@@ -9,113 +9,8 @@
 #include <string.h>
 #include <bitops.h>
 #include "chip.h"
-#if 0
-struct mem_range *sizeram(void)
-{
-	static struct mem_range mem[4];
-	/* the units of tolm are 64 KB */
-	/* the units of drb16 are 64 MB */
-	uint16_t tolm, remapbase, remaplimit, drb16;
-	uint16_t tolm_r, remapbase_r, remaplimit_r;
-	uint8_t  drb;
-	int remap_high;
-        device_t dev;
 
-        dev = dev_find_slot(0, 0); // d0f0
-	if (!dev) {
-                printk_err("Cannot find PCI: 0:0\n");
-                return 0;
-        }
-	
-	/* Calculate and report the top of low memory and 
-	 * any remapping.
-	 */
-	/* Test if the remap memory high option is set */
-        remap_high = 0;
-//        if(get_option(&remap_high, "remap_memory_high")){
-//                remap_high = 0;
-//        }
-	printk_debug("remap_high is %d\n", remap_high);
-	/* get out the value of the highest DRB. This tells the end of 
-	 * physical memory. The units are ticks of 64 MB i.e. 1 means
-	 * 64 MB. 
-	 */
-	drb = pci_read_config8(dev, 0x67);
-	drb16 = (uint16_t)drb;
-	if(remap_high && (drb16 > 0x08)) {
-		/* We only come here if we have at least 512MB of memory,
-		 * so it is safe to hard code tolm.
-		 * 0x2000 means 512MB 
-		 */
-
-		tolm = 0x2000;
-		/* i.e 0x40 * 0x40 is 0x1000 which is 4 GB */
-		if(drb16 > 0x0040) {
-			/* There is more than 4GB of memory put
-			 * the remap window at the end of ram.
-			 */
-			remapbase = drb16;
-			remaplimit = remapbase + 0x38;
-		}
-		else {
-			remapbase = 0x0040;
-			remaplimit = remapbase + (drb16-8);
-		}
-	}
-	else {
-		tolm = (uint16_t)((dev_root.resource[1].base >> 16)&0x0f800);
-		if((tolm>>8) >= (drb16<<2)) {
-			tolm = (drb16<<10);
-			remapbase = 0x3ff;
-			remaplimit = 0;
-		}
-		else {
-			remapbase = drb16;
-			remaplimit = remapbase + ((0x0040-(tolm>>10))-1);
-		}
-	}
-	/* Write the ram configruation registers,
-	 * preserving the reserved bits.
-	 */
-	tolm_r = pci_read_config16(dev, 0xc4);
-	tolm |= (tolm_r & 0x7ff); 
-	pci_write_config16(dev, 0xc4, tolm);
-	remapbase_r = pci_read_config16(dev, 0xc6);
-	remapbase |= (remapbase_r & 0xfc00);
-	pci_write_config16(dev, 0xc6, remapbase);
-	remaplimit_r = pci_read_config16(dev, 0xc8);
-	remaplimit |= (remaplimit_r & 0xfc00);
-	pci_write_config16(dev, 0xc8, remaplimit);
-
-#if 0
-    printk_debug("mem info tolm = %x, drb = %x, pci_memory_base = %x, remap = %x-%x\n",tolm,drb,pci_memory_base,remapbase,remaplimit);
-#endif
-	
-	mem[0].basek = 0;
-	mem[0].sizek = 640;
-	mem[1].basek = 768;
-	/* Convert size in 64K bytes to size in K bytes */
-	mem[1].sizek = (tolm << 6) - mem[1].basek;
-	mem[2].basek = 0;
-	mem[2].sizek = 0;
-	if ((drb << 16) > (tolm << 6)) {
-		/* We don't need to consider the remap window
-		 * here because we put it immediately after the
-		 * rest of ram.
-		 * All we must do is calculate the amount
-		 * of unused memory and report it at 4GB.
-		 */
-		mem[2].basek = 4096*1024;
-		mem[2].sizek = (drb << 16) - (tolm << 6);
-	}
-	mem[3].basek = 0;
-	mem[3].sizek = 0;
-	
-	return mem;
-}
-#endif
-
-#define BRIDGE_IO_MASK (IORESOURCE_IO | IORESOURCE_MEM | IORESOURCE_PREFETCH)
+#define BRIDGE_IO_MASK (IORESOURCE_IO | IORESOURCE_MEM)
 
 static void pci_domain_read_resources(device_t dev)
 {
@@ -130,21 +25,12 @@ static void pci_domain_read_resources(device_t dev)
         compute_allocate_resource(&dev->link[0], resource,
                 IORESOURCE_IO, IORESOURCE_IO);
 
-        /* Initialize the system wide prefetchable memory resources constraints */
-        resource = new_resource(dev, 1);
-        resource->limit = 0xfcffffffffULL;
-        resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
-        compute_allocate_resource(&dev->link[0], resource,
-                IORESOURCE_MEM | IORESOURCE_PREFETCH,
-                IORESOURCE_MEM | IORESOURCE_PREFETCH);
-
         /* Initialize the system wide memory resources constraints */
-        resource = new_resource(dev, 2);
-        resource->limit = 0xfcffffffffULL;
+        resource = new_resource(dev, 1);
+        resource->limit = 0xffffffffULL;
         resource->flags = IORESOURCE_MEM;
         compute_allocate_resource(&dev->link[0], resource,
-                IORESOURCE_MEM | IORESOURCE_PREFETCH,
-                IORESOURCE_MEM);
+                IORESOURCE_MEM, IORESOURCE_MEM);
 }
 
 static void ram_resource(device_t dev, unsigned long index,
@@ -164,72 +50,14 @@ static void ram_resource(device_t dev, unsigned long index,
 
 static void pci_domain_set_resources(device_t dev)
 {
-        struct resource *io, *mem1, *mem2;
         struct resource *resource, *last;
-        unsigned long mmio_basek;
+	device_t mc_dev;
         uint32_t pci_tolm;
-        int idx;
-	uint8_t  drb;
-        unsigned basek, sizek;
-	device_t dev_memctrl;
 
-#if 0
-        /* Place the IO devices somewhere safe */
-        io = find_resource(dev, 0);
-        io->base = DEVICE_IO_START;
-#endif
-#if 1
-        /* Now reallocate the pci resources memory with the
-         * highest addresses I can manage.
-         */
-        mem1 = find_resource(dev, 1);
-        mem2 = find_resource(dev, 2);
-
-#if 1
-                printk_debug("base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
-                        mem1->base, mem1->limit, mem1->size, mem1->align);
-                printk_debug("base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
-                        mem2->base, mem2->limit, mem2->size, mem2->align);
-#endif
-
-        /* See if both resources have roughly the same limits */
-        if (((mem1->limit <= 0xffffffff) && (mem2->limit <= 0xffffffff)) ||
-                ((mem1->limit > 0xffffffff) && (mem2->limit > 0xffffffff)))
-        {
-                /* If so place the one with the most stringent alignment first
-                 */
-                if (mem2->align > mem1->align) {
-                        struct resource *tmp;
-                        tmp = mem1;
-                        mem1 = mem2;
-                        mem2 = tmp;
-                }
-                /* Now place the memory as high up as it will go */
-                mem2->base = resource_max(mem2);
-                mem1->limit = mem2->base - 1;
-                mem1->base = resource_max(mem1);
-        }
-        else {
-                /* Place the resources as high up as they will go */
-                mem2->base = resource_max(mem2);
-                mem1->base = resource_max(mem1);
-        }
-
-#if 1
-                printk_debug("base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
-                        mem1->base, mem1->limit, mem1->size, mem1->align);
-                printk_debug("base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
-                        mem2->base, mem2->limit, mem2->size, mem2->align);
-#endif
-#endif
         pci_tolm = 0xffffffffUL;
         last = &dev->resource[dev->resources];
         for(resource = &dev->resource[0]; resource < last; resource++)
         {
-#if 1
-                resource->flags |= IORESOURCE_ASSIGNED;
-                resource->flags &= ~IORESOURCE_STORED;
-#endif
                 compute_allocate_resource(&dev->link[0], resource,
                         BRIDGE_IO_MASK, resource->flags & BRIDGE_IO_MASK);
 
@@ -243,43 +71,77 @@ static void pci_domain_set_resources(device_t dev)
                 }
         }
 
-#warning "FIXME handle interleaved nodes"
-        mmio_basek = pci_tolm >> 10;
-        /* Round mmio_basek to something the processor can support */
-        mmio_basek &= ~((1 << 6) -1);
+	mc_dev = dev->link[0].children;
+	if (mc_dev) {
+		/* Figure out which areas are/should be occupied by RAM.
+		 * This is all computed in kilobytes and converted to/from
+		 * the memory controller right at the edges.
+		 * Having different variables in different units is
+		 * too confusing to get right.  Kilobytes are good up to
+		 * 4 Terabytes of RAM...
+		 */
+		uint16_t tolm_r, remapbase_r, remaplimit_r;
+		unsigned long tomk, tolmk;
+		unsigned long remapbasek, remaplimitk;
+		int idx;
 
-#if 1
-#warning "FIXME improve mtrr.c so we don't use up all of the mtrrs with a 64M MMIO hole"
-        /* Round the mmio hold to 64M */
-        mmio_basek &= ~((64*1024) - 1);
-#endif
+		/* Get the value of the highest DRB. This tells the end of
+		 * the physical memory.  The units are ticks of 64MB
+		 * i.e. 1 means 64MB.
+		 */
+		tomk = ((unsigned long)pci_read_config8(mc_dev, 0x67)) << 16;
+		/* Compute the top of Low memory */
+		tolmk = pci_tolm >> 10;
+		if (tolmk >= tomk) {
+			/* The PCI hole does not overlap memory
+			 * we won't use the remap window.
+			 */
+			tolmk = tomk;
+			remapbasek   = 0x3ff << 16;
+			remaplimitk  = 0 << 16;
+		}
+		else {
+			/* The PCI memory hole overlaps memory
+			 * setup the remap window.
+			 */
+			/* Find the bottom of the remap window
+			 * is it above 4G?
+			 */
+			remapbasek = 4*1024*1024;
+			if (tomk > remapbasek) {
+				remapbasek = tomk;
+			}
+			/* Find the limit of the remap window */
+			remaplimitk = (remapbasek + (4*1024*1024 - tolmk) - (1 << 16));
+		}
+		/* Write the ram configuration registers,
+		 * preserving the reserved bits.
+		 */
+		tolm_r = pci_read_config16(mc_dev, 0xc4);
+		tolm_r = ((tolmk >> 17) << 11) | (tolm_r & 0x7ff);
+		pci_write_config16(mc_dev, 0xc4, tolm_r);
 
-	dev_memctrl = dev_find_slot(0, 0); // d0f0
-	drb = pci_read_config8(dev_memctrl, 0x67);
-
-        idx = 10;
-
-	basek = 0;
-	sizek = 640;
-	ram_resource(dev, idx++, basek, sizek);
-
-	basek = 768;
-	sizek = mmio_basek - basek;
-	ram_resource(dev, idx++, basek, sizek);
-
-	if ((drb << 16) > mmio_basek) {
-                /* We don't need to consider the remap window
-                 * here because we put it immediately after the
-                 * rest of ram.
-                 * All we must do is calculate the amount
-                 * of unused memory and report it at 4GB.
-                 */
-                basek = 4096*1024;
-                sizek = (drb << 16) - mmio_basek;
-		ram_resource(dev, idx++, basek, sizek);
+		remapbase_r = pci_read_config16(mc_dev, 0xc6);
+		remapbase_r = (remapbasek >> 16) | (remapbase_r & 0xfc00);
+		pci_write_config16(mc_dev, 0xc6, remapbase_r);
+		
+		remaplimit_r = pci_read_config16(mc_dev, 0xc8);
+		remaplimit_r = (remaplimitk >> 16) | (remaplimit_r & 0xfc00);
+		pci_write_config16(mc_dev, 0xc8, rempaplimit_r);
+		
+		/* Report the memory regions */
+		idx = 10;
+		ram_resource(dev, idx++, 0, 640);
+		ram_resource(dev, idx++, 768, tolmk - 768);
+		if (tomk > 4*1024*1024) {
+			ram_resource(dev, idx++, 4096*1024, tomk - 4*1024*1024);
+		}
+		if (remaplimitk >= remapbasek) {
+			ram_resource(dev, idx++, ramapbasek,
+				(reamplimitk + 64*1024) = remapbasek);
+		}
 	}
-
-        assign_resources(&dev->link[0]);
+	assign_resources(&dev->link[0]);
 }
 
 static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
@@ -296,56 +158,6 @@ static struct device_operations pci_domain_ops = {
         .scan_bus         = pci_domain_scan_bus,
 };  
 
-static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
-{
-        struct bus *cpu_bus;
-        unsigned reg;
-        int i;
-
-        /* Find which cpus are present */
-        cpu_bus = &dev->link[0];
-        for(i = 0; i < 7; i+=6) {
-                device_t dev, cpu;
-                struct device_path cpu_path;
-#if 0
-//How to identify Intel CPU
-                /* Find the cpu's memory controller */
-                dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 0));
-#endif
-
-                /* Build the cpu device path */
-                cpu_path.type = DEVICE_PATH_APIC;
-                cpu_path.u.apic.apic_id = i;
-
-                /* See if I can find the cpu */
-                cpu = find_dev_path(cpu_bus, &cpu_path);
-#if 0
-                /* Enable the cpu if I have the processor */
-                if (dev && dev->enabled) {
-                        if (!cpu) {
-                                cpu = alloc_dev(cpu_bus, &cpu_path);
-                        }
-                        if (cpu) {
-                                cpu->enabled = 1;
-                        }
-                }
-
-                /* Disable the cpu if I don't have the processor */
-                if (cpu && (!dev || !dev->enabled)) {
-                        cpu->enabled = 0;
-                }
-#else
-		cpu->enabled = 1;
-#endif
-                /* Report what I have done */
-                if (cpu) {
-                        printk_debug("CPU: %s %s\n",
-                                dev_path(cpu), cpu->enabled?"enabled":"disabled");
-                }
-        }
-        return max;
-}
-
 static void cpu_bus_init(device_t dev)
 {
         initialize_cpus(&dev->link[0]);
@@ -360,7 +172,7 @@ static struct device_operations cpu_bus_ops = {
         .set_resources    = cpu_bus_noop,
         .enable_resources = cpu_bus_noop,
         .init             = cpu_bus_init,
-        .scan_bus         = cpu_bus_scan,
+        .scan_bus         = cpu_bus_noop,
 };
 
 static void enable_dev(struct device *dev)

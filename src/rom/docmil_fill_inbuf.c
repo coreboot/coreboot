@@ -11,12 +11,16 @@
 #define DOC_KERNEL_START 65536
 #endif
 
+#ifndef DOC_MIL_BASE
+#define DOC_MIL_BASE  0xffffe000
+#endif
+
 static unsigned char *nvram;
 static int block_count;
 static int firstfill = 1;
 
 static void memcpy_from_doc_mil(void *dest, const void *src, size_t n);
-static unsigned char *doc_mil = (unsigned char *) 0xffffe000;
+static unsigned char *doc_mil = (unsigned char *) DOC_MIL_BASE;
 #ifdef CHECK_DOC_MIL
 static unsigned char *checkbuf;
 #endif /* CHECK_DOC_MIL */

@@ -22,6 +22,14 @@ option NO_KEYBOARD
 option HAVE_PIRQ_TABLE
 option ZKERNEL_START=0xfffc0000
 option ZKERNEL_MASK=0x7f 
+# For those people who use DoC
+# on DoC on this board, Linux starts at the front. No need to have 
+# linuxbios in DoC as it is in FLASH
+# Actually we'll leave it at the 65K offset. The reason to leave it there
+# is we can drop any LinuxBIOS DoC in from any machine and it will work 
+# fine. 
+# option DOC_KERNEL_START 0
+option DOC_MIL_BASE=0xd000
 option L440BX
 
 object mainboard.o

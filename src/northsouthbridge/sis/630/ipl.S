@@ -127,7 +127,6 @@ check_row_column:
 
 	addw	%cx, %si			# sdram_type_bank[column + row * 4]
 	movb	-52(%si), %cl			# sdram_type_bank[column + row * 4 - 52]
-#endif
 
 #ifdef SIZE_ALL
 	movb	%ah, %bh			# Restore DIMM slot number from AH to BH

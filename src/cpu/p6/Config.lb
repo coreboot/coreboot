@@ -3,4 +3,3 @@ dir /cpu/p5
 object cpufixup.o
 object mtrr.o
 object pgtbl.o
-#object l2_cache.o

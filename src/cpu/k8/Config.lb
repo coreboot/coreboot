@@ -1,5 +1,5 @@
 # How does the config tool pick the correct
-# cpufixup.c to generate cupfixup.o ?
+# cpufixup.c to generate cpufixup.o ?
 
 uses k8
 uses CPU_FIXUP

@@ -24,6 +24,7 @@ uses INTEL_PPRO_MTRR
 uses HEAP_SIZE
 uses IRQ_SLOT_COUNT
 uses k7
+uses k8
 uses MAINBOARD_PART_NUMBER
 uses MAINBOARD_VENDOR
 uses MAX_CPUS
@@ -41,13 +42,16 @@ uses STACK_SIZE
 uses USE_ELF_BOOT
 uses USE_FALLBACK_IMAGE
 uses USE_OPTION_TABLE
+uses HAVE_OPTION_TABLE
 
-option HAVE_MP_TABLE=0
+option HAVE_OPTION_TABLE=1
+option HAVE_MP_TABLE=1
 option CPU_FIXUP=1
 option CONFIG_UDELAY_TSC=0
 option i686=1
 option INTEL_PPRO_MTRR=1
 option k7=1
+option k8=1
 
 
 ### Customize our winbond superio chip for this motherboard

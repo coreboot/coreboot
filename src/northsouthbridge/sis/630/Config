@@ -1,6 +1,5 @@
 option SIS630
 option USE_DOC_MIL
-option INBUF_COPY
 docipl northsouthbridge/sis/630/ipl.S
 raminit northsouthbridge/sis/630/raminit.inc
 

@@ -74,20 +74,18 @@ static void uart_init(void)
 	outb(0x01, TTYS0_BASE + UART_FCR);
 	/* Set Baud Rate Divisor to 12 ==> 115200 Baud */
 	outb(0x80 | UART_LCS, TTYS0_BASE + UART_LCR);
-#if 0 &&  USE_OPTION_TABLE == 1
- {
-		static const unsigned char divisor[] = { 1,2,3,6,12,24,48,96 };
-		unsigned ttys0_div, ttys0_index;
-		outb(RTC_BOOT_BYTE + 1, 0x70);
-		ttys0_index = inb(0x71);
-		ttys0_index &= 7;
-		ttys0_div = divisor[ttys0_index];
-		outb(ttys0_div & 0xff, TTYS0_BASE + UART_DLL);
-		outb(0, TTYS0_BASE + UART_DLM);
- }
+#if USE_OPTION_TABLE == 1
+	static const unsigned char divisor[] = { 1,2,3,6,12,24,48,96 };
+	unsigned ttys0_div, ttys0_index;
+	outb(RTC_BOOT_BYTE + 1, 0x70);
+	ttys0_index = inb(0x71);
+	ttys0_index &= 7;
+	ttys0_div = divisor[ttys0_index];
+	outb(ttys0_div & 0xff, TTYS0_BASE + UART_DLL);
+	outb(0, TTYS0_BASE + UART_DLM);
 #else
-		outb(TTYS0_DIV & 0xFF,   TTYS0_BASE + UART_DLL);
-		outb((TTYS0_DIV >> 8) & 0xFF,    TTYS0_BASE + UART_DLM);
+	outb(TTYS0_DIV & 0xFF,   TTYS0_BASE + UART_DLL);
+	outb((TTYS0_DIV >> 8) & 0xFF,    TTYS0_BASE + UART_DLM);
 #endif
 	outb(UART_LCS, TTYS0_BASE + UART_LCR);
 }

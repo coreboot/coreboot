@@ -199,7 +199,7 @@ rtc_fixup(void)
 
 	/* Select 24 HR time */
 	outb_p(0x0B, 0x70);
-	outb_p(0x26, 0x71);
+	outb_p(0x02, 0x71);
 
 	/* Clear Checksum Error */
 	outb_p(0x0D, 0x70);

@@ -7,8 +7,8 @@
 owner:	Ron Minnich
 email:	rminnich@lanl.gov
 #status: One of unsupported, unstable, stable
-status: unstable
-explanation: 
+status: unsupported
+explanation: Dell declined to help us
 flash-types: 
 payload-types: 
 # e.g. linux, plan 9, wince, etc.

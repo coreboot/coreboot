@@ -7,20 +7,20 @@
 owner:	Ron Minnich
 email:	rminnich@lanl.gov
 #status: One of unsupported, unstable, stable
-status: unstable
+status: stable
 explanation: 
-flash-types: 
-payload-types: 
+flash-types: sst28sf040 and similar
+payload-types: etherboot
 # e.g. linux, plan 9, wince, etc.
-OS-types: 
+OS-types: Linux
 # e.g. "Plan 9 interrupts don't work on this chipset"
 OS-issues:
-console-types:
+console-types: serial
 # vga is unsupported, unstable, or stable
 vga:
 # Last-known-good follows the internationl date standard: day/month/year
-last-known-good: 0/0/0000
-Comments: 
+last-known-good: 01/06/2002
+Comments: Can't use CONFIG_COMPRESS
 Links:
 Mainboard-revision: 
 # What other mainboards are like this one? List them here. 

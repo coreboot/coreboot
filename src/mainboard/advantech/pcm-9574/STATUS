@@ -7,8 +7,8 @@
 owner:	Ron Minnich
 email:	rminnich@lanl.gov
 #status: One of unsupported, unstable, stable
-status: unstable
-explanation: 
+status: no longer tested 
+explanation: It had a software-controlled fan and other design misfeatures, so we dropped it.
 flash-types: 
 payload-types: 
 # e.g. linux, plan 9, wince, etc.

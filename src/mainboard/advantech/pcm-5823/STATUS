@@ -7,20 +7,20 @@
 owner:	Ron Minnich
 email:	rminnich@lanl.gov
 #status: One of unsupported, unstable, stable
-status: unstable
+status: stable
 explanation: 
-flash-types: 
-payload-types: 
+flash-types: sst28SF040, sst28SF020, and similar; CF for the payload
+payload-types: etherboot, 9load, ADLO, Linux kernel from CF
 # e.g. linux, plan 9, wince, etc.
-OS-types: 
+OS-types: Linux, Plan 9, OpenBSD, Win2K
 # e.g. "Plan 9 interrupts don't work on this chipset"
 OS-issues:
 console-types:
 # vga is unsupported, unstable, or stable
 vga:
 # Last-known-good follows the internationl date standard: day/month/year
-last-known-good: 0/0/0000
-Comments: 
+last-known-good: 01/11/2002
+Comments: Make sure it's the rev 2!
 Links:
 Mainboard-revision: 
 # What other mainboards are like this one? List them here. 

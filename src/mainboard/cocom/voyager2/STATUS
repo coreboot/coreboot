@@ -7,9 +7,9 @@
 owner:	Ron Minnich
 email:	rminnich@lanl.gov
 #status: One of unsupported, unstable, stable
-status: unstable
+status: stable
 explanation: 
-flash-types: 
+flash-types: sst28sf040 and similar 512KB or 256KB
 payload-types: 
 # e.g. linux, plan 9, wince, etc.
 OS-types: 

@@ -8,7 +8,7 @@ owner:	Ron Minnich
 email:	rminnich@lanl.gov
 #status: One of unsupported, unstable, stable
 status: unstable
-explanation: 
+explanation:  Obsolete, no reported users
 flash-types: 
 payload-types: 
 # e.g. linux, plan 9, wince, etc.

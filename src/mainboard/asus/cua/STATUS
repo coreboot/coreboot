@@ -7,19 +7,19 @@
 owner:	Ron Minnich
 email:	rminnich@lanl.gov
 #status: One of unsupported, unstable, stable
-status: unstable
-explanation: 
-flash-types: 
-payload-types: 
+status: stable
+explanation: This has worked for 18 months, and seems quite solid
+flash-types: Flash (32DIP) and DoC (MD2800-D08)
+payload-types: Etherboot, Linux kernel, other OSes
 # e.g. linux, plan 9, wince, etc.
 OS-types: 
 # e.g. "Plan 9 interrupts don't work on this chipset"
 OS-issues:
-console-types:
+console-types: Serial so far
 # vga is unsupported, unstable, or stable
 vga:
 # Last-known-good follows the internationl date standard: day/month/year
-last-known-good: 0/0/0000
+last-known-good: 01/08/2002
 Comments: 
 Links:
 Mainboard-revision: 

@@ -7,19 +7,19 @@
 owner:	Ron Minnich
 email:	rminnich@lanl.gov
 #status: One of unsupported, unstable, stable
-status: unstable
-explanation: 
-flash-types: 
-payload-types: 
+status: unsupported
+explanation: The Alphas is dead, dead, dead.
+flash-types: Soldered-on; it's 2 Mbytes
+payload-types: Linux kernel
 # e.g. linux, plan 9, wince, etc.
 OS-types: 
 # e.g. "Plan 9 interrupts don't work on this chipset"
 OS-issues:
-console-types:
+console-types: Serial
 # vga is unsupported, unstable, or stable
 vga:
 # Last-known-good follows the internationl date standard: day/month/year
-last-known-good: 0/0/0000
+last-known-good: 10/10/2001
 Comments: 
 Links:
 Mainboard-revision: 

@@ -311,7 +311,7 @@ static struct device_operations mainboard_operations = {
 	.enable           = 0,
 };
 
-static void enable_dev(struct chip *chip)
+static void enable_dev(struct device *dev)
 {
 	dev_root.ops = &mainboard_operations;
 }

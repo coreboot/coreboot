@@ -1,3 +1,6 @@
 option i786=1
 
 object delay_i786.o
+object i786_cpufixup.o
+object i786_microcode.o
+object i786_microcode_tables.o

@@ -60,12 +60,7 @@ end
 ##
 southbridge winbond/w83c553 end
 
-# Already intialized in board_init()
-#superio NSC/pc97307 
-#	register "com1" = "{1}"
-#	register "lpt" = "{0}"
-#	register "port" = "UART0_IO_BASE"
-#end
+superio NSC/pc97307 end
 
 ##
 ## Build the objects we have code for in this directory.

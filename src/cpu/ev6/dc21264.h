@@ -55,7 +55,7 @@
 #define EV6_SCB__DTB_TAG1	((1 << 1) | (1 << 5))
 #define EV6_SCB__DTB_PTE0	((1 << 0) | (1 << 4))
 #define EV6_SCB__DTB_PTE1	((1 << 3) | (1 << 7))
-#define EV6_SCB__DTB_ALTMODE	(1 << 6)
+#define EV6_SCB__DTB_ALT_MODE	(1 << 6)
 #define EV6_SCB__DTB_IAP	(1 << 7)
 #define EV6_SCB__DTB_IA		(1 << 7)
 #define EV6_SCB__DTB_IS0	(1 << 6)
@@ -80,7 +80,7 @@
  * =========================================================
  */
 #define EV6__CC			((0xC0 << 8) | EV6_SCB__CC)
-#define EV6__CTL		((0xC1 << 8) | EV6_SCB__CTL) 
+#define EV6__CC_CTL		((0xC1 << 8) | EV6_SCB__CC_CTL) 
 #define EV6__VA			((0xC2 << 8) | EV6_SCB__VA)
 #define EV6__VA_CTL		((0xC4 << 8) | EV6_SCB__VA_CTL)
 #define EV6__VA_FORM		((0xC3 << 8) | EV6_SCB__VA_FORM)
@@ -121,7 +121,7 @@
 #define EV6__DTB_TAG1		((0xA0 << 8) | EV6_SCB__DTB_TAG1)
 #define EV6__DTB_PTE0		((0x21 << 8) | EV6_SCB__DTB_PTE0)
 #define EV6__DTB_PTE1		((0xA1 << 8) | EV6_SCB__DTB_PTE1)
-#define EV6__DTB_ALTMODE	((0x26 << 8) | EV6_SCB__DTB_ALTMODE)
+#define EV6__DTB_ALT_MODE	((0x26 << 8) | EV6_SCB__DTB_ALT_MODE)
 #define EV6__DTB_IAP		((0xA2 << 8) | EV6_SCB__DTB_IAP)
 #define EV6__DTB_IA		((0xA3 << 8) | EV6_SCB__DTB_IA)
 #define EV6__DTB_IS0		((0x24 << 8) | EV6_SCB__DTB_IS0)
@@ -420,6 +420,14 @@
 #define EV6__I_CTL__VPTB__V		18
 #define EV6__I_CTL__VPTB__M		((1 << EV6__I_CTL__VPTB__V) -1)
 
+/* EV6__I_STAT */
+#define EV6__I_STAT__TPE__S		29
+#define EV6__I_STAT__TPE__V		1
+#define EV6__I_STAT__TPE__M		((1 << EV6__I_STAT__TPE__V) -1)
+#define EV6__I_STAT__DPE__S		30
+#define EV6__I_STAT__DPE__V		1
+#define EV6__I_STAT__DPE__M		((1 << EV6__I_STAT__DPE__V) -1)
+
 /* EV6__IC_FLUSH (no subfields)  */
 /* EV6__IC_FLUSH_ASM (no subfields) */
 /* EV6__CLR_MAP (no subfields */
@@ -634,4 +642,199 @@
 /* EV6__C_DATA (no subfields) */
 /* EV6__C_SHIFT (no subfields) */
 
-#endif /* DC21264_H */
+/* 
+ * Palcode entry points 
+ * =========================================================
+ */
+
+/* Exception pal entry points */
+#define EV6__DTBM_DOUBLE_3_ENTRY	0x100
+#define EV6__DTBM_DOUBLE_4_ENTRY	0x180
+#define EV6__FEN_ENTRY			0x200
+#define EV6__UNALIGN_ENTRY		0x280
+#define EV6__DTBM_SINGLE_ENTRY		0x300
+#define EV6__DFAULT_ENTRY		0x380
+#define EV6__OPCDEC_ENTRY		0x400
+#define EV6__IACV_ENTRY			0x480
+#define EV6__MCHK_ENTRY			0x500
+#define EV6__ITB_MISS_ENTRY		0x580
+#define EV6__ARITH_ENTRY		0x600
+#define EV6__INTERRUPT_ENTRY		0x680
+#define EV6__MT_FPCR_ENTRY		0x700
+#define EV6__RESET_ENTRY		0x780
+/* Privelidged pal entry points */
+#define EV6__CALL_PAL_00_ENTRY		0x2000 /* aka Halt */
+#define EV6__CALL_PAL_01_ENTRY		0x2040
+#define EV6__CALL_PAL_02_ENTRY		0x2080
+#define EV6__CALL_PAL_03_ENTRY		0x20C0
+#define EV6__CALL_PAL_04_ENTRY		0x2100
+#define EV6__CALL_PAL_05_ENTRY		0x2140
+#define EV6__CALL_PAL_06_ENTRY		0x2180
+#define EV6__CALL_PAL_07_ENTRY		0x21C0
+#define EV6__CALL_PAL_08_ENTRY		0x2200
+#define EV6__CALL_PAL_09_ENTRY		0x2240
+#define EV6__CALL_PAL_0A_ENTRY		0x2280
+#define EV6__CALL_PAL_0B_ENTRY		0x22C0
+#define EV6__CALL_PAL_0C_ENTRY		0x2300
+#define EV6__CALL_PAL_0D_ENTRY		0x2340
+#define EV6__CALL_PAL_0E_ENTRY		0x2380
+#define EV6__CALL_PAL_0F_ENTRY		0x23C0
+#define EV6__CALL_PAL_10_ENTRY		0x2400
+#define EV6__CALL_PAL_11_ENTRY		0x2440
+#define EV6__CALL_PAL_12_ENTRY		0x2480
+#define EV6__CALL_PAL_13_ENTRY		0x24C0
+#define EV6__CALL_PAL_14_ENTRY		0x2500
+#define EV6__CALL_PAL_15_ENTRY		0x2540
+#define EV6__CALL_PAL_16_ENTRY		0x2580
+#define EV6__CALL_PAL_17_ENTRY		0x25C0
+#define EV6__CALL_PAL_18_ENTRY		0x2600
+#define EV6__CALL_PAL_19_ENTRY		0x2640
+#define EV6__CALL_PAL_1A_ENTRY		0x2680
+#define EV6__CALL_PAL_1B_ENTRY		0x26C0
+#define EV6__CALL_PAL_1C_ENTRY		0x2700
+#define EV6__CALL_PAL_1D_ENTRY		0x2740
+#define EV6__CALL_PAL_1E_ENTRY		0x2780
+#define EV6__CALL_PAL_1F_ENTRY		0x27C0
+#define EV6__CALL_PAL_20_ENTRY		0x2800
+#define EV6__CALL_PAL_21_ENTRY		0x2840
+#define EV6__CALL_PAL_22_ENTRY		0x2880
+#define EV6__CALL_PAL_23_ENTRY		0x28C0
+#define EV6__CALL_PAL_24_ENTRY		0x2900
+#define EV6__CALL_PAL_25_ENTRY		0x2940
+#define EV6__CALL_PAL_26_ENTRY		0x2980
+#define EV6__CALL_PAL_27_ENTRY		0x29C0
+#define EV6__CALL_PAL_28_ENTRY		0x2A00
+#define EV6__CALL_PAL_29_ENTRY		0x2A40
+#define EV6__CALL_PAL_2A_ENTRY		0x2A80
+#define EV6__CALL_PAL_2B_ENTRY		0x2AC0
+#define EV6__CALL_PAL_2C_ENTRY		0x2B00
+#define EV6__CALL_PAL_2D_ENTRY		0x2B40
+#define EV6__CALL_PAL_2E_ENTRY		0x2B80
+#define EV6__CALL_PAL_2F_ENTRY		0x2BC0
+#define EV6__CALL_PAL_30_ENTRY		0x2C00
+#define EV6__CALL_PAL_31_ENTRY		0x2C40
+#define EV6__CALL_PAL_32_ENTRY		0x2C80
+#define EV6__CALL_PAL_33_ENTRY		0x2CC0
+#define EV6__CALL_PAL_34_ENTRY		0x2D00
+#define EV6__CALL_PAL_35_ENTRY		0x2D40
+#define EV6__CALL_PAL_36_ENTRY		0x2D80
+#define EV6__CALL_PAL_37_ENTRY		0x2DC0
+#define EV6__CALL_PAL_38_ENTRY		0x2E00
+#define EV6__CALL_PAL_39_ENTRY		0x2E40
+#define EV6__CALL_PAL_3A_ENTRY		0x2E80
+#define EV6__CALL_PAL_3B_ENTRY		0x2EC0
+#define EV6__CALL_PAL_3C_ENTRY		0x2F00
+#define EV6__CALL_PAL_3D_ENTRY		0x2F40
+#define EV6__CALL_PAL_3E_ENTRY		0x2F80
+#define EV6__CALL_PAL_3F_ENTRY		0x2FC0
+/* Unpriveledged pal entry points */
+#define EV6__CALL_PAL_80_ENTRY		0x3000
+#define EV6__CALL_PAL_81_ENTRY		0x3040
+#define EV6__CALL_PAL_82_ENTRY		0x3080
+#define EV6__CALL_PAL_83_ENTRY		0x30C0
+#define EV6__CALL_PAL_84_ENTRY		0x3100
+#define EV6__CALL_PAL_85_ENTRY		0x3140
+#define EV6__CALL_PAL_86_ENTRY		0x3180
+#define EV6__CALL_PAL_87_ENTRY		0x31C0
+#define EV6__CALL_PAL_88_ENTRY		0x3200
+#define EV6__CALL_PAL_89_ENTRY		0x3240
+#define EV6__CALL_PAL_8A_ENTRY		0x3280
+#define EV6__CALL_PAL_8B_ENTRY		0x32C0
+#define EV6__CALL_PAL_8C_ENTRY		0x3300
+#define EV6__CALL_PAL_8D_ENTRY		0x3340
+#define EV6__CALL_PAL_8E_ENTRY		0x3380
+#define EV6__CALL_PAL_8F_ENTRY		0x33C0
+#define EV6__CALL_PAL_90_ENTRY		0x3400
+#define EV6__CALL_PAL_91_ENTRY		0x3440
+#define EV6__CALL_PAL_92_ENTRY		0x3480
+#define EV6__CALL_PAL_93_ENTRY		0x34C0
+#define EV6__CALL_PAL_94_ENTRY		0x3500
+#define EV6__CALL_PAL_95_ENTRY		0x3540
+#define EV6__CALL_PAL_96_ENTRY		0x3580
+#define EV6__CALL_PAL_97_ENTRY		0x35C0
+#define EV6__CALL_PAL_98_ENTRY		0x3600
+#define EV6__CALL_PAL_99_ENTRY		0x3640
+#define EV6__CALL_PAL_9A_ENTRY		0x3680
+#define EV6__CALL_PAL_9B_ENTRY		0x36C0
+#define EV6__CALL_PAL_9C_ENTRY		0x3700
+#define EV6__CALL_PAL_9D_ENTRY		0x3740
+#define EV6__CALL_PAL_9E_ENTRY		0x3780
+#define EV6__CALL_PAL_9F_ENTRY		0x37C0
+#define EV6__CALL_PAL_A0_ENTRY		0x3800
+#define EV6__CALL_PAL_A1_ENTRY		0x3840
+#define EV6__CALL_PAL_A2_ENTRY		0x3880
+#define EV6__CALL_PAL_A3_ENTRY		0x38C0
+#define EV6__CALL_PAL_A4_ENTRY		0x3900
+#define EV6__CALL_PAL_A5_ENTRY		0x3940
+#define EV6__CALL_PAL_A6_ENTRY		0x3980
+#define EV6__CALL_PAL_A7_ENTRY		0x39C0
+#define EV6__CALL_PAL_A8_ENTRY		0x3A00
+#define EV6__CALL_PAL_A9_ENTRY		0x3A40
+#define EV6__CALL_PAL_AA_ENTRY		0x3A80
+#define EV6__CALL_PAL_AB_ENTRY		0x3AC0
+#define EV6__CALL_PAL_AC_ENTRY		0x3B00
+#define EV6__CALL_PAL_AD_ENTRY		0x3B40
+#define EV6__CALL_PAL_AE_ENTRY		0x3B80
+#define EV6__CALL_PAL_AF_ENTRY		0x3BC0
+#define EV6__CALL_PAL_B0_ENTRY		0x3C00
+#define EV6__CALL_PAL_B1_ENTRY		0x3C40
+#define EV6__CALL_PAL_B2_ENTRY		0x3C80
+#define EV6__CALL_PAL_B3_ENTRY		0x3CC0
+#define EV6__CALL_PAL_B4_ENTRY		0x3D00
+#define EV6__CALL_PAL_B5_ENTRY		0x3D40
+#define EV6__CALL_PAL_B6_ENTRY		0x3D80
+#define EV6__CALL_PAL_B7_ENTRY		0x3DC0
+#define EV6__CALL_PAL_B8_ENTRY		0x3E00
+#define EV6__CALL_PAL_B9_ENTRY		0x3E40
+#define EV6__CALL_PAL_BA_ENTRY		0x3E80
+#define EV6__CALL_PAL_BB_ENTRY		0x3EC0
+#define EV6__CALL_PAL_BC_ENTRY		0x3F00
+#define EV6__CALL_PAL_BD_ENTRY		0x3F40
+#define EV6__CALL_PAL_BE_ENTRY		0x3F80
+#define EV6__CALL_PAL_BF_ENTRY		0x3FC0
+/* All other pall call entry points are handled by OPCDEC entry */
+
+
+/* Alpha Logical Register Definitions
+ * =========================================================
+ */
+
+/*  PAL Shadow Registers */
+#define	p0 $4
+#define p1 $5
+#define p2 $6
+#define p3 $7
+#define p4 $20
+#define p5 $21
+#define p6 $22
+#define p7 $23
+
+/* Alpha Logical Instruction Definitions
+ * =========================================================
+ */
+
+#define	mtpr	    hw_mtpr
+#define	mfpr	    hw_mfpr
+
+#define ldl_p	    hw_ldl/p
+#define ldq_p	    hw_ldq/p
+#define stl_p	    hw_stl/p
+#define stq_p	    hw_stq/p
+
+/* Virtual PTE fetch variants of HW_LD.
+ */
+#define ld_vpte     hw_ldq/v
+
+/*
+ * Physical mode load-lock and store-conditional variants of
+ * HW_LD and HW_ST.
+ */
+#define ldq_lp	    hw_ldq/pl
+#define stq_cp	    hw_stq/pc
+
+#define STALL       bis $31, $31, $31
+
+/* Align the code to a hardware fetch block */
+#define FETCH_BLOCK_ALIGN 	.p2alignl 4, 0x47ff041f
+
+#endif /* DC21264_H */	

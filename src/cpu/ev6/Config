@@ -1,0 +1,2 @@
+makedefine CPU_OPT=-mcpu=ev6 -Wa,-m21264
+option USE_CPU_EV6=1

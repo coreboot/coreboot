@@ -189,6 +189,9 @@ nonregistered:
 sizeram:		
 	rorl	$16, %ecx
 	/* clear the 'no multi page' bit. */
+	/* NOTE: 3/22/01 -- I think this is wrong! -- rgm
+	 * I think we should OR IN 0x1000, which we already did!
+	 */
 	andw	$0xefff, %cx
 	WRITE_MCR0 
 	/*
@@ -228,6 +231,10 @@ sizeram:
 	rol	$20, %ecx
 /* set 4 banks. */
 	orb	$1, %cl
+/* COMMENT 3-22-01 RGM -- I THINK WE WANT THIS HERE TO TURN
+ * MULTIBANK ON
+	andw	$0xefff, %cx
+ */
 	WRITE_MCR0
 	/*
 	mov	$0x6c, %al
@@ -247,6 +254,9 @@ sizeram:
 	movb	$7, (%esi)
 	cmpb	$0, (%edi)
 	jz	1f /* 4 banks */
+	/* NOTE 03-22-01 RGM
+	 * I THINK THIS SHOULD BE 0x180000!
+         */
 	orl	$0x80000, %ecx
 	/* clear 4 banks */
 	andb	$0xfe, %cl

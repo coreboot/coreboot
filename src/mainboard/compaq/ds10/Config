@@ -1,0 +1,7 @@
+northbridge alpha/tsunami
+southbridge ali/m1543
+#southbridge...
+#superio...
+
+
+object mainboard.o

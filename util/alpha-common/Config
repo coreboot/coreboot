@@ -1,0 +1,9 @@
+
+makerule commlib.a: disassm.o romhead.o ; rm -f commlib.a
+addaction commlib.a ar cr commlib.a disassm.o romhead.o
+addaction commlib.a ar ts commlib.a > /dev/null
+
+
+makerule disassm.o: $(TOP)/util/alpha-common/disassm.c ; $(CC) -g -O -I$(TOP)/util/alpha-common -I$(TOP)/util/alpha-common/include -c $(TOP)/util/alpha-common/disassm.c
+
+makerule romhead.o: $(TOP)/util/alpha-common/romhead.c ; $(CC) -g -O -I$(TOP)/util/alpha-common -I$(TOP)/util/alpha-common/include -c $(TOP)/util/alpha-common/romhead.c

@@ -1,5 +1,4 @@
 #include <console/console.h>
-#include <arch/io.h>
 #include <arch/pciconf.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -16,13 +15,6 @@ struct pci_ops {
 };
 
 struct pci_ops pci_direct_ppc;
-
-#define CONFIG_CMD(bus,devfn,where) \
-		((bus << 16) | (devfn << 8) | (where & ~3) | 0x80000000)
-
-/*
- * Direct access to PCI hardware...
- */
 
 /*
  * Before we decide to use direct hardware access mechanisms, we try to do some
@@ -99,60 +91,6 @@ void pci_set_method(void)
 {
 	conf = &pci_direct_ppc;
 	pci_sanity_check(conf);
-}
-
-static uint8_t pci_ppc_read_config8(unsigned char bus, int devfn, int where)
-{
-	uint8_t res;
-
-	out_le32((unsigned *)PCIC0_CFGADDR, CONFIG_CMD(bus, devfn, where));
-	res = in_8((unsigned char *)PCIC0_CFGDATA + (where & 3));
-	printk_spew("read8(0x%x,0x%x,0x%x)=0x%x\n", bus, devfn, where, res);
-	return res;
-}
-
-static uint16_t pci_ppc_read_config16(unsigned char bus, int devfn, int where)
-{
-	uint16_t res;
-
-	out_le32((unsigned *)PCIC0_CFGADDR, CONFIG_CMD(bus, devfn, where));
-	res = in_le16((unsigned short *)PCIC0_CFGDATA + (where & 2));
-	printk_spew("read16(0x%x,0x%x,0x%x)=0x%x\n", bus, devfn, where, res);
-	return res;
-}
-
-static uint32_t pci_ppc_read_config32(unsigned char bus, int devfn, int where)
-{
-	uint32_t res;
-
-	out_le32((unsigned *)PCIC0_CFGADDR, CONFIG_CMD(bus, devfn, where));
-	res = in_le32((unsigned *)PCIC0_CFGDATA);
-	printk_spew("read32(0x%x,0x%x,0x%x)=0x%x\n", bus, devfn, where, res);
-	return res;
-}
-
-static int pci_ppc_write_config8(unsigned char bus, int devfn, int where, uint8_t data)
-{
-	out_le32((unsigned *)PCIC0_CFGADDR, CONFIG_CMD(bus, devfn, where));
-	out_8((unsigned char *)PCIC0_CFGDATA + (where & 3), data);
-	printk_spew("write8(0x%x,0x%x,0x%x)<-0x%x\n", bus, devfn, where, data);
-	return 0;
-}
-
-static int pci_ppc_write_config16(unsigned char bus, int devfn, int where, uint16_t data)
-{
-	out_le32((unsigned *)PCIC0_CFGADDR, CONFIG_CMD(bus, devfn, where));
-	out_le16((unsigned short *)PCIC0_CFGDATA + (where & 2), data);
-	printk_spew("write16(0x%x,0x%x,0x%x)<-0x%x\n", bus, devfn, where, data);
-	return 0;
-}
-
-static int pci_ppc_write_config32(unsigned char bus, int devfn, int where, uint32_t data)
-{
-	out_le32((unsigned *)PCIC0_CFGADDR, CONFIG_CMD(bus, devfn, where));
-	out_le32((unsigned *)PCIC0_CFGDATA, data);
-	printk_spew("write32(0x%x,0x%x,0x%x)<-0x%x\n", bus, devfn, where, data);
-	return 0;
 }
 
 struct pci_ops pci_direct_ppc =

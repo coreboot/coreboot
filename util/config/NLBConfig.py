@@ -617,7 +617,7 @@ treetop = command_vals['TOP']
 makebase = os.path.join(treetop, "util/config/make.base")
 crt0base = os.path.join(treetop, "arch/i386/config/crt0.base")
 ldscriptbase = os.path.join(treetop, "arch/alpha/config/ldscript.base")
-doxyscriptbase = os.path.join(treetop, "config/doxyscript.base")
+doxyscriptbase = os.path.join(treetop, "src/config/doxyscript.base")
 
 ## now read in the base files. 
 #print "Now Process the base files"

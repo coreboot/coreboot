@@ -1,3 +1,8 @@
+on the cs5530 southbridge, 
+
+setpci -s 0:12.0 52.b=ee
+setpci -x 0:12.0 5b.b= 0x20 (| with whatever is there)
+
 I am making this a general-purpose userland flash burner -- RGM
 
 Earlier notes from Ollie:

@@ -37,6 +37,12 @@ const static int ramsizes[16] =
 #define SIS630_BANK1 0x61
 #define SIS630_BANK2 0x62
 #define SIS630_DIMM_LOCATION_FOR_SMA 0x65
+#define MAX_DIMM_SLOTS 3
+// We thought about a function but this is easier. 
+// feel free to improve on this idea. 
+// this array has all the DIMM slot size in Kbytes. 
+unsigned long slotsizeM[MAX_DIMM_SLOTS];
+
 unsigned long sizeram()
 {
 	struct pci_dev *pcidev;
@@ -67,6 +73,7 @@ unsigned long sizeram()
 	for (dimm_slot = 0, total_size = 0, dimm_reg = SIS630_BANK0;
 	     dimm_reg <= SIS630_BANK2; dimm_slot++, dimm_reg++) {
 		u8 regval;
+		slotsizeM[dimm_slot] = 0;
 		if ((dimm_status & (1 << dimm_slot)) == 0)
 			/* this DIMM slot does not have SDRAM installed */
 			continue;
@@ -80,7 +87,8 @@ unsigned long sizeram()
 			sides = 1;
 
 		/* low-order 4 bits are a ram size */
-		total_size += (ramsizes[regval & 0xf] * sides);
+		slotsizeM[dimm_slot] = (ramsizes[regval & 0xf] * sides);
+		total_size += slotsizeM[dimm_slot];
 	}
 
 	/* the total memory visible to the system is physical memory installed minus the

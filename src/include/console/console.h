@@ -7,6 +7,8 @@
 void console_init(void);
 void console_tx_byte(unsigned char byte);
 void console_tx_flush(void);
+unsigned char console_rx_byte(void);
+int console_tst_byte(void);
 void post_code(uint8_t value);
 void die(char *msg);
 
@@ -14,6 +16,8 @@ struct console_driver {
 	void (*init)(void);
 	void (*tx_byte)(unsigned char byte);
 	void (*tx_flush)(void);
+	unsigned char (*rx_byte)(void);
+	int (*tst_byte)(void);
 };
 
 #define __console	__attribute__((unused, __section__ (".rodata.console_drivers")))

@@ -43,8 +43,20 @@ void ttyS0_tx_byte(unsigned char data)
 	uart8250_tx_byte(TTYS0_BASE, data);
 }
 
+unsigned char ttyS0_rx_byte(void) 
+{
+	return uart8250_rx_byte(TTYS0_BASE);
+}
+
+int ttyS0_tst_byte(unsigned char data) 
+{
+	return uart8250_can_rx_byte(TTYS0_BASE);
+}
+
 static struct console_driver uart8250_console __console = {
 	.init    = ttyS0_init,
 	.tx_byte = ttyS0_tx_byte,
+	.rx_byte = ttyS0_rx_byte,
+	.tst_byte = ttyS0_tst_byte,
 };
 

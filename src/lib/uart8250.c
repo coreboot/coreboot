@@ -20,7 +20,7 @@
 #define UART_MSR 0x06
 #define UART_SCR 0x07
 
-static inline int uart8250_can_tx_byte(unsigned base_port)
+static int uart8250_can_tx_byte(unsigned base_port)
 {
 	return inb(base_port + UART_LSR) & 0x20;
 }
@@ -43,6 +43,18 @@ void uart8250_tx_byte(unsigned base_port, unsigned char data)
 	outb(data, base_port + UART_TBR);
 	/* Make certain the data clears the fifos */
 	uart8250_wait_until_sent(base_port);
+}
+
+int uart8250_can_rx_byte(unsigned base_port)
+{
+	return inb(base_port + UART_LSR) & 0x01;
+}
+
+unsigned char uart8250_rx_byte(unsigned base_port)
+{
+	while(!uart8250_can_rx_byte(base_port))
+		;
+	return inb(base_port + UART_RBR);
 }
 
 void uart8250_init(unsigned base_port, unsigned divisor, unsigned lcs)

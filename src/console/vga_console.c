@@ -97,4 +97,6 @@ static void vga_tx_byte(unsigned char byte)
 struct console_driver {
 	.init    = vga_init,
 	.tx_byte = vga_tx_byte,
+	.rx_byte = 0,
+	.tst_byte = 0,
 };

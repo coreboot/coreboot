@@ -52,6 +52,31 @@ void console_tx_byte(unsigned char byte)
 	__console_tx_byte(byte);
 }
 
+unsigned char console_rx_byte(void)
+{
+	struct console_driver *driver;
+	if (!initialized)
+		return 0;
+	for(driver = console_drivers; driver < econsole_drivers; driver++)
+		if (driver->tst_byte)
+			break;
+	if (driver == econsole_drivers)
+		return 0;
+	while (!driver->tst_byte());
+	return driver->rx_byte();
+}
+
+int console_tst_byte(void)
+{
+	struct console_driver *driver;
+	if (!initialized)
+		return 0;
+	for(driver = console_drivers; driver < econsole_drivers; driver++)
+		if (driver->tst_byte)
+			return driver->tst_byte();
+	return 0;
+}
+
 /*
  *    Write POST information
  */

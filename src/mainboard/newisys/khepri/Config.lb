@@ -316,7 +316,7 @@ northbridge amd/amdk8 "mc1"
 end
 
 cpu k8 "cpu0"
-	register "across" = "{ .chip = &amd8131, .ht_width=16, .ht_speed=600 }"
+	register "ldt1" = "{ .chip = &amd8131, .ht_width=16, .ht_speed=600 }"
 end
 
 cpu k8 "cpu1" 

@@ -204,7 +204,7 @@ end
 dir /pc80
 #dir /bioscall
 cpu k8 "cpu0"
-  register "up" = "{.chip = &amd8131, .ht_width=16, .ht_speed=600}"
+  register "ldt0" = "{.chip = &amd8131, .ht_width=16, .ht_speed=600}"
 end
 
 cpu k8 "cpu1"

@@ -1,13 +1,15 @@
-#
-# exec_kernel/user_space/head.S
-#
-# Copyright (C) 2000 Eric Biederman
-#
-# Parts of this code were take from the linux startup
-# code of linux-2.4.0-test9
-#
-# Other parts were taken from etherboot-5.0.5
-#
+/*
+ * exec_kernel/user_space/head.S
+ *
+ * Copyright (C) 2000 Eric Biederman
+ *
+ * Parts of this code were take from the linux startup
+ * code of linux-2.4.0-test9
+ *
+ * Other parts were taken from etherboot-5.0.5
+ */
+	
+#define ASSEMBLY 1
 
 #define RELOC 0x10000
 #define KERN_CODE_SEG 0x10
@@ -17,6 +19,7 @@
 
 	.equ	CR0_PE,1
 
+#if 0
 #define TTYS0_BASE	0x3f8
 #define TTYS0_RBR (TTYS0_BASE+0x00)
 #define TTYS0_TBR TTYS0_RBR
@@ -38,6 +41,7 @@
 #define TTYS0_TX_CHAR(byte)	\
 	mov	byte, %al	; \
 	TTYS0_TX_AL
+#endif
 	
 .text
 	.code32
@@ -112,6 +116,8 @@ startup_32:
 
 
 	/* Routines to query the BIOS... */
+
+#if 0
 	.globl noop
 noop:
 	TTYS0_TX_CHAR($'a')
@@ -128,6 +134,7 @@ noop:
 	TTYS0_TX_CHAR($'\r')
 	TTYS0_TX_CHAR($'\n')
 	ret
+#endif
 
 /**************************************************************************
 E820_MEMSIZE - Get a listing of memory regions
@@ -387,4 +394,118 @@ gdt:
 	.word	0xffff,(RELOC&0xffff)
 	.byte	(RELOC>>16),0x93,0x00,(RELOC>>24)
 
+
+.section ".note.data", "a", @progbits
+#include "elf_boot.h"
+/* You can probably do this in C if everything was all in one structure,
+ * but doing it pieces resulted in strange alignments of the data structures.
+ * Since that breaks the definition of the .note section I do it here in
+ * in assembly.  The control is better and for simplicity it is a toss up.
+ */
+	.balign 4
+	.int 2f - 1f
+	.int 4f - 3f
+	.int EIN_PROGRAM_NAME
+1:	.asciz "ELFBoot"
+2:
+	.balign 4
+3:	
+	.asciz "Linux"
+4:
+
+
+	.balign 4
+	.int 2f - 1f
+	.int 4f - 3f
+	.int EIN_PROGRAM_VERSION
+1:	.asciz "ELFBoot"
+2:
+	.balign 4
+3:	
+	.asciz DEFAULT_PROGRAM_VERSION
+4:
+
+
+	
+	.balign 4
+	.int 2f - 1f
+	.int 4f - 3f
+	.int EIN_PROGRAM_CHECKSUM
+1:	.asciz "ELFBoot"
+2:
+	.balign 4
+3:	
+	.word 0
+4:
+
+
+	.balign 4
+	.int 2f - 1f
+	.int 4f - 3f
+	.int LIN_COMMAND_LINE
+1:	.asciz "Linux"
+2:
+	.balign 4
+3:
+	.globl note_command_line
+note_command_line:
+	.asciz DEFAULT_COMMAND_LINE
+33:
+	.fill 256 - (33b - 3b), 1, 0
+4:	
+	
+
+	.balign 4
+	.int 2f - 1f
+	.int 4f - 3f
+	.int LIN_ROOT_DEV
+1:	.asciz "Linux"
+2:
+	.balign 4
+3:
+	.globl note_root_dev
+note_root_dev:
+	.word DEFAULT_ROOT_DEV
+4:
+	
+	.balign 4
+	.int 2f - 1f
+	.int 4f - 3f
+	.int LIN_RAMDISK_FLAGS
+1:	.asciz "Linux"
+2:
+	.balign 4
+3:
+	.globl note_ramdisk_flags
+note_ramdisk_flags:
+	.word  0
+4:
+
+	.balign 4
+	.int 2f - 1f
+	.int 4f - 3f
+	.int LIN_INITRD_START
+1:	.asciz "Linux"
+2:
+	.balign 4
+3:
+	.globl note_initrd_start
+note_initrd_start:
+	.int ramdisk_data 
+4:
+
+	.balign 4
+	.int 2f - 1f
+	.int 4f - 3f
+	.int LIN_INITRD_SIZE
+1:	.asciz "Linux"
+2:
+	.balign 4
+3:
+	.globl note_initrd_size
+note_initrd_size:
+	.int ramdisk_data_size
+4:
+	.balign 4
+	.previous
 

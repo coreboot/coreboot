@@ -18,25 +18,31 @@
 INCLUDE mkelfImage.lds
 OUTPUT_FORMAT("elf32-i386", "elf32-i386", "elf32-i386")
 OUTPUT_ARCH(i386)
-MEMORY
+
+PHDRS
 {
-	/* 0x10000 - 0x90000 A good safe area in low memory I can use */
-	low (rwx)    : ORIGIN = 0x010000, LENGTH = 0x0080000
-	middle (rwx) : ORIGIN = 0x091000, LENGTH = 0x0001000
-	upper (rwx)  : ORIGIN = 0x100000, LENGTH = 0x37f00000
+	note PT_NOTE ;
+	low PT_LOAD ;
+	middle PT_LOAD ;
+	upper PT_LOAD ;
+	ramdisk PT_LOAD ;
 }
+
 ENTRY(startup_32)
 SECTIONS
 {
   . = 0x10000 ;
   _text = .;			/* Text and read-only data */
-  .text (.): {
+  .note . : {
+	*(.note.data)
+  } :note :low
+  .text . : {
 	*(.text)
 	*(.fixup)
 	*(.gnu.warning)
-	} > low  = 0x9090
-  .rodata (.): { *(.rodata) *(.note.data)} > low 
-  .kstrtab (.): { *(.kstrtab) } > low 
+	} :low  = 0x9090
+  .rodata (.): { *(.rodata) } :low 
+  .kstrtab (.): { *(.kstrtab) } :low 
 
 
   . = ALIGN(16);		/* Exception table */
@@ -45,29 +51,29 @@ SECTIONS
   .data (.): {			/* Data */
 	*(.data)
 	CONSTRUCTORS
-	} > low 
+	} :low 
 
   _edata = .;			/* End of data section */
   __bss_start = .;		/* BSS */
   .bss (.): {
 	*(.bss)
-	} > low 
+	}  :low 
   _end = . ;
 
 
   . = 0x91000 ;
   .nokill (.): {
     *(.nokill)
-  } > middle 
+  } :middle
 
   . = 0x100000 ;
   .kernel (.): { 
     *(.kernel)
-  } > upper 
+  } :upper
   . = initrd_base;
   .ramdisk (ALIGN(4096)) : {
     *(.ramdisk)
-  }  > upper 
+  }  :ramdisk
   ramdisk_data_size = (ramdisk_data_end - ramdisk_data);
   /* Stabs debugging sections.  */
   .stab 0 : { *(.stab) }

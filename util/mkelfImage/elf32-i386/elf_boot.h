@@ -1,6 +1,7 @@
 #ifndef ELF_BOOT_H 
 #define ELF_BOOT_H 
 
+#ifndef ASSEMBLY
 #include <stdint.h>
 
 /* This defines the structure of a table of parameters useful for ELF
@@ -37,6 +38,8 @@ typedef struct
 	Elf_Word n_descsz;		/* Length of the note's descriptor.  */
 	Elf_Word n_type;		/* Type of the note.  */
 } Elf_Nhdr;
+
+#endif /* ASSEMBLY */
 
 /* For standard notes n_namesz must be zero */
 /* All of the following standard note types provide a single null

@@ -202,128 +202,11 @@ struct param_info {
 typedef unsigned size_t;
 
 
-#define _NOTE __attribute__((__section__(".rodata")))
-static const struct {
-	Elf_Word namesz;
-	Elf_Word descsz;
-	Elf_Word type;
-	unsigned char name[8];
-	unsigned char desc[6];
-	unsigned char dummy[2];
-} program _NOTE = {
-	sizeof(program.name),
-	sizeof(program.desc),
-	EIN_PROGRAM_NAME,
-	"ElfBoot",
-	"Linux"
-};
-
-static const struct {
-	Elf_Word namesz;
-	Elf_Word descsz;
-	Elf_Word type;
-	unsigned char name[8];
-	unsigned char desc[64];
-} program_version _NOTE = {
-	sizeof(program.name),
-	sizeof(program.desc),
-	EIN_PROGRAM_NAME,
-	"ElfBoot",
-	"2.2.17 (eric@DLT) #21 Wed Jan 3 14:44:09 MST 2001"
-};
-
-static const struct {
-	Elf_Word namesz;
-	Elf_Word descsz;
-	Elf_Word type;
-	unsigned char name[6];
-	unsigned char dummy[2];
-	char command_line[256];
-} note_command_line _NOTE = {
-	sizeof(program.name),
-	sizeof(program.desc),
-	LIN_COMMAND_LINE,
-	"Linux", { 0, 0 },
-	DEFAULT_COMMAND_LINE,
-};
-
-static const struct {
-	Elf_Word namesz;
-	Elf_Word descsz;
-	Elf_Word type;
-	unsigned char name[6];
-	unsigned char dummy[2];
-	unsigned short root_dev;
-	unsigned char dummy2[2];
-} note_root_dev _NOTE = {
-	sizeof(program.name),
-	sizeof(program.desc),
-	LIN_ROOT_DEV,
-	"Linux", { 0, 0 },
-	DEFAULT_ROOT_DEV, { 0, 0 },
-};
-
-
-static const struct {
-	Elf_Word namesz;
-	Elf_Word descsz;
-	Elf_Word type;
-	unsigned char name[6];
-	unsigned char dummy[2];
-	unsigned short ramdisk_flags;
-	unsigned char dummy2[2];
-} note_ramdisk_flags _NOTE = {
-	sizeof(program.name),
-	sizeof(program.desc),
-	LIN_RAMDISK_FLAGS,
-	"Linux", { 0, 0 },
-	0 
-#if defined(DEFAULT_RAMDISK_IMAGE_START)
-	| (DEFAULT_RAMDISK_IMAGE_START & RAMDISK_IMAGE_START_MASK)
-#endif
-#if defined(DEFAULT_RAMDISK_PROMPT_FLAG)
-	| RAMDISK_PROMPT_FLAG
-#endif
-#if defined(DEFAULT_RAMDISK_LOAD_FLAG)
-	| RAMDISK_LOAD_FLAG
-#endif
-	, { 0 , 0 },
-	
-};
-
-
-extern char ramdisk_data[], ramdisk_data_size[];
-
-static const struct {
-	Elf_Word namesz;
-	Elf_Word descsz;
-	Elf_Word type;
-	unsigned char name[6];
-	unsigned char dummy[2];
-	unsigned initrd_start;
-} note_initrd_start _NOTE = {
-	sizeof(program.name),
-	sizeof(program.desc),
-	LIN_INITRD_START,
-	"Linux", { 0, 0 },
-	(unsigned)&ramdisk_data,
-};
-
-static const struct {
-	Elf_Word namesz;
-	Elf_Word descsz;
-	Elf_Word type;
-	unsigned char name[6];
-	unsigned char dummy[2];
-	unsigned initrd_size;
-} note_initrd_size _NOTE = {
-	sizeof(program.name),
-	sizeof(program.desc),
-	LIN_INITRD_SIZE,
-	"Linux", { 0, 0 },
-	((unsigned)&ramdisk_data_size),
-};
-
+extern char note_command_line[];
+extern unsigned short note_root_dev;
+extern unsigned short note_ramdisk_flags;
+extern unsigned long note_initrd_start;
+extern unsigned long note_initrd_size;
 
 /* FIXME handle systems with large EBDA's */
 static struct parameters *faked_real_mode = (void *)0x90000;
@@ -805,52 +688,36 @@ static void hardware_setup(struct param_info *info)
  * =============================================================================
  */
 
-static inline unsigned long elf_note_size(Elf_Nhdr *hdr)
-{
-	unsigned long size;
-	size = sizeof(*hdr);
-	size += hdr->n_namesz;
-	if (size & 3) {
-		size += 4 - (size & 3);
-	}
-	size = hdr->n_descsz;
-	if (size & 3) {
-		size += 4 - (size & 3);
-	}
-	return size;
-}
-static inline Elf_Nhdr *next_elf_note(Elf_Nhdr *hdr)
-{
-	return (void *)(((char *)hdr) + elf_note_size(hdr));
-}
-
-static inline unsigned char *elf_note_name(Elf_Nhdr *hdr)
-{
-	return (void *)(((char *)hdr) + sizeof(*hdr));
-}
-
-static inline unsigned char *elf_note_desc(Elf_Nhdr *hdr)
-{
-	int offset;
-	offset = sizeof(*hdr);
-	offset = hdr->n_namesz;
-	if (offset & 3) {
-		offset += 4 - (offset & 3);
-	}
-	return (void *)(((char *)hdr) + offset);
-}
-
 static int count_elf_notes(Elf_Bhdr *bhdr)
 {
 	Elf_Nhdr *hdr;
-	void *start = (void *)bhdr;
-	void *end = ((char *)start) + bhdr->b_size;
+	unsigned char *note, *end;
 	int count;
 	count = 0;
-	for(hdr = start; ((void *)hdr < end) &&
-		(elf_note_size(hdr) <= (end - (void *)hdr));
-		hdr = next_elf_note(hdr)) {
+	note = ((char *)bhdr) + sizeof(*bhdr);
+	end = ((char *)bhdr) + bhdr->b_size;
+#if 0
+	puts("count_elf_notes"); put_hex((unsigned long)bhdr); puts("\n");
+#endif
+	while (note < end) {
+		Elf_Nhdr *hdr;
+		unsigned char *n_name, *n_desc, *next;
+		hdr = (Elf_Nhdr *)note;
+		n_name = note + sizeof(*hdr);
+		n_desc = n_name + ((hdr->n_namesz + 3) & ~3);
+		next = n_desc + ((hdr->n_descsz + 3) & ~3);
+#if 0
+		puts("elf_note = "); put_hex((unsigned long)note); puts("\n");
+		puts("elf_namesz = "); put_hex(hdr->n_namesz); puts("\n");
+		puts("elf_descsz = "); put_hex(hdr->n_descsz); puts("\n");
+		puts("elf_type   = "); put_hex(hdr->n_type); puts("\n");
+		puts("elf_name = "); put_hex((unsigned long)n_name); puts("\n");
+		puts("elf_desc = "); put_hex((unsigned long)n_desc); puts("\n");
+#endif
+		if (next > end) 
+			break;
 		count++;
+		note = next;
 	}
 	return count;
 }
@@ -858,22 +725,24 @@ static int count_elf_notes(Elf_Bhdr *bhdr)
 static Elf_Nhdr *find_elf_note(Elf_Bhdr *bhdr, 
 	Elf_Word namesz, unsigned char *name, Elf_Word type)
 {
-
-	Elf_Nhdr *hdr;
-	void *start = (void *)bhdr;
-	void *end = ((char *)start) + bhdr->b_size;
-	for(hdr = start; ((void *)hdr < end) &&
-		(elf_note_size(hdr) <= (end - (void *)hdr));
-		hdr = next_elf_note(hdr)) {
-		unsigned char *n_name;
-		unsigned char *n_desc;
-		n_name = elf_note_name(hdr);
-		n_desc = elf_note_desc(hdr);
+	unsigned char *note, *end;
+	note = ((char *)bhdr) + sizeof(*bhdr);
+	end = ((char *)bhdr) + bhdr->b_size;
+	while(note < end) {
+		Elf_Nhdr *hdr;
+		unsigned char *n_name, *n_desc, *next;
+		hdr = (Elf_Nhdr *)note;
+		n_name = note + sizeof(*hdr);
+		n_desc = n_name + ((hdr->n_namesz + 3) & ~3);
+		next = n_desc + ((hdr->n_descsz + 3) & ~3);
+		if (next > end) 
+			break;
 		if ((hdr->n_type == type) &&
 			(hdr->n_namesz == namesz) &&
 			(memcmp(n_name, name, namesz) == 0)) {
 			return hdr;
 		}
+		note = next;
 	}
 	return 0;
 }
@@ -896,17 +765,19 @@ struct {
 
 static void convert_elf_boot(struct param_info *info, Elf_Bhdr *bhdr)
 {
-	Elf_Nhdr *hdr;
-	int i;
-	void *start = (void *)bhdr;
-	void *end = ((char *)start) + bhdr->b_size;
-	for(hdr = start; ((void *)hdr < end) &&
-		(elf_note_size(hdr) <= (end - (void *)hdr));
-		hdr = next_elf_note(hdr)) {
-		unsigned char *n_name;
-		unsigned char *n_desc;
-		n_name = elf_note_name(hdr);
-		n_desc = elf_note_desc(hdr);
+	unsigned char *note, *end;
+	note = ((char *)bhdr) + sizeof(*bhdr);
+	end = ((char *)bhdr) + bhdr->b_size;
+	while(note < end) {
+		Elf_Nhdr *hdr;
+		unsigned char *n_name, *n_desc, *next;
+		int i;
+		hdr = (Elf_Nhdr *)note;
+		n_name = note + sizeof(*hdr);
+		n_desc = n_name + ((hdr->n_namesz + 3) & ~3);
+		next = n_desc + ((hdr->n_descsz + 3) & ~3);
+		if (next > end) 
+			break;
 		for(i = 0; i < sizeof(elf_notes)/sizeof(elf_notes[0]); i++) {
 			if ((hdr->n_type == elf_notes[i].type) &&
 				(hdr->n_namesz == elf_notes[i].namesz) &&
@@ -915,6 +786,7 @@ static void convert_elf_boot(struct param_info *info, Elf_Bhdr *bhdr)
 				break;
 			}
 		}
+		note = next;
 	}
 }
 
@@ -949,7 +821,7 @@ static int count_lb_records(void *start, unsigned long length)
 	return count;
 }
 
-static int find_lb_table(struct param_info *info, void *start, void *end)
+static struct lb_header *__find_lb_table(void *start, void *end)
 {
 	unsigned char *ptr;
 	/* For now be stupid.... */
@@ -966,11 +838,29 @@ static int find_lb_table(struct param_info *info, void *start, void *end)
 			(count_lb_records(ptr + sizeof(*head), head->table_bytes) ==
 				head->table_entries)
 			) {
-			info->has_linuxbios = 1;
-			info->lb_table = (void *)ptr;
-			return 1;
+			return head;
 		}
 	};
+	return 0;
+}
+
+static int find_lb_table(struct param_info *info)
+{
+	struct lb_header *head;
+	head = 0;
+	if (!head) {
+		/* First try at address 0 */
+		head = __find_lb_table((void *)0x00000, (void *)0x1000);
+	}
+	if (!head) {
+		/* Then try at address 0xf0000 */
+		head = __find_lb_table((void *)0xf0000, (void *)0x100000);
+	}
+	if (head) {
+		info->has_linuxbios = 1;
+		info->lb_table = head;
+		return 1;
+	}
 	return 0;
 }
 
@@ -1148,6 +1038,12 @@ static void query_bootloader_param_class(struct param_info *info)
 		}
 		else {
 			puts("Bad ELF parameter table!\n");
+			puts("   checksum = "); put_hex(checksum); puts("\n");
+			puts("      count = "); put_hex(count); puts("\n");
+			puts("        hdr = "); put_hex((unsigned long)hdr); puts("\n");
+			puts("     b_size = "); put_hex(hdr->b_size); puts("\n");
+			puts("b_signature = "); put_hex(hdr->b_signature); puts("\n");
+			puts("  b_records = "); put_hex(hdr->b_records); puts("\n");
 		}
 	}
 	if (!has_bootloader_type) {
@@ -1178,33 +1074,52 @@ static void query_bootloader_values(struct param_info *info)
 static int bootloader_query_firmware_class(struct param_info *info)
 {
 	Elf_Nhdr *hdr;
+	unsigned char *note, *n_name, *n_desc;
+	int detected_firmware_type;
 	if (!info->has_elf_boot) {
 		/* Only the elf boot tables gives us a firmware type */
 		return 0;
 	}
+	detected_firmware_type = 0;
+
 	hdr = find_elf_note(info->data, 0, 0, EBN_FIRMWARE_TYPE);
 	if (!hdr) {
 		info->has_pcbios = 1;
+		detected_firmware_type = 1;
+	} else {
+		note = (char *)hdr;
+		n_name = note + sizeof(*hdr);
+		n_desc = n_name + ((hdr->n_namesz + 3) & ~3);
 	}
-	else if ((hdr->n_descsz == 7) &&
-		(memcmp(elf_note_desc(hdr), "PCBIOS", 7) == 0)) {
+	if (!detected_firmware_type && hdr &&
+		(hdr->n_descsz == 7) &&
+		(memcmp(n_desc, "PCBIOS", 7) == 0)) {
 		info->has_pcbios = 1;
+		detected_firmware_type = 1;
 	}
-	else if ((hdr->n_descsz == 10) &&
-		(memcmp(elf_note_desc(hdr), "LinuxBIOS", 10) == 0)) {
-		info->has_linuxbios = 1;
+	if (!detected_firmware_type && hdr &&
+		(hdr->n_descsz == 10) &&
+		(memcmp(n_desc, "LinuxBIOS", 10) == 0)) {
+		/* Don't believe I'm linuxBIOS unless I can
+		 * find the linuxBIOS table..
+		 */
+		detected_firmware_type = find_lb_table(info);
 	}
-	else if (hdr->n_descsz == 0) {
+	if (!detected_firmware_type && hdr &&
+		(hdr->n_descsz == 0)) {
 		/* No firmware is present */
+		detected_firmware_type = 1;
 	}
-	else if ((hdr->n_descsz == 1) && 
-		(memcmp(elf_note_desc(hdr), "", 1) == 0)) {
+	if (!detected_firmware_type && hdr &&
+		(hdr->n_descsz == 1) && 
+		(memcmp(n_desc, "", 1) == 0)) {
 		/* No firmware is present */
+		detected_firmware_type = 1;
 	}
-	else {
-		puts("Unknow firmware type!");
+	if (!detected_firmware_type && hdr) {
+		puts("Unknown firmware type:"); puts(n_desc); puts("\n");
 	}
-	return 1;
+	return detected_firmware_type;
 }
 
 static void query_firmware_class(struct param_info *info)
@@ -1222,15 +1137,7 @@ static void query_firmware_class(struct param_info *info)
 
 	/* See if we can detect linuxbios. */
 	if (!detected_firmware_type) {
-		/* First try at address 0 */
-		detected_firmware_type = 
-			find_lb_table(info, (void*)0x00000, (void*)0x1000);
-	}
-
-	if (!detected_firmware_type) {
-		/* Then try at address 0xf0000 */
-		detected_firmware_type = 
-			find_lb_table(info, (void*)0xf0000, (void*)0x100000);
+		detected_firmware_type = find_lb_table(info);
 	}
 
 	if (!detected_firmware_type) {
@@ -1424,8 +1331,8 @@ void initialize_linux_params(struct param_info *info)
 	info->real_mode->cl_offset = 2048;
 	
 	/* Now set the command line */
-	len = strnlen(note_command_line.command_line, sizeof(info->real_mode->command_line) -1);
-	memcpy(info->real_mode->command_line, note_command_line.command_line, len);
+	len = strnlen(note_command_line, sizeof(info->real_mode->command_line) -1);
+	memcpy(info->real_mode->command_line, note_command_line, len);
 	info->real_mode->command_line[len] = '\0';
 
 	/* from the bios initially */
@@ -1446,12 +1353,12 @@ void initialize_linux_params(struct param_info *info)
 	/* old ramdisk options, These really should be command line
 	 * things...
 	 */
-	info->real_mode->ramdisk_flags = note_ramdisk_flags.ramdisk_flags; 
+	info->real_mode->ramdisk_flags = note_ramdisk_flags; 
 
 	/* default to /dev/hda.
 	 * Override this on the command line if necessary 
 	 */
-	info->real_mode->orig_root_dev = note_root_dev.root_dev;
+	info->real_mode->orig_root_dev = note_root_dev;
 	
 	/* Originally from the bios? */
 	info->real_mode->aux_device_info = 0;
@@ -1469,9 +1376,9 @@ void initialize_linux_params(struct param_info *info)
 	/* Ramdisk address and size ... */
 	info->real_mode->initrd_start = 0;
 	info->real_mode->initrd_size = 0;
-	if (note_initrd_size.initrd_size) {
-		info->real_mode->initrd_start = note_initrd_start.initrd_start;
-		info->real_mode->initrd_size = note_initrd_size.initrd_size;
+	if (note_initrd_size) {
+		info->real_mode->initrd_start = note_initrd_start;
+		info->real_mode->initrd_size = note_initrd_size;
 	}	
 
 	/* Now remember those things that I need */

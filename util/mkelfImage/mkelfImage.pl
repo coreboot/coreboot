@@ -20,8 +20,9 @@ $params{PREFIX}=undef();
 $params{RAMDISK}="";
 $params{VMLINUX}="/usr/src/linux/vmlinux";
 $params{TARGET}="elfImage";
-$params{ROOT_DEV}='((0x3<<16)| 0)';
+$params{ROOT_DEV}='((0x3<<8)| 0)';
 $params{COMMAND_LINE}='';
+$params{PROGRAM_VERSION}='';
 $params{OUTPUT_FORMAT}='elf32-i386';
 $params{INITRD_BASE}=0x00800000; # 8MB
 
@@ -30,18 +31,9 @@ sub compile_file
 {
 	my ($params, $src, $dst) = @_;
 	my ($options, $cmd);
-	$options = "-DDEFAULT_ROOT_DEV='((unsigned short)$params->{ROOT_DEV})'";
+	$options = "-DDEFAULT_ROOT_DEV='($params->{ROOT_DEV})'";
 	$options .= " -DDEFAULT_COMMAND_LINE='\"$params->{COMMAND_LINE}\"'";
-	if (defined($params->{RAMDISK_IMAGE_START})) {
-		$options .= " -DDEFAULT_RAMDISK_IMAGE_START=" . 
-		    "'((unsigned short)$params->{RAMDISK_IMAGE_START})'";
-	}
-	if ($params->{RAMDISK_PROMPT_FLAG}) {
-		$options .= " -DDEFAULT_RAMDISK_PROMPT_FLAG";
-	}
-	if ($params->{RAMDISK_LOAD_FLAG}) {
-		$options .= " -DDEFAULT_RAMDISK_LOAD_FLAG";
-	}
+	$options .= " -DDEFAULT_PROGRAM_VERSION='\"$params->{PROGRAM_VERSION}\"'";
 	$cmd = "$params->{CC} $params->{CFLAGS} $options -c $params->{PREFIX}/$src -o $dst";
 	print " Running $cmd \n";
 	system($cmd);
@@ -73,6 +65,18 @@ sub build_kernel_piggy
 			$ramsize, $vidmode, $rootdev);
 		(undef, $setupsects, $flags, $syssize, $swapdev, $ramsize, 
 			$vidmode, $rootdev) = unpack('a497Cv6', $buffer);
+		$fd_in->read($buffer, 32768) == 32768 
+		    or die "Error reading setup sector of $src";
+		my (undef, $header, $version, undef, $start_sys, $kver_addr)
+			= unpack('a2a4Sa4SS', $buffer);
+		if ($header ne 'HdrS') {
+			die "Not an linux kernel";
+		}
+		if ($setupsects == 0) {
+			$setupsects = 4;
+		}
+		$params->{PROGRAM_VERSION} = unpack('Z32768', substr($buffer, $kver_addr));
+		
 		my $fd_out = new FileHandle;
 		$fd_out->open(">${dst}.obj") or die "Cannot open ${dst}.obj";
 		$fd_in->seek(512 + (512*$setupsects), 0);
@@ -152,6 +156,136 @@ sub build_elf_image
 	return $dst;
 }
 
+sub compute_ip_checksum
+{
+	my ($str) = @_;
+	my ($checksum, $i, $size, $shorts);
+	$checksum = 0;
+	$size = length($str);
+	$shorts = $size >> 1;
+	for($i = 0; $i < $shorts; $i++) {
+		$checksum += unpack('S', substr($str, $i <<1, 2));
+		$checksum -= 0xFFFF unless ($checksum <= 0xFFFF);
+	}
+	if ($size & 1) {
+		$checksum -= 0xFFFF unless ($checksum <= 0xFFFF);
+		$checksum += unpack('C', substr($str, -1, 1));
+	}
+	return (~$checksum) & 0xFFFF;
+}
+
+sub add_ip_checksums
+{
+	my ($offset, $sum, $new) = @_;
+	my $checksum;
+	$sum = ~$sum & 0xFFFF;
+	$new = ~$new & 0xFFFF;
+	if ($offset & 1) {
+		$new = (($new >> 8) & 0xff) | (($new << 8) & 0xff00);
+	}
+	$checksum = $sum + $new;
+	if ($checksum > 0xFFFF) {
+		$checksum -= 0xFFFF;
+	}
+	return (~$checksum) & 0xFFFF;
+}
+
+
+sub write_ip_checksum
+{
+	my ($file) = @_;
+	my ($fd, $buffer, %ehdr, @phdrs, $key, $size, $i);
+	my ($checksum, $offset) = 0;
+	$fd = new FileHandle;
+	$fd->open("+<$file") or die "Cannot open $file\n";
+	$fd->read($buffer, 52) == 52 or die "Cannot read ELF header\n";
+	@ehdr{e_ident, e_type, e_machine, e_version, e_entry, e_phoff, e_shoff,
+		e_flags, e_ehsize, e_phentsize, e_phnum, e_shentsize, e_shnum, 
+		e_shstrndx} = unpack('a16SSLLLLLSSSSSS', $buffer);
+	$checksum = compute_ip_checksum($buffer);
+	$offset += 52;
+
+
+	## FIXME add some sanity checks here...
+	#foreach $key (keys(%ehdr)) {
+	#	 print "$key: $ehdr{$key}\n";
+	#}
+
+	$fd->seek($ehdr{e_phoff}, 0) or die "Cannot seek to $ehdr{e_phoff}\n";
+	$size = $ehdr{e_phnum}*32;
+	$fd->read($buffer, $size) == $size or die "Cannot read ELF Program header $size\n";
+	for($i = 0; $i < $ehdr{e_phnum} ; $i++) {
+		my %phdr;
+		@phdr{p_type, p_offset, p_vaddr, p_paddr, p_filesz, p_memsz, 
+			p_flags, p_align} 
+			= unpack('LLLLLLLL', substr($buffer, $i*32, 32));
+		push(@phdrs, \%phdr);
+	}
+	$checksum = add_ip_checksums($offset, $checksum, 
+		compute_ip_checksum($buffer));
+	$offset += $size;
+
+
+	for($i = 0; $i < scalar(@phdrs); $i++) {
+		my $phdr = $phdrs[$i];
+		#print("\n");
+		#foreach $key (keys(%$phdr)) {
+		#	 printf("%10s: %08x\n", $key, $phdr->{$key});
+		#}
+		# Only worry about PT_LOAD segments 
+		next unless ($phdr->{p_type} == 1);
+		$fd->seek($phdr->{p_offset}, 0) or die "Cannot seek to $phdr->{p_offset}\n";
+		$fd->read($buffer, $phdr->{p_filesz}) == $phdr->{p_filesz} 
+			or die "Cannot read ELF segment $phdr->{p_filesz}\n";
+		$buffer .= "\0" x ($phdr->{p_memsz} - $phdr->{p_filesz});
+		$checksum = add_ip_checksums($offset, $checksum, 
+			compute_ip_checksum($buffer));
+		$offset += $phdr->{p_memsz}
+	}
+	printf("checksum: %04x\n", $checksum);
+
+	my $phdr = $phdrs[0];
+	# Do I have a PT_NOTE segment?
+	if ($phdr->{p_type} == 4) {
+		my $offset;
+		$fd->seek($phdr->{p_offset}, 0) or die "Cannot seek to $phdr->{p_offset}\n";
+		$fd->read($buffer, $phdr->{p_filesz}) == $phdr->{p_filesz} 
+			or die "Cannot read ELF segment $phdr->{p_filesz}\n";
+		
+		$offset = 0;
+		while($offset < length($buffer)) {
+			my %note;
+			@note{n_namesz, n_descsz, n_type} 
+				= unpack('LLL', substr($buffer, $offset, 12));
+			$offset += 12;
+			$note{n_name} = unpack("a$note{n_namesz}", 
+				substr($buffer, $offset, $note{n_namesz}));
+			$offset += ($note{n_namesz} + 3) & ~3;
+			$note{n_desc} = unpack("a$note{n_descsz}",
+				substr($buffer, $offset, $note{n_descsz}));
+			
+			#printf("n_type: %08x n_name(%d): %s n_desc(%d): %s\n",
+			#	$note{n_type}, 
+			#	$note{n_namesz}, $note{n_name},
+			#	$note{n_descsz}, $note{n_desc});
+			if (($note{n_namesz} == 8) &&
+				($note{n_name} eq "ELFBoot\0") &&
+				($note{n_type} == 3)) {
+				my ($foffset, $buffer);
+				$foffset = $phdr->{p_offset} + $offset;
+				$buffer = pack('S', $checksum);
+				$fd->seek($foffset, 0) or die "Cannot seek to $foffset";
+				$fd->print($buffer);
+				#print("checksum note...\n");
+				
+			}
+			$offset += ($note{n_descsz} + 3) & ~3;
+		}
+	}
+	$fd->close();
+	
+}
+
 sub build
 {
 	my ($params) = @_;
@@ -171,6 +305,7 @@ sub build
 		"$tempdir/head_$$.o"));
 	build_elf_image($params, $params->{TARGET}, @objects);
 	unlink(@objects);
+	write_ip_checksum($params->{TARGET});
 	
 }
 
@@ -186,10 +321,6 @@ sub main
 		   'output=s' => \$params->{TARGET},
 		   'version' => \$wantversion,
 		   'ramdisk-base=i' =>\$params->{INITRD_BASE},
-		   # FIXME figure out what the old RAMDISK_IMAGE flags are about.
-		   #'ramdisk-image-start=i' => \$params{RAMDISK_IMAGE_START},
-		   #'ramdisk-prompt-flag!' => \$params{RAMDISK_PROMPT_FLAG},
-		   #'ramdisk-load-flag!' => \$params{RAMDISK_LOAD_FLAG},
 		   );
 	if (defined($wantversion) && $wantversion) {
 		print "$0 $VERSION\n";

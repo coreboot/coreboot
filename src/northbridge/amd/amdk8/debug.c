@@ -69,6 +69,23 @@ static void dump_pci_devices(void)
 	}
 }
 
+static void dump_pci_devices_on_bus(unsigned busn)
+{
+        device_t dev;
+        for(dev = PCI_DEV(busn, 0, 0);
+                dev <= PCI_DEV(busn, 0x1f, 0x7);
+                dev += PCI_DEV(0,0,1)) {
+                uint32_t id;
+                id = pci_read_config32(dev, PCI_VENDOR_ID);
+                if (((id & 0xffff) == 0x0000) || ((id & 0xffff) == 0xffff) ||
+                        (((id >> 16) & 0xffff) == 0xffff) ||
+                        (((id >> 16) & 0xffff) == 0x0000)) {
+                        continue;
+                }
+                dump_pci_device(dev);
+        }
+}
+
 static void dump_spd_registers(const struct mem_controller *ctrl)
 {
 	int i;

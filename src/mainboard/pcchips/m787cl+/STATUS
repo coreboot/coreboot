@@ -23,9 +23,7 @@ console-types: serial, vga-text
 vga: stable
 # Last-known-good follows the internationl date standard: day/month/year
 last-known-good: 4/2/2003
-Comments: NOTE: Requires SDRAM in slot DIMM1 \
-4 bit 640x400 graphics is supported for a startup logo screen, followed by \
-80x25 vga text console.  Graphics timing and sizing are not perfect but very close.
+Comments: NOTE: Requires SDRAM in slot DIMM1 4 bit 640x400 graphics is supported for a startup logo screen, followed by 80x25 vga text console.  Graphics timing and sizing are not perfect but very close.
 Links: http://www.pcchips.com.tw/M787CL.html
 Mainboard-revision: 
 # What other mainboards are like this one? List them here. 

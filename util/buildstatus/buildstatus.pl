@@ -145,6 +145,7 @@ if ($#ARGV == 1) { $prefix = $ARGV[1]; }
 open(DIRS, "ls $prefix/src/mainboard/*/*/STATUS|") || die("open ls failed: $!");
 while(<DIRS>) {
 	chop;
+	printf(STDERR "$_ \n");
 	mainboard($_);
 }
 dumpstatus();

@@ -18,7 +18,7 @@ OS-issues:
 console-types: serial, (vga)
 #console-types: serial, vga (framedev) //or this one
 # vga is unsupported, unstable, or stable
-vga:unstable
+vga:stable
 # Last-known-good follows the internationl date standard: day/month/year
 last-known-good: 19/03/2003
 Comments: just tried it with normal flashrom (no DoC)

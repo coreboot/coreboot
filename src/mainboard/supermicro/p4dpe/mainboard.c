@@ -82,6 +82,9 @@ void mainboard_fixup(void)
 	isa_dma_init();
 	ich3_1e0_misc();
 	ich3_1f0_misc();
+	e7500_pci_parity_enable();
+	p64h2_pci_parity_enable();
+	ich3_pci_parity_enable();
 
 #if 0   /* CPU clock option is not presently used */
 	cpu_clock_multiplier = CPU_CLOCK_MULTIPLIER;

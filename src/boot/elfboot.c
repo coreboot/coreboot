@@ -440,12 +440,10 @@ static int load_elf_segments(
 		end = dest + ptr->s_memsz;
 		middle = dest + ptr->s_filesz;
 		start_offset = ptr->s_offset;
-#if 1
+		/* Ignore s_offset if I have a pure bss segment */
 		if (ptr->s_filesz == 0) {
 			start_offset = offset;
 		}
-#endif
-
 		
 		printk_spew("[ 0x%016lx, %016lx, 0x%016lx) <- %016lx\n",
 			(unsigned long)dest,

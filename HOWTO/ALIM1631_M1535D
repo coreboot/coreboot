@@ -62,11 +62,11 @@ NOTE: these steps are tested all the way up to the end, they work.
 The steps for loading linuxbios are simple:
 0) get linux installed on your LinuxBIOS machine
 1) Get Linuxbios source from the sourceforge
-2) get a 2.4.9 kernel for LinuxBIOS, patch it, then build it
+2) get a 2.4.9 kernel for you LinuxBIOS machine, patch it, then build it
 3) config and build linuxbios
 4) Get the MTD utilities from http://www.linux-mtd.infradead.org/ 
 	and build the 'erase' utility
-5) Configure a new 2.4.9 kernel for burning Disk On Chip
+5) Configure a new 2.4.9 kernel on your build machine for burning Disk On Chip
 6) put a Disk On Chip into the flash socket
 7) Burn the chip 
 8) Configure serial connection and hit reset.
@@ -114,7 +114,8 @@ o	Once you have pulled this file down and untar'ed it,
 
 o       There are a couple of things you have to fix in the 2.4.9 kernel.
 
-	First, you need to fix a keyboard bug for using the serial console. 
+	First, IF YOU ARE RUNNING REDHAT 7.1 ON YOUR LinuxBIOS machine, 
+	you need to fix /drivers/char/serial.c. 
 	IF YOU DON'T DO THIS, LINUXBIOS WILL BOOT UP, BUT YOU WON'T BE ABLE
 	TO TYPE ANYTHING USING YOUR TERMINAL KEYBOARD.
 
@@ -124,7 +125,7 @@ o       There are a couple of things you have to fix in the 2.4.9 kernel.
 	if ((cflag & CREAD) == 0)
                 info->ignore_status_mask |= UART_LSR_DR;
 
-	Secondly, if you need to burn Disk On Chip MILLENIUM
+	Secondly, if you need to burn Disk On Chip MILLENIUM from the ASUS
 
 	Go to linux-directory/drivers/mtd/devices/
 	Edit the file docprobe.c and change line 42.
@@ -135,7 +136,7 @@ o       There are a couple of things you have to fix in the 2.4.9 kernel.
 
 o	Now copy config-2.4.9-asus (from /freebios/src/kernel_patches)
 	to .config, then
-	make oldconfig
+        make oldconfig
 	make clean
 	make dep
 	make vmlinux
@@ -233,7 +234,7 @@ o	You now need to figure out where you want to put your build images.
 
 	Here's what it looks like when you run it. 
 
- 	python ~/src/freebois/util/config/NLBConfig.py asus-cua.config ~/src/freebios
+ 	python ~/freebios/util/config/NLBConfig.py asus-cua.config ~/freebios
 
 	/root/linuxbios/config_files/asus-cua is not a directory. 
 	 I know I should make this, but I'm too paranoid
@@ -294,6 +295,10 @@ ua
 
 	You're now ready to burn the Disk On Chip, but first .... 
 
+Steps 4 and 5 illustrate ONE WAY of burning Disk On Chip.  If you
+have other ways of burning LinuxBIOS onto Flash, please go ahead and use
+your steps.
+
 Step 4) Get the MTD utilities from http://www.linux-mtd.infradead.org/ 
 	(see the instructions at that site)
 	cvs -d :pserver:anoncvs@cvs.infradead.org:/home/cvs co mtd
@@ -303,7 +308,7 @@ Step 4) Get the MTD utilities from http://www.linux-mtd.infradead.org/
 	(You need the erase utility)
 	Install the erase utility where it is in your path. 
 
-Step 5) Configuring your kernel for Disk on Chip.
+Step 5) Configuring your kernel on your build machine for Disk on Chip.
 
 	You are going to use the script burn_mtd_asus_cua.  PLEASE
 	NOTE:  THIS SCRIPT WORKS ONLY ON MOTHERBOARDS WITH THE ACER ALI
@@ -312,18 +317,16 @@ Step 5) Configuring your kernel for Disk on Chip.
 	The fix for other chipsets seems simple enough:  just change
 	the setpci line in burn_mtd_asus_cua to enable your chipset to write
 	to flash.  However, you have to get this information from the chipset
-	documentation.  THIS, IN OUR EXPERIENCE, IS HARD!  
+	documentation.  THIS, IN OUR EXPERIENCE, IS HARD! Again, if you
+        have other ways of burning LinuxBIOS onto Flash, please go ahead
+        and do so!  
 
 	You need a new 2.4.9 kernel for your build machine so you can
-	burn the Disk On Chip.
+	burn the Disk On Chip.  Get a 2.4.9 kernel, untar it.
 
-	Get a 2.4.9 kernel, untar it.  This is a NEW kernel source.  You
-	should have two 2.4.9 kernels on your build machine - one for
-	LinuxBIOS and one for burning the Disk On Chip.  DO NOT MIX THEM UP.
-
-	Change the files linux-directory/drivers/char/serial.c and
-	linux-directory/drivers/char/mtd/devices/docprobe.c as shown
-	in Step 2)
+	MAKE SURE YOU change 
+        linux-directory/drivers/char/mtd/devices/docprobe.c as shown
+	in Step 2).
 
 	Copy the file config-2.4.9-flash-burn from freebios/src/kernel_patches
 	to your 2.4.9 directory as .config

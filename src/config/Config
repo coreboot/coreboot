@@ -45,12 +45,12 @@ expr CONFIG_UNCOMPRESSED=!CONFIG_COMPRESS
 makedefine LINUXBIOS_PAYLOAD-$(CONFIG_COMPRESS):=linuxbios_payload.nrv2b
 makedefine LINUXBIOS_PAYLOAD-$(CONFIG_UNCOMPRESSED):=linuxbios_payload.bin
 
-addaction linuxbios_c nm -n linuxbios_c | sort > linuxbios_c.map
+addaction linuxbios_c $(CROSS_COMPILE)nm -n linuxbios_c | sort > linuxbios_c.map
 makerule linuxbios_payload.bin: linuxbios_c; $(OBJCOPY) -O binary $< $@
 makerule linuxbios_payload.nrv2b: linuxbios_payload.bin nrv2b ; ./nrv2b e $< $@
 makerule linuxbios_payload: $(LINUXBIOS_PAYLOAD-1) ; cp $(LINUXBIOS_PAYLOAD-1) linuxbios_payload
-makerule linuxbios: crt0.o linuxbios_payload ldscript.ld ; $(CC) -nostdlib -nostartfiles -static -o $@ -T ldscript.ld crt0.o
-addaction linuxbios nm -n linuxbios | sort > linuxbios.map
+makerule linuxbios: crt0.o linuxbios_payload ldscript.ld; $(CC) -nostdlib -nostartfiles -static -o $@ -T ldscript.ld crt0.o
+addaction linuxbios $(CROSS_COMPILE)nm -n linuxbios | sort > linuxbios.map
 
 makerule linuxbios.a : $(OBJECTS-1) ; rm -f linuxbios.a
 addaction linuxbios.a ar cr linuxbios.a $(OBJECTS-1)

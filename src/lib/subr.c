@@ -91,7 +91,8 @@ void post_code(uint8_t value)
 {
 #ifdef SERIAL_POST
 	printk_info("POST: 0x%02x\n", value);
-#endif
+#elsif !define(NO_POST)
 	outb(value, 0x80);
+#endif
 }
 

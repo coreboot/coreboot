@@ -35,16 +35,6 @@ unsigned long pci_memory_base = 0xc0000000;
 
 static const struct pci_ops *conf;
 
-struct pci_ops {
-	int (*read_byte) (u8 bus, int devfn, int where, u8 * val);
-	int (*read_word) (u8 bus, int devfn, int where, u16 * val);
-	int (*read_dword) (u8 bus, int devfn, int where, u32 * val);
-	int (*write_byte) (u8 bus, int devfn, int where, u8 val);
-	int (*write_word) (u8 bus, int devfn, int where, u16 val);
-	int (*write_dword) (u8 bus, int devfn, int where, u32 val);
-};
-
-
 /*
  * Direct access to PCI hardware...
  */
@@ -199,12 +189,13 @@ static int pci_sanity_check(const struct pci_ops *o)
 #define PCI_CLASS_DISPLAY_VGA		0x0300
 #define PCI_VENDOR_ID_COMPAQ		0x0e11
 #define PCI_VENDOR_ID_INTEL		0x8086
+#define PCI_VENDOR_ID_MOTOROLA		0x1057
 
 	for (bus = 0, devfn = 0; devfn < 0x100; devfn++)
 		if ((!o->read_word(bus, devfn, PCI_CLASS_DEVICE, &x) &&
 		     (x == PCI_CLASS_BRIDGE_HOST || x == PCI_CLASS_DISPLAY_VGA)) ||
 		    (!o->read_word(bus, devfn, PCI_VENDOR_ID, &x) &&
-		     (x == PCI_VENDOR_ID_INTEL || x == PCI_VENDOR_ID_COMPAQ)))
+		     (x == PCI_VENDOR_ID_INTEL || x == PCI_VENDOR_ID_COMPAQ || x == PCI_VENDOR_ID_MOTOROLA)))
 			return 1;
 	printk_err("PCI: Sanity check failed\n");
 	return 0;
@@ -383,6 +374,12 @@ void pci_set_method()
 {
 	conf = &pci_direct_conf1;
 	conf = pci_check_direct();
+}
+
+int pci_set_direct(struct pci_ops *method)
+{
+	conf = method;
+	return pci_sanity_check(method);
 }
 
 /* allocating resources on PCI is a mess. The reason is that 
@@ -892,13 +889,11 @@ handle_superio(int pass, struct superio *all_superio[], int nsuperio)
 
 	for (i = 0; i < nsuperio; i++){
 		s = all_superio[i];
-		printk_debug(__FUNCTION__
-			" Pass %d, check #%d, s %p s->super %p\n",
-			pass, i, s, s->super);
+		printk_debug("%s: Pass %d, check #%d, s %p s->super %p\n",
+			__FUNCTION__, pass, i, s, s->super);
 		if (!s->super) {
-			printk_debug(__FUNCTION__
-				" Pass %d, Skipping #%d as it has no superio pointer!\n",
-				pass, i);
+			printk_debug("%s: Pass %d, Skipping #%d as it has no superio pointer!\n",
+				__FUNCTION__, pass, i);
 			continue;
 		}
 
@@ -906,12 +901,12 @@ handle_superio(int pass, struct superio *all_superio[], int nsuperio)
 			pass, s->super->name);
 
 		// if no port is assigned use the defaultport
-		printk_info(__FUNCTION__ "  port 0x%x, defaultport 0x%x\n",
-			s->port, s->super->defaultport);
+		printk_info("%s:  port 0x%x, defaultport 0x%x\n",
+			__FUNCTION__, s->port, s->super->defaultport);
 		if (!s->port)
 			s->port = s->super->defaultport;
 
-		printk_info(__FUNCTION__ "  Using port 0x%x\n", s->port);
+		printk_info("%s:  Using port 0x%x\n", __FUNCTION__, s->port);
 
 		// need to have both pre_pci_init and devfn defined.
 		if (s->super->pre_pci_init && (pass == 0)) {
@@ -924,7 +919,7 @@ handle_superio(int pass, struct superio *all_superio[], int nsuperio)
 			printk_debug("  Call finishup\n");
 			s->super->finishup(s);
 		}
-		printk_debug(__FUNCTION__ " Pass %d, done #%d\n", pass, i);
+		printk_debug("%s: Pass %d, done #%d\n", __FUNCTION__, pass, i);
 	}
 	printk_debug("handle_superio done\n");
 }

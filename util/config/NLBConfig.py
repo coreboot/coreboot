@@ -325,6 +325,14 @@ def keyboard(dir, keyboard_name):
 def cpu(dir, cpu_name):
 	common_command_action(dir, 'cpu', cpu_name)
 
+# COMMAND: pmc <vendor>/<pmc card name>
+#
+# This command may only be used once.  Executes the
+# config file $(TOP)/src/pmc/<vendor>/<pmc card name>/Config
+#
+def pmc(dir, pmc_name):
+	common_command_action(dir, 'pmc', pmc_name)
+
 # COMMAND: northsouthbridge <vendor>/<northsouthbridge name>
 #
 # This command may only be used once.  Executes the config file
@@ -824,6 +832,7 @@ command_actions = {
 	'target'      : target,
 	'mainboard'   : mainboard,
 	'cpu'         : cpu,
+	'pmc'         : pmc,
 	'northbridge' : northbridge,
 	'southbridge' : southbridge,
 	'northsouthbridge' : northsouthbridge,
@@ -1048,7 +1057,7 @@ CPUFLAGS := $(foreach _var_,$(VARIABLES),$(call D_item,$(_var_)))
 	# print out all the object dependencies
 	file.write("\n# object dependencies (objectrules:)\n")
 	# There is ALWAYS a crt0.o
-	file.write("OBJECTS-1 := crt0.o\n")
+	#file.write("OBJECTS-1 := crt0.o\n")
 	file.write("DRIVERS-1 :=\n")
 	for objrule in objectrules:
 		obj_name = objrule[0]

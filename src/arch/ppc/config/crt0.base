@@ -1,131 +1,239 @@
-/* -*- asm -*-
- * $ $
- *
- */
+/* $Id$ */
+/* Copyright 2000  AG Electronics Ltd. */
+/* This code is distributed without warranty under the GPL v2 (see COPYING) */
 
-#include <arch/asm.h>
-#include <arch/intel.h>
+#define ASM
+#include "ppcreg.h"
+#include <ppc_asm.tmpl>
 
-#include <pciconf.h>
-#ifdef SMP
-#include <cpu/p6/apic.h>
-#endif
-/*
- * This is the entry code the code in .reset section
- * jumps to this address.
- *
- */
+#define BSP_IOREGION1	0x80000000
+#define BSP_IOMASK1	BAT_BL_256M | BAT_VALID_SUPERVISOR | BAT_VALID_USER
+#define BSP_IOREGION2	0xFD000000
+#define BSP_IOMASK2	BAT_BL_32M | BAT_VALID_SUPERVISOR | BAT_VALID_USER
+
 .section ".rom.data", "a", @progbits
 .section ".rom.text", "ax", @progbits
 
-	intel_chip_post_macro(0x01)             /* delay for chipsets */
+.globl _start
+.type _start, @function
+.globl __bss_end
+.globl __start_address_check
+
+	/*
+	 * Locate at hreset vector
+	 */
+	.space	(0x100)
+
+_start:
+	b	system_reset
+
+	/*
+	 * Space for exception table
+	 */
+	.space	(0x3000)
+
+system_reset:
+        isync
+
+	/* 
+	 * Disable dcache and MMU, so that init_memory stands a chance
+	 */   
+        li      r0, 0
+	sync
+        mtspr	HID0, r0
+        sync
+        mtmsr	r0 
+        isync
+
+	/*
+	 * Invalidate BATS
+	 */
+        mtibatu 0, r0
+        mtibatu 1, r0
+        mtibatu 2, r0
+        mtibatu 3, r0
+	isync
+        mtdbatu 0, r0
+        mtdbatu 1, r0
+        mtdbatu 2, r0
+        mtdbatu 3, r0
+	isync
+
+	/*
+	 * Clear segment registers
+	 */
+	mtsr    0, r0
+	isync
+	mtsr    1, r0
+	isync
+	mtsr    2, r0
+	isync
+	mtsr    3, r0
+	isync
+	mtsr    4, r0
+	isync
+	mtsr    5, r0
+	isync
+	mtsr    6, r0
+	isync
+	mtsr    7, r0
+	isync
+	mtsr    8, r0
+	isync
+	mtsr    9, r0
+	isync
+	mtsr    10, r0
+	isync
+	mtsr    11, r0
+	isync
+	mtsr    12, r0
+	isync
+	mtsr    13, r0
+	isync
+	mtsr    14, r0
+	isync
+	mtsr    15, r0
+	isync
+
+	/*
+	 * Initialize northbridge. This has to happen early because it
+	 * resets memory. Memory is on at this point, albeit with
+	 * pessimistic settings. We reconfigure later using I2C.
+	 */
+	bl	bsp_init_northbridge
+
+	/*
+	 * CACHE_RAM_BASE - this is a 128KB BAT covering the 
+	 * __start_data address. We allocate it in the cache so 
+	 * that we can continue running and 
+	 * report a memory failure in early startup code. 
+	 */
+
+        /*
+	 * Set up DBATs 
+	 */
+        //lis     r2, CACHE_RAM_BASE@ha
+        //lis     r2, _RAMBASE@ha
+        //ori     r3, r2, BAT_BL_256M | BAT_VALID_SUPERVISOR | BAT_VALID_USER
+        //ori     r2, r2, BAT_READ_WRITE
+        lis     r2, 0@ha
+        ori     r3, r2, BAT_BL_256M | BAT_VALID_SUPERVISOR | BAT_VALID_USER
+        ori     r2, r2, BAT_READ_WRITE
+        mtdbatu 0, r3
+        mtdbatl 0, r2
+	isync
+
+        //lis     r2, _ROMBASE@ha
+        //ori     r3, r2, BAT_BL_16M | BAT_VALID_SUPERVISOR | BAT_VALID_USER
+        //ori     r2, r2, BAT_READ_ONLY
+        //mtdbatu 1, r3
+        //mtdbatl 1, r2
+        lis     r2, 0xfc000000@ha
+        ori     r3, r2, BAT_BL_64M | BAT_VALID_SUPERVISOR | BAT_VALID_USER
+        ori     r2, r2, BAT_CACHE_INHIBITED | BAT_GUARDED | BAT_READ_WRITE
+        mtdbatu 1, r3
+        mtdbatl 1, r2
+	isync
+
+        lis     r2, BSP_IOREGION1@h
+        ori     r3, r2, BSP_IOMASK1
+        ori     r2, r2, BAT_CACHE_INHIBITED | BAT_GUARDED | BAT_READ_WRITE
+        mtdbatu 2, r3
+        mtdbatl 2, r2
+	isync
+
+        //lis     r2, BSP_IOREGION2@h
+        //ori     r3, r2, BSP_IOMASK2
+        //ori     r2, r2, BAT_CACHE_INHIBITED | BAT_GUARDED | BAT_READ_WRITE
+        //mtdbatu 3, r3
+        //mtdbatl 3, r2
+
+	/*
+	 * IBATS
+	 */
+        lis     r2, 0@ha
+        ori     r3, r2, BAT_BL_256M | BAT_VALID_SUPERVISOR | BAT_VALID_USER
+        ori     r2, r2, BAT_READ_WRITE
+        mtibatu 0, r3
+        mtibatl 0, r2
+	isync
+
+        lis     r2, _ROMBASE@ha
+        ori     r3, r2, BAT_BL_16M | BAT_VALID_SUPERVISOR | BAT_VALID_USER
+        ori     r2, r2, BAT_READ_ONLY
+        mtibatu 1, r3
+        mtibatl 1, r2
+	isync
+
+	/*
+	 * Invalidate tlb entries
+	 */
+	lis	r3, 0
+	lis	r5, 0x4
+	isync
+tlblp:
+	tlbie	r3
+	sync
+	addi	r3, r3, 0x1000
+	cmp	0, 0, r3, r5
+	blt	tlblp
+
+	sync
+
+        /*
+	 * Enable MMU 
+	 */
+        mfmsr   r2
+        ori     r2, r2, MSR_DR | MSR_IR
+	isync
+        mtmsr   r2
+        isync
+
+	/*
+	 * Relocate payload (text & data) to ram
+	 */
+	lis     r3, _liseg@ha
+	addi    r3, r3, _liseg@l
+	lis     r4, _iseg@ha
+	addi    r4, r4, _iseg@l
+
+	/*
+	 * Skip if they're the same
+	 */
+	cmp     0, 0, r3, r4
+	beq     skip
+
+	lis     r7, _eliseg@ha
+	addi    r7, r7, _eliseg@l
+
+relocate_loop:
+	lwzx	r5, 0, r3
+	stwx	r5, 0, r4
+	addi    r3, r3, 4
+	addi    r4, r4, 4
+	cmp     0, 0, r3, r7
+	ble     relocate_loop
+
+skip:
+        /*
+	 * Enable L1 dcache 
+	 */
+        mfspr   r2, HID0
+        ori     r2, r2, HID0_DCE | HID0_DCFI
+	sync
+        mtspr   HID0, r2
+
+        /*
+	 * Enable L1 icache 
+	 */
+        mfspr   r2, HID0
+        ori     r2, r2, HID0_ICE | HID0_ICFI
+	isync
+        mtspr   HID0, r2
+
+	/*
+	 * Start payload
+	 */
+	b  	_iseg
 
 #include "crt0_includes.h"
-
-	CONSOLE_DEBUG_TX_STRING($str_after_ram)
-
-	/* clear boot_complete flag */
-	xorl	%ebp, %ebp
-__main:
-
-	/*
-	 *	Copy data into RAM and clear the BSS. Since these segments
-	 *	isn\'t really that big we just copy/clear using bytes, not
-	 *	double words.
-	 */
-	intel_chip_post_macro(0x11)		/* post 11 */
-
-	cld				/* clear direction flag */
-
-	/* copy linuxBIOS from it's initial load location to 
-	 * the location it is compiled to run at.
-	 * Normally this is copying from FLASH ROM to RAM.
-	 */
-	leal	EXT(_liseg), %esi
-	leal	EXT(_iseg), %edi
-	cmpl	%esi, %edi
-	jz	.Lnocopy
-	movl	$EXT(_eliseg), %ecx
-	subl	%esi, %ecx
-	jz	.Lnocopy		/* should not happen */
-	rep
-	movsb
-.Lnocopy:
-	intel_chip_post_macro(0x12)		/* post 12 */
-
-	/** clear stack */
-	leal	EXT(_stack), %edi
-	movl	$EXT(_estack), %ecx
-	subl	%edi, %ecx
-	xorl	%eax, %eax
-	rep
-	stosb
-
-	/** clear bss */
-	leal	EXT(_bss), %edi
-	movl	$EXT(_ebss), %ecx
-	subl	%edi, %ecx
-	jz	.Lnobss
-	xorl	%eax, %eax
-	rep
-	stosb
-.Lnobss:
-
-	/* set new stack */
-	movl	$_estack, %esp
-#ifdef SMP
-	/* Get the cpu id */
-	movl	$APIC_DEFAULT_BASE, %edi
-	movl	APIC_ID(%edi), %eax
-	shrl	$24, %eax
-
-	/* Get the cpu index (MAX_CPUS on error) */
-	movl	$-4, %ebx
-1:	addl	$4, %ebx
-	cmpl	$(MAX_CPUS << 2), %ebx
-	je	2
-	cmpl	%eax, EXT(initial_apicid)(%ebx)
-	jne	1b
-2:	shrl	$2, %ebx
-
-	/* Now compute the appropriate stack */
-	movl	%ebx, %eax
-	movl	$STACK_SIZE, %ebx
-	mull	%ebx
-	subl	%eax, %esp
-#endif
-
-	/* push the boot_complete flag */
-	pushl	%ebp
-
-	/* Save the stack location */
-	movl	%esp, %ebp
-
-	/*
-	 *	Now we are finished. Memory is up, data is copied and
-	 *	bss is cleared.   Now we call the main routine and
-	 *	let it do the rest.
-	 */ 
-	intel_chip_post_macro(0xfe)	/* post fe */
-
-	CONSOLE_DEBUG_TX_STRING($str_pre_main)
-
-	/* memory is up. Let\'s do the rest in C -- much easier. */
-
-	intel_chip_post_macro(0xfd)	/* post fe */
-
-	/* Resort the stack location */
-	movl	%ebp, %esp
-	
-	/* The boot_complete flag has already been pushed */
-	call	EXT(hardwaremain)
-	/*NOTREACHED*/
-.Lhlt:	
-	intel_chip_post_macro(0xee)	/* post fe */
-	hlt
-	jmp	.Lhlt
-
-.section ".rom.data"
-str_after_ram:       .string "Copying LinuxBIOS to ram.\r\n"
-str_pre_main:        .string "Jumping to LinuxBIOS.\r\n"
-.previous

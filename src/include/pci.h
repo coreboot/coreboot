@@ -274,6 +274,7 @@
 #define PCI_DEVFN(slot,func)	((((slot) & 0x1f) << 3) | ((func) & 0x07))
 #define PCI_SLOT(devfn)		(((devfn) >> 3) & 0x1f)
 #define PCI_FUNC(devfn)		((devfn) & 0x07)
+#define PCI_BDF(bus,dev,func)	((bus) << 16 | (dev) << 11 | (func) << 8)
 
 
 #include <types.h>
@@ -344,6 +345,15 @@ struct pci_dev {
 	struct pci_dev_operations *ops;
 };
 
+struct pci_ops {
+	int (*read_byte) (u8 bus, int devfn, int where, u8 * val);
+	int (*read_word) (u8 bus, int devfn, int where, u16 * val);
+	int (*read_dword) (u8 bus, int devfn, int where, u32 * val);
+	int (*write_byte) (u8 bus, int devfn, int where, u8 val);
+	int (*write_word) (u8 bus, int devfn, int where, u16 val);
+	int (*write_dword) (u8 bus, int devfn, int where, u32 val);
+};
+
 extern struct pci_dev	pci_root;	/* root bus */
 extern struct pci_dev	*pci_devices;	/* list of all devices */
 
@@ -409,6 +419,7 @@ int pci_debugwrite_config_word(struct pci_dev *dev, u8 where, u16 val);
 int pci_debugwrite_config_dword(struct pci_dev *dev, u8 where, u32 val);
 void pci_set_master(struct pci_dev *dev);
 void pci_set_method(void);
+int pci_set_direct(struct pci_ops *);
 void pci_enumerate(void);
 void pci_configure(void);
 void pci_enable(void);

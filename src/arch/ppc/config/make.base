@@ -1,8 +1,3 @@
-option _ROMBASE=0xf0000
-option _RAMBASE=0x4000
-option ROM_IMAGE_SIZE=65536
-option PAYLOAD_SIZE=458752
-
 # By default we only have one cpu 
 option MAX_CPUS=1
 # Reserve 256K for the heap
@@ -10,36 +5,36 @@ option HEAP_SIZE=0x40000
 # Reserve 8K for each stack
 option STACK_SIZE=0x2000
 
-# By default on x86 we have a memory hole between 640K and 1MB
-option MEMORY_HOLE=1
-
-ldscript arch/i386/config/ldscript.base
-
-# How do I add -mprefered-stack-boundary=2 if the compiler supports it?
-# On x86 tt results in a code size reduction.
-#
+ldscript arch/ppc/config/ldscript.base
 
 dir /src/config
 
-makerule all : romimage ;
-makerule floppy : all ; mcopy -o romimage a:
-makerule romimage : linuxbios.rom payload.block ; cat payload.block linuxbios.rom > romimage
+makerule all : linuxbios.sunix ;
+
+makerule linuxbios.sdos: linuxbios ;
+addaction linuxbios.sdos $(OBJCOPY) linuxbios --change-addresses 0x1100000 -O srec $@
+
+makerule linuxbios.sunix: linuxbios.sdos ;
+addaction linuxbios.sunix tr -d '\015' < linuxbios.sdos > linuxbios.sunix
+
+#makerule all : romimage ;
+#makerule floppy : all ; mcopy -o romimage a:
+#makerule romimage : linuxbios.rom payload.block ; cat payload.block linuxbios.rom > romimage
+
+#makerule linuxbios.rom: linuxbios.strip ; 
+#addaction linuxbios.rom export size=`ls -l linuxbios.strip | (read p c u g size r ; echo $$size)` ; \
+#addaction linuxbios.rom echo $$size ; \
+#addaction linuxbios.rom dd if=linuxbios.strip of=linuxbios.rom bs=1 seek=`expr $(ROM_IMAGE_SIZE) - $$size`
 
 
-makerule linuxbios.rom: linuxbios.strip ; 
-addaction linuxbios.rom export size=`ls -l linuxbios.strip | (read p c u g size r ; echo $$size)` ; \
-addaction linuxbios.rom echo $$size ; \
-addaction linuxbios.rom dd if=linuxbios.strip of=linuxbios.rom bs=1 seek=`expr $(ROM_IMAGE_SIZE) - $$size`
+#makerule payload.block : $(if $(PAYLOAD),$(PAYLOAD), linux.bin.gz) ; dd conv=sync bs=$(PAYLOAD_SIZE) if=$< of=$@
 
-
-makerule payload.block : $(if $(PAYLOAD),$(PAYLOAD), linux.bin.gz) ; dd conv=sync bs=$(PAYLOAD_SIZE) if=$< of=$@
-
-makerule linux.bin.gz: linux.bin ;gzip -f -3 linux.bin
-makerule linux.bin: $(LINUX) ;  objcopy -O binary -R .note -R .comment -S $< $@
+#makerule linux.bin.gz: linux.bin ;gzip -f -3 linux.bin
+#makerule linux.bin: $(LINUX) ;  $(CROSS_COMPILE)objcopy -O binary -R .note -R .comment -S $< $@
 
 
 addaction clean rm -f romimage linux.* payload.*
 
 # do standard config files that the user need not specify
 # for now, this is just 'lib', but it may be more later. 
-dir /src/arch/i386
+dir /src/arch/ppc

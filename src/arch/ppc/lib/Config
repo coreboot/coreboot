@@ -1,7 +1,7 @@
-object i386_subr.o
-object params.o
-object hardwaremain.o
-object pirq_routing.o HAVE_PIRQ_TABLE
-object vgabios.o CONFIG_VGABIOS
-object idt.o  CONFIG_REALMODE_IDT
-option CONFIG_LOGICAL_CPUS=1
+object c_start.S
+object setup.o
+object id.o
+object timer.o
+object timebase.S
+object floats.S
+

@@ -144,6 +144,33 @@ static inline unsigned long uart_rx_bytes(unsigned base_port,
 
 inline void uart_init(unsigned base_port, unsigned divisor)
 {
+	/*
+	 * enable divisor access
+	 */
+	outb(0x80 | UART_LCS, base_port + UART_LCR);
+
+	/*
+	 * set divisior
+	 */
+	outb((divisor >> 8) & 0xFF,    base_port + UART_DLM);
+	outb(divisor & 0xFF,   base_port + UART_DLL);
+
+	/*
+	 * disable divisor access
+	 */
+	outb(UART_LCS, base_port + UART_LCR);
+
+	/*
+	 * set polled mode
+	 */
+	outb(0x0, base_port + UART_IER);
+
+	/*
+	 * enable and clear FIFOs
+	 */
+	outb(0x07, base_port + UART_FCR);
+	outb(0x03, base_port + UART_MCR);
+#if 0
 	/* disable interrupts */
 	outb(0x0, base_port + UART_IER);
 	/* enable fifo's */
@@ -153,6 +180,7 @@ inline void uart_init(unsigned base_port, unsigned divisor)
 	outb(divisor & 0xFF,   base_port + UART_DLL);
 	outb((divisor >> 8) & 0xFF,    base_port + UART_DLM);
 	outb(UART_LCS, base_port + UART_LCR);
+#endif
 }
 
 void ttys0_init(void)

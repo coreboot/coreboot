@@ -1,5 +1,5 @@
-#ifndef I386_STDDEF_H
-#define I386_STDDEF_H
+#ifndef PPC_STDDEF_H
+#define PPC_STDDEF_H
 
 typedef long ptrdiff_t;
 typedef unsigned long size_t;
@@ -12,4 +12,4 @@ typedef unsigned int wint_t;
 
 #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 
-#endif /* I386_STDDEF_H */
+#endif /* PPC_STDDEF_H */

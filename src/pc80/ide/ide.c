@@ -167,7 +167,8 @@ static int init_drive(unsigned base, int driveno)
 
 	printk_info("%s \n", harddisk_info[driveno].model_number);
 
-	printk_info(__FUNCTION__ " sectors_per_track=[%d], num_heads=[%d], num_cylinders=[%d]\n",
+	printk_info("%s: sectors_per_track=[%d], num_heads=[%d], num_cylinders=[%d]\n",
+		     __FUNCTION__,
 		     harddisk_info[driveno].num_sectors_per_track,
 		     harddisk_info[driveno].num_heads,
 		     harddisk_info[driveno].num_cylinders);
@@ -332,9 +333,9 @@ int ide_read_sector(int drive, void * buffer, unsigned int block, int byte_offse
 	int address_mode = harddisk_info[drive].address_mode;
 	//int i;
 
-	printk_info(__FUNCTION__ " drive[%d], buffer[%08x], block[%08x], offset[%d], n_bytes[%d]\n",
-	     drive, buffer, block, byte_offset, n_bytes);
-	    printk_info(__FUNCTION__ " block(%08x) to addr(%08x)\r", block, (int)buffer);
+	printk_info("%s: drive[%d], buffer[%08x], block[%08x], offset[%d], n_bytes[%d]\n",
+	    __FUNCTION__, drive, buffer, block, byte_offset, n_bytes);
+	    printk_info("%s: block(%08x) to addr(%08x)\r", __FUNCTION__, block, (int)buffer);
 	if ((drive < 0) || (drive >= NUM_HD) ||
 	    (harddisk_info[drive].drive_exists == 0))
 	{
@@ -360,7 +361,7 @@ int ide_read_sector(int drive, void * buffer, unsigned int block, int byte_offse
 			IDE_DH_HEAD(track % harddisk_info[drive].num_heads) |
 			IDE_DH_DRIVE(drive) |
 			IDE_DH_CHS;
-		printk_info(__FUNCTION__ " CHS: track=[%d], sector_number=[%d], cylinder=[%d]\n", track, cmd.sector_number, cmd.cylinder);
+		printk_info("%s: CHS: track=[%d], sector_number=[%d], cylinder=[%d]\n", __FUNCTION__, track, cmd.sector_number, cmd.cylinder);
 		/*
 		*/
 	} else {
@@ -379,8 +380,8 @@ int ide_read_sector(int drive, void * buffer, unsigned int block, int byte_offse
 			IDE_DH_DRIVE(drive) |
 			IDE_DH_LBA;
 #endif
-		printk_info(__FUNCTION__ " LBA: drivehead[%0x], cylinder[%04x], sector[%0x], block[%8x]\n",
-		  cmd.drivehead, cmd.cylinder, cmd.sector_number, block & 0x0fffffff);
+		printk_info("%s: LBA: drivehead[%0x], cylinder[%04x], sector[%0x], block[%8x]\n",
+		  __FUNCTION__, cmd.drivehead, cmd.cylinder, cmd.sector_number, block & 0x0fffffff);
 		/*
 		*/
 	}
@@ -411,9 +412,9 @@ int ide_write_sector(int drive, void * buffer, unsigned int block ) {
 	int address_mode = harddisk_info[drive].address_mode;
 	//int i;
 
-	printk_info(__FUNCTION__ " drive[%d], buffer[%08x], block[%08x]\n",
-	     drive, buffer, block);
-	    printk_info(__FUNCTION__ " block(%08x) from addr(%08x)\r", block, (int)buffer);
+	printk_info("%s: drive[%d], buffer[%08x], block[%08x]\n",
+	     __FUNCTION__, drive, buffer, block);
+	    printk_info("%s: block(%08x) from addr(%08x)\r", __FUNCTION__, block, (int)buffer);
 	if ((drive < 0) || (drive >= NUM_HD) ||
 	    (harddisk_info[drive].drive_exists == 0))
 	{
@@ -439,7 +440,7 @@ int ide_write_sector(int drive, void * buffer, unsigned int block ) {
 			IDE_DH_HEAD(track % harddisk_info[drive].num_heads) |
 			IDE_DH_DRIVE(drive) |
 			IDE_DH_CHS;
-		printk_info(__FUNCTION__ " CHS: track=[%d], sector_number=[%d], cylinder=[%d]\n", track, cmd.sector_number, cmd.cylinder);
+		printk_info("%s: CHS: track=[%d], sector_number=[%d], cylinder=[%d]\n", __FUNCTION__, track, cmd.sector_number, cmd.cylinder);
 		/*
 		*/
 	} else {
@@ -458,8 +459,8 @@ int ide_write_sector(int drive, void * buffer, unsigned int block ) {
 			IDE_DH_DRIVE(drive) |
 			IDE_DH_LBA;
 #endif
-		printk_info(__FUNCTION__ " LBA: drivehead[%0x], cylinder[%04x], sector[%0x], block[%8x]\n",
-		  cmd.drivehead, cmd.cylinder, cmd.sector_number, block & 0x0fffffff);
+		printk_info("%s: LBA: drivehead[%0x], cylinder[%04x], sector[%0x], block[%8x]\n",
+		  __FUNCTION__, cmd.drivehead, cmd.cylinder, cmd.sector_number, block & 0x0fffffff);
 		/*
 		*/
 	}
@@ -510,8 +511,8 @@ int ide_read_sector(int drive, void * buffer, unsigned int block, int byte_offse
 		IDE_DH_DRIVE(drive) |
 		IDE_DH_CHS;
 
-    printk_info(__FUNCTION__ " track=[%d], sector_number=[%d], cylinder=[%d]\n",
-	   track, cmd.sector_number, cmd.cylinder);
+    printk_info("%s: track=[%d], sector_number=[%d], cylinder=[%d]\n",
+	   __FUNCTION__, track, cmd.sector_number, cmd.cylinder);
 	write_command(base, IDE_CMD_READ_MULTI_RETRY, &cmd);
 	if ((inb_p(IDE_REG_STATUS(base)) & 1) != 0) {
 		return 1;
@@ -524,7 +525,7 @@ int ide_read_sector(int drive, void * buffer, unsigned int block, int byte_offse
 	} else {
 		status = ide_read_data(base, buffer, IDE_SECTOR_SIZE);
 	}
-    printk_info(__FUNCTION__ " status = [%d]\n", status);
+    printk_info("%s: status = [%d]\n", __FUNCTION__, status);
 	return status;
 }
 #endif

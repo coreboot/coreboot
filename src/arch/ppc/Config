@@ -1,3 +1,2 @@
-dir boot
+#dir boot
 dir lib
-dir smp

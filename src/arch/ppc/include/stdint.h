@@ -1,5 +1,5 @@
-#ifndef I386_STDINT_H
-#define I386_STDINT_H
+#ifndef PPC_STDINT_H
+#define PPC_STDINT_H
 
 /* Exact integral types */
 typedef unsigned char      uint8_t;
@@ -49,4 +49,4 @@ typedef long long int      intmax_t;
 typedef unsigned long long uintmax_t;
 
 
-#endif /* I386_STDINT_H */
+#endif /* PPC_STDINT_H */

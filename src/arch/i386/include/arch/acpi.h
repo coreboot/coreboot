@@ -22,8 +22,19 @@ typedef unsigned short u16;
 typedef unsigned int u32;
 typedef unsigned long long u64;
 
-#define RSDP_NAME               "RSDP"
-#define RSDP_SIG                "RSD PTR "  /* RSDT Pointer signature */
+#define RSDP_SIG              "RSD PTR "  /* RSDT Pointer signature */
+#define RSDP_NAME             "RSDP"
+
+#define RSDT_NAME             "RSDT"
+#define HPET_NAME             "HPET"
+#define MADT_NAME             "APIC"
+
+#define RSDT_TABLE            "RSDT    "
+#define HPET_TABLE            "AMD64   "
+#define MADT_TABLE            "MADT    "
+
+#define OEM_ID                "LXBIOS"
+#define ASLC                  "NONE"
 
 /* ACPI 2.0 table RSDP */
 
@@ -209,8 +220,33 @@ typedef struct acpi_facs {
 	u8 resv[33];
 } __attribute__ ((packed)) acpi_facs_t;
 
-
 unsigned long write_acpi_tables(unsigned long addr);
+unsigned long acpi_dump_apics(unsigned long current);
+
+void acpi_add_table(acpi_rsdt_t *rsdt, void *table);
+int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic);
+int acpi_create_madt_ioapic(acpi_madt_ioapic_t *ioapic, u8 id, u32 addr,u32 gsi_base);
+void acpi_create_madt(acpi_madt_t *madt);
+void acpi_create_hpet(acpi_hpet_t *hpet);
+void acpi_create_facs(acpi_facs_t *facs);
+void acpi_write_rsdt(acpi_rsdt_t *rsdt);
+void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt);
+
+#define ACPI_WRITE_MADT_IOAPIC(bus,device,fn,id)        \
+do {                                                    \
+        device_t dev;                                   \
+        struct resource *res;                           \
+        dev = dev_find_slot(bus, PCI_DEVFN(device,fn)); \
+        if (!dev) break;                                \
+        res = find_resource(dev, PCI_BASE_ADDRESS_0);   \
+        if (!res) break;                                \
+	current += acpi_create_madt_ioapic(		\
+		(acpi_madt_ioapic_t *)current,		\
+		id, res->base, gsi_base);		\
+	gsi_base+=4;					\
+} while(0);
+
+#define IO_APIC_ADDR	0xfec00000UL
 
 #else // HAVE_ACPI_TABLES
 

@@ -24,8 +24,8 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 	for (i = 0; i < rt->size; i++)
 		sum += addr[i];
 
-	printk_debug("%s:%6d:%s() - irq_routing_table located at: 0x%p\n",
-		     __FILE__, __LINE__, __FUNCTION__, addr);
+	printk_debug("%s() - irq_routing_table located at: 0x%p\n",
+		     __FUNCTION__, addr);
 
 	
 	sum = rt->checksum - sum;

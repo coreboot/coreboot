@@ -1,38 +1,27 @@
 /*
  * LinuxBIOS ACPI Table support
  * written by Stefan Reinauer <stepan@openbios.org>
- * (C) 2004 SUSE LINUX AG
- */
-/* ACPI FADT, FACS, and DSDT table support added by 
+ *  (C) 2004 SUSE LINUX AG
+ *  (C) 2005 Stefan Reinauer
+ *
+ * ACPI FADT, FACS, and DSDT table support added by 
  * Nick Barker <nick.barker9@btinternet.com>, and those portions
- * (C) Copyright 2004 Nick Barker
+ *  (C) Copyright 2004 Nick Barker
+ */
+
+/* 
+ * Each system port implementing ACPI has to provide two functions:
+ * 
+ *   write_acpi_tables()
+ *   acpi_dump_apics()
+ *   
+ * See Solo or Epia port on more details.
  */
 
 #include <console/console.h>
 #include <string.h>
 #include <arch/acpi.h>
-
-#define RSDP_SIG              "RSD PTR "  /* RSDT Pointer signature */
-#define RSDP_NAME             "RSDP"
-
-#define RSDT_NAME             "RSDT"
-#define HPET_NAME             "HPET"
-#define MADT_NAME             "APIC"
-
-#define RSDT_TABLE            "RSDT    "
-#define HPET_TABLE            "AMD64   "
-#define MADT_TABLE            "MADT    "
-
-#define OEM_ID                "LXBIOS"
-#define ASLC                  "NONE"
-
-
-// FIX ME - define needs declaring / setting in Config files
-#define HAVE_ACPI_FADT 
-
-#ifdef HAVE_ACPI_FADT
-extern unsigned char AmlCode[];
-#endif
+#include <device/pci.h>
 
 u8 acpi_checksum(u8 *table, u32 length)
 {
@@ -48,7 +37,7 @@ u8 acpi_checksum(u8 *table, u32 length)
  * add an acpi table to rsdt structure, and recalculate checksum
  */
 
-static void acpi_add_table(acpi_rsdt_t *rsdt, void *table)
+void acpi_add_table(acpi_rsdt_t *rsdt, void *table)
 {
 	int i;
 
@@ -68,11 +57,11 @@ static void acpi_add_table(acpi_rsdt_t *rsdt, void *table)
 		}
 	}
 
-	printk_warning("ACPI: could not ACPI table. failed.\n");
+	printk_warning("ACPI: could not add ACPI table to RSDT. failed.\n");
 }
 
 
-static int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic)
+int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic)
 {
 	lapic->type=0;
 	lapic->length=sizeof(acpi_madt_lapic_t);
@@ -84,12 +73,12 @@ static int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic)
 	return(lapic->length);
 }
 
-static int acpi_create_madt_ioapic(acpi_madt_ioapic_t *ioapic, u8 id, u32 addr) 
+int acpi_create_madt_ioapic(acpi_madt_ioapic_t *ioapic, u8 id, u32 addr,u32 gsi_base) 
 {
 	ioapic->type=1;
 	ioapic->length=sizeof(acpi_madt_ioapic_t);
 	ioapic->reserved=0x00;
-	ioapic->gsi_base=0x00000000;
+	ioapic->gsi_base=gsi_base;
 	
 	ioapic->ioapic_id=id;
 	ioapic->ioapic_addr=addr;
@@ -97,13 +86,11 @@ static int acpi_create_madt_ioapic(acpi_madt_ioapic_t *ioapic, u8 id, u32 addr)
 	return(ioapic->length);
 }
 
-static int acpi_create_madt_irqoverride(acpi_madt_irqoverride_t *irqoverride,
+int acpi_create_madt_irqoverride(acpi_madt_irqoverride_t *irqoverride,
 		u8 bus, u8 source, u32 gsirq, u16 flags)
 {
 	irqoverride->type=2;
 	irqoverride->length=sizeof(acpi_madt_irqoverride_t);
-	irqoverride->flags=0x0001;
-	
 	irqoverride->bus=bus;
 	irqoverride->source=source;
 	irqoverride->gsirq=gsirq;
@@ -112,7 +99,7 @@ static int acpi_create_madt_irqoverride(acpi_madt_irqoverride_t *irqoverride,
 	return(irqoverride->length);
 }
 
-static int acpi_create_madt_lapic_nmi(acpi_madt_lapic_nmi_t *lapic_nmi, u8 cpu,
+int acpi_create_madt_lapic_nmi(acpi_madt_lapic_nmi_t *lapic_nmi, u8 cpu,
 		u16 flags, u8 lint)
 {
 	lapic_nmi->type=4;
@@ -125,10 +112,10 @@ static int acpi_create_madt_lapic_nmi(acpi_madt_lapic_nmi_t *lapic_nmi, u8 cpu,
 	return(lapic_nmi->length);
 }
 
-static void acpi_create_madt(acpi_madt_t *madt)
+void acpi_create_madt(acpi_madt_t *madt)
 {
 #define LOCAL_APIC_ADDR	0xfee00000ULL
-#define IO_APIC_ADDR	0xfec00000UL
+	
 	acpi_header_t *header=&(madt->header);
 	unsigned long current=(unsigned long)madt+sizeof(acpi_madt_t);
 	
@@ -145,26 +132,16 @@ static void acpi_create_madt(acpi_madt_t *madt)
 
 	madt->lapic_addr= LOCAL_APIC_ADDR;
 	madt->flags	= 0x1; /* PCAT_COMPAT */
-	
-	/* create all subtables for 1p */
-	current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, 0, 0);
-	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, 2,
-			IO_APIC_ADDR);
-	current += acpi_create_madt_irqoverride( (acpi_madt_irqoverride_t *)
-			current, 0, 0, 2, 1 /* active high */);
-	current += acpi_create_madt_irqoverride( (acpi_madt_irqoverride_t *)
-			current, 0, 9, 9, 0xf /* active low, level triggered */);
-	current += acpi_create_madt_lapic_nmi( (acpi_madt_lapic_nmi_t *)
-			current, 0, 5, 1);
 
+	current = acpi_dump_apics(current);
+	
 	/* recalculate length */
 	header->length= current - (unsigned long)madt;
 	
 	header->checksum	= acpi_checksum((void *)madt, header->length);
 }
 
-
-static void acpi_create_hpet(acpi_hpet_t *hpet)
+void acpi_create_hpet(acpi_hpet_t *hpet)
 {
 #define HPET_ADDR  0xfed00000ULL
 	acpi_header_t *header=&(hpet->header);
@@ -195,9 +172,8 @@ static void acpi_create_hpet(acpi_hpet_t *hpet)
 	header->checksum	= acpi_checksum((void *)hpet, sizeof(acpi_hpet_t));
 }
 
-static void acpi_create_facs(acpi_facs_t *facs)
+void acpi_create_facs(acpi_facs_t *facs)
 {
-
 	memset( (void *)facs,0, sizeof(acpi_facs_t));
 
 	memcpy(facs->signature,"FACS",4);
@@ -209,9 +185,9 @@ static void acpi_create_facs(acpi_facs_t *facs)
 	facs->x_firmware_waking_vector_l = 0;
 	facs->x_firmware_waking_vector_h = 0;
 	facs->version = 1;
-
 }
-static void acpi_write_rsdt(acpi_rsdt_t *rsdt)
+
+void acpi_write_rsdt(acpi_rsdt_t *rsdt)
 { 
 	acpi_header_t *header=&(rsdt->header);
 	
@@ -233,7 +209,7 @@ static void acpi_write_rsdt(acpi_rsdt_t *rsdt)
 	header->checksum	= acpi_checksum((void *)rsdt, sizeof(acpi_rsdt_t));
 }
 
-static void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt)
+void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt)
 {
 	memcpy(rsdp->signature, RSDP_SIG, 8);
 	memcpy(rsdp->oem_id, OEM_ID, 6);
@@ -242,89 +218,6 @@ static void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt)
 	rsdp->rsdt_address	= (u32)rsdt;
 	rsdp->checksum		= acpi_checksum((void *)rsdp, 20);
 	rsdp->ext_checksum	= acpi_checksum((void *)rsdp, sizeof(acpi_rsdp_t));
-	
 }
 
-unsigned long write_acpi_tables(unsigned long start)
-{
-	unsigned long current;
-	acpi_rsdp_t *rsdp;
-	acpi_rsdt_t *rsdt;
-	acpi_hpet_t *hpet;
-	acpi_madt_t *madt;
-	acpi_fadt_t *fadt;
-	acpi_facs_t *facs;
-	acpi_header_t *dsdt;
-	
-	/* Align ACPI tables to 16byte */
-	start   = ( start + 0x0f ) & -0x10;
-	current = start;
-	
-	printk_info("ACPI: Writing ACPI tables at %lx...\n", start);
-
-	/* We need at least an RSDP and an RSDT Table */
-	rsdp = (acpi_rsdp_t *) current;
-	current += sizeof(acpi_rsdp_t);
-	rsdt = (acpi_rsdt_t *) current;
-	current += sizeof(acpi_rsdt_t);
-
-	/* clear all table memory */
-	memset((void *)start, 0, current - start);
-	
-	acpi_write_rsdp(rsdp, rsdt);
-	acpi_write_rsdt(rsdt);
-	
-	/*
-	 * We explicitly add these tables later on:
-	 */
-#ifdef HAVE_ACPI_HPET
-	printk_debug("ACPI:    * HPET\n");
-
-	hpet = (acpi_hpet_t *) current;
-	current += sizeof(acpi_hpet_t);
-	acpi_create_hpet(hpet);
-	acpi_add_table(rsdt,hpet);
-
-	/* If we want to use HPET Timers Linux wants an MADT */
-	printk_debug("ACPI:    * MADT\n");
-
-	madt = (acpi_madt_t *) current;
-	acpi_create_madt(madt);
-	current+=madt->header.length;
-	acpi_add_table(rsdt,madt);
-
-
-#endif
-
-#ifdef HAVE_ACPI_FADT
-
-
-	printk_debug("ACPI:     * FACS\n");
-	facs = (acpi_facs_t *) current;
-	current += sizeof(acpi_facs_t);
-	acpi_create_facs(facs);
-
-
-	dsdt = (acpi_header_t *)current;
-	current += ((acpi_header_t *)AmlCode)->length;
-	memcpy((void *)dsdt,(void *)AmlCode, ((acpi_header_t *)AmlCode)->length);
-	dsdt->checksum = 0; // don't trust intel iasl compiler to get this right
-	dsdt->checksum = acpi_checksum(dsdt,dsdt->length);
-	printk_debug("ACPI:     * DSDT @ %08x Length %x\n",dsdt,dsdt->length);
-	printk_debug("ACPI:     * FADT\n");
-
-	fadt = (acpi_fadt_t *) current;
-	current += sizeof(acpi_fadt_t);
-
-	acpi_create_fadt(fadt,facs,dsdt);
-	acpi_add_table(rsdt,fadt);
-
-
-#endif	
-
-
-
-	printk_info("ACPI: done.\n");
-	return current;
-}
 

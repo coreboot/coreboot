@@ -88,7 +88,7 @@ void setnorthb(device_t north, uint8_t reg, uint8_t val)
 void
 dumpnorth(device_t north) 
 {
-	uint8_t r, c;
+	unsigned int r, c;
 	for(r = 0; ; r += 16) {
 		print_debug_hex8(r);
 		print_debug(":");

@@ -1089,6 +1089,32 @@ numbering will force
 you to adopt the code in mptable.c. This is subject to change in future
 revisions.
 
+\subsection {ACPI Tables}
+
+There is initial ACPI support in LinuxBIOS now. Currently the only gain with
+this is the ability to use HPET timers in Linux. To achieve this, there is a
+framework that can generate the following tables: 
+\begin{itemize}
+\item RSDP
+\item RSDT
+\item MADT
+\item HPET
+\end{itemize}
+
+To enable ACPI in your LinuxBIOS build, add the following lines to your
+configuration files:
+\begin{verbatim}
+uses HAVE_ACPI_TABLES
+[..]
+option HAVE_ACPI_TABLES=1
+\end{verbatim}
+
+To keep Linux doing it's pci ressource allocation based on IRQ tables and MP
+tables, you have to specify the kernel parameter \texttt{pci=noacpi} otherwise
+your PCI devices won't get interrupts. 
+It's likely that more ACPI support will follow, when there is need for certain
+features.
+
 \subsection{POST}
 LinuxBIOS has three different methods of handling POST codes. They can
 be triggered using configuration file options.
@@ -1230,13 +1256,13 @@ code. The fallback mechanism can be used with the \texttt{cmos\_util}.
 LinuxBIOS supports the following standards
 \begin{itemize}
 \item Multiprocessing Specification (MPSPEC) 1.4
-\item IRQ Tables
+\item IRQ Tables (PIRQ)
+\item ACPI (initial support on AMD64)
 \item Elf Booting
 \end{itemize}
 However, the following standards are not supported until now, and will
 probably not be supported in future revisions:
 \begin{itemize}
-\item ACPI
 \item APM
 \end{itemize}
 

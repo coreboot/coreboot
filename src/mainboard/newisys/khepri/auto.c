@@ -65,7 +65,7 @@ static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 	uint32_t ret=0x00010101; /* default row entry */
 
 	static const unsigned int rows_2p[2][2] = {
-		{ 0x00050101, 0x00010404 },
+		{ 0x00090101, 0x00010808 },
 		{ 0x00010404, 0x00050101 }
 	};
 
@@ -96,6 +96,9 @@ static void coherent_ht_mainboard(unsigned cpus)
 #include "southbridge/amd/amd8111/amd8111_ldtstop.c"
 
 #include "northbridge/amd/amdk8/raminit.c"
+
+#define CONNECTION_0_1 DOWN
+
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
 

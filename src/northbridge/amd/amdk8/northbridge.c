@@ -166,7 +166,7 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 	for(link = 0; link < dev->links; link++) {
 		uint32_t link_type;
 		uint32_t busses, config_busses;
-		unsigned free_reg, config_reg;
+		unsigned free_reg, config_reg, other_reg;
 		dev->link[link].cap = 0x80 + (link *0x20);
 		do {
 			link_type = pci_read_config32(dev, dev->link[link].cap + 0x18);
@@ -455,7 +455,13 @@ static void amdk8_set_resources(device_t dev)
 
 unsigned int amdk8_scan_root_bus(device_t root, unsigned int max)
 {
-	return pci_scan_bus(&root->link[0], PCI_DEVFN(0x18, 0), 0xff, max);
+	unsigned reg;
+	max = pci_scan_bus(&root->link[0], PCI_DEVFN(0x18, 0), 0xff, max);
+	/* Unmap all of the other pci busses */
+	for(reg = 0xe0; reg <= 0xec; reg += 4) {
+		f1_write_config32(reg, 0);
+	}
+	return max;
 }
 
 static struct device_operations northbridge_operations = {

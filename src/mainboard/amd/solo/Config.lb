@@ -228,6 +228,10 @@ northbridge amd/amdk8 "mc0"
 	pci 0:18.1
 	pci 0:18.2
 	pci 0:18.3
+	southbridge amd/amd8151 "amd8151" link 0
+		pci 0:0.0
+		pci 0:1.0
+	end
 	southbridge amd/amd8111 "amd8111" link 0
 		pci 0:0.0
 		pci 0:1.0 on
@@ -255,10 +259,6 @@ northbridge amd/amdk8 "mc0"
 			register "com1" = "{1, 0, 0x3f8, 4}"
 			register "lpt" = "{1}"
 		end
-	end
-	southbridge amd/amd8151 "amd8151" link 1
-		pci 0:0.0
-		pci 0:1.0
 	end
 end
 

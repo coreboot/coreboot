@@ -475,6 +475,10 @@ static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
 {
 	struct device *dev = 0;
 	for(; *list; list = &(*list)->sibling) {
+		if ((*list)->path.type != DEVICE_PATH_PCI) {
+			printk_err("child %s not a pci device\n", dev_path(*list));
+			continue;
+		}
 		if ((*list)->path.u.pci.devfn == devfn) {
 			/* Unlink from the list */
 			dev = *list;

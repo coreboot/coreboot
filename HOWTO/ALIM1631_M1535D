@@ -194,7 +194,10 @@ o	You now need to figure out where you want to put your build images.
 	docipl mainboard/asus/cua/ipl.S
 
 	# Enable Serial Console for debugging
-	option SERIAL_CONSOLE
+	option SERIAL_CONSOLE=1
+
+	# Enable IRQ Routing table stuff
+	option HAVE_PIRQ_TABLE=1
 
 	# Enable MicroCode update and L2 Cache init for PII and PIII
 	option UPDATE_MICROCODE

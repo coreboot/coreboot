@@ -954,4 +954,7 @@ ram_set_spd_registers:
 #endif
 	RET_LABEL(ram_set_spd_registers)
 
+/* things that are not used */
+#define FIRST_NORMAL_REFERENCE()
+#define SPECIAL_FINISHUP()
 intel_440_out:

@@ -28,13 +28,10 @@
  * Intel Architecture Software Developer's Manual
  * Volume 3: System Programming
  */
-#include <linux/config.h>
-#include <linux/module.h>
-#include <linux/kernel.h>
-#include <linux/types.h>
-#include <asm/system.h>
-#include <asm/processor.h>
-#include <asm/msr.h>
+#include <cpu/p6/msr.h>
+#include <cpu/p6/mtrr.h>
+#include <cpu/p5/cpuid.h>
+#include <printk.h>
 
 /* Include debugging code and outputs */
 #define DEBUG 
@@ -95,7 +92,7 @@ int intel_l2_configure()
     int signature, tmp;
     int cache_size;
   
-    cpuid(0, &eax, &ebx, &ecx, &edx);
+    intel_cpuid(0, &eax, &ebx, &ecx, &edx);
   
     if (ebx != 0x756e6547 ||
 	edx != 0x49656e69 ||
@@ -105,7 +102,7 @@ int intel_l2_configure()
 	return -1;
     }
   
-    cpuid(1, &eax, &ebx, &ecx, &edx);
+    intel_cpuid(1, &eax, &ebx, &ecx, &edx);
 
     /* Mask out the stepping */
     signature = eax & 0xfff0;
@@ -591,7 +588,7 @@ static int calculate_l2_latency(void)
 	else
 	    return -1;
 	
-	cpuid(1, &eax, &ebx, &ecx, &edx);
+	intel_cpuid(1, &eax, &ebx, &ecx, &edx);
 
 	/* Mask out Model/Type */
 	eax &= 0xfff0;

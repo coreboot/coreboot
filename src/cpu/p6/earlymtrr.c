@@ -37,7 +37,7 @@ static void early_mtrr_init(void)
 	const unsigned long *msr_addr;
 	unsigned long cr0;
 
-	print_err("Disabling cache\r\n");
+	print_debug("Disabling cache\r\n");
 	/* Just to be sure, take all the steps to disable the cache.
 	 * This may not be needed, but C3's may...
 	 * Invalidate the cache */
@@ -56,7 +56,7 @@ static void early_mtrr_init(void)
 	/* Invalidate the cache again */
 	asm volatile ("invd");
 
-	print_err("Clearing mtrr\r\n");
+	print_debug("Clearing mtrr\r\n");
 
 	/* Inialize all of the relevant msrs to 0 */
 	msr.lo = 0;
@@ -81,7 +81,7 @@ static void early_mtrr_init(void)
 	wrmsr(0x201, msr);
 
 #if defined(XIP_ROM_SIZE) && defined(XIP_ROM_BASE)
-	print_err("Setting XIP\r\n");
+	print_debug("Setting XIP\r\n");
 	/* enable write through caching so we can do execute in place
 	 * on the flash rom.
 	 */
@@ -104,5 +104,5 @@ static void early_mtrr_init(void)
 	cr0 = read_cr0();
 	cr0 &= 0x9fffffff;
 	write_cr0(cr0);
-	print_err("Enabled the cache\r\n");
+	print_debug("Enabled the cache\r\n");
 }

@@ -438,10 +438,9 @@ static void southbridge_init(struct chip *chip, enum chip_pass pass)
 	case CONF_PASS_POST_PCI:
 		vt8231_init(conf);
 		pci_routing_fixup();
-		
 		break;
+
 	case CONF_PASS_PRE_BOOT:
-		pci_routing_fixup();
 		dump_south();
 		break;
 		

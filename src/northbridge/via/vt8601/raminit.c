@@ -55,9 +55,9 @@ void dimms_read(unsigned long x)
 	eax =  x;
 	for(c = 0; c < 6; c++) {
 		
-		print_err("dimms_read: ");
-		print_err_hex32(eax);
-		print_err("\r\n");
+		print_debug("dimms_read: ");
+		print_debug_hex32(eax);
+		print_debug("\r\n");
 		y = * (volatile unsigned long *) eax;
 		eax += 0x10000000;
 	}
@@ -68,9 +68,9 @@ void dimms_write(int x)
 	uint8_t c;
 	unsigned long eax = x;
 	for(c = 0; c < 6; c++) {
-		print_err("dimms_write: ");
-		print_err_hex32(eax);
-		print_err("\r\n");
+		print_debug("dimms_write: ");
+		print_debug_hex32(eax);
+		print_debug("\r\n");
 		*(volatile unsigned long *) eax = 0;
 		eax += 0x10000000;
 	}
@@ -81,11 +81,11 @@ void dimms_write(int x)
 #ifdef DEBUG_SETNORTHB
 void setnorthb(device_t north, uint8_t reg, uint8_t val) 
 {
-	print_err("setnorth: reg ");
-	print_err_hex8(reg);
-	print_err(" to ");
-	print_err_hex8(val);
-	print_err("\r\n");
+	print_debug("setnorth: reg ");
+	print_debug_hex8(reg);
+	print_debug(" to ");
+	print_debug_hex8(val);
+	print_debug("\r\n");
 	pci_write_config8(north, reg, val);
 }
 #else
@@ -97,13 +97,13 @@ dumpnorth(device_t north)
 {
 	uint8_t r, c;
 	for(r = 0; r < 256; r += 16) {
-		print_err_hex8(r);
-		print_err(":");
+		print_debug_hex8(r);
+		print_debug(":");
 		for(c = 0; c < 16; c++) {
-			print_err_hex8(pci_read_config8(north, r+c));
-			print_err(" ");
+			print_debug_hex8(pci_read_config8(north, r+c));
+			print_debug(" ");
 		}
-		print_err("\r\n");
+		print_debug("\r\n");
   }
 }
 
@@ -120,22 +120,22 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	device_t north = (device_t) 0;
 	uint8_t c, r;
 
-	print_err("vt8601 init starting\n");
+	print_err("vt8601 init starting\r\n");
 	north = pci_locate_device(PCI_ID(0x1106, 0x8601), 0);
 	north = 0;
-	print_err_hex32(north);
-	print_err(" is the north\n");
-	print_err_hex16(pci_read_config16(north, 0));
-	print_err(" ");
-	print_err_hex16(pci_read_config16(north, 2));
-	print_err("\r\n");
+	print_debug_hex32(north);
+	print_debug(" is the north\n");
+	print_debug_hex16(pci_read_config16(north, 0));
+	print_debug(" ");
+	print_debug_hex16(pci_read_config16(north, 2));
+	print_debug("\r\n");
 	
 	/* All we are doing now is setting initial known-good values that will
 	 * be revised later as we read SPD
 	 */	
 	// memory clk enable. We are not using ECC
 	pci_write_config8(north,0x78, 0x01);
-	print_err_hex8(pci_read_config8(north, 0x78));
+	print_debug_hex8(pci_read_config8(north, 0x78));
 	// dram control, see the book. 
 #if DIMM_PC133
 	pci_write_config8(north,0x68, 0x52);
@@ -146,7 +146,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	pci_write_config8(north,0x6B, 0x0c);
 	// Initial setting, 256MB in each bank, will be rewritten later.
 	pci_write_config8(north,0x5A, 0x20);
-	print_err_hex8(pci_read_config8(north, 0x5a));
+	print_debug_hex8(pci_read_config8(north, 0x5a));
 	pci_write_config8(north,0x5B, 0x40);
 	pci_write_config8(north,0x5C, 0x60);
 	pci_write_config8(north,0x5D, 0x80);
@@ -220,11 +220,15 @@ do_module_size(unsigned char slot /*, unsigned char base) */)
 	/* is the module there? if byte 2 is not 4, then we'll assume it 
 	 * is useless. 
 	 */
-	if (smbus_read_byte(module, 2) != 4)
+	if (smbus_read_byte(module, 2) != 4) {
+		print_err("Slot "); 
+		print_err_hex8(slot); 
+		print_err(" is empty\r\n");
 		goto done;
+	}
 	
-	//print_err_hex8(slot);
-	//    print_err(" is SDRAM\n");
+	//print_debug_hex8(slot);
+	//    print_debug(" is SDRAM\n");
 	width = smbus_read_byte(module, 6) | (smbus_read_byte(module,7)<<0);
 	banks = smbus_read_byte(module, 17);
 	/* we're going to assume symmetric banks. Sorry. */
@@ -239,15 +243,15 @@ do_module_size(unsigned char slot /*, unsigned char base) */)
 	value -= 23;
 	/* now subtract 3 more bits as these are 8-bit bytes */
 	value -= 3;
-	//    print_err_hex8(value);
-	//    print_err(" is the # bits for this bank\n");
+	//    print_debug_hex8(value);
+	//    print_debug(" is the # bits for this bank\n");
 	/* now put that size into the correct register */
 	value = (1 << value);
  done:
 	reg = ramregs[slot];
 	
-	//    print_err_hex8(value); print_err(" would go into ");
-	//    print_err_hex8(ramregs[reg]); print_err("\n");
+	//    print_debug_hex8(value); print_debug(" would go into ");
+	//    print_debug_hex8(ramregs[reg]); print_debug("\n");
 	//    pci_write_config8(north, ramregs[reg], value);
 	return value;
 }
@@ -272,7 +276,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	
 	val = (Trp << 7) | (Tras << 6) | (casl << 4) | 4;
 	
-	print_err_hex8(val); print_err(" is the computed timing\n");
+	print_debug_hex8(val); print_debug(" is the computed timing\n");
 	/* don't set it. Experience shows that this screwy chipset should just
 	 * be run with the most conservative timing.
 	 * pci_write_config8(0, 0x64, val);
@@ -299,19 +303,19 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	
 	/* set NOP*/
 	pci_write_config8(north,0x6C, 0x01);
-	print_err("NOP\r\n");
+	print_debug("NOP\r\n");
 	/* wait 200us*/
 	// You need to do the memory reference. That causes the nop cycle. 
 	dimms_read(0);
 	udelay(400);
-	print_err("PRECHARGE\r\n");
+	print_debug("PRECHARGE\r\n");
 	/* set precharge */
 	pci_write_config8(north,0x6C, 0x02);
-	print_err("DUMMY READS\r\n");
+	print_debug("DUMMY READS\r\n");
 	/* dummy reads*/
 	dimms_read(0);
 	udelay(200);
-	print_err("CBR\r\n");
+	print_debug("CBR\r\n");
 	/* set CBR*/
 	pci_write_config8(north,0x6C, 0x04);
 	
@@ -332,7 +336,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	udelay(200);
 	dimms_read(0);
 	udelay(200);
-	print_err("MRS\r\n");
+	print_debug("MRS\r\n");
 	/* set MRS*/
 	pci_write_config8(north,0x6c, 0x03);
 #if DIMM_CL2
@@ -341,21 +345,21 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	dimms_read(0x1d0);
 #endif
 	udelay(200);
-	print_err("NORMAL\r\n");
+	print_debug("NORMAL\r\n");
 	/* set to normal mode */
 	pci_write_config8(north,0x6C, 0x08);
 	
 	dimms_write(0x55aa55aa);
 	dimms_read(0);
 	udelay(200);
-	print_err("set ref. rate\r\n");
+	print_debug("set ref. rate\r\n");
 	// Set the refresh rate. 
 #if DIMM_PC133
 	pci_write_config8(north,0x6A, 0x86);
 #else
 	pci_write_config8(north,0x6A, 0x65);
 #endif
-	print_err("enable multi-page open\r\n");
+	print_debug("enable multi-page open\r\n");
 	// enable multi-page open
 	pci_write_config8(north,0x6B, 0x0d);
 	
@@ -374,21 +378,21 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	pci_write_config8(north,0x56, 0xff);
 	pci_write_config8(north,0x57, 0xff);
 	dumpnorth(north);
-	print_err("MA\r\n");
+	print_debug("MA\r\n");
 	for(c = 0; c < 8; c++) {
 		/* Write different values to 0 and 8, then read from 0.
 		 * If values of address 0 match, we have something there. */
-		print_err("write to 0\r\n");
+		print_debug("write to 0\r\n");
 		*(volatile unsigned long *) 0 = 0x12345678;
 		
 		/* LEAVE THIS HERE. IT IS ESSENTIAL. OTHERWISE BUFFERING
 		 * WILL FOOL YOU!
 		 */
-		print_err("write to 8\r\n");
+		print_debug("write to 8\r\n");
 		*(volatile unsigned long *) 8 = 0x87654321;
 		
 		if (*(volatile unsigned long *) 0 != 0x12345678) {
-			print_err("no memory in this bank\r\n");
+			print_debug("no memory in this bank\r\n");
 			/* No memory in this bank. Tell it to the bridge. */
 			pci_write_config8(north,ramregs[c], 0);
 		} 
@@ -404,7 +408,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 				pci_write_config8(north,0x58, raminit_ma_reg_table[r]);
 				
 				* (volatile unsigned long *) eax = 0;
-				print_err(" done write to eax\r\n");
+				print_debug(" done write to eax\r\n");
 				// Write to addresses with only one address bit
 				// on, from 0x80000000 to 0x00000008 (lower 3 bits
 				// are ignored, assuming 64-bit bus).  Then what
@@ -416,20 +420,20 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 				eax = 0x80000000;
 				while (eax !=  4) {
 					* (volatile unsigned long *) eax = eax;
-					//print_err_hex32(eax);
+					//print_debug_hex32(eax);
 					outb(eax&0xff, 0x80);
 					eax >>= 1;
 				}
-				print_err(" done read to eax\r\n");
+				print_debug(" done read to eax\r\n");
 				eax = * (unsigned long *)0;
 				/* oh boy ... what is this. 
 				   movl 0, %eax
 				   cmpl %eax, %esi
 				   jnc 3f
 				*/
-				print_err("eax and esi: ");
-				print_err_hex32(eax); print_err(" ");
-				print_err_hex32(esi); print_err("\r\n");
+				print_debug("eax and esi: ");
+				print_debug_hex32(eax); print_debug(" ");
+				print_debug_hex32(esi); print_debug("\r\n");
 				
 				if (eax > esi) { /* ??*/
 					
@@ -441,9 +445,9 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 			}
 		  
 			pci_write_config8(north,0x58, raminit_ma_reg_table[best]);
-			print_err("enabled first bank of ram ... ma is ");
-			print_err_hex8(pci_read_config8(north, 0x58));
-			print_err("\r\n");
+			print_debug("enabled first bank of ram ... ma is ");
+			print_debug_hex8(pci_read_config8(north, 0x58));
+			print_debug("\r\n");
 		}
 	}
 	base = 0;
@@ -475,7 +479,9 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	  base = do_module_size(0xa0, base);
 	  base = do_module_size(0xa0, base);
 	  base = do_module_size(0xa0, base);*/
-	print_err("vt8601 done\n");
+	print_err("vt8601 done\r\n");
+	/*
 	dumpnorth(north);
 	udelay(1000);
+	*/
 }

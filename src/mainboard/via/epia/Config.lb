@@ -140,7 +140,7 @@ makerule ./auto.E
 end
 makerule ./auto.inc 
 	depends "./auto.E ./romcc"
-	action	"./romcc   -O2 -mcpu=c3 ./auto.E > auto.inc"
+	action	"./romcc   -O2 -mcpu=c3 ./auto.E "
 end
 
 ##

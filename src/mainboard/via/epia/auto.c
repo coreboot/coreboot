@@ -101,10 +101,11 @@ static void main(void)
 	outb(5, 0x80);
 	
 	enable_vt8231_serial();
-	enable_mainboard_devices();
+
 	uart_init();
 	console_init();
 	
+	enable_mainboard_devices();
 	enable_smbus();
 	enable_shadow_ram();
 	/*

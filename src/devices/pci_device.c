@@ -37,6 +37,7 @@ static uint8_t pci_moving_config8(struct device *dev, unsigned reg)
 
 	return ones ^ zeroes;
 }
+
 static uint16_t pci_moving_config16(struct device *dev, unsigned reg)
 {
 	uint16_t value, ones, zeroes;
@@ -81,7 +82,7 @@ unsigned pci_find_capability(device_t dev, unsigned cap)
 	if (pos > PCI_CAP_LIST_NEXT) {
 		pos = pci_read_config8(dev, pos);
 	}
-	while(pos != 0) {   /* loop through the linked list */
+	while (pos != 0) {   /* loop through the linked list */
 		int this_cap;
 		this_cap = pci_read_config8(dev, pos + PCI_CAP_LIST_ID);
 		if (this_cap == cap) {
@@ -111,7 +112,7 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 
 	/* See which bits move */
 	moving = pci_moving_config32(dev, index);
-	
+
 	/* Initialize attr to the bits that do not move */
 	attr = value & ~moving;
 
@@ -153,9 +154,8 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 	 */
 	if (moving == 0) {
 		if (value != 0) {
-			printk_debug(
-				"%s register %02x(%08x), read-only ignoring it\n",
-				dev_path(dev), index, value);
+			printk_debug("%s register %02x(%08x), read-only ignoring it\n",
+				     dev_path(dev), index, value);
 		}
 		resource->flags = 0;
 	}
@@ -199,9 +199,9 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 #if 0
 	if (resource->flags) {
 		printk_debug("%s %02x ->",
-			dev_path(dev), resource->index);
+			     dev_path(dev), resource->index);
 		printk_debug(" value: 0x%08Lx zeroes: 0x%08Lx ones: 0x%08Lx attr: %08lx\n",
-			value, zeroes, ones, attr);
+			     value, zeroes, ones, attr);
 		printk_debug(
 			"%s %02x -> size: 0x%08Lx max: 0x%08Lx %s%s\n ",
 			dev_path(dev),
@@ -225,7 +225,7 @@ static void pci_read_bases(struct device *dev, unsigned int howmany)
 {
 	unsigned long index;
 
-	for(index = PCI_BASE_ADDRESS_0; (index < PCI_BASE_ADDRESS_0 + (howmany << 2)); ) {
+	for (index = PCI_BASE_ADDRESS_0; (index < PCI_BASE_ADDRESS_0 + (howmany << 2)); ) {
 		struct resource *resource;
 		resource = pci_get_resource(dev, index);
 		index += (resource->flags & IORESOURCE_PCI64)?8:4;
@@ -233,11 +233,63 @@ static void pci_read_bases(struct device *dev, unsigned int howmany)
 	compact_resources(dev);
 }
 
+static void pci_read_rom_resource(struct device *dev, unsigned long index)
+{
+	struct resource *resource;
+	unsigned long value, attr;
+	resource_t  moving, limit;
+
+	/* Initialize the resources to nothing */
+	resource = new_resource(dev, index);
+
+	/* Get the initial value */
+	value = pci_read_config32(dev, index);
+
+	/* See which bits move */
+	moving = pci_moving_config32(dev, index);
+	/* clear the Enable bit */
+	moving = moving & 0xffffffffe;
+
+	/* Find the resource constraints. 
+	 *
+	 * Start by finding the bits that move. From there:
+	 * - Size is the least significant bit of the bits that move.
+	 * - Limit is all of the bits that move plus all of the lower bits.
+	 * See PCI Spec 6.2.5.1 ...
+	 */
+	limit = 0;
+
+	if (moving) {
+		resource->size = 1;
+		resource->align = resource->gran = 0;
+		while(!(moving & resource->size)) {
+			resource->size <<= 1;
+			resource->align += 1;
+			resource->gran  += 1;
+		}
+		resource->limit = limit = moving | (resource->size - 1);
+		printk_debug("%s, rom size: %x, limit: %x\n",
+			    dev_path(dev), resource->size, limit);
+	}
+
+	if (moving == 0) {
+		if (value != 0) {
+			printk_debug("%s register %02x(%08x), read-only ignoring it\n",
+				     dev_path(dev), index, value);
+		}
+		resource->flags = 0;
+	} else {
+		resource->flags |= IORESOURCE_MEM | IORESOURCE_READONLY;
+	}
+	compact_resources(dev);
+
+}
+
 static void pci_set_resource(struct device *dev, struct resource *resource);
 
-static void pci_record_bridge_resource(
-	struct device *dev, resource_t moving,
-	unsigned index, unsigned long mask, unsigned long type)
+static void pci_record_bridge_resource( struct device *dev, resource_t moving,
+					unsigned index, unsigned long mask,
+					unsigned long type)
 {
 	/* Initiliaze the constraints on the current bus */
 	struct resource *resource;
@@ -271,7 +323,6 @@ static void pci_record_bridge_resource(
 	}
 	return;
 }
-
 
 static void pci_bridge_read_bases(struct device *dev)
 {
@@ -329,8 +380,7 @@ void pci_dev_read_resources(struct device *dev)
 
 	pci_read_bases(dev, 6);
 
-	addr = pci_read_config32(dev, PCI_ROM_ADDRESS);
-	dev->rom_address = (addr == 0xffffffff)? 0 : addr;
+	pci_read_rom_resource(dev, PCI_ROM_ADDRESS);
 }
 
 void pci_bus_read_resources(struct device *dev)
@@ -339,9 +389,8 @@ void pci_bus_read_resources(struct device *dev)
 
 	pci_bridge_read_bases(dev);
 	pci_read_bases(dev, 2);
-	
-	addr = pci_read_config32(dev, PCI_ROM_ADDRESS1);
-	dev->rom_address = (addr == 0xffffffff)? 0 : addr;
+
+	pci_read_rom_resource(dev, PCI_ROM_ADDRESS1);
 }
 
 static void pci_set_resource(struct device *dev, struct resource *resource)
@@ -450,10 +499,10 @@ void pci_dev_set_resources(struct device *dev)
 
 	last = &dev->resource[dev->resources];
 
-	for(resource = &dev->resource[0]; resource < last; resource++) {
+	for (resource = &dev->resource[0]; resource < last; resource++) {
 		pci_set_resource(dev, resource);
 	}
-	for(link = 0; link < dev->links; link++) {
+	for (link = 0; link < dev->links; link++) {
 		struct bus *bus;
 		bus = &dev->link[link];
 		if (bus->children) {

@@ -7,7 +7,7 @@
 struct bus *get_pbus_smbus(device_t dev)
 {
 	struct bus *pbus = dev->bus;
-	while(pbus && pbus->dev && !ops_smbus_bus(pbus)) {
+	while (pbus && pbus->dev && !ops_smbus_bus(pbus)) {
 		pbus = pbus->dev->bus;
 	}
 	if (!pbus || !pbus->dev || !pbus->dev->ops || !pbus->dev->ops->ops_smbus_bus) {
@@ -18,9 +18,10 @@ struct bus *get_pbus_smbus(device_t dev)
 	return pbus;
 }
 
-	/*multi level i2c MUX??? may need to find the first i2c device and then set link down to current dev
-                 1 store get_pbus_smbus list link
-                 2 reverse the link and call set link */
+/*multi level i2c MUX??? may need to find the first i2c device and then set link
+ * down to current dev
+  1 store get_pbus_smbus list link
+  2 reverse the link and call set link */
 
 int smbus_set_link(device_t dev)
 {
@@ -33,10 +34,10 @@ int smbus_set_link(device_t dev)
                 pbus = pbus->dev->bus;
         }
 //	printk_info("smbus_set_link: ");
-	for(i=pbus_num-1; i>=0; i--) {
+	for (i=pbus_num-1; i>=0; i--) {
 //		printk_info(" %s[%d] -> ", dev_path(pbus_a[i]->dev), pbus_a[i]->link);
-        	if(ops_smbus_bus(get_pbus_smbus(pbus_a[i]->dev))) {
-                	if(pbus_a[i]->dev->ops && pbus_a[i]->dev->ops->set_link)
+        	if (ops_smbus_bus(get_pbus_smbus(pbus_a[i]->dev))) {
+                	if (pbus_a[i]->dev->ops && pbus_a[i]->dev->ops->set_link)
                         	pbus_a[i]->dev->ops->set_link(pbus_a[i]->dev, pbus_a[i]->link);
 		}
 	}

@@ -424,6 +424,8 @@ static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 {
 	struct resource *resource;
 	unsigned link;
+	uint32_t base, limit;
+	unsigned reg;
 	for (link = 0; link < dev->links; link++) {
 		if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
 			printk_info("%s: bridge on link %d has VGA device\n",
@@ -433,12 +435,29 @@ static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 			resource =  amdk8_find_mempair(dev, nodeid, link);
 			printk_info("MEM pair register %x\n", resource->index - 0x100);
 			resource->base = 0xa0000;
-			resource->size = 0x00000;
+			resource->size = 0x20000;
 			resource->gran = 16;
 			resource->align = 16;
-			resource->flags = IORESOURCE_PREFETCH | IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_ASSIGNED;
+			resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_ASSIGNED;
 		}
 	}
+#if 1
+	reg  = resource->index & 0xfc;
+	base  = f1_read_config32(reg);
+	limit = f1_read_config32(reg + 0x4);
+	base  &= 0x000000f0;
+	base  |= (resource->base >> 8) & 0xffffff00;
+	base  |= 3;
+	limit &= 0x00000048;
+	limit |= ((resource->base + resource->size) >> 8) & 0xffffff00;
+	limit |= (resource->index & 3) << 4;
+	limit |= (nodeid & 7);
+	f1_write_config32(reg + 0x4, limit);
+	f1_write_config32(reg, base);
+
+	/* release the resource */
+	resource->flags = 0;
+#endif
 }
 static void amdk8_set_resources(device_t dev)
 {

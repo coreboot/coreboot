@@ -1,0 +1,32 @@
+# These are keyword-value pairs. 
+# a : separates the keyword from the value 
+# the value is arbitrary text delimited by newline. 
+# continuation, if needed, will be via the \ at the end of a line
+# comments are indicated by a '#' as the first character. 
+# the keywords are case-INSENSITIVE
+#
+# pcchips m787cl+ mainboard
+#
+owner:	Steve M. Gehlbach
+email:	steve@kesa.com
+#status: One of unsupported, unstable, stable
+status: stable
+explanation: tested with serial and vga console, 64M DIMM
+flash-types: AT49F040-70PC
+payload-types: 
+# e.g. linux, plan 9, wince, etc.
+OS-types: linux
+# e.g. "Plan 9 interrupts don't work on this chipset"
+OS-issues: none known
+console-types: serial, vga-text
+# vga is unsupported, unstable, or stable
+vga: stable
+# Last-known-good follows the internationl date standard: day/month/year
+last-known-good: 4/2/2003
+Comments: NOTE: Requires SDRAM in slot DIMM1 \
+4 bit 640x400 graphics is supported for a startup logo screen, followed by \
+80x25 vga text console.  Graphics timing and sizing are not perfect but very close.
+Links: http://www.pcchips.com.tw/M787CL.html
+Mainboard-revision: 
+# What other mainboards are like this one? List them here. 
+AKA: 

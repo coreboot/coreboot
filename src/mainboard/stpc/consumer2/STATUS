@@ -1,0 +1,34 @@
+# These are keyword-value pairs. 
+# a : separates the keyword from the value 
+# the value is arbitrary text delimited by newline. 
+# continuation, if needed, will be via the \ at the end of a line
+# comments are indicated by a '#' as the first character. 
+# the keywords are case-INSENSITIVE
+#
+# stpc Consumer II Evaluation Motherboard
+#
+owner:	Steve M. Gehlbach
+email:	steve@kesa.com
+#status: One of unsupported, unstable, stable
+status: stable
+explanation: okay except tv-out, tv-in not setup properly; rtc?- hwclock very slow in linux
+flash-types: AT49F040-70PC
+payload-types: 
+# e.g. linux, plan 9, wince, etc.
+OS-types: linux
+# e.g. "Plan 9 interrupts don't work on this chipset"
+OS-issues: linux hwclock hangs for 20 seconds and reports wrong value. \
+Change irqs to be used in src/mainboard/stpc/consumer2/mainboard.c; \
+irq table is dynamic with the checksum calculated on startup; ram must \
+be enabled at 0xf0000 for irq table to be written (done by default).
+console-types: serial, vga-text
+# vga is unsupported, unstable, or stable
+vga: stable
+# Last-known-good follows the internationl date standard: day/month/year
+last-known-good: 17/12/2002
+Comments: 4 bit 640x400 graphics is supported for a startup logo screen, followed by \
+80x25 vga text console.  Not sure if vga clock is set correctly but it is close.
+Links: http://us.st.com/stonline/products/support/stpc/stpcxx/stpcc4/index.htm
+Mainboard-revision: 1.1
+# What other mainboards are like this one? List them here. 
+AKA: 

@@ -15,7 +15,7 @@ void ich2_rtc_init(void)
 	rtc_failed = byte & RTC_FAILED;
 	if (rtc_failed) {
 		byte &= ~(1 << 1); /* preserve the power fail state */
-		pcibios_write_config_byte(RTC_BUS, RTC_DEVFN, GEN_PMCON_3, &byte);
+		pcibios_write_config_byte(RTC_BUS, RTC_DEVFN, GEN_PMCON_3, byte);
 	}
 	pcibios_read_config_dword(RTC_BUS, RTC_DEVFN, GEN_STS, &dword);
 	rtc_failed |= dword & (1 << 2);

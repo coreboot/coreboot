@@ -11,6 +11,7 @@
 
 static struct {
 	struct uniform_boot_header header;
+	struct linuxbios_header lb_header;
 	struct {
 		struct {
 			struct ube_memory memory;
@@ -26,6 +27,14 @@ static struct {
 		.arg_bytes = sizeof(ube_all.command_line),
 		.env = (unsigned long)&ube_all.env,
 		.env_bytes = sizeof(ube_all.env),
+	},
+	.lb_header = {
+		.signature = { 'L', 'B', 'I', 'O' },
+		.header_bytes = sizeof(ube_all.lb_header),
+		.header_checksum = 0,
+		.env_bytes = sizeof(ube_all.env),
+		.env_checksum = 0,
+		.env_entries = 0,
 	},
 	.env = {
 		.mem = {
@@ -65,6 +74,11 @@ void *get_ube_pointer(unsigned long totalram)
 	ube_all.header.header_checksum = 0;
 	ube_all.header.header_checksum = 
 		uniform_boot_compute_header_checksum(&ube_all.header);
+	ube_all.lb_header.env_entries = 1; /* FIXME remove this hardcode.. */
+	ube_all.lb_header.env_checksum = 
+		compute_checksum(&ube_all.env, sizeof(ube_all.env));
+	ube_all.lb_header.header_checksum = 
+		compute_checksum(&ube_all.lb_header, sizeof(ube_all.lb_header));
 	return &ube_all.header;
 }
 

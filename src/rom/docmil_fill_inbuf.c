@@ -20,6 +20,10 @@
 #define DOC_MIL_BASE  0xffffe000
 #endif
 
+static unsigned char *inbuf;	/* input buffer */
+static unsigned int insize;	/* valid bytes in inbuf */
+static unsigned int inptr;	/* index of next byte to be processed in inbuf */
+
 static unsigned char *nvram;
 static int block_count;
 static int firstfill = 1;
@@ -53,7 +57,7 @@ reset_doc()
 }
 #endif
 
-int
+static int 
 fill_inbuf(void)
 {
 #ifdef CHECK_DOC_MIL
@@ -373,7 +377,7 @@ static int DoCMil_is_alias(volatile char *docptr1, volatile char *docptr2)
 }
 
 #if 0
-int WriteBlockECC(volatile char *docptr, unsigned int block, const char *buf)
+static int WriteBlockECC(volatile char *docptr, unsigned int block, const char *buf)
 {
 	unsigned char eccbuf[6];
 	volatile char dummy;
@@ -458,7 +462,7 @@ int WriteBlockECC(volatile char *docptr, unsigned int block, const char *buf)
 }
 
 #endif
-int ReadBlockECC( volatile unsigned char *docptr, unsigned int block, char *buf)
+static int ReadBlockECC( volatile unsigned char *docptr, unsigned int block, char *buf)
 {
 	int i, ret;
 	volatile char dummy;
@@ -591,4 +595,46 @@ memcpy_from_doc_mil(void *dest, const void *src, size_t n)
 	}
 
 }
+
+/* FIXME this is a very lazy ugly port of the new interface to the doc millenium 
+ * find a good way to implement this...
+ */
+
+#define get_byte()  (inptr < insize ? inbuf[inptr++] : fill_inbuf())
+
+static int init_bytes(void)
+{
+	return;
+}
+static void fini_bytes(void)
+{
+	return;
+}
+static byte_offset_t read_bytes(void *vdest, byte_offset_t count)
+{
+	byte_offset_t bytes = 0;
+	unsigned char *dest = vdest;
+	while(bytes < count) {
+		*(dest++) = get_byte();
+	}
+	return count;
+}
+
+static byte_offset_t skip_bytes(byte_offset_t count)
+{
+	byte_offset_t bytes = 0;
+	while(bytes < count) {
+		unsigned char byte;
+		byte = get_byte();
+	}
+	return count;
+}
+
+static struct stream doc_mil_stream __stream = {
+	.init = init_bytes,
+	.read = read_bytes,	       
+	.skip = skip_bytes,
+	.fini = fini_bytes,
+}
+
 #endif /* USE_DOC_MIL */

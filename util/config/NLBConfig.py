@@ -41,17 +41,17 @@ def add_main_rule_dependency(new_dependency):
 # this is a tuple, object name, source it depends on, 
 # and an optional rule (can be empty) for actually building
 # the object
-def addobject(object, sourcepath, rule, condition):
-	objectrules.append([object, topify(sourcepath), rule, condition])
+def addobject(object, sourcepath, rule, condition, variable):
+	objectrules.append([object, topify(sourcepath), rule, condition, variable])
 
 # OK, let's face it, make sucks. 
 # if you have a rule like this: 
 # a.o: /some/long/path/a.c
 # make won't apply the .c.o rule. Toy!
 
-def addobject_defaultrule(object, sourcepath, condition):
+def addobject_defaultrule(object, sourcepath, condition, variable):
 	defaultrule = "\t $(CC) -c $(CFLAGS) -o $@ $<"
-	addobject(object, sourcepath, defaultrule, condition)
+	addobject(object, sourcepath, defaultrule, condition, variable)
 
 # for all these functions, you need:
 # the dir that the Config file is in
@@ -136,7 +136,7 @@ def keyboard(dir, keyboard_name):
 	if (debug):
 		print "KEYBOARD"
 	keyboard_dir = os.path.join(treetop, 'src', keyboard_name)
-	addobject_defaultrule('keyboard.o', keyboard_dir,'')
+	addobject_defaultrule('keyboard.o', keyboard_dir,'','OBJECTS')
 
 def cpu(dir, cpu_name):
 	common_command_action(dir, 'cpu', cpu_name)
@@ -165,7 +165,7 @@ def superio(dir,  superio_name):
 	# note that superio is w.r.t. treetop
 	buildfullpath('superio', superio_name)
 	dir = os.path.join(treetop, 'src', 'superio', superio_name)
-	addobject_defaultrule('superio.o', dir,'')
+	addobject_defaultrule('superio.o', dir,'','OBJECTS')
 
 # commands are of the form: 
 # superio_name [name=val]*
@@ -188,8 +188,8 @@ def nsuperio(dir, superio_commands):
 	dir = os.path.join(treetop, 'src', 'superio', superio_name)
 	object="superio_%s.o" % superio_decl_name
 	superio_source = dir + "/superio.c"
-	addobject_defaultrule(object, superio_source,'')
-	addobject_defaultrule('nsuperio.o', "", '')
+	addobject_defaultrule(object, superio_source,'','OBJECTS')
+	addobject_defaultrule('nsuperio.o', "", '','OBJECTS')
 	rest = m.group(2)
 	superio_cmds = '';
 	m = command_re.match(rest)
@@ -251,7 +251,15 @@ def object(dir, command):
 	m = re.match("([^" + wspc + "]+)([" + wspc + "]([^" + wspc + "]*)|)", command)
 	obj_name = m.group(1)
 	condition = m.group(3)
-	addobject_defaultrule(obj_name, dir, condition)
+	addobject_defaultrule(obj_name, dir, condition,'OBJECTS')
+
+def driver(dir, command):
+	wspc = string.whitespace
+	m = re.match("([^" + wspc + "]+)([" + wspc + "]([^" + wspc + "]*)|)", command)
+	obj_name = m.group(1)
+	condition = m.group(3)
+	addobject_defaultrule(obj_name, dir, condition, 'DRIVERS')
+	
 
 # for eventual user-defined rules. 
 # pattern is name : deps ; rule
@@ -390,6 +398,7 @@ command_vals = {
 	'pcibridge'   : [],   # vendor, bridgename
 	'superio'     : [],   # vendor, superio name
 	'object'      : {},   # path/filename.[cS]
+	'driver'      : {},   # path/filename.[cS]
 	'mainboardinit'     : [],   # set of files to include for mainboard init
 	'config_files'      : [],   # set of files we built the makefile from
 	'ldscripts'         : [],   # set of files we build the linker script from
@@ -408,6 +417,7 @@ command_actions = {
 	'superio'     : superio,
 	'nsuperio'    : nsuperio,
 	'object'      : object,
+	'driver'      : driver,
 	'linux'       : linux,
 	'payload'     : payload,
 	'raminit'     : raminit,
@@ -595,13 +605,15 @@ def writemakefile(path):
 	# print out all the object dependencies
 	# There is ALWAYS a crt0.o
 	file.write("OBJECTS-1 := crt0.o\n")
+	file.write("DRIVERS-1 :=\n")
 	for i in range(len(objectrules)):
 		obj_name = objectrules[i][0]
 		obj_cond = objectrules[i][3]
+		obj_var  = objectrules[i][4]
 		if not obj_cond :
-			file.write("OBJECTS-1 += %s\n" % (obj_name))
+			file.write("%s-1 += %s\n" % (obj_var, obj_name))
 		else:
-			file.write("OBJECTS-$(%s) += %s\n" % (obj_cond, obj_name))
+			file.write("%s-$(%s) += %s\n" % (obj_var, obj_cond, obj_name))
 
 	# print out all ldscript.ld dependencies
 	file.write("LDSUBSCRIPTS-1 := \n" )

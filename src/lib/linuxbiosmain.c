@@ -18,9 +18,10 @@
  */
 
 #include <printk.h>
+#include <part/fallback_boot.h>
 #include <params.h>
 #include <subr.h>
-#include <rom/fill_inbuf.h>
+#include <rom/read_bytes.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -92,6 +93,7 @@ int linuxbiosmain(unsigned long base, unsigned long totalram)
 	printk_notice("\nnetboot_init test complete, all is well (I hope!)\n");
 #endif /* USE_TFTP */
 		
+	streams->init();
 	printk_debug("Gunzip setup\n");
 	gunzip_setup();
 	printk_debug("Gunzipping boot code\n");
@@ -100,6 +102,7 @@ int linuxbiosmain(unsigned long base, unsigned long totalram)
 		post_code(0xff);
 		return 0;
 	}
+	streams->fini();
 	post_code(0xf8);
 
 #ifdef TFTP_INITRD
@@ -156,6 +159,8 @@ int linuxbiosmain(unsigned long base, unsigned long totalram)
 	set_display(empty_zero_page, 25, 80);
 	set_initrd(empty_zero_page, initrd_start, initrd_size);
 
+	/* Reset to booting from this image as late as possible */
+	boot_successful();
 
 	printk_debug("Jumping to boot code\n");
 	post_code(0xfe);

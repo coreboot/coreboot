@@ -5,30 +5,38 @@
 #include <rom/read_bytes.h>
 
 #include <string.h>
-#include <serial_subr.h>
+#include <floppy_subr.h>
 
+static unsigned long offset;
 
 static int init_bytes(void)
 {
-	return 0;
-}
-static void fini_bytes(void)
-{
-}
-static byte_offset_t read_bytes(void *vdest, byte_offset_t count)
-{
-	return ttys0_rx_bytes(vdest, count);
-}
-static byte_offset_t skip_bytes(byte_offset_t count)
-{
-	int64_t i;
-	for(i = 0; i < count; i++) {
-		unsigned char byte;
-		byte = ttys0_rx_byte();
-	}
+	offset = 0;
+	return floppy_init();
 }
 
-static struct stream serial_stream __stream = {
+static void fini_bytes(void)
+{
+	floppy_fini();
+}
+
+static byte_offset_t read_bytes(void *vdest, byte_offset_t count)
+{
+	byte_offset_t len;
+	len = floppy_read(vdest, offset, count);
+	if (len > 0) {
+		offset += len;
+	}
+	return len;
+}
+
+static byte_offset_t skip_bytes(byte_offset_t count)
+{
+	offset += count;
+	return count;
+}
+
+static struct stream floppy_bytes __stream = {
 	.init = init_bytes,
 	.read = read_bytes,	       
 	.skip = skip_bytes,

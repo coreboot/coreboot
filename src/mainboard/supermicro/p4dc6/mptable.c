@@ -55,6 +55,34 @@ void smp_write_config_table(void *v, unsigned long * processor_map)
 	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
 		0x04, (4 <<2)|0, 0x02, 0x10);
 
+	/* Four standard PCI slots */
+	/* Slot 1 */
+	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
+		0x04, (7 <<2)|0, 0x02, 0x10);
+	/* Slot 2 */
+	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
+		0x04, (1 <<2)|0, 0x02, 0x11);
+	/* Slot 3 */
+	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
+		0x04, (2 <<2)|0, 0x02, 0x12);
+	/* Slot 4 */
+	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
+		0x04, (3 <<2)|0, 0x02, 0x13);
+
+	/* Two 64 bit PCI slots */
+	/* Slot 1 */
+	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
+		0x03, (1 <<2)|0, 0x02, 0x12);
+	/* Slot 2 */
+	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
+		0x03, (2 <<2)|0, 0x02, 0x12);
+
+	/* Two SCSI */
+	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
+		0x03, (4 <<2)|0, 0x02, 0x12);
+	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
+		0x03, (4 <<2)|1, 0x02, 0x12);
+	
 	/* ISA backward compatibility interrupts  */
 	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
 		0x05, 0x00, 0x02, 0x00);
@@ -66,6 +94,8 @@ void smp_write_config_table(void *v, unsigned long * processor_map)
 		0x05, 0x03, 0x02, 0x03);
 	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
 		0x05, 0x04, 0x02, 0x04);
+	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
+		0x05, 0x05, 0x02, 0x05);
 	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
 		0x05, 0x06, 0x02, 0x06);
 	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,

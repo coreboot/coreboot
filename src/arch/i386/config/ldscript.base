@@ -46,6 +46,9 @@ SECTIONS
 	}
 	.rodata (.) :  {
 		_rodata = .;
+		streams = . ;
+		*(.rodata.streams)
+		estreams = .;
 		*(.rodata)
 		*(.rodata.*)
 		_erodata = .;

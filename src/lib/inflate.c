@@ -986,14 +986,6 @@ STATIC int inflate()
       h = hufts;
   } while (!e);
 
-  /* Undo too much lookahead. The next read will be byte aligned so we
-   * can discard unused bits in the last meaningful byte.
-   */
-  while (bk >= 8) {
-    bk -= 8;
-    inptr--;
-  }
-
   /* flush out slide */
   flush_output(wp);
 

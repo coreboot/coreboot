@@ -7,7 +7,6 @@
 void ich2_power_after_power_fail(int on)
 {
 	struct pci_dev *dev;
-	unsigned char byte;
 	dev = pci_find_device(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82801BA_1F0, 0);	
 	if (!dev) {
 		return;

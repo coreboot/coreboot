@@ -13,5 +13,6 @@ object memcmp.o
 object malloc.o
 object elfboot.o
 object do_inflate.o
+object floppy_subr.o
 object delay.o
 object fallback_boot.o USE_FALLBACK_BOOT

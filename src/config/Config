@@ -16,7 +16,7 @@ makerule ldoptions : Makefile.settings ; perl -e 'foreach $$var (split(" ", $$EN
 
 makerule linuxbios.strip: linuxbios ; objcopy -O binary linuxbios linuxbios.strip
 
-makerule linuxbios.o : crt0.o linuxbios.a $(LIBGCC_FILE_NAME)  ; $(CC) -nostdlib -r -o $@ crt0.o linuxbios.a $(LIBGCC_FILE_NAME)
+makerule linuxbios.o : crt0.o $(DRIVERS-1) linuxbios.a $(LIBGCC_FILE_NAME)  ; $(CC) -nostdlib -r -o $@ crt0.o $(DRIVERS-1) linuxbios.a $(LIBGCC_FILE_NAME)
 
 
 makerule linuxbios: linuxbios.o ldscript.ld ; $(CC) -nostdlib -nostartfiles -static -o $@ -T ldscript.ld linuxbios.o 

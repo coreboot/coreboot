@@ -1,10 +1,8 @@
-#ifdef USE_TSUNAMI_TIGBUS_ROM
-
 #include <printk.h>
 #include <stdlib.h>
 #include <subr.h>
 #include <stddef.h>
-#include <rom/fill_inbuf.h>
+#include <rom/read_bytes.h>
 
 #include <arch/io.h>
 #include <northbridge/alpha/tsunami/core_tsunami.h>
@@ -13,12 +11,7 @@
 #define TIG_KERNEL_START 0x20000
 #endif
 
-static unsigned long nvram;
-static int block_count;
-static int firstfill = 1;
-static unsigned char *ram;
-
-#define K64 (64 * 1024)
+static unsigned long offset;
 
 #define MAX_TIG_FLASH_SIZE (16*1024*1024)
 static void tsunami_flash_copy_from(void *addr, unsigned long offset, long len)
@@ -34,65 +27,49 @@ static void tsunami_flash_copy_from(void *addr, unsigned long offset, long len)
 	}
 }
 
-int fill_inbuf(void)
+static int init_bytes(void)
 {
-	extern unsigned char *inbuf;
-	extern unsigned int insize;
-	extern unsigned int inptr;
-
-	if (firstfill) {
-		block_count = 0;
-		firstfill = 0;
-		ram = malloc(K64);
-		if (!ram) {
-			printk_emerg("%6d:%s() - "
-			       "ram malloc failed\n",
-			       __LINE__, __FUNCTION__);
-			return 0;
-		}
+	offset = 0;
+	printk_debug("%6d:%s() - TIG_KERNEL_START:0x%08x\n",
+		__LINE__, __FUNCTION__,
+		TIG_KERNEL_START);
+}
+static void fini_bytes(void)
+{
+	return;
+}
+static byte_offset_t skip_bytes(byte_offset_t count)
+{
+	unsigned long new_offset;
+	byte_offset_t len;
+	new_offset = offset + count;
+	if (new_offset > MAX_TIG_FLASH_SIZE) {
+		new_offset = MAX_TIG_FLASH_SIZE;
 	}
-
-	if (block_count > 31) {
-		printk_emerg("%6d:%s() - overflowed source buffer\n",
-		       __LINE__, __FUNCTION__);
-		insize = 0;
-		return (0);
-	}
-	if (!block_count) {
-		nvram = TIG_KERNEL_START;
-		printk_debug("%6d:%s() - ram buffer:0x%08x\n",
-		       __LINE__, __FUNCTION__, ram);
-		printk_debug("%6d:%s() - TIG_KERNEL_START:0x%08x\n",
-		       __LINE__, __FUNCTION__,
-		       TIG_KERNEL_START);
-	}
-
-
-	tsunami_flash_copy_from(ram, nvram, K64);
-	printk_debug("\n%6d:%s() - nvram:0x%lx  block_count:%d\n",
-	       __LINE__, __FUNCTION__, nvram, block_count);
-
-#if 0
-	{
-		int i;
-		for(i = 0; i < K64; i+= 16) {
-			printk_debug("%05x: %02x %02x %02x %02x %02x %02x %02x %02x "
-				"%02x %02x %02x %02x %02x %02x %02x %02x\n",
-				(block_count << 16)+i,
-				ram[i+0], ram[i+1], ram[i+2], ram[i+3],
-				ram[i+4], ram[i+5], ram[i+6], ram[i+7],
-				ram[i+8], ram[i+9], ram[i+10], ram[i+11],
-				ram[i+12], ram[i+13], ram[i+14],ram[i+15]);
-		}
-	}
-#endif
-	nvram += K64;
-	inbuf = ram;
-	insize = K64;
-	inptr = 1;
-	post_code(0xd0 + block_count);
-	block_count++;
-	return inbuf[0];
+	len = new_offset - offset;
+	offset = new_offset;
+	return len;
 }
 
-#endif /* USE_TSUNAMI_TIGBUS_ROM */
+static byte_offset_t read_bytes(void *vdest, byte_offset_t count)
+{
+	long length;
+	length = MAX_TIG_FLASH_SIZE - offset;
+	if (count < 0)
+		count = 0;
+	if (count < length) {
+		length = count;
+	}
+	tsunami_flash_copy_from(vdest, offset, length);
+	offset += length;
+	return length;
+}
+
+
+static struct stream tsunami_tigbus_rom_stream __stream = {
+	.init = init_bytes,
+	.read = read_bytes,	       
+	.skip = skip_bytes,
+	.fini = fini_bytes,
+
+};

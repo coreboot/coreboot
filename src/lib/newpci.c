@@ -461,8 +461,20 @@ void compute_allocate_io(struct pci_bus *bus)
 		    curbus->number, io_base);
 	}
 
-	/* Walk through all the devices on current bus and oompute IO address space.*/
+	/* Walk through all the devices on current bus and compute IO address space.*/
 	for (curdev = bus->devices; curdev; curdev = curdev->sibling) {
+		u32 class_revision;
+		/* FIXME Special case for VGA for now just note
+		 * we have an I/O resource later make certain
+		 * we don't have a device conflict.
+		 */
+		pci_read_config_dword(curdev, PCI_CLASS_REVISION, &class_revision);
+		if (((class_revision >> 24) == 0x03) && 
+			((class_revision >> 16) != 0x380)) {
+			printk_debug("Running VGA fix...\n");
+			/* All legacy VGA cards have I/O space registers */
+			curdev->command |= PCI_COMMAND_IO;	
+		}
 		for (i = 0; i < 6; i++) {
 			unsigned long size = curdev->size[i];
 			if (size & PCI_BASE_ADDRESS_SPACE_IO) {
@@ -690,8 +702,8 @@ void assign_resources(struct pci_bus *bus)
 					      curbus->iobase >> 8);
 			pci_write_config_byte(curbus->self, PCI_IO_LIMIT,
 					      curbus->iolimit >> 8);
-			printk_debug("Bus 0x%x iobase to 0x%x iolimit 0x%x\n",
-			    bus->number, curbus->iobase, curbus->iolimit);
+			printk_debug("Bus 0x%x Child Bus %x iobase to 0x%x iolimit 0x%x\n",
+  			    bus->number,curbus->number, curbus->iobase, curbus->iolimit);
 		}
 
 		// set the memory range
@@ -701,8 +713,8 @@ void assign_resources(struct pci_bus *bus)
 					      curbus->membase >> 16);
 			pci_write_config_word(curbus->self, PCI_MEMORY_LIMIT,
 					      curbus->memlimit >> 16);
-			printk_debug("Bus 0x%x membase to 0x%x memlimit 0x%x\n",
-			    bus->number, curbus->membase, curbus->memlimit);
+			printk_debug("Bus 0x%x Child Bus %x membase to 0x%x memlimit 0x%x\n",
+			    bus->number,curbus->number, curbus->membase, curbus->memlimit);
 
 		}
 
@@ -713,15 +725,16 @@ void assign_resources(struct pci_bus *bus)
 					      curbus->prefmembase >> 16);
 			pci_write_config_word(curbus->self, PCI_PREF_MEMORY_LIMIT,
 					      curbus->prefmemlimit >> 16);
-			printk_debug("Bus 0x%x prefmembase to 0x%x prefmemlimit 0x%x\n",
-			    bus->number, curbus->prefmembase, curbus->prefmemlimit);
+			printk_debug("Bus 0x%x Child Bus %x prefmembase to 0x%x prefmemlimit 0x%x\n",
+			    bus->number,curbus->number, curbus->prefmembase,
+			    curbus->prefmemlimit);
 
 		}
 		curbus->self->command |= PCI_COMMAND_MASTER;
-
+		assign_resources(curbus);
 	}
 
-	for (curdev = pci_devices; curdev; curdev = curdev->next) {
+	for (curdev = bus->devices; curdev; curdev = curdev->sibling) {
 		int i;
 		for (i = 0; i < 6; i++) {
 			unsigned long reg;

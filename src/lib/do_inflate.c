@@ -1,7 +1,7 @@
 #include <printk.h>
 #include <string.h>
 #include <stdlib.h>
-#include <rom/fill_inbuf.h>
+#include <rom/read_bytes.h>
 #include <subr.h>
 #include "definitions.h"
 #include "do_inflate.h"
@@ -23,6 +23,16 @@ static unsigned char window[WSIZE];	/* Sliding window buffer */
 #else
 static unsigned char *window;		/* Sliding window buffer */
 #endif
+
+static unsigned char get_byte(void)
+{
+	unsigned char result;
+	if (streams->read(&result, 1) != 1) {
+		printk_err("Unexpected! Out of bytes...\n");
+		while(1) ;
+	}
+	return result;
+}
 
 
 /*

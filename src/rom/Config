@@ -1,7 +1,9 @@
-object fill_inbuf.o
-object rom_fill_inbuf.o
-object docmil_fill_inbuf.o
-#object docplus_fill_inbuf.o
-object tsunami_tigbus_rom_fill_inbuf.o
-object serial_fill_inbuf.o
-object tftp_fill_inbuf.o
+driver rom_fill_inbuf.o USE_GENERIC_ROM
+driver docmil_fill_inbuf.o
+#driver docplus_fill_inbuf.o
+driver tsunami_tigbus_rom_fill_inbuf.o USE_TSUNAMI_TIGBUS_ROM
+driver serial_fill_inbuf.o USE_SERIAL_FILL_INBUF
+driver tftp_fill_inbuf.o USE_TFTP
+driver floppy_fill_inbuf.o BOOT_FLOPPY
+driver ide_fill_inbuf.o BOOT_IDE
+#object read_bytes.o

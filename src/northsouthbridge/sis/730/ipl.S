@@ -117,11 +117,11 @@ check_row_column:
 	jl	no_sdram
 #endif /* SAFTY_CHECK */
 
-#if 1
+#if 0
 	subb	$0x0b, %ch			# row = row - 11
 	shlb	$0x02, %ch			# row * 4
 
-	addb	%ch, %cl			# column + row *4
+	addb	%ch, %cl			# column + row * 4
 	movzbw	%cl, %bx			# Get the SDRAM type.
 
 	addw	%bx, %si			# sdram_type_bank[column + row * 4]
@@ -214,88 +214,17 @@ sis730ipl_start:
 	movw	%ax, %ss
 	movw	$SPL_RAM_SEG, %ax
 	movw	%ax, %es
+	xorw	%sp, %sp			# clear %sp
 
 #ifdef STD_FLASH
-	movw	$0xf000, %ax
-	movw	%ax, %ds 
-	xorw	%sp, %sp			# clear %sp
-	xorw	%si, %si
-	xorw	%di, %di
-	movw	$0xffff, %cx
-	rep
-	movsb
-
-	movw	$DOC_WIN_SEG, %ax
-	movw	%ax, %ds
+#include "rom/std_flash.inc"
 #else /* !STD_FLASH */
-	movw	$sis950_init_table, %si		# unlock SiS 950 LPC
-	movw	$0x05, %cx			# select Clock Selection
-	movw	$0x2e, %dx			# and Flash ROM I/F 
-	rep
-	outsb
-	movb	$0xfd, %al			# enable write, CLKIN = 24 MHZ
-	outb	%al, $0x2f
-
-	xorw	%sp, %sp			# clear %sp
-	xorw	%dx, %dx			# clear %dx, start of RAM
-	movw	$0x800, %si			# point %si to CDSN Data area
-	movw	$0x1000, %di			# point %di to CDSN Control area
-	movw	$DOC_SPL_START_PAGE, %bp	# start page of LinuxBIOS
-
-	movb	$0x84, %al			# Reset DOC Millennium
-	call	doc_reset
-
-	movb	$0x85, %al			# Turn into Normal Mode
-	call	doc_reset
-
-read_next_page:
-	movw	$0x1000, %di			# point %di to CDSN Control area
-
-flash_command:
-	movb	$0x03, 0x04(%di)		# start command cycle
-	movb	$0x00, (%si)			# issue flash command Read00
-	call	doc_cycle_end
-
-	movw	%bp, %bx			# %bp is current page number
-
-flash_address:
-	shll	$0x08, %ebx
-	movb	$0x03, %cl			# this one is DANGEROUS but I am
-						# sure the upper 3 bytes == 0x00
-
-	movb	$0x05, 0x04(%di)		# start address cycle
-0:
-	movb	%bl, (%si)			# write address to CDSNIO
-	shrw	$0x08, %bx			# shift next address byte
-	loop	0b
-
-	call	doc_cycle_end
-
-wait_for_flash_ready:
-	/* delay by reding NOP register before polling the FLASH READY bit,
-	   this is inlined to save a call/ret pair */
-doc_delay:
-	movb	$0x04, %cl			# this one is DANGEROUS but I am
-						# sure the upper 3 bytes == 0x00
-0:
-	movb	0x20(%di), %al			# read DOC NOP retisger
-	loop	0b				# four times
-
-	testb	$0x80, 0x04(%di)		# is flash ready ?
-	jz	wait_for_flash_ready
-
-	movb	0x1d(%di), %al			# init read pipeline
-	movw	$0x100, %cx			# 1 page = 512 bytes
-	movw	$0x800, %si			# point %si to CDSN Data area
-	movw	%dx, %di			# restore saved current destination
-	rep
-	movsw
-
-	movw	%di, %dx			# save current destination
-	incw	%bp				# increse current page number
-	cmpw	$(DOC_SPL_START_PAGE + DOC_SPL_SIZE_IN_PAGE), %bp
-						# moved enough data ??
-	jl	read_next_page			# no, read next page
+#include "unlock_flash.inc"
+#if defined(USE_DOC_MIL) || defined(USE_DOC_2000_TSOP)
+#	include "rom/doc_mil.inc"
+#else defined(USE_DOC_MIL_PLUS)
+#	include "rom/doc_mil_plus.inc"
+#endif
 #endif /* STD_FLASH */
 
 sis730ipl_end:
@@ -331,7 +260,7 @@ write_common:
 read_spd:
 	/* Input:  AH = 05h, AL = byte number of SPD to be read.
 	   Output: BL = The value of specified SPD byte. */
-	movb	$0x05, %ah
+	movb	$0x05, %ah			# set SMB Command == byte address
 	CALL_BP(sis_set_smbus)
 
 	movw	$0x0312, %ax			# Start, R/W byte Data
@@ -352,7 +281,7 @@ read_spd_fail:
 
 sis_get_smbus:
 	/* Input:  AH - register index.
-	   Output: AL - register value. */
+	   Output: BL - register value. */
 	addb	%ah, %dl			# read SMBus byte 0
 	inb	%dx, %al
 	movb	%al, %bl			# return result in BL
@@ -368,18 +297,6 @@ sis_set_smbus:
 	addb	%ah, %dl
 	outb	%al, %dx
 	RET_BP					# End of sis_set_smbus
-
-doc_reset:
-	/* Input: AL = value write to DOC_CONTROL register
-	   Clobberd: CX */
-	movb	%al, 0x02(%di)			# write DoC Control retister
-	movb	%al, 0x02(%di)			# twice
-	ret					# End of doc_reset
-
-doc_cycle_end:
-	movb	$0x00, 0x1e(%di)		# flush write pepeline
-	movb	$0x01, 0x04(%di)		# end command cycle
-	ret
 
 sdram_type_bank_1:
 # Column Number	  8	  9	  10	  11	Row Number
@@ -420,7 +337,11 @@ reset_vector:
 	.byte	0xea				# jmp to f000:fe00, where IPL
 	.word	0xfe00, 0xf000			# starts in Standard Flash
 #else /* !STD_FLASH i.e. DoC Mil */
+#if defined(USE_DOC_MIL)
 	.org 0x1f0
+#elif defined(USE_DOC_2000_TSOP) || defined(USE_DOC_MIL_PLUS)
+	.org 0x3f0
+#endif
 reset_vector:
 	.byte	0xea				# jmp to fe00:0000, where IPL
 	.word	0x0000, DOC_WIN_SEG		# starts in DoC

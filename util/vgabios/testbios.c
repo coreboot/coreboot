@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <sys/mman.h>
 #include <fcntl.h>
@@ -78,10 +79,10 @@ main(int argc, char **argv)
 		die("Usage: testbios <file> <size> <base> <initial IP> <initial CS>");
 
 	filename = argv[1];
-	size = strtol(argv[2]);
-	base = strtol(argv[3]);
-	initialip = strtol(argv[4]);
-	initialcs = strtol(argv[5]);
+	size = strtol(argv[2], 0, 0);
+	base = strtol(argv[3], 0, 0);
+	initialip = strtol(argv[4], 0, 0);
+	initialcs = strtol(argv[5], 0, 0);
 
 	current = &p;
 	X86EMU_setMemBase(biosmem, sizeof(biosmem));
@@ -107,12 +108,12 @@ main(int argc, char **argv)
 	//	M.x86.saved_cs = 0;
 	//	M.x86.saved_ip = 0;
 	X86EMU_trace_on();
-	x86emu_single_step ();
+//	x86emu_single_step ();
 	X86EMU_exec();
-	x86emu_single_step ();
-	x86emu_single_step ();
-	x86emu_single_step ();
-	x86emu_single_step ();
+//	x86emu_single_step ();
+	//x86emu_single_step ();
+	//x86emu_single_step ();
+	//x86emu_single_step ();
 	
 
 

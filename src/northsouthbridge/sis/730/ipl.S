@@ -222,7 +222,7 @@ sis730ipl_start:
 #include "unlock_flash.inc"
 #if defined(USE_DOC_MIL) || defined(USE_DOC_2000_TSOP)
 #	include "rom/doc_mil.inc"
-#else defined(USE_DOC_MIL_PLUS)
+#elsif defined(USE_DOC_MIL_PLUS)
 #	include "rom/doc_mil_plus.inc"
 #endif
 #endif /* STD_FLASH */

@@ -1,35 +1,52 @@
 #include <arch/pirq_routing.h>
+#include <device/pci.h>
+
+#define IRQ_ROUTER_BUS		1
+#define IRQ_ROUTER_DEVFN	PCI_DEVFN(4,3)
+#define IRQ_ROUTER_VENDOR	0x1022
+#define IRQ_ROUTER_DEVICE	0x746b
+
+#define AVAILABLE_IRQS 0xdef8
+#define IRQ_SLOT(slot, bus, dev, fn, linka, linkb, linkc, linkd) \
+	{ bus, (dev<<3)|fn, {{ linka, AVAILABLE_IRQS}, { linkb, AVAILABLE_IRQS}, \
+	{linkc, AVAILABLE_IRQS}, {linkd, AVAILABLE_IRQS}}, slot, 0}
+
+/*  Each IRQ_SLOT entry consists of:
+ *  bus, devfn, {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap}, slot, rfu  
+ */
 
 const struct irq_routing_table intel_irq_routing_table = {
-	PIRQ_SIGNATURE, /* u32 signature */
-	PIRQ_VERSION,   /* u16 version   */
-	32+16*IRQ_SLOT_COUNT,/* there can be total 
-			      * IRQ_SLOT_COUNT devices on the bus */
-	1,              /* Where the interrupt router lies (bus) */
-	(4<<3)|3,       /* Where the interrupt router lies (dev) */
-	0x0,            /* IRQs devoted exclusively to PCI usage */
-	0x1022,         /* Vendor */
-	0x746b,         /* Device */
-	0,              /* Crap (miniport) */
-	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, /* u8 rfu[11] */
-	0xb0,           /*  u8 checksum , mod 256 checksum must give zero */
-	{	/* bus, devfn,     {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap}, slot, rfu  */
-		/* PCI Slot 1 */
-		{0x03, (0x01<<3)|0, {{0x02, 0xdef8}, {0x03, 0xdef8}, {0x04, 0xdef8}, {0x01, 0xdef8}}, 0x01, 0},
-		/* PCI Slot 2 */
-		{0x03, (0x02<<3)|0, {{0x03, 0xdef8}, {0x04, 0xdef8}, {0x01, 0xdef8}, {0x02, 0xdef8}}, 0x02, 0},
-		/* PCI Slot 3 */
-		{0x02, (0x01<<3)|0, {{0x02, 0xdef8}, {0x03, 0xdef8}, {0x04, 0xdef8}, {0x01, 0xdef8}}, 0x03, 0},
-		/* PCI Slot 4 */
-		{0x02, (0x02<<3)|0, {{0x03, 0xdef8}, {0x04, 0xdef8}, {0x01, 0xdef8}, {0x02, 0xdef8}}, 0x04, 0},
-		/* PCI Slot 5 */
-		{0x04, (0x05<<3)|0, {{0x02, 0xdef8}, {0x03, 0xdef8}, {0x04, 0xdef8}, {0x01, 0xdef8}}, 0x05, 0},
-		/* PCI Slot 6 */
-		{0x04, (0x04<<3)|0, {{0x01, 0xdef8}, {0x02, 0xdef8}, {0x03, 0xdef8}, {0x04, 0xdef8}}, 0x06, 0},
-		/* Onboard NICS */
-		{0x02, (0x03<<3)|0, {{0x04, 0xdef8}, {0x00, 0xdef8}, {0x00, 0xdef8}, {0x00, 0xdef8}}, 0x00, 0},
-		{0x02, (0x04<<3)|0, {{0x04, 0xdef8}, {0x00, 0xdef8}, {0x00, 0xdef8}, {0x00, 0xdef8}}, 0x00, 0},
+	PIRQ_SIGNATURE,		/* u32 signature */
+	PIRQ_VERSION,		/* u16 version   */
+	32+16*IRQ_SLOT_COUNT,	/* there can be total IRQ_SLOT_COUNT 
+				 * devices on the bus */
+	IRQ_ROUTER_BUS,		/* Where the interrupt router lies (bus) */
+	IRQ_ROUTER_DEVFN,	/* Where the interrupt router lies (dev) */
+	0x00,			/* IRQs devoted exclusively to PCI usage */
+	IRQ_ROUTER_VENDOR,	/* Vendor */
+	IRQ_ROUTER_DEVICE,	/* Device */
+	0x00,			/* Crap (miniport) */
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },	/* u8 rfu[11] */
+	0x00,			/*  u8 checksum , mod 256 checksum must give
+				 *  zero, will be corrected later 
+				 */
+	{
+
+		/* slot(0=onboard), devfn, irqlinks (line id, 0=not routed) */
+
+		/* PCI Slot 1-6 */
+		IRQ_SLOT (1, 3,1,0, 2,3,4,1 ),
+		IRQ_SLOT (2, 3,2,0, 3,4,1,2 ),
+		IRQ_SLOT (3, 2,1,0, 2,3,4,1 ),
+		IRQ_SLOT (4, 2,2,0, 3,4,1,2 ),
+		IRQ_SLOT (5, 4,5,0, 2,3,4,1 ),
+		IRQ_SLOT (6, 4,4,0, 1,2,3,4 ),
+
+		/* Onboard NICs */
+		IRQ_SLOT (0, 2,3,0, 4,0,0,0 ),
+		IRQ_SLOT (0, 2,4,0, 4,0,0,0 ),
+
 		/* Let Linux know about bus 1 */
-		{0x01, (0x04<<3)|3, {{0x00, 0xdef8}, {0x00, 0xdef8}, {0x00, 0xdef8}, {0x00, 0xdef8}}, 0x00, 0},
+		IRQ_SLOT (0, 1,4,3, 0,0,0,0 ),
 	}
 };

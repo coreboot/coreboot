@@ -44,7 +44,7 @@ int probe_29f002 (struct flashchip * flash)
 
 	myusec_delay(10);
 
-	printf(__FUNCTION__ "id1 %d, id2 %d\n", id1, id2);
+	printf("%s: id1 %d, id2 %d\n", __FUNCTION__, id1, id2);
 	if (id1 == flash->manufacture_id && id2 == flash->model_id)
 		return 1;
 

@@ -181,7 +181,7 @@ unsigned long micro = 0;
 void 
 myusec_calibrate_delay()
 {
-	unsigned long count = 2 *  1024 * 1024;
+	unsigned long count = 20 *  1024 * 1024;
 	volatile unsigned long i;
 	unsigned long timeusec;
 	struct timeval start, end;
@@ -189,7 +189,7 @@ myusec_calibrate_delay()
 
 	fprintf(stderr, "Setting up microsecond timing loop\n");
 	while (! ok) {
-		fprintf(stderr, "Try %d\n", count);
+		//fprintf(stderr, "Try %d\n", count);
 		gettimeofday(&start, 0);
 		for( i = count; i; i--)
 			;
@@ -206,7 +206,7 @@ myusec_calibrate_delay()
 	// compute one microsecond. That will be count / time
 	micro = count / timeusec;
 
-	fprintf(stderr, "one us is %d count\n", micro);
+	//fprintf(stderr, "one us is %d count\n", micro);
 
 
 }
@@ -226,8 +226,6 @@ main (int argc, char * argv[])
     unsigned long size;
     FILE * image;
     struct flashchip * flash;
-
-    myusec_calibrate_delay();
 
     if (argc > 2){
 	printf("usage: %s [romimage]\n", argv[0]);
@@ -255,6 +253,11 @@ main (int argc, char * argv[])
     buf = (char *) calloc (size, sizeof(char));
     fread (buf, sizeof(char), size, image);
 
+    printf("Calibrating timer since microsleep sucks ... takes a second\n");
+    myusec_calibrate_delay();
+    printf("OK, calibrated, now do the deed\n");
+
     flash->write (flash, buf);
     verify_flash (flash, buf);
+    return 0;
 }

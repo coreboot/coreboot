@@ -1,6 +1,7 @@
 /* coherent hypertransport initialization for AMD64 
+ * 
  * written by Stefan Reinauer <stepan@openbios.org>
- * (c) 2003 by SuSE Linux AG
+ * (c) 2003-2004 by SuSE Linux AG
  *
  * This code is licensed under GPL.
  */
@@ -132,7 +133,7 @@ static void enable_routing(u8 node)
 
 	/* Enable routing table */
 	print_spew("Enabling routing table for node ");
-	print_spew_hex32(node);
+	print_spew_hex8(node);
 
 	val=pci_read_config32(NODE_HT(node), 0x6c);
 	val &= ~((1<<1)|(1<<0));
@@ -147,8 +148,8 @@ static void rename_temp_node(u8 node)
 {
 	uint32_t val;
 
-	print_spew("Renaming current temp node to ");
-	print_spew_hex32(node);
+	print_spew("Renaming current temporary node to ");
+	print_spew_hex8(node);
 
 	val=pci_read_config32(NODE_HT(7), 0x60);
 	val &= (~7);  /* clear low bits. */
@@ -315,7 +316,7 @@ static void setup_remote_node(u8 node, u8 cpus)
 	uint8_t row;
 	int i;
 
-	print_spew("setup_remote_node\r\n");
+	print_spew("setup_remote_node: ");
 	for(row=0; row<cpus; row++)
 		setup_remote_row(node, row, cpus);
 
@@ -328,7 +329,7 @@ static void setup_remote_node(u8 node, u8 cpus)
 		pci_write_config32(NODE_MP(7), reg, value);
 
 	}
-	print_spew("setup_remote_done\r\n");
+	print_spew("done\r\n");
 }
 
 #endif
@@ -367,7 +368,7 @@ static struct setup_smp_result setup_smp(void)
 	setup_temp_row(0, 1, result.cpus);
 	
 	if (!check_connection(0, 7, CONNECTION_0_1)) {
-		print_spew("No connection to Node 1.\r\n");
+		print_debug("No connection to Node 1.\r\n");
 		clear_temp_row(0);	/* delete temp connection */
 		setup_uniprocessor();	/* and get up working     */
 		result.cpus = 1;
@@ -391,7 +392,7 @@ static struct setup_smp_result setup_smp(void)
 	setup_temp_row(0,2, result.cpus);
 
 	if (!check_connection(0, 7, CONNECTION_0_2)) {
-		print_spew("No connection to Node 2.\r\n");
+		print_debug("No connection to Node 2.\r\n");
 		clear_temp_row(0);	 /* delete temp connection */
 		result.cpus = 2;
 		return result;
@@ -405,7 +406,7 @@ static struct setup_smp_result setup_smp(void)
 	setup_temp_row(1,3, result.cpus); /* temp. link between nodes 1 and 3 */
 
 	if (!check_connection(1, 7, CONNECTION_1_3)) {
-		print_spew("No connection to Node 3.\r\n");
+		print_debug("No connection to Node 3.\r\n");
 		clear_temp_row(0);	 /* delete temp connection */
 		clear_temp_row(1);	 /* delete temp connection */
 		result.cpus = 2;
@@ -436,7 +437,7 @@ static struct setup_smp_result setup_smp(void)
 	clear_temp_row(3);
 
 #endif
-	print_debug_hex32(result.cpus);
+	print_debug_hex8(result.cpus);
 	print_debug(" nodes initialized.\r\n");
 	return result;
 }

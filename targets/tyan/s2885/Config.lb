@@ -179,14 +179,14 @@ option DEBUG=1
 option _RAMBASE=0x004000
 
 ##
-## Use a 128K stack
+## Use a 128K stack + 128
 ##
-option STACK_SIZE=0x4000
+option STACK_SIZE=0x8000
 
 ##
-## Use a 256K heap + 64
+## Use a 256K heap + 128 + 64
 ##
-option HEAP_SIZE=0xa000
+option HEAP_SIZE=0xe000
 
 #
 ###

@@ -1,7 +1,43 @@
-#define MEMORY_512MB  0  /* SuSE Solo configuration */
-#define MEMORY_1024MB 1  /* LNXI Solo configuration */
+#define MEMORY_SUSE_SOLO  1 /* SuSE Solo configuration */
+#define MEMORY_LNXI_SOLO  2 /* LNXI Solo configuration */
+#define MEMORY_LNXI_HDAMA 3 /* LNXI HDAMA configuration */
 
-static void sdram_set_registers(void)
+
+#ifndef MEMORY_CONFIG
+#define MEMORY_CONFIG MEMORY_SUSE_SOLO
+#endif
+
+static void setup_resource_map(const unsigned int *register_values, int max)
+{
+	int i;
+	print_debug("setting up resource map....\r\n");
+	for(i = 0; i < max; i += 3) {
+		device_t dev;
+		unsigned where;
+		unsigned long reg;
+#if 0
+		print_debug_hex32(register_values[i]);
+		print_debug(" <-");
+		print_debug_hex32(register_values[i+2]);
+		print_debug("\r\n");
+#endif
+		dev = register_values[i] & ~0xff;
+		where = register_values[i] & 0xff;
+		reg = pci_read_config32(dev, where);
+		reg &= register_values[i+1];
+		reg |= register_values[i+2];
+		pci_write_config32(dev, where, reg);
+#if 0
+		reg = pci_read_config32(register_values[i]);
+		reg &= register_values[i+1];
+		reg |= register_values[i+2] & ~register_values[i+1];
+		pci_write_config32(register_values[i], reg);
+#endif
+	}
+	print_debug("done.\r\n");
+}
+
+static void setup_default_resource_map(void)
 {
 	static const unsigned int register_values[] = {
 	/* Careful set limit registers before base registers which contain the enables */
@@ -31,12 +67,7 @@ static void sdram_set_registers(void)
 	 *         This field defines the upper address bits of a 40 bit  address
 	 *         that define the end of the DRAM region.
 	 */
-#if MEMORY_1024MB
-	PCI_ADDR(0, 0x18, 1, 0x44), 0x0000f8f8, 0x003f0000,
-#endif
-#if MEMORY_512MB
-	PCI_ADDR(0, 0x18, 1, 0x44), 0x0000f8f8, 0x001f0000,
-#endif
+	PCI_ADDR(0, 0x18, 1, 0x44), 0x0000f8f8, 0x00000000,
 	PCI_ADDR(0, 0x18, 1, 0x4C), 0x0000f8f8, 0x00000001,
 	PCI_ADDR(0, 0x18, 1, 0x54), 0x0000f8f8, 0x00000002,
 	PCI_ADDR(0, 0x18, 1, 0x5C), 0x0000f8f8, 0x00000003,
@@ -74,25 +105,14 @@ static void sdram_set_registers(void)
 	 *         This field defines the upper address bits of a 40-bit address
 	 *         that define the start of the DRAM region.
 	 */
-	PCI_ADDR(0, 0x18, 1, 0x40), 0x0000f8fc, 0x00000003,
-#if MEMORY_1024MB
-	PCI_ADDR(0, 0x18, 1, 0x48), 0x0000f8fc, 0x00400000,
-	PCI_ADDR(0, 0x18, 1, 0x50), 0x0000f8fc, 0x00400000,
-	PCI_ADDR(0, 0x18, 1, 0x58), 0x0000f8fc, 0x00400000,
-	PCI_ADDR(0, 0x18, 1, 0x60), 0x0000f8fc, 0x00400000,
-	PCI_ADDR(0, 0x18, 1, 0x68), 0x0000f8fc, 0x00400000,
-	PCI_ADDR(0, 0x18, 1, 0x70), 0x0000f8fc, 0x00400000,
-	PCI_ADDR(0, 0x18, 1, 0x78), 0x0000f8fc, 0x00400000,
-#endif
-#if MEMORY_512MB
-	PCI_ADDR(0, 0x18, 1, 0x48), 0x0000f8fc, 0x00200000,
-	PCI_ADDR(0, 0x18, 1, 0x50), 0x0000f8fc, 0x00200000,
-	PCI_ADDR(0, 0x18, 1, 0x58), 0x0000f8fc, 0x00200000,
-	PCI_ADDR(0, 0x18, 1, 0x60), 0x0000f8fc, 0x00200000,
-	PCI_ADDR(0, 0x18, 1, 0x68), 0x0000f8fc, 0x00200000,
-	PCI_ADDR(0, 0x18, 1, 0x70), 0x0000f8fc, 0x00200000,
-	PCI_ADDR(0, 0x18, 1, 0x78), 0x0000f8fc, 0x00200000,
-#endif
+	PCI_ADDR(0, 0x18, 1, 0x40), 0x0000f8fc, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0x48), 0x0000f8fc, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0x50), 0x0000f8fc, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0x58), 0x0000f8fc, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0x60), 0x0000f8fc, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0x68), 0x0000f8fc, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0x70), 0x0000f8fc, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0x78), 0x0000f8fc, 0x00000000,
 
 	/* Memory-Mapped I/O Limit i Registers
 	 * F1:0x84 i = 0
@@ -126,14 +146,14 @@ static void sdram_set_registers(void)
 	 *         This field defines the upp adddress bits of a 40-bit address that
 	 *         defines the end of a memory-mapped I/O region n
 	 */
-	PCI_ADDR(0, 0x18, 1, 0x84), 0x00000048, 0x00e1ff00,
-	PCI_ADDR(0, 0x18, 1, 0x8C), 0x00000048, 0x00dfff00,
-	PCI_ADDR(0, 0x18, 1, 0x94), 0x00000048, 0x00e3ff00,
+	PCI_ADDR(0, 0x18, 1, 0x84), 0x00000048, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0x8C), 0x00000048, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0x94), 0x00000048, 0x00000000,
 	PCI_ADDR(0, 0x18, 1, 0x9C), 0x00000048, 0x00000000,
 	PCI_ADDR(0, 0x18, 1, 0xA4), 0x00000048, 0x00000000,
 	PCI_ADDR(0, 0x18, 1, 0xAC), 0x00000048, 0x00000000,
-	PCI_ADDR(0, 0x18, 1, 0xB4), 0x00000048, 0x00000b00,
-	PCI_ADDR(0, 0x18, 1, 0xBC), 0x00000048, 0x00fe0b00,
+	PCI_ADDR(0, 0x18, 1, 0xB4), 0x00000048, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0xBC), 0x00000048, 0x00000000,
 
 	/* Memory-Mapped I/O Base i Registers
 	 * F1:0x80 i = 0
@@ -161,19 +181,14 @@ static void sdram_set_registers(void)
 	 *         This field defines the upper address bits of a 40bit address 
 	 *         that defines the start of memory-mapped I/O region i
 	 */
-	PCI_ADDR(0, 0x18, 1, 0x80), 0x000000f0, 0x00e00003,
-	PCI_ADDR(0, 0x18, 1, 0x88), 0x000000f0, 0x00d80003,
-	PCI_ADDR(0, 0x18, 1, 0x90), 0x000000f0, 0x00e20003,
+	PCI_ADDR(0, 0x18, 1, 0x80), 0x000000f0, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0x88), 0x000000f0, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0x90), 0x000000f0, 0x00000000,
 	PCI_ADDR(0, 0x18, 1, 0x98), 0x000000f0, 0x00000000,
 	PCI_ADDR(0, 0x18, 1, 0xA0), 0x000000f0, 0x00000000,
 	PCI_ADDR(0, 0x18, 1, 0xA8), 0x000000f0, 0x00000000,
-	PCI_ADDR(0, 0x18, 1, 0xB0), 0x000000f0, 0x00000a03,
-#if MEMORY_1024MB
-	PCI_ADDR(0, 0x18, 1, 0xB8), 0x000000f0, 0x00400003,
-#endif
-#if MEMORY_512MB
-	PCI_ADDR(0, 0x18, 1, 0xB8), 0x000000f0, 0x00200003,
-#endif
+	PCI_ADDR(0, 0x18, 1, 0xB0), 0x000000f0, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0xB8), 0x000000f0, 0x00000000,
 
 	/* PCI I/O Limit i Registers
 	 * F1:0xC4 i = 0
@@ -200,8 +215,8 @@ static void sdram_set_registers(void)
 	 *         This field defines the end of PCI I/O region n
 	 * [31:25] Reserved
 	 */
-	PCI_ADDR(0, 0x18, 1, 0xC4), 0xFE000FC8, 0x0000d000,
-	PCI_ADDR(0, 0x18, 1, 0xCC), 0xFE000FC8, 0x000ff000,
+	PCI_ADDR(0, 0x18, 1, 0xC4), 0xFE000FC8, 0x01fff000,
+	PCI_ADDR(0, 0x18, 1, 0xCC), 0xFE000FC8, 0x00000000,
 	PCI_ADDR(0, 0x18, 1, 0xD4), 0xFE000FC8, 0x00000000,
 	PCI_ADDR(0, 0x18, 1, 0xDC), 0xFE000FC8, 0x00000000,
 
@@ -230,8 +245,8 @@ static void sdram_set_registers(void)
 	 *         This field defines the start of PCI I/O region n 
 	 * [31:25] Reserved
 	 */
-	PCI_ADDR(0, 0x18, 1, 0xC0), 0xFE000FCC, 0x0000d003,
-	PCI_ADDR(0, 0x18, 1, 0xC8), 0xFE000FCC, 0x00001013,
+	PCI_ADDR(0, 0x18, 1, 0xC0), 0xFE000FCC, 0x00000003,
+	PCI_ADDR(0, 0x18, 1, 0xC8), 0xFE000FCC, 0x00000000,
 	PCI_ADDR(0, 0x18, 1, 0xD0), 0xFE000FCC, 0x00000000,
 	PCI_ADDR(0, 0x18, 1, 0xD8), 0xFE000FCC, 0x00000000,
 
@@ -275,6 +290,350 @@ static void sdram_set_registers(void)
 	PCI_ADDR(0, 0x18, 1, 0xE4), 0x0000FC88, 0x00000000,
 	PCI_ADDR(0, 0x18, 1, 0xE8), 0x0000FC88, 0x00000000,
 	PCI_ADDR(0, 0x18, 1, 0xEC), 0x0000FC88, 0x00000000,
+	};
+	int max;
+	max = sizeof(register_values)/sizeof(register_values[0]);
+	setup_resource_map(register_values, max);
+}
+
+static void sdram_set_registers(void)
+{
+	static const unsigned int register_values[] = {
+
+	/* Careful set limit registers before base registers which contain the enables */
+	/* DRAM Limit i Registers
+	 * F1:0x44 i = 0
+	 * F1:0x4C i = 1
+	 * F1:0x54 i = 2
+	 * F1:0x5C i = 3
+	 * F1:0x64 i = 4
+	 * F1:0x6C i = 5
+	 * F1:0x74 i = 6
+	 * F1:0x7C i = 7
+	 * [ 2: 0] Destination Node ID
+	 *         000 = Node 0
+	 *         001 = Node 1
+	 *         010 = Node 2
+	 *         011 = Node 3
+	 *         100 = Node 4
+	 *         101 = Node 5
+	 *         110 = Node 6
+	 *         111 = Node 7
+	 * [ 7: 3] Reserved
+	 * [10: 8] Interleave select
+	 *         specifies the values of A[14:12] to use with interleave enable.
+	 * [15:11] Reserved
+	 * [31:16] DRAM Limit Address i Bits 39-24
+	 *         This field defines the upper address bits of a 40 bit  address
+	 *         that define the end of the DRAM region.
+	 */
+#if MEMORY_CONFIG == MEMORY_LNXI_SOLO
+	PCI_ADDR(0, 0x18, 1, 0x44), 0x0000f8f8, 0x003f0000,
+	PCI_ADDR(0, 0x18, 1, 0x4C), 0x0000f8f8, 0x00000001,
+#endif
+#if MEMORY_CONFIG == MEMORY_SUSE_SOLO
+	PCI_ADDR(0, 0x18, 1, 0x44), 0x0000f8f8, 0x001f0000,
+	PCI_ADDR(0, 0x18, 1, 0x4C), 0x0000f8f8, 0x00000001,
+#endif
+#if MEMORY_CONFIG == MEMORY_LNXI_HDAMA
+	PCI_ADDR(0, 0x18, 1, 0x44), 0x0000f8f8, 0x003f0000,
+	PCI_ADDR(0, 0x18, 1, 0x4C), 0x0000f8f8, 0x007f0001,
+#endif
+	PCI_ADDR(0, 0x18, 1, 0x54), 0x0000f8f8, 0x00000002,
+	PCI_ADDR(0, 0x18, 1, 0x5C), 0x0000f8f8, 0x00000003,
+	PCI_ADDR(0, 0x18, 1, 0x64), 0x0000f8f8, 0x00000004,
+	PCI_ADDR(0, 0x18, 1, 0x6C), 0x0000f8f8, 0x00000005,
+	PCI_ADDR(0, 0x18, 1, 0x74), 0x0000f8f8, 0x00000006,
+	PCI_ADDR(0, 0x18, 1, 0x7C), 0x0000f8f8, 0x00000007,
+	/* DRAM Base i Registers
+	 * F1:0x40 i = 0
+	 * F1:0x48 i = 1
+	 * F1:0x50 i = 2
+	 * F1:0x58 i = 3
+	 * F1:0x60 i = 4
+	 * F1:0x68 i = 5
+	 * F1:0x70 i = 6
+	 * F1:0x78 i = 7
+	 * [ 0: 0] Read Enable
+	 *         0 = Reads Disabled
+	 *         1 = Reads Enabled
+	 * [ 1: 1] Write Enable
+	 *         0 = Writes Disabled
+	 *         1 = Writes Enabled
+	 * [ 7: 2] Reserved
+	 * [10: 8] Interleave Enable
+	 *         000 = No interleave
+	 *         001 = Interleave on A[12] (2 nodes)
+	 *         010 = reserved
+	 *         011 = Interleave on A[12] and A[14] (4 nodes)
+	 *         100 = reserved
+	 *         101 = reserved
+	 *         110 = reserved
+	 *         111 = Interleve on A[12] and A[13] and A[14] (8 nodes)
+	 * [15:11] Reserved
+	 * [13:16] DRAM Base Address i Bits 39-24
+	 *         This field defines the upper address bits of a 40-bit address
+	 *         that define the start of the DRAM region.
+	 */
+	PCI_ADDR(0, 0x18, 1, 0x40), 0x0000f8fc, 0x00000003,
+#if MEMORY_CONFIG == MEMORY_LNXI_SOLO
+	PCI_ADDR(0, 0x18, 1, 0x48), 0x0000f8fc, 0x00400000,
+	PCI_ADDR(0, 0x18, 1, 0x50), 0x0000f8fc, 0x00400000,
+	PCI_ADDR(0, 0x18, 1, 0x58), 0x0000f8fc, 0x00400000,
+	PCI_ADDR(0, 0x18, 1, 0x60), 0x0000f8fc, 0x00400000,
+	PCI_ADDR(0, 0x18, 1, 0x68), 0x0000f8fc, 0x00400000,
+	PCI_ADDR(0, 0x18, 1, 0x70), 0x0000f8fc, 0x00400000,
+	PCI_ADDR(0, 0x18, 1, 0x78), 0x0000f8fc, 0x00400000,
+#endif
+#if MEMORY_CONFIG == MEMORY_SUSE_SOLO
+	PCI_ADDR(0, 0x18, 1, 0x48), 0x0000f8fc, 0x00200000,
+	PCI_ADDR(0, 0x18, 1, 0x50), 0x0000f8fc, 0x00200000,
+	PCI_ADDR(0, 0x18, 1, 0x58), 0x0000f8fc, 0x00200000,
+	PCI_ADDR(0, 0x18, 1, 0x60), 0x0000f8fc, 0x00200000,
+	PCI_ADDR(0, 0x18, 1, 0x68), 0x0000f8fc, 0x00200000,
+	PCI_ADDR(0, 0x18, 1, 0x70), 0x0000f8fc, 0x00200000,
+	PCI_ADDR(0, 0x18, 1, 0x78), 0x0000f8fc, 0x00200000,
+#endif
+#if MEMORY_CONFIG == MEMORY_LNXI_HDAMA
+	PCI_ADDR(0, 0x18, 1, 0x48), 0x0000f8fc, 0x00400003,
+	PCI_ADDR(0, 0x18, 1, 0x50), 0x0000f8fc, 0x00800000,
+	PCI_ADDR(0, 0x18, 1, 0x58), 0x0000f8fc, 0x00800000,
+	PCI_ADDR(0, 0x18, 1, 0x60), 0x0000f8fc, 0x00800000,
+	PCI_ADDR(0, 0x18, 1, 0x68), 0x0000f8fc, 0x00800000,
+	PCI_ADDR(0, 0x18, 1, 0x70), 0x0000f8fc, 0x00800000,
+	PCI_ADDR(0, 0x18, 1, 0x78), 0x0000f8fc, 0x00800000,
+	PCI_ADDR(0, 0x18, 1, 0x78), 0x0000f8fc, 0x00800000,
+#endif
+
+	/* Memory-Mapped I/O Limit i Registers
+	 * F1:0x84 i = 0
+	 * F1:0x8C i = 1
+	 * F1:0x94 i = 2
+	 * F1:0x9C i = 3
+	 * F1:0xA4 i = 4
+	 * F1:0xAC i = 5
+	 * F1:0xB4 i = 6
+	 * F1:0xBC i = 7
+	 * [ 2: 0] Destination Node ID
+	 *         000 = Node 0
+	 *         001 = Node 1
+	 *         010 = Node 2
+	 *         011 = Node 3
+	 *         100 = Node 4
+	 *         101 = Node 5
+	 *         110 = Node 6
+	 *         111 = Node 7
+	 * [ 3: 3] Reserved
+	 * [ 5: 4] Destination Link ID
+	 *         00 = Link 0
+	 *         01 = Link 1
+	 *         10 = Link 2
+	 *         11 = Reserved
+	 * [ 6: 6] Reserved
+	 * [ 7: 7] Non-Posted
+	 *         0 = CPU writes may be posted
+	 *         1 = CPU writes must be non-posted
+	 * [31: 8] Memory-Mapped I/O Limit Address i (39-16)
+	 *         This field defines the upp adddress bits of a 40-bit address that
+	 *         defines the end of a memory-mapped I/O region n
+	 */
+#if (MEMORY_CONFIG == MEMORY_LNXI_SOLO) || (MEMORY_CONFIG == MEMORY_SUSE_SOLO)
+	PCI_ADDR(0, 0x18, 1, 0x84), 0x00000048, 0x00e1ff00,
+	PCI_ADDR(0, 0x18, 1, 0x8C), 0x00000048, 0x00dfff00,
+	PCI_ADDR(0, 0x18, 1, 0x94), 0x00000048, 0x00e3ff00,
+	PCI_ADDR(0, 0x18, 1, 0x9C), 0x00000048, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0xA4), 0x00000048, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0xAC), 0x00000048, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0xB4), 0x00000048, 0x00000b00,
+	PCI_ADDR(0, 0x18, 1, 0xBC), 0x00000048, 0x00fe0b00,
+#endif
+#if MEMORY_CONFIG == MEMORY_LNXI_HDAMA
+	PCI_ADDR(0, 0x18, 1, 0x84), 0x00000048, 0x00fe2f00,
+	PCI_ADDR(0, 0x18, 1, 0x8C), 0x00000048, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0x94), 0x00000048, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0x9C), 0x00000048, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0xA4), 0x00000048, 0x00fec000,
+	PCI_ADDR(0, 0x18, 1, 0xAC), 0x00000048, 0x0000b000,
+	PCI_ADDR(0, 0x18, 1, 0xB4), 0x00000048, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0xBC), 0x00000048, 0x00000000,
+#endif
+
+	/* Memory-Mapped I/O Base i Registers
+	 * F1:0x80 i = 0
+	 * F1:0x88 i = 1
+	 * F1:0x90 i = 2
+	 * F1:0x98 i = 3
+	 * F1:0xA0 i = 4
+	 * F1:0xA8 i = 5
+	 * F1:0xB0 i = 6
+	 * F1:0xB8 i = 7
+	 * [ 0: 0] Read Enable
+	 *         0 = Reads disabled
+	 *         1 = Reads Enabled
+	 * [ 1: 1] Write Enable
+	 *         0 = Writes disabled
+	 *         1 = Writes Enabled
+	 * [ 2: 2] Cpu Disable
+	 *         0 = Cpu can use this I/O range
+	 *         1 = Cpu requests do not use this I/O range
+	 * [ 3: 3] Lock
+	 *         0 = base/limit registers i are read/write
+	 *         1 = base/limit registers i are read-only
+	 * [ 7: 4] Reserved
+	 * [31: 8] Memory-Mapped I/O Base Address i (39-16)
+	 *         This field defines the upper address bits of a 40bit address 
+	 *         that defines the start of memory-mapped I/O region i
+	 */
+#if (MEMORY_CONFIG == MEMORY_LNXI_SOLO) || (MEMORY_CONFIG == MEMORY_SUSE_SOLO)
+	PCI_ADDR(0, 0x18, 1, 0x80), 0x000000f0, 0x00e00003,
+	PCI_ADDR(0, 0x18, 1, 0x88), 0x000000f0, 0x00d80003,
+	PCI_ADDR(0, 0x18, 1, 0x90), 0x000000f0, 0x00e20003,
+	PCI_ADDR(0, 0x18, 1, 0x98), 0x000000f0, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0xA0), 0x000000f0, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0xA8), 0x000000f0, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0xB0), 0x000000f0, 0x00000a03,
+#endif
+#if MEMORY_CONFIG == MEMORY_LNXI_SOLO
+	PCI_ADDR(0, 0x18, 1, 0xB8), 0x000000f0, 0x00400003,
+#endif
+#if MEMORY_CONFIG == MEMORY_SUSE_SOLO
+	PCI_ADDR(0, 0x18, 1, 0xB8), 0x000000f0, 0x00200003,
+#endif
+#if MEMORY_CONFIG == MEMORY_LNXI_HDAMA
+	PCI_ADDR(0, 0x18, 1, 0x80), 0x000000f0, 0x00fc0003,
+	PCI_ADDR(0, 0x18, 1, 0x88), 0x000000f0, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0x90), 0x000000f0, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0x98), 0x000000f0, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0xA0), 0x000000f0, 0x00fec00e,
+	PCI_ADDR(0, 0x18, 1, 0xA8), 0x000000f0, 0x00000a03,
+	PCI_ADDR(0, 0x18, 1, 0xB0), 0x000000f0, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0xB8), 0x000000f0, 0x00000000,
+#endif
+
+	/* PCI I/O Limit i Registers
+	 * F1:0xC4 i = 0
+	 * F1:0xCC i = 1
+	 * F1:0xD4 i = 2
+	 * F1:0xDC i = 3
+	 * [ 2: 0] Destination Node ID
+	 *         000 = Node 0
+	 *         001 = Node 1
+	 *         010 = Node 2
+	 *         011 = Node 3
+	 *         100 = Node 4
+	 *         101 = Node 5
+	 *         110 = Node 6
+	 *         111 = Node 7
+	 * [ 3: 3] Reserved
+	 * [ 5: 4] Destination Link ID
+	 *         00 = Link 0
+	 *         01 = Link 1
+	 *         10 = Link 2
+	 *         11 = reserved
+	 * [11: 6] Reserved
+	 * [24:12] PCI I/O Limit Address i
+	 *         This field defines the end of PCI I/O region n
+	 * [31:25] Reserved
+	 */
+#if (MEMORY_CONFIG == MEMORY_LNXI_SOLO) || (MEMORY_CONFIG == MEMORY_SUSE_SOLO)
+	PCI_ADDR(0, 0x18, 1, 0xC4), 0xFE000FC8, 0x0000d000,
+	PCI_ADDR(0, 0x18, 1, 0xCC), 0xFE000FC8, 0x000ff000,
+	PCI_ADDR(0, 0x18, 1, 0xD4), 0xFE000FC8, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0xDC), 0xFE000FC8, 0x00000000,
+#endif
+#if MEMORY_CONFIG == MEMORY_LNXI_HDAMA
+	PCI_ADDR(0, 0x18, 1, 0xC4), 0xFE000FC8, 0x01fff000,
+	PCI_ADDR(0, 0x18, 1, 0xCC), 0xFE000FC8, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0xD4), 0xFE000FC8, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0xDC), 0xFE000FC8, 0x00000000,
+#endif
+
+	/* PCI I/O Base i Registers
+	 * F1:0xC0 i = 0
+	 * F1:0xC8 i = 1
+	 * F1:0xD0 i = 2
+	 * F1:0xD8 i = 3
+	 * [ 0: 0] Read Enable
+	 *         0 = Reads Disabled
+	 *         1 = Reads Enabled
+	 * [ 1: 1] Write Enable
+	 *         0 = Writes Disabled
+	 *         1 = Writes Enabled
+	 * [ 3: 2] Reserved
+	 * [ 4: 4] VGA Enable
+	 *         0 = VGA matches Disabled
+	 *         1 = matches all address < 64K and where A[9:0] is in the 
+	 *             range 3B0-3BB or 3C0-3DF independen of the base & limit registers
+	 * [ 5: 5] ISA Enable
+	 *         0 = ISA matches Disabled
+	 *         1 = Blocks address < 64K and in the last 768 bytes of eack 1K block
+	 *             from matching agains this base/limit pair
+	 * [11: 6] Reserved
+	 * [24:12] PCI I/O Base i
+	 *         This field defines the start of PCI I/O region n 
+	 * [31:25] Reserved
+	 */
+#if (MEMORY_CONFIG == MEMORY_LNXI_SOLO) || (MEMORY_CONFIG == MEMORY_SUSE_SOLO)
+	PCI_ADDR(0, 0x18, 1, 0xC0), 0xFE000FCC, 0x0000d003,
+	PCI_ADDR(0, 0x18, 1, 0xC8), 0xFE000FCC, 0x00001013,
+	PCI_ADDR(0, 0x18, 1, 0xD0), 0xFE000FCC, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0xD8), 0xFE000FCC, 0x00000000,
+#endif
+#if MEMORY_CONFIG == MEMORY_LNXI_HDAMA
+	PCI_ADDR(0, 0x18, 1, 0xC0), 0xFE000FCC, 0x00000033,
+	PCI_ADDR(0, 0x18, 1, 0xC8), 0xFE000FCC, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0xD0), 0xFE000FCC, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0xD8), 0xFE000FCC, 0x00000000,
+#endif
+
+	/* Config Base and Limit i Registers
+	 * F1:0xE0 i = 0
+	 * F1:0xE4 i = 1
+	 * F1:0xE8 i = 2
+	 * F1:0xEC i = 3
+	 * [ 0: 0] Read Enable
+	 *         0 = Reads Disabled
+	 *         1 = Reads Enabled
+	 * [ 1: 1] Write Enable
+	 *         0 = Writes Disabled
+	 *         1 = Writes Enabled
+	 * [ 2: 2] Device Number Compare Enable
+	 *         0 = The ranges are based on bus number
+	 *         1 = The ranges are ranges of devices on bus 0
+	 * [ 3: 3] Reserved
+	 * [ 6: 4] Destination Node
+	 *         000 = Node 0
+	 *         001 = Node 1
+	 *         010 = Node 2
+	 *         011 = Node 3
+	 *         100 = Node 4
+	 *         101 = Node 5
+	 *         110 = Node 6
+	 *         111 = Node 7
+	 * [ 7: 7] Reserved
+	 * [ 9: 8] Destination Link
+	 *         00 = Link 0
+	 *         01 = Link 1
+	 *         10 = Link 2
+	 *         11 - Reserved
+	 * [15:10] Reserved
+	 * [23:16] Bus Number Base i
+	 *         This field defines the lowest bus number in configuration region i
+	 * [31:24] Bus Number Limit i
+	 *         This field defines the highest bus number in configuration regin i
+	 */
+#if (MEMORY_CONFIG == MEMORY_LNXI_SOLO) || (MEMORY_CONFIG == MEMORY_SUSE_SOLO)
+	PCI_ADDR(0, 0x18, 1, 0xE0), 0x0000FC88, 0xff000003,
+	PCI_ADDR(0, 0x18, 1, 0xE4), 0x0000FC88, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0xE8), 0x0000FC88, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0xEC), 0x0000FC88, 0x00000000,
+#endif
+#if MEMORY_CONFIG == MEMORY_LNXI_HDAMA
+	PCI_ADDR(0, 0x18, 1, 0xE0), 0x0000FC88, 0xff000003,
+	PCI_ADDR(0, 0x18, 1, 0xE4), 0x0000FC88, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0xE8), 0x0000FC88, 0x00000000,
+	PCI_ADDR(0, 0x18, 1, 0xEC), 0x0000FC88, 0x00000000,
+#endif
 
 	/* DRAM CS Base Address i Registers
 	 * F2:0x40 i = 0
@@ -298,15 +657,20 @@ static void sdram_set_registers(void)
 	 *         bits decode 32-MByte blocks of memory.
 	 */
 	PCI_ADDR(0, 0x18, 2, 0x40), 0x001f01fe, 0x00000001,
-#if MEMORY_1024MB
+#if MEMORY_CONFIG == MEMORY_LNXI_SOLO
 	PCI_ADDR(0, 0x18, 2, 0x44), 0x001f01fe, 0x01000001,
 	PCI_ADDR(0, 0x18, 2, 0x48), 0x001f01fe, 0x02000001,
 	PCI_ADDR(0, 0x18, 2, 0x4C), 0x001f01fe, 0x03000001,
 #endif
-#if MEMORY_512MB
+#if MEMORY_CONFIG == MEMORY_SUSE_SOLO
 	PCI_ADDR(0, 0x18, 2, 0x44), 0x001f01fe, 0x00800001,
 	PCI_ADDR(0, 0x18, 2, 0x48), 0x001f01fe, 0x01000001,
 	PCI_ADDR(0, 0x18, 2, 0x4C), 0x001f01fe, 0x01800001,
+#endif
+#if MEMORY_CONFIG == MEMORY_LNXI_HDAMA
+	PCI_ADDR(0, 0x18, 2, 0x44), 0x001f01fe, 0x00001001,
+	PCI_ADDR(0, 0x18, 2, 0x48), 0x001f01fe, 0x00000000,
+	PCI_ADDR(0, 0x18, 2, 0x4C), 0x001f01fe, 0x00000000,
 #endif
 	PCI_ADDR(0, 0x18, 2, 0x50), 0x001f01fe, 0x00000000,
 	PCI_ADDR(0, 0x18, 2, 0x54), 0x001f01fe, 0x00000000,
@@ -331,17 +695,23 @@ static void sdram_set_registers(void)
 	 * [31:30] Reserved
 	 * 
 	 */
-#if MEMORY_1024MB
+#if MEMORY_CONFIG == MEMORY_LNXI_SOLO
 	PCI_ADDR(0, 0x18, 2, 0x60), 0xC01f01ff, 0x00e0fe00,
 	PCI_ADDR(0, 0x18, 2, 0x64), 0xC01f01ff, 0x00e0fe00,
 	PCI_ADDR(0, 0x18, 2, 0x68), 0xC01f01ff, 0x00e0fe00,
 	PCI_ADDR(0, 0x18, 2, 0x6C), 0xC01f01ff, 0x00e0fe00,
 #endif
-#if MEMORY_512MB
+#if MEMORY_CONFIG == MEMORY_SUSE_SOLO
 	PCI_ADDR(0, 0x18, 2, 0x60), 0xC01f01ff, 0x0060fe00,
 	PCI_ADDR(0, 0x18, 2, 0x64), 0xC01f01ff, 0x0060fe00,
 	PCI_ADDR(0, 0x18, 2, 0x68), 0xC01f01ff, 0x0060fe00,
 	PCI_ADDR(0, 0x18, 2, 0x6C), 0xC01f01ff, 0x0060fe00,
+#endif
+#if MEMORY_CONFIG == MEMORY_LNXI_HDAMA
+	PCI_ADDR(0, 0x18, 2, 0x60), 0xC01f01ff, 0x03e0ee00,
+	PCI_ADDR(0, 0x18, 2, 0x64), 0xC01f01ff, 0x03e0ee00,
+	PCI_ADDR(0, 0x18, 2, 0x68), 0xC01f01ff, 0x00000000,
+	PCI_ADDR(0, 0x18, 2, 0x6C), 0xC01f01ff, 0x00000000,
 #endif
 	PCI_ADDR(0, 0x18, 2, 0x70), 0xC01f01ff, 0x00000000,
 	PCI_ADDR(0, 0x18, 2, 0x74), 0xC01f01ff, 0x00000000,
@@ -367,11 +737,14 @@ static void sdram_set_registers(void)
 	 * [11:11] Reserved
 	 * [31:15]
 	 */
-#if MEMORY_1024MB
+#if MEMORY_CONFIG == MEMORY_LNXI_SOLO
 	PCI_ADDR(0, 0x18, 2, 0x80), 0xffff8888, 0x00000033,
 #endif
-#if MEMORY_512MB
+#if MEMORY_CONFIG == MEMORY_SUSE_SOLO
 	PCI_ADDR(0, 0x18, 2, 0x80), 0xffff8888, 0x00000022,
+#endif
+#if MEMORY_CONFIG == MEMORY_LNXI_HDAMA
+	PCI_ADDR(0, 0x18, 2, 0x80), 0xffff8888, 0x00000003,
 #endif
 	/* DRAM Timing Low Register
 	 * F2:0x88
@@ -437,7 +810,12 @@ static void sdram_set_registers(void)
 	 *         1 = 3 bus clocks
 	 * [31:29] Reserved
 	 */
+#if (MEMORY_CONFIG == MEMORY_LNXI_SOLO) || (MEMORY_CONFIG == MEMORY_SUSE_SOLO)
 	PCI_ADDR(0, 0x18, 2, 0x88), 0xe8088008, 0x03623125,
+#endif
+#if MEMORY_CONFIG == MEMORY_LNXI_HDAMA
+	PCI_ADDR(0, 0x18, 2, 0x88), 0xe8088008, 0x13723335,
+#endif
 	/* DRAM Timing High Register
 	 * F2:0x8C
 	 * [ 0: 0] Twtr (Write to Read Delay)
@@ -467,13 +845,15 @@ static void sdram_set_registers(void)
 	 *         001 = 2 Mem clocks after CAS# (Registered Dimms)
 	 * [31:23] Reserved
 	 */
-#if MEMORY_1024MB
+#if MEMORY_CONFIG == MEMORY_LNXI_SOLO
 	PCI_ADDR(0, 0x18, 2, 0x8c), 0xff8fe08e, 0x00000930,
 #endif
-#if MEMORY_512MB
+#if MEMORY_CONFIG == MEMORY_SUSE_SOLO
 	PCI_ADDR(0, 0x18, 2, 0x8c), 0xff8fe08e, 0x00000130,
 #endif
-
+#if MEMORY_CONFIG == MEMORY_LNXI_HDAMA
+	PCI_ADDR(0, 0x18, 2, 0x8c), 0xff8fe08e, 0x00100a20,
+#endif
 	/* DRAM Config Low Register
 	 * F2:0x90
 	 * [ 0: 0] DLL Disable
@@ -544,6 +924,7 @@ static void sdram_set_registers(void)
 	 *         111 = Oldest entry in DCQ can be bypassed 7 times
 	 * [31:28] Reserved
 	 */
+#if (MEMORY_CONFIG == MEMORY_LNXI_SOLO) || (MEMORY_CONFIG == MEMORY_SUSE_SOLO)
 	PCI_ADDR(0, 0x18, 2, 0x90), 0xf0000000, 
 	(4 << 25)|(0 << 24)| 
 	(0 << 23)|(0 << 22)|(0 << 21)|(0 << 20)| 
@@ -551,6 +932,16 @@ static void sdram_set_registers(void)
 	(2 << 14)|(0 << 13)|(0 << 12)| 
 	(0 << 11)|(0 << 10)|(0 << 9)|(0 << 8)| 
 	(0 << 3) |(0 << 1) |(0 << 0),
+#endif
+#if MEMORY_CONFIG == MEMORY_LNXI_HDAMA
+	PCI_ADDR(0, 0x18, 2, 0x90), 0xf0000000, 
+	(4 << 25)|(0 << 24)|
+	(0 << 23)|(0 << 22)|(0 << 21)|(0 << 20)|
+	(0 << 19)|(0 << 18)|(0 << 17)|(1 << 16)|
+	(2 << 14)|(0 << 13)|(0 << 12)|
+	(0 << 11)|(0 << 10)|(0 << 9)|(0 << 8)|
+	(0 << 3) |(0 << 1) |(0 << 0),
+#endif
 	/* DRAM Config High Register
 	 * F2:0x94
 	 * [ 0: 3] Maximum Asynchronous Latency
@@ -615,11 +1006,14 @@ static void sdram_set_registers(void)
 	 *         1 = Enabled
 	 * [31:30] Reserved
 	 */
-#if MEMORY_1024MB
+#if MEMORY_CONFIG == MEMORY_LNXI_SOLO
 	PCI_ADDR(0, 0x18, 2, 0x94), 0xc180f0f0, 0x0e2b0a05,
 #endif
-#if MEMORY_512MB
+#if MEMORY_CONFIG == MEMORY_SUSE_SOLO
 	PCI_ADDR(0, 0x18, 2, 0x94), 0xc180f0f0, 0x0e2b0a06,
+#endif
+#if MEMORY_CONFIG == MEMORY_LNXI_HDAMA
+	PCI_ADDR(0, 0x18, 2, 0x94), 0xc180f0f0, 0x065b0b08,
 #endif
 	/* DRAM Delay Line Register
 	 * F2:0x98

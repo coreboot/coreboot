@@ -50,6 +50,7 @@ TESTS=\
 	simple_test29.c \
 	simple_test30.c \
 	simple_test31.c \
+	simple_test32.c \
 	raminit_test.c \
 	raminit_test2.c \
 	raminit_test3.c \

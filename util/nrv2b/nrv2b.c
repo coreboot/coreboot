@@ -43,6 +43,7 @@
 #include <netinet/in.h>
 #endif
 
+
 #ifndef VERBOSE
 #define Fprintf(x)
 #define wterr     0

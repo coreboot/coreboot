@@ -13,7 +13,7 @@ EXT(reset_vector):
 	 * other assemblers to tell it where the segment registers
 	 * are pointing in memory right now.
 	 */
-	jmp	EXT(_start_offset)
+	jmp	EXT(_start)
 #elif (_ROMBASE < 0x100000)
 	ljmp	$((_ROMBASE & 0xf0000)>>4),$EXT(_start_offset);
 #else

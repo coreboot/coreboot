@@ -46,7 +46,7 @@ set_var_mtrr:
 	wrmsr
 
 #if defined(XIP_ROM_SIZE) && defined(XIP_ROM_BASE)
-	/* enable write back cachine so we can do execute in place
+	/* enable write base caching so we can do execute in place
 	 * on the flash rom.
 	 */
 	movl	$0x202, %ecx

@@ -20,7 +20,9 @@ static int boot_cpu(void)
 	msr = rdmsr(0x1b);
 	bsp = !!(msr.lo & (1 << 8));
 	if (bsp) {
-		print_debug("Bootstrap cpu\r\n");
+		print_debug("Bootstrap processor\r\n");
+	} else {
+		print_debug("Application processor\r\n");
 	}
 
 	return bsp;
@@ -110,14 +112,19 @@ static void dump_spd_registers(void)
 	}
 }
 
-
-
-
 static void main(void)
 {
 	uart_init();
 	console_init();
+#if 0
+	print_debug(" XIP_ROM_BASE: ");
+	print_debug_hex32(XIP_ROM_BASE);
+	print_debug(" XIP_ROM_SIZE: ");
+	print_debug_hex32(XIP_ROM_SIZE);
+	print_debug("\r\n");
+#endif
 	if (boot_cpu() && !cpu_init_detected()) {
+		setup_default_resource_map();
 		setup_coherent_ht_domain();
 		enumerate_ht_chain();
 		print_pci_devices();
@@ -125,17 +132,7 @@ static void main(void)
 		sdram_initialize();
 
 		dump_spd_registers();
-#if 0
-		ram_fill(  0x00100000, 0x00180000);
-		ram_verify(0x00100000, 0x00180000);
-#endif
-#ifdef MEMORY_1024MB
-		ram_fill(  0x00000000, 0x00001000);
-		ram_verify(0x00000000, 0x00001000);
-#endif
-#ifdef MEMROY_512MB
-		ram_fill(  0x00000000, 0x01ffffff);
-		ram_verify(0x00000000, 0x01ffffff);
-#endif
+		/* Check the first 8M */
+		ram_check(0x00100000, 0x00800000);
 	}
 }

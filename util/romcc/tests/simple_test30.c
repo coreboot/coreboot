@@ -21,7 +21,7 @@ static struct syscall_result syscall0(unsigned long nr)
 	long res;
 	asm volatile(
 		"int $0x80"
-		: "a" (res)
+		: "=a" (res)
 		: "a" (nr));
 	return syscall_return(res);
 }
@@ -31,7 +31,7 @@ static struct syscall_result syscall1(unsigned long nr, unsigned long arg1)
 	long res;
 	asm volatile(
 		"int $0x80"
-		: "a" (res)
+		: "=a" (res)
 		: "a" (nr), "b" (arg1));
 	return syscall_return(res);
 	
@@ -42,7 +42,7 @@ static struct syscall_result syscall2(unsigned long nr, unsigned long arg1, unsi
 	long res;
 	asm volatile(
 		"int $0x80"
-		: "a" (res)
+		: "=a" (res)
 		: "a" (nr), "b" (arg1), "c" (arg2));
 	return syscall_return(res);
 	
@@ -55,7 +55,7 @@ static struct syscall_result syscall3(unsigned long nr, unsigned long arg1, unsi
 	long res;
 	asm volatile(
 		"int $0x80"
-		: "a" (res)
+		: "=a" (res)
 		: "a" (nr), "b" (arg1), "c" (arg2), "d" (arg3));
 	return syscall_return(res);
 	
@@ -67,7 +67,7 @@ static struct syscall_result syscall4(unsigned long nr, unsigned long arg1, unsi
 	long res;
 	asm volatile(
 		"int $0x80"
-		: "a" (res)
+		: "=a" (res)
 		: "a" (nr), "b" (arg1), "c" (arg2), "d" (arg3), "S" (arg4));
 	return syscall_return(res);
 	
@@ -79,7 +79,7 @@ static struct syscall_result syscall5(unsigned long nr, unsigned long arg1, unsi
 	long res;
 	asm volatile(
 		"int $0x80"
-		: "a" (res)
+		: "=a" (res)
 		: "a" (nr), "b" (arg1), "c" (arg2), "d" (arg3), 
 		"S" (arg4), "D" (arg5));
 	return syscall_return(res);

@@ -1,8 +1,24 @@
+#if defined(i786)
+#define HAVE_MOVNTI 1
+#endif
+#if defined(k8)
+#define HAVE_MOVNTI 1
+#endif
+
 static void write_phys(unsigned long addr, unsigned long value)
 {
+#if HAVE_MOVNTI
+	asm volatile(
+		"movnti %1, (%0)"
+		: /* outputs */
+		: "r" (addr), "r" (value) /* inputs */
+		: /* clobbers */
+		);
+#else
 	volatile unsigned long *ptr;
 	ptr = (void *)addr;
 	*ptr = value;
+#endif
 }
 
 static unsigned long read_phys(unsigned long addr)
@@ -12,7 +28,7 @@ static unsigned long read_phys(unsigned long addr)
 	return *ptr;
 }
 
-void ram_fill(unsigned long start, unsigned long stop)
+static void ram_fill(unsigned long start, unsigned long stop)
 {
 	unsigned long addr;
 	/* 
@@ -25,7 +41,7 @@ void ram_fill(unsigned long start, unsigned long stop)
 	print_debug("\r\n");
 	for(addr = start; addr < stop ; addr += 4) {
 		/* Display address being filled */
-		if ((addr & 0xffff) == 0) {
+		if (!(addr & 0xffff)) {
 			print_debug_hex32(addr);
 			print_debug("\r");
 		}
@@ -36,7 +52,7 @@ void ram_fill(unsigned long start, unsigned long stop)
 	print_debug("\r\nDRAM filled\r\n");
 }
 
-void ram_verify(unsigned long start, unsigned long stop)
+static void ram_verify(unsigned long start, unsigned long stop)
 {
 	unsigned long addr;
 	/* 
@@ -50,7 +66,7 @@ void ram_verify(unsigned long start, unsigned long stop)
 	for(addr = start; addr < stop ; addr += 4) {
 		unsigned long value;
 		/* Display address being tested */
-		if ((addr & 0xffff) == 0) {
+		if (!(addr & 0xffff)) {
 			print_debug_hex32(addr);
 			print_debug("\r");
 		}
@@ -69,7 +85,7 @@ void ram_verify(unsigned long start, unsigned long stop)
 }
 
 
-void ramcheck(unsigned long start, unsigned long stop)
+void ram_check(unsigned long start, unsigned long stop)
 {
 	int result;
 	/*

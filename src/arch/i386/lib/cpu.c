@@ -68,6 +68,11 @@ static void interrupts_on()
 	low |= APIC_DEFAULT_BASE;
 	wrmsr(APIC_BASE_MSR, low, high);
 
+	/*
+	 * Set Task Priority to 'accept all'.
+	 */
+	apic_write_around(APIC_TASKPRI,
+		apic_read_around(APIC_TASKPRI) & ~APIC_TPRI_MASK);
 
 	/* Put the local apic in virtual wire mode */
 	apic_write_around(APIC_SPIV, 
@@ -91,10 +96,9 @@ static void interrupts_on()
 		| (APIC_LVT_REMOTE_IRR |APIC_SEND_PENDING | 
 			APIC_DELIVERY_MODE_NMI)
 		);
-#if 1
+
 	printk_debug(" apic_id: %d ",
 		apic_read(APIC_ID));
-#endif
 
 #else /* APIC */
 #ifdef i686

@@ -1,6 +1,13 @@
 #include <pc80/mc146818rtc.h>
 #include <part/fallback_boot.h>
 
+#ifndef MAX_REBOOT_CNT
+#error "MAX_REBOOT_CNT not defined"
+#endif
+#if  MAX_REBOOT_CNT > 15
+#error "MAX_REBOOT_CNT too high"
+#endif
+
 static unsigned char cmos_read(unsigned char addr)
 {
 	outb(addr, RTC_BASE_PORT + 0);

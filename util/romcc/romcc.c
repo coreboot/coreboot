@@ -9,7 +9,6 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
 #include <limits.h>
 
 #define DEBUG_ERROR_MESSAGES 0
@@ -18,6 +17,7 @@
 #define DEBUG_CONSISTENCY 1
 
 #warning "FIXME boundary cases with small types in larger registers"
+#warning "FIXME give clear error messages about unused variables"
 
 /*  Control flow graph of a loop without goto.
  * 
@@ -864,6 +864,10 @@ struct type {
 #define REG_VIRT3          (MAX_REGISTERS + 3)
 #define REG_VIRT4          (MAX_REGISTERS + 4)
 #define REG_VIRT5          (MAX_REGISTERS + 5)
+#define REG_VIRT6          (MAX_REGISTERS + 5)
+#define REG_VIRT7          (MAX_REGISTERS + 5)
+#define REG_VIRT8          (MAX_REGISTERS + 5)
+#define REG_VIRT9          (MAX_REGISTERS + 5)
 
 /* Provision for 8 register classes */
 #if 1
@@ -2156,6 +2160,14 @@ static int digitp(int c)
 	}
 	return ret;
 }
+static int digval(int c)
+{
+	int val = -1;
+	if ((c >= '0') && (c <= '9')) {
+		val = c - '0';
+	}
+	return val;
+}
 
 static int hexdigitp(int c)
 {
@@ -3262,7 +3274,12 @@ static void preprocess(struct compile_state *state, int index)
 		}
 		/* Error if there are any characters after the include */
 		for(ptr = file->pos; *ptr != '\n'; ptr++) {
-			if (!isspace(*ptr)) {
+			switch(*ptr) {
+			case ' ':
+			case '\t':
+			case '\v':
+				break;
+			default:
 				error(state, 0, "garbage after include directive");
 			}
 		}
@@ -4916,9 +4933,13 @@ static struct triple *flatten(
 			}
 			break;
 		}
+		case OP_PIECE:
+			MISC(ptr, 0) = flatten(state, first, MISC(ptr, 0));
+			use_triple(MISC(ptr, 0), ptr);
+			use_triple(ptr, MISC(ptr, 0));
+			break;
 		case OP_ADDRCONST:
 		case OP_SDECL:
-		case OP_PIECE:
 			MISC(ptr, 0) = flatten(state, first, MISC(ptr, 0));
 			use_triple(MISC(ptr, 0), ptr);
 			break;
@@ -7639,11 +7660,17 @@ static void asm_statement(struct compile_state *state, struct triple *first)
 		while(more) {
 			struct triple *var;
 			struct triple *constraint;
+			char *str;
 			more = 0;
 			if (out > MAX_LHS) {
 				error(state, 0, "Maximum output count exceeded.");
 			}
 			constraint = string_constant(state);
+			str = constraint->u.blob;
+			if (str[0] != '=') {
+				error(state, 0, "Output constraint does not start with =");
+			}
+			constraint->u.blob = str + 1;
 			eat(state, TOK_LPAREN);
 			var = conditional_expr(state);
 			eat(state, TOK_RPAREN);
@@ -7666,11 +7693,20 @@ static void asm_statement(struct compile_state *state, struct triple *first)
 		while(more) {
 			struct triple *val;
 			struct triple *constraint;
+			char *str;
 			more = 0;
 			if (in > MAX_RHS) {
 				error(state, 0, "Maximum input count exceeded.");
 			}
 			constraint = string_constant(state);
+			str = constraint->u.blob;
+			if (digitp(str[0] && str[1] == '\0')) {
+				int val;
+				val = digval(str[0]);
+				if ((val < 0) || (val >= out)) {
+					error(state, 0, "Invalid input constraint %d", val);
+				}
+			}
 			eat(state, TOK_LPAREN);
 			val = conditional_expr(state);
 			eat(state, TOK_RPAREN);
@@ -7717,41 +7753,68 @@ static void asm_statement(struct compile_state *state, struct triple *first)
 
 	def = new_triple(state, OP_ASM, &void_type, clobbers + out, in);
 	def->u.ainfo = info;
+
+	/* Find the register constraints */
+	for(i = 0; i < out; i++) {
+		struct triple *constraint;
+		constraint = out_param[i].constraint;
+		info->tmpl.lhs[i] = arch_reg_constraint(state, 
+			out_param[i].expr->type, constraint->u.blob);
+		free_triple(state, constraint);
+	}
+	for(; i - out < clobbers; i++) {
+		struct triple *constraint;
+		constraint = clob_param[i - out].constraint;
+		info->tmpl.lhs[i] = arch_reg_clobber(state, constraint->u.blob);
+		free_triple(state, constraint);
+	}
 	for(i = 0; i < in; i++) {
 		struct triple *constraint;
+		const char *str;
 		constraint = in_param[i].constraint;
-		info->tmpl.rhs[i] = arch_reg_constraint(state, 
-			in_param[i].expr->type, constraint->u.blob);
-
-		RHS(def, i) = read_expr(state,in_param[i].expr);
+		str = constraint->u.blob;
+		if (digitp(str[0]) && str[1] == '\0') {
+			struct reg_info cinfo;
+			int val;
+			val = digval(str[0]);
+			cinfo.reg = info->tmpl.lhs[val].reg;
+			cinfo.regcm = arch_type_to_regcm(state, in_param[i].expr->type);
+			cinfo.regcm &= info->tmpl.lhs[val].regcm;
+			if (cinfo.reg == REG_UNSET) {
+				cinfo.reg = REG_VIRT0 + val;
+			}
+			if (cinfo.regcm == 0) {
+				error(state, 0, "No registers for %d", val);
+			}
+			info->tmpl.lhs[val] = cinfo;
+			info->tmpl.rhs[i]   = cinfo;
+				
+		} else {
+			info->tmpl.rhs[i] = arch_reg_constraint(state, 
+				in_param[i].expr->type, str);
+		}
 		free_triple(state, constraint);
+	}
+
+	/* Now build the helper expressions */
+	for(i = 0; i < in; i++) {
+		RHS(def, i) = read_expr(state,in_param[i].expr);
 	}
 	flatten(state, first, def);
 	for(i = 0; i < out; i++) {
 		struct triple *piece;
-		struct triple *constraint;
-		constraint = out_param[i].constraint;
-		info->tmpl.lhs[i] = arch_reg_constraint(state,
-			out_param[i].expr->type, constraint->u.blob);
-
 		piece = triple(state, OP_PIECE, out_param[i].expr->type, def, 0);
 		piece->u.cval = i;
 		LHS(def, i) = piece;
 		flatten(state, first,
 			write_expr(state, out_param[i].expr, piece));
-		free_triple(state, constraint);
 	}
 	for(; i - out < clobbers; i++) {
 		struct triple *piece;
-		struct triple *constraint;
-		constraint = clob_param[i - out].constraint;
-		info->tmpl.lhs[i] = arch_reg_clobber(state, constraint->u.blob);
-
 		piece = triple(state, OP_PIECE, &void_type, def, 0);
 		piece->u.cval = i;
 		LHS(def, i) = piece;
 		flatten(state, first, piece);
-		free_triple(state, constraint);
 	}
 }
 
@@ -12195,11 +12258,18 @@ static void least_conflict(struct compile_state *state,
 	struct triple_reg_set *set;
 	size_t count;
 
+#if 0
+#define HI() fprintf(stderr, "%-10p(%-15s) %d\n", ins, tops(ins->op), __LINE__)
+#else
+#define HI()
+#endif
+
 #warning "FIXME handle instructions with left hand sides..."
 	/* Only instructions that introduce a new definition
 	 * can be the conflict instruction.
 	 */
 	if (!triple_is_def(state, ins)) {
+HI();
 		return;
 	}
 
@@ -12216,11 +12286,13 @@ static void least_conflict(struct compile_state *state,
 			}
 		}
 		if (!edge && (lr != conflict->ref_range)) {
+HI();
 			return;
 		}
 		count++;
 	}
 	if (count <= 1) {
+HI();
 		return;
 	}
 
@@ -12234,6 +12306,7 @@ static void least_conflict(struct compile_state *state,
 		}
 	}
 	if (!set && (conflict->ref_range != REG_UNSET)) {
+HI();
 		return;
 	}
 
@@ -12280,6 +12353,7 @@ static void least_conflict(struct compile_state *state,
 			;
 		}
 	}
+HI();
 	return;
 }
 
@@ -12287,6 +12361,13 @@ static void find_range_conflict(struct compile_state *state,
 	struct reg_state *rstate, char *used, struct live_range *ref_range,
 	struct least_conflict *conflict)
 {
+
+#if 0
+	static void verify_blocks(struct compile_state *stae);
+	verify_blocks(state);
+	print_blocks(state, stderr);
+	print_dominators(state, stderr);
+#endif
 	/* there are 3 kinds ways conflicts can occure.
 	 * 1) the life time of 2 values simply overlap.
 	 * 2) the 2 values feed into the same instruction.
@@ -12314,10 +12395,28 @@ static void find_range_conflict(struct compile_state *state,
 	walk_variable_lifetimes(state, rstate->blocks, least_conflict, conflict);
 
 	if (!conflict->ins) {
-		internal_error(state, 0, "No conflict ins?");
+		struct live_range_edge *edge;
+		struct live_range_def *lrd;
+		fprintf(stderr, "edges:\n");
+		for(edge = ref_range->edges; edge; edge = edge->next) {
+			lrd = edge->node->defs;
+			do {
+				fprintf(stderr, " %-10p(%s)", lrd->def, tops(lrd->def->op));
+				lrd = lrd->next;
+			} while(lrd != edge->node->defs);
+			fprintf(stderr, "|\n");
+		}
+		fprintf(stderr, "range:\n");
+		lrd = ref_range->defs;
+		do {
+			fprintf(stderr, " %-10p(%s)", lrd->def, tops(lrd->def->op));
+			lrd = lrd->next;
+		} while(lrd != ref_range->defs);
+		fprintf(stderr,"\n");
+		internal_error(state, ref_range->defs->def, "No conflict ins?");
 	}
 	if (!conflict->live) {
-		internal_error(state, 0, "No conflict live?");
+		internal_error(state, ref_range->defs->def, "No conflict live?");
 	}
 	return;
 }
@@ -13899,7 +13998,9 @@ static void verify_uses(struct compile_state *state)
 		struct triple **expr;
 		expr = triple_rhs(state, ins, 0);
 		for(; expr; expr = triple_rhs(state, ins, expr)) {
-			for(set = *expr?(*expr)->use:0; set; set = set->next) {
+			struct triple *rhs;
+			rhs = *expr;
+			for(set = rhs?rhs->use:0; set; set = set->next) {
 				if (set->member == ins) {
 					break;
 				}
@@ -13910,7 +14011,9 @@ static void verify_uses(struct compile_state *state)
 		}
 		expr = triple_lhs(state, ins, 0);
 		for(; expr; expr = triple_lhs(state, ins, expr)) {
-			for(set =  *expr?(*expr)->use:0; set; set = set->next) {
+			struct triple *lhs;
+			lhs = *expr;
+			for(set =  lhs?lhs->use:0; set; set = set->next) {
 				if (set->member == ins) {
 					break;
 				}
@@ -14140,6 +14243,7 @@ static void print_op_asm(struct compile_state *state,
 		}
 	}
 	lhs = i;
+	fprintf(fp, "#ASM\n");
 	fputc('\t', fp);
 	for(ptr = info->str; *ptr; ptr++) {
 		char *next;
@@ -14165,9 +14269,9 @@ static void print_op_asm(struct compile_state *state,
 		piece = (param < lhs)? LHS(ins, param) : RHS(ins, param - lhs);
 		fprintf(fp, "%s", 
 			arch_reg_str(ID_REG(piece->id)));
-		ptr = next;
+		ptr = next -1;
 	}
-	fputc('\n', fp);
+	fprintf(fp, "\n#NOT ASM\n");
 }
 
 

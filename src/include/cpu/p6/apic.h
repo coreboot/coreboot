@@ -10,6 +10,8 @@
 
 #define APIC_ID		0x020
 #define APIC_LVR	0x030
+#define	APIC_TASKPRI	0x80
+#define		APIC_TPRI_MASK		0xFF
 #define APIC_ARBID	0x090
 #define	APIC_RRR	0x0C0
 #define APIC_SVR	0x0f0

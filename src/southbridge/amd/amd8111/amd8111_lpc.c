@@ -1,5 +1,5 @@
 /*
- * (C) 2003 Linux Networx 
+ * (C) 2003 Linux Networx, SuSE Linux AG
  */
 #include <console/console.h>
 #include <device/device.h>
@@ -28,38 +28,33 @@ static struct ioapicreg ioapicregvalues[] = {
 #define NMI		(4 << 8)
 #define SMI		(2 << 8)
 #define INT		(1 << 8)
+	/* IO-APIC virtual wire mode configuration */
 	/* mask, trigger, polarity, destination, delivery, vector */
-	{0x00, ENABLED | TRIGGER_EDGE | POLARITY_HIGH | PHYSICAL_DEST | ExtINT | 0, 0},
-	{0x01, DISABLED, NONE},
-	{0x02, ENABLED | TRIGGER_EDGE | POLARITY_HIGH | PHYSICAL_DEST | INT | 0,  0},
-	{0x03, DISABLED, NONE},
-	{0x04, DISABLED, NONE},
-	{0x05, DISABLED, NONE},
-	{0x06, DISABLED, NONE},
-	{0x07, DISABLED, NONE},
-	{0x08, DISABLED, NONE},
-	{0x09, DISABLED, NONE},
-	{0x0a, DISABLED, NONE},
-	{0x0b, DISABLED, NONE},
-	{0x0c, DISABLED, NONE},
-	{0x0d, DISABLED, NONE},
-	{0x0e, DISABLED, NONE},
-	{0x0f, DISABLED, NONE},
-	{0x10, DISABLED, NONE},
-	{0x11, DISABLED, NONE},
-	{0x12, DISABLED, NONE},
-	{0x13, DISABLED, NONE},
-	{0x14, DISABLED, NONE},
-	{0x14, DISABLED, NONE},
-	{0x15, DISABLED, NONE},
-	{0x16, DISABLED, NONE},
-	{0x17, DISABLED, NONE},
-	{0x18, DISABLED, NONE},
-	{0x19, DISABLED, NONE},
-	{0x20, DISABLED, NONE},
-	{0x21, DISABLED, NONE},
-	{0x22, DISABLED, NONE},
-	{0x23, DISABLED, NONE},
+	{   0, ENABLED | TRIGGER_EDGE | POLARITY_HIGH | PHYSICAL_DEST | ExtINT, NONE},
+	{   1, DISABLED, NONE},
+	{   2, DISABLED, NONE},
+	{   3, DISABLED, NONE},
+	{   4, DISABLED, NONE},
+	{   5, DISABLED, NONE},
+	{   6, DISABLED, NONE},
+	{   7, DISABLED, NONE},
+	{   8, DISABLED, NONE},
+	{   9, DISABLED, NONE},
+	{  10, DISABLED, NONE},
+	{  11, DISABLED, NONE},
+	{  12, DISABLED, NONE},
+	{  13, DISABLED, NONE},
+	{  14, DISABLED, NONE},
+	{  15, DISABLED, NONE},
+	{  16, DISABLED, NONE},
+	{  17, DISABLED, NONE},
+	{  18, DISABLED, NONE},
+	{  19, DISABLED, NONE},
+	{  20, DISABLED, NONE},
+	{  21, DISABLED, NONE},
+	{  22, DISABLED, NONE},
+	{  23, DISABLED, NONE},
+	/* Be careful and don't write past the end... */
 };
 
 static void setup_ioapic(void)
@@ -71,6 +66,7 @@ static void setup_ioapic(void)
 	struct ioapicreg *a = ioapicregvalues;
 
 	l = (unsigned long *) ioapic_base;
+
 	for (i = 0; i < sizeof(ioapicregvalues) / sizeof(ioapicregvalues[0]);
 	     i++, a++) {
 		l[0] = (a->reg * 2) + 0x10;
@@ -95,13 +91,11 @@ static void lpc_init(struct device *dev)
 
 	printk_debug("lpc_init\n");
 
-#if 0
 	/* IO APIC initialization */
 	byte = pci_read_config8(dev, 0x4B);
 	byte |= 1;
 	pci_write_config8(dev, 0x4B, byte);
 	setup_ioapic();
-#endif
 
 	/* posted memory write enable */
 	byte = pci_read_config8(dev, 0x46);

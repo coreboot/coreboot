@@ -34,7 +34,7 @@
 .code16
 
 #ifdef STD_FLASH
-.org 0xfe00
+.org 0xfc00
 #endif
 
 #define SIZE_ALL
@@ -334,8 +334,8 @@ pci_init_table:
 #ifdef STD_FLASH
 	.org 0xfff0
 reset_vector:
-	.byte	0xea				# jmp to f000:fe00, where IPL
-	.word	0xfe00, 0xf000			# starts in Standard Flash
+	.byte	0xea				# jmp to f000:fc00, where IPL
+	.word	0xfc00, 0xf000			# starts in Standard Flash
 #else /* !STD_FLASH i.e. DoC Mil */
 #if defined(USE_DOC_MIL)
 	.org 0x1f0

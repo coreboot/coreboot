@@ -83,7 +83,7 @@ static void keyboard_on(void)
 		regval |= 0x0f; 
 		pci_write_config8(dev0, 0x51, regval);
 	}
-	pc_keyboard_init();
+	init_pc_keyboard(0x60, 0x64, 0);
 }
 
 static void nvram_on(void)

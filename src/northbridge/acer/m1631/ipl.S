@@ -18,7 +18,7 @@ it with the version available from LANL.
  */
 /* Parts of this code Copyright 2000, Ron Minnich, Advanced Computing Lab, LANL
  * rminnich@lanl.gov
- * Modifications by Ronnie Liu of Acer Labs Inc. 
+ * Modifications by Ronnie Liu of Acer Labs Inc.
  */
 #include <asm.h>
 #include <cpu/p5/macros.h>
@@ -108,13 +108,11 @@ code16
 /* 0xff selects register 0x47 */
 	movb	$0xff, %dl
 	outb	%al,%dx
-	xorl	%edi, %edi
 
+/*	Must set regs on North Bridge (device 0) */
 
-/*	Must set regs on North Bridge	*/
-
-	movl	$0x800000f8,%eax	/* f9h */
-	movw	$0xcf8,%dx
+	movw	$0x00f8,%ax	/* f9h */
+	movb	$0xf8,%dl
 	outl	%eax,%dx
 	movb	$0xfd,%dl
 	movb	$0x08,%al
@@ -128,13 +126,6 @@ code16
 	orb	$0x08,%al
 	outb	%al,%dx
 
-	movb	$0x48,%al	/* 49h */
-	movb	$0xf8,%dl
-	outl	%eax,%dx
-	movb	$0xfd,%dl
-	movb	$0x60,%al
-	outb	%al,%dx
-
 	movb	$0x80,%al	/* 82h */
 	movb	$0xf8,%dl
 	outl	%eax,%dx
@@ -142,57 +133,13 @@ code16
 	movb	$0x10,%al
 	outb	%al,%dx
 
-	movb	$0x90,%al	/* 93h */
+	movb	$0x6c, %al
 	movb	$0xf8,%dl
-	outl	%eax,%dx
-	movb	$0xff,%dl
-	inb	%dx,%al
-	orb	$0x06,%al
-	outb	%al,%dx
-
-	movb	$0x80,%al	/* 83h */
-	movb	$0xf8,%dl
-	outl	%eax,%dx
-	movb	$0xff,%dl
-	movb	$0x00,%al
-	outb	%al,%dx
-
-	movb	$0x6c,%al	/* 6eh, 6fh */
-	movb	$0xf8,%dl
-	outl	%eax,%dx
-	movb	$0xfc, %dl
-	inl	%dx, %eax
-	andl	$0x0000fffc, %eax
-	orl	$0xf6410001, %eax	
-	outl	%eax, %dx
-
-	movb	$0x55, 0
-	movb	$0xaa, 0x2000
-	cmpb	$0x55, 0
-	je	bank_4
-	andb	$0xfc, %al	/* 2 bank */
-bank_4:
-	outl	%eax, %dx
-
-	movl	$0x8000007c,%eax	/* Enable Refresh 7eh */
-	movw	$0xcf8,%dx
-	outl	%eax,%dx
-	movb	$0xfe,%dl
-	inb	%dx,%al
-	orb	$0x08,%al
-	outb	%al,%dx
-
-#if 0
-	movl	$0x8000006c, %eax
-	mov	$0x0cf8,%dx
 	outl	%eax,%dx
 /*	movb	$0x8000006c, %al
 	CALLSP(pci_read_dword)*/
 	movb	$0xfc, %dl
-	inl	%dx, %eax
-	movl	%eax, %ecx
-	andl    $0xfffc, %ecx
-	orl	INIT_MCR,  %ecx
+	movl	$0xf662f83c, %ecx
 	WRITE_MCR0
 	/*
 	movb	$0x6c, %al
@@ -223,7 +170,7 @@ sizeram:
 	rorl	$16, %ecx
 	/* clear the 'no multi page' bit. */
 	andw	$0xefff, %cx
-	WRITE_MCR0
+	WRITE_MCR0 
 	/*
 	mov	$0x6c, %al
 	CALLSP(pci_write_dword)
@@ -274,16 +221,17 @@ sizeram:
 	movb	$6, 0x2000
 	movb	$7, 0x4000
 	cmpb	$0, 0
-	jz	1f /* only one bank */
+	jz	1f /* 4 banks */
 	orl	$0x80000, %ecx
-1: 
 	/* clear 4 banks */
 	andb	$0xfe, %cl
+1: 
 	WRITE_MCR0
+	
 	movl	$0x8000007c, %eax
 	movb	$0xf8, %dl
 	outl	%eax, %dx
-	movl	$0x242bc411, %eax
+	movl	$0x2428c411, %eax
 	movb	$0xfc, %dl
 	outl	%eax, %dx
 	/*
@@ -296,11 +244,6 @@ sizeram:
 	/* NOTE: MUST NOT DESTROY %ecx! */
 	/* INPUT: %al, the register. %ecx, the write data */
 	/* Following code courtesy Ollie Lho:	*/
-	
-#endif	
-	
-	
-	
 	
 	
 	

@@ -13,12 +13,25 @@
 # for debugging and not really for production use.
 
 arch i386
+cpu p5
 mainboardinit cpu/i386/entry16.inc
 mainboardinit cpu/i386/entry32.inc
 ldscript cpu/i386/entry16.lds
 ldscript cpu/i386/entry32.lds
 mainboardinit cpu/i386/reset16.inc
 ldscript cpu/i386/reset16.lds
+
+########################################################################
+
+mainboardinit southbridge/nsc/scx200/scx200_setup.inc
+mainboardinit pc80/serial.inc
+mainboardinit arch/i386/lib/console.inc
+
+########################################################################
+# Just about everything is integrated in the SCx200
+
+northbridge nsc/gx1
+southbridge nsc/scx200
 
 ########################################################################
 # Where the Disk On Chip Chip Select pin is mapped in memory. 
@@ -97,30 +110,11 @@ option SCx200_PRIMARY_IDE
 #option SCx200_SECONDARY_IDE
 
 ########################################################################
-# Finally, the code
-
-# This must be done before the serial port is initialized, so
-# it has to be here.
-mainboardinit northsouthbridge/NSC/scx200/chipset_setup.inc
-
-mainboardinit pc80/serial.inc
-mainboardinit arch/i386/lib/console.inc
-
-northsouthbridge NSC/scx200
 
 option NO_KEYBOARD
-
 option FINAL_MAINBOARD_FIXUP=1
 object mainboard.o
 
-# The PIRQ table doesn't seem to work properly, so the PCI interrupts
-# are set up in final_mainboard_fixup instead.
-# FIXME -- build a working irq table
-#option HAVE_PIRQ_TABLE=1
-#object irq_tables.o
-
-cpu p5
-
 # Local variables:
-#   compile-command: "make -C /export/nano/bios/nano"
+#   compile-command: "make -C /export/bios/nano"
 # End:

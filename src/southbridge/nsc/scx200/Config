@@ -1,0 +1,4 @@
+# freebios/src/southbridge/nsc/scx200/Config
+# Copyright (c) 2002 Christer Weinigel <wingel@hack.org>
+
+object southbridge.o

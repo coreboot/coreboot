@@ -1,0 +1,33 @@
+# Copyright (c) 2002 Christer Weinigel <wingel@hack.org>
+# This is an example configuration file for the Cocom Voyager 2
+# See src/mainboard/cocom/voyager2/Config for more information
+
+target voyager2
+mainboard cocom/voyager2
+
+# Enable Serial Console for debugging
+option SERIAL_CONSOLE=1
+option TTYS0_BAUD=38400
+
+option DEFAULT_CONSOLE_LOGLEVEL=9
+option DEBUG
+
+#option INBUF_COPY
+option RAMTEST
+#option BOOT_IDE=1
+#option BOOT_TFTP=1
+
+#option USE_ELF_BOOT=1
+option USE_GENERIC_ROM=1
+option ZKERNEL_START=0xc0000200
+option ZKERNEL_MASK=0xffff
+option ROM_SIZE=262144
+
+# Path to your kernel (vmlinux)
+linux /export/nano/linux
+
+# Kernel command line parameters
+commandline root=/dev/hda2 console=ttyS0,38400 reboot=h
+#commandline root=/dev/nfs ip=dhcp console=ttyS0,38400
+
+

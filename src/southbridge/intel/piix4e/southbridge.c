@@ -6,6 +6,27 @@
 void
 southbridge_fixup()
 {
+#if (CONFIG_LINUXBIOS_ENABLE_IDE == 1)
+        struct pci_dev *pcidev;
+
+        printk_info( "Enabling IDE...");
+
+        pcidev = pci_find_device(0x8086, 0x7111, (void *)NULL);
+
+	if (! pcidev) {
+		printk_err("Can't find piix4e\n");
+	} else {
+		unsigned char c;
+
+		pci_read_config_word(pcidev, 0x41, &c);
+		c |= 0x80;
+		pci_read_config_word(pcidev, 0x43, &c);
+		c |= 0x80;
+		printk_info("Enabled IDE for channels 1 and 2\n");
+	}
+
+        printk_info("done.\n");
+#endif
 }
 
 void nvram_on()

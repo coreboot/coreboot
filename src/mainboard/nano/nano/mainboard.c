@@ -75,7 +75,7 @@ final_mainboard_fixup()
 
 /*
     Local variables:
-        compile-command: "make -C /export/nano/bios/nano"
+        compile-command: "make -C /export/bios/nano"
         c-basic-offset: 8
     End:
 */

@@ -1,0 +1,82 @@
+# Copyright (c) 2002 Christer Weinigel <wingel@hack.org>
+
+# This is a config file for the Cocom Voyager 2 board
+# <URL:http://www.cocom.co.uk>
+
+# The Voyager 2 is a National Semiconductor GX1 + CS5530 + PC93917
+# design.  It is a fairly complete PC with VGA, one serial port, one
+# IrDA header, one parallel port, two USB ports, a PS/2 Keyboard
+# connector (can also be used for a PS/2 Mouse using a splitter
+# cable), floppy, IDE and finally one ethernet port using a RTL8139
+# ethernet chip.  Other than that the board has a DiskOnChip socket
+# and a PC104 connector for expansion.
+
+arch i386
+cpu p5
+mainboardinit cpu/i386/entry16.inc
+mainboardinit cpu/i386/entry32.inc
+ldscript cpu/i386/entry16.lds
+ldscript cpu/i386/entry32.lds
+mainboardinit cpu/i386/reset16.inc
+ldscript cpu/i386/reset16.lds
+
+########################################################################
+
+mainboardinit superio/NSC/pc97317/sio_setup.inc
+mainboardinit pc80/serial.inc
+mainboardinit arch/i386/lib/console.inc
+
+########################################################################
+
+northbridge nsc/gx1
+southbridge nsc/cs5530
+superio NSC/pc97317
+
+########################################################################
+# Lots of constans, you probably don't need to change anything here.
+
+# GX_BASE is the address of a configuration memory region for the GX1
+# processor.  You probably don't want to change this.
+option GX_BASE=0x40000000
+
+########################################################################
+# Super I/O configuration
+
+# The SIO is pin strapped to show up at address 0x2e
+option SIO_BASE=0x2e
+
+# Serial Port 1
+option SIO_SP1_BASE=0x3f8
+option SIO_SP1_IRQ=4
+
+# Serial Port 2 is connected to an IrDA header
+#option SIO_SP2_BASE=0x2f8
+#option SIO_SP2_IRQ=3
+
+# Parallel port
+option SIO_PP_BASE=0x278
+option SIO_PP_IRQ=7
+
+# GPIO Pins
+option SIO_GPIO_BASE=0xe0
+
+########################################################################
+# Southbridge configuration
+
+option CS5530_INTA=9
+option CS5530_INTB=10
+option CS5530_INTC=11
+option CS5530_INTD=15
+
+option CS5530_PRIMARY_IDE=1
+#option CS5530_SECONDARY_IDE=1
+
+########################################################################
+
+option NO_KEYBOARD
+option FINAL_MAINBOARD_FIXUP=1
+object mainboard.o
+
+# Local variables:
+#   compile-command: "make -C /export/bios/voyager2"
+# End:

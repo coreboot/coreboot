@@ -1,0 +1,12 @@
+# freebios/src/northbridge/nsc/gx1/Config
+# Copyright (c) 2002 Christer Weinigel <wingel@hack.org>
+# Configuration for the National Semiconductor GX1 processors
+
+mainboardinit northbridge/nsc/gx1/cpu_setup.inc
+mainboardinit northbridge/nsc/gx1/gx_setup.inc
+mainboardinit northbridge/nsc/gx1/northbridge_setup.inc
+
+raminit northbridge/nsc/gx1/raminit.inc
+
+object northbridge.o
+

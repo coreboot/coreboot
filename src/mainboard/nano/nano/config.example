@@ -29,6 +29,11 @@ option RAMTEST
 # DOC socket that causes it to write garbage to address 0x80 of the
 # flash chip.
 
+# For some strange reason the kernel fails to boot when I use a high ROMBASE
+#option _ROMBASE=0xffff0000
+
+#option USE_ELF_BOOT=1
+
 option USE_GENERIC_ROM=1
 option ZKERNEL_START=0xc0000200
 option ZKERNEL_MASK=0xffff
@@ -45,7 +50,7 @@ option ROM_SIZE=262144
 linux /export/nano/linux
 
 # Kernel command line parameters
-commandline root=/dev/hda2 console=ttyS0,38400
+commandline root=/dev/hda2 console=ttyS0,38400 reboot=h
 #commandline root=/dev/nfs ip=dhcp console=ttyS0,38400
 
 

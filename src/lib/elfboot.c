@@ -384,10 +384,14 @@ static int build_elf_segment_list(
 		new->s_memsz = phdr[i].p_memsz;
 		new->s_offset = phdr[i].p_offset;
 		new->s_filesz = phdr[i].p_filesz;
+		printk_debug("New segment addr 0x%lx size 0x%lx offset 0x%lx filesize 0x%lx\n",
+			new->s_addr, new->s_memsz, new->s_offset, new->s_filesz);
 		/* Clean up the values */
 		if (new->s_filesz > new->s_memsz)  {
 			new->s_filesz = new->s_memsz;
 		}
+		printk_debug("(cleaned up) New segment addr 0x%lx size 0x%lx offset 0x%lx filesize 0x%lx\n",
+			new->s_addr, new->s_memsz, new->s_offset, new->s_filesz);
 		for(ptr = head->next; ptr != head; ptr = ptr->next) {
 			if (new->s_offset < ptr->s_offset)
 				break;
@@ -567,8 +571,10 @@ int elfload(struct stream *stream, struct lb_memory *mem,
 		goto out;
 
 	/* Verify the loaded image */
+/*
 	if (!verify_loaded_image(cb_chain, ehdr, phdr, &head)) 
 		goto out;
+ */
 
 	/* Shutdown the stream device */
 	stream->fini();

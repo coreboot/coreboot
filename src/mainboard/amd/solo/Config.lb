@@ -30,7 +30,7 @@ option HAVE_FALLBACK_BOOT=1
 ##
 ## Build code to reset the motherboard from linuxBIOS
 ##
-option HAVE_HARD_RESET=0
+option HAVE_HARD_RESET=1
 
 ##
 ## Build code to export a programmable irq routing table

@@ -1,5 +1,4 @@
 #define ASSEMBLY 1
-
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <cpu/p6/apic.h>
@@ -23,17 +22,26 @@
 
 static void memreset_setup(void)
 {
-	/* Set the memreset low */
-	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 28);
-	/* Ensure the BIOS has control of the memory lines */
+	if (is_cpu_pre_c0()) {
+		/* Set the memreset low */
+		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 28);
+		/* Ensure the BIOS has control of the memory lines */
+		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 29);
+	}
+	else {
+		/* Ensure the CPU has controll of the memory lines */
+		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 29);
+	}
 }
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
-	udelay(800);
-	/* Set memreset_high */
-	outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 28);
-	udelay(90);
+	if (is_cpu_pre_c0()) {
+		udelay(800);
+		/* Set memreset_high */
+		outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 28);
+		udelay(90);
+	}
 }
 
 static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
@@ -114,9 +122,6 @@ static void pc87360_enable_serial(void)
 
 static void main(void)
 {
-	/*
-	 * GPIO28 of 8111 will control H0_MEMRESET_L
-	 */
 	static const struct mem_controller cpu[] = {
 		{
 			.node_id = 0,
@@ -124,15 +129,13 @@ static void main(void)
 			.f1 = PCI_DEV(0, 0x18, 1),
 			.f2 = PCI_DEV(0, 0x18, 2),
 			.f3 = PCI_DEV(0, 0x18, 3),
-			.channel0 = { (0xa<<3), (0xa<<3)|1, 0, 0 },
+			.channel0 = { (0xa<<3)|0, (0xa<<3)|1, 0, 0 },
 			.channel1 = { 0, 0, 0, 0 },
 		}
 	};
-
 	if (cpu_init_detected()) {
 		asm("jmp __cpu_reset");
 	}
-
 	enable_lapic();
 	init_timer();
 
@@ -142,9 +145,7 @@ static void main(void)
 		print_err("This LinuxBIOS image is built for UP only.\n");
 	}
 #endif
-
 	pc87360_enable_serial();
-
 	uart_init();
 	console_init();
 	setup_default_resource_map();
@@ -152,18 +153,45 @@ static void main(void)
 	enumerate_ht_chain(0);
 	distinguish_cpu_resets(0);
 	
+#if 0
+	print_pci_devices();
+#endif
 	enable_smbus();
-
+#if 0
+	dump_spd_registers(&cpu[0]);
+#endif
 	memreset_setup();
-	sdram_initialize(1, cpu);
+	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
 
+#if 0
+	dump_pci_devices();
+#endif
+#if 0
+	dump_pci_device(PCI_DEV(0, 0x18, 2));
+#endif
+
+	/* Check all of memory */
+#if 0
 	msr_t msr;
 	msr = rdmsr(TOP_MEM);
 	print_debug("TOP_MEM: ");
 	print_debug_hex32(msr.hi);
 	print_debug_hex32(msr.lo);
 	print_debug("\r\n");
-
+#endif
+#if 0
 	ram_check(0x00000000, msr.lo);
-	
+#endif
+#if 0
+	static const struct {
+		unsigned long lo, hi;
+	} check_addrs[] = {
+		/* Check 16MB of memory @ 0*/
+		{ 0x00000000, 0x01000000 },
+	};
+	int i;
+	for(i = 0; i < sizeof(check_addrs)/sizeof(check_addrs[0]); i++) {
+		ram_check(check_addrs[i].lo, check_addrs[i].hi);
+	}
+#endif
 }

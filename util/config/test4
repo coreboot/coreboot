@@ -1,10 +1,11 @@
-target winfast #comment
+target winfast
 #comment
 
 mainboard leadtek/winfast6300
 option SERIAL_CONSOLE
 keyboard pc80
 option NEWPCI
+nooption NEWPCI
 # makerule LINUX=../../linux/vmlinux
 linux /usr/src/linux
 docipl northsouthbridge/sis/630

@@ -401,6 +401,82 @@ int ide_read_sector(int drive, void * buffer, unsigned int block, int byte_offse
 	return status;
 }
 
+#ifdef DANGER_IDE_WRITE
+/* write a sector or a partial sector */
+int ide_write_sector(int drive, void * buffer, unsigned int block ) {
+	ide_cmd_param_t cmd = IDE_DEFAULT_COMMAND;
+	unsigned base;
+	unsigned int track;
+	int status;
+	int address_mode = harddisk_info[drive].address_mode;
+	//int i;
+
+	printk_info(__FUNCTION__ " drive[%d], buffer[%08x], block[%08x]\n",
+	     drive, buffer, block);
+	    printk_info(__FUNCTION__ " block(%08x) from addr(%08x)\r", block, (int)buffer);
+	if ((drive < 0) || (drive >= NUM_HD) ||
+	    (harddisk_info[drive].drive_exists == 0))
+	{
+		printk_info("unknown drive\n");
+		return 1;
+	}
+	base = harddisk_info[drive].controller_port;
+
+	if (harddisk_info[drive].num_heads > 8) {
+		outb_p(0xA, IDE_REG_CONTROL(base));
+	} else {
+		outb_p(0x2, IDE_REG_CONTROL(base));
+	}
+
+	cmd.sector_count = 1;
+
+	if (address_mode == IDE_DH_CHS) {
+		track = block / harddisk_info[drive].num_sectors_per_track;
+
+		cmd.sector_number = 1+(block % harddisk_info[drive].num_sectors_per_track);
+		cmd.cylinder = track / harddisk_info[drive].num_heads;
+		cmd.drivehead = IDE_DH_DEFAULT | 
+			IDE_DH_HEAD(track % harddisk_info[drive].num_heads) |
+			IDE_DH_DRIVE(drive) |
+			IDE_DH_CHS;
+		printk_info(__FUNCTION__ " CHS: track=[%d], sector_number=[%d], cylinder=[%d]\n", track, cmd.sector_number, cmd.cylinder);
+		/*
+		*/
+	} else {
+#if 1
+		cmd.sector_number = block & 0xff; /* lower byte of block (lba) */
+		cmd.cylinder = (block >> 8) & 0xffff; /* middle 2 bytes of block (lba) */
+		cmd.drivehead = IDE_DH_DEFAULT | /* set bits that must be on */
+			((block >> 24) & 0x0f) | /* lower nibble of byte 3 of block */
+			IDE_DH_DRIVE(drive) |
+			IDE_DH_LBA;
+#else
+		cmd.sector_number = (block >> 24) & 0xff; /* byte 0 of block (lba) */
+		cmd.cylinder = (block >> 8) & 0xffff; /* bytes 1 & 2 of block (lba) */
+		cmd.drivehead = IDE_DH_DEFAULT | /* set bits that must be on */
+			((block >> 4) & 0x0f) | /* upper nibble of byte 3 of block */
+			IDE_DH_DRIVE(drive) |
+			IDE_DH_LBA;
+#endif
+		printk_info(__FUNCTION__ " LBA: drivehead[%0x], cylinder[%04x], sector[%0x], block[%8x]\n",
+		  cmd.drivehead, cmd.cylinder, cmd.sector_number, block & 0x0fffffff);
+		/*
+		*/
+	}
+	
+	write_command(base, IDE_CMD_WRITE_MULTI_RETRY, &cmd);
+	if ((inb_p(IDE_REG_STATUS(base)) & 1) != 0) {
+		printk_info("ide not ready...\n");
+		return 1;
+	}
+
+	status = ide_write_data(base, buffer, IDE_SECTOR_SIZE);
+	return status;
+}
+
+
+#endif
+
 #if 0
 /* read a sector or a partial sector */
 int ide_read_sector(int drive, void * buffer, unsigned int block, int byte_offset, 

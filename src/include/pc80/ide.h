@@ -54,6 +54,11 @@ extern harddisk_info_t harddisk_info[NUM_HD];
 extern int ide_init(void);
 extern int ide_read_sector(int driveno, void * buf, unsigned int sector,
 			   int byte_offset, int n_bytes);
+
+#ifdef DANGER_IDE_WRITE
+extern int ide_write_sector(int driveno, void * buf, unsigned int sector);
+#endif
+
 extern int ide_read_data(unsigned base, void * buf, size_t size);
 extern int ide_write_data(unsigned base, void * buf, size_t size);
 extern int ide_shutdown(void);
@@ -111,6 +116,11 @@ typedef enum {
     IDE_CMD_NOOP = 0,
     IDE_CMD_RECALIBRATE = 0x10,
     IDE_CMD_READ_MULTI_RETRY = 0x20,
+
+#ifdef DANGER_IDE_WRITE
+    IDE_CMD_WRITE_MULTI_RETRY = 0x30,
+#endif
+
     IDE_CMD_READ_MULTI = IDE_CMD_READ_MULTI_RETRY,
     IDE_CMD_READ_MULTI_NORETRY = 0x21,
 

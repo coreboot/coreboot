@@ -24,6 +24,7 @@ ecc_ram_initialize:
 	jz	1f
 	incl	%ecx
 1:	movl	$1, %esi
+	subl	$12, %ecx
 	shll	%cl, %esi
 
 	/* Set caching on all of memory into write-combining mode. 
@@ -40,10 +41,12 @@ ecc_ram_initialize:
 	wrmsr
 
 	movl	$0x201, %ecx		/* mtrr[0] physical mask register */
-	movl	$0x0000000f, %edx
 	xorl	%eax, %eax
 	subl	%esi, %eax
-	andl	$0xfffff000, %eax
+	movl	%eax, %edx
+	shrl	$20, %edx
+	andl	$0x0f, %edx
+	shll	$12, %eax
 	orl	$0x800, %eax
 	wrmsr
 

@@ -1,7 +1,7 @@
 jmp smbus_code_end
 
-#define PM_DEV_FN (AMD766_DEV + 0x300)
-
+#define PM_DEV_FN (AMD768_DEV + 0x300)
+#define SMBUS_TIMEOUT (100*1000)
 
 #define PM_BASE 0xDD00
 #define SMBUS_IO_BASE (PM_BASE + 0xE0)
@@ -42,11 +42,8 @@ jmp smbus_code_end
 #define SMB_GCTL_SLAVE_INTERRUPT (1 << 9)
 #define SMB_GCTL_ALERT_INTERRUPT (1 << 10)
 
-enable_string:	.string "Enabling smbus\r\n"
-setup_string:	.string "Setting up smbus\r\n"
 
 enable_smbus:
-	CONSOLE_INFO_TX_STRING($enable_string)
 	/* Enable PM IO C3A41 */
 	movl	$(0x80000000 | PM_DEV_FN | 0x40), %eax
 	movw	$0xcf8, %dx
@@ -74,7 +71,6 @@ enable_smbus:
 	 * Effects:	The smbus is enabled
 	 */
 setup_smbus:
-	CONSOLE_INFO_TX_STRING($setup_string)
 	movl $(SMB_GSTAT_ABORT | SMB_GSTAT_COLLISION | \
 		SMB_GSTAT_PROTO_ERROR | SMB_GSTAT_COMPLETE | \
 		SMB_GSTAT_TIMEOUT | SMB_GSTAT_SNOOP_MATCH | \
@@ -82,6 +78,10 @@ setup_smbus:
 	movw $SMB_GSTAT, %dx
 	outb %al, %dx
 	RET_LABEL(setup_smbus)
+
+smbus_never_ready:   .string "smbus_never_ready\r\n"
+smbus_never_done:    .string "smbus_never_done\r\n"
+full_reset_text:     .string "full_reset\r\n"
 
 	/*
 	 * Routine:	smbus_wait_until_ready
@@ -91,12 +91,17 @@ setup_smbus:
 	 * Effects:	Upon return the smbus is ready to accept commands
 	 */
 smbus_wait_until_ready:	
+	movl    $(SMBUS_TIMEOUT << 8), %eax
 	movl $SMB_GSTAT, %edx
 1:	inb %dx, %al
+        subl    $0x00000100, %eax        
+        testl   $0xffffff00, %eax
+        jz      2f
 	testb $SMB_GSTAT_HOST_BUSY, %al
 	jnz 1b
 	RET_LABEL(smbus_wait_until_ready)
-
+2:      CONSOLE_DEBUG_TX_STRING($smbus_never_ready)
+        jmp     full_reset
 
 	/*
 	 * Routine:	smbus_wait_until_done
@@ -105,21 +110,33 @@ smbus_wait_until_ready:
 	 * Trashed:	eax, edx
 	 * Effects:	Upon return the smbus has completed it's most recent transation
 	 */
+smbus_wait_until_done:	
+	movl $SMB_GSTAT, %edx
+        movl    $(SMBUS_TIMEOUT << 8), %eax
+1:	inb %dx, %al
+        subl    $0x00000100, %eax
+        testl   $0xffffff00, %eax
+        jz      4f
+	testb $(SMB_GSTAT_HOST_BUSY), %al
+	jnz 1b
+2:	testb $(~(SMB_GSTAT_HOST_BUSY)), %al
+	jnz 3f
+	inb %dx, %al
+	testb $(~(SMB_GSTAT_HOST_BUSY)), %al
+	jz 2b
+3:	RET_LABEL(smbus_wait_until_done)
+4:      CONSOLE_DEBUG_TX_STRING($smbus_never_done)
+        jmp     full_reset
 
-/*
- *smbus_wait_until_done:	
- *	movl $SMB_GSTAT, %edx
- *1:	inb %dx, %al
- *	testb $(SMB_GSTAT_HOST_BUSY), %al
- *	jnz 1b
- *2:	testb $(~(SMB_GSTAT_HOST_BUSY)), %al
- *	jnz 3f
- *	inb %dx, %al
- *	testb $(~(SMB_GSTAT_HOST_BUSY)), %al
- *	jz 2b
- *3:	RET_LABEL(smbus_wait_until_done)
- *
- */
+full_reset:
+	CONSOLE_DEBUG_TX_STRING($full_reset_text)
+	movl	$0x00003b41, %eax  /*bus 0, device 7, function 3, reg 0x41 */
+	movb	$(1<<5), %dl
+	PCI_WRITE_CONFIG_BYTE  /* enable port cf9 */
+	movb	$0x0e, %al
+	movw	$0x0cf9, %dx
+	outb	%al,%dx		/* do the full reset */
+1:	jmp	1b
 
 	/*
 	 * Routine:	smbus_read_byte
@@ -170,14 +187,8 @@ smbus_read_byte:
 	outw %ax, %dx
 
 	/* poll for transaction completion */
-#	CALL_LABEL(smbus_wait_until_done)
-#	code copied since CALL_LABEL can only be used once!
-	movl $SMB_GSTAT, %edx
-1:	inb %dx, %al
-	testb $SMB_GSTAT_HOST_BUSY, %al
-	jnz 1b
-#endcopy of smbus_wait_until_ready
-
+	CALL_LABEL(smbus_wait_until_done)
+	xorl	%eax, %eax
 	/* read the results and see if we succeded */
 	movl $SMB_GSTAT, %edx
 	inb %dx, %al

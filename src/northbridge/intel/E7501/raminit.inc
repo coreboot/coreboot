@@ -1,4 +1,4 @@
-jmp intel_E7500_out
+jmp intel_E7501_out
 
 /* This was originally for the e7500, modified for e7501
  * The primary differences are that 7501 apparently can 
@@ -11,7 +11,7 @@ jmp intel_E7500_out
  * Steven James 02/06/2003
  */
 
-#define DEBUG_RAM_CONFIG 0
+#define DEBUG_RAM_CONFIG 1
 
 
 /* DDR DIMM Mode register Definitions */
@@ -34,7 +34,7 @@ jmp intel_E7500_out
 
 #define BURST_LENGTH BURST_4
 #define BURST_TYPE   BURST_INTERLEAVED
-#define CAS_LATENCY  CAS_2_0
+#define CAS_LATENCY  CAS_2_5
 //#define CAS_LATENCY  CAS_1_5
 
 #define MRS_VALUE (MODE_NORM | CAS_LATENCY | BURST_TYPE | BURST_LENGTH)
@@ -176,7 +176,7 @@ constant_register_values:
 	 * 0x2e - 0x2f
 	 * [15:00] Subsystem ID
 	 */
-	.long 0x2c, 0, (0x15d9 << 0) | (0x3480 << 16)
+	.long 0x2c, 0, (0x15d9 << 0) | (0x3580 << 16)
 
 	/* Undocumented
 	 * 0x80 - 0x80
@@ -196,13 +196,16 @@ constant_register_values:
 	 */
 #if CAS_LATENCY == CAS_2_5
 #	.long 0x80, 0xfffffe00, 0x06 /* Intel E7500 recommended */
-	.long 0x80, 0xfffff000, 0x0bb6 /* Intel E7500 recommended */
+#	.long 0x80, 0xfffff000, 0x0bb6 /* Intel E7500 recommended */
+	.long 0x80, 0xfffff000, 0x0662 /* from Factory Bios */
 #elif CAS_LATENCY == CAS_2_0
 #	.long 0x80, 0xfffffe00, 0x0d /* values for register 0x80 */
-	.long 0x80, 0xfffff000, 0x0bb1 /* values for register 0x80 */
+#	.long 0x80, 0xfffff000, 0x0bb1 /* values for register 0x80 */
+	.long 0x80, 0xfffff000, 0x0662 /* from Factory Bios */
 #elif CAS_LATENCY == CAS_1_5
 #	.long 0x80, 0xfffffe00, 0x05
-	.long 0x80, 0xfffff000, 0x0bb5
+#	.long 0x80, 0xfffff000, 0x0bb5
+	.long 0x80, 0xfffff000, 0x0662 /* from Factory Bios */
 #endif
 
 	/* Enable periodic memory recalibration */
@@ -332,7 +335,7 @@ constant_register_values:
 	 *         1 == 2 DRAM Clocks
 	 */
 #define DRT_CAS_2_5 (0<<4)
-#define DRT_CAS_2_0 (1<<4)
+#define DRT_CAS_2_0 (1<<4)   
 #define DRT_CAS_1_5 (2<<4)
 #define DRT_CAS_MASK (3<<4)
 
@@ -346,7 +349,8 @@ constant_register_values:
 
 	/* Most aggressive settings possible */
 #	.long 0x78, 0xc0fff8c4, (1<<29)|(1<<28)|(1<<27)|(2<<24)|(2<<9)|DRT_CL|(1<<3)|(1<<1)|(1<<0)
-	.long 0x78, 0xc0f8f8c0, (1<<29)|(1<<28)|(1<<27)|(1<<24)|(1<<16)|(2<<9)|DRT_CL|(1<<3)|(3<<1)|(1<<0)
+#	.long 0x78, 0xc0f8f8c0, (1<<29)|(1<<28)|(1<<27)|(1<<24)|(1<<16)|(2<<9)|DRT_CL|(1<<3)|(3<<1)|(1<<0)
+	.long 0x78, 0xc0f8f9c0, (1<<29)|(1<<28)|(1<<27)|(1<<24)|(1<<16)|(2<<9)|DRT_CL|(1<<3)|(3<<1)|(1<<0)
 
 	/* FIXME why was I attempting to set a reserved bit? */
 	/* 0x0100040f */
@@ -392,7 +396,8 @@ constant_register_values:
 	 * [03:00] Reserved
 	 */
 #	.long 0x7c, 0xffcefcff, (1<<22)|(2 << 20)|(1 << 16)| (0 << 8)
-	.long 0x7c, 0xff8cfcff, (1<<22)|(2 << 20)|(1 << 17)|(1 << 16)| (0 << 8)
+#	.long 0x7c, 0xff8cfcff, (1<<22)|(2 << 20)|(1 << 17)|(1 << 16)| (0 << 8)
+	.long 0x7c, 0xff82fcff, (1<<22)|(2 << 20)|(1 << 18)|(1 << 16)| (0 << 8)
 
 	/* CLOCK_DIS - CK/CK# Disable Register
 	 * 0x8C
@@ -433,6 +438,7 @@ constant_register_values:
 	 * When remaplimit < remapbase this register is disabled.
 	 */
 	.long 0xc8, 0xfffffc00, 0
+
 	/* DVNP - Device Not Present Register
 	 * 0xE0 - 0xE1
 	 * [15:05] Reserved
@@ -1332,9 +1338,11 @@ spd_enable_clocks:
 	movl	$0x8c, %eax
 	PCI_READ_CONFIG_DWORD
 	movl	%eax, %esi
-
+#if 0
 # Intel clears top bit here, should we?
+# No the default is on and for normal timming it should be on.  Tom Z
 	andl	$0x7f, %esi
+#endif
 
 spd_get_clocks:
 	/* Read any spd byte to see if the dimm is present */
@@ -1356,7 +1364,6 @@ spd_enable_clocks_next_dimm:
 	addb	$(SMBUS_MEM_DEVICE_INC), %bl /* increment the smbus device */
 	cmpb	$SMBUS_MEM_DEVICE_END, %bl
 	jbe	spd_get_clocks
-
 	movl	$0x8c, %eax
 	movl	%esi, %ecx
 	PCI_WRITE_CONFIG_DWORD
@@ -1380,7 +1387,8 @@ cas_latency_80:
  	 */
  	 
 #	.byte 0x05, 0x01, 0x06 
-	.byte 0xb5, 0xb1, 0xb6 
+#	.byte 0xb5, 0xb1, 0xb6 
+	.byte 0x62, 0x62, 0x62   /* factory setting for 0 undocumented reg tnz */ 
 cas_latency_78:
 	.byte DRT_CAS_1_5, DRT_CAS_2_0, DRT_CAS_2_5
 
@@ -1389,16 +1397,17 @@ spd_set_cas_latency:
 	 * supported cas latencies.
 	 */
 	movl	$(SMBUS_MEM_DEVICE_START), %ebx
-	/* Initially allow cas latencies 2.5, 2.0, 1.5
+	/* Initially allow cas latencies 2.5, 2.0
 	 * which the chipset supports.
 	 */	
-	movl	$((1 << 3)|(1 << 2)|(1 <<1)), %esi
+	movl	$((1 << 3)|(1 << 2)), %esi
 spd_get_cas_latencies:
 	movb	$18, %bh
 	CALLSP(smbus_read_byte)
 	jz	spd_set_cas_latency_next_dimm
 
 	/* Find the highest supported cas latency */
+	andl	$0x0ff, %eax
 	bsrl	%eax, %ecx
 	movl	$1, %edi
 	shll	%cl, %edi
@@ -1406,13 +1415,13 @@ spd_get_cas_latencies:
 	/* Remember the supported cas latencies */
 	movl	%eax, %ecx
 	
-	/* Verify each cas latency at 100Mhz */
+	/* Verify each cas latency at 133Mhz */
 	/* Verify slowest/highest CAS latency */
 	movb	$9, %bh
 	CALLSP(smbus_read_byte)
 	jz	spd_set_cas_latency_next_dimm
 
-	cmpb	$0xa0, %al
+	cmpb	$0x75, %al
 	jbe	1f
 	/* The bus is too fast so we cannot support this case latency */
 	notl	%edi
@@ -1429,7 +1438,7 @@ spd_get_cas_latencies:
 	CALLSP(smbus_read_byte)
 	jz	spd_set_cas_latency_next_dimm
 
-	cmpb	$0xa0, %al
+	cmpb	$0x75, %al
 	jbe	1f
 	/* The bus is too fast so we cannot support this cas latency */
 	notl	%edi
@@ -1446,7 +1455,7 @@ spd_get_cas_latencies:
 	CALLSP(smbus_read_byte)
 	jz	spd_set_cas_latency_next_dimm
 
-	movb	$0xa0, %al
+	cmpb	$0x75, %al
 	jbe	1f
 	/* The bus is too fast so we cannot support this cas latency */
 	notl	%edi
@@ -1485,8 +1494,13 @@ spd_set_cas_latency_next_dimm:
 	movl	%eax, %ecx
 	movl	$0x88, %eax
 	PCI_WRITE_CONFIG_DWORD
+#if 0
 	andl	$0xfc00ffff, %ecx	/* set DQS delays to 2.2ns */
 	orl	$0x02310000, %ecx
+#endif
+	andl	$0x0c0000ff, %ecx	/* patch try register 88 is undocumented tnz */
+	orl	$0xd2109800, %ecx
+
 	movl	$0x88, %eax
 	PCI_WRITE_CONFIG_DWORD
 	movl	%ebx, %ecx
@@ -1519,9 +1533,9 @@ spd_get_dram_timing:
 	movb	$27, %bh
 	CALLSP(smbus_read_byte)
 	jz	spd_set_dram_timing_next_dimm
-	cmpb	$(20<<2), %al
+	cmpb	$(15<<2), %al
 	jbe	1f
-	/* At 100Mhz if row precharge time is above than 20ns than we
+	/* At 133Mhz if row precharge time is above than 15ns than we
 	 * need 3 clocks not 2 clocks.
 	 */ 
 	andl	$~(1<<0), %esi
@@ -1532,9 +1546,9 @@ spd_get_dram_timing:
 	movb	$29, %bh
 	CALLSP(smbus_read_byte)
 	jz	spd_set_dram_timing_next_dimm
-	cmpb	$(20<<2), %al
+	cmpb	$(15<<2), %al
 	jbe	1f
-	/* At 100Mhz if the Minimum ras to cas delay is about 20ns we
+	/* At 133Mhz if the Minimum ras to cas delay is about 15ns we
 	 * need 3 clocks not 2 clocks.
 	 */
 	andl	$~((1<<3)|(1<<1)), %esi
@@ -1546,8 +1560,9 @@ spd_get_dram_timing:
 	movb	$30, %bh
 	CALLSP(smbus_read_byte)
 	jz	spd_set_dram_timing_next_dimm
-	/* Convert tRAS from ns to 100Mhz clock cycles */
-	movb	$10, %dl
+	/* Convert tRAS from ns to 133Mhz clock cycles */
+	movb	$15, %dl
+	shll	$1, %eax	/* mult by 2 to make 7.5 15 */
 	addb	%dl, %al	/* Make certain we round up */
 	subb	$1, %al
 	andl	$0xff, %eax	/* Clear the upper bits of eax */
@@ -1572,7 +1587,7 @@ spd_get_dram_timing:
 	subl	$1, %ecx
 
 	/* See if we need a slower timing */
-	cmpb	%al, %cl
+	cmpb	%cl, %al
 	jbe	1f
 
 	/* O.k. put in our slower timing */
@@ -1580,7 +1595,7 @@ spd_get_dram_timing:
 	addb	$1, %cl
 	notl	%ecx
 	shll	$9, %ecx
-	andl	$(3<<9), %esi
+	andl	$~(3<<9), %esi
 	orl	%ecx, %esi
 	
 1:	
@@ -1594,7 +1609,7 @@ spd_get_dram_timing:
 	 * Back to Back Read Turn Around
 	 */
 	/* Set to a 4 clock back to back read turn around */
-	andl	$~(1<<27), %esi
+#	andl	$~(1<<27), %esi
 	/*
 	 * Back to Back Read-Write Turn Around
 	 */
@@ -1604,7 +1619,7 @@ spd_get_dram_timing:
 	 * Back to Back Write-Read Turn Around
 	 */
 	/* Set to a 3 clock back to back write to read turn around */
-	andl	$~(1<<29), %esi
+#	andl	$~(1<<29), %esi
 			
 spd_set_dram_timing_next_dimm:
 	/* go to the next DIMM */
@@ -1919,4 +1934,4 @@ mem_err:
 	CONSOLE_ERR_TX_HEX8(%bh)
 	jmp	mem_stop
 
-intel_E7500_out:
+intel_E7501_out:

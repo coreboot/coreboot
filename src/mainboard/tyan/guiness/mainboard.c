@@ -93,8 +93,7 @@ static void fixup_adaptec_7899P(struct pci_dev *pdev)
 	/* Set the device id */
 	pci_write_config_word(pdev, PCI_DEVICE_ID, PCI_DEVICE_ID_ADAPTEC2_7899P);
 	/* Set the subsytem vendor id */
-//	pci_write_config_word(pdev, PCI_SUBSYSTEM_VENDOR_ID, PCI_VENDOR_ID_TYAN);
-	pci_write_config_word(pdev, PCI_SUBSYSTEM_VENDOR_ID, 0x10f1);
+	pci_write_config_word(pdev, PCI_SUBSYSTEM_VENDOR_ID, PCI_VENDOR_ID_TYAN);
 	/* Set the subsytem id */
 	pci_write_config_word(pdev, PCI_SUBSYSTEM_ID, 0x2462);
 	/* Disable writes to the device id */

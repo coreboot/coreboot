@@ -82,6 +82,8 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,
 	        0x05, 0x09, 0x02, 0x09);
 	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,
+	        0x05, 0x0c, 0x02, 0x0c);
+	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,
 	        0x05, 0x0d, 0x02, 0x0d);
 	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,
 	        0x05, 0x0e, 0x02, 0x0e);
@@ -107,21 +109,21 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
 	        0x04, (0x1<<2)|0, 0x02, 0x10);
 
-#if 1
 	/* Slot 1 */
 	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
-	        0x02, (1<<2)|0, 0x04, 0x00);
-#endif
+		0x03, (1<<2)|0, 0x03, 0x00);
+	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
+		0x03, (1<<2)|1, 0x03, 0x01);
 
-#if 1
 	/* Slot 2 */
 	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
-		0x03, (1<<2)|0, 0x03, 0x00);
+	        0x02, (1<<2)|0, 0x04, 0x00);
+	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
+	        0x02, (1<<2)|1, 0x04, 0x01);
 
 	/* Onboard Gigabit Intel NIC */
 	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
 		0x03, (4<<2)|0, 0x03, 0x07);
-#endif
 
 
 	/* There is no extension information... */

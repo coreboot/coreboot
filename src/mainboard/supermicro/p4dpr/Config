@@ -101,6 +101,11 @@ object irq_tables.o HAVE_PIRQ_TABLE
 ###
 
 ##
+## Number of consecutive times boot failures triggers a boot into fallback mode.
+##
+option MAX_REBOOT_CNT=8
+
+##
 ## Location of the DIMM EEPROMS on the SMBUS
 ## This is fixed into a narrow range by the DIMM package standard.
 ##
@@ -130,7 +135,6 @@ option HAVE_FALLBACK_BOOT=1
 ##
 option CONFIG_UDELAY_TSC=1
 option CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2=1
-
 
 ##
 ## Build code to reset the motherboard from linuxBIOS

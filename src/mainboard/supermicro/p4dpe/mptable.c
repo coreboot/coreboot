@@ -127,21 +127,33 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 	/* Slot 1 */
 	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
 		0x02, (1<<2)|0, 0x04, 0x00);
+	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
+		0x02, (1<<2)|1, 0x04, 0x01);
 	/* Slot 2 */
 	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
 		0x03, (1<<2)|0, 0x03, 0x00);
+	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
+		0x03, (1<<2)|1, 0x03, 0x01);
 	/* Slot 3 */
 	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
 		0x06, (1<<2)|0, 0x05, 0x00);
+	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
+		0x06, (1<<2)|1, 0x05, 0x01);
 	/* Slot 4 */
 	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
 		0x05, (1<<2)|0, 0x08, 0x00);
+	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
+		0x05, (1<<2)|1, 0x08, 0x01);
 	/* Slot 5 */
 	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
 		0x05, (2<<2)|0, 0x08, 0x04);
+	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
+		0x05, (2<<2)|1, 0x08, 0x05);
 	/* Slot 6 */
 	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
 		0x05, (3<<2)|0, 0x08, 0x08);
+	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
+		0x05, (3<<2)|1, 0x08, 0x09);
 
 	/* Onboard Gigabit Intel NIC */
 	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,
@@ -154,10 +166,6 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 	mc->mpc_checksum = smp_compute_checksum(mc, mc->mpc_length);
 	printk_debug("Wrote the mp table end at: %p - %p\n",
 		mc, smp_next_mpe_entry(mc));
-#if CONFIG_DEBUG_MPTABLE == 1
-	hexdump ("_MP_", 0x10, 0x20);
-	hexdump("TABLE", mc, 0x1e4-0x20);
-#endif
 	return smp_next_mpe_entry(mc);
 }
 

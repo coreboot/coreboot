@@ -1,11 +1,11 @@
 #include <pci.h>
 #include <pci_ids.h>
-#include <southbridge/amd/amd766.h>
+#include <southbridge/amd/amd768.h>
 
-void amd766_posted_memory_write_enable(void)
+void amd768_posted_memory_write_enable(void)
 {
 	struct pci_dev *dev;
-	dev = pci_find_device(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_VIPER_7410, 0);
+	dev = pci_find_device(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_SB768_7440, 0);
 	if (dev != NULL) {
 		unsigned char byte;
 		pci_read_config_byte(dev, 0x46, &byte);

@@ -316,7 +316,7 @@ constant_register_values:
 #endif
 
 	/* Most aggressive settings possible */
-	.long 0x78, 0xc0fff8c4, (1<<29)|(1<<28)|(1<<27)|(2<<24)|(2<<9)|DRT_CL|(1<<3)|(1<<1)|(1<<0)
+	.long 0x78, 0xc0fff8c0, (1<<29)|(1<<28)|(1<<27)|(2<<24)|(2<<9)|DRT_CL|(1<<3)|(3<<1)|(1<<0)
 
 	/* FIXME why was I attempting to set a reserved bit? */
 	/* 0x0100040f */
@@ -1332,7 +1332,7 @@ cas_latency_80:
 	 * I am not prepared to change this value, to the intel recommended value
 	 * of 0x0d.  Eric Biederman
  	 */
-	.byte 0x05, 0x01, 0x06 
+	.byte 0x05, 0x0d, 0x06 
 cas_latency_78:
 	.byte DRT_CAS_1_5, DRT_CAS_2_0, DRT_CAS_2_5
 
@@ -1539,8 +1539,9 @@ spd_get_dram_timing:
 	/* 
 	 * tRD 
 	 */
-	/* Set to a 7 clock read delay */
+	/* Set to a 6 clock read delay */
 	andl	$~(7<<24), %esi
+	orl	$(1<<24), %esi   
 
 	/*
 	 * Back to Back Read Turn Around

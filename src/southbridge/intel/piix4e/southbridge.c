@@ -69,7 +69,6 @@ southbridge_fixup()
 	}
 
         printk_info("done.\n");
-
 }
 
 void nvram_on()

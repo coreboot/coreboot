@@ -531,8 +531,10 @@ RET_LABEL(ram_set_registers)
 	 * Routine:	sdram_spd_get_dimm_size
 	 * Arguments:	%bl SMBUS_MEM_DEVICE
 	 * Results:	
-	 *		%edi log base 2 size of DIMM side 1 in bits
-	 *		%esi log base 2 size of DIMM side 2 in bits
+	 *		%edi log base 2 size of DIMM side 1 in bits upper 16 
+	 *			bits have the chip size.
+	 *		%esi log base 2 size of DIMM side 2 in bits upper 16 
+         *                      bits have the chip size.
 	 *
 	 * Preserved:	%ebx (except %bh), %ebp
 	 *
@@ -577,6 +579,16 @@ sdram_spd_get_dimm_size:
 	bsrl	%eax, %ecx	/* compute cheap log base 2 */
 	addl	%ecx, %edi
 
+	movb	$13, %bh	/* chip width */
+	CALLSP(smbus_read_byte)
+	jz	sdram_spd_get_dimm_size_out
+	andl	$0xff, %eax
+	bsrl	%eax, %ecx	/* compute cheap log base 2 */
+	movl	%edi, %eax
+	addl	%ecx, %edi	/* edi now has the chip base 2 size in bits */
+	shll	$16, %edi	/* move the value to the top 16 bits */
+	orl	%eax, %edi	/* restore part of the dimm size */
+
 	/* Get the module data width and convert it to a power of two */
 	movb	$7, %bh		/* (high byte) */
 	CALLSP(smbus_read_byte)
@@ -611,9 +623,13 @@ sdram_spd_get_dimm_size:
 	movl	%eax, %ecx
 	andl	$0xf, %ecx
 	subl	%ecx, %esi	/* Subtract out rows on side 1 */
+	shll	$16,%ecx
+	subl	%ecx, %esi	/* Subtract out rows on side 1 */
 	shrl	$4, %eax
 	andl	$0xf, %eax
 	addl	%eax, %esi	/* Add in rows on side 2 */
+	shll	$16, %eax
+	addl	%eax,%esi
 
 	movb	$4, %bh		/* columns */
 	CALLSP(smbus_read_byte)
@@ -621,9 +637,13 @@ sdram_spd_get_dimm_size:
 	movl	%eax, %ecx
 	andl	$0xf, %ecx
 	subl	%ecx, %esi	/* Subtract out columns on side 1 */
+	shll	$16,%ecx
+	subl	%ecx, %esi	/* Subtract out rows on side 1 */
 	shrl	$4, %eax
 	andl	$0xf, %eax
 	addl	%eax, %esi	/* Add in columns on side 2 */
+	shll	$16, %eax
+	addl	%eax,%esi
 
 sdram_spd_get_dimm_size_out:
 	RET_LABEL(sdram_spd_get_dimm_size)
@@ -632,7 +652,8 @@ sdram_spd_get_dimm_size_out:
 	/*
 	 * Routine:	set_dimm_size
 	 * Arguments:	%esp return address
-	 *              %edi width of the dimm in bits
+	 *              %edi 0-15 width of the dimm in bits
+	 *              %edi 16-31 width of the chips in bits
 	 *		%edx dim base register
 	 *
 	 * Preserved:	%ebx, %esi
@@ -645,8 +666,11 @@ sdram_spd_get_dimm_size_out:
 set_dimm_size:
 	/* Convert ram width in bits to log base 2 ram size in 8MB quantities */
 	xorl	%eax, %eax
-	subl	$26, %edi
+	movl	%edi, %ecx
+	andl	$0x0ff, %ecx
+	subl	$26, %ecx
 	jb	1f
+	subl	$26, %edi
 
 	/* Compute the ignore bits for the DIMM side 1 */
 	movl	%edi, %ecx
@@ -658,7 +682,8 @@ set_dimm_size:
 	/* Add in the addressing mode */
 	shll	$7, %eax
 	orl	$3, %eax	/* Set the enable and mode 1 */
-	cmpl	$32, %edi	/* 256MB */
+	shrl	$16, %ecx
+	cmpl	$28, %ecx	/* 512Mbits chip size row+col+banks+chip_width */
 	jb	1f
 	xorl	$6, %eax	/* Clear mode 1 set mode 2 */
 1:
@@ -843,6 +868,12 @@ order_next_dimm:
 
 	/* Increment the top of memory */
 	addl	%edx, %ebp
+	cmpl	%edx, %ebp
+	jnc	tom_ok
+	/* top of memory overflowed 4 gig */
+	andl	$0x000000ff, %ebp
+	orl	$0xfc000000, %ebp  
+tom_ok:
 
 	/* Write the base register */
 	PCI_WRITE_CONFIG_DWORD
@@ -1403,6 +1434,7 @@ get_dimm_row_cycle_setting:
 	 * units SPD byte 41 is in
 	 */
 	jnz	get_dimm_row_cycle_setting_new
+
 	movb	$30, %bh
 	CALLSP(smbus_read_byte)
 	jz	get_dimm_row_cycle_setting_error
@@ -1435,10 +1467,25 @@ get_dimm_row_cycle_setting_low:
 	jmp	set_dimm_row_cycle_setting
 
 dimm_row_new_cycle_setting_msg:
-	.string "\r\n Newly defined SPD byte 41 populated please update the code to handle this\r\n"
+	.string "\r\n ERROR - Memory tRC is to slow for bus speed. \r\n"
 get_dimm_row_cycle_setting_new:
-	CONSOLE_DEBUG_TX_STRING($dimm_row_new_cycle_setting_msg)
-	/* fall through */
+
+	/* %eax has the delay time in nanoseconds. 
+	   To get the cycles delay, devide time by nano sec per bus cycle */
+	movl	MEM_NS_PER_CYCLE(%ebp), %edx
+	addb	%dl, %al	/* Make certain to round up */
+	subb	$1, %al
+	divb	%dl, %al
+	subb	$3, %al
+	movb	%al, %ah
+	andb	$0xf8, %ah	/* test for overflow of max 7 */
+	jz	2f
+	movl	%ebx, %ecx
+	CONSOLE_WARNING_INLINE_TX_STRING($dimm_row_new_cycle_setting_msg)
+	movl	%ecx, %ebx
+	movb	$7, %al		/* overflow, so make it it max of 7 */
+2:
+	jmp set_dimm_row_cycle_setting
 
 get_dimm_row_cycle_setting_error:
 	stc	
@@ -2018,8 +2065,6 @@ ram_set_spd_registers:
 	 * Effects:	After this routine has been run you can access
 	 *		memory on the currently plugged in DIMMS.
 	 */
-ram_enabled:	.string "Ram Enabled\r\n"
-
 enable_sdram:
 	/* Recalibrate the PDL timing registers */
 	movl	$0x80000140, %eax
@@ -2052,8 +2097,6 @@ enable_sdram_wait:
 	inl	%dx, %eax
 	testl	$(1 << 23), %eax /* Wait until the mode register is set */
 	jnz enable_sdram_wait	
-
-	CONSOLE_DEBUG_TX_STRING($ram_enabled)
 
 	RET_LABEL(enable_sdram)
 

@@ -15,27 +15,35 @@
  *      condition is signaled clear the CMOS ram.
  *
  * Step 4:  Test for which copy of linuxbios to boot.
- *     We use 2 bits of CMOS ram.
+ *
+ *     We use 6 bits of CMOS ram.
  *     Bit 0: Initial boot direction
  *            0 - Boot the failsafe image.
  *            1 - Boot the other image.
  *     Bit 1: Reboot direction
  *            0 - Boot the failsafe image.
  *            1 - Boot the other image.
+ *     Bits 4-7: Reboot count
  *
  *     On initial boot we read bit0, and write it to bit1, and clear
- *     bit0.  
+ *     bit0.  Additionally we clear bit1 if we bit0 was initially set
+ *     and we have reached the maximum boot count. 
  *
  *     On a reboot the bits are not touched.
  *     
  *     Then the appropriate image is jumped to.
- *
  *    
  */
 #include "82801.h"
 #include <pc80/mc146818rtc.h>
 #include <part/fallback_boot.h>
 
+#ifndef MAX_REBOOT_CNT
+#error "MAX_REBOOT_CNT not defined"
+#endif
+#if MAX_REBOOT_CNT > 15
+#error "MAX_REBOOT_CNT to large"
+#endif
 
 	/* Intel systems magically stop the second cpu in hardware */
 	testb	%al, %al
@@ -108,17 +116,33 @@ __rtc_ok:
 	outb	%al, $0x70
 	inb	$0x71, %al
 
-	/* Transfer the boot bit from bit 0 to bit 1. 
-	 * And clear bit 0 so that unless we say it works we 
-	 * fallback to the other bios image immediately.
-	 */
 	movb	%al, %bl
-	andb	$0xfc, %al
-	andb	$1, %bl
-	shlb	%bl
+	movb	%al, %cl
+	andb	$0x0c, %al	/* Remove the boot bits from %al */
+	shrb	$4, %cl		/* Isolate the boot count */
+
+	/* If we are in fallback mode set the reboot count to max */
+	testb	$1, %bl
+	jnz	__reboot_cnt_read
+	movb	$MAX_REBOOT_CNT, %cl
+__reboot_cnt_read:
+	/* Increment the reboot count and see if we have hit the limit */
+	incb	%cl
+	cmpb	$MAX_REBOOT_CNT, %cl
+	jb	__reboot_cnt_ok
+__reboot_cnt_bad:
+	xorb	%cl, %cl	/* clear the boot count in fallback */
+	xorb	%bl, %bl	/* clear the boot bits in fallback */
+	jmp	__reboot_cnt_set
+
+__reboot_cnt_ok:
+	movb	$((1<<1)|(1<<0)), %bl	/* Set boot_option=1 last_boot=1 */
+	/* Save the new boot bits */
+__reboot_cnt_set:
+	shlb	$4, %cl
 	orb	%bl, %al
+	orb	%cl, %al
 	outb	%al, $0x71
 
 	testb	$(1<<1), %al
 	jnz	__normal_image
-

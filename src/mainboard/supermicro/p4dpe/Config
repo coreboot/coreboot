@@ -99,6 +99,10 @@ object irq_tables.o HAVE_PIRQ_TABLE
 ###
 ### Build options
 ###
+##
+
+## Number of consecutive times boot failures triggers a boot into fallback mode.##
+option MAX_REBOOT_CNT=8
 
 ##
 ## Location of the DIMM EEPROMS on the SMBUS

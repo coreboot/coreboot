@@ -93,4 +93,3 @@ void video_tx_byte(unsigned char byte)
 	write_crtc((video_col + (video_line *COLS)) >> 8, CRTC_CURSOR_HI);
 	write_crtc((video_col + (video_line *COLS)) & 0x0ff, CRTC_CURSOR_LO);
 }
-

@@ -354,7 +354,6 @@ NO FUNCTIONS YET!
 
 
 /* originally this macro was from STPC BIOS */
-/* kevin/Ispiri - changed to default to serial port POST codes */
 #define	intel_chip_post_macro(value)			 \
 	movb	$value, %al				; \
 	outb	%al, $0x80

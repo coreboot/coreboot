@@ -36,8 +36,7 @@ ldscript arch/i386/lib/id.lds
 
 #mainboardinit arch/i386/lib/noop_failover.inc USE_NORMAL_IMAGE
 #mainboardinit southbridge/amd/amd766/cmos_reset_failover.inc USE_FALLBACK_IMAGE
-#ldscript arch/i386/lib/failover.lds USE_FALLBACK_IMAGE
-ldscript arch/i386/lib/failover-noz.lds USE_FALLBACK_IMAGE
+ldscript arch/i386/lib/failover.lds USE_FALLBACK_IMAGE
 
 ##
 ## We aren't a reset so shutdown the second cpu if present.
@@ -92,7 +91,6 @@ mainboardinit mainboard/tyan/guiness/mainboard_raminit.inc
 ##
 northbridge amd/amd76x
 southbridge amd/amd766
-#mainboardinit arch/i386/smp/secondary.inc
 nsuperio winbond/w83627hf com1={1} com2={0} floppy=1 lpt=1 keyboard=1
 dir ../../../pc80
 dir /src/superio/winbond/w83627hf
@@ -210,7 +208,7 @@ option FINAL_MAINBOARD_FIXUP=1
 ## This is useful for optional includes
 ##
 option USE_FALLBACK_IMAGE=0
-expr BUILD_NORMAL_IMAGE=!USE_FALLBACK_IMAGE
+expr USE_NORMAL_IMAGE=!USE_FALLBACK_IMAGE
 
 ###
 ### LinuxBIOS layout values
@@ -220,7 +218,7 @@ expr BUILD_NORMAL_IMAGE=!USE_FALLBACK_IMAGE
 option ROM_SIZE=524288
 
 ## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
-option ROM_IMAGE_SIZE=65535
+option ROM_IMAGE_SIZE=49152
 
 ##
 ## Use a small 8K stack
@@ -241,24 +239,20 @@ expr USE_OPTION_TABLE=!USE_FALLBACK_IMAGE
 ## Compute the location and size of where this firmware image
 ## (linuxBIOS plus bootloader) will live in the boot rom chip.
 ##
-expr ROM_SECTION_SIZE  =(USE_FALLBACK_IMAGE*65536)+(BUILD_NORMAL_IMAGE*(ROM_SIZE - 65536))
-expr ROM_SECTION_OFFSET=(USE_FALLBACK_IMAGE*(ROM_SIZE-65536))+(BUILD_NORMAL_IMAGE*0)
+expr ROM_SECTION_SIZE  =(USE_FALLBACK_IMAGE*65536)+(USE_NORMAL_IMAGE*(ROM_SIZE - 65536))
+expr ROM_SECTION_OFFSET=(USE_FALLBACK_IMAGE*(ROM_SIZE-65536))+(USE_NORMAL_IMAGE*0)
 
 ##
 ## Compute the start location and size size of
 ## The linuxBIOS bootloader.
 ##
-#expr ZKERNEL_START =(0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
-
-expr ZKERNEL_START = 0xfff80000
+expr ZKERNEL_START =(0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
 expr PAYLOAD_SIZE  =ROM_SECTION_SIZE - ROM_IMAGE_SIZE
 
 ##
 ## Compute where this copy of linuxBIOS will start in the boot rom
 ##
-#expr _ROMBASE      =ZKERNEL_START + PAYLOAD_SIZE
-expr _ROMBASE = 0xffff0000 - ( 0x10000 * BUILD_NORMAL_IMAGE)
-
+expr _ROMBASE      =ZKERNEL_START + PAYLOAD_SIZE
 
 ##
 ## Compute a range of ROM that can cached to speed up linuxBIOS,

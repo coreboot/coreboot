@@ -6,7 +6,7 @@
 void nvram_on(void)
 {
 	struct pci_dev *dev;
-	dev = pci_find_device(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_VIPER_7410, 0);
+	dev = pci_find_device(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_SB768_7440, 0);
 	if (dev != NULL) {
 		u8 segen;
 		pci_read_config_byte(dev, 0x43, &segen);

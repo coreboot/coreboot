@@ -34,7 +34,11 @@
  */
 #include <pc80/mc146818rtc.h>
 #include <part/fallback_boot.h>
-	
+
+#if 0
+#define MAX_REBOOT_CNT 8
+#endif
+
 	/* See if the CMOS error condition has been flagged */
 	movb	$RTC_REG_D, %al
 	outb	%al, $0x70
@@ -44,7 +48,7 @@
 	jz	__rtc_failed
 
 	/* Compute the cmos checksum, and see if it is valid */
-	movb	$PC_CKS_RANGE_START, %bl
+	movb	$LB_CKS_RANGE_START, %bl
 	xorl	%ecx, %ecx
 1:
 	movb	%bl, %al
@@ -53,16 +57,16 @@
 	inb	$0x71, %al
 	addl	%eax, %ecx
 	incb	%bl
-	cmpb	$PC_CKS_RANGE_END, %bl
+	cmpb	$LB_CKS_RANGE_END, %bl
 	jbe	1b
 
 	/* Compute the cmos checksum, and see if it is valid */
 	/* Read the stored checksum */
-	movb	$(PC_CKS_LOC), %al
+	movb	$(LB_CKS_LOC), %al
 	outb	%al,$0x70
 	inb	$0x71, %al
 	movb	%al, %bh
-	movb	$(PC_CKS_LOC+1), %al
+	movb	$(LB_CKS_LOC+1), %al
 	outb	%al, $0x70
 	inb	$0x71, %al
 	movb	%al, %bl
@@ -81,6 +85,7 @@ __rtc_failed:
 	outb	%al, $0x70
 	inb	$0x71, %al
 	andb	$0xfc, %al
+	orb	$(MAX_REBOOT_CNT << 4), %al
 	outb	%al, $0x71
 	jmp	__rtc_ok
 
@@ -89,29 +94,44 @@ __rtc_ok:
 	movb	$RTC_BOOT_BYTE, %al
 	outb	%al, $0x70
 	inb	$0x71, %al
-
+	testb	$1, %al		/* are we in normal mode */
+	jz	2f
+	andb	$0x0f, %al	/* if yes, clear the boot count */
 	/* Transfer the boot bit from bit 0 to bit 1. 
 	 * And clear bit 0 so that unless we say it works we 
 	 * fallback to the other bios image immediately.
 	 */
+2:	movb	%al, %bl
+	shrb	$4, %bl		/* are we already at the max cnt */
+	cmpb	$MAX_REBOOT_CNT, %bl
+	jz	1f
+	addb	$(1<<4), %al	/* no, so add one count */
 	movb	%al, %bl
-	andb	$0xfc, %al
-	andb	$1, %bl
+	shrb	$4, %bl		/* now are we at the max count */
+	cmpb	$MAX_REBOOT_CNT, %bl
+	jnz	1f
+	andb	$0xfc, %al	/* yes, so put in fallback mode */
+1:	movb	%al, %bl
+	testb	$0xe0, %al	/* is this the first boot */
+	jnz	2f
+	andb	$1, %bl		/* if yes, shift the boot bits */
 	shlb	%bl
+	andb    $0xfc, %al
 	orb	%bl, %al
-	outb	%al, $0x71
-
-	testb	$(1<<1), %al
+2:	outb	%al, $0x71	/* save the boot byte */
+	movb    %al, %bl
+	shrb    $4, %bl         /* are we at the max count */
+	cmpb    $MAX_REBOOT_CNT, %bl
 	jz	__failover_boot
 
 	/* Enable 4MB rom access at 0xFFC00000 - 0xFFFFFFFF */
-	movl	$(0x80000000 | AMD766_DEV | 0x40), %eax
+	movl	$(0x80000000 | AMD768_DEV | 0x40), %eax
 	movw	$0xcf8, %dx
 	outl	%eax, %dx
 	movw	$(0xcfc + 3), %dx
 	inb	%dx, %al
 	orb	$0x80, %al
 	outb	%al, %dx
-
 	jmp	__normal_image
+
 __failover_boot:

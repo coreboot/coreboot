@@ -244,7 +244,29 @@ do_module_size(unsigned char slot) { /*, unsigned char base) */
 }
 
 static void sdram_set_spd_registers(const struct mem_controller *ctrl) {
+  #define T133 7
+  unsigned char Trp = 1, Tras = 1, casl = 2, val;
+  unsigned char timing = 0xe4;
+  /* read Trp */
+  val = smbus_read_byte(0xa0, 27);
+  if (val < 2*T133)
+    Trp = 1;
+  val = smbus_read_byte(0xa0, 30);
+  if (val < 5*T133)
+    Tras = 0;
+  val = smbus_read_byte(0xa0, 18);
+  if (val < 8)
+    casl = 1;
+  if (val < 4)
+    casl = 0;
 
+  val = (Trp << 7) | (Tras << 6) | (casl << 4) | 4;
+
+  print_err_hex8(val); print_err(" is the computed timing\n");
+  /* don't set it. Experience shows that this screwy chipset should just
+   * be run with the most conservative timing.
+   * pci_write_config8(0, 0x64, val);
+   */
 }
 
 static void sdram_enable(int controllers, const struct mem_controller *ctrl) {

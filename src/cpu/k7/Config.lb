@@ -1,3 +1,4 @@
 uses k7
 uses CPU_FIXUP
+dir /cpu/p6
 #object cpufixup.o

@@ -145,18 +145,21 @@ mainboardinit cpu/k8/disable_mmx_sse.inc
 ###
 northbridge amd/amdk8
 end
-southbridge amd/amd8111
+southbridge amd/amd8111 "amd8111"
 end
-southbridge amd/amd8131
+southbridge amd/amd8131 "amd8131"
 end
 #mainboardinit archi386/smp/secondary.inc
 superio NSC/pc87360
 	register "com1" = "{1}"
 	register "lpt" = "{1}"
 end
-dir /pc80
+# dir /pc80
 ##dir /src/superio/winbond/w83627hf
-cpu p5 end
-cpu p6 end
-cpu k7 end
-cpu k8 end
+dir /cpu/k8
+cpu k8 "cpu0" 
+  register "up" = "{.chip = &amd8111, .ht_width=8, .ht_speed=200}"
+end
+
+cpu k8 "cpu1" 
+end

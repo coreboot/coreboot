@@ -4,6 +4,9 @@
 #include <cpu/p6/msr.h>
 #include <cpu/k8/mtrr.h>
 #include <device/device.h>
+#include <device/chip.h>
+
+#include "chip.h"
 
 void k8_cpufixup(struct mem_range *mem)
 {
@@ -51,3 +54,27 @@ void k8_cpufixup(struct mem_range *mem)
 	msr.lo |= SYSCFG_MSR_MtrrVarDramEn | SYSCFG_MSR_TOM2En;
 	wrmsr(SYSCFG_MSR, msr);
 }
+
+static
+void k8_enable(struct chip *chip, enum chip_pass pass)
+{
+
+        struct cpu_k8_config *conf = (struct cpu_k8_config *)chip->chip_info;
+
+        switch (pass) {
+        case CONF_PASS_PRE_CONSOLE:
+                break;
+        default:
+                /* nothing yet */
+                break;
+        }
+}
+
+struct chip_control cpu_k8_control = {
+        enable: k8_enable,
+        name:   "AMD K8"
+};
+
+
+
+

@@ -1,4 +1,6 @@
 uses CPU_FIXUP
+dir /cpu/k7
+config chip.h
 if CPU_FIXUP
   object cpufixup.o
   object apic_timer.o

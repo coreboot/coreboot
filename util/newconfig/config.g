@@ -21,6 +21,9 @@ alloptions = 0 # override uses at top level
 local_path = re.compile(r'^\.')
 include_pattern = re.compile(r'%%([^%]+)%%')
 
+# the cpu type for this mainboard
+cpu_type = 0
+
 # -----------------------------------------------------------------------------
 #                    Utility Classes
 # -----------------------------------------------------------------------------
@@ -1062,8 +1065,22 @@ def target(name):
 	print "Will place Makefile, crt0.S, etc. in %s" % target_dir
 
 
+def cpudir(path):
+	global cpu_type
+	if (cpu_type and (cpu_type != path)):
+		fatal("Two different CPU types: %s and %s" % (cpu_type, path))
+	srcdir = "/cpu/%s" % path
+	dodir(srcdir, "Config.lb")
+	cpu_type = path
+	
 def part(type, path, file, name):
 	global curimage, dirstack, partstack
+	# special case for 'cpu' parts. 
+	# we could add a new function too, but this is rather trivial.
+	# if the part is a cpu, and we haven't seen it before, 
+	# arrange to source the directory /cpu/'type'
+	if (type == 'cpu'):
+		cpudir(path)
 	partdir = os.path.join(type, path)
 	srcdir = os.path.join(treetop, 'src')
 	fulldir = os.path.join(srcdir, partdir)

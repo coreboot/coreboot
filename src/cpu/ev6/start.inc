@@ -230,7 +230,22 @@ PAL_CALL_DUMMY(EV6__CALL_PAL_82_ENTRY)
 PAL_CALL_DUMMY(EV6__CALL_PAL_83_ENTRY)
 PAL_CALL_DUMMY(EV6__CALL_PAL_84_ENTRY)
 PAL_CALL_DUMMY(EV6__CALL_PAL_85_ENTRY)
-PAL_CALL_DUMMY(EV6__CALL_PAL_86_ENTRY)
+
+#if 0
+/* PAL_CALL_DUMMY(EV6__CALL_PAL_86_ENTRY) */
+#else
+	/* imb */
+PAL_EXCEPT(IMB, EV6__CALL_PAL_86_ENTRY)
+	mb
+	bis	zero, zero, zero		/* nop */
+	bis	zero, zero, zero		/* nop */
+	bis	zero, zero, zero		/* nop */
+
+	hw_mtpr zero, EV6__IC_FLUSH		/* (4,0L) flush the icache
+	bne	zero, .				/* pvc #24 */
+	hw_ret/stall(p7)			/* return with stall */
+#endif
+
 PAL_CALL_DUMMY(EV6__CALL_PAL_87_ENTRY)
 PAL_CALL_DUMMY(EV6__CALL_PAL_88_ENTRY)
 PAL_CALL_DUMMY(EV6__CALL_PAL_89_ENTRY)
@@ -342,6 +357,10 @@ Mstart:	bne	t2, Move
 	FETCH_BLOCK_ALIGN
 	hw_mtpr	zero, EV6__ITB_IA
 	hw_mtpr	zero, EV6__DTB_IA
+
+	/* flush I_CACHE */
+	FETCH_BLOCK_ALIGN
+	hw_mtpr	zero, EV6__IC_FLUSH
 
 	/* clear i_stat & dc_stat */
 	LOAD_CONSTANT32(t0, EV6__I_STAT__W1C)

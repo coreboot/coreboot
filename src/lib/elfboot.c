@@ -6,6 +6,48 @@
 #include <string.h>
 #include <subr.h>
 
+extern unsigned char _text;
+extern unsigned char _etext;
+extern unsigned char _rodata;
+extern unsigned char _erodata;
+extern unsigned char _data;
+extern unsigned char _edata;
+extern unsigned char _bss;
+extern unsigned char _ebss;
+extern unsigned char _heap;
+extern unsigned char _eheap;
+extern unsigned char _stack;
+extern unsigned char _estack;
+struct range {
+	unsigned long start;
+	unsigned long end;
+};
+#define RANGE(SEGMENT) { (unsigned long)&_ ## SEGMENT, (unsigned long)&_e ## SEGMENT }
+static struct range bad_ranges[] = {
+	RANGE(text),
+	RANGE(rodata),
+	RANGE(data),
+	RANGE(bss),
+	RANGE(heap),
+	RANGE(stack),
+};
+
+static int safe_range(unsigned long start, unsigned long len)
+{
+	/* Check through all of the segments and see if the segment
+	 * that was passed in overlaps with any of them.
+	 */
+	int i;
+	unsigned long end = start + len;
+	for(i = 0; i < sizeof(bad_ranges)/sizeof(bad_ranges[0]); i++) {
+		if ((start < bad_ranges[i].end) &&
+			(end > bad_ranges[i].start)) {
+			return 0;
+		}
+	}
+	return 1;
+}
+
 int elfboot(size_t totalram)
 {
 	static unsigned char header[ELF_HEAD_SIZE];
@@ -42,8 +84,29 @@ int elfboot(size_t totalram)
 			ELF_HEAD_SIZE)) {
 		goto out;
 	}
-
 	phdr = (Elf_phdr *)&header[ehdr->e_phoff];
+
+	/* Sanity check the segments and zero the extra bytes */
+	for(i = 0; i < ehdr->e_phnum; i++) {
+		unsigned long start;
+		unsigned char *dest, *end;
+
+		if (!safe_range(phdr[i].p_paddr, phdr[i].p_memsz)) {
+			printk("Bad memory range: [0x%016lx, 0x%016lx)\n",
+				phdr[i].p_paddr, phdr[i].p_memsz);
+			goto out;
+		}
+		dest = (unsigned char *)(phdr[i].p_paddr);
+		end = dest + phdr[i].p_memsz;
+		dest += phdr[i].p_filesz;
+
+		/* Zero the extra bytes */
+		while(dest < end) {
+			*(dest++) = 0;
+		}
+	}
+
+	
 	offset = 0;
 	while(1) {
 		Elf_phdr *cur_phdr = 0;
@@ -55,6 +118,9 @@ int elfboot(size_t totalram)
 		 */
 		for(i = 0; i < ehdr->e_phnum; i++) {
 			if (phdr[i].p_type != PT_LOAD) {
+				continue;
+			}
+			if (phdr[i].p_filesz == 0) {
 				continue;
 			}
 			if (phdr[i].p_filesz > phdr[i].p_memsz) {
@@ -71,7 +137,7 @@ int elfboot(size_t totalram)
 		if (!cur_phdr) {
 			break;
 		}
-		printk("Loading Section: addr: 0x%08x memsz: 0x%08x filesz: 0x%08x\n",
+		printk("Loading Section: addr: 0x%016lx memsz: 0x%016lx filesz: 0x%016lx\n",
 			cur_phdr->p_paddr, cur_phdr->p_memsz, cur_phdr->p_filesz);
 
 		/* Compute the boundaries of the section */
@@ -117,10 +183,7 @@ int elfboot(size_t totalram)
 			*(dest++) = get_byte();
 		}
 		offset += cur_phdr->p_filesz;
-		/* Zero the extra bytes */
-		while(dest < end) {
-			*(dest++) = 0;
-		}
+		/* The extra bytes between dest & end have been zeroed */
 	}
 
 	DBG("Jumping to boot code\n");

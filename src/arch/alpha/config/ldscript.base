@@ -52,8 +52,8 @@ SECTIONS
 	. = ALIGN(8);
 	.heap : {
 		_heap = .;			
-		/* Reserve a meg for the heap */
-		. = . + 1024*1024;
+		/* Reserve a 128K for the heap */
+		. = . + 128*1024;
 		. = ALIGN(8);
 		_eheap = .;
 	}

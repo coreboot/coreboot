@@ -65,7 +65,7 @@ NOTE: these steps are tested up to step 3, and work.
 The steps for loading linuxbios are simple:
 0) get linux installed on your LinuxBIOS machine
 1) Get Linuxbios source from the sourceforge
-2) get a 2.4.0-test12 kernel, patch it, then build it
+2) get a 2.4.7 kernel, patch it, then build it
 3) config and build linuxbios
 4) Get the MTD utilities from http://www.linux-mtd.infradead.org/ 
 	and build the 'erase' utility
@@ -92,17 +92,17 @@ cvs -z3 -d:pserver:anonymous@cvs.freebios.sourceforge.net:/cvsroot/freebios co f
 
 
 Step 2)
-o 	go to www.kernel.org and get linux-2.4.0-test12
+o 	go to www.kernel.org and get linux-2.4.7
 
 o	Once you have pulled this file down and untar'ed it, 
 	apply the proper patch from the freebios/src/kernel_patches 
 	directory.  The patch is:
 
-	linux-2.4.0-test12-sis630-sisfb_lite.patch
+	linux-2.4.7-sis.patch
 	Your patch command will look like this:
 	cd linux_directory
-	patch -p1 < ~/freebios/src/kernel_patches/linux-2.4.0-test12-sis630-sisfb_lite.patch
-o	Now copy config-2.4.0-test12.sis to .config, then
+	patch -p1 < ~/freebios/src/kernel_patches/linux-2.4.7-sis.patch
+o	Now copy config-2.4.7-sis to .config, then
 	make oldconfig
 	make clean
 	make dep
@@ -157,7 +157,7 @@ o	You now need to figure out where you want to put your build images.
 
 	# Path to your kernel (vmlinux)
 	# NOTE; you need a path to your test12 kernel here. 
-	linux /usr/src/linux-2.4.0-test12
+	linux /usr/src/linux-2.4.7-sis
 
 	# Kernel command line parameters
 	commandline root=/dev/hda1 

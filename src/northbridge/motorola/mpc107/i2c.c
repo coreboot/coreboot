@@ -1,4 +1,4 @@
-/* $Id$
+/*
  * (C) Copyright 2002
  * Humboldt Solutions Ltd, <adrian@humboldt.co.uk>
  *

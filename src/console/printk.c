@@ -4,11 +4,6 @@
  *  Copyright (C) 1991, 1992  Linus Torvalds
  *
  */
-
-#ifndef lint
-static char rcsid[] = "$Id$";
-#endif
-
 //typedef void * va_list;
 
 #include <stdarg.h>

@@ -10,9 +10,6 @@
 /*
  * Bootstrap code for the STPC Consumer
  * Copyright (c) 1999 by Net Insight AB. All Rights Reserved.
- *
- * $Id$
- *
  */
 
 /*

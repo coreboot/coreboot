@@ -1,7 +1,3 @@
-#ifndef lint
-static char rcsid[] = "$Id$";
-#endif
-
 /* Should support 8250, 16450, 16550, 16550A type uarts */
 #include <arch/io.h>
 #include <uart8250.h>

@@ -8,11 +8,6 @@
 /*
  * Wirzenius wrote this portably, Torvalds fucked it up :-)
  */
-
-#ifndef lint
-static char rcsid[] = "$Id$";
-#endif
-
 #include <stdarg.h>
 #include <string.h>
 

@@ -27,8 +27,6 @@ it with the version available from LANL.
 /*
  * Bootstrap code for the Intel
  *
- * $Id$
- *
  */
 
 /* 

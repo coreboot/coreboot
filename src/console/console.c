@@ -1,7 +1,5 @@
 /*
  * Bootstrap code for the INTEL 
- * $Id$
- *
  */
 
 #include <arch/io.h>

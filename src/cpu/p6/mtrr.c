@@ -21,8 +21,6 @@
  *
  *
  * Reference: Intel Architecture Software Developer's Manual, Volume 3: System Programming
- *
- * $Id$
  */
 
 #include <console/console.h>

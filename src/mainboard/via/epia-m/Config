@@ -9,13 +9,13 @@ ldscript cpu/i386/reset16.lds
 mainboardinit superio/via/vt1211/setup_serial.inc
 mainboardinit pc80/serial.inc
 mainboardinit arch/i386/lib/console.inc
-# mainboardinit southbridge/via/vt8235/setup_ide.inc
-# mainboardinit southbridge/via/vt8235/setup_ethernet.inc
-mainboardinit mainboard/via/epia-m/dumpdev.inc
-mainboardinit mainboard/via/epia-m/do_dumpdev.inc
-mainboardinit southbridge/via/vt8235/setup_misc.inc
+mainboardinit southbridge/via/vt8235/setup_ide.inc
+mainboardinit southbridge/via/vt8235/setup_ethernet.inc
+#mainboardinit mainboard/via/epia-m/dumpdev.inc
+#mainboardinit mainboard/via/epia-m/do_dumpdev.inc
+#mainboardinit southbridge/via/vt8235/setup_misc.inc
 mainboardinit northbridge/via/vt8623/raminit.inc
-mainboardinit mainboard/via/epia-m/do_dumpdev.inc
+#mainboardinit mainboard/via/epia-m/do_dumpdev.inc
 # mainboardinit ram/dump_northbridge.inc
 # mainboardinit mainboard/via/epia-m/do_dumpnorth.inc
 # mainboardinit ram/ramtest.inc

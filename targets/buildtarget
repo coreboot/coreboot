@@ -36,8 +36,7 @@ if [ ! -f $config_lb ]; then
 	exit 1
 fi
 
-target_subdir=`sed -n -e 's/^target \(.*\)$/\1/p' $config_lb`
-target_subdir=`dirname $config_lb`/$target_subdir
+target_subdir=$target_dir/`sed -n -e 's/^target \(.*\)$/\1/p' $config_lb`
 config_py=$target_subdir/config.py
 
 if [ ! -d $target_subdir ] ; then

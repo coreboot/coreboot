@@ -5,7 +5,7 @@
 #include <arch/io.h>
 #include "arch/romcc_io.h"
 #include "pc80/mc146818rtc_early.c"
-#include "cpu/p6/boot_cpu.c"
+#include "cpu/x86/lapic/boot_cpu.c"
 
 static void main(void)
 {

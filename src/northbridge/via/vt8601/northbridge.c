@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_ids.h>
 #include <device/hypertransport.h>
 #include <stdlib.h>
 #include <string.h>
@@ -52,7 +53,6 @@ static struct pci_driver northbridge_driver __pci_driver = {
 static void pci_domain_read_resources(device_t dev)
 {
         struct resource *resource;
-        unsigned reg;
 
         /* Initialize the system wide io space constraints */
         resource = new_resource(dev, 0);
@@ -133,7 +133,7 @@ static void pci_domain_set_resources(device_t dev)
 					ramregs[i]);
 		}
 		printk_debug("I would set ram size to 0x%x Kbytes\n", (rambits)*8*1024);
-		tomk = ramreg*8*1024;
+		tomk = rambits*8*1024;
 		/* Compute the top of Low memory */
 		tolmk = pci_tolm >> 10;
 		if (tolmk >= tomk) {
@@ -181,8 +181,6 @@ static struct device_operations cpu_bus_ops = {
 
 static void enable_dev(struct device *dev)
 {
-        struct device_path path;
-
         /* Set the operations if it is a special bus type */
         if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
                 dev->ops = &pci_domain_ops;
@@ -192,7 +190,7 @@ static void enable_dev(struct device *dev)
         }
 }
 
-struct chip_operations northbridge_via_vt8601_control = {
+struct chip_operations northbridge_via_vt8601_ops = {
 	.enable_dev = enable_dev, 
 	.name      = "VIA vt8601 Northbridge",
 };

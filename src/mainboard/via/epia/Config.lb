@@ -14,9 +14,8 @@ end
 ## Compute the start location and size size of
 ## The linuxBIOS bootloader.
 ##
-default PAYLOAD_SIZE            = ( ROM_SECTION_SIZE - ROM_IMAGE_SIZE )
 default CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
-default CONFIG_ROM_STREAM     = 1
+default PAYLOAD_SIZE            = ( ROM_SECTION_SIZE - ROM_IMAGE_SIZE )
 
 ##
 ## Compute where this copy of linuxBIOS will start in the boot rom
@@ -45,6 +44,7 @@ arch i386 end
 
 
 driver mainboard.o
+if HAVE_PIRQ_TABLE object irq_tables.o end
 #object reset.o
 
 ##
@@ -128,59 +128,63 @@ dir /pc80
 config chip.h
 
 chip northbridge/via/vt8601
-#	pci 0:0.0
-#	pci 0:1.0
-	chip southbridge/via/vt8231
-#		pci 0:11.0
-#		pci 0:11.1
-#		pci 0:11.2
-#		pci 0:11.3
-#		pci 0:11.4
-#		pci 0:11.5
-#		pci 0:11.6
-#		pci 0:12.0
-		register "enable_usb" = "0"
-		register "enable_native_ide" = "0"
-		register "enable_com_ports" = "1"
-		register "enable_keyboard" = "0"
-		register "enable_nvram" = "1"
-                chip superio/winbond/w83627hf
-                        device pnp 2e.0 on #  Floppy
-                                 io 0x60 = 0x3f0
-                                irq 0x70 = 6
-                                drq 0x74 = 2
-			end
-                        device pnp 2e.1 off #  Parallel Port
-                                 io 0x60 = 0x378
-                                irq 0x70 = 7
-			end
-                        device pnp 2e.2 on #  Com1
-                                 io 0x60 = 0x3f8
-                                irq 0x70 = 4
-			end
-                        device pnp 2e.3 off #  Com2
-                                io 0x60 = 0x2f8
-                                irq 0x70 = 3
-			end
-                        device pnp 2e.5 on #  Keyboard
-                                 io 0x60 = 0x60
-                                 io 0x62 = 0x64
-                               irq 0x70 = 1
-				irq 0x72 = 12
-			end
-                        device pnp 2e.6 off end #  CIR
-                        device pnp 2e.7 off end #  GAME_MIDI_GIPO1
-                        device pnp 2e.8 off end #  GPIO2
-                        device pnp 2e.9 off end #  GPIO3
-                        device pnp 2e.a off end #  ACPI
-                        device pnp 2e.b on  #  HW Monitor
- 				 io 0x60 = 0x290
-			end
-			register "com1" = "{1}"
-		#	register "com1" = "{1, 0, 0x3f8, 4}"
-		#	register "lpt" = "{1}"
-                end
-	end
+  device pci_domain 0 on
+    device pci 0.0 on
+      chip southbridge/via/vt8231
+        register "enable_usb" = "0"
+        register "enable_native_ide" = "0"
+        register "enable_com_ports" = "1"
+        register "enable_keyboard" = "0"
+        register "enable_nvram" = "1"
+        device pci 11.0 on            # Southbridge
+          device pci 11.1 on  end       # Ide
+          device pci 11.2 off end       # Usb
+          device pci 11.3 off end       # Usb
+          device pci 11.4 off end       # ACPI
+          device pci 11.5 off end       # Audio
+          device pci 11.6 on            # Com
+            chip superio/winbond/w83627hf
+              device pnp 2e.0 on      #  Floppy
+                 io 0x60 = 0x3f0
+                irq 0x70 = 6
+                drq 0x74 = 2
+              end
+              device pnp 2e.1 off     #  Parallel Port
+                 io 0x60 = 0x378
+                irq 0x70 = 7
+              end
+              device pnp 2e.2 on      #  Com1
+                 io 0x60 = 0x3f8
+                irq 0x70 = 4
+              end
+              device pnp 2e.3 off     #  Com2
+                 io 0x60 = 0x2f8
+                irq 0x70 = 3
+              end
+              device pnp 2e.5 on      #  Keyboard
+                 io 0x60 = 0x60
+                 io 0x62 = 0x64
+                irq 0x70 = 1
+                irq 0x72 = 12
+              end
+              device pnp 2e.6 off end #  CIR
+              device pnp 2e.7 off end #  GAME_MIDI_GIPO1
+              device pnp 2e.8 off end #  GPIO2
+              device pnp 2e.9 off end #  GPIO3
+              device pnp 2e.a off end #  ACPI
+              device pnp 2e.b on      #  HW Monitor
+                 io 0x60 = 0x290
+              end
+              register "com1" = "{1}"
+            end
+          end
+          device pci 12.0 on end        # Ethernet
+        end
+      end
+    end
+  end
+  chip cpu/via/model_centaur
+  end
 end
 
 ##
@@ -188,3 +192,4 @@ end
 ##
 mainboardinit pc80/serial.inc
 mainboardinit arch/i386/lib/console.inc
+

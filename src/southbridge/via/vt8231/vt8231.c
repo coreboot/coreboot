@@ -161,11 +161,9 @@ static const unsigned char slotIrqs[4] = { 5, 10, 12, 11 };
 	PCI slot is AD31          (device 15) (00:14.0)
 	Southbridge is AD28       (device 12) (00:11.0)
 */
-static void pci_routing_fixup(void)
+static void pci_routing_fixup(struct device *dev)
 {
-	device_t dev;
 
-        dev = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8231, 0);
 	printk_info("%s: dev is %p\n", __FUNCTION__, dev);
 	if (dev) {
 		/* initialize PCI interupts - these assignments depend
@@ -423,33 +421,21 @@ static void vt8231_init(struct southbridge_via_vt8231_config *conf)
 	rtc_init(0);
 }
 
-static void southbridge_init(struct chip *chip, enum chip_pass pass)
-{
-
-	struct southbridge_via_vt8231_config *conf = 
-		(struct southbridge_via_vt8231_config *)chip->chip_info;
-
-	switch (pass) {
-	case CONF_PASS_PRE_PCI:
-		vt8231_pci_enable(conf);
-		break;
-		
-	case CONF_PASS_POST_PCI:
-		vt8231_init(conf);
-		pci_routing_fixup();
-		break;
-
-	case CONF_PASS_PRE_BOOT:
-		dump_south();
-		break;
-		
-	default:
-		/* nothing yet */
-		break;
-	}
+static void southbridge_init(struct device *dev) {
+	vt8231_init(dev->chip_info);
+	pci_routing_fixup(dev);
 }
 
-struct chip_operations southbridge_via_vt8231_control = {
-	.enable    = southbridge_init,
-	.name      = "VIA vt8231"
+struct device_operations vt8231_dev_ops = {
+	.init = &southbridge_init,
+};
+
+static void southbridge_enable(struct device *dev)
+{
+	dev->ops = &vt8231_dev_ops;	
+}
+
+struct chip_operations southbridge_via_vt8231_ops = {
+	.enable_dev	= southbridge_enable,
+	.name		= "VIA vt8231"
 };

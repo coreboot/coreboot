@@ -68,6 +68,7 @@ default HAVE_OPTION_TABLE=1
 
 ## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
 default ROM_IMAGE_SIZE = 65536
+default FALLBACK_SIZE = 131072
 
 ##
 ## Use a small 8K stack
@@ -87,4 +88,7 @@ default USE_OPTION_TABLE = 0
 
 default _RAMBASE = 0x00004000
 
+default CONFIG_ROM_STREAM     = 1
+
 end
+

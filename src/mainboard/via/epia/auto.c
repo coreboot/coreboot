@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 #include <device/pci_def.h>
-#include <cpu/p6/apic.h>
+#include <cpu/x86/lapic.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
@@ -11,7 +11,7 @@
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
 #include "northbridge/via/vt8601/raminit.h"
-#include "cpu/p6/earlymtrr.c"
+#include "cpu/x86/mtrr/earlymtrr.c"
 
 /*
  */
@@ -23,7 +23,7 @@ void udelay(int usecs)
 }
 
 #include "lib/delay.c"
-#include "cpu/p6/boot_cpu.c"
+#include "cpu/x86/lapic/boot_cpu.c"
 #include "debug.c"
 
 #include "southbridge/via/vt8231/vt8231_early_smbus.c"
@@ -96,8 +96,6 @@ static void enable_shadow_ram(void)
 static void main(void)
 {
 	unsigned long x;
-	/*	init_timer();*/
-	outb(5, 0x80);
 	
 	enable_vt8231_serial();
 

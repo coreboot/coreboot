@@ -267,11 +267,14 @@ void *smp_write_floating_table(unsigned long addr);
 unsigned long write_smp_table(unsigned long addr);
 
 #else /* HAVE_MP_TABLE */
+#if 0
 static inline 
-unsigned long write_smp_table(unsigned long addr);
+unsigned long write_smp_table(unsigned long addr)
 {
 	return addr;
 }
+#endif
+#define write_smp_table(addr)	addr
 #endif /* HAVE_MP_TABLE */
 
 #endif

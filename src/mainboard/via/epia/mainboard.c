@@ -7,8 +7,8 @@
 #include <arch/io.h>
 #include "chip.h"
 
-static int
-mainboard_scan_bus(device_t root, int maxbus) 
+static unsigned int
+mainboard_scan_bus(device_t root, unsigned int maxbus) 
 {
 	int retval;
 	printk_spew("%s: root %p maxbus %d\n", __FUNCTION__, root, maxbus);
@@ -31,7 +31,7 @@ static void enable_dev(device_t dev)
 	dev->ops = &mainboard_operations;
 }
 
-struct chip_operations mainboard_via_epia_control = {
+struct chip_operations mainboard_via_epia_ops = {
 	.enable_dev = enable_dev,
 	.name       = "VIA EPIA mainboard ",
 };

@@ -15,12 +15,16 @@ superio NSC/pc87309
 option ENABLE_FIXED_AND_VARIABLE_MTRRS
 option PIIX4_DEVFN=0x38
 option NO_KEYBOARD
+option HAVE_PIRQ_TABLE
 option ZKERNEL_START=0xfffc0000
 option ZKERNEL_MASK=0x7f 
 option L440BX
 
 object mainboard.o
+object irq_tables.o
 
 cpu p6
 cpu p5
+
+
 

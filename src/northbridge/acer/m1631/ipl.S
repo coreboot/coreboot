@@ -42,7 +42,7 @@ it with the version available from LANL.
 #define INIT_MCR $0xf6621000
 #define WDELAY movw	$0x1000, ax; 1: dec %ax; jnz 1b
 #undef WDELAY
-#define WDELAY outb %al, %dx; jmp 1f; 1: outb %al, %dx
+#define WDELAY outb %al, $0x80; jmp 1f; 1: outb %al, $0x80
 #define WRITE_MCR0 movl %ecx, %eax ;  outl %eax, %dx ; WDELAY
 /*#include <cpu/p5/start32.inc>*/
 .org 0xfe000
@@ -143,7 +143,7 @@ code16
 /*	movb	$0x8000006c, %al
 	CALLSP(pci_read_dword)*/
 	movb	$0xfc, %dl
-	movl	$0xf662f83c, %ecx
+	movl	$0xf663f83c, %ecx
 	WRITE_MCR0
 // Not only does this not work, it screws up the programming. 
 #if 0
@@ -168,6 +168,7 @@ nonregistered:
 	 */
 	andb	$0xf0, %cl
 	/* test 8 bit CAS */
+Secondtry: 
 	movl	$0x800, %esi
 	movb	$0, (%edi)
 	movb	$1, (%esi) // esi is at 0x800
@@ -185,14 +186,28 @@ nonregistered:
 	cmpb	$0, (%edi)
 	jnz	sizeram
 	inc	%cl
+	roll	%esi
+	movb	$4, (%esi) // esi is at 0x4000
+	cmpb	$0, (%edi)
+	jnz	sizeram
+#if 0
+	// This code does not work ...
+	// OK, nothing matched. 
+	// This could be 64MB 2 internal banks. Dammit.
+	andb	$0xf0, %cl
+	orb	$0x0a, %cl
+	WRITE_MCR0
+	jmp	secondtry
+#endif
+
 	
 sizeram:		
 	rorl	$16, %ecx
 	/* clear the 'no multi page' bit. */
 	/* NOTE: 3/22/01 -- I think this is wrong! -- rgm
 	 * I think we should OR IN 0x1000, which we already did!
-	 */
 	andw	$0xefff, %cx
+	 */
 	WRITE_MCR0 
 	/*
 	mov	$0x6c, %al
@@ -207,8 +222,6 @@ sizeram:
 	/* clear the size out to 4 MB */
 	andb	$0xf8, %cl
 	/* 4 MB */
-	// esi is at 0x2000 at this point. To get to 0x400000, 
-	// roll it 13 bits
 	movl	$0x400000, %esi
 1:
 #ifdef USE_BIG_REAL
@@ -233,8 +246,8 @@ sizeram:
 	orb	$1, %cl
 /* COMMENT 3-22-01 RGM -- I THINK WE WANT THIS HERE TO TURN
  * MULTIBANK ON
-	andw	$0xefff, %cx
  */
+	andw	$0xefff, %cx
 	WRITE_MCR0
 	/*
 	mov	$0x6c, %al
@@ -255,15 +268,18 @@ sizeram:
 	cmpb	$0, (%edi)
 	jz	1f /* 4 banks */
 	/* NOTE 03-22-01 RGM
-	 * I THINK THIS SHOULD BE 0x180000!
+	 * I THINK THIS SHOULD BE 0x1800000!
          */
-	orl	$0x80000, %ecx
+	orl	$0x1800000, %ecx
+	jmp	2f
 	/* clear 4 banks */
+1:
 	andb	$0xfe, %cl
-1: 
+2: 
 	WRITE_MCR0
 	
-	movl	$0x8000007c, %eax
+/* Next line ASSUMES that eax contains 8000000xx
+	movb	$0x7c, %al
 	movb	$0xf8, %dl
 	outl	%eax, %dx
 	movl	$0x2428c411, %eax

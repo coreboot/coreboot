@@ -130,6 +130,53 @@ static void setup_parallel(struct superio *sio)
 	}
 }
 
+// test a non-fifo uart init. Stupid chip.
+/* Line Control Settings */
+#ifndef TTYS0_LCS
+/* Set 8bit, 1 stop bit, no parity */
+#define TTYS0_LCS       0x3
+#endif
+
+#define UART_LCS        TTYS0_LCS
+
+/* Data */
+#define UART_RBR 0x00
+#define UART_TBR 0x00
+
+
+        
+/* Control */
+#define UART_IER 0x01
+#define UART_IIR 0x02
+#define UART_FCR 0x02
+#define UART_LCR 0x03
+#define UART_MCR 0x04
+#define UART_DLL 0x00
+#define UART_DLM 0x01
+
+/* Status */
+#define UART_LSR 0x05
+#define UART_MSR 0x06
+#define UART_SCR 0x07
+
+inline void uart_init_nofifo(unsigned base_port, unsigned divisor)
+{       
+        /* disable interrupts */
+        outb(0x0, base_port + UART_IER); 
+#if 0
+        /* enable fifo's */ 
+        outb(0x01, base_port + UART_FCR);
+#else
+        outb(0x06, base_port + UART_FCR);
+#endif
+        /* Set Baud Rate Divisor to 12 ==> 115200 Baud */
+        outb(0x80 | UART_LCS, base_port + UART_LCR);
+        outb(divisor & 0xFF,   base_port + UART_DLL);
+        outb((divisor >> 8) & 0xFF,    base_port + UART_DLM);
+        outb(UART_LCS, base_port + UART_LCR);
+}
+
+
 static void setup_com(struct superio *sio,
 	struct com_ports *com, int device)
 {

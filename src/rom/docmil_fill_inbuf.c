@@ -59,6 +59,7 @@ fill_inbuf(void)
 
 	post_code(0xd0 + block_count);
 	block_count++;
+        printk_debug("inbuf[0] is 0x%x\n", inbuf[0]);
 	return inbuf[0];
 }
 

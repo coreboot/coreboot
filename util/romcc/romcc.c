@@ -23,7 +23,6 @@
 #warning "FIXME boundary cases with small types in larger registers"
 #warning "FIXME give clear error messages about unused variables"
 #warning "FIXME properly handle multi dimensional arrays"
-#warning "FIXME fix scc_transform"
 
 /*  Control flow graph of a loop without goto.
  * 
@@ -1015,6 +1014,9 @@ static void __internal_warning(struct compile_state *state, struct triple *ptr,
 	va_list args;
 	va_start(args, fmt);
 	loc(stderr, state, ptr);
+	if (ptr) {
+		fprintf(stderr, "%p %s ", ptr, tops(ptr->op));
+	}
 	fprintf(stderr, "Internal compiler warning: ");
 	vfprintf(stderr, fmt, args);
 	fprintf(stderr, "\n");
@@ -1177,40 +1179,6 @@ static void unuse_triple(struct triple *used, struct triple *unuser)
 		if (use->member == unuser) {
 			*ptr = use->next;
 			xfree(use);
-		}
-		else {
-			ptr = &use->next;
-		}
-	}
-}
-
-static void push_triple(struct triple *used, struct triple *user)
-{
-	struct triple_set *new;
-	if (!used)
-		return;
-	if (!user)
-		return;
-	/* Append new to the head of the list,
-	 * it's the only sensible behavoir for a stack.
-	 */
-	new = xcmalloc(sizeof(*new), "triple_set");
-	new->member = user;
-	new->next   = used->use;
-	used->use   = new;
-}
-
-static void pop_triple(struct triple *used, struct triple *unuser)
-{
-	struct triple_set *use, **ptr;
-	ptr = &used->use;
-	while(*ptr) {
-		use = *ptr;
-		if (use->member == unuser) {
-			*ptr = use->next;
-			xfree(use);
-			/* Only free one occurance from the stack */
-			return;
 		}
 		else {
 			ptr = &use->next;
@@ -1827,6 +1795,15 @@ static void release_triple(struct compile_state *state, struct triple *ptr)
 {
 	struct triple_set *set, *next;
 	struct triple **expr;
+	struct block *block;
+	/* Make certain the we are not the first or last element of a block */
+	block = block_of_triple(state, ptr);
+	if (block && (block->last == ptr)) {
+		block->last = ptr->prev;
+	}
+	if (block && (block->first == ptr)) {
+		block->first = ptr->next;
+	}
 	/* Remove ptr from use chains where it is the user */
 	expr = triple_rhs(state, ptr, 0);
 	for(; expr; expr = triple_rhs(state, ptr, expr)) {
@@ -4571,7 +4548,7 @@ static struct triple *array_to_pointer(struct compile_state *state, struct tripl
 		type = new_type(
 			TYPE_POINTER | (def->type->type & QUAL_MASK),
 			def->type->left, 0);
-		if ((def->op == OP_SDECL) || is_const(def)) {
+		if ((def->op == OP_SDECL) || IS_CONST_OP(def->op)) {
 			struct triple *addrconst;
 			if ((def->op != OP_SDECL) && (def->op != OP_BLOBCONST)) {
 				internal_error(state, def, "bad array constant");
@@ -9586,7 +9563,7 @@ static struct block *basic_block(struct compile_state *state,
 	struct triple *first)
 {
 	struct block *block;
-	struct triple *ptr;
+	struct triple *ptr, *final;
 	int op;
 	if (first->op != OP_LABEL) {
 		internal_error(state, 0, "block does not start with a label");
@@ -9595,6 +9572,11 @@ static struct block *basic_block(struct compile_state *state,
 	if (first->u.block != 0) {
 		return first->u.block;
 	}
+	/* Lookup the final instruction.
+	 * It is important that the final instruction has it's own
+	 * basic block.
+	 */
+	final = RHS(state->main_function, 0)->prev;
 	/* Allocate another basic block structure */
 	state->last_vertex += 1;
 	block = xcmalloc(sizeof(*block), "block");
@@ -9602,7 +9584,8 @@ static struct block *basic_block(struct compile_state *state,
 	block->vertex = state->last_vertex;
 	ptr = first;
 	do {
-		if ((ptr != first) && (ptr->op == OP_LABEL) && ptr->use) {
+		if ((ptr != first) && (ptr->op == OP_LABEL) && 
+			((ptr->use) || ptr == final)) {
 			break;
 		}
 		block->last = ptr;
@@ -10486,10 +10469,10 @@ static void insert_phi_operations(struct compile_state *state)
 				/* Count how many edges flow into this block */
 				in_edges = front->users;
 				/* Insert a phi function for this variable */
-				get_occurance(front->first->occurance);
+				get_occurance(var->occurance);
 				phi = alloc_triple(
 					state, OP_PHI, var->type, -1, in_edges, 
-					front->first->occurance);
+					var->occurance);
 				phi->u.block = front;
 				MISC(phi, 0) = var;
 				use_triple(var, phi);
@@ -10515,12 +10498,71 @@ static void insert_phi_operations(struct compile_state *state)
 	xfree(work);
 }
 
+
+static int count_and_number_adecls(struct compile_state *state)
+{
+	struct triple *first, *ins;
+	int adecls = 0;
+	first = RHS(state->main_function, 0);
+	ins = first;
+	do {
+		if (ins->op == OP_ADECL) {
+			adecls += 1;
+			ins->id = adecls;
+		}
+		ins = ins->next;
+	} while(ins != first);
+	return adecls;
+}
+
+static struct triple *peek_triple(struct triple_set **stacks, struct triple *var)
+{
+	struct triple_set *head;
+	struct triple *top_val;
+	top_val = 0;
+	head = stacks[var->id];
+	if (head) {
+		top_val = head->member;
+	}
+	return top_val;
+}
+
+static void push_triple(struct triple_set **stacks, struct triple *var, struct triple *val)
+{
+	struct triple_set *new;
+	/* Append new to the head of the list,
+	 * it's the only sensible behavoir for a stack.
+	 */
+	new = xcmalloc(sizeof(*new), "triple_set");
+	new->member = val;
+	new->next   = stacks[var->id];
+	stacks[var->id] = new;
+}
+
+static void pop_triple(struct triple_set **stacks, struct triple *var, struct triple *oldval)
+{
+	struct triple_set *set, **ptr;
+	ptr = &stacks[var->id];
+	while(*ptr) {
+		set = *ptr;
+		if (set->member == oldval) {
+			*ptr = set->next;
+			xfree(set);
+			/* Only free one occurance from the stack */
+			return;
+		}
+		else {
+			ptr = &set->next;
+		}
+	}
+}
+
 /*
  * C(V)
  * S(V)
  */
 static void fixup_block_phi_variables(
-	struct compile_state *state, struct block *parent, struct block *block)
+	struct compile_state *state, struct triple_set **stacks, struct block *parent, struct block *block)
 {
 	struct block_set *set;
 	struct triple *ptr;
@@ -10545,8 +10587,8 @@ static void fixup_block_phi_variables(
 				internal_error(state, ptr, "no var???");
 			}
 			/* Find the current value of the variable */
-			val = var->use->member;
-			if ((val->op == OP_WRITE) || (val->op == OP_READ)) {
+			val = peek_triple(stacks, var);
+			if (val && ((val->op == OP_WRITE) || (val->op == OP_READ))) {
 				internal_error(state, val, "bad value in phi");
 			}
 			if (edge >= TRIPLE_RHS(ptr->sizes)) {
@@ -10567,7 +10609,7 @@ static void fixup_block_phi_variables(
 
 
 static void rename_block_variables(
-	struct compile_state *state, struct block *block)
+	struct compile_state *state, struct triple_set **stacks, struct block *block)
 {
 	struct block_set *user;
 	struct triple *ptr, *next, *last;
@@ -10586,11 +10628,11 @@ static void rename_block_variables(
 			struct triple *var, *val;
 			var = RHS(ptr, 0);
 			unuse_triple(var, ptr);
-			if (!var->use) {
+			/* Find the current value of the variable */
+			val = peek_triple(stacks, var);
+			if (!val) {
 				error(state, ptr, "variable used without being set");
 			}
-			/* Find the current value of the variable */
-			val = var->use->member;
 			if ((val->op == OP_WRITE) || (val->op == OP_READ)) {
 				internal_error(state, val, "bad value in read");
 			}
@@ -10623,24 +10665,24 @@ static void rename_block_variables(
 			propogate_use(state, ptr, tval);
 			unuse_triple(var, ptr);
 			/* Push OP_WRITE ptr->right onto a stack of variable uses */
-			push_triple(var, tval);
+			push_triple(stacks, var, tval);
 		}
 		if (ptr->op == OP_PHI) {
 			struct triple *var;
 			var = MISC(ptr, 0);
 			/* Push OP_PHI onto a stack of variable uses */
-			push_triple(var, ptr);
+			push_triple(stacks, var, ptr);
 		}
 		last = ptr;
 	}
 	block->last = last;
 
 	/* Fixup PHI functions in the cf successors */
-	fixup_block_phi_variables(state, block, block->left);
-	fixup_block_phi_variables(state, block, block->right);
+	fixup_block_phi_variables(state, stacks, block, block->left);
+	fixup_block_phi_variables(state, stacks, block, block->right);
 	/* rename variables in the dominated nodes */
 	for(user = block->idominates; user; user = user->next) {
-		rename_block_variables(state, user->member);
+		rename_block_variables(state, stacks, user->member);
 	}
 	/* pop the renamed variable stack */
 	last = block->first;
@@ -10654,7 +10696,7 @@ static void rename_block_variables(
 			struct triple *var;
 			var = RHS(ptr, 0);
 			/* Pop OP_WRITE ptr->right from the stack of variable uses */
-			pop_triple(var, RHS(ptr, 1));
+			pop_triple(stacks, var, RHS(ptr, 1));
 			release_triple(state, ptr);
 			continue;
 		}
@@ -10662,7 +10704,7 @@ static void rename_block_variables(
 			struct triple *var;
 			var = MISC(ptr, 0);
 			/* Pop OP_WRITE ptr->right from the stack of variable uses */
-			pop_triple(var, ptr);
+			pop_triple(stacks, var, ptr);
 		}
 		last = ptr;
 	}
@@ -10708,15 +10750,117 @@ static void prune_block_variables(struct compile_state *state,
 	}
 }
 
+struct phi_triple {
+	struct triple *phi;
+	unsigned orig_id;
+	int alive;
+};
+
+static void keep_phi(struct compile_state *state, struct phi_triple *live, struct triple *phi)
+{
+	struct triple **slot;
+	int zrhs, i;
+	if (live[phi->id].alive) {
+		return;
+	}
+	live[phi->id].alive = 1;
+	zrhs = TRIPLE_RHS(phi->sizes);
+	slot = &RHS(phi, 0);
+	for(i = 0; i < zrhs; i++) {
+		struct triple *used;
+		used = slot[i];
+		if (used && (used->op == OP_PHI)) {
+			keep_phi(state, live, used);
+		}
+	}
+}
+
+static void prune_unused_phis(struct compile_state *state)
+{
+	struct triple *first, *phi;
+	struct phi_triple *live;
+	int phis, i;
+	
+
+	/* Find the first instruction */
+	first = RHS(state->main_function, 0);
+
+	/* Count how many phi functions I need to process */
+	phis = 0;
+	for(phi = first->next; phi != first; phi = phi->next) {
+		if (phi->op == OP_PHI) {
+			phis += 1;
+		}
+	}
+	
+	/* Mark them all dead */
+	live = xcmalloc(sizeof(*live) * (phis + 1), "phi_triple");
+	phis = 0;
+	for(phi = first->next; phi != first; phi = phi->next) {
+		if (phi->op != OP_PHI) {
+			continue;
+		}
+		live[phis].alive   = 0;
+		live[phis].orig_id = phi->id;
+		live[phis].phi     = phi;
+		phi->id = phis;
+		phis += 1;
+	}
+	
+	/* Mark phis alive that are used by non phis */
+	for(i = 0; i < phis; i++) {
+		struct triple_set *set;
+		for(set = live[i].phi->use; !live[i].alive && set; set = set->next) {
+			if (set->member->op != OP_PHI) {
+				keep_phi(state, live, live[i].phi);
+				break;
+			}
+		}
+	}
+
+	/* Delete the extraneous phis */
+	for(i = 0; i < phis; i++) {
+		struct triple **slot;
+		int zrhs, j;
+		if (!live[i].alive) {
+			release_triple(state, live[i].phi);
+			continue;
+		}
+		phi = live[i].phi;
+		slot = &RHS(phi, 0);
+		zrhs = TRIPLE_RHS(phi->sizes);
+		for(j = 0; j < zrhs; j++) {
+			if(!slot[j]) {
+				error(state, phi, "variable not set on all paths to use");
+			}
+		}
+	}
+	xfree(live);
+}
+
+
 static void transform_to_ssa_form(struct compile_state *state)
 {
+	struct triple_set **stacks;
+	int adecls;
 	insert_phi_operations(state);
 #if 0
 	printf("@%s:%d\n", __FILE__, __LINE__);
 	print_blocks(state, stdout);
 #endif
-	rename_block_variables(state, state->first_block);
+
+	/* Allocate stacks for the Variables */
+	adecls = count_and_number_adecls(state);
+	stacks = xcmalloc(sizeof(stacks[0])*(adecls + 1), "adecl stacks");
+	rename_block_variables(state, stacks, state->first_block);
+	xfree(stacks);
+
 	prune_block_variables(state, state->first_block);
+
+#if 1
+	prune_unused_phis(state);
+#endif
+
 }
 
 
@@ -11198,6 +11342,15 @@ static void insert_copies_to_phi(struct compile_state *state)
 			unuse_triple(val, phi);
 			use_triple(move, phi);
 
+			/* Walk up the dominator tree until I have found the appropriate block */
+			while(eblock && !tdominates(state, val, eblock->last)) {
+				eblock = eblock->idom;
+			}
+			if (!eblock) {
+				internal_error(state, phi, "Cannot find block dominated by %p",
+					val);
+			}
+
 			/* Walk through the block backwards to find
 			 * an appropriate location for the OP_COPY.
 			 */
@@ -11589,6 +11742,8 @@ static int count_triples(struct compile_state *state)
 	} while (ins != first);
 	return triples;
 }
+
+
 struct dead_triple {
 	struct triple *triple;
 	struct dead_triple *work_next;
@@ -14761,21 +14916,40 @@ static void verify_domination(struct compile_state *state)
 	ins = first;
 	do {
 		for(set = ins->use; set; set = set->next) {
-			struct triple **expr;
-			if (set->member->op == OP_PHI) {
-				continue;
-			}
-			/* See if the use is on the righ hand side */
-			expr = triple_rhs(state, set->member, 0);
-			for(; expr ; expr = triple_rhs(state, set->member, expr)) {
-				if (*expr == ins) {
+			struct triple **slot;
+			struct triple *use_point;
+			int i, zrhs;
+			use_point = 0;
+			zrhs = TRIPLE_RHS(ins->sizes);
+			slot = &RHS(set->member, 0);
+			/* See if the use is on the right hand side */
+			for(i = 0; i < zrhs; i++) {
+				if (slot[i] == ins) {
 					break;
 				}
 			}
-			if (expr &&
-				!tdominates(state, ins, set->member)) {
-				internal_error(state, set->member, 
-					"non dominated rhs use?");
+			if (i < zrhs) {
+				use_point = set->member;
+				if (set->member->op == OP_PHI) {
+					struct block_set *bset;
+					int edge;
+					bset = set->member->u.block->use;
+					for(edge = 0; bset && (edge < i); edge++) {
+						bset = bset->next;
+					}
+					if (!bset) {
+						internal_error(state, set->member, 
+							"no edge for phi rhs %d\n", i);
+					}
+					use_point = bset->member->last;
+				}
+			}
+			if (use_point &&
+				!tdominates(state, ins, use_point)) {
+				internal_warning(state, ins, 
+					"ins does not dominate rhs use");
+				internal_error(state, use_point, 
+					"non dominated rhs use point?");
 			}
 		}
 		ins = ins->next;

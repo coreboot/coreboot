@@ -1,5 +1,5 @@
-VERSION:=0.33
-RELEASE_DATE:=1 July 2003
+VERSION:=0.34
+RELEASE_DATE:=4 July 2003
 PACKAGE:=romcc
 
 
@@ -61,9 +61,7 @@ TESTS=\
 	simple_test39.c \
 	simple_test40.c \
 	simple_test41.c \
-	simple_test42.c \
 	simple_test43.c \
-	simple_test44.c \
 	simple_test45.c \
 	simple_test46.c \
 	simple_test47.c \
@@ -74,6 +72,8 @@ TESTS=\
 	simple_test52.c \
 	simple_test53.c \
 	simple_test54.c \
+	simple_test55.c \
+	simple_test56.c \
 	raminit_test.c \
 	raminit_test2.c \
 	raminit_test3.c \
@@ -81,7 +81,9 @@ TESTS=\
 	raminit_test5.c
 
 FAIL_TESTS = \
-	fail_test1.c
+	fail_test1.c \
+	fail_test2.c \
+	fail_test3.c
 
 TEST_SRCS:=$(patsubst %, tests/%, $(TESTS))
 TEST_ASM:=$(patsubst %.c, tests/%.S, $(TESTS))
@@ -93,10 +95,10 @@ FAIL_OUT:=$(patsubst %.c, tests/%.out, $(FAIL_TESTS))
 
 
 $(TEST_ASM): %.S: %.c romcc
-	export ALLOC_CHECK_=2; ./romcc -O -mcpu=k8 -o $@ $< > $*.debug
+	export ALLOC_CHECK_=2; ./romcc -O2 -mcpu=k8 -o $@ $< > $*.debug
 
 $(FAIL_OUT): %.out: %.c romcc
-	export ALLOC_CHECK_=2; if ./romcc -O -o $*.S $< > $*.debug 2> $@ ; then exit 1 ; else exit 0 ; fi
+	export ALLOC_CHECK_=2; if ./romcc -O2 -o $*.S $< > $*.debug 2> $@ ; then exit 1 ; else exit 0 ; fi
 
 $(TEST_OBJ): %.o: %.S
 	as $< -o $@

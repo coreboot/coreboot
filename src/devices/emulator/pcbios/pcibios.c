@@ -12,8 +12,6 @@ int pcibios_handler()
 	int i, ret = 0;
 	struct device *dev = 0;
 
-	printk_debug("%s AX = %x\n", __func__, X86_AX);
-
 	switch (X86_AX) {
 	case PCI_BIOS_PRESENT:
 		X86_AH	= 0x00;		/* no config space/special cycle support */

@@ -537,6 +537,12 @@ void pci_dev_enable_resources(struct device *dev)
 void pci_bus_enable_resources(struct device *dev)
 {
 	uint16_t ctrl;
+
+	/* enable IO in command register if there is VGA card
+	 * connected with (even it does not claim IO resource) */
+	if (dev->link[0].bridge_ctrl & PCI_BRIDGE_CTL_VGA)
+		dev->command |= PCI_COMMAND_IO;
+
 	ctrl = pci_read_config16(dev, PCI_BRIDGE_CONTROL);
 	ctrl |= dev->link[0].bridge_ctrl;
 	ctrl |= (PCI_BRIDGE_CTL_PARITY + PCI_BRIDGE_CTL_SERR); /* error check */

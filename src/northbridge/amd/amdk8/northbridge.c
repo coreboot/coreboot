@@ -387,6 +387,8 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 		limit |= (nodeid & 7);
 
 		if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
+			printk_spew("%s, enabling legacy VGA IO forwarding for %s link %s\n",
+				    __func__, dev_path(dev), link);
 			base |= PCI_IO_BASE_VGA_EN;
 		}
 		if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_NO_ISA) {
@@ -438,6 +440,8 @@ static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 			break;
 		}
 	}
+
+	printk_spew("%s: link %d has VGA device\n", __func__, link);
 
 	/* no VGA card installed */
 	if (link == dev->links)

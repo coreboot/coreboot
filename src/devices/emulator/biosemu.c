@@ -46,8 +46,8 @@ int run_bios_int(int num)
 	X86_CS = MEM_RW((num << 2) + 2);
 	X86_IP = MEM_RW(num << 2);
 
-	printk_debug("%s: INT %x CS:IP = %x:%x\n", __FUNCTION__,
-		     num, MEM_RW((num << 2) + 2), MEM_RW(num << 2));
+	//printk_debug("%s: INT %x CS:IP = %x:%x\n", __FUNCTION__,
+	//	     num, MEM_RW((num << 2) + 2), MEM_RW(num << 2));
 
 	return 1;
 }
@@ -58,8 +58,8 @@ u8 x_inb(u16 port)
 
 	val = inb(port);
 
-	if (port != 0x40)
-	    printk_debug("inb(0x%04x) = 0x%02x\n", port, val);
+	//if (port != 0x40)
+	//    printk_debug("inb(0x%04x) = 0x%02x\n", port, val);
 
 	return val;
 }
@@ -70,7 +70,7 @@ u16 x_inw(u16 port)
 
 	val = inw(port);
 
-	printk_debug("inw(0x%04x) = 0x%04x\n", port, val);
+	//printk_debug("inw(0x%04x) = 0x%04x\n", port, val);
 	return val;
 }
 
@@ -80,26 +80,26 @@ u32 x_inl(u16 port)
 
 	val = inl(port);
 
-	printk_debug("inl(0x%04x) = 0x%08x\n", port, val);
+	//printk_debug("inl(0x%04x) = 0x%08x\n", port, val);
 	return val;
 }
 
 void x_outb(u16 port, u8 val)
 {
-	if (port != 0x43)
-		printk_debug("outb(0x%02x, 0x%04x)\n", val, port);
+	//if (port != 0x43)
+	//	printk_debug("outb(0x%02x, 0x%04x)\n", val, port);
 	outb(val, port);
 }
 
 void x_outw(u16 port, u16 val)
 {
-	printk_debug("outw(0x%04x, 0x%04x)\n", val, port);
+	//printk_debug("outw(0x%04x, 0x%04x)\n", val, port);
 	outw(val, port);
 }
 
 void x_outl(u16 port, u32 val)
 {
-	printk_debug("outl(0x%08x, 0x%04x)\n", val, port);
+	//printk_debug("outl(0x%08x, 0x%04x)\n", val, port);
 	outl(val, port);
 }
 
@@ -116,7 +116,7 @@ void do_int(int num)
 {
 	int ret = 0;
 
-	printk_debug("int%x vector at %x\n", num, getIntVect(num));
+	//printk_debug("int%x vector at %x\n", num, getIntVect(num));
 
 	switch (num) {
 #ifndef _PC
@@ -143,6 +143,7 @@ void do_int(int num)
 		break;
 	case 0x1A:
 		ret = pcibios_handler();
+		ret = 1;
 		break;
 	case 0xe6:
 		//ret = intE6_handler();

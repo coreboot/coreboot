@@ -205,8 +205,8 @@ u8 *mem_ptr(u32 addr, int size)
 	} else
 #endif
 	if (addr < 0x200) {
-		printk("%x:%x updating int vector 0x%x\n",
-		       M.x86.R_CS, M.x86.R_IP, addr >> 2);
+		//printk("%x:%x updating int vector 0x%x\n",
+		//       M.x86.R_CS, M.x86.R_IP, addr >> 2);
 
 		retaddr = (u8 *) (M.mem_base + addr);
 	} else {

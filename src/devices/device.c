@@ -378,6 +378,7 @@ static void allocate_vga_resource(void)
 		if (((dev->class >> 16) == PCI_BASE_CLASS_DISPLAY) &&
 		    ((dev->class >> 8) != PCI_CLASS_DISPLAY_OTHER)) {
 			if (!vga) {
+                                printk_debug("Allocating VGA resource %s\n", dev_path(dev));
 				vga = dev;
 			}
 			if (vga == dev) {
@@ -394,6 +395,8 @@ static void allocate_vga_resource(void)
 	}
 	/* Now walk up the bridges setting the VGA enable */
 	while (bus) {
+		printk_debug("Setting PCI_BRIDGE_CTL_VGA for bridge %s\n",
+			     dev_path(bus->dev));
 		bus->bridge_ctrl |= PCI_BRIDGE_CTL_VGA;
 		bus = (bus == bus->dev->bus)? 0 : bus->dev->bus;
 	} 

@@ -793,6 +793,8 @@ CPUFLAGS := $(foreach _var_,$(VARIABLES),$(call D_item,$(_var_)))
 		file.write("%s\n" %i)
 	file.write("\n")
 
+	# main rule
+	file.write("all: linuxbios.rom")
 	# print out all the object dependencies
 	file.write("\n# object dependencies (objectrules:)\n")
 	file.write("OBJECTS :=\n")

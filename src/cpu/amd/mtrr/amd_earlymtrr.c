@@ -40,23 +40,6 @@ static void do_amd_early_mtrr_init(const unsigned long *mtrr_msrs)
         msr.lo = (((CONFIG_LB_MEM_TOPK << 10) + TOP_MEM_MASK) & ~TOP_MEM_MASK);
         wrmsr(TOP_MEM, msr);
 
-	/* Enable caching for 0 - 1MB using variable mtrr */
-#if 0
-	set_var_mtrr(0, 0x00000000, (CONFIG_LB_MEM_TOPK << 10), MTRR_TYPE_WRBACK);
-#else
-        msr = rdmsr(0x200);
-        msr.hi = 0x00000000;
-        msr.lo &= 0x00000f00;
-        msr.lo |= 0x00000000 | MTRR_TYPE_WRBACK;
-        wrmsr(0x200, msr);
-
-        msr = rdmsr(0x201);
-        msr.hi = 0x0000000f;
-        msr.lo &= 0x000007ff;
-        msr.lo |= (~((CONFIG_LB_MEM_TOPK << 10) - 1)) | 0x800;
-        wrmsr(0x201, msr);
-#endif
-
 #if defined(XIP_ROM_SIZE)
         /* enable write through caching so we can do execute in place
          * on the flash rom.

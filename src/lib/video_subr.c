@@ -1,13 +1,14 @@
 #include <video_subr.h>
-# error the video display code has not been tested
+#include <string.h>
 
+# This used to work but has not been tested recently.
 // kludgy but this is only used here ...
 static char *vidmem;		/* The video buffer, should be replaced by symbol in ldscript.ld */
 static int video_line, video_col;
 
 #define LINES  	25		/* Number of lines and   */
 #define COLS   	80		/*   columns on display  */
-#define VIDBUFFER 0x20000;
+#define VIDBUFFER 0xA000;
 
 void video_init(void)
 {
@@ -34,8 +35,8 @@ void video_tx_byte(unsigned char byte)
 		video_col = 0;
 	}
 	else {
-		videmem[((video_col + (video_line *COLS)) * 2)] = byte;
-		videmem[((video_col + (video_line *COLS)) * 2) +1] = 0x07;
+		vidmem[((video_col + (video_line *COLS)) * 2)] = byte;
+		vidmem[((video_col + (video_line *COLS)) * 2) +1] = 0x07;
 		video_col++;
 	}
 	if (video_col >= COLS) {

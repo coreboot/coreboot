@@ -1094,14 +1094,14 @@ parser Config:
 			( DEFAULT
 			  ( value		{{ setdefault(ID, value) }}
 			  | NONE		{{ setnodefault(ID) }}
-			  )			{{ d |= 1 }}
+			  )			{{ d = d | 1 }}
 			| FORMAT STR		{{ setformat(ID, dequote(STR)) }}
 			| EXPORT 
 			  ( ALWAYS		{{ setexported(ID) }}
 			  | USED		{{ setexportable(ID) }}
 			  | NEVER		{{ setnoexport(ID) }}
-			  )			{{ d |= 2 }}
-			| COMMENT STR 		{{ setcomment(ID, dequote(STR)); d |= 4 }}
+			  )			{{ d = d | 2 }}
+			| COMMENT STR 		{{ setcomment(ID, dequote(STR)); d = d | 4 }}
 			)+			{{ return d }}
 		
     rule define:	DEFINE ID 		{{ newoption(ID) }}

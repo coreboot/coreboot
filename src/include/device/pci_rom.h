@@ -1,3 +1,5 @@
+#ifndef PCI_ROM_H
+#define PCI_ROM_H
 #include <arch/byteorder.h>
 #include <stddef.h>
 
@@ -30,3 +32,8 @@ struct  pci_data {
 	uint8_t		indicator;
 	uint16_t	reserved_2;
 };
+
+extern struct rom_header * pci_rom_probe(struct device *dev);
+extern struct rom_header *pci_rom_load(struct device *dev, struct rom_header *rom_header);
+
+#endif

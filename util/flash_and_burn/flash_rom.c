@@ -148,12 +148,12 @@ struct flashchip *probe_flash(struct flashchip *flash)
 
 int verify_flash(struct flashchip *flash, char *buf, int verbose)
 {
-	int i = 0;
+	int i;
 	int total_size = flash->total_size * 1024;
 	volatile char *bios = flash->virt_addr;
 
 	printf("Verifying address: ");
-	while (i < total_size) {
+	for (i = 0; i < total_size; i++) {
 		if (verbose)
 			printf("0x%08x", i);
 		if (*(bios + i) != *(buf + i)) {
@@ -162,7 +162,6 @@ int verify_flash(struct flashchip *flash, char *buf, int verbose)
 		}
 		if (verbose)
 			printf("\b\b\b\b\b\b\b\b\b\b");
-		i++;
 	}
 	if (verbose)
 		printf("\n");

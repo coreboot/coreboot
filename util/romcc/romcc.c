@@ -3932,6 +3932,15 @@ static size_t align_of(struct compile_state *state, struct type *type)
 	return align;
 }
 
+static size_t needed_padding(size_t offset, size_t align)
+{
+        size_t padding;
+	padding = 0;
+	if (offset % align) {
+		padding = align - (offset % align);
+	}
+	return padding;
+}
 static size_t size_of(struct compile_state *state, struct type *type)
 {
 	size_t size;
@@ -3961,16 +3970,16 @@ static size_t size_of(struct compile_state *state, struct type *type)
 	case TYPE_PRODUCT:
 	{
 		size_t align, pad;
-		size = size_of(state, type->left);
-		while((type->right->type & TYPE_MASK) == TYPE_PRODUCT) {
-			type = type->right;
+		size = 0;
+		while((type->type & TYPE_MASK) == TYPE_PRODUCT) {
 			align = align_of(state, type->left);
-			pad = align - (size % align);
+			pad = needed_padding(size, align);
 			size = size + pad + size_of(state, type->left);
+			type = type->right;
 		}
-		align = align_of(state, type->right);
-		pad = align - (size % align);
-		size = size + pad + sizeof(type->right);
+		align = align_of(state, type);
+		pad = needed_padding(size, align);
+		size = size + pad + sizeof(type);
 		break;
 	}
 	case TYPE_OVERLAP:
@@ -4001,26 +4010,26 @@ static size_t size_of(struct compile_state *state, struct type *type)
 static size_t field_offset(struct compile_state *state, 
 	struct type *type, struct hash_entry *field)
 {
-	size_t size, align, pad;
+	size_t size, align;
 	if ((type->type & TYPE_MASK) != TYPE_STRUCT) {
 		internal_error(state, 0, "field_offset only works on structures");
 	}
 	size = 0;
 	type = type->left;
 	while((type->type & TYPE_MASK) == TYPE_PRODUCT) {
+		align = align_of(state, type->left);
+		size += needed_padding(size, align);
 		if (type->left->field_ident == field) {
 			type = type->left;
 			break;
 		}
 		size += size_of(state, type->left);
 		type = type->right;
-		align = align_of(state, type);
-		pad = align - (size % align);
-		size += pad;
 	}
+	align = align_of(state, type);
+	size += needed_padding(size, align);
 	if (type->field_ident != field) {
-		internal_error(state, 0, "field_offset: member %s not present",
-			field->name);
+		error(state, 0, "member %s not present", field->name);
 	}
 	return size;
 }
@@ -4040,8 +4049,34 @@ static struct type *field_type(struct compile_state *state,
 		type = type->right;
 	}
 	if (type->field_ident != field) {
-		internal_error(state, 0, "field_type: member %s not present", 
-			field->name);
+		error(state, 0, "member %s not present", field->name);
+	}
+	return type;
+}
+
+static struct type *next_field(struct compile_state *state,
+	struct type *type, struct type *prev_member) 
+{
+	if ((type->type & TYPE_MASK) != TYPE_STRUCT) {
+		internal_error(state, 0, "next_field only works on structures");
+	}
+	type = type->left;
+	while((type->type & TYPE_MASK) == TYPE_PRODUCT) {
+		if (!prev_member) {
+			type = type->left;
+			break;
+		}
+		if (type->left == prev_member) {
+			prev_member = 0;
+		}
+		type = type->right;
+	}
+	if (type == prev_member) {
+		prev_member = 0;
+	}
+	if (prev_member) {
+		internal_error(state, 0, "prev_member %s not present", 
+			prev_member->field_ident->name);
 	}
 	return type;
 }
@@ -4494,17 +4529,7 @@ static struct triple *deref_field(
 		error(state, 0, "request for member %s in something not a struct or union",
 			field->name);
 	}
-	member = type->left;
-	while((member->type & TYPE_MASK) == TYPE_PRODUCT) {
-		if (member->left->field_ident == field) {
-			member = member->left;
-			break;
-		}
-		member = member->right;
-	}
-	if (member->field_ident != field) {
-		error(state, 0, "%s is not a member", field->name);
-	}
+	member = field_type(state, type, field);
 	if ((type->type & STOR_MASK) == STOR_PERM) {
 		/* Do the pointer arithmetic to get a deref the field */
 		ulong_t offset;
@@ -4514,8 +4539,7 @@ static struct triple *deref_field(
 	}
 	else {
 		/* Find the variable for the field I want. */
-		result = triple(state, OP_DOT, 
-			field_type(state, type, field), expr, 0);
+		result = triple(state, OP_DOT, member, expr, 0);
 		result->u.field = field;
 	}
 	return result;
@@ -4796,9 +4820,6 @@ static int expr_depth(struct compile_state *state, struct triple *ins)
 
 static struct triple *flatten(
 	struct compile_state *state, struct triple *first, struct triple *ptr);
-
-static struct triple *mk_add_expr(
-	struct compile_state *state, struct triple *left, struct triple *right);
 
 static struct triple *flatten_generic(
 	struct compile_state *state, struct triple *first, struct triple *ptr)
@@ -5156,9 +5177,12 @@ static struct triple *flatten(
 			struct triple *base;
 			base = RHS(ptr, 0);
 			if (base->op == OP_DEREF) {
+				struct triple *left;
 				ulong_t offset;
 				offset = field_offset(state, base->type, ptr->u.field);
-				ptr = mk_add_expr(state, RHS(base, 0), 
+				left = RHS(base, 0);
+				ptr = triple(state, OP_ADD, left->type, 
+					read_expr(state, left),
 					int_const(state, &ulong_type, offset));
 				free_triple(state, base);
 			}
@@ -8815,28 +8839,14 @@ static struct field_info designator(struct compile_state *state, struct type *ty
 		case TOK_DOT:
 		{
 			struct hash_entry *field;
-			struct type *member;
 			if ((type->type & TYPE_MASK) != TYPE_STRUCT) {
 				error(state, 0, "Struct designator not in struct initializer");
 			}
 			eat(state, TOK_DOT);
 			eat(state, TOK_IDENT);
 			field = state->token[0].ident;
-			info.offset = 0;
-			member = type->left;
-			while((member->type & TYPE_MASK) == TYPE_PRODUCT) {
-				if (member->left->field_ident == field) {
-					member = member->left;
-					break;
-				}
-				info.offset += size_of(state, member->left);
-				member = member->right;
-			}
-			if (member->field_ident != field) {
-				error(state, 0, "%s is not a member", 
-					field->name);
-			}
-			info.type = member;
+			info.offset = field_offset(state, type, field);
+			info.type   = field_type(state, type, field);
 			break;
 		}
 		default:
@@ -8866,6 +8876,9 @@ static struct triple *initializer(
 		}
 		info.offset = 0;
 		info.type = type->left;
+		if ((type->type & TYPE_MASK) == TYPE_STRUCT) {
+			info.type = next_field(state, type, 0);
+		}
 		if (type->elements == ELEMENT_COUNT_UNSPECIFIED) {
 			max_offset = 0;
 		} else {
@@ -8889,9 +8902,6 @@ static struct triple *initializer(
 				error(state, 0, "element beyond bounds");
 			}
 			value_type = info.type;
-			if ((value_type->type & TYPE_MASK) == TYPE_PRODUCT) {
-				value_type = type->left;
-			}
 			value = eval_const_expr(state, initializer(state, value_type));
 			value_size = size_of(state, value_type);
 			if (((type->type & TYPE_MASK) == TYPE_ARRAY) &&
@@ -8920,8 +8930,6 @@ static struct triple *initializer(
 				*((uint32_t *)dest) = value->u.cval & 0xffffffff;
 			}
 			else {
-				fprintf(stderr, "%d %d\n",
-					value->op, value_size);
 				internal_error(state, 0, "unhandled constant initializer");
 			}
 			free_triple(state, value);
@@ -8930,8 +8938,10 @@ static struct triple *initializer(
 				comma = 1;
 			}
 			info.offset += value_size;
-			if ((info.type->type & TYPE_MASK) == TYPE_PRODUCT) {
-				info.type = info.type->right;
+			if ((type->type & TYPE_MASK) == TYPE_STRUCT) {
+				info.type = next_field(state, type, info.type);
+				info.offset = field_offset(state, type, 
+					info.type->field_ident);
 			}
 		} while(comma && (peek(state) != TOK_RBRACE));
 		if ((type->elements == ELEMENT_COUNT_UNSPECIFIED) &&

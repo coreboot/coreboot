@@ -25,7 +25,7 @@ static unsigned char clip[9]={0,1,3,7,0x0f,0x1f,0x3f,0x7f,0xff};
 */
 void test_for_entry_overlaps(int entry_start,int entry_end)
 {
-	int ptr;
+	long ptr;
 	int buffer_bit_size;
 	int offset;
 	int byte;
@@ -155,9 +155,11 @@ int main(int argc, char **argv)
 	int entry_mode=0;
 	int enum_mode=0;
 	int checksum_mode=0;
-	int ptr,cnt;
+	long ptr;
+	int cnt;
 	char *cptr;
-	int offset,entry_start;
+	long offset;
+	int entry_start;
 	int entries_length;
 	int enum_length;
 	int len;
@@ -271,8 +273,8 @@ int main(int argc, char **argv)
 	}
 
 	/* put the length of the entries into the header section */
-	entries_length=(int)cptr;
-	entries_length-=(int)(cmos_table+ct->header_length);
+	entries_length=(long)cptr;
+	entries_length-=(long)(cmos_table+ct->header_length);
 
 	/* compute the start of the enumerations section */
 	entry_start=(int)cmos_table;
@@ -313,14 +315,14 @@ int main(int argc, char **argv)
 		if(cnt%4)
 			cnt+=4-(cnt%4);
 		/* store the record length */
-		c_enums->size=((int)&c_enums->text[cnt])-(int)c_enums;
+		c_enums->size=((long)&c_enums->text[cnt])-(long)c_enums;
 		/* store the record type */
 		c_enums->tag=LB_TAG_OPTION_ENUM;
 		/* increment to the next record */
 		c_enums=(struct cmos_enums*)&c_enums->text[cnt];
 	}
 	/* save the enumerations length */
-	enum_length=(int)c_enums-(int)c_enums_start;
+	enum_length=(long)c_enums-(long)c_enums_start;
 	ct->size=ct->header_length+enum_length+entries_length;
 
 	/* Get the checksum records */

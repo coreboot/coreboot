@@ -115,9 +115,9 @@ void framebuffer_on()
 
 	/* enable legacy VGA IO (0x3B0 - 0x3BB, 0x3C0 - 0x3DF) and MEM (0xA0000 - 0xBFFFF),
 	   needed for XFree86 3.3.6 */
-	pcibios_read_config_dword(0, devfn, 0x3e, &command);
+	pcibios_read_config_byte(0, devfn, 0x3e, &command);
 	command |= 0x08;
-	pcibios_write_config_dword(0, devfn, 0x3e, command);
+	pcibios_write_config_byte(0, devfn, 0x3e, command);
 }
 #endif	/* HAVE_FRAMEBUFFER */
 

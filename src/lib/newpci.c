@@ -219,7 +219,7 @@ static int pci_sanity_check(const struct pci_ops *o)
 		if ((!o->read_word(bus, devfn, PCI_CLASS_DEVICE, &x) &&
 		     (x == PCI_CLASS_BRIDGE_HOST || x == PCI_CLASS_DISPLAY_VGA)) ||
 		    (!o->read_word(bus, devfn, PCI_VENDOR_ID, &x) &&
-		(x == PCI_VENDOR_ID_INTEL || x == PCI_VENDOR_ID_COMPAQ)))
+		     (x == PCI_VENDOR_ID_INTEL || x == PCI_VENDOR_ID_COMPAQ)))
 			return 1;
 	printk_err("PCI: Sanity check failed\n");
 	return 0;
@@ -268,7 +268,7 @@ int pci_read_config_byte(struct pci_dev *dev, u8 where, u8 * val)
 	int res; 
 	res = conf->read_byte(dev->bus->number, dev->devfn, where, val);
 	printk_spew("Read config byte bus %d,devfn 0x%x,reg 0x%x,val 0x%x,res 0x%x\n",
-	    dev->bus->number, dev->devfn, where, *val, res);
+		    dev->bus->number, dev->devfn, where, *val, res);
 	return res;
 
 
@@ -279,7 +279,7 @@ int pci_read_config_word(struct pci_dev *dev, u8 where, u16 * val)
 	int res; 
 	res = conf->read_word(dev->bus->number, dev->devfn, where, val);
 	printk_spew( "Read config word bus %d,devfn 0x%x,reg 0x%x,val 0x%x,res 0x%x\n",
-	    dev->bus->number, dev->devfn, where, *val, res);
+		     dev->bus->number, dev->devfn, where, *val, res);
 	return res;
 }
 
@@ -288,21 +288,21 @@ int pci_read_config_dword(struct pci_dev *dev, u8 where, u32 * val)
 	int res; 
 	res = conf->read_dword(dev->bus->number, dev->devfn, where, val);
 	printk_spew( "Read config dword bus %d,devfn 0x%x,reg 0x%x,val 0x%x,res 0x%x\n",
-	    dev->bus->number, dev->devfn, where, *val, res);
+		     dev->bus->number, dev->devfn, where, *val, res);
 	return res;
 }
 
 int pci_write_config_byte(struct pci_dev *dev, u8 where, u8 val)
 {
 	printk_spew( "Write config byte bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
-	    dev->bus->number, dev->devfn, where, val);
+		     dev->bus->number, dev->devfn, where, val);
 	return conf->write_byte(dev->bus->number, dev->devfn, where, val);
 }
 
 int pci_write_config_word(struct pci_dev *dev, u8 where, u16 val)
 {
 	printk_spew( "Write config word bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
-	    dev->bus->number, dev->devfn, where, val);
+		     dev->bus->number, dev->devfn, where, val);
 	return conf->write_word(dev->bus->number, dev->devfn, where, val);
 
 }
@@ -310,7 +310,7 @@ int pci_write_config_word(struct pci_dev *dev, u8 where, u16 val)
 int pci_write_config_dword(struct pci_dev *dev, u8 where, u32 val)
 {
 	printk_spew( "Write config dword bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
-	    dev->bus->number, dev->devfn, where, val);
+		     dev->bus->number, dev->devfn, where, val);
 	return conf->write_dword(dev->bus->number, dev->devfn, where, val);
 }
 
@@ -319,7 +319,7 @@ int pcibios_read_config_byte(unsigned char bus, unsigned char devfn, u8 where, u
 	int res; 
 	res = conf->read_byte(bus, devfn, where, val);
 	printk_spew( "Read config byte bus %d,devfn 0x%x,reg 0x%x,val 0x%x,res 0x%x\n",
-	    bus, devfn, where, *val, res);
+		     bus, devfn, where, *val, res);
 	return res;
 }
 
@@ -328,7 +328,7 @@ int pcibios_read_config_word(unsigned char bus, unsigned char devfn, u8 where, u
 	int res; 
 	res = conf->read_word(bus, devfn, where, val);
 	printk_spew( "Read config word bus %d,devfn 0x%x,reg 0x%x,val 0x%x,res 0x%x\n",
-	    bus, devfn, where, *val, res);
+		     bus, devfn, where, *val, res);
 	return res;
 
 }
@@ -338,7 +338,7 @@ int pcibios_read_config_dword(unsigned char bus, unsigned char devfn, u8 where, 
 	int res; 
 	res = conf->read_dword(bus, devfn, where, val);
 	printk_spew( "Read config dword bus %d,devfn 0x%x,reg 0x%x,val 0x%x,res 0x%x\n",
-	    bus, devfn, where, *val, res);
+		     bus, devfn, where, *val, res);
 	return res;
 
 }
@@ -346,7 +346,7 @@ int pcibios_read_config_dword(unsigned char bus, unsigned char devfn, u8 where, 
 int pcibios_write_config_byte(unsigned char bus, unsigned char devfn, u8 where, u8 val)
 {
 	printk_spew( "Write byte bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
-	    bus, devfn, where, val);
+		     bus, devfn, where, val);
 	return conf->write_byte(bus, devfn, where, val);
 
 }
@@ -354,7 +354,7 @@ int pcibios_write_config_byte(unsigned char bus, unsigned char devfn, u8 where, 
 int pcibios_write_config_word(unsigned char bus, unsigned char devfn, u8 where, u16 val)
 {
 	printk_spew( "Write word bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
-	    bus, devfn, where, val);
+		     bus, devfn, where, val);
 	return conf->write_word(bus, devfn, where, val);
 
 }
@@ -362,7 +362,7 @@ int pcibios_write_config_word(unsigned char bus, unsigned char devfn, u8 where, 
 int pcibios_write_config_dword(unsigned char bus, unsigned char devfn, u8 where, u32 val)
 {
     	printk_spew( "Write doubleword bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
-	    bus, devfn, where, val);
+		     bus, devfn, where, val);
 	return conf->write_dword(bus, devfn, where, val);
 }
 
@@ -458,7 +458,7 @@ void compute_allocate_io(struct pci_bus *bus)
 		compute_allocate_io(curbus);
 		io_base = round(curbus->iolimit, IO_BRIDGE_ALIGN);
 		printk_debug("BUSIO: done Bridge Bus 0x%x, iobase now 0x%lx\n",
-		    curbus->number, io_base);
+			     curbus->number, io_base);
 	}
 
 	/* Walk through all the devices on current bus and compute IO address space.*/
@@ -470,7 +470,7 @@ void compute_allocate_io(struct pci_bus *bus)
 		 */
 		pci_read_config_dword(curdev, PCI_CLASS_REVISION, &class_revision);
 		if (((class_revision >> 24) == 0x03) && 
-			((class_revision >> 16) != 0x380)) {
+		    ((class_revision >> 16) != 0x380)) {
 			printk_debug("Running VGA fix...\n");
 			/* All legacy VGA cards have I/O space registers */
 			curdev->command |= PCI_COMMAND_IO;	
@@ -483,19 +483,20 @@ void compute_allocate_io(struct pci_bus *bus)
 					continue;
 
 				printk_debug("DEVIO: Bus 0x%x, devfn 0x%x, reg 0x%x: "
-				    "iosize 0x%lx\n",
-				    curdev->bus->number, curdev->devfn, i, iosize);
+					     "iosize 0x%lx\n",
+					     curdev->bus->number, curdev->devfn, i, iosize);
 				// Make sure that iosize is a minimum 
 				// size. 
 				iosize = round(iosize, IO_ALIGN);
 				// io_base must be aligned to the io size.
 				io_base = round(io_base, iosize);
-				printk_debug("  rounded size %d base 0x%x\n", 							iosize, io_base);
+				printk_debug("  rounded size %d base 0x%x\n",
+					     iosize, io_base);
 				curdev->base_address[i] = io_base;
 				// some chipsets allow us to set/clear the IO bit. 
 				// (e.g. VIA 82c686a.) So set it to be safe)
 				curdev->base_address[i] |= 
-				    PCI_BASE_ADDRESS_SPACE_IO;
+					PCI_BASE_ADDRESS_SPACE_IO;
 				printk_debug("-->set base to 0x%lx\n", io_base);
 				io_base += iosize;
 				curdev->command |= PCI_COMMAND_IO;
@@ -527,7 +528,7 @@ void compute_allocate_mem(struct pci_bus *bus)
 		compute_allocate_mem(curbus);
 		mem_base = round(curbus->memlimit, ONEMEG);
 		printk_debug("BUSMEM: Bridge Bus 0x%x,membase now 0x%lx\n",
-		    curbus->number, mem_base);
+			     curbus->number, mem_base);
 	}
 
 	/* Walk through all the devices on current bus and oompute MEMORY address space.*/
@@ -546,7 +547,7 @@ void compute_allocate_mem(struct pci_bus *bus)
 
 			// we don't support the 1M type
 			if (type & PCI_BASE_ADDRESS_MEM_TYPE_1M) {
-			    continue;
+				continue;
 			}
 
 			// if it's prefetch type, continue;
@@ -568,15 +569,15 @@ void compute_allocate_mem(struct pci_bus *bus)
 				regmem = round(memorysize, MEM_ALIGN);
 				mem_base = round(mem_base, regmem);
 				printk_debug("DEVMEM: Bus 0x%x, devfn 0x%x, reg 0x%x: "
-				    "memsize 0x%lx\n",
-				    curdev->bus->number, curdev->devfn, i, regmem);
+					     "memsize 0x%lx\n",
+					     curdev->bus->number, curdev->devfn, i, regmem);
 				curdev->base_address[i] = mem_base;
 				printk_debug("-->set base to 0x%lx\n", mem_base);
 				mem_base += regmem;
 				curdev->command |= PCI_COMMAND_MEMORY;
 				// for 64-bit BARs, the odd ones don't count
 				if (type == PCI_BASE_ADDRESS_MEM_TYPE_64)
-				    continue;
+					continue;
 
 			}
 		}
@@ -606,7 +607,7 @@ void compute_allocate_prefmem(struct pci_bus *bus)
 		compute_allocate_prefmem(curbus);
 		prefmem_base = round(curbus->prefmemlimit, ONEMEG);
 		printk_debug("BUSPREFMEM: Bridge Bus 0x%x, prefmem base now 0x%lx\n",
-		    curbus->number, prefmem_base);
+			     curbus->number, prefmem_base);
 	}
 
 	/* Walk through all the devices on current bus and oompute PREFETCHABLE MEMORY address space.*/
@@ -620,18 +621,18 @@ void compute_allocate_prefmem(struct pci_bus *bus)
 				continue;
 
 			if (type & PCI_BASE_ADDRESS_SPACE_IO) {
-			    continue;
+				continue;
 			}
 
 			// we don't support the 1M type
 			if (type & PCI_BASE_ADDRESS_MEM_TYPE_1M) {
-			    printk_warning(__FUNCTION__ ": 1M memory not supported\n");
-			    continue;
+				printk_warning(__FUNCTION__ ": 1M memory not supported\n");
+				continue;
 			}
 		      
 			// if it's not a prefetch type, continue;
 			if (! (type & PCI_BASE_ADDRESS_MEM_PREFETCH))
-			    continue;
+				continue;
 			// this should be a function some day ... comon code with 
 			// the non-prefetch allocate
 			// now mask out all but the 32 or 64 bit type info
@@ -646,15 +647,15 @@ void compute_allocate_prefmem(struct pci_bus *bus)
 				regmem = round(memorysize, MEM_ALIGN);
 				prefmem_base = round(prefmem_base, regmem);
 				printk_debug("DEVPREFMEM: Bus 0x%x, devfn 0x%x, reg 0x%x: "
-				    "prefmemsize 0x%lx\n",
-				    curdev->bus->number, curdev->devfn, i, regmem);
+					     "prefmemsize 0x%lx\n",
+					     curdev->bus->number, curdev->devfn, i, regmem);
 				curdev->base_address[i] = prefmem_base;
 				printk_debug("-->set base to 0x%lx\n", prefmem_base);
 				prefmem_base += regmem;
 				curdev->command |= PCI_COMMAND_MEMORY;
 				// for 64-bit BARs, the odd ones don't count
 				if (type == PCI_BASE_ADDRESS_MEM_TYPE_64)
-				    continue;
+					continue;
 			}
 		}
 	}
@@ -709,7 +710,7 @@ void assign_resources(struct pci_bus *bus)
 			pci_write_config_byte(curbus->self, PCI_IO_LIMIT,
 					      curbus->iolimit >> 8);
 			printk_debug("Bus 0x%x Child Bus %x iobase to 0x%x iolimit 0x%x\n",
-  			    bus->number,curbus->number, curbus->iobase, curbus->iolimit);
+				     bus->number,curbus->number, curbus->iobase, curbus->iolimit);
 		}
 
 		// set the memory range
@@ -720,7 +721,7 @@ void assign_resources(struct pci_bus *bus)
 			pci_write_config_word(curbus->self, PCI_MEMORY_LIMIT,
 					      curbus->memlimit >> 16);
 			printk_debug("Bus 0x%x Child Bus %x membase to 0x%x memlimit 0x%x\n",
-			    bus->number,curbus->number, curbus->membase, curbus->memlimit);
+				     bus->number,curbus->number, curbus->membase, curbus->memlimit);
 
 		}
 
@@ -732,8 +733,8 @@ void assign_resources(struct pci_bus *bus)
 			pci_write_config_word(curbus->self, PCI_PREF_MEMORY_LIMIT,
 					      curbus->prefmemlimit >> 16);
 			printk_debug("Bus 0x%x Child Bus %x prefmembase to 0x%x prefmemlimit 0x%x\n",
-			    bus->number,curbus->number, curbus->prefmembase,
-			    curbus->prefmemlimit);
+				     bus->number,curbus->number, curbus->prefmembase,
+				     curbus->prefmemlimit);
 
 		}
 		curbus->self->command |= PCI_COMMAND_MASTER;
@@ -750,8 +751,8 @@ void assign_resources(struct pci_bus *bus)
 			reg = PCI_BASE_ADDRESS_0 + (i << 2);
 			pci_write_config_dword(curdev, reg, curdev->base_address[i]);
 			printk_debug("Bus 0x%x devfn 0x%x reg 0x%x base to 0x%lx\n",
-			    curdev->bus->number, curdev->devfn, i, 
-			    curdev->base_address[i]);
+				     curdev->bus->number, curdev->devfn, i, 
+				     curdev->base_address[i]);
 		}
 		/* set a default latency timer */
 		pci_write_config_byte(curdev, PCI_LATENCY_TIMER, 0x40);
@@ -770,7 +771,7 @@ void enable_resources(struct pci_bus *bus)
 		pci_read_config_word(curdev, PCI_COMMAND, &command);
 		command |= curdev->command;
 		printk_debug("DEV Set command bus 0x%02x devfn 0x%02x to 0x%02x\n",
-		    curdev->bus->number, curdev->devfn, command);
+			     curdev->bus->number, curdev->devfn, command);
 		pci_write_config_word(curdev, PCI_COMMAND, command);
 	}
 }
@@ -793,13 +794,16 @@ void pci_enumerate()
 void pci_configure()
 {
 	printk_info("Allocating PCI resources...");
+
 	pci_root.membase = PCI_MEM_START;
 	pci_root.prefmembase = PCI_MEM_START;
 	pci_root.iobase = PCI_IO_START;
 
 	compute_allocate_resources(&pci_root);
+
 	// now just set things into registers ... we hope ...
 	assign_resources(&pci_root);
+
 	printk_info("done.\n");
 }
 
@@ -837,96 +841,94 @@ void pci_zero_irq_settings(void)
 void
 handle_superio(int pass, struct superio *all_superio[], int nsuperio)
 {
-  int i;
-  struct superio *s;
-  printk_debug("handle_superio start, s %p nsuperio %d s->super %p\n",
-	 s, nsuperio, s->super);
-  for(i = 0; i < nsuperio; i++){
-      s = all_superio[i];
-      printk_debug(__FUNCTION__ " Pass %d, check #%d, s %p s->super %p\n",
-	  pass, i, s, s->super);
-    if (!s->super) {
-	printk_debug(__FUNCTION__ " Pass %d, Skipping #%d as it has no superio pointer!\n", pass, i);
-        continue;
-    }
-    printk_debug("handle_superio: Pass %d, Superio %s\n", pass, 
-	   s->super->name);
-    // if no port is assigned use the defaultport
-    printk_info( __FUNCTION__ "  port 0x%x, defaultport 0x%x\n",
-	   s->port, s->super->defaultport);
-    if (! s->port)
-      s->port = s->super->defaultport;
+	int i;
+	struct superio *s;
 
-    printk_info( __FUNCTION__ "  Using port 0x%x\n", s->port);
+	printk_debug("handle_superio start, s %p nsuperio %d s->super %p\n",
+		     s, nsuperio, s->super);
 
-    // need to have both pre_pci_init and devfn defined.
-    if (s->super->pre_pci_init && (pass == 0)) {
-      printk_debug("  Call pre_pci_init\n");
-      s->super->pre_pci_init(s);
-    }
-    else
-      if (s->super->init && (pass == 1)) 
-	{
-	  printk_debug("  Call init\n");
-	  s->super->init(s);
+	for (i = 0; i < nsuperio; i++){
+		s = all_superio[i];
+		printk_debug(__FUNCTION__
+			     " Pass %d, check #%d, s %p s->super %p\n",
+			     pass, i, s, s->super);
+		if (!s->super) {
+			printk_debug(__FUNCTION__
+				     " Pass %d, Skipping #%d as it has no superio pointer!\n",
+				     pass, i);
+			continue;
+		}
+
+		printk_debug("handle_superio: Pass %d, Superio %s\n",
+			     pass, s->super->name);
+
+		// if no port is assigned use the defaultport
+		printk_info(__FUNCTION__ "  port 0x%x, defaultport 0x%x\n",
+			    s->port, s->super->defaultport);
+		if (!s->port)
+			s->port = s->super->defaultport;
+
+		printk_info(__FUNCTION__ "  Using port 0x%x\n", s->port);
+
+		// need to have both pre_pci_init and devfn defined.
+		if (s->super->pre_pci_init && (pass == 0)) {
+			printk_debug("  Call pre_pci_init\n");
+			s->super->pre_pci_init(s);
+		} else if (s->super->init && (pass == 1)) {
+			printk_debug("  Call init\n");
+			s->super->init(s);
+		} else if (s->super->finishup && (pass == 2)) {
+			printk_debug("  Call finishup\n");
+			s->super->finishup(s);
+		}
+		printk_debug(__FUNCTION__ " Pass %d, done #%d\n", pass, i);
 	}
-      else
-	if (s->super->finishup && (pass == 2))
-	  {
-	    printk_debug("  Call finishup\n");
-	    s->super->finishup(s);
-	  }
-    printk_debug(__FUNCTION__ " Pass %d, done #%d\n", pass, i);
-  }
-  printk_debug("handle_superio done\n");
+	printk_debug("handle_superio done\n");
 }
 
 void
 handle_southbridge(int pass, struct southbridge *s, int nsouthbridge)
 {
-  int i;
-  for(i = 0; i < nsouthbridge; i++, s++){
-    
-    if (!s->southbridge)
-      continue;
-    printk_debug("handle_southbridge: Pass %d, Superio %s\n", pass, 
-	   s->southbridge->name);
+	int i;
+	for (i = 0; i < nsouthbridge; i++, s++) {
 
-    // need to have both pre_pci_init and devfn defined.
-    if (s->southbridge->pre_pci_init && (pass == 0) && (s->devfn)) {
-      printk_debug("  Call pre_pci_init\n");
-      s->southbridge->pre_pci_init(s);
-    }
-    else
-      {
-	// first, have to set up any device not set up. 
-	// policy: we ignore the devfn here. First, it's in the pcidev, and
-	// second, it's really only to be used BEFORE pci config is done. 
-	if (! s->device)
-	  s->device = pci_find_device(s->southbridge->vendor, 
-				      s->southbridge->device, 0);
+		if (!s->southbridge)
+			continue;
+		printk_debug("handle_southbridge: Pass %d, Superio %s\n", pass, 
+			     s->southbridge->name);
 
-	if (! s->device) { // not there!
-	  printk_info("  No such device\n");
-	  continue;
+		// need to have both pre_pci_init and devfn defined.
+		if (s->southbridge->pre_pci_init && (pass == 0) && (s->devfn)) {
+			printk_debug("  Call pre_pci_init\n");
+			s->southbridge->pre_pci_init(s);
+		} else {
+			// first, have to set up any device not set up. 
+			// policy: we ignore the devfn here. First, it's in the pcidev, and
+			// second, it's really only to be used BEFORE pci config is done. 
+			if (!s->device)
+				s->device = pci_find_device(s->southbridge->vendor, 
+							    s->southbridge->device, 0);
+
+			if (!s->device) {
+				// not there!
+				printk_info("  No such device\n");
+				continue;
+			}
+			// problem. We have to handle multiple devices of same type. 
+			// We don't do this yet. One way is to mark the pci device used at
+			// this point, i.e. 
+			// s->device->inuse = 1
+			// and then continue looking if the device is in use.
+			// For now, let's get this basic thing to work.
+			if (s->southbridge->init && (pass == 1)) {
+				printk_debug("  Call init\n");
+				s->southbridge->init(s);
+			} else if (s->southbridge->finishup && (pass == 2)) {
+				printk_debug("  Call finishup\n");
+				s->southbridge->finishup(s);
+			}
+		}
 	}
-	// problem. We have to handle multiple devices of same type. 
-	// We don't do this yet. One way is to mark the pci device used at
-	// this point, i.e. 
-	// s->device->inuse = 1
-	// and then continue looking if the device is in use.
-	// For now, let's get this basic thing to work.
-	if (s->southbridge->init && (pass == 1)) {
-	  printk_debug("  Call init\n");
-	  s->southbridge->init(s);
-	}
-	else
-	  if (s->southbridge->finishup && (pass == 2)) {
-	    printk_debug("  Call finishup\n");
-	    s->southbridge->finishup(s);
-	  }
-      }
-  }
 }
 
 

@@ -1,6 +1,29 @@
 #include <pci.h>
 #include <printk.h>
 
+static 
+void refresh_set(int turn_it_on)
+{
+        struct pci_dev *pcidev;
+	u32 ref;
+
+	pcidev = pci_find_slot(0, PCI_DEVFN(0,0));
+
+	if (! pcidev) // won't happen but ...
+		return;
+
+	pci_read_config_dword(pcidev, 0x7c, &ref);
+	printk(KERN_INFO __FUNCTION__ "refresh was 0x%lx onoff is %d\n", 
+		ref, turn_it_on);
+	if (turn_it_on)
+		ref |= (1 << 19);
+	else
+		ref &= ~(1 << 19);
+			
+	pci_write_config_dword(pcidev, 0x7c, ref);
+	pci_read_config_dword(pcidev, 0x7c, &ref);
+	printk(KERN_INFO __FUNCTION__ "refresh is now 0x%lx\n", ref);
+}
 // FIX ME!
 unsigned long sizeram()
 {
@@ -8,6 +31,7 @@ unsigned long sizeram()
 	int i;
         struct pci_dev *pcidev;
 	volatile unsigned char *cp; 
+	char c;
 	u32 ram;
 	unsigned long size;
 	pcidev = pci_find_slot(0, PCI_DEVFN(0,0));
@@ -17,35 +41,43 @@ unsigned long sizeram()
 	printk("Acer sizeram pcidev %p\n", pcidev);
 
 	/* now read and print registers for ram ...*/
-	for(i = 0x6c; i < 0x78; i++) {
+	for(i = 0x6c; i < 0x78; i += 4) {
 
 		pci_read_config_dword(pcidev, i, &ram);
 		size = (1 << (((ram >> 20) & 0x7))) * (0x400000);
 		printk("0x%x 0x%x, size 0x%x\n", i, ram, size);
 	}
 	printk("so is the first one double-sided? \n");
-	cache_disable();
 	pci_read_config_dword(pcidev, 0x6c, &ram);
 	size = (1 << (((ram >> 20) & 0x7))) * (0x400000);
 	printk("set cp to 0x%x\n", size);
 	cp = (char *) size;
 	printk("cp is now %p\n", cp);
+	cache_disable();
+	refresh_set(0);
+	// you now have about 15 microseconds
 	*cp = 0x55;
 	// how odd. 
 	// what happens is if there is a 2nd row, then it will 
 	// read back REGARDLESS of the settings of the bits in the
 	// register! We verified this with the arium ...
 	// RGM 4/10/01
+	//printk("*cp is 0x%x\n", *cp);
+	c = *cp;
+	refresh_set(1);
+	printk("*cp is 0x%x\n", c);
 	if (*cp == 0x55) {
 		ram |= 0x1800000;		
-		printk("Jam 0x%x into 0x6c\n", ram);
+		printk("two side: Jam 0x%x into 0x6c\n", ram);
 		pci_write_config_dword(pcidev, 0x6c, ram);
 		printk("@ cp now is 0x%x\n", *cp);
 		// set the base address for the next dram slot 
 		// (if there is any ... )
 		cp += size;
-	}
+	} else printk("One sided\n");
+	
 	printk("cp now is 0x%x\n", cp);
+	return 0;
 	// now do the other two banks. 
 #define INIT_MCR 0xf663f83c
 	for(i = 0x70; i < 0x78; i += 4) {

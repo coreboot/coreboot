@@ -56,7 +56,7 @@ static int calculate_l2_cache_size(void);
 static int calculate_l2_physical_address_range(void);
 static int calculate_l2_ecc(void);
 
-static void cache_disable(void)
+void cache_disable(void)
 {
 	unsigned int tmp;
 
@@ -72,7 +72,7 @@ static void cache_disable(void)
 		      : "=r" (tmp) : : "memory");
 }
 
-static void cache_enable(void)
+void cache_enable(void)
 {
 	unsigned int tmp;
 

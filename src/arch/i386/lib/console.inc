@@ -7,6 +7,8 @@ console_test:        .string "\r\n\r\nLinuxBIOS starting...\r\n"
 	/* uses:	ax, dx */
 #if defined(SERIAL_CONSOLE)
 #define __CONSOLE_INLINE_TX_AL TTYS0_TX_AL
+#else
+#define __CONSOLE_INLINE_TX_AL
 #endif
 
 	/* uses:	esp, ax, dx */

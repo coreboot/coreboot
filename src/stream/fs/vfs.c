@@ -23,24 +23,11 @@ struct fsys_entry {
 };
 
 struct fsys_entry fsys_table[] = {
-# ifdef CONFIG_FS_FAT
+# if CONFIG_FS_FAT == 1
     {"fat", fat_mount, fat_read, fat_dir, 0, 0},
 # endif
 # if CONFIG_FS_EXT2 == 1
     {"ext2fs", ext2fs_mount, ext2fs_read, ext2fs_dir, 0, 0},
-# endif
-# ifdef CONFIG_FS_MINIX
-    {"minix", minix_mount, minix_read, minix_dir, 0, 0},
-# endif
-# ifdef CONFIG_FS_REISERFS
-    {"reiserfs", reiserfs_mount, reiserfs_read, reiserfs_dir, 0,
-     reiserfs_embed},
-# endif
-# ifdef CONFIG_FS_JFS
-    {"jfs", jfs_mount, jfs_read, jfs_dir, 0, jfs_embed},
-# endif
-# ifdef CONFIG_FS_XFS
-    {"xfs", xfs_mount, xfs_read, xfs_dir, 0, 0},
 # endif
 # if CONFIG_FS_ISO9660 == 1
     {"iso9660", iso9660_mount, iso9660_read, iso9660_dir, 0, 0},

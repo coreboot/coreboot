@@ -7,18 +7,11 @@ mainboard amd/solo
 
 option ROM_SIZE=0x100000
 
-romimage "normal"
-	option USE_FALLBACK_IMAGE=0
-	option ROM_IMAGE_SIZE=0x10000
-	option LINUXBIOS_EXTRA_VERSION=".0-Normal"
-	payload /usr/share/LinuxBIOS/kernelpayload.elf
-end
-
-romimage "fallback" 
+romimage "only" 
 	option USE_FALLBACK_IMAGE=1
 	option ROM_IMAGE_SIZE=0x10000
-	option LINUXBIOS_EXTRA_VERSION=".0-Fallback"
+	option LINUXBIOS_EXTRA_VERSION=".0"
 	payload /usr/share/LinuxBIOS/kernelpayload.elf
 end
 
-buildrom ./solo-8mbit.rom ROM_SIZE "normal" "fallback"
+buildrom ./solo-8mbit.rom ROM_SIZE "only"

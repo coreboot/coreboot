@@ -10,7 +10,12 @@
 #define DOC_STACK_SEG		0x0400
 #define SPL_RAM_SEG		0x8000
 
-#define DOC_SPL_START_BLK	2	/* 0,1 for IPL */
+#ifdef USE_DOC_MIL_PLUS
+#define DOC_SPL_START_BLK	4	/* 0-3 for IPL (each of 1KB size) */
+#else
+#define DOC_SPL_START_BLK	2	/* 0,1 for IPL (each of 512B size) */
+#endif
+
 #define DOC_SPL_SIZE_IN_PAGE	126     /* 1 page = 512 bytes, total 63kB */
 
 #define RET_LABEL(label)	\

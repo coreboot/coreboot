@@ -2,6 +2,7 @@ import sys
 import os
 import re
 import string
+import types
 
 warnings = 0
 errors = 0
@@ -174,7 +175,7 @@ def warning(string):
 	"""Print warning message"""
         global warnings, loc
 	warnings = warnings + 1
-        print "===> Warning: %s" % string
+        print "===> WARNING: %s" % string
         print "%s" % loc
 
 def exitiferrors():
@@ -270,7 +271,7 @@ class romimage:
 	def addmakerule(self, id):
 		o = getdict(self.makebaserules, id)
 		if (o):
-			print "Warning, rule %s previously defined" % id
+			warning("rule %s previously defined" % id)
 		o = makerule(id)
 		setdict(self.makebaserules, id, o)
 
@@ -319,7 +320,7 @@ class romimage:
 		debug.info(debug.object, "add object %s source %s" % (object_name, source))
 		l = getdict(dict, base)
 		if (l):
-			print "Warning, object/driver %s previously defined" % base
+			warning("object/driver %s previously defined" % base)
 		setdict(dict, base, [object, source, type, base])
 
 	def addinitobjectrule(self, name):
@@ -377,7 +378,7 @@ class romimage:
 		debug.info(debug.object, "ADDCRT0: %s -> %s" % (str, path))
 		o = getdict(self.initincludes, path)
 		if (o):
-			print "Warning, init include for %s previously defined" % path
+			warning("Warning, init include for %s previously defined" % path)
 		o = initinclude(str, path)
 		setdict(self.initincludes, path, o)
 		self.initincludesorder.append(path)
@@ -494,7 +495,7 @@ class option:
 		if (v == 0):
 			return 0
 		val = v.contents()
-		if (not (type(val) is str)):
+		if (not (type(val) is types.StringType)):
 			return v
 		if (val == '' or val[0] != '{'):
 			return v
@@ -508,7 +509,7 @@ class option:
 	def setdefault(self, value, loc):
 		global global_option_values
 		if (self.default):
-			fatal("Error: default value for %s already set" % self.name)
+			fatal("default value for %s already set" % self.name)
 		setdict(global_option_values, self.name, value)
 		self.defined = 1
 		self.default = 1
@@ -738,7 +739,7 @@ class partobj:
 		global global_options
 		o = getdict(global_options, name)
 		if (o == 0):
-			fatal("Error: can't use undefined option %s" % name)
+			fatal("can't use undefined option %s" % name)
 		o.setused()
 		o1 = getdict(self.uses_options, name)
 		if (o1):
@@ -1101,7 +1102,7 @@ def partpop():
 	# Warn if options are used without being set in this part
 	for i in curpart.uses_options.keys():
 		if (not isset(i, curpart)):
-			print "WARNING: Option %s using default value %s" % (i, getformated(i, curpart.image))
+			warning("Option %s using default value %s" % (i, getformated(i, curpart.image)))
 	dirstack.pop()
 
 def dodir(path, file):

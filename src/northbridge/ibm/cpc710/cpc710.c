@@ -15,13 +15,13 @@ extern void cpc710_pci_init(void);
 void
 setCPC710(uint32_t addr, uint32_t data)
 {
-	out_be32((unsigned *)(CPC710_SCA_CPC0 + addr), data);
+	out_be32((unsigned *)(CPC710_PHYS_CPC0 + addr), data);
 }
 
 uint32_t
 getCPC710(uint32_t addr)
 {
-	return (uint32_t)in_be32((unsigned *)(CPC710_SCA_CPC0 + addr));
+	return (uint32_t)in_be32((unsigned *)(CPC710_PHYS_CPC0 + addr));
 }
 
 void
@@ -34,6 +34,8 @@ sdram_init(void)
 void
 cpc710_init(void)
 {
+	uint32_t mccr;
+
 	setCPC710(CPC710_CPC0_RSTR,   0xf0000000);	
 	(void)getCPC710(CPC710_CPC0_MPSR);	
 	setCPC710(CPC710_CPC0_SIOC0,   0x00000000);	
@@ -74,4 +76,11 @@ cpc710_init(void)
 	setCPC710(CPC710_SDRAM0_MCER0,  0x80000080);	
 	setCPC710(CPC710_SDRAM0_MCER1,  0x82000080);	
 	setCPC710(CPC710_SDRAM0_MCCR,   0xd2b06000);	
+
+	/*
+ 	 * wait for SDRAM init
+	 */
+	do {
+		mccr = getCPC710(CPC710_SDRAM0_MCCR);	
+	} while (mccr & CPC710_MCCR_INIT_STATUS != CPC710_MCCR_INIT_STATUS);
 }

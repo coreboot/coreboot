@@ -36,7 +36,4 @@ extern void ppc_enable_mmu(void);
 
 /* Describe which sort of ppc CPU I am */
 extern void ppc_identify(void);
-
-/* CPU clock speed in ticks per second */
-extern unsigned long get_clock_speed();
 #endif

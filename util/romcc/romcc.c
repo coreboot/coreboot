@@ -847,7 +847,11 @@ struct type {
 
 #define MAX_REGISTERS      75
 #define MAX_REG_EQUIVS     16
+#if 1
+#define REGISTER_BITS      16
+#else
 #define REGISTER_BITS      28
+#endif
 #define MAX_VIRT_REGISTERS (1<<REGISTER_BITS)
 #define TEMPLATE_BITS      6
 #define MAX_TEMPLATES      (1<<TEMPLATE_BITS)
@@ -862,9 +866,22 @@ struct type {
 #define REG_VIRT5          (MAX_REGISTERS + 5)
 
 /* Provision for 8 register classes */
+#if 1
+#define REG_SHIFT  0
+#define REGC_SHIFT REGISTER_BITS
+#define REGC_MASK (((1 << MAX_REGC) - 1) << REGISTER_BITS)
 #define REG_MASK (MAX_VIRT_REGISTERS -1)
 #define ID_REG(ID)              ((ID) & REG_MASK)
 #define SET_REG(ID, REG)        ((ID) = (((ID) & ~REG_MASK) | ((REG) & REG_MASK)))
+#define ID_REGCM(ID)		(((ID) & REGC_MASK) >> REGC_SHIFT)
+#define SET_REGCM(ID, REGCM)	((ID) = (((ID) & ~REGC_MASK) | (((REGCM) << REGC_SHIFT) & REGC_MASK)))
+#define SET_INFO(ID, INFO)	((ID) = (((ID) & ~(REG_MASK | REGC_MASK)) | \
+		(((INFO).reg) & REG_MASK) | ((((INFO).regcm) << REGC_SHIFT) & REGC_MASK)))
+#else
+#define REG_MASK (MAX_VIRT_REGISTERS -1)
+#define ID_REG(ID)              ((ID) & REG_MASK)
+#define SET_REG(ID, REG)        ((ID) = (((ID) & ~REG_MASK) | ((REG) & REG_MASK)))
+#endif
 
 static unsigned arch_reg_regcm(struct compile_state *state, int reg);
 static unsigned arch_regcm_normalize(struct compile_state *state, unsigned regcm);
@@ -10843,7 +10860,7 @@ static void free_variable_lifetimes(
 
 }
 
-typedef struct triple *(*wvl_cb_t)(
+typedef void (*wvl_cb_t)(
 	struct compile_state *state, 
 	struct reg_block *blocks, struct triple_reg_set *live, 
 	struct reg_block *rb, struct triple *ins, void *arg);
@@ -10873,7 +10890,7 @@ static void walk_variable_lifetimes(struct compile_state *state,
 		}
 		/* Walk through the basic block calculating live */
 		for(done = 0, ptr = block->last; !done; ptr = prev) {
-			struct triple **expr, *result;
+			struct triple **expr;
 
 			prev = ptr->prev;
 			done = (ptr == block->first);
@@ -10886,19 +10903,10 @@ static void walk_variable_lifetimes(struct compile_state *state,
 			/* Inform the callback function of what is
 			 * going on.
 			 */
-			result = cb(state, blocks, live, rb, ptr, arg);
+			 cb(state, blocks, live, rb, ptr, arg);
 			
 			/* Remove the current definition from live */
 			do_triple_unset(&live, ptr);
-
-			/* If the current instruction was deleted continue */
-			if (!result) {
-				if (block->last == ptr) {
-					block->last = prev;
-				}
-				continue;
-			}
-			
 
 			/* Add the current uses to live.
 			 *
@@ -11769,7 +11777,7 @@ static void initialize_live_ranges(
 	} while(ins != first);
 }
 
-static struct triple *graph_ins(
+static void graph_ins(
 	struct compile_state *state, 
 	struct reg_block *blocks, struct triple_reg_set *live, 
 	struct reg_block *rb, struct triple *ins, void *arg)
@@ -11783,7 +11791,7 @@ static struct triple *graph_ins(
 	 * the interference graph.
 	 */
 	if (!triple_is_def(state, ins)) {
-		return ins;
+		return;
 	}
 	def = rstate->lrd[ins->id].lr;
 	
@@ -11805,11 +11813,11 @@ static struct triple *graph_ins(
 		}
 		add_live_edge(rstate, def, lr);
 	}
-	return ins;
+	return;
 }
 
 
-static struct triple *print_interference_ins(
+static void print_interference_ins(
 	struct compile_state *state, 
 	struct reg_block *blocks, struct triple_reg_set *live, 
 	struct reg_block *rb, struct triple *ins, void *arg)
@@ -11855,7 +11863,7 @@ static struct triple *print_interference_ins(
 	if (triple_is_branch(state, ins)) {
 		printf("\n");
 	}
-	return ins;
+	return;
 }
 
 static int coalesce_live_ranges(
@@ -11962,17 +11970,11 @@ static int coalesce_live_ranges(
 }
 
 
-struct coalesce_conflict {
-	struct triple *ins;
-	int index;
-};
-static struct triple *spot_coalesce_conflict(struct compile_state *state,
+static void fix_coalesce_conflicts(struct compile_state *state,
 	struct reg_block *blocks, struct triple_reg_set *live,
 	struct reg_block *rb, struct triple *ins, void *arg)
 {
-	struct coalesce_conflict *conflict = arg;
 	int zlhs, zrhs, i, j;
-	int found;
 
 	/* See if we have a mandatory coalesce operation between
 	 * a lhs and a rhs value.  If so and the rhs value is also
@@ -11980,101 +11982,113 @@ static struct triple *spot_coalesce_conflict(struct compile_state *state,
 	 * we would have two definitions in the same live range simultaneously
 	 * alive.
 	 */
-	found = -1;
 	zlhs = TRIPLE_LHS(ins->sizes);
 	if ((zlhs == 0) && triple_is_def(state, ins)) {
 		zlhs = 1;
 	}
 	zrhs = TRIPLE_RHS(ins->sizes);
-	for(i = 0; (i < zlhs) && (found == -1); i++) {
+	for(i = 0; i < zlhs; i++) {
 		struct reg_info linfo;
 		linfo = arch_reg_lhs(state, ins, i);
 		if (linfo.reg < MAX_REGISTERS) {
 			continue;
 		}
-		for(j = 0; (j < zrhs) && (found == -1); j++) {
+		for(j = 0; j < zrhs; j++) {
 			struct reg_info rinfo;
 			struct triple *rhs;
 			struct triple_reg_set *set;
+			int found;
+			found = 0;
 			rinfo = arch_reg_rhs(state, ins, j);
 			if (rinfo.reg != linfo.reg) {
 				continue;
 			}
 			rhs = RHS(ins, j);
-			for(set = live; set && (found == -1); set = set->next) {
+			for(set = live; set && !found; set = set->next) {
 				if (set->member == rhs) {
-					found = j;
+					found = 1;
 				}
+			}
+			if (found) {
+				struct triple *copy;
+				copy = pre_copy(state, ins, j);
+				copy->id |= TRIPLE_FLAG_PRE_SPLIT;
 			}
 		}
 	}
-	/* Only update conflict if we are the least dominated conflict */
-	if ((found != -1) &&
-		(!conflict->ins || tdominates(state, ins, conflict->ins))) {
-		conflict->ins = ins;
-		conflict->index = found;
-	}
-	return ins;
+	return;
 }
 
-static void resolve_coalesce_conflict(
-	struct compile_state *state, struct coalesce_conflict *conflict)
+static void replace_set_use(struct compile_state *state,
+	struct triple_reg_set *head, struct triple *orig, struct triple *new)
 {
-	struct triple *copy;
-	copy = pre_copy(state, conflict->ins, conflict->index);
-	copy->id |= TRIPLE_FLAG_PRE_SPLIT;
-}
-	
-
-static struct triple *spot_tangle(struct compile_state *state,
-	struct reg_block *blocks, struct triple_reg_set *live,
-	struct reg_block *rb, struct triple *ins, void *arg)
-{
-	struct triple **tangle = arg;
-	char used[MAX_REGISTERS];
 	struct triple_reg_set *set;
-
-	/* Find out which registers have multiple uses at this point */
-	memset(used, 0, sizeof(used));
-	for(set = live; set; set = set->next) {
-		struct reg_info info;
-		info = find_lhs_color(state, set->member, 0);
-		if (info.reg == REG_UNSET) {
-			continue;
-		}
-		reg_inc_used(state, used, info.reg);
-	}
-
-	/* Now find the least dominated definition of a register in
-	 * conflict I have seen so far.
-	 */
-	for(set = live; set; set = set->next) {
-		struct reg_info info;
-		info = find_lhs_color(state, set->member, 0);
-		if (used[info.reg] < 2) {
-			continue;
-		}
-		if (!*tangle || tdominates(state, set->member, *tangle)) {
-			*tangle = set->member;
+	for(set = head; set; set = set->next) {
+		if (set->member == orig) {
+			set->member = new;
 		}
 	}
-	return ins;
 }
 
-static void resolve_tangle(struct compile_state *state, struct triple *tangle)
+static void replace_block_use(struct compile_state *state, 
+	struct reg_block *blocks, struct triple *orig, struct triple *new)
+{
+	int i;
+#warning "WISHLIST visit just those blocks that need it *"
+	for(i = 1; i <= state->last_vertex; i++) {
+		struct reg_block *rb;
+		rb = &blocks[i];
+		replace_set_use(state, rb->in, orig, new);
+		replace_set_use(state, rb->out, orig, new);
+	}
+}
+
+static void color_instructions(struct compile_state *state)
+{
+	struct triple *ins, *first;
+	first = RHS(state->main_function, 0);
+	ins = first;
+	do {
+		if (triple_is_def(state, ins)) {
+			struct reg_info info;
+			info = find_lhs_color(state, ins, 0);
+			if (info.reg >= MAX_REGISTERS) {
+				info.reg = REG_UNSET;
+			}
+			SET_INFO(ins->id, info);
+		}
+		ins = ins->next;
+	} while(ins != first);
+}
+
+static struct reg_info read_lhs_color(
+	struct compile_state *state, struct triple *ins, int index)
+{
+	struct reg_info info;
+	if ((index == 0) && triple_is_def(state, ins)) {
+		info.reg   = ID_REG(ins->id);
+		info.regcm = ID_REGCM(ins->id);
+	}
+	else if (index < TRIPLE_LHS(ins->sizes)) {
+		info = read_lhs_color(state, LHS(ins, index), 0);
+	}
+	else {
+		internal_error(state, ins, "Bad lhs %d", index);
+		info.reg = REG_UNSET;
+		info.regcm = 0;
+	}
+	return info;
+}
+
+static struct triple *resolve_tangle(
+	struct compile_state *state, struct triple *tangle)
 {
 	struct reg_info info, uinfo;
 	struct triple_set *set, *next;
 	struct triple *copy;
 
-#if 0
-	fprintf(stderr, "Resolving tangle: %p\n", tangle);
-	print_blocks(state, stderr);
-#endif
+#warning "WISHLIST recalculate all affected instructions colors"
 	info = find_lhs_color(state, tangle, 0);
-#if 0
-	fprintf(stderr, "color: %d\n", info.reg);
-#endif
 	for(set = tangle->use; set; set = next) {
 		struct triple *user;
 		int i, zrhs;
@@ -12086,26 +12100,84 @@ static void resolve_tangle(struct compile_state *state, struct triple *tangle)
 				continue;
 			}
 			uinfo = find_rhs_post_color(state, user, i);
-#if 0
-			fprintf(stderr, "%p rhs %d color: %d\n", 
-				user, i, uinfo.reg);
-#endif
 			if (uinfo.reg == info.reg) {
 				copy = pre_copy(state, user, i);
 				copy->id |= TRIPLE_FLAG_PRE_SPLIT;
+				SET_INFO(copy->id, uinfo);
 			}
 		}
 	}
+	copy = 0;
 	uinfo = find_lhs_pre_color(state, tangle, 0);
-#if 0
-	fprintf(stderr, "pre color: %d\n", uinfo.reg);
-#endif
 	if (uinfo.reg == info.reg) {
+		struct reg_info linfo;
 		copy = post_copy(state, tangle);
 		copy->id |= TRIPLE_FLAG_PRE_SPLIT;
+		linfo = find_lhs_color(state, copy, 0);
+		SET_INFO(copy->id, linfo);
 	}
+	info = find_lhs_color(state, tangle, 0);
+	SET_INFO(tangle->id, info);
+	
+	return copy;
 }
 
+
+static void fix_tangles(struct compile_state *state,
+	struct reg_block *blocks, struct triple_reg_set *live,
+	struct reg_block *rb, struct triple *ins, void *arg)
+{
+	struct triple *tangle;
+	do {
+		char used[MAX_REGISTERS];
+		struct triple_reg_set *set;
+		tangle = 0;
+
+		/* Find out which registers have multiple uses at this point */
+		memset(used, 0, sizeof(used));
+		for(set = live; set; set = set->next) {
+			struct reg_info info;
+			info = read_lhs_color(state, set->member, 0);
+			if (info.reg == REG_UNSET) {
+				continue;
+			}
+			reg_inc_used(state, used, info.reg);
+		}
+		
+		/* Now find the least dominated definition of a register in
+		 * conflict I have seen so far.
+		 */
+		for(set = live; set; set = set->next) {
+			struct reg_info info;
+			info = read_lhs_color(state, set->member, 0);
+			if (used[info.reg] < 2) {
+				continue;
+			}
+			if (!tangle || tdominates(state, set->member, tangle)) {
+				tangle = set->member;
+			}
+		}
+		/* If I have found a tangle resolve it */
+		if (tangle) {
+			struct triple *post_copy;
+			post_copy = resolve_tangle(state, tangle);
+			if (post_copy) {
+				replace_block_use(state, blocks, tangle, post_copy);
+			}
+			if (post_copy && (tangle != ins)) {
+				replace_set_use(state, live, tangle, post_copy);
+			}
+		}
+	} while(tangle);
+	return;
+}
+
+static void correct_tangles(
+	struct compile_state *state, struct reg_block *blocks)
+{
+	color_instructions(state);
+	walk_variable_lifetimes(state, blocks, fix_tangles, 0);
+}
 
 struct least_conflict {
 	struct reg_state *rstate;
@@ -12114,7 +12186,7 @@ struct least_conflict {
 	struct triple_reg_set *live;
 	size_t count;
 };
-static struct triple *least_conflict(struct compile_state *state,
+static void least_conflict(struct compile_state *state,
 	struct reg_block *blocks, struct triple_reg_set *live,
 	struct reg_block *rb, struct triple *ins, void *arg)
 {
@@ -12128,7 +12200,7 @@ static struct triple *least_conflict(struct compile_state *state,
 	 * can be the conflict instruction.
 	 */
 	if (!triple_is_def(state, ins)) {
-		return ins;
+		return;
 	}
 
 	/* See if live ranges at this instruction are a
@@ -12144,12 +12216,12 @@ static struct triple *least_conflict(struct compile_state *state,
 			}
 		}
 		if (!edge && (lr != conflict->ref_range)) {
-			return ins;
+			return;
 		}
 		count++;
 	}
 	if (count <= 1) {
-		return ins;
+		return;
 	}
 
 	/* See if there is an uncolored member in this subset. 
@@ -12162,7 +12234,7 @@ static struct triple *least_conflict(struct compile_state *state,
 		}
 	}
 	if (!set && (conflict->ref_range != REG_UNSET)) {
-		return ins;
+		return;
 	}
 
 
@@ -12208,7 +12280,7 @@ static struct triple *least_conflict(struct compile_state *state,
 			;
 		}
 	}
-	return ins;
+	return;
 }
 
 static void find_range_conflict(struct compile_state *state,
@@ -12975,49 +13047,23 @@ static void allocate_registers(struct compile_state *state)
 
 	do {
 		struct live_range **point, **next;
-		struct triple *tangle;
-		struct coalesce_conflict conflict;
 		int coalesced;
 
 		/* Restore ids */
 		ids_from_rstate(state, &rstate);
 
-		do {
-			/* Cleanup the temporary data structures */
-			cleanup_rstate(state, &rstate);
+		/* Cleanup the temporary data structures */
+		cleanup_rstate(state, &rstate);
 
-			/* Compute the variable lifetimes */
-			rstate.blocks = compute_variable_lifetimes(state);
+		/* Compute the variable lifetimes */
+		rstate.blocks = compute_variable_lifetimes(state);
 
-			/* Find an invalid mandatory live range coalesce */
-			conflict.ins = 0;
-			conflict.index = -1;
-			walk_variable_lifetimes(
-				state, rstate.blocks, spot_coalesce_conflict, &conflict);
-			
-			/* If a tangle was found resolve it */
-			if (conflict.ins) {
-				resolve_coalesce_conflict(state, &conflict);
-			}
-		} while(conflict.ins);
+		/* Fix invalid mandatory live range coalesce conflicts */
+		walk_variable_lifetimes(
+			state, rstate.blocks, fix_coalesce_conflicts, 0);
 
-		do {
-			/* Cleanup the temporary data structures */
-			cleanup_rstate(state, &rstate);
-
-			/* Compute the variable lifetimes */
-			rstate.blocks = compute_variable_lifetimes(state);
-
-			/* Find two simultaneous uses of the same register */
-			tangle = 0;
-			walk_variable_lifetimes(
-				state, rstate.blocks, spot_tangle, &tangle);
-			
-			/* If a tangle was found resolve it */
-			if (tangle) {
-				resolve_tangle(state, tangle);
-			}
-		} while(tangle);
+		/* Fix two simultaneous uses of the same register */
+		correct_tangles(state, rstate.blocks);
 
 		if (state->debug & DEBUG_INSERTED_COPIES) {
 			printf("After resolve_tangles\n");

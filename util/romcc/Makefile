@@ -1,5 +1,5 @@
-VERSION:=0.27
-RELEASE_DATE:=10 June 2003
+VERSION:=0.28
+RELEASE_DATE:=16 June 2003
 PACKAGE:=romcc
 
 
@@ -52,7 +52,8 @@ TESTS=\
 	simple_test31.c \
 	raminit_test.c \
 	raminit_test2.c \
-	raminit_test3.c
+	raminit_test3.c \
+	raminit_test4.c
 
 TEST_SRCS:=$(patsubst %, tests/%, $(TESTS))
 TEST_ASM:=$(patsubst %.c, tests/%.S, $(TESTS))
@@ -77,5 +78,5 @@ echo:
 	echo "TEST_ELF=$(TEST_ELF)"
 
 clean:
-	rm -f romcc core $(TEST_ASM) $(TEST_OBJ) $(TEST_ELF) tests/*.debug tests/*.debug2
+	rm -f romcc romcc_pg core $(TEST_ASM) $(TEST_OBJ) $(TEST_ELF) tests/*.debug tests/*.debug2 tests/*.gmon.out
 

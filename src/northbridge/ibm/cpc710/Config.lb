@@ -1,3 +1,11 @@
 #
 # Config file for IBM CPC710
 #
+
+initobject cpc710.o
+initobject cpc710_pci.o
+initobject cpc710_sdram.o
+
+object cpc710.o
+object cpc710_pci.o
+object cpc710_sdram.o

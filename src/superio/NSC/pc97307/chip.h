@@ -17,8 +17,6 @@
 extern struct chip_control superio_NSC_pc97307_control;
 
 struct superio_NSC_pc97307_config {
-    struct com_ports com1;
-    struct lpt_ports lpt;
     int port;
 };
 #endif /* _SUPERIO_NSC_PC97307 */

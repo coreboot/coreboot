@@ -712,11 +712,24 @@ static struct device_operations pci_domain_ops = {
 	.ops_pci_bus      = &pci_cf8_conf1,
 };
 
+#define APIC_ID_OFFSET 0x10
+
 static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 {
 	struct bus *cpu_bus;
+	device_t dev_mc;
 	int i;
-	int apic_id_offset = lapicid(); // bsp apicid
+        int enable_apic_ext_id = 0;
+        int bsp_apic_id = lapicid(); // bsp apicid
+        int apic_id_offset = bsp_apic_id;	
+
+        dev_mc = dev_find_slot(0, PCI_DEVFN(0x18, 0));
+        if(pci_read_config32(dev_mc, 0x68) & ( HTTC_APIC_EXT_ID | HTTC_APIC_EXT_BRD_CST)) {
+                enable_apic_ext_id = 1;
+                if(apic_id_offset==0) { //bsp apic id is not changed
+                        apic_id_offset = APIC_ID_OFFSET;
+                }
+        }
 
 	/* Find which cpus are present */
 	cpu_bus = &dev->link[0];
@@ -751,8 +764,11 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 		
 		/* Report what I have done */
 		if (cpu) {
-                        if(cpu->path.u.apic.apic_id<apic_id_offset) {
-                                cpu->path.u.apic.apic_id += apic_id_offset;
+                        if(enable_apic_ext_id) {
+                        	if(cpu->path.u.apic.apic_id<apic_id_offset) { //all add offset except bsp cores
+                                	if( (cpu->path.u.apic.apic_id > siblings) || (bsp_apic_id!=0) )
+                                        	cpu->path.u.apic.apic_id += apic_id_offset;
+                                }
                         }  
 			printk_debug("CPU: %s %s\n", dev_path(cpu),
 				     cpu->enabled?"enabled":"disabled");

@@ -145,7 +145,7 @@ static void enable_apic_ext_id(u8 node)
         u32 val;
 
         val = pci_read_config32(NODE_HT(node), 0x68);
-        val |= HTTC_APIC_EXT_ID | HTTC_APIC_EXT_BRD_CST ;
+        val |= (HTTC_APIC_EXT_SPUR | HTTC_APIC_EXT_ID | HTTC_APIC_EXT_BRD_CST);
         pci_write_config32(NODE_HT(node), 0x68, val);
 #endif
 }

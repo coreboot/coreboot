@@ -267,9 +267,6 @@ unsigned char smp_compute_checksum(void *v, int len);
 void *smp_write_floating_table(unsigned long addr);
 unsigned long write_smp_table(unsigned long addr, unsigned long *processor_map);
 
-/* A table (per mainboard) listing the initial apicid of each cpu. */
-extern unsigned long initial_apicid[CONFIG_MAX_CPUS];
-
 #else /* HAVE_MP_TABLE */
 static inline 
 unsigned long write_smp_table(unsigned long addr, unsigned long *processor_map)
@@ -277,6 +274,9 @@ unsigned long write_smp_table(unsigned long addr, unsigned long *processor_map)
 	return addr;
 }
 #endif /* HAVE_MP_TABLE */
+
+/* A table (per mainboard) listing the initial apicid of each cpu. */
+extern unsigned long initial_apicid[CONFIG_MAX_CPUS];
 
 #endif
 

@@ -763,6 +763,12 @@ define AGP_APERTURE_SIZE
 	comment "AGP graphics virtual memory aperture size"
 end
 
+define CONFIG_PCI_ROM_RUN
+        default 0
+        export always
+        comment "Init PCI device option rom"
+end
+
 ###############################################
 # Board specific options
 ###############################################

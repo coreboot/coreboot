@@ -10,10 +10,14 @@
 #include <pc80/vga.h>
 #include <console/console.h>
 
-void beep(int ms);
+//extern void beep(int ms);
 
 static char *vidmem;		/* The video buffer, should be replaced by symbol in ldscript.ld */
 int vga_line, vga_col;
+
+extern int vga_inited; // it will be changed in pci_rom.c
+
+static int vga_console_inited = 0;
 
 #define VIDBUFFER 0xB8000;
 
@@ -29,7 +33,6 @@ static void memsetw(void *s, int c, unsigned int n)
 
 static void vga_init(void)
 {
-
 	// these are globals
 	vga_line = 0;
 	vga_col = 0;
@@ -56,6 +59,15 @@ static void vga_scroll(void)
 
 static void vga_tx_byte(unsigned char byte)
 {
+	if (!vga_inited) {
+		return;
+	}
+ 
+	if(!vga_console_inited) {
+		vga_init();
+		vga_console_inited = 1;
+	}
+
 	if (byte == '\n') {
 		vga_line++;
 		vga_col = 0;
@@ -71,8 +83,8 @@ static void vga_tx_byte(unsigned char byte)
 
 	} else if (byte == '\a') {
 		//beep
-		beep(500);
-
+//		beep(500);
+		;
 	} else {
 		vidmem[((vga_col + (vga_line *COLS)) * 2)] = byte;
 		vidmem[((vga_col + (vga_line *COLS)) * 2) +1] = VGA_ATTR_CLR_WHT;
@@ -94,8 +106,8 @@ static void vga_tx_byte(unsigned char byte)
 	write_crtc((vga_col + (vga_line *COLS)) & 0x0ff, CRTC_CURSOR_LO);
 }
 
-struct console_driver {
-	.init    = vga_init,
+static struct console_driver vga_console __console ={
+	.init    = 0,
 	.tx_byte = vga_tx_byte,
 	.rx_byte = 0,
 	.tst_byte = 0,

@@ -34,7 +34,7 @@ function debug
 {
 	test "$verbose" == "true" && echo $*
 }
-	
+
 function vendors
 {
 	# make this a function so we can easily select
@@ -64,6 +64,7 @@ function create_config
 {
 	VENDOR=$1
 	MAINBOARD=$2
+	TARCH=$( architecture $VENDOR $MAINBOARD )
 	echo -n "  Creating config file..."
 	mkdir -p $TARGET
 	( cat << EOF
@@ -76,6 +77,9 @@ option CC="CROSSCC"
 option CROSS_COMPILE="CROSS_PREFIX"
 option HOSTCC="CROSS_HOSTCC"
 
+EOF
+	if [ $TARCH == i386 ] ; then
+		cat <<EOF
 romimage "normal"
 	option USE_FALLBACK_IMAGE=0
 	option ROM_IMAGE_SIZE=0x12000
@@ -89,9 +93,17 @@ romimage "fallback"
 	option LINUXBIOS_EXTRA_VERSION=".0-fallback"
 	payload PAYLOAD
 end
-
-buildrom ./VENDOR_MAINBOARD.rom ROM_SIZE "normal" "fallback"
+buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
 EOF
+	else
+		cat <<EOF
+romimage "only"
+	option LINUXBIOS_EXTRA_VERSION=".0"
+	payload PAYLOAD
+end
+buildrom ./linuxbios.rom ROM_SIZE "only"
+EOF
+	fi
 	) | sed -e s,VENDOR,$VENDOR,g \
 		-e s,MAINBOARD,$MAINBOARD,g \
 		-e s,PAYLOAD,$PAYLOAD,g \
@@ -199,9 +211,9 @@ function build_target
 	TARCH=$( architecture $VENDOR $MAINBOARD )
 
 	# default setting
-	CC="gcc"
-	HOSTCC="gcc"
-	CROSS_COMPILE=""
+	CC='$(CROSS_COMPILE)gcc'
+	HOSTCC='gcc'
+	CROSS_COMPILE=''
 
 	echo -n "Processing mainboard/$VENDOR/$MAINBOARD"
 	
@@ -218,7 +230,7 @@ function build_target
 			found_crosscompiler=true
 		fi
 		if [ "$found_crosscompiler" == "false" -a "$TARCH" == ppc ] ;then
-			for prefix in powerpc-eabi- powerpc-linux- ; do
+			for prefix in powerpc-eabi- powerpc-linux- ppc_74xx- ; do
 				if ${prefix}gcc --version > /dev/null 2> /dev/null ; then
 					found_crosscompiler=true
 					CROSS_COMPILE=$prefix
@@ -235,17 +247,17 @@ function build_target
 			echo
 			return 0
 		else
-			echo " ($TARCH: ok, though we're $ARCH)"
+			echo " ($TARCH: ok, we're $ARCH)"
 		fi
 	fi
-	
+
 	built_successfully $VENDOR $MAINBOARD && \
 	{
 		echo " ( mainboard/$VENDOR/$MAINBOARD previously ok )"
 		echo
 		return 0
 	}
-	
+
 	build_broken $VENDOR $MAINBOARD || \
 	{
 		echo " ( broken mainboard/$VENDOR/$MAINBOARD skipped )"
@@ -313,7 +325,7 @@ while true ; do
 	case "$1" in
 		-t|--target)	shift; target="$1"; shift;;
 		-a|--all)	shift; buildall=true;;
-		-b|--broken)    shift; buildbroken=true;;
+		-b|--broken)	shift; buildbroken=true;;
 		-v|--verbose)	shift; verbose=true;;
 		-V|--version)	shift; myversion; exit 0;;
 		-h|--help)	shift; myhelp; exit 0;;
@@ -323,6 +335,7 @@ while true ; do
 	esac
 done
 
+# /path/to/freebios2/
 test -z "$1" || LBROOT=$1
 
 debug "LBROOT=$LBROOT"

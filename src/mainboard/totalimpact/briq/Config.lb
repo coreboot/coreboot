@@ -16,17 +16,17 @@ object clock.o
 arch ppc end
 
 if CONFIG_BRIQ_750FX
-	cpu ppc/ppc7xx end
+	chip cpu/ppc/ppc7xx device pnp 0.0 on end end
 end
 if CONFIG_BRIQ_7400
-	cpu ppc/mpc74xx end
+	chip cpu/ppc/mpc74xx device pnp 0.0 on end  end
 end
 
 ##
 ## Include the secondary Configuration files 
 ##
-northbridge ibm/cpc710 end
-southbridge winbond/w83c553 end
+chip northbridge/ibm/cpc710 device pnp 0.0 on end end
+chip southbridge/winbond/w83c553 device pnp 0.0 on end end
 
 ##
 ## Build the objects we have code for in this directory.

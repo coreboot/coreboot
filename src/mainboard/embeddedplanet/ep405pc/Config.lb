@@ -9,12 +9,12 @@ initobject init.c
 driver pci_bridge.c
 
 arch ppc end
-cpu ppc/ppc4xx end
+chip cpu/ppc/ppc4xx device pnp 0.0 on end end
 
 ##
 ## Include the secondary Configuration files 
 ##
-southbridge winbond/w83c553 end
+chip southbridge/winbond/w83c553 device pnp 0.0 on end end
 
 ##
 ## Build the objects we have code for in this directory.

@@ -1,0 +1,14 @@
+option CONFIG_UDELAY_TSC=1
+object southbridge.o
+object nvram.o
+object amd768_ioapic.o
+object amd768_lpc.o
+object amd768_mem.o
+object amd768_mouse.o
+object amd768_pm.o
+object amd768_reset.o
+object amd768_watchdog.o
+object amd768_power.o
+object amd768_reboot.o
+object amd768_ide.o
+

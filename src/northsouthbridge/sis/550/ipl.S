@@ -192,7 +192,7 @@ no_sdram:
 no_sdram:
 #ifdef HAVE_FRAMEBUFFER
 	movb	$0x63, %ah			# enable DIMM 0 and
-	movw	$SMA_SIZE + $0x01, %ax		# enable SMA 8 MB for VGA
+	movb	$(SMA_SIZE + 0x01), %al		# enable SMA 8 MB for VGA
 #else /* HAVE_FRAMEBUFFER */
 	movw	$0x6301, %ax			# enable DIMM 0 
 #endif /* HAVE_FRAMEBUFFER */

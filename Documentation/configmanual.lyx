@@ -1,4 +1,4 @@
-#This file was created by <root> Thu Jan 11 12:04:16 2001
+#This file was created by <root> Tue Jan 16 09:39:36 2001
 #LyX 1.0 (C) 1995-1999 Matthias Ettrich and the LyX Team
 \lyxformat 2.15
 \textclass article
@@ -334,13 +334,13 @@ multicol5
 1 1 0 0
 1 1 0 0
 8 1 0 "" ""
-8 1 1 "" ""
+2 1 1 "4in" ""
 0 8 1 0 0 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
-0 8 1 0 0 0 0 "" ""
-0 8 1 0 1 0 0 "" ""
+0 2 1 0 1 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
 0 8 1 0 1 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
@@ -776,10 +776,15 @@ e>/Config, where TOP represents the top of the source tree.
 
 .
  
+\layout Subsection
+
+Commands that name resource directories.
+ 
 \layout Standard
 
-The naming of resources in most cases is <vendor id>/<hardware>.
- We show the resource names in Table 
+Resource directories contain C source code for LinuxBIOS.
+ The naming of resource directories in most cases is <vendor id>/<hardware>.
+ We show the resource directory commands in Table 
 \begin_inset LatexCommand \ref{resourcepaths}
 
 \end_inset 
@@ -792,7 +797,7 @@ The naming of resources in most cases is <vendor id>/<hardware>.
 \layout Standard
 \align center \LyXTable
 multicol5
-12 2 0 0 -1 -1 -1 -1
+12 3 0 0 -1 -1 -1 -1
 1 1 0 0
 1 0 0 0
 1 0 0 0
@@ -806,23 +811,36 @@ multicol5
 1 0 0 0
 1 1 0 0
 8 1 0 "" ""
-8 1 1 "" ""
+2 1 1 "4in" ""
+2 1 1 "4in" ""
 0 8 1 0 0 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
-0 8 1 0 0 0 0 "" ""
-0 8 1 0 0 0 0 "" ""
-0 8 1 0 0 0 0 "" ""
-0 8 1 0 1 0 0 "" ""
-0 8 1 0 0 0 0 "" ""
-0 8 1 0 1 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
 0 8 1 0 1 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
 0 8 1 0 1 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
@@ -836,9 +854,13 @@ Resource Name
 \newline 
 Path
 \newline 
-mainboard
+
+\newline 
+inboard
 \newline 
 TOP/src/mainboard/<vendor>/<partname>
+\newline 
+
 \newline 
 cpu
 \newline 
@@ -847,17 +869,25 @@ TOP/src/cpu/<partname>.
 \newline 
 
 \newline 
+
+\newline 
 NOTE: no vendor in this path.
  We did this because so much of this 
+\newline 
+
 \newline 
 
 \newline 
 code is generic.
  Was this right?
 \newline 
+
+\newline 
 northbridge
 \newline 
 TOP/src/northbridge/<vendor>/<partname>
+\newline 
+
 \newline 
 northsouthbridge
 \newline 
@@ -865,24 +895,36 @@ TOP/src/northsouthbridge/<vendor>/<partname>
 \newline 
 
 \newline 
+
+\newline 
 NOTE: sets path for northbridge and southbridge, 
+\newline 
+
 \newline 
 
 \newline 
 since this command is for integrated chipsets (i.e.
  SiS 630)
 \newline 
+
+\newline 
 southbridge
 \newline 
 TOP/src/southbridge/<vendor>/<partname>
+\newline 
+
 \newline 
 superio
 \newline 
 TOP/src/superio/<vendor>/<partname>
 \newline 
+
+\newline 
 pcibridge
 \newline 
 TOP/src/pcibridge/<vendor>/<partname>
+\newline 
+
 \layout Caption
 
 
@@ -894,7 +936,346 @@ How resources are named
 \end_float 
 \layout Standard
 
-The commands and their effects are shown in Table 
+The commands and their resulting path are shown in Table 
+\begin_inset LatexCommand \ref{resourcepaths}
+
+\end_inset 
+
+.
+ Each of these commands (except for superio, currently) will check for a
+ Config file in the directory and process that file.
+ The Config file can contain any command.
+ 
+\layout Comment
+
+Was it a mistake to not have a Config file for superio? There's only one
+ file, but it is inconsistent.
+ 
 \layout Standard
 
+The configuration tool keeps track of three directories: the resource directory
+ that it is currently processing (think of this as the current working directory
+); the TOP of the freebios source tree; and the directory that holds the
+ build (i.e.
+ the target directory).
+ All of these variables come into use when resource directory Config files
+ are processed.
+ For example, if the Config directory for northbridge specifies the file
+ northbridge.c, then an object rule for northbridge.o will be added to the
+ Makefile, with source being found in the resource directory.
+ All source names are made relative to TOP.
+ 
+\layout Subsection
+
+Commands that modify the Makefile
+\layout Standard
+
+There are several commands that add rules and options to the Makefile.
+ They are shown below.
+ 
+\layout Comment
+
+Makefile flags for the LinuxBIOS are set in a variable called CPUFLAGS,
+ not in CFLAGS.
+ 
+\layout Standard
+
+\begin_float tab 
+\layout Standard
+\align center \LyXTable
+multicol5
+19 2 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+0 0 1 0
+0 0 1 0
+1 0 0 0
+0 0 1 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+0 0 1 0
+0 0 1 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+0 0 1 0
+1 0 0 0
+0 0 1 0
+0 0 1 0
+1 1 0 0
+8 1 0 "" ""
+2 1 1 "4in" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 2 1 0 1 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 2 1 0 1 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+
+Rule Name
+\newline 
+Result
+\newline 
+object <name>.o
+\newline 
+Add the object <name>.o to the Makefile, depending on 
+\newline 
+
+\newline 
+TOP/current-directory/<name>.c.
+ Add a rule for building
+\newline 
+
+\newline 
+the object using cc.
+ 
+\newline 
+makerule <name> : [<deps>] ; [<rule>]
+\newline 
+Add a rule for <name>, depending on <deps> (
+\newline 
+
+\newline 
+optional), with actions <rule> (optional).
+\newline 
+addaction <rule> <action>
+\newline 
+Add an action to an existing rule
+\newline 
+adddepend <rule> <dependency>
+\newline 
+Add a dependency to an existing rule
+\newline 
+makedefine <variable>=<value>
+\newline 
+Add a makerule to the Makefile.
+ Note: if you just want
+\newline 
+
+\newline 
+ to add a -Doption or -Uoption to the Makefile, use the 
+\newline 
+
+\newline 
+option and nooption commands instead.
+ 
+\newline 
+option <name>
+\newline 
+add -D<name> to the Makefile CPUFLAGS
+\newline 
+nooption
+\newline 
+add -U<name> to the Makefile CPUFLAGS
+\newline 
+commandline <linux-command-line>
+\newline 
+Set the commandline for Linux.
+ This can include spaces, e.g.
+\newline 
+
+\newline 
+commandline root=/dev/hda1 console=tty0 single
+\newline 
+docipl <path>
+\newline 
+Turn on Millenium Disk On Chip Makefile options.
+ This changes
+\newline 
+
+\newline 
+variables for ldscript.ld, sets option for crt0.S, and sets the USE_DOC 
+\newline 
+
+\newline 
+option in CPUFLAGS.
+ 
+\newline 
+linux <path>
+\newline 
+Set the path for Linux, assumed to be in <path>/vmlinux.
+ 
+\layout Caption
+
+Commands that modify the Makefile
+\end_float 
+\layout Subsection
+
+Commands that modify ldscript.ld
+\layout Standard
+
+There are four commands that modify ldscript.ld.
+ These commands determine the base address of the data, bss, stack, and
+ LinuxBIOS code segments (not x86 segment registers, but ELF-style segments).
+ These commands are currently used primarily by the docipl command.
+ 
+\layout Standard
+
+\begin_float tab 
+\layout Standard
+\align center \LyXTable
+multicol5
+5 2 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+8 1 0 "" ""
+2 1 1 "4in" ""
+0 8 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+
+Command 
+\newline 
+Action
+\newline 
+setdata <value>
+\newline 
+Set the base of data.
+ Default is 0x4000.
+ 
+\newline 
+setbss <value>
+\newline 
+Set the base of bss.
+ Default is 0x5000.
+ 
+\newline 
+setstack <value>
+\newline 
+Set the base of the stack.
+ Default is 0x90000.
+ 
+\newline 
+setlinuxbiosbase <value>
+\newline 
+Set the linuxbios code base.
+ Default is 0xf0000.
+ 
+\layout Caption
+
+The ldscript.ld commands
+\end_float 
+\layout Subsection
+
+Commands that affect crt0.S
+\layout Standard
+
+The only commands that affect crt0.S are option commands.
+ These set options that affect how crt0.S operates when it starts.
+ The options that affect crt0.S are shown below.
+ Note that except for RAMTEST, these options affect other 
+\layout Standard
+
+\begin_float tab 
+\layout Standard
+\align center \LyXTable
+multicol5
+8 2 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+1 0 0 0
+0 0 1 0
+0 0 1 0
+0 0 1 0
+0 0 1 0
+1 1 0 0
+8 1 0 "" ""
+2 1 1 "4in" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+
+Option
+\newline 
+Meaning
+\newline 
+RAMTEST
+\newline 
+Run a simple RAM diagnostic after initializing SDRAM
+\newline 
+USE_DOC_MIL
+\newline 
+This option is usually set by the docipl command, and has two main effects.
+ 
+\newline 
+
+\newline 
+It turns off the SDRAM
+\newline 
+
+\newline 
+init in crt0.S (since the docipl does it).
+ It also modifies the range of memory
+\newline 
+
+\newline 
+used by the SDRAM test code (since we don't want SDRAM test code overwriting
+\newline 
+
+\newline 
+LinuxBIOS code in SDRAM)
+\newline 
+SERIAL_CONSOLE
+\newline 
+Enables serial console output in crt0.S
+\layout Caption
+
+Options that affect crt0.S
+\end_float 
 \the_end

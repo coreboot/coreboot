@@ -116,7 +116,7 @@ option HAVE_PIRQ_TABLE=1
 ##
 ## Do not build special code to the keyboard
 ##
-option NO_KEYBOARD
+option NO_KEYBOARD=1
 
 ##
 ## Build code to export an x86 MP table
@@ -165,7 +165,7 @@ option HAVE_MTRR_TABLE=1
 ## We must setup the fixed mtrrs or we confuse SMP secondary
 ## processor identification
 ##
-option ENABLE_FIXED_AND_VARIABLE_MTRRS
+option ENABLE_FIXED_AND_VARIABLE_MTRRS=1
 
 
 ##

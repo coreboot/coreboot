@@ -1,6 +1,6 @@
 ## This is Architecture independant part of the makefile
 
-option CROSS_COMPILE
+option CROSS_COMPILE=
 
 makedefine CC:=$(CROSS_COMPILE)gcc 
 makedefine CPP:= $(CROSS_COMPILE)gcc -x assembler-with-cpp -DASSEMBLY -E

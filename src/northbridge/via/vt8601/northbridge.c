@@ -49,13 +49,6 @@ static unsigned long __sizeram(void)
 	totalmem -= sma_size;
 	totalmem *= 1024;
 
-	printk_info("sizeram: returning 0x%x KB\n", totalmem);
-	printk_info("sizeram: NOT returning 0x%x KB\n", totalmem);
-	printk_info("sizeram: there are still some SPD problems ... \n");
-	totalmem = 64 * 1024;
-	printk_info("sizeram: SO we return only 0x%x KB\n", totalmem);
-#if 0
-#endif
 	return totalmem;
 }
 

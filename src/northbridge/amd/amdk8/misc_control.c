@@ -18,6 +18,20 @@
 #include "./cpu_rev.c"
 #include "amdk8.h"
 
+/**
+ * @brief Read resources for AGP aperture
+ *
+ * @param 
+ *
+ * There is only one AGP aperture resource needed. The resoruce is added to
+ * the northbridge of BSP.
+ *
+ * The same trick can be used to augment legacy VGA resources which can
+ * be detect by generic pci reousrce allocator for VGA devices.
+ * BAD: it is more tricky than I think, the resource allocation code is
+ * implemented in a way to NOT DOING legacy VGA resource allcation on
+ * purpose :-(.
+ */
 static void mcf3_read_resources(device_t dev)
 {
 	struct resource *resource;
@@ -30,7 +44,7 @@ static void mcf3_read_resources(device_t dev)
 		return;
 	}
 		
-	/* Add a 64M Gart apeture resource */
+	/* Add a Gart apeture resource */
 	if (dev->resources < MAX_RESOURCES) {
 		resource = &dev->resource[dev->resources];
 		dev->resources++;
@@ -46,36 +60,42 @@ static void mcf3_read_resources(device_t dev)
 	}
 }
 
+static void set_agp_aperture(device_t dev, struct resource *resource)
+{
+	device_t pdev;
+	uint32_t base;
+	uint32_t size;
+		
+	size = (0<<6)|(0<<5)|(0<<4)| ((log2(resource->size) - 25) << 1)|(0<<0);
+	base = ((resource->base) >> 25) & 0x00007fff;
+	pdev = 0;
+
+	/* A search for MISC Control device is neceressary */
+	while (pdev = dev_find_device(PCI_VENDOR_ID_AMD, 0x1103, pdev)) {
+		pci_write_config32(pdev, 0x90, size);
+		pci_write_config32(pdev, 0x94, base);
+		/* Don't set the GART Table base address */
+		pci_write_config32(pdev, 0x98, 0);
+
+		printk_debug("%s %02x <- [0x%08lx - 0x%08lx] mem <gart>\n",
+			     dev_path(pdev), resource->index, resource->base,
+			     resource->base + resource->size - 1);
+	}
+	/* Remember this resource has been stored */
+	resource->flags |= IORESOURCE_STORED;	
+}
+
 static void mcf3_set_resources(device_t dev)
 {
 	struct resource *resource, *last;
+
 	last = &dev->resource[dev->resources];
 	for (resource = &dev->resource[0]; resource < last; resource++) {
 		if (resource->index == 0x94) {
-			device_t pdev;
-			uint32_t base;
-			uint32_t size;
-			
-			size = (0<<6)|(0<<5)|(0<<4)|
-			    ((log2(resource->size) - 25) << 1)|(0<<0);
-			base = ((resource->base) >> 25) & 0x00007fff;
-			pdev = 0;
-			while (pdev = dev_find_device(PCI_VENDOR_ID_AMD, 0x1103, pdev)) {
-				/* I want a 64M GART apeture */
-				pci_write_config32(pdev, 0x90, (0<<6)|(0<<5)|(0<<4)|(1<<1)|(0<<0));
-				/* Store the GART base address */
-				pci_write_config32(pdev, 0x94, base);
-				/* Don't set the GART Table base address */
-				pci_write_config32(pdev, 0x98, 0);
-
-				printk_debug("%s %02x <- [0x%08lx - 0x%08lx] mem <gart>\n",
-					     dev_path(pdev), resource->index, resource->base,
-					     resource->base + resource->size - 1);
-			}
-			/* Remember this resource has been stored */
-			resource->flags |= IORESOURCE_STORED;
+			set_agp_aperture(dev, resource);
 		}
 	}
+
 	/* Set the generic PCI resources */
 	pci_dev_set_resources(dev);
 }

@@ -23,8 +23,8 @@ void keyboard_on()
 {
 	u8 regval;
 	struct pci_dev *pcidev;
-
-	/* turn on sis730 keyboard/mouse controller */
+	void pc_keyboard_init(void);
+	/* turn on sis630 keyboard/mouse controller */
 	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, (void *)NULL);
 	if (pcidev != NULL) {
 		/* Register 0x47, Keyboard Controller */
@@ -91,6 +91,102 @@ serial_irq_fixedup(void)
 	}
 }
 
+/* apc_fixup: Fix up the Mux-ed GPIO Lines controlled by APC registers 
+ *
+ * For SiS630A/B Mainboards, the MAC address of the internal SiS900 is stored in EEPROM
+ * on the board. The EEPROM interface lines are muxed with GPIO pins and are selected by
+ * some APC registers.
+ */
+static void
+apc_fixup(void)
+{
+	u8 regval;
+	struct pci_dev *isa_bridge;
+
+	isa_bridge = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503,
+				     (void *)NULL);
+	if (isa_bridge != NULL) {
+		/* Register 0x48, select APC control registers */
+		pci_read_config_byte(isa_bridge, 0x48, &regval);
+		pci_write_config_byte(isa_bridge, 0x48, regval | 0x40);
+
+		/* Enable MAC Serial ROM Autoload */
+		outb(0x01, 0x70);
+		regval = inb(0x71);
+		outb(regval | 0x80, 0x71);
+
+		/* select Keyboard/Mouse function for GPIO Pin [14:10] */
+		outb(0x02, 0x70);
+		regval = inb(0x71);
+		outb(regval | 0x40, 0x71);
+
+		/* Enable ACPI S3,S5 */
+		outb(0x04, 0x70);
+		regval = inb(0x71);
+		outb(regval | 0x03, 0x71);
+		
+		/* Register 0x48, select RTC registers */
+		pci_read_config_byte(isa_bridge, 0x48, &regval);
+		pci_write_config_byte(isa_bridge, 0x48, regval & ~0x40);
+	}
+}
+
+/* timer0_fixup: Fix up the Timer 0 of 8254 Programmable Timer
+ *
+ * The timer 0 is used to generate the 18.2 Hz, IRQ 0 timer event and used by system
+ * to update date/time.
+ *
+ * FixME: Should be program timer 1 for DRAM refresh too ??
+ */
+static void
+timer0_fixup(void)
+{
+	/* select Timer 0, 16 Bit Access, Mode 3, Binary */
+	outb_p(0x43, 0x36);
+
+	/* Load LSB, 0x00 */
+	outb_p(0x40, 0x00);
+
+	/* Load MSB, 0x00 */
+	outb_p(0x40, 0x00);
+}
+
+/* rtc_fixup: Fix up the Real Time Clock
+ *
+ * The Real Time Clock updates the day/time information in the CMOS RAM every second.
+ * The clock diveder has to be programmed correctly or the RTC will update the CMOS
+ * in incorrect time interval (i.e. more or less then 1Sec in "wall clock").
+ * 
+ * FixME: Where does the CMOS stroe Y2K information and how does Linux handle it ??
+ */
+static void
+rtc_fixup(void)
+{
+	volatile u8 dummy;
+	u8 regval;
+	struct pci_dev *isa_bridge;
+
+	isa_bridge = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503,
+				     (void *)NULL);
+	if (isa_bridge != NULL) {
+		/* Register 0x48, Enable internal RTC */
+		pci_read_config_byte(isa_bridge, 0x48, &regval);
+		pci_write_config_byte(isa_bridge, 0x48, regval | 0x10);
+	}
+
+	/* Select Normal Colok Divider, 978 us interrupt */
+	outb_p(0x0A, 0x70);
+	outb_p(0x26, 0x71);
+
+	/* Select 24 HR time */
+	outb_p(0x0B, 0x70);
+	outb_p(0x02, 0x71);
+
+	/* Clear Checksum Error */
+	outb_p(0x0D, 0x70);
+	dummy = inb_p(0x71);
+}
+
 static void
 acpi_fixup(void)
 {
@@ -149,9 +245,9 @@ acpi_fixup(void)
 void
 final_southbridge_fixup()
 {
+#ifdef OLD_KERNEL_HACK
 	struct pci_dev *pcidev;
 
-#ifdef OLD_KERNEL_HACK
 	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, (void *)NULL);
 	if (pcidev != NULL) {
 		printk("Remapping IRQ on southbridge for OLD_KERNEL_HACK\n");
@@ -182,6 +278,9 @@ final_southbridge_fixup()
 	}
 #endif /* OLD_KERNEL_HACK */
 
+	timer0_fixup();
+	rtc_fixup();
+	apc_fixup();
 	serial_irq_fixedup();
 	acpi_fixup();
 

@@ -3,13 +3,16 @@
  ***
  ***/
 
+#define MAX_MEM_BANK $0x78
+#define LOAD_CURRENT_MCR mov (%esi),%al
+
 	/*** sungeun jump to start ***/
 	jmp	raminit_start
 
 /***
  *** BEGIN TABLES
  ***/
-dram_temp :
+mem_bank_reg_table :
 	.byte 0x6c
 	.byte 0x70
 	.byte 0x74
@@ -97,7 +100,7 @@ internal_bank_tbl:
 	mov	%dl,%al		; \
 	and	$3,%al		; \
 	mov	$0x0cfc,%dx	; \
-	add	%dl,%al		; \
+	add	%al,%dl		; \
 	mov	%cl,%al		; \
 	outb	%al,%dx
 
@@ -144,7 +147,7 @@ internal_bank_tbl:
 #define save_dram_type \
 	mov	%sp,%di		; \
 	mov	%esi,%eax		; \
-	subl	$dram_temp, %eax ; \
+	subl	$mem_bank_reg_table, %eax ; \
 	mov	$2,%dl		; \
 	mul	%dl		; \
 	addl	$0x94,%eax	; \
@@ -169,12 +172,12 @@ internal_bank_tbl:
 	mov	$0x0100,%cx	; \
 	save_dram_type ; \
 	ror	$16,%edi	; \
-	mov	(%esi),%al	; \
+	LOAD_CURRENT_MCR	; \
 	add	$3,%al		; \
 	pci_read_byte		; \
 	and	$0b11100111,%al	; \
 	mov	%al,%cl		; \
-	mov	(%esi),%al	; \
+	LOAD_CURRENT_MCR	; \
 	add	$3,%al		; \
 	pci_write_byte		; \
 	mov	%di,%sp
@@ -207,12 +210,12 @@ internal_bank_tbl:
 
 
 #define DISABLE_BLOCK \
-	mov	(%esi),%al	; \
+	LOAD_CURRENT_MCR	; \
 	pci_write_dword		; \
 	and	$0x0f87fffff,%eax ; \
 	xor	%di,%di		; \
 	mov	%eax,%edi	; \
-	mov	(%esi),%al	; \
+	LOAD_CURRENT_MCR	; \
 	pci_read_dword
 
 
@@ -226,41 +229,44 @@ internal_bank_tbl:
  ***/
 raminit_start:
 	mov	$0x81,%ax
-	mov	$0x7f00,%cx
+	mov	$0x7f00,%cx	/*** disable SMA mode ***/
 	pci_read_write_byte
 	mov	$0x82,%ax
-	mov	$0xff10,%cx
+	mov	$0xff10,%cx	/*** set 3 DIMMs, no ECC ***/
 	pci_read_write_byte
 	mov	$0x84,%ax
-	mov	$0xfe00,%cx
+	mov	$0xfe00,%cx	/*** set 3 DIMMs, no ECC ***/
 	pci_read_write_byte
 
-	movl	$dram_temp,%esi
+	/*** initialize, load table, zero %ecx, %ebx ***/
+	movl	$mem_bank_reg_table,%esi
 	xor	%ecx,%ecx
 	xor	%ebx,%ebx
+
+	/*** main loop ***/
 detect_block_again:
 
-	or	$0x10000,%ebx
+	or	$0x10000,%ebx	/*** for even bank ***/
 	xor	%bx,%bx
-	mov     (%esi),%al
-	add	$3,%al
+	LOAD_CURRENT_MCR	/*** current memory control register ***/
+	add	$3,%al		/*** point to upper byte of MCR ***/
 	mov	%cx,%di
-	mov	$0x0ee,%cl
+	mov	$0x0ee,%cl	/*** EDO DRAM ***/
 	pci_write_byte
-	mov     (%esi),%al
+	LOAD_CURRENT_MCR
 	add	$2,%al
-	mov	$0x064,%cl
+	mov	$0x064,%cl	/*** 256M col=12 bits ***/
 	pci_write_byte
 	mov	%di,%cx
 	jmp	detect_ma_size
 odd_bank_detect:
 	shl	$3,%bx
 	and	$(~0x10000),%ebx
-	mov     (%esi),%al
+	LOAD_CURRENT_MCR
 	add	$3,%al
 	mov	$0x0e9,%cl
 	pci_write_byte
-	mov     (%esi),%al
+	LOAD_CURRENT_MCR
 	add	$2,%al
 	mov	$0x0e4,%cl
 	pci_write_byte
@@ -268,6 +274,7 @@ detect_ma_size:
 	/***
 	 *** sungeun *** BEGIN "inlined" macro DETECT_DRAM_TYPE
 	 ***/
+	/*** standard EDO dram test ***/
 	movl	$0x055555555,%es:(0x0)
 	movl	$0x0aaaaaaaa,%es:(0x8)
 	cmpl	$0x55555555,%es:(0)
@@ -283,17 +290,17 @@ detect_ma_size:
 	jmp	 dram_type_detect_end
 detect_sdram:
 	mov $0x7e,%ax
-	mov $0xf700, %cx
+	mov $0xf700, %cx	/*** turn off EDO detect ***/
 	pci_read_write_byte
-	mov (%esi),%al
+	LOAD_CURRENT_MCR
 	mov %al,%ah
 	mov $0x42,%al
 	cmos_data_in
 	test	$0b00010000,%al
 	mov %ah,%al
-	jz cas_2
-	mov	(%esi),%al
-	pci_write_dword
+	/*** jz cas_2 *** always slow ***/
+	LOAD_CURRENT_MCR
+	pci_read_dword	/*** changed from pci_write_dword ***/
 	mov	%eax,%edi
 	and	$0x00000fffc,%edi
 	test	$0x010000,%ebx
@@ -304,8 +311,8 @@ detect_sdram:
 	or	$0x0f1e40000,%edi
 	jmp	configure_sdram_type
 cas_2:
-	mov	(%esi),%al
-	pci_write_dword
+	LOAD_CURRENT_MCR
+	pci_read_dword	/*** changed from pci_write_dword ***/
 	mov	%eax,%edi
 	and	$0x00000fffc,%edi
 	test	$0x010000,%ebx
@@ -315,10 +322,10 @@ cas_2:
 1:
 	or	$0x0d1e40000,%edi
 configure_sdram_type:
-	mov	(%esi),%al
-	pci_read_dword
-	mov	$1000,%ax
-1:
+	LOAD_CURRENT_MCR
+	pci_write_dword	/*** changed from pci_read_dword ***/
+	mov	$0xFFFF,%ax	/*** mov	$1000,%ax ***/
+1:	/*** timing loop *** wait for dram to finish configuration ***/
 	dec	%ax
 	jnz	1b
 	movl	$0x055555555,%es:(0x0)
@@ -335,19 +342,19 @@ configure_sdram_type:
 	save_dram_type
 	jmp	 dram_type_detect_end
 chk_vc_sdram_type:
-	mov	(%esi),%al
+	LOAD_CURRENT_MCR
 	pci_write_dword
 	mov	%eax,%edi
 	and	$0x0e7ffffff,%edi
-	mov	(%esi),%al
+	LOAD_CURRENT_MCR
 	pci_read_dword
 	mov	$0x7e,%ax
 	mov	$0xf700,%cx
 	pci_read_write_byte
-	mov	(%esi),%al
+	LOAD_CURRENT_MCR
 	pci_write_dword
 	mov	%eax,%edi
-	mov	(%esi),%al
+	LOAD_CURRENT_MCR
 	test	$0x010000,%ebx
 	jz	1f
 	and	$0x00000d7f0,%edi
@@ -357,7 +364,7 @@ chk_vc_sdram_type:
 	and	$0x00000d7f0,%edi
 	or	$0x0f9e20000,%edi
 configure_vc_sdram_type:
-	mov	(%esi),%al
+	LOAD_CURRENT_MCR
 	pci_read_dword
 	mov	$1000,%ax
 1:
@@ -402,7 +409,7 @@ dram_type_detect_end:
 	jz	a_sub_end
 	cmp	$0x00,%ah
 	jnz	no_sdram
-	mov	(%esi),%al
+	LOAD_CURRENT_MCR
 	pci_write_dword
 	mov	%eax,%edi
 	and	$0x00000ffff,%edi
@@ -429,7 +436,7 @@ set_cas_end:
 	jz	set_single
 	or	$1,%edi
 set_single:
-	mov	(%esi),%al
+	LOAD_CURRENT_MCR
 	pci_read_dword
 	jmp     detect_block_again_end
 no_sdram:
@@ -520,14 +527,14 @@ memory_sizing_sub:
 	shr	$20,%eax
 	mov	%al,%cl
 configure_ma:
-	mov     (%esi),%al
+	LOAD_CURRENT_MCR
 	add	$2,%al
 	pci_read_byte 
 	and	$0x0f0,%al
 	and	$0x0f,%cl
 	or	%cl,%al
 	mov	%al,%cl
-	mov     (%esi),%al
+	LOAD_CURRENT_MCR
 	add	$2,%al
 	pci_write_byte
 
@@ -620,20 +627,20 @@ determine_bank_number:
 	test	$0x40000,%ebx
 	jnz	configure_internal_bank_end 
 	mov	%cx,%di
-	mov	(%esi),%al
+	LOAD_CURRENT_MCR
 	add	$1,%al
 	pci_read_byte
 	and	$0x0ef,%al
 	mov	%al,%cl
-	mov	(%esi),%al
+	LOAD_CURRENT_MCR
 	add	$1,%al
 	pci_write_byte
-	mov	(%esi),%al
+	LOAD_CURRENT_MCR
 	pci_read_byte
 	and	$0x0fc,%al
 	or	$1,%al
 	mov	%al,%cl
-	mov	(%esi),%al
+	LOAD_CURRENT_MCR
 	pci_write_byte
 	mov	%di,%cx
 	test	$0x10000,%ebx
@@ -663,11 +670,11 @@ what_memory_ma:
 	mov	%di,%si
 	jz	i_4_bank
 	mov	%cx,%di
-	mov	(%esi),%al
+	LOAD_CURRENT_MCR
 	pci_read_byte
 	and	$0x0fc,%al
 	mov	%al,%cl
-	mov	(%esi),%al
+	LOAD_CURRENT_MCR
 	pci_write_byte
 	mov	%di,%cx
 i_4_bank:	
@@ -683,7 +690,7 @@ EDO_T:
 	 *** sungeun *** END "inlined" macro MEMORY_SIZING
 	 ***/
 
-	mov     (%esi),%al
+	LOAD_CURRENT_MCR
 	add	$2,%al
 	mov	%bx,%di
 	pci_read_byte
@@ -692,7 +699,7 @@ EDO_T:
 	and	$0x8f,%al
 	or	%di,%ax
 	mov	%al,%cl
-	mov     (%esi),%al
+	LOAD_CURRENT_MCR
 	add	$2,%al
 	pci_write_byte
 	/***
@@ -736,7 +743,7 @@ configure_memory_block:
 	/***
 	 *** sungeun *** BEGIN "inlined" macro CONFIGURE_MEMORY
 	 ***/
-	movl	$dram_temp,%esi 
+	movl	$mem_bank_reg_table,%esi 
 	mov     (%esi),%dl
 	mov	$0x094,%bl
 configure_next:
@@ -756,16 +763,16 @@ configure_next:
 	jz	1f 
 	or	$0x03,%di
 1:
-	mov     (%esi),%al
+	LOAD_CURRENT_MCR
 	pci_write_dword
 	and	$0x0f87fffff,%eax
 	shl	$23,%edi
 	or	%edi,%eax
 	mov	%eax,%edi
-	mov     (%esi),%al
+	LOAD_CURRENT_MCR
 	pci_read_dword
 	inc	%si
-	cmpb	$0x78,(%esi)
+	cmpb	MAX_MEM_BANK,(%esi)
 	jnz	configure_next
 	/***
 	 *** sungeun *** END "inlined" macro CONFIGURE_MEMORY

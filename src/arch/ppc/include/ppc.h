@@ -10,9 +10,12 @@
 /* stringify is needed for macro expansion */
 #define stringify(x) #x
 
-#define ppc_getdcr(reg) ({unsigned int result; \
+#define mfdcr(reg)	({unsigned int result; \
 			__asm__ volatile("mfdcr %0, " stringify(reg) \
-			: "=r" (result)); result;})
+				  	 : "=r" (result)); result;})
+
+#define mtdcr(reg, v)	asm volatile("mtdcr " stringify(reg) ",%0" \
+			: : "r" (v))
 
 extern unsigned ppc_getmsr(void);
 extern unsigned ppc_gethid0(void);

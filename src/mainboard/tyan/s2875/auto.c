@@ -1,6 +1,7 @@
 #define ASSEMBLY 1
+ 
 #include <stdint.h>
-#include <device/pci_def.h> 
+#include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
@@ -28,7 +29,7 @@ static void hard_reset(void)
         set_bios_reset();
 
         /* enable cf9 */
-        pci_write_config8(PCI_DEV(0, 0x04, 3), 0x41, 0xf1);
+        pci_write_config8(PCI_DEV(0, 0x05, 3), 0x41, 0xf1);
         /* reset */
         outb(0x0e, 0x0cf9);
 }
@@ -36,7 +37,7 @@ static void hard_reset(void)
 static void soft_reset(void)
 {
         set_bios_reset();
-        pci_write_config8(PCI_DEV(0, 0x04, 0), 0x47, 1);
+        pci_write_config8(PCI_DEV(0, 0x05, 0), 0x47, 1);
 }
 
 static void memreset_setup(void)
@@ -47,7 +48,7 @@ static void memreset_setup(void)
    else {
         outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=1
    }
-        outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17); 
+        outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
 }
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
@@ -86,8 +87,8 @@ static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 	uint32_t ret=0x00010101; /* default row entry */
 
 	static const unsigned int rows_2p[2][2] = {
-		{ 0x00030101, 0x00010202 },
-		{ 0x00010202, 0x00030101 }
+		{ 0x00050101, 0x00010404 },
+		{ 0x00010404, 0x00050101 }
 	};
 
 	if(maxnodes>2) {
@@ -116,8 +117,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
-
-#include "resourcemap.c" /* tyan does not want the default */
 
 #define FIRST_CPU  1
 #define SECOND_CPU 1
@@ -148,6 +147,7 @@ static void main(void)
 		},
 #endif
 	};
+
         int needs_reset;
         enable_lapic();
         init_timer();
@@ -161,14 +161,17 @@ static void main(void)
         w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
         uart_init();
         console_init();
-        setup_s2881_resource_map();
+        setup_default_resource_map();
         needs_reset = setup_coherent_ht_domain();
-        needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0xc0);
+        needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0x80);
         if (needs_reset) {
                 print_info("ht reset -\r\n");
                 soft_reset();
         }
-	
+#if 0
+        dump_pci_devices();
+#endif
+
 #if 0
 	print_pci_devices();
 #endif
@@ -198,13 +201,13 @@ static void main(void)
 /*
 #if  0
 	ram_check(0x00000000, msr.lo+(msr.hi<<32));
-#else
+#else 
 #if TOTAL_CPUS < 2
 	// Check 16MB of memory @ 0
-	ram_check(0x00000000, 0x01000000);
+	ram_check(0x00000000, 0x00100000);
 #else
 	// Check 16MB of memory @ 2GB 
-	ram_check(0x80000000, 0x81000000);
+	ram_check(0x80000000, 0x80100000);
 #endif
 #endif
 */

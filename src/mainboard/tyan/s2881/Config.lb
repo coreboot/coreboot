@@ -37,7 +37,8 @@ driver mainboard.o
 #driver adaptec_scsi.o
 #driver si_sata.o
 #driver intel_nic.o
-#driver broadcom_nic.o
+#dir ../drivers/broadcom_nic_ipmi
+dir ../drivers/ati_graph
 #object reset.o
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
@@ -117,9 +118,6 @@ mainboardinit cpu/i386/bist32_fail.inc
 ###
 ### Romcc output
 ###
-#makerule ./failover.E dep "$(MAINBOARD)/failover.c" act "$(CPP) -I$(TOP)/src $(CPPFLAGS) $(MAINBOARD)/failover.c > ./failever.E"
-#makerule ./failover.inc dep "./romcc ./failover.E" act "./romcc -O ./failover.E > failover.inc"
-#mainboardinit .failover.inc
 
 makerule ./failover.E
 	depends "$(MAINBOARD)/failover.c" 
@@ -128,7 +126,7 @@ end
 
 makerule ./failover.inc
 	depends "./romcc ./failover.E"
-	action "./romcc -O -o failover.inc --label-prefix=failover ./failover.E"end
+	action "./romcc -O2 -o failover.inc --label-prefix=failover ./failover.E"end
 
 makerule ./auto.E
         depends "$(MAINBOARD)/auto.c option_table.h"
@@ -136,8 +134,7 @@ makerule ./auto.E
 end
 makerule ./auto.inc 
 	depends "./romcc ./auto.E"
-	action "./romcc -O -mcpu=k8 -o auto.inc --label-prefix=auto ./auto.E" 
-#	action	"./romcc -mcpu=k8  -O ./auto.E > auto.inc"
+	action "./romcc -O2 -mcpu=k8 -o auto.inc --label-prefix=auto ./auto.E" 
 end
 mainboardinit cpu/k8/enable_mmx_sse.inc
 mainboardinit ./auto.inc
@@ -146,6 +143,9 @@ mainboardinit cpu/k8/disable_mmx_sse.inc
 ###
 ### Include the secondary Configuration files 
 ###
+
+dir /pc80
+
 northbridge amd/amdk8 "mc0"
         pci 0:18.0
         pci 0:18.0
@@ -171,31 +171,33 @@ northbridge amd/amdk8 "mc0"
                 pci 1:0.1 on
                 pci 1:0.2 on
                 pci 1:1.0 off
-                superio winbond/w83627hf link 1
-                        pnp 2e.0 off #  Floppy
-                                 io 0x60 = 0x3f0
-                                irq 0x70 = 6
-                                drq 0x74 = 2
-                        pnp 2e.1 off #  Parallel Port
-                                 io 0x60 = 0x378
-                                irq 0x70 = 7
-                        pnp 2e.2 on #  Com1
-                                 io 0x60 = 0x3f8
-                                irq 0x70 = 4
-                        pnp 2e.3 off #  Com2
-                                 io 0x60 = 0x2f8
-                                irq 0x70 = 3
-                        pnp 2e.5 on #  Keyboard
-                                 io 0x60 = 0x60
-                                 io 0x62 = 0x64
-                                irq 0x70 = 1
-                        pnp 2e.6 off #  CIR
-                        pnp 2e.7 off #  GAME_MIDI_GIPO1
-                        pnp 2e.8 off #  GPIO2
-                        pnp 2e.9 off #  GPIO3
-                        pnp 2e.a off #  ACPI
-                        pnp 2e.b off #  HW Monitor
-                end
+#                superio winbond/w83627hf link 1
+#                        pnp 2e.0 on #  Floppy
+#                                 io 0x60 = 0x3f0
+#                                irq 0x70 = 6
+#                                drq 0x74 = 2
+#                        pnp 2e.1 off #  Parallel Port
+#                                 io 0x60 = 0x378
+#                                irq 0x70 = 7
+#                        pnp 2e.2 on #  Com1
+#                                 io 0x60 = 0x3f8
+#                                irq 0x70 = 4
+#                        pnp 2e.3 off #  Com2
+#                                 io 0x60 = 0x2f8
+#                                irq 0x70 = 3
+#                        pnp 2e.5 on #  Keyboard
+#                                 io 0x60 = 0x60
+#                                 io 0x62 = 0x64
+#                                irq 0x70 = 1
+#				irq 0x72 = 12
+#                        pnp 2e.6 off #  CIR
+#                        pnp 2e.7 off #  GAME_MIDI_GIPO1
+#                        pnp 2e.8 off #  GPIO2
+#                        pnp 2e.9 off #  GPIO3
+#                        pnp 2e.a off #  ACPI
+#                        pnp 2e.b on #  HW Monitor
+#				 io 0x60 = 0x290
+#                end
         end
 end
 
@@ -209,7 +211,6 @@ northbridge amd/amdk8 "mc1"
 end
 
 
-dir /pc80
 #dir /bioscall
 cpu k8 "cpu0"
   register "up" = "{.chip = &amd8131, .ht_width=16, .ht_speed=600}"

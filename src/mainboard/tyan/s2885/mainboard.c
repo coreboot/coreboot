@@ -87,10 +87,11 @@ static void amd8111_enable_rom(void)
         pci_write_config8(dev, 0x43, byte);
 }
 #endif
+#if 0
 static void onboard_scsi_fixup(void)
 {
         struct device *dev;
-#if 0 
+#if 1 
 	unsigned char i,j,k;
 
 	for(i=0;i<=6;i++) {
@@ -119,6 +120,7 @@ static void onboard_scsi_fixup(void)
 //	print_mem();
 //	amd8111_enable_rom();
 }
+#endif
 #if 0
 static void vga_fixup(void) {
         // we do this right here because:
@@ -153,8 +155,8 @@ enable(struct chip *chip, enum chip_pass pass)
 //		case CONF_PASS_PRE_PCI:
 //		case CONF_PASS_POST_PCI:		
                 case CONF_PASS_PRE_BOOT:
-			if (conf->fixup_scsi)
-        			onboard_scsi_fixup();
+//			if (conf->fixup_scsi)
+ //       			onboard_scsi_fixup();
 //			if (conf->fixup_vga)
 //				vga_fixup();
 			printk_debug("mainboard fixup pass %d done\r\n",

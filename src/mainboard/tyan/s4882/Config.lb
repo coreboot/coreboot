@@ -34,9 +34,9 @@ default LB_CKS_RANGE_END=122
 default LB_CKS_LOC=123
 
 driver mainboard.o
-driver lsi_scsi.o
+dir ../common/lsi_scsi
 #driver adaptec_scsi.o
-driver si_sata.o
+#driver si_sata.o
 #driver intel_nic.o
 #object reset.o
 if HAVE_MP_TABLE object mptable.o end
@@ -137,7 +137,6 @@ end
 makerule ./auto.inc 
 	depends "./romcc ./auto.E"
 	action "./romcc -O2 -mcpu=k8 -o auto.inc --label-prefix=auto ./auto.E" 
-#	action	"./romcc -mcpu=k8  -O ./auto.E > auto.inc"
 end
 mainboardinit cpu/k8/enable_mmx_sse.inc
 mainboardinit ./auto.inc

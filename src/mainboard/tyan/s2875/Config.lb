@@ -9,19 +9,21 @@ uses ARCH
 uses HARD_RESET_BUS
 uses HARD_RESET_DEVICE
 uses HARD_RESET_FUNCTION
+
 #
 #
 ###
 ### Set all of the defaults for an x86 architecture
 ###
+
 #
 #
 ###
 ### Build the objects we have code for in this directory.
 ###
-##object mainboard.o
+
 config chip.h
-register "fixup_scsi" = "1" 
+register "fixup_scsi" = "1"
 register "fixup_vga" = "1"
 
 
@@ -33,20 +35,19 @@ default LB_CKS_RANGE_END=122
 default LB_CKS_LOC=123
 
 driver mainboard.o
-#driver adaptec_scsi.o
 #driver si_sata.o
-#driver intel_nic_ipmi.o
-#driver broadcom_nic_ipmi.o
+#driver intel_nic.o
 #object reset.o
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
 #
 default HARD_RESET_BUS=1
-default HARD_RESET_DEVICE=2
+default HARD_RESET_DEVICE=5
 default HARD_RESET_FUNCTION=0
 #
+#
 arch i386 end
-#cpu k8 end
+
 #
 ###
 ### Build our 16 bit and 32 bit linuxBIOS entry code
@@ -56,6 +57,7 @@ mainboardinit cpu/i386/entry32.inc
 mainboardinit cpu/i386/bist32.inc
 ldscript /cpu/i386/entry16.lds
 ldscript /cpu/i386/entry32.lds
+
 #
 ###
 ### Build our reset vector (This is where linuxBIOS is entered)
@@ -112,19 +114,9 @@ mainboardinit cpu/i386/bist32_fail.inc
 ####
 #### O.k. We aren't just an intermediary anymore!
 ####
-#
-###
-### When debugging disable the watchdog timer
-###
-##option MAXIMUM_CONSOLE_LOGLEVEL=7
-#default MAXIMUM_CONSOLE_LOGLEVEL=7
-#
-#if USE_FALLBACK_IMAGE mainboardinit arch/i386/lib/noop_failover.inc  end
-#
 ###
 ### Romcc output
 ###
-
 makerule ./failover.E
 	depends "$(MAINBOARD)/failover.c" 
 	action "$(CPP) -I$(TOP)/src $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/failover.c > ./failover.E"
@@ -139,17 +131,21 @@ makerule ./auto.E
         depends "$(MAINBOARD)/auto.c option_table.h"
         action  "$(CPP) -I$(TOP)/src -I. $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
 end
+
 makerule ./auto.inc 
 	depends "./romcc ./auto.E"
 	action "./romcc -O2 -mcpu=k8 -o auto.inc --label-prefix=auto ./auto.E" 
 end
+
 mainboardinit cpu/k8/enable_mmx_sse.inc
 mainboardinit ./auto.inc
 mainboardinit cpu/k8/disable_mmx_sse.inc
+
 #
 ###
 ### Include the secondary Configuration files 
 ###
+dir /pc80
 
 northbridge amd/amdk8 "mc0"
         pci 0:18.0
@@ -158,14 +154,18 @@ northbridge amd/amdk8 "mc0"
         pci 0:18.1
         pci 0:18.2
         pci 0:18.3
-        southbridge amd/amd8111 "amd8111" link 0
+        southbridge amd/amd8151 "amd8151" link 0
                 pci 0:0.0
-                pci 0:1.0 on
-                pci 0:1.1 on
-                pci 0:1.2 on
-                pci 0:1.3 on
-                pci 0:1.5 off
-                pci 0:1.6 off
+                pci 0:1.0
+        end
+	southbridge amd/amd8111 "amd8111" link 0
+       	       	pci 0:0.0
+	       	pci 0:1.0 on
+	        pci 0:1.1 on
+	        pci 0:1.2 on
+	        pci 0:1.3 on
+	        pci 0:1.5 on
+	        pci 0:1.6 off
                 pci 1:0.0 on
                 pci 1:0.1 on
                 pci 1:0.2 on
@@ -194,15 +194,27 @@ northbridge amd/amdk8 "mc0"
                         pnp 2e.8 off #  GPIO2
                         pnp 2e.9 off #  GPIO3
                         pnp 2e.a off #  ACPI
-                        pnp 2e.b on  #  HW Monitor
+                        pnp 2e.b on #  HW Monitor
 				 io 0x60 = 0x290
                 end
-        end
+	end
 end
 
-dir /pc80
+northbridge amd/amdk8 "mc1"
+        pci 0:19.0
+        pci 0:19.0
+        pci 0:19.0
+        pci 0:19.1
+        pci 0:19.2
+        pci 0:19.3
+end
+
 #dir /bioscall
+
 cpu k8 "cpu0"
-  register "up" = "{.chip = &amd8111, .ht_width=8, .ht_speed=200}"
+  register "up" = "{.chip = &amd8151, .ht_width=16, .ht_speed=600}"
+end
+
+cpu k8 "cpu1"
 end
 

@@ -7,7 +7,6 @@
 #include "../../../northbridge/amd/amdk8/northbridge.h"
 #include "chip.h"
 //#include <part/mainboard.h>
-//#include "lsi_scsi.c"
 unsigned long initial_apicid[CONFIG_MAX_CPUS] =
 {
 	0,1
@@ -47,7 +46,7 @@ static void print_pci_regs(struct device *dev)
       for(i=0;i<256;i++) {
 	     byte = pci_read_config8(dev, i);
    
-             if((i%16)==0) printk_info("\n%02x:",i);
+             if((i%16)==0) printk_debug("\n%02x:",i);
              printk_debug(" %02x",byte);
       }
       printk_debug("\n");
@@ -88,12 +87,14 @@ static void amd8111_enable_rom(void)
         pci_write_config8(dev, 0x43, byte);
 }
 #endif
+#if 0
 static void onboard_scsi_fixup(void)
 {
-       struct device *dev;
+        struct device *dev;
+#if 1 
 	unsigned char i,j,k;
-#if 0 
-	for(i=0;i<=5;i++) {
+
+	for(i=0;i<=6;i++) {
 		for(j=0;j<=0x1f;j++) {
 			for (k=0;k<=6;k++){
 				dev = dev_find_slot(i, PCI_DEVFN(j, k));
@@ -119,7 +120,8 @@ static void onboard_scsi_fixup(void)
 //	print_mem();
 //	amd8111_enable_rom();
 }
-/*
+#endif
+#if 0
 static void vga_fixup(void) {
         // we do this right here because:
         // - all the hardware is working, and some VGA bioses seem to need
@@ -131,31 +133,34 @@ static void vga_fixup(void) {
 #endif
 #if CONFIG_VGABIOS == 1
         printk_debug("DO THE VGA BIOS\n");
-        do_vgabios();
+        do_vgabios(0x0600);
         post_code(0x93);
 #endif
 
 }
- */
+
+#endif
+ 
 
 static void
 enable(struct chip *chip, enum chip_pass pass)
 {
 
-        struct mainboard_tyan_s2882_config *conf = 
-		(struct mainboard_tyan_s2882_config *)chip->chip_info;
+        struct mainboard_tyan_s2875_config *conf = 
+		(struct mainboard_tyan_s2875_config *)chip->chip_info;
 
         switch (pass) {
 		default: break;
 //		case CONF_PASS_PRE_CONSOLE:
 //		case CONF_PASS_PRE_PCI:
-		case CONF_PASS_POST_PCI:		
+//		case CONF_PASS_POST_PCI:		
                 case CONF_PASS_PRE_BOOT:
 //			if (conf->fixup_scsi)
-//        			onboard_scsi_fixup();
+ //       			onboard_scsi_fixup();
 //			if (conf->fixup_vga)
 //				vga_fixup();
-//			printk_debug("mainboard fixup pass %d done\r\n",pass);
+			printk_debug("mainboard fixup pass %d done\r\n",
+					pass);
 			break;
 	}
 
@@ -185,9 +190,8 @@ static void enumerate(struct chip *chip)
                 child->bus = &dev_root.link[0];
         }
 }
-struct chip_control mainboard_tyan_s2882_control = {
-        .enable = enable,
+struct chip_control mainboard_tyan_s2875_control = {
+	.enable = enable,
         .enumerate = enumerate,
-        .name      = "Tyan s2882 mainboard ",
+        .name      = "Tyan s2875 mainboard ",
 };
-

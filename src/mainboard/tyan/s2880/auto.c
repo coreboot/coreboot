@@ -39,24 +39,24 @@ static void soft_reset(void)
         set_bios_reset();
         pci_write_config8(PCI_DEV(0, 0x04, 0), 0x47, 1);
 }
-#define REV_B_RESET 0
 static void memreset_setup(void)
 {
-#if REV_B_RESET==1
+   if (is_cpu_pre_c0()) {
         outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=0
-#else
+   }
+   else {
         outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=1
-#endif
+   }
         outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17); 
 }
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
+   if (is_cpu_pre_c0()) {
         udelay(800);
-#if REV_B_RESET==1
         outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 17); //REVB_MEMRST_L=1
-#endif
         udelay(90);
+   }
 }
 
 static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
@@ -114,7 +114,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 }
 
 /* include mainboard specific ht code */
-#include "hypertransport.c"
+//#include "hypertransport.c"
 
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
@@ -166,7 +166,7 @@ static void main(void)
         needs_reset = setup_coherent_ht_domain();
         needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0x80);
         if (needs_reset) {
-                print_info("ht reset -\r\t");
+                print_info("ht reset -\r\n");
                 soft_reset();
         }
 	

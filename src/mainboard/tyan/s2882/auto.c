@@ -42,21 +42,22 @@ static void soft_reset(void)
 #define REV_B_RESET 0
 static void memreset_setup(void)
 {
-#if REV_B_RESET==1
+   if (is_cpu_pre_c0()) {
         outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=0
-#else
+   }
+   else {
         outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=1
-#endif
+   }
         outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
 }
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
+   if (is_cpu_pre_c0()) {
         udelay(800);
-#if REV_B_RESET==1
         outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 17); //REVB_MEMRST_L=1
-#endif
         udelay(90);
+   }
 }
 
 

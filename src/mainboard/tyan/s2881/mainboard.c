@@ -38,7 +38,7 @@ static void fixup_lsi_53c1030(struct device *pdev)
 }
 #endif
 //extern static void lsi_scsi_init(struct device *dev);
-#if 1
+#if 0
 static void print_pci_regs(struct device *dev)
 {
       uint8_t byte;
@@ -152,12 +152,11 @@ enable(struct chip *chip, enum chip_pass pass)
 //		case CONF_PASS_PRE_PCI:
 //		case CONF_PASS_POST_PCI:		
                 case CONF_PASS_PRE_BOOT:
-			if (conf->fixup_scsi)
-        			onboard_scsi_fixup();
+//			if (conf->fixup_scsi)
+ //       			onboard_scsi_fixup();
 //			if (conf->fixup_vga)
 //				vga_fixup();
-			printk_debug("mainboard fixup pass %d done\r\n",
-					pass);
+//			printk_debug("mainboard fixup pass %d done\r\n",pass);
 			break;
 	}
 

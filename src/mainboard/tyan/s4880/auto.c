@@ -28,7 +28,7 @@ static void hard_reset(void)
         set_bios_reset();
 
         /* enable cf9 */
-        pci_write_config8(PCI_DEV(0, 0x04, 3), 0x41, 0xf1);
+        pci_write_config8(PCI_DEV(1, 0x04, 3), 0x41, 0xf1);
         /* reset */
         outb(0x0e, 0x0cf9);
 }
@@ -36,7 +36,7 @@ static void hard_reset(void)
 static void soft_reset(void)
 {
         set_bios_reset();
-        pci_write_config8(PCI_DEV(0, 0x04, 0), 0x47, 1);
+        pci_write_config8(PCI_DEV(1, 0x04, 0), 0x47, 1);
 }
 
 
@@ -121,11 +121,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-/* include mainboard specific ht code */
-#include "hypertransport.c"
-
-
 #include "northbridge/amd/amdk8/raminit.c"
+
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
 

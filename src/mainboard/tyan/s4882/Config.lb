@@ -9,6 +9,7 @@ uses ARCH
 uses HARD_RESET_BUS
 uses HARD_RESET_DEVICE
 uses HARD_RESET_FUNCTION
+
 #
 #
 ###
@@ -152,13 +153,13 @@ northbridge amd/amdk8 "mc0"
         pci 0:18.1
         pci 0:18.2
         pci 0:18.3
-        southbridge amd/amd8131 "amd8131" link 2
+        southbridge amd/amd8131 "amd8131" link 1
                 pci 0:0.0
                 pci 0:0.1
                 pci 0:1.0
                 pci 0:1.1
 	end
-        southbridge amd/amd8111 "amd8111" link 2
+        southbridge amd/amd8111 "amd8111" link 1
                 pci 0:0.0
                 pci 0:1.0 on
                 pci 0:1.1 on

@@ -1,5 +1,4 @@
 #define ASSEMBLY 1
- 
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
@@ -40,6 +39,7 @@ static void soft_reset(void)
         pci_write_config8(PCI_DEV(0, 0x04, 0), 0x47, 1);
 }
 
+
 #define REV_B_RESET 0
 static void memreset_setup(void)
 {
@@ -48,7 +48,7 @@ static void memreset_setup(void)
 #else
         outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=1
 #endif
-        outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
+        outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17); 
 }
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
@@ -83,31 +83,38 @@ static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 	 *     [2] Route to Link 1
 	 *     [3] Route to Link 2
 	 */
-
-	uint32_t ret=0x00010101; /* default row entry */
-
-	static const unsigned int rows_2p[2][2] = {
-		{ 0x00050101, 0x00010404 },
-		{ 0x00010404, 0x00050101 }
-	};
-
-	if(maxnodes>2) {
-		print_debug("this mainboard is only designed for 2 cpus\r\n");
-		maxnodes=2;
-	}
+        uint32_t ret=0x00010101; /* default row entry */
 
 
-	if (!(node>=maxnodes || row>=maxnodes)) {
-		ret=rows_2p[node][row];
-	}
+        static const unsigned int rows_4p[4][4] = {
+                { 0x000b0101, 0x00010202, 0x00030808, 0x00010208 },
+                { 0x00010202, 0x00070101, 0x00010204, 0x00030404 },
+                { 0x00030404, 0x00010204, 0x00070101, 0x00010202 },
+                { 0x00010208, 0x00030808, 0x00010202, 0x000b0101 }
+        };
+        
+        if (!(node>=maxnodes || row>=maxnodes)) {
+		ret=rows_4p[node][row];
+        }
 
-	return ret;
+        return ret;
 }
 
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
-	/* nothing to do */
+#define SMBUS_HUB 0x18
+        unsigned device=(ctrl->channel0[0])>>8;
+        smbus_write_byte(SMBUS_HUB , 0x01, device);
+        smbus_write_byte(SMBUS_HUB , 0x03, 0);
 }
+#if 0
+static inline void change_i2c_mux(unsigned device)
+{
+#define SMBUS_HUB 0x18
+        smbus_write_byte(SMBUS_HUB , 0x01, device);
+        smbus_write_byte(SMBUS_HUB , 0x03, 0);
+}
+#endif
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
@@ -115,6 +122,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 }
 
 #include "northbridge/amd/amdk8/raminit.c"
+
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
 
@@ -122,33 +130,75 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #define FIRST_CPU  1
 #define SECOND_CPU 1
-#define TOTAL_CPUS (FIRST_CPU + SECOND_CPU)
+
+#define THIRD_CPU  1 
+#define FOURTH_CPU 1 
+
+#define TOTAL_CPUS (FIRST_CPU + SECOND_CPU + THIRD_CPU + FOURTH_CPU)
+
+#define RC0 ((1<<1)<<8)
+#define RC1 ((1<<2)<<8)
+#define RC2 ((1<<3)<<8)
+#define RC3 ((1<<4)<<8)
+
+#define DIMM0 0x50
+#define DIMM1 0x51
+#define DIMM2 0x52
+#define DIMM3 0x53
+        
 static void main(void)
 {
 	static const struct mem_controller cpu[] = {
 #if FIRST_CPU
-		{
-			.node_id = 0,
-			.f0 = PCI_DEV(0, 0x18, 0),
-			.f1 = PCI_DEV(0, 0x18, 1),
-			.f2 = PCI_DEV(0, 0x18, 2),
-			.f3 = PCI_DEV(0, 0x18, 3),
-			.channel0 = { (0xa<<3)|0, (0xa<<3)|2, 0, 0 },
-			.channel1 = { (0xa<<3)|1, (0xa<<3)|3, 0, 0 },
-		},
+                {
+                        .node_id = 0,
+                        .f0 = PCI_DEV(0, 0x18, 0),
+                        .f1 = PCI_DEV(0, 0x18, 1),
+                        .f2 = PCI_DEV(0, 0x18, 2),
+                        .f3 = PCI_DEV(0, 0x18, 3),
+                        .channel0 = { RC0|DIMM0, RC0|DIMM2, 0, 0 },
+                        .channel1 = { RC0|DIMM1, RC0|DIMM3, 0, 0 },
+                },
 #endif
 #if SECOND_CPU
-		{
-			.node_id = 1,
-			.f0 = PCI_DEV(0, 0x19, 0),
-			.f1 = PCI_DEV(0, 0x19, 1),
-			.f2 = PCI_DEV(0, 0x19, 2),
-			.f3 = PCI_DEV(0, 0x19, 3),
-			.channel0 = { (0xa<<3)|4, (0xa<<3)|6, 0, 0 },
-			.channel1 = { (0xa<<3)|5, (0xa<<3)|7, 0, 0 },
-		},
+                {
+                        .node_id = 1,
+                        .f0 = PCI_DEV(0, 0x19, 0),
+                        .f1 = PCI_DEV(0, 0x19, 1),
+                        .f2 = PCI_DEV(0, 0x19, 2),
+                        .f3 = PCI_DEV(0, 0x19, 3),
+                        .channel0 = { RC1|DIMM0, RC1|DIMM2 , 0, 0 },
+                        .channel1 = { RC1|DIMM1, RC1|DIMM3 , 0, 0 },
+
+                },
+#endif
+
+#if THIRD_CPU
+                {
+                        .node_id = 2,
+                        .f0 = PCI_DEV(0, 0x1a, 0),
+                        .f1 = PCI_DEV(0, 0x1a, 1),
+                        .f2 = PCI_DEV(0, 0x1a, 2),
+                        .f3 = PCI_DEV(0, 0x1a, 3),
+                        .channel0 = { RC2|DIMM0, RC2|DIMM2, 0, 0 },
+                        .channel1 = { RC2|DIMM1, RC2|DIMM3, 0, 0 },
+
+                },
+#endif
+#if FOURTH_CPU
+                {
+                        .node_id = 3,
+                        .f0 = PCI_DEV(0, 0x1b, 0),
+                        .f1 = PCI_DEV(0, 0x1b, 1),
+                        .f2 = PCI_DEV(0, 0x1b, 2),
+                        .f3 = PCI_DEV(0, 0x1b, 3),
+                        .channel0 = { RC3|DIMM0, RC3|DIMM2, 0, 0 },
+                        .channel1 = { RC3|DIMM1, RC3|DIMM3, 0, 0 },
+
+                },
 #endif
 	};
+	int i;
         int needs_reset;
         enable_lapic();
         init_timer();
@@ -162,20 +212,35 @@ static void main(void)
         w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
         uart_init();
         console_init();
-        setup_s2885_resource_map();
+        setup_s4882_resource_map();
         needs_reset = setup_coherent_ht_domain();
-        needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0xc0);
+        needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0xa0);
+#if 0
+        dump_pci_device(PCI_DEV(0, 4, 0));
+#endif
         if (needs_reset) {
                 print_info("ht reset -");
                 soft_reset();
         }
-
+	
 #if 0
-	print_pci_devices();
+	dump_pci_devices();
 #endif
 	enable_smbus();
 #if 0
-	dump_spd_registers(&cpu[0]);
+
+//	activate_spd_rom(&cpu[0]); 
+//	dump_spd_registers(&cpu[0]);
+
+//	for(i=0;i<4;i++) {
+//		activate_spd_rom(&cpu[i]); 
+//        	dump_smbus_registers();
+//	}
+        for(i=1;i<256;i=i*2) {
+                change_i2c_mux(i);
+                dump_smbus_registers();
+        }
+
 #endif
 	memreset_setup();
 	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
@@ -199,13 +264,13 @@ static void main(void)
 /*
 #if  0
 	ram_check(0x00000000, msr.lo+(msr.hi<<32));
-#else 
+#else
 #if TOTAL_CPUS < 2
 	// Check 16MB of memory @ 0
-	ram_check(0x00000000, 0x00100000);
+	ram_check(0x00000000, 0x01000000);
 #else
 	// Check 16MB of memory @ 2GB 
-	ram_check(0x80000000, 0x80100000);
+	ram_check(0x80000000, 0x81000000);
 #endif
 #endif
 */

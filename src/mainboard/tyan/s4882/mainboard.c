@@ -10,7 +10,7 @@
 //#include "lsi_scsi.c"
 unsigned long initial_apicid[CONFIG_MAX_CPUS] =
 {
-	0,1
+	0,1,2,3
 };
 #if 0
 static void fixup_lsi_53c1030(struct device *pdev)
@@ -27,7 +27,7 @@ static void fixup_lsi_53c1030(struct device *pdev)
         word = 0x10f1;
 	pci_write_config16(pdev, PCI_SUBSYSTEM_VENDOR_ID, word);
             // Set the subsytem id 
-	word = 0x2880;
+	word = 0x4882;
         pci_write_config16(pdev, PCI_SUBSYSTEM_ID, word);
             // Disable writes to the device id 
 	byte = 0;
@@ -38,7 +38,7 @@ static void fixup_lsi_53c1030(struct device *pdev)
 }
 #endif
 //extern static void lsi_scsi_init(struct device *dev);
-#if 1
+#if 0
 static void print_pci_regs(struct device *dev)
 {
       uint8_t byte;
@@ -88,6 +88,7 @@ static void amd8111_enable_rom(void)
         pci_write_config8(dev, 0x43, byte);
 }
 #endif
+#if 0
 static void onboard_scsi_fixup(void)
 {
         struct device *dev;
@@ -120,6 +121,7 @@ static void onboard_scsi_fixup(void)
 //	print_mem();
 //	amd8111_enable_rom();
 }
+#endif
 #if 0
 static void vga_fixup(void) {
         // we do this right here because:
@@ -143,8 +145,8 @@ static void
 enable(struct chip *chip, enum chip_pass pass)
 {
 
-        struct mainboard_tyan_s2880_config *conf = 
-		(struct mainboard_tyan_s2880_config *)chip->chip_info;
+        struct mainboard_tyan_s4882_config *conf = 
+		(struct mainboard_tyan_s4882_config *)chip->chip_info;
 
         switch (pass) {
 		default: break;
@@ -152,8 +154,8 @@ enable(struct chip *chip, enum chip_pass pass)
 //		case CONF_PASS_PRE_PCI:
 //		case CONF_PASS_POST_PCI:		
                 case CONF_PASS_PRE_BOOT:
-			if (conf->fixup_scsi)
-        			onboard_scsi_fixup();
+//			if (conf->fixup_scsi)
+//        			onboard_scsi_fixup();
 //			if (conf->fixup_vga)
 //				vga_fixup();
 			printk_debug("mainboard fixup pass %d done\r\n",
@@ -161,12 +163,6 @@ enable(struct chip *chip, enum chip_pass pass)
 			break;
 	}
 
-}
-void final_mainboard_fixup(void)
-{
-#if 0
-        enable_ide_devices();
-#endif
 }
 static struct device_operations mainboard_operations = {
         .read_resources   = root_dev_read_resources,
@@ -187,10 +183,10 @@ static void enumerate(struct chip *chip)
                 child->bus = &dev_root.link[0];
         }
 }
-struct chip_control mainboard_tyan_s2880_control = {
+struct chip_control mainboard_tyan_s4882_control = {
         .enable = enable,
         .enumerate = enumerate,
-        .name      = "Tyan s2880 mainboard ",
+        .name      = "Tyan s4882 mainboard ",
 };
 
 

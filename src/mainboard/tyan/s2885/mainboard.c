@@ -119,7 +119,7 @@ static void onboard_scsi_fixup(void)
 //	print_mem();
 //	amd8111_enable_rom();
 }
-
+#if 0
 static void vga_fixup(void) {
         // we do this right here because:
         // - all the hardware is working, and some VGA bioses seem to need
@@ -136,6 +136,8 @@ static void vga_fixup(void) {
 #endif
 
 }
+
+#endif
  
 
 static void
@@ -153,8 +155,8 @@ enable(struct chip *chip, enum chip_pass pass)
                 case CONF_PASS_PRE_BOOT:
 			if (conf->fixup_scsi)
         			onboard_scsi_fixup();
-			if (conf->fixup_vga)
-				vga_fixup();
+//			if (conf->fixup_vga)
+//				vga_fixup();
 			printk_debug("mainboard fixup pass %d done\r\n",
 					pass);
 			break;

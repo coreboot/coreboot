@@ -32,7 +32,7 @@ default LB_CKS_LOC=123
 
 
 driver mainboard.o
-#driver lsi_scsi.o
+driver lsi_scsi.o
 #driver adaptec_scsi.o
 #driver promise_sata.o
 #driver intel_nic.o
@@ -179,6 +179,7 @@ northbridge amd/amdk8 "mc0"
                                  io 0x60 = 0x60
                                  io 0x62 = 0x64
                                 irq 0x70 = 1
+				irq 0x72 = 12
                         pnp 2e.6 off #  CIR
                         pnp 2e.7 off #  GAME_MIDI_GIPO1
                         pnp 2e.8 off #  GPIO2

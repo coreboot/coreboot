@@ -35,7 +35,7 @@ default LB_CKS_LOC=123
 driver mainboard.o
 #driver adaptec_scsi.o
 #driver si_sata.o
-driver intel_nic.o
+#driver intel_nic.o
 #driver broadcom_nic.o
 #object reset.o
 if HAVE_MP_TABLE object mptable.o end
@@ -196,6 +196,7 @@ northbridge amd/amdk8 "mc0"
                                  io 0x60 = 0x60
                                  io 0x62 = 0x64
                                 irq 0x70 = 1
+				irq 0x72 = 12
                         pnp 2e.6 off #  CIR
                         pnp 2e.7 off #  GAME_MIDI_GIPO1
                         pnp 2e.8 off #  GPIO2

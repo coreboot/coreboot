@@ -113,9 +113,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-/* include mainboard specific ht code */
-#include "hypertransport.c"
-
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
@@ -166,7 +163,7 @@ static void main(void)
         console_init();
         setup_s2881_resource_map();
         needs_reset = setup_coherent_ht_domain();
-        needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0x80);
+        needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0xc0);
         if (needs_reset) {
                 print_info("ht reset -");
                 soft_reset();

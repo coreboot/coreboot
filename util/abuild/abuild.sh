@@ -11,13 +11,6 @@
 #  archive for more details.
 #     
 
-LBROOT=$1
-
-# /path/to/freebios2/
-if [ -z "$LBROOT" ] ; then
-	LBROOT=$( cd ../..; pwd )
-fi
-
 
 # Where shall we place all the build trees?
 TARGET=$( pwd )/linuxbios-builds
@@ -73,16 +66,20 @@ function create_config
 target VENDOR_MAINBOARD
 mainboard VENDOR/MAINBOARD
 
+option CC="CROSSCC"
+# not supported yet
+# option LD="CROSSLD"
+
 romimage "normal"
 	option USE_FALLBACK_IMAGE=0
-	option ROM_IMAGE_SIZE=0x13000
+	option ROM_IMAGE_SIZE=0x12000
 	option LINUXBIOS_EXTRA_VERSION=".0-normal"
 	payload PAYLOAD
 end
 
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
-	option ROM_IMAGE_SIZE=0x13000
+	option ROM_IMAGE_SIZE=0x12000
 	option LINUXBIOS_EXTRA_VERSION=".0-fallback"
 	payload PAYLOAD
 end
@@ -92,6 +89,8 @@ EOF
 	) | sed -e s,VENDOR,$VENDOR,g \
 		-e s,MAINBOARD,$MAINBOARD,g \
 		-e s,PAYLOAD,$PAYLOAD,g \
+		-e s,CROSSCC,"$CC",g \
+		-e s,CROSSLD,"$LD",g \
 		> $TARGET/Config-${VENDOR}_${MAINBOARD}.lb
 	echo " ok"
 }
@@ -167,42 +166,131 @@ function compile_target
 function built_successfully
 {
 	CURR=`pwd`
-	cd $TARGET/${VENDOR}_${MAINBOARD}
 	status="fail"
-	if [ -r compile.status ] ; then
-		status=`cat compile.status`
+	if [ -d "$TARGET/${VENDOR}_${MAINBOARD}" ]; then
+		cd $TARGET/${VENDOR}_${MAINBOARD}
+		if [ -r compile.status ] ; then
+			status=`cat compile.status`
+		fi
+		cd $CURR
 	fi
-	cd $CURR
-	[ "$status" == "ok" ]
+	[ "$buildall" != "true" -a "$status" == "ok" ]
 }
 function build_target
 {
 	VENDOR=$1
 	MAINBOARD=$2
 	TARCH=$( architecture $VENDOR $MAINBOARD )
+
+	# default setting
+	CC="gcc"
+	LD="ld"
 	
 	echo -n "Processing mainboard/$VENDOR/$MAINBOARD"
+	
 	if [ "$ARCH" == "$TARCH" ]; then
 		echo " ($TARCH: ok)"
-		if ! built_successfully $VENDOR $MAINBOARD  ; then
-			create_buildenv $VENDOR $MAINBOARD
-			if [ $? -eq 0 ]; then
-				compile_target $VENDOR $MAINBOARD
-			fi
-		else
-			echo " ( mainboard/$VENDOR/$MAINBOARD previously ok )"
+	else
+		found_crosscompiler=false
+		if [ "$ARCH" == amd64 -a "$TARCH" == i386 ]; then
+			CC="gcc -m32"
+			found_crosscompiler=true
+			echo " ($TARCH: subset of $ARCH)"
+		fi
+		if [ "$ARCH" == ppc64 -a "$TARCH" == ppc ]; then
+			CC="gcc -m32"
+			found_crosscompiler=true
+			echo " ($TARCH: subset of $ARCH)"
 		fi
 
+		# TBD: look for suitable cross compiler suite
+		# cross-$TARCH-gcc and cross-$TARCH-ld
+		
+		# Check result:
+		if [ $found_crosscompiler == "false" ]; then
+			echo " ($TARCH: skipped, we're $ARCH)"
+			return 0
+		fi
+	fi
+	
+	if ! built_successfully $VENDOR $MAINBOARD  ; then
+		create_buildenv $VENDOR $MAINBOARD
+		if [ $? -eq 0 ]; then
+			compile_target $VENDOR $MAINBOARD
+		fi
 	else
-		# cross compiling not supported yet.
-		echo " ($TARCH: skipped, we're $ARCH)"
+		echo " ( mainboard/$VENDOR/$MAINBOARD previously ok )"
 	fi
 	echo
 }
 
-for VENDOR in $( vendors ); do
-  for MAINBOARD in $( mainboards $VENDOR ); do
-  	build_target $VENDOR $MAINBOARD
-  done
+function myhelp
+{
+	echo "Usage: $0 [-v|--verbose] [-a|--all] [-t|--target vendor/board] [lbroot]"
+	echo "       $0 [-V|--version]"
+	echo "       $0 [-h|--help]"
+	exit 0
+}
+
+function myversion 
+{
+	cat << EOF
+
+LinuxBIOS autobuild: V0.1.
+
+Copyright (C) 2004 by Stefan Reinauer, <stepan@openbios.org>
+This program is free software; you may redistribute it under the terms
+of the GNU General Public License. This program has absolutely no
+warranty.
+
+EOF
+	myhelp
+	exit 0
+}
+
+# default options
+target=""
+buildall=false
+
+# parse parameters
+args=`getopt -l version,verbose,help,all,target: Vvhat: $*`
+
+if [ $? != 0 ]; then
+	myhelp
+	exit 1
+fi
+
+set -- $args
+for arg
+do
+  case $arg in
+        -t|--target)	shift;target=$1;shift;;
+        -a|--all)	shift;buildall=true;;
+	-v|--verbose)	shift;verbose=true;;
+	-V|--version)	shift;myversion;;
+	-h|--help)	shift;myhelp;;
+  esac
 done
+
+# -- is $1
+LBROOT=$2
+
+# /path/to/freebios2/
+if [ -z "$LBROOT" ] ; then
+	LBROOT=$( cd ../..; pwd )
+fi
+
+if [ $target != "" ]; then
+  # build a single board
+  VENDOR=`echo $target|tr -d \'|cut -f1 -d/`
+  MAINBOARD=`echo $target|tr -d \'|cut -f2 -d/`
+  build_target $VENDOR $MAINBOARD
+else
+  # build all boards per default
+  for VENDOR in $( vendors ); do
+    for MAINBOARD in $( mainboards $VENDOR ); do
+  	build_target $VENDOR $MAINBOARD
+    done
+  done
+fi
 

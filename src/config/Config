@@ -25,9 +25,12 @@ addaction linuxbios nm -n linuxbios > linuxbios.map
 makerule linuxbios.a : $(OBJECTS-1) ; rm -f linuxbios.a
 addaction linuxbios.a ar cr linuxbios.a $(OBJECTS-1)
 
-makerule crt0.s: crt0.S ; $(CPP) $(CPPFLAGS) -I$(TOP)/src $< > crt0.s
+makerule crt0.s: crt0.S ; @echo "$(CPP) ... $< > $crt0.s "
+addaction crt0.s @$(CPP) $(CPPFLAGS) -I$(TOP)/src $< > crt0.s
 
-makerule crt0.o : crt0.s; $(CC) $(CPU_OPT) -c crt0.s
+makerule crt0.o : crt0.s; @echo $(CC) ... -o $@ $<
+addaction crt0.o @$(CC) -c $(CPU_OPT) -o $@ $<
+
 
 makerule etags: $(SOURCES) ; etags $(SOURCES)
 makerule tags: $(SOURCES) ; ctags $(SOURCES)

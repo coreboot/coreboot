@@ -3,11 +3,7 @@
 
 #if !defined(ASSEMBLY)
 
-#if USE_FALLBACK_BOOT
 void boot_successful(void);
-#  else
-#    define boot_successful()
-#endif
 
 #endif /* ASSEMBLY */
 

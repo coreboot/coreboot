@@ -1,6 +1,7 @@
 option _ROMBASE=0xf0000
 option _RAMBASE=0x4000
 option ROM_IMAGE_SIZE=65536
+option PAYLOAD_SIZE=458752
 
 # By default we only have one cpu 
 option MAX_CPUS=1
@@ -24,7 +25,7 @@ dir /src/config
 
 makerule all : romimage ;
 makerule floppy : all ; mcopy -o romimage a:
-makerule romimage : linuxbios.rom payload.bin.gz.block ; cat payload.bin.gz.block linuxbios.rom > romimage
+makerule romimage : linuxbios.rom payload.block ; cat payload.block linuxbios.rom > romimage
 
 
 makerule linuxbios.rom: linuxbios.strip ; 
@@ -36,12 +37,13 @@ addaction linuxbios.rom dd if=linuxbios.strip of=linuxbios.rom bs=1 seek=`expr $
 makerule mkrom: $(TOP)/mkrom/mkrom.c ; $(CC) -o mkrom $<
 
 
-makerule payload.bin.gz.block : payload.bin.gz ; dd conv=sync bs=448k if=payload.bin.gz of=payload.bin.gz.block
-makerule payload.bin.gz: payload.bin ;gzip -f -3 payload.bin
-makerule payload.bin: $(PAYLOAD) ;  objcopy -O binary -R .note -R .comment -S $< payload.bin
+makerule payload.block : $(if $(PAYLOAD),$(PAYLOAD), linux.bin.gz) ; dd conv=sync bs=$(PAYLOAD_SIZE) if=$< of=$@
+
+makerule linux.bin.gz: linux.bin ;gzip -f -3 linux.bin
+makerule linux.bin: $(LINUX) ;  objcopy -O binary -R .note -R .comment -S $< $@
 
 
-addaction clean rm -f romimage mkrom payload.*
+addaction clean rm -f romimage mkrom linux.* payload.*
 
 # do standard config files that the user need not specify
 # for now, this is just 'lib', but it may be more later. 

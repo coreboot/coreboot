@@ -11,7 +11,6 @@
 # $Id$
 # Author:
 # Modified by Jan Kok to improve readability of Makefile, etc.
-
 import sys
 import os
 import re
@@ -31,7 +30,7 @@ crt0base = ''
 ldscriptbase = ''
 
 makeoptions = {}
-makenooptions = {}
+makeexpressions = []
 
 # Key is the rule name. Value is a mkrule object.
 makebaserules = {}
@@ -44,6 +43,67 @@ target_dir = ''
 
 objectrules = []
 userdefines = []
+
+
+# -----------------------------------------------------------------------------
+#                    Error Handling
+# -----------------------------------------------------------------------------
+
+class location:
+	class place:
+		def __init__(self, file, line, command):
+			self.file = file
+			self.line = line
+			self.command = command
+		def next_line(self, command):
+			self.line = self.line + 1
+			self.command = command
+		def at(self):
+			return "%s:%d" % (self.file, self.line)
+	
+	def __init__ (self):
+		self.stack = []
+
+	def file(self):
+		return self.stack[-1].file
+	def line(self):
+		 return self.stack[-1].line
+	def command(self):
+		return self.stack[-1].command
+
+	def push_file(self, file):
+		self.stack.append(self.place(file, 0, ""))
+	def pop_file(self):
+		self.stack.pop()
+	def next_line(self, command):
+		self.stack[-1].next_line(command)
+	def at(self):
+		return self.stack[-1].at()
+loc = location()
+
+def fatal(string):	
+	global loc
+	size = len(loc.stack)
+	i = 0
+	while(i < size -1):
+		print loc.stack[i].at()
+		i = i + 1
+	print "%s: %s"% (loc.at(), string)
+	sys.exit(1)
+
+def warning(string):
+	global loc
+	print "===> Warning:"
+	size = len(loc.stack)
+	i = 0
+	while(i < size -1):
+		print loc.stack[i].at()
+		i = i + 1
+	print "%s: %s"% (loc.at(), string)
+
+# -----------------------------------------------------------------------------
+#                    Rules
+# -----------------------------------------------------------------------------
 
 # this is the absolute base rule, and so is very special. 
 mainrulelist = "all"
@@ -80,15 +140,14 @@ class mkrule:
 	# This defines the function mkrule(target, depends, action).
 	# It creates a makerule object and records it for later recall.
 	def __init__(self, target, depends, actions):
-		self.whence = current_config_file()
+		self.whence = loc.file()
 		self.comments = []       # list of strings
 		self.target = target     # string
 		self.depends = depends   # string of dependency names
 		self.actions = actions   # list of strings
 		if makebaserules.has_key(target):
-			print "===> Warning: makerule for target '%s' in file" % target
-			print current_config_file(), "is replacing previous definition in file"
-			print makebaserules[target].whence
+			warning("makerule for target '%s' is replacing previous defintion in file %s" % 
+			(target, makebaserules[target].whence))
 		else:
 			# Keep a list of targets so we can output the rules
 			# in the order that they are defined.
@@ -127,22 +186,12 @@ class mkrule:
 # -----------------------------------------------------------------------------
 #                        Command parsing functions
 # -----------------------------------------------------------------------------
-
-# Keep track of nested config files, for error reporting.
-config_file_stack = []
-def current_config_file():
-	return config_file_stack[-1]
-
-# The command being processed, for error reporting.
-current_command = ''
-
+		
 # Match a compiled pattern with a string, die if fails, return list of groups.
 def match(pattern, string):
 	m = pattern.match(string)
 	if not m:
-		print "\nBad command syntax: ", current_command
-		print "in file", current_config_file()
-		sys.exit(1)
+		fatal("Bad command sytax")
 	return m.groups()
 
 # A common pattern: <nonwhitespace><whitespace><rest of line>
@@ -164,8 +213,7 @@ splitargs_re = re.compile(r'(\S*)\s*(.*)')
 # instance of the BIOS.  The target directory will be $(TOP)/<target-name>. 
 def target(dir, targ_name):
 	global target_dir
-	target_dir = os.path.join(os.path.dirname(current_config_file()),
-				targ_name)
+	target_dir = os.path.join(os.path.dirname(loc.file()), targ_name)
 	if not os.path.isdir(target_dir):
 		print 'Creating directory', target_dir
 		os.makedirs(target_dir)
@@ -179,7 +227,7 @@ def handleconfig(dir):
 	if os.path.isfile(file):
 		doconfigfile(dir, file)
 	else:
-		print "===> Warning: %s not found" % file
+		warning("%s not found" % file)
 
 # type is the command name, e.g. 'northbridge'
 # name is the path arg that followed the command
@@ -410,7 +458,7 @@ def makerule(dir, rule):
 def addaction(dir, rule):
 	(target, action) = match(splitargs_re, rule)
 	if not makebaserules.has_key(target):
-	    print "===> Warning: Need 'makerule %s ...' before addaction in %s" % (target, current_config_file())
+		warning("Need 'makerule %s ...' before addaction" % (target))
         makebaserules[target].addaction(action)
 
 # COMMAND: adddepend <target> <dependency>
@@ -420,7 +468,7 @@ def addaction(dir, rule):
 def adddepend(dir, rule):
 	(target, depend) = match(splitargs_re, rule)
 	if not makebaserules.has_key(target):
-	    print "===> Warning: Need 'makerule %s ...' before adddepend in %s" % (target, current_config_file())
+		warning("Need 'makerule %s ...' before adddepend" % (target))
         makebaserules[target].adddepend(depend)
 
 # COMMAND: makedefine <stuff>
@@ -429,17 +477,197 @@ def adddepend(dir, rule):
 def makedefine(dir, rule): 
 	userdefines.append(rule)
 
+
+class mkexpr:
+	class identifier:
+		def __init__ (self, name):
+			self.name = name
+		def bc(self):
+			return "($(" + self.name + "))"
+		def perl(self):
+			return "($(" + self.name + "))"
+
+	class constant:
+		def __init__ (self, value):
+			self.value = value
+		def bc(self):
+			return "(" + self.value + ")"
+		def perl(self):
+			return "(" + self.value + ")"
+
+	class unary:
+		def __init__ (self, op, right):
+			self.op = op
+			self.right = right
+
+		def bc(self):
+			rstring = self.right.bc()
+			if (self.op == "!"):
+				result = "!" + rstring
+			elif (self.op == "-"):
+				result = "-" + rstring
+			return "(" + result + ")"
+
+		def perl(self):
+			rstring = self.right.perl()
+			if (self.op == "!"):
+				result = "!" + rstring
+			elif (self.op == "-"):
+				result = "-" + rstring
+			return "(" + result + ")"
+		
+	class binary:
+		def __init__(self, op, left, right):
+			self.op = op
+			self.left = left
+			self.right = right
+
+		def bc(self):
+			lstring = self.left.bc()
+			rstring = self.right.bc()
+			if (self.op == "&"):
+				result = lstring + "&&" + rstring
+			elif (self.op == "|"):
+				result = lstring + "||" + rstring
+			elif (self.op == "+"):
+				result = lstring + "+" + rstring
+			elif (self.op == "-"):
+				result = lstring + "-" + rstring
+			elif (self.op == "*"):
+				result = lstring + "*" + rstring
+			elif (self.op == "/"):
+				result = lstring + "/" + rstring
+			elif (self.op == "<<"):
+				result = lstring + "*(2^" + rstring + ") "
+			elif (self.op == ">>"):
+				result = lstring + "/(2^" + rstring + ") "
+			return "(" + result + ")"
+
+
+		def perl(self):
+			lstring = self.left.perl()
+			rstring = self.right.perl()
+			if (self.op == "&"):
+				result = lstring + "&&" + rstring
+			elif (self.op == "|"):
+				result = lstring + "||" + rstring
+			elif (self.op == "+"):
+				result = lstring + "+" + rstring
+			elif (self.op == "-"):
+				result = lstring + "-" + rstring
+			elif (self.op == "*"):
+				result = lstring + "*" + rstring
+			elif (self.op == "/"):
+				result = lstring + "/" + rstring
+			elif (self.op == "<<"):
+				result = lstring + "<<" + rstring + ") "
+			elif (self.op == ">>"):
+				result = lstring + ">>" + rstring + ") "
+			return "(" + result + ")"
+
+	class expression:
+		def __init__(self, expr):
+			self.expr = expr
+
+		def bc(self):
+			string = self.expr.bc()
+			return "${shell echo '" + string + "' | bc}"
+
+		def perl(self):
+			string = self.expr.perl()
+			return "${shell perl -e 'printf(\"%u\\n\", " + string + ");' }"
+	
+	# Tokens: ( ) ! | & + - * / << >> option )
+	start_re     = re.compile(r"^\s*(([A-Za-z_][A-Za-z_0-9]*)|((0x[0-9A-Za-z]+)|([0-9]+))|(\()|(!))(.*)$")
+	close_re     = re.compile(r"^\s*\)(.*)$")
+	middle_re    = re.compile(r"^\s*((\|)|(&)|(\+)|(-)|(\*)|(/)|(<<)|(>>))(.*)$")
+
+	def __init__(self, expr):
+		self.orig_expr = expr
+		self.expr = ""
+
+	def prec(self, op):
+		if (op == "|"):
+			result = 1
+		elif (op == "&"):
+			result = 2
+		elif (op == "+") or (op == "-"):
+			result = 3
+		elif (op == "*") or (op == "/"):
+			result = 4
+		elif (op == "<<") or (op == ">>"):
+			result = 5
+
+
+	def _parse_start(self):
+		#print("start expr: %s"%(self.expr))
+		m = self.start_re.match(self.expr)
+		if m:
+			(token, self.expr) = (m.group(1), m.group(8))
+			if token == "(":
+				left = self._parse()
+				#print("close expr: %s"%(self.expr))
+				m = self.close_re.match(self.expr)
+				if  m:
+					self.expr = m.group(1)
+				else:
+					fatal("No Matching )");
+			elif (token == "!"):
+				right = self._parse()
+				left = self.unary(token, right)
+			elif m.group(2):
+				if not makeoptions.has_key(token):
+					fatal("Option %s not defined" % token)
+				left = self.identifier(token)
+			elif m.group(3):
+				left = self.constant(token)
+		else: 
+			fatal("Invalid expression: %s" % self.expr)
+		return left
+
+	def _parse_middle(self, left):
+		#print("middle expr: %s"%(self.expr))
+		m = self.middle_re.match(self.expr)
+		while(m):
+			(op, self.expr) = (m.group(1),m.group(10))
+			right = self._parse_start()
+			m = self.middle_re.match(self.expr)
+			if m and (self.prec(op) < self.prec(m.group(1))):
+				right = self._parse_middle()
+			left = self.binary(op, left, right)
+		return left
+		
+	def _parse(self):
+		left = self._parse_start()
+		return self._parse_middle(left)
+
+	def parse(self):
+		self.expr = self.orig_expr
+		result = self._parse()
+		if self.expr != "":
+			fatal("Extra tokens: %s"% self.expr)
+		return self.expression(result)
+
 # Put "<option>:=<value>" and add <option> to VARIABLES in Makefile.settings
 def set_option(option, value):
-	if makenooptions.has_key(option):
-		del makenooptions[option]
-	makeoptions[option] = value
+	if makeoptions.has_key(option) and (makeoptions[option][0] == "expr"):
+		fatal("Cannot replace expression %s" % option)
+	makeoptions[option] = ("option", value)
 
 # Add <option> to VARIABLES in Makefile.settings
+# And remove any value <option> may already have.
 def clear_option(option):
-	if makeoptions.has_key(option):
-		del makeoptions[option]
-	makenooptions[option] = ""
+	if makeoptions.has_key(option) and (makeoptions[option][0] == "expr"):
+		fatal("Cannot clear expression %s" % option)
+	makeoptions[option] = ("nooption", "")
+
+# Put "<option>:=<value>" and add <option> to VARIABLES in Makefile.settings
+def set_expr(option, value):
+	if makeoptions.has_key(option) and (makeoptions[option][0] == "expr"):
+		fatal("Cannot replace expression %s" % option)
+	makeexpressions.append(option);
+	makeoptions[option] = ("expr", mkexpr(value).parse().perl())
+
 
 # COMMAND: option <option-name> [=<optional value>]
 #
@@ -451,7 +679,7 @@ def clear_option(option):
 # Also, put "<option>:=<value>" and add <option> to VARIABLES in
 # Makefile.settings
 #
-option_re = re.compile(r"^([^=]*)=(.*)$")
+option_re = re.compile(r"^([A-Za-z_][A-Za-z_0-9]+)\s*=(.*)$")
 def option(dir, option):
 	m = option_re.match(option)
 	key=option
@@ -461,10 +689,18 @@ def option(dir, option):
 	set_option(key, value)
 
 # COMMAND: nooption <option-name>
-# Add <option-namee> to VARIABLES and "-U<option-name>" to CFLAGS.
+# Add <option-name> to VARIABLES and "-U<option-name>" to CFLAGS.
 def nooption(dir, option):
 	clear_option(option)
 
+# COMMAND: expr
+def expr(dir, option):
+	m = option_re.match(option)
+	value= ""
+	if m and m.group(1):
+		(key, value) = m.groups()
+	set_expr(key, value)
+	
 # COMMAND: commandline <stuff>
 # Equivalent to "option CMD_LINE="<stuff>".
 def commandline(dir, command):
@@ -498,7 +734,8 @@ def payload(dir, payload_name):
 
 # COMMAND: linux <linux_dir>
 def linux(dir, linux_name):
-	payload(dir, linux_name + '/vmlinux')
+	linuxrule = 'LINUX=' + linux_name + '/vmlinux'
+	makedefine(dir, linuxrule)
 
 # COMMAND: rambase <address>
 def rambase(dir, address):
@@ -552,14 +789,15 @@ command_actions = {
 	'nooption'    : nooption,
 	'rambase'     : rambase,
 	'biosbase'    : biosbase,
-	'commandline' : commandline
+	'commandline' : commandline,
+	'expr'        : expr,
 	}
 
 # Open file, extract lines, and close.  For reading config and "base" files.
 def readfile(filename): 
 	if not os.path.isfile(filename):
 		print filename, "is not a file \n"
-		sys.exit()
+		sys.exit(1)
 	fileobject = open(filename, "r")
 	filelines = fileobject.readlines()
 	fileobject.close()
@@ -580,15 +818,13 @@ config_file_list = []
 
 # Process config files.
 def doconfigfile(dir, filename):
-	global current_command
-
 	if (debug):
 		print "doconfigfile" , filename
 
 	config_file_list.append(filename)
 
 	# Keep track of current config file, for error reporting.
-	config_file_stack.append(filename)
+	loc.push_file(filename)
 
 	if (debug):
 		print "doconfigfile: config_file_list ", config_file_list
@@ -597,7 +833,7 @@ def doconfigfile(dir, filename):
 		print "doconfigfile: filelines", filelines
 
 	for line in filelines:
-		current_command = line
+		loc.next_line(line)
 
 		(verb, args) = command_re.match(line).groups()
 		if not verb:
@@ -608,22 +844,21 @@ def doconfigfile(dir, filename):
 			# The commands above can accept comments as regular
 			# arguments.  For all other commands, strip
 			# final whitespace and comments.
-			args = stripcomment_re.match(args).group(1)
+			if args:
+				args = stripcomment_re.match(args).group(1)
 
 		if ((arch == '') and not verb in
 					('arch', 'mainboard', 'target')):
-			print "arch, target, or mainboard must be "
-			print "the first commands, not ", verb
-			sys.exit()
+			fatal("arch, target, or mainboard must be\n"
+				"the first commands, not %s"%(verb))
 
 		if command_actions.has_key(verb):
 			# Call the command execution function.
 			command_actions[verb](dir, args)
 		else:
-			print verb, "is not a valid command! \n"
-			sys.exit()
+			fatal("%s is not a valid command!"% (verb))
 
-	config_file_stack.pop()
+	loc.pop_file()
 
 
 # -----------------------------------------------------------------------------
@@ -708,12 +943,23 @@ def writemakefilesettings(path):
 	keys = makeoptions.keys()
 	keys.sort()
 	for key in keys:
-		file.write("export %s:=%s\n" % (key, makeoptions[key]))
+		(type, value) = makeoptions[key]
+		if type == "option":
+			file.write("export %s:=%s\n" % (key, value))
+	
+	# Write out the expressions in the order they were defined
+	# This ensures expressions that depend on other expressions
+	# will execute correctly
+	i = 0
+	while(i < len(makeexpressions)):
+		key = makeexpressions[i]
+		(type, value) = makeoptions[key]
+		file.write("export %s:=%s\n" % (key, value))
+		i = i + 1
+
 	file.write("export VARIABLES := ");
 	for key in keys:
 		file.write("%s " % key)
-	for key in makenooptions.keys(): 
-		file.write("%s " % (key))
 	file.write("\n");
 
 
@@ -804,8 +1050,8 @@ CPUFLAGS := $(foreach _var_,$(VARIABLES),$(call D_item,$(_var_)))
 	for mbifile in mainboardinit_files:
 		file.write("crt0.s: $(TOP)/src/%s\n" % mbifile[0])
 
-	# Print out the rules that will cause the files generated by
-	# NLBConfig.py to be remade if any dependencies change.
+	# Print out the rules that will make cause the files
+	# generated by NLBConfig.py to be remade if any dependencies change.
 	# It would seem sensible to write a rule with multiple targets, e.g.
 	# Makefile Makefile.settings crt0.S nsuperio.c: ...dependencies...
 	# but 'make' will run the rule for Makefile.settings (if out of date)
@@ -835,6 +1081,13 @@ CPUFLAGS := $(foreach _var_,$(VARIABLES),$(call D_item,$(_var_)))
 	file.write("\tpython $(TOP)/util/config/NLBConfig.py %s $(TOP)\n"
 			% top_config_file)
 
+	keys = makeoptions.keys()
+	keys.sort()
+	file.write("\necho:\n")
+	for key in keys:
+		file.write("\t@echo %s='$(%s)'\n"% (key,key))
+	
+
 	file.close();
 
 def writesuperiofile(path):
@@ -856,7 +1109,7 @@ def writesuperiofile(path):
 
 if len(sys.argv) != 3:
 	print "python NLBConfig.py <Config Filename> <src-path>\n"
-	sys.exit()
+	sys.exit(1)
 
 # Retrieve config filename from command line.
 top_config_file = os.path.abspath(sys.argv[1])

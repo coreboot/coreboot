@@ -67,8 +67,8 @@ static byte_offset_t rom_read_bytes(int cp, void *vdest, byte_offset_t count)
 			return bytes;
 		}
 		length = K64 - block_offset;
-		if (length > count) {
-			length = count;
+		if (length > (count - bytes)) {
+			length = count - bytes;
 		}
 		if (cp) {
 			memcpy(dest, nvram + block_offset, length);

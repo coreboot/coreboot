@@ -2,20 +2,29 @@
 #include <pci_ids.h>
 #include <southbridge/intel/82801.h>
 #include <printk.h>
+#include <part/hard_reset.h>
+#include <part/fallback_boot.h>
 #include "82801.h"
 
 void ich2_set_cpu_multiplier(unsigned multiplier)
 {
-	u32 dword;
+	u32 dword, old_dword;
 	struct pci_dev *dev;
+	unsigned old_multiplier;
 	dev = pci_find_device(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82801BA_1F0, 0);
 	if (!dev) {
 		printk_err("Cannot find device %08x:%08x\n",
 			PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82801BA_1F0);
 		return;
 	}
-	pci_read_config_dword(dev, GEN_STS, &dword);
+	pci_read_config_dword(dev, GEN_STS, &old_dword);
+	dword = old_dword;
 	dword &= ~((1 << 12) - (1 << 8));
 	dword |= (multiplier & 0xf) << 8;
-	pci_write_config_dword(dev, GEN_STS, dword);
+	if (dword != old_dword) {
+		pci_write_config_dword(dev, GEN_STS, dword);
+		printk_info("Rebooting to change the cpu multiplier\n");
+		boot_successful();
+		hard_reset();
+	}
 }

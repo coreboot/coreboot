@@ -39,7 +39,6 @@ void mainboard_fixup(void)
 #endif
 	ich2_power_after_power_fail(1);
 	w832627hf_power_after_power_fail(POWER_ON);
-	printk_notice("Please add a mainboard_fixup!\n");
 	return;
 }
 

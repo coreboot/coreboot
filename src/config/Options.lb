@@ -712,7 +712,7 @@ define CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
 end
 define INTEL_PPRO_MTRR
 	default none
-	export always
+	export used
 	comment ""
 end
 define CONFIG_UDELAY_TSC

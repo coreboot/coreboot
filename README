@@ -1,1 +1,6 @@
 This is FreeBIOS.
+
+Requires bcc to compile 16-bit C code.  Obtain bcc from
+ftp://ftp.FreeBSD.org/pub/FreeBSD/ports/distfiles/bcc.tar.gz
+
+

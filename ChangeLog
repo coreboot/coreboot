@@ -1,3 +1,9 @@
+2000-03-06  Jeff Garzik  <jgarzik@mandrakesoft.com>
+
+	* configure.in: Reordered AC_OUTPUT targets
+	* README: Mention where to find original bcc
+	  16-bit C compiler.
+
 2000-03-05  Jeff Garzik  <jgarzik@mandrakesoft.com>
 
 	* configure.in, chip/Makefile.am, chip/intel/*:

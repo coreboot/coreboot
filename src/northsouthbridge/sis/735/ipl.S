@@ -32,7 +32,7 @@
 
 .code16
 
-//#define SPD_SIZING
+#define SPD_SIZING
 #define SIZE_ALL
 #define REALLY_COMPACT
 

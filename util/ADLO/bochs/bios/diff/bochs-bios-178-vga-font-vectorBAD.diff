@@ -1,0 +1,12 @@
+--- rombios.c	Tue Nov 12 17:41:36 2002
++++ rombios.c-current	Tue Nov 12 12:44:20 2002
+@@ -9027,6 +9028,9 @@
+   call _cdemu_init
+   ;;
+ #endif // BX_ELTORITO_BOOT
++
++  ;; VGA Fonts.: F000h:FA6Eh : SYSTEM DATA - 8x8 GRAPHICS FONT
++  SET_INT_VECTOR(0x1F, #0xF000, #0xFA6E)
+  
+   int  #0x19
+   //JMP_EP(0x0064) ; INT 19h location

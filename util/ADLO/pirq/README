@@ -1,0 +1,24 @@
+EXPERIMENTAL
+
+This directory contains PIRQ tables. 
+
+The PIRQ table is stored in the PC at are in between 0xF0000 and 0xFFFFF.
+It is distinguished by "$PIR" string at start of table is around 256 bytes
+long.
+
+So just like video bios we attemtp to grab it and save it. The support for
+grabbing is not complete in the Makefile and resulting file still will
+have to be hand edited (if anyone want to hack 'grep' to have -A an -B
+return char count instead of line count while in binary mode, volunters
+are welcome).
+
+			--------------
+
+PIRQ support is not complete yet.
+
+			--------------
+
+More information on PIRQ can be found at :
+	-http://www.microsoft.com/hwdev/archive/BUSBIOS/pciirq.asp
+	-The red PCI book.
+

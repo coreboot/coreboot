@@ -1,0 +1,253 @@
+Index: rombios.c
+===================================================================
+RCS file: /fs/cvsroot/loader/bochs/bios/rombios.c,v
+retrieving revision 1.13
+diff -u -r1.13 rombios.c
+--- rombios.c	10 Nov 2002 14:30:52 -0000	1.13
++++ rombios.c	12 Nov 2002 01:41:56 -0000
+@@ -133,10 +133,10 @@
+ //
+ //   BCC Bug: find a generic way to handle the bug of #asm after an "if"  (fixed in 0.16.7)
+ 
+-#define DEBUG_ROMBIOS      0
++#define DEBUG_ROMBIOS      1
+ 
+-#define DEBUG_ATA          0
+-#define DEBUG_INT13_HD     0
++#define DEBUG_ATA          1
++#define DEBUG_INT13_HD     1
+ #define DEBUG_INT13_CD     0
+ #define DEBUG_INT13_ET     0
+ #define DEBUG_INT13_FL     0
+@@ -154,7 +154,7 @@
+ #define BX_USE_ATADRV    1
+ #define BX_ELTORITO_BOOT 1
+ 
+-#define BX_MAX_ATA_INTERFACES   4
++#define BX_MAX_ATA_INTERFACES   1
+ #define BX_MAX_ATA_DEVICES      (BX_MAX_ATA_INTERFACES*2)
+ 
+    /* model byte 0xFC = AT */
+@@ -2018,7 +2018,7 @@
+ #define ATA_DATA_IN      0x01
+ #define ATA_DATA_OUT     0x02
+ 
+-#define ATA_WAIT_COUNT      0xFFFF
++#define ATA_WAIT_COUNT      0xFFFFFF
+   
+ // ---------------------------------------------------------------------------
+ // ATA/ATAPI driver : ata_wait_for_notbusy()
+@@ -2202,11 +2202,14 @@
+   // Device detection
+   hdcount=cdcount=0;
+   
+-  for(device=0; device<BX_MAX_ATA_DEVICES; device++) {
++//  for(device=0; device<BX_MAX_ATA_DEVICES; device++) {
++{
+     Bit16u iobase1, iobase2;
+     Bit8u  channel, slave, shift;
+     Bit8u  sc, sn, cl, ch, st;
+ 
++	printf("DEVICE:%d\n",device);
++
+     channel = device / 2;
+     slave = device % 2;
+ 
+@@ -2269,7 +2272,7 @@
+         BX_PANIC("ata-detect: Failed to detect ATA device\n");
+ 
+       removable = (read_byte(get_SS(),buffer+0) & 0x80) ? 1 : 0;
+-      mode      = read_byte(get_SS(),buffer+96) ? ATA_MODE_PIO32 : ATA_MODE_PIO16;
++//      mode      = read_byte(get_SS(),buffer+96) ? ATA_MODE_PIO32 : ATA_MODE_PIO16;
+       blksize   = read_word(get_SS(),buffer+10);
+       
+       cylinders = read_word(get_SS(),buffer+(1*2)); // word 1
+@@ -2556,9 +2559,24 @@
+   write_dword(ebda_seg, &EbdaData->ata.trsfbytes,0L);
+   current = 0;
+ 
+-  status = inb(iobase1 + ATA_CB_STAT);
++  status = ata_wait_for_notbusy(iobase1);
++
++status = inb(iobase1 + ATA_CB_STAT);
+   if (status & ATA_CB_STAT_BSY) return 1;
+ 
++// 1) SEND COMMAND
++
++  /* clear Device/Head register */
++  outb(iobase1 + ATA_CB_DH, 0x00);
++
++  status = ata_wait_for_notbusy(iobase1);
++  if (status!=0)
++	return 10;
++
++  status = ata_wait_for_devrdy(iobase1);
++  if (status!=0)
++	return 11;
++
+   outb(iobase2 + ATA_CB_DC, ATA_CB_DC_HD15 | ATA_CB_DC_NIEN);
+   outb(iobase1 + ATA_CB_FR, 0x00);
+   outb(iobase1 + ATA_CB_SC, count);
+@@ -2566,6 +2584,11 @@
+   outb(iobase1 + ATA_CB_CL, cylinder & 0x00ff);
+   outb(iobase1 + ATA_CB_CH, cylinder >> 8);
+   outb(iobase1 + ATA_CB_DH, (slave ? ATA_CB_DH_DEV1 : ATA_CB_DH_DEV0) | (Bit8u) head );
++
++  status = ata_wait_for_notbusy(iobase1);
++  if (status!=0)
++	return 12;
++
+   outb(iobase1 + ATA_CB_CMD, command);
+ 
+   while (1) {
+@@ -2573,6 +2596,11 @@
+     if ( !(status & ATA_CB_STAT_BSY) ) break;
+     }
+ 
++   ata_wait_for_notbusy(iobase1);
++
++
++// 1) END OF SEND COMMAND
++
+   if (status & ATA_CB_STAT_ERR) {
+     BX_DEBUG_ATA("ata_cmd_data_in : read error\n");
+     return 2;
+@@ -2581,6 +2609,19 @@
+     return 3;
+   }
+ 
++// 2) READ BACK DATA
++
++  /* clear Device/Head register */
++  outb(iobase1 + ATA_CB_DH, 0x00);
++
++  status = ata_wait_for_notbusy(iobase1);
++  if (status!=0)
++	return 31;
++
++  status = ata_wait_for_dataready(iobase1);
++  if (status!=0)
++	return 32;
++
+   // FIXME : move seg/off translation here
+ 
+ ASM_START
+@@ -2636,7 +2677,7 @@
+       if ( (status & (ATA_CB_STAT_BSY | ATA_CB_STAT_RDY | ATA_CB_STAT_DRQ | ATA_CB_STAT_ERR) ) 
+           != ATA_CB_STAT_RDY ) {
+         BX_DEBUG_ATA("ata_cmd_data_in : no sectors left (status %02x)\n", (unsigned) status);
+-        return 4;
++        //return 4;
+         }
+       break;
+       }
+@@ -2644,11 +2685,12 @@
+       if ( (status & (ATA_CB_STAT_BSY | ATA_CB_STAT_RDY | ATA_CB_STAT_DRQ | ATA_CB_STAT_ERR) ) 
+           != (ATA_CB_STAT_RDY | ATA_CB_STAT_DRQ) ) {
+         BX_DEBUG_ATA("ata_cmd_data_in : more sectors left (status %02x)\n", (unsigned) status);
+-        return 5;
++       // return 5;
+       }
+       continue;
+     }
+-  }
++  } // while(1)
++
+   // Enable interrupts
+   outb(iobase2+ATA_CB_DC, ATA_CB_DC_HD15);
+   return 0;
+@@ -2699,8 +2741,21 @@
+   write_dword(ebda_seg, &EbdaData->ata.trsfbytes,0L);
+   current = 0;
+ 
+-  status = inb(iobase1 + ATA_CB_STAT);
+-  if (status & ATA_CB_STAT_BSY) return 1;
++  //status = inb(iobase1 + ATA_CB_STAT);
++  //if (status & ATA_CB_STAT_BSY) return 1;
++
++// 1) SEND COMMAND
++
++  /* clear Device/Head register */
++  outb(iobase1 + ATA_CB_DH, 0x00);
++
++  status = ata_wait_for_notbusy(iobase1);
++  if (status!=0)
++        return 10;
++
++  status = ata_wait_for_devrdy(iobase1);
++  if (status!=0)
++        return 11;
+ 
+   outb(iobase2 + ATA_CB_DC, ATA_CB_DC_HD15 | ATA_CB_DC_NIEN);
+   outb(iobase1 + ATA_CB_FR, 0x00);
+@@ -2709,12 +2764,23 @@
+   outb(iobase1 + ATA_CB_CL, cylinder & 0x00ff);
+   outb(iobase1 + ATA_CB_CH, cylinder >> 8);
+   outb(iobase1 + ATA_CB_DH, (slave ? ATA_CB_DH_DEV1 : ATA_CB_DH_DEV0) | (Bit8u) head );
++
++  status = ata_wait_for_notbusy(iobase1);
++  if (status!=0)
++        return 12;
++
+   outb(iobase1 + ATA_CB_CMD, command);
+ 
+   while (1) {
+     status = inb(iobase1 + ATA_CB_STAT);
+     if ( !(status & ATA_CB_STAT_BSY) ) break;
+     }
++   ata_wait_for_notbusy(iobase1);
++
++
++
++
++// 1) END OF SEND COMMAND
+ 
+   if (status & ATA_CB_STAT_ERR) {
+     BX_DEBUG_ATA("ata_cmd_data_out : read error\n");
+@@ -2724,6 +2790,18 @@
+     return 3;
+     }
+ 
++// 2) WRITE DATA
++
++  /* clear Device/Head register */
++  outb(iobase1 + ATA_CB_DH, 0x00);
++
++  status = ata_wait_for_notbusy(iobase1);
++  if (status!=0)
++        return 31;
++  status = ata_wait_for_dataready(iobase1);
++  if (status!=0)
++        return 32;
++
+   // FIXME : move seg/off translation here
+ 
+ ASM_START
+@@ -2781,7 +2859,7 @@
+       if ( (status & (ATA_CB_STAT_BSY | ATA_CB_STAT_RDY | ATA_CB_STAT_DF | ATA_CB_STAT_DRQ | ATA_CB_STAT_ERR) ) 
+           != ATA_CB_STAT_RDY ) {
+         BX_DEBUG_ATA("ata_cmd_data_out : no sectors left (status %02x)\n", (unsigned) status);
+-        return 6;
++        //return 6;
+         }
+       break;
+       }
+@@ -2789,7 +2867,7 @@
+       if ( (status & (ATA_CB_STAT_BSY | ATA_CB_STAT_RDY | ATA_CB_STAT_DRQ | ATA_CB_STAT_ERR) ) 
+           != (ATA_CB_STAT_RDY | ATA_CB_STAT_DRQ) ) {
+         BX_DEBUG_ATA("ata_cmd_data_out : more sectors left (status %02x)\n", (unsigned) status);
+-        return 7;
++        //return 7;
+       }
+       continue;
+     }
+@@ -4817,6 +4895,9 @@
+     case 0x09: /* initialize drive parameters */
+     case 0x0c: /* seek to specified cylinder */
+     case 0x0d: /* alternate disk reset */
++	ata_reset();
++        goto int13_success;
++	break;
+     case 0x11: /* recalibrate */
+     case 0x14: /* controller internal diagnostic */
+       BX_INFO("int13h_harddisk function %02xh unimplemented, returns success\n", GET_AH());

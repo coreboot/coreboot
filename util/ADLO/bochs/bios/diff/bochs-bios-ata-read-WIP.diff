@@ -1,0 +1,88 @@
+--- rombios.c-1.76	Mon Nov  4 01:43:51 2002
++++ rombios.c	Tue Nov  5 17:37:55 2002
+@@ -2301,6 +2551,19 @@
+   status = inb(iobase1 + ATA_CB_STAT);
+   if (status & ATA_CB_STAT_BSY) return 1;
+ 
++// 1) SEND COMMAND
++
++  /* clear Device/Head register */
++  outb(iobase1 + ATA_CB_DH, 0x00);
++
++  status = ata_wait_for_notbusy(iobase1);
++  if (status!=0)
++	return 10;
++
++  status = ata_wait_for_devrdy(iobase1);
++  if (status!=0)
++	return 11;
++
+   outb(iobase2 + ATA_CB_DC, ATA_CB_DC_HD15 | ATA_CB_DC_NIEN);
+   outb(iobase1 + ATA_CB_FR, 0x00);
+   outb(iobase1 + ATA_CB_SC, count);
+@@ -2308,12 +2571,23 @@
+   outb(iobase1 + ATA_CB_CL, cylinder & 0x00ff);
+   outb(iobase1 + ATA_CB_CH, cylinder >> 8);
+   outb(iobase1 + ATA_CB_DH, (slave ? ATA_CB_DH_DEV1 : ATA_CB_DH_DEV0) | (Bit8u) head );
++
++  status = ata_wait_for_notbusy(iobase1);
++  if (status!=0)
++	return 12;
++
+   outb(iobase1 + ATA_CB_CMD, command);
+ 
+   while (1) {
+     status = inb(iobase1 + ATA_CB_STAT);
+     if ( !(status & ATA_CB_STAT_BSY) ) break;
+     }
++//  ata_wait_for_notbusy(iobase1);
++
++
++
++
++// 1) END OF SEND COMMAND
+ 
+   if (status & ATA_CB_STAT_ERR) {
+     BX_DEBUG_ATA("ata_cmd_data_in : read error\n");
+@@ -2323,12 +2597,24 @@
+     return 3;
+   }
+ 
+-  // FIXME : move seg/off translation here
++// 2) READ BACK DATA
++
++  /* clear Device/Head register */
++  outb(iobase1 + ATA_CB_DH, 0x00);
+ 
++  status = ata_wait_for_notbusy(iobase1);
++  if (status!=0)
++	return 10;
++  status = ata_wait_for_dataready(iobase1);
++  if (status!=0)
++	return 11;
++
++  // FIXME : move seg/off translation here
++/*
+ ASM_START
+         sti  ;; enable higher priority interrupts
+ ASM_END
+-
++*/
+   while (1) {
+ 
+ ASM_START
+@@ -2386,11 +2672,12 @@
+       if ( (status & (ATA_CB_STAT_BSY | ATA_CB_STAT_RDY | ATA_CB_STAT_DRQ | ATA_CB_STAT_ERR) ) 
+           != (ATA_CB_STAT_RDY | ATA_CB_STAT_DRQ) ) {
+         BX_DEBUG_ATA("ata_cmd_data_in : more sectors left (status %02x)\n", (unsigned) status);
+-        return 5;
++       // return 5;
+       }
+       continue;
+     }
+-  }
++  } // while(1)
++
+   // Enable interrupts
+   outb(iobase2+ATA_CB_DC, ATA_CB_DC_HD15);
+   return 0;

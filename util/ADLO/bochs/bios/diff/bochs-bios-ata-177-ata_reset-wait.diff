@@ -1,0 +1,49 @@
+this patch makes use of previous patch ata-177-waitfor.diff
+
+It also makes the (h) step do not depend on (g) step anymore.
+
+Should (g) die out completely?
+Does not seem to do anything worthwhile.
+
+                ---------------------------------
+
+        Adam Sulmicki <adam@cfar.umd.edu>
+        Wed Nov  6 04:43:05 EST 2002
+        http://www.eax.com/patches/
+
+-------------------------------------------------------------------------------
+
+Index: rombios.c
+===================================================================
+RCS file: /fs/cvsroot/loader/bochs/bios/rombios.c,v
+retrieving revision 1.8
+diff -u -r1.8 rombios.c
+--- rombios.c	6 Nov 2002 09:45:16 -0000	1.8
++++ rombios.c	6 Nov 2002 09:50:45 -0000
+@@ -2454,23 +2454,13 @@
+     sc = inb(iobase1+ATA_CB_SC);
+     sn = inb(iobase1+ATA_CB_SN);
+ 
+-    if ( (sc==0x01) && (sn==0x01) ) {
++  }
+ 
+ // 8.2.1 (h) -- wait for not BSY
+-      max=0xff;
+-      while(max--!=0) {
+-        Bit8u status = inb(iobase1+ATA_CB_STAT);
+-        if ((status & ATA_CB_STAT_BSY) == 0) break;
+-        }
+-      }
+-    }
++    ata_wait_for_notbusy(iobase1);
+ 
+ // 8.2.1 (i) -- wait for DRDY
+-  max=0xfff;
+-  while(max--!=0) {
+-    Bit8u status = inb(iobase1+ATA_CB_STAT);
+-      if ((status & ATA_CB_STAT_RDY) != 0) break;
+-  }
++    ata_wait_for_devrdy(iobase1);
+ 
+   // Enable interrupts
+   outb(iobase2+ATA_CB_DC, ATA_CB_DC_HD15);

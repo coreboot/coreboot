@@ -1,0 +1,30 @@
+an patch to display CHS information.
+
+I believe it should being displayed, just like PC BIOS classic does.
+
+                ---------------------------------
+
+        Adam Sulmicki <adam@cfar.umd.edu>
+        Wed Nov  6 04:43:05 EST 2002
+        http://www.eax.com/patches/
+
+-------------------------------------------------------------------------------
+
+Index: rombios.c
+===================================================================
+RCS file: /fs/cvsroot/loader/bochs/bios/rombios.c,v
+retrieving revision 1.6
+diff -u -r1.6 rombios.c
+--- rombios.c	6 Nov 2002 09:37:27 -0000	1.6
++++ rombios.c	6 Nov 2002 09:40:53 -0000
+@@ -2174,7 +2174,9 @@
+       write_word(ebda_seg,&EbdaData->ata.devices[device].pchs.cylinders, cylinders);
+       write_word(ebda_seg,&EbdaData->ata.devices[device].pchs.spt, spt);
+       write_dword(ebda_seg,&EbdaData->ata.devices[device].sectors, sectors);
+-      BX_INFO("ata%d-%d: PCHS=%u/%d/%d translation=", channel, slave,cylinders, heads, spt);
++
++      printf("ata%d %s: ",channel,slave?" slave":"master");
++      printf("PCHS=%u/%d/%d translation=",cylinders, heads, spt);
+ 
+       translation = inb_cmos(0x39 + channel/2);
+       for (shift=device%4; shift>0; shift--) translation >>= 2;

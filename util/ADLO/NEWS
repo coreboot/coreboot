@@ -1,0 +1,38 @@
+initial release
+	
+	boots LILO
+
+"linux_alpha" release
+
+	fixed keyboard in lilo
+
+	boots linux
+		(must use "linux mem=100mb ro init=/bin/sh ")
+
+"win2k" release
+
+	lilo works
+		no restrictions
+	grub works
+		no restrictions
+	linux works
+		no restrictions
+	openbsd works
+		no restrictions
+	win2k
+		no restrictions
+
+	freebsd 
+		hangs at /sbin/init
+	win98
+		sometimes boots up to desktop
+	winXP
+		finish text mode bar, 
+		switch to gfx mode 
+		stop 7b 
+
+"public" release
+	
+	just bit of cleanups, other than that same as
+	"win2k" release.
+

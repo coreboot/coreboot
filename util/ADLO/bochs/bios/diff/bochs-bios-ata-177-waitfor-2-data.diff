@@ -1,0 +1,53 @@
+Index: rombios.c
+===================================================================
+RCS file: /fs/cvsroot/loader/bochs/bios/rombios.c,v
+retrieving revision 1.10
+diff -u -r1.10 rombios.c
+--- rombios.c	6 Nov 2002 16:11:02 -0000	1.10
++++ rombios.c	10 Nov 2002 09:51:50 -0000
+@@ -911,7 +911,7 @@
+ 
+ Bit16u ata_wait_for_notbusy();
+ Bit16u ata_wait_for_devrdy();
+-//Bit16u ata_wait_for_dataready();
++Bit16u ata_wait_for_dataready();
+ 
+ Bit16u ata_cmd_non_data();
+ Bit16u ata_cmd_data_in();
+@@ -2076,7 +2076,35 @@
+ // ---------------------------------------------------------------------------
+ // based on ide.c from "The Universal Talkware Boot Loader" (GPL)
+ 
+-//Bit16u ata_wait_for_dataready(iobase){}
++Bit16u ata_wait_for_dataready(iobase)
++Bit16u iobase;
++{
++    Bit32u i = 0;
++
++/*
++    printf("wait for dta ready ...status %x\n",
++		inb(iobase+ATA_CB_STAT));
++*/
++
++    do {
++
++       //CHECK DF && ERR
++        if (((inb(iobase+ATA_CB_STAT) & 
++		(ATA_CB_STAT_DF|ATA_CB_STAT_ERR)) != 0)) {
++            return 1;
++        }
++
++        //Check DRQ
++        if (((inb(iobase+ATA_CB_STAT) & ATA_CB_STAT_DRQ) == 
++		ATA_CB_STAT_DRQ)) {
++            return 0;
++        }
++
++    } while (i++ <= ATA_WAIT_COUNT);
++
++    return 1;
++
++}
+ 
+ // ---------------------------------------------------------------------------
+ // ATA/ATAPI driver : initialization

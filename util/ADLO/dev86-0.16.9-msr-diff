@@ -1,0 +1,103 @@
+diff -u -r dev86-0.16.9-orig/as/asm/each.asm dev86-0.16.9-new/as/asm/each.asm
+--- dev86-0.16.9-orig/as/asm/each.asm	Wed Sep  4 05:26:12 1991
++++ dev86-0.16.9-new/as/asm/each.asm	Sun Nov  3 19:15:38 2002
+@@ -101,6 +101,7 @@
+ pushfd
+ rcl	[esi*4],1
+ rcr	[esi*4],1
++rdmsr
+ rol	[esi*4],1
+ ror	[esi*4],1
+ rep
+@@ -139,6 +140,7 @@
+ verw	[esi*4]
+ wait
+ wbinvd
++wrmsr
+ xadd	[esi*4],bx
+ xchg	bx,[esi*4]
+ xlat
+diff -u -r dev86-0.16.9-orig/as/asm/inher.asm dev86-0.16.9-new/as/asm/inher.asm
+--- dev86-0.16.9-orig/as/asm/inher.asm	Fri Jun 10 22:42:12 1988
++++ dev86-0.16.9-new/as/asm/inher.asm	Sun Nov  3 19:43:32 2002
+@@ -31,6 +31,7 @@
+ 
+ 	OUTSB
+ 
++	RDMSR
+ 	REP
+ 	REPE
+ 	REPNE
+@@ -97,6 +98,7 @@
+ 
+ 	INSW
+ 	INSD
++	INVD
+ 	IRET
+ 	IRETD
+ 
+@@ -123,5 +125,7 @@
+ 	STOSW
+ 	STOSW
+ 
++	WRMSR
++
+ 	XLAT
+ 	XLATB
+diff -u -r dev86-0.16.9-orig/as/asm/summary.as dev86-0.16.9-new/as/asm/summary.as
+--- dev86-0.16.9-orig/as/asm/summary.as	Tue Sep  3 16:40:02 1991
++++ dev86-0.16.9-new/as/asm/summary.as	Sun Nov  3 19:20:49 2002
+@@ -293,6 +293,7 @@
+ 	PUSHFD
+ 	RCL	; shiftcount
+ 	RCR	; shiftcount
++	RDMSR
+ 	ROL	; shiftcount
+ 	ROR	; shiftcount
+ 	REP	; INS/MOVS/OUTS/STOS
+@@ -372,6 +373,7 @@
+ 	VERW	; r/m16
+ 	WAIT
+ 	WBINVD
++	WRMSR
+ 	XADD	; r/m8,r8
+ 	XADD	; r/m16,r16
+ 	XADD	; r/m32,r32
+diff -u -r dev86-0.16.9-orig/as/keywords.c dev86-0.16.9-new/as/keywords.c
+--- dev86-0.16.9-orig/as/keywords.c	Wed Jun 27 12:08:22 2001
++++ dev86-0.16.9-new/as/keywords.c	Sun Nov  3 20:13:23 2002
+@@ -621,6 +621,7 @@
+     3, 'L', 'T', 'R', GROUP6, 0x18,
+     5, 'M', 'O', 'V', 'S', 'X', MOVX, 0xBE,
+     5, 'M', 'O', 'V', 'Z', 'X', MOVX, 0xB6,
++    5, 'R', 'D', 'M', 'S', 'R', INHER, 0x32,
+     4, 'S', 'E', 'T', 'A', SETCC, 0x97,
+     5, 'S', 'E', 'T', 'A', 'E', SETCC, 0x93,
+     4, 'S', 'E', 'T', 'B', SETCC, 0x92,
+@@ -661,6 +662,7 @@
+     4, 'V', 'E', 'R', 'R', GROUP6, 0x20,
+     4, 'V', 'E', 'R', 'W', GROUP6, 0x28,
+     6, 'W', 'B', 'I', 'N', 'V', 'D', INHER, 0x09,
++    5, 'W', 'R', 'M', 'S', 'R', INHER, 0x30,
+     4, 'X', 'A', 'D', 'D', ExGx, 0xC0,
+ #endif /* I80386 */
+ 
+diff -u -r dev86-0.16.9-orig/man/as86.1 dev86-0.16.9-new/man/as86.1
+--- dev86-0.16.9-orig/man/as86.1	Tue Sep 26 16:18:31 2000
++++ dev86-0.16.9-new/man/as86.1	Sun Nov  3 19:12:25 2002
+@@ -395,13 +395,13 @@
+ LFS LGDT LGS LIDT LLDT LMSW LOCK LODB LODS LODSB LODSD LODSW LODW LOOP
+ LOOPE LOOPNE LOOPNZ LOOPZ LSL LSS LTR MOV MOVS MOVSB MOVSD MOVSW MOVSX
+ MOVW MOVZX MUL NEG NOP NOT OR OUT OUTS OUTSB OUTSD OUTSW OUTW POP POPA
+-POPAD POPF POPFD PUSH PUSHA PUSHAD PUSHF PUSHFD RCL RCR REP REPE REPNE
++POPAD POPF POPFD PUSH PUSHA PUSHAD PUSHF PUSHFD RCL RCR RDMSR REP REPE REPNE
+ REPNZ REPZ RET RETF RETI ROL ROR SAHF SAL SAR SBB SCAB SCAS SCASB SCASD
+ SCASW SCAW SEG SETA SETAE SETB SETBE SETC SETE SETG SETGE SETL SETLE
+ SETNA SETNAE SETNB SETNBE SETNC SETNE SETNG SETNGE SETNL SETNLE SETNO
+ SETNP SETNS SETNZ SETO SETP SETPE SETPO SETS SETZ SGDT SHL SHLD SHR SHRD
+ SIDT SLDT SMSW STC STD STI STOB STOS STOSB STOSD STOSW STOW STR SUB TEST
+-VERR VERW WAIT WBINVD XADD XCHG XLAT XLATB XOR 
++VERR VERW WAIT WBINVD WRMSR XADD XCHG XLAT XLATB XOR 
+ .TP
+ Floating point
+ F2XM1 FABS FADD FADDP FBLD FBSTP FCHS FCLEX FCOM FCOMP FCOMPP FCOS

@@ -1,0 +1,13 @@
+--- rombios.c	Sun Nov 10 10:18:43 2002
++++ rombios.c	Thu Nov 14 21:07:54 2002
+@@ -24,10 +24,6 @@
+ //  License along with this library; if not, write to the Free Software
+ //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+ 
+-/* includes a subset of config.h that can be compiled by bcc, and applies
+-   to this file */
+-#include "biosconfig.h"
+-
+ // ROM BIOS for use with Bochs/Plex x86 emulation environment
+ 
+ 

@@ -1,0 +1,170 @@
+Index: rombios.c
+===================================================================
+RCS file: /fs/cvsroot/loader/bochs/bios/rombios.c,v
+retrieving revision 1.13
+diff -u -r1.13 rombios.c
+--- rombios.c	10 Nov 2002 14:30:52 -0000	1.13
++++ rombios.c	10 Nov 2002 15:20:45 -0000
+@@ -2269,7 +2269,7 @@
+         BX_PANIC("ata-detect: Failed to detect ATA device\n");
+ 
+       removable = (read_byte(get_SS(),buffer+0) & 0x80) ? 1 : 0;
+-      mode      = read_byte(get_SS(),buffer+96) ? ATA_MODE_PIO32 : ATA_MODE_PIO16;
++//      mode      = read_byte(get_SS(),buffer+96) ? ATA_MODE_PIO32 : ATA_MODE_PIO16;
+       blksize   = read_word(get_SS(),buffer+10);
+       
+       cylinders = read_word(get_SS(),buffer+(1*2)); // word 1
+@@ -2556,8 +2556,21 @@
+   write_dword(ebda_seg, &EbdaData->ata.trsfbytes,0L);
+   current = 0;
+ 
+-  status = inb(iobase1 + ATA_CB_STAT);
+-  if (status & ATA_CB_STAT_BSY) return 1;
++//  status = inb(iobase1 + ATA_CB_STAT);
++//  if (status & ATA_CB_STAT_BSY) return 1;
++
++// 1) SEND COMMAND
++
++  /* clear Device/Head register */
++  outb(iobase1 + ATA_CB_DH, 0x00);
++
++  status = ata_wait_for_notbusy(iobase1);
++  if (status!=0)
++	return 10;
++
++  status = ata_wait_for_devrdy(iobase1);
++  if (status!=0)
++	return 11;
+ 
+   outb(iobase2 + ATA_CB_DC, ATA_CB_DC_HD15 | ATA_CB_DC_NIEN);
+   outb(iobase1 + ATA_CB_FR, 0x00);
+@@ -2566,12 +2579,23 @@
+   outb(iobase1 + ATA_CB_CL, cylinder & 0x00ff);
+   outb(iobase1 + ATA_CB_CH, cylinder >> 8);
+   outb(iobase1 + ATA_CB_DH, (slave ? ATA_CB_DH_DEV1 : ATA_CB_DH_DEV0) | (Bit8u) head );
++
++  status = ata_wait_for_notbusy(iobase1);
++  if (status!=0)
++	return 12;
++
+   outb(iobase1 + ATA_CB_CMD, command);
+ 
+   while (1) {
+     status = inb(iobase1 + ATA_CB_STAT);
+     if ( !(status & ATA_CB_STAT_BSY) ) break;
+     }
++//  ata_wait_for_notbusy(iobase1);
++
++
++
++
++// 1) END OF SEND COMMAND
+ 
+   if (status & ATA_CB_STAT_ERR) {
+     BX_DEBUG_ATA("ata_cmd_data_in : read error\n");
+@@ -2581,6 +2605,18 @@
+     return 3;
+   }
+ 
++// 2) READ BACK DATA
++
++  /* clear Device/Head register */
++  outb(iobase1 + ATA_CB_DH, 0x00);
++
++  status = ata_wait_for_notbusy(iobase1);
++  if (status!=0)
++	return 10;
++  status = ata_wait_for_dataready(iobase1);
++  if (status!=0)
++	return 11;
++
+   // FIXME : move seg/off translation here
+ 
+ ASM_START
+@@ -2636,7 +2672,7 @@
+       if ( (status & (ATA_CB_STAT_BSY | ATA_CB_STAT_RDY | ATA_CB_STAT_DRQ | ATA_CB_STAT_ERR) ) 
+           != ATA_CB_STAT_RDY ) {
+         BX_DEBUG_ATA("ata_cmd_data_in : no sectors left (status %02x)\n", (unsigned) status);
+-        return 4;
++        // return 4;
+         }
+       break;
+       }
+@@ -2644,11 +2680,12 @@
+       if ( (status & (ATA_CB_STAT_BSY | ATA_CB_STAT_RDY | ATA_CB_STAT_DRQ | ATA_CB_STAT_ERR) ) 
+           != (ATA_CB_STAT_RDY | ATA_CB_STAT_DRQ) ) {
+         BX_DEBUG_ATA("ata_cmd_data_in : more sectors left (status %02x)\n", (unsigned) status);
+-        return 5;
++       // return 5;
+       }
+       continue;
+     }
+-  }
++  } // while(1)
++
+   // Enable interrupts
+   outb(iobase2+ATA_CB_DC, ATA_CB_DC_HD15);
+   return 0;
+@@ -2702,6 +2739,19 @@
+   status = inb(iobase1 + ATA_CB_STAT);
+   if (status & ATA_CB_STAT_BSY) return 1;
+ 
++// 1) SEND COMMAND
++
++  /* clear Device/Head register */
++  outb(iobase1 + ATA_CB_DH, 0x00);
++
++  status = ata_wait_for_notbusy(iobase1);
++  if (status!=0)
++        return 10;
++
++  status = ata_wait_for_devrdy(iobase1);
++  if (status!=0)
++        return 11;
++
+   outb(iobase2 + ATA_CB_DC, ATA_CB_DC_HD15 | ATA_CB_DC_NIEN);
+   outb(iobase1 + ATA_CB_FR, 0x00);
+   outb(iobase1 + ATA_CB_SC, count);
+@@ -2709,12 +2759,23 @@
+   outb(iobase1 + ATA_CB_CL, cylinder & 0x00ff);
+   outb(iobase1 + ATA_CB_CH, cylinder >> 8);
+   outb(iobase1 + ATA_CB_DH, (slave ? ATA_CB_DH_DEV1 : ATA_CB_DH_DEV0) | (Bit8u) head );
++
++  status = ata_wait_for_notbusy(iobase1);
++  if (status!=0)
++        return 12;
++
+   outb(iobase1 + ATA_CB_CMD, command);
+ 
+   while (1) {
+     status = inb(iobase1 + ATA_CB_STAT);
+     if ( !(status & ATA_CB_STAT_BSY) ) break;
+     }
++//  ata_wait_for_notbusy(iobase1);
++
++
++
++
++// 1) END OF SEND COMMAND
+ 
+   if (status & ATA_CB_STAT_ERR) {
+     BX_DEBUG_ATA("ata_cmd_data_out : read error\n");
+@@ -2723,6 +2784,18 @@
+     BX_DEBUG_ATA("ata_cmd_data_out : DRQ not set (status %02x)\n", (unsigned) status);
+     return 3;
+     }
++
++// 2) READ BACK DATA
++
++  /* clear Device/Head register */
++  outb(iobase1 + ATA_CB_DH, 0x00);
++
++  status = ata_wait_for_notbusy(iobase1);
++  if (status!=0)
++        return 10;
++  status = ata_wait_for_dataready(iobase1);
++  if (status!=0)
++        return 11;
+ 
+   // FIXME : move seg/off translation here
+ 

@@ -1,0 +1,5 @@
+Here we have various patches against bochs bios.
+
+The goal is that, once they are stable enough, we will submit them 
+back into bochs project for inclusion into the mainline sources.
+

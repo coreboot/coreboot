@@ -1,0 +1,56 @@
+An better fix for Int15/EAX=8E20.
+
+
+Basically. we are given 4 bytes to store an 4 byte long number.
+So just treat it as such.
+ 
+It also makes it consistent with CMOS description of those numbers.
+               
+---------------------------------
+
+        Adam Sulmicki <adam@cfar.umd.edu>
+	Wed Nov  6 04:43:05 EST 2002
+        http://www.eax.com/patches/
+
+-------------------------------------------------------------------------------
+
+Index: rombios.c
+===================================================================
+RCS file: /fs/cvsroot/loader/bochs/bios/rombios.c,v
+retrieving revision 1.5
+diff -u -r1.5 rombios.c
+--- rombios.c	6 Nov 2002 09:11:47 -0000	1.5
++++ rombios.c	6 Nov 2002 09:35:55 -0000
+@@ -3783,24 +3783,14 @@
+                         return;
+                         break;
+                     case 1:
+-                        extended_memory_size = inb_cmos(0x35);
+-                        extended_memory_size <<= 8;
+-                        extended_memory_size |= inb_cmos(0x34);
+-                        extended_memory_size *= 64;
+-                        if(extended_memory_size > 0x3bc000) // greater than EFF00000???
+-                        {
+-                            extended_memory_size = 0x3bc000; // everything after this is reserved memory until we get to 0x100000000
+-                        }
+-                        extended_memory_size *= 1024;
+-                        extended_memory_size += 15728640; // make up for the 16mb of memory that is chopped off
+-
+-                        if(extended_memory_size <= 15728640)
+-                        {
+-                            extended_memory_size = inb_cmos(0x31);
+-                            extended_memory_size <<= 8;
+-                            extended_memory_size |= inb_cmos(0x30);
+-                            extended_memory_size *= 1024;
+-                        }
++			extended_memory_size = 
++				extended_memory_size*0x00 + inb_cmos(0x30);
++			extended_memory_size = 
++				extended_memory_size*0x10 + inb_cmos(0x31);
++			extended_memory_size = 
++				extended_memory_size*0x10 + inb_cmos(0x34);
++			extended_memory_size = 
++				extended_memory_size*0x10 + inb_cmos(0x35);
+ 
+                         write_word(ES, regs.u.r16.di, 0x0000);
+                         write_word(ES, regs.u.r16.di+2, 0x0010);

@@ -1,0 +1,115 @@
+this patch add two timing out wait functions.
+namely:
+
+	Bit16u ata_wait_for_notbusy();
+	Bit16u ata_wait_for_devrdy();
+
+They will come to use later in ata_reset() as well as ide write and read 
+functions.
+
+basically a fundation laying patch.
+
+                ---------------------------------
+
+        Adam Sulmicki <adam@cfar.umd.edu>
+        Wed Nov  6 04:43:05 EST 2002
+        http://www.eax.com/patches/
+
+-------------------------------------------------------------------------------
+
+Index: rombios.c
+===================================================================
+RCS file: /fs/cvsroot/loader/bochs/bios/rombios.c,v
+retrieving revision 1.7
+diff -u -r1.7 rombios.c
+--- rombios.c	6 Nov 2002 09:41:17 -0000	1.7
++++ rombios.c	6 Nov 2002 09:44:39 -0000
+@@ -909,6 +909,10 @@
+ void   ata_detect();
+ void   ata_reset();
+ 
++Bit16u ata_wait_for_notbusy();
++Bit16u ata_wait_for_devrdy();
++//Bit16u ata_wait_for_dataready();
++
+ Bit16u ata_cmd_non_data();
+ Bit16u ata_cmd_data_in();
+ Bit16u ata_cmd_data_out();
+@@ -2003,7 +2007,77 @@
+ #define ATA_DATA_NO      0x00
+ #define ATA_DATA_IN      0x01
+ #define ATA_DATA_OUT     0x02
++
++#define ATA_WAIT_COUNT      0xFFFF
+   
++// ---------------------------------------------------------------------------
++// ATA/ATAPI driver : ata_wait_for_notbusy()
++// ---------------------------------------------------------------------------
++// based on ide.c from "The Universal Talkware Boot Loader" (GPL)
++
++Bit16u ata_wait_for_notbusy(iobase)
++Bit16u iobase;
++{
++
++    Bit32u i = 0;
++
++/*
++    printf("wait for busy ...status %x\n",inb(iobase+ATA_CB_STAT));
++*/
++
++    do {
++        //Wait BSY from 1 to 0
++        if (((inb(iobase+ATA_CB_STAT) & ATA_CB_STAT_BSY) == 0)) {
++            return 0;
++        }
++    } while (i++ <= ATA_WAIT_COUNT);
++
++    return 1;
++
++}
++
++// ---------------------------------------------------------------------------
++// ATA/ATAPI driver : ata_wait_for_devrdy()
++// ---------------------------------------------------------------------------
++// based on ide.c from "The Universal Talkware Boot Loader" (GPL)
++
++Bit16u ata_wait_for_devrdy(iobase)
++Bit16u iobase;
++{
++    Bit32u i = 0;
++
++/*
++    printf("wait for device ready ...status %x\n",
++		inb(iobase+ATA_CB_STAT));
++*/
++
++    do {
++
++       //CHECK DF && ERR
++        if (((inb(iobase+ATA_CB_STAT) & 
++		(ATA_CB_STAT_DF|ATA_CB_STAT_ERR)) != 0)) {
++            return 1;
++        }
++
++        //Check DRDY
++        if (((inb(iobase+ATA_CB_STAT) & ATA_CB_STAT_RDY) == 
++		ATA_CB_STAT_RDY)) {
++            return 0;
++        }
++
++    } while (i++ <= ATA_WAIT_COUNT);
++
++    return 1;
++
++}
++
++// ---------------------------------------------------------------------------
++// ATA/ATAPI driver : ata_wait_for_dataready()
++// ---------------------------------------------------------------------------
++// based on ide.c from "The Universal Talkware Boot Loader" (GPL)
++
++//Bit16u ata_wait_for_dataready(iobase){}
++
+ // ---------------------------------------------------------------------------
+ // ATA/ATAPI driver : initialization
+ // ---------------------------------------------------------------------------

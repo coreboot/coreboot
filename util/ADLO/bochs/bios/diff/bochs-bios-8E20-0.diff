@@ -1,0 +1,26 @@
+an quick and dirty fix for Int15/EAX=8E20.
+
+use 8E20-1.diff instead.
+
+do not apply.
+                ---------------------------------
+
+        Adam Sulmicki <adam@cfar.umd.edu>
+        Wed Nov  6 04:43:05 EST 2002
+        http://www.eax.com/patches/
+
+-------------------------------------------------------------------------------
+
+--- rombios.c-1.76	Mon Nov  4 01:43:51 2002
++++ rombios.c	Tue Nov  5 17:37:55 2002
+@@ -3629,7 +3923,9 @@
+                             extended_memory_size = 0x3bc000; // everything after this is reserved memory until we get to 0x100000000
+                         }
+                         extended_memory_size *= 1024;
+-                        extended_memory_size += 15728640; // make up for the 16mb of memory that is chopped off
++
++// make up  for the 16mb of memory that is chopped off
++//                        extended_memory_size += 15728640; 
+ 
+                         if(extended_memory_size <= 15728640)
+                         {

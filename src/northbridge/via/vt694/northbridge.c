@@ -67,7 +67,7 @@ struct mem_range *sizeram(void)
 		mem[1].sizek = 64*1024;
 	}
 	mem[1].sizek -= mem[1].basek;
-	return &mem;
+	return mem;
 }
 
 #ifdef HAVE_FRAMEBUFFER
@@ -82,3 +82,25 @@ void framebuffer_on()
 	pcibios_write_config_word(0, devfn, 0x3e, command);
 }
 #endif
+
+/*
+ * This fixup is based on capturing values from an Award bios.  Without
+ * this fixup the DMA write performance is awful (i.e. hdparm -t /dev/hda is 20x
+ * slower than normal, ethernet drops packets).
+ * Apparently these registers govern some sort of bus master behavior.
+ */
+void northbridge_fixup(void)
+{
+	struct pci_dev *pcidev = pci_find_slot(0, PCI_DEVFN(0,0));
+
+	if (pcidev) {
+		pci_write_config_byte(pcidev, 0x70, 0xc0);
+		pci_write_config_byte(pcidev, 0x71, 0x88);
+		pci_write_config_byte(pcidev, 0x72, 0xec);
+		pci_write_config_byte(pcidev, 0x73, 0x0c);
+		pci_write_config_byte(pcidev, 0x74, 0x0e);
+		pci_write_config_byte(pcidev, 0x75, 0x81);
+		pci_write_config_byte(pcidev, 0x76, 0x52);
+	}
+}
+

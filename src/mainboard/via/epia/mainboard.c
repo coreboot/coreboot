@@ -54,8 +54,8 @@ mainboard_fixup()
 {
 	printk_info("Mainboard fixup\n");
 
+	northbridge_fixup();
 	southbridge_fixup();
-	pci_routing_fixup();
 }
 
 void
@@ -65,14 +65,13 @@ final_southbridge_fixup()
 
 	nvram_on();
 	keyboard_on();
-	southbridge_fixup();
 	pci_routing_fixup();
 }
 
 void
 final_mainboard_fixup()
 {
-	final_southbridge_fixup();
 	printk_info("Final mainboard fixup\n");
+	final_southbridge_fixup();
 }
 

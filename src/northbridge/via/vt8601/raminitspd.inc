@@ -9,7 +9,10 @@ register_table:
 	.byte 0x78, 0x1
 /* safe initial values ... */
 	.byte 0x68, 0x0
+	.byte 0x6a, 0x0	/* disable refresh */
 	.byte 0x6b, 0x0
+	.byte 0x6c, 0x0 /* disable ECC for start */
+	.byte 0x6d, 0x37 /* as per Cindy Lee, ... */
 	.byte 0x64, 0xe4 /* slowest ram setting. banks 0, 1 */
 	.byte 0x65, 0xe4 /* banks 2, 3*/
 	.byte 0x66, 0xe4 /* banks 4, 5 */
@@ -123,7 +126,7 @@ spd_set_nbxcfg_done:
 #define SET_RAM_COMMAND(command) \
 	movl $0x6c, %eax		; \
 	PCI_READ_CONFIG_BYTE		; \
-	andl $0x14, %eax		; \
+	andl $0x18, %eax		; \
 	orl  $(command), %eax		; \
 	movl %eax, %edx			; \
 	movl $0x6c, %eax		; \
@@ -135,7 +138,7 @@ spd_set_nbxcfg_done:
 	PCI_READ_CONFIG_BYTE	; \
 	andl $0x20,  %eax	; \
 	xorl $0x20,  %eax	; \
-	shll $2,    %eax	; \
+	shrl $1,    %eax	; \
 	orl  $0x2a, %eax	; \
 
 #define SET_RAM_MODE_REGISTER \
@@ -153,6 +156,20 @@ spd_set_nbxcfg_done:
 #else /* USE_SPD */
 #define ENABLE_REFRESH()		CALL_LABEL(spd_enable_refresh)
 #endif
+
+#define FIRST_NORMAL_REFERENCE() \
+	movl $0x55aa55aa, %eax; \
+	mov %eax, 0x0; \
+	mov 0x0, %eax; 
+
+// should also read 0x5f and write that to 0x56 and 0x57
+
+
+#define SPECIAL_FINISHUP() \
+	/* enable multi-page open */; \
+	CS_WRITE($0x6B, $0x01)
+
+
 
 spd_enable_refresh: 
 	// just set it for now. 

@@ -103,12 +103,15 @@ ram_initialize:
 
 	/* normal operation */
 	SET_RAM_COMMAND(RAM_COMMAND_NONE)
-		
+
+	FIRST_NORMAL_REFERENCE()		
 	TTYS0_TX_STRING($ram_8)
 
 
 	/* Finally enable refresh */
 	/* DRAMC */
 	ENABLE_REFRESH()
+
+	SPECIAL_FINISHUP()
 
 	TTYS0_TX_STRING($ram_9)

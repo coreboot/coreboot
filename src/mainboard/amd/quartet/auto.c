@@ -19,25 +19,32 @@
 #include "cpu/p6/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "debug.c"
+#include "northbridge/amd/amdk8/cpu_rev.c"
 
 #define SIO_BASE 0x2e
 
 static void memreset_setup(void)
 {
-	/* Set the memreset low */
-	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 28);
-	/* Ensure the BIOS has control of the memory lines */
-	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 29);
-	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 30);
-	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 31);
+	if (is_cpu_pre_c0()) {
+		/* Set the memreset low */
+		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 28);
+		/* Ensure the BIOS has control of the memory lines */
+		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 29);
+	}
+	else {
+		/* Ensure the CPU has controll of the memory lines */
+		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 29);
+	}
 }
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
-	udelay(800);
-	/* Set memreset_high */
-	outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 28);
-	udelay(90);
+	if (is_cpu_pre_c0()) {
+		udelay(800);
+		/* Set memreset_high */
+		outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 28);
+		udelay(90);
+	}
 }
 
 /*
@@ -109,9 +116,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 static void coherent_ht_mainboard(unsigned cpus)
 {
 }
-
-#include "northbridge/amd/amdk8/cpu_ldtstop.c"
-#include "southbridge/amd/amd8111/amd8111_ldtstop.c"
 
 #include "northbridge/amd/amdk8/raminit.c"
 
@@ -272,8 +276,21 @@ static void main(void)
 #endif
 #if 0
 	ram_check(0x00000000, msr.lo);
-#else
-	/* Check 16MB of memory */
-	ram_check(0x00000000, 0x01000000);
+#endif
+#if 0
+	static const struct {
+		unsigned long lo, hi;
+	} check_addrs[] = {
+		/* Check 16MB of memory @ 0*/
+		{ 0x00000000, 0x01000000 },
+#if 0
+		/* Check 16MB of memory @ 2GB */
+		{ 0x80000000, 0x81000000 },
+#endif
+	};
+	int i;
+	for(i = 0; i < sizeof(check_addrs)/sizeof(check_addrs[0]); i++) {
+		ram_check(check_addrs[i].lo, check_addrs[i].hi);
+	}
 #endif
 }

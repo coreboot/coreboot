@@ -48,8 +48,8 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 		else {
 			printk_debug("ERROR - could not find PCI 1:03.0, using defaults\n");
 
-			bus_8111_1 = 3;
-			bus_isa = 4;
+			bus_8111_1 = 4;
+			bus_isa = 5;
 		}
 		/* 8131-1 */
 		dev = dev_find_slot(1, PCI_DEVFN(0x01,0));
@@ -60,7 +60,7 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 		else {
 			printk_debug("ERROR - could not find PCI 1:01.0, using defaults\n");
 
-			bus_8131_1 = 1;
+			bus_8131_1 = 2;
 		}
 		/* 8131-2 */
 		dev = dev_find_slot(1, PCI_DEVFN(0x02,0));
@@ -71,7 +71,7 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 		else {
 			printk_debug("ERROR - could not find PCI 1:02.0, using defaults\n");
 
-			bus_8131_2 = 2;
+			bus_8131_2 = 3;
 		}
 	}
 
@@ -143,10 +143,6 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 	smp_write_lintsrc(mc, mp_NMI, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
 		bus_isa, 0x00, MP_APIC_ALL, 0x01);
 
-
-	/* AGP Slot */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		0x03, (6<<2)|0, 0x02, 0x12);
 
 	/* PCI Slot 1 */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,

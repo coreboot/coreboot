@@ -42,7 +42,7 @@ option IRQ_SLOT_COUNT=7
 ## Build code to export an x86 MP table
 ## Useful for specifying IRQ routing values
 ##
-option HAVE_MP_TABLE=1
+option HAVE_MP_TABLE=0
 
 ##
 ## Build code to export a CMOS option table
@@ -137,7 +137,7 @@ arch i386 end
 #object mainboard.o
 driver mainboard.o
 #object static_devices.o
-if HAVE_MP_TABLE object mptable.o end
+# if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
 object reset.o
 

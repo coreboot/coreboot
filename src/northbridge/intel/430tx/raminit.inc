@@ -24,7 +24,7 @@ jmp intel_430_out
 #define DRB_REG0 $0x60
 
 /* The maximum allowed rows of memory banks */
-#define MAX_ROWS $0x8
+#define MAX_ROWS $0x6
 
 #define RAM_READ 0x0400
 
@@ -35,7 +35,8 @@ jmp intel_430_out
 	movl $(0x60 + ((n) -1)), %eax	; \
 	PCI_READ_CONFIG_BYTE		; \
 	andl $0xFF, %eax		; \
-	shll $23, %eax			; \
+/* 4 MB granularity for the 430TX */
+	shll $22, %eax			; \
 
 #define DIMM_READ \
 	addl %ebx, %eax			; \
@@ -49,8 +50,6 @@ jmp intel_430_out
 #define DIMM3_READ DIMM_BASE(3) ; DIMM_READ
 #define DIMM4_READ DIMM_BASE(4) ; DIMM_READ
 #define DIMM5_READ DIMM_BASE(5) ; DIMM_READ
-#define DIMM6_READ DIMM_BASE(6) ; DIMM_READ
-#define DIMM7_READ DIMM_BASE(7) ; DIMM_READ
 
 #define DIMMS_READ_EBX_OFFSET \
 	DIMM0_READ	; \
@@ -59,8 +58,6 @@ jmp intel_430_out
 	DIMM3_READ	; \
 	DIMM4_READ	; \
 	DIMM5_READ	; \
-	DIMM6_READ	; \
-	DIMM7_READ
 
 #define DIMMS_READ(offset) \
 	movl $offset, %ebx	; \
@@ -73,19 +70,19 @@ jmp intel_430_out
 #define RAM_COMMAND_CBR		0x4
 
 #define SET_RAM_COMMAND(command) \
-	movl $0x76, %eax		; \
+	movl $0x54, %eax		; \
 	PCI_READ_CONFIG_BYTE		; \
 	andl $0x1F, %eax		; \
 	orl  $((command) << 5), %eax	; \
 	movl %eax, %edx			; \
-	movl $0x76, %eax		; \
+	movl $0x54, %eax		; \
 	PCI_WRITE_CONFIG_BYTE
 
 #define COMPUTE_CAS_MODE \
-	movl $0x76, %eax	; \
+	movl $0x54, %eax	; \
 	PCI_READ_CONFIG_BYTE	; \
-	andl $0x4,  %eax	; \
-	xorl $0x4,  %eax	; \
+	andl $0x10,  %eax	; \
+	xorl $0x10,  %eax	; \
 	shll $2,    %eax	; \
 	orl  $0x2a, %eax	; \
 
@@ -103,11 +100,12 @@ jmp intel_430_out
 
 /* Default values for config registers */
 	
-#define SET_NBXCFG \
-	CS_WRITE_LONG(0x50, 0xff00a00c)
+/* #define SET_NBXCFG \
+	CS_WRITE_LONG(0x50, 0xff00a00c) */
 
 #define SET_DRAMC						\
-	CS_WRITE_BYTE(0x57, 0x8)				\
+	CS_WRITE_BYTE(0x67, 0xB0)				\
+	CS_WRITE_BYTE(0x68, 0xF0)				\
 
 	/* PAM - Programmable Attribute Map Registers */	
 	/* Ideally we want to enable all of these as DRAM and teach
@@ -130,36 +128,34 @@ jmp intel_430_out
 	CS_WRITE_BYTE(0x63,  DRB)				; \
 	CS_WRITE_BYTE(0x64,  DRB)				; \
 	CS_WRITE_BYTE(0x65,  DRB)				; \
-	CS_WRITE_BYTE(0x66,  DRB)				; \
-	CS_WRITE_BYTE(0x67,  DRB)
 
 #define SET_FDHC \
-	CS_WRITE_BYTE(0x68,  0x00)
+	CS_WRITE_BYTE(0x57,  0x01)
 
-#define SET_RPS \
-	CS_WRITE_WORD(0x74, 0x0000)
+/* #define SET_RPS \
+	CS_WRITE_WORD(0x74, 0x0000)*/
 
 #define SET_SDRAMC \
-	CS_WRITE_BYTE(0x76, 0x00) 
+	CS_WRITE_BYTE(0x54, 0x00) 
 
-#define SET_PGPOL \
-	CS_WRITE_WORD(0x78, 0xff00)
+/* #define SET_PGPOL \
+	CS_WRITE_WORD(0x78, 0xff00)*/
 
 	/* PMCR - Power Management Control Register
 	   Enable normal refresh operation and
 	   the gated clock	*/ 
 #define SET_PMCR \
-	CS_WRITE_BYTE(0x7a, 0x14)
+	CS_WRITE_BYTE(0x79, 0x10)
 
 ram_set_registers:	
-	SET_NBXCFG
+/*	SET_NBXCFG */
 	SET_DRAMC
 	SET_PAM
 	SET_DRB
-	SET_FDHC
-	SET_RPS
+	SET_FDHC   
+/*	SET_RPS    */
 	SET_SDRAMC
-	SET_PGPOL
+/*	SET_PGPOL  */
 	SET_PMCR
 	RET_LABEL(ram_set_registers)
 

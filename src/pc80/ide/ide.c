@@ -24,7 +24,7 @@
 #include <arch/io.h>
 #include <printk.h>
 #include <string.h>
-#include <timer.h>
+#include <delay.h>
 #include <pci.h>
 #include <pc80/ide.h>
 #include <arch/io.h>
@@ -41,7 +41,7 @@ static int await_ide(int (*done)(struct controller *ctrl),
 		if (result) {
 			return 0;
 		}
-		if ((timeout == 0) || (ticks_since_boot() > timeout)) {
+		if (timeout-- == 0) {
 			break;
 		}
 		udelay(1000); /* Added to avoid spinning GRW */
@@ -52,7 +52,7 @@ static int await_ide(int (*done)(struct controller *ctrl),
 /* The maximum time any IDE command can last 31 seconds,
  * So if any IDE commands takes this long we know we have problems.
  */
-#define IDE_TIMEOUT (32*get_hz())
+#define IDE_TIMEOUT (32*1000)
 
 static int not_bsy(struct controller *ctrl)
 {
@@ -75,7 +75,7 @@ static int ide_software_reset(struct controller *ctrl)
 	 * is set.  If the bsy bit does not clear in a reasonable
 	 * amount of time give up.
 	 */
-	if (await_ide(not_bsy, ctrl, ticks_since_boot() + IDE_TIMEOUT) < 0) {
+	if (await_ide(not_bsy, ctrl, IDE_TIMEOUT) < 0) {
 		return -1;
 	}
 
@@ -85,7 +85,7 @@ static int ide_software_reset(struct controller *ctrl)
 	udelay(5);
 	outb(IDE_CTRL_HD15 | IDE_CTRL_NIEN, IDE_REG_DEVICE_CONTROL(ctrl));
 	udelay(2000);
-	if (await_ide(not_bsy, ctrl, ticks_since_boot() + IDE_TIMEOUT) < 0) {
+	if (await_ide(not_bsy, ctrl, IDE_TIMEOUT) < 0) {
 		return -1;
 	}
 	return 0;
@@ -124,12 +124,12 @@ static void pio_set_registers(
 static int pio_non_data(struct controller *ctrl, const struct ide_pio_command *cmd)
 {
 	/* Wait until the busy bit is clear */
-	if (await_ide(not_bsy, ctrl, ticks_since_boot() + IDE_TIMEOUT) < 0) {
+	if (await_ide(not_bsy, ctrl, IDE_TIMEOUT) < 0) {
 		return -1;
 	}
 
 	pio_set_registers(ctrl, cmd);
-	if (await_ide(not_bsy, ctrl, ticks_since_boot() + IDE_TIMEOUT) < 0) {
+	if (await_ide(not_bsy, ctrl, IDE_TIMEOUT) < 0) {
 		return -1;
 	}
 	/* FIXME is there more error checking I could do here? */
@@ -143,13 +143,13 @@ static int pio_data_in(struct controller *ctrl, const struct ide_pio_command *cm
 
 	/* FIXME handle commands with multiple blocks */
 	/* Wait until the busy bit is clear */
-	if (await_ide(not_bsy, ctrl, ticks_since_boot() + IDE_TIMEOUT) < 0) {
+	if (await_ide(not_bsy, ctrl, IDE_TIMEOUT) < 0) {
 		return -1;
 	}
 
 	/* How do I tell if INTRQ is asserted? */
 	pio_set_registers(ctrl, cmd);
-	if (await_ide(not_bsy, ctrl, ticks_since_boot() + IDE_TIMEOUT) < 0) {
+	if (await_ide(not_bsy, ctrl, IDE_TIMEOUT) < 0) {
 		return -1;
 	}
 	status = inb(IDE_REG_STATUS(ctrl));
@@ -471,7 +471,6 @@ static int init_controller(struct controller *ctrl, int basedrive)
 
 int ide_init(void)
 {
-	struct harddisk_info *info;
 	int index;
 	int drives = 0;
 

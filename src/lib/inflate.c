@@ -999,7 +999,7 @@ STATIC int inflate()
 
 
   /* return success */
-  DBG("<%u> ", h);
+  printk_debug("<%u> ", h);
   return 0;
 }
 

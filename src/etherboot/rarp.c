@@ -101,7 +101,7 @@ void rfc951_sleep(int exp)
 	/* compute mask */
 	for (tmo = 63; tmo <= 60*TICKS_PER_SEC && --exp > 0; tmo = 2*tmo+1);
 	/* sleep */
-	printk("<sleep>\n");
+	printk_info("<sleep>\n");
 	for (tmo = (tmo&seed)+currticks(); currticks() < tmo; )
 	return;
 }
@@ -351,7 +351,7 @@ int udp_transmit(unsigned long destip, unsigned int srcsock,
 		for(arpentry = 0; arpentry<MAX_ARP; arpentry++)
 			if (arptable[arpentry].ipaddr.s_addr == destip) break;
 		if (arpentry == MAX_ARP) {
-			printk("%I is not in my arp table!\n", destip);
+			printk_info("%I is not in my arp table!\n", destip);
 			return(0);
 		}
 		for (i = 0; i < ETH_ALEN; i++)
@@ -440,7 +440,7 @@ int tftp(const char *name, int (*fnc)(unsigned char *, int, int, int))
 			if (block && ((retry += TFTP_REXMT) < TFTP_TIMEOUT))
 			{	/* we resend our last ack */
 #ifdef	MDEBUG
-				printk("<REXMT>\n");
+				printk_info("<REXMT>\n");
 #endif
 				udp_transmit(arptable[ARP_SERVER].ipaddr.s_addr,
 					iport, oport,
@@ -453,7 +453,7 @@ int tftp(const char *name, int (*fnc)(unsigned char *, int, int, int))
 		tr = (struct tftp_t *)&nic.packet[ETH_HLEN];
 		if (tr->opcode == ntohs(TFTP_ERROR))
 		{
-			printk("TFTP error %d (%s)\n",
+			printk_info("TFTP error %d (%s)\n",
 			       ntohs(tr->u.err.errcode),
 			       tr->u.err.errmsg);
 			break;
@@ -587,7 +587,7 @@ int tftp_init(const char *name)
 		if (block && ((retry += TFTP_REXMT) < TFTP_TIMEOUT))
 		{	/* we resend our last ack */
 #ifdef	MDEBUG
-			printk("<REXMT>\n");
+			printk_info("<REXMT>\n");
 #endif
 			udp_transmit(arptable[ARP_SERVER].ipaddr.s_addr,
 				iport, oport,
@@ -602,7 +602,7 @@ int tftp_init(const char *name)
 
 	tr = (struct tftp_t *)&nic.packet[ETH_HLEN];
 	if (tr->opcode == ntohs(TFTP_ERROR)) {
-		printk("TFTP error %d (%s)\n",
+		printk_info("TFTP error %d (%s)\n",
 		       ntohs(tr->u.err.errcode),
 		       tr->u.err.errmsg);
 
@@ -687,7 +687,7 @@ retry:
 		if (block && ((retry += TFTP_REXMT) < TFTP_TIMEOUT))
 		{	/* we resend our last ack */
 #ifdef	MDEBUG
-			printk("<REXMT>\n");
+			printk_info("<REXMT>\n");
 #endif
 			udp_transmit(arptable[ARP_SERVER].ipaddr.s_addr,
 				iport, oport,
@@ -701,7 +701,7 @@ retry:
 	tr = (struct tftp_t *)&nic.packet[ETH_HLEN];
 	if (tr->opcode == ntohs(TFTP_ERROR))
 	{
-		printk("TFTP error %d (%s)\n",
+		printk_info("TFTP error %d (%s)\n",
 		       ntohs(tr->u.err.errcode),
 		       tr->u.err.errmsg);
 		return(-tr->u.err.errcode);

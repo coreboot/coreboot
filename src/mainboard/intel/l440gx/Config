@@ -13,9 +13,12 @@ option NO_KEYBOARD
 option ZKERNEL_START=0xfff40000
 option ZKERNEL_MASK=0x3ed 
 option L440GX
-option SMP
+option IOAPIC=1
+option SMP=1
+option MAX_CPUS=2
 
 object mainboard.o
+object mptable.o
 
 cpu p6
 cpu p5

@@ -44,7 +44,7 @@ int fill_inbuf(void)
 	}
 
 	if (block_count > 31) {
-		printk(KERN_EMERG "%6d:%s() - overflowed source buffer\n",
+		printk_emerg( "%6d:%s() - overflowed source buffer\n",
 		       __LINE__, __FUNCTION__);
 		inbuf = zkernel_start;
 		inptr = 0;
@@ -57,7 +57,7 @@ int fill_inbuf(void)
 
 #ifdef INBUF_COPY
 		if (!ram) {
-			printk(KERN_EMERG "%6d:%s() - "
+			printk_emerg("%6d:%s() - "
 			       "ram malloc failed\n",
 			       __LINE__, __FUNCTION__);
 			inbuf = zkernel_start;
@@ -66,10 +66,10 @@ int fill_inbuf(void)
 			return (0);
 		}
 
-		DBG("%6d:%s() - ram buffer:0x%08x\n",
+		printk_debug("%6d:%s() - ram buffer:0x%08x\n",
 		       __LINE__, __FUNCTION__, ram);
 #endif
-		DBG("%6d:%s() - zkernel_start:0x%08x  "
+		printk_debug("%6d:%s() - zkernel_start:0x%08x  "
 		       "zkernel_mask:0x%08x\n",
 		       __LINE__, __FUNCTION__,
 		       zkernel_start, zkernel_mask);
@@ -77,14 +77,14 @@ int fill_inbuf(void)
 		nvram += K64;
 
 		while (!(zkernel_mask & (1 << block_count))) {
-			DBG("%6d:%s() - skipping block %d\n",
+			printk_debug("%6d:%s() - skipping block %d\n",
 			       __LINE__, __FUNCTION__, block_count);
 
 			block_count++;
 			nvram += K64;
 
 			if (block_count > 31) {
-				printk(KERN_EMERG "%6d:%s() - "
+				printk_emerg("%6d:%s() - "
 				       "overflowed source buffer\n",
 				       __LINE__, __FUNCTION__);
 				inbuf = zkernel_start;
@@ -98,7 +98,7 @@ int fill_inbuf(void)
 #ifdef INBUF_COPY
 	memcpy(ram, nvram, K64);
 #endif
-	DBG("%6d:%s() - nvram:0x%p  block_count:%d\n",
+	printk_debug("%6d:%s() - nvram:0x%p  block_count:%d\n",
 	       __LINE__, __FUNCTION__, nvram, block_count);
 
 #ifdef INBUF_COPY

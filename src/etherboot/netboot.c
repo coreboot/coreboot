@@ -26,7 +26,7 @@ void init_HR_TIMER(void)
 	outl(0x80000874, 0x0cf8);
 	acpi_base = inw(0x0cfc);
 
-	printk("init_HR_TIMER: acpi_base = %04x\n", acpi_base);
+	printk_info("init_HR_TIMER: acpi_base = %04x\n", acpi_base);
 
 	j = inw(acpi_base + 0x56) | 0x02;	// HR_TMR control
 	outw(j, acpi_base + 0x56);		// activate HR_TMR
@@ -47,18 +47,18 @@ int test_display_tftp_callback(char *data, int block, int length, int eof)
 	int i;
 
 #ifdef DEBUG	
-	printk("RECD block %u, length = %u:\n",block, length);
+	printk_info("RECD block %u, length = %u:\n",block, length);
 #endif
 	for(i=0; i<length; i++) 
 		if(!data[i])
-			printk("|");
+			printk_info("|");
 		else
-			printk("%c",data[i]);
+			printk_info("%c",data[i]);
 #ifdef DEBUG
 	if(eof) 
-		printk("\nEND OF FILE\n");
+		printk_info("\nEND OF FILE\n");
 	
-	printk("====================\n");
+	printk_info("====================\n");
 #endif
 	return(-1);
 }
@@ -79,23 +79,23 @@ void netboot_init()
 	pcidev = pci_find_device(PCI_VENDOR_ID_SI, 0x0900, (void *)NULL);
 	pci_write_config_byte(pcidev, PCI_BASE_ADDRESS_0, iobase);
 
-	printk("\ncalling init_HR_TIMER\n");
+	printk_info("\ncalling init_HR_TIMER\n");
 	init_HR_TIMER();
 
 	result = sis900_probe(&nic, &iobase, pcidev);
 
-	printk("netboot_init : sis900_probe = %04x\n", (unsigned int) result);
+	printk_info("netboot_init : sis900_probe = %04x\n", (unsigned int) result);
 
 	memcpy(arptable[ARP_CLIENT].node, eth_addr, ETH_ALEN);
 	
-	printk("doing rarp:\n");
+	printk_info("doing rarp:\n");
 	rarp();
 
-	printk("My IP address is: %04x\n",arptable[ARP_CLIENT].ipaddr.s_addr);
-	printk("My server's IP address is: %04x\n",arptable[ARP_SERVER].ipaddr.s_addr);
+	printk_info("My IP address is: %04x\n",arptable[ARP_CLIENT].ipaddr.s_addr);
+	printk_info("My server's IP address is: %04x\n",arptable[ARP_SERVER].ipaddr.s_addr);
 
 #ifdef DEBUG
-	printk("Now testing tftp, transferring cmdline\n");
+	printk_info("Now testing tftp, transferring cmdline\n");
 	
 //	tftp("cmdline", test_display_tftp_callback);
 	tftp_init("cmdline");
@@ -103,9 +103,9 @@ void netboot_init()
 		rc = tftp_fetchone(buffer);
 		for(i=0; i<rc; i++) 
 			if(!buffer[i])
-				printk("|");
+				printk_info("|");
 			else
-				printk("%c",buffer[i]);
+				printk_info("%c",buffer[i]);
 	}
 #endif
 	

@@ -6,7 +6,7 @@
 void mainboard_fixup()
 {
 
-	printk("mainboard_fixup()\n");
+	printk_info("mainboard_fixup()\n");
 }
 
 void final_mainboard_fixup()

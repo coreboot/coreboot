@@ -6,7 +6,7 @@
 void mainboard_fixup()
 {
 
-	printk("intel_mainboard_fixup()\n");
+	printk_debug("intel_mainboard_fixup()\n");
 #if 0
 	struct pci_dev *pm_pcidev, *host_bridge_pcidev, *nic_pcidev;
 	// put in the right values for acer stuff

@@ -11,7 +11,7 @@ southbridge_fixup()
     pcidev = pci_find_device(PCI_VENDOR_ID_ACER, 
 	PCI_DEVICE_ID_ACER_M1535D, (void *)NULL);
     if (!pcidev) {
-	printk(KERN_ERR __FUNCTION__ "no southbridge for 0x%x:0x%x\n",
+	printk_err(__FUNCTION__ "no southbridge for 0x%x:0x%x\n",
 	    PCI_VENDOR_ID_ACER, PCI_DEVICE_ID_ACER_M1535D);
 	return;
     }
@@ -33,7 +33,7 @@ void nvram_on()
         pcidev = pci_find_device(PCI_VENDOR_ID_ACER, 
 	    PCI_DEVICE_ID_ACER_M1535D, (void *)NULL);
 	if (!pcidev) {
-	    printk(KERN_ERR __FUNCTION__ "no southbridge for 0x%x:0x%x\n",
+	    printk_err( __FUNCTION__ "no southbridge for 0x%x:0x%x\n",
 		    PCI_VENDOR_ID_ACER, PCI_DEVICE_ID_ACER_M1535D);
 		    return;
 	}

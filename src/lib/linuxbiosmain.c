@@ -52,13 +52,13 @@ int linuxbiosmain(unsigned long base, unsigned long totalram)
 #if USE_ELF_BOOT
 	return elfboot(totalram);
 #else /* !ELF_BOOT */
-	printk("\n");
-	printk("Welcome to start32, the open sourced starter.\n");
-	printk("This space will eventually hold more diagnostic information.\n");
-	printk("\n");
-	printk("January 2000, James Hendricks, Dale Webster, and Ron Minnich.\n");
-	printk("Version 0.1\n");
-	printk("\n");
+	printk_info("\n");
+	printk_info("Welcome to start32, the open sourced starter.\n");
+	printk_info("This space will eventually hold more diagnostic information.\n");
+	printk_info("\n");
+	printk_info("January 2000, James Hendricks, Dale Webster, and Ron Minnich.\n");
+	printk_info("Version 0.1\n");
+	printk_info("\n");
 
 	initrd_start = 0;
 	initrd_size  = 0;
@@ -82,44 +82,44 @@ int linuxbiosmain(unsigned long base, unsigned long totalram)
 	post_code(0xf1);
 
 #ifdef PYRO_TEST1
-	printk(KERN_NOTICE "LiLa loader, press a key to test netboot_init:");
+	printk_notice( "LiLa loader, press a key to test netboot_init:");
 	buflen = sizeof(buffer);
 	ttys0_rx_line(buffer, &buflen);
 #endif
 
 #ifdef USE_TFTP
 	netboot_init();
-	printk(KERN_NOTICE "\nnetboot_init test complete, all is well (I hope!)\n");
+	printk_notice("\nnetboot_init test complete, all is well (I hope!)\n");
 #endif /* USE_TFTP */
 		
-	DBG("Gunzip setup\n");
+	printk_debug("Gunzip setup\n");
 	gunzip_setup();
-	DBG("Gunzipping boot code\n");
+	printk_debug("Gunzipping boot code\n");
 	if (gunzip() != 0) {
-		printk("gunzip failed\n");
+		printk_notice("gunzip failed\n");
 		post_code(0xff);
 		return 0;
 	}
 	post_code(0xf8);
 
 #ifdef TFTP_INITRD
-	printk("Loading initrd now\n");
+	printk_notice("Loading initrd now\n");
 
 	buflen = tftp_init("initrd");
-	printk("TFTP init complete (%d)\n",buflen);
+	printk_notice("TFTP init complete (%d)\n",buflen);
 	buflen = 512;	// I know, not it's purpose, 
 				// but it isn't being used at this point.
 	bufptr = (char *) initrd_start = 0x0400000;
 	while (buflen == 512) {
 		buflen = tftp_fetchone(bufptr);
 #ifdef DEBUG_TFTP
-		printk("Got block, bufptr = %lu, size= %u\n",bufptr, buflen);
+		printk_spew("Got block, bufptr = %lu, size= %u\n",bufptr, buflen);
 #endif
 		bufptr += buflen;
 	}
  	initrd_size = (unsigned long) bufptr - initrd_start;
 
-	printk("Initrd loaded\n");
+	printk_notice("Initrd loaded\n");
 
 	if(tftp_init("cmdline") >=0) {
                 buflen = tftp_fetchone(buffer);
@@ -127,7 +127,7 @@ int linuxbiosmain(unsigned long base, unsigned long totalram)
 		cmd_line=buffer;
 	}
 
-	printk("Booting with command line: %s\n",cmd_line);
+	printk_notice("Booting with command line: %s\n",cmd_line);
 
 
 #endif /* TFTP_INITRD */
@@ -149,7 +149,7 @@ int linuxbiosmain(unsigned long base, unsigned long totalram)
 	set_memory_size(empty_zero_page, 0x3c00, totalram - 2048);
 	post_code(0xfa);
 
-	PRINTK(KERN_NOTICE "command line - [%s]\n", cmd_line);
+	printk_notice("command line - [%s]\n", cmd_line);
 
 	set_command_line(empty_zero_page, cmd_line);
 	set_root_rdonly(empty_zero_page);
@@ -157,7 +157,7 @@ int linuxbiosmain(unsigned long base, unsigned long totalram)
 	set_initrd(empty_zero_page, initrd_start, initrd_size);
 
 
-	DBG("Jumping to boot code\n");
+	printk_debug("Jumping to boot code\n");
 	post_code(0xfe);
 
 	/* there seems to be a bug in gas? it's generating wrong bit-patterns ...

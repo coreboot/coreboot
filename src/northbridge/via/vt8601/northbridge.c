@@ -31,9 +31,9 @@ unsigned long sizeram()
 		// sanity check. If the mem value is < prevmem, 
 		// that is an error, so skip this step. 
 		if (mem < prevmem) {
-			printk("ERROR: bank 0x%x, mem 0x%x TOO SMALL\n",
+			printk_err("ERROR: bank 0x%x, mem 0x%x TOO SMALL\n",
 				bank, prevmem);
-			printk("Should be >= 0x%x\n", prevmem);
+			printk_err("Should be >= 0x%x\n", prevmem);
 		} else 
 			totalmem += (mem - prevmem) * 8;
 		prevmem = mem;
@@ -42,11 +42,11 @@ unsigned long sizeram()
 	totalmem -= sma_size;
 	totalmem *= 1024;
 
-	printk("sizeram: returning 0x%x KB\n", totalmem);
-	printk("sizeram: NOT returning 0x%x KB\n", totalmem);
-	printk("sizeram: there are still some SPD problems ... \n");
+	printk_info("sizeram: returning 0x%x KB\n", totalmem);
+	printk_info("sizeram: NOT returning 0x%x KB\n", totalmem);
+	printk_info("sizeram: there are still some SPD problems ... \n");
 	totalmem = 64 * 1024;
-	printk("sizeram: SO we return only 0x%x KB\n", totalmem);
+	printk_info("sizeram: SO we return only 0x%x KB\n", totalmem);
 #if 0
 #endif
 	return totalmem;

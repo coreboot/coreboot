@@ -1,5 +1,5 @@
-#ifndef __LINUXBIOS_MTRR_H
-#define __LINUXBIOS_MTRR_H
+#ifndef __LINUXBIOS_CPU_P6_MTRR_H
+#define __LINUXBIOS_CPU_P6_MTRR_H
 
 /*  These are the region types  */
 #define MTRR_TYPE_UNCACHABLE 0
@@ -30,4 +30,13 @@
 #define MTRRfix4K_F0000_MSR 0x26e
 #define MTRRfix4K_F8000_MSR 0x26f
 
-#endif /* __LINUXBIOS_MTRR_H */
+
+#if !defined(ASSEMBLY)
+
+#if defined(INTEL_PPRO_MTRR) 
+void setup_mtrrs(unsigned long ramsizeK);
+#endif
+
+#endif /* ASSEMBLY */
+
+#endif /* __LINUXBIOS_CPU_P6_MTRR_H */

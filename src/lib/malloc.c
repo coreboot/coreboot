@@ -5,7 +5,7 @@
 #if 1
 #define MALLOCDBG(x)
 #else
-#define MALLOCDBG(x) printk x
+#define MALLOCDBG(x) printk_spew x
 #endif
 extern unsigned char _heap, _eheap;
 static size_t free_mem_ptr = (size_t)&_heap;		/* Start of heap */
@@ -15,13 +15,13 @@ static size_t free_mem_end_ptr = (size_t)&_eheap;	/* End of heap */
 void malloc_mark(malloc_mark_t *place)
 {
 	*place = free_mem_ptr;
-	DBG("malloc_mark 0x%08lx\n", (unsigned long)free_mem_ptr);
+	printk_spew("malloc_mark 0x%08lx\n", (unsigned long)free_mem_ptr);
 }
 
 void malloc_release(malloc_mark_t *ptr)
 {
 	free_mem_ptr = *ptr;
-	DBG("malloc_release 0x%08lx\n", (unsigned long)free_mem_ptr);
+	printk_spew("malloc_release 0x%08lx\n", (unsigned long)free_mem_ptr);
 }
 
 void *malloc(size_t size)

@@ -65,18 +65,18 @@ void southbridge_fixup()
 	// First do some more things to devfn (7,0)
 	// note: this should already be cleared, according to the book. 
 	pcibios_read_config_byte(0, devfn, 0x48, &enables);
-	printk("IDE enable in reg. 48 is 0x%x\n", enables);
+	printk_debug("IDE enable in reg. 48 is 0x%x\n", enables);
 	enables &= ~2; // need manifest constant here!
-	printk("set IDE reg. 48 to 0x%x\n", enables);
+	printk_debug("set IDE reg. 48 to 0x%x\n", enables);
 	pcibios_write_config_byte(0, devfn, 0x48, enables);
 
 	// set default interrupt values (IDE)
 	pcibios_read_config_byte(0, devfn, 0x4a, &enables);
-	printk("IRQs in reg. 4a are 0x%x\n", enables & 0xf);
+	printk_debug("IRQs in reg. 4a are 0x%x\n", enables & 0xf);
 	// clear out whatever was there. 
 	enables &= ~0xf;
 	enables |= 4;
-	printk("setting reg. 4a to 0x%x\n", enables);
+	printk_debug("setting reg. 4a to 0x%x\n", enables);
 	pcibios_write_config_byte(0, devfn, 0x4a, enables);
 	
 	// set up the serial port interrupts. 
@@ -85,30 +85,30 @@ void southbridge_fixup()
 
 	devfn = PCI_DEVFN(7, 1);
 	pcibios_read_config_byte(0, devfn, 0x40, &enables);
-	printk("enables in reg 0x40 0x%x\n", enables);
+	printk_debug("enables in reg 0x40 0x%x\n", enables);
 	enables |= 3;
 	pcibios_write_config_byte(0, devfn, 0x40, enables);
 	pcibios_read_config_byte(0, devfn, 0x40, &enables);
-	printk("enables in reg 0x40 read back as 0x%x\n", enables);
+	printk_debug("enables in reg 0x40 read back as 0x%x\n", enables);
 	// address decoding. 
 	// we want "flexible", i.e. 1f0-1f7 etc. or native PCI
         pcibios_read_config_byte(0, devfn, 0x9, &enables);
-        printk("enables in reg 0x9 0x%x\n", enables);
+        printk_debug("enables in reg 0x9 0x%x\n", enables);
 	// by the book, set the low-order nibble to 0xa. 
 	enables &= ~0xf;
 	// cf/cg silicon needs an 'f' here. 
         enables |= 0xf;
         pcibios_write_config_byte(0, devfn, 0x9, enables);
         pcibios_read_config_byte(0, devfn, 0x9, &enables);
-        printk("enables in reg 0x9 read back as 0x%x\n", enables);
+        printk_debug("enables in reg 0x9 read back as 0x%x\n", enables);
 
 	// standard bios sets master bit. 
 	pcibios_read_config_byte(0, devfn, 0x4, &enables);
-	printk("command in reg 0x4 0x%x\n", enables);
+	printk_debug("command in reg 0x4 0x%x\n", enables);
 	enables |= 5;
 	pcibios_write_config_byte(0, devfn, 0x4, enables);
 	pcibios_read_config_byte(0, devfn, 0x4, &enables);
-	printk("command in reg 0x4 reads back as 0x%x\n", enables);
+	printk_debug("command in reg 0x4 reads back as 0x%x\n", enables);
 
 	// oh well, the PCI BARs don't work right. 
 	// This chip will not work unless IDE runs at standard legacy

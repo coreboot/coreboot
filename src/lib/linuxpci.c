@@ -22,12 +22,6 @@ static char rcsid[] = "$Id$";
 #include <subr.h>
 
 
-#undef DEBUGSCAN
-#ifdef DEBUGSCAN
-#define DBGSCAN(x...) printk(KERN_DEBUG x)
-#else
-#define DBGSCAN(x...)
-#endif
 
 /**
  * This is the root of the PCI tree. A PCI tree always has 
@@ -104,14 +98,14 @@ void pci_set_master(struct pci_dev *dev)
 
 	pci_read_config_word(dev, PCI_COMMAND, &cmd);
 	if (!(cmd & PCI_COMMAND_MASTER)) {
-		DBG("PCI: Enabling bus mastering for device %02x:%02x\n",
+		printk_debug("PCI: Enabling bus mastering for device %02x:%02x\n",
 		       dev->bus->number, dev->devfn);
 		cmd |= PCI_COMMAND_MASTER;
 		pci_write_config_word(dev, PCI_COMMAND, cmd);
 	}
 	pci_read_config_byte(dev, PCI_LATENCY_TIMER, &lat);
 	if (lat < 16) {
-		DBG("PCI: Increasing latency timer of device %02x:%02x to 64\n",
+		printk_debug("PCI: Increasing latency timer of device %02x:%02x to 64\n",
 		       dev->bus->number, dev->devfn);
 		pci_write_config_byte(dev, PCI_LATENCY_TIMER, 64);
 	}
@@ -173,7 +167,7 @@ void pci_read_bases(struct pci_dev *dev, unsigned int howmany)
 
 		addr &= (PCI_BASE_ADDRESS_SPACE | PCI_BASE_ADDRESS_MEM_TYPE_MASK);
 		if (addr == (PCI_BASE_ADDRESS_SPACE_MEMORY | PCI_BASE_ADDRESS_MEM_TYPE_64)) {
-			DBG("reg %d is 64-bit\n", reg);
+			printk_debug("reg %d is 64-bit\n", reg);
 			/* this is a 64-bit memory base address */
 			reg++;
 			pci_read_config_dword(dev, PCI_BASE_ADDRESS_0 + (reg << 2), &addr);
@@ -181,7 +175,7 @@ void pci_read_bases(struct pci_dev *dev, unsigned int howmany)
 #if BITS_PER_LONG == 64
 				dev->base_address[reg - 1] |= ((unsigned long) addr) << 32;
 #else
-				printk(KERN_ERR "PCI: Unable to handle 64-bit address for device "
+				printk_err("PCI: Unable to handle 64-bit address for device "
 				       "%02x:%02x\n", dev->bus->number, dev->devfn);
 				dev->base_address[reg - 1] = 0;
 #endif
@@ -200,7 +194,7 @@ unsigned int pci_scan_bus(struct pci_bus *bus)
 	struct pci_dev *dev, **bus_last;
 	struct pci_bus *child;
 
-	DBG("PCI: pci_scan_bus for bus %d\n", bus->number);
+	printk_debug("PCI: pci_scan_bus for bus %d\n", bus->number);
 
 	bus_last = &bus->devices;
 	max = bus->secondary;
@@ -210,14 +204,14 @@ unsigned int pci_scan_bus(struct pci_bus *bus)
 	/* probe all devices on this bus with some optimization for non-existance and 
 	   single funcion devices */
 	for (devfn = 0; devfn < 0xff; devfn++) {
-	    u32 id, class, addr;
+		u32 id, class, addr;
 		u8 cmd, tmp, hdr_type;
 
 		// gcc just went to hell. Don't test -- this always
 		// returns 0 anyway. 
 #if GCC_WORKS_ON_O2
                 if (pcibios_read_config_dword(bus->number, devfn, PCI_VENDOR_ID, &id))	{
-		    DBGSCAN("PCI: devfn 0x%x, read_config_dword fails\n", 
+		    printk_spew("PCI: devfn 0x%x, read_config_dword fails\n", 
 				devfn);
 		    continue;
 		}
@@ -226,7 +220,7 @@ unsigned int pci_scan_bus(struct pci_bus *bus)
 
 		/* some broken boards return 0 if a slot is empty: */
 		if (id == 0xffffffff || id == 0x00000000 || id == 0x0000ffff || id == 0xffff0000) {
-		    DBGSCAN("PCI: devfn 0x%x, bad id 0x%x\n", devfn, id);
+		    printk_spew("PCI: devfn 0x%x, bad id 0x%x\n", devfn, id);
 			if (PCI_FUNC(devfn) == 0x00) {
 				/* if this is a function 0 device and it is not present,
 				   skip to next device */
@@ -237,17 +231,17 @@ unsigned int pci_scan_bus(struct pci_bus *bus)
 		}
 
                 if (pcibios_read_config_byte(bus->number, devfn, PCI_HEADER_TYPE, &hdr_type)){
-		    DBGSCAN("PCI: devfn 0x%x, header type read fails\n", devfn);
+		    printk_spew("PCI: devfn 0x%x, header type read fails\n", devfn);
 		    continue;
 		}
 
 		if (pcibios_read_config_dword(bus->number, devfn, PCI_CLASS_REVISION, &class)) {
-		    DBGSCAN("PCI: devfn 0x%x, class read fails\n", devfn);
+		    printk_spew("PCI: devfn 0x%x, class read fails\n", devfn);
 			continue;
 		}
 
 		if ((dev = kmalloc(sizeof(*dev), GFP_ATOMIC)) == 0) {
-			printk(KERN_ERR "PCI: out of memory.\n");
+			printk_err("PCI: out of memory.\n");
 			continue;
 		}
 
@@ -292,14 +286,14 @@ unsigned int pci_scan_bus(struct pci_bus *bus)
 			break;
 		default:	/* unknown header */
 		bad:
-			printk(KERN_ERR "PCI: %02x:%02x [%04x/%04x/%06x] has unknown header "
+			printk_err("PCI: %02x:%02x [%04x/%04x/%06x] has unknown header "
 			       "type %02x, ignoring.\n",
 			       bus->number, dev->devfn, dev->vendor, dev->device, class,
 			       hdr_type);
 			continue;
 		}
 
-		DBG("PCI: %02x:%02x [%04x/%04x]\n", bus->number, dev->devfn,
+		printk_debug("PCI: %02x:%02x [%04x/%04x]\n", bus->number, dev->devfn,
 		    dev->vendor, dev->device);
 
 		/* Put it into the global PCI device chain. It's used to find devices once
@@ -374,7 +368,7 @@ unsigned int pci_scan_bus(struct pci_bus *bus)
 #endif
 			/* Insert it into the tree of buses. */
 			if ((child = kmalloc(sizeof(*child), GFP_ATOMIC)) == 0) {
-				printk(KERN_ERR "PCI: out of memory for bridge.\n");
+				printk_err("PCI: out of memory for bridge.\n");
 				continue;
 			}
 			memset(child, 0, sizeof(*child));
@@ -454,7 +448,7 @@ unsigned int pci_scan_bus(struct pci_bus *bus)
 	 *
 	 * Return how far we've got finding sub-buses.
 	 */
-	DBG("PCI: pci_scan_bus returning with max=%02x\n", max);
+	printk_debug("PCI: pci_scan_bus returning with max=%02x\n", max);
 	post_code(0x55);
 	return max;
 }

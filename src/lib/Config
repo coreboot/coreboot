@@ -11,4 +11,5 @@ object memcmp.o
 object malloc.o
 object elfboot.o
 object do_inflate.o
+object delay.o
 

@@ -3,7 +3,7 @@
 
 void smp_write_config_table(void *v)
 {
-	int ioapicid = 0;    // JAMES_HACK
+	int ioapicid = 0;
 	static const char sig[4] = "PCMP";
 	static const char oem[8] = "LNXI    ";
 	static const char productid[12] = "L440GX      ";
@@ -26,18 +26,9 @@ void smp_write_config_table(void *v)
 	mc->mpe_checksum = 0;
 	mc->reserved = 0;
 
-#ifndef JAMES_HACK
-	smp_write_processor(mc, 0x01, 0x11, 
-		CPU_ENABLED | CPU_BOOTPROCESSOR, 0x00000683, 0x0387fbff);
-#else
-	printk("James: Setting up 2 proc. SMP table");
 
-	smp_write_processor(mc, 0x1, 0x11, 
-		CPU_ENABLED | CPU_BOOTPROCESSOR, 0x00000683, 0x0387fbff);
-	smp_write_processor(mc, 0x0, 0x11, 
-		CPU_ENABLED, 0x00000683, 0x0387fbff);
+	smp_write_processors(mc);
 	ioapicid = 2;
-#endif
 
 	smp_write_bus(mc, 0, "PCI   ");
 	smp_write_bus(mc, 1, "PCI   ");
@@ -126,6 +117,8 @@ void smp_write_config_table(void *v)
 
 	mc->mpe_checksum = smp_compute_checksum(smp_next_mpc_entry(mc), mc->mpe_length);
 	mc->mpc_checksum = smp_compute_checksum(mc, mc->mpc_length);
+	printk_debug("Wrote the mp table end at: %p - %p\n",
+		mc, smp_next_mpe_entry(mc));
 }
 
 void write_smp_table(void *v)

@@ -57,11 +57,11 @@ int elfboot(size_t totalram)
 	void *ptr, *entry;
 	int i;
 
-	printk("\n");
-	printk("Welcome to elfboot, the open sourced starter.\n");
-	printk("Febuary 2001, Eric Biederman.\n");
-	printk("Version 0.99\n");
-	printk("\n");
+	printk_info("\n");
+	printk_info("Welcome to elfboot, the open sourced starter.\n");
+	printk_info("Febuary 2001, Eric Biederman.\n");
+	printk_info("Version 0.99\n");
+	printk_info("\n");
 	ptr = get_ube_pointer(totalram);
 
 	post_code(0xf8);
@@ -88,11 +88,10 @@ int elfboot(size_t totalram)
 
 	/* Sanity check the segments and zero the extra bytes */
 	for(i = 0; i < ehdr->e_phnum; i++) {
-		unsigned long start;
 		unsigned char *dest, *end;
 
 		if (!safe_range(phdr[i].p_paddr, phdr[i].p_memsz)) {
-			printk("Bad memory range: [0x%016lx, 0x%016lx)\n",
+			printk_err("Bad memory range: [0x%016lx, 0x%016lx)\n",
 				phdr[i].p_paddr, phdr[i].p_memsz);
 			goto out;
 		}
@@ -100,9 +99,14 @@ int elfboot(size_t totalram)
 		end = dest + phdr[i].p_memsz;
 		dest += phdr[i].p_filesz;
 
-		/* Zero the extra bytes */
-		while(dest < end) {
-			*(dest++) = 0;
+		if (dest < end) {
+			printk_debug("Clearing Section: addr: 0x%016lx memsz: 0x%016lx\n",
+				(unsigned long)dest, end - dest);
+
+			/* Zero the extra bytes */
+			while(dest < end) {
+				*(dest++) = 0;
+			}
 		}
 	}
 
@@ -137,7 +141,7 @@ int elfboot(size_t totalram)
 		if (!cur_phdr) {
 			break;
 		}
-		printk("Loading Section: addr: 0x%016lx memsz: 0x%016lx filesz: 0x%016lx\n",
+		printk_debug("Loading Section: addr: 0x%016lx memsz: 0x%016lx filesz: 0x%016lx\n",
 			cur_phdr->p_paddr, cur_phdr->p_memsz, cur_phdr->p_filesz);
 
 		/* Compute the boundaries of the section */
@@ -186,21 +190,21 @@ int elfboot(size_t totalram)
 		/* The extra bytes between dest & end have been zeroed */
 	}
 
-	DBG("Jumping to boot code\n");
+	printk_debug("Jumping to boot code\n");
 	post_code(0xfe);
 
 	/* Jump to kernel */
 	jmp_to_elf_entry(entry, ptr);
 
  out:
-	printk("Bad ELF Image\n");
+	printk_err("Bad ELF Image\n");
 	for(i = 0; i < sizeof(*ehdr); i++) {
 		if ((i & 0xf) == 0) {
-			printk("\n");
+			printk_err("\n");
 		}
-		printk("%02x ", header[i]);
+		printk_err("%02x ", header[i]);
 	}
-	printk("\n");
+	printk_err("\n");
 
 	return 0;
 }

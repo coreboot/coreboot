@@ -33,13 +33,25 @@
 	mov	%ah, %al	; \
 	outb	%al, %dx
 
+
+	/* uses:	esp, ax, dx */
+#define TTYS0_TX_CHAR(byte)	\
+	mov	byte, %al	; \
+	CALLSP(ttys0_tx_al)
+
 	/* uses:	 ax, dx */
-#define TTYS0_TX_BYTE(byte)	\
+#define TTYS0_INLINE_TX_CHAR(byte)	\
 	mov	byte, %al	; \
 	TTYS0_TX_AL
 
+	/* uses:	esp, ax, dx */
+#define TTYS0_TX_HEX8(byte)	\
+	mov	byte, %al	; \
+	CALLSP(ttys0_tx_hex8)
+
 	/* uses:	 ax, dx */
-#define TTYS0_TX_AL_HEX8	\
+#define TTYS0_INLINE_TX_HEX8(byte)	\
+	mov	byte, %al	; \
 	mov	$TTYS0_SCR, %dx	; \
 	outb	%al, %dx	; \
 	shr	$4, %al		; \
@@ -61,26 +73,108 @@
 	mov	$TTYS0_SCR, %dx	; \
 	inb	%dx, %al
 
-
-	/* uses:	esp, ax, dx */
-#define TTYS0_TX_CHAR(byte)	\
-	mov	byte, %al	; \
-	CALLSP(ttys0_tx_al)
-
-	/* uses:	esp, ax, dx */
-#define TTYS0_TX_HEX8(byte)	\
-	mov	byte, %al	; \
-	CALLSP(ttys0_tx_hex8)
-
 	/* uses:	esp, eax, ebx, dx */
 #define TTYS0_TX_HEX32(lword)	\
 	mov	lword, %eax	; \
 	CALLSP(ttys0_tx_hex32)
 
+	/* uses:	eax, lword, dx */
+#define TTYS0_INLINE_TX_HEX32(lword)	\
+	mov	lword, %eax	; \
+	shr	$28, %eax	; \
+	add	$'0', %al	; \
+	cmp	$'9', %al	; \
+	jle	9f		; \
+	add	$39, %al	; \
+9:				; \
+	TTYS0_TX_AL		; \
+				; \
+	mov	lword, %eax	; \
+	shr	$24, %eax	; \
+	and	$0x0f, %al	; \
+	add	$'0', %al	; \
+	cmp	$'9', %al	; \
+	jle	9f		; \
+	add	$39, %al	; \
+9:				; \
+	TTYS0_TX_AL		; \
+				; \
+	mov	lword, %eax	; \
+	shr	$20, %eax	; \
+	and	$0x0f, %al	; \
+	add	$'0', %al	; \
+	cmp	$'9', %al	; \
+	jle	9f		; \
+	add	$39, %al	; \
+9:				; \
+	TTYS0_TX_AL		; \
+				; \
+	mov	lword, %eax	; \
+	shr	$16, %eax	; \
+	and	$0x0f, %al	; \
+	add	$'0', %al	; \
+	cmp	$'9', %al	; \
+	jle	9f		; \
+	add	$39, %al	; \
+9:				; \
+	TTYS0_TX_AL		; \
+				; \
+	mov	lword, %eax	; \
+	shr	$12, %eax	; \
+	and	$0x0f, %al	; \
+	add	$'0', %al	; \
+	cmp	$'9', %al	; \
+	jle	9f		; \
+	add	$39, %al	; \
+9:				; \
+	TTYS0_TX_AL		; \
+				; \
+	mov	lword, %eax	; \
+	shr	$8, %eax	; \
+	and	$0x0f, %al	; \
+	add	$'0', %al	; \
+	cmp	$'9', %al	; \
+	jle	9f		; \
+	add	$39, %al	; \
+9:				; \
+	TTYS0_TX_AL		; \
+				; \
+	mov	lword, %eax	; \
+	shr	$4, %eax	; \
+	and	$0x0f, %al	; \
+	add	$'0', %al	; \
+	cmp	$'9', %al	; \
+	jle	9f		; \
+	add	$39, %al	; \
+9:				; \
+	TTYS0_TX_AL		; \
+				; \
+	mov	lword, %eax	; \
+	and	$0x0f, %al	; \
+	add	$'0', %al	; \
+	cmp	$'9', %al	; \
+	jle	9f		; \
+	add	$39, %al	; \
+9:				; \
+	TTYS0_TX_AL
+
+
 	/* uses:	 esp, ebx, ax, dx */
 #define TTYS0_TX_STRING(string)	\
 	mov	string, %ebx	; \
 	CALLSP(ttys0_tx_string)
+
+	/* uses:	 ebx, ax, dx */
+#define TTYS0_INLINE_TX_STRING(string)	\
+	movl	string, %ebx	; \
+10:	movb	(%ebx), %al	; \
+	incl	%ebx		; \
+	testb	%al, %al	; \
+	jz	11f		; \
+	TTYS0_TX_AL		; \
+	jmp	10b		; \
+11:	
+
 
 	/* uses:	 esp, ax, dx */
 ttys0_tx_al:

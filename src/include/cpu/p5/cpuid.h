@@ -1,25 +1,25 @@
-#ifndef _INTEL_CPUID_H_
-#define _INTEL_CPUID_H_
+#ifndef CPU_P5_CPUID_H
+#define CPU_P5_CPUID_H
 
-#ifdef i586
-int intel_mtrr_check(void);
-#endif
-void intel_display_cpuid(void);
+int mtrr_check(void);
+void display_cpuid(void);
 
 /*
  *      Generic CPUID function. copied from Linux kernel headers
  */
 
-extern inline void intel_cpuid(int op, int *eax, int *ebx, int *ecx, int *edx)
+static inline void cpuid(int op, int *eax, int *ebx, int *ecx, int *edx)
 {
-        __asm__("cpuid"
+        __asm__("pushl %%ebx\n\t"
+		"cpuid\n\t"
+		"movl	%%ebx, %%esi\n\t"
+		"popl	%%ebx\n\t"
                 : "=a" (*eax),
-                  "=b" (*ebx),
+                  "=S" (*ebx),
                   "=c" (*ecx),
                   "=d" (*edx)
                 : "a" (op)
                 : "cc");
 }
 
-
-#endif /* _INTEL_CPUID_H_ */
+#endif /* CPU_P5_CPUID_H */

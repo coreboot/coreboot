@@ -31,6 +31,7 @@ static char rcsid[] = "$Id$";
 
 #include <cpu/p6/msr.h>
 #include <cpu/p6/mtrr.h>
+#include <cpu/k7/mtrr.h>
 #include <printk.h>
 #include <subr.h>
 
@@ -44,58 +45,76 @@ static unsigned int mtrr_msr[] = {
 
 #ifndef HAVE_MTRR_TABLE
 
+/* We want to cache memory as efficiently as possible.
+ */
+#define MTRR_TYPE_RAM MTRR_TYPE_WRBACK
+/* We can't use Write Combining on a legacy frame buffer because
+ * it is incompatible with EGA 16 color video modes...
+ */
+#define MTRR_TYPE_FB  MTRR_TYPE_UNCACHABLE
+/* For areas that are supposed to cover roms it makes no
+ * sense to cache writes.
+ */
+#define MTRR_TYPE_ROM MTRR_TYPE_WRPROT
+
+
+#ifdef MEMORY_HOLE
+#define RAM MTRR_TYPE_RAM
+#define FB  MTRR_TYPE_FB
+#define ROM MTRR_TYPE_ROM
+#else
+#define RAM MTRR_TYPE_RAM
+#define FB  MTRR_TYPE_RAM
+#define ROM MTRR_TYPE_RAM
+#endif /* MEMORY_HOLE */
+
 static unsigned char fixed_mtrr_values[][4] = {
 	/* MTRRfix64K_00000_MSR, defines memory range from 0KB to 512 KB, each byte cover 64KB area */
-	{MTRR_TYPE_WRBACK, MTRR_TYPE_WRBACK, MTRR_TYPE_WRBACK, MTRR_TYPE_WRBACK},
-	{MTRR_TYPE_WRBACK, MTRR_TYPE_WRBACK, MTRR_TYPE_WRBACK, MTRR_TYPE_WRBACK},
+	{RAM, RAM, RAM, RAM}, {RAM, RAM, RAM, RAM},
 
 	/* MTRRfix16K_80000_MSR, defines memory range from 512KB to 640KB, each byte cover 16KB area */
-	{MTRR_TYPE_WRBACK, MTRR_TYPE_WRBACK, MTRR_TYPE_WRBACK, MTRR_TYPE_WRBACK},
-	{MTRR_TYPE_WRBACK, MTRR_TYPE_WRBACK, MTRR_TYPE_WRBACK, MTRR_TYPE_WRBACK},
+	{RAM, RAM, RAM, RAM}, {RAM, RAM, RAM, RAM},
 
 	/* MTRRfix16K_A0000_MSR, defines memory range from A0000 to C0000, each byte cover 16KB area */
-	{MTRR_TYPE_WRCOMB, MTRR_TYPE_WRCOMB, MTRR_TYPE_WRCOMB, MTRR_TYPE_WRCOMB},
-	{MTRR_TYPE_WRCOMB, MTRR_TYPE_WRCOMB, MTRR_TYPE_WRCOMB, MTRR_TYPE_WRCOMB},
+	{FB,  FB,  FB,  FB},  {FB,  FB,  FB,  FB},
 
 	/* MTRRfix4K_C0000_MSR, defines memory range from C0000 to C8000, each byte cover 4KB area */
-	{MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH},
-	{MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH},
+	{ROM, ROM, ROM, ROM}, {ROM, ROM, ROM, ROM},
 
 	/* MTRRfix4K_C8000_MSR, defines memory range from C8000 to D0000, each byte cover 4KB area */
-	{MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH},
-	{MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH},
+	{ROM, ROM, ROM, ROM}, {ROM, ROM, ROM, ROM},
 
 	/* MTRRfix4K_D0000_MSR, defines memory range from D0000 to D8000, each byte cover 4KB area */
-	{MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH},
-	{MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH},
+	{ROM, ROM, ROM, ROM}, {ROM, ROM, ROM, ROM},
 
 	/* MTRRfix4K_D8000_MSR, defines memory range from D8000 to E0000, each byte cover 4KB area */
-	{MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH},
-	{MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH},
+	{ROM, ROM, ROM, ROM}, {ROM, ROM, ROM, ROM},
 
 	/* MTRRfix4K_E0000_MSR, defines memory range from E0000 to E8000, each byte cover 4KB area */
-	{MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH},
-	{MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH},
+	{ROM, ROM, ROM, ROM}, {ROM, ROM, ROM, ROM},
 
 	/* MTRRfix4K_E8000_MSR, defines memory range from E8000 to F0000, each byte cover 4KB area */
-	{MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH},
-	{MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH},
+	{ROM, ROM, ROM, ROM}, {ROM, ROM, ROM, ROM},
 
 	/* MTRRfix4K_F0000_MSR, defines memory range from F0000 to F8000, each byte cover 4KB area */
-	{MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH},
-	{MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH},
+	{ROM, ROM, ROM, ROM}, {ROM, ROM, ROM, ROM},
 
 	/* MTRRfix4K_F8000_MSR, defines memory range from F8000 to 100000, each byte cover 4KB area */
-	{MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH},
-	{MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH},
+	{ROM, ROM, ROM, ROM}, {ROM, ROM, ROM, ROM},
 };
+
+#undef FB
+#undef RAM
+#undef ROM
+#undef MTRR_TYPE_RAM
+#undef MTRR_TYPE_FB
+#undef MTRR_TYPE_ROM
 
 #else
 extern unsigned char fixed_mtrr_values[][4];
 #endif
 
-void
-intel_enable_fixed_mtrr()
+static void intel_enable_fixed_mtrr(void)
 {
 	unsigned long low, high;
 
@@ -104,8 +123,7 @@ intel_enable_fixed_mtrr()
 	wrmsr(MTRRdefType_MSR, low, high);
 }
 
-void
-intel_enable_var_mtrr()
+static void intel_enable_var_mtrr(void)
 {
 	unsigned long low, high;
 
@@ -116,7 +134,7 @@ intel_enable_var_mtrr()
 
 /* setting fixed mtrr, you can do some experiments with different memory type 
    defined in the table "fixed_mtrr_values" */ 
-void intel_set_fixed_mtrr()
+static void intel_set_fixed_mtrr(void)
 {
 	unsigned int i;
 	unsigned long low, high;
@@ -129,7 +147,7 @@ void intel_set_fixed_mtrr()
 }
 
 /* setting variable mtrr, comes from linux kernel source */
-void intel_set_var_mtrr(unsigned int reg, unsigned long base, unsigned long size, unsigned char type)
+static void intel_set_var_mtrr(unsigned int reg, unsigned long base, unsigned long size, unsigned char type)
 {
 	unsigned int tmp;
 
@@ -197,28 +215,36 @@ static __inline__ unsigned int fms(unsigned int x)
  *	ramsize = 156MB == 128MB WB (at 0MB) + 32MB WB (at 128MB) + 4MB UC (at 156MB)
  */
 #ifdef INTEL_PPRO_MTRR
-#ifdef ENABLE_FIXED_AND_VARIABLE_MTRRS
-void intel_set_mtrr(unsigned long rambase, unsigned long ramsizeK)
+
+/* 2 MTRRS are reserved for the operating system */
+#define BIOS_MTRRS 6
+#define OS_MTRRS   2
+#define MTRRS        (BIOS_MTRRS + OS_MTRRS)
+
+void setup_mtrrs(unsigned long ramsizeK)
 {
 	unsigned int reg = 0;
 	unsigned long range_wb, range_uc;
+	unsigned long rambase;
+	unsigned long romendK;
 
-	DBG("\n");
+	printk_debug("\n");
+	rambase = 0;
 
-	while (ramsizeK != 0 && reg <= 6) {
+	while (ramsizeK != 0 && reg < BIOS_MTRRS) {
 		post_code(0x60 + reg);
 
 		range_wb = 1 << (fms(ramsizeK - 1) + 1);
 		range_uc = range_wb - ramsizeK;
 
 		if ((range_uc == 0) || ((ramsizeK % range_uc) == 0)) {
-			DBG("Setting variable MTRR %d, base: %4dMB, range: %4dMB, type: WB\n",
+			printk_debug("Setting variable MTRR %d, base: %4dMB, range: %4dMB, type: WB\n",
 			    reg, rambase >> 10, range_wb >> 10);
 			intel_set_var_mtrr(reg++, rambase * 1024, range_wb * 1024,
 					   MTRR_TYPE_WRBACK);
 			rambase += ramsizeK;
 
-			DBG("Setting variable MTRR %d, base: %4dMB, range: %4dMB, type: UC\n",
+			printk_debug("Setting variable MTRR %d, base: %4dMB, range: %4dMB, type: UC\n",
 			    reg, rambase >> 10, range_uc >> 10);
 			intel_set_var_mtrr(reg++, rambase * 1024, range_uc * 1024,
 					   MTRR_TYPE_UNCACHABLE);
@@ -226,7 +252,7 @@ void intel_set_mtrr(unsigned long rambase, unsigned long ramsizeK)
 		} else {
 			range_wb >>= 1;
 
-			DBG("Setting variable MTRR %d, base: %4dMB, range: %4dMB, type: WB\n",
+			printk_debug("Setting variable MTRR %d, base: %4dMB, range: %4dMB, type: WB\n",
 			    reg, rambase >> 10, range_wb >> 10);
 			intel_set_var_mtrr(reg++, rambase * 1024, range_wb * 1024,
 					   MTRR_TYPE_WRBACK);
@@ -235,19 +261,34 @@ void intel_set_mtrr(unsigned long rambase, unsigned long ramsizeK)
 			ramsizeK -= range_wb;
 		}
 	}
-
+#if defined(XIP_ROM_SIZE) && defined(XIP_ROM_BASE)
+#if XIP_ROM_SIZE < 4096
+#error XIP_ROM_SIZE must be at least 4K
+#endif
+#if XIP_ROM_SIZE & (XIP_ROM_SIZE -1)
+#error XIP_ROM_SIZE must be a power of two
+#endif
+#if XIP_ROM_BASE & (XIP_ROM_SIZE -1)
+#error XIP_ROM_BASE must be a multiple of XIP_ROM_SIZE
+#endif
+	/* I assume that XIP_ROM_SIZE is a power of two
+	 * and that XIP_ROM_BASE is power of tow aligned.
+	 */
+	romendK = (XIP_ROM_BASE + XIP_ROM_SIZE) >>10;
+	if ((reg < BIOS_MTRRS) && 
+		((XIP_ROM_BASE > rambase) || (romendK > rambase))) {
+		intel_set_var_mtrr(reg++, XIP_ROM_BASE, XIP_ROM_SIZE,
+			MTRR_TYPE_WRPROT);
+	}
+#endif /* XIP_ROM_SIZE && XIP_ROM_BASE */
+	/* Clear out the extra MTRR's */
+	while(reg < MTRRS) {
+		intel_set_var_mtrr(reg++, 0, 0, 0);
+	}
 	intel_set_fixed_mtrr();
 
 	/* enable fixed MTRR */
 	intel_enable_fixed_mtrr();
 	intel_enable_var_mtrr();
 }
-#else /* ENABLE_FIXED_AND_VARIABLE_MTRRS */
-void intel_set_mtrr(unsigned long rambase, unsigned long ramsizeK)
-{
-	DBG("\n");
-	intel_set_var_mtrr(0, 0, ramsizeK * 1024, MTRR_TYPE_WRBACK);
-	intel_enable_var_mtrr();
-}
-#endif /* ENABLE_FIXED_AND_VARIABLE_MTRRS */
 #endif /* INTEL_PPRO_MTRR */

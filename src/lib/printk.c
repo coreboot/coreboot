@@ -12,17 +12,18 @@ static char rcsid[] = "$Id$";
 //typedef void * va_list;
 
 #include <stdarg.h>
+#include <smp/spinlock.h>
 
 static char buf[1024];
 
 /* printk's without a loglevel use this.. */
-#define DEFAULT_MESSAGE_LOGLEVEL 4 /* KERN_WARNING */
+#define DEFAULT_MESSAGE_LOGLEVEL 4 /* BIOS_WARNING */
 
 /* We show everything that is MORE important than this.. */
 #define MINIMUM_CONSOLE_LOGLEVEL 1 /* Minimum loglevel we let people use */
 
 #ifndef DEFAULT_CONSOLE_LOGLEVEL
-#define DEFAULT_CONSOLE_LOGLEVEL 8 /* anything MORE serious than KERN_WARNING */
+#define DEFAULT_CONSOLE_LOGLEVEL 8 /* anything MORE serious than BIOS_SPEW */
 #endif
 
 /* Keep together for sysctl support */
@@ -35,31 +36,27 @@ int default_console_loglevel = DEFAULT_CONSOLE_LOGLEVEL;
 void display(char*);
 extern int vsprintf(char *buf, const char *, va_list);
 
-int printk(const char *fmt, ...)
+spinlock_t console_lock = SPIN_LOCK_UNLOCKED;
+
+int do_printk(int msg_level, const char *fmt, ...)
 {
 	va_list args;
 	int i;
-	char *p;
-	int msg_level;
+
+	if (msg_level >= console_loglevel) {
+		return 0;
+	}
+
+	spin_lock(&console_lock);
 
 	va_start(args, fmt);
 	i = vsprintf(buf, fmt, args); /* hopefully i < sizeof(buf)-4 */
 	va_end(args);
-	p = buf;
-	if (
-		p[0] == '<' &&
-		p[1] > '0' && 
-		p[1] <= '9' &&
-		p[2] == '>'
-	) {
-		msg_level = p[1] - '0';
-		p +=3;
-	} else {
-		msg_level = default_message_loglevel;
-	}
-	if (msg_level < console_loglevel) {
-		display(p);
-	}
+
+	display(buf);
+
+	spin_unlock(&console_lock);
+
 	return i;
 }
 

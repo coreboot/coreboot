@@ -48,17 +48,17 @@ void nvram_on()
 		pci_write_config_byte(pcidev, 0x40, 0x33);
 		/* Flash can be flashed */
 		pci_write_config_byte(pcidev, 0x45, 0x40);
-		DBG("Enabled in SIS 503 regs 0x40 and 0x45\n");
+		printk_debug("Enabled in SIS 503 regs 0x40 and 0x45\n");
 
 	}
-	DBG("Now try to turn off shadow\n");
+	printk_debug("Now try to turn off shadow\n");
 
 #ifdef USE_DOC_MIL
 	/* turn off nvram shadow in 0xc0000 ~ 0xfffff, i.e. accessing segment C - F
 	   is actually to the DRAM not NVRAM. For 512KB NVRAM case, this one should be
 	   disabled */
 	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_550, (void *)NULL);
-	DBG("device for SiS 550 is 0x%x\n", pcidev);
+	printk_debug("device for SiS 550 is 0x%x\n", pcidev);
 	if (pcidev != NULL) {
 		/* read cycle goes to System Memory */
 		//pci_write_config_word(pcidev, 0x70, 0x1fff);
@@ -68,7 +68,7 @@ void nvram_on()
 		pci_write_config_word(pcidev, 0x72, 0xFFFF);
 		pci_write_config_word(pcidev, 0x74, 0xFFFF);
 		pci_write_config_byte(pcidev, 0x76, 0xFF);
-		DBG("Shadow memory disabled in SiS 550\n");
+		printk_debug("Shadow memory disabled in SiS 550\n");
 
 	}
 #endif
@@ -132,21 +132,21 @@ acpi_fixup(void)
 		// Set a base address for ACPI of 0xc000
 		pci_read_config_word(pcidev, 0x74, &temp);
 
-		DBG("acpibase was 0x%x\n", temp);
+		printk_debug("acpibase was 0x%x\n", temp);
 		pci_write_config_word(pcidev, 0x74, acpibase);
 		pci_read_config_word(pcidev, 0x74, &temp);
-		DBG("acpibase is 0x%x\n", temp);
+		printk_debug("acpibase is 0x%x\n", temp);
 
 		// now enable acpi
 		pci_read_config_byte(pcidev, 0x40, &val);
-		DBG("acpi enable reg was 0x%x\n", val);
+		printk_debug("acpi enable reg was 0x%x\n", val);
 		val |= 0x80;
 		pci_write_config_byte(pcidev, 0x40, val);
 		pci_read_config_byte(pcidev, 0x40, &val);
-		DBG("acpi enable reg after set is 0x%x\n", val);
-		DBG("acpi status: word at 0x56 is 0x%x\n",
+		printk_debug("acpi enable reg after set is 0x%x\n", val);
+		printk_debug("acpi status: word at 0x56 is 0x%x\n",
 		       inw(acpibase+0x56));
-		DBG("acpi status: byte at 0x4b is 0x%x\n", 
+		printk_debug("acpi status: byte at 0x4b is 0x%x\n", 
 		       inb(acpibase + 0x4b));
 
 		// now that it's on, get in there and call off the dogs. 
@@ -156,14 +156,14 @@ acpi_fixup(void)
 		outb(0, acpibase + 0x4b);
 		// ah ha! have to SET, NOT CLEAR!
 		outb(0x40, acpibase + 0x56);
-		DBG("acpibase + 0x56 is 0x%x\n", 
+		printk_debug("acpibase + 0x56 is 0x%x\n", 
 		       inb(acpibase+0x56));
 		val &= (~0x80);
 		pci_write_config_byte(pcidev, 0x40, val);
 		pci_read_config_byte(pcidev, 0x40, &val);
-		DBG("acpi disable reg after set is 0x%x\n", val);
+		printk_debug("acpi disable reg after set is 0x%x\n", val);
 	} else {
-		printk(KERN_EMERG "Can't find south bridge!\n");
+		printk_emerg("Can't find south bridge!\n");
 	}
 	
 }
@@ -180,5 +180,5 @@ final_southbridge_fixup()
 	/* Delay transaction, experimental */
 	south_fixup();
 
-	DBG("Southbridge fixup done for SIS 503\n");
+	printk_debug("Southbridge fixup done for SIS 503\n");
 }

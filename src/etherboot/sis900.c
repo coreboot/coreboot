@@ -288,11 +288,11 @@ struct nic *sis900_probe(struct nic *nic, unsigned short *io_addrs, struct pci_d
         return NULL;
     }
 
-    printk("\nsis900_probe: MAC addr %02x:%02x:%02x:%02x:%02x:%02x at ioaddr %04x\n",
+    printk_info("\nsis900_probe: MAC addr %02x:%02x:%02x:%02x:%02x:%02x at ioaddr %04x\n",
            nic->node_addr[0],nic->node_addr[1],nic->node_addr[2],
            nic->node_addr[3],nic->node_addr[4],nic->node_addr[5],
            ioaddr);
-    printk("sis900_probe: Vendor:%04x Device:%04x\n", vendor, dev_id);
+    printk_info("sis900_probe: Vendor:%04x Device:%04x\n", vendor, dev_id);
 
     /* probe for mii transceiver */
     /* search for total of 32 possible mii phy addresses */
@@ -315,7 +315,7 @@ struct nic *sis900_probe(struct nic *nic, unsigned short *io_addrs, struct pci_d
 
             if (phy_id0 == mii_chip_table[i].phy_id0) {
 
-                printk("sis900_probe: %s transceiver found at address %d.\n",
+                printk_info("sis900_probe: %s transceiver found at address %d.\n",
                        mii_chip_table[i].name, phy_addr);
 
                 mii.chip_info = &mii_chip_table[i];
@@ -326,19 +326,19 @@ struct nic *sis900_probe(struct nic *nic, unsigned short *io_addrs, struct pci_d
                 found=1;
                 break;
             } else {
-		printk("Found an MII, but can't recognize it. id= %u:%u\n", phy_id0, phy_id1);
+		printk_info("Found an MII, but can't recognize it. id= %u:%u\n", phy_id0, phy_id1);
             }
         }
     }
         
     if (found == 0) {
-        printk("sis900_probe: No MII transceivers found!\n");
+        printk_info("sis900_probe: No MII transceivers found!\n");
         return NULL;
     }
 
     /* Arbitrarily select the last PHY found as current PHY */
     cur_phy = mii.phy_addr;
-    printk("sis900_probe: Using %s as default\n",  mii.chip_info->name);
+    printk_info("sis900_probe: Using %s as default\n",  mii.chip_info->name);
 
     /* initialize device */
     sis900_init(nic);
@@ -602,7 +602,7 @@ sis900_init_rxfilter(struct nic *nic)
         outl(w, ioaddr + rfdr);
 
         if (sis900_debug > 0)
-            printk("sis900_init_rxfilter: Receive Filter Addrss[%d]=%x\n",
+            printk_info("sis900_init_rxfilter: Receive Filter Addrss[%d]=%x\n",
                    i, inl(ioaddr + rfdr));
     }
 
@@ -631,7 +631,7 @@ sis900_init_txd(struct nic *nic)
     /* load Transmit Descriptor Register */
     outl((u32) &txd, ioaddr + txdp); 
     if (sis900_debug > 0)
-        printk("sis900_init_txd: TX descriptor register loaded with: %X\n", 
+        printk_info("sis900_init_txd: TX descriptor register loaded with: %X\n", 
                inl(ioaddr + txdp));
 }
 
@@ -658,7 +658,7 @@ sis900_init_rxd(struct nic *nic)
         rxd[i].cmdsts = (u32) RX_BUF_SIZE;
         rxd[i].bufptr = (u32) &rxb[i*RX_BUF_SIZE];
         if (sis900_debug > 0)
-            printk("sis900_init_rxd: rxd[%d]=%X link=%X cmdsts=%X bufptr=%X\n", 
+            printk_info("sis900_init_rxd: rxd[%d]=%X link=%X cmdsts=%X bufptr=%X\n", 
                    i, &rxd[i], rxd[i].link, rxd[i].cmdsts, rxd[i].bufptr);
     }
 
@@ -666,7 +666,7 @@ sis900_init_rxd(struct nic *nic)
     outl((u32) &rxd[0], ioaddr + rxdp);
 
     if (sis900_debug > 0)
-        printk("sis900_init_rxd: RX descriptor register loaded with: %X\n", 
+        printk_info("sis900_init_rxd: RX descriptor register loaded with: %X\n", 
                inl(ioaddr + rxdp));
 
 }
@@ -773,9 +773,9 @@ sis900_read_mode(struct nic *nic, int phy_addr, int *speed, int *duplex)
         *duplex = FDX_CAPABLE_HALF_SELECTED;
 
     if (status & MII_STSOUT_LINK_FAIL)
-        printk("sis900_read_mode: Media Link Off\n");
+        printk_info("sis900_read_mode: Media Link Off\n");
     else
-        printk("sis900_read_mode: Media Link On %s %s-duplex \n", 
+        printk_info("sis900_read_mode: Media Link On %s %s-duplex \n", 
                *speed == HW_SPEED_100_MBPS ? 
                "100mbps" : "10mbps",
                *duplex == FDX_CAPABLE_FULL_SELECTED ?
@@ -816,22 +816,22 @@ amd79c901_read_mode(struct nic *nic, int phy_addr, int *speed, int *duplex)
             *duplex = FDX_CAPABLE_HALF_SELECTED;
 
         if (status & MII_STSSUM_LINK)
-            printk("amd79c901_read_mode: Media Link On %s %s-duplex \n", 
+            printk_info("amd79c901_read_mode: Media Link On %s %s-duplex \n", 
                    *speed == HW_SPEED_100_MBPS ? 
                    "100mbps" : "10mbps",
                    *duplex == FDX_CAPABLE_FULL_SELECTED ?
                    "full" : "half");
         else
-            printk("amd79c901_read_mode: Media Link Off\n");
+            printk_info("amd79c901_read_mode: Media Link Off\n");
     }
     else {
         /* HomePNA */
         *speed = HW_SPEED_HOME;
         *duplex = FDX_CAPABLE_HALF_SELECTED;
         if (status & MII_STAT_LINK)
-            printk("amd79c901_read_mode:Media Link On 1mbps half-duplex \n");
+            printk_info("amd79c901_read_mode:Media Link On 1mbps half-duplex \n");
         else
-            printk("amd79c901_read_mode: Media Link Off\n");
+            printk_info("amd79c901_read_mode: Media Link Off\n");
     }
 }
 
@@ -867,13 +867,13 @@ static void ics1893_read_mode(struct nic *nic, int phy_addr, int *speed, int *du
 		*duplex = FDX_CAPABLE_HALF_SELECTED;
 
 	if (status & MII_STSICS_LINKSTS)
-		printk("ics1893_read_mode: Media Link On %s %s-duplex \n",
+		printk_info("ics1893_read_mode: Media Link On %s %s-duplex \n",
 		       *speed == HW_SPEED_100_MBPS ?
 		       "100mbps" : "10mbps",
 		       *duplex == FDX_CAPABLE_FULL_SELECTED ?
 		       "full" : "half");
 	else
-		printk("ics1893_read_mode: Media Link Off\n");
+		printk_info("ics1893_read_mode: Media Link Off\n");
 }
 
 /**
@@ -911,13 +911,13 @@ static void rtl8201_read_mode(struct nic *nic, int phy_addr, int *speed, int *du
 	}
 
 	if (status & MII_STAT_LINK)
-		printk("rtl8201_read_mode: Media Link On %s %s-duplex \n",
+		printk_info("rtl8201_read_mode: Media Link On %s %s-duplex \n",
 		       *speed == HW_SPEED_100_MBPS ?
 		       "100mbps" : "10mbps",
 		       *duplex == FDX_CAPABLE_FULL_SELECTED ?
 		       "full" : "half");
 	else
-		printk("rtl9201_read_config_mode: Media Link Off\n");
+		printk_info("rtl9201_read_config_mode: Media Link Off\n");
 }
 
 /* Function: sis900_transmit
@@ -948,7 +948,7 @@ sis900_transmit(struct nic  *nic,
     /* load Transmit Descriptor Register */
     outl((u32) &txd, ioaddr + txdp); 
     if (sis900_debug > 1)
-        printk("sis900_transmit: TX descriptor register loaded with: %X\n", 
+        printk_info("sis900_transmit: TX descriptor register loaded with: %X\n", 
                inl(ioaddr + txdp));
 
     memcpy(txb, d, ETH_ALEN);
@@ -961,7 +961,7 @@ sis900_transmit(struct nic  *nic,
     s &= DSIZE;
 
     if (sis900_debug > 1)
-        printk("sis900_transmit: sending %d bytes ethtype %x\n", (int) s, t);
+        printk_info("sis900_transmit: sending %d bytes ethtype %x\n", (int) s, t);
 
     /* pad to minimum packet size */
     while (s < ETH_ZLEN)  
@@ -975,7 +975,7 @@ sis900_transmit(struct nic  *nic,
     outl(TxENA, ioaddr + cr);
 
     if (sis900_debug > 1)
-        printk("sis900_transmit: Queued Tx packet size %d.\n", (int) s);
+        printk_info("sis900_transmit: Queued Tx packet size %d.\n", (int) s);
 
     to = currticks() + TX_TIMEOUT;
 
@@ -983,12 +983,12 @@ sis900_transmit(struct nic  *nic,
         /* wait */ ;
 
     if (currticks() >= to) {
-        printk("sis900_transmit: TX Timeout! Tx status %X.\n", tx_status);
+        printk_info("sis900_transmit: TX Timeout! Tx status %X.\n", tx_status);
     }
     
     if (tx_status & (ABORT | UNDERRUN | OWCOLL)) {
         /* packet unsuccessfully transmited */
-        printk("sis900_transmit: Transmit error, Tx status %X.\n", tx_status);
+        printk_info("sis900_transmit: Transmit error, Tx status %X.\n", tx_status);
     }
     /* Disable interrupts by clearing the interrupt mask. */
     outl(0, ioaddr + imr);
@@ -1016,20 +1016,20 @@ sis900_poll(struct nic *nic)
     int retstat = 0;
 
     if (sis900_debug > 2)
-        printk("sis900_poll: cur_rx:%d, status:%X\n", cur_rx, rx_status);
+        printk_info("sis900_poll: cur_rx:%d, status:%X\n", cur_rx, rx_status);
 
     if (!(rx_status & OWN))
         return retstat;
 
     if (sis900_debug > 1)
-        printk("sis900_poll: got a packet: cur_rx:%d, status:%X\n",
+        printk_info("sis900_poll: got a packet: cur_rx:%d, status:%X\n",
                cur_rx, rx_status);
 
     nic->packetlen = (rx_status & DSIZE) - CRC_SIZE;
 
     if (rx_status & (ABORT|OVERRUN|TOOLONG|RUNT|RXISERR|CRCERR|FAERR)) {
         /* corrupted packet received */
-        printk("sis900_poll: Corrupted packet received, buffer status = %X\n",
+        printk_info("sis900_poll: Corrupted packet received, buffer status = %X\n",
                rx_status);
         retstat = 0;
     } else {

@@ -19,17 +19,12 @@ crt0base = '';
 ldscriptbase = '';
 
 makeoptions = {};
+makenooptions = {};
 # rule format. Key is the rule name. value is a list of lists. The first
 # element of the list is the dependencies, the rest are actions. 
 makebaserules = {};
 treetop = '';
 outputdir = '';
-
-# config variables for the ldscript
-# Initialize the to zero so we get a link error if the
-# are not set.
-rambase = 0;
-linuxbiosbase = 0;
 
 objectrules = [];
 userrules = [];
@@ -225,9 +220,15 @@ def nsuperio(dir, superio_commands):
 # basically raminit can have a whole list of files. That's why
 # this is a list. 
 def raminit(dir, file):
-	ramfilelist = command_vals['raminit']
+	ramfilelist = command_vals['mainboardinit']
 	ramfilelist.append(file)
 	print "Added ram init file: ", file
+
+# A list of files for initializing a motherboard
+def mainboardinit(dir, file):
+	mainboardfilelist = command_vals['mainboardinit']
+	mainboardfilelist.append(file)
+	print "Added mainboard init file: ", file
 
 def object(dir, obj_name):
 	addobject_defaultrule(obj_name, dir)
@@ -293,19 +294,37 @@ def adddepend(dir, rule):
 def makedefine(dir, rule): 
 	userdefines.append(rule)
 
+def set_option(option, value):
+	if makenooptions.has_key(option):
+		del makenooptions[option]
+	makeoptions[option] = value
+	#print "option %s = %s\n" % (option, value)
+
+def clear_option(option):
+	if makeoptions.has_key(option):
+		del makeoptions[option]
+	makenooptions[option] = ""
+	#print "nooption %s \n" % (option)
+	
 def option(dir, option):
-	makeoptions[option] = "-D" + option
+	regexp = re.compile(r"^([^=]*)=(.*)$")
+	m = regexp.match(option)
+	key=option
+	value= ""
+	if m and m.group(1):
+		key = m.group(1)
+		value = m.group(2)
+	set_option(key, value)
 
 def nooption(dir, option):
-	makeoptions[option] = "-U" + option
+	clear_option(option)
 
 def commandline(dir, command):
-	makeoptions["CMD_LINE"] = "-DCMD_LINE=\'\"" + command + "\"\'"
+	set_option("CMD_LINE", "\"" + command + "\"")
 
 # we do all these rules by hand because docipl will always be special
 # it's more or less a stand-alone bootstrap
 def docipl(dir, ipl_name):
-	global rambase, linuxbiosbase
 	mainboard = command_vals['mainboard']
 	mainboard_dir = os.path.join(treetop, 'src', mainboard)
 	# add the docipl rule
@@ -318,20 +337,18 @@ def docipl(dir, ipl_name):
 	# Now we need a mainboard-specific include path
 	userrules.append("\tcc $(CFLAGS) -I%s -c $<" % mainboard_dir)
 	# now set new values for the ldscript.ld.  Should be a script? 
-	rambase = 0x4000
-	linuxbiosbase = 0x80000
+	set_option("_RAMBASE", 0x4000)
+	set_option("_ROMBASE", 0x80000)
 
 def linux(dir, linux_name):
 	linuxrule = 'LINUX=' + linux_name
 	makedefine(dir, linuxrule)
 
 def setrambase(dir, address):
-	global rambase
-	rambase = string.atol(address,0)
+	set_option("_RAMBASE", address)
 
 def setlinuxbiosbase(dir, address):
-	global linuxbiosbase
-	linuxbiosbase = string.atol(address,0)
+	set_option("_ROMBASE", address)
 
 list_vals = {
 #	'option': []
@@ -350,7 +367,8 @@ command_vals = {
 	'pcibridge'   : [],   # vendor, bridgename
 	'superio'     : [],   # vendor, superio name
 	'object'      : {},   # path/filename.[cS]
-	'raminit'     : [],   # set of files to include for ram init
+	'mainboardinit'     : [],   # set of files to include for mainboard init
+	'config_files'      : [],   # set of files we built the makefile from
 	}
 
 command_actions = {
@@ -368,6 +386,7 @@ command_actions = {
 	'object'      : object,
 	'linux'       : linux,
 	'raminit'     : raminit,
+	'mainboardinit'     : mainboardinit,
 	'dir'         : dir,
 	'keyboard'    : keyboard, 
 	'docipl'      : docipl,
@@ -397,8 +416,12 @@ def readfile(filename):
 def doconfigfile(dir, filename):
 	if (debug):
 		print "doconfigfile" , filename
-	filelines = readfile(filename)
+	config_file_list = command_vals['config_files']
+	config_file_list.append(filename)
 	if (debug):
+		print "doconfigfile: config_file_list ", config_file_list
+	filelines = readfile(filename)
+	if (debug > 1):
 		print "doconfigfile: filelines", filelines
 	# parse out command arguments /(.*)(#.*)/ for comments
 	regexp = re.compile(r"([^#]*)(.*)")
@@ -434,24 +457,25 @@ def doconfigfile(dir, filename):
 # write crt0
 def writecrt0(path):
 	crt0filepath = os.path.join(path, "crt0.S")
-	raminitfiles = command_vals["raminit"]
-	paramfile = os.path.join(treetop, 'src/include', 
-			command_vals['northbridge'][0], "param.h")
-	paramfileinclude = ''
+	mainboardinitfiles = command_vals['mainboardinit']
+	#paramfile = os.path.join(treetop, 'src/include', 
+	#		command_vals['northbridge'][0], "param.h")
+	#paramfileinclude = ''
 
 	print "Trying to create ", crt0filepath
 #	try: 
 	file = open(crt0filepath, 'w+')
 
-	print "Check for crt0.S param file:", paramfile
-	if os.path.isfile(paramfile):
-		ipfile = os.path.join(command_vals['northbridge'][0],"param.h")
-		paramfileinclude = "#include <%s>\n" %  ipfile
-		print " Adding include to crt0.S for this parameter file:"
-		print " ", paramfileinclude
+	#print "Check for crt0.S param file:", paramfile
+	#if os.path.isfile(paramfile):
+	#	 ipfile = os.path.join(command_vals['northbridge'][0],"param.h")
+	#	 paramfileinclude = "#include <%s>\n" %  ipfile
+	#	 print " Adding include to crt0.S for this parameter file:"
+	#	 print " ", paramfileinclude
+	#
+	## serial for superio
+	#superioserial = "#include <%s/setup_serial.inc>\n" % command_vals['superio']
 
-	# serial for superio
-	superioserial = "#include <%s/setup_serial.inc>\n" % command_vals['superio']
 	crt0lines = readfile(crt0base)
 
 	if (debug):
@@ -460,34 +484,35 @@ def writecrt0(path):
 		if (string.strip(line) <> "CRT0_PARAMETERS"):
 			file.write(line)
 		else:
-			file.write(paramfileinclude)
-			# we will do this better at some point. 
-			# possible we need a 'console' command.
-			file.write("\n");
-			file.write("#ifdef SERIAL_CONSOLE\n");
-			file.write(superioserial)
-			file.write("#include <pc80/serial.inc>\n");
-			file.write("TTYS0_TX_STRING($ttyS0_test)\n")
-			file.write("#endif /* SERIAL_CONSOLE */\n")
-			file.write("\n");
+			#file.write(paramfileinclude)
+			## we will do this better at some point. 
+			## possible we need a 'console' command.
+			#file.write("\n");
+			#file.write("#ifdef SERIAL_CONSOLE\n");
+			#file.write(superioserial)
+			#file.write("#include <pc80/serial.inc>\n");
+			#file.write("TTYS0_TX_STRING($ttyS0_test)\n")
+			#file.write("#endif /* SERIAL_CONSOLE */\n")
+			#file.write("\n");
 
-			for i in range(len(raminitfiles)):
-				file.write("#include <%s>\n" % raminitfiles[i])
+			for i in range(len(mainboardinitfiles)):
+				file.write("#include <%s>\n" % mainboardinitfiles[i])
 
 	file.close();
 
 # write ldscript
 def writeldscript(path):
-	global rambase, linuxbiosbase
 	ldfilepath = os.path.join(path, "ldscript.ld")
 	print "Trying to create ", ldfilepath
 #	try: 
 	file = open(ldfilepath, 'w+')
-	# print out the ldscript rules
-	# print out the values of defined variables
-	file.write('_ROMBASE	= 0x%lx;\n' % linuxbiosbase)
-	file.write('_RAMBASE	= 0x%lx;\n' % rambase)
 
+	keys = makeoptions.keys()
+	keys.sort()
+	for key in keys:
+		if makeoptions[key] :
+			file.write("%s = %s;\n" % (key, makeoptions[key]))
+		
 	ldlines = readfile(ldscriptbase)
 	if (debug):
 		print "LDLINES ",ldlines
@@ -495,8 +520,7 @@ def writeldscript(path):
 		file.write(line)
 	file.close();
 
-
-# write ldscript
+# write doxygen file
 def writedoxygenfile(path):
 	global objectrules, doxyscriptbase
 	doxyfilepath = os.path.join(path, "LinuxBIOSDoc.config")
@@ -530,14 +554,30 @@ def writedoxygenfile(path):
 
 def writemakefile(path):
 	makefilepath = os.path.join(path, "Makefile")
+	mainboardinitfiles = command_vals['mainboardinit']
+	config_file_list = command_vals['config_files']
+
 	print "Trying to create ", makefilepath
+	keys = makeoptions.keys()
+	keys.sort()
 #	try: 
 	file = open(makefilepath, 'w+')
 	file.write("TOP=%s\n" % (treetop))
+	for key in keys:
+		if makeoptions[key] :
+			file.write("%s=%s\n" % (key, makeoptions[key]))
+
 	file.write("CPUFLAGS=\n")
-	for z in makeoptions.keys(): 
-#		print "key is %s, val %s\n" % (z, makeoptions[z])
-		file.write("CPUFLAGS += %s\n" % (makeoptions[z]))
+	for key in keys: 
+#		print "key is %s, val %s\n" % (key, makeoptions[key])
+#		file.write("CPUFLAGS += %s\n" % (makeoptions[key]))
+		if makeoptions[key] :
+			file.write("CPUFLAGS += -D%s=\'%s'\n" % (key, makeoptions[key]))
+		else:
+			file.write("CPUFLAGS += -D%s\n" % (key))
+
+	for key in makenooptions.keys(): 
+		file.write("CPUFLAGS += -U%s\n" % (key))
 				
 	# print out all the object dependencies
 	# There is ALWAYS a crt0.o
@@ -583,6 +623,16 @@ def writemakefile(path):
 	
 #	for i in range(len(linuxrules)):
 #		file.write("%s\n" % linuxrules[i])
+
+	# print out the dependencies for crt0.s
+	for i in range(len(mainboardinitfiles)):
+		file.write("crt0.s: $(TOP)/src/%s\n" % mainboardinitfiles[i])
+
+	# print out the dependencies for Makefile
+	file.write("Makefile crt0.S ldscript.ld nsuperio.c: %s/%s $(TOP)/util/config/NLBConfig.py $(TOP)/src/arch/$(ARCH)/config/make.base $(TOP)/src/arch/$(ARCH)/config/ldscript.base $(TOP)/src/arch/$(ARCH)/config/crt0.base \n\tpython $(TOP)/util/config/NLBConfig.py %s/%s $(TOP)\n" 
+		% (config_path, config_file, config_path, config_file))
+	for i in range(len(config_file_list)):
+		file.write("Makefile: %s\n" % config_file_list[i])
 
 	file.close();
 #	except IOError:

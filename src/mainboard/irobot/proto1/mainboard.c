@@ -100,7 +100,7 @@ loader_setup(unsigned long base,
 
   button = !(inb(0x4031) & 0x04);
 
-  PRINTK(KERN_INFO "LID button is - %s\n", (button ? "closed" : "open"));
+  printk_info( "LID button is - %s\n", (button ? "closed" : "open"));
 
   if (button) {
     *cmd_line = "root=/dev/ram0 console=ttyS0,115200";
@@ -114,7 +114,7 @@ loader_setup(unsigned long base,
     /* flip to other flash page */
 
     gpo0 = inb(0x4034);
-    PRINTK(KERN_INFO "GPO[0] : 0x%02x\n", gpo0);
+    printk_info( "GPO[0] : 0x%02x\n", gpo0);
     gpo0 &= ~0x01;
     outb(gpo0, 0x4034);
 
@@ -122,10 +122,10 @@ loader_setup(unsigned long base,
       int ii;
 
       for (ii = 0; ii<16; ii++) {
-	PRINTK(KERN_INFO "[%02x] ", *(unsigned char *)(0xfff00000+ii));
+	printk_info( "[%02x] ", *(unsigned char *)(0xfff00000+ii));
       }
       
-      PRINTK(KERN_INFO "\n");
+      printk_info("\n");
     }
 
     memcpy((void *)(*initrd_start), (void *)(0xfff00000), *initrd_size);

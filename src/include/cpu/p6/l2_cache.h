@@ -15,4 +15,6 @@
 #define BBL_CR_BUSY	0x11B
 #define BBL_CR_CTL3	0x11E
 
+extern int p6_configure_l2_cache(void);
+
 #endif /* __LINUXBIOS_P6_L2_CACHE_H */

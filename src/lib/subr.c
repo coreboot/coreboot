@@ -120,7 +120,7 @@ void post_code(uint8_t value)
 #ifdef SERIAL_POST
 	unsigned long hi, lo;
 	rdtsc(lo, hi);
-	printk(KERN_INFO "POST: 0x%02x, TSC Lo: %d, Hi: %d\n",
+	printk_info("POST: 0x%02x, TSC Lo: %d, Hi: %d\n",
 	       value, lo, hi);
 #endif
 	outb(value, 0x80);

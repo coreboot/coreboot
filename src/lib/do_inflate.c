@@ -41,11 +41,11 @@ typedef unsigned long ulg;
 
 
 #ifdef TRACEV
-#  define Trace(x) printk(KERN_DDEBUG x)
-#  define Tracev(x) {if (verbose) printk(KERN_DDEBUG  x);}
-#  define Tracevv(x) {if (verbose>1) printk(KERN_DDEBUG  x);}
-#  define Tracec(c,x) {if (verbose && (c)) printk(KERN_DDEBUG x);}
-#  define Tracecv(c,x) {if (verbose>1 && (c)) printk(KERN_DDEBUG  x);}
+#  define Trace(x) printk_debug(x)
+#  define Tracev(x) {if (verbose) printk_debug(x);}
+#  define Tracevv(x) {if (verbose>1) printk_debug(x);}
+#  define Tracec(c,x) {if (verbose && (c)) printk_debug(x);}
+#  define Tracecv(c,x) {if (verbose>1 && (c)) printk_debug(x);}
 #else
 #  define Trace(x)
 #  define Tracev(x)
@@ -73,7 +73,7 @@ static void flush_window(void)
 
 	in = window;
 	out = &output_data[output_ptr];
-	DBG("flush 0x%08x count 0x%08x\n", (unsigned long) out, outcnt);
+	printk_debug("flush 0x%08x count 0x%08x\n", (unsigned long) out, outcnt);
 
 	for (n = 0; n < outcnt; n++) {
 		ch = *out++ = *in++;
@@ -96,6 +96,6 @@ void gunzip_setup(void)
 	window = malloc(WSIZE);
 #endif
 	output_data = (char *) KERNEL_START;
-	DBG("output data is 0x%08x\n", (unsigned long) output_data);
+	printk_debug("output data is 0x%08x\n", (unsigned long) output_data);
 	makecrc();
 }

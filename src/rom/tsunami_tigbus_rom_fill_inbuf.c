@@ -45,7 +45,7 @@ int fill_inbuf(void)
 		firstfill = 0;
 		ram = malloc(K64);
 		if (!ram) {
-			printk(KERN_EMERG "%6d:%s() - "
+			printk_emerg("%6d:%s() - "
 			       "ram malloc failed\n",
 			       __LINE__, __FUNCTION__);
 			return 0;
@@ -53,30 +53,30 @@ int fill_inbuf(void)
 	}
 
 	if (block_count > 31) {
-		printk(KERN_EMERG "%6d:%s() - overflowed source buffer\n",
+		printk_emerg("%6d:%s() - overflowed source buffer\n",
 		       __LINE__, __FUNCTION__);
 		insize = 0;
 		return (0);
 	}
 	if (!block_count) {
 		nvram = TIG_KERNEL_START;
-		DBG("%6d:%s() - ram buffer:0x%08x\n",
+		printk_debug("%6d:%s() - ram buffer:0x%08x\n",
 		       __LINE__, __FUNCTION__, ram);
-		DBG("%6d:%s() - TIG_KERNEL_START:0x%08x\n",
+		printk_debug("%6d:%s() - TIG_KERNEL_START:0x%08x\n",
 		       __LINE__, __FUNCTION__,
 		       TIG_KERNEL_START);
 	}
 
 
 	tsunami_flash_copy_from(ram, nvram, K64);
-	DBG("\n%6d:%s() - nvram:0x%lx  block_count:%d\n",
+	printk_debug("\n%6d:%s() - nvram:0x%lx  block_count:%d\n",
 	       __LINE__, __FUNCTION__, nvram, block_count);
 
 #if 0
 	{
 		int i;
 		for(i = 0; i < K64; i+= 16) {
-			printk("%05x: %02x %02x %02x %02x %02x %02x %02x %02x "
+			printk_debug("%05x: %02x %02x %02x %02x %02x %02x %02x %02x "
 				"%02x %02x %02x %02x %02x %02x %02x %02x\n",
 				(block_count << 16)+i,
 				ram[i+0], ram[i+1], ram[i+2], ram[i+3],

@@ -11,7 +11,7 @@ void mainboard_fixup()
 	struct pci_dev *pm_pcidev, *host_bridge_pcidev, *nic_pcidev;
 	unsigned smbus_io, pm_io;
 	unsigned int i, j;
-	printk("intel_mainboard_fixup()\n");
+	printk_debug("intel_mainboard_fixup()\n");
 
 #if 1
 	pm_pcidev = pci_find_device(0x8086, 0x7113, 0);
@@ -28,31 +28,31 @@ void mainboard_fixup()
 	u32 dword;
 	for(i = 0; i < 8; i++) {
 		pci_read_config_byte(host_bridge_pcidev, 0x60 +i, &byte);
-		printk("DRB[i] = 0x%02x\n", byte);
+		printk_debug("DRB[i] = 0x%02x\n", byte);
 	}
 	pci_read_config_byte(host_bridge_pcidev, 0x57, &byte);
-	printk("DRAMC = 0x%02x\n", byte);
+	printk_debug("DRAMC = 0x%02x\n", byte);
 	pci_read_config_byte(host_bridge_pcidev, 0x74, &byte);
-	printk("RPS = 0x%02x\n", byte);
+	printk_debug("RPS = 0x%02x\n", byte);
 	pci_read_config_word(host_bridge_pcidev, 0x78, &word);
-	printk("PGPOL = 0x%04x\n", word);
+	printk_debug("PGPOL = 0x%04x\n", word);
 	pci_read_config_dword(host_bridge_pcidev, 0x50, &dword);
-	printk("NBXCFG = 0x%04x\n", dword);
+	printk_debug("NBXCFG = 0x%04x\n", dword);
 	}
 	
 #endif
 #if 1
 
-	printk("Reset Control Register\n");
+	printk_debug("Reset Control Register\n");
 	outb(((inb(0xcf9) & 0x04) | 0x02), 0xcf9);
 
-	printk("port 92\n");
+	printk_debug("port 92\n");
 	outb((inb(0x92) & 0xFE), 0x92);
 
-	printk("Disable Nmi\n");
+	printk_debug("Disable Nmi\n");
 	outb(0, 0x70);
 
-	printk("enabling smbus\n");
+	printk_debug("enabling smbus\n");
 #if 0
 	smbus_io = NewPciIo(0x10);
 #else
@@ -63,7 +63,7 @@ void mainboard_fixup()
 	pci_write_config_word(pm_pcidev, 0x4, 1); /* iospace enable */
 
 
-	printk("enable pm functions\n");
+	printk_debug("enable pm functions\n");
 #if 0
 	pm_io = NewPciIo(0x40);
 #else
@@ -72,13 +72,13 @@ void mainboard_fixup()
 	pci_write_config_dword(pm_pcidev, 0x40, pm_io | 1); /* iobase addr */
 	pci_write_config_byte(pm_pcidev, 0x80, 1);  /* enable pm io address */
 
-	printk("disabling smi\n");
+	printk_debug("disabling smi\n");
 	/* GLBEN */
 	outw(0x00,      pm_io + 0x20);
 	/* GLBCTL */
 	outl((1 << 24), pm_io + 0x28);
 	
-	printk("Disable more pm stuff\n");
+	printk_debug("Disable more pm stuff\n");
 	/* PMEN */
 	outw((1 << 8), pm_io + 0x02);
 	/* PMCNTRL */
@@ -98,10 +98,10 @@ void mainboard_fixup()
 	/* GPIREG */
 	/* GPOREG */
 	
-	printk("Set the subsystem vendor id\n");
+	printk_debug("Set the subsystem vendor id\n");
 	pci_write_config_word(host_bridge_pcidev, 0x2c, 0x8086);
 
-	printk("Disabling pm stuff in pci config space\n");
+	printk_debug("Disabling pm stuff in pci config space\n");
 
 #define MAX_COUNTERS
 #ifndef MAX_COUNTERS
@@ -162,19 +162,19 @@ void mainboard_fixup()
 #if 1
 	
 	/* Verify that smi is disabled */
-	printk("Testing SMI\r\n");
+	printk_debug("Testing SMI\r\n");
 	{
 	u32 value;
 	pci_read_config_dword(pm_pcidev, 0x58, &value);
 	pci_write_config_dword(pm_pcidev, 0x58, value | (1 << 25));
 	}
 	outb(inb(0xb2), 0xb2);
-	printk("SMI disabled\r\n");
+	printk_debug("SMI disabled\r\n");
 #endif
 #if 0
 	
 	for(i = 0; i < 255; i++) {
-		printk("%08x\r\n", i);
+		printk_debug("%08x\r\n", i);
 		__rdtsc_delay2(1000000000UL, pm_io);
 	}
 #endif

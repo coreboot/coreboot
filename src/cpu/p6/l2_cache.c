@@ -61,7 +61,7 @@ void cache_disable(void)
 	unsigned int tmp;
 
 	/* Disable cache */
-	DBG("Disable Cache\n");
+	printk_debug("Disable Cache\n");
 
 	/* Write back the cache and flush TLB */
 	asm volatile ("movl  %%cr0, %0\n\t"
@@ -81,37 +81,39 @@ void cache_enable(void)
 		      "movl  %0, %%cr0\n\t"
 		      :"=r" (tmp) : : "memory");
 
-	DBG("Enable Cache\n");
+	printk_debug("Enable Cache\n");
 }
 
 // GOTO bad and GOTO done added by rgm. 
 // there were too many ways that you could leave this thing with the 
 // cache turned off!
 // TODO: save whether it was on or not, and restore that state on exit.
-int intel_l2_configure()
+int p6_configure_l2_cache()
 {
 	unsigned int eax, ebx, ecx, edx;
 	int signature, tmp;
 	int cache_size;
+	int result;
 
-	intel_cpuid(0, &eax, &ebx, &ecx, &edx);
+	printk_info("Configuring L2 cache...");
+	cpuid(0, &eax, &ebx, &ecx, &edx);
 
 	if (ebx != 0x756e6547 || edx != 0x49656e69 || ecx != 0x6c65746e) {
-		printk(KERN_ERR "Not 'GenuineIntel' Processor\n");
+		printk_err( "Not 'GenuineIntel' Processor\n");
 		goto bad;
 	}
 
-	intel_cpuid(1, &eax, &ebx, &ecx, &edx);
+	cpuid(1, &eax, &ebx, &ecx, &edx);
 
 	/* Mask out the stepping */
 	signature = eax & 0xfff0;
 	if (signature & 0x1000) {
-		DBG("Overdrive chip no L2 cache configuration\n");
+		printk_debug("Overdrive chip no L2 cache configuration\n");
 		goto done;
 	}
 
 	if (signature < 0x630 || signature >= 0x680) {
-		DBG("CPU signature of %x so no L2 cache configuration\n",
+		printk_debug("CPU signature of %x so no L2 cache configuration\n",
 		     signature);
 		goto done;
 	}
@@ -120,7 +122,7 @@ int intel_l2_configure()
 	rdmsr(BBL_CR_CTL3, eax, edx);
 	/* If bit 23 (L2 Hardware disable) is set then done */
 	if (eax & 0x800000) {
-		DBG("L2 Hardware disabled\n");
+		printk_debug("L2 Hardware disabled\n");
 		goto done;
 	}
 
@@ -133,7 +135,7 @@ int intel_l2_configure()
 		/* Mask out [22-24] Clock frequency ratio */
 		eax &= 0x1c00000;
 		if (eax == 0xc00000 || eax == 0x1000000) {
-			printk(KERN_ERR "Incorrect clock frequency ratio %x\n",
+			printk_err( "Incorrect clock frequency ratio %x\n",
 			       eax);
 			goto bad;
 		}
@@ -173,7 +175,7 @@ int intel_l2_configure()
 		/* Mask out [22-24] Clock frequency ratio */
 		eax &= 0x3c00000;
 		if (eax == 0xc00000 || eax == 0x3000000) {
-			printk(KERN_ERR "Incorrect clock frequency ratio %x\n",
+			printk_err( "Incorrect clock frequency ratio %x\n",
 			       eax);
 			goto bad;
 		}
@@ -220,7 +222,7 @@ int intel_l2_configure()
 		/* Shift to [1:0] */
 		v >>= 26;
 
-		DBG("Sending %x to set_l2_register4\n", v);
+		printk_debug("Sending %x to set_l2_register4\n", v);
 		if (set_l2_register4(v) != 0)
 			goto bad;
 
@@ -231,7 +233,7 @@ int intel_l2_configure()
 	/* Read L2 register 0 */
 	tmp = read_l2(0);
 	if (tmp < 0) {
-		printk(KERN_ERR "Failed to read_l2(0)\n");
+		printk_err("Failed to read_l2(0)\n");
 		goto bad;
 	}
 
@@ -246,18 +248,18 @@ int intel_l2_configure()
 	}
 
 	if (calculate_l2_ecc() != 0) {
-		printk(KERN_ERR "Failed to calculate L2 ECC\n");
+		printk_err( "Failed to calculate L2 ECC\n");
 		goto bad;
 	}
 
 	if (calculate_l2_physical_address_range() != 0) {
-		printk(KERN_ERR
+		printk_err(
 		       "Failed to calculate L2 physical address range\n");
 		goto bad;
 	}
 
 	if (calculate_l2_cache_size() != 0) {
-		printk(KERN_ERR "Failed to calculate L2 cache size\n");
+		printk_err("Failed to calculate L2 cache size\n");
 		goto bad;
 	}
 
@@ -272,7 +274,7 @@ int intel_l2_configure()
 	cache_size = cache_size << 3;
 
 	/* Cache is 4 way for each address */
-	DBG("L2 Cache size is %dK\n", cache_size * 4 / 1024);
+	printk_debug("L2 Cache size is %dK\n", cache_size * 4 / 1024);
 
 	/* Write to all cache lines to initialize */
 	while (cache_size > 0) {
@@ -287,14 +289,14 @@ int intel_l2_configure()
 			 * MESI = Invalid
 			 */
 			if (signal_l2(0, cache_size, 0, 0, way, 0x1c) != 0) {
-				printk(KERN_ERR
+				printk_err(
 				       "Failed on signal_l2(%x, %x)\n",
 				       cache_size, way);
 				goto bad;
 			}
 		}
 	}
-	DBG("L2 Cache lines initialized\n");
+	printk_debug("L2 Cache lines initialized\n");
 
 	/* Disable cache */
 	cache_disable();
@@ -309,7 +311,7 @@ int intel_l2_configure()
 
 	/* Write 0 to L2 control register 5 */
 	if (write_l2(5, 0) != 0) {
-		printk(KERN_ERR "write_l2(5, 0) failed\n");
+		printk_err("write_l2(5, 0) failed\n");
 		goto done;
 	}
 
@@ -333,13 +335,15 @@ int intel_l2_configure()
 
 	/* Turn on cache. Both L1 and L2 are now active. Wahoo! */
 done:
+	result = 0;
+ out:
 	cache_enable();
 
-	return 0;
+	printk_info("done.\n");
+	return result;
 bad: 
-	// it was probably on when we got here, so turn it back on. 
-	cache_enable();
-	return -1;
+	result = -1;
+	goto out;
 }
 
 /* Setup address_high:address_low, data_high:data_low into the L2
@@ -536,7 +540,7 @@ static int calculate_l2_latency(void)
 	/* Read an undocumented MSR */
 	rdmsr(0x17, eax, edx);
 
-	DBG("rdmsr(0x17) = %x, %x\n", eax, edx);
+	printk_debug("rdmsr(0x17) = %x, %x\n", eax, edx);
 
 	/* Mask out [23:20] in EDX. Are Intel trying to hide this?? */
 	edx &= 0x1e00000;
@@ -565,12 +569,12 @@ static int calculate_l2_latency(void)
 		else
 			return -1;
 
-		intel_cpuid(1, &eax, &ebx, &ecx, &edx);
+		cpuid(1, &eax, &ebx, &ecx, &edx);
 
 		/* Mask out Model/Type */
 		eax &= 0xfff0;
 
-		DBG("L2 latency type = %x\n", t);
+		printk_debug("L2 latency type = %x\n", t);
 
 		if (eax == 0x650) {
 			/* Read EBL_CR_POWERON */
@@ -597,13 +601,13 @@ static int calculate_l2_latency(void)
 		} else
 			return -1;
 
-		DBG("Searching for key %x\n", eax);
+		printk_debug("Searching for key %x\n", eax);
 
 		/* Search table for matching entry */
 		for (le = latency_table; le->key != eax; le++) {
 			/* Fail if we get to the end of the table */
 			if (le->key == 0xff) {
-				printk(KERN_ERR
+				printk_err(
 				       "Could not find key %x in latency table\n",
 				       eax);
 				return -1;
@@ -613,7 +617,7 @@ static int calculate_l2_latency(void)
 		l = le->value;
 	}
 
-	DBG("L2 Cache latency is %d\n", l / 2);
+	printk_debug("L2 Cache latency is %d\n", l / 2);
 
 	/* Read BBL_CR_CTL3 */
 	rdmsr(0x11e, eax, edx);
@@ -709,7 +713,7 @@ static int calculate_l2_cache_size(void)
 		/* Write new value into BBL_CR_CTL3 */
 		wrmsr(0x11e, eax, edx);
 
-		DBG("Maximum cache mask is %x\n", cache_setting);
+		printk_debug("Maximum cache mask is %x\n", cache_setting);
 
 		/* Write aaaaaaaa:aaaaaaaa to address 0 in the l2 cache */
 		v = test_l2_address_alias(0, 0, 0xaaaaaaaa, 0xaaaaaaaa);
@@ -753,14 +757,14 @@ static int calculate_l2_cache_size(void)
 		/* Write cache size into BBL_CR_CTL3 */
 		wrmsr(0x11e, eax, edx);
 
-		DBG("L2 Cache Mask is %x\n", size);
+		printk_debug("L2 Cache Mask is %x\n", size);
 
 		/* Shift to [6:2] */
 		size >>= 11;
 
 		v = read_l2(2);
 
-		DBG("read_l2(2) = %x\n", v);
+		printk_debug("read_l2(2) = %x\n", v);
 
 		if (v < 0)
 			return -1;
@@ -773,7 +777,7 @@ static int calculate_l2_cache_size(void)
 		/* Or in this size */
 		v |= size;
 
-		DBG("write_l2(2) = %x\n", v);
+		printk_debug("write_l2(2) = %x\n", v);
 
 		if (write_l2(2, v) != 0)
 			return -1;
@@ -782,7 +786,7 @@ static int calculate_l2_cache_size(void)
 
 		a = read_l2(2);
 
-		DBG("read_l2(2) = %x\n", a);
+		printk_debug("read_l2(2) = %x\n", a);
 
 		if (a < 0)
 			return -1;
@@ -794,7 +798,7 @@ static int calculate_l2_cache_size(void)
 
 		a &= 0xf;
 
-		DBG("Calculated a = %x\n", a);
+		printk_debug("Calculated a = %x\n", a);
 
 		if (a == 0)
 			return -1;
@@ -836,7 +840,7 @@ static int calculate_l2_physical_address_range(void)
 	else
 		r3 &= 0x7;
 
-	DBG("L2 Physical Address Range is %dM\n", (1 << r3) * 512);
+	printk_debug("L2 Physical Address Range is %dM\n", (1 << r3) * 512);
 
 	/* Shift into [22:20] */
 	r3 = r3 << 20;
@@ -877,7 +881,7 @@ static int calculate_l2_ecc(void)
 	rdmsr(0x118, eax, edx);
 
 	if (eax == data1) {
-		DBG("L2 ECC Checking is enabled\n");
+		printk_debug("L2 ECC Checking is enabled\n");
 
 		/* Set ECC Check Enable in BBL_CR_CTL3 */
 		rdmsr(0x11e, eax, edx);

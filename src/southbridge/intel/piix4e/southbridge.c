@@ -22,12 +22,12 @@ void nvram_on()
 
         struct pci_dev *pcidev;
 
-	printk(KERN_INFO "Enabling extended BIOS access...");
+	printk_info( "Enabling extended BIOS access...");
 
         pcidev = pci_find_device(0x8086, 0x7110, (void *)NULL);
         if (pcidev) pci_write_config_word(pcidev, 0x4e, 0x03c3);
 
-	printk(KERN_INFO "done.\n");
+	printk_info("done.\n");
 	post_code(0x91);
 }
 
@@ -52,13 +52,13 @@ void keyboard_on()
         pcidev = pci_find_device(0x8086, 0x7110, (void *)NULL);
 
 	if (! pcidev) {
-	  printk(KERN_ERR __FUNCTION__ "Can't find dev 0x7110\n");
+	  printk_err( __FUNCTION__ "Can't find dev 0x7110\n");
 	  return;
 	}
         /* oh no, we are setting this below. Fix it later. */
         /* to do -- changed these to PciReadByte */
 	pci_read_config_byte(pcidev, 0x4e, &regval);
-	printk(KERN_DEBUG __FUNCTION__ "regcal at 0x4e is 0x%x\n", regval);
+	printk_debug( __FUNCTION__ "regcal at 0x4e is 0x%x\n", regval);
         regval |= 0x2;
 	pci_write_config_byte(pcidev, 0x4e, regval);
 

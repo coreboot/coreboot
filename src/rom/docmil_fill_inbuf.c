@@ -30,20 +30,20 @@ fill_inbuf(void)
 {
 	if (firstfill) {
 		if ((ram = malloc(K64)) == NULL) {
-			printk(KERN_EMERG "%6d:%s() - ram malloc failed\n",
+			printk_emerg("%6d:%s() - ram malloc failed\n",
 			      __LINE__, __FUNCTION__);
 			return (0);
 		}
 
 #ifdef CHECK_DOC_MIL
 		if ((checkbuf = malloc(K64)) == NULL) {
-			printk(KERN_EMERG "%6d:%s() - checkbuf malloc failed\n",
+			printk_emerg("%6d:%s() - checkbuf malloc failed\n",
 			      __LINE__, __FUNCTION__);
-			printk(KERN_EMERG "Checking disabled\n");
+			printk_emerg("Checking disabled\n");
 		}
 #endif
 
-		DBG("%6d:%s() - ram buffer:0x%p\n",
+		printk_debug("%6d:%s() - ram buffer:0x%p\n",
 		       __LINE__, __FUNCTION__, ram);
 
 		block_count = 0;
@@ -57,20 +57,20 @@ fill_inbuf(void)
 	if (checkbuf) {
 		memcpy_from_doc_mil(checkbuf, nvram, K64);
 		if (memcmp(checkbuf, ram, K64)) {
-			printk("CHECKBUF FAILS for doc mil!\n");
-			printk(KERN_EMERG "address 0x%x\n", nvram);
+			printk_emerg("CHECKBUF FAILS for doc mil!\n");
+			printk_emerg( "address 0x%x\n", nvram);
 		}
 	}
 	{ 
 		int i;
-		printk(KERN_INFO "First 16 bytes of block: ");
+		printk_info( "First 16 bytes of block: ");
 		for (i = 0; i < 16; i++)
-			printk("0x%x ", ram[i]);
-		printk(KERN_INFO "\n");
+			printk_info("0x%x ", ram[i]);
+		printk_info( "\n");
 	}
 #endif
 
-	DBG("%6d:%s() - nvram:0x%p  block_count:%d\n",
+	printk_debug("%6d:%s() - nvram:0x%p  block_count:%d\n",
 	       __LINE__, __FUNCTION__, nvram, block_count);
 
 	nvram += K64;

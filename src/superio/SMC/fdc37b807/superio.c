@@ -168,7 +168,7 @@ finishup(struct superio *s)
   
 	rv |= smc_configuration_state(addr, 0); return(rv);
 	if (rv)
-		printk("For %s rv in finishup is %d\n", s->name, rv);
+		printk_info("For %s rv in finishup is %d\n", s->name, rv);
 }
 
 

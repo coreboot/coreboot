@@ -423,6 +423,7 @@ void pci_set_method(void);
 void pci_enumerate(void);
 void pci_configure(void);
 void pci_enable(void);
+void pci_zero_irq_settings(void);
 
 // historical functions ...
 void intel_conf_writeb(unsigned long port, unsigned char value);

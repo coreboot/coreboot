@@ -146,7 +146,14 @@ jmp intel_440_out
 #define ASSERT_RAM_COMMAND()		DIMMS_READ(RAM_READ)
 #define ASSERT_MRS_RAM_COMMAND(mode)	DIMMS_READ(mode)
 #if ! USE_SPD
-#define ENABLE_REFRESH()		CS_BIS_BYTE(0x57, 0x1)
+#define ENABLE_REFRESH()	\
+	movl $(0x57), %eax	; \
+	PCI_READ_CONFIG_BYTE	; \
+	orb 0x1, %al		; \
+	mov %al, %dl		; \
+	movl $(0x57), %eax	; \
+	PCI_WRITE_CONFIG_BYTE
+	
 #else /* USE_SPD */
 #define ENABLE_REFRESH()		CALL_LABEL(spd_enable_refresh)
 #endif
@@ -202,11 +209,11 @@ jmp intel_440_out
 	 * refresh disabled					\
 	 */
 
-#define SET_PAM \
-	/* PAM - Programmable Attribute Map Registers */	\
+	/* PAM - Programmable Attribute Map Registers */
 	/* Ideally we want to enable all of these as DRAM and teach
 	 * linux it is o.k. to use them...
 	 */
+#define SET_PAM \
 	CS_WRITE_BYTE(0x59, 0x00)				; \
 	CS_WRITE_BYTE(0x5a, 0x00)				; \
 	CS_WRITE_BYTE(0x5b, 0x00)				; \
@@ -421,7 +428,7 @@ jmp intel_440_out
 	CS_WRITE_BYTE(0xef, 0x00)
 
 
-ram_set_registers:	
+ram_set_registers:
 	SET_NBXCFG
 	SET_DRAMC
 	SET_PAM
@@ -443,6 +450,8 @@ ram_set_registers:
 #define CONFIG_ADDR(bus,devfn,where) (((bus) << 16) | ((devfn) << 8) | (where))
 #define PM_FUNCTION  CONFIG_ADDR(0, PIIX4_DEVFN+3, 0)
 
+#if USE_SPD
+	
 #define SMBUS_IO_BASE 0x1000
 #define SMBHSTSTAT 0
 #define SMBHSTCTL  2
@@ -467,7 +476,7 @@ enable_smbus:
 	 */
 setup_smbus:	
 	xor %eax,%eax
-	movl $(SMBUS_IO_BASE + SMBHSTSTAT), %edx
+	movw $(SMBUS_IO_BASE + SMBHSTSTAT), %dx
 	outb %al, %dx
 	RET_LABEL(setup_smbus)
 
@@ -593,7 +602,6 @@ smbus_read_byte:
 	 */
 
 spd_set_drb:
-#define SPD_SETUP_DIMM(SMBUS_MEM_DEVICE, CONFIG_PORT) \
 	xorl %ebp, %ebp /* clear the memory address */
 	movl $((0x60 << 16) |SMBUS_MEM_DEVICE_0), %ebx
 spd_set_drb_loop_top:	
@@ -644,23 +652,23 @@ spd_set_drb_loop_top:
 
 	/* for now only handle the symmetrical case */
 	movl %edi, %esi
-
+20:	
 	/* Compute the end address for the DRB register */
-	cmpl $8, %edi
-	jae 20f
+	cmpl $8, %edi  /* Ignore the dimm if it is over 2GB */
+	jae 21f
 	movl $1, %eax
 	movl %edi, %ecx
 	shll %cl, %eax
 	addl %eax, %ebp
-20:
-	/* Write the comuputed value for the first half of the DIMM */
+21:
+	/* Write the computed value for the first half of the DIMM */
 	movl %ebp, %edx /* value to write into %edx */
 	movl %ebx, %eax
 	shrl $16,  %eax /* port address into %eax */
 	PCI_WRITE_CONFIG_BYTE
 	
 	/* Compute the end address for the DRB register */
-	cmpl $8, %esi
+	cmpl $8, %esi /* Ignore the dimm if it is over 2GB */
 	jae 30f
 	mov $1, %eax
 	movl %esi, %ecx
@@ -727,6 +735,7 @@ spd_set_dramc_out:
 	PCI_WRITE_CONFIG_BYTE
 	RET_LABEL(spd_set_dramc)
 
+#endif /* USE_SPD */
 
 	/*
 	 * Routine:	spd_enable_refresh
@@ -748,6 +757,7 @@ refresh_rates:
 	.byte 0x03 /* Extended(4x)  62.5 us   -> 62.4 us */
 	.byte 0x04 /* Extended(8x)  125 us    -> 124.8 us */
 
+#if USE_SPD
 spd_enable_refresh:
 	/* Find the first dimm and assume the rest are the same */
 	/* Load the smbus device and port int %ebx */
@@ -940,6 +950,10 @@ spd_set_nbxcfg:
 spd_set_sdramc:
 	RET_LABEL(spd_set_sdramc)
 
+#endif /* USE_SPD */
+
+	
+
 	/* PAM FDHC MBSC SMRAM ESRAMC MBFS DWTC DRTC */
 ram_set_spd_registers:
 #if USE_SPD
@@ -954,6 +968,18 @@ ram_set_spd_registers:
 #endif
 	RET_LABEL(ram_set_spd_registers)
 
+#if 1
+#define HAVE_ECC_RAM_SIZE
+get_ecc_ram_size_ebx:
+	movl	$0x67, %eax		/* Read the RAM SIZE */
+	PCI_READ_CONFIG_BYTE
+	andl	$0x000000ff, %eax	/* Convert it to bytes */
+	movl	%eax, %ebx
+	shll	$23, %ebx
+	RET_LABEL(get_ecc_ram_size_ebx)
+#endif /* HAVE_ECC_RAM_SIZE */
+
+	
 /* things that are not used */
 #define FIRST_NORMAL_REFERENCE()
 #define SPECIAL_FINISHUP()

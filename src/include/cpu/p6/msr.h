@@ -1,3 +1,6 @@
+#ifndef CPU_P6_MSR_H
+#define CPU_P6_MSR_H
+
 /*
  * Access to machine-specific registers (available on 586 and better only)
  * Note: the rd* operations modify the parameters directly (without using
@@ -27,4 +30,4 @@
      __asm__ __volatile__("rdpmc" \
 			  : "=a" (low), "=d" (high) \
 			  : "c" (counter))
-
+#endif /* CPU_P6_MSR_H */

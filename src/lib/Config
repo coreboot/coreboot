@@ -2,7 +2,9 @@ object linuxbiosmain.o
 object linuxpci.o
 object newpci.o
 object printk.o
-object serial_subr.o
+object serial_subr.o SERIAL_CONSOLE
+object video_subr.o VIDEO_CONSOLE
+object logbuf_subr.o LOGBUF_CONSOLE
 object subr.o
 object vsprintf.o
 object memset.o

@@ -3,7 +3,7 @@
 #include <printk.h>
 #include <cpu/p6/apic.h>
 
-void smp_write_config_table(void *v)
+void smp_write_config_table(void *v, unsigned long * processor_map)
 {
 	static const char sig[4] = "PCMP";
 	static const char oem[8] = "TYAN    ";
@@ -28,7 +28,7 @@ void smp_write_config_table(void *v)
 	mc->reserved = 0;
 
 
-	smp_write_processors(mc);
+	smp_write_processors(mc, processor_map);
 	smp_write_bus(mc, 0, "PCI   ");
 	smp_write_bus(mc, 1, "PCI   ");
 	smp_write_bus(mc, 2, "ISA   ");
@@ -147,11 +147,11 @@ void smp_write_config_table(void *v)
 		mc, smp_next_mpe_entry(mc));
 }
 
-void write_smp_table(void *v)
+void write_smp_table(void *v, unsigned long *processor_map)
 {
 	printk_debug("Writing the mp table\n");
 	smp_write_floating_table(v);
-	smp_write_config_table(v);
+	smp_write_config_table(v, processor_map);
 }
 
 

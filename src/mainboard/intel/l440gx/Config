@@ -4,10 +4,12 @@ mainboardinit cpu/i386/entry16.inc
 ldscript cpu/i386/entry16.lds
 mainboardinit cpu/i386/reset16.inc
 ldscript cpu/i386/reset16.lds
+
 mainboardinit northbridge/intel/440gx/reset_test.inc
 
 mainboardinit superio/NSC/pc87309/setup_serial.inc
 mainboardinit pc80/serial.inc
+
 northbridge intel/440gx
 southbridge intel/piix4e
 mainboardinit cpu/p6/earlymtrr.inc

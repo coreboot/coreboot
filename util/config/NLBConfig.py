@@ -42,7 +42,7 @@ def add_main_rule_dependency(new_dependency):
 # and an optional rule (can be empty) for actually building
 # the object
 def addobject(object, sourcepath, rule, condition):
-	objectrules.append([object, sourcepath, rule, condition])
+	objectrules.append([object, topify(sourcepath), rule, condition])
 
 # OK, let's face it, make sucks. 
 # if you have a rule like this: 
@@ -98,12 +98,11 @@ def common_command_action(dir, type, name):
 	return fullpath
 
 def set_arch(dir, my_arch):
-	global arch, makebase, crt0base, ldscriptbase
+	global arch, makebase, crt0base
 	arch = my_arch
 	configpath = os.path.join(treetop, os.path.join("src/arch/", os.path.join(my_arch, "config")))
 	makebase = os.path.join(configpath, "make.base")
 	crt0base = os.path.join(configpath, "crt0.base")
-	ldscriptbase = os.path.join(configpath, "ldscript.base")
 	print "Now Process the ", my_arch, " base files"
 	if (debug):
 		print "Makebase is :", makebase, ":"
@@ -510,22 +509,6 @@ def writecrt0(path):
 
 	file.close();
 
-# write ldoptions
-def writeldoptions(path):
-	ldfilepath = os.path.join(path, "ldoptions")
-	print "Trying to create ", ldfilepath
-#	try: 
-	file = open(ldfilepath, 'w+')
-
-	keys = makeoptions.keys()
-	keys.sort()
-	for key in keys:
-		value = makeoptions[key]
-		regexp = re.compile(r"^(0x[0-9a-fA-F]+|0[0-7]+|[0-9]+)$")
-		if value and regexp.match(value):
-			file.write("%s = %s;\n" % (key, value))
-		
-	file.close();
 
 # write doxygen file
 def writedoxygenfile(path):
@@ -554,38 +537,56 @@ def writedoxygenfile(path):
 
 
 
+def topify(path):
+	global treetop
+	if path[0:len(treetop)] == treetop:
+		path = path[len(treetop):len(path)]
+		if (path[0:1] == "/"):
+			path = path[1:len(path)]
+		path = "$(TOP)/" + path
+	return path
+
+
+def writemakefilesettings(path):
+	# Write Makefile.settings to seperate the settings
+	# from the actual makefile creation
+	# In practice you need to rerun NLBConfig.py to change
+	# these but in theory you shouldn't need to.
+	filename = os.path.join(path, "Makefile.settings")
+
+	print "Trying to create ", filename
+	keys = makeoptions.keys()
+	keys.sort()
+#	try: 
+	file = open(filename, 'w+')
+	file.write("TOP=%s\n" % (treetop))
+	for key in keys:
+		file.write("export %s:=%s\n" % (key, makeoptions[key]))
+	file.write("export VARIABLES := ");
+	for key in keys:
+		file.write("%s " % key)
+	for key in makenooptions.keys(): 
+		file.write("%s " % (key))
+	file.write("\n");
+
+
 # write the makefile
 # we're not sure whether to write crt0.S yet. We'll see. 
 # let's try the Makefile
 # first, dump all the -D stuff
 
 def writemakefile(path):
+	writemakefilesettings(path)
 	makefilepath = os.path.join(path, "Makefile")
 	mainboardinitfiles = command_vals['mainboardinit']
 	config_file_list = command_vals['config_files']
 	ldscripts = command_vals['ldscripts']
 
 	print "Trying to create ", makefilepath
-	keys = makeoptions.keys()
-	keys.sort()
-#	try: 
 	file = open(makefilepath, 'w+')
-	file.write("TOP=%s\n" % (treetop))
-	for key in keys:
-		if makeoptions[key] :
-			file.write("%s=%s\n" % (key, makeoptions[key]))
 
-	file.write("CPUFLAGS :=\n")
-	for key in keys: 
-#		print "key is %s, val %s\n" % (key, makeoptions[key])
-#		file.write("CPUFLAGS += %s\n" % (makeoptions[key]))
-		if makeoptions[key] :
-			file.write("CPUFLAGS += -D%s=\'%s'\n" % (key, makeoptions[key]))
-		else:
-			file.write("CPUFLAGS += -D%s\n" % (key))
-
-	for key in makenooptions.keys(): 
-		file.write("CPUFLAGS += -U%s\n" % (key))
+	file.write("include Makefile.settings\n")
+	file.write("include cpuflags\n")
 				
 	# print out all the object dependencies
 	# There is ALWAYS a crt0.o
@@ -599,9 +600,9 @@ def writemakefile(path):
 			file.write("OBJECTS-$(%s) += %s\n" % (obj_cond, obj_name))
 
 	# print out all ldscript.ld dependencies
-	file.write("LDSUBSCRIPTS-1 := %s\n" % ldscriptbase )
+	file.write("LDSUBSCRIPTS-1 := \n" )
 	for i in range(len(ldscripts)):
-		script = ldscripts[i][0];
+		script = topify(ldscripts[i][0]);
 		condition = ldscripts[i][1];
 		if condition:
 			file.write("LDSUBSCRIPTS-$(%s) += %s\n" % (condition, script))
@@ -648,10 +649,10 @@ def writemakefile(path):
 
 
 	# print out the dependencies for Makefile
-	file.write("Makefile crt0.S ldoptions nsuperio.c: %s $(TOP)/util/config/NLBConfig.py $(TOP)/src/arch/$(ARCH)/config/make.base $(TOP)/src/arch/$(ARCH)/config/crt0.base \n\tpython $(TOP)/util/config/NLBConfig.py %s $(TOP)\n" 
+	file.write("Makefile Makefile.settings crt0.S nsuperio.c: %s $(TOP)/util/config/NLBConfig.py $(TOP)/src/arch/$(ARCH)/config/make.base $(TOP)/src/arch/$(ARCH)/config/crt0.base \n\tpython $(TOP)/util/config/NLBConfig.py %s $(TOP)\n" 
 		% (config_file, config_file))
 	for i in range(len(config_file_list)):
-		file.write("Makefile: %s\n" % config_file_list[i])
+		file.write("Makefile: %s\n" % topify(config_file_list[i]))
 
 	file.close();
 #	except IOError:
@@ -685,7 +686,6 @@ treetop = command_vals['TOP']
 # set the default locations for config files
 makebase = os.path.join(treetop, "util/config/make.base")
 crt0base = os.path.join(treetop, "arch/i386/config/crt0.base")
-ldscriptbase = os.path.join(treetop, "arch/alpha/config/ldscript.base")
 doxyscriptbase = os.path.join(treetop, "src/config/doxyscript.base")
 
 ## now read in the base files. 
@@ -702,7 +702,6 @@ doconfigfile(treetop, config_file)
 #	print key, val
 
 writemakefile(outputdir)
-writeldoptions(outputdir)
 writecrt0(outputdir)
 writesuperiofile(outputdir)
 writedoxygenfile(outputdir)

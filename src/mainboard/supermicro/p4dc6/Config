@@ -1,0 +1,73 @@
+arch i386
+mainboardinit cpu/i386/entry16.inc
+ldscript cpu/i386/entry16.lds
+mainboardinit cpu/i386/reset16.inc
+ldscript cpu/i386/reset16.lds
+
+#rambase  0x04000000
+biosbase 0xffff0000
+option XIP_ROM_BASE=0xffff0000
+option XIP_ROM_SIZE=0x10000
+option CACHE_RAM_BASE=0xfff70000
+option CACHE_RAM_SIZE=0x00010000
+option USE_CACHE_RAM=1
+nooption USE_DEFAULT_LAYOUT
+#rambase 0xfff70000
+rambase 0x00000000
+option STACK_SIZE=0x2000
+
+
+#mainboardinit northbridge/amd/amd76x/reset_test.inc
+
+#mainboardinit southbridge/intel/82801/definitions.inc
+#mainboardinit southbridge/intel/82801/disable_watchdog.inc
+#mainboardinit southbridge/intel/82801/lpc_com1.inc
+mainboardinit cpu/i786/earlymtrr.inc
+mainboardinit superio/winbond/w83627hf/setup_serial.inc
+mainboardinit pc80/serial.inc
+#mainboardinit ram/ramtest.inc
+#mainboardinit mainboard/supermicro/p4dc6/spin.inc
+mainboardinit cpu/i786/cache_ram_init.inc
+#mainboardinit mainboard/supermicro/p4dc6/cache_test.inc
+mainboardinit cpu/i786/cache_ram_start.inc
+mainboardinit cpu/i786/cache_ram_fini.inc
+
+northbridge intel/82860
+southbridge intel/82801
+southbridge intel/82806
+
+
+nsuperio winbond/w83627hf com1={1} com2={1} floppy=1 lpt=1 keyboard=1
+
+option RAMTEST=1
+option NO_KEYBOARD
+option ENABLE_FIXED_AND_VARIABLE_MTRRS
+#option FINAL_MAINBOARD_FIXUP
+
+object cacheramtest.o
+object mainboard.o
+object mptable.o HAVE_MP_TABLE
+object irq_tables.o HAVE_PIRQ_TABLE
+#keyboard pc80
+dir ../../../pc80
+
+# FIXME are the SMBUS DIMM locations documented anywhere? 
+option SMBUS_MEM_DEVICE_START=(0xa << 3)
+option SMBUS_MEM_DEVICE_END=(SMBUS_MEM_DEVICE_START +3)
+option SMBUS_MEM_DEVICE_INC=1
+option SIO_BASE=0x2e
+#option SMP=1
+option IOAPIC=1
+option HAVE_MP_TABLE=1
+option HAVE_PIRQ_TABLE=1
+#option MAX_CPUS=2
+#option FINAL_MAINBOARD_FIXUP=1
+#option HAVE_HARD_RESET=1
+#option STACK_SIZE=0x10000
+#option XIP_ROM_SIZE=0x8000
+#option XIP_ROM_BASE=0xffff8000
+nooption MEMORY_HOLE
+
+cpu p5
+cpu p6
+cpu i786

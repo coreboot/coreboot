@@ -1,4 +1,3 @@
-#ifdef HAVE_PIRQ_TABLE
 #include <printk.h>
 #include <pci.h>
 #include <arch/pirq_routing.h>
@@ -61,5 +60,3 @@ void copy_pirq_routing_table(void)
 	memcpy((char *) RTABLE_DEST, &intel_irq_routing_table, intel_irq_routing_table.size);
 	printk_info("done.\n");
 }
-#endif /* HAVE_PIRQ_TABLE */
-

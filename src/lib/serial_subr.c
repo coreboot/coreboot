@@ -18,6 +18,14 @@ static char rcsid[] = "$Id$";
 
 #define TTYS0_DIV	(115200/TTYS0_BAUD)
 
+/* Line Control Settings */
+#ifndef TTYS0_LCS
+/* Set 8bit, 1 stop bit, no parity */
+#define TTYS0_LCS	0x3
+#endif
+
+#define UART_LCS	TTYS0_LCS
+
 /* Data */
 #define UART_RBR 0x00
 #define UART_TBR 0x00
@@ -35,10 +43,6 @@ static char rcsid[] = "$Id$";
 #define UART_LSR 0x05
 #define UART_MSR 0x06
 #define UART_SCR 0x07
-
-#ifndef TTYS0_BAUD
-#define TTYS0_BAUD 115200
-#endif
 
 static inline int uart_can_tx_byte(unsigned base_port)
 {
@@ -141,10 +145,10 @@ inline void uart_init(unsigned base_port, unsigned divisor)
 	/* enable fifo's */
 	outb(0x01, base_port + UART_FCR);
 	/* Set Baud Rate Divisor to 12 ==> 115200 Baud */
-	outb(0x83, base_port + UART_LCR);
+	outb(0x80 | UART_LCS, base_port + UART_LCR);
 	outb(divisor & 0xFF,   base_port + UART_DLL);
 	outb((divisor >> 8) & 0xFF,    base_port + UART_DLM);
-	outb(0x03, base_port + UART_LCR);
+	outb(UART_LCS, base_port + UART_LCR);
 }
 
 void ttys0_init(void)

@@ -1,4 +1,3 @@
-
 	/*
 	 * This is much more of a "Is my SDRAM properly configured?"
 	 * test than a "Is my SDRAM faulty?" test.  Not all bits
@@ -6,6 +5,7 @@
 	 */
 	
 	jmp	rt_skip
+	.section ".rodata"
 
 rt_test:	.string "Testing SDRAM : "
 rt_fill:	.string "SDRAM fill:\r\n"
@@ -13,6 +13,7 @@ rt_verify:	.string "SDRAM verify:\r\n"
 rt_toomany:	.string "Too many errors.\r\n"
 rt_done:	.string "Done.\r\n"
 	
+	.text
 ramtest:
 #ifdef RAMTEST
 	mov %eax, %esi

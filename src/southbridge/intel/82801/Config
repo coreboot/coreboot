@@ -1,0 +1,3 @@
+object nvram.o
+object ich2_ioapic.o
+object ich2_lpc.o

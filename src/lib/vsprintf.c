@@ -88,12 +88,13 @@ __res = ((unsigned long) n) % (unsigned) base; \
 n = ((unsigned long) n) / (unsigned) base; \
 __res; })
 
-static char * number(char * str, long num, int base, int size, int precision
+static int number(void (*tx_byte)(unsigned char byte), long num, int base, int size, int precision
 	,int type)
 {
 	char c,sign,tmp[66];
 	const char *digits="0123456789abcdefghijklmnopqrstuvwxyz";
 	int i;
+	int count = 0;
 
 	if (type & LARGE)
 		digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -132,38 +133,35 @@ static char * number(char * str, long num, int base, int size, int precision
 	size -= precision;
 	if (!(type&(ZEROPAD+LEFT)))
 		while(size-->0)
-			*str++ = ' ';
+			tx_byte(' '), count++;
 	if (sign)
-		*str++ = sign;
+		tx_byte(sign), count++;
 	if (type & SPECIAL) {
 		if (base==8)
-			*str++ = '0';
+			tx_byte('0'), count++;
 		else if (base==16) {
-			*str++ = '0';
-			*str++ = digits[33];
+			tx_byte('0'), count++;
+			tx_byte(digits[33]), count++;
 		}
 	}
 	if (!(type & LEFT))
 		while (size-- > 0)
-			*str++ = c;
+			tx_byte(c), count++;
 	while (i < precision--)
-		*str++ = '0';
+		tx_byte('0'), count++;
 	while (i-- > 0)
-		*str++ = tmp[i];
+		tx_byte(tmp[i]), count++;
 	while (size-- > 0)
-		*str++ = ' ';
-	return str;
+		tx_byte(' '), count++;
+	return count;
 }
 
-/* Forward decl. needed for IP address printing stuff... */
-int sprintf(char * buf, const char *fmt, ...);
 
-int vsprintf(char *buf, const char *fmt, va_list args)
+int vtxprintf(void (*tx_byte)(unsigned char byte), const char *fmt, va_list args)
 {
 	int len;
 	unsigned long num;
 	int i, base;
-	char * str;
 	const char *s;
 
 	int flags;		/* flags to number() */
@@ -172,10 +170,12 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 	int precision;		/* min. # of digits for integers; max
 				   number of chars for from string */
 	int qualifier;		/* 'h', 'l', or 'L' for integer fields */
+	
+	int count;
 
-	for (str=buf ; *fmt ; ++fmt) {
+	for (count=0; *fmt ; ++fmt) {
 		if (*fmt != '%') {
-			*str++ = *fmt;
+			tx_byte(*fmt), count++;
 			continue;
 		}
 			
@@ -234,10 +234,10 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 		case 'c':
 			if (!(flags & LEFT))
 				while (--field_width > 0)
-					*str++ = ' ';
-			*str++ = (unsigned char) va_arg(args, int);
+					tx_byte(' '), count++;
+			tx_byte((unsigned char) va_arg(args, int)), count++;
 			while (--field_width > 0)
-				*str++ = ' ';
+				tx_byte(' '), count++;
 			continue;
 
 		case 's':
@@ -249,11 +249,11 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 
 			if (!(flags & LEFT))
 				while (len < field_width--)
-					*str++ = ' ';
+					tx_byte(' '), count++;
 			for (i = 0; i < len; ++i)
-				*str++ = *s++;
+				tx_byte(*s++), count++;
 			while (len < field_width--)
-				*str++ = ' ';
+				tx_byte(' '), count++;
 			continue;
 
 		case 'p':
@@ -261,7 +261,7 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 				field_width = 2*sizeof(void *);
 				flags |= ZEROPAD;
 			}
-			str = number(str,
+			count += number(tx_byte,
 				(unsigned long) va_arg(args, void *), 16,
 				field_width, precision, flags);
 			continue;
@@ -270,15 +270,15 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 		case 'n':
 			if (qualifier == 'l') {
 				long * ip = va_arg(args, long *);
-				*ip = (str - buf);
+				*ip = count;
 			} else {
 				int * ip = va_arg(args, int *);
-				*ip = (str - buf);
+				*ip = count;
 			}
 			continue;
 
 		case '%':
-			*str++ = '%';
+			tx_byte('%'), count++;
 			continue;
 
 		/* integer number formats - set up the flags and "break" */
@@ -299,9 +299,9 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 			break;
 
 		default:
-			*str++ = '%';
+			tx_byte('%'), count++;
 			if (*fmt)
-				*str++ = *fmt;
+				tx_byte(*fmt), count++;
 			else
 				--fmt;
 			continue;
@@ -316,10 +316,27 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 			num = va_arg(args, int);
 		else
 			num = va_arg(args, unsigned int);
-		str = number(str, num, base, field_width, precision, flags);
+		count += number(tx_byte, num, base, field_width, precision, flags);
 	}
-	*str = '\0';
-	return str-buf;
+	return count;
+}
+
+/* FIXME this global makes vsprintf non-reentrant
+ */
+static char *str_buf;
+static void str_tx_byte(char byte)
+{
+	*str_buf = byte;
+	str_buf++;
+}
+
+int vsprintf(char * buf, const char *fmt, va_list args)
+{
+	int i;
+	str_buf = buf;
+	i = vtxprintf(str_tx_byte, fmt, args);
+	str_buf = 0;
+	return i;
 }
 
 int sprintf(char * buf, const char *fmt, ...)

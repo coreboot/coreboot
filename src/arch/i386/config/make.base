@@ -6,53 +6,34 @@ option ROM_IMAGE_SIZE=65536
 option MAX_CPUS=1
 # Reserve 256K for the heap
 option HEAP_SIZE=0x40000
-# Reserve 64K for each stack
-option STACK_SIZE=0x10000
+# Reserve 8K for each stack
+option STACK_SIZE=0x2000
 
 # By default on x86 we have a memory hole between 640K and 1MB
 option MEMORY_HOLE=1
 
-makedefine CC:=gcc 
-makedefine CPP:= gcc -x assembler-with-cpp -DASSEMBLY -E
-makedefine LIBGCC_FILE_NAME := $(shell $(CC) -print-libgcc-file-name)
-makedefine GCC_INC_DIR := $(shell $(CC) -print-search-dirs | sed -ne "s/install: \(.*\)/\1include/gp")
-makedefine CPPFLAGS := -I$(TOP)/src/include -I$(TOP)/src/arch/$(ARCH)/include -I$(GCC_INC_DIR) $(CPUFLAGS)
-makedefine CFLAGS := $(CPU_OPT) $(CPPFLAGS) -O2 -nostdinc -nostdlib -fno-builtin -Wall
+option USE_DEFAULT_LAYOUT=1
+ldscript arch/i386/config/ldscript.base USE_DEFAULT_LAYOUT
+ldscript arch/i386/config/ldscript.cacheram USE_CACHE_RAM
+
+# How do I add -mprefered-stack-boundary=2 if the compiler supports it?
+# On x86 tt results in a code size reduction.
+#
+
+dir /src/config
+
 makerule all : romimage ;
 makerule floppy : all ; mcopy -o romimage a:
 makerule romimage : linuxbios.rom vmlinux.bin.gz.block ; cat vmlinux.bin.gz.block linuxbios.rom > romimage
+
 
 makerule linuxbios.rom: linuxbios.strip ; 
 addaction linuxbios.rom export size=`ls -l linuxbios.strip | (read p c u g size r ; echo $$size)` ; \
 addaction linuxbios.rom echo $$size ; \
 addaction linuxbios.rom dd if=linuxbios.strip of=linuxbios.rom bs=1 seek=`expr $(ROM_IMAGE_SIZE) - $$size`
 
-makerule linuxbios.strip: linuxbios ; objcopy -O binary linuxbios linuxbios.strip
 
-makerule linuxbios.o : crt0.o linuxbios.a $(LIBGCC_FILE_NAME)  ; $(CC) -nostdlib -r -o $@ crt0.o linuxbios.a $(LIBGCC_FILE_NAME)
-
-makerule ldscript.ld : ldoptions $(LDSUBSCRIPTS-1) ; echo "INCLUDE ldoptions" > ldscript.ld ; for file in $(LDSUBSCRIPTS-1) ; do echo "INCLUDE $$file" >> ldscript.ld ; done
-
-makerule linuxbios: linuxbios.o ldscript.ld ; $(CC) -nostdlib -nostartfiles -static -o $@ -T ldscript.ld linuxbios.o 
-addaction linuxbios nm -n linuxbios > linuxbios.map
-
-makerule etags: $(SOURCES) ; etags $(SOURCES)
-makerule tags: $(SOURCES) ; ctags $(SOURCES)
-makerule documentation: $(SOURCES) ; doxygen LinuxBIOSDoc.config 
-
-makerule linuxbios.a : $(OBJECTS-1) ; rm -f linuxbios.a
-addaction linuxbios.a ar cr linuxbios.a $(OBJECTS-1)
-
-makerule crt0.s: crt0.S ; $(CPP) $(CPPFLAGS) -I$(TOP)/src $< > crt0.s
-
-makerule crt0.o : crt0.s; $(CC) $(CPU_OPT) -c crt0.s
 makerule mkrom: $(TOP)/mkrom/mkrom.c ; $(CC) -o mkrom $<
-
-makerule clean : ; rm -f linuxbios.* vmlinux.* *.o mkrom xa? *~
-addaction clean rm -f linuxbios romimage crt0.s
-addaction clean rm -f a.out *.s *.l
-addaction clean rm -f TAGS tags
-addaction clean rm -f docipl
 
 
 makerule vmlinux.bin.gz.block : vmlinux.bin.gz ; dd conv=sync bs=448k if=vmlinux.bin.gz of=vmlinux.bin.gz.block
@@ -60,9 +41,8 @@ makerule vmlinux.bin.gz: vmlinux.bin ;gzip -f -3 vmlinux.bin
 makerule vmlinux.bin: $(LINUX)/vmlinux ;  objcopy -O binary -R .note -R .comment -S $< vmlinux.bin
 
 
+addaction clean rm -f romimage mkrom vmlinux.*
+
 # do standard config files that the user need not specify
 # for now, this is just 'lib', but it may be more later. 
 dir /src/arch/i386
-dir /src/lib
-dir /src/boot
-dir /src/rom

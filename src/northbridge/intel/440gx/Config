@@ -1,3 +1,4 @@
+mainboardinit arch/i386/lib/set_memory_size_noop.inc
 mainboardinit northbridge/intel/440gx/raminit.inc
 mainboardinit sdram/generic_sdram_enable.inc
 mainboardinit sdram/generic_sdram.inc

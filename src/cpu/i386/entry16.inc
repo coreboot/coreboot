@@ -36,6 +36,10 @@ EXT(_start): jmp _realstart
  * at 0x18; these are Linux-compatible. 
  */
 
+#ifndef CACHE_RAM_BASE
+#define CACHE_RAM_BASE 0
+#endif
+
 /** GDT. we have modified this from the original freebios to make it 
  * compatible with linux. This puts text at seg 0x10 and data at 0x18
  */
@@ -46,16 +50,16 @@ EXT(gdtptr):
 	.long	gdt		/* we know the offset */
 gdt:
 	.word	0x0000, 0x0000		/* dummy */
-	.byte	0x0, 0x0, 0x0, 0x0
-	
-	.word	0x0000, 0x0000		/* dummy */
-	.byte	0x0, 0x0, 0x0, 0x0
+	.byte	0x00, 0x00, 0x00, 0x00
+
+	.word	0xffff, (CACHE_RAM_BASE & 0xffff)		/* flat offset data segment */
+	.byte	((CACHE_RAM_BASE >> 16)& 0xff), 0x93, 0xcf, ((CACHE_RAM_BASE >> 24) & 0xff)
 	
 	.word	0xffff, 0x0000		/* flat code segment */
-	.byte	0x0, 0x9b, 0xcf, 0x0	
+	.byte	0x00, 0x9b, 0xcf, 0x00	
 	
 	.word	0xffff, 0x0000		/* flat data segment */
-	.byte	0x0, 0x93, 0xcf, 0x0	
+	.byte	0x00, 0x93, 0xcf, 0x00	
 
 
 _realstart:

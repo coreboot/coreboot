@@ -9,6 +9,10 @@
 #include <string.h>
 #include <arch/i386_subr.h>
 
+#if defined(SMP) || defined(IOAPIC)
+#define APIC 1
+#endif
+
 void cache_on(unsigned long totalram)
 {
 	post_code(0x60);
@@ -45,7 +49,7 @@ void interrupts_on()
 	 * see the Intel mp1.4 spec, page A-3
 	 */
 
-#if defined(SMP)
+#if defined(APIC)
 	/* Only Pentium Pro and later have those MSR stuff */
 	unsigned long low, high;
 
@@ -81,7 +85,7 @@ void interrupts_on()
 		| (APIC_LVT_REMOTE_IRR |APIC_SEND_PENDING | 
 			APIC_DELIVERY_MODE_NMI)
 		);
-#else /* SMP */
+#else /* APIC */
 #ifdef i686
 	/* Only Pentium Pro and later have those MSR stuff */
 	unsigned long low, high;
@@ -92,7 +96,7 @@ void interrupts_on()
 	low &= ~APIC_BASE_MSR_ENABLE;
 	wrmsr(APIC_BASE_MSR, low, high);
 #endif /* i686 */
-#endif /* SMP */
+#endif /* APIC */
 	printk_info("done.\n");
 	post_code(0x9b);
 }

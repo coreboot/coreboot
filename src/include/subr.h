@@ -5,6 +5,9 @@
 
 void displayinit(void);
 void display(char msg[]);
+void display_tx_byte(unsigned char byte);
+void display_tx_break(void);
+
 void error(char errmsg[]);
 void post_code(uint8_t value);
 

@@ -1,24 +1,45 @@
-
 /* Base Address */
-#define TTYS0 0x3f8
+#ifndef TTYS0_BASE
+#define TTYS0_BASE	0x3f8
+#endif
+
+/* Baud Rate */
+#ifndef TTYS0_BAUD
+#define TTYS0_BAUD 115200
+#endif
+
+#if ((115200%TTYS0_BAUD) != 0)
+#error Bad ttys0 baud rate
+#endif
+
+/* Baud Rate Divisor */
+#define TTYS0_DIV	(115200/TTYS0_BAUD)
+#define TTYS0_DIV_LO	(TTYS0_DIV&0xFF)
+#define TTYS0_DIV_HI	((TTYS0_DIV >> 8)&0xFF)
+
+/* Line Control Settings */
+#ifndef TTYS0_LCS
+/* Set 8bit, 1 stop bit, no parity */
+#define TTYS0_LCS	0x3
+#endif
 
 /* Data */
-#define TTYS0_RBR (TTYS0+0x00)
+#define TTYS0_RBR (TTYS0_BASE+0x00)
 
 /* Control */
 #define TTYS0_TBR TTYS0_RBR
-#define TTYS0_IER (TTYS0+0x01)
-#define TTYS0_IIR (TTYS0+0x02)
+#define TTYS0_IER (TTYS0_BASE+0x01)
+#define TTYS0_IIR (TTYS0_BASE+0x02)
 #define TTYS0_FCR TTYS0_IIR
-#define TTYS0_LCR (TTYS0+0x03)
-#define TTYS0_MCR (TTYS0+0x04)
+#define TTYS0_LCR (TTYS0_BASE+0x03)
+#define TTYS0_MCR (TTYS0_BASE+0x04)
 #define TTYS0_DLL TTYS0_RBR
 #define TTYS0_DLM TTYS0_IER
 
 /* Status */
-#define TTYS0_LSR (TTYS0+0x05)
-#define TTYS0_MSR (TTYS0+0x06)
-#define TTYS0_SCR (TTYS0+0x07)
+#define TTYS0_LSR (TTYS0_BASE+0x05)
+#define TTYS0_MSR (TTYS0_BASE+0x06)
+#define TTYS0_SCR (TTYS0_BASE+0x07)
 
 	jmp	serial0
 
@@ -300,19 +321,21 @@ serial0:
 	/* Set 115.2Kbps,8n1 */
 	/* Set 8bit, 1 stop bit, no parity, DLAB */
 	mov	$TTYS0_LCR, %dx
-	mov	$0x83, %al
+	mov	$(TTYS0_LCS | 0x80), %al
 	out	%al, %dx
 
 	/* set Baud Rate Divisor to 1 ==> 115200 Buad */
 	mov	$TTYS0_DLL, %dx
-	mov	$0x01, %al
+	mov	$TTYS0_DIV_LO, %al
 	out	%al, %dx
 	mov	$TTYS0_DLM, %dx
-	mov	$0x00, %al
+	mov	$TTYS0_DIV_HI, %al
 	out	%al, %dx
 
 	/* Disable DLAB */
 	mov	$TTYS0_LCR, %dx
-	mov	$0x03, %al
+	mov	$(TTYS0_LCS & 0x7f), %al
 	out	%al, %dx
+
+	TTYS0_TX_STRING($ttyS0_test)
 

@@ -1,4 +1,4 @@
 object i386_subr.o
 object params.o
 object hardwaremain.o
-object pirq_routing.o
+object pirq_routing.o HAVE_PIRQ_TABLE

@@ -249,8 +249,6 @@ static void enable_devices(struct superio *sio)
 	setup_acpi_registers(sio);
 #endif
 
-	// what's this.
-	write_config(sio, 1, 0x30);
 	exit_pnp(sio);
 }
 

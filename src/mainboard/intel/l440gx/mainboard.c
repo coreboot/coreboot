@@ -28,20 +28,19 @@ void mainboard_fixup()
 	u32 dword;
 	for(i = 0; i < 8; i++) {
 		pci_read_config_byte(host_bridge_pcidev, 0x60 +i, &byte);
-		printk_debug("DRB[i] = 0x%02x\n", byte);
+		printk_spew("DRB[i] = 0x%02x\n", byte);
 	}
 	pci_read_config_byte(host_bridge_pcidev, 0x57, &byte);
-	printk_debug("DRAMC = 0x%02x\n", byte);
+	printk_spew("DRAMC = 0x%02x\n", byte);
 	pci_read_config_byte(host_bridge_pcidev, 0x74, &byte);
-	printk_debug("RPS = 0x%02x\n", byte);
+	printk_spew("RPS = 0x%02x\n", byte);
 	pci_read_config_word(host_bridge_pcidev, 0x78, &word);
-	printk_debug("PGPOL = 0x%04x\n", word);
+	printk_spew("PGPOL = 0x%04x\n", word);
 	pci_read_config_dword(host_bridge_pcidev, 0x50, &dword);
-	printk_debug("NBXCFG = 0x%04x\n", dword);
+	printk_spew("NBXCFG = 0x%04x\n", dword);
 	}
 	
 #endif
-#if 1
 
 	printk_debug("Reset Control Register\n");
 	outb(((inb(0xcf9) & 0x04) | 0x02), 0xcf9);
@@ -157,9 +156,8 @@ void mainboard_fixup()
 	/* DEVRESJ */
 	pci_write_config_dword(pm_pcidev, 0x7c, 0);
 
-#endif
 
-#if 1
+#if 0
 	
 	/* Verify that smi is disabled */
 	printk_debug("Testing SMI\r\n");

@@ -750,9 +750,9 @@ void enable_resources(struct pci_bus *bus)
 		u16 command;
 		pci_read_config_word(curdev, PCI_COMMAND, &command);
 		command |= curdev->command;
-		pci_write_config_word(curdev, PCI_COMMAND, command);
-		printk_debug("DEV Set command bus 0x%x devfn 0x%x to 0x%x\n",
+		printk_debug("DEV Set command bus 0x%02x devfn 0x%02x to 0x%02x\n",
 		    curdev->bus->number, curdev->devfn, command);
+		pci_write_config_word(curdev, PCI_COMMAND, command);
 	}
 }
 

@@ -26,9 +26,9 @@
 
 CRT0_PARAMETERS
 
-#if defined(SERIAL_CONSOLE) && defined(DEBUG)
+#if defined(SERIAL_CONSOLE) && (DEFAULT_CONSOLE_LOGLEVEL >= 7)
         TTYS0_TX_STRING($str_after_ram)
-#endif /* defined(SERIAL_CONSOLE) && defined(DEBUG) */
+#endif 
 
 	/* clear boot_complete flag */
 	xorl	%ebp, %ebp
@@ -96,10 +96,9 @@ __main:
 	 */ 
 	intel_chip_post_macro(0xfe)	/* post fe */
 
-#if defined(SERIAL_CONSOLE) && defined(DEBUG)
+#if defined(SERIAL_CONSOLE) && (DEFAULT_CONSOLE_LOGLEVEL >= 7)
         TTYS0_TX_STRING($str_pre_main)
-#endif /* defined(SERIAL_CONSOLE) && defined(DEBUG) */
-
+#endif 
 
 	/* memory is up. Let\'s do the rest in C -- much easier. */
 

@@ -1,4 +1,4 @@
-config i82801er.h
+config chip.h
 driver i82801er.o
 driver i82801er_usb.o
 driver i82801er_lpc.o

@@ -9,14 +9,7 @@
 #ifndef I82801DBM_H
 #define I82801DBM_H
 
-struct southbridge_intel_i82801dbm_config 
-{
-  int enable_usb;
-  int enable_native_ide;
-};
-struct chip_control;
-extern struct chip_control southbridge_intel_i82801dbm_control;
-
+#include "chip.h"
 extern void i82801dbm_enable(device_t dev);
 
 /*

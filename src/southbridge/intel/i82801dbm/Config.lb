@@ -1,4 +1,4 @@
-config i82801dbm.h
+config chip.h
 driver i82801dbm.o
 driver i82801dbm_usb.o
 driver i82801dbm_lpc.o

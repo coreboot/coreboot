@@ -1,11 +1,7 @@
 #ifndef I82801ER_H
 #define I82801ER_H
 
-struct southbridge_intel_i82801er_config 
-{
-};
-struct chip_control;
-extern struct chip_control southbridge_intel_i82801er_control;
+#include "chip.h"
 
 extern void i82801er_enable(device_t dev);
 

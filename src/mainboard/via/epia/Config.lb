@@ -16,7 +16,7 @@ uses XIP_ROM_SIZE
 uses XIP_ROM_BASE
 
 ## ROM_SIZE is the size of boot ROM that this board will use.
-default ROM_SIZE 524288
+default ROM_SIZE  524288
 
 ###
 ### Build options
@@ -129,18 +129,14 @@ option XIP_ROM_BASE = ( _ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE )
 ##
 
 arch i386 end
-#cpu k8 end
 
 ##
 ## Build the objects we have code for in this directory.
 ##
 
-#object mainboard.o
+
 driver mainboard.o
-#object static_devices.o
-if HAVE_MP_TABLE object mptable.o end
-if HAVE_PIRQ_TABLE object irq_tables.o end
-object reset.o
+#object reset.o
 
 ##
 ## Romcc output
@@ -161,7 +157,7 @@ makerule ./auto.E
 end
 makerule ./auto.inc 
 	depends "./auto.E ./romcc"
-	action	"./romcc -mcpu=k8  -O ./auto.E > auto.inc"
+	action	"./romcc   -O ./auto.E > auto.inc"
 end
 
 ##
@@ -195,7 +191,7 @@ ldscript /arch/i386/lib/id.lds
 ##
 ## Setup our mtrrs
 ##
-mainboardinit cpu/k8/earlymtrr.inc
+# mainboardinit cpu/p6/earlymtrr.inc
 
 ###
 ### This is the early phase of linuxBIOS startup 
@@ -214,9 +210,7 @@ end
 ##
 ## Setup RAM
 ##
-mainboardinit cpu/k8/enable_mmx_sse.inc
 mainboardinit ./auto.inc
-mainboardinit cpu/k8/disable_mmx_sse.inc
 
 ##
 ## Include the secondary Configuration files 
@@ -224,59 +218,28 @@ mainboardinit cpu/k8/disable_mmx_sse.inc
 dir /pc80
 config chip.h
 
-northbridge amd/amdk8 "mc0"
+northbridge via/vt8601 "vt8601"
 	pci 0:18.0
 	pci 0:18.0
 	pci 0:18.0
 	pci 0:18.1
 	pci 0:18.2
 	pci 0:18.3
-	southbridge amd/amd8131 "amd8131"
+	southbridge via/vt8231 "vt8231"
+		register "enable_usb" = "0"
+		register "enable_native_ide" = "1"
+		register "enable_com_ports" = "1"
+		register "enable_keyboard" = "0"
+		register "enable_nvram" = "1"
 		pci 0:0.0
 		pci 0:0.1
 		pci 0:1.0
 		pci 0:1.1
 	end
-	southbridge amd/amd8111 "amd8111"
-		pci 0:0.0
-		pci 0:1.0
-		pci 0:1.1
-		pci 0:1.2
-		pci 0:1.3
-		pci 0:1.5
-		pci 0:1.6
-		superio NSC/pc87360
-			pnp 1:2e.0
-			pnp 1:2e.1
-			pnp 1:2e.2
-			pnp 1:2e.3
-			pnp 1:2e.4
-			pnp 1:2e.5
-			pnp 1:2e.6
-			pnp 1:2e.7
-			pnp 1:2e.8
-			pnp 1:2e.9
-			pnp 1:2e.a
-			register "com1" = "{1, 0, 0x3f8, 4}"
-			register "lpt" = "{1}"
-		end
-	end
 end
 
-northbridge amd/amdk8 "mc1"
-	pci 0:19.0
-	pci 0:19.0
-	pci 0:19.0
-	pci 0:19.1
-	pci 0:19.2
-	pci 0:19.3
-end
-
-cpu k8 "cpu0"
-	register "up" = "{ .chip = &amd8131, .ht_width=16, .ht_speed=600 }"
-end
-
-cpu k8 "cpu1" 
+cpu p5 "cpu0"
+	
 end
 
 ##

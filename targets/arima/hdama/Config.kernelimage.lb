@@ -64,7 +64,7 @@ option INTEL_PPRO_MTRR=1
 option k7=1
 option k8=1
 
-option ROM_SIZE=524288
+option ROM_SIZE=0x100000
 
 
 option HAVE_OPTION_TABLE=1
@@ -75,7 +75,7 @@ option HAVE_FALLBACK_BOOT=1
 ### Compute the location and size of where this firmware image
 ### (linuxBIOS plus bootloader) will live in the boot rom chip.
 ###
-option FALLBACK_SIZE=131072
+option FALLBACK_SIZE=ROM_SIZE
 
 ## LinuxBIOS C code runs at this location in RAM
 option _RAMBASE=0x00004000
@@ -88,24 +88,16 @@ option _RAMBASE=0x00004000
 
 #
 # Arima hdama
-romimage "normal"
-	option USE_FALLBACK_IMAGE=0
-	option ROM_IMAGE_SIZE=0x10000
-	option LINUXBIOS_EXTRA_VERSION=".0Normal"
-	mainboard arima/hdama
-	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
-# use this to test a build if you don't have the etherboot
-#	payload /etc/hosts
-end
-
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
 	option ROM_IMAGE_SIZE=0x10000
+#	option ROM_SECTION_SIZE=0x100000
 	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
 	mainboard arima/hdama
-	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
-# use this to test a build if you don't have the etherboot
-#	payload /etc/hosts
+	payload ../../../../tg3--ide_disk.zelf
+#	payload ../../../../opteron_phase1_p4_noapic
+#	payload ../../../../../../hdama-1
+#	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
 end
 
-buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
+buildrom ROM_SIZE "fallback"

@@ -1,10 +1,10 @@
 #include <console/console.h>
 #include <device/device.h>
-//#include <device/chip.h>
+#include <device/chip.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-//#include "chip.h"
+#include "chip.h"
 //#include <part/mainboard.h>
 //#include "lsi_scsi.c"
 unsigned long initial_apicid[MAX_CPUS] =
@@ -35,8 +35,9 @@ static void fixup_lsi_53c1030(struct device *pdev)
 //	lsi_scsi_init(pdev);
 	
 }
+*/
 //extern static void lsi_scsi_init(struct device *dev);
-static void print_pci_regs(struct device *dev)
+/*static void print_pci_regs(struct device *dev)
 {
       uint8_t byte;
       int i;
@@ -55,12 +56,13 @@ static void print_pci_regs(struct device *dev)
 */
 static void onboard_scsi_fixup(void)
 {
-       struct device *dev;
-/*
-       // Set the scsi device id's 
+//       struct device *dev;
+
+/*       // Set the scsi device id's 
        printk_debug("%2d:%2d:%2d\n",0,1,0);
 	dev = dev_find_slot(0, PCI_DEVFN(0x1, 0));
        if (dev) {
+		print_pci_regs(dev);
         }
         // Set the scsi device id's 
        printk_debug("%2d:%2d:%2d\n",0,2,0);
@@ -68,31 +70,45 @@ static void onboard_scsi_fixup(void)
         if (dev) {
 		print_pci_regs(dev);
         }
- 
-      // Set the scsi device id's
-       printk_debug("%2d:%2d:%2d\n",1,0xa,0);
-       dev = dev_find_slot(1, PCI_DEVFN(0xa, 0));
-       if (dev) {
-                print_pci_regs(dev);
-        }
+
         // Set the scsi device id's
-       printk_debug("%2d:%2d:%2d\n",1,0xa,1);
-        dev = dev_find_slot(1, PCI_DEVFN(0xa, 1));
+       printk_debug("%2d:%2d:%2d\n",0,3,0);
+        dev = dev_find_slot(0, PCI_DEVFN(0x3, 0));
         if (dev) {
                 print_pci_regs(dev);
         }
-       printk_debug("%2d:%2d:%2d\n",1,9,0);
-       dev = dev_find_slot(1, PCI_DEVFN(0x9, 0));
+
+      // Set the scsi device id's
+       printk_debug("%2d:%2d:%2d\n",1,0x7,0);
+       dev = dev_find_slot(1, PCI_DEVFN(0x7, 0));
        if (dev) {
                 print_pci_regs(dev);
         }
         // Set the scsi device id's
-       printk_debug("%2d:%2d:%2d\n",1,9,1);
-        dev = dev_find_slot(1, PCI_DEVFN(0x9, 1));
+       printk_debug("%2d:%2d:%2d\n",1,0x8,0);
+        dev = dev_find_slot(1, PCI_DEVFN(0x8, 0));
+        if (dev) {
+                print_pci_regs(dev);
+        }
+       printk_debug("%2d:%2d:%2d\n",2,3,0);
+       dev = dev_find_slot(2, PCI_DEVFN(0x3, 0));
+       if (dev) {
+                print_pci_regs(dev);
+        }
+        // Set the scsi device id's
+       printk_debug("%2d:%2d:%2d\n",2,6,0);
+        dev = dev_find_slot(2, PCI_DEVFN(0x6, 0));
+        if (dev) {
+                print_pci_regs(dev);
+        }
+        // Set the scsi device id's
+       printk_debug("%2d:%2d:%2d\n",3,4,0);
+        dev = dev_find_slot(3, PCI_DEVFN(0x4, 0));
         if (dev) {
                 print_pci_regs(dev);
         }
 */
+
 
 /*
         dev = dev_find_device(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_53C1030,0);
@@ -105,7 +121,7 @@ static void onboard_scsi_fixup(void)
 */
 }
  
-/*
+
 static void
 enable(struct chip *chip, enum chip_pass pass)
 {
@@ -116,7 +132,7 @@ enable(struct chip *chip, enum chip_pass pass)
         switch (pass) {
 		default: break;
 		case CONF_PASS_PRE_BOOT:
-			 if (conf->fixup_scsi)
+			if (conf->fixup_scsi)
         			onboard_scsi_fixup();
 			printk_debug("mainboard fixup pass %d done\r\n",
 					pass);
@@ -132,7 +148,7 @@ void final_mainboard_fixup(void)
 }
 
 struct chip_control mainboard_tyan_s2880_control = {
-	        enable: enable,
-	        name:   "Tyan s2880 mainboard "
+	        .enable= enable,
+	        .name=   "Tyan s2880 mainboard "
 };
-*/
+

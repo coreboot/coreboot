@@ -1124,6 +1124,23 @@ static void spd_set_ram_size(const struct mem_controller *ctrl)
 	}
 }
 
+//BY LYH //Fill next base reg with right value
+static void fill_last(unsigned long node_id,unsigned long base)
+{
+        unsigned i;
+        unsigned base_reg;
+        base &=0xffff0000;
+        device_t device;
+        for(device = PCI_DEV(0, 0x18, 1); device <= PCI_DEV(0, 0x1f, 1); device
++= PCI_DEV(0, 1, 0)) {
+                for(i=node_id+1;i<=7;i++) {
+                        base_reg=0x40+(i<<3);
+                        pci_write_config32(device,base_reg,base);
+                }
+        }
+}
+//BY LYH END
+ 
 static void route_dram_accesses(const struct mem_controller *ctrl,
 	unsigned long base_k, unsigned long limit_k)
 {
@@ -1276,6 +1293,9 @@ static void order_dimms(const struct mem_controller *ctrl)
 	print_debug("\r\n");
 #endif
 	route_dram_accesses(ctrl, base_k, tom_k);
+//BY LYH
+        fill_last(ctrl->node_id, tom_k<<2);
+//BY LYH END
 	set_top_mem(tom_k);
 }
 

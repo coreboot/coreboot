@@ -16,11 +16,13 @@ uses ARCH
 ### Build the objects we have code for in this directory.
 ###
 ##object mainboard.o
-#config chip.h
-#register "fixup_scsi" = "1"
+config chip.h
+register "fixup_scsi" = "1"
 
 driver mainboard.o
 driver lsi_scsi.o
+driver adaptec_scsi.o
+driver intel_nic.o
 object static_devices.o
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end

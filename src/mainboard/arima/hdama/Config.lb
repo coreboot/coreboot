@@ -154,9 +154,9 @@ superio NSC/pc87360
 	register "com1" = "{1}"
 	register "lpt" = "{1}"
 end
-# dir /pc80
+dir /pc80
 ##dir /src/superio/winbond/w83627hf
-dir /cpu/k8
+#dir /cpu/k8
 cpu k8 "cpu0" 
   register "up" = "{.chip = &amd8111, .ht_width=8, .ht_speed=200}"
 end

@@ -14,7 +14,7 @@
 #include "lib/delay.c"
 #include "cpu/p6/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
-#include "debug.c"
+//#include "debug.c"
 
 static void memreset_setup(void)
 {

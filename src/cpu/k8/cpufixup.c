@@ -32,15 +32,28 @@ void k8_cpufixup(struct mem_range *mem)
 		mmio_basek = tomk;
 	}
 
-	/* Setup TOP_MEM */
-	msr.hi = mmio_basek >> 22;
-	msr.lo = mmio_basek << 10;
-	wrmsr(TOP_MEM, msr);
+#if 1
+        /* Report the amount of memory. */
+        print_debug("cpufixup RAM: 0x");
+        print_debug_hex32(tomk);
+        print_debug(" KB\r\n");
+#endif
 
-	/* Setup TOP_MEM2 */
-	msr.hi = tomk >> 22;
-	msr.lo = tomk << 10;
-	wrmsr(TOP_MEM2, msr);
+        /* Now set top of memory */
+        msr.lo = (tomk & 0x003fffff) << 10;
+        msr.hi = (tomk & 0xffc00000) >> 22;
+        wrmsr(TOP_MEM2, msr);
+
+        /* Leave a 64M hole between TOP_MEM and TOP_MEM2
+         * so I can see my rom chip and other I/O devices.
+         */
+        if (tomk >= 0x003f0000) {
+                tomk = 0x3f0000;
+        } //    tom_k = 0x3c0000;
+        msr.lo = (tomk & 0x003fffff) << 10;
+        msr.hi = (tomk & 0xffc00000) >> 22;
+        wrmsr(TOP_MEM, msr);
+
 
 	/* zero the IORR's before we enable to prevent
 	 * undefined side effects.

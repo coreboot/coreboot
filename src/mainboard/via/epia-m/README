@@ -1,5 +1,0 @@
-To enable flash write,
-
-$ setpci -s 0:11.0  40.b=54
-
--Andrew

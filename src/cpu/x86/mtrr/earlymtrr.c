@@ -79,8 +79,6 @@ static void do_early_mtrr_init(const unsigned long *mtrr_msrs)
 	const unsigned long *msr_addr;
 	unsigned long cr0;
 
-	print_spew("Clearing mtrr\r\n");
-
 	/* Inialize all of the relevant msrs to 0 */
 	msr.lo = 0;
 	msr.hi = 0;

@@ -1,5 +1,6 @@
 option SIS540
 option USE_DOC_MIL
+option SMA_SIZE=0x90
 docipl northsouthbridge/sis/540/ipl.S
 raminit northsouthbridge/sis/540/raminit.inc
 

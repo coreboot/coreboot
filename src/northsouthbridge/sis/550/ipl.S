@@ -40,6 +40,7 @@
 
 sis630spd_start:
 	cli					# Disables the maskable
+						# hardware interrupts.
 
 	movw	%cs, %ax			# makes data segment ==
 	movw	%ax, %ds			#       code segment
@@ -183,17 +184,17 @@ no_sdram:
 	movw	%fs, %ax
 	movb	$0x63, %ah
 #ifdef HAVE_FRAMEBUFFER
-        orb	$0xA0, %al			# enable SMA 8 MB for VGA
+	orb	$SMA_SIZE, %al			# enable SMA 8 MB for VGA
 #endif /* HAVE_FRAMEBUFFER */
 
 #else /* !SIZE_ALL */
 
 no_sdram:
 #ifdef HAVE_FRAMEBUFFER
-                                                # enable DIMM 0 and 
-        movw        $0x63A1, %ax		# enable SMA 8 MB for VGA
+	movb	$0x63, %ah			# enable DIMM 0 and
+	movw	$SMA_SIZE + $0x01, %ax		# enable SMA 8 MB for VGA
 #else /* HAVE_FRAMEBUFFER */
-        movw        $0x6301, %ax		# enable DIMM 0 
+	movw	$0x6301, %ax			# enable DIMM 0 
 #endif /* HAVE_FRAMEBUFFER */
 
 #endif /* SIZE_ALL */

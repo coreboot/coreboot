@@ -7,7 +7,7 @@ makedefine LIBGCC_FILE_NAME := $(shell $(CC) -print-libgcc-file-name)
 makedefine GCC_INC_DIR := $(shell $(CC) -print-search-dirs | sed -ne "s/install: \(.*\)/\1include/gp")
 
 makedefine CPPFLAGS := -I$(TOP)/src/include -I$(TOP)/src/arch/$(ARCH)/include -I$(GCC_INC_DIR) $(CPUFLAGS)
-makedefine ROMCCPPFLAGS := -D__ROMCC__=0 -D__ROMCC_MINOR__=63
+makedefine ROMCCPPFLAGS := -D__ROMCC__=0 -D__ROMCC_MINOR__=64
 makedefine CFLAGS := $(CPU_OPT) $(CPPFLAGS) -Os -nostdinc -nostdlib -fno-builtin  -Wall
 
 makedefine HOSTCFLAGS:= -Os -Wall

@@ -3,8 +3,8 @@
 #undef RELEASE_DATE
 #undef VERSION
 #define VERSION_MAJOR "0"
-#define VERSION_MINOR "63"
-#define RELEASE_DATE "28 May 2004"
+#define VERSION_MINOR "64"
+#define RELEASE_DATE "28 June 2004"
 #define VERSION VERSION_MAJOR "." VERSION_MINOR
 
 #include <stdarg.h>
@@ -10014,15 +10014,21 @@ static void simplify_load(struct compile_state *state, struct triple *ins)
 		(blob->op == OP_BLOBCONST)) {
 		unsigned char buffer[SIZEOF_WORD];
 		size_t reg_size, mem_size;
-		const char *src;
+		const char *src, *end;
 		ulong_t val;
 		reg_size = reg_size_of(state, ins->type);
 		if (reg_size > REG_SIZEOF_REG) {
 			internal_error(state, ins, "load size greater than register");
 		}
 		mem_size = size_of(state, ins->type);
+		end = blob->u.blob;
+		end += bits_to_bytes(size_of(state, sdecl->type));
 		src = blob->u.blob;
 		src += addr->u.cval;
+
+		if (src > end) {
+			error(state, ins, "Load address out of bounds");
+		}
 
 		memset(buffer, 0, sizeof(buffer));
 		memcpy(buffer, src, bits_to_bytes(mem_size));
@@ -14387,10 +14393,24 @@ static void expand_function_call(
 	jmp           = flatten(state, ret_loc, 
 		call(state, retvar, ret_addr, func_first, func_last));
 
+	/* Find the result */
+	if ((rtype->type & TYPE_MASK) != TYPE_VOID) {
+		struct triple * result;
+		result = flatten(state, first, 
+			read_expr(state, 
+				deref_index(state, fresult(state, func), 1)));
+
+		propogate_use(state, fcall, result);
+	}
+
+	/* Release the original fcall instruction */
+	release_triple(state, fcall);
+
 	/* Restore the active variables from the result variable */
 	for(i = 0, set = enclose; set ; set = set->next, i++) {
 		struct triple_set *use, *next;
 		struct triple *new;
+		struct basic_blocks bb;
 		if (!set->member || (set->member == fcall)) {
 			continue;
 		}
@@ -14406,7 +14426,18 @@ static void expand_function_call(
 				write_expr(state, set->member, new));
 			continue;
 		}
-		/* If the original is a value update the dominated uses */
+		/*
+		 * If the original is a value update the dominated uses.
+		 */
+		
+		/* Analyze the basic blocks so I can see who dominates whom */
+		bb.func = me;
+		bb.first = RHS(me, 0);
+		if (!triple_is_ret(state, bb.first->prev)) {
+			bb.func = 0;
+		}
+		analyze_basic_blocks(state, &bb);
+		
 
 #if DEBUG_EXPLICIT_CLOSURES
 		fprintf(state->errout, "Updating domindated uses: %p -> %p\n",
@@ -14424,20 +14455,13 @@ static void expand_function_call(
 			}
 			replace_use(state, set->member, new, use->member);
 		}
+
+		/* Release the basic blocks, the instructions will be
+		 * different next time, and flatten/insert_triple does
+		 * not update the block values so I can't cache the analysis.
+		 */
+		free_basic_blocks(state, &bb);
 	}
-
-	/* Find the result */
-	if ((rtype->type & TYPE_MASK) != TYPE_VOID) {
-		struct triple * result;
-		result = flatten(state, first, 
-			read_expr(state, 
-				deref_index(state, fresult(state, func), 1)));
-
-		propogate_use(state, fcall, result);
-	}
-
-	/* Release the original fcall instruction */
-	release_triple(state, fcall);
 
 	/* Release the closure variable list */
 	free_closure_variables(state, &enclose);
@@ -15008,11 +15032,11 @@ static void find_cf_blocks(struct cf_block *cf, struct block *block)
 }
 
 static void print_control_flow(struct compile_state *state,
-	struct basic_blocks *bb)
+	FILE *fp, struct basic_blocks *bb)
 {
 	struct cf_block *cf;
 	int i;
-	printf("\ncontrol flow\n");
+	fprintf(fp, "\ncontrol flow\n");
 	cf = xcmalloc(sizeof(*cf) * (bb->last_vertex + 1), "cf_block");
 	find_cf_blocks(cf, bb->first_block);
 
@@ -15022,11 +15046,11 @@ static void print_control_flow(struct compile_state *state,
 		block = cf[i].block;
 		if (!block)
 			continue;
-		printf("(%p) %d:", block, block->vertex);
+		fprintf(fp, "(%p) %d:", block, block->vertex);
 		for(edge = block->edges; edge; edge = edge->next) {
-			printf(" %d", edge->member->vertex);
+			fprintf(fp, " %d", edge->member->vertex);
 		}
-		printf("\n");
+		fprintf(fp, "\n");
 	}
 
 	xfree(cf);
@@ -15302,10 +15326,16 @@ static void romcc_print_blocks(struct compile_state *state, FILE *fp)
 }
 static void print_blocks(struct compile_state *state, const char *func, FILE *fp)
 {
+	static void print_dominators(struct compile_state *state, FILE *fp, struct basic_blocks *bb);
+	static void print_dominance_frontiers(struct compile_state *state, FILE *fp, struct basic_blocks *bb);
 	if (state->compiler->debug & DEBUG_BASIC_BLOCKS) {
 		fprintf(fp, "After %s\n", func);
 		romcc_print_blocks(state, fp);
-		print_control_flow(state, &state->bb);
+		if (state->compiler->debug & DEBUG_FDOMINATORS) {
+			print_dominators(state, fp, &state->bb);
+			print_dominance_frontiers(state, fp, &state->bb);
+		}
+		print_control_flow(state, fp, &state->bb);
 	}
 }
 
@@ -15885,7 +15915,7 @@ static void print_dominators(struct compile_state *state, FILE *fp, struct basic
 
 
 static int print_frontiers(
-	struct compile_state *state, struct block *block, int vertex)
+	struct compile_state *state, FILE *fp, struct block *block, int vertex)
 {
 	struct block_set *user, *edge;
 
@@ -15894,22 +15924,22 @@ static int print_frontiers(
 	}
 	vertex += 1;
 
-	printf("%d:", block->vertex);
+	fprintf(fp, "%d:", block->vertex);
 	for(user = block->domfrontier; user; user = user->next) {
-		printf(" %d", user->member->vertex);
+		fprintf(fp, " %d", user->member->vertex);
 	}
-	printf("\n");
+	fprintf(fp, "\n");
 	
 	for(edge = block->edges; edge; edge = edge->next) {
-		vertex = print_frontiers(state, edge->member, vertex);
+		vertex = print_frontiers(state, fp, edge->member, vertex);
 	}
 	return vertex;
 }
 static void print_dominance_frontiers(struct compile_state *state,
-	struct basic_blocks *bb)
+	FILE *fp, struct basic_blocks *bb)
 {
-	printf("\ndominance frontiers\n");
-	print_frontiers(state, bb->first_block, 0);
+	fprintf(fp, "\ndominance frontiers\n");
+	print_frontiers(state, fp, bb->first_block, 0);
 	
 }
 
@@ -15922,8 +15952,8 @@ static void analyze_idominators(struct compile_state *state, struct basic_blocks
 	/* If debuging print the print what I have just found */
 	if (state->compiler->debug & DEBUG_FDOMINATORS) {
 		print_dominators(state, state->dbgout, bb);
-		print_dominance_frontiers(state, bb);
-		print_control_flow(state, bb);
+		print_dominance_frontiers(state, state->dbgout, bb);
+		print_control_flow(state, state->dbgout, bb);
 	}
 }
 
@@ -15952,7 +15982,7 @@ static void print_ipdominators(struct compile_state *state, FILE *fp,
 }
 
 static int print_pfrontiers(
-	struct compile_state *state, struct block *block, int vertex)
+	struct compile_state *state, FILE *fp, struct block *block, int vertex)
 {
 	struct block_set *user;
 
@@ -15961,21 +15991,21 @@ static int print_pfrontiers(
 	}
 	vertex += 1;
 
-	printf("%d:", block->vertex);
+	fprintf(fp, "%d:", block->vertex);
 	for(user = block->ipdomfrontier; user; user = user->next) {
-		printf(" %d", user->member->vertex);
+		fprintf(fp, " %d", user->member->vertex);
 	}
-	printf("\n");
+	fprintf(fp, "\n");
 	for(user = block->use; user; user = user->next) {
-		vertex = print_pfrontiers(state, user->member, vertex);
+		vertex = print_pfrontiers(state, fp, user->member, vertex);
 	}
 	return vertex;
 }
 static void print_ipdominance_frontiers(struct compile_state *state,
-	struct basic_blocks *bb)
+	FILE *fp, struct basic_blocks *bb)
 {
-	printf("\nipdominance frontiers\n");
-	print_pfrontiers(state, bb->last_block, 0);
+	fprintf(fp, "\nipdominance frontiers\n");
+	print_pfrontiers(state, fp, bb->last_block, 0);
 	
 }
 
@@ -15989,8 +16019,8 @@ static void analyze_ipdominators(struct compile_state *state,
 	/* If debuging print the print what I have just found */
 	if (state->compiler->debug & DEBUG_RDOMINATORS) {
 		print_ipdominators(state, state->dbgout, bb);
-		print_ipdominance_frontiers(state, bb);
-		print_control_flow(state, bb);
+		print_ipdominance_frontiers(state, state->dbgout, bb);
+		print_control_flow(state, state->dbgout, bb);
 	}
 }
 
@@ -16015,6 +16045,9 @@ static int tdominates(struct compile_state *state,
 	} 
 	else {
 		struct triple *ins;
+		if (!bdom || !bsub) {
+			internal_error(state, dom, "huh?");
+		}
 		ins = sub;
 		while((ins != bsub->first) && (ins != dom)) {
 			ins = ins->prev;
@@ -18962,6 +18995,7 @@ static void print_interference_ins(
 	struct reg_state *rstate = arg;
 	struct live_range *lr;
 	unsigned id;
+	FILE *fp = state->dbgout;
 
 	lr = rstate->lrd[ins->id].lr;
 	id = ins->id;
@@ -18972,38 +19006,38 @@ static void print_interference_ins(
 
 	if (lr->defs) {
 		struct live_range_def *lrd;
-		printf("       range:");
+		fprintf(fp, "       range:");
 		lrd = lr->defs;
 		do {
-			printf(" %-10p", lrd->def);
+			fprintf(fp, " %-10p", lrd->def);
 			lrd = lrd->next;
 		} while(lrd != lr->defs);
-		printf("\n");
+		fprintf(fp, "\n");
 	}
 	if (live) {
 		struct triple_reg_set *entry;
-		printf("        live:");
+		fprintf(fp, "        live:");
 		for(entry = live; entry; entry = entry->next) {
-			printf(" %-10p", entry->member);
+			fprintf(fp, " %-10p", entry->member);
 		}
-		printf("\n");
+		fprintf(fp, "\n");
 	}
 	if (lr->edges) {
 		struct live_range_edge *entry;
-		printf("       edges:");
+		fprintf(fp, "       edges:");
 		for(entry = lr->edges; entry; entry = entry->next) {
 			struct live_range_def *lrd;
 			lrd = entry->node->defs;
 			do {
-				printf(" %-10p", lrd->def);
+				fprintf(fp, " %-10p", lrd->def);
 				lrd = lrd->next;
 			} while(lrd != entry->node->defs);
-			printf("|");
+			fprintf(fp, "|");
 		}
-		printf("\n");
+		fprintf(fp, "\n");
 	}
 	if (triple_is_branch(state, ins)) {
-		printf("\n");
+		fprintf(fp, "\n");
 	}
 	return;
 }
@@ -19929,7 +19963,7 @@ static void ids_from_rstate(struct compile_state *state,
 	if (state->compiler->debug & DEBUG_INTERFERENCE) {
 		FILE *fp = state->dbgout;
 		print_interference_blocks(state, rstate, fp, 0);
-		print_control_flow(state, &state->bb);
+		print_control_flow(state, fp, &state->bb);
 		fflush(fp);
 	}
 	first = state->first;
@@ -20042,7 +20076,7 @@ static void allocate_registers(struct compile_state *state)
 			/* Display the interference graph if desired */
 			if (state->compiler->debug & DEBUG_INTERFERENCE) {
 				print_interference_blocks(state, &rstate, state->dbgout, 1);
-				printf("\nlive variables by instruction\n");
+				fprintf(state->dbgout, "\nlive variables by instruction\n");
 				walk_variable_lifetimes(
 					state, &state->bb, rstate.blocks, 
 					print_interference_ins, &rstate);
@@ -21293,11 +21327,11 @@ static void verify_domination(struct compile_state *state)
 				!tdominates(state, ins, use_point)) {
 				if (is_const(ins)) {
 					internal_warning(state, ins, 
-					"non dominated rhs use point?");
+					"non dominated rhs use point %p?", use_point);
 				}
 				else {
 					internal_error(state, ins, 
-						"non dominated rhs use point?");
+						"non dominated rhs use point %p?", use_point);
 				}
 			}
 		}

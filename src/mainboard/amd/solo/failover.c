@@ -9,15 +9,14 @@
 
 static void main(void)
 {
+	/* Nothing special needs to be done to find bus 0 */
+	/* Allow the HT devices to be found */
+	enumerate_ht_chain();
+
+	/* Setup the 8111 */
+	amd8111_enable_rom();
+
 	if (do_normal_boot()) {
-		/* Nothing special needs to be done to find bus 0 */
-
-		/* Allow the HT devices to be found */
-		enumerate_ht_chain();
-
-		/* Setup the 8111 */
-		amd8111_enable_rom();
-
 		/* Jump to the normal image */
 		asm("jmp __normal_image");
 	}

@@ -116,40 +116,78 @@ static void dump_pci_device(unsigned dev)
 	}
 }
 
-static void dump_spd_registers(void)
+static void dump_spd_registers(const struct mem_controller *ctrl)
 {
-	unsigned device;
-	device = SMBUS_MEM_DEVICE_START;
+	int i;
 	print_debug("\r\n");
-	while(device <= SMBUS_MEM_DEVICE_END) {
-		int i;
-		print_debug("dimm: "); 
-		print_debug_hex8(device); 
-		for(i = 0; i < 256; i++) {
-			int status;
-			unsigned char byte;
-			if ((i & 0xf) == 0) {
-				print_debug("\r\n");
-				print_debug_hex8(i);
-				print_debug(": ");
+	for(i = 0; i < 4; i++) {
+		unsigned device;
+		device = ctrl->channel0[i];
+		if (device) {
+			int j;
+			print_debug("dimm: "); 
+			print_debug_hex8(i); 
+			print_debug(".0: ");
+			print_debug_hex8(device);
+			for(j = 0; j < 256; j++) {
+				int status;
+				unsigned char byte;
+				if ((j & 0xf) == 0) {
+					print_debug("\r\n");
+					print_debug_hex8(j);
+					print_debug(": ");
+				}
+				status = smbus_read_byte(device, j);
+				if (status < 0) {
+					print_debug("bad device\r\n");
+					break;
+				}
+				byte = status & 0xff;
+				print_debug_hex8(byte);
+				print_debug_char(' ');
 			}
-			status = smbus_read_byte(device, i);
-			if (status < 0) {
-				print_debug("bad device\r\n");
-				break;
-			}
-			byte = status & 0xff;
-			print_debug_hex8(byte);
-			print_debug_char(' ');
+			print_debug("\r\n");
 		}
-		device += SMBUS_MEM_DEVICE_INC;
-		print_debug("\r\n");
+		device = ctrl->channel1[i];
+		if (device) {
+			int j;
+			print_debug("dimm: "); 
+			print_debug_hex8(i); 
+			print_debug(".1: ");
+			print_debug_hex8(device);
+			for(j = 0; j < 256; j++) {
+				int status;
+				unsigned char byte;
+				if ((j & 0xf) == 0) {
+					print_debug("\r\n");
+					print_debug_hex8(j);
+					print_debug(": ");
+				}
+				status = smbus_read_byte(device, j);
+				if (status < 0) {
+					print_debug("bad device\r\n");
+					break;
+				}
+				byte = status & 0xff;
+				print_debug_hex8(byte);
+				print_debug_char(' ');
+			}
+			print_debug("\r\n");
+		}
 	}
 }
 
 
 static void main(void)
 {
+	static const struct mem_controller cpu0 = {
+		.f0 = PCI_DEV(0, 0x18, 0),
+		.f1 = PCI_DEV(0, 0x18, 1),
+		.f2 = PCI_DEV(0, 0x18, 2),
+		.f3 = PCI_DEV(0, 0x18, 3),
+		.channel0 = { (0xa << 3), (0xa << 3)|1, 0, 0 },
+		.channel1 = { 0, 0, 0, 0},
+	};
 	uart_init();
 	console_init();
 #if 0
@@ -165,9 +203,9 @@ static void main(void)
 		enumerate_ht_chain();
 		print_pci_devices();
 		enable_smbus();
-		sdram_initialize();
+		dump_spd_registers(&cpu0);
+		sdram_initialize(&cpu0);
 
-		dump_spd_registers();
 		dump_pci_device(PCI_DEV(0, 0x18, 2));
 		
 		/* Check the first 512M */

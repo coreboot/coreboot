@@ -1,7 +1,7 @@
-#include "intel_conf.h"
-#include "intel_subr.h"
-#include "printk.h"
-
+#include <pciconf.h>
+#include <subr.h>
+#include <printk.h>
+#include <cpu/p5/cpuid.h>
 #ifdef i586
 #include <asm/msr.h>
 #endif

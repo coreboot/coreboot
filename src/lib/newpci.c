@@ -34,6 +34,30 @@
 #define PCI_MEM_START 0x80000000
 #define PCI_IO_START 0x1000
 
+// historical functions, sometimes very useful. 
+/*
+ *    Write the special configuration registers on the INTEL
+ */
+void intel_conf_writeb(unsigned long port, unsigned char value)
+{
+	unsigned char whichbyte = port & 3;
+	port &= (~3);
+	outl(port, PCI_CONF_REG_INDEX);
+	outb(value, PCI_CONF_REG_DATA + whichbyte);
+}
+
+/*
+ *    Read the special configuration registers on the INTEL
+ */
+unsigned char intel_conf_readb(unsigned long port)
+{
+	unsigned char whichbyte = port & 3;
+	port &= (~3);
+	outl(port, PCI_CONF_REG_INDEX);
+	return inb(PCI_CONF_REG_DATA + whichbyte);
+}
+
+
 static const struct pci_ops *conf;
 
 struct pci_ops {

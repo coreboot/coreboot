@@ -797,17 +797,20 @@ CPUFLAGS := $(foreach _var_,$(VARIABLES),$(call D_item,$(_var_)))
 	file.write("\n# object dependencies (objectrules:)\n")
 	file.write("OBJECTS :=\n")
 	file.write("DRIVER :=\n")
+	file.write("\nSOURCES :=\n")
 	for objrule in objectrules.keys():
 		obj = objectrules[objrule]
 		obj_name = obj[0]
 		obj_source = obj[1]
 		file.write("OBJECTS-1 += %s\n" % (obj_name))
+		file.write("SOURCES += %s\n" % (obj_source))
 
 	for driverrule in driverrules.keys():
 		driver = driverrules[driverrule]
 		obj_name = driver[0]
 		obj_source = driver[1]
 		file.write("DRIVER += %s\n" % (obj_name))
+		file.write("SOURCES += %s\n" % (obj_source))
 
 	# Print out all ldscript.ld dependencies.
 	file.write("\n# ldscript.ld dependencies:\n")
@@ -824,7 +827,6 @@ CPUFLAGS := $(foreach _var_,$(VARIABLES),$(call D_item,$(_var_)))
 		else:
 			file.write("CRT0_INCLUDES += $(TOP)/src/%s\n" % i)
 
-	file.write("\nSOURCES=\n")
 	#for source in sources:
 		#file.write("SOURCES += %s\n" % source)
 	

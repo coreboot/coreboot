@@ -6,6 +6,7 @@
 
 struct mem_range *sizeram(void)
 {
+	static struct mem_range mem[3];
 	unsigned long size;
 	unsigned short word;
 	

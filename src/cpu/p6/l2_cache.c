@@ -38,7 +38,7 @@ static char rcsid[] = "$Id$";
 #include <cpu/p5/cpuid.h>
 
 /* Include debugging code and outputs */
-#define DEBUG
+//#define DEBUG
 #include <printk.h>
 
 static int signal_l2(unsigned int address_high,

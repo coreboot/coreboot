@@ -20,7 +20,7 @@ void printnibl(unsigned long nibl);
 void printchar(unsigned char x);
 void printint(unsigned long x);
 void error(char errmsg[]);
-void intel_post(char value);
+void intel_post(unsigned char value);
 void intel_conf_writeb(unsigned long port, unsigned char value);
 unsigned char intel_conf_readb(unsigned long port);
 void intel_cache_on(unsigned long base, unsigned long totalram);

@@ -229,5 +229,9 @@ chip northbridge/amd/amdk8
 			device apic 1 on end
 		end
 	end
+
+        chip drivers/generic/debug
+                device  pnp 0.0 on end
+        end
 end
 

@@ -128,9 +128,12 @@ unsigned long cpu_initialize(struct mem_range *mem)
 
 	/* Turn on caching if we haven't already */
 	cache_on(mem);
-
+#if i586==1
 	display_cpuid();
+#endif
+#if i686==1
 	mtrr_check();
+#endif
 
 	/* some cpus need a fixup done. This is the hook for doing that. */
 	cpufixup(mem);

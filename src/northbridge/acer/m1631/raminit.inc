@@ -3,6 +3,9 @@
  ***
  ***/
 
+	/*** sungeun jump to start ***/
+	jmp	raminit_start
+
 /***
  *** BEGIN TABLES
  ***/
@@ -76,9 +79,11 @@ internal_bank_tbl:
  *** BEGIN MACROS
  ***/
 
+
 #define cmos_data_in \
 	out	%al,$0x70	; \
 	in	$0x71,%al
+
 
 #define pci_write_byte \
 	mov	$0x80000000,%edx ; \
@@ -95,6 +100,7 @@ internal_bank_tbl:
 	add	%dl,%al		; \
 	mov	%cl,%al		; \
 	out	%al,%dx
+
 
 #define pci_read_byte \
 	mov	$0x80000000,%edx ; \
@@ -122,6 +128,7 @@ internal_bank_tbl:
 	mov	$0x0fc,%dl	; \
 	mov	%edi,%eax	; \
 	out	%eax,%dx
+
 
 #define pci_read_dword \
 	mov	$0,%ah		; \
@@ -198,381 +205,6 @@ internal_bank_tbl:
 	pci_write_byte		; \
 	mov	%di,%sp
 
-#define DETECT_DRAM_TYPE \
-	;; \
-	movl	$0x055555555,%es:(0x0) ; \
-	movl	$0x0aaaaaaaa,%es:(0x8) ; \
-	cmpl	$0x55555555,%es:(0) ; \
-	jnz	detect_sdram	; \
-	cmpl	$0x0aaaaaaaa,%es:(8) ; \
-	jnz	detect_sdram	; \
-	mov	$0x01,%cx	; \
-	test $0x10000,%ebx	; \
-	jnz  1f		; \
-	mov	$0x01,%ch	; \
-1:				; \
-	save_dram_type		; \
-	jmp	 dram_type_detect_end ; \
-detect_sdram:			; \
-	mov $0x7e,%ax		; \
-	mov (0b11110111 << 8)+0b00000000, %cx ; \
-	pci_read_write_byte	; \
-	mov (%esi),%al		; \
-	mov %al,%ah		; \
-	mov $0x42,%al		; \
-	cmos_data_in		; \
-	test	$0b00010000,%al	; \
-	mov %ah,%al		; \
-	jz cas_2		; \
-	mov	(%esi),%al	; \
-	pci_write_dword		; \
-	mov	%eax,%edi	; \
-	and	$0x00000fffc,%edi ; \
-	test	$0x010000,%ebx	; \
-	jz	1f		; \
-	or	$0x0f6640000,%edi ; \
-	jmp	configure_sdram_type ; \
-1:				; \
-	or	$0x0f1e40000,%edi ; \
-	jmp	configure_sdram_type ; \
-cas_2:				; \
-	mov	(%esi),%al	; \
-	pci_write_dword		; \
-	mov	%eax,%edi	; \
-	and	$0x00000fffc,%edi ; \
-	test	$0x010000,%ebx	; \
-	jz	1f		; \
-	or	$0x0d6640000,%edi ; \
-	jmp	configure_sdram_type ; \
-1:				; \
-	or	$0x0d1e40000,%edi ; \
-configure_sdram_type:		; \
-	mov	(%esi),%al	; \
-	pci_read_dword		; \
-	mov	$1000,%ax	; \
-1:				; \
-	dec	%ax		; \
-	jnz	1b		; \
-	movl	$0x055555555,%es:(0x0) ; \
-	movl	$0x0aaaaaaaa,%es:(0x8) ; \
-	cmpl	$0x055555555,%es:(0x0) ; \
-	jnz	chk_vc_sdram_type ; \
-	cmpl	$0x0aaaaaaaa,%es:(0x8) ; \
-	jnz	chk_vc_sdram_type ; \
-	mov	$0x02,%cx	; \
-	test	$0x10000,%ebx	; \
-	jnz 	1f		; \
-	mov	$01,%ch		; \
-1:				; \
-	save_dram_type		; \
-	jmp	 dram_type_detect_end ; \
-chk_vc_sdram_type:		; \
-	mov	(%esi),%al	; \
-	pci_write_dword		; \
-	mov	%eax,%edi	; \
-	and	$0x0e7ffffff,%edi ; \
-	mov	(%esi),%al	; \
-	pci_read_dword		; \
-	mov	$0x7e,%ax	; \
-	mov	(0b11110111 << 8)+0b00000000,%cx ; \
-	pci_read_write_byte	; \
-	mov	(%esi),%al	; \
-	pci_write_dword		; \
-	mov	%eax,%edi	; \
-	mov	(%esi),%al	; \
-	test	$0x010000,%ebx	; \
-	jz	1f		; \
-	and	$0x00000d7f0,%edi ; \
-	or	$0x0fe620000,%edi ; \
-	jmp	configure_vc_sdram_type	; \
-1:				; \
-	and	$0x00000d7f0,%edi ; \
-	or	$0x0f9e20000,%edi ; \
-configure_vc_sdram_type:	; \
-	mov	(%esi),%al	; \
-	pci_read_dword		; \
-	mov	$1000,%ax	; \
-1:				; \
-	dec	%ax		; \
-	jnz	1b		; \
-	movl	$0x055555555,%es:(0x0) ; \
-	movl	$0x0aaaaaaaa,%es:(0x8) ; \
-	cmpl	$0x055555555,%es:(0x0) ; \
-	jnz	no_dram		; \
-	cmpl	$0x0aaaaaaaa,%es:(0x8) ; \
-	jnz	no_dram		; \
-	mov	$0x03,%cx	; \
-	test	$0x10000,%ebx	; \
-	jnz 	1f		; \
-	mov	$0x01,%ch	; \
-1:				; \
-	save_dram_type		; \
-	jmp	 dram_type_detect_end ; \
-no_dram:			; \
-	memory_error		; \
-	test	$0x10000,%ebx	; \
-	jnz	prepare_next_detect ; \
-dram_type_detect_end:		; \
-
-#define MA_DETECT \
-	;; \
-	test	$0x40000,%ebx	; \
-	jnz	vc_sdram_table	; \
-	movl	$ma_table, %esi ; \
-	jmp	detect_ma	; \
-vc_sdram_table:			; \
-	movl	$vc_ma_table,%esi ; \
-detect_ma:			; \
-	add	%ax,%si		; \
-	mov	(%esi),%edx	; \
-	mov	%edx,%esi	; \
-	movl	$0x055555555,(%esi); \
-	movl	$0x0aaaaaaaa,(%esi) ; \
-	cmpl	$0x055555555,%esi; \
-	jz	1f	; \
-	jmp    ma_detect_end ; \
-1:		; \
-	movl	$ma_table,%esi	; \
-	add	%ax,%si	; \
-	mov	4(%esi),%dl ; \
-	test	$0x10000,%ebx	; \
-	jz	1f	; \
-	xor	%ecx,%ecx	; \
-	mov	%dl,%cl		; \
-	shl	$16,%ecx	; \
-	jmp	memory_sizing_sub ; \
-	;; \
-1:		; \
-	ror	$20,%ecx	; \
-	mov	%dl,%cl		; \
-	rol	$20,%ecx	; \
-	jmp	memory_sizing_sub ; \
-ma_detect_end:		; \
-
-
-
-
-#define CHECK_SUB \
-	test	$0x10000,%ebx	; \
-	jnz	1f		; \
-	mov	%bx,%ax		; \
-	and	$0x03f,%ax	; \
-	mov	%al,%ah		; \
-	and	$0x07,%al	; \
-	shr	$3,%ah		; \
-	cmp	%al,%ah		; \
-	jz	2f		; \
-	set_no_dram		; \
-	jmp	1f	; \
-2:			; \
-	shr	$16,%ecx	; \
-	mov	%cx,%ax		; \
-	and	$0x0ff,%ax	; \
-	mov	%al,%ah		; \
-	and	$0x0f,%al	; \
-	shr	$4,%ah		; \
-	cmp	%al,%ah		; \
-	jz	1f	; \
-	set_no_dram		; \
-1:
-
-
-#define A_SUB \
-	mov	$0x10,%ch	; \
-	save_dram_type		; \
-	mov	%al,%cl		; \
-	mov	$0x11,%ch	; \
-	save_dram_type		; \
-	mov	%al,%ch		; \
-	mov	%cx,%ax		; \
-	cmp	$0x00,%al	; \
-	jz	no_sdram	; \
-	cmp	%ah,%al		; \
-	jz	a_sub_end	; \
-	cmp	$0x00,%ah	; \
-	jnz	no_sdram	; \
-	mov	(%esi),%al	; \
-	pci_write_dword		; \
-	mov	%eax,%edi	; \
-	and	$0x00000ffff,%edi ; \
-	mov	$0x042,%al	; \
-	cmos_data_in		; \
-	test	$0b00010000,%al	; \
-	jz	cas_l_2		; \
-	or	$0x0e6000000,%edi ; \
-	jmp	set_cas_end	; \
-cas_l_2:			; \
-	or	$0x0c6000000,%edi ; \
-set_cas_end:			; \
-	ror	$27,%edi	; \
-	and	$0x0ff,%cx	; \
-	or	%cx,%di		; \
-	rol	$7,%edi		; \
-	shr	$3,%bx		; \
-	and	$0x07,%bx	; \
-	or	%bx,%di		; \
-	rol	$20,%edi	; \
-	and	$0x0000f0000,%ecx ; \
-	or	%ecx,%edi	; \
-	test	$0x80000,%ebx	; \
-	jz	set_single	; \
-	or	$1,%edi		; \
-set_single:			; \
-	mov	(%esi),%al	; \
-	pci_read_dword		; \
-	jmp     detect_block_again_end ; \
-no_sdram:			; \
-	set_no_dram		; \
-	jmp	 detect_block_again_end	; \
-a_sub_end:
-
-
-#define bank_number	\
-	and	(~0x80000),%ebx	; \
-	test	$0x40000,%ebx	; \
-	jnz	configure_internal_bank_end ; \
-	mov	%cx,%di		; \
-	mov	(%esi),%al	; \
-	add	$1,%al		; \
-	pci_read_byte		; \
-	and	$0x0ef,%al	; \
-	mov	%al,%cl		; \
-	mov	(%esi),%al	; \
-	add	$1,%al		; \
-	pci_write_byte		; \
-	mov	(%esi),%al	; \
-	pci_read_byte		; \
-	and	$0x0fc,%al	; \
-	or	$1,%al		; \
-	mov	%al,%cl		; \
-	mov	(%esi),%al	; \
-	pci_write_byte		; \
-	mov	%di,%cx		; \
-	test	$0x10000,%ebx	; \
-	jz	1f ; \
-	ror	$16,%ecx	; \
-	jmp	what_memory_ma	; \
-1:		; \
-	ror	$20,%ecx	; \
-what_memory_ma:			; \
-	movl	$0x055555555,%es:(0x0) ; \
-	mov	%cx,%ax		; \
-	test	$0x10000,%ebx	; \
-	rol	$16,%ecx	; \
-	jnz	1f ; \
-	rol	$4,%ecx		; \
-1:		; \
-	and	$0x0f,%ax	; \
-	mov	$4,%dl		; \
-	mul	%dl		; \
-	mov	%si,%di		; \
-	movl	$internal_bank_tbl, %esi ; \
-	add	%ax,%si		; \
-	movl	(%esi),%edx	; \
-	mov	%edx,%esi	; \
-	movl	$0x0aaaaaaaa,(%esi) ; \
-	cmpl	$0x055555555,%es:(0x0) ; \
-	mov	%di,%si		; \
-	jz	i_4_bank	; \
-	mov	%cx,%di		; \
-	mov	(%esi),%al	; \
-	pci_read_byte		; \
-	and	$0x0fc,%al	; \
-	mov	%al,%cl		; \
-	mov	(%esi),%al	; \
-	pci_write_byte		; \
-	mov	%di,%cx		; \
-i_4_bank:			; \
-	or	$0x80000,%ebx	; \
-configure_internal_bank_end:
-
-
-
-#define MEMORY_SIZING \
-	mov	%si,%di		; \
-	mov	$10,%eax	; \
-	mov	%cl,%dl		; \
-	and	$0x0f,%dl	; \
-	mul	%dl		; \
-	movl $sizing_table,%esi ; \
-	addw	%ax,%si		; \
-	mov	8(%esi),%dl	; \
-	mov	8(%esi),%dh	; \
-	ror	$16,%edx	; \
-	mov	9(%esi),%dl	; \
-	rol	$16,%edx	; \
-	mov	%esi,%eax	; \
-	mov	%eax,%esi	; \
-memory_sizing_loop:		; \
-	cmp	%dl,%dh		; \
-	jz	1f ; \
-	cmpl	$0x0aaaaaaaa,0(%esi) ; \
-	jz	1f		; \
-	memory_error		; \
-	mov	%di,%si		; \
-	jmp	 prepare_next_detect ; \
-1:		; \
-	movl	$0x55555555,0(%esi) ; \
-	movl	$0x0aaaaaaaa,0(%esi)	; \
-	cmpl	$0x55555555,0(%esi) ; \
-	jz	determine_size	; \
-	cmp	$0,%dl		; \
-	jnz	1f ; \
-	memory_error		; \
-	mov	%di,%si		; \
-	jmp	 prepare_next_detect ; \
-1: ; \
-	dec	%dl		; \
-	ror	$16,%edx	; \
-	mov	%dl,%al		; \
-	rol	$16,%edx	; \
-	cmp	%al,%dl		; \
-	jnz	1f		; \
-	shr	$1,%esi		; \
-1:		; \
-	shr	$1,%esi		; \
-	jmp	memory_sizing_loop ; \
-determine_size:			; \
-	sub	%dl,%dh		; \
-	cmp	$2,%dh		; \
-	jae	1f ; \
-	or	$0x20000,%ebx	; \
-1:		; \
-	xor	%dx,%dx		; \
-find_memory_size_offset:	; \
-	cmp	$0x00200000,%esi ; \
-	jz	1f ; \
-	shr	$1,%esi		; \
-	inc	%dx		; \
-	jmp	find_memory_size_offset	; \
-1:		; \
-	movl    $memory_size,%esi	; \
-	addw	%dx,%si		; \
-	mov	$0,%dx		; \
-	orb	0(%esi),%dl	; \
-	or	%dx,%bx		; \
-	mov	%di,%si		; \
-	test	$0x10000,%ebx	; \
-	jz	second_bank_number ; \
-	mov	$0x10,%ch	; \
-	jmp	read_dram_type	; \
-second_bank_number:		; \
-	mov	$0x11,%ch	; \
-read_dram_type:			; \
-	save_dram_type		; \
-	cmp	$0x01,%al	; \
-	jz	EDO_T		; \
-	cmp	$0x00,%al	; \
-	jz	EDO_T		; \
-	cmp	$0x02,%al	; \
-	jz	determine_bank_number ; \
-	or	$0x40000,%ebx	; \
-determine_bank_number:		; \
-	bank_number		; \
-EDO_T:				; \
-	and	(~0x20000),%ebx	; \
-	and	(~0x40000),%ebx	; \
-
 
 #define DISABLE_BLOCK \
 	mov	(%esi),%al	; \
@@ -584,40 +216,6 @@ EDO_T:				; \
 	pci_read_dword
 
 
-
-#define CONFIGURE_MEMORY \
-	movl	$dram_temp,%esi ; \
-	mov     (%esi),%dl	; \
-	mov	$0x094,%bl	; \
-configure_next:			; \
-	xor	%edi,%edi	; \
-	mov	%bl,%al		; \
-	pci_read_byte		; \
-	cmp	$0x00,%al	; \
-	jz	1f ; \
-	or	$0x3,%di	; \
-1:		; \
-	shl	$2,%di		; \
-	inc	%bl		; \
-	mov	%bl,%al		; \
-	pci_read_byte		; \
-	inc	%bl		; \
-	cmp	$0x00,%al	; \
-	jz	1f ; \
-	or	$0x03,%di	; \
-1:		; \
-	mov     (%esi),%al	; \
-	pci_write_dword		; \
-	and	$0x0f87fffff,%eax ; \
-	shl	$23,%edi	; \
-	or	%edi,%eax	; \
-	mov	%eax,%edi	; \
-	mov     (%esi),%al	; \
-	pci_read_dword		; \
-	inc	%si		; \
-	cmpb	$0x78,(%esi)	; \
-	jnz	configure_next
-
 /***
  *** END MACROS
  ***/
@@ -626,6 +224,7 @@ configure_next:			; \
 /***
  *** START REAL STUFF
  ***/
+raminit_start:
 	mov	$0x81,%ax
 	mov	(0b01111111 << 8)+0b00000000,%cx
 	pci_read_write_byte
@@ -666,10 +265,180 @@ odd_bank_detect:
 	mov	$0x0e4,%cl
 	pci_write_byte
 detect_ma_size:
-	DETECT_DRAM_TYPE
+	/***
+	 *** sungeun *** BEGIN "inlined" macro DETECT_DRAM_TYPE
+	 ***/
+	movl	$0x055555555,%es:(0x0)
+	movl	$0x0aaaaaaaa,%es:(0x8)
+	cmpl	$0x55555555,%es:(0)
+	jnz	detect_sdram
+	cmpl	$0x0aaaaaaaa,%es:(8)
+	jnz	detect_sdram
+	mov	$0x01,%cx
+	test $0x10000,%ebx
+	jnz  1f
+	mov	$0x01,%ch
+1:
+	save_dram_type
+	jmp	 dram_type_detect_end
+detect_sdram:
+	mov $0x7e,%ax
+	mov (0b11110111 << 8)+0b00000000, %cx
+	pci_read_write_byte
+	mov (%esi),%al
+	mov %al,%ah
+	mov $0x42,%al
+	cmos_data_in
+	test	$0b00010000,%al
+	mov %ah,%al
+	jz cas_2
+	mov	(%esi),%al
+	pci_write_dword
+	mov	%eax,%edi
+	and	$0x00000fffc,%edi
+	test	$0x010000,%ebx
+	jz	1f
+	or	$0x0f6640000,%edi
+	jmp	configure_sdram_type
+1:
+	or	$0x0f1e40000,%edi
+	jmp	configure_sdram_type
+cas_2:
+	mov	(%esi),%al
+	pci_write_dword
+	mov	%eax,%edi
+	and	$0x00000fffc,%edi
+	test	$0x010000,%ebx
+	jz	1f
+	or	$0x0d6640000,%edi
+	jmp	configure_sdram_type
+1:
+	or	$0x0d1e40000,%edi
+configure_sdram_type:
+	mov	(%esi),%al
+	pci_read_dword
+	mov	$1000,%ax
+1:
+	dec	%ax
+	jnz	1b
+	movl	$0x055555555,%es:(0x0)
+	movl	$0x0aaaaaaaa,%es:(0x8)
+	cmpl	$0x055555555,%es:(0x0)
+	jnz	chk_vc_sdram_type
+	cmpl	$0x0aaaaaaaa,%es:(0x8)
+	jnz	chk_vc_sdram_type
+	mov	$0x02,%cx
+	test	$0x10000,%ebx
+	jnz 	1f
+	mov	$01,%ch
+1:
+	save_dram_type
+	jmp	 dram_type_detect_end
+chk_vc_sdram_type:
+	mov	(%esi),%al
+	pci_write_dword
+	mov	%eax,%edi
+	and	$0x0e7ffffff,%edi
+	mov	(%esi),%al
+	pci_read_dword
+	mov	$0x7e,%ax
+	mov	(0b11110111 << 8)+0b00000000,%cx
+	pci_read_write_byte
+	mov	(%esi),%al
+	pci_write_dword
+	mov	%eax,%edi
+	mov	(%esi),%al
+	test	$0x010000,%ebx
+	jz	1f
+	and	$0x00000d7f0,%edi
+	or	$0x0fe620000,%edi
+	jmp	configure_vc_sdram_type
+1:
+	and	$0x00000d7f0,%edi
+	or	$0x0f9e20000,%edi
+configure_vc_sdram_type:
+	mov	(%esi),%al
+	pci_read_dword
+	mov	$1000,%ax
+1:
+	dec	%ax
+	jnz	1b
+	movl	$0x055555555,%es:(0x0)
+	movl	$0x0aaaaaaaa,%es:(0x8)
+	cmpl	$0x055555555,%es:(0x0)
+	jnz	no_dram
+	cmpl	$0x0aaaaaaaa,%es:(0x8)
+	jnz	no_dram
+	mov	$0x03,%cx
+	test	$0x10000,%ebx
+	jnz 	1f
+	mov	$0x01,%ch
+1:
+	save_dram_type
+	jmp	 dram_type_detect_end
+no_dram:
+	memory_error
+	test	$0x10000,%ebx
+	jnz	prepare_next_detect
+dram_type_detect_end:
+	/***
+	 *** sungeun *** END "inlined" macro DETECT_DRAM_TYPE
+	 ***/
 	test	$0x10000,%ebx
 	jnz	 1f
-	A_SUB
+	/***
+	 *** sungeun *** BEGIN "inlined" macro A_SUB
+	 ***/
+	mov	$0x10,%ch
+	save_dram_type
+	mov	%al,%cl
+	mov	$0x11,%ch
+	save_dram_type
+	mov	%al,%ch
+	mov	%cx,%ax
+	cmp	$0x00,%al
+	jz	no_sdram
+	cmp	%ah,%al
+	jz	a_sub_end
+	cmp	$0x00,%ah
+	jnz	no_sdram
+	mov	(%esi),%al
+	pci_write_dword
+	mov	%eax,%edi
+	and	$0x00000ffff,%edi
+	mov	$0x042,%al
+	cmos_data_in
+	test	$0b00010000,%al
+	jz	cas_l_2
+	or	$0x0e6000000,%edi
+	jmp	set_cas_end
+cas_l_2:
+	or	$0x0c6000000,%edi
+set_cas_end:
+	ror	$27,%edi
+	and	$0x0ff,%cx
+	or	%cx,%di
+	rol	$7,%edi
+	shr	$3,%bx
+	and	$0x07,%bx
+	or	%bx,%di
+	rol	$20,%edi
+	and	$0x0000f0000,%ecx
+	or	%ecx,%edi
+	test	$0x80000,%ebx
+	jz	set_single
+	or	$1,%edi
+set_single:
+	mov	(%esi),%al
+	pci_read_dword
+	jmp     detect_block_again_end
+no_sdram:
+	set_no_dram
+	jmp	 detect_block_again_end
+a_sub_end:
+	/***
+	 *** sungeun *** END "inlined" macro A_SUB
+	 ***/
 1:	
 	mov	$0x10,%ch
 	save_dram_type
@@ -688,7 +457,43 @@ vcm_ma_type_set:
 	mov	$10,%ax
 	or	$0x40000,%ebx
 detect_ma_table:
-	MA_DETECT
+	/***
+	 *** sungeun *** BEGIN "inlined" macro MA_DETECT
+	 ***/
+	test	$0x40000,%ebx
+	jnz	vc_sdram_table
+	movl	$ma_table, %esi
+	jmp	detect_ma
+vc_sdram_table:
+	movl	$vc_ma_table,%esi
+detect_ma:
+	add	%ax,%si
+	mov	(%esi),%edx
+	mov	%edx,%esi
+	movl	$0x055555555,(%esi)
+	movl	$0x0aaaaaaaa,(%esi)
+	cmpl	$0x055555555,%esi
+	jz	1f
+	jmp    ma_detect_end
+1:
+	movl	$ma_table,%esi
+	add	%ax,%si
+	mov	4(%esi),%dl
+	test	$0x10000,%ebx
+	jz	1f
+	xor	%ecx,%ecx
+	mov	%dl,%cl
+	shl	$16,%ecx
+	jmp	memory_sizing_sub
+1:
+	ror	$20,%ecx
+	mov	%dl,%cl
+	rol	$20,%ecx
+	jmp	memory_sizing_sub
+ma_detect_end:
+	/***
+	 *** sungeun *** END "inlined" macro MA_DETECT
+	 ***/
 	add	$5,%ax
 	cmp	$25,%ax
 	jz	 1f
@@ -726,7 +531,157 @@ configure_ma:
 	add	$2,%al
 	pci_write_byte
 
-	MEMORY_SIZING
+	/***
+	 *** sungeun *** BEGIN "inlined" macro MEMORY_SIZING
+	 ***/
+	mov	%si,%di	
+	mov	$10,%eax
+	mov	%cl,%dl	
+	and	$0x0f,%dl
+	mul	%dl	
+	movl $sizing_table,%esi
+	addw	%ax,%si	
+	mov	8(%esi),%dl
+	mov	8(%esi),%dh
+	ror	$16,%edx
+	mov	9(%esi),%dl
+	rol	$16,%edx
+	mov	%esi,%eax
+	mov	%eax,%esi
+memory_sizing_loop:	
+	cmp	%dl,%dh	
+	jz	1f
+	cmpl	$0x0aaaaaaaa,0(%esi)
+	jz	1f
+	memory_error
+	mov	%di,%si
+	jmp	 prepare_next_detect
+1:	
+	movl	$0x55555555,0(%esi)
+	movl	$0x0aaaaaaaa,0(%esi)
+	cmpl	$0x55555555,0(%esi)
+	jz	determine_size
+	cmp	$0,%dl
+	jnz	1f
+	memory_error
+	mov	%di,%si
+	jmp	 prepare_next_detect
+1:
+	dec	%dl	
+	ror	$16,%edx
+	mov	%dl,%al	
+	rol	$16,%edx
+	cmp	%al,%dl	
+	jnz	1f	
+	shr	$1,%esi	
+1:
+	shr	$1,%esi	
+	jmp	memory_sizing_loop
+determine_size:		
+	sub	%dl,%dh	
+	cmp	$2,%dh	
+	jae	1f
+	or	$0x20000,%ebx
+1:
+	xor	%dx,%dx	
+find_memory_size_offset:
+	cmp	$0x00200000,%esi
+	jz	1f
+	shr	$1,%esi	
+	inc	%dx	
+	jmp	find_memory_size_offset
+1:	
+	movl    $memory_size,%esi
+	addw	%dx,%si	
+	mov	$0,%dx	
+	orb	0(%esi),%dl
+	or	%dx,%bx	
+	mov	%di,%si	
+	test	$0x10000,%ebx
+	jz	second_bank_number
+	mov	$0x10,%ch
+	jmp	read_dram_type
+second_bank_number:
+	mov	$0x11,%ch
+read_dram_type:	
+	save_dram_type	
+	cmp	$0x01,%al
+	jz	EDO_T	
+	cmp	$0x00,%al
+	jz	EDO_T	
+	cmp	$0x02,%al
+	jz	determine_bank_number
+	or	$0x40000,%ebx
+determine_bank_number:
+	/***
+	 *** sungeun *** BEGIN "inlined" macro bank_number
+	 ***/
+	and	(~0x80000),%ebx
+	test	$0x40000,%ebx
+	jnz	configure_internal_bank_end 
+	mov	%cx,%di
+	mov	(%esi),%al
+	add	$1,%al
+	pci_read_byte
+	and	$0x0ef,%al
+	mov	%al,%cl
+	mov	(%esi),%al
+	add	$1,%al
+	pci_write_byte
+	mov	(%esi),%al
+	pci_read_byte
+	and	$0x0fc,%al
+	or	$1,%al
+	mov	%al,%cl
+	mov	(%esi),%al
+	pci_write_byte
+	mov	%di,%cx
+	test	$0x10000,%ebx
+	jz	1f 
+	ror	$16,%ecx
+	jmp	what_memory_ma
+1:
+	ror	$20,%ecx
+what_memory_ma:	
+	movl	$0x055555555,%es:(0x0) 
+	mov	%cx,%ax
+	test	$0x10000,%ebx
+	rol	$16,%ecx
+	jnz	1f 
+	rol	$4,%ecx
+1:
+	and	$0x0f,%ax
+	mov	$4,%dl
+	mul	%dl
+	mov	%si,%di
+	movl	$internal_bank_tbl, %esi 
+	add	%ax,%si
+	movl	(%esi),%edx
+	mov	%edx,%esi
+	movl	$0x0aaaaaaaa,(%esi) 
+	cmpl	$0x055555555,%es:(0x0) 
+	mov	%di,%si
+	jz	i_4_bank
+	mov	%cx,%di
+	mov	(%esi),%al
+	pci_read_byte
+	and	$0x0fc,%al
+	mov	%al,%cl
+	mov	(%esi),%al
+	pci_write_byte
+	mov	%di,%cx
+i_4_bank:	
+	or	$0x80000,%ebx
+configure_internal_bank_end:
+	/***
+	 *** sungeun *** END "inlined" macro bank_number
+	 ***/
+EDO_T:
+	and	(~0x20000),%ebx
+	and	(~0x40000),%ebx
+	/***
+	 *** sungeun *** END "inlined" macro MEMORY_SIZING
+	 ***/
 
 	mov     (%esi),%al
 	add	$2,%al
@@ -739,8 +694,35 @@ configure_ma:
 	mov	%al,%cl
 	mov     (%esi),%al
 	add	$2,%al
-	pci_write_byte	
-	CHECK_SUB
+	pci_write_byte
+	/***
+	 *** sungeun *** BEGIN "inlined" macro CHECK_SUB
+	 ***/
+	test	$0x10000,%ebx
+	jnz	1f
+	mov	%bx,%ax
+	and	$0x03f,%ax
+	mov	%al,%ah
+	and	$0x07,%al
+	shr	$3,%ah
+	cmp	%al,%ah
+	jz	2f
+	set_no_dram
+	jmp	1f
+2:
+	shr	$16,%ecx
+	mov	%cx,%ax
+	and	$0x0ff,%ax
+	mov	%al,%ah
+	and	$0x0f,%al
+	shr	$4,%ah
+	cmp	%al,%ah
+	jz	1f
+	set_no_dram
+1:
+	/***
+	 *** sungeun *** END "inlined" macro CHECK_SUB
+	 ***/
 prepare_next_detect:
 	test	$0x10000,%ebx
 	jnz	 odd_bank_detect
@@ -751,7 +733,43 @@ detect_block_again_end:
 	jz	configure_memory_block
 	jmp	 detect_block_again
 configure_memory_block:
-	CONFIGURE_MEMORY 
+	/***
+	 *** sungeun *** BEGIN "inlined" macro CONFIGURE_MEMORY
+	 ***/
+	movl	$dram_temp,%esi 
+	mov     (%esi),%dl
+	mov	$0x094,%bl
+configure_next:
+	xor	%edi,%edi
+	mov	%bl,%al
+	pci_read_byte
+	cmp	$0x00,%al
+	jz	1f 
+	or	$0x3,%di
+1:
+	shl	$2,%di
+	inc	%bl
+	mov	%bl,%al
+	pci_read_byte
+	inc	%bl
+	cmp	$0x00,%al
+	jz	1f 
+	or	$0x03,%di
+1:
+	mov     (%esi),%al
+	pci_write_dword
+	and	$0x0f87fffff,%eax
+	shl	$23,%edi
+	or	%edi,%eax
+	mov	%eax,%edi
+	mov     (%esi),%al
+	pci_read_dword
+	inc	%si
+	cmpb	$0x78,(%esi)
+	jnz	configure_next
+	/***
+	 *** sungeun *** END "inlined" macro CONFIGURE_MEMORY
+	 ***/
 	mov	$0x7e,%ax
 	mov	(0b11110111 << 8)+0b00000000,%cx
 	pci_read_write_byte

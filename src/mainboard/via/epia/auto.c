@@ -34,23 +34,23 @@ static void memreset_setup(void)
 }
 
 /*
-static void memreset(int controllers, const struct mem_controller *ctrl)
-{
-}
+  static void memreset(int controllers, const struct mem_controller *ctrl)
+  {
+  }
 */
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
-	unsigned char c;
-	c = smbus_read_byte(device, address);
-	return c;
+  unsigned char c;
+  c = smbus_read_byte(device, address);
+  return c;
 }
 
 
 
 #include "northbridge/via/vt8601/raminit.c"
 /*
-#include "sdram/generic_sdram.c"
- */
+  #include "sdram/generic_sdram.c"
+*/
 
 static void
 enable_mainboard_devices(void) {
@@ -96,47 +96,40 @@ static void main(void)
   /*	init_timer();*/
   outb(5, 0x80);
 
-	enable_vt8231_serial();
-	enable_mainboard_devices();
-	uart_init();
-	console_init();
+  enable_vt8231_serial();
+  enable_mainboard_devices();
+  uart_init();
+  console_init();
 	
-	enable_smbus();
-	enable_shadow_ram();
-	/*
-	memreset_setup();
-	 this is way more generic than we need.
-	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
-	*/
-	sdram_set_registers((const struct mem_controller *) 0);
+  enable_smbus();
+  enable_shadow_ram();
+  /*
+    memreset_setup();
+    this is way more generic than we need.
+    sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
+  */
+  sdram_set_registers((const struct mem_controller *) 0);
+  sdram_set_spd_registers((const struct mem_controller *) 0);
+  sdram_enable(0, (const struct mem_controller *) 0);
 
-
-	/* Check all of memory */
+  /* Check all of memory */
 #if 0
-	msr_t msr;
-	msr = rdmsr(TOP_MEM);
-	print_debug("TOP_MEM: ");
-	print_debug_hex32(msr.hi);
-	print_debug_hex32(msr.lo);
-	print_debug("\r\n");
+  ram_check(0x00000000, msr.lo);
 #endif
 #if 0
-	ram_check(0x00000000, msr.lo);
-#endif
-#if 0
-	static const struct {
-		unsigned long lo, hi;
-	} check_addrs[] = {
-		/* Check 16MB of memory @ 0*/
-		{ 0x00000000, 0x01000000 },
+  static const struct {
+    unsigned long lo, hi;
+  } check_addrs[] = {
+    /* Check 16MB of memory @ 0*/
+    { 0x00000000, 0x01000000 },
 #if TOTAL_CPUS > 1
-		/* Check 16MB of memory @ 2GB */
-		{ 0x80000000, 0x81000000 },
+    /* Check 16MB of memory @ 2GB */
+    { 0x80000000, 0x81000000 },
 #endif
-	};
-	int i;
-	for(i = 0; i < sizeof(check_addrs)/sizeof(check_addrs[0]); i++) {
-		ram_check(check_addrs[i].lo, check_addrs[i].hi);
-	}
+  };
+  int i;
+  for(i = 0; i < sizeof(check_addrs)/sizeof(check_addrs[0]); i++) {
+    ram_check(check_addrs[i].lo, check_addrs[i].hi);
+  }
 #endif
 }

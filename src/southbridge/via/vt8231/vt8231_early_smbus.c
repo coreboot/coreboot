@@ -41,10 +41,14 @@ static void enable_smbus(void)
   c |= 5;
   pci_write_config8(dev, 0xd2, c);
 
-  c = pci_read_config8(dev, 0x54);
-  c &= ~0x80;
-  pci_write_config8(dev, 0xd2, c);
-
+  /* make it work for I/O ...
+   */
+  dev = pci_locate_device(PCI_ID(0x1106,0x8231), 0);
+  c = pci_read_config8(dev, 4);
+  c |= 1;
+  pci_write_config8(dev, 4, c);
+  print_err_hex8(c);
+  print_err(" is the comm register\n");
 
   print_debug("SMBus controller enabled\r\n");
 }
@@ -139,11 +143,11 @@ static unsigned char smbus_read_byte(unsigned char devAdr,
 {
   unsigned short i;
   unsigned char  bData;
-  unsigned char  sts;
+  unsigned char  sts = 0;
 		        
   /* clear host status */
   outb(0xff, SMBUS_IO_BASE);
-			    
+
   /* check SMBUS ready */
   for ( i = 0; i < 0xFFFF; i++ )
     if ( (inb(SMBUS_IO_BASE) & 0x01) == 0 )

@@ -13,12 +13,16 @@
 #include "chip.h"
 #include "northbridge.h"
 
+static const uint8_t ramregs[] = {0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 
+	  				0x56, 0x57};
+
 struct mem_range *sizeram(void)
 {
 	unsigned long mmio_basek;
 	static struct mem_range mem[10];
 	device_t dev;
 	int i, idx;
+	unsigned char rambits;
 
 	dev = dev_find_slot(0, 0);
 	if (!dev) {
@@ -33,7 +37,24 @@ struct mem_range *sizeram(void)
 		mem[idx].sizek = 0;
 		idx++;
 	}
+	for(rambits = 0, i = 0; i < sizeof(ramregs)/sizeof(ramregs[0]); i++) {
+	  unsigned char reg;
+	  reg = pci_read_config8(dev, ramregs[i]);
+	  /* these are ENDING addresses, not sizes. 
+	   * if there is memory in this slot, then reg will be > rambits.
+	   * So we just take the max, that gives us total. 
+	   * We take the highest one to cover for once and future linuxbios
+	   * bugs. We warn about bugs.
+	   */
+	  if (reg > rambits)
+	    rambits = reg;
+	  if (reg < rambits)
+	    printk_err("ERROR! register 0x%x is not set!\n", 
+		       ramregs[i]);
+	}
 
+	printk_err("I would set ram size to 0x%x Mbytes\n", (1 <<rambits)*8);
+		
 #if 1
 	for(i = 0; i < idx; i++) {
 		printk_debug("mem[%d].basek = %08x mem[%d].sizek = %08x\n",
@@ -58,7 +79,7 @@ static void enumerate(struct chip *chip)
  */
 static void
 random_fixup() {
-  device_t *pcidev = dev_find_slot(0, 0);
+  device_t pcidev = dev_find_slot(0, 0);
 
   printk_spew("VT8601 random fixup ...\n");
   if (pcidev) {

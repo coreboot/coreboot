@@ -1,6 +1,6 @@
 #include <cpu/p6/mtrr.h>
 #include "raminit.h"
-#if 0
+
 /*
 This software and ancillary information (herein called SOFTWARE )
 called LinuxBIOS          is made available under the terms described
@@ -32,278 +32,12 @@ it with the version available from LANL.
  * (Rest of configuration is done in C)
  * 5/19/03 by SONE Takeshi <ts1@tsn.or.jp>
  */
+/* converted to C 9/2003 Ron Minnich */
 
-
-/* Stable ~1 usec delay by hitting unused ISA port. */
-#define UDELAY(x) movl $x,%ecx; 9: outb %al,$0x81; loop 9b
-
-#define DIMMS_READ(x) \
-        movl 0x00000000+x, %eax; \
-        movl 0x10000000+x, %eax; \
-        movl 0x20000000+x, %eax; \
-        movl 0x30000000+x, %eax; \
-        movl 0x40000000+x, %eax; \
-        movl 0x50000000+x, %eax
-
-#define DIMMS_WRITE(x) \
-        movl %eax, 0x00000000+x; \
-        movl %eax, 0x10000000+x; \
-        movl %eax, 0x20000000+x; \
-        movl %eax, 0x30000000+x; \
-        movl %eax, 0x40000000+x; \
-        movl %eax, 0x50000000+x
-
-raminit:
-	intel_chip_post_macro(0x35)
-
-	// memory clk enable. We are not using ECC
-	CS_WRITE($0x78, $0x01)
-	// dram control, see the book. 
-#if DIMM_PC133
-	CS_WRITE($0x68, $0x52)
-#else
-        CS_WRITE($0x68, $0x42)
-#endif
-	// dram control, see the book. 
-	CS_WRITE($0x6B, $0x0c)
-	// Initial setting, 256MB in each bank, will be rewritten later.
-	CS_WRITE($0x5A, $0x20)
-	CS_WRITE($0x5B, $0x40)
-	CS_WRITE($0x5C, $0x60)
-	CS_WRITE($0x5D, $0x80)
-	CS_WRITE($0x5E, $0xA0)
-	CS_WRITE($0x5F, $0xC0)
-        // It seems we have to take care of these 2 registers as if 
-        // they are bank 6 and 7.
-        CS_WRITE($0x56, $0xC0)
-        CS_WRITE($0x57, $0xC0)
-
-	// SDRAM in all banks
-	CS_WRITE($0x60, $0x3F)
-	// DRAM timing. I'm suspicious of this
-	// This is for all banks, 64 is 0,1.  65 is 2,3. 66 is 4,5.
-	// ras precharge 4T, RAS pulse 5T
-	// cas2 is 0xd6, cas3 is 0xe6
-	// we're also backing off write pulse width to 2T, so result is 0xee
-#if DIMM_CL2
-	CS_WRITE($0x64, $0xd4)
-	CS_WRITE($0x65, $0xd4)
-	CS_WRITE($0x66, $0xd4)
-#else // CL=3
-	CS_WRITE($0x64, $0xe4)
-	CS_WRITE($0x65, $0xe4)
-	CS_WRITE($0x66, $0xe4)
-#endif
-
-	// dram frequency select.
-	// enable 4K pages for 64M dram. 
-#if DIMM_PC133
-	CS_WRITE($0x69, $0x3c)
-#else
-        CS_WRITE($0x69, $0xac)
-#endif
-	// refresh counter, disabled.
-	CS_WRITE($0x6A, $0x00)
-	// clkenable configuration. kevinh FIXME - add precharge
-	CS_WRITE($0x6C, $0x00)
-	// dram read latch delay of 1 ns, MD drive 8 mA,
-	// high drive strength on MA[2:	13], we#, cas#, ras#
-	// As per Cindy Lee, set to 0x37, not 0x57
-	CS_WRITE($0x6D, $0x7f)
-
-        /* Initialize all banks at once */
-
-/* begin to initialize*/
-	// I forget why we need this, but we do
-	mov $0xa55a5aa5, %eax
-        DIMMS_WRITE(0)
-	
-/* set NOP*/
-	CS_WRITE($0x6C, $0x01)
-
-/* wait 200us*/
-	// You need to do the memory reference. That causes the nop cycle. 
-        DIMMS_READ(0)
-	UDELAY(400)
-
-/* set precharge */
-	CS_WRITE($0x6C, $0x02)
-
-/* dummy reads*/
-        DIMMS_READ(0)
-	UDELAY(200)
-
-/* set CBR*/
-	CS_WRITE($0x6C, $0x04)
-	
-/* do 8 reads and wait >100us between each - from via*/
-        DIMMS_READ(0)
-	UDELAY(200)
-        DIMMS_READ(0)
-	UDELAY(200)
-        DIMMS_READ(0)
-	UDELAY(200)
-        DIMMS_READ(0)
-	UDELAY(200)
-        DIMMS_READ(0)
-	UDELAY(200)
-        DIMMS_READ(0)
-	UDELAY(200)
-        DIMMS_READ(0)
-	UDELAY(200)
-        DIMMS_READ(0)
-	UDELAY(200)
-
-/* set MRS*/
-	CS_WRITE($0x6c, $0x03)
-#if DIMM_CL2
-        DIMMS_READ(0x150)
-#else // CL=3
-        DIMMS_READ(0x1d0)
-#endif
-	UDELAY(200)
-
-/* set to normal mode */
-	CS_WRITE($0x6C, $0x08)
-	movl $0x55aa55aa, %eax
-        DIMMS_WRITE(0)
-        DIMMS_READ(0)
-	UDELAY(200)
-
-	// Set the refresh rate. 
-#if DIMM_PC133
-	CS_WRITE($0x6A, $0x86)
-#else
-	CS_WRITE($0x6A, $0x65)
-#endif
-	// enable multi-page open
-	CS_WRITE($0x6B, $0x0d)
-
-        /* Begin auto-detection
-         * Find the first bank with DIMM equipped. */
-
-        /* Maximum possible memory in bank 0, none in other banks.
-         * Starting from bank 0, we's fill 0 in these registers
-         * until memory is found. */
-	CS_WRITE($0x5A, $0xff)
-	CS_WRITE($0x5B, $0xff)
-	CS_WRITE($0x5C, $0xff)
-	CS_WRITE($0x5D, $0xff)
-	CS_WRITE($0x5E, $0xff)
-	CS_WRITE($0x5F, $0xff)
-	CS_WRITE($0x56, $0xff)
-	CS_WRITE($0x57, $0xff)
-
-        movl $0x5A, %ebx // first bank
-1:
-        /* Write different values to 0 and 8, then read from 0.
-         * If values of address 0 match, we have something there. */
-        movl $0x12345678, %eax
-        movl %eax, 0
-        movl $0x87654321, %edx
-        movl %edx, 8
-        movl 0, %edx
-        cmpl %eax, %edx
-        je 2f
-        /* No memory in this bank. Tell it to the bridge. */
-        movl %ebx, %eax
-        xorl %edx, %edx
-        PCI_WRITE_CONFIG_BYTE
-        incl %ebx
-        cmpl $0x60, %ebx
-        jne 1b
-        /* No memory at all! */
-	CONSOLE_EMERG_TX_STRING($msg_nomem)
-1:
-        hlt
-        jmp 1b
-2:
-
-        /* Detect MA mapping type of the first bank. */
-
-        jmp raminit_ma
-raminit_ma_reg_table:
-        /* Values for MA type register to try */
-        .word 0x0000, 0x8088, 0xe0ee
-        .word 0xffff // end mark
-
-raminit_ma:
-        xorl %esi, %esi // highest address
-        movl $raminit_ma_reg_table, %ebx
-1:
-        movw (%ebx), %cx
-        cmpw $0xffff, %cx
-        je raminit_ma_done
-        movl $0x58, %eax
-        PCI_WRITE_CONFIG_WORD
-
-        xorl %eax, %eax
-        movl %eax, (%eax)
-
-        // Write to addresses with only one address bit on,
-        // from 0x80000000 to 0x00000008 (lower 3 bits are ignored, assuming 
-        // 64-bit bus).
-        // Then what is read at address 0 is the value written to the lowest
-        // address where it gets wrap-around. That address is either the size
-        // of the bank, or a missing bit due to incorrect MA mapping.
-        movl $0x80000000, %eax
-2:
-        movl %eax, (%eax)
-        shrl $1, %eax
-        cmpl $4, %eax
-        jne 2b
-
-        movl 0, %eax
-        cmpl %eax, %esi
-        jnc 3f
-
-        // This is the current best MA mapping.
-        // Save the address and its MA mapping value.
-        movl %eax, %esi
-        movl %ecx, %edi
-3:
-        incl %ebx
-        incl %ebx
-        jmp 1b
-
-
-raminit_ma_done:
-        // Set the best (hopefully correct) MA mapping type.
-        movl $0x58, %eax
-        movl %edi, %ecx
-        PCI_WRITE_CONFIG_WORD
-
-	CONSOLE_DEBUG_TX_STRING($msg_enabled)
-	CONSOLE_DEBUG_TX_HEX32(%esi)
-	CONSOLE_DEBUG_TX_STRING($msg_bytes)
-
-        /*
-         * We have the size of first bank in %esi, but throwing it away.
-         * Sizing will again be done in C, because we'll configure the rest
-         * of banks in there anyway.
-         */
-
-        //CALLSP(dumpnorth)
-
-	intel_chip_post_macro(0x36)
-
-
-        .section ".rom.data"
-msg_nomem:
-        .asciz "No memory\r\n"
-msg_enabled:
-        .asciz "Enabled first bank of RAM: 0x"
-msg_bytes:
-        .asciz " bytes\r\n"
-        .previous
-#endif
-
-	/* this is an early hack. We're going to just try to get memory
-	 * working as it was before. I need help for SPD! RGM
-	 */
-// Set to 1 if your DIMMs are PC133
-// Note that I'm assuming CPU's FSB frequency is 133MHz. If your CPU runs
-// at another bus speed, you might need to change some of register values.
+/* Set to 1 if your DIMMs are PC133 Note that I'm assuming CPU's FSB
+ * frequency is 133MHz. If your CPU runs at another bus speed, you
+ * might need to change some of register values.
+ */
 #ifndef DIMM_PC133
 #define DIMM_PC133 0
 #endif
@@ -313,19 +47,19 @@ msg_bytes:
 #define DIMM_CL2 0
 #endif
 
-	  void dimms_read(unsigned long x) {
-	  uint8_t c;
-	  unsigned long eax; 
-	  volatile unsigned long y;
-	  eax =  x;
-	  for(c = 0; c < 6; c++) {
-	    
-	    print_err("dimms_read: ");
-	    print_err_hex32(eax);
-	    print_err("\r\n");
-	    y = * (volatile unsigned long *) eax;
-	    eax += 0x10000000;
-	  }
+void dimms_read(unsigned long x) {
+  uint8_t c;
+  unsigned long eax; 
+  volatile unsigned long y;
+  eax =  x;
+  for(c = 0; c < 6; c++) {
+    
+    print_err("dimms_read: ");
+    print_err_hex32(eax);
+    print_err("\r\n");
+    y = * (volatile unsigned long *) eax;
+    eax += 0x10000000;
+  }
 }
 
 void dimms_write(int x) {
@@ -340,8 +74,9 @@ void dimms_write(int x) {
   }
 }
 
-#define setnorthb pci_write_config8
-#if 0
+
+
+#ifdef DEBUG_SETNORTHB
 void setnorthb(device_t north, uint8_t reg, uint8_t val) {
   print_err("setnorth: reg ");
     print_err_hex8(reg);
@@ -350,6 +85,8 @@ void setnorthb(device_t north, uint8_t reg, uint8_t val) {
   print_err("\r\n");
   pci_write_config8(north, reg, val);
 }
+#else
+#define setnorthb pci_write_config8
 #endif
 
 void
@@ -371,10 +108,10 @@ static void sdram_set_registers(const struct mem_controller *ctrl) {
     0x0000, 0x8088, 0xe0ee,
     0xffff // end mark
   };
-  static const uint8_t ramregs[] = {0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 
+  static const unsigned char ramregs[] = {0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 
 	  				0x56, 0x57};
 
-  device_t north = 0;
+  device_t north = (device_t) 0;
   uint8_t c, r;
 
   print_err("vt8601 init starting\n");
@@ -386,7 +123,10 @@ static void sdram_set_registers(const struct mem_controller *ctrl) {
   print_err(" ");
   print_err_hex16(pci_read_config16(north, 2));
   print_err("\r\n");
-	
+
+  /* All we are doing now is setting initial known-good values that will
+   * be revised later as we read SPD
+   */	
   // memory clk enable. We are not using ECC
   pci_write_config8(north,0x78, 0x01);
   print_err_hex8(pci_read_config8(north, 0x78));
@@ -435,8 +175,12 @@ static void sdram_set_registers(const struct mem_controller *ctrl) {
 #else
   pci_write_config8(north,0x69, 0xac);
 #endif
+
+  /* IMPORTANT -- disable refresh counter */
   // refresh counter, disabled.
   pci_write_config8(north,0x6A, 0x00);
+
+
   // clkenable configuration. kevinh FIXME - add precharge
   pci_write_config8(north,0x6C, 0x00);
   // dram read latch delay of 1 ns, MD drive 8 mA,
@@ -446,6 +190,75 @@ static void sdram_set_registers(const struct mem_controller *ctrl) {
 
   /* Initialize all banks at once */
 
+}
+
+/* slot is the dram slot. Base is the *8M base. */
+static unsigned char 
+do_module_size(unsigned char slot) { /*, unsigned char base) */
+  static const unsigned char log2[256] = {[1] = 0, [2] = 1, [4] = 2, [8] = 3,
+			     [16]=4, [32]=5, [64]=6, 
+			     [128]=7};
+  static const uint8_t ramregs[] = {0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 
+	  				0x56, 0x57};
+  device_t north = 0;
+  /* for all the DRAMS, see if they are there and get the size of each
+   * module. This is just a very early first cut at sizing.
+   */
+  /* we may run out of registers ... */
+  unsigned char width, banks, rows, cols, reg;
+  unsigned char value = 0;
+  unsigned char module = 0xa1 | (slot << 1);
+    /* is the module there? if byte 2 is not 4, then we'll assume it 
+     * is useless. 
+     */
+  if (smbus_read_byte(module, 2) != 4)
+    goto done;
+
+  //print_err_hex8(slot);
+  //    print_err(" is SDRAM\n");
+    width = smbus_read_byte(module, 6) | (smbus_read_byte(module,7)<<0);
+    banks = smbus_read_byte(module, 17);
+    /* we're going to assume symmetric banks. Sorry. */
+    cols = smbus_read_byte(module, 4)  & 0xf;
+    rows = smbus_read_byte(module, 3)  & 0xf;
+    /* grand total. You have rows+cols addressing, * times of banks, times
+     * width of data in bytes*/
+    /* do this in terms of address bits. Then subtract 23 from it. 
+     * That might do it.
+     */
+    value = cols + rows + log2[banks] + log2[width];
+    value -= 23;
+    /* now subtract 3 more bits as these are 8-bit bytes */
+    value -= 3;
+    //    print_err_hex8(value);
+    //    print_err(" is the # bits for this bank\n");
+    /* now put that size into the correct register */
+    value = (1 << value);
+ done:
+    reg = ramregs[slot];
+
+    //    print_err_hex8(value); print_err(" would go into ");
+    //    print_err_hex8(ramregs[reg]); print_err("\n");
+    //    pci_write_config8(north, ramregs[reg], value);
+    return value;
+}
+
+static void sdram_set_spd_registers(const struct mem_controller *ctrl) {
+
+}
+
+static void sdram_enable(int controllers, const struct mem_controller *ctrl) {
+  unsigned char i;
+  static const uint16_t raminit_ma_reg_table[] = {
+    /* Values for MA type register to try */
+    0x0000, 0x8088, 0xe0ee,
+    0xffff // end mark
+  };
+  static const uint8_t ramregs[] = {0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 
+	  				0x56, 0x57};
+
+  device_t north = 0;
+  uint8_t c, r, base;
   /* begin to initialize*/
   // I forget why we need this, but we do
   dimms_write(0xa55a5aa5);
@@ -599,13 +412,37 @@ static void sdram_set_registers(const struct mem_controller *ctrl) {
       print_err("\r\n");
     }
   }
+  base = 0;
+  /* runs out of variable space. */
+  /* this is unrolled and constants used as much as possible to help
+   * us not run out of registers.
+   * we'll run out of code space instead :-)
+   */
+  //  for(i = 0; i < 8; i++)
+  base = do_module_size(0); /*, base);*/
+  pci_write_config8(north, ramregs[0], base);
+  base = do_module_size(1); /*, base);*/
+  base += pci_read_config8(north, ramregs[0]);
+  pci_write_config8(north, ramregs[1], base);
+  /* runs out of code space. */
+  for(i = 0; i < 8; i++){
+    pci_write_config8(north, ramregs[i], base);
+    /*
+    pci_write_config8(north, ramregs[3], base);
+    pci_write_config8(north, ramregs[4], base);
+    pci_write_config8(north, ramregs[5], base);
+    pci_write_config8(north, ramregs[6], base);
+    pci_write_config8(north, ramregs[7], base);
+    */
+  }
+  /*
+  base = do_module_size(0xa0, base);
+  base = do_module_size(0xa0, base);
+  base = do_module_size(0xa0, base);
+  base = do_module_size(0xa0, base);
+  base = do_module_size(0xa0, base);
+  base = do_module_size(0xa0, base);*/
   print_err("vt8601 done\n");
   dumpnorth(north);
   udelay(1000);
-}
-
-static void sdram_set_spd_registers(const struct mem_controller *ctrl) {
-}
-
-static void sdram_enable(int controllers, const struct mem_controller *ctrl) {
 }

@@ -35,27 +35,20 @@
 int write_49f002(struct flashchip *flash, unsigned char *buf)
 {
 	int i;
-	int total_size = flash->total_size * 1024;
+	int total_size = flash->total_size * 1024, page_size =
+		flash->page_size;
 	volatile char *bios = flash->virt_addr;
-	volatile char *dst = bios;
 
 	erase_chip_jedec(flash);
 
 	printf("Programming Page: ");
 	for (i = 0; i < total_size; i++) {
 		/* write to the sector */
-		if ((i & 0xfff) == 0)
-			printf("address: 0x%08lx", (unsigned long) i);
-		*(bios + 0x5555) = 0xAA;
-		*(bios + 0x2AAA) = 0x55;
-		*(bios + 0x5555) = 0xA0;
-		*dst++ = *buf++;
-
-		/* wait for Toggle bit ready */
-		toggle_ready_jedec(dst);
-
-		if ((i & 0xfff) == 0)
-			printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		printf("%04d at address: 0x%08x ", i, i * page_size);
+		write_sector_jedec(bios, buf + i * page_size,
+				   bios + i * page_size, page_size);
+		printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		fflush(stdout);
 	}
 	printf("\n");
 

@@ -62,26 +62,19 @@ int probe_jedec(struct flashchip *flash)
 
 int erase_sector_jedec(volatile unsigned char *bios, unsigned int page)
 {
-	volatile unsigned char *Temp;
-
 	/*  Issue the Sector Erase command   */
-	Temp = bios + 0x5555;	/* set up address to be BASE:5555h      */
-	*Temp = 0xAA;		/* write data 0xAA to the address       */
+	*(volatile char *) (bios + 0x5555) = 0xAA;
 	myusec_delay(10);
-	Temp = bios + 0x2AAA;	/* set up address to be BASE:2AAAh      */
-	*Temp = 0x55;		/* write data 0x55 to the address       */
+	*(volatile char *) (bios + 0x2AAA) = 0x55;
 	myusec_delay(10);
-	Temp = bios + 0x5555;	/* set up address to be BASE:5555h      */
-	*Temp = 0x80;		/* write data 0x80 to the address       */
+	*(volatile char *) (bios + 0x5555) = 0x80;
 	myusec_delay(10);
-	Temp = bios + 0x5555;	/* set up address to be BASE:5555h      */
-	*Temp = 0xAA;		/* write data 0xAA to the address       */
+
+	*(volatile char *) (bios + 0x5555) = 0xAA;
 	myusec_delay(10);
-	Temp = bios + 0x2AAA;	/* set up address to be BASE:2AAAh      */
-	*Temp = 0x55;		/* write data 0x55 to the address       */
+	*(volatile char *) (bios + 0x2AAA) = 0x55;
 	myusec_delay(10);
-	Temp = bios + page;	/* set up address to be the current sector */
-	*Temp = 0x30;		/* write data 0x30 to the address       */
+	*(volatile char *) (bios + page)   = 0x30;
 	myusec_delay(10);
 
 	/* wait for Toggle bit ready         */
@@ -92,26 +85,19 @@ int erase_sector_jedec(volatile unsigned char *bios, unsigned int page)
 
 int erase_block_jedec(volatile unsigned char *bios, unsigned int block)
 {
-	volatile unsigned char *Temp;
-
 	/*  Issue the Sector Erase command   */
-	Temp = bios + 0x5555;	/* set up address to be BASE:5555h      */
-	*Temp = 0xAA;		/* write data 0xAA to the address       */
+	*(volatile char *) (bios + 0x5555) = 0xAA;
 	myusec_delay(10);
-	Temp = bios + 0x2AAA;	/* set up address to be BASE:2AAAh      */
-	*Temp = 0x55;		/* write data 0x55 to the address       */
+	*(volatile char *) (bios + 0x2AAA) = 0x55;
 	myusec_delay(10);
-	Temp = bios + 0x5555;	/* set up address to be BASE:5555h      */
-	*Temp = 0x80;		/* write data 0x80 to the address       */
+	*(volatile char *) (bios + 0x5555) = 0x80;
 	myusec_delay(10);
-	Temp = bios + 0x5555;	/* set up address to be BASE:5555h      */
-	*Temp = 0xAA;		/* write data 0xAA to the address       */
+
+	*(volatile char *) (bios + 0x5555) = 0xAA;
 	myusec_delay(10);
-	Temp = bios + 0x2AAA;	/* set up address to be BASE:2AAAh      */
-	*Temp = 0x55;		/* write data 0x55 to the address       */
+	*(volatile char *) (bios + 0x2AAA) = 0x55;
 	myusec_delay(10);
-	Temp = bios + block;	/* set up address to be the current sector */
-	*Temp = 0x50;		/* write data 0x30 to the address       */
+	*(volatile char *) (bios + block)  = 0x50;
 	myusec_delay(10);
 
 	/* wait for Toggle bit ready         */
@@ -123,26 +109,20 @@ int erase_block_jedec(volatile unsigned char *bios, unsigned int block)
 int erase_chip_jedec(struct flashchip *flash)
 {
 	volatile unsigned char *bios = flash->virt_addr;
-	volatile unsigned char *Temp;
 
 	/*  Issue the JEDEC Chip Erase command   */
-	Temp = bios + 0x5555;	/* set up address to be BASE:5555h      */
-	*Temp = 0xAA;		/* write data 0xAA to the address       */
+	*(volatile char *) (bios + 0x5555) = 0xAA;
 	myusec_delay(10);
-	Temp = bios + 0x2AAA;	/* set up address to be BASE:2AAAh      */
-	*Temp = 0x55;		/* write data 0x55 to the address       */
+	*(volatile char *) (bios + 0x2AAA) = 0x55;
 	myusec_delay(10);
-	Temp = bios + 0x5555;	/* set up address to be BASE:5555h      */
-	*Temp = 0x80;		/* write data 0x80 to the address       */
+	*(volatile char *) (bios + 0x5555) = 0x80;
 	myusec_delay(10);
-	Temp = bios + 0x5555;	/* set up address to be BASE:5555h      */
-	*Temp = 0xAA;		/* write data 0xAA to the address       */
+
+	*(volatile char *) (bios + 0x5555) = 0xAA;
 	myusec_delay(10);
-	Temp = bios + 0x2AAA;	/* set up address to be BASE:2AAAh      */
-	*Temp = 0x55;		/* write data 0x55 to the address       */
+	*(volatile char *) (bios + 0x2AAA) = 0x55;
 	myusec_delay(10);
-	Temp = bios + 0x5555;	/* set up address to be BASEy:5555h     */
-	*Temp = 0x10;		/* write data 0x10 to the address       */
+	*(volatile char *) (bios + 0x5555) = 0x10;
 	myusec_delay(10);
 
 	toggle_ready_jedec(bios);

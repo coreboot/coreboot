@@ -194,7 +194,8 @@ int main(int argc, char *argv[])
 	FILE *image;
 	struct flashchip *flash;
 	int opt;
-	int read_it = 0, write_it = 0, verify_it = 0, verbose = 0;
+	int read_it = 0, write_it = 0, erase_it = 0, verify_it = 0,
+		verbose = 0;
 	char *filename = NULL;
 
 
@@ -211,7 +212,7 @@ int main(int argc, char *argv[])
 
 	setbuf(stdout, NULL);
 
-	while ((opt = getopt(argc, argv, "rwvVc:s:e:")) != EOF) {
+	while ((opt = getopt(argc, argv, "rwvVEc:s:e:")) != EOF) {
 		switch (opt) {
 		case 'r':
 			read_it = 1;
@@ -227,6 +228,9 @@ int main(int argc, char *argv[])
 			break;
 		case 'V':
 			verbose = 1;
+			break;
+		case 'E':
+			erase_it = 1;
 			break;
 		case 's':
 			tempstr = strdup(optarg);
@@ -266,14 +270,18 @@ int main(int argc, char *argv[])
 	}
 
 	printf("Part is %s\n", flash->name);
-	if (!filename) {
+	if (!filename && !erase_it) {
 		printf("OK, only ENABLING flash write, but NOT FLASHING\n");
 		return 0;
 	}
 	size = flash->total_size * 1024;
 	buf = (char *) calloc(size, sizeof(char));
 
-	if (read_it) {
+	if (erase_it) {
+		printf("Erasing flash chip\n");
+		flash->erase(flash);
+		exit(0);		
+	} else if (read_it) {
 		if ((image = fopen(filename, "w")) == NULL) {
 			perror(filename);
 			exit(1);

@@ -27,43 +27,13 @@
 #include "jedec.h"
 #include "pm49fl004.h"
 
-static __inline__ int erase_block_49fl004(volatile unsigned char *bios,
-					  unsigned long address)
-{
-	volatile unsigned char *Temp;
-
-	Temp = bios + 0x5555;	/* set up address to be C000:5555h      */
-	*Temp = 0xAA;		/* write data 0xAA to the address       */
-	myusec_delay(10);
-	Temp = bios + 0x2AAA;	/* set up address to be C000:2AAAh      */
-	*Temp = 0x55;		/* write data 0x55 to the address       */
-	myusec_delay(10);
-	Temp = bios + 0x5555;	/* set up address to be C000:5555h      */
-	*Temp = 0x80;		/* write data 0x80 to the address       */
-	myusec_delay(10);
-	Temp = bios + 0x5555;	/* set up address to be C000:5555h      */
-	*Temp = 0xAA;		/* write data 0xAA to the address       */
-	myusec_delay(10);
-	Temp = bios + 0x2AAA;	/* set up address to be C000:2AAAh      */
-	*Temp = 0x55;		/* write data 0x55 to the address       */
-	myusec_delay(10);
-	Temp = bios + address;	/* set up address to be C000:5555h      */
-	*Temp = 0x50;		/* write data 0x50 to the address       */
-
-	/* wait for Toggle bit ready         */
-	toggle_ready_jedec(bios);
-
-	return (0);
-}
-
-
 extern int exclude_start_page, exclude_end_page;
 
 int write_49fl004(struct flashchip *flash, unsigned char *buf)
 {
 	int i;
 	int total_size = flash->total_size * 1024, page_size =
-	    flash->page_size;
+		flash->page_size;
 	volatile char *bios = flash->virt_addr;
 	
 	printf("Programming Page: ");
@@ -72,7 +42,7 @@ int write_49fl004(struct flashchip *flash, unsigned char *buf)
 			continue;
 		
 		/* erase the page before programming */
-		erase_block_49fl004(bios, i * page_size);
+		erase_block_jedec(bios, i * page_size);
 
 		/* write to the sector */
 		printf("%04d at address: 0x%08x", i, i * page_size);

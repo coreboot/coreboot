@@ -487,6 +487,32 @@ def writeldscript(path):
 	file.close();
 
 
+# write ldscript
+def writedoxygenfile(path):
+	global objectrules, doxyscriptbase
+	doxyfilepath = os.path.join(path, "LinuxBIOSDoc.config")
+	print "Trying to create ", doxyfilepath
+#	try: 
+	file = open(doxyfilepath, 'w+')
+# FIXME. Should be computing .c once. Fix this in objectrules.append
+	file.write("INPUT= \\\n")
+	for i in range(len(objectrules)):
+		source = objectrules[i][1]
+		if (source[-2:] != '.c'): # no suffix. Build name. 
+			base = objectrules[i][0]
+			base = base[0:len(base)-2]
+			source = os.path.join(objectrules[i][1], base)
+			source = source + ".c"
+		file.write("%s \\\n" % source)
+
+	doxylines = readfile(doxyscriptbase)
+	if (debug):
+		print "DOXYLINES ",doxylines
+        for line in doxylines:
+		file.write(line)
+	file.close();
+
+
 
 # write the makefile
 # we're not sure whether to write crt0.S yet. We'll see. 
@@ -582,6 +608,7 @@ treetop = command_vals['TOP']
 makebase = os.path.join(treetop, "util/config/make.base")
 crt0base = os.path.join(treetop, "arch/i386/config/crt0.base")
 ldscriptbase = os.path.join(treetop, "arch/alpha/config/ldscript.base")
+doxyscriptbase = os.path.join(treetop, "config/doxyscript.base")
 
 ## now read in the base files. 
 #print "Now Process the base files"
@@ -600,3 +627,4 @@ writemakefile(outputdir)
 writeldscript(outputdir)
 writecrt0(outputdir)
 writesuperiofile(outputdir)
+writedoxygenfile(outputdir)

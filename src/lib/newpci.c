@@ -798,6 +798,14 @@ handle_superio(int pass, struct superio *s, int nsuperio)
       continue;
     printk(KERN_INFO "handle_superio: Pass %d, Superio %s\n", pass, 
 	   s->super->name);
+    // if no port is assigned use the defaultport
+    printk(KERN_INFO __FUNCTION__ "  port 0x%x, defaultport 0x%x\n",
+	   s->port, s->super->defaultport);
+    if (! s->port)
+      s->port = s->super->defaultport;
+
+    printk(KERN_INFO __FUNCTION__ "  Using port 0x%x\n", s->port);
+
     // need to have both pre_pci_init and devfn defined.
     if (s->super->pre_pci_init && (pass == 0)) {
       printk(KERN_INFO "  Call pre_pci_init\n");

@@ -11,6 +11,8 @@ makerule linuxbios.rom: linuxbios.strip mkrom ; ./mkrom -s 64 -f -o linuxbios.ro
 makerule linuxbios.strip: linuxbios ; objcopy -O binary -R .note -R .comment -S linuxbios linuxbios.strip
 makerule linuxbios: linuxbios.a vmlinux.bin.gz ; @rm -f biosobject
 makerule etags: $(SOURCES) ; etags $(SOURCES)
+makerule tags: $(SOURCES) ; gctags $(SOURCES)
+makerule documentation: $(SOURCES) ; doxygen LinuxBIOSDoc.config 
 addaction linuxbios $(LINK) 
 addaction linuxbios nm -n linuxbios > linuxbios.map
 

@@ -43,6 +43,7 @@ sub compile_file
 		$options .= " -DDEFAULT_RAMDISK_LOAD_FLAG";
 	}
 	$cmd = "$params->{CC} $params->{CFLAGS} $options -c $params->{PREFIX}/$src -o $dst";
+	print " Running $cmd \n";
 	system($cmd);
 	die "$cmd\nrc = $?" unless ($? == 0);
 	return $dst;
@@ -109,6 +110,7 @@ sub build_ramdisk_piggy
 	my ($params, $section, $src, $dst) = @_;
 	my $fd = new FileHandle;
 	if (defined($src) && ($src ne "")) {
+		print " Running cp ${src} ${dst}.obj \n";
 		system("cp ${src} ${dst}.obj");
 	}
 	else {
@@ -143,6 +145,7 @@ sub build_elf_image
 	$fd->close();
 	my $script = "$params->{PREFIX}/elfImage.lds";
 	my $cmd = "$params->{LD} -o ${dst}  -T $script " . join(" ", @srcs);
+	print " Running $cmd";
 	system("$cmd");
 	die "rc = $?" unless ($? == 0);
 	unlink("${dst}.obj",$lscript);

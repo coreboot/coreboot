@@ -42,7 +42,7 @@ static void mcf3_read_resources(device_t dev)
 	pci_dev_read_resources(dev);
 
 	/* If we are not the first processor don't allocate the gart apeture */
-	if (dev->path.u.pci.devfn != PCI_DEVFN(0x18, 0x3)) {
+	if (dev->path.u.pci.devfn != PCI_DEVFN(0x18, 3)) {
 		return;
 	}
 
@@ -68,19 +68,20 @@ static void set_agp_aperture(device_t dev)
 	if (resource) {
 		device_t pdev;
 		uint32_t gart_base, gart_acr;
+
 		/* Remember this resource has been stored */
 		resource->flags |= IORESOURCE_STORED;
 
-		/*Find the size of the GART aperture */
-		gart_acr  = (0<<6)|(0<<5)|(0<<4)| ((log2(resource->size) - 25) << 1)|(0<<0);
+		/* Find the size of the GART aperture */
+		gart_acr = (0<<6)|(0<<5)|(0<<4)|((resource->gran - 25) << 1)|(0<<0);
 
 		/* Get the base address */
 		gart_base = ((resource->base) >> 25) & 0x00007fff;
 		
 		/* Update the other northbriges */
 		pdev = 0;
-		while (pdev = dev_find_device(PCI_VENDOR_ID_AMD, 0x1103, pdev)) {
-			/* Store GART size but don't enable it */
+		while((pdev = dev_find_device(PCI_VENDOR_ID_AMD, 0x1103, pdev))) {
+			/* Store the GART size but don't enable it */
 			pci_write_config32(pdev, 0x90, gart_acr);
 
 			/* Store the GART base address */
@@ -175,8 +176,6 @@ static void misc_control_init(struct device *dev)
 			needs_reset = 1; /* Needed? */
 		}
 	}
-#if CONFIG_MAX_CPUS > 1 
-/* Single CPU systems don't seem to need this. It might cause resets? (YhLu) */
 	/* Optimize the Link read pointers */
 	f0_dev = dev_find_slot(0, dev->path.u.pci.devfn - 3);
 	if (f0_dev) {
@@ -202,7 +201,6 @@ static void misc_control_init(struct device *dev)
 	else {
 		printk_err("Missing f0 device!\n");
 	}
-#endif 
 	if (needs_reset) {
 		printk_debug("resetting cpu\n");
 		hard_reset();
@@ -217,6 +215,7 @@ static struct device_operations mcf3_ops  = {
 	.enable_resources = pci_dev_enable_resources,
 	.init             = misc_control_init,
 	.scan_bus         = 0,
+	.ops_pci          = 0,
 };
 
 static struct pci_driver mcf3_driver __pci_driver = {

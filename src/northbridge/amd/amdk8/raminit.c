@@ -1,20 +1,20 @@
-#include <cpu/k8/mtrr.h>
+#include <cpu/x86/mem.h>
+#include <cpu/x86/cache.h>
+#include <cpu/x86/mtrr.h>
 #include "raminit.h"
 #include "amdk8.h"
 
 #if (CONFIG_LB_MEM_TOPK & (CONFIG_LB_MEM_TOPK -1)) != 0
 # error "CONFIG_LB_MEM_TOPK must be a power of 2"
 #endif
-
 static void setup_resource_map(const unsigned int *register_values, int max)
 {
 	int i;
 	print_debug("setting up resource map....");
-
 #if 0
 	print_debug("\r\n");
 #endif
-	for (i = 0; i < max; i += 3) {
+	for(i = 0; i < max; i += 3) {
 		device_t dev;
 		unsigned where;
 		unsigned long reg;
@@ -1921,11 +1921,21 @@ static long spd_set_dram_timing(const struct mem_controller *ctrl, const struct 
 	return dimm_mask;
 }
 
+static int controller_present(const struct mem_controller *ctrl)
+{
+	return pci_read_config32(ctrl->f0, 0) == 0x11001022;
+}
 static void sdram_set_spd_registers(const struct mem_controller *ctrl) 
 {
 	struct spd_set_memclk_result result;
 	const struct mem_param *param;
 	long dimm_mask;
+#if 1
+	if (!controller_present(ctrl)) {
+		print_debug("No memory controller present\r\n");
+		return;
+	}
+#endif
 	hw_enable_ecc(ctrl);
 	activate_spd_rom(ctrl);
 	dimm_mask = spd_detect_dimms(ctrl);
@@ -1972,6 +1982,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	/* Before enabling memory start the memory clocks */
 	for(i = 0; i < controllers; i++) {
 		uint32_t dch;
+		if (!controller_present(ctrl + i))
+			continue;
 		dch = pci_read_config32(ctrl[i].f2, DRAM_CONFIG_HIGH);
 		if (dch & (DCH_MEMCLK_EN0|DCH_MEMCLK_EN1|DCH_MEMCLK_EN2|DCH_MEMCLK_EN3)) {
 			dch |= DCH_MEMCLK_VALID;
@@ -1991,6 +2003,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	for(i = 0; i < controllers; i++) {
 		uint32_t dcl, dch;
+		if (!controller_present(ctrl + i))
+			continue;
 		/* Skip everything if I don't have any memory on this controller */
 		dch = pci_read_config32(ctrl[i].f2, DRAM_CONFIG_HIGH);
 		if (!(dch & DCH_MEMCLK_VALID)) {
@@ -2021,6 +2035,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	}
 	for(i = 0; i < controllers; i++) {
 		uint32_t dcl, dch;
+		if (!controller_present(ctrl + i))
+			continue;
 		/* Skip everything if I don't have any memory on this controller */
 		dch = pci_read_config32(ctrl[i].f2, DRAM_CONFIG_HIGH);
 		if (!(dch & DCH_MEMCLK_VALID)) {
@@ -2058,78 +2074,16 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	/* Save the value of msr_201 */
 	msr_201 = rdmsr(0x201);
 	
-	print_debug("Clearing LinuxBIOS memory: ");
-	
-	/* disable cache */
-	__asm__ volatile(
-		"movl  %%cr0, %0\n\t"
-		"orl  $0x40000000, %0\n\t"
-		"movl  %0, %%cr0\n\t"
-		:"=r" (cnt)
-		);
-	
-	/* Disable fixed mtrrs */
-	msr = rdmsr(MTRRdefType_MSR);
-	msr.lo &= ~(1<<10);
-	wrmsr(MTRRdefType_MSR, msr);
-	
-	
-	/* Set the variable mtrrs to write combine */
-	msr.hi = 0;
-	msr.lo = 0 | MTRR_TYPE_WRCOMB;
-	wrmsr(0x200, msr);
-	
-	/* Set the limit to 1M of ram */
-	msr.hi = 0x000000ff;
-	msr.lo = (~((CONFIG_LB_MEM_TOPK << 10) - 1)) | 0x800;
-	wrmsr(0x201, msr);
-	
-	/* enable cache */
-	__asm__ volatile(
-		"movl  %%cr0, %0\n\t"
-		"andl  $0x9fffffff, %0\n\t"
-		"movl  %0, %%cr0\n\t"	
-		:"=r" (cnt)	
-		);
-	
+	print_debug("Clearing initial memory region: ");
+
+	/* Use write combine caching while we setup the  first 1M */
+	cache_lbmem(MTRR_TYPE_WRCOMB);
+
 	/* clear memory 1meg */
-	__asm__ volatile(
-		"1: \n\t"
-		"movl %0, %%fs:(%1)\n\t"
-		"addl $4,%1\n\t"
-		"subl $4,%2\n\t"
-		"jnz 1b\n\t"
-		:
-		: "a" (0), "D" (0), "c" (1024*1024)
-		);			
-	
-	/* disable cache */
-	__asm__ volatile(
-		"movl  %%cr0, %0\n\t"
-		"orl  $0x40000000, %0\n\t"
-		"movl  %0, %%cr0\n\t"
-		:"=r" (cnt)
-		);
-	
-	/* restore msr registers */
-	msr = rdmsr(MTRRdefType_MSR);
-	msr.lo |= 0x0400;
-	wrmsr(MTRRdefType_MSR, msr);
-	
-	
-	/* Restore the variable mtrrs */
-	msr.hi = 0;
-	msr.lo = MTRR_TYPE_WRBACK;
-	wrmsr(0x200, msr);
-	wrmsr(0x201, msr_201);
-	
-	/* enable cache */
-	__asm__ volatile(
-		"movl  %%cr0, %0\n\t"
-		"andl  $0x9fffffff, %0\n\t"
-		"movl  %0, %%cr0\n\t"	
-		:"=r" (cnt)	
-		);
+	clear_memory((void *)0, CONFIG_LB_MEM_TOPK << 10);
+
+	/* The first 1M is now setup, use it */
+	cache_lbmem(MTRR_TYPE_WRBACK);
 	
 	print_debug(" done\r\n");
 }

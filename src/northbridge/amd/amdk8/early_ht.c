@@ -16,8 +16,9 @@ static int enumerate_ht_chain(void)
 		id = pci_read_config32(PCI_DEV(0,0,0), PCI_VENDOR_ID);
 		/* If the chain is enumerated quit */
 		if (((id & 0xffff) == 0x0000) || ((id & 0xffff) == 0xffff) ||
-		    (((id >> 16) & 0xffff) == 0xffff) ||
-		    (((id >> 16) & 0xffff) == 0x0000)) {
+			(((id >> 16) & 0xffff) == 0xffff) ||
+			(((id >> 16) & 0xffff) == 0x0000)) 
+		{
 			break;
 		}
 		hdr_type = pci_read_config8(PCI_DEV(0,0,0), PCI_HEADER_TYPE);
@@ -25,7 +26,8 @@ static int enumerate_ht_chain(void)
 		hdr_type &= 0x7f;
 
 		if ((hdr_type == PCI_HEADER_TYPE_NORMAL) ||
-		    (hdr_type == PCI_HEADER_TYPE_BRIDGE)) {
+			(hdr_type == PCI_HEADER_TYPE_BRIDGE)) 
+		{
 			pos = pci_read_config8(PCI_DEV(0,0,0), PCI_CAPABILITY_LIST);
 		}
 		while(pos != 0) {

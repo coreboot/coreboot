@@ -142,11 +142,11 @@ void vga_hardware_fixup(void) {
 
 	printk_info("done.\n");
 
-#ifdef VIDEO_SHOW_LOGO
 	if (!splash_done) {
 		printk_debug("Setting graphics mode...\n");
 		vga_set_gmode(); // set graphics mode
 
+#ifdef VIDEO_SHOW_LOGO
 		//
 		// the pcx_file is in flash at an address set 
 		// in the config file with PCX_FILE_LOCATION

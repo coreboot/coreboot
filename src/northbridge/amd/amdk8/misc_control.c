@@ -155,6 +155,8 @@ static void misc_control_init(struct device *dev)
 			needs_reset = 1; /* Needed? */
 		}
 	}
+#if CONFIG_MAX_CPUS > 1 
+/* Single CPU systems don't seem to need this. It might cause resets? (YhLu) */
 	/* Optimize the Link read pointers */
 	f0_dev = dev_find_slot(0, dev->path.u.pci.devfn - 3);
 	if (f0_dev) {
@@ -180,6 +182,7 @@ static void misc_control_init(struct device *dev)
 	else {
 		printk_err("Missing f0 device!\n");
 	}
+#endif 
 	if (needs_reset) {
 		printk_debug("resetting cpu\n");
 		hard_reset();

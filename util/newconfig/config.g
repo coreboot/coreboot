@@ -281,6 +281,7 @@ class romimage:
 		if (o):
 			warning("rule %s previously defined" % id)
 		o = makerule(id)
+		print "We are in addmakerule, add %s\n" % id
 		setdict(self.makebaserules, id, o)
 
 	def getmakerules(self):
@@ -750,8 +751,6 @@ class partobj:
 			file.write("\n")
 
 		if (self.instance == 0):
-			self.dumpme(0)
-			# KLUDGE
 			self.instance_name = "dev_root"
 			file.write("struct %s_config %s_info_%s;\n" % (self.type_name, self.type_name, self.instance))
 			file.write("struct device dev_root = {\n")
@@ -964,15 +963,12 @@ def getoption(name, image):
 	#print "getoption: name %s image %s alloptions %s curimage %s\n\n" % (name, image, alloptions, curimage)
 	curpart = partstack.tos()
 	if (alloptions):
-		#print "ALLOPTIONS\n"
 		o = getdict(global_options, name)
 	elif (curpart):
 		o = getdict(curpart.uses_options, name)
-		print "CURPART o is %s\n" % o
 		if (o == 0):
 			print "curpart.uses_optins is %s\n" % curpart.uses_options
 	else:
-		#print "GLOBAL_USES_OPTIONS\n"
 		o = getdict(global_uses_options, name)
 	v = getoptionvalue(name, o, image)
 	if (v == 0):
@@ -1230,6 +1226,7 @@ def startromimage(name):
 	if (o):
 		fatal("romimage %s previously defined" % name)
 	curimage = romimage(name)
+	dodir('/config', 'Config.lb')
 	curimage.settargetdir(os.path.join(target_dir, name))
 	#o = partobj(curimage, target_dir, 0, 'board', target_name)
 	#curimage.setroot(o)
@@ -1264,7 +1261,7 @@ def mainboard():
 		type_name, 'Config.lb', 0, 'chip')
 	print "Configuring PART %s" % (type)
 	partstack.push(newpart)
-	print "  new PART tos is now %s\n" %partstack.tos().info()
+	#print "  new PART tos is now %s\n" %partstack.tos().info()
 	dirstack.push(fulldir)
 	loadoptions(mainboard_path, 'Options.lb', 'mainboardvariables')
 	# special case for 'cpu' parts.
@@ -1318,7 +1315,7 @@ def devicepart(type):
 			'', 0, 0, 'device')
 	print "Configuring PART %s" % (type)
 	partstack.push(newpart)
-	print "  new PART tos is now %s\n" %partstack.tos().info()
+	#print "  new PART tos is now %s\n" %partstack.tos().info()
 	# just push TOS, so that we can pop later. 
 	dirstack.push(dirstack.tos())
 	
@@ -1330,9 +1327,9 @@ def part(type, path, file, name, link):
 	type_name = flatten_name(partdir)
 	newpart = partobj(curimage, fulldir, partstack.tos(), type, \
 			type_name, name, link, 'chip')
-	print "Configuring PART %s, path %s" % (type, path)
+	#print "Configuring PART %s, path %s" % (type, path)
 	partstack.push(newpart)
-	print "  new PART tos is now %s\n" %partstack.tos().info()
+	#print "  new PART tos is now %s\n" %partstack.tos().info()
 	dirstack.push(fulldir)
 	# special case for 'cpu' parts. 
 	# we could add a new function too, but this is rather trivial.
@@ -1355,7 +1352,7 @@ def partpop():
 			notice("Option %s using default value %s" % (op, getformated(op, curpart.image)))
 	oldpart = partstack.pop()
 	dirstack.pop()
-	print "partstack.pop, TOS is now %s\n" % oldpart.info()
+	#print "partstack.pop, TOS is now %s\n" % oldpart.info()
 
 def dodir(path, file):
 	"""dodir is like part but there is no new part"""
@@ -1380,6 +1377,7 @@ def lookup(name):
 
 def addrule(id):
 	global curimage
+	print "ADDRULE: %s\n" %id
 	curimage.addmakerule(id)
 	
 def adduserdefine(str):
@@ -1397,6 +1395,7 @@ def adddep(id, str):
 def setarch(my_arch):
 	"""arch is 'different' ... darn it."""
 	global curimage
+	print "SETTING ARCH %s\n" % my_arch
 	curimage.setarch(my_arch)
 	setdefault('ARCH', my_arch, 1)
 	part('arch', my_arch, 'Config.lb', 0, 0)

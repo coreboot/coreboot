@@ -16,7 +16,6 @@ end
 ##
 default PAYLOAD_SIZE            = ( ROM_SECTION_SIZE - ROM_IMAGE_SIZE )
 default CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
-default CONFIG_ROM_STREAM     = 1
 
 ##
 ## Compute where this copy of linuxBIOS will start in the boot rom
@@ -33,72 +32,216 @@ default _ROMBASE      = ( CONFIG_ROM_STREAM_START + PAYLOAD_SIZE )
 default XIP_ROM_SIZE=65536
 default XIP_ROM_BASE = ( _ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE )
 
+arch i386 end 
+
+##
+## Build the objects we have code for in this directory.
+##
+
+driver mainboard.o
+if HAVE_MP_TABLE object mptable.o end
+if HAVE_PIRQ_TABLE object irq_tables.o end
+#object reset.o
+
+##
+## Romcc output
+##
+makerule ./failover.E
+	depends "$(MAINBOARD)/failover.c" 
+	action "$(CPP) -I$(TOP)/src $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/failover.c > ./failover.E"
+end
+
+makerule ./failover.inc
+	depends "./failover.E ./romcc"
+	action "./romcc -O -o failover.inc --label-prefix=failover ./failover.E"
+end
+
+makerule ./auto.E 
+	depends	"$(MAINBOARD)/auto.c option_table.h " 
+	action	"$(CPP) -I$(TOP)/src -I. $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
+end
+makerule ./auto.inc 
+	depends "./auto.E ./romcc"
+	action	"./romcc -mcpu=k8 -O2 ./auto.E > auto.inc"
+end
+
+##
+## Build our 16 bit and 32 bit linuxBIOS entry code
+##
+mainboardinit cpu/x86/16bit/entry16.inc
+mainboardinit cpu/x86/32bit/entry32.inc
+ldscript /cpu/x86/16bit/entry16.lds
+ldscript /cpu/x86/32bit/entry32.lds
+
+##
+## Build our reset vector (This is where linuxBIOS is entered)
+##
+if USE_FALLBACK_IMAGE 
+	mainboardinit cpu/x86/16bit/reset16.inc 
+	ldscript /cpu/x86/16bit/reset16.lds 
+else
+	mainboardinit cpu/x86/32bit/reset32.inc 
+	ldscript /cpu/x86/32bit/reset32.lds 
+end
+
+### Should this be in the northbridge code?
+mainboardinit arch/i386/lib/cpu_reset.inc
+
+##
+## Include an id string (For safe flashing)
+##
+mainboardinit arch/i386/lib/id.inc
+ldscript /arch/i386/lib/id.lds
+
+###
+### This is the early phase of linuxBIOS startup 
+### Things are delicate and we test to see if we should
+### failover to another image.
+###
+if USE_FALLBACK_IMAGE
+	ldscript /arch/i386/lib/failover.lds 
+	mainboardinit ./failover.inc
+end
+
+###
+### O.k. We aren't just an intermediary anymore!
+###
+
+##
+## Setup RAM
+##
+mainboardinit cpu/x86/fpu/enable_fpu.inc
+mainboardinit cpu/x86/mmx/enable_mmx.inc
+mainboardinit cpu/x86/sse/enable_sse.inc
+mainboardinit ./auto.inc
+mainboardinit cpu/x86/sse/disable_sse.inc
+mainboardinit cpu/x86/mmx/disable_mmx.inc
+
+##
+## Include the secondary Configuration files 
+##
+dir /pc80
+config chip.h
+
 # sample config for arima/hdama
 chip northbridge/amd/amdk8
-	print "HI MOM!\n"
-	device pnp cf8.0 on					# cf8 config
-	print "HI MOM!\n"
-		device pci 18.0 on				#  northbridge 
-	print "HI MOM!\n"
+	device pci_domain 0 on
+		device pci 18.0 on #  northbridge 
 			#  devices on link 0, link 0 == LDT 0 
 			chip southbridge/amd/amd8131
-			print "SOUTH\n"
 				# the on/off keyword is mandatory
 				device pci 0.0 on end
-			print "SOUTH2\n"
 				device pci 0.1 on end
-			print "SOUTH3\n"
 				device pci 1.0 on end
-			print "SOUTH4\n"
 				device pci 1.1 on end
 			end
 			chip southbridge/amd/amd8111
-				print "NEXT SOUTH\n"
 				# this "device pci 0.0" is the parent the next one
 				# PCI bridge
 				device pci 0.0 on
-					# this "device pci 0.0" is a child of the
-					# previous one
-					# devices behind the bridge
 					device pci 0.0 on end
 					device pci 0.1 on end
 					device pci 0.2 on end
-					# the device statement can span across multiple
-					# lines too
-					device pci 1.0
-						off
-					end
+					device pci 1.0 off end
 				end
 				device pci 1.0 on
 					chip superio/NSC/pc87360
-						device pnp 2e.3 on
-							io 0x60 = 0x3f8
+						device	pnp 2e.0 off  # Floppy 
+							 io 0x60 = 0x3f0
+							irq 0x70 = 6
+							drq 0x74 = 2
+						end
+						device pnp 2e.1 off  # Parallel Port
+							 io 0x60 = 0x378
+							irq 0x70 = 7
+						end
+						device pnp 2e.2 off # Com 2
+							 io 0x60 = 0x2f8
+							irq 0x70 = 3
+						end
+						device pnp 2e.3 on  # Com 1
+							 io 0x60 = 0x3f8
 							irq 0x70 = 4
-						end 
+						end
+						device pnp 2e.4 off end # SWC
+						device pnp 2e.5 off end # Mouse
+						device pnp 2e.6 on  # Keyboard
+							 io 0x60 = 0x60
+							 io 0x62 = 0x64
+							irq 0x70 = 1
+						end
+						device pnp 2e.7 off end # GPIO
+						device pnp 2e.8 off end # ACB
+						device pnp 2e.9 off end # FSCM
+						device pnp 2e.a off end # WDT  
 					end
 				end
 				device pci 1.1 on end
-				device pci 1.2 off end
-				device pci 1.3 off end
-				device pci 1.5 on end
+				device pci 1.2 on end
+				device pci 1.3 on 
+					chip drivers/generic/generic
+						#phillips pca9545 smbus mux
+						device i2c  70 on end
+							# analog_devices adm1026	
+							chip drivers/generic/generic
+								device i2c 2c on end
+							end
+						device i2c 70 on end
+						device i2c 70 on end
+						device i2c 70 on end
+					end
+					chip drivers/generic/generic link 4 #dimm 0-0-0
+						device i2c 50 on end
+					end
+					chip drivers/generic/generic link 4 #dimm 0-0-1
+						device i2c 51 on end
+					end 
+					chip drivers/generic/generic link 4 #dimm 0-1-0
+						device i2c 52 on end
+					end 
+					chip drivers/generic/generic link 4 #dimm 0-1-1
+						device i2c 53 on end
+					end 
+					chip drivers/generic/generic link 4 #dimm 1-0-0
+						device i2c 54 on end 
+					end
+					chip drivers/generic/generic link 4 #dimm 1-0-1
+						device i2c 55 on end
+					end 
+					chip drivers/generic/generic link 4 #dimm 1-1-0
+						device i2c 56 on end
+					end 
+					chip drivers/generic/generic link 4 #dimm 1-1-1
+						device i2c 57 on end
+					end 
+				end
+				device pci 1.5 off end
 				device pci 1.6 on end
 			end
 		end #  device pci 18.0 
-		device pci 18.0 on
-			#  some non-existence devices on link 1 
+		
+		device pci 18.0 on end # LDT1
+		device pci 18.0 on end # LDT2
+		device pci 18.1 on end
+		device pci 18.2 on end
+		device pci 18.3 on end
+
+		chip northbridge/amd/amdk8
+			device pci 19.0 on end
+			device pci 19.0 on end
+			device pci 19.0 on end
+			device pci 19.1 on end
+			device pci 19.2 on end
+			device pci 19.3 on end
 		end
-		device pci 18.0 on
-			#  some non-existence devices on link 2 
+	end 
+	device apic_cluster 0 on
+		chip cpu/amd/socket_940
+			device apic 0 on end
 		end
-		device pci 18.1
-			#  empty 
+		chip cpu/amd/socket_940
+			device apic 1 on end
 		end
-		device pci 18.2
-			#  empty 
-		end
-		device pci 18.3
-			#  empty 
-		end
-	end #  device pnp 
+	end
 end
 

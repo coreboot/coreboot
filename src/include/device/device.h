@@ -67,7 +67,8 @@ struct device {
 
 	unsigned long rom_address;
 	struct device_operations *ops;
-	struct chip *chip;
+	struct chip_control *chip_control;
+	void *chip_info;
 };
 
 extern struct device	dev_root;	/* root bus */

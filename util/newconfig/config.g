@@ -1,3 +1,4 @@
+# -*- python -*-
 import sys
 import os
 import re
@@ -616,6 +617,13 @@ class partobj:
 		# Path to the device
 		self.path = ""
 
+		# Resources of the device
+		self.resoruce = ""
+		self.resources = 0
+
+		# Enabled state of the device
+		self.enabled = 1
+
                 # Link from parent device
                 if ((link < 0) or (link > 16)):
         		fatal("Invalid link")
@@ -630,7 +638,7 @@ class partobj:
 					% (self.type_name, self.instance)
 		else:
 			self.instance_name = instance_name
-			self.chipinfo_name = "%s_config" % self.instance_name
+			self.chipinfo_name = "%s_info_%d" % (self.instance_name, self.instance)
 		
 		# Link this part into the tree
 		if (parent and (part != 'arch')):
@@ -704,6 +712,15 @@ class partobj:
 				parent = parent.parent
 		fatal("Device %s has no chip parent; this is a config file error" % self.type_name)
 
+	def firstsiblingdevice(self):
+		"""Find the first device in the sibling link."""
+		sibling = self.siblings
+		while(sibling):
+			if (sibling.chip_or_device == 'device'):
+				return sibling
+			else:
+				sibling = sibling.children
+		return 0		
 
 	def gencode(self, file, pass_num):
 		"""Generate static initalizer code for this part. Two passes
@@ -721,7 +738,7 @@ class partobj:
 			return
 		# This is pass the second, which is pass number 1
 		# this is really just a case statement ...
-		if ((self.instance) and (self.chip_or_device == 'chip')):
+		if ((self.instance) and (self.chip_or_device == 'chip') and (self.chipconfig)):
 			debug.info(debug.gencode, "gencode: chipconfig(%d)" % \
 					self.instance)
 			file.write("struct %s_config %s" % (self.type_name ,\
@@ -757,32 +774,39 @@ class partobj:
 			file.write("\t.ops = &default_dev_ops_root,\n")
 			file.write("\t.bus = &dev_root.link[0],\n")
 			file.write("\t.path = { .type = DEVICE_PATH_ROOT },\n")
-			file.write("\t.enable = 1\n\t.links = 1\n")
+			file.write("\t.enabled = 1,\n\t.links = 1,\n")
 			file.write("\t.link = {\n\t\t[0] = {\n")
 			file.write("\t\t\t.dev=&dev_root,\n\t\t\t.link = 0,\n")
-			file.write("\t\t\t.children = %s,\n" % self.firstchilddevice().instance_name)
+			file.write("\t\t\t.children = &%s,\n" % self.firstchilddevice().instance_name)
 			file.write("\t\t},\n")
 			file.write("\t},\n")
-			file.write("\t.chip_control = &%s_control,\n" % self.type_name)
-			file.write("\t.chip_info = &%s_info_%s,\n" % (self.type_name, self.instance))
+			if (self.chipconfig != 0):
+				file.write("\t.chip_control = &%s_control,\n" % self.type_name)
+				file.write("\t.chip_info = &%s_info_%s,\n" % (self.type_name, self.instance))
 			file.write("};\n")
 			return
 
 		file.write("struct device %s = {\n" % self.instance_name)
 		file.write("\t.ops = 0,\n")
 		file.write("\t.bus = &%s.link[0],\n" % self.firstparentdevice().instance_name)
-		file.write("\t%s,\n" % self.path)
-		file.write("\t.links = 1\n")
+		file.write("\t.path = {%s},\n" % self.path)
+		file.write("\t.enabled = %d,\n" % self.enabled)
+		if (self.resources):
+			file.write("\t.resources = %d,\n" % self.resources)
+			file.write("\t.resource = {%s\n\t },\n" % self.resource)
+		file.write("\t.links = 1,\n")
 		file.write("\t.link = {\n\t\t[0] = {\n")
 		file.write("\t\t\t.dev=&%s,\n\t\t\t.link = 0,\n" % self.instance_name)
 		if (self.firstchilddevice()):
 			file.write("\t\t\t.children = &%s,\n" % self.firstchilddevice().instance_name)
 		file.write("\t\t},\n")
 		file.write("\t},\n")
-		if (self.siblings):
-			file.write("\t.sibling = %s,\n" % self.siblings.instance_name)
-		file.write("\t.chip_control = &%s_control,\n" % self.firstparentchip().type_name)
-		file.write("\t.chip_info = &%s_info_%s,\n" % (self.firstparentchip().type_name, self.firstparentchip().instance))
+		sibling = self.firstsiblingdevice();
+		if (sibling):
+			file.write("\t.sibling = &%s,\n" % sibling.instance_name)
+		if (self.chipconfig != 0):
+			file.write("\t.chip_control = &%s_control,\n" % self.firstparentchip().type_name)
+			file.write("\t.chip_info = &%s_info_%s,\n" % (self.firstparentchip().type_name, self.firstparentchip().instance))
 		file.write("};\n")
 		return
 
@@ -790,8 +814,8 @@ class partobj:
 
 		file.write("\t/* %s %s */\n" % (self.part, self.dir))
                 file.write("\t.link = %d,\n" % (self.link))
-		if (self.path != ""):
-			file.write("\t.path = { %s\n\t},\n" % (self.path) )
+#		if (self.path != ""):
+#			file.write("\t.path = { %s\n\t},\n" % (self.path) )
 		if (self.siblings):
 			debug.info(debug.gencode, "gencode: siblings(%d)" \
 				% self.siblings.instance)
@@ -835,56 +859,61 @@ class partobj:
 		value = dequote(value)
         	setdict(self.registercode, field, value)
 
+	def set_enabled(self, enabled):
+		self.enabled = enabled
+
 	def start_resources(self):
-		self.path = "%s, .resource={" % (self.path)
+		self.resource = ""
+		self.resources = 0
 
 	def end_resources(self):
-		self.path = "%s}" % (self.path)
+		self.resource = "%s" % (self.resource)
 
 	def add_resource(self, type, index, value):
 		""" Add a resource to a device """
-		self.path = "%s\n\t\t\t{ .flags=%s, .index=0x%x, .base=0x%x}," % (self.path, type, index, value)
+		self.resource = "%s\n\t\t{ .flags=%s, .index=0x%x, .base=0x%x}," % (self.resource, type, index, value)
+		self.resources = self.resources + 1
 		
-		
-		
-	def addpcipath(self, enable, bus, slot, function):
+	def addpcipath(self, slot, function):
 		""" Add a relative pci style path from our parent to this device """
-		if ((bus < 0) or (bus > 255)):
-			fatal("Invalid bus")
 		if ((slot < 0) or (slot > 0x1f)):
 			fatal("Invalid device id")
 		if ((function < 0) or (function > 7)):
 			fatal("Invalid function")
-		self.path = "%s\n\t\t .enabled = %d, .path = {.type=DEVICE_PATH_PCI,.u={.pci={ .bus = 0x%x, .devfn = PCI_DEVFN(0x%x,%d)}}" % (self.path, enable, bus, slot, function)
+		self.path = ".type=DEVICE_PATH_PCI,.u={.pci={ .devfn = PCI_DEVFN(0x%x,%d)}}" % (slot, function)
 
-	def addpnppath(self, enable, port, device):
+	def addpnppath(self, port, device):
 		""" Add a relative path to a pnp device hanging off our parent """
 		if ((port < 0) or (port > 65536)):
 			fatal("Invalid port")
 		if ((device < 0) or (device > 0xff)):
 			fatal("Invalid device")
-		self.path = "%s\n\t\t.enabled = %d, .path={.type=DEVICE_PATH_PNP,.u={.pnp={ .port = 0x%x, .device = 0x%x }}" % (self.path, enable, port, device)
+		self.path = ".type=DEVICE_PATH_PNP,.u={.pnp={ .port = 0x%x, .device = 0x%x }}" % (port, device)
 		
-	def addi2cpath(self, enable, device):
+	def addi2cpath(self, device):
 		""" Add a relative path to a i2c device hanging off our parent """
 		if ((device < 0) or (device > 0x7f)):
 			fatal("Invalid device")
-		self.path = "%s\n\t\t .enabled = %d, .path = {.type=DEVICE_PATH_I2C,.u={.i2c={ .device = 0x%x }} " % (self.path, enable, device)
+		self.path = ".type=DEVICE_PATH_I2C,.u={.i2c={ .device = 0x%x }}" % (device)
 
-	def addapicpath(self, enable, apic_id):
+	def addapicpath(self, apic_id):
 		""" Add a relative path to a cpu device hanging off our parent """
 		if ((apic_id < 0) or (apic_id > 255)):
 			fatal("Invalid device")
-		self.path = "%s\n\t\t .enabled = %d, .path = {.type=DEVICE_PATH_APIC,.u={.apic={ .apic_id = 0x%x }} " % (self.path, enable, apic_id)
+		self.path = ".type=DEVICE_PATH_APIC,.u={.apic={ .apic_id = 0x%x }}" % (apic_id)
     
-	def addpci_domainpath(self, enable, pci_domain):
+	def addpci_domainpath(self, pci_domain):
 		""" Add a pci_domain number to a chip """
 		if ((pci_domain < 0) or (pci_domain > 0xffff)):
 			fatal("Invalid pci_domain: 0x%x is out of the range 0 to 0xffff" % pci_domain)
-		self.path = "%s\n\t\t .enabled = %d, .path = {.type=DEVICE_PATH_PCI_DOMAIN,.u={.pci_domain={ .pci_domain = 0x%x }} " % (self.path, enable, pci_domain)
+		self.path = ".type=DEVICE_PATH_PCI_DOMAIN,.u={.pci_domain={ .domain = 0x%x }}" % (pci_domain)
     
-
-
+	def addapic_cluster(self, cluster):
+		""" Add a pci_domain number to a chip """
+		if ((cluster < 0) or (cluster > 15)):
+			fatal("Invalid apic cluster: %d is out of the range 0 to ff" % cluster)
+		self.path = ".type=DEVICE_PATH_APIC_CLUSTER,.u={.apic_cluster={ .cluster = 0x%x }}" % (cluster)
+    
 	def usesoption(self, name):
 		"""Declare option that can be used by this part"""
 		global global_options
@@ -1226,11 +1255,11 @@ def startromimage(name):
 	if (o):
 		fatal("romimage %s previously defined" % name)
 	curimage = romimage(name)
-	dodir('/config', 'Config.lb')
 	curimage.settargetdir(os.path.join(target_dir, name))
 	#o = partobj(curimage, target_dir, 0, 'board', target_name)
 	#curimage.setroot(o)
 	setdict(romimages, name, curimage)
+	dodir('/config', 'Config.lb')
 
 def endromimage():
 	global curimage
@@ -1258,7 +1287,7 @@ def mainboard():
 	fulldir = os.path.join(srcdir, partdir)
 	type_name = flatten_name(partdir)
 	newpart = partobj(curimage, fulldir, partstack.tos(), 'mainboard', \
-		type_name, 'Config.lb', 0, 'chip')
+		type_name, 0, 0, 'chip')
 	print "Configuring PART %s" % (type)
 	partstack.push(newpart)
 	#print "  new PART tos is now %s\n" %partstack.tos().info()
@@ -1538,6 +1567,7 @@ parser Config:
     token PNP:			'pnp'
     token I2C:			'i2c'
     token APIC:			'apic'
+    token APIC_CLUSTER:		'apic_cluster'
     token PCI_DOMAIN:		'pci_domain'
     token LINK:                 'link'
 
@@ -1641,10 +1671,10 @@ parser Config:
 
     rule register<<C>>:	REGISTER field '=' STR	{{ if (C): addregister(field, STR) }}
 
-    rule enable:				{{ val = 1 }}
-	    		[ ( ON 			{{ val = 1 }}
+    rule enable<<C>>:				{{ val = 1 }}
+	    		( ON 			{{ val = 1 }}
 			| OFF			{{ val = 0 }}
-			) ]			{{ return val }}
+			) 			{{ if(C): partstack.tos().set_enabled(val) }}
 
     rule resource<<C>>:				{{ type = "" }}
 	    		(  IO			{{ type = "IORESOURCE_IO" }}
@@ -1666,49 +1696,36 @@ parser Config:
 
     			HEX_NUM			{{ slot = int(HEX_NUM,16) }}
 			'.' HEX_NUM		{{ function = int(HEX_NUM, 16) }}
-			enable 
-						{{ if (C): partstack.tos().addpcipath(enable, 0, slot, function) }}
-			resources<<C>>
-			partend<<C>>
+						{{ if (C): partstack.tos().addpcipath(slot, function) }}
+    rule pci_domain<<C>>:	
+			PCI_DOMAIN 		{{ if (C): devicepart('pci_domain') }}
+			HEX_NUM			{{ pci_domain = int(HEX_NUM, 16) }}
+						{{ if (C): partstack.tos().addpci_domainpath(pci_domain) }}
 
     rule pnp<<C>>:	PNP  			{{ if (C): devicepart('pnp') }}
 			HEX_NUM			{{ port = int(HEX_NUM,16) }}
 			'.' HEX_NUM		{{ device = int(HEX_NUM, 16) }}
-			enable
-						{{ if (C): partstack.tos().addpnppath(enable, port, device) }}
-			resources<<C>>
-			partend<<C>>
-
-
+						{{ if (C): partstack.tos().addpnppath(port, device) }}
+						
     rule i2c<<C>>:	I2C   			{{ if (C): devicepart('i2c') }}
 			HEX_NUM			{{ device = int(HEX_NUM, 16) }}
-			enable
-						{{ if (C): partstack.tos().addi2cpath(enable, device) }}
-			resources<<C>>
-			partend<<C>>
+						{{ if (C): partstack.tos().addi2cpath(device) }}
 
     rule apic<<C>>:	APIC   			{{ if (C): devicepart('apic') }}
 			HEX_NUM			{{ apic_id = int(HEX_NUM, 16) }}
-			enable
-						{{ if (C): partstack.tos().addapicpath(enable, apic_id) }}
-			resources<<C>>
-			partend<<C>>
+						{{ if (C): partstack.tos().addapicpath(apic_id) }}
 
-    rule pci_domain<<C>>:	
-			PCI_DOMAIN 		{{ if (C): devicepart('pci_domain') }}
-			HEX_NUM			{{ pci_domain = int(HEX_NUM, 16) }}
-			enable
-						{{ if (C): partstack.tos().addpci_domainpath(enable, pci_domain) }}
-			resources<<C>>
-			partend<<C>>
-
+    rule apic_cluster<<C>>: APIC_CLUSTER 	{{ if (C): devicepart('apic_cluster') }}
+			HEX_NUM			{{ cluster = int(HEX_NUM, 16) }}
+						{{ if (C): partstack.tos().addapicpath(cluster) }}
 
     rule dev_path<<C>>:				
 	    		pci<<C>>		{{ return pci }}
+		|	pci_domain<<C>>		{{ return pci_domain }}
 	    	|	pnp<<C>>		{{ return pnp }}
 		|	i2c<<C>>		{{ return i2c }}
 		|	apic<<C>>		{{ return apic }}
-		|	pci_domain<<C>>		{{ return pci_domain }}
+		|	apic_cluster<<C>>	{{ return apic_cluster }}
 		
     rule prtval:	expr			{{ return str(expr) }}
 		|	STR			{{ return STR }}
@@ -1723,7 +1740,10 @@ parser Config:
 
     rule config<<C>>:	CONFIG PATH		{{ if (C): addconfig(PATH) }}
 
-    rule device<<C>>:   DEVICE dev_path<<C>> 
+    rule device<<C>>:   DEVICE dev_path<<C>>
+    			enable<<C>>			
+			resources<<C>>
+			partend<<C>> 
 
     rule stmt<<C>>:	arch<<C>>		{{ return arch}}
 		|	addaction<<C>>		{{ return addaction }}

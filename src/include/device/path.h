@@ -9,11 +9,17 @@ enum device_path_type {
 	DEVICE_PATH_PNP,
 	DEVICE_PATH_I2C,
 	DEVICE_PATH_APIC,
+	DEVICE_PATH_PCI_DOMAIN,
+	DEVICE_APIC_CLUSTER,
+};
+
+struct pci_domain_path
+{
+	unsigned domain;
 };
 
 struct pci_path
 {
-	unsigned bus;
 	unsigned devfn;
 };
 
@@ -33,13 +39,21 @@ struct apic_path
 	unsigned apic_id;
 };
 
+struct apic_cluster_path
+{
+	unsigned cluster;
+};
+
+
 struct device_path {
 	enum device_path_type type;
 	union {
-		struct pci_path  pci;
-		struct pnp_path  pnp;
-		struct i2c_path  i2c;
-		struct apic_path apic;
+		struct pci_path   pci;
+		struct pnp_path   pnp;
+		struct i2c_path   i2c;
+		struct apic_path  apic;
+		struct pci_domain_path pci_domain;
+		struct apic_cluster_path apic_cluster;
 	} u;
 };
 

@@ -220,9 +220,13 @@ typedef struct acpi_facs {
 	u8 resv[33];
 } __attribute__ ((packed)) acpi_facs_t;
 
+/* These are implemented by the target port */
 unsigned long write_acpi_tables(unsigned long addr);
 unsigned long acpi_dump_apics(unsigned long current);
 
+
+/* These can be used by the target port */
+u8 acpi_checksum(u8 *table, u32 length);
 void acpi_add_table(acpi_rsdt_t *rsdt, void *table);
 int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic);
 int acpi_create_madt_ioapic(acpi_madt_ioapic_t *ioapic, u8 id, u32 addr,u32 gsi_base);

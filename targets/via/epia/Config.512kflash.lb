@@ -4,7 +4,7 @@
 
 loadoptions
 
-target epia
+target epia.512kflash
 
 uses ARCH
 uses CONFIG_COMPRESS

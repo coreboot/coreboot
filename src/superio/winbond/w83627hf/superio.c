@@ -72,8 +72,24 @@ static void enumerate(struct chip *chip)
 	pnp_enumerate(chip, sizeof(pnp_dev_info)/sizeof(pnp_dev_info[0]), 
 		&pnp_ops, pnp_dev_info);
 }
+static void sio_enable(struct chip *chip, enum chip_pass pass)
+{
+
+        struct superio_winbond_w83627hf_config *conf = (struct superio_winbond_w83627hf_config *)chip->chip_info;
+
+        switch (pass) {
+        case CONF_PASS_PRE_CONSOLE:
+                init_pc_keyboard(0x60, 0x64, &conf->keyboard);
+                break;
+        default:
+                /* nothing yet */
+                break;
+        }
+}
+
 
 struct chip_control superio_winbond_w83627hf_control = {
+	.enable	   = sio_enable,
 	.enumerate = enumerate,
 	.name      = "Winbond w83627hf"
 };

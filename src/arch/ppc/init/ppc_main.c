@@ -3,6 +3,7 @@
  * gwatson@lanl.gov
  */
 
+#include <board.h>
 #include <sdram.h>
 
 extern unsigned _iseg[];

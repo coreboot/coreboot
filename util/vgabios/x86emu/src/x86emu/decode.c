@@ -669,7 +669,12 @@ u16 *decode_rm_seg_register(int reg)
 		DECODE_PRINTF("DS");
 		return &M.x86.R_DS;
 	case 4:
-	case 5:
+		DECODE_PRINTF("FS");
+		return &M.x86.R_FS;
+         case 5:
+		DECODE_PRINTF("GS");
+		return &M.x86.R_GS;
+
 	case 6:
 	case 7:
 		DECODE_PRINTF("ILLEGAL SEGREG");

@@ -17,9 +17,9 @@
 
 /* converted to C 6/2004 yhlu */
 
-#define DEBUG_RAM_CONFIG 12
+#define DEBUG_RAM_CONFIG 2
 #undef ASM_CONSOLE_LOGLEVEL
-#define ASM_CONSOLE_LOGLEVEL 10
+#define ASM_CONSOLE_LOGLEVEL 8
 #define dumpnorth() dump_pci_device(PCI_DEV(0, 0, 1)) 
 
 /* DDR DIMM Mode register Definitions */
@@ -380,14 +380,14 @@ static void write_8dwords(uint32_t src_addr, uint32_t dst_addr) {
 
 static void ram_set_d0f0_regs(const struct mem_controller *ctrl) {
 #if DEBUG_RAM_CONFIG
-	dumpnorth();
+	//dumpnorth();
 #endif
 	int i;
 	int max;
         max = sizeof(register_values)/sizeof(register_values[0]);
         for(i = 0; i < max; i += 3) {
                 uint32_t reg;
-#if DEBUG_RAM_CONFIG
+#if DEBUG_RAM_CONFIG >=2
                 print_debug_hex32(register_values[i]);
                 print_debug(" <-");
                 print_debug_hex32(register_values[i+2]);
@@ -1395,10 +1395,10 @@ static void dram_finish(const struct mem_controller *ctrl)
 	if(dword == 1)  {
 		
 #if DEBUG_RAM_CONFIG	
-		print_debug(ecc_pre_init);
+//		print_debug(ecc_pre_init);
 #endif
 #if DEBUG_RAM_CONFIG		
-		print_debug(ecc_post_init);	
+//		print_debug(ecc_post_init);	
 #endif
 #if 0
 		/* Clear the ECC error bits */
@@ -1409,7 +1409,7 @@ static void dram_finish(const struct mem_controller *ctrl)
 	  }
 
 #if DEBUG_RAM_CONFIG 
-	dumpnorth();
+//	dumpnorth();
 #endif
 
 /*	verify_ram(); */

@@ -7,6 +7,7 @@
 #include <getopt.h>
 
 #define die(x) { perror(x); exit(1); }
+#define warn(x) { perror(x);  }
 
 #include <x86emu.h>
 #include "test.h"
@@ -258,8 +259,9 @@ int main(int argc, char **argv)
 	X86EMU_setupPioFuncs(&myfuncs);
 	ioperm(0, 0x400, 1);
 
-	if (iopl(3) < 0)
-		die("iopl");
+	if (iopl(3) < 0) {
+		warn("iopl failed, continuing anyway");
+	}
 
 	/* Emergency sync ;-) */
 	sync();

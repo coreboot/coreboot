@@ -111,6 +111,18 @@ static void print_debug_hex8(unsigned char value) { __console_tx_hex8(BIOS_DEBUG
 static void print_debug_hex16(unsigned short value){ __console_tx_hex16(BIOS_DEBUG, value); }
 static void print_debug_hex32(unsigned int value) { __console_tx_hex32(BIOS_DEBUG, value); }
 static void print_debug(const char *str) { __console_tx_string(BIOS_DEBUG, str); }
+static void print_debug_hex8_(unsigned char value) __attribute__((noinline))
+{
+	print_debug_hex8(value);
+}
+static void print_debug_hex32_(unsigned int value) __attribute__((noinline))
+{
+	print_debug_hex32(value);
+}
+static void print_debug_(const char *str) __attribute__((noinline))
+{
+	print_debug(str);
+}
 
 static void print_spew_char(unsigned char byte) { __console_tx_char(BIOS_SPEW, byte); }
 static void print_spew_hex8(unsigned char value) { __console_tx_hex8(BIOS_SPEW, value); }

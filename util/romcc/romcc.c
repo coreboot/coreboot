@@ -11,15 +11,11 @@
 #include <string.h>
 #include <limits.h>
 
-#define DEBUG_ERROR_MESSAGES 0
-#define DEBUG_COLOR_GRAPH 0
-#define DEBUG_SCC 0
-#define DEBUG_CONSISTENCY 1
-#define DEBUG_RANGE_CONFLICTS 0
-#define DEBUG_COALESCING 0
+#define MAX_ALLOCATION_PASSES 100
+
+#define DEBUG_CONSISTENCY 2
 #define DEBUG_SDP_BLOCKS 0
 #define DEBUG_TRIPLE_COLOR 0
-#define DEBUG_SIMPLIFY 0
 
 #warning "FIXME boundary cases with small types in larger registers"
 #warning "FIXME give clear error messages about unused variables"
@@ -421,8 +417,8 @@ struct token {
  * Not seen outside of expressions.
  */
 
-#define OP_CALL      72
-/* OP_CALL performs a procedure call. 
+#define OP_FCALL      72
+/* OP_FCALL performs a procedure call. 
  * MISC(0) holds a pointer to the OP_LIST of a function
  * RHS(x) holds argument x of a function
  * 
@@ -437,30 +433,52 @@ struct token {
 
 /* statements */
 #define OP_LIST      80
-/* OP_LIST Holds a list of statements, and a result value.
+/* OP_LIST Holds a list of statements that compose a function, and a result value.
  * RHS(0) holds the list of statements.
  * MISC(0) holds the value of the statements.
+ * A list of all functions is maintained.
  */
 
-#define OP_BRANCH    81 /* branch */
+#define OP_BRANCH    81 /* an unconditional branch */
 /* For branch instructions
  * TARG(0) holds the branch target.
- * RHS(0) if present holds the branch condition.
  * ->next holds where to branch to if the branch is not taken.
- * The branch target can only be a decl...
+ * The branch target can only be a label
  */
 
-#define OP_LABEL     83
+#define OP_CBRANCH   82 /* a conditional branch */
+/* For conditional branch instructions
+ * RHS(0) holds the branch condition.
+ * TARG(1) holds the branch target.
+ * ->next holds where to branch to if the branch is not taken.
+ * The branch target can only be a label
+ */
+
+#define OP_CALL      83 /* an uncontional branch that will return */
+/* For call instructions
+ * MISC(0) holds the OP_RET that returns from the branch
+ * TARG(0) holds the branch target.
+ * ->next holds where to branch to if the branch is not taken.
+ * The branch target can only be a label
+ */
+
+#define OP_RET       84 /* an uncontinonal branch through a variable back to an OP_CALL */
+/* For call instructions
+ * RHS(0) holds the variable with the return address
+ * The branch target can only be a label
+ */
+
+#define OP_LABEL     86
 /* OP_LABEL is a triple that establishes an target for branches.
  * ->use is the list of all branches that use this label.
  */
 
-#define OP_ADECL     84 
-/* OP_DECL is a triple that establishes an lvalue for assignments.
+#define OP_ADECL     87 
+/* OP_ADECL is a triple that establishes an lvalue for assignments.
  * ->use is a list of statements that use the variable.
  */
 
-#define OP_SDECL     85
+#define OP_SDECL     88
 /* OP_SDECL is a triple that establishes a variable of static
  * storage duration.
  * ->use is a list of statements that use the variable.
@@ -468,12 +486,12 @@ struct token {
  */
 
 
-#define OP_PHI       86
+#define OP_PHI       89
 /* OP_PHI is a triple used in SSA form code.  
  * It is used when multiple code paths merge and a variable needs
  * a single assignment from any of those code paths.
  * The operation is a cross between OP_DECL and OP_WRITE, which
- * is what OP_PHI is geneared from.
+ * is what OP_PHI is generated from.
  * 
  * RHS(x) points to the value from code path x
  * The number of RHS entries is the number of control paths into the block
@@ -531,6 +549,8 @@ struct op_info {
 #define DEF    4 /* Triple is a variable definition */
 #define BLOCK  8 /* Triple stores the current block */
 #define STRUCTURAL 16 /* Triple does not generate a machine instruction */
+#define BRANCH     32 /* Triple is a branch instruction */
+#define CBRANCH    64 /* Triple is a conditional branch instruction */
 	unsigned char lhs, rhs, misc, targ;
 };
 
@@ -599,13 +619,15 @@ static const struct op_info table_ops[] = {
 [OP_COND       ] = OP( 0,  3, 0, 0, 0 | DEF | BLOCK, "cond"),
 [OP_COMMA      ] = OP( 0,  2, 0, 0, 0 | DEF | BLOCK, "comma"),
 /* Call is special most it can stand in for anything so it depends on context */
-[OP_CALL       ] = OP(-1, -1, 1, 0, 0 | BLOCK, "call"),
-/* The sizes of OP_CALL and OP_VAL_VEC depend upon context */
+[OP_FCALL       ] = OP(-1, -1, 1, 0, 0 | BLOCK, "fcall"),
+/* The sizes of OP_FCALL and OP_VAL_VEC depend upon context */
 [OP_VAL_VEC    ] = OP( 0, -1, 0, 0, 0 | BLOCK | STRUCTURAL, "valvec"),
 
 [OP_LIST       ] = OP( 0,  1, 1, 0, 0 | DEF | STRUCTURAL, "list"),
-/* The number of targets for OP_BRANCH depends on context */
-[OP_BRANCH     ] = OP( 0, -1, 0, 1, PURE | BLOCK, "branch"),
+[OP_BRANCH     ] = OP( 0,  0, 0, 1, PURE | BLOCK | BRANCH, "branch"),
+[OP_CBRANCH    ] = OP( 0,  1, 0, 1, PURE | BLOCK | BRANCH | CBRANCH, "cbranch"),
+[OP_CALL       ] = OP( 0,  0, 1, 1, PURE | BLOCK | BRANCH, "call"),
+[OP_RET        ] = OP( 0,  1, 0, 0, PURE | BLOCK | BRANCH, "ret"),
 [OP_LABEL      ] = OP( 0,  0, 0, 0, PURE | BLOCK | STRUCTURAL, "label"),
 [OP_ADECL      ] = OP( 0,  0, 0, 0, PURE | BLOCK | STRUCTURAL, "adecl"),
 [OP_SDECL      ] = OP( 0,  0, 1, 0, PURE | BLOCK | STRUCTURAL, "sdecl"),
@@ -624,17 +646,17 @@ static const struct op_info table_ops[] = {
 [OP_SET_ULESSEQ] = OP( 0,  1, 0, 0, PURE | DEF | BLOCK, "set_ulesseq"),
 [OP_SET_SMOREEQ] = OP( 0,  1, 0, 0, PURE | DEF | BLOCK, "set_smoreq"),
 [OP_SET_UMOREEQ] = OP( 0,  1, 0, 0, PURE | DEF | BLOCK, "set_umoreq"),
-[OP_JMP        ] = OP( 0,  0, 0, 1, PURE | BLOCK, "jmp"),
-[OP_JMP_EQ     ] = OP( 0,  1, 0, 1, PURE | BLOCK, "jmp_eq"),
-[OP_JMP_NOTEQ  ] = OP( 0,  1, 0, 1, PURE | BLOCK, "jmp_noteq"),
-[OP_JMP_SLESS  ] = OP( 0,  1, 0, 1, PURE | BLOCK, "jmp_sless"),
-[OP_JMP_ULESS  ] = OP( 0,  1, 0, 1, PURE | BLOCK, "jmp_uless"),
-[OP_JMP_SMORE  ] = OP( 0,  1, 0, 1, PURE | BLOCK, "jmp_smore"),
-[OP_JMP_UMORE  ] = OP( 0,  1, 0, 1, PURE | BLOCK, "jmp_umore"),
-[OP_JMP_SLESSEQ] = OP( 0,  1, 0, 1, PURE | BLOCK, "jmp_slesseq"),
-[OP_JMP_ULESSEQ] = OP( 0,  1, 0, 1, PURE | BLOCK, "jmp_ulesseq"),
-[OP_JMP_SMOREEQ] = OP( 0,  1, 0, 1, PURE | BLOCK, "jmp_smoreq"),
-[OP_JMP_UMOREEQ] = OP( 0,  1, 0, 1, PURE | BLOCK, "jmp_umoreq"),
+[OP_JMP        ] = OP( 0,  0, 0, 1, PURE | BLOCK | BRANCH, "jmp"),
+[OP_JMP_EQ     ] = OP( 0,  1, 0, 1, PURE | BLOCK | BRANCH | CBRANCH, "jmp_eq"),
+[OP_JMP_NOTEQ  ] = OP( 0,  1, 0, 1, PURE | BLOCK | BRANCH | CBRANCH, "jmp_noteq"),
+[OP_JMP_SLESS  ] = OP( 0,  1, 0, 1, PURE | BLOCK | BRANCH | CBRANCH, "jmp_sless"),
+[OP_JMP_ULESS  ] = OP( 0,  1, 0, 1, PURE | BLOCK | BRANCH | CBRANCH, "jmp_uless"),
+[OP_JMP_SMORE  ] = OP( 0,  1, 0, 1, PURE | BLOCK | BRANCH | CBRANCH, "jmp_smore"),
+[OP_JMP_UMORE  ] = OP( 0,  1, 0, 1, PURE | BLOCK | BRANCH | CBRANCH, "jmp_umore"),
+[OP_JMP_SLESSEQ] = OP( 0,  1, 0, 1, PURE | BLOCK | BRANCH | CBRANCH, "jmp_slesseq"),
+[OP_JMP_ULESSEQ] = OP( 0,  1, 0, 1, PURE | BLOCK | BRANCH | CBRANCH, "jmp_ulesseq"),
+[OP_JMP_SMOREEQ] = OP( 0,  1, 0, 1, PURE | BLOCK | BRANCH | CBRANCH, "jmp_smoreq"),
+[OP_JMP_UMOREEQ] = OP( 0,  1, 0, 1, PURE | BLOCK | BRANCH | CBRANCH, "jmp_umoreq"),
 
 [OP_INB        ] = OP( 0,  1, 0, 0, IMPURE | DEF | BLOCK, "__inb"),
 [OP_INW        ] = OP( 0,  1, 0, 0, IMPURE | DEF | BLOCK, "__inw"),
@@ -749,8 +771,9 @@ struct block_set {
 };
 struct block {
 	struct block *work_next;
-	struct block *left, *right;
 	struct triple *first, *last;
+	int edge_count;
+	struct block_set *edges;
 	int users;
 	struct block_set *use;
 	struct block_set *idominates;
@@ -790,9 +813,19 @@ struct hash_entry {
 
 #define HASH_TABLE_SIZE 2048
 
-struct compile_state {
+struct compiler_state {
 	const char *label_prefix;
 	const char *ofilename;
+	unsigned long flags;
+	unsigned long debug;
+	unsigned long max_allocation_passes;
+};
+struct arch_state {
+	unsigned long features;
+};
+struct compile_state {
+	struct compiler_state *compiler;
+	struct arch_state *arch;
 	FILE *output;
 	struct file_state *file;
 	struct occurance *last_occurance;
@@ -804,42 +837,45 @@ struct compile_state {
 	struct hash_entry *i_continue;
 	struct hash_entry *i_break;
 	struct hash_entry *i_default;
+	struct hash_entry *i_return;
 	int scope_depth;
 	int if_depth, if_value;
 	int macro_line;
 	struct file_state *macro_file;
+	struct triple *functions;
 	struct triple *main_function;
 	struct triple *first;
+	struct triple *global_pool;
 	struct block *first_block, *last_block;
 	int last_vertex;
-	unsigned long features;
-	int debug;
-	int optimize;
 };
 
 /* visibility global/local */
 /* static/auto duration */
 /* typedef, register, inline */
 #define STOR_SHIFT         0
-#define STOR_MASK     0x000f
+#define STOR_MASK     0x001f
 /* Visibility */
 #define STOR_GLOBAL   0x0001
 /* Duration */
 #define STOR_PERM     0x0002
+/* Definition locality */
+#define STOR_NONLOCAL 0x0004  /* The definition is not in this translation unit */
 /* Storage specifiers */
 #define STOR_AUTO     0x0000
 #define STOR_STATIC   0x0002
-#define STOR_EXTERN   0x0003
-#define STOR_REGISTER 0x0004
-#define STOR_TYPEDEF  0x0008
-#define STOR_INLINE   0x000c
+#define STOR_LOCAL    0x0003
+#define STOR_EXTERN   0x0007
+#define STOR_INLINE   0x0008
+#define STOR_REGISTER 0x0010
+#define STOR_TYPEDEF  0x0018
 
-#define QUAL_SHIFT         4
-#define QUAL_MASK     0x0070
+#define QUAL_SHIFT         5
+#define QUAL_MASK     0x00e0
 #define QUAL_NONE     0x0000
-#define QUAL_CONST    0x0010
-#define QUAL_VOLATILE 0x0020
-#define QUAL_RESTRICT 0x0040
+#define QUAL_CONST    0x0020
+#define QUAL_VOLATILE 0x0040
+#define QUAL_RESTRICT 0x0080
 
 #define TYPE_SHIFT         8
 #define TYPE_MASK     0x1f00
@@ -974,28 +1010,191 @@ static struct triple *transform_to_arch_instruction(
 
 
 
-#define DEBUG_ABORT_ON_ERROR    0x0001
-#define DEBUG_INTERMEDIATE_CODE 0x0002
-#define DEBUG_CONTROL_FLOW      0x0004
-#define DEBUG_BASIC_BLOCKS      0x0008
-#define DEBUG_FDOMINATORS       0x0010
-#define DEBUG_RDOMINATORS       0x0020
-#define DEBUG_TRIPLES           0x0040
-#define DEBUG_INTERFERENCE      0x0080
-#define DEBUG_ARCH_CODE         0x0100
-#define DEBUG_CODE_ELIMINATION  0x0200
-#define DEBUG_INSERTED_COPIES   0x0400
+#define DEBUG_ABORT_ON_ERROR    0x00000001
+#define DEBUG_BASIC_BLOCKS      0x00000002
+#define DEBUG_FDOMINATORS       0x00000004
+#define DEBUG_RDOMINATORS       0x00000008
+#define DEBUG_TRIPLES           0x00000010
+#define DEBUG_INTERFERENCE      0x00000020
+#define DEBUG_SCC_TRANSFORM     0x00000040
+#define DEBUG_SCC_TRANSFORM2    0x00000080
+#define DEBUG_REBUILD_SSA_FORM  0x00000100
+#define DEBUG_INLINE            0x00000200
+#define DEBUG_RANGE_CONFLICTS   0x00000400
+#define DEBUG_RANGE_CONFLICTS2  0x00000800
+#define DEBUG_COLOR_GRAPH       0x00001000
+#define DEBUG_COLOR_GRAPH2      0x00002000
+#define DEBUG_COALESCING        0x00004000
+#define DEBUG_COALESCING2       0x00008000
+
+#define DEBUG_DEFAULT ( \
+	DEBUG_ABORT_ON_ERROR | \
+	DEBUG_BASIC_BLOCKS | \
+	DEBUG_FDOMINATORS | \
+	DEBUG_RDOMINATORS | \
+	DEBUG_TRIPLES | \
+	0 )
+
+#define COMPILER_ELIMINATE_INEFECTUAL_CODE 0x00000001
+#define COMPILER_SIMPLIFY                  0x00000002
+#define COMPILER_SCC_TRANSFORM             0x00000004
+#define COMPILER_INLINE                    0x00000008
+#define COMPILER_ALWAYS_INLINE             0x00000010
+#define COMPILER_SIMPLIFY_OP               0x00000020
+#define COMPILER_SIMPLIFY_PHI              0x00000040
+#define COMPILER_SIMPLIFY_LABEL            0x00000080
+#define COMPILER_SIMPLIFY_BRANCH           0x00000100
+#define COMPILER_SIMPLIFY_COPY             0x00000200
+#define COMPILER_SIMPLIFY_ARITH            0x00000400
+#define COMPILER_SIMPLIFY_SHIFT            0x00000800
+#define COMPILER_SIMPLIFY_BITWISE          0x00001000
+#define COMPILER_SIMPLIFY_LOGICAL          0x00002000
+
+#define COMPILER_DEFAULT_FLAGS ( \
+	COMPILER_ELIMINATE_INEFECTUAL_CODE | \
+	COMPILER_INLINE | \
+	COMPILER_ALWAYS_INLINE | \
+	COMPILER_SIMPLIFY_OP | \
+	COMPILER_SIMPLIFY_PHI | \
+	COMPILER_SIMPLIFY_LABEL | \
+	COMPILER_SIMPLIFY_BRANCH | \
+	COMPILER_SIMPLIFY_COPY | \
+	COMPILER_SIMPLIFY_ARITH | \
+	COMPILER_SIMPLIFY_SHIFT | \
+	COMPILER_SIMPLIFY_BITWISE | \
+	COMPILER_SIMPLIFY_LOGICAL | \
+	0 )
 
 #define GLOBAL_SCOPE_DEPTH   1
 #define FUNCTION_SCOPE_DEPTH (GLOBAL_SCOPE_DEPTH + 1)
 
 static void compile_file(struct compile_state *old_state, const char *filename, int local);
 
+
+
+static void init_compiler_state(struct compiler_state *compiler)
+{
+	memset(compiler, 0, sizeof(*compiler));
+	compiler->label_prefix = "";
+	compiler->ofilename = "auto.inc";
+	compiler->flags = COMPILER_DEFAULT_FLAGS;
+	compiler->debug = 0;
+	compiler->max_allocation_passes = MAX_ALLOCATION_PASSES;
+
+}
+
+struct compiler_flag {
+	const char *name;
+	unsigned long flag;
+};
+static int set_flag(
+	const struct compiler_flag *ptr, unsigned long *flags,
+	int act, const char *flag)
+{
+	int result = -1;
+	for(; ptr->name; ptr++) {
+		if (strcmp(ptr->name, flag) == 0) {
+			break;
+		}
+	}
+	if (ptr->name) {
+		result = 0;
+		*flags &= ~(ptr->flag);
+		if (act) {
+			*flags |= ptr->flag;
+		}
+	}
+	return result;
+}
+
+static int compiler_encode_flag(
+	struct compiler_state *compiler, const char *flag)
+{
+	static const struct compiler_flag flags[] = {
+		{ "eliminate-inefectual-code", COMPILER_ELIMINATE_INEFECTUAL_CODE },
+		{ "simplify",                  COMPILER_SIMPLIFY },
+		{ "scc-transform",             COMPILER_SCC_TRANSFORM },
+		{ "inline",                    COMPILER_INLINE },
+		{ "always-inline",             COMPILER_ALWAYS_INLINE },
+		{ "simplify-op",               COMPILER_SIMPLIFY_OP },
+		{ "simplify-phi",              COMPILER_SIMPLIFY_PHI },
+		{ "simplify-label",            COMPILER_SIMPLIFY_LABEL },
+		{ "simplify-branch",           COMPILER_SIMPLIFY_BRANCH },
+		{ "simplify-copy",             COMPILER_SIMPLIFY_COPY },
+		{ "simplify-arith",            COMPILER_SIMPLIFY_ARITH },
+		{ "simplify-shift",            COMPILER_SIMPLIFY_SHIFT },
+		{ "simplify-bitwise",          COMPILER_SIMPLIFY_BITWISE },
+		{ "simplify-logical",          COMPILER_SIMPLIFY_LOGICAL },
+		{ 0, 0 },
+	};
+	static const struct compiler_flag opt_flags[] = {
+		{ "-O",  COMPILER_SIMPLIFY },
+		{ "-O2", COMPILER_SIMPLIFY | COMPILER_SCC_TRANSFORM },
+		{ 0, 0, },
+	};
+	static const struct compiler_flag debug_flags[] = {
+		{ "abort-on-error",        DEBUG_ABORT_ON_ERROR },
+		{ "basic-blocks",          DEBUG_BASIC_BLOCKS },
+		{ "fdominators",           DEBUG_FDOMINATORS },
+		{ "rdominators",           DEBUG_RDOMINATORS },
+		{ "triples",               DEBUG_TRIPLES },
+		{ "interference",          DEBUG_INTERFERENCE },
+		{ "scc-transform",         DEBUG_SCC_TRANSFORM },
+		{ "scc-transform2",        DEBUG_SCC_TRANSFORM2 },
+		{ "rebuild-ssa-form",      DEBUG_REBUILD_SSA_FORM },
+		{ "inline",                DEBUG_INLINE },
+		{ "live-range-conflicts",  DEBUG_RANGE_CONFLICTS },
+		{ "live-range-conflicts2", DEBUG_RANGE_CONFLICTS2 },
+		{ "color-graph",           DEBUG_COLOR_GRAPH },
+		{ "color-graph2",          DEBUG_COLOR_GRAPH2 },
+		{ "coalescing",            DEBUG_COALESCING },
+		{ "coalescing2",           DEBUG_COALESCING2 },
+		{ 0, 0 },
+	};
+	int act;
+	int result;
+
+	act = 1;
+	result = -1;
+	if (strncmp(flag, "no-", 3) == 0) {
+		flag += 3;
+		act = 0;
+	}
+	if (strncmp(flag, "-O", 2) == 0) {
+		result = set_flag(opt_flags, &compiler->flags, act, flag);
+	}
+	else if (act && strncmp(flag, "label-prefix=", 13) == 0) {
+		result = 0;
+		compiler->label_prefix = flag + 13;
+	}
+	else if (act && strncmp(flag, "max-allocation-passes=", 22) == 0) {
+		unsigned long max_passes;
+		char *end;
+		max_passes = strtoul(flag + 22, &end, 10);
+		if (end[0] == '\0') {
+			result = 0;
+			compiler->max_allocation_passes = max_passes;
+		}
+	}
+	else if (act && strcmp(flag, "debug") == 0) {
+		result = 0;
+		compiler->debug |= DEBUG_DEFAULT;
+	}
+	else if (strncmp(flag, "debug-", 6) == 0) {
+		flag += 6;
+		result = set_flag(debug_flags, &compiler->debug, act, flag);
+	}
+	else {
+		result = set_flag(flags, &compiler->flags, act, flag);
+	}
+	return result;
+}
+
 static void do_cleanup(struct compile_state *state)
 {
 	if (state->output) {
 		fclose(state->output);
-		unlink(state->ofilename);
+		unlink(state->compiler->ofilename);
 	}
 }
 
@@ -1021,12 +1220,10 @@ static void loc(FILE *fp, struct compile_state *state, struct triple *triple)
 	int col;
 	if (triple && triple->occurance) {
 		struct occurance *spot;
-		spot = triple->occurance;
-		while(spot->parent) {
-			spot = spot->parent;
+		for(spot = triple->occurance; spot; spot = spot->parent) {
+			fprintf(fp, "%s:%d.%d: ", 
+				spot->filename, spot->line, spot->col);
 		}
-		fprintf(fp, "%s:%d.%d: ", 
-			spot->filename, spot->line, spot->col);
 		return;
 	}
 	if (!state->file) {
@@ -1037,12 +1234,13 @@ static void loc(FILE *fp, struct compile_state *state, struct triple *triple)
 		state->file->report_name, state->file->report_line, col);
 }
 
-static void romcc_internal_error(struct compile_state *state, struct triple *ptr, 
+static void internal_error(struct compile_state *state, struct triple *ptr, 
 	char *fmt, ...)
 {
 	va_list args;
 	va_start(args, fmt);
 	loc(stderr, state, ptr);
+	fputc('\n', stderr);
 	if (ptr) {
 		fprintf(stderr, "%p %s ", ptr, tops(ptr->op));
 	}
@@ -1055,7 +1253,7 @@ static void romcc_internal_error(struct compile_state *state, struct triple *ptr
 }
 
 
-static void romcc_internal_warning(struct compile_state *state, struct triple *ptr, 
+static void internal_warning(struct compile_state *state, struct triple *ptr, 
 	char *fmt, ...)
 {
 	va_list args;
@@ -1072,26 +1270,27 @@ static void romcc_internal_warning(struct compile_state *state, struct triple *p
 
 
 
-static void romcc_error(struct compile_state *state, struct triple *ptr, 
+static void error(struct compile_state *state, struct triple *ptr, 
 	char *fmt, ...)
 {
 	va_list args;
 	va_start(args, fmt);
 	loc(stderr, state, ptr);
-	if (ptr && (state->debug & DEBUG_ABORT_ON_ERROR)) {
+	fputc('\n', stderr);
+	if (ptr && (state->compiler->debug & DEBUG_ABORT_ON_ERROR)) {
 		fprintf(stderr, "%p %s ", ptr, tops(ptr->op));
 	}
 	vfprintf(stderr, fmt, args);
 	va_end(args);
 	fprintf(stderr, "\n");
 	do_cleanup(state);
-	if (state->debug & DEBUG_ABORT_ON_ERROR) {
+	if (state->compiler->debug & DEBUG_ABORT_ON_ERROR) {
 		abort();
 	}
 	exit(1);
 }
 
-static void romcc_warning(struct compile_state *state, struct triple *ptr, 
+static void warning(struct compile_state *state, struct triple *ptr, 
 	char *fmt, ...)
 {
 	va_list args;
@@ -1103,17 +1302,6 @@ static void romcc_warning(struct compile_state *state, struct triple *ptr,
 	va_end(args);
 }
 
-#if DEBUG_ERROR_MESSAGES 
-#  define internal_error fprintf(stderr,  "@ %s.%s:%d \t", __FILE__, __func__, __LINE__),romcc_internal_error
-#  define internal_warning fprintf(stderr,  "@ %s.%s:%d \t", __FILE__, __func__, __LINE__),romcc_internal_warning
-#  define error fprintf(stderr, "@ %s.%s:%d \t", __FILE__, __func__, __LINE__),romcc_error
-#  define warning fprintf(stderr, "@ %s.%s:%d \t", __FILE__, __func__, __LINE__),romcc_warning
-#else
-#  define internal_error romcc_internal_error
-#  define internal_warning romcc_internal_warning
-#  define error romcc_error
-#  define warning romcc_warning
-#endif
 #define FINISHME() warning(state, 0, "FINISHME @ %s.%s:%d", __FILE__, __func__, __LINE__)
 
 static void valid_op(struct compile_state *state, int op)
@@ -1238,18 +1426,22 @@ static void unuse_triple(struct triple *used, struct triple *unuser)
 
 static void put_occurance(struct occurance *occurance)
 {
-	occurance->count -= 1;
-	if (occurance->count <= 0) {
-		if (occurance->parent) {
-			put_occurance(occurance->parent);
+	if (occurance) {
+		occurance->count -= 1;
+		if (occurance->count <= 0) {
+			if (occurance->parent) {
+				put_occurance(occurance->parent);
+			}
+			xfree(occurance);
 		}
-		xfree(occurance);
 	}
 }
 
 static void get_occurance(struct occurance *occurance)
 {
-	occurance->count += 1;
+	if (occurance) {
+		occurance->count += 1;
+	}
 }
 
 
@@ -1299,35 +1491,48 @@ static struct occurance *new_occurance(struct compile_state *state)
 }
 
 static struct occurance *inline_occurance(struct compile_state *state,
-	struct occurance *new, struct occurance *orig)
+	struct occurance *base, struct occurance *top)
 {
 	struct occurance *result, *last;
+	if (top->parent) {
+		internal_error(state, 0, "inlining an already inlined function?");
+	}
+	/* If I have a null base treat it that way */
+	if ((base->parent == 0) &&
+		(base->col == 0) &&
+		(base->line == 0) &&
+		(base->function[0] == '\0') &&
+		(base->filename[0] == '\0')) {
+		base = 0;
+	}
+	/* See if I can reuse the last occurance I had */
 	last = state->last_occurance;
 	if (last &&
-		(last->parent   == orig) &&
-		(last->col      == new->col) &&
-		(last->line     == new->line) &&
-		(last->function == new->function) &&
-		(last->filename == new->filename)) {
+		(last->parent   == base) &&
+		(last->col      == top->col) &&
+		(last->line     == top->line) &&
+		(last->function == top->function) &&
+		(last->filename == top->filename)) {
 		get_occurance(last);
 		return last;
 	}
+	/* I can't reuse the last occurance so free it */
 	if (last) {
 		state->last_occurance = 0;
 		put_occurance(last);
 	}
-	get_occurance(orig);
+	/* Generate a new occurance structure */
+	get_occurance(base);
 	result = xmalloc(sizeof(*result), "occurance");
 	result->count    = 2;
-	result->filename = new->filename;
-	result->function = new->function;
-	result->line     = new->line;
-	result->col      = new->col;
-	result->parent   = orig;
+	result->filename = top->filename;
+	result->function = top->function;
+	result->line     = top->line;
+	result->col      = top->col;
+	result->parent   = base;
 	state->last_occurance = result;
 	return result;
 }
-	
 
 static struct occurance dummy_occurance = {
 	.count    = 2,
@@ -1370,26 +1575,17 @@ static unsigned short triple_sizes(struct compile_state *state,
 	targ = table_ops[op].targ;
 	
 	
-	if (op == OP_CALL) {
-		struct type *param;
-		rhs = 0;
-		param = type->right;
-		while((param->type & TYPE_MASK) == TYPE_PRODUCT) {
-			rhs++;
-			param = param->right;
-		}
-		if ((param->type & TYPE_MASK) != TYPE_VOID) {
-			rhs++;
-		}
+	if (op == OP_FCALL) {
+		rhs = rhs_wanted;
 		lhs = 0;
-		if ((type->left->type & TYPE_MASK) == TYPE_STRUCT) {
+		if ((type->type & TYPE_MASK) == TYPE_STRUCT) {
 			lhs = type->left->elements;
 		}
 	}
 	else if (op == OP_VAL_VEC) {
 		rhs = type->elements;
 	}
-	else if ((op == OP_BRANCH) || (op == OP_PHI)) {
+	else if (op == OP_PHI) {
 		rhs = rhs_wanted;
 	}
 	else if (op == OP_ASM) {
@@ -1496,19 +1692,19 @@ static struct triple *branch(struct compile_state *state,
 	struct triple *targ, struct triple *test)
 {
 	struct triple *ret;
-	ret = new_triple(state, OP_BRANCH, &void_type, -1, test?1:0);
 	if (test) {
+		ret = new_triple(state, OP_CBRANCH, &void_type, -1, 1);
 		RHS(ret, 0) = test;
+	} else {
+		ret = new_triple(state, OP_BRANCH, &void_type, -1, 0);
 	}
 	TARG(ret, 0) = targ;
 	/* record the branch target was used */
 	if (!targ || (targ->op != OP_LABEL)) {
 		internal_error(state, 0, "branch not to label");
-		use_triple(targ, ret);
 	}
 	return ret;
 }
-
 
 static void insert_triple(struct compile_state *state,
 	struct triple *first, struct triple *ptr)
@@ -1521,8 +1717,8 @@ static void insert_triple(struct compile_state *state,
 		ptr->prev       = first->prev;
 		ptr->prev->next = ptr;
 		ptr->next->prev = ptr;
-		if ((ptr->prev->op == OP_BRANCH) && 
-			TRIPLE_RHS(ptr->prev->sizes)) {
+		
+		if ((ptr->prev->op == OP_CBRANCH) || (ptr->prev->op == OP_CALL)) {
 			unuse_triple(first, ptr->prev);
 			use_triple(ptr, ptr->prev);
 		}
@@ -1544,13 +1740,13 @@ static struct block *block_of_triple(struct compile_state *state,
 	struct triple *ins)
 {
 	struct triple *first;
-	if (!ins) {
+	if (!ins || ins == &zero_triple) {
 		return 0;
 	}
 	first = state->first;
 	while(ins != first && !triple_stores_block(state, ins)) {
 		if (ins == ins->prev) {
-			internal_error(state, 0, "ins == ins->prev?");
+			internal_error(state, ins, "ins == ins->prev?");
 		}
 		ins = ins->prev;
 	}
@@ -1676,9 +1872,79 @@ static void display_triple(FILE *fp, struct triple *ins)
 	fflush(fp);
 }
 
+static void display_triple_changes(
+	FILE *fp, const struct triple *new, const struct triple *orig)
+{
+
+	int new_count, orig_count;
+	new_count = TRIPLE_SIZE(new->sizes);
+	orig_count = TRIPLE_SIZE(orig->sizes);
+	if ((new->op != orig->op) ||
+		(new_count != orig_count) ||
+		(memcmp(orig->param, new->param,	
+			orig_count * sizeof(orig->param[0])) != 0) ||
+		(memcmp(&orig->u, &new->u, sizeof(orig->u)) != 0)) 
+	{
+		struct occurance *ptr;
+		int i, min_count, indent;
+		fprintf(fp, "(%p)", orig);
+		if (orig->op == new->op) {
+			fprintf(fp, " %-11s", tops(orig->op));
+		} else {
+			fprintf(fp, " [%-10s %-10s]", 
+				tops(new->op), tops(orig->op));
+		}
+		min_count = new_count;
+		if (min_count > orig_count) {
+			min_count = orig_count;
+		}
+		for(indent = i = 0; i < min_count; i++) {
+			if (orig->param[i] == new->param[i]) {
+				fprintf(fp, " %-11p", 
+					orig->param[i]);
+				indent += 12;
+			} else {
+				fprintf(fp, " [%-10p %-10p]",
+					new->param[i], 
+					orig->param[i]);
+				indent += 24;
+			}
+		}
+		for(; i < orig_count; i++) {
+			fprintf(fp, " [%-9p]", orig->param[i]);
+			indent += 12;
+		}
+		for(; i < new_count; i++) {
+			fprintf(fp, " [%-9p]", new->param[i]);
+			indent += 12;
+		}
+		if ((new->op == OP_INTCONST)||
+			(new->op == OP_ADDRCONST)) {
+			fprintf(fp, " <0x%08lx>", 
+				(unsigned long)(new->u.cval));
+			indent += 13;
+		}
+		for(;indent < 36; indent++) {
+			putc(' ', fp);
+		}
+		fprintf(fp, " @");
+		for(ptr = orig->occurance; ptr; ptr = ptr->parent) {
+			fprintf(fp, " %s,%s:%d.%d",
+				ptr->function, 
+				ptr->filename,
+				ptr->line, 
+				ptr->col);
+			
+		}
+		fprintf(fp, "\n");
+		fflush(fp);
+	}
+}
+
 static void display_func(FILE *fp, struct triple *func)
 {
 	struct triple *first, *ins;
+	fprintf(fp, "display_func %s\n", func->type->type_ident->name);
 	first = ins = RHS(func, 0);
 	do {
 		display_triple(fp, ins);
@@ -1704,30 +1970,23 @@ static int triple_is_pure(struct compile_state *state, struct triple *ins, unsig
 
 static int triple_is_branch(struct compile_state *state, struct triple *ins)
 {
-	/* This function is used to determine which triples need
-	 * a register.
-	 */
-	int is_branch;
+	/* Is this triple a branch instruction? */
 	valid_ins(state, ins);
-	is_branch = (table_ops[ins->op].targ != 0);
-	return is_branch;
+	return (table_ops[ins->op].flags & BRANCH) != 0;
 }
 
 static int triple_is_cond_branch(struct compile_state *state, struct triple *ins)
 {
-	/* A conditional branch has the condition argument as a single
-	 * RHS parameter.
-	 */
-	return triple_is_branch(state, ins) &&
-		(TRIPLE_RHS(ins->sizes) == 1);
+	/* Is this triple a conditional branch instruction? */
+	valid_ins(state, ins);
+	return (table_ops[ins->op].flags & CBRANCH) != 0;
 }
 
 static int triple_is_uncond_branch(struct compile_state *state, struct triple *ins)
 {
-	/* A unconditional branch has no RHS parameters.
-	 */
-	return triple_is_branch(state, ins) &&
-		(TRIPLE_RHS(ins->sizes) == 0);
+	/* Is this triple a unconditional branch instruction? */
+	valid_ins(state, ins);
+	return (table_ops[ins->op].flags & CBRANCH) == 0;
 }
 
 static int triple_is_def(struct compile_state *state, struct triple *ins)
@@ -1796,21 +2055,42 @@ static struct triple **triple_targ(struct compile_state *state,
 	ret = 0;
 	count = TRIPLE_TARG(ins->sizes);
 	vector = &TARG(ins, 0);
-	if (count) {
+	if (!ret && 
+		((ins->op == OP_CALL) || (table_ops[ins->op].flags & CBRANCH))) {
+		if (!last) {
+			ret = &ins->next;
+		} else if (last == &ins->next) {
+			last = 0;
+		}
+	}
+	if (!ret && count) {
 		if (!last) {
 			ret = vector;
 		}
 		else if ((last >= vector) && (last < (vector + count - 1))) {
 			ret = last + 1;
 		}
-		else if ((last == (vector + count - 1)) && 
-			TRIPLE_RHS(ins->sizes)) {
-			ret = &ins->next;
+		else if (last == vector + count - 1) {
+			last = 0;
+		}
+	}
+	if (!ret && (ins->op == OP_RET)) {
+		struct triple_set *use;
+		for(use = ins->use; use; use = use->next) {
+			if (use->member->op != OP_CALL) {
+				continue;
+			}
+			if (!last) {
+				ret = &use->member->next;
+				break;
+			}
+			else if (last == &use->member->next) {
+				last = 0;
+			}
 		}
 	}
 	return ret;
 }
-
 
 static void verify_use(struct compile_state *state,
 	struct triple *user, struct triple *used)
@@ -1869,6 +2149,7 @@ static void release_triple(struct compile_state *state, struct triple *ptr)
 	struct triple_set *set, *next;
 	struct triple **expr;
 	struct block *block;
+	valid_ins(state, ptr);
 	/* Make certain the we are not the first or last element of a block */
 	block = block_of_triple(state, ptr);
 	if (block) {
@@ -1903,13 +2184,14 @@ static void release_triple(struct compile_state *state, struct triple *ptr)
 	}
 	expr = triple_targ(state, ptr, 0);
 	for(; expr; expr = triple_targ(state, ptr, expr)) {
-		if (*expr) {
+		if (*expr){
 			unuse_triple(*expr, ptr);
 		}
 	}
 	/* Reomve ptr from use chains where it is used */
 	for(set = ptr->use; set; set = next) {
 		next = set->next;
+		valid_ins(state, set->member);
 		expr = triple_rhs(state, set->member, 0);
 		for(; expr; expr = triple_rhs(state, set->member, expr)) {
 			if (*expr == ptr) {
@@ -1939,7 +2221,8 @@ static void release_triple(struct compile_state *state, struct triple *ptr)
 	free_triple(state, ptr);
 }
 
-static void print_triple(struct compile_state *state, struct triple *ptr);
+static void print_triples(struct compile_state *state);
+static void print_blocks(struct compile_state *state, const char *func, FILE *fp);
 
 #define TOK_UNKNOWN     0
 #define TOK_SPACE       1
@@ -3364,6 +3647,7 @@ static void preprocess(struct compile_state *state, int index)
 			meat(state, index, TOK_LIT_STRING);
 			name = xmalloc(tk->str_len, "report_name");
 			token = tk->val.str + 1;
+			base = strrchr(token, '/');
 			name_len = tk->str_len - 2;
 			if (base != 0) {
 				dir_len = base - token;
@@ -3846,7 +4130,12 @@ static struct type uint_type   = { .type  = TYPE_UINT };
 static struct type long_type   = { .type  = TYPE_LONG };
 static struct type ulong_type  = { .type  = TYPE_ULONG };
 
-static struct type void_func   = { 
+static struct type void_ptr_type  = {
+	.type = TYPE_POINTER,
+	.left = &void_type,
+};
+
+static struct type void_func_type = { 
 	.type  = TYPE_FUNCTION,
 	.left  = &void_type,
 	.right = &void_type,
@@ -3890,6 +4179,9 @@ static void stor_of(FILE *fp, struct type *type)
 	case STOR_STATIC:
 		fprintf(fp, "static ");
 		break;
+	case STOR_LOCAL:
+		fprintf(fp, "local ");
+		break;
 	case STOR_EXTERN:
 		fprintf(fp, "extern ");
 		break;
@@ -3899,8 +4191,17 @@ static void stor_of(FILE *fp, struct type *type)
 	case STOR_TYPEDEF:
 		fprintf(fp, "typedef ");
 		break;
-	case STOR_INLINE:
+	case STOR_INLINE | STOR_LOCAL:
 		fprintf(fp, "inline ");
+		break;
+	case STOR_INLINE | STOR_STATIC:
+		fprintf(fp, "static inline");
+		break;
+	case STOR_INLINE | STOR_EXTERN:
+		fprintf(fp, "extern inline");
+		break;
+	default:
+		fprintf(fp, "stor:%x", type->type & STOR_MASK);
 		break;
 	}
 }
@@ -4433,7 +4734,14 @@ static struct triple *integral_promotion(
 		int_type = type->type & ~TYPE_MASK;
 		int_type |= do_integral_promotion(type->type);
 		if (int_type != type->type) {
-			def->type = new_type(int_type, 0, 0);
+			if (def->op != OP_LOAD) {
+				def->type = new_type(int_type, 0, 0);
+			}
+			else {
+#warning "FIXME can I just cast all operands like this?"
+				def = triple(state, OP_COPY, 
+					new_type(int_type, 0, 0), def, 0);
+			}
 		}
 	}
 	return def;
@@ -4967,7 +5275,7 @@ static int expr_depth(struct compile_state *state, struct triple *ins)
 		rdepth = expr_depth(state, RHS(ins, 1));
 		count = (ldepth >= rdepth)? ldepth : rdepth;
 	}
-	else if (ins->op == OP_CALL) {
+	else if (ins->op == OP_FCALL) {
 		/* Don't figure the depth of a call just guess it is huge */
 		count = 1000;
 	}
@@ -4991,17 +5299,18 @@ static struct triple *flatten(
 	struct compile_state *state, struct triple *first, struct triple *ptr);
 
 static struct triple *flatten_generic(
-	struct compile_state *state, struct triple *first, struct triple *ptr)
+	struct compile_state *state, struct triple *first, struct triple *ptr,
+	int ignored)
 {
 	struct rhs_vector {
 		int depth;
 		struct triple **ins;
 	} vector[MAX_RHS];
 	int i, rhs, lhs;
-	/* Only operations with just a rhs should come here */
+	/* Only operations with just a rhs and a lhs should come here */
 	rhs = TRIPLE_RHS(ptr->sizes);
 	lhs = TRIPLE_LHS(ptr->sizes);
-	if (TRIPLE_SIZE(ptr->sizes) != lhs + rhs) {
+	if (TRIPLE_SIZE(ptr->sizes) != lhs + rhs + ignored) {
 		internal_error(state, ptr, "unexpected args for: %d %s",
 			ptr->op, tops(ptr->op));
 	}
@@ -5125,176 +5434,10 @@ static struct triple *flatten_cond(
 	return read_expr(state, val);
 }
 
-static int local_triple(struct compile_state *state, 
-	struct triple *func, struct triple *ins)
-{
-	int local = (ins->id & TRIPLE_FLAG_LOCAL);
-#if 0
-	if (!local) {
-		fprintf(stderr, "global: ");
-		display_triple(stderr, ins);
-	}
-#endif
-	return local;
-}
-
-struct triple *copy_func(struct compile_state *state, struct triple *ofunc, 
-	struct occurance *base_occurance)
-{
-	struct triple *nfunc;
-	struct triple *nfirst, *ofirst;
-	struct triple *new, *old;
-
-#if 0
-	fprintf(stdout, "\n");
-	loc(stdout, state, 0);
-	fprintf(stdout, "\n__________ copy_func _________\n");
-	display_func(stdout, ofunc);
-	fprintf(stdout, "__________ copy_func _________ done\n\n");
-#endif
-
-	/* Make a new copy of the old function */
-	nfunc = triple(state, OP_LIST, ofunc->type, 0, 0);
-	nfirst = 0;
-	ofirst = old = RHS(ofunc, 0);
-	do {
-		struct triple *new;
-		struct occurance *occurance;
-		int old_lhs, old_rhs;
-		old_lhs = TRIPLE_LHS(old->sizes);
-		old_rhs = TRIPLE_RHS(old->sizes);
-		occurance = inline_occurance(state, base_occurance, old->occurance);
-		new = alloc_triple(state, old->op, old->type, old_lhs, old_rhs,
-			occurance);
-		if (!triple_stores_block(state, new)) {
-			memcpy(&new->u, &old->u, sizeof(new->u));
-		}
-		if (!nfirst) {
-			RHS(nfunc, 0) = nfirst = new;
-		}
-		else {
-			insert_triple(state, nfirst, new);
-		}
-		new->id |= TRIPLE_FLAG_FLATTENED;
-		
-		/* During the copy remember new as user of old */
-		use_triple(old, new);
-
-		/* Populate the return type if present */
-		if (old == MISC(ofunc, 0)) {
-			MISC(nfunc, 0) = new;
-		}
-		/* Remember which instructions are local */
-		old->id |= TRIPLE_FLAG_LOCAL;
-		old = old->next;
-	} while(old != ofirst);
-
-	/* Make a second pass to fix up any unresolved references */
-	old = ofirst;
-	new = nfirst;
-	do {
-		struct triple **oexpr, **nexpr;
-		int count, i;
-		/* Lookup where the copy is, to join pointers */
-		count = TRIPLE_SIZE(old->sizes);
-		for(i = 0; i < count; i++) {
-			oexpr = &old->param[i];
-			nexpr = &new->param[i];
-			if (*oexpr && !*nexpr) {
-				if (!local_triple(state, ofunc, *oexpr)) {
-					*nexpr = *oexpr;
-				}
-				else if ((*oexpr)->use) {
-					*nexpr = (*oexpr)->use->member;
-				}
-				if (*nexpr == old) {
-					internal_error(state, 0, "new == old?");
-				}
-				use_triple(*nexpr, new);
-			}
-			if (!*nexpr && *oexpr) {
-				internal_error(state, 0, "Could not copy %d\n", i);
-			}
-		}
-		old = old->next;
-		new = new->next;
-	} while((old != ofirst) && (new != nfirst));
-	
-	/* Make a third pass to cleanup the extra useses */
-	old = ofirst;
-	new = nfirst;
-	do {
-		unuse_triple(old, new);
-		/* Forget which instructions are local */
-		old->id &= ~TRIPLE_FLAG_LOCAL;
-		old = old->next;
-		new = new->next;
-	} while ((old != ofirst) && (new != nfirst));
-	return nfunc;
-}
-
-static struct triple *flatten_call(
+static struct triple *flatten_fcall(
 	struct compile_state *state, struct triple *first, struct triple *ptr)
 {
-	/* Inline the function call */
-	struct type *ptype;
-	struct triple *ofunc, *nfunc, *nfirst, *param, *result;
-	struct triple *end, *nend;
-	int pvals, i;
-
-	/* Find the triples */
-	ofunc = MISC(ptr, 0);
-	if (ofunc->op != OP_LIST) {
-		internal_error(state, 0, "improper function");
-	}
-	nfunc = copy_func(state, ofunc, ptr->occurance);
-	nfirst = RHS(nfunc, 0)->next;
-	/* Prepend the parameter reading into the new function list */
-	ptype = nfunc->type->right;
-	param = RHS(nfunc, 0)->next;
-	pvals = TRIPLE_RHS(ptr->sizes);
-	for(i = 0; i < pvals; i++) {
-		struct type *atype;
-		struct triple *arg;
-		atype = ptype;
-		if ((ptype->type & TYPE_MASK) == TYPE_PRODUCT) {
-			atype = ptype->left;
-		}
-		while((param->type->type & TYPE_MASK) != (atype->type & TYPE_MASK)) {
-			param = param->next;
-		}
-		arg = RHS(ptr, i);
-		flatten(state, nfirst, write_expr(state, param, arg));
-		ptype = ptype->right;
-		param = param->next;
-	}
-	result = 0;
-	if ((nfunc->type->left->type & TYPE_MASK) != TYPE_VOID) {
-		result = read_expr(state, MISC(nfunc,0));
-	}
-#if 0
-	fprintf(stdout, "\n");
-	loc(stdout, state, 0);
-	fprintf(stdout, "\n__________ flatten_call _________\n");
-	display_func(stdout, nfunc);
-	fprintf(stdout, "__________ flatten_call _________ done\n\n");
-#endif
-
-	/* Get rid of the extra triples */
-	nfirst = RHS(nfunc, 0)->next;
-	free_triple(state, RHS(nfunc, 0));
-	RHS(nfunc, 0) = 0;
-	free_triple(state, nfunc);
-
-	/* Append the new function list onto the return list */
-	end = first->prev;
-	nend = nfirst->prev;
-	end->next    = nfirst;
-	nfirst->prev = end;
-	nend->next   = first;
-	first->prev  = nend;
-
-	return result;
+	return flatten_generic(state, first, ptr, 1);
 }
 
 static struct triple *flatten(
@@ -5327,8 +5470,8 @@ static struct triple *flatten(
 		case OP_COND:
 			ptr = flatten_cond(state, first, ptr);
 			break;
-		case OP_CALL:
-			ptr = flatten_call(state, first, ptr);
+		case OP_FCALL:
+			ptr = flatten_fcall(state, first, ptr);
 			break;
 		case OP_READ:
 		case OP_LOAD:
@@ -5337,15 +5480,29 @@ static struct triple *flatten(
 			break;
 		case OP_BRANCH:
 			use_triple(TARG(ptr, 0), ptr);
-			if (TRIPLE_RHS(ptr->sizes)) {
-				use_triple(RHS(ptr, 0), ptr);
-				if (ptr->next != ptr) {
-					use_triple(ptr->next, ptr);
-				}
+			break;
+		case OP_CBRANCH:
+			RHS(ptr, 0) = flatten(state, first, RHS(ptr, 0));
+			use_triple(RHS(ptr, 0), ptr);
+			use_triple(TARG(ptr, 0), ptr);
+			if (ptr->next != ptr) {
+				use_triple(ptr->next, ptr);
 			}
 			break;
+		case OP_CALL:
+			MISC(ptr, 0) = flatten(state, first, MISC(ptr, 0));
+			use_triple(MISC(ptr, 0), ptr);
+			use_triple(TARG(ptr, 0), ptr);
+			if (ptr->next != ptr) {
+				use_triple(ptr->next, ptr);
+			}
+			break;
+		case OP_RET:
+			RHS(ptr, 0) = flatten(state, first, RHS(ptr, 0));
+			use_triple(RHS(ptr, 0), ptr);
+			break;
 		case OP_BLOBCONST:
-			insert_triple(state, state->first, ptr);
+			insert_triple(state, state->global_pool, ptr);
 			ptr->id |= TRIPLE_FLAG_FLATTENED;
 			ptr->id &= ~TRIPLE_FLAG_LOCAL;
 			ptr = triple(state, OP_SDECL, ptr->type, ptr, 0);
@@ -5387,7 +5544,7 @@ static struct triple *flatten(
 			use_triple(MISC(ptr, 0), ptr);
 			break;
 		case OP_SDECL:
-			first = state->first;
+			first = state->global_pool;
 			MISC(ptr, 0) = flatten(state, first, MISC(ptr, 0));
 			use_triple(MISC(ptr, 0), ptr);
 			insert_triple(state, first, ptr);
@@ -5398,7 +5555,7 @@ static struct triple *flatten(
 			break;
 		default:
 			/* Flatten the easy cases we don't override */
-			ptr = flatten_generic(state, first, ptr);
+			ptr = flatten_generic(state, first, ptr, 0);
 			break;
 		}
 	} while(ptr && (ptr != orig_ptr));
@@ -5660,12 +5817,12 @@ static int constants_equal(struct compile_state *state,
 
 static int is_zero(struct triple *ins)
 {
-	return is_const(ins) && (ins->u.cval == 0);
+	return is_simple_const(ins) && (ins->u.cval == 0);
 }
 
 static int is_one(struct triple *ins)
 {
-	return is_const(ins) && (ins->u.cval == 1);
+	return is_simple_const(ins) && (ins->u.cval == 1);
 }
 
 static long_t bit_count(ulong_t value)
@@ -5740,10 +5897,8 @@ static int is_pow2(struct triple *ins)
 }
 
 static ulong_t read_const(struct compile_state *state,
-	struct triple *ins, struct triple **expr)
+	struct triple *ins, struct triple *rhs)
 {
-	struct triple *rhs;
-	rhs = *expr;
 	switch(rhs->type->type &TYPE_MASK) {
 	case TYPE_CHAR:   
 	case TYPE_SHORT:
@@ -5765,11 +5920,116 @@ static ulong_t read_const(struct compile_state *state,
 	return rhs->u.cval;
 }
 
-static long_t read_sconst(struct triple *ins, struct triple **expr)
+static long_t read_sconst(struct compile_state *state,
+	struct triple *ins, struct triple *rhs)
 {
-	struct triple *rhs;
-	rhs = *expr;
 	return (long_t)(rhs->u.cval);
+}
+
+int const_ltrue(struct compile_state *state, struct triple *ins, struct triple *rhs)
+{
+	if (!is_const(rhs)) {
+		internal_error(state, 0, "non const passed to const_true\n");
+	}
+	return !is_zero(rhs);
+}
+
+int const_eq(struct compile_state *state, struct triple *ins,
+	struct triple *left, struct triple *right)
+{
+	int result;
+	if (!is_const(left) || !is_const(right)) {
+		internal_error(state, ins, "non const passed to const_eq\n");
+		result = 0;
+	}
+	else if (left == right) {
+		result = 1;
+	}
+	else if (is_simple_const(left) && is_simple_const(right)) {
+		ulong_t lval, rval;
+		lval = read_const(state, ins, left);
+		rval = read_const(state, ins, right);
+		result = (lval == rval);
+	}
+	else if ((left->op == OP_ADDRCONST) && 
+		(right->op == OP_ADDRCONST)) {
+		result = (MISC(left, 0) == MISC(right, 0)) &&
+			(left->u.cval == right->u.cval);
+	}
+	else {
+		internal_error(state, ins, "incomparable constants passed to const_eq\n");
+		result = 0;
+	}
+	return result;
+	
+}
+
+int const_ucmp(struct compile_state *state, struct triple *ins,
+	struct triple *left, struct triple *right)
+{
+	int result;
+	if (!is_const(left) || !is_const(right)) {
+		internal_error(state, ins, "non const past to ucmp_const\n");
+		result = -2;
+	}
+	else if (left == right) {
+		result = 0;
+	}
+	else if (is_simple_const(left) && is_simple_const(right)) {
+		ulong_t lval, rval;
+		lval = read_const(state, ins, left);
+		rval = read_const(state, ins, right);
+		result = 0;
+		if (lval > rval) {
+			result = 1;
+		} else if (rval > lval) {
+			result = -1;
+		}
+	}
+	else if ((left->op == OP_ADDRCONST) && 
+		(right->op == OP_ADDRCONST) &&
+		(MISC(left, 0) == MISC(right, 0))) {
+		result = 0;
+		if (left->u.cval > right->u.cval) {
+			result = 1;
+		} else if (left->u.cval < right->u.cval) {
+			result = -1;
+		}
+	}
+	else {
+		internal_error(state, ins, "incomparable constants passed to const_ucmp\n");
+		result = -2;
+	}
+	return result;
+}
+
+int const_scmp(struct compile_state *state, struct triple *ins,
+	struct triple *left, struct triple *right)
+{
+	int result;
+	if (!is_const(left) || !is_const(right)) {
+		internal_error(state, ins, "non const past to ucmp_const\n");
+		result = -2;
+	}
+	else if (left == right) {
+		result = 0;
+	}
+	else if (is_simple_const(left) && is_simple_const(right)) {
+		long_t lval, rval;
+		lval = read_sconst(state, ins, left);
+		rval = read_sconst(state, ins, right);
+		result = 0;
+		if (lval > rval) {
+			result = 1;
+		} else if (rval > lval) {
+			result = -1;
+		}
+	}
+	else {
+		internal_error(state, ins, "incomparable constants passed to const_scmp\n");
+		result = -2;
+	}
+	return result;
 }
 
 static void unuse_rhs(struct compile_state *state, struct triple *ins)
@@ -5874,6 +6134,7 @@ static void flatten_structures(struct compile_state *state)
 	do {
 		struct triple *next;
 		next = ins->next;
+		valid_ins(state, ins);
 		if ((ins->type->type & TYPE_MASK) == TYPE_STRUCT) {
 			if (ins->op == OP_VAL_VEC) {
 				/* Do nothing */
@@ -5910,7 +6171,7 @@ static void flatten_structures(struct compile_state *state)
 				}
 				propogate_use(state, ins, next);
 				flatten(state, ins, next);
-				free_triple(state, ins);
+				release_triple(state, ins);
 			}
 			else if ((ins->op == OP_STORE) || (ins->op == OP_WRITE)) {
 				struct triple *src, *dst, **vector;
@@ -5945,7 +6206,7 @@ static void flatten_structures(struct compile_state *state)
 				}
 				propogate_use(state, ins, next);
 				flatten(state, ins, next);
-				free_triple(state, ins);
+				release_triple(state, ins);
 			}
 		}
 		ins = next;
@@ -5957,6 +6218,9 @@ static void flatten_structures(struct compile_state *state)
 		struct triple *next;
 		next = ins->next;
 		if (ins->op == OP_VAL_VEC) {
+			if (ins->use) {
+				internal_error(state, ins, "valvec used\n");
+			}
 			release_triple(state, ins);
 		} 
 		ins = next;
@@ -5996,8 +6260,8 @@ static void simplify_smul(struct compile_state *state, struct triple *ins)
 	}
 	if (is_const(RHS(ins, 0)) && is_const(RHS(ins, 1))) {
 		long_t left, right;
-		left  = read_sconst(ins, &RHS(ins, 0));
-		right = read_sconst(ins, &RHS(ins, 1));
+		left  = read_sconst(state, ins, RHS(ins, 0));
+		right = read_sconst(state, ins, RHS(ins, 1));
 		mkconst(state, ins, left * right);
 	}
 	else if (is_zero(RHS(ins, 1))) {
@@ -6010,7 +6274,7 @@ static void simplify_smul(struct compile_state *state, struct triple *ins)
 		struct triple *val;
 		val = int_const(state, ins->type, tlog2(RHS(ins, 1)));
 		ins->op = OP_SL;
-		insert_triple(state, ins, val);
+		insert_triple(state, state->global_pool, val);
 		unuse_triple(RHS(ins, 1), ins);
 		use_triple(val, ins);
 		RHS(ins, 1) = val;
@@ -6027,8 +6291,8 @@ static void simplify_umul(struct compile_state *state, struct triple *ins)
 	}
 	if (is_const(RHS(ins, 0)) && is_const(RHS(ins, 1))) {
 		ulong_t left, right;
-		left  = read_const(state, ins, &RHS(ins, 0));
-		right = read_const(state, ins, &RHS(ins, 1));
+		left  = read_const(state, ins, RHS(ins, 0));
+		right = read_const(state, ins, RHS(ins, 1));
 		mkconst(state, ins, left * right);
 	}
 	else if (is_zero(RHS(ins, 1))) {
@@ -6041,7 +6305,7 @@ static void simplify_umul(struct compile_state *state, struct triple *ins)
 		struct triple *val;
 		val = int_const(state, ins->type, tlog2(RHS(ins, 1)));
 		ins->op = OP_SL;
-		insert_triple(state, ins, val);
+		insert_triple(state, state->global_pool, val);
 		unuse_triple(RHS(ins, 1), ins);
 		use_triple(val, ins);
 		RHS(ins, 1) = val;
@@ -6052,8 +6316,8 @@ static void simplify_sdiv(struct compile_state *state, struct triple *ins)
 {
 	if (is_const(RHS(ins, 0)) && is_const(RHS(ins, 1))) {
 		long_t left, right;
-		left  = read_sconst(ins, &RHS(ins, 0));
-		right = read_sconst(ins, &RHS(ins, 1));
+		left  = read_sconst(state, ins, RHS(ins, 0));
+		right = read_sconst(state, ins, RHS(ins, 1));
 		mkconst(state, ins, left / right);
 	}
 	else if (is_zero(RHS(ins, 0))) {
@@ -6069,7 +6333,7 @@ static void simplify_sdiv(struct compile_state *state, struct triple *ins)
 		struct triple *val;
 		val = int_const(state, ins->type, tlog2(RHS(ins, 1)));
 		ins->op = OP_SSR;
-		insert_triple(state, ins, val);
+		insert_triple(state, state->global_pool, val);
 		unuse_triple(RHS(ins, 1), ins);
 		use_triple(val, ins);
 		RHS(ins, 1) = val;
@@ -6080,8 +6344,8 @@ static void simplify_udiv(struct compile_state *state, struct triple *ins)
 {
 	if (is_const(RHS(ins, 0)) && is_const(RHS(ins, 1))) {
 		ulong_t left, right;
-		left  = read_const(state, ins, &RHS(ins, 0));
-		right = read_const(state, ins, &RHS(ins, 1));
+		left  = read_const(state, ins, RHS(ins, 0));
+		right = read_const(state, ins, RHS(ins, 1));
 		mkconst(state, ins, left / right);
 	}
 	else if (is_zero(RHS(ins, 0))) {
@@ -6097,7 +6361,7 @@ static void simplify_udiv(struct compile_state *state, struct triple *ins)
 		struct triple *val;
 		val = int_const(state, ins->type, tlog2(RHS(ins, 1)));
 		ins->op = OP_USR;
-		insert_triple(state, ins, val);
+		insert_triple(state, state->global_pool, val);
 		unuse_triple(RHS(ins, 1), ins);
 		use_triple(val, ins);
 		RHS(ins, 1) = val;
@@ -6108,8 +6372,8 @@ static void simplify_smod(struct compile_state *state, struct triple *ins)
 {
 	if (is_const(RHS(ins, 0)) && is_const(RHS(ins, 1))) {
 		long_t left, right;
-		left  = read_const(state, ins, &RHS(ins, 0));
-		right = read_const(state, ins, &RHS(ins, 1));
+		left  = read_const(state, ins, RHS(ins, 0));
+		right = read_const(state, ins, RHS(ins, 1));
 		mkconst(state, ins, left % right);
 	}
 	else if (is_zero(RHS(ins, 0))) {
@@ -6125,7 +6389,7 @@ static void simplify_smod(struct compile_state *state, struct triple *ins)
 		struct triple *val;
 		val = int_const(state, ins->type, RHS(ins, 1)->u.cval - 1);
 		ins->op = OP_AND;
-		insert_triple(state, ins, val);
+		insert_triple(state, state->global_pool, val);
 		unuse_triple(RHS(ins, 1), ins);
 		use_triple(val, ins);
 		RHS(ins, 1) = val;
@@ -6136,8 +6400,8 @@ static void simplify_umod(struct compile_state *state, struct triple *ins)
 {
 	if (is_const(RHS(ins, 0)) && is_const(RHS(ins, 1))) {
 		ulong_t left, right;
-		left  = read_const(state, ins, &RHS(ins, 0));
-		right = read_const(state, ins, &RHS(ins, 1));
+		left  = read_const(state, ins, RHS(ins, 0));
+		right = read_const(state, ins, RHS(ins, 1));
 		mkconst(state, ins, left % right);
 	}
 	else if (is_zero(RHS(ins, 0))) {
@@ -6153,7 +6417,7 @@ static void simplify_umod(struct compile_state *state, struct triple *ins)
 		struct triple *val;
 		val = int_const(state, ins->type, RHS(ins, 1)->u.cval - 1);
 		ins->op = OP_AND;
-		insert_triple(state, ins, val);
+		insert_triple(state, state->global_pool, val);
 		unuse_triple(RHS(ins, 1), ins);
 		use_triple(val, ins);
 		RHS(ins, 1) = val;
@@ -6172,8 +6436,8 @@ static void simplify_add(struct compile_state *state, struct triple *ins)
 	if (is_const(RHS(ins, 0)) && is_const(RHS(ins, 1))) {
 		if (RHS(ins, 0)->op == OP_INTCONST) {
 			ulong_t left, right;
-			left  = read_const(state, ins, &RHS(ins, 0));
-			right = read_const(state, ins, &RHS(ins, 1));
+			left  = read_const(state, ins, RHS(ins, 0));
+			right = read_const(state, ins, RHS(ins, 1));
 			mkconst(state, ins, left + right);
 		}
 		else if (RHS(ins, 0)->op == OP_ADDRCONST) {
@@ -6201,8 +6465,8 @@ static void simplify_sub(struct compile_state *state, struct triple *ins)
 	if (is_const(RHS(ins, 0)) && is_const(RHS(ins, 1))) {
 		if (RHS(ins, 0)->op == OP_INTCONST) {
 			ulong_t left, right;
-			left  = read_const(state, ins, &RHS(ins, 0));
-			right = read_const(state, ins, &RHS(ins, 1));
+			left  = read_const(state, ins, RHS(ins, 0));
+			right = read_const(state, ins, RHS(ins, 1));
 			mkconst(state, ins, left - right);
 		}
 		else if (RHS(ins, 0)->op == OP_ADDRCONST) {
@@ -6223,15 +6487,15 @@ static void simplify_sl(struct compile_state *state, struct triple *ins)
 {
 	if (is_const(RHS(ins, 1))) {
 		ulong_t right;
-		right = read_const(state, ins, &RHS(ins, 1));
+		right = read_const(state, ins, RHS(ins, 1));
 		if (right >= (size_of(state, ins->type)*8)) {
 			warning(state, ins, "left shift count >= width of type");
 		}
 	}
 	if (is_const(RHS(ins, 0)) && is_const(RHS(ins, 1))) {
 		ulong_t left, right;
-		left  = read_const(state, ins, &RHS(ins, 0));
-		right = read_const(state, ins, &RHS(ins, 1));
+		left  = read_const(state, ins, RHS(ins, 0));
+		right = read_const(state, ins, RHS(ins, 1));
 		mkconst(state, ins,  left << right);
 	}
 }
@@ -6240,15 +6504,15 @@ static void simplify_usr(struct compile_state *state, struct triple *ins)
 {
 	if (is_const(RHS(ins, 1))) {
 		ulong_t right;
-		right = read_const(state, ins, &RHS(ins, 1));
+		right = read_const(state, ins, RHS(ins, 1));
 		if (right >= (size_of(state, ins->type)*8)) {
 			warning(state, ins, "right shift count >= width of type");
 		}
 	}
 	if (is_const(RHS(ins, 0)) && is_const(RHS(ins, 1))) {
 		ulong_t left, right;
-		left  = read_const(state, ins, &RHS(ins, 0));
-		right = read_const(state, ins, &RHS(ins, 1));
+		left  = read_const(state, ins, RHS(ins, 0));
+		right = read_const(state, ins, RHS(ins, 1));
 		mkconst(state, ins, left >> right);
 	}
 }
@@ -6257,15 +6521,15 @@ static void simplify_ssr(struct compile_state *state, struct triple *ins)
 {
 	if (is_const(RHS(ins, 1))) {
 		ulong_t right;
-		right = read_const(state, ins, &RHS(ins, 1));
+		right = read_const(state, ins, RHS(ins, 1));
 		if (right >= (size_of(state, ins->type)*8)) {
 			warning(state, ins, "right shift count >= width of type");
 		}
 	}
 	if (is_const(RHS(ins, 0)) && is_const(RHS(ins, 1))) {
 		long_t left, right;
-		left  = read_sconst(ins, &RHS(ins, 0));
-		right = read_sconst(ins, &RHS(ins, 1));
+		left  = read_sconst(state, ins, RHS(ins, 0));
+		right = read_sconst(state, ins, RHS(ins, 1));
 		mkconst(state, ins, left >> right);
 	}
 }
@@ -6274,8 +6538,8 @@ static void simplify_and(struct compile_state *state, struct triple *ins)
 {
 	if (is_const(RHS(ins, 0)) && is_const(RHS(ins, 1))) {
 		ulong_t left, right;
-		left  = read_const(state, ins, &RHS(ins, 0));
-		right = read_const(state, ins, &RHS(ins, 1));
+		left  = read_const(state, ins, RHS(ins, 0));
+		right = read_const(state, ins, RHS(ins, 1));
 		mkconst(state, ins, left & right);
 	}
 }
@@ -6284,8 +6548,8 @@ static void simplify_or(struct compile_state *state, struct triple *ins)
 {
 	if (is_const(RHS(ins, 0)) && is_const(RHS(ins, 1))) {
 		ulong_t left, right;
-		left  = read_const(state, ins, &RHS(ins, 0));
-		right = read_const(state, ins, &RHS(ins, 1));
+		left  = read_const(state, ins, RHS(ins, 0));
+		right = read_const(state, ins, RHS(ins, 1));
 		mkconst(state, ins, left | right);
 	}
 }
@@ -6294,8 +6558,8 @@ static void simplify_xor(struct compile_state *state, struct triple *ins)
 {
 	if (is_const(RHS(ins, 0)) && is_const(RHS(ins, 1))) {
 		ulong_t left, right;
-		left  = read_const(state, ins, &RHS(ins, 0));
-		right = read_const(state, ins, &RHS(ins, 1));
+		left  = read_const(state, ins, RHS(ins, 0));
+		right = read_const(state, ins, RHS(ins, 1));
 		mkconst(state, ins, left ^ right);
 	}
 }
@@ -6314,7 +6578,7 @@ static void simplify_neg(struct compile_state *state, struct triple *ins)
 {
 	if (is_const(RHS(ins, 0))) {
 		ulong_t left;
-		left = read_const(state, ins, &RHS(ins, 0));
+		left = read_const(state, ins, RHS(ins, 0));
 		mkconst(state, ins, -left);
 	}
 	else if (RHS(ins, 0)->op == OP_NEG) {
@@ -6326,91 +6590,97 @@ static void simplify_invert(struct compile_state *state, struct triple *ins)
 {
 	if (is_const(RHS(ins, 0))) {
 		ulong_t left;
-		left = read_const(state, ins, &RHS(ins, 0));
+		left = read_const(state, ins, RHS(ins, 0));
 		mkconst(state, ins, ~left);
 	}
 }
 
 static void simplify_eq(struct compile_state *state, struct triple *ins)
 {
-	if (is_const(RHS(ins, 0)) && is_const(RHS(ins, 1))) {
-		ulong_t left, right;
-		left  = read_const(state, ins, &RHS(ins, 0));
-		right = read_const(state, ins, &RHS(ins, 1));
-		mkconst(state, ins, left == right);
+	struct triple *left, *right;
+	left = RHS(ins, 0);
+	right = RHS(ins, 1);
+
+	if (is_const(left) && is_const(right)) {
+		mkconst(state, ins, const_eq(state, ins, left, right) == 1);
 	}
-	else if (RHS(ins, 0) == RHS(ins, 1)) {
+	else if (left == right) {
 		mkconst(state, ins, 1);
 	}
 }
 
 static void simplify_noteq(struct compile_state *state, struct triple *ins)
 {
-	if (is_const(RHS(ins, 0)) && is_const(RHS(ins, 1))) {
-		ulong_t left, right;
-		left  = read_const(state, ins, &RHS(ins, 0));
-		right = read_const(state, ins, &RHS(ins, 1));
-		mkconst(state, ins, left != right);
+	struct triple *left, *right;
+	left = RHS(ins, 0);
+	right = RHS(ins, 1);
+
+	if (is_const(left) && is_const(right)) {
+		mkconst(state, ins, const_eq(state, ins, left, right) != 1);
 	}
-	else if (RHS(ins, 0) == RHS(ins, 1)) {
+	if (left == right) {
 		mkconst(state, ins, 0);
 	}
 }
 
 static void simplify_sless(struct compile_state *state, struct triple *ins)
 {
-	if (is_const(RHS(ins, 0)) && is_const(RHS(ins, 1))) {
-		long_t left, right;
-		left  = read_sconst(ins, &RHS(ins, 0));
-		right = read_sconst(ins, &RHS(ins, 1));
-		mkconst(state, ins, left < right);
+	struct triple *left, *right;
+	left = RHS(ins, 0);
+	right = RHS(ins, 1);
+
+	if (is_const(left) && is_const(right)) {
+		mkconst(state, ins, const_scmp(state, ins, left, right) < 0);
 	}
-	else if (RHS(ins, 0) == RHS(ins, 1)) {
+	else if (left == right) {
 		mkconst(state, ins, 0);
 	}
 }
 
 static void simplify_uless(struct compile_state *state, struct triple *ins)
 {
-	if (is_const(RHS(ins, 0)) && is_const(RHS(ins, 1))) {
-		ulong_t left, right;
-		left  = read_const(state, ins, &RHS(ins, 0));
-		right = read_const(state, ins, &RHS(ins, 1));
-		mkconst(state, ins, left < right);
+	struct triple *left, *right;
+	left = RHS(ins, 0);
+	right = RHS(ins, 1);
+
+	if (is_const(left) && is_const(right)) {
+		mkconst(state, ins, const_ucmp(state, ins, left, right) < 0);
 	}
-	else if (is_zero(RHS(ins, 0))) {
-		mkconst(state, ins, 1);
+	else if (is_zero(right)) {
+		mkconst(state, ins, 0);
 	}
-	else if (RHS(ins, 0) == RHS(ins, 1)) {
+	else if (left == right) {
 		mkconst(state, ins, 0);
 	}
 }
 
 static void simplify_smore(struct compile_state *state, struct triple *ins)
 {
-	if (is_const(RHS(ins, 0)) && is_const(RHS(ins, 1))) {
-		long_t left, right;
-		left  = read_sconst(ins, &RHS(ins, 0));
-		right = read_sconst(ins, &RHS(ins, 1));
-		mkconst(state, ins, left > right);
+	struct triple *left, *right;
+	left = RHS(ins, 0);
+	right = RHS(ins, 1);
+
+	if (is_const(left) && is_const(right)) {
+		mkconst(state, ins, const_scmp(state, ins, left, right) > 0);
 	}
-	else if (RHS(ins, 0) == RHS(ins, 1)) {
+	else if (left == right) {
 		mkconst(state, ins, 0);
 	}
 }
 
 static void simplify_umore(struct compile_state *state, struct triple *ins)
 {
-	if (is_const(RHS(ins, 0)) && is_const(RHS(ins, 1))) {
-		ulong_t left, right;
-		left  = read_const(state, ins, &RHS(ins, 0));
-		right = read_const(state, ins, &RHS(ins, 1));
-		mkconst(state, ins, left > right);
+	struct triple *left, *right;
+	left = RHS(ins, 0);
+	right = RHS(ins, 1);
+
+	if (is_const(left) && is_const(right)) {
+		mkconst(state, ins, const_ucmp(state, ins, left, right) > 0);
 	}
-	else if (is_zero(RHS(ins, 1))) {
-		mkconst(state, ins, 1);
+	else if (is_zero(left)) {
+		mkconst(state, ins, 0);
 	}
-	else if (RHS(ins, 0) == RHS(ins, 1)) {
+	else if (left == right) {
 		mkconst(state, ins, 0);
 	}
 }
@@ -6418,109 +6688,115 @@ static void simplify_umore(struct compile_state *state, struct triple *ins)
 
 static void simplify_slesseq(struct compile_state *state, struct triple *ins)
 {
-	if (is_const(RHS(ins, 0)) && is_const(RHS(ins, 1))) {
-		long_t left, right;
-		left  = read_sconst(ins, &RHS(ins, 0));
-		right = read_sconst(ins, &RHS(ins, 1));
-		mkconst(state, ins, left <= right);
+	struct triple *left, *right;
+	left = RHS(ins, 0);
+	right = RHS(ins, 1);
+
+	if (is_const(left) && is_const(right)) {
+		mkconst(state, ins, const_scmp(state, ins, left, right) <= 0);
 	}
-	else if (RHS(ins, 0) == RHS(ins, 1)) {
+	else if (left == right) {
 		mkconst(state, ins, 1);
 	}
 }
 
 static void simplify_ulesseq(struct compile_state *state, struct triple *ins)
 {
-	if (is_const(RHS(ins, 0)) && is_const(RHS(ins, 1))) {
-		ulong_t left, right;
-		left  = read_const(state, ins, &RHS(ins, 0));
-		right = read_const(state, ins, &RHS(ins, 1));
-		mkconst(state, ins, left <= right);
+	struct triple *left, *right;
+	left = RHS(ins, 0);
+	right = RHS(ins, 1);
+
+	if (is_const(left) && is_const(right)) {
+		mkconst(state, ins, const_ucmp(state, ins, left, right) <= 0);
 	}
-	else if (is_zero(RHS(ins, 0))) {
+	else if (is_zero(left)) {
 		mkconst(state, ins, 1);
 	}
-	else if (RHS(ins, 0) == RHS(ins, 1)) {
+	else if (left == right) {
 		mkconst(state, ins, 1);
 	}
 }
 
 static void simplify_smoreeq(struct compile_state *state, struct triple *ins)
 {
-	if (is_const(RHS(ins, 0)) && is_const(RHS(ins, 0))) {
-		long_t left, right;
-		left  = read_sconst(ins, &RHS(ins, 0));
-		right = read_sconst(ins, &RHS(ins, 1));
-		mkconst(state, ins, left >= right);
+	struct triple *left, *right;
+	left = RHS(ins, 0);
+	right = RHS(ins, 1);
+
+	if (is_const(left) && is_const(right)) {
+		mkconst(state, ins, const_scmp(state, ins, left, right) >= 0);
 	}
-	else if (RHS(ins, 0) == RHS(ins, 1)) {
+	else if (left == right) {
 		mkconst(state, ins, 1);
 	}
 }
 
 static void simplify_umoreeq(struct compile_state *state, struct triple *ins)
 {
-	if (is_const(RHS(ins, 0)) && is_const(RHS(ins, 1))) {
-		ulong_t left, right;
-		left  = read_const(state, ins, &RHS(ins, 0));
-		right = read_const(state, ins, &RHS(ins, 1));
-		mkconst(state, ins, left >= right);
+	struct triple *left, *right;
+	left = RHS(ins, 0);
+	right = RHS(ins, 1);
+
+	if (is_const(left) && is_const(right)) {
+		mkconst(state, ins, const_ucmp(state, ins, left, right) >= 0);
 	}
-	else if (is_zero(RHS(ins, 1))) {
+	else if (is_zero(right)) {
 		mkconst(state, ins, 1);
 	}
-	else if (RHS(ins, 0) == RHS(ins, 1)) {
+	else if (left == right) {
 		mkconst(state, ins, 1);
 	}
 }
 
 static void simplify_lfalse(struct compile_state *state, struct triple *ins)
 {
-	if (is_const(RHS(ins, 0))) {
-		ulong_t left;
-		left = read_const(state, ins, &RHS(ins, 0));
-		mkconst(state, ins, left == 0);
+	struct triple *rhs;
+	rhs = RHS(ins, 0);
+
+	if (is_const(rhs)) {
+		mkconst(state, ins, !const_ltrue(state, ins, rhs));
 	}
 	/* Otherwise if I am the only user... */
-	else if ((RHS(ins, 0)->use) &&
-		(RHS(ins, 0)->use->member == ins) && (RHS(ins, 0)->use->next == 0)) {
+	else if ((rhs->use) &&
+		(rhs->use->member == ins) && (rhs->use->next == 0)) {
 		int need_copy = 1;
 		/* Invert a boolean operation */
-		switch(RHS(ins, 0)->op) {
-		case OP_LTRUE:   RHS(ins, 0)->op = OP_LFALSE;  break;
-		case OP_LFALSE:  RHS(ins, 0)->op = OP_LTRUE;   break;
-		case OP_EQ:      RHS(ins, 0)->op = OP_NOTEQ;   break;
-		case OP_NOTEQ:   RHS(ins, 0)->op = OP_EQ;      break;
-		case OP_SLESS:   RHS(ins, 0)->op = OP_SMOREEQ; break;
-		case OP_ULESS:   RHS(ins, 0)->op = OP_UMOREEQ; break;
-		case OP_SMORE:   RHS(ins, 0)->op = OP_SLESSEQ; break;
-		case OP_UMORE:   RHS(ins, 0)->op = OP_ULESSEQ; break;
-		case OP_SLESSEQ: RHS(ins, 0)->op = OP_SMORE;   break;
-		case OP_ULESSEQ: RHS(ins, 0)->op = OP_UMORE;   break;
-		case OP_SMOREEQ: RHS(ins, 0)->op = OP_SLESS;   break;
-		case OP_UMOREEQ: RHS(ins, 0)->op = OP_ULESS;   break;
+		switch(rhs->op) {
+		case OP_LTRUE:   rhs->op = OP_LFALSE;  break;
+		case OP_LFALSE:  rhs->op = OP_LTRUE;   break;
+		case OP_EQ:      rhs->op = OP_NOTEQ;   break;
+		case OP_NOTEQ:   rhs->op = OP_EQ;      break;
+		case OP_SLESS:   rhs->op = OP_SMOREEQ; break;
+		case OP_ULESS:   rhs->op = OP_UMOREEQ; break;
+		case OP_SMORE:   rhs->op = OP_SLESSEQ; break;
+		case OP_UMORE:   rhs->op = OP_ULESSEQ; break;
+		case OP_SLESSEQ: rhs->op = OP_SMORE;   break;
+		case OP_ULESSEQ: rhs->op = OP_UMORE;   break;
+		case OP_SMOREEQ: rhs->op = OP_SLESS;   break;
+		case OP_UMOREEQ: rhs->op = OP_ULESS;   break;
 		default:
 			need_copy = 0;
 			break;
 		}
 		if (need_copy) {
-			mkcopy(state, ins, RHS(ins, 0));
+			mkcopy(state, ins, rhs);
 		}
 	}
 }
 
 static void simplify_ltrue (struct compile_state *state, struct triple *ins)
 {
-	if (is_const(RHS(ins, 0))) {
-		ulong_t left;
-		left = read_const(state, ins, &RHS(ins, 0));
-		mkconst(state, ins, left != 0);
+	struct triple *rhs;
+	rhs = RHS(ins, 0);
+
+	if (is_const(rhs)) {
+		mkconst(state, ins, const_ltrue(state, ins, rhs));
 	}
-	else switch(RHS(ins, 0)->op) {
+	else switch(rhs->op) {
 	case OP_LTRUE:   case OP_LFALSE:  case OP_EQ:      case OP_NOTEQ:
 	case OP_SLESS:   case OP_ULESS:   case OP_SMORE:   case OP_UMORE:
 	case OP_SLESSEQ: case OP_ULESSEQ: case OP_SMOREEQ: case OP_UMOREEQ:
-		mkcopy(state, ins, RHS(ins, 0));
+		mkcopy(state, ins, rhs);
 	}
 
 }
@@ -6532,7 +6808,7 @@ static void simplify_copy(struct compile_state *state, struct triple *ins)
 		case OP_INTCONST:
 		{
 			ulong_t left;
-			left = read_const(state, ins, &RHS(ins, 0));
+			left = read_const(state, ins, RHS(ins, 0));
 			mkconst(state, ins, left);
 			break;
 		}
@@ -6574,10 +6850,13 @@ static int phi_dependency(struct block *block)
 	 * depends on that block to exist, and makes a block
 	 * that is otherwise useless unsafe to remove.
 	 */
-	if (block && (
-		    phi_present(block->left) ||
-		    phi_present(block->right))) {
-		return 1;
+	if (block) {
+		struct block_set *edge;
+		for(edge = block->edges; edge; edge = edge->next) {
+			if (phi_present(edge->member)) {
+				return 1;
+			}
+		}
 	}
 	return 0;
 }
@@ -6590,7 +6869,8 @@ static struct triple *branch_target(struct compile_state *state, struct triple *
 	 * loop back onto themselves. If I see one don't advance the
 	 * target.
 	 */
-	while(triple_is_structural(state, targ) && (targ->next != targ)) {
+	while(triple_is_structural(state, targ) && 
+		(targ->next != targ) && (targ->next != state->first)) {
 		targ = targ->next;
 	}
 	return targ;
@@ -6600,7 +6880,7 @@ static struct triple *branch_target(struct compile_state *state, struct triple *
 static void simplify_branch(struct compile_state *state, struct triple *ins)
 {
 	int simplified;
-	if (ins->op != OP_BRANCH) {
+	if ((ins->op != OP_BRANCH) && (ins->op != OP_CBRANCH)) {
 		internal_error(state, ins, "not branch");
 	}
 	if (ins->use != 0) {
@@ -6620,27 +6900,27 @@ static void simplify_branch(struct compile_state *state, struct triple *ins)
 		struct triple *targ;
 		simplified = 0;
 		targ = branch_target(state, ins);
-		if ((targ != ins) && triple_is_uncond_branch(state, targ)) {
-			if (!phi_dependency(targ->u.block)) 
-			{
-				unuse_triple(TARG(ins, 0), ins);
-				TARG(ins, 0) = TARG(targ, 0);
-				use_triple(TARG(ins, 0), ins);
-				simplified = 1;
-			}
+		if ((targ != ins) && (targ->op == OP_BRANCH) &&	
+			!phi_dependency(targ->u.block))
+		{
+			unuse_triple(TARG(ins, 0), ins);
+			TARG(ins, 0) = TARG(targ, 0);
+			use_triple(TARG(ins, 0), ins);
+			simplified = 1;
 		}
 	} while(simplified);
 
 	/* If we have a conditional branch with a constant condition
 	 * make it an unconditional branch.
 	 */
-	if (TRIPLE_RHS(ins->sizes) && is_const(RHS(ins, 0))) {
+	if ((ins->op == OP_CBRANCH) && is_const(RHS(ins, 0))) {
 		struct triple *targ;
 		ulong_t value;
-		value = read_const(state, ins, &RHS(ins, 0));
+		value = read_const(state, ins, RHS(ins, 0));
 		unuse_triple(RHS(ins, 0), ins);
 		targ = TARG(ins, 0);
 		ins->sizes = TRIPLE_SIZES(0, 0, 0, 1);
+		ins->op = OP_BRANCH;
 		if (value) {
 			unuse_triple(ins->next, ins);
 			TARG(ins, 0) = targ;
@@ -6651,12 +6931,12 @@ static void simplify_branch(struct compile_state *state, struct triple *ins)
 		}
 	}
 	
-	/* If we have an unconditional branch to the next instruction
+	/* If we have a branch to the next instruction
 	 * make it a noop.
 	 */
 	if (TARG(ins, 0) == ins->next) {
 		unuse_triple(ins->next, ins);
-		if (TRIPLE_RHS(ins->sizes)) {
+		if (ins->op == OP_CBRANCH) {
 			unuse_triple(RHS(ins, 0), ins);
 			unuse_triple(ins->next, ins);
 		}
@@ -6670,8 +6950,6 @@ static void simplify_branch(struct compile_state *state, struct triple *ins)
 
 static void simplify_label(struct compile_state *state, struct triple *ins)
 {
-	struct triple *first;
-	first = state->first;
 	/* Ignore volatile labels */
 	if (!triple_is_pure(state, ins, ins->id)) {
 		return;
@@ -6688,13 +6966,17 @@ static void simplify_label(struct compile_state *state, struct triple *ins)
 			struct triple_set *user, *next;
 			ins->op = OP_NOOP;
 			for(user = ins->use; user; user = next) {
-				struct triple *use;
+				struct triple *use, **expr;
 				next = user->next;
 				use = user->member;
-				if (TARG(use, 0) == ins) {
-					TARG(use, 0) = ins->prev;
-					unuse_triple(ins, use);
-					use_triple(ins->prev, use);
+				expr = triple_targ(state, use, 0);
+				for(;expr; expr = triple_targ(state, use, expr)) {
+					if (*expr == ins) {
+						*expr = ins->prev;
+						unuse_triple(ins, use);
+						use_triple(ins->prev, use);
+					}
+					
 				}
 			}
 			if (ins->use) {
@@ -6717,11 +6999,11 @@ static void simplify_phi(struct compile_state *state, struct triple *ins)
 	}
 	/* See if all of the rhs members of a phi have the same value */
 	if (slot[0] && is_simple_const(slot[0])) {
-		cvalue = read_const(state, ins, &slot[0]);
+		cvalue = read_const(state, ins, slot[0]);
 		for(i = 1; i < zrhs; i++) {
 			if (	!slot[i] ||
 				!is_simple_const(slot[i]) ||
-				(cvalue != read_const(state, ins, &slot[i]))) {
+				(cvalue != read_const(state, ins, slot[i]))) {
 				break;
 			}
 		}
@@ -6750,7 +7032,7 @@ static void simplify_bsf(struct compile_state *state, struct triple *ins)
 {
 	if (is_const(RHS(ins, 0))) {
 		ulong_t left;
-		left = read_const(state, ins, &RHS(ins, 0));
+		left = read_const(state, ins, RHS(ins, 0));
 		mkconst(state, ins, bsf(left));
 	}
 }
@@ -6759,162 +7041,93 @@ static void simplify_bsr(struct compile_state *state, struct triple *ins)
 {
 	if (is_const(RHS(ins, 0))) {
 		ulong_t left;
-		left = read_const(state, ins, &RHS(ins, 0));
+		left = read_const(state, ins, RHS(ins, 0));
 		mkconst(state, ins, bsr(left));
 	}
 }
 
 
 typedef void (*simplify_t)(struct compile_state *state, struct triple *ins);
-static const simplify_t table_simplify[] = {
-#if 1
+static const struct simplify_table {
+	simplify_t func;
+	unsigned long flag;
+} table_simplify[] = {
 #define simplify_sdivt    simplify_noop
 #define simplify_udivt    simplify_noop
-#endif
-#if 0
-#define simplify_smul     simplify_noop
-#define simplify_umul	  simplify_noop
-#define simplify_sdiv	  simplify_noop
-#define simplify_udiv	  simplify_noop
-#define simplify_smod	  simplify_noop
-#define simplify_umod	  simplify_noop
-#endif
-#if 0
-#define simplify_add	  simplify_noop
-#define simplify_sub	  simplify_noop
-#endif
-#if 0
-#define simplify_sl	  simplify_noop
-#define simplify_usr	  simplify_noop
-#define simplify_ssr	  simplify_noop
-#endif
-#if 0
-#define simplify_and	  simplify_noop
-#define simplify_xor	  simplify_noop
-#define simplify_or	  simplify_noop
-#endif
-#if 0
-#define simplify_pos	  simplify_noop
-#define simplify_neg	  simplify_noop
-#define simplify_invert	  simplify_noop
-#endif
-
-#if 0
-#define simplify_eq	  simplify_noop
-#define simplify_noteq	  simplify_noop
-#endif
-#if 0
-#define simplify_sless	  simplify_noop
-#define simplify_uless	  simplify_noop
-#define simplify_smore	  simplify_noop
-#define simplify_umore	  simplify_noop
-#endif
-#if 0
-#define simplify_slesseq  simplify_noop
-#define simplify_ulesseq  simplify_noop
-#define simplify_smoreeq  simplify_noop
-#define simplify_umoreeq  simplify_noop
-#endif
-#if 0
-#define simplify_lfalse	  simplify_noop
-#endif
-#if 0
-#define simplify_ltrue	  simplify_noop
-#endif
-
-#if 0
-#define simplify_copy	  simplify_noop
-#endif
-
-#if 0
-#define simplify_branch	  simplify_noop
-#endif
-#if 0
-#define simplify_label	  simplify_noop
-#endif
-
-#if 0
-#define simplify_phi	  simplify_noop
-#endif
-
-#if 0
-#define simplify_bsf	  simplify_noop
-#define simplify_bsr      simplify_noop
-#endif
-
-#if 1
 #define simplify_piece    simplify_noop
-#endif
 
-[OP_SDIVT      ] = simplify_sdivt,
-[OP_UDIVT      ] = simplify_udivt,
-[OP_SMUL       ] = simplify_smul,
-[OP_UMUL       ] = simplify_umul,
-[OP_SDIV       ] = simplify_sdiv,
-[OP_UDIV       ] = simplify_udiv,
-[OP_SMOD       ] = simplify_smod,
-[OP_UMOD       ] = simplify_umod,
-[OP_ADD        ] = simplify_add,
-[OP_SUB        ] = simplify_sub,
-[OP_SL         ] = simplify_sl,
-[OP_USR        ] = simplify_usr,
-[OP_SSR        ] = simplify_ssr,
-[OP_AND        ] = simplify_and,
-[OP_XOR        ] = simplify_xor,
-[OP_OR         ] = simplify_or,
-[OP_POS        ] = simplify_pos,
-[OP_NEG        ] = simplify_neg,
-[OP_INVERT     ] = simplify_invert,
+[OP_SDIVT      ] = { simplify_sdivt,    COMPILER_SIMPLIFY_ARITH },
+[OP_UDIVT      ] = { simplify_udivt,	COMPILER_SIMPLIFY_ARITH },
+[OP_SMUL       ] = { simplify_smul,	COMPILER_SIMPLIFY_ARITH },
+[OP_UMUL       ] = { simplify_umul,	COMPILER_SIMPLIFY_ARITH },
+[OP_SDIV       ] = { simplify_sdiv,	COMPILER_SIMPLIFY_ARITH },
+[OP_UDIV       ] = { simplify_udiv,	COMPILER_SIMPLIFY_ARITH },
+[OP_SMOD       ] = { simplify_smod,	COMPILER_SIMPLIFY_ARITH },
+[OP_UMOD       ] = { simplify_umod,	COMPILER_SIMPLIFY_ARITH },
+[OP_ADD        ] = { simplify_add,	COMPILER_SIMPLIFY_ARITH },
+[OP_SUB        ] = { simplify_sub,	COMPILER_SIMPLIFY_ARITH },
+[OP_SL         ] = { simplify_sl,	COMPILER_SIMPLIFY_SHIFT },
+[OP_USR        ] = { simplify_usr,	COMPILER_SIMPLIFY_SHIFT },
+[OP_SSR        ] = { simplify_ssr,	COMPILER_SIMPLIFY_SHIFT },
+[OP_AND        ] = { simplify_and,	COMPILER_SIMPLIFY_BITWISE },
+[OP_XOR        ] = { simplify_xor,	COMPILER_SIMPLIFY_BITWISE },
+[OP_OR         ] = { simplify_or,	COMPILER_SIMPLIFY_BITWISE },
+[OP_POS        ] = { simplify_pos,	COMPILER_SIMPLIFY_ARITH },
+[OP_NEG        ] = { simplify_neg,	COMPILER_SIMPLIFY_ARITH },
+[OP_INVERT     ] = { simplify_invert,	COMPILER_SIMPLIFY_BITWISE },
 
-[OP_EQ         ] = simplify_eq,
-[OP_NOTEQ      ] = simplify_noteq,
-[OP_SLESS      ] = simplify_sless,
-[OP_ULESS      ] = simplify_uless,
-[OP_SMORE      ] = simplify_smore,
-[OP_UMORE      ] = simplify_umore,
-[OP_SLESSEQ    ] = simplify_slesseq,
-[OP_ULESSEQ    ] = simplify_ulesseq,
-[OP_SMOREEQ    ] = simplify_smoreeq,
-[OP_UMOREEQ    ] = simplify_umoreeq,
-[OP_LFALSE     ] = simplify_lfalse,
-[OP_LTRUE      ] = simplify_ltrue,
+[OP_EQ         ] = { simplify_eq,	COMPILER_SIMPLIFY_LOGICAL },
+[OP_NOTEQ      ] = { simplify_noteq,	COMPILER_SIMPLIFY_LOGICAL },
+[OP_SLESS      ] = { simplify_sless,	COMPILER_SIMPLIFY_LOGICAL },
+[OP_ULESS      ] = { simplify_uless,	COMPILER_SIMPLIFY_LOGICAL },
+[OP_SMORE      ] = { simplify_smore,	COMPILER_SIMPLIFY_LOGICAL },
+[OP_UMORE      ] = { simplify_umore,	COMPILER_SIMPLIFY_LOGICAL },
+[OP_SLESSEQ    ] = { simplify_slesseq, 	COMPILER_SIMPLIFY_LOGICAL },
+[OP_ULESSEQ    ] = { simplify_ulesseq,	COMPILER_SIMPLIFY_LOGICAL },
+[OP_SMOREEQ    ] = { simplify_smoreeq,	COMPILER_SIMPLIFY_LOGICAL },
+[OP_UMOREEQ    ] = { simplify_umoreeq,	COMPILER_SIMPLIFY_LOGICAL },
+[OP_LFALSE     ] = { simplify_lfalse,	COMPILER_SIMPLIFY_LOGICAL },
+[OP_LTRUE      ] = { simplify_ltrue,	COMPILER_SIMPLIFY_LOGICAL },
 
-[OP_LOAD       ] = simplify_noop,
-[OP_STORE      ] = simplify_noop,
+[OP_LOAD       ] = { simplify_noop,	COMPILER_SIMPLIFY_OP },
+[OP_STORE      ] = { simplify_noop,	COMPILER_SIMPLIFY_OP },
 
-[OP_NOOP       ] = simplify_noop,
+[OP_NOOP       ] = { simplify_noop,	COMPILER_SIMPLIFY_OP },
 
-[OP_INTCONST   ] = simplify_noop,
-[OP_BLOBCONST  ] = simplify_noop,
-[OP_ADDRCONST  ] = simplify_noop,
+[OP_INTCONST   ] = { simplify_noop,	COMPILER_SIMPLIFY_OP },
+[OP_BLOBCONST  ] = { simplify_noop,	COMPILER_SIMPLIFY_OP },
+[OP_ADDRCONST  ] = { simplify_noop,	COMPILER_SIMPLIFY_OP },
 
-[OP_WRITE      ] = simplify_noop,
-[OP_READ       ] = simplify_noop,
-[OP_COPY       ] = simplify_copy,
-[OP_PIECE      ] = simplify_piece,
-[OP_ASM        ] = simplify_noop,
+[OP_WRITE      ] = { simplify_noop,	COMPILER_SIMPLIFY_OP },
+[OP_READ       ] = { simplify_noop,	COMPILER_SIMPLIFY_OP },
+[OP_COPY       ] = { simplify_copy,	COMPILER_SIMPLIFY_COPY },
+[OP_PIECE      ] = { simplify_piece,	COMPILER_SIMPLIFY_OP },
+[OP_ASM        ] = { simplify_noop,	COMPILER_SIMPLIFY_OP },
 
-[OP_DOT        ] = simplify_noop,
-[OP_VAL_VEC    ] = simplify_noop,
+[OP_DOT        ] = { simplify_noop,	COMPILER_SIMPLIFY_OP },
+[OP_VAL_VEC    ] = { simplify_noop,	COMPILER_SIMPLIFY_OP },
 
-[OP_LIST       ] = simplify_noop,
-[OP_BRANCH     ] = simplify_branch,
-[OP_LABEL      ] = simplify_label,
-[OP_ADECL      ] = simplify_noop,
-[OP_SDECL      ] = simplify_noop,
-[OP_PHI        ] = simplify_phi,
+[OP_LIST       ] = { simplify_noop,	COMPILER_SIMPLIFY_OP },
+[OP_BRANCH     ] = { simplify_branch,	COMPILER_SIMPLIFY_BRANCH },
+[OP_CBRANCH    ] = { simplify_branch,	COMPILER_SIMPLIFY_BRANCH },
+[OP_CALL       ] = { simplify_noop,	COMPILER_SIMPLIFY_BRANCH },
+[OP_RET        ] = { simplify_noop,	COMPILER_SIMPLIFY_BRANCH },
+[OP_LABEL      ] = { simplify_label,	COMPILER_SIMPLIFY_LABEL },
+[OP_ADECL      ] = { simplify_noop,	COMPILER_SIMPLIFY_OP },
+[OP_SDECL      ] = { simplify_noop,	COMPILER_SIMPLIFY_OP },
+[OP_PHI        ] = { simplify_phi,	COMPILER_SIMPLIFY_PHI },
 
-[OP_INB        ] = simplify_noop,
-[OP_INW        ] = simplify_noop,
-[OP_INL        ] = simplify_noop,
-[OP_OUTB       ] = simplify_noop,
-[OP_OUTW       ] = simplify_noop,
-[OP_OUTL       ] = simplify_noop,
-[OP_BSF        ] = simplify_bsf,
-[OP_BSR        ] = simplify_bsr,
-[OP_RDMSR      ] = simplify_noop,
-[OP_WRMSR      ] = simplify_noop,                    
-[OP_HLT        ] = simplify_noop,
+[OP_INB        ] = { simplify_noop,	COMPILER_SIMPLIFY_OP },
+[OP_INW        ] = { simplify_noop,	COMPILER_SIMPLIFY_OP },
+[OP_INL        ] = { simplify_noop,	COMPILER_SIMPLIFY_OP },
+[OP_OUTB       ] = { simplify_noop,	COMPILER_SIMPLIFY_OP },
+[OP_OUTW       ] = { simplify_noop,	COMPILER_SIMPLIFY_OP },
+[OP_OUTL       ] = { simplify_noop,	COMPILER_SIMPLIFY_OP },
+[OP_BSF        ] = { simplify_bsf,	COMPILER_SIMPLIFY_OP },
+[OP_BSR        ] = { simplify_bsr,	COMPILER_SIMPLIFY_OP },
+[OP_RDMSR      ] = { simplify_noop,	COMPILER_SIMPLIFY_OP },
+[OP_WRMSR      ] = { simplify_noop,     COMPILER_SIMPLIFY_OP },               
+[OP_HLT        ] = { simplify_noop,     COMPILER_SIMPLIFY_OP },
 };
 
 static void simplify(struct compile_state *state, struct triple *ins)
@@ -6927,68 +7140,30 @@ static void simplify(struct compile_state *state, struct triple *ins)
 		if ((op < 0) || (op > sizeof(table_simplify)/sizeof(table_simplify[0]))) {
 			do_simplify = 0;
 		}
-		else {
-			do_simplify = table_simplify[op];
+		else if (state->compiler->flags & table_simplify[op].flag) {
+			do_simplify = table_simplify[op].func;
 		}
+		else {
+			do_simplify = simplify_noop;
+		}
+	
 		if (!do_simplify) {
 			internal_error(state, ins, "cannot simplify op: %d %s\n",
 				op, tops(op));
 			return;
 		}
-#if !DEBUG_SIMPLIFY
 		do_simplify(state, ins);
-#else
-		{
-			struct triple *dup;
-			int ins_count, dup_count;
-			dup = dup_triple(state, ins);
-			do_simplify(state, ins);
-			ins_count = TRIPLE_SIZE(ins->sizes);
-			dup_count = TRIPLE_SIZE(dup->sizes);
-			if ((dup->op != ins->op) ||
-				(ins_count != dup_count) ||
-				(memcmp(dup->param, ins->param,	
-					dup_count * sizeof(dup->param[0])) != 0) ||
-				(memcmp(&dup->u, &ins->u, sizeof(ins->u)) != 0)) 
-			{
-				int i, min_count;
-				fprintf(stderr, "simplify: %11p", ins);
-				if (dup->op == ins->op) {
-					fprintf(stderr, " %-11s", tops(ins->op));
-				} else {
-					fprintf(stderr, " [%-10s %-10s]", 
-						tops(dup->op), tops(ins->op));
-				}
-				min_count = dup_count;
-				if (min_count > ins_count) {
-					min_count = ins_count;
-				}
-				for(i = 0; i < min_count; i++) {
-					if (dup->param[i] == ins->param[i]) {
-						fprintf(stderr, " %-11p", ins->param[i]);
-					} else {
-						fprintf(stderr, " [%-10p %-10p]",
-							dup->param[i], ins->param[i]);
-					}
-				}
-				for(; i < ins_count; i++) {
-					fprintf(stderr, " [%-9p]", ins->param[i]);
-				}
-				for(; i < dup_count; i++) {
-					fprintf(stderr, " [%-9p]", dup->param[i]);
-				}
-				fprintf(stderr, "\n");
-				fflush(stderr);
-			}
-			xfree(dup);
-		}
-#endif
 	} while(ins->op != op);
 }
+
+static void rebuild_ssa_form(struct compile_state *state);
 
 static void simplify_all(struct compile_state *state)
 {
 	struct triple *ins, *first;
+	if (!(state->compiler->flags & COMPILER_SIMPLIFY)) {
+		return;
+	}
 	first = state->first;
 	ins = first->prev;
 	do {
@@ -7000,6 +7175,9 @@ static void simplify_all(struct compile_state *state)
 		simplify(state, ins);
 		ins = ins->next;
 	}while(ins != first);
+	rebuild_ssa_form(state);
+
+	print_blocks(state, __func__, stdout);
 }
 
 /*
@@ -7011,7 +7189,7 @@ static void register_builtin_function(struct compile_state *state,
 	const char *name, int op, struct type *rtype, ...)
 {
 	struct type *ftype, *atype, *param, **next;
-	struct triple *def, *arg, *result, *work, *last, *first;
+	struct triple *def, *arg, *result, *work, *last, *first, *retvar, *ret;
 	struct hash_entry *ident;
 	struct file_state file;
 	int parameters;
@@ -7037,7 +7215,7 @@ static void register_builtin_function(struct compile_state *state,
 	}
 
 	/* Find the function type */
-	ftype = new_type(TYPE_FUNCTION, rtype, 0);
+	ftype = new_type(TYPE_FUNCTION | STOR_INLINE | STOR_STATIC, rtype, 0);
 	next = &ftype->right;
 	va_start(args, rtype);
 	for(i = 0; i < parameters; i++) {
@@ -7058,6 +7236,9 @@ static void register_builtin_function(struct compile_state *state,
 	def = triple(state, OP_LIST, ftype, 0, 0);
 	first = label(state);
 	RHS(def, 0) = first;
+	retvar = variable(state, &void_ptr_type);
+	retvar = flatten(state, first, retvar);
+	ret = triple(state, OP_RET, &void_type, read_expr(state, retvar), 0);
 
 	/* Now string them together */
 	param = ftype->right;
@@ -7076,7 +7257,7 @@ static void register_builtin_function(struct compile_state *state,
 	}
 	MISC(def, 0) = result;
 	work = new_triple(state, op, rtype, -1, parameters);
-	for(i = 0, arg = first->next; i < parameters; i++, arg = arg->next) {
+	for(i = 0, arg = first->next->next; i < parameters; i++, arg = arg->next) {
 		RHS(work, i) = read_expr(state, arg);
 	}
 	if (result && ((rtype->type & TYPE_MASK) == TYPE_STRUCT)) {
@@ -7111,19 +7292,27 @@ static void register_builtin_function(struct compile_state *state,
 	}
 	work = flatten(state, first, work);
 	last = flatten(state, first, label(state));
+	ret  = flatten(state, first, ret);
 	name_len = strlen(name);
 	ident = lookup(state, name, name_len);
+	ftype->type_ident = ident;
 	symbol(state, ident, &ident->sym_ident, def, ftype);
 	
 	state->file = file.prev;
 	state->function = 0;
-#if 0
-	fprintf(stdout, "\n");
-	loc(stdout, state, 0);
-	fprintf(stdout, "\n__________ builtin_function _________\n");
-	print_triple(state, def);
-	fprintf(stdout, "__________ builtin_function _________ done\n\n");
-#endif
+	
+	if (!state->functions) {
+		state->functions = def;
+	} else {
+		insert_triple(state, state->functions, def);
+	}
+	if (state->compiler->debug & DEBUG_INLINE) {
+		fprintf(stdout, "\n");
+		loc(stdout, state, 0);
+		fprintf(stdout, "\n__________ %s _________\n", __FUNCTION__);
+		display_func(stdout, def);
+		fprintf(stdout, "__________ %s _________ done\n\n", __FUNCTION__);
+	}
 }
 
 static struct type *partial_struct(struct compile_state *state,
@@ -7263,10 +7452,17 @@ static struct triple *call_expr(
 	eat(state, TOK_LPAREN);
 	/* Find the return type without any specifiers */
 	type = clone_type(0, func->type->left);
-	def = new_triple(state, OP_CALL, func->type, -1, -1);
-	def->type = type;
-
-	pvals = TRIPLE_RHS(def->sizes);
+	/* Count the number of rhs entries for OP_FCALL */
+	param = func->type->right;
+	pvals = 0;
+	while((param->type & TYPE_MASK) == TYPE_PRODUCT) {
+		pvals++;
+		param = param->right;
+	}
+	if ((param->type & TYPE_MASK) != TYPE_VOID) {
+		pvals++;
+	}
+	def = new_triple(state, OP_FCALL, type, -1, pvals);
 	MISC(def, 0) = func;
 
 	param = func->type->right;
@@ -8260,7 +8456,7 @@ static void return_statement(struct compile_state *state, struct triple *first)
 	/* Find the return variable */
 	var = MISC(state->main_function, 0);
 	/* Find the return destination */
-	dest = RHS(state->main_function, 0)->prev;
+	dest = state->i_return->sym_ident->def;
 	mv = jmp = 0;
 	/* If needed generate a jump instruction */
 	if (!last) {
@@ -8766,7 +8962,7 @@ static struct type *param_decl(struct compile_state *state)
 static struct type *param_type_list(struct compile_state *state, struct type *type)
 {
 	struct type *ftype, **next;
-	ftype = new_type(TYPE_FUNCTION, type, param_decl(state));
+	ftype = new_type(TYPE_FUNCTION | (type->type & STOR_MASK), type, param_decl(state));
 	next = &ftype->right;
 	while(peek(state) == TOK_COMMA) {
 		eat(state, TOK_COMMA);
@@ -9089,7 +9285,7 @@ static unsigned int storage_class_specifier_opt(struct compile_state *state)
 		break;
 	default:
 		if (state->scope_depth <= GLOBAL_SCOPE_DEPTH) {
-			specifiers = STOR_STATIC;
+			specifiers = STOR_LOCAL;
 		}
 		else {
 			specifiers = STOR_AUTO;
@@ -9580,7 +9776,7 @@ static void resolve_branches(struct compile_state *state)
 static struct triple *function_definition(
 	struct compile_state *state, struct type *type)
 {
-	struct triple *def, *tmp, *first, *end;
+	struct triple *def, *tmp, *first, *end, *retvar, *ret;
 	struct hash_entry *ident;
 	struct type *param;
 	int i;
@@ -9621,6 +9817,17 @@ static struct triple *function_definition(
 	/* Put a label at the very end of a function */
 	end = label(state);
 	flatten(state, first, end);
+	/* Remember where return goes */
+	ident = state->i_return;
+	symbol(state, ident, &ident->sym_ident, end, end->type);
+
+	/* Allocate a variable for the return address */
+	retvar = variable(state, &void_ptr_type);
+	retvar = flatten(state, end, retvar);
+
+	/* Add in the return instruction */
+	ret = triple(state, OP_RET, &void_type, read_expr(state, retvar), 0);
+	ret = flatten(state, first, ret);
 
 	/* Walk through the parameters and create symbol table entries
 	 * for them.
@@ -9664,13 +9871,20 @@ static struct triple *function_definition(
 	/* Remove the parameter scope */
 	end_scope(state);
 
-#if 0
-	fprintf(stdout, "\n");
-	loc(stdout, state, 0);
-	fprintf(stdout, "\n__________ function_definition _________\n");
-	print_triple(state, def);
-	fprintf(stdout, "__________ function_definition _________ done\n\n");
-#endif
+
+	/* Remember I have defined a function */
+	if (!state->functions) {
+		state->functions = def;
+	} else {
+		insert_triple(state, state->functions, def);
+	}
+	if (state->compiler->debug & DEBUG_INLINE) {
+		fprintf(stdout, "\n");
+		loc(stdout, state, 0);
+		fprintf(stdout, "\n__________ %s _________\n", __FUNCTION__);
+		display_func(stdout, def);
+		fprintf(stdout, "__________ %s _________ done\n\n", __FUNCTION__);
+	}
 
 	return def;
 }
@@ -9690,6 +9904,7 @@ static struct triple *do_decl(struct compile_state *state,
 		type->type &= ~STOR_MASK;
 		type->type |= STOR_AUTO;
 		break;
+	case STOR_LOCAL:
 	case STOR_EXTERN:
 		type->type &= ~STOR_MASK;
 		type->type |= STOR_STATIC;
@@ -9732,6 +9947,7 @@ static void decl(struct compile_state *state, struct triple *first)
 	type = declarator(state, base_type, &ident, 0);
 	if (global && ident && (peek(state) == TOK_LBRACE)) {
 		/* function */
+		type->type_ident = ident;
 		state->function = ident->name;
 		def = function_definition(state, type);
 		symbol(state, ident, &ident->sym_ident, def, type);
@@ -9786,9 +10002,457 @@ static void decls(struct compile_state *state)
 	}
 }
 
+/* 
+ * Function inlining
+ */
+
+static struct triple *call(struct compile_state *state,
+	struct triple *retvar, struct triple *ret_addr, 
+	struct triple *targ, struct triple *ret)
+{
+	struct triple *call;
+
+	if (!retvar || !is_lvalue(state, retvar)) {
+		internal_error(state, 0, "writing to a non lvalue?");
+	}
+	write_compatible(state, retvar->type, &void_ptr_type);
+
+	call = new_triple(state, OP_CALL, &void_type, 1, 0);
+	TARG(call, 0) = targ;
+	MISC(call, 0) = ret;
+	if (!targ || (targ->op != OP_LABEL)) {
+		internal_error(state, 0, "call not to a label");
+	}
+	if (!ret || (ret->op != OP_RET)) {
+		internal_error(state, 0, "call not matched with return");
+	}
+	return call;
+}
+
+static void mark_live_functions(struct compile_state *state, struct triple *first)
+{
+	struct triple *ptr;
+	ptr = first;
+	do {
+		if (ptr->op == OP_FCALL) {
+			struct triple *func;
+			func = MISC(ptr, 0);
+			if (func->u.cval++ == 0) {
+				mark_live_functions(state, RHS(func, 0));
+			}
+		}
+		ptr = ptr->next;
+	} while(ptr != first);
+}
+
+static void walk_functions(struct compile_state *state,
+	void (*cb)(struct compile_state *state, struct triple *func, void *arg),
+	void *arg)
+{
+	struct triple *func, *first;
+	func = first = state->functions;
+	do {
+		cb(state, func, arg);
+		func = func->next;
+	} while(func != first);
+}
+
+
+static int local_triple(struct compile_state *state, 
+	struct triple *func, struct triple *ins)
+{
+	int local = (ins->id & TRIPLE_FLAG_LOCAL);
+#if 0
+	if (!local) {
+		fprintf(stderr, "global: ");
+		display_triple(stderr, ins);
+	}
+#endif
+	return local;
+}
+
+struct triple *copy_func(struct compile_state *state, struct triple *ofunc, 
+	struct occurance *base_occurance)
+{
+	struct triple *nfunc;
+	struct triple *nfirst, *ofirst;
+	struct triple *new, *old;
+
+	if (state->compiler->debug & DEBUG_INLINE) {
+		fprintf(stdout, "\n");
+		loc(stdout, state, 0);
+		fprintf(stdout, "\n__________ %s _________\n", __FUNCTION__);
+		display_func(stdout, ofunc);
+		fprintf(stdout, "__________ %s _________ done\n\n", __FUNCTION__);
+	}
+
+	/* Make a new copy of the old function */
+	nfunc = triple(state, OP_LIST, ofunc->type, 0, 0);
+	nfirst = 0;
+	ofirst = old = RHS(ofunc, 0);
+	do {
+		struct triple *new;
+		struct occurance *occurance;
+		int old_lhs, old_rhs;
+		old_lhs = TRIPLE_LHS(old->sizes);
+		old_rhs = TRIPLE_RHS(old->sizes);
+		occurance = inline_occurance(state, base_occurance, old->occurance);
+		if (ofunc->u.cval && (old->op == OP_FCALL)) {
+			MISC(old, 0)->u.cval += 1;
+		}
+		new = alloc_triple(state, old->op, old->type, old_lhs, old_rhs,
+			occurance);
+		if (!triple_stores_block(state, new)) {
+			memcpy(&new->u, &old->u, sizeof(new->u));
+		}
+		if (!nfirst) {
+			RHS(nfunc, 0) = nfirst = new;
+		}
+		else {
+			insert_triple(state, nfirst, new);
+		}
+		new->id |= TRIPLE_FLAG_FLATTENED;
+		
+		/* During the copy remember new as user of old */
+		use_triple(old, new);
+
+		/* Populate the return type if present */
+		if (old == MISC(ofunc, 0)) {
+			MISC(nfunc, 0) = new;
+		}
+		/* Remember which instructions are local */
+		old->id |= TRIPLE_FLAG_LOCAL;
+		old = old->next;
+	} while(old != ofirst);
+
+	/* Make a second pass to fix up any unresolved references */
+	old = ofirst;
+	new = nfirst;
+	do {
+		struct triple **oexpr, **nexpr;
+		int count, i;
+		/* Lookup where the copy is, to join pointers */
+		count = TRIPLE_SIZE(old->sizes);
+		for(i = 0; i < count; i++) {
+			oexpr = &old->param[i];
+			nexpr = &new->param[i];
+			if (*oexpr && !*nexpr) {
+				if (!local_triple(state, ofunc, *oexpr)) {
+					*nexpr = *oexpr;
+				}
+				else if ((*oexpr)->use) {
+					*nexpr = (*oexpr)->use->member;
+				}
+				if (*nexpr == old) {
+					internal_error(state, 0, "new == old?");
+				}
+				use_triple(*nexpr, new);
+			}
+			if (!*nexpr && *oexpr) {
+				internal_error(state, 0, "Could not copy %d\n", i);
+			}
+		}
+		old = old->next;
+		new = new->next;
+	} while((old != ofirst) && (new != nfirst));
+	
+	/* Make a third pass to cleanup the extra useses */
+	old = ofirst;
+	new = nfirst;
+	do {
+		unuse_triple(old, new);
+		/* Forget which instructions are local */
+		old->id &= ~TRIPLE_FLAG_LOCAL;
+		old = old->next;
+		new = new->next;
+	} while ((old != ofirst) && (new != nfirst));
+	return nfunc;
+}
+
+static struct triple *flatten_inline_call(
+	struct compile_state *state, struct triple *first, struct triple *ptr)
+{
+	/* Inline the function call */
+	struct type *ptype;
+	struct triple *ofunc, *nfunc, *nfirst, *param, *result;
+	struct triple *end, *nend;
+	int pvals, i;
+
+	/* Find the triples */
+	ofunc = MISC(ptr, 0);
+	if (ofunc->op != OP_LIST) {
+		internal_error(state, 0, "improper function");
+	}
+	nfunc = copy_func(state, ofunc, ptr->occurance);
+	nfirst = RHS(nfunc, 0)->next->next;
+	/* Prepend the parameter reading into the new function list */
+	ptype = nfunc->type->right;
+	param = RHS(nfunc, 0)->next->next;
+	pvals = TRIPLE_RHS(ptr->sizes);
+	for(i = 0; i < pvals; i++) {
+		struct type *atype;
+		struct triple *arg;
+		atype = ptype;
+		if ((ptype->type & TYPE_MASK) == TYPE_PRODUCT) {
+			atype = ptype->left;
+		}
+		while((param->type->type & TYPE_MASK) != (atype->type & TYPE_MASK)) {
+			param = param->next;
+		}
+		arg = RHS(ptr, i);
+		flatten(state, nfirst, write_expr(state, param, arg));
+		ptype = ptype->right;
+		param = param->next;
+	}
+	result = 0;
+	if ((nfunc->type->left->type & TYPE_MASK) != TYPE_VOID) {
+		result = read_expr(state, MISC(nfunc,0));
+	}
+	if (state->compiler->debug & DEBUG_INLINE) {
+		fprintf(stdout, "\n");
+		loc(stdout, state, 0);
+		fprintf(stdout, "\n__________ %s _________\n", __FUNCTION__);
+		display_func(stdout, nfunc);
+		fprintf(stdout, "__________ %s _________ done\n\n", __FUNCTION__);
+	}
+
+	/* Get rid of the extra triples */
+	nfirst = RHS(nfunc, 0)->next->next;
+	release_triple(state, RHS(nfunc, 0)->prev->prev);
+	release_triple(state, RHS(nfunc, 0)->prev);
+	release_triple(state, RHS(nfunc, 0)->next);
+	free_triple(state, RHS(nfunc, 0));
+	RHS(nfunc, 0) = 0;
+	free_triple(state, nfunc);
+
+	/* Append the new function list onto the return list */
+	end = first->prev;
+	nend = nfirst->prev;
+	end->next    = nfirst;
+	nfirst->prev = end;
+	nend->next   = first;
+	first->prev  = nend;
+
+	return result;
+}
+
+static struct triple *flatten_function_call(
+	struct compile_state *state, struct triple *first, struct triple *ptr)
+{
+	/* Generate an ordinary function call */
+	struct triple *func, *func_first, *func_last, *retvar;
+	struct type *ptype;
+	struct triple *param;
+	struct triple *jmp;
+	struct triple *ret_addr, *ret_loc, *ret_set;
+	struct triple *result;
+	int pvals, i;
+
+	FINISHME();
+	/* Find the triples */
+	func = MISC(ptr, 0);
+	func_first = RHS(func, 0);
+	retvar = func_first->next;
+	func_last  = func_first->prev;
+
+	/* Generate some needed triples */
+	ret_loc = label(state);
+	ret_addr = triple(state, OP_ADDRCONST, &void_ptr_type, ret_loc, 0);
+
+	/* Pass the parameters to the new function */
+	ptype = func->type->right;
+	param = func_first->next->next;
+	pvals = TRIPLE_RHS(ptr->sizes);
+	for(i = 0; i < pvals; i++) {
+		struct type *atype;
+		struct triple *arg;
+		atype = ptype;
+		if ((ptype->type & TYPE_MASK) == TYPE_PRODUCT) {
+			atype = ptype->left;
+		}
+		while((param->type->type & TYPE_MASK) != (atype->type & TYPE_MASK)) {
+			param = param->next;
+		}
+		arg = RHS(ptr, i);
+		flatten(state, first, write_expr(state, param, arg));
+		ptype = ptype->right;
+		param = param->next;
+	}
+       
+	/* Thread the triples together */
+	ret_loc       = flatten(state, first, ret_loc);
+	ret_addr      = flatten(state, ret_loc, ret_addr);
+	ret_set       = flatten(state, ret_loc, write_expr(state, retvar, ret_addr));
+	jmp           = flatten(state, ret_loc, 
+		call(state, retvar, ret_addr, func_first, func_last));
+
+	/* Find the result */
+	result = 0;
+	if ((func->type->left->type & TYPE_MASK) != TYPE_VOID) {
+		result = read_expr(state, MISC(func, 0));
+	}
+
+	if (state->compiler->debug & DEBUG_INLINE) {
+		fprintf(stdout, "\n");
+		loc(stdout, state, 0);
+		fprintf(stdout, "\n__________ %s _________\n", __FUNCTION__);
+		display_func(stdout, func);
+		fprintf(stdout, "__________ %s _________ done\n\n", __FUNCTION__);
+	}
+
+	return result;
+}
+
+static void inline_functions(struct compile_state *state, struct triple *first)
+{
+	struct triple *ptr, *next;
+	ptr = next = first;
+	do {
+		int do_inline;
+		struct triple *func, *prev, *new;
+		ptr = next;
+		prev = ptr->prev;
+		next = ptr->next;
+		if (ptr->op != OP_FCALL) {
+			continue;
+		}
+		func = MISC(ptr, 0);
+		/* See if the function should be inlined */
+		switch(func->type->type & STOR_MASK) {
+		case STOR_STATIC | STOR_INLINE:
+		case STOR_LOCAL  | STOR_INLINE:
+		case STOR_EXTERN | STOR_INLINE:
+			do_inline = 1;
+			break;
+		default:
+			do_inline = (func->u.cval == 1);
+			break;
+		}
+		if (state->compiler->flags & COMPILER_ALWAYS_INLINE) {
+			do_inline = 1;
+		}
+		if (!(state->compiler->flags & COMPILER_INLINE)) {
+			do_inline = 0;
+		}
+		if (!do_inline) {
+			continue;
+		}
+		if (state->compiler->debug & DEBUG_INLINE) {
+			fprintf(stderr, "inlining %s\n",
+				func->type->type_ident->name);
+		}
+
+		/* Update the function use counts */
+		func->u.cval -= 1;
+		/* Unhook the call and really inline it */
+		next->prev = prev;
+		prev->next = next;
+		ptr->next = ptr->prev = ptr;
+		
+		new = flatten(state, next, 
+			flatten_inline_call(state, next, ptr));
+		if (new) {
+			propogate_use(state, ptr, new);
+		}
+		release_triple(state, ptr);
+		next = prev->next;
+	} while (next != first);
+	ptr = next = first;
+	do {
+		struct triple *func, *prev, *new;
+		ptr = next;
+		prev = ptr->prev;
+		next = ptr->next;
+		if (ptr->op != OP_FCALL) {
+			continue;
+		}
+		func = MISC(ptr, 0);
+		inline_functions(state, RHS(func, 0));
+		/* Unhook the call and really flatten it */
+		next->prev = prev;
+		prev->next = next;
+		ptr->next = ptr->prev = ptr;
+		new = flatten(state, next, 
+			flatten_function_call(state, next, ptr));
+		if (new) {
+			propogate_use(state, ptr, new);
+		}
+		release_triple(state, ptr);
+		next = prev->next;
+	} while(next != first);
+}
+	
+static void insert_function(struct compile_state *state,
+	struct triple *func, void *arg)
+{
+	struct triple *first, *end, *ffirst, *fend;
+
+	if (state->compiler->debug & DEBUG_INLINE) {
+		fprintf(stderr, "%s func count: %d\n", 
+			func->type->type_ident->name, func->u.cval);
+	}
+	if (func->u.cval == 0) {
+		return;
+	}
+	if (state->compiler->flags & COMPILER_ALWAYS_INLINE) {
+		internal_error(state, func, "always inline failed\n");
+	}
+
+	/* Find the end points of the lists */
+	first  = arg;
+	end    = first->prev;
+	ffirst = RHS(func, 0);
+	fend   = ffirst->prev;
+
+	/* splice the lists together */
+	end->next    = ffirst;
+	ffirst->prev = end;
+	fend->next   = first;
+	first->prev  = fend;
+}
+
+static void join_functions(struct compile_state *state)
+{
+	struct triple *jmp, *start, *end, *call;
+	struct file_state file;
+
+	/* Dummy file state to get debug handing right */
+	memset(&file, 0, sizeof(file));
+	file.basename = "";
+	file.line = 0;
+	file.report_line = 0;
+	file.report_name = file.basename;
+	file.prev = state->file;
+	state->file = &file;
+	state->function = "";
+	
+	/* Lay down the basic program structure */
+	end = label(state);
+	start = label(state);
+	start = flatten(state, state->first, start);
+	end = flatten(state, state->first, end);
+	call = new_triple(state, OP_FCALL, &void_type, -1, 0);
+	MISC(call, 0) = state->main_function;
+	flatten(state, state->first, call);
+	
+	/* See which functions are called, and how often */
+	mark_live_functions(state, state->first);
+	inline_functions(state, state->first);
+	walk_functions(state, insert_function, end);
+
+	if (start->next != end) {
+		jmp = flatten(state, start, branch(state, end, 0));
+	}
+
+	/* Done now cleanup */
+	state->file = file.prev;
+	state->function = 0;
+}
+
 /*
  * Data structurs for optimation.
  */
+
 
 static int do_use_block(
 	struct block *used, struct block_set **head, struct block *user, 
@@ -9854,6 +10518,20 @@ static void unuse_block(struct block *used, struct block *unuser)
 	int count;
 	count = do_unuse_block(used, &used->use, unuser); 
 	used->users -= count;
+}
+
+static void add_block_edge(struct block *block, struct block *edge, int front)
+{
+	int count;
+	count = do_use_block(block, &block->edges, edge, front);
+	block->edge_count += count;
+}
+
+static void remove_block_edge(struct block *block, struct block *edge)
+{
+	int count;
+	count = do_unuse_block(block, &block->edges, edge);
+	block->edge_count -= count;
 }
 
 static void idom_block(struct block *idom, struct block *user)
@@ -9928,7 +10606,7 @@ static int do_print_triple(struct compile_state *state, struct triple *ins)
 	}
 	display_triple(stdout, ins);
 
-	if ((ins->op == OP_BRANCH) && ins->use) {
+	if (triple_is_branch(state, ins) && ins->use && (ins->op != OP_RET)) {
 		internal_error(state, ins, "branch used?");
 	}
 	if (triple_is_branch(state, ins)) {
@@ -9939,7 +10617,9 @@ static int do_print_triple(struct compile_state *state, struct triple *ins)
 
 static void print_triples(struct compile_state *state)
 {
-	walk_triples(state, do_print_triple);
+	if (state->compiler->debug & DEBUG_TRIPLES) {
+		walk_triples(state, do_print_triple);
+	}
 }
 
 struct cf_block {
@@ -9947,12 +10627,14 @@ struct cf_block {
 };
 static void find_cf_blocks(struct cf_block *cf, struct block *block)
 {
+	struct block_set *edge;
 	if (!block || (cf[block->vertex].block == block)) {
 		return;
 	}
 	cf[block->vertex].block = block;
-	find_cf_blocks(cf, block->left);
-	find_cf_blocks(cf, block->right);
+	for(edge = block->edges; edge; edge = edge->next) {
+		find_cf_blocks(cf, edge->member);
+	}
 }
 
 static void print_control_flow(struct compile_state *state)
@@ -9965,15 +10647,13 @@ static void print_control_flow(struct compile_state *state)
 
 	for(i = 1; i <= state->last_vertex; i++) {
 		struct block *block;
+		struct block_set *edge;
 		block = cf[i].block;
 		if (!block)
 			continue;
 		printf("(%p) %d:", block, block->vertex);
-		if (block->left) {
-			printf(" %d", block->left->vertex);
-		}
-		if (block->right && (block->right != block->left)) {
-			printf(" %d", block->right->vertex);
+		for(edge = block->edges; edge; edge = edge->next) {
+			printf(" %d", edge->member->vertex);
 		}
 		printf("\n");
 	}
@@ -9982,8 +10662,7 @@ static void print_control_flow(struct compile_state *state)
 }
 
 
-static struct block *basic_block(struct compile_state *state,
-	struct triple *first)
+static struct block *basic_block(struct compile_state *state, struct triple *first)
 {
 	struct block *block;
 	struct triple *ptr;
@@ -10018,32 +10697,52 @@ static struct block *basic_block(struct compile_state *state,
 		/* The block has no outflowing edges */
 	}
 	else if (ptr->op == OP_LABEL) {
-		block->left = basic_block(state, ptr);
-		block->right = 0;
-		use_block(block->left, block);
+		struct block *next;
+		next = basic_block(state, ptr);
+		add_block_edge(block, next, 0);
+		use_block(next, block);
 	}
 	else if (triple_is_branch(state, ptr)) {
-		block->left = 0;
-		/* Trace the branch target */
-		block->right = basic_block(state, TARG(ptr, 0));
-		use_block(block->right, block);
-		/* If there is a test trace the branch as well */
-		if (TRIPLE_RHS(ptr->sizes)) {
-			block->left = basic_block(state, ptr->next);
-			use_block(block->left, block);
+		struct triple **expr, *first;
+		struct block *child;
+		/* Find the branch targets.
+		 * I special case the first branch as that magically
+		 * avoids some difficult cases for the register allocator.
+		 */
+		expr = triple_targ(state, ptr, 0);
+		if (!expr) {
+			internal_error(state, ptr, "branch without targets");
+		}
+		first = *expr;
+		expr = triple_targ(state, ptr, expr);
+		for(; expr; expr = triple_targ(state, ptr, expr)) {
+			if (!*expr) continue;
+			child = basic_block(state, *expr);
+			use_block(child, block);
+			add_block_edge(block, child, 0);
+		}
+		if (first) {
+			child = basic_block(state, first);
+			use_block(child, block);
+			add_block_edge(block, child, 1);
 		}
 	}
 	else {
 		internal_error(state, 0, "Bad basic block split");
 	}
 #if 0
-	fprintf(stderr, "basic_block: %10p [%2d] ( %10p - %10p ) %10p [%2d] %10p [%2d] \n",
+{
+	struct block_set *edge;
+	fprintf(stderr, "basic_block: %10p [%2d] ( %10p - %10p )",
 		block, block->vertex, 
-		block->first, block->last,
-		block->left ? block->left->first : 0,
-		block->left ? block->left->vertex : -1,
-		block->left ? block->left->first : 0,
-		block->left ? block->left->vertex : -1);
+		block->first, block->last);
+	for(edge = block->edges; edge; edge = edge->next) {
+		fprintf(stderr, " %10p [%2d]",
+			edge->member ? edge->member->first : 0,
+			edge->member ? edge->member->vertex : -1);
+	}
+	fprintf(stderr, "\n");
+}
 #endif
 	return block;
 }
@@ -10059,16 +10758,13 @@ static void walk_blocks(struct compile_state *state,
 	first = state->first;
 	ptr = first;
 	do {
-		struct block *block;
 		if (triple_stores_block(state, ptr)) {
+			struct block *block;
 			block = ptr->u.block;
 			if (block && (block != last_block)) {
 				cb(state, block, arg);
 			}
 			last_block = block;
-		}
-		if (block && (block->last == ptr)) {
-			block = 0;
 		}
 		ptr = ptr->next;
 	} while(ptr != first);
@@ -10077,17 +10773,21 @@ static void walk_blocks(struct compile_state *state,
 static void print_block(
 	struct compile_state *state, struct block *block, void *arg)
 {
-	struct block_set *user;
+	struct block_set *user, *edge;
 	struct triple *ptr;
 	FILE *fp = arg;
 
-	fprintf(fp, "\nblock: %p (%d)  %p<-%p %p<-%p\n", 
+	fprintf(fp, "\nblock: %p (%d) ",
 		block, 
-		block->vertex,
-		block->left, 
-		block->left && block->left->use?block->left->use->member : 0,
-		block->right, 
-		block->right && block->right->use?block->right->use->member : 0);
+		block->vertex);
+
+	for(edge = block->edges; edge; edge = edge->next) {
+		fprintf(fp, " %p<-%p",
+			edge->member,
+			(edge->member && edge->member->use)?
+			edge->member->use->member : 0);
+	}
+	fprintf(fp, "\n");
 	if (block->first->op == OP_LABEL) {
 		fprintf(fp, "%p:\n", block->first);
 	}
@@ -10106,10 +10806,18 @@ static void print_block(
 }
 
 
-static void print_blocks(struct compile_state *state, FILE *fp)
+static void romcc_print_blocks(struct compile_state *state, FILE *fp)
 {
 	fprintf(fp, "--------------- blocks ---------------\n");
 	walk_blocks(state, print_block, fp);
+}
+static void print_blocks(struct compile_state *state, const char *func, FILE *fp)
+{
+	if (state->compiler->debug & DEBUG_BASIC_BLOCKS) {
+		fprintf(fp, "After %s\n", func);
+		romcc_print_blocks(state, fp);
+		print_control_flow(state);
+	}
 }
 
 static void prune_nonblock_triples(struct compile_state *state)
@@ -10164,26 +10872,33 @@ static void setup_basic_blocks(struct compile_state *state)
 	{
 		struct block *block, *prev_block;
 		struct triple *final;
+
 		prev_block = state->last_block;
+		
 		final = label(state);
 		flatten(state, state->first, final);
+		final->id |= TRIPLE_FLAG_VOLATILE;
 		use_triple(final, final);
 		block = basic_block(state, final);
+
 		state->last_block = block;
-		prev_block->left = block;
-		use_block(prev_block->left, prev_block);
+
+		add_block_edge(prev_block, block, 0);
+		use_block(block, prev_block);
 	}
 
+#if 0
 	/* If we are debugging print what I have just done */
-	if (state->debug & DEBUG_BASIC_BLOCKS) {
+	if (state->compiler->debug & DEBUG_BASIC_BLOCKS) {
 		print_blocks(state, stdout);
 		print_control_flow(state);
 	}
+#endif
 }
 
 static void free_basic_block(struct compile_state *state, struct block *block)
 {
-	struct block_set *entry, *next;
+	struct block_set *edge, *entry;
 	struct block *child;
 	if (!block) {
 		return;
@@ -10192,11 +10907,10 @@ static void free_basic_block(struct compile_state *state, struct block *block)
 		return;
 	}
 	block->vertex = -1;
-	if (block->left) {
-		unuse_block(block->left, block);
-	}
-	if (block->right) {
-		unuse_block(block->right, block);
+	for(edge = block->edges; edge; edge = edge->next) {
+		if (edge->member) {
+			unuse_block(edge->member, block);
+		}
 	}
 	if (block->idom) {
 		unidom_block(block->idom, block);
@@ -10206,46 +10920,48 @@ static void free_basic_block(struct compile_state *state, struct block *block)
 		unipdom_block(block->ipdom, block);
 	}
 	block->ipdom = 0;
-	for(entry = block->use; entry; entry = next) {
-		next = entry->next;
+	while((entry = block->use)) {
 		child = entry->member;
 		unuse_block(block, child);
-		if (child->left == block) {
-			child->left = 0;
-		}
-		if (child->right == block) {
-			child->right = 0;
+		if (child && (child->vertex != -1)) {
+			for(edge = child->edges; edge; edge = edge->next) {
+				edge->member = 0;
+			}
 		}
 	}
-	for(entry = block->idominates; entry; entry = next) {
-		next = entry->next;
+	while((entry = block->idominates)) {
 		child = entry->member;
 		unidom_block(block, child);
-		child->idom = 0;
+		if (child && (child->vertex != -1)) {
+			child->idom = 0;
+		}
 	}
-	for(entry = block->domfrontier; entry; entry = next) {
-		next = entry->next;
+	while((entry = block->domfrontier)) {
 		child = entry->member;
 		undomf_block(block, child);
 	}
-	for(entry = block->ipdominates; entry; entry = next) {
-		next = entry->next;
+	while((entry = block->ipdominates)) {
 		child = entry->member;
 		unipdom_block(block, child);
-		child->ipdom = 0;
+		if (child && (child->vertex != -1)) {
+			child->ipdom = 0;
+		}
 	}
-	for(entry = block->ipdomfrontier; entry; entry = next) {
-		next = entry->next;
+	while((entry = block->ipdomfrontier)) {
 		child = entry->member;
 		unipdomf_block(block, child);
 	}
 	if (block->users != 0) {
 		internal_error(state, 0, "block still has users");
 	}
-	free_basic_block(state, block->left);
-	block->left = 0;
-	free_basic_block(state, block->right);
-	block->right = 0;
+	while((edge = block->edges)) {
+		child = edge->member;
+		remove_block_edge(block, child);
+		
+		if (child && (child->vertex != -1)) {
+			free_basic_block(state, child);
+		}
+	}
 	memset(block, -1, sizeof(*block));
 	xfree(block);
 }
@@ -10308,6 +11024,7 @@ static void sdom_block(struct sdom_block *sdom, struct sdom_block *block)
 static int initialize_sdblock(struct sdom_block *sd,
 	struct block *parent, struct block *block, int vertex)
 {
+	struct block_set *edge;
 	if (!block || (sd[block->vertex].block == block)) {
 		return vertex;
 	}
@@ -10320,8 +11037,9 @@ static int initialize_sdblock(struct sdom_block *sd,
 	sd[vertex].parent   = parent? &sd[parent->vertex] : 0;
 	sd[vertex].ancestor = 0;
 	sd[vertex].vertex   = vertex;
-	vertex = initialize_sdblock(sd, block, block->left, vertex);
-	vertex = initialize_sdblock(sd, block, block->right, vertex);
+	for(edge = block->edges; edge; edge = edge->next) {
+		vertex = initialize_sdblock(sd, block, edge->member, vertex);
+	}
 	return vertex;
 }
 
@@ -10355,25 +11073,21 @@ static int setup_spdblocks(struct compile_state *state, struct sdom_block *sd)
 	/* Setup as many sdpblocks as possible without using fake edges */
 	vertex = initialize_spdblock(state, sd, 0, state->last_block, 0);
 
-	/* Walk through the graph and find unconnected blocks.  If 
-	 * we can, add a fake edge from the unconnected blocks to the
-	 * end of the graph.
+	/* Walk through the graph and find unconnected blocks.  Add a
+	 * fake edge from the unconnected blocks to the end of the
+	 * graph. 
 	 */
 	block = state->first_block->last->next->u.block;
 	for(; block && block != state->first_block; block = block->last->next->u.block) {
 		if (sd[block->vertex].block == block) {
 			continue;
 		}
-		if (block->left != 0) {
-			continue;
-		}
-
 #if DEBUG_SDP_BLOCKS
 		fprintf(stderr, "Adding %d\n", vertex +1);
 #endif
+		add_block_edge(block, state->last_block, 0);
+		use_block(state->last_block, block);
 
-		block->left = state->last_block;
-		use_block(block->left, block);
 		vertex = initialize_spdblock(state, sd, state->last_block, block, vertex);
 	}
 	return vertex;
@@ -10473,19 +11187,13 @@ static void compute_spdom(struct compile_state *state, struct sdom_block *sd)
 	 */
 	for(i = state->last_vertex; i >= 2; i--) {
 		struct sdom_block *u, *v, *parent, *next;
+		struct block_set *edge;
 		struct block *block;
 		block = sd[i].block;
 		parent = sd[i].parent;
 		/* Step 2 */
-		if (block->left) {
-			v = &sd[block->left->vertex];
-			u = !(v->ancestor)? v : (compress_ancestors(v), v->label);
-			if (u->sdom->vertex < sd[i].sdom->vertex) {
-				sd[i].sdom = u->sdom;
-			}
-		}
-		if (block->right && (block->right != block->left)) {
-			v = &sd[block->right->vertex];
+		for(edge = block->edges; edge; edge = edge->next) {
+			v = &sd[edge->member->vertex];
 			u = !(v->ancestor)? v : (compress_ancestors(v), v->label);
 			if (u->sdom->vertex < sd[i].sdom->vertex) {
 				sd[i].sdom = u->sdom;
@@ -10637,7 +11345,7 @@ static void find_post_dominators(struct compile_state *state)
 static void find_block_domf(struct compile_state *state, struct block *block)
 {
 	struct block *child;
-	struct block_set *user;
+	struct block_set *user, *edge;
 	if (block->domfrontier != 0) {
 		internal_error(state, block->first, "domfrontier present?");
 	}
@@ -10648,11 +11356,10 @@ static void find_block_domf(struct compile_state *state, struct block *block)
 		}
 		find_block_domf(state, child);
 	}
-	if (block->left && block->left->idom != block) {
-		domf_block(block, block->left);
-	}
-	if (block->right && block->right->idom != block) {
-		domf_block(block, block->right);
+	for(edge = block->edges; edge; edge = edge->next) {
+		if (edge->member->idom != block) {
+			domf_block(block, edge->member);
+		}
 	}
 	for(user = block->idominates; user; user = user->next) {
 		struct block_set *frontier;
@@ -10711,17 +11418,58 @@ static void print_dominated(
 	fprintf(fp,"\n");
 }
 
+static void print_dominated2(
+	struct compile_state *state, FILE *fp, int depth, struct block *block)
+{
+	struct block_set *user;
+	struct triple *ins;
+	struct occurance *ptr, *ptr2;
+	const char *filename1, *filename2;
+	int equal_filenames;
+	int i;
+	for(i = 0; i < depth; i++) {
+		fprintf(fp, "   ");
+	}
+	fprintf(fp, "%3d: %p (%p - %p) @", 
+		block->vertex, block, block->first, block->last);
+	ins = block->first;
+	while(ins != block->last && (ins->occurance->line == 0)) {
+		ins = ins->next;
+	}
+	ptr = ins->occurance;
+	ptr2 = block->last->occurance;
+	filename1 = ptr->filename? ptr->filename : "";
+	filename2 = ptr2->filename? ptr2->filename : "";
+	equal_filenames = (strcmp(filename1, filename2) == 0);
+	if ((ptr == ptr2) || (equal_filenames && ptr->line == ptr2->line)) {
+		fprintf(fp, " %s:%d", ptr->filename, ptr->line);
+	} else if (equal_filenames) {
+		fprintf(fp, " %s:(%d - %d)",
+			ptr->filename, ptr->line, ptr2->line);
+	} else {
+		fprintf(fp, " (%s:%d - %s:%d)",
+			ptr->filename, ptr->line,
+			ptr2->filename, ptr2->line);
+	}
+	fprintf(fp, "\n");
+	for(user = block->idominates; user; user = user->next) {
+		print_dominated2(state, fp, depth + 1, user->member);
+	}
+}
+
 static void print_dominators(struct compile_state *state, FILE *fp)
 {
 	fprintf(fp, "\ndominates\n");
 	walk_blocks(state, print_dominated, fp);
+	fprintf(fp, "dominates\n");
+	print_dominated2(state, fp, 0, state->first_block);
 }
 
 
 static int print_frontiers(
 	struct compile_state *state, struct block *block, int vertex)
 {
-	struct block_set *user;
+	struct block_set *user, *edge;
 
 	if (!block || (block->vertex != vertex + 1)) {
 		return vertex;
@@ -10733,9 +11481,10 @@ static int print_frontiers(
 		printf(" %d", user->member->vertex);
 	}
 	printf("\n");
-
-	vertex = print_frontiers(state, block->left, vertex);
-	vertex = print_frontiers(state, block->right, vertex);
+	
+	for(edge = block->edges; edge; edge = edge->next) {
+		vertex = print_frontiers(state, edge->member, vertex);
+	}
 	return vertex;
 }
 static void print_dominance_frontiers(struct compile_state *state)
@@ -10752,7 +11501,7 @@ static void analyze_idominators(struct compile_state *state)
 	/* Find the dominance frontiers */
 	find_block_domf(state, state->first_block);
 	/* If debuging print the print what I have just found */
-	if (state->debug & DEBUG_FDOMINATORS) {
+	if (state->compiler->debug & DEBUG_FDOMINATORS) {
 		print_dominators(state, stdout);
 		print_dominance_frontiers(state);
 		print_control_flow(state);
@@ -10817,7 +11566,7 @@ static void analyze_ipdominators(struct compile_state *state)
 	/* Find the control dependencies (post dominance frontiers) */
 	find_block_ipdomf(state, state->last_block);
 	/* If debuging print the print what I have just found */
-	if (state->debug & DEBUG_RDOMINATORS) {
+	if (state->compiler->debug & DEBUG_RDOMINATORS) {
 		print_ipdominators(state, stdout);
 		print_ipdominance_frontiers(state);
 		print_control_flow(state);
@@ -11099,7 +11848,7 @@ static void fixup_block_phi_variables(
 static void rename_block_variables(
 	struct compile_state *state, struct stack *stacks, struct block *block)
 {
-	struct block_set *user;
+	struct block_set *user, *edge;
 	struct triple *ptr, *next, *last;
 	int done;
 	if (!block)
@@ -11167,8 +11916,9 @@ static void rename_block_variables(
 	block->last = last;
 
 	/* Fixup PHI functions in the cf successors */
-	fixup_block_phi_variables(state, stacks, block, block->left);
-	fixup_block_phi_variables(state, stacks, block, block->right);
+	for(edge = block->edges; edge; edge = edge->next) {
+		fixup_block_phi_variables(state, stacks, block, edge->member);
+	}
 	/* rename variables in the dominated nodes */
 	for(user = block->idominates; user; user = user->next) {
 		rename_block_variables(state, stacks, user->member);
@@ -11353,6 +12103,8 @@ static void transform_to_ssa_form(struct compile_state *state)
 
 	prune_block_variables(state, state->first_block);
 	prune_unused_phis(state);
+
+	print_blocks(state, __func__, stdout);
 }
 
 
@@ -11363,13 +12115,10 @@ static void clear_vertex(
 	 * of the current blocks neighbors in case there are malformed
 	 * blocks with now instructions at this point.
 	 */
-	struct block_set *user;
+	struct block_set *user, *edge;
 	block->vertex = 0;
-	if (block->left) {
-		block->left->vertex = 0;
-	}
-	if (block->right) {
-		block->right->vertex = 0;
+	for(edge = block->edges; edge; edge = edge->next) {
+		edge->member->vertex = 0;
 	}
 	for(user = block->use; user; user = user->next) {
 		user->member->vertex = 0;
@@ -11421,11 +12170,6 @@ static void transform_from_ssa_form(struct compile_state *state)
 	walk_blocks(state, clear_vertex, 0);
 	next_vertex = 1;
 	mark_live_block(state, state->first_block, &next_vertex);
-
-#if 0
-	fprintf(stderr, "@ %s:%d\n", __FILE__, __LINE__);
-	print_blocks(state, stderr);
-#endif
 
 	/* Walk all of the operations to find the phi functions */
 	first = state->first;
@@ -11575,11 +12319,10 @@ static void transform_from_ssa_form(struct compile_state *state)
 	}
 }
 
-#if 0
-#define HI() do { fprintf(stderr, "@ %s:%d\n", __FILE__, __LINE__); print_blocks(state, stderr); } while (0)
-#else
-#define HI() 
-#endif
+#define HI() if (state->compiler->debug & DEBUG_REBUILD_SSA_FORM) { \
+	fprintf(stderr, "@ %s:%d\n", __FILE__, __LINE__); romcc_print_blocks(state, stderr); \
+	} 
+
 static void rebuild_ssa_form(struct compile_state *state)
 {
 HI();
@@ -11970,6 +12713,7 @@ static void insert_copies_to_phi(struct compile_state *state)
 			transform_to_arch_instruction(state, move);
 		}
 	}
+	print_blocks(state, __func__, stdout);
 }
 
 struct triple_reg_set {
@@ -12207,16 +12951,12 @@ static struct reg_block *compute_variable_lifetimes(
 		int i;
 		change = 0;
 		for(i = 1; i <= state->last_vertex; i++) {
+			struct block_set *edge;
 			struct reg_block *rb;
 			rb = &blocks[i];
-			/* Add the left successor's input set to in */
-			if (rb->block->left) {
-				change |= reg_in(state, blocks, rb, rb->block->left);
-			}
-			/* Add the right successor's input set to in */
-			if ((rb->block->right) && 
-				(rb->block->right != rb->block->left)) {
-				change |= reg_in(state, blocks, rb, rb->block->right);
+			/* Add the all successor's input set to in */
+			for(edge = rb->block->edges; edge; edge = edge->next) {
+				change |= reg_in(state, blocks, rb, edge->member);
 			}
 			/* Add use to in... */
 			change |= use_in(state, rb);
@@ -12385,6 +13125,10 @@ static void eliminate_inefectual_code(struct compile_state *state)
 	int triples, i;
 	struct triple *first, *final, *ins;
 
+	if (!(state->compiler->flags & COMPILER_ELIMINATE_INEFECTUAL_CODE)) {
+		return;
+	}
+
 	/* Setup the work list */
 	work_list = 0;
 	work_list_tail = &work_list;
@@ -12452,12 +13196,13 @@ static void eliminate_inefectual_code(struct compile_state *state)
 		} while(expr);
 		/* Wake up the reverse control dependencies of this triple */
 		for(user = dt->block->ipdomfrontier; user; user = user->next) {
-			awaken(state, dtriple, &user->member->last, &work_list_tail);
-			if ((user->member->left != state->last_block) &&
-				!triple_is_cond_branch(state, user->member->last)) {
-				internal_error(state, dt->triple, 
-					"conditional branch missing");
+			struct triple *last;
+			last = user->member->last;
+			while((last->op == OP_NOOP) && (last != user->member->first)) {
+				internal_warning(state, last, "awakening noop?");
+				last = last->prev;
 			}
+			awaken(state, dtriple, &last, &work_list_tail);
 		}
 	}
 	for(dt = &dtriple[1]; dt <= &dtriple[triples]; dt++) {
@@ -12471,6 +13216,10 @@ static void eliminate_inefectual_code(struct compile_state *state)
 		}
 	}
 	xfree(dtriple);
+
+	rebuild_ssa_form(state);
+
+	print_blocks(state, __func__, stdout);
 }
 
 
@@ -12626,6 +13375,8 @@ static void insert_mandatory_copies(struct compile_state *state)
 	next:
 		ins = ins->next;
 	} while(ins != first);
+
+	print_blocks(state, __func__, stdout);
 }
 
 
@@ -12677,7 +13428,6 @@ struct reg_state {
 	unsigned defs;
 	unsigned ranges;
 	int passes, max_passes;
-#define MAX_ALLOCATION_PASSES 100
 };
 
 
@@ -12693,6 +13443,7 @@ static void print_interference_block(
 {
 	struct print_interference_block_info *info = arg;
 	struct reg_state *rstate = info->rstate;
+	struct block_set *edge;
 	FILE *fp = info->fp;
 	struct reg_block *rb;
 	struct triple *ptr;
@@ -12700,13 +13451,14 @@ static void print_interference_block(
 	int done;
 	rb = &rstate->blocks[block->vertex];
 
-	fprintf(fp, "\nblock: %p (%d), %p<-%p %p<-%p\n", 
-		block, 
-		block->vertex,
-		block->left, 
-		block->left && block->left->use?block->left->use->member : 0,
-		block->right, 
-		block->right && block->right->use?block->right->use->member : 0);
+	fprintf(fp, "\nblock: %p (%d),",
+		block, 	block->vertex);
+	for(edge = block->edges; edge; edge = edge->next) {
+		fprintf(fp, " %p<-%p",
+			edge->member, 
+			edge->member && edge->member->use?edge->member->use->member : 0);
+	}
+	fprintf(fp, "\n");
 	if (rb->in) {
 		struct triple_reg_set *in_set;
 		fprintf(fp, "        in:");
@@ -13125,21 +13877,21 @@ static struct live_range *coalesce_ranges(
 		internal_error(state, lr1->defs->def,
 			"cannot coalesce live ranges with dissimilar register classes");
 	}
-#if DEBUG_COALESCING
-	fprintf(stderr, "coalescing:");
-	lrd = lr1->defs;
-	do {
-		fprintf(stderr, " %p", lrd->def);
-		lrd = lrd->next;
-	} while(lrd != lr1->defs);
-	fprintf(stderr, " |");
-	lrd = lr2->defs;
-	do {
-		fprintf(stderr, " %p", lrd->def);
-		lrd = lrd->next;
-	} while(lrd != lr2->defs);
-	fprintf(stderr, "\n");
-#endif
+	if (state->compiler->debug & DEBUG_COALESCING) {
+		fprintf(stderr, "coalescing:");
+		lrd = lr1->defs;
+		do {
+			fprintf(stderr, " %p", lrd->def);
+			lrd = lrd->next;
+		} while(lrd != lr1->defs);
+		fprintf(stderr, " |");
+		lrd = lr2->defs;
+		do {
+			fprintf(stderr, " %p", lrd->def);
+			lrd = lrd->next;
+		} while(lrd != lr2->defs);
+		fprintf(stderr, "\n");
+	}
 	/* If there is a clear dominate live range put it in lr1,
 	 * For purposes of this test phi functions are
 	 * considered dominated by the definitions that feed into
@@ -13327,10 +14079,11 @@ static void initialize_live_ranges(
 		}
 		zrhs = TRIPLE_RHS(ins->sizes);
 
-#if DEBUG_COALESCING > 1
-		fprintf(stderr, "mandatory coalesce: %p %d %d\n",
-			ins, zlhs, zrhs);
-#endif		
+		if (state->compiler->debug & DEBUG_COALESCING2) {
+			fprintf(stderr, "mandatory coalesce: %p %d %d\n",
+				ins, zlhs, zrhs);
+		}
+
 		for(i = 0; i < zlhs; i++) {
 			struct reg_info linfo;
 			struct live_range_def *lhs;
@@ -13343,11 +14096,12 @@ static void initialize_live_ranges(
 			} else {
 				lhs = &rstate->lrd[LHS(ins, i)->id];
 			}
-#if DEBUG_COALESCING > 1
-			fprintf(stderr, "coalesce lhs(%d): %p %d\n",
-				i, lhs, linfo.reg);
-		
-#endif		
+
+			if (state->compiler->debug & DEBUG_COALESCING2) {
+				fprintf(stderr, "coalesce lhs(%d): %p %d\n",
+					i, lhs, linfo.reg);
+			}
+
 			for(j = 0; j < zrhs; j++) {
 				struct reg_info rinfo;
 				struct live_range_def *rhs;
@@ -13356,11 +14110,12 @@ static void initialize_live_ranges(
 					continue;
 				}
 				rhs = &rstate->lrd[RHS(ins, j)->id];
-#if DEBUG_COALESCING > 1
-				fprintf(stderr, "coalesce rhs(%d): %p %d\n",
-					j, rhs, rinfo.reg);
-		
-#endif		
+
+				if (state->compiler->debug & DEBUG_COALESCING2) {
+					fprintf(stderr, "coalesce rhs(%d): %p %d\n",
+						j, rhs, rinfo.reg);
+				}
+
 				if (rinfo.reg == linfo.reg) {
 					coalesce_ranges(state, rstate, 
 						lhs->lr, rhs->lr);
@@ -13887,37 +14642,49 @@ static void cleanup_rstate(struct compile_state *state, struct reg_state *rstate
 struct triple *find_constrained_def(
 	struct compile_state *state, struct live_range *range, struct triple *constrained)
 {
-	struct live_range_def *lrd;
-	lrd = range->defs;
+	struct live_range_def *lrd, *lrd_next;
+	lrd_next = range->defs;
 	do {
 		struct reg_info info;
 		unsigned regcm;
-		int is_constrained;
+
+		lrd = lrd_next;
+		lrd_next = lrd->next;
+
 		regcm = arch_type_to_regcm(state, lrd->def->type);
 		info = find_lhs_color(state, lrd->def, 0);
 		regcm      = arch_regcm_reg_normalize(state, regcm);
 		info.regcm = arch_regcm_reg_normalize(state, info.regcm);
-		/* If the 2 register class masks are not equal the
-		 * the current register class is constrained.
+		/* If the 2 register class masks are equal then
+		 * the current register class is not constrained.
 		 */
-		is_constrained = regcm != info.regcm;
+		if (regcm == info.regcm) {
+			continue;
+		}
 		
+		/* If there is just one use.
+		 * That use cannot accept a larger register class.
+		 * There are no intervening definitions except
+		 * definitions that feed into that use.
+		 * Then a triple is not constrained.
+		 * FIXME handle this case!
+		 */
+#warning "FIXME ignore cases that cannot be fixed (a definition followed by a use)"
+		
+
 		/* Of the constrained live ranges deal with the
 		 * least dominated one first.
 		 */
-		if (is_constrained) {
-#if DEBUG_RANGE_CONFLICTS
+		if (state->compiler->debug & DEBUG_RANGE_CONFLICTS) {
 			fprintf(stderr, "canidate: %p %-8s regcm: %x %x\n",
 				lrd->def, tops(lrd->def->op), regcm, info.regcm);
-#endif
-			if (!constrained || 
-				tdominates(state, lrd->def, constrained))
-			{
-				constrained = lrd->def;
-			}
 		}
-		lrd = lrd->next;
-	} while(lrd != range->defs);
+		if (!constrained || 
+			tdominates(state, lrd->def, constrained))
+		{
+			constrained = lrd->def;
+		}
+	} while(lrd_next != range->defs);
 	return constrained;
 }
 
@@ -13938,13 +14705,15 @@ static int split_constrained_ranges(
 	for(edge = range->edges; edge; edge = edge->next) {
 		constrained = find_constrained_def(state, edge->node, constrained);
 	}
+#warning "FIXME should I call find_constrained_def here only if no previous constrained def was found?"
 	if (!constrained) {
 		constrained = find_constrained_def(state, range, constrained);
 	}
-#if DEBUG_RANGE_CONFLICTS
-	fprintf(stderr, "constrained: %p %-8s\n",
-		constrained, tops(constrained->op));
-#endif
+
+	if (state->compiler->debug & DEBUG_RANGE_CONFLICTS) {
+		fprintf(stderr, "constrained: %p %-8s\n",
+			constrained, tops(constrained->op));
+	}
 	if (constrained) {
 		ids_from_rstate(state, rstate);
 		cleanup_rstate(state, rstate);
@@ -13958,10 +14727,10 @@ static int split_ranges(
 	char *used, struct live_range *range)
 {
 	int split;
-#if DEBUG_RANGE_CONFLICTS
-	fprintf(stderr, "split_ranges %d %s %p\n", 
-		rstate->passes, tops(range->defs->def->op), range->defs->def);
-#endif
+	if (state->compiler->debug & DEBUG_RANGE_CONFLICTS) {
+		fprintf(stderr, "split_ranges %d %s %p\n", 
+			rstate->passes, tops(range->defs->def->op), range->defs->def);
+	}
 	if ((range->color == REG_UNNEEDED) ||
 		(rstate->passes >= rstate->max_passes)) {
 		return 0;
@@ -13981,29 +14750,57 @@ static int split_ranges(
 	 *
 	 */
 #warning "WISHLIST implement live range splitting..."
-	if ((DEBUG_RANGE_CONFLICTS > 1) && 
-		(!split || (DEBUG_RANGE_CONFLICTS > 2))) {
+	
+	if (!split && (state->compiler->debug & DEBUG_RANGE_CONFLICTS2)) {
 		print_interference_blocks(state, rstate, stderr, 0);
 		print_dominators(state, stderr);
 	}
 	return split;
 }
 
-#if DEBUG_COLOR_GRAPH > 1
-#define cgdebug_printf(...) fprintf(stdout, __VA_ARGS__)
-#define cgdebug_flush() fflush(stdout)
-#define cgdebug_loc(STATE, TRIPLE) loc(stdout, STATE, TRIPLE)
-#elif DEBUG_COLOR_GRAPH == 1
-#define cgdebug_printf(...) fprintf(stderr, __VA_ARGS__)
-#define cgdebug_flush() fflush(stderr)
-#define cgdebug_loc(STATE, TRIPLE) loc(stderr, STATE, TRIPLE)
-#else
-#define cgdebug_printf(...)
-#define cgdebug_flush()
-#define cgdebug_loc(STATE, TRIPLE)
-#endif
+static FILE *cgdebug_fp(struct compile_state *state)
+{
+	FILE *fp;
+	fp = 0;
+	if (!fp && (state->compiler->debug & DEBUG_COLOR_GRAPH2)) {
+		fp = stderr;
+	}
+	if (!fp && (state->compiler->debug & DEBUG_COLOR_GRAPH)) {
+		fp = stdout;
+	}
+	return fp;
+}
 
-	
+static void cgdebug_printf(struct compile_state *state, const char *fmt, ...)
+{
+	FILE *fp;
+	fp = cgdebug_fp(state);
+	if (fp) {
+		va_list args;
+		va_start(args, fmt);
+		vfprintf(fp, fmt, args);
+		va_end(args);
+	}
+}
+
+static void cgdebug_flush(struct compile_state *state)
+{
+	FILE *fp;
+	fp = cgdebug_fp(state);
+	if (fp) {
+		fflush(fp);
+	}
+}
+
+static void cgdebug_loc(struct compile_state *state, struct triple *ins)
+{
+	FILE *fp;
+	fp = cgdebug_fp(state);
+	if (fp) {
+		loc(fp, state, ins);
+	}
+}
+
 static int select_free_color(struct compile_state *state, 
 	struct reg_state *rstate, struct live_range *range)
 {
@@ -14027,24 +14824,24 @@ static int select_free_color(struct compile_state *state,
 		}
 		reg_fill_used(state, used, edge->node->color);
 	}
-#if DEBUG_COLOR_GRAPH > 1
-	{
+
+	if (state->compiler->debug & DEBUG_COLOR_GRAPH2) {
 		int i;
 		i = 0;
 		for(edge = range->edges; edge; edge = edge->next) {
 			i++;
 		}
-		cgdebug_printf("\n%s edges: %d @%s:%d.%d\n", 
-			tops(range->def->op), i, 
-			range->def->filename, range->def->line, range->def->col);
+		cgdebug_printf(state, "\n%s edges: %d", 
+			tops(range->defs->def->op), i);
+		cgdebug_loc(state, range->defs->def);
+		cgdebug_printf(state, "\n");
 		for(i = 0; i < MAX_REGISTERS; i++) {
 			if (used[i]) {
-				cgdebug_printf("used: %s\n",
+				cgdebug_printf(state, "used: %s\n",
 					arch_reg_str(i));
 			}
 		}
 	}	
-#endif
 
 	/* If a color is already assigned see if it will work */
 	if (range->color != REG_UNSET) {
@@ -14207,11 +15004,7 @@ static int select_free_color(struct compile_state *state,
 					arch_reg_str(i));
 			}
 		}
-#if DEBUG_COLOR_GRAPH < 2
 		error(state, range->defs->def, "too few registers");
-#else
-		internal_error(state, range->defs->def, "too few registers");
-#endif
 	}
 	range->classes &= arch_reg_regcm(state, range->color);
 	if ((range->color == REG_UNSET) || (range->classes == 0)) {
@@ -14226,7 +15019,7 @@ static int color_graph(struct compile_state *state, struct reg_state *rstate)
 	struct live_range_edge *edge;
 	struct live_range *range;
 	if (rstate->low) {
-		cgdebug_printf("Lo: ");
+		cgdebug_printf(state, "Lo: ");
 		range = rstate->low;
 		if (*range->group_prev != range) {
 			internal_error(state, 0, "lo: *prev != range?");
@@ -14243,7 +15036,7 @@ static int color_graph(struct compile_state *state, struct reg_state *rstate)
 		}
 	}
 	else if (rstate->high) {
-		cgdebug_printf("Hi: ");
+		cgdebug_printf(state, "Hi: ");
 		range = rstate->high;
 		if (*range->group_prev != range) {
 			internal_error(state, 0, "hi: *prev != range?");
@@ -14262,7 +15055,7 @@ static int color_graph(struct compile_state *state, struct reg_state *rstate)
 	else {
 		return 1;
 	}
-	cgdebug_printf(" %d\n", range - rstate->lr);
+	cgdebug_printf(state, " %d\n", range - rstate->lr);
 	range->group_prev = 0;
 	for(edge = range->edges; edge; edge = edge->next) {
 		struct live_range *node;
@@ -14280,7 +15073,7 @@ static int color_graph(struct compile_state *state, struct reg_state *rstate)
 			if (&node->group_next == rstate->high_tail) {
 				rstate->high_tail = node->group_prev;
 			}
-			cgdebug_printf("Moving...%d to low\n", node - rstate->lr);
+			cgdebug_printf(state, "Moving...%d to low\n", node - rstate->lr);
 			node->group_prev  = rstate->low_tail;
 			node->group_next  = 0;
 			*rstate->low_tail = node;
@@ -14293,11 +15086,11 @@ static int color_graph(struct compile_state *state, struct reg_state *rstate)
 	}
 	colored = color_graph(state, rstate);
 	if (colored) {
-		cgdebug_printf("Coloring %d @", range - rstate->lr);
+		cgdebug_printf(state, "Coloring %d @", range - rstate->lr);
 		cgdebug_loc(state, range->defs->def);
-		cgdebug_flush();
+		cgdebug_flush(state);
 		colored = select_free_color(state, rstate, range);
-		cgdebug_printf(" %s\n", arch_reg_str(range->color));
+		cgdebug_printf(state, " %s\n", arch_reg_str(range->color));
 	}
 	return colored;
 }
@@ -14416,9 +15209,10 @@ static void ids_from_rstate(struct compile_state *state,
 		return;
 	}
 	/* Display the graph if desired */
-	if (state->debug & DEBUG_INTERFERENCE) {
-		print_blocks(state, stdout);
+	if (state->compiler->debug & DEBUG_INTERFERENCE) {
+		print_interference_blocks(state, rstate, stdout, 0);
 		print_control_flow(state);
+		fflush(stdout);
 	}
 	first = state->first;
 	ins = first;
@@ -14466,7 +15260,7 @@ static void allocate_registers(struct compile_state *state)
 
 	/* Clear out the reg_state */
 	memset(&rstate, 0, sizeof(rstate));
-	rstate.max_passes = MAX_ALLOCATION_PASSES;
+	rstate.max_passes = state->compiler->max_allocation_passes;
 
 	do {
 		struct live_range **point, **next;
@@ -14474,9 +15268,10 @@ static void allocate_registers(struct compile_state *state)
 		int tangles;
 		int coalesced;
 
-#if DEBUG_RANGE_CONFLICTS
-		fprintf(stderr, "pass: %d\n", rstate.passes);
-#endif
+		if (state->compiler->debug & DEBUG_RANGE_CONFLICTS) {
+			fprintf(stderr, "pass: %d\n", rstate.passes);
+			fflush(stderr);
+		}
 
 		/* Restore ids */
 		ids_from_rstate(state, &rstate);
@@ -14500,11 +15295,8 @@ static void allocate_registers(struct compile_state *state)
 			tangles = correct_tangles(state, rstate.blocks);
 		} while(tangles);
 
-		if (state->debug & DEBUG_INSERTED_COPIES) {
-			printf("After resolve_tangles\n");
-			print_blocks(state, stdout);
-			print_control_flow(state);
-		}
+		
+		print_blocks(state, "resolve_tangles", stdout);
 		verify_consistency(state);
 		
 		/* Allocate and initialize the live ranges */
@@ -14516,9 +15308,10 @@ static void allocate_registers(struct compile_state *state)
 		 *  yields some benefit.
 		 */
 		do {
-#if DEBUG_COALESCING
-			fprintf(stderr, "coalescing\n");
-#endif			
+			if (state->compiler->debug & DEBUG_COALESCING) {
+				fprintf(stderr, "coalescing\n");
+			}
+
 			/* Remove any previous live edge calculations */
 			cleanup_live_edges(&rstate);
 
@@ -14527,7 +15320,7 @@ static void allocate_registers(struct compile_state *state)
 				state, rstate.blocks, graph_ins, &rstate);
 			
 			/* Display the interference graph if desired */
-			if (state->debug & DEBUG_INTERFERENCE) {
+			if (state->compiler->debug & DEBUG_INTERFERENCE) {
 				print_interference_blocks(state, &rstate, stdout, 1);
 				printf("\nlive variables by instruction\n");
 				walk_variable_lifetimes(
@@ -14537,9 +15330,9 @@ static void allocate_registers(struct compile_state *state)
 			
 			coalesced = coalesce_live_ranges(state, &rstate);
 
-#if DEBUG_COALESCING
-			fprintf(stderr, "coalesced: %d\n", coalesced);
-#endif
+			if (state->compiler->debug & DEBUG_COALESCING) {
+				fprintf(stderr, "coalesced: %d\n", coalesced);
+			}
 		} while(coalesced);
 
 #if DEBUG_CONSISTENCY > 1
@@ -14579,7 +15372,7 @@ static void allocate_registers(struct compile_state *state)
 			 */
 			if ((range->degree < regc_max_size(state, range->classes)) ||
 				(range->color != REG_UNSET)) {
-				cgdebug_printf("Lo: %5d degree %5d%s\n", 
+				cgdebug_printf(state, "Lo: %5d degree %5d%s\n", 
 					range - rstate.lr, range->degree,
 					(range->color != REG_UNSET) ? " (colored)": "");
 				*range->group_prev = range->group_next;
@@ -14596,7 +15389,7 @@ static void allocate_registers(struct compile_state *state)
 				next = point;
 			}
 			else {
-				cgdebug_printf("hi: %5d degree %5d%s\n", 
+				cgdebug_printf(state, "hi: %5d degree %5d%s\n", 
 					range - rstate.lr, range->degree,
 					(range->color != REG_UNSET) ? " (colored)": "");
 			}
@@ -14614,6 +15407,9 @@ static void allocate_registers(struct compile_state *state)
 
 	/* Cleanup the temporary data structures */
 	cleanup_rstate(state, &rstate);
+
+	/* Display the new graph */
+	print_blocks(state, __func__, stdout);
 }
 
 /* Sparce Conditional Constant Propogation
@@ -14648,11 +15444,12 @@ struct flow_edge {
 	struct flow_edge *out_next;
 	int executable;
 };
+#define MAX_FLOW_BLOCK_EDGES 3
 struct flow_block {
 	struct block *block;
 	struct flow_edge *in;
 	struct flow_edge *out;
-	struct flow_edge left, right;
+	struct flow_edge *edges;
 };
 
 struct scc_state {
@@ -14668,9 +15465,20 @@ struct scc_state {
 static void scc_add_fedge(struct compile_state *state, struct scc_state *scc, 
 	struct flow_edge *fedge)
 {
+	if (state->compiler->debug & DEBUG_SCC_TRANSFORM2) {
+		fprintf(stderr, "adding fedge: %p (%4d -> %5d)\n",
+			fedge,
+			fedge->src->block?fedge->src->block->last->id: 0,
+			fedge->dst->block?fedge->dst->block->first->id: 0);
+	}
 	if ((fedge == scc->flow_work_list) ||
 		(fedge->work_next != fedge) ||
 		(fedge->work_prev != fedge)) {
+
+		if (state->compiler->debug & DEBUG_SCC_TRANSFORM2) {
+			fprintf(stderr, "dupped fedge: %p\n",
+				fedge);
+		}
 		return;
 	}
 	if (!scc->flow_work_list) {
@@ -14708,19 +15516,20 @@ static struct flow_edge *scc_next_fedge(
 static void scc_add_sedge(struct compile_state *state, struct scc_state *scc,
 	struct ssa_edge *sedge)
 {
-#if DEBUG_SCC > 1
-	fprintf(stderr, "adding sedge: %5d (%4d -> %5d)\n",
-		sedge - scc->ssa_edges,
-		sedge->src->def->id,
-		sedge->dst->def->id);
-#endif
+	if (state->compiler->debug & DEBUG_SCC_TRANSFORM2) {
+		fprintf(stderr, "adding sedge: %5d (%4d -> %5d)\n",
+			sedge - scc->ssa_edges,
+			sedge->src->def->id,
+			sedge->dst->def->id);
+	}
 	if ((sedge == scc->ssa_work_list) ||
 		(sedge->work_next != sedge) ||
 		(sedge->work_prev != sedge)) {
-#if DEBUG_SCC > 1
-		fprintf(stderr, "dupped sedge: %5d\n",
-			sedge - scc->ssa_edges);
-#endif
+
+		if (state->compiler->debug & DEBUG_SCC_TRANSFORM2) {
+			fprintf(stderr, "dupped sedge: %5d\n",
+				sedge - scc->ssa_edges);
+		}
 		return;
 	}
 	if (!scc->ssa_work_list) {
@@ -14778,10 +15587,10 @@ static void initialize_scc_state(
 		}
 		ins = ins->next;
 	} while(ins != first);
-#if DEBUG_SCC
-	fprintf(stderr, "ins_count: %d ssa_edge_count: %d vertex_count: %d\n",
-		ins_count, ssa_edge_count, state->last_vertex);
-#endif
+	if (state->compiler->debug & DEBUG_SCC_TRANSFORM) {
+		fprintf(stderr, "ins_count: %d ssa_edge_count: %d vertex_count: %d\n",
+			ins_count, ssa_edge_count, state->last_vertex);
+	}
 	scc->ins_count   = ins_count;
 	scc->lattice     = 
 		xcmalloc(sizeof(*scc->lattice)*(ins_count + 1), "lattice");
@@ -14806,6 +15615,8 @@ static void initialize_scc_state(
 			block->vertex = fblock_index;
 			fblock = &scc->flow_blocks[fblock_index];
 			fblock->block = block;
+			fblock->edges = xcmalloc(sizeof(*fblock->edges)*block->edge_count,
+				"flow_edges");
 		}
 		{
 			struct lattice_node *lnode;
@@ -14825,55 +15636,6 @@ static void initialize_scc_state(
 	fblock = 0;
 	ins = first;
 	do {
-		if ((ins->op == OP_LABEL) && (block != ins->u.block)) {
-			struct flow_edge *fedge, **ftail;
-			struct block_set *bedge;
-			block = ins->u.block;
-			fblock = &scc->flow_blocks[block->vertex];
-			fblock->in = 0;
-			fblock->out = 0;
-			ftail = &fblock->out;
-			if (block->left) {
-				fblock->left.dst = &scc->flow_blocks[block->left->vertex];
-				if (fblock->left.dst->block != block->left) {
-					internal_error(state, 0, "block mismatch");
-				}
-				fblock->left.out_next = 0;
-				*ftail = &fblock->left;
-				ftail = &fblock->left.out_next;
-			}
-			if (block->right) {
-				fblock->right.dst = &scc->flow_blocks[block->right->vertex];
-				if (fblock->right.dst->block != block->right) {
-					internal_error(state, 0, "block mismatch");
-				}
-				fblock->right.out_next = 0;
-				*ftail = &fblock->right;
-				ftail = &fblock->right.out_next;
-			}
-			for(fedge = fblock->out; fedge; fedge = fedge->out_next) {
-				fedge->src = fblock;
-				fedge->work_next = fedge->work_prev = fedge;
-				fedge->executable = 0;
-			}
-			ftail = &fblock->in;
-			for(bedge = block->use; bedge; bedge = bedge->next) {
-				struct block *src_block;
-				struct flow_block *sfblock;
-				struct flow_edge *sfedge;
-				src_block = bedge->member;
-				sfblock = &scc->flow_blocks[src_block->vertex];
-				sfedge = 0;
-				if (src_block->left == block) {
-					sfedge = &sfblock->left;
-				} else {
-					sfedge = &sfblock->right;
-				}
-				*ftail = sfedge;
-				ftail = &sfedge->in_next;
-				sfedge->in_next = 0;
-			}
-		}
 		{
 			struct triple_set *edge;
 			struct ssa_edge **stail;
@@ -14893,6 +15655,63 @@ static void initialize_scc_state(
 				sedge->out_next = 0;
 			}
 		}
+		if ((ins->op == OP_LABEL) && (block != ins->u.block)) {
+			struct flow_edge *fedge, **ftail;
+			struct block_set *bedge;
+			block = ins->u.block;
+			fblock = &scc->flow_blocks[block->vertex];
+			fblock->in = 0;
+			fblock->out = 0;
+			ftail = &fblock->out;
+
+			fedge = fblock->edges;
+			bedge = block->edges;
+			for(; bedge; bedge = bedge->next, fedge++) {
+				fedge->dst = &scc->flow_blocks[bedge->member->vertex];
+				if (fedge->dst->block != bedge->member) {
+					internal_error(state, 0, "block mismatch");
+				}
+				*ftail = fedge;
+				ftail = &fedge->out_next;
+				fedge->out_next = 0;
+			}
+			for(fedge = fblock->out; fedge; fedge = fedge->out_next) {
+				fedge->src = fblock;
+				fedge->work_next = fedge->work_prev = fedge;
+				fedge->executable = 0;
+			}
+		}
+		ins = ins->next;
+	} while (ins != first);
+	block = 0;
+	fblock = 0;
+	ins = first;
+	do {
+		if ((ins->op  == OP_LABEL) && (block != ins->u.block)) {
+			struct flow_edge **ftail;
+			struct block_set *bedge;
+			block = ins->u.block;
+			fblock = &scc->flow_blocks[block->vertex];
+			ftail = &fblock->in;
+			for(bedge = block->use; bedge; bedge = bedge->next) {
+				struct block *src_block;
+				struct flow_block *sfblock;
+				struct flow_edge *sfedge;
+				src_block = bedge->member;
+				sfblock = &scc->flow_blocks[src_block->vertex];
+				for(sfedge = sfblock->out; sfedge; sfedge = sfedge->out_next) {
+					if (sfedge->dst == fblock) {
+						break;
+					}
+				}
+				if (!sfedge) {
+					internal_error(state, 0, "edge mismatch");
+				}
+				*ftail = sfedge;
+				ftail = &sfedge->in_next;
+				sfedge->in_next = 0;
+			}
+		}
 		ins = ins->next;
 	} while(ins != first);
 	/* Setup a dummy block 0 as a node above the start node */
@@ -14901,10 +15720,11 @@ static void initialize_scc_state(
 		struct flow_edge *fedge;
 		fblock = &scc->flow_blocks[0];
 		fblock->block = 0;
+		fblock->edges = xcmalloc(sizeof(*fblock->edges)*1, "flow_edges");
 		fblock->in = 0;
-		fblock->out = &fblock->left;
+		fblock->out = fblock->edges;
 		dst = &scc->flow_blocks[state->first_block->vertex];
-		fedge = &fblock->left;
+		fedge = fblock->edges;
 		fedge->src        = fblock;
 		fedge->dst        = dst;
 		fedge->work_next  = fedge;
@@ -14919,16 +15739,25 @@ static void initialize_scc_state(
 		scc->ssa_work_list  = 0;
 		scc_add_fedge(state, scc, fedge);
 	}
-#if DEBUG_SCC
-	fprintf(stderr, "ins_index: %d ssa_edge_index: %d fblock_index: %d\n",
-		ins_index, ssa_edge_index, fblock_index);
-#endif
+	if (state->compiler->debug & DEBUG_SCC_TRANSFORM) {
+		fprintf(stderr, "ins_index: %d ssa_edge_index: %d fblock_index: %d\n",
+			ins_index, ssa_edge_index, fblock_index);
+	}
 }
 
 	
 static void free_scc_state(
 	struct compile_state *state, struct scc_state *scc)
 {
+	int i;
+	for(i = 0; i < state->last_vertex + 1; i++) {
+		struct flow_block *fblock;
+		fblock = &scc->flow_blocks[i];
+		if (fblock->edges) {
+			xfree(fblock->edges);
+			fblock->edges = 0;
+		}
+	}
 	xfree(scc->flow_blocks);
 	xfree(scc->ssa_edges);
 	xfree(scc->lattice);
@@ -14987,6 +15816,34 @@ static int lval_changed(struct compile_state *state,
 
 }
 
+static void scc_debug_lnode(
+	struct compile_state *state, struct lattice_node *lnode, int changed)
+{
+	if (state->compiler->debug & DEBUG_SCC_TRANSFORM) {
+		FILE *fp = stderr;
+		struct triple *val, **expr;
+		val = lnode->val? lnode->val : lnode->def;
+		fprintf(fp, "%p %s %3d %10s (",
+			lnode->def, 
+			((lnode->def->op == OP_PHI)? "phi: ": "expr:"),
+			lnode->def->id,
+			tops(lnode->def->op));
+		expr = triple_rhs(state, lnode->def, 0);
+		for(;expr;expr = triple_rhs(state, lnode->def, expr)) {
+			if (*expr) {
+				fprintf(fp, " %d", (*expr)->id);
+			}
+		}
+		if (val->op == OP_INTCONST) {
+			fprintf(fp, " <0x%08lx>", (unsigned long)(val->u.cval));
+		}
+		fprintf(fp, " ) -> %s %s\n",
+			((!lnode->val)? "lo": is_const(lnode->val)? "const": "hi"),
+			changed? "changed" : ""
+			);
+	}
+}
+
 static void scc_visit_phi(struct compile_state *state, struct scc_state *scc, 
 	struct lattice_node *lnode)
 {
@@ -15006,13 +15863,13 @@ static void scc_visit_phi(struct compile_state *state, struct scc_state *scc,
 	slot = &RHS(lnode->def, 0);
 	index = 0;
 	for(fedge = lnode->fblock->in; fedge; index++, fedge = fedge->in_next) {
-#if DEBUG_SCC
-		fprintf(stderr, "Examining edge: %d vertex: %d executable: %d\n", 
-			index,
-			fedge->dst->block->vertex,
-			fedge->executable
-			);
-#endif
+		if (state->compiler->debug & DEBUG_SCC_TRANSFORM) {
+			fprintf(stderr, "Examining edge: %d vertex: %d executable: %d\n", 
+				index,
+				fedge->dst->block->vertex,
+				fedge->executable
+				);
+		}
 		if (!fedge->executable) {
 			continue;
 		}
@@ -15042,14 +15899,8 @@ static void scc_visit_phi(struct compile_state *state, struct scc_state *scc,
 		}
 	}
 	changed = lval_changed(state, old, lnode);
-#if DEBUG_SCC
-	fprintf(stderr, "%p phi:  %d -> %s %s\n",
-		lnode->def, 
-		lnode->def->id,
-		((!lnode->val)? "lo": is_const(lnode->val)? "const": "hi"),
-		changed? "changed" : ""
-		);
-#endif
+	scc_debug_lnode(state, lnode, changed);
+
 	/* If the lattice value has changed update the work lists. */
 	if (changed) {
 		struct ssa_edge *sedge;
@@ -15090,7 +15941,7 @@ static int compute_lnode_val(struct compile_state *state, struct scc_state *scc,
 			*vexpr = (tmp->val)? tmp->val : tmp->def;
 		}
 	}
-	if (scratch->op == OP_BRANCH) {
+	if (triple_is_branch(state, scratch)) {
 		scratch->next = lnode->def->next;
 	}
 	/* Recompute the value */
@@ -15105,7 +15956,7 @@ static int compute_lnode_val(struct compile_state *state, struct scc_state *scc,
 	}
 	if ((scratch->prev != scratch) ||
 		((scratch->next != scratch) &&
-			((lnode->def->op != OP_BRANCH) ||
+			(!triple_is_branch(state, lnode->def) ||
 				(scratch->next != lnode->def->next)))) {
 		internal_error(state, lnode->def, "scratch in list?");
 	}
@@ -15157,6 +16008,11 @@ static int compute_lnode_val(struct compile_state *state, struct scc_state *scc,
 		}
 		lnode->val = 0;
 	}
+	/* Report what has just happened */
+	if (state->compiler->debug & DEBUG_SCC_TRANSFORM2) {
+		display_triple_changes(stderr, scratch, lnode->def);
+	}
+
 	/* See if we need to free the scratch value */
 	if (lnode->val != scratch) {
 		xfree(scratch);
@@ -15168,10 +16024,11 @@ static void scc_visit_branch(struct compile_state *state, struct scc_state *scc,
 	struct lattice_node *lnode)
 {
 	struct lattice_node *cond;
-#if DEBUG_SCC
-	{
+	struct flow_edge *left, *right;
+	if (state->compiler->debug & DEBUG_SCC_TRANSFORM) {
 		struct flow_edge *fedge;
-		fprintf(stderr, "branch: %d (",
+		fprintf(stderr, "%s: %d (",
+			tops(lnode->def->op),
 			lnode->def->id);
 		
 		for(fedge = lnode->fblock->out; fedge; fedge = fedge->out_next) {
@@ -15184,29 +16041,43 @@ static void scc_visit_branch(struct compile_state *state, struct scc_state *scc,
 		}
 		fprintf(stderr, "\n");
 	}
-#endif
-	if (lnode->def->op != OP_BRANCH) {
+	if (!triple_is_branch(state, lnode->def)) {
 		internal_error(state, lnode->def, "not branch");
 	}
 	/* This only applies to conditional branches */
-	if (TRIPLE_RHS(lnode->def->sizes) == 0) {
+	if (!triple_is_cond_branch(state, lnode->def)) {
 		return;
 	}
 	cond = triple_to_lattice(state, scc, RHS(lnode->def,0));
+	for(left = cond->fblock->out; left; left = left->out_next) {
+		if (left->dst->block->first == lnode->def->next) {
+			break;
+		}
+	}
+	if (!left) {
+		internal_error(state, lnode->def, "Cannot find left branch edge");
+	}
+	for(right = cond->fblock->out; right; right = right->out_next) {
+		if (right->dst->block->first == TARG(lnode->def, 0)) {
+			break;
+		}
+	}
+	if (!right) {
+		internal_error(state, lnode->def, "Cannot find right branch edge");
+	}
 	if (cond->val && !is_const(cond->val)) {
 #warning "FIXME do I need to do something here?"
 		warning(state, cond->def, "condition not constant?");
 		return;
 	}
 	if (cond->val == 0) {
-		scc_add_fedge(state, scc, cond->fblock->out);
-		scc_add_fedge(state, scc, cond->fblock->out->out_next);
+		scc_add_fedge(state, scc, left);
+		scc_add_fedge(state, scc, right);
 	}
 	else if (cond->val->u.cval) {
-		scc_add_fedge(state, scc, cond->fblock->out->out_next);
-		
+		scc_add_fedge(state, scc, right);
 	} else {
-		scc_add_fedge(state, scc, cond->fblock->out);
+		scc_add_fedge(state, scc, left);
 	}
 
 }
@@ -15217,24 +16088,10 @@ static void scc_visit_expr(struct compile_state *state, struct scc_state *scc,
 	int changed;
 
 	changed = compute_lnode_val(state, scc, lnode);
-#if DEBUG_SCC
-	{
-		struct triple **expr;
-		fprintf(stderr, "expr: %3d %10s (",
-			lnode->def->id, tops(lnode->def->op));
-		expr = triple_rhs(state, lnode->def, 0);
-		for(;expr;expr = triple_rhs(state, lnode->def, expr)) {
-			if (*expr) {
-				fprintf(stderr, " %d", (*expr)->id);
-			}
-		}
-		fprintf(stderr, " ) -> %s\n",
-			(!lnode->val)? "lo": is_const(lnode->val)? "const": "hi");
-	}
-#endif
-	if (lnode->def->op == OP_BRANCH) {
-		scc_visit_branch(state, scc, lnode);
+	scc_debug_lnode(state, lnode, changed);
 
+	if (triple_is_branch(state, lnode->def)) {
+		scc_visit_branch(state, scc, lnode);
 	}
 	else if (changed) {
 		struct ssa_edge *sedge;
@@ -15253,28 +16110,30 @@ static void scc_writeback_values(
 	do {
 		struct lattice_node *lnode;
 		lnode = triple_to_lattice(state, scc, ins);
-#if DEBUG_SCC
-		if (lnode->val && 
-			!is_const(lnode->val) &&
-			!triple_is_uncond_branch(state, lnode->val) &&
-			(lnode->val->op != OP_NOOP)) 
-		{
-			struct flow_edge *fedge;
-			int executable;
-			executable = 0;
-			for(fedge = lnode->fblock->in; 
-			    !executable && fedge; fedge = fedge->in_next) {
-				executable |= fedge->executable;
-			}
-			if (executable) {
-				internal_warning(state, lnode->val,
-					"lattice node %d %s->%s still high?",
-					ins->id, 
-					tops(lnode->def->op),
-					tops(lnode->val->op));
+
+		if (state->compiler->debug & DEBUG_SCC_TRANSFORM) {
+			if (lnode->val && 
+				!is_const(lnode->val) &&
+				!triple_is_uncond_branch(state, lnode->val) &&
+				(lnode->val->op != OP_NOOP)) 
+			{
+				struct flow_edge *fedge;
+				int executable;
+				executable = 0;
+				for(fedge = lnode->fblock->in; 
+				    !executable && fedge; fedge = fedge->in_next) {
+					executable |= fedge->executable;
+				}
+				if (executable) {
+					internal_warning(state, lnode->val,
+						"lattice node %d %s->%s still high?",
+						ins->id, 
+						tops(lnode->def->op),
+						tops(lnode->val->op));
+				}
 			}
 		}
-#endif
+
 		/* Restore id */
 		ins->id = lnode->old_id;
 		if (lnode->val && (lnode->val != ins)) {
@@ -15309,6 +16168,9 @@ static void scc_writeback_values(
 static void scc_transform(struct compile_state *state)
 {
 	struct scc_state scc;
+	if (!(state->compiler->flags & COMPILER_SCC_TRANSFORM)) {
+		return;
+	}
 
 	initialize_scc_state(state, &scc);
 
@@ -15340,11 +16202,12 @@ static void scc_transform(struct compile_state *state)
 					reps++;
 				}
 			}
-#if DEBUG_SCC
-			fprintf(stderr, "vertex: %d reps: %d\n", 
-				block->vertex, reps);
 			
-#endif
+			if (state->compiler->debug & DEBUG_SCC_TRANSFORM) {
+				fprintf(stderr, "vertex: %d reps: %d\n", 
+					block->vertex, reps);
+			}
+
 			done = 0;
 			for(ptr = block->first; !done; ptr = ptr->next) {
 				struct lattice_node *lnode;
@@ -15357,8 +16220,12 @@ static void scc_transform(struct compile_state *state)
 					scc_visit_expr(state, &scc, lnode);
 				}
 			}
-			if (fblock->out && !fblock->out->out_next) {
-				scc_add_fedge(state, &scc, fblock->out);
+			/* Add unconditional branch edges */
+			if (!triple_is_cond_branch(state, fblock->block->last)) {
+				struct flow_edge *out;
+				for(out = fblock->out; out; out = out->out_next) {
+					scc_add_fedge(state, &scc, out);
+				}
 			}
 		}
 		while((sedge = scc_next_sedge(state, &scc))) {
@@ -15366,12 +16233,14 @@ static void scc_transform(struct compile_state *state)
 			struct flow_block *fblock;
 			lnode = sedge->dst;
 			fblock = lnode->fblock;
-#if DEBUG_SCC
-			fprintf(stderr, "sedge: %5d (%5d -> %5d)\n",
-				sedge - scc.ssa_edges,
-				sedge->src->def->id,
-				sedge->dst->def->id);
-#endif
+
+			if (state->compiler->debug & DEBUG_SCC_TRANSFORM) {
+				fprintf(stderr, "sedge: %5d (%5d -> %5d)\n",
+					sedge - scc.ssa_edges,
+					sedge->src->def->id,
+					sedge->dst->def->id);
+			}
+
 			if (lnode->def->op == OP_PHI) {
 				scc_visit_phi(state, &scc, lnode);
 			}
@@ -15390,6 +16259,9 @@ static void scc_transform(struct compile_state *state)
 	
 	scc_writeback_values(state, &scc);
 	free_scc_state(state, &scc);
+	rebuild_ssa_form(state);
+	
+	print_blocks(state, __func__, stdout);
 }
 
 
@@ -15401,6 +16273,8 @@ static void transform_to_arch_instructions(struct compile_state *state)
 	do {
 		ins = transform_to_arch_instruction(state, ins);
 	} while(ins != first);
+	
+	print_blocks(state, __func__, stdout);
 }
 
 #if DEBUG_CONSISTENCY
@@ -15463,6 +16337,20 @@ static void verify_blocks_present(struct compile_state *state)
 	
 	
 }
+
+static int edge_present(struct compile_state *state, struct block *block, struct triple *edge)
+{
+	struct block_set *bedge;
+	struct block *targ;
+	targ = block_of_triple(state, edge);
+	for(bedge = block->edges; bedge; bedge = bedge->next) {
+		if (bedge->member == targ) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
 static void verify_blocks(struct compile_state *state)
 {
 	struct triple *ins;
@@ -15475,7 +16363,7 @@ static void verify_blocks(struct compile_state *state)
 	blocks = 0;
 	do {
 		int users;
-		struct block_set *user;
+		struct block_set *user, *edge;
 		blocks++;
 		for(ins = block->first; ins != block->last->next; ins = ins->next) {
 			if (triple_stores_block(state, ins) && (ins->u.block != block)) {
@@ -15493,62 +16381,48 @@ static void verify_blocks(struct compile_state *state)
 				(user->member == state->first_block)) {
 				continue;
 			}
-			if ((user->member->left != block) &&
-				(user->member->right != block)) {
+			for(edge = user->member->edges; edge; edge = edge->next) {
+				if (edge->member == block) {
+					break;
+				}
+			}
+			if (!edge) {
 				internal_error(state, user->member->first,
 					"user does not use block");
 			}
 		}
-		if (triple_is_branch(state, block->last) &&
-			(block->right != block_of_triple(state, TARG(block->last, 0))))
-		{
-			internal_error(state, block->last, "block->right != TARG(0)");
+		if (triple_is_branch(state, block->last)) {
+			struct triple **expr;
+			expr = triple_targ(state, block->last, 0);
+			for(;expr; expr = triple_targ(state, block->last, expr)) {
+				if (*expr && !edge_present(state, block, *expr)) {
+					internal_error(state, block->last, "no edge to targ");
+				}
+			}
 		}
 		if (!triple_is_uncond_branch(state, block->last) &&
 			(block != state->last_block) &&
-			(block->left != block_of_triple(state, block->last->next)))
-		{
-			internal_error(state, block->last, "block->left != block->last->next");
+			!edge_present(state, block, block->last->next)) {
+			internal_error(state, block->last, "no edge to block->last->next");
 		}
-		if (block->left) {
-			for(user = block->left->use; user; user = user->next) {
+		for(edge = block->edges; edge; edge = edge->next) {
+			for(user = edge->member->use; user; user = user->next) {
 				if (user->member == block) {
 					break;
 				}
 			}
 			if (!user || user->member != block) {
 				internal_error(state, block->first,
-					"block does not use left");
+					"block does not use edge");
 			}
-			if (!block->left->first) {
-				internal_error(state, block->first, "left block is empty");
-			}
-		}
-		if (block->right) {
-			for(user = block->right->use; user; user = user->next) {
-				if (user->member == block) {
-					break;
-				}
-			}
-			if (!user || user->member != block) {
-				internal_error(state, block->first,
-					"block does not use right");
-			}
-			if (!block->right->first) {
-				internal_error(state, block->first, "right block is empty");
+			if (!edge->member->first) {
+				internal_error(state, block->first, "edge block is empty");
 			}
 		}
 		if (block->users != users) {
 			internal_error(state, block->first, 
 				"computed users %d != stored users %d\n",
 				users, block->users);
-		}
-		for(user = block->ipdomfrontier; user; user = user->next) {
-			if ((user->member->left != state->last_block) &&
-				!triple_is_cond_branch(state, user->member->last)) {
-				internal_error(state, user->member->last,
-					"conditional branch missing");
-			}
 		}
 		if (!triple_stores_block(state, block->last->next)) {
 			internal_error(state, block->last->next, 
@@ -15582,7 +16456,7 @@ static void verify_domination(struct compile_state *state)
 			struct triple *use_point;
 			int i, zrhs;
 			use_point = 0;
-			zrhs = TRIPLE_RHS(ins->sizes);
+			zrhs = TRIPLE_RHS(set->member->sizes);
 			slot = &RHS(set->member, 0);
 			/* See if the use is on the right hand side */
 			for(i = 0; i < zrhs; i++) {
@@ -15608,8 +16482,6 @@ static void verify_domination(struct compile_state *state)
 			}
 			if (use_point &&
 				!tdominates(state, ins, use_point)) {
-				internal_warning(state, ins, 
-					"ins does not dominate rhs use");
 				internal_error(state, use_point, 
 					"non dominated rhs use point?");
 			}
@@ -15697,14 +16569,13 @@ static void verify_consistency(struct compile_state *state) {}
 
 static void optimize(struct compile_state *state)
 {
-	if (state->debug & DEBUG_TRIPLES) {
-		print_triples(state);
-	}
+	/* Dump what the instruction graph intially looks like */
+	print_triples(state);
+
 	/* Replace structures with simpler data types */
 	flatten_structures(state);
-	if (state->debug & DEBUG_TRIPLES) {
-		print_triples(state);
-	}
+	print_triples(state);
+
 	verify_consistency(state);
 	/* Analize the intermediate code */
 	analyze_basic_blocks(state);
@@ -15719,32 +16590,17 @@ static void optimize(struct compile_state *state)
 	 * phi functions early and I kill them often.
 	 */
 	transform_to_ssa_form(state);
-
 	verify_consistency(state);
-	if (state->debug & DEBUG_CODE_ELIMINATION) {
-		fprintf(stdout, "After transform_to_ssa_form\n");
-		print_blocks(state, stdout);
-	}
+
 	/* Remove dead code */
 	eliminate_inefectual_code(state);
-	rebuild_ssa_form(state);
 	verify_consistency(state);
 
 	/* Do strength reduction and simple constant optimizations */
-	if (state->optimize >= 1) {
-		simplify_all(state);
-		rebuild_ssa_form(state);
-	}
-	if (state->debug & DEBUG_CODE_ELIMINATION) {
-		fprintf(stdout, "After simplify_all\n");
-		print_blocks(state, stdout);
-	}
+	simplify_all(state);
 	verify_consistency(state);
 	/* Propogate constants throughout the code */
-	if (state->optimize >= 2) {
-		scc_transform(state);
-		rebuild_ssa_form(state);
-	}
+	scc_transform(state);
 	verify_consistency(state);
 #warning "WISHLIST implement single use constants (least possible register pressure)"
 #warning "WISHLIST implement induction variable elimination"
@@ -15753,44 +16609,21 @@ static void optimize(struct compile_state *state)
 	 */
 	transform_to_arch_instructions(state);
 	verify_consistency(state);
-	if (state->debug & DEBUG_ARCH_CODE) {
-		printf("After transform_to_arch_instructions\n");
-		print_blocks(state, stdout);
-		print_control_flow(state);
-	}
+
 	/* Remove dead code */
 	eliminate_inefectual_code(state);
-	rebuild_ssa_form(state);
 	verify_consistency(state);
-	if (state->debug & DEBUG_CODE_ELIMINATION) {
-		printf("After eliminate_inefectual_code\n");
-		print_blocks(state, stdout);
-		print_control_flow(state);
-	}
-	verify_consistency(state);
+
 	/* Color all of the variables to see if they will fit in registers */
 	insert_copies_to_phi(state);
-	if (state->debug & DEBUG_INSERTED_COPIES) {
-		printf("After insert_copies_to_phi\n");
-		print_blocks(state, stdout);
-		print_control_flow(state);
-	}
 	verify_consistency(state);
+
 	insert_mandatory_copies(state);
-	if (state->debug & DEBUG_INSERTED_COPIES) {
-		printf("After insert_mandatory_copies\n");
-		print_blocks(state, stdout);
-		print_control_flow(state);
-	}
 	verify_consistency(state);
+
 	allocate_registers(state);
 	verify_consistency(state);
-	if (state->debug & DEBUG_INTERMEDIATE_CODE) {
-		print_blocks(state, stdout);
-	}
-	if (state->debug & DEBUG_CONTROL_FLOW) {
-		print_control_flow(state);
-	}
+
 	/* Remove the optimization information.
 	 * This is more to check for memory consistency than to free memory.
 	 */
@@ -16009,12 +16842,20 @@ static const struct {
 	[REGC_IMM8]       = { REGC_IMM8_FIRST,       REGC_IMM8_LAST },
 };
 
-static int arch_encode_feature(const char *feature, unsigned long *features)
+static void init_arch_state(struct arch_state *arch)
 {
-	struct cpu {
-		const char *name;
-		int cpu;
-	} cpus[] = {
+	memset(arch, 0, sizeof(*arch));
+	arch->features = 0;
+}
+
+static int arch_encode_flag(struct arch_state *arch, const char *flag)
+{
+	static const struct compiler_flag flags[] = {
+		{ "mmx", X86_MMX_REGS },
+		{ "sse", X86_XMM_REGS },
+		{ 0,     0 },
+	};
+	static const struct compiler_flag cpus[] = {
 		{ "i386", 0 },
 		{ "p2",   X86_MMX_REGS },
 		{ "p3",   X86_MMX_REGS | X86_XMM_REGS },
@@ -16025,30 +16866,21 @@ static int arch_encode_feature(const char *feature, unsigned long *features)
 		{ "c3-2", X86_MMX_REGS | X86_XMM_REGS }, /* Nehemiah */
 		{  0,     0 }
 	};
-	struct cpu *ptr;
-	int result = 0;
-	if (strcmp(feature, "mmx") == 0) {
-		*features |= X86_MMX_REGS;
+	int result;
+	int act;
+
+	act = 1;
+	result = -1;
+	if (strncmp(flag, "no-", 3) == 0) {
+		flag += 3;
+		act = 0;
 	}
-	else if (strcmp(feature, "sse") == 0) {
-		*features |= X86_XMM_REGS;
-	}
-	else if (strncmp(feature, "cpu=", 4) == 0) {
-		const char *cpu = feature + 4;
-		for(ptr = cpus; ptr->name; ptr++) {
-			if (strcmp(ptr->name, cpu) == 0) {
-				break;
-			}
-		}
-		if (ptr->name) {
-			*features |= ptr->cpu; 
-		}
-		else {
-			result = -1;
-		}
+	if (act && strncmp(flag, "cpu=", 4) == 0) {
+		flag += 4;
+		result = set_flag(cpus, &arch->features, 1, flag);
 	}
 	else {
-		result = -1;
+		result = set_flag(flags, &arch->features, act, flag);
 	}
 	return result;
 }
@@ -16259,10 +17091,10 @@ static unsigned arch_avail_mask(struct compile_state *state)
 		REGCM_GPR32 | REGCM_GPR32_8 | 
 		REGCM_DIVIDEND32 | REGCM_DIVIDEND64 |
 		REGCM_IMM32 | REGCM_IMM16 | REGCM_IMM8 | REGCM_FLAGS;
-	if (state->features & X86_MMX_REGS) {
+	if (state->arch->features & X86_MMX_REGS) {
 		avail_mask |= REGCM_MMX;
 	}
-	if (state->features & X86_XMM_REGS) {
+	if (state->arch->features & X86_XMM_REGS) {
 		avail_mask |= REGCM_XMM;
 	}
 	return avail_mask;
@@ -16638,27 +17470,28 @@ static int get_imm8(struct triple *ins, struct triple **expr)
 #define TEMPLATE_TEST32       41
 #define TEMPLATE_SET          42
 #define TEMPLATE_JMP          43
-#define TEMPLATE_INB_DX       44
-#define TEMPLATE_INB_IMM      45
-#define TEMPLATE_INW_DX       46
-#define TEMPLATE_INW_IMM      47
-#define TEMPLATE_INL_DX       48
-#define TEMPLATE_INL_IMM      49
-#define TEMPLATE_OUTB_DX      50
-#define TEMPLATE_OUTB_IMM     51
-#define TEMPLATE_OUTW_DX      52
-#define TEMPLATE_OUTW_IMM     53
-#define TEMPLATE_OUTL_DX      54
-#define TEMPLATE_OUTL_IMM     55
-#define TEMPLATE_BSF          56
-#define TEMPLATE_RDMSR        57
-#define TEMPLATE_WRMSR        58
-#define TEMPLATE_UMUL8        59
-#define TEMPLATE_UMUL16       60
-#define TEMPLATE_UMUL32       61
-#define TEMPLATE_DIV8         62
-#define TEMPLATE_DIV16        63
-#define TEMPLATE_DIV32        64
+#define TEMPLATE_RET          44
+#define TEMPLATE_INB_DX       45
+#define TEMPLATE_INB_IMM      46
+#define TEMPLATE_INW_DX       47
+#define TEMPLATE_INW_IMM      48
+#define TEMPLATE_INL_DX       49
+#define TEMPLATE_INL_IMM      50
+#define TEMPLATE_OUTB_DX      51
+#define TEMPLATE_OUTB_IMM     52
+#define TEMPLATE_OUTW_DX      53
+#define TEMPLATE_OUTW_IMM     54
+#define TEMPLATE_OUTL_DX      55
+#define TEMPLATE_OUTL_IMM     56
+#define TEMPLATE_BSF          57
+#define TEMPLATE_RDMSR        58
+#define TEMPLATE_WRMSR        59
+#define TEMPLATE_UMUL8        60
+#define TEMPLATE_UMUL16       61
+#define TEMPLATE_UMUL32       62
+#define TEMPLATE_DIV8         63
+#define TEMPLATE_DIV16        64
+#define TEMPLATE_DIV32        65
 #define LAST_TEMPLATE       TEMPLATE_DIV32
 #if LAST_TEMPLATE >= MAX_TEMPLATES
 #error "MAX_TEMPLATES to low"
@@ -16948,6 +17781,9 @@ static struct ins_template templates[] = {
 	[TEMPLATE_JMP] = {
 		.rhs = { [0] = { REG_EFLAGS, REGCM_FLAGS } },
 	},
+	[TEMPLATE_RET] = {
+		.rhs = { [0] = { REG_UNSET, REGCM_GPR32 } },
+	},
 	[TEMPLATE_INB_DX] = {
 		.lhs = { [0] = { REG_AL,  REGCM_GPR8_LO } },  
 		.rhs = { [0] = { REG_DX, REGCM_GPR16 } },
@@ -17114,7 +17950,7 @@ static void fixup_branches(struct compile_state *state,
 		if (entry->member->op == OP_COPY) {
 			fixup_branches(state, cmp, entry->member, jmp_op);
 		}
-		else if (entry->member->op == OP_BRANCH) {
+		else if (entry->member->op == OP_CBRANCH) {
 			struct triple *branch;
 			struct triple *left, *right;
 			left = right = 0;
@@ -17389,23 +18225,16 @@ static struct triple *transform_to_arch_instruction(
 	case OP_LOAD:
 		switch(ins->type->type & TYPE_MASK) {
 		case TYPE_CHAR:   case TYPE_UCHAR:
-			ins->template_id = TEMPLATE_LOAD8;
-			break;
-		case TYPE_SHORT:
-		case TYPE_USHORT:
-			ins->template_id = TEMPLATE_LOAD16;
-			break;
-		case TYPE_INT:
-		case TYPE_UINT:
-		case TYPE_LONG:
-		case TYPE_ULONG:
+		case TYPE_SHORT:  case TYPE_USHORT:
+		case TYPE_INT:    case TYPE_UINT:
+		case TYPE_LONG:   case TYPE_ULONG:
 		case TYPE_POINTER:
-			ins->template_id = TEMPLATE_LOAD32;
 			break;
 		default:
 			internal_error(state, ins, "unknown type in load");
 			break;
 		}
+		ins->template_id = TEMPLATE_LOAD32;
 		break;
 	case OP_ADD:
 	case OP_SUB:
@@ -17490,15 +18319,18 @@ static struct triple *transform_to_arch_instruction(
 		bool_cmp(state, ins, OP_TEST, OP_JMP_EQ, OP_SET_EQ);
 		break;
 	case OP_BRANCH:
-		if (TRIPLE_RHS(ins->sizes) > 0) {
-			struct triple *left = RHS(ins, 0);
-			fixup_branch(state, ins, OP_JMP_NOTEQ, OP_TEST, 
-				left->type, left, 0);
-		}
-		else {
-			ins->op = OP_JMP;
-			ins->template_id = TEMPLATE_NOP;
-		}
+		ins->op = OP_JMP;
+		ins->template_id = TEMPLATE_NOP;
+		break;
+	case OP_CBRANCH:
+		fixup_branch(state, ins, OP_JMP_NOTEQ, OP_TEST, 
+			RHS(ins, 0)->type, RHS(ins, 0), 0);
+		break;
+	case OP_CALL:
+		ins->template_id = TEMPLATE_NOP;
+		break;
+	case OP_RET:
+		ins->template_id = TEMPLATE_RET;
 		break;
 	case OP_INB:
 	case OP_INW:
@@ -17677,14 +18509,16 @@ static void print_const_val(
 			(long)(ins->u.cval));
 		break;
 	case OP_ADDRCONST:
-		if (MISC(ins, 0)->op != OP_SDECL) {
+		if ((MISC(ins, 0)->op != OP_SDECL) &&
+			(MISC(ins, 0)->op != OP_LABEL))
+		{
 			internal_error(state, ins, "bad base for addrconst");
 		}
 		if (MISC(ins, 0)->u.cval <= 0) {
 			internal_error(state, ins, "unlabeled constant");
 		}
 		fprintf(fp, " $L%s%lu+%lu ",
-			state->label_prefix, 
+			state->compiler->label_prefix, 
 			(unsigned long)(MISC(ins, 0)->u.cval),
 			(unsigned long)(ins->u.cval));
 		break;
@@ -17722,14 +18556,15 @@ static void print_const(struct compile_state *state,
 		}
 		break;
 	case OP_ADDRCONST:
-		if (MISC(ins, 0)->op != OP_SDECL) {
+		if ((MISC(ins, 0)->op != OP_SDECL) &&
+			(MISC(ins, 0)->op != OP_LABEL)) {
 			internal_error(state, ins, "bad base for addrconst");
 		}
 		if (MISC(ins, 0)->u.cval <= 0) {
 			internal_error(state, ins, "unlabeled constant");
 		}
 		fprintf(fp, ".int L%s%lu+%lu\n",
-			state->label_prefix,
+			state->compiler->label_prefix,
 			(unsigned long)(MISC(ins, 0)->u.cval),
 			(unsigned long)(ins->u.cval));
 		break;
@@ -17761,7 +18596,7 @@ static long get_const_pool_ref(
 	ref = next_label(state);
 	fprintf(fp, ".section \"" DATA_SECTION "\"\n");
 	fprintf(fp, ".balign %d\n", align_of(state, ins->type));
-	fprintf(fp, "L%s%lu:\n", state->label_prefix, ref);
+	fprintf(fp, "L%s%lu:\n", state->compiler->label_prefix, ref);
 	print_const(state, ins, fp);
 	fprintf(fp, ".section \"" TEXT_SECTION "\"\n");
 	return ref;
@@ -18167,8 +19002,8 @@ static void print_op_move(struct compile_state *state,
 		else if (dst_regcm & (REGCM_XMM | REGCM_MMX)) {
 			long ref;
 			ref = get_const_pool_ref(state, src, fp);
-			fprintf(fp, "\tmovq L%s%lu, %s\n",
-				state->label_prefix, ref,
+			fprintf(fp, "\tmovd L%s%lu, %s\n",
+				state->compiler->label_prefix, ref,
 				reg(state, dst, (REGCM_XMM | REGCM_MMX)));
 		}
 		else {
@@ -18181,14 +19016,31 @@ static void print_op_load(struct compile_state *state,
 	struct triple *ins, FILE *fp)
 {
 	struct triple *dst, *src;
+	const char *op;
 	dst = ins;
 	src = RHS(ins, 0);
 	if (is_const(src) || is_const(dst)) {
 		internal_error(state, ins, "unknown load operation");
 	}
-	fprintf(fp, "\tmov (%s), %s\n",
+	switch(ins->type->type & TYPE_MASK) {
+	case TYPE_CHAR:   op = "movsbl"; break;
+	case TYPE_UCHAR:  op = "movzbl"; break;
+	case TYPE_SHORT:  op = "movswl"; break;
+	case TYPE_USHORT: op = "movzwl"; break;
+	case TYPE_INT:    case TYPE_UINT:
+	case TYPE_LONG:   case TYPE_ULONG:
+	case TYPE_POINTER:
+		op = "movl"; 
+		break;
+	default:
+		internal_error(state, ins, "unknown type in load");
+		op = "<invalid opcode>";
+		break;
+	}
+	fprintf(fp, "\t%s (%s), %s\n",
+		op, 
 		reg(state, src, REGCM_GPR32),
-		reg(state, dst, REGCM_GPR8_LO | REGCM_GPR16 | REGCM_GPR32));
+		reg(state, dst, REGCM_GPR32));
 }
 
 
@@ -18283,7 +19135,7 @@ static void print_op_branch(struct compile_state *state,
 	struct triple *branch, FILE *fp)
 {
 	const char *bop = "j";
-	if (branch->op == OP_JMP) {
+	if ((branch->op == OP_JMP) || (branch->op == OP_CALL)) {
 		if (TRIPLE_RHS(branch->sizes) != 0) {
 			internal_error(state, branch, "jmp with condition?");
 		}
@@ -18325,8 +19177,15 @@ static void print_op_branch(struct compile_state *state,
 	}
 	fprintf(fp, "\t%s L%s%lu\n",
 		bop, 
-		state->label_prefix,
+		state->compiler->label_prefix,
 		(unsigned long)(TARG(branch, 0)->u.cval));
+}
+
+static void print_op_ret(struct compile_state *state,
+	struct triple *branch, FILE *fp)
+{
+	fprintf(fp, "\tjmp *%s\n",
+		reg(state, RHS(branch, 0), REGCM_GPR32));
 }
 
 static void print_op_set(struct compile_state *state,
@@ -18393,7 +19252,7 @@ static void print_sdecl(struct compile_state *state,
 	fprintf(fp, ".section \"" DATA_SECTION "\"\n");
 	fprintf(fp, ".balign %d\n", align_of(state, ins->type));
 	fprintf(fp, "L%s%lu:\n", 
-		state->label_prefix, (unsigned long)(ins->u.cval));
+		state->compiler->label_prefix, (unsigned long)(ins->u.cval));
 	print_const(state, MISC(ins, 0), fp);
 	fprintf(fp, ".section \"" TEXT_SECTION "\"\n");
 		
@@ -18450,7 +19309,11 @@ static void print_instruction(struct compile_state *state,
 	case OP_JMP_SMORE:   case OP_JMP_UMORE:
 	case OP_JMP_SLESSEQ: case OP_JMP_ULESSEQ:
 	case OP_JMP_SMOREEQ: case OP_JMP_UMOREEQ:
+	case OP_CALL:
 		print_op_branch(state, ins, fp);
+		break;
+	case OP_RET:
+		print_op_ret(state, ins, fp);
 		break;
 	case OP_SET_EQ:      case OP_SET_NOTEQ:
 	case OP_SET_SLESS:   case OP_SET_ULESS:
@@ -18493,7 +19356,7 @@ static void print_instruction(struct compile_state *state,
 			return;
 		}
 		fprintf(fp, "L%s%lu:\n", 
-			state->label_prefix, (unsigned long)(ins->u.cval));
+			state->compiler->label_prefix, (unsigned long)(ins->u.cval));
 		break;
 		/* Ignore OP_PIECE */
 	case OP_PIECE:
@@ -18595,40 +19458,26 @@ static void print_tokens(struct compile_state *state)
 	} while(tk->tok != TOK_EOF);
 }
 
-static void call_main(struct compile_state *state)
-{
-	struct triple *call;
-	call = new_triple(state, OP_CALL, &void_func, -1, -1);
-	call->type = &void_type;
-	MISC(call, 0) = state->main_function;
-	flatten(state, state->first, call);
-}
-
-static void compile(const char *filename, const char *ofilename, 
-	unsigned long features, int debug, int opt, const char *label_prefix)
+static void compile(const char *filename, 
+	struct compiler_state *compiler, struct arch_state *arch)
 {
 	int i;
 	struct compile_state state;
 	struct triple *ptr;
 	memset(&state, 0, sizeof(state));
+	state.compiler = compiler;
+	state.arch     = arch;
 	state.file = 0;
 	for(i = 0; i < sizeof(state.token)/sizeof(state.token[0]); i++) {
 		memset(&state.token[i], 0, sizeof(state.token[i]));
 		state.token[i].tok = -1;
 	}
-	/* Remember the debug settings */
-	state.features = features;
-	state.debug    = debug;
-	state.optimize = opt;
 	/* Remember the output filename */
-	state.ofilename = ofilename;
-	state.output    = fopen(state.ofilename, "w");
+	state.output    = fopen(state.compiler->ofilename, "w");
 	if (!state.output) {
 		error(&state, 0, "Cannot open output file %s\n",
-			ofilename);
+			state.compiler->ofilename);
 	}
-	/* Remember the label prefix */
-	state.label_prefix = label_prefix;
 	/* Prep the preprocessor */
 	state.if_depth = 0;
 	state.if_value = 0;
@@ -18642,6 +19491,7 @@ static void compile(const char *filename, const char *ofilename,
 	state.i_continue = lookup(&state, "continue", 8);
 	state.i_break    = lookup(&state, "break", 5);
 	state.i_default  = lookup(&state, "default", 7);
+	state.i_return   = lookup(&state, "return", 6);
 
 	/* Allocate beginning bounding labels for the function list */
 	state.first = label(&state);
@@ -18652,6 +19502,12 @@ static void compile(const char *filename, const char *ofilename,
 	use_triple(ptr, ptr);
 	flatten(&state, state.first, ptr);
 
+	/* Allocate a label for the pool of global variables */
+	state.global_pool = label(&state);
+	state.global_pool->id |= TRIPLE_FLAG_VOLATILE;
+	flatten(&state, state.first, state.global_pool);
+
+
 	/* Enter the globl definition scope */
 	start_scope(&state);
 	register_builtins(&state);
@@ -18660,11 +19516,12 @@ static void compile(const char *filename, const char *ofilename,
 	print_tokens(&state);
 #endif	
 	decls(&state);
+
 	/* Exit the global definition scope */
 	end_scope(&state);
 
-	/* Call the main function */
-	call_main(&state);
+	/* Join all of the functions into one giant function */
+	join_functions(&state);
 
 	/* Now that basic compilation has happened 
 	 * optimize the intermediate code 
@@ -18672,7 +19529,7 @@ static void compile(const char *filename, const char *ofilename,
 	optimize(&state);
 
 	generate_code(&state);
-	if (state.debug) {
+	if (state.compiler->debug) {
 		fprintf(stderr, "done\n");
 	}
 }
@@ -18704,62 +19561,58 @@ static void arg_error(char *fmt, ...)
 int main(int argc, char **argv)
 {
 	const char *filename;
-	const char *ofilename;
-	const char *label_prefix;
-	unsigned long features;
-	int last_argc;
-	int debug;
-	int optimize;
-	features = 0;
-	label_prefix = "";
-	ofilename = "auto.inc";
-	optimize = 0;
-	debug = 0;
-	last_argc = -1;
-	while((argc > 1) && (argc != last_argc)) {
-		last_argc = argc;
-		if (strncmp(argv[1], "--debug=", 8) == 0) {
-			debug = atoi(argv[1] + 8);
-			argv++;
-			argc--;
-		}
-		else if (strncmp(argv[1], "--label-prefix=", 15) == 0) {
-			label_prefix= argv[1] + 15;
-			argv++;
-			argc--;
-		}
-		else if ((strcmp(argv[1],"-O") == 0) ||
-			(strcmp(argv[1], "-O1") == 0)) {
-			optimize = 1;
-			argv++;
-			argc--;
-		}
-		else if (strcmp(argv[1],"-O2") == 0) {
-			optimize = 2;
-			argv++;
-			argc--;
-		}
-		else if ((strcmp(argv[1], "-o") == 0) && (argc > 2)) {
-			ofilename = argv[2];
+	struct compiler_state compiler;
+	struct arch_state arch;
+	int all_opts;
+	init_compiler_state(&compiler);
+	init_arch_state(&arch);
+	filename = 0;
+	all_opts = 0;
+	while(argc > 1) {
+		if (!all_opts && (strcmp(argv[1], "-o") == 0) && (argc > 2)) {
+			compiler.ofilename = argv[2];
 			argv += 2;
 			argc -= 2;
 		}
-		else if (strncmp(argv[1], "-m", 2) == 0) {
+		else if (!all_opts && argv[1][0] == '-') {
 			int result;
-			result = arch_encode_feature(argv[1] + 2, &features);
+			result = -1;
+			if (strcmp(argv[1], "--") == 0) {
+				result = 0;
+				all_opts = 1;
+			}
+			else if (strncmp(argv[1],"-O", 2) == 0) {
+				result = compiler_encode_flag(&compiler, argv[1]);
+			}
+			else if (strncmp(argv[1], "--label-prefix=", 15) == 0) {
+				result = compiler_encode_flag(&compiler, argv[1]+2);
+			}
+			else if (strncmp(argv[1], "-f", 2) == 0) {
+				result = compiler_encode_flag(&compiler, argv[1]+2);
+			}
+			else if (strncmp(argv[1], "-m", 2) == 0) {
+				result = arch_encode_flag(&arch, argv[1]+2);
+			}
 			if (result < 0) {
-				arg_error("Invalid feature specified: %s\n",
-					argv[1] + 2);
+				arg_error("Invalid option specified: %s\n",
+					argv[1]);
 			}
 			argv++;
 			argc--;
 		}
+		else {
+			if (filename) {
+				arg_error("Only one filename may be specified\n");
+			}
+			filename = argv[1];
+			argv++;
+			argc--;
+		}
 	}
-	if (argc != 2) {
-		arg_error("Wrong argument count %d\n", argc);
+	if (!filename) {
+		arg_error("No filename specified\n");
 	}
-	filename = argv[1];
-	compile(filename, ofilename, features, debug, optimize, label_prefix);
+	compile(filename, &compiler, &arch);
 
 	return 0;
 }

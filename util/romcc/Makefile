@@ -1,5 +1,5 @@
-VERSION:=0.36
-RELEASE_DATE:=10 October 2003
+VERSION:=0.37
+RELEASE_DATE:=21 October 2003
 PACKAGE:=romcc
 
 
@@ -25,6 +25,7 @@ LINUX_TESTS=\
 	linux_test5.c \
 	linux_test6.c \
 	linux_test7.c \
+	linux_test8.c \
 
 TESTS=\
 	hello_world.c \
@@ -89,6 +90,10 @@ TESTS=\
 	simple_test66.c \
 	simple_test67.c \
 	simple_test68.c \
+	simple_test69.c \
+	simple_test71.c \
+	simple_test72.c \
+	simple_test73.c \
 	raminit_test.c \
 	raminit_test2.c \
 	raminit_test3.c \
@@ -117,8 +122,10 @@ TEST_ASM_O_mmmx_msse:=$(patsubst %.c, tests/%.S-O-mmmx-msse, $(TESTS))
 TEST_ASM_O2_mmmx     :=$(patsubst %.c, tests/%.S-O2-mmmx, $(TESTS))
 TEST_ASM_O2_msse     :=$(patsubst %.c, tests/%.S-O2-msse, $(TESTS))
 TEST_ASM_O2_mmmx_msse:=$(patsubst %.c, tests/%.S-O2-mmmx-msse, $(TESTS))
-TEST_ASM_ALL:= $(TEST_ASM) $(TEST_ASM_O) $(TEST_ASM_O2) $(TEST_ASM_mmmx) $(TEST_ASM_msse) $(TEST_ASM_mmmx_msse) $(TEST_ASM_O_mmmx) $(TEST_ASM_O_msse) $(TEST_ASM_O_mmmx_msse) $(TEST_ASM_O2_mmmx) $(TEST_ASM_O2_msse) $(TEST_ASM_O2_mmmx_msse)
-TEST_ASM_MOST:= $(TEST_ASM_O) $(TEST_ASM_O_mmmx) $(TEST_ASM_O_msse) $(TEST_ASM_O_mmmx_msse) $(TEST_ASM_O2) $(TEST_ASM_O2_mmmx) $(TEST_ASM_O2_msse) $(TEST_ASM_O2_mmmx_msse)
+TEST_ASM_O2_mmmx_call     :=$(patsubst %.c, tests/%.S-O2-mmmx-call, $(TESTS))
+TEST_ASM_O2_mmmx_msse_call:=$(patsubst %.c, tests/%.S-O2-mmmx-msse-call, $(TESTS))
+TEST_ASM_ALL:= $(TEST_ASM) $(TEST_ASM_O) $(TEST_ASM_O2) $(TEST_ASM_mmmx) $(TEST_ASM_msse) $(TEST_ASM_mmmx_msse) $(TEST_ASM_O_mmmx) $(TEST_ASM_O_msse) $(TEST_ASM_O_mmmx_msse) $(TEST_ASM_O2_mmmx) $(TEST_ASM_O2_msse) $(TEST_ASM_O2_mmmx_msse) $(TEST_ASM_O2_mmmx_call) $(TEST_ASM_O2_mmmx_msse_call)
+TEST_ASM_MOST:= $(TEST_ASM_O) $(TEST_ASM_O_mmmx) $(TEST_ASM_O_msse) $(TEST_ASM_O_mmmx_msse) $(TEST_ASM_O2) $(TEST_ASM_O2_mmmx) $(TEST_ASM_O2_msse) $(TEST_ASM_O2_mmmx_msse) $(TEST_ASM_O2_mmmx_call) $(TEST_ASM_O2_mmmx_msse_call)
 TEST_OBJ:=$(patsubst %.c, tests/%.o, $(TESTS))
 TEST_ELF:=$(patsubst %.c, tests/%.elf, $(TESTS))
 LINUX_ELF:=$(patsubst %.c, tests/%.elf, $(LINUX_TESTS))
@@ -128,48 +135,56 @@ FAIL_SRCS:=$(patsubst %, tests/%, $(FAIL_TESTS))
 FAIL_OUT:=$(patsubst %.c, tests/%.out, $(FAIL_TESTS))
 
 
+ROMCC_OPTS=-fmax-allocation-passes=8 -fdebug-live-range-conflicts
+
 $(TEST_ASM): %.S: %.c romcc
-	export ALLOC_CHECK_=2; ./romcc -o $@ $< > $*.debug
+	export ALLOC_CHECK_=2; ./romcc $(ROMCC_OPTS) -o $@ $< > $*.debug
 
 $(TEST_ASM_O): %.S-O: %.c romcc
-	export ALLOC_CHECK_=2; ./romcc -O -o $@ $< > $*.debug
+	export ALLOC_CHECK_=2; ./romcc $(ROMCC_OPTS) -O -o $@ $< > $*.debug
 
 $(TEST_ASM_O2): %.S-O2: %.c romcc
-	export ALLOC_CHECK_=2; ./romcc -O2 -o $@ $< > $*.debug
+	export ALLOC_CHECK_=2; ./romcc $(ROMCC_OPTS) -O2 -o $@ $< > $*.debug
 
 
 $(TEST_ASM_mmmx): %.S-mmmx: %.c romcc
-	export ALLOC_CHECK_=2; ./romcc -mmmx -o $@ $< > $*.debug
+	export ALLOC_CHECK_=2; ./romcc $(ROMCC_OPTS) -mmmx -o $@ $< > $*.debug
 
 $(TEST_ASM_msse): %.S-msse: %.c romcc
-	export ALLOC_CHECK_=2; ./romcc -msse -o $@ $< > $*.debug
+	export ALLOC_CHECK_=2; ./romcc $(ROMCC_OPTS) -msse -o $@ $< > $*.debug
 
 $(TEST_ASM_mmmx_msse): %.S-mmmx-msse: %.c romcc
-	export ALLOC_CHECK_=2; ./romcc -mmmx -msse -o $@ $< > $*.debug
+	export ALLOC_CHECK_=2; ./romcc $(ROMCC_OPTS) -mmmx -msse -o $@ $< > $*.debug
 
 
 $(TEST_ASM_O_mmmx): %.S-O-mmmx: %.c romcc
-	export ALLOC_CHECK_=2; ./romcc -O -mmmx -o $@ $< > $*.debug
+	export ALLOC_CHECK_=2; ./romcc $(ROMCC_OPTS) -O  -mmmx -o $@ $< > $*.debug
 
 $(TEST_ASM_O_msse): %.S-O-msse: %.c romcc
-	export ALLOC_CHECK_=2; ./romcc -O -msse -o $@ $< > $*.debug
+	export ALLOC_CHECK_=2; ./romcc $(ROMCC_OPTS) -O  -msse -o $@ $< > $*.debug
 
 $(TEST_ASM_O_mmmx_msse): %.S-O-mmmx-msse: %.c romcc
-	export ALLOC_CHECK_=2; ./romcc -O -mmmx -msse -o $@ $< > $*.debug
+	export ALLOC_CHECK_=2; ./romcc $(ROMCC_OPTS) -O  -mmmx -msse -o $@ $< > $*.debug
 
 
 $(TEST_ASM_O2_mmmx): %.S-O2-mmmx: %.c romcc
-	export ALLOC_CHECK_=2; ./romcc -O2 -mmmx -o $@ $< > $*.debug
+	export ALLOC_CHECK_=2; ./romcc $(ROMCC_OPTS) -O2  -mmmx -o $@ $< > $*.debug
 
 $(TEST_ASM_O2_msse): %.S-O2-msse: %.c romcc
-	export ALLOC_CHECK_=2; ./romcc -O2 -msse -o $@ $< > $*.debug
+	export ALLOC_CHECK_=2; ./romcc $(ROMCC_OPTS) -O2  -msse -o $@ $< > $*.debug
 
 $(TEST_ASM_O2_mmmx_msse): %.S-O2-mmmx-msse: %.c romcc
-	export ALLOC_CHECK_=2; ./romcc -O2 -mmmx -msse -o $@ $< > $*.debug
+	export ALLOC_CHECK_=2; ./romcc $(ROMCC_OPTS) -O2 -mmmx -msse -o $@ $< > $*.debug
+
+$(TEST_ASM_O2_mmmx_call): %.S-O2-mmmx-call: %.c romcc
+	export ALLOC_CHECK_=2; ./romcc $(ROMCC_OPTS) -O2 -mmmx -fno-always-inline -o $@ $< > $*.debug
+
+$(TEST_ASM_O2_mmmx_msse_call): %.S-O2-mmmx-msse-call: %.c romcc
+	export ALLOC_CHECK_=2; ./romcc $(ROMCC_OPTS) -O2 -mmmx -msse -fno-always-inline -o $@ $< > $*.debug
 
 
 $(FAIL_OUT): %.out: %.c romcc
-	export ALLOC_CHECK_=2; if ./romcc -O2 -o $*.S $< > $*.debug 2> $@ ; then exit 1 ; else exit 0 ; fi
+	export ALLOC_CHECK_=2; if ./romcc $(ROMCC_OPTS) -O2  -o $*.S $< > $*.debug 2> $@ ; then exit 1 ; else exit 0 ; fi
 
 $(TEST_OBJ): %.o: %.S-O2-mmmx
 	as $< -o $@

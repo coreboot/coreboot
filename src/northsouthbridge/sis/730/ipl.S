@@ -32,6 +32,7 @@
 #include "ipl.h"
 
 .code16
+
 #ifdef STD_FLASH
 .org 0xfe00
 #endif
@@ -213,6 +214,7 @@ sis730ipl_start:
 	movw	%ax, %ss
 	movw	$SPL_RAM_SEG, %ax
 	movw	%ax, %es
+
 #ifdef STD_FLASH
 	movw	$0xf000, %ax
 	movw	%ax, %ds 
@@ -225,8 +227,7 @@ sis730ipl_start:
 
 	movw	$DOC_WIN_SEG, %ax
 	movw	%ax, %ds
-
-#else
+#else /* !STD_FLASH */
 	movw	$sis950_init_table, %si		# unlock SiS 950 LPC
 	movw	$0x05, %cx			# select Clock Selection
 	movw	$0x2e, %dx			# and Flash ROM I/F 
@@ -294,7 +295,7 @@ doc_delay:
 	incw	%bp				# increse current page number
 	cmpw	$128, %bp			# moved 63 KB ??
 	jl	read_next_page			# no, read next page
-#endif /*else STD_FLASH */
+#endif /* STD_FLASH */
 
 sis730ipl_end:
 	jmp	spl_vector			# jump to SPL vector
@@ -415,15 +416,14 @@ pci_init_table:
 #ifdef STD_FLASH
 	.org 0xfff0
 reset_vector:
-	.byte	0xea				# jmp to fe00:0000, where IPL
-	.word	0xfe00, 0xf000		# starts in DoC
-
-#else
+	.byte	0xea				# jmp to f000:fe00, where IPL
+	.word	0xfe00, 0xf000			# starts in Standard Flash
+#else /* !STD_FLASH i.e. DoC Mil */
 	.org 0x1f0
 reset_vector:
 	.byte	0xea				# jmp to fe00:0000, where IPL
 	.word	0x0000, DOC_WIN_SEG		# starts in DoC
-#endif
+#endif /* STD_FLASH */
 
 spl_vector:
 	.byte	0xea				# jmp to 8000:0000, where SPL

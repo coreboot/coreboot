@@ -23,9 +23,11 @@
 #include <rom/fill_inbuf.h>
 #include <string.h>
 #include <stdlib.h>
+
 #if USE_ELF_BOOT
 #include <boot/elf.h>
 #endif
+
 #include "do_inflate.h"
 
 #ifdef USE_TFTP
@@ -42,16 +44,14 @@ int linuxbiosmain(unsigned long base, unsigned long totalram)
 	unsigned long initrd_start, initrd_size;
 
 #ifdef USE_TFTP
-char buffer[256];
-char *bufptr;
-int buflen;
-#endif
+	char buffer[256];
+	char *bufptr;
+	int buflen;
+#endif /* USE_TFTP */
 
 #if USE_ELF_BOOT
 	return elfboot(totalram);
-#else
-
-
+#else /* !ELF_BOOT */
 	printk("\n");
 	printk("Welcome to start32, the open sourced starter.\n");
 	printk("This space will eventually hold more diagnostic information.\n");
@@ -66,7 +66,7 @@ int buflen;
 	cmd_line = CMD_LINE;
 #else
 	cmd_line = "root=/dev/hda1 single";
-#endif
+#endif /* CMD_LINE */
 
 #ifdef LOADER_SETUP
 	loader_setup(base,
@@ -76,21 +76,21 @@ int buflen;
 		     &cmd_line,
 		     &zkernel_start,
 		     &zkernel_mask);
-#endif
+#endif /* LOADER_SETUP */
 
 
 	post_code(0xf1);
 
 #ifdef PYRO_TEST1
-printk(KERN_NOTICE "LiLa loader, press a key to test netboot_init:");
-buflen = sizeof(buffer);
-ttys0_rx_line(buffer, &buflen);
+	printk(KERN_NOTICE "LiLa loader, press a key to test netboot_init:");
+	buflen = sizeof(buffer);
+	ttys0_rx_line(buffer, &buflen);
 #endif
 
 #ifdef USE_TFTP
 	netboot_init();
 	printk(KERN_NOTICE "\nnetboot_init test complete, all is well (I hope!)\n");
-#endif
+#endif /* USE_TFTP */
 		
 	DBG("Gunzip setup\n");
 	gunzip_setup();
@@ -110,10 +110,10 @@ ttys0_rx_line(buffer, &buflen);
 	buflen = 512;	// I know, not it's purpose, 
 				// but it isn't being used at this point.
 	bufptr = (char *) initrd_start = 0x0400000;
-	while(buflen == 512) {
+	while (buflen == 512) {
 		buflen = tftp_fetchone(bufptr);
 #ifdef DEBUG_TFTP
-printk("Got block, bufptr = %lu, size= %u\n",bufptr, buflen);
+		printk("Got block, bufptr = %lu, size= %u\n",bufptr, buflen);
 #endif
 		bufptr += buflen;
 	}
@@ -130,7 +130,7 @@ printk("Got block, bufptr = %lu, size= %u\n",bufptr, buflen);
 	printk("Booting with command line: %s\n",cmd_line);
 
 
-#endif
+#endif /* TFTP_INITRD */
 
 	/* parameter passing to linux. You have to get the pointer to the
 	 * empty_zero_page, then fill it in. 
@@ -181,5 +181,5 @@ printk("Got block, bufptr = %lu, size= %u\n",bufptr, buflen);
 			     :: "i" (0x100000));
 
 	return 0;		/* It should not ever return */
-#endif
+#endif /* ELF_BOOT */
 }

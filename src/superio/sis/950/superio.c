@@ -78,32 +78,36 @@ enable_lpt(struct superio *s)
 static void
 finishup(struct superio *s)
 {
-  enter_pnp(s);
+	enter_pnp(s);
 
-  // don't fool with IDE just yet ...
-  if (s->floppy)
-    enable_floppy(s);
-  
-  if (s->com1.enable)
-    enable_com(s, PNP_COM1_DEVICE);
-  if (s->com2.enable)
-    enable_com(s, PNP_COM2_DEVICE);
+	// don't fool with IDE just yet ...
+	if (s->floppy)
+		enable_floppy(s);
 
-  if (s->lpt)
-    enable_lpt(s);
-  
-  exit_pnp(s);
+	if (s->com1.enable)
+		enable_com(s, PNP_COM1_DEVICE);
+	if (s->com2.enable)
+		enable_com(s, PNP_COM2_DEVICE);
+
+	if (s->lpt)
+		enable_lpt(s);
+
+	exit_pnp(s);
 }
 
 struct superio_control superio_sis_950_control = {
-  (void *)0, (void *)0, finishup, 0x2e, "SiS 950"
+	pre_pci_init: 	(void *) 0,
+	init: 		(void *) 0,
+	finishup: 	finishup,
+	defaultport:	0x2e,
+	name:		"SiS 950"
 };
 
 #if 0
 void
 final_superio_fixup(void)
 {
-  superio_sis_950.finishup((struct superio *) 0);
+	superio_sis_950.finishup((struct superio *) 0);
 }
 #endif
 

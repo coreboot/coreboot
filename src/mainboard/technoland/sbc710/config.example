@@ -15,6 +15,7 @@ option UPDATE_MICROCODE
 option INBUF_COPY
 option DEFAULT_CONSOLE_LOGLEVEL=9
 option DEBUG
+option USE_GENERIC_ROM=1
 
 # Path to your kernel (vmlinux)
 linux ~/src/bios/linux-2.4.7-sis

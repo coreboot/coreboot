@@ -18,7 +18,18 @@ register_table:
 	.byte 0x64, 0xe4 /* slowest ram setting. banks 0, 1 */
 	.byte 0x65, 0xe4 /* banks 2, 3*/
 	.byte 0x66, 0xe4 /* banks 4, 5 */
+/* we tried increasing the drive, but that did not help  or hurt. 
+ * We will leave it at low drive for now, however. 
+ */
+#if 1
+/* the standard BIOS goes for 0x5f here, which is very high drive. 
+ * Try it out. RGM 1/26/1 */
+/* LOW DRIVE */
 	.byte 0x6d, 0x5 /* 0x4 = 24 ma on ma[2:13],we#, 24ma on ras# */
+#else
+ /* HIGH DRIVE */
+	.byte 0x6d, 0x5f /* 0x4 = 24 ma on ma[2:13],we#, 24ma on ras# */
+#endif
 	.byte 0x60, 0xff /* sdram in ALL banks. It's all we do. */
 /* set these to 0xee (128 MB VC SDRAM).  In our working code we set to 
  * 0x88, but VIA code recommends 0xee. Since we are SPD, in the end, 

@@ -26,9 +26,6 @@
 #include <stdlib.h>
 #include <boot/linuxbios_table.h>
 
-#if USE_ELF_BOOT
-#include <boot/elf.h>
-#endif
 
 #include "do_inflate.h"
 
@@ -51,9 +48,6 @@ int linuxbiosmain(unsigned long base, unsigned long totalram)
 	int buflen;
 #endif /* USE_TFTP */
 
-#if USE_ELF_BOOT
-	return elfboot(streams, get_lb_mem());
-#else /* !ELF_BOOT */
 	printk_info("\n");
 	printk_info("Welcome to start32, the open sourced starter.\n");
 	printk_info("This space will eventually hold more diagnostic information.\n");
@@ -187,5 +181,4 @@ int linuxbiosmain(unsigned long base, unsigned long totalram)
 			     :: "i" (0x100000));
 
 	return 0;		/* It should not ever return */
-#endif /* ELF_BOOT */
 }

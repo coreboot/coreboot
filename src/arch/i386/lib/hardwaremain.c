@@ -166,6 +166,11 @@ static void wait_for_other_cpus(void)
 	printk_debug("All AP CPUs stopped\n");
 }
 
+#else /* SMP */
+#define wait_for_other_cpus() do {} while(0)
+#endif /* SMP */
+
+#if SMP && MAX_PHYSICAL_CPUS
 static void remove_logical_cpus(void)
 {
 	/* To turn off hyperthreading just remove the logical
@@ -182,11 +187,11 @@ static void remove_logical_cpus(void)
 		}
 	}
 }
+#else
 
-#else /* SMP */
-#define wait_for_other_cpus() do {} while(0)
-#define remove_logical_cpus() do {} while(0)
-#endif /* SMP */
+#define remove_logical_cpus() do {} while(0) 
+
+#endif /* SMP && MAX_PHYSICAL_CPUS */
 
 
 void write_tables(struct mem_range *mem)
@@ -251,7 +256,6 @@ void hardwaremain(int boot_complete)
 	 */
 	struct mem_range *mem, *tmem;
 	unsigned long totalmem;
-	extern void linuxbiosmain(struct mem_range *mem);
 
 	// we don't call post code for this one -- since serial post could cause real 
 	// trouble.
@@ -393,15 +397,21 @@ void hardwaremain(int boot_complete)
 	write_tables(mem);
 
 
-#ifdef LINUXBIOS
-	printk_info("Jumping to linuxbiosmain()...\n");
-	// we could go to argc, argv, for main but it seems like overkill.
-	post_code(0xed);
-	linuxbiosmain(mem);
-#endif /* LINUXBIOS */
+#if USE_ELF_BOOT
+	elfboot(streams, get_lb_mem());
+#else
+	{
+		extern void linuxbiosmain(unsigned long base, unsigned long totalram);
+
+		printk_info("Jumping to linuxbiosmain()...\n");
+		// we could go to argc, argv, for main but it seems like overkill.
+		post_code(0xed);
+		for(tmem = mem; tmem->sizek; tmem++) {
+			;
+		}
+		tmem--;
+		linuxbiosmain(0, tmem->basek + tmem->sizek);
+	}
+#endif /* USE_ELF_BOOT */
 }
-
-
-
-
 

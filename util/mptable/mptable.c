@@ -1198,7 +1198,7 @@ sasEntry( void )
     /* read it into local memory */
     readEntry( &entry, sizeof( entry ) );
 
-    printf( "--\n%s\n", extendedtableEntryTypes[ entry.type ].name );
+    printf( "--\n%s\n", extendedtableEntryTypes[ entry.type - 128 ].name );
     printf( " bus ID: %d", entry.busID );
     printf( " address type: " );
     switch ( entry.addressType ) {
@@ -1229,7 +1229,7 @@ bhdEntry( void )
     /* read it into local memory */
     readEntry( &entry, sizeof( entry ) );
 
-    printf( "--\n%s\n", extendedtableEntryTypes[ entry.type ].name );
+    printf( "--\n%s\n", extendedtableEntryTypes[ entry.type - 128 ].name );
     printf( " bus ID: %d", entry.busID );
     printf( " bus info: 0x%02x", entry.busInfo );
     printf( " parent bus ID: %d", entry.busParent );
@@ -1244,7 +1244,7 @@ cbasmEntry( void )
     /* read it into local memory */
     readEntry( &entry, sizeof( entry ) );
 
-    printf( "--\n%s\n", extendedtableEntryTypes[ entry.type ].name );
+    printf( "--\n%s\n", extendedtableEntryTypes[ entry.type - 128 ].name );
     printf( " bus ID: %d", entry.busID );
     printf( " address modifier: %s\n", (entry.addressMod & 0x01) ?
                                         "subtract" : "add" );

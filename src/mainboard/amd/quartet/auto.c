@@ -205,7 +205,7 @@ static void main(void)
 	pc87360_enable_serial();
 	uart_init();
 	console_init();
-	setup_default_resource_map();
+	setup_quartet_resource_map();
 	setup_coherent_ht_domain();
 	enumerate_ht_chain(0);
 	distinguish_cpu_resets(0);

@@ -32,7 +32,7 @@
 
 \title{LinuxBIOS on AMD64}
 \author{Stefan Reinauer $<$stepan@openbios.org$>$}
-\date{November 18, 2003}
+\date{February 10th, 2004}
 
 \begin{document}
 
@@ -59,7 +59,19 @@ find errors in the following descriptions, contact
 
 
 %
-% 2 What is LinuxBIOS
+% 2 Changes
+%
+
+\section{Changes}
+ \begin{itemize}
+ \item 2003/11/18 initial release 
+ \item 2004/02/10 acpi and option rom updates
+ \end{itemize}
+
+
+
+%
+% 3 What is LinuxBIOS
 %
 
 \section{What is LinuxBIOS?}
@@ -78,7 +90,7 @@ Systems can be booted with LinuxBIOS, including embedded systems,
 Desktop PCs and Servers.
 
 %
-% 3 Build Requirements
+% 4 Build Requirements
 %
 
 \section{Build Requirements}
@@ -98,7 +110,7 @@ The following toolchain is recommended:
 \newpage
 
 %
-% 4 Getting the Sources
+% 5 Getting the Sources
 %
 
 \section{Getting the Sources}
@@ -140,7 +152,7 @@ when finished.  Most x86 hardware is currently only supported by the
 LinuxBIOS 1.0 tree.
 
 %
-% 5 LinuxBIOS configuration overview
+% 6 LinuxBIOS configuration overview
 %
 
 \section{LinuxBIOS configuration overview}
@@ -172,6 +184,10 @@ basically any point.
 
 This document describes different approaches of changing and configuring the
 LinuxBIOS source tree when building for AMD64.
+
+%
+% 7 Building LinuxBIOS
+%
 
 \section{Building LinuxBIOS}
 One of the design goals for building LinuxBIOS was to keep object files
@@ -210,6 +226,10 @@ The LinuxBIOS image filename is specified in the firmware image specific
 configuration file. The default filename for AMD's Solo motherboard is
 \texttt{solo.rom}.
 
+%
+% 8 Programming LinuxBIOS to flash memory
+%
+
 \section{Programming LinuxBIOS to flash memory}
 The image resulting from a LinuxBIOS build can be directly programmed to
 a flash device, either using a hardware flash programmer or by using the
@@ -223,6 +243,10 @@ software flash programming, find detailed information:
 \end{itemize}
 
 \newpage
+
+%
+% 9 LinuxBIOS configuration
+%
 
 \section{LinuxBIOS configuration}
 The following chapters will cope with configuring LinuxBIOS. All
@@ -787,9 +811,11 @@ decompression is needed).
 
 
 \newpage
+
 %
-% 9. Tweaking the source code
+% 10. Tweaking the source code
 % 
+
 \section{Tweaking the source code}
 Besides configuring the existing code it is sometimes necessary or
 wished to tweak certain parts of LinuxBIOS by direct changes to the
@@ -1225,7 +1251,7 @@ implementation.
 \newpage
 
 %
-% 10. LinuxBIOS Internals
+% 11. LinuxBIOS Internals
 %
 
 \section{LinuxBIOS Internals}
@@ -1382,7 +1408,112 @@ the \texttt{tftp} server.
 \newpage
 
 %
-% 11 Glossary
+% 12. Advanced Device Initialization Mechanisms
+%
+
+\section{Advanced Device Initialization Mechanisms}
+
+Like software, today's hardware is getting more and more complex. To
+stay flexible many hardware vendors start breaking hardware
+compatibility to old standards as VGA. Thus, VGA is still supported by
+most cards, but emulation has to be enabled by the firmware for the
+device to operate properly.  Also, many expansion cards are small
+discrete systems that have to initialize attached ram, download
+controller firmware and similar. Without this initialization, an
+operating system can not take advantage of the hardware, so there needs
+to be a way to address this issue. There are several alternatives:
+
+\subsection{Native LinuxBIOS Support}
+
+For some devices (ie Trident Cyberblade 3d) there is native LinuxBIOS
+support This means there is a small driver bound to the PCI id of the
+device that is called after PCI device ressources are allotted.
+
+PROs:
+ \begin{itemize}
+ \item open source
+ \item minimal driver
+ \item early control
+ \end{itemize}
+
+CONs:
+ \begin{itemize}
+ \item need an additional driver
+ \item viable for onboard devices only
+ \item not flexible for pci cards
+ \end{itemize}
+
+\subsection{Using Native Linux Support}
+
+A simple way of getting a whole lot of drivers available for LinuxBIOS
+is to reuse Linux drivers by putting a Linux kernel to flash. This
+works, because no drivers are needed to get the Linux kernel (as opposed
+to store the kernel on a harddisk connected to isa/scsi/raid storage)
+
+PROs:
+ \begin{itemize}
+ \item large number of open source drivers
+ \end{itemize}
+
+CONs:
+ \begin{itemize}
+ \item need Linux in Flash (BLOAT!)
+ \item drivers expect devices to be initialized (LSI1020/1030)
+ \item Linux only
+ \item large flash needed (4MBit minimum, normal operations 8+ MBit)
+ \end{itemize}
+
+
+\subsection{Running X86 Option ROMs}
+
+Especially SCSI/RAID controllers and graphics adapters come with a
+special option rom. This option rom usually contains x86 binary code
+that uses a legacy PCBIOS interface for device interaction. If this code
+gets executed, the device becomes operable in Linux and other operating
+systems.
+
+PROs:
+ \begin{itemize}
+ \item really flexible
+ \item no need for additional drivers on firmware layer
+ \item large number of supported devices
+ \end{itemize}
+
+CONs:
+ \begin{itemize}
+ \item non-x86 platforms need complex emulation
+ \item x86 platforms need legacy API
+ \item outdated concept
+ \end{itemize}
+
+
+\subsection{Running Open Firmware Option ROMs}
+
+Some PCI devices come with open firmware option roms. These devices are
+normally found in computers from SUN, Apple or IBM. Open Firmware is a
+instruction set architecture independent firmware standard that allows
+device specific initialization using simple, small, but flexible
+bytecode that runs with minimal footprint on all architectures that have
+an Open Firmware implementation.
+
+There is a free Open Firmware implementation available, called OpenBIOS,
+that runs on top of LinuxBIOS. See www.openbios.org
+
+PROs:
+ \begin{itemize}
+ \item architecture independence
+ \item small footprint
+ \item clean concept, less bugs
+ \end{itemize}
+
+CONs:
+ \begin{itemize}
+ \item only small number of devices come with OpenFirmware capable option roms
+ \end{itemize}
+
+
+%
+% 13 Glossary
 %
 
 \section{Glossary}
@@ -1404,7 +1535,7 @@ ROMs they can be electronically erased and reprogrammed.
 \newpage
 
 %
-% 12 Bibliography
+% 14 Bibliography
 %
 
 \section{Bibliography}

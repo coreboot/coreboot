@@ -31,6 +31,7 @@ static char rcsid[] = "$Id$";
 
 #include <cpu/p6/msr.h>
 #include <cpu/p6/mtrr.h>
+#define DEBUG
 #include <printk.h>
 
 #define arraysize(x)   (sizeof(x)/sizeof((x)[0]))
@@ -155,6 +156,23 @@ void intel_set_var_mtrr(unsigned int reg, unsigned long base, unsigned long size
 
 }
 
+
+/*
+ * fms: find most sigificant bit set.
+ *
+ * stolen from Linux Kernel Source
+ */
+static __inline__ int fms(int x)
+{
+ 	int r;
+
+	__asm__("bsrl %1,%0\n\t"
+	        "jnz 1f\n\t"
+	        "movl $0,%0\n"
+	        "1:" : "=r" (r) : "g" (x));
+	return r;
+}
+
 /* setting up variable and fixed mtrr
    ToDo: 1. still need to find out how to set size and alignment correctly
          2. should we invalid cache by INVLD or WBINVD ?? */
@@ -162,33 +180,32 @@ void intel_set_var_mtrr(unsigned int reg, unsigned long base, unsigned long size
 #ifdef ENABLE_FIXED_AND_VARIABLE_MTRRS
 void intel_set_mtrr(unsigned long rambase, unsigned long ramsizeK)
 {
+	unsigned int reg = 0;
+	unsigned long range;
 
-#ifdef SIS630
-	/* hardcoded for 128MB SDRAM, 4 MB SMA */
-	// change this 10/29/00 RGM 
-	// set WRBACk to the size of ram, and SMA to the last 4M
-	// This works because Ollie fixed Dram setup with SPD
-	// coming in, from sis sizeram, the size is size of ram - 
-	// 256M. We should probably change the way this is done. 
-	// For now, take ramsizeK, add 4M, that's it. 
-	// you have to round up the ramsize because MTRRs 
-	// have to be on a power of two boundary. 
-	// BUT: UC and WB types are allowed to overlap. 
-	// so there is no problem with letting MTRR 0 overlap MTRR 1
-	printk(KERN_INFO "set_mtrr: rambase is 0x%x, ramsizeK is 0x%x\n", 
-		rambase, ramsizeK);
+	DBG("\n");
+	while (ramsizeK != 0 && reg <= 3) {
+		intel_post(0x60 + reg);
 
-	printk(KERN_INFO "setting MTRR 0 size to 0x%x\n", 
-	       (ramsizeK + 4096) * 1024);
-	intel_set_var_mtrr(0, 0, (ramsizeK + 4096) * 1024, MTRR_TYPE_WRBACK);
-	intel_set_var_mtrr(1, (ramsizeK * 1024), 
-			   4096 * 1024, MTRR_TYPE_UNCACHABLE);
-	printk(KERN_INFO "MTRRs set\n");
+		range = 1 << fms(ramsizeK);
+		DBG("Setting variable MTRR %d, base: %dMB, range: %dMB, type: WB\n",
+		    reg, rambase >> 10, range >> 10);
 
-#else /* SIS630 */
-	printk("Setting variable MTRR 0 to %dK\n", ramsizeK);
-	intel_set_var_mtrr(0, 0, ramsizeK * 1024, MTRR_TYPE_WRBACK);
-#endif /* SIS630 */
+		intel_set_var_mtrr(reg, rambase * 1024, range * 1024, MTRR_TYPE_WRBACK);
+
+		rambase += range;
+		ramsizeK -= range;
+		reg++;
+	}
+
+	/* The "remainder" of the memory ranges. FixMe: should we secrify this range or set it
+	   as WB and trust Linux Kernel (or Intel CPU ?? ) */
+	if (ramsizeK != 0) {
+		range = 1 << (fms(ramsizeK) + 1);
+		DBG("Setting variable MTRR %d, base: %dMB, range: %dMB, type: UC\n",
+		    reg, rambase >> 10, range >> 10);
+		intel_set_var_mtrr(reg, rambase * 1024, range * 1024, MTRR_TYPE_UNCACHABLE);
+	}
 
 	intel_set_fixed_mtrr();
 
@@ -201,7 +218,7 @@ void intel_set_mtrr(unsigned long rambase, unsigned long ramsizeK)
 {
 	intel_set_var_mtrr(0, 0, ramsizeK * 1024, MTRR_TYPE_WRBACK);
 	intel_enable_var_mtrr();
-//	intel_set_fixed_mtrr();
+	//intel_set_fixed_mtrr();
 }
 #endif /* ENABLE_FIXED_AND_VARIABLE_MTRRS */
 #endif /* INTEL_PPRO_MTRR */

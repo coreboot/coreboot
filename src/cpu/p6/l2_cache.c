@@ -35,24 +35,21 @@ static char rcsid[] = "$Id$";
 
 #include <cpu/p6/msr.h>
 #include <cpu/p6/mtrr.h>
+#include <cpu/p6/l2_cache.h>
 #include <cpu/p5/cpuid.h>
 
 /* Include debugging code and outputs */
 //#define DEBUG
 #include <printk.h>
 
-static int signal_l2(unsigned int address_high,
-		     unsigned int address_low,
-		     unsigned int data_high,
-		     unsigned int data_low, int way, int command);
+static int signal_l2(unsigned int address_high, unsigned int address_low,
+		     unsigned int data_high, unsigned int data_low,
+		     int way, int command);
 static int read_l2(unsigned int address);
 static int write_l2(unsigned int address, int data);
-static int write_l2_2(unsigned int address,
-		      unsigned int data1, unsigned int data2);
-static int test_l2_address_alias(unsigned int address1,
-				 unsigned int address2,
-				 unsigned int data_high,
-				 unsigned int data_low);
+static int write_l2_2(unsigned int address, unsigned int data1, unsigned int data2);
+static int test_l2_address_alias(unsigned int address1, unsigned int address2,
+				 unsigned int data_high, unsigned int data_low);
 static int calculate_l2_latency(void);
 static int set_l2_register4(int l);
 static int calculate_l2_cache_size(void);
@@ -65,6 +62,7 @@ static void cache_disable(void)
 
 	/* Disable cache */
 	printk( KERN_INFO "Disable Cache\n");
+
 	/* Write back the cache and flush TLB */
 	asm volatile ("movl  %%cr0, %0\n\t"
 		      "orl  $0x40000000, %0\n\t"
@@ -82,6 +80,7 @@ static void cache_enable(void)
 		      "andl  $0x9fffffff, %0\n\t"
 		      "movl  %0, %%cr0\n\t"
 		      :"=r" (tmp) : : "memory");
+
 	printk( KERN_INFO "Enable Cache\n");
 }
 
@@ -118,7 +117,7 @@ int intel_l2_configure()
 	}
 
 	/* Read BBL_CR_CTL3 */
-	rdmsr(0x11e, eax, edx);
+	rdmsr(BBL_CR_CTL3, eax, edx);
 	/* If bit 23 (L2 Hardware disable) is set then done */
 	if (eax & 0x800000) {
 		DBG("L2 Hardware disabled\n");
@@ -129,7 +128,7 @@ int intel_l2_configure()
 		/* 0x630 signature setup */
 
 		/* Read EBL_CR_POWERON */
-		rdmsr(0x2a, eax, edx);
+		rdmsr(EBL_CR_POWERON, eax, edx);
 
 		/* Mask out [22-24] Clock frequency ratio */
 		eax &= 0x1c00000;
@@ -141,7 +140,7 @@ int intel_l2_configure()
 
 		cache_disable();
 		/* Read BBL_CR_CTL3 */
-		rdmsr(0x11e, eax, edx);
+		rdmsr(BBL_CR_CTL3, eax, edx);
 		/* Mask out:
 		 * [0] L2 Configured
 		 * [5] ECC Check Enable
@@ -161,7 +160,7 @@ int intel_l2_configure()
 		 */
 		eax |= 0x44000;
 		/* Write BBL_CR_CTL3 */
-		wrmsr(0x11e, eax, edx);
+		wrmsr(BBL_CR_CTL3, eax, edx);
 	} else {
 		int calc_eax;
 		int v;

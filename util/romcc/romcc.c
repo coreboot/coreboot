@@ -3,8 +3,8 @@
 #undef RELEASE_DATE
 #undef VERSION
 #define VERSION_MAJOR "0"
-#define VERSION_MINOR "64"
-#define RELEASE_DATE "28 June 2004"
+#define VERSION_MINOR "65"
+#define RELEASE_DATE "8 November 2004"
 #define VERSION VERSION_MAJOR "." VERSION_MINOR
 
 #include <stdarg.h>
@@ -582,7 +582,7 @@ struct token {
 #define OP_CBRANCH   82 /* a conditional branch */
 /* For conditional branch instructions
  * RHS(0) holds the branch condition.
- * TARG(1) holds the branch target.
+ * TARG(0) holds the branch target.
  * ->next holds where to branch to if the branch is not taken.
  * The branch target can only be a label
  */
@@ -1057,7 +1057,8 @@ struct compile_state {
 	struct file_state *file;
 	struct occurance *last_occurance;
 	const char *function;
-	struct token token[4];
+	int    token_base;
+	struct token token[6];
 	struct hash_entry *hash_table[HASH_TABLE_SIZE];
 	struct hash_entry *i_switch;
 	struct hash_entry *i_case;
@@ -2199,6 +2200,15 @@ struct triple *dup_triple(struct compile_state *state, struct triple *src)
 	return dup;
 }
 
+static struct triple *copy_triple(struct compile_state *state, struct triple *src)
+{
+	struct triple *copy;
+	copy = dup_triple(state, src);
+	copy->use = 0;
+	copy->next = copy->prev = copy;
+	return copy;
+}
+
 static struct triple *new_triple(struct compile_state *state, 
 	int op, struct type *type, int lhs, int rhs)
 {
@@ -3176,26 +3186,31 @@ static void print_blocks(struct compile_state *state, const char *func, FILE *fp
 #define TOK_FIRST_KEYWORD TOK_AUTO
 #define TOK_LAST_KEYWORD  TOK_ALIGNOF
 
-#define TOK_DEFINE      100
-#define TOK_UNDEF       101
-#define TOK_INCLUDE     102
-#define TOK_LINE        103
-#define TOK_ERROR       104
-#define TOK_WARNING     105
-#define TOK_PRAGMA      106
-#define TOK_IFDEF       107
-#define TOK_IFNDEF      108
-#define TOK_ELIF        109
-#define TOK_ENDIF       110
+#define TOK_MDEFINE     100
+#define TOK_MDEFINED    101
+#define TOK_MUNDEF      102
+#define TOK_MINCLUDE    103
+#define TOK_MLINE       104
+#define TOK_MERROR      105
+#define TOK_MWARNING    106
+#define TOK_MPRAGMA     107
+#define TOK_MIFDEF      108
+#define TOK_MIFNDEF     109
+#define TOK_MELIF       110
+#define TOK_MENDIF      111
 
-#define TOK_FIRST_MACRO TOK_DEFINE
-#define TOK_LAST_MACRO  TOK_ENDIF
+#define TOK_FIRST_MACRO TOK_MDEFINE
+#define TOK_LAST_MACRO  TOK_MENDIF
          
-#define TOK_DEFINED     111
-#define TOK_EOF         112
+#define TOK_MIF         112
+#define TOK_MELSE       113
+#define TOK_MIDENT      114
+
+#define TOK_EOL		115
+#define TOK_EOF         116
 
 static const char *tokens[] = {
-[TOK_UNKNOWN     ] = "unknown",
+[TOK_UNKNOWN     ] = ":unknown:",
 [TOK_SPACE       ] = ":space:",
 [TOK_SEMI        ] = ";",
 [TOK_LBRACE      ] = "{",
@@ -3290,19 +3305,23 @@ static const char *tokens[] = {
 [TOK_ATTRIBUTE   ] = "__attribute__",
 [TOK_ALIGNOF     ] = "__alignof__",
 
-[TOK_DEFINE      ] = "define",
-[TOK_UNDEF       ] = "undef",
-[TOK_INCLUDE     ] = "include",
-[TOK_LINE        ] = "line",
-[TOK_ERROR       ] = "error",
-[TOK_WARNING     ] = "warning",
-[TOK_PRAGMA      ] = "pragma",
-[TOK_IFDEF       ] = "ifdef",
-[TOK_IFNDEF      ] = "ifndef",
-[TOK_ELIF        ] = "elif",
-[TOK_ENDIF       ] = "endif",
+[TOK_MDEFINE     ] = "#define",
+[TOK_MDEFINED    ] = "#defined",
+[TOK_MUNDEF      ] = "#undef",
+[TOK_MINCLUDE    ] = "#include",
+[TOK_MLINE       ] = "#line",
+[TOK_MERROR      ] = "#error",
+[TOK_MWARNING    ] = "#warning",
+[TOK_MPRAGMA     ] = "#pragma",
+[TOK_MIFDEF      ] = "#ifdef",
+[TOK_MIFNDEF     ] = "#ifndef",
+[TOK_MELIF       ] = "#elif",
+[TOK_MENDIF      ] = "#endif",
 
-[TOK_DEFINED     ] = "defined",
+[TOK_MIF         ] = "#if",
+[TOK_MELSE       ] = "#else",
+[TOK_MIDENT      ] = "#:ident:",
+[TOK_EOL         ] = "EOL", 
 [TOK_EOF         ] = "EOF",
 };
 
@@ -3366,10 +3385,19 @@ static void ident_to_macro(struct compile_state *state, struct token *tk)
 {
 	struct hash_entry *entry;
 	entry = tk->ident;
-	if (entry && 
-		(entry->tok >= TOK_FIRST_MACRO) &&
-		(entry->tok <= TOK_LAST_MACRO)) {
+	if (!entry)
+		return;
+	if ((entry->tok >= TOK_FIRST_MACRO) && (entry->tok <= TOK_LAST_MACRO)) {
 		tk->tok = entry->tok;
+	}
+	else if (entry->tok == TOK_IF) {
+		tk->tok = TOK_MIF;
+	}
+	else if (entry->tok == TOK_ELSE) {
+		tk->tok = TOK_MELSE;
+	}
+	else {
+		tk->tok = TOK_MIDENT;
 	}
 }
 
@@ -3507,17 +3535,18 @@ static void register_keywords(struct compile_state *state)
 
 static void register_macro_keywords(struct compile_state *state)
 {
-	hash_keyword(state, "define",        TOK_DEFINE);
-	hash_keyword(state, "undef",         TOK_UNDEF);
-	hash_keyword(state, "include",       TOK_INCLUDE);
-	hash_keyword(state, "line",          TOK_LINE);
-	hash_keyword(state, "error",         TOK_ERROR);
-	hash_keyword(state, "warning",       TOK_WARNING);
-	hash_keyword(state, "pragma",        TOK_PRAGMA);
-	hash_keyword(state, "ifdef",         TOK_IFDEF);
-	hash_keyword(state, "ifndef",        TOK_IFNDEF);
-	hash_keyword(state, "elif",          TOK_ELIF);
-	hash_keyword(state, "endif",         TOK_ENDIF);
+	hash_keyword(state, "define",        TOK_MDEFINE);
+	hash_keyword(state, "defined",       TOK_MDEFINED);
+	hash_keyword(state, "undef",         TOK_MUNDEF);
+	hash_keyword(state, "include",       TOK_MINCLUDE);
+	hash_keyword(state, "line",          TOK_MLINE);
+	hash_keyword(state, "error",         TOK_MERROR);
+	hash_keyword(state, "warning",       TOK_MWARNING);
+	hash_keyword(state, "pragma",        TOK_MPRAGMA);
+	hash_keyword(state, "ifdef",         TOK_MIFDEF);
+	hash_keyword(state, "ifndef",        TOK_MIFNDEF);
+	hash_keyword(state, "elif",          TOK_MELIF);
+	hash_keyword(state, "endif",         TOK_MENDIF);
 }
 
 
@@ -3574,7 +3603,7 @@ static void define_macro(
 	macro->buf_len = value_len;
 	macro->buf_off = value_off;
 	macro->args    = args;
-	macro->buf = xmalloc(macro->buf_len + 2, "macro buf");
+	macro->buf = xmalloc(macro->buf_len + 1, "macro buf");
 
 	macro->argc = 0;
 	for(arg = args; arg; arg = arg->next) {
@@ -3582,8 +3611,7 @@ static void define_macro(
 	}      
 
 	memcpy(macro->buf, value, macro->buf_len);
-	macro->buf[macro->buf_len] = '\n';
-	macro->buf[macro->buf_len+1] = '\0';
+	macro->buf[macro->buf_len] = '\0';
 
 	ident->sym_define = macro;
 }
@@ -3663,6 +3691,16 @@ static int spacep(int c)
 	case '\f':
 	case '\v':
 	case '\r':
+		ret = 1;
+		break;
+	}
+	return ret;
+}
+
+static int eolp(int c)
+{
+	int ret = 0;
+	switch(c) {
 	case '\n':
 		ret = 1;
 		break;
@@ -3907,15 +3945,17 @@ static void raw_next_token(struct compile_state *state,
 		tok = TOK_EOF;
 		tokp = end;
 	}
+	/* End of Line */
+	else if (eolp(c)) {
+		tok = TOK_EOL;
+		file->line++;
+		file->report_line++;
+		file->line_start = tokp + 1;
+	}
 	/* Whitespace */
 	else if (spacep(c)) {
 		tok = TOK_SPACE;
 		while ((tokp < end) && spacep(c)) {
-			if (c == '\n') {
-				file->line++;
-				file->report_line++;
-				file->line_start = tokp + 1;
-			}
 			c = *(++tokp);
 		}
 		if (!spacep(c)) {
@@ -3928,9 +3968,7 @@ static void raw_next_token(struct compile_state *state,
 		for(tokp += 2; tokp < end; tokp++) {
 			c = *tokp;
 			if (c == '\n') {
-				file->line++;
-				file->report_line++;
-				file->line_start = tokp +1;
+				tokp--;
 				break;
 			}
 		}
@@ -3955,6 +3993,10 @@ static void raw_next_token(struct compile_state *state,
 		}
 		if (tok == TOK_UNKNOWN) {
 			error(state, 0, "unterminated comment");
+		}
+		if (state->token_base && (line != file->line)) {
+			error(state, 0, 
+				"multiline comment in preprocessor directive");
 		}
 		file->report_line += line - file->line;
 		file->line = line;
@@ -3991,7 +4033,12 @@ static void raw_next_token(struct compile_state *state,
 			error(state, 0, "unterminated string constant");
 		}
 		if (line != file->line) {
-			warning(state, 0, "multiline string constant");
+			if (state->token_base) {
+				/* Preprocessor directives cannot span lines */
+				error(state, 0, "multiline string constant");
+			} else {
+				warning(state, 0, "multiline string constant");
+			}
 		}
 		file->report_line += line - file->line;
 		file->line = line;
@@ -4031,7 +4078,12 @@ static void raw_next_token(struct compile_state *state,
 			error(state, 0, "unterminated character constant");
 		}
 		if (line != file->line) {
-			warning(state, 0, "multiline character constant");
+			if (state->token_base) {
+				/* Preprocessor directives cannot span lines */
+				error(state, 0, "multiline character constant");
+			} else {
+				warning(state, 0, "multiline character constant");
+			}
 		}
 		file->report_line += line - file->line;
 		file->line = line;
@@ -4198,7 +4250,11 @@ static void raw_next_token(struct compile_state *state,
 	file->pos = tokp + 1;
 	tk->tok = tok;
 	if (tok == TOK_IDENT) {
-		ident_to_keyword(state, tk);
+		if (state->token_base == 0) {
+			ident_to_keyword(state, tk);
+		} else {
+			ident_to_macro(state, tk);
+		}
 	}
 }
 
@@ -4230,7 +4286,7 @@ static void check_tok(struct compile_state *state, struct token *tk, int tok)
 		const char *name1, *name2;
 		name1 = tokens[tk->tok];
 		name2 = "";
-		if (tk->tok == TOK_IDENT) {
+		if ((tk->tok == TOK_IDENT) || (tk->tok == TOK_MIDENT)) {
 			name2 = tk->ident->name;
 		}
 		error(state, 0, "\tfound %s %s expected %s",
@@ -4659,439 +4715,6 @@ static int compile_macro(struct compile_state *state,
 	return 1;
 }
 
-
-static int mpeek(struct compile_state *state, int index)
-{
-	struct token *tk;
-	int rescan;
-	tk = &state->token[index + 1];
-	if (tk->tok == -1) {
-		do {
-			raw_next_token(state, state->file, tk);
-		} while(tk->tok == TOK_SPACE);
-	}
-	do {
-		rescan = 0;
-		if ((tk->tok == TOK_EOF) && 
-			(state->file != state->macro_file) &&
-			(state->file->prev)) {
-			struct file_state *file = state->file;
-			state->file = file->prev;
-			/* file->basename is used keep it */
-			if (file->report_dir != file->dirname) {
-				xfree(file->report_dir);
-			}
-			xfree(file->dirname);
-			xfree(file->buf);
-			xfree(file);
-			next_token(state, tk);
-			rescan = 1;
-		}
-		else if (tk->ident && tk->ident->sym_define) {
-			rescan = compile_macro(state, &state->file, tk);
-			if (rescan) {
-				next_token(state, tk);
-			}
-				
-		}
-	} while(rescan);
-	/* Don't show the token on the next line */
-	if (state->macro_line < state->macro_file->line) {
-		return TOK_EOF;
-	}
-	return tk->tok;
-}
-
-static void meat(struct compile_state *state, int index, int tok)
-{
-	int i;
-	int next_tok;
-	next_tok = mpeek(state, index);
-	if (next_tok != tok) {
-		check_tok(state, &state->token[index + 1], tok);
-	}
-
-	/* Free the old token value */
-	if (state->token[index].str_len) {
-		memset((void *)(state->token[index].val.str), -1, 
-			state->token[index].str_len);
-		xfree(state->token[index].val.str);
-	}
-	for(i = index; i < sizeof(state->token)/sizeof(state->token[0]) - 1; i++) {
-		state->token[i] = state->token[i + 1];
-	}
-	memset(&state->token[i], 0, sizeof(state->token[i]));
-	state->token[i].tok = -1;
-}
-
-static int mpeek_raw(struct compile_state *state, int index)
-{
-	struct token *tk;
-	int rescan;
-	tk = &state->token[index + 1];
-	if (tk->tok == -1) {
-		do {
-			raw_next_token(state, state->file, tk);
-		} while(tk->tok == TOK_SPACE);
-	}
-	do {
-		rescan = 0;
-		if ((tk->tok == TOK_EOF) && 
-			(state->file != state->macro_file) &&
-			(state->file->prev)) {
-			struct file_state *file = state->file;
-			state->file = file->prev;
-			/* file->basename is used keep it */
-			if (file->report_dir != file->dirname) {
-				xfree(file->report_dir);
-			}
-			xfree(file->dirname);
-			xfree(file->buf);
-			xfree(file);
-			next_token(state, tk);
-			rescan = 1;
-		}
-	} while(rescan);
-	/* Don't show the token on the next line */
-	if (state->macro_line < state->macro_file->line) {
-		return TOK_EOF;
-	}
-	return tk->tok;
-}
-
-static void meat_raw(struct compile_state *state, int index, int tok)
-{
-	int next_tok;
-	int i;
-	next_tok = mpeek_raw(state, index);
-	if (next_tok != tok) {
-		check_tok(state, &state->token[index + 1], tok);
-	}
-
-	/* Free the old token value */
-	if (state->token[index].str_len) {
-		memset((void *)(state->token[index].val.str), -1, 
-			state->token[index].str_len);
-		xfree(state->token[index].val.str);
-	}
-	for(i = index; i < sizeof(state->token)/sizeof(state->token[0]) - 1; i++) {
-		state->token[i] = state->token[i + 1];
-	}
-	memset(&state->token[i], 0, sizeof(state->token[i]));
-	state->token[i].tok = -1;
-}
-
-static long_t mcexpr(struct compile_state *state, int index);
-
-static long_t mprimary_expr(struct compile_state *state, int index)
-{
-	long_t val;
-	int tok;
-	tok = mpeek(state, index);
-	switch(tok) {
-	case TOK_LPAREN:
-		meat(state, index, TOK_LPAREN);
-		val = mcexpr(state, index);
-		meat(state, index, TOK_RPAREN);
-		break;
-	case TOK_LIT_INT:
-	{
-		long lval;
-		char *end;
-		meat(state, index, TOK_LIT_INT);
-		errno = 0;
-		lval = strtol(state->token[index].val.str, &end, 0);
-		if ((lval > LONG_T_MAX) || (lval < LONG_T_MIN) ||
-			(((lval == LONG_MIN) || (lval == LONG_MAX)) &&
-				(errno == ERANGE))) {
-			error(state, 0, "Integer constant `%s' to large", state->token[index].val.str);
-		}
-		val = lval;
-		break;
-	}
-	default:
-		meat(state, index, TOK_LIT_INT);
-		val = 0;
-	}
-	return val;
-}
-static long_t munary_expr(struct compile_state *state, int index)
-{
-	long_t val;
-	int tok;
-	tok = mpeek(state, index);
-	if ((tok == TOK_IDENT) && 
-		(state->token[index + 1].ident == state->i_defined)) {
-		tok = TOK_DEFINED;
-	}
-	switch(tok) {
-	case TOK_PLUS:
-		meat(state, index, TOK_PLUS);
-		val = munary_expr(state, index);
-		val = + val;
-		break;
-	case TOK_MINUS:
-		meat(state, index, TOK_MINUS);
-		val = munary_expr(state, index);
-		val = - val;
-		break;
-	case TOK_TILDE:
-		meat(state, index, TOK_BANG);
-		val = munary_expr(state, index);
-		val = ~ val;
-		break;
-	case TOK_BANG:
-		meat(state, index, TOK_BANG);
-		val = munary_expr(state, index);
-		val = ! val;
-		break;
-	case TOK_DEFINED:
-	{
-		struct hash_entry *ident;
-		int parens;
-		meat(state, index, TOK_IDENT);
-		parens = 0;
-		if (mpeek_raw(state, index) == TOK_LPAREN) {
-			meat(state, index, TOK_LPAREN);
-			parens = 1;
-		}
-		meat_raw(state, index, TOK_IDENT);
-		ident = state->token[index].ident;
-		val = ident->sym_define != 0;
-		if (parens) {
-			meat(state, index, TOK_RPAREN);
-		}
-		break;
-	}
-	default:
-		val = mprimary_expr(state, index);
-		break;
-	}
-	return val;
-	
-}
-static long_t mmul_expr(struct compile_state *state, int index)
-{
-	long_t val;
-	int done;
-	val = munary_expr(state, index);
-	do {
-		long_t right;
-		done = 0;
-		switch(mpeek(state, index)) {
-		case TOK_STAR:
-			meat(state, index, TOK_STAR);
-			right = munary_expr(state, index);
-			val = val * right;
-			break;
-		case TOK_DIV:
-			meat(state, index, TOK_DIV);
-			right = munary_expr(state, index);
-			val = val / right;
-			break;
-		case TOK_MOD:
-			meat(state, index, TOK_MOD);
-			right = munary_expr(state, index);
-			val = val % right;
-			break;
-		default:
-			done = 1;
-			break;
-		}
-	} while(!done);
-
-	return val;
-}
-
-static long_t madd_expr(struct compile_state *state, int index)
-{
-	long_t val;
-	int done;
-	val = mmul_expr(state, index);
-	do {
-		long_t right;
-		done = 0;
-		switch(mpeek(state, index)) {
-		case TOK_PLUS:
-			meat(state, index, TOK_PLUS);
-			right = mmul_expr(state, index);
-			val = val + right;
-			break;
-		case TOK_MINUS:
-			meat(state, index, TOK_MINUS);
-			right = mmul_expr(state, index);
-			val = val - right;
-			break;
-		default:
-			done = 1;
-			break;
-		}
-	} while(!done);
-
-	return val;
-}
-
-static long_t mshift_expr(struct compile_state *state, int index)
-{
-	long_t val;
-	int done;
-	val = madd_expr(state, index);
-	do {
-		long_t right;
-		done = 0;
-		switch(mpeek(state, index)) {
-		case TOK_SL:
-			meat(state, index, TOK_SL);
-			right = madd_expr(state, index);
-			val = val << right;
-			break;
-		case TOK_SR:
-			meat(state, index, TOK_SR);
-			right = madd_expr(state, index);
-			val = val >> right;
-			break;
-		default:
-			done = 1;
-			break;
-		}
-	} while(!done);
-
-	return val;
-}
-
-static long_t mrel_expr(struct compile_state *state, int index)
-{
-	long_t val;
-	int done;
-	val = mshift_expr(state, index);
-	do {
-		long_t right;
-		done = 0;
-		switch(mpeek(state, index)) {
-		case TOK_LESS:
-			meat(state, index, TOK_LESS);
-			right = mshift_expr(state, index);
-			val = val < right;
-			break;
-		case TOK_MORE:
-			meat(state, index, TOK_MORE);
-			right = mshift_expr(state, index);
-			val = val > right;
-			break;
-		case TOK_LESSEQ:
-			meat(state, index, TOK_LESSEQ);
-			right = mshift_expr(state, index);
-			val = val <= right;
-			break;
-		case TOK_MOREEQ:
-			meat(state, index, TOK_MOREEQ);
-			right = mshift_expr(state, index);
-			val = val >= right;
-			break;
-		default:
-			done = 1;
-			break;
-		}
-	} while(!done);
-	return val;
-}
-
-static long_t meq_expr(struct compile_state *state, int index)
-{
-	long_t val;
-	int done;
-	val = mrel_expr(state, index);
-	do {
-		long_t right;
-		done = 0;
-		switch(mpeek(state, index)) {
-		case TOK_EQEQ:
-			meat(state, index, TOK_EQEQ);
-			right = mrel_expr(state, index);
-			val = val == right;
-			break;
-		case TOK_NOTEQ:
-			meat(state, index, TOK_NOTEQ);
-			right = mrel_expr(state, index);
-			val = val != right;
-			break;
-		default:
-			done = 1;
-			break;
-		}
-	} while(!done);
-	return val;
-}
-
-static long_t mand_expr(struct compile_state *state, int index)
-{
-	long_t val;
-	val = meq_expr(state, index);
-	while (mpeek(state, index) == TOK_AND) {
-		long_t right;
-		meat(state, index, TOK_AND);
-		right = meq_expr(state, index);
-		val = val & right;
-	}
-	return val;
-}
-
-static long_t mxor_expr(struct compile_state *state, int index)
-{
-	long_t val;
-	val = mand_expr(state, index);
-	while (mpeek(state, index) == TOK_XOR) {
-		long_t right;
-		meat(state, index, TOK_XOR);
-		right = mand_expr(state, index);
-		val = val ^ right;
-	}
-	return val;
-}
-
-static long_t mor_expr(struct compile_state *state, int index)
-{
-	long_t val;
-	val = mxor_expr(state, index);
-	while (mpeek(state, index) == TOK_OR) {
-		long_t right;
-		meat(state, index, TOK_OR);
-		right = mxor_expr(state, index);
-		val = val | right;
-	}
-	return val;
-}
-
-static long_t mland_expr(struct compile_state *state, int index)
-{
-	long_t val;
-	val = mor_expr(state, index);
-	while (mpeek(state, index) == TOK_LOGAND) {
-		long_t right;
-		meat(state, index, TOK_LOGAND);
-		right = mor_expr(state, index);
-		val = val && right;
-	}
-	return val;
-}
-static long_t mlor_expr(struct compile_state *state, int index)
-{
-	long_t val;
-	val = mland_expr(state, index);
-	while (mpeek(state, index) == TOK_LOGOR) {
-		long_t right;
-		meat(state, index, TOK_LOGOR);
-		right = mland_expr(state, index);
-		val = val || right;
-	}
-	return val;
-}
-
-static long_t mcexpr(struct compile_state *state, int index)
-{
-	return mlor_expr(state, index);
-}
-
 static void eat_tokens(struct compile_state *state, int targ_tok)
 {
 	if (state->eat_depth > 0) {
@@ -5139,7 +4762,7 @@ static void reenter_if(struct compile_state *state, const char *name)
 {
 	in_if(state, name);
 	if ((state->eat_depth == state->if_depth) &&
-		(state->eat_targ == TOK_ELSE)) {
+		(state->eat_targ == TOK_MELSE)) {
 		state->eat_depth = 0;
 		state->eat_targ = 0;
 	}
@@ -5148,7 +4771,7 @@ static void enter_else(struct compile_state *state, const char *name)
 {
 	in_if(state, name);
 	if ((state->eat_depth == state->if_depth) &&
-		(state->eat_targ == TOK_ELSE)) {
+		(state->eat_targ == TOK_MELSE)) {
 		state->eat_depth = 0;
 		state->eat_targ = 0;
 	}
@@ -5163,378 +4786,20 @@ static void exit_if(struct compile_state *state, const char *name)
 	state->if_depth -= 1;
 }
 
-static void preprocess(struct compile_state *state, int index)
-{
-	/* Doing much more with the preprocessor would require
-	 * a parser and a major restructuring.
-	 * Postpone that for later.
-	 */
-	struct file_state *file;
-	struct token *tk;
-	int line;
-	int tok;
-	
-	file = state->file;
-	tk = &state->token[index];
-	state->macro_line = line = file->line;
-	state->macro_file = file;
-
-	next_token(state, tk);
-	ident_to_macro(state, tk);
-	if (tk->tok == TOK_IDENT) {
-		error(state, 0, "undefined preprocessing directive `%s'",
-			tk->ident->name);
-	}
-	switch(tk->tok) {
-	case TOK_LIT_INT:
-	{
-		int override_line;
-		override_line = strtoul(tk->val.str, 0, 10);
-		next_token(state, tk);
-		/* I have a cpp line marker parse it */
-		if (tk->tok == TOK_LIT_STRING) {
-			const char *token, *base;
-			char *name, *dir;
-			int name_len, dir_len;
-			name = xmalloc(tk->str_len, "report_name");
-			token = tk->val.str + 1;
-			base = strrchr(token, '/');
-			name_len = tk->str_len -2;
-			if (base != 0) {
-				dir_len = base - token;
-				base++;
-				name_len -= base - token;
-			} else {
-				dir_len = 0;
-				base = token;
-			}
-			memcpy(name, base, name_len);
-			name[name_len] = '\0';
-			dir = xmalloc(dir_len + 1, "report_dir");
-			memcpy(dir, token, dir_len);
-			dir[dir_len] = '\0';
-			file->report_line = override_line - 1;
-			file->report_name = name;
-			file->report_dir = dir;
-		}
-		break;
-	}
-	case TOK_LINE:
-		meat(state, index, TOK_LIT_INT);
-		file->report_line = strtoul(tk->val.str, 0, 10) -1;
-		if (mpeek(state, index) == TOK_LIT_STRING) {
-			const char *token, *base;
-			char *name, *dir;
-			int name_len, dir_len;
-			meat(state, index, TOK_LIT_STRING);
-			name = xmalloc(tk->str_len, "report_name");
-			token = tk->val.str + 1;
-			base = strrchr(token, '/');
-			name_len = tk->str_len - 2;
-			if (base != 0) {
-				dir_len = base - token;
-				base++;
-				name_len -= base - token;
-			} else {
-				dir_len = 0;
-				base = token;
-			}
-			memcpy(name, base, name_len);
-			name[name_len] = '\0';
-			dir = xmalloc(dir_len + 1, "report_dir");
-			memcpy(dir, token, dir_len);
-			dir[dir_len] = '\0';
-			file->report_name = name;
-			file->report_dir = dir;
-		}
-		break;
-	case TOK_UNDEF:
-	{
-		struct hash_entry *ident;
-		if (if_eat(state))  /* quit early when #if'd out */
-			break;
-
-		meat_raw(state, index, TOK_IDENT);
-		ident = tk->ident;
-
-		undef_macro(state, ident);
-		break;
-	}
-	case TOK_PRAGMA:
-		if (if_eat(state))  /* quit early when #if'd out */
-			break;
-		warning(state, 0, "Ignoring preprocessor directive: %s", 
-			tk->ident->name);
-		break;
-	case TOK_ELIF:
-		reenter_if(state, "#elif");
-		if (if_eat(state))   /* quit early when #if'd out */
-			break;
-		/* If the #if was taken the #elif just disables the following code */
-		if (if_value(state)) {
-			eat_tokens(state, TOK_ENDIF);
-		}
-		/* If the previous #if was not taken see if the #elif enables the 
-		 * trailing code.
-		 */
-		else {
-			set_if_value(state, mcexpr(state, index) != 0);
-			if (!if_value(state)) {
-				eat_tokens(state, TOK_ELSE);
-			}
-		}
-		break;
-	case TOK_IF:
-		enter_if(state);
-		if (if_eat(state))  /* quit early when #if'd out */
-			break;
-		set_if_value(state, mcexpr(state, index) != 0);
-		if (!if_value(state)) {
-			eat_tokens(state, TOK_ELSE);
-		}
-		break;
-	case TOK_IFNDEF:
-		enter_if(state);
-		if (if_eat(state))  /* quit early when #if'd out */
-			break;
-		next_token(state, tk);
-		if ((line != file->line) || (tk->tok != TOK_IDENT)) {
-			error(state, 0, "Invalid macro name");
-		}
-		set_if_value(state, tk->ident->sym_define == 0);
-		if (!if_value(state)) {
-			eat_tokens(state, TOK_ELSE);
-		}
-		break;
-	case TOK_IFDEF:
-		enter_if(state);
-		if (if_eat(state))  /* quit early when #if'd out */
-			break;
-		next_token(state, tk);
-		if ((line != file->line) || (tk->tok != TOK_IDENT)) {
-			error(state, 0, "Invalid macro name");
-		}
-		set_if_value(state, tk->ident->sym_define != 0);
-		if (!if_value(state)) {
-			eat_tokens(state, TOK_ELSE);
-		}
-		break;
-	case TOK_ELSE:
-		enter_else(state, "#else");
-		if (!if_eat(state) && if_value(state)) {
-			eat_tokens(state, TOK_ENDIF);
-		}
-		break;
-	case TOK_ENDIF:
-		exit_if(state, "#endif");
-		break;
-	case TOK_DEFINE:
-	{
-		struct hash_entry *ident;
-		struct macro_arg *args, **larg;
-		const char *start, *mstart, *ptr;
-
-		if (if_eat(state))  /* quit early when #if'd out */
-			break;
-
-		meat_raw(state, index, TOK_IDENT);
-		ident = tk->ident;
-		args = 0;
-		larg = &args;
-
-		/* Remember the start of the macro */
-		start = file->pos;
-
-		/* Find the end of the line. */
-		for(ptr = start; *ptr != '\n'; ptr++)  
-			;
-
-		/* remove the trailing whitespace */
-		while(spacep(*ptr)) {
-			ptr--;
-		}
-
-		/* Remove leading whitespace */
-		while(spacep(*start) && (start < ptr)) {
-			start++;
-		}
-		/* Remember where the macro starts */
-		mstart = start;
-
-		/* Parse macro parameters */
-		if (lparen_peek(state, state->file)) {
-			meat_raw(state, index, TOK_LPAREN);
-			
-			for(;;) {
-				struct macro_arg *narg, *arg;
-				struct hash_entry *aident;
-				int tok;
-
-				tok = mpeek_raw(state, index);
-				if (!args && (tok == TOK_RPAREN)) {
-					break;
-				}
-				else if (tok == TOK_DOTS) {
-					meat_raw(state, index, TOK_DOTS);
-					aident = state->i___VA_ARGS__;
-				} 
-				else {
-					meat_raw(state, index, TOK_IDENT);
-					aident = tk->ident;
-				}
-				
-				narg = xcmalloc(sizeof(*arg), "macro arg");
-				narg->ident = aident;
-
-				/* Verify I don't have a duplicate identifier */
-				for(arg = args; arg; arg = arg->next) {
-					if (arg->ident == narg->ident) {
-						error(state, 0, "Duplicate macro arg `%s'",
-							narg->ident->name);
-					}
-				}
-				/* Add the new argument to the end of the list */
-				*larg = narg;
-				larg = &narg->next;
-
-				if ((aident == state->i___VA_ARGS__) ||
-					(mpeek(state, index) != TOK_COMMA)) {
-					break;
-				}
-				meat_raw(state, index, TOK_COMMA);
-			}
-			meat_raw(state, index, TOK_RPAREN);
-
-			/* Get the start of the macro body */
-			mstart = file->pos;
-
-			/* Remove leading whitespace */
-			while(spacep(*mstart) && (mstart < ptr)) {
-				mstart++;
-			}
-		}
-		define_macro(state, ident, start, ptr - start + 1, 
-			mstart - start, args);
-		break;
-	}
-	case TOK_ERROR:
-	{
-		const char *end;
-		int len;
-		
-		/* Find the end of the line */
-		for(end = file->pos; *end != '\n'; end++)
-			;
-		len = (end - file->pos);
-		if (!if_eat(state)) {
-			error(state, 0, "%*.*s", len, len, file->pos);
-		}
-		file->pos = end;
-		break;
-	}
-	case TOK_WARNING:
-	{
-		const char *end;
-		int len;
-		
-		/* Find the end of the line */
-		for(end = file->pos; *end != '\n'; end++)
-			;
-		len = (end - file->pos);
-		if (!if_eat(state)) {
-			warning(state, 0, "%*.*s", len, len, file->pos);
-		}
-		file->pos = end;
-		break;
-	}
-	case TOK_INCLUDE:
-	{
-		char *name;
-		const char *ptr;
-		int local;
-		local = 0;
-		name = 0;
-		next_token(state, tk);
-		if (tk->tok == TOK_LIT_STRING) {
-			const char *token;
-			int name_len;
-			name = xmalloc(tk->str_len, "include");
-			token = tk->val.str +1;
-			name_len = tk->str_len -2;
-			if (*token == '"') {
-				token++;
-				name_len--;
-			}
-			memcpy(name, token, name_len);
-			name[name_len] = '\0';
-			local = 1;
-		}
-		else if (tk->tok == TOK_LESS) {
-			const char *start, *end;
-			start = file->pos;
-			for(end = start; *end != '\n'; end++) {
-				if (*end == '>') {
-					break;
-				}
-			}
-			if (*end == '\n') {
-				error(state, 0, "Unterminated included directive");
-			}
-			name = xmalloc(end - start + 1, "include");
-			memcpy(name, start, end - start);
-			name[end - start] = '\0';
-			file->pos = end +1;
-			local = 0;
-		}
-		else {
-			error(state, 0, "Invalid include directive");
-		}
-		/* Error if there are any characters after the include */
-		for(ptr = file->pos; *ptr != '\n'; ptr++) {
-			switch(*ptr) {
-			case ' ':
-			case '\t':
-			case '\v':
-				break;
-			default:
-				error(state, 0, "garbage after include directive");
-			}
-		}
-		if (!if_eat(state)) {
-			compile_file(state, name, local);
-		}
-		xfree(name);
-		next_token(state, tk);
-		return;
-	}
-	default:
-		/* Ignore # without a following ident */
-		if (tk->tok == TOK_IDENT) {
-			error(state, 0, "Invalid preprocessor directive: %s", 
-				tk->ident->name);
-		}
-		break;
-	}
-	/* Consume the rest of the macro line */
-	do {
-		tok = mpeek_raw(state, index);
-		meat_raw(state, index, tok);
-	} while(tok != TOK_EOF);
-	return;
-}
-
-static void token(struct compile_state *state, int index)
+static void cpp_token(struct compile_state *state, struct token *tk)
 {
 	struct file_state *file;
-	struct token *tk;
 	int rescan;
 
-	tk = &state->token[index];
 	next_token(state, tk);
 	do {
 		rescan = 0;
 		file = state->file;
-		if (tk->tok == TOK_EOF && file->prev) {
+		/* Exit out of an include directive or macro call */
+		if ((tk->tok == TOK_EOF) && 
+			(state->file && state->macro_file) &&
+			file->prev) 
+		{
 			state->file = file->prev;
 			/* file->basename is used keep it */
 			xfree(file->dirname);
@@ -5543,57 +4808,121 @@ static void token(struct compile_state *state, int index)
 			next_token(state, tk);
 			rescan = 1;
 		}
-		else if (tk->tok == TOK_MACRO) {
-			preprocess(state, index);
+	} while(rescan);
+}
+
+static void preprocess(struct compile_state *state, struct token *tk);
+
+static void token(struct compile_state *state, struct token *tk)
+{
+	int rescan;
+	cpp_token(state, tk);
+	do {
+		rescan = 0;
+		/* Process a macro directive */
+		if (tk->tok == TOK_MACRO) {
+			preprocess(state, tk);
 			rescan = 1;
 		}
+		/* Expand a macro call */
 		else if (tk->ident && tk->ident->sym_define) {
 			rescan = compile_macro(state, &state->file, tk);
 			if (rescan) {
-				next_token(state, tk);
+				cpp_token(state, tk);
 			}
 		}
+		/* Eat tokens disabled by the preprocessor */
 		else if (if_eat(state)) {
+			cpp_token(state, tk);
+			rescan = 1;
+		}
+		/* When not in macro context hide EOL */
+		else if ((tk->tok == TOK_EOL) && (state->token_base == 0)) {
 			next_token(state, tk);
 			rescan = 1;
 		}
 	} while(rescan);
 }
 
+
+static inline struct token *get_token(struct compile_state *state, int offset)
+{
+	int index;
+	index = state->token_base + offset;
+	if (index >= sizeof(state->token)/sizeof(state->token[0])) {
+		internal_error(state, 0, "token array to small");
+	}
+	return &state->token[index];
+}
+
+static struct token *do_eat_token(struct compile_state *state, int tok)
+{
+	struct token *tk;
+	int i;
+	check_tok(state, get_token(state, 1), tok);
+	
+	/* Free the old token value */
+	tk = get_token(state, 0);
+	if (tk->str_len) {
+		memset((void *)tk->val.str, -1, tk->str_len);
+		xfree(tk->val.str);
+	}
+	/* Overwrite the old token with newer tokens */
+	for(i = state->token_base; i < sizeof(state->token)/sizeof(state->token[0]) - 1; i++) {
+		state->token[i] = state->token[i + 1];
+	}
+	/* Clear the last token */
+	memset(&state->token[i], 0, sizeof(state->token[i]));
+	state->token[i].tok = -1;
+
+	/* Return the token */
+	return tk;
+}
+
+static int cpp_peek(struct compile_state *state)
+{
+	struct token *tk1;
+	tk1 = get_token(state, 1);
+	if (tk1->tok == -1) {
+		cpp_token(state, tk1);
+	}
+	return tk1->tok;
+}
+
+static struct token *cpp_eat(struct compile_state *state, int tok)
+{
+	cpp_peek(state);
+	return do_eat_token(state, tok);
+}
+
 static int peek(struct compile_state *state)
 {
-	if (state->token[1].tok == -1) {
-		token(state, 1);
+	struct token *tk1;
+	tk1 = get_token(state, 1);
+	if (tk1->tok == -1) {
+		token(state, tk1);
 	}
-	return state->token[1].tok;
+	return tk1->tok;
 }
 
 static int peek2(struct compile_state *state)
 {
-	if (state->token[1].tok == -1) {
-		token(state, 1);
+	struct token *tk1, *tk2;
+	tk1 = get_token(state, 1);
+	tk2 = get_token(state, 2);
+	if (tk1->tok == -1) {
+		token(state, tk1);
 	}
-	if (state->token[2].tok == -1) {
-		token(state, 2);
+	if (tk2->tok == -1) {
+		token(state, tk2);
 	}
-	return state->token[2].tok;
+	return tk2->tok;
 }
 
-static void eat(struct compile_state *state, int tok)
+static struct token *eat(struct compile_state *state, int tok)
 {
-	int i;
 	peek(state);
-	check_tok(state, &state->token[1], tok);
-
-	/* Free the old token value */
-	if (state->token[0].str_len) {
-		xfree((void *)(state->token[0].val.str));
-	}
-	for(i = 0; i < sizeof(state->token)/sizeof(state->token[0]) - 1; i++) {
-		state->token[i] = state->token[i + 1];
-	}
-	memset(&state->token[i], 0, sizeof(state->token[i]));
-	state->token[i].tok = -1;
+	return do_eat_token(state, tok);
 }
 
 static void compile_file(struct compile_state *state, const char *filename, int local)
@@ -5669,6 +4998,398 @@ static void compile_file(struct compile_state *state, const char *filename, int 
 	
 	process_trigraphs(state);
 	splice_lines(state);
+}
+
+static struct triple *constant_expr(struct compile_state *state);
+static void integral(struct compile_state *state, struct triple *def);
+
+static int mcexpr(struct compile_state *state)
+{
+	struct triple *cvalue;
+	cvalue = constant_expr(state);
+	integral(state, cvalue);
+	if (cvalue->op != OP_INTCONST) {
+		error(state, 0, "integer constant expected");
+	}
+	return cvalue->u.cval != 0;
+}
+
+static void preprocess(struct compile_state *state, struct token *current_token)
+{
+	/* Doing much more with the preprocessor would require
+	 * a parser and a major restructuring.
+	 * Postpone that for later.
+	 */
+	struct file_state *file;
+	int old_token_base;
+	int line;
+	int tok;
+	
+	file = state->file;
+	state->macro_line = line = file->line;
+	state->macro_file = file;
+
+	old_token_base = state->token_base;
+	state->token_base = current_token - state->token;
+
+	tok = cpp_peek(state);
+	switch(tok) {
+	case TOK_LIT_INT:
+	{
+		struct token *tk;
+		int override_line;
+		tk = cpp_eat(state, TOK_LIT_INT);
+		override_line = strtoul(tk->val.str, 0, 10);
+		/* I have a cpp line marker parse it */
+		if (cpp_peek(state) == TOK_LIT_STRING) {
+			const char *token, *base;
+			char *name, *dir;
+			int name_len, dir_len;
+			tk = cpp_eat(state, TOK_LIT_STRING);
+			name = xmalloc(tk->str_len, "report_name");
+			token = tk->val.str + 1;
+			base = strrchr(token, '/');
+			name_len = tk->str_len -2;
+			if (base != 0) {
+				dir_len = base - token;
+				base++;
+				name_len -= base - token;
+			} else {
+				dir_len = 0;
+				base = token;
+			}
+			memcpy(name, base, name_len);
+			name[name_len] = '\0';
+			dir = xmalloc(dir_len + 1, "report_dir");
+			memcpy(dir, token, dir_len);
+			dir[dir_len] = '\0';
+			file->report_line = override_line - 1;
+			file->report_name = name;
+			file->report_dir = dir;
+		}
+		break;
+	}
+	case TOK_MLINE:
+	{
+		struct token *tk;
+		cpp_eat(state, TOK_MLINE);
+		tk = eat(state, TOK_LIT_INT);
+		file->report_line = strtoul(tk->val.str, 0, 10) -1;
+		if (cpp_peek(state) == TOK_LIT_STRING) {
+			const char *token, *base;
+			char *name, *dir;
+			int name_len, dir_len;
+			tk = cpp_eat(state, TOK_LIT_STRING);
+			name = xmalloc(tk->str_len, "report_name");
+			token = tk->val.str + 1;
+			base = strrchr(token, '/');
+			name_len = tk->str_len - 2;
+			if (base != 0) {
+				dir_len = base - token;
+				base++;
+				name_len -= base - token;
+			} else {
+				dir_len = 0;
+				base = token;
+			}
+			memcpy(name, base, name_len);
+			name[name_len] = '\0';
+			dir = xmalloc(dir_len + 1, "report_dir");
+			memcpy(dir, token, dir_len);
+			dir[dir_len] = '\0';
+			file->report_name = name;
+			file->report_dir = dir;
+		}
+		break;
+	}
+	case TOK_MUNDEF:
+	{
+		struct hash_entry *ident;
+		cpp_eat(state, TOK_MUNDEF);
+		if (if_eat(state))  /* quit early when #if'd out */
+			break;
+		
+		ident = cpp_eat(state, TOK_MIDENT)->ident;
+
+		undef_macro(state, ident);
+		break;
+	}
+	case TOK_MPRAGMA:
+		cpp_eat(state, TOK_MPRAGMA);
+		if (if_eat(state))  /* quit early when #if'd out */
+			break;
+		warning(state, 0, "Ignoring pragma"); 
+		break;
+	case TOK_MELIF:
+		cpp_eat(state, TOK_MELIF);
+		reenter_if(state, "#elif");
+		if (if_eat(state))   /* quit early when #if'd out */
+			break;
+		/* If the #if was taken the #elif just disables the following code */
+		if (if_value(state)) {
+			eat_tokens(state, TOK_MENDIF);
+		}
+		/* If the previous #if was not taken see if the #elif enables the 
+		 * trailing code.
+		 */
+		else {
+			set_if_value(state, mcexpr(state));
+			if (!if_value(state)) {
+				eat_tokens(state, TOK_MELSE);
+			}
+		}
+		break;
+	case TOK_MIF:
+		cpp_eat(state, TOK_MIF);
+		enter_if(state);
+		if (if_eat(state))  /* quit early when #if'd out */
+			break;
+		set_if_value(state, mcexpr(state));
+		if (!if_value(state)) {
+			eat_tokens(state, TOK_MELSE);
+		}
+		break;
+	case TOK_MIFNDEF:
+	{
+		struct hash_entry *ident;
+
+		cpp_eat(state, TOK_MIFNDEF);
+		enter_if(state);
+		if (if_eat(state))  /* quit early when #if'd out */
+			break;
+		ident = cpp_eat(state, TOK_MIDENT)->ident;
+		set_if_value(state, ident->sym_define == 0);
+		if (!if_value(state)) {
+			eat_tokens(state, TOK_MELSE);
+		}
+		break;
+	}
+	case TOK_MIFDEF:
+	{
+		struct hash_entry *ident;
+		cpp_eat(state, TOK_MIFDEF);
+		enter_if(state);
+		if (if_eat(state))  /* quit early when #if'd out */
+			break;
+		ident = cpp_eat(state, TOK_MIDENT)->ident;
+		set_if_value(state, ident->sym_define != 0);
+		if (!if_value(state)) {
+			eat_tokens(state, TOK_MELSE);
+		}
+		break;
+	}
+	case TOK_MELSE:
+		cpp_eat(state, TOK_MELSE);
+		enter_else(state, "#else");
+		if (!if_eat(state) && if_value(state)) {
+			eat_tokens(state, TOK_MENDIF);
+		}
+		break;
+	case TOK_MENDIF:
+		cpp_eat(state, TOK_MENDIF);
+		exit_if(state, "#endif");
+		break;
+	case TOK_MDEFINE:
+	{
+		struct hash_entry *ident;
+		struct macro_arg *args, **larg;
+		const char *start, *mstart, *ptr;
+
+		cpp_eat(state, TOK_MDEFINE);
+		if (if_eat(state))  /* quit early when #if'd out */
+			break;
+
+		ident = cpp_eat(state, TOK_MIDENT)->ident;
+		args = 0;
+		larg = &args;
+
+		/* Remember the start of the macro */
+		start = file->pos;
+
+		/* Find the end of the line. */
+		for(ptr = start; *ptr != '\n'; ptr++)  
+			;
+
+		/* remove the trailing whitespace */
+		ptr-=1;
+		while(spacep(*ptr)) {
+			ptr--;
+		}
+
+		/* Remove leading whitespace */
+		while(spacep(*start) && (start < ptr)) {
+			start++;
+		}
+		/* Remember where the macro starts */
+		mstart = start;
+
+		/* Parse macro parameters */
+		if (lparen_peek(state, state->file)) {
+			cpp_eat(state, TOK_LPAREN);
+			
+			for(;;) {
+				struct macro_arg *narg, *arg;
+				struct hash_entry *aident;
+				int tok;
+
+				tok = cpp_peek(state);
+				if (!args && (tok == TOK_RPAREN)) {
+					break;
+				}
+				else if (tok == TOK_DOTS) {
+					cpp_eat(state, TOK_DOTS);
+					aident = state->i___VA_ARGS__;
+				} 
+				else {
+					aident = cpp_eat(state, TOK_MIDENT)->ident;
+				}
+				
+				narg = xcmalloc(sizeof(*arg), "macro arg");
+				narg->ident = aident;
+
+				/* Verify I don't have a duplicate identifier */
+				for(arg = args; arg; arg = arg->next) {
+					if (arg->ident == narg->ident) {
+						error(state, 0, "Duplicate macro arg `%s'",
+							narg->ident->name);
+					}
+				}
+				/* Add the new argument to the end of the list */
+				*larg = narg;
+				larg = &narg->next;
+
+				if ((aident == state->i___VA_ARGS__) ||
+					(cpp_peek(state) != TOK_COMMA)) {
+					break;
+				}
+				cpp_eat(state, TOK_COMMA);
+			}
+			cpp_eat(state, TOK_RPAREN);
+
+			/* Get the start of the macro body */
+			mstart = file->pos;
+
+			/* Remove leading whitespace */
+			while(spacep(*mstart) && (mstart < ptr)) {
+				mstart++;
+			}
+		}
+		define_macro(state, ident, start, ptr - start + 1, 
+			mstart - start, args);
+		break;
+	}
+	case TOK_MERROR:
+	{
+		const char *end;
+		int len;
+		
+		cpp_eat(state, TOK_MERROR);
+		/* Find the end of the line */
+		for(end = file->pos; *end != '\n'; end++)
+			;
+		len = (end - file->pos);
+		if (!if_eat(state)) {
+			error(state, 0, "%*.*s", len, len, file->pos);
+		}
+		file->pos = end;
+		break;
+	}
+	case TOK_MWARNING:
+	{
+		const char *end;
+		int len;
+		
+		cpp_eat(state, TOK_MWARNING);
+		/* Find the end of the line */
+		for(end = file->pos; *end != '\n'; end++)
+			;
+		len = (end - file->pos);
+		if (!if_eat(state)) {
+			warning(state, 0, "%*.*s", len, len, file->pos);
+		}
+		file->pos = end;
+		break;
+	}
+	case TOK_MINCLUDE:
+	{
+		char *name;
+		int local;
+		local = 0;
+		name = 0;
+
+		cpp_eat(state, TOK_MINCLUDE);
+		tok = peek(state);
+		if (tok == TOK_LIT_STRING) {
+			struct token *tk;
+			const char *token;
+			int name_len;
+			tk = eat(state, TOK_LIT_STRING);
+			name = xmalloc(tk->str_len, "include");
+			token = tk->val.str +1;
+			name_len = tk->str_len -2;
+			if (*token == '"') {
+				token++;
+				name_len--;
+			}
+			memcpy(name, token, name_len);
+			name[name_len] = '\0';
+			local = 1;
+		}
+		else if (tok == TOK_LESS) {
+			const char *start, *end;
+			eat(state, TOK_LESS);
+			start = file->pos;
+			for(end = start; *end != '\n'; end++) {
+				if (*end == '>') {
+					break;
+				}
+			}
+			if (*end == '\n') {
+				error(state, 0, "Unterminated include directive");
+			}
+			name = xmalloc(end - start + 1, "include");
+			memcpy(name, start, end - start);
+			name[end - start] = '\0';
+			file->pos = end;
+			local = 0;
+			eat(state, TOK_MORE);
+		}
+		else {
+			error(state, 0, "Invalid include directive");
+		}
+		/* Error if there are any tokens after the include */
+		if (cpp_peek(state) != TOK_EOL) {
+			error(state, 0, "garbage after include directive");
+		}
+		if (!if_eat(state)) {
+			compile_file(state, name, local);
+		}
+		xfree(name);
+		break;
+	}
+	case TOK_EOL:
+		/* Ignore # without a follwing ident */
+		break;
+	default:
+	{
+		const char *name1, *name2;
+		name1 = tokens[tok];
+		name2 = "";
+		if (tok == TOK_MIDENT) {
+			name2 = get_token(state, 1)->ident->name;
+		}
+		error(state, 0, "Invalid preprocessor directive: %s %s", 
+			name1, name2);
+		break;
+	}
+	}
+	/* Consume the rest of the macro line */
+	do {
+		tok = cpp_peek(state);
+		cpp_eat(state, tok);
+	} while((tok != TOK_EOF) && (tok != TOK_EOL));
+	state->token_base = old_token_base;
+	return;
 }
 
 /* Type helper functions */
@@ -7761,13 +7482,14 @@ static struct triple *mkland_expr(
 	struct triple *left, struct triple *right)
 {
 	struct triple *def, *val, *var, *jmp, *mid, *end;
+	struct triple *lstore, *rstore;
 
 	/* Generate some intermediate triples */
 	end = label(state);
 	var = variable(state, &int_type);
 	
 	/* Store the left hand side value */
-	left = write_expr(state, var, left);
+	lstore = write_expr(state, var, left);
 
 	/* Jump if the value is false */
 	jmp =  branch(state, end, 
@@ -7775,13 +7497,13 @@ static struct triple *mkland_expr(
 	mid = label(state);
 	
 	/* Store the right hand side value */
-	right = write_expr(state, var, right);
+	rstore = write_expr(state, var, right);
 
 	/* An expression for the computed value */
 	val = read_expr(state, var);
 
 	/* Generate the prog for a logical and */
-	def = mkprog(state, var, left, jmp, mid, right, end, val, 0);
+	def = mkprog(state, var, lstore, jmp, mid, rstore, end, val, 0);
 	
 	return def;
 }
@@ -10850,8 +10572,7 @@ static struct triple *character_constant(struct compile_state *state)
 	const signed char *str, *end;
 	int c;
 	int str_len;
-	eat(state, TOK_LIT_CHAR);
-	tk = &state->token[0];
+	tk = eat(state, TOK_LIT_CHAR);
 	str = tk->val.str + 1;
 	str_len = tk->str_len - 2;
 	if (str_len <= 0) {
@@ -10880,8 +10601,7 @@ static struct triple *string_constant(struct compile_state *state)
 	type->elements = 0;
 	/* The while loop handles string concatenation */
 	do {
-		eat(state, TOK_LIT_STRING);
-		tk = &state->token[0];
+		tk = eat(state, TOK_LIT_STRING);
 		str = tk->val.str + 1;
 		str_len = tk->str_len - 2;
 		if (str_len < 0) {
@@ -10915,8 +10635,7 @@ static struct triple *integer_constant(struct compile_state *state)
 	int u, l, decimal;
 	struct type *type;
 
-	eat(state, TOK_LIT_INT);
-	tk = &state->token[0];
+	tk = eat(state, TOK_LIT_INT);
 	errno = 0;
 	decimal = (tk->val.str[0] != '0');
 	val = strtoul(tk->val.str, &end, 0);
@@ -10983,8 +10702,7 @@ static struct triple *primary_expr(struct compile_state *state)
 		 * a varable name
 		 * a function name
 		 */
-		eat(state, TOK_IDENT);
-		ident = state->token[0].ident;
+		ident = eat(state, TOK_IDENT)->ident;
 		if (!ident->sym_ident) {
 			error(state, 0, "%s undeclared", ident->name);
 		}
@@ -10995,12 +10713,20 @@ static struct triple *primary_expr(struct compile_state *state)
 	{
 		struct hash_entry *ident;
 		/* Here ident is an enumeration constant */
-		eat(state, TOK_ENUM_CONST);
-		ident = state->token[0].ident;
+		ident = eat(state, TOK_ENUM_CONST)->ident;
 		if (!ident->sym_ident) {
 			error(state, 0, "%s undeclared", ident->name);
 		}
 		def = ident->sym_ident->def;
+		break;
+	}
+	case TOK_MIDENT:
+	{
+		struct hash_entry *ident;
+		ident = eat(state, TOK_MIDENT)->ident;
+		warning(state, 0, "Replacing undefined macro: %s with 0",
+			ident->name);
+		def = int_const(state, &int_type, 0);
 		break;
 	}
 	case TOK_LPAREN:
@@ -11053,8 +10779,7 @@ static struct triple *postfix_expr(struct compile_state *state)
 		{
 			struct hash_entry *field;
 			eat(state, TOK_DOT);
-			eat(state, TOK_IDENT);
-			field = state->token[0].ident;
+			field = eat(state, TOK_IDENT)->ident;
 			def = deref_field(state, def, field);
 			break;
 		}
@@ -11062,8 +10787,7 @@ static struct triple *postfix_expr(struct compile_state *state)
 		{
 			struct hash_entry *field;
 			eat(state, TOK_ARROW);
-			eat(state, TOK_IDENT);
-			field = state->token[0].ident;
+			field = eat(state, TOK_IDENT)->ident;
 			def = mk_deref_expr(state, read_expr(state, def));
 			def = deref_field(state, def, field);
 			break;
@@ -11173,6 +10897,24 @@ static struct triple *unary_expr(struct compile_state *state)
 			release_expr(state, expr);
 		}
 		def = int_const(state, &ulong_type, align_of_in_bytes(state, type));
+		break;
+	}
+	case TOK_MDEFINED:
+	{
+		/* We only come here if we are called from the preprocessor */
+		struct hash_entry *ident;
+		int parens;
+		eat(state, TOK_MDEFINED);
+		parens = 0;
+		if (cpp_peek(state) == TOK_LPAREN) {
+			cpp_eat(state, TOK_LPAREN);
+			parens = 1;
+		}
+		ident = cpp_eat(state, TOK_MIDENT)->ident;
+		if (parens) {
+			eat(state, TOK_RPAREN);
+		}
+		def = int_const(state, &int_type, ident->sym_define != 0);
 		break;
 	}
 	default:
@@ -11482,34 +11224,140 @@ static struct triple *conditional_expr(struct compile_state *state)
 	return def;
 }
 
+struct cv_triple {
+	struct triple *val;
+	int id;
+};
+
+static void set_cv(struct compile_state *state, struct cv_triple *cv,
+	struct triple *dest, struct triple *val)
+{
+	if (cv[dest->id].val) {
+		free_triple(state, cv[dest->id].val);
+	}
+	cv[dest->id].val = val;
+}
+static struct triple *get_cv(struct compile_state *state, struct cv_triple *cv,
+	struct triple *src)
+{
+	return cv[src->id].val;
+}
+
 static struct triple *eval_const_expr(
 	struct compile_state *state, struct triple *expr)
 {
 	struct triple *def;
 	if (is_const(expr)) {
 		def = expr;
-	} 
+	}
 	else {
 		/* If we don't start out as a constant simplify into one */
 		struct triple *head, *ptr;
+		struct cv_triple *cv;
+		int i, count;
 		head = label(state); /* dummy initial triple */
 		flatten(state, head, expr);
+		count = 1;
 		for(ptr = head->next; ptr != head; ptr = ptr->next) {
-			simplify(state, ptr);
+			count++;
 		}
-		/* Remove the constant value the tail of the list */
-		def = head->prev;
-		def->prev->next = def->next;
-		def->next->prev = def->prev;
-		def->next = def->prev = def;
-		if (!is_const(def)) {
-			error(state, 0, "Not a constant expression");
+		cv = xcmalloc(sizeof(struct cv_triple)*count, "const value vector");
+		i = 1;
+		for(ptr = head->next; ptr != head; ptr = ptr->next) {
+			cv[i].val = 0;
+			cv[i].id  = ptr->id;
+			ptr->id   = i;
+			i++;
 		}
+		ptr = head->next;
+		do {
+			valid_ins(state, ptr);
+			if ((ptr->op == OP_PHI) || (ptr->op == OP_LIST)) {
+				internal_error(state, ptr, 
+					"unexpected %s in constant expression",
+					tops(ptr->op));
+			}
+			else if (ptr->op == OP_LIST) {
+			}
+			else if (triple_is_structural(state, ptr)) {
+				ptr = ptr->next;
+			}
+			else if (triple_is_ubranch(state, ptr)) {
+				ptr = TARG(ptr, 0);
+			}
+			else if (triple_is_cbranch(state, ptr)) {
+				struct triple *cond_val;
+				cond_val = get_cv(state, cv, RHS(ptr, 0));
+				if (!cond_val || !is_const(cond_val) || 
+					(cond_val->op != OP_INTCONST)) 
+				{
+					internal_error(state, ptr, "bad branch condition");
+				}
+				if (cond_val->u.cval == 0) {
+					ptr = ptr->next;
+				} else {
+					ptr = TARG(ptr, 0);
+				}
+			}
+			else if (triple_is_branch(state, ptr)) {
+				error(state, ptr, "bad branch type in constant expression");
+			}
+			else if (ptr->op == OP_WRITE) {
+				struct triple *val;
+				val = get_cv(state, cv, RHS(ptr, 0));
+				
+				set_cv(state, cv, MISC(ptr, 0), 
+					copy_triple(state, val));
+				set_cv(state, cv, ptr, 
+					copy_triple(state, val));
+				ptr = ptr->next;
+			}
+			else if (ptr->op == OP_READ) {
+				set_cv(state, cv, ptr, 
+					copy_triple(state, 
+						get_cv(state, cv, RHS(ptr, 0))));
+				ptr = ptr->next;
+			}
+			else if (triple_is_pure(state, ptr, cv[ptr->id].id)) {
+				struct triple *val, **rhs;
+				val = copy_triple(state, ptr);
+				rhs = triple_rhs(state, val, 0);
+				for(; rhs; rhs = triple_rhs(state, val, rhs)) {
+					if (!*rhs) {
+						internal_error(state, ptr, "Missing rhs");
+					}
+					*rhs = get_cv(state, cv, *rhs);
+				}
+				simplify(state, val);
+				set_cv(state, cv, ptr, val);
+				ptr = ptr->next;
+			}
+			else {
+				error(state, ptr, "impure operation in constant expression");
+			}
+			
+		} while(ptr != head);
+
+		/* Get the result value */
+		def = get_cv(state, cv, head->prev);
+		cv[head->prev->id].val = 0;
+
+		/* Free the temporary values */
+		for(i = 0; i < count; i++) {
+			if (cv[i].val) {
+				free_triple(state, cv[i].val);
+				cv[i].val = 0;
+			}
+		}
+		xfree(cv);
 		/* Free the intermediate expressions */
 		while(head->next != head) {
 			release_triple(state, head->next);
 		}
 		free_triple(state, head);
+	}
+	if (!is_const(def)) {
+		error(state, expr, "Not a constant expression");
 	}
 	return def;
 }
@@ -11864,8 +11712,7 @@ static void goto_statement(struct compile_state *state, struct triple *first)
 {
 	struct hash_entry *ident;
 	eat(state, TOK_GOTO);
-	eat(state, TOK_IDENT);
-	ident = state->token[0].ident;
+	ident = eat(state, TOK_IDENT)->ident;
 	if (!ident->sym_label) {
 		/* If this is a forward branch allocate the label now,
 		 * it will be flattend in the appropriate location later.
@@ -11883,9 +11730,8 @@ static void labeled_statement(struct compile_state *state, struct triple *first)
 {
 	struct triple *ins;
 	struct hash_entry *ident;
-	eat(state, TOK_IDENT);
 
-	ident = state->token[0].ident;
+	ident = eat(state, TOK_IDENT)->ident;
 	if (ident->sym_label && ident->sym_label->def) {
 		ins = ident->sym_label->def;
 		put_occurance(ins->occurance);
@@ -12376,24 +12222,25 @@ static struct type *type_name(struct compile_state *state)
 
 static struct type *direct_declarator(
 	struct compile_state *state, struct type *type, 
-	struct hash_entry **ident, int need_ident)
+	struct hash_entry **pident, int need_ident)
 {
+	struct hash_entry *ident;
 	struct type *outer;
 	int op;
 	outer = 0;
 	arrays_complete(state, type);
 	switch(peek(state)) {
 	case TOK_IDENT:
-		eat(state, TOK_IDENT);
+		ident = eat(state, TOK_IDENT)->ident;
 		if (!ident) {
 			error(state, 0, "Unexpected identifier found");
 		}
 		/* The name of what we are declaring */
-		*ident = state->token[0].ident;
+		*pident = ident;
 		break;
 	case TOK_LPAREN:
 		eat(state, TOK_LPAREN);
-		outer = declarator(state, type, ident, need_ident);
+		outer = declarator(state, type, pident, need_ident);
 		eat(state, TOK_RPAREN);
 		break;
 	default:
@@ -12453,13 +12300,13 @@ static struct type *direct_declarator(
 
 static struct type *declarator(
 	struct compile_state *state, struct type *type, 
-	struct hash_entry **ident, int need_ident)
+	struct hash_entry **pident, int need_ident)
 {
 	while(peek(state) == TOK_STAR) {
 		eat(state, TOK_STAR);
 		type = new_type(TYPE_POINTER | (type->type & STOR_MASK), type, 0);
 	}
-	type = direct_declarator(state, type, ident, need_ident);
+	type = direct_declarator(state, type, pident, need_ident);
 	return type;
 }
 
@@ -12468,8 +12315,7 @@ static struct type *typedef_name(
 {
 	struct hash_entry *ident;
 	struct type *type;
-	eat(state, TOK_TYPE_NAME);
-	ident = state->token[0].ident;
+	ident = eat(state, TOK_TYPE_NAME)->ident;
 	type = ident->sym_ident->type;
 	specifiers |= type->type & QUAL_MASK;
 	if ((specifiers & (STOR_MASK | QUAL_MASK)) != 
@@ -12491,9 +12337,7 @@ static struct type *enum_specifier(
 	eat(state, TOK_ENUM);
 	tok = peek(state);
 	if ((tok == TOK_IDENT) || (tok == TOK_ENUM_CONST) || (tok == TOK_TYPE_NAME)) {
-		eat(state, tok);
-		ident = state->token[0].ident;
-		
+		ident = eat(state, tok)->ident;
 	}
 	base = 0;
 	if (!ident || (peek(state) == TOK_LBRACE)) {
@@ -12506,8 +12350,7 @@ static struct type *enum_specifier(
 			struct hash_entry *eident;
 			struct triple *value;
 			struct type *entry;
-			eat(state, TOK_IDENT);
-			eident = state->token[0].ident;
+			eident = eat(state, TOK_IDENT)->ident;
 			if (eident->sym_ident) {
 				error(state, 0, "%s already declared", 
 					eident->name);
@@ -12601,8 +12444,7 @@ static struct type *struct_or_union_specifier(
 	}
 	tok = peek(state);
 	if ((tok == TOK_IDENT) || (tok == TOK_ENUM_CONST) || (tok == TOK_TYPE_NAME)) {
-		eat(state, tok);
-		ident = state->token[0].ident;
+		ident = eat(state, tok)->ident;
 	}
 	if (!ident || (peek(state) == TOK_LBRACE)) {
 		ulong_t elements;
@@ -12717,8 +12559,7 @@ static unsigned int attrib(struct compile_state *state, unsigned int attributes)
 	case TOK_TYPE_NAME:
 	{
 		struct hash_entry *ident;
-		eat(state, TOK_IDENT);
-		ident = state->token[0].ident;
+		ident = eat(state, TOK_IDENT)->ident;
 
 		if (ident == state->i_noinline) {
 			if (attributes & ATTRIB_ALWAYS_INLINE) {
@@ -12799,8 +12640,9 @@ static struct type *type_specifier(
 	struct compile_state *state, unsigned int spec)
 {
 	struct type *type;
+	int tok;
 	type = 0;
-	switch(peek(state)) {
+	switch((tok = peek(state))) {
 	case TOK_VOID:
 		eat(state, TOK_VOID);
 		type = new_type(TYPE_VOID | spec, 0, 0);
@@ -12935,7 +12777,7 @@ static struct type *type_specifier(
 		break;
 	default:
 		error(state, 0, "bad type specifier %s", 
-			tokens[peek(state)]);
+			tokens[tok]);
 		break;
 	}
 	return type;
@@ -13082,8 +12924,7 @@ static struct field_info designator(struct compile_state *state, struct type *ty
 				error(state, 0, "Struct designator not in struct initializer");
 			}
 			eat(state, TOK_DOT);
-			eat(state, TOK_IDENT);
-			field = state->token[0].ident;
+			field = eat(state, TOK_IDENT)->ident;
 			info.offset = field_offset(state, type, field);
 			info.type   = field_type(state, type, field);
 			break;
@@ -14723,6 +14564,10 @@ static void join_functions(struct compile_state *state)
 	file.prev = state->file;
 	state->file = &file;
 	state->function = "";
+
+	if (!state->main_function) {
+		error(state, 0, "No functions to compile\n");
+	}
 
 	/* The type of arguments */
 	args_type   = state->main_function->type->right;
@@ -20237,9 +20082,6 @@ static int is_lattice_lo(struct compile_state *state, struct lattice_node *lnode
 	return (lnode->val != lnode->def) && !is_scc_const(state, lnode->val);
 }
 
-
-
-
 static void scc_add_fedge(struct compile_state *state, struct scc_state *scc, 
 	struct flow_edge *fedge)
 {
@@ -20341,7 +20183,6 @@ static struct ssa_edge *scc_next_sedge(
 	}
 	return sedge;
 }
-
 
 static void initialize_scc_state(
 	struct compile_state *state, struct scc_state *scc)
@@ -21529,7 +21370,7 @@ static void optimize(struct compile_state *state)
 	print_triples(state);
 
 	verify_consistency(state);
-	/* Analize the intermediate code */
+	/* Analyze the intermediate code */
 	state->bb.first = state->first;
 	analyze_basic_blocks(state, &state->bb);
 
@@ -24808,22 +24649,21 @@ static void generate_code(struct compile_state *state)
 
 static void print_preprocessed_tokens(struct compile_state *state)
 {
-	struct token *tk;
 	int tok;
 	FILE *fp;
 	int line;
 	const char *filename;
 	fp = state->output;
-	tk = &state->token[0];
 	filename = 0;
 	line = 0;
 	for(;;) {
+		struct token *tk;
 		const char *token_str;
 		tok = peek(state);
 		if (tok == TOK_EOF) {
 			break;
 		}
-		eat(state, tok);
+		tk = eat(state, tok);
 		token_str = 
 			tk->ident ? tk->ident->name :
 			tk->str_len ? tk->val.str :
@@ -24905,7 +24745,6 @@ static void compile(const char *filename,
 	state.i_default       = lookup(&state, "default", 7);
 	state.i_return        = lookup(&state, "return", 6);
 	/* Memorize where predefined macros are. */
-	state.i_defined       = lookup(&state, "defined", 7);
 	state.i___VA_ARGS__   = lookup(&state, "__VA_ARGS__", 11);
 	state.i___FILE__      = lookup(&state, "__FILE__", 8);
 	state.i___LINE__      = lookup(&state, "__LINE__", 8);

@@ -81,26 +81,27 @@ static __inline__ write_sector_39sf020(volatile char * bios,
 	volatile char *Temp;
 
 	for (i = 0; i < page_size; i++) {
-	  if (*dst != 0xff) {
-	    printf("FATAL: dst %p not erased (val 0x%x\n", dst, *dst);
-	    return;
-	  }
+		if (*dst != 0xff) {
+			printf("FATAL: dst %p not erased (val 0x%x\n", dst, *dst);
+			return;
+		}
 		/* transfer data from source to destination */
 		if (*src == 0xFF) {
 			dst++, src++;
 			/* If the data is 0xFF, don't program it */
 			continue;
 		}
-            Temp =   (bios + 0x5555); 
-            *Temp = 0xAA;                   
-            Temp =  bios + 0x2AAA; 
-            *Temp = 0x55; 
-            Temp =  bios + 0x5555; 
-            *Temp = 0xA0;                   
+		Temp =   (bios + 0x5555); 
+		*Temp = 0xAA;                   
+		Temp =  bios + 0x2AAA; 
+		*Temp = 0x55; 
+		Temp =  bios + 0x5555; 
+		*Temp = 0xA0;                   
 		*dst = *src;
 		toggle_ready_jedec(bios);
-            if (*dst != *src) printf("BAD! dst 0x%x val 0x%x src 0x%x\n",
-					dst, *dst, *src);
+		if (*dst != *src)
+			printf("BAD! dst 0x%x val 0x%x src 0x%x\n",
+			       dst, *dst, *src);
 		dst++, src++;
 	}
 }
@@ -137,9 +138,9 @@ int probe_39sf020 (struct flashchip * flash)
 int erase_39sf020 (struct flashchip * flash)
 {
 	volatile unsigned char * bios = flash->virt_addr;
-	volatile unsigned char *Temp; 
+	volatile unsigned char *Temp;
+
         /*  Issue the Sector Erase command to 39SF020   */
-	printf(__FUNCTION__ " bios is %p\n", bios);
         Temp  = bios + 0x5555; /* set up address to be C000:5555h      */
         *Temp = 0xAA;            /* write data 0xAA to the address       */
 	myusec_delay(10);

@@ -10,6 +10,7 @@
 #include <device/pci_ops.h>
 #include "./cpu_rev.c"
 
+static cpu_reset_count = 0; //By LYH
 static void misc_control_init(struct device *dev)
 {
 	uint32_t cmd;
@@ -52,27 +53,20 @@ static void misc_control_init(struct device *dev)
 		cmd = 0x04e20707;
 		pci_write_config32(dev, 0xd4, cmd );
 	}
-
-/*
- * FIXME: This preprocessor check is a mere workaround. 
- * The right fix is to walk over all links on all nodes
- * and set the FIFO read pointer optimization value to
- * 0x25 for each link connected to an AMD HT device.
- *
- * The reason this is only enabled for machines with more 
- * than one CPU is that Athlon64 machines don't have the
- * link at all that is optimized in the code.
- */
-
-#if CONFIG_MAX_CPUS > 1	
+#if 1
+#if HAVE_HARD_RESET==1
+	cpu_reset_count++;  //by LYH
 	cmd = pci_read_config32(dev, 0xdc);
 	if((cmd & 0x0000ff00) != 0x02500) {
 		cmd &= 0xffff00ff;
 		cmd |= 0x00002500;
 		pci_write_config32(dev, 0xdc, cmd );
-		printk_debug("resetting cpu\n");
-		hard_reset();
-	}
+	        if(cpu_reset_count==CONFIG_MAX_CPUS) { //By LYH
+			printk_debug("resetting cpu\n");
+			hard_reset();
+		} //By LYH
+	} 
+#endif
 #endif	
 	printk_debug("done.\n");
 }

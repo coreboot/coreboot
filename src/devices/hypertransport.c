@@ -320,8 +320,8 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int max)
 #if HAVE_HARD_RESET == 1
 	if(reset_needed) {
 		printk_info("HyperT reset needed\n");
-		hard_reset();
-	}
+// By LYH		hard_reset();
+	} else 
 	printk_debug("HyperT reset not needed\n");
 #endif
 	if (next_unitid > 0x1f) {

@@ -415,6 +415,13 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 		limit |= rlimit & 0x01fff000;
 		limit |= (link & 3) << 4;
 		limit |= (nodeid & 3);
+		if (reg == 0xc8){
+			/* hack to set vga for test */
+			/* factory: b0: 03 0a 00 00 00 0b 00 00 */
+			f1_write_config32(0xb0, 0xa03);
+			f1_write_config32(0xb4, 0xb00);
+			base |= 0x30;
+		}
 		f1_write_config32(reg + 0x4, limit);
 		f1_write_config32(reg, base);
 	}
@@ -476,10 +483,45 @@ unsigned int amdk8_scan_root_bus(device_t root, unsigned int max)
 	return max;
 }
 
+void amdk8_enable_resources(struct device *dev)
+{
+  uint16_t ctrl;
+  unsigned link;
+  unsigned int vgalink = -1;
+
+  ctrl = pci_read_config16(dev, PCI_BRIDGE_CONTROL);
+  ctrl |= dev->link[0].bridge_ctrl;
+  printk_debug("%s bridge ctrl <- %04x\n", dev_path(dev), ctrl);
+  printk_err("%s bridge ctrl <- %04x\n", dev_path(dev), ctrl);
+  pci_write_config16(dev, PCI_BRIDGE_CONTROL, ctrl);
+
+#if 0
+  /* let's see what link VGA is on */
+  for(link = 0; link < dev->links; link++) {
+    device_t child;
+    printk_err("Kid %d of k8: bridge ctrl says: 0x%x\n", link, dev->link[link].bridge_ctrl);
+    if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA)
+	vgalink = link;
+  }
+
+  if (vgalink != =1) {
+  /* now find the IOPAIR that goes to vgalink and set the  vga enable in the base part (0x30) */
+  /* now allocate an MMIOPAIR and point it to the CPU0, LINK=vgalink */
+  /* now set IORR1 so it has a hole for the 0xa0000-0xcffff region */
+  }
+#endif
+
+  pci_dev_enable_resources(dev);
+  //enable_childrens_resources(dev);
+}
+
+
+
 static struct device_operations northbridge_operations = {
 	.read_resources   = amdk8_read_resources,
 	.set_resources    = amdk8_set_resources,
-	.enable_resources = pci_dev_enable_resources,
+//	.enable_resources = pci_dev_enable_resources,
+        .enable_resources = amdk8_enable_resources,
 	.init             = 0,
 	.scan_bus         = amdk8_scan_chains,
 	.enable           = 0,
@@ -496,3 +538,4 @@ struct chip_control northbridge_amd_amdk8_control = {
 	.name   = "AMD K8 Northbridge",
 	.enumerate = enumerate,
 };
+

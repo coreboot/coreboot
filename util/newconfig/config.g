@@ -1135,7 +1135,10 @@ def part(type, path, file, name):
 	if (type == 'cpu'):
 		cpudir(path)
 	else:
-		doconfigfile(srcdir, partdir, file)
+        	if (type == 'mainboard'):
+			doconfigfile(srcdir, partdir, file, 'mainboard_cfgfile')
+		else:
+			doconfigfile(srcdir, partdir, file, 'cfgfile')
 
 def partpop():
 	global dirstack, partstack
@@ -1163,7 +1166,7 @@ def dodir(path, file):
 		fullpath = dirstack.tos()
 	debug.info(debug.statement, "DODIR: path %s, fullpath %s" % (path, fullpath))
 	dirstack.push(os.path.join(fullpath, path))
-	doconfigfile(fullpath, path, file)
+	doconfigfile(fullpath, path, file, 'cfgfile')
 	dirstack.pop()
 
 def lookup(name):
@@ -1195,12 +1198,12 @@ def setarch(my_arch):
 	setoption('ARCH', my_arch)
 	part('arch', my_arch, 'Config.lb', 0)
 
-def doconfigfile(path, confdir, file):
+def doconfigfile(path, confdir, file, rule):
 	rname = os.path.join(confdir, file)
 	loc.push(rname)
 	fullpath = os.path.join(path, rname)
 	fp = safe_open(fullpath, 'r')
-	if (not parse('cfgfile', fp.read())):
+	if (not parse(rule, fp.read())):
 		fatal("Could not parse file")
 	exitiferrors()
 	loc.pop()
@@ -1480,6 +1483,12 @@ parser Config:
 
     # ENTRY for parsing Config.lb file
     rule cfgfile:	(uses<<1>>)* 
+    			(stmt<<1>>)*
+			EOF			{{ return 1 }}
+    #mainboard config files are special, in that they can also have
+    # default values.
+    rule mainboard_cfgfile:	(uses<<1>>)* 
+                            (defstmts<<1>>)*
     			(stmt<<1>>)*
 			EOF			{{ return 1 }}
 

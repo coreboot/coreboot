@@ -26,7 +26,7 @@ modprobe docprobe
 dd conv=notrunc conv=sync bs=65536 if=${linux} of=vmlinux.bin.gz.block
 dd conv=notrunc conv=sync bs=63k if=${linuxbios} of=linuxbios.block
 
-erase /dev/mtd0 0 128
+erase /dev/mtd0 0 1024
 dd conv=notrunc if=docipl of=/dev/mtd0 
 dd conv=notrunc if=docipl of=/dev/mtd0 seek=1
 dd conv=notrunc if=linuxbios.block of=/dev/mtd0 seek=2

@@ -1,6 +1,6 @@
-/* Copyright 2003 Tyan */
+/* Copyright 2003-2004 Tyan Computer*/
 
-/* Author: Yinghai Lu 
+/* Author: Yinghai Lu yhlu@tyan.com
  *
  */
 
@@ -20,15 +20,37 @@
 static void si_sata_init(struct device *dev)
 {
 	uint16_t word;
-
+	uint32_t dword;
+#if 0
         word = pci_read_config16(dev, 0x4);
         word |= ((1 << 2) |(1<<4)); // Command: 3--> 17
         pci_write_config16(dev, 0x4, word);
+#endif
 
-	printk_debug("SI_SATA_FIXUP:  done  \n");
+	/* some driver change class code to 0x104, but not change deviceid without reason*/
+        /* restore it so we don't need to unplug AC power to restore it*/
+	
+	word = pci_read_config16(dev, 0x0a);
+	if(word!=0x0180) {
+		 /* enble change device id and class id*/	
+	        dword = pci_read_config32(dev,0x40);
+	        dword |= (1<<0);
+        	pci_write_config32(dev, 0x40, dword);
+
+		word = 0x0180;
+		pci_write_config16(dev, 0x0a, word);
+
+	        /* disable change device id and class id*/
+        	dword = pci_read_config32(dev,0x40);
+        	dword &= ~(1<<0);
+        	pci_write_config32(dev, 0x40, dword);
+
+		printk_debug("Class code restored.\n");
+
+	}
+
 	
 }
-
 static struct device_operations si_sata_ops  = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,

@@ -1711,10 +1711,10 @@ parser Config:
 			) 			{{ if(C): partstack.tos().set_enabled(val) }}
 
     rule resource<<C>>:				{{ type = "" }}
-	    		(  IO			{{ type = "IORESOURCE_FIXED | IORESOURCE_IO" }}
-			|   MEM			{{ type = "IORESOURCE_FIXED | IORESOURCE_MEM" }}
-			|   IRQ			{{ type = "IORESOURCE_FIXED | IORESOURCE_IRQ" }}
-			|   DRQ			{{ type = "IORESOURCE_FIXED | IORESOURCE_DRQ" }}
+	    		(  IO			{{ type = "IORESOURCE_FIXED | IORESOURCE_ASSIGNED | IORESOURCE_IO" }}
+			|   MEM			{{ type = "IORESOURCE_FIXED | IORESOURCE_ASSIGNED | IORESOURCE_MEM" }}
+			|   IRQ			{{ type = "IORESOURCE_FIXED | IORESOURCE_ASSIGNED | IORESOURCE_IRQ" }}
+			|   DRQ			{{ type = "IORESOURCE_FIXED | IORESOURCE_ASSIGNED | IORESOURCE_DRQ" }}
 			)
 			term '='		{{ index = term }}
 			term			{{ value = term }}

@@ -7,7 +7,7 @@
 owner:	Andrew Ip
 email:	aip@cwlinux.com
 #status: One of unsupported, unstable, stable
-status: unstable
+status: stable
 explanation:
 flash-types: SST 39SF020A
 payload-types: etherboot, memtest

@@ -30,6 +30,21 @@
 #include "jedec.h"
 #include "sst49lf040.h"
 
+int erase_49lf040(struct flashchip *flash)
+{
+        int i;
+        int total_size = flash->total_size * 1024;
+        int page_size = flash->page_size;
+        volatile char *bios = flash->virt_addr;
+
+        for (i = 0; i < total_size / page_size; i++) {
+		/* Chip erase only works in parallel programming mode
+		 * for the 49lf040. Use sector-erase instead */
+		erase_sector_jedec(bios, i * page_size);
+	}         
+	return 0;
+}
+
 int write_49lf040(struct flashchip *flash, unsigned char *buf)
 {
 	int i;
@@ -40,8 +55,8 @@ int write_49lf040(struct flashchip *flash, unsigned char *buf)
 	printf("Programming Page: ");
 	for (i = 0; i < total_size / page_size; i++) {
 		/* erase the page before programming
-		 * Chip erase only works in parallel programming mode for the 49lf040.
-		 * Use sector-erase instead */
+		 * Chip erase only works in parallel programming mode
+		 * for the 49lf040. Use sector-erase instead */
 		erase_sector_jedec(bios, i * page_size);
 
 		/* write to the sector */

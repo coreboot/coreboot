@@ -66,7 +66,7 @@ struct flashchip flashchips[] = {
 	{"SST39VF020",	SST_ID,		SST_39VF020,	NULL, 256, 4096,
 	 probe_jedec,	erase_chip_jedec, write_39sf020,NULL},
 	{"SST49LF040",	SST_ID,		SST_49LF040, 	NULL, 512, 4096,
-	 probe_jedec, 	erase_chip_jedec, write_49lf040,NULL},
+	 probe_jedec, 	erase_49lf040, write_49lf040,NULL},
 	{"SST49LF080A",	SST_ID,		SST_49LF080A,	NULL, 1024, 4096,
 	 probe_jedec,	erase_chip_jedec, write_49lf040,NULL},
 	{"SST49LF002A/B", SST_ID,	SST_49LF002A,	NULL, 256, 16 * 1024,

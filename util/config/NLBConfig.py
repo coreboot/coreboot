@@ -20,117 +20,6 @@ bss = 0x5000;
 stack = 0x90000;
 linuxbiosbase = 0xf0000;
 
-p5crt0preram = [
-	'/*',
-	' * $ $',
-	' *',
-	' */',
-	'',
-	'#include <asm.h>',
-	'#include <intel.h>',
-	'',
-	'#include <pciconf.h>',
-	'/*',
-	' * This is the entry code (the mkrom(8) utility makes a jumpvector',
-	' * to this adddess. ',
-	' *',
-	' * When we get here we are in x86 real mode.',
-	' *',
-	' *	%cs	= 0xf000	%ip	= 0x0000',
-	' *	%ds	= 0x0000	%es	= 0x0000',
-	' *	%dx	= 0x0yxx  (y = 3 for i386, 5 for pentium, 6 for P6,',
-	' *					where x is undefined)',
-	' *	%fl	= 0x0002',
-	' */',
-	' 	.text',
-	'	.code16',
-	'',
-	'#include <cpu/p5/start32.inc>',
-	'',
-	'#include <pc80/i8259.inc>',
-	'	/* initialize the RAM */',
-	'	/* different for each motherboard */',
-]
-
-p5crt0postram = [
-	'',
-	'/* Turn on mtrr for faster boot */',
-	'#include <cpu/p6/earlymtrr.inc>',
-	'',
-	'/*',
-	' *	Copy data into RAM and clear the BSS. Since these segments',
-	' *	isn\'t really that big we just copy/clear using bytes, not',
-	' *	double words.',
-	' */',
-	'	intel_chip_post_macro(0x11)		/* post 11 */',
-	'',
-	'#ifdef SERIAL_CONSOLE',
-	'        TTYS0_TX_STRING($str_after_ram)',
-	'#endif /* SERIAL_CONSOLE */',
-	'',
-	'	cld				/* clear direction flag */',
-	'',
-	'	/* copy data segment from FLASH ROM to RAM */',
-	'	leal	EXT(_ldata), %esi',
-	'	leal	EXT(_data), %edi',
-	'	movl	$EXT(_eldata), %ecx',
-	'	subl	%esi, %ecx',
-	'	jz	.Lnodata		/* should not happen */',
-	'	rep',
-	'	movsb',
-	'.Lnodata:',
-	'	intel_chip_post_macro(0x12)		/* post 12 */',
-	'',
-	'#ifdef SERIAL_CONSOLE',
-	'        TTYS0_TX_STRING($str_after_ram)',
-	'#endif /* SERIAL_CONSOLE */',
-	'',
-	'	/** clear stack */',
-	'	xorl	%edi, %edi',
-	'	movl	$_PDATABASE, %ecx',
-	'	xorl	%eax, %eax',
-	'	rep',
-	'	stosb',
-	'',
-	'	/** clear bss */',
-	'	leal	EXT(_bss), %edi',
-	'	movl	$EXT(_ebss), %ecx',
-	'	subl	%edi, %ecx',
-	'	jz	.Lnobss',
-	'	xorl	%eax, %eax',
-	'	rep',
-	'	stosb',
-	'.Lnobss:',
-	'',
-	'/*',
-	' *	Now we are finished. Memory is up, data is copied and',
-	' *	bss is cleared.   Now we call the main routine and',
-	' *	let it do the rest.',
-	' */ ',
-	'	intel_chip_post_macro(0xfe)	/* post fe */',
-	'',
-	'#ifdef SERIAL_CONSOLE',
-	'        TTYS0_TX_STRING($str_pre_main)',
-	'#endif /* SERIAL_CONSOLE */',
-	'',
-	'',
-	'/* memory is up. Let\'s do the rest in C -- much easier. */',
-	'',
-	'	/* set new stack */',
-	'	movl	$_PDATABASE, %esp',
-	'',
-	'	call	EXT(intel_main)',
-	'	/*NOTREACHED*/',
-	'.Lhlt:	hlt',
-	'	jmp	.Lhlt',
-	'',
-	'ttyS0_test:          .string "\\r\\n\\r\\nHello world!!\\r\\n"',
-	'str_after_ram:       .string "Ram Initialize?\\r\\n"',
-	'str_after_copy:      .string "after copy?\\r\\n"',
-	'str_pre_main:        .string "before main\\r\\n"',
-	'newline:             .string "\\r\\n"',
-	]
-
 objectrules = [];
 userrules = [];
 
@@ -430,32 +319,44 @@ def writep5crt0(path):
 	raminitfiles = command_vals["raminit"]
 	paramfile = os.path.join(treetop, 'src/include', 
 			command_vals['northbridge'][0], "param.h")
+	paramfileinclude = ''
+
 	print "Trying to create ", crt0filepath
 #	try: 
 	file = open(crt0filepath, 'w+')
 
-	for i in range(len(p5crt0preram)):
-		file.write("%s\n" % p5crt0preram[i])
 	print "Check for crt0.S param file:", paramfile
 	if os.path.isfile(paramfile):
 		ipfile = os.path.join(command_vals['northbridge'][0],"param.h")
-		file.write("#include <%s>\n" %  ipfile)
-		print " Adding include to crt0.S for this parameter file"
+		paramfileinclude = "#include <%s>\n" %  ipfile
+		print " Adding include to crt0.S for this parameter file:"
+		print " ", paramfileinclude
 
-	# we will do this better at some point. 
-	# possible we need a 'console' command.
-	file.write("\n");
-	file.write("#ifdef SERIAL_CONSOLE\n");
-	file.write("#include <%s/setup_serial.inc>\n" % command_vals['superio'])
-	file.write("#include <pc80/serial.inc>\n");
-	file.write("TTYS0_TX_STRING($ttyS0_test)\n")
-	file.write("#endif /* SERIAL_CONSOLE */\n")
-	file.write("\n");
+	# serial for superio
+	superioserial = "#include <%s/setup_serial.inc>\n" % command_vals['superio']
+	crt0lines = readfile(crt0base)
 
-	for i in range(len(raminitfiles)):
-		file.write("#include <%s>\n" % raminitfiles[i])
-	for i in range(len(p5crt0postram)):
-		file.write("%s\n" % p5crt0postram[i])
+	if (debug):
+		print "CRT0 ", crt0lines
+        for line in crt0lines:
+		if (line <> "PARAM"):
+			file.write(line)
+		else:
+			file.write(paramfileinclude)
+			# we will do this better at some point. 
+			# possible we need a 'console' command.
+			file.write("\n");
+			file.write("#ifdef SERIAL_CONSOLE\n");
+			file.write(superioserial)
+			file.write("#include <pc80/serial.inc>\n");
+			file.write("TTYS0_TX_STRING($ttyS0_test)\n")
+			file.write("#endif /* SERIAL_CONSOLE */\n")
+			file.write("\n");
+
+			for i in range(len(raminitfiles)):
+				file.write("#include <%s>\n" % raminitfiles[i])
+
+	file.close();
 
 # write ldscript
 def writeldscript(path):
@@ -551,7 +452,7 @@ treetop = command_vals['TOP']
 	
 # set the default locations for config files
 makebase = os.path.join(treetop, "util/config/make.base")
-crt0base = os.path.join(treetop, "util/config/crt0.base")
+crt0base = os.path.join(treetop, "util/config/p5crt0.base")
 ldscriptbase = os.path.join(treetop, "util/config/ldscript.base")
 doconfigfile(treetop, sys.argv[1])
 

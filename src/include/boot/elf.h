@@ -393,10 +393,12 @@ extern int elf_check_arch(Elf_ehdr *ehdr);
 extern void jmp_to_elf_entry(void *entry, unsigned long buffer);
 struct stream;
 struct lb_memory;
+extern int elfload(struct stream *stream, struct lb_memory *mem,
+	unsigned char *header, unsigned long header_size);
 extern int elfboot(struct stream *stream, struct lb_memory *mem);
 
 #define FIRMWARE_TYPE "LinuxBIOS"
 #define BOOTLOADER "elfboot"
-#define BOOTLOADER_VERSION "1.1"
+#define BOOTLOADER_VERSION "1.2"
 
 #endif	/* elf.h */

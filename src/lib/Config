@@ -11,7 +11,7 @@ object memset.o
 object memcpy.o
 object memcmp.o
 object malloc.o
-object elfboot.o
+object elfboot.o USE_ELF_BOOT
 object do_inflate.o
 object floppy_subr.o
 object delay.o

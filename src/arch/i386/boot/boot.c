@@ -90,6 +90,7 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer)
 	printk_spew("lb_size  = 0x%08lx\n", lb_size);
 	printk_spew("adjust   = 0x%08lx\n", adjust);
 	printk_spew("buffer   = 0x%08lx\n", buffer);
+	printk_spew("     elf_boot_notes = 0x%08lx\n", (unsigned long)&elf_boot_notes);
 	printk_spew("adjusted_boot_notes = 0x%08lx\n", adjusted_boot_notes);
 	
 	/* Jump to kernel */
@@ -138,8 +139,8 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer)
 		"	rep	movsl\n\t"
 
 		/* Now jump to the loaded image */
-		"	movl	0(%%esp), %%eax\n\t"
-		"	movl	$0x0E1FB007, %%ebx\n\t"
+		"	movl	$0x0E1FB007, %%eax\n\t"
+		"	movl	 0(%%esp), %%ebx\n\t"
 		"	call	*4(%%esp)\n\t"
 
 		/* The loaded image returned? */
@@ -174,7 +175,7 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer)
 
 		:: 
 		"g" (lb_start), "g" (buffer), "g" (lb_size),
-		"g" (entry), "g"(&adjusted_boot_notes)
+		"g" (entry), "g"(adjusted_boot_notes)
 		);
 }
 

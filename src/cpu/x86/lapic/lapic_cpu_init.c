@@ -229,7 +229,13 @@ int start_cpu(device_t cpu)
 void secondary_cpu_init(void)
 {
 	atomic_inc(&active_cpus);
+#if CONFIG_MAX_CPUS>2
+	spin_lock(&start_cpu_lock);
+#endif
 	cpu_initialize();
+#if CONFIG_MAX_CPUS>2
+	spin_unlock(&start_cpu_lock);
+#endif
 	atomic_dec(&active_cpus);
 	stop_this_cpu();
 }
@@ -254,6 +260,9 @@ static void initialize_other_cpus(struct bus *cpu_bus)
 			printk_err("CPU  %u would not start!\n",
 				cpu->path.u.apic.apic_id);
 		}
+#if CONFIG_MAX_CPUS>2
+		udelay(10);
+#endif
 	}
 
 	/* Now loop until the other cpus have finished initializing */

@@ -164,7 +164,7 @@ do_vgabios(void)
 
 #ifdef VGABIOS_START
   // Use VGA BIOS blob at specified address
-  // rom = VGABIOS_START;
+  rom = VGABIOS_START;
 #else
   pci_read_config_dword(dev, PCI_ROM_ADDRESS, &rom);
   // paranoia

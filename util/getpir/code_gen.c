@@ -13,15 +13,20 @@ static char *preamble[] = {
 	0
 };
 
-void code_gen(FILE * fpir, struct irq_routing_table *rt)
+void code_gen(char *filename, struct irq_routing_table *rt)
 {
 	char **code = preamble;
 	struct irq_info *se_arr = (struct irq_info *) ((char *) rt + 32);
 	int i, ts = (rt->size - 32) / 16;
+	FILE *fpir;
+
+	if ((fpir = fopen(filename, "w")) == NULL) {
+		printf("Failed creating file!\n");
+		exit(2);
+	}
 
 	while (*code)
 		fprintf(fpir, "%s", *code++);
-
 
 	fprintf(fpir, "\t32+16*%d,	 /* there can be total %d devices on the bus */\n",
 		ts, ts);
@@ -52,4 +57,6 @@ void code_gen(FILE * fpir, struct irq_routing_table *rt)
 	}
 	fprintf(fpir, "\t}\n");
 	fprintf(fpir, "};\n");
+
+	fclose(fpir);
 }

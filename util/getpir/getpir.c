@@ -33,7 +33,6 @@ static struct irq_routing_table *probe_table(int fd_mem)
 main()
 {
 	int fd_mem;
-	FILE *fpir;
  	struct irq_routing_table *rt;
 
 	if (getuid()) {
@@ -50,13 +49,7 @@ main()
 		printf("Checksum is ok!\n");
 
 	printf("Creating irq_tables.c .....\n");
-	fpir = fopen("irq_tables.c", "w");
-	if (!fpir) {
-		printf("Failed creating file!\n");
-		exit(2);
-	}
-	code_gen(fpir, rt);
-	fclose(fpir);
+	code_gen("irq_tables.c", rt);
 
 	close(fd_mem);
 

@@ -37,11 +37,11 @@ if [ ! -f $config_lb ]; then
 fi
 
 build_dir=`dirname $config_lb`/`sed -n -e 's/^target \(.*\)$/\1/p' $config_lb`
-echo $build_dir
+echo "build_dir=$build_dir"
 config_py=$build_dir/config.py
 
-if [ ! -d $target_subdir ] ; then
-	mkdir -p $target_subdir
+if [ ! -d $build_dir ] ; then
+	mkdir -p $build_dir
 fi
 if [ ! -f $config_py ]; then
 	echo "No linuxbios config script found. Rebuilding it.."

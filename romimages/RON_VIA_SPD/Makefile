@@ -8,6 +8,7 @@ CPUFLAGS += -DNEWPCI
 CPUFLAGS += -DSERIAL_CONSOLE
 # mainboard-dependent. 
 CPUFLAGS += -DPM_DEVFN=0x3c
+CPUFLAGS += -DSUPERIO_DEVFN=0x88
 # If you enable FIXED_AND_VARIABLE it never makes it to the kernel!
 # you have to only enable variable. 
 # 1/25/01. Things just stopped working for no reason I can see (RGM). 

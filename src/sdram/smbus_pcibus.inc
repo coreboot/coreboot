@@ -17,7 +17,9 @@
 	PCI_WRITE_CONFIG_DWORD
 	
 #define DEVFN(device, function) (((device) << 3) + (function))
+#ifndef CONFIG_ADDR
 #define CONFIG_ADDR(bus,devfn,where) (((bus) << 16) | ((devfn) << 8) | (where))
+#endif
 
 /* jump around these subrs */
 jmp smbus_pcibus_end

@@ -15,6 +15,7 @@ CPUFLAGS += -DSERIAL_CONSOLE
 CPUFLAGS += -DENABLE_FIXED_AND_VARIABLE_MTRRS
 # mainboard-dependent. 
 CPUFLAGS += -DPM_DEVFN=0x8c
+CPUFLAGS += -DSUPERIO_DEVFN=0x88
 CPUFLAGS += -DRAMTEST
 # This makes it fail sooner ...
 #CPUFLAGS += -DINBUF_COPY
@@ -41,7 +42,7 @@ LINUX=$(TOP)/../linux-2.4.0-via/
 
 LINK = ld -T ldscript.ld -o $@ $(OBJECTS)
 CC=cc $(CFLAGS)
-CCASM=cc -I$(TOP)/chip/intel $(CFLAGS)
+CCASM=cc $(CFLAGS)
 
 all: romimage
 floppy: all 
@@ -95,7 +96,7 @@ params.o: $(TOP)/src/lib/params.c
 hardwaremain.o: $(TOP)/src/lib/hardwaremain.c
 	cc $(CFLAGS) -c $<
 
-southbridge.o: $(TOP)/src/southbridge/via/vt82c686/southbridge.c
+southbridge.o: $(TOP)/src/southbridge/via/vt8231/southbridge.c
 	cc $(CFLAGS) -c $<
 
 northbridge.o: $(TOP)/src/northbridge/via/vt8601/northbridge.c

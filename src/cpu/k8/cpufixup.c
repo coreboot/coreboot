@@ -66,8 +66,6 @@ static inline void wrmsr_amd(unsigned index, msr_t msr)
                 );
 }
 
-
-
 #define MTRR_COUNT 8
 #define ZERO_CHUNK_KB 0x800UL /* 2M */
 #define TOLM_KB 0x400000UL
@@ -292,14 +290,65 @@ static void init_ecc_memory(void)
 	printk_debug(" done\n");
 }
 
-void k8_cpufixup(struct mem_range *mem)
+static void k8_errata(void)
 {
-	unsigned long mmio_basek, tomk;
-	unsigned long i;
 	msr_t msr;
 
-	disable_cache();
-	
+	if (is_cpu_pre_c0()) {
+		/* Erratum 63... */
+		msr = rdmsr(HWCR_MSR);
+		msr.lo |= (1 << 6);
+		wrmsr(HWCR_MSR, msr);
+
+		/* Erratum 69... */
+		msr = rdmsr_amd(BU_CFG_MSR);
+		msr.hi |= (1 << (45 - 32));
+		wrmsr_amd(BU_CFG_MSR, msr);
+
+		/* Erratum 81... */
+		msr = rdmsr_amd(DC_CFG_MSR);
+		msr.lo |=  (1 << 10);
+		wrmsr_amd(DC_CFG_MSR, msr);
+	}
+
+	/* I can't touch this msr on early buggy cpus */
+	if (!is_cpu_pre_b3()) {
+		/* Erratum 89 ... */
+		msr = rdmsr(NB_CFG_MSR);
+		msr.lo |= 1 << 3;
+		if (!is_cpu_pre_c0()) {
+			/* Erratum 86 Disable data masking on C0 and 
+			 * later processor revs.
+			 * FIXME this is only needed if ECC is enabled.
+			 */
+			msr.hi |= 1 << (36 - 32);
+		}
+		wrmsr(NB_CFG_MSR, msr);
+	}
+
+	/* Erratum 97 ... */
+	if (!is_cpu_pre_c0()) {
+		msr = rdmsr_amd(DC_CFG_MSR);
+		msr.lo |= 1 << 3;
+		wrmsr_amd(DC_CFG_MSR, msr);
+	}
+
+	/* Erratum 94 ... */
+	msr = rdmsr_amd(IC_CFG_MSR);
+	msr.lo |= 1 << 11;
+	wrmsr_amd(IC_CFG_MSR, msr);
+
+	/* Erratum 91 prefetch miss is handled in the kernel */
+}
+
+static void setup_toms(struct mem_range *mem)
+{
+	unsigned long i;
+	msr_t msr;
+	unsigned long mmio_basek, tomk;
+
+	printk_spew("%s\n", __FUNCTION__);
+
 	/* Except for the PCI MMIO hold just before 4GB there are no
 	 * significant holes in the address space, so just account
 	 * for those two and move on.
@@ -331,16 +380,56 @@ void k8_cpufixup(struct mem_range *mem)
 	/* Setup TOP_MEM2 */
 	msr.hi = tomk >> 22;
 	msr.lo = tomk << 10;
-	wrmsr(TOP_MEM2, msr);
+	wrmsr(TOP_MEM2, msr);	
+}
+
+static void setup_iorrs(void)
+{
+	unsigned long i;
+	msr_t msr;
+	device_t f3_dev;
+	uint32_t base, size;
 
 	/* zero the IORR's before we enable to prevent
-	 * undefined side effects.
-	 */
+	 * undefined side effects. */
 	msr.lo = msr.hi = 0;
-	for(i = IORR_FIRST; i <= IORR_LAST; i++) {
+	for (i = IORR_FIRST; i <= IORR_LAST; i++) {
 		wrmsr(i, msr);
 	}
 
+	/* enable IORR1 for AGP Aperture */ 
+	f3_dev = dev_find_slot(0, PCI_DEVFN(0x18, 3));
+	if (!f3_dev) {
+		die("Cannot find cpu function 3\n");
+	}
+
+	size = (pci_read_config32(f3_dev, 0x90) & 0x0E) >> 1;
+	size = (32*1024*1024) << size;
+	base = pci_read_config32(f3_dev, 0x94) << 25;
+	printk_debug("%s: setting IORR1 for AGP aperture base 0x%x, size 0x%x\n",
+		     __FUNCTION__, base, size);
+
+	msr.lo = base;
+	msr.hi = 0xff;
+	wrmsr(IORR1_BASE, msr);
+
+	msr.lo = ~(size - 1);
+	msr.hi = 0xff;
+	wrmsr(IORR1_MASK, msr);
+}
+
+void k8_cpufixup(struct mem_range *mem)
+{
+	unsigned long i;
+	msr_t msr;
+
+	disable_cache();
+	
+	setup_toms(mem);
+
+	setup_iorrs();
+
+	/* Enable TOMs and IORRs */
 	msr = rdmsr(SYSCFG_MSR);
 	msr.lo |= SYSCFG_MSR_MtrrVarDramEn | SYSCFG_MSR_TOM2En;
 	wrmsr(SYSCFG_MSR, msr);
@@ -348,58 +437,12 @@ void k8_cpufixup(struct mem_range *mem)
 	/* zero the machine check error status registers */
 	msr.lo = 0;
 	msr.hi = 0;
-	for(i=0; i<5; i++) {
+	for (i = 0; i < 5; i++) {
 		wrmsr(MCI_STATUS + (i*4),msr);
 	}
-	
-	if (is_cpu_pre_c0()) {
-		/* Erratum 63... */
-		msr = rdmsr(HWCR_MSR);
-		msr.lo |= (1 << 6);
-		wrmsr(HWCR_MSR, msr);
 
-		/* Erratum 69... */
-		msr = rdmsr_amd(BU_CFG_MSR);
-		msr.hi |= (1 << (45 - 32));
-		wrmsr_amd(BU_CFG_MSR, msr);
+	k8_errata();
 
-		/* Erratum 81... */
-		msr = rdmsr_amd(DC_CFG_MSR);
-		msr.lo |=  (1 << 10);
-		wrmsr_amd(DC_CFG_MSR, msr);
-			
-	}
-	/* I can't touch this msr on early buggy cpus */
-	if (!is_cpu_pre_b3()) {
-
-		/* Erratum 89 ... */
-		msr = rdmsr(NB_CFG_MSR);
-		msr.lo |= 1 << 3;
-		
-		if (!is_cpu_pre_c0()) {
-			/* Erratum 86 Disable data masking on C0 and 
-			 * later processor revs.
-			 * FIXME this is only needed if ECC is enabled.
-			 */
-			msr.hi |= 1 << (36 - 32);
-		}	
-		wrmsr(NB_CFG_MSR, msr);
-	}
-	
-	/* Erratum 97 ... */
-	if (!is_cpu_pre_c0()) {
-		msr = rdmsr_amd(DC_CFG_MSR);
-		msr.lo |= 1 << 3;
-		wrmsr_amd(DC_CFG_MSR, msr);
-	}	
-	
-	/* Erratum 94 ... */
-	msr = rdmsr_amd(IC_CFG_MSR);
-	msr.lo |= 1 << 11;
-	wrmsr_amd(IC_CFG_MSR, msr);
-
-	/* Erratum 91 prefetch miss is handled in the kernel */
-	
 	enable_cache();
 
 	/* Is this a bad location?  In particular can another node prefecth

@@ -1,4 +1,5 @@
 #define ASSEMBLY 1
+
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
@@ -25,6 +26,7 @@
 #include "cpu/p6/earlymtrr.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
+
 
 static void hard_reset(void)
 {
@@ -60,7 +62,7 @@ static void main(void)
 	static const struct mem_controller memctrl[] = {
 		{
 			.d0 = PCI_DEV(0, 0, 0),
-			.channel0 = { (0xa<<3)|0, (0xa<<3)|1, (0xa<<3)|2, 0 },
+			.channel0 = { (0xa<<3)|0, 0 },
 		},
 	};
 
@@ -73,14 +75,14 @@ static void main(void)
         uart_init();
         console_init();
 
-#if 1
+#if 0
 	print_pci_devices();
 #endif
 	if(!bios_reset_detected()) {
         	enable_smbus();
 #if 1
-//      	dump_spd_registers(&memctrl[0]);
-        	dump_smbus_registers();
+      	dump_spd_registers(&memctrl[0]);
+	//        	dump_smbus_registers();
 #endif
 
 		memreset_setup();
@@ -102,10 +104,10 @@ static void main(void)
 	}
 #endif
 
-#if 1
+#if 0
 	dump_pci_devices();
 #endif
-#if 1
+#if 0
 	dump_pci_device(PCI_DEV(0, 0, 0));
 #endif
 

@@ -4307,6 +4307,8 @@ static struct triple *cond_expr(
 	if (!result_type) {
 		error(state, 0, "Incompatible types in conditional expression");
 	}
+	/* Cleanup and invert the test */
+	test = lfalse_expr(state, read_expr(state, test));
 	def = new_triple(state, OP_COND, result_type, 3);
 	def->param[0] = test;
 	def->param[1] = left;

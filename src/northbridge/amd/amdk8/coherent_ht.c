@@ -181,8 +181,6 @@ static void enable_routing(u8 node)
 	print_spew("Enabling routing table for node ");
 	print_spew_hex8(node);
 
-//	enable_apic_ext_id(node);
-
 	val=pci_read_config32(NODE_HT(node), 0x6c);
 	val &= ~((1<<1)|(1<<0));
 	pci_write_config32(NODE_HT(node), 0x6c, val);
@@ -266,7 +264,8 @@ static unsigned read_freq_cap(device_t dev, unsigned pos)
 	freq_cap &= ~(1 << HT_FREQ_VENDOR); /* Ignore Vendor HT frequencies */
 
 	id = pci_read_config32(dev, 0);
-
+#if 0
+	//is it coherent ht link?
 	/* AMD 8131 Errata 48 */
 	if (id == (PCI_VENDOR_ID_AMD | (PCI_DEVICE_ID_AMD_8131_PCIX << 16))) {
 		freq_cap &= ~(1 << HT_FREQ_800Mhz);
@@ -275,6 +274,7 @@ static unsigned read_freq_cap(device_t dev, unsigned pos)
 	if (id == (PCI_VENDOR_ID_AMD | (PCI_DEVICE_ID_AMD_8151_SYSCTRL << 16))) {
 		freq_cap &= ~(1 << HT_FREQ_800Mhz);
 	}
+#endif
 	/* AMD K8 Unsupported 1Ghz? */
 	if (id == (PCI_VENDOR_ID_AMD | (0x1100 << 16))) {
 		freq_cap &= ~(1 << HT_FREQ_1000Mhz);

@@ -15,6 +15,9 @@ The goals of the new language are these:
 a bit more comprehensible and flexible
 \item make the specification easier for people to use and understand
 \item allow unique register-set-specifiers for each chip
+\item allow generic register-set-specifiers for each chip
+\item generate static initialization code, as needed, for the 
+specifiers. 
 \end{itemize}
 
 \section{Language}
@@ -142,6 +145,27 @@ target ::= 'target' PATH
 board ::= target (option)* mainboard
 
 \end{verbatim}
+
+\subsubsection{Command definitions}
+\subsubsubsection{option}
+\subsubsubsection{default}
+\subsubsubsection{cpu}
+\subsubsubsection{arch}
+\subsubsubsection{northbridge}
+\subsubsubsection{southbridge}
+\subsubsubsection{superio}
+\subsubsubsection{object}
+\subsubsubsection{driver}
+\subsubsubsection{mainboardinit}
+\subsubsubsection{makerule}
+\subsubsubsection{makedefine}
+\subsubsubsection{addaction}
+\subsubsubsection{init}
+\subsubsubsection{register}
+\subsubsubsection{iif}
+\subsubsubsection{dir}
+\subsubsubsection{ldscript}
+
 
 A sample file:
 

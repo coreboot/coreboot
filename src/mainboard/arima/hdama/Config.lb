@@ -1,0 +1,133 @@
+#
+#
+###
+### Set all of the defaults for an x86 architecture
+###
+#
+#
+###
+### Build the objects we have code for in this directory.
+###
+##object mainboard.o
+driver mainboard.o
+object static_devices.o
+if HAVE_MP_TABLE object mptable.o end
+if HAVE_PIRQ_TABLE object irq_tables.o end
+#
+arch i386 end
+cpu k8 end
+#
+option DEBUG=1
+default USE_FALLBACK_IMAGE=1
+option A=(1+2)
+option B=0xa
+#
+###
+### Build our 16 bit and 32 bit linuxBIOS entry code
+###
+mainboardinit cpu/i386/entry16.inc
+mainboardinit cpu/i386/entry32.inc
+ldscript /cpu/i386/entry16.lds
+ldscript /cpu/i386/entry32.lds
+#
+###
+### Build our reset vector (This is where linuxBIOS is entered)
+###
+if USE_FALLBACK_IMAGE 
+  mainboardinit cpu/i386/reset16.inc 
+  ldscript /cpu/i386/reset16.lds 
+end
+
+if USE_NORMAL_IMAGE
+  mainboardinit cpu/i386/reset32.inc 
+  ldscript /cpu/i386/reset32.lds 
+end
+#
+#### Should this be in the northbridge code?
+#mainboardinit archi386/lib/cpu_reset.inc
+#
+###
+### Include an id string (For safe flashing)
+###
+mainboardinit arch/i386/lib/id.inc
+ldscript /arch/i386/lib/id.lds
+#
+####
+#### This is the early phase of linuxBIOS startup 
+#### Things are delicate and we test to see if we should
+#### failover to another image.
+####
+option MAX_REBOOT_CNT=2
+##ldscript arch/i386/lib/failover.lds USE_FALLBACK_IMAGE
+#
+###
+### Setup our mtrrs
+###
+mainboardinit cpu/k8/earlymtrr.inc
+#
+#
+###
+### Only the bootstrap cpu makes it here.
+### Failover if we need to 
+###
+#
+if USE_FALLBACK_IMAGE
+  mainboardinit southbridge/amd/amd8111/cmos_boot_failover.inc 
+end
+#
+####
+#### O.k. We aren't just an intermediary anymore!
+####
+#
+###
+### When debugging disable the watchdog timer
+###
+##option MAXIMUM_CONSOLE_LOGLEVEL=7
+#default MAXIMUM_CONSOLE_LOGLEVEL=7
+#option DISABLE_WATCHDOG= (MAXIMUM_CONSOLE_LOGLEVEL >= 8) 
+#if DISABLE_WATCHDOG
+#  mainboardinit southbridgeamd/amd8111/disable_watchdog.inc 
+#end
+#
+###
+### Setup the serial port
+###
+#mainboardinit superiowinbond/w83627hf/setup_serial.inc
+mainboardinit pc80/serial.inc
+mainboardinit arch/i386/lib/console.inc
+if USE_FALLBACK_IMAGE mainboardinit archi386/lib/noop_failover.inc  end
+#
+###
+### Romcc output
+###
+#makerule ./failover.E dep "$(MAINBOARD)/failover.c" act "$(CPP) -I$(TOP)/src $(CPPFLAGS) $(MAINBOARD)/failover.c > ./failever.E"
+#makerule ./failover.inc dep "./romcc ./failover.E" act "./romcc -O ./failover.E > failover.inc"
+#mainboardinit .failover.inc
+makerule ./auto.E dep "$(MAINBOARD)/auto.c" act "$(CPP) -I$(TOP)/src -$(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
+makerule ./auto.inc dep "./romcc ./auto.E" act "./romcc -O ./auto.E > auto.inc"
+mainboardinit ./auto.inc
+#
+###
+### Setup RAM
+###
+mainboardinit ram/ramtest.inc
+mainboardinit southbridge/amd/amd8111/smbus.inc
+mainboardinit sdram/generic_dump_spd.inc
+#
+###
+### Include the secondary Configuration files 
+###
+northbridge amd/amdk8
+end
+southbridge amd/amd8111
+end
+#mainboardinit archi386/smp/secondary.inc
+superio NSC/pc87360
+	register "com1={1} com2={0} floppy=1 lpt=1 keyboard=1"
+end
+dir /pc80
+##dir /src/superio/winbond/w83627hf
+cpu p5 end
+cpu p6 end
+cpu k7 end
+cpu k8 end

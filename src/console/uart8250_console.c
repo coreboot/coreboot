@@ -26,9 +26,9 @@
 
 #define UART_LCS	TTYS0_LCS
 
-void ttyS0_init(void)
+static void ttyS0_init(void)
 {
-	static unsigned char div[8]={1,2,3,6,12,24,48,96};
+	static const unsigned char div[8]={1,2,3,6,12,24,48,96};
 	int b_index=0;
 	unsigned int divisor=TTYS0_DIV;
 
@@ -38,17 +38,17 @@ void ttyS0_init(void)
 	uart8250_init(TTYS0_BASE, divisor, TTYS0_LCS);
 }
 
-void ttyS0_tx_byte(unsigned char data) 
+static void ttyS0_tx_byte(unsigned char data) 
 {
 	uart8250_tx_byte(TTYS0_BASE, data);
 }
 
-unsigned char ttyS0_rx_byte(void) 
+static unsigned char ttyS0_rx_byte(void) 
 {
 	return uart8250_rx_byte(TTYS0_BASE);
 }
 
-int ttyS0_tst_byte(void) 
+static int ttyS0_tst_byte(void) 
 {
 	return uart8250_can_rx_byte(TTYS0_BASE);
 }

@@ -4,7 +4,6 @@
  *  Copyright (C) 1991, 1992  Linus Torvalds
  *
  */
-//typedef void * va_list;
 
 #include <stdarg.h>
 #include <smp/spinlock.h>

@@ -1,0 +1,3 @@
+#define SERIAL_CONSOLE
+#define PYRO_SERIAL
+//#define VIDEO_CONSOLE

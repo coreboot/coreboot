@@ -80,7 +80,7 @@ static const initreg_t ide_init[] = {
 	{ BYTE, 0x46, 0x00,	0x00   },  /* Secondary slave data recovery time. */ 
 	{ BYTE, 0x47, 0x00,	0x00   },  /* Secondary slave data active time. */   
 	{ BYTE, 0x48, 0x00,	0x05   },  /* Read/Write FIFO Threshold = 1/4 */
-	{ BYTE, 0x4A, 0x40,	0xe2   },  /* Enable Bus Master, Fast postwrite, IDE 0 */
+	{ BYTE, 0x4A, 0x40,	0xe6   },  /* Enable Bus Master, Fast postwrite, IDE 0,1 */
 	{ BYTE, 0x4B, 0x00,	0x11   },  /* Enable Postwrite and Prefech for IDE0, Master */
 	{ WORD, 0x4C, 0x00,	0x0200 },  /* Prefetch count of primary. */
 	{ WORD, 0x4E, 0x00,	0x0200 },  /* Prefetch count of secondary. */
@@ -219,11 +219,17 @@ apc_fixup(void)
 		regval = inb(0x71);
 		outb(regval | 0x40, 0x71);
 
+#if ENABLE_MII
+		/* Enable MII Interface Interface for GPIO Pin [15-14, 9-8, 6-0] and OC1-0 */
+		outb(0x03, 0x70);
+		regval = inb(0x71) | 0x02;
+		outb(regval, 0x71);
+#else
 		/* Disable MII Interface Interface for GPIO Pin [15-14, 9-8, 6-0] and OC1-0 */
 		outb(0x03, 0x70);
 		regval = inb(0x71) & 0xfc;
 		outb(regval, 0x71);
-
+#endif
 		/* Enable ACPI S3,S5 */
 		outb(0x04, 0x70);
 		regval = inb(0x71);

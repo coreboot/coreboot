@@ -98,7 +98,7 @@ option CONFIG_CHIP_CONFIGURE=1
 ### Build code to export a programmable irq routing table
 ###
 option HAVE_PIRQ_TABLE=1
-option IRQ_SLOT_COUNT=13
+option IRQ_SLOT_COUNT=12
 #
 ###
 ### Build code for SMP support

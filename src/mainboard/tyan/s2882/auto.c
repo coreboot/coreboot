@@ -17,22 +17,26 @@
 #include "debug.c"
 #include "northbridge/amd/amdk8/cpu_rev.c"
  
-
+#define REV_B_RESET 0
 static void memreset_setup(void)
 {
-	/* Set the memreset low */
-//	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 28);
-	/* Ensure the BIOS has control of the memory lines */
-//	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 29);
+#if REV_B_RESET==1
+        outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=0
+#else
+        outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=1
+#endif
+        outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
 }
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
-	udelay(800);
-	/* Set memreset_high */
-//	outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 28);
-	udelay(90);
+        udelay(800);
+#if REV_B_RESET==1
+        outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 17); //REVB_MEMRST_L=1
+#endif
+        udelay(90);
 }
+
 
 static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 {
@@ -80,9 +84,9 @@ static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
-	/* nothing to do */
+        /* nothing to do */
 }
-
+ 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);

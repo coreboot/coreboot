@@ -48,7 +48,6 @@ uses CONFIG_CHIP_CONFIGURE
 uses XIP_ROM_SIZE
 uses XIP_ROM_BASE
 uses LINUXBIOS_EXTRA_VERSION
-uses FAKE_SPDROM
 uses CC
 
 option CC="gcc -m32"
@@ -73,8 +72,6 @@ option ROM_SIZE=524288
 option HAVE_OPTION_TABLE=1
 option CONFIG_ROM_STREAM=1
 option HAVE_FALLBACK_BOOT=1
-
-option FAKE_SPDROM=1
 
 ###
 ### Compute the location and size of where this firmware image

@@ -76,7 +76,7 @@ option k7=1
 option k8=1
 option ROM_SIZE=524288
 
-option HAVE_HARD_RESET=1
+option HAVE_HARD_RESET=0
 
 #option CONFIG_VGABIOS=1
 #option CONFIG_REALMODE_IDT=1

@@ -12,7 +12,7 @@ const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_VERSION,   /* u16 version   */
 	32+16*11,        /* there can be total 11 devices on the bus */
 	1,           /* Where the interrupt router lies (bus) */
-	0x3b,           /* Where the interrupt router lies (dev) */
+	(4<<3)|3,           /* Where the interrupt router lies (dev) */
 	0,         /* IRQs devoted exclusively to PCI usage */
 	0x1022,         /* Vendor */
 	0x746b,         /* Device */
@@ -20,7 +20,7 @@ const struct irq_routing_table intel_irq_routing_table = {
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, /* u8 rfu[11] */
 	0x35,         /*  u8 checksum , this hase to set to some value that would give 0 after the sum of all bytes for this structure (including checksum) */
 	{
-		{0,0x38, {{0x1, 0xdef8}, {0x2, 0xdef8}, {0x3, 0xdef8}, {0x4, 0xdef8}}, 0, 0},
+		{1,(4<<3)|0, {{0x1, 0xdef8}, {0x2, 0xdef8}, {0x3, 0xdef8}, {0x4, 0xdef8}}, 0, 0},
 		{0x4,0, {{0, 0}, {0, 0}, {0, 0}, {0x4, 0xdef8}}, 0, 0},
 		{0x6,0, {{0x1, 0xdef8}, {0x2, 0xdef8}, {0, 0}, {0, 0}}, 0x6, 0},
 		{0x3,0x18, {{0x1, 0xdef8}, {0x2, 0xdef8}, {0x3, 0xdef8}, {0x4, 0xdef8}}, 0x1, 0},

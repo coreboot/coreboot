@@ -11,6 +11,7 @@
 #  archive for more details.
 #     
 
+#set -x # Turn echo on....
 
 # Where shall we place all the build trees?
 TARGET=$( pwd )/linuxbios-builds
@@ -33,7 +34,7 @@ function vendors
 {
 	# make this a function so we can easily select
 	# without breaking readability
-	ls -1 $LBROOT/src/mainboard | grep -v CVS
+	ls -1 "$LBROOT/src/mainboard" | grep -v CVS
 }
 
 function mainboards
@@ -253,32 +254,33 @@ target=""
 buildall=false
 
 # parse parameters
-args=`getopt -l version,verbose,help,all,target: Vvhat: $*`
+args=`getopt -l version,verbose,help,all,target: Vvhat: -- "$@"`
 
 if [ $? != 0 ]; then
 	myhelp
 	exit 1
 fi
 
-set -- $args
-for arg
-do
-  case $arg in
-        -t|--target)	shift;target=$1;shift;;
-        -a|--all)	shift;buildall=true;;
-	-v|--verbose)	shift;verbose=true;;
-	-V|--version)	shift;myversion;;
-	-h|--help)	shift;myhelp;;
-  esac
+eval set -- "$args"
+while true ; do
+	case $1 in
+		-t|--target)	shift; target=$1; shift;;
+		-a|--all)	shift; buildall=true;;
+		-v|--verbose)	shift; verbose=true;;
+		-V|--version)	shift; myversion;;
+		-h|--help)	shift; myhelp;;
+		--)		shift; break;;
+		*)		echo "Unrecognized argument" ; exit 1 ;;
+	esac
 done
 
-# -- is $1
-LBROOT=$2
+LBROOT=$1
 
 # /path/to/freebios2/
 if [ -z "$LBROOT" ] ; then
 	LBROOT=$( cd ../..; pwd )
 fi
+echo "LBROOT=$LBROOT"
 
 if [ "$target" != "" ]; then
   # build a single board

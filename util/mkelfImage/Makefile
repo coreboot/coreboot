@@ -1,4 +1,10 @@
-PREFIX=/opt/lnxi
+# To run this: 
+# Put the name of a directory in PREFIX where you want to run this stuff.
+# make sure that this name is OUTSIDE THE LINUXBIOS TREE
+# that way it survives across cvs updates. 
+# Then do a 'make install'
+# the result will be a directory tree  that you can run mkelfImage in
+PREFIX=/users/rminnich/src/bios/mkelf
 PERLPATH=/usr/bin/perl
 VERSION="1.9"
 DATE="7 January 2002"

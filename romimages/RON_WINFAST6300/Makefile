@@ -8,16 +8,21 @@ CPUFLAGS += -DNEWPCI
 CPUFLAGS += -DENABLE_FIXED_AND_VARIABLE_MTRRS
 CPUFLAGS += -DINBUF_COPY
 CPUFLAGS += -DUSE_DOC_MIL
-CPUFLAGS += -DCMD_LINE='"root=/dev/hda1 single"'
+CPUFLAGS += -DCMD_LINE='"root=/dev/hda5 single"'
 CPUFLAGS += -DFINAL_MAINBOARD_FIXUP
 
-LINUX=$(TOP)/linux-2.4.0-test11-linuxbios
+LINUX =$(TOP)/linux-2.4.0-test11-linuxbios
 
-TOP=../..
-INCLUDES=-nostdinc -I $(TOP)/src/include 
-CFLAGS=$(INCLUDES) -O2 $(CPUFLAGS) -Ilinux/include -Wall
+TOP =../..
 
-OBJECTS=crt0.o hardwaremain.o linuxbiosmain.o 
+NBDIR = $(TOP)/src/northsouthbridge/sis/630/
+SBDIR = $(TOP)/src/northsouthbridge/sis/630/
+MBDIR = $(TOP)/src/mainboard/leadtek/winfast6300/
+
+INCLUDES = -nostdinc -I $(TOP)/src/include 
+CFLAGS   = $(INCLUDES) -O2 $(CPUFLAGS) -Ilinux/include -Wall
+
+OBJECTS  = crt0.o hardwaremain.o linuxbiosmain.o 
 OBJECTS += mainboard.o mtrr.o subr.o fill_inbuf.o params.o
 OBJECTS += southbridge.o northbridge.o superio.o
 #OBJECTS += pci.o
@@ -140,7 +145,7 @@ linuxpci.o: $(TOP)/src/lib/linuxpci.c
 # I have noe idea why you can not use $(CPUFLAGS) to compile ipl.S
 # a bug with -Di686 ??
 ipl.o: $(TOP)/src/northsouthbridge/sis/630/ipl.S
-	gcc -c -DHAVE_FRAMEBUFFER -I$(TOP)/northsouthbridge/sis/630 $<
+	gcc -c -DHAVE_FRAMEBUFFER -I$(MBDIR) $<
 
 vmlinux.bin.gz.block: vmlinux.bin.gz
 	dd conv=sync bs=448k if=vmlinux.bin.gz of=vmlinux.bin.gz.block

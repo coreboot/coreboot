@@ -29,3 +29,6 @@ object irq_tables.o
 keyboard pc80
 cpu p5
 cpu p6
+
+option MAINBOARD_PART_NUMBER=EPIA
+option MAINBOARD_VENDOR=VIA

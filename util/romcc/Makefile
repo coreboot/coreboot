@@ -1,5 +1,5 @@
-VERSION:=0.31
-RELEASE_DATE:=25 June 2003
+VERSION:=0.32
+RELEASE_DATE:=28 June 2003
 PACKAGE:=romcc
 
 
@@ -59,18 +59,36 @@ TESTS=\
 	simple_test37.c \
 	simple_test38.c \
 	simple_test39.c \
+	simple_test40.c \
+	simple_test41.c \
+	simple_test42.c \
+	simple_test43.c \
+	simple_test44.c \
+	simple_test45.c \
+	simple_test46.c \
+	simple_test47.c \
 	raminit_test.c \
 	raminit_test2.c \
 	raminit_test3.c \
 	raminit_test4.c
+
+FAIL_TESTS = \
+	fail_test1.c
 
 TEST_SRCS:=$(patsubst %, tests/%, $(TESTS))
 TEST_ASM:=$(patsubst %.c, tests/%.S, $(TESTS))
 TEST_OBJ:=$(patsubst %.c, tests/%.o, $(TESTS))
 TEST_ELF:=$(patsubst %.c, tests/%.elf, $(TESTS))
 
+FAIL_SRCS:=$(patsubst %, tests/%, $(FAIL_TESTS))
+FAIL_OUT:=$(patsubst %.c, tests/%.out, $(FAIL_TESTS))
+
+
 $(TEST_ASM): %.S: %.c romcc
-	export ALLOC_CHECK_=2; ./romcc -O -o $@ $< > $*.debug
+	export ALLOC_CHECK_=2; ./romcc -mcpu=k8 -O -o $@ $< > $*.debug
+
+$(FAIL_OUT): %.out: %.c romcc
+	export ALLOC_CHECK_=2; if ./romcc -O -o $*.S $< > $*.debug 2> $@ ; then exit 1 ; else exit 0 ; fi
 
 $(TEST_OBJ): %.o: %.S
 	as $< -o $@
@@ -85,7 +103,10 @@ echo:
 	echo "TEST_ASM=$(TEST_ASM)"
 	echo "TEST_OBJ=$(TEST_OBJ)"
 	echo "TEST_ELF=$(TEST_ELF)"
+	echo ""
+	echo "FAIL_SRCS=$(FAIL_SRCS)"
+	echo "FAIL_ASM=$(FAIL_ASM)"
 
 clean:
-	rm -f romcc romcc_pg core $(TEST_ASM) $(TEST_OBJ) $(TEST_ELF) tests/*.debug tests/*.debug2 tests/*.gmon.out
+	rm -f romcc romcc_pg core $(TEST_ASM) $(TEST_OBJ) $(TEST_ELF) tests/*.debug tests/*.debug2 tests/*.gmon.out tests/*.out
 

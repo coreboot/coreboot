@@ -15,6 +15,8 @@
 #define DEBUG_COLOR_GRAPH 0
 #define DEBUG_SCC 0
 #define DEBUG_CONSISTENCY 2
+#define DEBUG_RANGE_CONFLICTS 0
+#define DEBUG_COALESCING 0
 
 #warning "FIXME boundary cases with small types in larger registers"
 #warning "FIXME give clear error messages about unused variables"
@@ -300,6 +302,9 @@ struct token {
 #define OP_MAX_CONST 59
 #define IS_CONST_OP(X) (((X) >= OP_MIN_CONST) && ((X) <= OP_MAX_CONST))
 #define OP_INTCONST  50
+/* For OP_INTCONST ->type holds the type.
+ * ->u.cval holds the constant value.
+ */
 #define OP_BLOBCONST 51
 /* For OP_BLOBCONST ->type holds the layout and size
  * information.  u.blob holds a pointer to the raw binary
@@ -889,6 +894,7 @@ struct type {
 
 static unsigned arch_reg_regcm(struct compile_state *state, int reg);
 static unsigned arch_regcm_normalize(struct compile_state *state, unsigned regcm);
+static unsigned arch_regcm_reg_normalize(struct compile_state *state, unsigned regcm);
 static void arch_reg_equivs(
 	struct compile_state *state, unsigned *equiv, int reg);
 static int arch_select_free_register(
@@ -4000,7 +4006,7 @@ static size_t size_of(struct compile_state *state, struct type *type)
 		size = size_of(state, type->left);
 		break;
 	default:
-		error(state, 0, "sizeof not yet defined for type\n");
+		internal_error(state, 0, "sizeof not yet defined for type\n");
 		break;
 	}
 	return size;
@@ -10264,7 +10270,7 @@ static void insert_phi_operations(struct compile_state *state)
 	int *has_already, *work;
 	struct block *work_list, **work_list_tail;
 	int iter;
-	struct triple *var;
+	struct triple *var, *vnext;
 
 	size = sizeof(int) * (state->last_vertex + 1);
 	has_already = xcmalloc(size, "has_already");
@@ -10272,16 +10278,18 @@ static void insert_phi_operations(struct compile_state *state)
 	iter = 0;
 
 	first = RHS(state->main_function, 0);
-	for(var = first->next; var != first ; var = var->next) {
+	for(var = first->next; var != first ; var = vnext) {
 		struct block *block;
-		struct triple_set *user;
+		struct triple_set *user, *unext;
+		vnext = var->next;
 		if ((var->op != OP_ADECL) || !var->use) {
 			continue;
 		}
 		iter += 1;
 		work_list = 0;
 		work_list_tail = &work_list;
-		for(user = var->use; user; user = user->next) {
+		for(user = var->use; user; user = unext) {
+			unext = user->next;
 			if (user->member->op == OP_READ) {
 				continue;
 			}
@@ -10292,6 +10300,8 @@ static void insert_phi_operations(struct compile_state *state)
 			block = user->member->u.block;
 			if (!block) {
 				warning(state, user->member, "dead code");
+				release_triple(state, user->member);
+				continue;
 			}
 			if (work[block->vertex] >= iter) {
 				continue;
@@ -10429,16 +10439,30 @@ static void rename_block_variables(
 		}
 		/* LHS(A) */
 		if (ptr->op == OP_WRITE) {
-			struct triple *var, *val;
+			struct triple *var, *val, *tval;
 			var = LHS(ptr, 0);
-			val = RHS(ptr, 0);
+			tval = val = RHS(ptr, 0);
 			if ((val->op == OP_WRITE) || (val->op == OP_READ)) {
 				internal_error(state, val, "bad value in write");
 			}
-			propogate_use(state, ptr, val);
+			/* Insert a copy if the types differ */
+			if (!equiv_types(ptr->type, val->type)) {
+				if (val->op == OP_INTCONST) {
+					tval = pre_triple(state, ptr, OP_INTCONST, ptr->type, 0, 0);
+					tval->u.cval = val->u.cval;
+				}
+				else {
+					tval = pre_triple(state, ptr, OP_COPY, ptr->type, val, 0);
+					use_triple(val, tval);
+				}
+				unuse_triple(val, ptr);
+				RHS(ptr, 0) = tval;
+				use_triple(tval, ptr);
+			}
+			propogate_use(state, ptr, tval);
 			unuse_triple(var, ptr);
 			/* Push OP_WRITE ptr->right onto a stack of variable uses */
-			push_triple(var, val);
+			push_triple(var, tval);
 		}
 		if (ptr->op == OP_PHI) {
 			struct triple *var;
@@ -10922,25 +10946,38 @@ static struct triple *post_copy(struct compile_state *state, struct triple *ins)
 	return out;
 }
 
-static struct triple *pre_copy(
-	struct compile_state *state, struct triple *ins, int index)
+static struct triple *typed_pre_copy(
+	struct compile_state *state, struct type *type, struct triple *ins, int index)
 {
 	/* Carefully insert enough operations so that I can
 	 * enter any operation with a GPR32.
 	 */
 	struct triple *in;
 	struct triple **expr;
+	unsigned classes;
+	struct reg_info info;
 	if (ins->op == OP_PHI) {
 		internal_error(state, ins, "pre_copy on a phi?");
 	}
+	classes = arch_type_to_regcm(state, type);
+	info = arch_reg_rhs(state, ins, index);
 	expr = &RHS(ins, index);
-	in = pre_triple(state, ins, OP_COPY, (*expr)->type, *expr, 0);
+	if ((info.regcm & classes) == 0) {
+		internal_error(state, ins, "pre_copy with no register classes");
+	}
+	in = pre_triple(state, ins, OP_COPY, type, *expr, 0);
 	unuse_triple(*expr, ins);
 	*expr = in;
 	use_triple(RHS(in, 0), in);
 	use_triple(in, ins);
 	transform_to_arch_instruction(state, in);
 	return in;
+	
+}
+static struct triple *pre_copy(
+	struct compile_state *state, struct triple *ins, int index)
+{
+	return typed_pre_copy(state, RHS(ins, index)->type, ins, index);
 }
 
 
@@ -10957,7 +10994,7 @@ static void insert_copies_to_phi(struct compile_state *state)
 	for(phi = first->next; phi != first ; phi = phi->next) {
 		struct block_set *set;
 		struct block *block;
-		struct triple **slot;
+		struct triple **slot, *copy;
 		int edge;
 		if (phi->op != OP_PHI) {
 			continue;
@@ -10965,6 +11002,13 @@ static void insert_copies_to_phi(struct compile_state *state)
 		phi->id |= TRIPLE_FLAG_POST_SPLIT;
 		block = phi->u.block;
 		slot  = &RHS(phi, 0);
+		/* Phi's that feed into mandatory live range joins
+		 * cause nasty complications.  Insert a copy of
+		 * the phi value so I never have to deal with
+		 * that in the rest of the code.
+		 */
+		copy = post_copy(state, phi);
+		copy->id |= TRIPLE_FLAG_PRE_SPLIT;
 		/* Walk all of the incoming edges/blocks and insert moves.
 		 */
 		for(edge = 0, set = block->use; set; set = set->next, edge++) {
@@ -11577,6 +11621,14 @@ static void insert_mandatory_copies(struct compile_state *state)
 			if (regcm == 0) {
 				do_pre_copy = 1;
 			}
+			/* Always use pre_copies for constants.
+			 * They do not take up any registers until a
+			 * copy places them in one.
+			 */
+			if ((info.reg == REG_UNNEEDED) && 
+				(rinfo.reg != REG_UNNEEDED)) {
+				do_pre_copy = 1;
+			}
 		}
 		do_post_copy =
 			!do_pre_copy &&
@@ -11587,7 +11639,7 @@ static void insert_mandatory_copies(struct compile_state *state)
 
 		reg = info.reg;
 		regcm = info.regcm;
-		/* Walk through the uses of insert and do a pre_copy or see if a post_copy is warranted */
+		/* Walk through the uses of ins and do a pre_copy or see if a post_copy is warranted */
 		for(entry = ins->use; entry; entry = next) {
 			struct reg_info rinfo;
 			int i;
@@ -11714,6 +11766,175 @@ struct reg_state {
 #define MAX_ALLOCATION_PASSES 100
 };
 
+
+
+struct print_interference_block_info {
+	struct reg_state *rstate;
+	FILE *fp;
+	int need_edges;
+};
+static void print_interference_block(
+	struct compile_state *state, struct block *block, void *arg)
+
+{
+	struct print_interference_block_info *info = arg;
+	struct reg_state *rstate = info->rstate;
+	FILE *fp = info->fp;
+	struct reg_block *rb;
+	struct triple *ptr;
+	int phi_present;
+	int done;
+	rb = &rstate->blocks[block->vertex];
+
+	fprintf(fp, "\nblock: %p (%d), %p<-%p %p<-%p\n", 
+		block, 
+		block->vertex,
+		block->left, 
+		block->left && block->left->use?block->left->use->member : 0,
+		block->right, 
+		block->right && block->right->use?block->right->use->member : 0);
+	if (rb->in) {
+		struct triple_reg_set *in_set;
+		fprintf(fp, "        in:");
+		for(in_set = rb->in; in_set; in_set = in_set->next) {
+			fprintf(fp, " %-10p", in_set->member);
+		}
+		fprintf(fp, "\n");
+	}
+	phi_present = 0;
+	for(done = 0, ptr = block->first; !done; ptr = ptr->next) {
+		done = (ptr == block->last);
+		if (ptr->op == OP_PHI) {
+			phi_present = 1;
+			break;
+		}
+	}
+	if (phi_present) {
+		int edge;
+		for(edge = 0; edge < block->users; edge++) {
+			fprintf(fp, "     in(%d):", edge);
+			for(done = 0, ptr = block->first; !done; ptr = ptr->next) {
+				struct triple **slot;
+				done = (ptr == block->last);
+				if (ptr->op != OP_PHI) {
+					continue;
+				}
+				slot = &RHS(ptr, 0);
+				fprintf(fp, " %-10p", slot[edge]);
+			}
+			fprintf(fp, "\n");
+		}
+	}
+	if (block->first->op == OP_LABEL) {
+		fprintf(fp, "%p:\n", block->first);
+	}
+	for(done = 0, ptr = block->first; !done; ptr = ptr->next) {
+		struct triple_set *user;
+		struct live_range *lr;
+		unsigned id;
+		int op;
+		op = ptr->op;
+		done = (ptr == block->last);
+		lr = rstate->lrd[ptr->id].lr;
+		
+		if (triple_stores_block(state, ptr)) {
+			if (ptr->u.block != block) {
+				internal_error(state, ptr, 
+					"Wrong block pointer: %p",
+					ptr->u.block);
+			}
+		}
+		if (op == OP_ADECL) {
+			for(user = ptr->use; user; user = user->next) {
+				if (!user->member->u.block) {
+					internal_error(state, user->member, 
+						"Use %p not in a block?",
+						user->member);
+				}
+				
+			}
+		}
+		id = ptr->id;
+		ptr->id = rstate->lrd[id].orig_id;
+		SET_REG(ptr->id, lr->color);
+		display_triple(fp, ptr);
+		ptr->id = id;
+
+		if (triple_is_def(state, ptr) && (lr->defs == 0)) {
+			internal_error(state, ptr, "lr has no defs!");
+		}
+		if (info->need_edges) {
+			if (lr->defs) {
+				struct live_range_def *lrd;
+				fprintf(fp, "       range:");
+				lrd = lr->defs;
+				do {
+					fprintf(fp, " %-10p", lrd->def);
+					lrd = lrd->next;
+				} while(lrd != lr->defs);
+				fprintf(fp, "\n");
+			}
+			if (lr->edges > 0) {
+				struct live_range_edge *edge;
+				fprintf(fp, "       edges:");
+				for(edge = lr->edges; edge; edge = edge->next) {
+					struct live_range_def *lrd;
+					lrd = edge->node->defs;
+					do {
+						fprintf(fp, " %-10p", lrd->def);
+						lrd = lrd->next;
+					} while(lrd != edge->node->defs);
+					fprintf(fp, "|");
+				}
+				fprintf(fp, "\n");
+			}
+		}
+		/* Do a bunch of sanity checks */
+		valid_ins(state, ptr);
+		if ((ptr->id < 0) || (ptr->id > rstate->defs)) {
+			internal_error(state, ptr, "Invalid triple id: %d",
+				ptr->id);
+		}
+		for(user = ptr->use; user; user = user->next) {
+			struct triple *use;
+			struct live_range *ulr;
+			use = user->member;
+			valid_ins(state, use);
+			if ((use->id < 0) || (use->id > rstate->defs)) {
+				internal_error(state, use, "Invalid triple id: %d",
+					use->id);
+			}
+			ulr = rstate->lrd[user->member->id].lr;
+			if (triple_stores_block(state, user->member) &&
+				!user->member->u.block) {
+				internal_error(state, user->member,
+					"Use %p not in a block?",
+					user->member);
+			}
+		}
+	}
+	if (rb->out) {
+		struct triple_reg_set *out_set;
+		fprintf(fp, "       out:");
+		for(out_set = rb->out; out_set; out_set = out_set->next) {
+			fprintf(fp, " %-10p", out_set->member);
+		}
+		fprintf(fp, "\n");
+	}
+	fprintf(fp, "\n");
+}
+
+static void print_interference_blocks(
+	struct compile_state *state, struct reg_state *rstate, FILE *fp, int need_edges)
+{
+	struct print_interference_block_info info;
+	info.rstate = rstate;
+	info.fp = fp;
+	info.need_edges = need_edges;
+	fprintf(fp, "\nlive variables by block\n");
+	walk_blocks(state, print_interference_block, &info);
+
+}
 
 static unsigned regc_max_size(struct compile_state *state, int classes)
 {
@@ -12025,6 +12246,21 @@ static struct live_range *coalesce_ranges(
 		internal_error(state, lr1->defs->def,
 			"cannot coalesce live ranges with dissimilar register classes");
 	}
+#if DEBUG_COALESCING
+	fprintf(stderr, "coalescing:");
+	lrd = lr1->defs;
+	do {
+		fprintf(stderr, " %p", lrd->def);
+		lrd = lrd->next;
+	} while(lrd != lr1->defs);
+	fprintf(stderr, " |");
+	lrd = lr2->defs;
+	do {
+		fprintf(stderr, " %p", lrd->def);
+		lrd = lrd->next;
+	} while(lrd != lr2->defs);
+	fprintf(stderr, "\n");
+#endif
 	/* If there is a clear dominate live range put it in lr1,
 	 * For purposes of this test phi functions are
 	 * considered dominated by the definitions that feed into
@@ -12060,7 +12296,6 @@ static struct live_range *coalesce_ranges(
 		lr2->color);
 #endif
 	
-	lr1->classes = classes;
 	/* Append lr2 onto lr1 */
 #warning "FIXME should this be a merge instead of a splice?"
 	/* This FIXME item applies to the correctness of live_range_end 
@@ -12148,9 +12383,9 @@ static void initialize_live_ranges(
 	 */
 	count = count_triples(state);
 	/* Potentially I need one live range definitions for each
-	 * instruction, plus an extra for the split routines.
+	 * instruction.
 	 */
-	rstate->defs = count + 1;
+	rstate->defs = count;
 	/* Potentially I need one live range for each instruction
 	 * plus an extra for the dummy live range.
 	 */
@@ -12172,7 +12407,6 @@ static void initialize_live_ranges(
 			struct reg_info info;
 			/* Find the architecture specific color information */
 			info = find_def_color(state, ins);
-
 			i++;
 			rstate->lr[i].defs    = &rstate->lrd[j];
 			rstate->lr[i].color   = info.reg;
@@ -12196,7 +12430,6 @@ static void initialize_live_ranges(
 		ins = ins->next;
 	} while(ins != first);
 	rstate->ranges = i;
-	rstate->defs -= 1;
 
 	/* Make a second pass to handle achitecture specific register
 	 * constraints.
@@ -12214,7 +12447,12 @@ static void initialize_live_ranges(
 			zlhs = 1;
 		}
 		zrhs = TRIPLE_RHS(ins->sizes);
+
+#if DEBUG_COALESCING > 1
+		fprintf(stderr, "mandatory coalesce: %p %d %d\n",
+			ins, zlhs, zrhs);
 		
+#endif		
 		for(i = 0; i < zlhs; i++) {
 			struct reg_info linfo;
 			struct live_range_def *lhs;
@@ -12227,6 +12465,11 @@ static void initialize_live_ranges(
 			} else {
 				lhs = &rstate->lrd[LHS(ins, i)->id];
 			}
+#if DEBUG_COALESCING > 1
+			fprintf(stderr, "coalesce lhs(%d): %p %d\n",
+				i, lhs, linfo.reg);
+		
+#endif		
 			for(j = 0; j < zrhs; j++) {
 				struct reg_info rinfo;
 				struct live_range_def *rhs;
@@ -12234,7 +12477,12 @@ static void initialize_live_ranges(
 				if (rinfo.reg < MAX_REGISTERS) {
 					continue;
 				}
-				rhs = &rstate->lrd[RHS(ins, i)->id];
+				rhs = &rstate->lrd[RHS(ins, j)->id];
+#if DEBUG_COALESCING > 1
+				fprintf(stderr, "coalesce rhs(%d): %p %d\n",
+					j, rhs, rinfo.reg);
+		
+#endif		
 				if (rinfo.reg == linfo.reg) {
 					coalesce_ranges(state, rstate, 
 						lhs->lr, rhs->lr);
@@ -12526,6 +12774,7 @@ static void fix_coalesce_conflicts(struct compile_state *state,
 	struct reg_block *blocks, struct triple_reg_set *live,
 	struct reg_block *rb, struct triple *ins, void *arg)
 {
+	int *conflicts = arg;
 	int zlhs, zrhs, i, j;
 
 	/* See if we have a mandatory coalesce operation between
@@ -12565,10 +12814,20 @@ static void fix_coalesce_conflicts(struct compile_state *state,
 				struct triple *copy;
 				copy = pre_copy(state, ins, j);
 				copy->id |= TRIPLE_FLAG_PRE_SPLIT;
+				(*conflicts)++;
 			}
 		}
 	}
 	return;
+}
+
+static int correct_coalesce_conflicts(
+	struct compile_state *state, struct reg_block *blocks)
+{
+	int conflicts;
+	conflicts = 0;
+	walk_variable_lifetimes(state, blocks, fix_coalesce_conflicts, &conflicts);
+	return conflicts;
 }
 
 static void replace_set_use(struct compile_state *state,
@@ -12743,317 +13002,81 @@ static int correct_tangles(
 	return tangles;
 }
 
-struct least_conflict {
-	struct reg_state *rstate;
-	struct live_range *ref_range;
-	struct triple *ins;
-	struct triple_reg_set *live;
-	size_t count;
-	int constraints;
-};
-static void least_conflict(struct compile_state *state,
-	struct reg_block *blocks, struct triple_reg_set *live,
-	struct reg_block *rb, struct triple *ins, void *arg)
+
+static void ids_from_rstate(struct compile_state *state, struct reg_state *rstate);
+static void cleanup_rstate(struct compile_state *state, struct reg_state *rstate);
+
+struct triple *find_constrained_def(
+	struct compile_state *state, struct live_range *range, struct triple *constrained)
 {
-	struct least_conflict *conflict = arg;
-	struct live_range_edge *edge;
-	struct triple_reg_set *set;
-	size_t count;
-	int constraints;
-
-#warning "FIXME handle instructions with left hand sides..."
-	/* Only instructions that introduce a new definition
-	 * can be the conflict instruction.
-	 */
-	if (!triple_is_def(state, ins)) {
-		return;
-	}
-
-	/* See if live ranges at this instruction are a
-	 * strict subset of the live ranges that are in conflict.
-	 */
-	count = 0;
-	for(set = live; set; set = set->next) {
-		struct live_range *lr;
-		lr = conflict->rstate->lrd[set->member->id].lr;
-		/* Ignore it if there cannot be an edge between these two nodes */
-		if (!arch_regcm_intersect(conflict->ref_range->classes, lr->classes)) {
-			continue;
-		}
-		for(edge = conflict->ref_range->edges; edge; edge = edge->next) {
-			if (edge->node == lr) {
-				break;
-			}
-		}
-		if (!edge && (lr != conflict->ref_range)) {
-			return;
-		}
-		count++;
-	}
-	if (count <= 1) {
-		return;
-	}
-
-#if 0
-	/* See if there is an uncolored member in this subset. 
-	 */
-	 for(set = live; set; set = set->next) {
-		struct live_range *lr;
-		lr = conflict->rstate->lrd[set->member->id].lr;
-		if (lr->color == REG_UNSET) {
-			break;
-		}
-	}
-	if (!set && (conflict->ref_range != REG_UNSET)) {
-		return;
-	}
-#endif
-
-	/* See if any of the live registers are constrained,
-	 * if not it won't be productive to pick this as
-	 * a conflict instruction.
-	 */
-	constraints = 0;
-	for(set = live; set; set = set->next) {
-		struct triple_set *uset;
+	struct live_range_def *lrd;
+	lrd = range->defs;
+	do {
 		struct reg_info info;
-		unsigned classes;
-		unsigned cur_size, size;
-		/* Skip this instruction */
-		if (set->member == ins) {
-			continue;
-		}
-		/* Find how many registers this value can potentially 
-		 * be assigned to.
+		unsigned regcm;
+		int is_constrained;
+		regcm = arch_type_to_regcm(state, lrd->def->type);
+		info = find_lhs_color(state, lrd->def, 0);
+		regcm      = arch_regcm_reg_normalize(state, regcm);
+		info.regcm = arch_regcm_reg_normalize(state, info.regcm);
+		/* If the 2 register class masks are not equal the
+		 * the current register class is constrained.
 		 */
-		classes = arch_type_to_regcm(state, set->member->type);
-		size = regc_max_size(state, classes);
+		is_constrained = regcm != info.regcm;
 		
-		/* Find how many registers we allow this value to
-		 * be assigned to.
+		/* Of the constrained live ranges deal with the
+		 * least dominated one first.
 		 */
-		info = arch_reg_lhs(state, set->member, 0);
-		
-		/* If the value does not live in a register it
-		 * isn't constrained.
-		 */
-		if (info.reg == REG_UNNEEDED) {
-			continue;
-		}
-		
-		if ((info.reg == REG_UNSET) || (info.reg >= MAX_REGISTERS)) {
-			cur_size = regc_max_size(state, info.regcm);
-		} else {
-			cur_size = 1;
-		}
-
-		/* If there is no difference between potential and
-		 * actual register count there is not a constraint
-		 */
-		if (cur_size >= size) {
-			continue;
-		}
-		
-		/* If this live_range feeds into conflict->inds
-		 * it isn't a constraint we can relieve.
-		 */
-		for(uset = set->member->use; uset; uset = uset->next) {
-			if (uset->member == ins) {
-				break;
+		if (is_constrained) {
+			if (!constrained || 
+				tdominates(state, lrd->def, constrained))
+			{
+				constrained = lrd->def;
 			}
 		}
-		if (uset) {
-			continue;
-		}
-		constraints = 1;
-		break;
-	}
-	/* Don't drop canidates with constraints */
-	if (conflict->constraints && !constraints) {
-		return;
-	}
-
-
-#if 0
-	fprintf(stderr, "conflict ins? %p %s count: %d constraints: %d\n",
-		ins, tops(ins->op), count, constraints);
-#endif
-	/* Find the instruction with the largest possible subset of
-	 * conflict ranges and that dominates any other instruction
-	 * with an equal sized set of conflicting ranges.
-	 */
-	if ((count > conflict->count) ||
-		((count == conflict->count) &&
-			tdominates(state, ins, conflict->ins))) {
-		struct triple_reg_set *next;
-		/* Remember the canidate instruction */
-		conflict->ins = ins;
-		conflict->count = count;
-		conflict->constraints = constraints;
-		/* Free the old collection of live registers */
-		for(set = conflict->live; set; set = next) {
-			next = set->next;
-			do_triple_unset(&conflict->live, set->member);
-		}
-		conflict->live = 0;
-		/* Rember the registers that are alive but do not feed
-		 * into or out of conflict->ins.
-		 */
-		for(set = live; set; set = set->next) {
-			struct triple **expr;
-			if (set->member == ins) {
-				goto next;
-			}
-			expr = triple_rhs(state, ins, 0);
-			for(;expr; expr = triple_rhs(state, ins, expr)) {
-				if (*expr == set->member) {
-					goto next;
-				}
-			}
-			expr = triple_lhs(state, ins, 0);
-			for(; expr; expr = triple_lhs(state, ins, expr)) {
-				if (*expr == set->member) {
-					goto next;
-				}
-			}
-			do_triple_set(&conflict->live, set->member, set->new);
-		next:
-			;
-		}
-	}
-	return;
+		lrd = lrd->next;
+	} while(lrd != range->defs);
+	return constrained;
 }
 
-static void find_range_conflict(struct compile_state *state,
-	struct reg_state *rstate, char *used, struct live_range *ref_range,
-	struct least_conflict *conflict)
-{
-
-	/* there are 3 kinds ways conflicts can occure.
-	 * 1) the life time of 2 values simply overlap.
-	 * 2) the 2 values feed into the same instruction.
-	 * 3) the 2 values feed into a phi function.
-	 */
-
-	/* find the instruction where the problematic conflict comes
-	 * into existance.  that the instruction where all of
-	 * the values are alive, and among such instructions it is
-	 * the least dominated one.
-	 *
-	 * a value is alive an an instruction if either;
-	 * 1) the value defintion dominates the instruction and there
-	 *    is a use at or after that instrction
-	 * 2) the value definition feeds into a phi function in the
-	 *    same block as the instruction.  and the phi function
-	 *    is at or after the instruction.
-	 */
-	memset(conflict, 0, sizeof(*conflict));
-	conflict->rstate      = rstate;
-	conflict->ref_range   = ref_range;
-	conflict->ins         = 0;
-	conflict->live        = 0;
-	conflict->count       = 0;
-	conflict->constraints = 0;
-	walk_variable_lifetimes(state, rstate->blocks, least_conflict, conflict);
-
-	if (!conflict->ins) {
-		internal_error(state, ref_range->defs->def, "No conflict ins?");
-	}
-	if (!conflict->live) {
-		internal_error(state, ref_range->defs->def, "No conflict live?");
-	}
-#if 0
-	fprintf(stderr, "conflict ins: %p %s count: %d constraints: %d\n", 
-		conflict->ins, tops(conflict->ins->op),
-		conflict->count, conflict->constraints);
-#endif
-	return;
-}
-
-static struct triple *split_constrained_range(struct compile_state *state, 
-	struct reg_state *rstate, char *used, struct least_conflict *conflict)
-{
-	unsigned constrained_size;
-	struct triple *new, *constrained;
-	struct triple_reg_set *cset;
-	/* Find a range that is having problems because it is
-	 * artificially constrained.
-	 */
-	constrained_size = ~0;
-	constrained = 0;
-	new = 0;
-	for(cset = conflict->live; cset; cset = cset->next) {
-		struct triple_set *set;
-		struct reg_info info;
-		unsigned classes;
-		unsigned cur_size, size;
-		/* Skip the live range that starts with conflict->ins */
-		if (cset->member == conflict->ins) {
-			continue;
-		}
-		/* Find how many registers this value can potentially
-		 * be assigned to.
-		 */
-		classes = arch_type_to_regcm(state, cset->member->type);
-		size = regc_max_size(state, classes);
-
-		/* Find how many registers we allow this value to
-		 * be assigned to.
-		 */
-		info = arch_reg_lhs(state, cset->member, 0);
-
-		/* If the register doesn't need a register 
-		 * splitting it can't help.
-		 */
-		if (info.reg == REG_UNNEEDED) {
-			continue;
-		}
-#warning "FIXME do I need a call to arch_reg_rhs around here somewhere?"
-		if ((info.reg == REG_UNSET) || (info.reg >= MAX_REGISTERS)) {
-			cur_size = regc_max_size(state, info.regcm);
-		} else {
-			cur_size = 1;
-		}
-		/* If this live_range feeds into conflict->ins
-		 * splitting it is unlikely to help.
-		 */
-		for(set = cset->member->use; set; set = set->next) {
-			if (set->member == conflict->ins) {
-				goto next;
-			}
-		}
-
-		/* If there is no difference between potential and
-		 * actual register count there is nothing to do.
-		 */
-		if (cur_size >= size) {
-			continue;
-		}
-		/* Of the constrained registers deal with the
-		 * most constrained one first.
-		 */
-		if (!constrained ||
-			(size < constrained_size)) {
-			constrained = cset->member;
-			constrained_size = size;
-		}
-	next:
-		;
-	}
-	if (constrained) {
-		new = post_copy(state, constrained);
-		new->id |= TRIPLE_FLAG_POST_SPLIT;
-	}
-	return new;
-}
-
-static int split_ranges(
+static int split_constrained_ranges(
 	struct compile_state *state, struct reg_state *rstate, 
+	struct live_range *range)
+{
+	/* Walk through the edges in conflict and our current live
+	 * range, and find definitions that are more severly constrained
+	 * than they type of data they contain require.
+	 * 
+	 * Then pick one of those ranges and relax the constraints.
+	 */
+	struct live_range_edge *edge;
+	struct triple *constrained;
+
+	constrained = 0;
+	for(edge = range->edges; edge; edge = edge->next) {
+		constrained = find_constrained_def(state, edge->node, constrained);
+	}
+	if (!constrained) {
+		constrained = find_constrained_def(state, range, constrained);
+	}
+#if DEBUG_RANGE_CONFLICTS
+	fprintf(stderr, "constrained: %s %p\n",
+		tops(constrained->op), constrained);
+#endif
+	if (constrained) {
+		ids_from_rstate(state, rstate);
+		cleanup_rstate(state, rstate);
+		resolve_tangle(state, constrained);
+	}
+	return !!constrained;
+}
+	
+static int split_ranges(
+	struct compile_state *state, struct reg_state *rstate,
 	char *used, struct live_range *range)
 {
-	struct triple *new;
-
-#if 0
+	int split;
+#if DEBUG_RANGE_CONFLICTS
 	fprintf(stderr, "split_ranges %d %s %p\n", 
 		rstate->passes, tops(range->defs->def->op), range->defs->def);
 #endif
@@ -13061,71 +13084,42 @@ static int split_ranges(
 		(rstate->passes >= rstate->max_passes)) {
 		return 0;
 	}
-	new = 0;
-	/* If I can't allocate a register something needs to be split */
-	if (arch_select_free_register(state, used, range->classes) == REG_UNSET) {
-		struct least_conflict conflict;
+	split = split_constrained_ranges(state, rstate, range);
 
-#if 0
-	fprintf(stderr, "find_range_conflict\n");
-#endif
-		/* Find where in the set of registers the conflict
-		 * actually occurs.
-		 */
-		find_range_conflict(state, rstate, used, range, &conflict);
-
-		/* If a range has been artifically constrained split it */
-		new = split_constrained_range(state, rstate, used, &conflict);
-		
-		if (!new) {
-		/* Ideally I would split the live range that will not be used
-		 * for the longest period of time in hopes that this will 
-		 * (a) allow me to spill a register or
-		 * (b) allow me to place a value in another register.
-		 *
-		 * So far I don't have a test case for this, the resolving
-		 * of mandatory constraints has solved all of my
-		 * know issues.  So I have choosen not to write any
-		 * code until I cat get a better feel for cases where
-		 * it would be useful to have.
-		 *
-		 */
+	/* Ideally I would split the live range that will not be used
+	 * for the longest period of time in hopes that this will 
+	 * (a) allow me to spill a register or
+	 * (b) allow me to place a value in another register.
+	 *
+	 * So far I don't have a test case for this, the resolving
+	 * of mandatory constraints has solved all of my
+	 * know issues.  So I have choosen not to write any
+	 * code until I cat get a better feel for cases where
+	 * it would be useful to have.
+	 *
+	 */
 #warning "WISHLIST implement live range splitting..."
-#if 0
-			print_blocks(state, stderr);
-			print_dominators(state, stderr);
-
-#endif
-			return 0;
-		}
-	}
-	if (new) {
-		rstate->lrd[rstate->defs].orig_id = new->id;
-		new->id = rstate->defs;
-		rstate->defs++;
-#if 0
-		fprintf(stderr, "new: %p old: %s %p\n", 
-			new, tops(RHS(new, 0)->op), RHS(new, 0));
-#endif
-#if 0
-		print_blocks(state, stderr);
+	if ((DEBUG_RANGE_CONFLICTS > 1) && 
+		(!split || (DEBUG_RANGE_CONFLICTS > 2))) {
+		print_interference_blocks(state, rstate, stderr, 0);
 		print_dominators(state, stderr);
-
-#endif
-		return 1;
 	}
-	return 0;
+	return split;
 }
+
 
 #if DEBUG_COLOR_GRAPH > 1
 #define cgdebug_printf(...) fprintf(stdout, __VA_ARGS__)
 #define cgdebug_flush() fflush(stdout)
+#define cgdebug_loc(STATE, TRIPLE) loc(stdout, STATE, TRIPLE)
 #elif DEBUG_COLOR_GRAPH == 1
 #define cgdebug_printf(...) fprintf(stderr, __VA_ARGS__)
 #define cgdebug_flush() fflush(stderr)
+#define cgdebug_loc(STATE, TRIPLE) loc(stderr, STATE, TRIPLE)
 #else
 #define cgdebug_printf(...)
 #define cgdebug_flush()
+#define cgdebug_loc(STATE, TRIPLE)
 #endif
 
 	
@@ -13301,16 +13295,16 @@ static int select_free_color(struct compile_state *state,
 				arch_reg_str(edge->node->color));
 			lrd = edge->node->defs;
 			do {
-				warning(state, lrd->def, " %s",
-					tops(lrd->def->op));
+				warning(state, lrd->def, " %s %p",
+					tops(lrd->def->op), lrd->def);
 				lrd = lrd->next;
 			} while(lrd != edge->node->defs);
 		}
 		warning(state, range->defs->def, "range: ");
 		lrd = range->defs;
 		do {
-			warning(state, lrd->def, " %s",
-				tops(lrd->def->op));
+			warning(state, lrd->def, " %s %p",
+				tops(lrd->def->op), lrd->def);
 			lrd = lrd->next;
 		} while(lrd != range->defs);
 			
@@ -13408,9 +13402,8 @@ static int color_graph(struct compile_state *state, struct reg_state *rstate)
 	}
 	colored = color_graph(state, rstate);
 	if (colored) {
-		cgdebug_printf("Coloring %d @%s:%d.%d:", 
-			range - rstate->lr,
-			range->def->filename, range->def->line, range->def->col);
+		cgdebug_printf("Coloring %d @", range - rstate->lr);
+		cgdebug_loc(state, range->defs->def);
 		cgdebug_flush();
 		colored = select_free_color(state, rstate, range);
 		cgdebug_printf(" %s\n", arch_reg_str(range->color));
@@ -13470,154 +13463,6 @@ static void color_triples(struct compile_state *state, struct reg_state *rstate)
 		SET_REG(ins->id, lr->color);
 		ins = ins->next;
 	} while (ins != first);
-}
-
-static void print_interference_block(
-	struct compile_state *state, struct block *block, void *arg)
-
-{
-	struct reg_state *rstate = arg;
-	struct reg_block *rb;
-	struct triple *ptr;
-	int phi_present;
-	int done;
-	rb = &rstate->blocks[block->vertex];
-
-	printf("\nblock: %p (%d), %p<-%p %p<-%p\n", 
-		block, 
-		block->vertex,
-		block->left, 
-		block->left && block->left->use?block->left->use->member : 0,
-		block->right, 
-		block->right && block->right->use?block->right->use->member : 0);
-	if (rb->in) {
-		struct triple_reg_set *in_set;
-		printf("        in:");
-		for(in_set = rb->in; in_set; in_set = in_set->next) {
-			printf(" %-10p", in_set->member);
-		}
-		printf("\n");
-	}
-	phi_present = 0;
-	for(done = 0, ptr = block->first; !done; ptr = ptr->next) {
-		done = (ptr == block->last);
-		if (ptr->op == OP_PHI) {
-			phi_present = 1;
-			break;
-		}
-	}
-	if (phi_present) {
-		int edge;
-		for(edge = 0; edge < block->users; edge++) {
-			printf("     in(%d):", edge);
-			for(done = 0, ptr = block->first; !done; ptr = ptr->next) {
-				struct triple **slot;
-				done = (ptr == block->last);
-				if (ptr->op != OP_PHI) {
-					continue;
-				}
-				slot = &RHS(ptr, 0);
-				printf(" %-10p", slot[edge]);
-			}
-			printf("\n");
-		}
-	}
-	if (block->first->op == OP_LABEL) {
-		printf("%p:\n", block->first);
-	}
-	for(done = 0, ptr = block->first; !done; ptr = ptr->next) {
-		struct triple_set *user;
-		struct live_range *lr;
-		unsigned id;
-		int op;
-		op = ptr->op;
-		done = (ptr == block->last);
-		lr = rstate->lrd[ptr->id].lr;
-		
-		if (triple_stores_block(state, ptr)) {
-			if (ptr->u.block != block) {
-				internal_error(state, ptr, 
-					"Wrong block pointer: %p",
-					ptr->u.block);
-			}
-		}
-		if (op == OP_ADECL) {
-			for(user = ptr->use; user; user = user->next) {
-				if (!user->member->u.block) {
-					internal_error(state, user->member, 
-						"Use %p not in a block?",
-						user->member);
-				}
-				
-			}
-		}
-		id = ptr->id;
-		ptr->id = rstate->lrd[id].orig_id;
-		SET_REG(ptr->id, lr->color);
-		display_triple(stdout, ptr);
-		ptr->id = id;
-
-		if (triple_is_def(state, ptr) && (lr->defs == 0)) {
-			internal_error(state, ptr, "lr has no defs!");
-		}
-
-		if (lr->defs) {
-			struct live_range_def *lrd;
-			printf("       range:");
-			lrd = lr->defs;
-			do {
-				printf(" %-10p", lrd->def);
-				lrd = lrd->next;
-			} while(lrd != lr->defs);
-			printf("\n");
-		}
-		if (lr->edges > 0) {
-			struct live_range_edge *edge;
-			printf("       edges:");
-			for(edge = lr->edges; edge; edge = edge->next) {
-				struct live_range_def *lrd;
-				lrd = edge->node->defs;
-				do {
-					printf(" %-10p", lrd->def);
-					lrd = lrd->next;
-				} while(lrd != edge->node->defs);
-				printf("|");
-			}
-			printf("\n");
-		}
-		/* Do a bunch of sanity checks */
-		valid_ins(state, ptr);
-		if ((ptr->id < 0) || (ptr->id > rstate->defs)) {
-			internal_error(state, ptr, "Invalid triple id: %d",
-				ptr->id);
-		}
-		for(user = ptr->use; user; user = user->next) {
-			struct triple *use;
-			struct live_range *ulr;
-			use = user->member;
-			valid_ins(state, use);
-			if ((use->id < 0) || (use->id > rstate->defs)) {
-				internal_error(state, use, "Invalid triple id: %d",
-					use->id);
-			}
-			ulr = rstate->lrd[user->member->id].lr;
-			if (triple_stores_block(state, user->member) &&
-				!user->member->u.block) {
-				internal_error(state, user->member,
-					"Use %p not in a block?",
-					user->member);
-			}
-		}
-	}
-	if (rb->out) {
-		struct triple_reg_set *out_set;
-		printf("       out:");
-		for(out_set = rb->out; out_set; out_set = out_set->next) {
-			printf(" %-10p", out_set->member);
-		}
-		printf("\n");
-	}
-	printf("\n");
 }
 
 static struct live_range *merge_sort_lr(
@@ -13734,10 +13579,11 @@ static void allocate_registers(struct compile_state *state)
 
 	do {
 		struct live_range **point, **next;
+		int conflicts;
 		int tangles;
 		int coalesced;
 
-#if 0
+#if DEBUG_RANGE_CONFLICTS
 		fprintf(stderr, "pass: %d\n", rstate.passes);
 #endif
 
@@ -13751,8 +13597,7 @@ static void allocate_registers(struct compile_state *state)
 		rstate.blocks = compute_variable_lifetimes(state);
 
 		/* Fix invalid mandatory live range coalesce conflicts */
-		walk_variable_lifetimes(
-			state, rstate.blocks, fix_coalesce_conflicts, 0);
+		conflicts = correct_coalesce_conflicts(state, rstate.blocks);
 
 		/* Fix two simultaneous uses of the same register.
 		 * In a few pathlogical cases a partial untangle moves
@@ -13780,7 +13625,7 @@ static void allocate_registers(struct compile_state *state)
 		 *  yields some benefit.
 		 */
 		do {
-#if 0
+#if DEBUG_COALESCING
 			fprintf(stderr, "coalescing\n");
 #endif			
 			/* Remove any previous live edge calculations */
@@ -13792,8 +13637,7 @@ static void allocate_registers(struct compile_state *state)
 			
 			/* Display the interference graph if desired */
 			if (state->debug & DEBUG_INTERFERENCE) {
-				printf("\nlive variables by block\n");
-				walk_blocks(state, print_interference_block, &rstate);
+				print_interference_blocks(state, &rstate, stdout, 1);
 				printf("\nlive variables by instruction\n");
 				walk_variable_lifetimes(
 					state, rstate.blocks, 
@@ -13802,7 +13646,7 @@ static void allocate_registers(struct compile_state *state)
 			
 			coalesced = coalesce_live_ranges(state, &rstate);
 
-#if 0
+#if DEBUG_COALESCING
 			fprintf(stderr, "coalesced: %d\n", coalesced);
 #endif
 		} while(coalesced);
@@ -14650,6 +14494,26 @@ static void verify_uses(struct compile_state *state)
 	} while(ins != first);
 	
 }
+static void verify_blocks_present(struct compile_state *state)
+{
+	struct triple *first, *ins;
+	if (!state->first_block) {
+		return;
+	}
+	first = RHS(state->main_function, 0);
+	ins = first;
+	do {
+		if (triple_stores_block(state, ins)) {
+			if (!ins->u.block) {
+				internal_error(state, ins, 
+					"%p not in a block?\n", ins);
+			}
+		}
+		ins = ins->next;
+	} while(ins != first);
+	
+	
+}
 static void verify_blocks(struct compile_state *state)
 {
 	struct triple *ins;
@@ -14754,6 +14618,7 @@ static void verify_ins_colors(struct compile_state *state)
 static void verify_consistency(struct compile_state *state)
 {
 	verify_uses(state);
+	verify_blocks_present(state);
 	verify_blocks(state);
 	verify_domination(state);
 	verify_piece(state);
@@ -14778,6 +14643,7 @@ static void optimize(struct compile_state *state)
 	setup_basic_blocks(state);
 	analyze_idominators(state);
 	analyze_ipdominators(state);
+
 	/* Transform the code to ssa form */
 	transform_to_ssa_form(state);
 	verify_consistency(state);
@@ -15089,6 +14955,7 @@ static unsigned arch_regc_size(struct compile_state *state, int class)
 	}
 	return regc_size[class];
 }
+
 static int arch_regcm_intersect(unsigned regcm1, unsigned regcm2)
 {
 	/* See if two register classes may have overlapping registers */
@@ -15307,6 +15174,16 @@ static unsigned arch_regcm_normalize(struct compile_state *state, unsigned regcm
 	return result;
 }
 
+static unsigned arch_regcm_reg_normalize(struct compile_state *state, unsigned regcm)
+{
+	/* Like arch_regcm_normalize except immediate register classes are excluded */
+	regcm = arch_regcm_normalize(state, regcm);
+	/* Remove the immediate register classes */
+	regcm &= ~(REGCM_IMM32 | REGCM_IMM16 | REGCM_IMM8);
+	return regcm;
+	
+}
+
 static unsigned arch_reg_regcm(struct compile_state *state, int reg)
 {
 	unsigned mask;
@@ -15461,21 +15338,28 @@ static int do_select_reg(struct compile_state *state,
 static int arch_select_free_register(
 	struct compile_state *state, char *used, int classes)
 {
-	/* Preference: flags, 8bit gprs, 32bit gprs, other 32bit reg
-	 * other types of registers.
+	/* Live ranges with the most neighbors are colored first.
+	 *
+	 * Generally it does not matter which colors are given
+	 * as the register allocator attempts to color live ranges
+	 * in an order where you are guaranteed not to run out of colors.
+	 *
+	 * Occasionally the register allocator cannot find an order
+	 * of register selection that will find a free color.  To
+	 * increase the odds the register allocator will work when
+	 * it guesses first give out registers from register classes
+	 * least likely to run out of registers.
+	 * 
 	 */
 	int i, reg;
 	reg = REG_UNSET;
-	for(i = REGC_FLAGS_FIRST; (reg == REG_UNSET) && (i <= REGC_FLAGS_LAST); i++) {
-		reg = do_select_reg(state, used, i, classes);
-	}
-	for(i = REGC_GPR32_FIRST; (reg == REG_UNSET) && (i <= REGC_GPR32_LAST); i++) {
+	for(i = REGC_XMM_FIRST; (reg == REG_UNSET) && (i <= REGC_XMM_LAST); i++) {
 		reg = do_select_reg(state, used, i, classes);
 	}
 	for(i = REGC_MMX_FIRST; (reg == REG_UNSET) && (i <= REGC_MMX_LAST); i++) {
 		reg = do_select_reg(state, used, i, classes);
 	}
-	for(i = REGC_XMM_FIRST; (reg == REG_UNSET) && (i <= REGC_XMM_LAST); i++) {
+	for(i = REGC_GPR32_LAST; (reg == REG_UNSET) && (i >= REGC_GPR32_FIRST); i--) {
 		reg = do_select_reg(state, used, i, classes);
 	}
 	for(i = REGC_GPR16_FIRST; (reg == REG_UNSET) && (i <= REGC_GPR16_LAST); i++) {
@@ -15487,6 +15371,9 @@ static int arch_select_free_register(
 	for(i = REGC_GPR64_FIRST; (reg == REG_UNSET) && (i <= REGC_GPR64_LAST); i++) {
 		reg = do_select_reg(state, used, i, classes);
 	}
+	for(i = REGC_FLAGS_FIRST; (reg == REG_UNSET) && (i <= REGC_FLAGS_LAST); i++) {
+		reg = do_select_reg(state, used, i, classes);
+	}
 	return reg;
 }
 
@@ -15494,10 +15381,8 @@ static int arch_select_free_register(
 static unsigned arch_type_to_regcm(struct compile_state *state, struct type *type) 
 {
 #warning "FIXME force types smaller (if legal) before I get here"
-	unsigned avail_mask;
 	unsigned mask;
 	mask = 0;
-	avail_mask = arch_avail_mask(state);
 	switch(type->type & TYPE_MASK) {
 	case TYPE_ARRAY:
 	case TYPE_VOID: 
@@ -15533,7 +15418,7 @@ static unsigned arch_type_to_regcm(struct compile_state *state, struct type *typ
 		internal_error(state, 0, "no register class for type");
 		break;
 	}
-	mask &= avail_mask;
+	mask = arch_regcm_normalize(state, mask);
 	return mask;
 }
 
@@ -15587,49 +15472,61 @@ static int get_imm8(struct triple *ins, struct triple **expr)
 #define TEMPLATE_NOP         0
 #define TEMPLATE_INTCONST8   1
 #define TEMPLATE_INTCONST32  2
-#define TEMPLATE_COPY_REG    3
-#define TEMPLATE_COPY_IMM32  4
-#define TEMPLATE_COPY_IMM16  5
+#define TEMPLATE_COPY8_REG   3
+#define TEMPLATE_COPY16_REG  4
+#define TEMPLATE_COPY32_REG  5
 #define TEMPLATE_COPY_IMM8   6
-#define TEMPLATE_PHI         7
-#define TEMPLATE_STORE8      8
-#define TEMPLATE_STORE16     9
-#define TEMPLATE_STORE32    10
-#define TEMPLATE_LOAD8      11
-#define TEMPLATE_LOAD16     12
-#define TEMPLATE_LOAD32     13
-#define TEMPLATE_BINARY_REG 14
-#define TEMPLATE_BINARY_IMM 15
-#define TEMPLATE_SL_CL      16
-#define TEMPLATE_SL_IMM     17
-#define TEMPLATE_UNARY      18
-#define TEMPLATE_CMP_REG    19
-#define TEMPLATE_CMP_IMM    20
-#define TEMPLATE_TEST       21
-#define TEMPLATE_SET        22
-#define TEMPLATE_JMP        23
-#define TEMPLATE_INB_DX     24
-#define TEMPLATE_INB_IMM    25
-#define TEMPLATE_INW_DX     26
-#define TEMPLATE_INW_IMM    27
-#define TEMPLATE_INL_DX     28
-#define TEMPLATE_INL_IMM    29
-#define TEMPLATE_OUTB_DX    30
-#define TEMPLATE_OUTB_IMM   31
-#define TEMPLATE_OUTW_DX    32
-#define TEMPLATE_OUTW_IMM   33
-#define TEMPLATE_OUTL_DX    34
-#define TEMPLATE_OUTL_IMM   35
-#define TEMPLATE_BSF        36
-#define TEMPLATE_RDMSR      37
-#define TEMPLATE_WRMSR      38
-#define LAST_TEMPLATE       TEMPLATE_WRMSR
+#define TEMPLATE_COPY_IMM16  7
+#define TEMPLATE_COPY_IMM32  8
+#define TEMPLATE_PHI8        9
+#define TEMPLATE_PHI16      10
+#define TEMPLATE_PHI32      11
+#define TEMPLATE_STORE8     12
+#define TEMPLATE_STORE16    13
+#define TEMPLATE_STORE32    14
+#define TEMPLATE_LOAD8      15
+#define TEMPLATE_LOAD16     16
+#define TEMPLATE_LOAD32     17
+#define TEMPLATE_BINARY_REG 18
+#define TEMPLATE_BINARY_IMM 19
+#define TEMPLATE_SL_CL      20
+#define TEMPLATE_SL_IMM     21
+#define TEMPLATE_UNARY      22
+#define TEMPLATE_CMP_REG    23
+#define TEMPLATE_CMP_IMM    24
+#define TEMPLATE_TEST       25
+#define TEMPLATE_SET        26
+#define TEMPLATE_JMP        27
+#define TEMPLATE_INB_DX     28
+#define TEMPLATE_INB_IMM    29
+#define TEMPLATE_INW_DX     30
+#define TEMPLATE_INW_IMM    31
+#define TEMPLATE_INL_DX     32
+#define TEMPLATE_INL_IMM    33
+#define TEMPLATE_OUTB_DX    34
+#define TEMPLATE_OUTB_IMM   35
+#define TEMPLATE_OUTW_DX    36
+#define TEMPLATE_OUTW_IMM   37
+#define TEMPLATE_OUTL_DX    38
+#define TEMPLATE_OUTL_IMM   39
+#define TEMPLATE_BSF        40
+#define TEMPLATE_RDMSR      41
+#define TEMPLATE_WRMSR      42
+#define TEMPLATE_UMUL       43
+#define TEMPLATE_DIV        44
+#define TEMPLATE_MOD        45
+#define LAST_TEMPLATE       TEMPLATE_MOD
 #if LAST_TEMPLATE >= MAX_TEMPLATES
 #error "MAX_TEMPLATES to low"
 #endif
 
-#define COPY_REGCM (REGCM_GPR32 | REGCM_GPR16 | REGCM_GPR8 | REGCM_MMX | REGCM_XMM)
-#define COPY32_REGCM (REGCM_GPR32 | REGCM_MMX | REGCM_XMM)
+#define COPY8_REGCM     (REGCM_GPR64 | REGCM_GPR32 | REGCM_GPR16 | REGCM_GPR8 | REGCM_MMX | REGCM_XMM)
+#define COPY16_REGCM    (REGCM_GPR64 | REGCM_GPR32 | REGCM_GPR16 | REGCM_MMX | REGCM_XMM)  
+#define COPY32_REGCM    (REGCM_GPR64 | REGCM_GPR32 | REGCM_MMX | REGCM_XMM)
+#define COPYIMM8_REGCM  (REGCM_GPR32 | REGCM_GPR16 | REGCM_GPR8)
+#define COPYIMM16_REGCM (REGCM_GPR32 | REGCM_GPR16)
+#define COPYIMM32_REGCM (REGCM_GPR32)
+
 
 static struct ins_template templates[] = {
 	[TEMPLATE_NOP]      = {},
@@ -15639,41 +15536,89 @@ static struct ins_template templates[] = {
 	[TEMPLATE_INTCONST32] = { 
 		.lhs = { [0] = { REG_UNNEEDED, REGCM_IMM32 } },
 	},
-	[TEMPLATE_COPY_REG] = {
-		.lhs = { [0] = { REG_UNSET, COPY_REGCM } },
-		.rhs = { [0] = { REG_UNSET, COPY_REGCM }  },
+	[TEMPLATE_COPY8_REG] = {
+		.lhs = { [0] = { REG_UNSET, COPY8_REGCM } },
+		.rhs = { [0] = { REG_UNSET, COPY8_REGCM }  },
 	},
-	[TEMPLATE_COPY_IMM32] = {
+	[TEMPLATE_COPY16_REG] = {
+		.lhs = { [0] = { REG_UNSET, COPY16_REGCM } },
+		.rhs = { [0] = { REG_UNSET, COPY16_REGCM }  },
+	},
+	[TEMPLATE_COPY32_REG] = {
 		.lhs = { [0] = { REG_UNSET, COPY32_REGCM } },
-		.rhs = { [0] = { REG_UNNEEDED, REGCM_IMM32 } },
-	},
-	[TEMPLATE_COPY_IMM16] = {
-		.lhs = { [0] = { REG_UNSET, COPY32_REGCM | REGCM_GPR16 } },
-		.rhs = { [0] = { REG_UNNEEDED, REGCM_IMM16 } },
+		.rhs = { [0] = { REG_UNSET, COPY32_REGCM }  },
 	},
 	[TEMPLATE_COPY_IMM8] = {
-		.lhs = { [0] = { REG_UNSET, COPY_REGCM } },
+		.lhs = { [0] = { REG_UNSET, COPYIMM8_REGCM } },
 		.rhs = { [0] = { REG_UNNEEDED, REGCM_IMM8 } },
 	},
-	[TEMPLATE_PHI] = { 
-		.lhs = { [0] = { REG_VIRT0, COPY_REGCM } },
+	[TEMPLATE_COPY_IMM16] = {
+		.lhs = { [0] = { REG_UNSET, COPYIMM16_REGCM } },
+		.rhs = { [0] = { REG_UNNEEDED, REGCM_IMM16 | REGCM_IMM8 } },
+	},
+	[TEMPLATE_COPY_IMM32] = {
+		.lhs = { [0] = { REG_UNSET, COPYIMM32_REGCM } },
+		.rhs = { [0] = { REG_UNNEEDED, REGCM_IMM32 | REGCM_IMM16 | REGCM_IMM8 } },
+	},
+	[TEMPLATE_PHI8] = { 
+		.lhs = { [0] = { REG_VIRT0, COPY8_REGCM } },
 		.rhs = { 
-			[ 0] = { REG_VIRT0, COPY_REGCM },
-			[ 1] = { REG_VIRT0, COPY_REGCM },
-			[ 2] = { REG_VIRT0, COPY_REGCM },
-			[ 3] = { REG_VIRT0, COPY_REGCM },
-			[ 4] = { REG_VIRT0, COPY_REGCM },
-			[ 5] = { REG_VIRT0, COPY_REGCM },
-			[ 6] = { REG_VIRT0, COPY_REGCM },
-			[ 7] = { REG_VIRT0, COPY_REGCM },
-			[ 8] = { REG_VIRT0, COPY_REGCM },
-			[ 9] = { REG_VIRT0, COPY_REGCM },
-			[10] = { REG_VIRT0, COPY_REGCM },
-			[11] = { REG_VIRT0, COPY_REGCM },
-			[12] = { REG_VIRT0, COPY_REGCM },
-			[13] = { REG_VIRT0, COPY_REGCM },
-			[14] = { REG_VIRT0, COPY_REGCM },
-			[15] = { REG_VIRT0, COPY_REGCM },
+			[ 0] = { REG_VIRT0, COPY8_REGCM },
+			[ 1] = { REG_VIRT0, COPY8_REGCM },
+			[ 2] = { REG_VIRT0, COPY8_REGCM },
+			[ 3] = { REG_VIRT0, COPY8_REGCM },
+			[ 4] = { REG_VIRT0, COPY8_REGCM },
+			[ 5] = { REG_VIRT0, COPY8_REGCM },
+			[ 6] = { REG_VIRT0, COPY8_REGCM },
+			[ 7] = { REG_VIRT0, COPY8_REGCM },
+			[ 8] = { REG_VIRT0, COPY8_REGCM },
+			[ 9] = { REG_VIRT0, COPY8_REGCM },
+			[10] = { REG_VIRT0, COPY8_REGCM },
+			[11] = { REG_VIRT0, COPY8_REGCM },
+			[12] = { REG_VIRT0, COPY8_REGCM },
+			[13] = { REG_VIRT0, COPY8_REGCM },
+			[14] = { REG_VIRT0, COPY8_REGCM },
+			[15] = { REG_VIRT0, COPY8_REGCM },
+		}, },
+	[TEMPLATE_PHI16] = { 
+		.lhs = { [0] = { REG_VIRT0, COPY16_REGCM } },
+		.rhs = { 
+			[ 0] = { REG_VIRT0, COPY16_REGCM },
+			[ 1] = { REG_VIRT0, COPY16_REGCM },
+			[ 2] = { REG_VIRT0, COPY16_REGCM },
+			[ 3] = { REG_VIRT0, COPY16_REGCM },
+			[ 4] = { REG_VIRT0, COPY16_REGCM },
+			[ 5] = { REG_VIRT0, COPY16_REGCM },
+			[ 6] = { REG_VIRT0, COPY16_REGCM },
+			[ 7] = { REG_VIRT0, COPY16_REGCM },
+			[ 8] = { REG_VIRT0, COPY16_REGCM },
+			[ 9] = { REG_VIRT0, COPY16_REGCM },
+			[10] = { REG_VIRT0, COPY16_REGCM },
+			[11] = { REG_VIRT0, COPY16_REGCM },
+			[12] = { REG_VIRT0, COPY16_REGCM },
+			[13] = { REG_VIRT0, COPY16_REGCM },
+			[14] = { REG_VIRT0, COPY16_REGCM },
+			[15] = { REG_VIRT0, COPY16_REGCM },
+		}, },
+	[TEMPLATE_PHI32] = { 
+		.lhs = { [0] = { REG_VIRT0, COPY32_REGCM } },
+		.rhs = { 
+			[ 0] = { REG_VIRT0, COPY32_REGCM },
+			[ 1] = { REG_VIRT0, COPY32_REGCM },
+			[ 2] = { REG_VIRT0, COPY32_REGCM },
+			[ 3] = { REG_VIRT0, COPY32_REGCM },
+			[ 4] = { REG_VIRT0, COPY32_REGCM },
+			[ 5] = { REG_VIRT0, COPY32_REGCM },
+			[ 6] = { REG_VIRT0, COPY32_REGCM },
+			[ 7] = { REG_VIRT0, COPY32_REGCM },
+			[ 8] = { REG_VIRT0, COPY32_REGCM },
+			[ 9] = { REG_VIRT0, COPY32_REGCM },
+			[10] = { REG_VIRT0, COPY32_REGCM },
+			[11] = { REG_VIRT0, COPY32_REGCM },
+			[12] = { REG_VIRT0, COPY32_REGCM },
+			[13] = { REG_VIRT0, COPY32_REGCM },
+			[14] = { REG_VIRT0, COPY32_REGCM },
+			[15] = { REG_VIRT0, COPY32_REGCM },
 		}, },
 	[TEMPLATE_STORE8] = {
 		.lhs = { [0] = { REG_UNSET, REGCM_GPR32 } },
@@ -15834,6 +15779,33 @@ static struct ins_template templates[] = {
 			[2] = { REG_EDX, REGCM_GPR32 },
 		},
 	},
+	[TEMPLATE_UMUL] = {
+		.lhs = { [0] = { REG_EDXEAX, REGCM_GPR64 } },
+		.rhs = { 
+			[0] = { REG_EAX, REGCM_GPR32 },
+			[1] = { REG_UNSET, REGCM_GPR32 },
+		},
+	},
+	[TEMPLATE_DIV] = {
+		.lhs = { 
+			[0] = { REG_EAX, REGCM_GPR32 },
+			[1] = { REG_EDX, REGCM_GPR32 },
+		},
+		.rhs = {
+			[0] = { REG_EDXEAX, REGCM_GPR64 },
+			[1] = { REG_UNSET, REGCM_GPR32 },
+		},
+	},
+	[TEMPLATE_MOD] = {
+		.lhs = { 
+			[0] = { REG_EDX, REGCM_GPR32 },
+			[1] = { REG_EAX, REGCM_GPR32 },
+		},
+		.rhs = {
+			[0] = { REG_EDXEAX, REGCM_GPR64 },
+			[1] = { REG_UNSET, REGCM_GPR32 },
+		},
+	},
 };
 
 static void fixup_branches(struct compile_state *state,
@@ -15897,7 +15869,7 @@ static void bool_cmp(struct compile_state *state,
 	/* Generate the instruction sequence that will transform the
 	 * result of the comparison into a logical value.
 	 */
-	set = post_triple(state, ins, set_op, ins->type, ins, 0);
+	set = post_triple(state, ins, set_op, &char_type, ins, 0);
 	use_triple(ins, set);
 	set->template_id = TEMPLATE_SET;
 
@@ -16007,11 +15979,12 @@ static struct triple *transform_to_arch_instruction(
 {
 	/* Transform from generic 3 address instructions
 	 * to archtecture specific instructions.
-	 * And apply architecture specific constrains to instructions.
+	 * And apply architecture specific constraints to instructions.
 	 * Copies are inserted to preserve the register flexibility
 	 * of 3 address instructions.
 	 */
 	struct triple *next;
+	size_t size;
 	next = ins->next;
 	switch(ins->op) {
 	case OP_INTCONST:
@@ -16030,22 +16003,46 @@ static struct triple *transform_to_arch_instruction(
 		ins->template_id = TEMPLATE_NOP;
 		break;
 	case OP_COPY:
-		ins->template_id = TEMPLATE_COPY_REG;
-		if (is_imm8(RHS(ins, 0))) {
+		size = size_of(state, ins->type);
+		if (is_imm8(RHS(ins, 0)) && (size <= 1)) {
 			ins->template_id = TEMPLATE_COPY_IMM8;
 		}
-		else if (is_imm16(RHS(ins, 0))) {
+		else if (is_imm16(RHS(ins, 0)) && (size <= 2)) {
 			ins->template_id = TEMPLATE_COPY_IMM16;
 		}
-		else if (is_imm32(RHS(ins, 0))) {
+		else if (is_imm32(RHS(ins, 0)) && (size <= 4)) {
 			ins->template_id = TEMPLATE_COPY_IMM32;
 		}
 		else if (is_const(RHS(ins, 0))) {
 			internal_error(state, ins, "bad constant passed to copy");
 		}
+		else if (size <= 1) {
+			ins->template_id = TEMPLATE_COPY8_REG;
+		}
+		else if (size <= 2) {
+			ins->template_id = TEMPLATE_COPY16_REG;
+		}
+		else if (size <= 4) {
+			ins->template_id = TEMPLATE_COPY32_REG;
+		}
+		else {
+			internal_error(state, ins, "bad type passed to copy");
+		}
 		break;
 	case OP_PHI:
-		ins->template_id = TEMPLATE_PHI;
+		size = size_of(state, ins->type);
+		if (size <= 1) {
+			ins->template_id = TEMPLATE_PHI8;
+		}
+		else if (size <= 2) {
+			ins->template_id = TEMPLATE_PHI16;
+		}
+		else if (size <= 4) {
+			ins->template_id = TEMPLATE_PHI32;
+		}
+		else {
+			internal_error(state, ins, "bad type passed to phi");
+		}
 		break;
 	case OP_STORE:
 		switch(ins->type->type & TYPE_MASK) {
@@ -16097,12 +16094,28 @@ static struct triple *transform_to_arch_instruction(
 			ins->template_id = TEMPLATE_BINARY_IMM;
 		}
 		break;
+#if 0
+		/* This code does not work yet */
+	case OP_UMUL:
+		ins->template_id = TEMPLATE_UMUL;
+		break;
+	case OP_UDIV:
+	case OP_SDIV:
+		ins->template_id = TEMPLATE_DIV;
+		break;
+	case OP_UMOD:
+	case OP_SMOD:
+		ins->template_id = TEMPLATE_MOD;
+		break;
+#endif
 	case OP_SL:
 	case OP_SSR:
 	case OP_USR:
 		ins->template_id = TEMPLATE_SL_CL;
 		if (get_imm8(ins, &RHS(ins, 1))) {
 			ins->template_id = TEMPLATE_SL_IMM;
+		} else if (size_of(state, RHS(ins, 1)->type) > 1) {
+			typed_pre_copy(state, &char_type, ins, 1);
 		}
 		break;
 	case OP_INVERT:
@@ -16514,6 +16527,16 @@ static void print_op_move(struct compile_state *state,
 					arch_reg_str(dst_reg));
 			}
 		}
+		/* Move from 32bit gprs to 16bit gprs */
+		else if ((src_regcm & REGCM_GPR32) &&
+			(dst_regcm & REGCM_GPR16)) {
+			dst_reg = (dst_reg - REGC_GPR16_FIRST) + REGC_GPR32_FIRST;
+			if ((src_reg != dst_reg) || !omit_copy) {
+				fprintf(fp, "\tmov %s, %s\n",
+					arch_reg_str(src_reg),
+					arch_reg_str(dst_reg));
+			}
+		}
 		/* Move 32bit to 8bit */
 		else if ((src_regcm & REGCM_GPR32_8) &&
 			(dst_regcm & REGCM_GPR8))
@@ -16570,6 +16593,30 @@ static void print_op_move(struct compile_state *state,
 				reg(state, src, src_regcm),
 				reg(state, dst, dst_regcm));
 		}
+		/* Move from 16bit gprs &  mmx/sse registers */
+		else if ((src_regcm & REGCM_GPR16) &&
+			(dst_regcm & (REGCM_MMX | REGCM_XMM))) {
+			const char *op;
+			int mid_reg;
+			op = is_signed(src->type)? "movsx":"movxz";
+			mid_reg = (src_reg - REGC_GPR16_FIRST) + REGC_GPR32_FIRST;
+			fprintf(fp, "\t%s %s, %s\n\tmovd %s, %s\n",
+				op,
+				arch_reg_str(src_reg),
+				arch_reg_str(mid_reg),
+				arch_reg_str(mid_reg),
+				arch_reg_str(dst_reg));
+		}
+
+		/* Move from mmx/sse registers to 16bit gprs */
+		else if ((src_regcm & (REGCM_MMX | REGCM_XMM)) &&
+			(dst_regcm & REGCM_GPR16)) {
+			dst_reg = (dst_reg - REGC_GPR16_FIRST) + REGC_GPR32_FIRST;
+			fprintf(fp, "\tmovd %s, %s\n",
+				arch_reg_str(src_reg),
+				arch_reg_str(dst_reg));
+		}
+
 #if X86_4_8BIT_GPRS
 		/* Move from 8bit gprs to  mmx/sse registers */
 		else if ((src_regcm & REGCM_GPR8) && (src_reg <= REG_DL) &&
@@ -16593,16 +16640,6 @@ static void print_op_move(struct compile_state *state,
 			fprintf(fp, "\tmovd %s, %s\n",
 				reg(state, src, src_regcm),
 				arch_reg_str(mid_reg));
-		}
-		/* Move from 32bit gprs to 16bit gprs */
-		else if ((src_regcm & REGCM_GPR32) &&
-			(dst_regcm & REGCM_GPR16)) {
-			dst_reg = (dst_reg - REGC_GPR16_FIRST) + REGC_GPR32_FIRST;
-			if ((src_reg != dst_reg) || !omit_copy) {
-				fprintf(fp, "\tmov %s, %s\n",
-					arch_reg_str(src_reg),
-					arch_reg_str(dst_reg));
-			}
 		}
 		/* Move from 32bit gprs to 8bit gprs */
 		else if ((src_regcm & REGCM_GPR32) &&

@@ -13,6 +13,7 @@ target_dir = ''
 target_name = ''
 treetop = ''
 full_mainboard_path = ''
+mainboard_path = ''
 global_options = {}
 global_options_by_order = []
 global_option_values = {}
@@ -850,6 +851,7 @@ def getoptionvalue(name, op, image):
 	global global_option_values
 	#print "getoptionvalue name %s op %s image %s\n" % (name, op,image)
 	if (op == 0):
+		print_stack()
 		fatal("Option %s undefined (missing use command?)" % name)
 	if (image):
 		v = getdict(image.getvalues(), name)
@@ -870,8 +872,10 @@ def getoption(name, image):
 		#print "ALLOPTIONS\n"
 		o = getdict(global_options, name)
 	elif (curpart):
-		#print "CURPART\n"
 		o = getdict(curpart.uses_options, name)
+		print "CURPART o is %s\n" % o
+		if (o == 0):
+			print "curpart.uses_optins is %s\n" % curpart.uses_options
 	else:
 		#print "GLOBAL_USES_OPTIONS\n"
 		o = getdict(global_uses_options, name)
@@ -1124,7 +1128,9 @@ def payload(path):
 
 def startromimage(name):
 	global romimages, curimage, target_dir, target_name
+	curpart = partstack.tos()
 	print "Configuring ROMIMAGE %s Curimage %s" % (name, curimage)
+	print "Curpart is %s\n" % curpart
 	o = getdict(romimages, name)
 	if (o):
 		fatal("romimage %s previously defined" % name)
@@ -1142,7 +1148,7 @@ def endromimage():
 	#curpart = 0
 
 def mainboardsetup(path):
-	global full_mainboard_path
+	global full_mainboard_path, mainboard_path
 	mainboard_path = os.path.join('mainboard', path)
 	loadoptions(mainboard_path, 'Options.lb', 'mainboardvariables')
 	full_mainboard_path = os.path.join(treetop, 'src', 'mainboard', path)
@@ -1153,12 +1159,24 @@ def mainboardsetup(path):
 	setdefault('MAINBOARD_PART_NUMBER', part_number, 0)
 
 def mainboard():
-	# a mainboard is no longer really a part as such. 
-	# so just do the config file for the mainboard
-	#part('mainboard', full_mainboard_path, 'Config.lb', 0, 0)
-	global full_mainboard_path
-	mainboard_path = os.path.join(full_mainboard_path)
-	loadoptions(mainboard_path, 'Config.lb', 'cfgfile')
+	global curimage, dirstack, partstack
+	file = 'Config.lb'
+	partdir = mainboard_path
+	srcdir = os.path.join(treetop, 'src')
+	fulldir = os.path.join(srcdir, partdir)
+	type_name = flatten_name(partdir)
+	newpart = partobj(curimage, fulldir, partstack.tos(), 'mainboard', \
+		type_name, 'Config.lb', 0, 'chip')
+	print "Configuring PART %s" % (type)
+	partstack.push(newpart)
+	print "  new PART tos is now %s\n" %partstack.tos().info()
+	dirstack.push(fulldir)
+	loadoptions(mainboard_path, 'Options.lb', 'mainboardvariables')
+	# special case for 'cpu' parts.
+	# we could add a new function too, but this is rather trivial.
+	# if the part is a cpu, and we haven't seen it before,
+	# arrange to source the directory /cpu/'type'
+	doconfigfile(srcdir, partdir, file, 'cfgfile')
 	curimage.setroot(partstack.tos())
 	partpop()
 
@@ -1219,7 +1237,7 @@ def part(type, path, file, name, link):
 			type_name, name, link, 'chip')
 	print "Configuring PART %s, path %s" % (type, path)
 	partstack.push(newpart)
-	print "  new PART tos is now %s\n" %partstack.tos()
+	print "  new PART tos is now %s\n" %partstack.tos().info()
 	dirstack.push(fulldir)
 	# special case for 'cpu' parts. 
 	# we could add a new function too, but this is rather trivial.

@@ -62,5 +62,4 @@ extern __inline__ void protect_jedec(volatile char *bios)
 	usleep(200);
 }
 
-
 #endif				/* !__JEDEC_H__ */

@@ -30,14 +30,6 @@
 #include "jedec.h"
 #include "sst49lf040.h"
 
-#define AUTO_PG_ERASE1		0x20
-#define AUTO_PG_ERASE2		0xD0
-#define AUTO_PGRM		0x10
-#define CHIP_ERASE		0x30
-#define RESET			0xFF
-#define READ_ID			0x90
-
-
 int write_49lf040(struct flashchip *flash, unsigned char *buf)
 {
 	int i;

@@ -26,11 +26,6 @@
 #include "jedec.h"
 #include "pm49fl004.h"
 
-#define AUTO_PGRM		0x10
-#define CHIP_ERASE		0x30
-#define RESET			0xFF
-#define READ_ID			0x90
-
 static __inline__ int erase_block_49fl004(volatile unsigned char *bios,
 					  unsigned long address)
 {

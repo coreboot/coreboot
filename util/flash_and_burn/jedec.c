@@ -141,15 +141,16 @@ void write_page_jedec(volatile char *bios, char *src, volatile char *dst,
 
 int write_sector_jedec(volatile char *bios,
 		       unsigned char *src,
-		       volatile unsigned char *dst, unsigned int page_size)
+		       volatile unsigned char *dst,
+		       unsigned int page_size)
 {
 	int i;
 	volatile char *Temp;
 
 	for (i = 0; i < page_size; i++) {
 		if (*dst != 0xff) {
-			printf("FATAL: dst %p not erased (val 0x%x\n", dst,
-			       *dst);
+			printf("FATAL: dst %p not erased (val 0x%x)\n",
+			       dst, *dst);
 			return (-1);
 		}
 		/* transfer data from source to destination */

@@ -42,10 +42,16 @@ static void soft_reset(void)
         set_bios_reset();
         pci_write_config8(PCI_DEV(0, 0x04, 0), 0x47, 1);
 }
+
+#define AMD8111_RESET PCI_DEV(     \
+                HARD_RESET_BUS,    \
+                HARD_RESET_DEVICE, \
+                HARD_RESET_FUNCTION)
+
 static void soft2_reset(void)
 {  
         set_bios_reset();
-        pci_write_config8(PCI_DEV(3, 0x04, 0), 0x47, 1);
+        pci_write_config8(AMD8111_RESET, 0x47, 1);
 }
 
 static void memreset_setup(void)
@@ -139,7 +145,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-//#include "northbridge/amd/amdk8/setup_resource_map.c"
+#include "northbridge/amd/amdk8/setup_resource_map.c"
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
@@ -204,6 +210,13 @@ static void main(unsigned long bist)
 #else           
                 /* cpu reset also reset the memtroller ????
                         need soft_reset to reset all except keep HT link freq and width */
+		/* So we don't need to 
+			1. jmp to __cpu_reset
+			2. jmp to __main to copy ROM to ram (It costs some time) 
+			3. call hardwaremain(), it will according to boot_complete to issue hard_reset in southbridge. 
+				(Actually it is soft2_reset(); --- without call hard_reset, the memory is corrupted.
+		  We will call soft2_reset directly to spare time in 1 and 2 and 3.2
+		*/
                 	distinguish_cpu_resets();
                 	soft2_reset();
 #endif  

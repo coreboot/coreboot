@@ -939,6 +939,12 @@ class partobj:
 			fatal("Invalid device")
 		self.set_path(".type=DEVICE_PATH_APIC,.u={.apic={ .apic_id = 0x%x }}" % (apic_id))
     
+	def addcpupath(self, cpu_id):
+		""" Add a relative path to a cpu device hanging off our parent """
+		if ((cpu_id < 0) or (cpu_id > 255)):
+			fatal("Invalid device")
+		self.set_path(".type=DEVICE_PATH_CPU,.u={.cpu={ .id = 0x%x }}" % (cpu_id))
+    
 	def addpci_domainpath(self, pci_domain):
 		""" Add a pci_domain number to a chip """
 		if ((pci_domain < 0) or (pci_domain > 0xffff)):
@@ -950,6 +956,11 @@ class partobj:
 		if ((cluster < 0) or (cluster > 15)):
 			fatal("Invalid apic cluster: %d is out of the range 0 to ff" % cluster)
 		self.set_path(".type=DEVICE_PATH_APIC_CLUSTER,.u={.apic_cluster={ .cluster = 0x%x }}" % (cluster))
+    
+	def addcpu_buspath(self, bus):
+		if ((bus < 0) or (bus > 15)):
+			fatal("Invalid cpu bus: %d is out of the range 0 to ff" % bus)
+		self.set_path(".type=DEVICE_PATH_CPU_BUS,.u={.cpu_bus={ .id = 0x%x }}" % (bus))
     
 	def usesoption(self, name):
 		"""Declare option that can be used by this part"""
@@ -1604,6 +1615,8 @@ parser Config:
     token I2C:			'i2c'
     token APIC:			'apic'
     token APIC_CLUSTER:		'apic_cluster'
+    token CPU:			'cpu'
+    token CPU_BUS:		'cpu_bus'
     token PCI_DOMAIN:		'pci_domain'
 
 
@@ -1755,6 +1768,14 @@ parser Config:
 			HEX_NUM			{{ cluster = int(HEX_NUM, 16) }}
 						{{ if (C): partstack.tos().addapic_clusterpath(cluster) }}
 
+    rule cpu<<C>>: CPU 				{{ if (C): devicepart('cpu') }}
+			HEX_NUM			{{ id = int(HEX_NUM, 16) }}
+						{{ if (C): partstack.tos().addcpupath(id) }}
+
+    rule cpu_bus<<C>>: CPU_BUS 			{{ if (C): devicepart('cpu_bus') }}
+			HEX_NUM			{{ bus = int(HEX_NUM, 16) }}
+						{{ if (C): partstack.tos().addcpu_buspath(bus) }}
+
     rule dev_path<<C>>:				
 	    		pci<<C>>		{{ return pci }}
 		|	pci_domain<<C>>		{{ return pci_domain }}
@@ -1762,6 +1783,8 @@ parser Config:
 		|	i2c<<C>>		{{ return i2c }}
 		|	apic<<C>>		{{ return apic }}
 		|	apic_cluster<<C>>	{{ return apic_cluster }}
+		|	cpu<<C>>		{{ return cpu }}
+		|	cpu_bus<<C>>		{{ return cpu_bus }}
 		
     rule prtval:	expr			{{ return str(expr) }}
 		|	STR			{{ return STR }}

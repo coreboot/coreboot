@@ -170,14 +170,14 @@ void x_outb(u16 port, u8 val)
 	(void) getsecs(&sec, &usec);
 	current->inb40time = (u16)(usec | 1);
     } else {
-	outb(port, val);
+	outb(val, port);
     }
 }
 
 void x_outw(u16 port, u16 val)
 {
 
-    outw(port, val);
+    outw(val, port);
 }
 
 u32 x_inl(u16 port)
@@ -191,7 +191,7 @@ u32 x_inl(u16 port)
 
 void x_outl(u16 port, u32 val)
 {
-    outl(port, val);
+    outl(val, port);
 }
 
 u8 Mem_rb(int addr)

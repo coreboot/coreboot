@@ -149,7 +149,7 @@ static void vt8231_pci_enable(struct southbridge_via_vt8231_config *conf) {
   /*
 	unsigned long busdevfn = 0x8000;
 	if (conf->enable_ide) {
-		printk_spew("%s: enabling IDE function\n", __FUNCTION__);
+		printk_debug("%s: enabling IDE function\n", __FUNCTION__);
 	}
   */
 }
@@ -203,6 +203,20 @@ static void pci_routing_fixup(void)
 }
 
 
+void
+dump_south(void){
+  device_t dev0;
+  dev0 = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8231, 0);
+  int i,j;
+
+  for(i = 0; i < 256; i += 16) {
+    printk_debug("0x%x: ", i);
+    for(j = 0; j < 16; j++) {
+      printk_debug("%02x ", pci_read_config8(dev0, i+j));
+    }
+    printk_debug("\n");
+  }
+}
 
 static void vt8231_init(struct southbridge_via_vt8231_config *conf)
 {
@@ -214,7 +228,7 @@ static void vt8231_init(struct southbridge_via_vt8231_config *conf)
   // to do: use the pcibios_find function here, instead of 
   // hard coding the devfn. 
   // done - kevinh/Ispiri
-  printk_spew("vt8231 init\n");
+  printk_debug("vt8231 init\n");
   /* Base 8231 controller */
   dev0 = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8231, 0);
   /* IDE controller */
@@ -303,7 +317,7 @@ static void vt8231_init(struct southbridge_via_vt8231_config *conf)
   // com2 to 3, com1 to 4
   pci_write_config8(dev0, 0x46, 0x04);
   pci_write_config8(dev0, 0x47, 0x03);
-
+  pci_write_config8(dev0, 0x6e, 0x98);
   //
   // Power management setup
   //
@@ -409,6 +423,8 @@ static void vt8231_init(struct southbridge_via_vt8231_config *conf)
   }
 
 
+  /* set up isa bus -- i/o recovery time, rom write enable, extend-ale */
+  pci_write_config8(dev0, 0x40, 0x54);
   ethernet_fixup();
 
   // Start the rtc
@@ -434,8 +450,8 @@ southbridge_init(struct chip *chip, enum chip_pass pass)
 
     break;
   case CONF_PASS_PRE_BOOT:
-    printk_err("FUCK! ROUTING FIXUP!\n");
     pci_routing_fixup();
+    dump_south();
     break;
 
   default:

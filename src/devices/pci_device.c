@@ -686,13 +686,25 @@ unsigned int pci_scan_bridge(struct device *dev, unsigned int max)
 */
 static void pci_level_irq(unsigned char intNum)
 {
-	unsigned intBits = inb(0x4d0) | (((unsigned) inb(0x4d1)) << 8);
+	unsigned short intBits = inb(0x4d0) | (((unsigned) inb(0x4d1)) << 8);
 
+	printk_spew("%s: current ints are 0x%x\n", __FUNCTION__, intBits);
 	intBits |= (1 << intNum);
+
+	printk_spew("%s: try to set ints 0x%x\n", __FUNCTION__, intBits);
 
 	// Write new values
 	outb((unsigned char) intBits, 0x4d0);
 	outb((unsigned char) (intBits >> 8), 0x4d1);
+
+	if (inb(0x4d0) != (intBits & 0xf)) {
+	  printk_err("%s: lower order bits are wrong: want 0x%x, got 0x%x\n",
+		     __FUNCTION__, intBits &0xf, inb(0x4d0));
+	}
+	if (inb(0x4d1) != ((intBits >> 8) & 0xf)) {
+	  printk_err("%s: lower order bits are wrong: want 0x%x, got 0x%x\n",
+		     __FUNCTION__, (intBits>>8) &0xf, inb(0x4d1));
+	}
 }
 
 

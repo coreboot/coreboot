@@ -50,7 +50,54 @@ static void enumerate(struct chip *chip)
 	chip->dev->ops = &default_pci_ops_bus;
 }
 
+/*
+ * This fixup is based on capturing values from an Award bios.  Without
+ * this fixup the DMA write performance is awful (i.e. hdparm -t /dev/hda is 20x
+ * slower than normal, ethernet drops packets).
+ * Apparently these registers govern some sort of bus master behavior.
+ */
+static void
+random_fixup() {
+  device_t *pcidev = dev_find_slot(0, 0);
+
+  printk_spew("VT8601 random fixup ...\n");
+  if (pcidev) {
+    pci_write_config8(pcidev, 0x70, 0xc0);
+    pci_write_config8(pcidev, 0x71, 0x88);
+    pci_write_config8(pcidev, 0x72, 0xec);
+    pci_write_config8(pcidev, 0x73, 0x0c);
+    pci_write_config8(pcidev, 0x74, 0x0e);
+    pci_write_config8(pcidev, 0x75, 0x81);
+    pci_write_config8(pcidev, 0x76, 0x52);
+  }
+}
+
+static void 
+northbridge_init(struct chip *chip, enum chip_pass pass)
+{
+
+  struct northbridge_via_vt8601_config *conf = 
+    (struct northbridge_via_vt8601_config *)chip->chip_info;
+
+  switch (pass) {
+  case CONF_PASS_PRE_PCI:
+    break;
+
+  case CONF_PASS_POST_PCI:
+    break;
+
+  case CONF_PASS_PRE_BOOT:
+    random_fixup();
+    break;
+
+  default:
+    /* nothing yet */
+    break;
+  }
+}
+
 struct chip_control northbridge_via_vt8601_control = {
 	.enumerate = enumerate,
+	enable: northbridge_init,
 	.name   = "VIA vt8601 Northbridge",
 };

@@ -575,7 +575,7 @@ static struct setup_smp_result setup_smp(void)
 
 	/* We found 2 nodes so far */
 	val = pci_read_config32(NODE_HT(7), 0x6c);
-	byte = (val>2) & 0x3; // get default link on 7 to 0
+	byte = (val>>2) & 0x3; // get default link on 7 to 0
 	setup_row_local(7,1);
 	setup_remote_row_direct(1, 0, byte);
 
@@ -599,7 +599,7 @@ static struct setup_smp_result setup_smp(void)
                         
 	        /* We found 2 nodes so far */
 	        val = pci_read_config32(NODE_HT(7), 0x6c);
-        	byte = (val>2) & 0x3; // get default link on 7 to 0
+        	byte = (val>>2) & 0x3; // get default link on 7 to 0
 	        setup_row_local(7,1);
 	        setup_remote_row_direct(1, 0, byte);
         }
@@ -676,7 +676,7 @@ static struct setup_smp_result setup_smp(void)
 	setup_temp_row(0,2);
 
         val = pci_read_config32(NODE_HT(7), 0x6c);
-        byte = (val>2) & 0x3; // get default link on 7 to 0
+        byte = (val>>2) & 0x3; // get default link on 7 to 0
 
         setup_row_local(7,2);
         setup_remote_row_direct(2, 0, byte);
@@ -690,7 +690,7 @@ static struct setup_smp_result setup_smp(void)
 	setup_temp_row(1,3);
 
         val = pci_read_config32(NODE_HT(7), 0x6c);
-        byte = (val>2) & 0x3; // get default link on 7 to 0
+        byte = (val>>2) & 0x3; // get default link on 7 to 0
 
         setup_row_local(7,3);
         setup_remote_row_direct(3, 1, byte);
@@ -854,7 +854,7 @@ static struct setup_smp_result setup_smp(void)
         	setup_temp_row(byte,byte+2);
 	}
         val = pci_read_config32(NODE_HT(7), 0x6c);
-        byte = (val>2) & 0x3; // get default link on 7 to 0
+        byte = (val>>2) & 0x3; // get default link on 7 to 0
         
         setup_row_local(7,4);
         setup_remote_row_direct(4, 2, byte);
@@ -868,7 +868,7 @@ static struct setup_smp_result setup_smp(void)
 	}
 
         val = pci_read_config32(NODE_HT(7), 0x6c);
-        byte = (val>2) & 0x3; // get default link on 7 to 0
+        byte = (val>>2) & 0x3; // get default link on 7 to 0
         setup_row_local(7,5);
         setup_remote_row_direct(5, 3, byte);
         setup_remote_node(5);  /* Setup the regs on the remote node */
@@ -1058,7 +1058,7 @@ static struct setup_smp_result setup_smp(void)
                 setup_temp_row(byte,byte+2);
         }
         val = pci_read_config32(NODE_HT(7), 0x6c);
-        byte = (val>2) & 0x3; // get default link on 7 to 0
+        byte = (val>>2) & 0x3; // get default link on 7 to 0
 
         setup_row_local(7,6);
         setup_remote_row_direct(6, 4, byte);
@@ -1073,7 +1073,7 @@ static struct setup_smp_result setup_smp(void)
         }
 
         val = pci_read_config32(NODE_HT(7), 0x6c);
-        byte = (val>2) & 0x3; // get default link on 7 to 0
+        byte = (val>>2) & 0x3; // get default link on 7 to 0
         setup_row_local(7,7);
         setup_remote_row_direct(7, 5, byte);
 
@@ -1083,7 +1083,7 @@ static struct setup_smp_result setup_smp(void)
         }
 	setup_temp_row(4,7);
         val = pci_read_config32(NODE_HT(7), 0x6c);
-        byte = (val>2) & 0x3; // get default link on 7 to 0
+        byte = (val>>2) & 0x3; // get default link on 7 to 0
 
         setup_row_local(7,7);
         setup_remote_row_direct(7, 4, byte);
@@ -1126,7 +1126,7 @@ static struct setup_smp_result setup_smp(void)
 		check_connection(7);
 	}
         val = pci_read_config32(NODE_HT(7), 0x6c);
-        byte = (val>2) & 0x3; // get default link on 7 to 0
+        byte = (val>>2) & 0x3; // get default link on 7 to 0
 //        setup_row_local(7,7);
         setup_remote_row_direct(7, 5, byte);
 	//Till now 57, 75 done
@@ -1164,7 +1164,7 @@ static struct setup_smp_result setup_smp(void)
                 check_connection(7);
         }
         val = pci_read_config32(NODE_HT(7), 0x6c);
-        byte = (val>2) & 0x3; // get default link on 7 to 0
+        byte = (val>>2) & 0x3; // get default link on 7 to 0
 //        setup_row_local(7,7);
         setup_remote_row_direct(7, 6, byte);
         //Till now 67, 76 done

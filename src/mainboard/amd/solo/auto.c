@@ -102,20 +102,25 @@ static void main(void)
 		 .channel1 = {0, 0, 0, 0},
 		 }
 	};
+
 	int needs_reset;
 	enable_lapic();
 	init_timer();
+
 	if (cpu_init_detected()) {
 		asm("jmp __cpu_reset");
 	}
+
 	distinguish_cpu_resets();
 	if (!boot_cpu()) {
 		print_err("This LinuxBIOS image is built for UP only.\n");
 		stop_this_cpu();
 	}
+
 	pc87360_enable_serial(SERIAL_DEV, TTYS0_BASE);
 	uart_init();
 	console_init();
+
 	setup_default_resource_map();
 	needs_reset = setup_coherent_ht_domain();
 	needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0x80);
@@ -123,20 +128,22 @@ static void main(void)
 		print_info("ht reset -\r\n");
 		soft_reset();
 	}
+
 #if 0
 	print_pci_devices();
 #endif
+
 	enable_smbus();
+
 #if 0
 	dump_spd_registers(&cpu[0]);
 #endif
+
 	memreset_setup();
 	sdram_initialize(sizeof(cpu) / sizeof(cpu[0]), cpu);
 
 #if 0
 	dump_pci_devices();
-#endif
-#if 0
 	dump_pci_device(PCI_DEV(0, 0x18, 2));
 #endif
 

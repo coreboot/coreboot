@@ -1,0 +1,10 @@
+- 1.1.0
+Intial development release of LinuxBIOS.
+Everything is thrown overboard and will be reincluded as necessary so we can
+get rid of the legacy baggage.  Since LinuxBIOS was started we have developed
+some better techniques for some things, but we still hang on to the old ways
+because some ports that we want not to break depend on them.  So we preserve
+them by preserve the 1.0.x series and keeping only the best practices for
+the 1.1.x series.  When there is a stable port this code base will
+become LinuxBIOS 2.0.x and the core will become frozen.
+

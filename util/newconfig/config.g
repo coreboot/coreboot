@@ -566,7 +566,7 @@ class option_value:
 
 class partobj:
 	"""A configuration part"""
-	def __init__ (self, image, dir, parent, part, type_name, instance_name, link):
+	def __init__ (self, image, dir, parent, part, type_name, instance_name, link, chip_or_device):
 		debug.info(debug.object, "partobj dir %s parent %s part %s" \
 				% (dir, parent, part))
 
@@ -576,6 +576,7 @@ class partobj:
 		# links for static device tree
 		self.children = 0
 		self.siblings = 0
+		self.chip_or_device = chip_or_device
 
 		# list of init code files
 		self.initcode = []
@@ -645,6 +646,11 @@ class partobj:
 				parent.children = self
 		else:
 			self.parent = self
+
+	def info(self):
+		return "%s: %s" % (self.part, self.type)
+	def type(self):
+		return self.chip_or_device
 
 	def dumpme(self, lvl):
 		"""Dump information about this part for debugging"""
@@ -1193,13 +1199,13 @@ def cpudir(path):
 	dodir(srcdir, "Config.lb")
 	cpu_type = path
 	
-def simplepart(type):
+def devicepart(type):
 	global curimage, dirstack, partstack
 	newpart = partobj(curimage, 0, partstack.tos(), type, \
-			'', 0, 0)
+			'', 0, 0, 'device')
 	print "Configuring PART %s" % (type)
 	partstack.push(newpart)
-	print "  new PART tos is now %s\n" %partstack.tos()
+	print "  new PART tos is now %s\n" %partstack.tos().info()
 	# just push TOS, so that we can pop later. 
 	dirstack.push(dirstack.tos())
 	
@@ -1210,7 +1216,7 @@ def part(type, path, file, name, link):
 	fulldir = os.path.join(srcdir, partdir)
 	type_name = flatten_name(partdir)
 	newpart = partobj(curimage, fulldir, partstack.tos(), type, \
-			type_name, name, link)
+			type_name, name, link, 'chip')
 	print "Configuring PART %s, path %s" % (type, path)
 	partstack.push(newpart)
 	print "  new PART tos is now %s\n" %partstack.tos()
@@ -1234,9 +1240,9 @@ def partpop():
 	for op in curpart.uses_options.keys():
 		if (not isset(op, curpart)):
 			notice("Option %s using default value %s" % (op, getformated(op, curpart.image)))
-	partstack.pop()
+	oldpart = partstack.pop()
 	dirstack.pop()
-	print "partstack.pop, TOS is now %s\n" % partstack.tos()
+	print "partstack.pop, TOS is now %s\n" % oldpart.info()
 
 def dodir(path, file):
 	"""dodir is like part but there is no new part"""
@@ -1543,7 +1549,7 @@ parser Config:
 						{{ if (C): partstack.tos().end_resources() }}
 	    
     
-    rule pci<<C>>:	PCI 			{{ if (C): simplepart('pci') }}
+    rule pci<<C>>:	PCI 			{{ if (C): devicepart('pci') }}
 
     			HEX_NUM			{{ slot = int(HEX_NUM,16) }}
 			'.' HEX_NUM		{{ function = int(HEX_NUM, 16) }}
@@ -1552,7 +1558,7 @@ parser Config:
 			resources<<C>>
 			partend<<C>>
 
-    rule pnp<<C>>:	PNP  			{{ if (C): simplepart('pnp') }}
+    rule pnp<<C>>:	PNP  			{{ if (C): devicepart('pnp') }}
 			HEX_NUM			{{ port = int(HEX_NUM,16) }}
 			'.' HEX_NUM		{{ device = int(HEX_NUM, 16) }}
 			enable
@@ -1561,13 +1567,13 @@ parser Config:
 			partend<<C>>
 
 
-    rule i2c<<C>>:	I2C   			{{ if (C): simplepart('i2c') }}
+    rule i2c<<C>>:	I2C   			{{ if (C): devicepart('i2c') }}
 			HEX_NUM			{{ device = int(HEX_NUM, 16) }}
 			enable
 						{{ if (C): partstack.tos().addi2cpath(enable, device) }}
 			resources<<C>>
 
-    rule apic<<C>>:	APIC   			{{ if (C): simplepart('apic') }}
+    rule apic<<C>>:	APIC   			{{ if (C): devicepart('apic') }}
 			HEX_NUM			{{ apic_id = int(HEX_NUM, 16) }}
 			enable
 						{{ if (C): partstack.tos().addapicpath(enable, apic_id) }}

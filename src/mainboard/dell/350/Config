@@ -1,0 +1,55 @@
+northbridge intel/440bx
+southbridge intel/piix4e
+
+nsuperio SMC/fdc37b807
+
+option ENABLE_FIXED_AND_VARIABLE_MTRRS
+option PIIX4_DEVFN=0x38
+option NO_KEYBOARD
+option ZKERNEL_START=0xfffc0000
+option ZKERNEL_MASK=0x7f 
+option L440BX
+
+object mainboard.o
+
+cpu p6
+cpu p5
+
+makerule phlash_floppy: phlash ; mcopy -o /tmp/$(PHLASH_BASE_NAME).bi? a:
+
+makerule phlash: $(BOOT_IMAGE) linuxbios.rom headers ; rm -f xa?
+addaction phlash split -b 64k $(BOOT_IMAGE)
+addaction phlash # Now just touch them if we have a really
+addaction phlash # small kernel!
+addaction phlash touch xaa xab xac xad xae xaf xag xah
+addaction phlash # this is starting at bank 4, and proceeding on. Unused banks are dups
+addaction phlash # the nvram is odd, all of the banks are interleaved
+addaction phlash cat $(PHLASH_BASE_NAME).bi1.header xaa > $(PHLASH_BASE_NAME).bi1 #4
+addaction phlash cat $(PHLASH_BASE_NAME).bi3.header xab > $(PHLASH_BASE_NAME).bi3 #6
+addaction phlash cat $(PHLASH_BASE_NAME).bi2.header xac > $(PHLASH_BASE_NAME).bi2 #7
+addaction phlash cat $(PHLASH_BASE_NAME).bi4.header xad > $(PHLASH_BASE_NAME).bi4 #9
+addaction phlash cat $(PHLASH_BASE_NAME).bi7.header xae > $(PHLASH_BASE_NAME).bi7 #a
+addaction phlash cat $(PHLASH_BASE_NAME).bi6.header xaf > $(PHLASH_BASE_NAME).bi6 #b
+addaction phlash cat $(PHLASH_BASE_NAME).bi9.header xag > $(PHLASH_BASE_NAME).bi9 #c
+addaction phlash cat $(PHLASH_BASE_NAME).bi8.header xah > $(PHLASH_BASE_NAME).bi8 #d
+addaction phlash cat $(PHLASH_BASE_NAME).bia.header linuxbios.rom > $(PHLASH_BASE_NAME).bia
+addaction phlash # Part o & 5 seem not to be written reliably for some reason... 
+addaction phlash cat $(PHLASH_BASE_NAME).bio.header /dev/null > $(PHLASH_BASE_NAME).bio
+addaction phlash cat $(PHLASH_BASE_NAME).bi5.header /dev/null > $(PHLASH_BASE_NAME).bi5
+addaction phlash sh -x $(TOP)/src/mainboard/intel/l440bx/BUILD_PHLASH_FILES $(PHLASH_BASE_NAME)
+
+makerule headers : $(PHLASH_BASE_NAME).bi1.header $(PHLASH_BASE_NAME).bi2.header $(PHLASH_BASE_NAME).bi3.header $(PHLASH_BASE_NAME).bi4.header $(PHLASH_BASE_NAME).bi5.header $(PHLASH_BASE_NAME).bi6.header $(PHLASH_BASE_NAME).bi7.header $(PHLASH_BASE_NAME).bi8.header $(PHLASH_BASE_NAME).bi9.header $(PHLASH_BASE_NAME).bia.header $(PHLASH_BASE_NAME).bio.header ;
+
+makerule $(PHLASH_BASE_NAME).bi1.header: $(TOP)/../intel_flash_disk/$(PHLASH_BASE_NAME).bi1 ; dd if=$< of=$@ bs=1 count=160
+makerule $(PHLASH_BASE_NAME).bi2.header: $(TOP)/../intel_flash_disk/$(PHLASH_BASE_NAME).bi2 ; dd if=$< of=$@ bs=1 count=160
+makerule $(PHLASH_BASE_NAME).bi3.header: $(TOP)/../intel_flash_disk/$(PHLASH_BASE_NAME).bi3 ; dd if=$< of=$@ bs=1 count=160
+makerule $(PHLASH_BASE_NAME).bi4.header: $(TOP)/../intel_flash_disk/$(PHLASH_BASE_NAME).bi4 ; dd if=$< of=$@ bs=1 count=160
+makerule $(PHLASH_BASE_NAME).bi5.header: $(TOP)/../intel_flash_disk/$(PHLASH_BASE_NAME).bi5 ; dd if=$< of=$@ bs=1 count=160
+makerule $(PHLASH_BASE_NAME).bi6.header: $(TOP)/../intel_flash_disk/$(PHLASH_BASE_NAME).bi6 ; dd if=$< of=$@ bs=1 count=160
+makerule $(PHLASH_BASE_NAME).bi7.header: $(TOP)/../intel_flash_disk/$(PHLASH_BASE_NAME).bi7 ; dd if=$< of=$@ bs=1 count=160
+makerule $(PHLASH_BASE_NAME).bi8.header: $(TOP)/../intel_flash_disk/$(PHLASH_BASE_NAME).bi8 ; dd if=$< of=$@ bs=1 count=160
+makerule $(PHLASH_BASE_NAME).bi9.header: $(TOP)/../intel_flash_disk/$(PHLASH_BASE_NAME).bi9 ; dd if=$< of=$@ bs=1 count=160
+makerule $(PHLASH_BASE_NAME).bia.header: $(TOP)/../intel_flash_disk/$(PHLASH_BASE_NAME).bia ; dd if=$< of=$@ bs=1 count=160
+makerule $(PHLASH_BASE_NAME).bio.header: $(TOP)/../intel_flash_disk/$(PHLASH_BASE_NAME).bio ; dd if=$< of=$@ bs=1 count=160
+
+addaction clean rm -f $(PHLASH_BASE_NAME)* xa?

@@ -1,6 +1,6 @@
 #define ASSEMBLY 1
-#define MAXIMUM_CONSOLE_LOGLEVEL 9
-#define DEFAULT_CONSOLE_LOGLEVEL 9
+// #define MAXIMUM_CONSOLE_LOGLEVEL 9
+// #define DEFAULT_CONSOLE_LOGLEVEL 9
 
 #include <stdint.h>
 #include <device/pci_def.h>
@@ -100,16 +100,18 @@ static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 	return ret;
 }
 
-static inline int spd_read_byte(unsigned device, unsigned address)
+
+static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
 #define SMBUS_HUB 0x30
-	unsigned hub = device >> 8;
-	
-	device &= 0xff;
-	smbus_write_byte(SMBUS_HUB, 0x01, 1<<hub);
-	smbus_write_byte(SMBUS_HUB, 0x03, 0);
+	unsigned device=(ctrl->channel0[0])>>8;
+	smbus_write_byte(SMBUS_HUB | (0x01<<8), device);
+	smbus_write_byte(SMBUS_HUB | (0x03<<8), 0);
+}
 
-	return smbus_read_byte(device, address);
+static inline int spd_read_byte(unsigned device, unsigned address)
+{
+	return smbus_read_byte(device & 0xff, address);
 }
 
 /* no specific code here. this should go away completely */
@@ -181,10 +183,10 @@ static void pc87360_enable_serial(void)
 	pnp_set_iobase0(SIO_BASE, 0x3f8);
 }
 
-#define RC0 (0<<8)
-#define RC1 (1<<8)
-#define RC2 (2<<8)
-#define RC3 (3<<8)
+#define RC0 ((1<<0)<<8)
+#define RC1 ((1<<1)<<8)
+#define RC2 ((1<<2)<<8)
+#define RC3 ((1<<3)<<8)
 
 #define DIMM0 0xa0
 #define DIMM1 0xa2

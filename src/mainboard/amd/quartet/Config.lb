@@ -230,7 +230,7 @@ northbridge amd/amdk8 "mc0"
 	pci 0:18.2
 	pci 0:18.3
 	southbridge amd/amd8111 "amd8111" link 2
-		pci 0:0.0 on
+		pci 0:0.0
 		pci 0:1.0 on
 		pci 0:1.1 on
 		pci 0:1.2 on
@@ -266,13 +266,13 @@ northbridge amd/amdk8 "mc1"
 	pci 0:19.1
 	pci 0:19.2
 	pci 0:19.3
-	southbridge amd/amd8131 "amd8131" link 1
+	southbridge amd/amd8131 "amd8131_0" link 1
 		pci 0:0.0
 		pci 0:0.1
 		pci 0:1.0
 		pci 0:1.1
 	end
-	southbridge amd/amd8131 "amd8131" link 1
+	southbridge amd/amd8131 "amd8131_1" link 1
 		pci 0:0.0
 		pci 0:0.1
 		pci 0:1.0

@@ -1,5 +1,5 @@
 /* coherent hypertransport initialization for AMD64 
- * written by Stefan Reinauer <stepan@openbios.info>
+ * written by Stefan Reinauer <stepan@openbios.org>
  * (c) 2003 by SuSE Linux AG
  *
  * This code is licensed under GPL.

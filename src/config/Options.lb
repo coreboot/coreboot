@@ -641,6 +641,13 @@ define FAKE_SPDROM
 	comment "Use this to fake spd rom values"
 end
 
+define HAVE_ACPI_TABLES
+	default 0
+	export always
+	comment "Define to build ACPI tables"
+end
+
+
 ###############################################
 # Board specific options
 ###############################################

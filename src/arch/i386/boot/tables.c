@@ -5,6 +5,7 @@
 #include <boot/linuxbios_tables.h>
 #include <arch/pirq_routing.h>
 #include <arch/smp/mpspec.h>
+#include <arch/acpi.h>
 #include "linuxbios_table.h"
 
 #if CONFIG_SMP && CONFIG_MAX_PHYSICAL_CPUS && (CONFIG_MAX_PHYSICAL_CPUS < CONFIG_MAX_CPUS)
@@ -61,6 +62,10 @@ struct lb_memory *write_tables(struct mem_range *mem, unsigned long *processor_m
 	if (low_table_end < 0x500) {
 		low_table_end = 0x500;
 	}
+
+	/* Write ACPI tables */
+	low_table_end = write_acpi_tables(low_table_end);
+	
 	/* The linuxbios table must be in 0-4K or 960K-1M */
 	write_linuxbios_table(processor_map, mem,
 			      low_table_start, low_table_end,

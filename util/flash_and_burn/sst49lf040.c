@@ -61,11 +61,9 @@ static int erase_sector_49lf040 (volatile char * bios, unsigned int page)
 	myusec_delay(10);
         Temp  = bios + page; /* set up address to be the current sector */
         *Temp = 0x30;       /* write data 0x30 to the address       */
-	myusec_delay(50000);
 	
 	/* wait for Toggle bit ready         */
 	toggle_ready_jedec(bios);
-	myusec_delay(25000);
 
 	return(0);
 }
@@ -97,8 +95,6 @@ static __inline__ int write_sector_49lf040(volatile char * bios,
 		*Temp = 0xA0;                   
 		*dst = *src;
 		toggle_ready_jedec(bios);
-
-	        data_polling_jedec(dst, *src);
 		if (*dst != *src)
 			printf("BAD! dst 0x%lx val 0x%x src 0x%x\n",
 			       (unsigned long)dst, *dst, *src);

@@ -31,34 +31,6 @@
 #define RESET			0xFF
 #define READ_ID			0x90
 
-static __inline__ void protect_49fl004 (volatile char * bios)
-{
-	/* ask compiler not to optimize this */
-	volatile unsigned char tmp;
-
-	tmp = *(volatile unsigned char *) (bios + 0x1823);
-	tmp = *(volatile unsigned char *) (bios + 0x1820);
-	tmp = *(volatile unsigned char *) (bios + 0x1822);
-	tmp = *(volatile unsigned char *) (bios + 0x0418);
-	tmp = *(volatile unsigned char *) (bios + 0x041B);
-	tmp = *(volatile unsigned char *) (bios + 0x0419);
-	tmp = *(volatile unsigned char *) (bios + 0x040A);
-}
-
-static __inline__ void unprotect_49fl004 (volatile char * bios)
-{
-	/* ask compiler not to optimize this */
-	volatile unsigned char tmp;
-
-	tmp = *(volatile unsigned char *) (bios + 0x1823);
-	tmp = *(volatile unsigned char *) (bios + 0x1820);
-	tmp = *(volatile unsigned char *) (bios + 0x1822);
-	tmp = *(volatile unsigned char *) (bios + 0x0418);
-	tmp = *(volatile unsigned char *) (bios + 0x041B);
-	tmp = *(volatile unsigned char *) (bios + 0x0419);
-	tmp = *(volatile unsigned char *) (bios + 0x041A);
-}
-
 static __inline__ int erase_block_49fl004 ( volatile unsigned char * bios ,unsigned long address) 
 {
         volatile unsigned char *Temp;
@@ -188,8 +160,6 @@ int write_49fl004 (struct flashchip * flash, unsigned char * buf)
 	int total_size = flash->total_size * 1024, page_size = flash->page_size;
 	volatile char * bios = flash->virt_addr;
 
-//	unprotect_49fl004 (bios);
-//	erase_49fl004(flash);
 	printf ("Programming Page: ");
 	for (i = 0; i < total_size/page_size; i++) {
 		/* erase the page before programming */
@@ -198,13 +168,11 @@ int write_49fl004 (struct flashchip * flash, unsigned char * buf)
 		/* write to the sector */
 		printf ("%04d at address: 0x%08x", i, i * page_size);
 		write_block_49fl004(bios, buf + i * page_size, bios + i * page_size,
-				     page_size);
+				    page_size);
 		printf ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
                 fflush(stdout);
 	}
 	printf("\n");
-
-//	protect_49fl004 (bios);
 
 	return(0);
 }

@@ -1,12 +1,27 @@
 This file contains instructions for the SiS 630 based mainboards.
 
-WARNING: we assume you've built kernels, know how to open up your PC, and how
-to yank the flash part out and put in a different part. There is NO WARRANTY, 
-express or implied, with this software. In fact, if you don't know what you're
-doing, and you get careless, you're going to end up with a nice paperweight
-instead of a motherboard. YOU HAVE BEEN WARNED. 
+Unfortunately, there is a step in this HOWTO that could be hazardous. The 
+hazards include (but are not limited to)
+1) destroying your motherboard
+2) hurting yourself
+3) killing yourself
 
-That said, this process is pretty hard to screw up. 
+Because of these hazards, you must take full responsibility if you
+decide to install LinuxBIOS following these procedures. Neither Los
+Alamos National Labs nor any lab personnel can be held responsible for
+any adverse consequences of your attempt to follow these procedures.
+
+WARNING: we assume you've built kernels, know how to open up your PC,
+and how to yank the flash part out while power is on and put in a
+different part. There is NO WARRANTY, express or implied, with this
+software. In fact, if you don't know what you're doing, and you get
+careless, you're going to end up with a nice paperweight instead of a
+motherboard, an emergency room bill, or a funeral service.
+
+			YOU HAVE BEEN WARNED.
+
+	Now that we're done with the mandatory US legal jargon
+		(how I hate lawyers ...)
 
 The mainboards that are "known good" are:
 Matsonic MS7308E
@@ -28,27 +43,39 @@ www.eurocomla.com (we don't know yet -- have not tried them)
 Linux distribution: RedHat 6.2 or later. We haven't tried anything else. 
 	They may all work fine. 
 
-Other software notes: You MUST have as version 2.9.5 or later. 
+Other software notes: You MUST have 'as' version 2.9.5 or later. 
 
-You need to have a target machine (the machine that runs LinuxBIOS) and a build 
-machine (which will let you build LinuxBIOS). These can be one and the same 
-machine. In this HOWTO we assume they're different. If they are the same 
-machine, all that really changes is that you have to do Step 3 first. 
+Recommended: you really ought to get a 32-DIP Zero Insertion Force (ZIF)
+socket for the flash part. This makes taking out flash and putting in Disk
+On Chip much easier. 
+
+You need to have a target machine (the machine that runs LinuxBIOS)
+and a build machine (which will let you build LinuxBIOS). These can be
+one and the same machine. In this HOWTO we assume they're the same. 
+We nevertheless refer to a 'build' machine and 'target' machine in case you
+want to use a different machine. 
+
 Also, freebios and linuxbios still share the same source tree. We use the 
 name 'linuxbios' where it makes sense, and 'freebios' otherwise. But they 
 are the same source base. 
+
 ----
 The steps for loading linuxbios are simple:
-0) Get Linuxbios source from the sourceforge
-1) get a kernel, patch it, then build it
-2) config and build linuxbios
-3) get linux installed on your target machine
+0) get linux installed on your target machine
+1) Get Linuxbios source from the sourceforge
+2) get a 2.4.0-test12 kernel, patch it, then build it
+3) config and build linuxbios
 4) put a Disk On Chip into the flash socket
 5) Burn the chip
 6) hit reset. You're up.
 
 ---
-Step 0)
+Step 0) 
+	Get Linux installed on your target machine. We have used 
+	RedHat 6.2, but any recent Linux distribution should work, such
+	as Mandrake 7.0. 
+
+Step 1)
 o	You need to get linuxbios source.
 	cd to the directory you want the source tree to be.
 	Then:
@@ -57,15 +84,15 @@ cvs -d:pserver:anonymous@cvs.freebios.sourceforge.net:/cvsroot/freebios login
 cvs -z3 -d:pserver:anonymous@cvs.freebios.sourceforge.net:/cvsroot/freebios co freebios 
 
 
-Step 1:
-o 	go to www.kernel.org and get linux-2.4.0-test11
+Step 2)
+o 	go to www.kernel.org and get linux-2.4.0-test12
 
 o	Once you have pulled this file down and untar'ed it, 
 	apply the proper patch from the freebios/src/kernel_patches 
-	directory.  Here's the current favorite for test11:
- 	linux-2.4.0-test11-sis630-fat-sisfb.patch
+	directory.  The patch is:
+	linux-2.4.0-test12-sis630-linuxbios.patch-1
 
-o	Now copy config-2.4.0-test11.sis to .config, then
+o	Now copy config-2.4.0-test12.sis to .config, then
 	make oldconfig
 	make clean
 	make dep
@@ -79,7 +106,7 @@ o	Now copy config-2.4.0-test11.sis to .config, then
 	and install the modules as well, since you will need the Disk On Chip
 	modules to burn the Disk On Chip part. 
 
-Step 2:
+Step 3:
 
 o	You now need to figure out where you want to put your build images. 
 	DO NOT PUT THESE IN THE LINUXBIOS SOURCE TREE. 
@@ -118,7 +145,8 @@ o	You now need to figure out where you want to put your build images.
 	option HAVE_FRAMEBUFFER
 
 	# Path to your kernel (vmlinux)
-	linux /usr/src/linux
+	# NOTE; you need a path to your test12 kernel here. 
+	linux /usr/src/linux-2.4.0-test12
 
 	# Kernel command line parameters
 	commandline root=/dev/hda1 
@@ -189,12 +217,6 @@ o	You now need to figure out where you want to put your build images.
 
 	You're now ready to burn the Disk On Chip, but first .... 
 
-Step 3) 
-	Get Linux installed on your target machine. 
-	If your build and target are the same, you have already done this.
-	We can't yet boot alternate media such as cdroms. 
-	Be sure and get a kernel running which has MTD on as MODULES. 
-
 Step 4) 
 	NOTE: BE ADVISED THAT THIS STEP CAN HURT OR KILL YOU!
 	YOU ARE WORKING WITH A POWERED-ON COMPUTER AT THIS POINT. 
@@ -202,6 +224,7 @@ Step 4)
 	WHILE THE COMPUTER IS ON. 
 	IF YOU HAVE NOT DONE THIS TYPE OF WORK, DO NOT DO IT!
 	WE TAKE NO RESPONSIBILITY FOR ANYTHING THAT HAPPENS AT THIS STEP.
+	BEFORE DOING THIS STEP WITH POWER ON, YOU SHOULD TRY IT WITH POWER OFF.
 
 	Figure out if you're going to burn the DoC on the build or target
 	machine. It has to be the machine with MTD modules. 
@@ -217,7 +240,15 @@ Step 4)
 	hurt by hardware, DON'T DO IT.
 
 Step 5) Run the following script:
-	(TBD)
+	Run the burn_mtd script from util/mtd
+	Here's how it looks when you run it:
+
 
 Step 6) Hit reset. Linuxbios should come up in a few seconds. 
+
+If it doesn't work: 
+
+1) if you can, hook up a serial line to your target, settings 115200,8n1
+   and see what messages come out. If you can capture them, send them
+   to linuxbios@lanl.gov with a description of your problem. 
 

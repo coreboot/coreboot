@@ -191,7 +191,7 @@ romimage "fallback"
 	option _ROMBASE      = (CONFIG_ROM_STREAM_START + PAYLOAD_SIZE)
 	mainboard arima/hdama
 	payload ../../../../tg3--ide_disk.zelf
-#	payload ../../../../opteron_phase1
+#	payload ../../../../opteron_phase1_p4_noapic
 end
 
 buildrom ROM_SIZE "normal" "fallback"

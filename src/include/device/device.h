@@ -101,7 +101,7 @@ device_t dev_find_slot (unsigned int bus, unsigned int devfn);
 struct device_operations default_dev_ops_root;
 extern void root_dev_read_resources(device_t dev);
 extern void root_dev_set_resources(device_t dev);
-extern unsigned int walk_static_devices(device_t bus, unsigned int max);
+extern unsigned int scan_static_bus(device_t bus, unsigned int max);
 extern void enable_childrens_resources(device_t dev);
 extern unsigned int root_dev_scan_pci_bus(device_t root, unsigned int max);
 

@@ -14,7 +14,7 @@
 #define MC_MEM_CNTRL1		0x8400
 #define     SDCLK_START		(1<<17)
 #define     TEST_REF		(1<<4)
-#define     PROGRAM_SDRAM	(1<<1)
+#define     PROGRAM_SDRAM	(1<<0)
 
 #define MC_MEM_CNTRL2		0x8404
 #define     SDCLK_MASK		0x000003c0

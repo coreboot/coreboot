@@ -192,23 +192,59 @@ def safe_open(file, mode):
 class romimage:
 	"""A rom image is the ultimate goal of linuxbios"""
 	def __init__ (self, name):
+		# name of this rom image
 		self.name = name
+
+		# set by 'arch' directive
 		self.arch = ''
+
+		# set by 'payload' directive
 		self.payload = ''
+
+		# set by 'init' directive
 		self.initfile = ''
+
+		# make rules added by 'makerule' directive
 		self.makebaserules = {}
+
+		# object files added by 'object' directive
 		self.objectrules = {}
+
+		# init object files added by 'initobject' directive
 		self.initobjectrules = {}
+
+		# driver files added by 'drive' directive
 		self.driverrules = {}
+
+		# loader scripts added by 'ldscript' directive
 		self.ldscripts = []
+
+		# user defines added by 'makedefine' directive
 		self.userdefines = []
+
+		# files to be included in crt0.S
 		self.initincludes = {}
-		self.initincludesorder = [] # need to preserve order
-		self.useinitincludes = 0 # transitional
+
+		# as above, but order is preserved
+		self.initincludesorder = []
+
+		# transitional flag to support old crtinclude format
+		self.useinitincludes = 0
+
+		# instance counter for parts
 		self.partinstance = 0
+
+		# chip config files included by the 'config' directive
+		self.configincludes = {}
+
+		# root of part tree
 		self.root = 0
+
+		# name of target directory specified by 'target' directive
 		self.target_dir = ''
-		self.values = {} # values of options set in romimage
+
+		# option values set in rom image
+		self.values = {}
 
 	def getname(self):
 		return self.name
@@ -351,6 +387,12 @@ class romimage:
 		if (o):
 			return o
 		fatal("No such init include \"%s\"" % path);
+
+	def addconfiginclude(self, part, path):
+		setdict(self.configincludes, part, path)
+
+	def getconfigincludes(self):
+		return self.configincludes
 
 	def getincludefilename(self):
 		if (self.useinitincludes):
@@ -528,26 +570,62 @@ class option_value:
 
 class partobj:
 	"""A configuration part"""
-	def __init__ (self, image, dir, parent, type, name):
-		debug.info(debug.object, "partobj dir %s parent %s type %s" %(dir,parent,type))
+	def __init__ (self, image, dir, parent, part, type_name, instance_name):
+		debug.info(debug.object, "partobj dir %s parent %s part %s" \
+				% (dir, parent, part))
+
+		# romimage that is configuring this part
 		self.image = image
+
+		# links for static device tree
 		self.children = 0
 		self.siblings = 0
+
+		# list of init code files
 		self.initcode = []
+
+		# initializers for static device tree
 		self.registercode = {}
-		# sibling is not a list. 
-		self.type = type
+
+		# part name
+		self.part = part
+
+		# type name of this part
+		self.type_name = type_name
+
+		# object files needed to build this part
 		self.objects = []
+
+		# directory containg part files
 		self.dir = dir
-		self.irq = 0
+
+		# instance number, used to distinguish anonymous
+		# instances of this part
 		self.instance = image.newpartinstance()
-		self.flatten_name = flatten_name(os.path.join(type, name))
 		debug.info(debug.object, "INSTANCE %d" % self.instance)
-		self.devfn = 0	
-		self.private = 0	
+
+		# Options used by this part
 		self.uses_options = {}
+
+		# Name of chip config file (0 if not needed)
 		self.chipconfig = 0
+
+		# Flag to indicate that we have generated type
+		# definitions for this part (only want to do it once)
+		self.done_types = 0
+
+		# If no instance name is supplied then generate
+		# a unique name
+		if (instance_name == 0):
+			self.instance_name = self.type_name + \
+					"_dev%d" % self.instance
+			self.config_name = "%s_config_%d" \
+					% (self.type_name, self.instance)
+		else:
+			self.instance_name = instance_name
+			self.config_name = "%s_config" % self.instance_name
 		
+		# Link this part into the tree
 		if (parent):
 			debug.info(debug.gencode, "add to parent")
 			self.parent   = parent
@@ -561,11 +639,12 @@ class partobj:
 			self.parent = self
 
 	def dumpme(self, lvl):
-		print "%d: type %s" % (lvl, self.type)
+		"""Dump information about this part for debugging"""
+		print "%d: part %s" % (lvl, self.part)
 		print "%d: instance %d" % (lvl, self.instance)
 		print "%d: dir %s" % (lvl,self.dir)
-		print "%d: flatten_name %s" % (lvl,self.flatten_name)
-		print "%d: parent %s" % (lvl,self.parent.type)
+		print "%d: name %s" % (lvl,self.name)
+		print "%d: parent %s" % (lvl,self.parent.part)
 		print "%d: parent dir %s" % (lvl,self.parent.dir)
 		if (self.children):
 			print "%d: child %s" % (lvl, self.children.dir)
@@ -579,16 +658,22 @@ class partobj:
 			print "  %s = %s" % (f, v)
 		print "\n"
 
-	def gencode(self, file):
+	def gencode(self, file, pass_num):
+		"""Generate static initalizer code for this part. Two passes
+		are used - the first generates type information, and the second
+		generates instance information"""
+		if (pass_num == 0):
+			if (self.instance):
+				file.write("struct chip %s;\n" \
+					% self.instance_name)
+			else:
+				file.write("struct chip static_root;\n")
+			return
 		if (self.chipconfig):
-			debug.info(debug.gencode, "gencode: chipconfig(%d)" % self.instance)
-			file.write("#include \"%s\"\n" % os.path.join(self.dir, self.chipconfig))
-			file.write("extern struct chip_control %s_control;\n" % \
-					self.flatten_name)
-			file.write("struct %s_config %s_config_%d" % (\
-					self.flatten_name ,\
-					self.flatten_name , \
-					self.instance))
+			debug.info(debug.gencode, "gencode: chipconfig(%d)" % \
+					self.instance)
+			file.write("struct %s_config %s" % (self.type_name ,\
+					self.config_name))
 			if (self.registercode):
 				file.write("\t= {\n")
 				for f, v in self.registercode.items():
@@ -598,46 +683,55 @@ class partobj:
 				file.write(";")
 			file.write("\n");
 		if (self.instance):
-			file.write("struct chip static_dev%d = {\n" % self.instance)
+			file.write("struct chip %s = {\n" % self.instance_name)
 		else:
 			file.write("struct chip static_root = {\n")
-		file.write("/* %s %s */\n" % (self.type, self.dir))
-		#file.write("  .devfn = %d,\n" % self.devfn)
+		file.write("/* %s %s */\n" % (self.part, self.dir))
 		if (self.siblings):
-			debug.info(debug.gencode, "gencode: siblings(%d)" % self.siblings.instance)
-			file.write("  .next = &static_dev%d,\n" % self.siblings.instance)
+			debug.info(debug.gencode, "gencode: siblings(%d)" \
+				% self.siblings.instance)
+			file.write("  .next = &%s,\n" \
+				% self.siblings.instance_name)
+		else:
+			file.write("  .next = 0,\n")
 		if (self.children):
-			debug.info(debug.gencode, "gencode: children(%d)" % self.children.instance)
-			file.write("  .children = &static_dev%d,\n" % \
-					self.children.instance)
-		if (self.private):
-			file.write("  .private = private%d,\n" % self.instance)
+			debug.info(debug.gencode, "gencode: children(%d)" \
+				% self.children.instance)
+			file.write("  .children = &%s,\n" \
+				% self.children.instance_name)
+		else:
+			file.write("  .children = 0,\n")
 		if (self.chipconfig):
 			# set the pointer to the structure for all this
 			# type of part
 			file.write("  .control= &%s_control,\n" % \
-					self.flatten_name )
+					self.type_name )
 			# generate the pointer to the isntance
 			# of the chip struct
-			file.write("  .chip_info = (void *) &%s_config_%d,\n" %\
-					(self.flatten_name, self.instance ))
+			file.write("  .chip_info = (void *) &%s,\n" \
+					% self.config_name)
+		else:
+			file.write("  .control= 0,\n")
+			file.write("  .chip_info= 0,\n")
 		file.write("};\n")
 		
-	def irq(self, irq):
-		self.irq = irq
-       
     	def addinit(self, code):
+		"""Add init file to this part"""
         	self.initcode.append(code)
 		
     	def addconfig(self, path):
-        	self.chipconfig = path
+		"""Add chip config file to this part"""
+        	self.chipconfig = os.path.join(self.dir, path)
+		self.image.addconfiginclude(self.type_name, self.chipconfig)
 
     	def addregister(self, field, value):
+		"""Register static initialization information"""
 		field = dequote(field)
 		value = dequote(value)
         	setdict(self.registercode, field, value)
 
 	def usesoption(self, name):
+		"""Declare option that can be used by this part"""
 		global global_options
 		o = getdict(global_options, name)
 		if (o == 0):
@@ -709,7 +803,7 @@ def getoption(name, image):
 def setoption(name, value):
 	global loc, global_options, global_option_values, curimage
 	curpart = partstack.tos()
-	if (curpart and curpart.type != 'mainboard'):
+	if (curpart and curpart.part != 'mainboard'):
 		fatal("Options may only be set in top-level and mainboard configuration files")
 	o = getdict(global_uses_options, name)
 	if (o == 0):
@@ -935,7 +1029,7 @@ def mainboard(path):
 	setoption('MAINBOARD_VENDOR', vendor)
 	setoption('MAINBOARD_PART_NUMBER', part_number)
 	dodir('/config', 'Config.lb')
-	part('mainboard', path, 'Config.lb')
+	part('mainboard', path, 'Config.lb', 0)
 	curimage.setroot(partstack.tos())
 	partpop()
 
@@ -968,13 +1062,15 @@ def target(name):
 	print "Will place Makefile, crt0.S, etc. in %s" % target_dir
 
 
-def part(name, path, file):
+def part(type, path, file, name):
 	global curimage, dirstack, partstack
-	partdir = os.path.join(name, path)
+	partdir = os.path.join(type, path)
 	srcdir = os.path.join(treetop, 'src')
 	fulldir = os.path.join(srcdir, partdir)
-	newpart = partobj(curimage, fulldir, partstack.tos(), name, path)
-	print "Configuring PART %s, path %s" % (name, path)
+	type_name = flatten_name(os.path.join(type, path))
+	newpart = partobj(curimage, fulldir, partstack.tos(), type, \
+			type_name, name)
+	print "Configuring PART %s, path %s" % (type, path)
 	partstack.push(newpart)
 	dirstack.push(fulldir)
 	doconfigfile(srcdir, partdir, file)
@@ -984,7 +1080,7 @@ def partpop():
 	curpart = partstack.pop()
 	if (curpart == 0):
 		fatal("Trying to pop non-existent part")
-	print "End PART %s" % curpart.type
+	print "End PART %s" % curpart.part
 	# Warn if options are used without being set in this part
 	for i in curpart.uses_options.keys():
 		if (not isset(i, curpart)):
@@ -1030,12 +1126,12 @@ def adddep(id, str):
 	global curimage
 	curimage.addmakedepend(id, str)
 
-def set_arch(my_arch):
+def setarch(my_arch):
 	"""arch is 'different' ... darn it."""
 	global curimage
 	curimage.setarch(my_arch)
 	setoption('ARCH', my_arch)
-	part('arch', my_arch, 'Config.lb')
+	part('arch', my_arch, 'Config.lb', 0)
 
 def doconfigfile(path, confdir, file):
 	rname = os.path.join(confdir, file)
@@ -1190,32 +1286,28 @@ parser Config:
 
     rule partend<<C>>:	(stmt<<C>>)* END 	{{ if (C): partpop()}}
 
-    rule northbridge<<C>>:
-			NORTHBRIDGE PATH	{{ if (C): part('northbridge', PATH, 'Config.lb') }}
-			partend<<C>>
-
-    rule superio<<C>>:	SUPERIO PATH		{{ if (C): part('superio', PATH, 'Config.lb') }}
-			partend<<C>>
-
     # This is needed because the legacy cpu command could not distinguish
     # between cpu vendors. It should just be PATH, but getting this change
-    # into the source tree will be tricky...
-    rule cpuid:		ID 			{{ return ID }}
+    # into the source tree will be tricky... 
+    # DO NOT USE ID AS IT MAY GO AWAY IN THE FUTURE
+    rule partid:	ID 			{{ return ID }}
 		|	PATH			{{ return PATH }}
 
-    rule cpu<<C>>:	CPU cpuid		{{ if (C): part('cpu', cpuid, 'Config.lb') }}
+    rule parttype:	NORTHBRIDGE		{{ return 'northbridge' }} 
+    		|	SUPERIO 		{{ return 'superio' }}
+		|	PMC			{{ return 'pmc' }}
+		|	SOUTHBRIDGE		{{ return 'southbridge' }}
+		|	CPU			{{ return 'cpu' }}
+
+    rule partdef<<C>>:				{{ name = 0 }}
+			parttype partid
+			[ STR			{{ name = dequote(STR) }}
+			]			{{ if (C): part(parttype, partid, 'Config.lb', name) }}
 			partend<<C>>
 
-    rule pmc<<C>>:	PMC PATH		{{ if (C): part('pmc', PATH, 'Config.lb') }}
+    rule arch<<C>>:	ARCH ID			{{ if (C): setarch(ID) }}
 			partend<<C>>
-
-    rule arch<<C>>:	ARCH ID			{{ if (C): set_arch(ID) }}
-			partend<<C>>
-
-    rule southbridge<<C>>:
-			SOUTHBRIDGE PATH	{{ if (C): part('southbridge', PATH, 'Config.lb')}}
-			partend<<C>>
-
+    
     rule mainboardinit<<C>>:
 			MAINBOARDINIT DIRPATH	{{ if (C): addcrt0include(DIRPATH)}}
 
@@ -1277,7 +1369,6 @@ parser Config:
     rule stmt<<C>>:	arch<<C>>		{{ return arch}}
 		|	addaction<<C>>		{{ return addaction }}
     		|	config<<C>>		{{ return config}}
-    		|	cpu<<C>>		{{ return cpu}}
 		|	dir<<C>>		{{ return dir}}
 		|	driver<<C>>		{{ return driver }}
 		|	iif<<C>>	 	{{ return iif }}
@@ -1288,14 +1379,11 @@ parser Config:
 		|	mainboardinit<<C>>	{{ return mainboardinit }}
 		|	makedefine<<C>> 	{{ return makedefine }}
 		|	makerule<<C>>		{{ return makerule }}
-		|	northbridge<<C>>	{{ return northbridge }}
 		|	object<<C>>		{{ return object }}
 		|	option<<C>>		{{ return option }}
-		|	pmc<<C>>		{{ return pmc}}
+		|	partdef<<C>>		{{ return partdef }}
 		| 	prtstmt<<C>>		{{ return prtstmt}}
 		|	register<<C>> 		{{ return register}}
-		|	southbridge<<C>>	{{ return southbridge }}
-		|	superio<<C>>		{{ return superio }}
 
     # ENTRY for parsing Config.lb file
     rule cfgfile:	(uses<<1>>)* 
@@ -1682,38 +1770,30 @@ def writecode(image):
 	filename = os.path.join(img_dir, "static.c")
 	print "Creating", filename
 	file = safe_open(filename, 'w+')
-	# gen all the forward references
-
-	i = 0
 	file.write("#include <device/chip.h>\n")
-	file.write("struct chip ")
-	while (i <= image.numparts()):
-		if (i):
-			file.write(", static_dev%d"% i)
-		else:
-			file.write("static_root")
-		i = i + 1
-	file.write(";\n")
-	gencode(image.getroot(), file)
+	for path in image.getconfigincludes().values():
+		file.write("#include \"%s\"\n" % path)
+	gencode(image.getroot(), file, 0)
+	gencode(image.getroot(), file, 1)
 	file.close()
 
-def gencode(part, file):
+def gencode(part, file, pass_num):
 	debug.info(debug.gencode, "GENCODE ME is")
-	part.gencode(file)
+	part.gencode(file, pass_num)
 	# dump the siblings -- actually are there any? not sure
 	debug.info(debug.gencode, "GENCODE SIBLINGS are")
 	kid = part.siblings
 	while (kid):
-		kid.gencode(file)
+		kid.gencode(file, pass_num)
 		kid = kid.siblings
 	# now dump the children 
 	debug.info(debug.gencode, "GENCODE KIDS are")
 	if (part.children):
-		gencode(part.children, file)
+		gencode(part.children, file, pass_num)
 	kid = part.siblings
 	while (kid):
 		if (kid.children):
-			gencode(kid.children, file)
+			gencode(kid.children, file, pass_num)
 		kid = kid.siblings
 	debug.info(debug.gencode, "DONE GENCODE")
 

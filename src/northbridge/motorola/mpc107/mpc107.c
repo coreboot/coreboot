@@ -35,7 +35,7 @@
 void mpc107_init(void);
 
 void 
-sdram_init(void)
+memory_init(void)
 {
 	struct sdram_dimm_info dimms[NUM_DIMMS];
 	struct sdram_bank_info banks[NUM_BANKS];

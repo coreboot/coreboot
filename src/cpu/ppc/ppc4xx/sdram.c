@@ -60,7 +60,7 @@
 
 /*-----------------------------------------------------------------------
  */
-void sdram_init(void)
+void memory_init(void)
 {
 #if 0
 	unsigned long speed;

@@ -10,6 +10,7 @@
 	CPC710_MCCR_FIXED_BITS
 
 void cpc710_init(void);
+void sdram_init(void);
 extern void cpc710_pci_init(void);
 
 void
@@ -25,17 +26,16 @@ getCPC710(uint32_t addr)
 }
 
 void
-sdram_init(void)
+memory_init(void)
 {
 	cpc710_init();
+	sdram_init();
 	cpc710_pci_init();
 }
 
 void
 cpc710_init(void)
 {
-	uint32_t mccr;
-
 	setCPC710(CPC710_CPC0_RSTR,   0xf0000000);	
 	(void)getCPC710(CPC710_CPC0_MPSR);	
 	setCPC710(CPC710_CPC0_SIOC0,   0x00000000);	
@@ -55,6 +55,12 @@ cpc710_init(void)
 	setCPC710(CPC710_SDRAM0_MEAR,   0x00000000);	
 	setCPC710(CPC710_SDRAM0_MWPR,   0x00000000);	
 	setCPC710(CPC710_CPC0_RGBAN1, 0x00000000);	
+}
+
+void
+sdram_init()
+{
+	uint32_t mccr;
 
 	/*
 	 * Reset memory configuration

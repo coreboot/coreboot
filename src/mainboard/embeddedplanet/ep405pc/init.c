@@ -107,3 +107,8 @@ board_init(void)
 	udelay(100000);
 	out_8((unsigned char *)0xF4000009, 0x0E);
 }
+
+void
+board_init2(void)
+{
+}

@@ -32,10 +32,15 @@
 void
 board_init(void)
 {
+}
+
+void
+board_init2(void)
+{
         /*
          * Enable UART
          */
         uart8250_init(TTYS0_BASE, TTYS0_DIV, TTYS0_LCS);
-        printk_info("briQ board initialized...\n");
+        printk_info("briQ initialized...\n");
 
 }

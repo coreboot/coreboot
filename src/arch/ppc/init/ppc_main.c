@@ -28,9 +28,20 @@ void ppc_main(void)
 	unsigned *from;
 	unsigned *to;
 
+	/*
+ 	 * very early board initialization
+	 */
 	board_init();
 
-	sdram_init();
+	/*
+	 * turn on memory
+	 */
+	memory_init();
+
+	/*
+	 * final initialization before jumping to payload
+	 */
+	board_init2();
 
 	/*
 	 * Flush cache now that memory is enabled.

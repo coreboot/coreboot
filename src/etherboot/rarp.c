@@ -1,3 +1,4 @@
+#include <printk.h>
 #include "etherboot.h"
 #include "nic.h"
 

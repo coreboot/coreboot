@@ -39,6 +39,7 @@
 /* Includes */
 
 #include <types.h>
+#include <printk.h>
 #include "etherboot.h"
 #include "nic.h"
 #include "pci.h"
@@ -158,7 +159,7 @@ static int sis900_get_mac_addr(struct pci_device * pci_dev , struct nic *nic)
 	/* check to see if we have sane EEPROM */
 	signature = (u16) sis900_read_eeprom( EEPROMSignature);
 	if (signature == 0xffff || signature == 0x0000) {
-		printk ("sis900_probe: Error EERPOM read %x\n", signature);
+		printk_info ("sis900_probe: Error EERPOM read %x\n", signature);
 		return 0;
 	}
 
@@ -284,7 +285,7 @@ struct nic *sis900_probe(struct nic *nic, unsigned short *io_addrs, struct pci_d
 
     if (ret == 0)
     {
-        printk ("sis900_probe: Error MAC address not found\n");
+        printk_info ("sis900_probe: Error MAC address not found\n");
         return NULL;
     }
 

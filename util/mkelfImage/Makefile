@@ -4,7 +4,7 @@
 # that way it survives across cvs updates. 
 # Then do a 'make install'
 # the result will be a directory tree  that you can run mkelfImage in
-PREFIX=/users/rminnich/src/bios/mkelf
+PREFIX=/usr/local/
 PERLPATH=/usr/bin/perl
 VERSION="1.9"
 DATE="7 January 2002"

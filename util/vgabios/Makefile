@@ -1,5 +1,17 @@
+#
+# NOTE: You need to add your libpci.a version to CFLAGS below if
+# pci-userspace.c does not build.
+#
+# If you are building on AMD64, you have to use /usr/lib64/libpci.a instead of
+# /usr/lib/...
+#
+
 CC       =  gcc
-CFLAGS   =  -Wall -Ix86emu/include -O2 -g
+CFLAGS   =  -Wall -Ix86emu/include -O2 -g \
+		-DLIBPCI_MAJOR_VERSION=2  \
+		-DLIBPCI_MINOR_VERSION=1  \
+		-DLIBPCI_MICRO_VERSION=11
+
 
 INTOBJS  =  int10.o int15.o int16.o int1a.o inte6.o
 OBJECTS  =  testbios.o helper_exec.o helper_mem.o $(INTOBJS)

@@ -2,6 +2,12 @@
 #include <pci/pci.h>
 #include "pci.h"
 
+#define LIBPCI_CHECK_VERSION(major,minor,micro) \
+ ( (LIBPCI_MAJOR_VERSION > (major)) || \
+   (LIBPCI_MAJOR_VERSION == (major) && LIBPCI_MINOR_VERSION > (minor)) || \
+ (LIBPCI_MAJOR_VERSION == (major) && LIBPCI_MINOR_VERSION == (minor)) && \
+ LIBPCI_MICRO_VERSION >= (micro) )
+
 #define PCITAG struct pci_filter *
 
 #define DEBUG_PCI 1
@@ -44,7 +50,11 @@ PCITAG findPci(unsigned short bx)
 	tag->slot = slot;
 	tag->func = func;
 
+#if LIBPCI_CHECK_VERSION(2,1,99)
 	if (pci_get_dev(pacc, 0, bus, slot, func))
+#else
+	if (pci_get_dev(pacc, bus, slot, func))
+#endif
 		return tag;
 
 	return NULL;
@@ -58,7 +68,11 @@ u32 pciSlotBX(PCITAG tag)
 u8 pciReadByte(PCITAG tag, u32 idx)
 {
 	struct pci_dev *d;
+#if LIBPCI_CHECK_VERSION(2,1,99)
 	if ((d = pci_get_dev(pacc, 0, tag->bus, tag->slot, tag->func)))
+#else
+	if ((d = pci_get_dev(pacc, tag->bus, tag->slot, tag->func)))
+#endif
 		return pci_read_byte(d, idx);
 #ifdef DEBUG_PCI
 	printf("PCI: device not found while read byte (%x:%x.%x)\n",
@@ -70,7 +84,11 @@ u8 pciReadByte(PCITAG tag, u32 idx)
 u16 pciReadWord(PCITAG tag, u32 idx)
 {
 	struct pci_dev *d;
+#if LIBPCI_CHECK_VERSION(2,1,99)
 	if ((d = pci_get_dev(pacc, 0, tag->bus, tag->slot, tag->func)))
+#else
+	if ((d = pci_get_dev(pacc, tag->bus, tag->slot, tag->func)))
+#endif
 		return pci_read_word(d, idx);
 #ifdef DEBUG_PCI
 	printf("PCI: device not found while read word (%x:%x.%x)\n",
@@ -82,7 +100,11 @@ u16 pciReadWord(PCITAG tag, u32 idx)
 u32 pciReadLong(PCITAG tag, u32 idx)
 {
 	struct pci_dev *d;
+#if LIBPCI_CHECK_VERSION(2,1,99)
 	if ((d = pci_get_dev(pacc, 0, tag->bus, tag->slot, tag->func)))
+#else
+	if ((d = pci_get_dev(pacc, tag->bus, tag->slot, tag->func)))
+#endif
 		return pci_read_long(d, idx);
 #ifdef DEBUG_PCI
 	printf("PCI: device not found while read long (%x:%x.%x)\n",
@@ -95,7 +117,11 @@ u32 pciReadLong(PCITAG tag, u32 idx)
 void pciWriteLong(PCITAG tag, u32 idx, u32 data)
 {
 	struct pci_dev *d;
+#if LIBPCI_CHECK_VERSION(2,1,99)
 	if ((d = pci_get_dev(pacc, 0, tag->bus, tag->slot, tag->func)))
+#else
+	if ((d = pci_get_dev(pacc, tag->bus, tag->slot, tag->func)))
+#endif
 		pci_write_long(d, idx, data);
 #ifdef DEBUG_PCI
 	else
@@ -107,7 +133,11 @@ void pciWriteLong(PCITAG tag, u32 idx, u32 data)
 void pciWriteWord(PCITAG tag, u32 idx, u16 data)
 {
 	struct pci_dev *d;
+#if LIBPCI_CHECK_VERSION(2,1,99)
 	if ((d = pci_get_dev(pacc, 0, tag->bus, tag->slot, tag->func)))
+#else
+	if ((d = pci_get_dev(pacc, tag->bus, tag->slot, tag->func)))
+#endif
 		pci_write_word(d, idx, data);
 #ifdef DEBUG_PCI
 	else
@@ -120,7 +150,11 @@ void pciWriteWord(PCITAG tag, u32 idx, u16 data)
 void pciWriteByte(PCITAG tag, u32 idx, u8 data)
 {
 	struct pci_dev *d;
+#if LIBPCI_CHECK_VERSION(2,1,99)
 	if ((d = pci_get_dev(pacc, 0, tag->bus, tag->slot, tag->func)))
+#else
+	if ((d = pci_get_dev(pacc, tag->bus, tag->slot, tag->func)))
+#endif
 		pci_write_long(d, idx, data);
 #ifdef DEBUG_PCI
 	else

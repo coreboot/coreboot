@@ -40,6 +40,17 @@ void
 board_init(void)
 {
 	/*
+	 * Configure Inerrupt Controller
+	 */
+        mtdcr(uicsr, 0xFFFFFFFF);      /* clear all ints */
+        mtdcr(uicer, 0x00000000);      /* disable all ints */
+        mtdcr(uiccr, 0x00000000);      /* set all to be non-critical */
+        mtdcr(uicpr, 0xFFFFFF80);      /* set int polarities */
+        mtdcr(uictr, 0x10000000);      /* set int trigger levels */
+        mtdcr(uicvcr, 0x00000001);     /* set vect base=0,INT0 highest pri */
+        mtdcr(uicsr, 0xFFFFFFFF);      /* clear all ints */
+
+	/*
 	 * Configure FLASH
 	 */
 	mtebc(pb0cr, 0xFC0DC000);
@@ -52,14 +63,38 @@ board_init(void)
 	mtebc(pb4ap, 0x04050000);
 	
 	/*
-	 * Enable FLASH, NVRAM, POR
+	 * Board Control and Status Register (BCSR) setup
+	 */
+
+	/*
+	 * BCSR1 - PCI Control
+	 */
+	out_8((unsigned char *)0xF4000001, 0x80);
+
+	/*
+	 * BCSR2 - FLASH, NVRAM and POR Control
 	 */
 	out_8((unsigned char *)0xF4000002, 0x9C);
 
 	/*
-	 * Enable UART0
+	 * BCSR3 - FENET and UART
 	 */
-	out_8((unsigned char *)0xF4000003, 0x20);
+	out_8((unsigned char *)0xF4000003, 0xf0);
+
+	/*
+	 * BCSR4 - PCI Status and Masking
+	 */
+	out_8((unsigned char *)0xF4000004, 0x00);
+
+	/*
+	 * BCSR5 - XIRQ Select
+	 */
+	out_8((unsigned char *)0xF4000005, 0x00);
+
+	/*
+	 * BCSR6 - XIRQ Routing
+	 */
+	out_8((unsigned char *)0xF4000006, 0x07);
 
 	/*
 	 * Cycle LEDs to show something is happening...

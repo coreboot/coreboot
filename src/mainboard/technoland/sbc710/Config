@@ -29,7 +29,7 @@ option ZKERNEL_MASK=0x7f
 # is we can drop any LinuxBIOS DoC in from any machine and it will work 
 # fine. 
 # option DOC_KERNEL_START 0
-option DOC_MIL_BASE=0xd000
+option DOC_MIL_BASE=0xd0000
 option L440BX
 
 object mainboard.o

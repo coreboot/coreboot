@@ -1,4 +1,4 @@
-#define DEBG(x)  
+#define DEBG(x)
 #define DEBG1(x)  
 /* Taken from /usr/src/linux/lib/inflate.c [unmodified]
    Used for start32, 1/11/2000

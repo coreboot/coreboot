@@ -1,4 +1,4 @@
-#define SMBUS_IO_BASE 0x1000
+#define SMBUS_IO_BASE 0x0f00
 
 #define SMBGSTATUS 0xe0
 #define SMBGCTL    0xe2

@@ -17,5 +17,11 @@ testbios: $(OBJECTS) $(LIBS)
  
 helper_exec.o: helper_exec.c test.h
 
+x86emu/src/x86emu/libx86emu.a:
+	$(MAKE) -C x86emu/src/x86emu/ -f makefile.linux
+
 clean:
 	rm -f *.o *~ testbios
+
+distclean: clean
+	$(MAKE) -C x86emu/src/x86emu/ -f makefile.linux clean

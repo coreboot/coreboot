@@ -537,6 +537,11 @@ define CONFIG_FS_ISO9660
 	export always
 	comment "Enable ISO9660 filesystem support"
 end
+define CONFIG_FS_FAT
+	default 0
+	export always
+	comment "Enable FAT filesystem support"
+end
 define AUTOBOOT_DELAY
 	default 2
 	export always

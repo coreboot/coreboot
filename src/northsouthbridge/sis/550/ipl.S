@@ -366,10 +366,14 @@ spl_vector:
 	.byte	0xea				# jmp to 8000:0000, where SPL
 	.word	0x0000, SPL_RAM_SEG		# (LinuxBIOS) starts in RAM
 
+#ifdef STD_FLASH
+	.org 0xffff
+#else /* !STD_FLASH i.e. DoC Mil */
 #if (USE_DOC_MIL == 1)
 	.org 0x1ff
 #elif (USE_DOC_2000_TSOP == 1) || (USE_DOC_MIL_PLUS == 1)
 	.org 0x3ff
+#endif
 #endif
 
 end:

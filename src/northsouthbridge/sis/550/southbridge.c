@@ -145,7 +145,6 @@ void nvram_on()
 	}
 	printk_debug("Now try to turn off shadow\n");
 
-#if !defined(STD_FLASH)
 	/* turn off nvram shadow in 0xc0000 ~ 0xfffff, i.e. accessing segment C - F
 	   is actually to the DRAM not NVRAM. For 512KB NVRAM case, this one should be
 	   disabled */
@@ -163,7 +162,6 @@ void nvram_on()
 		printk_debug("Shadow memory disabled in SiS 550\n");
 
 	}
-#endif
 }
 
 /* serial_irq_fixup: Enable Serial Interrupt. Serial interrupt is the IRQ line from SiS 950

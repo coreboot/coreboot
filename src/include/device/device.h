@@ -11,6 +11,7 @@ struct device_operations {
 	void (*set_resources)(device_t dev);
 	void (*init)(device_t dev);
 	unsigned int (*scan_bus)(device_t  bus, unsigned int max);
+	void (*enable)(device_t dev);
 };
 
 
@@ -31,7 +32,7 @@ struct device {
 	unsigned short	device;
 	unsigned int	class;		/* 3 bytes: (base,sub,prog-if) */
 	unsigned int	hdr_type;	/* PCI header type */
-	unsigned int	master : 1;	/* set if device is master capable */
+	unsigned int    enable : 1;	/* set if we should enable the device */
 
 	unsigned char	secondary; 	/* secondary bus number */
 	unsigned char	subordinate;	/* max subordinate bus number */
@@ -56,7 +57,6 @@ struct device {
 	unsigned int resources;
 	unsigned long rom_address;
 	struct device_operations *ops;
-
 };
 
 extern struct device	dev_root;	/* root bus */

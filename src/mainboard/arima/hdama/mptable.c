@@ -150,43 +150,43 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 
 	/* PCI Slot 1 */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8131_2, (1<<2)|0, 0x04, 0x11);
+		bus_8131_2, (1<<2)|0, 0x04, 0x1);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8131_2, (1<<2)|1, 0x04, 0x12);
+		bus_8131_2, (1<<2)|1, 0x04, 0x2);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8131_2, (1<<2)|2, 0x04, 0x13);
+		bus_8131_2, (1<<2)|2, 0x04, 0x3);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8131_2, (1<<2)|3, 0x04, 0x10);
+		bus_8131_2, (1<<2)|3, 0x04, 0x0);
 
 	/* PCI Slot 2 */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8131_2, (2<<2)|0, 0x04, 0x12);
+		bus_8131_2, (2<<2)|0, 0x04, 0x2);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8131_2, (2<<2)|1, 0x04, 0x13);
+		bus_8131_2, (2<<2)|1, 0x04, 0x3);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8131_2, (2<<2)|2, 0x04, 0x10);
+		bus_8131_2, (2<<2)|2, 0x04, 0x0);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8131_2, (2<<2)|3, 0x04, 0x11);
+		bus_8131_2, (2<<2)|3, 0x04, 0x1);
 
 	/* PCI Slot 3 */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8131_1, (1<<2)|0, 0x03, 0x11);
+		bus_8131_1, (1<<2)|0, 0x03, 0x1);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8131_1, (1<<2)|1, 0x03, 0x12);
+		bus_8131_1, (1<<2)|1, 0x03, 0x2);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8131_1, (1<<2)|2, 0x03, 0x13);
+		bus_8131_1, (1<<2)|2, 0x03, 0x3);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8131_1, (1<<2)|3, 0x03, 0x10);
+		bus_8131_1, (1<<2)|3, 0x03, 0x0);
 
 	/* PCI Slot 4 */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8131_1, (2<<2)|0, 0x03, 0x12);
+		bus_8131_1, (2<<2)|0, 0x03, 0x2);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8131_1, (2<<2)|1, 0x03, 0x13);
+		bus_8131_1, (2<<2)|1, 0x03, 0x3);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8131_1, (2<<2)|2, 0x03, 0x10);
+		bus_8131_1, (2<<2)|2, 0x03, 0x0);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8131_1, (2<<2)|3, 0x03, 0x11);
+		bus_8131_1, (2<<2)|3, 0x03, 0x1);
 
 	/* PCI Slot 5 */
 #warning "FIXME get the irqs right, it's just hacked to work for now"
@@ -212,9 +212,9 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 
 	/* On board nics */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8131_1, (3<<2)|0, 0x03, 0x13);
+		bus_8131_1, (3<<2)|0, 0x03, 0x3);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8131_1, (4<<2)|0, 0x03, 0x10);
+		bus_8131_1, (4<<2)|0, 0x03, 0x0);
 
 	/* There is no extension information... */
 

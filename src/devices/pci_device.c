@@ -572,23 +572,18 @@ unsigned int pci_scan_bus(struct device *bus, unsigned int max)
 				continue;
 			}
 			memset(dev, 0, sizeof(*dev));
+			dev->bus = bus;
+			dev->devfn = devfn;
+			dev->vendor = id & 0xffff;
+			dev->device = (id >> 16) & 0xffff;
+			dev->hdr_type = hdr_type;
+			/* class code, the upper 3 bytes of PCI_CLASS_REVISION */
+			dev->class = class >> 8;
+
+			/* If we don't have prior information about this device enable it */
+			dev->enable = 1;
 		}
 
-		dev->bus = bus;
-		dev->devfn = devfn;
-		dev->vendor = id & 0xffff;
-		dev->device = (id >> 16) & 0xffff;
-		dev->hdr_type = hdr_type;
-		/* class code, the upper 3 bytes of PCI_CLASS_REVISION */
-		dev->class = class >> 8;
-
-		/* non-destructively determine if device can be a master: */
-		cmd = pci_read_config8(dev, PCI_COMMAND);
-		pci_write_config8(dev, PCI_COMMAND, cmd | PCI_COMMAND_MASTER);
-		tmp = pci_read_config8(dev, PCI_COMMAND);
-
-		dev->master = ((tmp & PCI_COMMAND_MASTER) != 0);
-		pci_write_config8(dev, PCI_COMMAND, cmd);
 
 		/* Look at the vendor and device id, or at least the 
 		 * header type and class and figure out which set of configuration
@@ -600,9 +595,16 @@ unsigned int pci_scan_bus(struct device *bus, unsigned int max)
 			free(dev);
 			continue;
 		}
-		printk_debug("PCI: %02x:%02x.%01x [%04x/%04x]\n", 
+
+		/* Now run the magic enable/disable sequence for the device */
+		if (dev->ops && dev->ops->enable) {
+			dev->ops->enable(dev);
+		}
+
+		printk_debug("PCI: %02x:%02x.%01x [%04x/%04x] %s\n", 
 			bus->secondary, PCI_SLOT(dev->devfn), PCI_FUNC(dev->devfn), 
-			dev->vendor, dev->device);
+			dev->vendor, dev->device, 
+			dev->enable?"enabled": "disabled");
 
 		/* Put it into the global device chain. */
 		append_device(dev);

@@ -39,7 +39,7 @@ void get_sys_info (struct ppc4xx_sys_info * sysInfo)
 	unsigned long psr;
 	unsigned long m;
 
-	memset(&sysInfo, 0, sizeof(*sysInfo));
+	memset(sysInfo, 0, sizeof(*sysInfo));
 
 	/*
 	 * Read PLL Mode register

@@ -336,10 +336,10 @@ def writep5crt0(path):
 	superioserial = "#include <%s/setup_serial.inc>\n" % command_vals['superio']
 	crt0lines = readfile(crt0base)
 
-	if (debug):
-		print "CRT0 ", crt0lines
+#	if (debug):
+	print "CRT0 ", crt0lines
         for line in crt0lines:
-		if (line <> "PARAM"):
+		if (string.strip(line) <> "PARAM"):
 			file.write(line)
 		else:
 			file.write(paramfileinclude)

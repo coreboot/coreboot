@@ -1,6 +1,7 @@
 #ifndef RESOURCE_H
 #define RESOURCE_H
 
+#include <stdint.h>
 
 #define IORESOURCE_BITS		0x000000ff	/* Bus-specific bits */
 
@@ -60,15 +61,31 @@
 #define IORESOURCE_MEM_SHADOWABLE	(1<<5)	/* dup: IORESOURCE_SHADOWABLE */
 #define IORESOURCE_MEM_EXPANSIONROM	(1<<6)
 
+
+typedef uint64_t resource_t;
 struct resource {
-	unsigned long base;	/* Base address of the resource */
-	unsigned long size;	/* Size of the resource */
-	unsigned long limit;	/* Largest valid value base + size -1 */
+	resource_t base;	/* Base address of the resource */
+	resource_t size;	/* Size of the resource */
+	resource_t limit;	/* Largest valid value base + size -1 */
 	unsigned long flags;	/* Descriptions of the kind of resource */
 	unsigned long index;	/* Bus specific per device resource id */
 	unsigned char align;	/* Required alignment (log 2) of the resource */
 	unsigned char gran;	/* Granularity (log 2) of the resource */
 	/* Alignment must be >= the granularity of the resource */
 };
+
+/* Macros to generate index values for subtractive resources */
+#define IOINDEX_SUBTRACTIVE(IDX,LINK) (0x10000000 + ((IDX) << 8) + LINK)
+#define IOINDEX_SUBTRACTIVE_LINK(IDX) (IDX & 0xff)
+
+/* Generic resource helper functions */
+struct device;
+extern void compact_resources(struct device * dev);
+extern struct resource *probe_resource(struct device *dev, unsigned index);
+extern struct resource *new_resource(struct device * dev, unsigned index);
+extern struct resource *find_resource(struct device * dev, unsigned index);
+extern resource_t resource_end(struct resource *resource);
+extern resource_t resource_max(struct resource *resource);
+extern void report_resource_stored(struct device * dev, struct resource *resource, const char *comment);
 
 #endif /* RESOURCE_H */

@@ -7,6 +7,8 @@
 
 struct device;
 typedef struct device * device_t;
+struct pci_operations;
+struct smbus_bus_operations;
 
 struct device_operations {
 	void (*read_resources)(device_t dev);
@@ -15,6 +17,8 @@ struct device_operations {
 	void (*init)(device_t dev);
 	unsigned int (*scan_bus)(device_t  bus, unsigned int max);
 	void (*enable)(device_t dev);
+	struct pci_operations *ops_pci;
+	struct smbus_bus_operations *ops_smbus_bus;
 };
 
 
@@ -28,7 +32,7 @@ struct bus {
 	unsigned char   cap;		/* PCi capability offset */
 };
 
-#define MAX_RESOURCES 8
+#define MAX_RESOURCES 12
 #define MAX_LINKS     3
 /*
  * There is one device structure for each slot-number/function-number
@@ -47,6 +51,8 @@ struct device {
 	unsigned int	class;		/* 3 bytes: (base,sub,prog-if) */
 	unsigned int	hdr_type;	/* PCI header type */
 	unsigned int    enabled : 1;	/* set if we should enable the device */
+	unsigned int    initialized : 1; /* set if we have initialized the device */
+	unsigned int    have_resources : 1; /* Set if we have read the devices resources */
 
 	uint8_t command;
 
@@ -83,10 +89,9 @@ extern void enable_resources(struct device *dev);
 extern void enumerate_static_device(void);
 extern void enumerate_static_devices(void);
 extern const char *dev_path(device_t dev);
-extern void compact_resources(device_t dev);
-extern struct resource *get_resource(device_t dev, unsigned index);
 
 /* Helper functions */
+device_t find_dev_path(struct bus *parent, struct device_path *path);
 device_t alloc_find_dev(struct bus *parent, struct device_path *path);
 device_t dev_find_device (unsigned int vendor, unsigned int device, device_t from);
 device_t dev_find_class (unsigned int class, device_t from);
@@ -103,6 +108,8 @@ extern void root_dev_read_resources(device_t dev);
 extern void root_dev_set_resources(device_t dev);
 extern unsigned int scan_static_bus(device_t bus, unsigned int max);
 extern void enable_childrens_resources(device_t dev);
-extern unsigned int root_dev_scan_pci_bus(device_t root, unsigned int max);
+extern void root_dev_enable_resources(device_t dev);
+extern unsigned int root_dev_scan_bus(device_t root, unsigned int max);
+extern void root_dev_init(device_t dev);
 
 #endif /* DEVICE_H */

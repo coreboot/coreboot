@@ -1184,7 +1184,7 @@ spd_post_init:	.string "done\r\n"
 refresh_rate_rank:
 	/* Refresh rates ordered from most conservative (lowest)
 	 * to most agressive (highest)
-	/* disabled 0 -> rank 3 
+	 * disabled 0 -> rank 3 
 	 * 15.6usec 1 -> rank 1
 	 * 7.8 usec 2 -> rank 0
 	 * 64usec   3 -> rank 2

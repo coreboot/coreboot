@@ -24,7 +24,7 @@ void keyboard_on()
 	u8 regval;
 	struct pci_dev *pcidev;
 
-	/* turn on sis630 keyboard/mouse controller */
+	/* turn on sis550 keyboard/mouse controller */
 	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, (void *)NULL);
 	if (pcidev != NULL) {
 		/* Register 0x47, Keyboard Controller */
@@ -40,7 +40,7 @@ void nvram_on()
 {
 	struct pci_dev *pcidev;
 
-	/* turn on sis630 nvram. */
+	/* turn on sis550 nvram. */
 	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, (void *)NULL);
 	if (pcidev != NULL) {
 		/* Enable FFF80000 to FFFFFFFF decode. You have to also enable
@@ -57,14 +57,18 @@ void nvram_on()
 	/* turn off nvram shadow in 0xc0000 ~ 0xfffff, i.e. accessing segment C - F
 	   is actually to the DRAM not NVRAM. For 512KB NVRAM case, this one should be
 	   disabled */
-	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_630, (void *)NULL);
-	DBG("device for SiS 630 is 0x%x\n", pcidev);
+	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_550, (void *)NULL);
+	DBG("device for SiS 550 is 0x%x\n", pcidev);
 	if (pcidev != NULL) {
 		/* read cycle goes to System Memory */
-		pci_write_config_word(pcidev, 0x70, 0x1fff);
+		//pci_write_config_word(pcidev, 0x70, 0x1fff);
 		/* write cycle goest to System Memory */
-		pci_write_config_word(pcidev, 0x72, 0x1fff);
-		DBG("Shadow memory disabled in SiS 630\n");
+		//pci_write_config_word(pcidev, 0x72, 0x1fff);
+		pci_write_config_word(pcidev, 0x70, 0xFFFF);
+		pci_write_config_word(pcidev, 0x72, 0xFFFF);
+		pci_write_config_word(pcidev, 0x74, 0xFFFF);
+		pci_write_config_byte(pcidev, 0x76, 0xFF);
+		DBG("Shadow memory disabled in SiS 550\n");
 
 	}
 #endif

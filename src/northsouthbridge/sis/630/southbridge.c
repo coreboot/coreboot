@@ -152,6 +152,14 @@ final_southbridge_fixup()
 	struct pci_dev *pcidev;
 
 #ifdef OLD_KERNEL_HACK
+	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, (void *)NULL);
+	if (pcidev != NULL) {
+		printk("Remapping IRQ on southbridge for OLD_KERNEL_HACK\n");
+               // remap IRQ for PCI -- this is exactly what the BIOS does now.
+               pci_write_config_byte(pcidev, 0x42, 0xa);
+               pci_write_config_byte(pcidev, 0x43, 0xb);
+               pci_write_config_byte(pcidev, 0x44, 0xc);
+	}
 	// ethernet fixup. This should all work, and doesn't, yet. 
 	// so we hack it for now. 
 	// need a manifest constant for the enet device. 

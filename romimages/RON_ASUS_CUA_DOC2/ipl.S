@@ -18,7 +18,7 @@ it with the version available from LANL.
  */
 /* Parts of this code Copyright 2000, Ron Minnich, Advanced Computing Lab, LANL
  * rminnich@lanl.gov
- * Modifications by Ronnie Liu of Acer Labs Inc. 
+ * Modifications by Ronnie Liu of Acer Labs Inc.
  */
 #include <asm.h>
 #include <cpu/p5/macros.h>
@@ -39,15 +39,23 @@ it with the version available from LANL.
  * ror it 16 bits, and as we grow the CAS, we just inc cs, and that will
  * set the right value. 
  */
-#define INIT_MCR $0xf6411000
+#define INIT_MCR $0xf6621000
 #define WRITE_MCR0 movl %ecx, %eax ;  outl %eax, %dx
 /*#include <cpu/p5/start32.inc>*/
 .org 0xfe000
 .code16
 _start:	jmp _realstart
 gdt:	 //GDT entry 0 (null segment)
-	.byte 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
-	.byte 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+	// this GDT 0 is garbage. But we won't ever use it, so
+	// that's ok. 
+bytes:
+	// these first two bytes are for flash. It's ugly,
+	// but we are out of room!
+	.byte   0xff, NO_INB, 0x40
+	.byte	0xf8, 0xfd, NO_INB, 0x8
+	.byte	0x8c, 0xfe, DO_INB, 0x8
+	.byte	0x80, 0xfe, NO_INB, 0x10
+	.byte	0
 	// GDT 1
 	.word	0xffff, 0x0000		/* flat code segment */
 	.byte	0x0, 0x9a, 0xcf, 0x0	
@@ -59,22 +67,15 @@ gdtptr:
 	.word	4*8-1
 	.long	gdt		/* we know the offset */
 	.long 0
+
 #define DO_INB	1
 #define NO_INB  0
-bytes:
-	.byte	0xf8, 0xfd, NO_INB, 0x8
-	.byte	0x8c, 0xfe, DO_INB, 0x8
-	.byte	0x48, 0xfd, NO_INB, 0x60
-	.byte	0x80, 0xfe, NO_INB, 0x10
-	.byte	0x90, 0xff, DO_INB, 0x6
-	.byte	0x80, 0xff, NO_INB, 0
-	.byte	0
+	
 _realstart:	
 
 	cli
 	movw	%cs, %ax
 	movw	%ax, %es
-
 
 	.byte 0x66 /* prefix */
 	.byte 0x26
@@ -93,11 +94,11 @@ _realstart:
 .Lprotected:
 	.code32
 	movw	$0x18, %bx
-	movw	%bx, %es
+/*	movw	%bx, %es*/
 	movw	%bx, %ds
-	movw	%bx, %es
-	movw	%bx, %fs
-	movw	%bx, %gs
+/*	movw	%bx, %es*/
+/*	movw	%bx, %fs*/
+/*	movw	%bx, %gs*/
 	movw	%bx, %ss
 #ifdef USE_BIG_REAL
 	andb	$0xfe, %al
@@ -113,21 +114,19 @@ code16
 	movl	$0x80003844, %eax
 	mov	$0x0cf8,%dx
 	outl	%eax,%dx
-/* but 0x40 makes flash writeable. You need this for DoC */
-	movb	$0x40, %al
-/* 0xff selects register 0x47 */
-	movb	$0xff, %dl
-	outb	%al,%dx
+
+
 	xorl	%edi, %edi
 	xorw	%ax,%ax
 	movl	$bytes, %esi
-	/*	Must set regs on North Bridge	*/
-	movb	$0xc, %dh
-	movb	(%esi), %al
+	jmp selectbyte
 loop:
 	movb	$0xf8, %dl
 	inc	%esi
 	outl	%eax,%dx
+
+	// from here, you are selecting which byte to use. 
+selectbyte:	 
 	movb	(%esi),%dl
 	inc	%esi
 	movb	(%esi),%al
@@ -147,6 +146,7 @@ noinb:
 	cmpb	$0, %al
 	jne	loop
 
+/*	Must set regs on North Bridge (device 0) */
 
 	movb	$0x6c, %al
 	movb	$0xf8,%dl
@@ -154,33 +154,40 @@ noinb:
 /*	movb	$0x8000006c, %al
 	CALLSP(pci_read_dword)*/
 	movb	$0xfc, %dl
-	inl	%dx, %eax
-	movl	%eax, %ecx
-	andl    $0xfffc, %ecx
-	orl	INIT_MCR,  %ecx
+	movl	$0xf662f83c, %ecx
+	WRITE_MCR0
+	/* check for registered. All this means is write to 0,
+	 * read back, if it's not the same, set 'registered',
+	 * read back, it it's the same you're ok.
+	 */
+	movb	$0xa5, (%edi)
+	cmpb	$0xa5, (%edi)
+	je	nonregistered
+	orb	$0x40, %cl
 	WRITE_MCR0
 	/*
 	movb	$0x6c, %al
 	CALLSP(pci_write_dword)
 	*/
+nonregistered:	 
 	rorl	$16, %ecx
 	/* clear out the CAS, since we assume start at zero
 	 * and increment 
 	 */
 	andb	$0xf0, %cl
 	/* test 8 bit CAS */
-	movb	$0, 0
+	movb	$0, (%edi)
 	movb	$1, 0x800
-	cmpb	$0,0
+	cmpb	$0,(%edi)
 	jnz	sizeram
 	inc	%cl
 	/* change the value we store each time. It makes debugging easier */
 	movb	$2, 0x1000
-	cmpb	$0, 0
+	cmpb	$0, (%edi)
 	jnz	sizeram
 	inc	%cl
 	movb	$3, 0x2000
-	cmpb	$0, 0
+	cmpb	$0, (%edi)
 	jnz	sizeram
 	inc	%cl
 	
@@ -188,7 +195,7 @@ sizeram:
 	rorl	$16, %ecx
 	/* clear the 'no multi page' bit. */
 	andw	$0xefff, %cx
-	WRITE_MCR0
+	WRITE_MCR0 
 	/*
 	mov	$0x6c, %al
 	CALLSP(pci_write_dword)
@@ -197,7 +204,7 @@ sizeram:
 /* now size the dram */
 /* you had best have at least 4M; that's as small as we go */
 /* rorr 20 the ecx value, to get row size into lsb */
-	movb	$0, 0
+	movb	$0, (%edi)
 	ror	$20, %ecx
 	/* clear the size out to 4 MB */
 	andb	$0xf8, %cl
@@ -212,7 +219,7 @@ sizeram:
 	 */
  	movb	$4, %es:(%esi)
 #endif
-	cmpb	$0, 0
+	cmpb	$0, (%edi)
 	/* if there is not a 0 at 0, the last write wrapped. Hop out */
 	jne	1f
 	inc	%cl
@@ -234,21 +241,22 @@ sizeram:
  * Just set 4-bank mode, and set non-zero numbers into a few places. 
  * if the byte at 0 changes, you have two banks. Trivial.
  */
-	movb	$0, 0
+	movb	$0, (%edi)
 	movb	$5, 0x1000
 	movb	$6, 0x2000
 	movb	$7, 0x4000
-	cmpb	$0, 0
-	jz	1f /* only one bank */
+	cmpb	$0, (%edi)
+	jz	1f /* 4 banks */
 	orl	$0x80000, %ecx
-1: 
 	/* clear 4 banks */
 	andb	$0xfe, %cl
+1: 
 	WRITE_MCR0
+	
 	movl	$0x8000007c, %eax
 	movb	$0xf8, %dl
 	outl	%eax, %dx
-	movl	$0x242bc411, %eax
+	movl	$0x2428c411, %eax
 	movb	$0xfc, %dl
 	outl	%eax, %dx
 	/*
@@ -261,11 +269,6 @@ sizeram:
 	/* NOTE: MUST NOT DESTROY %ecx! */
 	/* INPUT: %al, the register. %ecx, the write data */
 	/* Following code courtesy Ollie Lho:	*/
-	
-
-	
-	
-	
 	
 	
 	
@@ -401,6 +404,7 @@ doc_cycle_end:
 
 
 /* we don't need these. We only do I/O to MCR 0 */
+#if 0
 pci_write_dword:
 	mov	$0,%ah
 	mov	$0x80000000,%edx
@@ -423,6 +427,7 @@ pci_read_dword:
 	inl	%dx, %eax
 	mov	%eax, %ecx
 	RETSP
+#endif
 
 	.org 0xfe1f0
 reset_vector:

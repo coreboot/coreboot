@@ -1,10 +1,10 @@
-init config/crt0.lb
 ldscript config/ldscript.lb
 
 makerule linuxbios.rom 
-	depends	"linuxbios.strip buildrom" 
-	action	"./buildrom $< $@ $(PAYLOAD) $(ROM_IMAGE_SIZE) $(ROM_SIZE)"
+	depends	"linuxbios" 
+	action	"cp $< $@"
 end
 
+dir init
 dir lib
 dir boot

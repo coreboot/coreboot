@@ -90,7 +90,7 @@ northbridge_init_table:
 	.byte	0x98,	0x00	#
 	.byte	0x9C,	0x02	# CPU to VGA MEM Posted Write
 
-	/* DRAM Priority Timer Control REgister */
+	/* DRAM Priority Timer Control Register */
 	.byte	0xA0,	0x00
 	.byte	0xA1,	0x00
 	.byte	0xA2,	0x03
@@ -99,7 +99,5 @@ northbridge_init_table:
 	/* AGP Command Register */
 	.byte	0xC8,	0x04	# AGP 4X
 	.byte	0xC9,	0x00	# AGP Disabled
-	.byte	0xCA,	0x00
-	.byte	0xCB,	0x00
 
 northbridge_init_table_end:

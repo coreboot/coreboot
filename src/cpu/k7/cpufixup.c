@@ -4,14 +4,13 @@
 #include <cpu/cpufixup.h>
 
 
-#ifndef WE_KNOW_K7_IS_BROKEN
-#SORRY but AMD doesnt want this released.
-#endif
 void
 k7_cpufixup(unsigned long ram_kilobytes)
 {
+#if 0
 	printk_err("WARNING: you are running the busted version of linuxbios\n");
 	printk_err("for K7. It will really run slow\n");
+#endif
 }
 
 // see the explanation in freebios/util/k7msr for how this code was

@@ -88,11 +88,11 @@ void secondary_cpu_init(void)
 	int index;
 
 	atomic_inc(&active_cpus);
-	printk_debug(__FUNCTION__ "\n");
+	printk_debug("%s\n", __FUNCTION__);
 	mem = get_ramsize();
 	id = cpu_initialize(mem);
 	index = processor_index(id);
-	printk_debug(__FUNCTION__ "  %d/%u\n", index, id);
+	printk_debug("%s  %d/%u\n", __FUNCTION__ , index, id);
 	processor_map[index] = CPU_ENABLED;
 	atomic_dec(&active_cpus);
 	stop_cpu(id);

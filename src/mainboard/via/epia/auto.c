@@ -44,6 +44,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "northbridge/via/vt8601/raminit.c"
 #include "sdram/generic_sdram.c"
+/*
+ */
 
 static void main(void)
 {
@@ -55,7 +57,7 @@ static void main(void)
 	
 	enable_smbus();
 	memreset_setup();
-	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
+//	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
 
 
 	/* Check all of memory */

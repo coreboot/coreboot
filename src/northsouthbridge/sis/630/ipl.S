@@ -110,7 +110,7 @@ check_row_column:
 	cmpb	$0x08, %cl			# Col number too small, unsupported.
 	jb	no_sdram
 	cmpb	$0x0b, %cl			# Col number too big, unsupported.
-	jl	no_sdram	
+	jl	no_sdram
 #endif /* SAFTY_CHECK */
 
 #if 1
@@ -130,9 +130,9 @@ check_row_column:
 	xorb	%ch, %ch
 
 	addw	%cx, %si			# sdram_type_bank[column + row * 4]
-	movb	-52(%si), %cl			# sdram_type_bank[column + row * 4 - 52]	
+	movb	-52(%si), %cl			# sdram_type_bank[column + row * 4 - 52]
 #endif
-	
+
 #ifdef SIZE_ALL
 	movb	%ah, %bh			# Restore DIMM slot number from AH to BH
 #endif /* SIZE_ALL */
@@ -230,7 +230,7 @@ sis630ipl_start:
 
 	movb	$0x85, %al			# Turn into Normal Mode
 	call	doc_reset
-	
+
 read_next_page:
 	movw	$0x1000, %di			# point %di to CDSN Control area
 
@@ -238,14 +238,14 @@ flash_command:
 	movb	$0x03, 0x04(%di)		# start command cycle
 	movb	$0x00, (%si)			# issue flash command Read00
 	call	doc_cycle_end
-	
+
 	movw	%bp, %bx			# %bp is current page number
 
 flash_address:
 	shll	$0x08, %ebx
-        movb	$0x03, %cl			# this one is DANGEROUS but I am
+	movb	$0x03, %cl			# this one is DANGEROUS but I am
 						# sure the upper 3 bytes == 0x00
-	
+
 	movb	$0x05, 0x04(%di)		# start address cycle
 0:
 	movb	%bl, (%si)			# write address to CDSNIO
@@ -263,7 +263,7 @@ doc_delay:
 0:
 	movb	0x20(%di), %al			# read DOC NOP retisger
 	loop	0b				# four times
-	
+
 	testb	$0x80, 0x04(%di)		# is flash ready ?
 	jz	wait_for_flash_ready
 
@@ -289,7 +289,7 @@ write_lpc_register:
 	movl	$LPC_BRIDGE_BASE_ADDR, %edx
 	jmp	write_common
 
-write_pci_register:			
+write_pci_register:
 	/* Input: AH - register number. AL - register value. */
 	movl	$NORTH_BRIDGE_BASE_ADDR, %edx
 
@@ -318,7 +318,7 @@ read_spd:
 	movw	$0x0312, %ax			# Start, R/W byte Data
 	CALL_BP(sis_set_smbus)
 
-wait_for_smbus_read:	
+wait_for_smbus_read:
 	movb	$0x80, %dl			# Read SMBus status 
 	inb	%dx, %al
 

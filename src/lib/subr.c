@@ -207,7 +207,7 @@ void intel_zero_irq_settings(void)
 
 void intel_check_irq_routing_table(void)
 {
-#if (defined(L440BX) || defined (SIS630))
+#ifdef HAVE_PIRQ_TABLE
 	const u8 *addr;
 	const struct irq_routing_table *rt;
 	int i;
@@ -248,14 +248,14 @@ void intel_check_irq_routing_table(void)
 		       "checksum error in irq routing table\n",
 		       __FILE__, __LINE__, __FUNCTION__);
 	}
-#endif /* #if defined(L440BX) */
+#endif /* #ifdef HAVE_PIRQ_TABLE */
 }
 
 #define RTABLE_DEST 0xf0000
 
 void intel_copy_irq_routing_table(void)
 {
-#ifdef SIS630
+#ifdef HAVE_PIRQ_TABLE
 	memcpy((char *) RTABLE_DEST, &intel_irq_routing_table, intel_irq_routing_table.size);
 #endif
 }

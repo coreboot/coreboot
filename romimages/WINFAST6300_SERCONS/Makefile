@@ -9,7 +9,7 @@ CPUFLAGS += -DSERIAL_CONSOLE
 CPUFLAGS += -DENABLE_FIXED_AND_VARIABLE_MTRRS
 CPUFLAGS += -DINBUF_COPY
 CPUFLAGS += -DUSE_DOC_MIL
-CPUFLAGS += -DCMD_LINE='"ro root=/dev/hda1 console=ttyS0,115200 single "'
+CPUFLAGS += -DCMD_LINE='"ro root=/dev/hda1 console=ttyS0,115200 single mem=64m          "'
 CPUFLAGS += -DFINAL_MAINBOARD_FIXUP
 
 LINUX=$(TOP)/../linux-2.4.0-test6.sis

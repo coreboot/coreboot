@@ -17,6 +17,7 @@ static char rcsid[] =
 #include <pci.h>
 #include <pci_ids.h>
 #include <northsouthbridge/sis/630/param.h>
+#include <cpu/p5/io.h>
 
 void keyboard_on()
 {
@@ -95,6 +96,9 @@ final_southbridge_fixup()
 	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, 
 	    (void *)NULL);
 	if (pcidev != NULL) {
+	    unsigned char val;
+	    unsigned short acpibase = 0xc000, temp;
+	    int i;
 	    // put symbolic names in here soon ... so much typing, so little time. 
 
 	    // remap IRQ for PCI -- this is exactly what the BIOS does now. 
@@ -111,7 +115,51 @@ final_southbridge_fixup()
 	    // enable IRQs 7 to 1
 	    pci_write_config_byte(pcidev, 0x72, 0xfd);
 	    pci_write_config_byte(pcidev, 0x73, 0xff);
-	    
+	    // the following is to turn off software watchdogs. 
+	    // we co-op the address space from c000-cfff here. Temporarily. 
+	    // Later, we need a better way to do this. 
+	    // But since Linux doesn't even understand this yet, no issue. 
+	    // Set a base address for ACPI of 0xc000
+	    pci_read_config_word(pcidev, 0x74, &temp);
+
+	    printk(KERN_INFO "acpibase was 0x%x\n", temp);
+	    pci_write_config_word(pcidev, 0x74, acpibase);
+	    pci_read_config_word(pcidev, 0x74, &temp);
+	    printk(KERN_INFO "acpibase is 0x%x\n", temp);
+	    // now enable acpi
+	    pci_read_config_byte(pcidev, 0x40, &val);
+	    printk(KERN_INFO "acpi enable reg was 0x%x\n", val);
+	    val |= 0x80;
+	    pci_write_config_byte(pcidev, 0x40, val);
+	    pci_read_config_byte(pcidev, 0x40, &val);
+	    printk(KERN_INFO "acpi enable reg after set is 0x%x\n", val);
+	    printk(KERN_INFO "acpi status: word at 0x56 is 0x%x\n",
+		inw(acpibase+0x56));
+	    printk(KERN_INFO "acpi status: byte at 0x4b is 0x%x\n", 
+		inb(acpibase + 0x4b));
+#if 0
+// this hangs anyway, so what's the point. 
+	    for(i = 0; i < 0x63; i += 16) {
+		int j; 
+		printk(KERN_INFO "0x%x: ", i);
+		for(j = 0; (j < 16) && ((j + i) < 0x63); j++)
+		    printk(KERN_INFO "%02x ", inb(acpibase + i + j));
+		printk(KERN_INFO "\n");
+	    }
+#endif
+	    // now that it's on, get in there and call off the dogs. 
+	    // that's the recommended thing to do if MD40 iso on. 
+	    outw(0, acpibase + 0x56);
+	    // does this help too? 
+	    outb(0, acpibase + 0x4b);
+	    // ah ha! have to SET, NOT CLEAR!
+	    outb(0x40, acpibase + 0x56);
+	    printk(KERN_INFO "acpibase + 0x56 is 0x%x\n", 
+		inb(acpibase+0x56));
+	    val &= (~0x80);
+	    pci_write_config_byte(pcidev, 0x40, val);
+	    pci_read_config_byte(pcidev, 0x40, &val);
+	    printk(KERN_INFO "acpi disable reg after set is 0x%x\n", val);
 	} else {
 	    printk(KERN_EMERG "Can't find south bridge!\n");
 	}

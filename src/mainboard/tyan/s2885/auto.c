@@ -169,7 +169,7 @@ static void main(void)
 	enable_lapic();
 	init_timer();
 	if (!boot_cpu() ) {
-		notify_bsp_ap_is_stopped();
+//		notify_bsp_ap_is_stopped();
 		stop_this_cpu();
 	}
 	uart_init();

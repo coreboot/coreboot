@@ -37,7 +37,7 @@ static void fixup_lsi_53c1030(struct device *pdev)
 }
 #endif
 //extern static void lsi_scsi_init(struct device *dev);
-#if 1
+#if 0
 static void print_pci_regs(struct device *dev)
 {
       uint8_t byte;
@@ -90,7 +90,7 @@ static void amd8111_enable_rom(void)
 static void onboard_scsi_fixup(void)
 {
         struct device *dev;
-#if 0
+#if 0 
 	unsigned char i,j,k;
 
 	for(i=0;i<=6;i++) {

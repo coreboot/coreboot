@@ -2,3 +2,4 @@ driver amd8111_usb.o
 driver amd8111_lpc.o
 driver amd8111_ide.o
 driver amd8111_acpi.o
+driver amd8111_usb2.o

@@ -12,12 +12,11 @@ static void pcix_init(device_t dev)
 	uint16_t word;
 	uint8_t byte;
 
-	
 	/* Enable memory write and invalidate ??? */
 	byte = pci_read_config8(dev, 0x04);
         byte |= 0x10;
         pci_write_config8(dev, 0x04, byte);
-	
+ 	
 	/* Set drive strength */
 	word = pci_read_config16(dev, 0xe0);
         word = 0x0404;
@@ -30,7 +29,7 @@ static void pcix_init(device_t dev)
 	word = pci_read_config16(dev, 0xe8);
         word = 0x0404;
         pci_write_config16(dev, 0xe8, word);
-
+	
 	return;
 }
 
@@ -58,6 +57,14 @@ static void ioapic_enable(device_t dev)
 		value &= ~((1 << 1) | (1 << 0));
 	}
 	pci_write_config32(dev, 0x44, value);
+
+//BY LYH
+        value = pci_read_config32(dev, 0x4);
+        value |= 6;
+        pci_write_config32(dev, 0x4, value);
+//BY LYH END
+ 
+
 }
 
 static struct device_operations ioapic_ops = {

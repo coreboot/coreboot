@@ -77,6 +77,41 @@ static void disable_probes(void)
 	print_debug("done.\r\n");
 
 }
+//BY LYH
+#define WAIT_TIMES 1000
+static void wait_ap_stop(u8 node) 
+{
+	unsigned long reg;
+	unsigned long i;
+	for(i=0;i<WAIT_TIMES;i++) {
+		unsigned long regx;
+		regx = pci_read_config32(NODE_HT(node),0x6c);
+		if((regx & (1<<4))==1) break;
+        }
+	reg = pci_read_config32(NODE_HT(node),0x6c);
+        reg &= ~(1<<4);  // clear it
+        pci_write_config32(NODE_HT(node), 0x6c, reg);
+
+}
+static void notify_bsp_ap_is_stopped(void)
+{
+	unsigned long reg;
+	unsigned long apic_id;
+        apic_id = *((volatile unsigned long *)(APIC_DEFAULT_BASE+APIC_ID));
+	apic_id >>= 24;
+/*      print_debug("applicaton cpu apic_id: ");
+        print_debug_hex32(apic_id);
+        print_debug("\r\n");
+        }*/
+        if(apic_id!=0) { //AP  apic_id == node_id ??
+//              set the ColdResetbit to notify BSP that AP is stopped
+                reg = pci_read_config32(NODE_HT(apic_id), 0x6C);
+                reg |= 1<<4;
+                pci_write_config32(NODE_HT(apic_id),  0x6C, reg);
+        }
+ 
+}
+//BY LYH END
 
 static void enable_routing(u8 node)
 {
@@ -109,8 +144,15 @@ static void enable_routing(u8 node)
 	print_debug_hex32(node);
 
 	val=pci_read_config32(NODE_HT(node), 0x6c);
-	val &= ~((1<<6)|(1<<5)|(1<<4)|(1<<1)|(1<<0));
-	pci_write_config32(NODE_HT(node), 0x6c, val);
+        val &= ~((1<<6)|(1<<5)|(1<<4)|(1<<1)|(1<<0)); 
+ 	pci_write_config32(NODE_HT(node), 0x6c, val);
+//BY LYH
+#if 1
+	if(node!=0) {
+		wait_ap_stop(node);
+	}
+#endif
+//BY LYH END
 
 	print_debug(" done.\r\n");
 }
@@ -285,9 +327,9 @@ static u8 setup_smp(void)
 	/* We found 2 nodes so far */
 	setup_node(0, cpus);	/* Node 1 is there. Setup Node 0 correctly */
 	setup_remote_node(1, cpus);  /* Setup the routes on the remote node */
-	rename_temp_node(1);	/* Rename Node 7 to Node 1  */
-	enable_routing(1);	/* Enable routing on Node 1 */
-	
+        rename_temp_node(1);    /* Rename Node 7 to Node 1  */
+        enable_routing(1);      /* Enable routing on Node 1 */
+  	
 	clear_temp_row(0);	/* delete temporary connection */
 	
 #if MAX_CPUS > 2
@@ -323,14 +365,14 @@ static u8 setup_smp(void)
 	
 	setup_temp_row(0,2,cpus);
 	setup_temp_node(2,cpus);
-	rename_temp_node(2);
-	enable_routing(2);
-
+        rename_temp_node(2);
+        enable_routing(2);
+  
 	setup_temp_row(0,1,cpus);
 	setup_temp_row(1,3,cpus);
 	setup_temp_node(3,cpus);
-	rename_temp_node(3);
-	enable_routing(3);	/* enable routing on node 3 (temp.) */
+        rename_temp_node(3);
+        enable_routing(3);      /* enable routing on node 3 (temp.) */
 	
 	clear_temp_row(0);
 	clear_temp_row(1);
@@ -394,6 +436,42 @@ static unsigned int cpuid(unsigned int op)
 
 static void coherent_ht_finalize(unsigned cpus)
 {
+//BY LYH 
+#if 1
+     static const unsigned int register_values[] = {
+        PCI_ADDR(0, 0x18, 0, 0x84), 0x88ff9c05, 0x11000020,
+        PCI_ADDR(0, 0x18, 0, 0xa4), 0x88ff9c05, 0x11000020,
+        PCI_ADDR(0, 0x18, 0, 0xc4), 0x88ff9c05, 0x770000d0,
+        PCI_ADDR(0, 0x19, 0, 0x84), 0x88ff9c05, 0x770000d0,
+        PCI_ADDR(0, 0x19, 0, 0xa4), 0x88ff9c05, 0x11000020,
+        PCI_ADDR(0, 0x19, 0, 0xc4), 0x88ff9c05, 0x770000d0,
+
+
+        PCI_ADDR(0, 0x18, 0, 0x88), 0xfffff0ff, 0x00000400,
+        PCI_ADDR(0, 0x18, 0, 0xa8), 0xfffff0ff, 0x00000500,
+        PCI_ADDR(0, 0x18, 0, 0xc8), 0xfffff0ff, 0x00000000,
+        PCI_ADDR(0, 0x19, 0, 0x88), 0xfffff0ff, 0x00000000,
+        PCI_ADDR(0, 0x19, 0, 0xa8), 0xfffff0ff, 0x00000500,
+        PCI_ADDR(0, 0x19, 0, 0xc8), 0xfffff0ff, 0x00000000,
+
+        PCI_ADDR(0, 0x18, 0, 0x94), 0xff0000ff, 0x00ff0000,
+        PCI_ADDR(0, 0x18, 0, 0xb4), 0xff0000ff, 0x00000000,
+        PCI_ADDR(0, 0x18, 0, 0xd4), 0xff0000ff, 0x00000000,
+        PCI_ADDR(0, 0x19, 0, 0x94), 0xff0000ff, 0x00000000,
+        PCI_ADDR(0, 0x19, 0, 0xb4), 0xff0000ff, 0x00000000,
+        PCI_ADDR(0, 0x19, 0, 0xd4), 0xff0000ff, 0x00000000,
+
+      };
+        int i;
+        int max;
+
+
+        device_t dev;
+        unsigned where;
+        unsigned long reg;
+#endif
+//BY LYH END
+
 	int node;
 	bool rev_a0;
 	
@@ -416,7 +494,7 @@ static void coherent_ht_finalize(unsigned cpus)
 		pci_write_config32(NODE_HT(node),0x60,val);
 
 		val=pci_read_config32(NODE_HT(node), 0x68);
-		val |= 0x00008000;
+		val |= 0x0f00c800;  // 0x00008000->0f00c800 BY LYH
 		pci_write_config32(NODE_HT(node),0x68,val);
 
 		if (rev_a0) {
@@ -425,6 +503,28 @@ static void coherent_ht_finalize(unsigned cpus)
 			pci_write_config32(NODE_HT(node),0xd4,0);
 		}
 	}
+//BY LYH
+#if 1
+        print_debug("setting up coherent ht domain....\r\n");
+        max = sizeof(register_values)/sizeof(register_values[0]);
+        for(i = 0; i < max; i += 3) {
+#if 0
+                print_debug_hex32(i);
+                print_debug(": ");
+                print_debug_hex32(register_values[i]);
+                print_debug(" <-");
+                print_debug_hex32(register_values[i+2]);
+                print_debug("\r\n");
+#endif
+                dev = register_values[i] & ~0xff;
+                where = register_values[i] & 0xff;
+                reg = pci_read_config32(dev, where);
+                reg &= register_values[i+1];
+                reg |= register_values[i+2];
+                pci_write_config32(dev, where, reg);
+        }
+#endif
+//BY LYH END
 
 #if 1
 	print_debug("done\r\n");

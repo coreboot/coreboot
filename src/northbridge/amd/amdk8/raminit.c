@@ -1249,7 +1249,14 @@ static void order_dimms(const struct mem_controller *ctrl)
 		tom |= (1 << (canidate + 24));
 
 		/* Recompute the cs base register value */
-		csbase = (tom << 21) | 1;
+#if 1  // BY LYH  Need to count from 0 for every memory controller
+		csbase = ((tom - (base_k>>15))<< 21) | 1;
+		print_debug("csbase=");
+		print_debug_hex32(csbase);
+		print_debug("\r\n");
+#else  //BY LYH END
+               csbase = (tom << 21) | 1;
+#endif
 
 		/* Increment the top of memory */
 		tom += size;
@@ -1276,6 +1283,14 @@ static void order_dimms(const struct mem_controller *ctrl)
 	print_debug("\r\n");
 #endif
 	route_dram_accesses(ctrl, base_k, tom_k);
+
+#if 0 //BY LYH
+	if(ctrl->node_id==1) {
+		pci_write_config32(ctrl->f2, DRAM_CSBASE, 0x00000001);
+	
+	}	
+#endif 
+
 	set_top_mem(tom_k);
 }
 
@@ -2224,12 +2239,12 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		print_debug_hex32(dcl);
 		print_debug("\r\n");
 #endif
-#if 1
+#if 0
 		dcl &= ~DCL_DimmEccEn;
 #endif		
 #warning "FIXME set the ECC type to perform"
 #warning "FIXME initialize the scrub registers"
-#if 0
+#if 1
 		if (dcl & DCL_DimmEccEn) {
 			print_debug("ECC enabled\r\n");
 		}
@@ -2260,7 +2275,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		} else {
 			print_debug(" done\r\n");
 		}
-#if 0
+#if 1
 		if (dcl & DCL_DimmEccEn) {
 			print_debug("Clearing memory: ");
 			loops = 0;

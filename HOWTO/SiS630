@@ -164,6 +164,9 @@ o	You now need to figure out where you want to put your build images.
 
 	# We're using disk on chip. Tell it where to find the docipl code
 	docipl northsouthbridge/sis/630
+	# Tell Config that we're going to use DOC Millenium as the source
+	# of the compressed image
+	option USE_DOC_MIL
 
 
 	

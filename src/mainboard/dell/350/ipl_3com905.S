@@ -31,9 +31,55 @@
 
 #include "ipl.h"
 
+.org 0xfe000
 .code16
-.org 0xfe00
+_start:	jmp _realstart
+gdt:	 //GDT entry 0 (null segment)
+	.byte 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+	.byte 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+	// GDT 1
+	.word	0xffff, 0x0000		/* flat code segment */
+	.byte	0x0, 0x9a, 0xcf, 0x0	
+	
+	.word	0xffff, 0x0000		/* flat data segment */
+	.byte	0x0, 0x92, 0xcf, 0x0	
 
+gdtptr:
+	.word	4*8-1
+	.long	gdt		/* we know the offset */
+	.long 0
+
+_realstart:	
+
+	cli
+	movw	%cs, %ax
+	movw	%ax, %es
+
+	.byte 0x66 /* prefix */
+	.byte 0x26
+	.byte 0x0f, 0x01, 0x16 /* lgdt [es:offset]*/
+	.word  gdtptr -  EXT(_start) /* offset in segment */
+
+	movl	%cr0, %eax
+	andl	$0x7FFAFFD1, %eax /* PG,AM,WP,NE,TS,EM,MP = 0 */
+	orl	$0x60000001, %eax /* CD, NW, PE = 1 */
+	movl	%eax, %cr0
+
+	/* invalidate the cache */
+	invd
+	data32	ljmp	$0x10, $.Lprotected
+
+.Lprotected:
+	.code32
+	movw	$0x18, %bx
+	movw	%bx, %ds
+	movw	%bx, %es
+/*
+	movw	%bx, %fs
+	movw	%bx, %gs
+ */
+	movw	%bx, %ss
+// ALL CODE BELOW THIS POINT SUCKS
 dell350_3com905_start:
 	cli					# Disables the maskable
 						# hardware interrupts.

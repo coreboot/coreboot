@@ -1,0 +1,5717 @@
+diff -urN linux-2.4.12-official/arch/i386/kernel/process.c linux-2.4.12-linuxbios/arch/i386/kernel/process.c
+--- linux-2.4.12-official/arch/i386/kernel/process.c	Fri Oct  5 09:42:54 2001
++++ linux-2.4.12-linuxbios/arch/i386/kernel/process.c	Tue Nov  6 13:12:56 2001
+@@ -49,6 +49,131 @@
+ 
+ #include <linux/irq.h>
+ 
++#define CONFIG_LINUXBIOS_PM
++#ifdef CONFIG_LINUXBIOS_PM
++#include <linux/pci.h>
++void
++sis503_reset(struct pci_dev *dev)
++{
++	unsigned char b;
++	unsigned short acpi_base;
++
++	printk(KERN_ERR __FUNCTION__ ": starting reset operation. \n");
++
++	/* Enable ACPI by set B7 on Reg 0x40, LPC */
++	pci_read_config_byte(dev, 0x40, &b);
++	pci_write_config_byte(dev, 0x40, b | 0x80);
++	printk(KERN_ERR __FUNCTION__ ": enabled ACPI. \n");
++
++	/* get the ACPI base address for register 0x74,0x75 of LPC */
++	pci_read_config_word(dev, 0x74, &acpi_base);	
++	printk(KERN_ERR __FUNCTION__ ":acpi base: %x\n", acpi_base);
++
++	/* Set software watchdog timer init value */
++	outb(0x03, 0x4a + acpi_base);
++	printk(KERN_ERR __FUNCTION__ ": set the dog. \n");
++
++	printk(KERN_ERR __FUNCTION__ ": enabling dog. \n");
++	/* Software watchdog enable, issue PCIRST# when time expire */
++	outb(0x8f, 0x4b + acpi_base);
++
++	printk(KERN_ERR __FUNCTION__ ": We should reset soon. \n");
++}
++
++void
++sis503_off(struct pci_dev *dev)
++{
++	unsigned char b;
++	unsigned short acpi_base;
++
++	printk(KERN_ERR __FUNCTION__ ": starting reset operation. \n");
++	/* Enable ACPI by set B7 on Reg 0x40, LPC */
++	pci_read_config_byte(dev, 0x40, &b);
++	pci_write_config_byte(dev, 0x40, b | 0x80);
++	printk(KERN_ERR __FUNCTION__ ": enabled ACPI. \n");
++
++        /* get the ACPI base address for register 0x74,0x75 of LPC */
++	pci_read_config_word(dev, 0x74, &acpi_base);
++	printk (KERN_ERR __FUNCTION__ ":acpi base: %x\n", acpi_base);
++
++	/* ACPI Register 5, Bit 10-12, Sleeping Type,
++	   set to 101 -> S5, soft_off */
++	outb(0x14, 0x05 + acpi_base);
++	printk(KERN_ERR __FUNCTION__ ": DONE setting sleep type. \n");
++
++	/* ACPI Register 5, Bit 13, Sleep Enable */
++	outb(0x20 | 0x14, 0x05 + acpi_base);
++	printk(KERN_ERR __FUNCTION__ ": DONE sleep enable. \n");
++}
++
++struct pci_dev * pci_find_device(unsigned int vendor, unsigned int device, 
++				 const struct pci_dev *from);
++
++struct linuxbios_control {
++	u_short vendor, device;
++	void (*poweroff)(struct pci_dev *);
++	void (*reset)(struct pci_dev *);
++};
++
++struct linuxbios_control controls[] = {
++	{PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, sis503_off, sis503_reset}
++};
++
++struct linuxbios_control *findcontrol(struct pci_dev **d)
++{
++	struct linuxbios_control *lb = controls, *retval = 0;
++	int i;
++
++	printk(KERN_ERR __FUNCTION__ ": Find vendor 0x%x device 0x%x\n", 
++	       lb->vendor, lb->device);
++	for(lb = controls, i = 0; 
++	    (i < sizeof(controls)/sizeof(controls[0])) && (! retval); 
++	    i++, lb++)
++	{
++		*d = pci_find_device(lb->vendor, lb->device, 0);
++		if (*d)
++			retval = lb;
++	}
++
++	printk(KERN_ERR __FUNCTION__ ": result of find is %p\n", retval);
++	return retval;
++}
++
++void
++linuxbios_poweroff(void)
++{
++	struct linuxbios_control *lb = 0;
++	struct pci_dev *dev;
++
++	printk(KERN_ERR __FUNCTION__ ": find an lb\n");
++	lb = findcontrol(&dev);
++
++	printk(KERN_ERR __FUNCTION__ ": found lb %p, call %p\n", 
++	       lb, lb ? lb->poweroff : 0);
++	if (lb && (lb->poweroff))
++		lb->poweroff(dev);
++	printk(KERN_ERR __FUNCTION__ ": Returning? Can't happen, I thought?\n");
++}
++
++void
++linuxbios_reset(void)
++{
++	struct linuxbios_control *lb = 0;
++	struct pci_dev *dev;
++
++	printk(KERN_ERR __FUNCTION__ ": find an lb\n");
++	lb = findcontrol(&dev);
++
++	printk(KERN_ERR __FUNCTION__ ": found lb %p, call %p\n", 
++	       lb, lb ? lb->reset : 0);
++	if (lb && (lb->reset))
++		lb->reset(dev);
++	printk(KERN_ERR __FUNCTION__ ": Returning? Can't happen, I thought?\n");
++}
++
++#endif
++
++
+ asmlinkage void ret_from_fork(void) __asm__("ret_from_fork");
+ 
+ int hlt_counter;
+@@ -399,6 +524,9 @@
+ 	 */
+ 	smp_send_stop();
+ 	disable_IO_APIC();
++#endif
++#ifdef CONFIG_LINUXBIOS_PM
++	linuxbios_reset();
+ #endif
+ 
+ 	if(!reboot_thru_bios) {
+diff -urN linux-2.4.12-official/drivers/ide/sis5513.c linux-2.4.12-linuxbios/drivers/ide/sis5513.c
+--- linux-2.4.12-official/drivers/ide/sis5513.c	Sat Sep  8 00:28:38 2001
++++ linux-2.4.12-linuxbios/drivers/ide/sis5513.c	Tue Nov  6 13:12:56 2001
+@@ -236,6 +236,7 @@
+ 
+ 	byte reg4bh		= 0;
+ 	byte rw_prefetch	= (0x11 << drive->dn);
++	byte regval		= 0;
+ 
+ 	pci_read_config_byte(dev, 0x4b, &reg4bh);
+ 	if (drive->media != ide_disk)
+@@ -243,6 +244,24 @@
+ 	
+ 	if ((reg4bh & rw_prefetch) != rw_prefetch)
+ 		pci_write_config_byte(dev, 0x4b, reg4bh|rw_prefetch);
++
++	switch(host_dev->device) {
++	case PCI_DEVICE_ID_SI_530:
++	case PCI_DEVICE_ID_SI_540:
++	case PCI_DEVICE_ID_SI_620:
++	case PCI_DEVICE_ID_SI_630:
++	case PCI_DEVICE_ID_SI_730:
++	        /* set PCI read request threshold to 50 % full */
++	        pci_read_config_byte(dev, 0x48, &regval);
++	        pci_write_config_byte(dev, 0x48, (regval & 0xF0) | 0x05);
++	        /* Enable Bus Master/PCI bust cycle and Fast post wirte */
++	        pci_read_config_byte(dev, 0x4A, &regval);
++	        pci_write_config_byte(dev, 0x4A, regval | 0xC0);
++	        /* Set prefetch Count to max value == 512 */
++	        pci_write_config_word(dev, 0x4C, 0x0200);   
++	        pci_write_config_word(dev, 0x4E, 0x0200);   
++ 	}
++
+ }
+ 
+ static void config_art_rwp_pio (ide_drive_t *drive, byte pio)
+diff -urN linux-2.4.12-official/drivers/mtd/devices/docprobe.c linux-2.4.12-linuxbios/drivers/mtd/devices/docprobe.c
+--- linux-2.4.12-official/drivers/mtd/devices/docprobe.c	Fri Oct  5 06:14:59 2001
++++ linux-2.4.12-linuxbios/drivers/mtd/devices/docprobe.c	Tue Nov  6 13:12:56 2001
+@@ -39,7 +39,7 @@
+    a Millennium enough that they go through and work out what the 
+    difference is :)
+ */
+-#define DOC_SINGLE_DRIVER
++#undef DOC_SINGLE_DRIVER
+ 
+ #include <linux/config.h>
+ #include <linux/kernel.h>
+diff -urN linux-2.4.12-official/drivers/video/sis/Makefile linux-2.4.12-linuxbios/drivers/video/sis/Makefile
+--- linux-2.4.12-official/drivers/video/sis/Makefile	Tue Oct  9 01:46:49 2001
++++ linux-2.4.12-linuxbios/drivers/video/sis/Makefile	Tue Nov  6 13:12:56 2001
+@@ -4,11 +4,28 @@
+ 
+ O_TARGET := sisfb.o
+ 
+-export-objs := sis_main.o
++# SiS 530/620
++#obj-y  := sisfb_lite.o sisfb_legacy_init.o sisfb_530_init.o sisfb_530_core.o sisfb_530_accel.o
++
++# SiS 540/630
++#obj-y  := sisfb_lite.o sisfb_accel.o sisfb_legacy_init.o sisfb_300_init.o \
++#	sisfb_300_core.o sisfb_530_accel.o
++
++# SiS 550
++#obj-y  := sisfb_lite.o sisfb_accel.o sisfb_legacy_init.o sisfb_315_init.o \
++#	sisfb_300_core.o sisfb_315_accel.o
++
++#obj-y  := sisfb_lite.o sisfb_accel.o sisfb_legacy_init.o sisfb_300_init.o \
++#	sisfb_300_core.o sisfb_530_accel.o \
++#	sisfb_315_init.o sisfb_315_accel.o
++
++obj-$(CONFIG_FB_SIS)		+= sisfb_lite.o sisfb_accel.o sisfb_legacy_init.o
++obj-$(CONFIG_FB_SIS_300)	+= sisfb_300_init.o sisfb_300_core.o sisfb_530_accel.o
++obj-$(CONFIG_FB_SIS_315)	+= sisfb_315_init.o sisfb_300_core.o sisfb_315_accel.o
+ 
+-obj-y  := sis_main.o sis_300.o sis_301.o
+ obj-m  := $(O_TARGET)
+ 
+ include $(TOPDIR)/Rules.make
+ 
+-
++clean:
++	rm -f core *.o *.a *.s
+diff -urN linux-2.4.12-official/drivers/video/sis/sisfb_300_core.c linux-2.4.12-linuxbios/drivers/video/sis/sisfb_300_core.c
+--- linux-2.4.12-official/drivers/video/sis/sisfb_300_core.c	Thu Jan  1 08:00:00 1970
++++ linux-2.4.12-linuxbios/drivers/video/sis/sisfb_300_core.c	Tue Nov  6 13:12:56 2001
+@@ -0,0 +1,580 @@
++/* sisfb_300_core.c: Setting Video Mode for SiS 540/550/630/730 Integrated VGA
++ *
++ * Copyright 2001 Ollie Lho <ollie@sis.com.tw>
++ *
++ *	This program is free software; you can redistribute it and/or modify
++ *	it under the terms of the GNU General Public License as published by
++ *	the Free Software Foundation; either version 2 of the License, or
++ *	(at your option) any later version.
++ *
++ *	This program is distributed in the hope that it will be useful,
++ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *	GNU General Public License for more details.
++ *
++ *	You should have received a copy of the GNU General Public License
++ *	along with this program; if not, write to the Free Software
++ *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
++ *
++ *
++ * This driver is implemented by the Author for his own personal interests and is NOT a
++ * commitment NOR supported officially by Silicon Integrated Systems Corp. Please direct
++ * any bug report/question to the Author and don't bother SiS Technical Support Personell.
++ *
++ *
++ * Reference:
++ *	1. Glamour Design Guideline V0.8
++ *	2. Programmer's Guide to the EGA, VGA, and Super VGA Card. Third Edition,
++ *	   Richard F. Ferraro, Addison-Welsey, Aug. 1994
++ *	3. sis86c201.c in XFree86 3.3.6
++ */
++
++#include "sisfb_lite.h"
++#include "sisfb_300_core.h"
++
++static void sisfb_get_clock(struct sisfb_info * sisfb, struct sisfb_clock_param * clock, int which);
++static void sisfb_set_clock(struct sisfb_info * sisfb, struct sisfb_clock_param * clock, int which);
++static void sisfb_set_memory_clocks(struct sisfb_info * sisfb);
++static int sisfb_get_memory_size(struct sisfb_info * sisfb);
++static void sisfb_set_crt1_crtc_regs(struct sisfb_info * sisfb, struct sisfb_par * par);
++static void sisfb_set_crt1_mode_regs(struct sisfb_info * sisfb, struct sisfb_par * par);
++static void sisfb_set_crt1_pitch(struct sisfb_info * sisfb, struct sisfb_par * par);
++static void sisfb_set_crt1_offset(struct sisfb_info * sisfb, struct sisfb_par * par);
++static void sisfb_set_crt1_vclk(struct sisfb_info * sisfb, struct sisfb_par * par);
++static int sisfb_set_fifo_thresholds(struct sisfb_info * sisfb, struct sisfb_par * par);
++
++/**
++ *	sisfb_get_clock: - Read the clock generator parameters
++ *	@sisfb: SiS Frame Buffer structure
++ *	@clock: Paramters of the clock generator (return)
++ *	@which: Which clock generator to be read.
++ *
++ *	Read the clock generator parameters to @clock form the hardware. The desired
++ *	clock generator is specified by @which. Valid values are MCLK for memory clock,
++ *	VCLK for video dot clock and ECLK for 3D engine.
++ */
++static void
++sisfb_get_clock(struct sisfb_info * sisfb, struct sisfb_clock_param * clock, int which)
++{
++	u8 data;
++
++	/* get divider and numerator */
++	data = sisfb_get_seq_reg(sisfb, which);
++	clock->divider   = ((data & 0x80) >> 7) + 1;
++	clock->numerator =  (data & ~0x80) + 1;
++
++	/* get denumerator and post scalar */
++	data = sisfb_get_seq_reg(sisfb, which + 1);
++	clock->denumerator = (data & 0x1F) + 1;
++	clock->post_scalar = ((data & 0xE0) >> 5) + 1;
++
++	/* get VCO gain */
++	data = sisfb_get_seq_reg(sisfb, which + 2);
++	clock->vco_gain = (data >> 7);
++}
++
++/**
++ *	sisfb_set_clock: - Set the clock generator parameters
++ *	@sisfb: SiS Frame Buffer structure
++ *	@clock: Paramters of the clock generator
++ *	@which: Which clock generator to be read.
++ *
++ *	Set the clock generator parameters @clock to the hardware. The desired clock
++ *	generator is specified by @which. Valid values are MCLK for memory clock,
++ *	VCLK for video dot clock and ECLK for 3D engine.
++ */
++static void
++sisfb_set_clock(struct sisfb_info * sisfb, struct sisfb_clock_param * clock, int which)
++{
++	u8 data;
++
++	/* set divider and numerator */
++	data  = (clock->numerator - 1) & 0x7F;
++	data |= (clock->divider   - 1) ? 0x80 : 0x00;
++	sisfb_set_seq_reg(sisfb, which, data);
++
++	/* set denumerator and post scalar */
++	data  = (clock->denumerator - 1) & 0x1F;
++	data |= (clock->post_scalar - 1) << 5;
++	sisfb_set_seq_reg(sisfb, which + 1, data);
++
++	/* set VCO gain */
++	data = clock->vco_gain ? 0x80 : 0x00;
++	sisfb_set_seq_reg(sisfb, which + 2, data);
++}
++
++/**
++ *	sisfb_set_memory_clocks: - Set memory bus clock rate
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Set the memory clocks for VGA core. Form SiS 300 and up, the VGA core has
++ *	2 independent clocks for 2D and 3D engines. We can set them to different
++ *	rates seperatly.
++ */
++extern unsigned long mclk, eclk;
++static void __devinit
++sisfb_set_memory_clocks(struct sisfb_info * sisfb)
++{
++	struct sisfb_clock_param clock;
++
++	/* set the clock rate according to the option */
++	sisfb_calc_clock_param(&clock, mclk);
++	sisfb_set_clock(sisfb, &clock, SIS300_MCLK);
++
++	sisfb_calc_clock_param(&clock, eclk);
++	sisfb_set_clock(sisfb, &clock, SIS300_ECLK);
++
++	/* read the clock rate back and show to user */
++	sisfb_get_clock(sisfb, &clock, SIS300_MCLK);
++	printk(KERN_INFO "sisfb_lite: 2D Memory Clock = %6ld KHz\n",
++	       sisfb_calc_clock_freq(&clock));
++
++	sisfb_get_clock(sisfb, &clock, SIS300_ECLK);
++	printk(KERN_INFO "sisfb_lite: 3D Memory Clock = %6ld KHz\n",
++	       sisfb_calc_clock_freq(&clock));
++}
++
++/**
++ *	sisfb_get_memory_size: - Get framebuffer memory size
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Return 0 on Success, -ENODEV if SMA is incorrectly/not configured
++ *
++ *	Get the framebuffer memory size from host controller. For SiS 540/630/730 and
++ *	SiS 550 Families, the Shared Memory Area (SMA) is enabled in Bit 7, size is
++ *	stored in Bit 4..6 of Register 0x63, Host Bridge (i.e. PCI 0:0.0).
++ *
++ *	The register is set by DRAM initialzation code during boot process and can
++ *	not be re-configured once the DRAM has been turned on. 
++ */
++#define SIS630_BANKENABLE 0x63
++static int __devinit
++sisfb_get_memory_size(struct sisfb_info * sisfb)
++{
++	struct pci_dev * host = NULL;
++	u8 dram_status, sma_size, sma_size_bits;
++
++	if ((host = pci_find_slot(0, 0)) == NULL) {
++		printk(KERN_EMERG "sisfb_lite: Can not find Host Controller !!!\n");
++		return -ENODEV;
++	}
++
++	/* get SMA configuration from register 0x63 */
++	pci_read_config_byte(host, SIS630_BANKENABLE, &dram_status);
++
++	/* SMA not enabled */
++	if ((dram_status & 0x80) != 0x80)
++		return -ENODEV;
++
++	/* compute Shared Menory Area (SMA) size in Mega Bytes */
++	sma_size_bits = (dram_status >> 4) & 0x7;
++	if (sma_size_bits > 5) {
++		// this is invalid!
++		printk(KERN_EMERG "sisfb_lite: Invalid Shared Memory Area Configuration !!!\n");
++		return -ENODEV;
++	}
++	sma_size = (2 << sma_size_bits);
++	sisfb->video_size_virt = sma_size * 1024 * 1024;
++
++	return 0;
++}
++
++static void
++sisfb_set_crt1_crtc_regs(struct sisfb_info * sisfb, struct sisfb_par * par)
++{
++	u16 htotal, hdispend, hsyncstart, hsyncend, hblankstart, hblankend;
++	u16 vtotal, vdispend, vsyncstart, vsyncend, vblankstart, vblankend;
++	u16 overflow, overflow_h1, overflow_h2, overflow_v;
++
++	/* first convert 'par' to "screen" unit */
++	htotal       = (par->htotal     >> 3) - 5;
++	hdispend     = (par->hdispend   >> 3) - 1;
++	hblankstart  = (par->hsyncstart >> 3) - 1;
++	hblankend    = (par->hsyncend   >> 3);
++	hsyncstart   = (par->hsyncstart >> 3);
++	hsyncend     = (par->hsyncend   >> 3);
++
++	vtotal       = par->vtotal     - 2;
++	vdispend     = par->vdispend   - 1;
++	vsyncstart   = par->vsyncstart;
++	vsyncend     = par->vsyncend;
++	vblankstart  = par->vsyncstart;
++	vblankend    = par->vsyncend   + 1;
++
++	/* the "overlow" bits (8:15) of the screen parameters are spread all over
++	 * various registers */ 
++	overflow     = 
++		((vsyncstart  & 0x200) >> 2) | /* Bit 7, Vertical Retrace Start Bit 9 */
++		((vdispend    & 0x200) >> 3) | /* Bit 6, Vertical Display End   Bit 9 */
++		((vtotal      & 0x200) >> 4) | /* Bit 5, Vertical Total         Bit 9 */
++		0x10                         | /* Bit 4, line compare           Bit 8 */
++		((vblankstart & 0x100) >> 5) | /* Bit 3, Vertical Blank   Start Bit 8 */
++		((vsyncstart  & 0x100) >> 6) | /* Bit 2, Vertical Retrace Start Bit 8 */
++		((vdispend    & 0x100) >> 7) | /* Bit 1, Vertical Display End   Bit 8 */
++		((vtotal      & 0x100) >> 8);  /* Bit 0, Vertical Total         Bit 8 */
++
++	overflow_v  =
++		((vsyncend    & 0x010) << 1) | /* Bit 5, Vertical Retrace End   Bit  4 */
++		((vblankend   & 0x100) >> 4) | /* Bit 4, Vertical Blank   End   Bit  8 */
++		((vsyncstart  & 0x400) >> 7) | /* Bit 3, Vertical Retrace Start Bit 10 */
++		((vblankstart & 0x400) >> 8) | /* Bit 2, Vertical Blank   Start Bit 10 */
++		((vdispend    & 0x400) >> 9) | /* Bit 1, Vertical Display End   Bit 10 */
++		((vtotal      & 0x400) >> 10); /* Bit 0, Vertical Total         Bit 10 */
++
++	overflow_h1  =
++		((hsyncstart  & 0x300) >> 2) | /* Bit 6,7 Horizontal Retrace Start Bit 8,9 */
++		((hblankstart & 0x300) >> 4) | /* Bit 4,5 Horizontal Blank   Start Bit 8,9 */
++		((hdispend    & 0x300) >> 6) | /* Bit 2,3 Horizontal Display End   Bit 8,9 */
++		((htotal      & 0x300) >> 8);  /* Bit 0,1 Horizontal Total         Bit 8,9 */
++
++	overflow_h2  =
++		((hsyncend    & 0x020) >> 3) | /* Bit 2   Horizontal Retrace End Bit 5   */
++		((hblankend   & 0x0C0) >> 6);  /* Bit 0,1 Horizontal Blank   End Bit 6,7 */
++
++	/* write 'par' to hardware registers, Standard VGA part, low order bits */
++	sisfb_set_crtc_reg(sisfb, 0x00, htotal);
++	sisfb_set_crtc_reg(sisfb, 0x01, hdispend);
++	sisfb_set_crtc_reg(sisfb, 0x02, hblankstart);
++	sisfb_set_crtc_reg(sisfb, 0x03,
++			   0x80 |               /* Bit 7, Enable Vertical Retrace Start/End */
++			   (hblankend & 0x1f)); /* Bit 0:4,  Horizontal Blank  End Bit 0:4  */
++	sisfb_set_crtc_reg(sisfb, 0x04, hsyncstart);
++	sisfb_set_crtc_reg(sisfb, 0x05,
++			   (hblankend & 0x20) << 2 | /* Bit 7,   Horizontal Blank   End Bit 5   */
++			   (hsyncend & 0x1f));       /* Bit 0:4, Horizontal Retrace End Bit 0:4 */
++	sisfb_set_crtc_reg(sisfb, 0x06, vtotal);
++	sisfb_set_crtc_reg(sisfb, 0x09,
++			   0x40 |                       /* Bit 6, line compare         Bit 9 */
++			   (vblankstart & 0x200) >> 4); /* Bit 5, Vertical Blank Start Bit 9 */
++	sisfb_set_crtc_reg(sisfb, 0x10, vsyncstart);
++	sisfb_set_crtc_reg(sisfb, 0x11, (vsyncend & 0x0F) | 0x20);
++	sisfb_set_crtc_reg(sisfb, 0x12, vdispend);
++	sisfb_set_crtc_reg(sisfb, 0x15, vblankstart);
++	sisfb_set_crtc_reg(sisfb, 0x16, vblankend);
++
++	/* Standard VGA part, overflow bits */
++	sisfb_set_crtc_reg(sisfb, 0x07, overflow);
++
++	/* Extended Registers, overflow bits */
++	sisfb_set_seq_reg(sisfb, 0x0A, overflow_v);
++	sisfb_set_seq_reg(sisfb, 0x0B, overflow_h1);
++	sisfb_set_seq_reg(sisfb, 0x0C, overflow_h2);
++}
++
++/**
++ *	sisfb_set_crt1_mode_regs: - Set misc video mode registers
++ *	@sisfb: SiS Frame Buffer structure
++ *	@par: hardware specific parameters
++ *
++ *	Set color depth and enable 2D engine. The display line width register SR 0x10
++ *	is also enabled.
++ */
++static void
++sisfb_set_crt1_mode_regs(struct sisfb_info * sisfb, struct sisfb_par * par)
++{
++	u8 tmp;
++
++	/* enable Enhanced Graphics Mode and Auto Line Width Counter */
++	tmp = 0x03;
++	switch (par->bits_per_pixel) {
++	case 32:
++		tmp |= 0x10;
++		break;
++	case 16:
++		tmp |= 0x08;
++		break;
++	case 8:
++	default:
++		break;
++	}
++	sisfb_set_seq_reg(sisfb, 0x06, tmp);
++
++	/* enable 2D engine */
++	sisfb_set_seq_reg(sisfb, 0x1E, 0x40);
++}
++
++/**
++ *	sisfb_set_crt1_pitch: - Set screen pitch registers for CRT1
++ *	@sisfb: SiS Frame Buffer structure
++ *	@par: hardware specific parameters
++ *
++ *	Set the screen pitch registers for CRT1. Screen pitch refers to the memory address
++ *	difference between two dots of the same col on two vertically neighboring scan lines.
++ *	The CRTC 0x13 is called "offset register" in VGA literatures. SiS VGA also defines
++ *	its own screen line width register SR 0x10 which is enabled by Bit 0 of SR 0x06.
++ */
++static void
++sisfb_set_crt1_pitch(struct sisfb_info * sisfb, struct sisfb_par * par)
++{
++	u16 pitch = par->line_length >> 3;
++	u8 line_length = ((par->line_length + 63) >> 6) + 1;
++
++	/* disable line compare */
++	sisfb_set_seq_reg(sisfb, 0x0F, 0x08);
++
++	/* screen pitch, in units of double word */
++	sisfb_set_crtc_reg(sisfb, 0x13, pitch & 0xFF);
++	sisfb_set_seq_reg(sisfb,  0x0E, (pitch >> 8) & 0x0F);
++
++	/* display line length, in units of 64 bytes */
++	sisfb_set_seq_reg(sisfb, 0x10, line_length);
++}
++
++/**
++ *	sisfb_set_crt1_offset: - Set screen start offset register for CRT1
++ *	@sisfb: SiS Frame Buffer structure
++ *	@par: hardware specific parameters
++ *
++ *	Set the screen start offset registers for CRT1. Screen start offset refers to the
++ *	memory address of the pixel (0, 0) on the current vitrual screen. This address
++ *	is calculated when the virtual screen is panned by pan_display() or when the var
++ *	is changed and decoded by decode_var(). This value is stored in the
++ *	par->screen_offset member of the current display. par->screen_offset is in the
++ *	unit of byte while the VGA hardware uses Double Word.
++ */
++static void
++sisfb_set_crt1_offset(struct sisfb_info * sisfb, struct sisfb_par * par)
++{
++	u32 offset;
++
++	/* convert offset address from units of byte to double word */
++	offset = par->screen_offset >> 2;
++
++	/* set screen start memory address in units of double word,
++	   bit 23:16 in SR0D, bit 15:8 in CR0C, bit 7:0 in CR0D */
++	sisfb_set_crtc_reg(sisfb, 0x0C, offset >> 8);
++	sisfb_set_crtc_reg(sisfb, 0x0D, offset);
++	sisfb_set_seq_reg(sisfb, 0x0D, offset >> 16);
++}
++
++/**
++ *	sisfb_set_crt1_vclk: - Set video dot clock frequence for CRT1
++ *	@sisfb: SiS Frame Buffer structure
++ *	@par: hardware specific parameters
++ *
++ *	Select normal clock generator as DCLK source. Set the clock frequence as
++ *	specified in @par->dot_clock. Also set the DAC slew rate according to DCLK
++ *	frequence.
++ */
++static void
++sisfb_set_crt1_vclk(struct sisfb_info * sisfb, struct sisfb_par * par)
++{
++	/* FixME: Use clock_param for par->dot_clock */
++	u32 vclk = par->dot_clock / 1000;
++	u8 tmp = 0x10, tmp1;
++	struct sisfb_clock_param clock;
++
++	/* Select normal DCLK clock generator */
++	sisfb_set_seq_reg(sisfb, 0x31, 0x00);
++
++	/* set vclk frequence, FixME: do error check  */
++	sisfb_calc_clock_param(&clock, vclk);
++	sisfb_set_clock(sisfb, &clock, SIS300_DCLK);
++
++	sisfb_get_clock(sisfb, &clock, SIS300_DCLK);
++	printk(KERN_INFO "sisfb_lite: Video Dot Clock = %6ld KHz\n",
++	       sisfb_calc_clock_freq(&clock));
++
++	/* set DAC slew rate, the statesment in Glamour Design Guideline V.08
++	 * is totally contracted to the true hardware implementation */
++	if (vclk < 100000)
++		tmp |= 0x03;
++	else if (vclk < 200000)
++		tmp |= 0x02;
++	else if (vclk < 250000)
++		tmp |= 0x01;
++
++	/* FixME: Set half DCLK if VCLK is too high,
++	 * need to be updated for SiS 315 */
++	if (vclk > 150000) {
++		tmp  |= 0x80;
++		tmp1  = 0x08;
++	} else {
++		tmp &= 0x7F;
++		tmp1 = 0x00;
++	}
++
++	sisfb_set_seq_reg(sisfb, 0x07, tmp);
++	sisfb_set_seq_reg(sisfb, 0x32, tmp1);
++}
++
++static u8 latency_factor[] = {
++	97, 88, 86, 79, 77,  0,
++	 0, 87, 85, 78, 76, 54,
++	80, 72, 69, 63, 61,  0,
++	 0, 70, 68, 62, 59, 37, 
++};
++
++static int
++sisfb_set_fifo_thresholds(struct sisfb_info * sisfb, struct sisfb_par * par)
++{
++	u32 vclk = par->dot_clock / 1000;
++	unsigned int i = 0, threshold;
++	int grant_timer, fg_queue, bg_queue;
++	struct pci_dev * host = NULL;
++	u8 queue, srf;
++
++	if ((host = pci_find_slot(0, 0)) == NULL) {
++		printk(KERN_EMERG "sisfb_lite: Can not find Host Controller !!!\n");
++		return -ENODEV;
++	}
++
++	pci_read_config_byte(host, 0x53, &queue);
++	queue &= 0xF0;
++
++	for (grant_timer = 1; grant_timer >= 0; grant_timer--) {
++		for (fg_queue = 0; fg_queue <= 5; fg_queue++) {
++			for (bg_queue = 0; bg_queue <= 1; bg_queue++) {
++				threshold = latency_factor[i++] * vclk;
++				threshold *= (par->bits_per_pixel >> 3);
++				threshold /= (mclk * 16);
++				if (threshold > 0x13 || threshold == 0x00)
++					;
++				else
++					goto set_threshold;
++			}
++		}
++	}
++
++	return -EINVAL;
++
++ set_threshold:
++	/* write froeground and backgroudn queue, GUI grant timer */
++	queue |= ((fg_queue << 1) | bg_queue);
++	pci_write_config_byte(host, 0x53, queue);
++	pci_write_config_byte(host, 0xA3, grant_timer);
++
++	/* Write CRT/CPU threshold low, CRT/Engine threshold high */
++	threshold += 1;
++	srf = sisfb_get_seq_reg(sisfb, 0x0F);
++	sisfb_set_seq_reg(sisfb, 0x08, ((threshold & 0x0F) << 4 | 0x0F));
++	sisfb_set_seq_reg(sisfb, 0x0F, ((threshold & 0x10) << 1 | srf ));
++
++	/* Write CRT/CPU threshold high */
++	threshold += 3;
++	if (threshold > 0x0F)
++		threshold = 0x0F;
++	sisfb_set_seq_reg(sisfb, 0x09, (threshold & 0x0F));
++
++	return 0;
++}
++
++/**
++ *	sisfb_config_memory: - Configure Framebuffer Memory
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Return 0 on Success, -ENODEV on Failure
++ *
++ *	Configure the frame buffer memory.
++ *	If Memory Type Range Registers (MTRR) is configured in the kernel. We set the
++ *	Frame Buffer area as "Write Combine" to boost the perfromance.
++ */
++int __devinit
++sisfb_config_memory(struct sisfb_info * sisfb)
++{
++	int ret;
++	u8 data = 0;
++
++	/* Check if we have SMA configured correctly and HOW MUCH */
++	if ((ret = sisfb_get_memory_size(sisfb)) < 0)
++		return ret;
++
++	/* Enable PCI Relocated IO, Memory Mapped IO and Linear Framebuffer Addressing */
++	//data  = SIS300_PCI_VGA_MEM_DISABLE | SIS300_PCI_VGA_IO_DISABLE;
++	data = SIS300_PCI_PCI_IO_ENABLE | SIS300_PCI_PCI_MMIO_ENABLE;
++	data |= SIS300_PCI_LINEAR_ENABLE;
++	sisfb_set_seq_reg(sisfb, SIS300_PCI_ADDR_SET, data);
++
++	/* ioremap MMIO and Framebuffer Area */
++	sisfb->video_base_virt = 
++		ioremap(sisfb->video_base_phy, sisfb->video_size_virt);
++	sisfb->mmio_base_virt  =
++		ioremap(sisfb->mmio_base_phy, sisfb->mmio_size_phy);
++
++	printk(KERN_INFO "sisfb_lite: framebuffer at 0x%lx, mapped to 0x%p, size %lu KB\n",
++	       sisfb->video_base_phy, (char *) sisfb->video_base_virt,
++	       sisfb->video_size_virt / 1024);
++
++	sisfb_set_memory_clocks(sisfb);
++
++#ifdef CONFIG_MTRR
++	/* Use MTRR to boost performance */
++	sisfb->mtrr = mtrr_add(sisfb->video_base_phy, sisfb->video_size_virt,
++			       MTRR_TYPE_WRCOMB, 1);
++	if (sisfb->mtrr >= 0) {
++		printk(KERN_INFO "sisfb_lite: Turned on MTRR Write Combine for framebuffer\n");
++	}
++#endif /* CONFIG_MTRR */
++
++	return 0;
++}
++
++/**
++ *	sisfb_pan_var: - Set screen start offset
++ *	@var: Frame Buffer changable part
++ *	@info: Frame Buffer structure
++ *
++ *	Set the screen start offset accroding to xoffset, yoffset, xres_virtual
++ *
++ *	Virtual Screen:
++ *
++ *	-------------------------------------------> xres_vitrual
++ *	|  O
++ *	|  -----------------------------------------
++ *	|  |          O'                           |
++ *	|  |           ------------------------    |
++ *	|  |           |                      |    |
++ *	|  |           |                      |    |
++ *	|  |           |                      |    |
++ *	|  |           |                      |    |
++ *	|  |           |                      |    |
++ *	|  |           |                      |    |
++ *	|  |           |                      |    |
++ *	|  |           ------------------------    |
++ *	|  |                                   D'  |
++ *	|  |                                       |
++ *	|  |                                       |
++ *	v  ----------------------------------------- D
++ *    yres_virtual
++ */
++int
++sisfb_pan_display_300(struct fb_var_screeninfo * var, struct sisfb_info * sisfb)
++{
++	u32 offset;
++
++	/* offset address in units of "pixels" */
++	offset = var->yoffset * var->xres_virtual + var->xoffset;
++	/* offset address in units of byte */
++	offset = offset * (var->bits_per_pixel >> 3);
++
++	/* update screen_offset member of current par structure */
++	sisfb->current_par.screen_offset = offset;
++
++	sisfb_set_crt1_offset(sisfb, &sisfb->current_par);
++
++	return 0;
++}
++
++/*
++ *  Set the hardware according to 'par'.
++ */
++void
++sisfb_set_par_300(struct sisfb_par *par, struct sisfb_info * sisfb)
++{
++	sisfb_display_off(sisfb);
++
++	/* Standard VGA CRTC Registers */
++	sisfb_set_crt1_crtc_regs(sisfb, par);
++
++	/* Extended Registers, other stuff */
++	sisfb_set_crt1_pitch(sisfb, par);
++	sisfb_set_crt1_offset(sisfb, par);
++	sisfb_set_crt1_vclk(sisfb, par);
++	sisfb_set_crt1_mode_regs(sisfb, par);
++	sisfb_set_fifo_thresholds(sisfb, par);
++
++	/* makes 'par' values as the current_par of this framebuffer */
++	sisfb->current_par = *par;
++
++	sisfb_display_on(sisfb);
++}
+diff -urN linux-2.4.12-official/drivers/video/sis/sisfb_300_core.h linux-2.4.12-linuxbios/drivers/video/sis/sisfb_300_core.h
+--- linux-2.4.12-official/drivers/video/sis/sisfb_300_core.h	Thu Jan  1 08:00:00 1970
++++ linux-2.4.12-linuxbios/drivers/video/sis/sisfb_300_core.h	Tue Nov  6 13:12:56 2001
+@@ -0,0 +1,24 @@
++#ifndef __SISFB_300_CORE__
++#define __SISFB_300_CORE__
++
++#define SIS300_PCI_ADDR_SET		0x20
++#define SIS300_PCI_PCI_MMIO_ENABLE	0x01
++#define SIS300_PCI_VGA_MEM_DISABLE	0x04
++#define SIS300_PCI_VGA_IO_DISABLE		0x10
++#define SIS300_PCI_PCI_IO_ENABLE		0x20
++#define SIS300_PCI_LINEAR_ENABLE		0x80
++
++#define TURBO_QUEUE_AREA_SIZE 0x80000	/* 512K */
++#define HW_CURSOR_AREA_SIZE   0x1000	/* 4K */
++
++enum clock_gen_base {
++	SIS300_MCLK = 0x28,
++	SIS300_DCLK = 0x2B,
++	SIS300_ECLK = 0x2E
++};
++
++extern int sisfb_config_memory(struct sisfb_info * sisfb);
++extern int sisfb_pan_display_300(struct fb_var_screeninfo * var, struct sisfb_info * sisfb);
++extern void sisfb_set_par_300(struct sisfb_par *par, struct sisfb_info * sisfb);
++
++#endif /* __SISFB_300_CORE__ */
+diff -urN linux-2.4.12-official/drivers/video/sis/sisfb_300_init.c linux-2.4.12-linuxbios/drivers/video/sis/sisfb_300_init.c
+--- linux-2.4.12-official/drivers/video/sis/sisfb_300_init.c	Thu Jan  1 08:00:00 1970
++++ linux-2.4.12-linuxbios/drivers/video/sis/sisfb_300_init.c	Tue Nov  6 13:12:56 2001
+@@ -0,0 +1,203 @@
++/* sisfb_300_init.c: Initialization Code for SiS 540/630/730 Integrated VGA
++ *
++ * Copyright 2001 Ollie Lho <ollie@sis.com.tw>
++ *
++ *	This program is free software; you can redistribute it and/or modify
++ *	it under the terms of the GNU General Public License as published by
++ *	the Free Software Foundation; either version 2 of the License, or
++ *	(at your option) any later version.
++ *
++ *	This program is distributed in the hope that it will be useful,
++ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *	GNU General Public License for more details.
++ *
++ *	You should have received a copy of the GNU General Public License
++ *	along with this program; if not, write to the Free Software
++ *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
++ *
++ *
++ * This driver is implemented by the Author for his own personal interests and is NOT a
++ * commitment NOR supported officially by Silicon Integrated Systems Corp. Please direct
++ * any bug report/question to the Author and don't bother SiS Technical Support Personell.
++ *
++ *
++ * Reference:
++ *	1. Glamour Design Guideline V0.8
++ */
++
++#include "sisfb_lite.h"
++#include "sisfb_300_core.h"
++#include "sisfb_530_accel.h"
++
++static void sisfb_set_pci_agp_timming(struct sisfb_info * sisfb);
++static void sisfb_enable_turbo_queue(struct sisfb_info * sisfb);
++static void sisfb_fake_vgabios(struct sisfb_info * sisfb);
++
++/* Default values for PCI/AGP Timming control registers: SR21-SR25, SR32 */
++static u8 pci_timming[] __initdata = {
++	0xB6, 0xBA, 0xF6, 0x0D, 0x00, 0x11
++};
++
++/**
++ *	sisfb_set_pci_agp_timming: - Set AGP/PCI timming control registers
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Initialize PCI and AGP timming control registers. Most of them are
++ *	dumped form normal BIOS setting.
++ */
++static void __devinit
++sisfb_set_pci_agp_timming(struct sisfb_info * sisfb)
++{
++	u8 AGP, tmp;
++
++	/* SR3A, Hardware Trap III */
++	tmp = sisfb_get_seq_reg(sisfb, 0x3A);
++	if ((tmp & 0x30) == 0x30)
++		// PCI Mode
++		AGP = 0;
++	else
++		// AGP Mode;
++		AGP = 1;
++
++	tmp = pci_timming[0];
++	if (AGP == 0)
++		// Disable AGP Request High Priority
++		tmp &= ~0x10;
++	sisfb_set_seq_reg(sisfb, 0x21, tmp);
++
++	tmp = pci_timming[1];
++	if (AGP == 1)
++		// Enable PCI Burst memory write
++		tmp |= 0x20;
++	sisfb_set_seq_reg(sisfb, 0x22, tmp);
++
++	sisfb_set_seq_reg(sisfb, 0x23, pci_timming[2]);
++	sisfb_set_seq_reg(sisfb, 0x24, pci_timming[3]);
++	sisfb_set_seq_reg(sisfb, 0x25, pci_timming[4]);
++	sisfb_set_seq_reg(sisfb, 0x32, pci_timming[5]);
++}
++
++/**
++ *	sisfb_enable_turbo_queue: - Set Turbo Queue size and enable it
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Commands to the Graphics Engine (2D, 3D, etc) are buffered in
++ *	the Video Memory which is called Turbo Queue in SiS VGA Specs.
++ *	Usually this buffer area takes the last few KBs in the Video RAM.
++ */
++/* default turbo queue size == 64KB */
++static int tqueue_size = 0x10000;
++static void __devinit
++sisfb_enable_turbo_queue(struct sisfb_info * sisfb)
++{
++	u32 tqueue_pos;
++	u8 tqueue_status;
++
++	/* turbo queue position, in units of 64KB */
++	tqueue_pos = sisfb->video_size_virt - tqueue_size;
++	tqueue_pos /= 0x10000;
++
++	/* enable Turbo Tueue */
++	tqueue_status = 0x80 | (tqueue_pos >> 8);
++
++	sisfb_set_seq_reg(sisfb, 0x26, tqueue_pos);
++	sisfb_set_seq_reg(sisfb, 0x27, tqueue_status);
++
++	printk(KERN_INFO "sisfb_lite: Use %dKB off-screen memory for Turbo Queue\n",
++	       tqueue_size / 1024);
++}
++
++/**
++ *	sisfb_fake_vgabios: - Pretend we still have VGA BIOS
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Many of the Extended Sequencer Registers and Externded CRT Controller Registers
++ *	are used by traditional System/VGA BIOS and Drivers to pass information back and
++ *	forth. We have to fake some resonable values for these registers in order to let
++ *	some stupid applications like XFree 3.3.6 work properly.  
++ */
++static void __devinit
++sisfb_fake_vgabios(struct sisfb_info * sisfb)
++{
++	int i;
++	u8 data, sma_size;
++	u8 fake_bios[] = {0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F};
++
++	/* SR 14 is used as "protocol" by VGA BIOS and XFree86 for passing SMA size
++	   and bus width, we have to fake them :~-( */
++	sma_size = sisfb->video_size_virt >> 21;
++	data = fake_bios[ffs(sma_size) - 1];
++	data |= 0x40;	// 64-bit bus
++	sisfb_set_seq_reg(sisfb, 0x14, data);
++
++	/* SR16-SR19 are used as "protocol" by VGA BIOS and System BIOS for passing
++	   information about TV-out, we have to clear them :~-( */
++	for (i = 0x16; i <= 0x19; i++) {
++		sisfb_set_seq_reg(sisfb, i, 0x00);
++	}
++
++	/* SR1A are used as "protocol" by VGA BIOS and System BIOS for passing
++	   information about M/B frequence, we have to fake them :~-( */
++	sisfb_set_seq_reg(sisfb, 0x1A, 0x12);
++
++	/* set MD out enable to 1T (what the hell ??) */
++	sisfb_set_seq_reg(sisfb, 0x15, 0x01);
++
++	/* SR1B, SR1C are not used by SiS 630 (used by SiS 300 ??),
++	   clear them. */
++	sisfb_set_seq_reg(sisfb, 0x1B, 0x00);
++	sisfb_set_seq_reg(sisfb, 0x1C, 0x00);
++
++	/* CR30-CR37 are used by VGA BIOS to pass information
++	   about SiS 301, clean them */
++	for (i = 0x30; i <= 0x37; i++) {
++		sisfb_set_crtc_reg(sisfb, i, 0x00);
++	}
++}
++
++/**
++ *	sisfb_init_300: - Initialize the SiS300 VGA Core in SiS300, SiS630,540,730
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Return 0 on Success, -ENODEV if SMA is incorrectly/not configured
++ *
++ *	SiS 300 VGA core is used in SiS540/630/730 chipsets. This routine inits
++ *	the very SiS300 specific stuff.
++ */
++int __devinit
++sisfb_init_300(struct sisfb_info * sisfb)
++{
++	int ret;
++
++	if ((ret = sisfb_config_memory(sisfb)) < 0)
++		return ret;
++
++	sisfb_init_legacy_vga(sisfb);
++
++	/* set to High Speed DAC by default */
++	sisfb_set_seq_reg(sisfb, 0x07, 0x13);
++
++	/* Disable DAC pedestal */
++	sisfb_set_seq_reg(sisfb, 0x1F, 0x00);
++
++	sisfb_set_pci_agp_timming(sisfb);
++
++	/* disable power management mode */
++	sisfb_set_seq_reg(sisfb, 0x11, 0x0F);
++
++	/* set screen start memory address bit 23:16 to 0, bit 15:0 are in CR0C, CR0D */
++	sisfb_set_seq_reg(sisfb, 0x0D, 0x00);
++
++	sisfb_enable_turbo_queue(sisfb);
++
++	sisfb_fake_vgabios(sisfb);
++
++	/* set hardware specific functions */
++	sisfb->accelerator = &sis530_accelerator;
++	sisfb->set_par = sisfb_set_par_300;
++	sisfb->pan_display = sisfb_pan_display_300;
++	sisfb->set_disp = sisfb_set_dispsw_accel;
++
++	return 0;
++}
+diff -urN linux-2.4.12-official/drivers/video/sis/sisfb_300_video.h linux-2.4.12-linuxbios/drivers/video/sis/sisfb_300_video.h
+--- linux-2.4.12-official/drivers/video/sis/sisfb_300_video.h	Thu Jan  1 08:00:00 1970
++++ linux-2.4.12-linuxbios/drivers/video/sis/sisfb_300_video.h	Tue Nov  6 13:12:56 2001
+@@ -0,0 +1,153 @@
++#ifndef __SISFB_300_VIDEO__
++#define __SISFB_300_VIDEO__
++
++#ifdef __KERNEL__
++#include "sisfb_lite.h"
++#endif __KERNEL__
++
++enum sis300_video_registers {
++	SIS300_VIDEO_PASSWORD = 0x00,
++
++	/* Video Window Horizonal Start/End */
++	SIS300_VIDEO_WIN_HOR_DISP_START_LOW	= 0x01,
++	SIS300_VIDEO_WIN_HOR_DISP_END_LOW	= 0x02,
++	SIS300_VODEO_WIN_HOR_OVERFLOW		= 0x03,
++
++	/* Video Window Horizonal Start/End */
++	SIS300_VIDEO_WIN_VER_DISP_START_LOW	= 0x04,
++	SIS300_VIDEO_WIN_VER_DISP_END_LOW	= 0x05,
++	SIS300_VODEO_WIN_VER_OVERFLOW		= 0x06,
++
++	/* Y Plane (4:2:0) or YUV (4:2:2) buffer start address */
++	SIS300_VIDEO_Y_BUF_START_LOW		= 0x07,
++	SIS300_VIDEO_Y_BUF_START_MIDDLE		= 0x08,
++	SIS300_VIDEO_Y_HOR_START_HIGH		= 0x09,
++
++	/* U Plane (4:2:0) buffer start address */
++	SIS300_VIDEO_U_BUF_START_LOW		= 0x0A,
++	SIS300_VIDEO_U_BUF_START_MIDDLE		= 0x0B,
++	SIS300_VIDEO_U_HOR_START_HIGH		= 0x0C,
++
++	/* U Plane (4:2:0) buffer start address */
++	SIS300_VIDEO_V_BUF_START_LOW		= 0x0D,
++	SIS300_VIDEO_V_BUF_START_MIDDLE		= 0x0E,
++	SIS300_VIDEO_V_HOR_START_HIGH		= 0x0F,
++
++	/* Ptich for Y, UV Planes */
++	SIS300_VIDEO_Y_BUF_PITCH_LOW		= 0x10,
++	SIS300_VIDEO_UV_BUF_PITCH_LOW		= 0x11,
++	SIS300_VIDEO_Y_UV_BUF_PITCH_HIGH	= 0x12,
++
++	/* FixMe: No idea what this is */
++	SIS300_VIDEO_Y_BUF_PRESET_LOW		= 0x13,
++	SIS300_VIDEO_Y_BUF_PRESET_MIDDLE	= 0x14,
++
++	SIS300_VIDEO_UV_BUF_PRESET_LOW		= 0x15,
++	SIS300_VIDEO_UV_BUF_PRESET_MIDDLE	= 0x16,
++
++	SIS300_VIDEO_Y_UV_BUF_PRESET_HIGH	= 0x17,
++
++	/* Image Sacling control registers */
++	SIS300_VIDEO_HOR_POST_UP_SCALE_LOW	= 0x18,
++	SIS300_VIDEO_HOR_POST_UP_SCALE_HIGH	= 0x19,
++
++	SIS300_VIDEO_VER_UP_SCALE_LOW		= 0x1A,
++	SIS300_VIDEO_VER_UP_SCALE_HIGH		= 0x1B,
++
++	SIS300_VIDEO_SCALE_CONTROL		= 0x1C,
++
++	/* Playback line buffer control */
++	SIS300_VIDEO_PLAYBACK_THRESHOLD_LOW	= 0x1D,
++	SIS300_VIDEO_PLAYBACK_THRESHOLD_HIGH	= 0x1E,
++	SIS300_VIDEO_PLAYBACK_LINE_BUF_SIZE	= 0x1F,
++
++	/* Destination color key, RGB color space*/
++	SIS300_VIDEO_OVERLAY_COLORKEY_RED_MIN	= 0x20,
++	SIS300_VIDEO_OVERLAY_COLORKEY_GREEN_MIN	= 0x21,
++	SIS300_VIDEO_OVERLAY_COLORKEY_BLUE_MIN	= 0x22,
++	SIS300_VIDEO_OVERLAY_COLORKEY_RED_MAX	= 0x23,
++	SIS300_VIDEO_OVERLAY_COLORKEY_GREEN_MAX	= 0x24,
++	SIS300_VIDEO_OVERLAY_COLORKEY_BLUE_MAX	= 0x25,
++
++	/* Source color key, YUV color space */
++	SIS300_VIDEO_OVERLAY_CHROMAKEY_Y_MIN	= 0x26,
++	SIS300_VIDEO_OVERLAY_CHROMAKEY_U_MIN	= 0x27,
++	SIS300_VIDEO_OVERLAY_CHROMAKEY_V_MIN	= 0x28,
++	SIS300_VIDEO_OVERLAY_CHROMAKEY_Y_MAX	= 0x29,
++	SIS300_VIDEO_OVERLAY_CHROMAKEY_U_MAX	= 0x2A,
++	SIS300_VIDEO_OVERLAY_CHROMAKEY_V_MAX	= 0x2B,
++
++	/* Contrast Enhancement and Brightness control */
++	SIS300_VIDEO_CONTRAST_FACTOR		= 0x2C,
++	SIS300_VIDEO_BRIGHTNESS			= 0x2D,
++	SIS300_VIDEO_CONTRAST_ENHANCE_CONTROL	= 0x2E,
++
++	SIS300_VIDEO_KEY_OVERLAY_MODE		= 0x2F,
++
++	/* Misc Control, inclue YUV 422, YUV 420 selectrion */
++	SIS300_VIDEO_MISC_CONTROL_0		= 0x30,
++	SIS300_VIDEO_MISC_CONTROL_1		= 0x31,
++	SIS300_VIDEO_MISC_CONTROL_2		= 0x32
++};
++
++enum sis300_video_misc0_bits {
++	SIS300_ENABLE_OVERLAY		= 0x02,
++	SIS300_PIX_FMT_YVU420		= 0x0c,
++	SIS300_PIX_FMT_UYVY		= 0x08,
++	SIS300_PIX_FMT_YUYV		= 0x28,
++};
++
++#define SIS300_VIDEO_ADDR             0x02
++#define SIS300_VIDEO_DATA             0x03
++
++static inline void
++sisfb_set_video_reg(struct sisfb_info * sisfb, u8 index, u8 data)
++{
++	u16 port = sisfb->vga_io_base;
++
++	outb(index, port + SIS300_VIDEO_ADDR);
++	outb(data, port + SIS300_VIDEO_DATA);
++}
++
++static inline u8
++sisfb_get_video_reg(struct sisfb_info * sisfb, u8 index)
++{
++	u16 port = sisfb->vga_io_base;
++
++	outb(index, port + SIS00_VIDEO_ADDR);
++	return inb(port + SIS300_VIDEO_DATA);
++}
++
++/**
++ *	sisfb_lock_video_regs: - Lock the Video Acclerator Registers
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Lock Video Acclerator Registers by writing 0x21 (%SIS_PASSWD_LOCK) to
++ *	SIS300_VIDEO_PASSWORD register
++ */
++static inline void
++sisfb_lock_video_regs(struct sisfb_info * sisfb)
++{
++	u8 data;
++
++	/* lock the access to Video Accelerator Registers */
++	sisfb_set_video_reg(sisfb, SIS300_VIDEO_PASSWORD, SIS_PASSWD_LOCK);
++}
++
++/**
++ *	sisfb_unlock_video_regs: - Unlock the Video Acclerator Registers
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Unlock Video Acclerator Registers by writing 0x86 (%SIS_PASSWD_UNLOCK) to
++ *	SIS300_VIDEO_PASSWD register
++ */
++static inline void
++sisfb_unlock_video_regs(struct sisfb_info * sisfb)
++{
++	u8 data;
++
++	/* unlock the access to Video Accelerator Registers */
++	sisfb_set_video_reg(sisfb, SIS300_VIDEO_PASSWORD, SIS_PASSWD_UNLOCK);
++}
++
++#endif /* __SISFB_300_VIDEO__ */
+diff -urN linux-2.4.12-official/drivers/video/sis/sisfb_301_lcd.h linux-2.4.12-linuxbios/drivers/video/sis/sisfb_301_lcd.h
+--- linux-2.4.12-official/drivers/video/sis/sisfb_301_lcd.h	Thu Jan  1 08:00:00 1970
++++ linux-2.4.12-linuxbios/drivers/video/sis/sisfb_301_lcd.h	Tue Nov  6 13:12:56 2001
+@@ -0,0 +1,54 @@
++#ifndef __SISFB_301_LCD__
++#define __SISFB_301_LCD__
++
++enum sisfb_301_lcd_registers {
++	SIS301_LCD_FUNCTION_CONTROL,	SIS301_LCD_FIFO_HIGH,
++	SIS301_LCD_FIFO_LOW,		SIS301_LCD_FIFO_STOP,
++	SIS301_LCD_BASE_ADDR_HIGH,	SIS301_LCD_BASE_ADDR_MED,
++	SIS301_LCD_BASE_ADDR_LOW,	SIS301_LCD_LINE_OFFSET,
++	SIS301_LCD_HR_TOTAL,		SIS301_LCD_,
++	SIS301_LCD_, SIS301_LCD_, 
++	SIS301_LCD_, SIS301_LCD_,
++	SIS301_LCD_, SIS301_LCD_,
++
++	SIS301_LCD_FUNCTION_CONTROL, SIS301_LCD_,
++	SIS301_LCD_, SIS301_LCD_,
++	SIS301_LCD_, SIS301_LCD_,
++	SIS301_LCD_, SIS301_LCD_,
++	SIS301_LCD_, SIS301_LCD_,
++	SIS301_LCD_, SIS301_LCD_, 
++	SIS301_LCD_, SIS301_LCD_,
++	SIS301_LCD_, SIS301_LCD_,
++
++	SIS301_LCD_FUNCTION_CONTROL, SIS301_LCD_,
++	SIS301_LCD_, SIS301_LCD_,
++	SIS301_LCD_, SIS301_LCD_,
++	SIS301_LCD_, SIS301_LCD_,
++	SIS301_LCD_, SIS301_LCD_,
++	SIS301_LCD_, SIS301_LCD_, 
++	SIS301_LCD_, SIS301_LCD_,
++	SIS301_LCD_, SIS301_LCD_,
++};
++
++#define SIS301_PANEL_LINK_ADDR		0x04
++#define SIS301_PANEL_LINK_DATA		0x05
++
++static inline void
++sisfb_set_panel_link_reg(struct sisfb_info * sisfb, u8 index, u8 data)
++{
++	u16 port = sisfb->vga_io_base;
++
++	outb(index, port + SIS301_PANEL_LINK_ADDR);
++	outb(data, port + SIS301_PANEL_LINK_DATA);
++}
++
++static inline u8
++sisfb_get_panel_link_reg(struct sisfb_info * sisfb, u8 index)
++{
++	u16 port = sisfb->vga_io_base;
++
++	outb(index, port + SIS301_PANEL_LINK_ADDR);
++	return inb(port + SIS301_PANEL_LINK_DATA);
++}
++
++#endif /* __SISFB_301_LCD__ */
+diff -urN linux-2.4.12-official/drivers/video/sis/sisfb_315_accel.c linux-2.4.12-linuxbios/drivers/video/sis/sisfb_315_accel.c
+--- linux-2.4.12-official/drivers/video/sis/sisfb_315_accel.c	Thu Jan  1 08:00:00 1970
++++ linux-2.4.12-linuxbios/drivers/video/sis/sisfb_315_accel.c	Tue Nov  6 13:12:56 2001
+@@ -0,0 +1,574 @@
++/* sisfb_315_accel.c: 2D Hardware Acceleration for SiS 550
++ *
++ * Copyright 2001 Ollie Lho <ollie@sis.com.tw>
++ *
++ *	This program is free software; you can redistribute it and/or modify
++ *	it under the terms of the GNU General Public License as published by
++ *	the Free Software Foundation; either version 2 of the License, or
++ *	(at your option) any later version.
++ *
++ *	This program is distributed in the hope that it will be useful,
++ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *	GNU General Public License for more details.
++ *
++ *	You should have received a copy of the GNU General Public License
++ *	along with this program; if not, write to the Free Software
++ *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
++ *
++ *
++ * This driver is implemented by the Author for his own personal interests and is NOT a
++ * commitment NOR supported officially by Silicon Integrated Systems Corp. Please direct
++ * any bug report/question to the Author and don't bother SiS Technical Support Personell.
++ *
++ *
++ * Reference:
++ *	1. SiS 315 2D Engine Register, Version 0.30, Jun. 12, 2000
++ *	2. sis315_accel.c in XFree86 4.0.2
++ */
++
++#include "sisfb_315_accel.h"
++
++/**
++ *	sisfb_wait_idle: - Wait for 2D and 3D engine being idle
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Polling the Connamd Queue Status register until all the following condition is
++ *	meat.
++ *		bit 31 2D/3D engine, Hardware/Software Queue: 1 is idle and empty
++ * 		bit 30 Hardware Command Queue: 1 is empty,
++ * 		bit 29 2D Engine: 1 idle
++ * 		bit 28 3D Engine: 1 idle
++ */
++static inline void
++sisfb_wait_idle(struct sisfb_info *sisfb)
++{
++	int count = 0x10;
++	volatile u32 dummy = 0x00000000;
++
++	while (dummy != 0x80000000 && --count) {
++		dummy = sisfb_readl(sisfb, SIS315_2D_CMD_QUEUE_STATUS) & 0x80000000;
++	}
++}
++
++static inline void
++sisfb_set_agp_base(struct sisfb_info *sisfb)
++{
++	u16 base;
++
++	switch (sisfb->current_par.bits_per_pixel) {
++	case 8:
++	case 24:
++	default:
++		base = 0x0000;
++		break;
++	case 16:
++		base = 0x8000;
++		break;
++	case 32:
++		base = 0xC000;
++		break;
++	}
++	sisfb_writew(sisfb, SIS315_2D_AGP_BASE, base);
++}
++
++static inline u32
++sisfb_command_bpp(struct sisfb_info *sisfb)
++{
++	switch (sisfb->current_par.bits_per_pixel) {
++	case 8:
++	default:
++		return SIS315_2D_CMD_CFB_8;
++	case 16:
++		return SIS315_2D_CMD_CFB_16;
++	case 32:
++		return SIS315_2D_CMD_CFB_32;
++	}
++}
++
++/**
++ *	sisfb_fillrect: - Fill a rectangle area on framebuffer
++ *	@sisfb: SiS Frame Buffer structure
++ *	@x: X origin
++ *	@y: Y origin
++ *	@width: width
++ *	@height: height
++ *	@color: color to fill
++ *	@rop: Raster Operation for the fill
++ *
++ *	Fille a rectangle area on(off ??) the screen starting from (@x, @y) to
++ *	(@x + @width, @y + @height) with @color.
++ *	The raster operation @rop is used for solid fill or invert (vai ROP_XOR).
++ *
++ *	Note:
++ *		1. The Source Pitch is dummy in this case.
++ *		2. We have to use Pattern ROPs with color in Pattern FG/BG Color Register.
++ */
++static void
++sisfb_fillrect(struct sisfb_info *sisfb, u32 x, u32 y,
++	       u32 width, u32 height, u32 color, u8 rop)
++{
++	u32 cmd;
++	u16 pitch = sisfb->current_par.line_length;
++	u32 base = sisfb->current_par.screen_offset;
++
++	/* FixMe: What the hell is this ?? */
++	sisfb_set_agp_base(sisfb);
++
++	/* setup Source & Desination Pitch */
++	sisfb_writew(sisfb, SIS315_2D_SRC_PITCH, 0 /* dummy*/);
++	sisfb_writew(sisfb, SIS315_2D_DST_PITCH, pitch);
++
++	/* disable merge clipping */
++	sisfb_writew(sisfb, SIS315_2D_DST_HEIGHT, -1);
++
++	/* setup Source & Destination Base Address == (0, screen_offset) */
++	sisfb_writel(sisfb, SIS315_2D_SRC_ADDR, 0);
++	sisfb_writel(sisfb, SIS315_2D_DST_ADDR, base);
++
++	/* setup Source X and Y origin  == (0, 0) */
++	sisfb_writew(sisfb, SIS315_2D_SRC_X, 0);
++	sisfb_writew(sisfb, SIS315_2D_SRC_Y, 0);
++
++	/* setup Destination X and Y origin  == (x, y) */
++	sisfb_writew(sisfb, SIS315_2D_DST_X, x);
++	sisfb_writew(sisfb, SIS315_2D_DST_Y, y);
++
++	/* setup Rectangle Width and Height */
++	sisfb_writew(sisfb, SIS315_2D_RECT_WIDTH, width);
++	sisfb_writew(sisfb, SIS315_2D_RECT_HEIGHT, height);
++
++	/* setup the foreground color in Pattern Foreground Color Register */
++	sisfb_writel(sisfb, SIS315_2D_PAT_FG_COLOR, color);
++
++	/* Command = BitBlt, X++, Y++, pattern = Pattern Foreground Color Register, ROP = rop */
++	cmd = SIS315_2D_CMD_BITBLT | SIS315_2D_CMD_PAT_FG_REG |
++		sisfb_command_bpp(sisfb) | (rop << 8);
++
++	/* Fire The Command !! */
++	sisfb_writel(sisfb, SIS315_2D_CMD, cmd);
++	sisfb_writel(sisfb, SIS315_2D_CMD, cmd);
++}
++
++/**
++ *	sisfb_copyrect: - Copy a rectangle area
++ *	@sisfb: SiS Frame Buffer structure
++ *	@srcx: X origin of source rectangle
++ *	@srcy: Y origin of source rectangle
++ *	@sdst: X origin of destination rectangle
++ *	@sdst: Y origin of destination rectangle
++ *	@width: width
++ *	@height: height
++ *
++ *	Copy a rectangle area on(off ??) the screen starting from (@xsrc, @ysrc) to
++ *	(@xsrc + @width, @ysrc + @height) to (@xdst, @ydst).
++ *
++ *	FixMe: Do we need to set up x,y direction ??
++ */
++static void
++sisfb_copyrect(struct sisfb_info *sisfb, u32 srcx, u32 srcy,
++	       u32 dstx, u32 dsty, u32 width, u32 height, u8 rop)
++{
++	u32 cmd;
++	u16 pitch = sisfb->current_par.line_length;
++	u32 base = sisfb->current_par.screen_offset;
++
++#ifdef FIXME
++	u32 x_dir = SIS315_2D_CMD_DIR_X_INC, y_dir = SIS315_2D_CMD_DIR_Y_INC;
++	/* If the direction is "decreasing", the chip wants the addresses
++	 * to be at the other end, so we must be aware of that in our
++	 * calculations. */
++	if (srcx <= dstx) {
++		x_dir = SIS315_2D_CMD_DIR_X_DEC;
++		srcx += width - 1;
++		dstx += width - 1;
++	}
++
++	if (srcy <= dsty) {
++		y_dir = SIS315_2D_CMD_DIR_Y_DEC;
++		srcy += height - 1;
++		dsty += height - 1;
++	}
++#endif
++
++	/* FixMe: What the hell is this ?? */
++	sisfb_set_agp_base(sisfb);
++
++	/* setup Source & Desination Pitch */
++	sisfb_writew(sisfb, SIS315_2D_SRC_PITCH, pitch);
++	sisfb_writew(sisfb, SIS315_2D_DST_PITCH, pitch);
++
++	/* disable merge clipping */
++	sisfb_writew(sisfb, SIS315_2D_DST_HEIGHT, -1);
++
++	/* setup Source & Destination Base Address == (screen_offset, screen_offset) */
++	sisfb_writel(sisfb, SIS315_2D_SRC_ADDR, base);
++	sisfb_writel(sisfb, SIS315_2D_DST_ADDR, base);
++
++	/* setup Source X and Y origin  == (srcx, srcy) */
++	sisfb_writew(sisfb, SIS315_2D_SRC_X, srcx);
++	sisfb_writew(sisfb, SIS315_2D_SRC_Y, srcy);
++
++	/* setup Destination X and Y origin  == (dstx, dsty) */
++	sisfb_writew(sisfb, SIS315_2D_DST_X, dstx);
++	sisfb_writew(sisfb, SIS315_2D_DST_Y, dsty);
++
++	/* setup Rectangle Width and Height */
++	sisfb_writew(sisfb, SIS315_2D_RECT_WIDTH, width);
++	sisfb_writew(sisfb, SIS315_2D_RECT_HEIGHT, height);
++
++	/* Command = BitBlt, X Dir, Y Dir, bitblt from video memory (ScrenToScreen), ROP = rop */
++	cmd = SIS315_2D_CMD_BITBLT | SIS315_2D_CMD_SRC_VIDEO |
++		sisfb_command_bpp(sisfb) | (rop << 8);
++
++	/* Fire The Command !! */
++	sisfb_writel(sisfb, SIS315_2D_CMD, cmd);
++	sisfb_writel(sisfb, SIS315_2D_CMD, cmd);
++}
++
++static void
++sisfb_copyrect_transparent(struct sisfb_info *sisfb, u32 srcx, u32 srcy,
++			   u32 dstx, u32 dsty, u32 width, u32 height,
++			   u32 src_hi, u32 src_low,
++			   u32 dst_hi, u32 dst_low,
++			   u8 rop)
++{
++	u32 cmd;
++	u16 pitch = sisfb->current_par.line_length;
++	u32 base = sisfb->current_par.screen_offset;
++
++#if 0
++	u32 x_dir = SIS315_2D_CMD_DIR_X_INC, y_dir = SIS315_2D_CMD_DIR_Y_INC;
++	/* If the direction is "decreasing", the chip wants the addresses
++	 * to be at the other end, so we must be aware of that in our
++	 * calculations. */
++	if (srcx <= dstx) {
++		x_dir = SIS315_2D_CMD_DIR_X_DEC;
++		srcx += width - 1;
++		dstx += width - 1;
++	}
++
++	if (srcy <= dsty) {
++		y_dir = SIS315_2D_CMD_DIR_Y_DEC;
++		srcy += height - 1;
++		dsty += height - 1;
++	}
++#endif
++
++	/* FixMe: What the hell is this ?? */
++	sisfb_set_agp_base(sisfb);
++
++	/* setup Source & Desination Pitch */
++	sisfb_writew(sisfb, SIS315_2D_SRC_PITCH, pitch);
++	sisfb_writew(sisfb, SIS315_2D_DST_PITCH, pitch);
++
++	/* disable merge clipping */
++	sisfb_writew(sisfb, SIS315_2D_DST_HEIGHT, -1);
++
++	/* setup Source & Destination Base Address == (screen_offset, screen_offset) */
++	sisfb_writel(sisfb, SIS315_2D_SRC_ADDR, base);
++	sisfb_writel(sisfb, SIS315_2D_DST_ADDR, base);
++
++	/* setup Source X and Y origin  == (srcx, srcy) */
++	sisfb_writew(sisfb, SIS315_2D_SRC_X, srcx);
++	sisfb_writew(sisfb, SIS315_2D_SRC_Y, srcy);
++
++	/* setup Destination X and Y origin  == (dstx, dsty) */
++	sisfb_writew(sisfb, SIS315_2D_DST_X, dstx);
++	sisfb_writew(sisfb, SIS315_2D_DST_Y, dsty);
++
++	/* setup Rectangle Width and Height */
++	sisfb_writew(sisfb, SIS315_2D_RECT_WIDTH, width);
++	sisfb_writew(sisfb, SIS315_2D_RECT_HEIGHT, height);
++
++	/* setup Source Color Key */
++	sisfb_writew(sisfb, SIS315_2D_TRANS_SRC_KEY_HIGH, src_hi);
++	sisfb_writew(sisfb, SIS315_2D_TRANS_SRC_KEY_LOW, src_low);
++
++	/* setup Destination Color Key */
++	sisfb_writew(sisfb, SIS315_2D_TRANS_DEST_KEY_HIGH, dst_hi);
++	sisfb_writew(sisfb, SIS315_2D_TRANS_DEST_KEY_LOW, dst_low);
++
++	/* Command = BitBlt, X Dir, Y Dir, bitblt from video memory (ScrenToScreen), ROP = rop */
++	cmd = SIS315_2D_CMD_TRANSPARENT_BITBLT | SIS315_2D_CMD_SRC_VIDEO |
++		sisfb_command_bpp(sisfb) | (rop << 8);
++
++	/* Fire The Command !! */
++	sisfb_writel(sisfb, SIS315_2D_CMD, cmd);
++	sisfb_writel(sisfb, SIS315_2D_CMD, cmd);
++}
++
++/**
++ *	sisfb_8x8_color_expand: - Color expand with 8x8 monochrome bit mask
++ *	@sisfb: SiS Frame Buffer structure
++ *	@x: X origin
++ *	@y: Y origin
++ *	@width: width
++ *	@height: height
++ *	@fg: foreground color to expand
++ *	@bg: background color to expand
++ *	@rop: Raster Operation for the expand
++ *	@bitmap: 8x8 monochrom bitmap (64 bits)
++ *
++ *	Color expand the 8x8 bitmap @bitmap by setting bits with value 1 to @fg while bits
++ *	with value 0 to @bg. If @bg == -1 then background pixels are not expanded. Also fill
++ *	the rectangle (@x, @y) - (@x + @width, @y + @height) with the expanded pattern.
++ *
++ *	Note:
++ *		1. The Source Pitch is width/8 then rounded up.
++ *		2. We have to use Pattern ROPs with color in Pattern FG/BG Color Register.
++ */
++static void
++sisfb_8x8_color_expand(struct sisfb_info * sisfb,  u32 x, u32 y, u32 width,
++		       u32 height, u32 fg, u32 bg, u8 rop, u8 * bitmap)
++{
++	u32 cmd;
++	u16 pitch = sisfb->current_par.line_length;
++	u32 base = sisfb->current_par.screen_offset;
++
++	/* FixMe: What the hell is this ?? */
++	sisfb_set_agp_base(sisfb);
++
++	/* setup Source & Desination Pitch */
++	sisfb_writew(sisfb, SIS315_2D_SRC_PITCH, (width + 7) >> 3);
++	sisfb_writew(sisfb, SIS315_2D_DST_PITCH, pitch);
++
++	/* disable merge clipping */
++	sisfb_writew(sisfb, SIS315_2D_DST_HEIGHT, -1);
++
++	/* setup Source & Destination Base Address == (0, screen_offset) */
++	sisfb_writel(sisfb, SIS315_2D_SRC_ADDR, 0);
++	sisfb_writel(sisfb, SIS315_2D_DST_ADDR, base);
++
++	/* setup Source X and Y origin  == (0, 0) */
++	sisfb_writew(sisfb, SIS315_2D_SRC_X, 0);
++	sisfb_writew(sisfb, SIS315_2D_SRC_Y, 0);
++
++	/* setup Destination X and Y origin  == (x, y) */
++	sisfb_writew(sisfb, SIS315_2D_DST_X, x);
++	sisfb_writew(sisfb, SIS315_2D_DST_Y, y);
++
++	/* setup Rectangle Width and Height */
++	sisfb_writew(sisfb, SIS315_2D_RECT_WIDTH, width);
++	sisfb_writew(sisfb, SIS315_2D_RECT_HEIGHT, height);
++
++	/* setup the foreground color in Pattern Foreground Color Register */
++	sisfb_writel(sisfb, SIS315_2D_PAT_FG_COLOR, fg);
++
++	/* setup the foreground color in Pattern Background Color Register */
++	sisfb_writel(sisfb, SIS315_2D_PAT_BG_COLOR, bg);
++
++	/* store 8x8 mono bitmap to Mono Mask Register */
++	sisfb_writel(sisfb, SIS315_2D_MONO_MASK, *(u32 *) bitmap);
++	sisfb_writel(sisfb, SIS315_2D_MONO_MASK + 4, *(u32 *) (bitmap + 4));
++
++	/* Command = Color Expand, X++, Y++, color = Pattern Register, ROP = rop */
++	cmd = SIS315_2D_CMD_COLOREXP | SIS315_2D_CMD_PAT_MONO_MASK |
++		sisfb_command_bpp(sisfb) | (rop << 8);
++
++	/* if background color == -1 then don't expand background pixels */
++	if (bg == -1)
++		cmd |= SIS315_2D_CMD_TRANSPARENT;
++
++	/* Fire The Command !! */
++	sisfb_writel(sisfb, SIS315_2D_CMD, cmd);
++	sisfb_writel(sisfb, SIS315_2D_CMD, cmd);
++}
++
++/**
++ *	sisfb_color_expand: - Color expand with Pattern Register
++ *	@sisfb: SiS Frame Buffer structure
++ *	@x: X origin
++ *	@y: Y origin
++ *	@width: width
++ *	@height: height
++ *	@fg: foreground color to expand
++ *	@bg: background color to expand
++ *	@rop: Raster Operation for the expand
++ *	@bitmap: monochrom bitmap (384 bytes max)
++ *	@size: size of @bitmap
++ *
++ *	Color expand the bitmap @bitmap by setting bits with value 1 to @fg while bits
++ *	with value 0 to @bg. If @bg == -1 then background pixels are not expanded. The
++ *	bitmap is transfered to hardware Pattern Register and can be as large as 384 bytes,
++ *	effectively expanding 3072 pixels in a single operation.
++ *
++ *	The rectangle (@x, @y) - (@x + @width, @y + @height) is filled with the expanded pattern.
++ *	If the size of @bitmap is samller then 384 bytes and the size of the rectangle is larger
++ *	then 3072 pixels, some pixels in the rectangle are filled with "garbage". 
++ *
++ *	Note:
++ *		1. The Source Pitch is width/8 then rounded up (i.e. in units of byte).
++ *		2. We have to use Normal ROPs with color in Source FG/BG Color Register.
++ */
++static void
++sisfb_color_expand(struct sisfb_info * sisfb,  u32 x, u32 y, u32 width,
++		   u32 height, u32 fg, u32 bg, u8 rop, u8 * bitmap, u32 size)
++{
++	u32 cmd;
++	u16 pitch = sisfb->current_par.line_length;
++	u32 base = sisfb->current_par.screen_offset;
++
++	/* FixMe: What the hell is this ?? */
++	sisfb_set_agp_base(sisfb);
++
++	/* setup Source & Desination Pitch */
++	sisfb_writew(sisfb, SIS315_2D_SRC_PITCH, (width + 7) >> 3);
++	sisfb_writew(sisfb, SIS315_2D_DST_PITCH, pitch);
++
++	/* disable merge clipping */
++	sisfb_writew(sisfb, SIS315_2D_DST_HEIGHT, -1);
++
++	/* setup Source & Destination Base Address == (0, screem_offset) */
++	sisfb_writel(sisfb, SIS315_2D_SRC_ADDR, 0);
++	sisfb_writel(sisfb, SIS315_2D_DST_ADDR, base);
++
++	/* setup Source X and Y origin  == (0, 0) */
++	sisfb_writew(sisfb, SIS315_2D_SRC_X, 0);
++	sisfb_writew(sisfb, SIS315_2D_SRC_Y, 0);
++
++	/* setup Destination X and Y origin  == (x, y) */
++	sisfb_writew(sisfb, SIS315_2D_DST_X, x);
++	sisfb_writew(sisfb, SIS315_2D_DST_Y, y);
++
++	/* setup Rectangle Width and Height */
++	sisfb_writew(sisfb, SIS315_2D_RECT_WIDTH, width);
++	sisfb_writew(sisfb, SIS315_2D_RECT_HEIGHT, height);
++
++	/* setup the foreground color in Source Foreground Color Register */
++	sisfb_writel(sisfb, SIS315_2D_SRC_FG_COLOR, fg);
++
++	/* setup the foreground color in Source Background Color Register */
++	sisfb_writel(sisfb, SIS315_2D_SRC_BG_COLOR, bg);
++
++	/* transfer bitmap pattern to pattern register */
++	memcpy_toio(sisfb->mmio_base_virt + SIS315_2D_PATTERN_REG,
++		    bitmap, size);
++	
++	/* Command = Color Expand, X++, Y++, color = Pattern Register, ROP = rop */
++	cmd = SIS315_2D_CMD_COLOREXP | SIS315_2D_CMD_PAT_PAT_REG |
++		sisfb_command_bpp(sisfb) | (rop << 8);
++
++	/* if background color == -1 then don't expand background pixels */
++	if (bg == -1)
++		cmd |= SIS315_2D_CMD_TRANSPARENT;
++
++	/* Fire The Command !! */
++	sisfb_writel(sisfb, SIS315_2D_CMD, cmd);
++	sisfb_writel(sisfb, SIS315_2D_CMD, cmd);
++}
++
++static void
++sisfb_drawline(struct sisfb_info * sisfb, u32 srcx, u32 srcy,
++	       u32 dstx, u32 dsty, u32 fg, u32 bg, u8 rop)
++{
++	u32 cmd;
++	u16 pitch = sisfb->current_par.line_length;
++	u32 base = sisfb->current_par.screen_offset;
++
++	/* FixMe: What the hell is this ?? */
++	sisfb_set_agp_base(sisfb);
++
++	/* setup Source & Desination Pitch */
++	sisfb_writew(sisfb, SIS315_2D_SRC_PITCH, 1);
++	sisfb_writew(sisfb, SIS315_2D_DST_PITCH, pitch);
++
++	/* disable merge clipping */
++	sisfb_writew(sisfb, SIS315_2D_DST_HEIGHT, -1);
++
++	/* setup Source & Destination Base Address == (0, screen_offset) */
++	sisfb_writel(sisfb, SIS315_2D_SRC_ADDR, 0);
++	sisfb_writel(sisfb, SIS315_2D_DST_ADDR, base);
++
++	/* setup Source X and Y origin  == (srcx, srcy) */
++	sisfb_writew(sisfb, SIS315_2D_LINE_X0, srcx);
++	sisfb_writew(sisfb, SIS315_2D_LINE_Y0, srcy);
++
++	/* setup Destination X and Y origin  == (dstx, dsty) */
++	sisfb_writew(sisfb, SIS315_2D_LINE_X1, dstx);
++	sisfb_writew(sisfb, SIS315_2D_LINE_Y1, dsty);
++
++	/* setup Line Segement Count == 1 */
++	sisfb_writew(sisfb, SIS315_2D_LINE_COUNT, 1);
++	sisfb_writew(sisfb, SIS315_2D_LINE_STYLE_PERIOD, 0);
++
++	/* setup the foreground color in Pattern Foreground Color Register */
++	sisfb_writel(sisfb, SIS315_2D_PAT_FG_COLOR, fg);
++
++	/* setup the foreground color in Pattern Background Color Register */
++	sisfb_writel(sisfb, SIS315_2D_PAT_BG_COLOR, bg);
++
++	/* Command = Color Expand, X++, Y++, color = Pattern Foreground Register, ROP = rop */
++	cmd = SIS315_2D_CMD_LINE_DRAW | SIS315_2D_CMD_PAT_FG_REG |
++		sisfb_command_bpp(sisfb) | (rop << 8);
++
++	/* Fire The Command !! */
++	sisfb_writel(sisfb, SIS315_2D_CMD, cmd);
++	sisfb_writel(sisfb, SIS315_2D_CMD, cmd);
++}
++
++static void
++sisfb_drawline_style(struct sisfb_info * sisfb, u32 srcx, u32 srcy,
++		     u32 dstx, u32 dsty, u32 fg, u32 bg, u8 rop, u8 * bitmap)
++{
++	u32 cmd;
++	u16 pitch = sisfb->current_par.line_length;
++	u32 base = sisfb->current_par.screen_offset;
++
++	/* FixMe: What the hell is this ?? */
++	sisfb_set_agp_base(sisfb);
++
++	/* setup Source & Desination Pitch */
++	sisfb_writew(sisfb, SIS315_2D_SRC_PITCH, 1);
++	sisfb_writew(sisfb, SIS315_2D_DST_PITCH, pitch);
++
++	/* disable merge clipping */
++	sisfb_writew(sisfb, SIS315_2D_DST_HEIGHT, -1);
++
++	/* setup Source & Destination Base Address == (0, 0) */
++	sisfb_writel(sisfb, SIS315_2D_SRC_ADDR, 0);
++	sisfb_writel(sisfb, SIS315_2D_DST_ADDR, base);
++
++	/* setup Source X and Y origin  == (srcx, srcy) */
++	sisfb_writew(sisfb, SIS315_2D_LINE_X0, srcx);
++	sisfb_writew(sisfb, SIS315_2D_LINE_Y0, srcy);
++
++	/* setup Destination X and Y origin  == (dstx, dsty) */
++	sisfb_writew(sisfb, SIS315_2D_LINE_X1, dstx);
++	sisfb_writew(sisfb, SIS315_2D_LINE_Y1, dsty);
++
++	/* setup Line Segment Count == 1 */
++	sisfb_writew(sisfb, SIS315_2D_LINE_COUNT, 1);
++	sisfb_writew(sisfb, SIS315_2D_LINE_STYLE_PERIOD, 0);
++
++	/* setup the foreground color in Pattern Foreground Color Register */
++	sisfb_writel(sisfb, SIS315_2D_PAT_FG_COLOR, fg);
++
++	/* setup the foreground color in Pattern Background Color Register */
++	sisfb_writel(sisfb, SIS315_2D_PAT_BG_COLOR, bg);
++
++	/* transfer bitmap pattern to Line Style register */
++	sisfb_writel(sisfb, SIS315_2D_LINE_STYLE_0, * bitmap);
++	sisfb_writel(sisfb, SIS315_2D_LINE_STYLE_1, *(bitmap + 1));
++	
++	/* Command = Color Expand, X++, Y++, color = Pattern Register, ROP = rop */
++	cmd = SIS315_2D_CMD_LINE_DRAW | SIS315_2D_CMD_PAT_FG_REG
++		| sisfb_command_bpp(sisfb) | SIS315_2D_CMD_LINE_STLYE_ENABLE
++		| (rop << 8);
++
++	/* Fire The Command !! */
++	sisfb_writel(sisfb, SIS315_2D_CMD, cmd);
++	sisfb_writel(sisfb, SIS315_2D_CMD, cmd);
++}
++
++struct sisfb_accelerator sis315_accelerator = {
++	fillrect:		sisfb_fillrect,
++	copyrect:		sisfb_copyrect,
++	copyrect_transparent:	sisfb_copyrect_transparent,
++
++	color_expand_8x8:	sisfb_8x8_color_expand,
++	color_expand:		sisfb_color_expand,
++
++	drawline:		sisfb_drawline,
++	drawline_style:		sisfb_drawline_style,
++};
+diff -urN linux-2.4.12-official/drivers/video/sis/sisfb_315_accel.h linux-2.4.12-linuxbios/drivers/video/sis/sisfb_315_accel.h
+--- linux-2.4.12-official/drivers/video/sis/sisfb_315_accel.h	Thu Jan  1 08:00:00 1970
++++ linux-2.4.12-linuxbios/drivers/video/sis/sisfb_315_accel.h	Tue Nov  6 13:12:56 2001
+@@ -0,0 +1,95 @@
++#ifndef __SISFB_315_ACCEL__
++#define __SISFB_315_ACCEL__
++
++#ifdef __KERNEL__
++#include "sisfb_lite.h"
++#endif /* __KERNEL__ */
++
++#include "sisfb_accel.h"
++
++enum sis315_2d_registers {
++	SIS315_2D_SRC_ADDR     = 0x8200,
++	SIS315_2D_SRC_PITCH    = 0x8204, SIS315_2D_AGP_BASE     = 0x8206,
++	SIS315_2D_SRC_Y        = 0x8208, SIS315_2D_SRC_X        = 0x820A,
++	SIS315_2D_DST_Y        = 0x820C, SIS315_2D_DST_X        = 0x820E,
++	SIS315_2D_DST_ADDR     = 0x8210,
++	SIS315_2D_DST_PITCH    = 0x8214, SIS315_2D_DST_HEIGHT   = 0x8216,
++	SIS315_2D_RECT_WIDTH   = 0x8218, SIS315_2D_RECT_HEIGHT  = 0x821A,
++	SIS315_2D_PAT_FG_COLOR = 0x821C,
++	SIS315_2D_PAT_BG_COLOR = 0x8220,
++	SIS315_2D_SRC_FG_COLOR = 0x8224,
++	SIS315_2D_SRC_BG_COLOR = 0x8228,
++	SIS315_2D_MONO_MASK    = 0x822C,
++	SIS315_2D_LEFT_CLIP    = 0x8234, SIS315_2D_TOP_CLIP     = 0x8236,
++	SIS315_2D_RIGHT_CLIP   = 0x8238, SIS315_2D_BOT_CLIP     = 0x823A,
++	SIS315_2D_CMD          = 0x823C,
++	SIS315_2D_PATTERN_REG  = 0x8300
++};
++
++enum sis315_2d_registers_drawline {
++	SIS315_2D_LINE_X0      = 0x8208, SIS315_2D_LINE_Y0           = 0x820A,
++	SIS315_2D_LINE_X1      = 0x820C, SIS315_2D_LINE_Y1           = 0x820E,
++	SIS315_2D_LINE_COUNT   = 0x8218, SIS315_2D_LINE_STYLE_PERIOD = 0x821A,
++	SIS315_2D_LINE_STYLE_0 = 0x822C,
++	SIS315_2D_LINE_STYLE_1 = 0x8230,
++	SIS315_2D_LINE_Xn      = 0x8300, SIS315_2D_LINE_Yn           = 0x8302,
++};
++
++enum sis315_2d_register_transparent_bitblt {
++	SIS315_2D_TRANS_DEST_KEY_HIGH = 0x821C,
++	SIS315_2D_TRANS_DEST_KEY_LOW  = 0x8220,
++	SIS315_2D_TRANS_SRC_KEY_HIGH  = 0x8224,
++	SIS315_2D_TRANS_SRC_KEY_LOW   = 0x8228,
++};
++
++enum sis315_2d_cmd_type {
++	SIS315_2D_CMD_BITBLT             = 0x00, SIS315_2D_CMD_COLOREXP           = 0x01,
++	SIS315_2D_CMD_ENCOLOREXP         = 0x02, SIS315_2D_CMD_MULTIPLE_SCANLINE  = 0x03,
++	SIS315_2D_CMD_LINE_DRAW          = 0x04, SIS315_2D_CMD_TRAPEZOID_FILL     = 0x05,
++	SIS315_2D_CMD_TRANSPARENT_BITBLT = 0x06, SIS315_2D_CMD_ALPHA_BLENDING     = 0x07,
++	SIS315_2D_CMD_3D_FUNCTION        = 0x08, SIS315_2D_CMD_CLEAR_Z_BUFFER     = 0x09,
++       	SIS315_2D_CMD_GRADIENT_FILL      = 0x0A, SIS315_2D_CMD_STRETCH_BITBLT     = 0x0B
++};
++
++enum sis315_2d_cmd_control {
++	SIS315_2D_CMD_SRC_VIDEO     = 0x00,
++	SIS315_2D_CMD_SRC_SYSTEM    = 0x10,
++	SIS315_2D_CMD_SRC_AGP       = 0x20,
++
++	SIS315_2D_CMD_PAT_FG_REG    = 0x00,
++	SIS315_2D_CMD_PAT_PAT_REG   = 0x40,
++	SIS315_2D_CMD_PAT_MONO_MASK = 0x80,
++
++	SIS315_2D_CMD_CFB_8         = 0x00000000,
++	SIS315_2D_CMD_CFB_16        = 0x00010000,
++	SIS315_2D_CMD_CFB_32        = 0x00020000,
++
++	SIS315_2D_CMD_RECT_CLIP_EN  = 0x00040000,
++	SIS315_2D_CMD_TRANSPARENT   = 0x00100000,
++
++	/* Subfunction for Color/Enhanced Color Expansion */
++	SIS315_2D_CMD_COLOR_TO_MONO = 0x00100000,
++	SIS315_2D_CMD_AA_TEXT       = 0x00200000,
++
++	SIS315_2D_CMD_MERGE_CLIP_DIS    = 0x04000000,
++
++	SIS315_2D_CMD_LINE_STLYE_ENABLE = 0x00800000
++
++#if 0
++	SIS315_2D_CMD_DIR_X_INC     = 0x00010000,
++	SIS315_2D_CMD_DIR_X_DEC     = 0x00000000,
++	SIS315_2D_CMD_DIR_Y_INC     = 0x00020000,
++	SIS315_2D_CMD_DIR_Y_DEC     = 0x00000000,
++#endif
++};
++
++enum sis315_command_queue_registers {
++	SIS315_2D_CMD_QUEUE_BASE_ADDRESS  = 0x85C0,
++	SIS315_2D_CMD_QUEUE_WRITE_POINTER = 0x85C4,
++	SIS315_2D_CMD_QUEUE_READ_POINTER  = 0x85C8,
++	SIS315_2D_CMD_QUEUE_STATUS        = 0x85CC
++};
++
++extern struct sisfb_accelerator sis315_accelerator;
++
++#endif /* __SISFB_315_ACCEL__ */
+diff -urN linux-2.4.12-official/drivers/video/sis/sisfb_315_init.c linux-2.4.12-linuxbios/drivers/video/sis/sisfb_315_init.c
+--- linux-2.4.12-official/drivers/video/sis/sisfb_315_init.c	Thu Jan  1 08:00:00 1970
++++ linux-2.4.12-linuxbios/drivers/video/sis/sisfb_315_init.c	Tue Nov  6 13:12:56 2001
+@@ -0,0 +1,238 @@
++/* sisfb_315_init.c: Initialization Code for SiS 550 Integrated VGA
++ *
++ * Copyright 2001 Ollie Lho <ollie@sis.com.tw>
++ *
++ *	This program is free software; you can redistribute it and/or modify
++ *	it under the terms of the GNU General Public License as published by
++ *	the Free Software Foundation; either version 2 of the License, or
++ *	(at your option) any later version.
++ *
++ *	This program is distributed in the hope that it will be useful,
++ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *	GNU General Public License for more details.
++ *
++ *	You should have received a copy of the GNU General Public License
++ *	along with this program; if not, write to the Free Software
++ *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
++ *
++ *
++ * This driver is implemented by the Author for his own personal interests and is NOT a
++ * commitment NOR supported officially by Silicon Integrated Systems Corp. Please direct
++ * any bug report/question to the Author and don't bother SiS Technical Support Personell.
++ *
++ *
++ * Reference:
++ *	1. Glamour II Design Guideline V.12
++ */
++
++#include "sisfb_lite.h"
++#include "sisfb_300_core.h"
++#include "sisfb_315_accel.h"
++
++static void sisfb_set_pci_agp_timming(struct sisfb_info * sisfb);
++static void sisfb_set_dram_config(struct sisfb_info * sisfb);
++static void sisfb_enable_turbo_queue(struct sisfb_info * sisfb);
++static void sisfb_fake_vgabios(struct sisfb_info * sisfb);
++
++/* Default values for PCI/AGP Timming control registers: SR21-SR25, SR32 */
++static u8 pci_timming[] __initdata = {
++	/* SR 0x21 - 0x25, 0x31 - 0x33 */
++	0xB6, 0xB2, 0xF6, 0x0D, 0x30, 0x00, 0x01, 0x10
++};
++
++/**
++ *	sisfb_set_pci_agp_timming: - Set AGP/PCI timming control registers
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Initialize PCI and AGP timming control registers. Most of them are
++ *	dumped form normal BIOS setting.
++ */
++static void __devinit
++sisfb_set_pci_agp_timming(struct sisfb_info * sisfb)
++{
++	u8 AGP, tmp;
++
++	/* SR3A, Hardware Trap III */
++	tmp = sisfb_get_seq_reg(sisfb, 0x3A);
++	if ((tmp & 0x30) == 0x30)
++		// PCI Mode
++		AGP = 0;
++	else
++		// AGP Mode;
++		AGP = 1;
++
++	tmp = pci_timming[0];
++	if (AGP == 0)
++		// Disable AGP Request High Priority
++		tmp &= ~0x10;
++	sisfb_set_seq_reg(sisfb, 0x21, tmp);
++
++	tmp = pci_timming[1];
++	if (AGP == 1)
++		// Enable PCI Burst memory write
++		tmp |= 0x20;
++	sisfb_set_seq_reg(sisfb, 0x22, tmp);
++
++	sisfb_set_seq_reg(sisfb, 0x23, pci_timming[2]);
++	sisfb_set_seq_reg(sisfb, 0x24, pci_timming[3]);
++	sisfb_set_seq_reg(sisfb, 0x25, pci_timming[4]);
++	sisfb_set_seq_reg(sisfb, 0x31, pci_timming[5]);
++	sisfb_set_seq_reg(sisfb, 0x32, pci_timming[6]);
++	sisfb_set_seq_reg(sisfb, 0x33, pci_timming[7]);
++
++	/* command queue threshold, max = 11111b */
++	sisfb_set_seq_reg(sisfb, 0x27, 0x1F);
++}
++
++static u8 dram_config1[] __initdata = {
++	/* SR 0x15-0x1B */
++	0x00, 0x0F, 0x5E, 0xA9, 0xA0, 0x00, 0x30
++};
++
++static u8 dram_config2[] __initdata = {
++	/* CR 0x40-0x44 */
++	0x33, 0x33, 0x00, 0x03, 0x00
++};
++
++static void __devinit
++sisfb_set_dram_config(struct sisfb_info * sisfb)
++{
++	int i;
++
++	for (i = 0x15; i <= 0x1B; i++)
++		sisfb_set_seq_reg(sisfb, i, dram_config1[i - 0x15]);
++
++	for (i = 0x40; i <= 0x44; i++)
++		sisfb_set_crtc_reg(sisfb, i, dram_config2[i - 0x40]);
++}
++
++/**
++ *	sisfb_enable_turbo_queue: - Set Turbo Queue size and enable it
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Commands to the Graphics Engine (2D, 3D, etc) are buffered in
++ *	the Video Memory which is called Turbo Queue in SiS VGA Specs.
++ *	Usually this buffer area takes the last few KBs in the Video RAM.
++ */
++/* default turbo queue size == 512KB */
++static int tqueue_size = 0x80000;
++static void __devinit
++sisfb_enable_turbo_queue(struct sisfb_info * sisfb)
++{
++	u32 tqueue_pos;
++	volatile u8 dummy;
++
++	tqueue_pos = sisfb->video_size_virt - tqueue_size;
++
++	/* set Command Queue threshold to max value 11111b */
++	sisfb_set_seq_reg(sisfb, 0x27, 0x1F);
++	/* synchronous reset for Connamd Queue */
++	sisfb_set_seq_reg(sisfb, 0x26, 0x01);
++
++	/* FixMe: What does this mean ?? */
++	dummy = sisfb_readb(sisfb, 0x85C8);
++	sisfb_writeb(sisfb, 0x85C4, dummy);
++
++	/* enable Command Queue (on Video RAM) , MMIO Commands */
++	sisfb_set_seq_reg(sisfb, 0x26, 0x22);
++
++	/* set Command Queue Base Address */
++	sisfb_writeb(sisfb, 0x85C0, tqueue_pos);
++
++	printk(KERN_INFO "sisfb_lite: Use %dKB off-screen memory for Turbo Queue\n",
++	       tqueue_size / 1024);
++}
++
++/**
++ *	sisfb_fake_vgabios: - Pretend we still have VGA BIOS
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Many of the Extended Sequencer Registers and Externded CRT Controller Registers
++ *	are used by traditional System/VGA BIOS and Drivers to pass information back and
++ *	forth. We have to fake some resonable values for these registers in order to let
++ *	some stupid applications like XFree 3.3.6 work properly.  
++ */
++static void __devinit
++sisfb_fake_vgabios(struct sisfb_info * sisfb)
++{
++	int i;
++	u8 data, sma_size;
++	u8 fake_bios[] = {0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F};
++
++	/* SR 14 is used as "protocol" by VGA BIOS and XFree86 for passing SMA size
++	   and bus width, we have to fake them :~-( */
++	sma_size = sisfb->video_size_virt >> 21;
++	data = fake_bios[ffs(sma_size) - 1];
++	data |= 0x40;	// 64-bit bus
++	sisfb_set_seq_reg(sisfb, 0x14, data);
++
++	/* SR16-SR19 are used as "protocol" by VGA BIOS and System BIOS for passing
++	   information about TV-out, we have to clear them :~-( */
++	for (i = 0x16; i <= 0x19; i++) {
++		sisfb_set_seq_reg(sisfb, i, 0x00);
++	}
++
++	/* SR1A are used as "protocol" by VGA BIOS and System BIOS for passing
++	   information about M/B frequence, we have to fake them :~-( */
++	sisfb_set_seq_reg(sisfb, 0x1A, 0x12);
++
++	/* set MD out enable to 1T (what the hell ??) */
++	sisfb_set_seq_reg(sisfb, 0x15, 0x01);
++
++	/* SR1B, SR1C are not used by SiS 630 (used by SiS 300 ??),
++	   clear them. */
++	sisfb_set_seq_reg(sisfb, 0x1B, 0x00);
++	sisfb_set_seq_reg(sisfb, 0x1C, 0x00);
++
++	/* CR30-CR37 are used by VGA BIOS to pass information
++	   about SiS 301, clean them */
++	for (i = 0x30; i <= 0x3F; i++) {
++		sisfb_set_crtc_reg(sisfb, i, 0x00);
++	}
++}
++
++/**
++ *	sisfb_init_315: - Initialize the SiS315 VGA Core in SiS550
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Return 0 on Success, -ENODEV if SMA is incorrectly/not configured
++ *
++ *	SiS 315 VGA core is used in SiS550 chipsets. This routine inits
++ *	the very SiS315 specific stuff.
++ */
++int __devinit
++sisfb_init_315(struct sisfb_info * sisfb)
++{
++	int ret;
++
++	if ((ret = sisfb_config_memory(sisfb)) < 0)
++		return ret;
++
++	sisfb_init_legacy_vga(sisfb);
++
++	/* set to High Speed DAC by default */
++	sisfb_set_seq_reg(sisfb, 0x07, 0x10);
++
++	/* Disable DAC pedestal */
++	sisfb_set_seq_reg(sisfb, 0x1F, 0x00);
++
++	sisfb_set_pci_agp_timming(sisfb);
++
++	sisfb_set_dram_config(sisfb);
++
++	/* disable power management mode */
++	sisfb_set_seq_reg(sisfb, 0x11, 0x0F);
++
++	sisfb_enable_turbo_queue(sisfb);
++
++	sisfb_fake_vgabios(sisfb);
++
++	/* set hardware specific functions */
++	sisfb->accelerator = &sis315_accelerator;
++	sisfb->set_par = sisfb_set_par_300;
++	sisfb->pan_display = sisfb_pan_display_300;
++	sisfb->set_disp = sisfb_set_dispsw_fbcon;
++
++	return 0;
++}
+diff -urN linux-2.4.12-official/drivers/video/sis/sisfb_530_accel.c linux-2.4.12-linuxbios/drivers/video/sis/sisfb_530_accel.c
+--- linux-2.4.12-official/drivers/video/sis/sisfb_530_accel.c	Thu Jan  1 08:00:00 1970
++++ linux-2.4.12-linuxbios/drivers/video/sis/sisfb_530_accel.c	Tue Nov  6 13:12:56 2001
+@@ -0,0 +1,572 @@
++/* sisfb_530_accel.c: 2D Hardware Acceleration for SiS 530/620/540/630/730
++ *
++ * Copyright 2001 Ollie Lho <ollie@sis.com.tw>
++ *
++ *	This program is free software; you can redistribute it and/or modify
++ *	it under the terms of the GNU General Public License as published by
++ *	the Free Software Foundation; either version 2 of the License, or
++ *	(at your option) any later version.
++ *
++ *	This program is distributed in the hope that it will be useful,
++ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *	GNU General Public License for more details.
++ *
++ *	You should have received a copy of the GNU General Public License
++ *	along with this program; if not, write to the Free Software
++ *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
++ *
++ *
++ * This driver is implemented by the Author for his own personal interests and is NOT a
++ * commitment NOR supported officially by Silicon Integrated Systems Corp. Please direct
++ * any bug report/question to the Author and don't bother SiS Technical Support Personell.
++ *
++ *
++ * Reference:
++ *	1. SiS 6326 AGP/PCI Graphics & Video Acclerator. Rev 1.0, May 12, 1997
++ *	2. SiS 530 Host, PCI, 3D Graphics & Memory Controller Datasheet,
++ *	   Preliminary v1.0 Nov. 10, 1998
++ *	3. sis_accel2.c in XFree86 3.3.6
++ *	4. sis300_accel.c in XFree86 4.0.2
++ */
++
++#include "sisfb_530_accel.h"
++
++/**
++ *	sisfb_wait_idle: - Wait for 2D and 3D engine being idle
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Polling the Connamd Status register until all the following condition is
++ *	meat.
++ *		bit 31 2D engine: 1 is idle,
++ * 		bit 30 3D engine: 1 is idle,
++ * 		bit 29 Command queue: 1 is empty
++ */
++static inline void
++sisfb_wait_idle(struct sisfb_info *sisfb)
++{
++	int count = 0x10;
++	volatile u32 dummy = 0x00000000;
++
++	while (dummy != 0xe0000000 && --count) {
++		dummy = sisfb_readl(sisfb, SIS530_2D_CMD_STATUS) & 0xe0000000;
++	}
++}
++
++/**
++ *	sisfb_wait_cmd_queue: - Wait for command queue space
++ *	@sisfb: SiS Frame Buffer structure
++ *	@length: Space need for command queue
++ *
++ *	Polling the Command Status register until there is more space
++ *	left for @length of command
++ */
++static inline void
++sisfb_wait_cmd_queue(struct sisfb_info *sisfb, unsigned length)
++{
++	do {
++		/* nothing */
++	} while ((sisfb_readl(sisfb, SIS530_2D_CMD_STATUS) & 0x1FFF) < (length));
++}
++
++static inline void
++sisfb_set_agp_base(struct sisfb_info *sisfb)
++{
++	u16 base;
++
++	switch (sisfb->current_par.bits_per_pixel) {
++	case 8:
++	case 24:
++	default:
++		base = 0x0000;
++		break;
++	case 16:
++		base = 0x8000;
++		break;
++	case 32:
++		base = 0xC000;
++		break;
++	}
++	sisfb_writew(sisfb, SIS530_2D_AGP_BASE, base);
++}
++
++/**
++ *	sisfb_fillrect: - Fill a rectangle area on framebuffer
++ *	@sisfb: SiS Frame Buffer structure
++ *	@x: X origin
++ *	@y: Y origin
++ *	@width: width
++ *	@height: height
++ *	@color: color to fill
++ *	@rop: Raster Operation for the fill
++ *
++ *	Fill a rectangle area on(off ??) the screen starting from (@x, @y) to
++ *	(@x + @width, @y + @height) with @color.
++ *	The raster operation @rop is used for solid fill or invert (via ROP_XOR).
++ *
++ *	Note:
++ *		1. The Source Pitch is dummy in this case.
++ *		2. We have to use Pattern ROPs with color in Pattern FG/BG Color Register.
++ */
++static void
++sisfb_fillrect(struct sisfb_info *sisfb, u32 x, u32 y,
++	       u32 width, u32 height, u32 color, u8 rop)
++{
++	u32 cmd;
++	u16 pitch = sisfb->current_par.line_length;
++	u32 base = sisfb->current_par.screen_offset;
++
++	/* FixMe: What the hell is this ?? */
++	sisfb_set_agp_base(sisfb);
++
++	/* setup Source & Desination Pitch */
++	sisfb_writew(sisfb, SIS530_2D_SRC_PITCH, 0 /* dummy*/);
++	sisfb_writew(sisfb, SIS530_2D_DST_PITCH, pitch);
++
++	/* disable merge clipping */
++	sisfb_writew(sisfb, SIS530_2D_DST_HEIGHT, -1);
++
++	/* setup Source & Destination Base Address == (0, screen_offset) */
++	sisfb_writel(sisfb, SIS530_2D_SRC_ADDR, 0);
++	sisfb_writel(sisfb, SIS530_2D_DST_ADDR, base);
++
++	/* setup Source X and Y origin  == (0, 0) */
++	sisfb_writew(sisfb, SIS530_2D_SRC_X, 0);
++	sisfb_writew(sisfb, SIS530_2D_SRC_Y, 0);
++
++	/* setup Destination X and Y origin  == (x, y) */
++	sisfb_writew(sisfb, SIS530_2D_DST_X, x);
++	sisfb_writew(sisfb, SIS530_2D_DST_Y, y);
++
++	/* setup Rectangle Width and Height */
++	sisfb_writew(sisfb, SIS530_2D_RECT_WIDTH, width);
++	sisfb_writew(sisfb, SIS530_2D_RECT_HEIGHT, height);
++
++	/* setup the foreground color in Pattern Foreground Color Register */
++	sisfb_writel(sisfb, SIS530_2D_PAT_FG_COLOR, color);
++
++	/* Command = BitBlt, X++, Y++, pattern = Pattern Foreground Color Register, ROP = rop */
++	cmd = SIS530_2D_CMD_BITBLT | SIS530_2D_CMD_PAT_FG_REG |
++		SIS530_2D_CMD_DIR_X_INC | SIS530_2D_CMD_DIR_Y_INC | (rop << 8);
++
++	/* Fire The Command !! */
++	sisfb_writel(sisfb, SIS530_2D_CMD, cmd);
++	sisfb_writel(sisfb, SIS530_2D_CMD_STATUS, 0);
++}
++
++/**
++ *	sisfb_copyrect: - Copy a rectangle area
++ *	@sisfb: SiS Frame Buffer structure
++ *	@srcx: X origin of source rectangle
++ *	@srcy: Y origin of source rectangle
++ *	@sdst: X origin of destination rectangle
++ *	@sdst: Y origin of destination rectangle
++ *	@width: width
++ *	@height: height
++ *
++ *	Copy a rectangle area on(off ??) the screen starting from (@xsrc, @ysrc) to
++ *	(@xsrc + @width, @ysrc + @height) to (@xdst, @ydst).
++ */
++static void
++sisfb_copyrect(struct sisfb_info *sisfb, u32 srcx, u32 srcy,
++	       u32 dstx, u32 dsty, u32 width, u32 height, u8 rop)
++{
++	u32 cmd;
++	u32 x_dir = SIS530_2D_CMD_DIR_X_INC, y_dir = SIS530_2D_CMD_DIR_Y_INC;
++	u16 pitch = sisfb->current_par.line_length;
++	u32 base = sisfb->current_par.screen_offset;
++
++	/* If the direction is "decreasing", the chip wants the addresses
++	 * to be at the other end, so we must be aware of that in our
++	 * calculations. */
++	if (srcx <= dstx) {
++		x_dir = SIS530_2D_CMD_DIR_X_DEC;
++		srcx += width - 1;
++		dstx += width - 1;
++	}
++
++	if (srcy <= dsty) {
++		y_dir = SIS530_2D_CMD_DIR_Y_DEC;
++		srcy += height - 1;
++		dsty += height - 1;
++	}
++
++	/* FixMe: What the hell is this ?? */
++	sisfb_set_agp_base(sisfb);
++
++	/* setup Source & Desination Pitch */
++	sisfb_writew(sisfb, SIS530_2D_SRC_PITCH, pitch);
++	sisfb_writew(sisfb, SIS530_2D_DST_PITCH, pitch);
++
++	/* disable merge clipping */
++	sisfb_writew(sisfb, SIS530_2D_DST_HEIGHT, -1);
++
++	/* setup Source & Destination Base Address == (screen_offset, screen_offset) */
++	sisfb_writel(sisfb, SIS530_2D_SRC_ADDR, base);
++	sisfb_writel(sisfb, SIS530_2D_DST_ADDR, base);
++
++	/* setup Source X and Y origin  == (srcx, srcy) */
++	sisfb_writew(sisfb, SIS530_2D_SRC_X, srcx);
++	sisfb_writew(sisfb, SIS530_2D_SRC_Y, srcy);
++
++	/* setup Destination X and Y origin  == (dstx, dsty) */
++	sisfb_writew(sisfb, SIS530_2D_DST_X, dstx);
++	sisfb_writew(sisfb, SIS530_2D_DST_Y, dsty);
++
++	/* setup Rectangle Width and Height */
++	sisfb_writew(sisfb, SIS530_2D_RECT_WIDTH, width);
++	sisfb_writew(sisfb, SIS530_2D_RECT_HEIGHT, height);
++
++	/* Command = BitBlt, X Dir, Y Dir, bitblt from video memory (ScrenToScreen), ROP = rop */
++	cmd = SIS530_2D_CMD_BITBLT | SIS530_2D_CMD_SRC_VIDEO |
++		x_dir | y_dir | (rop << 8);
++
++	/* Fire The Command !! */
++	sisfb_writel(sisfb, SIS530_2D_CMD, cmd);
++	sisfb_writel(sisfb, SIS530_2D_CMD_STATUS, 0);
++}
++
++static void
++sisfb_copyrect_transparent(struct sisfb_info *sisfb, u32 srcx, u32 srcy,
++			   u32 dstx, u32 dsty, u32 width, u32 height,
++			   u32 src_hi, u32 src_low,
++			   u32 dst_hi, u32 dst_low,
++			   u8 rop)
++{
++	u32 cmd;
++	u32 x_dir = SIS530_2D_CMD_DIR_X_INC, y_dir = SIS530_2D_CMD_DIR_Y_INC;
++	u16 pitch = sisfb->current_par.line_length;
++	u32 base = sisfb->current_par.screen_offset;
++
++	/* If the direction is "decreasing", the chip wants the addresses
++	 * to be at the other end, so we must be aware of that in our
++	 * calculations. */
++	if (srcx <= dstx) {
++		x_dir = SIS530_2D_CMD_DIR_X_DEC;
++		srcx += width - 1;
++		dstx += width - 1;
++	}
++
++	if (srcy <= dsty) {
++		y_dir = SIS530_2D_CMD_DIR_Y_DEC;
++		srcy += height - 1;
++		dsty += height - 1;
++	}
++
++	/* FixMe: What the hell is this ?? */
++	sisfb_set_agp_base(sisfb);
++
++	/* setup Source & Desination Pitch */
++	sisfb_writew(sisfb, SIS530_2D_SRC_PITCH, pitch);
++	sisfb_writew(sisfb, SIS530_2D_DST_PITCH, pitch);
++
++	/* disable merge clipping */
++	sisfb_writew(sisfb, SIS530_2D_DST_HEIGHT, -1);
++
++	/* setup Source & Destination Base Address == (screen_offset, screen_offset) */
++	sisfb_writel(sisfb, SIS530_2D_SRC_ADDR, base);
++	sisfb_writel(sisfb, SIS530_2D_DST_ADDR, base);
++
++	/* setup Source X and Y origin  == (srcx, srcy) */
++	sisfb_writew(sisfb, SIS530_2D_SRC_X, srcx);
++	sisfb_writew(sisfb, SIS530_2D_SRC_Y, srcy);
++
++	/* setup Destination X and Y origin  == (dstx, dsty) */
++	sisfb_writew(sisfb, SIS530_2D_DST_X, dstx);
++	sisfb_writew(sisfb, SIS530_2D_DST_Y, dsty);
++
++	/* setup Rectangle Width and Height */
++	sisfb_writew(sisfb, SIS530_2D_RECT_WIDTH, width);
++	sisfb_writew(sisfb, SIS530_2D_RECT_HEIGHT, height);
++
++	/* setup Source Color Key */
++	sisfb_writew(sisfb, SIS530_2D_TRANS_SRC_KEY_HIGH, src_hi);
++	sisfb_writew(sisfb, SIS530_2D_TRANS_SRC_KEY_LOW, src_low);
++
++	/* setup Destination Color Key */
++	sisfb_writew(sisfb, SIS530_2D_TRANS_DEST_KEY_HIGH, dst_hi);
++	sisfb_writew(sisfb, SIS530_2D_TRANS_DEST_KEY_LOW, dst_low);
++
++	/* Command = BitBlt, X Dir, Y Dir, bitblt from video memory (ScrenToScreen), ROP = rop */
++	cmd = SIS530_2D_CMD_TRANSPARENT_BITBLT | SIS530_2D_CMD_SRC_VIDEO |
++		x_dir | y_dir | (rop << 8);
++
++	/* Fire The Command !! */
++	sisfb_writel(sisfb, SIS530_2D_CMD, cmd);
++	sisfb_writel(sisfb, SIS530_2D_CMD_STATUS, 0);
++}
++
++/**
++ *	sisfb_8x8_color_expand: - Color expand with 8x8 monochrome bit mask
++ *	@sisfb: SiS Frame Buffer structure
++ *	@x: X origin
++ *	@y: Y origin
++ *	@width: width
++ *	@height: height
++ *	@fg: foreground color to expand
++ *	@bg: background color to expand
++ *	@rop: Raster Operation for the expand
++ *	@bitmap: 8x8 monochrom bitmap (64 bits)
++ *
++ *	Color expand the 8x8 bitmap @bitmap by setting bits with value 1 to @fg while bits
++ *	with value 0 to @bg. If @bg == -1 then background pixels are not expanded. Also fill
++ *	the rectangle (@x, @y) - (@x + @width, @y + @height) with the expanded pattern.
++ *
++ *	Note:
++ *		1. The Source Pitch is dummy in this case.
++ *		2. We have to use Pattern ROPs with color in Pattern FG/BG Color Register.
++ */
++static void
++sisfb_8x8_color_expand(struct sisfb_info * sisfb,  u32 x, u32 y, u32 width,
++		       u32 height, u32 fg, u32 bg, u8 rop, u8 * bitmap)
++{
++	u32 cmd;
++	u16 pitch = sisfb->current_par.line_length;
++	u32 base = sisfb->current_par.screen_offset;
++
++	/* FixMe: What the hell is this ?? */
++	sisfb_set_agp_base(sisfb);
++
++	/* setup Source & Desination Pitch */
++	sisfb_writew(sisfb, SIS530_2D_SRC_PITCH, 0 /*dummy*/);
++	sisfb_writew(sisfb, SIS530_2D_DST_PITCH, pitch);
++
++	/* disable merge clipping */
++	sisfb_writew(sisfb, SIS530_2D_DST_HEIGHT, -1);
++
++	/* setup Source & Destination Base Address == (0, screen_offset) */
++	sisfb_writel(sisfb, SIS530_2D_SRC_ADDR, 0);
++	sisfb_writel(sisfb, SIS530_2D_DST_ADDR, base);
++
++	/* setup Source X and Y origin  == (0, 0) */
++	sisfb_writew(sisfb, SIS530_2D_SRC_X, 0);
++	sisfb_writew(sisfb, SIS530_2D_SRC_Y, 0);
++
++	/* setup Destination X and Y origin  == (x, y) */
++	sisfb_writew(sisfb, SIS530_2D_DST_X, x);
++	sisfb_writew(sisfb, SIS530_2D_DST_Y, y);
++
++	/* setup Rectangle Width and Height */
++	sisfb_writew(sisfb, SIS530_2D_RECT_WIDTH, width);
++	sisfb_writew(sisfb, SIS530_2D_RECT_HEIGHT, height);
++
++	/* setup the foreground color in Pattern Foreground Color Register */
++	sisfb_writel(sisfb, SIS530_2D_PAT_FG_COLOR, fg);
++
++	/* setup the foreground color in Pattern Background Color Register */
++	sisfb_writel(sisfb, SIS530_2D_PAT_BG_COLOR, bg);
++
++	/* store 8x8 mono bitmap to Mono Mask Register */
++	sisfb_writel(sisfb, SIS530_2D_MONO_MASK, *(u32 *) bitmap);
++	sisfb_writel(sisfb, SIS530_2D_MONO_MASK + 4, *(u32 *) (bitmap + 4));
++
++	/* Command = Color Expand, X++, Y++, color = Mono Mask, ROP = rop */
++	cmd = SIS530_2D_CMD_COLOREXP | SIS530_2D_CMD_PAT_MONO_MASK |
++		SIS530_2D_CMD_DIR_X_INC | SIS530_2D_CMD_DIR_Y_INC | (rop << 8);
++
++	/* if background color == -1 then don't expand background pixels */
++	if (bg == -1)
++		cmd |= SIS530_2D_CMD_TRANSPARENT;
++
++	/* Fire The Command !! */
++	sisfb_writel(sisfb, SIS530_2D_CMD, cmd);
++	sisfb_writel(sisfb, SIS530_2D_CMD_STATUS, 0);
++}
++
++/**
++ *	sisfb_color_expand: - Color expand with Pattern Register
++ *	@sisfb: SiS Frame Buffer structure
++ *	@x: X origin
++ *	@y: Y origin
++ *	@width: width
++ *	@height: height
++ *	@fg: foreground color to expand
++ *	@bg: background color to expand
++ *	@rop: Raster Operation for the expand
++ *	@bitmap: monochrom bitmap (384 bytes max)
++ *	@size: size of @bitmap
++ *
++ *	Color expand the bitmap @bitmap by setting bits with value 1 to @fg while bits
++ *	with value 0 to @bg. If @bg == -1 then background pixels are not expanded. The
++ *	bitmap is transfered to hardware Pattern Register and can be as large as 384 bytes,
++ *	effectively expanding 3072 pixels in a single operation.
++ *
++ *	The rectangle (@x, @y) - (@x + @width, @y + @height) is filled with the expanded
++ *	pattern. If the size of @bitmap is samller then 384 bytes and the size of the
++ *	rectangle is larger then 3072 pixels, some pixels in the rectangle are filled
++ *	with "garbage". 
++ *
++ *	Note:
++ *		1. The Source Pitch is width/8 then rounded up (i.e. in units of byte).
++ *		2. We have to use Normal ROPs with color in Source FG/BG Color Register.
++ */
++static void
++sisfb_color_expand(struct sisfb_info * sisfb,  u32 x, u32 y, u32 width,
++		   u32 height, u32 fg, u32 bg, u8 rop, u8 * bitmap, u32 size)
++{
++	u32 cmd;
++	u16 pitch = sisfb->current_par.line_length;
++	u32 base = sisfb->current_par.screen_offset;
++
++	/* FixMe: What the hell is this ?? */
++	sisfb_set_agp_base(sisfb);
++
++	/* setup Source & Desination Pitch */
++	sisfb_writew(sisfb, SIS530_2D_SRC_PITCH, (width + 7) >> 3);
++	sisfb_writew(sisfb, SIS530_2D_DST_PITCH, pitch);
++
++	/* disable merge clipping */
++	sisfb_writew(sisfb, SIS530_2D_DST_HEIGHT, -1);
++
++	/* setup Source & Destination Base Address == (0, screen_offset) */
++	sisfb_writel(sisfb, SIS530_2D_SRC_ADDR, 0);
++	sisfb_writel(sisfb, SIS530_2D_DST_ADDR, base);
++
++	/* setup Source X and Y origin  == (0, 0) */
++	sisfb_writew(sisfb, SIS530_2D_SRC_X, 0);
++	sisfb_writew(sisfb, SIS530_2D_SRC_Y, 0);
++
++	/* setup Destination X and Y origin  == (x, y) */
++	sisfb_writew(sisfb, SIS530_2D_DST_X, x);
++	sisfb_writew(sisfb, SIS530_2D_DST_Y, y);
++
++	/* setup Rectangle Width and Height */
++	sisfb_writew(sisfb, SIS530_2D_RECT_WIDTH, width);
++	sisfb_writew(sisfb, SIS530_2D_RECT_HEIGHT, height);
++
++	/* setup the foreground color in Source Foreground Color Register */
++	sisfb_writel(sisfb, SIS530_2D_SRC_FG_COLOR, fg);
++
++	/* setup the foreground color in Source Background Color Register */
++	sisfb_writel(sisfb, SIS530_2D_SRC_BG_COLOR, bg);
++
++	/* transfer bitmap pattern to pattern register */
++	memcpy_toio(sisfb->mmio_base_virt + SIS530_2D_PATTERN_REG,
++		    bitmap, size);
++	
++	/* Command = Color Expand, X++, Y++, color = Pattern Register, ROP = rop */
++	cmd = SIS530_2D_CMD_COLOREXP |SIS530_2D_CMD_PAT_PAT_REG |
++		SIS530_2D_CMD_DIR_X_INC | SIS530_2D_CMD_DIR_Y_INC | (rop << 8);
++
++	/* if background color == -1 then don't expand background pixels */
++	if (bg == -1)
++		cmd |= SIS530_2D_CMD_TRANSPARENT;
++
++	/* Fire The Command !! */
++	sisfb_writel(sisfb, SIS530_2D_CMD, cmd);
++	sisfb_writel(sisfb, SIS530_2D_CMD_STATUS, 0);
++}
++
++static void
++sisfb_drawline(struct sisfb_info * sisfb, u32 srcx, u32 srcy,
++	       u32 dstx, u32 dsty, u32 fg, u32 bg, u8 rop)
++{
++	u32 cmd;
++	u16 pitch = sisfb->current_par.line_length;
++	u32 base = sisfb->current_par.screen_offset;
++
++	/* FixMe: What the hell is this ?? */
++	sisfb_set_agp_base(sisfb);
++
++	/* setup Source & Desination Pitch */
++	sisfb_writew(sisfb, SIS530_2D_SRC_PITCH, 1);
++	sisfb_writew(sisfb, SIS530_2D_DST_PITCH, pitch);
++
++	/* disable merge clipping */
++	sisfb_writew(sisfb, SIS530_2D_DST_HEIGHT, -1);
++
++	/* setup Source & Destination Base Address == (0, screen_offset) */
++	sisfb_writel(sisfb, SIS530_2D_SRC_ADDR, 0);
++	sisfb_writel(sisfb, SIS530_2D_DST_ADDR, base);
++
++	/* setup Source X and Y origin  == (srcx, srcy) */
++	sisfb_writew(sisfb, SIS530_2D_LINE_X0, srcx);
++	sisfb_writew(sisfb, SIS530_2D_LINE_Y0, srcy);
++
++	/* setup Destination X and Y origin  == (dstx, dsty) */
++	sisfb_writew(sisfb, SIS530_2D_LINE_X1, dstx);
++	sisfb_writew(sisfb, SIS530_2D_LINE_Y1, dsty);
++
++	/* setup Line Segement Count == 1 */
++	sisfb_writew(sisfb, SIS530_2D_LINE_COUNT, 1);
++	sisfb_writew(sisfb, SIS530_2D_LINE_STYLE_PERIOD, 0);
++
++	/* setup the foreground color in Pattern Foreground Color Register */
++	sisfb_writel(sisfb, SIS530_2D_PAT_FG_COLOR, fg);
++
++	/* setup the foreground color in Pattern Background Color Register */
++	sisfb_writel(sisfb, SIS530_2D_PAT_BG_COLOR, bg);
++
++	/* Command = Color Expand, X++, Y++, color = Pattern Foreground Register, ROP = rop */
++	cmd = SIS530_2D_CMD_LINE_DRAW | SIS530_2D_CMD_PAT_FG_REG |
++		(rop << 8);
++
++	/* Fire The Command !! */
++	sisfb_writel(sisfb, SIS530_2D_CMD, cmd);
++	sisfb_writel(sisfb, SIS530_2D_CMD_STATUS, 0);
++}
++
++static void
++sisfb_drawline_style(struct sisfb_info * sisfb, u32 srcx, u32 srcy,
++		     u32 dstx, u32 dsty, u32 fg, u32 bg, u8 rop, u8 * bitmap)
++{
++	u32 cmd;
++	u16 pitch = sisfb->current_par.line_length;
++	u32 base = sisfb->current_par.screen_offset;
++
++	/* FixMe: What the hell is this ?? */
++	sisfb_set_agp_base(sisfb);
++
++	/* setup Source & Desination Pitch */
++	sisfb_writew(sisfb, SIS530_2D_SRC_PITCH, 1);
++	sisfb_writew(sisfb, SIS530_2D_DST_PITCH, pitch);
++
++	/* disable merge clipping */
++	sisfb_writew(sisfb, SIS530_2D_DST_HEIGHT, -1);
++
++	/* setup Source & Destination Base Address == (0, 0) */
++	sisfb_writel(sisfb, SIS530_2D_SRC_ADDR, 0);
++	sisfb_writel(sisfb, SIS530_2D_DST_ADDR, base);
++
++	/* setup Source X and Y origin  == (srcx, srcy) */
++	sisfb_writew(sisfb, SIS530_2D_LINE_X0, srcx);
++	sisfb_writew(sisfb, SIS530_2D_LINE_Y0, srcy);
++
++	/* setup Destination X and Y origin  == (dstx, dsty) */
++	sisfb_writew(sisfb, SIS530_2D_LINE_X1, dstx);
++	sisfb_writew(sisfb, SIS530_2D_LINE_Y1, dsty);
++
++	/* setup Line Segment Count == 1 */
++	sisfb_writew(sisfb, SIS530_2D_LINE_COUNT, 1);
++	sisfb_writew(sisfb, SIS530_2D_LINE_STYLE_PERIOD, 0);
++
++	/* setup the foreground color in Pattern Foreground Color Register */
++	sisfb_writel(sisfb, SIS530_2D_PAT_FG_COLOR, fg);
++
++	/* setup the foreground color in Pattern Background Color Register */
++	sisfb_writel(sisfb, SIS530_2D_PAT_BG_COLOR, bg);
++
++	/* transfer bitmap pattern to Line Style register */
++	sisfb_writel(sisfb, SIS530_2D_LINE_STYLE_0, * bitmap);
++	sisfb_writel(sisfb, SIS530_2D_LINE_STYLE_1, *(bitmap + 1));
++	
++	/* Command = Color Expand, X++, Y++, color = Pattern Register, ROP = rop */
++	cmd = SIS530_2D_CMD_LINE_DRAW | SIS530_2D_CMD_PAT_FG_REG |
++		SIS530_2D_CMD_LINE_STLYE_ENABLE | (rop << 8);
++
++	/* Fire The Command !! */
++	sisfb_writel(sisfb, SIS530_2D_CMD, cmd);
++	sisfb_writel(sisfb, SIS530_2D_CMD_STATUS, 0);
++}
++
++struct sisfb_accelerator sis530_accelerator = {
++	fillrect:		sisfb_fillrect,
++	copyrect:		sisfb_copyrect,
++	copyrect_transparent:	sisfb_copyrect_transparent,
++
++	color_expand_8x8:	sisfb_8x8_color_expand,
++	color_expand:		sisfb_color_expand,
++
++	drawline:		sisfb_drawline,
++	drawline_style:		sisfb_drawline_style,
++};
+diff -urN linux-2.4.12-official/drivers/video/sis/sisfb_530_accel.h linux-2.4.12-linuxbios/drivers/video/sis/sisfb_530_accel.h
+--- linux-2.4.12-official/drivers/video/sis/sisfb_530_accel.h	Thu Jan  1 08:00:00 1970
++++ linux-2.4.12-linuxbios/drivers/video/sis/sisfb_530_accel.h	Tue Nov  6 13:17:46 2001
+@@ -0,0 +1,76 @@
++#ifndef __SISFB_530_ACCEL__
++#define __SISFB_530_ACCEL__
++
++#ifdef __KERNEL__
++#include "sisfb_lite.h"
++#endif __KERNEL__
++
++#include "sisfb_accel.h"
++
++enum sis530_2d_registers {
++	SIS530_2D_SRC_ADDR     = 0x8200,
++	SIS530_2D_SRC_PITCH    = 0x8204, SIS530_2D_AGP_BASE     = 0x8206,
++	SIS530_2D_SRC_Y        = 0x8208, SIS530_2D_SRC_X        = 0x820A,
++	SIS530_2D_DST_Y        = 0x820C, SIS530_2D_DST_X        = 0x820E,
++	SIS530_2D_DST_ADDR     = 0x8210,
++	SIS530_2D_DST_PITCH    = 0x8214, SIS530_2D_DST_HEIGHT   = 0x8216,
++	SIS530_2D_RECT_WIDTH   = 0x8218, SIS530_2D_RECT_HEIGHT  = 0x821A,
++	SIS530_2D_PAT_FG_COLOR = 0x821C,
++	SIS530_2D_PAT_BG_COLOR = 0x8220,
++	SIS530_2D_SRC_FG_COLOR = 0x8224,
++	SIS530_2D_SRC_BG_COLOR = 0x8228,
++	SIS530_2D_MONO_MASK    = 0x822C,
++	SIS530_2D_LEFT_CLIP    = 0x8234, SIS530_2D_TOP_CLIP     = 0x8236,
++	SIS530_2D_RIGHT_CLIP   = 0x8238, SIS530_2D_BOT_CLIP     = 0x823A,
++	SIS530_2D_CMD          = 0x823C,
++	SIS530_2D_CMD_STATUS   = 0x8240,
++	SIS530_2D_PATTERN_REG  = 0x8300
++};
++
++enum sis530_2d_registers_drawline {
++	SIS530_2D_LINE_X0      = 0x8208, SIS530_2D_LINE_Y0           = 0x820A,
++	SIS530_2D_LINE_X1      = 0x820C, SIS530_2D_LINE_Y1           = 0x820E,
++	SIS530_2D_LINE_COUNT   = 0x8218, SIS530_2D_LINE_STYLE_PERIOD = 0x821A,
++	SIS530_2D_LINE_STYLE_0 = 0x822C,
++	SIS530_2D_LINE_STYLE_1 = 0x8230,
++	SIS530_2D_LINE_Xn      = 0x8300, SIS530_2D_LINE_Yn           = 0x8302,
++};
++
++enum sis530_2d_register_transparent_bitblt {
++	SIS530_2D_TRANS_DEST_KEY_HIGH = 0x821C,
++	SIS530_2D_TRANS_DEST_KEY_LOW  = 0x8220,
++	SIS530_2D_TRANS_SRC_KEY_HIGH  = 0x8224,
++	SIS530_2D_TRANS_SRC_KEY_LOW   = 0x8228,
++};
++
++enum sis530_2d_cmd_type {
++	SIS530_2D_CMD_BITBLT             = 0x00, SIS530_2D_CMD_COLOREXP           = 0x01,
++	SIS530_2D_CMD_ENCOLOREXP         = 0x02, SIS530_2D_CMD_MULTIPLE_SCANLINE  = 0x03,
++	SIS530_2D_CMD_LINE_DRAW          = 0x04, SIS530_2D_CMD_TRAPEZOID_FILL     = 0x05,
++	SIS530_2D_CMD_TRANSPARENT_BITBLT = 0x06
++};
++
++enum sis530_2d_cmd_control {
++	SIS530_2D_CMD_SRC_VIDEO     = 0x00,
++	SIS530_2D_CMD_SRC_SYSTEM    = 0x10,
++	SIS530_2D_CMD_SRC_AGP       = 0x20,
++
++	SIS530_2D_CMD_PAT_FG_REG    = 0x00,
++	SIS530_2D_CMD_PAT_PAT_REG   = 0x40,
++	SIS530_2D_CMD_PAT_MONO_MASK = 0x80,
++
++	SIS530_2D_CMD_DIR_X_INC     = 0x00010000,
++	SIS530_2D_CMD_DIR_X_DEC     = 0x00000000,
++	SIS530_2D_CMD_DIR_Y_INC     = 0x00020000,
++	SIS530_2D_CMD_DIR_Y_DEC     = 0x00000000,
++
++	SIS530_2D_CMD_RECT_CLIP_EN    = 0x00040000,
++	SIS530_2D_CMD_MERGE_CLIP_DIS  = 0x04000000,
++	SIS530_2D_CMD_TRANSPARENT     = 0x00100000,
++
++	SIS530_2D_CMD_LINE_STLYE_ENABLE = 0x00800000
++};
++
++extern struct sisfb_accelerator sis530_accelerator;
++
++#endif /* __SISFB_530_ACCEL__ */
+diff -urN linux-2.4.12-official/drivers/video/sis/sisfb_530_core.c linux-2.4.12-linuxbios/drivers/video/sis/sisfb_530_core.c
+--- linux-2.4.12-official/drivers/video/sis/sisfb_530_core.c	Thu Jan  1 08:00:00 1970
++++ linux-2.4.12-linuxbios/drivers/video/sis/sisfb_530_core.c	Tue Nov  6 13:12:56 2001
+@@ -0,0 +1,333 @@
++/* sisfb_530_core.c: Setting Video Mode for SiS 530/620 Integrated VGA
++ *
++ * Copyright 2001 Ollie Lho <ollie@sis.com.tw>
++ *
++ *	This program is free software; you can redistribute it and/or modify
++ *	it under the terms of the GNU General Public License as published by
++ *	the Free Software Foundation; either version 2 of the License, or
++ *	(at your option) any later version.
++ *
++ *	This program is distributed in the hope that it will be useful,
++ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *	GNU General Public License for more details.
++ *
++ *	You should have received a copy of the GNU General Public License
++ *	along with this program; if not, write to the Free Software
++ *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
++ *
++ *
++ * This driver is implemented by the Author for his own personal interests and is NOT a
++ * commitment NOR supported officially by Silicon Integrated Systems Corp. Please direct
++ * any bug report/question to the Author and don't bother SiS Technical Support Personell.
++ *
++ *
++ * Reference:
++ *	1. SiS 530 Host, PCI, 3D Graphics & Memory Controller Datasheet,
++ *	   Preliminary v1.0 Nov. 10, 1998
++ */
++
++#include "sisfb_lite.h"
++#include "sisfb_530_core.h"
++
++static void sisfb_get_clock(struct sisfb_info * sisfb, struct sisfb_clock_param * clock, int which);
++static void sisfb_set_clock(struct sisfb_info * sisfb, struct sisfb_clock_param * clock, int which);
++static void sisfb_set_memory_clocks(struct sisfb_info * sisfb);
++static int sisfb_get_memory_size(struct sisfb_info * sisfb);
++static void sisfb_set_crt1_crtc_regs(struct sisfb_info * sisfb, struct sisfb_par * par);
++static void sisfb_set_crt1_mode_regs(struct sisfb_info * sisfb, struct sisfb_par * par);
++static void sisfb_set_crt1_pitch(struct sisfb_info * sisfb, struct sisfb_par * par);
++static void sisfb_set_crt1_offset(struct sisfb_info * sisfb, struct sisfb_par * par);
++static void sisfb_set_crt1_vclk(struct sisfb_info * sisfb, struct sisfb_par * par);
++static int sisfb_set_fifo_thresholds(struct sisfb_info * sisfb, struct sisfb_par * par);
++
++/**
++ *	sisfb_get_clock: - Read the clock generator parameters
++ *	@sisfb: SiS Frame Buffer structure
++ *	@clock: Paramters of the clock generator (return)
++ *	@which: Which clock generator to be read.
++ *
++ *	Read the clock generator parameters to @clock form the hardware. The desired
++ *	clock generator is specified by @which. Valid values are MCLK for memory clock,
++ *	VCLK for video dot clock.
++ */
++static void
++sisfb_get_clock(struct sisfb_info * sisfb, struct sisfb_clock_param * clock, int which)
++{
++	u8 data, data1;
++
++	/* get divider and numerator */
++	data = sisfb_get_seq_reg(sisfb, which);
++	clock->divider   = ((data & 0x80) >> 7) + 1;
++	clock->numerator =  (data & ~0x80) + 1;
++
++	/* get denumerator and post scalar */
++	data = sisfb_get_seq_reg(sisfb, which + 1);
++	clock->denumerator = (data & 0x1F) + 1;
++
++	/* Bit 2 of post scaler is in SR13 */
++	data1 = sisfb_get_seq_reg(sisfb, SIS530_CLK);
++	if (which == SIS530_MCLK) {
++		data1 &= 0x80;
++		data1 >>= 5;
++	} else {
++		data1 &= 0x40;
++		data1 >>= 4;
++	}
++	clock->post_scalar = ((data & 0x60) >> 5) | data1;
++
++	/* get VCO gain */
++	data = sisfb_get_seq_reg(sisfb, which + 1);
++	clock->vco_gain = (data >> 7);
++}
++
++/**
++ *	sisfb_set_clock: - Set the clock generator parameters
++ *	@sisfb: SiS Frame Buffer structure
++ *	@clock: Paramters of the clock generator
++ *	@which: Which clock generator to be read.
++ *
++ *	Set the clock generator parameters @clock to the hardware. The desired clock
++ *	generator is specified by @which. Valid values are MCLK for memory clock,
++ *	VCLK for video dot clock.
++ */
++static void
++sisfb_set_clock(struct sisfb_info * sisfb, struct sisfb_clock_param * clock, int which)
++{
++	u8 data, data1;
++
++	/* set divider and numerator */
++	data  = (clock->numerator - 1) & 0x7F;
++	data |= (clock->divider   - 1) ? 0x80 : 0x00;
++	sisfb_set_seq_reg(sisfb, which, data);
++
++	/* set denumerator and post scalar */
++	data  = (clock->denumerator - 1) & 0x1F;
++	data |= ((clock->post_scalar - 1) & 0x03) << 5;
++	/* set VCO gain */
++	data |= clock->vco_gain ? 0x80 : 0x00;
++	sisfb_set_seq_reg(sisfb, which + 1, data);
++
++	/* set Bit 2 of post scalar
++	 * FixMe: sis86c201.c says SIS530_CLK should be set fist  */
++	data = sisfb_get_seq_reg(sisfb, SIS530_CLK);
++	if (which == SIS530_MCLK) {
++		data &= ~0x80;
++		data |= ((clock->post_scalar - 1) & 0x04) << 5;
++	} else {
++		data &= ~0x40;
++		data |= ((clock->post_scalar - 1) & 0x04) << 4;
++	}
++	sisfb_set_seq_reg(sisfb, SIS530_CLK, data);	
++}
++
++/**
++ *	sisfb_set_memory_clocks: - Set memory bus clock rate
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Set the memory clocks for VGA core.
++ */
++extern unsigned long mclk, eclk;
++static void __devinit
++sisfb_set_memory_clocks(struct sisfb_info * sisfb)
++{
++	struct sisfb_clock_param clock;
++
++	/* set the clock rate according to the option */
++	sisfb_calc_clock_param(&clock, mclk);
++	sisfb_set_clock(sisfb, &clock, SIS530_MCLK);
++
++	/* read the clock rate back and show to user */
++	sisfb_get_clock(sisfb, &clock, SIS300_MCLK);
++	printk(KERN_INFO "sisfb_lite: 2D Memory Clock = %6ld KHz\n",
++	       sisfb_calc_clock_freq(&clock));
++}
++
++/**
++ *	sisfb_get_memory_size: - Get framebuffer memory size
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Return 0 on Success, -ENODEV if SMA is incorrectly/not configured
++ *
++ *	Get the framebuffer memory size from host controller. For SiS 530/620 Families,
++ *	the Shared Memory Area (SMA) is enabled in Bit 6, size is stored in Bit 4..5 of
++ *	Register 0x63, Host Bridge (i.e. PCI 0:0.0).
++ *
++ *	The register is set by DRAM initialzation code during boot process and can
++ *	not be re-configured once the DRAM has been turned on. 
++ */
++#define SIS530_BANKENABLE 0x63
++static int __devinit
++sisfb_get_memory_size(struct sisfb_info * sisfb)
++{
++	struct pci_dev * host = NULL;
++	u8 dram_status, sma_size, sma_size_bits;
++
++	if ((host = pci_find_slot(0, 0)) == NULL) {
++		printk(KERN_EMERG "sisfb_lite: Can not find Host Controller !!!\n");
++		return -ENODEV;
++	}
++
++	/* get SMA configuration from register 0x63 */
++	pci_read_config_byte(host, SIS530_BANKENABLE, &dram_status);
++
++	/* SMA not enabled */
++	if ((dram_status & 0x40) != 0x40)
++		return -ENODEV;
++
++	/* compute Shared Menory Area (SMA) size in Mega Bytes */
++	sma_size_bits = (dram_status >> 4) & 0x3;
++	sma_size = (2 << sma_size_bits);
++	sisfb->video_size_virt = sma_size * 1024 * 1024;
++
++	return 0;
++}
++
++static void
++sisfb_set_crt1_crtc_regs(struct sisfb_info * sisfb, struct sisfb_par * par)
++{
++	u8 data;
++	u16 htotal, hdispend, hsyncstart, hsyncend, hblankstart, hblankend;
++	u16 vtotal, vdispend, vsyncstart, vsyncend, vblankstart, vblankend;
++	u16 overflow, overflow_h1, overflow_h2, overflow_v;
++
++	/* first convert 'par' to "screen" unit */
++	htotal       = (par->htotal     >> 3) - 5;
++	hdispend     = (par->hdispend   >> 3) - 1;
++	hblankstart  = (par->hsyncstart >> 3) - 1;
++	hblankend    = (par->hsyncend   >> 3);
++	hsyncstart   = (par->hsyncstart >> 3);
++	hsyncend     = (par->hsyncend   >> 3);
++
++	vtotal       = par->vtotal     - 2;
++	vdispend     = par->vdispend   - 1;
++	vsyncstart   = par->vsyncstart;
++	vsyncend     = par->vsyncend;
++	vblankstart  = par->vsyncstart;
++	vblankend    = par->vsyncend   + 1;
++
++	/* the "overlow" bits (8:15) of the screen parameters are spread all over
++	 * various registers */ 
++	overflow     = 
++		((vsyncstart  & 0x200) >> 2) | /* Bit 7, Vertical Retrace Start Bit 9 */
++		((vdispend    & 0x200) >> 3) | /* Bit 6, Vertical Display End   Bit 9 */
++		((vtotal      & 0x200) >> 4) | /* Bit 5, Vertical Total         Bit 9 */
++		0x10                         | /* Bit 4, line compare           Bit 8 */
++		((vblankstart & 0x100) >> 5) | /* Bit 3, Vertical Blank   Start Bit 8 */
++		((vsyncstart  & 0x100) >> 6) | /* Bit 2, Vertical Retrace Start Bit 8 */
++		((vdispend    & 0x100) >> 7) | /* Bit 1, Vertical Display End   Bit 8 */
++		((vtotal      & 0x100) >> 8);  /* Bit 0, Vertical Total         Bit 8 */
++
++	overflow_v  =
++		((vsyncstart  & 0x400) >> 7) | /* Bit 3, Vertical Retrace Start Bit 10 */
++		((vblankstart & 0x400) >> 8) | /* Bit 2, Vertical Blank   Start Bit 10 */
++		((vdispend    & 0x400) >> 9) | /* Bit 1, Vertical Display End   Bit 10 */
++		((vtotal      & 0x400) >> 10); /* Bit 0, Vertical Total         Bit 10 */
++
++	overflow_h  =
++		((hblankend   & 0x040) >> 2) | /* Bit 4, Horizontal Blank   End   Bit 6 */
++		((hsyncstart  & 0x100) >> 5) | /* Bit 3, Horizontal Retrace Start Bit 8 */
++		((hblankstart & 0x100) >> 6) | /* Bit 2, Horizontal Blank   Start Bit 8 */
++		((hdispend    & 0x100) >> 7) | /* Bit 1, Horizontal Display End   Bit 8 */
++		((htotal      & 0x100) >> 8);  /* Bit 0, Horizontal Total         Bit 8 */
++
++	/* write 'par' to hardware registers, Standard VGA part, low order bits */
++	sisfb_set_crtc_reg(sisfb, 0x00, htotal);
++	sisfb_set_crtc_reg(sisfb, 0x01, hdispend);
++	sisfb_set_crtc_reg(sisfb, 0x02, hblankstart);
++	sisfb_set_crtc_reg(sisfb, 0x03,
++			   0x80 |               /* Bit 7, Enable Vertical Retrace Start/End */
++			   (hblankend & 0x1f)); /* Bit 0:4,  Horizontal Blank  End Bit 0:4  */
++	sisfb_set_crtc_reg(sisfb, 0x04, hsyncstart);
++	sisfb_set_crtc_reg(sisfb, 0x05,
++			   (hblankend & 0x20) << 2 | /* Bit 7,   Horizontal Blank   End Bit 5   */
++			   (hsyncend & 0x1f));       /* Bit 0:4, Horizontal Retrace End Bit 0:4 */
++	sisfb_set_crtc_reg(sisfb, 0x06, vtotal);
++	sisfb_set_crtc_reg(sisfb, 0x09,
++			   0x40 |                       /* Bit 6, line compare         Bit 9 */
++			   (vblankstart & 0x200) >> 4); /* Bit 5, Vertical Blank Start Bit 9 */
++	sisfb_set_crtc_reg(sisfb, 0x10, vsyncstart);
++	sisfb_set_crtc_reg(sisfb, 0x11, (vsyncend & 0x0F) | 0x20);
++	sisfb_set_crtc_reg(sisfb, 0x12, vdispend);
++	sisfb_set_crtc_reg(sisfb, 0x15, vblankstart);
++	sisfb_set_crtc_reg(sisfb, 0x16, vblankend);
++
++	/* Standard VGA part, overflow bits */
++	sisfb_set_crtc_reg(sisfb, 0x07, overflow);
++
++	/* Extended Registers, overflow bits */
++	data = sisfb_get_seq_reg(sisfb, 0x0A) & 0xF0;
++	sisfb_set_seq_reg(sisfb, 0x0A, data | overflow_v);
++	data = sisfb_get_seq_reg(sisfb, 0x12) & 0xE0;
++	sisfb_set_seq_reg(sisfb, 0x0B, data | overflow_h);
++}
++
++/**
++ *	sisfb_set_crt1_mode_regs: - Set misc video mode registers
++ *	@sisfb: SiS Frame Buffer structure
++ *	@par: hardware specific parameters
++ *
++ *	Set color depth and enable 2D engine. The display line width register SR 0x10
++ *	is also enabled.
++ */
++static void
++sisfb_set_crt1_mode_regs(struct sisfb_info * sisfb, struct sisfb_par * par)
++{
++	u8 tmp;
++
++	/* enable Linear Addressing, Enhanced Graphics/Text Mode */
++	tmp = 0x83;
++	switch (par->bits_per_pixel) {
++	case 32:
++		tmp |= 0x10;
++		break;
++	case 16:
++		tmp |= 0x08;
++		break;
++	case 8:
++	default:
++		break;
++	}
++	sisfb_set_seq_reg(sisfb, 0x06, tmp);
++
++	/* enable 32 bpp ture color (instead of 24 ??) */
++	if (par->bits_per_pixel == 32) {
++		tmp = sisfb_get_seq_reg(sisfb, 0x09) | 0x80;
++		sisfb_set_seq_reg(sisfb, 0x09, tmp);
++		tmp = sisfb_get_seq_reg(sisfb, 0x0B) | 0x80;
++		sisfb_set_seq_reg(sisfb, 0x0B, tmp);
++	}
++
++	/* enable 2D engine programming, disable logical screen width
++	 * FixMe: move to init.c */
++	tmp = sisfb_get_seq_reg(sisfb, 0x27) | 0x70;
++	sisfb_set_seq_reg(sisfb, 0x27, tmp);
++}
++
++/**
++ *	sisfb_set_crt1_pitch: - Set screen pitch registers for CRT1
++ *	@sisfb: SiS Frame Buffer structure
++ *	@par: hardware specific parameters
++ *
++ *	Set the screen pitch registers for CRT1. Screen pitch refers to the memory address
++ *	difference between two dots of the same col on two vertically neighboring scan lines.
++ *	The CRTC 0x13 is called "offset register" in VGA literatures.
++ */
++static void
++sisfb_set_crt1_pitch(struct sisfb_info * sisfb, struct sisfb_par * par)
++{
++	u8 data;
++	u16 pitch = par->line_length >> 3;
++	u8 line_length = ((par->line_length + 63) >> 6) + 1;
++
++	/* disable line compare 
++	 * FixMe: move to init.c */
++	data = sisfb_get_seq_reg(sisfb, 0x38) | 0x20;
++	sisfb_set_seq_reg(sisfb, 0x38, data);
++
++	/* screen pitch, in units of double word */
++	sisfb_set_crtc_reg(sisfb, 0x13, pitch & 0xFF);
++	tmp = sisfb_get_seq_reg(sisfb, 0x0A);
++	sisfb_set_seq_reg(sisfb,  0x0A, (pitch >> 8) & tmp);
++}
++
+diff -urN linux-2.4.12-official/drivers/video/sis/sisfb_530_core.h linux-2.4.12-linuxbios/drivers/video/sis/sisfb_530_core.h
+--- linux-2.4.12-official/drivers/video/sis/sisfb_530_core.h	Thu Jan  1 08:00:00 1970
++++ linux-2.4.12-linuxbios/drivers/video/sis/sisfb_530_core.h	Tue Nov  6 13:12:56 2001
+@@ -0,0 +1,17 @@
++#ifndef __SISFB_530_CORE__
++#define __SISFB_530_CORE__
++
++#define TURBO_QUEUE_AREA_SIZE 0x80000	/* 512K */
++#define HW_CURSOR_AREA_SIZE   0x1000	/* 4K */
++
++enum clock_gen_base {
++	SIS530_CLK  = 0x13,
++	SIS530_MCLK = 0x28,
++	SIS530_DCLK = 0x2A,
++};
++
++extern int sisfb_config_memory(struct sisfb_info * sisfb);
++extern int sisfb_pan_display_300(struct fb_var_screeninfo * var, struct sisfb_info * sisfb);
++extern void sisfb_set_par_300(struct sisfb_par *par, struct sisfb_info * sisfb);
++
++#endif /* __SISFB_300_CORE__ */
+diff -urN linux-2.4.12-official/drivers/video/sis/sisfb_530_init.c linux-2.4.12-linuxbios/drivers/video/sis/sisfb_530_init.c
+--- linux-2.4.12-official/drivers/video/sis/sisfb_530_init.c	Thu Jan  1 08:00:00 1970
++++ linux-2.4.12-linuxbios/drivers/video/sis/sisfb_530_init.c	Tue Nov  6 13:12:56 2001
+@@ -0,0 +1,113 @@
++/* sisfb_530_init.c: Initialization code for SiS 530/620 Integrated VGA
++ *
++ * Copyright 2001 Ollie Lho <ollie@sis.com.tw>
++ *
++ *	This program is free software; you can redistribute it and/or modify
++ *	it under the terms of the GNU General Public License as published by
++ *	the Free Software Foundation; either version 2 of the License, or
++ *	(at your option) any later version.
++ *
++ *	This program is distributed in the hope that it will be useful,
++ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *	GNU General Public License for more details.
++ *
++ *	You should have received a copy of the GNU General Public License
++ *	along with this program; if not, write to the Free Software
++ *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
++ *
++ *
++ * This driver is implemented by the Author for his own personal interests and is NOT a
++ * commitment NOR supported officially by Silicon Integrated Systems Corp. Please direct
++ * any bug report/question to the Author and don't bother SiS Technical Support Personell.
++ *
++ *
++ * Reference:
++ *	1. SiS 6326 AGP/PCI Graphics & Video Acclerator. Rev 1.0, May 12, 1997
++ *	2. SiS 530 Host, PCI, 3D Graphics & Memory Controller Datasheet,
++ *	   Preliminary v1.0 Nov. 10, 1998
++ */
++
++#include "sisfb_lite.h"
++#include "sisfb_530_core.h"
++#include "sisfb_530_accel.h"
++
++/**
++ *	sisfb_enable_turbo_queue: - Set Turbo Queue size and enable it
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Commands to the Graphics Engine (2D, 3D, etc) are buffered in
++ *	the Video Memory which is called Turbo Queue in SiS VGA Specs.
++ *	Usually this buffer area takes the last few KBs in the Video RAM.
++ */
++/* default turbo queue size == 32KB */
++static int tqueue_size = 0x8000;
++static void __devinit
++sisfb_enable_turbo_queue(struct sisfb_info * sisfb)
++{
++	u32 tqueue_pos;
++	u8 tqueue_status;
++
++	/* turbo queue position, in units of 32KB */
++	tqueue_pos = sisfb->video_size_virt - tqueue_size;
++	tqueue_pos /= 0x8000;
++
++	/* enable Turbo Tueue and Graphics Engine Programming */
++	tqueue_status = sisfb_get_seq_reg(sisfb, 0x27);
++	tqueue_status |= 0x80;
++
++	sisfb_set_seq_reg(sisfb, 0x27, tqueue_status);
++	sisfb_set_seq_reg(sisfb, 0x2C, tqueue_pos);
++
++	printk(KERN_INFO "sisfb_lite: Use %dKB off-screen memory for Turbo Queue\n",
++	       tqueue_size / 1024);
++
++}
++
++/**
++ *	sisfb_init_530: - Initialize the SiS530 VGA Core in SiS 530/620
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Return 0 on Success, -ENODEV if SMA is incorrectly/not configured
++ *
++ *	SiS 300 VGA core is used in SiS 530/620 chipsets. This routine inits
++ *	the very SiS300 specific stuff.
++ */
++int __devinit
++sisfb_init_530(struct sisfb_info * sisfb)
++{
++	int ret;
++
++	if ((ret = sisfb_config_memory(sisfb)) < 0)
++		return ret;
++
++	sisfb_init_legacy_vga(sisfb);
++
++#if 0
++	/* set to High Speed DAC by default */
++	sisfb_set_seq_reg(sisfb, 0x07, 0x13);
++
++	/* Disable DAC pedestal */
++	sisfb_set_seq_reg(sisfb, 0x1F, 0x00);
++
++	sisfb_set_pci_agp_timming(sisfb);
++
++	/* disable power management mode */
++	sisfb_set_seq_reg(sisfb, 0x11, 0x0F);
++
++	/* set screen start memory address bit 23:16 to 0, bit 15:0 are in CR0C, CR0D */
++	sisfb_set_seq_reg(sisfb, 0x0D, 0x00);
++
++	sisfb_enable_turbo_queue(sisfb);
++
++	sisfb_fake_vgabios(sisfb);
++#endif
++
++	/* set hardware specific functions */
++	sisfb->accelerator = &sis530_accelerator;
++	sisfb->set_par = sisfb_set_par_530;
++	sisfb->pan_display = sisfb_pan_display_53;
++	sisfb->set_disp = sisfb_set_dispsw_accel;
++
++	return 0;
++}
+diff -urN linux-2.4.12-official/drivers/video/sis/sisfb_accel.c linux-2.4.12-linuxbios/drivers/video/sis/sisfb_accel.c
+--- linux-2.4.12-official/drivers/video/sis/sisfb_accel.c	Thu Jan  1 08:00:00 1970
++++ linux-2.4.12-linuxbios/drivers/video/sis/sisfb_accel.c	Tue Nov  6 13:12:56 2001
+@@ -0,0 +1,360 @@
++/* sisfb_accel.c: Generic 2D Hardware Acceleration Layer for Text Mode Console 
++ *
++ * Copyright 2001 Ollie Lho <ollie@sis.com.tw>
++ *
++ *	This program is free software; you can redistribute it and/or modify
++ *	it under the terms of the GNU General Public License as published by
++ *	the Free Software Foundation; either version 2 of the License, or
++ *	(at your option) any later version.
++ *
++ *	This program is distributed in the hope that it will be useful,
++ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *	GNU General Public License for more details.
++ *
++ *	You should have received a copy of the GNU General Public License
++ *	along with this program; if not, write to the Free Software
++ *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
++ *
++ *
++ * This driver is implemented by the Author for his own personal interests and is NOT a
++ * commitment NOR supported officially by Silicon Integrated Systems Corp. Please direct
++ * any bug report/question to the Author and don't bother SiS Technical Support Personell.
++ *
++ *
++ * Reference:
++ */
++
++#include "sisfb_lite.h"
++#include "sisfb_accel.h"
++
++static void
++sisfb_cfbX_bmove(struct display *disp, int sy, int sx, int dy, int dx,
++		 int height, int width)
++{
++	struct sisfb_info *sisfb = (struct sisfb_info *) (disp->fb_info);
++	struct sisfb_accelerator * accel = 
++		(struct sisfb_accelerator *) (sisfb->accelerator);
++
++	sx *= fontwidth(disp);
++	sy *= fontheight(disp);
++	dx *= fontwidth(disp);
++	dy *= fontheight(disp);
++	width *= fontwidth(disp);
++	height *= fontheight(disp);
++
++	accel->copyrect(sisfb, sx, sy, dx, dy, width, height, ROP_COPY);
++}
++
++static void
++sisfb_cfbX_clear(struct display *disp, int sy, int sx, int height,
++		 int width, u32 color)
++{
++	struct sisfb_info *sisfb = (struct sisfb_info *) (disp->fb_info);
++	struct sisfb_accelerator * accel = 
++		(struct sisfb_accelerator *) (sisfb->accelerator);
++
++	sx *= fontwidth(disp);
++	sy *= fontheight(disp);
++	width *= fontwidth(disp);
++	height *= fontheight(disp);
++
++	accel->fillrect(sisfb, sx, sy, width, height, color, ROP_COPY_PAT);
++}
++
++static void
++sisfb_cfbX_putc(struct display *disp, int c, int sy, int sx, u32 fg, u32 bg)
++{
++	struct sisfb_info *sisfb = (struct sisfb_info *) (disp->fb_info);
++	struct sisfb_accelerator * accel = 
++		(struct sisfb_accelerator *) (sisfb->accelerator);
++	int width    = fontwidth(disp);
++	int height   = fontheight(disp);
++	int width_b  = (width + 7) >> 3;
++	u8 * bitmap = disp->fontdata + (c & disp->charmask) * height * width_b;
++
++	sx *= fontwidth(disp);
++	sy *= fontheight(disp);
++
++	accel->color_expand(sisfb, sx, sy, width, height, fg, bg,
++			    ROP_COPY, bitmap, width_b * height);
++}
++
++static void
++sisfb_cfbX_putcs(struct display *disp, unsigned short * s, int count,
++		 int sy, int sx, u32 fg, u32 bg)
++{
++	struct sisfb_info *sisfb = (struct sisfb_info *) (disp->fb_info);
++	struct sisfb_accelerator * accel = 
++		(struct sisfb_accelerator *) (sisfb->accelerator);
++	int width    = fontwidth(disp);
++	int height   = fontheight(disp);
++	int width_b  = (width + 7) >> 3;
++
++	sx *= fontwidth(disp);
++	sy *= fontheight(disp);
++
++	while (count--) {
++		u16 c;
++		u8 * bitmap;
++
++		c = scr_readw(s++) & disp->charmask;
++		bitmap = disp->fontdata + c * height * width_b;
++
++		accel->color_expand(sisfb, sx, sy, width, height, fg, bg,
++				    ROP_COPY, bitmap, width_b * height);
++
++		sx += fontwidth(disp);
++	}
++}
++
++static void
++sisfb_cfbX_revc(struct display *disp, int sx, int sy)
++{
++	struct sisfb_info *sisfb = (struct sisfb_info *) (disp->fb_info);
++	struct sisfb_accelerator * accel = 
++		(struct sisfb_accelerator *) (sisfb->accelerator);
++	int width    = fontwidth(disp);
++	int height   = fontheight(disp);
++	int bpp      = sisfb->current_par.bits_per_pixel;
++
++	accel->fillrect(sisfb, sx * width, sy * height, width, height,
++		       (bpp == 8) ? 0x0f : 0xffffffff, ROP_XOR_PAT);
++}
++
++#ifdef FBCON_HAS_CFB8
++static void
++sisfb_cfb8_clear(struct vc_data *conp, struct display *disp,
++		 int sy, int sx, int height, int width)
++{
++	u32 color;
++
++	color = attr_bgcol_ec(disp, conp);
++
++	sisfb_cfbX_clear(disp, sy, sx, height, width, color);
++}
++#endif
++
++#ifdef FBCON_HAS_CFB16
++static void
++sisfb_cfb16_clear(struct vc_data *conp, struct display *disp,
++		  int sy, int sx, int height, int width)
++{
++	u32 color;
++
++	color = ((u16 *) disp->dispsw_data)[attr_bgcol_ec(disp, conp)];
++
++	sisfb_cfbX_clear(disp, sy, sx, height, width, color);
++}
++#endif
++
++#ifdef FBCON_HAS_CFB32
++static void
++sisfb_cfb32_clear(struct vc_data * conp, struct display * disp,
++		  int sy, int sx, int height, int width)
++{
++	u32 color;
++
++	color = ((u32 *) disp->dispsw_data)[attr_bgcol_ec(disp, conp)];
++	sisfb_cfbX_clear(disp, sy, sx, height, width, color);
++}
++#endif
++
++#ifdef FBCON_HAS_CFB8
++static void
++sisfb_cfb8_putc(struct vc_data * conp, struct display * disp, int c, int sy, int sx)
++{
++	u32 fg, bg;
++
++	fg = attr_fgcol(disp, c);
++	bg = attr_bgcol(disp, c);
++
++	sisfb_cfbX_putc(disp, c, sy, sx, fg, bg);
++}
++#endif
++
++#ifdef FBCON_HAS_CFB16
++static void
++sisfb_cfb16_putc(struct vc_data * conp, struct display * disp, int c, int sy, int sx)
++{
++	u32 fg, bg;
++
++	fg = ((u16 *)disp->dispsw_data)[attr_fgcol(disp, c)];
++	bg = ((u16 *)disp->dispsw_data)[attr_bgcol(disp, c)];
++
++	sisfb_cfbX_putc(disp, c, sy, sx, fg, bg);
++}
++#endif
++
++#ifdef FBCON_HAS_CFB32
++static void
++sisfb_cfb32_putc(struct vc_data * conp, struct display * disp, int c, int sy, int sx)
++{
++	u32 fg, bg;
++
++	fg = ((u32 *)disp->dispsw_data)[attr_fgcol(disp, c)];
++	bg = ((u32 *)disp->dispsw_data)[attr_bgcol(disp, c)];
++
++	sisfb_cfbX_putc(disp, c, sy, sx, fg, bg);
++}
++#endif
++
++#ifdef FBCON_HAS_CFB8
++static void
++sisfb_cfb8_putcs(struct vc_data * conp, struct display * disp, const unsigned short *s,
++		 int count, int sy, int sx)
++{
++	u32 fg, bg;
++
++	fg = attr_fgcol(disp, *s);
++	bg = attr_bgcol(disp, *s);
++
++	sisfb_cfbX_putcs(disp, s, count, sy, sx, fg, bg);
++}
++#endif
++
++#ifdef FBCON_HAS_CFB16
++static void
++sisfb_cfb16_putcs(struct vc_data * conp, struct display * disp, const unsigned short *s,
++		  int count, int sy, int sx)
++{
++	u32 fg, bg;
++
++	fg = ((u16 *)disp->dispsw_data)[attr_fgcol(disp, *s)];
++	bg = ((u16 *)disp->dispsw_data)[attr_bgcol(disp, *s)];
++
++	sisfb_cfbX_putcs(disp, s, count, sy, sx, fg, bg);
++}
++#endif
++
++#ifdef FBCON_HAS_CFB32
++static void
++sisfb_cfb32_putcs(struct vc_data * conp, struct display * disp, const unsigned short *s,
++		  int count, int sy, int sx)
++{
++	u32 fg, bg;
++
++	fg = ((u32 *)disp->dispsw_data)[attr_fgcol(disp, *s)];
++	bg = ((u32 *)disp->dispsw_data)[attr_bgcol(disp, *s)];
++
++	sisfb_cfbX_putcs(disp, s, count, sy, sx, fg, bg);
++}
++#endif
++
++/**
++ *	sisfb_cfbX_clear_margins: - Clear the margin of the text console
++ *	@conp:
++ *	@disp:
++ *	@bottom_onlly:
++ *
++ *	It's used to clear the margins around the region used for the emulated text
++ *	console, when the resolution of the (virtual) screen is not a multiple of the
++ *	font size, or when you want a small text console in the center of the screen
++ *	(on Sparc). `bottom_only' means clear the bottom area only, which is useful
++ *	when panning (using the virtual screen).
++ */
++static void
++sisfb_cfbX_clear_margins(struct vc_data * conp, struct display * disp,
++			 int bottom_only)
++{
++	struct sisfb_info *sisfb = (struct sisfb_info *) (disp->fb_info);
++	struct sisfb_accelerator * accel = 
++		(struct sisfb_accelerator *) (sisfb->accelerator);
++	unsigned int cell_w = fontwidth(disp);
++	unsigned int cell_h = fontheight(disp);
++	unsigned int right_width   = disp->var.xres % cell_w;
++	unsigned int bottom_height = disp->var.yres % cell_h;
++	unsigned int right_start   = disp->var.xres - right_width;
++	unsigned int bottom_start  = disp->var.yres - bottom_height;
++
++	if (!bottom_only && right_width) {
++		/* clear whole right margin, not only visible portion */
++		accel->fillrect(sisfb,
++				disp->var.xoffset + right_start, 0,
++				right_width, disp->var.yres_virtual,
++				0x0000, ROP_COPY_PAT);
++	}
++
++	if (bottom_height) {
++		accel->fillrect(sisfb,
++				disp->var.xoffset, disp->var.yoffset + bottom_start,
++				right_start, bottom_height,
++				0x0000, ROP_COPY_PAT);
++	}
++}
++
++#ifdef FBCON_HAS_CFB8
++static struct display_switch sisfb_cfb8 = {
++	setup:		fbcon_cfb8_setup,
++	bmove:		sisfb_cfbX_bmove,
++	clear:		sisfb_cfb8_clear,
++	putc:		sisfb_cfb8_putc,
++	putcs:		sisfb_cfb8_putcs,
++	revc:		sisfb_cfbX_revc,
++	cursor:		NULL,
++	clear_margins:	sisfb_cfbX_clear_margins,
++	fontwidthmask:	FONTWIDTH(4)|FONTWIDTH(8)|FONTWIDTH(12)|FONTWIDTH(16)
++};
++#endif
++
++#ifdef FBCON_HAS_CFB16
++static struct display_switch sisfb_cfb16 = {
++	setup:		fbcon_cfb16_setup,
++	bmove:		sisfb_cfbX_bmove,
++	clear:		sisfb_cfb16_clear,
++	putc:		sisfb_cfb16_putc,
++	putcs:		sisfb_cfb16_putcs,
++	revc:		sisfb_cfbX_revc,
++	cursor:		NULL,
++	clear_margins:	sisfb_cfbX_clear_margins,
++	fontwidthmask:	FONTWIDTH(4)|FONTWIDTH(8)|FONTWIDTH(12)|FONTWIDTH(16)
++};
++#endif
++
++#ifdef FBCON_HAS_CFB32
++static struct display_switch sisfb_cfb32 = {
++	setup:		fbcon_cfb32_setup,
++	bmove:		sisfb_cfbX_bmove,
++	clear:		sisfb_cfb32_clear,
++	putc:		sisfb_cfb32_putc,
++	putcs:		sisfb_cfb32_putcs,
++	revc:		sisfb_cfbX_revc,
++	cursor:		NULL,
++	clear_margins:	sisfb_cfbX_clear_margins,
++	fontwidthmask:	FONTWIDTH(4)|FONTWIDTH(8)|FONTWIDTH(12)|FONTWIDTH(16)
++};
++#endif
++
++void
++sisfb_set_dispsw_accel(struct display *disp, struct sisfb_info *sisfb,
++			int bpp, int accel)
++{
++	switch (bpp) {
++#ifdef FBCON_HAS_CFB8
++	case 8:
++		disp->dispsw = &sisfb_cfb8;
++		break;
++#endif
++
++#ifdef FBCON_HAS_CFB16
++	case 15:
++	case 16:
++		disp->dispsw = &sisfb_cfb16;
++		disp->dispsw_data = sisfb->fbcon_cmap.cfb16;
++		break;
++#endif
++
++#ifdef FBCON_HAS_CFB32
++	case 32:
++		disp->dispsw = &sisfb_cfb32;
++		disp->dispsw_data = sisfb->fbcon_cmap.cfb32;
++		break;
++#endif
++
++	default:
++		disp->dispsw = &fbcon_dummy;
++		return;
++	}
++
++	disp->scrollmode = SCROLL_YREDRAW;
++}
+diff -urN linux-2.4.12-official/drivers/video/sis/sisfb_accel.h linux-2.4.12-linuxbios/drivers/video/sis/sisfb_accel.h
+--- linux-2.4.12-official/drivers/video/sis/sisfb_accel.h	Thu Jan  1 08:00:00 1970
++++ linux-2.4.12-linuxbios/drivers/video/sis/sisfb_accel.h	Tue Nov  6 13:12:56 2001
+@@ -0,0 +1,86 @@
++#ifndef __SISFB_ACCEL__
++#define __SISFB_ACCEL__
++
++#define PAT_REG_SIZE 384
++
++enum sisfb_raster_op_bitblt {
++	ROP_CLEAR		= 0x00, /* dst =    0,            0    */
++	ROP_AND			= 0x88, /* dst =  dst &  src,     DSa  */
++	RON_AND_REVERSE		= 0x44, /* dst = ~dst &  src,     SDna */
++	ROP_COPY		= 0xCC, /* dst =  src,            S    */
++	ROP_AND_INVERTED	= 0x22, /* dst =  dst & ~src,     DSna */
++	ROP_NOOP		= 0xAA, /* dst =  dst,            D    */
++	ROP_XOR			= 0x66, /* dst =  dst ^  src,     DSx  */
++	ROP_OR			= 0xEE, /* dst =  dst |  src,     DSo  */
++	ROP_NOR			= 0x11, /* dst =  ~(dst | src),   DSon */
++	ROP_EQUIV		= 0x99, /* dst =  dst ^ ~src,     DSxn */
++	ROP_INVERT  		= 0x55, /* dst = ~dst,            Dn   */
++	ROP_OR_INVERSE		= 0xDD, /* dst = ~dst | src,      SDno */
++	ROP_COPY_INVERTED	= 0x33, /* dst = ~src,            Sn   */
++	ROP_OR_INVERTED		= 0xBB, /* dst = ~src | dst,      DSno */
++	ROP_NAND		= 0x77, /* dst = ~(dst & src),    DSan */
++	ROP_SET			= 0xFF, /* dst =    1,            1    */
++
++	/* same as above, but with pattern as source */
++	ROP_CLEAR_PAT		= 0x00, /* dst =    0,            0    */
++	ROP_AND_PAT		= 0xA0, /* dst =  dst &  src,     DSa  */
++	RON_AND_REVERSE_PAT	= 0x50, /* dst = ~dst &  src,     SDna */
++	ROP_COPY_PAT		= 0xF0, /* dst =  src,            S    */
++	ROP_AND_INVERTED_PAT	= 0x0A, /* dst =  dst & ~src,     DSna */
++	ROP_NOOP_PAT		= 0xAA, /* dst =  dst,            D    */
++	ROP_XOR_PAT		= 0x5A, /* dst =  dst ^  src,     DSx  */
++	ROP_OR_PAT		= 0xFA, /* dst =  dst |  src,     DSo  */
++	ROP_NOR_PAT	       	= 0x05, /* dst =  ~(dst | src),   DSon */
++	ROP_EQUIV_PAT		= 0xA5, /* dst =  dst ^ ~src,     DSxn */
++	ROP_INVERT_PAT		= 0x55, /* dst = ~dst,            Dn   */
++	ROP_OR_REVERSE_PAT	= 0xDD, /* dst = ~dst | src,      SDno */
++	ROP_COPY_INVERTED_PAT	= 0x0F, /* dst = ~src,            Sn   */
++	ROP_OR_INVERTED_PAT	= 0xAF, /* dst = ~src | dst,      DSno */
++	ROP_NAND_PAT		= 0x5F, /* dst = ~(dst & src),    DSan */
++	ROP_SET_PAT		= 0xFF, /* dst =    1,            1    */
++};
++
++enum sisfb_raster_op_transparent_bitblt {
++	ROP_BLACK,
++	ROP_NOT_MERGE_PEN,
++};
++
++#ifdef __KERNEL__
++struct sisfb_accelerator {
++	void (*fillrect)(struct sisfb_info *sisfb, u32 x, u32 y,
++			  u32 width, u32 height, u32 color, u8 rop);
++	void (*copyrect)(struct sisfb_info *sisfb, u32 srcx, u32 srcy,
++			 u32 dstx, u32 dsty, u32 width, u32 height, u8 rop);
++	void (*copyrect_transparent)(struct sisfb_info *sisfb, u32 srcx, u32 srcy,
++				     u32 dstx, u32 dsty, u32 width, u32 height,
++				     u32 src_hi, u32 src_low,
++				     u32 dst_hi, u32 dst_low,
++				     u8 rop);
++
++	void (*color_expand_8x8)(struct sisfb_info * sisfb,  u32 x, u32 y, u32 width,
++				 u32 height, u32 fg, u32 bg, u8 rop, u8 * bitmap);
++	void (*color_expand)(struct sisfb_info * sisfb,  u32 x, u32 y, u32 width,
++			     u32 height, u32 fg, u32 bg, u8 rop, u8 * bitmap, u32 size);
++
++	void (*drawline)(struct sisfb_info * sisfb, u32 srcx, u32 srcy,
++			 u32 dstx, u32 dsty, u32 fg, u32 bg, u8 rop);
++	void (*drawline_style)(struct sisfb_info * sisfb, u32 srcx, u32 srcy,
++			       u32 dstx, u32 dsty, u32 fg, u32 bg, u8 rop,
++			       u8 * bitmap);
++
++#if 0
++	/* not implemented yet */
++	void (*span_fill)(struct sisfb_info * sisfb, u32 srcy, u32 fg, u32 bg,
++			  u32 *span, u8 rop, u8 * bitmap);
++
++	void (*trapezoid_fill)(struct sisfb_info * sisfb, ...);
++#endif
++};
++
++void
++sisfb_set_dispsw_accel(struct display *disp, struct sisfb_info *sisfb,
++		       int bpp, int accel);
++
++#endif /* __KERNEL_ */
++
++#endif /* __SISFB_ACCEL__ */
+diff -urN linux-2.4.12-official/drivers/video/sis/sisfb_legacy_init.c linux-2.4.12-linuxbios/drivers/video/sis/sisfb_legacy_init.c
+--- linux-2.4.12-official/drivers/video/sis/sisfb_legacy_init.c	Thu Jan  1 08:00:00 1970
++++ linux-2.4.12-linuxbios/drivers/video/sis/sisfb_legacy_init.c	Tue Nov  6 13:12:56 2001
+@@ -0,0 +1,313 @@
++/* sisfb_legacy_init.c: Initialization code for Legacy VGA Registers
++ *
++ * Copyright 2001 Ollie Lho <ollie@sis.com.tw>
++ *
++ *	This program is free software; you can redistribute it and/or modify
++ *	it under the terms of the GNU General Public License as published by
++ *	the Free Software Foundation; either version 2 of the License, or
++ *	(at your option) any later version.
++ *
++ *	This program is distributed in the hope that it will be useful,
++ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *	GNU General Public License for more details.
++ *
++ *	You should have received a copy of the GNU General Public License
++ *	along with this program; if not, write to the Free Software
++ *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
++ *
++ *
++ * This driver is implemented by the Author for his own personal interests and is NOT a
++ * commitment NOR supported officially by Silicon Integrated Systems Corp. Please direct
++ * any bug report/question to the Author and don't bother SiS Technical Support Personell.
++ *
++ *
++ * Reference:
++ *	1. SiS 6326 AGP/PCI Graphics & Video Acclerator. Rev 1.0, May 12, 1997
++ *	2. SiS 530 Host, PCI, 3D Graphics & Memory Controller Datasheet,
++ *	   Preliminary v1.0 Nov. 10, 1998
++ *	3. Programmer's Guide to the EGA, VGA, and Super VGA Card. Third Edition,
++ *	   Richard F. Ferraro, Addison-Welsey, Aug. 1994
++ */
++
++#include "sisfb_lite.h"
++
++static void sisfb_set_default_misc_reg(struct sisfb_info * sisfb);
++static void sisfb_set_default_seq_regs(struct sisfb_info * sisfb);
++static void sisfb_set_default_crtc_regs(struct sisfb_info * sisfb);
++static void sisfb_set_default_grc_regs(struct sisfb_info * sisfb);
++static void sisfb_set_default_attr_regs(struct sisfb_info * sisfb);
++static void sisfb_permute_dac_rgb(struct sisfb_info * sisfb, u8 * colors);
++static void sisfb_load_default_palette(struct sisfb_info * sisfb);
++void sisfb_init_legacy_vga(struct sisfb_info * sisfb);
++
++static u8 default_vga_palette[] __initdata = {
++	/* Palette 0-15, original EGA 16 colors stored as 00bbggrr where
++	 * bbggrr are 2 bits index to the color values {0, 42, 21, 63} */
++	0x00, 0x10, 0x04, 0x14, 0x01, 0x11, 0x09, 0x15,
++	0x2A, 0x3A, 0x2E, 0x3E, 0x2B, 0x3B, 0x2F, 0x3F,
++
++	/* Palette 16-31, 16 evenly spaced shades of gray */
++	0x00, 0x05, 0x08, 0x0B, 0x0E, 0x11, 0x14, 0x18,
++	0x1C, 0x20, 0x24, 0x28, 0x2D, 0x32, 0x38, 0x3F,
++
++	/* Palette 32-247, 24 colors group generated form 5 elements,
++	 * each group has 3 intensity and 3 saturation levels */
++	0x00, 0x10, 0x1F, 0x2F, 0x3F,
++	0x1F, 0x27, 0x2F, 0x37, 0x3F,
++	0x2D, 0x31, 0x36, 0x3A, 0x3F,
++	0x00, 0x07, 0x0E, 0x15, 0x1C,
++	0x0E, 0x11, 0x15, 0x18, 0x1C,
++	0x14, 0x16, 0x18, 0x1A, 0x1C,
++	0x00, 0x04, 0x08, 0x0C, 0x10,
++	0x08, 0x0A, 0x0C, 0x0E, 0x10,
++	0x0B, 0x0C, 0x0D, 0x0F, 0x10
++};
++
++/**
++ *	sisfb_set_default_misc_reg: - Set default value for standard VGA Miscellaneouse
++ *	Output Register
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Miscellaneouse Output Register is used for selecting Sync Polarity, Clock Generator
++ *	and Enable/Disable IO/MEM address space.
++ *
++ *	The Miscellaneouse Output Register is programmed with 0x6F => VGA 400 lines,
++ *	internal clock generator, MEM/IO address enabled.
++ *
++ *	This function is needed to be called once at driver initialization.
++ */
++static void __devinit
++sisfb_set_default_misc_reg(struct sisfb_info * sisfb)
++{
++	sisfb_set_gen_reg(sisfb, 0x3c2, 0x6F);
++}
++
++/**
++ *	sisfb_set_default_seq_regs: - Set default values for standard VGA Sequencer Registers
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Most of the Seqencer Registers are used for "backward compability" with EGA cards.
++ *	The really essential registers are SR0 for reset and SR1 for turnning on/off the
++ *	display.
++ *
++ *	This function is needed to be called once at driver initialization.
++ */
++static void __devinit
++sisfb_set_default_seq_regs(struct sisfb_info * sisfb)
++{
++	/* recover from Reset state */
++	sisfb_set_seq_reg(sisfb, 0x00, 0x03);
++
++	/* set SR1 Bit5: Screen Off , Bit 0, 9 dots/char (why not 8 ??) */
++	sisfb_set_seq_reg(sisfb, 0x01, 0x21);
++
++	/* Enable bit plane 0-3 */
++	sisfb_set_seq_reg(sisfb, 0x02, 0x0F);
++
++	/* Use Character Table 0 */
++	sisfb_set_seq_reg(sisfb, 0x03, 0x00);
++
++	/* Enable 4-Chain Mode, Disable Odd/Even Mode, Enable 256KB Memory */
++	sisfb_set_seq_reg(sisfb, 0x04, 0x0E);
++}
++
++/**
++ *	sisfb_set_default_crtc_regs: - Set default values for standard VGA CRT
++ *	Controller Registers
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Most of the CRT Controllers Registers are display mode specific, they are set
++ *	in various node setting routines. 
++ *
++ *	This function is needed to be called once at driver initialization.
++ */
++static void __devinit
++sisfb_set_default_crtc_regs(struct sisfb_info * sisfb)
++{
++	/* Disable Vertical Panning */
++	sisfb_set_crtc_reg(sisfb, 0x08, 0x00);
++
++	/* No text cursor */
++	sisfb_set_crtc_reg(sisfb, 0x0A, 0x00);
++	sisfb_set_crtc_reg(sisfb, 0x0B, 0x00);
++
++	/* Screen start from 0 */
++	sisfb_set_crtc_reg(sisfb, 0x0C, 0x00);
++	sisfb_set_crtc_reg(sisfb, 0x0D, 0x00);
++
++	/* Text cursor at 0 */
++	sisfb_set_crtc_reg(sisfb, 0x0E, 0x00);
++	sisfb_set_crtc_reg(sisfb, 0x0F, 0x00);
++
++	/* Enable Double Word Mode */
++	sisfb_set_crtc_reg(sisfb, 0x14, 0x40);
++
++	/* Enable vertical and horizonal retrace,
++	   sequential memory addressing */
++	sisfb_set_crtc_reg(sisfb, 0x17, 0xA3);
++	/* set line compare Bit 0..7 to 0xFF */
++	sisfb_set_crtc_reg(sisfb, 0x18, 0xFF);
++}
++
++/**
++ *	sisfb_set_default_grc_regs: - Set default values for standard VGA Graphics
++ *	Controller Registers
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Graphics Controller Registers are used for "backward compability" with EGA cards.
++ *	These registers are not actually used by this driver. Set them to some sane values
++ *	or clear to 0.
++ *
++ *	This function is needed to be called once at driver initialization.
++ *
++ *	FixME: GR05 Bit 6 seem to be used for 256-color stuff, is it really needed ??
++ */
++static void __devinit
++sisfb_set_default_grc_regs(struct sisfb_info * sisfb)
++{
++	int i;
++
++	/* GR0-GR4 are not used by VGA, clear them */
++	for (i = 0; i <= 0x04; i++) {
++		sisfb_set_grc_reg(sisfb, i, 0x00);
++	}
++
++	/* enable 256-color mode */
++	sisfb_set_grc_reg(sisfb, 0x05, 0x40);
++
++	/* Graphics Mode, Memory Address 0xA0000 to 0xAFFFF */
++	sisfb_set_grc_reg(sisfb, 0x06, 0x05);
++	sisfb_set_grc_reg(sisfb, 0x07, 0x0F);
++	sisfb_set_grc_reg(sisfb, 0x08, 0xFF);
++}
++
++/**
++ *	sisfb_set_default_attr_regs: - Set default values for standard VGA Attribute Registers
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Attribute Registers are used for "backward compability" with EGA cards. These
++ *	registers are not actually used by this driver. Set them to some sane values
++ *	or clear to 0.
++ *
++ *	This function is needed to be called once at driver initialization.
++ */
++static void __devinit
++sisfb_set_default_attr_regs(struct sisfb_info * sisfb)
++{
++	int i;
++
++	/* Color Palette Registers AR0-ARF are used for EGA compability,
++	 * set them as "identical mapping" */
++	for (i = 0; i <= 0x0F; i++) {
++		sisfb_set_attr_reg(sisfb, i, i);
++	}
++
++	/* AR10-AR14 are not used by VGA, clear them */
++	for (i = 0x10; i <= 0x14; i++) {
++		sisfb_set_attr_reg(sisfb, i, 0x00);
++	}
++
++	/* Set the Palette Address Source to Video Memory */
++	sisfb_get_gen_reg(sisfb, 0x3DA);
++	sisfb_set_gen_reg(sisfb, 0x3C0, 0x20);
++}
++
++/**
++ *	sisfb_permute_dac_rgb: - Program the DAC color registers for a color group
++ *	@sisfb: SiS Frame Buffer structure
++ *	@colors: Color elements in a color group
++ *
++ *	Generate the 24 permutation of the colors in each color group and program the
++ *	DAC color registers in the pre-defined order.
++ */
++static void __devinit
++sisfb_permute_dac_rgb(struct sisfb_info * sisfb, u8 * colors)
++{
++	int i;
++
++	for (i = 0; i < 5; i++)
++		sisfb_set_dac_rgb(sisfb, colors[i], colors[0], colors[4]);
++	for (i = 3; i > 0; i--)
++		sisfb_set_dac_rgb(sisfb, colors[4], colors[0], colors[i]);
++
++	for (i = 0; i < 5; i++)
++		sisfb_set_dac_rgb(sisfb, colors[4], colors[i], colors[0]);
++	for (i = 3; i > 0; i--)
++		sisfb_set_dac_rgb(sisfb, colors[i], colors[4], colors[0]);
++
++	for (i = 0; i < 5; i++)
++		sisfb_set_dac_rgb(sisfb, colors[0], colors[4], colors[i]);
++	for (i = 3; i > 0; i--)
++		sisfb_set_dac_rgb(sisfb, colors[0], colors[i], colors[4]);
++}
++
++/**
++ *	sisfb_load_default_palette: - Load the default VGA Palette.
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Load the pre-defined standard VGA Palette default_vga_palette by writing
++ *	to DAC color registers.
++ */
++static void __devinit
++sisfb_load_default_palette(struct sisfb_info * sisfb)
++{
++	int i, level;
++    	u8 data;
++	u8 * table = default_vga_palette;
++
++	/* set PEL Mask */
++	sisfb_set_gen_reg(sisfb, 0x3C6, 0xFF);
++	sisfb_set_dac_index(sisfb, 0x00);
++
++	/* 0-15, 16 colors initially loaded to EGA color palette */
++	for (i = 0; i < 16; i++) {
++		u8 ega_colors[] = {0, 42, 21, 63};
++		u8 red, green, blue;
++
++		/* data == 00bbggrr */
++		data  = table[i];
++		red   = ega_colors[((data >> 0) & 0x03)];
++		green = ega_colors[((data >> 2) & 0x03)];
++		blue  = ega_colors[((data >> 4) & 0x03)];
++		sisfb_set_dac_rgb(sisfb, red, green, blue);
++	}
++
++	/* 16-31, 16 evenly spaced shades of gray */
++	for (i = 16; i < 32; i++) {
++		data = table[i];
++		sisfb_set_dac_rgb(sisfb, data, data, data);
++	}
++
++	/* for each of 3 intensity x 3 saturation == 9 levels */
++	for (level = 0; level < 9; level++) {
++		u8 * colors = table + 32;
++		sisfb_permute_dac_rgb(sisfb, colors);
++		colors += 5;
++	}
++
++	/* last 8 entries are cleared to 0 for black */
++	for (i = 0; i < 8; i++) {
++		sisfb_set_dac_rgb(sisfb, 0x00, 0x00, 0x00);
++	}
++}
++
++/**
++ *	sisfb_init_legacy_vga: - Initialize the Standard VGA Registers
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Call other help functions to initialize the standard/legacy VGA registers.
++ */
++void __devinit
++sisfb_init_legacy_vga(struct sisfb_info * sisfb)
++{
++	sisfb_set_default_seq_regs(sisfb);
++	sisfb_set_default_misc_reg(sisfb);
++	sisfb_set_default_attr_regs(sisfb);
++	sisfb_set_default_grc_regs(sisfb);
++	sisfb_load_default_palette(sisfb);
++
++	/* you have to load CRTC registers last or SiS 630E and SiS 630S
++	   will not work. I have no idea why */
++	sisfb_set_default_crtc_regs(sisfb);
++}
+diff -urN linux-2.4.12-official/drivers/video/sis/sisfb_legacy_vga.h linux-2.4.12-linuxbios/drivers/video/sis/sisfb_legacy_vga.h
+--- linux-2.4.12-official/drivers/video/sis/sisfb_legacy_vga.h	Thu Jan  1 08:00:00 1970
++++ linux-2.4.12-linuxbios/drivers/video/sis/sisfb_legacy_vga.h	Tue Nov  6 13:12:56 2001
+@@ -0,0 +1,276 @@
++#ifndef __SISFB_LEGACY_VGA__
++#define __SISFB_LEGACY_VGA__
++
++/* VGA register Offsets */
++#define ATTR_WRITE           0x40
++#define ATTR_READ            0x41
++#define MISC_OUT_W           0x42
++#define SEQ_ADDR             0x44
++#define SEQ_DATA             0x45
++#define PEL_MASK             0x46
++#define DACR_ADDR            0x47
++#define DACW_ADDR            0x48
++#define DAC_DATA             0x49
++#define MISC_OUT_R           0x4C
++#define GRC_ADDR             0x4E
++#define GRC_DATA             0x4F
++#define CRTC_ADDR            0x54
++#define CRTC_DATA            0x55
++
++#define FEATURE_READ         0x4A
++#define FEATURE_WRITE        0x5A
++
++#define SIS_PASSWD           0x05
++#define SIS_PASSWD_LOCK      0x21
++#define SIS_PASSWD_UNLOCK    0x86
++
++static inline void
++sisfb_writeb(struct sisfb_info *sisfb, u32 offset, u8 val)
++{
++	writeb(val, sisfb->mmio_base_virt + offset);
++}
++
++static inline void
++sisfb_writew(struct sisfb_info *sisfb, u32 offset, u16 val)
++{
++	writew(val, sisfb->mmio_base_virt + offset);
++}
++
++static inline void
++sisfb_writel(struct sisfb_info *sisfb, u32 offset, u32 val)
++{
++	writel(val, sisfb->mmio_base_virt + offset);
++}
++
++static inline u8
++sisfb_readb(struct sisfb_info *sisfb, u32 offset)
++{
++	return readb(sisfb->mmio_base_virt + offset);
++}
++
++static inline u16
++sisfb_readw(struct sisfb_info *sisfb, u32 offset)
++{
++	return readw(sisfb->mmio_base_virt + offset);
++}
++
++static inline u32
++sisfb_readl(struct sisfb_info *sisfb, u32 offset)
++{
++	return readl(sisfb->mmio_base_virt + offset);
++}
++
++static inline void
++sisfb_set_gen_reg(struct sisfb_info * sisfb, u16 port, u8 data)
++{
++	u16 base = sisfb->vga_io_base;
++
++	outb(data, port + base - 0x380);
++}
++
++static inline u8
++sisfb_get_gen_reg(struct sisfb_info * sisfb, u16 port)
++{
++	u16 base = sisfb->vga_io_base;
++
++	return inb(port + base - 0x380);
++}
++
++static inline void
++sisfb_set_seq_reg(struct sisfb_info * sisfb, u8 index, u8 data)
++{
++	u16 port = sisfb->vga_io_base;
++
++	outb(index, port + SEQ_ADDR);
++	outb(data, port + SEQ_DATA);
++}
++
++static inline u8
++sisfb_get_seq_reg(struct sisfb_info * sisfb, u8 index)
++{
++	u16 port = sisfb->vga_io_base;
++
++	outb(index, port + SEQ_ADDR);
++	return inb(port + SEQ_DATA);
++}
++
++static inline void
++sisfb_set_crtc_reg(struct sisfb_info * sisfb, u8 index, u8 data)
++{
++	u16 port = sisfb->vga_io_base;
++
++	outb(index, port + CRTC_ADDR);
++	outb(data, port + CRTC_DATA);
++}
++
++static inline u8
++sisfb_get_crtc_reg(struct sisfb_info * sisfb, u8 index)
++{
++	u16 port = sisfb->vga_io_base;
++
++	outb(index, port + CRTC_ADDR);
++	return inb(port + CRTC_DATA);
++}
++
++static inline void
++sisfb_set_grc_reg(struct sisfb_info * sisfb, u8 index, u8 data)
++{
++	u16 port = sisfb->vga_io_base;
++
++	outb(index, port + GRC_ADDR);
++	outb(data, port + GRC_DATA);
++}
++
++static inline u8
++sisfb_get_grc_reg(struct sisfb_info * sisfb, u8 index)
++{
++	u16 port = sisfb->vga_io_base;
++
++	outb(index, port + GRC_ADDR);
++	return inb(port + GRC_DATA);
++}
++
++static inline void
++sisfb_set_attr_reg(struct sisfb_info * sisfb, u8 index, u8 data)
++{
++	u16 port = sisfb->vga_io_base;
++	volatile u8 dummy;
++
++	/* Read port 0x3DA, to set the Adderss flip-flop */
++	dummy = sisfb_get_gen_reg(sisfb, 0x3DA);
++	outb(index, port + ATTR_WRITE);
++	outb(data, port + ATTR_WRITE);	
++}
++
++static inline u8
++sisfb_get_attr_reg(struct sisfb_info * sisfb, u8 index)
++{
++	u16 port = sisfb->vga_io_base;
++	volatile u8 dummy;
++
++	/* Read port 0x3DA, to set the Adderss flip-flop */	
++	dummy = sisfb_get_gen_reg(sisfb, 0x3DA);
++	outb(index, port + ATTR_READ);
++	return inb(port + ATTR_READ);	
++}
++
++/**
++ *	sisfb_set_dac_index: - Select DAC color register to be loaded
++ *	@sisfb: SiS Frame Buffer structure
++ *	@index: Index of the DAC color Register to be loaded
++ *
++ *	Select the DAC color register to be loaded by programming the
++ *	DAC Write Address Register.
++ */
++static inline void
++sisfb_set_dac_index(struct sisfb_info * sisfb, u8 index)
++{
++	u16 port = sisfb->vga_io_base;
++
++	outb(index, port + DACW_ADDR);
++}	
++
++/**
++ *	sisfb_set_dac_rgb: - Load the DAC color register
++ *	@sisfb: SiS Frame Buffer structure
++ *	@red: Red component
++ *	@green: Green component
++ *	@blue: Blue compoenet
++ *
++ *	Load the DAC color register with (@red, @green, @blue) by writing to the DAC Data
++ *	Register. The color register to be loaded is implicitely selected by the DAC Write
++ *	Address Register.
++ */
++static inline void
++sisfb_set_dac_rgb(struct sisfb_info * sisfb, u8 red, u8 green, u8 blue)
++{
++	u16 port = sisfb->vga_io_base;
++
++	outb(red,   port + DAC_DATA);
++	outb(green, port + DAC_DATA);
++	outb(blue,  port + DAC_DATA);
++}		
++
++/**
++ *	sisfb_lock_regs: - Lock the CRTC Registers 0-7 and Extended Sequencer Registers
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Lock CRTC 0-7 by setting Bit 7 of CRTC 0x11.
++ *	Lock Extended Registers by writing 0x21 (%SIS_PASSWD_LOCK) to
++ *	SR 0x05 (%SIS_PASSWD)
++ */
++static inline void
++sisfb_lock_regs(struct sisfb_info * sisfb)
++{
++	u8 data;
++
++	/* Set Bit 7 to enable Write Protect for CR0 to CR7 */
++	data = sisfb_get_crtc_reg(sisfb, 0x11);
++	data = data | 0x80;
++	sisfb_set_crtc_reg(sisfb, 0x11, data);
++
++	/* lock the access to Extended Registers SR5-SR3C and/or CR30-CR37 ?? */
++	sisfb_set_seq_reg(sisfb, SIS_PASSWD, SIS_PASSWD_LOCK);
++}
++
++/**
++ *	sisfb_unlock_regs: - Unlock the CRTC Registers 0-7 and Extended Sequencer Registers
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Unlock CRTC 0-7 by clearing Bit 7 of CRTC 0x11.
++ *	Unlock Extended Registers by writing 0x86 (%SIS_PASSWD_UNLOCK) to
++ *	SR 0x05 (%SIS_PASSWD)
++ */
++static inline void
++sisfb_unlock_regs(struct sisfb_info * sisfb)
++{
++	u8 data;
++
++	/* clear Bit 7 to disable Write Protect for CR0 to CR7 */
++	data = sisfb_get_crtc_reg(sisfb, 0x11);
++	data = data & 0x7f;
++	sisfb_set_crtc_reg(sisfb, 0x11, data);
++
++	/* unlock the access to Extended Registers SR5-SR3C and/or CR30-CR37 ?? */
++	sisfb_set_seq_reg(sisfb, SIS_PASSWD, SIS_PASSWD_UNLOCK);
++}
++
++/**
++ *	sisfb_display_on: - Turn the monitor on.
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Turn on the monitor by clearing Bit 5 of Seqencer Register 0x01
++ */
++static inline void
++sisfb_display_on(struct sisfb_info * sisfb)
++{
++	u8 data;
++
++	data = sisfb_get_seq_reg(sisfb, 0x01);
++
++	/* clear SR1 Bit 5: Screen Off ==> Screen On */
++	data &= ~0x20;
++	sisfb_set_seq_reg(sisfb, 0x01, data);
++}
++
++/**
++ *	sisfb_display_off: - Turn the monitor off.
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Turn off the monitor by settng Bit 5 of Seqencer Register 0x01
++ */
++static inline void
++sisfb_display_off(struct sisfb_info * sisfb)
++{
++	u8 data;
++
++	data = sisfb_get_seq_reg(sisfb, 0x01);
++
++    	/* set SR1 Bit5: Screen Off */
++	data |= 0x20;
++	sisfb_set_seq_reg(sisfb, 0x01, data);
++}
++
++extern void sisfb_init_legacy_vga(struct sisfb_info * sisfb);
++
++#endif /* __SISFB_LEGACY_VGA__ */
+diff -urN linux-2.4.12-official/drivers/video/sis/sisfb_lite.c linux-2.4.12-linuxbios/drivers/video/sis/sisfb_lite.c
+--- linux-2.4.12-official/drivers/video/sis/sisfb_lite.c	Thu Jan  1 08:00:00 1970
++++ linux-2.4.12-linuxbios/drivers/video/sis/sisfb_lite.c	Tue Nov  6 13:12:56 2001
+@@ -0,0 +1,1135 @@
++/* sisfb_lite.c: SiSFB Lite, Frame Buffer Device Driver for SiS 540/630/730 requires no VGA BIOS
++ *
++ * Copyright 2000 Ollie Lho <ollie@sis.com.tw>
++ *
++ * This driver is derived form an eraly version of sisfb.c which is:
++ * 	This driver is partly based on the VBE 2.0 compliant graphic 
++ * 	boards framebuffer driver, which is 
++ * 
++ * 	(c) 1998 Gerd Knorr <kraxel@goldbach.in-berlin.de>
++ *
++ * This driver is implemented by the Author for his own personal interests and is NOT a
++ * commitment NOR supported officially by Silicon Integrated Systems Corp. Please direct
++ * any bug report/question to the Author and don't bother SiS Technical Support Personell.
++ *
++ *
++ * Reference:
++ *	1. SiS 6326 AGP/PCI Graphics & Video Acclerator. Rev 1.0, May 12, 1997
++ *	2. Programmer's Guide to the EGA, VGA, and Super VGA Card. Third Edition,
++ *	   Richard F. Ferraro, Addison-Welsey, Aug. 1994
++ *	3. Glamour Design Guideline V0.8
++ *	4. Graphics Hardware by Geert Uytterhoeven <geert@linux-m86k.org>
++ *	5. sis86c201.c in XFree86 3.3.6
++ *
++ * ToDo:
++ *	0. more document
++ *	1. figure out if we need both default_par and current_par
++ */
++
++/* make checkconfig does not check included files... */
++#include <linux/config.h>
++#include "sisfb_lite.h"
++
++#define PCI_DEVICE_ID_SI_550_VGA 0x5315
++
++static struct pci_device_id sisfb_pci_tbl [] __devinitdata = {
++#ifdef CONFIG_FB_SIS_300
++	{PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_630_VGA,
++	 PCI_ANY_ID, PCI_ANY_ID, 0, 0, SISFB_LITE_300},
++	{PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_540_VGA,
++	 PCI_ANY_ID, PCI_ANY_ID, 0, 0, SISFB_LITE_300},
++#endif /* CONFIG_FB_SIS_300 */
++#ifdef CONFIG_FB_SIS_315
++	{PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_550_VGA,
++	 PCI_ANY_ID, PCI_ANY_ID, 0, 0, SISFB_LITE_315},
++#endif /* CONFIG_FB_SIS_300 */
++	{0,}
++};
++MODULE_DEVICE_TABLE (pci, sisfb_pci_tbl);
++
++static char fontname[40] __initdata;
++static const char * mode_option __initdata;
++
++static struct fb_var_screeninfo default_var __initdata = {
++	/* 640x480, 60 Hz, Non-Interlaced (25.175 MHz dotclock) */
++	xres:		640,
++	yres:		480,
++	xres_virtual:	640,
++	yres_virtual:	480,
++	xoffset:	0,
++	yoffset:	0,
++	bits_per_pixel:	8,
++	grayscale:	0,
++	red:		{0, 8, 0},
++	green:		{0, 8, 0},
++	blue:		{0, 8, 0},
++	transp:		{0, 0, 0},
++	nonstd:		0,
++	activate:	FB_ACTIVATE_NOW,
++	height:		-1,
++	width:		-1,
++	accel_flags:	0,
++
++	/* timming, virtually the same as sisfb_default_mode */
++	pixclock:	39722,
++	left_margin:	48,
++	right_margin:	16,
++	upper_margin:	33,
++	lower_margin:	10,
++	hsync_len:	96,
++	vsync_len:	2,
++	sync:		0,
++	vmode:		FB_VMODE_NONINTERLACED
++};
++
++static struct fb_videomode sisfb_default_mode __initdata = {
++	name:	        "640x480-8@60",
++	refresh:	60,
++	xres:		640,
++	yres:		480,
++	pixclock:	39722,
++	left_margin:	48,
++	right_margin:	16,
++	upper_margin:	33,
++	lower_margin:	10,
++	hsync_len:	96,
++	vsync_len:	2,
++	sync:		0,
++	vmode:		FB_VMODE_NONINTERLACED
++};
++
++static int inverse;
++
++unsigned long mclk = 100000, eclk = 100000;
++
++extern int sisfb_init_300(struct sisfb_info * sisfb);
++extern int sisfb_init_315(struct sisfb_info * sisfb);
++
++/* Interface used by the world */
++int sisfb_setup(char *options);
++int sisfb_init(void);
++
++/* Internal routines */
++static void do_install_cmap(struct display * disp, struct fb_info *info);
++/* ---------------------------------------------------------------------------------- */
++static int sisfb_encode_fix(struct fb_fix_screeninfo * fix, struct sisfb_par * par,
++			    struct sisfb_info * sisfb);
++static int sisfb_decode_var(struct fb_var_screeninfo * var, struct sisfb_par * par,
++			    const struct sisfb_info * sisfb);
++static int sisfb_encode_var(struct fb_var_screeninfo * var, const struct sisfb_par * par,
++			    const struct sisfb_info * sisfb);
++static int sisfb_getcolreg(unsigned regno, unsigned * red, unsigned * green, unsigned * blue,
++			   unsigned * transp, struct fb_info * info);
++static int sisfb_setcolreg(unsigned regno, unsigned red, unsigned green, unsigned blue,
++			   unsigned transp, struct fb_info * info);
++/* ---------------------------------------------------------------------------------- */
++static int sisfb_switch_con(int con, struct fb_info * info);
++static void sisfb_blank(int blank, struct fb_info * info);
++/* ----------------------------------------- fb_ops --------------------------------- */
++static int sisfb_get_fix(struct fb_fix_screeninfo * fix, int con, struct fb_info * info);
++static int sisfb_get_var(struct fb_var_screeninfo * var, int con, struct fb_info * info);
++static int sisfb_set_var(struct fb_var_screeninfo * var, int con, struct fb_info * info);
++static int sisfb_get_cmap(struct fb_cmap * cmap, int kspc, int con, struct fb_info * info);
++static int sisfb_set_cmap(struct fb_cmap * cmap, int kspc, int con, struct fb_info * info);
++static int sisfb_ioctl(struct inode * inode, struct file * file, unsigned int cmd,
++		       unsigned long arg, int con, struct fb_info * info);
++
++/**
++ *	sisfb_calc_clock_freq: - Calculate the clock frequence generated by @clock
++ *	@clock: paramters of the clock generator.
++ *
++ *	Calculate the clock frequence that will be generated by the internal clock
++ *	generator given the paremters stated in @clock. The frequence is returned
++ *	in the unit of KHz.
++ */
++unsigned long
++sisfb_calc_clock_freq(struct sisfb_clock_param * clock)
++{
++	unsigned long freq = CLOCK_SOURCE;
++
++	freq *= (clock->divider * clock->numerator);
++	freq /= (clock->denumerator * clock->post_scalar);
++
++	return freq;
++}
++
++/**
++ *	sisfb_calc_clock_param: - Calculate the correct clock generator parameters for @freq
++ *	@clock: Paramters of the clock generator (return)
++ *	@freq: The desired clock frequence in KHz
++ *
++ *	Calculate the clock generator parameters that will generate the clock signal
++ *	with frequence @freq. This is the inverse function of sisfb_calc_clock_freq()
++ *
++ *	Return 0 on success, -EINVAL otherwise.
++ *
++ *	In this function, we are trying to find a set of parmeters (divider, numerator,
++ *	denumerator, post scalar) such that:
++ *
++ *                      |   Divider * Numerator               |
++ *      |Fout - Freq| = |------------------------- Fref - Freq| => 0
++ *                      |Denumerator * Post Scalar            |
++ *
++ *	In order to simplify the alogrithm we have introduced the following contrains:
++ *		1. The Post Scalar can only be power of 2 i.e. 1,2,4,8
++ *		2. The divider is always 1.
++ *		3. The frequence range for the VCO output (Fout * Post Scalar)
++ *		   is 150 MHz - 300 MHZ
++ *
++ *	First we have to find out the proper value for Post Scalar. Due to the
++ *	constrains stated above, for @freq in the following ranges, we set the
++ *	Post Scalar as:
++ *		     freq        post scalar
++ *		  150 -  300 MHz	1
++ *		   75 -  150 MHz	2
++ *		 37.5 -   75 MHz	4
++ *		18.75 - 37.5 MHz	8
++ *	Once the Post Scalar is determined, we try every possible (numerator, denumerator)
++ *	pair such that the error between the generated frequence f_out and desirec
++ *	frequence @freq is minimal.
++ */
++int
++sisfb_calc_clock_param(struct sisfb_clock_param * clock, unsigned long freq)
++{
++	int numerator, denumerator;
++	unsigned long f_vco = freq;
++	long error, min_error = freq;
++
++	/* test if the required frequency is out of range */
++	if ((freq > MAX_F_VCO) || (freq < MIN_F_VCO / 8))
++		return -EINVAL;
++
++	/* find the proper Post Scalar */
++	clock->post_scalar = 8;
++	while (f_vco > MAX_F_VCO / 8) {
++		f_vco /= 2;
++		clock->post_scalar /= 2;
++	}
++
++	/* find the (numerator, denumerator) pair that minimize the error = |f_out - freq| */
++	for (denumerator = 2; denumerator <= 32; denumerator++) {
++		for (numerator = 1; numerator <= 128; numerator++) {
++			unsigned long f_out = CLOCK_SOURCE;
++
++			f_out *= numerator;
++			f_out /= (denumerator * clock->post_scalar);
++			error = f_out - freq;
++			error = (error > 0) ? error : -error;
++			if (error < min_error) {
++				min_error = error;
++				clock->numerator = numerator;
++				clock->denumerator = denumerator;
++			}
++			/* FixMe: return early if we are satisfied with current
++			 * parameters */
++		}
++	}
++
++	/* this is our unfortunate constrain */
++	clock->divider  = 1;
++	clock->vco_gain = 1;
++
++	return 0;
++}
++
++/**
++ *	do_install_cmap: - Install colormap
++ *	@disp: Display structure of current console
++ *	@info: Frame Buffer structure
++ *
++ *	Install colormap for the current console. This function is called every
++ *	time the display mode is changed (by set_var or switch_con).
++ */
++static void
++do_install_cmap(struct display * disp, struct fb_info *info)
++{
++	struct sisfb_info * sisfb = (struct sisfb_info *) info;
++
++	if (disp->cmap.len)
++		fb_set_cmap(&disp->cmap, 1, sisfb_setcolreg, info);
++	else {
++		fb_set_cmap(fb_default_cmap(sisfb->current_par.cmap_len), 1, 
++			    sisfb_setcolreg, info);
++	}
++}
++
++void
++sisfb_set_dispsw_fbcon(struct display * disp, struct sisfb_info * sisfb, int bpp, int accel)
++{
++	switch (bpp) {
++#ifdef FBCON_HAS_CFB8
++	case 8:
++		disp->dispsw = &fbcon_cfb8;
++		break;
++#endif
++
++#ifdef FBCON_HAS_CFB16
++	case 15:
++	case 16:
++		disp->dispsw = &fbcon_cfb16;
++		disp->dispsw_data = sisfb->fbcon_cmap.cfb16;
++		break;
++#endif
++
++#ifdef FBCON_HAS_CFB32
++	case 32:
++		disp->dispsw = &fbcon_cfb32;
++		disp->dispsw_data = sisfb->fbcon_cmap.cfb32;
++		break;
++#endif
++
++	default:
++		disp->dispsw = &fbcon_dummy;
++		return;
++	}
++
++	disp->scrollmode = SCROLL_YREDRAW;
++}
++
++/**
++ *	sisfb_encode_fix: - Encode the Fixed Part of the Display
++ *	@fix: Fixed screen info (return)
++ *	@con: Console number
++ *	@info: Frame Buffer structure
++ *
++ *	Return the fixed part of the display information in @fix. The struct of @fix is
++ *	defined in linux/fb.h.
++ */
++static int
++sisfb_encode_fix(struct fb_fix_screeninfo * fix, struct sisfb_par * par, struct sisfb_info * sisfb)
++{
++	memset(fix, 0, sizeof(struct fb_fix_screeninfo));
++	strcpy(fix->id, "SiSFB Lite");
++
++	fix->smem_start = sisfb->video_base_phy;
++	fix->smem_len   = sisfb->video_size_virt;
++
++	fix->type     = FB_TYPE_PACKED_PIXELS;
++	fix->type_aux = 0;
++
++	if (par->bits_per_pixel == 8)
++		fix->visual = FB_VISUAL_PSEUDOCOLOR;
++	else
++		fix->visual = FB_VISUAL_TRUECOLOR;
++
++	fix->xpanstep    = 8;
++	fix->ypanstep    = 1;
++	fix->ywrapstep   = 0;
++
++	fix->line_length = par->line_length;
++
++	fix->mmio_start  = sisfb->mmio_base_phy;
++	fix->mmio_len    = sisfb->mmio_size_phy;
++
++	fix->accel       = FB_ACCEL_SIS_GLAMOUR;
++
++	return 0;
++}
++
++/**
++ *	sisfb_decode_var: - Convert @var to @par
++ *	@var: 
++ *	@par:
++ *	@info: Frame Buffer structure
++ *
++ *	Get the video parammeters @par from @var. If a value doesn't fit, round it up,
++ *	if it's too big, return -EINVAL.
++ *
++ *	The device's default par i.e. sisfb->default_par is converted from default_var by
++ *	this function during driver initialization. Default_var is either predefined or
++ *	provided by find_mode().
++ */
++static int 
++sisfb_decode_var(struct fb_var_screeninfo * var,
++		 struct sisfb_par * par, const struct sisfb_info * sisfb)
++{
++	if (var->bits_per_pixel != 8  && var->bits_per_pixel != 16 &&
++	    var->bits_per_pixel != 32) {
++		printk(KERN_ERR "sisfb_lite: depth not supported: %u\n",
++		       var->bits_per_pixel);
++		return -EINVAL;
++	}
++
++	/* make sure there is enough video ram for the mode */
++	if ((u32)(var->xres_virtual * var->yres_virtual * var->bits_per_pixel / 8) >
++	    sisfb->video_size_virt) {
++		printk(KERN_ERR "sisfb_lite: Not enough memory for mode\n");
++		return -EINVAL;
++	}
++
++	/* FixMe: virtual resolution can only be 2^N for SiS530/620 */
++
++	memset(par, 0, sizeof(struct sisfb_par));
++
++	par->hdispend 	= var->xres;
++	par->xvirt	= var->xres_virtual;
++	par->hsyncstart = par->hdispend   + var->right_margin;
++	par->hsyncend 	= par->hsyncstart + var->hsync_len;
++	par->htotal   	= par->hsyncend   + var->left_margin;
++
++	par->vdispend 	= var->yres;
++	par->yvirt	= var->yres_virtual;
++	par->vsyncstart = par->vdispend   + var->lower_margin;
++	par->vsyncend 	= par->vsyncstart + var->vsync_len;
++	par->vtotal   	= par->vsyncend   + var->upper_margin;
++
++	par->dot_clock 	= 1E12 / var->pixclock;
++
++	par->bits_per_pixel = var->bits_per_pixel;
++	par->cmap_len	    = (par->bits_per_pixel == 8) ? 256 : 16;
++
++	par->line_length    = var->xres_virtual * (var->bits_per_pixel >> 3);
++
++	/* update screen_offset member of current par structure */
++	par->screen_offset = (var->yoffset * var->xres_virtual + var->xoffset) *
++		(var->bits_per_pixel >> 3);
++
++#if 0
++	if (var->sync & FB_SYNC_HOR_HIGH_ACT)
++		par->sync_mode |= SISFB_HSYNC_ACT_HIGH;
++	else
++		par->sunc_mode |= SISFB_HSYNC_ACT_LOW;
++	if (var->sync & FB_SYNC_VERT_HIGH_ACT)
++		par->sync_mode |= SISFB_VSYNC_ACT_HIGH;
++	else
++		par->sync_mode |= SISFB_VSYNC_ACT_LOW;
++#endif
++
++	return 0;
++}
++
++/**
++ *	sisfb_encode_var: - Convert @par to @var
++ *	@var: 
++ *	@par:
++ *	@info: Frame Buffer structure
++ *
++ *	Fill the @var structure based on the values in the hardware specific @par.
++ */
++static int
++sisfb_encode_var(struct fb_var_screeninfo * var, const struct sisfb_par * par,
++		 const struct sisfb_info * sisfb)
++{
++	memset(var, 0, sizeof(struct fb_var_screeninfo));
++
++	var->xres           = par->hdispend;
++	var->yres           = par->vdispend;
++	var->xres_virtual   = par->xvirt;
++	var->yres_virtual   = par->yvirt;
++	var->right_margin   = par->hsyncstart - par->hdispend;
++	var->hsync_len      = par->hsyncend   - par->hsyncstart;
++	var->left_margin    = par->htotal     - par->hsyncend;
++	var->lower_margin   = par->vsyncstart - par->vdispend;
++	var->vsync_len      = par->vsyncend   - par->vsyncstart;
++	var->upper_margin   = par->vtotal     - par->vsyncend;
++	var->bits_per_pixel = par->bits_per_pixel;
++	var->height         = -1;
++	var->width          = -1;
++
++	switch (par->bits_per_pixel) {
++#ifdef FBCON_HAS_CFB8
++	case 8:
++		var->red.length     = 6;
++		var->green.length   = 6;
++		var->blue.length    = 6;
++		break;
++#endif
++#ifdef FBCON_HAS_CFB16
++	case 16:		/* RGB 565 */
++		var->red.offset     = 11;
++		var->red.length     = 5;
++		var->green.offset   = 5;
++		var->green.length   = 6;
++		var->blue.offset    = 0;
++		var->blue.length    = 5;
++		var->transp.offset  = 0;
++		var->transp.length  = 0;
++		break;
++#endif
++#ifdef FBCON_HAS_CFB32
++	case 32:
++		var->red.offset     = 16;
++		var->red.length     = 8;
++		var->green.offset   = 8;
++		var->green.length   = 8;
++		var->blue.offset    = 0;
++		var->blue.length    = 8;
++		var->transp.offset  = 24;
++		var->transp.length  = 8;
++		break;
++#endif
++	}
++
++	var->pixclock = (u32) (1E12 / par->dot_clock);
++
++	if (par->sync_mode & 0x80)
++		var->sync &= ~FB_SYNC_VERT_HIGH_ACT;
++	else
++		var->sync |= FB_SYNC_VERT_HIGH_ACT;
++
++	if (par->sync_mode & 0x40)
++		var->sync &= ~FB_SYNC_HOR_HIGH_ACT;
++	else
++		var->sync |= FB_SYNC_HOR_HIGH_ACT;
++
++	return 0;
++}
++
++/**
++ *	sisfb_getcolreg: - Read color register
++ *	@regno: Color register number
++ *	@red: Red component (return)
++ *	@green: Green component (return)
++ *	@blue: Blue component (return)
++ *	@trans: Alpha component (return)
++ *	@info: Frame Buffer structure
++ *
++ *	Return != 0 for invalid register number.
++ *
++ *	Read a single color register form the driver's color palette and split
++ *	it into colors/transparent components. sisfb_get_cmap() uses this function
++ *	to query the colormap.
++ */
++static int
++sisfb_getcolreg(unsigned regno, unsigned *red, unsigned *green, unsigned *blue,
++	      unsigned *transp, struct fb_info * info)
++{
++	struct sisfb_info * sisfb = (struct sisfb_info *) info;
++	struct sisfb_par * par = (struct sisfb_par *) &sisfb->current_par;
++
++	if (regno >= par->cmap_len)
++		return 1;
++
++	*red    = (sisfb->palette[regno].red   << 8) | sisfb->palette[regno].red;
++	*green  = (sisfb->palette[regno].green << 8) | sisfb->palette[regno].green;
++	*blue   = (sisfb->palette[regno].blue  << 8) | sisfb->palette[regno].blue;
++	*transp = 0;
++
++	return 0;
++}
++
++/**
++ *	sisfb_getcolreg: - Set color register
++ *	@regno: Color register number
++ *	@red: Red component (return)
++ *	@green: Green component (return)
++ *	@blue: Blue component (return)
++ *	@trans: Alpha component (return)
++ *	@info: Frame Buffer structure
++ *
++ *	Return != 0 for invalid register number.
++ *
++ *	Set a single color register to the driver's color palette (HW for 256 color
++ *	mode, SW otherwise) according to colors/transparent components supplied.
++ *	The values supplied are already rounded down to the hardware's capabilities
++ *	(according to the entries in the var structure)
++ *	 
++ *	sisfb_set_cmap() uses this function to set the colormap.
++ */
++static int
++sisfb_setcolreg(unsigned regno, unsigned red, unsigned green, unsigned blue,
++	      unsigned transp, struct fb_info * info)
++{
++	struct sisfb_info * sisfb = (struct sisfb_info *) info;
++	struct sisfb_par * par = (struct sisfb_par *) &sisfb->current_par;
++
++	if (regno >= par->cmap_len)
++		return 1;
++
++	red   >>= 8;
++	green >>= 8;
++	blue  >>= 8;
++
++	sisfb->palette[regno].red   = red;
++	sisfb->palette[regno].green = green;
++	sisfb->palette[regno].blue  = blue;
++
++	switch (par->bits_per_pixel) {
++#ifdef FBCON_HAS_CFB8
++	case 8:
++		sisfb_set_dac_index(sisfb, regno);
++		sisfb_set_dac_rgb(sisfb, red >> 2, green >> 2, blue >> 2);
++		break;
++#endif
++#ifdef FBCON_HAS_CFB16
++	case 15:
++	case 16:
++		sisfb->fbcon_cmap.cfb16[regno] =
++		    ((red   & 0xF8) << 8) |
++		    ((green & 0xFC) << 3) |
++		    ((blue  & 0xF8) >> 3);
++		break;
++#endif
++#ifdef FBCON_HAS_CFB32
++	case 32:
++		sisfb->fbcon_cmap.cfb32[regno] = (red << 16) | (green << 8) | (blue);
++		break;
++#endif
++	}
++
++	return 0;
++}
++
++/*
++ *    Switch Console (called by fbcon.c)
++ */
++static int sisfb_switch_con(int con, struct fb_info * info)
++{
++	struct sisfb_info * sisfb = (struct sisfb_info *) info;
++	struct sisfb_par par;
++
++	/* unlock VGA registers, XFree86 3.3.6 leave the registers locked
++	 * during console switch */
++	sisfb_unlock_regs(sisfb);
++
++	/* backup colormap of current console */
++	if (fb_display[sisfb->currcon].cmap.len)
++		fb_get_cmap(&fb_display[sisfb->currcon].cmap,
++			    1, sisfb_getcolreg, info);
++
++	/* same mode, needn't change mode actually */
++	if (!memcmp(&fb_display[con].var, &fb_display[sisfb->currcon].var,
++		    sizeof(struct fb_var_screeninfo))) {
++		sisfb->currcon = con;
++		return 1;
++	}
++
++	sisfb->currcon = con;
++
++	/* convert var to par and set the hardware by set_par */
++	sisfb_decode_var(&fb_display[con].var, &par, sisfb);
++	sisfb->set_par(&par, sisfb);
++
++	/* set display switch for current bits_per_pixel */
++	sisfb->set_disp(&fb_display[con], sisfb, fb_display[con].var.bits_per_pixel, 0);
++
++	/* Install new colormap for current console */
++	do_install_cmap(&fb_display[con], info);
++
++	return 1;
++}
++
++static int
++sisfb_updatevar(int con, struct fb_info * info)
++{
++	struct sisfb_info * sisfb = (struct sisfb_info *) info;
++
++	if (con == sisfb->currcon)
++		sisfb->pan_display(&fb_display[con].var, sisfb);
++
++	return 0;
++}
++
++/**
++ *	sisfb_blank: -  Blanking or Unblanking the CRT
++ *	@blank: 0 unblank, 1 blank, 2 no vsync, 3 no hsync, 4 off
++ *	@info: Frame Buffer structure
++ *
++ *	The documents on bit 6..7 of SR11 and SR1F are ambigiuos. They are either marked as
++ *	"reserved" or conflicts with each other from different sources. It is possible that
++ *	all these bits are "wired" altogether in the actual circuit implementation (HW bug ??).
++ *	And the VGA guys just choose one to document/program on their own will.
++ *
++ *	XFree86 3.3.6 programs SR11 and CRTC17 but not SR1F
++ */
++static void
++sisfb_blank(int blank, struct fb_info * info)
++{
++	u8 display, power, retrace;
++	struct sisfb_info * sisfb = (struct sisfb_info *) info;
++
++	display = sisfb_get_seq_reg(sisfb, 0x01);
++	power   = sisfb_get_seq_reg(sisfb, 0x11);
++	retrace = sisfb_get_crtc_reg(sisfb, 0x17);
++
++	/* Turn the display off */
++	display |= 0x20;
++
++	switch (blank) {
++	case 0:
++		/* Turn the display on */
++		display &= ~0x20;
++		/* Disable DPMS mode */
++		power   &= ~0xC0;
++		/* Enable horizontal and vertical retrace signals */
++		retrace |= 0x80;
++		break;
++	case 1:
++		break;
++	case 2:
++		/* Enter DPMS Suspend Mode -> no vsync */
++		power   |= 0x80;
++		break;
++	case 3:
++		/* Enter DPMS standby Mode -> no hsync */
++		power   |= 0x40;
++		break;
++	case 4:
++	default:
++		/* Enter DPMS Power Off Mode -> no hsync,vsync */
++		power   |= 0xC0;
++		/* Disable horizontal and vertical retrace signals */
++		retrace &= ~0x80;
++		break;
++	}
++
++	sisfb_set_seq_reg(sisfb, 0x01, display);
++	sisfb_set_seq_reg(sisfb, 0x11, power);
++	sisfb_set_crtc_reg(sisfb, 0x17, retrace);
++}
++
++/**
++ *	sisfb_get_fix: - Get the Fixed Part of the Display
++ *	@fix: Fixed screen info (return)
++ *	@con: Console number
++ *	@info: Frame Buffer structure
++ *
++ *	Return the fixed part of the display information in @fix. The struct of @fix is
++ *	defined in linux/fb.h.
++ *
++ *	This function calls sisfb_encode_fix() to encode @fix from current 'var' or 'par'
++ */
++static int
++sisfb_get_fix(struct fb_fix_screeninfo * fix, int con, struct fb_info * info)
++{
++	struct sisfb_info * sisfb = (struct sisfb_info *) info;
++	struct sisfb_par par;
++
++	if (con == -1)
++		par = sisfb->default_par;
++	else
++		sisfb_decode_var(&fb_display[con].var, &par, sisfb);
++
++	sisfb_encode_fix(fix, &par, sisfb);
++
++	return 0;
++}
++
++/**
++ *	sisfb_get_var: - Convert @var to @par
++ *	@var: 
++ *	@par:
++ *	@info: Frame Buffer structure
++ *
++ *	Get the video params out of 'var'. If a value doesn't fit, round it up,
++ *	if it's too big, return -EINVAL.
++ *
++ *	The driver's default par i.e. sisfb->default_par is convert from default_var
++ *	during initialization. Default_var is either predefined or provided by find_mode().
++ */
++static int
++sisfb_get_var(struct fb_var_screeninfo * var, int con, struct fb_info * info)
++{
++	const struct sisfb_info * sisfb = (struct sisfb_info *) info;
++
++	if (con == -1)
++		/* initialization, get the var from default_par */
++		sisfb_encode_var(var, &sisfb->default_par, sisfb);
++	else
++		*var = fb_display[con].var;
++	return 0;
++}
++
++/*
++ *    Set the User Defined Part of the Display
++ */
++static int sisfb_set_var(struct fb_var_screeninfo * var, int con, struct fb_info * info)
++{
++	struct sisfb_info * sisfb = (struct sisfb_info *) info;
++	struct sisfb_par par;
++	struct display * display;
++	int err, oldbpp;
++
++	if (con == -1)
++		display = &sisfb->disp;
++	else
++		display = &fb_display[con];
++
++	/* try to convert var to HW register values (par) */
++	if ((err = sisfb_decode_var(var, &par, sisfb)))
++		/* HW does not support this display mode */
++		return err;
++
++	/* return current mode to user */
++	sisfb_encode_var(var, &par, sisfb);
++
++	if ((var->activate & FB_ACTIVATE_MASK) != FB_ACTIVATE_NOW)
++		return 0;
++
++	oldbpp = display->var.bits_per_pixel;
++
++	if (display->var.xres != var->xres ||
++	    display->var.yres != var->yres ||
++	    display->var.xres_virtual != var->xres_virtual ||
++	    display->var.yres_virtual != var->yres_virtual ||
++	    display->var.bits_per_pixel != var->bits_per_pixel ||
++	    display->var.accel_flags != var->accel_flags) {
++		struct fb_fix_screeninfo fix;
++
++		sisfb_encode_fix(&fix, &par, sisfb);
++
++		display->screen_base = (char *) sisfb->video_base_virt;
++		display->visual = fix.visual;
++		display->type = fix.type;
++		display->type_aux = fix.type_aux;
++		display->ypanstep = fix.ypanstep;
++		display->ywrapstep = fix.ywrapstep;
++		display->line_length = fix.line_length;
++		display->next_line = fix.line_length;
++		display->can_soft_blank = 1;
++		display->inverse = inverse;
++		display->var = *var;
++
++		sisfb->set_disp(display, sisfb, var->bits_per_pixel, 0);
++
++		if (info->changevar)
++			(*info->changevar) (con);
++	}
++
++	/* call sisfb_set_par if the console is visible (foreground) console
++	   or during initialization */
++	if (!sisfb->info.display_fg || sisfb->info.display_fg->vc_num == con || con < 0)
++		sisfb->set_par(&par, sisfb);
++
++	/* clear OnScreen */
++	memset((unsigned char *) sisfb->video_base_virt + par.screen_offset, 0,
++	       par.line_length * var->yres);
++
++	/* if we have changed the color depth, install new colormap
++	   FixME: We only alloc_cmap but never free one ?? */
++	if (oldbpp != var->bits_per_pixel || con < 0) {
++		if ((err = fb_alloc_cmap(&display->cmap, 0, 0)))
++			return err;
++		do_install_cmap(display, info);
++	}
++
++	return 0;
++}
++
++/**
++ *	sisfb_get_cmap: - Get the Colormap
++ *	@cmap: Colormap to be get (return)
++ *	@kspc:
++ *	@con: Console number
++ *	@info: Frame Buffer structure
++ *
++ *	Get the colormap of console @con to @cmap. If the @con is the current console,
++ *	get the colormap from the hardware registers otherwise we return the private
++ *	colormap of the console. If the console does not have a private colormap we
++ *	return the "default colormap".
++ */
++static int
++sisfb_get_cmap(struct fb_cmap * cmap, int kspc, int con, struct fb_info * info)
++{
++	struct sisfb_info * sisfb = (struct sisfb_info *) info;
++	struct display *disp;  
++
++	if (con == -1)
++		disp = &sisfb->disp;
++	else
++		disp = &fb_display[con];
++
++	if (con == sisfb->currcon)
++		/* current console, use getcolreg to get the HW colormap */
++		return fb_get_cmap(cmap, kspc, sisfb_getcolreg, info);
++	else if (fb_display[con].cmap.len)
++		/* non default colormap? */
++		fb_copy_cmap(&disp->cmap, cmap, kspc ? 0 : 2);
++	else
++		fb_copy_cmap(fb_default_cmap(sisfb->current_par.cmap_len), cmap,
++			     kspc ? 0 : 2);
++
++	return 0;
++}
++
++/**
++ *	sisfb_set_cmap: - Set the Colormap
++ *	@cmap: Colormap to be set
++ *	@kspc:
++ *	@con: Console number
++ *	@info: Frame Buffer structure
++ *
++ *	Set the colormap of console @con to @cmap. If the colormap of console @con is
++ *	not allocated yet, allocate it. If the @con is the current console, really set
++ *	the hardware registers otherwise only set to the private colormap "in memory".
++ */
++static int
++sisfb_set_cmap(struct fb_cmap * cmap, int kspc, int con, struct fb_info * info)
++{
++	int err = 0;
++	struct sisfb_info * sisfb = (struct sisfb_info *) info;
++	struct display *disp;  
++
++	if (con == -1)
++		disp = &sisfb->disp;
++	else
++		disp = &fb_display[con];
++
++	if (disp->cmap.len == 0) {
++		/* no colormap allocated, allocate it */
++		err = fb_alloc_cmap(&disp->cmap, sisfb->current_par.cmap_len, 0);
++		if (err)
++			return err;
++	}
++
++	if (con == sisfb->currcon)
++		/* current console, use setcolreg to set the HW colormap */
++		err = fb_set_cmap(cmap, kspc, sisfb_setcolreg, info);
++	else
++		/* not current console, don't touch the HW, make a copy instead */
++		fb_copy_cmap(cmap, &disp->cmap, kspc ? 0 : 1);
++
++	return err;
++}
++
++/*
++ *  Pan or Wrap the Display
++ *
++ *  This call looks only at xoffset, yoffset and the FB_VMODE_YWRAP flag
++ */
++static int
++sisfb_pan_display(struct fb_var_screeninfo * var, int con, struct fb_info * info)
++{
++	struct sisfb_info * sisfb = (struct sisfb_info *) info;
++	struct display *disp;
++
++	if (con == -1)
++		disp = &sisfb->disp;
++	else
++		disp = &fb_display[con];
++
++	if (var->xoffset > (var->xres_virtual - var->xres))
++		return -EINVAL;
++	if (var->yoffset > (var->yres_virtual - var->yres))
++		return -EINVAL;
++
++	if (var->vmode & FB_VMODE_YWRAP) {
++		if (var->yoffset < 0 ||
++		    var->yoffset >= disp->var.yres_virtual ||
++		    var->xoffset)
++			return -EINVAL;
++	} else {
++		if (var->xoffset + disp->var.xres > disp->var.xres_virtual ||
++		    var->yoffset + disp->var.yres > disp->var.yres_virtual)
++			return -EINVAL;
++	}
++
++	if (con == sisfb->currcon)
++		sisfb->pan_display(var, sisfb);
++
++	/* update xoffset, yoffset and vmode members of var structure for current
++	 * console this is neceressary since this function is called by a seperate
++	 * ioctl function than set_var (actually, set_var doesn't care about these
++	 * members at all) */
++	disp->var.xoffset = var->xoffset;
++	disp->var.yoffset = var->yoffset;
++
++	if (var->vmode & FB_VMODE_YWRAP)
++		disp->var.vmode |= FB_VMODE_YWRAP;
++	else
++		disp->var.vmode &= ~FB_VMODE_YWRAP;
++
++	return 0;
++}
++
++static int sisfb_ioctl(struct inode * inode, struct file * file, unsigned int cmd,
++		       unsigned long arg, int con, struct fb_info * info)
++{
++	return 0;
++}
++
++static struct fb_ops sisfb_ops = {
++	owner:		THIS_MODULE,
++	fb_get_fix:	sisfb_get_fix,
++	fb_get_var:	sisfb_get_var,
++	fb_set_var:	sisfb_set_var,
++	fb_get_cmap:	sisfb_get_cmap,
++	fb_set_cmap:	sisfb_set_cmap,
++	fb_pan_display:	sisfb_pan_display,
++	fb_ioctl:	sisfb_ioctl,
++};
++
++int sisfb_setup(char * options)
++{
++	char *this_opt;
++
++	if (!options || !*options)
++		return 0;
++
++	for (this_opt = strtok(options, ","); this_opt; 
++	     this_opt = strtok(NULL, ",")) {
++		if (!*this_opt)
++			continue;
++
++		if (!strcmp(this_opt, "inverse")) {
++			inverse = 1;
++			fb_invert_cmaps();
++		} else if (!strncmp(this_opt, "font:", 5)) {
++			strncpy(fontname, this_opt + 5, 40);
++		} else {
++			mode_option = this_opt;
++		}
++	}
++	return 0;
++}
++
++static int __devinit
++sisfb_probe(struct pci_dev * pci_dev, const struct pci_device_id * pci_id)
++{
++	struct sisfb_info * sisfb;
++	struct fb_var_screeninfo var;
++
++	if (pci_enable_device(pci_dev))
++		return -ENODEV;
++
++	if ((sisfb = kmalloc(sizeof(struct sisfb_info), GFP_KERNEL)) == NULL)
++		return -ENOMEM;
++	memset(sisfb, 0, sizeof(struct sisfb_info));
++
++	sisfb->pci_dev = pci_dev;
++
++	sisfb->video_base_phy = pci_resource_start(pci_dev, 0);
++	sisfb->video_size_phy = pci_resource_len(pci_dev, 0);
++	if (!request_mem_region(sisfb->video_base_phy, sisfb->video_size_phy, "sisfb FB")) {
++		printk(KERN_ERR "sisfb_lite: cannot reserve frame buffer memory\n");
++		return -ENODEV;
++	}
++
++	sisfb->mmio_base_phy = pci_resource_start(pci_dev, 1);
++	sisfb->mmio_size_phy = pci_resource_len(pci_dev, 1);
++	if (!request_mem_region(sisfb->mmio_base_phy, sisfb->mmio_size_phy, "sisfb MMIO")) {
++		printk(KERN_ERR "sisfb_lite: cannot reserve MMIO region\n");
++		release_mem_region(sisfb->video_base_phy, sisfb->video_size_phy);
++		return -ENODEV;
++	}
++
++	sisfb->vga_io_base = pci_resource_start(pci_dev, 2);
++	sisfb->vga_io_size = pci_resource_len(pci_dev, 2);
++	if (!request_region(sisfb->vga_io_base, sisfb->vga_io_size, "sisfb IO")) {
++		printk(KERN_ERR "sisfb_lite: cannot reserve I/O ports\n");
++		release_mem_region(sisfb->video_base_phy, sisfb->video_size_phy);
++		release_mem_region(sisfb->mmio_base_phy, sisfb->mmio_size_phy);
++		return -ENODEV;
++	}
++
++	sisfb_unlock_regs(sisfb);
++
++	switch (pci_id->driver_data) {
++#ifdef CONFIG_FB_SIS_300
++	case SISFB_LITE_300:
++		sisfb_init_300(sisfb);
++		break;
++#endif /* CONFIG_FB_SIS_300 */
++#ifdef CONFIG_FB_SIS_315
++	case SISFB_LITE_315:
++	        sisfb_init_315(sisfb);
++		break;
++#endif /* CONFIG_FB_SIS_530 */
++	case SISFB_LITE_530:
++	default:
++		printk(KERN_ERR "UnSupupported SiS VGA Core\n");
++		goto failed;
++	}
++
++	strcpy(sisfb->info.modename, "SiSFB Lite");
++
++	sisfb->info.changevar  = NULL;
++	sisfb->info.node       = -1;
++	sisfb->info.fbops      = &sisfb_ops;
++	sisfb->info.disp       = &sisfb->disp;
++	strcpy(sisfb->info.fontname, fontname);
++	sisfb->info.switch_con = &sisfb_switch_con;
++	sisfb->info.updatevar  = &sisfb_updatevar;
++	sisfb->info.blank      = &sisfb_blank;
++	sisfb->info.flags      = FBINFO_FLAG_DEFAULT;
++
++	sisfb->currcon = -1;
++
++	memset(&var, 0, sizeof(var));
++        if (fb_find_mode(&var, &sisfb->info, mode_option, NULL, 0, &sisfb_default_mode, 8) == 0)
++		var = default_var;
++
++	/* get the default_par and make it as our current_par */
++	sisfb_decode_var(&var, &sisfb->default_par, sisfb);
++	sisfb->current_par = sisfb->default_par;
++	sisfb->disp.var = var;
++
++	sisfb->currcon = 0;
++
++	if (register_framebuffer((struct fb_info *) sisfb) < 0) {
++		goto failed;
++	}
++
++	/* make sisfb a driver_data of the PCI device */
++	pci_set_drvdata(pci_dev, sisfb);
++
++	return 0;
++
++ failed:
++	/* clean things up when failed to register frame buffer */
++	pci_dev->driver_data = NULL;
++	release_mem_region(sisfb->video_base_phy, sisfb->video_size_phy);
++	release_mem_region(sisfb->mmio_base_phy, sisfb->mmio_size_phy);
++	release_region(sisfb->vga_io_base, sisfb->vga_io_size);
++
++	iounmap(sisfb->video_base_virt);
++	iounmap(sisfb->mmio_base_virt);
++
++#ifdef CONFIG_MTRR
++	mtrr_del(sisfb->mtrr, sisfb->video_base_phy, sisfb->video_size_virt);
++#endif /* CONFIG_MTRR */
++
++	kfree(sisfb);
++	return -EINVAL;
++}
++
++static void __devexit
++sisfb_remove(struct pci_dev * pci_dev)
++{
++	struct sisfb_info * sisfb = pci_get_drvdata(pci_dev);
++
++	unregister_framebuffer((struct fb_info *) sisfb);
++
++	release_mem_region(sisfb->video_base_phy, sisfb->video_size_phy);
++	release_mem_region(sisfb->mmio_base_phy, sisfb->mmio_size_phy);
++	release_region(sisfb->vga_io_base, sisfb->vga_io_size);
++
++	iounmap(sisfb->video_base_virt);
++	iounmap(sisfb->mmio_base_virt);
++
++#ifdef CONFIG_MTRR
++	mtrr_del(sisfb->mtrr, sisfb->video_base_phy, sisfb->video_size_virt);
++#endif /* CONFIG_MTRR */
++
++	kfree(sisfb);
++	pci_set_drvdata(pci_dev, NULL);
++}
++
++#define SISFB_MODULE_NAME "sisfb_lite"
++
++static struct pci_driver sisfb_pci_driver = {
++	name:		SISFB_MODULE_NAME,
++	id_table:	sisfb_pci_tbl,
++	probe:		sisfb_probe,
++	remove:		sisfb_remove,
++};
++
++static const char * version = "$Id$";
++
++int __init sisfb_init(void)
++{
++	printk(KERN_INFO "sisfb_lite: %s\n", version);
++
++	return pci_module_init(&sisfb_pci_driver);
++}
++
++static void __exit sisfb_cleanup(void)
++{
++	pci_unregister_driver(&sisfb_pci_driver);
++}
++
++#ifdef MODULE
++module_init(sisfb_init);
++#endif /* MODULE */
++
++module_exit(sisfb_cleanup);
+diff -urN linux-2.4.12-official/drivers/video/sis/sisfb_lite.h linux-2.4.12-linuxbios/drivers/video/sis/sisfb_lite.h
+--- linux-2.4.12-official/drivers/video/sis/sisfb_lite.h	Thu Jan  1 08:00:00 1970
++++ linux-2.4.12-linuxbios/drivers/video/sis/sisfb_lite.h	Tue Nov  6 13:17:43 2001
+@@ -0,0 +1,211 @@
++#ifndef __SISFB_LITE__
++#define __SISFB_LITE__
++
++#include <linux/config.h>
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/errno.h>
++#include <linux/string.h>
++#include <linux/mm.h>
++#include <linux/tty.h>
++#include <linux/malloc.h>
++#include <linux/delay.h>
++#include <linux/fb.h>
++#include <linux/console.h>
++#include <linux/selection.h>
++#include <linux/ioport.h>
++#include <linux/init.h>
++#include <linux/pci.h>
++
++#include <asm/io.h>
++
++#ifdef CONFIG_MTRR
++#include <asm/mtrr.h>
++#endif
++
++#include <video/fbcon.h>
++#include <video/fbcon-cfb8.h>
++#include <video/fbcon-cfb16.h>
++#include <video/fbcon-cfb32.h>
++
++enum sisfb_core_generation {
++	SISFB_LITE_530, SISFB_LITE_300, SISFB_LITE_315
++};
++
++#define NR_PALETTE	256
++
++struct sisfb_par {
++	unsigned htotal;
++	unsigned xvirt;
++	unsigned hdispend;
++	unsigned hsyncstart;
++	unsigned hsyncend;
++	unsigned hblankstart;
++	unsigned hblankend;
++
++	unsigned vtotal;
++	unsigned yvirt;
++	unsigned vdispend;
++	unsigned vsyncstart;
++	unsigned vsyncend;
++	unsigned vblankstart;
++	unsigned vblankend;
++
++	/* Video Dot Clock frequence in HZ */
++	unsigned long dot_clock;
++	unsigned fifo_threshold;
++
++	unsigned bits_per_pixel;
++	unsigned cmap_len;
++
++	/* line length, in units of byte = xres_vitrual * bytes_per_pixel */
++	unsigned line_length;
++	/* screen start offset for virtual screen, in units of byte */
++	unsigned screen_offset;
++
++	unsigned sync_mode;
++};
++
++struct sisfb_info {
++	struct fb_info info;
++	struct pci_dev *pci_dev;
++
++	unsigned long video_size_phy;
++	unsigned long video_base_phy;
++	unsigned long video_size_virt;
++	void * video_base_virt;
++
++	unsigned long mmio_size_phy;
++	unsigned long mmio_base_phy;
++	void * mmio_base_virt;
++
++	unsigned vga_io_base;
++	unsigned vga_io_size;
++
++	/* mtrr register number for Write Combin video memory */
++	unsigned mtrr;
++
++	/* default par, used during driver init */
++	struct sisfb_par default_par;
++	/* current par, changed with switch_con, set_var, pan_display */
++	struct sisfb_par current_par;
++
++	/* default display, used during driver init e.g. fb_info->disp */
++	struct display disp;
++	/* current console number, used for vt switch */
++	unsigned currcon;
++
++	struct {
++		u8 blue, green, red, pad;
++	} palette[NR_PALETTE];
++
++	/* These ifdefs must be last! They differ for module & non-module compiles */
++#if defined(FBCON_HAS_CFB16) || defined(FBCON_HAS_CFB32)
++	union {
++#ifdef FBCON_HAS_CFB16
++		u16 cfb16[16];
++#endif /* FBCON_HAS_CFB16 */
++#ifdef FBCON_HAS_CFB32
++		u32 cfb32[16];
++#endif /* FBCON_HAS_CFB32 */
++	} fbcon_cmap;
++#endif /* defined(FBCON_HAS_CFB16) || defined(FBCON_HAS_CFB32) */
++
++	struct sisfb_accelerator * accelerator;
++
++	void (*set_par)(struct sisfb_par *par, struct sisfb_info * sisfb);
++	int (*pan_display)(struct fb_var_screeninfo *var, struct sisfb_info *sisfb);
++	void (*set_disp)(struct display *disp, struct sisfb_info *sisfb, int bpp, int accel);
++};
++
++/* The Programmable Clock Generator:
++ *
++ * The programmable clock generator is based on Phase Lock Loop (PLL) technology
++ * which requires only one external clock source to generate clock signals with
++ * various frequences. Conceptially, the PLL is just like an OP Amp and is consisted
++ * of a Phase Detector, a Voltage Controlled Oscillator and some frequence dividers.
++ * The clock source Fref is feed to the frequence divider /DeNumerator, then passed
++ * to the Phase Detector (PD). The output of the Phase Detector is used to drive the
++ * Voltage Controlled Oscillator (VCO). The clock signal output of the VCO, called Fvco,
++ * is then feedback to the Pahse Detector after divided by /Divider and /Numerator.
++ * When the PLL is in a stationary state, the 2 inputs of the Phase Detector is the
++ * same. Thus we have equation (1).
++ *
++ * The VCO can only generate a certain range of Fvco, for most case 135 MHz < Fvco < 250 MHz.
++ * If we would like to generate clock frequence Fout that is lower then the lower
++ * bound of Fvco, another frequnce divider called Post Scalar is needed. Then we
++ * have equation (2). By solving equatiuon (1) and (2) we can find the relationship
++ * between clock source Fref and generated clock Fout as in equation (3).
++ *
++ * Note:
++ * 1. From dumping the VGA BIOS data, it seems that the VCO in SiS 630 can generate
++ * frequence in the range of 90 MHZ - 400 MHz. But for the sake of safety, we just
++ * assume that 150 MHz < Fvco < 300 MHz in this implementation.
++ *
++ * 2. The /Divider is in Bit 7 of clock generator I, /Numerator is in Bit 0..6 of
++ * clock generator I and /DeNumerator is in Bit 0..4 of clock generator II. Their
++ * actual values are the values stored in the corresponding register plus 1.
++ *
++ * 3. The /Post Scalar is in Bit 5..7 of clock generator II. The actual meaning of
++ * the values in the register is not clear from the document. We assume that:
++ *	000 => 1,	001 => 2,	010 => 3,	011 => 4
++ *	110 => 6,	111 => 8, others are reserved.
++ *
++ * 4. The document (6326 Spec and Glamour Design Guideline) only states the VCO Gain,
++ * Bit 7 of clock generator register III should be set for "high frequence operation"
++ * but without specifying the definition of "high frequence". From XFree86 3.3.6,
++ * sisfb.c and BIOS dumping, they are always set.
++ *
++ *                                      -------------- 
++ *                               -------| /Numerator |<------
++ *                               |      --------------      |
++ *                               |                     ------------
++ *                               |                     | /Divider |
++ *                               |                     ------------
++ *                               |                          |
++ *            ----------------   V    ------      -------   |    ----------------
++ * Fref ----> | /DeNumerator |---+--->| CP |----->| VCO |------->| /Post Scalar | ----> Fout
++ *            ----------------  PD    ------      -------  Fvco  ----------------
++ *                                                   ^
++ *                                                   |
++ *                                                  Gain
++ *
++ * For
++ *          Fref              Fvco                                 Fvco
++ *       ----------- = -------------------  (1)   and    Fout = -----------  (2) 
++ *       DeNumerator   Divider * Numerator                      Post Scalar
++ *
++ * We have
++ *                 Divider * Numerator
++ *       Fout = ------------------------- Fref (14.318 MHz)  (3)
++ *              Denumerator * Post Scalar
++ *
++ * Reference:
++ *	1. SiS 6326 AGP/PCI Graphics & Video Acclerator. Rev 1.0, May 12, 1997
++ *	2. Graphics Hardware by Geert Uytterhoeven <geert@linux-m86k.org>
++ *	3. sis86c201.c in XFree86 3.3.6
++ *	4. Glamour Design Guideline V0.8
++ */
++
++/* Clock generator source, 14.318 MHz */
++#define CLOCK_SOURCE 14318
++/* Minimium Fvco 150 MHz */
++#define MIN_F_VCO 150000
++/* Maximium Fvco 300 MHz */
++#define MAX_F_VCO 300000
++
++struct sisfb_clock_param {
++	/* parameters for setting clock generator for SiS VGA core */
++	u8 divider;
++	u8 numerator;
++	u8 denumerator;
++	u8 post_scalar;
++	u8 vco_gain;
++};
++
++extern unsigned long sisfb_calc_clock_freq(struct sisfb_clock_param * clock);
++extern int sisfb_calc_clock_param(struct sisfb_clock_param * clock, unsigned long freq);
++extern void sisfb_set_dispsw_fbcon(struct display * disp, struct sisfb_info * sisfb, int bpp, int accel);
++#include "sisfb_legacy_vga.h"
++
++#endif /* __SISFB_LITE__ */

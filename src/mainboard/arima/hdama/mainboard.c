@@ -238,8 +238,18 @@ static void verify_cpu_voltages(device_t dev)
 
 #define SMBUS_MUX 0x70
 
-	if (smbus_wait_until_ready(smbus_io_base) < 0) {
-		return -2;
+static void do_verify_cpu_voltages(void)
+{
+	device_t smbus_dev;
+	device_t mux, sensor;
+	struct device_path mux_path, sensor_path;
+	int result;
+	int mux_setting;
+	
+	/* Find the smbus controller */
+	smbus_dev = dev_find_device(0x1022, 0x746b, 0);
+	if (!smbus_dev) {
+		die("SMBUS controller not found\n");
 	}
 	
 	/* Find the smbus mux */
@@ -250,25 +260,12 @@ static void verify_cpu_voltages(device_t dev)
 		die("SMBUS mux not found\n");
 	}
 
-	global_status_register = inw(smbus_io_base + SMBGSTATUS);
-
-	/* read results of transaction */
-	byte = inw(smbus_io_base + SMBHSTDAT) & 0xff;
-
-	if (global_status_register != (1 << 4)) {
-		return -1;
-	}
-	return byte;
-}
-
-#if 0
-static int smbus_read_byte(unsigned smbus_io_base, unsigned device, unsigned address)
-{
-	unsigned char global_status_register;
-	unsigned char byte;
-
-	if (smbus_wait_until_ready(smbus_io_base) < 0) {
-		return -2;
+	/* Find the adm1026 sensor */
+	sensor_path.type         = DEVICE_PATH_I2C;
+	sensor_path.u.i2c.device = ADM1026_DEVICE;
+	sensor = find_dev_path(mux, &sensor_path);
+	if (!sensor) {
+		die("ADM1026 not found\n");
 	}
 	
 	/* Set the mux to see the temperature sensors */

@@ -53,6 +53,13 @@ SECTIONS
 		epci_drivers = . ;
 		*(.rodata)
 		*(.rodata.*)
+		/*
+		 * kevinh/Ispiri - Added an align, because the objcopy tool
+		 * incorrectly converts sections that are not long word aligned.
+		 * This breaksthe linuxbios.strip target.
+		 */
+		 . = ALIGN(4);
+
 		_erodata = .;
 	}	
 	/*

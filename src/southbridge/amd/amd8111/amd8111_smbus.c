@@ -3,7 +3,7 @@
 #include <arch/io.h>
 
 #define PM_BUS 0
-#define PM_DEVFN (AMD8111_DEVFN+3)
+#define PM_DEVFN PCI_DEVFN(0x7,3)
 
 #define SMBUS_IO_BASE 0x1000
 #define SMBHSTSTAT 0

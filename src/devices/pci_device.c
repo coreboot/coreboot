@@ -303,6 +303,8 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 			IORESOURCE_IO, IORESOURCE_IO);
 		pci_write_config8(dev, PCI_IO_BASE,  base >> 8);
 		pci_write_config8(dev, PCI_IO_LIMIT, limit >> 8);
+		pci_write_config16(dev, PCI_IO_BASE_UPPER16, 0);
+		pci_write_config16(dev, PCI_IO_LIMIT_UPPER16, 0);
 	}
 	else if (resource->index == PCI_MEMORY_BASE) {
 		/* set the memory range
@@ -322,6 +324,8 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 			IORESOURCE_MEM | IORESOURCE_PREFETCH);
 		pci_write_config16(dev, PCI_PREF_MEMORY_BASE,  base >> 16);
 		pci_write_config16(dev, PCI_PREF_MEMORY_LIMIT, limit >> 16);
+		pci_write_config32(dev, PCI_PREF_BASE_UPPER32, 0);
+		pci_write_config32(dev, PCI_PREF_LIMIT_UPPER32, 0);
 	}
 	else {
 		printk_err("ERROR: invalid resource->index %x\n",

@@ -402,7 +402,7 @@ static void disable_probes(void)
 	print_debug("Disabling read/write/fill probes for UP... ");
 
 	val=pci_read_config32(NODE_HT(0), 0x68);
-	val |= 0x0000040f;
+	val |= (1<<10)|(1<<9)|(1<<8)|(1<<4)|(1<<3)|(1<<2)|(1<<1)|(1 << 0);
 	pci_write_config32(NODE_HT(0), 0x68, val);
 
 	print_debug("done.\r\n");
@@ -475,7 +475,6 @@ static bool check_connection(u8 src, u8 dest, u8 link)
 {
 	/* this function does 2 things:
 	 * 1) detect whether the coherent HT link is connected.
-         *    After this step follows a small idle loop.
 	 * 2) verify that the coherent hypertransport link
 	 *    is established and actually working by reading the
 	 *    remote node's vendor/device id
@@ -491,9 +490,6 @@ static bool check_connection(u8 src, u8 dest, u8 link)
 	val=pci_read_config32(NODE_HT(src), 0x98+link);
 	if ( (val&0x17) != 0x03)
 		return 0;
-
-	/* idle loop to make sure the link is established */
-	for (val=0;val<16;val++);
 
 	/* 2) */
         val=pci_read_config32(NODE_HT(dest),0);

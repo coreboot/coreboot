@@ -580,7 +580,7 @@ class partobj:
 		if (self.chipconfig):
 			debug.info(debug.gencode, "gencode: chipconfig(%d)" % self.instance)
 			file.write("#include \"%s/chip.h\"\n" % self.dir)
-			file.write("extern struct superio_control %s_control;\n" % \
+			file.write("extern struct chip_control %s_control;\n" % \
 					self.flatten_name)
 			file.write("struct %s_config %s_config_%d" % (\
 					self.flatten_name ,\
@@ -590,7 +590,7 @@ class partobj:
 				file.write("\t= {\n")
 				for i in self.registercode:
 					file.write( "\t  %s" % i)
-				file.write("\t}\n")
+				file.write("\t};\n")
 			else:
 				file.write(";")
 			file.write("\n");
@@ -616,7 +616,7 @@ class partobj:
 					self.flatten_name )
 			# generate the pointer to the isntance
 			# of the chip struct
-			file.write("  .chip_config = (void *) &%s_config_%d,\n" %\
+			file.write("  .chip_info = (void *) &%s_config_%d,\n" %\
 					(self.flatten_name, self.instance ))
 		file.write("};\n")
 		
@@ -1510,7 +1510,7 @@ def writeimagemakefile(image):
 		file.write("\t$(CC) -c $(CFLAGS) -o $@ $<\n")
 		#file.write("%s\n" % objrule[2])
 
-	# special rule for chips_target.c
+	# special rule for chip_target.c
 	file.write("chip_%s.o: chip_%s.c\n" % (target_name, target_name))
 	file.write("\t$(CC) -c $(CFLAGS) -o $@ $<\n")
 
@@ -1632,7 +1632,7 @@ def dumptree(part, lvl):
 	debug.info(debug.dumptree, "DONE DUMPTREE")
 
 def writecode(image):
-	filename = os.path.join(img_dir, "chips_%s.c" % target_name)
+	filename = os.path.join(img_dir, "chip_%s.c" % target_name)
 	print "Creating", filename
 	file = open(filename, 'w+')
 	# gen all the forward references
@@ -1642,9 +1642,9 @@ def writecode(image):
 	file.write("struct chip ")
 	while (i <= image.numparts()):
 		if (i):
-			file.write("cdev%d "% i)
+			file.write(", dev%d"% i)
 		else:
-			file.write("root ")
+			file.write("root")
 		i = i + 1
 	file.write(";\n")
 	gencode(image.getroot(), file)

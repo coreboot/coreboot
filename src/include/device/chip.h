@@ -6,6 +6,11 @@
  */
 
 /* some of the types of resources chips can control */
+#ifndef CHIP_CONFIGURE
+#define CHIP_CONFIGURE(chip, pass) chip_configure(chip, pass)
+#else
+#define CHIP_CONFIGURE(chip, pass)
+#endif
 
 struct com_ports {
   unsigned int enable,baud, base, irq;
@@ -24,6 +29,7 @@ struct lpt_ports {
 
 enum chip_pass {
 	CHIP_PRE_CONSOLE,
+	CHIP_PRE_PCI,
 	CHIP_PRE_DEVICE_ENUMERATE,
 	CHIP_PRE_DEVICE_CONFIGURE,
 	CHIP_PRE_DEVICE_ENABLE,
@@ -59,5 +65,5 @@ struct chip {
   void *chip_info; /* the dreaded "void *" */
 };
 
-extern struct chip *root;
+extern struct chip root;
 extern void chip_configure(struct chip *, enum chip_pass);

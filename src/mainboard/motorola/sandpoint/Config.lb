@@ -34,7 +34,7 @@ end
 ##
 southbridge winbond/w83c553 end
 superio NSC/pc97307 
-	register "com1={1} com2={1} floppy=0 lpt=1 keyboard=1 hwmonitor=1"
+	register ".com1={1}, .lpt={0}, .port=SIO_COM1_BASE"
 end
 
 ##

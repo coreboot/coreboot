@@ -10,6 +10,15 @@
 void
 chip_configure(struct chip *root, enum chip_pass pass)
 {
-	while (root) {
+	struct chip *c;
+
+	for (c = root; c; c = c->next) {
+		if (root->control && root->control->enable)
+			root->control->enable(root, pass);
+	}
+
+	for (c = root; c; c = c->next) {
+		if (root->children)
+			chip_configure(root->children, pass);
 	}
 }

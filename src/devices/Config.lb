@@ -1,3 +1,4 @@
 object device.o
 object device_util.o
 object pci_device.o
+object chip.o

@@ -569,23 +569,3 @@ define CONFIG_UDELAY_TSC
 	comment ""
 end
 
-###############################################
-# SMBUS options
-###############################################
-define SMBUS_MEM_DEVICE_START
-	default (0xa<<3)
-	export used
-	comment "The starting address on the SMBUS for the memory EEPROM"
-end
-
-define SMBUS_MEM_DEVICE_END
-	default (SMBUS_MEM_DEVICE_START + 1)
-	export used
-	comment "The ending address on the SMBUS for the memory EEPROM"
-end
-
-define SMBUS_MEM_DEVICE_INC
-	default 1
-	export used
-	comment "The amount to increment device addresses on SMBUS probes"
-end

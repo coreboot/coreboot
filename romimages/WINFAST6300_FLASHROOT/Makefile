@@ -8,10 +8,10 @@ CPUFLAGS += -DNEWPCI
 CPUFLAGS += -DENABLE_FIXED_AND_VARIABLE_MTRRS
 CPUFLAGS += -DINBUF_COPY
 CPUFLAGS += -DUSE_DOC_MIL
+CPUFLAGS += -DFINAL_MAINBOARD_FIXUP
 CPUFLAGS += -DCMD_LINE='"root=/dev/nftla1 single"'
 
-LINUXPATH=$(TOP)/../linux-2.4.0-test6.sis
-LINUX=$(LINUXPATH)/vmlinux
+LINUX=$(TOP)/../linux-2.4.0-test6.sis
 
 TOP=../..
 INCLUDES=-nostdinc -I $(TOP)/src/include 
@@ -19,7 +19,7 @@ CFLAGS=$(INCLUDES) -O2 $(CPUFLAGS) -Ilinux/include -Wall
 
 OBJECTS=crt0.o hardwaremain.o linuxbiosmain.o 
 OBJECTS += mainboard.o mtrr.o subr.o fill_inbuf.o params.o
-OBJECTS += southbridge.o northbridge.o
+OBJECTS += southbridge.o northbridge.o superio.o
 #OBJECTS += pci.o
 OBJECTS += printk.o vsprintf.o
 OBJECTS += newpci.o linuxpci.o
@@ -29,7 +29,7 @@ OBJECTS += serial_subr.o
 OBJECTS += mpspec.o
 OBJECTS += microcode.o
 OBJECTS += keyboard.o
-LINUX=$(TOP)/../linux-2.4.0-test6.sis/
+
 
 LINK = ld -T ldscript.ld -o $@ $(OBJECTS)
 CC=cc $(CFLAGS)
@@ -94,6 +94,9 @@ southbridge.o: $(TOP)/src/northsouthbridge/sis/630/southbridge.c
 	cc $(CFLAGS) -c $<
 
 northbridge.o: $(TOP)/src/northsouthbridge/sis/630/northbridge.c
+	cc $(CFLAGS) -c $<
+
+superio.o: $(TOP)/src/superio/sis/950/superio.c
 	cc $(CFLAGS) -c $<
 
 pci.o:  $(TOP)/src/lib/pci.c

@@ -141,7 +141,7 @@ int verify_flash (struct flashchip * flash, char * buf, int verbose)
 	volatile char * bios = flash->virt_addr;
 
 	printf("Verifying address: ");
-	while (i++ < total_size) {
+	while (i < total_size) {
 		if (verbose) 
 			printf("0x%08x", i);
 		if (*(bios+i) != *(buf+i)) {
@@ -150,6 +150,7 @@ int verify_flash (struct flashchip * flash, char * buf, int verbose)
 		}
 		if (verbose) 
 			printf("\b\b\b\b\b\b\b\b\b\b");
+		i++
 	}
 	if (verbose)
 		printf("\n");
@@ -178,12 +179,12 @@ int main (int argc, char * argv[])
 	FILE * image;
 	struct flashchip * flash;
 	int opt;
-	int read_it = 0, write_it = 0, verify_it = 0;
+	int read_it = 0, write_it = 0, verify_it = 0, verbose = 0;
 	char *filename = NULL;
 
 	setbuf(stdout, NULL);
 
-	while ((opt = getopt(argc, argv, "rwvc:")) != EOF) {
+	while ((opt = getopt(argc, argv, "rwvVc:")) != EOF) {
 		switch (opt) {
 		case 'r':
 			read_it = 1;
@@ -196,6 +197,9 @@ int main (int argc, char * argv[])
 			break;
 		case 'c':
 			chip_to_probe = strdup(optarg);
+			break;
+		case 'V':
+			verbose = 1;
 			break;
 		default:
 			usage(argv[0]);
@@ -257,6 +261,6 @@ int main (int argc, char * argv[])
 	if (write_it || (!read_it && !verify_it))
 		flash->write (flash, buf);
 	if (verify_it)
-		verify_flash (flash, buf, /* verbose = */ 0);
+		verify_flash (flash, buf, verbose);
 	return 0;
 }

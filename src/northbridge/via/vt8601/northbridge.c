@@ -1,5 +1,7 @@
 #include <printk.h>
 #include <pci.h>
+#include <pciconf.h>
+
 
 unsigned long sizeram()
 {
@@ -7,6 +9,7 @@ unsigned long sizeram()
 	unsigned char bank, mem, prevmem;
 	// fix me later -- there are two more banks at 0x56 and 0x57
 	unsigned long firstbank = 0x5a, lastbank = 0x5f;
+	u8 sma_status, sma_size, sma_size_bits;	
 	
         struct pci_dev *pcidev;
 
@@ -15,12 +18,22 @@ unsigned long sizeram()
 	if (! pcidev)
 		return 0;
 
+	pci_read_config_byte(pcidev, 0xfb, &sma_status);
+	sma_size_bits = (sma_status >> 4) & 0x03;
+	if (sma_size_bits > 3)
+		sma_size = 0;
+	else
+		sma_size = 0x01 << sma_size_bits;
+
 	for(totalmem = mem = prevmem = 0, bank = firstbank; 
 	    bank <= lastbank; bank++) {
 		pci_read_config_byte(pcidev, bank, &mem);
-		totalmem += (mem - prevmem) * 8 * 1024;
+		totalmem += (mem - prevmem) * 8;
 		prevmem = mem;
 	}
+	
+	totalmem -= sma_size;
+	totalmem *= 1024;
 
 	printk("sizeram: returning 0x%x KB\n", totalmem);
 #if 0
@@ -31,3 +44,24 @@ unsigned long sizeram()
 #endif
 	return totalmem;
 }
+
+
+/*
+unsigned long sizeram()
+{
+	return 0;
+}
+*/
+
+#ifdef HAVE_FRAMEBUFFER
+void framebuffer_on()
+{
+	unsigned long devfn;
+	u16 command;
+
+	devfn = PCI_DEVFN(0, 1);
+	pcibios_read_config_word(0, devfn, 0x3e, &command);
+	command |= 0x08;
+	pcibios_write_config_word(0, devfn, 0x3e, command);
+}
+#endif

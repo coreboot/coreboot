@@ -1,3 +1,6 @@
+/* 
+   v1.0 02/15/2001: To add "afteram.inc" file after test dram.
+*/ 
 /*
  * $ $
  *
@@ -52,6 +55,8 @@
 
 	CALLSP(ramtest)
 #endif	
+
+#include <northbridge/via/vt8601/afteram.inc>
 /*
  *	Copy data into RAM and clear the BSS. Since these segments
  *	isn't really that big we just copy/clear using bytes, not

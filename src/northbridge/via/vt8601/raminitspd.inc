@@ -41,6 +41,11 @@
 	(1) After SPD, set registers:
 		(1) Second to write and modify: 0x70:0xc0, or 0x71:08-->0x71:88, 0x72:ec, 0x73:0c, 0x74:0x0e,
 			or 0x75:0x80-->0x75:0x81, or 0x76:0x80-->0x76:0xd6, or 0x79:0xf0-->0x79:0xf4, 0x7a:0x01
+  v1.5: 02/15/2001: To modify and add:
+	(1) Initial register: 0x81:0xc3
+            To add ptp table(bus0, devfn08) and program: 0x1c:0xf0, 0x20:0xf0, 0x21:0xff, 0x24:0xf0, 0x25:0xff, 0x34:0x80 	
+	(2) After SPD, set registers:
+		(1) Second to write: 0x0d:0x08, 0xac:0x6e
 
 */
 		
@@ -71,7 +76,7 @@ register_table:
 
 	.byte 0x50, 0xfe
 	.byte 0x51, 0xdf
-	.byte 0x52, 0xc8
+	.byte 0x52, 0xc8 
 	.byte 0x53, 0x98
 	.byte 0xf8, 0x22
 	.byte 0xf9, 0x42
@@ -114,8 +119,20 @@ register_table:
 	.byte 0x75, 0x80
 	.byte 0x76, 0x80
 	.byte 0x79, 0xf0
+
+	.byte 0x81, 0xc3
 	.byte 0x0 /* end of table */
-ram_set_registers: 
+
+ptp_table:
+	.byte 0x1c, 0xf0
+	.byte 0x20, 0xf0
+	.byte 0x21, 0xff
+	.byte 0x24, 0xf0
+	.byte 0x25, 0xff
+	.byte 0x34, 0x80
+	.byte 0x0
+
+ram_set_registers:
 	/* standard x86 loop on table until done code */
 	/* assumes that: devfn is 0 (safe on anything we've seen) */
 	/* which means addresses are a byte */
@@ -126,13 +143,27 @@ ram_set_registers:
 	xor	%eax, %eax
 	movb	(%esi), %al
 	testb 	%al, %al
-	jz	done_ram_set_registers
+//	jz	done_ram_set_registers
+	jz 	ptp
 	inc	%esi
 	movb	(%esi), %dl
 	PCI_WRITE_CONFIG_BYTE
 	inc %esi
 	jmp 1b
 
+ptp:	movl	$ptp_table, %esi
+2:
+	/* zero out eax. This is a must right here. */
+	xor	%eax, %eax
+	movb	(%esi), %al
+	testb 	%al, %al
+	jz	done_ram_set_registers
+	inc	%esi
+	orl 	$0x0800, %eax 
+	movb	(%esi), %dl
+	PCI_WRITE_CONFIG_BYTE
+	inc %esi
+	jmp 2b
 	// I forget why we need this, but we do
 
 	mov $0xa55a5aa5, %eax
@@ -314,7 +345,9 @@ spd_set_nbxcfg_done:
 	orb $0x04, %dl        ; \
 	movl $0x79, %eax      ; \
 	PCI_WRITE_CONFIG_BYTE ; \
-	CS_WRITE($0x7a, $0x01)  
+	CS_WRITE($0x7a, $0x01) ; \
+	CS_WRITE($0x0d, $0x08) ; \
+	CS_WRITE($0xac, $0x6e) 
 
 //	CS_WRITE($0x6d, $0x21) ; \
 //	CS_WRITE($0x84, $0xc0)

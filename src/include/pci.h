@@ -224,7 +224,7 @@ extern void printf(char *format, ...);
 #define PCI_FUNC(devfn)		((devfn) & 0x07)
 
 
-#include <linux/types.h>
+#include <types.h>
 
 /*
  * There is one pci_dev structure for each slot-number/function-number
@@ -314,23 +314,23 @@ void pcibios_fixup(void);
 void pcibios_fixup_bus(struct pci_bus *);
 char *pcibios_setup (char *str);
 int pcibios_read_config_byte (unsigned char bus, unsigned char dev_fn,
-			      unsigned char where, unsigned char *val);
+			      unsigned char where, u8 *val);
 int pcibios_read_config_word (unsigned char bus, unsigned char dev_fn,
-			      unsigned char where, unsigned short *val);
+			      unsigned char where, u16 *val);
 int pcibios_read_config_dword (unsigned char bus, unsigned char dev_fn,
-			       unsigned char where, unsigned int *val);
+			       unsigned char where, u32 *val);
 int pcibios_write_config_byte (unsigned char bus, unsigned char dev_fn,
-			       unsigned char where, unsigned char val);
+			       unsigned char where, u8 val);
 int pcibios_write_config_word (unsigned char bus, unsigned char dev_fn,
-			       unsigned char where, unsigned short val);
+			       unsigned char where, u16 val);
 int pcibios_write_config_dword (unsigned char bus, unsigned char dev_fn,
-				unsigned char where, unsigned int val);
+				unsigned char where, u32 val);
 int pcibios_debugwrite_config_byte (unsigned char bus, unsigned char dev_fn,
-			       unsigned char where, unsigned char val);
+			       unsigned char where, u8 val);
 int pcibios_debugwrite_config_word (unsigned char bus, unsigned char dev_fn,
-			       unsigned char where, unsigned short val);
+			       unsigned char where, u16 val);
 int pcibios_debugwrite_config_dword (unsigned char bus, unsigned char dev_fn,
-				unsigned char where, unsigned int val);
+				unsigned char where, u32 val);
 
 /* Don't use these in new code, use pci_find_... instead */
 
@@ -376,35 +376,6 @@ void pci_enable(void);
 void intel_conf_writeb(unsigned long port, unsigned char value);
 unsigned char intel_conf_readb(unsigned long port);
 
-#ifndef CONFIG_PCI
-/* If the system does not have PCI, clearly these return errors.  Define
-   these as simple inline functions to avoid hair in drivers.  */
-extern inline int pcibios_present(void) { return 0; }
-
-#define _PCI_NOP(o,s,t) \
-	extern inline int pcibios_##o##_config_##s## (u8 bus, u8 dfn, u8 where, t val) \
-		{ return PCIBIOS_FUNC_NOT_SUPPORTED; } \
-	extern inline int pci_##o##_config_##s## (struct pci_dev *dev, u8 where, t val) \
-		{ return PCIBIOS_FUNC_NOT_SUPPORTED; }
-#define _PCI_NOP_ALL(o,x)	_PCI_NOP(o,byte,u8 x) \
-				_PCI_NOP(o,word,u16 x) \
-				_PCI_NOP(o,dword,u32 x)
-_PCI_NOP_ALL(read, *)
-_PCI_NOP_ALL(write,)
-
-extern inline struct pci_dev *pci_find_device(unsigned int vendor, unsigned int device, struct pci_dev *from)
-{ return NULL; }
-
-extern inline struct pci_dev *pci_find_class(unsigned int class, struct pci_dev *from)
-{ return NULL; }
-
-extern inline struct pci_dev *pci_find_slot(unsigned int bus, unsigned int devfn)
-{ return NULL; }
-
-extern inline void pci_set_master(struct pci_dev *dev)
-{ return; }
-
-#endif /* !CONFIG_PCI */
 
 #define kmalloc(x, y) malloc(x)
 void *malloc(unsigned int);

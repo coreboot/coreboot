@@ -13,9 +13,11 @@
  * linux source tree, so keep your mods to a minimum, please
  * RGM
  */
-#include <lbpci.h>
+#include <pci.h>
 #include <pci_ids.h>
 #include <cpu/p5/io.h>
+#include <printk.h>
+#include <types.h>
 
 extern void intel_post(unsigned char value);
 #define DEBUG
@@ -241,7 +243,7 @@ unsigned int pci_scan_bus(struct pci_bus *bus)
 			continue;
 		}
 
-		if ((dev = kmalloc(sizeof(*dev), GFP_ATOMIC)) == NULL) {
+		if ((dev = kmalloc(sizeof(*dev), GFP_ATOMIC)) == 0) {
 			printk("PCI: out of memory.\n");
 			continue;
 		}
@@ -335,7 +337,7 @@ unsigned int pci_scan_bus(struct pci_bus *bus)
 	for (dev = bus->devices; dev; dev = dev->sibling)
 		/* If it's a bridge, scan the bus behind it. */
 		if ((dev->class >> 8) == PCI_CLASS_BRIDGE_PCI) {
-			unsigned int buses;
+			u32 buses;
 			unsigned int devfn = dev->devfn;
 			unsigned short cr;
 #define NOTUSED
@@ -368,7 +370,7 @@ unsigned int pci_scan_bus(struct pci_bus *bus)
 			}
 #endif
 			/* Insert it into the tree of buses. */
-			if ((child = kmalloc(sizeof(*child), GFP_ATOMIC)) == NULL) {
+			if ((child = kmalloc(sizeof(*child), GFP_ATOMIC)) == 0) {
 				printk("PCI: out of memory for bridge.\n");
 				continue;
 			}
@@ -468,7 +470,7 @@ struct pci_bus *pci_scan_peer_bridge(int bus)
 	struct pci_bus *b;
 
 	b = &pci_root;
-	while ((b != NULL) && (bus != 0)) {
+	while ((b != 0) && (bus != 0)) {
 		if (b->number == bus)
 			return (b);
 		b = b->next;

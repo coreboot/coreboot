@@ -3,7 +3,7 @@
 #include <printk.h>
 #include <cpu/p5/cpuid.h>
 #ifdef i586
-#include <asm/msr.h>
+#include <cpu/p6/msr.h>
 #endif
 
 #ifdef i586

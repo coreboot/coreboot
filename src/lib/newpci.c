@@ -11,9 +11,9 @@
  * the wisdom of Tom's recommendations ...
  */
 /* single-pass allocation appears to be the way to go.  */
-#include <lbpci.h>
+#include <pci.h>
 #undef __KERNEL__
-#include <asm/io.h>
+#include <cpu/p5/io.h>
 #include <printk.h>
 
 #ifdef EMULATE

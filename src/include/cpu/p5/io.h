@@ -97,7 +97,7 @@ __OUTS(b)
 __OUTS(w)
 __OUTS(l)
 
-#ifdef __KERNEL__
+#ifdef NONONONONO
 
 #include <linux/vmalloc.h>
 #include <asm/page.h>

@@ -12,8 +12,9 @@ static char rcsid[] = "$Id$";
 
 #include <cpu/p5/macros.h>
 #include <printk.h>
-#include <lbpci.h>
+#include <pci.h>
 #include <subr.h>
+#include <linux/asm-i386/msr.h>
 
 #ifdef SERIAL_CONSOLE
 #include <serial_subr.h>

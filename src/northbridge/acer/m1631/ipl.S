@@ -18,6 +18,7 @@
  * set the right value. 
  */
 #define INIT_MCR $0xf6641000
+#define WRITE_MCR0 movl %ecx, %eax ;  outl %eax, %dx
 /*#include <cpu/p5/start32.inc>*/
 .org 0xfe000
 .code16
@@ -73,12 +74,20 @@ code16
 	/* I will leave this here for now, but you should also set it later. */
 
 	xorl	%edi, %edi
-	movb	$0x6c, %al
-	CALLSP(pci_read_dword)
+	movl	$0x8000006c, %eax
+	mov	$0x0cf8,%dx
+	outl	%eax,%dx
+/*	movb	$0x8000006c, %al
+	CALLSP(pci_read_dword)*/
+	movb	$0xfc, %dl
+	inl	%dx, %eax
 	andl    $0xfffc, %ecx
 	orl	INIT_MCR,  %ecx
+	WRITE_MCR0
+	/*
 	movb	$0x6c, %al
 	CALLSP(pci_write_dword)
+	*/
 	rorl	$16, %ecx
 	/* test 8 bit CAS */
 	movb	$0, 0
@@ -100,8 +109,11 @@ sizeram:
 	rorl	$16, %ecx
 	/* clear the 'no multi page' bit. */
 	andw	$0xefff, %cx
+	WRITE_MCR0
+	/*
 	mov	$0x6c, %al
 	CALLSP(pci_write_dword)
+	*/
 /* size is now in cx[19:16] */
 /* now size the dram */
 /* you had best have at least 32M; that's as small as we go */
@@ -126,8 +138,11 @@ sizeram:
 	rol	$20, %ecx
 /* set 4 banks. */
 	orb	$1, %cl
+	WRITE_MCR0
+	/*
 	mov	$0x6c, %al
 	CALLSP(pci_write_dword)
+	*/
 /* bank detect */
 /* you don't need to even care how large CAS is. 
  * Just set 4-bank mode, and set non-zero numbers into a few places. 
@@ -143,14 +158,128 @@ sizeram:
 1: 
 	/* clear 4 banks */
 	andb	$0xfe, %cl
+	WRITE_MCR0
+	/*
 	mov	$0x6c, %al
 	CALLSP(pci_write_dword)
+	*/
 	/* at this point, dram slot 0 is up.  we hope. */
 
 	/* now for flash ... */
 	/* NOTE: MUST NOT DESTROY %ecx! */
 	/* INPUT: %al, the register. %ecx, the write data */
+	/* Following code courtesy Ollie Lho:	*/
+/*
+ * ipl.S:	 Initial Program Loader (IPL) for SiS 630 and M-System DoC Millennium
+ *
+ *
+ * Copyright 2000 Silicon Integrated Systems Corporation
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ *
+ * Reference:
+ *	1. SiS 630 Specification
+ *	2. System Management Bus Specification Rev 1.1
+ *	3. PC SDRAM Serial Presence Detect (SPD) Specification Rev 1.2B
+ *	4. Booting From the DiskOnChip Millennium, M-Systems Application Note Ap-DOC-044
+ *	   APR-2000, 93-SR-001-44-7L REV. 1.0
+ *
+ * $Id$
+ */
+#define DOC_WIN_SEG		0xfe00
+#define DOC_STACK_SEG		0x0400
+#define SPL_RAM_SEG		0x8000
 
+#define DOC_SPL_START_BLK	2	/* 0,1 for IPL */
+#define DOC_SPL_SIZE_IN_PAGE	126     /* 1 page = 512 bytes, total 63kB */
+
+ipl_start:
+	/* O.K. we have DRAM now, so set up STACK for CALL/RET */
+	movw	$DOC_STACK_SEG, %ax
+	movw	%ax, %ss
+	movw	$SPL_RAM_SEG, %ax
+	movw	%ax, %es
+
+	xorl	%sp, %sp			# clear %sp
+	xorl	%edx, %edx			# clear %dx, start of RAM
+	xorl	%esi, %esi
+	xorl	%edi, %edi
+	movw	$0x800, %si			# point %si to CDSN Data area
+	movw	$0x1000, %di			# point %di to CDSN Control area
+	movl	$DOC_SPL_START_BLK, %ebp	# start page of LinuxBIOS
+
+	movb	$0x84, %al			# Reset DOC Millennium
+	call	doc_reset
+
+	movb	$0x85, %al			# Turn into Normal Mode
+	call	doc_reset
+	
+read_next_page:
+	movw	$0x1000, %di			# point %di to CDSN Control area
+
+flash_command:
+	movb	$0x03, 0x04(%edi)		# start command cycle
+	movb	$0x00, (%esi)			# issue flash command Read00
+	call	doc_cycle_end
+	
+	movw	%bp, %bx			# %bp is current page number
+
+flash_address:
+	shll	$0x08, %ebx
+        movb	$0x03, %cl			# this one is DANGEROUS but I am
+						# sure the upper 3 bytes == 0x00
+	
+	movb	$0x05, 0x04(%edi)		# start address cycle
+0:
+	movb	%bl, (%esi)			# write address to CDSNIO
+	shrw	$0x08, %bx			# shift next address byte
+	loop	0b
+
+	call	doc_cycle_end
+
+wait_for_flash_ready:
+	/* delay by reding NOP register before polling the FLASH READY bit,
+	   this is inlined to save a call/ret pair */
+doc_delay:
+	movb	$0x04, %cl			# this one is DANGEROUS but I am
+						# sure the upper 3 bytes == 0x00
+0:
+	movb	0x20(%edi), %al			# read DOC NOP retisger
+	loop	0b				# four times
+	
+	testb	$0x80, 0x04(%edi)		# is flash ready ?
+	jz	wait_for_flash_ready
+
+	movb	0x1d(%edi), %al			# init read pipeline
+	movw	$0x100, %cx			# 1 page = 512 bytes
+	movw	$0x800, %si			# point %si to CDSN Data area
+	movw	%dx, %di			# restore saved current destination
+	rep
+	movsw
+
+	movw	%di, %dx			# save current destination
+	incw	%bp				# increse current page number
+	cmpw	$128, %bp			# moved 63 KB ??
+	jl	read_next_page			# no, read next page
+
+sis630ipl_end:
+	jmp	spl_vector			# jump to SPL vector
+
+/* we don't need these. We only do I/O to MCR 0 */
+#if 0
 pci_write_dword:
 	mov	$0,%ah
 	mov	$0x80000000,%edx
@@ -173,6 +302,7 @@ pci_read_dword:
 	inl	%dx, %eax
 	mov	%eax, %ecx
 	RETSP
+#endif
 
 	.org 0xfe1f0
 reset_vector:

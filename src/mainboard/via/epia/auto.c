@@ -28,6 +28,7 @@ void udelay(int usecs) {
 #define MAXIMUM_CONSOLE_LOGLEVEL 9
 #define DEFAULT_CONSOLE_LOGLEVEL 9
 
+#include "southbridge/via/vt8231/vt8231_early_serial.c"
 static void memreset_setup(void)
 {
 }
@@ -53,6 +54,7 @@ static void main(void)
 {
   /*	init_timer();*/
 
+	enable_vt8231_serial();
 	uart_init();
 	console_init();
 	

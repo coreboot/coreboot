@@ -586,23 +586,23 @@ class partobj:
 			if (self.registercode):
 				file.write("\t= {\n")
 				for f, v in self.registercode.items():
-					file.write( "  .%s = %s;\n" % (f, v))
+					file.write( "  .%s = %s,\n" % (f, v))
 				file.write("};\n")
 			else:
 				file.write(";")
 			file.write("\n");
 		if (self.instance):
-			file.write("struct chip dev%d = {\n" % self.instance)
+			file.write("struct chip static_dev%d = {\n" % self.instance)
 		else:
-			file.write("struct chip root = {\n")
+			file.write("struct chip static_root = {\n")
 		file.write("/* %s %s */\n" % (self.type, self.dir))
 		#file.write("  .devfn = %d,\n" % self.devfn)
 		if (self.siblings):
 			debug.info(debug.gencode, "gencode: siblings(%d)" % self.siblings.instance)
-			file.write("  .next = &dev%d,\n" % self.siblings.instance)
+			file.write("  .next = &static_dev%d,\n" % self.siblings.instance)
 		if (self.children):
 			debug.info(debug.gencode, "gencode: children(%d)" % self.children.instance)
-			file.write("  .children = &dev%d,\n" % \
+			file.write("  .children = &static_dev%d,\n" % \
 					self.children.instance)
 		if (self.private):
 			file.write("  .private = private%d,\n" % self.instance)
@@ -1675,9 +1675,9 @@ def writecode(image):
 	file.write("struct chip ")
 	while (i <= image.numparts()):
 		if (i):
-			file.write(", dev%d"% i)
+			file.write(", static_dev%d"% i)
 		else:
-			file.write("root")
+			file.write("static_root")
 		i = i + 1
 	file.write(";\n")
 	gencode(image.getroot(), file)

@@ -562,7 +562,7 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned min_devfn,
 
 	post_code(0x24);
 
-	/* probe all devices on this bus with some optimization for
+	/* probe all devices/functions on this bus with some optimization for
 	 * non-existence and single funcion devices */
 	for (devfn = min_devfn; devfn <= max_devfn; devfn++) {
 		uint32_t id, class;
@@ -602,13 +602,15 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned min_devfn,
 			 * device */
 			/* FIXME: What happen if this PCI device listed as
 			 * static device but does not exist ? This calls
-			 * some arbitray code without any justification */
+			 * some arbitray code without any justification
+			 * Also, it calls the enable function regardlessly
+			 * the value of dev->enabled  */
 			if (dev->chip && dev->chip->control &&
 			    dev->chip->control->enable_dev) {
-				int enable  = dev->enabled;
+				int enabled  = dev->enabled;
 				dev->enabled = 1;
 				dev->chip->control->enable_dev(dev);
-				dev->enabled = enable;
+				dev->enabled = enabled;
 			}
 			/* Now read the vendor and device id */
 			id = pci_read_config32(dev, PCI_VENDOR_ID);
@@ -616,7 +618,7 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned min_devfn,
 		/* Read the rest of the pci configuration information */
 		hdr_type = pci_read_config8(dev, PCI_HEADER_TYPE);
 		class = pci_read_config32(dev, PCI_CLASS_REVISION);
-		
+
 		/* Store the interesting information in the device structure */
 		dev->vendor = id & 0xffff;
 		dev->device = (id >> 16) & 0xffff;
@@ -640,8 +642,8 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned min_devfn,
 		/* Now run the magic enable/disable sequence for the device */
 		if (dev->ops && dev->ops->enable) {
 			dev->ops->enable(dev);
-		}
-		else if (dev->chip && dev->chip->control && dev->chip->control->enable_dev) {
+		} else if (dev->chip && dev->chip->control &&
+			   dev->chip->control->enable_dev) {
 			dev->chip->control->enable_dev(dev);
 		}
 

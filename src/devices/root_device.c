@@ -4,7 +4,7 @@
 
 /** 
  * Read the resources for the root device,
- * that encompase the resources for the entire system.
+ * that encompass the resources for the entire system.
  * @param root Pointer to the device structure for the system root device
  */
 void root_dev_read_resources(device_t root)
@@ -92,6 +92,13 @@ unsigned int walk_static_devices(device_t bus, unsigned int max)
 	return max;
 }
 
+/**
+ * @brief Enable resources for children devices
+ *
+ * @param dev the device whos childrens resources are to be enabled
+ *
+ * This function is call by the enable_resource 
+ */
 void enable_childrens_resources(device_t dev)
 {
 	unsigned link;
@@ -103,11 +110,28 @@ void enable_childrens_resources(device_t dev)
 	}
 }
 
+/**
+ * @brief Scan root bus for generic PCI systems
+ *
+ * @param root the root device structure
+ * @param max the current bus number scanned so fat, usually 0x00
+ *
+ */
 unsigned int root_dev_scan_pci_bus(device_t root, unsigned int max)
 {
 	return pci_scan_bus(&root->link[0], 0, 0xff, max);
 }
 
+/**
+ * @brief Default device operation for root device
+ *
+ * This is the default device operation for root devices in PCI based systems.
+ * The static enumeration code chip_control::enumerate() of mainboards usually
+ * override this operation with their own device operations. An notable example
+ * is mainboard operations for AMD K8 mainboards. They replace the scan_bus()
+ * method with amdk8_scan_root_bus() due to the special device layout of AMD K8
+ * systems.
+ */
 struct device_operations default_dev_ops_root = {
 	.read_resources   = root_dev_read_resources,
 	.set_resources    = root_dev_set_resources,

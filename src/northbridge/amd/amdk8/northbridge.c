@@ -485,6 +485,24 @@ static void amdk8_set_resources(device_t dev)
 	}
 }
 
+/**
+ * @brief Scan root bus for AMD K8 systems
+ *
+ * @param root the root device structure
+ * @max the current bus number scanned so far, usually 0x00
+ *
+ * The root device in a AMD K8 system is not at Bus 0, Device 0, Fun 0
+ * as other PCI based systems. The northbridge is at Bus 0, Device 0x18,
+ * Fun 0. We have to call the pci_scan_bus() with PCI_DEVFN(0x18,0) as
+ * the starting device instead of PCI_DEVFN(0x0, 0) as in the default
+ * root_dev_scan_pci_bus().
+ *
+ * This function is set up as the default scan_bus() method for mainboards'
+ * device_operations for AMD K8 mainboards in mainboard.c
+ *
+ * @see device_operation()
+ * @see root_dev_scan_pci_bus()
+ */
 unsigned int amdk8_scan_root_bus(device_t root, unsigned int max)
 {
 	unsigned reg;
@@ -492,7 +510,6 @@ unsigned int amdk8_scan_root_bus(device_t root, unsigned int max)
 	printk_debug("amdk8_scan_root_bus\n");
 
 	/* Unmap all of the HT chains */
-	printk_debug("amdk8_scan_root_bus: clearing HT registers\n");
 	for (reg = 0xe0; reg <= 0xec; reg += 4) {
 		f1_write_config32(reg, 0);
 	}

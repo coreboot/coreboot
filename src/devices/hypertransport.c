@@ -14,9 +14,9 @@ static device_t ht_scan_get_devs(device_t *old_devices)
 	device_t first, last;
 	first = *old_devices;
 	last = first;
-	while(last && last->sibling && 
-		(last->sibling->path.type == DEVICE_PATH_PCI) &&
-		(last->sibling->path.u.pci.devfn > last->path.u.pci.devfn)) {
+	while (last && last->sibling && 
+	       (last->sibling->path.type == DEVICE_PATH_PCI) &&
+	       (last->sibling->path.u.pci.devfn > last->path.u.pci.devfn)) {
 		last = last->sibling;
 	}
 	if (first) {

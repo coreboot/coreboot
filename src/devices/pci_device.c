@@ -508,6 +508,8 @@ static struct device *pci_scan_get_dev(struct device **list,
 {
 	struct device *dev = 0;
 
+	printk_debug("%s, looking for devfn: %02x.%01x\n", __FUNCTION__,
+		     devfn >> 3, devfn & 7);
 	for (; *list; list = &(*list)->sibling) {
 		if ((*list)->path.type != DEVICE_PATH_PCI) {
 			printk_err("child %s not a pci device\n",
@@ -522,6 +524,8 @@ static struct device *pci_scan_get_dev(struct device **list,
 			break;
 		}
 	}
+
+	printk_debug("%s, found dev %08x\n", __FUNCTION__, dev);
 
 	/* FIXME: why are we doing this ? Isn't there some order between the
 	 * structures before ? */
@@ -738,11 +742,11 @@ unsigned int pci_scan_bridge(struct device *dev, unsigned int max)
 		  ((unsigned int) (bus->secondary) << 8) |
 		  ((unsigned int) (bus->subordinate) << 16));
 	pci_write_config32(dev, PCI_PRIMARY_BUS, buses);
-	
+
 	/* Now we can scan all subordinate buses i.e. the buses behind the
 	 * bridge */
 	max = pci_scan_bus(bus, 0x00, 0xff, max);
-	
+
 	/* We know the number of buses behind this bridge. Set the subordinate
 	 * bus number to its real value */
 	bus->subordinate = max;

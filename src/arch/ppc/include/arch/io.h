@@ -36,12 +36,8 @@
  * are arrays of bytes, and byte-swapping is not appropriate in
  * that case.  - paulus
  */
-#define insb(port, buf, ns)	_insb((uint8_t *)((port)+_IO_BASE), (buf), (ns))
-#define outsb(port, buf, ns)	_outsb((uint8_t *)((port)+_IO_BASE), (buf), (ns))
 #define insw(port, buf, ns)	_insw_ns((uint16_t *)((port)+_IO_BASE), (buf), (ns))
 #define outsw(port, buf, ns)	_outsw_ns((uint16_t *)((port)+_IO_BASE), (buf), (ns))
-#define insl(port, buf, nl)	_insl_ns((uint32_t *)((port)+_IO_BASE), (buf), (nl))
-#define outsl(port, buf, nl)	_outsl_ns((uint32_t *)((port)+_IO_BASE), (buf), (nl))
 
 #define inb(port)		in_8((uint8_t *)((port)+_IO_BASE))
 #define outb(val, port)		out_8((uint8_t *)((port)+_IO_BASE), (val))
@@ -58,14 +54,10 @@
 #define outl_p(val, port)	outl((val), (port))
 
 /*
- * The *_ns versions below don't do byte-swapping.
- * Neither do the standard versions now, these are just here
- * for older code.
+ * The *_ns versions below do byte-swapping.
  */
-#define insw_ns(port, buf, ns)	_insw_ns((uint16_t *)((port)+_IO_BASE), (buf), (ns))
-#define outsw_ns(port, buf, ns)	_outsw_ns((uint16_t *)((port)+_IO_BASE), (buf), (ns))
-#define insl_ns(port, buf, nl)	_insl_ns((uint32_t *)((port)+_IO_BASE), (buf), (nl))
-#define outsl_ns(port, buf, nl)	_outsl_ns((uint32_t *)((port)+_IO_BASE), (buf), (nl))
+#define insw_ns(port, buf, ns)	_insw((uint16_t *)((port)+_IO_BASE), (buf), (ns))
+#define outsw_ns(port, buf, ns)	_outsw((uint16_t *)((port)+_IO_BASE), (buf), (ns))
 
 
 #define IO_SPACE_LIMIT ~0
@@ -168,7 +160,7 @@ static inline void _insw_ns(volatile uint16_t *port, void *buf, int ns)
 	uint16_t *   b = (uint16_t *)buf;    
 
 	while (ns > 0) {    
-		*b++ = readw(port);
+		*b++ = in_le16(port);
 		ns--;
 	}
 }
@@ -179,6 +171,26 @@ static inline void _outsw_ns(volatile uint16_t *port, const void *buf, int ns)
 
 	while (ns > 0) {    
 		out_le16(port, *b++);
+		ns--;
+	}
+}
+
+static inline void _insw(volatile uint16_t *port, void *buf, int ns)
+{
+	uint16_t *   b = (uint16_t *)buf;    
+
+	while (ns > 0) {    
+		*b++ = in_be16(port);
+		ns--;
+	}
+}
+
+static inline void _outsw(volatile uint16_t *port, const void *buf, int ns)
+{
+	uint16_t *   b = (uint16_t *)buf;    
+
+	while (ns > 0) {    
+		out_be16(port, *b++);
 		ns--;
 	}
 }

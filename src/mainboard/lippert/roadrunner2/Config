@@ -30,7 +30,7 @@ mainboardinit arch/i386/lib/console.inc
 
 northbridge nsc/gx1
 southbridge nsc/cs5530
-superio SMC/fdc37b72x
+nsuperio SMC/fdc37b72x com1={1} port=0x370
 
 ########################################################################
 # Lots of constans, you probably don't need to change anything here.
@@ -38,27 +38,6 @@ superio SMC/fdc37b72x
 # GX_BASE is the address of a configuration memory region for the GX1
 # processor.  You probably don't want to change this.
 option GX_BASE=0x40000000
-
-########################################################################
-# Super I/O configuration
-
-# The SIO is pin strapped to show up at address 0x2e
-option SIO_BASE=0x2e
-
-# Serial Port 1
-option SIO_SP1_BASE=0x3f8
-option SIO_SP1_IRQ=4
-
-# Serial Port 2 is connected to an IrDA header
-#option SIO_SP2_BASE=0x2f8
-#option SIO_SP2_IRQ=3
-
-# Parallel port
-option SIO_PP_BASE=0x278
-option SIO_PP_IRQ=7
-
-# GPIO Pins
-option SIO_GPIO_BASE=0xe0
 
 ########################################################################
 # Southbridge configuration

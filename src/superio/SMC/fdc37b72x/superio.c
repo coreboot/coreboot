@@ -7,16 +7,11 @@
 
 // just define these here. We may never need them anywhere else
 #define FLOPPY_DEVICE 0
-#define PARALLEL_DEVICE 1
-#define COM1_DEVICE 2
-#define COM2_DEVICE 3
-#define KBC_DEVICE 5
-#ifdef W83977CTF
-#define CIR_DEVICE  6
-#endif
-#define GAME_PORT_DEVICE 7
+#define PARALLEL_DEVICE 3
+#define COM1_DEVICE 4
+#define COM2_DEVICE 5
+#define KBC_DEVICE 7
 #define GPIO_PORT2_DEVICE 8
-#define GPIO_PORT3_DEVICE 9
 #define ACPI_DEVICE 0xa
 
 #define FLOPPY_DEFAULT_IOBASE	0x3f0
@@ -44,8 +39,7 @@ void
 enter_pnp(struct superio *sio)
 {
 	// unlock it XXX make this a subr at some point 
-	outb(0x87, sio->port);
-	outb(0x87, sio->port);
+	outb(0x55, sio->port);
 }
 
 void
@@ -278,10 +272,6 @@ static void setup_devices(struct superio *sio)
 	set_logical_device(sio, GPIO_PORT2_DEVICE);
 	set_enable(sio, sio->gpio2);
 
-	/*  gpio_port3  */
-	set_logical_device(sio, GPIO_PORT3_DEVICE);
-	set_enable(sio, sio->gpio3);
-
 	/* enable/disable acpi  */
 	set_logical_device(sio, ACPI_DEVICE);
 	set_enable(sio, sio->acpi);
@@ -289,11 +279,10 @@ static void setup_devices(struct superio *sio)
 	exit_pnp(sio);
 }
 
-struct superio_control superio_winbond_w83977ef_control = {
+struct superio_control superio_SMC_fdc37b72x_control = {
         pre_pci_init:   (void *) 0,
         init:           setup_devices, 
         finishup:       (void *) 0,
         defaultport:    PNPADDR,
         name:           "SMC fdc37b72x"
 };
-

@@ -56,37 +56,10 @@
 	/*
 	 * Clear segment registers (LinuxBIOS doesn't use these)
 	 */
-	mtsr    0, r0
-	isync
-	mtsr    1, r0
-	isync
-	mtsr    2, r0
-	isync
-	mtsr    3, r0
-	isync
-	mtsr    4, r0
-	isync
-	mtsr    5, r0
-	isync
-	mtsr    6, r0
-	isync
-	mtsr    7, r0
-	isync
-	mtsr    8, r0
-	isync
-	mtsr    9, r0
-	isync
-	mtsr    10, r0
-	isync
-	mtsr    11, r0
-	isync
-	mtsr    12, r0
-	isync
-	mtsr    13, r0
-	isync
-	mtsr    14, r0
-	isync
-	mtsr    15, r0
+	li	r3, 15
+1:	mtsrin  r3, r0
+	subic.	r3, r3, 1
+	bge	1b
 	isync
 
         /*

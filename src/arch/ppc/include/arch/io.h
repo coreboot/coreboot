@@ -20,7 +20,7 @@
 #define PREP_ISA_MEM_BASE 	0xc0000000
 #define PREP_PCI_DRAM_OFFSET 	0x80000000
 
-#define _IO_BASE		0xfe000000
+#define _IO_BASE		0
 
 #define readb(addr) in_8((volatile uint8_t *)(addr))
 #define writeb(b,addr) out_8((volatile uint8_t *)(addr), (b))

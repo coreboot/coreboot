@@ -29,6 +29,7 @@
 #include <southbridge/via/vt82c686/setup_serial.inc>
 
 #include <pc80/serial.inc>
+#include <pc80/i8259.inc>
 
 	TTYS0_TX_STRING($ttyS0_test)
 	

@@ -891,7 +891,7 @@ static int find_ide_controller(struct controller *ctrl, int ctrl_index)
 
 	/* See how this controller is configured */
 	mask = (ctrl_index & 1) ? 4 : 1;
-	printk_debug("%s channel: ", (ctrl_index & 1) ? "secodary" : "primary");
+	printk_debug("%s channel: ", (ctrl_index & 1) ? "secondary" : "primary");
 	if (prog_if & mask) {
 		printk_debug("native PCI mode\n");
 		if ((ctrl_index & 1) == 0) {

@@ -188,7 +188,7 @@ do_vgabios(void)
 	printk_debug("rom base, size: %x\n", rom);
 #endif
 	buf = (unsigned char *) rom;
-	if ((buf[0] == 0x55) && (buf[1] = 0xaa)) {
+	if ((buf[0] == 0x55) && (buf[1] == 0xaa)) {
 		memcpy((void *) 0xc0000, buf, size);
 		
 		for(i = 0; i < 16; i++)

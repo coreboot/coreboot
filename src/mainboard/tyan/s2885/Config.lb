@@ -161,12 +161,12 @@ chip northbridge/amd/amdk8/root_complex
 						device pci 1.0 off end
 					end
 					device pci 1.0 on
-                	                        chip drivers/generic/debug
-                	                                device pnp 2.0 on end
-                	                                device pnp 2.1 off end
-                	                                device pnp 2.2 off end
-                	                                device pnp 2.3 on end
-                	                        end
+#                	                        chip drivers/generic/debug
+#                	                                device pnp 2.0 on end
+#                	                                device pnp 2.1 off end
+#                	                                device pnp 2.2 off end
+#                	                                device pnp 2.3 on end
+#                	                        end
 						chip superio/winbond/w83627hf
 							device pnp 2e.0 on #  Floppy
                 	                 			io 0x60 = 0x3f0

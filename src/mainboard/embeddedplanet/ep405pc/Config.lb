@@ -1,10 +1,9 @@
 ##
-## Config file for the Motorola Sandpoint III development system.
-## Note that this has only been tested with the Altimus 7410 PMC.
+## Config file for the Embedded Planet EP405PC Computing Engine
 ##
 
 arch ppc end
-cpu ppc4xx end
+cpu ppc/ppc4xx end
 
 ##
 ## Include the secondary Configuration files 

@@ -8,10 +8,6 @@ mainboard technoland/sbc710
 option SERIAL_CONSOLE
 option NO_KEYBOARD
 
-# Enable MicroCode update and L2 Cache init for PII and PIII
-option UPDATE_MICROCODE
-#option CONFIGURE_L2_CACHE
-
 option INBUF_COPY
 option DEFAULT_CONSOLE_LOGLEVEL=9
 option DEBUG

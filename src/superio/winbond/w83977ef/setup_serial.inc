@@ -2,9 +2,13 @@
 	movw port, %dx; \
 	outb %al, %dx
 
+#ifndef SERIAL_SUPERIO_BASEADDRESS
+#define SERIAL_SUPERIO_BASEADDRES $0x3f0
+#endif
+
 /* the second outit is a cheap delay */
-#define OUTPNPADDR(val) OUTIT(val, $0x3f0); OUTIT(val, $0xeb)
-#define OUTPNPDATA(val) OUTIT(val, $0x3f1); OUTIT(val, $0xeb)
+#define OUTPNPADDR(val) OUTIT(val, SERIAL_SUPERIO_BASEADDRESS); OUTIT(val, $0xeb)
+#define OUTPNPDATA(val) OUTIT(val, SERIAL_SUPERIO_BASEADDRESS+1); OUTIT(val, $0xeb)
 
 /* to do: move this to a common include file! */
 #define WRITESIOBYTE(register, value) movw register, %dx ;\

@@ -55,7 +55,7 @@ option CS5530_PRIMARY_IDE=1
 option NO_KEYBOARD
 option FINAL_MAINBOARD_FIXUP=1
 object mainboard.o
-option ZMASK=0xfffc0000
+option ZKERNEL_START=0xfffc0000
 
 # Local variables:
 #   compile-command: "make -C /export/bios/voyager2"

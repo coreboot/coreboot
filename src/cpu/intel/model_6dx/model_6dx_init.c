@@ -37,9 +37,7 @@ static struct device_operations cpu_dev_ops = {
 	.init     = model_6dx_init,
 };
 static struct cpu_device_id cpu_table[] = {
-#if 0
 	{ X86_VENDOR_INTEL, 0x06D6 }, /* Pentium M on 90nm with 2MiB of L2 cache */
-#endif
 	{ 0, 0 },
 };
 

@@ -25,7 +25,7 @@ it with the version available from LANL.
  * protected mode. 
  */
 
-.text
+/* .section ".rom.text" */
 .code16
 .globl	EXT(_start)
 .type EXT(_start), @function
@@ -102,8 +102,8 @@ EXT(_start):
 .align	4
 .globl EXT(gdtptr16)
 EXT(gdtptr16):
-	.word	4*8-1
-	.long	gdt		/* we know the offset */
+	.word	gdt_end - gdt -1 /* compute the table limit */
+	.long	gdt		 /* we know the offset */
 
 .globl EXT(_estart)
 EXT(_estart):

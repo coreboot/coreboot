@@ -4,16 +4,15 @@ jmp cpu_reset_out
 #include <loglevel.h>
 
 
-.section ".rodata"
+.section ".rom.data"
 
 #if ASM_CONSOLE_LOGLEVEL >= BIOS_SPEW
 cpu_reset_str:		.string "cpu_reset\r\n";
 cpu_apic_str:		.string "apic: ";
 cpu_size_set_str:	.string	"cpu memory size set\r\n";
 #endif
+.previous
 
-
-.text
 
 __cpu_reset:
 	CONSOLE_SPEW_TX_STRING($cpu_reset_str)

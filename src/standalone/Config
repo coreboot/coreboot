@@ -1,0 +1,2 @@
+nooption _ROMBASE
+option CRT0=$(TOP)/src/arch/$(ARCH)/standalone/crt0.S

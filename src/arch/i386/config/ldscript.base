@@ -33,18 +33,32 @@ ENTRY(_start)
 
 SECTIONS
 {
+	. = DEFINED(_ROMBASE)? _ROMBASE : _RAMBASE;
+	/* This section might be better named .setup */
+	.rom . : {
+		_rom = .;
+		*(.rom.text);
+		*(.rom.data);
+		. = ALIGN(16);
+		_erom = .;
+	}
+	_lrom = LOADADDR(.rom);
+	_elrom = LOADADDR(.rom) + SIZEOF(.rom);
+	. = DEFINED(_ROMBASE)? _RAMBASE : . ;
 	/*
 	 * First we place the code and read only data (typically const declared).
 	 * This get placed in rom.
 	 */
-	. = _ROMBASE;
-	.text (.) : {
+	.text . : AT (_elrom) {
 		_text = .;
 		*(.text);
 		*(.text.*);
+		. = ALIGN(16);
 		_etext = .;
 	}
-	.rodata (.) :  {
+	_ltext = LOADADDR(.text);
+	_eltext = LOADADDR(.text) + SIZEOF(.text);
+	.rodata . : AT(_eltext){
 		_rodata = .;
 		. = ALIGN(4);
 		streams = . ;
@@ -53,10 +67,9 @@ SECTIONS
 		*(.rodata)
 		*(.rodata.*)
 		_erodata = .;
-	}
-
-	. = _RAMBASE;
-
+	}	
+	_lrodata = LOADADDR(.rodata);
+	_elrodata = LOADADDR(.rodata) + SIZEOF(.rodata);
 	/*
 	 * After the code we place initialized data (typically initialized
 	 * global variables). This gets copied into ram by startup code.
@@ -64,19 +77,26 @@ SECTIONS
 	 * whereas __data_loadstart and __data_loadend shows where in rom to
 	 * copy from.
 	 */
-	.data (.): AT(_erodata) {
+	.data . : AT(_elrodata) {
 		_data = .;
 		*(.data)
 		_edata = .;
 	}
 	_ldata	= LOADADDR(.data);
 	_eldata	= LOADADDR(.data) + SIZEOF(.data);
+	/* The initialized data segment.  
+	 * This is all of the data that we copy from rom into the ram.
+	 */
+	_iseg = _text;
+	_eiseg = _edata;
+	_liseg = _ltext;
+	_eliseg = _eldata;
 	/*
 	 * bss does not contain data, it is just a space that should be zero
 	 * initialized on startup. (typically uninitialized global variables)
 	 * crt0.S fills between _bss and _ebss with zeroes.
 	 */
-	.bss (.): {
+	.bss . : {
 		_bss = .;
 		*(.bss)
 		*(.sbss)
@@ -84,20 +104,24 @@ SECTIONS
 		_ebss = .;
 	}
 	_end = .;
-
-	.heap (.): {
-		_heap = .;
-		/* Reserve 256K for the heap */
-		. = HEAP_SIZE ;
-		_eheap = .;
-	}
-	.stack (.) : {
+	.stack . : {
 		_stack = .;
 		/* Reserve a stack for each possible cpu, +1 extra */
 		. = ((MAX_CPUS * STACK_SIZE) + STACK_SIZE) ; 
 		_estack = .;
 	}
-
+	.heap . : {
+		_heap = .;
+		/* Reserve 256K for the heap */
+		. = HEAP_SIZE ;
+		. = ALIGN(4);
+		_eheap = .;
+	}
+	/* The ram segment
+ 	 * This is all address of the memory resident copy of linuxBIOS.
+	 */
+	_ram_seg = _text;
+	_eram_seg = _eheap;
 	/DISCARD/ : {
 		*(.comment)
 		*(.note)

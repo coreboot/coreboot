@@ -24,6 +24,7 @@
 #include <rom/read_bytes.h>
 #include <string.h>
 #include <stdlib.h>
+#include <boot/linuxbios_table.h>
 
 #if USE_ELF_BOOT
 #include <boot/elf.h>
@@ -51,7 +52,7 @@ int linuxbiosmain(unsigned long base, unsigned long totalram)
 #endif /* USE_TFTP */
 
 #if USE_ELF_BOOT
-	return elfboot();
+	return elfboot(streams, get_lb_mem());
 #else /* !ELF_BOOT */
 	printk_info("\n");
 	printk_info("Welcome to start32, the open sourced starter.\n");

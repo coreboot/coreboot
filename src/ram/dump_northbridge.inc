@@ -3,14 +3,15 @@
 	 */
 	
 	jmp	dumpnorth_skip
-	.section ".rodata"
+	.section ".rom.data"
 
 dn_banner:	.string "dump northbridge: \r\n"
 dn_done:	.string "Done.\r\n"
 dn_before:      .string "Before setting values: \r\n"
 dn_after:       .string "After setting values: \r\n" 
+	.previous
 	
-	.text
+
 	dumpnorth:
 	mov %esp, %ebp
 	CONSOLE_INFO_TX_STRING($dn_banner)

@@ -1,4 +1,4 @@
-/*
+/* -*- asm -*-
  * $ $
  *
  */
@@ -11,20 +11,14 @@
 #include <cpu/p6/apic.h>
 #endif
 /*
- * This is the entry code (the mkrom(8) utility makes a jumpvector
- * to this adddess. 
+ * This is the entry code the code in .reset section
+ * jumps to this address.
  *
- * When we get here we are in x86 real mode.
- *
- *	%cs	= 0xf000	%ip	= 0x0000
- *	%ds	= 0x0000	%es	= 0x0000
- *	%dx	= 0x0yxx  (y = 3 for i386, 5 for pentium, 6 for P6,
- *					where x is undefined)
- *	%fl	= 0x0002
  */
- 	.text
+.section ".rom.data", "a", @progbits
+.section ".rom.text", "ax", @progbits
 
-CRT0_PARAMETERS
+#include "crt0_includes.h"
 
 	CONSOLE_DEBUG_TX_STRING($str_after_ram)
 
@@ -41,15 +35,20 @@ __main:
 
 	cld				/* clear direction flag */
 
-	/* copy data segment from FLASH ROM to RAM */
-	leal	EXT(_ldata), %esi
-	leal	EXT(_data), %edi
-	movl	$EXT(_eldata), %ecx
+	/* copy linuxBIOS from it's initial load location to 
+	 * the location it is compiled to run at.
+	 * Normally this is copying from FLASH ROM to RAM.
+	 */
+	leal	EXT(_liseg), %esi
+	leal	EXT(_iseg), %edi
+	cmpl	%esi, %edi
+	jz	.Lnocopy
+	movl	$EXT(_eliseg), %ecx
 	subl	%esi, %ecx
-	jz	.Lnodata		/* should not happen */
+	jz	.Lnocopy		/* should not happen */
 	rep
 	movsb
-.Lnodata:
+.Lnocopy:
 	intel_chip_post_macro(0x12)		/* post 12 */
 
 	/** clear stack */
@@ -124,7 +123,7 @@ __main:
 	hlt
 	jmp	.Lhlt
 
-.section ".rodata"
+.section ".rom.data"
 str_after_ram:       .string "Ram Initialize?\r\n"
 str_pre_main:        .string "before main\r\n"
 .previous

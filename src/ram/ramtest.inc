@@ -5,15 +5,15 @@
 	 */
 	
 	jmp	rt_skip
-	.section ".rodata"
+	.section ".rom.data"
 
 rt_test:	.string "Testing SDRAM : "
 rt_fill:	.string "SDRAM fill:\r\n"
 rt_verify:	.string "SDRAM verify:\r\n"
 rt_toomany:	.string "Too many errors.\r\n"
 rt_done:	.string "Done.\r\n"
+	.previous
 	
-	.text
 ramtest:
 #ifdef RAMTEST
 	mov %eax, %esi

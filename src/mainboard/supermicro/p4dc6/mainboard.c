@@ -24,7 +24,32 @@ unsigned long initial_apicid[MAX_CPUS] =
 	0, 6
 };
 
+#ifndef CPU_CLOCK_MULTIPLIER
+#define CPU_CLOCK_MULTIPLIER XEON_X17
+#endif
 
+#define MAINBOARD_POWER_ON 1
+#define MAINBOARD_POWER_OFF 2
+
+#ifndef MAINBOARD_POWER_ON_AFTER_POWER_FAIL
+#define MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
+#endif
+
+static void set_power_on_after_power_fail(int setting)
+{
+	switch(setting) {
+	case MAINBOARD_POWER_ON:
+	default:
+		ich2_power_after_power_fail(1);
+		w832627hf_power_after_power_fail(POWER_ON);
+		break;
+	case MAINBOARD_POWER_OFF:
+		ich2_power_after_power_fail(0);
+		w832627hf_power_after_power_fail(POWER_OFF);
+		break;
+
+	}
+}
 void mainboard_fixup(void)
 {
 	ich2_enable_ioapic();
@@ -33,12 +58,10 @@ void mainboard_fixup(void)
 	ich2_rtc_init();
 	ich2_lpc_route_dma(0xff);
 	isa_dma_init();
-#if 1
-	/* FIXME don't hard code these */
-	ich2_set_cpu_multiplier(XEON_X17);
-#endif
-	ich2_power_after_power_fail(1);
-	w832627hf_power_after_power_fail(POWER_ON);
+
+	ich2_set_cpu_multiplier(CPU_CLOCK_MULTIPLIER);
+
+	set_power_on_after_power_fail(MAINBOARD_POWER_ON_AFTER_POWER_FAIL);
 	return;
 }
 
@@ -66,6 +89,7 @@ void cache_ram_start(void)
 {
         int error;
         error = 0;
+
         /* displayinit MUST PRECEDE ALL PRINTK! */
         displayinit();
         printk_info("printk: Testing %d %s\n", 123, "testing!!!");

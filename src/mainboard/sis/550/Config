@@ -2,6 +2,7 @@ arch i386
 mainboardinit cpu/i386/entry16.inc
 mainboardinit cpu/i386/entry32.inc
 ldscript cpu/i386/entry16.lds
+ldscript cpu/i386/entry32.lds
 
 mainboardinit pc80/serial.inc
 mainboardinit arch/i386/lib/console.inc

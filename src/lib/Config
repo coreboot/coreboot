@@ -15,5 +15,5 @@ object elfboot.o
 object do_inflate.o
 object floppy_subr.o
 object delay.o
-object fallback_boot.o
+object fallback_boot.o HAVE_FALLBACK_BOOT
 object compute_ip_checksum.o

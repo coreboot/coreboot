@@ -2,7 +2,7 @@
 
 #include <arch/cache_ram.h>
 
-	.text
+/* 	.section ".rom.text" */
 	.code32
 
 /** This gdt has a 4 Gb code segment at 0x10, and a 4 GB data segment
@@ -16,22 +16,28 @@
 	.align	4
 .globl EXT(gdtptr)
 EXT(gdtptr):
-	.word	4*8-1
-	.long	gdt		/* we know the offset */
+	.word	gdt_end - gdt -1 /* compute the table limit */
+	.long	gdt		 /* we know the offset */
 
 gdt:
 	.word	0x0000, 0x0000		/* dummy */
 	.byte	0x00, 0x00, 0x00, 0x00
 
-	.word	0xffff, (CACHE_RAM_SEG_BASE & 0xffff)		/* flat offset data segment */
-	.byte	((CACHE_RAM_SEG_BASE >> 16)& 0xff), 0x93, 0xcf
-	.byte	((CACHE_RAM_SEG_BASE >> 24) & 0xff)
+	.word	0xffff, _cache_ram_seg_base_low	/* flat cache ram offset data segment */
+	.byte	_cache_ram_seg_base_middle, 0x93, 0xcf
+	.byte	_cache_ram_seg_base_high
 	
 	.word	0xffff, 0x0000		/* flat code segment */
 	.byte	0x00, 0x9b, 0xcf, 0x00	
 	
 	.word	0xffff, 0x0000		/* flat data segment */
 	.byte	0x00, 0x93, 0xcf, 0x00	
+
+	.word	0xffff, _rom_code_seg_base_low		/* flat rom offset code segment */
+	.byte	_rom_code_seg_base_middle, 0x9b, 0xcf
+	.byte	_rom_code_seg_base_high
+gdt_end:
+	
 
 /*
  *	When we come here we are in protected mode. We expand 

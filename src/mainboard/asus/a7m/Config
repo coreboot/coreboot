@@ -2,6 +2,7 @@ arch i386
 mainboardinit cpu/i386/entry16.inc
 mainboardinit cpu/i386/entry32.inc
 ldscript cpu/i386/entry16.lds
+ldscript cpu/i386/entry32.lds
 
 mainboardinit northbridge/amd/amd76x/reset_test.inc
 mainboardinit cpu/k7/earlymtrr.inc

@@ -3,6 +3,7 @@ arch i386
 mainboardinit cpu/i386/entry16.inc
 mainboardinit cpu/i386/entry32.inc
 ldscript cpu/i386/entry16.lds
+ldscript cpu/i386/entry32.lds
 mainboardinit cpu/i386/reset16.inc
 ldscript cpu/i386/reset16.lds
 
@@ -23,43 +24,44 @@ option XIP_ROM_BASE=0xffff0000
 option XIP_ROM_SIZE=0x10000
 option STACK_SIZE=0x2000
 
-#######
-## Testing of the cache ram idea on a PIII
-#######
-
-option CACHE_RAM_BASE=0xfff00000
-option CACHE_RAM_SIZE=0x00010000
-option USE_CACHE_RAM=1
-nooption USE_DEFAULT_LAYOUT
-option RAMTEST=1
-
-mainboardinit cpu/i786/earlymtrr.inc
-#mainboardinit ram/ramtest.inc
-mainboardinit cpu/p6/cache_ram_init.inc
-#mainboardinit mainboard/supermicro/p4dc6/cache_test.inc
-mainboardinit cpu/p6/cache_ram_start.inc
-mainboardinit cpu/p6/cache_ram_fini.inc
-
-option USE_GENERIC_SDRAM=1
-option USE_GENERIC_SDRAM_ENABLE=1
-option USE_PIIX4E_SMBUS=1
-option USE_GENERIC_DUMP_SPD=1
-option USE_GENERIC_ZERO_ECC_SDRAM=1
-option USE_RAMTEST=1
-object mainboard_raminit.c
-
-option SMBUS_MEM_DEVICE_START=0x50
-option SMBUS_MEM_DEVICE_END=0x53
-option SMBUS_MEM_DEVICE_INC=1
-dir /src/sdram
-dir /src/ram
-
-
-#######
+# Disable the cache as ram code until we can get a fully working version
+########
+### Testing of the cache ram idea on a PIII
+########
+#
+#option CACHE_RAM_BASE=0xfff00000
+#option CACHE_RAM_SIZE=0x00010000
+#option USE_CACHE_RAM=1
+#nooption USE_DEFAULT_LAYOUT
+#option RAMTEST=1
+#
+#mainboardinit cpu/i786/earlymtrr.inc
+##mainboardinit ram/ramtest.inc
+#mainboardinit cpu/p6/cache_ram_init.inc
+##mainboardinit mainboard/supermicro/p4dc6/cache_test.inc
+#mainboardinit cpu/p6/cache_ram_start.inc
+#mainboardinit cpu/p6/cache_ram_fini.inc
+#
+#option USE_GENERIC_SDRAM=1
+#option USE_GENERIC_SDRAM_ENABLE=1
+#option USE_PIIX4E_SMBUS=1
+#option USE_GENERIC_DUMP_SPD=1
+#option USE_GENERIC_ZERO_ECC_SDRAM=1
+#option USE_RAMTEST=1
+#object mainboard_raminit.c
+#
+#option SMBUS_MEM_DEVICE_START=0x50
+#option SMBUS_MEM_DEVICE_END=0x53
+#option SMBUS_MEM_DEVICE_INC=1
+#dir /src/sdram
+#dir /src/ram
+#
+#
+########
 
 northbridge intel/440gx
 southbridge intel/piix4e
-#mainboardinit cpu/p6/earlymtrr.inc
+mainboardinit cpu/p6/earlymtrr.inc
 
 superio NSC/pc87309
 

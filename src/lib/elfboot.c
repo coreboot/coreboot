@@ -3,68 +3,238 @@
 #include <part/fallback_boot.h>
 #include <boot/elf.h>
 #include <boot/elf_boot.h>
+#include <boot/linuxbios_tables.h>
 #include <rom/read_bytes.h>
 #include <string.h>
 #include <subr.h>
 #include <stdint.h>
+#include <stdlib.h>
 
+/* Maximum physical address we can use for the linuxBIOS bounce buffer.
+ */
+#ifndef MAX_ADDR
+#define MAX_ADDR -1UL
+#endif
 
-extern unsigned char _text;
-extern unsigned char _etext;
-extern unsigned char _rodata;
-extern unsigned char _erodata;
-extern unsigned char _data;
-extern unsigned char _edata;
-extern unsigned char _bss;
-extern unsigned char _ebss;
-extern unsigned char _heap;
-extern unsigned char _eheap;
-extern unsigned char _stack;
-extern unsigned char _estack;
-struct range {
-	unsigned long start;
-	unsigned long end;
-};
-#define RANGE(SEGMENT) { (unsigned long)&_ ## SEGMENT, (unsigned long)&_e ## SEGMENT }
-static struct range bad_ranges[] = {
-	RANGE(text),
-	RANGE(rodata),
-	RANGE(data),
-	RANGE(bss),
-	RANGE(heap),
-	RANGE(stack),
+extern unsigned char _ram_seg;
+extern unsigned char _eram_seg;
+
+struct segment {
+	struct segment *next;
+	struct segment *prev;
+	unsigned long s_addr;
+	unsigned long s_memsz;
+	unsigned long s_offset;
+	unsigned long s_filesz;
 };
 
-static int safe_range(unsigned long start, unsigned long len)
+
+/* The problem:  
+ * Static executables all want to share the same addresses
+ * in memory because only a few addresses are reliably present on
+ * a machine, and implementing general relocation is hard.
+ *
+ * The solution:
+ * - Allocate a buffer twice the size of the linuxBIOS image.
+ * - Anything that would overwrite linuxBIOS copy into the lower half of
+ *   the buffer. 
+ * - After loading an ELF image copy linuxBIOS to the upper half of the
+ *   buffer.
+ * - Then jump to the loaded image.
+ * 
+ * Benefits:
+ * - Nearly arbitrary standalone executables can be loaded.
+ * - LinuxBIOS is preserved, so it can be returned to.
+ * - The implementation is still relatively simple,
+ *   and much simpler then the general case implemented in kexec.
+ * 
+ */
+
+static unsigned long get_bounce_buffer(struct lb_memory *mem)
 {
-	/* Check through all of the segments and see if the segment
-	 * that was passed in overlaps with any of them.
+	unsigned long lb_size;
+	unsigned long mem_entries;
+	unsigned long buffer;
+	int i;
+	lb_size = (unsigned long)(&_eram_seg - &_ram_seg);
+	/* Double linuxBIOS size so I have somewhere to place a copy to return to */
+	lb_size = lb_size + lb_size;
+	mem_entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
+	buffer = 0;
+	for(i = 0; i < mem_entries; i++) {
+		unsigned long mstart, mend;
+		unsigned long msize;
+		unsigned long tbuffer;
+		if (mem->map[i].type != LB_MEM_RAM)
+			continue;
+		if (mem->map[i].start > MAX_ADDR)
+			continue;
+		if (mem->map[i].size < lb_size)
+			continue;
+		mstart = mem->map[i].start;
+		msize = MAX_ADDR - mstart +1;
+		if (msize > mem->map[i].size)
+			msize = mem->map[i].size;
+		mend = mstart + msize;
+		tbuffer = mend - lb_size;
+		if (tbuffer < buffer) 
+			continue;
+		buffer = tbuffer;
+	}
+	return buffer;
+}
+
+static int safe_range(struct lb_memory *mem, unsigned long buffer,
+	unsigned long start, unsigned long len)
+{
+	/* Check through all of the memory segments and ensure
+	 * the segment that was passed in is completely contained
+	 * in RAM.
 	 */
 	int i;
 	unsigned long end = start + len;
-	for(i = 0; i < sizeof(bad_ranges)/sizeof(bad_ranges[0]); i++) {
-		if ((start < bad_ranges[i].end) &&
-			(end > bad_ranges[i].start)) {
-			printk_err(__FUNCTION__ " start 0x%x end 0x%x\n", 
-					start, end);
-			printk_err(__FUNCTION__ " Conflicts with range %d\n",
-				i);
-			printk_err("  which starts at 0x%x ends at 0x%x\n", 
-				bad_ranges[i].start, bad_ranges[i].end);	
-			return 0;
+	unsigned long mem_entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
+
+	/* See if I conflict with the bounce buffer */
+	if (end >= buffer) {
+		return 0;
+	}
+
+	/* Walk through the table of valid memory ranges and see if I
+	 * have a match.
+	 */
+	for(i = 0; i < mem_entries; i++) {
+		uint64_t mstart, mend;
+		uint32_t mtype;
+		mtype = mem->map[i].type;
+		mstart = mem->map[i].start;
+		mend = mstart + mem->map[i].size;
+		if ((mtype == LB_MEM_RAM) && (start < mend) && (end > mstart)) {
+			break;
 		}
+	}
+	if (i == mem_entries) {
+		printk_err("No matching ram area found for range:\n");
+		printk_err("  [0x%016lx, 0x%016lx)\n", start, end);
+		printk_err("Ram areas\n");
+		for(i = 0; i < mem_entries; i++) {
+			uint64_t mstart, mend;
+			uint32_t mtype;
+			mtype = mem->map[i].type;
+			mstart = mem->map[i].start;
+			mend = mstart + mem->map[i].size;
+			printk_err("  [0x%016lx, 0x%016lx) %s\n",
+				(unsigned long)mstart, 
+				(unsigned long)mend, 
+				(mtype == LB_MEM_RAM)?"RAM":"Reserved");
+			
+		}
+		return 0;
 	}
 	return 1;
 }
 
-int elfboot(void)
+static void bounce_segments(unsigned long buffer, struct segment *head)
+{
+	/* Modify all segments that want to load onto linuxBIOS
+	 * to load onto the bounce buffer instead.
+	 */
+	unsigned long lb_start = (unsigned long)&_ram_seg;
+	unsigned long lb_end = (unsigned long)&_eram_seg;
+	struct segment *ptr;
+
+	printk_spew("lb: [0x%016lx, 0x%016lx)\n", 
+		lb_start, lb_end);
+
+	for(ptr = head->next; ptr != head; ptr = ptr->next) {
+		unsigned long start, middle, end;
+		start = ptr->s_addr;
+		middle = start + ptr->s_filesz;
+		end = start + ptr->s_memsz;
+		/* I don't conflict with linuxBIOS so get out of here */
+		if ((end <= lb_start) || (start >= lb_end))
+			continue;
+
+		printk_spew("segment: [0x%016lx, 0x%016lx, 0x%016lx)\n", 
+			start, middle, end);
+
+		/* Slice off a piece at the beginning
+		 * that doesn't conflict with linuxBIOS.
+		 */
+		if (start < lb_start) {
+			struct segment *new;
+			unsigned long len = lb_start - start;
+			new = malloc(sizeof(*new));
+			*new = *ptr;
+			new->s_memsz = len;
+			ptr->s_memsz -= len;
+			ptr->s_addr += len;
+			ptr->s_offset += len;
+			if (ptr->s_filesz > len) {
+				new->s_filesz = len;
+				ptr->s_filesz -= len;
+			} else {
+				ptr->s_filesz = 0;
+			}
+			new->next = ptr;
+			ptr->prev = new;
+			start = ptr->s_addr;
+
+			printk_spew("   early: [0x%016lx, 0x%016lx, 0x%016lx)\n", 
+				new->s_addr, 
+				new->s_addr + new->s_filesz,
+				new->s_addr + new->s_memsz);
+		}
+
+		/* Slice off a piece at the end 
+		 * that doesn't conflict with linuxBIOS 
+		 */
+		if (end > lb_end) {
+			struct segment *new;
+			unsigned long len = end - lb_end;
+			new = malloc(sizeof(*new));
+			*new = *ptr;
+			ptr->s_memsz = len;
+			new->s_memsz -= len;
+			new->s_addr += len;
+			new->s_offset += len;
+			if (ptr->s_filesz > len) {
+				ptr->s_filesz = len;
+				new->s_filesz -= len;
+			} else {
+				new->s_filesz = 0;
+			}
+			ptr->next = new;
+			new->prev = ptr;
+			end = start + len;
+
+			printk_spew("   late: [0x%016lx, 0x%016lx, 0x%016lx)\n", 
+				new->s_addr, 
+				new->s_addr + new->s_filesz,
+				new->s_addr + new->s_memsz);
+
+		}
+		/* Now retarget this segment onto the bounce buffer */
+		ptr->s_addr = buffer + (ptr->s_addr - lb_start);
+
+		printk_spew(" bounce: [0x%016lx, 0x%016lx, 0x%016lx)\n", 
+			ptr->s_addr, 
+			ptr->s_addr + ptr->s_filesz, 
+			ptr->s_addr + ptr->s_memsz);
+	}
+}
+
+int elfboot(struct stream *stream, struct lb_memory *mem)
 {
 	static unsigned char header[ELF_HEAD_SIZE];
 	unsigned long offset;
 	Elf_ehdr *ehdr;
 	Elf_phdr *phdr;
 	int header_offset;
-	void *ptr, *entry;
+	unsigned long bounce_buffer;
+	struct segment dummy;
+	struct segment *head, *ptr;
+	void *entry;
 	int i;
 	byte_offset_t amtread;
 
@@ -73,14 +243,22 @@ int elfboot(void)
 	printk_info("January 2002, Eric Biederman.\n");
 	printk_info("Version %s\n", BOOTLOADER_VERSION);
 	printk_info("\n");
-	if (streams->init() < 0) {
+	if (stream->init() < 0) {
 		printk_err("Could not initialize driver...\n");
 		goto out;
 	}
 
+	/* Find a bounce buffer so I can load to linuxBIOS's current location */
+	bounce_buffer = get_bounce_buffer(mem);
+	if (!bounce_buffer) {
+		printk_err("Could not find a bounce buffer...\n");
+		goto out;
+	}
+
+
 	post_code(0xf8);
 	/* Read in the initial ELF_HEAD_SIZE bytes */
-	if (streams->read(header, ELF_HEAD_SIZE) != ELF_HEAD_SIZE) {
+	if (stream->read(header, ELF_HEAD_SIZE) != ELF_HEAD_SIZE) {
 		printk_err("Read failed...\n");
 		goto out;
 	}
@@ -113,79 +291,65 @@ int elfboot(void)
 	entry = (void *)(ehdr->e_entry);
 	phdr = (Elf_phdr *)&header[ehdr->e_phoff + header_offset];
 
-	/* Sanity check the segments and zero the extra bytes */
+	/* Create an ordered table of the segments */
+	memset(&dummy, 0, sizeof(dummy));
+	head = &dummy;
+	head->next = head->prev = head;
 	for(i = 0; i < ehdr->e_phnum; i++) {
-		unsigned char *dest, *end;
+		struct segment *new;
+		new = malloc(sizeof(*new));
+		new->s_addr = phdr[i].p_paddr;
+		new->s_memsz = phdr[i].p_memsz;
+		new->s_offset = phdr[i].p_offset;
+		new->s_filesz = phdr[i].p_filesz;
+		/* Clean up the values */
+		if (new->s_filesz > new->s_memsz)  {
+			new->s_filesz = new->s_memsz;
+		}
+		for(ptr = head->next; ptr != head; ptr = ptr->next) {
+			if (new->s_offset < ptr->s_offset)
+				break;
+		}
+		new->next = ptr;
+		new->prev = ptr->prev;
+		ptr->prev->next = new;
+		ptr->prev = new;
+	}
 
-		if (!safe_range(phdr[i].p_paddr, phdr[i].p_memsz)) {
-			printk_err("Bad memory range: [0x%016lx, 0x%016lx)\n",
-				phdr[i].p_paddr, phdr[i].p_memsz);
+	/* Sanity check the segments */
+	for(ptr = head->next; ptr != head; ptr = ptr->next) {
+		if (!safe_range(mem, bounce_buffer, ptr->s_addr, ptr->s_memsz)) {
 			goto out;
 		}
-		dest = (unsigned char *)(phdr[i].p_paddr);
-		end = dest + phdr[i].p_memsz;
-		dest += phdr[i].p_filesz;
-
-		if (dest < end) {
-			printk_debug("Clearing Section: addr: 0x%016lx memsz: 0x%016lx\n",
-				(unsigned long)dest, end - dest);
-
-			/* Zero the extra bytes */
-			while(dest < end) {
-				*(dest++) = 0;
-			}
-		}
 	}
-	
-	offset = 0;
-	while(1) {
-		Elf_phdr *cur_phdr = 0;
-		int i,len;
-		unsigned long start_offset;
-		unsigned char *dest, *middle, *end;
-		/* Find the program header that descibes the current piece
-		 * of the file.
-		 */
-		for(i = 0; i < ehdr->e_phnum; i++) {
-			if (phdr[i].p_type != PT_LOAD) {
-				continue;
-			}
-			if (phdr[i].p_filesz == 0) {
-				continue;
-			}
-			if (phdr[i].p_filesz > phdr[i].p_memsz) {
-				continue;
-			}
-			if (phdr[i].p_offset >= offset) {
-				if (!cur_phdr ||
-					(cur_phdr->p_offset > phdr[i].p_offset)) {
-					cur_phdr = &phdr[i];
-				}
-			}
-		}
 
-		/* If we are out of sections we are done */
-		if (!cur_phdr) {
-			break;
-		}
+	/* Modify all segments that want to load onto linuxBIOS
+	 * to load onto the bounce buffer instead.
+	 */
+	bounce_segments(bounce_buffer, head);
+
+	/* Load the segments */
+	offset = 0;
+	for(ptr = head->next; ptr != head; ptr = ptr->next) {
+		unsigned long start_offset;
+		unsigned long skip_bytes, read_bytes;
+		unsigned char *dest, *middle, *end;
+		byte_offset_t result;
 		printk_debug("Loading Section: addr: 0x%016lx memsz: 0x%016lx filesz: 0x%016lx\n",
-			cur_phdr->p_paddr, cur_phdr->p_memsz, cur_phdr->p_filesz);
+			ptr->s_addr, ptr->s_memsz, ptr->s_filesz);
 
 		/* Compute the boundaries of the section */
-		dest = (unsigned char *)(cur_phdr->p_paddr);
-		printk_debug("dest %p\n", dest);
-		end = dest + cur_phdr->p_memsz;
-		printk_debug("end %p\n", end);
-		len = cur_phdr->p_filesz;
-		printk_debug("len %d\n", len);
-		if (len > cur_phdr->p_memsz) {
-			len = cur_phdr->p_memsz;
-		}
-		middle = dest + len;
-		printk_debug("middle %d\n", middle);
-		start_offset = cur_phdr->p_offset;
+		dest = (unsigned char *)(ptr->s_addr);
+		end = dest + ptr->s_memsz;
+		middle = dest + ptr->s_filesz;
+		start_offset = ptr->s_offset;
 
-		printk_debug("start_offset %d\n", start_offset);
+		printk_spew("[ 0x%016lx, %016lx, 0x%016lx) <- %016lx\n",
+			(unsigned long)dest,
+			(unsigned long)middle,
+			(unsigned long)end,
+			(unsigned long)start_offset);
+
 		/* Skip intial buffer unused bytes */
 		if (offset < (ELF_HEAD_SIZE - header_offset)) {
 			if (start_offset < (ELF_HEAD_SIZE - header_offset)) {
@@ -195,10 +359,12 @@ int elfboot(void)
 			}
 		}
 
-		printk_debug(__FUNCTION__ " skip %d\n", start_offset - offset);
 		/* Skip the unused bytes */
-		if (streams->skip(start_offset - offset) != (start_offset - offset)) {
-			printk_err("skip failed\n");
+		skip_bytes = start_offset - offset;
+		if (skip_bytes && 
+			((result = stream->skip(skip_bytes)) != skip_bytes)) {
+			printk_err("ERROR: Skip of %ld bytes skiped %ld bytes\n",
+				skip_bytes, result);
 			goto out;
 		}
 		offset = start_offset;
@@ -206,55 +372,53 @@ int elfboot(void)
 		/* Copy data from the initial buffer */
 		if (offset < (ELF_HEAD_SIZE - header_offset)) {
 			size_t len;
-			if ((cur_phdr->p_filesz + start_offset) > ELF_HEAD_SIZE) {
+			if ((ptr->s_filesz + start_offset) > ELF_HEAD_SIZE) {
 				len = ELF_HEAD_SIZE - start_offset;
 			}
 			else {
-				len = cur_phdr->p_filesz;
+				len = ptr->s_filesz;
 			}
 			memcpy(dest, &header[header_offset + start_offset], len);
 			dest += len;
 		}
 		
 		/* Read the section into memory */
-		printk_debug(__FUNCTION__ " read to %p size %d\n", 
-				dest, middle-dest);
-		amtread = streams->read(dest, middle - dest);
-		if ( amtread /*!=*/ < (middle - dest)) {
-			printk_err("Read for section failed...\n");
-			printk_err("Wanted %d got %d\n", middle-dest, amtread);
+		read_bytes = middle - dest;
+		if (read_bytes && 
+			((result = stream->read(dest, read_bytes)) != read_bytes)) {
+			printk_err("ERROR: Read of %ld bytes read %ld bytes...\n",
+				read_bytes, result);
 			goto out;
 		}
-		offset += cur_phdr->p_filesz;
-		/* The extra bytes between dest & end have been zeroed */
+		offset += ptr->s_filesz;
+
+		/* Zero the extra bytes between middle & end */
+		if (middle < end) {
+			printk_debug("Clearing Section: addr: 0x%016lx memsz: 0x%016lx\n",
+				(unsigned long)middle, end - middle);
+
+			/* Zero the extra bytes */
+			memset(middle, 0, end - middle);
+		}
 	}
 
 
 	/* Reset to booting from this image as late as possible */
-	streams->fini();
+	stream->fini();
 	boot_successful();
 
 	printk_debug("Jumping to boot code\n");
 	post_code(0xfe);
 
 	/* Jump to kernel */
-	jmp_to_elf_entry(entry);
+	jmp_to_elf_entry(entry, bounce_buffer);
+	return 1;
 
  out:
-	printk_err("Bad ELF Image\n");
-	for(i = 0; i < sizeof(*ehdr); i++) {
-		if ((i & 0xf) == 0) {
-			printk_err("\n");
-		}
-		printk_err("%02x ", header[i]);
-	}
-	printk_err("\n");
+	printk_err("Cannot Load ELF Image\n");
 
-	/* Reset to booting from this image as late as possible */
-	streams->fini();
-#if 0
-	boot_successful();
-#endif
+	/* Shutdown the stream device */
+	stream->fini();
 
 	return 0;
 }

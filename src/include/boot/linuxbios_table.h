@@ -20,4 +20,9 @@ void lb_memory_range(struct lb_memory *mem,
 	uint32_t type, unsigned long start, unsigned long size);
 unsigned long lb_table_fini(struct lb_header *header);
 
+/* Routines to extract part so the linuxBIOS table or information
+ * from the linuxBIOS table.
+ */
+struct lb_memory *get_lb_mem(void);
+
 #endif /* LINUXBIOS_TABLE_H */

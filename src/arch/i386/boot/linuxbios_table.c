@@ -142,11 +142,16 @@ unsigned long lb_table_fini(struct lb_header *head)
 	return (unsigned long)rec;
 }
 
-unsigned long setup_memory_table(
-	struct lb_memory *mem,
-	unsigned long totalram,
-	unsigned long low_table_start, unsigned long low_table_end)
+
+/* Routines to extract part so the linuxBIOS table or 
+ * information from the linuxBIOS table after we have written it.
+ * Currently get_lb_mem relies on a global we can change the
+ * implementaiton.
+ */
+static struct lb_memory *mem_ranges = 0;
+struct lb_memory *get_lb_mem(void)
 {
+	return mem_ranges;
 }
 
 unsigned long write_linuxbios_table( 
@@ -173,5 +178,8 @@ unsigned long write_linuxbios_table(
 	lb_memory_range(mem, LB_MEM_RAM,      0x00100000, (totalram - 1024) << 10);
 
 	low_table_end = lb_table_fini(head);
+
+	/* Remember where my valid memory ranges are */
+	mem_ranges = mem;
 	return low_table_end;
 }

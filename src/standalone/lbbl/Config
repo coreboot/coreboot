@@ -1,0 +1,8 @@
+# Load the default standalone application options
+dir ..
+
+option _RAMBASE=0x00004000
+object lbbl.o
+payload /dev/null
+
+option USE_ELF_BOOT=1

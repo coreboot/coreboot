@@ -1,0 +1,571 @@
+#######################################################
+#
+# Main options file for LinuxBIOS
+#
+# Each option used by a part must be defined in
+# this file. The format for options is:
+#
+#   define <name> 
+#	default <expr> | {<expr>} | "<string>" | none
+#	format "<string>"
+#	export always | used | never
+#	comment "<string>"
+#   end
+#
+# where 
+#
+#   <name> is the name of the option
+#   <expr> is a numeric expression
+#   <string> is a string
+#
+# Either a default value or 'default none' must
+# be specified for every option. An option
+# specified as 'default none' will not be exported
+# (i.e. will remain undefined) unless it has
+# been assigned a value.
+#
+# Option values can be an immediate expression that 
+# evaluates to a numeric value, a delayed expression 
+# (surrounded by curley braces), or a string 
+# (surrounded by double quotes.)
+#
+# Immediate expressions are evaluated at the time an
+# option is defined or set and the numeric result 
+# becomes the value of the option.
+#
+# Delayed expression are evaluated at the time the 
+# option is used, either in another expression or 
+# when being exported.
+#
+# String values will have the double quotes removed 
+# automatically. 
+#
+# Format strings determine the print format that is 
+# used when exporting options. The default format
+# is "%s" for strings and "%d" for numbers.
+#
+# Exported options generate entries in the 
+# Makefile.settings file. Options can be always 
+# exported, exported only if used, or never exported.
+#
+# A comment string must be supplied for every option.
+#
+#######################################################
+
+###############################################
+# Architecture options
+###############################################
+
+define ARCH
+	default "i386"
+	export always
+	comment "Default architecture is i386, options are alpha and ppc"
+end
+define k7
+	default none
+	export always
+	comment "We're a k7"
+end
+define k8
+	default none
+	export always
+	comment "We're a k8"
+end
+define i586
+	default none
+	export always
+	comment "We're a 586"
+end
+define i686
+	default none
+	export always
+	comment "We're a 686"
+end
+define CPU_FIXUP
+	default none
+	export always
+	comment "Do CPU fixups"
+end
+
+###############################################
+# Build options
+###############################################
+
+define CROSS_COMPILE
+	default ""
+	export always
+	comment "Cross compiler prefix"
+end
+define CC
+	default "$(CROSS_COMPILE)gcc"
+	export always
+	comment "Target C Compiler"
+end
+define HOSTCC
+	default "$(CROSS_COMPILE)gcc"
+	export always
+	comment "Host C Compiler"
+end
+define OBJCOPY
+	default "$(CROSS_COMPILE)objcopy"
+	export always
+	comment "Objcopy command"
+end
+define LINUXBIOS_VERSION
+	default "1.1.0"
+	export always
+	comment "LinuxBIOS version"
+end
+define LINUXBIOS_BUILD
+	default "$(shell date)"
+	export always
+	comment "Build date"
+end
+define LINUXBIOS_COMPILE_TIME
+	default "$(shell date +%T)"
+	export always
+	comment "Build time"
+end
+define LINUXBIOS_COMPILE_BY
+	default "$(shell whoami)"
+	export always
+	comment "Who build this image"
+end
+define LINUXBIOS_COMPILE_HOST
+	default "$(shell hostname)"
+	export always
+	comment "Build host"
+end
+
+define LINUXBIOS_COMPILE_DOMAIN
+	default ""
+	export always
+	comment "Build domain name"
+end
+define LINUXBIOS_COMPILER
+	default "$(shell $(CC) $(CFLAGS) -v 2>&1 | tail -n 1)"
+	export always
+	comment "Build compiler"
+end
+define LINUXBIOS_LINKER
+	default "$(shell  $(CC) -Wl,-v 2>&1 | grep version | tail -n 1)"
+	export always
+	comment "Build linker"
+end
+define LINUXBIOS_ASSEMBLER
+	default "$(shell  touch dummy.s ; $(CC) -c -Wa,-v dummy.s 2>&1; rm -f dummy.s dummy.o )"
+	export always
+	comment "Build assembler"
+end
+
+###############################################
+# ROM image options
+###############################################
+
+define HAVE_FALLBACK_BOOT
+	default 0
+	export always
+	comment "Set if fallback booting required"
+end
+define USE_FALLBACK_IMAGE
+	default 0
+	export used
+	comment "Set to build a fallback image"
+end
+define USE_NORMAL_IMAGE
+	default {!USE_FALLBACK_IMAGE}
+	export used
+	comment "Set to build a normal image"
+end
+define FALLBACK_SIZE
+	default 65536
+	format "0x%x"
+	export used
+	comment "Default fallback image size"
+end
+define ROM_SIZE
+	default 262144
+	format "0x%x"
+	export used
+	comment "Size of your ROM"
+end
+define ROM_IMAGE_SIZE
+	default 65535
+	format "0x%x"
+	export always
+	comment "Default image size"
+end
+define ROM_SECTION_SIZE
+	default FALLBACK_SIZE
+	format "0x%x"
+	export used
+	comment "Default rom section size"
+end
+define ROM_SECTION_OFFSET
+	default {ROM_SIZE - FALLBACK_SIZE}
+	format "0x%x"
+	export used
+	comment "Default rom section offset"
+end
+define PAYLOAD_SIZE
+	default {ROM_SECTION_SIZE - ROM_IMAGE_SIZE}
+	format "0x%x"
+	export always
+	comment "Default payload size"
+end
+define _ROMBASE
+	default {PAYLOAD_SIZE}
+	format "0x%x"
+	export always
+	comment "Base of ROM"
+end
+define STACK_SIZE
+	default 0x2000
+	format "0x%x"
+	export always
+	comment "Default stack size"
+end
+define HEAP_SIZE
+	default 0x2000
+	format "0x%x"
+	export used
+	comment "Default heap size"
+end
+define _RAMBASE
+	default 0x00100000
+	format "0x%x"
+	export used
+	comment "Base address of RAM"
+end
+define USE_CACHE_RAM
+	default 0
+	export used
+	comment "Use cache as temporary RAM if possible"
+end
+define CACHE_RAM_BASE
+	default 0x00200000
+	format "0x%x"
+	export always
+	comment "Base address of cache when using it for temporary RAM"
+end
+define CACHE_RAM_SIZE
+	default 0x00004000
+	format "0x%x"
+	export always
+	comment "Size of cache when using it for temporary RAM"
+end
+define CONFIG_COMPRESS
+	default 1
+	export always
+	comment "Set for compressed image"
+end
+define CONFIG_UNCOMPRESSED
+	default {!CONFIG_COMPRESS}
+	export always
+	comment "Set for uncompressed image"
+end
+define HAVE_OPTION_TABLE
+	default 0
+	export always
+	comment "Export CMOS option table"
+end
+define USE_OPTION_TABLE
+	default {HAVE_OPTION_TABLE && !USE_FALLBACK_IMAGE}
+	export always
+	comment "Use option table"
+end
+
+###############################################
+# Build targets
+###############################################
+
+define CRT0
+	default "$(TOP)/src/arch/$(ARCH)/config/crt0.base"
+	export always
+	comment "Main initialization target"
+end
+
+###############################################
+# Debugging/Logging options
+###############################################
+
+define DEBUG
+	default 1
+	export always
+	comment "Enable debugging code"
+end
+define CONFIG_CONSOLE_VGA
+	default 0
+	export always
+	comment "Log messages to VGA"
+end
+define CONFIG_CONSOLE_LOGBUF
+	default 0
+	export always
+	comment "Log messages to buffer"
+end
+define CONFIG_CONSOLE_SROM
+	default 0
+	export always
+	comment "Log messages to SROM console"
+end
+define CONFIG_CONSOLE_SERIAL8250
+	default 0
+	export always
+	comment "Log messages to serial 8250 console"
+end
+define SERIAL_CONSOLE
+	default none
+	export used
+	comment "Log messages to serial console"
+end
+define MAXIMUM_CONSOLE_LOGLEVEL
+	default 7
+	export always
+	comment "Console will log at this level"
+end
+define NO_POST
+	default none
+	export always
+	comment "Disable POST codes"
+end
+define TTYS0_BAUD
+	default 115200
+	export always
+	comment "Default baud rate for serial console"
+end
+define NO_KEYBOARD
+	default none
+	export never
+	comment "Set if we don't have a keyboard"
+end
+
+###############################################
+# Mainboard options
+###############################################
+
+define MAINBOARD
+	default "Mainboard_not_set"
+	export always
+	comment "Mainboard name"
+end
+define MAINBOARD_PART_NUMBER
+	default "Part_number_not_set"
+	export always
+	comment "Part number of mainboard"
+end
+define MAINBOARD_VENDOR
+	default "Vendor_not_set"
+	export always
+	comment "Vendor of mainboard"
+end
+define FINAL_MAINBOARD_FIXUP
+	default 0
+	export used
+	comment "Do final mainboard fixups"
+end
+
+
+###############################################
+# SMP options
+###############################################
+
+define CONFIG_SMP
+	default none
+	export always
+	comment "Define if we support SMP"
+end
+define SMP
+	default none
+	export always
+	comment "Define if we support SMP"
+end
+define MAX_CPUS
+	default 1
+	export always
+	comment "CPU count for this machine"
+end
+define CONFIG_LOGICAL_CPUS
+	default 1
+	export always
+	comment "Logical CPU count for this machine"
+end
+define MAX_PHYSICAL_CPUS
+	default 1
+	export always
+	comment "Physical CPU count for this machine"
+end
+define HAVE_MP_TABLE
+	default none
+	export always
+	comment "Define to build an MP table"
+end
+
+###############################################
+# Boot options
+###############################################
+
+define USE_ELF_BOOT
+	default none
+	export always
+	comment "Use ELF boot loader"
+end
+define CONFIG_IDE_STREAM
+	default 0
+	export always
+	comment "Boot from IDE device"
+end
+define CONFIG_ROM_STREAM
+	default 0
+	export always
+	comment "Boot image is located in ROM" 
+end
+define CONFIG_ROM_STREAM_START
+	default {0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1}
+	format "0x%x"
+	export always
+	comment "ROM stream start location"
+end
+
+###############################################
+# IRQ options
+###############################################
+
+define HAVE_PIRQ_TABLE
+	default none
+	export always
+	comment "Define if we have a PIRQ table"
+end
+define IRQ_SLOT_COUNT
+	default none
+	export always
+	comment "Number of IRQ slots"
+end
+define CONFIG_PCIBIOS_IRQ
+	default none
+	export always
+	comment "PCIBIOS IRQ support"
+end
+define CONFIG_IOAPIC
+	default none
+	export always
+	comment "IOAPIC support"
+end
+
+###############################################
+# IDE specific options
+###############################################
+
+define IDE_BOOT_DRIVE
+	default 0
+	export always
+	comment "Disk number of boot drive"
+end
+define IDE_SWAB
+	default none
+	export always
+	comment "Swap bytes when reading from IDE device"
+end
+define IDE_OFFSET
+	default 0
+	export always
+	comment "Sector at which to start searching for boot image"
+end
+
+###############################################
+# SMBUS options
+###############################################
+
+define SMBUS_MEM_DEVICE_START
+	default (0xa << 3)
+	export always
+	comment "Start address of SMBUS device"
+end
+define SMBUS_MEM_DEVICE_END
+	default {SMBUS_MEM_DEVICE_START +1}
+	export always
+	comment "End address of SMBUS device"
+end
+define SMBUS_MEM_DEVICE_INC
+	default 1
+	export always
+	comment "Increment value SMBUS"
+end
+
+###############################################
+# SuperIO options
+###############################################
+
+define SIO_BASE
+	default none
+	export used
+	comment "Superio base address"
+end
+define SIO_SYSTEM_CLK_INPUT
+	default none
+	export used
+	comment "Superio CLK input default"
+end
+
+###############################################
+# Misc options
+###############################################
+
+define HAVE_HARD_RESET
+	default none
+	export used
+	comment "Have hard reset"
+end
+define MEMORY_HOLE
+	default none
+	export used
+	comment "Set to deal with memory hole"
+end
+define ENABLE_FIXED_AND_VARIABLE_MTRRS
+	default none
+	export used
+	comment "Enable fixed and variable mtrrs"
+end
+define START_CPU_SEG
+	default 0xf0000
+	format "0x%x"
+	export always
+	comment "Start CPU segment"
+end
+define MAX_REBOOT_CNT
+	default 2
+	export always
+	comment "Set maximum reboots"
+end
+define DISABLE_WATCHDOG
+	default {MAXIMUM_CONSOLE_LOGLEVEL >= 8}
+	export used
+	comment "Disable watchdog if we're doing lots of output"
+end
+
+###############################################
+# Misc device options
+###############################################
+
+define CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
+	default none
+	export used
+	comment ""
+end
+define INTEL_PPRO_MTRR
+	default none
+	export always
+	comment ""
+end
+define AMD8111_DEV
+	default 0x3800
+	format "0x%x"
+	export used
+	comment ""
+end
+define CONFIG_UDELAY_TSC
+	default 0
+	export used
+	comment ""
+end
+

@@ -48,6 +48,9 @@ uses CONFIG_CHIP_CONFIGURE
 uses XIP_ROM_SIZE
 uses XIP_ROM_BASE
 uses LINUXBIOS_EXTRA_VERSION
+uses CC
+
+option CC="gcc -m32"
 
 option CONFIG_CHIP_CONFIGURE=1
 
@@ -65,7 +68,6 @@ option k8=1
 
 option ROM_SIZE=262144
 
-
 option HAVE_OPTION_TABLE=1
 option CONFIG_ROM_STREAM=1
 option HAVE_FALLBACK_BOOT=1
@@ -80,17 +82,11 @@ option FALLBACK_SIZE=131072
 option _RAMBASE=0x00004000
 
 #
-###
-### Compute the start location and size size of
-### The linuxBIOS bootloader.
-###
-
-#
 # AMD Solo
 romimage "normal"
 	option USE_FALLBACK_IMAGE=0
 	option ROM_IMAGE_SIZE=0x10000
-	option LINUXBIOS_EXTRA_VERSION=".0Normal"
+	option LINUXBIOS_EXTRA_VERSION=".0-Normal"
 	mainboard amd/solo
 	payload /suse/stepan/tg3--ide_disk.zelf
 end
@@ -98,7 +94,7 @@ end
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
 	option ROM_IMAGE_SIZE=0x10000
-	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
+	option LINUXBIOS_EXTRA_VERSION=".0-Fallback"
 	mainboard amd/solo
 	payload /suse/stepan/tg3--ide_disk.zelf
 end

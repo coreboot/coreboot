@@ -51,6 +51,10 @@ uses CONFIG_CHIP_CONFIGURE
 uses XIP_ROM_SIZE
 uses XIP_ROM_BASE
 uses LINUXBIOS_EXTRA_VERSION
+uses CC
+
+# set target C compiler to 32bit gcc.
+option CC="gcc -m32"
 
 # Configuration options.
 

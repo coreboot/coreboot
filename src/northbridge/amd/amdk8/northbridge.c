@@ -235,7 +235,7 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 		printk_debug("Hyper transport scan link: %d max: %d\n", link, max);
 #endif		
 		/* Now we can scan all of the subordinate busses i.e. the chain on the hypertranport link */
-		max = hypertransport_scan_chain(&dev->link[link], 1, max);
+		max = hypertransport_scan_chain(&dev->link[link], max);
 
 #if 1
 		printk_debug("Hyper transport scan link: %d new max: %d\n", link, max);

@@ -74,6 +74,7 @@ TESTS=\
 	simple_test54.c \
 	simple_test55.c \
 	simple_test56.c \
+	simple_test59.c \
 	raminit_test.c \
 	raminit_test2.c \
 	raminit_test3.c \
@@ -95,10 +96,10 @@ FAIL_OUT:=$(patsubst %.c, tests/%.out, $(FAIL_TESTS))
 
 
 $(TEST_ASM): %.S: %.c romcc
-	export ALLOC_CHECK_=2; ./romcc -O2 -mcpu=k8 -o $@ $< > $*.debug
+	export ALLOC_CHECK_=2; ./romcc -O -mcpu=k8 -o $@ $< > $*.debug
 
 $(FAIL_OUT): %.out: %.c romcc
-	export ALLOC_CHECK_=2; if ./romcc -O2 -o $*.S $< > $*.debug 2> $@ ; then exit 1 ; else exit 0 ; fi
+	export ALLOC_CHECK_=2; if ./romcc -O -o $*.S $< > $*.debug 2> $@ ; then exit 1 ; else exit 0 ; fi
 
 $(TEST_OBJ): %.o: %.S
 	as $< -o $@

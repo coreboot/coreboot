@@ -4002,7 +4002,7 @@ static size_t size_of(struct compile_state *state, struct type *type)
 		}
 		align = align_of(state, type);
 		pad = needed_padding(size, align);
-		size = size + pad + sizeof(type);
+		size = size + pad + size_of(state, type);
 		break;
 	}
 	case TYPE_OVERLAP:
@@ -4021,8 +4021,15 @@ static size_t size_of(struct compile_state *state, struct type *type)
 		}
 		break;
 	case TYPE_STRUCT:
+	{
+		size_t align, pad;
 		size = size_of(state, type->left);
+		/* Pad structures so their size is a multiples of their alignment */
+		align = align_of(state, type);
+		pad = needed_padding(size, align);
+		size = size + pad;
 		break;
+	}
 	default:
 		internal_error(state, 0, "sizeof not yet defined for type\n");
 		break;
@@ -4617,7 +4624,7 @@ static struct triple *read_expr(struct compile_state *state, struct triple *def)
 	return triple(state, op, def->type, def, 0);
 }
 
-static void write_compatible(struct compile_state *state,
+int is_write_compatible(struct compile_state *state, 
 	struct type *dest, struct type *rval)
 {
 	int compatible = 0;
@@ -4642,9 +4649,29 @@ static void write_compatible(struct compile_state *state,
 		(dest->type_ident == rval->type_ident)) {
 		compatible = 1;
 	}
-	if (!compatible) {
+	return compatible;
+}
+
+
+static void write_compatible(struct compile_state *state,
+	struct type *dest, struct type *rval)
+{
+	if (!is_write_compatible(state, dest, rval)) {
 		error(state, 0, "Incompatible types in assignment");
 	}
+}
+
+static int is_init_compatible(struct compile_state *state,
+	struct type *dest, struct type *rval)
+{
+	int compatible = 0;
+	if (is_write_compatible(state, dest, rval)) {
+		compatible = 1;
+	}
+	else if (equiv_types(dest, rval)) {
+		compatible = 1;
+	}
+	return compatible;
 }
 
 static struct triple *write_expr(
@@ -5428,6 +5455,15 @@ static struct triple *mk_subscript_expr(
 		error(state, left, "subscripted value is not a pointer");
 	}
 	return mk_deref_expr(state, mk_add_expr(state, left, right));
+}
+
+static struct triple *mk_cast_expr(
+	struct compile_state *state, struct type *type, struct triple *expr)
+{
+	struct triple *def;
+	def = read_expr(state, expr);
+	def = triple(state, OP_COPY, type, def, 0);
+	return def;
 }
 
 /*
@@ -7333,8 +7369,7 @@ static struct triple *cast_expr(struct compile_state *state)
 		eat(state, TOK_LPAREN);
 		type = type_name(state);
 		eat(state, TOK_RPAREN);
-		def = read_expr(state, cast_expr(state));
-		def = triple(state, OP_COPY, type, def, 0);
+		def = mk_cast_expr(state, type, cast_expr(state));
 	}
 	else {
 		def = unary_expr(state);
@@ -8182,7 +8217,6 @@ static void asm_statement(struct compile_state *state, struct triple *first)
 				error(state, 0, "Maximum clobber limit exceeded.");
 			}
 			clobber = string_constant(state);
-			eat(state, TOK_RPAREN);
 
 			clob_param[clobbers].constraint = clobber;
 			if (peek(state) == TOK_COMMA) {
@@ -8250,20 +8284,21 @@ static void asm_statement(struct compile_state *state, struct triple *first)
 		RHS(def, i) = read_expr(state,in_param[i].expr);
 	}
 	flatten(state, first, def);
-	for(i = 0; i < out; i++) {
+	for(i = 0; i < (out + clobbers); i++) {
+		struct type *type;
 		struct triple *piece;
-		piece = triple(state, OP_PIECE, out_param[i].expr->type, def, 0);
-		piece->u.cval = i;
-		LHS(def, i) = piece;
-		flatten(state, first,
-			write_expr(state, out_param[i].expr, piece));
-	}
-	for(; i - out < clobbers; i++) {
-		struct triple *piece;
-		piece = triple(state, OP_PIECE, &void_type, def, 0);
+		type = (i < out)? out_param[i].expr->type : &void_type;
+		piece = triple(state, OP_PIECE, type, def, 0);
 		piece->u.cval = i;
 		LHS(def, i) = piece;
 		flatten(state, first, piece);
+	}
+	/* And write the helpers to their destinations */
+	for(i = 0; i < out; i++) {
+		struct triple *piece;
+		piece = LHS(def, i);
+		flatten(state, first,
+			write_expr(state, out_param[i].expr, piece));
 	}
 }
 
@@ -8627,7 +8662,9 @@ static struct type *struct_or_union_specifier(
 		struct_type = new_type(TYPE_STRUCT | spec, struct_type, 0);
 		struct_type->type_ident = ident;
 		struct_type->elements = elements;
-		symbol(state, ident, &ident->sym_struct, 0, struct_type);
+		if (ident) {
+			symbol(state, ident, &ident->sym_struct, 0, struct_type);
+		}
 	}
 	if (ident && ident->sym_struct) {
 		struct_type = clone_type(spec, 	ident->sym_struct->type);
@@ -9015,8 +9052,23 @@ static struct triple *initializer(
 	struct compile_state *state, struct type *type)
 {
 	struct triple *result;
+#warning "FIXME handle string pointer initializers "
+#warning "FIXME more consistent initializer handling (where should eval_const_expr go?"
 	if (peek(state) != TOK_LBRACE) {
 		result = assignment_expr(state);
+		if (((type->type & TYPE_MASK) == TYPE_ARRAY) &&
+			(type->elements == ELEMENT_COUNT_UNSPECIFIED) &&
+			((result->type->type & TYPE_MASK) == TYPE_ARRAY) &&
+			(result->type->elements != ELEMENT_COUNT_UNSPECIFIED) &&
+			(equiv_types(type->left, result->type->left))) {
+			type->elements = result->type->elements;
+		}
+		if (!is_init_compatible(state, type, result->type)) {
+			error(state, 0, "Incompatible types in initializer");
+		}
+		if (!equiv_types(type, result->type)) {
+			result = mk_cast_expr(state, type, result);
+		}
 	}
 	else {
 		int comma;

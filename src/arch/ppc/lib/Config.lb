@@ -11,4 +11,5 @@ initobject pci_dev.o
 initobject printk_init.o
 initobject timebase.S
 initobject timer.o
-
+initobject setup.o
+initobject floats.S

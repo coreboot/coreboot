@@ -12,7 +12,8 @@ static unsigned ht_lookup_slave_capability(device_t dev)
 	hdr_type &= 0x7f;
 
 	if ((hdr_type == PCI_HEADER_TYPE_NORMAL) ||
-	    (hdr_type == PCI_HEADER_TYPE_BRIDGE)) {
+		(hdr_type == PCI_HEADER_TYPE_BRIDGE))
+	{
 		pos = PCI_CAPABILITY_LIST;
 	}
 	if (pos > PCI_CAP_LIST_NEXT) {
@@ -48,7 +49,8 @@ static void ht_collapse_previous_enumeration(unsigned bus)
 		
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
 		if ((id == 0xffffffff) || (id == 0x00000000) ||
-		    (id == 0x0000ffff) || (id == 0xffff0000)) {
+			(id == 0x0000ffff) || (id == 0xffff0000)) 
+		{
 			continue;
 		}
 		
@@ -90,7 +92,7 @@ static unsigned ht_read_freq_cap(device_t dev, unsigned pos)
 	return freq_cap;
 }
 
-#define LINK_OFFS(WIDTH,FREQ,FREQ_CAP)					\
+#define LINK_OFFS(WIDTH,FREQ,FREQ_CAP) \
 	(((WIDTH & 0xff) << 16) | ((FREQ & 0xff) << 8) | (FREQ_CAP & 0xFF))
 
 #define LINK_WIDTH(OFFS)    ((OFFS >> 16) & 0xFF)
@@ -212,8 +214,8 @@ static int ht_setup_chain(device_t udev, unsigned upos)
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
 		/* If the chain is enumerated quit */
 		if (((id & 0xffff) == 0x0000) || ((id & 0xffff) == 0xffff) ||
-		    (((id >> 16) & 0xffff) == 0xffff) ||
-		    (((id >> 16) & 0xffff) == 0x0000)) {
+			(((id >> 16) & 0xffff) == 0xffff) ||
+			(((id >> 16) & 0xffff) == 0x0000)) {
 			break;
 		}
 

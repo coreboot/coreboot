@@ -64,6 +64,7 @@ static void __console_tx_string(int loglevel, const char *str)
 	}
 }
 
+#define NOINLINE __attribute__((noinline))
 static void print_emerg_char(unsigned char byte) { __console_tx_char(BIOS_EMERG, byte); }
 static void print_emerg_hex8(unsigned char value){ __console_tx_hex8(BIOS_EMERG, value); }
 static void print_emerg_hex16(unsigned short value){ __console_tx_hex16(BIOS_EMERG, value); }
@@ -111,24 +112,62 @@ static void print_debug_hex8(unsigned char value) { __console_tx_hex8(BIOS_DEBUG
 static void print_debug_hex16(unsigned short value){ __console_tx_hex16(BIOS_DEBUG, value); }
 static void print_debug_hex32(unsigned int value) { __console_tx_hex32(BIOS_DEBUG, value); }
 static void print_debug(const char *str) { __console_tx_string(BIOS_DEBUG, str); }
-static void print_debug_hex8_(unsigned char value) __attribute__((noinline))
-{
-	print_debug_hex8(value);
-}
-static void print_debug_hex32_(unsigned int value) __attribute__((noinline))
-{
-	print_debug_hex32(value);
-}
-static void print_debug_(const char *str) __attribute__((noinline))
-{
-	print_debug(str);
-}
 
 static void print_spew_char(unsigned char byte) { __console_tx_char(BIOS_SPEW, byte); }
 static void print_spew_hex8(unsigned char value) { __console_tx_hex8(BIOS_SPEW, value); }
 static void print_spew_hex16(unsigned short value){ __console_tx_hex16(BIOS_SPEW, value); }
 static void print_spew_hex32(unsigned int value) { __console_tx_hex32(BIOS_SPEW, value); }
 static void print_spew(const char *str) { __console_tx_string(BIOS_SPEW, str); }
+
+/* Non inline versions.... */
+
+static void print_alert_char_(unsigned char value) NOINLINE   { print_alert_char(value); }
+static void print_alert_hex8_(unsigned char value) NOINLINE   { print_alert_hex8(value); }
+static void print_alert_hex16_(unsigned short value) NOINLINE { print_alert_hex16(value); }
+static void print_alert_hex32_(unsigned int value) NOINLINE   { print_alert_hex32(value); }
+static void print_alert_(const char *str) NOINLINE            { print_alert(str); }
+
+static void print_crit_char_(unsigned char value) NOINLINE   { print_crit_char(value); }
+static void print_crit_hex8_(unsigned char value) NOINLINE   { print_crit_hex8(value); }
+static void print_crit_hex16_(unsigned short value) NOINLINE { print_crit_hex16(value); }
+static void print_crit_hex32_(unsigned int value) NOINLINE   { print_crit_hex32(value); }
+static void print_crit_(const char *str) NOINLINE            { print_crit(str); }
+
+static void print_err_char_(unsigned char value) NOINLINE   { print_err_char(value); }
+static void print_err_hex8_(unsigned char value) NOINLINE   { print_err_hex8(value); }
+static void print_err_hex16_(unsigned short value) NOINLINE { print_err_hex16(value); }
+static void print_err_hex32_(unsigned int value) NOINLINE   { print_err_hex32(value); }
+static void print_err_(const char *str) NOINLINE            { print_err(str); }
+
+static void print_warning_char_(unsigned char value) NOINLINE   { print_warning_char(value); }
+static void print_warning_hex8_(unsigned char value) NOINLINE   { print_warning_hex8(value); }
+static void print_warning_hex16_(unsigned short value) NOINLINE { print_warning_hex16(value); }
+static void print_warning_hex32_(unsigned int value) NOINLINE   { print_warning_hex32(value); }
+static void print_warning_(const char *str) NOINLINE            { print_warning(str); }
+
+static void print_notice_char_(unsigned char value) NOINLINE   { print_notice_char(value); }
+static void print_notice_hex8_(unsigned char value) NOINLINE   { print_notice_hex8(value); }
+static void print_notice_hex16_(unsigned short value) NOINLINE { print_notice_hex16(value); }
+static void print_notice_hex32_(unsigned int value) NOINLINE   { print_notice_hex32(value); }
+static void print_notice_(const char *str) NOINLINE            { print_notice(str); }
+
+static void print_info_char_(unsigned char value) NOINLINE   { print_info_char(value); }
+static void print_info_hex8_(unsigned char value) NOINLINE   { print_info_hex8(value); }
+static void print_info_hex16_(unsigned short value) NOINLINE { print_info_hex16(value); }
+static void print_info_hex32_(unsigned int value) NOINLINE   { print_info_hex32(value); }
+static void print_info_(const char *str) NOINLINE            { print_info(str); }
+
+static void print_debug_char_(unsigned char value) NOINLINE   { print_debug_char(value); }
+static void print_debug_hex8_(unsigned char value) NOINLINE   { print_debug_hex8(value); }
+static void print_debug_hex16_(unsigned short value) NOINLINE { print_debug_hex16(value); }
+static void print_debug_hex32_(unsigned int value) NOINLINE   { print_debug_hex32(value); }
+static void print_debug_(const char *str) NOINLINE            { print_debug(str); }
+
+static void print_spew_char_(unsigned char value) NOINLINE   { print_spew_char(value); }
+static void print_spew_hex8_(unsigned char value) NOINLINE   { print_spew_hex8(value); }
+static void print_spew_hex16_(unsigned short value) NOINLINE { print_spew_hex16(value); }
+static void print_spew_hex32_(unsigned int value) NOINLINE   { print_spew_hex32(value); }
+static void print_spew_(const char *str) NOINLINE            { print_spew(str); }
 
 #ifndef LINUXBIOS_EXTRA_VERSION
 #define LINUXBIOS_EXTRA_VERSION ""

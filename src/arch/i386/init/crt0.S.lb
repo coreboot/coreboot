@@ -37,15 +37,17 @@
 
 #include "crt0_includes.h"
 
+#ifndef CONSOLE_DEBUG_TX_STRING
 	/* uses:	 esp, ebx, ax, dx */
-#define __CONSOLE_TX_STRING(string)	\
+# define __CRT_CONSOLE_TX_STRING(string) \
 	mov	string, %ebx	; \
-	CALLSP(console_tx_string)
+	CALLSP(crt_console_tx_string)
 
-#if ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG
-#define CONSOLE_DEBUG_TX_STRING(string)        __CONSOLE_TX_STRING(string)
-#else
-#define CONSOLE_DEBUG_TX_STRING(string)
+# if defined(TTYS0_BASE) && (ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG)
+#  define CONSOLE_DEBUG_TX_STRING(string)        __CRT_CONSOLE_TX_STRING(string)
+# else
+#  define CONSOLE_DEBUG_TX_STRING(string)
+# endif
 #endif
 
 	/* clear boot_complete flag */
@@ -167,9 +169,9 @@ decompr_end_n2b:
 	hlt
 	jmp	.Lhlt
 
-#if ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG
+#ifdef __CRT_CONSOLE_TX_STRING
 	/* Uses esp, ebx, ax, dx  */
-console_tx_string:
+crt_console_tx_string:
 	mov	(%ebx), %al
 	inc	%ebx
 	cmp	$0, %al
@@ -207,8 +209,10 @@ console_tx_string:
 	mov	%ah, %al
 	outb	%al, %dx
 
-	jmp console_tx_string	
+	jmp crt_console_tx_string
+#endif /* __CRT_CONSOLE_TX_STRING */
 
+#if defined(CONSOLE_DEBUG_TX_STRING) && (ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG)
 .section ".rom.data"
 str_copying_to_ram:  .string "Copying LinuxBIOS to ram.\r\n"
 str_pre_main:        .string "Jumping to LinuxBIOS.\r\n"

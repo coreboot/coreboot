@@ -100,7 +100,7 @@ static struct pnp_info pnp_dev_info[] = {
 
 static void enable_dev(device_t dev)
 {
-	pnp_enable_devices(dev, &pnp_ops,
+	pnp_enable_devices(dev, &ops,
 		sizeof(pnp_dev_info)/sizeof(pnp_dev_info[0]), pnp_dev_info);
 }
 

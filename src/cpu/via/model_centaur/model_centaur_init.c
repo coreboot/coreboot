@@ -11,28 +11,11 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
 
-static uint32_t microcode_updates[] = {
-	/* WARNING - Intel has a new data structure that has variable length
-	 * microcode update lengths.  They are encoded in int 8 and 9.  A
-	 * dummy header of nulls must terminate the list.
-	 */
-
-	/*  Dummy terminator  */
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-};
-
-
 static void model_centaur_init(device_t dev)
 {
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
 	x86_mtrr_check();
-	
-	/* Update the microcode */
-	intel_update_microcode(microcode_updates);
 
 	/* Enable the local cpu apics */
 	setup_lapic();

@@ -1,3 +1,7 @@
-#config chip.h
-#object socket_754.o
+uses CONFIG_CHIP_NAME
+
+if CONFIG_CHIP_NAME
+	config chip.h
+end
+object socket_754.o
 dir /cpu/amd/model_fxx

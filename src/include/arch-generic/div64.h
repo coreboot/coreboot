@@ -17,7 +17,9 @@
  *       beware of side effects!
  */
 
+#ifndef ULONG_MAX
 #include <limits.h>
+#endif
 #include <stdint.h>
 
 #if ULONG_MAX == 4294967295

@@ -19,7 +19,8 @@ static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 static struct pci_operations lops_pci = {
 	.set_subsystem = lpci_set_subsystem,
 };
-static struct device_operations smbus_ops = {
+
+static struct device_operations usb_ops = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
@@ -29,8 +30,8 @@ static struct device_operations smbus_ops = {
 	.ops_pci          = &lops_pci,
 };
 
-static struct pci_driver smbus_driver __pci_driver = {
-	.ops = &smbus_ops,
+static struct pci_driver usb_driver __pci_driver = {
+	.ops    = &usb_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = PCI_DEVICE_ID_AMD_8111_USB,
 };

@@ -13,4 +13,3 @@ SECTIONS {
 		BYTE(0x00);
 	} 
 }
-

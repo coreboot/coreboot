@@ -1,6 +1,3 @@
-
-
-
 #include <arch/io.h>
 /* code taken from: 
 !

@@ -20,7 +20,7 @@
 #define UART_MSR 0x06
 #define UART_SCR 0x07
 
-static int uart8250_can_tx_byte(unsigned base_port)
+static inline int uart8250_can_tx_byte(unsigned base_port)
 {
 	return inb(base_port + UART_LSR) & 0x20;
 }

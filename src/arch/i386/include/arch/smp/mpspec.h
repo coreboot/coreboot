@@ -274,7 +274,7 @@ unsigned long write_smp_table(unsigned long addr)
 	return addr;
 }
 #endif
-#define write_smp_table(addr)	addr
+#define write_smp_table(addr)	(addr)
 #endif /* HAVE_MP_TABLE */
 
 #endif

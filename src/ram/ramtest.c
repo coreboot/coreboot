@@ -38,7 +38,7 @@ static void ram_fill(unsigned long start, unsigned long stop)
 		/* Display address being filled */
 		if (!(addr & 0xffff)) {
 			print_debug_hex32(addr);
-			print_debug("\r");
+			print_debug(" \r");
 		}
 		write_phys(addr, addr);
 	};
@@ -50,6 +50,7 @@ static void ram_fill(unsigned long start, unsigned long stop)
 static void ram_verify(unsigned long start, unsigned long stop)
 {
 	unsigned long addr;
+	int i = 0;
 	/* 
 	 * Verify.
 	 */
@@ -63,7 +64,7 @@ static void ram_verify(unsigned long start, unsigned long stop)
 		/* Display address being tested */
 		if (!(addr & 0xffff)) {
 			print_debug_hex32(addr);
-			print_debug("\r");
+			print_debug(" \r");
 		}
 		value = read_phys(addr);
 		if (value != addr) {
@@ -72,6 +73,8 @@ static void ram_verify(unsigned long start, unsigned long stop)
 			print_err_char(':');
 			print_err_hex32(value);
 			print_err("\r\n");
+			i++;
+			if(i>256) break;
 		}
 	}
 	/* Display final address */

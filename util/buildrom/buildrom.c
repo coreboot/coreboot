@@ -70,8 +70,9 @@ int main(int argc, char *argv[])
 	cp = malloc(romsize);
 	if (!cp)
 		fatal("malloc buffer");
-	for (i = 0; i < romsize; i++)
+	for (i = 0; i < romsize; i++) {
 		cp[i] = zero;
+	}
 
 	/* read the input file in at the END of the array */
 	readlen = read(infd, &cp[romsize - inbuf.st_size], inbuf.st_size);

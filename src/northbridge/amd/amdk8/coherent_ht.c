@@ -25,7 +25,6 @@
  */
 
 #define generate_temp_row(...) ((generate_row(__VA_ARGS__)&(~0x0f0000))|0x010000)
-#define clear_temp_row(x)       fill_row(x,7,DEFAULT)
 #define enable_bsp_routing()	enable_routing(0)
 
 #define NODE_HT(x) PCI_DEV(0,24+x,0)
@@ -56,7 +55,7 @@ static u8 link_to_register(int ldt)
 	if (ldt&0x02) return 0x00;
 	
 	/* we should never get here */
-	print_debug("Unknown Link\n");
+	print_spew("Unknown Link\n");
 	return 0;
 }
 
@@ -281,29 +280,29 @@ static void fill_row(u8 node, u8 row, u32 value)
 	pci_write_config32(NODE_HT(node), 0x40+(row<<2), value);
 }
 
-static void setup_row(u8 source, u8 dest, u8 cpus)
+static void setup_row(u8 source, u8 dest, u8 nodes)
 {
-	fill_row(source,dest,generate_row(source,dest,cpus));
+	fill_row(source,dest,generate_row(source,dest,nodes));
 }
 
-static void setup_temp_row(u8 source, u8 dest, u8 cpus)
+static void setup_temp_row(u8 source, u8 dest, u8 nodes)
 {
-	fill_row(source,7,generate_temp_row(source,dest,cpus));
+	fill_row(source,7,generate_temp_row(source,dest,nodes));
 }
 
-static void setup_node(u8 node, u8 cpus)
+static void setup_node(u8 node, u8 nodes)
 {
 	u8 row;
-	for(row=0; row<cpus; row++)
-		setup_row(node, row, cpus);
+	for(row=0; row<nodes; row++)
+		setup_row(node, row, nodes);
 }
 
-static void setup_remote_row(u8 source, u8 dest, u8 cpus)
+static void setup_remote_row(u8 source, u8 dest, u8 nodes)
 {
-	fill_row(7, dest, generate_row(source, dest, cpus));
+	fill_row(7, dest, generate_row(source, dest, nodes));
 }
 
-static void setup_remote_node(u8 node, u8 cpus)
+static void setup_remote_node(u8 node, u8 nodes)
 {
 	static const uint8_t pci_reg[] = { 
 		0x44, 0x4c, 0x54, 0x5c, 0x64, 0x6c, 0x74, 0x7c, 
@@ -318,8 +317,8 @@ static void setup_remote_node(u8 node, u8 cpus)
 	int i;
 
 	print_spew("setup_remote_node: ");
-	for(row=0; row<cpus; row++)
-		setup_remote_row(node, row, cpus);
+	for(row=0; row<nodes; row++)
+		setup_remote_row(node, row, nodes);
 
 	/* copy the default resource map from node 0 */
 	for(i = 0; i < sizeof(pci_reg)/sizeof(pci_reg[0]); i++) {
@@ -336,11 +335,11 @@ static void setup_remote_node(u8 node, u8 cpus)
 #endif
 
 #if CONFIG_MAX_CPUS > 2
-static void setup_temp_node(u8 node, u8 cpus)
+static void setup_temp_node(u8 node, u8 nodes)
 {
 	u8 row;
-	for(row=0; row<cpus; row++)
-		fill_row(7,row,generate_row(node,row,cpus));
+	for(row=0; row<nodes; row++)
+		fill_row(7,row,generate_row(node,row,nodes));
 }
 #endif
 
@@ -351,7 +350,7 @@ static void setup_uniprocessor(void)
 }
 
 struct setup_smp_result {
-	int cpus;
+	int nodes;
 	int needs_reset;
 };
 
@@ -359,46 +358,42 @@ struct setup_smp_result {
 static struct setup_smp_result setup_smp(void)
 {
 	struct setup_smp_result result;
-	result.cpus = 2;
+	result.nodes = 2;
 	result.needs_reset = 0;
 
 	print_spew("Enabling SMP settings\r\n");
 
-	setup_row(0, 0, result.cpus);
+	setup_row(0, 0, result.nodes);
 	/* Setup and check a temporary connection to node 1 */
-	setup_temp_row(0, 1, result.cpus);
+	setup_temp_row(0, 1, result.nodes);
 	
 	if (!check_connection(0, 7, link_to_register(link_connection(0,1)))) {
-		print_debug("No connection to Node 1.\r\n");
-		clear_temp_row(0);	/* delete temp connection */
+		print_spew("No connection to Node 1.\r\n");
 		setup_uniprocessor();	/* and get up working     */
-		result.cpus = 1;
+		result.nodes = 1;
 		return result;
 	}
 
 	/* We found 2 nodes so far */
 	
-	setup_node(0, result.cpus);	/* Node 1 is there. Setup Node 0 correctly */
-	setup_remote_node(1, result.cpus);  /* Setup the routes on the remote node */
+	setup_node(0, result.nodes);	/* Node 1 is there. Setup Node 0 correctly */
+	setup_remote_node(1, result.nodes);  /* Setup the routes on the remote node */
         rename_temp_node(1);    /* Rename Node 7 to Node 1  */
         enable_routing(1);      /* Enable routing on Node 1 */
   	
-	clear_temp_row(0);	/* delete temporary connection */
-	
-	result.needs_reset =
-		optimize_connection(NODE_HT(0), 0x80 + link_to_register(link_connection(0,1)),
-				    NODE_HT(1), 0x80 + link_to_register(link_connection(1,0)) );
+	result.needs_reset = optimize_connection(
+		NODE_HT(0), 0x80 + link_to_register(link_connection(0,1)),
+		NODE_HT(1), 0x80 + link_to_register(link_connection(1,0)) );
 
 #if CONFIG_MAX_CPUS > 2
-	result.cpus=4;
+	result.nodes=4;
 	
 	/* Setup and check temporary connection from Node 0 to Node 2 */
-	setup_temp_row(0,2, result.cpus);
+	setup_temp_row(0,2, result.nodes);
 
 	if (!check_connection(0, 7, link_to_register(link_connection(0,2))) ) {
-		print_debug("No connection to Node 2.\r\n");
-		clear_temp_row(0);	 /* delete temp connection */
-		result.cpus = 2;
+		print_spew("No connection to Node 2.\r\n");
+		result.nodes = 2;
 		return result;
 	}
 
@@ -406,38 +401,31 @@ static struct setup_smp_result setup_smp(void)
 	 * connection from node 0 to node 3 via node 1
 	 */
 
-	setup_temp_row(0,1, result.cpus); /* temp. link between nodes 0 and 1 */
-	setup_temp_row(1,3, result.cpus); /* temp. link between nodes 1 and 3 */
+	setup_temp_row(0,1, result.nodes); /* temp. link between nodes 0 and 1 */
+	setup_temp_row(1,3, result.nodes); /* temp. link between nodes 1 and 3 */
 
 	if (!check_connection(1, 7, link_to_register(link_connection(1,3)))) {
-		print_debug("No connection to Node 3.\r\n");
-		clear_temp_row(0);	 /* delete temp connection */
-		clear_temp_row(1);	 /* delete temp connection */
-		result.cpus = 2;
+		print_spew("No connection to Node 3.\r\n");
+		result.nodes = 2;
 		return result;
 	}
 
 	/* We found 4 nodes so far. Now setup all nodes for 4p */
 
-	setup_node(0, result.cpus);  /* The first 2 nodes are configured    */
-	setup_node(1, result.cpus);  /* already. Just configure them for 4p */
+	setup_node(0, result.nodes);  /* The first 2 nodes are configured    */
+	setup_node(1, result.nodes);  /* already. Just configure them for 4p */
 	
-	setup_temp_row(0,2, result.cpus);
-	setup_temp_node(2, result.cpus);
+	setup_temp_row(0,2, result.nodes);
+	setup_temp_node(2, result.nodes);
         rename_temp_node(2);
         enable_routing(2);
   
-	setup_temp_row(0,1, result.cpus);
-	setup_temp_row(1,3, result.cpus);
-	setup_temp_node(3, result.cpus);
+	setup_temp_row(0,1, result.nodes);
+	setup_temp_row(1,3, result.nodes);
+	setup_temp_node(3, result.nodes);
         rename_temp_node(3);
         enable_routing(3);      /* enable routing on node 3 (temp.) */
 	
-	clear_temp_row(0);
-	clear_temp_row(1);
-	clear_temp_row(2);
-	clear_temp_row(3);
-
 	/* optimize physical connections - by LYH */
 	result.needs_reset = optimize_connection(
 		NODE_HT(0), 0x80 + link_to_register(link_connection(0,2)),
@@ -453,50 +441,57 @@ static struct setup_smp_result setup_smp(void)
 
 #endif /* CONFIG_MAX_CPUS > 2 */
 
-	print_debug_hex8(result.cpus);
+	print_debug_hex8(result.nodes);
 	print_debug(" nodes initialized.\r\n");
 	return result;
 }
 #endif
 
-#if CONFIG_MAX_CPUS > 1
-static unsigned verify_mp_capabilities(unsigned cpus)
+static unsigned verify_mp_capabilities(unsigned nodes)
 {
 	unsigned node, row, mask;
 	bool mp_cap=TRUE;
 
-	if (cpus > 2) {
+	if (nodes > 2) {
 		mask=0x06;	/* BigMPCap */
-	} else {
+	} else if (nodes == 2) {
 		mask=0x02;	/* MPCap    */
+	} else {
+		mask=0x00;	/* Non SMP */
 	}
 
-	for (node=0; node<cpus; node++) {
+	for (node=0; node<nodes; node++) {
 		if ((pci_read_config32(NODE_MC(node), 0xe8) & mask) != mask) {
 			mp_cap = FALSE;
 		}
 	}
 
 	if (mp_cap) {
-		return cpus;
+		return nodes;
 	}
 
-	/* one of our cpus is not mp capable */
+	/* one of our nodes is not mp capable */
 
 	print_err("One of the CPUs is not MP capable. Going back to UP\r\n");
-
-	for (node = cpus; node > 0; node--) {
-		for (row = cpus; row > 0; row--) {
-			fill_row(NODE_HT(node-1), row-1, DEFAULT);
-		}
-	}
-	setup_uniprocessor();
 	return 1;
 }
 
-#endif
+static void clear_dead_routes(unsigned nodes)
+{
+	int last_row;
+	int node, row;
+	last_row = nodes;
+	if (nodes == 1) {
+		last_row = 0;
+	}
+	for(node = 7; node >= 0; node--) {
+		for(row = 7; row >= last_row; row--) {
+			fill_row(node, row, DEFAULT);
+		}
+	}
+}
 
-static void coherent_ht_finalize(unsigned cpus)
+static void coherent_ht_finalize(unsigned nodes)
 {
 	unsigned node;
 	bool rev_a0;
@@ -507,11 +502,9 @@ static void coherent_ht_finalize(unsigned cpus)
 	 * registers on Hammer A0 revision.
 	 */
 
-#if 1
-	print_debug("coherent_ht_finalize\r\n");
-#endif
+	print_spew("coherent_ht_finalize\r\n");
 	rev_a0 = is_cpu_rev_a0();
-	for (node = 0; node < cpus; node++) {
+	for (node = 0; node < nodes; node++) {
 		device_t dev;
 		uint32_t val;
 		dev = NODE_HT(node);
@@ -519,7 +512,7 @@ static void coherent_ht_finalize(unsigned cpus)
 		/* Set the Total CPU and Node count in the system */
 		val = pci_read_config32(dev, 0x60);
 		val &= (~0x000F0070);
-		val |= ((cpus-1)<<16)|((cpus-1)<<4);
+		val |= ((nodes-1)<<16)|((nodes-1)<<4);
 		pci_write_config32(dev, 0x60, val);
 
 		/* Only respond to real cpu pci configuration cycles
@@ -537,22 +530,20 @@ static void coherent_ht_finalize(unsigned cpus)
 		pci_write_config32(dev, 0x68, val);
 
 		if (rev_a0) {
-			print_debug("shit it is an old cup\n");
+			print_spew("shit it is an old cup\n");
 			pci_write_config32(dev, 0x94, 0);
 			pci_write_config32(dev, 0xb4, 0);
 			pci_write_config32(dev, 0xd4, 0);
 		}
 	}
 
-#if 1
-	print_debug("done\r\n");
-#endif
+	print_spew("done\r\n");
 }
 
-static int apply_cpu_errata_fixes(unsigned cpus, int needs_reset)
+static int apply_cpu_errata_fixes(unsigned nodes, int needs_reset)
 {
 	unsigned node;
-	for(node = 0; node < cpus; node++) {
+	for(node = 0; node < nodes; node++) {
 		device_t dev;
 		uint32_t cmd;
 		dev = NODE_MC(node);
@@ -601,10 +592,10 @@ static int apply_cpu_errata_fixes(unsigned cpus, int needs_reset)
 	return needs_reset;
 }
 
-static int optimize_link_read_pointers(unsigned cpus, int needs_reset)
+static int optimize_link_read_pointers(unsigned nodes, int needs_reset)
 {
 	unsigned node;
-	for(node = 0; node < cpus; node = node + 1) {
+	for(node = 0; node < nodes; node = node + 1) {
 		device_t f0_dev, f3_dev;
 		uint32_t cmd_ref, cmd;
 		int link;
@@ -619,7 +610,8 @@ static int optimize_link_read_pointers(unsigned cpus, int needs_reset)
 			if (link_type & LinkConnected) {
 				cmd &= 0xff << (link *8);
 				/* FIXME this assumes the device on the other
-				 * side is an AMD device */
+				 * side is an AMD device 
+				 */
 				cmd |= 0x25 << (link *8);
 			}
 		}
@@ -634,23 +626,24 @@ static int optimize_link_read_pointers(unsigned cpus, int needs_reset)
 static int setup_coherent_ht_domain(void)
 {
 	struct setup_smp_result result;
-	result.cpus = 1;
+	result.nodes = 1;
 	result.needs_reset = 0;
 
 	enable_bsp_routing();
 
-#if CONFIG_MAX_CPUS == 1
-	setup_uniprocessor();
-#else
+#if CONFIG_MAX_CPUS > 1
 	result = setup_smp();
-	result.cpus = verify_mp_capabilities(result.cpus);
 #endif
-
-	coherent_ht_finalize(result.cpus);
-	result.needs_reset = apply_cpu_errata_fixes(result.cpus, result.needs_reset);
+	result.nodes = verify_mp_capabilities(result.nodes);
+	clear_dead_routes(result.nodes);
+	if (result.nodes == 1) {
+		setup_uniprocessor();
+	}
+	coherent_ht_finalize(result.nodes);
+	result.needs_reset = apply_cpu_errata_fixes(result.nodes, result.needs_reset);
 
 #if CONFIG_MAX_CPUS > 1 /* Why doesn't this work on the solo? */
-	result.needs_reset = optimize_link_read_pointers(result.cpus, result.needs_reset);
+	result.needs_reset = optimize_link_read_pointers(result.nodes, result.needs_reset);
 #endif
 
 	return result.needs_reset;

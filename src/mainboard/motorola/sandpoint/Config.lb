@@ -34,7 +34,9 @@ end
 ##
 southbridge winbond/w83c553 end
 superio NSC/pc97307 
-	register ".com1={1}, .lpt={0}, .port=SIO_COM1_BASE"
+	register "com1" = "{1}"
+	register "lpt" = "{0}"
+	register "port" = "SIO_COM1_BASE"
 end
 
 ##

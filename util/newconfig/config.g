@@ -528,25 +528,19 @@ class partobj:
 		self.children = 0
 		self.siblings = 0
 		self.initcode = []
-		self.registercode = []
+		self.registercode = {}
 		# sibling is not a list. 
 		self.type = type
 		self.objects = []
 		self.dir = dir
 		self.irq = 0
 		self.instance = image.newpartinstance()
-		self.flatten_name = flatten_name(type + "/" + name)
+		self.flatten_name = flatten_name(os.path.join(type, name))
 		debug.info(debug.object, "INSTANCE %d" % self.instance)
 		self.devfn = 0	
 		self.private = 0	
 		self.uses_options = {}
-		# chip initialization. If there is a chip.h in the 
-		# directory, generate the structs etc. to 
-		# initialize the code
-		if (os.path.exists(dir + "/" + "chip.h")): 
-			self.chipconfig = 1
-		else:
-			self.chipconfig = 0
+		self.chipconfig = 0
 		
 		if (parent):
 			debug.info(debug.gencode, "add to parent")
@@ -575,14 +569,14 @@ class partobj:
 		for i in self.initcode:
 			print "  %s" % i
 		print "%d: registercode " % lvl
-		for i in self.registercode:
-			print "  %s" % i
+		for f, v in self.registercode.items():
+			print "  %s = %s" % (f, v)
 		print "\n"
 
 	def gencode(self, file):
 		if (self.chipconfig):
 			debug.info(debug.gencode, "gencode: chipconfig(%d)" % self.instance)
-			file.write("#include \"%s/chip.h\"\n" % self.dir)
+			file.write("#include \"%s\"\n" % os.path.join(self.dir, self.chipconfig))
 			file.write("extern struct chip_control %s_control;\n" % \
 					self.flatten_name)
 			file.write("struct %s_config %s_config_%d" % (\
@@ -591,9 +585,9 @@ class partobj:
 					self.instance))
 			if (self.registercode):
 				file.write("\t= {\n")
-				for i in self.registercode:
-					file.write( "\t  %s" % i)
-				file.write("\t};\n")
+				for f, v in self.registercode.items():
+					file.write( "  .%s = %s;\n" % (f, v))
+				file.write("};\n")
 			else:
 				file.write(";")
 			file.write("\n");
@@ -629,9 +623,13 @@ class partobj:
     	def addinit(self, code):
         	self.initcode.append(code)
 		
-    	def addregister(self, code):
-		code = dequote(code)
-        	self.registercode.append(code)
+    	def addconfig(self, path):
+        	self.chipconfig = path
+
+    	def addregister(self, field, value):
+		field = dequote(field)
+		value = dequote(value)
+        	setdict(self.registercode, field, value)
 
 	def usesoption(self, name):
 		global global_options
@@ -865,10 +863,15 @@ def addinit(path):
 		curimage.setinitfile(dirstack.tos() + '/' + path)
 	print "Adding init file: %s" % path
 
-def addregister(code):
+def addconfig(path):
 	global partstack
 	curpart = partstack.tos()
-	curpart.addregister(code)
+	curpart.addconfig(path)
+
+def addregister(field, value):
+	global partstack
+	curpart = partstack.tos()
+	curpart.addregister(field, value)
 
 def addcrt0include(path):
 	"""we do the crt0include as a dictionary, so that if needed we
@@ -1100,6 +1103,7 @@ parser Config:
     token ARCH:			'arch'
     token BUILDROM:		'buildrom'
     token COMMENT:		'comment'
+    token CONFIG:		'config'
     token CPU:			'cpu'
     token DEFAULT:		'default'
     token DEFINE:		'define'
@@ -1239,7 +1243,9 @@ parser Config:
 
     rule init<<C>>:	INIT DIRPATH		{{ if (C): addinit(DIRPATH) }}
 
-    rule register<<C>>:	REGISTER STR		{{ if (C): addregister(STR) }}
+    rule field:		STR			{{ return STR }}
+
+    rule register<<C>>:	REGISTER field '=' STR	{{ if (C): addregister(field, STR) }}
 
     rule prtval:	expr			{{ return str(expr) }}
 		|	STR			{{ return STR }}
@@ -1252,8 +1258,11 @@ parser Config:
 			[ "," prtlist 		{{ val = val + prtlist }}
 			]			{{ if (C): print eval(val) }}
 
+    rule config<<C>>:	CONFIG PATH		{{ if (C): addconfig(PATH) }}
+
     rule stmt<<C>>:	arch<<C>>		{{ return arch}}
 		|	addaction<<C>>		{{ return addaction }}
+    		|	config<<C>>		{{ return config}}
     		|	cpu<<C>>		{{ return cpu}}
 		|	dir<<C>>		{{ return dir}}
 		|	driver<<C>>		{{ return driver }}
@@ -1459,8 +1468,8 @@ def writeimagemakefile(image):
 		file.write("SOURCES += %s\n" % (obj_source))
 
 	# for chip_target.c
-	file.write("OBJECTS += chip_%s.o\n" % target_name)
-	file.write("SOURCES += chip_%s.c\n" % target_name)
+	file.write("OBJECTS += static.o\n")
+	file.write("SOURCES += static.c\n")
 
 	for driverrule, driver in image.getdriverrules().items():
 		obj_name = driver[0]
@@ -1527,7 +1536,7 @@ def writeimagemakefile(image):
 		#file.write("%s\n" % objrule[2])
 
 	# special rule for chip_target.c
-	file.write("chip_%s.o: chip_%s.c\n" % (target_name, target_name))
+	file.write("static.o: static.c\n")
 	file.write("\t$(CC) -c $(CFLAGS) -o $@ $<\n")
 
 	# Print out the rules that will make cause the files
@@ -1537,7 +1546,7 @@ def writeimagemakefile(image):
 	file.write("GENERATED:=\n")
 	for genfile in ['Makefile',
 			'nsuperio.c',
-			'chip_%s.c' % target_name, 
+			'static.c',
 			'LinuxBIOSDoc.config' ]:
 		file.write("GENERATED += %s\n" % genfile)
 	file.write("GENERATED += %s\n" % image.getincludefilename())
@@ -1649,7 +1658,7 @@ def dumptree(part, lvl):
 	debug.info(debug.dumptree, "DONE DUMPTREE")
 
 def writecode(image):
-	filename = os.path.join(img_dir, "chip_%s.c" % target_name)
+	filename = os.path.join(img_dir, "static.c")
 	print "Creating", filename
 	file = open(filename, 'w+')
 	# gen all the forward references

@@ -37,6 +37,8 @@ if USE_FALLBACK_IMAGE
   print "Use fallback!"
   mainboardinit cpu/i386/reset16.inc 
   ldscript /cpu/i386/reset16.lds 
+else
+  print "NO FALLBACK USED!"
 end
 
 if USE_NORMAL_IMAGE
@@ -45,7 +47,7 @@ if USE_NORMAL_IMAGE
 end
 #
 #### Should this be in the northbridge code?
-#mainboardinit archi386/lib/cpu_reset.inc
+mainboardinit arch/i386/lib/cpu_reset.inc
 #
 ###
 ### Include an id string (For safe flashing)
@@ -59,7 +61,9 @@ ldscript /arch/i386/lib/id.lds
 #### failover to another image.
 ####
 #option MAX_REBOOT_CNT=2
-##ldscript arch/i386/lib/failover.lds USE_FALLBACK_IMAGE
+if USE_FALLBACK_IMAGE
+  ldscript /arch/i386/lib/failover.lds 
+end
 #
 ###
 ### Setup our mtrrs

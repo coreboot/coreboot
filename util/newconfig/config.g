@@ -282,7 +282,7 @@ class partobj:
 		o.setused()
 		setvalue(self.options, name, o)
 		if (debug):
-			print "option %s used in %s" % (name, self)
+			print "option %s used in %s " % (name, self)
 
 class partsstack:
 	def __init__ (self):

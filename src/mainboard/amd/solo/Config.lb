@@ -241,7 +241,9 @@ ldscript /arch/i386/lib/id.lds
 #### failover to another image.
 ####
 option MAX_REBOOT_CNT=2
-##ldscript arch/i386/lib/failover.lds USE_FALLBACK_IMAGE
+if USE_FALLBACK_IMAGE
+  ldscript /arch/i386/lib/failover.lds 
+end
 #
 ###
 ### Setup our mtrrs

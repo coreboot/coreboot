@@ -55,7 +55,7 @@ option i586=1
 option INTEL_PPRO_MTRR=1
 option k7=1
 option k8=1
-
+option ROM_SIZE=524288
 
 ### Customize our winbond superio chip for this motherboard
 ###
@@ -66,7 +66,7 @@ option SIO_SYSTEM_CLK_INPUT=0
 ### Build code for the fallback boot
 ###
 # at some point it will be possible to set both of these to 1.
-option HAVE_FALLBACK_BOOT=1
+option HAVE_FALLBACK_BOOT=0
 option USE_NORMAL_IMAGE=0
 #
 ###
@@ -117,7 +117,7 @@ option ENABLE_FIXED_AND_VARIABLE_MTRRS=1
 ### Call the final_mainboard_fixup function
 ###
 option FINAL_MAINBOARD_FIXUP=1
-option USE_FALLBACK_IMAGE=0
+option USE_FALLBACK_IMAGE=1
 
 ###
 ### Only use the option table in a normal image
@@ -128,7 +128,9 @@ option USE_OPTION_TABLE=!USE_FALLBACK_IMAGE
 ### Compute the location and size of where this firmware image
 ### (linuxBIOS plus bootloader) will live in the boot rom chip.
 ###
+#option FALLBACK_SIZE=524288
 if USE_FALLBACK_IMAGE 
+  print "Using fallback ROM setup"
   option ROM_SECTION_SIZE  = FALLBACK_SIZE
   option ROM_SECTION_OFFSET= (ROM_SIZE - FALLBACK_SIZE)
 end
@@ -158,8 +160,6 @@ option CONFIG_COMPRESS=0
 
 option USE_ELF_BOOT=1
 
-option ROM_SIZE=524288
-
 ## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
 option ROM_IMAGE_SIZE=49152
 
@@ -175,12 +175,6 @@ option STACK_SIZE=0x10000
 ## Use a 64K heap
 ##
 option HEAP_SIZE=0x10000
-
-## Compute the location and size of where this firmware image
-## (linuxBIOS plus bootloader) will live in the boot rom chip.
-##       
-option ROM_SECTION_SIZE=ROM_SIZE
-option ROM_SECTION_OFFSET=0
 
 #
 ###

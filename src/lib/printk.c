@@ -14,7 +14,7 @@ static char rcsid[] = "$Id$";
 #include <stdarg.h>
 #include <smp/spinlock.h>
 
-static char buf[1024];
+char log_buf[1024];
 
 /* printk's without a loglevel use this.. */
 #define DEFAULT_MESSAGE_LOGLEVEL 4 /* BIOS_WARNING */
@@ -50,10 +50,10 @@ int do_printk(int msg_level, const char *fmt, ...)
 	spin_lock(&console_lock);
 
 	va_start(args, fmt);
-	i = vsprintf(buf, fmt, args); /* hopefully i < sizeof(buf)-4 */
+	i = vsprintf(log_buf, fmt, args); /* hopefully i < sizeof(log_buf)-4 */
 	va_end(args);
 
-	display(buf);
+	display(log_buf);
 
 	spin_unlock(&console_lock);
 

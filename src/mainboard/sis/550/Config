@@ -3,10 +3,9 @@ mainboardinit cpu/i386/entry16.inc
 ldscript cpu/i386/entry16.lds
 
 northsouthbridge sis/550
-mainboardinit cpu/p6/earlymtrr.inc
 
 option FINAL_MAINBOARD_FIXUP
-option HAVE_PIRQ_TABLE
+option HAVE_PIRQ_TABLE=1
 object mainboard.o
 object irq_tables.o
 keyboard pc80

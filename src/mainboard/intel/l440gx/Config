@@ -28,9 +28,12 @@ option IOAPIC=1
 option SMP=1
 option MAX_CPUS=2
 option HAVE_MP_TABLE=1
+option HAVE_PIRQ_TABLE=1
 
 object mainboard.o
 object mptable.o
+object irq_tables.o HAVE_PIRQ_TABLE
+
 
 cpu p6
 cpu p5

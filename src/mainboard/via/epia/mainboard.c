@@ -5,58 +5,57 @@
 
 #include <types.h>
 
-void pci_routing_fixup(void)
+static const unsigned char southbridgeIrqs[4] = { 11, 5, 10, 12 };
+static const unsigned char enetIrqs[4] = { 11, 5, 10, 12 };
+static const unsigned char slotIrqs[4] = { 5, 10, 12, 11 };
+
+/*
+	Our IDSEL mappings are as follows
+	PCI slot is AD31          (device 15) (00:14.0)
+	Southbridge is AD28       (device 12) (00:11.0)
+*/
+static void pci_routing_fixup(void)
 {
 	struct pci_dev *dev;
 
-	dev = pci_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8231, 0);
+        dev = pci_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8231, 0);
 	if (dev != NULL) {
-		/* 
-		 * initialize PCI interupts - these assignments depend
-		 * on the PCB routing of PINTA-D
-		 */
+		/* initialize PCI interupts - these assignments depend
+		   on the PCB routing of PINTA-D 
+
+		   PINTA = IRQ11
+		   PINTB = IRQ5
+		   PINTC = IRQ10
+		   PINTD = IRQ12
+		*/
 		pci_write_config_byte(dev, 0x55, 0xb0);
 		pci_write_config_byte(dev, 0x56, 0xa5);
 		pci_write_config_byte(dev, 0x57, 0xc0);
 	}
+
+	// Standard southbridge components
+	printk_info("setting southbridge\n");
+	pci_assign_irqs(0, 0x11, southbridgeIrqs);
+
+	// Ethernet built into southbridge
+	printk_info("setting ethernet\n");
+	pci_assign_irqs(0, 0x12, enetIrqs);
+
+	// PCI slot
+	printk_info("setting pci slot\n");
+	pci_assign_irqs(0, 0x14, slotIrqs);
+
 }
 
-void
-ethernet_fixup()
-{
-	struct pci_dev	*dev;
-	u8		byte;
 
-	printk_info("Ethernet fixup\n");
-	dev = pci_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8231, 0);
-	if (dev != NULL) {
-		/* enable lan */
-		pci_read_config_byte(dev, 0x51, &byte);
-		printk_debug("Get FC 2 in reg. 51 is 0x%x\n", byte);
-		byte |= 0x30;
-		printk_debug("Set FC 2 in reg. 51 to 0x%x\n", byte);
-		pci_write_config_byte(dev, 0x51, byte);
-
-		/* setup interrupt */
-		pci_read_config_byte(dev, 0x4d, &byte);
-		printk_debug("Get IRQ Control in reg. 4d is 0x%x\n", byte);
-		byte |= 0x20;
-		printk_debug("Set IRQ Control in reg. 4d to 0x%x\n", byte);
-		pci_write_config_byte(dev, 0x4d, byte);
-
-		/* setup PINTA */
-		pci_read_config_byte(dev, 0x55, &byte);
-		printk_debug("Get IRQ Control in reg. 55 is 0x%x\n", byte);
-		byte = 0x50;
-		printk_debug("Set IRQ Control in reg. 55 to 0x%x\n", byte);
-		pci_write_config_byte(dev, 0x55, byte);
-	}
-}
 
 void
 mainboard_fixup()
 {
 	printk_info("Mainboard fixup\n");
+
+	southbridge_fixup();
+	pci_routing_fixup();
 }
 
 void
@@ -68,7 +67,6 @@ final_southbridge_fixup()
 	keyboard_on();
 	southbridge_fixup();
 	pci_routing_fixup();
-	ethernet_fixup();
 }
 
 void

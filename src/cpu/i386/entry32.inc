@@ -20,22 +20,47 @@ EXT(gdtptr):
 	.long	gdt		 /* we know the offset */
 
 gdt:
+// selgdt 0
 	.word	0x0000, 0x0000		/* dummy */
 	.byte	0x00, 0x00, 0x00, 0x00
 
-	.word	0xffff, _cache_ram_seg_base_low	/* flat cache ram offset data segment */
+// selgdt 8
+/* flat cache ram offset data segment */
+	.word	0xffff, _cache_ram_seg_base_low	
 	.byte	_cache_ram_seg_base_middle, 0x93, 0xcf
 	.byte	_cache_ram_seg_base_high
 	
-	.word	0xffff, 0x0000		/* flat code segment */
+// selgdt 0x10 
+/* flat code segment */
+	.word	0xffff, 0x0000		
 	.byte	0x00, 0x9b, 0xcf, 0x00	
 	
-	.word	0xffff, 0x0000		/* flat data segment */
+//selgdt 0x18
+/* flat data segment */
+	.word	0xffff, 0x0000		
 	.byte	0x00, 0x93, 0xcf, 0x00	
 
-	.word	0xffff, _rom_code_seg_base_low		/* flat rom offset code segment */
+//selgdt 0x20
+/* flat rom offset code segment */
+	.word	0xffff, _rom_code_seg_base_low		
 	.byte	_rom_code_seg_base_middle, 0x9b, 0xcf
 	.byte	_rom_code_seg_base_high
+
+
+#if defined(CONFIG_VGABIOS) && (CONFIG_VGABIOS == 1)
+	// from monty:
+	/* 0x00009a00,0000ffffULL,   20h: 16-bit 64k code at 0x00000000 */
+        /* 0x00009200,0000ffffULL    28h: 16-bit 64k data at 0x00000000 */
+// selgdt 0x28
+/*16-bit 64k code at 0x00000000 */
+	.word 0xffff, 0x0000
+	.byte 0, 0x9a, 0, 0
+
+// selgdt 0x30
+/*16-bit 64k data at 0x00000000 */
+	.word 0xffff, 0x0000
+	.byte 0, 0x92, 0, 0
+#endif // defined(CONFIG_VGABIOS) && (CONFIG_VGABIOS == 1)
 gdt_end:
 	
 

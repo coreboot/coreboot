@@ -1,3 +1,14 @@
+#ifndef lint
+static char rcsid[] = "$Id$";
+#endif
+
+#include <pci.h>
+#include <pci_ids.h>
+#undef __KERNEL__
+#include <arch/io.h>
+#include <printk.h>
+#include <string.h>
+
 /* vgabios.c. Derived from: */
 
 /*------------------------------------------------------------ -*- C -*-
@@ -54,123 +65,78 @@
  *
  *  $Id$
  *--------------------------------------------------------------------*/
-
-/* andrey -- ugly */
-	memcpy(regions->addr, vgarom, 1024*64);
-	printk("copied region...");
-
-	//for(err = 0; err < 16; err++)
-	//	printk("0x%x ", *(regions->addr+err));
-	printk("\n");
-
-/* end andrey -- ugly */
+#if (CONFIG_VGABIOS == 1)
 
 
-#if defined(__i386__)
-/*-------------------------------------------------------------------------
- * Machine restart code - x86
- *-----------------------------------------------------------------------*/
-static unsigned long long
-real_mode_gdt_entries [] = {
-        0x0000000000000000ULL,  /* 00h: Null descriptor */
-	0x0000000000000000ULL,  /* 08h: Unused... */
-	0x00cf9a000000ffffULL,	/* 10h: 32-bit 4GB code at 0x00000000 */
-	0x00cf92000000ffffULL,	/* 18h: 32-bit 4GB data at 0x00000000 */
-        0x00009a000000ffffULL,  /* 20h: 16-bit 64k code at 0x00000000 */
-        0x000092000000ffffULL	/* 28h: 16-bit 64k data at 0x00000000 */
-};
-
-static struct {
-        unsigned short       size __attribute__ ((packed));
-        unsigned long long * base __attribute__ ((packed));
-}
-real_mode_gdt = { sizeof (real_mode_gdt_entries)-1, 0 },
-real_mode_idt = { 0x3ff, 0 };
-
-/*
-  Registers:
-  eax - scratch
-  ebx - memory list pointer
-  ecx - counter
-  edx - entry point
-  esi - scratch memcpy pointer
-  edi - scratch memcpy pointer
-  ebp - flags
- */
 /* The address arguments to this function are PHYSICAL ADDRESSES */ 
-static void real_mode_switch(struct monte_reloc_page_t *mem_list,
-			     void *entry,
-			     unsigned long flags) {
+static void real_mode_switch_call_vga(void)
+{
   __asm__ __volatile__
       (
        /* Now that our memcpy is done we can get to 16 bit code
 	* segment.  This configures CS properly for real mode. */
-       "    ljmp $0x20, $0x1000-(real_mode_switch_end - __rms_16bit) \n"
+       "    ljmp $0x28, $0x1000-(real_mode_switch_end - __rms_16bit) \n"
        "__rms_16bit:                 \n"
        ".code16                      \n" /* 16 bit code from here on... */
 
        /* Load the segment registers w/ properly configured segment
 	* descriptors.  They will retain these configurations (limits,
 	* writability, etc.) once protected mode is turned off. */
-       "    mov  $0x28, %%ax         \n"
-       "    mov  %%ax, %%ds          \n"
-       "    mov  %%ax, %%es          \n"
-       "    mov  %%ax, %%fs          \n"
-       "    mov  %%ax, %%gs          \n"
-       "    mov  %%ax, %%ss          \n"
+       "    mov  $0x30, %ax         \n"
+       "    mov  %ax, %ds          \n"
+       "    mov  %ax, %es          \n"
+       "    mov  %ax, %fs          \n"
+       "    mov  %ax, %gs          \n"
+       "    mov  %ax, %ss          \n"
 
        /* Turn off protection (bit 0 in CR0) */
-       "    movl %%cr0, %%eax        \n"
-       "    andl $0xFFFFFFFE, %%eax  \n"
-       "    movl %%eax, %%cr0        \n"
+       "    movl %cr0, %eax        \n"
+       "    andl $0xFFFFFFFE, %eax  \n"
+       "    movl %eax, %cr0        \n"
 
        /* Now really going into real mode */
        "    ljmp $0, $0x1000-(real_mode_switch_end - __rms_real) \n"
        "__rms_real:                  \n"
 
        /* Setup a stack */
-       "    mov  $0x9000, %%ax       \n"
-       "    mov  %%ax, %%ss          \n"
-       "    mov  $0xAFFE, %%ax       \n"
-       "    mov  %%ax, %%sp          \n"
+       "    mov  $0x9000, %ax       \n"
+       "    mov  %ax, %ss          \n"
+       "    mov  $0xAFFE, %ax       \n"
+       "    mov  %ax, %sp          \n"
  	/* ebugging for RGM */
-       "    mov $0x11, %%al	\n"
-	" outb	%%al, $0x80\n"
+       "    mov $0x11, %al	\n"
+	" outb	%al, $0x80\n"
 
        /* Dump zeros in the other segregs */
-       "    xor  %%ax, %%ax          \n"
-       "    mov  %%ax, %%ds          \n"
-       "    mov  %%ax, %%es          \n"
-       "    mov  %%ax, %%fs          \n"
-       "    mov  %%ax, %%gs          \n"
-
-       "    sti                      \n" /* Enable interrupts */
-
-       /* Try and sanitize the video hardware state. */
-       "    mov  $0x0003, %%ax       \n"	/* Ask for 80x25 */
-       "    int  $0x10               \n"
+       "    xor  %ax, %ax          \n"
+       "    mov  %ax, %ds          \n"
+       "    mov  %ax, %es          \n"
+       "    mov  %ax, %fs          \n"
+       "    mov  %ax, %gs          \n"
 	" .byte 0x9a, 0x03, 0, 0, 0xc0  \n"
-	" movb $0x55, %%al\noutb %%al, $0x80\n"
-       
-#if 0
-       "    push %%edx               \n" /* Kludge to do far jump */
-       "    lret                     \n"
-#endif
-
-       /*"    jmp *%%edx               \n"*/
-       /*"    ljmp $0x9020, $0x0000    \n"*/
-#if 0
-       /* Debugging tools... */
-       "    .byte 0xcc               \n" /* XXX DEBUG triple fault XXXX */
-       "    .byte 0xeb, 0xfe         \n" /* XXX DEBUG wedge XXXXX */
-#endif
-       ".code32                      \n" /* Restore mode for rest of file */
-       : : "m" (mem_list), "m" (entry), "m" (flags));
+	" movb $0x55, %al\noutb %al, $0x80\n"
+       /* if we got here, just about done. 
+	* Need to get back to protected mode */
+       "movl	%cr0, %eax\n"
+       "andl	$0x7FFAFFD1, %eax\n" /* PG,AM,WP,NE,TS,EM,MP = 0 */
+	"orl	$0x60000001, %eax\n" /* CD, NW, PE = 1 */
+       "movl	%eax, %cr0\n"
+	/* Now that we are in protected mode jump to a 32 bit code segment. */
+       "data32	ljmp	$0x10, $vgarestart\n"
+       "vgarestart:\n"
+       ".code32\n"
+       "    movw $0x18, %ax          \n"
+       "    mov  %ax, %ds          \n"
+       "    mov  %ax, %es          \n"
+       "    mov  %ax, %fs          \n"
+       "    mov  %ax, %gs          \n"
+       "ret\n"
+       );
 }
 __asm__ (".text\n""real_mode_switch_end:\n");
 extern char real_mode_switch_end[];
 
-
+#if 0
 //static
 int monte_restart(unsigned long entry_addr, unsigned long flags) {
     void * ptr;
@@ -199,34 +165,35 @@ int monte_restart(unsigned long entry_addr, unsigned long flags) {
     /* NOT REACHED */
     while(1);			/* Shut up gcc. */
 }
-#endif /* defined(__i386__) */
+#endif
+void
+do_vgabios(void)
+{
+  struct pci_dev *dev;
+  unsigned int rom = 0;
+  unsigned char *buf;
+  int i;
 
+  dev = pci_find_class(PCI_CLASS_DISPLAY_VGA <<8, NULL);
 
-	/* andrey stuff starts here */
-	{
-	struct pci_dev *dev;
-	unsigned int rom = 0;
-        unsigned char *buf;
+  if (! dev) {
+    printk_debug("NO VGA FOUND\n");
+    return;
+  }
+  printk_debug("found VGA: vid=%ux, did=%ux\n", dev->vendor, dev->device);
+  pci_read_config_dword(dev, PCI_ROM_ADDRESS, &rom);
+  // paranoia
+  rom &= ~1;
+  pci_write_config_dword(dev, PCI_ROM_ADDRESS, rom|1);
+  printk_debug("rom base, size: %x\n", rom);
+  buf = (unsigned char *) rom;
+  memcpy((void *) 0xc0000, buf, 64*1024);
 
+  for(i = 0; i < 16; i++)
+    printk_debug("0x%x ", buf[i]);
+  pci_write_config_dword(dev, PCI_ROM_ADDRESS, rom);
+  // check signature here later!
+  real_mode_switch_call_vga();
+}
 
-	dev = pci_find_class(PCI_CLASS_DISPLAY_VGA <<8, NULL);
-	printk("found VGA: vid=%ux, did=%ux\n", dev->vendor, dev->device);
-	pci_read_config_dword(dev, PCI_ROM_ADDRESS, &rom);
-	// paranoia
-	rom &= ~1;
-	pci_write_config_byte(dev, PCI_ROM_ADDRESS, 1);
-	printk("rom base, size: %x\n", rom);
-	buf = ioremap(rom, sizeof(vgarom));
-	printk("buf is %p\n" ,buf);
-	if (buf) {
-		int i;
-		memcpy(vgarom, buf, sizeof(vgarom));
-		iounmap(buf);
-		for(i = 0; i < 16; i++)
-			printk("0x%x ", vgarom[i]);
-		printk("\n");
-	}
-	pci_write_config_byte(dev, PCI_ROM_ADDRESS, 0);
-	printk("done...");
-	}
-
+#endif // (CONFIG_VGABIOS == 1)

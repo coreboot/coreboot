@@ -23,16 +23,9 @@
 
 extern void intel_post(char value);
 
-#define DEBUG
 #define ERRCHK
 #undef TRACEV
 #define MALLOCDBG 
-
-#ifdef DEBUG
-#define DBG(x...) printk(KERN_DEBUG x)
-#else
-#define DBG(x...)
-#endif
 
 /*
  * gzip declarations

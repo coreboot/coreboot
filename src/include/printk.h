@@ -15,4 +15,10 @@
 extern int console_loglevel;
 int printk(const char *fmt, ...);
 
+#ifdef DEBUG
+#define DBG(x...) printk(KERN_DEBUG x)
+#else
+#define DBG(x...)
+#endif
+
 #endif

@@ -36,10 +36,10 @@ static char rcsid[] = "$Id$";
 #include <cpu/p6/msr.h>
 #include <cpu/p6/mtrr.h>
 #include <cpu/p5/cpuid.h>
-#include <printk.h>
 
 /* Include debugging code and outputs */
 #define DEBUG
+#include <printk.h>
 
 static int signal_l2(unsigned int address_high,
 		     unsigned int address_low,
@@ -58,12 +58,6 @@ static int set_l2_register4(int l);
 static int calculate_l2_cache_size(void);
 static int calculate_l2_physical_address_range(void);
 static int calculate_l2_ecc(void);
-
-#ifdef DEBUG
-#define DBG(x...) printk(KERN_DEBUG x)
-#else
-#define DBG(x...)
-#endif
 
 static void cache_disable(void)
 {

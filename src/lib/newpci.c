@@ -19,12 +19,6 @@ static char rcsid[] = "$Id$";
 #include <cpu/p5/io.h>
 #include <printk.h>
 
-#ifdef DEBUG
-#define DBG(x...) printk(KERN_DEBUG x)
-#else
-#define DBG(x...)
-#endif
-
 #define ONEMEG (1 << 20)
 
 #define PCI_MEM_START 0x80000000

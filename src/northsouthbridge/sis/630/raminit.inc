@@ -70,6 +70,10 @@ write_common:
 	outb	%al, %dx
 	ret					# End of write_[lpc|pci]_reg
 
+#ifdef SIS630S
+#include "630s_regs.inc"
+#else /* !SIS630S */
 #include "630_regs.inc"
+#endif
 
 register_setting_end:

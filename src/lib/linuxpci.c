@@ -20,15 +20,8 @@ static char rcsid[] = "$Id$";
 #include <types.h>
 
 extern void intel_post(unsigned char value);
-#define DEBUG
+
 #undef DEBUGSCAN
-
-#ifdef DEBUG
-#define DBG(x...) printk(KERN_DEBUG x)
-#else
-#define DBG(x...)
-#endif
-
 #ifdef DEBUGSCAN
 #define DBGSCAN(x...) printk(KERN_DEBUG x)
 #else

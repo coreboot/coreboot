@@ -41,32 +41,31 @@ void enable_floppy()
 void
 enable_com(int com)
 {
-    unsigned char b;
-    /* now set the LDN to com LDN */
-    outb(0x7, 0x2e);	/* pick reg. 7 */
-    outb(com, 0x2f);	/* LDN 0 to reg. 7 */
+	unsigned char b;
+	/* now set the LDN to com LDN */
+	outb(0x7, 0x2e);	/* pick reg. 7 */
+	outb(com, 0x2f);	/* LDN 0 to reg. 7 */
 
-    /* now select register 0x30, and set bit 1 in that register */
-    outb(0x30, 0x2e);
-    outb(0x1, 0x2f);
+	/* now select register 0x30, and set bit 1 in that register */
+	outb(0x30, 0x2e);
+	outb(0x1, 0x2f);
 
-    /* set CLKIN frequence to 24 MHZ */
-    outb(0x24, 0x2e);
-    b = inb(0x2f) | 0xfd;
-    outb(0x24, 0x2e);
-    outb(b, 0x2f);
+	/* set CLKIN frequence to 24 MHZ */
+	outb(0x24, 0x2e);
+	b = inb(0x2f) | 0xfd;
+	outb(0x24, 0x2e);
+	outb(b, 0x2f);
 }
 
 void
 final_superio_fixup()
 {
-
-    enter_pnp();
+	enter_pnp();
 #ifdef MUST_ENABLE_FLOPPY
-    enable_floppy();
+	enable_floppy();
 #endif
-    enable_com(PNP_COM1_DEVICE);
-    enable_com(PNP_COM2_DEVICE);
+	enable_com(PNP_COM1_DEVICE);
+	enable_com(PNP_COM2_DEVICE);
 
-    exit_pnp();
+	exit_pnp();
 }

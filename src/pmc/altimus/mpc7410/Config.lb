@@ -1,0 +1,14 @@
+##
+## CPU initialization
+##
+initinclude "EARLY_INIT" pmc/altimus/mpc7410/mpc7410.inc
+
+##
+## Include the secondary Configuration files 
+##
+northbridge motorola/mpc107 end
+
+##
+## Build the objects we have code for in this directory.
+##
+object mpc7410.o

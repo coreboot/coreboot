@@ -1,0 +1,21 @@
+##
+## Config file for the Motorola Sandpoint III development system.
+## Note that this has only been tested with the Altimus 7410 PMC.
+##
+
+##
+## Include the secondary Configuration files 
+##
+southbridge winbond/w83c553 end
+superio NSC/pc97307 
+	register "com1={1} com2={1} floppy=0 lpt=1 keyboard=1 hwmonitor=1"
+end
+
+##
+## Build the objects we have code for in this directory.
+##
+#object hardwaremain.o
+object sandpoint.o
+
+dir nvram
+dir flash

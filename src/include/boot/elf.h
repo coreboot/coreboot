@@ -397,6 +397,6 @@ extern int elfboot(struct stream *stream, struct lb_memory *mem);
 
 #define FIRMWARE_TYPE "LinuxBIOS"
 #define BOOTLOADER "elfboot"
-#define BOOTLOADER_VERSION "1.0"
+#define BOOTLOADER_VERSION "1.1"
 
 #endif	/* elf.h */

@@ -297,6 +297,11 @@ int elfboot(struct stream *stream, struct lb_memory *mem)
 	head->next = head->prev = head;
 	for(i = 0; i < ehdr->e_phnum; i++) {
 		struct segment *new;
+		/* Ignore data that I don't need to handle */
+		if (phdr[i].p_type != PT_LOAD)
+			continue;
+		if (phdr[i].p_memsz == 0)
+			continue;
 		new = malloc(sizeof(*new));
 		new->s_addr = phdr[i].p_paddr;
 		new->s_memsz = phdr[i].p_memsz;
@@ -335,10 +340,10 @@ int elfboot(struct stream *stream, struct lb_memory *mem)
 		unsigned long skip_bytes, read_bytes;
 		unsigned char *dest, *middle, *end;
 		byte_offset_t result;
-		printk_debug("Loading Section: addr: 0x%016lx memsz: 0x%016lx filesz: 0x%016lx\n",
+		printk_debug("Loading Segment: addr: 0x%016lx memsz: 0x%016lx filesz: 0x%016lx\n",
 			ptr->s_addr, ptr->s_memsz, ptr->s_filesz);
 
-		/* Compute the boundaries of the section */
+		/* Compute the boundaries of the segment */
 		dest = (unsigned char *)(ptr->s_addr);
 		end = dest + ptr->s_memsz;
 		middle = dest + ptr->s_filesz;
@@ -382,7 +387,7 @@ int elfboot(struct stream *stream, struct lb_memory *mem)
 			dest += len;
 		}
 		
-		/* Read the section into memory */
+		/* Read the segment into memory */
 		read_bytes = middle - dest;
 		if (read_bytes && 
 			((result = stream->read(dest, read_bytes)) != read_bytes)) {
@@ -394,7 +399,7 @@ int elfboot(struct stream *stream, struct lb_memory *mem)
 
 		/* Zero the extra bytes between middle & end */
 		if (middle < end) {
-			printk_debug("Clearing Section: addr: 0x%016lx memsz: 0x%016lx\n",
+			printk_debug("Clearing Segment: addr: 0x%016lx memsz: 0x%016lx\n",
 				(unsigned long)middle, end - middle);
 
 			/* Zero the extra bytes */

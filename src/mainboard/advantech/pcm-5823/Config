@@ -42,10 +42,11 @@ option GX_BASE=0x40000000
 ########################################################################
 # Southbridge configuration
 
-option CS5530_INTA=9
-option CS5530_INTB=10
-option CS5530_INTC=11
-option CS5530_INTD=15
+# no need to assign INTA-D, since it is done by pirq table
+# option CS5530_INTA=9
+# option CS5530_INTB=10
+# option CS5530_INTC=11
+# option CS5530_INTD=15
 
 option CS5530_PRIMARY_IDE=1
 option CS5530_SECONDARY_IDE=1

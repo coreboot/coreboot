@@ -75,6 +75,7 @@ void final_southbridge_fixup()
 		return;
 	}
 
+#if !(HAVE_PIRQ_TABLE)
 	pci_read_config_word(dev, 0x5c, &int_map);
 	printk_debug("F0/5c: 0x%04x\n", int_map);
 	inta = CS5530_INTA;
@@ -101,7 +102,7 @@ void final_southbridge_fixup()
 	outb(trig >> 8, 0x4d1);
 	printk_debug("4d0: 0x%02x\n", inb(0x4d0));
 	printk_debug("4d1: 0x%02x\n", inb(0x4d1));
-
+#endif
 	pci_read_config_byte(dev, 0x5b, &b);
 	printk_debug("F0/5b = 0x%02x\n", b);
 #ifdef CS5530_PRIMARY_IDE
@@ -115,11 +116,13 @@ void final_southbridge_fixup()
 	printk_debug("F0/5b = 0x%02x\n", b);
 	pci_write_config_byte(dev, 0x5b, b);
 
+#if !(HAVE_PIRQ_TABLE)
 	dev = pci_find_slot(0, PCI_DEVFN(0x13, 0));
 	if (dev) {
 		printk_debug(NAME "USB is on INTA, IRQ %d\n", inta);
 		pci_write_config_byte(dev, PCI_INTERRUPT_LINE, inta);
 	}
+#endif
 }
 
 /*

@@ -1,7 +1,7 @@
 #!/bin/bash
 # arg1 is the linuxbios.strip to use. default is linuxbios.strip
 # arg2 is the stripped, gzipp'ed kernel. Default is vmlinux.bin.gz
-# the old script that does insmod by hand is in burn_mtd.old
+v=`uname -r`
 rmmod docprobe
 rmmod doc2001
 rmmod docecc
@@ -20,8 +20,9 @@ fi
 
 flash_on
 
-modprobe doc2001
-modprobe docprobe
+insmod /lib/modules/${v}/kernel/drivers/mtd/docecc.o
+insmod /lib/modules/${v}/kernel/drivers/mtd/doc2001.o
+insmod /lib/modules/${v}/kernel/drivers/mtd/docprobe.o
 
 dd conv=notrunc conv=sync bs=65536 if=${linux} of=vmlinux.bin.gz.block
 dd conv=notrunc conv=sync bs=63k if=${linuxbios} of=linuxbios.block

@@ -68,8 +68,8 @@ target VENDOR_MAINBOARD
 mainboard VENDOR/MAINBOARD
 
 option CC="CROSSCC"
-# not supported yet
-# option LD="CROSSLD"
+option CROSS_COMPILE="CROSS_PREFIX"
+option HOSTCC="CROSS_HOSTCC"
 
 romimage "normal"
 	option USE_FALLBACK_IMAGE=0
@@ -91,7 +91,8 @@ EOF
 		-e s,MAINBOARD,$MAINBOARD,g \
 		-e s,PAYLOAD,$PAYLOAD,g \
 		-e s,CROSSCC,"$CC",g \
-		-e s,CROSSLD,"$LD",g \
+		-e s,CROSS_PREFIX,"$CROSS_COMPILE",g \
+		-e s,CROSS_HOSTCC,"$HOSTCC",g \
 		> $TARGET/Config-${VENDOR}_${MAINBOARD}.lb
 	echo " ok"
 }
@@ -185,8 +186,9 @@ function build_target
 
 	# default setting
 	CC="gcc"
-	LD="ld"
-	
+	HOSTCC="gcc"
+	CROSS_COMPILE=""
+
 	echo -n "Processing mainboard/$VENDOR/$MAINBOARD"
 	
 	if [ "$ARCH" == "$TARCH" ]; then
@@ -203,6 +205,14 @@ function build_target
 			found_crosscompiler=true
 			echo " ($TARCH: subset of $ARCH)"
 		fi
+		if [ "$found_crosscompiler" == "false" -a "$TARCH" == ppc ] ;then
+			for prefix in powerpc-linux- ; do
+				if ${prefix}gcc --version > /dev/null 2> /dev/null ; then
+					found_crosscompiler=true
+					CROSS_COMPILE=$prefix
+				fi
+			done
+		fi
 
 		# TBD: look for suitable cross compiler suite
 		# cross-$TARCH-gcc and cross-$TARCH-ld
@@ -211,6 +221,8 @@ function build_target
 		if [ $found_crosscompiler == "false" ]; then
 			echo " ($TARCH: skipped, we're $ARCH)"
 			return 0
+		else
+			echo " ($TARCH: ok)"
 		fi
 	fi
 	
@@ -283,16 +295,16 @@ fi
 echo "LBROOT=$LBROOT"
 
 if [ "$target" != "" ]; then
-  # build a single board
-  VENDOR=`echo $target|tr -d \'|cut -f1 -d/`
-  MAINBOARD=`echo $target|tr -d \'|cut -f2 -d/`
-  build_target $VENDOR $MAINBOARD
+	# build a single board
+	VENDOR=`echo $target|tr -d \'|cut -f1 -d/`
+	MAINBOARD=`echo $target|tr -d \'|cut -f2 -d/`
+	build_target $VENDOR $MAINBOARD
 else
-  # build all boards per default
-  for VENDOR in $( vendors ); do
-    for MAINBOARD in $( mainboards $VENDOR ); do
-  	build_target $VENDOR $MAINBOARD
-    done
-  done
+	# build all boards per default
+	for VENDOR in $( vendors ); do
+		for MAINBOARD in $( mainboards $VENDOR ); do
+			build_target $VENDOR $MAINBOARD
+		done
+	done
 fi
 

@@ -154,7 +154,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
-#include "resourcemap.c"	/* quartet does not want the default */
+/* quartet does not want the default */
+#include "resourcemap.c"
 
 #define RC0 ((1<<1)<<8)
 #define RC1 ((1<<2)<<8)

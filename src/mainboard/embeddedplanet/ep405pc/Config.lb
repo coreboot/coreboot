@@ -2,33 +2,6 @@
 ## Config file for the Embedded Planet EP405PC Computing Engine
 ##
 
-uses PCIC0_CFGADDR 
-uses PCIC0_CFGDATA 
-uses ISA_IO_BASE 
-uses ISA_MEM_BASE 
-uses TTYS0_BASE 
-uses _IO_BASE 
-
-##
-## Set PCI configuration register addresses
-##
-default PCIC0_CFGADDR=0xeec00000
-default PCIC0_CFGDATA=0xeec00004
-
-##
-## Set PCI/ISA I/O and memory base address
-##
-default ISA_IO_BASE=0xe8000000
-default ISA_MEM_BASE=0x80000000
-default _IO_BASE=ISA_IO_BASE
-
-##
-## HACK ALERT: the UART0 registers are not in the PCI I/O address space
-## but both IDE and UART use the same routines for I/O (inb/outb). To get 
-## around this we set TTYSO_BASE to the difference between the two.
-##
-default TTYS0_BASE=0xef600300-ISA_IO_BASE
-
 ##
 ## Early board initialization, called from ppc_main()
 ##

@@ -16,11 +16,12 @@ static void do_amd_early_mtrr_init(const unsigned long *mtrr_msrs)
         msr_t msr;
         const unsigned long *msr_addr;
         unsigned long cr0;
-
+#if 0
         /* Enable the access to AMD RdDram and WrDram extension bits */
         msr = rdmsr(SYSCFG_MSR);
         msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
         wrmsr(SYSCFG_MSR, msr);
+#endif
 
         /* Inialize all of the relevant msrs to 0 */
         msr.lo = 0;
@@ -29,11 +30,12 @@ static void do_amd_early_mtrr_init(const unsigned long *mtrr_msrs)
         for(msr_addr = mtrr_msrs; (msr_nr = *msr_addr); msr_addr++) {
                 wrmsr(msr_nr, msr);
         }
-
+#if 0
         /* Disable the access to AMD RdDram and WrDram extension bits */
         msr = rdmsr(SYSCFG_MSR);
         msr.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
         wrmsr(SYSCFG_MSR, msr);
+#endif
 
         /* Enable memory access for 0 - 1MB using top_mem */
         msr.hi = 0;

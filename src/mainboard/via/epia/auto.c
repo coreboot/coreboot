@@ -16,7 +16,7 @@
 void udelay(int usecs) {
   int i;
   for(i = 0; i < usecs; i++)
-    outb(0x80, 0x80);
+    outb(i&0xff, 0x80);
 }
 
 #include "lib/delay.c"

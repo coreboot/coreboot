@@ -1,5 +1,5 @@
-OBJS = jedec.o sst28sf040.o am29f040b.o mx29f002.c
-CC = gcc -O2
+OBJS = jedec.o sst28sf040.o am29f040b.o mx29f002.c sst39sf020.o
+CC = gcc -O2 -g
 
 all: ${OBJS}
 	${CC} -o flash_rom flash_rom.c ${OBJS}

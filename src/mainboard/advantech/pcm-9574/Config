@@ -33,6 +33,8 @@ object mainboard.o
 object irq_tables.o
 
 option UPDATE_MICROCODE
+option PAYLOAD_SIZE=196608
+
 
 cpu p6
 cpu p5

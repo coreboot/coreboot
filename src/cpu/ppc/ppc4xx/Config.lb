@@ -22,4 +22,5 @@ initobject clock.c
 
 object mem.o
 object clock.o
+object cache.S
 

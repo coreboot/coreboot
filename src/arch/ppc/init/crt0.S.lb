@@ -11,6 +11,8 @@
 _start:
 	b	system_reset
 
+.section ".rom.exception_vectors", "ax", @progbits
+
 %%EXCEPTION_VECTOR_TABLE%%
 
 .section ".rom.data", "a", @progbits
@@ -18,38 +20,95 @@ _start:
 
 system_reset:
 
-%%EARLY_INIT%%
-
-start_payload:
 	/*
-	 * Relocate payload (text & data) to ram
+	 * Do processor family initialization
 	 */
-	lis     r3, _liseg@ha
-	addi    r3, r3, _liseg@l
-	lis     r4, _iseg@ha
-	addi    r4, r4, _iseg@l
+%%FAMILY_INIT%%
 
 	/*
-	 * Skip if they're the same
+	 * Do processor specific initialization
 	 */
-	cmp     0, 0, r3, r4
-	beq     1f
+%%PROCESSOR_INIT%%
 
-	lis     r7, _eliseg@ha
-	addi    r7, r7, _eliseg@l
-
-2:
-	lwzx	r5, 0, r3
-	stwx	r5, 0, r4
-	addi    r3, r3, 4
-	addi    r4, r4, 4
-	cmp     0, 0, r3, r7
-	ble     2b
-
-1:
+#if USE_DCACHE_RAM == 1
+#define DCACHE_RAM_END	(DCACHE_RAM_BASE + DCACHE_RAM_SIZE - 1)
 	/*
-	 * Start payload
+	 * Setup stack in cache
 	 */
-	b  	_iseg
+	lis     r1, DCACHE_RAM_END@ha
+	addi    r1, r1, DCACHE_RAM_END@l
+	stwu    r0,-64(r1) 
+	stwu    r1,-24(r1) 
+
+	/*
+	 * Clear stack
+	 */
+	lis	r4, DCACHE_RAM_BASE@ha
+	addi	r4, r4, DCACHE_RAM_BASE@l
+	lis	r7, DCACHE_RAM_END@ha
+	addi	r7, r7, DCACHE_RAM_END@l
+	lis	r5, 0
+1:	stwx	r5, 0, r4
+	addi	r4, r4, 4
+	cmp	0, 0, r4, r7
+	ble	1b
+	sync
+
+	/*
+	 * Set up the EABI pointers, before we enter any C code
+	 */
+	lis     r13, _SDA_BASE_@ha
+	addi    r13, r13, _SDA_BASE_@l
+	lis     r2, _SDA2_BASE_@ha
+	addi    r2, r2, _SDA2_BASE_@l
+
+	/*
+	 * load start address into SRR0 for rfi
+	 */
+	lis	r3, ppc_main@ha
+	addi	r3, r3, ppc_main@l
+	mtspr	SRR0, r3
+
+	/*
+	 * load the current MSR into SRR1 so that it will be copied 
+	 * back into MSR on rfi
+	 */
+	mfmsr	r4
+	mtspr	SRR1, r4	// load SRR1 with r4
+
+	/*
+	 * If something returns after rfi then die
+	 */
+	lis	r3, dead@ha
+	addi	r3, r3, dead@l
+	mtlr	r3
+
+	/*
+	 * Complete rest of initialization in C (ppc_main)
+	 */
+	rfi
+#endif /* USE_DCACHE_RAM */
+
+	/*
+	 * Stop here if something goes wrong
+	 */
+dead:
+	b	dead
+	/*NOTREACHED*/
+
+/* Remove need for ecrti.o and ectrn.o */
+.globl __init
+__init:
+.globl __fini
+__fini:
+.globl __CTOR_LIST__
+__CTOR_LIST__:
+.globl __CTOR_END__
+__CTOR_END__:
+.globl __DTOR_LIST__
+__DTOR_LIST__:
+.globl __DTOR_END__
+__DTOR_END__:
+        blr
 
 %%NORTHBRIDGE_INIT%%

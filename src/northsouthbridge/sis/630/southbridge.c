@@ -57,28 +57,6 @@ void nvram_on()
 		pci_write_config_word(pcidev, 0x72, 0x1fff);
 	}
 }
-/* turn on the floppy. On some chipsets you have to do this. */
-#ifdef MUST_ENABLE_FLOPPY
-void enable_floppy()
-{
-	/* unlock it XXX make this a subr at some point */
-	outb(0x87, 0x2e);
-	outb(0x01, 0x2e);
-	outb(0x55, 0x2e);
-	outb(0x55, 0x2e);
-
-	/* now set the LDN to floppy LDN */
-	outb(0x7, 0x2e);	/* pick reg. 7 */
-	outb(0x0, 0x2f);	/* LDN 0 to reg. 7 */
-
-	/* now select register 0x30, and set bit 1 in that register */
-	outb(0x30, 0x2e);
-	outb(0x1, 0x2f);
-
-	/* all done. */
-	outb(1, 0x2e);
-}
-#endif /* MUST_ENABLE_FLOPPY */
 
 // simple fixup (which we hope can leave soon) for the sis southbridge part
 void

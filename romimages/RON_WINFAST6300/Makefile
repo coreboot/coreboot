@@ -19,7 +19,7 @@ CFLAGS=$(INCLUDES) -O2 $(CPUFLAGS) -Ilinux/include -Wall
 
 OBJECTS=crt0.o hardwaremain.o linuxbiosmain.o 
 OBJECTS += mainboard.o mtrr.o subr.o fill_inbuf.o params.o
-OBJECTS += southbridge.o northbridge.o
+OBJECTS += southbridge.o northbridge.o superio.o
 #OBJECTS += pci.o
 OBJECTS += printk.o vsprintf.o
 OBJECTS += newpci.o linuxpci.o
@@ -93,6 +93,9 @@ southbridge.o: $(TOP)/src/northsouthbridge/sis/630/southbridge.c
 	cc $(CFLAGS) -c $<
 
 northbridge.o: $(TOP)/src/northsouthbridge/sis/630/northbridge.c
+	cc $(CFLAGS) -c $<
+
+superio.o: $(TOP)/src/superio/sis/950/superio.c
 	cc $(CFLAGS) -c $<
 
 pci.o:  $(TOP)/src/lib/pci.c

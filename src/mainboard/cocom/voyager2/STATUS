@@ -1,0 +1,27 @@
+# These are keyword-value pairs. 
+# a : separates the keyword from the value 
+# the value is arbitrary text delimited by newline. 
+# continuation, if needed, will be via the \ at the end of a line
+# comments are indicated by a '#' as the first character. 
+# the keywords are case-INSENSITIVE
+owner:	Ron Minnich
+email:	rminnich@lanl.gov
+#status: One of unsupported, unstable, stable
+status: unstable
+explanation: 
+flash-types: 
+payload-types: 
+# e.g. linux, plan 9, wince, etc.
+OS-types: 
+# e.g. "Plan 9 interrupts don't work on this chipset"
+OS-issues:
+console-types:
+# vga is unsupported, unstable, or stable
+vga:
+# Last-known-good follows the internationl date standard: day/month/year
+last-known-good: 0/0/0000
+Comments: 
+Links:
+Mainboard-revision: 
+# What other mainboards are like this one? List them here. 
+AKA: 

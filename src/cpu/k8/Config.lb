@@ -1,4 +1,5 @@
 uses CPU_FIXUP
 if CPU_FIXUP
   object cpufixup.o
+  object apic_timer.o
 end

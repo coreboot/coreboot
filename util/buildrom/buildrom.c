@@ -55,8 +55,11 @@ main(int argc, char *argv[]) {
 
 	if (fstat(infd, &inbuf) < 0)
 		fatal("stat of infile");
-	if (inbuf.st_size > size) 
-		fatal("input file larger than allowed size!\n");
+	if (inbuf.st_size > size)  {
+		fprintf(stderr, "linuxbios image is %d bytes; only %d allowed\n",
+				inbuf.st_size, size);
+		fatal("Linuxbios input file larger than allowed size!\n");
+	}
 
 	if (fstat(payloadfd, &payloadbuf) < 0)
 		fatal("stat of infile");

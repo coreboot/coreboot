@@ -1,44 +1,37 @@
 /* Copyright 2000  AG Electronics Ltd. */
 /* This code is distributed without warranty under the GPL v2 (see COPYING) */
 
-#include <types.h>
 #include <arch/io.h>
+#include <device/chip.h>
+#include "chip.h"
 
-#ifndef PNP_INDEX_REG
-#define PNP_INDEX_REG	0x15C
-#endif
-#ifndef PNP_DATA_REG
-#define PNP_DATA_REG	0x15D
-#endif
-#ifndef SIO_COM1
-#define SIO_COM1_BASE	0x3F8
-#endif
-#ifndef SIO_COM2
-#define SIO_COM2_BASE	0x2F8
-#endif
-
-static
 void pnp_output(char address, char data)
 {
-    outb(address, PNP_INDEX_REG);
-    outb(data, PNP_DATA_REG);
+	outb(address, PNP_INDEX_REG);
+	outb(data, PNP_DATA_REG);
 }
 
-static
-void sio_enable(void)
+void sio_enable(struct chip *chip, enum chip_pass pass)
 {
-    /* Enable Super IO Chip */
-    pnp_output(0x07, 6); /* LD 6 = UART1 */
-    pnp_output(0x30, 0); /* Dectivate */
-    pnp_output(0x60, SIO_COM1_BASE >> 8); /* IO Base */
-    pnp_output(0x61, SIO_COM1_BASE & 0xFF); /* IO Base */
-    pnp_output(0x30, 1); /* Activate */
+
+	struct superio_NSC_pc87360_config *conf = (struct superio_NSC_pc87360_config *)chip->chip_info;
+
+	switch (pass) {
+	case CHIP_PRE_CONSOLE:
+		/* Enable Super IO Chip */
+		pnp_output(0x07, 6); /* LD 6 = UART1 */
+		pnp_output(0x30, 0); /* Dectivate */
+		pnp_output(0x60, conf->port >> 8); /* IO Base */
+		pnp_output(0x61, conf->port & 0xFF); /* IO Base */
+		pnp_output(0x30, 1); /* Activate */
+		break;
+	default:
+		/* nothing yet */
+		break;
+	}
 }
 
-struct superio_control superio_NSC_pc87360_control = {
-	pre_pci_init:   (void *)0,
-	init:           (void *)0,
-	finishup:       (void *)0,
-	defaultport:    SIO_COM1_BASE,
-	name:           "NSC pc87360"
+struct chip_control superio_NSC_pc87360_control = {
+	enable: sio_enable,
+	name:   "NSC 87360"
 };

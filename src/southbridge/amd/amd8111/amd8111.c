@@ -15,7 +15,7 @@ void amd8111_enable(device_t dev)
 	/* See if we are on the behind the amd8111 pci bridge */
 	bus_dev = dev->bus->dev;
 	if ((bus_dev->vendor == PCI_VENDOR_ID_AMD) && 
-		(bus_dev->device == PCI_DEVICE_ID_AMD_8111_PCI)) {
+	    (bus_dev->device == PCI_DEVICE_ID_AMD_8111_PCI)) {
 		unsigned devfn;
 		devfn = bus_dev->path.u.pci.devfn + (1 << 3);
 		lpc_dev = dev_find_slot(bus_dev->bus->secondary, devfn);
@@ -26,11 +26,12 @@ void amd8111_enable(device_t dev)
 		lpc_dev = dev_find_slot(dev->bus->secondary, devfn);
 		index = dev->path.u.pci.devfn & 7;
 	}
+
 	if ((!lpc_dev) || (index >= 16)) {
 		return;
 	}
 	if ((lpc_dev->vendor != PCI_VENDOR_ID_AMD) ||
-		(lpc_dev->device != PCI_DEVICE_ID_AMD_8111_ISA)) {
+	    (lpc_dev->device != PCI_DEVICE_ID_AMD_8111_ISA)) {
 		uint32_t id;
 		id = pci_read_config32(lpc_dev, PCI_VENDOR_ID);
 		if (id != (PCI_VENDOR_ID_AMD | (PCI_DEVICE_ID_AMD_8111_ISA << 16))) {
@@ -48,6 +49,6 @@ void amd8111_enable(device_t dev)
 }
 
 struct chip_control southbridge_amd_amd8111_control = {
-	.name       = "AMD 8111",
+	.name       = "AMD 8111 Southbridge",
 	.enable_dev = amd8111_enable,
 };

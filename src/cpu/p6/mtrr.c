@@ -99,7 +99,7 @@ static void intel_set_var_mtrr(unsigned int reg, unsigned long basek, unsigned l
 	base.hi = basek >> 22;
 	base.lo  = basek << 10;
 
-       //printk_debug("ADDRESS_MASK_HIGH=%#x\n", ADDRESS_MASK_HIGH);
+	//printk_debug("ADDRESS_MASK_HIGH=%#x\n", ADDRESS_MASK_HIGH);
 
 	if (sizek < 4*1024*1024) {
 		mask.hi = ADDRESS_MASK_HIGH;
@@ -219,7 +219,7 @@ static void set_fixed_mtrrs(unsigned int first, unsigned int last, unsigned char
 	unsigned int fixed_msr = NUM_FIXED_RANGES >> 3;
 	msr_t msr;
 	msr.lo = msr.hi = 0; /* Shut up gcc */
-	for(i = first; i < last; i++) {
+	for (i = first; i < last; i++) {
 		/* When I switch to a new msr read it in */
 		if (fixed_msr != i >> 3) {
 			/* But first write out the old msr */
@@ -304,12 +304,12 @@ void setup_mtrrs(struct mem_range *mem)
 	printk_debug("\n");
 	/* Initialized the fixed_mtrrs to uncached */
 	printk_debug("Setting fixed MTRRs(%d-%d) type: UC\n", 
-		0, NUM_FIXED_RANGES);
+		     0, NUM_FIXED_RANGES);
 	set_fixed_mtrrs(0, NUM_FIXED_RANGES, MTRR_TYPE_UNCACHEABLE);
 
 	/* Now see which of the fixed mtrrs cover ram.
 	 */
-	for(memp = mem; memp->sizek; memp++) {
+	for (memp = mem; memp->sizek; memp++) {
 		unsigned int start_mtrr;
 		unsigned int last_mtrr;
 		start_mtrr = fixed_mtrr_index(memp->basek);
@@ -317,11 +317,17 @@ void setup_mtrrs(struct mem_range *mem)
 		if (start_mtrr >= NUM_FIXED_RANGES) {
 			break;
 		}
+
+#if defined(k7) || defined(k8)
+#warning "FIXME: dealing with RdMEM/WrMEM for Athlon/Opteron"
+#endif
+
 		printk_debug("Setting fixed MTRRs(%d-%d) type: WB\n",
-			start_mtrr, last_mtrr);
+			     start_mtrr, last_mtrr);
 		set_fixed_mtrrs(start_mtrr, last_mtrr, MTRR_TYPE_WRBACK);
 	}
 	printk_debug("DONE fixed MTRRs\n");
+
 	/* Cache as many memory areas as possible */
 	/* FIXME is there an algorithm for computing the optimal set of mtrrs? 
 	 * In some cases it is definitely possible to do better.

@@ -42,7 +42,7 @@ struct mem_range *sizeram(void)
 	printk_debug("mmio_base: %dKB\n", mmio_basek);
 #endif
 
-	for(idx = i = 0; i < 8; i++) {
+	for (idx = i = 0; i < 8; i++) {
 		uint32_t base, limit;
 		unsigned basek, limitk, sizek;
 		base  = pci_read_config32(dev, 0x40 + (i<<3));
@@ -54,18 +54,18 @@ struct mem_range *sizeram(void)
 		limitk = ((limit + 0x00010000) & 0xffff0000) >> 2;
 		sizek = limitk - basek;
 		if ((idx > 0) &&
-			((mem[idx -1].basek + mem[idx - 1].sizek) == basek)) {
+		    ((mem[idx - 1].basek + mem[idx - 1].sizek) == basek)) {
 			mem[idx -1].sizek += sizek;
-		}
-		else {
+		} else {
 			mem[idx].basek = basek;
 			mem[idx].sizek = sizek;
 			idx++;
 		}
 	
 		/* see if we need a hole from 0xa0000 to 0xbffff */
-		if((mem[idx-1].basek < ((8*64)+(8*16))) && 
-		   (mem[idx-1].sizek > ((8*64)+(16*16)))) {
+		if ((mem[idx-1].basek < ((8*64)+(8*16))) /* 640 */ && 
+		    (mem[idx-1].sizek > ((8*64)+(16*16))) /* 768 */ ) {
+#warning "FIXME: this left 0xA0000 to 0xBFFFF undefined"
 			mem[idx].basek = (8*64)+(16*16);
 			mem[idx].sizek = mem[idx-1].sizek - ((8*64)+(16*16));
 			mem[idx-1].sizek = ((8*64)+(8*16)) - mem[idx-1].basek;
@@ -74,7 +74,7 @@ struct mem_range *sizeram(void)
 		
 		/* See if I need to split the region to accomodate pci memory space */
 		if ((mem[idx - 1].basek <= mmio_basek) &&
-			((mem[idx - 1].basek + mem[idx - 1].sizek) >  mmio_basek)) {
+		    ((mem[idx - 1].basek + mem[idx - 1].sizek) >  mmio_basek)) {
 			if (mem[idx - 1].basek < mmio_basek) {
 				unsigned pre_sizek;
 				pre_sizek = mmio_basek - mem[idx - 1].basek;
@@ -92,10 +92,10 @@ struct mem_range *sizeram(void)
 			}
 		}
 	}
-#if 0
-	for(i = 0; i < idx; i++) {
+#if 1
+	for (i = 0; i < idx; i++) {
 		printk_debug("mem[%d].basek = %08x mem[%d].sizek = %08x\n",
-			i, mem[i].basek, i, mem[i].sizek);
+			     i, mem[i].basek, i, mem[i].sizek);
 	}
 #endif
 	while(idx < sizeof(mem)/sizeof(mem[0])) {
@@ -512,6 +512,40 @@ static void mcf0_control_init(struct device *dev)
 	pci_write_config32(dev, 0xdc, cmd );
 #endif	
 	printk_debug("done.\n");
+}
+
+
+static void amdk8_enable_resources(struct device *dev)
+{
+	uint16_t ctrl;
+	unsigned link;
+	unsigned int vgalink = -1;
+
+	ctrl = pci_read_config16(dev, PCI_BRIDGE_CONTROL);
+	ctrl |= dev->link[0].bridge_ctrl;
+	printk_debug("%s bridge ctrl <- %04x\n", dev_path(dev), ctrl);
+	printk_err("%s bridge ctrl <- %04x\n", dev_path(dev), ctrl);
+	pci_write_config16(dev, PCI_BRIDGE_CONTROL, ctrl);
+
+#if 0
+	/* let's see what link VGA is on */
+	for(link = 0; link < dev->links; link++) {
+		device_t child;
+		printk_err("Kid %d of k8: bridge ctrl says: 0x%x\n",
+			   link, dev->link[link].bridge_ctrl);
+		if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA)
+			vgalink = link;
+	}
+
+	if (vgalink != 1) {
+		/* now find the IOPAIR that goes to vgalink and set the  vga enable in the base part (0x30) */
+		/* now allocate an MMIOPAIR and point it to the CPU0, LINK=vgalink */
+		/* now set IORR1 so it has a hole for the 0xa0000-0xcffff region */
+	}
+#endif
+
+	pci_dev_enable_resources(dev);
+	//enable_childrens_resources(dev);
 }
 
 static struct device_operations northbridge_operations = {

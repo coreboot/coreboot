@@ -1,3 +1,6 @@
+# How does the config tool pick the correct
+# cpufixup.c to generate cupfixup.o ?
+
 uses k8
 uses CPU_FIXUP
 default k8=1

@@ -5,10 +5,12 @@
 #if (CONFIG_LB_MEM_TOPK & (CONFIG_LB_MEM_TOPK -1)) != 0
 # error "CONFIG_LB_MEM_TOPK must be a power of 2"
 #endif
+
 static void setup_resource_map(const unsigned int *register_values, int max)
 {
 	int i;
 	print_debug("setting up resource map....");
+
 #if 0
 	print_debug("\r\n");
 #endif

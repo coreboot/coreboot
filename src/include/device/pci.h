@@ -28,7 +28,9 @@ struct pci_driver {
 };
 
 #define __pci_driver __attribute__ ((unused,__section__(".rodata.pci_driver")))
+/** start of compile time generated pci driver array */
 extern struct pci_driver pci_drivers[];
+/** end of compile time generated pci driver array */
 extern struct pci_driver epci_drivers[];
 
 

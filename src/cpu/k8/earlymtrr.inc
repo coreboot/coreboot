@@ -13,6 +13,13 @@ earlymtrr_start:
 	xorl	%edx, %edx			#
 	movl	$fixed_mtrr_msr, %esi
 
+enable_fixed_mtrr_dram_modify:
+	/* Enable the access to AMD RdDram and WrDram extension bits */
+	movl	$SYSCFG_MSR, %ecx
+	rdmsr
+	orl	$SYSCFG_MSR_MtrrFixDramModEn, %eax
+	wrmsr
+		
 clear_fixed_var_mtrr:
 	lodsl	(%esi), %eax
 	testl	%eax, %eax
@@ -25,7 +32,14 @@ clear_fixed_var_mtrr:
 	jmp	clear_fixed_var_mtrr
 clear_fixed_var_mtrr_out:
 
-/* enable memory access for 0 - 1MB using top_mem */
+disable_fixed_mtrr_dram_modify:
+	/* Disable the access to AMD RdDram and WrDram extension bits */
+	movl	$SYSCFG_MSR, %ecx
+	rdmsr
+	andl	$(~SYSCFG_MSR_MtrrFixDramModEn), %eax
+	wrmsr
+
+	/* enable memory access for 0 - 1MB using top_mem */
 	movl	$TOP_MEM, %ecx
 	xorl	%edx, %edx
 	movl	$(((CONFIG_LB_MEM_TOPK << 10) + TOP_MEM_MASK) & ~TOP_MEM_MASK) , %eax
@@ -72,9 +86,10 @@ enable_mtrr:
 	movl	$0x00000800, %eax
 	wrmsr
 
-	/* Enable the MTRRs in SYSCFG */
+	/* Enable the MTRRs and IORRs in SYSCFG */
 	movl	$SYSCFG_MSR, %ecx
 	rdmsr
+	/* Don't enable SYSCFG_MSR_MtrrFixDramEn) untill we have done with VGA BIOS */
 	orl	$(SYSCFG_MSR_MtrrVarDramEn), %eax
 	wrmsr
 

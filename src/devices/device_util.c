@@ -6,15 +6,16 @@
 
 
 /**
- * See if a device structure already exists and if not allocate it
+ * @brief See if a device structure already exists and if not allocate it
+ *
  * @param bus The bus to find the device on
  * @param path The relative path from the bus to the appropriate device
- * @return pointer a device structure for the device on bus at path
+ * @return pointer to a device structure for the device on bus at path
  */
 device_t alloc_find_dev(struct bus *parent, struct device_path *path)
 {
 	device_t child;
-	for(child = parent->children; child; child = child->sibling) {
+	for (child = parent->children; child; child = child->sibling) {
 		if (path_eq(path, &child->path)) {
 			return child;
 		}

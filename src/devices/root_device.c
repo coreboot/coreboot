@@ -21,9 +21,9 @@ void root_dev_read_resources(device_t root)
 	root->resource[res].flags = IORESOURCE_IO;
 	root->resource[res].index = 0;
 	printk_spew("%s . link %p, resource %p\n", __FUNCTION__, 
-					&root->link[0], &root->resource[res]);
+		    &root->link[0], &root->resource[res]);
 	compute_allocate_resource(&root->link[0], &root->resource[res], 
-		IORESOURCE_IO, IORESOURCE_IO);
+				  IORESOURCE_IO, IORESOURCE_IO);
 	res++;
 
 	/* Initialize the system wide memory resources constraints */
@@ -35,9 +35,9 @@ void root_dev_read_resources(device_t root)
 	root->resource[res].flags = IORESOURCE_MEM;
 	root->resource[res].index = 1;
 	printk_spew("%s . link %p, resource %p\n", __FUNCTION__, 
-				&root->link[0], &root->resource[res]);
+		    &root->link[0], &root->resource[res]);
 	compute_allocate_resource(&root->link[0], &root->resource[res], 
-		IORESOURCE_MEM, IORESOURCE_MEM);
+				  IORESOURCE_MEM, IORESOURCE_MEM);
 	res++;
 
 	root->resources = res;
@@ -51,12 +51,12 @@ void root_dev_read_resources(device_t root)
  */
 void root_dev_set_resources(device_t root)
 {
-	struct bus *bus;
-	bus = &root->link[0];
-	compute_allocate_resource(bus,
-		&root->resource[0], IORESOURCE_IO, IORESOURCE_IO);
-	compute_allocate_resource(bus, 
-		&root->resource[1], IORESOURCE_MEM, IORESOURCE_MEM);
+	struct bus *bus = &root->link[0];
+
+	compute_allocate_resource(bus, &root->resource[0],
+				  IORESOURCE_IO, IORESOURCE_IO);
+	compute_allocate_resource(bus, &root->resource[1],
+				  IORESOURCE_MEM, IORESOURCE_MEM);
 	assign_resources(bus);
 }
 
@@ -71,18 +71,18 @@ unsigned int walk_static_devices(device_t bus, unsigned int max)
 {
 	device_t child;
 	unsigned link;
-	for(link = 0; link < bus->links; link++) {
-		for(child = bus->link[link].children; child; child = child->sibling) {
+
+	for (link = 0; link < bus->links; link++) {
+		for (child = bus->link[link].children; child; child = child->sibling) {
 			if (child->ops && child->ops->enable) {
 				child->ops->enable(child);
 			}
-			printk_debug("%s %s\n",
-				dev_path(child),
-				child->enable?"enabled": "disabled");
+			printk_debug("%s %s\n", dev_path(child),
+				     child->enable?"enabled": "disabled");
 		}
 	}
-	for(link = 0; link < bus->links; link++) {
-		for(child = bus->link[link].children; child; child = child->sibling) {
+	for (link = 0; link < bus->links; link++) {
+		for (child = bus->link[link].children; child; child = child->sibling) {
 			if (!child->ops || !child->ops->scan_bus)
 				continue;
 			printk_debug("%s scanning...\n", dev_path(child));
@@ -95,9 +95,9 @@ unsigned int walk_static_devices(device_t bus, unsigned int max)
 void enable_childrens_resources(device_t dev)
 {
 	unsigned link;
-	for(link = 0; link < dev->links; link++) {
+	for (link = 0; link < dev->links; link++) {
 		device_t child;
-		for(child = dev->link[link].children; child; child = child->sibling) {
+		for (child = dev->link[link].children; child; child = child->sibling) {
 			enable_resources(child);
 		}
 	}

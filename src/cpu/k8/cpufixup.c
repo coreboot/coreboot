@@ -428,5 +428,5 @@ void k8_enable(struct chip *chip, enum chip_pass pass)
 
 struct chip_control cpu_k8_control = {
         .enable = k8_enable,
-        .name   = "AMD K8",
+        .name   = "AMD K8 CPU",
 };

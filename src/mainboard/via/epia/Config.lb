@@ -78,7 +78,8 @@ default HEAP_SIZE=0x4000
 ##
 ## Only use the option table in a normal image
 ##
-default USE_OPTION_TABLE = !USE_FALLBACK_IMAGE
+#default USE_OPTION_TABLE = !USE_FALLBACK_IMAGE
+default USE_OPTION_TABLE = 0
 
 ##
 ## Compute the location and size of where this firmware image

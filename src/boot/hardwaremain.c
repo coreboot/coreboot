@@ -37,9 +37,6 @@ it with the version available from LANL.
 #include <device/pci.h>
 #include <device/chip.h>
 #include <delay.h>
-#if 0
-#include <part/mainboard.h>
-#endif
 #include <part/hard_reset.h>
 #include <smp/atomic.h>
 #include <boot/elf.h>
@@ -81,6 +78,12 @@ static struct mem_range *get_ramsize(void)
 /* Number of cpus that are currently running in linuxbios */
 static atomic_t active_cpus = ATOMIC_INIT(1);
 
+/**
+ * @brief Initialize secondary processors.
+ *
+ *
+ * @todo move this into a method of per cpu data structure.
+ */
 void secondary_cpu_init(void)
 {
 	struct mem_range *mem;
@@ -88,12 +91,14 @@ void secondary_cpu_init(void)
 	int index;
 
 	atomic_inc(&active_cpus);
+
 	printk_debug("%s\n", __FUNCTION__);
 	mem = get_ramsize();
 	id = cpu_initialize(mem);
 	index = processor_index(id);
 	printk_debug("%s  %d/%u\n", __FUNCTION__ , index, id);
 	processor_map[index] = CPU_ENABLED;
+
 	atomic_dec(&active_cpus);
 	stop_cpu(id);
 }
@@ -105,20 +110,22 @@ static void wait_for_other_cpus(void)
 	old_active_count = 1;
 
 	active_count = atomic_read(&active_cpus);
-	while(active_count > 1) {
+	while (active_count > 1) {
 		if (active_count != old_active_count) {
-			printk_info("Waiting for %d CPUS to stop\n", active_count);
+			printk_info("Waiting for %d CPUS to stop\n",
+				    active_count);
 			old_active_count = active_count;
 		}
 		active_count = atomic_read(&active_cpus);
 	}
-	for(i = 0; i < CONFIG_MAX_CPUS; i++) {
+
+	for (i = 0; i < CONFIG_MAX_CPUS; i++) {
 		if (!(processor_map[i] & CPU_ENABLED)) {
 			printk_err("CPU %d did not initialize!\n", i);
 			processor_map[i] = 0;
-#warning "FIXME do I need a mainboard_cpu_fixup function?"
 		}
 	}
+
 	printk_debug("All AP CPUs stopped\n");
 }
 
@@ -126,20 +133,16 @@ static void wait_for_other_cpus(void)
 #define wait_for_other_cpus() do {} while(0)
 #endif /* CONFIG_SMP */
 
+/**
+ * @brief Main program of LinuxBIOS
+ *
+ * @param boot_complete
+ */
 void hardwaremain(int boot_complete)
 {
 	/* Processor ID of the BOOT cpu (i.e. the one running this code) */
 	unsigned long boot_cpu;
 	int boot_index;
-
-	/* the order here is a bit tricky. We don't want to do much of 
-	 * anything that uses config registers until after PciAllocateResources
-	 * since that function also figures out what kind of config strategy
-	 * to use (type 1 or type 2). 
-	 * so we turn on cache, then worry about PCI setup, then do other 
-	 * things, so that the other work can use the PciRead* and PciWrite*
-	 * functions. 
-	 */
 	struct mem_range *mem, *tmem;
 	struct lb_memory *lb_mem;
 	unsigned long totalmem;
@@ -153,8 +156,8 @@ void hardwaremain(int boot_complete)
 	
 	post_code(0x39);
 	printk_notice("LinuxBIOS-%s%s %s %s...\n", 
-		linuxbios_version, linuxbios_extra_version, linuxbios_build,
-		(boot_complete)?"rebooting":"booting");
+		      linuxbios_version, linuxbios_extra_version,
+		      linuxbios_build, (boot_complete)?"rebooting":"booting");
 
 	post_code(0x40);
 
@@ -162,57 +165,68 @@ void hardwaremain(int boot_complete)
 	if (boot_complete) {
 		hard_reset();
 	}
+
 	CONFIGURE(CONF_PASS_PRE_PCI);
 
-	/* pick how to scan the bus. This is first so we can get at memory size. */
+	/* determine how software can generate PCI configuration transactions
+	 * in this system  */
 	printk_info("Finding PCI configuration type.\n");
 	pci_set_method();
 	post_code(0x5f);
+
+	/* convert static device structures into dynamic device structures
+	 * before probing dynamic devices. */
 	enumerate_static_devices();
+
+	/* probe the existence of dynamic devices and construct the dynamic
+	 * device tree. */
 	dev_enumerate();
 	post_code(0x66);
-	/* Now do the real bus.
-	 * We round the total ram up a lot for thing like the SISFB, which 
-	 * shares high memory with the CPU. 
-	 */
+
+	/* probe and assign the resources required by the dynamic devices */
 	dev_configure();
 	post_code(0x88);
 
+	/* enable the resources probed and assigned in dev_configure() */
 	dev_enable();
 
+	/* do the device specific init in additional to simple resources
+	 * allocation performed in dev_enable() */
 	dev_initialize();
 	post_code(0x89);
 
 	CONFIGURE(CONF_PASS_POST_PCI);
 
+	/* this is done last because some devices may 'steal' memory from
+	 * the system during device initialization. */
 	mem = get_ramsize();
 	post_code(0x70);
-	totalmem = 0;
-	for(tmem = mem; tmem->sizek; tmem++) {
+	for (totalmem = 0, tmem = mem; tmem->sizek; tmem++) {
 		totalmem += tmem->sizek;
 	}
-	printk_info("totalram: %ldM\n", 
-		(totalmem + 512) >> 10); /* Round to the nearest meg */
+	/* Round to the nearest mega */
+	printk_info("totalram: %ldM\n", (totalmem + 512) >> 10);
 
-	/* Fully initialize the cpu before configuring the bus */
+	/* fully initialize the boot processor */
 	boot_cpu = cpu_initialize(mem);
 	boot_index = processor_index(boot_cpu);
 	printk_spew("BOOT CPU is %d\n", boot_cpu);
 	processor_map[boot_index] = CPU_BOOTPROCESSOR|CPU_ENABLED;
 
-	/* Now start the other cpus initializing 
-	 * The sooner they start the sooner they stop.
-	 */
+	/* start up other processors, it works like a pthread_create() or
+	 * fork(), instead of running the initialization code for all devices
+	 * as the boot processor, they start from secondary_cpu_init(), doing
+	 * cpu initialization only. */
 	post_code(0x75);
 	startup_other_cpus(processor_map);
-	post_code(0x77);
 
-	/* make certain we are the only cpu running in linuxBIOS */
+	/* like pthread_join() or wait(), wait other processors finishing
+	 * their execution of secondary_cpu_init() and make certain we are
+	 * the only cpu running in LinuxBIOS */
 	wait_for_other_cpus();
 
-	/* Now that we have collected all of our information
-	 * write our configuration tables.
-	 */
+	/* Now that we have collected all of our information, write our
+	 * configuration tables. */
 	lb_mem = write_tables(mem, processor_map);
 
 	CONFIGURE(CONF_PASS_PRE_BOOT);

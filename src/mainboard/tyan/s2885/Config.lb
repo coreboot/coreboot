@@ -6,17 +6,19 @@ uses LB_CKS_RANGE_END
 uses LB_CKS_LOC
 uses MAINBOARD
 uses ARCH
+
 #
 #
 ###
 ### Set all of the defaults for an x86 architecture
 ###
+
 #
 #
 ###
 ### Build the objects we have code for in this directory.
 ###
-##object mainboard.o
+
 config chip.h
 register "fixup_scsi" = "1"
 register "fixup_vga" = "1"
@@ -38,9 +40,10 @@ driver mainboard.o
 object reset.o
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
+
 #
 arch i386 end
-#cpu k8 end
+
 #
 ###
 ### Build our 16 bit and 32 bit linuxBIOS entry code
@@ -50,6 +53,7 @@ mainboardinit cpu/i386/entry32.inc
 mainboardinit cpu/i386/bist32.inc
 ldscript /cpu/i386/entry16.lds
 ldscript /cpu/i386/entry32.lds
+
 #
 ###
 ### Build our reset vector (This is where linuxBIOS is entered)
@@ -120,24 +124,30 @@ end
 
 makerule ./failover.inc
 	depends "./romcc ./failover.E"
-	action "./romcc -O -o failover.inc --label-prefix=failover ./failover.E"end
+	action "./romcc -O -o failover.inc --label-prefix=failover ./failover.E"
+end
 
 makerule ./auto.E 
         depends "$(MAINBOARD)/auto.c option_table.h"
         action  "$(CPP) -I$(TOP)/src -I. $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
 end
+
 makerule ./auto.inc 
 	depends "./romcc ./auto.E"
 	action "./romcc -O -mcpu=k8 -o auto.inc --label-prefix=auto ./auto.E" 
 #	action	"./romcc -mcpu=k8  -O ./auto.E > auto.inc"
 end
+
 mainboardinit cpu/k8/enable_mmx_sse.inc
 mainboardinit ./auto.inc
 mainboardinit cpu/k8/disable_mmx_sse.inc
+
 #
 ###
 ### Include the secondary Configuration files 
 ###
+dir /pc80
+
 northbridge amd/amdk8 "mc0"
         pci 0:18.0
         pci 0:18.0
@@ -203,7 +213,7 @@ northbridge amd/amdk8 "mc1"
         pci 0:19.2
         pci 0:19.3
 end
-  
+
 dir /pc80
 #dir /bioscall
 

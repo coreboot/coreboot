@@ -717,6 +717,11 @@ define HAVE_ACPI_TABLES
 	comment "Define to build ACPI tables"
 end
 
+define AGP_APERTURE_SIZE
+	default none
+	export used
+	comment "AGP graphics virtual memory aperture size"
+end
 
 ###############################################
 # Board specific options

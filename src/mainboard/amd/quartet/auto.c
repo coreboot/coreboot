@@ -40,19 +40,21 @@ static void soft_reset(void)
 	set_bios_reset();
 	pci_write_config8(PCI_DEV(0, 0x04, 0), 0x47, 1);
 }
-	
+
 
 static void memreset_setup(void)
 {
 	if (is_cpu_pre_c0()) {
 		/* Set the memreset low */
-		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 28);
+		outb((0 << 7) | (0 << 6) | (0 << 5) | (0 << 4) | (1 << 2) |
+		     (0 << 0), SMBUS_IO_BASE + 0xc0 + 28);
 		/* Ensure the BIOS has control of the memory lines */
-		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 29);
-	}
-	else {
+		outb((0 << 7) | (0 << 6) | (0 << 5) | (0 << 4) | (1 << 2) |
+		     (0 << 0), SMBUS_IO_BASE + 0xc0 + 29);
+	} else {
 		/* Ensure the CPU has controll of the memory lines */
-		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 29);
+		outb((0 << 7) | (0 << 6) | (0 << 5) | (0 << 4) | (1 << 2) |
+		     (1 << 0), SMBUS_IO_BASE + 0xc0 + 29);
 	}
 }
 
@@ -61,7 +63,8 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
 	if (is_cpu_pre_c0()) {
 		udelay(800);
 		/* Set memreset_high */
-		outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 28);
+		outb((0 << 7) | (0 << 6) | (0 << 5) | (0 << 4) | (1 << 2) |
+		     (1 << 0), SMBUS_IO_BASE + 0xc0 + 28);
 		udelay(90);
 	}
 }
@@ -71,7 +74,8 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
  *
  */
 
-static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
+static unsigned int generate_row(uint8_t node, uint8_t row,
+				 uint8_t maxnodes)
 {
 	/* Routing Table Node i 
 	 *
@@ -95,25 +99,25 @@ static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 	 *     [3] Route to Link 2
 	 */
 
-	uint32_t ret=0x00010101; /* default row entry */
+	uint32_t ret = 0x00010101;	/* default row entry */
 
 	static const unsigned int rows_2p[2][2] = {
-		{ 0x00030101, 0x00010202 },
-		{ 0x00010202, 0x00030101 }
+		{0x00030101, 0x00010202},
+		{0x00010202, 0x00030101}
 	};
 
 	static const unsigned int rows_4p[4][4] = {
-		{ 0x00070101, 0x00010202, 0x00030404, 0x00010204 },
-		{ 0x00010202, 0x000b0101, 0x00010208, 0x00030808 },
-		{ 0x00030808, 0x00010208, 0x000b0101, 0x00010202 },
-		{ 0x00010204, 0x00030404, 0x00010202, 0x00070101 }
+		{0x00070101, 0x00010202, 0x00030404, 0x00010204},
+		{0x00010202, 0x000b0101, 0x00010208, 0x00030808},
+		{0x00030808, 0x00010208, 0x000b0101, 0x00010202},
+		{0x00010204, 0x00030404, 0x00010202, 0x00070101}
 	};
 
-	if (!(node>=maxnodes || row>=maxnodes)) {
-		if (maxnodes==2)
-			ret=rows_2p[node][row];
-		if (maxnodes==4)
-			ret=rows_4p[node][row];
+	if (!(node >= maxnodes || row >= maxnodes)) {
+		if (maxnodes == 2)
+			ret = rows_2p[node][row];
+		if (maxnodes == 4)
+			ret = rows_4p[node][row];
 	}
 
 	return ret;
@@ -124,9 +128,9 @@ static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
 #define SMBUS_HUB 0x18
-	unsigned device=(ctrl->channel0[0])>>8;
-	smbus_write_byte(SMBUS_HUB , 0x01, device);
-	smbus_write_byte(SMBUS_HUB , 0x03, 0);
+	unsigned device = (ctrl->channel0[0]) >> 8;
+	smbus_write_byte(SMBUS_HUB, 0x01, device);
+	smbus_write_byte(SMBUS_HUB, 0x03, 0);
 }
 
 static inline int spd_read_byte(unsigned device, unsigned address)
@@ -143,7 +147,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "sdram/generic_sdram.c"
 
-#include "resourcemap.c" /* quartet does not want the default */
+#include "resourcemap.c"	/* quartet does not want the default */
 
 #define RC0 ((1<<1)<<8)
 #define RC1 ((1<<2)<<8)
@@ -159,57 +163,57 @@ static void main(void)
 {
 	static const struct mem_controller cpu[] = {
 		{
-			.node_id = 0,
-			.f0 = PCI_DEV(0, 0x18, 0),
-			.f1 = PCI_DEV(0, 0x18, 1),
-			.f2 = PCI_DEV(0, 0x18, 2),
-			.f3 = PCI_DEV(0, 0x18, 3),
-			.channel0 = { RC0|DIMM0, RC0|DIMM2, 0, 0 },
-			.channel1 = { RC0|DIMM1, RC0|DIMM3, 0, 0 },
-		},
+		 .node_id = 0,
+		 .f0 = PCI_DEV(0, 0x18, 0),
+		 .f1 = PCI_DEV(0, 0x18, 1),
+		 .f2 = PCI_DEV(0, 0x18, 2),
+		 .f3 = PCI_DEV(0, 0x18, 3),
+		 .channel0 = {RC0 | DIMM0, RC0 | DIMM2, 0, 0},
+		 .channel1 = {RC0 | DIMM1, RC0 | DIMM3, 0, 0},
+		 },
 		{
-			.node_id = 1,
-			.f0 = PCI_DEV(0, 0x19, 0),
-			.f1 = PCI_DEV(0, 0x19, 1),
-			.f2 = PCI_DEV(0, 0x19, 2),
-			.f3 = PCI_DEV(0, 0x19, 3),
-			.channel0 = { RC1|DIMM0, RC1|DIMM2, 0, 0 },
-			.channel1 = { RC1|DIMM1, RC1|DIMM3, 0, 0 },
-		},
+		 .node_id = 1,
+		 .f0 = PCI_DEV(0, 0x19, 0),
+		 .f1 = PCI_DEV(0, 0x19, 1),
+		 .f2 = PCI_DEV(0, 0x19, 2),
+		 .f3 = PCI_DEV(0, 0x19, 3),
+		 .channel0 = {RC1 | DIMM0, RC1 | DIMM2, 0, 0},
+		 .channel1 = {RC1 | DIMM1, RC1 | DIMM3, 0, 0},
+		 },
 		{
-			.node_id = 2,
-			.f0 = PCI_DEV(0, 0x1a, 0),
-			.f1 = PCI_DEV(0, 0x1a, 1),
-			.f2 = PCI_DEV(0, 0x1a, 2),
-			.f3 = PCI_DEV(0, 0x1a, 3),
-			.channel0 = { RC2|DIMM0, RC2|DIMM2, 0, 0 },
-			.channel1 = { RC2|DIMM1, RC2|DIMM3, 0, 0 },
-		},
+		 .node_id = 2,
+		 .f0 = PCI_DEV(0, 0x1a, 0),
+		 .f1 = PCI_DEV(0, 0x1a, 1),
+		 .f2 = PCI_DEV(0, 0x1a, 2),
+		 .f3 = PCI_DEV(0, 0x1a, 3),
+		 .channel0 = {RC2 | DIMM0, RC2 | DIMM2, 0, 0},
+		 .channel1 = {RC2 | DIMM1, RC2 | DIMM3, 0, 0},
+		 },
 		{
-			.node_id = 3,
-			.f0 = PCI_DEV(0, 0x1b, 0),
-			.f1 = PCI_DEV(0, 0x1b, 1),
-			.f2 = PCI_DEV(0, 0x1b, 2),
-			.f3 = PCI_DEV(0, 0x1b, 3),
-			.channel0 = { RC3|DIMM0, RC3|DIMM2, 0, 0 },
-			.channel1 = { RC3|DIMM1, RC3|DIMM3, 0, 0 },
-		}
+		 .node_id = 3,
+		 .f0 = PCI_DEV(0, 0x1b, 0),
+		 .f1 = PCI_DEV(0, 0x1b, 1),
+		 .f2 = PCI_DEV(0, 0x1b, 2),
+		 .f3 = PCI_DEV(0, 0x1b, 3),
+		 .channel0 = {RC3 | DIMM0, RC3 | DIMM2, 0, 0},
+		 .channel1 = {RC3 | DIMM1, RC3 | DIMM3, 0, 0},
+		 }
 	};
 	int needs_reset;
 
 	enable_lapic();
 	init_timer();
-	
+
 	if (cpu_init_detected()) {
 		asm("jmp __cpu_reset");
 	}
-	
+
 	distinguish_cpu_resets();
-	
+
 	if (!boot_cpu()) {
 		stop_this_cpu();
 	}
-	
+
 	pc87360_enable_serial(SERIAL_DEV, TTYS0_BASE);
 	uart_init();
 	console_init();
@@ -228,7 +232,7 @@ static void main(void)
 	dump_spd_registers(&cpu[0]);
 #endif
 	memreset_setup();
-	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
+	sdram_initialize(sizeof(cpu) / sizeof(cpu[0]), cpu);
 
 #if 0
 	dump_pci_devices();

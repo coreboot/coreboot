@@ -628,7 +628,7 @@ class partobj:
 		self.path = ""
 
                 # Link from parent device
-                if ((link < 0) or (link > 2)):
+                if ((link < 0) or (link > 16)):
         		fatal("Invalid link")
                 self.link = link
 		

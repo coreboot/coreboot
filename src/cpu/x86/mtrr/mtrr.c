@@ -29,8 +29,6 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 
-#define arraysize(x)   (sizeof(x)/sizeof((x)[0]))
-
 #warning "FIXME I do not properly handle address more than 36 physical address bits"
 #ifdef k8
 # define ADDRESS_BITS 40
@@ -284,7 +282,7 @@ void x86_setup_mtrrs(void)
 			start_mtrr = fixed_mtrr_index(resk(res->base));
 			last_mtrr  = fixed_mtrr_index(resk((res->base + res->size)));
 			if (start_mtrr >= NUM_FIXED_RANGES) {
-				break;
+				continue;
 			}
 			printk_debug("Setting fixed MTRRs(%d-%d) Type: WB\n",
 				start_mtrr, last_mtrr);

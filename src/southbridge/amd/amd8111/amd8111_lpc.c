@@ -170,7 +170,7 @@ static void amd8111_lpc_read_resources(device_t dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 }
 
-static void amd8111_lpc_enable_resoruces(device_t dev)
+static void amd8111_lpc_enable_resources(device_t dev)
 {
 	pci_dev_enable_resources(dev);
 	enable_childrens_resources(dev);

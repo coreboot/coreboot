@@ -13,7 +13,7 @@ static inline unsigned long log2(unsigned long x)
 		"jnz 1f\n\t"
 		"movl $-1, %0\n\t"
 		"1:\n\t"
-		: "=r" (r) : "g" (x));
+		: "=r" (r) : "r" (x));
 	return r;
 		
 }

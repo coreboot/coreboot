@@ -5,7 +5,6 @@
 
 #define IORR_FIRST 0xC0010016
 #define IORR_LAST  0xC0010019
-#define SYSCFG     0xC0010010
 
 #define MTRR_READ_MEM			(1 << 4)
 #define MTRR_WRITE_MEM			(1 << 3)
@@ -23,8 +22,6 @@
 #define SYSCFG_MSR_SetDirtyEnE		(1 <<  8)
 #define SYSCFG_MSR_SysVicLimitMask	((1 << 8) - (1 << 5))
 #define SYSCFG_MSR_SysAckLimitMask	((1 << 5) - (1 << 0))
-
-
 
 #define IORR0_BASE			0xC0010016
 #define IORR0_MASK			0xC0010017

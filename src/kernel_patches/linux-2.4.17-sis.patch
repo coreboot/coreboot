@@ -1,6 +1,6 @@
 $Id$
 
---- linux-2.4.17-orig/drivers/ide/sis5513.c	Fri Sep  7 09:28:38 2001
+--- linux-2.4.17-orig/drivers/ide/sis5513.c	Fri Sep  7 10:28:38 2001
 +++ linux-2.4.17-sis/drivers/ide/sis5513.c	Wed Mar 13 14:19:52 2002
 @@ -236,6 +236,7 @@
  
@@ -69,7 +69,7 @@ $Id$
 +clean:
 +	rm -f core *.o *.a *.s
  
---- linux-2.4.17-orig/drivers/video/sis/sisfb_300_core.c	Wed Mar 13 16:13:21 2002
+--- linux-2.4.17-orig/drivers/video/sis/sisfb_300_core.c	Thu Mar 14 10:28:52 2002
 +++ linux-2.4.17-sis/drivers/video/sis/sisfb_300_core.c	Wed Mar 13 14:19:52 2002
 @@ -0,0 +1,580 @@
 +/* sisfb_300_core.c: Setting Video Mode for SiS 540/550/630/730 Integrated VGA
@@ -652,7 +652,7 @@ $Id$
 +
 +	sisfb_display_on(sisfb);
 +}
---- linux-2.4.17-orig/drivers/video/sis/sisfb_300_core.h	Wed Mar 13 16:13:21 2002
+--- linux-2.4.17-orig/drivers/video/sis/sisfb_300_core.h	Thu Mar 14 10:28:52 2002
 +++ linux-2.4.17-sis/drivers/video/sis/sisfb_300_core.h	Wed Mar 13 14:19:52 2002
 @@ -0,0 +1,24 @@
 +#ifndef __SISFB_300_CORE__
@@ -679,7 +679,7 @@ $Id$
 +extern void sisfb_set_par_300(struct sisfb_par *par, struct sisfb_info * sisfb);
 +
 +#endif /* __SISFB_300_CORE__ */
---- linux-2.4.17-orig/drivers/video/sis/sisfb_300_init.c	Wed Mar 13 16:13:21 2002
+--- linux-2.4.17-orig/drivers/video/sis/sisfb_300_init.c	Thu Mar 14 10:28:52 2002
 +++ linux-2.4.17-sis/drivers/video/sis/sisfb_300_init.c	Wed Mar 13 14:19:52 2002
 @@ -0,0 +1,203 @@
 +/* sisfb_300_init.c: Initialization Code for SiS 540/630/730 Integrated VGA
@@ -885,7 +885,7 @@ $Id$
 +
 +	return 0;
 +}
---- linux-2.4.17-orig/drivers/video/sis/sisfb_300_video.h	Wed Mar 13 16:13:21 2002
+--- linux-2.4.17-orig/drivers/video/sis/sisfb_300_video.h	Thu Mar 14 10:28:52 2002
 +++ linux-2.4.17-sis/drivers/video/sis/sisfb_300_video.h	Wed Mar 13 14:19:52 2002
 @@ -0,0 +1,153 @@
 +#ifndef __SISFB_300_VIDEO__
@@ -1041,7 +1041,7 @@ $Id$
 +}
 +
 +#endif /* __SISFB_300_VIDEO__ */
---- linux-2.4.17-orig/drivers/video/sis/sisfb_301_lcd.h	Wed Mar 13 16:13:21 2002
+--- linux-2.4.17-orig/drivers/video/sis/sisfb_301_lcd.h	Thu Mar 14 10:28:53 2002
 +++ linux-2.4.17-sis/drivers/video/sis/sisfb_301_lcd.h	Wed Mar 13 14:19:52 2002
 @@ -0,0 +1,54 @@
 +#ifndef __SISFB_301_LCD__
@@ -1098,7 +1098,7 @@ $Id$
 +}
 +
 +#endif /* __SISFB_301_LCD__ */
---- linux-2.4.17-orig/drivers/video/sis/sisfb_315_accel.c	Wed Mar 13 16:13:21 2002
+--- linux-2.4.17-orig/drivers/video/sis/sisfb_315_accel.c	Thu Mar 14 10:28:53 2002
 +++ linux-2.4.17-sis/drivers/video/sis/sisfb_315_accel.c	Wed Mar 13 14:19:52 2002
 @@ -0,0 +1,574 @@
 +/* sisfb_315_accel.c: 2D Hardware Acceleration for SiS 550
@@ -1675,8 +1675,8 @@ $Id$
 +	drawline:		sisfb_drawline,
 +	drawline_style:		sisfb_drawline_style,
 +};
---- linux-2.4.17-orig/drivers/video/sis/sisfb_315_accel.h	Wed Mar 13 16:13:21 2002
-+++ linux-2.4.17-sis/drivers/video/sis/sisfb_315_accel.h	Wed Mar 13 14:31:00 2002
+--- linux-2.4.17-orig/drivers/video/sis/sisfb_315_accel.h	Thu Mar 14 10:28:53 2002
++++ linux-2.4.17-sis/drivers/video/sis/sisfb_315_accel.h	Thu Mar 14 09:36:04 2002
 @@ -0,0 +1,95 @@
 +#ifndef __SISFB_315_ACCEL__
 +#define __SISFB_315_ACCEL__
@@ -1773,7 +1773,7 @@ $Id$
 +extern struct sisfb_accelerator sis315_accelerator;
 +
 +#endif /* __SISFB_315_ACCEL__ */
---- linux-2.4.17-orig/drivers/video/sis/sisfb_315_init.c	Wed Mar 13 16:13:21 2002
+--- linux-2.4.17-orig/drivers/video/sis/sisfb_315_init.c	Thu Mar 14 10:28:53 2002
 +++ linux-2.4.17-sis/drivers/video/sis/sisfb_315_init.c	Wed Mar 13 14:19:52 2002
 @@ -0,0 +1,238 @@
 +/* sisfb_315_init.c: Initialization Code for SiS 550 Integrated VGA
@@ -2014,7 +2014,7 @@ $Id$
 +
 +	return 0;
 +}
---- linux-2.4.17-orig/drivers/video/sis/sisfb_530_accel.c	Wed Mar 13 16:13:21 2002
+--- linux-2.4.17-orig/drivers/video/sis/sisfb_530_accel.c	Thu Mar 14 10:28:53 2002
 +++ linux-2.4.17-sis/drivers/video/sis/sisfb_530_accel.c	Wed Mar 13 14:19:52 2002
 @@ -0,0 +1,572 @@
 +/* sisfb_530_accel.c: 2D Hardware Acceleration for SiS 530/620/540/630/730
@@ -2589,8 +2589,8 @@ $Id$
 +	drawline:		sisfb_drawline,
 +	drawline_style:		sisfb_drawline_style,
 +};
---- linux-2.4.17-orig/drivers/video/sis/sisfb_530_accel.h	Wed Mar 13 16:13:21 2002
-+++ linux-2.4.17-sis/drivers/video/sis/sisfb_530_accel.h	Wed Mar 13 14:30:57 2002
+--- linux-2.4.17-orig/drivers/video/sis/sisfb_530_accel.h	Thu Mar 14 10:28:53 2002
++++ linux-2.4.17-sis/drivers/video/sis/sisfb_530_accel.h	Thu Mar 14 09:36:01 2002
 @@ -0,0 +1,76 @@
 +#ifndef __SISFB_530_ACCEL__
 +#define __SISFB_530_ACCEL__
@@ -2668,7 +2668,7 @@ $Id$
 +extern struct sisfb_accelerator sis530_accelerator;
 +
 +#endif /* __SISFB_530_ACCEL__ */
---- linux-2.4.17-orig/drivers/video/sis/sisfb_530_core.c	Wed Mar 13 16:13:21 2002
+--- linux-2.4.17-orig/drivers/video/sis/sisfb_530_core.c	Thu Mar 14 10:28:53 2002
 +++ linux-2.4.17-sis/drivers/video/sis/sisfb_530_core.c	Wed Mar 13 14:19:52 2002
 @@ -0,0 +1,333 @@
 +/* sisfb_530_core.c: Setting Video Mode for SiS 530/620 Integrated VGA
@@ -3004,7 +3004,7 @@ $Id$
 +	sisfb_set_seq_reg(sisfb,  0x0A, (pitch >> 8) & tmp);
 +}
 +
---- linux-2.4.17-orig/drivers/video/sis/sisfb_530_core.h	Wed Mar 13 16:13:21 2002
+--- linux-2.4.17-orig/drivers/video/sis/sisfb_530_core.h	Thu Mar 14 10:28:53 2002
 +++ linux-2.4.17-sis/drivers/video/sis/sisfb_530_core.h	Wed Mar 13 14:19:52 2002
 @@ -0,0 +1,17 @@
 +#ifndef __SISFB_530_CORE__
@@ -3024,7 +3024,7 @@ $Id$
 +extern void sisfb_set_par_300(struct sisfb_par *par, struct sisfb_info * sisfb);
 +
 +#endif /* __SISFB_300_CORE__ */
---- linux-2.4.17-orig/drivers/video/sis/sisfb_530_init.c	Wed Mar 13 16:13:21 2002
+--- linux-2.4.17-orig/drivers/video/sis/sisfb_530_init.c	Thu Mar 14 10:28:53 2002
 +++ linux-2.4.17-sis/drivers/video/sis/sisfb_530_init.c	Wed Mar 13 14:19:52 2002
 @@ -0,0 +1,113 @@
 +/* sisfb_530_init.c: Initialization code for SiS 530/620 Integrated VGA
@@ -3140,7 +3140,7 @@ $Id$
 +
 +	return 0;
 +}
---- linux-2.4.17-orig/drivers/video/sis/sisfb_accel.c	Wed Mar 13 16:13:22 2002
+--- linux-2.4.17-orig/drivers/video/sis/sisfb_accel.c	Thu Mar 14 10:28:53 2002
 +++ linux-2.4.17-sis/drivers/video/sis/sisfb_accel.c	Wed Mar 13 14:19:52 2002
 @@ -0,0 +1,360 @@
 +/* sisfb_accel.c: Generic 2D Hardware Acceleration Layer for Text Mode Console 
@@ -3503,7 +3503,7 @@ $Id$
 +
 +	disp->scrollmode = SCROLL_YREDRAW;
 +}
---- linux-2.4.17-orig/drivers/video/sis/sisfb_accel.h	Wed Mar 13 16:13:22 2002
+--- linux-2.4.17-orig/drivers/video/sis/sisfb_accel.h	Thu Mar 14 10:28:53 2002
 +++ linux-2.4.17-sis/drivers/video/sis/sisfb_accel.h	Wed Mar 13 14:19:52 2002
 @@ -0,0 +1,86 @@
 +#ifndef __SISFB_ACCEL__
@@ -3592,7 +3592,7 @@ $Id$
 +#endif /* __KERNEL_ */
 +
 +#endif /* __SISFB_ACCEL__ */
---- linux-2.4.17-orig/drivers/video/sis/sisfb_legacy_init.c	Wed Mar 13 16:13:22 2002
+--- linux-2.4.17-orig/drivers/video/sis/sisfb_legacy_init.c	Thu Mar 14 10:28:53 2002
 +++ linux-2.4.17-sis/drivers/video/sis/sisfb_legacy_init.c	Wed Mar 13 14:19:52 2002
 @@ -0,0 +1,313 @@
 +/* sisfb_legacy_init.c: Initialization code for Legacy VGA Registers
@@ -3908,7 +3908,7 @@ $Id$
 +	   will not work. I have no idea why */
 +	sisfb_set_default_crtc_regs(sisfb);
 +}
---- linux-2.4.17-orig/drivers/video/sis/sisfb_legacy_vga.h	Wed Mar 13 16:13:22 2002
+--- linux-2.4.17-orig/drivers/video/sis/sisfb_legacy_vga.h	Thu Mar 14 10:28:53 2002
 +++ linux-2.4.17-sis/drivers/video/sis/sisfb_legacy_vga.h	Wed Mar 13 14:19:52 2002
 @@ -0,0 +1,276 @@
 +#ifndef __SISFB_LEGACY_VGA__
@@ -4187,7 +4187,7 @@ $Id$
 +extern void sisfb_init_legacy_vga(struct sisfb_info * sisfb);
 +
 +#endif /* __SISFB_LEGACY_VGA__ */
---- linux-2.4.17-orig/drivers/video/sis/sisfb_lite.c	Wed Mar 13 16:13:22 2002
+--- linux-2.4.17-orig/drivers/video/sis/sisfb_lite.c	Thu Mar 14 10:28:53 2002
 +++ linux-2.4.17-sis/drivers/video/sis/sisfb_lite.c	Wed Mar 13 16:00:22 2002
 @@ -0,0 +1,1142 @@
 +/* sisfb_lite.c: SiSFB Lite, Frame Buffer Device Driver for SiS 540/630/730 requires no VGA BIOS
@@ -5332,8 +5332,8 @@ $Id$
 +#endif /* MODULE */
 +
 +module_exit(sisfb_cleanup);
---- linux-2.4.17-orig/drivers/video/sis/sisfb_lite.h	Wed Mar 13 16:13:22 2002
-+++ linux-2.4.17-sis/drivers/video/sis/sisfb_lite.h	Wed Mar 13 14:30:54 2002
+--- linux-2.4.17-orig/drivers/video/sis/sisfb_lite.h	Thu Mar 14 10:28:53 2002
++++ linux-2.4.17-sis/drivers/video/sis/sisfb_lite.h	Thu Mar 14 09:35:57 2002
 @@ -0,0 +1,211 @@
 +#ifndef __SISFB_LITE__
 +#define __SISFB_LITE__
@@ -5546,7 +5546,7 @@ $Id$
 +#include "sisfb_legacy_vga.h"
 +
 +#endif /* __SISFB_LITE__ */
---- linux-2.4.17-orig/drivers/mtd/devices/docprobe.c	Thu Oct  4 15:14:59 2001
+--- linux-2.4.17-orig/drivers/mtd/devices/docprobe.c	Thu Oct  4 16:14:59 2001
 +++ linux-2.4.17-sis/drivers/mtd/devices/docprobe.c	Wed Mar 13 14:19:52 2002
 @@ -39,7 +39,7 @@
     a Millennium enough that they go through and work out what the 
@@ -5557,15 +5557,31 @@ $Id$
  
  #include <linux/config.h>
  #include <linux/kernel.h>
---- linux-2.4.17-orig/arch/i386/kernel/process.c	Thu Oct  4 18:42:54 2001
-+++ linux-2.4.17-sis/arch/i386/kernel/process.c	Wed Mar 13 14:19:52 2002
-@@ -49,6 +49,131 @@
+--- linux-2.4.17-orig/arch/i386/config.in	Fri Dec 21 10:41:53 2001
++++ linux-2.4.17-sis/arch/i386/config.in	Thu Mar 14 09:26:30 2002
+@@ -416,3 +416,13 @@
+ fi
+ 
+ endmenu
++
++mainmenu_option next_comment
++comment 'LinuxBIOS'
++
++tristate 'LinuxBIOS Support' CONFIG_LINUXBIOS
++if [ "$CONFIG_LINUXBIOS" != "n" ]; then
++   source arch/i386/Linuxbios.in
++fi
++
++endmenu
+--- linux-2.4.17-orig/arch/i386/kernel/process.c	Thu Oct  4 19:42:54 2001
++++ linux-2.4.17-sis/arch/i386/kernel/process.c	Thu Mar 14 09:29:18 2002
+@@ -49,6 +49,158 @@
  
  #include <linux/irq.h>
  
-+#define CONFIG_LINUXBIOS_PM
 +#ifdef CONFIG_LINUXBIOS_PM
 +#include <linux/pci.h>
++#ifdef CONFIG_LINUXBIOS_PM_SIS503
 +void
 +sis503_reset(struct pci_dev *dev)
 +{
@@ -5619,7 +5635,27 @@ $Id$
 +	outb(0x20 | 0x14, 0x05 + acpi_base);
 +	printk(KERN_ERR __FUNCTION__ ": DONE sleep enable. \n");
 +}
++#endif // CONFIG_LINUXBIOS_PM_SIS503
++#ifdef CONFIG_LINUXBIOS_PM_PIIX4E
++void
++piix4e_reset(struct pci_dev *dev)
++{
++    // simple on this part. outb 0x6 to 0xcf9
 +
++    printk(KERN_ERR __FUNCTION__ ": starting reset operation. \n");
++    outb(0x6, 0xcf9);
++    printk(KERN_ERR __FUNCTION__ ": We should reset soon. \n");
++}
++
++void
++piix4e_off(struct pci_dev *dev)
++{
++	unsigned char b;
++	unsigned short acpi_base;
++
++	printk(KERN_ERR __FUNCTION__ ": no power off on this chip! \n");
++}
++#endif
 +struct pci_dev * pci_find_device(unsigned int vendor, unsigned int device, 
 +				 const struct pci_dev *from);
 +
@@ -5630,7 +5666,14 @@ $Id$
 +};
 +
 +struct linuxbios_control controls[] = {
-+	{PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, sis503_off, sis503_reset}
++#ifdef CONFIG_LINUXBIOS_PM_SIS503
++	{PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, sis503_off, sis503_reset},
++#endif
++#ifdef CONFIG_LINUXBIOS_PM_PIIX4E
++	{PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82371AB_3, 
++	 piix4e_off, piix4e_reset},
++#endif
++	{0}
 +};
 +
 +struct linuxbios_control *findcontrol(struct pci_dev **d)
@@ -5685,19 +5728,40 @@ $Id$
 +	printk(KERN_ERR __FUNCTION__ ": Returning? Can't happen, I thought?\n");
 +}
 +
-+#endif
++#endif // CONFIG_LINUXBIOS_PM
 +
 +
  asmlinkage void ret_from_fork(void) __asm__("ret_from_fork");
  
  int hlt_counter;
-@@ -399,6 +524,9 @@
- 	 */
+@@ -400,6 +552,9 @@
  	smp_send_stop();
  	disable_IO_APIC();
-+#endif
+ #endif
 +#ifdef CONFIG_LINUXBIOS_PM
 +	linuxbios_reset();
- #endif
++#endif
  
  	if(!reboot_thru_bios) {
+ 		/* rebooting needs to touch the page at absolute addr 0 */
+@@ -429,6 +584,9 @@
+ {
+ 	if (pm_power_off)
+ 		pm_power_off();
++#ifdef CONFIG_LINUXBIOS_PM
++	linuxbios_poweroff();
++#endif
+ }
+ 
+ extern void show_trace(unsigned long* esp);
+--- linux-2.4.17-orig/arch/i386/Linuxbios.in	Thu Mar 14 10:29:10 2002
++++ linux-2.4.17-sis/arch/i386/Linuxbios.in	Thu Mar 14 09:30:04 2002
+@@ -0,0 +1,8 @@
++mainmenu_option next_comment
++comment 'Linuxbios Options'
++bool 'Linuxbios Power Management support?' CONFIG_LINUXBIOS_PM
++if [ "$CONFIG_LINUXBIOS_PM" = "y" ]; then
++	bool '	SIS 503 support?' CONFIG_LINUXBIOS_PM_SIS503
++	bool '	PIIX4E support?' CONFIG_LINUXBIOS_PM_PIIX4E
++fi
++endmenu

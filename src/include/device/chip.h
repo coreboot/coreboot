@@ -6,7 +6,7 @@
  */
 
 /* some of the types of resources chips can control */
-#ifndef CHIP_CONFIGURE
+#ifndef CONFIG_CHIP_CONFIGURE
 #define CHIP_CONFIGURE(chip, pass) chip_configure(chip, pass)
 #else
 #define CHIP_CONFIGURE(chip, pass)

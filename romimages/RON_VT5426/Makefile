@@ -22,7 +22,7 @@ CPUFLAGS += -DRAMTEST
 CPUFLAGS += -DCMD_LINE='"ro root=/dev/hda1 console=ttyS0,115200 single "'
 
 TOP=../..
-INCLUDES=-nostdinc -I $(TOP)/src/include 
+INCLUDES=-nostdinc -I $(TOP)/src/include -I $(TOP)/src/arch/i386/include
 NOOPT_CFLAGS=$(INCLUDES) $(CPUFLAGS) -Wall
 CFLAGS=$(NOOPT_CFLAGS) -O2
 
@@ -37,6 +37,7 @@ OBJECTS += serial_subr.o
 OBJECTS += mpspec.o
 OBJECTS += microcode.o
 OBJECTS += keyboard.o
+OBJECTS += ioapic.o
 #LINUX=$(TOP)/../linux-2.4.0-test6.via/
 LINUX=$(TOP)/../linux-2.4.0-via/
 
@@ -91,6 +92,9 @@ fill_inbuf.o: $(TOP)/src/lib/fill_inbuf.c
 	cc $(CFLAGS) -c $<
 
 params.o: $(TOP)/src/lib/params.c
+	cc $(CFLAGS) $(LINUXINCLUDE) -c $<
+
+ioapic.o: $(TOP)/src/cpu/p6/ioapic.c
 	cc $(CFLAGS) $(LINUXINCLUDE) -c $<
 
 hardwaremain.o: $(TOP)/src/lib/hardwaremain.c

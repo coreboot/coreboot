@@ -243,12 +243,9 @@ spd_set_drb_loop_top:
 	movl %edi, %esi
 20:
 	/* Compute the end address for the DRB register */
-	// Has to be at least 64 MB? Not sure what Eric Biederman was doing
-	// here, but I think minimum SDRAM is 64 MB, so that would fit. 
-	// this covers somewhat for buggy SDRAMs. -- rgm
-	// If it's smaller, assume it is not there. 
-	// 2^3=8, times 8 mb, is 64 mb. 
-	cmpl $3, %edi
+	// If it is >= 8, i.e. >= 2^8 or 256, skip it.
+	// >= 8 is a bogus value. 
+	cmpl $8, %edi
 	jae 21f
 	movl $1, %eax
 	movl %edi, %ecx
@@ -263,7 +260,7 @@ spd_set_drb_loop_top:
 	PCI_WRITE_CONFIG_BYTE
 	
 	/* Compute the end address for the DRB register */
-	cmpl $3, %esi
+	cmpl $8, %esi
 	jae 30f
 	mov $1, %eax
 	movl %esi, %ecx

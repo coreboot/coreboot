@@ -10,7 +10,7 @@ ldscript cpu/i386/reset16.lds
 ##
 ## Startup code for secondary CPUS
 ##
-mainboardinit arch/i386/smp/secondary.inc
+#mainboardinit arch/i386/smp/secondary.inc
 
 mainboardinit northbridge/intel/440gx/reset_test.inc
 

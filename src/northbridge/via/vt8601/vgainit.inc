@@ -21,3 +21,32 @@ CS_WRITE($0xfb, $FBREG) // VGA enable
 
 #endif
 
+#if VIDEO_CONSOLE
+
+/*
+ * by Steve M. Gehlbach, Ph.D.
+ * steve @ kesa . com
+ *
+ * 9/7/03 smg
+ * minor chipset settings for vga
+ * more work needed for init, since reboot
+ * from linux has problems (hdwr reset okay)
+ *
+ */
+	// set shadow ram to award settings
+
+	CS_WRITE($0x61, $0x2a)
+	CS_WRITE($0x62, $0x00)
+	CS_WRITE($0x63, $0x20)
+
+	// turn off GA
+	
+	CS_WRITE($0x88,$0x00)
+
+	// enable vga, fb
+
+	CS_WRITE($0xF9,$0x42)
+	CS_WRITE($0xFB,$0xb0)
+
+#endif
+

@@ -6,6 +6,7 @@ ldscript cpu/i386/entry32.lds
 mainboardinit cpu/i386/reset16.inc
 ldscript cpu/i386/reset16.lds
 
+option VGA_HARDWARE_FIXUP=1
 mainboardinit superio/via/vt8231/setup_ethernet.inc
 mainboardinit superio/via/vt8231/setup_serial.inc
 mainboardinit pc80/serial.inc

@@ -2,8 +2,17 @@
 #include <pci.h>
 #include <pci_ids.h>
 #include <cpu/p5/io.h>
+#include <pc80/vga.h>
 
 #include <types.h>
+
+void northbridge_fixup();
+void southbridge_fixup();
+void video_init();
+void nvram_on();
+void keyboard_on();
+void pci_assign_irqs(unsigned bus, unsigned slot, const unsigned char pIntAtoD[4]);
+
 
 static const unsigned char southbridgeIrqs[4] = { 11, 5, 10, 12 };
 static const unsigned char enetIrqs[4] = { 11, 5, 10, 12 };
@@ -65,6 +74,15 @@ final_southbridge_fixup()
 
 	nvram_on();
 	keyboard_on();
+	southbridge_fixup();
+
+#ifdef VIDEO_CONSOLE
+	vga_hardware_fixup();
+	// this has to be done here due to pci not always being up
+	// earlier and pci resources are not ready
+	video_init();
+#endif
+
 	pci_routing_fixup();
 }
 

@@ -234,7 +234,7 @@ end
 define _RAMBASE
 	default 0x00100000
 	format "0x%x"
-	export used
+	export always
 	comment "Base address of RAM"
 end
 define USE_CACHE_RAM

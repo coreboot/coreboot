@@ -761,17 +761,12 @@ atapi_request_sense(struct harddisk_info *info, uint8_t *asc, uint8_t *ascq)
 {
 	uint8_t packet[12];
 	uint8_t buf[18];
-	int i;
 
 	memset(packet, 0, sizeof packet);
 	packet[0] = 0x03; /* REQUEST SENSE */
 	packet[4] = sizeof buf;
 	if (pio_packet(info, 1, packet, sizeof packet, buf, sizeof buf) != 0)
 		return -1;
-
-	for (i = 0; i < sizeof buf; i++)
-		printk_debug("%02x ", buf[i]);
-	printk_debug("\n");
 
 	if (asc)
 		*asc = buf[12];
@@ -828,7 +823,6 @@ ok:
 		| (uint32_t) buf[5] << 16
 		| (uint32_t) buf[6] << 8
 		| (uint32_t) buf[7] << 0;
-	printk_debug("block_len=%u\n", block_len);
 	if (block_len != IDE_SECTOR_SIZE && block_len != CDROM_SECTOR_SIZE) {
 		printk_info("Unsupported sector size %u\n", block_len);
 		return -1;
@@ -840,7 +834,6 @@ ok:
 		| (uint32_t) buf[2] << 8
 		| (uint32_t) buf[3] << 0;
 
-	printk_debug("sectors=%u\n", sectors);
 	if (info->hw_sector_size == CDROM_SECTOR_SIZE)
 		sectors <<= 2; /* # of sectors in 512-byte "soft" sector */
 	if (sectors != info->sectors)

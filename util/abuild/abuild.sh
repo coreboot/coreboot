@@ -257,8 +257,9 @@ function build_target
 	if [ $? -eq 0 ]; then
 		compile_target $VENDOR $MAINBOARD
 	fi
-}
+
 	echo
+}
 
 function myhelp
 {
@@ -310,7 +311,7 @@ fi
 eval set "$args"
 while true ; do
 	case "$1" in
-		-t|--target)	shift; target=$1; shift;;
+		-t|--target)	shift; target="$1"; shift;;
 		-a|--all)	shift; buildall=true;;
 		-b|--broken)    shift; buildbroken=true;;
 		-v|--verbose)	shift; verbose=true;;
@@ -328,8 +329,8 @@ debug "LBROOT=$LBROOT"
 
 if [ "$target" != "" ]; then
 	# build a single board
-	VENDOR=`echo $target|tr -d \'|cut -f1 -d/`
-	MAINBOARD=`echo $target|tr -d \'|cut -f2 -d/`
+	VENDOR=`echo $target|cut -f1 -d/`
+	MAINBOARD=`echo $target|cut -f2 -d/`
 	build_target $VENDOR $MAINBOARD
 else
 	# build all boards per default

@@ -324,11 +324,19 @@ define SERIAL_CONSOLE
 	export used
 	comment "Log messages to serial console"
 end
+
+define DEFAULT_CONSOLE_LOGLEVEL
+	default 7
+	export always
+	comment "Console will log at this level unless changed"
+end
+
 define MAXIMUM_CONSOLE_LOGLEVEL
 	default 7
 	export always
-	comment "Console will log at this level"
+ 	comment "Error messages up to this level can be printed"
 end
+
 define NO_POST
 	default none
 	export always

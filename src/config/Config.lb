@@ -148,11 +148,10 @@ makerule clean
 	action	"rm -f linuxbios.* *~"
 	action	"rm -f linuxbios"
 	action	"rm -f ldscript.ld"
-	action	"rm -f a.out *.s *.l *.o"
-	action	"rm -f TAGS tags"
-	action	"rm -f docipl"
+	action	"rm -f a.out *.s *.l *.o *.E *.inc"
+	action	"rm -f TAGS tags romcc"
+	action	"rm -f docipl buildrom chips.c *chip.c linuxbios_c* linuxbios_pay*"
 	action	"rm -f build_opt_tbl option_table.c crt0.S"
-	action	"rm -f chip_*.c"
 end
 
 # do standard config files that the user need not specify

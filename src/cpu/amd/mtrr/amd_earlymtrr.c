@@ -27,7 +27,12 @@ static void amd_early_mtrr_init(void)
 	};
 	msr_t msr;
 
-	disable_cache();
+	/* wbinvd which is called in disable_cache() causes hangs on Opterons
+	 * if there is no data in the cache.
+	 * At this point we should not have the cache enabled so don't bother
+	 * disabling it.
+	 */
+	/* disable_cache(); */
 	do_early_mtrr_init(mtrr_msrs);
 
 	/* Enable memory access for 0 - 1MB using top_mem */

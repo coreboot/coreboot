@@ -185,7 +185,7 @@ option _RAMBASE=0x00008000
 
 ## For the trick of using cache as ram
 ## put the fake ram location at this address
-#option CACHE_RAM_BASE=0xfff70000
+option CACHE_RAM_BASE=0xfff70000
 option CACHE_RAM_SIZE=0x00010000
 
 ##

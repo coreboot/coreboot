@@ -1,9 +1,9 @@
-# Sample config file for building AMD Solo7 images
-# This will make a target directory of ./solo
+# Sample config file for building AMD Quartet images
+# This will make a target directory of ./quartet
 
 loadoptions
 
-target solo
+target quartet
 
 uses ARCH
 uses CONFIG_COMPRESS
@@ -51,8 +51,8 @@ uses LINUXBIOS_EXTRA_VERSION
 
 option CONFIG_CHIP_CONFIGURE=1
 
-option  MAXIMUM_CONSOLE_LOGLEVEL=8
-option  DEFAULT_CONSOLE_LOGLEVEL=8
+option  MAXIMUM_CONSOLE_LOGLEVEL=7
+option  DEFAULT_CONSOLE_LOGLEVEL=7
 option  CONFIG_CONSOLE_SERIAL8250=1
 
 option CPU_FIXUP=1
@@ -63,7 +63,7 @@ option INTEL_PPRO_MTRR=1
 option k7=1
 option k8=1
 
-option ROM_SIZE=262144
+option ROM_SIZE=524288
 
 
 option HAVE_OPTION_TABLE=1
@@ -74,7 +74,7 @@ option HAVE_FALLBACK_BOOT=1
 ### Compute the location and size of where this firmware image
 ### (linuxBIOS plus bootloader) will live in the boot rom chip.
 ###
-option FALLBACK_SIZE=131072
+option FALLBACK_SIZE=0x40000
 
 ## LinuxBIOS C code runs at this location in RAM
 option _RAMBASE=0x00004000
@@ -86,12 +86,12 @@ option _RAMBASE=0x00004000
 ###
 
 #
-# AMD Solo
+# AMD Quartet
 romimage "normal"
 	option USE_FALLBACK_IMAGE=0
 	option ROM_IMAGE_SIZE=0x10000
 	option LINUXBIOS_EXTRA_VERSION=".0Normal"
-	mainboard amd/solo
+	mainboard amd/quartet
 	payload /suse/stepan/tg3--ide_disk.zelf
 end
 
@@ -99,7 +99,7 @@ romimage "fallback"
 	option USE_FALLBACK_IMAGE=1
 	option ROM_IMAGE_SIZE=0x10000
 	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
-	mainboard amd/solo
+	mainboard amd/quartet
 	payload /suse/stepan/tg3--ide_disk.zelf
 end
 

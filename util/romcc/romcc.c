@@ -3,8 +3,8 @@
 #undef RELEASE_DATE
 #undef VERSION
 #define VERSION_MAJOR "0"
-#define VERSION_MINOR "66"
-#define RELEASE_DATE "8 November 2004"
+#define VERSION_MINOR "67"
+#define RELEASE_DATE "9 November 2004"
 #define VERSION VERSION_MAJOR "." VERSION_MINOR
 
 #include <stdarg.h>
@@ -336,6 +336,7 @@ struct file_state {
 	int report_line;
 	const char *report_name;
 	const char *report_dir;
+	int macro : 1;
 };
 struct hash_entry;
 struct token {
@@ -4696,6 +4697,7 @@ static int compile_macro(struct compile_state *state,
 	file->report_line = 1;
 	file->report_name = file->basename;
 	file->report_dir  = file->dirname;
+	file->macro       = 1;
 	file->prev = *filep;
 	*filep = file;
 	return 1;
@@ -4978,6 +4980,7 @@ static void compile_file(struct compile_state *state, const char *filename, int 
 	file->report_line = 1;
 	file->report_name = file->basename;
 	file->report_dir  = file->dirname;
+	file->macro       = 0;
 
 	file->prev = state->file;
 	state->file = file;
@@ -5052,6 +5055,7 @@ static void preprocess(struct compile_state *state, struct token *current_token)
 			file->report_line = override_line - 1;
 			file->report_name = name;
 			file->report_dir = dir;
+			file->macro      = 0;
 		}
 		break;
 	}
@@ -5085,6 +5089,7 @@ static void preprocess(struct compile_state *state, struct token *current_token)
 			dir[dir_len] = '\0';
 			file->report_name = name;
 			file->report_dir = dir;
+			file->macro      = 0;
 		}
 		break;
 	}
@@ -24643,6 +24648,7 @@ static void print_preprocessed_tokens(struct compile_state *state)
 	filename = 0;
 	line = 0;
 	for(;;) {
+		struct file_state *file;
 		struct token *tk;
 		const char *token_str;
 		tok = peek(state);
@@ -24655,23 +24661,29 @@ static void print_preprocessed_tokens(struct compile_state *state)
 			tk->str_len ? tk->val.str :
 			tokens[tk->tok];
 		
-		if ((state->file->line != line) || 
-			(state->file->basename != filename)) {
+
+		file = state->file;
+		while(file->macro && file->prev) {
+			file = file->prev;
+		}
+		if (!file->macro && 
+			((file->line != line) || (file->basename != filename))) 
+		{
 			int i, col;
-			if ((state->file->basename == filename) &&
-				(line < state->file->line)) {
-				while(line < state->file->line) {
+			if ((file->basename == filename) &&
+				(line < file->line)) {
+				while(line < file->line) {
 					fprintf(fp, "\n");
 					line++;
 				}
 			}
 			else {
 				fprintf(fp, "\n#line %d \"%s\"\n",
-					state->file->line, state->file->basename);
+					file->line, file->basename);
 			}
-			line = state->file->line;
-			filename = state->file->basename;
-			col = get_col(state->file) - strlen(token_str);
+			line = file->line;
+			filename = file->basename;
+			col = get_col(file) - strlen(token_str);
 			for(i = 0; i < col; i++) {
 				fprintf(fp, " ");
 			}

@@ -94,8 +94,8 @@ romimage "fallback"
 #	option ROM_SECTION_SIZE=0x100000
 	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
 	mainboard arima/hdama
-	payload ../../../../tg3--ide_disk.zelf
-#	payload ../../../../opteron_phase1_p4_noapic
+#	payload ../../../../tg3--ide_disk.zelf
+	payload ../../../../opteron_phase1_p4_noapic
 #	payload ../../../../../../hdama-1
 #	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
 end

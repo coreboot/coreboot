@@ -1,7 +1,7 @@
 #define ASSEMBLY 1
 
-#define MAXIMUM_CONSOLE_LOGLEVEL 6
-#define DEFAULT_CONSOLE_LOGLEVEL 6
+//#define MAXIMUM_CONSOLE_LOGLEVEL 6
+//#define DEFAULT_CONSOLE_LOGLEVEL 6
 
 #include <stdint.h>
 #include <device/pci_def.h>

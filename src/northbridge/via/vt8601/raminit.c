@@ -54,10 +54,6 @@ void dimms_read(unsigned long x)
 	volatile unsigned long y;
 	eax =  x;
 	for(c = 0; c < 6; c++) {
-		
-		print_debug("dimms_read: ");
-		print_debug_hex32(eax);
-		print_debug("\r\n");
 		y = * (volatile unsigned long *) eax;
 		eax += 0x10000000;
 	}
@@ -68,9 +64,6 @@ void dimms_write(int x)
 	uint8_t c;
 	unsigned long eax = x;
 	for(c = 0; c < 6; c++) {
-		print_debug("dimms_write: ");
-		print_debug_hex32(eax);
-		print_debug("\r\n");
 		*(volatile unsigned long *) eax = 0;
 		eax += 0x10000000;
 	}
@@ -109,14 +102,6 @@ dumpnorth(device_t north)
 
 static void sdram_set_registers(const struct mem_controller *ctrl) 
 {
-	static const uint16_t raminit_ma_reg_table[] = {
-		/* Values for MA type register to try */
-		0x0000, 0x8088, 0xe0ee,
-		0xffff // end mark
-	};
-	static const unsigned char ramregs[] = {0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 
-	  				0x56, 0x57};
-
 	device_t north = (device_t) 0;
 	uint8_t c, r;
 
@@ -193,67 +178,64 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	// high drive strength on MA[2:	13], we#, cas#, ras#
 	// As per Cindy Lee, set to 0x37, not 0x57
 	pci_write_config8(north,0x6D, 0x7f);
-
-	/* Initialize all banks at once */
-
 }
 
-/* slot is the dram slot. Base is the *8M base. */
-static unsigned char 
-do_module_size(unsigned char slot /*, unsigned char base) */) 
+/* slot is the dram slot. Return size of side0 in lower 16-bit,
+ * side1 in upper 16-bit, in units of 8MB */
+static unsigned long 
+spd_module_size(unsigned char slot) 
 { 
-	static const unsigned char log2[256] = {
-		[1] = 0, [2] = 1, [4] = 2, [8] = 3,
-		[16]=4, [32]=5, [64]=6, 
-		[128]=7
-	};
-	static const uint8_t ramregs[] = {0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 
-					  0x56, 0x57};
-	device_t north = 0;
 	/* for all the DRAMS, see if they are there and get the size of each
 	 * module. This is just a very early first cut at sizing.
 	 */
 	/* we may run out of registers ... */
-	unsigned char width, banks, rows, cols, reg;
-	unsigned char value = 0;
-	unsigned char module = 0xa1 | (slot << 1);
+	unsigned int banks, rows, cols, reg;
+	unsigned int value = 0;
+	unsigned int module = ((0x50 + slot) << 1) + 1;
 	/* is the module there? if byte 2 is not 4, then we'll assume it 
 	 * is useless. 
 	 */
+	print_info("Slot "); 
+	print_info_hex8(slot); 
 	if (smbus_read_byte(module, 2) != 4) {
-		print_err("Slot "); 
-		print_err_hex8(slot); 
-		print_err(" is empty\r\n");
-		goto done;
+		print_info(" is empty\r\n");
+		return 0;
 	}
+	print_info(" is SDRAM ");
 	
-	//print_debug_hex8(slot);
-	//    print_debug(" is SDRAM\n");
-	width = smbus_read_byte(module, 6) | (smbus_read_byte(module,7)<<0);
 	banks = smbus_read_byte(module, 17);
 	/* we're going to assume symmetric banks. Sorry. */
 	cols = smbus_read_byte(module, 4)  & 0xf;
 	rows = smbus_read_byte(module, 3)  & 0xf;
 	/* grand total. You have rows+cols addressing, * times of banks, times
-	 * width of data in bytes*/
-	/* do this in terms of address bits. Then subtract 23 from it. 
-	 * That might do it.
-	 */
-	value = cols + rows + log2[banks] + log2[width];
-	value -= 23;
-	/* now subtract 3 more bits as these are 8-bit bytes */
-	value -= 3;
-	//    print_debug_hex8(value);
-	//    print_debug(" is the # bits for this bank\n");
-	/* now put that size into the correct register */
-	value = (1 << value);
- done:
-	reg = ramregs[slot];
-	
-	//    print_debug_hex8(value); print_debug(" would go into ");
-	//    print_debug_hex8(ramregs[reg]); print_debug("\n");
-	//    pci_write_config8(north, ramregs[reg], value);
+	 * width of data in bytes */
+	/* Width is assumed to be 64 bits == 8 bytes */
+	value = (1 << (cols + rows)) * banks * 8;
+	print_info_hex32(value);
+	print_info(" bytes ");
+	/* Return in 8MB units */
+	value >>= 23;
+
+	/* We should have single or double side */
+	if (smbus_read_byte(module, 5) == 2) {
+		print_info("x2");
+		value = (value << 16) | value;
+	}
+	print_info("\r\n");
 	return value;
+
+}
+
+static int
+spd_num_chips(unsigned char slot) 
+{ 
+	unsigned int module = ((0x50 + slot) << 1) + 1;
+	unsigned int width;
+
+	width = smbus_read_byte(module, 13);
+	if (width == 0)
+		width = 8;
+	return 64 / width;
 }
 
 static void sdram_set_spd_registers(const struct mem_controller *ctrl)
@@ -283,20 +265,32 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	 */
 }
 
+static void set_ma_mapping(device_t north, int slot, int type)
+{
+    unsigned char reg, val;
+    int shift;
+
+    reg = 0x58 + slot/2;
+    if (slot%2 >= 1)
+        shift = 0;
+    else
+        shift = 4;
+
+    val = pci_read_config8(north, reg);
+    val &= ~(0xf << shift);
+    val |= type << shift;
+    pci_write_config8(north, reg, val);
+}
+
+
 static void sdram_enable(int controllers, const struct mem_controller *ctrl) 
 {
 	unsigned char i;
-	static const uint16_t raminit_ma_reg_table[] = {
-		/* Values for MA type register to try */
-		0x0000, 0x8088, 0xe0ee,
-		0xffff // end mark
-	};
 	static const uint8_t ramregs[] = {
 		0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 0x56, 0x57
 	};
-
 	device_t north = 0;
-	uint8_t c, r, base;
+	uint32_t size, base, slot, ma;
 	/* begin to initialize*/
 	// I forget why we need this, but we do
 	dimms_write(0xa55a5aa5);
@@ -363,125 +357,38 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	// enable multi-page open
 	pci_write_config8(north,0x6B, 0x0d);
 	
-	/* Begin auto-detection
-	 * Find the first bank with DIMM equipped. */
-	
-	/* Maximum possible memory in bank 0, none in other banks.
-	 * Starting from bank 0, we fill 0 in these registers
-	 * until memory is found. */
-	pci_write_config8(north,0x5A, 0xff);
-	pci_write_config8(north,0x5B, 0xff);
-	pci_write_config8(north,0x5C, 0xff);
-	pci_write_config8(north,0x5D, 0xff);
-	pci_write_config8(north,0x5E, 0xff);
-	pci_write_config8(north,0x5F, 0xff);
-	pci_write_config8(north,0x56, 0xff);
-	pci_write_config8(north,0x57, 0xff);
-	dumpnorth(north);
-	print_debug("MA\r\n");
-	for(c = 0; c < 8; c++) {
-		/* Write different values to 0 and 8, then read from 0.
-		 * If values of address 0 match, we have something there. */
-		print_debug("write to 0\r\n");
-		*(volatile unsigned long *) 0 = 0x12345678;
-		
-		/* LEAVE THIS HERE. IT IS ESSENTIAL. OTHERWISE BUFFERING
-		 * WILL FOOL YOU!
-		 */
-		print_debug("write to 8\r\n");
-		*(volatile unsigned long *) 8 = 0x87654321;
-		
-		if (*(volatile unsigned long *) 0 != 0x12345678) {
-			print_debug("no memory in this bank\r\n");
-			/* No memory in this bank. Tell it to the bridge. */
-			pci_write_config8(north,ramregs[c], 0);
-		} 
-		/* found something */
-		{
-			uint8_t best = 0;
-			
-			/* Detect MA mapping type of the bank. */
-			
-			for(r = 0; r < 3; r++) {
-				volatile unsigned long esi = 0;
-				volatile unsigned long eax = 0;
-				pci_write_config8(north,0x58, raminit_ma_reg_table[r]);
-				
-				* (volatile unsigned long *) eax = 0;
-				print_debug(" done write to eax\r\n");
-				// Write to addresses with only one address bit
-				// on, from 0x80000000 to 0x00000008 (lower 3 bits
-				// are ignored, assuming 64-bit bus).  Then what
-				// is read at address 0 is the value written to
-				// the lowest address where it gets
-				// wrap-around. That address is either the size of
-				// the bank, or a missing bit due to incorrect MA
-				// mapping.
-				eax = 0x80000000;
-				while (eax !=  4) {
-					* (volatile unsigned long *) eax = eax;
-					//print_debug_hex32(eax);
-					outb(eax&0xff, 0x80);
-					eax >>= 1;
-				}
-				print_debug(" done read to eax\r\n");
-				eax = * (unsigned long *)0;
-				/* oh boy ... what is this. 
-				   movl 0, %eax
-				   cmpl %eax, %esi
-				   jnc 3f
-				*/
-				print_debug("eax and esi: ");
-				print_debug_hex32(eax); print_debug(" ");
-				print_debug_hex32(esi); print_debug("\r\n");
-				
-				if (eax > esi) { /* ??*/
-					
-					// This is the current best MA mapping.
-					// Save the address and its MA mapping value.
-					best = r;
-					esi = eax;
-				}
-			}
-		  
-			pci_write_config8(north,0x58, raminit_ma_reg_table[best]);
-			print_debug("enabled first bank of ram ... ma is ");
-			print_debug_hex8(pci_read_config8(north, 0x58));
-			print_debug("\r\n");
-		}
-	}
 	base = 0;
-	/* runs out of variable space. */
-	/* this is unrolled and constants used as much as possible to help
-	 * us not run out of registers.
-	 * we'll run out of code space instead :-)
-	 */
-	//  for(i = 0; i < 8; i++)
-	base = do_module_size(0); /*, base);*/
-	pci_write_config8(north, ramregs[0], base);
-	base += do_module_size(1); /*, base);*/
-	pci_write_config8(north, ramregs[1], base);
-	/* runs out of code space. */
-	for(i = 2; i < 8; i++){
-		pci_write_config8(north, ramregs[i], base);
-		/*
-		  pci_write_config8(north, ramregs[3], base);
-		  pci_write_config8(north, ramregs[4], base);
-		  pci_write_config8(north, ramregs[5], base);
-		  pci_write_config8(north, ramregs[6], base);
-		  pci_write_config8(north, ramregs[7], base);
-		*/
+	for(slot = 0; slot < 4; slot++) {
+		size = spd_module_size(slot);
+		/* side 0 */
+		base += size & 0xffff;
+		pci_write_config8(north, ramregs[2*slot], base);
+		/* side 1 */
+		base += size >> 16;
+		if (base > 0xff)
+			base = 0xff;
+		pci_write_config8(north, ramregs[2*slot + 1], base);
+
+		if (!size)
+			continue;
+
+		/* Calculate the value of MA mapping type register,
+		 * based on size of SDRAM chips. */
+		size = (size & 0xffff) << (3 + 3);
+			/* convert module size to be in Mbits */
+		size /= spd_num_chips(slot);
+		print_debug_hex16(size);
+		print_debug(" is the chip size\r\n");
+		if (size < 64)
+			ma = 0;
+		if (size < 256)
+			ma = 8;
+		else
+			ma = 0xe;
+		print_debug_hex16(ma);
+		print_debug(" is the MA type\r\n");
+		set_ma_mapping(north, slot, ma);
 	}
-	/*
-	  base = do_module_size(0xa0, base);
-	  base = do_module_size(0xa0, base);
-	  base = do_module_size(0xa0, base);
-	  base = do_module_size(0xa0, base);
-	  base = do_module_size(0xa0, base);
-	  base = do_module_size(0xa0, base);*/
 	print_err("vt8601 done\r\n");
-	/*
 	dumpnorth(north);
-	udelay(1000);
-	*/
 }

@@ -219,7 +219,7 @@ static void main(void)
 	memreset_setup();
 	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
 
-#if 0
+#if 1
 	dump_pci_devices();
 #endif
 #if 0

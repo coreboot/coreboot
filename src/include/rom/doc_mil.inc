@@ -21,25 +21,11 @@ flash_command:
 	movw	%bp, %bx			# %bp is current page number
 
 flash_address:
-#ifndef SIS550_BUG
-	shll	$0x08, %ebx
-	movb	$0x03, %cl			# this one is DANGEROUS but I am
-						# sure the upper 3 bytes == 0x00
-
-	movb	$0x05, 0x04(%di)		# start address cycle
-0:
-	movb	%bl, (%si)			# write address to CDSNIO
-	shrw	$0x08, %bx			# shift next address byte
-	loop	0b
-#else /* SIS550_BUG */
-
 	movb	$0x05, 0x04(%di)		# start address cycle
 
-	movb	$0x00, (%si)
-	movw	%bp, %bx
-	movb	%bl, (%si)
-	movb	%bh, (%si)
-#endif
+	movb	$0x00, (%si)			# Address Bit 0-7, always 0
+	movb	%bl, (%si)			# Address Bit 9-16, page # low byte
+	movb	%bh, (%si)			# Address Bit 17-24, page # high byte
 
 	call	doc_cycle_end
 

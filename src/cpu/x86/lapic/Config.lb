@@ -1,0 +1,3 @@
+object lapic.o
+object lapic_cpu_init.o
+object secondary.S

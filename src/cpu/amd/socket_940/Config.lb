@@ -1,0 +1,3 @@
+config chip.h
+object socket_940.o
+dir /cpu/amd/model_fxx

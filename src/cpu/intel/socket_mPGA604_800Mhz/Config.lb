@@ -1,0 +1,3 @@
+config chip.h
+object socket_mPGA604_800Mhz.o
+dir /cpu/intel/model_f3x

@@ -37,7 +37,7 @@ raminit:
 	CS_WRITE($0x55, $0x07)
 
 	/* DRAM MA Map Type */
-	CS_WRITE($0x58, $0x71)
+	CS_WRITE($0x58, $0xc0)
 
 	/* DRAM bank 0 - 3 size = 512M */
 	CS_WRITE($0x5a, $0x08)
@@ -54,11 +54,11 @@ raminit:
 	/* DRAM Arbitration Timer */
 	CS_WRITE($0x65, $0x32)
 	CS_WRITE($0x66, $0x01)
-	CS_WRITE($0x68, $0x59)
+	CS_WRITE($0x68, $0x41)
 
 	/* DRAM Frequency */
 	CS_WRITE($0x54, $0xe0)
-	CS_WRITE($0x69, $0x2d)
+	CS_WRITE($0x69, $0x25)
 
 	/* Enable CKE */
 	CS_WRITE($0x6b, $0x10)
@@ -123,9 +123,8 @@ raminit:
 	CS_WRITE($0x6b, $0x58)
 
 	/* Set the refreash rate */
-	CS_WRITE($0x6a, $0x86)
-
-	CS_WRITE($0x67, $0x39)
+	CS_WRITE($0x6a, $0x43)
+	CS_WRITE($0x67, $0x22)
 
 	/* pci */
 	CS_WRITE($0x70, $0x82)

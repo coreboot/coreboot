@@ -150,7 +150,7 @@ int verify_flash (struct flashchip * flash, char * buf, int verbose)
 		}
 		if (verbose) 
 			printf("\b\b\b\b\b\b\b\b\b\b");
-		i++
+		i++;
 	}
 	if (verbose)
 		printf("\n");

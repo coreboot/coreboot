@@ -58,10 +58,11 @@ static __inline__ int erase_block_49fl004 ( volatile unsigned char * bios ,unsig
 
         return(0);
 }
+
 static __inline__ int write_block_49fl004(volatile char * bios, 
-				       unsigned char * src,
-				       volatile unsigned char * dst, 
-				       unsigned int page_size)
+					  unsigned char * src,
+					  volatile unsigned char * dst, 
+					  unsigned int page_size)
 {
 	int i;
 	volatile char *Temp;

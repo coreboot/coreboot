@@ -29,8 +29,8 @@ static void enable_dev(struct device *dev)
 	dev->ops = &mainboard_operations;
 }
 
-struct chip_operations mainboard_emulation_qemu_i386_control = {
+struct chip_operations mainboard_emulation_qemu_i386_ops = {
 	.enable_dev = enable_dev, 
-	.name       = "qemu mainboard ",
+	//.name       = "qemu mainboard ",
 };
 

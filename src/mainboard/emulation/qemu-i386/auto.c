@@ -3,14 +3,12 @@
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
-#include <cpu/p6/apic.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
-#include "cpu/p6/earlymtrr.c"
 
 /*
  */
@@ -22,7 +20,7 @@ void udelay(int usecs)
 }
 
 #include "lib/delay.c"
-#include "cpu/p6/boot_cpu.c"
+#include "cpu/x86/lapic/boot_cpu.c"
 #include "debug.c"
 
 static void main(void)

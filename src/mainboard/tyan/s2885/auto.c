@@ -151,16 +151,13 @@ static void main(void)
                 {
                         .udev = PCI_DEV(0, 0x18, 0),
                         .upos = 0xc0,
-                        .devreg = 0xe2,
-                        .mindev = 1,
-                },
+                        .devreg = 0xe0,
+                }, 
                 {
                         .udev = PCI_DEV(0, 0x18, 0),
                         .upos = 0x80,
-                        .devreg = 0xe6,
-                        .mindev = 5,
-                
-                },      
+                        .devreg = 0xe4,
+                },
         };
         int needs_reset;
 

@@ -12,7 +12,7 @@ static unsigned ht_lookup_slave_capability(device_t dev)
 	hdr_type &= 0x7f;
 
 	if ((hdr_type == PCI_HEADER_TYPE_NORMAL) ||
-		(hdr_type == PCI_HEADER_TYPE_BRIDGE)) {
+	    (hdr_type == PCI_HEADER_TYPE_BRIDGE)) {
 		pos = PCI_CAPABILITY_LIST;
 	}
 	if (pos > PCI_CAP_LIST_NEXT) {
@@ -48,7 +48,7 @@ static void ht_collapse_previous_enumeration(unsigned bus)
 		
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
 		if ((id == 0xffffffff) || (id == 0x00000000) ||
-			(id == 0x0000ffff) || (id == 0xffff0000)) {
+		    (id == 0x0000ffff) || (id == 0xffff0000)) {
 			continue;
 		}
 		pos = ht_lookup_slave_capability(dev);
@@ -62,7 +62,6 @@ static void ht_collapse_previous_enumeration(unsigned bus)
 		pci_write_config16(dev, pos + PCI_CAP_FLAGS, flags);
 	}
 }
-
 
 static unsigned ht_read_freq_cap(device_t dev, unsigned pos)
 {
@@ -90,27 +89,27 @@ static unsigned ht_read_freq_cap(device_t dev, unsigned pos)
 	return freq_cap;
 }
 
-#define LINK_OFFS(WIDTH,FREQ,FREQ_CAP) \
+#define LINK_OFFS(WIDTH,FREQ,FREQ_CAP)					\
 	(((WIDTH & 0xff) << 16) | ((FREQ & 0xff) << 8) | (FREQ_CAP & 0xFF))
 
 #define LINK_WIDTH(OFFS)    ((OFFS >> 16) & 0xFF)
 #define LINK_FREQ(OFFS)     ((OFFS >> 8) & 0xFF)
 #define LINK_FREQ_CAP(OFFS) ((OFFS) & 0xFF)
 
-#define PCI_HT_HOST_OFFS LINK_OFFS( \
-	PCI_HT_CAP_HOST_WIDTH, \
-	PCI_HT_CAP_HOST_FREQ, \
-	PCI_HT_CAP_HOST_FREQ_CAP)
+#define PCI_HT_HOST_OFFS LINK_OFFS(		\
+		PCI_HT_CAP_HOST_WIDTH,		\
+		PCI_HT_CAP_HOST_FREQ,		\
+		PCI_HT_CAP_HOST_FREQ_CAP)
 
-#define PCI_HT_SLAVE0_OFFS LINK_OFFS( \
-	PCI_HT_CAP_SLAVE_WIDTH0, \
-	PCI_HT_CAP_SLAVE_FREQ0, \
-	PCI_HT_CAP_SLAVE_FREQ_CAP0)
+#define PCI_HT_SLAVE0_OFFS LINK_OFFS(		\
+		PCI_HT_CAP_SLAVE_WIDTH0,	\
+		PCI_HT_CAP_SLAVE_FREQ0,		\
+		PCI_HT_CAP_SLAVE_FREQ_CAP0)
 
-#define PCI_HT_SLAVE1_OFFS LINK_OFFS( \
-	PCI_HT_CAP_SLAVE_WIDTH1, \
-	PCI_HT_CAP_SLAVE_FREQ1, \
-	PCI_HT_CAP_SLAVE_FREQ_CAP1)
+#define PCI_HT_SLAVE1_OFFS LINK_OFFS(		\
+		PCI_HT_CAP_SLAVE_WIDTH1,	\
+		PCI_HT_CAP_SLAVE_FREQ1,		\
+		PCI_HT_CAP_SLAVE_FREQ_CAP1)
 
 static int ht_optimize_link(
 	device_t dev1, uint8_t pos1, unsigned offs1,
@@ -212,8 +211,8 @@ static int ht_setup_chain(device_t udev, unsigned upos)
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
 		/* If the chain is enumerated quit */
 		if (((id & 0xffff) == 0x0000) || ((id & 0xffff) == 0xffff) ||
-			(((id >> 16) & 0xffff) == 0xffff) ||
-			(((id >> 16) & 0xffff) == 0x0000)) {
+		    (((id >> 16) & 0xffff) == 0xffff) ||
+		    (((id >> 16) & 0xffff) == 0x0000)) {
 			break;
 		}
 		pos = ht_lookup_slave_capability(dev);
@@ -242,111 +241,130 @@ static int ht_setup_chain(device_t udev, unsigned upos)
 	} while((last_unitid != next_unitid) && (next_unitid <= 0x1f));
 	return reset_needed;
 }
+
 struct ht_chain {
-        device_t udev;
-        unsigned upos;
-        unsigned devreg; 
-        unsigned mindev; 
-};              
+	device_t udev;
+	unsigned upos;
+	unsigned devreg; 
+};
+
+static int ht_setup_chainx(device_t udev, unsigned upos, unsigned next_unitid)
+{
+	unsigned last_unitid;
+	unsigned uoffs;
+	int reset_needed=0;
+
+	uoffs = PCI_HT_HOST_OFFS;
+	do {
+		uint32_t id;
+		uint8_t pos;
+		unsigned flags, count;
+		device_t dev = PCI_DEV(0, 0, 0);
+		last_unitid = next_unitid;
+
+		id = pci_read_config32(dev, PCI_VENDOR_ID);
+		/* If the chain is enumerated quit */
+		if (((id & 0xffff) == 0x0000) || ((id & 0xffff) == 0xffff) ||
+		    (((id >> 16) & 0xffff) == 0xffff) ||
+		    (((id >> 16) & 0xffff) == 0x0000)) {
+			break;
+		}
+		pos = ht_lookup_slave_capability(dev);
+		if (!pos) {
+			print_err("HT link capability not found\r\n");
+			break;
+		}
+		/* Setup the Hypertransport link */
+		reset_needed |= ht_optimize_link(udev, upos, uoffs, dev, pos, PCI_HT_SLAVE0_OFFS);
+
+		/* Update the Unitid of the current device */
+		flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
+		flags &= ~0x1f; /* mask out the bse Unit ID */
+		flags |= next_unitid & 0x1f;
+		pci_write_config16(dev, pos + PCI_CAP_FLAGS, flags);
+
+		/* Remeber the location of the last device */
+		udev = PCI_DEV(0, next_unitid, 0);
+		upos = pos;
+		uoffs = PCI_HT_SLAVE1_OFFS;
+
+		/* Compute the number of unitids consumed */
+		count = (flags >> 5) & 0x1f;
+		next_unitid += count;
+
+	} while((last_unitid != next_unitid) && (next_unitid <= 0x1f));
+	if(reset_needed!=0) next_unitid |= 0xffff0000;
+	return next_unitid;
+}
 
 static int ht_setup_chains(const struct ht_chain *ht_c, int ht_c_num)
-{               
-        /* Assumption the HT chain that is bus 0 has the HT I/O Hub on it. 
-         * On most boards this just happens.  If a cpu has multiple
-         * non Coherent links the appropriate bus registers for the
-         * links needs to be programed to point at bus 0.
-         */     
-        unsigned next_unitid, last_unitid;
-        int reset_needed; 
-        unsigned uoffs;
-        unsigned upos;
-        device_t udev;
-        int i;
+{
+	/* Assumption the HT chain that is bus 0 has the HT I/O Hub on it. 
+	 * On most boards this just happens.  If a cpu has multiple
+	 * non Coherent links the appropriate bus registers for the
+	 * links needs to be programed to point at bus 0.
+	 */
+	unsigned next_unitid;
+	int reset_needed; 
+	unsigned upos;
+	device_t udev;
+	int i;
 
-        /* Make certain the HT bus is not enumerated */
-        ht_collapse_previous_enumeration(0);
+	/* Make certain the HT bus is not enumerated */
+	ht_collapse_previous_enumeration(0);
 
-        reset_needed = 0;
-        next_unitid = 1;
+	reset_needed = 0;
+	next_unitid = 1;
 
 
-        for(i=0;i<ht_c_num;i++) {
-#if 0
-        unsigned tmp;
-        tmp = pci_read_config8(PCI_DEV(0,0x18,1),ht_c[i].devreg);
-#endif
+	for(i=0;i<ht_c_num;i++) {
+		uint32_t reg;
+		uint8_t reg8;
+		reg = pci_read_config32(PCI_DEV(0,0x18,1), ht_c[i].devreg);
+		reg |= (0xff<<24) | 7;
+		reg &= ~(0xff<<16);
+		pci_write_config32(PCI_DEV(0,0x18,1), ht_c[i].devreg, reg);
 
-        pci_write_config8(PCI_DEV(0,0x18,1), ht_c[i].devreg, 0);
 #if CONFIG_MAX_CPUS > 1 
-        pci_write_config8(PCI_DEV(0,0x19,1), ht_c[i].devreg, 0);
+		pci_write_config32(PCI_DEV(0,0x19,1), ht_c[i].devreg, reg);
 #endif
 #if CONFIG_MAX_CPUS > 2
-        pci_write_config8(PCI_DEV(0,0x1a,1), ht_c[i].devreg, 0);
-        pci_write_config8(PCI_DEV(0,0x1b,1), ht_c[i].devreg, 0);
+		pci_write_config32(PCI_DEV(0,0x1a,1), ht_c[i].devreg, reg);
+		pci_write_config32(PCI_DEV(0,0x1b,1), ht_c[i].devreg, reg);
 #endif
 
-        uoffs = PCI_HT_HOST_OFFS;
-        upos = ht_c[i].upos;
-        udev = ht_c[i].udev;
-        do {
-                uint32_t id;
-                uint8_t pos;
-                unsigned flags, count;
-                device_t dev = PCI_DEV(0, 0, 0);
-                last_unitid = next_unitid;
-                
-                id = pci_read_config32(dev, PCI_VENDOR_ID);
-                /* If the chain is enumerated quit */
-                if (((id & 0xffff) == 0x0000) || ((id & 0xffff) == 0xffff) ||
-                        (((id >> 16) & 0xffff) == 0xffff) ||
-                        (((id >> 16) & 0xffff) == 0x0000)) {
-                        break;
-                }       
-                pos = ht_lookup_slave_capability(dev);
-                if (!pos) {
-                        print_err("HT link capability not found\r\n");
-                        break;
-                }
-                /* Setup the Hypertransport link */
-                reset_needed |= ht_optimize_link(udev, upos, uoffs, dev, pos, PCI_HT_SLAVE0_OFFS);
+		//Store dev min
+		reg8 = next_unitid & 0xff ;
+		upos = ht_c[i].upos;
+		udev = ht_c[i].udev;
 
-                /* Update the Unitid of the current device */
-                flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
-                flags &= ~0x1f; /* mask out the bse Unit ID */
-                flags |= next_unitid & 0x1f;
-                pci_write_config16(dev, pos + PCI_CAP_FLAGS, flags);
+		next_unitid = ht_setup_chainx(udev,upos,next_unitid);
+		if((next_unitid & 0xffff0000) == 0xffff0000) {
+			reset_needed |= 1;
+			next_unitid &=0x0000ffff;
+		}
 
-                /* Remeber the location of the last device */
-                udev = PCI_DEV(0, next_unitid, 0);
-                upos = pos;
-                uoffs = PCI_HT_SLAVE1_OFFS;
-
-                /* Compute the number of unitids consumed */
-                count = (flags >> 5) & 0x1f;
-                next_unitid += count;
-
-        } while((last_unitid != next_unitid) && (next_unitid <= 0x1f));
-#if 0
-        pci_write_config8(PCI_DEV(0,0x18,1), ht_c[i].devreg, tmp);
+		//set dev min
+		pci_write_config8(PCI_DEV(0,0x18,1), ht_c[i].devreg+2, reg8);
 #if CONFIG_MAX_CPUS > 1 
-        pci_write_config8(PCI_DEV(0,0x19,1), ht_c[i].devreg, tmp);
+		pci_write_config8(PCI_DEV(0,0x19,1), ht_c[i].devreg+2, reg8);
 #endif
 #if CONFIG_MAX_CPUS > 2
-        pci_write_config8(PCI_DEV(0,0x1a,1), ht_c[i].devreg, tmp);
-        pci_write_config8(PCI_DEV(0,0x1b,1), ht_c[i].devreg, tmp);
+		pci_write_config8(PCI_DEV(0,0x1a,1), ht_c[i].devreg+2, reg8);
+		pci_write_config8(PCI_DEV(0,0x1b,1), ht_c[i].devreg+2, reg8);
 #endif
-#else
-        pci_write_config8(PCI_DEV(0,0x18,1), ht_c[i].devreg, ht_c[i].mindev);
-#if CONFIG_MAX_CPUS > 1 
-        pci_write_config8(PCI_DEV(0,0x19,1), ht_c[i].devreg, ht_c[i].mindev);
+
+		//Set dev max
+		reg8 = (next_unitid-1) & 0xff ;
+		pci_write_config8(PCI_DEV(0,0x18,1), ht_c[i].devreg+3, reg8);
+#if CONFIG_MAX_CPUS > 1
+		pci_write_config8(PCI_DEV(0,0x19,1), ht_c[i].devreg+3, reg8);
 #endif
 #if CONFIG_MAX_CPUS > 2
-        pci_write_config8(PCI_DEV(0,0x1a,1), ht_c[i].devreg, ht_c[i].mindev);
-        pci_write_config8(PCI_DEV(0,0x1b,1), ht_c[i].devreg, ht_c[i].mindev);
+		pci_write_config8(PCI_DEV(0,0x1a,1), ht_c[i].devreg+3, reg8);
+		pci_write_config8(PCI_DEV(0,0x1b,1), ht_c[i].devreg+3, reg8);
 #endif
-#endif
+	}
 
-        }
-
-        return reset_needed;
+	return reset_needed;
 }

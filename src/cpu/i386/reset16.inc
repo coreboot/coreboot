@@ -3,25 +3,19 @@
 .globl	reset_vector
 reset_vector:
 #if _ROMBASE >= 0xffff0000
-	/* Hmm.
-	 * _start_offset is the low 16 bits of _start.
-	 * Theoretically we should have problems but it compiles
-	 * and links properly with binutils 2.9.5 & 2.10.90
-	 * This is probably a case that needs fixing in binutils.
-	 * And then we can just use _start.
-	 * We also need something like the assume directive in
-	 * other assemblers to tell it where the segment registers
-	 * are pointing in memory right now.
+	/* jmp _start */
+	.byte  0xe9
+	.int   _start - ( . + 2 )
+	/* Note: The above jump is hand coded to work around bugs in binutils.
+	 * 5 byte are used for a 3 byte instruction.  This works because x86
+	 * is little endian and allows us to use supported 32bit relocations
+	 * instead of the weird 16 bit relocations that binutils does not
+	 * handle consistenly between versions because they are used so rarely.
 	 */
-	jmp	_start
-#elif (_ROMBASE < 0x100000)
-	ljmp	$((_ROMBASE & 0xf0000)>>4),$_start_offse);
 #else
-#error	_ROMBASE is an unsupported value
+# error _ROMBASE is an unsupported value
 #endif
-
 	. = 0x8;
 	.code32
 	jmp	protected_start
-
 	.previous

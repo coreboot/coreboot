@@ -53,8 +53,8 @@ struct mem_range *sizeram(void)
 		       ramregs[i]);
 	}
 
-	printk_err("I would set ram size to 0x%x Mbytes\n", (1 <<rambits)*8);
-		
+	printk_debug("I would set ram size to 0x%x Kbytes\n", (rambits)*8*1024);
+	mem[0].sizek = rambits*8*1024;
 #if 1
 	for(i = 0; i < idx; i++) {
 		printk_debug("mem[%d].basek = %08x mem[%d].sizek = %08x\n",

@@ -4,7 +4,6 @@ superio via/vt82c686
 
 option ENABLE_FIXED_AND_VARIABLE_MTRRS
 object mainboard.o
-object irq_tables.o
 keyboard pc80
 cpu p5
 cpu p6

@@ -1,0 +1,7 @@
+mainboardinit northbridge/amd/amd76x/set_memory_size.inc
+mainboardinit northbridge/amd/amd76x/raminit.inc
+mainboardinit sdram/generic_sdram.inc
+mainboardinit sdram/generic_zero_ecc_sdram.inc
+mainboardinit arch/i386/lib/cpu_reset.inc
+
+object northbridge.o

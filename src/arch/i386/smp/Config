@@ -1,0 +1,3 @@
+object mpspec.o
+object ioapic.o
+object start_stop.o

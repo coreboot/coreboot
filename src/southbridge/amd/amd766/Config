@@ -1,0 +1,3 @@
+object southbridge.o
+object nvram.o
+

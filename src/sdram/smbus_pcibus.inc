@@ -1,5 +1,5 @@
 /* Useful macros PCIBUS, and SMBUS functions for getting DRAM going. */
-/* courtesy Eric Beiderman of linuxnetworx.com */
+/* courtesy Eric Biederman of linuxnetworx.com */
 
 #define CS_WRITE_BYTE(addr, byte) \
 	movl $addr, %eax	; \

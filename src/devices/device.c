@@ -49,6 +49,7 @@ static struct device **last_dev_p = &dev_root.next;
  *
  * @see device_path
  */
+static spinlock_t dev_lock = SPIN_LOCK_UNLOCKED;
 device_t alloc_dev(struct bus *parent, struct device_path *path)
 {
 	device_t dev, child;
@@ -100,25 +101,14 @@ device_t alloc_dev(struct bus *parent, struct device_path *path)
  * @param roundup Alignment as a power of two
  * @returns rounded up number
  */
-static unsigned long round(unsigned long val, unsigned long roundup)
+static resource_t round(resource_t val, unsigned long pow)
 {
-	/* ROUNDUP MUST BE A POWER OF TWO. */
-	unsigned long inverse;
-	inverse = ~(roundup - 1);
-	val += (roundup - 1);
-	val &= inverse;
+	resource_t mask;
+	mask = (1ULL << pow) - 1ULL;
+	val += mask;
+	val &= ~mask;
 	return val;
 }
-
-static unsigned long round_down(unsigned long val, unsigned long round_down)
-{
-	/* ROUND_DOWN MUST BE A POWER OF TWO. */
-	unsigned long inverse;
-	inverse = ~(round_down - 1);
-	val &= inverse;
-	return val;
-}
-
 
 /** Read the resources on all devices of a given bus.
  * @param bus bus to read the resources on.
@@ -127,11 +117,17 @@ static void read_resources(struct bus *bus)
 {
 	struct device *curdev;
 
+	printk_spew("%s read_resources bus %d link: %d\n",
+		dev_path(bus->dev), bus->secondary, bus->link);
+
 	/* Walk through all of the devices and find which resources they need. */
 	for(curdev = bus->children; curdev; curdev = curdev->sibling) {
 		unsigned links;
 		int i;
-		if (curdev->resources > 0) {
+		if (curdev->have_resources) {
+			continue;
+		}
+		if (!curdev->enabled) {
 			continue;
 		}
 		if (!curdev->ops || !curdev->ops->read_resources) {
@@ -139,24 +135,31 @@ static void read_resources(struct bus *bus)
 				dev_path(curdev));
 			continue;
 		}
-		if (!curdev->enabled) {
-			continue;
-		}
 		curdev->ops->read_resources(curdev);
+		curdev->have_resources = 1;
 		/* Read in subtractive resources behind the current device */
 		links = 0;
 		for(i = 0; i < curdev->resources; i++) {
 			struct resource *resource;
+			unsigned link;
 			resource = &curdev->resource[i];
-			if ((resource->flags & IORESOURCE_SUBTRACTIVE) &&
-				(!(links & (1 << resource->index))))
-			{
-				links |= (1 << resource->index);
+			if (!(resource->flags & IORESOURCE_SUBTRACTIVE)) 
+				continue;
+			link = IOINDEX_SUBTRACTIVE_LINK(resource->index);
+			if (link > MAX_LINKS) {
+				printk_err("%s subtractive index on link: %d\n",
+					dev_path(curdev), link);
+				continue;
+			}
+			if (!(links & (1 << link))) {
+				links |= (1 << link);
 				read_resources(&curdev->link[resource->index]);
 				
 			}
 		}
 	}
+	printk_spew("%s read_resources bus %d link: %d done\n",
+		dev_path(bus->dev), bus->secondary, bus->link);
 }
 
 struct pick_largest_state {
@@ -219,10 +222,8 @@ static void find_largest_resource(struct pick_largest_state *state,
 	}
 }
 
-static struct device *largest_resource(struct bus *bus,
-				       struct resource **result_res,
-				       unsigned long type_mask,
-				       unsigned long type)
+static struct device *largest_resource(struct bus *bus, struct resource **result_res,
+	unsigned long type_mask, unsigned long type)
 {
 	struct pick_largest_state state;
 
@@ -608,3 +609,4 @@ void dev_initialize(void)
 	}
 	printk_info("Devices initialized\n");
 }
+

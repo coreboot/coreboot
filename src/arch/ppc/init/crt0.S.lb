@@ -5,26 +5,16 @@
 #include "ppcreg.h"
 #include <ppc_asm.tmpl>
 
-.section ".rom.data", "a", @progbits
-.section ".rom.text", "ax", @progbits
+.section ".rom.reset", "ax", @progbits
 
 .globl _start
-.type _start, @function
-.globl __bss_end
-.globl __start_address_check
-
-	/*
-	 * Locate at hreset vector
-	 */
-	.space	(0x100)
-
 _start:
 	b	system_reset
 
-	/*
-	 * Space for exception table
-	 */
-	.space	(0x3000)
+%%EXCEPTION_VECTOR_TABLE%%
+
+.section ".rom.data", "a", @progbits
+.section ".rom.text", "ax", @progbits
 
 system_reset:
 

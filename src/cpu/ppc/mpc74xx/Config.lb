@@ -12,8 +12,8 @@ uses DCACHE_RAM_SIZE
 default USE_DCACHE_RAM=1
 ## Set dcache ram above linuxbios image
 default DCACHE_RAM_BASE=_RAMBASE+0x100000
-## Dcache size is 16Kb
-default DCACHE_RAM_SIZE=16384
+## Dcache size is 32Kb
+default DCACHE_RAM_SIZE=0x8000
 
 initinclude "FAMILY_INIT" cpu/ppc/mpc74xx/mpc74xx.inc
 object clock.o

@@ -25,10 +25,6 @@
  * $Id$
  */
 
-#ifndef lint
-static char rcsid[] = "$Id$";
-#endif
-
 #include <console/console.h>
 #include <mem.h>
 #include <cpu/p6/msr.h>
@@ -128,8 +124,6 @@ static void intel_set_var_mtrr(unsigned int reg, unsigned long basek, unsigned l
 /* setting variable mtrr, comes from linux kernel source */
 void set_var_mtrr(unsigned int reg, unsigned long base, unsigned long size, unsigned char type)
 {
-	unsigned int tmp;
-
 	if (reg >= 8)
 		return;
 

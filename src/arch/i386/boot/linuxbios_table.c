@@ -115,7 +115,7 @@ void lb_strings(struct lb_header *header)
 		{ LB_TAG_LINKER,         linuxbios_linker,         },
 		{ LB_TAG_ASSEMBLER,      linuxbios_assembler,      },
 	};
-	int i;
+	unsigned int i;
 	for(i = 0; i < sizeof(strings)/sizeof(strings[0]); i++) {
 		struct lb_string *rec;
 		size_t len;

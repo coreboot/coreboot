@@ -161,7 +161,7 @@ void hardwaremain(int boot_complete)
 #endif
 #if 1
 
-	// pick how to scan the bus. This is first so we can get at memory size.
+	/* pick how to scan the bus. This is first so we can get at memory size. */
 	printk_info("Finding PCI configuration type.\n");
 	pci_set_method();
 	post_code(0x5f);
@@ -170,13 +170,15 @@ void hardwaremain(int boot_complete)
 #endif
 	dev_enumerate();
 	post_code(0x66);
-	// Now do the real bus
-	// we round the total ram up a lot for thing like the SISFB, which 
-	// shares high memory with the CPU. 
+	/* Now do the real bus.
+	 * We round the total ram up a lot for thing like the SISFB, which 
+	 * shares high memory with the CPU. 
+	 */
 	dev_configure();
 	post_code(0x88);
 
 	dev_enable();
+
 	dev_initialize();
 	post_code(0x89);
 #endif

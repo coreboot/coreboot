@@ -35,50 +35,56 @@ static void hlt(void)
 	__builtin_hlt();
 }
 
-static unsigned int config_cmd(unsigned char bus, unsigned devfn, unsigned where)
+typedef __builtin_msr_t msr_t;
+
+static msr_t rdmsr(unsigned long index)
 {
-	return 0x80000000 | (bus << 16) | (devfn << 8) | (where & ~3);
+	return __builtin_rdmsr(index);
 }
 
-static unsigned char pcibios_read_config_byte(
-	unsigned char bus, unsigned devfn, unsigned where)
+static void wrmsr(unsigned long index, msr_t msr)
 {
-	outl(config_cmd(bus, devfn, where), 0xCF8);
-	return inb(0xCFC + (where & 3));
+	__builtin_wrmsr(index, msr.lo, msr.hi);
 }
 
-static unsigned short pcibios_read_config_word(
-	unsigned char bus, unsigned devfn, unsigned where)
+#define PCI_ADDR(BUS, DEV, FN, WHERE) ( \
+	(((BUS) & 0xFF) << 16) | \
+	(((DEV) & 0x1f) << 11) | \
+	(((FN) & 0x07) << 8) | \
+	((WHERE) & 0xFF))
+
+static unsigned char pci_read_config8(unsigned addr)
 {
-	outl(config_cmd(bus, devfn, where), 0xCF8);
-	return inw(0xCFC + (where & 2));
+	outl(0x80000000 | (addr & ~3), 0xCF8);
+	return inb(0xCFC + (addr & 3));
 }
 
-static unsigned int pcibios_read_config_dword(
-	unsigned char bus, unsigned devfn, unsigned where)
+static unsigned short pci_read_config16(unsigned addr)
 {
-	outl(config_cmd(bus, devfn, where), 0xCF8);
+	outl(0x80000000 | (addr & ~3), 0xCF8);
+	return inw(0xCFC + (addr & 2));
+}
+
+static unsigned int pci_read_config32(unsigned addr)
+{
+	outl(0x80000000 | (addr & ~3), 0xCF8);
 	return inl(0xCFC);
 }
 
-
-static void pcibios_write_config_byte(
-	unsigned char bus, unsigned devfn, unsigned where, unsigned char value)
+static void pci_write_config8(unsigned addr, unsigned char value)
 {
-	outl(config_cmd(bus, devfn, where), 0xCF8);
-	outb(value, 0xCFC + (where & 3));
+	outl(0x80000000 | (addr & ~3), 0xCF8);
+	outb(value, 0xCFC + (addr & 3));
 }
 
-static void pcibios_write_config_word(
-	unsigned char bus, unsigned devfn, unsigned where, unsigned short value)
+static void pci_write_config16(unsigned addr, unsigned short value)
 {
-	outl(config_cmd(bus, devfn, where), 0xCF8);
-	outw(value, 0xCFC + (where & 2));
+	outl(0x80000000 | (addr & ~3), 0xCF8);
+	outw(value, 0xCFC + (addr & 2));
 }
 
-static void pcibios_write_config_dword(
-	unsigned char bus, unsigned devfn, unsigned where, unsigned int value)
+static void pci_write_config32(unsigned addr, unsigned int value)
 {
-	outl(config_cmd(bus, devfn, where), 0xCF8);
+	outl(0x80000000 | (addr & ~3), 0xCF8);
 	outl(value, 0xCFC);
 }

@@ -537,7 +537,7 @@ unsigned int pci_scan_bus(struct device *bus, unsigned int max)
 
 	/* probe all devices on this bus with some optimization for non-existance and 
 	   single funcion devices */
-	for (devfn = 0; devfn < 0xff; devfn++) {
+	for (devfn = 0; devfn <= 0xff; devfn++) {
 		struct device dummy;
 		uint32_t id, class;
 		uint8_t cmd, tmp, hdr_type;

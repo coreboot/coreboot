@@ -1,7 +1,3 @@
-#ifndef lint
-static char rcsid[] = "$Id$";
-#endif
-
 #include <console/console.h>
 #include <cpu/p5/cpuid.h>
 #ifdef i586

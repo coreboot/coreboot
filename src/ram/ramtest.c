@@ -1,13 +1,13 @@
 static void write_phys(unsigned long addr, unsigned long value)
 {
-	unsigned long *ptr;
+	volatile unsigned long *ptr;
 	ptr = (void *)addr;
 	*ptr = value;
 }
 
 static unsigned long read_phys(unsigned long addr)
 {
-	unsigned long *ptr;
+	volatile unsigned long *ptr;
 	ptr = (void *)addr;
 	return *ptr;
 }

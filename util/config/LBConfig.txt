@@ -68,6 +68,6 @@ makerule	 Specify an additional makerule, e.g.
 commandline	  Specify the command line, e.g.
 		  commandline root=/dev/hda1 single
 option		  Add an option, implicitly setting it. 
-		  e.g. option SERIAL_CONSOLE
+		  e.g. option SERIAL_CONSOLE=1
 
 

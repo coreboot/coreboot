@@ -13,7 +13,7 @@ option USE_DOC_MIL
 docipl northbridge/acer/m1631/ipl.S
 
 # Enable Serial Console for debugging
-option SERIAL_CONSOLE
+option SERIAL_CONSOLE=1
 
 # Enable MicroCode update and L2 Cache init for PII and PIII
 #option UPDATE_MICROCODE

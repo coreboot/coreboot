@@ -5,7 +5,7 @@ target tlsbc710
 mainboard technoland/sbc710
 
 # Enable Serial Console for debugging
-option SERIAL_CONSOLE
+option SERIAL_CONSOLE=1
 option NO_KEYBOARD
 
 option INBUF_COPY

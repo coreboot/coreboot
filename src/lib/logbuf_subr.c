@@ -1,6 +1,6 @@
 #include <logbuf_subr.h>
 
-#define LOGBUF_SIZE = 1024;
+#define LOGBUF_SIZE  1024
 
 // KEEP THIS GLOBAL. 
 // I need the address so I can watch it with the ARIUM hardware. RGM.

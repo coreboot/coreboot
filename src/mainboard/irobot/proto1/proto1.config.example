@@ -7,7 +7,7 @@ target proto1
 mainboard irobot/proto1
 
 # Enable Serial Console for debugging
-option SERIAL_CONSOLE
+option SERIAL_CONSOLE=1
 option NO_KEYBOARD
 
 # Enable MicroCode update for PIII

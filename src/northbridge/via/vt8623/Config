@@ -1,1 +1,3 @@
 object northbridge.o
+object via_vga.o
+

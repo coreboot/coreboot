@@ -3,14 +3,12 @@
 #include <printk.h>
 #include <cpu/p6/msr.h>
 #include <cpu/cpufixup.h>
+#include <cpu/k7/mtrr.h>
 
 #define TOP_MEM    0xc001001A
 #define TOP_MEM2   0xc001001D
 #define IORR_FIRST 0xC0010016
 #define IORR_LAST  0xC0010019
-#define SYSCFG     0xC0010010
-
-#define MTRRVARDRAMEN (1 << 20)
 
 void k7_cpufixup(struct mem_range *mem)
 {
@@ -50,11 +48,12 @@ void k7_cpufixup(struct mem_range *mem)
 	for (i = IORR_FIRST; i <= IORR_LAST; i++)
 		wrmsr(i, lo, hi);
 
-	rdmsr(SYSCFG, lo, hi);
+	rdmsr(SYSCFG_MSR, lo, hi);
 	printk_spew("SYSCFG was 0x%x:0x%x\n", hi, lo);
-	lo |= MTRRVARDRAMEN;
-	wrmsr(SYSCFG, lo, hi);
-	rdmsr(SYSCFG, lo, hi);
+	lo |= SYSCFG_MSR_MtrrVarDramEn;
+	lo |= SYSCFG_MSR_SysEccEn;
+	wrmsr(SYSCFG_MSR, lo, hi);
+	rdmsr(SYSCFG_MSR, lo, hi);
 	printk_spew("SYSCFG IS NOW 0x%x:0x%x\n", hi, lo);
 }
 

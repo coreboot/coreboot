@@ -16,6 +16,14 @@ struct irq_info {
 	u8 rfu;
 } __attribute__((packed));
 
+#if defined(IRQ_SLOT_COUNT)
+#define IRQ_SLOTS_COUNT IRQ_SLOT_COUNT
+#elif (__GNUC__ < 3)
+#define IRQ_SLOTS_COUNT 1
+#else
+#define IRQ_SLOTS_COUNT
+#endif
+
 struct irq_routing_table {
 	u32 signature;			/* PIRQ_SIGNATURE should be here */
 	u16 version;			/* PIRQ_VERSION */
@@ -26,15 +34,7 @@ struct irq_routing_table {
 	u32 miniport_data;		/* Crap */
 	u8 rfu[11];
 	u8 checksum;			/* Modulo 256 checksum must give zero */
-#ifndef IRQ_SLOT_COUNT
-#if (__GNUC__ < 3)
-	struct irq_info slots[1];
-#else
-	struct irq_info slots[];
-#endif // __GNUC__ < 3
-#else
-  struct irq_info slots[IRQ_SLOT_COUNT];
-#endif // ! IRQ_SLOT_COUNT
+	struct irq_info slots[IRQ_SLOTS_COUNT];
 } __attribute__((packed));
 
 extern const struct irq_routing_table intel_irq_routing_table;

@@ -13,6 +13,12 @@
 #define PC_CKS_LOC		46
 
 
+/* Linux bios checksum is built only over bytes 49..125 */
+#define LB_CKS_RANGE_START	49
+#define LB_CKS_RANGE_END	125
+#define LB_CKS_LOC		126
+
+
 /* control registers - Moto names
  */
 #define RTC_REG_A		10

@@ -13,6 +13,12 @@ void check_pirq_routing_table(void)
 
 	printk_info("Checking IRQ routing tables...\n");
 
+#ifdef(IRQ_SLOT_COUNT)
+	if (sizeof(intel_irq_routing_table) != intel_irq_routing_table.size) {
+		printk_warning("Inconsistent IRQ routing table size\n");
+	}
+#endif
+
 	rt = &intel_irq_routing_table;
 	addr = (u8 *)rt;
 
@@ -51,7 +57,6 @@ void check_pirq_routing_table(void)
 
 	printk_info("done.\n");
 }
-#endif
 
 int verify_copy_pirq_routing_table(unsigned long addr)
 {
@@ -70,6 +75,9 @@ int verify_copy_pirq_routing_table(unsigned long addr)
 	printk_info("succeed\n");
 	return 0;
 }
+#else
+#define verify_copy_pirq_routing_table(addr)
+#endif
 
 unsigned long copy_pirq_routing_table(unsigned long addr)
 {
@@ -84,4 +92,3 @@ unsigned long copy_pirq_routing_table(unsigned long addr)
 	verify_copy_pirq_routing_table(addr);
 	return addr + intel_irq_routing_table.size;
 }
-

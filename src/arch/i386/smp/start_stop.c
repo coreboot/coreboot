@@ -231,6 +231,11 @@ void startup_other_cpus(unsigned long *processor_map)
 	/* Assume the cpus are densly packed by apicid */
 	for(i = 0; i < MAX_CPUS; i++) {
 		unsigned long cpu_apicid = initial_apicid[i];
+		if (cpu_apicid == -1) {
+			printk_err("CPU %d not found\n",i);
+			processor_map[i] = 0;
+			continue;
+		}
 		if (cpu_apicid == apicid ) {
 			continue;
 		}
@@ -238,6 +243,7 @@ void startup_other_cpus(unsigned long *processor_map)
 			/* Put an error in processor_map[i]? */
 			printk_err("CPU %d/%u would not start!\n",
 				i, cpu_apicid);
+			processor_map[i] = 0;
 		}
 	}
 }

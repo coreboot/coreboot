@@ -113,6 +113,8 @@ void smp_write_processors(struct mp_config_table *mc,
 	cpu_feature_flags = edx;
 	for(i = 0; i < MAX_CPUS; i++) {
 		unsigned long cpu_apicid = initial_apicid[i];
+		if(initial_apicid[i]==-1)
+			continue;
 		smp_write_processor(mc, cpu_apicid, apic_version,
 			processor_map[i],
 			cpu_features, cpu_feature_flags

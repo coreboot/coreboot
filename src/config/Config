@@ -37,6 +37,9 @@ makerule linuxbios_c.o: $(DRIVERS-1) linuxbios.a $(LIBGCC_FILE_NAME)  ; $(CC) -n
 
 makerule linuxbios_c: linuxbios_c.o $(TOP)/src/config/linuxbios_c.ld ldoptions ; $(CC) -nostdlib -nostartfiles -static -o $@ -T $(TOP)/src/config/linuxbios_c.ld linuxbios_c.o
 
+##
+## By default compress the C part of linuxbios
+##
 option CONFIG_COMPRESS=1
 expr CONFIG_UNCOMPRESSED=!CONFIG_COMPRESS
 makedefine LINUXBIOS_PAYLOAD-$(CONFIG_COMPRESS):=linuxbios_payload.nrv2b

@@ -202,13 +202,30 @@ static void pci_get_resource(struct pci_dev *dev, struct resource *resource, uns
 			resource->limit = 0x000fffffUL;
 		}
 		else if (type == PCI_BASE_ADDRESS_MEM_TYPE_64) {
+			unsigned long index_hi;
 			/* 64bit limit 
 			 * For now just treat this as a 32bit limit
 			 */
+			index_hi = index + 4;
 			resource->limit = 0xffffffffUL;
 			resource->flags |= IORESOURCE_PCI64;
-			pci_read_config_dword(dev, index +4, &addr);
-			if (addr) {
+			pci_read_config_dword( dev, index_hi, &addr);
+			/* get the extended size */
+			pci_write_config_dword(dev, index_hi, 0xffffffffUL);
+			pci_read_config_dword( dev, index_hi, &size);
+
+			/* get the minimum value the bar can be set to */
+			pci_write_config_dword(dev, index_hi, 0);
+			pci_read_config_dword(dev,  index_hi, &base);
+
+			/* restore addr */
+			pci_write_config_dword(dev, index_hi, addr);
+			
+			if ((size == 0xffffffff) && (base == 0)) {
+				/* Clear the top half of the bar */
+				pci_write_config_dword(dev, index_hi, 0);
+			}
+			else {
 				printk_err("PCI: %02x:%02x.%01x Unable to handle 64-bit address\n",
 					dev->bus->secondary, 
 					PCI_SLOT(dev->devfn), PCI_FUNC(dev->devfn));
@@ -417,6 +434,7 @@ static void pci_set_resource(struct pci_dev *dev, struct resource *resource)
 		buf,
 		(resource->flags & IORESOURCE_IO)? "io":
 		(resource->flags & IORESOURCE_PREFETCH)? "prefmem": "mem");
+	return;
 }
 
 static void pci_dev_set_resources(struct pci_dev *dev)

@@ -150,6 +150,13 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 //#include "northbridge/amd/amdk8/setup_resource_map.c"
 #include "northbridge/amd/amdk8/raminit.c"
 
+#if 1
+        #define ENABLE_APIC_EXT_ID 1
+        #define APIC_ID_OFFSET 0x10
+#else
+        #define ENABLE_APIC_EXT_ID 0
+#endif
+
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
 
@@ -228,23 +235,22 @@ static void main(unsigned long bist)
 	};
 	int i;
         int needs_reset;
+	unsigned nodeid;
         if (bist == 0) {
                 /* Skip this if there was a built in self test failure */
                 amd_early_mtrr_init();
                 enable_lapic();
                 init_timer();
-
-                if (cpu_init_detected()) {
-#if 1
+                nodeid = lapicid() & 0xf;
+        #if ENABLE_APIC_EXT_ID == 1
+                enable_apic_ext_id(nodeid);
+                lapic_write(LAPIC_ID, ( lapic_read(LAPIC_ID) | (APIC_ID_OFFSET<<24) ) ); // CPU apicid is from 0x10
+        #endif
+                if (cpu_init_detected(nodeid)) {
                         asm volatile ("jmp __cpu_reset");
-#else                   
-                /* cpu reset also reset the memtroller ????
-                        need soft_reset to reset all except keep HT link freq and width */
-                        distinguish_cpu_resets();
-                        soft2_reset();
-#endif          
                 }
-                distinguish_cpu_resets();
+                distinguish_cpu_resets(nodeid);
+
                 if (!boot_cpu()) {
                         stop_this_cpu();
                 }       
@@ -259,7 +265,12 @@ static void main(unsigned long bist)
 
         setup_s4882_resource_map();
         needs_reset = setup_coherent_ht_domain();
+#if 0
         needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0xa0);
+#else
+        // automatically set that for you, but you might meet tight space
+        needs_reset |= ht_setup_chains_x();
+#endif
         if (needs_reset) {
                 print_info("ht reset -\r\n");
                 soft_reset();

@@ -7,12 +7,12 @@
 #define HTIC_BIOSR_Detect  (1<<5)
 #define HTIC_INIT_Detect   (1<<6)
 
-static int cpu_init_detected(void)
+static int cpu_init_detected(unsigned nodeid)
 {
 	unsigned long htic;
 	device_t dev;
 
-	dev = PCI_DEV(0, 0x18 + lapicid(), 0);
+	dev = PCI_DEV(0, 0x18 + nodeid, 0);
 	htic = pci_read_config32(dev, HT_INIT_CONTROL);
 
 	return !!(htic & HTIC_INIT_Detect);
@@ -34,11 +34,11 @@ static int cold_reset_detected(void)
 	return !(htic & HTIC_ColdR_Detect);
 }
 
-static void distinguish_cpu_resets(void)
+static void distinguish_cpu_resets(unsigned nodeid)
 {
 	uint32_t htic;
 	device_t device;
-	device = PCI_DEV(0, 0x18 + lapicid(), 0);
+	device = PCI_DEV(0, 0x18 + nodeid, 0);
 	htic = pci_read_config32(device, HT_INIT_CONTROL);
 	htic |= HTIC_ColdR_Detect | HTIC_BIOSR_Detect | HTIC_INIT_Detect;
 	pci_write_config32(device, HT_INIT_CONTROL, htic);

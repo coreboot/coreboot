@@ -715,6 +715,7 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 {
 	struct bus *cpu_bus;
 	int i;
+	int apic_id_offset = lapicid(); // bsp apicid
 
 	/* Find which cpus are present */
 	cpu_bus = &dev->link[0];
@@ -749,6 +750,9 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 		
 		/* Report what I have done */
 		if (cpu) {
+                        if(cpu->path.u.apic.apic_id<apic_id_offset) {
+                                cpu->path.u.apic.apic_id += apic_id_offset;
+                        }  
 			printk_debug("CPU: %s %s\n", dev_path(cpu),
 				     cpu->enabled?"enabled":"disabled");
 		}

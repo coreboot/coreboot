@@ -38,7 +38,7 @@ static void enumerate(struct chip *chip)
 		child->bus = &dev_root.link[0];
 	}
 }
-struct chip_control mainboard_via_epia_control = {
+struct chip_control mainboard_via_epia_m_control = {
 	.enumerate = enumerate, 
 	.name      = "VIA EPIA-M mainboard ",
 };

@@ -934,6 +934,7 @@ parser Config:
     token DEP:			'dep'
     token DIR:			'dir'
     token DRIVER:		'driver'
+    token ELSE:			'else'
     token END:			'$|end'
     token EQ:			'='
     token EXPORT:		'export'
@@ -1040,7 +1041,7 @@ parser Config:
 # needs to be C and ID, but nested if's are, we hope, not going to 
 # happen. IF so, possibly ID && C could be used.
     rule iif<<C>>:	IF ID			{{ c = lookup(ID) }}
-			(stmt<<c>>)* END
+			(stmt<<c>>)* [ ELSE (stmt<<not c>>)* ] END
 
     rule depsacts<<ID, C>>:
 			( DEP STR		{{ if (C): adddep(ID, STR) }}
@@ -1098,7 +1099,7 @@ parser Config:
     rule option<<C>>:	OPTION ID EQ value	{{ if (C): setoptionstmt(ID, value) }}
 
     rule opif:		IF ID			{{ c = lookup(ID) }}
-			(option<<c>>)* END
+			(option<<c>>)* [ ELSE (option<<not c>>)* ] END
 
     rule opstmt:	option<<1>>
 		|	opif

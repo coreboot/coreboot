@@ -32,7 +32,6 @@ void intel_cache_on(unsigned long base, unsigned long totalram)
 
 void intel_interrupts_on()
 {
-
 	/* this is so interrupts work. This is very limited scope -- 
 	 * linux will do better later, we hope ...
 	 */
@@ -66,7 +65,9 @@ void intel_interrupts_on()
 	reg &= 0xfffe00ff;
 	reg |= 0x5400;
 	*regp = reg;
-#else
+#else /* !SMP */
+#ifdef i686
+	/* Only Pentium Pro and later have thos MSR stuff */
 	unsigned long low, high;
 
 	printk(KERN_INFO "Enabling interrupts...");
@@ -74,7 +75,8 @@ void intel_interrupts_on()
 	rdmsr(0x1b, low, high);
 	low &= ~0x800;
 	wrmsr(0x1b, low, high);
-#endif
+#endif /* i686 */
+#endif /* SMP */
 
 	printk(KERN_INFO "done.\n");
 	post_code(0x9b);

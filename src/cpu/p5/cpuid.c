@@ -11,9 +11,11 @@ static char rcsid[] = "$Id$";
 #include <cpu/p6/msr.h>
 #endif
 
-#ifdef i586
+
 int intel_mtrr_check(void)
 {
+#ifdef i686
+	/* Only Pentium Pro and later have MTRR */
 	unsigned long low, high;
 
 	DBG("\nMTRR check\n");
@@ -37,8 +39,10 @@ int intel_mtrr_check(void)
 
 	post_code(0x93);
 	return ((int) low);
+#else /* !i686 */
+	return 0;
+#endif /* i686 */
 }
-#endif
 
 void intel_display_cpuid(void)
 {

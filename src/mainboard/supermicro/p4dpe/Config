@@ -79,6 +79,8 @@ mainboardinit ram/dump_northbridge.inc
 #mainboardinit southbridge/intel/82801/smbus.inc
 #mainboardinit sdram/generic_dump_spd.inc
 mainboardinit mainboard/supermicro/p4dpe/mainboard_raminit.inc
+mainboardinit ram/spotcheck.inc
+
 
 ##
 ## Include the secondary Configuration files 
@@ -114,6 +116,8 @@ object irq_tables.o HAVE_PIRQ_TABLE
 option SMBUS_MEM_DEVICE_START=(0xa << 3)
 option SMBUS_MEM_DEVICE_END=(SMBUS_MEM_DEVICE_START +3)
 option SMBUS_MEM_DEVICE_INC=1
+option SMBUS_MEM_CHANNEL_OFF=4
+
 
 ##
 ## Customize our winbond superio chip for this motherboard

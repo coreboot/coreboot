@@ -399,18 +399,8 @@ static void main(void)
 #if 0
 		init_apic_timer();
 #endif
-#if 1
 		setup_default_resource_map();
-#endif
-
-#if 0
-		dump_pci_device(PCI_DEV(0, 0x18, 0));
-#endif
-
 		setup_coherent_ht_domain();
-#if 1
-		disable_probes();
-#endif
 		enumerate_ht_chain();
 		print_pci_devices();
 		enable_smbus();

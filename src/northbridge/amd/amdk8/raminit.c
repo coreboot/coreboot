@@ -1123,20 +1123,21 @@ static void route_dram_accesses(const struct mem_controller *ctrl,
 {
 #warning "FIXME this is hardcoded for one cpu"
 	unsigned node_id;
-	unsigned link_id;
 	unsigned limit;
+	unsigned base;
 	node_id = 0;
-	link_id = 0;
 	/* Route the addresses to node 0 */
 	limit = (limit_k << 2);
 	limit &= 0xffff0000;
 	limit -= 0x00010000;
-	pci_write_config32(ctrl->f1, 0x44, limit | (0 << 7) | (link_id << 4) | (node_id << 0));
-	pci_write_config32(ctrl->f1, 0x40, (base_k << 2) | (0 << 8) | (1<<1) | (1<<0));
+	base = (base_k << 2);
+	base &= 0xffff0000;
+	pci_write_config32(ctrl->f1, 0x44, limit | (0 << 8) | (node_id << 0));
+	pci_write_config32(ctrl->f1, 0x40, base  | (0 << 8) | (1<<1) | (1<<0));
 
-#if 1
-	pci_write_config32(PCI_DEV(0, 0x19, 1), 0x44, limit | (0 << 7) | (link_id << 4) | (node_id << 0));
-	pci_write_config32(PCI_DEV(0, 0x19, 1), 0x40, (base_k << 2) | (0 << 8) | (1<<1) | (1<<0));
+#if 0
+	pci_write_config32(PCI_DEV(0, 0x19, 1), 0x44, limit | (0 << 8) | (1 << 4) | (node_id << 0));
+	pci_write_config32(PCI_DEV(0, 0x19, 1), 0x40, base  | (0 << 8) | (1<<1) | (1<<0));
 #endif
 }
 

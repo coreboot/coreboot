@@ -526,8 +526,8 @@ static unsigned int generate_row(u8 node, u8 row, u8 maxnodes)
 	u32 ret=DEFAULT;
 
 	static const unsigned int rows_2p[2][2] = {
-		{ 0x00030101, 0x00010404 },
-		{ 0x00010404, 0x00030101 }
+		{ 0x00050101, 0x00010404 },
+		{ 0x00010404, 0x00050101 }
 	};
 
 	static const unsigned int rows_4p[4][4] = {
@@ -622,9 +622,11 @@ static void setup_remote_node(u8 node, u8 cpus)
 		uint32_t value;
 		uint8_t reg;
 		reg = pci_reg[i];
+#if 0
 		print_debug("copying reg: ");
 		print_debug_hex8(reg);
 		print_debug("\r\n");
+#endif
 		value = pci_read_config32(NODE_MP(0), reg);
 		pci_write_config32(NODE_MP(7), reg, value);
 

@@ -17,3 +17,10 @@ void mainboard_fixup()
 	host_bridge_pcidev = pci_find_slot(0, PCI_DEVFN(0,0));
 #endif
 }
+
+void final_mainboard_fixup()
+{
+    void final_northbridge_fixup(void);
+
+    final_northbridge_fixup();
+}

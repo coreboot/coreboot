@@ -1,0 +1,10 @@
+#mainboardinit cpu/i786/enable_sse.inc
+mainboardinit arch/i386/lib/cpu_reset.inc
+mainboardinit ram/spotcheck.inc
+mainboardinit northbridge/intel/E7501/raminit.inc
+mainboardinit northbridge/intel/E7501/sdram_enable.inc
+mainboardinit sdram/generic_sdram.inc
+#mainboardinit cpu/i786/disable_sse.inc
+mainboardinit sdram/generic_cache_linuxbios.inc
+
+object northbridge.o

@@ -11,16 +11,9 @@
 
 #define SLOW_DOWN_IO
 
-#define PMAC_ISA_MEM_BASE 	0
-#define PMAC_PCI_DRAM_OFFSET 	0
-#define CHRP_ISA_IO_BASE 	0xf8000000
-#define CHRP_ISA_MEM_BASE 	0xf7000000
-#define CHRP_PCI_DRAM_OFFSET 	0
-#define PREP_ISA_IO_BASE 	0x80000000
-#define PREP_ISA_MEM_BASE 	0xc0000000
-#define PREP_PCI_DRAM_OFFSET 	0x80000000
-
-#define _IO_BASE		0
+#ifndef _IO_BASE
+#define _IO_BASE	0
+#endif
 
 #define readb(addr) in_8((volatile uint8_t *)(addr))
 #define writeb(b,addr) out_8((volatile uint8_t *)(addr), (b))

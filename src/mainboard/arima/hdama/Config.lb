@@ -107,8 +107,14 @@ if USE_FALLBACK_IMAGE mainboardinit arch/i386/lib/noop_failover.inc  end
 #makerule ./failover.E dep "$(MAINBOARD)/failover.c" act "$(CPP) -I$(TOP)/src $(CPPFLAGS) $(MAINBOARD)/failover.c > ./failever.E"
 #makerule ./failover.inc dep "./romcc ./failover.E" act "./romcc -O ./failover.E > failover.inc"
 #mainboardinit .failover.inc
-makerule ./auto.E dep "$(MAINBOARD)/auto.c" act "$(CPP) -I$(TOP)/src -$(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
-makerule ./auto.inc dep "./romcc ./auto.E" act "./romcc -O ./auto.E > auto.inc"
+makerule ./auto.E 
+	depends	"$(MAINBOARD)/auto.c" 
+	action	"$(CPP) -I$(TOP)/src -$(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
+end
+makerule ./auto.inc 
+	depends "./romcc ./auto.E" 
+	action	"./romcc -O ./auto.E > auto.inc"
+end
 mainboardinit ./auto.inc
 #
 ###

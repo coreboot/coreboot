@@ -102,7 +102,7 @@ define CC
 	comment "Target C Compiler"
 end
 define HOSTCC
-	default "$(CROSS_COMPILE)gcc"
+	default "gcc"
 	export always
 	comment "Host C Compiler"
 end

@@ -10,6 +10,7 @@ errors = 0
 arch = ''
 ldscriptbase = ''
 payloadfile = ''
+initfile = ''
 
 # Key is the rule name. Value is a mkrule object.
 makebaserules = {}
@@ -22,6 +23,7 @@ target_dir = ''
 
 #sources = {}
 objectrules = {}
+initobjectrules = {}
 # make these a hash so they will be unique.
 driverrules = {}
 ldscripts = []
@@ -37,12 +39,15 @@ options = {}
 # for options. 
 options_by_order = []
 crt0includes = []
+initincludes = {}
+useinitincludes = 0 # transitional
 partinstance = 0
 curdir = '' 
 dirstack = []
 config_file_list = []
 
 local_path = re.compile(r'^\.')
+include_pattern = re.compile(r'%%([^%]+)%%')
 
 # -----------------------------------------------------------------------------
 #                    Error Handling
@@ -79,6 +84,17 @@ class location:
         def at(self):
                 return self.stack[-1].at()
 loc = location()
+
+class initinclude:
+	def __init__ (self, str, path):
+		self.string = str
+		self.path = path
+
+	def getstring(self):
+		return self.string
+
+	def getpath(self):
+		return self.path
 
 class makerule:
 	def __init__ (self, target):
@@ -310,9 +326,10 @@ class partobj:
 		if (o == 0):
 			fatal("Error: can't use undefined option %s" % name)
 		o.setused()
+		o1 = getvalue(self.options, name)
+		if (o1):
+			return
 		setvalue(self.options, name, o)
-		if (debug):
-			print "option %s used in %s " % (name, self)
 
 class partsstack:
 	def __init__ (self):
@@ -551,20 +568,30 @@ def loadoptions():
 		fatal("Error: Could not parse file")
 	loc.pop_file()
 
+def addinit(path):
+	global initfile
+	if (path[0] == '/'):
+		initfile =  treetop + '/src/' + path
+	else:
+		initfile = curdir + '/' + path
+	print "Adding init file: %s" % path
+
 # we do the crt0include as a dictionary, so that if needed we
 # can trace who added what when. Also it makes the keys
 # nice and unique. 
 def addcrt0include(path):
 	global crt0includes
-	#fullpath = os.path.join(curdir, path)
-	#fullpath = path
-	#setvalue(crt0includes, fullpath, loc)
-	# oh shoot. Order matters. All right, we'll worry about this 
-	# later. 
-	fullpath = path
 	if (debug > 2):
-		print "ADDCRT0: %s" % fullpath
-	crt0includes.append(fullpath)
+		print "ADDCRT0: %s" % path
+	crt0includes.append(path)
+
+def addinitinclude(str, path):
+	global initincludes, useinitincludes
+	useinitincludes = 1
+	if (debug > 2):
+		print "ADDCRT0: %s -> %s" % str, path
+	o = initinclude(dequote(str), path)
+	setvalue(initincludes, path, o)
 
 def addldscript(path):
 	global ldscripts
@@ -604,6 +631,9 @@ def addobjectdriver(dict, object_name):
 		print "add object %s source %s" % (object_name, source)
 	setvalue(dict, base, [object, source])
 
+def addinitobject(object_name):
+	addobjectdriver(initobjectrules, object_name)
+
 def addobject(object_name):
 	addobjectdriver(objectrules, object_name)
 
@@ -628,7 +658,7 @@ def part(name, path, file):
 	dirstack.append(curdir)
 	curdir = os.path.join(treetop, 'src', name, path)
 	newpart = partobj(curdir, curpart, name, path)
-	print "Configuring PART %s, path %s\n" % (name,path)
+	print "Configuring PART %s, path %s" % (name,path)
 	if (debug):
 		print "PUSH part %s %s" % (name, curpart.dir)
 	pstack.push(curpart)
@@ -718,13 +748,19 @@ def flatten_name(str):
 
 def addaction(id, str):
 	o = getvalue(makebaserules, id)
-	a = dequote(str)
-	o.addaction(a)
+	if (o):
+		a = dequote(str)
+		o.addaction(a)
+		return
+	fatal("No such rule \"%s\" for addaction" % id);
 
 def adddep(id, str):
 	o = getvalue(makebaserules, id)
-	a = dequote(str)
-	o.adddependency(a)
+	if (o):
+		a = dequote(str)
+		o.adddependency(a)
+		return
+	fatal("No such rule \"%s\" for adddependency" % id);
 
 # If the first part of <path> matches treetop, replace that part with "$(TOP)"
 def topify(path):
@@ -742,7 +778,8 @@ def set_arch(my_arch):
 	global curdir
 	arch = my_arch
 	setoption('ARCH', my_arch)
-	part('arch', my_arch, 'config/make.base.lb')
+	#part('arch', my_arch, 'config/make.base.lb')
+	part('arch', my_arch, 'Config.lb')
 
 
 def mainboard(path):
@@ -754,6 +791,7 @@ def mainboard(path):
         mainboard_part_number = re.sub("[^/]/", "", path)
 	setoption('MAINBOARD_VENDOR', vendor)
 	setoption('MAINBOARD_PART_NUMBER', mainboard_part_number)
+	dodir('/config', 'Config.lb')
 	part('mainboard', path, 'Config.lb')
 
 #=============================================================================
@@ -766,7 +804,8 @@ def writemakefileheader(file, fname):
 
 
 def writemakefilesettings(path):
-	global treetop, arch, mainboard_dir, target_dir, options_by_order, root
+	global treetop, arch, mainboard_dir, target_dir, root
+	global options_by_order, options
 	# Write Makefile.settings to seperate the settings
 	# from the actual makefile creation
 	# In practice you need to rerun NLBConfig.py to change
@@ -801,7 +840,7 @@ def writemakefilesettings(path):
 # first, dump all the -D stuff
 
 def writemakefile(path):
-	global root
+	global root, useinitincludes
 	makefilepath = os.path.join(path, "Makefile")
 	print "Creating", makefilepath
 	file = open(makefilepath, 'w+')
@@ -831,9 +870,17 @@ CPUFLAGS := $(foreach _var_,$(VARIABLES),$(call D_item,$(_var_)))
 	file.write("all: linuxbios.rom")
 	# print out all the object dependencies
 	file.write("\n# object dependencies (objectrules:)\n")
+	file.write("INIT-OBJECTS :=\n")
 	file.write("OBJECTS :=\n")
 	file.write("DRIVER :=\n")
 	file.write("\nSOURCES :=\n")
+	for irule in initobjectrules.keys():
+		init = initobjectrules[irule]
+		i_name = init[0]
+		i_source = init[1]
+		file.write("INIT-OBJECTS += %s\n" % (i_name))
+		file.write("SOURCES += %s\n" % (i_source))
+
 	for objrule in objectrules.keys():
 		obj = objectrules[objrule]
 		obj_name = obj[0]
@@ -857,11 +904,19 @@ CPUFLAGS := $(foreach _var_,$(VARIABLES),$(call D_item,$(_var_)))
 	# Print out the dependencies for crt0_includes.h
 	file.write("\n# Dependencies for crt0_includes.h\n")
 	file.write("CRT0_INCLUDES:=\n")
-	for i in crt0includes:
-		if (local_path.match(i)):
-			file.write("CRT0_INCLUDES += %s\n" % i)
-		else:
-			file.write("CRT0_INCLUDES += $(TOP)/src/%s\n" % i)
+	if (useinitincludes):
+		for inc in initincludes.keys():
+			if (local_path.match(inc)):
+				file.write("CRT0_INCLUDES += %s\n" % inc)
+			else:
+				file.write("CRT0_INCLUDES += $(TOP)/src/%s\n" % inc)
+	else:
+		for i in crt0includes:
+			if (local_path.match(i)):
+				file.write("CRT0_INCLUDES += %s\n" % i)
+			else:
+				file.write("CRT0_INCLUDES += $(TOP)/src/%s\n" % i)
+
 
 	# Print out the user defines.
 	file.write("\n# userdefines:\n")
@@ -902,11 +957,14 @@ CPUFLAGS := $(foreach _var_,$(VARIABLES),$(call D_item,$(_var_)))
 	file.write("GENERATED:=\n")
 	for genfile in [ 'Makefile',
 			'Makefile.settings',
-			'crt0_includes.h',
 			'nsuperio.c',
 			 'chip.c', 
 			'LinuxBIOSDoc.config' ]:
 		file.write("GENERATED += %s\n" % genfile)
+	if (useinitincludes):
+		file.write("GENERATED += crt0.S\n")
+	else:
+		file.write("GENERATED += crt0_includes.h\n")
 
 	file.write("\n# Remake Makefile (and the other files generated by\n")
 	file.write("# NLBConfig.py) if any config dependencies change.\n")
@@ -945,12 +1003,54 @@ def writecrt0_includes(path):
 	crt0filepath = os.path.join(path, "crt0_includes.h")
 	print "Creating", crt0filepath
 	file = open(crt0filepath, 'w+')
-
 	for i in crt0includes:
 		file.write("#include <%s>\n" % i)
 
 	file.close()
 
+def writeinitincludes(path):
+	global initfile, include_pattern, crt0_includes
+	crt0filepath = os.path.join(path, "crt0.S")
+	print "Creating", crt0filepath
+	infile = open(initfile, 'r')
+	outfile = open(crt0filepath, 'w+')
+
+	line = infile.readline()
+	while (line):
+		p = include_pattern.match(line)
+		if (p):
+			for i in initincludes.keys():
+				inc = initincludes[i]
+				if (inc.getstring() == p.group(1)):
+					outfile.write("#include \"%s\"\n" % inc.getpath())
+		else:
+			outfile.write(line);
+		line = infile.readline()
+
+	infile.close()
+	outfile.close()
+
+def writeldoptions(path):
+	global options
+	# Write Makefile.settings to seperate the settings
+	# from the actual makefile creation
+	# In practice you need to rerun NLBConfig.py to change
+	# these but in theory you shouldn't need to.
+
+	filename = os.path.join(path, "ldoptions")
+	print "Creating", filename
+	file = open(filename, 'w+')
+	for i in options.keys():
+		if (isexported(i, 0) and IsInt(getoption(i, 0))):
+			file.write("%s = %s;\n" % (i, getformated(i, 0)))
+	file.close()
+
+# Add any run-time checks to verify that parsing the configuration
+# was successful
+def verifyparse():
+	global useinitincludes, initfile
+	if (useinitincludes and initfile == ''):
+		fatal("An init file must be specified")
 
 %%
 parser Config:
@@ -959,7 +1059,7 @@ parser Config:
 
     # less general tokens should come first, otherwise they get matched
     # by the re's
-    token ACT:			'act'
+    token ACTION:		'action'
     token ADDACTION:		'addaction'
     token ALWAYS:		'always'
     token ARCH:			'arch'
@@ -967,7 +1067,7 @@ parser Config:
     token CPU:			'cpu'
     token DEFAULT:		'default'
     token DEFINE:		'define'
-    token DEP:			'dep'
+    token DEPENDS:		'depends'
     token DIR:			'dir'
     token DRIVER:		'driver'
     token ELSE:			'else'
@@ -977,6 +1077,8 @@ parser Config:
     token FORMAT:		'format'
     token IF:			'if'
     token INIT:			'init'
+    token INITOBJECT:		'initobject'
+    token INITINCLUDE:		'initinclude'
     token LDSCRIPT:		'ldscript'
     token LOADOPTIONS:		'loadoptions'
     token MAINBOARD:		'mainboard'
@@ -1004,7 +1106,7 @@ parser Config:
     token PATH:			r'[a-zA-Z0-9_.][a-zA-Z0-9/_.]+[a-zA-Z0-9_.]+'
     # Dir's on the other hand are abitrary
     # this may all be stupid.
-    token DIRPATH:		r'[a-zA-Z0-9_$()./]+'
+    token DIRPATH:		r'[-a-zA-Z0-9_$()./]+'
     token ID:			r'[a-zA-Z_.]+[a-zA-Z0-9_.]*'
     token DELEXPR:		r'{([^}]+|\\.)*}'
     token STR:			r'"([^\\"]+|\\.)*"'
@@ -1061,8 +1163,16 @@ parser Config:
 			SOUTHBRIDGE PATH	{{ if (C): part('southbridge', PATH, 'Config.lb')}}
 			partend<<C>>
 
-    rule mainboardinit<<C>>: 
+    rule mainboardinit<<C>>:
 			MAINBOARDINIT DIRPATH	{{ if (C): addcrt0include(DIRPATH)}}
+
+    rule initinclude<<C>>: 
+			INITINCLUDE 
+			STR 
+			DIRPATH			{{ if (C): addinitinclude(STR, DIRPATH)}}
+
+    rule initobject<<C>>:
+			INITOBJECT DIRPATH	{{ if (C): addinitobject(DIRPATH)}}
 
     rule object<<C>>:	OBJECT DIRPATH		{{ if (C): addobject(DIRPATH)}}
 
@@ -1081,12 +1191,13 @@ parser Config:
 			(stmt<<c>>)* [ ELSE (stmt<<not c>>)* ] END
 
     rule depsacts<<ID, C>>:
-			( DEP STR		{{ if (C): adddep(ID, STR) }}
-			| ACT STR		{{ if (C): addaction(ID, STR) }}
+			( DEPENDS STR		{{ if (C): adddep(ID, STR) }}
+			| ACTION STR		{{ if (C): addaction(ID, STR) }}
 			)*
 
     rule makerule<<C>>:	MAKERULE DIRPATH	{{ if (C): addrule(DIRPATH) }} 
 			depsacts<<DIRPATH, C>> 
+			END
 
     rule makedefine<<C>>:
 			MAKEDEFINE RAWTEXT	{{ if (C): adduserdefine(RAWTEXT) }}
@@ -1094,7 +1205,7 @@ parser Config:
     rule addaction<<C>>:
 			ADDACTION ID STR	{{ if (C): addaction(ID, STR) }}
 
-    rule init<<C>>:	INIT STR		{{ if (C): curpart.addinit(STR) }}
+    rule init<<C>>:	INIT DIRPATH		{{ if (C): addinit(DIRPATH) }}
 
     rule register<<C>>:	REGISTER STR		{{ if (C): curpart.addregister(STR) }}
 
@@ -1108,9 +1219,11 @@ parser Config:
 		|	northbridge<<C>>	{{ return northbridge }}
 		|	southbridge<<C>>	{{ return southbridge }}
 		|	superio<<C>>		{{ return superio }}
+		|	initobject<<C>>		{{ return initobject }}
 		|	object<<C>>		{{ return object }}
 		|	driver<<C>>		{{ return driver }}
 		|	mainboardinit<<C>>	{{ return mainboardinit }}
+		|	initinclude<<C>>	{{ return initinclude }}
 		|	makerule<<C>>		{{ return makerule }}
 		|	makedefine<<C>> 	{{ return makedefine }}
 		|	addaction<<C>>		{{ return addaction }}
@@ -1250,6 +1363,8 @@ if __name__=='__main__':
 	if (not parse('board', open(argv[1], 'r').read())):
 		fatal("Error: Could not parse file")
 
+	verifyparse()
+
 	if (debug):
 		print "DEVICE TREE:"
 		dumptree(root, 0)
@@ -1281,5 +1396,9 @@ if __name__=='__main__':
 			print " makerule %s dep %s act %s" % (i, m.dependency, m.actions)
 
 	writemakefilesettings(target_dir)
-	writecrt0_includes(target_dir)
+	if (useinitincludes):
+		writeinitincludes(target_dir)
+	else:
+		writecrt0_includes(target_dir)
 	writemakefile(target_dir)
+	writeldoptions(target_dir)

@@ -12,18 +12,36 @@ makedefine CFLAGS := $(CPU_OPT) $(CPPFLAGS) -Os -nostdinc -nostdlib -fno-builtin
 
 makedefine HOSTCFLAGS:= -Os -Wall
 
-makerule ldscript.ld   dep "ldoptions $(LDSUBSCRIPTS-1)" act " echo \"INCLUDE ldoptions\" > $@ ; for file in $(LDSUBSCRIPTS-1) ; do echo \"INCLUDE $$file\" >> $@ ; done"
+makerule ldscript.ld   
+	depends	"ldoptions $(LDSUBSCRIPTS-1)" 
+	action	"echo \"INCLUDE ldoptions\" > $@ ; for file in $(LDSUBSCRIPTS-1) ; do echo \"INCLUDE $$file\" >> $@ ; done"
+end
 
-makerule cpuflags   dep "Makefile.settings" act " perl -e 'print \"CPUFLAGS :=\n\"; foreach $$var (split(\" \", $$ENV{VARIABLES})) { if (exists($$ENV{$$var})) { print \"CPUFLAGS += -D$$var\" . (length($$ENV{$$var})?\"=\x27$$ENV{$$var}\x27\":\"\") .\"\n\"} else { print \"CPUFLAGS += -U$$var\n\"} }' > $@"
+#makerule cpuflags   
+#	depends	"Makefile.settings" 
+#	action	"perl -e 'print \"CPUFLAGS :=\n\"; foreach $$var (split(\" \", $$ENV{VARIABLES})) { if (exists($$ENV{$$var})) { print \"CPUFLAGS += -D$$var\" . (length($$ENV{$$var})?\"=\x27$$ENV{$$var}\x27\":\"\") .\"\n\"} else { print \"CPUFLAGS += -U$$var\n\"} }' > $@"
+#end
 
-makerule ldoptions   dep "Makefile.settings" act " perl -e 'foreach $$var (split(\" \", $$ENV{VARIABLES})) { if ($$ENV{$$var} =~ m/^(0x[0-9a-fA-F]+|0[0-7]+|[0-9]+)$$/) { print \"$$var = $$ENV{$$var};\n\"; }}' > $@"
+#makerule ldoptions   
+#	depends	"Makefile.settings" 
+#	action	"perl -e 'foreach $$var (split(\" \", $$ENV{VARIABLES})) { if ($$ENV{$$var} =~ m/^(0x[0-9a-fA-F]+|0[0-7]+|[0-9]+)$$/) { print \"$$var = $$ENV{$$var};\n\"; }}' > $@"
+#end
 
-makerule linuxbios.strip  dep "linuxbios" act " $(OBJCOPY) -O binary linuxbios linuxbios.strip"
+makerule linuxbios.strip  
+	depends	"linuxbios" 
+	action	"$(OBJCOPY) -O binary linuxbios linuxbios.strip"
+end
 
+makerule linuxbios_c.o   
+	depends	"$(DRIVER) linuxbios.a $(LIBGCC_FILE_NAME)" 
+	action	"$(CC) -nostdlib -r -o $@ c_start.o $(DRIVER) linuxbios.a $(LIBGCC_FILE_NAME)"
+end
 
-makerule linuxbios_c.o   dep "$(DRIVER) linuxbios.a $(LIBGCC_FILE_NAME)" act  " $(CC) -nostdlib -r -o $@ c_start.o $(DRIVER) linuxbios.a $(LIBGCC_FILE_NAME)"
-
-makerule linuxbios_c  dep "linuxbios_c.o $(TOP)/src/config/linuxbios_c.ld ldoptions" act " $(CC) -nostdlib -nostartfiles -static -o $@ -T $(TOP)/src/config/linuxbios_c.ld linuxbios_c.o"
+makerule linuxbios_c  
+	depends	"linuxbios_c.o $(TOP)/src/config/linuxbios_c.ld ldoptions" 
+	action	"$(CC) -nostdlib -nostartfiles -static -o $@ -T $(TOP)/src/config/linuxbios_c.ld linuxbios_c.o"
+	action 	"$(CROSS_COMPILE)nm -n linuxbios_c | sort > linuxbios_c.map"
+end
 
 ##
 ## By default compress the C part of linuxbios
@@ -31,53 +49,110 @@ makerule linuxbios_c  dep "linuxbios_c.o $(TOP)/src/config/linuxbios_c.ld ldopti
 makedefine LINUXBIOS_PAYLOAD-$(CONFIG_COMPRESS):=linuxbios_payload.nrv2b
 makedefine LINUXBIOS_PAYLOAD-$(CONFIG_UNCOMPRESSED):=linuxbios_payload.bin
 
-addaction linuxbios_c "$(CROSS_COMPILE)nm -n linuxbios_c | sort > linuxbios_c.map"
-makerule linuxbios_payload.bin dep "linuxbios_c" act " $(OBJCOPY) -O binary $< $@"
-makerule linuxbios_payload.nrv2b dep " linuxbios_payload.bin nrv2b" act " ./nrv2b e $< $@"
-makerule linuxbios_payload   dep "$(LINUXBIOS_PAYLOAD-1) " act "cp $(LINUXBIOS_PAYLOAD-1) linuxbios_payload"
-makerule linuxbios   dep "crt0.o linuxbios_payload ldscript.ld " act "$(CC) -nostdlib -nostartfiles -static -o $@ -T ldscript.ld crt0.o"
-addaction linuxbios "$(CROSS_COMPILE)nm -n linuxbios | sort > linuxbios.map"
+makerule linuxbios_payload.bin 
+	depends	"linuxbios_c" 
+	action	"$(OBJCOPY) -O binary $< $@"
+end
 
-makerule linuxbios.a   dep "$(OBJECTS-1) " act "rm -f linuxbios.a"
-addaction linuxbios.a "ar cr linuxbios.a $(OBJECTS-1)"
+makerule linuxbios_payload.nrv2b 
+	depends	"linuxbios_payload.bin nrv2b" 
+	action	"./nrv2b e $< $@"
+end
 
-makerule crt0.S   dep "$(CRT0) " act "cp $< $@"
+makerule linuxbios_payload   
+	depends	"$(LINUXBIOS_PAYLOAD-1)" 
+	action	"cp $(LINUXBIOS_PAYLOAD-1) linuxbios_payload"
+end
+
+makerule linuxbios   
+	depends	"crt0.o linuxbios_payload ldscript.ld" 
+	action	"$(CC) -nostdlib -nostartfiles -static -o $@ -T ldscript.ld crt0.o"
+	action	"$(CROSS_COMPILE)nm -n linuxbios | sort > linuxbios.map"
+end
+
+makerule linuxbios.a   
+	depends	"$(OBJECTS-1)" 
+	action	"rm -f linuxbios.a"
+	action	"ar cr linuxbios.a $(OBJECTS-1)"
+end
+
+#makerule crt0.S   
+#	depends	"$(CRT0)" 
+#	action		"cp $< $@"
+#end
 
 # the buildrom tool
-makerule buildrom dep "$(TOP)/util/buildrom/buildrom.c" act "$(CC) -o $@ $<"
+makerule buildrom 
+	depends	"$(TOP)/util/buildrom/buildrom.c" 
+	action	"$(HOSTCC) -o $@ $<"
+end
+
 # Force crt0.s (which has build time version code in it to rebuild every time)
 makedefine .PHONY : crt0.s
-makerule crt0.s   dep "crt0.S crt0_includes.h $(CRT0_INCLUDES) " act "@echo \"$(CPP) ... $< > $@ \""
-addaction crt0.s "$(CPP) $(CPPFLAGS) -I. -I$(TOP)/src  $< > $@.new && mv $@.new $@ "
+makerule crt0.s   
+	depends	"crt0.S $(CRT0_INCLUDES)" 
+	action	"@echo \"$(CPP) ... $< > $@ \""
+	action	"$(CPP) $(CPPFLAGS) -I. -I$(TOP)/src  $< > $@.new && mv $@.new $@"
+end
 
-makerule crt0.o  dep "crt0.s " act "@echo $(CC) ... -o $@ $<"
-addaction crt0.o "@$(CC) -c $(CPU_OPT) -o $@ $<"
+makerule crt0.o  
+	depends	"crt0.s $(INIT-OBJECTS)" 
+	action	"@echo $(CC) ... -o $@ $<"
+	action	"@$(CC) -c $(CPU_OPT) -o $@ $< $(INIT-OBJECTS)"
+end
 
+makerule etags   
+	depends	"$(SOURCES)" 
+	action	"etags $(SOURCES)"
+end
+makerule tags   
+	depends	"$(SOURCES)" 
+	action	"ctags $(SOURCES)"
+end
+makerule documentation   
+	depends	"$(SOURCES)" 
+	action	"doxygen LinuxBIOSDoc.config"
+end
 
-makerule etags   dep "$(SOURCES) " act "etags $(SOURCES)"
-makerule tags   dep "$(SOURCES) " act "ctags $(SOURCES)"
-makerule documentation   dep "$(SOURCES) " act "doxygen LinuxBIOSDoc.config "
+makerule ./romcc   
+	depends	"$(TOP)/util/romcc/romcc.c" 
+	action	"$(HOSTCC) -g $(HOSTCFLAGS) -DVERSION='\"0.21\"' -DRELEASE_DATE='\"7 april 2003\"' $< -o $@"
+end
 
-makerule ./romcc   dep "$(TOP)/util/romcc/romcc.c " act "$(HOSTCC) -g $(HOSTCFLAGS) -DVERSION='\"0.21\"' -DRELEASE_DATE='\"7 april 2003\"' $< -o $@"
-makerule build_opt_tbl   dep "$(TOP)/util/options/build_opt_tbl.c $(TOP)/src/include/pc80/mc146818rtc.h $(TOP)/src/include/boot/linuxbios_tables.h " act "$(HOSTCC) $(HOSTCFLAGS) $< -o $@"
+makerule build_opt_tbl   
+	depends	"$(TOP)/util/options/build_opt_tbl.c $(TOP)/src/include/pc80/mc146818rtc.h $(TOP)/src/include/boot/linuxbios_tables.h" 
+	action	"$(HOSTCC) $(HOSTCFLAGS) $< -o $@"
+end
 
-#makerule /$(TARGET_DIR)/option_table.c    dep "build_opt_tbl $(MAINBOARD)/cmos.layout " act "./build_opt_tbl -b  --config $(MAINBOARD)/cmos.layout "
-makerule option_table.c    dep "build_opt_tbl $(MAINBOARD)/cmos.layout " act "./build_opt_tbl -b  --config $(MAINBOARD)/cmos.layout "
+#makerule /$(TARGET_DIR)/option_table.c
+#	depends	"build_opt_tbl $(MAINBOARD)/cmos.layout" 
+#	action	"./build_opt_tbl -b  --config $(MAINBOARD)/cmos.layout"
+#end
+
+makerule option_table.c
+	depends	"build_opt_tbl $(MAINBOARD)/cmos.layout" 
+	action	"./build_opt_tbl -b  --config $(MAINBOARD)/cmos.layout"
+end
 
 if HAVE_OPTION_TABLE
 object ./option_table.o 
 #special rule
-#makerule option_table.o dep "option_table.c" act "$(CC) -c $(CFLAGS) -o $@ $<"
+#makerule option_table.o 
+#	depends	"option_table.c" 
+#	action	"$(CC) -c $(CFLAGS) -o $@ $<"
+#end
 # object option_table.o 
 end
 
-makerule clean  act "rm -f linuxbios.* *~"
-addaction clean "rm -f linuxbios "
-addaction clean "rm -f ldoptions cpuflags ldscript.ld"
-addaction clean "rm -f a.out *.s *.l *.o"
-addaction clean "rm -f TAGS tags"
-addaction clean "rm -f docipl"
-addaction clean "rm -f build_opt_tbl option_table.c crt0.S"
+makerule clean  
+	action	"rm -f linuxbios.* *~"
+	action	"rm -f linuxbios"
+	action	"rm -f ldscript.ld"
+	action	"rm -f a.out *.s *.l *.o"
+	action	"rm -f TAGS tags"
+	action	"rm -f docipl"
+	action	"rm -f build_opt_tbl option_table.c crt0.S"
+end
 
 # do standard config files that the user need not specify
 # for now, this is just 'lib', but it may be more later. 

@@ -1,9 +1,6 @@
 /* Copyright 2000  AG Electronics Ltd. */
 /* This code is distributed without warranty under the GPL v2 (see COPYING) */
 
-#include <ppc.h>
-#include <ppcreg.h>
-#include <types.h>
 #include <arch/io.h>
 
 #ifndef PNP_INDEX_REG

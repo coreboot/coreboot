@@ -1094,6 +1094,60 @@ spd_verify_dimm:
 	jmp	spd_unsupported_data
 1:
 
+	/* Back-to-Back Random Column Accesses */
+	movb	$15, %bh
+	CALLSP(spd_read_paired_byte)
+	jz	spd_missing_data
+	testb	%al, %al
+	jz	spd_invalid_data
+	cmpb	$4, %al
+	ja	spd_unsupported_data
+
+	/* Burst Lengths */
+	movb	$16, %bh
+	CALLSP(spd_read_paired_byte)
+	jz	spd_missing_data
+	testb	$(1<<2), %al
+	jz	spd_unsupported_data
+
+	/* Logical Banks */
+	movb	$17, %bh
+	CALLSP(spd_read_paired_byte)
+	jz	spd_missing_data
+	testb	%al, %al
+	jz	spd_invalid_data
+	
+	/* Supported CAS Latencies */
+	movb	$18, %bh
+	CALLSP(spd_read_paired_byte)
+	jz	spd_missing_data
+	testb	$(1 << 1), %al /* CL 1.5 */
+	jnz	1f
+	testb	$(1 << 2), %al /* CL 2.0 */
+	jnz	1f
+	testb	$(1 << 3), %al /* CL 2.5 */
+	jnz	1f
+	jmp	spd_unsupported_data
+1:
+	
+	/* Cycle time at Cas Latency (CLX - 0.5) */
+	movb	$23, %bh
+	CALLSP(spd_read_paired_byte)
+	jz	spd_missing_data
+	
+	/* Cycle time at Cas Latency (CLX - 1.0) */
+	movb	$26, %bh
+	CALLSP(spd_read_paired_byte)
+	jz	spd_missing_data
+	
+	/* tRP Row precharge time */
+	movb	$27, %bh
+	CALLSP(spd_read_paired_byte)
+	jz	spd_missing_data
+	testb	$0xfc, %al
+	jz	spd_invalid_data
+	
+
 	/* tRCD RAS to CAS */
 	movb	$29, %bh
 	CALLSP(spd_read_paired_byte)

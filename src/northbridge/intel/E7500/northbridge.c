@@ -89,5 +89,5 @@ struct mem_range *sizeram(void)
 	mem[3].basek = 0;
 	mem[3].sizek = 0;
 	
-	return (struct mem_range *) &mem;
+	return mem;
 }

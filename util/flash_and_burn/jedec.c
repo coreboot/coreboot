@@ -139,39 +139,46 @@ void write_page_jedec(volatile char *bios, char *src, volatile char *dst,
 	toggle_ready_jedec(dst - 1);
 }
 
-int write_sector_jedec(volatile char *bios,
-		       unsigned char *src,
+int wirte_byte_program_jedec(volatile unsigned char *bios, unsigned char *src,
+			     volatile unsigned char *dst)
+{
+	volatile unsigned char *Temp;
+
+	if (*dst != 0xff) {
+		printf("FATAL: dst %p not erased (val 0x%x)\n",
+		       dst, *dst);
+		return (-1);
+	}
+	/* transfer data from source to destination */
+	if (*src == 0xFF) {
+		dst++, src++;
+		/* If the data is 0xFF, don't program it */
+		return 0;
+	}
+	/* Issue JEDEC Byte Program command */
+	Temp = bios + 0x5555;
+	*Temp = 0xAA;
+	Temp = bios + 0x2AAA;
+	*Temp = 0x55;
+	Temp = bios + 0x5555;
+	*Temp = 0xA0;
+	*dst = *src;
+	toggle_ready_jedec(bios);
+	if (*dst != *src)
+		printf("BAD! dst 0x%lx val 0x%x src 0x%x\n",
+		       (unsigned long) dst, *dst, *src);
+	dst++, src++;
+	return 0;
+}
+
+int write_sector_jedec(volatile unsigned char *bios, unsigned char *src,
 		       volatile unsigned char *dst,
 		       unsigned int page_size)
 {
 	int i;
-	volatile char *Temp;
 
 	for (i = 0; i < page_size; i++) {
-		if (*dst != 0xff) {
-			printf("FATAL: dst %p not erased (val 0x%x)\n",
-			       dst, *dst);
-			return (-1);
-		}
-		/* transfer data from source to destination */
-		if (*src == 0xFF) {
-			dst++, src++;
-			/* If the data is 0xFF, don't program it */
-			continue;
-		}
-		/* Issue JEDEC Byte Program command */
-		Temp = bios + 0x5555;
-		*Temp = 0xAA;
-		Temp = bios + 0x2AAA;
-		*Temp = 0x55;
-		Temp = bios + 0x5555;
-		*Temp = 0xA0;
-		*dst = *src;
-		toggle_ready_jedec(bios);
-		if (*dst != *src)
-			printf("BAD! dst 0x%lx val 0x%x src 0x%x\n",
-			       (unsigned long) dst, *dst, *src);
-		dst++, src++;
+		wirte_byte_program_jedec(bios, src, dst);
 	}
 
 	return (0);
@@ -180,8 +187,8 @@ int write_sector_jedec(volatile char *bios,
 int write_jedec(struct flashchip *flash, unsigned char *buf)
 {
 	int i;
-	int total_size = flash->total_size * 1024, page_size =
-	    flash->page_size;
+	int total_size = flash->total_size * 1024;
+	int page_size = flash->page_size;
 	volatile unsigned char *bios = flash->virt_addr;
 
 	erase_chip_jedec(flash);
@@ -194,8 +201,7 @@ int write_jedec(struct flashchip *flash, unsigned char *buf)
 		printf("%04d at address: 0x%08x", i, i * page_size);
 		write_page_jedec(bios, buf + i * page_size,
 				 bios + i * page_size, page_size);
-		printf
-		    ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 	}
 	printf("\n");
 	protect_jedec(bios);

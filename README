@@ -1,81 +1,14 @@
-This is FreeBIOS.
+This is FreeBIOS. At this point it's really linuxbios, FreeBIOS is mostly gone. 
 
-Requires bcc to compile 16-bit C code.  Obtain bcc from
-ftp://ftp.FreeBSD.org/pub/FreeBSD/ports/distfiles/bcc.tar.gz
+To see how to build a target, you should look into the HOWTO directory. 
 
-Rough directory layout: 
-
-chip is for chipset types. chip/intel is intel mainboards. chip/stpc is
-stpc systems. These are common files to both freebios and linuxbios.
-
-lib is architecture-indepedent (we hope) code that is used by both linuxbios
-and freebios. 
-
-include is what you think. 
-
-----------------------------------------------------
-LinuxBIOS
------------------------------------------------------
-linuxbios is the linuxbios directory. Things for linuxbios ONLY live here. 
-
-There is an inflate directory for the inflate code, a lib directory for
-common library code, an include directory, a kernel_patches directory for
-patches to the various kernels, and finally, Makefile.common, an included
-Makefile used by all the builds.
-
-Actual targets are done in caps (this is a Berkeley style thing). 
-In each target are:
-1) crt0.S for that target. These vary a bit by target, although they 
-   do include lots of common code. 
-2) Makefile. This mainly has -D stuff and it includes ../Makefile.common
-3) ldscript.ld. We'd like to make this common, but they seem to vary a lot
-4) linux. (YOU supply this). A soft link to a linux source tree. 
-   e.g. ln -s /usr/src/linux linux
+We should, but do not, have a HOWTO for each target. Sorry, Ron's fault.
+But the SIS 630 is a good place to start. 
 
 To make this you need a newer GAS. Our version that works is
 
 GNU assembler version 2.9.5 (i386-redhat-linux) using BFD version
 2.9.5.0.22
 
-This comes with redhat 6.2. 
+This comes with redhat 6.2  or later. Almost everybody has this now.
 
-To build, cd to the directory and make, viz. 
-cd linuxbios/PM133
-make
-
-You'll see the various compiles, then you'll see an ld step, then a step
-called mkrom. mkrom builds a 64k linuxbios rom image. Finally the 
-linuxbios 64k image is concatenated with a stripped, compressed linux
-kernel and put into a file called 'romimage'. 
-
-If you say
-make floppy
-it will build it and 'mcopy romimage a:'. This is for those of you with
-FLASH burners. 
-
--------------------------
-LinuxBIOS structure
--------------------------
-
-Mkrom puts in a call to f000:fff0, which is the entry point for LinuxBIOS. 
-This starts off in source form in crt0.S
-
-There are about 16 instructions of 16-bit code, in the include file
-../../chip/intel/intel_start32.S. This is the absolute minimum amount of
-assembly code needed. 
-
-This puts us into protected mode with 32-bit addresses. Next ram is turned
-on. We have tried hard to keep the 32-bit assembly to a minimum, and in
-fact what's there is really the little bit needed to get ram going, and
-the other little bit needed to print diagnostic messages to COM1 while RAM
-is set up. If you don't know it already you'll find getting SDRAM going is
-a real mess, though we're getting better at it bit by bit. 
-
-The assembly code calls intel_main function (found in
-../../chip/intel/intel_main.c). This function does all the remaining
-hardware setup in C. Please think hard about adding assembly! We do an
-awful lot in C, include cache, MTRR, MSR, and other setup. 
-
-Finally, intel_main calls linuxbios_main (../inflate/main.c). This code
-unzips the kernel to 0x100000, and jumps to it. From that point on, Linux
-runs the show. 

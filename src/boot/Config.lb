@@ -1,2 +1,5 @@
 object elfboot.o
 object hardwaremain.o
+if CONFIG_FS_STREAM
+	object filo.o
+end

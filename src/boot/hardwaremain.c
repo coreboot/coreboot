@@ -217,6 +217,10 @@ void hardwaremain(int boot_complete)
 
 	CONFIGURE(CONF_PASS_PRE_BOOT);
 
+#if CONFIG_FS_STREAM == 1
+	filo(lb_mem);
+#else
 	elfboot(lb_mem);
+#endif
 }
 

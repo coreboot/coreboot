@@ -29,6 +29,9 @@ entries
 386          1       e       1        ECC_memory
 388          4       r       0        reboot_bits
 392          3       e       5        baud_rate
+396          1       e       1        interleave_chip_selects
+397          2       e       8        max_mem_clock
+
 400          1       e       1        power_on_after_fail
 412          4       e       6        debug_level
 416          4       e       7        boot_first
@@ -36,6 +39,7 @@ entries
 424          4       e       7        boot_third
 428          4       h       0        boot_index
 432	     8       h       0        boot_countdown
+444          1       e       1        nmi
 1008         16      h       0        check_sum
 
 enumerations

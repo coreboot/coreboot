@@ -174,7 +174,7 @@ northbridge amd/amdk8 "mc0"
                 pci 0:1.6 off
                 pci 1:0.0 on
                 pci 1:0.1 on
-                pci 1:0.2 on
+                pci 1:0.2 off
                 pci 1:1.0 off
                 superio winbond/w83627hf link 1
                         pnp 2e.0 on #  Floppy

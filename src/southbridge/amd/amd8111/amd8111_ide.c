@@ -10,6 +10,7 @@ static void ide_init(struct device *dev)
 
 	/* Enable ide devices so the linux ide driver will work */
 	uint16_t word;
+	uint8_t byte;
 	int enable_a=1, enable_b=1;
 
 	word = pci_read_config16(dev, 0x40);
@@ -31,21 +32,12 @@ static void ide_init(struct device *dev)
 
 	pci_write_config16(dev, 0x40, word);
 
+
+        byte = 0x20 ; // Latency: 64-->32
+        pci_write_config8(dev, 0xd, byte);
+
 	word = 0x0f;
 	pci_write_config16(dev, 0x42, word);
-
-	/* The AMD768 has a bug where the BM DMA address must be
-	 * 256 byte aligned while it is only 16 bytes long.
-	 * Hard code this to a valid address below 0x1000
-	 * where automatic port address assignment starts.
-	 * FIXME: I assume the 8111 does the same thing. We should
-	 * clarify. stepan@suse.de
-	 */
-	pci_write_config32(dev, 0x20, 0xf01);
-
-	pci_write_config32(dev, 0x48, 0x205e5e5e);
-	word = 0x06a;
-	pci_write_config16(dev, 0x4c, word);
 }
 
 static struct device_operations ide_ops  = {

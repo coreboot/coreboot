@@ -11,6 +11,7 @@ void amd8111_enable(device_t dev)
 	device_t bus_dev;
 	unsigned index;
 	uint16_t reg_old, reg;
+	uint8_t byte;
 
 	/* See if we are on the behind the amd8111 pci bridge */
 	bus_dev = dev->bus->dev;
@@ -38,6 +39,18 @@ void amd8111_enable(device_t dev)
 			return;
 		}
 	}
+
+        if ((dev->vendor == PCI_VENDOR_ID_AMD) &&
+            (dev->device == PCI_DEVICE_ID_AMD_8111_USB2)) {
+		if(!dev->enabled) {
+		        byte = pci_read_config8(lpc_dev, 0x47);
+		        byte |= (1<<7);
+		        pci_write_config8(lpc_dev, 0x47, byte);
+			return;
+		}
+		
+	}
+	
 	reg = reg_old = pci_read_config16(lpc_dev, 0x48);
 	reg &= ~(1 << index);
 	if (dev->enabled) {
@@ -46,6 +59,7 @@ void amd8111_enable(device_t dev)
 	if (reg != reg_old) {
 		pci_write_config16(lpc_dev, 0x48, reg);
 	}
+	
 }
 
 struct chip_control southbridge_amd_amd8111_control = {

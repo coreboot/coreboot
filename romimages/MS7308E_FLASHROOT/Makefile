@@ -11,7 +11,7 @@ CPUFLAGS += -DUSE_DOC_MIL
 CPUFLAGS += -DFINAL_MAINBOARD_FIXUP
 CPUFLAGS += -DRAMTEST
 CPUFLAGS += -DSERIAL_CONSOLE
-CPUFLAGS += -DCMD_LINE='"root=/dev/nftla1 single console=ttyS0,115200 mem=64m         "'
+CPUFLAGS += -DCMD_LINE='"root=/dev/nftla1 single console=ttyS0,115200 "'
 
 LINUX=$(TOP)/../linux-2.4.0-test6.sis
 

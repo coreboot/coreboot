@@ -27,6 +27,7 @@
 
 #include <cpu/p6/msr.h>
 #include <cpu/p6/mtrr.h>
+#include <printk.h>
 
 #define arraysize(x)   (sizeof(x)/sizeof((x)[0]))
 
@@ -155,8 +156,42 @@ void intel_set_mtrr(unsigned long rambase, unsigned long ramsizeK)
 {
 #ifdef SIS630
 	/* hardcoded for 128MB SDRAM, 4 MB SMA */
-	intel_set_var_mtrr(0, 0, 128 * 1024 * 1024, MTRR_TYPE_WRBACK);
-	intel_set_var_mtrr(1, 124 * 1024 * 1024, 4 * 1024 * 1024, MTRR_TYPE_UNCACHABLE);
+	// change this 10/29/00 RGM 
+	// set WRBACk to the size of ram, and SMA to the last 4M
+	// This works because Ollie fixed Dram setup with SPD
+	// coming in, from sis sizeram, the size is size of ram - 
+	// 256M. We should probably change the way this is done. 
+	// For now, take ramsizeK, add 4M, that's it. 
+	// you have to round up the ramsize because MTRRs 
+	// have to be on a power of two boundary. 
+	// BUT: UC and WB types are allowed to overlap. 
+	// so there is no problem with letting MTRR 0 overlap MTRR 1
+	printk(KERN_INFO "set_mtrr: rambase is 0x%x, ramsizeK is 0x%x\n", 
+		rambase, ramsizeK);
+#if 0
+// why doesn't this work! machine hangs!
+	printk(KERN_INFO "setting MTRR 0 size to 0x%x\n", 
+		(ramsizeK + 4096) * 1024);
+	intel_set_var_mtrr(0, 0, (ramsizeK + 4096) * 1024, MTRR_TYPE_WRBACK);
+	intel_set_var_mtrr(1, (ramsizeK * 1024), 
+		4096 * 1024, MTRR_TYPE_UNCACHABLE);
+#else
+	// Ollie, this is a hack! Sorry! Ron
+	printk(KERN_INFO "Setting 256M MTRR 0\n");
+	intel_set_var_mtrr(0, 0, 256 * 1024 * 1024, MTRR_TYPE_WRBACK);
+#ifdef HAVE_FRAMEBUFFER
+	// for SiS, ramsizeK is the base of the framebuffer. 
+	// but  if it's less than 60M, don't bother ...
+	if (ramsizeK > 60*1024)
+	{
+		printk(KERN_INFO "Setting %dM, 4M size MTRR 1\n", 
+			ramsizeK);
+		intel_set_var_mtrr(1, ramsizeK * 1024, 4096 * 1024, 
+			MTRR_TYPE_UNCACHABLE);
+	}
+#endif
+	printk(KERN_INFO "MTRRs set\n");
+#endif
 #else
 	printk("Setting variable MTRR 0 to %dK\n", ramsizeK);
 	intel_set_var_mtrr(0, 0, ramsizeK * 1024, MTRR_TYPE_WRBACK);

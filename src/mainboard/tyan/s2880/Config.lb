@@ -32,7 +32,7 @@ default LB_CKS_LOC=123
 
 
 driver mainboard.o
-dir ../common/lsi_scsi
+#dir ../common/lsi_scsi
 #driver adaptec_scsi.o
 #driver promise_sata.o
 #driver intel_nic.o

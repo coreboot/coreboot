@@ -3,7 +3,7 @@
 
 #include <ppc.h>
 
-unsigned long get_clock_speed(void)
+unsigned long get_timer_freq(void)
 {
     return 100000000 / 4;
 }

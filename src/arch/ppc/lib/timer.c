@@ -7,7 +7,7 @@
 
 unsigned long get_hz(void)
 {
-	return get_clock_speed();
+	return get_timer_freq();
 }
 
 unsigned long ticks_since_boot(void)

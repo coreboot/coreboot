@@ -4,6 +4,6 @@
 /*
  * Various clock routines.
  */
-extern unsigned long get_clock_speed(void);
-extern unsigned long get_bus_freq(void);
+extern unsigned long get_timer_freq(void);
+extern unsigned long get_pci_bus_freq(void);
 #endif /* _CLOCK_H */

@@ -20,7 +20,7 @@ static int PLL_multiplier[] = {
 };
 
 unsigned long 
-get_clock_speed(void)
+get_timer_freq(void)
 {
 	unsigned long clock = CONFIG_SYS_CLK_FREQ * 1000000;
 	return clock * PLL_multiplier[ppc_gethid1() >> 28] / 10;

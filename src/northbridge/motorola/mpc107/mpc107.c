@@ -317,7 +317,7 @@ mpc107_config_memory(int no_banks, sdram_bank_info * bank, int for_real)
     int i, j;
     char ignore[8];
     /* Convert bus clock to cycle time in 100ns units */
-    unsigned cycle_time = 10 * (2500000000U / get_clock_speed());
+    unsigned cycle_time = 10 * (2500000000U / get_timer_freq());
     /* Approximate */
     unsigned access_time = cycle_time - 300;
     unsigned cas_latency = 0;

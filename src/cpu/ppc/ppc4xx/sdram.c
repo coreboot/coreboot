@@ -72,7 +72,7 @@ void sdram_init(void)
 	/*
 	 * Determine SDRAM speed
 	 */
-	speed = get_bus_freq(); /* parameter not used on ppc4xx */
+	speed = get_pci_bus_freq(); /* parameter not used on ppc4xx */
 
 	/*
 	 * Support for 100MHz and 133MHz SDRAM

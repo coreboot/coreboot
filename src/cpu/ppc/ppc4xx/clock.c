@@ -164,7 +164,7 @@ void get_sys_info (struct ppc4xx_sys_info * sysInfo)
 	}
 }
 
-unsigned long get_clock_speed(void)
+unsigned long get_timer_freq(void)
 {
 	struct ppc4xx_sys_info sys_info;
 
@@ -172,7 +172,7 @@ unsigned long get_clock_speed(void)
 	return sys_info.freqProcessor;
 }
 
-unsigned long get_bus_freq(void)
+unsigned long get_pci_bus_freq(void)
 {
 	struct ppc4xx_sys_info sys_info;
 

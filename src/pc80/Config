@@ -4,7 +4,7 @@ option CONFIG_MC146818RTC=1
 object isa-dma.o
 object i8259.o CONFIG_I8259
 object udelay_timer2.o CONFIG_UDELAY_TIMER2
-object beep.o CONFIG_BEEP
+object beep.o VIDEO_CONSOLE
 object vga_load_regs.o VIDEO_CONSOLE
 object font_8x16.o VIDEO_CONSOLE
 object vga_set_mode.o VIDEO_CONSOLE

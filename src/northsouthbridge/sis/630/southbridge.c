@@ -82,13 +82,14 @@ void enable_floppy()
 
 // simple fixup (which we hope can leave soon) for the sis southbridge part
 void
-southbridge_fixup()
+final_southbridge_fixup()
 {
     struct pci_dev *pcidev;
     
     // ethernet fixup. This should all work, and doesn't, yet. 
     // so we hack it for now. 
-    pcidev = pci_find_device(PCI_VENDOR_ID_SI, 	PCI_DEVICE_ID_SI_503, 
+    // need a manifest constant for the enet device. 
+    pcidev = pci_find_device(PCI_VENDOR_ID_SI, 	0x0900, 
 	(void *)NULL);
 	if (pcidev != NULL) {
 	    u32 bar0 = 0xb001;

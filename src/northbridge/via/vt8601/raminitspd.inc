@@ -95,9 +95,11 @@ spd_set_nbxcfg_done:
 
 #define DIMM_READ \
 	addl %ebx, %eax			; \
-	movl (%eax), %edx		; \
+	movl (%eax), %edx		/* end it here -- see if that fixes */
+#if 0
 	xorl $0xdff8, %eax		; \
 	movl (%eax), %edx
+#endif
 
 #define DIMM0_READ DIMM0_BASE   ; DIMM_READ
 #define DIMM1_READ DIMM_BASE(1) ; DIMM_READ

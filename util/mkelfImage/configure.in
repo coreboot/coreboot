@@ -1,0 +1,50 @@
+dnl 
+dnl configure.ac for mkelfImage
+dnl 
+dnl 
+
+dnl ---Required
+AC_INIT(mkelfImage.pl)
+AC_CONFIG_AUX_DIR(./config)
+
+dnl --Options
+
+dnl ---Programs
+dnl To specify a different compiler, just 'export CC=/path/to/compiler'
+AC_PROG_CC
+
+dnl ld
+AC_CHECK_TOOL([LD], ld, no)
+AC_SUBST([LD])
+if test "$LD" = no; then
+	   AC_MSG_ERROR([ld not found])
+fi
+
+dnl objcopy
+AC_CHECK_TOOL([OBJCOPY], objcopy, no)
+AC_SUBST([OBJCOPY])
+if test "$OBJCOPY" = no; then
+	    AC_MSG_ERROR([objcopy not found])
+fi
+
+dnl Make sure we have a good version of perl
+AC_PATH_PROG([PERL], perl, no)
+AC_SUBST([PERL])
+if test "$PERL" = no; then
+	AC_MSG_ERROR([perl not found])
+fi
+$PERL -e 'require 5;' || {
+	AC_MSG_ERROR([Perl 5 or better is required])
+}
+
+dnl pod2man
+AC_PATH_PROG([POD2MAN], pod2man, no)
+AC_SUBST([POD2MAN])
+if test "$POD2MAN" = no; then
+	AC_MSG_ERROR([pod2man is not found])
+fi
+
+
+dnl ---Output
+AC_OUTPUT([Makefile.conf])
+

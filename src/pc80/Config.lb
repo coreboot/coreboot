@@ -1,3 +1,5 @@
+uses CONFIG_IDE_STREAM
+
 #object keyboard.o
 object mc146818rtc.o
 #object isa-dma.o
@@ -8,5 +10,7 @@ object mc146818rtc.o
 #object font_8x16.o VIDEO_CONSOLE
 #object vga_set_mode.o VIDEO_CONSOLE
 #object vga_load_pcx.o VIDEO_CONSOLE
-#dir ide
 
+if CONFIG_IDE_STREAM
+	dir ide
+end

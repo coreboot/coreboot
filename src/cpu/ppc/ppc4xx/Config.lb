@@ -1,7 +1,23 @@
 ##
 ## CPU initialization
 ##
-initinclude "EARLY_INIT" cpu/ppc/ppc4xx/ppc4xx.inc
+uses _RAMBASE
+uses USE_DCACHE_RAM
+uses DCACHE_RAM_BASE
+uses DCACHE_RAM_SIZE
+
+##
+## PPC4XX always uses cache ram for initial setup
+##
+option USE_DCACHE_RAM=1
+## Set dcache ram above linuxbios image
+option DCACHE_RAM_BASE=_RAMBASE+0x100000
+## Dcache size is 16Kb
+option DCACHE_RAM_SIZE=16384
+
+initinclude "FAMILY_INIT" cpu/ppc/ppc4xx/ppc4xx.inc
+initobject cache.S
+initobject sdram.c
 
 object mem.o
 object clock.o

@@ -79,6 +79,15 @@ struct lb_hwrpb {
 	uint64_t hwrpb;
 };
 
+#define LB_TAG_MAINBOARD	0x0003
+struct lb_mainboard {
+	uint32_t tag;
+	uint32_t size;
+	uint8_t  vendor_idx;
+	uint8_t  part_number_idx;
+	uint8_t  strings[0];
+};
+
 
 
 /* The following structures are for the cmos definitions table */

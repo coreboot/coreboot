@@ -6,8 +6,24 @@ set_memory_size:
 	movl	$0x9c, %eax
 	PCI_READ_CONFIG_DWORD
 
-#if USE_AMD_NDA_CODE
-#endif /* USE_AMD_NDA_CODE */
+	/* Set the Athlon Top of memory MSR */
+	xorl	%edx, %edx
+	movl	$TOP_MEM, %ecx
+	wrmsr
+	movl	$TOP_MEM2, %ecx
+	wrmsr
+
+	/* Clear the IOrr's */
+	xorl	%edx, %edx
+	xorl	%eax, %eax
+	movl	$IORR0_BASE, %ecx
+	wrmsr
+	movl	$IORR0_MASK, %ecx
+	wrmsr
+	movl	$IORR1_BASE, %ecx
+	wrmsr
+	movl	$IORR1_MASK, %ecx
+	wrmsr
 
 set_memory_size_end:
 	RETSP

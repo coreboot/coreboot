@@ -1,5 +1,6 @@
 #include <arch/cache_ram.h>
 
+  
 	/* copy data segment from FLASH ROM to CACHE */
 	movl	$_clrodata, %esi
 	movl	$_rodata, %edi

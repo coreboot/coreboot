@@ -16,6 +16,8 @@
 #include <superio/w83627hf.h>
 #include <northbridge/intel/82860/rdram.h>
 #include <pc80/mc146818rtc.h>
+#include <part/fallback_boot.h>
+
 
 #define LPC_BUS 0
 #define LPC_DEVFN ((0x1f << 3) + 0)
@@ -37,6 +39,7 @@
 #define TSCYCLE_SLOW 1000  /* ns */
 #define TSCYCLE_FAST 10    /* ns */
 void ndelay(unsigned long);
+void delay(unsigned long);
 
 #define I860_MCH_BUS 0
 #define I860_MCH_DEVFN 0
@@ -343,7 +346,7 @@ static void set_init_bits(int rdram_devices)
 	}
 }
 
-static void rdram_read_domain_initialization(int rdram_devices)
+static int rdram_read_domain_initialization(int rdram_devices)
 {
 	u8 rdt=0x8d;
 	int i,j,k;
@@ -371,6 +374,14 @@ static void rdram_read_domain_initialization(int rdram_devices)
 			mem[k]=data;
 		}
   		printk_debug("Device = %d, %x,  %x\n",j,mem[0],mem[4]);
+		if((mem[0]==0)||(mem[0]>8)){
+			printk_err("ERROR - Invalid memory read device %d, channel A\n",j);
+			return(j);
+		}
+		if((mem[4]==0)||(mem[4]>8)){
+			printk_err("ERROR - Invalid memory read device %d, channel B\n",j);
+			return(j+(1<<8));
+		}
 		adj_a[j]=(mem[0]&0x0ff)-1;
 		adj_b[j]=(mem[4]&0x0ff)-1;
 		if(adj_a[j]<l) l=adj_a[j];
@@ -409,7 +420,8 @@ static void rdram_read_domain_initialization(int rdram_devices)
 	rdram_run_command(0, 0, CMD_MCH_RAC_LOAD_RACA_CONFIG);
 	rdram_run_command(0, 0, CMD_MCH_RAC_LOAD_RACB_CONFIG);
 #endif
-	
+
+    	return(0);
 }
 
 static void rdram_set_clear_reset(void)
@@ -425,10 +437,12 @@ static void rdram_set_clear_reset(void)
 		tcycle=(999+spd_mhz_min[0])/spd_mhz_min[0];
 		delay=tcycle*2816;
 	}	
-	if(delay>(16*TSCYCLE_SLOW))
+	if(delay>(16*TSCYCLE_SLOW)) {
 		ndelay(delay);
-	else
+	}
+	else {
 		ndelay(16*TSCYCLE_SLOW);
+	}
 	rdram_run_command(0, BCAST, CMD_RDRAM_CLEAR_RESET);
 	rdram_write_reg(0, BCAST, REG_TEST34, 0, 0);
 	rdram_write_reg(0, BCAST, REG_TEST78, 0, 0);
@@ -771,13 +785,52 @@ static void ram_zap(unsigned long start, unsigned long stop)
 
 }
 
-void init_memory(void)
+void rdram_calibrate(void)
 {
 	int i,j;
+
+	/* 5. Rdram Current Control */
+	/* You can disable the final memory initialized bit 
+	 * to see if this is working and it isn't!
+	 * It is close though.
+	 * FIXME manual current calibration.
+	 */
+
+	rdram_run_command(0, 0, CMD_MCH_RAC_CURRENT_CALIBRATION);
+
+	/* Do not do the following command.  It will cause a lock up */
+	/* rdram_run_command(0, 0, CMD_MANUAL_CURRENT_CALIBRATION);  */
+	for(i = 0; i < 128; i++) {
+		for(j=0;j<rdram_chips;j++) {
+			rdram_run_command(0, j, CMD_RDRAM_CURRENT_CALIBRATION);
+		}
+	}
+
+
+	rdram_run_command(0, BCAST, CMD_TEMP_CALIBRATE_ENABLE);
+	rdram_run_command(0, BCAST, CMD_TEMP_CALIBRATE);
+#if 0
+	display_rdram_regs( rdram_chips );
+#endif
+
+	/* 6.1 RDRAM Core Initialization */
+	for(i = 0; i < 192; i++) {
+		rdram_run_command(0, BCAST, CMD_RDRAM_REFRESH);
+	}
+	
+}
+
+void init_memory(void)
+{
+	int i,j,k;
+	int status;
 	int ecc=1;
 	int rdram_devices=0;
 	u32 ricm;
 	u16 word;
+	unsigned char byte;
+	char manufact[8];
+	unsigned char m_year, m_week, m_location;
 
 	load_spd_vars();
 	display_spd_dev_row_col_bank(spd_devices, spd_row_col, spd_banks);
@@ -788,7 +841,7 @@ void init_memory(void)
 			rdram_devices+=spd_devices[i];
 	}
 	if(rdram_devices==0){
-		printk_debug("ERROR - Memory Rimms are not matched.\n");
+		printk_err("ERROR - Invalid Rimm configuration.\n");
 		for(;;) i=1;  /* Freeze the system error */
 	}
 	else {
@@ -808,38 +861,67 @@ void init_memory(void)
 	/* 4. Initialize Memory Controller */
 	mch_init();
 
-	/* 6.1 RDRAM Core Initialization */
-	for(i = 0; i < 192; i++) {
-		rdram_run_command(0, BCAST, CMD_RDRAM_REFRESH);
-	}
+	/* do steps 5. through 6.1 to calibrate 
+		current, temperature, refresh */
+	rdram_calibrate();
+
+	/* set up additional timing for each device */
+	if(rdram_read_domain_initialization(rdram_devices)) {
+		/* memory devices could not be read, so re-initialize
+			and calibrate, then try again */
+		printk_err("Re-initializing and calibrating ram\n");
+		rdram_init(rdram_devices);
+		rdram_calibrate();
+		if(k=rdram_read_domain_initialization(rdram_devices)) {
+			/* failed the second time, so halt and 
+				and display ram spd info. */
+			printk_err("ERROR - Ram failed to write and read\n");
+			i=k&0x0ff;
+			j=SMBUS_MEM_DEVICE_0;
+			if(i<spd_devices[0]){
+				if((k&0x0f00)==0) {
+					printk_err("Ram bank 0, channel A, device %d\n",i);
+				}
+				else {
+					printk_err("Ram bank 0, channel B, device %d\n",i);
+					j+=2;
+				}
+			}
+			else {
+				i-=spd_devices[0];
+				if((k&0x0f00)==0) {
+					printk_err("Ram bank 1, channel A, device %d\n",i);
+					j++;
+				}
+				else {
+					printk_err("Ram bank 1, channel B, device %d\n",i);
+					j+=3;
+				}
+			}
+
+			status = smbus_read_byte(j, 93, &byte);
+			if (status == 0) {
+				m_year=byte;
+			}
+			status = smbus_read_byte(j, 94, &byte);
+			if (status == 0) {
+				m_week=byte;
+			}
+			status = smbus_read_byte(j, 72, &byte);
+			if (status == 0) {
+				m_location=byte;
+			}
+			for(i=65;i<72;i++) {
+				smbus_read_byte(j, i, &manufact[i-65]);
+			}
+			manufact[7]=0;
+			printk_err("Manufacturer %s year %d week %d location %d\n",
+				manufact,m_year,m_week,m_location);
 	
-	/* 5. Rdram Current Control */
-	/* You can disable the final memory initialized bit 
-	 * to see if this is working and it isn't!
-	 * It is close though.
-	 * FIXME manual current calibration.
-	 */
-
-	rdram_run_command(0, 0, CMD_MCH_RAC_CURRENT_CALIBRATION);
-
-	/* Do not do the following command.  It will cause a lock up */
-	/* rdram_run_command(0, 0, CMD_MANUAL_CURRENT_CALIBRATION);  */
-
-	for(i = 0; i < 128; i++) {
-		for(j=0;j<rdram_chips;j++) {
-			rdram_run_command(0, j, CMD_RDRAM_CURRENT_CALIBRATION);
+			for(;;) i=1;  /* Freeze the system error */
 		}
 	}
-
-#if 0
-	display_rdram_regs( rdram_chips );
-#endif
-
-	rdram_run_command(0, BCAST, CMD_TEMP_CALIBRATE_ENABLE);
-	rdram_run_command(0, BCAST, CMD_TEMP_CALIBRATE);
-
-	/* 6.2 RDRAM Read Domain Initialization */
-	rdram_read_domain_initialization(rdram_devices);
+		
 
 	/* 7.0 Remaining init bits (LSR, NSR, PSR) */
 	set_init_bits(rdram_devices);
@@ -851,8 +933,13 @@ void init_memory(void)
 		MCH_RICM, ricm);
 	
 	/* Memory Controller Hub Configuration Enable ECC */
-	get_option(&ecc,"ECC_memory");
-	if((ecc)&&(spd_data_width[0]==18)) {  /* ECC is enables, so turn it on */
+	if(get_option(&ecc,"ECC_memory"))
+		ecc=0;
+	if((ecc)&&(spd_data_width[0]==18)&&
+		((spd_data_width[1]==18)||(spd_data_width[1]==0))&&
+		((spd_data_width[2]==18)||(spd_data_width[2]==0))&&
+		((spd_data_width[3]==18)||(spd_data_width[3]==0))) { 
+		 /* ECC is enables, so turn it on */
 		pcibios_read_config_word(I860_MCH_BUS,I860_MCH_DEVFN,MCH_MCHCFG, &word);
 		word |= (1 << 8);
 		pcibios_write_config_word(I860_MCH_BUS,I860_MCH_DEVFN,MCH_MCHCFG,word);

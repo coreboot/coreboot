@@ -217,11 +217,7 @@ constant_register_values:
 	 * [01:01] 1 == PCI Ordering Rules Compliance Enable
 	 * [00:00] 1 == Function 1 Enable
 	 */
-#if 0
 .long	0x4C, (1 << 2)|(1 << 1)|(1 << 0)
-#else
-.long	0x4C, (0 << 2)|(0 << 1)|(1 << 0)
-#endif
 #if 0 /* Calculated via SPD */
 	/* DRAM Timing 
 	 * 0x54

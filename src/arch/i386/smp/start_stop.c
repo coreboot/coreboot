@@ -74,18 +74,23 @@ void stop_cpu(unsigned long apicid)
 	while(1) {
 		hlt();
 	}
-
 }
 
-// This is a lot more paranoid now, since Linux can NOT handle
-// being told there is a CPU when none exists. So any errors 
-// will return 0, meaning no CPU. 
+/* This is a lot more paranoid now, since Linux can NOT handle
+ * being told there is a CPU when none exists. So any errors 
+ * will return 0, meaning no CPU. 
+ *
+ * We actually handling that case by noting which cpus startup
+ * and not telling anyone about the ones that dont.
+ */ 
 int start_cpu(unsigned long apicid)
 {
 	int timeout;
 	unsigned long send_status, accept_status, start_eip;
 	int j, num_starts, maxlvt;
 	extern char _start[], _estart[];
+	extern char reboot_halt[];
+	extern char _secondary_start[];
 	
 	/*
 	 * Starting actual IPI sequence...
@@ -101,6 +106,7 @@ int start_cpu(unsigned long apicid)
 	/*
 	 * Send IPI
 	 */
+	
 	apic_write_around(APIC_ICR, APIC_INT_LEVELTRIG | APIC_INT_ASSERT
 				| APIC_DM_INIT);
 
@@ -147,12 +153,7 @@ int start_cpu(unsigned long apicid)
 		return 0;
 	}
 
-	start_eip = START_CPU_SEG + (((unsigned long)_start) & 0xf000);
-	if ((((unsigned long)_start) & 0xfff) != 0) {
-		printk_err("_start is not 4K aligned!\n");
-		return 0;
-	}
-	memcpy((void *)start_eip, _start, _estart - _start);
+	start_eip = (unsigned long)_secondary_start;
 	printk_spew("start_eip=0x%08lx\n", start_eip);
        
 	num_starts = 2;

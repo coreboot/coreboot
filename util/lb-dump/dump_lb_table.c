@@ -150,6 +150,17 @@ void print_memory(struct lb_record *ptr, unsigned long addr)
 	}
 }
 
+void print_mainboard(struct lb_record *ptr, unsigned long addr)
+{
+	struct lb_mainboard *rec;
+	int max_size;
+	rec = (struct lb_mainboard *)ptr;
+	max_size = rec->size - sizeof(*rec);
+	printf("vendor: %.*s part number: %.*s\n",
+		max_size - rec->vendor_idx, rec->strings + rec->vendor_idx, 
+		max_size - rec->vendor_idx, rec->strings + rec->part_number_idx);
+}
+
 void print_option_table(struct lb_record *ptr, unsigned long addr)
 {
 	struct lb_record *rec, *last;
@@ -193,7 +204,6 @@ void print_option_enumeration(struct lb_record *ptr, unsigned long addr)
 		rec->text);
 }
 
-
 struct {
 	uint32_t type;
 	char *type_name;
@@ -202,6 +212,7 @@ struct {
 	{ LB_TAG_UNUSED,            "Unused",             nop_print },
 	{ LB_TAG_MEMORY,            "Memory",             print_memory },
 	{ LB_TAG_HWRPB,             "HWRPB",              nop_print },
+	{ LB_TAG_MAINBOARD,         "Mainboard",          print_mainboard },
 	{ LB_TAG_CMOS_OPTION_TABLE, "CMOS option table",  print_option_table },
 	{ LB_TAG_OPTION,            "Option",             print_option },
 	{ LB_TAG_OPTION_ENUM,       "Option Enumeration", print_option_enumeration },

@@ -106,8 +106,20 @@
 	movl	%eax, %esi
 	andl	$0xf, %esi
 
-#if defined(USE_AMD_NDA_CODE)
-#endif
+	/* Set the processor id. */
+	movl	$HWCR_MSR, %ecx
+	rdmsr
+	andl	$0x0FFFFFFF, %eax
+	shll	$28, %esi
+	orl	%esi, %eax
+	shrl	$28, %esi
+	/* Enable  SSE detection */
+	andl	$(~(1<<15)), %eax
+	/* Set PFER */
+	orl	$(1<<12), %eax
+	/* Say the page tables live in cachable memory */
+	orl	$(1<< 3), %eax
+	wrmsr
 
 
 	/* Figure out how many unacknowledged acks
@@ -132,8 +144,12 @@
 	/* Tell the processor how many unacknoledged probes the AMD762 can
 	 * support 
 	 */
-#if defined(USE_AMD_NDA_CODE)
-#endif /* USE_AMD_NDA_CODE */
+	movl	$SYSCFG_MSR, %ecx
+	rdmsr
+	andl	$(~(0x1f<< 0)), %eax
+	andl	$0x1f, %ebp
+	orl	%ebp, %eax
+	wrmsr
 
 	/* Enable the local apic, and map it where we expect it. */
 	movl $APIC_BASE_MSR, %ecx

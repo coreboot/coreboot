@@ -4,7 +4,7 @@
 
 unsigned long sizeram(void)
 {
-	unsigned long size;
+	u32 size;
 	/* Use the PCI top memory register */
 	pcibios_read_config_dword(0, 0, 0x9c, &size);
 	/* Convert size in bytes to size in K */

@@ -29,8 +29,8 @@ unsigned long initial_apicid[MAX_CPUS] =
 #define CPU_CLOCK_MULTIPLIER XEON_X17
 #endif
 
+#define MAINBOARD_POWER_OFF 0
 #define MAINBOARD_POWER_ON 1
-#define MAINBOARD_POWER_OFF 2
 
 #ifndef MAINBOARD_POWER_ON_AFTER_POWER_FAIL
 #define MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
@@ -67,7 +67,7 @@ void mainboard_fixup(void)
 	ich2_set_cpu_multiplier(cpu_clock_multiplier);
 
 	power_on_after_power_fail = MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
-	get_option(&power_on_after_power_fail, "power_on_after_power_fail");
+	get_option(&power_on_after_power_fail, "power_on_after_fail");
 	set_power_on_after_power_fail(power_on_after_power_fail);
 	return;
 }
@@ -99,7 +99,6 @@ void cache_ram_start(void)
 
         /* displayinit MUST PRECEDE ALL PRINTK! */
         displayinit();
-        printk_info("printk: Testing %d %s\n", 123, "testing!!!");
         printk_info("Finding PCI configuration type.\n");
         pci_set_method();
         printk_info("Setting up smbus controller\n");
@@ -107,8 +106,9 @@ void cache_ram_start(void)
         ich2_rtc_init();
         printk_info("Selecting rdram i2c bus\n");
         select_rdram_i2c();
-
+#if 0
 	display_smbus_spd();
+#endif
 
         init_memory();
 

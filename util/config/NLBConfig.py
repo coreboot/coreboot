@@ -277,6 +277,8 @@ mainboard_dir = None
 # is executed. 
 def mainboard(dir, mainboard_name):
 	global mainboard_dir
+	set_option('MAINBOARD_PART_NUMBER', os.path.basename(mainboard_name))
+	set_option('MAINBOARD_VENDOR', os.path.dirname(mainboard_name))
 	mainboard_dir = common_command_action(dir, 'mainboard', mainboard_name)
 
 # COMMAND: etherboot <network_device_name>
@@ -557,9 +559,21 @@ class mkexpr:
 			elif (self.op == "/"):
 				result = lstring + "/" + rstring
 			elif (self.op == "<<"):
-				result = lstring + "<<" + rstring + ") "
+				result = lstring + "<<" + rstring
 			elif (self.op == ">>"):
-				result = lstring + ">>" + rstring + ") "
+				result = lstring + ">>" + rstring
+			elif (self.op == ">"):
+				result = lstring + ">" + rstring
+			elif (self.op == ">="):
+				result = lstring + ">=" + rstring
+			elif (self.op == "<"):
+				result = lstring + "<" + rstring
+			elif (self.op == "<="):
+				result = lstring + "<=" + rstring
+			elif (self.op == "=="):
+				result = lstring + "==" + rstring
+			elif (self.op == "=="):
+				result = lstring + "!=" + rstring
 			return "(" + result + ")"
 
 	class expression:
@@ -574,10 +588,11 @@ class mkexpr:
 			string = self.expr.perl()
 			return "${shell perl -e 'printf(\"%u\\n\", " + string + ");' }"
 	
-	# Tokens: ( ) ! | & + - * / << >> option )
+	# Tokens: ( ) ! | & + - * / << >> == <= >= < > != option )
 	start_re     = re.compile(r"^\s*(([A-Za-z_][A-Za-z_0-9]*)|((0x[0-9A-Za-z]+)|([0-9]+))|(\()|(!))(.*)$")
 	close_re     = re.compile(r"^\s*\)(.*)$")
-	middle_re    = re.compile(r"^\s*((\|)|(&)|(\+)|(-)|(\*)|(/)|(<<)|(>>))(.*)$")
+#	middle_re    = re.compile(r"^\s*((\|)|(&)|(\+)|(-)|(\*)|(/)|(<<)|(>>)|(==)|(<=)|(>=)|(<)|(>))(.*)$")
+	middle_re    = re.compile(r"^\s*((\|)|(&)|(\+)|(-)|(\*)|(/)|(<<)|(>>)|>=|<=|>|<|==|!=)(.*)$")
 
 	def __init__(self, expr):
 		self.orig_expr = expr
@@ -588,12 +603,18 @@ class mkexpr:
 			result = 1
 		elif (op == "&"):
 			result = 2
-		elif (op == "+") or (op == "-"):
+		elif (op == "<") or (op == ">") or \
+			(op == ">=") or (op == "<=") or \
+			(op == "==") or (op == "!="):
 			result = 3
-		elif (op == "*") or (op == "/"):
+		elif (op == "+") or (op == "-"):
 			result = 4
-		elif (op == "<<") or (op == ">>"):
+		elif (op == "*") or (op == "/"):
 			result = 5
+		elif (op == "<<") or (op == ">>"):
+			result = 6
+		else:
+			fatal("Unknown operator: %s" % op)
 
 
 	def _parse_start(self):

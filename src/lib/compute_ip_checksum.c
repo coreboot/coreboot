@@ -6,11 +6,27 @@ unsigned long compute_ip_checksum(void *addr, unsigned long length)
 	uint16_t *ptr;
 	unsigned long sum;
 	unsigned long len;
-	/* FIXME this assumes addr is 2 byte aligned.
-	 * This isn't fatal on x86 but it can be on other platforms..
-	 */
+	unsigned long laddr;
 	/* compute an ip style checksum */
+	laddr = (unsigned long )addr;
 	sum = 0;
+	if (laddr & 1) {
+		uint16_t buffer;
+		unsigned char *ptr;
+		/* copy the first byte into a 2 byte buffer.
+		 * This way automatically handles the endian question
+		 * of which byte (low or high) the last byte goes in.
+		 */
+		buffer = 0;
+		ptr = addr;
+		memcpy(&buffer, ptr, 1);
+		sum += buffer;
+		if (sum > 0xFFFF)
+			sum -= 0xFFFF;
+		length -= 1;
+		addr = ptr +1;
+		
+	}
 	len = length >> 1;
 	ptr = addr;
 	while (len--) {
@@ -18,6 +34,7 @@ unsigned long compute_ip_checksum(void *addr, unsigned long length)
 		if (sum > 0xFFFF)
 			sum -= 0xFFFF;
 	}
+	addr = ptr;
 	if (length & 1) {
 		uint16_t buffer;
 		unsigned char *ptr;
@@ -27,7 +44,6 @@ unsigned long compute_ip_checksum(void *addr, unsigned long length)
 		 */
 		buffer = 0;
 		ptr = addr;
-		ptr += length - 1;
 		memcpy(&buffer, ptr, 1);
 		sum += buffer;
 		if (sum > 0xFFFF)

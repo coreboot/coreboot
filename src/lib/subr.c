@@ -30,7 +30,8 @@ static char rcsid[] = "$Id$";
 // initialize the display
 void displayinit(void)
 {
-	get_option(&console_loglevel, "debug_level");
+	if(get_option(&console_loglevel, "debug_level"))
+		console_loglevel=DEFAULT_CONSOLE_LOGLEVEL;
 
 #ifdef VIDEO_CONSOLE
 	video_init();

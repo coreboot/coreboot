@@ -32,6 +32,10 @@ it with the version available from LANL.
 static char rcsid[] = "$Id$";
 #endif
 
+#ifndef MAX_PHYSICAL_CPUS
+#define MAX_PHYSICAL_CPUS MAX_CPUS
+#endif
+
 #include <arch/io.h>
 #include <arch/intel.h>
 #include <pciconf.h>
@@ -58,6 +62,7 @@ static char rcsid[] = "$Id$";
 #include <smp/atomic.h>
 #include <arch/smp/mpspec.h>
 #include <boot/linuxbios_table.h>
+#include <pc80/mc146818rtc.h>
 
 
 /* The processor map. 
@@ -138,6 +143,7 @@ static void wait_for_other_cpus(void)
 	int old_active_count, active_count;
 	int i;
 	old_active_count = 1;
+
 	active_count = atomic_read(&active_cpus);
 
 	while (active_count > 1) {
@@ -150,20 +156,40 @@ static void wait_for_other_cpus(void)
 	for (i = 0; i < MAX_CPUS; i++) {
 		if (!(processor_map[i] & CPU_ENABLED)) {
 			printk_err("CPU %d/%u did not initialize!\n",
-				i, initial_apicid);
+				i, initial_apicid[i]);
 		}
 	}
 	printk_debug("All AP CPUs stopped\n");
 }
+
+static void remove_logical_cpus(void)
+{
+	/* To turn off hyperthreading just remove the logical
+	 * cpus from the processor map.
+	 */
+	int cnt;
+	cnt=0;
+	if (get_option(&cnt,"logical_cpus")==0) {
+		if (cnt) {
+		/* disable logical cpus */
+			for(cnt=MAX_PHYSICAL_CPUS;cnt<MAX_CPUS;cnt++)
+				processor_map[cnt]=0;
+			printk_debug("logical cpus disabled\n");
+		}
+	}
+}
+
 #else /* SMP */
 #define wait_for_other_cpus() do {} while(0)
+#define remove_logical_cpus() do {} while(0)
 #endif /* SMP */
+
 
 void write_tables(unsigned long totalram)
 {
 	unsigned long low_table_start, low_table_end;
 	unsigned long rom_table_start, rom_table_end;
-	
+
 	rom_table_start = 0xf0000;
 	rom_table_end =   0xf0000;
 	/* Start low addr at 16 bytes instead of 0 because of a buglet
@@ -180,6 +206,7 @@ void write_tables(unsigned long totalram)
 	/* copy the smp block to address 0 */
 	post_code(0x96);
 	/* The smp table must be in 0-1K, 639K-640K, or 960K-1M */
+	remove_logical_cpus();
 	low_table_end = write_smp_table(low_table_end, processor_map);
 
 	/* Don't write anything in the traditional x86 BIOS data segment */
@@ -334,6 +361,20 @@ void hardwaremain(int boot_complete)
 	post_code(0x93);
 #endif
 
+	// we do this right here because: 
+	// - all the hardware is working, and some VGA bioses seem to need 
+	//   that
+	// - we need page 0 below for linuxbios tables. 
+#if CONFIG_REALMODE_IDT == 1
+	printk_debug("INSTALL REAL-MODE IDT\n");
+	setup_realmode_idt();
+#endif
+#if CONFIG_VGABIOS == 1
+	printk_debug("DO THE VGA BIOS\n");
+	do_vgabios();
+	post_code(0x93);
+#endif
+
 	/* Now that we have collected all of our information
 	 * write our configuration tables.
 	 */
@@ -347,6 +388,9 @@ void hardwaremain(int boot_complete)
 	linuxbiosmain(0, totalram);
 #endif /* LINUXBIOS */
 }
+
+
+
 
 
 

@@ -7,7 +7,7 @@ void ndelay(unsigned long ns)
         unsigned long long ticks;
 
         /* FIXME calibrate this... don't just estimage 2Ghz */
-        ticks = ns << 1;
+        ticks = (ns << 1) + ns;  /* times 3 for up to 3Ghz */
         rdtscll(count);
         stop = ticks + count;
         while(stop > count) {

@@ -18,6 +18,7 @@ struct lb_record *lb_new_record(struct lb_header *header);
 struct lb_memory *lb_memory(struct lb_header *header);
 void lb_memory_range(struct lb_memory *mem, 
 	uint32_t type, unsigned long start, unsigned long size);
+struct lb_mainboard *lb_mainboard(struct lb_header *header);
 unsigned long lb_table_fini(struct lb_header *header);
 
 /* Routines to extract part so the linuxBIOS table or information

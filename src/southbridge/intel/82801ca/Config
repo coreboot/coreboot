@@ -1,0 +1,11 @@
+object nvram.o
+object ich3_ioapic.o
+object ich3_lpc.o
+object ich3_ide.o
+object ich3_reset.o
+object ich3_smbus.o
+object ich3_cpu.o
+object ich3_rtc.o
+object ich3_power.o
+object ich3_1e0_misc.o
+object ich3_1f0_misc.o

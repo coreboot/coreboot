@@ -1,5 +1,6 @@
 #include <cpu/p6/mtrr.h>
 
+
 /* The fixed and variable MTRRs are powered-up with random values, clear them to
  * MTRR_TYPE_UNCACHABLE for safty reason 
  */

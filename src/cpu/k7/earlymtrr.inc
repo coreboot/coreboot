@@ -4,7 +4,6 @@
  * MTRR_TYPE_UNCACHABLE for safty reason 
  */
 
-
 earlymtrr_start:
 	xorl	%eax, %eax			# clear %eax and %edx
 	xorl	%edx, %edx			#
@@ -22,6 +21,11 @@ clear_fixed_var_mtrr:
 	jmp	clear_fixed_var_mtrr
 clear_fixed_var_mtrr_out:
 
+/* enable memory access for 0 - 8MB using top_mem */
+	movl	$TOP_MEM, %ecx
+	xorl	%edx, %edx
+	movl	$0x0800000, %eax
+	wrmsr
 
 set_var_mtrr:
 	/* enable caching for 0 - 128MB using variable mtrr */
@@ -65,8 +69,10 @@ enable_mtrr:
 	wrmsr
 
 	/* Enable the MTRRs in SYSCFG */
-#if USE_AMD_NDA_CODE
-#endif /* USE_AMD_NDA_CODE */
+	movl	$SYSCFG_MSR, %ecx
+	rdmsr
+	orl	$(SYSCFG_MSR_MtrrVarDramEn), %eax
+	wrmsr
 
 	/* enable cache */
 	movl	%cr0, %eax
@@ -85,7 +91,9 @@ var_mtrr_msr:
 	.long	0x204, 0x205, 0x206, 0x207
 	.long	0x208, 0x209, 0x20A, 0x20B
 	.long	0x20C, 0x20D, 0x20E, 0x20F
-#if USE_AMD_NDA_CODE
-#endif /* USE_AMD_NDA_CODE */
+var_iorr_msr:
+	.long	0xC0010016, 0xC0010017, 0xC0010018, 0xC0010019
+mem_top:
+	.long	0xC001001A, 0xC001001D
 	.long	0x000 /* NULL, end of table */
 earlymtrr_end:

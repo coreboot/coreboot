@@ -71,6 +71,30 @@ struct lb_memory *lb_memory(struct lb_header *header)
 	return mem;
 }
 
+struct lb_mainboard *lb_mainboard(struct lb_header *header)
+{
+#define __STR(X) #X
+#define STR(X) __STR(X)
+	static const char vendor[] = STR(MAINBOARD_VENDOR);
+	static const char part_number[] = STR(MAINBOARD_PART_NUMBER);
+	struct lb_record *rec;
+	struct lb_mainboard *mainboard;
+	rec = lb_new_record(header);
+	mainboard = (struct lb_mainboard *)rec;
+	mainboard->tag = LB_TAG_MAINBOARD;
+	mainboard->size = sizeof(*mainboard) + 	
+		sizeof(vendor) + sizeof(part_number);
+	mainboard->vendor_idx = 0;
+	mainboard->part_number_idx = sizeof(vendor);
+	memcpy(mainboard->strings + mainboard->vendor_idx,
+		vendor, sizeof(vendor));
+	memcpy(mainboard->strings + mainboard->part_number_idx,
+		part_number, sizeof(part_number));
+#undef STR
+#undef __STR
+	return mainboard;
+}
+
 /* Some version of gcc have problems with 64 bit types so
  * take an unsigned long instead of a uint64_t for now.
  */
@@ -117,6 +141,7 @@ static void lb_reserve_table_memory(struct lb_header *head)
 	}
 }
 
+
 unsigned long lb_table_fini(struct lb_header *head)
 {
 	struct lb_record *rec, *first_rec;
@@ -129,8 +154,8 @@ unsigned long lb_table_fini(struct lb_header *head)
 	head->table_checksum = compute_ip_checksum(first_rec, head->table_bytes);
 	head->header_checksum = 0;
 	head->header_checksum = compute_ip_checksum(head, sizeof(*head));
-	printk_debug("Wrote linuxbios table at: %p - %p\n",
-		head, rec);
+	printk_debug("Wrote linuxbios table at: %p - %p  checksum %lx\n",
+		head, rec, head->table_checksum);
 	return (unsigned long)rec;
 }
 
@@ -175,6 +200,9 @@ unsigned long write_linuxbios_table(
 	lb_memory_range(mem, LB_MEM_RESERVED, 0x000a0000, 0x00060000);
 	/* Now show all of memory */
 	lb_memory_range(mem, LB_MEM_RAM,      0x00100000, (totalram - 1024) << 10);
+
+	/* Record our motheboard */
+	lb_mainboard(head);
 
 	low_table_end = lb_table_fini(head);
 

@@ -108,6 +108,7 @@ ramtest:
 6:
 	CONSOLE_INFO_TX_STRING($rt_done)
 	mov %ebp, %esp
+
 #endif
 	RETSP
 

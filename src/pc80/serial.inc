@@ -49,7 +49,7 @@
 	.type	 div,@object
 	.size	 div,8
 div:
-.byte 1,2,3,5,12,24,48,96
+.byte 1,2,3,6,12,24,48,96
 
 .previous
 #endif
@@ -77,11 +77,11 @@ serial0:
 
 	/* set Baud Rate Divisor to 1 ==> 115200 Buad */
 #if USE_OPTION_TABLE == 1
-	movb	$RTC_BOOT_BYTE, %al
+
+	movb	$(RTC_BOOT_BYTE+1), %al
 	outb	%al, $0x70
 	xorl	%edx,%edx
 	inb	$0x71, %al
-	sarb	$2,%al
 	andb	$7,%al
 	movb	%al,%dl
 	movb	div(%edx),%al

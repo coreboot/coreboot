@@ -1,63 +1,277 @@
+##
+## Set all of the defaults for an x86 architecture
+##
 arch i386
+
+##
+## Build our 16 bit and 32 bit linuxBIOS entry code
+##
 mainboardinit cpu/i386/entry16.inc
 mainboardinit cpu/i386/entry32.inc
 ldscript cpu/i386/entry16.lds
 ldscript cpu/i386/entry32.lds
-mainboardinit cpu/i386/reset16.inc
-ldscript cpu/i386/reset16.lds
 
-mainboardinit northbridge/amd/amd76x/reset_test.inc
+##
+## Build our reset vector (This is where linuxBIOS is entered)
+##
+mainboardinit cpu/i386/reset16.inc USE_FALLBACK_IMAGE
+ldscript cpu/i386/reset16.lds USE_FALLBACK_IMAGE
+mainboardinit cpu/i386/reset32.inc USE_NORMAL_IMAGE
+ldscript cpu/i386/reset32.lds USE_NORMAL_IMAGE
+
+##
+## Include an id string (For safe flashing)
+##
+mainboardinit arch/i386/lib/id.inc
+ldscript arch/i386/lib/id.lds
+
+
+###
+### This is the early phase of linuxBIOS startup 
+### Things are delicate and we test to see if we should
+### failover to another image.
+###
+#mainboardinit northbridge/amd/amd76x/reset_test.inc
+#mainboardinit arch/i386/lib/noop_failover.inc
+
+#mainboardinit arch/i386/lib/noop_failover.inc USE_NORMAL_IMAGE
+#mainboardinit southbridge/amd/amd766/cmos_reset_failover.inc USE_FALLBACK_IMAGE
+ldscript arch/i386/lib/failover.lds USE_FALLBACK_IMAGE
+
+##
+## We aren't a reset so shutdown the second cpu if present.
+##
+
+##
+## Setup our mtrrs
+##
 mainboardinit cpu/k7/earlymtrr.inc
-mainboardinit northbridge/amd/amd76x/mpinit.inc
-#mainboardinit southbridge/amd/amd766/disable_watchdog.inc
+
+##
+## Initialize the processor busses
+##
+mainboardinit northbridge/amd/amd76x/mpinit.inc USE_FALLBACK_IMAGE
+
+##
+## Only the bootstrap cpu makes it here.
+## Failover if we need to 
+##
+mainboardinit southbridge/amd/amd766/cmos_boot_failover.inc USE_FALLBACK_IMAGE
+
+###
+### O.k. We aren't just an intermediary anymore!
+###
+
+##
+## When debugging disable the watchdog timer
+##
+option MAXIMUM_CONSOLE_LOGLEVEL=7
+expr DISABLE_WATCHDOG= MAXIMUM_CONSOLE_LOGLEVEL >= 8
+mainboardinit southbridge/amd/amd766/disable_watchdog.inc DISABLE_WATCHDOG
+
+##
+## Setup the serial port
+##
 mainboardinit southbridge/amd/amd766/lpc_com1.inc
 mainboardinit superio/winbond/w83627hf/setup_serial.inc
 mainboardinit pc80/serial.inc
 mainboardinit arch/i386/lib/console.inc
+
+##
+## Setup RAM
+##
 #mainboardinit ram/ramtest.inc
 #mainboardinit mainboard/tyan/guiness/do_ramtest.inc
 mainboardinit southbridge/amd/amd766/smbus.inc
 #mainboardinit sdram/generic_dump_spd.inc
-
 mainboardinit mainboard/tyan/guiness/mainboard_raminit.inc
+
+##
+## Include the secondary Configuration files 
+##
 northbridge amd/amd76x
-#mainboardinit mainboard/tyan/guiness/do_ramtest.inc
-#mainboardinit cpu/k7/earlymtrr.inc
 southbridge amd/amd766
-
-
-nsuperio winbond/w83627hf com1={1} com2={0} floppy=1 lpt=1
-
-option RAMTEST=1
-option NO_KEYBOARD
-option ENABLE_FIXED_AND_VARIABLE_MTRRS
-#option FINAL_MAINBOARD_FIXUP
-
-
-object mainboard.o
-object mptable.o HAVE_MP_TABLE
-#object irq_tables.o
-#keyboard pc80
+mainboardinit arch/i386/smp/secondary.inc
+nsuperio winbond/w83627hf com1={1} com2={0} floppy=1 lpt=1 keyboard=1
 dir ../../../pc80
-
-option AMD766_DEV=0x3800
-# FIXME are the SMBUS DIMM locations documented anywhere? 
-option SMBUS_MEM_DEVICE_START=(0xa << 3)
-option SMBUS_MEM_DEVICE_END=(SMBUS_MEM_DEVICE_START +3)
-option SMBUS_MEM_DEVICE_INC=1
-option SIO_BASE=0x2e
-option SMP=1
-option IOAPIC=1
-option MAX_CPUS=2
-option HAVE_MP_TABLE=1
-option USE_AMD_NDA_CODE=1
-option FINAL_MAINBOARD_FIXUP=1
-option HAVE_HARD_RESET=1
-option STACK_SIZE=0x10000
-option XIP_ROM_SIZE=0x8000
-option XIP_ROM_BASE=0xffff8000
-nooption MEMORY_HOLE
-
+dir /src/superio/winbond/w83627hf
 cpu p5
 cpu p6
 cpu k7
+
+##
+## Build the objects we have code for in this directory.
+##
+object mainboard.o
+object mptable.o HAVE_MP_TABLE
+#object irq_tables.o HAVE_PIRQ_TABLE
+
+###
+### Build options
+###
+
+##
+## Location of the DIMM EEPROMS on the SMBUS
+## This is fixed into a narrow range by the DIMM package standard.
+##
+option SMBUS_MEM_DEVICE_START=(0xa << 3)
+option SMBUS_MEM_DEVICE_END=(SMBUS_MEM_DEVICE_START +3)
+option SMBUS_MEM_DEVICE_INC=1
+
+##
+## Customize our winbond superio chip for this motherboard
+##
+option SIO_BASE=0x2e
+nooption SIO_SYSTEM_CLK_INPUT
+
+##
+## Build code for the fallback boot
+##
+option HAVE_FALLBACK_BOOT=1
+
+##
+## Build code to reset the motherboard from linuxBIOS
+##
+option HAVE_HARD_RESET=1
+
+##
+## Build code to export a programmable irq routing table
+##
+#option HAVE_PIRQ_TABLE=1
+
+##
+## Build code to export an x86 MP table
+## Useful for specifying IRQ routing values
+##
+option HAVE_MP_TABLE=1
+
+##
+## Do not build special code for the keyboard
+##
+option NO_KEYBOARD=1
+
+##
+## Build code to export a CMOS option table
+##
+option HAVE_OPTION_TABLE=1
+
+##
+## Build code for SMP support
+## Only worry about 2 micro processors
+##
+option SMP=1
+option MAX_CPUS=2
+
+##
+## Build code to setup a generic IOAPIC
+##
+option IOAPIC=1
+
+##
+## MEMORY_HOLE instructs earlymtrr.inc to
+## enable caching from 0-640KB and to disable 
+## caching from 640KB-1MB using fixed MTRRs 
+##
+## Enabling this option breaks SMP because secondary
+## CPU identification depends on only variable MTRRs
+## being enabled.
+##
+nooption MEMORY_HOLE
+
+##
+## Enable both fixed and variable MTRRS
+## When we setup MTRRs in mtrr.c  
+##
+## We must setup the fixed mtrrs or we confuse SMP secondary
+## processor identification
+##
+option ENABLE_FIXED_AND_VARIABLE_MTRRS=1
+
+##
+## Clean up the motherboard id strings
+##
+option MAINBOARD_PART_NUMBER=THUNDER K7
+option MAINBOARD_VENDOR=Tyan
+
+##
+## Let Assembly code know where on the pci bus the AMD southbridge is
+##
+option AMD766_DEV=0x3800
+
+##
+## Call the final_mainboard_fixup function
+##
+option FINAL_MAINBOARD_FIXUP=1
+
+##
+## Figure out which type of linuxBIOS image to build
+## If we aren't a fallback image we must be a normal image
+## This is useful for optional includes
+##
+option USE_FALLBACK_IMAGE=0
+expr USE_NORMAL_IMAGE=!USE_FALLBACK_IMAGE
+
+###
+### LinuxBIOS layout values
+###
+
+## ROM_SIZE is the size of boot ROM that this board will use.
+option ROM_SIZE=524288
+
+## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
+option ROM_IMAGE_SIZE=49152
+
+##
+## Use a small 8K stack
+##
+option STACK_SIZE=0x2000
+
+##
+## Use a small 8K heap
+##
+option HEAP_SIZE=0x2000
+
+##
+## Only use the option table in a normal image
+##
+expr USE_OPTION_TABLE=!USE_FALLBACK_IMAGE
+
+##
+## Compute the location and size of where this firmware image
+## (linuxBIOS plus bootloader) will live in the boot rom chip.
+##
+expr ROM_SECTION_SIZE  =(USE_FALLBACK_IMAGE*65536)+(USE_NORMAL_IMAGE*(ROM_SIZE - 65536))
+expr ROM_SECTION_OFFSET=(USE_FALLBACK_IMAGE*(ROM_SIZE-65536))+(USE_NORMAL_IMAGE*0)
+
+##
+## Compute the start location and size size of
+## The linuxBIOS bootloader.
+##
+expr ZKERNEL_START =(0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+expr PAYLOAD_SIZE  =ROM_SECTION_SIZE - ROM_IMAGE_SIZE
+
+##
+## Compute where this copy of linuxBIOS will start in the boot rom
+##
+expr _ROMBASE      =ZKERNEL_START + PAYLOAD_SIZE
+
+##
+## Compute a range of ROM that can cached to speed up linuxBIOS,
+## execution speed.
+##
+#expr XIP_ROM_SIZE = 65536
+#expr XIP_ROM_BASE = _ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE
+#option XIP_ROM_SIZE=65536
+#option XIP_ROM_BASE=0xffff0000
+
+# XIP_ROM_SIZE && XIP_ROM_BASE values that work.
+#option XIP_ROM_SIZE=0x8000
+#option XIP_ROM_BASE=0xffff8000
+
+##
+## Compute where the SMP startup code needs to live
+## FIXME I don't see how to make this work for the normal image....
+##
+option START_CPU_SEG=0xf0000
+
+

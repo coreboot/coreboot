@@ -1,3 +1,16 @@
 object southbridge.o
 object nvram.o
+object amd766_ioapic.o
+object amd766_lpc.o
+object amd766_mem.o
+object amd766_mouse.o
+object amd766_pm.o
+object amd766_reset.o
+object amd766_watchdog.o
+object amd766_power.o
+object amd766_reboot.o
+object amd766_ide.o
+
+
+
 

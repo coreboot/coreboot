@@ -25,6 +25,7 @@ int ram_verify(unsigned long start, unsigned long stop, int max_errors)
 {
 	unsigned long addr;
 	int errors = 0;
+	int correct = 0;
 	/* 
 	 * Verify.
 	 */
@@ -41,10 +42,16 @@ int ram_verify(unsigned long start, unsigned long stop, int max_errors)
 				printk_err("%08lx:%08lx\n", addr, value);
 			}
 		}
+		else {
+			if (++correct <= max_errors) {
+				/* Display address without error */
+				printk_err("%08lx:%08lx\n", addr, value);
+			}
+		}
 	}
 	/* Display final address */
-	printk_debug("%08lx\nDRAM verified %d/%d errors\n", 
-		addr, errors, (stop - start)/4);
+	printk_debug("%08lx\nDRAM verified %d/%d errors %d/%d correct\n", 
+		addr, errors, (stop - start)/4, correct, (stop - start)/4);
 	return errors;
 }
 

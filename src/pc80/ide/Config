@@ -1,1 +1,3 @@
 object ide.o
+#object ide_probe.o
+

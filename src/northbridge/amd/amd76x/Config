@@ -5,3 +5,4 @@ mainboardinit sdram/generic_zero_ecc_sdram.inc
 mainboardinit arch/i386/lib/cpu_reset.inc
 
 object northbridge.o
+object amd76x_pci.o

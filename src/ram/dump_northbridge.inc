@@ -22,7 +22,23 @@ dn_after:       .string "After setting values: \r\n"
 	movl	%ecx, %eax
 
 	PCI_READ_CONFIG_DWORD
+#if 0
 	CONSOLE_INFO_TX_HEX32(%eax)
+#else
+	CONSOLE_INFO_TX_HEX8(%al)
+	movl	%ecx, %eax
+	PCI_READ_CONFIG_DWORD
+	shrl	$8,%eax
+	CONSOLE_INFO_TX_HEX8(%al)
+	movl	%ecx, %eax
+	PCI_READ_CONFIG_DWORD
+	shrl	$16,%eax
+	CONSOLE_INFO_TX_HEX8(%al)
+	movl	%ecx, %eax
+	PCI_READ_CONFIG_DWORD
+	shrl	$24,%eax
+	CONSOLE_INFO_TX_HEX8(%al)
+#endif
 	CONSOLE_INFO_TX_CHAR($'\r')
 	CONSOLE_INFO_TX_CHAR($'\n')
 	addl    $0x4, %ecx

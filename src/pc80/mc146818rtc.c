@@ -6,13 +6,13 @@
 #include <string.h>
 
 #define CMOS_READ(addr) ({ \
-outb_p((addr),RTC_PORT(0)); \
-inb_p(RTC_PORT(1)); \
+outb((addr),RTC_PORT(0)); \
+inb(RTC_PORT(1)); \
 })
 
 #define CMOS_WRITE(val, addr) ({ \
-outb_p((addr),RTC_PORT(0)); \
-outb_p((val),RTC_PORT(1)); \
+outb((addr),RTC_PORT(0)); \
+outb((val),RTC_PORT(1)); \
 })
 
 /* control registers - Moto names
@@ -86,30 +86,30 @@ outb_p((val),RTC_PORT(1)); \
 
 
 
-static int rtc_checksum_valid(void)
+static int rtc_checksum_valid(int range_start, int range_end, int cks_loc)
 {
 	int i;
 	unsigned sum, old_sum;
 	sum = 0;
-	for(i = PC_CKS_RANGE_START; i <= PC_CKS_RANGE_END; i++) {
+	for(i = range_start; i <= range_end; i++) {
 		sum += CMOS_READ(i);
 	}
-	sum &= 0xffff;
-	old_sum = (CMOS_READ(PC_CKS_LOC) << 8) | CMOS_READ(PC_CKS_LOC+1);
+	sum = (~sum)&0x0ffff;
+	old_sum = ((CMOS_READ(cks_loc)<<8) | CMOS_READ(cks_loc+1))&0x0ffff;
 	return sum == old_sum;
 }
 
-static void rtc_set_checksum(void)
+static void rtc_set_checksum(int range_start, int range_end, int cks_loc)
 {
 	int i;
 	unsigned sum;
 	sum = 0;
-	for(i = PC_CKS_RANGE_START; i <= PC_CKS_RANGE_END; i++) {
+	for(i = range_start; i <= range_end; i++) {
 		sum += CMOS_READ(i);
 	}
-	sum &= 0xffff;
-	CMOS_WRITE(((sum >> 8) & 0xff), PC_CKS_LOC);
-	CMOS_WRITE(((sum >> 0) & 0xff), PC_CKS_LOC+1);
+	sum = ~(sum & 0x0ffff);
+	CMOS_WRITE(((sum >> 8) & 0x0ff), cks_loc);
+	CMOS_WRITE(((sum >> 0) & 0x0ff), cks_loc+1);
 }
 
 #define RTC_CONTROL_DEFAULT (RTC_24H)
@@ -125,12 +125,15 @@ void rtc_init(int invalid)
 {
 	unsigned char x;
 	int cmos_invalid, checksum_invalid;
+
+  printk_debug("RTC Init\n");
 	/* See if there has been a CMOS power problem. */
 	x = CMOS_READ(RTC_VALID);
 	cmos_invalid = !(x & RTC_VRT);
 
 	/* See if there is a CMOS checksum error */
-	checksum_invalid = !rtc_checksum_valid();
+	checksum_invalid = !rtc_checksum_valid(PC_CKS_RANGE_START,
+			PC_CKS_RANGE_END,PC_CKS_LOC);
 
 	if (invalid || cmos_invalid || checksum_invalid) {
 		int i;
@@ -138,10 +141,11 @@ void rtc_init(int invalid)
 			invalid?" Clear requested":"", 
 			cmos_invalid?" Power Problem":"",
 			checksum_invalid?" Checksum invalid":"");
+#if 0
 		CMOS_WRITE(0, 0x01);
 		CMOS_WRITE(0, 0x03);
 		CMOS_WRITE(0, 0x05);
-		for(i = 10; i < 128; i++) {
+		for(i = 10; i < 48; i++) {
 			CMOS_WRITE(0, i);
 		}
 		
@@ -155,13 +159,21 @@ void rtc_init(int invalid)
 			CMOS_WRITE(1, 0x08); /* month */
 			CMOS_WRITE(0, 0x09); /* year */
 		}
+#endif
 	}
+	/* See if there is a LB CMOS checksum error */
+	checksum_invalid = !rtc_checksum_valid(LB_CKS_RANGE_START,
+			LB_CKS_RANGE_END,LB_CKS_LOC);
+	if(checksum_invalid)
+		printk_debug("Invalid CMOS LB checksum\n");
+
 	/* Setup the real time clock */
 	CMOS_WRITE(RTC_CONTROL_DEFAULT, RTC_CONTROL);
 	/* Setup the frequency it operates at */
 	CMOS_WRITE(RTC_FREQ_SELECT_DEFAULT, RTC_FREQ_SELECT);
 	/* Make certain we have a valid checksum */
-	rtc_set_checksum();
+	rtc_set_checksum(PC_CKS_RANGE_START,
+                        PC_CKS_RANGE_END,PC_CKS_LOC);
 	/* Clear any pending interrupts */
 	(void) CMOS_READ(RTC_INTR_FLAGS);
 }
@@ -182,7 +194,8 @@ static int get_cmos_value(unsigned long bit, unsigned long length, void *vret)
 	unsigned long i;
 	unsigned char uchar;
 
-	/* The table is checked when it is built to ensure all values are valid. */
+	/* The table is checked when it is built to ensure all 
+		values are valid. */
 	ret = vret;
 	byte=bit/8;	/* find the byte where the data starts */
 	byte_bit=bit%8; /* find the bit in the byte where the data starts */
@@ -200,7 +213,6 @@ static int get_cmos_value(unsigned long bit, unsigned long length, void *vret)
 	}
 	return 0;
 }
-
 
 int get_option(void *dest, char *name)
 {
@@ -223,10 +235,16 @@ int get_option(void *dest, char *name)
 			break;
 		}
 	}
-	if(!found) return(-2);
+	if(!found) {
+		printk_err("ERR: No cmos option '%s'\n", name);
+		return(-2);
+	}
 	
 	if(get_cmos_value(ce->bit, ce->length, dest))
 		return(-3);
+	if(!rtc_checksum_valid(LB_CKS_RANGE_START,
+			LB_CKS_RANGE_END,LB_CKS_LOC))
+		return(-4);
 	return(0);
 }
 #endif /* USE_OPTION_TABLE */

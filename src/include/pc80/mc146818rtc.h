@@ -88,6 +88,10 @@
 #define PC_CKS_RANGE_END	45
 #define PC_CKS_LOC		46
 
+#define LB_CKS_RANGE_START	49
+#define LB_CKS_RANGE_END	125
+#define LB_CKS_LOC		126
+
 #if !defined(ASSEMBLY)
 void rtc_init(int invalid);
 #if USE_OPTION_TABLE == 1

@@ -3,12 +3,16 @@
 #include <printk.h>
 #include <cpu/p6/apic.h>
 
+#define __STR(X) #X
+#define STR(X) __STR(X)
+
 void *smp_write_config_table(void *v, unsigned long * processor_map)
 {
 	static const char sig[4] = "PCMP";
-	static const char oem[8] = "TYAN    ";
-	static const char productid[12] = "GUINESS     ";
+	static const char oem[] = STR(MAINBOARD_VENDOR);
+	static const char productid[12] = STR(MAINBOARD_PART_NUMBER);
 	struct mp_config_table *mc;
+	int len;
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 	memset(mc, 0, sizeof(*mc));
@@ -17,8 +21,12 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 	mc->mpc_length = sizeof(*mc); /* initially just the header */
 	mc->mpc_spec = 0x04;
 	mc->mpc_checksum = 0; /* not yet computed */
-	memcpy(mc->mpc_oem, oem, sizeof(oem));
-	memcpy(mc->mpc_productid, productid, sizeof(productid));
+	memset(mc->mpc_oem, ' ', sizeof(mc->mpc_oem));
+	len = strnlen(oem, sizeof(mc->mpc_oem));
+	memcpy(mc->mpc_oem, oem, len);
+	memset(mc->mpc_productid, ' ', sizeof(mc->mpc_productid));
+	len = strnlen(productid, sizeof(mc->mpc_productid));
+	memcpy(mc->mpc_productid, productid, len);
 	mc->mpc_oemptr = 0;
 	mc->mpc_oemsize = 0;
 	mc->mpc_entry_count = 0; /* No entries yet... */

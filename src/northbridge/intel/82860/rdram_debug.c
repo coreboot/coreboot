@@ -269,7 +269,7 @@ void display_smbus_spd(void)
 			unsigned char byte;
 			status = smbus_read_byte(j, i, &byte);
 			if (status != 0) {
-				printk_debug("bad device\n");
+				printk_debug("ram slot empty or bad device\n");
 				continue;
 			}
 			printk_debug("0x%02x ", byte);
@@ -279,6 +279,7 @@ void display_smbus_spd(void)
 		}
 	}
 	printk_debug("\n");
+
 }
 
 void display_mch_regs(void)

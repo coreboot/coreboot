@@ -5,11 +5,12 @@ CPUFLAGS += -DINTEL_PPRO_MTRR  -DSIS630_KEYBOARD
 CPUFLAGS += -DSIS_FIXUP_FOR_FB
 CPUFLAGS += -DHAVE_FRAMEBUFFER
 CPUFLAGS += -DNEWPCI
+CPUFLAGS += -DSERIAL_CONSOLE
 CPUFLAGS += -DENABLE_FIXED_AND_VARIABLE_MTRRS
 CPUFLAGS += -DINBUF_COPY
 CPUFLAGS += -DUSE_DOC_MIL
+CPUFLAGS += -DCMD_LINE='"ro root=/dev/hda1 console=ttyS0,115200 single "'
 CPUFLAGS += -DFINAL_MAINBOARD_FIXUP
-CPUFLAGS += -DCMD_LINE='"root=/dev/nftla1 single"'
 
 LINUX=$(TOP)/../linux-2.4.0-test6.sis
 
@@ -29,7 +30,6 @@ OBJECTS += serial_subr.o
 OBJECTS += mpspec.o
 OBJECTS += microcode.o
 OBJECTS += keyboard.o
-
 
 LINK = ld -T ldscript.ld -o $@ $(OBJECTS)
 CC=cc $(CFLAGS)
@@ -66,8 +66,8 @@ linuxbios: $(OBJECTS) vmlinux.bin.gz
 # .inc files (relative to $TOP/src) in crt0.S. 
 # So, for example, earlymtrr.inc is included as cpu/p6/earlymtrr.inc
 # To make this work, add the extra -I $(TOP)/src here. 
-crt0.s: crt0.S 
-	$(CCASM) -I $(TOP)/src -E crt0.S > crt0.s
+crt0.s: $(TOP)/src/mainboard/leadtek/winfast6300/crt0.S 
+	$(CCASM) -I $(TOP)/src -E $< > crt0.s
 
 crt0.o : crt0.s
 	$(CCASM) -c crt0.s

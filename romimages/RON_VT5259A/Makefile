@@ -121,7 +121,7 @@ mpspec.o: $(TOP)/src/cpu/p6/mpspec.c
 microcode.o: $(TOP)/src/cpu/p6/microcode.c
 	$(CC) $(CFLAGS) -c $<
 
-serial_subr.o: $(TOP)/chip/intel/serial_subr.c
+serial_subr.o: $(TOP)/src/lib/serial_subr.c
 	cc $(CFLAGS) -c $<
 
 printk.o: $(TOP)/src/lib/printk.c

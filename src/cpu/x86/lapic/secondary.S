@@ -26,7 +26,7 @@ _secondary_start:
 	orl	$0x60000001, %eax /* CD, NW, PE = 1 */
 	movl	%eax, %cr0
 
-	ljmpl $0x10, $1f
+	ljmpl	$0x10, $1f
 1:	
 	.code32
 	movw	$0x18, %ax

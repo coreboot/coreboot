@@ -216,7 +216,7 @@ int_hand:
 	popl	%ecx
 	popl	%edx
 	popl	%ebx
-	popl	%ebp /* Ignore saved %esp value */
+	popl	%ebp	/* Ignore saved %esp value */
 	popl	%ebp
 	popl	%esi
 	popl	%edi
@@ -241,49 +241,50 @@ gdb_stub_breakpoint:
 
 	.globl gdt, gdt_end, gdt_limit, idtarg
 
-gdt_limit = gdt_end - gdt - 1 /* compute the table limit */
+gdt_limit = gdt_end - gdt - 1	/* compute the table limit */
 gdtaddr:
 	.word	gdt_limit
-	.long	gdt                /* we know the offset */
+	.long	gdt		/* we know the offset */
 
 	 .data
+
+	/* This is the gdt for GCC part of LinuxBIOS.
+	 * It is different from the gdt in ROMCC/ASM part of LinuxBIOS
+	 * which is defined in entry32.inc */
 gdt:
-// selgdt 0
+	/* selgdt 0, unused */
 	.word	0x0000, 0x0000		/* dummy */
 	.byte	0x00, 0x00, 0x00, 0x00
 
-// selgdt 8
+	/* selgdt 8, unused */
 	.word	0x0000, 0x0000		/* dummy */
 	.byte	0x00, 0x00, 0x00, 0x00
 
-// selgdt 0x10 
-/* flat code segment */
+	/* selgdt 0x10, flat code segment */
 	.word	0xffff, 0x0000		
 	.byte	0x00, 0x9b, 0xcf, 0x00	
-	
-//selgdt 0x18
-/* flat data segment */
+
+	/* selgdt 0x18, flat data segment */
 	.word	0xffff, 0x0000		
 	.byte	0x00, 0x93, 0xcf, 0x00	
 
-//selgdt 0x20
+	/* selgdt 0x20, unused */
 	.word	0x0000, 0x0000		/* dummy */
 	.byte	0x00, 0x00, 0x00, 0x00
 
 #if defined(CONFIG_LEGACY_VGABIOS) && (CONFIG_LEGACY_VGABIOS == 1)
-	// from monty:
-	/* 0x00009a00,0000ffffULL,   20h: 16-bit 64k code at 0x00000000 */
-        /* 0x00009200,0000ffffULL    28h: 16-bit 64k data at 0x00000000 */
-// selgdt 0x28
-/*16-bit 64k code at 0x00000000 */
-	.word 0xffff, 0x0000
-	.byte 0, 0x9a, 0, 0
+	/* from monty:
+	 * 0x00009a00,0000ffffULL,   20h: 16-bit 64k code at 0x00000000
+         * 0x00009200,0000ffffULL    28h: 16-bit 64k data at 0x00000000 */
 
-// selgdt 0x30
-/*16-bit 64k data at 0x00000000 */
+	/* selgdt 0x28, 16-bit 64k code at 0x00000000 */
+	.word 0xffff, 0x0000
+	.byte 0x00, 0x9a, 0x00, 0x00
+
+	/* selgdt 0x30, 16-bit 64k data at 0x00000000 */
 	.word 0xffff, 0x0000
 	.byte 0, 0x92, 0, 0
-#endif // defined(CONFIG_VGABIOS) && (CONFIG_VGABIOS == 1)
+#endif /* defined(CONFIG_VGABIOS) && (CONFIG_VGABIOS == 1) */
 gdt_end:
 
 idtarg:

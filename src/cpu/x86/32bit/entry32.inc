@@ -8,17 +8,20 @@
 	.align	4
 .globl gdtptr
 
+	/* This is the gdt for ROMCC/ASM part of LinuxBIOS.
+	 * It is different from the gdt in GCC part of LinuxBIOS
+	 * which is defined in c_start.S */
 gdt:
 gdtptr:
 	.word	gdt_end - gdt -1 /* compute the table limit */
 	.long	gdt		 /* we know the offset */
 	.word	0
 
-/* flat code segment */
+	/* selgdt 0x08, flat code segment */
 	.word	0xffff, 0x0000		
 	.byte	0x00, 0x9b, 0xcf, 0x00	
-	
-/* flat data segment */
+
+	/* selgdt 0x10,flat data segment */
 	.word	0xffff, 0x0000		
 	.byte	0x00, 0x93, 0xcf, 0x00	
 

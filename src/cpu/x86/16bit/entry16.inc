@@ -108,10 +108,10 @@ _start:
 	/* Now that we are in protected mode jump to a 32 bit code segment. */
 	data32	ljmp	$ROM_CODE_SEG, $__protected_start
 
-/** The gdt has a 4 Gb code segment at 0x10, and a 4 GB data segment
- * at 0x18; these are Linux-compatible. 
- */
-
+	/**
+	 * The gdt is defined in entry32.inc, it has a 4 Gb code segment
+	 * at 0x08, and a 4 GB data segment at 0x10;
+	 */
 .align	4
 .globl gdtptr16
 gdtptr16:

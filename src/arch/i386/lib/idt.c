@@ -18,12 +18,26 @@ struct realidt {
 // and pop to protected mode. 
 // second, since this only ever runs as part of linuxbios, 
 // we know all the segment register values -- so we don't save any.
+// keep the handler that calls things small. It can do a call to 
+// more complex code in linuxbios itself. This helps a lot as we don't
+// have to do address fixup in this little stub, and calls are absolute
+// so the handler is relocatable.
 void handler(void) {
  __asm__ __volatile__ ( 
 	".code16\n"
 	"idthandle:\n"
 	"	movb $0x55, %al\n"
 	"	outb %al, $0x80\n"
+	"	ljmp $0, $callbiosint16\n"
+	"end_idthandle:\n"
+	".code32\n"
+	);
+}
+
+void callbiosint(void) {
+__asm__ __volatile__ (
+	".code16\n"
+	"callbiosint16:\n"
 	"	pushl	%eax\n"
 	"	pushl	%ebx\n"
 	"	pushl	%ecx\n"
@@ -87,7 +101,6 @@ void handler(void) {
 	"	popl	%edi\n"
 	"	popl	%esi\n"
 	"	iret\n"
-	"end_idthandle:\n"
 	".code32\n"
 	);
 }
@@ -102,6 +115,7 @@ biosint(unsigned long eax,
 	printk_debug("biosint: eax 0x%lx ebx 0x%lx ecx 0x%lx edx 0x%lx\n", 
 		eax, ebx, ecx, edx);
 	printk_debug("biosint: edi 0x%lx esi 0x%lx\n", edi, esi);
+	return 0;
 } 
 void
 setup_realmode_idt(void) {

@@ -1,7 +1,7 @@
 #ifndef SMP_SPINLOCK_H
 #define SMP_SPINLOCK_H
 
-#ifdef CONFIG_SMP
+#if CONFIG_SMP == 1
 #include <arch/smp/spinlock.h>
 #else /* !CONFIG_SMP */
 

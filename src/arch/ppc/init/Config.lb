@@ -1,2 +1,2 @@
 init crt0.S.lb
-#initobject stuff.o
+initobject ppc_main.o

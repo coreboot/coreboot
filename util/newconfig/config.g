@@ -1530,9 +1530,9 @@ parser Config:
 			(romstmt<<1>>)*
 			END			{{ endromimage() }}
 
-    rule roms:		STR			{{ s = '(' + STR }}
+    rule roms:		STR			{{ s = '[' + STR }}
 			( STR			{{ s = s + "," + STR }}
-			)*			{{ return eval(s + ')') }}
+			)*			{{ return eval(s + ']') }}
 
     rule buildrom:	BUILDROM DIRPATH expr roms	{{ addbuildrom(DIRPATH, expr, roms) }}
 
@@ -1812,12 +1812,12 @@ def writemakefile(path):
 		file.write("\t(cd %s; make clean)\n" % o.getname())
 	
 	file.write("\nbuildroms:\n")
-	for i in range(len(buildroms)):
+	for i in buildroms:
 		file.write("\tcat ");
-		for j in range(len(buildroms[i])):
-			file.write("%s/linuxbios.rom " % buildroms[i][j] )
-		file.write("> %s\n" % buildroms[i].name);
-	file.write("\n\n")
+		for j in i.roms:
+			file.write("%s/linuxbios.rom " % j )
+		file.write("> %s\n" % i.name);
+	file.write("\n")
 	
 	file.close()
 

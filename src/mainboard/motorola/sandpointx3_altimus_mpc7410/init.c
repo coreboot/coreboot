@@ -45,11 +45,6 @@ void pnp_output(char address, char data)
 void
 board_init(void)
 {
-}
-
-void
-board_init2(void)
-{
 	/*
 	 * Enable UART0
 	 *
@@ -64,5 +59,10 @@ board_init2(void)
 	pnp_output(0x61, TTYS0_BASE & 0xFF); /* IO Base */
 	pnp_output(0x30, 1); /* Activate */
 	uart8250_init(TTYS0_BASE, 115200/TTYS0_BAUD, TTYS0_LCS);
+}
+
+void
+board_init2(void)
+{
 	printk_info("Sandpoint initialized...\n");
 }

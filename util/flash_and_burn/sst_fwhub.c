@@ -79,10 +79,8 @@ int probe_sst_fwhub(struct flashchip *flash)
 
 	myusec_delay(10);
 
-	// we need to mmap the write-protect space. 
-	printf("mapping control register at %x\n", 0 - 0x400000 -size);
 	bios = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
-		    flash->fd_mem, (off_t) (0 - 0x400000 - size));
+		    flash->fd_mem, (off_t) (0xFFFFFFFF - 0x400000 - size + 1));
 	if (bios == MAP_FAILED) {
 		// it's this part but we can't map it ...
 		perror("Error MMAP /dev/mem");
@@ -101,23 +99,16 @@ unsigned char wait_sst_fwhub(volatile unsigned char *bios)
 
 int erase_sst_fwhub_block(struct flashchip *flash, int offset)
 {
-	volatile unsigned char *bios = flash->virt_addr + offset;
-	volatile unsigned char *wrprotect =
-	    flash->virt_addr_2 + offset + 2;
+	volatile unsigned char *wrprotect = flash->virt_addr_2 + offset + 2;
 	unsigned char status;
 
-	// clear status register
-	printf("Erase at %p\n", bios);
+	//printf("Erase at %p\n", bios);
 	// clear write protect
-	printf("write protect is at %p\n", (wrprotect));
-	printf("write protect is 0x%x\n", *(wrprotect));
 	*(wrprotect) = 0;
-	printf("write protect is 0x%x\n", *(wrprotect));
 
 	erase_block_jedec(flash->virt_addr, offset);
 	status = wait_sst_fwhub(flash->virt_addr);
-	//print_sst_fwhub_status(status);
-	printf("DONE BLOCK 0x%x\n", offset);
+
 	return (0);
 }
 
@@ -126,11 +117,8 @@ int erase_sst_fwhub(struct flashchip *flash)
 	int i;
 	unsigned int total_size = flash->total_size * 1024;
 
-	printf("total_size is %d; flash->page_size is %d\n",
-	       total_size, flash->page_size);
 	for (i = 0; i < total_size; i += flash->page_size)
 		erase_sst_fwhub_block(flash, i);
-	printf("DONE ERASE\n");
 	return (0);
 }
 
@@ -145,7 +133,6 @@ void write_page_sst_fwhub(volatile char *bios, char *src,
 		src++;
 		dst++;
 	}
-
 }
 
 int write_sst_fwhub(struct flashchip *flash, unsigned char *buf)
@@ -165,10 +152,8 @@ int write_sst_fwhub(struct flashchip *flash, unsigned char *buf)
 		printf("%04d at address: 0x%08x", i, i * page_size);
 		write_page_sst_fwhub(bios, buf + i * page_size,
 				     bios + i * page_size, page_size);
-		printf
-		    ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 	}
 	printf("\n");
-	protect_sst_fwhub(bios);
 	return (0);
 }

@@ -176,11 +176,14 @@ int write_page_write_jedec(volatile unsigned char *bios, unsigned char *src,
 int write_byte_program_jedec(volatile unsigned char *bios, unsigned char *src,
 			     volatile unsigned char *dst)
 {
+	int tried = 0;
+
 	/* If the data is 0xFF, don't program it */
 	if (*src == 0xFF) {
 		return 0;
 	}
 
+retry:
 	/* Issue JEDEC Byte Program command */
 	*(volatile unsigned char *) (bios + 0x5555) = 0xAA;
 	*(volatile unsigned char *) (bios + 0x2AAA) = 0x55;
@@ -188,8 +191,11 @@ int write_byte_program_jedec(volatile unsigned char *bios, unsigned char *src,
 
 	/* transfer data from source to destination */
 	*dst = *src;
-
 	toggle_ready_jedec(bios);
+
+	if (*dst != *src && tried++ < 0x10) {
+ 		goto retry;
+ 	}
 
 	return 0;
 }

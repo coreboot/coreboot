@@ -200,19 +200,6 @@ int main(int argc, char *argv[])
 
         unsigned int exclude_start_position=0, exclude_end_position=0; // [x,y)
 	char *tempstr=NULL;
-#if 0
-
-#if 1
-	/* Keep fallback image */
-	exclude_start_position = 0x60000;
-	exclude_end_position = 0x80000;
-#else 
-	/* Keep DMI etc. */
-        exclude_start_position = 0x60000;
-        exclude_end_position = 0x70000;
-#endif
-
-#endif
 
 	if (argc > 1) {
 		/* Yes, print them. */

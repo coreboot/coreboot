@@ -182,10 +182,16 @@ void initialise_dma(void)
 	outw(W83C553F_DMA2 + W83C553F_DMA2_CS, 0x0000);
 }
 
+static void w83c553_enable_resources(device_t dev)
+{
+	pci_dev_enable_resources(dev);
+	enable_childrens_resources(dev);
+}
+
 struct device_operations w83c553_ops  = {
         .read_resources   = pci_dev_read_resources,
         .set_resources    = pci_dev_set_resources,
-        .enable_resources = pci_dev_enable_resources,
+        .enable_resources = w83c553_enable_resources,
         .init             = w83c553_init,
         .scan_bus         = scan_static_bus,
 };

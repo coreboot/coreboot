@@ -71,11 +71,11 @@ struct flashchip flashchips[] = {
 	{"SST49LF080A",	SST_ID,		SST_49LF080A,	NULL, 1024, 4096,
 	 probe_jedec,	erase_chip_jedec, write_49lf040,NULL},
 	{"SST49LF002A",	SST_ID,		SST_49LF002A,	NULL, 256, 4096,
-	 probe_jedec,	erase_chip_jedec, write_49lf040,NULL},
+	 probe_sst_fwhub, erase_sst_fwhub, write_sst_fwhub, NULL},
 	{"SST49LF003A", SST_ID,		SST_49LF003A,	NULL, 384, 4096,
-	 probe_jedec,	erase_chip_jedec, write_49lf040,NULL},
+	 probe_sst_fwhub, erase_sst_fwhub, write_sst_fwhub,NULL},
 	{"SST49LF004A", SST_ID,		SST_49LF004A,	NULL, 512, 4096,
-	 probe_jedec,	erase_chip_jedec, write_49lf040,NULL},
+	 probe_sst_fwhub, erase_sst_fwhub, write_sst_fwhub,NULL},
 	{"SST49LF008A", SST_ID,		SST_49LF008A, 	NULL, 1024, 4096,
 	 probe_sst_fwhub, erase_sst_fwhub, write_sst_fwhub, NULL},
 #endif
@@ -250,16 +250,15 @@ int main(int argc, char *argv[])
 			sscanf(tempstr,"%x",&exclude_start_position);
 			break;
 		case 'e':
-                        tempstr = strdup(optarg);
-                        sscanf(tempstr,"%x",&exclude_end_position);
-                        break;
+			tempstr = strdup(optarg);
+			sscanf(tempstr,"%x",&exclude_end_position);
+			break;
 
 		default:
 			usage(argv[0]);
 			break;
 		}
 	}
-
 
 	if (read_it && write_it) {
 		printf("-r and -w are mutually exclusive\n");
@@ -285,8 +284,7 @@ int main(int argc, char *argv[])
 
 	printf("Part is %s\n", flash->name);
 	if (!filename) {
-		printf
-		    ("OK, only ENABLING flash write, but NOT FLASHING\n");
+		printf("OK, only ENABLING flash write, but NOT FLASHING\n");
 		return 0;
 	}
 	size = flash->total_size * 1024;
@@ -303,8 +301,9 @@ int main(int argc, char *argv[])
 		else
 			flash->read(flash, buf);
 
-	        if(exclude_end_position - exclude_start_position > 0)  
-	                memset(buf+exclude_start_position, 0, exclude_end_position-exclude_start_position);
+		if (exclude_end_position - exclude_start_position > 0)
+			memset(buf+exclude_start_position, 0,
+			       exclude_end_position-exclude_start_position);
 
 		fwrite(buf, sizeof(char), size, image);
 		fclose(image);
@@ -318,15 +317,16 @@ int main(int argc, char *argv[])
 		fclose(image);
 	}
 
-	if(exclude_end_position - exclude_start_position > 0) 
-        	memcpy(buf+exclude_start_position, (const char *) flash->virt_addr+exclude_start_position, 
-			exclude_end_position-exclude_start_position);
-        
+	if (exclude_end_position - exclude_start_position > 0)
+	    memcpy(buf+exclude_start_position,
+		       (const char *) flash->virt_addr+exclude_start_position, 
+		       exclude_end_position-exclude_start_position);
+
         exclude_start_page = exclude_start_position/flash->page_size;
-        if((exclude_start_position%flash->page_size) != 0) { 
-                exclude_start_page++;
-        }       
-        exclude_end_page = exclude_end_position/flash->page_size;
+	if ((exclude_start_position%flash->page_size) != 0) {
+		exclude_start_page++;
+	}
+	exclude_end_page = exclude_end_position/flash->page_size;
 
 	if (write_it || (!read_it && !verify_it)) {
 		flash->write(flash, buf);

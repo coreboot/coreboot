@@ -89,6 +89,7 @@ int erase_sector_jedec(volatile unsigned char *bios, unsigned int page)
 
 	return (0);
 }
+
 int erase_block_jedec(volatile unsigned char *bios, unsigned int block)
 {
 	volatile unsigned char *Temp;
@@ -149,43 +150,45 @@ int erase_chip_jedec(struct flashchip *flash)
 	return (0);
 }
 
-void write_page_write_jedec(volatile unsigned char *bios, unsigned char *src,
-			    volatile unsigned char *dst, int page_size)
+int write_page_write_jedec(volatile unsigned char *bios, unsigned char *src,
+			   volatile unsigned char *dst, int page_size)
 {
 	int i;
 
 	/* Issue JEDEC Data Unprotect comand */
-	*(volatile char *) (bios + 0x5555) = 0xAA;
-	*(volatile char *) (bios + 0x2AAA) = 0x55;
-	*(volatile char *) (bios + 0x5555) = 0xA0;
+	*(volatile unsigned char *) (bios + 0x5555) = 0xAA;
+	*(volatile unsigned char *) (bios + 0x2AAA) = 0x55;
+	*(volatile unsigned char *) (bios + 0x5555) = 0xA0;
 
+	/* transfer data from source to destination */
 	for (i = 0; i < page_size; i++) {
-		/* transfer data from source to destination */
+		/* If the data is 0xFF, don't program it */
+		if (*src == 0xFF)
+			continue;
 		*dst++ = *src++;
 	}
 
-	usleep(100);
 	toggle_ready_jedec(dst - 1);
+
+	return 0;
 }
 
 int write_byte_program_jedec(volatile unsigned char *bios, unsigned char *src,
 			     volatile unsigned char *dst)
 {
-	volatile unsigned char *Temp;
-
-	/* transfer data from source to destination */
+	/* If the data is 0xFF, don't program it */
 	if (*src == 0xFF) {
-		/* If the data is 0xFF, don't program it */
 		return 0;
 	}
+
 	/* Issue JEDEC Byte Program command */
-	Temp = bios + 0x5555;
-	*Temp = 0xAA;
-	Temp = bios + 0x2AAA;
-	*Temp = 0x55;
-	Temp = bios + 0x5555;
-	*Temp = 0xA0;
+	*(volatile unsigned char *) (bios + 0x5555) = 0xAA;
+	*(volatile unsigned char *) (bios + 0x2AAA) = 0x55;
+	*(volatile unsigned char *) (bios + 0x5555) = 0xA0;
+
+	/* transfer data from source to destination */
 	*dst = *src;
+
 	toggle_ready_jedec(bios);
 
 	return 0;

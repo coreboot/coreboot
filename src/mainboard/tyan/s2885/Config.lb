@@ -157,6 +157,12 @@ chip northbridge/amd/amdk8
 					device pci 1.0 off end
 				end
 				device pci 1.0 on
+                                        chip drivers/generic/debug
+                                                device pnp 2.0 on end
+                                                device pnp 2.1 off end
+                                                device pnp 2.2 off end
+                                                device pnp 2.3 on end
+                                        end
 					chip superio/winbond/w83627hf
 						device pnp 2e.0 on #  Floppy
                                  			io 0x60 = 0x3f0
@@ -210,7 +216,14 @@ chip northbridge/amd/amdk8
 		
 		device pci 18.1 on end
 		device pci 18.2 on end
-		device pci 18.3 on end
+		device pci 18.3 on 
+#                        chip drivers/generic/debug
+#                                device pnp 1.0 on end
+#                                device pnp 1.1 off end
+#                                device pnp 1.2 off end
+#                                device pnp 1.3 on end
+#                        end
+		end
 
 		chip northbridge/amd/amdk8
 			device pci 19.0 on end
@@ -230,8 +243,11 @@ chip northbridge/amd/amdk8
 		end
 	end
 
-        chip drivers/generic/debug
-                device  pnp 0.0 on end
+        chip drivers/generic/debug 
+                device pnp 0.0 on end
+                device pnp 0.1 off end 
+                device pnp 0.2 off end
+                device pnp 0.3 on end
         end
 end
 

@@ -35,6 +35,22 @@ set_fixed_mtrr:
 	movl	$0x06060606, %edx
 	movl	$0x06060606, %eax
 	wrmsr
+
+#ifdef XIP_LOW
+	/* enable write through cache for 0xf0000-0xfffff*/
+	movl	$MTRRfix4K_F0000_MSR, %ecx
+	rdmsr
+	movl	$0x04040404, %edx
+	movl	$0x04040404, %eax
+	wrmsr
+
+	movl	$MTRRfix4K_F8000_MSR, %ecx
+	rdmsr
+	movl	$0x04040404, %edx
+	movl	$0x04040404, %eax
+	wrmsr
+#endif /* XIP_LOW */
+
 #endif /* MEMORY_HOLE */
 
 set_var_mtrr:
@@ -56,12 +72,12 @@ set_var_mtrr:
 	wrmsr
 
 #if defined(XIP_ROM_SIZE) && defined(XIP_ROM_BASE)
-	/* enable write protect caching so we can do execute in place
+	/* enable write through caching so we can do execute in place
 	 * on the flash rom.
 	 */
 	movl	$0x202, %ecx
 	xorl	%edx, %edx
-	movl	$(XIP_ROM_BASE | 0x005), %eax
+	movl	$(XIP_ROM_BASE | 0x004), %eax
 	wrmsr	
 
 	movl	$0x203, %ecx

@@ -33,6 +33,7 @@ struct flashchip {
 #define SST_39VF020       0xD6    /* SST 39SF020  device        */
 
 #define WINBOND_ID        0xDA	/* Winbond Manufacture ID code	*/
+#define W_29C011          0xC1	/* Winbond w29c011 device code*/
 #define W_29C020C         0x45	/* Winbond w29c020c device code*/
 #define W_49F002U         0x0B	/* Winbond w29c020c device code*/
 

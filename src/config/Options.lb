@@ -174,7 +174,7 @@ define CONFIG_CHIP_CONFIGURE
 end
 define CONFIG_USE_INIT
 	default 0
-	export never
+	export used
 	comment "Use stage 1 initialization code"
 end
 
@@ -236,6 +236,12 @@ define _ROMBASE
 	export always
 	comment "Base address of LinuxBIOS in ROM"
 end
+define _ROMSTART
+	default none
+	format "0x%x"
+	export used
+	comment "Start address of LinuxBIOS in ROM"
+end
 define _RESET
 	default {_ROMBASE}
 	format "0x%x"
@@ -265,6 +271,12 @@ define _RAMBASE
 	format "0x%x"
 	export always
 	comment "Base address of LinuxBIOS in RAM"
+end
+define _RAMSTART
+	default none
+	format "0x%x"
+	export used
+	comment "Start address of LinuxBIOS in RAM"
 end
 define USE_DCACHE_RAM
 	default 0

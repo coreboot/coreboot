@@ -184,12 +184,8 @@ define HAVE_FALLBACK_BOOT
 	comment "Set if fallback booting required"
 end
 define USE_FALLBACK_IMAGE
-<<<<<<< Options.lb
 	format "%d"
 	default 0
-=======
-	default 1
->>>>>>> 1.23
 	export used
 	comment "Set to build a fallback image"
 end

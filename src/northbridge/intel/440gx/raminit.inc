@@ -753,9 +753,24 @@ spd_set_dramc_out:
 /* next block is for Ron's attempt to get registered to work. */
 #ifdef INTEL_RAM_TEST_REGISTERED
 	/* BIOS makes weird page size for registered! */
-	movl	$2, %edx
+	/* what we have found is you need to set the EVEN banks to 
+	 * twice the size. Fortunately there is a very easy way to 
+	 * do this. First, read the WORD value of register 0x74. 
+	 */
 	movl	$0x74, %eax
-	PCI_WRITE_CONFIG_BYTE
+	PCI_READ_CONFIG_WORD
+	/* mask out the sizes for the ODD banks. 
+	 * we do this because we only handle symmetric DRAM
+         * so the sizes in odd and even banks are the same. 
+	 */
+	andw $0x3333, %ax
+	/* now to double the size of the EVEN banks we only need to add 1 */
+        /* because the size is log2
+         */
+	addw $0x1111, %ax
+	movw %ax, %cx
+	movl $0x74, %eax
+	PCI_WRITE_CONFIG_WORD
 #endif
 	/* now set the bit value for registered sdram into %eax */
 	movl $0x10, %eax

@@ -18,6 +18,10 @@
  * set the right value. 
  */
 #define INIT_MCR $0xf6621000
+#undef INIT_MCR
+/* I think that f662 is wrong. We need to make it 0xf6601000 */
+#define INIT_MCR $0xf6021000
+
 #define WRITE_MCR0 movl %ecx, %eax ;  outl %eax, %dx
 /*#include <cpu/p5/start32.inc>*/
 .org 0xfe000

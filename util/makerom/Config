@@ -1,9 +1,0 @@
-
-
-makerule makerom: commlib.a makerom.o compress.o ; $(CC) -o makerom makerom.o compress.o commlib.a
-
-makerule makerom.o: $(TOP)/util/makerom/makerom.c ; $(CC) -c -I$(TOP)/util/alpha-common/include $(TOP)/util/makerom/makerom.c
-
-makerule compress.o: $(TOP)/util/makerom/compress.c ; $(CC) -c -I$(TOP)/util/alpha-common/include $(TOP)/util/makerom/compress.c
-
-dir /util/alpha-common

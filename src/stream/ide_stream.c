@@ -6,8 +6,7 @@
 #include <string.h>
 
 /* read a sector or a partial sector */
-extern int ide_read_sector(int drive, void * buffer, unsigned int block, int byte_offset, 
-	int n_bytes);
+extern int ide_read(int drive, unsigned long block, void * buffer);
 extern int ide_init(void);
 
 static unsigned long offset;
@@ -62,12 +61,12 @@ static unsigned int first_fill = 1;
 #ifndef IDE_BOOT_DRIVE
 #define IDE_BOOT_DRIVE 0
 #endif
-static byte_offset_t ide_read(void *vdest, byte_offset_t offset, byte_offset_t count)
+static byte_offset_t stream_ide_read(void *vdest, byte_offset_t offset, byte_offset_t count)
 {
 	byte_offset_t bytes = 0;
 	unsigned char *dest = vdest;
 
-	//printk_debug("ide_read count = %x\n", count);
+	//printk_debug("stream_ide_read count = %x\n", count);
 	while (bytes < count) {
 		unsigned int byte_offset, len;
 
@@ -75,8 +74,7 @@ static byte_offset_t ide_read(void *vdest, byte_offset_t offset, byte_offset_t c
 		if (block_num != offset / 512 || first_fill) {
 			block_num  = offset / 512;
 			printk_notice (".");
-			ide_read_sector(IDE_BOOT_DRIVE, buffer, block_num,
-					0, 512);
+			ide_read(IDE_BOOT_DRIVE, block_num, buffer);
 			first_fill = 0;
 		}
 
@@ -104,7 +102,7 @@ byte_offset_t stream_read(void *vdest, byte_offset_t count)
 {
 	byte_offset_t len;
 
-	len = ide_read(vdest, offset, count);
+	len = stream_ide_read(vdest, offset, count);
 	if (len > 0) {
 		offset += len;
 	}

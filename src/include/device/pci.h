@@ -23,6 +23,7 @@
 
 /* Common pci operations without a standard interface */
 struct pci_operations {
+	/* set the Subsystem IDs for the PCI device */
 	void (*set_subsystem)(device_t dev, unsigned vendor, unsigned device);
 };
 

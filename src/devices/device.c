@@ -376,13 +376,14 @@ static void allocate_vga_resource(void)
 	struct bus *bus;
 	bus = 0;
 	vga = 0;
-	for(dev = all_devices; dev; dev = dev->next) {
+	for (dev = all_devices; dev; dev = dev->next) {
 		if (((dev->class >> 16) == PCI_BASE_CLASS_DISPLAY) &&
-			((dev->class >> 8) != PCI_CLASS_DISPLAY_OTHER)) 
-		{
+		    ((dev->class >> 8) != PCI_CLASS_DISPLAY_OTHER)) {
 			if (!vga) {
 				printk_debug("Allocating VGA resource %s\n",
-					dev_path(dev));
+					     dev_path(dev));
+				printk_debug("parent of the vga device %s\n",
+					     dev_path(dev->bus->dev));
 				vga = dev;
 			}
 			if (vga == dev) {
@@ -398,19 +399,28 @@ static void allocate_vga_resource(void)
 		bus = vga->bus;
 	}
 	/* Now walk up the bridges setting the VGA enable */
-	while(bus) {
+	while (bus) {
+		printk_info("Enabling VGA forward on bus connect to %s\n",
+			    dev_path(bus->dev));
 		bus->bridge_ctrl |= PCI_BRIDGE_CTL_VGA;
 		bus = (bus == bus->dev->bus)? 0 : bus->dev->bus;
 	} 
 }
 
 
-/** Assign the computed resources to the bridges and devices on the bus.
- * Recurse to any bridges found on this bus first. Then do the devices
- * on this bus.
- * 
+/**
+ * @brief  Assign the computed resources to the devices on the bus.
+ *
  * @param bus Pointer to the structure for this bus
- */ 
+ *
+ * Use the device specific set_resources method to store the computed
+ * resources to hardware. For bridge devices, the set_resources() method
+ * has to recurse into every down stream buses.
+ *
+ * Mutual recursion:
+ *	assign_resources() -> device_operation::set_resources()
+ *	device_operation::set_resources() -> assign_resources()
+ */
 void assign_resources(struct bus *bus)
 {
 	struct device *curdev;
@@ -418,7 +428,7 @@ void assign_resources(struct bus *bus)
 	printk_spew("%s assign_resources, bus %d link: %d\n", 
 		dev_path(bus->dev), bus->secondary, bus->link);
 
-	for(curdev = bus->children; curdev; curdev = curdev->sibling) {
+	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
 		if (!curdev->enabled || !curdev->resources) {
 			continue;
 		}
@@ -443,10 +453,13 @@ void assign_resources(struct bus *bus)
  *
  * The parent's resources should be enabled first to avoid having enabling
  * order problem. This is done by calling the parent's enable_resources()
- * method and let that method to call it's children's enable_resoruces() via
- * enable_childrens_resources().
+ * method and let that method to call it's children's enable_resoruces()
+ * method via the (global) enable_childrens_resources().
  *
  * Indirect mutual recursion:
+ *	enable_resources() -> device_operations::enable_resource()
+ *	device_operations::enable_resource() -> enable_children_resources()
+ *	enable_children_resources() -> enable_resources()
  */
 void enable_resources(struct device *dev)
 {
@@ -461,16 +474,25 @@ void enable_resources(struct device *dev)
 }
 
 /**
- * @brief Determine the existence of dynamic devices and construct dynamic
+ * @brief Determine the existence of devices and extend the device tree.
+ *
+ * Most of the devices in the system are listed in the mainboard Config.lb
+ * file. The device structures for these devices are generated at compile
+ * time by the config tool and are organized into the device tree. This
+ * function determines if the devices created at compile time actually exist
+ * in the physical system.
+ *
+ * For devices in the physical system but not listed in the Config.lb file,
+ * the device structures have to be created at run time and attached to the
  * device tree.
  *
- * Start from the root device 'dev_root', scan the buses in the system
- * recursively, build the dynamic device tree according to the result
- * of the probe.
+ * This function starts from the root device 'dev_root', scan the buses in
+ * the system recursively, modify the device tree according to the result of
+ * the probe.
  *
  * This function has no idea how to scan and probe buses and devices at all.
  * It depends on the bus/device specific scan_bus() method to do it. The
- * scan_bus() function also has to create the device structure and attach
+ * scan_bus() method also has to create the device structure and attach
  * it to the device tree. 
  */
 void dev_enumerate(void)
@@ -490,12 +512,13 @@ void dev_enumerate(void)
 	printk_info("done\n");
 }
 
-
 /**
  * @brief Configure devices on the devices tree.
  * 
- * Starting at the root of the dynamic device tree, travel recursively,
- * and compute resources needed by each device and allocate them.
+ * Starting at the root of the device tree, travel it recursively in two
+ * passes. In the first pass, we compute and allocate resources (ranges)
+ * requried by each device. In the second pass, the resources ranges are
+ * relocated to their final position and stored to the hardware.
  *
  * I/O resources start at DEVICE_IO_START and grow upward. MEM resources start
  * at DEVICE_MEM_START and grow downward.
@@ -519,7 +542,10 @@ void dev_configure(void)
 		printk_err("dev_root missing set_resources\n");
 		return;
 	}
+
+	printk_info("Reading resources...\n");
 	root->ops->read_resources(root);
+	printk_info("Done\n");
 
 	/* Get the resources */
 	io  = &root->resource[0];
@@ -539,8 +565,9 @@ void dev_configure(void)
 	allocate_vga_resource(); 
 
 	/* Store the computed resource allocations into device registers ... */
+	printk_info("Setting resources...\n");
 	root->ops->set_resources(root);
-
+	printk_info("Done\n");
 #if 0
 	mem->flags |= IORESOURCE_STORED;
 	report_resource_stored(root, mem, "");
@@ -569,14 +596,15 @@ void dev_enable(void)
  * @brief Initialize all devices in the global device list.
  *
  * Starting at the first device on the global device link list,
- * walk the list and call a driver to do device specific setup.
+ * walk the list and call the device's init() method to do deivce
+ * specific setup.
  */
 void dev_initialize(void)
 {
 	struct device *dev;
 
 	printk_info("Initializing devices...\n");
-	for(dev = all_devices; dev; dev = dev->next) {
+	for (dev = all_devices; dev; dev = dev->next) {
 		if (dev->enabled && !dev->initialized && 
 			dev->ops && dev->ops->init) 
 		{

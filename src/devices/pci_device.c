@@ -569,9 +569,9 @@ static void set_pci_ops(struct device *dev)
 	/* Look through the list of setup drivers and find one for
 	 * this pci device 
 	 */
-	for(driver = &pci_drivers[0]; driver != &epci_drivers[0]; driver++) {
+	for (driver = &pci_drivers[0]; driver != &epci_drivers[0]; driver++) {
 		if ((driver->vendor == dev->vendor) &&
-			(driver->device == dev->device)) 
+		    (driver->device == dev->device)) 
 		{
 			dev->ops = driver->ops;
 			printk_debug("%s [%04x/%04x] %sops\n", 
@@ -665,9 +665,6 @@ static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
  * Determine the existence of devices and bridges on a PCI bus. If there are
  * bridges on the bus, recursively scan the buses behind the bridges.
  *
- * This function is the default scan_bus() method for the root device
- * 'dev_root'.
- *
  * @param bus pointer to the bus structure
  * @param min_devfn minimum devfn to look at in the scan usually 0x00
  * @param max_devfn maximum devfn to look at in the scan usually 0xff
@@ -709,8 +706,8 @@ unsigned int pci_scan_bus(struct bus *bus,
 			dummy.path.u.pci.devfn = devfn;
 			id = pci_read_config32(&dummy, PCI_VENDOR_ID);
 			/* some broken boards return 0 if a slot is empty: */
-			if (	(id == 0xffffffff) || (id == 0x00000000) || 
-				(id == 0x0000ffff) || (id == 0xffff0000))
+			if ((id == 0xffffffff) || (id == 0x00000000) || 
+			    (id == 0x0000ffff) || (id == 0xffff0000))
 			{
 				printk_spew("PCI: devfn 0x%x, bad id 0x%x\n", devfn, id);
 				if (PCI_FUNC(devfn) == 0x00) {
@@ -753,7 +750,7 @@ unsigned int pci_scan_bus(struct bus *bus,
 			 * that may not always show up.
 			 */
 			if (id == 0xffffffff || id == 0x00000000 ||
-				id == 0x0000ffff || id == 0xffff0000) 
+			    id == 0x0000ffff || id == 0xffff0000) 
 			{
 				if (dev->enabled) {
 					printk_info("Disabling static device: %s\n",
@@ -816,10 +813,10 @@ unsigned int pci_scan_bus(struct bus *bus,
 	/* For all children that implement scan_bus (i.e. bridges)
 	 * scan the bus behind that child.
 	 */
-	for(child = bus->children; child; child = child->sibling) {
+	for (child = bus->children; child; child = child->sibling) {
 		if (!child->enabled ||
-			!child->ops || 
-			!child->ops->scan_bus) 
+		    !child->ops || 
+		    !child->ops->scan_bus) 
 		{
 			continue;
 		}

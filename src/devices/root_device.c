@@ -35,7 +35,8 @@ void root_dev_read_resources(device_t root)
 }
 
 /**
- * Write the resources for the root device,
+ * @brief Write the resources for the root device
+ *
  * and every device under it which are all of the devices.
  * @param root Pointer to the device structure for the system root device
  */
@@ -44,10 +45,10 @@ void root_dev_set_resources(device_t root)
 	struct bus *bus;
 
 	bus = &root->link[0];
-	compute_allocate_resource(bus,
-		&root->resource[0], IORESOURCE_IO, IORESOURCE_IO);
-	compute_allocate_resource(bus, 
-		&root->resource[1], IORESOURCE_MEM, IORESOURCE_MEM);
+	compute_allocate_resource(bus, &root->resource[0],
+				  IORESOURCE_IO, IORESOURCE_IO);
+	compute_allocate_resource(bus, &root->resource[1],
+				  IORESOURCE_MEM, IORESOURCE_MEM);
 	assign_resources(bus);
 }
 
@@ -56,26 +57,32 @@ void root_dev_set_resources(device_t root)
  *
  * The enumeration of certain buses is purely static. The existence of
  * devices on those buses can be completely determined at compile time
- * by the config file. Typical expamles are the 'PNP' devices on a legacy
- * ISA/LPC bus. There is no need of probing of any kind, the only thing
- * we have to do is to walk through the bus and enable or disable devices
- * as indicated in the config file.
+ * and is specified in the config file. Typical exapmles are the 'PNP'
+ * devices on a legacy ISA/LPC bus. There is no need of probing of any
+ * kind, the only thing we have to do is to walk through the bus and
+ * enable or disable devices as indicated in the config file.
  *
- * This function is the default scan_bus() method for LPC bridges.
+ * On the other hand, some devices are virtual and their existence is
+ * artificial. They can not be probed at run time. One example is the
+ * debug device. Those virtual devices have to be listed in the config
+ * file under some static bus in order to be enumerated at run time.
  *
- * @param root Pointer to the device structure for the system root device
- * @param max  Maximum bus number allowed in the system.
- * @return Largest bus number used.
+ * This function is the default scan_bus() method for the root device and
+ * LPC bridges.
+ *
+ * @param root Pointer to the root device which the static buses are attached
+ * @param max  Maximum bus number currently used before scanning.
+ * @return Largest bus number used after scanning.
  */
-unsigned int scan_static_bus(device_t bus, unsigned int max)
+unsigned int scan_static_bus(device_t root, unsigned int max)
 {
 	device_t child;
 	unsigned link;
-	
-	printk_spew("%s for %s\n", __func__, dev_path(bus));
 
-	for(link = 0; link < bus->links; link++) {
-		for(child = bus->link[link].children; child; child = child->sibling) {
+	printk_spew("%s for %s\n", __func__, dev_path(root));
+
+	for (link = 0; link < root->links; link++) {
+		for (child = root->link[link].children; child; child = child->sibling) {
 			if (child->chip_ops && child->chip_ops->enable_dev) {
 				child->chip_ops->enable_dev(child);
 			}
@@ -87,8 +94,8 @@ unsigned int scan_static_bus(device_t bus, unsigned int max)
 				child->enabled?"enabled": "disabled");
 		}
 	}
-	for(link = 0; link < bus->links; link++) {
-		for(child = bus->link[link].children; child; child = child->sibling) {
+	for (link = 0; link < root->links; link++) {
+		for (child = root->link[link].children; child; child = child->sibling) {
 			if (!child->ops || !child->ops->scan_bus)
 				continue;
 			printk_spew("%s scanning...\n", dev_path(child));
@@ -96,7 +103,7 @@ unsigned int scan_static_bus(device_t bus, unsigned int max)
 		}
 	}
 
-	printk_spew("%s done\n", __func__);
+	printk_spew("%s for  %s done\n", __func__, dev_path(root));
 
 	return max;
 }
@@ -106,17 +113,20 @@ unsigned int scan_static_bus(device_t bus, unsigned int max)
  *
  * @param dev the device whos children's resources are to be enabled
  *
- * This function is call by the enable_resource() indirectly via the
- * enable_resources() method of devices.
+ * This function is call by the global enable_resources() indirectly via the
+ * device_operation::enable_resources() method of devices.
  *
  * Indirect mutual recursion:
+ *	enable_childrens_resources() -> enable_resources()
+ *	enable_resources() -> device_operation::enable_resources()
+ *	device_operation::enable_resources() -> enable_children_resources()
  */
 void enable_childrens_resources(device_t dev)
 {
 	unsigned link;
-	for(link = 0; link < dev->links; link++) {
+	for (link = 0; link < dev->links; link++) {
 		device_t child;
-		for(child = dev->link[link].children; child; child = child->sibling) {
+		for (child = dev->link[link].children; child; child = child->sibling) {
 			enable_resources(child);
 		}
 	}
@@ -131,12 +141,9 @@ void root_dev_enable_resources(device_t dev)
  * @brief Scan root bus for generic systems
  *
  * @param root The root device structure
- * @param max The current bus number scanned so fat, usually 0x00
+ * @param max The current bus number scanned so far, usually 0x00
  *
- * This function is the default scan_bus() method of the dynamic root device.
- * The bus heirachy is rooted at the host/northbridge. The northbridge of a
- * generic PCI bus system is at Bus 0, Dev 0, Fun 0 so we scan the whole PCI
- * buses from there. 
+ * This function is the default scan_bus() method of the root device.
  */
 unsigned int root_dev_scan_bus(device_t root, unsigned int max)
 {
@@ -150,11 +157,9 @@ void root_dev_init(device_t root)
 /**
  * @brief Default device operation for root device
  *
- * This is the default device operation for root devices in PCI based systems.
- * These operations should be fully usable as is.  However the 
- * chip_operations::dev_enable of a motherboard can override this if you
- * want non-default behavior.  Currently src/mainboard/arima/hdama/mainbaord.c
- * does this for debugging purposes.
+ * This is the default device operation for root devices. These operations
+ * should be fully usable as is.  However the chip_operations::enable_dev()
+ * of a motherboard can override this if you want non-default behavior.
  */
 struct device_operations default_dev_ops_root = {
 	.read_resources   = root_dev_read_resources,
@@ -165,9 +170,9 @@ struct device_operations default_dev_ops_root = {
 };
 
 /**
- * @brief The root of dynamic device tree.
+ * @brief The root of device tree.
  *
- * This is the root of the dynamic device tree. A PCI tree always has 
- * one bus, bus 0. Bus 0 contains devices and bridges. 
+ * This is the root of the device tree. The device tree is defined in the
+ * static.c file and is generated by config tool during compile time.
  */
 extern struct device dev_root;

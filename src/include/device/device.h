@@ -57,7 +57,8 @@ struct bus {
  */
 
 struct device {
-	struct bus *	bus;		/* bus this device is on */
+	struct bus *	bus;		/* bus this device is on, for bridge
+					 * devices, it is the up stream bus */
 	device_t	sibling;	/* next device on this bus */
 	device_t	next;		/* chain of all devices */
 
@@ -79,7 +80,10 @@ struct device {
 	struct resource resource[MAX_RESOURCES];
 	unsigned int resources;
 
+	/* link are (down sream) buses attached to the device, usually a leaf
+	 * device with no child have 0 bus attached and a bridge has 1 bus */
 	struct bus link[MAX_LINKS];
+	/* number of buses attached to the device */
 	unsigned int links;
 
 	unsigned long rom_address;

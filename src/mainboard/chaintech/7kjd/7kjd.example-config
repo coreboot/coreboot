@@ -1,0 +1,25 @@
+
+# This will make a target directory of ./7kjd
+# Note that this is RELATIVE TO WHERE YOU ARE WHEN YOU RUN THE
+# CONFIG TOOL. Make it absolute if you like
+target 7kjd
+
+mainboard chaintech/7kjd
+
+# Enable Serial Console for debugging
+# It will come up at 115200,8n1
+option SERIAL_CONSOLE=1
+option TTYS0_BAUD=115200
+option DEFAULT_CONSOLE_LOGLEVEL=9
+option DEBUG=1
+
+option RAMTEST=1
+
+option USE_GENERIC_ROM=1
+option STD_FLASH=1
+option ROM_SIZE=262144
+option PAYLOAD_SIZE=196608
+option USE_ELF_BOOT=1
+
+payload /home/filo.elf
+

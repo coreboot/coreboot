@@ -1,5 +1,5 @@
 /* Convert to C by yhlu */
-#define MCH_DRC 0x7c
+#define MCH_DRC 0x70
 #define DRC_DONE (1 << 29)
 	/* If I have already booted once skip a bunch of initialization */
 	/* To see if I have already booted I check to see if memory

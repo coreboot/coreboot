@@ -367,6 +367,7 @@ static int build_elf_segment_list(
 	struct segment *ptr;
 	int i;
 	memset(head, 0, sizeof(*head));
+	head->phdr_next = head->phdr_prev = head;
 	head->next = head->prev = head;
 	for(i = 0; i < headers; i++) {
 		struct segment *new;

@@ -18,7 +18,7 @@
 #include "lib/delay.c"
 #include "cpu/p6/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
-#include "debug.c"
+#include "northbridge/amd/amdk8/debug.c"
 #include "northbridge/amd/amdk8/cpu_rev.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 

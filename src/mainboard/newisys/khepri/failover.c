@@ -27,6 +27,10 @@ static void main(void)
 			asm("jmp __cpu_reset");
 		}
 	}
+	/* Is this a deliberate reset by the bios */
+	else if (bios_reset_detected() && last_boot_normal()) {
+		asm("jmp __normal_image");
+	}
 	/* Is this a secondary cpu? */
 	else if (!boot_cpu() && last_boot_normal()) {
 		asm("jmp __normal_image");

@@ -1,0 +1,61 @@
+LBConfig is a simply Python program to build files that are in turned
+used to build the LinuxBIOS. Typically, LBConfig builds three files:
+
+Makefile
+ldscript.ld
+crt0.S
+
+These files are placed in a target directory specified in the config
+file itself.
+
+LBConfig uses a Little Language that is specific to the task of describing 
+LinuxBIOS components, build options, linker scripts, and any ancillary 
+make targets. The language is simple and we want to keep it that way. 
+
+The basic operating mode is that the user invokes the program,
+specifying a config file, and the top of the freebios tree (from now
+on we will call the top of the freebios tree $(TOP)). The first Config
+file specifies a mainboard vendor and name in Unix pathname style,
+e.g. leadtek/winfast6300 specifies a leadtek winfast6300 board. The
+tool then looks in the directory
+$(TOP)/src/mainboard/leadtek/winfast6300 for a Config file, and
+processes that file. In the course of processing a Config file, the
+tool may encounter other commands that lead to other Config files.
+For example, for the northbridge, there will be a Config file; for the cpu
+type there will be a Config file, and so on. 
+
+As of 12/7/2000, the config tool has the following directives:
+target		 Specify the target directory for builds. 
+		 This directory must exist -- sorry, we're being cautious
+		 for now
+mainboard	 Specify the mainboard vendor and name in Unix pathname
+		 format, e.g. leadtek/winfast6300 means the leadtek 
+		 winfast6300 board
+cpu		 Specify the cpu, e.g. cpu p6
+northbridge	 Specify the northbridge vendor and name, e.g. via/vt8601
+southbridge	 Specify the southbridge vendor and name, e.g. via/vt826c686a
+northsouthbridge For combined north and south bridge parts, specify 
+		 them as one, e.g. sis/630
+pcibridge	 This has not been used yet, but it is for pcibridges, 
+		 which are NOT the same as the other bridges
+superio		 Specify the superio, e.g. winbond/w83977ef
+object		 Add an object to the set of objects, e.g. object keyboard.o
+raminit		 Add a .S file to the list of files used for ram init. 
+		 The path is rooted at $(TOP)/src
+		 e.g. you might have:
+		 raminit sdram/generic_sdram.inc
+		 raminit northbridge/intel/440gx/raminitspd.inc
+docipl		 Specify the code to use and generate rules for building 
+		 a docipl, e.g. docipl northsouthbridge/sis/630/ipl.S
+linux		 Name the path for the linux binary, e.g. linux /usr/src/linux
+keyboard	 Name the keyboard, e.g. keyboard pc80/keyboard.c
+makerule	 Specify an additional makerule, e.g. 
+		 makerule LINUX=../../linux/vmlinux
+		 (note that this is an unused usage, since we have the 
+		  linux command)
+commandline	  Specify the command line, e.g.
+		  commandline root=/dev/hda1 single
+option		  Add an option, implicitly setting it. 
+		  e.g. option SERIAL_CONSOLE
+
+

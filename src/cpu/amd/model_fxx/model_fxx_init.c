@@ -149,9 +149,6 @@ static void init_ecc_memory(unsigned node_id)
 	int enable_scrubbing;
 	uint32_t dcl;
 	
-	/* For now there is a 1-1 mapping between node_id and cpu_id */
-	node_id = lapicid();
-
 	f1_dev = dev_find_slot(0, PCI_DEVFN(0x18 + node_id, 1));
 	if (!f1_dev) {
 		die("Cannot find cpu function 1\n");

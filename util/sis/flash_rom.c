@@ -45,7 +45,7 @@ struct flashchip flashchips[] = {
      probe_29f002,  erase_29f002,  write_29f002},
     {"SST29EE020A", SST_ID,     SST_29EE020A, NULL, 256, 128,
      probe_jedec,   erase_jedec,   write_jedec},
-    {"SST29EE020A", SST_ID,     SST_28SF040,  NULL, 512, 256,
+    {"SST28SF040A", SST_ID,     SST_28SF040,  NULL, 512, 256,
      probe_28sf040, erase_28sf040, write_28sf040},
     {"W29C020C",    WINBOND_ID, W_29C020C,    NULL, 256, 128,
      probe_jedec,   erase_jedec,   write_jedec},

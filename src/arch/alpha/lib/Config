@@ -1,0 +1,9 @@
+object hardwaremain.o
+
+makedefine OBJECTS+= __divqu.o __remqu.o __divlu.o __remlu.o
+
+makerule __divqu.o: $(TOP)/src/arch/alpha/lib/divide.S; $(CC) $(CFLAGS) -DDIV -c -o __divqu.o $<
+makerule __remqu.o: $(TOP)/src/arch/alpha/lib/divide.S; $(CC) $(CFLAGS) -DREM -c -o __remqu.o $<
+makerule __divlu.o: $(TOP)/src/arch/alpha/lib/divide.S; $(CC) $(CFLAGS) -DDIV -DINTSIZE -c -o __divlu.o $<
+makerule __remlu.o: $(TOP)/src/arch/alpha/lib/divide.S; $(CC) $(CFLAGS) -DREM -DINTSIZE -c -o __remlu.o $<
+

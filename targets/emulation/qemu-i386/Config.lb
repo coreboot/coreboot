@@ -1,0 +1,91 @@
+# Sample config file for qemu
+# This will make a target directory of qemu
+
+loadoptions
+
+target qemu-i386
+
+uses ARCH
+uses CONFIG_COMPRESS
+uses CONFIG_IOAPIC
+uses CONFIG_ROM_STREAM
+uses CONFIG_ROM_STREAM_START
+uses CONFIG_UDELAY_TSC
+uses CPU_FIXUP
+uses FALLBACK_SIZE
+uses HAVE_FALLBACK_BOOT
+uses HAVE_MP_TABLE
+uses HAVE_PIRQ_TABLE
+uses HAVE_HARD_RESET
+uses i586
+uses i686
+uses INTEL_PPRO_MTRR
+uses HEAP_SIZE
+uses MAINBOARD_PART_NUMBER
+uses MAINBOARD_VENDOR
+uses CONFIG_SMP
+uses CONFIG_MAX_CPUS
+uses MEMORY_HOLE
+uses PAYLOAD_SIZE
+uses _RAMBASE
+uses _ROMBASE
+uses ROM_IMAGE_SIZE
+uses ROM_SECTION_OFFSET
+uses ROM_SECTION_SIZE
+uses ROM_SIZE
+uses STACK_SIZE
+uses USE_FALLBACK_IMAGE
+uses USE_OPTION_TABLE
+uses HAVE_OPTION_TABLE
+uses MAXIMUM_CONSOLE_LOGLEVEL
+uses DEFAULT_CONSOLE_LOGLEVEL
+uses CONFIG_CONSOLE_SERIAL8250
+uses CONFIG_CONSOLE_BTEXT
+uses MAINBOARD
+uses CONFIG_CHIP_CONFIGURE
+uses XIP_ROM_SIZE
+uses XIP_ROM_BASE
+uses LINUXBIOS_EXTRA_VERSION
+uses TTYS0_BAUD
+uses CC
+
+option CC="gcc -m32"
+
+option TTYS0_BAUD=115200
+
+option CONFIG_CHIP_CONFIGURE=1
+
+option  MAXIMUM_CONSOLE_LOGLEVEL=10
+option  DEFAULT_CONSOLE_LOGLEVEL=10
+option  CONFIG_CONSOLE_SERIAL8250=1
+option  CONFIG_CONSOLE_BTEXT=1
+
+option CPU_FIXUP=1
+option CONFIG_UDELAY_TSC=0
+option i686=0
+option i586=1
+option INTEL_PPRO_MTRR=0
+option ROM_SIZE=256*1024
+
+option HAVE_OPTION_TABLE=0
+option CONFIG_ROM_STREAM=1
+option HAVE_FALLBACK_BOOT=1
+
+###
+### Compute the location and size of where this firmware image
+### (linuxBIOS plus bootloader) will live in the boot rom chip.
+###
+option FALLBACK_SIZE=256*1024
+
+## LinuxBIOS C code runs at this location in RAM
+option _RAMBASE=0x00004000
+
+romimage "image" 
+	option USE_FALLBACK_IMAGE=1
+	option ROM_IMAGE_SIZE=0x10000
+	option LINUXBIOS_EXTRA_VERSION="-OpenBIOS"
+	mainboard emulation/qemu-i386
+	payload /home/stepan/openbios.elf
+end
+
+buildrom ./qemu-bios.rom ROM_SIZE "image" 

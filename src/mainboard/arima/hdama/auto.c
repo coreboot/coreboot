@@ -19,6 +19,8 @@
 #include "debug.c"
 
 #define SIO_BASE 0x2e
+#define MAXIMUM_CONSOLE_LOGLEVEL 9
+#define DEFAULT_CONSOLE_LOGLEVEL 9
 
 static void memreset_setup(void)
 {
@@ -199,7 +201,7 @@ static void main(void)
 	enumerate_ht_chain(0);
 	distinguish_cpu_resets(0);
 	
-#if 0
+#if 1
 	print_pci_devices();
 #endif
 	enable_smbus();
@@ -209,10 +211,10 @@ static void main(void)
 	memreset_setup();
 	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
 
-#if 0
+#if 1
 	dump_pci_devices();
 #endif
-#if 0
+#if 1
 	dump_pci_device(PCI_DEV(0, 0x18, 2));
 #endif
 

@@ -92,7 +92,7 @@ Step 3)
 	Comment out the following line(s) :-
 	CFLAGS32+= -DPCIBIOS
 	Uncomment the following line(s) :-
-	#CFLAGS32+= -DLINUXBIOS -DCONFIG_TSC_CURTICKS -DCONSOLE_SERIAL \
+	#CFLAGS32+= -DLINUXBIOS -DCONFIG_TSC_CURRTICKS -DCONSOLE_SERIAL \
                     -DCOMCONSOLE=0x3f8 -DCOMPRESERVE -DCONFIG_PCI_DIRECT \
                     -DELF_IMAGE
 

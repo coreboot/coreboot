@@ -171,3 +171,11 @@ unsigned long get_clock_speed(void)
 	get_sys_info(&sys_info);
 	return sys_info.freqProcessor;
 }
+
+unsigned long get_bus_freq(void)
+{
+	struct ppc4xx_sys_info sys_info;
+
+	get_sys_info(&sys_info);
+	return sys_info.freqPLB;
+}

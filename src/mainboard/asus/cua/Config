@@ -14,9 +14,9 @@ southbridge acer/m1535
 superio acer/m1535
 mainboardinit cpu/p6/earlymtrr.inc
 
-option ENABLE_FIXED_AND_VARIABLE_MTRRS
-option FINAL_MAINBOARD_FIXUP
-option HAVE_PIRQ_TABLE
+option ENABLE_FIXED_AND_VARIABLE_MTRRS=1
+option FINAL_MAINBOARD_FIXUP=1
+option HAVE_PIRQ_TABLE=1
 object mainboard.o
 object irq_tables.o
 keyboard pc80

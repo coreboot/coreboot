@@ -102,10 +102,13 @@ static void real_mode_switch_call_vga(void)
        "    ljmp $0,  $__rms_real \n"
        "__rms_real:                  \n"
 
+	// put the stack at the end of page zero. 
+	// that way we can easily share it between real and protected, 
+	// since the 16-bit ESP at segment 0 will work for any case. 
        /* Setup a stack */
-       "    mov  $0x9000, %ax       \n"
+       "    mov  $0x0, %ax       \n"
        "    mov  %ax, %ss          \n"
-       "    mov  $0xAFFE, %ax       \n"
+       "    mov  $0x1000, %ax       \n"
        "    mov  %ax, %sp          \n"
  	/* ebugging for RGM */
        "    mov $0x11, %al	\n"

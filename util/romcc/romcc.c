@@ -20782,7 +20782,7 @@ static void scc_visit_cbranch(struct compile_state *state, struct scc_state *scc
 static void scc_add_sedge_dst(struct compile_state *state, 
 	struct scc_state *scc, struct ssa_edge *sedge)
 {
-	if (triple_is_branch(state, sedge->dst->def)) {
+	if (triple_is_cbranch(state, sedge->dst->def)) {
 		scc_visit_cbranch(state, scc, sedge->dst);
 	}
 	else if (triple_is_def(state, sedge->dst->def)) {

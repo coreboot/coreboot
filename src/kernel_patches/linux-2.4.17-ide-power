@@ -1,0 +1,243 @@
+$Id$
+
+--- linux-2.4.17-orig/drivers/ide/ide-pci.c	Thu Oct 25 14:53:47 2001
++++ linux-2.4.17-smartcore/drivers/ide/ide-pci.c	Wed Jan  9 11:03:18 2002
+@@ -697,9 +697,20 @@
+ 			goto controller_ok;
+ 		if ((IDE_PCI_DEVID_EQ(d->devid, DEVID_PDC20262)) && (secondpdc++==1) && (port==1)  ) 
+ 			goto controller_ok;
+-			
++#ifndef CONFIG_LINUXBIOS_FORCE_IDE_CONTROLLER_ON
+ 		if (e->reg && (pci_read_config_byte(dev, e->reg, &tmp) || (tmp & e->mask) != e->val))
+ 			continue;	/* port not enabled */
++#else
++		/* force 'em on! */
++ 		if (e->reg) {
++		    pci_read_config_byte(dev, e->reg, &tmp);
++		    tmp |= e->val;
++		    pci_write_config_byte(dev, e->reg, tmp);
++		    printk("%s: LINUXBIOS, so Jammed the enable on!\n", 
++			d->name);
++  		}
++		
++#endif
+ controller_ok:			
+ 		if (IDE_PCI_DEVID_EQ(d->devid, DEVID_HPT366) && (port) && (class_rev < 0x03))
+ 			return;
+--- linux-2.4.17-orig/drivers/ide/ide-probe.c	Mon Nov 26 06:29:17 2001
++++ linux-2.4.17-smartcore/drivers/ide/ide-probe.c	Wed Jan  9 11:03:18 2002
+@@ -310,6 +310,13 @@
+ 		if ((drive->media != ide_disk) && (cmd == WIN_IDENTIFY))
+ 			return 4;
+ 	}
++#ifdef CONFIG_LINUXBIOS_WAIT_HDA_SPINUP
++	if (! strncmp(drive->name, "hda", 3)) {
++	  printk("jamming drive present for %s\n", drive->name);
++	  drive->present = 1;
++	}
++#endif
++
+ #ifdef DEBUG
+ 	printk("probing for %s: present=%d, media=%d, probetype=%s\n",
+ 		drive->name, drive->present, drive->media,
+--- linux-2.4.17-orig/arch/i386/config.in	Fri Dec 21 10:41:53 2001
++++ linux-2.4.17-smartcore/arch/i386/config.in	Wed Jan  9 11:03:18 2002
+@@ -416,3 +416,13 @@
+ fi
+ 
+ endmenu
++
++mainmenu_option next_comment
++comment 'LinuxBIOS'
++
++tristate 'LinuxBIOS Support' CONFIG_LINUXBIOS
++if [ "$CONFIG_LINUXBIOS" != "n" ]; then
++   source arch/i386/Linuxbios.in
++fi
++
++endmenu
+--- linux-2.4.17-orig/arch/i386/kernel/process.c	Thu Oct  4 19:42:54 2001
++++ linux-2.4.17-smartcore/arch/i386/kernel/process.c	Fri Jan 18 09:57:47 2002
+@@ -49,6 +49,159 @@
+ 
+ #include <linux/irq.h>
+ 
++#define CONFIG_LINUXBIOS_PM
++#ifdef CONFIG_LINUXBIOS_PM
++#include <linux/pci.h>
++#ifdef CONFIG_LINUXBIOS_PM_SIS503
++void
++sis503_reset(struct pci_dev *dev)
++{
++	unsigned char b;
++	unsigned short acpi_base;
++
++	printk(KERN_ERR __FUNCTION__ ": starting reset operation. \n");
++
++	/* Enable ACPI by set B7 on Reg 0x40, LPC */
++	pci_read_config_byte(dev, 0x40, &b);
++	pci_write_config_byte(dev, 0x40, b | 0x80);
++	printk(KERN_ERR __FUNCTION__ ": enabled ACPI. \n");
++
++	/* get the ACPI base address for register 0x74,0x75 of LPC */
++	pci_read_config_word(dev, 0x74, &acpi_base);	
++	printk(KERN_ERR __FUNCTION__ ":acpi base: %x\n", acpi_base);
++
++	/* Set software watchdog timer init value */
++	outb(0x03, 0x4a + acpi_base);
++	printk(KERN_ERR __FUNCTION__ ": set the dog. \n");
++
++	printk(KERN_ERR __FUNCTION__ ": enabling dog. \n");
++	/* Software watchdog enable, issue PCIRST# when time expire */
++	outb(0x8f, 0x4b + acpi_base);
++
++	printk(KERN_ERR __FUNCTION__ ": We should reset soon. \n");
++}
++
++void
++sis503_off(struct pci_dev *dev)
++{
++	unsigned char b;
++	unsigned short acpi_base;
++
++	printk(KERN_ERR __FUNCTION__ ": starting reset operation. \n");
++	/* Enable ACPI by set B7 on Reg 0x40, LPC */
++	pci_read_config_byte(dev, 0x40, &b);
++	pci_write_config_byte(dev, 0x40, b | 0x80);
++	printk(KERN_ERR __FUNCTION__ ": enabled ACPI. \n");
++
++        /* get the ACPI base address for register 0x74,0x75 of LPC */
++	pci_read_config_word(dev, 0x74, &acpi_base);
++	printk (KERN_ERR __FUNCTION__ ":acpi base: %x\n", acpi_base);
++
++	/* ACPI Register 5, Bit 10-12, Sleeping Type,
++	   set to 101 -> S5, soft_off */
++	outb(0x14, 0x05 + acpi_base);
++	printk(KERN_ERR __FUNCTION__ ": DONE setting sleep type. \n");
++
++	/* ACPI Register 5, Bit 13, Sleep Enable */
++	outb(0x20 | 0x14, 0x05 + acpi_base);
++	printk(KERN_ERR __FUNCTION__ ": DONE sleep enable. \n");
++}
++#endif // CONFIG_LINUXBIOS_PM_SIS503
++#ifdef CONFIG_LINUXBIOS_PM_PIIX4E
++void
++piix4e_reset(struct pci_dev *dev)
++{
++    // simple on this part. outb 0x6 to 0xcf9
++
++    printk(KERN_ERR __FUNCTION__ ": starting reset operation. \n");
++    outb(0x6, 0xcf9);
++    printk(KERN_ERR __FUNCTION__ ": We should reset soon. \n");
++}
++
++void
++piix4e_off(struct pci_dev *dev)
++{
++	unsigned char b;
++	unsigned short acpi_base;
++
++	printk(KERN_ERR __FUNCTION__ ": no power off on this chip! \n");
++}
++#endif
++struct pci_dev * pci_find_device(unsigned int vendor, unsigned int device, 
++				 const struct pci_dev *from);
++
++struct linuxbios_control {
++	u_short vendor, device;
++	void (*poweroff)(struct pci_dev *);
++	void (*reset)(struct pci_dev *);
++};
++
++struct linuxbios_control controls[] = {
++#ifdef CONFIG_LINUXBIOS_PM_SIS503
++	{PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, sis503_off, sis503_reset}
++#endif
++#ifdef CONFIG_LINUXBIOS_PM_PIIX4E
++	{PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82371AB_3, 
++	 piix4e_off, piix4e_reset},
++#endif
++	{0}
++};
++
++struct linuxbios_control *findcontrol(struct pci_dev **d)
++{
++	struct linuxbios_control *lb = controls, *retval = 0;
++	int i;
++
++	printk(KERN_ERR __FUNCTION__ ": Find vendor 0x%x device 0x%x\n", 
++	       lb->vendor, lb->device);
++	for(lb = controls, i = 0; 
++	    (i < sizeof(controls)/sizeof(controls[0])) && (! retval); 
++	    i++, lb++)
++	{
++		*d = pci_find_device(lb->vendor, lb->device, 0);
++		if (*d)
++			retval = lb;
++	}
++
++	printk(KERN_ERR __FUNCTION__ ": result of find is %p\n", retval);
++	return retval;
++}
++
++void
++linuxbios_poweroff(void)
++{
++	struct linuxbios_control *lb = 0;
++	struct pci_dev *dev;
++
++	printk(KERN_ERR __FUNCTION__ ": find an lb\n");
++	lb = findcontrol(&dev);
++
++	printk(KERN_ERR __FUNCTION__ ": found lb %p, call %p\n", 
++	       lb, lb ? lb->poweroff : 0);
++	if (lb && (lb->poweroff))
++		lb->poweroff(dev);
++	printk(KERN_ERR __FUNCTION__ ": Returning? Can't happen, I thought?\n");
++}
++
++void
++linuxbios_reset(void)
++{
++	struct linuxbios_control *lb = 0;
++	struct pci_dev *dev;
++
++	printk(KERN_ERR __FUNCTION__ ": find an lb\n");
++	lb = findcontrol(&dev);
++
++	printk(KERN_ERR __FUNCTION__ ": found lb %p, call %p\n", 
++	       lb, lb ? lb->reset : 0);
++	if (lb && (lb->reset))
++		lb->reset(dev);
++	printk(KERN_ERR __FUNCTION__ ": Returning? Can't happen, I thought?\n");
++}
++
++#endif
++
++
+ asmlinkage void ret_from_fork(void) __asm__("ret_from_fork");
+ 
+ int hlt_counter;
+@@ -399,6 +552,9 @@
+ 	 */
+ 	smp_send_stop();
+ 	disable_IO_APIC();
++#endif
++#ifdef CONFIG_LINUXBIOS_PM
++	linuxbios_reset();
+ #endif
+ 
+ 	if(!reboot_thru_bios) {
+--- linux-2.4.17-orig/arch/i386/Linuxbios.in	Tue Jan 22 10:22:05 2002
++++ linux-2.4.17-smartcore/arch/i386/Linuxbios.in	Fri Jan 18 10:03:05 2002
+@@ -0,0 +1,10 @@
++mainmenu_option next_comment
++comment 'Linuxbios Options'
++bool 'Force IDE Controllers on?' CONFIG_LINUXBIOS_FORCE_IDE_CONTROLLER_ON
++bool 'Wait for HDA to spin up?'  CONFIG_LINUXBIOS_WAIT_HDA_SPINUP
++bool 'Linuxbios Power Management support?' CONFIG_LINUXBIOS_PM
++if [ "$CONFIG_LINUXBIOS_PM" = "y" ]; then
++	bool '	SIS 503 support?' CONFIG_LINUXBIOS_PM_SIS503
++	bool '	PIIX4E support?' CONFIG_LINUXBIOS_PM_PIIX4E
++fi
++endmenu

@@ -1,0 +1,51 @@
+# Copyright (c) 2002 Christer Weinigel <wingel@hack.org>
+
+# This is an example configuration file for the Nano Computer from 
+# Nano Computer Systems <URL:http://www.nano-system.com> (warning,
+# the page is in Swedish, but the products link might be interesting)
+
+# See src/mainboard/nano/nano/Config for more information
+
+target nano
+
+mainboard nano/nano
+
+# Enable Serial Console for debugging
+option SERIAL_CONSOLE=1
+option TTYS0_BAUD=38400
+
+option DEFAULT_CONSOLE_LOGLEVEL=9
+option DEBUG
+
+#option INBUF_COPY
+option RAMTEST
+#option BOOT_IDE=1
+#option BOOT_TFTP=1
+
+# I'm using the onboard Intel Strataflash to store LinuxBIOS and the
+# Linux Kernel.  I have also put LinuxBIOS in the BIOS ROM chip.
+# The reason for using such a strange address as 0xc0000200 below is
+# that the BIOS seems to do some kind of destructive probing of the
+# DOC socket that causes it to write garbage to address 0x80 of the
+# flash chip.
+
+option USE_GENERIC_ROM=1
+option ZKERNEL_START=0xc0000200
+option ZKERNEL_MASK=0xffff
+
+option ROM_SIZE=262144
+
+# If you want a watdog timer initialized as early as possible.  30
+# seconds might be a good choice, if the Linux kernel isn't up and
+# running and has started the Linux Watchdog driver before then
+# the system will do a hard reset.
+#option SCx200_WATCHDOG=30
+
+# Path to your kernel (vmlinux)
+linux /export/nano/linux
+
+# Kernel command line parameters
+commandline root=/dev/hda2 console=ttyS0,38400
+#commandline root=/dev/nfs ip=dhcp console=ttyS0,38400
+
+

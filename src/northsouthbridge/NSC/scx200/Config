@@ -1,0 +1,8 @@
+# freebios/src/northsouthbridge/NSC/scx200/Config
+# Copyright (c) 2002 Christer Weinigel <wingel@hack.org>
+
+raminit northsouthbridge/NSC/scx200/raminit.inc
+
+object southbridge.o
+object northbridge.o
+

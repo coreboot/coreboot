@@ -1,0 +1,126 @@
+# Copyright (c) 2002 Christer Weinigel <wingel@hack.org>
+
+# This is a config file Nano Computer from Nano Computer Systems
+# <URL:http://www.nano-system.com> (warning, the page is in Swedish,
+# but the products link might be interesting)
+
+# The NC is a National Semiconductor SC2200 based design with two
+# NatSemi DP83815 ethernet chips, one PCI slot, an onboard Compact
+# Flash and an external IDE connector.  Other features are two serial
+# ports, an I2C/SMBUS with two temperature sensors and a serial
+# EEPROM, and an Intel StrataFlash (4,8 or 16MB) soldered to the
+# board.  Finally there is a VGA connector but that is mostly intended
+# for debugging and not really for production use.
+
+arch i386
+mainboardinit cpu/i386/entry16.inc
+mainboardinit cpu/i386/entry32.inc
+ldscript cpu/i386/entry16.lds
+ldscript cpu/i386/entry32.lds
+mainboardinit cpu/i386/reset16.inc
+ldscript cpu/i386/reset16.lds
+
+########################################################################
+# Where the Disk On Chip Chip Select pin is mapped in memory. 
+# See the SCx200 databook for more information.
+
+option SCx200_DOCCS_BASE=0xc0000000
+option SCx200_DOCCS_CTRL=0x070007ff
+
+########################################################################
+# If you want to use this as a reference for other SCx200 based boards
+# be aware that the settings of the following registers are _very_
+# important.  PMR means Pin Multiplexing Register and the PMR togheter
+# with the MCR are used to reconfigure the pin assignments of the
+# processor, for example, the pins that drive a TFT screen can be used
+# as an IDE port, so if you make a mistake here, the pins would source
+# TTL voltages instead of TFT voltages and fry your, probably very 
+# expensive, TFT screen.  So:
+
+# DON'T MESS WITH THESE SETTINGS UNLESS YOU KNOW WHAT YOU ARE DOING!  
+
+# And don't blindly try this on any other SCx200 based hardware, first
+# look at the schematics and then read, and understand, the SCx200
+# data books.
+
+#option SCx200_PMR=0x02060891
+option SCx200_PMR=0x02860891
+option SCx200_MCR=0x00000411
+
+########################################################################
+# Some constans, you probably don't need to change anything here.
+
+# Where to put the SCx200 configuration block, the address 0x9000 is
+# really mandated in a SCx200 errata, but you can change it.
+option SCx200_CB_BASE=0x9000
+
+# GX_BASE is the address of another configuration block, this one for
+# the GX1 processor that is a part of the SCx200.  You probably don't
+# want to change this either, unless you have a very strange memory map.
+option GX_BASE=0x40000000
+
+########################################################################
+# Super I/O configuration
+
+# Does not do anything yet, the address is always hardcoded to 0x15c
+#option SCx200_SIO_BASE=0x15c
+
+# Serial port 1
+option SCx200_SP1_BASE=0x3f8
+option SCx200_SP1_IRQ=4
+# Serial port 2
+option SCx200_SP2_BASE=0x2f8
+option SCx200_SP2_IRQ=3
+# Serial port 3
+option SCx200_SP3_BASE=0x3e8
+option SCx200_SP3_IRQ=4
+
+# Parallel port
+option SCx200_PP_BASE=0x278
+option SCx200_PP_IRQ=7
+
+# ACCESS.bus 1
+option SCx200_ACB1_BASE=0x8200
+option SCx200_ACB1_IRQ=0
+# ACCESS.bus 2
+option SCx200_ACB2_BASE=0x8400
+option SCx200_ACB2_IRQ=0
+
+# Interrupt steering, same as a Cx5530
+option SCx200_INTA=9
+option SCx200_INTB=10
+option SCx200_INTC=11
+option SCx200_INTD=12
+
+# This is probably the same as a Cx5530
+option SCx200_PRIMARY_IDE
+#option SCx200_SECONDARY_IDE
+
+########################################################################
+# Finally, the code
+
+# This must be done before the serial port is initialized, so
+# it has to be here.
+mainboardinit northsouthbridge/NSC/scx200/chipset_setup.inc
+
+mainboardinit pc80/serial.inc
+mainboardinit arch/i386/lib/console.inc
+
+northsouthbridge NSC/scx200
+
+option NO_KEYBOARD
+
+option FINAL_MAINBOARD_FIXUP=1
+object mainboard.o
+
+# The PIRQ table doesn't seem to work properly, so the PCI interrupts
+# are set up in final_mainboard_fixup instead.
+# FIXME -- build a working irq table
+#option HAVE_PIRQ_TABLE=1
+#object irq_tables.o
+
+cpu p5
+
+# Local variables:
+#   compile-command: "make -C /export/nano/bios/nano"
+# End:

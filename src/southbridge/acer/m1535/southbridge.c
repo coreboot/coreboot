@@ -7,6 +7,7 @@ void
 southbridge_fixup()
 {
     struct pci_dev *pcidev;
+    unsigned char c;
     
     pcidev = pci_find_device(PCI_VENDOR_ID_ACER, 
 	PCI_DEVICE_ID_ACER_M1535D, (void *)NULL);
@@ -21,9 +22,19 @@ southbridge_fixup()
     /* ENABLE SERIAL IRQ */
     pci_write_config_byte(pcidev, 0x70, 0x8);
     
+// BAD IDEA. This has to be done much earlier in the process!
+// So it is done in chipset_init.inc
+#if 0
     /* ENABLE IDE CONTROLLER */
     pci_write_config_byte(pcidev, 0x58, 0x4c);
     
+    /* ENABLE read/write BARs on IDE controller*/
+    pci_read_config_byte(pcidev, 0x9, &c);
+    printk_err("1535 south bridge reg 9 was 0x%x ..", c);
+    c |= 5;
+    printk_err("set to  0x%x\n", c);
+    pci_write_config_byte(pcidev, 0x9, c);
+#endif
 }
 
 void nvram_on()

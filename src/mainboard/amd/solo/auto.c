@@ -4,7 +4,8 @@
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
-#include <arch/smp/lapic.h>
+#include <cpu/x86/lapic.h>
+#include <arch/cpu.h>
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
@@ -13,13 +14,15 @@
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/amd/amd8111/amd8111_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
-#include "cpu/k8/apic_timer.c"
+#include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
-#include "cpu/p6/boot_cpu.c"
+#include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
 #include "northbridge/amd/amdk8/cpu_rev.c"
 #include "superio/NSC/pc87360/pc87360_early_serial.c"
+#include "cpu/amd/mtrr/amd_earlymtrr.c"
+#include "cpu/x86/bist.h"
 
 #define SERIAL_DEV PNP_DEV(0x2e, PC87360_SP1)
 
@@ -90,7 +93,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "sdram/generic_sdram.c"
 #include "northbridge/amd/amdk8/resourcemap.c"
 
-static void main(void)
+static void main(unsigned long bist)
 {
 	static const struct mem_controller cpu[] = {
 		{
@@ -105,23 +108,34 @@ static void main(void)
 	};
 
 	int needs_reset;
-	enable_lapic();
-	init_timer();
 
-	if (cpu_init_detected()) {
-		asm("jmp __cpu_reset");
+	if (bist == 0) {
+		/* Skip this if there was a built in self test failure */
+		amd_early_mtrr_init();
+		
+		enable_lapic();
+		init_timer();
+		
+		if (cpu_init_detected()) {
+			asm volatile ("jmp __cpu_reset");
+		}
+
+		distinguish_cpu_resets();
+		
+		if (!boot_cpu()) {
+			/* This LinuxBIOS image is built for UP only */
+			stop_this_cpu();
+		}
 	}
 
-	distinguish_cpu_resets();
-	if (!boot_cpu()) {
-		print_err("This LinuxBIOS image is built for UP only.\n");
-		stop_this_cpu();
-	}
-
+	/* Setup the console */
 	pc87360_enable_serial(SERIAL_DEV, TTYS0_BASE);
 	uart_init();
 	console_init();
 
+	/* Halt if there was a built in self test failure */
+	report_bist_failure(bist);
+	
 	setup_default_resource_map();
 	needs_reset = setup_coherent_ht_domain();
 	needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0x80);
@@ -133,9 +147,7 @@ static void main(void)
 #if 0
 	print_pci_devices();
 #endif
-
 	enable_smbus();
-
 #if 0
 	dump_spd_registers(&cpu[0]);
 #endif
@@ -146,8 +158,8 @@ static void main(void)
 #if 0
 	dump_pci_devices();
 	dump_pci_device(PCI_DEV(0, 0x18, 2));
-#endif
 
 	/* Check the first 1M */
 	ram_check(0x00000000, 0x000100000);
+#endif
 }

@@ -56,6 +56,8 @@ option NO_KEYBOARD
 option FINAL_MAINBOARD_FIXUP=1
 object mainboard.o
 option ZKERNEL_START=0xfffc0000
+object irq_tables.o
+option HAVE_PIRQ_TABLE=1
 
 # Local variables:
 #   compile-command: "make -C /export/bios/voyager2"

@@ -1,5 +1,3 @@
-uses CONFIG_UDELAY_TSC
-
 dir /cpu/x86/mtrr
 dir /cpu/x86/fpu
 dir /cpu/x86/mmx
@@ -10,8 +8,3 @@ dir /cpu/intel/microcode
 dir /cpu/intel/hyperthreading
 driver model_f2x_init.o
 
-if CONFIG_UDELAY_TSC
-	dir /cpu/x86/tsc
-else
-	object apic_timer.o
-end

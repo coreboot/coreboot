@@ -1,0 +1,26 @@
+# This will make a target directory of ./winfast
+# Note that this is RELATIVE TO WHERE YOU ARE WHEN YOU RUN THE 
+# CONFIG TOOL. Make it absolute if you like
+target tsunami
+
+mainboard tyan/s1846
+
+# Enable Serial Console for debugging
+# It will come up at 115200,8n1
+option SERIAL_CONSOLE
+
+# Enable MicroCode update and L2 Cache init for PII and PIII
+option UPDATE_MICROCODE
+option CONFIGURE_L2_CACHE
+
+# Use the internal VGA frame buffer device
+#option HAVE_FRAMEBUFFER
+option USE_GENERIC_ROM
+
+# Path to your kernel (vmlinux)
+# NOTE; you need a path to your test12 kernel here. 
+linux /home/hcyun/Project/Linuxbios/linux
+#linux /home/hcyun/Project/qpconf/proj1/build/linux/
+
+# Kernel command line parameters
+commandline root=/dev/hda1 

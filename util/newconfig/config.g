@@ -1101,13 +1101,19 @@ parser Config:
 
     rule option<<C>>:	OPTION ID EQ value	{{ if (C): setoptionstmt(ID, value) }}
 
-    rule opif:		IF ID			{{ c = lookup(ID) }}
-			(option<<c>>)* [ ELSE (option<<not c>>)* ] END
+    rule opif<<C>>:	IF ID			{{ c = lookup(ID) }}
+			(opstmt<<C and c>>)* 
+			[ ELSE (opstmt<<C and not c>>)* ] END
 
-    rule opstmt:	option<<1>>
-		|	opif
+    rule opstmt<<C>>:	option<<C>>
+		|	opif<<C>>
+		|	pprint<<C>>
+
     # print clashes with a python keyword
-    rule pprint<<C>>:   PRINT STR		{{ if (C): print "%s\n"%STR}}
+    rule pprint<<C>>:   PRINT 
+			( STR		{{ if (C): print "%s" % dequote(STR) }}
+			| ID		{{ if (C): print "%s" % getformated(ID, curpart) }}
+			)
 
     # ENTRY for parsing a delayed value
     rule delexpr:	"{" expr "}"		{{ return expr }}
@@ -1116,7 +1122,7 @@ parser Config:
     rule board:		LOADOPTIONS		{{ loadoptions() }}
 	    		TARGET DIRPATH		{{ target(DIRPATH) }}
 			(uses<<1>>)*
-			(opstmt)*
+			(opstmt<<1>>)*
 			mainboard		{{ return 1 }}
 
     rule defstmts<<ID>>:			{{ d = 0 }}

@@ -16,7 +16,7 @@
 device_t find_dev_path(struct bus *parent, struct device_path *path)
 {
 	device_t child;
-	for(child = parent->children; child; child = child->sibling) {
+	for (child = parent->children; child; child = child->sibling) {
 		if (path_eq(path, &child->path)) {
 			break;
 		}
@@ -42,7 +42,8 @@ device_t alloc_find_dev(struct bus *parent, struct device_path *path)
 }
 
 /**
- * Given a bus and a devfn number, find the device structure
+ * @brief Given a PCI bus and a devfn number, find the device structure
+ *
  * @param bus The bus number
  * @param devfn a device/function number
  * @return pointer to the device structure
@@ -369,7 +370,8 @@ resource_t resource_max(struct resource *resource)
  * @param dev the device the stored resorce lives on
  * @param resource the resource that was just stored.
  */
-void report_resource_stored(device_t dev, struct resource *resource, const char *comment)
+void report_resource_stored(device_t dev, struct resource *resource,
+			    const char *comment)
 {
 	if (resource->flags & IORESOURCE_STORED) {
 		unsigned char buf[10];
@@ -390,7 +392,8 @@ void report_resource_stored(device_t dev, struct resource *resource, const char 
 			(resource->flags & IORESOURCE_IO)? "io":
 			(resource->flags & IORESOURCE_DRQ)? "drq":
 			(resource->flags & IORESOURCE_IRQ)? "irq":
-			(resource->flags & IORESOURCE_MEM)? "mem": 
+			(resource->flags & IORESOURCE_READONLY)? "rom":
+			(resource->flags & IORESOURCE_MEM)? "mem":
 			"????",
 			comment);
 	}

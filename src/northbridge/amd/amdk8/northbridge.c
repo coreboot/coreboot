@@ -196,8 +196,8 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 	return max;
 }
 
-static int reg_useable(unsigned reg, 
-	device_t goal_dev, unsigned goal_nodeid, unsigned goal_link)
+static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
+		       unsigned goal_link)
 {
 	struct resource *res;
 	unsigned nodeid, link;
@@ -221,9 +221,7 @@ static int reg_useable(unsigned reg,
 	}
 #if 0
 	printk_debug("reg: %02x result: %d gnodeid: %u glink: %u nodeid: %u link: %u\n",
-		     reg, result, 
-		     goal_nodeid, goal_link, 
-		     nodeid, link);
+		     reg, result, goal_nodeid, goal_link, nodeid, link);
 #endif
 	return result;
 }
@@ -420,28 +418,36 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 	report_resource_stored(dev, resource, buf);
 }
 
+/**
+ *
+ * I tried to reuse the resource allocation code in amdk8_set_resource()
+ * but it is too diffcult to deal with the resource allocation magic.
+ */
 static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 {
 	struct resource *resource;
 	unsigned link;
 	uint32_t base, limit;
 	unsigned reg;
+
+	/* find out which link the VGA card is connected,
+	 * we only deal with the 'first' vga card */
 	for (link = 0; link < dev->links; link++) {
 		if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-			printk_info("%s: bridge on link %d has VGA device\n",
-				    dev_path(dev), link);
-			printk_info("creating MEM pair for VGA memory\n");
-			/* Initialize the io space constraints on the current bus */
-			resource =  amdk8_find_mempair(dev, nodeid, link);
-			printk_info("MEM pair register %x\n", resource->index - 0x100);
-			resource->base = 0xa0000;
-			resource->size = 0x20000;
-			resource->gran = 16;
-			resource->align = 16;
-			resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_ASSIGNED;
+			break;
 		}
 	}
-#if 1
+
+	/* no VGA card installed */
+	if (link == dev->links)
+		return;
+
+	/* allocate a temp resrouce for legacy VGA buffer */
+	resource = amdk8_find_mempair(dev, nodeid, link);
+	resource->base = 0xa0000;
+	resource->size = 0x20000;
+
+	/* write the resource to the hardware */
 	reg  = resource->index & 0xfc;
 	base  = f1_read_config32(reg);
 	limit = f1_read_config32(reg + 0x4);
@@ -455,17 +461,17 @@ static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 	f1_write_config32(reg + 0x4, limit);
 	f1_write_config32(reg, base);
 
-	/* release the resource */
+	/* release the temp resource */
 	resource->flags = 0;
-#endif
 }
+
 static void amdk8_set_resources(device_t dev)
 {
 	unsigned nodeid, link;
 	int i;
 
 	/* Find the nodeid */
-	nodeid = amdk8_nodeid(dev);	
+	nodeid = amdk8_nodeid(dev);
 
 	amdk8_create_vga_resource(dev, nodeid);
 	
@@ -473,8 +479,8 @@ static void amdk8_set_resources(device_t dev)
 	for (i = 0; i < dev->resources; i++) {
 		amdk8_set_resource(dev, &dev->resource[i], nodeid);
 	}
-	
-	for(link = 0; link < dev->links; link++) {
+
+	for (link = 0; link < dev->links; link++) {
 		struct bus *bus;
 		bus = &dev->link[link];
 		if (bus->children) {
@@ -549,7 +555,7 @@ static void pci_domain_read_resources(device_t dev)
 
 	/* Find the already assigned resource pairs */
 	get_fx_devs();
-	for(reg = 0x80; reg <= 0xd8; reg+= 0x08) {
+	for (reg = 0x80; reg <= 0xd8; reg+= 0x08) {
 		uint32_t base, limit;
 		base  = f1_read_config32(reg);
 		limit = f1_read_config32(reg + 0x04);
@@ -576,15 +582,15 @@ static void pci_domain_read_resources(device_t dev)
 	resource->base  = 0x400;
 	resource->limit = 0xffffUL;
 	resource->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-	
+
 	/* Initialize the system wide memory resources constraints */
 	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
 	resource->limit = 0xfcffffffffULL;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 }
 
-static void ram_resource(device_t dev, unsigned long index, 
-	unsigned long basek, unsigned long sizek)
+static void ram_resource(device_t dev, unsigned long index,
+			 unsigned long basek, unsigned long sizek)
 {
 	struct resource *resource;
 
@@ -642,7 +648,7 @@ static void pci_domain_set_resources(device_t dev)
 #endif
 
 	idx = 10;
-	for(i = 0; i < 8; i++) {
+	for (i = 0; i < 8; i++) {
 		uint32_t base, limit;
 		unsigned basek, limitk, sizek;
 		base  = f1_read_config32(0x40 + (i << 3));
@@ -689,7 +695,7 @@ static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
 {
 	unsigned reg;
 	/* Unmap all of the HT chains */
-	for(reg = 0xe0; reg <= 0xec; reg += 4) {
+	for (reg = 0xe0; reg <= 0xec; reg += 4) {
 		f1_write_config32(reg, 0);
 	}
 	max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0x18, 0), 0xff, max);
@@ -712,7 +718,7 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 
 	/* Find which cpus are present */
 	cpu_bus = &dev->link[0];
-	for(i = 0; i < 8; i++) {
+	for (i = 0; i < 8; i++) {
 		device_t dev, cpu;
 		struct device_path cpu_path;
 
@@ -743,8 +749,8 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 		
 		/* Report what I have done */
 		if (cpu) {
-			printk_debug("CPU: %s %s\n",
-				dev_path(cpu), cpu->enabled?"enabled":"disabled");
+			printk_debug("CPU: %s %s\n", dev_path(cpu),
+				     cpu->enabled?"enabled":"disabled");
 		}
 	}
 	return max;
@@ -763,7 +769,7 @@ static struct device_operations cpu_bus_ops = {
 	.read_resources   = cpu_bus_noop,
 	.set_resources    = cpu_bus_noop,
 	.enable_resources = cpu_bus_noop,
-	.init             = cpu_bus_init,	
+	.init             = cpu_bus_init,
 	.scan_bus         = cpu_bus_scan,
 };
 

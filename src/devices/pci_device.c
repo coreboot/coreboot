@@ -53,6 +53,7 @@ static uint16_t pci_moving_config16(struct device *dev, unsigned reg)
 
 	return ones ^ zeroes;
 }
+
 static uint32_t pci_moving_config32(struct device *dev, unsigned reg)
 {
 	uint32_t value, ones, zeroes;
@@ -91,7 +92,6 @@ unsigned pci_find_capability(device_t dev, unsigned cap)
 	}
 	return 0;
 }
-
 
 /** Given a device and register, read the size of the BAR for that register. 
  * @param dev       Pointer to the device structure
@@ -134,7 +134,7 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 	if (moving) {
 		resource->size = 1;
 		resource->align = resource->gran = 0;
-		while(!(moving & resource->size)) {
+		while (!(moving & resource->size)) {
 			resource->size <<= 1;
 			resource->align += 1;
 			resource->gran  += 1;
@@ -158,15 +158,13 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 				     dev_path(dev), index, value);
 		}
 		resource->flags = 0;
-	}
-	else if (attr & PCI_BASE_ADDRESS_SPACE_IO) {
+	} else if (attr & PCI_BASE_ADDRESS_SPACE_IO) {
 		/* An I/O mapped base address */
 		attr &= PCI_BASE_ADDRESS_IO_ATTR_MASK;
 		resource->flags |= IORESOURCE_IO;
 		/* I don't want to deal with 32bit I/O resources */
 		resource->limit = 0xffff;
-	} 
-	else {
+	} else {
 		/* A Memory mapped base address */
 		attr &= PCI_BASE_ADDRESS_MEM_ATTR_MASK;
 		resource->flags |= IORESOURCE_MEM;
@@ -177,17 +175,14 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 		if (attr == PCI_BASE_ADDRESS_MEM_LIMIT_32) {
 			/* 32bit limit */
 			resource->limit = 0xffffffffUL;
-		}
-		else if (attr == PCI_BASE_ADDRESS_MEM_LIMIT_1M) {
+		} else if (attr == PCI_BASE_ADDRESS_MEM_LIMIT_1M) {
 			/* 1MB limit */
 			resource->limit = 0x000fffffUL;
-		}
-		else if (attr == PCI_BASE_ADDRESS_MEM_LIMIT_64) {
+		} else if (attr == PCI_BASE_ADDRESS_MEM_LIMIT_64) {
 			/* 64bit limit */
 			resource->limit = 0xffffffffffffffffULL;
 			resource->flags |= IORESOURCE_PCI64;
-		}
-		else {
+		} else {
 			/* Invalid value */
 			resource->flags = 0;
 		}
@@ -217,26 +212,10 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 	return resource;
 }
 
-/** Read the base address registers for a given device. 
- * @param dev Pointer to the dev structure
- * @param howmany How many registers to read (6 for device, 2 for bridge)
- */
-static void pci_read_bases(struct device *dev, unsigned int howmany)
-{
-	unsigned long index;
-
-	for (index = PCI_BASE_ADDRESS_0; (index < PCI_BASE_ADDRESS_0 + (howmany << 2)); ) {
-		struct resource *resource;
-		resource = pci_get_resource(dev, index);
-		index += (resource->flags & IORESOURCE_PCI64)?8:4;
-	}
-	compact_resources(dev);
-}
-
-static void pci_read_rom_resource(struct device *dev, unsigned long index)
+static void pci_get_rom_resource(struct device *dev, unsigned long index)
 {
 	struct resource *resource;
-	unsigned long value, attr;
+	unsigned long value;
 	resource_t  moving, limit;
 
 	/* Initialize the resources to nothing */
@@ -248,7 +227,7 @@ static void pci_read_rom_resource(struct device *dev, unsigned long index)
 	/* See which bits move */
 	moving = pci_moving_config32(dev, index);
 	/* clear the Enable bit */
-	moving = moving & 0xffffffffe;
+	moving = moving & ~PCI_ROM_ADDRESS_ENABLE;
 
 	/* Find the resource constraints. 
 	 *
@@ -262,14 +241,12 @@ static void pci_read_rom_resource(struct device *dev, unsigned long index)
 	if (moving) {
 		resource->size = 1;
 		resource->align = resource->gran = 0;
-		while(!(moving & resource->size)) {
+		while (!(moving & resource->size)) {
 			resource->size <<= 1;
 			resource->align += 1;
 			resource->gran  += 1;
 		}
 		resource->limit = limit = moving | (resource->size - 1);
-		printk_debug("%s, rom size: %x, limit: %x\n",
-			    dev_path(dev), resource->size, limit);
 	}
 
 	if (moving == 0) {
@@ -281,8 +258,25 @@ static void pci_read_rom_resource(struct device *dev, unsigned long index)
 	} else {
 		resource->flags |= IORESOURCE_MEM | IORESOURCE_READONLY;
 	}
-	compact_resources(dev);
+}
 
+/** Read the base address registers for a given device. 
+ * @param dev Pointer to the dev structure
+ * @param howmany How many registers to read (6 for device, 2 for bridge)
+ */
+static void pci_read_bases(struct device *dev, unsigned int howmany, unsigned long rom)
+{
+	unsigned long index;
+
+	for (index = PCI_BASE_ADDRESS_0; (index < PCI_BASE_ADDRESS_0 + (howmany << 2)); ) {
+		struct resource *resource;
+		resource = pci_get_resource(dev, index);
+		index += (resource->flags & IORESOURCE_PCI64)?8:4;
+	}
+	if (rom)
+		pci_get_rom_resource(dev, rom);
+
+	compact_resources(dev);
 }
 
 static void pci_set_resource(struct device *dev, struct resource *resource);
@@ -328,7 +322,6 @@ static void pci_bridge_read_bases(struct device *dev)
 {
 	resource_t moving_base, moving_limit, moving;
 
-
 	/* See if the bridge I/O resources are implemented */
 	moving_base = ((uint32_t)pci_moving_config8(dev, PCI_IO_BASE)) << 8;
 	moving_base |= ((uint32_t)pci_moving_config16(dev, PCI_IO_BASE_UPPER16)) << 16;
@@ -339,10 +332,8 @@ static void pci_bridge_read_bases(struct device *dev)
 	moving = moving_base & moving_limit;
 
 	/* Initialize the io space constraints on the current bus */
-	pci_record_bridge_resource(
-		dev, moving, PCI_IO_BASE, 
-		IORESOURCE_IO, IORESOURCE_IO);
-
+	pci_record_bridge_resource(dev, moving, PCI_IO_BASE,
+				   IORESOURCE_IO, IORESOURCE_IO);
 
 	/* See if the bridge prefmem resources are implemented */
 	moving_base =  ((resource_t)pci_moving_config16(dev, PCI_PREF_MEMORY_BASE)) << 16;
@@ -353,11 +344,9 @@ static void pci_bridge_read_bases(struct device *dev)
 	
 	moving = moving_base & moving_limit;
 	/* Initiliaze the prefetchable memory constraints on the current bus */
-	pci_record_bridge_resource(
-		dev, moving, PCI_PREF_MEMORY_BASE, 
-		IORESOURCE_MEM | IORESOURCE_PREFETCH,
-		IORESOURCE_MEM | IORESOURCE_PREFETCH);
-	
+	pci_record_bridge_resource(dev, moving, PCI_PREF_MEMORY_BASE, 
+				   IORESOURCE_MEM | IORESOURCE_PREFETCH,
+				   IORESOURCE_MEM | IORESOURCE_PREFETCH);
 
 	/* See if the bridge mem resources are implemented */
 	moving_base = ((uint32_t)pci_moving_config16(dev, PCI_MEMORY_BASE)) << 16;
@@ -366,10 +355,9 @@ static void pci_bridge_read_bases(struct device *dev)
 	moving = moving_base & moving_limit;
 
 	/* Initialize the memory resources on the current bus */
-	pci_record_bridge_resource(
-		dev, moving, PCI_MEMORY_BASE, 
-		IORESOURCE_MEM | IORESOURCE_PREFETCH,
-		IORESOURCE_MEM);
+	pci_record_bridge_resource(dev, moving, PCI_MEMORY_BASE, 
+				   IORESOURCE_MEM | IORESOURCE_PREFETCH,
+				   IORESOURCE_MEM);
 
 	compact_resources(dev);
 }
@@ -378,9 +366,7 @@ void pci_dev_read_resources(struct device *dev)
 {
 	uint32_t addr;
 
-	pci_read_bases(dev, 6);
-
-	pci_read_rom_resource(dev, PCI_ROM_ADDRESS);
+	pci_read_bases(dev, 6, PCI_ROM_ADDRESS);
 }
 
 void pci_bus_read_resources(struct device *dev)
@@ -388,9 +374,7 @@ void pci_bus_read_resources(struct device *dev)
 	uint32_t addr;
 
 	pci_bridge_read_bases(dev);
-	pci_read_bases(dev, 2);
-
-	pci_read_rom_resource(dev, PCI_ROM_ADDRESS1);
+	pci_read_bases(dev, 2,  PCI_ROM_ADDRESS1);
 }
 
 static void pci_set_resource(struct device *dev, struct resource *resource)
@@ -722,9 +706,8 @@ static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
  *
  * @return The maximum bus number found, after scanning all subordinate busses
  */
-unsigned int pci_scan_bus(struct bus *bus,
-	unsigned min_devfn, unsigned max_devfn,
-	unsigned int max)
+unsigned int pci_scan_bus(struct bus *bus, unsigned min_devfn, unsigned max_devfn,
+			  unsigned int max)
 {
 	unsigned int devfn;
 	device_t dev;
@@ -1000,8 +983,7 @@ static void pci_level_irq(unsigned char intNum)
 
     -kevinh@ispiri.com
 */
-void pci_assign_irqs(unsigned bus, unsigned slot,
-	const unsigned char pIntAtoD[4])
+void pci_assign_irqs(unsigned bus, unsigned slot, const unsigned char pIntAtoD[4])
 {
 	unsigned functNum;
 	device_t pdev;

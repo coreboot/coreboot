@@ -65,18 +65,6 @@ static void set_thermal_monitoring(int thermal_monitoring)
 	return;
 }
 
-static void enable_perr_serr(void)
-{
-#if 0
-	uint8_t data61,data70,data74;
-	data61=inb(0x61);
-	data70=inb(0x70);
-	data74=inb(0x74);
-	printk_debug("Temp Test 70 = %x, 74 = %x, 61 = %x\n",data70,data74,
-			data61);
-#endif
-	return;
-}
 void mainboard_fixup(void)
 {
 	int cpu_clock_multiplier;
@@ -111,8 +99,6 @@ void mainboard_fixup(void)
 	if(get_option(&thermal_monitoring, "thermal_monitoring"))
 		thermal_monitoring = THERMAL_MONITORING_OFF;
 	set_thermal_monitoring(thermal_monitoring);
-
-	enable_perr_serr();
 
 	return;
 }

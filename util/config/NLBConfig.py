@@ -1056,8 +1056,7 @@ CPUFLAGS := $(foreach _var_,$(VARIABLES),$(call D_item,$(_var_)))
 
 	# print out all the object dependencies
 	file.write("\n# object dependencies (objectrules:)\n")
-	# There is ALWAYS a crt0.o
-	#file.write("OBJECTS-1 := crt0.o\n")
+	file.write("OBJECTS-1 :=\n")
 	file.write("DRIVERS-1 :=\n")
 	for objrule in objectrules:
 		obj_name = objrule[0]

@@ -26,8 +26,8 @@ include_pattern = re.compile(r'%%([^%]+)%%')
 #                    Utility Classes
 # -----------------------------------------------------------------------------
 
-# Used to keep track of the current part or dir
 class stack:
+	"""Used to keep track of the current part or dir"""
 	class __stack_iter:
 		def __init__ (self, stack):
 			self.index = 0
@@ -83,9 +83,9 @@ dirstack = stack()
 #                    Error Handling
 # -----------------------------------------------------------------------------
 
-# Used to keep track of our current location while parsing
-# configuration files
 class location:
+	"""Used to keep track of our current location while parsing
+	configuration files"""
 	class __place:
                 def __init__(self, file, line, command):
                         self.file = file
@@ -131,27 +131,27 @@ class location:
                 return self.stack.tos().at()
 loc = location()
 
-# Print error message
 def error(string):      
+	"""Print error message"""
         global errors, loc
 	errors = errors + 1
         print "===> ERROR: %s" % string
         print "%s" % loc
 
-# Print error message and exit
 def fatal(string):      
+	"""Print error message and exit"""
 	error(string)
         exitiferrors()
 
-# Print warning message
 def warning(string):
+	"""Print warning message"""
         global warnings, loc
 	warnings = warnings + 1
         print "===> Warning: %s" % string
         print "%s" % loc
 
-# Exit parser if an error has been encountered
 def exitiferrors():
+	"""Exit parser if an error has been encountered"""
 	if (errors != 0):
 		sys.exit(1)
 
@@ -164,8 +164,8 @@ def debug_print(level, str):
 #                    Main classes
 # -----------------------------------------------------------------------------
 
-# A rom image is the ultimate goal of linuxbios
 class romimage:
+	"""A rom image is the ultimate goal of linuxbios"""
 	def __init__ (self, name):
 		self.name = name
 		self.arch = ''
@@ -353,36 +353,14 @@ class romimage:
 	def gettargetdir(self):
 		return self.targetdir
 
-# A buildrom statement
 class buildrom:
+	"""A buildrom statement"""
 	def __init__ (self, size, roms):
 		self.size = size
 		self.roms = roms
 
-# this is called with an an object name. 
-# the easiest thing to do is add this object to the current 
-# component.
-# such kludgery. If the name starts with '.' then make the 
-# dependency be on ./thing.x gag me.
-def addobjectdriver(dict, object_name):
-	global dirstack
-	suffix = object_name[-2:]
-	if (suffix == '.o'):
-		suffix = '.c'
-	base = object_name[:-2]
-	if (object_name[0] == '.'):
-		source = base + suffix
-	else:
-		source = os.path.join(dirstack.tos(), base + suffix)
-	object = base + '.o'
-	debug_print(1, "add object %s source %s" % (object_name, source))
-	l = getdict(dict, base)
-	if (l):
-		print "Warning, object/driver %s previously defined" % base
-	setdict(dict, base, [object, source])
-
-# include file for initialization code
 class initinclude:
+	"""include file for initialization code"""
 	def __init__ (self, str, path):
 		self.string = str
 		self.path = path
@@ -393,8 +371,8 @@ class initinclude:
 	def getpath(self):
 		return self.path
 
-# Rule to be included in Makefile
 class makerule:
+	"""Rule to be included in Makefile"""
 	def __init__ (self, target):
 		self.target = target
 		self.dependency = []
@@ -415,8 +393,8 @@ class makerule:
 	def gaction(self):
 		return self.actions
 
-# Configuration option
 class option:
+	"""Configuration option"""
 	def __init__ (self, name):
 		self.name = name	# name of option
 		self.loc = 0		# current location
@@ -513,14 +491,15 @@ class option:
 #		return (self.used)
 
 class option_value:
+	"""Value of a configuration option"""
 	def __init__(self, value):
 		self.value = value
 
 	def contents(self):
 		return self.value
 
-# A configuration part
 class partobj:
+	"""A configuration part"""
 	def __init__ (self, image, dir, parent, type, name):
 		debug_print(1, "partobj dir %s parent %s type %s" %(dir,parent,type))
 		self.image = image
@@ -673,11 +652,11 @@ def newoption(name):
 	setdict(global_options, name, o)
 	global_options_by_order.append(name)
 
-# option must be declared before being used in a part
-# if we're not processing a part, then we must
-# be at the top level where all options are available
 def getoption(name, image):
-	global global_uses_options, global_option_values
+	"""option must be declared before being used in a part
+	if we're not processing a part, then we must
+	be at the top level where all options are available
+	global global_uses_options, global_option_values"""
 	curpart = partstack.tos()
 	if (curpart):
 		o = getdict(curpart.uses_options, name)
@@ -863,10 +842,10 @@ def addregister(code):
 	curpart = partstack.tos()
 	curpart.addregister(code)
 
-# we do the crt0include as a dictionary, so that if needed we
-# can trace who added what when. Also it makes the keys
-# nice and unique. 
 def addcrt0include(path):
+	"""we do the crt0include as a dictionary, so that if needed we
+	can trace who added what when. Also it makes the keys
+	nice and unique."""
 	global curimage
 	curimage.addinitinclude(0, path)
 
@@ -974,8 +953,8 @@ def partpop():
 			print "WARNING: Option %s using default value %s" % (i, getformated(i, curpart.image))
 	dirstack.pop()
 
-# dodir is like part but there is no new part
 def dodir(path, file):
+	"""dodir is like part but there is no new part"""
 	global dirstack
 	# if the first char is '/', it is relative to treetop, 
 	# else relative to curdir
@@ -1013,8 +992,8 @@ def adddep(id, str):
 	global curimage
 	curimage.addmakedepend(id, str)
 
-# arch is 'different' ... darn it.
 def set_arch(my_arch):
+	"""arch is 'different' ... darn it."""
 	global curimage
 	curimage.setarch(my_arch)
 	setoption('ARCH', my_arch)
@@ -1042,8 +1021,8 @@ def ternary(val, yes, no):
 		debug_print("Ternary returns %d" % no)
 		return no
 
-# atoi is in the python library, but not strtol? Weird!
 def tohex(name):
+	"""atoi is in the python library, but not strtol? Weird!"""
 	return eval('int(%s)' % name)
 
 def IsInt( str ):
@@ -1065,8 +1044,9 @@ def flatten_name(str):
 	a = re.sub("/", "_", str)
 	return a
 
-# If the first part of <path> matches treetop, replace that part with "$(TOP)"
 def topify(path):
+	"""If the first part of <path> matches treetop, replace 
+	that part with $(TOP)"""
 	if path[0:len(treetop)] == treetop:
 		path = path[len(treetop):len(path)]
 		if (path[0:1] == "/"):
@@ -1601,9 +1581,9 @@ def writeldoptions(image):
 			file.write("%s = %s;\n" % (i, getformated(i, image)))
 	file.close()
 
-# Add any run-time checks to verify that parsing the configuration
-# was successful
 def verifyparse(image):
+	"""Add any run-time checks to verify that parsing the configuration
+	was successful"""
 	if (image.newformat() and image.getinitfile() == ''):
 		fatal("An init file must be specified")
 

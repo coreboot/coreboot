@@ -1,8 +1,25 @@
-
 /*
- * Bootstrap code for the INTEL 
- * $Id$
+<<<<<<< northbridge.c
+ * southbridge.c:	Norththbridge Initialization For SiS 730
  *
+ * Copyright 2002 Silicon Integrated Systems Corp.
+ *
+ *      This program is free software; you can redistribute it and/or modify
+ *      it under the terms of the GNU General Public License as published by
+ *      the Free Software Foundation; either version 2 of the License, or
+ *      (at your option) any later version.
+ *
+ *      This program is distributed in the hope that it will be useful,
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *      GNU General Public License for more details.
+ *
+ *      You should have received a copy of the GNU General Public License
+ *      along with this program; if not, write to the Free Software
+ *      Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ * Reference:
+ *      1. SiS 730S Data Sheet Rev. 1.0, Otc. 21, 2000
  */
 
 #ifndef lint
@@ -38,10 +55,6 @@ const static int ramsizes[16] =
 #define SIS630_BANK2 0x62
 #define SIS630_DIMM_LOCATION_FOR_SMA 0x65
 #define MAX_DIMM_SLOTS 3
-// We thought about a function but this is easier. 
-// feel free to improve on this idea. 
-// this array has all the DIMM slot size in Kbytes. 
-unsigned long slotsizeM[MAX_DIMM_SLOTS];
 
 unsigned long sizeram()
 {
@@ -73,7 +86,6 @@ unsigned long sizeram()
 	for (dimm_slot = 0, total_size = 0, dimm_reg = SIS630_BANK0;
 	     dimm_reg <= SIS630_BANK2; dimm_slot++, dimm_reg++) {
 		u8 regval;
-		slotsizeM[dimm_slot] = 0;
 		if ((dimm_status & (1 << dimm_slot)) == 0)
 			/* this DIMM slot does not have SDRAM installed */
 			continue;
@@ -87,8 +99,7 @@ unsigned long sizeram()
 			sides = 1;
 
 		/* low-order 4 bits are a ram size */
-		slotsizeM[dimm_slot] = (ramsizes[regval & 0xf] * sides);
-		total_size += slotsizeM[dimm_slot];
+		total_size += (ramsizes[regval & 0xf] * sides);
 	}
 
 	/* the total memory visible to the system is physical memory installed minus the

@@ -237,6 +237,7 @@ Step 4) Get the MTD utilities from http://www.linux-mtd.infradead.org/
 	(see the instructions at that site)
 	cvs -d :pserver:anoncvs@cvs.infradead.org:/home/cvs co mtd
 	cd mtd/util
+	sh -x MAKEDEV
 	make
 	(You need the erase utility)
 	Install the erase utility where it is in your path. 

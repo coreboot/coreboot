@@ -655,3 +655,17 @@ define CONFIG_SANDPOINT_GYRUS
 	export never
 	comment "Configure Sandpoint with Gyrus PMC"
 end
+
+###############################################
+# Options for totalimpact/briq
+###############################################
+define CONFIG_BRIQ_750FX
+	default 0
+	export never
+	comment "Configure briQ with PowerPC 750FX"
+end
+define CONFIG_BRIQ_7400
+	default 0
+	export never
+	comment "Configure briQ with PowerPC G4"
+end

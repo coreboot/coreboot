@@ -26,7 +26,11 @@ struct irq_routing_table {
 	u32 miniport_data;		/* Crap */
 	u8 rfu[11];
 	u8 checksum;			/* Modulo 256 checksum must give zero */
+#if GCC_VERSION < 3000
+	struct irq_info slots[1];
+#else
 	struct irq_info slots[];
+#endif
 } __attribute__((packed));
 
 extern const struct irq_routing_table intel_irq_routing_table;

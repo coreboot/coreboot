@@ -6,19 +6,16 @@ ldscript cpu/i386/entry32.lds
 mainboardinit cpu/i386/reset16.inc
 ldscript cpu/i386/reset16.lds
 
-# mainboardinit superio/via/vt8231/setup_serial.inc
+mainboardinit superio/via/vt8231/setup_serial.inc
 mainboardinit pc80/serial.inc
 mainboardinit arch/i386/lib/console.inc
-
-southbridge via/vt8231 
 northbridge via/vt8601 
-# mainboardinit northbridge/via/vt8601/raminitspd.inc
+southbridge via/vt8231 
+superio via/vt8231
+mainboardinit cpu/p6/earlymtrr.inc
 
-# superio via/vt8231
-# mainboardinit cpu/p6/earlymtrr.inc
-
-# option ENABLE_FIXED_AND_VARIABLE_MTRRS=1
-# option SUPERIO_DEVFN=0
+option ENABLE_FIXED_AND_VARIABLE_MTRRS=1
+option SUPERIO_DEVFN=0x88
 object mainboard.o
 keyboard pc80
 cpu p5

@@ -42,7 +42,7 @@ option HAVE_HARD_RESET=1
 ## Build code to export a programmable irq routing table
 ##
 option HAVE_PIRQ_TABLE=1
-option IRQ_SLOT_COUNT=7
+option IRQ_SLOT_COUNT=5
 object irq_tables.o
 
 ##

@@ -229,6 +229,8 @@ class partobj:
 		self.dir = dir
 		self.irq = 0
 		self.instance = partinstance + 1
+		if (debug):
+			print "INSTANCE %d" % self.instance
 		partinstance = partinstance + 1
 		self.devfn = 0	
 		self.private = 0	
@@ -239,6 +241,9 @@ class partobj:
 			self.parent   = parent
 			# add current child as my sibling, 
 			# me as the child.
+			if (debug):
+				if (parent.children):
+					print "add %s (%d) as isbling" % (parent.children.dir, parent.children.instance)
 			self.siblings = parent.children
 			parent.children = self
 		else:
@@ -246,15 +251,21 @@ class partobj:
 
 	def dumpme(self, lvl):
 		print "%d: type %s" % (lvl, self.type)
+		print "%d: instance %d" % (lvl, self.instance)
 		print "%d: dir %s" % (lvl,self.dir)
 		print "%d: parent %s" % (lvl,self.parent.type)
 		print "%d: parent dir %s" % (lvl,self.parent.dir)
+		if (self.children):
+			print "%d: child %s" % (lvl, self.children.dir)
+		if (self.siblings):
+			print "%d: siblings %s" % (lvl, self.siblings.dir)
 		print "%d: initcode " % lvl
 		for i in self.initcode:
 			print "  %s" % i
 		print "%d: registercode " % lvl
 		for i in self.registercode:
 			print "  %s" % i
+		print "\n"
 
 	def gencode(self, file):
 		file.write("struct cdev dev%d = {\n" % self.instance)
@@ -602,7 +613,7 @@ def part(name, path, file):
 	dirstack.append(curdir)
 	curdir = os.path.join(treetop, 'src', name, path)
 	newpart = partobj(curdir, curpart, name)
-	print "Configuring PART %s" % name
+	print "Configuring PART %s, path %s\n" % (name,path)
 	if (debug):
 		print "PUSH part %s %s" % (name, curpart.dir)
 	pstack.push(curpart)
@@ -1157,9 +1168,10 @@ def dumptree(part, lvl):
 	part.dumpme(lvl)
 	# dump the siblings -- actually are there any? not sure
 	# siblings are:
-	kid = part
-	#print "First sibling is %d\n" % kid.siblings
-	while (kid.siblings):
+	if (debug):
+		print "DUMPTREE SIBLINGS are"
+	kid = part.siblings
+	while (kid):
 		kid.dumpme(lvl)
 		kid = kid.siblings
 	# dump the kids
@@ -1177,6 +1189,8 @@ def gencode(part, file):
 	part.gencode(file)
 	# dump the siblings -- actually are there any? not sure
 	# dump the kids
+	if (debug):
+		print "GENCODE KID is"
 	kid = part
 	while (kid.siblings):
 		kid.gencode(file)
@@ -1212,7 +1226,6 @@ if __name__=='__main__':
 	if (not parse('board', open(argv[1], 'r').read())):
 		fatal("Error: Could not parse file")
 
-	debug = 1
 	if (debug):
 		print "DEVICE TREE:"
 		dumptree(root, 0)

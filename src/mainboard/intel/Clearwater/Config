@@ -1,0 +1,299 @@
+
+## Set all of the defaults for an x86 architecture
+##
+arch i386
+
+##
+## Build our 16 bit and 32 bit linuxBIOS entry code
+##
+mainboardinit cpu/i386/entry16.inc 
+mainboardinit cpu/i386/entry32.inc
+ldscript cpu/i386/entry16.lds 
+ldscript cpu/i386/entry32.lds 
+
+##
+## Test for logical cpu thats not BSP
+##  This is hyperthreading!
+## it may break!
+##
+#mainboardinit cpu/i786/logical_cpu.inc
+
+##
+## Build our reset vector (This is where linuxBIOS is entered)
+##
+mainboardinit cpu/i386/reset16.inc
+ldscript cpu/i386/reset16.lds
+
+#mainboardinit mainboard/intel/sv2/reset32.inc
+#ldscript mainboard/intel/sv2/reset32.lds
+
+##
+## Include an id string (For safe flashing)
+##
+mainboardinit arch/i386/lib/id.inc
+ldscript arch/i386/lib/id.lds
+
+##
+## Startup code for secondary CPUS
+##
+#mainboardinit arch/i386/smp/secondary.inc
+#mainboardinit arch/i386/lib/cpu_reset.inc
+
+## This is the early phase of linuxBIOS startup 
+## Things are delicate and we test to see if we should
+## failover to another image.
+
+#mainboardinit northbridge/intel/82860/reset_test.inc
+#mainboardinit arch/i386/lib/noop_failover.inc USE_NORMAL_IMAGE
+#mainboardinit southbridge/intel/82801/cmos_failover.inc USE_FALLBACK_IMAGE
+#ldscript arch/i386/lib/failover.lds USE_FALLBACK_IMAGE
+
+###
+### O.k. We aren't just an intermediary anymore!
+###
+
+
+##
+## Setup our mtrrs
+##
+#mainboardinit cpu/i786/earlymtrr.inc
+
+##
+## TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+##
+mainboardinit mainboard/intel/Clearwater/preserial.inc
+
+##
+## Setup the serial port
+##
+mainboardinit superio/winbond/w83627hf/setup_serial.inc
+#mainboardinit superio/winbond/w83627hf/setup_led.inc
+mainboardinit pc80/serial.inc
+mainboardinit arch/i386/lib/console.inc
+
+##
+## Switch temporarily into C code to setup RAM
+##
+#mainboardinit cpu/i786/cache_ram_init.inc
+#mainboardinit cpu/i786/cache_ram_test.inc
+#mainboardinit cpu/i786/cache_ram_start.inc
+#mainboardinit cpu/i786/cache_ram_fini.inc
+#ldscript cpu/i786/cache_ram.lds
+
+mainboardinit ram/ramtest.inc
+option RAMTEST=1
+#mainboardinit ram/dump_northbridge.inc
+mainboardinit mainboard/intel/Clearwater/dumpdev.inc
+
+##
+## Setup RAM
+##
+mainboardinit southbridge/intel/82801ca/smbus.inc
+mainboardinit southbridge/intel/82801ca/smbus_read_block.inc
+mainboardinit southbridge/intel/82801ca/smbus_noop_read_block.inc
+mainboardinit southbridge/intel/82801ca/smbus_read_byte.inc
+#mainboardinit sdram/generic_dump_spd.inc
+
+
+##
+## Include the secondary Configuration files 
+##
+northbridge intel/E7500
+southbridge intel/82801ca
+southbridge intel/82870
+#nsuperio NSC/pc87309 com1={1} com2={1} floppy=1 lpt=1 keyboard=1
+nsuperio winbond/w83627hf com1={1} com2={1} floppy=1 lpt=1 keyboard=1
+dir /src/pc80
+dir /src/superio/winbond/w83627hf
+dir /src/ram/
+cpu p5
+cpu p6
+cpu i786
+
+##
+## We'll need a udelay function
+##
+
+option CONFIG_UDELAY_TSC=1
+
+##
+## Build the objects we have code for in this directory.
+##
+object mainboard.o
+#object mtrr_values.o
+object mptable.o HAVE_MP_TABLE
+object irq_tables.o HAVE_PIRQ_TABLE
+
+
+###
+### Build options
+###
+
+##
+## Location of the DIMM EEPROMS on the SMBUS
+## This is fixed into a narrow range by the DIMM package standard.
+##
+option SMBUS_MEM_CHANNEL_OFF=4
+option SMBUS_MEM_DEVICE_START=(0xa << 3)
+option SMBUS_MEM_DEVICE_END=(SMBUS_MEM_DEVICE_START +2)
+option SMBUS_MEM_DEVICE_INC=1
+
+##
+## Customize our winbond superio chip for this motherboard
+##
+#option SIO_BASE=0x2e
+#option SIO_SYSTEM_CLK_INPUT=SIO_SYSTEM_CLK_INPUT_48MHZ
+
+##
+## Build code for the fallback boot
+##
+#option HAVE_FALLBACK_BOOT=1
+
+##
+## Build code for using cache as RAM
+##
+#option USE_CACHE_RAM=1
+
+##
+## Build code to reset the motherboard from linuxBIOS
+##
+option HAVE_HARD_RESET=1
+
+##
+## Build code to export a programmable irq routing table
+##
+option HAVE_PIRQ_TABLE=1
+
+
+##
+## Do not build special code to the keyboard
+##
+option NO_KEYBOARD=1
+
+##
+## Build code to export an x86 MP table
+## Useful for specifying IRQ routing values
+##
+option HAVE_MP_TABLE=1
+
+##
+## Build code to export a CMOS option tabe table
+##
+#option HAVE_OPTION_TABLE=1
+
+##
+## Build code for SMP support
+## Only worry about 2 micro processors
+##
+option SMP=1
+option MAX_CPUS=4
+option MAX_PHYSICAL_CPUS=2
+
+##
+## Build code to setup a generic IOAPIC
+##
+option IOAPIC=1
+
+##
+## MEMORY_HOLE instructs earlymtrr.inc to
+## enable caching from 0-640KB and to disable 
+## caching from 640KB-1MB using fixed MTRRs 
+##
+## Enabling this option breaks SMP because secondary
+## CPU identification depends on only variable MTRRs
+## being enabled.
+##
+nooption MEMORY_HOLE
+
+##
+## Don't do a generic MTRR setup
+## Instead use values from the fixed_mtrr_values array
+##
+#option HAVE_MTRR_TABLE=1
+
+##
+## Enable both fixed and variable MTRRS
+## When we setup MTRRs in mtrr.c  
+##
+## We must setup the fixed mtrrs or we confuse SMP secondary
+## processor identification
+##
+#option ENABLE_FIXED_AND_VARIABLE_MTRRS=1
+
+
+##
+## Figure out which type of linuxBIOS image to build
+## If we aren't a fallback image we must be a normal image
+## This is useful for optional includes
+##
+option USE_FALLBACK_IMAGE=0
+expr USE_NORMAL_IMAGE=!USE_FALLBACK_IMAGE
+
+###
+### LinuxBIOS layout values
+###
+
+## ROM_SIZE is the size of boot ROM that this board will use.
+option ROM_SIZE=1048576
+
+## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
+option ROM_IMAGE_SIZE=65536
+
+## LinuxBIOS C code runs at this location in RAM
+option _RAMBASE=0x00008000
+
+## For the trick of using cache as ram
+## put the fake ram location at this address
+option CACHE_RAM_BASE=0xfff70000
+option CACHE_RAM_SIZE=0x00010000
+
+##
+## Use a small 8K stack
+##
+option STACK_SIZE=0x2000
+
+##
+## Use a small 8K heap
+##
+option HEAP_SIZE=0x2000
+
+##
+## Clean up the motherboard id strings
+##
+option MAINBOARD_PART_NUMBER=Clearwater
+option MAINBOARD_VENDOR=Intel
+
+option PYRO_SERIAL=1
+
+##
+## Only use the option table in a normal image
+##
+#expr USE_OPTION_TABLE=!USE_FALLBACK_IMAGE
+
+##
+## Compute the location and size of where this firmware image
+## (linuxBIOS plus bootloader) will live in the boot rom chip.
+##
+expr ROM_SECTION_SIZE  =(USE_FALLBACK_IMAGE*65536)+(USE_NORMAL_IMAGE*(ROM_SIZE - 65536))
+expr ROM_SECTION_OFFSET=(USE_FALLBACK_IMAGE*(ROM_SIZE-65536))+(USE_NORMAL_IMAGE*0)
+
+
+##
+## Compute the start location and size size of
+## The linuxBIOS bootloader.
+##
+expr ZKERNEL_START =(0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+expr PAYLOAD_SIZE  =ROM_SECTION_SIZE - ROM_IMAGE_SIZE
+
+##
+## Compute where this copy of linuxBIOS will start in the boot rom
+##
+#expr _ROMBASE      =ZKERNEL_START + PAYLOAD_SIZE
+expr _ROMBASE		= 0xffff0000 - (USE_FALLBACK_IMAGE*0x10000)
+
+##
+## Compute a range of ROM that can cached to speed of linuxBIOS,
+## execution speed.
+##
+expr XIP_ROM_SIZE = 65536
+expr XIP_ROM_BASE = _ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE

@@ -7,9 +7,9 @@
 
 /* some of the types of resources chips can control */
 #ifndef CONFIG_CHIP_CONFIGURE
-#define CONFIGURE(dev, pass) chip_configure(chip, pass)
+#define CONFIGURE(pass) chip_configure(&static_root, pass)
 #else
-#define CONFIGURE(dev, pass)
+#define CONFIGURE(pass)
 #endif
 
 struct com_ports {
@@ -65,5 +65,5 @@ struct chip {
   void *chip_info; /* the dreaded "void *" */
 };
 
-extern struct chip root;
+extern struct chip static_root;
 extern void chip_configure(struct chip *, enum chip_pass);

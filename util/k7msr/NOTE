@@ -1,0 +1,64 @@
+scanmsr.c is Dave Jone's MSR scan program. 
+scanmsrout is the result of a 16-hour run to get ALL k7 msrs.
+fixmsr.c is our program that reloads the 0xcxxxxxxx MSRs for different
+memory configurations. 
+
+
+Here is the basic note on K7 MSR mods for LinuxBIOS
+
+K7 (non-SMP) fixed (at least on SiS 730)
+Date: Thu, 1 Nov 2001 15:14:28 -0700
+From: Ronald G Minnich <rminnich@lanl.gov>
+To: linuxbios@snaresland.acl.lanl.gov
+
+
+I got kind of tired waiting for this to get fixed. There are people out there 
+who have product plans that are really getting messed up by this whole 
+business. It seemed time to help them out. 
+
+So I did the following. 
+
+First, using David Jone's MSR reading program, I read all the  K7 MSRs by 
+walking the entire 2^32 space. This took about 16 hours. Then I did the same 
+thing on a PII. Then I compared the output of the two runs to isolate the 
+MSRs that are K7-specific. Turns out there is a range of K7 MSRs at 
+0xcxxxxxxx not found on any Pentium. These looked like they might be worth 
+trying. There were hidden MSRs on the PII to manipulate the cache; it was 
+worth seeing if these MSRs would fix the performance problem. 
+
+Then, for every combination of DRAM I care about, I plugged in:
+1x128
+2x128
+1x256
+2x256
+128+256
+256+128
+
+And then dumped the 0xcxxxxxxx MSRs. Then I wrote a program that sets the 
+MSRs based on this DRAM configuration. The idea is to boot under linuxbios, 
+then run this program, set the MSRs as set by the BIOS, and see if things 
+work. 
+
+The result is I can boot linuxbios, run my program, and get good K7 behavior. 
+I am not intepreting what MSR does what. I am simply loading all the MSRs 
+that seem to be K7-specific. This code will be going into linuxbios in the 
+next day or so. It will be in the K7 setup code. Obviously, if you plug in a 
+non-supported DRAM configuration I can't help you. But this is at least a 
+start. 
+
+So, it appears that for K7 uniprocessor, with 2 dram slots, and variations of 
+128 and 256 MB, we are back on the air. 
+
+Note that no NDA material was used in the making of this code. It is a very 
+straightforward loading of MSRs, as programmed by the normal BIOS, into the 
+MSRs in a LinuxBIOS system. Also no reverse assembly, etc. was used. All I did
+was run a program that queries the MSR space. 
+
+Finally, the conclusion: NDAs are stupid. 
+
+The program is attached. To invoke it you run 'fixmsr <variation>' where 
+variation is a variation of memory config. This is here for reference only, 
+this code will be going into linuxbios so you don't need to care how it works.
+
+ron
+

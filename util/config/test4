@@ -2,6 +2,7 @@ target winfast
 #comment
 
 mainboard leadtek/winfast6300
+nmakerule blah blah.o cc -c blah.c
 option SERIAL_CONSOLE
 keyboard pc80
 option NEWPCI

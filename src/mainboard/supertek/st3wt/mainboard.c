@@ -31,6 +31,12 @@ final_mainboard_fixup()
 
 	printk_info("Final mainboard fixup\n");
 
+	dev = pci_find_slot(0,PCI_DEVFN(0x12,0));
+	if (dev) {
+		printk_debug("st-3wt: setting up interrupts.\n");
+		pci_write_config_word(dev, 0x5c, 0xaa0b);
+	}
+	
         dev = pci_find_slot(0, PCI_DEVFN(0x0f, 0));
         if (dev) {
                 printk_debug("st-3wt: Setting eth0 IRQ to %d (INTB)\n",

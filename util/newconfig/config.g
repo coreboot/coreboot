@@ -827,9 +827,6 @@ CPUFLAGS := $(foreach _var_,$(VARIABLES),$(call D_item,$(_var_)))
 		else:
 			file.write("CRT0_INCLUDES += $(TOP)/src/%s\n" % i)
 
-	#for source in sources:
-		#file.write("SOURCES += %s\n" % source)
-	
 	# Print out the user defines.
 	file.write("\n# userdefines:\n")
 	#for udef in userdefines:

@@ -48,6 +48,12 @@ end
 #
 #### Should this be in the northbridge code?
 mainboardinit arch/i386/lib/cpu_reset.inc
+###
+### Setup the serial port
+###
+#mainboardinit superiowinbond/w83627hf/setup_serial.inc
+mainboardinit pc80/serial.inc
+mainboardinit arch/i386/lib/console.inc
 #
 ###
 ### Include an id string (For safe flashing)
@@ -94,12 +100,6 @@ end
 #  mainboardinit southbridgeamd/amd8111/disable_watchdog.inc 
 #end
 #
-###
-### Setup the serial port
-###
-#mainboardinit superiowinbond/w83627hf/setup_serial.inc
-mainboardinit pc80/serial.inc
-mainboardinit arch/i386/lib/console.inc
 if USE_FALLBACK_IMAGE mainboardinit arch/i386/lib/noop_failover.inc  end
 #
 ###

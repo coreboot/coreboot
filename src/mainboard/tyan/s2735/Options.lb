@@ -10,7 +10,6 @@ uses IRQ_SLOT_COUNT
 uses HAVE_OPTION_TABLE
 uses CONFIG_MAX_CPUS
 uses CONFIG_LOGICAL_CPUS
-#uses CONFIG_MAX_PHYSICAL_CPUS
 uses CONFIG_IOAPIC
 uses CONFIG_SMP
 uses FALLBACK_SIZE
@@ -45,7 +44,8 @@ uses DEFAULT_CONSOLE_LOGLEVEL
 uses MAXIMUM_CONSOLE_LOGLEVEL
 uses MAINBOARD_POWER_ON_AFTER_POWER_FAIL
 uses CONFIG_CONSOLE_SERIAL8250
-
+uses CONFIG_UDELAY_TSC
+uses CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
 
 ###
 ### Build options
@@ -53,8 +53,11 @@ uses CONFIG_CONSOLE_SERIAL8250
 
 ##
 ## ROM_SIZE is the size of boot ROM that this board will use.
-##
-default ROM_SIZE=524288
+#512K bytes
+#default ROM_SIZE=524288
+
+#1M bytes
+default ROM_SIZE=1048576
 
 ##
 ## FALLBACK_SIZE is the amount of the ROM the complete fallback image will use
@@ -78,7 +81,6 @@ default HAVE_HARD_RESET=1
 #default HARD_RESET_DEVICE=4
 #default HARD_RESET_FUNCTION=0
 
-##
 ## Delay timer options
 ##
 default CONFIG_UDELAY_TSC=1
@@ -115,7 +117,6 @@ default LB_CKS_LOC=123
 default CONFIG_SMP=1
 default CONFIG_MAX_CPUS=4
 default CONFIG_LOGICAL_CPUS=1
-#default CONFIG_MAX_PHYSICAL_CPUS=2
 
 ##
 ## Build code to setup a generic IOAPIC

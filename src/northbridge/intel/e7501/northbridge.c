@@ -127,7 +127,7 @@ static void pci_domain_set_resources(device_t dev)
 		
 		remaplimit_r = pci_read_config16(mc_dev, 0xc8);
 		remaplimit_r = (remaplimitk >> 16) | (remaplimit_r & 0xfc00);
-		pci_write_config16(mc_dev, 0xc8, rempaplimit_r);
+		pci_write_config16(mc_dev, 0xc8, remaplimit_r);
 		
 		/* Report the memory regions */
 		idx = 10;
@@ -137,8 +137,8 @@ static void pci_domain_set_resources(device_t dev)
 			ram_resource(dev, idx++, 4096*1024, tomk - 4*1024*1024);
 		}
 		if (remaplimitk >= remapbasek) {
-			ram_resource(dev, idx++, ramapbasek,
-				(reamplimitk + 64*1024) = remapbasek);
+			ram_resource(dev, idx++, remapbasek,
+				(remaplimitk + 64*1024) - remapbasek);
 		}
 	}
 	assign_resources(&dev->link[0]);

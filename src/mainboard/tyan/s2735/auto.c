@@ -70,7 +70,7 @@ static void main(unsigned long bist)
                 /* Skip this if there was a built in self test failure */
                 early_mtrr_init();
                 enable_lapic();
-                init_timer();
+//                init_timer();
 
         }
 
@@ -79,7 +79,7 @@ static void main(unsigned long bist)
         console_init();
 
         /* Halt if there was a built in self test failure */
-	report_bist_failure(bist);
+//	report_bist_failure(bist);
 
 //        setup_default_resource_map();
 #if 0
@@ -87,9 +87,9 @@ static void main(unsigned long bist)
 #endif
 	if(!bios_reset_detected()) {
         	enable_smbus();
-#if 0
-//      	dump_spd_registers(&memctrl[0]);
-        	dump_smbus_registers();
+#if 1
+    		dump_spd_registers(&memctrl[0]);
+//        	dump_smbus_registers();
 #endif
 
 		memreset_setup();
@@ -114,7 +114,7 @@ static void main(unsigned long bist)
 #if 0
 	dump_pci_devices();
 #endif
-#if 0
+#if 1
 	dump_pci_device(PCI_DEV(0, 0, 0));
 #endif
 
@@ -130,7 +130,7 @@ static void main(unsigned long bist)
 #if  0
 	ram_check(0x00000000, msr.lo+(msr.hi<<32));
 #else
-#if 0
+#if 1
 	// Check 16MB of memory @ 0
 	ram_check(0x00000000, 0x01000000);
 #else

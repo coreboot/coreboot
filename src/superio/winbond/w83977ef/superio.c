@@ -7,8 +7,17 @@
 
 // just define these here. We may never need them anywhere else
 #define FLOPPY_DEVICE 0
+#define PARALLEL_DEVICE 1
 #define COM1_DEVICE 2
 #define COM2_DEVICE 3
+#define KBC_DEVICE 5
+#ifdef W83977CTF
+#define CIR_DEVICE  6
+#endif
+#define GAME_PORT_DEVICE 7
+#define GPIO_PORT2_DEVICE 8
+#define GPIO_PORT3_DEVICE 9
+#define ACPI_DEVICE 0xa
 
 #define FLOPPY_DEFAULT_IOBASE	0x3f0
 #define FLOPPY_DEFAULT_IRQ	6
@@ -22,6 +31,10 @@
 #define COM2_DEFAULT_IOBASE	0x2f8
 #define COM2_DEFAULT_IRQ	3
 #define COM2_DEFAULT_BAUD	115200
+#define KBC_DEFAULT_IOBASE0	0x60
+#define KBC_DEFAULT_IOBASE1	0x64
+#define KBC_DEFAULT_IRQ0	0x1
+#define KBC_DEFAULT_IRQ1	0xc
 
 
 // funny how all these chips are "pnp compatible", and they're all different. 
@@ -81,6 +94,13 @@ static void set_iobase0(struct superio *sio, unsigned iobase)
 	write_config(sio, iobase & 0xff, 0x61);
 }
 
+static void set_iobase1(struct superio *sio, unsigned iobase)
+{
+	write_config(sio, (iobase >> 8) & 0xff, 0x62);
+	write_config(sio, iobase & 0xff, 0x63);
+}
+
+
 static void set_enable(struct superio *sio, int enable)
 {
 	write_config(sio, enable?0x1:0x0, 0x30);
@@ -90,6 +110,24 @@ static void set_enable(struct superio *sio, int enable)
 			read_config(sio, 0x07));
 	}
 #endif
+}
+
+static void setup_parallel(struct superio *sio)
+{
+	/* Remember the default resources */
+	unsigned iobase = PARALLEL_DEFAULT_IOBASE;
+	unsigned irq = PARALLEL_DEFAULT_IRQ;
+	unsigned drq = PARALLEL_DEFAULT_DRQ;
+	/* Select the device */
+	set_logical_device(sio, PARALLEL_DEVICE);
+	/* Disable it while initializing */
+	set_enable(sio, 0);
+	if (sio->lpt) {
+		set_iobase0(sio, iobase);
+		set_irq0(sio, irq);
+		set_drq(sio, drq);
+		set_enable(sio, 1);
+	}
 }
 
 static void setup_com(struct superio *sio,
@@ -130,6 +168,30 @@ static void setup_floppy(struct superio *sio)
 	}
 }
 
+#ifndef NO_KEYBOARD	       
+static void setup_keyboard(struct superio *sio)
+{
+	/* Remember the default resources */
+	unsigned iobase0 = KBC_DEFAULT_IOBASE0;
+	unsigned iobase1 = KBC_DEFAULT_IOBASE1;
+	unsigned irq0 = KBC_DEFAULT_IRQ0;
+	unsigned irq1 = KBC_DEFAULT_IRQ1;
+	/* Select the device */
+	set_logical_device(sio, KBC_DEVICE);
+	/* Disable it while initializing */
+	set_enable(sio, 0);
+	if (sio->keyboard) {
+		set_iobase0(sio, iobase0);
+		set_iobase1(sio, iobase1);
+		set_irq0(sio, irq0);
+		set_irq1(sio, irq1);
+		set_enable(sio, 1);
+		/* Initialize the keyboard */
+		pc_keyboard_init();
+
+	}
+}
+#endif
 
 #if 0
 #ifdef MUST_ENABLE_FLOPPY
@@ -175,14 +237,34 @@ static void setup_devices(struct superio *sio)
 
 	enter_pnp(sio);
 
-	/* setup/disable floppy */
+	/* enable/disable floppy */
 	setup_floppy(sio);
+
+	/* enable or disable parallel */
+	setup_parallel(sio);
 
 	/* enable/disable com1 */
 	setup_com(sio, &sio->com1,  COM1_DEVICE);
 
 	/* enable/disable com2 */
 	setup_com(sio, &sio->com2,  COM2_DEVICE);
+
+#ifndef NO_KEYBOARD
+	/* enable/disable keyboard */
+	setup_keyboard(sio);
+#endif
+
+	/*  gpio_port2 */
+	set_logical_device(sio, GPIO_PORT2_DEVICE);
+	set_enable(sio, sio->gpio2);
+
+	/*  gpio_port3  */
+	set_logical_device(sio, GPIO_PORT3_DEVICE);
+	set_enable(sio, sio->gpio3);
+
+	/* enable/disable acpi  */
+	set_logical_device(sio, ACPI_DEVICE);
+	set_enable(sio, sio->acpi);
 
 	exit_pnp(sio);
 }

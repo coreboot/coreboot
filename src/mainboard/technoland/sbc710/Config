@@ -11,7 +11,7 @@ southbridge intel/piix4e
 mainboardinit cpu/p6/earlymtrr.inc
 
 #superio NSC/pc87309
-nsuperio winbond/w83977ef
+nsuperio winbond/w83977ef keyboard=1
 nsuperio winbond/w83877tf
 
 option ENABLE_FIXED_AND_VARIABLE_MTRRS

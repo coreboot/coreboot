@@ -1,0 +1,9 @@
+northbridge via/vt8601 
+southbridge via/vt82c686 
+superio via/vt82c686
+
+option ENABLE_FIXED_AND_VARIABLE_MTRRS
+object mainboard.o
+keyboard pc80
+cpu p5
+cpu p6

@@ -8,9 +8,13 @@ CPUFLAGS += -DNEWPCI
 CPUFLAGS += -DSERIAL_CONSOLE
 # If you enable FIXED_AND_VARIABLE it never makes it to the kernel!
 # you have to only enable variable. 
-#CPUFLAGS += -DENABLE_FIXED_AND_VARIABLE_MTRRS
+# 1/25/01. Things just stopped working for no reason I can see (RGM). 
+# First test: enable fixed and variable MTRRs.
+# This wasn't the problem (My stupidity was) but it works ok, so leave
+# it in.
+CPUFLAGS += -DENABLE_FIXED_AND_VARIABLE_MTRRS
 # mainboard-dependent. 
-CPUFLAGS += -DPM_DEVFN=0x3c
+CPUFLAGS += -DPM_DEVFN=0x8c
 CPUFLAGS += -DRAMTEST
 # This makes it fail sooner ...
 #CPUFLAGS += -DINBUF_COPY
@@ -24,7 +28,6 @@ CFLAGS=$(NOOPT_CFLAGS) -O2
 OBJECTS=crt0.o hardwaremain.o linuxbiosmain.o 
 OBJECTS += mainboard.o mtrr.o subr.o fill_inbuf.o params.o
 OBJECTS += southbridge.o northbridge.o
-#OBJECTS += pci.o
 OBJECTS += printk.o vsprintf.o
 OBJECTS += newpci.o linuxpci.o
 OBJECTS += cpuid.o 
@@ -33,7 +36,8 @@ OBJECTS += serial_subr.o
 OBJECTS += mpspec.o
 OBJECTS += microcode.o
 OBJECTS += keyboard.o
-LINUX=$(TOP)/../linux-2.4.0-test6.via/
+#LINUX=$(TOP)/../linux-2.4.0-test6.via/
+LINUX=$(TOP)/../linux-2.4.0-via/
 
 LINK = ld -T ldscript.ld -o $@ $(OBJECTS)
 CC=cc $(CFLAGS)
@@ -50,7 +54,6 @@ floppy: all
 # can put it on the floppy (see ROOTDOIT)
 romimage: linuxbios.rom vmlinux.bin.gz.block
 	cat vmlinux.bin.gz.block linuxbios.rom > romimage
-	cp romimage /tmp
 
 linuxbios.rom: linuxbios.strip mkrom 
 	./mkrom -s 64 -f -o linuxbios.rom linuxbios.strip
@@ -80,7 +83,7 @@ mkrom: $(TOP)/mkrom/mkrom.c
 linuxbiosmain.o: $(TOP)/src/lib/linuxbiosmain.c
 	cc $(CFLAGS) -c $<
 
-mainboard.o: $(TOP)/src/mainboard/via/vt5292/mainboard.c
+mainboard.o: $(TOP)/src/mainboard/via/vt5426/mainboard.c
 	cc $(CFLAGS) -c $<
 
 fill_inbuf.o: $(TOP)/src/lib/fill_inbuf.c

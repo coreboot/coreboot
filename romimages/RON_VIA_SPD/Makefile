@@ -6,6 +6,8 @@ CPUFLAGS += -DINTEL_PPRO_MTRR
 CPUFLAGS += -DPM133_NVRAM -DPM133_KEYBOARD
 CPUFLAGS += -DNEWPCI
 CPUFLAGS += -DSERIAL_CONSOLE
+# mainboard-dependent. 
+CPUFLAGS += -DPM_DEVFN=0x3c
 # If you enable FIXED_AND_VARIABLE it never makes it to the kernel!
 # you have to only enable variable. 
 # 1/25/01. Things just stopped working for no reason I can see (RGM). 

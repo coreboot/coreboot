@@ -187,7 +187,7 @@ struct device_operations w83c553_ops  = {
         .set_resources    = pci_dev_set_resources,
         .enable_resources = pci_dev_enable_resources,
         .init             = w83c553_init,
-        .scan_bus         = 0,
+        .scan_bus         = scan_static_bus,
 };
 
 struct pci_driver w83c553f_pci_driver __pci_driver = {

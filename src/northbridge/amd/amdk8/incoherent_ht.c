@@ -242,7 +242,7 @@ static int ht_setup_chain(device_t udev, uint8_t upos)
 		}
 
 		/* get ht direction */
-                offs = (pci_read_config16(dev, pos + PCI_CAP_FLAGS) & (1<<10)) ? PCI_HT_SLAVE1_OFFS : PCI_HT_SLAVE0_OFFS;
+                offs = ( (pci_read_config16(dev, pos + PCI_CAP_FLAGS) >> 10) & 1) ? PCI_HT_SLAVE1_OFFS : PCI_HT_SLAVE0_OFFS;
 
 		/* Setup the Hypertransport link */
 		reset_needed |= ht_optimize_link(udev, upos, uoffs, dev, pos, offs);

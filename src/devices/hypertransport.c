@@ -71,7 +71,7 @@ static int ht_setup_link(struct prev_link *prev, device_t dev, unsigned pos)
 
 	/* Set the hypertransport link width and frequency */
 	reset_needed = 0;
-	linkb_to_host = pci_read_config16(dev, pos + PCI_CAP_FLAGS) & (1<<10);
+	linkb_to_host = (pci_read_config16(dev, pos + PCI_CAP_FLAGS) >> 10) & 1;
 
 	/* Read the capabilities */
 	present_freq_cap   = ht_read_freq_cap(dev, pos + (linkb_to_host ? PCI_HT_CAP_SLAVE_FREQ_CAP1: PCI_HT_CAP_SLAVE_FREQ_CAP0));

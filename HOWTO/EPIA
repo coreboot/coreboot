@@ -1,6 +1,7 @@
 Based on the K7SEM HOWTO by Brenden Bixler,
 which is based on the Sis 630 HOWTO by Ron Minnich.
 HOWTO written by Mark Wilkinson
+Version 1.1 - Now with added VGA
 
 This file contains instructions for the VIA Epia mini-ITX based mainboards.
 
@@ -65,6 +66,12 @@ a) Get a 2.4.x kernel, patch it, then compile.
 b) Setup the dhcp/tftp servers.
 c) Make an elf image of the kernel
 d) Reset the machine -- did it boot linux ?
+
+For the really really brave...
+  i) Extract the VGA BIOS from the original BIOS
+ ii) Make a combined vga bios/etherboot payload
+iii) Configure LinuxBIOS
+ iv) try it out -- did it work ?
 
 ---
 Note: This HOWTO assumes that the LinuxBIOS and etherboot work will be done
@@ -270,6 +277,106 @@ Step d)
 	Power cycle to epia once more, this time with the network connected,
 	and the dhcp & tftp servers running, you should see the kernel image
 	being loaded, then starting to run !
+
+
+Even further optional steps - NOT for the faint of heart !
+
+By this point, you should be resonably confidant with building and booting the
+EPIA motherboard from LinuxBIOS. But what about the onboard VGA controller ?
+Wouldn't it be nice to have that initalised as well ? Well, thanks to a lot of
+hard work put in by Sone Takeshi, you can !
+
+Step i) Extract the vgabios from the original BIOS.
+
+        The VGA BIOS code is copyright and cannot be re-distributed, but it
+        is supplied with the motherboard within the original BIOS code.
+	You do still have the original bios in a chip to boot from don't you ?
+        There are serveral possible ways to get a copy of the VGA BIOS,
+        perhaps the easiest is to boot into a linux system with the original
+        BIOS and as root, perform the following step :-
+
+		dd if=/proc/kcore of=video.bios.bin \
+                   bs=1 count=65536 skip=790528
+
+	Another method, would be to use something like the DOS based
+        cbrom program to extract the VGA BIOS from a copy of the bios image.
+	If you choose to do it this way, you must pad the resulting file to
+        64Kbytes in size, otherwise problems may occure later !
+
+Step ii) Make combined payload
+
+	Way back in step 3, we build an etherboot image that would load the
+	Linux kernel over the network. For the perpose of this HOWTO, that's
+	the payload we're going to use again. If like me, you've experimented
+	you probably have you're own favorate payload to play with, feel free
+	to substitute that for the via-rhine.ebi file listed.
+
+	First some information on how and why.
+
+		1) The bios chip on the EPIA is 256Kbytes in size.
+		2) It lives in the memory at 0xFFFC0000
+		3) LinuxBios normally starts looking for it's payload
+		   at the start of the flash chip (ie 0xFFFC0000)
+		4) By making the video bios exactly 64Kbytes in size,
+		   and placing it at the start of the flash image,
+                   we move the point where LinuxBIOS should start looking
+		   to the nice easy location of 0xFFFD0000.
+
+	Creating the combined payload image is simply a matter of appending
+	the real payload image onto the end of the video bios. The following
+	two commands assume that the video bios is less than 64Kbytes in size
+
+		$ cp video.bios.bin vga+eb.bin
+		$ dd if=via-rhine.ebi of=vga+eb.bin bs=1 seek=65536
+
+Step iii) Configure LinuxBIOS
+
+	Before building the new LinuxBIOS image, we need to alter our
+	config file to enable the VGA chipset and tell the system how much
+	of the ram to set aside for the framebuffer.
+
+	Modify you payload line to point to the combine image
+
+		payload /home/lb/payload/vga+eb.bin
+
+	Add/Modify the options that tell LinuxBIOS where to find the
+	vga bios image and where to start looking for the real payload
+
+		option VGABIOS_START=0xfffc0000
+		option ZKERNEL_START=0xfffd0000
+
+	Add the following options to your config file
+
+		option HAVE_FRAMEBUFFER=1
+		option SMA_SIZE=8
+		option CONFIG_VGABIOS=1
+		option CONFIG_REALMODE_IDT=1
+		option CONFIG_PCIBIOS=1
+		dir src/bioscall
+
+	With the exception of SMA_SIZE, these options enable the code within
+	LinuxBIOS to turn on the vga chipset, and call the VGA BIOS just like
+	the original BIOS would have.
+
+	The SMA_SIZE option tells LinuxBIOS how many megabytes of memory to
+	use for the framebuffer. Valid values here are :-
+
+		0 - Disable Framebuffer
+		1 - 1 Mbyte
+		2 - 2 Mbytes
+		8 - 8 Mbytes
+
+
+Step iv) Try it out !
+
+	Ok by now, we should have configured and re-build the LinuxBIOS image,
+	it's time to burn the image to the bios chip and reset the machine.
+
+	If all goes well, you will see to normal logging coming out of the
+	serial port, and (if you have a monitor plugged in) the vga monitor
+	switch on and display a cursor (until linux is loaded and prompts
+	you for a username that is)
+
 
 DEBUGGING
 ___________

@@ -17,8 +17,8 @@ uses PNP_CFGDATA
 ##
 default PCIC0_CFGADDR=0xfec00000
 default PCIC0_CFGDATA=0xfee00000
-default PNP_CFGADDR=0x15c
-default PNP_CFGDATA=0x15d
+default PNP_CFGADDR=0xfe00015c
+default PNP_CFGDATA=0xfe00015d
 
 ##
 ## Early board initialization, called from ppc_main()

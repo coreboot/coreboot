@@ -1,3 +1,5 @@
+#include <mem.h>
+#include <part/sizeram.h>
 #include <printk.h>
 #include <arch/io.h>
 #include <pciconf.h>
@@ -59,6 +61,7 @@ led_off(int led)
 void
 mainboard_fixup(void)
 {
+	struct mem_range *mem;
 	unsigned long ramsize;
 	int errors = 0;
 	struct pci_dev *pcidev;
@@ -69,7 +72,9 @@ mainboard_fixup(void)
 	led_on(10);
 
 	beep_on();
-	ramsize = sizeram() * 1024;
+	/* FIXME this is not how sizeram is intened to be called! */
+	mem = sizeram();
+	ramsize = (mem[1].sizek + mem[1].basek) * 1024;
 	if (ramcheck(0x00100000, ramsize, 20) != 0) {
 		error("DRAM Test Error");
 	}

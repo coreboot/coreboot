@@ -27,7 +27,6 @@ it with the version available from LANL.
 
 
 #include <console/console.h>
-#include <mem.h>
 #include <version.h>
 #include <boot/tables.h>
 #include <device/device.h>
@@ -35,6 +34,7 @@ it with the version available from LANL.
 #include <delay.h>
 #include <stdlib.h>
 #include <part/hard_reset.h>
+#include <part/init_timer.h>
 #include <boot/elf.h>
 
 void hardwaremain(int boot_complete)

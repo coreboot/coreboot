@@ -3,7 +3,7 @@
 
 #ifndef ASSEMBLY
 
-#if HAVE_FALLBACK_BOOT
+#if HAVE_FALLBACK_BOOT == 1
 void boot_successful(void);
 #else
 #define boot_successful()

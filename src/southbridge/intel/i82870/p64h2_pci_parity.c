@@ -1,4 +1,3 @@
-#include <mem.h>
 #include <pci.h>
 #include <arch/io.h>
 #include <printk.h>

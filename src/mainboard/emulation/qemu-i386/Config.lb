@@ -205,12 +205,7 @@ dir /pc80
 dir /drivers/emulation/qemu
 config chip.h
 
-northbridge emulation/qemu-i386 "nb_qemu"
-
+chip northbridge/emulation/qemu-i386
+	pci_domain 0
+	end
 end
-
-##
-## Include the old serial code for those few places that still need it.
-##
-mainboardinit pc80/serial.inc
-mainboardinit arch/i386/lib/console.inc

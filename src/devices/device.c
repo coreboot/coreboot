@@ -203,6 +203,8 @@ static void find_largest_resource(struct pick_largest_state *state,
 	struct device *curdev;
 	for(curdev = bus->children; curdev; curdev = curdev->sibling) {
 		int i;
+		/* Ignore disabled devices */
+		if (!curdev->have_resources) continue;
 		for(i = 0; i < curdev->resources; i++) {
 			struct resource *resource = &curdev->resource[i];
 			/* If it isn't the right kind of resource ignore it */

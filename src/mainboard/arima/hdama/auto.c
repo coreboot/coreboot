@@ -165,6 +165,7 @@ static void main(unsigned long bist)
 		amd_early_mtrr_init();
 		enable_lapic();
 		init_timer();
+		/* Has this cpu already booted? */
 		if (cpu_init_detected()) {
 			asm volatile ("jmp __cpu_reset");
 		}

@@ -1,7 +1,6 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <stdint.h>
-#include <mem.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

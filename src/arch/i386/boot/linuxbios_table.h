@@ -15,7 +15,7 @@ struct lb_record *lb_next_record(struct lb_record *rec);
 struct lb_record *lb_new_record(struct lb_header *header);
 struct lb_memory *lb_memory(struct lb_header *header);
 void lb_memory_range(struct lb_memory *mem, 
-	uint32_t type, unsigned long startk, unsigned long sizek);
+	uint32_t type, uint64_t start, uint64_t size);
 struct lb_mainboard *lb_mainboard(struct lb_header *header);
 unsigned long lb_table_fini(struct lb_header *header);
 

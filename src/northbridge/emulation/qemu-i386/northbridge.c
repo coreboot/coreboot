@@ -1,8 +1,6 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <stdint.h>
-#include <mem.h>
-#include <part/sizeram.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/hypertransport.h>
@@ -17,57 +15,102 @@ void hard_reset(void)
 	printk_err("Hard_RESET!!!\n");
 }
 
-struct mem_range *sizeram(void)
+#define BRIDGE_IO_MASK (IORESOURCE_IO | IORESOURCE_MEM)
+
+static void pci_domain_read_resources(device_t dev)
 {
-	unsigned long mmio_basek;
-	static struct mem_range mem[10];
-	device_t dev;
-	int i, idx;
-	unsigned char rambits;
+        struct resource *resource;
+        unsigned reg;
 
-	dev = dev_find_slot(0, 0);
-	if (!dev) {
-		printk_err("Cannot find PCI: 0:0\n");
-		return 0;
-	}
-	mem[0].basek = 0;
-	mem[0].sizek = 65536;
-#if 0
-	idx = 1;
-	while(idx < sizeof(mem)/sizeof(mem[0])) {
-		mem[idx].basek = 0;
-		mem[idx].sizek = 0;
-		idx++;
-	}
-	for(rambits = 0, i = 0; i < sizeof(ramregs)/sizeof(ramregs[0]); i++) {
-		unsigned char reg;
-		reg = pci_read_config8(dev, ramregs[i]);
-		/* these are ENDING addresses, not sizes. 
-		 * if there is memory in this slot, then reg will be > rambits.
-		 * So we just take the max, that gives us total. 
-		 * We take the highest one to cover for once and future linuxbios
-		 * bugs. We warn about bugs.
-		 */
-		if (reg > rambits)
-			rambits = reg;
-		if (reg < rambits)
-			printk_err("ERROR! register 0x%x is not set!\n", 
-				ramregs[i]);
-	}
+        /* Initialize the system wide io space constraints */
+        resource = new_resource(dev, 0);
+        resource->base  = 0x400;
+        resource->limit = 0xffffUL;
+        resource->flags = IORESOURCE_IO;
+        compute_allocate_resource(&dev->link[0], resource,
+                IORESOURCE_IO, IORESOURCE_IO);
+
+        /* Initialize the system wide memory resources constraints */
+        resource = new_resource(dev, 1);
+        resource->limit = 0xffffffffULL;
+        resource->flags = IORESOURCE_MEM;
+        compute_allocate_resource(&dev->link[0], resource,
+                IORESOURCE_MEM, IORESOURCE_MEM);
+}
+
+static void pci_domain_set_resources(device_t dev)
+{
+        struct resource *resource, *last;
+	device_t mc_dev;
+        uint32_t pci_tolm;
+
+        pci_tolm = 0xffffffffUL;
+        last = &dev->resource[dev->resources];
+        for(resource = &dev->resource[0]; resource < last; resource++)
+        {
+                compute_allocate_resource(&dev->link[0], resource,
+                        BRIDGE_IO_MASK, resource->flags & BRIDGE_IO_MASK);
+
+                resource->flags |= IORESOURCE_STORED;
+                report_resource_stored(dev, resource, "");
+
+                if ((resource->flags & IORESOURCE_MEM) &&
+                        (pci_tolm > resource->base))
+                {
+                        pci_tolm = resource->base;
+                }
+        }
+
 	
-	printk_debug("I would set ram size to 0x%x Kbytes\n", (rambits)*8*1024);
-	mem[0].sizek = rambits*8*1024;
-#endif
-#if 1
-	for(i = 0; i < idx; i++) {
-		printk_debug("mem[%d].basek = %08x mem[%d].sizek = %08x\n",
-			i, mem[i].basek, i, mem[i].sizek);
+	mc_dev = dev->link[0].children;
+	if (mc_dev) {
+		unsigned long tomk, tolmk;
+		/* Hard code the Top of memory for now */
+		tomk = 65536;
+		/* Compute the top of Low memory */
+		tolmk = pci_tolm >> 10;
+		if (tolmk >= tomk) {
+			/* The PCI hole does not overlap memory.
+			 */
+			tolmk = tomk;
+		}
+		
+		/* Report the memory regions */
+		idx = 10;
+		ram_resource(dev, idx++, 0, 640);
+		ram_resource(dev, idx++, 768, tolmk - 768);
+		if (tomk > 4*1024*1024) {
+			ram_resource(dev, idx++, 4096*1024, tomk - 4*1024*1024);
+		}
 	}
-#endif
+	assign_resources(&dev->link[0]);
+}
 
-	return mem;
+static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
+{
+        max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0, 0), 0xff, max);
+        return max;
+}
+
+static struct device_operations pci_domain_ops = {
+        .read_resources   = pci_domain_read_resources,
+        .set_resources    = pci_domain_set_resources,
+        .enable_resources = enable_childrens_resources,
+        .init             = 0,
+        .scan_bus         = pci_domain_scan_bus,
+};  
+
+static void enable_dev(struct device *dev)
+{
+        struct device_path path;
+
+        /* Set the operations if it is a special bus type */
+        if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
+                dev->ops = &pci_domain_ops;
+        }
 }
 
 struct chip_operations northbridge_emulation_qemu_i386_control = {
 	.name      = "QEMU Northbridge",
+	.enable_dev = enable_dev,
 };

@@ -1,5 +1,4 @@
 #include <console/console.h>
-#include <mem.h>
 #include <ip_checksum.h>
 #include <boot/linuxbios_tables.h>
 #include "linuxbios_table.h"
@@ -7,7 +6,6 @@
 #include <version.h>
 #include <device/device.h>
 #include <stdlib.h>
-
 
 struct lb_header *lb_table_init(unsigned long addr)
 {
@@ -130,29 +128,13 @@ void lb_strings(struct lb_header *header)
 
 }
 
-/* Some version of gcc have problems with 64 bit types so
- * take an unsigned long instead of a uint64_t for now.
- */
 void lb_memory_range(struct lb_memory *mem,
-	uint32_t type, unsigned long start, unsigned long size)
+	uint32_t type, uint64_t start, uint64_t size)
 {
 	int entries;
 	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
 	mem->map[entries].start = start;
 	mem->map[entries].size = size;
-	mem->map[entries].type = type;
-	mem->size += sizeof(mem->map[0]);
-}
-
-static void lb_memory_rangek(struct lb_memory *mem,
-	uint32_t type, unsigned long startk, unsigned long endk)
-{
-	int entries;
-	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
-	mem->map[entries].start = startk;
-	mem->map[entries].start <<= 10;
-	mem->map[entries].size = endk - startk;
-	mem->map[entries].size <<= 10;
 	mem->map[entries].type = type;
 	mem->size += sizeof(mem->map[0]);
 }
@@ -189,7 +171,6 @@ static void lb_reserve_table_memory(struct lb_header *head)
 	}
 }
 
-
 unsigned long lb_table_fini(struct lb_header *head)
 {
 	struct lb_record *rec, *first_rec;
@@ -207,6 +188,112 @@ unsigned long lb_table_fini(struct lb_header *head)
 	return (unsigned long)rec;
 }
 
+static void lb_cleanup_memory_ranges(struct lb_memory *mem)
+{
+	int entries;
+	int i, j;
+	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
+	
+	/* Sort the lb memory ranges */
+	for(i = 0; i < entries; i++) {
+		for(j = i; j < entries; j++) {
+			if (mem->map[j].start < mem->map[i].start) {
+				struct lb_memory_range tmp;
+				tmp = mem->map[i];
+				mem->map[i] = mem->map[j];
+				mem->map[j] = tmp;
+			}
+		}
+	}
+
+	/* Merge adjacent entries */
+	for(i = 0; (i + 1) < entries; i++) {
+		uint64_t start, end, nstart, nend;
+		if (mem->map[i].type != mem->map[i + 1].type) {
+			continue;
+		}
+		start  = mem->map[i].start;
+		end    = start + mem->map[i].size;
+		nstart = mem->map[i + 1].start;
+		nend   = nstart + mem->map[i + 1].size;
+		if ((start <= nstart) && (end > nstart)) {
+			if (start > nstart) {
+				start = nstart;
+			}
+			if (end < nend) {
+				end = nend;
+			}
+			/* Record the new region size */
+			mem->map[i].start = start;
+			mem->map[i].size  = end - start;
+
+			/* Delete the entry I have merged with */
+			memmove(&mem->map[i + 1], &mem->map[i + 2], 
+				((entries - i - 2) * sizeof(mem->map[0])));
+			mem->size -= sizeof(mem->map[0]);
+			entries -= 1;
+			/* See if I can merge with the next entry as well */
+			i -= 1; 
+		}
+	}
+}
+
+static void lb_remove_memory_range(struct lb_memory *mem, 
+	uint64_t start, uint64_t size)
+{
+	uint64_t end;
+	int entries;
+	int i;
+
+	end = start + size;
+	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
+
+	/* Remove a reserved area from the memory map */
+	for(i = 0; i < entries; i++) {
+		uint64_t map_start = mem->map[i].start;
+		uint64_t map_end   = map_start + mem->map[i].size;
+		if ((start <= map_start) && (end >= map_end)) {
+			/* Remove the completely covered range */
+			memmove(&mem->map[i], &mem->map[i + 1], 
+				((entries - i - 1) * sizeof(mem->map[0])));
+			mem->size -= sizeof(mem->map[0]);
+			entries -= 1;
+			/* Since the index will disappear revisit what will appear here */
+			i -= 1; 
+		}
+		else if ((start > map_start) && (end < map_end)) {
+			/* Split the memory range */
+			memmove(&mem->map[i + 1], &mem->map[i], 
+				((entries - i) * sizeof(mem->map[0])));
+			mem->size += sizeof(mem->map[0]);
+			entries += 1;
+			/* Update the first map entry */
+			mem->map[i].size = start - map_start;
+			/* Update the second map entry */
+			mem->map[i + 1].start = end;
+			mem->map[i + 1].size  = map_end - end;
+			/* Don't bother with this map entry again */
+			i += 1;
+		}
+		else if ((start <= map_start) && (end > map_start)) {
+			/* Shrink the start of the memory range */
+			mem->map[i].start = end;
+			mem->map[i].size  = map_end - end;
+		}
+		else if ((start < map_end) && (start > map_start)) {
+			/* Shrink the end of the memory range */
+			mem->map[i].size = start - map_start;
+		}
+	}
+}
+
+static void lb_add_memory_range(struct lb_memory *mem,
+	uint32_t type, uint64_t start, uint64_t size)
+{
+	lb_remove_memory_range(mem, start, size);
+	lb_memory_range(mem, type, start, size);
+	lb_cleanup_memory_ranges(mem);
+}
 
 /* Routines to extract part so the linuxBIOS table or 
  * information from the linuxBIOS table after we have written it.
@@ -219,61 +306,28 @@ struct lb_memory *get_lb_mem(void)
 	return mem_ranges;
 }
 
-struct mem_range *sizeram(void)
+static struct lb_memory *build_lb_mem(struct lb_header *head)
 {
-	struct mem_range *mem, *rmem;
+	struct lb_memory *mem;
 	struct device *dev;
-	unsigned int count;
-	count = 0;
-	for(dev = all_devices; dev; dev = dev->next) {
-		struct resource *res, *last;
-		last = &dev->resource[dev->resources];
-		for(res = &dev->resource[0]; res < last; res++) {
-			if ((res->flags & IORESOURCE_MEM) &&
-				(res->flags & IORESOURCE_CACHEABLE)) 
-			{
-				count++;
-			}
-		}
-	}
-	rmem = mem = malloc(sizeof(*mem) * (count + 1));
-	for(dev = all_devices; dev; dev = dev->next) {
-		struct resource *res, *last;
-		last = &dev->resource[dev->resources];
-		for(res = &dev->resource[0]; res < last; res++) {
-			if ((res->flags & IORESOURCE_MEM) &&
-				(res->flags & IORESOURCE_CACHEABLE)) 
-			{
-				mem->basek = res->base >> 10;
-				mem->sizek = res->size >> 10;
-				mem++;
-			}
-		}
-	}
-	mem->basek = 0;
-	mem->sizek = 0;
-#if 0
-	for(mem = rmem; mem->sizek; mem++) {
-		printk_debug("basek: %lu sizek: %lu\n",
-			mem->basek, mem->sizek);
-	}
-#endif
-	return rmem;
-}
 
-static struct mem_range *get_ramsize(void)
-{
-	struct mem_range *mem = 0;
-	if (!mem) {
-		mem = sizeram();
-	}
-	if (!mem) {
-		printk_emerg("No memory size information!\n");
-		for(;;) {
-			/* Ensure this loop is not optimized away */
-			asm volatile("":/* outputs */:/*inputs */ :"memory");
+	/* Record where the lb memory ranges will live */
+	mem = lb_memory(head);
+	mem_ranges = mem;
+
+	/* Build the raw table of memory */
+	for(dev = all_devices; dev; dev = dev->next) {
+		struct resource *res, *last;
+		last = &dev->resource[dev->resources];
+		for(res = &dev->resource[0]; res < last; res++) {
+			if (!(res->flags & IORESOURCE_MEM) ||
+				!(res->flags & IORESOURCE_CACHEABLE)) {
+				continue;
+			}
+			lb_memory_range(mem, LB_MEM_RAM, res->base, res->size);
 		}
 	}
+	lb_cleanup_memory_ranges(mem);
 	return mem;
 }
 
@@ -282,51 +336,38 @@ unsigned long write_linuxbios_table(
 	unsigned long rom_table_startk, unsigned long rom_table_endk)
 {
 	unsigned long table_size;
-	struct mem_range *ram, *ramp;
 	struct lb_header *head;
 	struct lb_memory *mem;
-	struct lb_record *rec_dest, *rec_src;
 
-	ram = get_ramsize();
 	head = lb_table_init(low_table_end);
 	low_table_end = (unsigned long)head;
-#if HAVE_OPTION_TABLE == 1
-	/* Write the option config table... */
-	rec_dest = lb_new_record(head);
-	rec_src = (struct lb_record *)&option_table;
-	memcpy(rec_dest,  rec_src, rec_src->size);
-#endif	
-	mem = lb_memory(head);
-	mem_ranges = mem;
-	/* I assume there is always ram at address 0 */
-	/* Reserve our tables in low memory */
-	table_size = (low_table_end - low_table_start);
-	lb_memory_range(mem, LB_MEM_TABLE, 0, table_size);
-	lb_memory_range(mem, LB_MEM_RAM, table_size, (ram[0].sizek << 10) - table_size);
-	/* Reserving pci memory mapped  space will keep the kernel from booting seeing
-	 * any pci resources.
-	 */
-	for(ramp = &ram[1]; ramp->sizek; ramp++) {
-		unsigned long startk, endk;
-		startk = ramp->basek;
-		endk = startk + ramp->sizek;
-		if ((startk < rom_table_startk) && (endk > rom_table_startk)) {
-			lb_memory_rangek(mem, LB_MEM_RAM, startk, rom_table_startk);
-			startk = rom_table_startk;
-		}
-		if ((startk == rom_table_startk) && (endk > startk)) {
-			unsigned long tend;
-			tend = rom_table_endk;
-			if (tend > endk) {
-				tend = endk;
-			}
-			lb_memory_rangek(mem, LB_MEM_TABLE, rom_table_startk, tend);
-			startk = tend;
-		}
-		if (endk > startk) {
-			lb_memory_rangek(mem, LB_MEM_RAM, startk, endk);
-		}
+	if (HAVE_OPTION_TABLE == 1) {
+		struct lb_record *rec_dest, *rec_src;
+		/* Write the option config table... */
+		rec_dest = lb_new_record(head);
+		rec_src = (struct lb_record *)&option_table;
+		memcpy(rec_dest,  rec_src, rec_src->size);
 	}
+	/* Record where RAM is located */
+	mem = build_lb_mem(head);
+	
+	/* Find the current mptable size */
+	table_size = (low_table_end - low_table_start);
+
+	/* Record the mptable and the the lb_table (This will be adjusted later) */
+	lb_add_memory_range(mem, LB_MEM_TABLE, 
+		low_table_start, table_size);
+
+	/* Record the pirq table */
+	lb_add_memory_range(mem, LB_MEM_TABLE, 
+		rom_table_startk << 10, (rom_table_endk - rom_table_startk) << 10);
+
+	/* Note:
+	 * I assume that there is always memory at immediately after
+	 * the low_table_end.  This means that after I setup the linuxbios table.
+	 * I can trivially fixup the reserved memory ranges to hold the correct
+	 * size of the linuxbios table.
+	 */
 
 	/* Record our motheboard */
 	lb_mainboard(head);

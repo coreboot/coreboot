@@ -1,8 +1,6 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <stdint.h>
-#include <mem.h>
-#include <part/sizeram.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <stdlib.h>
@@ -172,7 +170,7 @@ static struct device_operations cpu_bus_ops = {
         .set_resources    = cpu_bus_noop,
         .enable_resources = cpu_bus_noop,
         .init             = cpu_bus_init,
-        .scan_bus         = cpu_bus_noop,
+        .scan_bus         = 0,
 };
 
 static void enable_dev(struct device *dev)

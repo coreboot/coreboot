@@ -1,12 +1,11 @@
 #include <console/console.h>
-#include <mem.h>
 #include <cpu/cpu.h>
 #include <boot/tables.h>
 #include <boot/linuxbios_tables.h>
 #include "linuxbios_table.h"
 
 struct lb_memory *
-write_tables(struct mem_range *mem)
+write_tables(void)
 {
 	unsigned long low_table_start, low_table_end;
 	unsigned long rom_table_start, rom_table_end;
@@ -20,7 +19,7 @@ write_tables(struct mem_range *mem)
 	low_table_end = 16;
 
 	/* The linuxbios table must be in 0-4K or 960K-1M */
-	write_linuxbios_table(mem,
+	write_linuxbios_table(
 		low_table_start, low_table_end,
 		rom_table_start >> 10, rom_table_end >> 10);
 

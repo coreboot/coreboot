@@ -5,11 +5,12 @@
 
 #include <types.h>
 
-//static const unsigned char usbIrqs[4] = { 11, 5, 10, 12 };
-static const unsigned char usbIrqs[4] = { 11, 12, 10, 5 };
+static const unsigned char usbIrqs[4] = { 11, 10, 12, 5 };
 static const unsigned char enetIrqs[4] = { 11, 5, 10, 12 };
 static const unsigned char slotIrqs[4] = { 10, 12, 5, 11 };
-static const unsigned char firewireIrqs[4] = { 12, 10, 5, 11 };
+static const unsigned char firewireIrqs[4] = {10, 12, 5, 11 };
+static const unsigned char vt8235Irqs[4] = { 5,10, 12, 11 }; // (DA) ???
+
 
 /*
 	Our IDSEL mappings are as follows
@@ -32,11 +33,11 @@ static void pci_routing_fixup(void)
 		 * PINTD = IRQ5
 		 */
 		pci_write_config_byte(dev, 0x55, 0xb0);
-		pci_write_config_byte(dev, 0x56, 0xac);
+		pci_write_config_byte(dev, 0x56, 0xca);
 		pci_write_config_byte(dev, 0x57, 0x50);
 
 	}
-#if 1
+
 	// firewire built into southbridge
 	printk_info("setting firewire\n");
 	pci_assign_irqs(0, 0x0d, firewireIrqs);
@@ -53,16 +54,9 @@ static void pci_routing_fixup(void)
 	printk_info("setting pci slot\n");
 	pci_assign_irqs(0, 0x14, slotIrqs);
 
-#endif
-
-		printk_debug("4d0: 0x%02x\n", inb(0x4d0));
-		printk_debug("4d1: 0x%02x\n", inb(0x4d1));
-#if 0
-		outb(0, 0x4d0);
-		outb(0, 0x4d1);
-#endif
-		printk_debug("4d0: 0x%02x\n", inb(0x4d0));
-		printk_debug("4d1: 0x%02x\n", inb(0x4d1));
+	// vt8235 slot
+	printk_info("setting pci slot\n");
+	pci_assign_irqs(0, 0x11, vt8235Irqs);
 }
 
 
@@ -81,7 +75,6 @@ final_southbridge_fixup()
 	printk_info("Southbridge fixup\n");
 
 	nvram_on();
-//	keyboard_on();
 	pci_routing_fixup();
 }
 

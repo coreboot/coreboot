@@ -76,6 +76,9 @@ unsigned int scan_static_bus(device_t bus, unsigned int max)
 
 	for(link = 0; link < bus->links; link++) {
 		for(child = bus->link[link].children; child; child = child->sibling) {
+			if (child->chip_ops && child->chip_ops->enable_dev) {
+				child->chip_ops->enable_dev(child);
+			}
 			if (child->ops && child->ops->enable) {
 				child->ops->enable(child);
 			}
@@ -142,7 +145,6 @@ unsigned int root_dev_scan_bus(device_t root, unsigned int max)
 
 void root_dev_init(device_t root)
 {
-	initialize_cpus(root);
 }
 
 /**
@@ -169,9 +171,4 @@ struct device_operations default_dev_ops_root = {
  * This is the root of the dynamic device tree. A PCI tree always has 
  * one bus, bus 0. Bus 0 contains devices and bridges. 
  */
-struct device dev_root = {
-	.ops = &default_dev_ops_root,
-	.bus = &dev_root.link[0],
-	.path = { .type = DEVICE_PATH_ROOT },
-	.enabled = 1,
-};
+extern struct device dev_root;

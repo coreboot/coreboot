@@ -1,8 +1,5 @@
 #include <version.h>
 
-#define __STR(X) #X
-#define STR(X) __STR(X)
-
 #ifndef MAINBOARD_VENDOR
 #error MAINBOARD_VENDOR not defined
 #endif
@@ -39,23 +36,23 @@
 
 
 #ifndef  LINUXBIOS_EXTRA_VERSION
-#define LINUXBIOS_EXTRA_VERSION
+#define LINUXBIOS_EXTRA_VERSION ""
 #endif
 
-const char mainboard_vendor[] = STR(MAINBOARD_VENDOR);
-const char mainboard_part_number[] = STR(MAINBOARD_PART_NUMBER);
+const char mainboard_vendor[] = MAINBOARD_VENDOR;
+const char mainboard_part_number[] = MAINBOARD_PART_NUMBER;
 
-const char linuxbios_version[] = STR(LINUXBIOS_VERSION);
-const char linuxbios_extra_version[] = STR(LINUXBIOS_EXTRA_VERSION);
-const char linuxbios_build[] = STR(LINUXBIOS_BUILD);
+const char linuxbios_version[] = LINUXBIOS_VERSION;
+const char linuxbios_extra_version[] = LINUXBIOS_EXTRA_VERSION;
+const char linuxbios_build[] = LINUXBIOS_BUILD;
 
-const char linuxbios_compile_time[]   = STR(LINUXBIOS_COMPILE_TIME);
-const char linuxbios_compile_by[]     = STR(LINUXBIOS_COMPILE_BY);
-const char linuxbios_compile_host[]   = STR(LINUXBIOS_COMPILE_HOST);
-const char linuxbios_compile_domain[] = STR(LINUXBIOS_COMPILE_DOMAIN);
-const char linuxbios_compiler[]       = STR(LINUXBIOS_COMPILER);
-const char linuxbios_linker[]         = STR(LINUXBIOS_LINKER);
-const char linuxbios_assembler[]      = STR(LINUXBIOS_ASSEMBLER);
+const char linuxbios_compile_time[]   = LINUXBIOS_COMPILE_TIME;
+const char linuxbios_compile_by[]     = LINUXBIOS_COMPILE_BY;
+const char linuxbios_compile_host[]   = LINUXBIOS_COMPILE_HOST;
+const char linuxbios_compile_domain[] = LINUXBIOS_COMPILE_DOMAIN;
+const char linuxbios_compiler[]       = LINUXBIOS_COMPILER;
+const char linuxbios_linker[]         = LINUXBIOS_LINKER;
+const char linuxbios_assembler[]      = LINUXBIOS_ASSEMBLER;
 
 
 

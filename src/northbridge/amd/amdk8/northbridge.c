@@ -6,10 +6,10 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/hypertransport.h>
-#include <device/chip.h>
 #include <stdlib.h>
 #include <string.h>
 #include <bitops.h>
+#include <cpu/cpu.h>
 #include "chip.h"
 #include "northbridge.h"
 #include "amdk8.h"
@@ -487,7 +487,7 @@ static struct pci_driver mcf0_driver __pci_driver = {
 
 #define BRIDGE_IO_MASK (IORESOURCE_IO | IORESOURCE_MEM | IORESOURCE_PREFETCH)
 
-static void bridge_read_resources(device_t dev)
+static void pci_domain_read_resources(device_t dev)
 {
 	struct resource *resource;
 	unsigned reg;
@@ -556,7 +556,7 @@ static void ram_resource(device_t dev, unsigned long index,
 		IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 }
 
-static void bridge_set_resources(device_t dev)
+static void pci_domain_set_resources(device_t dev)
 {
 	struct resource *io, *mem1, *mem2;
 	struct resource *resource, *last;
@@ -577,7 +577,7 @@ static void bridge_set_resources(device_t dev)
 	mem2 = find_resource(dev, 2);
 	/* See if both resources have roughly the same limits */
 	if (((mem1->limit <= 0xffffffff) && (mem2->limit <= 0xffffffff)) ||
-		(mem1->limit > 0xffffffff) && (mem2->limit > 0xffffffff))
+		((mem1->limit > 0xffffffff) && (mem2->limit > 0xffffffff)))
 	{
 		/* If so place the one with the most stringent alignment first
 		 */
@@ -682,21 +682,34 @@ static void bridge_set_resources(device_t dev)
 	assign_resources(&dev->link[0]);
 }
 
-
-
-static unsigned int bridge_scan_bus(device_t root, unsigned int max)
+static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
 {
-	struct bus *cpu_bus;
 	unsigned reg;
 	int i;
 	/* Unmap all of the HT chains */
 	for(reg = 0xe0; reg <= 0xec; reg += 4) {
 		f1_write_config32(reg, 0);
 	}
-	max = pci_scan_bus(&root->link[0], PCI_DEVFN(0x18, 0), 0xff, max);
+	max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0x18, 0), 0xff, max);
+	return max;
+}
+
+static struct device_operations pci_domain_ops = {
+	.read_resources   = pci_domain_read_resources,
+	.set_resources    = pci_domain_set_resources,
+	.enable_resources = enable_childrens_resources,
+	.init             = 0,
+	.scan_bus         = pci_domain_scan_bus,
+};
+
+static unsigned int scan_cpu_bus(device_t dev, unsigned int max)
+{
+	struct bus *cpu_bus;
+	unsigned reg;
+	int i;
 
 	/* Find which cpus are present */
-	cpu_bus = &dev_root.link[1];
+	cpu_bus = &dev->link[0];
 	for(i = 0; i < 7; i++) {
 		device_t dev, cpu;
 		struct device_path cpu_path;
@@ -732,40 +745,39 @@ static unsigned int bridge_scan_bus(device_t root, unsigned int max)
 				dev_path(cpu), cpu->enabled?"enabled":"disabled");
 		}
 	}
-
 	return max;
 }
 
+static void cpu_bus_init(device_t dev)
+{
+	printk_debug("cpu_bus_init\n");
+#if 0
+	initialize_cpus(&dev->link[0]);
+#endif
+}
 
-static struct device_operations bridge_ops = {
-	.read_resources   = bridge_read_resources,
-	.set_resources    = bridge_set_resources,
-	.enable_resources = enable_childrens_resources,
-	.init             = 0,
-	.scan_bus         = bridge_scan_bus,
+static struct device_operations cpu_bus_ops = {
+	.read_resources   = 0,
+	.set_resources    = 0,
+	.enable_resources = 0,
+	.init             = cpu_bus_init,	
+	.scan_bus         = scan_cpu_bus,
 };
 
-static void enumerate(struct chip *chip)
+static void enable_dev(struct device *dev)
 {
 	struct device_path path;
-	device_t bridge;
-	chip_enumerate(chip);
 
-	/* Get the path for the bridge device */
-	path.type         = DEVICE_PATH_PNP;
-	path.u.pnp.port   = 0xcf8;
-	path.u.pnp.device = 0;
-
-	/* Lookup the bridge device */
-	bridge = find_dev_path(&dev_root.link[0], &path);
-
-	/* Set the bridge operations */
-	if (bridge) {
-		bridge->ops = &bridge_ops;
+	/* Set the operations if it is a special bus type */
+	if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
+		dev->ops = &pci_domain_ops;
+	}
+	else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
+		dev->ops = &cpu_bus_ops;
 	}
 }
 
-struct chip_control northbridge_amd_amdk8_control = {
-	.name   = "AMD K8 Northbridge",
-	.enumerate = enumerate,
+struct chip_operations northbridge_amd_amdk8_ops = {
+	.name       = "AMD K8 Northbridge",
+	.enable_dev = enable_dev,
 };

@@ -259,6 +259,9 @@ class romimage:
 		# exported options
 		self.exported_options = []
 
+		# Last device built
+		self.last_device = 0
+
 	def getname(self):
 		return self.name
 
@@ -282,7 +285,6 @@ class romimage:
 		if (o):
 			warning("rule %s previously defined" % id)
 		o = makerule(id)
-		print "We are in addmakerule, add %s\n" % id
 		setdict(self.makebaserules, id, o)
 
 	def getmakerules(self):
@@ -579,6 +581,7 @@ class partobj:
 		# links for static device tree
 		self.children = 0
 		self.siblings = 0
+		self.next_device = 0
 		self.chip_or_device = chip_or_device
 
 		# list of init code files
@@ -639,7 +642,13 @@ class partobj:
 		else:
 			self.instance_name = instance_name
 			self.chipinfo_name = "%s_info_%d" % (self.instance_name, self.instance)
-		
+			
+		# Link this part into the device list
+		if (self.chip_or_device == 'device'):
+			if (image.last_device):
+				image.last_device.next_device = self
+			image.last_device = self
+
 		# Link this part into the tree
 		if (parent and (part != 'arch')):
 			debug.info(debug.gencode, "add to parent")
@@ -769,7 +778,7 @@ class partobj:
 
 		if (self.instance == 0):
 			self.instance_name = "dev_root"
-			file.write("struct %s_config %s_info_%s;\n" % (self.type_name, self.type_name, self.instance))
+			file.write("struct device **last_dev_p = &%s.next;\n" % (self.image.last_device.instance_name))
 			file.write("struct device dev_root = {\n")
 			file.write("\t.ops = &default_dev_ops_root,\n")
 			file.write("\t.bus = &dev_root.link[0],\n")
@@ -780,9 +789,10 @@ class partobj:
 			file.write("\t\t\t.children = &%s,\n" % self.firstchilddevice().instance_name)
 			file.write("\t\t},\n")
 			file.write("\t},\n")
-			if (self.chipconfig != 0):
-				file.write("\t.chip_control = &%s_control,\n" % self.type_name)
+			if (self.chipconfig):
+				file.write("\t.chip_ops = &%s_ops,\n" % self.type_name)
 				file.write("\t.chip_info = &%s_info_%s,\n" % (self.type_name, self.instance))
+			file.write("\t.next = &%s,\n" % self.firstchilddevice().instance_name)
 			file.write("};\n")
 			return
 
@@ -804,9 +814,12 @@ class partobj:
 		sibling = self.firstsiblingdevice();
 		if (sibling):
 			file.write("\t.sibling = &%s,\n" % sibling.instance_name)
-		if (self.chipconfig != 0):
-			file.write("\t.chip_control = &%s_control,\n" % self.firstparentchip().type_name)
-			file.write("\t.chip_info = &%s_info_%s,\n" % (self.firstparentchip().type_name, self.firstparentchip().instance))
+		chip = self.firstparentchip()
+		if (chip and chip.chipconfig):
+			file.write("\t.chip_ops = &%s_ops,\n" % chip.type_name)
+			file.write("\t.chip_info = &%s_info_%s,\n" % (chip.type_name, chip.instance))
+		if (self.next_device):	
+			file.write("\t.next=&%s\n" % self.next_device.instance_name)
 		file.write("};\n")
 		return
 
@@ -1288,7 +1301,7 @@ def mainboard():
 	type_name = flatten_name(partdir)
 	newpart = partobj(curimage, fulldir, partstack.tos(), 'mainboard', \
 		type_name, 0, 0, 'chip')
-	print "Configuring PART %s" % (type)
+	#print "Configuring PART %s" % (type)
 	partstack.push(newpart)
 	#print "  new PART tos is now %s\n" %partstack.tos().info()
 	dirstack.push(fulldir)
@@ -1342,7 +1355,7 @@ def devicepart(type):
 	global curimage, dirstack, partstack
 	newpart = partobj(curimage, 0, partstack.tos(), type, \
 			'', 0, 0, 'device')
-	print "Configuring PART %s" % (type)
+	#print "Configuring PART %s" % (type)
 	partstack.push(newpart)
 	#print "  new PART tos is now %s\n" %partstack.tos().info()
 	# just push TOS, so that we can pop later. 
@@ -1374,7 +1387,7 @@ def partpop():
 	curpart = partstack.tos()
 	if (curpart == 0):
 		fatal("Trying to pop non-existent part")
-	print "End PART %s" % curpart.part
+	#print "End PART %s" % curpart.part
 	# Warn if options are used without being set in this part
 	for op in curpart.uses_options.keys():
 		if (not isset(op, curpart)):
@@ -1406,7 +1419,6 @@ def lookup(name):
 
 def addrule(id):
 	global curimage
-	print "ADDRULE: %s\n" %id
 	curimage.addmakerule(id)
 	
 def adduserdefine(str):
@@ -2167,7 +2179,7 @@ def writecode(image):
 	filename = os.path.join(img_dir, "static.c")
 	print "Creating", filename
 	file = safe_open(filename, 'w+')
-	file.write("#include <device/chip.h>\n")
+	file.write("#include <device/device.h>\n")
 	file.write("#include <device/pci.h>\n")
 	for path in image.getconfigincludes().values():
 		file.write("#include \"%s\"\n" % path)

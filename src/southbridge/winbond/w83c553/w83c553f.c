@@ -34,7 +34,6 @@
 #include <arch/io.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <device/chip.h>
 #include <console/console.h>
 #include "w83c553f.h"
 

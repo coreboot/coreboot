@@ -32,7 +32,6 @@ it with the version available from LANL.
 #include <boot/tables.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/chip.h>
 #include <delay.h>
 #include <stdlib.h>
 #include <part/hard_reset.h>
@@ -52,8 +51,6 @@ void hardwaremain(int boot_complete)
 
 	post_code(0x80);
 
-	CONFIGURE(CONF_PASS_PRE_CONSOLE);
-
 	/* displayinit MUST PRECEDE ALL PRINTK! */
 	console_init();
 	
@@ -69,13 +66,13 @@ void hardwaremain(int boot_complete)
 		hard_reset();
 	}
 
-	CONFIGURE(CONF_PASS_PRE_PCI);
+	/* FIXME: Is there a better way to handle this? */
+	init_timer(); 
 
 	/* pick how to scan the bus. This is first so we can get at memory size. */
 	printk_info("Finding PCI configuration type.\n");
 	pci_set_method();
 	post_code(0x5f);
-	enumerate_static_devices();
 	dev_enumerate();
 	post_code(0x66);
 	/* Now do the real bus.
@@ -90,14 +87,10 @@ void hardwaremain(int boot_complete)
 	dev_initialize();
 	post_code(0x89);
 
-	CONFIGURE(CONF_PASS_POST_PCI);
-
 	/* Now that we have collected all of our information
 	 * write our configuration tables.
 	 */
 	lb_mem = write_tables();
-
-	CONFIGURE(CONF_PASS_PRE_BOOT);
 
 #if CONFIG_FS_STREAM == 1
 	filo(lb_mem);

@@ -1,4 +1,4 @@
-config amd8111.h
+config chip.h
 driver amd8111.o
 #driver amd8111_usb.o
 driver amd8111_lpc.o

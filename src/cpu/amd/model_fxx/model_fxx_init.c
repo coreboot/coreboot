@@ -3,7 +3,6 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <device/device.h>
-#include <device/chip.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <string.h>

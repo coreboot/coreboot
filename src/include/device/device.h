@@ -5,10 +5,17 @@
 #include <device/resource.h>
 #include <device/path.h>
 
+
 struct device;
 typedef struct device * device_t;
 struct pci_operations;
 struct smbus_bus_operations;
+
+/* Chip operations */
+struct chip_operations {
+	char *name; 	/* This is the print name for debugging */
+	void (*enable_dev)(struct device *dev);
+};
 
 struct device_operations {
 	void (*read_resources)(device_t dev);
@@ -67,7 +74,7 @@ struct device {
 
 	unsigned long rom_address;
 	struct device_operations *ops;
-	struct chip_control *chip_control;
+	struct chip_operations *chip_ops;
 	void *chip_info;
 };
 

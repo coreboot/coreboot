@@ -1,6 +1,5 @@
 #include <console/console.h>
 #include <device/device.h>
-#include <device/chip.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <string.h>

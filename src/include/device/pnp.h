@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include <device/device.h>
 #include <device/pnp_def.h>
-#include <device/chip.h>
 
 /* Primitive pnp resource manipulation */
 void    pnp_write_config(device_t dev, uint8_t reg, uint8_t value);
@@ -45,7 +44,7 @@ struct pnp_info {
 	struct io_info io0, io1, io2, io3;
 };
 struct resource *pnp_get_resource(device_t dev, unsigned index);
-void pnp_enumerate(struct chip *chip, unsigned functions, 
-	struct device_operations *ops, struct pnp_info *info);
+void pnp_enable_devices(struct device *dev, struct device_operations *ops,
+	unsigned functions, struct pnp_info *info);
 
 #endif /* DEVICE_PNP_H */

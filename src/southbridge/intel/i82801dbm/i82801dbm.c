@@ -2,7 +2,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <device/chip.h>
 #include "i82801dbm.h"
 
 void i82801dbm_enable(device_t dev)

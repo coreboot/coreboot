@@ -5,7 +5,7 @@ struct device;
 #include <arch/cpu.h>
 
 void cpu_initialize(void);
-void initialize_cpus(struct device *root);
+void initialize_cpus(struct bus *cpu_bus);
 
 #define __cpu_driver __attribute__ ((used,__section__(".rodata.cpu_driver")))
 /** start of compile time generated pci driver array */

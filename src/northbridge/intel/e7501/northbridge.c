@@ -5,7 +5,6 @@
 #include <part/sizeram.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/chip.h>
 #include <stdlib.h>
 #include <string.h>
 #include <bitops.h>

@@ -5,7 +5,6 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pnp.h>
-#include <device/chip.h>
 #include <console/console.h>
 #include <string.h>
 #include <bitops.h>
@@ -24,7 +23,7 @@ static void init(device_t dev)
 	if (!dev->enabled) {
 		return;
 	}
-	conf = dev->chip->chip_info;
+	conf = dev->chip_info;
 	switch(dev->path.u.pnp.device) {
 	case PC87360_SP1: 
 		res0 = find_resource(dev, PNP_IDX_IO0);
@@ -65,13 +64,13 @@ static struct pnp_info pnp_dev_info[] = {
 };
 
 
-static void enumerate(struct chip *chip)
+static void enable_dev(struct device *dev)
 {
-	pnp_enumerate(chip, sizeof(pnp_dev_info)/sizeof(pnp_dev_info[0]), 
-		&pnp_ops, pnp_dev_info);
+	pnp_enable_devices(dev, &pnp_ops,
+		sizeof(pnp_dev_info)/sizeof(pnp_dev_info[0]), pnp_dev_info);
 }
 
-struct chip_control superio_NSC_pc87360_control = {
-	.enumerate = enumerate,
-	.name      = "NSC 87360"
+struct chip_operations superio_NSC_pc87360_ops = {
+	.name       = "NSC 87360",
+	.enable_dev = enable_dev,
 };

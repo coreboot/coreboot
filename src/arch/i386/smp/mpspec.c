@@ -1,4 +1,6 @@
 #include <console/console.h>
+#include <device/device.h>
+#include <device/path.h>
 #include <cpu/cpu.h>
 #include <arch/smp/mpspec.h>
 #include <string.h>
@@ -101,14 +103,17 @@ void smp_write_processors(struct mp_config_table *mc)
 	unsigned cpu_feature_flags;
 	struct cpuid_result result;
 	device_t cpu;
+	
 	boot_apic_id = lapicid();
 	apic_version = lapic_read(LAPIC_LVR) & 0xff;
 	result = cpuid(1);
 	cpu_features = result.eax;
 	cpu_feature_flags = result.edx;
-	for(cpu = dev_root.link[1].children; cpu; cpu = cpu->sibling) {
+	for(cpu = all_devices; cpu; cpu = cpu->next) {
 		unsigned long cpu_flag;
-		if (cpu->path.type != DEVICE_PATH_APIC) {
+		if ((cpu->path.type != DEVICE_PATH_APIC) || 
+			(cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER))
+		{
 			continue;
 		}
 		if (!cpu->enabled) {

@@ -9,7 +9,6 @@
 #include <delay.h>
 
 #include <arch/io.h>
-#include <device/chip.h>
 #include "../../../northbridge/amd/amdk8/northbridge.h"
 #include "../../../northbridge/amd/amdk8/cpu_rev.c"
 #include "chip.h"
@@ -312,13 +311,12 @@ static struct device_operations mainboard_operations = {
 	.enable           = 0,
 };
 
-static void enumerate(struct chip *chip)
+static void enable_dev(struct chip *chip)
 {
 	dev_root.ops = &mainboard_operations;
-	chip_enumerate(chip);
 }
-struct chip_control mainboard_arima_hdama_control = {
-	.enumerate = enumerate, 
+struct chip_operations mainboard_arima_hdama_ops = {
 	.name      = "Arima HDAMA mainboard ",
+	.enable_dev = enable_dev, 
 };
 

@@ -6,7 +6,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/hypertransport.h>
-#include <device/chip.h>
 #include <stdlib.h>
 #include <string.h>
 #include <bitops.h>

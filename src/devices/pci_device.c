@@ -18,7 +18,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <device/chip.h>
 #include <part/hard_reset.h>
 #include <part/fallback_boot.h>
 #include <delay.h>
@@ -486,7 +485,7 @@ void pci_dev_enable_resources(struct device *dev)
 
 	/* Set the subsystem vendor and device id for mainboard devices */
 	ops = ops_pci(dev);
-	if (dev->chip && ops && ops->set_subsystem) {
+	if (dev->chip_ops && ops && ops->set_subsystem) {
 		printk_debug("%s subsystem <- %02x/%02x\n",
 			dev_path(dev), 
 			MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID,
@@ -740,10 +739,9 @@ unsigned int pci_scan_bus(struct bus *bus,
 			 * it may be absent and enable_dev must cope.
 			 * 
 			 */
-			if (	dev->chip && dev->chip->control && 
-				dev->chip->control->enable_dev) 
+			if (dev->chip_ops && dev->chip_ops->enable_dev) 
 			{
-				dev->chip->control->enable_dev(dev);
+				dev->chip_ops->enable_dev(dev);
 			}
 			/* Now read the vendor and device id */
 			id = pci_read_config32(dev, PCI_VENDOR_ID);

@@ -7,7 +7,7 @@
 #error "This Configuration does not support SMP"
 #endif
 
-void initialize_cpus(device_t root)
+void initialize_cpus(struct bus *cpu_bus)
 {
 	struct device_path cpu_path;
 	struct cpu_info *info;
@@ -19,7 +19,7 @@ void initialize_cpus(device_t root)
 	cpu_path.type = DEVICE_PATH_BOOT_CPU;
 
 	/* Find the device struct for the boot cpu */
-	info->cpu = alloc_find_dev(root->link[1], &cpu_path);
+	info->cpu = alloc_find_dev(bus, &cpu_path);
 	
 	/* Initialize the bootstrap processor */
 	cpu_initialize();

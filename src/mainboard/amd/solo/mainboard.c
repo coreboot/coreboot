@@ -6,7 +6,6 @@
 #include <device/pci_ops.h>
 
 #include <arch/io.h>
-#include <device/chip.h>
 #include "../../../northbridge/amd/amdk8/northbridge.h"
 #include "chip.h"
 

@@ -2,7 +2,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <device/chip.h>
 #include "amd8111.h"
 
 void amd8111_enable(device_t dev)
@@ -62,7 +61,7 @@ void amd8111_enable(device_t dev)
 	
 }
 
-struct chip_control southbridge_amd_amd8111_control = {
+struct chip_operations southbridge_amd_amd8111_ops = {
 	.name       = "AMD 8111 Southbridge",
 	.enable_dev = amd8111_enable,
 };

@@ -133,6 +133,14 @@ const char *dev_path(device_t dev)
 			sprintf(buffer, "APIC: %02x",
 				dev->path.u.apic.apic_id);
 			break;
+		case DEVICE_PATH_PCI_DOMAIN:
+			sprintf(buffer, "PCI_DOMAIN: %04x",
+				dev->path.u.pci_domain.domain);
+			break;
+		case DEVICE_PATH_APIC_CLUSTER:
+			sprintf(buffer, "APIC_CLUSTER: %01x",
+				dev->path.u.apic_cluster.cluster);
+			break;
 		default:
 			printk_err("Unknown device path type: %d\n", dev->path.type);
 			break;
@@ -155,8 +163,7 @@ int path_eq(struct device_path *path1, struct device_path *path2)
 			equal = 1;
 			break;
 		case DEVICE_PATH_PCI:
-			equal = (path1->u.pci.bus == path2->u.pci.bus) &&
-				(path1->u.pci.devfn == path2->u.pci.devfn);
+			equal = (path1->u.pci.devfn == path2->u.pci.devfn);
 			break;
 		case DEVICE_PATH_PNP:
 			equal = (path1->u.pnp.port == path2->u.pnp.port) &&
@@ -167,6 +174,12 @@ int path_eq(struct device_path *path1, struct device_path *path2)
 			break;
 		case DEVICE_PATH_APIC:
 			equal = (path1->u.apic.apic_id == path2->u.apic.apic_id);
+			break;
+		case DEVICE_PATH_PCI_DOMAIN:
+			equal = (path1->u.pci_domain.domain == path2->u.pci_domain.domain);
+			break;
+		case DEVICE_PATH_APIC_CLUSTER:
+			equal = (path1->u.apic_cluster.cluster == path2->u.apic_cluster.cluster);
 			break;
 		default:
 			printk_err("Uknown device type: %d\n", path1->type);

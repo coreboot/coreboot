@@ -10,7 +10,7 @@ enum device_path_type {
 	DEVICE_PATH_I2C,
 	DEVICE_PATH_APIC,
 	DEVICE_PATH_PCI_DOMAIN,
-	DEVICE_APIC_CLUSTER,
+	DEVICE_PATH_APIC_CLUSTER,
 };
 
 struct pci_domain_path

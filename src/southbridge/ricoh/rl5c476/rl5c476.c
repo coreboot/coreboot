@@ -25,7 +25,6 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
-#include <device/chip.h>
 #include <console/console.h>
 #include "rl5c476.h"
 #include "chip.h"

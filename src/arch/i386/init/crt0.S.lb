@@ -37,12 +37,21 @@
 
 #include "crt0_includes.h"
 
+	/* uses:	 esp, ebx, ax, dx */
+#define __CONSOLE_TX_STRING(string)	\
+	mov	string, %ebx	; \
+	CALLSP(console_tx_string)
+
+#if ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG
+#define CONSOLE_DEBUG_TX_STRING(string)        __CONSOLE_TX_STRING(string)
+#else
+#define CONSOLE_DEBUG_TX_STRING(string)
+#endif
 
 	/* clear boot_complete flag */
 	xorl	%ebp, %ebp
 __main:
-	mov	$str_copying_to_ram, %ebx
-	CALLSP(console_tx_string)
+	CONSOLE_DEBUG_TX_STRING($str_copying_to_ram)
 
 	/*
 	 *	Copy data into RAM and clear the BSS. Since these segments
@@ -149,8 +158,7 @@ decompr_end_n2b:
 	movl	%esp, %ebp
 #endif
 
-	mov	$str_pre_main, %ebx
-	CALLSP(console_tx_string)
+	CONSOLE_DEBUG_TX_STRING($str_pre_main)
 	leal	_iseg, %edi
 	jmp	%edi
 
@@ -159,12 +167,9 @@ decompr_end_n2b:
 	hlt
 	jmp	.Lhlt
 
-
+#if ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG
 	/* Uses esp, ebx, ax, dx  */
 console_tx_string:
-#if ASM_CONSOLE_LOGLEVEL <= BIOS_DEBUG
-	RETSP
-#else	
 	mov	(%ebx), %al
 	inc	%ebx
 	cmp	$0, %al
@@ -210,4 +215,3 @@ str_pre_main:        .string "Jumping to LinuxBIOS.\r\n"
 .previous
 
 #endif /* ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG */
-	

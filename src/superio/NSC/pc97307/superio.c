@@ -2,7 +2,6 @@
 /* This code is distributed without warranty under the GPL v2 (see COPYING) */
 
 #include <arch/io.h>
-#include <device/chip.h>
 #include <console/console.h>
 #include "chip.h"
 

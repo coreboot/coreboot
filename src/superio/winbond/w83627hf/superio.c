@@ -7,7 +7,6 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pnp.h>
-#include <device/chip.h>
 #include <console/console.h>
 #include <string.h>
 #include <bitops.h>

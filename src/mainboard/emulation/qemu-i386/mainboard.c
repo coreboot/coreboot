@@ -5,7 +5,6 @@
 #include <device/pci_ops.h>
 
 #include <arch/io.h>
-#include <device/chip.h>
 #include "chip.h"
 
 void cpufixup(unsigned long mem)

@@ -1,4 +1,4 @@
-#include <device/chip.h>
+#include <device/device.h>
 #include "chip.h"
 
 

@@ -1,7 +1,7 @@
-#include <device/chip.h>
+#include <device/device.h>
 #include "chip.h"
 
 
-struct chip_control cpu_amd_socket_940_control = {
+struct chip_operations cpu_amd_socket_940_ops = {
 	.name = "socket 940",
 };

@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include <device/device.h>
 #include <device/path.h>
-#include <device/chip.h>
 #include <device/smbus_def.h>
 
 /* Common smbus bus operations */

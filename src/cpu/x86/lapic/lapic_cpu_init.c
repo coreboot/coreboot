@@ -234,12 +234,12 @@ void secondary_cpu_init(void)
 	stop_this_cpu();
 }
 
-static void initialize_other_cpus(device_t root)
+static void initialize_other_cpus(struct bus *cpu_bus)
 {
 	int old_active_count, active_count;
 	device_t cpu;
 	/* Loop through the cpus once getting them started */
-	for(cpu = root->link[1].children; cpu ; cpu = cpu->sibling) {
+	for(cpu = cpu_bus->children; cpu ; cpu = cpu->sibling) {
 		if (cpu->path.type != DEVICE_PATH_APIC) {
 			continue;
 		}
@@ -267,7 +267,7 @@ static void initialize_other_cpus(device_t root)
 		udelay(10);
 		active_count = atomic_read(&active_cpus);
 	}
-	for(cpu = root->link[1].children; cpu; cpu = cpu->sibling) {
+	for(cpu = cpu_bus->children; cpu; cpu = cpu->sibling) {
 		if (cpu->path.type != DEVICE_PATH_APIC) {
 			continue;
 		}
@@ -284,7 +284,7 @@ static void initialize_other_cpus(device_t root)
 #define initialize_other_cpus(root) do {} while(0)
 #endif /* CONFIG_SMP */
 
-void initialize_cpus(device_t root)
+void initialize_cpus(struct bus *cpu_bus)
 {
 	struct device_path cpu_path;
 	struct cpu_info *info;
@@ -305,12 +305,12 @@ void initialize_cpus(device_t root)
 #endif
 	
 	/* Find the device structure for the boot cpu */
-	info->cpu = alloc_find_dev(&root->link[1], &cpu_path);
+	info->cpu = alloc_find_dev(cpu_bus, &cpu_path);
 	
 	/* Initialize the bootstrap processor */
 	cpu_initialize();
 
 	/* Now initialize the rest of the cpus */
-	initialize_other_cpus(root);
+	initialize_other_cpus(cpu_bus);
 }
 

@@ -185,22 +185,24 @@ static void get_resources(device_t dev, struct pnp_info *info)
 	}	
 } 
 
-void pnp_enumerate(struct chip *chip, unsigned functions, 
-	struct device_operations *ops, struct pnp_info *info)
+void pnp_enable_devices(device_t base_dev, struct device_operations *ops, 
+	unsigned functions, struct pnp_info *info)
 {
 	struct device_path path;
 	device_t dev;
 	int i;
 
-	chip_enumerate(chip);
-
 	path.type       = DEVICE_PATH_PNP;
-	path.u.pnp.port = chip->dev->path.u.pnp.port;
+	path.u.pnp.port = base_dev->path.u.pnp.port;
 	
 	/* Setup the ops and resources on the newly allocated devices */
 	for(i = 0; i < functions; i++) {
 		path.u.pnp.device = info[i].function;
-		dev = alloc_find_dev(chip->bus, &path);
+		dev = alloc_find_dev(base_dev->bus, &path);
+		
+		/* Don't initialize a device multiple times */
+		if (dev->ops) 
+			continue;
 
 		if (info[i].ops == 0) {
 			dev->ops = ops;

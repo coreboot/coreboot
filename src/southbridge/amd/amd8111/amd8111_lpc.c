@@ -6,7 +6,6 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <device/chip.h>
 #include <pc80/mc146818rtc.h>
 #include "amd8111.h"
 

@@ -26,7 +26,6 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
-#include <device/chip.h>
 #include <console/console.h>
 #include "vt1211.h"
 #include "chip.h"

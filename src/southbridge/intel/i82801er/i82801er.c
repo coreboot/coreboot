@@ -2,7 +2,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <device/chip.h>
 #include "i82801er.h"
 
 void i82801er_enable(device_t dev)

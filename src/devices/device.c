@@ -27,7 +27,7 @@
 /** Linked list of ALL devices */
 struct device *all_devices = &dev_root;
 /** Pointer to the last device */
-static struct device **last_dev_p = &dev_root.next;
+extern struct device **last_dev_p;
 
 /** The upper limit of MEM resource of the devices.
  * Reserve 20M for the system */
@@ -504,6 +504,9 @@ void dev_enumerate(void)
 	unsigned subordinate;
 	printk_info("Enumerating buses...\n");
 	root = &dev_root;
+	if (root->chip_ops && root->chip_ops->enable_dev) {
+		root->chip_ops->enable_dev(root);
+	}
 	if (!root->ops || !root->ops->scan_bus) {
 		printk_err("dev_root missing scan_bus operation");
 		return;

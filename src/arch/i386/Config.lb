@@ -20,15 +20,7 @@ end
 makerule linuxbios.rom 
 	depends	"linuxbios.strip buildrom" 
 	action "./buildrom $< $@ $(PAYLOAD) $(ROM_IMAGE_SIZE) $(ROM_SECTION_SIZE)"
-	#action	"export size=`ls -l linuxbios.strip | (read p c u g size r ; echo $$size)` ; \\"
-	#action	"echo $$size ; \\"
-	#action	"dd if=linuxbios.strip of=linuxbios.rom bs=1 seek=`expr $(ROM_IMAGE_SIZE) - $$size`"
 end
-
-#makerule payload.block 
-#	depends	"$(if $(PAYLOAD),$(PAYLOAD), /dev/null)"
-#	action	"perl -e '@stats=stat(\"$<\"); $$sz=$$stats[7]; print "\xff" x ($(PAYLOAD_SIZE) - $$sz);' | cat $< - > $@"
-#end
 
 makerule crt0.S
 	depends "$(CRT0)"

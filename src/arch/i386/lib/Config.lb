@@ -1,6 +1,4 @@
-#object i386_subr.o
 #object params.o
-#object hardwaremain.o
 #object vgabios.o CONFIG_VGABIOS
 #object idt.o  CONFIG_REALMODE_IDT
 #object pci-irq.c CONFIG_PCIBIOS_IRQ
@@ -9,5 +7,4 @@
 object c_start.S
 object cpu.c
 object pci_ops.c
-
 

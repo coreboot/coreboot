@@ -205,7 +205,7 @@ unsigned long micro = 0;
 void 
 myusec_calibrate_delay()
 {
-	unsigned long count = 20 *  1024 * 1024;
+	unsigned long count = 10 *  1024 * 1024;
 	volatile unsigned long i;
 	unsigned long timeusec;
 	struct timeval start, end;
@@ -221,7 +221,7 @@ myusec_calibrate_delay()
 		timeusec = 1000000 * (end.tv_sec - start.tv_sec ) + 
 				(end.tv_usec - start.tv_usec);
 		fprintf(stderr, "timeusec is %d\n", timeusec);
-		count *= 10;
+		count *= 100;
 		if (timeusec < 1000000)
 			continue;
 		ok = 1;

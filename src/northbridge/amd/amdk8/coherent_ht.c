@@ -436,42 +436,6 @@ static unsigned int cpuid(unsigned int op)
 
 static void coherent_ht_finalize(unsigned cpus)
 {
-//BY LYH 
-#if 1
-     static const unsigned int register_values[] = {
-        PCI_ADDR(0, 0x18, 0, 0x84), 0x88ff9c05, 0x11000020,
-        PCI_ADDR(0, 0x18, 0, 0xa4), 0x88ff9c05, 0x11000020,
-        PCI_ADDR(0, 0x18, 0, 0xc4), 0x88ff9c05, 0x770000d0,
-        PCI_ADDR(0, 0x19, 0, 0x84), 0x88ff9c05, 0x770000d0,
-        PCI_ADDR(0, 0x19, 0, 0xa4), 0x88ff9c05, 0x11000020,
-        PCI_ADDR(0, 0x19, 0, 0xc4), 0x88ff9c05, 0x770000d0,
-
-
-        PCI_ADDR(0, 0x18, 0, 0x88), 0xfffff0ff, 0x00000400,
-        PCI_ADDR(0, 0x18, 0, 0xa8), 0xfffff0ff, 0x00000500,
-        PCI_ADDR(0, 0x18, 0, 0xc8), 0xfffff0ff, 0x00000000,
-        PCI_ADDR(0, 0x19, 0, 0x88), 0xfffff0ff, 0x00000000,
-        PCI_ADDR(0, 0x19, 0, 0xa8), 0xfffff0ff, 0x00000500,
-        PCI_ADDR(0, 0x19, 0, 0xc8), 0xfffff0ff, 0x00000000,
-
-        PCI_ADDR(0, 0x18, 0, 0x94), 0xff0000ff, 0x00ff0000,
-        PCI_ADDR(0, 0x18, 0, 0xb4), 0xff0000ff, 0x00000000,
-        PCI_ADDR(0, 0x18, 0, 0xd4), 0xff0000ff, 0x00000000,
-        PCI_ADDR(0, 0x19, 0, 0x94), 0xff0000ff, 0x00000000,
-        PCI_ADDR(0, 0x19, 0, 0xb4), 0xff0000ff, 0x00000000,
-        PCI_ADDR(0, 0x19, 0, 0xd4), 0xff0000ff, 0x00000000,
-
-      };
-        int i;
-        int max;
-
-
-        device_t dev;
-        unsigned where;
-        unsigned long reg;
-#endif
-//BY LYH END
-
 	int node;
 	bool rev_a0;
 	
@@ -503,29 +467,6 @@ static void coherent_ht_finalize(unsigned cpus)
 			pci_write_config32(NODE_HT(node),0xd4,0);
 		}
 	}
-//BY LYH
-#if 1
-        print_debug("setting up coherent ht domain....\r\n");
-        max = sizeof(register_values)/sizeof(register_values[0]);
-        for(i = 0; i < max; i += 3) {
-#if 0
-                print_debug_hex32(i);
-                print_debug(": ");
-                print_debug_hex32(register_values[i]);
-                print_debug(" <-");
-                print_debug_hex32(register_values[i+2]);
-                print_debug("\r\n");
-#endif
-                dev = register_values[i] & ~0xff;
-                where = register_values[i] & 0xff;
-                reg = pci_read_config32(dev, where);
-                reg &= register_values[i+1];
-                reg |= register_values[i+2];
-                pci_write_config32(dev, where, reg);
-        }
-#endif
-//BY LYH END
-
 #if 1
 	print_debug("done\r\n");
 #endif
@@ -546,5 +487,7 @@ static int setup_coherent_ht_domain(void)
 #endif
 	coherent_ht_finalize(cpus);
 
+	/* this should probably go away again. */
+	coherent_ht_mainboard(cpus);
 	return reset_needed;
 }

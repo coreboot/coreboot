@@ -2001,10 +2001,6 @@ def verifyparse():
 		for op in image.exported_options:
 			if (getoptionvalue(op.name, op, image) == 0 and getoptionvalue(op.name, op, 0) == 0):
 				error("Exported option %s has no value (check Options.lb)" % op.name)
-	print("Verifing global options")
-	for op in global_exported_options:
-		if (getoptionvalue(op.name, op, 0) == 0):
-			error("Exported option %s has no value (check Options.lb)" % op.name)
 	exitiferrors()
 			
 #=============================================================================

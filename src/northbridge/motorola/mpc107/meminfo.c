@@ -49,7 +49,7 @@ sdram_dimm_to_bank_info(const char *data,  sdram_dimm_info *dimm, int verbose)
     if (csum != data[63])
     {
 	if (verbose)
-	    printk_info("Broken checksum\n");
+	    printk_info("Broken checksum 0x%x, should be 0x%x\n", data[63], csum);
 	return;
     }
     

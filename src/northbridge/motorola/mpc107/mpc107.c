@@ -66,11 +66,19 @@ sizeram(void)
 	return &meminfo;
 }
 
+/*
+ * Configure the MPC107 with the most pessimistic settings. These
+ * are modified by reading the SPD EEPROM and adjusting accordingly.
+ * One thing to note. The SPD settings can be wrong, as 
+ * was the case for my machine. I could only configure 32Mb out of
+ * 128Mb using these settings.
+*/
 void
 mpc107_init(void)
 {
 	uint16_t reg16;
 	uint32_t reg32;
+	uint32_t is32bits;
 	
         /* 
 	 * PCI Cmd 
@@ -93,6 +101,7 @@ mpc107_init(void)
 	 *      0x00000800	enable MCP* assertion
 	 *      0x00000400	enable TEA* assertion
 	 *      0x00000200	enable data bus parking
+	 *      0x00000080	restrict flash write width
 	 *      0x00000040	enable PCI store gathering
 	 *      0x00000010	enable loop-snoop
 	 *      0x00000008	enable address bus parking
@@ -105,7 +114,7 @@ mpc107_init(void)
 	 */
 	reg32 &= 0x11;
 
-	reg32 |= 0xff041a18;
+	reg32 |= 0xff041a98;
 	pci_ppc_write_config32(0, 0, 0xa8, reg32);
 
         /* 
@@ -123,13 +132,14 @@ mpc107_init(void)
 	 *      0x00000008	addr phase wt states = 2
 	 *      0x0000000c	addr phase wt states = 3
 	 */
-
-	pci_ppc_write_config32(0, 0, 0xac, 0x04040004);
+	reg32 = 0x04000000;
+	pci_ppc_write_config32(0, 0, 0xac, reg32);
 
         /*
 	 * EUMBBAR 
 	 */
-	pci_ppc_write_config32(0, 0, 0x78, 0xfc000000);
+	reg32 = 0xfc000000;
+	pci_ppc_write_config32(0, 0, 0x78, reg32);
 	
         /*
 	 * MCCR1 - Set MEMGO bit later!
@@ -140,10 +150,12 @@ mpc107_init(void)
 	 *      0x00020000	EDO/FP enable (else SDRAM)
 	 *      0x00010000	Parity check
 	 *      0x0000FFFF	16Mbit/2 bank SDRAM
+	 *      0x0000AAAA	256Mbit/4 bank SDRAM
 	 *      0x00005555	64Mbit/2 bank SDRAM
 	 *      0x00000000	64Mbit/4 bank SDRAM
 	 */
 	reg32 = pci_ppc_read_config32(0, 0, 0xf0);
+	is32bits = (reg32 & 0x00400000) == 0;
 	reg32 &= 0x00080000; /* Preserve MEMGO bit in case we're in RAM */
 	reg32 |= 0x75800000;
 	pci_ppc_write_config32(0, 0, 0xf0, reg32);
@@ -158,14 +170,16 @@ mpc107_init(void)
 	 *      0x00040000	SDRAM inline reads
 	 *      0x00020000	ECC enable
 	 *      0x00010000	EDO (else FP)
-	 *      0x000006b8	Refresh 33MHz bus
-	 *      0x0000035c	Refresh 66MHz bus
-	 *      0x0000023c	Refresh 100MHz bus
-	 *      0x000001ac	Refresh 133MHz bus
+	 *      0x000004cc	Refresh 33MHz bus (307 clocks)
+	 *      0x00000cc4	Refresh 66MHz bus (817 clocks)
+	 *      0x000010fc	Refresh 83MHz bus (1087 clocks)
+	 *      0x0000150c	Refresh 100MHz bus (1347 clocks)
+	 *      0x00001d2c	Refresh 133MHz bus (1867 clocks)
 	 *      0x00000002	Reserve a page
 	 *      0x00000001	RWM parity
 	 */
-	pci_ppc_write_config32(0, 0, 0xf4, 0x0440023c);
+	reg32 = 0x044004cc;
+	pci_ppc_write_config32(0, 0, 0xf4, reg32);
 
 	/*
 	 * MCCR3
@@ -174,7 +188,8 @@ mpc107_init(void)
 	 *      0x00400000	RDLAT = 4 clocks
 	 *      0x00300000	RDLAT = 3 clocks
 	 */
-	pci_ppc_write_config32(0, 0, 0xf8, 0x78400000);
+	reg32 = 0x78400000;
+	pci_ppc_write_config32(0, 0, 0xf8, reg32);
 
         /* 
 	 * MCCR4 
@@ -190,13 +205,20 @@ mpc107_init(void)
 	 *      0x00003000	CAS Latencey (CL=3)
 	 *      0x00002000	CAS Latencey (CL=2)
 	 *      0x00000200	Sequential wrap/4-beat burst
+	 *      0x00000300	Sequential wrap/8-beat burst
 	 *      0x00000030	Reserve a page
 	 *      0x00000009	RWM parity
 	 */
-	pci_ppc_write_config32(0, 0, 0xfc, 0x35323239);
+	reg32 = 0x35323239;
+	if (!is32bits)
+		reg32 |= 0x0300;
+	pci_ppc_write_config32(0, 0, 0xfc, reg32);
 
 	/*
 	 * MSAR1/MSAR2/MESAR1/MESAR2
+	 *
+	 * Assume each memory block is 32Mb. This is
+	 * most likely NOT correct.
 	 */
 	pci_ppc_write_config32(0, 0, 0x80, 0x60402000);
 	pci_ppc_write_config32(0, 0, 0x84, 0xe0c0a080);
@@ -228,7 +250,7 @@ mpc107_init(void)
 	 *	0x01	MemClk 20 ohms
 	 *	0x00	MemClk 40 ohms
 	 */
-	pci_ppc_write_config8(0, 0, 0x73, 0xc0);
+	pci_ppc_write_config8(0, 0, 0x73, 0xd1);
 
         /* 
 	 * CDCR 
@@ -244,15 +266,15 @@ mpc107_init(void)
 	 *      0x0002	CPU_CLK1 disabled
 	 *      0x0001	CPU_CLK2 disabled
 	*/
-	pci_ppc_write_config16(0, 0, 0x74, 0xfc01);
+	pci_ppc_write_config16(0, 0, 0x74, 0xfd00);
 
 	/*
-	 * MDCR
+	 * MICR
 	 *      0x80	MCP 1=open-drain, 0=output
 	 *      0x40	SRESET 1=open-drain, 0=output
 	 *      0x20	QACK 1=high-Z, 0=output
 	 */
-	pci_ppc_write_config8(0, 0, 0x76, 0x60);
+	pci_ppc_write_config8(0, 0, 0x76, 0x40);
 
 	/*
 	 * MBEN
@@ -286,7 +308,7 @@ mpc107_init(void)
 }
 
 /*
- * Configure memory settings.
+ * Configure real memory settings.
  */
 unsigned long 
 mpc107_config_memory(int no_banks, sdram_bank_info * bank, int for_real)
@@ -678,12 +700,12 @@ mpc107_probe_dimms(int no_dimms, sdram_dimm_info *dimms, sdram_bank_info * bank)
     for(dimm = 0; dimm < no_dimms; dimm++)
     {
 	dimms[dimm].number = dimm;
-	dimms[dimm].bank1 = bank + dimm*2;
-	dimms[dimm].bank2 = bank + dimm*2 + 1;
-	bank[dimm*2].size = 0;
-	bank[dimm*2+1].size = 0;
-	bank[dimm*2].number = 0;
-	bank[dimm*2+1].number = 1;
+	dimms[dimm].bank1 = bank + dimm*NUM_BANKS;
+	dimms[dimm].bank2 = bank + dimm*NUM_BANKS + 1;
+	bank[dimm*NUM_BANKS].size = 0;
+	bank[dimm*NUM_BANKS+1].size = 0;
+	bank[dimm*NUM_BANKS].number = 0;
+	bank[dimm*NUM_BANKS+1].number = 1;
     }
     
     

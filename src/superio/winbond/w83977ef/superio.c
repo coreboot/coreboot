@@ -1,7 +1,9 @@
 // you can't make this stuff common. Things change a lot from superio to superio. sorry.
 
-#include <subr.h>
+#include <pci.h>
 #include <cpu/p5/io.h>
+#include <serial_subr.h>
+#include <printk.h>
 
 // just define these here. We may never need them anywhere else
 #define FLOPPY_DEVICE 0
@@ -66,6 +68,17 @@ static void set_irq0(struct superio *sio, unsigned irq)
 static void set_irq1(struct superio *sio, unsigned irq)
 {
 	write_config(sio, irq, 0x72);
+}
+
+static void set_drq(struct superio *sio, unsigned drq)
+{
+	write_config(sio, drq & 0xff, 0x74);
+}
+
+static void set_iobase0(struct superio *sio, unsigned iobase)
+{
+	write_config(sio, (iobase >> 8) & 0xff, 0x60);
+	write_config(sio, iobase & 0xff, 0x61);
 }
 
 static void set_enable(struct superio *sio, int enable)

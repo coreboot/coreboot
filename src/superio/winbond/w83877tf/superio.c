@@ -1,3 +1,5 @@
+// THIS FILE DOES NOT REALLY WORK! We need to fix it WRT the docs. RGM
+
 #include <pci.h>
 #include <cpu/p5/io.h>
 #include <serial_subr.h>
@@ -155,7 +157,8 @@ static void setup_parallel(struct superio *sio)
 		set_enable(sio, 1);
 	}
 }
-
+//do we have a keyboard on this chip? 
+#if 0
 static void setup_keyboard(struct superio *sio)
 {
 	/* Remember the default resources */
@@ -177,7 +180,7 @@ static void setup_keyboard(struct superio *sio)
 		pc_keyboard_init();
 	}
 }
-
+#endif
 
 #if 0
 static void setup_acpi_registers(struct superio *sio)
@@ -216,7 +219,7 @@ static void enable_devices(struct superio *sio)
 	setup_com(sio, &sio->com2,  COM2_DEVICE);
 
 	/* enable/disable keyboard */
-	setup_keyboard(sio);
+	// keyboard present? setup_keyboard(sio);
 
 	/* enable/disable cir */
 	set_logical_device(sio, CIR_DEVICE);
@@ -255,6 +258,6 @@ static void enable_devices(struct superio *sio)
 }
 
 /* The base address is either 0x2e or 0x4e */
-struct superio_control superio_winbond_w83627hf_control = {
-	(void *)0, enable_devices, (void *)0, 0x2e, "w83627hf"
+struct superio_control superio_winbond_w83877tf_control = {
+	(void *)0, enable_devices, (void *)0, 0x2e, "w83877tf"
 };

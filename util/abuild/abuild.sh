@@ -273,16 +273,16 @@ if [ $? != 0 ]; then
 	exit 1
 fi
 
-eval set -- "$args"
+eval set "$args"
 while true ; do
-	case $1 in
+	case "$1" in
 		-t|--target)	shift; target=$1; shift;;
 		-a|--all)	shift; buildall=true;;
 		-v|--verbose)	shift; verbose=true;;
 		-V|--version)	shift; myversion;;
 		-h|--help)	shift; myhelp;;
 		--)		shift; break;;
-		*)		echo "Unrecognized argument" ; exit 1 ;;
+		*)		break;;
 	esac
 done
 

@@ -12,6 +12,10 @@
 #ifndef CONFIG_MAX_SPOTCHECK_ERRORS
 #define CONFIG_MAX_SPOTCHECK_ERRORS 20
 #endif
+
+# debugging SMJ
+#define NO_HLT
+
 spot_test:	.string " Spot checking: "
 spot_error:	.string "Blatant memory errors found.\r\n"
 
@@ -79,15 +83,19 @@ spot_check:
 	incl	%esi
 	cmpl	$CONFIG_MAX_SPOTCHECK_ERRORS, %esi
 	jbe	3b
+#ifndef NO_HLT
 5:	
 	CONSOLE_INFO_TX_STRING($spot_error)
 	intel_chip_post_macro(0xf1)
 	jmp	.Lhlt
+#endif
 
 6:
+#ifndef NO_HLT
 	/* If any memory errors occured hlt */
 	testl	%esi, %esi
 	jnz	5b
+#endif
 	mov %ebp, %esp
 
 	RETSP

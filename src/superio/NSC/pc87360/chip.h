@@ -11,6 +11,8 @@
 #define SIO_COM2_BASE   0x2F8
 #endif
 
+extern struct chip_control superio_NSC_pc87360_control;
+
 struct superio_NSC_pc87360_config {
     struct com_ports com1;
     struct lpt_ports lpt;

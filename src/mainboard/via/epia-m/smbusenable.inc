@@ -16,9 +16,9 @@
         movl $dword, %ecx       ; \
         PCI_WRITE_CONFIG_DWORD
 
-#define DEVFN(device, function) (((device) &lt;&lt; 3) + (function))
+#define DEVFN(device, function) (((device) << 3) + (function))
 #ifndef CONFIG_ADDR
-#define CONFIG_ADDR(bus,devfn,where) (((bus) &lt;&lt; 16) | ((devfn) &lt;&lt; 8) | (where))
+#define CONFIG_ADDR(bus,devfn,where) (((bus) << 16) | ((devfn) << 8) | (where))
 #endif
 
 /* generic SMB routines that work for many systems. The only one that might
@@ -45,7 +45,7 @@
 
         /* put the SMBUS at port 0xf00 + enable*/
         CS_WRITE_WORD(PM_DEVFN+ 0xd0, SMBUS_IO_BASE|1)   /* iobase addr */
-        CS_WRITE_BYTE(PM_DEVFN + 0xd2, (0x4 &lt;&lt; 1) | 1)      /* smbus enable */
+        CS_WRITE_BYTE(PM_DEVFN + 0xd2, (0x4 << 1) | 1)      /* smbus enable */
         CS_WRITE_WORD(PM_DEVFN + 0x4, 1)                    /* iospace enable */
 
 /* The VT1211 serial port needs 48 mhz clock, on power up it is getting
@@ -61,7 +61,7 @@
         MYOUTB( $0xff, $(SMBUS_IO_BASE+SMBHSTSTAT))
         MYOUTB( $0x7f, $(SMBUS_IO_BASE+SMBHSTDAT0))
         MYOUTB( $0x83, $(SMBUS_IO_BASE+SMBHSTCMD))
-        MYOUTB( $(CLOCK_SLAVE_ADDRESS&lt;&lt;1), $(SMBUS_IO_BASE+SMBHSTADD))
+        MYOUTB( $(CLOCK_SLAVE_ADDRESS<<1), $(SMBUS_IO_BASE+SMBHSTADD))
         MYOUTB( $(8 | I2C_TRANS_CMD), $(SMBUS_IO_BASE+SMBHSTCTL))
         movw $(SMBUS_IO_BASE+SMBHSTSTAT), %dx
 smbwait1:

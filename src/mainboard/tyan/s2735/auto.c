@@ -14,7 +14,7 @@
 #include "ram/ramtest.c"
 #include "southbridge/intel/i82801er/i82801er_early_smbus.c"
 #include "northbridge/intel/e7501/raminit.h"
-#include "cpu/amd/model_fxx/apic_timer.c"
+#include "cpu/intel/model_f2x/apic_timer.c"
 #include "lib/delay.c"
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/intel/e7501/debug.c"

@@ -8,7 +8,7 @@ owner:	Andrew Ip
 email:	aip@cwlinux.com
 #status: One of unsupported, unstable, stable
 status: unstable
-explanation: slow performance
+explanation:
 flash-types: SST 39SF020A
 payload-types: etherboot, memtest
 # e.g. linux, plan 9, wince, etc.
@@ -19,7 +19,7 @@ console-types: serial
 # vga is unsupported, unstable, or stable
 vga: unsupported
 # Last-known-good follows the internationl date standard: day/month/year
-last-known-good: 0/0/0000
+last-known-good: 1/9/2003
 Comments: 
 Links:
 Mainboard-revision: 

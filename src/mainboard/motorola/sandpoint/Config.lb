@@ -7,7 +7,27 @@ uses CONFIG_SANDPOINT_TALUS
 uses CONFIG_SANDPOINT_UNITY
 uses CONFIG_SANDPOINT_VALIS
 uses CONFIG_SANDPOINT_GYRUS
+uses PCIC0_CFGADDR
+uses PCIC0_CFGDATA
+uses PNP_CFGADDR
+uses PNP_CFGDATA
 
+##
+## Set PCI registers
+##
+default PCIC0_CFGADDR=0xfec00000
+default PCIC0_CFGDATA=0xfee00000
+default PNP_CFGADDR=0x15c
+default PNP_CFGDATA=0x15d
+
+##
+## Early board initialization, called from ppc_main()
+##
+initobject init.c
+
+##
+## Set our ARCH
+##
 arch ppc end
 
 if CONFIG_SANDPOINT_ALTIMUS
@@ -36,14 +56,12 @@ southbridge winbond/w83c553 end
 superio NSC/pc97307 
 	register "com1" = "{1}"
 	register "lpt" = "{0}"
-	register "port" = "SIO_COM1_BASE"
+	register "port" = "TTYS0_BASE"
 end
 
 ##
 ## Build the objects we have code for in this directory.
 ##
-#object hardwaremain.o
-object sandpoint.o
 
 dir nvram
 dir flash

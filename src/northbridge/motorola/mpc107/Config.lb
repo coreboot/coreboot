@@ -1,14 +1,14 @@
 #
 # Objects linked with linuxbios
 #
-object i2c.o
-object meminfo.o
-object mpc107.o
-object mpc107_smp.o
-object mpc107_utils.S
+initobject i2c.o
+initobject meminfo.o
+initobject mpc107.o
+#object mpc107_smp.o
+#object mpc107_utils.S
 
 #
 # Included in crt0.S
 #
-initinclude "NORTHBRIDGE_INIT" northbridge/motorola/mpc107/mpc107_init.inc
-initinclude "NORTHBRIDGE_INIT" northbridge/motorola/mpc107/mpc107_utils.inc
+#initinclude "NORTHBRIDGE_INIT" northbridge/motorola/mpc107/mpc107_init.inc
+#initinclude "NORTHBRIDGE_INIT" northbridge/motorola/mpc107/mpc107_utils.inc

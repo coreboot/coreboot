@@ -18,13 +18,11 @@
  * MA 02111-1307 USA
  */
 #include <stdint.h>
-#include <bsp.h>
 #include <ppc.h>
-#include <device/pci.h>
-#include <mem.h>
 #include <string.h>
-#include <console/console.h>
+#include <printk.h>
 #include <arch/io.h>
+#include <arch/pciconf.h>
 #include "i2c.h"
 #include "mpc107.h"
 #include <timer.h>
@@ -32,40 +30,14 @@
 #define NUM_DIMMS	1
 #define NUM_BANKS	2
 
-struct mem_range *
-sizeram(void)
-{
-    int	i;
-    sdram_dimm_info dimm[NUM_DIMMS];
-    sdram_bank_info bank[NUM_BANKS];
-    static struct mem_range	meminfo;
-
-    hostbridge_probe_dimms(NUM_DIMMS, dimm, bank);
-
-    meminfo.basek = 0;
-    meminfo.sizek = 0;
-
-    for (i = 0; i < NUM_BANKS; i++) {
-	    meminfo.sizek += bank[i].size;
-    }
-
-    meminfo.sizek >>= 10;
-
-    return &meminfo;
-}
-
-/*
- * Memory is already turned on, but with pessimistic settings. Now
- * we optimize settings to the actual memory configuration.
- */
-unsigned 
-mpc107_config_memory(void)
+void 
+sdram_init(void)
 {
     sdram_dimm_info sdram_dimms[NUM_DIMMS];
     sdram_bank_info sdram_banks[NUM_BANKS];
 
     hostbridge_probe_dimms(NUM_DIMMS, sdram_dimms, sdram_banks);
-    return hostbridge_config_memory(NUM_BANKS, sdram_banks, 2);
+    (void)hostbridge_config_memory(NUM_BANKS, sdram_banks, 2);
 }
 
 /*
@@ -77,7 +49,7 @@ hostbridge_config_memory(int no_banks, sdram_bank_info * bank, int for_real)
     int i, j;
     char ignore[8];
     /* Convert bus clock to cycle time in 100ns units */
-    unsigned cycle_time = 10 * (2500000000U / bsp_clock_speed());
+    unsigned cycle_time = 10 * (2500000000U / get_clock_speed());
     /* Approximate */
     unsigned access_time = cycle_time - 300;
     unsigned cas_latency = 0;
@@ -97,10 +69,6 @@ hostbridge_config_memory(int no_banks, sdram_bank_info * bank, int for_real)
     uint32_t memend1, memend2;
     uint32_t extmemend1, extmemend2;
     uint32_t address;
-    struct device *dev;
-
-    if ((dev = dev_find_slot(0, 0)) == NULL )
-	return 0;
 
     /* Set up the ignore mask */
     for(i = 0; i < no_banks; i++)
@@ -148,9 +116,9 @@ hostbridge_config_memory(int no_banks, sdram_bank_info * bank, int for_real)
     }
 
     /* Read in configuration of port X */
-    mccr1 = pci_read_config32(dev, 0xf0);
-    mccr2 = pci_read_config32(dev, 0xf4);
-    mccr4 = pci_read_config32(dev, 0xfc);
+    mccr1 = pci_ppc_read_config32(0, 0, 0xf0);
+    mccr2 = pci_ppc_read_config32(0, 0, 0xf4);
+    mccr4 = pci_ppc_read_config32(0, 0, 0xfc);
     mccr1 &= 0xfff00000;
     mccr2 &= 0xffe00000;
     mccr3 = 0;
@@ -267,20 +235,20 @@ hostbridge_config_memory(int no_banks, sdram_bank_info * bank, int for_real)
 
     if (for_real)
     {
-	pci_write_config8(dev, 0xa0, bank_enable);
-	pci_write_config32(dev, 0x80, memstart1);
-	pci_write_config32(dev, 0x84, memstart2);
-	pci_write_config32(dev, 0x88, extmemstart1);
-	pci_write_config32(dev, 0x8c, extmemstart2);
-	pci_write_config32(dev, 0x90, memend1);
-	pci_write_config32(dev, 0x94, memend2);
-	pci_write_config32(dev, 0x98, extmemend1);
-	pci_write_config32(dev, 0x9c, extmemend2);
+	pci_ppc_write_config8(0, 0, 0xa0, bank_enable);
+	pci_ppc_write_config32(0, 0, 0x80, memstart1);
+	pci_ppc_write_config32(0, 0, 0x84, memstart2);
+	pci_ppc_write_config32(0, 0, 0x88, extmemstart1);
+	pci_ppc_write_config32(0, 0, 0x8c, extmemstart2);
+	pci_ppc_write_config32(0, 0, 0x90, memend1);
+	pci_ppc_write_config32(0, 0, 0x94, memend2);
+	pci_ppc_write_config32(0, 0, 0x98, extmemend1);
+	pci_ppc_write_config32(0, 0, 0x9c, extmemend2);
 
-	pci_write_config32(dev, 0xfc, mccr4);
-	pci_write_config32(dev, 0xf8, mccr3);
-	pci_write_config32(dev, 0xf4, mccr2);
-	pci_write_config32(dev, 0xf0, mccr1);
+	pci_ppc_write_config32(0, 0, 0xfc, mccr4);
+	pci_ppc_write_config32(0, 0, 0xf8, mccr3);
+	pci_ppc_write_config32(0, 0, 0xf4, mccr2);
+	pci_ppc_write_config32(0, 0, 0xf0, mccr1);
     }
     
     return address;
@@ -331,7 +299,7 @@ mpc107_i2c_byte_write(struct i2c_bus *bus, int target, int address, uint8_t data
     	unsigned timeout = ticks_since_boot() + 3 * get_hz();
 
 	/* Must wait here for clocks to start */
-        sleep_ticks(get_hz() / 40);
+        udelay(25000);
 	/* Start with MEN */
 	writel(MPC107_I2C_CCR_MEN, MPC107_BASE + MPC107_I2CCR);
 	/* Start as master */
@@ -381,7 +349,7 @@ mpc107_i2c_master_read(struct i2c_bus *bus, int target, int address,
     	unsigned count;
 
 	/* Must wait here for clocks to start */
-        sleep_ticks(get_hz() / 40);
+        udelay(25000);
 	/* Start with MEN */
 	writel(MPC107_I2C_CCR_MEN, MPC107_BASE + MPC107_I2CCR);
 	/* Start as master */

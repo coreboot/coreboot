@@ -3,7 +3,6 @@ driver i82801dbm.o
 driver i82801dbm_usb.o
 driver i82801dbm_lpc.o
 driver i82801dbm_ide.o
-driver i82801dbm_sata.o
 driver i82801dbm_usb2.o
 driver i82801dbm_ac97.o
 #driver i82801dbm_nic.o

@@ -17,5 +17,5 @@ static struct device_operations nic_ops  = {
 static struct pci_driver nic_driver __pci_driver = {
 	.ops    = &nic_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x1051,
+	.device = 0x103a,
 };

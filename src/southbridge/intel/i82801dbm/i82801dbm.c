@@ -20,10 +20,10 @@ void i82801dbm_enable(device_t dev)
 	}
 #if 0
 	if ((lpc_dev->vendor != PCI_VENDOR_ID_INTEL) ||
-	    (lpc_dev->device != PCI_DEVICE_ID_INTEL_82801ER_1F0)) {
+	    (lpc_dev->device != PCI_DEVICE_ID_INTEL_82801DBM_1F0)) {
 		uint32_t id;
 		id = pci_read_config32(lpc_dev, PCI_VENDOR_ID);
-		if (id != (PCI_VENDOR_ID_INTEL | (PCI_DEVICE_ID_INTEL_82801ER_1F0 << 16))) {
+		if (id != (PCI_VENDOR_ID_INTEL | (PCI_DEVICE_ID_INTEL_82801DBM_1F0 << 16))) {
 			return;
 		}
 	}

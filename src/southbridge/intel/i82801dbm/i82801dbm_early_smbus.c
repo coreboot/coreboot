@@ -22,7 +22,7 @@
 static void enable_smbus(void)
 {
 	device_t dev;
-	dev = pci_locate_device(PCI_ID(0x8086, 0x24d3), 0);
+	dev = pci_locate_device(PCI_ID(0x8086, 0x24c3), 0);
 	if (dev == PCI_DEV_INVALID) {
 		die("SMBUS controller not found\r\n");
 	}

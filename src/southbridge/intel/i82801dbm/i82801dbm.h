@@ -1,5 +1,13 @@
-#ifndef I82801ER_H
-#define I82801ER_H
+/* the problem: we have 82801dbm support in fb1, and 82801er in fb2. 
+ * fb1 code is what we want, fb2 structure is needed however. 
+ * so we need to get fb1 code for 82801dbm into fb2 structure. 
+ */
+/* What I did: took the 80801er stuff from fb2, verify it against the 
+ * db stuff in fb1, and made sure it was right.
+ */
+
+#ifndef I82801DBM_H
+#define I82801DBM_H
 
 struct southbridge_intel_i82801dbm_config 
 {
@@ -21,9 +29,6 @@ disabled.
 channel disabled.
 111 = Combined. IDE is primary. P0 is secondary slave. P1 is secondary master.
 */
-
-#define ICH5_SATA_ADDRESS_MAP 0
-
 
 #define PCI_DMA_CFG     0x90
 #define SERIRQ_CNTL     0x64

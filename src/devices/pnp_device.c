@@ -131,7 +131,7 @@ void pnp_enable_resources(device_t dev)
 void pnp_enable(device_t dev)
 {
 
-        if (!dev->enable) {
+        if (!dev->enabled) {
 		pnp_set_logical_device(dev);
 		pnp_set_enable(dev, 0);
 	}

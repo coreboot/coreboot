@@ -83,7 +83,7 @@ static void w83627hf_init(device_t dev)
 {
 	struct superio_winbond_w83627hf_config *conf;
 	struct resource *res0, *res1;
-	if (!dev->enable) {
+	if (!dev->enabled) {
 		return;
 	}
 	conf = dev->chip->chip_info;
@@ -140,7 +140,7 @@ void w83627hf_pnp_enable_resources(device_t dev)
 void w83627hf_pnp_enable(device_t dev)
 {
 
-        if (!dev->enable) {
+        if (!dev->enabled) {
                 pnp_enter_ext_func_mode(dev);   // BY LYH
 
                 pnp_set_logical_device(dev);

@@ -85,7 +85,7 @@ device_t alloc_dev(struct bus *parent, struct device_path *path)
 	}
 
 	/* If we don't have any other information about a device enable it */
-	dev->enable = 1;
+	dev->enabled = 1;
 
 	return dev;
 }
@@ -135,7 +135,7 @@ static void read_resources(struct bus *bus)
 				   dev_path(curdev));
 			continue;
 		}
-		if (!curdev->enable) {
+		if (!curdev->enabled) {
 			continue;
 		}
 
@@ -431,10 +431,10 @@ void assign_resources(struct bus *bus)
 	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
 		if (!curdev->ops || !curdev->ops->set_resources) {
 			printk_err("%s missing set_resources\n",
-				dev_path(curdev));
+				   dev_path(curdev));
 			continue;
 		}
-		if (!curdev->enable) {
+		if (!curdev->enabled) {
 			continue;
 		}
 		curdev->ops->set_resources(curdev);
@@ -461,7 +461,7 @@ void enable_resources(struct device *dev)
 		printk_err("%s missing enable_resources\n", dev_path(dev));
 		return;
 	}
-	if (!dev->enable) {
+	if (!dev->enabled) {
 		return;
 	}
 	dev->ops->enable_resources(dev);
@@ -471,7 +471,7 @@ void enable_resources(struct device *dev)
  * @brief Determine the existence of dynamic devices and construct dynamic
  * device tree.
  *
- * Start for the root device 'dev_root', scan the buses in the system
+ * Start form the root device 'dev_root', scan the buses in the system
  * recursively, build the dynamic device tree according to the result
  * of the probe.
  *
@@ -565,7 +565,7 @@ void dev_initialize(void)
 	printk_info("Initializing devices...\n");
 
 	for (dev = all_devices; dev; dev = dev->next) {
-		if (dev->enable && dev->ops && dev->ops->init) {
+		if (dev->enabled && dev->ops && dev->ops->init) {
 			printk_debug("%s init\n", dev_path(dev));
 			dev->ops->init(dev);
 		}

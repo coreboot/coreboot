@@ -98,19 +98,19 @@ static struct pci_driver pcix_driver __pci_driver = {
 static void ioapic_enable(device_t dev)
 {
 	uint32_t value;
+
 	value = pci_read_config32(dev, 0x44);
-	if (dev->enable) {
+	if (dev->enabled) {
 		value |= ((1 << 1) | (1 << 0));
 	} else {
 		value &= ~((1 << 1) | (1 << 0));
 	}
 	pci_write_config32(dev, 0x44, value);
 
-//BY LYH
+	/* We have to enable MEM and Bus Master for IOAPIC */
         value = pci_read_config32(dev, 0x4);
         value |= 6;
         pci_write_config32(dev, 0x4, value);
-//BY LYH END
 }
 
 static struct device_operations ioapic_ops = {

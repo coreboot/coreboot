@@ -264,10 +264,10 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int max)
 			*chain_last = dev;
 			/* Run the magice enable sequence for the device */
 			if (dev->chip && dev->chip->control && dev->chip->control->enable_dev) {
-				int enable  = dev->enable;
-				dev->enable = 1;
+				int enable  = dev->enabled;
+				dev->enabled = 1;
 				dev->chip->control->enable_dev(dev);
-				dev->enable = enable;
+				dev->enabled = enable;
 			}
 			/* Now read the vendor and device id */
 			id = pci_read_config32(dev, PCI_VENDOR_ID);
@@ -335,7 +335,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int max)
 		printk_debug("%s [%04x/%04x] %s next_unitid: %04x\n",
 			dev_path(dev),
 			dev->vendor, dev->device, 
-			(dev->enable? "enabled": "disabled"), next_unitid);
+			(dev->enabled? "enabled": "disabled"), next_unitid);
 
 	} while((last_unitid != next_unitid) && (next_unitid <= 0x1f));
 #if HAVE_HARD_RESET == 1

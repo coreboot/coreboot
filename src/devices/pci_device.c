@@ -470,7 +470,7 @@ static void set_pci_ops(struct device *dev)
 		break;
 	default:
 	bad:
-		if (dev->enable) {
+		if (dev->enabled) {
 			printk_err("%s [%04x/%04x/%06x] has unknown header "
 				   "type %02x, ignoring.\n",
 				   dev_path(dev),
@@ -605,10 +605,10 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned min_devfn,
 			 * some arbitray code without any justification */
 			if (dev->chip && dev->chip->control &&
 			    dev->chip->control->enable_dev) {
-				int enable  = dev->enable;
-				dev->enable = 1;
+				int enable  = dev->enabled;
+				dev->enabled = 1;
 				dev->chip->control->enable_dev(dev);
-				dev->enable = enable;
+				dev->enabled = enable;
 			}
 			/* Now read the vendor and device id */
 			id = pci_read_config32(dev, PCI_VENDOR_ID);
@@ -648,7 +648,7 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned min_devfn,
 		printk_debug("%s [%04x/%04x] %s\n", 
 			     dev_path(dev),
 			     dev->vendor, dev->device, 
-			     dev->enable?"enabled": "disabled");
+			     dev->enabled?"enabled": "disabled");
 
 		if (PCI_FUNC(devfn) == 0x00 && (hdr_type & 0x80) != 0x80) {
 			/* if this is not a multi function device, don't

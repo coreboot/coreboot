@@ -40,7 +40,7 @@ void amd8111_enable(device_t dev)
 	}
 	reg = reg_old = pci_read_config16(lpc_dev, 0x48);
 	reg &= ~(1 << index);
-	if (dev->enable) {
+	if (dev->enabled) {
 		reg |= (1 << index);
 	}
 	if (reg != reg_old) {

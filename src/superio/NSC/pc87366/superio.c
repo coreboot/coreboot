@@ -21,7 +21,7 @@ static void init(device_t dev)
 	/* Wishlist handle well known programming interfaces more
 	 * generically.
 	 */
-	if (!dev->enable) {
+	if (!dev->enabled) {
 		return;
 	}
 	conf = dev->chip->chip_info;

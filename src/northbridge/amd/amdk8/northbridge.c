@@ -97,7 +97,7 @@ struct mem_range *sizeram(void)
 			     i, mem[i].basek, i, mem[i].sizek);
 	}
 #endif
-	while(idx < sizeof(mem)/sizeof(mem[0])) {
+	while (idx < sizeof(mem)/sizeof(mem[0])) {
 		mem[idx].basek = 0;
 		mem[idx].sizek = 0;
 		idx++;
@@ -192,7 +192,7 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 		/* See if there is an available configuration space mapping register
 		 * in function 1. */
 		free_reg = 0;
-		for(config_reg = 0xe0; config_reg <= 0xec; config_reg += 4) {
+		for (config_reg = 0xe0; config_reg <= 0xec; config_reg += 4) {
 			uint32_t config;
 			config = f1_read_config32(config_reg);
 			if (!free_reg && ((config & 3) == 0)) {
@@ -200,8 +200,8 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 				continue;
 			}
 			if (((config & 3) == 3) && 
-				(((config >> 4) & 7) == nodeid) &&
-				(((config >> 8) & 3) == link)) {
+			    (((config >> 4) & 7) == nodeid) &&
+			    (((config >> 8) & 3) == link)) {
 				break;
 			}
 		}
@@ -492,12 +492,12 @@ unsigned int amdk8_scan_root_bus(device_t root, unsigned int max)
 	printk_debug("amdk8_scan_root_bus\n");
 
 	/* Unmap all of the HT chains */
+	printk_debug("amdk8_scan_root_bus: clearing HT registers\n");
 	for (reg = 0xe0; reg <= 0xec; reg += 4) {
-		printk_debug("amdk8_scan_root: clearing register %x\n", reg);
 		f1_write_config32(reg, 0);
 	}
 
-	printk_debug("amdk8_scan_root_bus: start scan pci bus\n");
+	printk_debug("amdk8_scan_root_bus: start scaning pci bus\n");
 	max = pci_scan_bus(&root->link[0], PCI_DEVFN(0x18, 0), 0xff, max);
 
 	printk_debug("amdk8_scan_root_bus: done\n");
@@ -570,13 +570,11 @@ static struct device_operations northbridge_operations = {
 	.enable           = 0,
 };
 
-
 static struct pci_driver mcf0_driver __pci_driver = {
 	.ops    = &northbridge_operations,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = 0x1100,
 };
-
 
 static void enumerate(struct chip *chip)
 {

@@ -78,7 +78,7 @@ unsigned int walk_static_devices(device_t bus, unsigned int max)
 				child->ops->enable(child);
 			}
 			printk_debug("%s %s\n", dev_path(child),
-				     child->enable?"enabled": "disabled");
+				     child->enabled?"enabled": "disabled");
 		}
 	}
 	for (link = 0; link < bus->links; link++) {
@@ -124,12 +124,12 @@ struct device dev_root = {
 	.ops = &default_dev_ops_root,
 	.bus = &dev_root.link[0],
 	.path = { .type = DEVICE_PATH_ROOT },
-	.enable = 1,
-	.links = 1,
-	.link = {
-		[0] = {
-			.dev = &dev_root,
-			.link = 0,
-		},
-	},
+	.enabled = 1,
+	.links   = 1,
+	.link    = {
+		 [0] = {
+			 .dev = &dev_root,
+			 .link = 0,
+		 },
+	 },
 };

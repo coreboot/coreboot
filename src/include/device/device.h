@@ -46,8 +46,7 @@ struct device {
 	unsigned short	device;
 	unsigned int	class;		/* 3 bytes: (base,sub,prog-if) */
 	unsigned int	hdr_type;	/* PCI header type */
-	/* @todo rename this to 'enabled' */
-	unsigned int    enable : 1;	/* set if we should enable the device */
+	unsigned int    enabled : 1;	/* set if we should enable the device */
 
 	uint8_t command;
 

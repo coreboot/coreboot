@@ -17,7 +17,7 @@ static uint32_t microcode_updates[] = {
 	 * dummy header of nulls must terminate the list.
 	 */
 #include "microcode_MU16810d.h"	
-#include "microcode_MU16930c.h"
+#include "microcode_MU16830c.h"
 	/*  Dummy terminator  */
         0x0, 0x0, 0x0, 0x0,
         0x0, 0x0, 0x0, 0x0,

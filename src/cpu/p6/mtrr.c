@@ -31,6 +31,14 @@
 
 #define arraysize(x)   (sizeof(x)/sizeof((x)[0]))
 
+#ifdef k8
+# define ADDRESS_BITS 40
+#else
+# define ADDRESS_BITS 36
+#endif
+#define ADDRESS_BITS_HIGH (ADDRESS_BITS - 32)
+#define ADDRESS_MASK_HIGH ((1u << ADDRESS_BITS_HIGH) - 1)
+
 static unsigned int mtrr_msr[] = {
 	MTRRfix64K_00000_MSR, MTRRfix16K_80000_MSR, MTRRfix16K_A0000_MSR,
 	MTRRfix4K_C0000_MSR, MTRRfix4K_C8000_MSR, MTRRfix4K_D0000_MSR, MTRRfix4K_D8000_MSR,
@@ -91,12 +99,14 @@ static void intel_set_var_mtrr(unsigned int reg, unsigned long basek, unsigned l
 	base.hi = basek >> 22;
 	base.lo  = basek << 10;
 
+       //printk_debug("ADDRESS_MASK_HIGH=%#x\n", ADDRESS_MASK_HIGH);
+
 	if (sizek < 4*1024*1024) {
-		mask.hi = 0x0FF;
+		mask.hi = ADDRESS_MASK_HIGH;
 		mask.lo = ~((sizek << 10) -1);
 	}
 	else {
-		mask.hi = 0x0F & (~((sizek >> 22) -1));
+		mask.hi = ADDRESS_MASK_HIGH & (~((sizek >> 22) -1));
 		mask.lo = 0;
 	}
 

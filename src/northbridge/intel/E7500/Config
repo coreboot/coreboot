@@ -1,5 +1,6 @@
 #mainboardinit cpu/i786/enable_sse.inc
 mainboardinit arch/i386/lib/cpu_reset.inc
+mainboardinit ram/spotcheck.inc
 mainboardinit northbridge/intel/E7500/raminit.inc
 mainboardinit northbridge/intel/E7500/sdram_enable.inc
 mainboardinit sdram/generic_sdram.inc

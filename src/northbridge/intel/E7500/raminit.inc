@@ -1186,6 +1186,7 @@ spd_verify_dimms_out:
 
 	.section ".rom.data"
 spd_pre_init:	.string "Reading SPD data...\r\n"
+spd_pre_set:	.string "setting based on SPD data...\r\n"
 spd_post_init:	.string "done\r\n"
 	.previous
 
@@ -1562,6 +1563,7 @@ ram_set_spd_registers:
 	CONSOLE_INFO_TX_STRING($spd_pre_init)
 	CALL_LABEL(spd_enable_clocks)
 	CALL_LABEL(spd_verify_dimms)
+	CONSOLE_INFO_TX_STRING($spd_pre_set)
 	CALL_LABEL(spd_set_row_attributes)
 	CALL_LABEL(spd_set_dram_controller_mode)
 	CALL_LABEL(spd_set_cas_latency)
@@ -1569,7 +1571,8 @@ ram_set_spd_registers:
 	CONSOLE_INFO_TX_STRING($spd_post_init)
 	RET_LABEL(ram_set_spd_registers)
 
-	
+/* LAST_DRB_SLOT is a constant for any E7500 board */
+#define LAST_DRB_SLOT 0x67
 
 spd_set_ram_size:
 	movl	$(SMBUS_MEM_DEVICE_START), %ebx
@@ -1620,6 +1623,19 @@ spd_get_dimm_size:
 	addb	$(SMBUS_MEM_DEVICE_INC), %bl /* increment the smbus device */
 	cmpb	$SMBUS_MEM_DEVICE_END, %bl
 	jbe	spd_get_dimm_size
+
+	/* now, fill in DRBs where no physical slot exists */
+1:
+	incl	%eax
+	cmpb	$LAST_DRB_SLOT, %al
+	jg	spd_set_ram_size_computed
+	movl	%ebp, %edx
+	movl	%eax, %ecx
+	PCI_WRITE_CONFIG_BYTE
+	movl	%ecx, %eax
+	jmp	1b
+
+	
 spd_set_ram_size_computed:
 	/* For now hardset everything at 128MB boundaries */
 	/* %ebp has the ram size in multiples of 64MB */
@@ -1718,7 +1734,7 @@ verify_ram:
 5:	
 	/* Now find the next bank and side to spot check */
 	incl	%ecx
-	cmpl	$8, %ecx
+	cmpl	$(SMBUS_MEM_DEVICE_START - SMBUS_MEM_DEVICE_END), %ecx
 	jl	1b
 	RET_LABEL(verify_ram)
 	

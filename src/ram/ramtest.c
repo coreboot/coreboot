@@ -100,6 +100,6 @@ void ram_check(unsigned long start, unsigned long stop)
 	print_debug("\r\n");
 	ram_fill(start, stop);
 	ram_verify(start, stop);
-	print_debug("Done.\n");
+	print_debug("Done.\r\n");
 }
 

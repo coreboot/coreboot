@@ -445,6 +445,8 @@ def driver(dir, command):
 #
 makerule_re = re.compile(r'([^:\s]+)\s*:\s*([^;]*?)\s*;\s*(.*)')
 def makerule(dir, rule): 
+	if (debug):
+		print "makerule " , rule
 	(target, dependencies, action) = match(makerule_re, rule)
 	# Each rule created by makerule will be printed to the Makefile
 	# with a comment which shows the config file from whence it came.
@@ -455,6 +457,8 @@ def makerule(dir, rule):
 # Add an action to an existing rule designated by <target>.
 #
 def addaction(dir, rule):
+	if (debug):
+		print "addaction " , rule
 	(target, action) = match(splitargs_re, rule)
 	if not makebaserules.has_key(target):
 		warning("Need 'makerule %s ...' before addaction" % (target))

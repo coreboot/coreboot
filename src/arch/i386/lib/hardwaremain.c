@@ -36,6 +36,11 @@ static char rcsid[] = "$Id$";
 #define MAX_PHYSICAL_CPUS MAX_CPUS
 #endif
 
+#if USE_ELF_BOOT
+#include <rom/read_bytes.h>
+#include <boot/elf.h>
+#endif
+
 #include <arch/io.h>
 #include <arch/intel.h>
 #include <pciconf.h>

@@ -1,6 +1,9 @@
-#include <boot/uniform_boot.h>
+#include <ip_checksum.h>
 #include <boot/elf.h>
+#include <boot/elf_boot.h>
 #include <arch/boot/hwrpb.h>
+#include <string.h>
+#include <printk.h>
 
 /* FIXME remove the hardcodes
  * MAX_ASM, CMD_LINE, SYSNAME, CYCLE_FREQ, CPU, SYS_VARIATION, SYS_TYPE
@@ -127,7 +130,7 @@ static struct boot_data {
 	},
 };
 
-
+#ifdef OLD_DS10
 static struct {
 	struct uniform_boot_header header;
 	struct {
@@ -153,6 +156,7 @@ static struct {
 	.command_line = HWRPB_COMMAND_LINE,
 };
 
+#endif
 static unsigned long hwrpb_compute_checksum(struct hwrpb_struct *hwrpb)
 {
 	unsigned long sum = 0, *l;
@@ -162,7 +166,7 @@ static unsigned long hwrpb_compute_checksum(struct hwrpb_struct *hwrpb)
 
 }
 
-
+#ifdef OLD_DS10
 void *get_ube_pointer(unsigned long totalram)
 {
 	/* Set the amount of RAM I have */
@@ -176,6 +180,16 @@ void *get_ube_pointer(unsigned long totalram)
 	return &ube_all;
 }
 
+#else
+void prepare_hwrpb(unsigned long totalram)
+{
+	/* Set the amount of RAM I have */
+	boot_data.mem_cluster[1].numpages = (totalram >> 3) -
+		boot_data.mem_cluster[1].start_pfn;
+	boot_data.hwrpb.chksum = 0;
+	boot_data.hwrpb.chksum = hwrpb_compute_checksum(&boot_data.hwrpb);
+}
+#endif
 
 int elf_check_arch(Elf_ehdr *ehdr)
 {
@@ -192,6 +206,6 @@ void jmp_to_elf_entry(void *entry, void *ptr)
 	kernel_entry = entry;
 
 	/* Jump to kernel */
-	kernel_entry(ptr);
+	kernel_entry((void *)ptr);
 }
 

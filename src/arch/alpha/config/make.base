@@ -4,10 +4,15 @@ rambase 0x8000
 option USE_DEFAULT_LAYOUT=1
 ldscript arch/alpha/config/ldscript.base USE_DEFAULT_LAYOUT
 
+option MAX_CPUS=1
+
 makedefine LINK = ld -T ldscript.ld -o $@ crt0.o linuxbios.a
 makerule all : linuxbios.rom ;
 makerule linuxbios.rom: linuxbios.strip makerom ; ./makerom -l0x310000 -i7 -v linuxbios.strip -o linuxbios.rom
 
+dir /src/cpu/ev6
+dir /src/config
+dir /src/boot
 
 #makerule makerom: $(TOP)/util/makerom/makerom.c $(TOP)/util/makerom/compress.c ; $(CC) -o makerom $(TOP)/util/makerom/makerom.c $(TOP)/util/makerom/compress.c
 

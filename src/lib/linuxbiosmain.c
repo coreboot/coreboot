@@ -174,11 +174,18 @@ int linuxbiosmain(unsigned long base, unsigned long totalram)
 	 * As of 2.4.0-test4 the linux parameter page isn't hardwired to be
 	 * at 0x90000 anymore.
 	 */
+
+// CPP SUCKS
+// if (ARCH == i386) fails here!
+#if defined(i586) || defined(i686) || defined (i786) || defined(i386)
 	/* move 0 to ebx. This is for SMP support. Jump to kernel */
 	__asm__ __volatile__("movl $0x90000, %%esi\n\t"
 			     "movl $0, %%ebx\n\t"
 			     "ljmp $0x10, %0\n\t"
 			     :: "i" (0x100000));
 
+#else
+	printk_error("UH OH\n");
+#endif
 	return 0;		/* It should not ever return */
 }

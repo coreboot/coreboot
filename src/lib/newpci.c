@@ -842,7 +842,7 @@ void
 handle_superio(int pass, struct superio *all_superio[], int nsuperio)
 {
 	int i;
-	struct superio *s;
+	struct superio *s = 0;
 
 	printk_debug("handle_superio start, s %p nsuperio %d s->super %p\n",
 		     s, nsuperio, s->super);

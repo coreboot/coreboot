@@ -33,6 +33,7 @@ static int init_bytes(void)
 	printk_debug("%6d:%s() - TIG_KERNEL_START:0x%08x\n",
 		__LINE__, __FUNCTION__,
 		TIG_KERNEL_START);
+	return 0;
 }
 static void fini_bytes(void)
 {

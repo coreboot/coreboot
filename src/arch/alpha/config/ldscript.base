@@ -14,11 +14,23 @@ SECTIONS
 		*(.text)
 		_etext = .;
 	} : kernel
-	.rodata  : {
-		_rodata = .;
-		*(.rodata);
-		_erodata = .;
-	} : kernel
+
+/* streams starts here */
+        _ltext = LOADADDR(.text);
+        _eltext = LOADADDR(.text) + SIZEOF(.text);
+        .rodata . : AT(_eltext){
+                _rodata = .;
+                . = ALIGN(4);
+                streams = . ;
+                *(.rodata.streams)
+                estreams = .;
+                *(.rodata)
+                *(.rodata.*)
+                _erodata = .;
+        }
+ 
+/* streams ends here */
+
 
 	. = _RAMBASE;
 	/* Global data */
@@ -65,6 +77,12 @@ SECTIONS
 		. = ALIGN(8);
 		_estack = .;
 	}
+        /* The ram segment
+	 * This is all address of the memory resident copy of linuxBIOS.
+	 */
+	_ram_seg = _text; 
+	_eram_seg = _eheap;
+			
 	
 	/DISCARD/ : {
 		/* Comment sections */

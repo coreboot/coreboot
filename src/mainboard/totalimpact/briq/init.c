@@ -22,53 +22,12 @@
 
 /*
  * Do very early board initialization:
- *
- * - Configure External Bus (EBC)
- * - Setup Flash
- * - Setup NVRTC
- * - Setup Board Control and Status Registers (BCSR)
- * - Enable UART0 for debugging
  */
 
 #include <ppc_asm.tmpl>
 #include <ppc.h>
-#include <ppc4xx.h>
-#include <arch/io.h>
-#include <timer.h>
 
 void
 board_init(void)
 {
-	/*
-	 * Configure FLASH
-	 */
-	mtebc(pb0cr, 0xFC0DC000);
-	mtebc(pb0ap, 0x02000000);
-
-	/*
-	 * Configure NVTRC/BCSR
-	 */
-	mtebc(pb4cr, 0xF4058000);
-	mtebc(pb4ap, 0x04050000);
-	
-	/*
-	 * Enable PCI
-	 */
-	outb(0x80, 0xF4000001);
-
-	/*
-	 * Enable UART0
-	 */
-	outb(0x20, 0xF4000003);
-
-	/*
-	 * Cycle LEDs to show something is happening...
-	 */
-	outb(0x07, 0xF4000009);
-	udelay(100000);
-	outb(0x0B, 0xF4000009);
-	udelay(100000);
-	outb(0x0D, 0xF4000009);
-	udelay(100000);
-	outb(0x0E, 0xF4000009);
 }

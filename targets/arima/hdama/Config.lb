@@ -12,6 +12,7 @@ uses CONFIG_COMPRESS
 uses CONFIG_IOAPIC
 uses CONFIG_ROM_STREAM
 uses CONFIG_ROM_STREAM_START
+uses CONFIG_SMP
 uses CONFIG_UDELAY_TSC
 uses CPU_FIXUP
 uses ENABLE_FIXED_AND_VARIABLE_MTRRS
@@ -23,8 +24,8 @@ uses HAVE_PIRQ_TABLE
 uses i586
 uses i686
 uses INTEL_PPRO_MTRR
-uses HEAP_SIZE
 uses IRQ_SLOT_COUNT
+uses HEAP_SIZE
 uses k7
 uses k8
 uses MAINBOARD_PART_NUMBER
@@ -54,8 +55,8 @@ uses CONFIG_CHIP_CONFIGURE
 
 option CONFIG_CHIP_CONFIGURE=1
 
-option  MAXIMUM_CONSOLE_LOGLEVEL=7
-option  DEFAULT_CONSOLE_LOGLEVEL=7
+option  MAXIMUM_CONSOLE_LOGLEVEL=9
+option  DEFAULT_CONSOLE_LOGLEVEL=9
 option  CONFIG_CONSOLE_SERIAL8250=1
 
 option HAVE_OPTION_TABLE=1
@@ -78,14 +79,14 @@ option SIO_SYSTEM_CLK_INPUT=0
 ### Build code to export a programmable irq routing table
 ###
 option HAVE_PIRQ_TABLE=1
-option IRQ_SLOT_COUNT=7
+option IRQ_SLOT_COUNT=18
 #
 ###
 ### Build code for SMP support
 ### Only worry about 2 micro processors
 ###
-##option CONFIG_SMP=1
-option MAX_CPUS=1
+option CONFIG_SMP=1
+option MAX_CPUS=2
 #
 ###
 ### Build code to setup a generic IOAPIC
@@ -111,13 +112,7 @@ option MEMORY_HOLE=0
 ### processor identification
 ###
 option ENABLE_FIXED_AND_VARIABLE_MTRRS=1
-#
-###
-### Clean up the motherboard id strings
-###
-#option MAINBOARD_PART_NUMBER="Solo7"
-#option MAINBOARD_VENDOR="AMD"
-#
+
 ###
 ### Call the final_mainboard_fixup function
 ###
@@ -151,7 +146,7 @@ option CONFIG_COMPRESS=1
 option USE_ELF_BOOT=1
 
 ## LinuxBIOS C code runs at this location in RAM
-option _RAMBASE=0x00100000
+option _RAMBASE=0x4000
 
 ##
 ## Use a 64K stack
@@ -195,7 +190,8 @@ romimage "fallback"
 	option CONFIG_ROM_STREAM     = 1
 	option _ROMBASE      = (CONFIG_ROM_STREAM_START + PAYLOAD_SIZE)
 	mainboard arima/hdama
-	payload ../../../../opteron_phase1
+	payload ../../../../tg3--ide_disk.zelf
+#	payload ../../../../opteron_phase1
 end
 
 buildrom ROM_SIZE "normal" "fallback"

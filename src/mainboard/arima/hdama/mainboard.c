@@ -22,7 +22,9 @@ enable(struct chip *chip, enum chip_pass pass)
                 (struct mainboard_arima_hdama_config *)chip->chip_info;
 
         switch (pass) {
-                default: break;
+	default: break;
+	case CONF_PASS_PRE_BOOT:
+		break;
         }
 
 }

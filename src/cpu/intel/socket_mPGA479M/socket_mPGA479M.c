@@ -2,6 +2,6 @@
 #include "chip.h"
 
 
-struct chip_opertations cpu_intel_socket_mPGA479M_control = {
+struct chip_operations cpu_intel_socket_mPGA479M_ops = {
 	CHIP_NAME("socket mPGA479M")
 };

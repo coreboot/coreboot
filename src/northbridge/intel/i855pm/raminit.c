@@ -1,4 +1,3 @@
-
 /* This was originally for the e7500, modified for i855pm
  */
 
@@ -44,8 +43,8 @@
 #define BURST_LENGTH BURST_4
 #define BURST_TYPE   BURST_INTERLEAVED
 #define CAS_LATENCY  CAS_2_0
-//#define CAS_LATENCY  CAS_2_5
-//#define CAS_LATENCY  CAS_1_5
+/*#define CAS_LATENCY  CAS_2_5*/
+/*#define CAS_LATENCY  CAS_1_5*/
 
 /* WOW! this could be bad! sets casl to 2 without checking! */
 #define MRS_VALUE (MODE_NORM | CAS_LATENCY | BURST_TYPE | BURST_LENGTH)
@@ -75,7 +74,7 @@ static inline void do_ram_command (const struct mem_controller *ctrl, uint32_t v
         /* %ecx - initial address to read from */
         /* Compute the offset */
         dword = value >> 16;
-	//        for(i=0;i<4;i++) {
+	/*        for(i=0;i<4;i++) {*/
         for(i=0;i<1;i++) {
                 /* Set the ram command */
                 byte = pci_read_config8(ctrl->d0, 0x70);
@@ -131,6 +130,8 @@ static inline void ram_mrs(const struct mem_controller *ctrl, uint32_t value){
 	/* Transform it into the form expected by SDRAM */
 	dword = ram_cas_latency[(byte>>5) & 1];
 #warning RAM_MRS -- using BROKEN hard-wired CAS 2.0. FIX ME SOON
+/*
+ */
 	value  |= (dword<<(16+MD_SHIFT));
 	
 	value |= (MODE_NORM | BURST_TYPE | BURST_LENGTH) << (16+MD_SHIFT);
@@ -290,8 +291,8 @@ static const long register_values[] = {
 	 *       10 == Write Only (Writes to DRAM, Reads to memory mapped I/O space)
 	 *       11 == Normal (All Access go to DRAM)
 	 */
-	//	0x90, 0xcccccf7f, (0x00 << 0) | (0x30 << 8) | (0x33 << 16) | (0x33 << 24),
-	//0x94, 0xcccccccc, (0x33 << 0) | (0x33 << 8) | (0x33 << 16) | (0x33 << 24),
+	/*	0x90, 0xcccccf7f, (0x00 << 0) | (0x30 << 8) | (0x33 << 16) | (0x33 << 24),*/
+	/*0x94, 0xcccccccc, (0x33 << 0) | (0x33 << 8) | (0x33 << 16) | (0x33 << 24),*/
 
 
 	/* FIXME why was I attempting to set a reserved bit? */
@@ -373,7 +374,7 @@ static void write_8dwords(uint32_t src_addr, uint32_t dst_addr) {
 	}
 }
 
-//#define SLOW_DOWN_IO inb(0x80);
+/*#define SLOW_DOWN_IO inb(0x80);*/
 #define SLOW_DOWN_IO udelay(40);
 
 
@@ -602,58 +603,6 @@ static struct dimm_size spd_get_dimm_size(unsigned device)
 	print_debug("\r\n");
 #endif
 	goto out;
-#if 0
-        value = spd_read_byte(device, 3);       /* rows */
-        if (value < 0) goto hw_err;
-//        if ((value & 0xf) == 0) goto val_err;
-        sz.side1 += value & 0xf;
-
-        value = spd_read_byte(device, 4);       /* columns */
-        if (value < 0) goto hw_err;
-//        if ((value & 0xf) == 0) goto val_err;
-        sz.side1 += value & 0xf;
-
-        value = spd_read_byte(device, 17);      /* banks */
-        if (value < 0) goto hw_err;
-//        if ((value & 0xff) == 0) goto val_err;
-	value &=0xff;
-        sz.side1 += log2(value);
-
-        /* Get the module data width and convert it to a power of two */
-        value = spd_read_byte(device, 7);       /* (high byte) */
-        if (value < 0) goto hw_err;
-        value &= 0xff;
-        value <<= 8;
-        
-        low = spd_read_byte(device, 6); /* (low byte) */
-        if (low < 0) goto hw_err;
-        value |= (low & 0xff);
-//        if ((value != 72) && (value != 64)) goto val_err;
-        sz.side1 += log2(value);
-        
-        /* side 2 */
-        value = spd_read_byte(device, 5);       /* number of physical banks */
-        if (value < 0) goto hw_err;
-        if (value == 1) goto out;
-//        if (value != 2) goto val_err;
-
-        /* Start with the symmetrical case */
-        sz.side2 = sz.side1;
-
-        value = spd_read_byte(device, 3);       /* rows */
-        if (value < 0) goto hw_err;
-        if ((value & 0xf0) == 0) goto out;      /* If symmetrical we are done */
-        sz.side2 -= (value & 0x0f);             /* Subtract out rows on side 1 */
-        sz.side2 += ((value >> 4) & 0x0f);      /* Add in rows on side 2 */
-
-        value = spd_read_byte(device, 4);       /* columns */
-        if (value < 0) goto hw_err;
-//        if ((value & 0xff) == 0) goto val_err;
-        sz.side2 -= (value & 0x0f);             /* Subtract out columns on side 1 */
-        sz.side2 += ((value >> 4) & 0x0f);      /* Add in columsn on side 2 */
-        goto out;
-
-#endif
  val_err:
         die("Bad SPD value\r\n");
         /* If an hw_error occurs report that I have no memory */
@@ -731,7 +680,7 @@ static long spd_set_row_attributes(const struct mem_controller *ctrl, long dimm_
 			 */
 			sz.side1-=14;	
 
-			/* Place in the %ebp the dra place holder */ //i
+			/* Place in the %ebp the dra place holder */ /*i*/
 			word &= ~(7<<i);
 			word |= sz.side1<<(i<<3);
 			
@@ -747,7 +696,7 @@ static long spd_set_row_attributes(const struct mem_controller *ctrl, long dimm_
                         	/* Convert to the format needed for the DRA register */
                         	sz.side2-=14;
 
-	                        /* Place in the %ebp the dra place holder */ //i
+	                        /* Place in the %ebp the dra place holder */ /*i*/
 				word &= ~(7<<i);
         	                word |= sz.side2<<((i<<3) + 4 );
 
@@ -762,241 +711,6 @@ static long spd_set_row_attributes(const struct mem_controller *ctrl, long dimm_
 	return dimm_mask;
 
 }
-#if 0
-	/*
-	 * Routine:	sdram_read_paired_byte
-	 * Arguments:	%esp return address
-	 *		%bl device on the smbus to read from
-	 *              %bh address on the smbus to read
-	 * Results:	
-	 *		zf clear
-	 *		byte read in %al
-	 *	On Error:
-	 *		zf set
-	 *		%eax trashed
-	 *
-	 * Preserved:	%ebx, %esi, %edi
-	 *
-	 * Trashed:	%eax, %ecx, %edx, %ebp, %esp, %eflags
-	 * Used:	%eax, %ebx, %ecx, %edx, %esp, %eflags
-	 *
-	 * Effects:	Reads two spd bytes from both ram channesl
-	 *              and errors if they are not equal.
-	 *		It then returns the equal result.
-	 */
-static spd_read_paired_byte () {
-	movl	%esp, %ebp
-	CALLSP(smbus_read_byte)
-	setnz	%cl
-	movb	%al, %ch
-	addb	$(SMBUS_MEM_CHANNEL_OFF), %bl
-	CALLSP(smbus_read_byte)
-	movb	%ch, %ah
-	setnz	%ch
-	subb	$(SMBUS_MEM_CHANNEL_OFF), %bl
-
-	/* See if dimms on both sides are equally present */	
-	cmp	%cl, %ch
-	jne	sdram_presence_mismatch
-
-	/* Leave if I have no data */
-	testb	%cl, %cl
-	jz	spd_verify_byte_out
-
-	/* Verify the data is identical */
-	cmp	%ah, %al
-	jne	sdram_value_mismatch
-
-	/* Clear the zero flag */
-	testb	%cl, %cl
-spd_verify_byte_out:
-	movl	%ebp, %esp
-	RETSP
-}
-
-	/*
-	 * Routine:	spd_verify_dimms
-	 * Arguments:	none
-	 * Results:	none
-	 * Preserved:	none
-	 * Trashed:	%eax, %ebx, %ecx, %edx, %ebp, %esi, %edi, %esp, %eflags
-	 * Used:	%eax, %ebx, %ecx, %edx, %ebp, %esi, %edi, %esp, %eflags
-	 *
-	 * Effects:	
-	 *		- Verify all interesting spd information
-	 *		  matches for both dimm channels.
-	 *		- Additional error checks that can be easily done
-	 *		  here are computed as well, so I don't need to
-	 *		  worry about them later.
-	 */
-static spd_verify_dimms() {
-	movl	$(SMBUS_MEM_DEVICE_START), %ebx
-spd_verify_dimm:
-	/* Verify this is DDR SDRAM */
-	movb	$2, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_verify_next_dimm
-	cmpb	$7, %al
-	jne	invalid_dimm_type
-
-	/* Verify the row addresses */
-	movb	$3, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	testb	$0x0f, %al
-	jz	spd_invalid_data
-	
-	/* Column addresses */
-	movb	$4, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	testb	$0xf, %al
-	jz	spd_invalid_data
-
-	/* Physical Banks */
-	movb	$5, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	cmp	$1, %al
-	jb	spd_invalid_data
-	cmp	$2, %al
-	ja	spd_invalid_data
-
-	/* Module Data Width */
-	movb	$7, %bh
-	CALLSP(spd_read_paired_byte)	
-	jz	spd_missing_data
-	cmpb	$0, %al
-	jne	spd_invalid_data
-
-	movb	$6, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	cmpb	$64, %al
-	je	1f
-	cmpb	$72, %al
-	je	1f
-	jmp	spd_unsupported_data
-1:
-
-	/* Cycle time at highest CAS latency CL=X */
-	movb	$9, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-
-	/* SDRAM type */
-	movb	$11, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-
-	/* Refresh Interval */
-	movb	$12, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	
-	/* SDRAM Width */
-	movb	$13, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	andb	$0x7f, %al
-	cmpb	$4, %al
-	je	1f
-	cmpb	$8, %al
-	je	1f
-	jmp	spd_unsupported_data
-1:
-
-	/* Back-to-Back Random Column Accesses */
-	movb	$15, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	testb	%al, %al
-	jz	spd_invalid_data
-	cmpb	$4, %al
-	ja	spd_unsupported_data
-
-	/* Burst Lengths */
-	movb	$16, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	testb	$(1<<2), %al
-	jz	spd_unsupported_data
-
-	/* Logical Banks */
-	movb	$17, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	testb	%al, %al
-	jz	spd_invalid_data
-	
-	/* Supported CAS Latencies */
-	movb	$18, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	testb	$(1 << 1), %al /* CL 1.5 */
-	jnz	1f
-	testb	$(1 << 2), %al /* CL 2.0 */
-	jnz	1f
-	testb	$(1 << 3), %al /* CL 2.5 */
-	jnz	1f
-	jmp	spd_unsupported_data
-1:
-	
-	/* Cycle time at Cas Latency (CLX - 0.5) */
-	movb	$23, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	
-	/* Cycle time at Cas Latency (CLX - 1.0) */
-	movb	$26, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	
-	/* tRP Row precharge time */
-	movb	$27, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	testb	$0xfc, %al
-	jz	spd_invalid_data
-	
-
-	/* tRCD RAS to CAS */
-	movb	$29, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	testb	$0xfc, %al
-	jz	spd_invalid_data
-	
-	/* tRAS Activate to Precharge */
-	movb	$30, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	testb	%al, %al
-	jz	spd_invalid_data
-
-	/* Module Bank Density */
-	movb	$31, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	testb	$(1<<2), %al		/* 16MB */
-	jnz	spd_unsupported_data
-	testb	$(1<<3), %al
-	jnz	spd_unsupported_data	/* 32MB */
-	
-	/* Address and Command Hold Time After Clock */
-	movb	$33, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-
-spd_verify_next_dimm:
-	/* go to the next DIMM */
-	addb	$(SMBUS_MEM_DEVICE_INC), %bl /* increment the smbus device */
-	cmpb	$SMBUS_MEM_DEVICE_END, %bl
-	jbe	spd_verify_dimm
-spd_verify_dimms_out:
-	RET_LABEL(spd_verify_dimms)
-}
-#endif
 #define spd_pre_init  "Reading SPD data...\r\n"
 #define spd_pre_set "setting based on SPD data...\r\n"
 #define spd_post_init "done\r\n"
@@ -1037,9 +751,9 @@ static long spd_set_dram_controller_mode (const struct mem_controller *ctrl, lon
         
         /* Read the inititial state */
         dword = pci_read_config32(ctrl->d0, 0x70);
-	// WTF? 
-	//dword |= 0x10000;
-#if 0 // DEBUG_RAM_CONFIG
+	/* WTF? */
+	/*dword |= 0x10000;*/
+#if 0 /* DEBUG_RAM_CONFIG*/
 	print_debug("spd_detect_dimms: 0x70.l is:");
 	print_debug_hex32(dword);
 	print_debug("\r\n");
@@ -1047,13 +761,7 @@ static long spd_set_dram_controller_mode (const struct mem_controller *ctrl, lon
 
 #if 0
         /* Test if ECC cmos option is enabled */
-        movb    $RTC_BOOT_BYTE, %al
-        outb    %al, $0x70
-        inb     $0x71, %al
-        testb   $(1<<2), %al
-        jnz     1f
         /* Clear the ecc enable */
-        andl    $~(3 << 20), %esi
 1:
 #endif
 
@@ -1087,7 +795,7 @@ static long spd_set_dram_controller_mode (const struct mem_controller *ctrl, lon
 		if(value < 0 ) continue;
 		value &= 0x7f;
 		if(value > MAX_SPD_REFRESH_RATE) { print_err("unsupported refresh rate\r\n");}
-//		if(value == 0xff) { print_err("unsupported refresh rate\r\n");}
+/*		if(value == 0xff) { print_err("unsupported refresh rate\r\n");}*/
 		
 #if DEBUG_RAM_CONFIG
 	print_debug("spd_detect_dimms: ref rate index:");
@@ -1131,12 +839,11 @@ static long spd_enable_clocks(const struct mem_controller *ctrl, long dimm_mask)
 
         /* Read the inititial state */
         dword = pci_read_config32(ctrl->d0, 0x8c);
-#if 0
-# Intel clears top bit here, should we?
-# No the default is on and for normal timming it should be on.  Tom Z
+/*
+  Intel clears top bit here, should we?
+  No the default is on and for normal timming it should be on.  Tom Z
         andl    $0x7f, %esi
-#endif
-
+ */
  
         for(i = 0; i < DIMM_SOCKETS; i++) {
 		if (!(dimm_mask & (1 << i))) {
@@ -1166,8 +873,8 @@ static const uint16_t cas_latency_80[] = {
  	 * Steven James 02/06/2003
  	 */
  	 
-//#	.byte 0x05, 0x01, 0x06 
-//#	.byte 0xb5, 0xb1, 0xb6 
+/*#	.byte 0x05, 0x01, 0x06 */
+/*#	.byte 0xb5, 0xb1, 0xb6 */
 	0x0, 0x0bb1, 0x0662   /* RCVEN */ 
 };
 static const uint16_t cas_latency_80_4dimms[] = {
@@ -1187,7 +894,7 @@ static long spd_set_cas_latency(const struct mem_controller *ctrl, long dimm_mas
         /* Initially allow cas latencies 2.5, 2.0
          * which the chipset supports.
          */
-	uint32_t dword = (1<<3)| (1<<2);// esi
+	uint32_t dword = (1<<3)| (1<<2);/* esi*/
 	uint32_t edi;
 	uint32_t ecx;
 	unsigned device;
@@ -1248,7 +955,7 @@ static long spd_set_cas_latency(const struct mem_controller *ctrl, long dimm_mas
 	/* After all of the arduous calculation setup with the fastest
 	 * cas latency I can use.
 	 */
-	value = __builtin_bsf(dword);  // bsrl = log2 how about bsfl?
+	value = __builtin_bsf(dword);  /* bsrl = log2 how about bsfl?*/
 	if(value ==0 ) return -1;
 	ecx = value -1;
 
@@ -1262,7 +969,7 @@ static long spd_set_cas_latency(const struct mem_controller *ctrl, long dimm_mas
 	dword |= (1<<26);
 	
 	/* the rest of the references are words */
-//	ecx<<=1;  // don't need shift left, because we already define that in u16 array
+/*	ecx<<=1;  // don't need shift left, because we already define that in u16 array*/
 	pci_write_config32(ctrl->d0, 0x88, dword);
 	
 	
@@ -1364,14 +1071,14 @@ static long spd_set_dram_timing(const struct mem_controller *ctrl, long dimm_mas
 	pci_write_config32(ctrl->d0, 0x60, 0x2a004425);
 	return dimm_mask;
 
-#if 0
-# Intel clears top bit here, should we?
-# No the default is on and for normal timming it should be on.  Tom Z
+/*
+  Intel clears top bit here, should we?
+  No the default is on and for normal timming it should be on.  Tom Z
         andl    $0x7f, %esi
-#endif
+ */
         
 
-// HERE. WHat's the frequency kenneth?        
+/* HERE. WHat's the frequency kenneth?        */
         for(i = 0; i < DIMM_SOCKETS; i++) {
 		if (!(dimm_mask & (1 << i))) {
                         continue;
@@ -1564,8 +1271,8 @@ static long spd_set_ram_size(const struct mem_controller *ctrl, long dimm_mask)
 #if 0 
         /* For now hardset everything at 128MB boundaries */
         /* %ebp has the ram size in multiples of 64MB */
-//        cmpl    $0, %ebp        /* test if there is no mem - smbus went bad */
-//        jz      no_memory_bad_smbus
+/*        cmpl    $0, %ebp        /* test if there is no mem - smbus went bad */*/
+/*        jz      no_memory_bad_smbus*/
         if(memsz < 0x30)  {
         	/* I should really adjust all of this in C after I have resources
          	* to all of the pcie devices.
@@ -1603,7 +1310,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl) {
 #if DEBUG_RAM_CONFIG
 	print_debug(spd_pre_init);
 #endif
-        //activate_spd_rom(ctrl);
+        /*activate_spd_rom(ctrl);*/
         dimm_mask = spd_detect_dimms(ctrl);
 	if (!(dimm_mask & ((1 << DIMM_SOCKETS) - 1))) {
                 print_debug("No memory for this controller\n");
@@ -1612,7 +1319,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl) {
 	dimm_mask = spd_enable_clocks(ctrl, dimm_mask);
         if (dimm_mask < 0)
                 goto hw_spd_err;
-	//spd_verify_dimms(ctrl);
+	/*spd_verify_dimms(ctrl);*/
 #if DEBUG_RAM_CONFIG
 	print_debug(spd_pre_set);
 #endif
@@ -1638,7 +1345,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl) {
 #if DEBUG_RAM_CONFIG
 	print_debug(spd_post_init);
 #endif
-	//moved from dram_post_init
+	/*moved from dram_post_init*/
 	spd_set_ram_size(ctrl, dimm_mask);
 	dump_pci_device(PCI_DEV(0,0,1));
 	return;
@@ -1663,76 +1370,17 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl) {
 	 * Only 64M of each side of each DIMM is currently mapped,
 	 * so we can handle > 4GB of ram here.
 	 */
-#if 0
-#define bank_msg  "Bank "
-#define side_msg " Side "
-static void verify_ram() {
-	xorl	%ecx, %ecx
-	/* Check to see if the RAM is present,
-	 * in the specified bank and side.
-	 */
-1:	movl	%ecx, %ebx
-	shrl	$1, %ebx
-	addl	$((5<<8) | SMBUS_MEM_DEVICE_START), %ebx
-	CALLSP(smbus_read_byte)
-	jz	5f
-	testl	$1, %ecx
-	jz	2f
-	cmpb	$2, %al
-	jne	5f
 
-	/* Display the bank and side we are spot checking.
-	 */
-2:	CONSOLE_INFO_TX_STRING($bank_msg)
-	movl	%ecx, %ebx
-	shrl	$1, %ebx
-	incl	%ebx
-	CONSOLE_INFO_TX_HEX8(%bl)
-	CONSOLE_INFO_TX_STRING($side_msg)
-	movl	%ecx, %ebx
-	andl	$1, %ebx
-	CONSOLE_INFO_TX_HEX8(%bl)
-
-	/* Compute the memory address to spot check. */
-	movl	%ecx, %ebx
-	xorl	%eax, %eax
-3:	testl	%ebx, %ebx
-	jz	4f
-	addl	$0x04000000, %eax
-	decl	%ebx
-	jmp	3b
-4:
-	/* Spot check 512K of RAM */
-	movl	%eax, %ebx
-	addl	$0x0007ffff, %ebx
-	CALLSP(spot_check)
-5:	
-	/* Now find the next bank and side to spot check */
-	incl	%ecx
-	cmpl	$((SMBUS_MEM_DEVICE_END - SMBUS_MEM_DEVICE_START)<<1), %ecx
-	jb	1b
-	RET_LABEL(verify_ram)
-
-}
-#endif	
-
-#if 0
 static void ram_postinit(const struct mem_controller *ctrl) {
 #if DEBUG_RAM_CONFIG 
 	dumpnorth();
 #endif
-	/* Include a test to verify that memory is more or less working o.k. 
-  	 * This test is to catch programming errors and hardware that is out of
-	 * spec, not a test to see if the memory dimms are working 100%
-	 */
-//#	CALL_LABEL(verify_ram)
-	spd_set_ram_size(ctrl);
+	/*spd_set_ram_size(ctrl);*/
 }
 #define FIRST_NORMAL_REFERENCE() CALL_LABEL(ram_postinit)
 
 #define SPECIAL_FINISHUP()   CALL_LABEL(dram_finish)
 
-#endif
 
 #define ecc_pre_init	"Initializing ECC state...\r\n"
 #define ecc_post_init	"ECC state initialized.\r\n"
@@ -1754,11 +1402,9 @@ static void dram_finish(const struct mem_controller *ctrl)
 #endif
 #if 0
 		/* Clear the ECC error bits */
-		/*	
 	dword = pci_read_config32(ctrl->d0, 0x7c); /* FCS_EN */
 	dword |= (1<<17);
 	pci_write_config32(ctrl->d0, 0x7c, dword);
-*/
 #endif
 	  }
 
@@ -1766,44 +1412,8 @@ static void dram_finish(const struct mem_controller *ctrl)
 	dumpnorth();
 #endif
 
-//	verify_ram();
+/*	verify_ram(); */
 }
-#if 0
-#define ERRFUNC(x, str) mem_err(x, str)
-
-
-ERRFUNC(invalid_dimm_type,          "Invalid dimm type")
-ERRFUNC(spd_missing_data,           "Missing sdram spd data")
-ERRFUNC(spd_invalid_data,           "Invalid sdram spd data")
-ERRFUNC(spd_unsupported_data,       "Unsupported sdram spd value")
-ERRFUNC(unsupported_page_size,      "Unsupported page size")
-ERRFUNC(sdram_presence_mismatch,    "DIMM presence mismatch")
-ERRFUNC(sdram_value_mismatch,       "spd data does not match")
-ERRFUNC(unsupported_refresh_rate,   "Unsuported spd refresh rate")
-ERRFUNC(inconsistent_cas_latencies, "No cas latency supported by all dimms")
-ERRFUNC(unsupported_rcd,            "Unsupported ras to cas delay")
-#undef ERRFUNC
-
-#define mem_err_err "ERROR: "
-#define mem_err_pair " on dimm pair "
-#define mem_err_byte " spd byte "
-static void mem_err {
-	movl	%ebx, %edi
-	CONSOLE_ERR_TX_STRING($mem_err_err)
-	CONSOLE_ERR_TX_STRING(%esi)
-	CONSOLE_ERR_TX_STRING($mem_err_pair)
-	movl	%edi, %ebx
-	subb	$(SMBUS_MEM_DEVICE_START), %bl
-	CONSOLE_ERR_TX_HEX8(%bl)
-	CONSOLE_ERR_TX_STRING($mem_err_byte)
-	movl	%edi, %ebx
-	CONSOLE_ERR_TX_HEX8(%bh)
-	jmp	mem_stop
-
-}
-
-#endif
-
 
 #if ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG
 #define ram_enable_1    "Ram Enable 1\r\n"
@@ -1821,10 +1431,24 @@ static void mem_err {
 
 	/* Estimate that SLOW_DOWN_IO takes about 50&76us*/
 	/* delay for 200us */
+void udelay(int usecs)
+{
+        int i;
+        for(i = 0; i < usecs; i++)
+                outb(i&0xff, 0x80);
+}
 
-#define DO_DELAY \
+
+#if 0
+static void DO_DELAY(void){
 	udelay(200);
-//	for(i=0; i<16;i++)  { 	SLOW_DOWN_IO	}
+}
+#endif
+
+#define DO_DELAY udelay(200);
+/*
+	for(i=0; i<16;i++)  { 	SLOW_DOWN_IO	}
+ */
 		
 
 #define EXTRA_DELAY DO_DELAY
@@ -1866,11 +1490,13 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 #endif
 	RAM_NOP(ctrl);
 	EXTRA_DELAY
+#undef DEBUG_RAM_CONFIG
 #define DEBUG_RAM_CONFIG 0
 	/* 4 Precharge all */
 #if DEBUG_RAM_CONFIG 
 	print_debug(ram_enable_4);
 #endif
+#undef DEBUG_RAM_CONFIG
 #define DEBUG_RAM_CONFIG 0
 	RAM_PRECHARGE(ctrl);
 	EXTRA_DELAY
@@ -1947,14 +1573,14 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	RAM_NORMAL(ctrl);
 
 
-	// special from v1
-        //FIRST_NORMAL_REFERENCE();
-	//spd_set_ram_size(ctrl, 0x03);
+	/* special from v1*/
+        /*FIRST_NORMAL_REFERENCE();*/
+	/*spd_set_ram_size(ctrl, 0x03);*/
 
         /* Finally enable refresh */
         ENABLE_REFRESH(ctrl);
 
-	//SPECIAL_FINISHUP();
+	/*SPECIAL_FINISHUP();*/
 	dram_finish(ctrl);
 	{ char *c = (char *) 0;
 	*c = 'a';

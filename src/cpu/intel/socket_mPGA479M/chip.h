@@ -1,4 +1,4 @@
-extern struct chip_operations cpu_intel_socket_mPGA479_control;
+extern struct chip_operations cpu_intel_socket_mPGA479M_ops;
 
-struct cpu_intel_socket_mPGA479_config {
+struct cpu_intel_socket_mPGA479M_config {
 };

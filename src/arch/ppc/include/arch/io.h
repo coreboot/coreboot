@@ -179,4 +179,14 @@ extern inline void out_be32(volatile unsigned *addr, int val)
 {
 	__asm__ __volatile__("stw%U0%X0 %1,%0; eieio" : "=m" (*addr) : "r" (val));
 }
+
+extern inline void _insw_ns(volatile u16 *port, void *buf, int ns)
+{
+	u16 *   b = (u16 *)buf;    
+
+	while (ns > 0) {    
+		*b++ = readw(port);
+		ns--;
+	}
+}
 #endif

@@ -1,11 +1,15 @@
-/*      
-        This should be done by Eric
-        2004.12 yhlu add multi ht chain dynamically support
-*/ 
-
+/*
+ 	This should be done by Eric
+	2004.12 yhlu add multi ht chain dynamically support
+*/
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/hypertransport_def.h>
+
+static inline void print_linkn_in (const char *strval, uint8_t byteval)
+{
+        print_debug(strval); print_debug_hex8(byteval); print_debug("\r\n");
+}
 
 static unsigned ht_lookup_slave_capability(device_t dev)
 {
@@ -44,7 +48,7 @@ static void ht_collapse_previous_enumeration(unsigned bus)
 {
 	device_t dev;
 	uint32_t id;
-	
+
 	/* Check if is already collapsed */
 	dev = PCI_DEV(bus, 0, 0);
         id = pci_read_config32(dev, PCI_VENDOR_ID);
@@ -310,6 +314,65 @@ static int ht_setup_chainx(device_t udev, unsigned upos, unsigned bus)
 	return reset_needed;
 }
 
+static int optimize_link_read_pointer(unsigned node, unsigned linkn, uint8_t linkt, unsigned val)
+{
+	uint32_t dword, dword_old;
+	uint8_t link_type;
+	
+	/* This works on an Athlon64 because unimplemented links return 0 */
+	dword = pci_read_config32(PCI_DEV(0,0x18+node,0), 0x98 + (linkn * 0x20));
+	link_type = dword & 0xff;
+	
+	dword_old = dword = pci_read_config32(PCI_DEV(0,0x18+node,3), 0xdc);
+	
+	if ( (link_type & 7) == linkt ) { /* Coherent Link only linkt = 3, ncoherent = 7*/
+		dword &= ~( 0xff<<(linkn *8) );
+		dword |= val << (linkn *8);
+	}
+	
+	if (dword != dword_old) {
+		pci_write_config32(PCI_DEV(0,0x18+node,3), 0xdc, dword);
+		return 1;
+	}
+	
+	return 0;
+}
+
+static int optimize_link_in_coherent(int ht_c_num)
+{
+	int reset_needed; 
+	int i;
+
+	reset_needed = 0;
+
+	for (i = 0; i < ht_c_num; i++) {
+		uint32_t reg;
+		unsigned nodeid, linkn;
+		unsigned busn;
+		unsigned val;
+
+		reg = pci_read_config32(PCI_DEV(0,0x18,1), 0xe0 + i * 4);
+		
+		nodeid = ((reg & 0xf0)>>4); // nodeid
+		linkn = ((reg & 0xf00)>>8); // link n
+		busn = (reg & 0xff0000)>>16; //busn
+	
+		reg = pci_read_config32( PCI_DEV(busn, 1, 0), PCI_VENDOR_ID);
+		if ( (reg & 0xffff) == PCI_VENDOR_ID_AMD) {
+			val = 0x25;
+		} else if ( (reg & 0xffff) == 0x10de ) {
+			val = 0x25;//???
+		} else {
+			continue;
+		}
+
+		reset_needed |= optimize_link_read_pointer(nodeid, linkn, 0x07, val);
+
+	}
+
+	return reset_needed;
+}
+
 static int ht_setup_chains(int ht_c_num)
 {
 	/* Assumption the HT chain that is bus 0 has the HT I/O Hub on it. 
@@ -342,25 +405,19 @@ static int ht_setup_chains(int ht_c_num)
 		dword &= ~(0xffff<<8);
 		dword |= (reg & 0xffff0000)>>8;
 		pci_write_config32( PCI_DEV(0, devpos,0), regpos , dword);
-
-#if 0
-		dump_pci_devices_on_bus(busn);
-#endif
 		
 	        /* Make certain the HT bus is not enumerated */
         	ht_collapse_previous_enumeration(busn);
 
 		upos = ((reg & 0xf00)>>8) * 0x20 + 0x80;
 		udev =  PCI_DEV(0, devpos, 0);
-
-#if 0
-                dump_pci_devices_on_bus(busn);
-#endif
 		
 		reset_needed |= ht_setup_chainx(udev,upos,busn );
 
 	}
 
+	reset_needed |= optimize_link_in_coherent(ht_c_num);		
+	
 	return reset_needed;
 }
 
@@ -372,20 +429,22 @@ static int ht_setup_chains_x(void)
         unsigned next_busn;
         int ht_c_num;
 	int nodes;
-                        
-        // read PCI_DEV(0,0x18,0) 0x64 bit [8:9] to find out SbLink m
+      
+        /* read PCI_DEV(0,0x18,0) 0x64 bit [8:9] to find out SbLink m */
         reg = pci_read_config32(PCI_DEV(0, 0x18, 0), 0x64);
-        //update PCI_DEV(0, 0x18, 1) 0xe0 to 0x05000m03, and next_busn=5+1;
+        /* update PCI_DEV(0, 0x18, 1) 0xe0 to 0x05000m03, and next_busn=5+1 */
+	print_linkn_in("SBLink=", ((reg>>8) & 3) );
         tempreg = 3 | ( 0<<4) | (((reg>>8) & 3)<<8) | (0<<16)| (5<<24);
         pci_write_config32(PCI_DEV(0, 0x18, 1), 0xe0, tempreg);
-        next_busn=5+1; // 0 will be used ht chain with SB we need to keep SB in bus0 in auto stage
-	// clean others
+
+        next_busn=5+1; /* 0 will be used ht chain with SB we need to keep SB in bus0 in auto stage*/
+	/* clean others */
         for(ht_c_num=1;ht_c_num<4; ht_c_num++) {
                 pci_write_config32(PCI_DEV(0, 0x18, 1), 0xe0 + ht_c_num * 4, 0);
         }
-	
-	nodes = ((pci_read_config32(PCI_DEV(0, 0x18, 0), 0x60)>>4) & 7) + 1;
  
+	nodes = ((pci_read_config32(PCI_DEV(0, 0x18, 0), 0x60)>>4) & 7) + 1;
+
         for(nodeid=0; nodeid<nodes; nodeid++) {
                 device_t dev; 
                 unsigned linkn;
@@ -394,24 +453,26 @@ static int ht_setup_chains_x(void)
                         unsigned regpos;
                         regpos = 0x98 + 0x20 * linkn;
                         reg = pci_read_config32(dev, regpos);
-                        if ((reg & 7) != 7) continue; // it is not non conherent or not connected
+                        if ((reg & 0x17) != 7) continue; /* it is not non conherent or not connected*/
+			print_linkn_in("NC node/link=", ((nodeid & 0xf)<<4)|(linkn & 0xf));
                         tempreg = 3 | (nodeid <<4) | (linkn<<8);
-                        //compare (temp & 0xffff), with (PCI(0, 0x18, 1) 0xe0 to 0xec & 0xfffff)
+                        /*compare (temp & 0xffff), with (PCI(0, 0x18, 1) 0xe0 to 0xec & 0xfffff) */
                         for(ht_c_num=0;ht_c_num<4; ht_c_num++) {
                                 reg = pci_read_config32(PCI_DEV(0, 0x18, 1), 0xe0 + ht_c_num * 4);
-                                if(((reg & 0xffff) == (tempreg & 0xffff)) || ((reg & 0xffff) == 0x0000)) {  // we got it
+                                if(((reg & 0xffff) == (tempreg & 0xffff)) || ((reg & 0xffff) == 0x0000)) {  /*we got it*/
                                         break;
                                 }
                         }
-                        if(ht_c_num == 4) break; //used up onle 4 non conherent allowed
-                        //update to 0xe0...
-			if((reg & 0xf) == 3) continue; //SBLink so don't touch it 
+                        if(ht_c_num == 4) break; /*used up onle 4 non conherent allowed*/
+                        /*update to 0xe0...*/
+			if((reg & 0xf) == 3) continue; /*SbLink so don't touch it */
+			print_linkn_in("\tbusn=", next_busn);
                         tempreg |= (next_busn<<16)|((next_busn+5)<<24);
                         pci_write_config32(PCI_DEV(0, 0x18, 1), 0xe0 + ht_c_num * 4, tempreg);
                         next_busn+=5+1;
                 }
         }
-        //update 0xe0, 0xe4, 0xe8, 0xec from PCI_DEV(0, 0x18,1) to PCI_DEV(0, 0x19,1) to PCI_DEV(0, 0x1f,1);
+        /*update 0xe0, 0xe4, 0xe8, 0xec from PCI_DEV(0, 0x18,1) to PCI_DEV(0, 0x19,1) to PCI_DEV(0, 0x1f,1);*/
 
         for(nodeid = 1; nodeid<nodes; nodeid++) {
                 int i;
@@ -426,7 +487,7 @@ static int ht_setup_chains_x(void)
                 }
         }
 	
-	// recount ht_c_num
+	/* recount ht_c_num*/
 	int i=0;
         for(ht_c_num=0;ht_c_num<4; ht_c_num++) {
 		reg = pci_read_config32(PCI_DEV(0, 0x18, 1), 0xe0 + ht_c_num * 4);

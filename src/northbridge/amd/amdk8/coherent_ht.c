@@ -623,7 +623,7 @@ static struct setup_smp_result setup_smp2(void)
 #else
 	byte = get_linkn_first(byte); /*Min Link to node1 --- according to AMD*/
 #endif
-	print_linkn("(0,1) byte=", byte);
+	print_linkn("(0,1) link=", byte);
 	setup_row_direct(0,1, byte);
 	setup_temp_row(0, 1);
 	
@@ -636,7 +636,7 @@ static struct setup_smp_result setup_smp2(void)
 	/* We found 2 nodes so far */
 	val = pci_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /*get default link on node7 to node0*/
-	print_linkn("(1,0) byte=", byte);
+	print_linkn("(1,0) link=", byte);
 	setup_row_local(7,1);
 	setup_remote_row_direct(1, 0, byte);
 
@@ -652,7 +652,7 @@ static struct setup_smp_result setup_smp2(void)
 #else
 		byte = get_linkn_last(byte);  /* Max link to Node1*/
 #endif
-		print_linkn("-->(0,1) byte=", byte);
+		print_linkn("-->(0,1) link=", byte);
 		setup_row_direct(0,1, byte);
 		setup_temp_row(0, 1);
 	
@@ -665,7 +665,7 @@ static struct setup_smp_result setup_smp2(void)
 		/* We found 2 nodes so far */
 		val = pci_read_config32(NODE_HT(7), 0x6c);
 		byte = (val>>2) & 0x3; /* get default link on node7 to node0*/
-		print_linkn("-->(1,0) byte=", byte); 
+		print_linkn("-->(1,0) link=", byte); 
 		setup_row_local(7,1);
 		setup_remote_row_direct(1, 0, byte);
 	}
@@ -710,7 +710,7 @@ static struct setup_smp_result setup_smp4(int needs_reset)
 	}
 
 	byte &= 3; /* bit [3,2] is count-1*/
-	print_linkn("(0,2) byte=", byte); 
+	print_linkn("(0,2) link=", byte); 
 	setup_row_direct(0, 2, byte);  /*(0,2) direct link done*/
 	setup_temp_row(0, 2);
 
@@ -728,7 +728,7 @@ static struct setup_smp_result setup_smp4(int needs_reset)
 	val = get_row(1,1);
 	byte = ((val>>16) & 0xfe) - link_connection(1,0);
 	byte = get_linkn_first(byte);
-	print_linkn("(1,3) byte=", byte); 
+	print_linkn("(1,3) link=", byte); 
 	setup_row_direct(1,3,byte);  /* (1, 3) direct link done*/
 	setup_temp_row(1,3); /* temp. link between nodes 1 and 3 */
 	
@@ -757,7 +757,7 @@ static struct setup_smp_result setup_smp4(int needs_reset)
 
 	val = pci_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 0*/
-	print_linkn("(2,0) byte=", byte); 
+	print_linkn("(2,0) link=", byte); 
 
 	setup_row_local(7,2);
 	setup_remote_row_direct(2, 0, byte);
@@ -781,7 +781,7 @@ static struct setup_smp_result setup_smp4(int needs_reset)
 
 	val = pci_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 1*/
-	print_linkn("(3,1) byte=", byte); 
+	print_linkn("(3,1) link=", byte); 
 
 	setup_row_local(7,3);
 	setup_remote_row_direct(3, 1, byte);
@@ -802,7 +802,7 @@ static struct setup_smp_result setup_smp4(int needs_reset)
 	val = get_row(2,2);
 	byte = ((val>>16) & 0xfe) - link_connection(2,0);
 	byte = get_linkn_last_count(byte);
-	print_linkn("(2,3) byte=", byte & 3);
+	print_linkn("(2,3) link=", byte & 3);
 	
 	setup_row_direct(2,3, byte & 0x3);
 	setup_temp_row(0,2);
@@ -818,7 +818,7 @@ static struct setup_smp_result setup_smp4(int needs_reset)
 			val = get_row(2,2);
 			byte = ((val>>16) & 0xfe) - link_connection(2,0);
 			byte = get_linkn_first(byte);
-			print_linkn("-->(2,3) byte=", byte); 
+			print_linkn("-->(2,3) link=", byte); 
 			setup_row_direct(2,3,byte);
 			setup_temp_row(2,3);
 			check_connection(7); /* to 3*/
@@ -828,7 +828,7 @@ static struct setup_smp_result setup_smp4(int needs_reset)
 
 	val = pci_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 2*/
-	print_linkn("(3,2) byte=", byte); 
+	print_linkn("(3,2) link=", byte); 
 	setup_remote_row_direct(3,2, byte);
 
 /* ready to enable RT for Node 3 */
@@ -878,7 +878,7 @@ static struct setup_smp_result setup_smp6(int needs_reset)
 		return result;
 	}
 	byte &= 3; /* bit [3,2] is count-2*/
-	print_linkn("(2,4) byte=", byte);
+	print_linkn("(2,4) link=", byte);
 	setup_row_direct(2, 4, byte);
 	
 	/* Setup and check temporary connection from Node 0 to Node 4  through 2*/
@@ -902,7 +902,7 @@ static struct setup_smp_result setup_smp6(int needs_reset)
 	}
 
 	byte &= 3; /*bit [3,2] is count-2*/
-	print_linkn("(3,5) byte=", byte);
+	print_linkn("(3,5) link=", byte);
 	setup_row_direct(3, 5, byte);
 
 	setup_temp_row(0,1); /* temp. link between nodes 0 and 1 */
@@ -943,7 +943,7 @@ static struct setup_smp_result setup_smp6(int needs_reset)
 	}
 	val = pci_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /*get default link on 7 to 2*/
-	print_linkn("(4,2) byte=", byte); 
+	print_linkn("(4,2) link=", byte); 
 	
 	setup_row_local(7,4);
 	setup_remote_row_direct(4, 2, byte);
@@ -974,7 +974,7 @@ static struct setup_smp_result setup_smp6(int needs_reset)
 
 	val = pci_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 3*/
-	print_linkn("(5,3) byte=", byte); 
+	print_linkn("(5,3) link=", byte); 
 	setup_row_local(7,5);
 	setup_remote_row_direct(5, 3, byte);
 	setup_remote_node(5);  /* Setup the regs on the remote node */
@@ -984,7 +984,7 @@ static struct setup_smp_result setup_smp6(int needs_reset)
 	val = get_row(4,4);
 	byte = ((val>>16) & 0xfe) - link_connection(4,2);
 	byte = get_linkn_last_count(byte);
-	print_linkn("(4,5) byte=", byte & 3);
+	print_linkn("(4,5) link=", byte & 3);
 	
 	setup_row_direct(4,5, byte & 0x3);
 	setup_temp_row(0,2);
@@ -1001,7 +1001,7 @@ static struct setup_smp_result setup_smp6(int needs_reset)
 			val = get_row(4,4);
 			byte = ((val>>16) & 0xfe) - link_connection(4,2);
 			byte = get_linkn_first(byte);
-			print_linkn("-->(4,5) byte=", byte);
+			print_linkn("-->(4,5) link=", byte);
 			setup_row_direct(4,5,byte);
 			setup_temp_row(4,5);
 			check_connection(7); /* to 5*/
@@ -1011,7 +1011,7 @@ static struct setup_smp_result setup_smp6(int needs_reset)
 
 	val = pci_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 4*/
-	print_linkn("(5,4) byte=", byte); 
+	print_linkn("(5,4) link=", byte); 
 	setup_remote_row_direct(5,4, byte);
 #endif	
 	
@@ -1089,7 +1089,7 @@ static struct setup_smp_result setup_smp8(int needs_reset)
 #else
 	byte = get_linkn_first(byte);  /*Min link to 6*/
 #endif
-	print_linkn("(4,6) byte=", byte);
+	print_linkn("(4,6) link=", byte);
 	setup_row_direct(4, 6, byte);
 
 	/* Setup and check temporary connection from Node 0 to Node 6  through 2, and 4*/
@@ -1107,7 +1107,7 @@ static struct setup_smp_result setup_smp8(int needs_reset)
 	val = get_row(5,5);
 	byte = ((val>>16) & 0xfe) - link_connection(5,4) - link_connection(5,3);
 	byte = get_linkn_first(byte);
-	print_linkn("(5,7) byte=", byte);
+	print_linkn("(5,7) link=", byte);
 	setup_row_direct(5, 7, byte);
 
 	setup_temp_row(0,1); /* temp. link between nodes 0 and 1 */
@@ -1118,7 +1118,7 @@ static struct setup_smp_result setup_smp8(int needs_reset)
 	val = get_row(4,4);
 	byte = ((val>>16) & 0xfe) - link_connection(4,2) - link_connection(4,6);
 	byte = get_linkn_first(byte); 
-	print_linkn("(4,7) byte=", byte); 
+	print_linkn("(4,7) link=", byte); 
 	setup_row_direct(4, 7, byte);
 
 	/* Setup and check temporary connection from Node 0 to Node 7 through 2, and 4*/
@@ -1167,7 +1167,7 @@ static struct setup_smp_result setup_smp8(int needs_reset)
 	}
 	val = pci_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 4*/
-	print_linkn("(6,4) byte=", byte);
+	print_linkn("(6,4) link=", byte);
 	
 	setup_row_local(7,6);
 	setup_remote_row_direct(6, 4, byte);
@@ -1202,7 +1202,7 @@ static struct setup_smp_result setup_smp8(int needs_reset)
 
 	val = pci_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 5*/
-	print_linkn("(7,5) byte=", byte); 
+	print_linkn("(7,5) link=", byte); 
 	setup_row_local(7,7);
 	setup_remote_row_direct(7, 5, byte);
 
@@ -1213,7 +1213,7 @@ static struct setup_smp_result setup_smp8(int needs_reset)
 	setup_temp_row(4,7);
 	val = pci_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 4*/
-	print_linkn("(7,4) byte=", byte); 
+	print_linkn("(7,4) link=", byte); 
 	setup_row_local(7,7);
 	setup_remote_row_direct(7, 4, byte);
 	/* till now 4-7, 7-4 done. */
@@ -1226,7 +1226,7 @@ static struct setup_smp_result setup_smp8(int needs_reset)
 	val = get_row(5,5);
 	byte = ((val>>16) & 0xfe) - link_connection(5,3);
 	byte = get_linkn_last(byte);
-	print_linkn("(5,7) byte=", byte); 
+	print_linkn("(5,7) link=", byte); 
 	setup_row_direct(5, 7, byte);
 	
 	setup_temp_row(0,1); /* temp. link between nodes 0 and 1 */
@@ -1240,7 +1240,7 @@ static struct setup_smp_result setup_smp8(int needs_reset)
 		byte = ((val>>16) & 0xfe) - link_connection(5,3);
 		byte = get_linkn_first(byte);
 
-		print_linkn("-->(5,7) byte=", byte);
+		print_linkn("-->(5,7) link=", byte);
 		setup_row_direct(5, 7, byte);
 #if 0
 		setup_temp_row(0,1); /* temp. link between nodes 0 and 1 */
@@ -1254,7 +1254,7 @@ static struct setup_smp_result setup_smp8(int needs_reset)
 	}
 	val = pci_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 5*/
-	print_linkn("(7,5) byte=", byte);
+	print_linkn("(7,5) link=", byte);
 	setup_remote_row_direct(7, 5, byte);
 	/*Till now 57, 75 done */
 	
@@ -1262,14 +1262,14 @@ static struct setup_smp_result setup_smp8(int needs_reset)
 	val = get_row(5,5);
 	byte = ((val>>16) & 0xfe) - link_connection(5,3) - link_connection(5,7);
 	byte = get_linkn_first(byte);
-	print_linkn("(5,6) byte=", byte);
+	print_linkn("(5,6) link=", byte);
 	setup_row_direct(5, 6, byte);
 
 	/* init 6,7 */
 	val = get_row(6,6);
 	byte = ((val>>16) & 0xfe) - link_connection(6,4);
 	byte = get_linkn_last(byte);
-	print_linkn("(6,7) byte=", byte);
+	print_linkn("(6,7) link=", byte);
 	setup_row_direct(6, 7, byte);
 
 	for(byte=0; byte<6; byte+=2) {
@@ -1282,7 +1282,7 @@ static struct setup_smp_result setup_smp8(int needs_reset)
 		val = get_row(6,6);
 		byte = ((val>>16) & 0xfe) - link_connection(6,4);
 		byte = get_linkn_first(byte);
-		print_linkn("-->(6,7) byte=", byte);
+		print_linkn("-->(6,7) link=", byte);
 
 		setup_row_direct(6, 7, byte);
 #if 0
@@ -1295,7 +1295,7 @@ static struct setup_smp_result setup_smp8(int needs_reset)
 	}
 	val = pci_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 6*/
-	print_linkn("(7,6) byte=", byte);
+	print_linkn("(7,6) link=", byte);
 
 	setup_remote_row_direct(7, 6, byte);
 	/* Till now 67, 76 done*/
@@ -1304,7 +1304,7 @@ static struct setup_smp_result setup_smp8(int needs_reset)
 	val = get_row(6,6);
 	byte = ((val>>16) & 0xfe) - link_connection(6,4) - link_connection(6,7);
 	byte = get_linkn_first(byte);
-	print_linkn("(6,5) byte=", byte);
+	print_linkn("(6,5) link=", byte);
 	setup_row_direct(6, 5, byte);
 
 #endif
@@ -1314,13 +1314,13 @@ static struct setup_smp_result setup_smp8(int needs_reset)
 	val = get_row(6,6);
 	byte = ((val>>16) & 0xfe) - link_connection(6,4);
 	byte = get_linkn_first(byte);
-	print_linkn("(6,7) byte=", byte);
+	print_linkn("(6,7) link=", byte);
 	setup_row_direct(6,7, byte);
 
 	val = get_row(7,7);
 	byte = ((val>>16) & 0xfe) - link_connection(7,5);
 	byte = get_linkn_first(byte);
-	print_linkn("(7,6) byte=", byte);
+	print_linkn("(7,6) link=", byte);
 	setup_row_direct(7,6, byte);
 #endif
 
@@ -1463,7 +1463,7 @@ static void clear_dead_routes(unsigned nodes)
 		for(row =0; row<nodes; row++) {
 			val |= get_row(node, row);
 		}
-		fill_row(node, row, (((val & 0xff) | ((val >> 8) & 0xff)) << 16) | 0x0101); 
+		fill_row(node, node, (((val & 0xff) | ((val >> 8) & 0xff)) << 16) | 0x0101); 
 	}
 }
 #endif /* CONFIG_MAX_CPUS > 1 */
@@ -1585,7 +1585,7 @@ static int optimize_link_read_pointers(unsigned nodes, int needs_reset)
 			/* This works on an Athlon64 because unimplemented links return 0 */
 			reg = 0x98 + (link * 0x20);
 			link_type = pci_read_config32(f0_dev, reg);
-			if ((link_type & 3) == 3) { 
+			if ((link_type & 7) == 3) { 
 				cmd &= ~(0xff << (link *8));
 				cmd |= 0x25 << (link *8);
 			}

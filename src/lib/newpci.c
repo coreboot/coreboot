@@ -14,39 +14,22 @@
 static char rcsid[] = "$Id$";
 #endif
 
+#include <bitops.h>
 #include <pci.h>
 #undef __KERNEL__
 #include <arch/io.h>
 #include <printk.h>
 
-#define ONEMEG (1 << 20)
 
+#define PCI_MEM_HIGH  0xFEC00000UL /* Reserve 20M for the system */
 #define PCI_MEM_START 0xC0000000
 #define PCI_IO_START 0x1000
 
-// historical functions, sometimes very useful. 
-/*
- *    Write the special configuration registers on the INTEL
+/* PCI_ALLOCATE_TIGHT selects a near optimal pci resource allocate
+ * algorithm, in case there are problems set this to 0 and scream at
+ * me: Eric Biederman <ebiederman@lnxi.com>
  */
-void intel_conf_writeb(unsigned long port, unsigned char value)
-{
-	unsigned char whichbyte = port & 3;
-	port &= (~3);
-	outl(port, PCI_CONF_REG_INDEX);
-	outb(value, PCI_CONF_REG_DATA + whichbyte);
-}
-
-/*
- *    Read the special configuration registers on the INTEL
- */
-unsigned char intel_conf_readb(unsigned long port)
-{
-	unsigned char whichbyte = port & 3;
-	port &= (~3);
-	outl(port, PCI_CONF_REG_INDEX);
-	return inb(PCI_CONF_REG_DATA + whichbyte);
-}
-
+#define PCI_ALLOCATE_TIGHT 1
 
 static const struct pci_ops *conf;
 
@@ -266,9 +249,9 @@ static const struct pci_ops *pci_check_direct(void)
 int pci_read_config_byte(struct pci_dev *dev, u8 where, u8 * val)
 {
 	int res; 
-	res = conf->read_byte(dev->bus->number, dev->devfn, where, val);
+	res = conf->read_byte(dev->bus->secondary, dev->devfn, where, val);
 	printk_spew("Read config byte bus %d,devfn 0x%x,reg 0x%x,val 0x%x,res 0x%x\n",
-		    dev->bus->number, dev->devfn, where, *val, res);
+		    dev->bus->secondary, dev->devfn, where, *val, res);
 	return res;
 
 
@@ -277,41 +260,41 @@ int pci_read_config_byte(struct pci_dev *dev, u8 where, u8 * val)
 int pci_read_config_word(struct pci_dev *dev, u8 where, u16 * val)
 {
 	int res; 
-	res = conf->read_word(dev->bus->number, dev->devfn, where, val);
+	res = conf->read_word(dev->bus->secondary, dev->devfn, where, val);
 	printk_spew( "Read config word bus %d,devfn 0x%x,reg 0x%x,val 0x%x,res 0x%x\n",
-		     dev->bus->number, dev->devfn, where, *val, res);
+		     dev->bus->secondary, dev->devfn, where, *val, res);
 	return res;
 }
 
 int pci_read_config_dword(struct pci_dev *dev, u8 where, u32 * val)
 {
 	int res; 
-	res = conf->read_dword(dev->bus->number, dev->devfn, where, val);
+	res = conf->read_dword(dev->bus->secondary, dev->devfn, where, val);
 	printk_spew( "Read config dword bus %d,devfn 0x%x,reg 0x%x,val 0x%x,res 0x%x\n",
-		     dev->bus->number, dev->devfn, where, *val, res);
+		     dev->bus->secondary, dev->devfn, where, *val, res);
 	return res;
 }
 
 int pci_write_config_byte(struct pci_dev *dev, u8 where, u8 val)
 {
 	printk_spew( "Write config byte bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
-		     dev->bus->number, dev->devfn, where, val);
-	return conf->write_byte(dev->bus->number, dev->devfn, where, val);
+		     dev->bus->secondary, dev->devfn, where, val);
+	return conf->write_byte(dev->bus->secondary, dev->devfn, where, val);
 }
 
 int pci_write_config_word(struct pci_dev *dev, u8 where, u16 val)
 {
 	printk_spew( "Write config word bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
-		     dev->bus->number, dev->devfn, where, val);
-	return conf->write_word(dev->bus->number, dev->devfn, where, val);
+		     dev->bus->secondary, dev->devfn, where, val);
+	return conf->write_word(dev->bus->secondary, dev->devfn, where, val);
 
 }
 
 int pci_write_config_dword(struct pci_dev *dev, u8 where, u32 val)
 {
 	printk_spew( "Write config dword bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
-		     dev->bus->number, dev->devfn, where, val);
-	return conf->write_dword(dev->bus->number, dev->devfn, where, val);
+		     dev->bus->secondary, dev->devfn, where, val);
+	return conf->write_dword(dev->bus->secondary, dev->devfn, where, val);
 }
 
 int pcibios_read_config_byte(unsigned char bus, unsigned char devfn, u8 where, u8 * val)
@@ -373,10 +356,19 @@ int pcibios_write_config_dword(unsigned char bus, unsigned char devfn, u8 where,
  */
 unsigned long round(unsigned long val, unsigned long roundup)
 {
-	// ROUNDUP MUST BE A POWER OF TWO. 
+	/* ROUNDUP MUST BE A POWER OF TWO. */
 	unsigned long inverse;
 	inverse = ~(roundup - 1);
 	val += (roundup - 1);
+	val &= inverse;
+	return val;
+}
+
+unsigned long round_down(unsigned long val, unsigned long round_down)
+{
+	/* ROUND_DOWN MUST BE A POWER OF TWO. */
+	unsigned long inverse;
+	inverse = ~(round_down - 1);
 	val &= inverse;
 	return val;
 }
@@ -420,365 +412,394 @@ void pci_set_method()
  */
 
 
-/** Given a desired amount of io, round it to IO_BRIDGE_ALIGN
- * @param amount Amount of memory desired. 
+/** Read the resources on all devices of a given pci bus.
+ * @param bus bus to read the resources on.
  */
-unsigned long iolimit(unsigned long amount)
+static void read_resources(struct pci_dev *bus)
 {
-	amount = round(amount, IO_BRIDGE_ALIGN) - 1;
-	return amount;
-}
-
-/** Given a desired amount of memory, round it to ONEMEG
- * @param amount Amount of memory desired. 
- */
-unsigned long memlimit(unsigned long amount)
-{
-	amount = round(amount, ONEMEG) - 1;
-	return amount;
-}
-
-/** Compute and allocate the io for this bus. 
- * @param bus Pointer to the struct for this bus. 
- */
-void compute_allocate_io(struct pci_bus *bus)
-{
-	int i;
-	struct pci_bus *curbus;
 	struct pci_dev *curdev;
-	unsigned long io_base;
 
-	io_base = bus->iobase;
-	printk_debug("compute_allocate_io: base 0x%lx\n", bus->iobase);
+	
+	/* Walk through all of the devices and find which resources they need. */
+	for(curdev = bus->children; curdev; curdev = curdev->sibling) {
+		if (curdev->resources > 0) {
+			continue;
+		}
+		curdev->ops->read_resources(curdev);
+	}
+}
 
-	/* First, walk all the bridges. When you return, grow the limit of the current bus
-	   since sub-busses need IO rounded to 4096 */
-	for (curbus = bus->children; curbus; curbus = curbus->next) {
-		curbus->iobase = io_base;
-		compute_allocate_io(curbus);
-		io_base = round(curbus->iolimit, IO_BRIDGE_ALIGN);
-		printk_debug("BUSIO: done Bridge Bus 0x%x, iobase now 0x%lx\n",
-			     curbus->number, io_base);
+static struct pci_dev *largest_resource(struct pci_dev *bus, struct resource **result_res,
+	unsigned long type_mask, unsigned long type)
+{
+	struct pci_dev *curdev;
+	struct pci_dev *result_dev = 0;
+	struct resource *last = *result_res;
+	struct resource *result = 0;
+	int seen_last = 0;
+	for(curdev = bus->children; curdev; curdev = curdev->sibling) {
+		int i;
+		for(i = 0; i < curdev->resources; i++) {
+			struct resource *resource = &curdev->resource[i];
+			/* If it isn't the right kind of resource ignore it */
+			if ((resource->flags & type_mask) != type) {
+				continue;
+			}
+			/* Be certain to pick the successor to last */
+			if (resource == last) {
+				seen_last = 1;
+				continue;
+			}
+			if (last && (
+				(last->align < resource->align) ||
+				((last->align == resource->align) &&
+					(last->size < resource->size)) ||
+				((last->align == resource->align) &&
+					(last->size == resource->size) &&
+					(!seen_last)))) {
+				continue;
+			}
+			if (!result || 
+				(result->align < resource->align) ||
+				((result->align == resource->align) &&
+					(result->size < resource->size))) {
+				result_dev = curdev;
+				result = resource;
+			}
+		}
+	}
+	*result_res = result;
+	return result_dev;
+}
+
+/* Compute allocate resources is the guts of the resource allocator.
+ * 
+ * The problem.
+ *  - Allocate resources locations for every device.
+ *  - Don't overlap, and follow the rules of bridges.
+ *  - Don't overlap with resources in fixed locations.
+ *  - Be efficient so we don't have ugly strategies.
+ *
+ * The strategy.
+ * - Devices that have fixed addresses are the minority so don't
+ *   worry about them too much.  Instead only use part of the address
+ *   space for devices with programmable addresses.  This easily handles
+ *   everything except bridges.
+ *
+ * - PCI devices are required to have thier sizes and their alignments
+ *   equal.  In this case an optimal solution to the packing problem
+ *   exists.  Allocate all devices from highest alignment to least
+ *   alignment or vice versa.  Use this.
+ *
+ * - So we can handle more than PCI run two allocation passes on
+ *   bridges.  The first to see how large the resources are behind
+ *   the bridge, and what their alignment requirements are.  The
+ *   second to assign a safe address to the devices behind the
+ *   bridge.  This allows me to treat a bridge as just a device with 
+ *   a couple of resources, and not need to special case it in the
+ *   allocator.  Also this allows handling of other types of bridges.
+ *
+ */
+
+#if PCI_ALLOCATE_TIGHT
+void compute_allocate_resource(
+	struct pci_dev *bus,
+	struct resource *bridge,
+	unsigned long type_mask,
+	unsigned long type)
+{
+	struct pci_dev *dev;
+	struct resource *resource;
+	unsigned long base;
+	unsigned long align, min_align;
+	min_align = 0;
+	base = bridge->base;
+
+	/* We want different minimum alignments for different kinds of
+	 * resources.  These minimums are not device type specific
+	 * but resource type specific.
+	 */
+	if (bridge->flags & IORESOURCE_IO) {
+		min_align = log2(IO_ALIGN);
+	}
+	if (bridge->flags & IORESOURCE_MEM) {
+		min_align = log2(MEM_ALIGN);
 	}
 
-	/* Walk through all the devices on current bus and compute IO address space.*/
-	for (curdev = bus->devices; curdev; curdev = curdev->sibling) {
-		u32 class_revision;
-		/* FIXME Special case for VGA for now just note
-		 * we have an I/O resource later make certain
-		 * we don't have a device conflict.
+	printk_spew("PCI: %02x:%02x.%01x compute_allocate_%s: base: %08lx size: %08lx align: %d gran: %d\n", 
+		bus->bus->secondary,
+		PCI_SLOT(bus->devfn), PCI_FUNC(bus->devfn),
+		(bridge->flags & IORESOURCE_IO)? "io":
+		(bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",
+		base, bridge->size, bridge->align, bridge->gran);
+
+	/* Make certain I have read in all of the resources */
+	read_resources(bus);
+
+	/* Remember I haven't found anything yet. */
+	resource = 0;
+
+	/* Walk through all the devices on the current bus and compute the addresses */
+	while(dev = largest_resource(bus, &resource, type_mask, type)) {
+		unsigned long size;
+		/* Do NOT I repeat do not ignore resources which have zero size.
+		 * If they need to be ignored dev->read_resources should not even
+		 * return them.   Some resources must be set even when they have
+		 * no size.  PCI bridge resources are a good example of this.
 		 */
-		pci_read_config_dword(curdev, PCI_CLASS_REVISION, &class_revision);
+
+		/* Propogate the resource alignment to the bridge register  */
+		if (resource->align > bridge->align) {
+			bridge->align = resource->align;
+		}
+
+		/* Make certain we are dealing with a good minimum size */
+		size = resource->size;
+		align = resource->align;
+		if (align < min_align) {
+			align = min_align;
+		}
+		if (resource->flags & IORESOURCE_IO) {
+			/* Don't allow potential aliases over the
+			 * legacy pci expansion card addresses.
+			 */
+			if ((base > 0x3ff) && ((base & 0x300) != 0)) {
+				base = (base & ~0x3ff) + 0x400;
+			}
+			/* Don't allow allocations in the VGA IO range.
+			 * PCI has special cases for that.
+			 */
+			else if ((base >= 0x3b0) && (base <= 0x3df)) {
+				base = 0x3e0;
+			}
+		}
+		if (((round(base, 1UL << align) + size) -1) <= resource->limit) {
+			/* base must be aligned to size */
+			base = round(base, 1UL << align);
+			resource->base = base;
+			resource->flags |= IORESOURCE_SET;
+			base += size;
+			
+			printk_spew(
+				"PCI: %02x:%02x.%01x %02x *  [0x%08lx - 0x%08lx] %s\n",
+				dev->bus->secondary, 
+				PCI_SLOT(dev->devfn), PCI_FUNC(dev->devfn), 
+				resource->index, 
+				resource->base, resource->base + resource->size -1,
+				(resource->flags & IORESOURCE_IO)? "io":
+				(resource->flags & IORESOURCE_PREFETCH)? "prefmem": "mem");
+		}
+
+	}
+	/* A pci bridge resource does not need to be a power
+	 * of two size, but it does have a minimum granularity.
+	 * Round the size up to that minimum granularity so we
+	 * know not to place something else at an address postitively
+	 * decoded by the bridge.
+	 */
+	bridge->size = round(base, 1UL << bridge->gran) - bridge->base;
+
+	printk_spew("PCI: %02x:%02x.%01x compute_allocate_%s: base: %08lx size: %08lx align: %d gran: %d done\n", 
+		bus->bus->secondary,
+		PCI_SLOT(bus->devfn), PCI_FUNC(bus->devfn),
+		(bridge->flags & IORESOURCE_IO)? "io":
+		(bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",
+		base, bridge->size, bridge->align, bridge->gran);
+
+
+}
+#else
+/* As close to the original algorithm as possible, no optimization */
+void compute_allocate_resource(
+	struct pci_dev *bus,
+	struct resource *bridge,
+	unsigned long type_mask,
+	unsigned long type)
+{
+	struct pci_dev *dev;
+	struct resource *resource;
+	unsigned long base;
+	unsigned long align, min_align;
+	min_align = 0;
+	base = bridge->base;
+
+	/* We want different minimum alignments for different kinds of
+	 * resources.  These minimums are not device type specific
+	 * but resource type specific.
+	 */
+	if (bridge->flags & IORESOURCE_IO) {
+		min_align = log2(IO_ALIGN);
+	}
+	if (bridge->flags & IORESOURCE_MEM) {
+		min_align = log2(MEM_ALIGN);
+	}
+
+	printk_spew("PCI: %02x:%02x.%01x compute_allocate_%s: base: %08lx size: %08lx align: %d gran: %d\n", 
+		bus->bus->secondary,
+		PCI_SLOT(bus->devfn), PCI_FUNC(bus->devfn),
+		(bridge->flags & IORESOURCE_IO)? "io":
+		(bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",
+		base, bridge->size, bridge->align, bridge->gran);
+
+	/* Make certain I have read in all of the resources */
+	read_resources(bus);
+
+	for(dev = bus->children; dev; dev = dev->sibling) {
+		int i;
+		for(i = 0; i < dev->resources; i++) {
+			resource = &dev->resource[i];
+			/* If it isn't a bridge resource ignore it */
+			if (!(resource->flags & IORESOURCE_PCI_BRIDGE)) {
+				continue;
+			}
+			/* If it isn't the right kind of resource ignore it */
+			if ((resource->flags & type_mask) != type) {
+				continue;
+			}
+			resource->base = base;
+			compute_allocate_resource(dev, resource, type_mask, type);
+			resource->flags |= IORESOURCE_SET;
+			base = round(resource->base + resource->size -1, 
+				resource->gran);
+		}
+	}
+	for(dev = bus->children; dev; dev = dev->sibling) {
+		int i;
+		for(i = 0; i < dev->resources; i++) {
+			unsigned long size;
+			resource = &dev->resource[i];
+			/* If it isn't the right kind of resource ignore it */
+			if ((resource->flags & type_mask) != type) {
+				continue;
+			}
+			if (!resource->size) {
+				continue;
+			}
+			if (resource->flags & IORESOURCE_PCI_BRIDGE) {
+				continue;
+			}
+
+			/* Propogate the resource alignment to the bridge register  */
+			if (resource->align > bridge->align) {
+				bridge->align = resource->align;
+			}
+
+			/* Make certain that iosize is a minimum size */
+			size = round(resource->size, 1UL << min_align);
+
+			/* base must be aligned to the io size */
+			base = round(base, size);
+			
+			if ((base + size -1) <= resource->limit) {
+				resource->base = base;
+				resource->flags |= IORESOURCE_SET;
+				base += size;
+			
+				printk_spew(
+					"PCI: %02x:%02x.%01x %02x *  [0x%08lx - 0x%08lx] %s\n",
+					dev->bus->secondary, 
+					PCI_SLOT(dev->devfn), PCI_FUNC(dev->devfn), 
+					resource->index, 
+					resource->base, resource->base + resource->size -1,
+					(resource->flags & IORESOURCE_IO)? "io":
+					(resource->flags & IORESOURCE_PREFETCH)? "prefmem": "mem");
+			}
+		}
+	}
+	/* A pci bridge resource does not need to be a power
+	 * of two size, but it does have a minimum granularity.
+	 * Round the size up to that minimum granularity so we
+	 * know not to place something else at an address postitively
+	 * decoded by the bridge.
+	 */
+	bridge->size = round(base, 1UL << bridge->gran) - bridge->base;
+
+	printk_spew("PCI: %02x:%02x.%01x compute_allocate_%s: base: %08lx size: %08lx align: %d gran: %d done\n", 
+		bus->bus->secondary,
+		PCI_SLOT(bus->devfn), PCI_FUNC(bus->devfn),
+		(bridge->flags & IORESOURCE_IO)? "io":
+		(bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",
+		base, bridge->size, bridge->align, bridge->gran);
+}
+
+#endif
+
+static void allocate_vga_resource(void)
+{
+	/* FIXME handle the VGA pallette snooping */
+	struct pci_dev *dev, *vga, *bus;
+	bus = vga = 0;
+	for(dev = pci_devices; dev; dev = dev->next) {
+		uint32_t class_revision;
+		pci_read_config_dword(dev, PCI_CLASS_REVISION, &class_revision);
 		if (((class_revision >> 24) == 0x03) && 
 		    ((class_revision >> 16) != 0x380)) {
-			printk_debug("Running VGA fix...\n");
-			/* All legacy VGA cards have I/O space registers */
-			curdev->command |= PCI_COMMAND_IO;	
-		}
-		for (i = 0; i < 6; i++) {
-			unsigned long size = curdev->size[i];
-			if (size & PCI_BASE_ADDRESS_SPACE_IO) {
-				unsigned long iosize = size & PCI_BASE_ADDRESS_IO_MASK;
-				if (!iosize)
-					continue;
-
-				printk_debug("DEVIO: Bus 0x%x, devfn 0x%x, reg 0x%x: "
-					     "iosize 0x%lx\n",
-					     curdev->bus->number, curdev->devfn, i, iosize);
-				// Make sure that iosize is a minimum 
-				// size. 
-				iosize = round(iosize, IO_ALIGN);
-				// io_base must be aligned to the io size.
-				io_base = round(io_base, iosize);
-				printk_debug("  rounded size %d base 0x%x\n",
-					     iosize, io_base);
-				curdev->base_address[i] = io_base;
-				// some chipsets allow us to set/clear the IO bit. 
-				// (e.g. VIA 82c686a.) So set it to be safe)
-				curdev->base_address[i] |= 
-					PCI_BASE_ADDRESS_SPACE_IO;
-				printk_debug("-->set base to 0x%lx\n", io_base);
-				io_base += iosize;
-				curdev->command |= PCI_COMMAND_IO;
+			if (!vga) {
+				printk_debug("Allocating VGA resource\n");
+				vga = dev;
+			}
+			if (vga == dev) {
+				/* All legacy VGA cards have MEM & I/O space registers */
+				dev->command |= PCI_COMMAND_MEMORY | PCI_COMMAND_IO;
+			} else {
+				/* It isn't safe to enable other VGA cards */
+				dev->command &= ~(PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
 			}
 		}
 	}
-	bus->iolimit = iolimit(io_base);
-
-	printk_debug("BUS %d: set iolimit to 0x%lx\n", bus->number, bus->iolimit);
+	if (vga) {
+		bus = vga->bus;
+	}
+	/* Now walk up the bridges setting the VGA enable */
+	while(bus) {
+		uint16_t ctrl;
+		pci_read_config_word(bus, PCI_BRIDGE_CONTROL, &ctrl);
+		ctrl |= PCI_BRIDGE_CTL_VGA;
+		pci_write_config_word(bus, PCI_BRIDGE_CONTROL, ctrl);
+		bus = (bus == bus->bus)? 0 : bus->bus;
+	} 
 }
 
-/** Compute and allocate the memory for this bus. 
- * @param bus Pointer to the struct for this bus. 
- */
-void compute_allocate_mem(struct pci_bus *bus)
-{
-	int i;
-	struct pci_bus *curbus;
-	struct pci_dev *curdev;
-	unsigned long mem_base;
-
-	mem_base = bus->membase;
-	printk_debug("compute_allocate_mem: base 0x%lx\n", bus->membase);
-
-	/* First, walk all the bridges. When you return, grow the limit of the current bus
-	   since sub-busses need MEMORY rounded to 1 Mega */
-	for (curbus = bus->children; curbus; curbus = curbus->next) {
-		curbus->membase = mem_base;
-		compute_allocate_mem(curbus);
-		mem_base = round(curbus->memlimit, ONEMEG);
-		printk_debug("BUSMEM: Bridge Bus 0x%x,membase now 0x%lx\n",
-			     curbus->number, mem_base);
-	}
-
-	/* Walk through all the devices on current bus and oompute MEMORY address space.*/
-	for (curdev = bus->devices; curdev; curdev = curdev->sibling) {
-		for (i = 0; i < 6; i++) {
-			unsigned long size = curdev->size[i];
-			unsigned long memorysize = size & (PCI_BASE_ADDRESS_MEM_MASK);
-			unsigned long type = size & (~PCI_BASE_ADDRESS_MEM_MASK);
-			if (!memorysize) {
-				continue;
-			}
-			
-			if (type & PCI_BASE_ADDRESS_SPACE_IO) {
-				continue;
-			}
-
-			// we don't support the 1M type
-			if (type & PCI_BASE_ADDRESS_MEM_TYPE_1M) {
-				continue;
-			}
-
-			// if it's prefetch type, continue;
-			if (type & PCI_BASE_ADDRESS_MEM_PREFETCH) {
-				continue;
-			}
-
-			// now mask out all but the 32 or 64 bits
-			type &= PCI_BASE_ADDRESS_MEM_TYPE_MASK;
-
-			// I'm pretty sure this test is not needed, but ...
-			if ((type == PCI_BASE_ADDRESS_MEM_TYPE_32) ||
-			    (type == PCI_BASE_ADDRESS_MEM_TYPE_64)) {
-				/* this is normal memory space */
-				unsigned long regmem;
-
-				/* PCI BUS Spec suggests that the memory address should be
-				   consumed in 4KB unit */
-				regmem = round(memorysize, MEM_ALIGN);
-				mem_base = round(mem_base, regmem);
-				printk_debug("DEVMEM: Bus 0x%x, devfn 0x%x, reg 0x%x: "
-					     "memsize 0x%lx\n",
-					     curdev->bus->number, curdev->devfn, i, regmem);
-				curdev->base_address[i] = mem_base;
-				printk_debug("-->set base to 0x%lx\n", mem_base);
-				mem_base += regmem;
-				curdev->command |= PCI_COMMAND_MEMORY;
-				// for 64-bit BARs, the odd ones don't count
-				if (type == PCI_BASE_ADDRESS_MEM_TYPE_64)
-					continue;
-
-			}
-		}
-	}
-	bus->memlimit = memlimit(mem_base);
-
-	printk_debug("BUS %d: set memlimit to 0x%lx\n", bus->number, bus->memlimit);
-}
-
-/** Compute and allocate the prefetch memory for this bus. 
- * @param bus Pointer to the struct for this bus. 
- */
-void compute_allocate_prefmem(struct pci_bus *bus)
-{
-	int i;
-	struct pci_bus *curbus;
-	struct pci_dev *curdev;
-	unsigned long prefmem_base;
-
-	prefmem_base = bus->prefmembase;
-	printk_debug("Compute_allocate_prefmem: base 0x%lx\n", bus->prefmembase);
-
-	/* First, walk all the bridges. When you return, grow the limit of the current bus
-	   since sub-busses need MEMORY rounded to 1 Mega */
-	for (curbus = bus->children; curbus; curbus = curbus->next) {
-		curbus->prefmembase = prefmem_base;
-		compute_allocate_prefmem(curbus);
-		prefmem_base = round(curbus->prefmemlimit, ONEMEG);
-		printk_debug("BUSPREFMEM: Bridge Bus 0x%x, prefmem base now 0x%lx\n",
-			     curbus->number, prefmem_base);
-	}
-
-	/* Walk through all the devices on current bus and oompute PREFETCHABLE MEMORY address space.*/
-	for (curdev = bus->devices; curdev; curdev = curdev->sibling) {
-		for (i = 0; i < 6; i++) {
-			unsigned long size = curdev->size[i];
-			unsigned long memorysize = size & (PCI_BASE_ADDRESS_MEM_MASK);
-			unsigned long type = size & (~PCI_BASE_ADDRESS_MEM_MASK);
-
-			if (!memorysize)
-				continue;
-
-			if (type & PCI_BASE_ADDRESS_SPACE_IO) {
-				continue;
-			}
-
-			// we don't support the 1M type
-			if (type & PCI_BASE_ADDRESS_MEM_TYPE_1M) {
-				printk_warning(__FUNCTION__ ": 1M memory not supported\n");
-				continue;
-			}
-		      
-			// if it's not a prefetch type, continue;
-			if (! (type & PCI_BASE_ADDRESS_MEM_PREFETCH))
-				continue;
-			// this should be a function some day ... comon code with 
-			// the non-prefetch allocate
-			// now mask out all but the 32 or 64 bit type info
-			type &= PCI_BASE_ADDRESS_MEM_TYPE_MASK;
-			// if all these names confuse you, they confuse me too!
-			if ((type == PCI_BASE_ADDRESS_MEM_TYPE_32) ||
-			    (type == PCI_BASE_ADDRESS_MEM_TYPE_64)) {
-				unsigned long regmem;
-
-				/* PCI BUS Spec suggests that the memory address should be
-				   consumed in 4KB unit */
-				regmem = round(memorysize, MEM_ALIGN);
-				prefmem_base = round(prefmem_base, regmem);
-				printk_debug("DEVPREFMEM: Bus 0x%x, devfn 0x%x, reg 0x%x: "
-					     "prefmemsize 0x%lx\n",
-					     curdev->bus->number, curdev->devfn, i, regmem);
-				curdev->base_address[i] = prefmem_base;
-				printk_debug("-->set base to 0x%lx\n", prefmem_base);
-				prefmem_base += regmem;
-				curdev->command |= PCI_COMMAND_MEMORY;
-				// for 64-bit BARs, the odd ones don't count
-				if (type == PCI_BASE_ADDRESS_MEM_TYPE_64)
-					continue;
-			}
-		}
-	}
-	bus->prefmemlimit = memlimit(prefmem_base);
-
-	printk_debug("BUS %d: set prefmemlimit to 0x%lx\n", bus->number, bus->prefmemlimit);
-}
-
-/** Compute and allocate resources. 
- * This is a one-pass process. We first compute all the IO, then 
- * memory, then prefetchable memory. 
- * This is really only called at the top level
- * @param bus Pointer to the struct for this bus. 
- */
-void compute_allocate_resources(struct pci_bus *bus)
-{
-	printk_debug("COMPUTE_ALLOCATE: do IO\n");
-	compute_allocate_io(bus);
-
-	printk_debug("COMPUTE_ALLOCATE: do MEM\n");
-	compute_allocate_mem(bus);
-
-	// now put the prefetchable memory at the end of the memory
-	bus->prefmembase = round(bus->memlimit, ONEMEG);
-
-	printk_debug("COMPUTE_ALLOCATE: do PREFMEM\n");
-	compute_allocate_prefmem(bus);
-}
 
 /** Assign the computed resources to the bridges and devices on the bus.
  * Recurse to any bridges found on this bus first. Then do the devices
  * on this bus. 
  * @param bus Pointer to the structure for this bus
  */ 
-void assign_resources(struct pci_bus *bus)
+void assign_resources(struct pci_dev *bus)
 {
-	struct pci_dev *curdev = pci_devices;
-	struct pci_bus *curbus;
+	struct pci_dev *curdev;
 
-	printk_debug("ASSIGN RESOURCES, bus %d\n", bus->number);
+	printk_debug("ASSIGN RESOURCES, bus %d\n", bus->secondary);
 
-	/* walk trhough all the buses, assign resources for bridges */
-	for (curbus = bus->children; curbus; curbus = curbus->next) {
-		curbus->self->command = 0;
-
-		/* set the IO ranges
-		   WARNING: we don't really do 32-bit addressing for IO yet! */
-		if (curbus->iobase) {
-			curbus->self->command |= PCI_COMMAND_IO;
-			pci_write_config_byte(curbus->self, PCI_IO_BASE,
-					      curbus->iobase >> 8);
-			pci_write_config_byte(curbus->self, PCI_IO_LIMIT,
-					      curbus->iolimit >> 8);
-			printk_debug("Bus 0x%x Child Bus %x iobase to 0x%x iolimit 0x%x\n",
-				     bus->number,curbus->number, curbus->iobase, curbus->iolimit);
-		}
-
-		// set the memory range
-		if (curbus->membase) {
-			curbus->self->command |= PCI_COMMAND_MEMORY;
-			pci_write_config_word(curbus->self, PCI_MEMORY_BASE,
-					      curbus->membase >> 16);
-			pci_write_config_word(curbus->self, PCI_MEMORY_LIMIT,
-					      curbus->memlimit >> 16);
-			printk_debug("Bus 0x%x Child Bus %x membase to 0x%x memlimit 0x%x\n",
-				     bus->number,curbus->number, curbus->membase, curbus->memlimit);
-
-		}
-
-		// set the prefetchable memory range
-		if (curbus->prefmembase) {
-			curbus->self->command |= PCI_COMMAND_MEMORY;
-			pci_write_config_word(curbus->self, PCI_PREF_MEMORY_BASE,
-					      curbus->prefmembase >> 16);
-			pci_write_config_word(curbus->self, PCI_PREF_MEMORY_LIMIT,
-					      curbus->prefmemlimit >> 16);
-			printk_debug("Bus 0x%x Child Bus %x prefmembase to 0x%x prefmemlimit 0x%x\n",
-				     bus->number,curbus->number, curbus->prefmembase,
-				     curbus->prefmemlimit);
-
-		}
-		curbus->self->command |= PCI_COMMAND_MASTER;
-		assign_resources(curbus);
-	}
-
-	for (curdev = bus->devices; curdev; curdev = curdev->sibling) {
-		int i;
-		for (i = 0; i < 6; i++) {
-			unsigned long reg;
-			if (curdev->base_address[i] == 0)
-				continue;
-
-			reg = PCI_BASE_ADDRESS_0 + (i << 2);
-			pci_write_config_dword(curdev, reg, curdev->base_address[i]);
-			printk_debug("Bus 0x%x devfn 0x%x reg 0x%x base to 0x%lx\n",
-				     curdev->bus->number, curdev->devfn, i, 
-				     curdev->base_address[i]);
-		}
-		/* set a default latency timer */
-		pci_write_config_byte(curdev, PCI_LATENCY_TIMER, 0x40);
+	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
+		curdev->ops->set_resources(curdev);
 	}
 }
 
-void enable_resources(struct pci_bus *bus)
+static void enable_resources(struct pci_dev *bus)
 {
-	struct pci_dev *curdev = pci_devices;
+	struct pci_dev *curdev;
 
-	/* walk through the chain of all pci device, this time we don't have to deal
-	   with the device v.s. bridge stuff, since every bridge has its own pci_dev
-	   assocaited with it */
+	/* Walk through the chain of all pci devices and enable them.
+	 * This is effectively a breadth first traversal so we should
+	 * not have enalbing ordering problems.
+	 */
 	for (curdev = pci_devices; curdev; curdev = curdev->next) {
 		u16 command;
 		pci_read_config_word(curdev, PCI_COMMAND, &command);
 		command |= curdev->command;
-		printk_debug("DEV Set command bus 0x%02x devfn 0x%02x to 0x%02x\n",
-			     curdev->bus->number, curdev->devfn, command);
+		printk_debug("PCI: %02x:%02x.%01x cmd <- %02x\n",
+			curdev->bus->secondary,
+			PCI_SLOT(curdev->devfn), PCI_FUNC(curdev->devfn),
+			command);
 		pci_write_config_word(curdev, PCI_COMMAND, command);
 	}
 }
 
 /** Enumerate the resources on the PCI by calling pci_init
  */
-void pci_enumerate()
+void pci_enumerate(void)
 {
 	printk_info("Scanning PCI bus...");
 	// scan it. 
@@ -791,18 +812,35 @@ void pci_enumerate()
  * PCI_IO_START. Since the assignment is hierarchical we set the values
  * into the pci_root struct. 
  */
-void pci_configure()
+void pci_configure(void)
 {
+	struct pci_dev *root = &pci_root;
 	printk_info("Allocating PCI resources...");
+	printk_debug("\n");
 
-	pci_root.membase = PCI_MEM_START;
-	pci_root.prefmembase = PCI_MEM_START;
-	pci_root.iobase = PCI_IO_START;
 
-	compute_allocate_resources(&pci_root);
+	root->ops->read_resources(root);
 
+	/* Make certain the io devices are allocated somewhere
+	 * safe.
+	 */
+	root->resource[0].base = PCI_IO_START;
+	root->resource[0].flags |= IORESOURCE_SET;
+	/* Now reallocate the pci resources memory with the
+	 * highest addresses I can manage.
+	 */
+#if PCI_ALLOCATE_TIGHT
+	root->resource[1].base = 
+		round_down(PCI_MEM_HIGH - root->resource[1].size,
+			1UL << root->resource[1].align);
+#else
+	root->resource[1].base = PCI_MEM_START;
+#endif
+	root->resource[1].flags |= IORESOURCE_SET;
 	// now just set things into registers ... we hope ...
-	assign_resources(&pci_root);
+	root->ops->set_resources(root);
+
+	allocate_vga_resource();
 
 	printk_info("done.\n");
 }
@@ -810,39 +848,39 @@ void pci_configure()
 /** Starting at the root, walk the tree and enable all devices/bridges. 
  * What really happens is computed COMMAND bits get set in register 4
  */
-void pci_enable()
+void pci_enable(void)
 {
 	printk_info("Enabling PCI resourcess...");
 
-	// now enable everything.
+	/* now enable everything. */
 	enable_resources(&pci_root);
 	printk_info("done.\n");
 }
 
-void pci_zero_irq_settings(void)
+/** Starting at the root, walk the tree and call a driver to
+ *  do device specific setup.
+ */
+void pci_initialize(void)
 {
-	struct pci_dev *pcidev;
-	unsigned char line;
-  
-	printk_info("Zeroing PCI IRQ settings...");
+	struct pci_dev *dev;
 
-	pcidev = pci_devices;
-  
-	while (pcidev) {
-		pci_read_config_byte(pcidev, 0x3d, &line);
-		if (line) {
-			pci_write_config_byte(pcidev, 0x3c, 0);
+	printk_info("Initializing PCI devices...\n");
+	for (dev = pci_devices; dev; dev = dev->next) {
+		if (dev->ops->init) {
+			printk_debug("PCI: %02x:%02x.%01x init\n",
+				dev->bus->secondary,
+				PCI_SLOT(dev->devfn), PCI_FUNC(dev->devfn));
+			dev->ops->init(dev);
 		}
-		pcidev = pcidev->next;
 	}
-	printk_info("done.\n");
+	printk_info("PCI devices initialized\n");
 }
 
 void
 handle_superio(int pass, struct superio *all_superio[], int nsuperio)
 {
 	int i;
-	struct superio *s = 0;
+	struct superio *s;
 
 	printk_debug("handle_superio start, s %p nsuperio %d s->super %p\n",
 		     s, nsuperio, s->super);
@@ -930,11 +968,4 @@ handle_southbridge(int pass, struct southbridge *s, int nsouthbridge)
 		}
 	}
 }
-
-
-
-
-
-
-
 

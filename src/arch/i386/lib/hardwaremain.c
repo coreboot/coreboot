@@ -36,11 +36,6 @@ static char rcsid[] = "$Id$";
 #define MAX_PHYSICAL_CPUS MAX_CPUS
 #endif
 
-#if USE_ELF_BOOT
-#include <rom/read_bytes.h>
-#include <boot/elf.h>
-#endif
-
 #include <arch/io.h>
 #include <arch/intel.h>
 #include <pciconf.h>
@@ -291,6 +286,9 @@ void hardwaremain(int boot_complete)
 #ifdef USE_NEW_SUPERIO_INTERFACE
 	handle_superio(0, all_superio, nsuperio);
 #endif
+#if 0
+	enumerate_static_devices();
+#endif
 	pci_enumerate();
 	post_code(0x66);
 
@@ -327,6 +325,7 @@ void hardwaremain(int boot_complete)
 	post_code(0x88);
 
 	pci_enable();
+	pci_initialize();
 	post_code(0x89);
 
 	// generic mainboard fixup
@@ -354,9 +353,6 @@ void hardwaremain(int boot_complete)
 	handle_superio(1, all_superio, nsuperio);
 #endif
 
-	pci_zero_irq_settings();
-
-
 
 	/* to do: intel_serial_on(); */
 
@@ -371,20 +367,6 @@ void hardwaremain(int boot_complete)
 #endif
 	/* make certain we are the only cpu running in linuxBIOS */
 	wait_for_other_cpus();
-
-	// we do this right here because: 
-	// - all the hardware is working, and some VGA bioses seem to need 
-	//   that
-	// - we need page 0 below for linuxbios tables. 
-#if CONFIG_REALMODE_IDT == 1
-	printk_debug("INSTALL REAL-MODE IDT\n");
-	setup_realmode_idt();
-#endif
-#if CONFIG_VGABIOS == 1
-	printk_debug("DO THE VGA BIOS\n");
-	do_vgabios();
-	post_code(0x93);
-#endif
 
 	// we do this right here because: 
 	// - all the hardware is working, and some VGA bioses seem to need 

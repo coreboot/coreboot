@@ -200,12 +200,16 @@ int elf_check_arch(Elf_ehdr *ehdr)
 		);
 }
 
-void jmp_to_elf_entry(void *entry, void *ptr)
+void jmp_to_elf_entry(void *entry, unsigned long buffer)
 {
-	void (*kernel_entry)(void *ptr);
+	void (*kernel_entry)(void);
 	kernel_entry = entry;
 
+	/* On alpha we don't currently support loading over LinuxBIOS.
+	 * So ignore the buffer.
+	 */
+
 	/* Jump to kernel */
-	kernel_entry((void *)ptr);
+	kernel_entry();
 }
 

@@ -277,13 +277,35 @@
 
 
 #include <types.h>
+#include <resource.h>
 
+struct pci_dev;
+struct pci_dev_operations {
+	void (*read_resources)(struct pci_dev *dev);
+	void (*set_resources)(struct pci_dev *dev);
+	void (*init)(struct pci_dev *dev);
+	unsigned int (*scan_bus)(struct pci_dev *bus, unsigned int max);
+};
+
+
+struct pci_driver {
+	struct pci_dev_operations *ops;
+	unsigned short vendor;
+	unsigned short device;
+};
+
+#define __pci_driver __attribute__ ((unused,__section__(".rodata.pci_driver")))
+extern struct pci_driver pci_drivers[];
+extern struct pci_driver epci_drivers[];
+
+#define MAX_RESOURCES 6
 /*
  * There is one pci_dev structure for each slot-number/function-number
  * combination:
  */
 struct pci_dev {
-	struct pci_bus	*bus;		/* bus this device is on */
+	struct pci_dev	*bus;		/* bus this device is on */
+	struct pci_dev	*children;	/* devices behind this bridge */
 	struct pci_dev	*sibling;	/* next device on this bus */
 	struct pci_dev	*next;		/* chain of all devices */
 
@@ -296,7 +318,10 @@ struct pci_dev {
 	unsigned int	class;		/* 3 bytes: (base,sub,prog-if) */
 	unsigned int	hdr_type;	/* PCI header type */
 	unsigned int	master : 1;	/* set if device is master capable */
-  u8 command;
+
+	unsigned char	secondary; 	/* secondary bus number */
+	unsigned char	subordinate;	/* max subordinate bus number */
+	uint8_t command;
 	/*
 	 * In theory, the irq level can be read from configuration
 	 * space and all would be fine.  However, old PCI chips don't
@@ -313,38 +338,13 @@ struct pci_dev {
 	/* Base registers for this device, can be adjusted by
 	 * pcibios_fixup() as necessary.
 	 */
-	unsigned long	base_address[6];
-  unsigned long   size[6];
+	struct resource resource[MAX_RESOURCES];
+	unsigned int resources;
 	unsigned long	rom_address;
+	struct pci_dev_operations *ops;
 };
 
-struct pci_bus {
-	struct pci_bus	*parent;	/* parent bus this bridge is on */
-	struct pci_bus	*children;	/* chain of P2P bridges on this bus */
-	struct pci_bus	*next;		/* chain of all PCI buses */
-
-	struct pci_dev	*self;		/* bridge device as seen by parent */
-	struct pci_dev	*devices;	/* devices behind this bridge */
-
-	void		*sysdata;	/* hook for sys-specific extension */
-	struct proc_dir_entry *procdir;	/* directory entry in /proc/bus/pci */
-	unsigned char	number;		/* bus number */
-	unsigned char	primary;	/* number of primary bridge */
-	unsigned char	secondary;	/* number of secondary bridge */
-	unsigned char	subordinate;	/* max number of subordinate buses */
-
-  unsigned long mem, prefmem, io;       /* amount of mem, prefetch mem, 
-					 * and I/O needed for this bridge. 
-					 * computed by compute_resources, 
-					 * inclusive of all child bridges
-					 * and devices 
-					 */
-  u32 membase, memlimit;
-  u32 prefmembase, prefmemlimit;
-  u32 iobase, iolimit;
-};
-
-extern struct pci_bus	pci_root;	/* root bus */
+extern struct pci_dev	pci_root;	/* root bus */
 extern struct pci_dev	*pci_devices;	/* list of all devices */
 
 /*
@@ -362,8 +362,6 @@ extern struct pci_dev	*pci_devices;	/* list of all devices */
 
 int pcibios_present (void);
 void pcibios_init(void);
-void pcibios_fixup(void);
-void pcibios_fixup_bus(struct pci_bus *);
 char *pcibios_setup (char *str);
 int pcibios_read_config_byte (unsigned char bus, unsigned char dev_fn,
 			      unsigned char where, u8 *val);
@@ -393,22 +391,14 @@ int pcibios_find_device (unsigned short vendor, unsigned short dev_id,
 
 /* Generic PCI interface functions */
 
-void pci_init(void);
-void pci_setup(char *str, int *ints);
-void pci_quirks_init(void);
-unsigned int pci_scan_bus(struct pci_bus *bus);
-struct pci_bus *pci_scan_peer_bridge(int bus);
-void pci_proc_init(void);
-void proc_old_pci_init(void);
-int get_pci_list(char *buf);
-int pci_proc_attach_device(struct pci_dev *dev);
-int pci_proc_detach_device(struct pci_dev *dev);
+void pci_initiailize(void);
+unsigned int pci_scan_bus(struct pci_dev *bus, unsigned int max);
+unsigned int pci_scan_bridge(struct pci_dev *bus, unsigned int max);
 
 struct pci_dev *pci_find_device (unsigned int vendor, unsigned int device, struct pci_dev *from);
 struct pci_dev *pci_find_class (unsigned int class, struct pci_dev *from);
 struct pci_dev *pci_find_slot (unsigned int bus, unsigned int devfn);
 
-#define pci_present pcibios_present
 int pci_read_config_byte(struct pci_dev *dev, u8 where, u8 *val);
 int pci_read_config_word(struct pci_dev *dev, u8 where, u16 *val);
 int pci_read_config_dword(struct pci_dev *dev, u8 where, u32 *val);
@@ -423,21 +413,19 @@ void pci_set_method(void);
 void pci_enumerate(void);
 void pci_configure(void);
 void pci_enable(void);
-void pci_zero_irq_settings(void);
-
-// historical functions ...
-void intel_conf_writeb(unsigned long port, unsigned char value);
-unsigned char intel_conf_readb(unsigned long port);
-
-
-#include <kmalloc.h>
+void pci_init(void);
 
 // Rounding for boundaries. 
 // Due to some chip bugs, go ahead and roung IO to 16
 #define IO_ALIGN 16 
-#define IO_BRIDGE_ALIGN 4096
 #define MEM_ALIGN 4096
+#define IO_BRIDGE_ALIGN 4096
+#define MEM_BRIDGE_ALIGN (1024*1024)
 
+extern void compute_allocate_resource(struct pci_dev *bus, struct resource *bridge,
+	unsigned long type_mask, unsigned long type);
+extern void assign_resources(struct pci_dev *bus);
+extern void enumerate_static_device(void);
 #include <pciconf.h>
 
 /* linkages from devices of a type (e.g. superio devices) 

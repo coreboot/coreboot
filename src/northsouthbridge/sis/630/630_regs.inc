@@ -39,7 +39,7 @@ northbridge_init_table:
 	/* SiS 630 specific registers. See SiS 630 Registers Recommended Setting */
 	
 	/* Host Control Interface */
-	.byte	0x50,	0x9C	#
+	.byte	0x50,	0x9E	#
 	.byte	0x51,	0x00	#
 
 	/* DRAM Control */
@@ -48,7 +48,7 @@ northbridge_init_table:
 
 	.byte	0x54,	0x00	# 0x00 -> 66/100 MHZ, 0x08 -> 133 MHZ
 	.byte	0x55,	0x29	# 0x29 -> 66/100 MHZ, 0x1D -> 133 MHZ
-	.byte	0x56,	0x80	# 0x00 -> 66  MHZ,    0x80 -> 100/133 MHZ
+	.byte	0x56,	0x00	# 0x00 -> 66  MHZ,    0x80 -> 100/133 MHZ
 	.byte	0x57,	0x00	# 0x00 -> 100 MHZ     0x01 -> 133 MHZ
 
 	/* Pre-driver Slew Rate/Current Driving Control */

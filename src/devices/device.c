@@ -599,6 +599,18 @@ void dev_initialize(void)
 	struct device *dev;
 
 	printk_info("Initializing devices...\n");
+#if CONFIG_CONSOLE_VGA == 1
+        for (dev = all_devices; dev; dev = dev->next) {
+                if (dev->enabled && !dev->initialized &&
+                        dev->ops && dev->ops->init)
+                {
+                        if( dev->on_mainboard && (dev->rom_address!=0)) continue;
+                        printk_debug("%s init\n", dev_path(dev));
+                        dev->initialized = 1;
+                        dev->ops->init(dev);
+                }
+        }
+#endif
 	for (dev = all_devices; dev; dev = dev->next) {
 		if (dev->enabled && !dev->initialized && 
 			dev->ops && dev->ops->init) 

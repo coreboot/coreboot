@@ -177,7 +177,6 @@ static void main(void)
 		print_debug_hex32(msr.hi);
 		print_debug_hex32(msr.lo);
 		print_debug("\r\n");
-#warning "FIXME if I pass msr.lo somehow I get the value 0x00000030 as stop in ram_check"
-		ram_check(0x00000000, 0x20000000);
+		ram_check(0x00000000, msr.lo);
 	}
 }

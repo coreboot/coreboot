@@ -7,8 +7,6 @@
 #include "southbridge/amd/amd8111/amd8111_enable_rom.c"
 #include "northbridge/amd/amdk8/early_ht.c"
 
-
-
 static void main(void)
 {
 	if (do_normal_boot()) {

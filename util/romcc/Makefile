@@ -1,12 +1,12 @@
-VERSION:=0.28
-RELEASE_DATE:=16 June 2003
+VERSION:=0.29
+RELEASE_DATE:=19 June 2003
 PACKAGE:=romcc
 
 
 # Move the configuration defines to makefile.conf
 CC=gcc
 CPPFLAGS=-DVERSION='"$(VERSION)"' -DRELEASE_DATE='"$(RELEASE_DATE)"'
-CFLAGS=-O -g -Wall $(CPPFLAGS)
+CFLAGS= -g -Wall $(CPPFLAGS)
 CPROF_FLAGS=-pg -fprofile-arcs
 
 all: romcc test
@@ -19,6 +19,7 @@ romcc_pg: romcc.c Makefile
 
 TESTS=\
 	hello_world.c \
+	hello_world2.c \
 	simple_test.c \
 	simple_test2.c \
 	simple_test3.c \
@@ -52,6 +53,10 @@ TESTS=\
 	simple_test31.c \
 	simple_test32.c \
 	simple_test33.c \
+	simple_test34.c \
+	simple_test35.c \
+	simple_test36.c \
+	simple_test37.c \
 	raminit_test.c \
 	raminit_test2.c \
 	raminit_test3.c \

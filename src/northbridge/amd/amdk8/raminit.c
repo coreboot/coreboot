@@ -657,18 +657,20 @@ static void sdram_set_registers(void)
 	 *         address that define the memory address space.  These
 	 *         bits decode 32-MByte blocks of memory.
 	 */
-	PCI_ADDR(0, 0x18, 2, 0x40), 0x001f01fe, 0x00000001,
 #if MEMORY_CONFIG == MEMORY_LNXI_SOLO
-	PCI_ADDR(0, 0x18, 2, 0x44), 0x001f01fe, 0x01000001,
-	PCI_ADDR(0, 0x18, 2, 0x48), 0x001f01fe, 0x02000001,
-	PCI_ADDR(0, 0x18, 2, 0x4C), 0x001f01fe, 0x03000001,
+	PCI_ADDR(0, 0x18, 2, 0x40), 0x001f01fe, 0x00000000,
+	PCI_ADDR(0, 0x18, 2, 0x44), 0x001f01fe, 0x00000000,
+	PCI_ADDR(0, 0x18, 2, 0x48), 0x001f01fe, 0x00000000,
+	PCI_ADDR(0, 0x18, 2, 0x4C), 0x001f01fe, 0x00000000,
 #endif
 #if MEMORY_CONFIG == MEMORY_SUSE_SOLO
+	PCI_ADDR(0, 0x18, 2, 0x40), 0x001f01fe, 0x00000001,
 	PCI_ADDR(0, 0x18, 2, 0x44), 0x001f01fe, 0x00800001,
 	PCI_ADDR(0, 0x18, 2, 0x48), 0x001f01fe, 0x01000001,
 	PCI_ADDR(0, 0x18, 2, 0x4C), 0x001f01fe, 0x01800001,
 #endif
 #if MEMORY_CONFIG == MEMORY_LNXI_HDAMA
+	PCI_ADDR(0, 0x18, 2, 0x40), 0x001f01fe, 0x00000001,
 	PCI_ADDR(0, 0x18, 2, 0x44), 0x001f01fe, 0x00001001,
 	PCI_ADDR(0, 0x18, 2, 0x48), 0x001f01fe, 0x00000000,
 	PCI_ADDR(0, 0x18, 2, 0x4C), 0x001f01fe, 0x00000000,
@@ -697,10 +699,10 @@ static void sdram_set_registers(void)
 	 * 
 	 */
 #if MEMORY_CONFIG == MEMORY_LNXI_SOLO
-	PCI_ADDR(0, 0x18, 2, 0x60), 0xC01f01ff, 0x00e0fe00,
-	PCI_ADDR(0, 0x18, 2, 0x64), 0xC01f01ff, 0x00e0fe00,
-	PCI_ADDR(0, 0x18, 2, 0x68), 0xC01f01ff, 0x00e0fe00,
-	PCI_ADDR(0, 0x18, 2, 0x6C), 0xC01f01ff, 0x00e0fe00,
+	PCI_ADDR(0, 0x18, 2, 0x60), 0xC01f01ff, 0x00000000,
+	PCI_ADDR(0, 0x18, 2, 0x64), 0xC01f01ff, 0x00000000,
+	PCI_ADDR(0, 0x18, 2, 0x68), 0xC01f01ff, 0x00000000,
+	PCI_ADDR(0, 0x18, 2, 0x6C), 0xC01f01ff, 0x00000000,
 #endif
 #if MEMORY_CONFIG == MEMORY_SUSE_SOLO
 	PCI_ADDR(0, 0x18, 2, 0x60), 0xC01f01ff, 0x0060fe00,
@@ -739,7 +741,7 @@ static void sdram_set_registers(void)
 	 * [31:15]
 	 */
 #if MEMORY_CONFIG == MEMORY_LNXI_SOLO
-	PCI_ADDR(0, 0x18, 2, 0x80), 0xffff8888, 0x00000033,
+	PCI_ADDR(0, 0x18, 2, 0x80), 0xffff8888, 0x00000000,
 #endif
 #if MEMORY_CONFIG == MEMORY_SUSE_SOLO
 	PCI_ADDR(0, 0x18, 2, 0x80), 0xffff8888, 0x00000022,
@@ -1173,29 +1175,53 @@ static struct dimm_size spd_get_dimm_size(unsigned device)
 	return sz;
 }
 
-static unsigned spd_to_dimm_side0(unsigned device)
+static unsigned spd_to_dimm(unsigned device)
 {
-	return (device - SMBUS_MEM_DEVICE_START) << 1;
+	return (device - SMBUS_MEM_DEVICE_START);
 }
 
-static unsigned spd_to_dimm_side1(unsigned device)
+static void set_dimm_size(struct dimm_size sz, unsigned index)
 {
-	return ((device - SMBUS_MEM_DEVICE_START) << 1) + 1;
-}
+	uint32_t base0, base1, map;
 
-static void set_dimm_size(unsigned long size, unsigned index)
-{
-	unsigned value = 0;
-	/* Make certain the dimm is at least 32MB */
-	if (size >= (25 + 3)) {
-		/* Place the dimm size in 32 MB quantities in the bits 31 - 21.
-		 * The initialize dimm size is in bits.
-		 * Set the base enable bit0.
-		 */
-		value = (1 << ((size - (25 + 3)) + 21)) | 1;
+#if 1
+	print_debug("set_dimm_size: (");
+	print_debug_hex32(sz.side1);
+	print_debug_char(',');
+	print_debug_hex32(sz.side2);
+	print_debug_char(',');
+	print_debug_hex32(index);
+	print_debug(")\r\n");
+#endif
+	if (sz.side1 != sz.side2) {
+		sz.side2 = 0;
 	}
+	map = pci_read_config32(PCI_DEV(0, 0x18, 2), 0x80);
+	map &= ~(0xf << (index + 4));
+
+	/* For each base register.
+	 * Place the dimm size in 32 MB quantities in the bits 31 - 21.
+	 * The initialize dimm size is in bits.
+	 * Set the base enable bit0.
+	 */
+	
+	base0 = base1 = 0;
+
+	/* Make certain side1 of the dimm is at least 32MB */
+	if (sz.side1 >= (25 + 3)) {
+		base0 = (1 << ((sz.side1 - (25 + 3)) + 21)) | 1;
+		map |= (sz.side1 - (25 + 3)) << (index *4);
+	}
+
+	/* Make certain side2 of the dimm is at least 32MB */
+	if (sz.side2 >= (25 + 3)) {
+		base1 = (1 << ((sz.side2 - (25 + 3)) + 21)) | 1;
+	}
+	
 	/* Set the appropriate DIMM base address register */
-	pci_write_config32(PCI_DEV(0, 0x18, 2), 0x40 + (index << 2), value);
+	pci_write_config32(PCI_DEV(0, 0x18, 2), 0x40 + (((index << 1)+0)<<2), base0);
+	pci_write_config32(PCI_DEV(0, 0x18, 2), 0x40 + (((index << 1)+1)<<2), base1);
+	pci_write_config32(PCI_DEV(0, 0x18, 2), 0x80, map);
 }
 
 static void spd_set_ram_size(void)
@@ -1207,8 +1233,7 @@ static void spd_set_ram_size(void)
 	{
 		struct dimm_size sz;
 		sz = spd_get_dimm_size(device);
-		set_dimm_size(sz.side1, spd_to_dimm_side0(device));
-		set_dimm_size(sz.side2, spd_to_dimm_side1(device));
+		set_dimm_size(sz, spd_to_dimm(device));
 	}
 }
 
@@ -1235,14 +1260,12 @@ static void set_top_mem(unsigned tom_k)
 static void order_dimms(void)
 {
 	unsigned long tom;
-	unsigned mask;
-	unsigned index;
 
 	/* Remember which registers we have used in the high 8 bits of tom */
 	tom = 0;
 	for(;;) {
 		/* Find the largest remaining canidate */
-		unsigned canidate;
+		unsigned index, canidate;
 		uint32_t csbase, csmask;
 		unsigned size;
 		csbase = 0;
@@ -1292,12 +1315,17 @@ static void order_dimms(void)
 
 		/* Write the new base register */
 		pci_write_config32(PCI_DEV(0, 0x18, 2), 0x40 + (canidate << 2), csbase);
+		/* Write the new mask register */
 		pci_write_config32(PCI_DEV(0, 0x18, 2), 0x60 + (canidate << 2), csmask);
 		
 	}
 	set_top_mem((tom & ~0xff000000) << 15);
 }
 
+static void spd_set_dram_timing(void)
+{
+	
+}
 
 #define DRAM_CONFIG_LOW 0x90
 #define  DCL_DLL_Disable   (1<<0)
@@ -1322,6 +1350,7 @@ static void spd_set_ecc_mode(void)
 static void sdram_set_spd_registers(void) 
 {
 	spd_set_ram_size();
+	spd_set_dram_timing();
 	spd_set_ecc_mode();
 	order_dimms();
 }

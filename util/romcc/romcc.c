@@ -215,6 +215,9 @@ struct file_state {
 	char *pos;
 	int line;
 	char *line_start;
+	int report_line;
+	const char *report_name;
+	const char *report_dir;
 };
 struct hash_entry;
 struct token {
@@ -632,6 +635,14 @@ struct triple_set {
 #define MAX_MISC 15
 #define MAX_TARG 15
 
+struct occurance {
+	int count;
+	const char *filename;
+	const char *function;
+	int line;
+	int col;
+	struct occurance *parent;
+};
 struct triple {
 	struct triple *next, *prev;
 	struct triple_set *use;
@@ -665,9 +676,7 @@ struct triple {
 #define TRIPLE_FLAG_FLATTENED   (1 << 31)
 #define TRIPLE_FLAG_PRE_SPLIT   (1 << 30)
 #define TRIPLE_FLAG_POST_SPLIT  (1 << 29)
-	const char *filename;
-	int line;
-	int col;
+	struct occurance *occurance;
 	union {
 		ulong_t cval;
 		struct block  *block;
@@ -744,6 +753,8 @@ struct compile_state {
 	FILE *output;
 	struct triple *vars;
 	struct file_state *file;
+	struct occurance *last_occurance;
+	const char *function;
 	struct token token[4];
 	struct hash_entry *hash_table[HASH_TABLE_SIZE];
 	struct hash_entry *i_continue;
@@ -956,7 +967,9 @@ static void loc(FILE *fp, struct compile_state *state, struct triple *triple)
 	int col;
 	if (triple) {
 		fprintf(fp, "%s:%d.%d: ", 
-			triple->filename, triple->line, triple->col);
+			triple->occurance->filename, 
+			triple->occurance->line, 
+			triple->occurance->col);
 		return;
 	}
 	if (!state->file) {
@@ -964,7 +977,7 @@ static void loc(FILE *fp, struct compile_state *state, struct triple *triple)
 	}
 	col = get_col(state->file);
 	fprintf(fp, "%s:%d.%d: ", 
-		state->file->basename, state->file->line, col);
+		state->file->report_name, state->file->report_line, col);
 }
 
 static void __internal_error(struct compile_state *state, struct triple *ptr, 
@@ -1194,22 +1207,119 @@ static void pop_triple(struct triple *used, struct triple *unuser)
 	}
 }
 
+static void put_occurance(struct occurance *occurance)
+{
+	occurance->count -= 1;
+	if (occurance->count <= 0) {
+		if (occurance->parent) {
+			put_occurance(occurance->parent);
+		}
+		xfree(occurance);
+	}
+}
+
+static void get_occurance(struct occurance *occurance)
+{
+	occurance->count += 1;
+}
+
+
+static struct occurance *new_occurance(struct compile_state *state)
+{
+	struct occurance *result, *last;
+	const char *filename;
+	const char *function;
+	int line, col;
+
+	function = "";
+	filename = 0;
+	line = 0;
+	col  = 0;
+	if (state->file) {
+		filename = state->file->report_name;
+		line     = state->file->report_line;
+		col      = get_col(state->file);
+	}
+	if (state->function) {
+		function = state->function;
+	}
+	last = state->last_occurance;
+	if (last &&
+		(last->col == col) &&
+		(last->line == line) &&
+		(last->function == function) &&
+		(strcmp(last->filename, filename) == 0)) {
+		get_occurance(last);
+		return last;
+	}
+	if (last) {
+		state->last_occurance = 0;
+		put_occurance(last);
+	}
+	result = xmalloc(sizeof(*result), "occurance");
+	result->count    = 2;
+	result->filename = filename;
+	result->function = function;
+	result->line     = line;
+	result->col      = col;
+	result->parent   = 0;
+	state->last_occurance = result;
+	return result;
+}
+
+static struct occurance *inline_occurance(struct compile_state *state,
+	struct occurance *new, struct occurance *orig)
+{
+	struct occurance *result, *last;
+	last = state->last_occurance;
+	if (last &&
+		(last->parent   == orig) &&
+		(last->col      == new->col) &&
+		(last->line     == new->line) &&
+		(last->function == new->function) &&
+		(last->filename == new->filename)) {
+		get_occurance(last);
+		return last;
+	}
+	if (last) {
+		state->last_occurance = 0;
+		put_occurance(last);
+	}
+	get_occurance(orig);
+	result = xmalloc(sizeof(*result), "occurance");
+	result->count    = 2;
+	result->filename = new->filename;
+	result->function = new->function;
+	result->line     = new->line;
+	result->col      = new->col;
+	result->parent   = orig;
+	state->last_occurance = result;
+	return result;
+}
+	
+
+static struct occurance dummy_occurance = {
+	.count    = 2,
+	.filename = __FILE__,
+	.function = "",
+	.line     = __LINE__,
+	.col      = 0,
+	.parent   = 0,
+};
 
 /* The zero triple is used as a place holder when we are removing pointers
  * from a triple.  Having allows certain sanity checks to pass even
  * when the original triple that was pointed to is gone.
  */
 static struct triple zero_triple = {
-	.next     = &zero_triple,
-	.prev     = &zero_triple,
-	.use      = 0,
-	.op       = OP_INTCONST,
-	.sizes    = TRIPLE_SIZES(0, 0, 0, 0),
-	.id       = -1, /* An invalid id */
+	.next      = &zero_triple,
+	.prev      = &zero_triple,
+	.use       = 0,
+	.op        = OP_INTCONST,
+	.sizes     = TRIPLE_SIZES(0, 0, 0, 0),
+	.id        = -1, /* An invalid id */
 	.u = { .cval   = 0, },
-	.filename = __FILE__,
-	.line     = __LINE__,
-	.col      = 0,
+	.occurance = &dummy_occurance,
 	.param { [0] = 0, [1] = 0, },
 };
 
@@ -1268,7 +1378,7 @@ static unsigned short triple_sizes(struct compile_state *state,
 
 static struct triple *alloc_triple(struct compile_state *state, 
 	int op, struct type *type, int lhs, int rhs,
-	const char *filename, int line, int col)
+	struct occurance *occurance)
 {
 	size_t size, sizes, extra_count, min_count;
 	struct triple *ret;
@@ -1280,14 +1390,12 @@ static struct triple *alloc_triple(struct compile_state *state,
 
 	size = sizeof(*ret) + sizeof(ret->param[0]) * extra_count;
 	ret = xcmalloc(size, "tripple");
-	ret->op       = op;
-	ret->sizes    = sizes;
-	ret->type     = type;
-	ret->next     = ret;
-	ret->prev     = ret;
-	ret->filename = filename;
-	ret->line     = line;
-	ret->col      = col;
+	ret->op        = op;
+	ret->sizes     = sizes;
+	ret->type      = type;
+	ret->next      = ret;
+	ret->prev      = ret;
+	ret->occurance = occurance;
 	return ret;
 }
 
@@ -1298,8 +1406,9 @@ struct triple *dup_triple(struct compile_state *state, struct triple *src)
 	src_lhs = TRIPLE_LHS(src->sizes);
 	src_rhs = TRIPLE_RHS(src->sizes);
 	src_size = TRIPLE_SIZE(src->sizes);
+	get_occurance(src->occurance);
 	dup = alloc_triple(state, src->op, src->type, src_lhs, src_rhs,
-		src->filename, src->line, src->col);
+		src->occurance);
 	memcpy(dup, src, sizeof(*src));
 	memcpy(dup->param, src->param, src_size * sizeof(src->param[0]));
 	return dup;
@@ -1309,28 +1418,19 @@ static struct triple *new_triple(struct compile_state *state,
 	int op, struct type *type, int lhs, int rhs)
 {
 	struct triple *ret;
-	const char *filename;
-	int line, col;
-	filename = 0;
-	line = 0;
-	col  = 0;
-	if (state->file) {
-		filename = state->file->basename;
-		line     = state->file->line;
-		col      = get_col(state->file);
-	}
-	ret = alloc_triple(state, op, type, lhs, rhs,
-		filename, line, col);
+	struct occurance *occurance;
+	occurance = new_occurance(state);
+	ret = alloc_triple(state, op, type, lhs, rhs, occurance);
 	return ret;
 }
 
 static struct triple *build_triple(struct compile_state *state, 
 	int op, struct type *type, struct triple *left, struct triple *right,
-	const char *filename, int line, int col)
+	struct occurance *occurance)
 {
 	struct triple *ret;
 	size_t count;
-	ret = alloc_triple(state, op, type, -1, -1, filename, line, col);
+	ret = alloc_triple(state, op, type, -1, -1, occurance);
 	count = TRIPLE_SIZE(ret->sizes);
 	if (count > 0) {
 		ret->param[0] = left;
@@ -1433,8 +1533,8 @@ static struct triple *pre_triple(struct compile_state *state,
 		base = MISC(base, 0);
 	}
 	block = block_of_triple(state, base);
-	ret = build_triple(state, op, type, left, right, 
-		base->filename, base->line, base->col);
+	get_occurance(base->occurance);
+	ret = build_triple(state, op, type, left, right, base->occurance);
 	if (triple_stores_block(state, ret)) {
 		ret->u.block = block;
 	}
@@ -1463,8 +1563,8 @@ static struct triple *post_triple(struct compile_state *state,
 	}
 
 	block = block_of_triple(state, base);
-	ret = build_triple(state, op, type, left, right, 
-		base->filename, base->line, base->col);
+	get_occurance(base->occurance);
+	ret = build_triple(state, op, type, left, right, base->occurance);
 	if (triple_stores_block(state, ret)) {
 		ret->u.block = block;
 	}
@@ -1485,22 +1585,31 @@ static struct triple *label(struct compile_state *state)
 
 static void display_triple(FILE *fp, struct triple *ins)
 {
+	struct occurance *ptr;
+	const char *reg;
+	char pre, post;
+	pre = post = ' ';
+	if (ins->id & TRIPLE_FLAG_PRE_SPLIT) {
+		pre = '^';
+	}
+	if (ins->id & TRIPLE_FLAG_POST_SPLIT) {
+		post = 'v';
+	}
+	reg = arch_reg_str(ID_REG(ins->id));
 	if (ins->op == OP_INTCONST) {
-		fprintf(fp, "(%p) %3d %-2d %-10s <0x%08lx>          @ %s:%d.%d\n",
-			ins, ID_REG(ins->id), ins->template_id, tops(ins->op), 
-			ins->u.cval,
-			ins->filename, ins->line, ins->col);
+		fprintf(fp, "(%p) %c%c %-7s %-2d %-10s <0x%08lx>         ",
+			ins, pre, post, reg, ins->template_id, tops(ins->op), 
+			ins->u.cval);
 	}
 	else if (ins->op == OP_ADDRCONST) {
-		fprintf(fp, "(%p) %3d %-2d %-10s %-10p <0x%08lx> @ %s:%d.%d\n",
-			ins, ID_REG(ins->id), ins->template_id, tops(ins->op), 
-			MISC(ins, 0), ins->u.cval,
-			ins->filename, ins->line, ins->col);
+		fprintf(fp, "(%p) %c%c %-7s %-2d %-10s %-10p <0x%08lx>",
+			ins, pre, post, reg, ins->template_id, tops(ins->op), 
+			MISC(ins, 0), ins->u.cval);
 	}
 	else {
 		int i, count;
-		fprintf(fp, "(%p) %3d %-2d %-10s", 
-			ins, ID_REG(ins->id), ins->template_id, tops(ins->op));
+		fprintf(fp, "(%p) %c%c %-7s %-2d %-10s", 
+			ins, pre, post, reg, ins->template_id, tops(ins->op));
 		count = TRIPLE_SIZE(ins->sizes);
 		for(i = 0; i < count; i++) {
 			fprintf(fp, " %-10p", ins->param[i]);
@@ -1508,9 +1617,16 @@ static void display_triple(FILE *fp, struct triple *ins)
 		for(; i < 2; i++) {
 			fprintf(fp, "           ");
 		}
-		fprintf(fp, " @ %s:%d.%d\n", 
-			ins->filename, ins->line, ins->col);
 	}
+	fprintf(fp, " @");
+	for(ptr = ins->occurance; ptr; ptr = ptr->parent) {
+		fprintf(fp, " %s,%s:%d.%d",
+			ptr->function, 
+			ptr->filename,
+			ptr->line, 
+			ptr->col);
+	}
+	fprintf(fp, "\n");
 	fflush(fp);
 }
 
@@ -1662,6 +1778,7 @@ static void free_triple(struct compile_state *state, struct triple *ptr)
 	if (ptr->use) {
 		internal_error(state, ptr, "ptr->use != 0");
 	}
+	put_occurance(ptr->occurance);
 	memset(ptr, -1, size);
 	xfree(ptr);
 }
@@ -2383,6 +2500,7 @@ next_token:
 		while ((tokp < end) && spacep(c)) {
 			if (c == '\n') {
 				file->line++;
+				file->report_line++;
 				file->line_start = tokp + 1;
 			}
 			c = *(++tokp);
@@ -2398,6 +2516,7 @@ next_token:
 			c = *tokp;
 			if (c == '\n') {
 				file->line++;
+				file->report_line++;
 				file->line_start = tokp +1;
 				break;
 			}
@@ -2424,6 +2543,7 @@ next_token:
 		if (tok == TOK_UNKNOWN) {
 			error(state, 0, "unterminated comment");
 		}
+		file->report_line += line - file->line;
 		file->line = line;
 		file->line_start = line_start;
 	}
@@ -2460,6 +2580,7 @@ next_token:
 		if (line != file->line) {
 			warning(state, 0, "multiline string constant");
 		}
+		file->report_line += line - file->line;
 		file->line = line;
 		file->line_start = line_start;
 
@@ -2499,6 +2620,7 @@ next_token:
 		if (line != file->line) {
 			warning(state, 0, "multiline character constant");
 		}
+		file->report_line += line - file->line;
 		file->line = line;
 		file->line_start = line_start;
 
@@ -2698,6 +2820,9 @@ static void compile_macro(struct compile_state *state, struct token *tk)
 	file->pos = file->buf;
 	file->line_start = file->pos;
 	file->line = 1;
+	file->report_line = 1;
+	file->report_name = file->basename;
+	file->report_dir  = file->dirname;
 	file->prev = state->file;
 	state->file = file;
 }
@@ -2719,6 +2844,9 @@ static int mpeek(struct compile_state *state, int index)
 			struct file_state *file = state->file;
 			state->file = file->prev;
 			/* file->basename is used keep it */
+			if (file->report_dir != file->dirname) {
+				xfree(file->report_dir);
+			}
 			xfree(file->dirname);
 			xfree(file->buf);
 			xfree(file);
@@ -3078,8 +3206,69 @@ static void preprocess(struct compile_state *state, int index)
 			tk->ident->name);
 	}
 	switch(tk->tok) {
-	case TOK_UNDEF:
+	case TOK_LIT_INT:
+	{
+		int override_line;
+		override_line = strtoul(tk->val.str, 0, 10);
+		next_token(state, index);
+		/* I have a cpp line marker parse it */
+		if (tk->tok == TOK_LIT_STRING) {
+			const char *token, *base;
+			char *name, *dir;
+			int name_len, dir_len;
+			name = xmalloc(tk->str_len, "report_name");
+			token = tk->val.str + 1;
+			base = strrchr(token, '/');
+			name_len = tk->str_len -2;
+			if (base != 0) {
+				dir_len = base - token;
+				base++;
+				name_len -= base - token;
+			} else {
+				dir_len = 0;
+				base = token;
+			}
+			memcpy(name, base, name_len);
+			name[name_len] = '\0';
+			dir = xmalloc(dir_len + 1, "report_dir");
+			memcpy(dir, token, dir_len);
+			dir[dir_len] = '\0';
+			file->report_line = override_line - 1;
+			file->report_name = name;
+			file->report_dir = dir;
+		}
+	}
+		break;
 	case TOK_LINE:
+		meat(state, index, TOK_LINE);
+		meat(state, index, TOK_LIT_INT);
+		file->report_line = strtoul(tk->val.str, 0, 10) -1;
+		if (mpeek(state, index) == TOK_LIT_STRING) {
+			const char *token, *base;
+			char *name, *dir;
+			int name_len, dir_len;
+			meat(state, index, TOK_LIT_STRING);
+			name = xmalloc(tk->str_len, "report_name");
+			token = tk->val.str + 1;
+			name_len = tk->str_len - 2;
+			if (base != 0) {
+				dir_len = base - token;
+				base++;
+				name_len -= base - token;
+			} else {
+				dir_len = 0;
+				base = token;
+			}
+			memcpy(name, base, name_len);
+			name[name_len] = '\0';
+			dir = xmalloc(dir_len + 1, "report_dir");
+			memcpy(dir, token, dir_len);
+			dir[dir_len] = '\0';
+			file->report_name = name;
+			file->report_dir = dir;
+		}
+		break;
+	case TOK_UNDEF:
 	case TOK_PRAGMA:
 		if (state->if_value < 0) {
 			break;
@@ -3475,6 +3664,10 @@ static void compile_file(struct compile_state *state, const char *filename, int 
 	file->pos = file->buf;
 	file->line_start = file->pos;
 	file->line = 1;
+
+	file->report_line = 1;
+	file->report_name = file->basename;
+	file->report_dir  = file->dirname;
 
 	file->prev = state->file;
 	state->file = file;
@@ -4725,7 +4918,8 @@ static struct triple *flatten_cond(
 	return read_expr(state, val);
 }
 
-struct triple *copy_func(struct compile_state *state, struct triple *ofunc)
+struct triple *copy_func(struct compile_state *state, struct triple *ofunc, 
+	struct occurance *base_occurance)
 {
 	struct triple *nfunc;
 	struct triple *nfirst, *ofirst;
@@ -4745,11 +4939,13 @@ struct triple *copy_func(struct compile_state *state, struct triple *ofunc)
 	ofirst = old = RHS(ofunc, 0);
 	do {
 		struct triple *new;
+		struct occurance *occurance;
 		int old_lhs, old_rhs;
 		old_lhs = TRIPLE_LHS(old->sizes);
 		old_rhs = TRIPLE_RHS(old->sizes);
+		occurance = inline_occurance(state, base_occurance, old->occurance);
 		new = alloc_triple(state, old->op, old->type, old_lhs, old_rhs,
-			old->filename, old->line, old->col);
+			occurance);
 		if (!triple_stores_block(state, new)) {
 			memcpy(&new->u, &old->u, sizeof(new->u));
 		}
@@ -4822,7 +5018,7 @@ static struct triple *flatten_call(
 	if (ofunc->op != OP_LIST) {
 		internal_error(state, 0, "improper function");
 	}
-	nfunc = copy_func(state, ofunc);
+	nfunc = copy_func(state, ofunc, ptr->occurance);
 	nfirst = RHS(nfunc, 0)->next;
 	/* Prepend the parameter reading into the new function list */
 	ptype = nfunc->type->right;
@@ -5410,8 +5606,9 @@ static void flatten_structures(struct compile_state *state)
 
 				op = ins->op;
 				def = RHS(ins, 0);
+				get_occurance(ins->occurance);
 				next = alloc_triple(state, OP_VAL_VEC, ins->type, -1, -1,
-					ins->filename, ins->line, ins->col);
+					ins->occurance);
 
 				vector = &RHS(next, 0);
 				tptr = next->type->left;
@@ -5426,9 +5623,9 @@ static void flatten_structures(struct compile_state *state)
 					
 					vector[i] = triple(
 						state, op, mtype, sfield, 0);
-					vector[i]->filename = next->filename;
-					vector[i]->line = next->line;
-					vector[i]->col = next->col;
+					put_occurance(vector[i]->occurance);
+					get_occurance(next->occurance);
+					vector[i]->occurance = next->occurance;
 					tptr = tptr->right;
 				}
 				propogate_use(state, ins, next);
@@ -5444,8 +5641,9 @@ static void flatten_structures(struct compile_state *state)
 				op = ins->op;
 				src = RHS(ins, 0);
 				dst = LHS(ins, 0);
+				get_occurance(ins->occurance);
 				next = alloc_triple(state, OP_VAL_VEC, ins->type, -1, -1,
-					ins->filename, ins->line, ins->col);
+					ins->occurance);
 				
 				vector = &RHS(next, 0);
 				tptr = next->type->left;
@@ -5460,9 +5658,9 @@ static void flatten_structures(struct compile_state *state)
 					dfield = deref_field(state, dst, mtype->field_ident);
 					vector[i] = triple(
 						state, op, mtype, dfield, sfield);
-					vector[i]->filename = next->filename;
-					vector[i]->line = next->line;
-					vector[i]->col = next->col;
+					put_occurance(vector[i]->occurance);
+					get_occurance(next->occurance);
+					vector[i]->occurance = next->occurance;
 					tptr = tptr->right;
 				}
 				propogate_use(state, ins, next);
@@ -6344,10 +6542,13 @@ static void register_builtin_function(struct compile_state *state,
 
 	/* Dummy file state to get debug handling right */
 	memset(&file, 0, sizeof(file));
-	file.basename = name;
+	file.basename = "<built-in>";
 	file.line = 1;
+	file.report_line = 1;
+	file.report_name = file.basename;
 	file.prev = state->file;
 	state->file = &file;
+	state->function = name;
 
 	/* Find the Parameter count */
 	valid_op(state, op);
@@ -6436,6 +6637,7 @@ static void register_builtin_function(struct compile_state *state,
 	symbol(state, ident, &ident->sym_ident, def, ftype);
 	
 	state->file = file.prev;
+	state->function = 0;
 #if 0
 	fprintf(stdout, "\n");
 	loc(stdout, state, 0);
@@ -8790,8 +8992,10 @@ static void decl(struct compile_state *state, struct triple *first)
 	type = declarator(state, base_type, &ident, 0);
 	if (global && ident && (peek(state) == TOK_LBRACE)) {
 		/* function */
+		state->function = ident->name;
 		def = function_definition(state, type);
 		symbol(state, ident, &ident->sym_ident, def, type);
+		state->function = 0;
 	}
 	else {
 		int done;
@@ -9962,11 +10166,10 @@ static void insert_phi_operations(struct compile_state *state)
 				/* Count how many edges flow into this block */
 				in_edges = front->users;
 				/* Insert a phi function for this variable */
+				get_occurance(front->first->occurance);
 				phi = alloc_triple(
 					state, OP_PHI, var->type, -1, in_edges, 
-					front->first->filename, 
-					front->first->line,
-					front->first->col);
+					front->first->occurance);
 				phi->u.block = front;
 				MISC(phi, 0) = var;
 				use_triple(var, phi);
@@ -10624,8 +10827,9 @@ static void insert_copies_to_phi(struct compile_state *state)
 				continue;
 			}
 
+			get_occurance(val->occurance);
 			move = build_triple(state, OP_COPY, phi->type, val, 0,
-				val->filename, val->line, val->col);
+				val->occurance);
 			move->u.block = eblock;
 			move->id |= TRIPLE_FLAG_PRE_SPLIT;
 			use_triple(val, move);
@@ -11266,6 +11470,7 @@ static void insert_mandatory_copies(struct compile_state *state)
 							internal_error(state, user, "bad rhs");
 						}
 						tmp = pre_copy(state, user, i);
+						tmp->id |= TRIPLE_FLAG_PRE_SPLIT;
 						continue;
 					} else {
 						do_post_copy = 1;
@@ -11281,6 +11486,7 @@ static void insert_mandatory_copies(struct compile_state *state)
 						internal_error(state, user, "bad rhs");
 					}
 					tmp = pre_copy(state, user, i);
+					tmp->id |= TRIPLE_FLAG_PRE_SPLIT;
 					continue;
 				} else {
 					do_post_copy = 1;
@@ -11292,6 +11498,7 @@ static void insert_mandatory_copies(struct compile_state *state)
 		if (do_post_copy) {
 			struct reg_info pre, post;
 			tmp = post_copy(state, ins);
+			tmp->id |= TRIPLE_FLAG_PRE_SPLIT;
 			pre = arch_reg_lhs(state, ins, 0);
 			post = arch_reg_lhs(state, tmp, 0);
 			if ((pre.reg == post.reg) && (pre.regcm == post.regcm)) {
@@ -11457,7 +11664,10 @@ static struct lre_hash **lre_probe(struct reg_state *rstate,
 	index = hash_live_edge(left, right);
 	
 	ptr = &rstate->hash[index];
-	while((*ptr) && ((*ptr)->left != left) && ((*ptr)->right != right)) {
+	while(*ptr) {
+		if (((*ptr)->left == left) && ((*ptr)->right == right)) {
+			break;
+		}
 		ptr = &(*ptr)->next;
 	}
 	return ptr;
@@ -11495,6 +11705,10 @@ static void add_live_edge(struct reg_state *rstate,
 	if (*ptr) {
 		return;
 	}
+#if 0
+	fprintf(stderr, "new_live_edge(%p, %p)\n",
+		left, right);
+#endif
 	new_hash = xmalloc(sizeof(*new_hash), "lre_hash");
 	new_hash->next  = *ptr;
 	new_hash->left  = left;
@@ -11533,6 +11747,7 @@ static void remove_live_edge(struct reg_state *rstate,
 			*ptr = edge->next;
 			memset(edge, 0, sizeof(*edge));
 			xfree(edge);
+			right->degree--;
 			break;
 		}
 	}
@@ -11542,6 +11757,7 @@ static void remove_live_edge(struct reg_state *rstate,
 			*ptr = edge->next;
 			memset(edge, 0, sizeof(*edge));
 			xfree(edge);
+			left->degree--;
 			break;
 		}
 	}
@@ -11671,7 +11887,7 @@ static struct live_range *coalesce_ranges(
 		fprintf(stderr, "lr2 pre\n");
 	}
 #endif
-#if 0
+#if 1
 	fprintf(stderr, "coalesce color1(%p): %3d color2(%p) %3d\n",
 		lr1->defs->def,
 		lr1->color,
@@ -11894,6 +12110,85 @@ static void graph_ins(
 	return;
 }
 
+static struct live_range *get_verify_live_range(
+	struct compile_state *state, struct reg_state *rstate, struct triple *ins)
+{
+	struct live_range *lr;
+	struct live_range_def *lrd;
+	int ins_found;
+	if ((ins->id < 0) || (ins->id > rstate->defs)) {
+		internal_error(state, ins, "bad ins?");
+	}
+	lr = rstate->lrd[ins->id].lr;
+	ins_found = 0;
+	lrd = lr->defs;
+	do {
+		if (lrd->def == ins) {
+			ins_found = 1;
+		}
+		lrd = lrd->next;
+	} while(lrd != lr->defs);
+	if (!ins_found) {
+		internal_error(state, ins, "ins not in live range");
+	}
+	return lr;
+}
+
+static void verify_graph_ins(
+	struct compile_state *state, 
+	struct reg_block *blocks, struct triple_reg_set *live, 
+	struct reg_block *rb, struct triple *ins, void *arg)
+{
+	struct reg_state *rstate = arg;
+	struct triple_reg_set *entry1, *entry2;
+
+
+	/* Compare live against edges and make certain the code is working */
+	for(entry1 = live; entry1; entry1 = entry1->next) {
+		struct live_range *lr1;
+		lr1 = get_verify_live_range(state, rstate, entry1->member);
+		for(entry2 = live; entry2; entry2 = entry2->next) {
+			struct live_range *lr2;
+			struct live_range_edge *edge2;
+			int lr1_found;
+			int lr2_degree;
+			if (entry2 == entry1) {
+				continue;
+			}
+			lr2 = get_verify_live_range(state, rstate, entry2->member);
+			if (lr1 == lr2) {
+				internal_error(state, entry2->member, 
+					"live range with 2 values simultaneously alive");
+			}
+			if (!arch_regcm_intersect(lr1->classes, lr2->classes)) {
+				continue;
+			}
+			if (!interfere(rstate, lr1, lr2)) {
+				internal_error(state, entry2->member, 
+					"edges don't interfere?");
+			}
+				
+			lr1_found = 0;
+			lr2_degree = 0;
+			for(edge2 = lr2->edges; edge2; edge2 = edge2->next) {
+				lr2_degree++;
+				if (edge2->node == lr1) {
+					lr1_found = 1;
+				}
+			}
+			if (lr2_degree != lr2->degree) {
+				internal_error(state, entry2->member,
+					"computed degree: %d does not match reported degree: %d\n",
+					lr2_degree, lr2->degree);
+			}
+			if (!lr1_found) {
+				internal_error(state, entry2->member, "missing edge");
+			}
+		}
+	}
+	return;
+}
+
 
 static void print_interference_ins(
 	struct compile_state *state, 
@@ -11902,9 +12197,14 @@ static void print_interference_ins(
 {
 	struct reg_state *rstate = arg;
 	struct live_range *lr;
+	unsigned id;
 
 	lr = rstate->lrd[ins->id].lr;
+	id = ins->id;
+	ins->id = rstate->lrd[id].orig_id;
+	SET_REG(ins->id, lr->color);
 	display_triple(stdout, ins);
+	ins->id = id;
 
 	if (lr->defs) {
 		struct live_range_def *lrd;
@@ -12033,7 +12333,7 @@ static int coalesce_live_ranges(
 				if (interfere(rstate, lr1, lr2)) {
 					continue;
 				}
-				
+
 				res = coalesce_ranges(state, rstate, lr1, lr2);
 				coalesced += 1;
 				if (res != lr1) {
@@ -13066,6 +13366,7 @@ static void print_interference_block(
 			}
 		}
 		id = ptr->id;
+		ptr->id = rstate->lrd[id].orig_id;
 		SET_REG(ptr->id, lr->color);
 		display_triple(stdout, ptr);
 		ptr->id = id;
@@ -13278,6 +13579,9 @@ static void allocate_registers(struct compile_state *state)
 			/* Forget previous live range edge calculations */
 			cleanup_live_edges(&rstate);
 
+#if 0
+			fprintf(stderr, "coalescing\n");
+#endif			
 			/* Compute the interference graph */
 			walk_variable_lifetimes(
 				state, rstate.blocks, graph_ins, &rstate);
@@ -13291,6 +13595,11 @@ static void allocate_registers(struct compile_state *state)
 					state, rstate.blocks, 
 					print_interference_ins, &rstate);
 			}
+#if DEBUG_CONSISTENCY
+			/* Verify the interference graph */
+			walk_variable_lifetimes(
+				state, rstate.blocks, verify_graph_ins, &rstate);
+#endif
 			
 			coalesced = coalesce_live_ranges(state, &rstate);
 		} while(coalesced);
@@ -15745,8 +16054,8 @@ static int check_reg(struct compile_state *state,
 static const char *arch_reg_str(int reg)
 {
 	static const char *regs[] = {
-		"%bad_register",
-		"%bad_register2",
+		"%unset",
+		"%unneeded",
 		"%eflags",
 		"%al", "%bl", "%cl", "%dl", "%ah", "%bh", "%ch", "%dh",
 		"%ax", "%bx", "%cx", "%dx", "%si", "%di", "%bp", "%sp",
@@ -16487,28 +16796,42 @@ static void print_instructions(struct compile_state *state)
 {
 	struct triple *first, *ins;
 	int print_location;
-	int last_line;
-	int last_col;
-	const char *last_filename;
+	struct occurance *last_occurance;
 	FILE *fp;
 	print_location = 1;
-	last_line = -1;
-	last_col  = -1;
-	last_filename = 0;
+	last_occurance = 0;
 	fp = state->output;
 	fprintf(fp, ".section \"" TEXT_SECTION "\"\n");
 	first = RHS(state->main_function, 0);
 	ins = first;
 	do {
-		if (print_location &&
-			((last_filename != ins->filename) ||
-				(last_line != ins->line) ||
-				(last_col  != ins->col))) {
-			fprintf(fp, "\t/* %s:%d */\n",
-				ins->filename, ins->line);
-			last_filename = ins->filename;
-			last_line = ins->line;
-			last_col  = ins->col;
+		if (print_location && 
+			last_occurance != ins->occurance) {
+			if (!ins->occurance->parent) {
+				fprintf(fp, "\t/* %s,%s:%d.%d */\n",
+					ins->occurance->function,
+					ins->occurance->filename,
+					ins->occurance->line,
+					ins->occurance->col);
+			}
+			else {
+				struct occurance *ptr;
+				fprintf(fp, "\t/*\n");
+				for(ptr = ins->occurance; ptr; ptr = ptr->parent) {
+					fprintf(fp, "\t * %s,%s:%d.%d\n",
+						ptr->function,
+						ptr->filename,
+						ptr->line,
+						ptr->col);
+				}
+				fprintf(fp, "\t */\n");
+				
+			}
+			if (last_occurance) {
+				put_occurance(last_occurance);
+			}
+			get_occurance(ins->occurance);
+			last_occurance = ins->occurance;
 		}
 
 		print_instruction(state, ins, fp);

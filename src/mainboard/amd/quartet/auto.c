@@ -137,11 +137,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "fakespd.c"
 #endif
 
-/* no specific code here. this should go away completely */
-static void coherent_ht_mainboard(unsigned cpus)
-{
-}
-
 #include "northbridge/amd/amdk8/raminit.c"
 
 #include "northbridge/amd/amdk8/coherent_ht.c"

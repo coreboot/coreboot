@@ -98,11 +98,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-/* no specific code here. this should go away completely */
-static void coherent_ht_mainboard(unsigned cpus)
-{
-}
-
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"

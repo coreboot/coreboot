@@ -7,8 +7,8 @@
 
 void display_cpuid(void)
 {
-    unsigned type = __getpvr() >> 16;
-    unsigned version = __getpvr() & 0xffff;
+    unsigned type = ppc_getpvr() >> 16;
+    unsigned version = ppc_getpvr() & 0xffff;
     const char *cpu_string = 0;
     switch(type) {
         case 1:

@@ -3,9 +3,9 @@
 
 #include <ppc_asm.tmpl>
 
-	.globl	_init_float_registers
+	.globl	ppc_init_float_registers
     
-_init_float_registers:
+ppc_init_float_registers:
 	lfd	fr0, 0(r3)
 	lfd	fr1, 0(r3)
 	lfd	fr2, 0(r3)

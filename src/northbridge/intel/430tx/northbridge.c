@@ -4,7 +4,7 @@
 unsigned long sizeram()
 {
 	/*
-	 * This is written for BX but should work also for GX.
+	 * Code for the BX/GX and TX are almost the same
 	 */
 	unsigned long totalmem;
 	unsigned char banks;
@@ -12,16 +12,20 @@ unsigned long sizeram()
         struct pci_dev *pcidev;
 
 	/* pci_find_device is way overkill for the host bridge! 
-	 * Plus the BX & GX have different device numbers so it
-	 * prevents code sharing.
 	 */
 	pcidev = pci_find_slot(0, PCI_DEVFN(0,0));
-        pci_read_config_byte(pcidev, 0x67, &banks);
+        pci_read_config_byte(pcidev, 0x65, &banks);
 
-	totalmem = (unsigned long) banks *8 * 1024;
+	/* RAM is in 4 MBytes granularity */
+	totalmem = (unsigned long) banks * 4 * 1024;
 
+	/*
+	 * This is just a failsafe, we SHOULDN'T come
+	 * here! It is hardlimited to 512M, more than the max amount
+	 * supported by the 430TX chipset
+	 */ 
 	if (banks == 0) {
-		totalmem = 0x80000000UL;
+		totalmem = 0x20000000UL;
 	}
 
 	return totalmem;

@@ -77,6 +77,9 @@ void k8_enable(struct chip *chip, enum chip_pass pass)
         switch (pass) {
         case CONF_PASS_PRE_CONSOLE:
                 break;
+	case CONF_PASS_PRE_PCI:
+		init_timer();
+		break;
         default:
                 /* nothing yet */
                 break;

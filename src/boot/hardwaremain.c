@@ -162,7 +162,6 @@ void hardwaremain(int boot_complete)
 	if (boot_complete) {
 		hard_reset();
 	}
-	init_timer(); /* needs to be moved into static configuration */
 	CONFIGURE(CONF_PASS_PRE_PCI);
 
 	/* pick how to scan the bus. This is first so we can get at memory size. */

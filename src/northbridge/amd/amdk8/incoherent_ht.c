@@ -246,8 +246,6 @@ static int ht_setup_chain(device_t udev, unsigned upos)
 }
 
 struct ht_chain {
-	device_t udev;
-	unsigned upos;
 	unsigned devreg; 
 };
 static int ht_setup_chainx(device_t udev, unsigned upos, unsigned bus)
@@ -344,20 +342,24 @@ static int ht_setup_chains(const struct ht_chain *ht_c, int ht_c_num)
 		dword |= (reg & 0xffff0000)>>8;
 		pci_write_config32( PCI_DEV(0, devpos,0), regpos , dword);
 #if 0
-		print_debug("PCI_DEV=(0,0x");
+		print_debug("udev=(0,0x");
 		print_debug_hex8(devpos);
 		print_debug(",0) 0x");
 		print_debug_hex8(regpos);
 		print_debug("=");
 		print_debug_hex32(dword);
-		print_debug("\r\n");
 #endif
 		
 	        /* Make certain the HT bus is not enumerated */
         	ht_collapse_previous_enumeration(busn);
 
-                upos = ht_c[i].upos;
-                udev = ht_c[i].udev;
+		upos = ((reg & 0xf00)>>8) * 0x20 + 0x80;
+		udev =  PCI_DEV(0, devpos, 0);
+#if 0
+                print_debug("\tupos=0x");
+                print_debug_hex32(upos);
+                print_debug("\r\n");
+#endif		
 		
 		reset_needed |= ht_setup_chainx(udev,upos,busn );
 

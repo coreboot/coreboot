@@ -40,7 +40,9 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
 */
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
-	return smbus_read_byte(device, address);
+	unsigned char c;
+	c = smbus_read_byte(device, address);
+	return c;
 }
 
 

@@ -57,15 +57,18 @@ static inline void smbus_delay(void)
 
 static int smbus_wait_until_ready(void)
 {
+	unsigned char c;
   unsigned long loops;
   loops = SMBUS_TIMEOUT;
   do {
     unsigned char val;
     smbus_delay();
-    c = my_inb(smbus_io_base + SMBHSTSTAT);
+    c = inb(SMBUS_IO_BASE + SMBHSTSTAT);
     while((c & 1) == 1) {
-      printk_err("c is 0x%x\n", c);
-      c = my_inb(smbus_io_base + SMBHSTSTAT);
+      print_err("c is ");
+      print_err_hex8(c);
+      print_err("\n");
+      c = inb(SMBUS_IO_BASE + SMBHSTSTAT);
       /* nop */ 
     }
 
@@ -75,13 +78,15 @@ static int smbus_wait_until_ready(void)
 
 void smbus_reset(void)
 {
-  my_outb(HOST_RESET, smbus_io_base + SMBHSTSTAT);
-  my_outb(HOST_RESET, smbus_io_base + SMBHSTSTAT);
-  my_outb(HOST_RESET, smbus_io_base + SMBHSTSTAT);
-  my_outb(HOST_RESET, smbus_io_base + SMBHSTSTAT);
+  outb(HOST_RESET, SMBUS_IO_BASE + SMBHSTSTAT);
+  outb(HOST_RESET, SMBUS_IO_BASE + SMBHSTSTAT);
+  outb(HOST_RESET, SMBUS_IO_BASE + SMBHSTSTAT);
+  outb(HOST_RESET, SMBUS_IO_BASE + SMBHSTSTAT);
 
   smbus_wait_until_ready();
-  printk_err("After reset status %#x\n", my_inb(smbus_io_base + SMBHSTSTAT));
+  print_err("After reset status ");
+  print_err_hex8( inb(SMBUS_IO_BASE + SMBHSTSTAT));
+  print_err("\n");
 }
   
 
@@ -89,12 +94,13 @@ void smbus_reset(void)
 static int smbus_wait_until_done(void)
 {
   unsigned long loops;
+  unsigned char byte;
   loops = SMBUS_TIMEOUT;
   do {
     unsigned char val;
     smbus_delay();
 		
-    byte = my_inb(smbus_io_base + SMBHSTSTAT);
+    byte = inb(SMBUS_IO_BASE + SMBHSTSTAT);
     if (byte & 1)
       break;
 
@@ -105,65 +111,64 @@ static int smbus_wait_until_done(void)
 static void smbus_print_error(unsigned char host_status_register)
 {
 
-  printk_err("smbus_error: 0x%02x\n", host_status_register);
+  print_err("smbus_error: ");
+  print_err_hex8(host_status_register);
+  print_err("\n");
   if (host_status_register & (1 << 4)) {
-    printk_err("Interrup/SMI# was Failed Bus Transaction\n");
+    print_err("Interrup/SMI# was Failed Bus Transaction\n");
   }
   if (host_status_register & (1 << 3)) {
-    printk_err("Bus Error\n");
+    print_err("Bus Error\n");
   }
   if (host_status_register & (1 << 2)) {
-    printk_err("Device Error\n");
+    print_err("Device Error\n");
   }
   if (host_status_register & (1 << 1)) {
-    printk_err("Interrupt/SMI# was Successful Completion\n");
+    print_err("Interrupt/SMI# was Successful Completion\n");
   }
   if (host_status_register & (1 << 0)) {
-    printk_err("Host Busy\n");
+    print_err("Host Busy\n");
   }
 }
 
 
 /* SMBus routines borrowed from VIA's Trident Driver */
 /* this works, so I am not going to touch it for now -- rgm */
-static unsigned char smbus_read(unsigned char devAdr, unsigned char bIndex, 
-				unsigned char *result)
+static unsigned char smbus_read_byte(unsigned char devAdr, 
+				unsigned char bIndex) 
 {
   unsigned short i;
   unsigned char  bData;
   unsigned char  sts;
 		        
   /* clear host status */
-  my_outb(0xff, smbus_io_base);
+  outb(0xff, SMBUS_IO_BASE);
 			    
   /* check SMBUS ready */
   for ( i = 0; i < 0xFFFF; i++ )
-    if ( (my_inb(smbus_io_base) & 0x01) == 0 )
+    if ( (inb(SMBUS_IO_BASE) & 0x01) == 0 )
       break;
 
   /* set host command */
-  my_outb(bIndex, smbus_io_base+3);
+  outb(bIndex, SMBUS_IO_BASE+3);
 
   /* set slave address */
-  my_outb(devAdr | 0x01, smbus_io_base+4);
+  outb(devAdr | 0x01, SMBUS_IO_BASE+4);
 
   /* start */
-  my_outb(0x48, smbus_io_base+2);
+  outb(0x48, SMBUS_IO_BASE+2);
 
   /* SMBUS Wait Ready */
   for ( i = 0; i < 0xFFFF; i++ )
-    if ( ((sts = my_inb(smbus_io_base)) & 0x01) == 0 )
+    if ( ((sts = inb(SMBUS_IO_BASE)) & 0x01) == 0 )
       break;
   if ((sts & ~3) != 0) {
     smbus_print_error(sts);
     return 0;
   }
-  bData=my_inb(smbus_io_base+5);
+  bData=inb(SMBUS_IO_BASE+5);
 
-  *result = bData;
-
-  /* return 1 if ok */
-  return 1;
+  return bData;
 
 }
 
@@ -182,35 +187,35 @@ int smbus_read_byte(unsigned device, unsigned address, unsigned char *result)
 
   /* setup transaction */
   /* disable interrupts */
-  my_outb(my_inb(smbus_io_base + SMBHSTCTL) & (~1), smbus_io_base + SMBHSTCTL);
+  outb(inb(SMBUS_IO_BASE + SMBHSTCTL) & (~1), SMBUS_IO_BASE + SMBHSTCTL);
   /* set the device I'm talking too */
-  my_outb(((device & 0x7f) << 1) | 1, smbus_io_base + SMBXMITADD);
+  outb(((device & 0x7f) << 1) | 1, SMBUS_IO_BASE + SMBXMITADD);
   /* set the command/address... */
-  my_outb(address & 0xFF, smbus_io_base + SMBHSTCMD);
+  outb(address & 0xFF, SMBUS_IO_BASE + SMBHSTCMD);
   /* set up for a byte data read */
-  my_outb((my_inb(smbus_io_base + SMBHSTCTL) & 0xE3) | (0x2 << 2),
-	  smbus_io_base + SMBHSTCTL);
+  outb((inb(SMBUS_IO_BASE + SMBHSTCTL) & 0xE3) | (0x2 << 2),
+	  SMBUS_IO_BASE + SMBHSTCTL);
 
   /* clear any lingering errors, so the transaction will run */
-  my_outb(my_inb(smbus_io_base + SMBHSTSTAT), smbus_io_base + SMBHSTSTAT);
+  outb(inb(SMBUS_IO_BASE + SMBHSTSTAT), SMBUS_IO_BASE + SMBHSTSTAT);
 
   /* clear the data byte...*/
-  my_outb(0, smbus_io_base + SMBHSTDAT0);
+  outb(0, SMBUS_IO_BASE + SMBHSTDAT0);
 
   /* start the command */
-  my_outb((my_inb(smbus_io_base + SMBHSTCTL) | 0x40),
-	  smbus_io_base + SMBHSTCTL);
+  outb((inb(SMBUS_IO_BASE + SMBHSTCTL) | 0x40),
+	  SMBUS_IO_BASE + SMBHSTCTL);
 
   /* poll for transaction completion */
   smbus_wait_until_done();
 
-  host_status_register = my_inb(smbus_io_base + SMBHSTSTAT);
+  host_status_register = inb(SMBUS_IO_BASE + SMBHSTSTAT);
 
   /* Ignore the In Use Status... */
   host_status_register &= ~(1 << 6);
 
   /* read results of transaction */
-  byte = my_inb(smbus_io_base + SMBHSTDAT0);
+  byte = inb(SMBUS_IO_BASE + SMBHSTDAT0);
   smbus_print_error(byte);
 
   *result = byte;

@@ -14,6 +14,8 @@ north_bridge_error:     .string "OOps, can't write to PAM registers properly\r\n
 after_zero:		.string "After 0x00...\r\n"
 before_zero_nop:	.string "Before 0x0000000 nop...\r\n"
 after_zero_nop:		.string "After 0x0000000 nop...\r\n"
+before_4m_nop:		.string "Before 0x4000000 nop...\r\n"
+after_4m_nop:		.string "After 0x4000000 nop...\r\n"
 after_one_million:	.string "After 0x0000000...\r\n"
 after_fifty_four:	.string "After 0x54...\r\n"
 firsttime: 		.string "First DRAM setup done\r\n"
@@ -240,22 +242,18 @@ north_ok:
 	loop .
 	CALLSP(dumpnorth)
 
-	mov 0x00, %eax		// dummy read to issue SDRAM NOP
+	//mov 0x00, %eax		// dummy read to issue SDRAM NOP
+	movl %eax, 0x00			// dummy read to issue SDRAM NOP
+	CONSOLE_DEBUG_TX_STRING($after_zero_nop)
 	/* delay 200 us*/
         mov $0x1000, %ecx
 	loop .
-
-#if 0
-	CS_WRITE_WORD(0x54, 0x0042)		// SDRAM Control Register
-        mov $0x10000, %ecx
-	loop .
-	CONSOLE_DEBUG_TX_STRING($before_zero_nop)
-	mov 0x0000000, %eax		// dummy read to issue SDRAM NOP
-	CONSOLE_DEBUG_TX_STRING($after_zero_nop)
+	CONSOLE_DEBUG_TX_STRING($before_4m_nop)
+	movl %eax, 0x4000000			// dummy read to issue SDRAM NOP
+	CONSOLE_DEBUG_TX_STRING($after_4m_nop)
 	/* delay 200 us*/
-	mov $0x1000, %ecx
+        mov $0x1000, %ecx
 	loop .
-#endif
 
 	/* SDRAM Precharge all */
 	CS_WRITE_WORD(0x54,0x0082)
@@ -263,21 +261,34 @@ north_ok:
 	loop .
 	CONSOLE_DEBUG_TX_STRING($after_fifty_four)
 
-	mov 0x00, %eax		// dummy read to make precharge happen
+	//mov 0x00, %eax		// dummy read to make precharge happen
+	movl %eax, 0x00			// dummy read to issue SDRAM NOP
         mov $0x1000, %ecx
 	loop .
 	CONSOLE_DEBUG_TX_STRING($after_zero)
+	CONSOLE_DEBUG_TX_STRING($before_4m_nop)
+	movl %eax, 0x4000000			// dummy read to issue SDRAM NOP
+	CONSOLE_DEBUG_TX_STRING($after_4m_nop)
+	/* delay 200 us*/
+        mov $0x1000, %ecx
+	loop .
 
 	/* SDRAM CBR Refresh */
 	CS_WRITE_WORD(0x54,0x0102)
 	mov $8, %ebx		// cycle 8 times
 9:
-	mov 0x00, %eax		// dummy read
+	movl %eax, 0x00			// dummy read to issue SDRAM NOP
+	//mov 0x00, %eax		// dummy read
         mov $10, %ecx		// brief delay
+	loop .
+	movl %eax, 0x4000000			// dummy read to issue SDRAM NOP
+	/* delay 200 us*/
+        mov $0x1000, %ecx
 	loop .
 	dec %ebx
 	jnz 9b
 
+	CONSOLE_DEBUG_TX_STRING($after_4m_nop)
 	/* SDRAM MRS command mode */
 	CS_WRITE_WORD(0x54,0x00C2)
 
@@ -285,13 +296,19 @@ north_ok:
  * the address read is 1d0, which means burst length 4,
  * wrap type interleaved, CAS latency 3 */
 
-	mov 0x1d0, %eax
+	//mov 0x1d0, %eax
+	movl %eax, 0x1d0
+	/* delay 200 us*/
+        mov $0x1000, %ecx
+	loop .
+	CONSOLE_DEBUG_TX_STRING($before_4m_nop)
+	movl %eax, 0x40001d0			// dummy read to issue SDRAM NOP
+	CONSOLE_DEBUG_TX_STRING($after_4m_nop)
+	/* delay 200 us*/
+        mov $0x1000, %ecx
+	loop .
 /* note if we ever add more banks of memory we'll have to add more lines
  * like the last one */
-
-// WE NEED THE CONFIGURE FOR THE OTHER SIDE TOO - Ron helped me with this, Bharath!
-	// mov 0x40001d0, %eax
-
 
 /* Put SDRAM in normal mode and enable refresh */
 	CS_WRITE_WORD(0x54,0x0002)

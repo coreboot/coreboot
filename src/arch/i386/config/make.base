@@ -1,0 +1,41 @@
+biosbase 0xf0000
+rambase 0x4000
+makedefine LINK = ld -T ldscript.ld -o $@ crt0.o linuxbios.a
+makedefine CPPFLAGS= -I$(TOP)/src/include -I$(TOP)/src/arch/$(ARCH)/include $(CPUFLAGS)
+makedefine CFLAGS= $(CPU_OPT) $(CPPFLAGS) -O2 -nostdinc -nostdlib -fno-builtin -Wall
+makedefine CC=cc 
+makerule all : romimage ;
+makerule floppy : all ; mcopy -o romimage a:
+makerule romimage : linuxbios.rom vmlinux.bin.gz.block ; cat vmlinux.bin.gz.block linuxbios.rom > romimage
+makerule linuxbios.rom: linuxbios.strip mkrom ; ./mkrom -s 64 -f -o linuxbios.rom linuxbios.strip
+makerule linuxbios.strip: linuxbios ; objcopy -O binary -R .note -R .comment -S linuxbios linuxbios.strip
+makerule linuxbios: linuxbios.a vmlinux.bin.gz ; @rm -f biosobject
+addaction linuxbios $(LINK) 
+addaction linuxbios nm -n linuxbios > linuxbios.map
+
+makerule linuxbios.a : $(OBJECTS) ; rm -f linuxbios.a
+addaction linuxbios.a ar cr linuxbios.a $(OBJECTS)
+
+makerule crt0.s: crt0.S ; $(CC) $(CPPFLAGS) -I$(TOP)/src -E $< > crt0.s
+
+makerule crt0.o : crt0.s; $(CC) $(CPU_OPT) -c crt0.s
+makerule mkrom: $(TOP)/mkrom/mkrom.c ; $(CC) -o mkrom $<
+
+makerule clean : ; rm -f linuxbios.* vmlinux.* *.o mkrom xa? *~
+addaction clean rm -f linuxbios romimage crt0.s
+addaction clean rm -f a.out *.s *.l
+addaction clean rm -f TAGS tags
+addaction clean rm -f docipl
+
+
+makerule vmlinux.bin.gz.block : vmlinux.bin.gz ; dd conv=sync bs=448k if=vmlinux.bin.gz of=vmlinux.bin.gz.block
+makerule vmlinux.bin.gz: vmlinux.bin ;gzip -f -3 vmlinux.bin
+makerule vmlinux.bin: $(LINUX)/vmlinux ;  objcopy -O binary -R .note -R .comment -S $< vmlinux.bin
+
+
+# do standard config files that the user need not specify
+# for now, this is just 'lib', but it may be more later. 
+dir /src/arch/i386
+dir /src/lib
+dir /src/boot
+dir /src/rom

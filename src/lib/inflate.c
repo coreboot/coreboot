@@ -1,8 +1,5 @@
 #define DEBG(x)  
-#define DEBGINT(x) 
 #define DEBG1(x)  
-#define DEBGH(x) 
-#define DEBGDYN(x) 
 /* Taken from /usr/src/linux/lib/inflate.c [unmodified]
    Used for start32, 1/11/2000
    James Hendricks, Dale Webster */
@@ -13,6 +10,12 @@
 /* 
  * Adapted for booting Linux by Hannu Savolainen 1993
  * based on gzip-1.0.3 
+ *
+ * Nicolas Pitre <nico@cam.org>, 1999/04/14 :
+ *   Little mods for all variable to reside either into rodata or bss segments
+ *   by marking constant variables with 'const' and initializing all the others
+ *   at run-time only.  This allows for the kernel uncompressor to run
+ *   directly from Flash or ROM memory on embeded systems.
  */
 
 /*
@@ -115,7 +118,6 @@ static char rcsid[] = "#Id: inflate.c,v 0.14 1993/06/10 13:27:04 jloup Exp #";
 #  include <stdlib.h>
 #endif
 
-
 #include "gzip.h"
 #define STATIC
 #endif /* !STATIC */
@@ -140,8 +142,8 @@ struct huft {
 
 
 /* Function prototypes */
-STATIC int huft_build OF((unsigned *, unsigned, unsigned, const ush *, 
-			  const ush *, struct huft **, int *));
+STATIC int huft_build OF((unsigned *, unsigned, unsigned, 
+		const ush *, const ush *, struct huft **, int *));
 STATIC int huft_free OF((struct huft *));
 STATIC int inflate_codes OF((struct huft *, struct huft *, int, int));
 STATIC int inflate_stored OF((void));
@@ -164,20 +166,20 @@ STATIC int inflate OF((void));
 #define flush_output(w) (wp=(w),flush_window())
 
 /* Tables for deflate from PKZIP's appnote.txt. */
-const unsigned border[] = {    /* Order of the bit length code lengths */
+static const unsigned border[] = {    /* Order of the bit length code lengths */
         16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15};
-const ush cplens[] = {         /* Copy lengths for literal codes 257..285 */
+static const ush cplens[] = {         /* Copy lengths for literal codes 257..285 */
         3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31,
         35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258, 0, 0};
         /* note: see note #13 above about the 258 in this list. */
-const ush cplext[] = {         /* Extra bits for literal codes 257..285 */
+static const ush cplext[] = {         /* Extra bits for literal codes 257..285 */
         0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
         3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0, 99, 99}; /* 99==invalid */
-const ush cpdist[] = {         /* Copy offsets for distance codes 0..29 */
+static const ush cpdist[] = {         /* Copy offsets for distance codes 0..29 */
         1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193,
         257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097, 6145,
         8193, 12289, 16385, 24577};
-const ush cpdext[] = {         /* Extra bits for distance codes */
+static const ush cpdext[] = {         /* Extra bits for distance codes */
         0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6,
         7, 7, 8, 8, 9, 9, 10, 10, 11, 11,
         12, 12, 13, 13};
@@ -217,7 +219,7 @@ const ush cpdext[] = {         /* Extra bits for distance codes */
 STATIC ulg bb;                         /* bit buffer */
 STATIC unsigned bk;                    /* bits in bit buffer */
 
-const ush mask_bits[] = {
+STATIC const ush mask_bits[] = {
     0x0000,
     0x0001, 0x0003, 0x0007, 0x000f, 0x001f, 0x003f, 0x007f, 0x00ff,
     0x01ff, 0x03ff, 0x07ff, 0x0fff, 0x1fff, 0x3fff, 0x7fff, 0xffff
@@ -261,8 +263,8 @@ const ush mask_bits[] = {
  */
 
 
-STATIC int lbits ;          /* bits in base literal/length lookup table */
-STATIC int dbits ;          /* bits in base distance lookup table */
+STATIC const int lbits = 9;          /* bits in base literal/length lookup table */
+STATIC const int dbits = 6;          /* bits in base distance lookup table */
 
 
 /* If BMAX needs to be larger than 16, then h and x[] should be ulg. */
@@ -273,14 +275,14 @@ STATIC int dbits ;          /* bits in base distance lookup table */
 STATIC unsigned hufts;         /* track memory usage */
 
 
-STATIC int huft_build(
-		      unsigned *b,            /* code lengths in bits (all assumed <= BMAX) */
-		      unsigned n,             /* number of codes (assumed <= N_MAX) */
-		      unsigned s,             /* number of simple-valued codes (0..s-1) */
-		      const ush *d,                 /* list of base values for non-simple codes */
-		      const ush *e,                 /* list of extra bits for non-simple codes */
-		      struct huft **t,        /* result: starting table */
-		      int *m)                 /* maximum lookup bits, returns actual */
+STATIC int huft_build(b, n, s, d, e, t, m)
+unsigned *b;            /* code lengths in bits (all assumed <= BMAX) */
+unsigned n;             /* number of codes (assumed <= N_MAX) */
+unsigned s;             /* number of simple-valued codes (0..s-1) */
+const ush *d;                 /* list of base values for non-simple codes */
+const ush *e;                 /* list of extra bits for non-simple codes */
+struct huft **t;        /* result: starting table */
+int *m;                 /* maximum lookup bits, returns actual */
 /* Given a list of code lengths and a maximum table size, make a set of
    tables to decode that set of codes.  Return zero on success, one if
    the given code set is incomplete (the tables are still built in this
@@ -307,7 +309,7 @@ STATIC int huft_build(
   int y;                        /* number of dummy codes added */
   unsigned z;                   /* number of entries in current table */
 
-DEBGH("huft1 ");
+DEBG("huft1 ");
 
   /* Generate counts for each bit length */
   memzero(c, sizeof(c));
@@ -320,12 +322,12 @@ DEBGH("huft1 ");
   } while (--i);
   if (c[0] == n)                /* null input--all zero length codes */
   {
-    *t = 0;
+    *t = (struct huft *)NULL;
     *m = 0;
     return 0;
   }
 
-DEBGH("huft2 ");
+DEBG("huft2 ");
 
   /* Find minimum and maximum length, bound *m by those */
   l = *m;
@@ -343,7 +345,7 @@ DEBGH("huft2 ");
     l = i;
   *m = l;
 
-DEBGH("huft3 ");
+DEBG("huft3 ");
 
   /* Adjust last length count to fill out codes, if needed */
   for (y = 1 << j; j < i; j++, y <<= 1)
@@ -353,7 +355,7 @@ DEBGH("huft3 ");
     return 2;
   c[i] += y;
 
-DEBGH("huft4 ");
+DEBG("huft4 ");
 
   /* Generate starting offsets into the value table for each length */
   x[1] = j = 0;
@@ -362,7 +364,7 @@ DEBGH("huft4 ");
     *xp++ = (j += *p++);
   }
 
-DEBGH("huft5 ");
+DEBG("huft5 ");
 
   /* Make a table of values in order of bit lengths */
   p = b;  i = 0;
@@ -371,26 +373,26 @@ DEBGH("huft5 ");
       v[x[j]++] = i;
   } while (++i < n);
 
-DEBGH("h6 ");
+DEBG("h6 ");
 
   /* Generate the Huffman codes and for each, make the table entries */
   x[0] = i = 0;                 /* first Huffman code is zero */
   p = v;                        /* grab values in bit order */
   h = -1;                       /* no tables yet--level -1 */
   w = -l;                       /* bits decoded == (l * h) */
-  u[0] = 0;   /* just to keep compilers happy */
-  q = (struct huft *)0;      /* ditto */
+  u[0] = (struct huft *)NULL;   /* just to keep compilers happy */
+  q = (struct huft *)NULL;      /* ditto */
   z = 0;                        /* ditto */
-DEBGH("h6a ");
+DEBG("h6a ");
 
   /* go through the bit lengths (k already is bits in shortest code) */
   for (; k <= g; k++)
   {
-DEBGH("h6b ");
+DEBG("h6b ");
     a = c[k];
     while (a--)
     {
-DEBGH("h6b1 ");
+DEBG("h6b1 ");
       /* here i is the Huffman code of length k bits for value *p */
       /* make tables up to required level */
       while (k > w + l)
@@ -417,7 +419,8 @@ DEBG1("3 ");
         z = 1 << j;             /* table entries for j-bit table */
 
         /* allocate and link in new table */
-        if ((q = (struct huft *)malloc((z + 1)*sizeof(struct huft))) == 0)
+        if ((q = (struct huft *)malloc((z + 1)*sizeof(struct huft))) ==
+            (struct huft *)NULL)
         {
           if (h)
             huft_free(u[0]);
@@ -426,7 +429,7 @@ DEBG1("3 ");
 DEBG1("4 ");
         hufts += z + 1;         /* track memory usage */
         *t = q + 1;             /* link to list for huft_free() */
-        *(t = &(q->v.t)) = 0;
+        *(t = &(q->v.t)) = (struct huft *)NULL;
         u[h] = ++q;             /* table starts after link */
 
 DEBG1("5 ");
@@ -442,7 +445,7 @@ DEBG1("5 ");
         }
 DEBG1("6 ");
       }
-DEBGH("h6c ");
+DEBG("h6c ");
 
       /* set up table entry in r */
       r.b = (uch)(k - w);
@@ -459,7 +462,7 @@ DEBGH("h6c ");
         r.e = (uch)e[*p - s];   /* non-simple--look up in lists */
         r.v.n = d[*p++ - s];
       }
-DEBGH("h6d ");
+DEBG("h6d ");
 
       /* fill code-like entries with r */
       f = 1 << (k - w);
@@ -477,12 +480,12 @@ DEBGH("h6d ");
         h--;                    /* don't need to update q */
         w -= l;
       }
-DEBGH("h6e ");
+DEBG("h6e ");
     }
-DEBGH("h6f ");
+DEBG("h6f ");
   }
 
-DEBGH("huft7 ");
+DEBG("huft7 ");
 
   /* Return true (1) if we were given an incomplete table */
   return y != 0 && g != 1;
@@ -490,8 +493,8 @@ DEBGH("huft7 ");
 
 
 
-STATIC int huft_free(
-struct huft *t)         /* table to free */
+STATIC int huft_free(t)
+struct huft *t;         /* table to free */
 /* Free the malloc'ed tables built by huft_build(), which makes a linked
    list of the tables it made, with the links in a dummy first entry of
    each table. */
@@ -501,7 +504,7 @@ struct huft *t)         /* table to free */
 
   /* Go through linked list, freeing from the malloced (t[-1]) address. */
   p = t;
-  while (p != 0)
+  while (p != (struct huft *)NULL)
   {
     q = (--p)->v.t;
     free((char*)p);
@@ -511,11 +514,9 @@ struct huft *t)         /* table to free */
 }
 
 
-STATIC int inflate_codes(
-			 struct huft *tl, 
-			 struct huft *td,   /* literal/length and distance decoder tables */
-			 int bl, 
-			 int bd)             /* number of bits decoded by tl[] and td[] */
+STATIC int inflate_codes(tl, td, bl, bd)
+struct huft *tl, *td;   /* literal/length and distance decoder tables */
+int bl, bd;             /* number of bits decoded by tl[] and td[] */
 /* inflate (decompress) the codes in a deflated (compressed) block.
    Return an error code or zero if it all goes ok. */
 {
@@ -550,9 +551,6 @@ STATIC int inflate_codes(
     DUMPBITS(t->b)
     if (e == 16)                /* then it's a literal */
     {
-/*
-      DEBG("l");
- */
       slide[w++] = (uch)t->v.n;
       Tracevv((stderr, "%c", slide[w-1]));
       if (w == WSIZE)
@@ -587,18 +585,10 @@ STATIC int inflate_codes(
       d = w - t->v.n - ((unsigned)b & mask_bits[e]);
       DUMPBITS(e)
       Tracevv((stderr,"\\[%d,%d]", w-d, n));
-/*
-      DEBG("D");printint(w-d);printint(n);
- */
 
       /* do the copy */
       do {
         n -= (e = (e = WSIZE - ((d &= WSIZE-1) > w ? d : w)) > n ? n : e);
-#if 0
-	DEBG("memcpy %d to %d size %d"); printint(d); printint(w); 
-			printint(e);
-        DEBG("\n");
-#endif
 #if !defined(NOMEMCPY) && !defined(DEBUG)
         if (w - d >= e)         /* (this test assumes unsigned comparison) */
         {
@@ -633,7 +623,7 @@ STATIC int inflate_codes(
 
 
 
-STATIC int inflate_stored(void)
+STATIC int inflate_stored()
 /* "decompress" an inflated type 0 (stored) block. */
 {
   unsigned n;           /* number of bytes in block */
@@ -689,7 +679,7 @@ DEBG("<stor");
 
 
 
-STATIC int inflate_fixed(void)
+STATIC int inflate_fixed()
 /* decompress an inflated type 1 (fixed Huffman codes) block.  We should
    either replace this with a custom decoder, or at least precompute the
    Huffman tables. */
@@ -743,7 +733,7 @@ DEBG("<fix");
 
 
 
-STATIC int inflate_dynamic(void)
+STATIC int inflate_dynamic()
 /* decompress an inflated type 2 (dynamic Huffman codes) block. */
 {
   int i;                /* temporary variables */
@@ -766,14 +756,6 @@ STATIC int inflate_dynamic(void)
   register ulg b;       /* bit buffer */
   register unsigned k;  /* number of bits in bit buffer */
 
-
-#if 0
-  for(i = 0; i < 288+32; i++)
-    if (ll[i]) {
-       display("non-zero ll index at ");
-       printint(i);
-    }
-#endif
 DEBG("<dyn");
 
   /* make local bit buffer */
@@ -797,8 +779,8 @@ DEBG("<dyn");
   if (nl > 286 || nd > 30)
 #endif
     return 1;                   /* bad lengths */
-DEBGINT(nl); DEBGINT(nd); DEBGINT(nb);
-DEBGDYN("dyn1 ");
+
+DEBG("dyn1 ");
 
   /* read in bit-length-code lengths */
   for (j = 0; j < nb; j++)
@@ -810,17 +792,18 @@ DEBGDYN("dyn1 ");
   for (; j < 19; j++)
     ll[border[j]] = 0;
 
+DEBG("dyn2 ");
 
   /* build decoding table for trees--single level, 7 bit lookup */
   bl = 7;
-  if ((i = huft_build(ll, 19, 19, 0, 0, &tl, &bl)) != 0)
+  if ((i = huft_build(ll, 19, 19, NULL, NULL, &tl, &bl)) != 0)
   {
     if (i == 1)
       huft_free(tl);
     return i;                   /* incomplete code set */
   }
 
-DEBGDYN("dyn3 freemem now "); DEBGINT(free_mem_ptr);
+DEBG("dyn3 ");
 
   /* read in literal and distance code lengths */
   n = nl + nd;
@@ -832,9 +815,6 @@ DEBGDYN("dyn3 freemem now "); DEBGINT(free_mem_ptr);
     j = (td = tl + ((unsigned)b & m))->b;
     DUMPBITS(j)
     j = td->v.n;
-/*
-    DEBGDYN("j is now"); DEBGINT(j);
- */
     if (j < 16)                 /* length of code in bits (0..15) */
       ll[i++] = l = j;          /* save last length in l */
     else if (j == 16)           /* repeat last length 3 to 6 times */
@@ -842,9 +822,6 @@ DEBGDYN("dyn3 freemem now "); DEBGINT(free_mem_ptr);
       NEEDBITS(2)
       j = 3 + ((unsigned)b & 3);
       DUMPBITS(2)
-/*
-    DEBGDYN("j second is now"); DEBGINT(j);
- */
       if ((unsigned)i + j > n)
         return 1;
       while (j--)
@@ -855,9 +832,6 @@ DEBGDYN("dyn3 freemem now "); DEBGINT(free_mem_ptr);
       NEEDBITS(3)
       j = 3 + ((unsigned)b & 7);
       DUMPBITS(3)
-/*
-    DEBGDYN("j three is now"); DEBGINT(j);
- */
       if ((unsigned)i + j > n)
         return 1;
       while (j--)
@@ -869,9 +843,6 @@ DEBGDYN("dyn3 freemem now "); DEBGINT(free_mem_ptr);
       NEEDBITS(7)
       j = 11 + ((unsigned)b & 0x7f);
       DUMPBITS(7)
-/*
-    DEBGDYN("j four is now"); DEBGINT(j);
- */
       if ((unsigned)i + j > n)
         return 1;
       while (j--)
@@ -880,35 +851,35 @@ DEBGDYN("dyn3 freemem now "); DEBGINT(free_mem_ptr);
     }
   }
 
-DEBGDYN("dyn4 ");
+DEBG("dyn4 ");
 
   /* free decoding table for trees */
   huft_free(tl);
 
-DEBGDYN("dyn5 free mem is now");DEBGINT(free_mem_ptr);
+DEBG("dyn5 ");
 
   /* restore the global bit buffer */
   bb = b;
   bk = k;
 
-DEBGDYN("dyn5a ");
+DEBG("dyn5a ");
 
   /* build the decoding tables for literal/length and distance codes */
   bl = lbits;
   if ((i = huft_build(ll, nl, 257, cplens, cplext, &tl, &bl)) != 0)
   {
-DEBGDYN("dyn5b ");
+DEBG("dyn5b ");
     if (i == 1) {
       error(" incomplete literal tree\n");
       huft_free(tl);
     }
     return i;                   /* incomplete code set */
   }
-DEBGDYN("dyn5c ");
+DEBG("dyn5c ");
   bd = dbits;
   if ((i = huft_build(ll + nl, nd, 0, cpdist, cpdext, &td, &bd)) != 0)
   {
-DEBGDYN("dyn5d ");
+DEBG("dyn5d ");
     if (i == 1) {
       error(" incomplete distance tree\n");
 #ifdef PKZIP_BUG_WORKAROUND
@@ -922,15 +893,13 @@ DEBGDYN("dyn5d ");
 #endif
   }
 
-DEBGDYN("dyn6 free_mem_ptr ");DEBGINT(free_mem_ptr);
+DEBG("dyn6 ");
 
   /* decompress until an end-of-block code */
-DEBG("inflate_codes inptr is "); DEBGINT(inptr);
   if (inflate_codes(tl, td, bl, bd))
     return 1;
 
-DEBG("AFTER inflate_codes inptr is "); DEBGINT(inptr);
-DEBGDYN("dyn7 ");
+DEBG("dyn7 ");
 
   /* free the decoding tables, return */
   huft_free(tl);
@@ -942,18 +911,16 @@ DEBGDYN("dyn7 ");
 
 
 
-STATIC int inflate_block(
-int *e)                 /* last block flag */
+STATIC int inflate_block(e)
+int *e;                 /* last block flag */
 /* decompress an inflated block */
 {
   unsigned t;           /* block type */
   register ulg b;       /* bit buffer */
   register unsigned k;  /* number of bits in bit buffer */
 
-  DEBG("<blk(");
-  DEBGINT(inptr);
-  DEBG(")");
-  
+  DEBG("<blk");
+
   /* make local bit buffer */
   b = bb;
   k = bk;
@@ -991,13 +958,13 @@ int *e)                 /* last block flag */
 
 
 
-STATIC int inflate(void)
+STATIC int inflate()
 /* decompress an inflated entry */
 {
   int e;                /* last block flag */
   int r;                /* result code */
   unsigned h;           /* maximum struct huft's malloc'ed */
-  void *ptr;
+  malloc_mark_t mark;
 
   /* initialize window, bit buffer */
   wp = 0;
@@ -1009,12 +976,12 @@ STATIC int inflate(void)
   h = 0;
   do {
     hufts = 0;
-    gzip_mark(&ptr);
+    malloc_mark(&mark);
     if ((r = inflate_block(&e)) != 0) {
-      gzip_release(&ptr);	    
+      malloc_release(&mark);	    
       return r;
     }
-    gzip_release(&ptr);
+    malloc_release(&mark);
     if (hufts > h)
       h = hufts;
   } while (!e);
@@ -1043,9 +1010,7 @@ STATIC int inflate(void)
  **********************************************************************/
 
 static ulg crc_32_tab[256];
-/* note that this fails for NVRAM! */
-/* do assign below in makecrc */
-static ulg crc ; /*= (ulg)0xffffffffL;  shift register contents */
+static ulg crc;		/* initialized in makecrc() so it'll reside in bss */
 #define CRC_VALUE (crc ^ 0xffffffffL)
 
 /*
@@ -1064,12 +1029,8 @@ makecrc(void)
   int k;                /* byte being shifted into crc apparatus */
 
   /* terms of polynomial defining this crc (except x^32): */
-  const int p[] = {0,1,2,4,5,7,8,10,11,12,16,22,23,26};
+  static const int p[] = {0,1,2,4,5,7,8,10,11,12,16,22,23,26};
 
-  /* move init of the lbits and dbits here, I know this is hokey -- rgm */
-  lbits = 9;          /* bits in base literal/length lookup table */
-  dbits = 6;          /* bits in base distance lookup table */
-  crc = (ulg)0xffffffffL; /* shift register contents */
   /* Make exclusive-or pattern from polynomial */
   e = 0;
   for (i = 0; i < sizeof(p)/sizeof(int); i++)
@@ -1088,6 +1049,9 @@ makecrc(void)
     }
     crc_32_tab[i] = c;
   }
+
+  /* this is initialized here so this code could reside in ROM */
+  crc = (ulg)0xffffffffL; /* shift register contents */
 }
 
 /* gzip flag byte */
@@ -1102,7 +1066,7 @@ makecrc(void)
 /*
  * Do the uncompression!
  */
-static int gunzip(void)
+int gunzip(void)
 {
     uch flags;
     unsigned char magic[2]; /* magic header */

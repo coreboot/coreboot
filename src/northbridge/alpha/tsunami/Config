@@ -1,0 +1,3 @@
+cpu ev6
+option USE_CPU_EV6=1
+option USE_CORE_TSUNAMI=1

@@ -23,9 +23,9 @@ void mainboard_fixup()
 #endif
 #if 1
 	{
-	unsigned char byte;
-	unsigned short word;
-	unsigned long dword;
+	u8 byte;
+	u16 word;
+	u32 dword;
 	for(i = 0; i < 8; i++) {
 		pci_read_config_byte(host_bridge_pcidev, 0x60 +i, &byte);
 		printk("DRB[i] = 0x%02x\n", byte);

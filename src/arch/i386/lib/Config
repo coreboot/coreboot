@@ -1,0 +1,3 @@
+object i386_subr.o
+object params.o
+object hardwaremain.o

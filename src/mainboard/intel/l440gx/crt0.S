@@ -26,7 +26,7 @@
 
 #include <pc80/i8259.inc>
 
-#include <superio/NSC/pc87309/superio.inc>
+#include <superio/NSC/pc87309/setup_serial.inc>
 	
 #include <pc80/serial.inc>
 

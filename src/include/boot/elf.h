@@ -4,6 +4,7 @@
 /* Standard ELF types.  */
 
 #include <stdint.h>
+#include <stddef.h>
 #include <arch/boot/boot.h>
 
 /* Type for a 16-bit quantity.  */
@@ -390,4 +391,5 @@ typedef Elf64_Phdr Elf_phdr;
 
 extern int elf_check_arch(Elf_ehdr *ehdr);
 extern void jmp_to_elf_entry(void *entry, void *ube);
+extern int elfboot(size_t totalram);
 #endif	/* elf.h */

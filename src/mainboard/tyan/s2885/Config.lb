@@ -43,26 +43,27 @@ if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
 #object reset.o
 
+
 ##
 ## Romcc output
 ##
 makerule ./failover.E
-	depends "$(MAINBOARD)/failover.c" 
-	action "$(CPP) -I$(TOP)/src $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/failover.c > ./failover.E"
+        depends "$(MAINBOARD)/failover.c ./romcc"
+        action "./romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
 end
 
 makerule ./failover.inc
-	depends "./failover.E ./romcc"
-	action "./romcc -O -o failover.inc --label-prefix=failover ./failover.E"
+        depends "$(MAINBOARD)/failover.c ./romcc"
+        action "./romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
 end
 
-makerule ./auto.E 
-	depends	"$(MAINBOARD)/auto.c option_table.h " 
-	action	"$(CPP) -I$(TOP)/src -I. $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
+makerule ./auto.E
+        depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
+        action  "./romcc -E -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
 end
-makerule ./auto.inc 
-	depends "./auto.E ./romcc"
-	action	"./romcc -mcpu=k8 -O2 ./auto.E > auto.inc"
+makerule ./auto.inc
+        depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
+        action  "./romcc    -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
 end
 
 ##
@@ -199,8 +200,8 @@ chip northbridge/amd/amdk8
 				device pci 1.3 on end
 				device pci 1.5 on end
 				device pci 1.6 off end
-#                                register "ide0_enable" = "1"
-#                                register "ide1_enable" = "1"
+                                register "ide0_enable" = "1"
+                                register "ide1_enable" = "1"
 			end
 		end #  device pci 18.0 
 		

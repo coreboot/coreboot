@@ -123,7 +123,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 }
 
 
-//#include "northbridge/amd/amdk8/setup_resource_map.c"
+#include "northbridge/amd/amdk8/setup_resource_map.c"
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
@@ -168,7 +168,7 @@ static void main(unsigned long bist)
                 init_timer();
 
                 if (cpu_init_detected()) {
-#if 0
+#if 1
                         asm volatile ("jmp __cpu_reset");
 #else                   
                 /* cpu reset also reset the memtroller ????

@@ -134,8 +134,8 @@ void *smp_write_config_table(void *v)
 
 //On Board Via USB 1.1 and 2
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_1, (3<<2)|0, 0x4, 0x11); //1.1
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_1, (3<<2)|1, 0x4, 0x12); //1.1
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_1, (3<<2)|2, 0x4, 0x10); //2
+        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_1, (3<<2)|1, 0x4, 0x10); //1.1
+        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_1, (3<<2)|2, 0x4, 0x12); //2
 
 //Slot 5 PCI 32
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_1, (4<<2)|0, 0x4, 0x10);

@@ -32,6 +32,8 @@ uses LB_CKS_LOC
 uses MAINBOARD_PART_NUMBER
 uses MAINBOARD_VENDOR
 uses MAINBOARD
+uses MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+uses MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 uses LINUXBIOS_EXTRA_VERSION
 uses _RAMBASE
 uses CC
@@ -43,7 +45,8 @@ uses DEFAULT_CONSOLE_LOGLEVEL
 uses MAXIMUM_CONSOLE_LOGLEVEL
 uses MAINBOARD_POWER_ON_AFTER_POWER_FAIL
 uses CONFIG_CONSOLE_SERIAL8250
-
+uses HAVE_INIT_TIMER
+uses CONFIG_GDB_STUB
 
 ###
 ### Build options
@@ -80,7 +83,7 @@ default HARD_RESET_FUNCTION=0
 ## Build code to export a programmable irq routing table
 ##
 default HAVE_PIRQ_TABLE=1
-default IRQ_SLOT_COUNT=9
+default IRQ_SLOT_COUNT=12
 
 ##
 ## Build code to export an x86 MP table
@@ -117,6 +120,8 @@ default CONFIG_IOAPIC=1
 ##
 default MAINBOARD_PART_NUMBER="Tyan"
 default MAINBOARD_VENDOR="s2850"
+default MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID=0x10f1
+default MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID=0x2850
 
 ###
 ### LinuxBIOS layout values
@@ -159,6 +164,11 @@ default CONFIG_ROM_STREAM = 1
 ##
 default CC="gcc"
 default HOSTCC="gcc"
+
+##
+## Disable the gdb stub by default
+## 
+default CONFIG_GDB_STUB=0
 
 ##
 ## The Serial Console

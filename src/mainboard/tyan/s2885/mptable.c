@@ -13,10 +13,12 @@ void *smp_write_config_table(void *v)
 
         unsigned char bus_num;
         unsigned char bus_isa;
+	unsigned char bus_8131_0;
         unsigned char bus_8131_1;
         unsigned char bus_8131_2;
 	unsigned char bus_8111_0;
         unsigned char bus_8111_1;
+	unsigned char bus_8151_0;
 	unsigned char bus_8151_1;
 
 
@@ -42,56 +44,59 @@ void *smp_write_config_table(void *v)
        {
                 device_t dev;
 
-                /* 8111 */
-                dev = dev_find_slot(3, PCI_DEVFN(0x03,0));
+		/* 8151 */
+		bus_8151_0 = 1;
+                dev = dev_find_slot(1, PCI_DEVFN(0x02,0));
                 if (dev) {
-			bus_8111_0 = pci_read_config8(dev, PCI_PRIMARY_BUS);
+                        bus_8151_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
+//                        printk_debug("bus_8151_1=%d\n",bus_8151_1);
+			bus_8111_0 = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
+			bus_8111_0++;
+			bus_8131_0 = bus_8111_0;
+//			printk_debug("bus_8111_0=%d\n",bus_8111_0);
+                }
+                else {
+                        printk_debug("ERROR - could not find PCI 1:02.0, using defaults\n");
+                        bus_8151_1 = 2;
+			bus_8111_0 = bus_8131_0 = 3;
+                }
+
+                /* 8111 */
+                dev = dev_find_slot(bus_8111_0, PCI_DEVFN(0x03,0));
+                if (dev) {
                         bus_8111_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
                         bus_isa    = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
                         bus_isa++;
-			printk_debug("bus_isa=%d\n",bus_isa);
+//			printk_debug("bus_isa=%d\n",bus_isa);
                 }
                 else {
-                        printk_debug("ERROR - could not find PCI 3:03.0, using defaults\n");
+                        printk_debug("ERROR - could not find PCI %02x:03.0, using defaults\n", bus_8111_0);
 
                         bus_8111_1 = 6;
                         bus_isa = 7;
                 }
                 /* 8131-1 */
-                dev = dev_find_slot(3, PCI_DEVFN(0x01,0));
+                dev = dev_find_slot(bus_8131_0, PCI_DEVFN(0x01,0));
                 if (dev) {
                         bus_8131_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 
                 }
                 else {
-                        printk_debug("ERROR - could not find PCI 3:01.0, using defaults\n");
+                        printk_debug("ERROR - could not find PCI %02x:01.0, using defaults\n", bus_8131_0);
 
                         bus_8131_1 = 4;
                 }
                 /* 8131-2 */
-                dev = dev_find_slot(3, PCI_DEVFN(0x02,0));
+                dev = dev_find_slot(bus_8131_0, PCI_DEVFN(0x02,0));
                 if (dev) {
                         bus_8131_2 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 
                 }
                 else {
-                        printk_debug("ERROR - could not find PCI 3:02.0, using defaults\n");
+                        printk_debug("ERROR - could not find PCI %02x:02.0, using defaults\n", bus_8131_0);
 
                         bus_8131_2 = 5;
                 }
-	               /* 8151 */
-                dev = dev_find_slot(1, PCI_DEVFN(0x02,0));
-                if (dev) {
-                        bus_8151_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-                        printk_debug("bus_8151_1=%d\n",bus_8151_1);
-   
-                }
-                else {
-                        printk_debug("ERROR - could not find PCI 1:02.0, using defaults\n");
-
-                        bus_8151_1 = 2;
-                }
-  
    
         }
 
@@ -105,18 +110,18 @@ void *smp_write_config_table(void *v)
         smp_write_bus(mc, bus_isa, "ISA   ");
 
 /*I/O APICs:	APIC ID	Version	State		Address*/
-	smp_write_ioapic(mc, 2, 0x11, 0xfec00000);
+	smp_write_ioapic(mc, 2, 0x11, 0xfec00000); //8111
         {
                 device_t dev;
 		struct resource *res;
-                dev = dev_find_slot(3, PCI_DEVFN(0x1,1));
+                dev = dev_find_slot(bus_8131_0, PCI_DEVFN(0x1,1));
                 if (dev) {
 			res = find_resource(dev, PCI_BASE_ADDRESS_0);
 			if (res) {
-				smp_write_ioapic(mc, 0x03, 0x11, res->base);
+				smp_write_ioapic(mc, 3, 0x11, res->base);
 			}
                 }
-                dev = dev_find_slot(3, PCI_DEVFN(0x2,1));
+                dev = dev_find_slot(bus_8131_0, PCI_DEVFN(0x2,1));
                 if (dev) {
 			res = find_resource(dev, PCI_BASE_ADDRESS_0);
 			if (res) {

@@ -56,28 +56,22 @@ static void soft2_reset(void)
 
 static void memreset_setup(void)
 {
-#if 0
    if (is_cpu_pre_c0()) {
         outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=0
    }
    else {
-#endif
         outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=1
-#if 0
    }
-#endif
         outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
 }
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
-#if 0
    if (is_cpu_pre_c0()) {
         udelay(800);
         outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 17); //REVB_MEMRST_L=1
         udelay(90);
    }
-#endif
 }
 
 static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
@@ -123,7 +117,7 @@ static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 	};
 
 	if(maxnodes>2) {
-//		print_debug("this mainboard is only designed for 2 cpus\r\n");
+		print_debug("this mainboard is only designed for 2 cpus\r\n");
 		maxnodes=2;
 	}
 
@@ -150,7 +144,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
 
-#include "resourcemap.c" /* tyan does not want the default */
+/* tyan does not want the default */
+#include "resourcemap.c" 
 
 #define FIRST_CPU  1
 #define SECOND_CPU 1
@@ -205,7 +200,7 @@ static void main(unsigned long bist)
         	init_timer();
 	
 	        if (cpu_init_detected()) {
-#if 0
+#if 1
         	        asm volatile ("jmp __cpu_reset");
 #else           
                 /* cpu reset also reset the memtroller ????

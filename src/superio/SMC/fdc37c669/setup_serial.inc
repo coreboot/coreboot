@@ -50,7 +50,7 @@
 	/* Check for Device ID */
 
 	SMC_READ($0x0d)
-	cmp %al, $0x04
+	cmp $0x4, %al           
 	je 2f
 	mov $0xfe, %al
 	outb %al, $0x80

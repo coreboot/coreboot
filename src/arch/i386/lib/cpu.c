@@ -135,15 +135,8 @@ unsigned long cpu_initialize(struct mem_range *mem)
 	/* some cpus need a fixup done. This is the hook for doing that. */
 	cpufixup(mem);
 
-#if 0
-	/* now that everything is really up, enable the l2 cache if desired. 
-	 * The enable can wait until this point, because linuxbios and it's
-	 * data areas are tiny, easily fitting into the L1 cache. 
-	 */
-	configure_l2_cache();
-#endif
-
 	interrupts_on();
+
 	processor_id = this_processors_id();
 	printk_info("CPU #%d Initialized\n", processor_id);
 	return processor_id;

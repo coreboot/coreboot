@@ -1,10 +1,6 @@
 ## This is Architecture independant part of the makefile
 
-option LINUXBIOS_VERSION="1.1.0"
-
-option CC="$(CROSS_COMPILE)gcc"
-option HOSTCC="$(CROSS_COMPILE)gcc"
-option OBJCOPY="objcopy"
+uses HAVE_OPTION_TABLE
 
 makedefine CPP:= $(CC) -no-gcc -x assembler-with-cpp -DASSEMBLY -E
 makedefine LIBGCC_FILE_NAME := $(shell $(CC) -print-libgcc-file-name)
@@ -15,15 +11,6 @@ makedefine ROMCCPPFLAGS := -D__ROMCC__=0 -D__ROMCC_MINOR__=23
 makedefine CFLAGS := $(CPU_OPT) $(CPPFLAGS) -Os -nostdinc -nostdlib -fno-builtin  -Wall
 
 makedefine HOSTCFLAGS:= -Os -Wall
-
-option LINUXBIOS_BUILD          = "$(shell date)	"
-option LINUXBIOS_COMPILE_TIME   = "$(shell date +%T)"
-option LINUXBIOS_COMPILE_BY     = "$(shell whoami)"
-option LINUXBIOS_COMPILE_HOST   = "$(shell hostname)"
-option LINUXBIOS_COMPILE_DOMAIN = "$(shell dnsdomainname)"
-option LINUXBIOS_COMPILER       = "$(shell  $(CC) $(CFLAGS) -v 2>&1 | tail -n 1)"
-option LINUXBIOS_LINKER         = "$(shell  $(CC) -Wl,-v 2>&1 | grep version | tail -n 1)"
-option LINUXBIOS_ASSEMBLER      = "$(shell  touch dummy.s ; $(CC) -c -Wa,-v dummy.s 2>&1; rm -f dummy.s dummy.o )"
 
 makerule ldscript.ld   dep "ldoptions $(LDSUBSCRIPTS-1)" act " echo \"INCLUDE ldoptions\" > $@ ; for file in $(LDSUBSCRIPTS-1) ; do echo \"INCLUDE $$file\" >> $@ ; done"
 
@@ -41,8 +28,6 @@ makerule linuxbios_c  dep "linuxbios_c.o $(TOP)/src/config/linuxbios_c.ld ldopti
 ##
 ## By default compress the C part of linuxbios
 ##
-option CONFIG_COMPRESS=1
-option CONFIG_UNCOMPRESSED=!CONFIG_COMPRESS
 makedefine LINUXBIOS_PAYLOAD-$(CONFIG_COMPRESS):=linuxbios_payload.nrv2b
 makedefine LINUXBIOS_PAYLOAD-$(CONFIG_UNCOMPRESSED):=linuxbios_payload.bin
 
@@ -56,7 +41,6 @@ addaction linuxbios "$(CROSS_COMPILE)nm -n linuxbios | sort > linuxbios.map"
 makerule linuxbios.a   dep "$(OBJECTS-1) " act "rm -f linuxbios.a"
 addaction linuxbios.a "ar cr linuxbios.a $(OBJECTS-1)"
 
-option CRT0="$(TOP)/src/arch/$(ARCH)/config/crt0.base"
 makerule crt0.S   dep "$(CRT0) " act "cp $< $@"
 
 # the buildrom tool

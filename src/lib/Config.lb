@@ -1,3 +1,5 @@
+uses HAVE_FALLBACK_BOOT
+
 object clog2.o
 object uart8250.o
 object memset.o

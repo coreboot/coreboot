@@ -1,0 +1,4 @@
+config chip.h
+object northbridge.o
+#driver misc_control.o
+

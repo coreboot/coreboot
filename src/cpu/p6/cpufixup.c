@@ -351,3 +351,27 @@ void p6_cpufixup(struct mem_range *mem)
 	printk_debug("Updating microcode\n");
 	display_cpuid_update_microcode();
 }
+
+
+static
+void p6_enable(struct chip *chip, enum chip_pass pass)
+{
+
+        struct cpu_p6_config *conf = (struct cpu_p6_config *)chip->chip_info;
+
+        switch (pass) {
+        case CONF_PASS_PRE_CONSOLE:
+                break;
+        case CONF_PASS_PRE_PCI:
+                init_timer();
+                break;
+        default:
+                /* nothing yet */
+                break;
+        }
+}
+
+struct chip_control cpu_p6_control = {
+        .enable = p6_enable,
+        .name   = "Intel P6  CPU",
+};

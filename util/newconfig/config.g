@@ -164,11 +164,11 @@ def error(string):
         global errors, loc
 	errors = errors + 1
         print "===> ERROR: %s" % string
+        print "%s" % loc
 
 def fatal(string):      
 	"""Print error message and exit"""
 	error(string)
-        print "%s" % loc
         exitiferrors()
 
 def warning(string):
@@ -514,6 +514,11 @@ class option:
 	def getformat(self):
 		return self.format
 
+	def setused(self):
+		if (self.exportable):
+			self.exported = 1
+		self.used = 1
+
 	def setwrite(self, part):
 		self.write.append(part)
 
@@ -624,7 +629,7 @@ class partobj:
 			self.config_name = "%s_config" % self.instance_name
 		
 		# Link this part into the tree
-		if (parent):
+		if (parent and (part != 'arch')):
 			debug.info(debug.gencode, "add to parent")
 			self.parent   = parent
 			# add current child as my sibling, 
@@ -765,11 +770,17 @@ class partobj:
 			fatal("Invalid device")
 		self.path = "%s\n\t\t{ .enabled = %d, .path={.type=DEVICE_PATH_PNP,.u={.pnp={ .port = 0x%x, .device = 0x%x }}}" % (self.path, enable, port, device)
 		
-	def addi2cpath(self, enabled, device):
+	def addi2cpath(self, enable, device):
 		""" Add a relative path to a i2c device hanging off our parent """
 		if ((device < 0) or (device > 0x7f)):
 			fatal("Invalid device")
 		self.path = "%s\n\t\t{ .enabled = %d, .path = {.type=DEVICE_PATH_I2C,.u={.i2c={ .device = 0x%x }}} " % (self.path, enable, device)
+	def addapicpath(self, enable, apic_id):
+		""" Add a relative path to a cpu device hanging off our parent """
+		if ((apic_id < 0) or (apic_id > 255)):
+			fatal("Invalid device")
+		self.path = "%s\n\t\t{ .enabled = %d, .path = {.type=DEVICE_PATH_APIC,.u={.apic={ .apic_id = 0x%x }}} " % (self.path, enable, apic_id)
+    
 
 
 	def usesoption(self, name):
@@ -782,10 +793,7 @@ class partobj:
 		if (o1):
 			return
 		setdict(self.uses_options, name, o)
-
-	def exportoption(self, op):
-		"""Export option that is used by this part"""
-		exportoption(op, self.image.exported_options)
+		exportoption(o, self.image.exported_options)
 
 # -----------------------------------------------------------------------------
 #                    statements 
@@ -872,12 +880,6 @@ def getoption(name, image):
 	exitiferrors()
 	return val
 
-def exportoption(op, exported_options):
-	if (not op.isexportable()):
-		return
-	if (not op in exported_options):
-		exported_options.append(op)
-
 def setoption(name, value, imp):
 	"""Set an option from within a configuration file. Normally this
 	is only permitted in the target (top level) configuration file.
@@ -903,19 +905,19 @@ def setoption(name, value, imp):
 	if (v == 0):
 		v = newoptionvalue(name, curimage)
 	v.setvalue(value)
-	if (curpart):
-		curpart.exportoption(o)
-	else:
-		exportoption(o, global_exported_options)
+
+def exportoption(op, exported_options):
+	if (not op.isexportable()):
+		return
+	if (not op in exported_options):
+		exported_options.append(op)
 
 def setdefault(name, value, isdef):
 	"""Set the default value of an option from within a configuration 
 	file. This is permitted from any configuration file, but will
 	result in a warning if the default is set more than once.
 	If 'isdef' is set, we're defining the option in Options.lb so
-	there is no need for 'uses'.
-	Note also that changing an options default value will export
-	the option, if it is exportable."""
+	there is no need for 'uses'."""
 
 	global loc, global_options, curimage
 
@@ -938,12 +940,6 @@ def setdefault(name, value, isdef):
 	if (v == 0):
 		v = newoptionvalue(name, image)
 	v.setdefault(value)
-	if (isdef):
-		return
-	if (curpart):
-		curpart.exportoption(o)
-	else:
-		exportoption(o, global_exported_options)
 
 def setnodefault(name):
 	global loc, global_options
@@ -1047,6 +1043,7 @@ def usesoption(name):
 	if (o1):
 		return
 	setdict(global_uses_options, name, o)
+	exportoption(o, global_exported_options)
 
 def validdef(name, defval):
 	global global_options
@@ -1135,9 +1132,9 @@ def mainboard(path):
 	full_path = os.path.join(treetop, 'src', 'mainboard', path)
 	vendor = re.sub("/.*", "", path)
         part_number = re.sub("[^/]*/", "", path)
-	setdefault('MAINBOARD', full_path, 1)
-	setdefault('MAINBOARD_VENDOR', vendor, 1)
-	setdefault('MAINBOARD_PART_NUMBER', part_number, 1)
+	setdefault('MAINBOARD', full_path, 0)
+	setdefault('MAINBOARD_VENDOR', vendor, 0)
+	setdefault('MAINBOARD_PART_NUMBER', part_number, 0)
 	dodir('/config', 'Config.lb')
 	part('mainboard', path, 'Config.lb', 0, 0)
 	curimage.setroot(partstack.tos())
@@ -1182,10 +1179,10 @@ def cpudir(path):
 	
 def part(type, path, file, name, link):
 	global curimage, dirstack, partstack
-	partdir = os.path.join(type, path)
+        partdir = os.path.join(type, path)
 	srcdir = os.path.join(treetop, 'src')
 	fulldir = os.path.join(srcdir, partdir)
-	type_name = flatten_name(os.path.join(type, path))
+	type_name = flatten_name(partdir)
 	newpart = partobj(curimage, fulldir, partstack.tos(), type, \
 			type_name, name, link)
 	print "Configuring PART %s, path %s" % (type, path)
@@ -1333,6 +1330,7 @@ parser Config:
     token COMMENT:		'comment'
     token CONFIG:		'config'
     token CPU:			'cpu'
+    token CHIP:			'chip'
     token DEFAULT:		'default'
     token DEFINE:		'define'
     token DEPENDS:		'depends'
@@ -1392,6 +1390,7 @@ parser Config:
     token PCI:			'pci'
     token PNP:			'pnp'
     token I2C:			'i2c'
+    token APIC:			'apic'
     token LINK:                 'link'
 
 
@@ -1435,9 +1434,10 @@ parser Config:
 		|	PMC			{{ return 'pmc' }}
 		|	SOUTHBRIDGE		{{ return 'southbridge' }}
 		|	CPU			{{ return 'cpu' }}
+		|	CHIP                    {{ return '' }}
 
     rule partdef<<C>>:				{{ name = 0 }} {{ link = 0 }}
-			parttype partid
+			parttype partid		{{ if (parttype == 'cpu'): link = 1 }}
 			[ STR			{{ name = dequote(STR) }}
                         ][ LINK NUM             {{ link = long(NUM, 10) }}
 			]                       {{ if (C): part(parttype, partid, 'Config.lb', name, link) }}
@@ -1530,10 +1530,21 @@ parser Config:
 
     rule i2c<<C>>:	I2C HEX_NUM		{{ device = int(HEX_NUM, 16) }}
 			enable
-						{{ if (C): partstatck.tos().addi2cpath(enable, device) }}
+						{{ if (C): partstack.tos().addi2cpath(enable, device) }}
 			resources<<C>>
-			
-			
+
+    rule apic<<C>>:	APIC HEX_NUM		{{ apic_id = int(HEX_NUM, 16) }}
+			enable
+						{{ if (C): partstack.tos().addapicpath(enable, apic_id) }}
+			resources<<C>>
+
+
+    rule dev_path<<C>>:				
+	    		pci<<C>>		{{ return pci }}
+	    	|	pnp<<C>>		{{ return pnp }}
+		|	i2c<<C>>		{{ return i2c }}
+		|	apic<<C>>		{{ return apic }}
+		
     rule prtval:	expr			{{ return str(expr) }}
 		|	STR			{{ return STR }}
 
@@ -1566,8 +1577,7 @@ parser Config:
 		|	partdef<<C>>		{{ return partdef }}
 		| 	prtstmt<<C>>		{{ return prtstmt }}
 		|	register<<C>> 		{{ return register }}
-		|	pci<<C>>		{{ return pci }}
-		|	pnp<<C>>		{{ return pnp }}
+		|	dev_path<<C>>		{{ return dev_path }}	
 
     # ENTRY for parsing Config.lb file
     rule cfgfile:	(uses<<1>>)* 
@@ -2000,8 +2010,11 @@ def verifyparse():
 			fatal("An init file must be specified")
 		for op in image.exported_options:
 			if (getoptionvalue(op.name, op, image) == 0 and getoptionvalue(op.name, op, 0) == 0):
-				error("Exported option %s has no value (check Options.lb)" % op.name)
-	exitiferrors()
+				warning("Exported option %s has no value (check Options.lb)" % op.name);
+	print("Verifing global options")
+	for op in global_exported_options:
+		if (getoptionvalue(op.name, op, 0) == 0):
+			notice("Exported option %s has no value (check Options.lb)" % op.name);
 			
 #=============================================================================
 #		MAIN PROGRAM

@@ -75,7 +75,7 @@ struct device *dev_find_class(unsigned int class, struct device *from)
 		from = all_devices;
 	else
 		from = from->next;
-	while (from && from->class != class)
+	while (from && (from->class & 0xffffff00) != class)
 		from = from->next;
 	return from;
 }

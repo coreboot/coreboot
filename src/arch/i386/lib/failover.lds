@@ -1,1 +1,1 @@
-	__normal_image = (ZKERNEL_START & 0xfffffff0) - 8;
+	__normal_image = (CONFIG_ROM_STREAM_START & 0xfffffff0) - 8;

@@ -268,17 +268,31 @@ static const struct pci_ops *pci_check_direct(void)
 
 int pci_read_config_byte(struct pci_dev *dev, u8 where, u8 * val)
 {
-	return conf->read_byte(dev->bus->number, dev->devfn, where, val);
+	int res; 
+	res = conf->read_byte(dev->bus->number, dev->devfn, where, val);
+	DBG("Read config byte bus %d,devfn 0x%x,reg 0x%x,val 0x%x,res 0x%x\n",
+	    dev->bus->number, dev->devfn, where, *val, res);
+	return res;
+
+
 }
 
 int pci_read_config_word(struct pci_dev *dev, u8 where, u16 * val)
 {
-	return conf->read_word(dev->bus->number, dev->devfn, where, val);
+	int res; 
+	res = conf->read_word(dev->bus->number, dev->devfn, where, val);
+	DBG("Read config word bus %d,devfn 0x%x,reg 0x%x,val 0x%x,res 0x%x\n",
+	    dev->bus->number, dev->devfn, where, *val, res);
+	return res;
 }
 
 int pci_read_config_dword(struct pci_dev *dev, u8 where, u32 * val)
 {
-	return conf->read_dword(dev->bus->number, dev->devfn, where, val);
+	int res; 
+	res = conf->read_dword(dev->bus->number, dev->devfn, where, val);
+	DBG("Read config dword bus %d,devfn 0x%x,reg 0x%x,val 0x%x,res 0x%x\n",
+	    dev->bus->number, dev->devfn, where, *val, res);
+	return res;
 }
 
 int pci_write_config_byte(struct pci_dev *dev, u8 where, u8 val)
@@ -290,7 +304,7 @@ int pci_write_config_byte(struct pci_dev *dev, u8 where, u8 val)
 
 int pci_write_config_word(struct pci_dev *dev, u8 where, u16 val)
 {
-	DBG("Write config byte bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
+	DBG("Write config word bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
 	    dev->bus->number, dev->devfn, where, val);
 	return conf->write_word(dev->bus->number, dev->devfn, where, val);
 
@@ -298,24 +312,38 @@ int pci_write_config_word(struct pci_dev *dev, u8 where, u16 val)
 
 int pci_write_config_dword(struct pci_dev *dev, u8 where, u32 val)
 {
-	DBG("Write config byte bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
+	DBG("Write config dword bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
 	    dev->bus->number, dev->devfn, where, val);
 	return conf->write_dword(dev->bus->number, dev->devfn, where, val);
 }
 
 int pcibios_read_config_byte(unsigned char bus, unsigned char devfn, u8 where, u8 * val)
 {
-	return conf->read_byte(bus, devfn, where, val);
+	int res; 
+	res = conf->read_byte(bus, devfn, where, val);
+	DBG("Read config byte bus %d,devfn 0x%x,reg 0x%x,val 0x%x,res 0x%x\n",
+	    bus, devfn, where, *val, res);
+	return res;
 }
 
 int pcibios_read_config_word(unsigned char bus, unsigned char devfn, u8 where, u16 * val)
 {
-	return conf->read_word(bus, devfn, where, val);
+	int res; 
+	res = conf->read_word(bus, devfn, where, val);
+	DBG("Read config word bus %d,devfn 0x%x,reg 0x%x,val 0x%x,res 0x%x\n",
+	    bus, devfn, where, *val, res);
+	return res;
+
 }
 
 int pcibios_read_config_dword(unsigned char bus, unsigned char devfn, u8 where, u32 * val)
 {
-	return conf->read_dword(bus, devfn, where, val);
+	int res; 
+	res = conf->read_dword(bus, devfn, where, val);
+	DBG("Read config dword bus %d,devfn 0x%x,reg 0x%x,val 0x%x,res 0x%x\n",
+	    bus, devfn, where, *val, res);
+	return res;
+
 }
 
 int pcibios_write_config_byte(unsigned char bus, unsigned char devfn, u8 where, u8 val)
@@ -424,7 +452,7 @@ void compute_allocate_io(struct pci_bus *bus)
 	unsigned long io_base;
 
 	io_base = bus->iobase;
-	DBG("compute_allocate_mem: base 0x%lx\n", bus->iobase);
+	DBG("compute_allocate_io: base 0x%lx\n", bus->iobase);
 
 	/* First, walk all the bridges. When you return, grow the limit of the current bus
 	   since sub-busses need IO rounded to 4096 */
@@ -493,11 +521,30 @@ void compute_allocate_mem(struct pci_bus *bus)
 			unsigned long size = curdev->size[i];
 			unsigned long memorysize = size & (PCI_BASE_ADDRESS_MEM_MASK);
 			unsigned long type = size & (~PCI_BASE_ADDRESS_MEM_MASK);
-
-			if (!memorysize)
+			if (!memorysize) {
 				continue;
+			}
+			
+			if (type & PCI_BASE_ADDRESS_SPACE_IO) {
+				continue;
+			}
 
-			if (type == 0) {	
+			// we don't support the 1M type
+			if (type & PCI_BASE_ADDRESS_MEM_TYPE_1M) {
+			    continue;
+			}
+
+			// if it's prefetch type, continue;
+			if (type & PCI_BASE_ADDRESS_MEM_PREFETCH) {
+				continue;
+			}
+
+			// now mask out all but the 32 or 64 bits
+			type &= PCI_BASE_ADDRESS_MEM_TYPE_MASK;
+
+			// I'm pretty sure this test is not needed, but ...
+			if ((type == PCI_BASE_ADDRESS_MEM_TYPE_32) ||
+			    (type == PCI_BASE_ADDRESS_MEM_TYPE_64)) {
 				/* this is normal memory space */
 				unsigned long regmem;
 
@@ -512,6 +559,10 @@ void compute_allocate_mem(struct pci_bus *bus)
 				DBG("-->set base to 0x%lx\n", mem_base);
 				mem_base += regmem;
 				curdev->command |= PCI_COMMAND_MEMORY;
+				// for 64-bit BARs, the odd ones don't count
+				if (type == PCI_BASE_ADDRESS_MEM_TYPE_64)
+				    continue;
+
 			}
 		}
 	}
@@ -553,8 +604,26 @@ void compute_allocate_prefmem(struct pci_bus *bus)
 			if (!memorysize)
 				continue;
 
-			if (type & PCI_BASE_ADDRESS_MEM_PREFETCH) {
-				/* this is a prefetchable memory area */
+			if (type & PCI_BASE_ADDRESS_SPACE_IO) {
+			    continue;
+			}
+
+			// we don't support the 1M type
+			if (type & PCI_BASE_ADDRESS_MEM_TYPE_1M) {
+			    printk(__FUNCTION__ ": 1M memory not supported\n");
+			    continue;
+			}
+		      
+			// if it's not a prefetch type, continue;
+			if (! (type & PCI_BASE_ADDRESS_MEM_PREFETCH))
+			    continue;
+			// this should be a function some day ... comon code with 
+			// the non-prefetch allocate
+			// now mask out all but the 32 or 64 bit type info
+			type &= PCI_BASE_ADDRESS_MEM_TYPE_MASK;
+			// if all these names confuse you, they confuse me too!
+			if ((type == PCI_BASE_ADDRESS_MEM_TYPE_32) ||
+			    (type == PCI_BASE_ADDRESS_MEM_TYPE_64)) {
 				unsigned long regmem;
 
 				/* PCI BUS Spec suggests that the memory address should be
@@ -568,6 +637,9 @@ void compute_allocate_prefmem(struct pci_bus *bus)
 				DBG("-->set base to 0x%lx\n", prefmem_base);
 				prefmem_base += regmem;
 				curdev->command |= PCI_COMMAND_MEMORY;
+				// for 64-bit BARs, the odd ones don't count
+				if (type == PCI_BASE_ADDRESS_MEM_TYPE_64)
+				    continue;
 			}
 		}
 	}

@@ -179,6 +179,7 @@ void pci_read_bases(struct pci_dev *dev, unsigned int howmany)
 
 		addr &= (PCI_BASE_ADDRESS_SPACE | PCI_BASE_ADDRESS_MEM_TYPE_MASK);
 		if (addr == (PCI_BASE_ADDRESS_SPACE_MEMORY | PCI_BASE_ADDRESS_MEM_TYPE_64)) {
+			DBG("reg %d is 64-bit\n", reg);
 			/* this is a 64-bit memory base address */
 			reg++;
 			pci_read_config_dword(dev, PCI_BASE_ADDRESS_0 + (reg << 2), &addr);

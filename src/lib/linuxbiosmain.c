@@ -26,6 +26,10 @@
 #include <stdlib.h>
 #include <boot/linuxbios_table.h>
 
+#ifdef VIDEO_CONSOLE
+#include <pc80/vga.h>
+#endif
+
 
 #include "do_inflate.h"
 
@@ -147,11 +151,17 @@ int linuxbiosmain(unsigned long base, unsigned long totalram)
 	set_memory_size(empty_zero_page, 0x3c00, totalram - 2048);
 	post_code(0xfa);
 
-	printk_notice("command line - [%s]\n", cmd_line);
+	printk_notice("\ncommand line - [%s]\n", cmd_line);
 
 	set_command_line(empty_zero_page, cmd_line);
 	set_root_rdonly(empty_zero_page);
+
+#ifdef VIDEO_CONSOLE
+	set_display(empty_zero_page, LINES, COLS);
+#else
 	set_display(empty_zero_page, 25, 80);
+#endif
+
 	set_initrd(empty_zero_page, initrd_start, initrd_size);
 
 	/* Reset to booting from this image as late as possible */

@@ -4,3 +4,4 @@ raminit northsouthbridge/sis/630/raminit.inc
 
 object southbridge.o
 object northbridge.o
+object sis630_vga.o VIDEO_CONSOLE

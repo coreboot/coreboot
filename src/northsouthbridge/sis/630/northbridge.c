@@ -107,7 +107,7 @@ struct mem_range *sizeram(void)
 		mem[1].sizek = 64*1024;
 	}
 	mem[1].sizek -= mem[1].basek;
-	return &mem;
+	return &mem[0];
 }
 
 
@@ -118,7 +118,7 @@ void framebuffer_on()
 	u16 command;
 
 	if ((pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_5591_AGP, NULL)) == NULL)
-		return 0;
+		return;
 
 	pci_read_config_word(pcidev, 0x04, &command);
 	command |= 0x20;

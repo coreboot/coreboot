@@ -1,5 +1,9 @@
 #include <string.h>
 
+#ifdef VIDEO_CONSOLE
+#include <pc80/vga.h>
+#endif
+
 /*
 This software and ancillary information (herein called SOFTWARE )
 called LinuxBIOS          is made available under the terms described
@@ -148,13 +152,23 @@ get_empty_zero_page()
 /* I am pretty sure we only need to set rows and cols for now. 
  * All the rest is BIOS stuff. If it gets worse we'll have to make this a 
  * screen_info * as the param
+ * S. Gehlbach: added additional items needed for video console
  */
+extern int video_line,video_col;
 void
 set_display(unsigned char *empty_zero_page, int rows, int cols)
 {
 	struct screen_info *sc = &SCREEN_INFO;
 	sc->orig_video_cols = cols;
 	sc->orig_video_lines = rows;
+
+#ifdef VIDEO_CONSOLE
+	sc->orig_video_isVGA = 1;
+	sc->orig_video_points = CHAR_HEIGHT;
+	sc->orig_video_mode = 3;
+	sc->orig_x = video_col;
+	sc->orig_y = video_line;
+#endif
 }
 
 void

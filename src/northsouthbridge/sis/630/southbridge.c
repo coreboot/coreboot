@@ -29,6 +29,8 @@ static char rcsid[] =
 #define IDE_BASE1  (0x1F0u)  /* primary controller */
 #define ASIZE(x) (sizeof(x)/sizeof((x)[0]))
 
+extern int video_init(void);
+
 typedef struct {
 	u8 size;
 	u8 regno;
@@ -369,6 +371,10 @@ final_southbridge_fixup()
 	serial_irq_fixedup();
 	acpi_fixup();
 	ide_fixup();
-
-	printk_debug("Southbridge fixup done for SIS 503\n");
+#ifdef VIDEO_CONSOLE
+	// this has to be done here due to pci not being up
+	// earlier and pci resources are not ready
+	video_init();
+#endif
+	printk_debug("Southbridge fixup done for SIS 603\n");
 }

@@ -16,19 +16,25 @@ extern int ide_init(void);
 static unsigned long offset;
 static int init_bytes(void)
 {
-	int i;
+	int i,res;
 
         printk_debug ("Trying polled ide\n");
         printk_debug ("Waiting for ide disks to spin up\n");
-        printk_debug ("This is a hard coded delay and longer than necessary.\n");
-	for (i = 0; i < 15; i++) {
-		printk_debug(".");
+        printk_notice ("This is a hard coded delay and longer than necessary.\n");
+	for (i = 0; i < 2; i++) {
+		printk_notice (".");
 		delay(1);
 	}
-	printk_debug("\n");
+	printk_info ("\n");
 
+#ifdef ONE_TRACK
+	offset = (ONE_TRACK*512);
+#else
 	offset = 0x7e00;
-	return ide_init();
+#endif
+	res = ide_init();
+	delay(1);
+	return res;
 }
 
 static void fini_bytes(void)
@@ -39,7 +45,9 @@ static void fini_bytes(void)
 static unsigned char buffer[512];
 static unsigned int block_num = 0;
 static unsigned int first_fill = 1;
-
+#ifndef IDE_BOOT_DRIVE
+#define IDE_BOOT_DRIVE 0
+#endif
 static byte_offset_t ide_read(void *vdest, byte_offset_t offset, byte_offset_t count)
 {
 	byte_offset_t bytes = 0;
@@ -54,10 +62,11 @@ static byte_offset_t ide_read(void *vdest, byte_offset_t offset, byte_offset_t c
 		/* The block is not cached in memory or frist time called */
 		if (block_num != offset / 512 || first_fill) {
 			block_num  = offset / 512;
-			ide_read_sector(0, buffer, block_num,
+			printk_notice (".");
+			ide_read_sector(IDE_BOOT_DRIVE, buffer, block_num,
 					0, 512);
 			first_fill = 0;
-#if 1
+#if 0
 			//printk_debug("ide_read offset = %x\n", offset);
 			//printk_debug("ide_read block_num = %x\n", block_num);
 			for (i = 0; i < 16; i++) {

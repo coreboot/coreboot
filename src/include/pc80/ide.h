@@ -47,7 +47,7 @@ typedef struct {
     unsigned char drive_exists;
 } harddisk_info_t;
 
-#define NUM_HD (2)
+#define NUM_HD (4)
 
 extern harddisk_info_t harddisk_info[NUM_HD];
 

@@ -34,6 +34,7 @@
 
 #define NORTH_BRIDGE_BASE_ADDR	0x80000000
 #define LPC_BRIDGE_BASE_ADDR	0x80000800
+#define PCI_PCI_BRIDGE_BASE_ADDR	0x80001000
 
 register_setting_start:
 	movl	$northbridge_init_table, %esi
@@ -62,6 +63,28 @@ write_northbridge_register:
 	movb	%bl, %al
 	outb	%al, %dx
 	loopnz	init_northbridge
+
+#ifdef VIDEO_CONSOLE
+// by S. Gehlbach < steve @ kesa . com >
+// this turns on the vga io access
+	movw	$0x3e08, %ax			# Writing PCI-PCI VGA I/O enable register
+write_vga_register:
+	/* Input: AH - register number. AL - register value. */
+	movl	$PCI_PCI_BRIDGE_BASE_ADDR, %edx
+	movl	%eax, %ebx			# Save %eax to %ebx.
+
+	movzbl	%bh, %eax			# add register address to
+	addl	%edx, %eax			# PCI base address
+
+	movw	$PCI_COMMAND_PORT, %dx
+	outl	%eax, %dx
+
+	movw	$PCI_DATA_PORT, %dx
+	andb	$0x03, %al
+	addb	%al, %dl
+	movb	%bl, %al
+	outb	%al, %dx
+#endif
 
 #ifdef DISABLE_INTERNAL_DEVICES
 	movw	$0x7c0e, %ax			# Writting undocumented LPC register

@@ -61,16 +61,26 @@ void root_dev_set_resources(device_t root)
 }
 
 /**
- * Walk through devices on the motherboard and scan for devices behind
- * them.
+ * @brief Scan devices on static buses.
+ *
+ * The existence of devices on certain buses can be completely determined at
+ * compile time by the config file. Typical expamles are the 'PNP' devices
+ * on an legacy ISA/LPC bus. There is no need of probing of any kind, the
+ * only thing we have to do is to walk through the bus and enable or disable
+ * devices as indicated in the config file.
+ *
+ * This function is the default scan_bus() method for LPC bridges.
+ *
  * @param root Pointer to the device structure for the system root device
  * @param max  Maximum bus number allowed in the system.
  * @return Largest bus number used.
  */
-unsigned int walk_static_devices(device_t bus, unsigned int max)
+unsigned int scan_static_bus(device_t bus, unsigned int max)
 {
 	device_t child;
 	unsigned link;
+
+	printk_debug("%s entered\n", __FUNCTION__);
 
 	for (link = 0; link < bus->links; link++) {
 		for (child = bus->link[link].children; child; child = child->sibling) {
@@ -89,15 +99,18 @@ unsigned int walk_static_devices(device_t bus, unsigned int max)
 			max = child->ops->scan_bus(child, max);
 		}
 	}
+
+	printk_debug("%s done\n", __FUNCTION__);
+
 	return max;
 }
 
 /**
  * @brief Enable resources for children devices
  *
- * @param dev the device whos childrens resources are to be enabled
+ * @param dev the device whos children's resources are to be enabled
  *
- * This function is call by the enable_resource 
+ * This function is call by the enable_resource()
  */
 void enable_childrens_resources(device_t dev)
 {
@@ -113,9 +126,13 @@ void enable_childrens_resources(device_t dev)
 /**
  * @brief Scan root bus for generic PCI systems
  *
- * @param root the root device structure
- * @param max the current bus number scanned so fat, usually 0x00
+ * @param root The root device structure
+ * @param max The current bus number scanned so fat, usually 0x00
  *
+ * This function is the default scan_bus() method of the dynamic root device.
+ * The bus heirachy is rooted at the host/northbridge. The northbridge of a
+ * generic PCI bus system is at Bus 0, Dev 0, Fun 0 so we scan the whole PCI
+ * buses from there. 
  */
 unsigned int root_dev_scan_pci_bus(device_t root, unsigned int max)
 {
@@ -141,7 +158,9 @@ struct device_operations default_dev_ops_root = {
 };
 
 /**
- * This is the root of the device tree. A PCI tree always has 
+ * @brief The root of dynamic device tree.
+ *
+ * This is the root of the dynamic device tree. A PCI tree always has 
  * one bus, bus 0. Bus 0 contains devices and bridges. 
  */
 struct device dev_root = {

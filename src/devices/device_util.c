@@ -184,7 +184,7 @@ struct resource *get_resource(device_t dev, unsigned index)
 
 	/* See if there is a resource with the appropriate index */
 	resource = 0;
-	for(i = 0; i < dev->resources; i++) {
+	for (i = 0; i < dev->resources; i++) {
 		if (dev->resource[i].index == index) {
 			resource = &dev->resource[i];
 			break;

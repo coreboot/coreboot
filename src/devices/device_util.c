@@ -2,6 +2,7 @@
 #include <device/device.h>
 #include <device/path.h>
 #include <device/pci.h>
+#include <device/resource.h>
 #include <string.h>
 
 /**
@@ -386,5 +387,56 @@ void report_resource_stored(device_t dev, struct resource *resource, const char 
 			(resource->flags & IORESOURCE_MEM)? "mem": 
 			"????",
 			comment);
+	}
+}
+
+void search_bus_resources(struct bus *bus,
+	unsigned long type_mask, unsigned long type,
+	resource_search_t search, void *gp)
+{
+	struct device *curdev;
+	for(curdev = bus->children; curdev; curdev = curdev->sibling) {
+		int i;
+		/* Ignore disabled devices */
+		if (!curdev->have_resources) continue;
+		for(i = 0; i < curdev->resources; i++) {
+			struct resource *resource = &curdev->resource[i];
+			/* If it isn't the right kind of resource ignore it */
+			if ((resource->flags & type_mask) != type) {
+				continue;
+			}
+			/* If it is a subtractive resource recurse */
+			if (resource->flags & IORESOURCE_SUBTRACTIVE) {
+				struct bus * subbus;
+				subbus = &curdev->link[IOINDEX_SUBTRACTIVE_LINK(resource->index)];
+				search_bus_resources(subbus, type_mask, type, search, gp);
+				continue;
+			}
+			search(gp, curdev, resource);
+		}
+	}
+}
+
+void search_global_resources(
+	unsigned long type_mask, unsigned long type,
+	resource_search_t search, void *gp)
+{
+	struct device *curdev;
+	for(curdev = all_devices; curdev; curdev = curdev->next) {
+		int i;
+		/* Ignore disabled devices */
+		if (!curdev->have_resources) continue;
+		for(i = 0; i < curdev->resources; i++) {
+			struct resource *resource = &curdev->resource[i];
+			/* If it isn't the right kind of resource ignore it */
+			if ((resource->flags & type_mask) != type) {
+				continue;
+			}
+			/* If it is a subtractive resource ignore it */
+			if (resource->flags & IORESOURCE_SUBTRACTIVE) {
+				continue;
+			}
+			search(gp, curdev, resource);
+		}
 	}
 }

@@ -23,6 +23,7 @@
  * Reference: Intel Architecture Software Developer's Manual, Volume 3: System Programming
  */
 
+#include <stddef.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <cpu/x86/msr.h>
@@ -250,15 +251,61 @@ static unsigned long resk(uint64_t value)
 	return resultk;
 }
 
+static void set_fixed_mtrr_resource(void *gp, struct device *dev, struct resource *res)
+{
+	unsigned int start_mtrr;
+	unsigned int last_mtrr;
+	start_mtrr = fixed_mtrr_index(resk(res->base));
+	last_mtrr  = fixed_mtrr_index(resk((res->base + res->size)));
+	if (start_mtrr >= NUM_FIXED_RANGES) {
+		return;
+	}
+	printk_debug("Setting fixed MTRRs(%d-%d) Type: WB\n",
+		start_mtrr, last_mtrr);
+	set_fixed_mtrrs(start_mtrr, last_mtrr, MTRR_TYPE_WRBACK);
+	
+}
+
+struct var_mtrr_state {
+	unsigned long range_startk, range_sizek;
+	unsigned int reg;
+};
+
+void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res)
+{
+	struct var_mtrr_state *state = gp;
+	unsigned long basek, sizek;
+	if (state->reg >= BIOS_MTRRS)
+		return;
+	basek = resk(res->base);
+	sizek = resk(res->size);
+	/* See if I can merge with the last range
+	 * Either I am below 1M and the fixed mtrrs handle it, or
+	 * the ranges touch.
+	 */
+	if ((basek <= 1024) || (state->range_startk + state->range_sizek == basek)) {
+		unsigned long endk = basek + sizek;
+		state->range_sizek = endk - state->range_startk;
+		return;
+	}
+	/* Write the range mtrrs */
+	if (state->range_sizek != 0) {
+		state->reg = range_to_mtrr(state->reg, state->range_startk, state->range_sizek, basek);
+		state->range_startk = 0;
+		state->range_sizek = 0;
+	}
+	/* Allocate an msr */
+	state->range_startk = basek;
+	state->range_sizek  = sizek;
+}
+
 void x86_setup_mtrrs(void)
 {
 	/* Try this the simple way of incrementally adding together
 	 * mtrrs.  If this doesn't work out we can get smart again 
 	 * and clear out the mtrrs.
 	 */
-	struct device *dev;
-	unsigned long range_startk, range_sizek;
-	unsigned int reg;
+	struct var_mtrr_state var_state;
 
 	printk_debug("\n");
 	/* Initialized the fixed_mtrrs to uncached */
@@ -268,76 +315,29 @@ void x86_setup_mtrrs(void)
 
 	/* Now see which of the fixed mtrrs cover ram.
 	 */
-	for(dev = all_devices; dev; dev = dev->next) {
-		struct resource *res, *last;
-		last = &dev->resource[dev->resources];
-		for(res = &dev->resource[0]; res < last; res++) {
-			unsigned int start_mtrr;
-			unsigned int last_mtrr;
-			if (!(res->flags & IORESOURCE_MEM) || 
-				!(res->flags & IORESOURCE_CACHEABLE)) 
-			{
-				continue;
-			}
-			start_mtrr = fixed_mtrr_index(resk(res->base));
-			last_mtrr  = fixed_mtrr_index(resk((res->base + res->size)));
-			if (start_mtrr >= NUM_FIXED_RANGES) {
-				continue;
-			}
-			printk_debug("Setting fixed MTRRs(%d-%d) Type: WB\n",
-				start_mtrr, last_mtrr);
-			set_fixed_mtrrs(start_mtrr, last_mtrr, MTRR_TYPE_WRBACK);
-		}
-	}
+	search_global_resources(
+		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
+		set_fixed_mtrr_resource, NULL);
 	printk_debug("DONE fixed MTRRs\n");
+
 	/* Cache as many memory areas as possible */
 	/* FIXME is there an algorithm for computing the optimal set of mtrrs? 
 	 * In some cases it is definitely possible to do better.
 	 */
-	range_startk = 0;
-	range_sizek = 0;
-	reg = 0;
-	for(dev = all_devices; dev; dev = dev->next) {
-		struct resource *res, *last;
-		last = &dev->resource[dev->resources];
-		for(res = &dev->resource[0]; res < last; res++) {
-			unsigned long basek, sizek;
-			if (!(res->flags & IORESOURCE_MEM) ||
-				!(res->flags & IORESOURCE_CACHEABLE)) {
-				continue;
-			}
-			basek = resk(res->base);
-			sizek = resk(res->size);
-			/* See if I can merge with the last range
-			 * Either I am below 1M and the fixed mtrrs handle it, or
-			 * the ranges touch.
-			 */
-			if ((basek <= 1024) || (range_startk + range_sizek == basek)) {
-				unsigned long endk = basek + sizek;
-				range_sizek = endk - range_startk;
-				continue;
-			}
-			/* Write the range mtrrs */
-			if (range_sizek != 0) {
-				reg = range_to_mtrr(reg, range_startk, range_sizek, basek);
-				range_startk = 0;
-				range_sizek = 0;
-				if (reg >= BIOS_MTRRS) 
-					goto last_msr;
-			}
-			/* Allocate an msr */
-			range_startk = basek;
-			range_sizek  = sizek;
-		}
-	}
+	var_state.range_startk = 0;
+	var_state.range_sizek = 0;
+	var_state.reg = 0;
+	search_global_resources(
+		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
+		set_var_mtrr_resource, &var_state);
  last_msr:
 	/* Write the last range */
-	reg = range_to_mtrr(reg, range_startk, range_sizek, 0);
+	var_state.reg = range_to_mtrr(var_state.reg, var_state.range_startk, var_state.range_sizek, 0);
 	printk_debug("DONE variable MTRRs\n");
 	printk_debug("Clear out the extra MTRR's\n");
 	/* Clear out the extra MTRR's */
-	while(reg < MTRRS) {
-		set_var_mtrr(reg++, 0, 0, 0);
+	while(var_state.reg < MTRRS) {
+		set_var_mtrr(var_state.reg++, 0, 0, 0);
 	}
 	/* enable fixed MTRR */
 	printk_spew("call enable_fixed_mtrr()\n");

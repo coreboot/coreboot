@@ -306,6 +306,12 @@ struct lb_memory *get_lb_mem(void)
 	return mem_ranges;
 }
 
+static void build_lb_mem_range(void *gp, struct device *dev, struct resource *res)
+{
+	struct lb_memory *mem = gp;
+	lb_memory_range(mem, LB_MEM_RAM, res->base, res->size);
+}
+
 static struct lb_memory *build_lb_mem(struct lb_header *head)
 {
 	struct lb_memory *mem;
@@ -316,17 +322,9 @@ static struct lb_memory *build_lb_mem(struct lb_header *head)
 	mem_ranges = mem;
 
 	/* Build the raw table of memory */
-	for(dev = all_devices; dev; dev = dev->next) {
-		struct resource *res, *last;
-		last = &dev->resource[dev->resources];
-		for(res = &dev->resource[0]; res < last; res++) {
-			if (!(res->flags & IORESOURCE_MEM) ||
-				!(res->flags & IORESOURCE_CACHEABLE)) {
-				continue;
-			}
-			lb_memory_range(mem, LB_MEM_RAM, res->base, res->size);
-		}
-	}
+	search_global_resources(
+		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
+		build_lb_mem_range, mem);
 	lb_cleanup_memory_ranges(mem);
 	return mem;
 }

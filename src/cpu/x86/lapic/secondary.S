@@ -36,6 +36,9 @@ _secondary_start:
 	movw	%ax, %fs
 	movw	%ax, %gs
 
+	/* Load the Interrupt descriptor table */
+	lidt	idtarg
+
 	/* Set the stack pointer, and flag that we are done */
 	xorl	%eax, %eax
 	movl	secondary_stack, %esp

@@ -75,13 +75,41 @@ static void set_fixed_mtrrs(unsigned int first, unsigned int last, unsigned char
 	}
 }
 
+struct mem_state {
+	unsigned long mmio_basek, tomk;
+};
+static void set_fixed_mtrr_resource(void *gp, struct device *dev, struct resource *res)
+{
+	struct mem_state *state = gp;
+	unsigned long topk;
+	unsigned int start_mtrr;
+	unsigned int last_mtrr;
+
+	topk = resk(res->base + res->size);
+	if (state->tomk < topk) {
+		state->tomk = topk;
+	}
+	if ((topk < 4*1024*1024) && (state->mmio_basek < topk)) {
+		state->mmio_basek = topk;
+	}
+	start_mtrr = fixed_mtrr_index(resk(res->base));
+	last_mtrr  = fixed_mtrr_index(resk((res->base + res->size)));
+	if (start_mtrr >= NUM_FIXED_RANGES) {
+		return;
+	}
+	printk_debug("Setting fixed MTRRs(%d-%d) Type: WB\n",
+		start_mtrr, last_mtrr);
+	set_fixed_mtrrs(start_mtrr, last_mtrr, MTRR_TYPE_WRBACK | MTRR_READ_MEM | MTRR_WRITE_MEM);
+	
+}
+
+
 #endif
 
 void amd_setup_mtrrs(void)
 {
-	unsigned long mmio_basek, tomk;
+	struct mem_state state;
 	unsigned long i;
-	device_t dev;
 	msr_t msr;
 
 	/* Enable the access to AMD RdDram and WrDram extension bits */
@@ -99,54 +127,29 @@ void amd_setup_mtrrs(void)
 	 * significant holes in the address space, so just account
 	 * for those two and move on.
 	 */
-	mmio_basek = tomk = 0;
-	for(dev = all_devices; dev; dev = dev->next) {
-		struct resource *res, *last;
-		last = &dev->resource[dev->resources];
-		for(res = &dev->resource[0]; res < last; res++) {
-			unsigned long topk;
-			unsigned long start_mtrr, last_mtrr;
-			if (!(res->flags & IORESOURCE_MEM) ||
-				(!(res->flags & IORESOURCE_CACHEABLE))) {
-				continue;
-			}
-			topk = resk(res->base + res->size);
-			if (tomk < topk) {
-				tomk = topk;
-			}
-			if ((topk < 4*1024*1024) && (mmio_basek < topk)) {
-				mmio_basek = topk;
-			}
-
-			start_mtrr = fixed_mtrr_index(resk(res->base));
-			last_mtrr  = fixed_mtrr_index(resk(res->base + res->size));
-			if (start_mtrr >= NUM_FIXED_RANGES) {
-				continue;
-			}
-			printk_debug("Setting fixed MTRRs(%d-%d) Type: WB\n",
-				start_mtrr, last_mtrr);
-			set_fixed_mtrrs(start_mtrr, last_mtrr, MTRR_TYPE_WRBACK | MTRR_READ_MEM | MTRR_WRITE_MEM);
-		}
-	}
+	state.mmio_basek = state.tomk = 0;
+	search_global_resources(
+		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
+		set_fixed_mtrr_resource, &state);
 	printk_debug("DONE fixed MTRRs\n");
-	if (mmio_basek > tomk) {
-		mmio_basek = tomk;
+	if (state.mmio_basek > state.tomk) {
+		state.mmio_basek = state.tomk;
 	}
-	/* Round mmio_basek down to the nearst size that will fit in TOP_MEM */
-	mmio_basek = mmio_basek & ~TOP_MEM_MASK_KB;
-	/* Round tomk up to the next greater size that will fit in TOP_MEM */
-	tomk = (tomk + TOP_MEM_MASK_KB) & ~TOP_MEM_MASK_KB;
+	/* Round state.mmio_basek down to the nearst size that will fit in TOP_MEM */
+	state.mmio_basek = state.mmio_basek & ~TOP_MEM_MASK_KB;
+	/* Round state.tomk up to the next greater size that will fit in TOP_MEM */
+	state.tomk = (state.tomk + TOP_MEM_MASK_KB) & ~TOP_MEM_MASK_KB;
 
 	disable_cache();
 
 	/* Setup TOP_MEM */
-	msr.hi = mmio_basek >> 22;
-	msr.lo = mmio_basek << 10;
+	msr.hi = state.mmio_basek >> 22;
+	msr.lo = state.mmio_basek << 10;
 	wrmsr(TOP_MEM, msr);
 
 	/* Setup TOP_MEM2 */
-	msr.hi = tomk >> 22;
-	msr.lo = tomk << 10;
+	msr.hi = state.tomk >> 22;
+	msr.lo = state.tomk << 10;
 	wrmsr(TOP_MEM2, msr);
 
 	/* zero the IORR's before we enable to prevent

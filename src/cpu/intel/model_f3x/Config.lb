@@ -1,3 +1,5 @@
+uses HAVE_MOVNTI
+default HAVE_MOVNTI=1
 dir /cpu/x86/tsc
 dir /cpu/x86/mtrr
 dir /cpu/x86/fpu

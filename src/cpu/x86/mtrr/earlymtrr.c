@@ -6,20 +6,26 @@
 
 /* Validate XIP_ROM_SIZE and XIP_ROM_BASE */
 #if defined(XIP_ROM_SIZE) && !defined(XIP_ROM_BASE)
-#error "XIP_ROM_SIZE without XIP_ROM_BASE"
+# error "XIP_ROM_SIZE without XIP_ROM_BASE"
 #endif
 #if defined(XIP_ROM_BASE) && !defined(XIP_ROM_SIZE)
-#error "XIP_ROM_BASE without XIP_ROM_SIZE"
+# error "XIP_ROM_BASE without XIP_ROM_SIZE"
 #endif
 #if !defined(CONFIG_LB_MEM_TOPK)
-#error "CONFIG_LB_MEM_TOPK not defined"
+# error "CONFIG_LB_MEM_TOPK not defined"
 #endif
 
-#if defined(XIP_ROM_SIZE) && ((XIP_ROM_SIZE & (XIP_ROM_SIZE -1)) != 0)
-#error "XIP_ROM_SIZE is not a power of 2"
-#endif
-#if defined(XIP_ROM_SIZE) && ((XIP_ROM_BASE % XIP_ROM_SIZE) != 0)
-#error "XIP_ROM_BASE is not a multiple of XIP_ROM_SIZE"
+#if __ROMCC__  == 0 && __ROMCC_MINOR__ <= 64
+
+#warning "Not checking if XIP_ROM_SIZE is valid to avoid romcc preprocessor deficiency"
+
+#else
+# if defined(XIP_ROM_SIZE) && ((XIP_ROM_SIZE & (XIP_ROM_SIZE -1)) != 0)
+#  error "XIP_ROM_SIZE is not a power of 2"
+# endif
+# if defined(XIP_ROM_SIZE) && ((XIP_ROM_BASE % XIP_ROM_SIZE) != 0)
+#  error "XIP_ROM_BASE is not a multiple of XIP_ROM_SIZE"
+# endif
 #endif
 
 #if (CONFIG_LB_MEM_TOPK & (CONFIG_LB_MEM_TOPK -1)) != 0

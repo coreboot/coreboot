@@ -24,7 +24,7 @@
  * don't want broadcast to be enabled for that node.
  */
 
-#define generate_temp_row(x...) ((generate_row(x)&(~0x0f0000))|0x010000)
+#define generate_temp_row(...) ((generate_row(__VA_ARGS__)&(~0x0f0000))|0x010000)
 #define clear_temp_row(x)       fill_row(x,7,DEFAULT)
 #define enable_bsp_routing()	enable_routing(0)
 

@@ -13,9 +13,6 @@
 #include "northbridge.h"
 #include "amdk8.h"
 
-#define DEVICE_MEM_HIGH  0xFEC00000ULL /* Reserve 20M for the system */
-#define DEVICE_IO_START 0x1000
-
 #define FX_DEVS 8
 static device_t __f0_dev[FX_DEVS];
 static device_t __f1_dev[FX_DEVS];
@@ -468,7 +465,9 @@ static void mcf0_control_init(struct device *dev)
 	cmd |= 0x00000600;
 	pci_write_config32(dev, 0xdc, cmd );
 #endif	
+#if 0
 	printk_debug("done.\n");
+#endif
 }
 
 static struct device_operations northbridge_operations = {
@@ -488,8 +487,6 @@ static struct pci_driver mcf0_driver __pci_driver = {
 	.device = 0x1100,
 };
 
-
-#define BRIDGE_IO_MASK (IORESOURCE_IO | IORESOURCE_MEM | IORESOURCE_PREFETCH)
 
 static void pci_domain_read_resources(device_t dev)
 {
@@ -521,28 +518,15 @@ static void pci_domain_read_resources(device_t dev)
 	}
 
 	/* Initialize the system wide io space constraints */
-	resource = new_resource(dev, 0);
+	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
 	resource->base  = 0x400;
 	resource->limit = 0xffffUL;
-	resource->flags = IORESOURCE_IO;
-	compute_allocate_resource(&dev->link[0], resource, 
-		IORESOURCE_IO, IORESOURCE_IO);
-
-	/* Initialize the system wide prefetchable memory resources constraints */
-	resource = new_resource(dev, 1);
-	resource->limit = 0xfcffffffffULL;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
-	compute_allocate_resource(&dev->link[0], resource,
-		IORESOURCE_MEM | IORESOURCE_PREFETCH, 
-		IORESOURCE_MEM | IORESOURCE_PREFETCH);
+	resource->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 	
 	/* Initialize the system wide memory resources constraints */
-	resource = new_resource(dev, 2);
+	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
 	resource->limit = 0xfcffffffffULL;
-	resource->flags = IORESOURCE_MEM;
-	compute_allocate_resource(&dev->link[0], resource,
-		IORESOURCE_MEM | IORESOURCE_PREFETCH, 
-		IORESOURCE_MEM);
+	resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 }
 
 static void ram_resource(device_t dev, unsigned long index, 
@@ -560,75 +544,37 @@ static void ram_resource(device_t dev, unsigned long index,
 		IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 }
 
+static void tolm_test(void *gp, struct device *dev, struct resource *new)
+{
+	struct resource **best_p = gp;
+	struct resource *best;
+	best = *best_p;
+	if (!best || (best->base > new->base)) {
+		best = new;
+	}
+	*best_p = best;
+}
+
+static uint32_t find_pci_tolm(struct bus *bus)
+{
+	struct resource *min;
+	uint32_t tolm;
+	min = 0;
+	search_bus_resources(bus, IORESOURCE_MEM, IORESOURCE_MEM, tolm_test, &min);
+	tolm = 0xffffffffUL;
+	if (min && tolm > min->base) {
+		tolm = min->base;
+	}
+	return tolm;
+}
+
 static void pci_domain_set_resources(device_t dev)
 {
-	struct resource *io, *mem1, *mem2;
-	struct resource *resource, *last;
 	unsigned long mmio_basek;
 	uint32_t pci_tolm;
 	int i, idx;
 
-#if 0
-	/* Place the IO devices somewhere safe */
-	io = find_resource(dev, 0);
-	io->base = DEVICE_IO_START;
-#endif
-#if 1
-	/* Now reallocate the pci resources memory with the
-	 * highest addresses I can manage.
-	 */
-	mem1 = find_resource(dev, 1);
-	mem2 = find_resource(dev, 2);
-	/* See if both resources have roughly the same limits */
-	if (((mem1->limit <= 0xffffffff) && (mem2->limit <= 0xffffffff)) ||
-		((mem1->limit > 0xffffffff) && (mem2->limit > 0xffffffff)))
-	{
-		/* If so place the one with the most stringent alignment first
-		 */
-		if (mem2->align > mem1->align) {
-			struct resource *tmp;
-			tmp = mem1;
-			mem1 = mem2;
-			mem2 = tmp;
-		}
-		/* Now place the memory as high up as it will go */
-		mem2->base = resource_max(mem2);
-		mem1->limit = mem2->base - 1;
-		mem1->base = resource_max(mem1);
-	}
-	else {
-		/* Place the resources as high up as they will go */
-		mem2->base = resource_max(mem2);
-		mem1->base = resource_max(mem1);
-	}
-
-#if 0
-		printk_debug("base1: 0x%08Lx limit1: 0x%08lx size: 0x%08Lx\n",
-			mem1->base, mem1->limit, mem1->size);
-		printk_debug("base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx\n",
-			mem2->base, mem2->limit, mem2->size);
-#endif
-#endif
-	pci_tolm = 0xffffffffUL;
-	last = &dev->resource[dev->resources];
-	for(resource = &dev->resource[0]; resource < last; resource++) 
-	{
-#if 1
-		resource->flags |= IORESOURCE_ASSIGNED;
-		resource->flags &= ~IORESOURCE_STORED;
-#endif
-		compute_allocate_resource(&dev->link[0], resource,
-			BRIDGE_IO_MASK, resource->flags & BRIDGE_IO_MASK);
-
-		resource->flags |= IORESOURCE_STORED;
-		report_resource_stored(dev, resource, "");
-
-		if ((resource->flags & IORESOURCE_MEM) &&
-			(pci_tolm > resource->base))
-		{
-			pci_tolm = resource->base;
-		}
-	}
+	pci_tolm = find_pci_tolm(&dev->link[0]);
 
 #warning "FIXME handle interleaved nodes"
 	mmio_basek = pci_tolm >> 10;
@@ -682,14 +628,12 @@ static void pci_domain_set_resources(device_t dev)
 		}
 		ram_resource(dev, idx++, basek, sizek);
 	}
-
 	assign_resources(&dev->link[0]);
 }
 
 static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
 {
 	unsigned reg;
-	int i;
 	/* Unmap all of the HT chains */
 	for(reg = 0xe0; reg <= 0xec; reg += 4) {
 		f1_write_config32(reg, 0);
@@ -709,7 +653,6 @@ static struct device_operations pci_domain_ops = {
 static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 {
 	struct bus *cpu_bus;
-	unsigned reg;
 	int i;
 
 	/* Find which cpus are present */
@@ -771,8 +714,6 @@ static struct device_operations cpu_bus_ops = {
 
 static void enable_dev(struct device *dev)
 {
-	struct device_path path;
-
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
 		dev->ops = &pci_domain_ops;
@@ -783,6 +724,5 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations northbridge_amd_amdk8_ops = {
-	.name       = "AMD K8 Northbridge",
 	.enable_dev = enable_dev,
 };

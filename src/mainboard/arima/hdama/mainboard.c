@@ -316,7 +316,6 @@ static void enable_dev(struct device *dev)
 	dev->ops = &mainboard_operations;
 }
 struct chip_operations mainboard_arima_hdama_ops = {
-	.name      = "Arima HDAMA mainboard ",
 	.enable_dev = enable_dev, 
 };
 

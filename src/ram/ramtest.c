@@ -1,10 +1,3 @@
-#if defined(i786)
-#define HAVE_MOVNTI 1
-#endif
-#if defined(k8)
-#define HAVE_MOVNTI 1
-#endif
-
 static void write_phys(unsigned long addr, unsigned long value)
 {
 #if HAVE_MOVNTI

@@ -169,9 +169,10 @@ struct pick_largest_state {
 	int seen_last;
 };
 
-static void pick_largest_resource(struct pick_largest_state *state, 
+static void pick_largest_resource(void *gp,
 	struct device *dev, struct resource *resource)
 {
+	struct pick_largest_state *state = gp;
 	struct resource *last;
 	last = state->last;
 	/* Be certain to pick the successor to last */
@@ -197,33 +198,6 @@ static void pick_largest_resource(struct pick_largest_state *state,
 	}    
 }
 
-static void find_largest_resource(struct pick_largest_state *state, 
-	struct bus *bus, unsigned long type_mask, unsigned long type)
-{
-	struct device *curdev;
-	for(curdev = bus->children; curdev; curdev = curdev->sibling) {
-		int i;
-		/* Ignore disabled devices */
-		if (!curdev->have_resources) continue;
-		for(i = 0; i < curdev->resources; i++) {
-			struct resource *resource = &curdev->resource[i];
-			/* If it isn't the right kind of resource ignore it */
-			if ((resource->flags & type_mask) != type) {
-				continue;
-			}
-			/* If it is a subtractive resource recurse */
-			if (resource->flags & IORESOURCE_SUBTRACTIVE) {
-				struct bus *subbus;
-				subbus = &curdev->link[resource->index];
-				find_largest_resource(state, subbus, type_mask, type);
-				continue;
-			}
-			/* See if this is the largest resource */
-			pick_largest_resource(state, curdev, resource);
-		}
-	}
-}
-
 static struct device *largest_resource(struct bus *bus, struct resource **result_res,
 	unsigned long type_mask, unsigned long type)
 {
@@ -234,7 +208,7 @@ static struct device *largest_resource(struct bus *bus, struct resource **result
 	state.result = 0;
 	state.seen_last = 0;
 
-	find_largest_resource(&state, bus, type_mask, type);
+	search_bus_resources(bus, type_mask, type, pick_largest_resource, &state);
 
 	*result_res = state.result;
 	return state.result_dev;
@@ -282,7 +256,7 @@ void compute_allocate_resource(
 	min_align = 0;
 	base = bridge->base;
 
-	printk_spew("%s compute_allocate_%s: base: %08lx size: %08lx align: %d gran: %d\n", 
+	printk_spew("%s compute_allocate_%s: base: %08Lx size: %08Lx align: %d gran: %d\n", 
 		dev_path(bus->dev),
 		(bridge->flags & IORESOURCE_IO)? "io":
 		(bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",
@@ -383,7 +357,7 @@ void compute_allocate_resource(
 	 */
 	bridge->size = round(base, bridge->gran) - bridge->base;
 
-	printk_spew("%s compute_allocate_%s: base: %08lx size: %08lx align: %d gran: %d done\n", 
+	printk_spew("%s compute_allocate_%s: base: %08Lx size: %08Lx align: %d gran: %d done\n", 
 		dev_path(bus->dev),
 		(bridge->flags & IORESOURCE_IO)? "io":
 		(bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",

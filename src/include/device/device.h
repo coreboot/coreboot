@@ -13,7 +13,6 @@ struct smbus_bus_operations;
 
 /* Chip operations */
 struct chip_operations {
-	char *name; 	/* This is the print name for debugging */
 	void (*enable_dev)(struct device *dev);
 };
 

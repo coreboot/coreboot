@@ -46,6 +46,7 @@ uses MAXIMUM_CONSOLE_LOGLEVEL
 uses MAINBOARD_POWER_ON_AFTER_POWER_FAIL
 uses CONFIG_CONSOLE_SERIAL8250
 uses HAVE_INIT_TIMER
+uses CONFIG_GDB_STUB
 
 ###
 ### Build options
@@ -164,6 +165,11 @@ default CONFIG_ROM_STREAM = 1
 ##
 default CC="gcc"
 default HOSTCC="gcc"
+
+##
+## Disable the gdb stub by default
+##
+default CONFIG_GDB_STUB=0
 
 ##
 ## The Serial Console

@@ -30,10 +30,17 @@ OUTPUT_ARCH(i386)
 ENTRY(_start)
 
 TARGET(binary)
-INPUT(linuxbios_payload)
+INPUT(linuxbios_ram.rom)
 SECTIONS
 {
 	. = _ROMBASE;
+	
+	.ram . : {
+		_ram = . ;
+		linuxbios_ram.rom(*)
+		_eram = . ;
+	}
+
 	/* This section might be better named .setup */
 	.rom . : {
 		_rom = .;
@@ -42,18 +49,13 @@ SECTIONS
 		. = ALIGN(16);
 		_erom = .;
 	}
+
 	_lrom = LOADADDR(.rom);
 	_elrom = LOADADDR(.rom) + SIZEOF(.rom);
-	
-	.payload . : {
-		_payload = . ;
-		linuxbios_payload(*)
-		_epayload = . ;
-	}
 	_iseg = _RAMBASE;
-	_eiseg = _iseg + SIZEOF(.payload);
-	_liseg = _payload;
-	_eliseg = _epayload;
+	_eiseg = _iseg + SIZEOF(.ram);
+	_liseg = _ram;
+	_eliseg = _eram;
 
 	/DISCARD/ : {
 		*(.comment)

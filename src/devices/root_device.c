@@ -72,7 +72,7 @@ unsigned int scan_static_bus(device_t bus, unsigned int max)
 	device_t child;
 	unsigned link;
 	
-	printk_debug("%s for %s\n", __func__, dev_path(bus));
+	printk_spew("%s for %s\n", __func__, dev_path(bus));
 
 	for(link = 0; link < bus->links; link++) {
 		for(child = bus->link[link].children; child; child = child->sibling) {
@@ -91,12 +91,12 @@ unsigned int scan_static_bus(device_t bus, unsigned int max)
 		for(child = bus->link[link].children; child; child = child->sibling) {
 			if (!child->ops || !child->ops->scan_bus)
 				continue;
-			printk_debug("%s scanning...\n", dev_path(child));
+			printk_spew("%s scanning...\n", dev_path(child));
 			max = child->ops->scan_bus(child, max);
 		}
 	}
 
-	printk_debug("%s done\n", __func__);
+	printk_spew("%s done\n", __func__);
 
 	return max;
 }

@@ -1,0 +1,25 @@
+
+1) Include llshell.inc in your northbridge Config file
+2) In raminit.inc (or whatever), make a jmp out to low_level_shell, setting
+   a return label in %esp.
+For example:
+ram_set_registers:
+
+	mov $llshell_ret1,%esp
+	jmp low_level_shell
+llshell_ret1:
+
+        /* Disable and invalidate the cache */
+        invd
+        mov %cr0, %eax
+        ....
+3) Optionally, comment out two lines in ramtest.inc:
+5:
+        CONSOLE_INFO_TX_STRING($rt_toomany)
+        // intel_chip_post_macro(0xf1)
+        // jmp  .Lhlt
+otherwise, a ramtest failure will hang
+
+4) build and flash as normal
+If it worked, the speaker will beep, and you'll get a shell.
+Type help or ? at the prompt for a list of commands.

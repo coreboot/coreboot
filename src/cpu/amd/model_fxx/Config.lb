@@ -1,5 +1,7 @@
 uses HAVE_INIT_TIMER
+uses HAVE_MOVNTI
 default HAVE_INIT_TIMER=1
+default HAVE_MOVNTI=1
 dir /cpu/x86/tsc
 dir /cpu/x86/fpu
 dir /cpu/x86/mmx

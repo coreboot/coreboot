@@ -61,35 +61,10 @@ define ARCH
 	export always
 	comment "Default architecture is i386, options are alpha and ppc"
 end
-define k7
-	default none
-	export used
-	comment "We're a k7"
-end
-define k8
-	default none
-	export used
-	comment "We're a k8"
-end
-define i586
-	default none
-	export used
-	comment "We're a 586"
-end
-define i686
-	default none
-	export used
-	comment "We're a 686"
-end
-define i786
-	default none
-	export used
-	comment "We're a 786"
-end
-define CPU_FIXUP
-	default none
-	export used
-	comment "Do CPU fixups"
+define HAVE_MOVNTI
+	default 0
+	export always
+	comment "This cpu supports the MOVNTI directive"
 end
 
 ###############################################
@@ -701,6 +676,12 @@ end
 ###############################################
 # Misc options
 ###############################################
+
+define CONFIG_GDB_STUB
+	default 0
+	export used
+	comment "Compile in gdb stub support?"
+end
 
 define HAVE_INIT_TIMER
 	default 0

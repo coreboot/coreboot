@@ -80,6 +80,7 @@ struct resource {
 
 /* Generic resource helper functions */
 struct device;
+struct bus;
 extern void compact_resources(struct device * dev);
 extern struct resource *probe_resource(struct device *dev, unsigned index);
 extern struct resource *new_resource(struct device * dev, unsigned index);
@@ -87,5 +88,14 @@ extern struct resource *find_resource(struct device * dev, unsigned index);
 extern resource_t resource_end(struct resource *resource);
 extern resource_t resource_max(struct resource *resource);
 extern void report_resource_stored(struct device * dev, struct resource *resource, const char *comment);
+
+typedef void (*resource_search_t)(void *gp, struct device *dev, struct resource *res);
+extern void search_bus_resources(struct bus *bus,
+	unsigned long type_mask, unsigned long type,
+	resource_search_t search, void *gp);
+
+extern void search_global_resources(
+	unsigned long type_mask, unsigned long type,
+	resource_search_t search, void *gp);
 
 #endif /* RESOURCE_H */

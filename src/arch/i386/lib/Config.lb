@@ -7,4 +7,4 @@
 object c_start.S
 object cpu.c
 object pci_ops.c
-
+object exception.c

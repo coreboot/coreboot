@@ -3557,7 +3557,7 @@ static void define_macro(
 	if (macro != 0) {
 		/* Explicitly allow identical redefinitions of the same macro */
 		if ((macro->buf_len == value_len) &&
-			(memcmp(macro->buf, value, value_len))) {
+			(memcmp(macro->buf, value, value_len) == 0)) {
 			return;
 		}
 		error(state, 0, "macro %s already defined\n", ident->name);
@@ -4804,7 +4804,7 @@ static long_t mprimary_expr(struct compile_state *state, int index)
 		if ((lval > LONG_T_MAX) || (lval < LONG_T_MIN) ||
 			(((lval == LONG_MIN) || (lval == LONG_MAX)) &&
 				(errno == ERANGE))) {
-			error(state, 0, "Integer constant to large");
+			error(state, 0, "Integer constant `%s' to large", state->token[index].val.str);
 		}
 		val = lval;
 		break;
@@ -24196,6 +24196,16 @@ static void print_op_move(struct compile_state *state,
 			}
 		}
 #endif /* X86_4_8BIT_GPRS */
+		/* Move from %eax:%edx to %eax:%edx */
+		else if ((src_regcm & REGCM_DIVIDEND64) &&
+			(dst_regcm & REGCM_DIVIDEND64) &&
+			(src_reg == dst_reg)) {
+			if (!omit_copy) {
+				fprintf(fp, "\t/*mov %s, %s*/\n",
+					arch_reg_str(src_reg),
+					arch_reg_str(dst_reg));
+			}
+		}
 		else {
 			if ((src_regcm & ~REGCM_FLAGS) == 0) {
 				internal_error(state, ins, "attempt to copy from %%eflags!");

@@ -86,6 +86,16 @@ static void setup_ioapic(void)
 	}
 }
 
+static void enable_hpet(struct device *dev)
+{
+	unsigned long hpet_address;
+	
+	pci_write_config32(dev,0xa0, 0xfed00001);
+	hpet_address=pci_read_config32(dev,0xa0)& 0xfffffffe;
+	printk_debug("enabling HPET @0x%x\n", hpet_address);
+	
+}
+
 static void lpc_init(struct device *dev)
 {
 	uint8_t byte;
@@ -117,6 +127,7 @@ static void lpc_init(struct device *dev)
 	byte |= (1 << 5);
 	pci_write_config8(dev, 0x41, byte);
 
+	enable_hpet(dev);
 }
 
 static void amd8111_lpc_read_resources(device_t dev)

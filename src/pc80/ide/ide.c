@@ -29,8 +29,14 @@
 #include <pc80/ide.h>
 #include <arch/io.h>
 
+#ifndef CONFIG_IDE_MAXBUS
+#define CONFIG_IDE_MAXBUS       2
+#endif
+
 struct controller    controller;
 struct harddisk_info harddisk_info[NUM_HD];
+extern uint32_t ide_base[CONFIG_IDE_MAXBUS];
+
 
 static int await_ide(int (*done)(struct controller *ctrl), 
 	struct controller *ctrl, unsigned long timeout)
@@ -226,11 +232,15 @@ static inline int ide_read_sector_lba48(
 	return pio_data_in(info->ctrl, &cmd, buffer, IDE_SECTOR_SIZE);
 }
 
-int ide_read_sector(int driveno, void * buf, unsigned int sector,
-                           int byte_offset, int n_bytes)
+int ide_read(int driveno, unsigned int sector, void *buf)
 {
-	struct harddisk_info *info = &harddisk_info[driveno];
+	struct harddisk_info *info;
 	int result;
+
+	if (driveno > NUM_HD-1)
+		return -1;
+
+	info = &harddisk_info[driveno];
 
 	/* Report the buffer is empty */
 	if (sector > info->sectors) {
@@ -251,7 +261,7 @@ int ide_read_sector(int driveno, void * buf, unsigned int sector,
 	return result;
 }
 
-static int init_drive(struct harddisk_info *info, struct controller *ctrl, int slave, int basedrive)
+static int init_drive(struct harddisk_info *info, struct controller *ctrl, int slave, int drive)
 {
 	uint16_t* drive_info;
 	struct ide_pio_command cmd;
@@ -267,9 +277,9 @@ static int init_drive(struct harddisk_info *info, struct controller *ctrl, int s
 	info->drive_exists = 0;
 	info->slave_absent = 0;
 	info->slave = slave?IDE_DH_SLAVE: IDE_DH_MASTER;
-	info->basedrive = basedrive;
+	info->basedrive = drive & 1;
 
-	printk_info("Testing for disk %d\n", info->basedrive);
+	printk_info("Testing for disk %d\n", drive);
 
 	/* Select the drive that we are testing */
 	outb(IDE_DH_DEFAULT | IDE_DH_HEAD(0) | IDE_DH_CHS | info->slave, 
@@ -296,7 +306,7 @@ static int init_drive(struct harddisk_info *info, struct controller *ctrl, int s
 		}
 	}
 
-	printk_info("Probing for disk %d\n", info->basedrive);
+	printk_info("Probing for disk %d\n", drive);
 	
 	memset(&cmd, 0, sizeof(cmd));
 	cmd.device = IDE_DH_DEFAULT | IDE_DH_HEAD(0) | IDE_DH_CHS | info->slave;
@@ -404,8 +414,9 @@ static int init_drive(struct harddisk_info *info, struct controller *ctrl, int s
 	return 0;
 }
 
-static int init_controller(struct controller *ctrl, int basedrive) 
+static int init_controller(struct controller *ctrl, int num) 
 {
+	int drive;
 	struct harddisk_info *info;
 
 	/* Put the drives ide channel in a know state and wait
@@ -454,15 +465,16 @@ static int init_controller(struct controller *ctrl, int basedrive)
 	 */
 
 	/* Now initialize the individual drives */
-	info = &harddisk_info[basedrive];
-	init_drive(info, ctrl, 0, basedrive & 1);
+	drive = num * 2; /* 2 drives per controller */
+	info = &harddisk_info[drive];
+	init_drive(info, ctrl, 0, drive);
 
 	/* at the moment this only works for the first drive */
 #if 0
 	if (info->drive_exists && !info->slave_absent) {
-		basedrive++;
+		drive++;
 		info++;
-		init_drive(info, ctrl, 1, basedrive & 1);
+		init_drive(info, ctrl, 1, drive);
 	}
 #endif
 
@@ -477,36 +489,26 @@ int ide_init(void)
 	/* Intialize the harddisk_info structures */
 	memset(harddisk_info, 0, sizeof(harddisk_info));
 
-	for(index = 0; index < 1; index++) {
-#if 0
+	for(index = 0; index < CONFIG_IDE_MAXBUS; index++) {
 		/* IDE normal pci mode */
-		unsigned cmd_reg, ctrl_reg;
 		uint32_t cmd_base, ctrl_base;
-		if (index < 2) {
-			cmd_reg  = PCI_BASE_ADDRESS_0;
-			ctrl_reg = PCI_BASE_ADDRESS_1;
-		} else {
-			cmd_reg  = PCI_BASE_ADDRESS_2;
-			ctrl_reg = PCI_BASE_ADDRESS_3;
-		}
-		pcibios_read_config_dword(0, 0, cmd_reg, &cmd_base);
-		pcibios_read_config_dword(0, 0, ctrl_reg, &ctrl_base);
-		controller.cmd_base  = cmd_base  & ~3;
-		controller.ctrl_base = ctrl_base & ~3;
-
-#endif
-		uint16_t base;
-		base = (index < 1)?IDE_BASE0:IDE_BASE1;
-		controller.cmd_base  = base;
-		controller.ctrl_base = base + IDE_REG_EXTENDED_OFFSET;
+		cmd_base  = ide_base[index];
+		ctrl_base = cmd_base + IDE_REG_EXTENDED_OFFSET;
+		controller.cmd_base  = (cmd_base  & ~3);
+		controller.ctrl_base = (ctrl_base & ~3);
 
 		printk_info("init_controller %d at (%x, %x)\n", index, controller.cmd_base, controller.ctrl_base);
 
-		if (init_controller(&controller, index << 1) < 0) {
+		if (init_controller(&controller, index) < 0) {
 			/* nothing behind the controller */
 			continue;
 		}
 		drives++;
+		/*
+		 * break here to avoid lengthy timeout probing for
+		 * disks on second controller
+		 */
+		break;
 	}
 
 	return drives > 0 ? 0 : -1;

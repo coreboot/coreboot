@@ -26,12 +26,41 @@
 #define TTYS0_TX_AL		\
 	mov	%al, %ah	; \
 9:	mov	$TTYS0_LSR, %dx	; \
-	inb	%dx, %al		; \
-	test	$0x20, %al		; \
+	inb	%dx, %al	; \
+	test	$0x20, %al	; \
 	je	9b		; \
 	mov	$TTYS0_TBR, %dx	; \
-	mov	%ah, %al		; \
+	mov	%ah, %al	; \
 	outb	%al, %dx
+
+	/* uses:	 ax, dx */
+#define TTYS0_TX_BYTE(byte)	\
+	mov	byte, %al	; \
+	TTYS0_TX_AL
+
+	/* uses:	 ax, dx */
+#define TTYS0_TX_AL_HEX8	\
+	mov	$TTYS0_SCR, %dx	; \
+	outb	%al, %dx	; \
+	shr	$4, %al		; \
+	add	$'0', %al	; \
+	cmp	$'9', %al	; \
+	jle	9f		; \
+	add	$39, %al	; \
+9:				; \
+	TTYS0_TX_AL		; \
+	mov	$TTYS0_SCR, %dx	; \
+	inb	%dx, %al	; \
+	and	$0x0f, %al	; \
+	add	$'0', %al	; \
+	cmp	$'9', %al	; \
+	jle	9f		; \
+	add	$39, %al	; \
+9:				; \
+	TTYS0_TX_AL		; \
+	mov	$TTYS0_SCR, %dx	; \
+	inb	%dx, %al
+
 
 	/* uses:	esp, ax, dx */
 #define TTYS0_TX_CHAR(byte)	\

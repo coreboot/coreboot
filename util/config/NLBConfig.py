@@ -7,6 +7,12 @@ import string
 
 debug = 0;
 
+# Architecture variables
+arch = '';
+makebase = '';
+crt0base = '';
+ldscriptbase = '';
+
 makeoptions = {};
 # rule format. Key is the rule name. value is a list of lists. The first
 # element of the list is the dependencies, the rest are actions. 
@@ -15,10 +21,10 @@ treetop = '';
 outputdir = '';
 
 # config variables for the ldscript
-data = 0x4000;
-bss = 0x5000;
-stack = 0x90000;
-linuxbiosbase = 0xf0000;
+# Initialize the to zero so we get a link error if the
+# are not set.
+rambase = 0;
+linuxbiosbase = 0;
 
 objectrules = [];
 userrules = [];
@@ -90,13 +96,25 @@ def common_command_action(dir, type, name):
 	handleconfig(realpath)
 	return fullpath
 
+def set_arch(dir, my_arch):
+	global arch, makebase, crt0base, ldscriptbase
+	arch = my_arch
+	configpath = os.path.join(treetop, os.path.join("src/arch/", os.path.join(my_arch, "config")))
+	makebase = os.path.join(configpath, "make.base")
+	crt0base = os.path.join(configpath, "crt0.base")
+	ldscriptbase = os.path.join(configpath, "ldscript.base")
+	print "Now Process the ", my_arch, " base files"
+	if (debug):
+		print "Makebase is :", makebase, ":"
+	makedefine(dir,  "ARCH="+my_arch)
+	doconfigfile(treetop, makebase)
+
 def dir(base_dir, name):
 	regexp = re.compile(r"^/(.*)")
 	m = regexp.match(name)
 	if m and m.group(1):
 		# /dir
-		fullpath = os.path.join("src", m.group(1))
-		fullpath = os.path.join(treetop, fullpath)
+		fullpath = os.path.join(treetop, m.group(1))
 	else:
 		# dir
 		fullpath = os.path.join(base_dir, name)
@@ -123,10 +141,12 @@ def northsouthbridge(dir, northsouthbridge_name):
 
 	
 def northbridge(dir, northbridge_name):
-	common_command_action(dir, 'northbridge', northbridge_name)
+	fullpath = common_command_action(dir, 'northbridge', northbridge_name)
+	command_vals["northbridge"] = [fullpath]
 
 def southbridge(dir, southbridge_name):
-	common_command_action(dir, 'southbridge', southbridge_name)
+	fullpath = common_command_action(dir, 'southbridge', southbridge_name)
+	command_vals["southbridge"] = [fullpath]
 
 def pcibridge(dir, pcibridge_name):
 	common_command_action(dir, 'picbridge', picbridge_name)
@@ -223,7 +243,7 @@ def commandline(dir, command):
 # we do all these rules by hand because docipl will always be special
 # it's more or less a stand-alone bootstrap
 def docipl(dir, ipl_name):
-	global data, bss, stack, linuxbiosbase
+	global rambase, linuxbiosbase
 	mainboard = command_vals['mainboard']
 	mainboard_dir = os.path.join(treetop, 'src', mainboard)
 	# add the docipl rule
@@ -236,23 +256,20 @@ def docipl(dir, ipl_name):
 	# Now we need a mainboard-specific include path
 	userrules.append("\tcc $(CPUFLAGS) -I%s -c $<" % mainboard_dir)
 	# now set new values for the ldscript.ld.  Should be a script? 
-	data = 0x4000
-	bss = 0x5000
-	stack = 0x90000
+	rambase = 0x4000
 	linuxbiosbase = 0x80000
 
 def linux(dir, linux_name):
 	linuxrule = 'LINUX=' + linux_name
 	makedefine(dir, linuxrule)
 
-def setdata(dir, address):
-	data = address
-def setbss(dir, address):
-	bss = address
-def setstack(dir, address):
-	stack = address
+def setrambase(dir, address):
+	global rambase
+	rambase = string.atol(address,0)
+
 def setlinuxbiosbase(dir, address):
-	linuxbiosbase = address
+	global linuxbiosbase
+	linuxbiosbase = string.atol(address,0)
 
 list_vals = {
 #	'option': []
@@ -275,6 +292,7 @@ command_vals = {
 	}
 
 command_actions = {
+	'arch'        : set_arch,
 	'TOP'         : top,
 	'target'      : target,
 	'mainboard'   : mainboard,
@@ -295,9 +313,7 @@ command_actions = {
 	'addaction'    : addaction,
 	'option'    : option,
 	'nooption'    : nooption,
-	'data'	: setdata,
-	'bss'	: setbss,
-	'stack' : setstack,
+	'rambase': setrambase,
 	'biosbase' : setlinuxbiosbase,
 	'commandline' : commandline
 	}
@@ -307,7 +323,7 @@ makeobjects = [];
 def readfile(filename): 
 	# open file, extract lines, and close
 	if not os.path.isfile(filename):
-		print config_file, "is not a file \n"
+		print filename, "is not a file \n"
 		sys.exit()
 	fileobject = open(filename, "r")
 	filelines = fileobject.readlines()
@@ -336,6 +352,9 @@ def doconfigfile(dir, filename):
 			verb = command.group(1)
 			args = command.group(3)
 			
+			if ((arch == '') and (verb != 'arch')):
+				print "arch must be the first command not ", verb, "\n"
+				sys.exit()
 			if command_actions.has_key(verb):
 				command_actions[verb](dir, args)
 			elif list_vals.has_key(verb):
@@ -346,7 +365,7 @@ def doconfigfile(dir, filename):
 
 # output functions
 # write crt0
-def writep5crt0(path):
+def writecrt0(path):
 	crt0filepath = os.path.join(path, "crt0.S")
 	raminitfiles = command_vals["raminit"]
 	paramfile = os.path.join(treetop, 'src/include', 
@@ -392,16 +411,15 @@ def writep5crt0(path):
 
 # write ldscript
 def writeldscript(path):
+	global rambase, linuxbiosbase
 	ldfilepath = os.path.join(path, "ldscript.ld")
 	print "Trying to create ", ldfilepath
 #	try: 
 	file = open(ldfilepath, 'w+')
 	# print out the ldscript rules
 	# print out the values of defined variables
-	file.write('_PDATABASE	= 0x%x;\n' % data)
-	file.write('_RAMBASE	= 0x%x;\n' % bss)
-	file.write('_KERNSTK	= 0x%x;\n' % stack)
-	file.write('_ROMBASE	= 0x%x;\n' % linuxbiosbase)
+	file.write('_ROMBASE	= 0x%lx;\n' % linuxbiosbase)
+	file.write('_RAMBASE	= 0x%lx;\n' % rambase)
 
 	ldlines = readfile(ldscriptbase)
 	if (debug):
@@ -489,13 +507,13 @@ treetop = command_vals['TOP']
 	
 # set the default locations for config files
 makebase = os.path.join(treetop, "util/config/make.base")
-crt0base = os.path.join(treetop, "util/config/p5crt0.base")
-ldscriptbase = os.path.join(treetop, "util/config/ldscript.base")
+crt0base = os.path.join(treetop, "arch/i386/config/crt0.base")
+ldscriptbase = os.path.join(treetop, "arch/alpha/config/ldscript.base")
 
-# now read in the base files. 
-print "Now Process the base files"
-print "Makebase is :", makebase, ":"
-doconfigfile(treetop, makebase)
+## now read in the base files. 
+#print "Now Process the base files"
+#print "Makebase is :", makebase, ":"
+#doconfigfile(treetop, makebase)
 
 # now read in the customizing script
 doconfigfile(treetop, sys.argv[1])
@@ -507,4 +525,4 @@ doconfigfile(treetop, sys.argv[1])
 
 writemakefile(outputdir)
 writeldscript(outputdir)
-writep5crt0(outputdir)
+writecrt0(outputdir)

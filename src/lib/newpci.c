@@ -16,7 +16,7 @@ static char rcsid[] = "$Id$";
 
 #include <pci.h>
 #undef __KERNEL__
-#include <cpu/p5/io.h>
+#include <arch/io.h>
 #include <printk.h>
 
 #define ONEMEG (1 << 20)

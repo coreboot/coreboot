@@ -1,5 +1,5 @@
 biosbase 0
-rambase 0x10000
+rambase 0x8000
 makedefine LINK = ld -T ldscript.ld -o $@ crt0.o linuxbios.a
 makedefine CPPFLAGS= -I$(TOP)/src/include -I$(TOP)/src/arch/$(ARCH)/include $(CPUFLAGS)
 makedefine CFLAGS= $(CPU_OPT) $(CPPFLAGS) -O2 -nostdinc -nostdlib -fno-builtin -Wall

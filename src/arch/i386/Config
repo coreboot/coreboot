@@ -1,2 +1,2 @@
-makedefine ARCH=i386
 dir boot
+dir lib

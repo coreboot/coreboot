@@ -1,6 +1,7 @@
 #include <pci.h>
 #include <pc80/keyboard.h>
 #include <printk.h>
+#include <subr.h>
 
 void
 southbridge_fixup()
@@ -27,7 +28,7 @@ void nvram_on()
         if (pcidev) pci_write_config_word(pcidev, 0x4e, 0x03c3);
 
 	printk(KERN_INFO "done.\n");
-	intel_post(0x91);
+	post_code(0x91);
 }
 
 // Have to talk to Eric Beiderman about this ...
@@ -37,7 +38,7 @@ void nvram_on()
 #ifdef NO_KEYBOARD
 void keyboard_on()
 {
-	intel_post(0x94);
+	post_code(0x94);
 }
 #else
 void keyboard_on()
@@ -80,6 +81,6 @@ void keyboard_on()
 
         /* now keyboard should work, ha ha. */
         pc_keyboard_init();
-	intel_post(0x94);
+	post_code(0x94);
 }
 #endif

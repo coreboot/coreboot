@@ -1,4 +1,3 @@
 option i586
 object cpuid.o
 #object tsc.o
-dir /arch/i386

@@ -32,6 +32,7 @@ static char rcsid[] = "$Id$";
 #include <cpu/p6/msr.h>
 #include <cpu/p6/mtrr.h>
 #include <printk.h>
+#include <subr.h>
 
 #define arraysize(x)   (sizeof(x)/sizeof((x)[0]))
 
@@ -205,7 +206,7 @@ void intel_set_mtrr(unsigned long rambase, unsigned long ramsizeK)
 	DBG("\n");
 
 	while (ramsizeK != 0 && reg <= 6) {
-		intel_post(0x60 + reg);
+		post_code(0x60 + reg);
 
 		range_wb = 1 << (fms(ramsizeK - 1) + 1);
 		range_uc = range_wb - ramsizeK;

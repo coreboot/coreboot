@@ -166,7 +166,7 @@ void hardwaremain(int boot_complete)
 		hard_reset();
 	}
 #endif
-	init_timer();
+	init_timer(); /* needs to be moved into static configuration */
 	CONFIGURE(CONF_PASS_PRE_PCI);
 
 	/* pick how to scan the bus. This is first so we can get at memory size. */
@@ -189,6 +189,8 @@ void hardwaremain(int boot_complete)
 
 	dev_initialize();
 	post_code(0x89);
+
+	CONFIGURE(CONF_PASS_POST_PCI);
 
 	mem = get_ramsize();
 	post_code(0x70);
@@ -220,7 +222,7 @@ void hardwaremain(int boot_complete)
 	 */
 	lb_mem = write_tables(mem, processor_map);
 
-	CONFIGURE(CONF_PASS_PRE_PCI);
+	CONFIGURE(CONF_PASS_PRE_BOOT);
 
 	elfboot(lb_mem);
 }

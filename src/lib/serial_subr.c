@@ -1,3 +1,6 @@
+#ifndef lint
+static char rcsid[] = "$Id$";
+#endif
 
 #include <cpu/p5/io.h>
 #include "serial_subr.h"

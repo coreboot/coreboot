@@ -1,3 +1,7 @@
+#ifndef lint
+static char rcsid[] = "$Id$";
+#endif
+
 // just define these here. We may never need them anywhere else
 #define PNP_COM1_DEVICE 0x1
 #define PNP_COM2_DEVICE 0x2

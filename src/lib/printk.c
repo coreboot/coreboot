@@ -5,6 +5,9 @@
  *
  */
 
+#ifndef lint
+static char rcsid[] = "$Id$";
+#endif
 
 //typedef void * va_list;
 

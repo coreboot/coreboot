@@ -4,7 +4,7 @@ PACKAGE:=romcc
 
 
 # Move the configuration defines to makefile.conf
-CC=gcc-2.95
+CC=gcc
 CPPFLAGS=-DVERSION='"$(VERSION)"' -DRELEASE_DATE='"$(RELEASE_DATE)"'
 CFLAGS= -g -Wall $(CPPFLAGS)
 CPROF_FLAGS=-pg -fprofile-arcs

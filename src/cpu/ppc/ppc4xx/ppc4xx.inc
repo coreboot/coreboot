@@ -89,7 +89,7 @@
 	 */
 
 	lis	r4,0x8000
-	addi	r4,r4,0x0001
+	ori	r4,r4,0x0001
 	mticcr	r4			/* instruction cache enable */
 	isync
 
@@ -102,7 +102,7 @@
 	 */
 
         lis     r4, DCACHE_RAM_BASE@ha
-	addi    r4, r4, DCACHE_RAM_BASE@l
+	ori     r4, r4, DCACHE_RAM_BASE@l
 	srwi	r4, r4, 27
 	subfic	r4, r4, 31
 	li	r0, 1

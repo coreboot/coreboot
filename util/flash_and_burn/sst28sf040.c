@@ -35,35 +35,35 @@
 #define RESET			0xFF
 #define READ_ID			0x90
 
-static __inline__ void protect_28sf040 (char * bios)
+static __inline__ void protect_28sf040 (volatile char * bios)
 {
 	/* ask compiler not to optimize this */
 	volatile unsigned char tmp;
 
-	tmp = *(unsigned char *) (bios + 0x1823);
-	tmp = *(unsigned char *) (bios + 0x1820);
-	tmp = *(unsigned char *) (bios + 0x1822);
-	tmp = *(unsigned char *) (bios + 0x0418);
-	tmp = *(unsigned char *) (bios + 0x041B);
-	tmp = *(unsigned char *) (bios + 0x0419);
-	tmp = *(unsigned char *) (bios + 0x040A);
+	tmp = *(volatile unsigned char *) (bios + 0x1823);
+	tmp = *(volatile unsigned char *) (bios + 0x1820);
+	tmp = *(volatile unsigned char *) (bios + 0x1822);
+	tmp = *(volatile unsigned char *) (bios + 0x0418);
+	tmp = *(volatile unsigned char *) (bios + 0x041B);
+	tmp = *(volatile unsigned char *) (bios + 0x0419);
+	tmp = *(volatile unsigned char *) (bios + 0x040A);
 }
 
-static __inline__ void unprotect_28sf040 (char * bios)
+static __inline__ void unprotect_28sf040 (volatile char * bios)
 {
 	/* ask compiler not to optimize this */
 	volatile unsigned char tmp;
 
-	tmp = *(unsigned char *) (bios + 0x1823);
-	tmp = *(unsigned char *) (bios + 0x1820);
-	tmp = *(unsigned char *) (bios + 0x1822);
-	tmp = *(unsigned char *) (bios + 0x0418);
-	tmp = *(unsigned char *) (bios + 0x041B);
-	tmp = *(unsigned char *) (bios + 0x0419);
-	tmp = *(unsigned char *) (bios + 0x041A);
+	tmp = *(volatile unsigned char *) (bios + 0x1823);
+	tmp = *(volatile unsigned char *) (bios + 0x1820);
+	tmp = *(volatile unsigned char *) (bios + 0x1822);
+	tmp = *(volatile unsigned char *) (bios + 0x0418);
+	tmp = *(volatile unsigned char *) (bios + 0x041B);
+	tmp = *(volatile unsigned char *) (bios + 0x0419);
+	tmp = *(volatile unsigned char *) (bios + 0x041A);
 }
 
-static __inline__ erase_sector_28sf040 (char * bios, unsigned long address)
+static __inline__ erase_sector_28sf040 (volatile char * bios, unsigned long address)
 {
 	*bios = AUTO_PG_ERASE1;
 	*(bios + address) = AUTO_PG_ERASE2;
@@ -72,8 +72,8 @@ static __inline__ erase_sector_28sf040 (char * bios, unsigned long address)
 	toggle_ready_jedec(bios);
 }
 
-static __inline__ write_sector_28sf040(char * bios, unsigned char * src,
-				       unsigned char * dst, unsigned int page_size)
+static __inline__ write_sector_28sf040(volatile char * bios, unsigned char * src,
+				       volatile unsigned char * dst, unsigned int page_size)
 {
 	int i;
 
@@ -95,24 +95,25 @@ static __inline__ write_sector_28sf040(char * bios, unsigned char * src,
 
 int probe_28sf040 (struct flashchip * flash)
 {
-	char * bios = flash->virt_addr;
+	volatile char * bios = flash->virt_addr;
 	unsigned char  id1, id2, tmp;
 
 	/* save the value at the beginning of the Flash */
 	tmp = *bios;
 
 	*bios = RESET;
-	usleep(10);
+	myusec_delay(10);
 
 	*bios = READ_ID;
-	usleep(10);
-	id1 = *(unsigned char *) bios;
-	usleep(10);
-	id2 = *(unsigned char *) (bios + 0x01);
+	myusec_delay(10);
+	id1 = *(volatile unsigned char *) bios;
+	myusec_delay(10);
+	id2 = *(volatile unsigned char *) (bios + 0x01);
 
 	*bios = RESET;
-	usleep(10);
+	myusec_delay(10);
 
+	printf(__FUNCTION__ "id1 %d, id2 %d\n", id1, id2);
 	if (id1 == flash->manufacture_id && id2 == flash->model_id)
 		return 1;
 
@@ -123,14 +124,14 @@ int probe_28sf040 (struct flashchip * flash)
 
 int erase_28sf040 (struct flashchip * flash)
 {
-	char * bios = flash->virt_addr;
+	volatile char * bios = flash->virt_addr;
 
 	unprotect_28sf040 (bios);
 	*bios = CHIP_ERASE;
 	*bios = CHIP_ERASE;
 	protect_28sf040 (bios);
 
-	usleep(10);
+	myusec_delay(10);
 	toggle_ready_jedec(bios);
 }
 
@@ -138,7 +139,7 @@ int write_28sf040 (struct flashchip * flash, char * buf)
 {
 	int i;
 	int total_size = flash->total_size * 1024, page_size = flash->page_size;
-	char * bios = flash->virt_addr;
+	volatile char * bios = flash->virt_addr;
 
 	unprotect_28sf040 (bios);
 

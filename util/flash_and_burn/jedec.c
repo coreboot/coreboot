@@ -29,24 +29,25 @@
 
 int probe_jedec (struct flashchip * flash)
 {
-	char * bios = flash->virt_addr;
+	volatile char * bios = flash->virt_addr;
 	unsigned char  id1, id2;
 
-	*(char *) (bios + 0x5555) = 0xAA;
-	*(char *) (bios + 0x2AAA) = 0x55;
-	*(char *) (bios + 0x5555) = 0x90;
+	*(volatile char *) (bios + 0x5555) = 0xAA;
+	*(volatile char *) (bios + 0x2AAA) = 0x55;
+	*(volatile char *) (bios + 0x5555) = 0x90;
 
-	usleep(10);
+	myusec_delay(10);
 
-	id1 = *(unsigned char *) bios;
-	id2 = *(unsigned char *) (bios + 0x01);
+	id1 = *(volatile unsigned char *) bios;
+	id2 = *(volatile unsigned char *) (bios + 0x01);
 
-	*(char *) (bios + 0x5555) = 0xAA;
-	*(char *) (bios + 0x2AAA) = 0x55;
-	*(char *) (bios + 0x5555) = 0xF0;
+	*(volatile char *) (bios + 0x5555) = 0xAA;
+	*(volatile char *) (bios + 0x2AAA) = 0x55;
+	*(volatile char *) (bios + 0x5555) = 0xF0;
 
-	usleep(10);
+	myusec_delay(10);
 
+	printf(__FUNCTION__ "id1 %d, id2 %d\n", id1, id2);
 	if (id1 == flash->manufacture_id && id2 == flash->model_id)
 		return 1;
 
@@ -55,17 +56,17 @@ int probe_jedec (struct flashchip * flash)
 
 int erase_jedec (struct flashchip * flash)
 {
-	char * bios = flash->virt_addr;
+	volatile char * bios = flash->virt_addr;
 
-	*(char *) (bios + 0x5555) = 0xAA;
-	*(char *) (bios + 0x2AAA) = 0x55;
-	*(char *) (bios + 0x5555) = 0x80;
+	*(volatile char *) (bios + 0x5555) = 0xAA;
+	*(volatile char *) (bios + 0x2AAA) = 0x55;
+	*(volatile char *) (bios + 0x5555) = 0x80;
 
-	*(char *) (bios + 0x5555) = 0xAA;
-	*(char *) (bios + 0x2AAA) = 0x55;
-	*(char *) (bios + 0x5555) = 0x10;
+	*(volatile char *) (bios + 0x5555) = 0xAA;
+	*(volatile char *) (bios + 0x2AAA) = 0x55;
+	*(volatile char *) (bios + 0x5555) = 0x10;
 
-	usleep(10);
+	myusec_delay(10);
 	toggle_ready_jedec(bios);
 }
 
@@ -73,7 +74,7 @@ int write_jedec (struct flashchip * flash, char * buf)
 {
 	int i;
 	int total_size = flash->total_size *1024, page_size = flash->page_size;
-	char * bios = flash->virt_addr;
+	volatile char * bios = flash->virt_addr;
 
 	erase_jedec (flash);
 	printf ("Programming Page: ");

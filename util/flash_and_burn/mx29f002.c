@@ -30,20 +30,21 @@
 
 int probe_29f002 (struct flashchip * flash)
 {
-	char * bios = flash->virt_addr;
+	volatile char * bios = flash->virt_addr;
 	unsigned char id1, id2, id3;
 
 	*(bios + 0x5555) = 0xAA;
 	*(bios + 0x2AAA) = 0x55;
 	*(bios + 0x5555) = 0x90;
     
-	id1 = *(unsigned char *) bios;
-	id2 = *(unsigned char *) (bios + 0x01);
+	id1 = *(volatile unsigned char *) bios;
+	id2 = *(volatile unsigned char *) (bios + 0x01);
  
 	*bios = 0xF0;
 
-	usleep(10);
+	myusec_delay(10);
 
+	printf(__FUNCTION__ "id1 %d, id2 %d\n", id1, id2);
 	if (id1 == flash->manufacture_id && id2 == flash->model_id)
 		return 1;
 
@@ -52,7 +53,7 @@ int probe_29f002 (struct flashchip * flash)
 
 int erase_29f002 (struct flashchip * flash)
 {
-	char * bios = flash->virt_addr;
+	volatile char * bios = flash->virt_addr;
 
  again:
 	*(bios + 0x555) = 0xF0;
@@ -63,7 +64,7 @@ int erase_29f002 (struct flashchip * flash)
 	*(bios + 0x2AA) = 0x55;
 	*(bios + 0x555) = 0x10;
 
-	usleep(100);
+	myusec_delay(100);
 	toggle_ready_jedec(bios);
 
 	//   while ((*bios & 0x40) != 0x40)
@@ -85,11 +86,11 @@ int write_29f002 (struct flashchip * flash, char * buf)
 {
     int i;
     int total_size = flash->total_size * 1024, page_size = flash->page_size;
-    char * bios = flash->virt_addr;
-    char * dst = bios, * src = buf;
+    volatile char * bios = flash->virt_addr;
+    volatile char * dst = bios, * src = buf;
 
     *bios = 0xF0;
-    usleep(10);
+    myusec_delay(10);
     erase_29f002(flash);
     //*bios = 0xF0;
 #if 1

@@ -109,7 +109,7 @@ int enable_flash_sis630 (void)
 struct flashchip * probe_flash(struct flashchip * flash)
 {
     int fd_mem;
-    char * bios;
+    volatile char * bios;
     unsigned long size;
 
     if ((fd_mem = open("/dev/mem", O_RDWR)) < 0) {
@@ -118,6 +118,7 @@ struct flashchip * probe_flash(struct flashchip * flash)
     }
 
     while (flash->name != NULL) {
+	printf("Trying %s, %d KB\n", flash->name, flash->total_size);
 	size = flash->total_size * 1024;
 	bios = mmap (0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
 		     fd_mem, (off_t) (0 - size));
@@ -132,7 +133,7 @@ struct flashchip * probe_flash(struct flashchip * flash)
 		    flash->name, (0 - size), bios);
 	    return flash;
 	}
-	munmap (bios, size);
+	munmap ((void *) bios, size);
 	flash++;
     }
     return NULL;
@@ -142,7 +143,7 @@ int verify_flash (struct flashchip * flash, char * buf)
 {
     int i = 0;
     int total_size = flash->total_size *1024;
-    char * bios = flash->virt_addr;
+    volatile char * bios = flash->virt_addr;
 
     printf("Verifying address: ");
     while (i++ < total_size) {
@@ -156,6 +157,52 @@ int verify_flash (struct flashchip * flash, char * buf)
     return 1;
 }
 
+// count to a billion. Time it. If it's < 1 sec, count to 10B, etc.
+
+unsigned long micro = 0;
+
+void 
+myusec_calibrate_delay()
+{
+	unsigned long count = 2 *  1024 * 1024;
+	volatile unsigned long i;
+	unsigned long timeusec;
+	struct timeval start, end;
+	int ok = 0;
+
+	fprintf(stderr, "Setting up microsecond timing loop\n");
+	while (! ok) {
+		fprintf(stderr, "Try %d\n", count);
+		gettimeofday(&start, 0);
+		for( i = count; i; i--)
+			;
+		gettimeofday(&end, 0);
+		timeusec = 1000000 * (end.tv_sec - start.tv_sec ) + 
+				(end.tv_usec - start.tv_usec);
+		fprintf(stderr, "timeusec is %d\n", timeusec);
+		count *= 10;
+		if (timeusec < 1000000)
+			continue;
+		ok = 1;
+	}
+
+	// compute one microsecond. That will be count / time
+	micro = count / timeusec;
+
+	fprintf(stderr, "one us is %d count\n", micro);
+
+
+}
+
+void
+myusec_delay(time)
+{
+  volatile unsigned long i;
+  for(i = 0; i < time * micro; i++)
+	;
+
+}
+
 main (int argc, char * argv[])
 {
     char * buf;
@@ -163,20 +210,20 @@ main (int argc, char * argv[])
     FILE * image;
     struct flashchip * flash;
 
+    myusec_calibrate_delay();
+
     if (argc > 2){
 	printf("usage: %s [romimage]\n", argv[0]);
 	printf(" If no romimage is specified, then all that happens\n");
-	printf(" is that flash writes are enabled (useful for DoC)\n");
-	exit(1);
+	printf(" is that flash info is dumped\n");
     }
-
-    enable_flash_sis630 ();
 
     if ((flash = probe_flash (flashchips)) == NULL) {
 	printf("EEPROM not found\n");
 	exit(1);
     }
 
+    printf("Part is %s\n", flash->name);
     if (argc < 2){
 	printf("OK, only ENABLING flash write, but NOT FLASHING\n");
         exit(0);

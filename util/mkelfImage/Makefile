@@ -5,6 +5,7 @@
 # Then do a 'make install'
 # the result will be a directory tree  that you can run mkelfImage in
 PREFIX=/usr/local/
+PREFIX= /users/rminnich/src/bios/mkelf2
 PERLPATH=/usr/bin/perl
 VERSION="1.12"
 DATE="26 January 2002"

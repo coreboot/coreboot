@@ -6,7 +6,7 @@ struct flashchip {
 	int manufacture_id;
 	int model_id;
 
-	char * virt_addr;
+	volatile char * virt_addr;
 	int total_size;
 	int page_size;
 

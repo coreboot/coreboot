@@ -2,7 +2,7 @@ extern int probe_jedec (struct flashchip * flash);
 extern int erase_jedec (struct flashchip * flash);
 extern int write_jedec (struct flashchip * flash, char * buf);
 
-extern __inline__ void toggle_ready_jedec (char * dst)
+extern __inline__ void toggle_ready_jedec (volatile char * dst)
 {
 	unsigned int i = 0;
 	char tmp1, tmp2;
@@ -18,7 +18,7 @@ extern __inline__ void toggle_ready_jedec (char * dst)
 	}
 }
 
-extern __inline__ void data_polling_jedec (char * dst, char data)
+extern __inline__ void data_polling_jedec (volatile char * dst, char data)
 {
 	unsigned int i = 0;
 	char tmp;
@@ -33,23 +33,23 @@ extern __inline__ void data_polling_jedec (char * dst, char data)
 	}
 }
 
-extern __inline__ void protect_jedec (char * bios)
+extern __inline__ void protect_jedec (volatile char * bios)
 {
-	*(char *) (bios + 0x5555) = 0xAA;
-	*(char *) (bios + 0x2AAA) = 0x55;
-	*(char *) (bios + 0x5555) = 0xA0;
+	*(volatile char *) (bios + 0x5555) = 0xAA;
+	*(volatile char *) (bios + 0x2AAA) = 0x55;
+	*(volatile char *) (bios + 0x5555) = 0xA0;
 
 	usleep(200);
 }
 
-extern __inline__ void write_page_jedec (char * bios, char * src, char * dst,
+extern __inline__ void write_page_jedec (volatile char * bios, char * src, volatile char * dst,
 					 int page_size)
 {
 	int i;
 
-	*(char *) (bios + 0x5555) = 0xAA;
-	*(char *) (bios + 0x2AAA) = 0x55;
-	*(char *) (bios + 0x5555) = 0xA0;
+	*(volatile char *) (bios + 0x5555) = 0xAA;
+	*(volatile char *) (bios + 0x2AAA) = 0x55;
+	*(volatile char *) (bios + 0x5555) = 0xA0;
 
 	for (i = 0; i < page_size; i++) {
 		/* transfer data from source to destination */

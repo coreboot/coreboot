@@ -18,7 +18,7 @@ extern int verbose;
  */
 int int42_handler()
 {
-
+#if 0
 	if (verbose && X86_AH != 0x0e) {
 		printf("int%x\n", current->num);
 		x86emu_dump_xregs();
@@ -472,7 +472,7 @@ int int42_handler()
 		/* Ignored                                            */
 		break;
 	}
-
+#endif
 	return 1;
 }
 #endif

@@ -1,10 +1,10 @@
 /****************************************************************************
 *
-*						Realmode X86 Emulator Library
+*                       Realmode X86 Emulator Library
 *
-*            	Copyright (C) 1996-1999 SciTech Software, Inc.
-* 				     Copyright (C) David Mosberger-Tang
-* 					   Copyright (C) 1999 Egbert Eich
+*               Copyright (C) 1991-2004 SciTech Software, Inc.
+*                    Copyright (C) David Mosberger-Tang
+*                      Copyright (C) 1999 Egbert Eich
 *
 *  ========================================================================
 *
@@ -28,8 +28,8 @@
 *
 *  ========================================================================
 *
-* Language:		ANSI C
-* Environment:	Any
+* Language:     ANSI C
+* Environment:  Any
 * Developer:    Kendall Bennett
 *
 * Description:  Header file for instruction decoding logic.
@@ -43,19 +43,19 @@
 
 /* Instruction Decoding Stuff */
 
-#define FETCH_DECODE_MODRM(mod,rh,rl) 	fetch_decode_modrm(&mod,&rh,&rl)
-#define DECODE_RM_BYTE_REGISTER(r)    	decode_rm_byte_register(r)
-#define DECODE_RM_WORD_REGISTER(r)    	decode_rm_word_register(r)
-#define DECODE_RM_LONG_REGISTER(r)    	decode_rm_long_register(r)
-#define DECODE_CLEAR_SEGOVR()         	M.x86.mode &= ~SYSMODE_CLRMASK
+#define FETCH_DECODE_MODRM(mod,rh,rl)   fetch_decode_modrm(&mod,&rh,&rl)
+#define DECODE_RM_BYTE_REGISTER(r)      decode_rm_byte_register(r)
+#define DECODE_RM_WORD_REGISTER(r)      decode_rm_word_register(r)
+#define DECODE_RM_LONG_REGISTER(r)      decode_rm_long_register(r)
+#define DECODE_CLEAR_SEGOVR()           M.x86.mode &= ~SYSMODE_CLRMASK
 
 /*-------------------------- Function Prototypes --------------------------*/
 
 #ifdef  __cplusplus
-extern "C" {            			/* Use "C" linkage when in C++ mode */
+extern "C" {                        /* Use "C" linkage when in C++ mode */
 #endif
 
-void 	x86emu_intr_raise (u8 type);
+void    x86emu_intr_raise (u8 type);
 void    fetch_decode_modrm (int *mod,int *regh,int *regl);
 u8      fetch_byte_imm (void);
 u16     fetch_word_imm (void);
@@ -72,16 +72,17 @@ void    store_data_word (uint offset, u16 val);
 void    store_data_word_abs (uint segment, uint offset, u16 val);
 void    store_data_long (uint offset, u32 val);
 void    store_data_long_abs (uint segment, uint offset, u32 val);
-u8* 	decode_rm_byte_register(int reg);
-u16* 	decode_rm_word_register(int reg);
-u32* 	decode_rm_long_register(int reg);
-u16* 	decode_rm_seg_register(int reg);
+u8*     decode_rm_byte_register(int reg);
+u16*    decode_rm_word_register(int reg);
+u32*    decode_rm_long_register(int reg);
+u16*    decode_rm_seg_register(int reg);
 unsigned decode_rm00_address(int rm);
 unsigned decode_rm01_address(int rm);
 unsigned decode_rm10_address(int rm);
+unsigned decode_rmXX_address(int mod, int rm);
 
 #ifdef  __cplusplus
-}                       			/* End of "C" linkage for C++   	*/
+}                                   /* End of "C" linkage for C++       */
 #endif
 
 #endif /* __X86EMU_DECODE_H */

@@ -44,7 +44,7 @@ PCITAG findPci(unsigned short bx)
 	tag->slot = slot;
 	tag->func = func;
 
-	if (pci_get_dev(pacc, bus, slot, func))
+	if (pci_get_dev(pacc, 0, bus, slot, func))
 		return tag;
 
 	return NULL;
@@ -58,7 +58,7 @@ u32 pciSlotBX(PCITAG tag)
 u8 pciReadByte(PCITAG tag, u32 idx)
 {
 	struct pci_dev *d;
-	if ((d = pci_get_dev(pacc, tag->bus, tag->slot, tag->func)))
+	if ((d = pci_get_dev(pacc, 0, tag->bus, tag->slot, tag->func)))
 		return pci_read_byte(d, idx);
 #ifdef DEBUG_PCI
 	printf("PCI: device not found while read byte (%x:%x.%x)\n",
@@ -70,7 +70,7 @@ u8 pciReadByte(PCITAG tag, u32 idx)
 u16 pciReadWord(PCITAG tag, u32 idx)
 {
 	struct pci_dev *d;
-	if ((d = pci_get_dev(pacc, tag->bus, tag->slot, tag->func)))
+	if ((d = pci_get_dev(pacc, 0, tag->bus, tag->slot, tag->func)))
 		return pci_read_word(d, idx);
 #ifdef DEBUG_PCI
 	printf("PCI: device not found while read word (%x:%x.%x)\n",
@@ -82,7 +82,7 @@ u16 pciReadWord(PCITAG tag, u32 idx)
 u32 pciReadLong(PCITAG tag, u32 idx)
 {
 	struct pci_dev *d;
-	if ((d = pci_get_dev(pacc, tag->bus, tag->slot, tag->func)))
+	if ((d = pci_get_dev(pacc, 0, tag->bus, tag->slot, tag->func)))
 		return pci_read_long(d, idx);
 #ifdef DEBUG_PCI
 	printf("PCI: device not found while read long (%x:%x.%x)\n",
@@ -95,7 +95,7 @@ u32 pciReadLong(PCITAG tag, u32 idx)
 void pciWriteLong(PCITAG tag, u32 idx, u32 data)
 {
 	struct pci_dev *d;
-	if ((d = pci_get_dev(pacc, tag->bus, tag->slot, tag->func)))
+	if ((d = pci_get_dev(pacc, 0, tag->bus, tag->slot, tag->func)))
 		pci_write_long(d, idx, data);
 #ifdef DEBUG_PCI
 	else
@@ -107,7 +107,7 @@ void pciWriteLong(PCITAG tag, u32 idx, u32 data)
 void pciWriteWord(PCITAG tag, u32 idx, u16 data)
 {
 	struct pci_dev *d;
-	if ((d = pci_get_dev(pacc, tag->bus, tag->slot, tag->func)))
+	if ((d = pci_get_dev(pacc, 0, tag->bus, tag->slot, tag->func)))
 		pci_write_word(d, idx, data);
 #ifdef DEBUG_PCI
 	else
@@ -120,7 +120,7 @@ void pciWriteWord(PCITAG tag, u32 idx, u16 data)
 void pciWriteByte(PCITAG tag, u32 idx, u8 data)
 {
 	struct pci_dev *d;
-	if ((d = pci_get_dev(pacc, tag->bus, tag->slot, tag->func)))
+	if ((d = pci_get_dev(pacc, 0, tag->bus, tag->slot, tag->func)))
 		pci_write_long(d, idx, data);
 #ifdef DEBUG_PCI
 	else

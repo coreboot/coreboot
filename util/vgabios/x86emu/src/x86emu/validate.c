@@ -1,10 +1,10 @@
 /****************************************************************************
 *
-*						Realmode X86 Emulator Library
+*                       Realmode X86 Emulator Library
 *
-*            	Copyright (C) 1996-1999 SciTech Software, Inc.
-* 				     Copyright (C) David Mosberger-Tang
-* 					   Copyright (C) 1999 Egbert Eich
+*               Copyright (C) 1991-2004 SciTech Software, Inc.
+*                    Copyright (C) David Mosberger-Tang
+*                      Copyright (C) 1999 Egbert Eich
 *
 *  ========================================================================
 *
@@ -47,11 +47,19 @@
 #include <stdarg.h>
 #include "x86emu.h"
 #include "x86emu/prim_asm.h"
+#include "x86emu/prim_ops.h"
 
 /*-------------------------- Implementation -------------------------------*/
 
 #define true 1
 #define false 0
+
+u32 cur_flags_mask = 0;
+
+int flags_are_different(u32 flags1, u32 flags2)
+{
+  return (flags1&cur_flags_mask) != (flags2&cur_flags_mask);
+}
 
 #define ALL_FLAGS   (F_CF | F_PF | F_AF | F_ZF | F_SF | F_OF)
 
@@ -59,8 +67,8 @@
 {                                                                   \
     parm_type   d,s;                                                \
     res_type    r,r_asm;                                            \
-	ulong     	flags,inflags;                                      \
-	int         f,failed = false;                                   \
+    u32         flags,inflags;                                      \
+    int         f,failed = false;                                   \
     char        buf1[80],buf2[80];                                  \
     for (d = 0; d < dmax; d += dincr) {                             \
         for (s = 0; s < smax; s += sincr) {                         \
@@ -70,7 +78,7 @@
 #define VAL_TEST_BINARY(name)                                           \
                 r_asm = name##_asm(&flags,d,s);                         \
                 r = name(d,s);                                  \
-                if (r != r_asm || M.x86.R_EFLG != flags)                \
+                if (r != r_asm || flags_are_different(M.x86.R_EFLG, flags))                \
                     failed = true;                                      \
                 if (failed || trace) {
 
@@ -78,7 +86,7 @@
                 name##_asm(&flags,d,s);                                 \
                 name(d,s);                                      \
                 r = r_asm = 0;                                          \
-                if (M.x86.R_EFLG != flags)                              \
+                if (flags_are_different(M.x86.R_EFLG, flags))                              \
                     failed = true;                                      \
                 if (failed || trace) {
 
@@ -190,7 +198,7 @@
     parm_type   d,s;                                                \
     res_type    r,r_asm;                                            \
     u8          shift;                                              \
-	u32         flags,inflags;                                      \
+    u32         flags,inflags;                                      \
     int         f,failed = false;                                   \
     char        buf1[80],buf2[80];                                  \
     for (d = 0; d < dmax; d += dincr) {                             \
@@ -202,7 +210,7 @@
 #define VAL_TEST_TERNARY(name)                                          \
                     r_asm = name##_asm(&flags,d,s,shift);               \
                     r = name(d,s,shift);                           \
-                    if (r != r_asm || M.x86.R_EFLG != flags)            \
+                    if (r != r_asm || flags_are_different(M.x86.R_EFLG, flags))            \
                         failed = true;                                  \
                     if (failed || trace) {
 
@@ -258,7 +266,7 @@
 #define VAL_START_UNARY(parm_type,max,incr)                 \
 {                                                           \
     parm_type   d,r,r_asm;                                  \
-	u32         flags,inflags;                              \
+    u32         flags,inflags;                              \
     int         f,failed = false;                           \
     char        buf1[80],buf2[80];                          \
     for (d = 0; d < max; d += incr) {                       \
@@ -268,7 +276,7 @@
 #define VAL_TEST_UNARY(name)                                \
             r_asm = name##_asm(&flags,d);                   \
             r = name(d);                                \
-            if (r != r_asm || M.x86.R_EFLG != flags) {      \
+            if (r != r_asm || flags_are_different(M.x86.R_EFLG, flags)) {      \
                 failed = true;
 
 #define VAL_FAIL_BYTE_UNARY(name)                                                               \
@@ -338,7 +346,7 @@
 {                                                                       \
     u8          d,s;                                                    \
     u16         r,r_asm;                                                \
-	u32         flags,inflags;                                          \
+    u32         flags,inflags;                                          \
     int         f,failed = false;                                       \
     char        buf1[80],buf2[80];                                      \
     for (d = 0; d < 0xFF; d += 1) {                                     \
@@ -349,7 +357,7 @@
                 M.x86.R_AL = d;                                         \
                 name(s);                                            \
                 r = M.x86.R_AX;                                         \
-                if (r != r_asm || M.x86.R_EFLG != flags)                \
+                if (r != r_asm || flags_are_different(M.x86.R_EFLG, flags))                \
                     failed = true;                                      \
                 if (failed || trace) {                                  \
                     if (failed)                                         \
@@ -379,7 +387,7 @@
     u16         d,s;                                                    \
     u16         r_lo,r_asm_lo;                                          \
     u16         r_hi,r_asm_hi;                                          \
-	u32         flags,inflags;                                          \
+    u32         flags,inflags;                                          \
     int         f,failed = false;                                       \
     char        buf1[80],buf2[80];                                      \
     for (d = 0; d < 0xFF00; d += 0x100) {                               \
@@ -391,7 +399,7 @@
                 name(s);                                            \
                 r_lo = M.x86.R_AX;                                      \
                 r_hi = M.x86.R_DX;                                      \
-                if (r_lo != r_asm_lo || r_hi != r_asm_hi || M.x86.R_EFLG != flags)\
+                if (r_lo != r_asm_lo || r_hi != r_asm_hi || flags_are_different(M.x86.R_EFLG, flags))\
                     failed = true;                                      \
                 if (failed || trace) {                                  \
                     if (failed)                                         \
@@ -421,7 +429,7 @@
     u32         d,s;                                                    \
     u32         r_lo,r_asm_lo;                                          \
     u32         r_hi,r_asm_hi;                                          \
-	u32         flags,inflags;                                          \
+    u32         flags,inflags;                                          \
     int         f,failed = false;                                       \
     char        buf1[80],buf2[80];                                      \
     for (d = 0; d < 0xFF000000; d += 0x1000000) {                       \
@@ -433,7 +441,7 @@
                 name(s);                                            \
                 r_lo = M.x86.R_EAX;                                     \
                 r_hi = M.x86.R_EDX;                                     \
-                if (r_lo != r_asm_lo || r_hi != r_asm_hi || M.x86.R_EFLG != flags)\
+                if (r_lo != r_asm_lo || r_hi != r_asm_hi || flags_are_different(M.x86.R_EFLG, flags))\
                     failed = true;                                      \
                 if (failed || trace) {                                  \
                     if (failed)                                         \
@@ -462,7 +470,7 @@
 {                                                                       \
     u16         d,s;                                                    \
     u8          r_quot,r_rem,r_asm_quot,r_asm_rem;                      \
-	u32         flags,inflags;                                          \
+    u32         flags,inflags;                                          \
     int         f,failed = false;                                       \
     char        buf1[80],buf2[80];                                      \
     for (d = 0; d < 0xFF00; d += 0x100) {                               \
@@ -477,7 +485,7 @@
                 if (M.x86.intr & INTR_SYNCH)                            \
                     continue;                                           \
                 name##_asm(&flags,&r_asm_quot,&r_asm_rem,d,s);          \
-                if (r_quot != r_asm_quot || r_rem != r_asm_rem || M.x86.R_EFLG != flags) \
+                if (r_quot != r_asm_quot || r_rem != r_asm_rem || flags_are_different(M.x86.R_EFLG, flags)) \
                     failed = true;                                      \
                 if (failed || trace) {                                  \
                     if (failed)                                         \
@@ -506,7 +514,7 @@
 {                                                                       \
     u32         d,s;                                                    \
     u16         r_quot,r_rem,r_asm_quot,r_asm_rem;                      \
-	u32         flags,inflags;                                          \
+    u32         flags,inflags;                                          \
     int         f,failed = false;                                       \
     char        buf1[80],buf2[80];                                      \
     for (d = 0; d < 0xFF000000; d += 0x1000000) {                       \
@@ -522,7 +530,7 @@
                 if (M.x86.intr & INTR_SYNCH)                            \
                     continue;                                           \
                 name##_asm(&flags,&r_asm_quot,&r_asm_rem,d & 0xFFFF,d >> 16,s);\
-                if (r_quot != r_asm_quot || r_rem != r_asm_rem || M.x86.R_EFLG != flags) \
+                if (r_quot != r_asm_quot || r_rem != r_asm_rem || flags_are_different(M.x86.R_EFLG, flags)) \
                     failed = true;                                      \
                 if (failed || trace) {                                  \
                     if (failed)                                         \
@@ -551,7 +559,7 @@
 {                                                                       \
     u32         d,s;                                                    \
     u32         r_quot,r_rem,r_asm_quot,r_asm_rem;                      \
-	u32         flags,inflags;                                          \
+    u32         flags,inflags;                                          \
     int         f,failed = false;                                       \
     char        buf1[80],buf2[80];                                      \
     for (d = 0; d < 0xFF000000; d += 0x1000000) {                       \
@@ -567,7 +575,7 @@
                 if (M.x86.intr & INTR_SYNCH)                            \
                     continue;                                           \
                 name##_asm(&flags,&r_asm_quot,&r_asm_rem,d,0,s);        \
-                if (r_quot != r_asm_quot || r_rem != r_asm_rem || M.x86.R_EFLG != flags) \
+                if (r_quot != r_asm_quot || r_rem != r_asm_rem || flags_are_different(M.x86.R_EFLG, flags)) \
                     failed = true;                                      \
                 if (failed || trace) {                                  \
                     if (failed)                                         \
@@ -593,173 +601,189 @@
 
 void printk(const char *fmt, ...)
 {
-	va_list argptr;
-	va_start(argptr, fmt);
-	vfprintf(stdout, fmt, argptr);
-	fflush(stdout);
-	va_end(argptr);
+    va_list argptr;
+    va_start(argptr, fmt);
+    vfprintf(stdout, fmt, argptr);
+    fflush(stdout);
+    va_end(argptr);
 }
 
-char *print_flags(char *buf, ulong flags)
+char * print_flags(char *buf,ulong flags)
 {
-	char *separator = "";
+    char *separator = "";
 
-	buf[0] = 0;
-	if (flags & F_CF) {
-		strcat(buf, separator);
-		strcat(buf, "CF");
-		separator = ",";
-	}
-	if (flags & F_PF) {
-		strcat(buf, separator);
-		strcat(buf, "PF");
-		separator = ",";
-	}
-	if (flags & F_AF) {
-		strcat(buf, separator);
-		strcat(buf, "AF");
-		separator = ",";
-	}
-	if (flags & F_ZF) {
-		strcat(buf, separator);
-		strcat(buf, "ZF");
-		separator = ",";
-	}
-	if (flags & F_SF) {
-		strcat(buf, separator);
-		strcat(buf, "SF");
-		separator = ",";
-	}
-	if (flags & F_OF) {
-		strcat(buf, separator);
-		strcat(buf, "OF");
-		separator = ",";
-	}
-	if (separator[0] == 0)
-		strcpy(buf, "None");
-	return buf;
+    buf[0] = 0;
+    if (flags & F_CF) {
+        strcat(buf,separator);
+        strcat(buf,"CF");
+        separator = ",";
+        }
+    if (flags & F_PF) {
+        strcat(buf,separator);
+        strcat(buf,"PF");
+        separator = ",";
+        }
+    if (flags & F_AF) {
+        strcat(buf,separator);
+        strcat(buf,"AF");
+        separator = ",";
+        }
+    if (flags & F_ZF) {
+        strcat(buf,separator);
+        strcat(buf,"ZF");
+        separator = ",";
+        }
+    if (flags & F_SF) {
+        strcat(buf,separator);
+        strcat(buf,"SF");
+        separator = ",";
+        }
+    if (flags & F_OF) {
+        strcat(buf,separator);
+        strcat(buf,"OF");
+        separator = ",";
+        }
+    if (separator[0] == 0)
+        strcpy(buf,"None");
+    return buf;
 }
 
-int main(int argc)
+int main(int argc, char *argv[])
 {
-	ulong def_flags;
-	int trace = false;
+    u32  def_flags;
+    int trace = false;
 
-	if (argc > 1)
-		trace = true;
-	memset(&M, 0, sizeof(M));
-	def_flags = get_flags_asm() & ~ALL_FLAGS;
+    if (argc > 1)
+        trace = true;
+    memset(&M, 0, sizeof(M));
+    def_flags = get_flags_asm() & ~ALL_FLAGS;
 
-	VAL_WORD_UNARY(aaa_word);
-	VAL_WORD_UNARY(aas_word);
+    cur_flags_mask = F_AF | F_CF;
+    VAL_WORD_UNARY(aaa_word);
+    VAL_WORD_UNARY(aas_word);
 
-	VAL_WORD_UNARY(aad_word);
-	VAL_WORD_UNARY(aam_word);
+    cur_flags_mask = F_SF | F_ZF | F_PF;
+    VAL_WORD_UNARY(aad_word);
+    VAL_WORD_UNARY(aam_word);
 
-	VAL_BYTE_BYTE_BINARY(adc_byte);
-	VAL_WORD_WORD_BINARY(adc_word);
-	VAL_LONG_LONG_BINARY(adc_long);
+    cur_flags_mask = ALL_FLAGS;
+    VAL_BYTE_BYTE_BINARY(adc_byte);
+    VAL_WORD_WORD_BINARY(adc_word);
+    VAL_LONG_LONG_BINARY(adc_long);
 
-	VAL_BYTE_BYTE_BINARY(add_byte);
-	VAL_WORD_WORD_BINARY(add_word);
-	VAL_LONG_LONG_BINARY(add_long);
+    VAL_BYTE_BYTE_BINARY(add_byte);
+    VAL_WORD_WORD_BINARY(add_word);
+    VAL_LONG_LONG_BINARY(add_long);
 
-	VAL_BYTE_BYTE_BINARY(and_byte);
-	VAL_WORD_WORD_BINARY(and_word);
-	VAL_LONG_LONG_BINARY(and_long);
+    cur_flags_mask = ALL_FLAGS & (~F_AF);
+    VAL_BYTE_BYTE_BINARY(and_byte);
+    VAL_WORD_WORD_BINARY(and_word);
+    VAL_LONG_LONG_BINARY(and_long);
 
-	VAL_BYTE_BYTE_BINARY(cmp_byte);
-	VAL_WORD_WORD_BINARY(cmp_word);
-	VAL_LONG_LONG_BINARY(cmp_long);
+    cur_flags_mask = ALL_FLAGS;
+    VAL_BYTE_BYTE_BINARY(cmp_byte);
+    VAL_WORD_WORD_BINARY(cmp_word);
+    VAL_LONG_LONG_BINARY(cmp_long);
 
-	VAL_BYTE_UNARY(daa_byte);
-	VAL_BYTE_UNARY(das_byte);	// Fails for 0x9A (out of range anyway)
+    cur_flags_mask = ALL_FLAGS & (~F_OF);
+    VAL_BYTE_UNARY(daa_byte);
+    VAL_BYTE_UNARY(das_byte);   // Fails for 0x9A (out of range anyway)
 
-	VAL_BYTE_UNARY(dec_byte);
-	VAL_WORD_UNARY(dec_word);
-	VAL_LONG_UNARY(dec_long);
+    cur_flags_mask = ALL_FLAGS;
+    VAL_BYTE_UNARY(dec_byte);
+    VAL_WORD_UNARY(dec_word);
+    VAL_LONG_UNARY(dec_long);
 
-	VAL_BYTE_UNARY(inc_byte);
-	VAL_WORD_UNARY(inc_word);
-	VAL_LONG_UNARY(inc_long);
+    VAL_BYTE_UNARY(inc_byte);
+    VAL_WORD_UNARY(inc_word);
+    VAL_LONG_UNARY(inc_long);
 
-	VAL_BYTE_BYTE_BINARY(or_byte);
-	VAL_WORD_WORD_BINARY(or_word);
-	VAL_LONG_LONG_BINARY(or_long);
+    cur_flags_mask = ALL_FLAGS & (~F_AF);
+    VAL_BYTE_BYTE_BINARY(or_byte);
+    VAL_WORD_WORD_BINARY(or_word);
+    VAL_LONG_LONG_BINARY(or_long);
 
-	VAL_BYTE_UNARY(neg_byte);
-	VAL_WORD_UNARY(neg_word);
-	VAL_LONG_UNARY(neg_long);
+    cur_flags_mask = ALL_FLAGS;
+    VAL_BYTE_UNARY(neg_byte);
+    VAL_WORD_UNARY(neg_word);
+    VAL_LONG_UNARY(neg_long);
 
-	VAL_BYTE_UNARY(not_byte);
-	VAL_WORD_UNARY(not_word);
-	VAL_LONG_UNARY(not_long);
+    VAL_BYTE_UNARY(not_byte);
+    VAL_WORD_UNARY(not_word);
+    VAL_LONG_UNARY(not_long);
 
-	VAL_BYTE_ROTATE(rcl_byte);
-	VAL_WORD_ROTATE(rcl_word);
-	VAL_LONG_ROTATE(rcl_long);
+    cur_flags_mask = ALL_FLAGS & (~F_OF);
+    VAL_BYTE_ROTATE(rcl_byte);
+    VAL_WORD_ROTATE(rcl_word);
+    VAL_LONG_ROTATE(rcl_long);
 
-	VAL_BYTE_ROTATE(rcr_byte);
-	VAL_WORD_ROTATE(rcr_word);
-	VAL_LONG_ROTATE(rcr_long);
+    VAL_BYTE_ROTATE(rcr_byte);
+    VAL_WORD_ROTATE(rcr_word);
+    VAL_LONG_ROTATE(rcr_long);
 
-	VAL_BYTE_ROTATE(rol_byte);
-	VAL_WORD_ROTATE(rol_word);
-	VAL_LONG_ROTATE(rol_long);
+    VAL_BYTE_ROTATE(rol_byte);
+    VAL_WORD_ROTATE(rol_word);
+    VAL_LONG_ROTATE(rol_long);
 
-	VAL_BYTE_ROTATE(ror_byte);
-	VAL_WORD_ROTATE(ror_word);
-	VAL_LONG_ROTATE(ror_long);
+    VAL_BYTE_ROTATE(ror_byte);
+    VAL_WORD_ROTATE(ror_word);
+    VAL_LONG_ROTATE(ror_long);
 
-	VAL_BYTE_ROTATE(shl_byte);
-	VAL_WORD_ROTATE(shl_word);
-	VAL_LONG_ROTATE(shl_long);
+    cur_flags_mask = ALL_FLAGS & (~(F_AF | F_OF));
+    VAL_BYTE_ROTATE(shl_byte);
+    VAL_WORD_ROTATE(shl_word);
+    VAL_LONG_ROTATE(shl_long);
 
-	VAL_BYTE_ROTATE(shr_byte);
-	VAL_WORD_ROTATE(shr_word);
-	VAL_LONG_ROTATE(shr_long);
+    VAL_BYTE_ROTATE(shr_byte);
+    VAL_WORD_ROTATE(shr_word);
+    VAL_LONG_ROTATE(shr_long);
 
-	VAL_BYTE_ROTATE(sar_byte);
-	VAL_WORD_ROTATE(sar_word);
-	VAL_LONG_ROTATE(sar_long);
+    VAL_BYTE_ROTATE(sar_byte);
+    VAL_WORD_ROTATE(sar_word);
+    VAL_LONG_ROTATE(sar_long);
 
-	VAL_WORD_ROTATE_DBL(shld_word);
-	VAL_LONG_ROTATE_DBL(shld_long);
+    cur_flags_mask = ALL_FLAGS & (~(F_AF | F_OF));
+    VAL_WORD_ROTATE_DBL(shld_word);
+    VAL_LONG_ROTATE_DBL(shld_long);
 
-	VAL_WORD_ROTATE_DBL(shrd_word);
-	VAL_LONG_ROTATE_DBL(shrd_long);
+    VAL_WORD_ROTATE_DBL(shrd_word);
+    VAL_LONG_ROTATE_DBL(shrd_long);
 
-	VAL_BYTE_BYTE_BINARY(sbb_byte);
-	VAL_WORD_WORD_BINARY(sbb_word);
-	VAL_LONG_LONG_BINARY(sbb_long);
+    cur_flags_mask = ALL_FLAGS;
+    VAL_BYTE_BYTE_BINARY(sbb_byte);
+    VAL_WORD_WORD_BINARY(sbb_word);
+    VAL_LONG_LONG_BINARY(sbb_long);
 
-	VAL_BYTE_BYTE_BINARY(sub_byte);
-	VAL_WORD_WORD_BINARY(sub_word);
-	VAL_LONG_LONG_BINARY(sub_long);
+    VAL_BYTE_BYTE_BINARY(sub_byte);
+    VAL_WORD_WORD_BINARY(sub_word);
+    VAL_LONG_LONG_BINARY(sub_long);
 
-	VAL_BYTE_BYTE_BINARY(xor_byte);
-	VAL_WORD_WORD_BINARY(xor_word);
-	VAL_LONG_LONG_BINARY(xor_long);
+    cur_flags_mask = ALL_FLAGS & (~F_AF);
+    VAL_BYTE_BYTE_BINARY(xor_byte);
+    VAL_WORD_WORD_BINARY(xor_word);
+    VAL_LONG_LONG_BINARY(xor_long);
 
-	VAL_VOID_BYTE_BINARY(test_byte);
-	VAL_VOID_WORD_BINARY(test_word);
-	VAL_VOID_LONG_BINARY(test_long);
+    VAL_VOID_BYTE_BINARY(test_byte);
+    VAL_VOID_WORD_BINARY(test_word);
+    VAL_VOID_LONG_BINARY(test_long);
 
-	VAL_BYTE_MUL(imul_byte);
-	VAL_WORD_MUL(imul_word);
-	VAL_LONG_MUL(imul_long);
+    cur_flags_mask = F_CF | F_OF;
+    VAL_BYTE_MUL(imul_byte);
+    VAL_WORD_MUL(imul_word);
+    VAL_LONG_MUL(imul_long);
 
-	VAL_BYTE_MUL(mul_byte);
-	VAL_WORD_MUL(mul_word);
-	VAL_LONG_MUL(mul_long);
+    VAL_BYTE_MUL(mul_byte);
+    VAL_WORD_MUL(mul_word);
+    VAL_LONG_MUL(mul_long);
 
-	VAL_BYTE_DIV(idiv_byte);
-	VAL_WORD_DIV(idiv_word);
-	VAL_LONG_DIV(idiv_long);
+    cur_flags_mask = 0;
+    VAL_BYTE_DIV(idiv_byte);
+    VAL_WORD_DIV(idiv_word);
+    VAL_LONG_DIV(idiv_long);
 
-	VAL_BYTE_DIV(div_byte);
-	VAL_WORD_DIV(div_word);
-	VAL_LONG_DIV(div_long);
+    VAL_BYTE_DIV(div_byte);
+    VAL_WORD_DIV(div_word);
+    VAL_LONG_DIV(div_long);
 
-	return 0;
+    return 0;
 }

@@ -31,9 +31,9 @@
 #############################################################################
 
 TARGETLIB = libx86emu.a
+TARGETDEBUGLIB =libx86emud.a
 
 OBJS=\
-debug.o \
 decode.o \
 fpu.o \
 ops.o \
@@ -41,20 +41,40 @@ ops2.o \
 prim_ops.o \
 sys.o
 
+DEBUGOBJS=debug.d \
+          decode.d \
+	  fpu.d \
+	  ops.d \
+	  ops2.d \
+	  prim_ops.d \
+	  sys.d
+
+.SUFFIXES: .d
+
+all: $(TARGETLIB) $(TARGETDEBUGLIB)
+
 $(TARGETLIB): $(OBJS)
 	ar rv $(TARGETLIB) $(OBJS)
 
-INCS   = -I. -Ix86emu -I../../include
-CFLAGS = -D__DRIVER__ -DFORCE_POST -D_CEXPORT= -DNO_LONG_LONG -DDEBUG
+$(TARGETDEBUGLIB): $(DEBUGOBJS)
+	ar rv $(TARGETDEBUGLIB) $(DEBUGOBJS)
+
+INCS   = -I. -I../../include -I../../include/x86emu
+#CFLAGS = -D__DRIVER__ -DFORCE_POST -D_CEXPORT= -DNO_LONG_LONG
+CFLAGS = -D__DRIVER__ -DFORCE_POST
+CDEBUGFLAGS = -DDEBUG
 
 .c.o:
-	gcc -g -O -Wall -c $(CFLAGS) $(INCS) $*.c
+	gcc -g -Os -Wall -c $(CFLAGS) $(INCS) $*.c
+
+.c.d:
+	gcc -g -O -Wall -c -o$*.d $(CFLAGS) $(CDEBUGFLAGS) $(INCS) $*.c
 
 .cpp.o:
 	gcc -c $(CFLAGS) $(INCS) $*.cpp
 
 clean:
-	rm -f *.a *.o
+	rm -f *.a *.o *.d
 
-validate:	validate.o libx86emu.a
-	gcc -o validate validate.o -lx86emu -L.
+validate:	validate.c libx86emu.a x86emu/prim_asm.h
+	gcc $(CFLAGS) $(INCS) -Wall -O2 -o validate validate.c -lx86emu -L.

@@ -2,7 +2,7 @@
 #
 #						Realmode X86 Emulator Library
 #
-#            	Copyright (C) 1996-1999 SciTech Software, Inc.
+#            	Copyright (C) 1991-2004 SciTech Software, Inc.
 #
 #  ========================================================================
 #

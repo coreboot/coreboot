@@ -1,10 +1,10 @@
 /****************************************************************************
 *
-*						Realmode X86 Emulator Library
+*                       Realmode X86 Emulator Library
 *
-*            	Copyright (C) 1996-1999 SciTech Software, Inc.
-* 				     Copyright (C) David Mosberger-Tang
-* 					   Copyright (C) 1999 Egbert Eich
+*               Copyright (C) 1991-2004 SciTech Software, Inc.
+*                    Copyright (C) David Mosberger-Tang
+*                      Copyright (C) 1999 Egbert Eich
 *
 *  ========================================================================
 *
@@ -28,8 +28,8 @@
 *
 *  ========================================================================
 *
-* Language:		ANSI C
-* Environment:	Any
+* Language:     ANSI C
+* Environment:  Any
 * Developer:    Kendall Bennett
 *
 * Description:  Header file for operand decoding functions.

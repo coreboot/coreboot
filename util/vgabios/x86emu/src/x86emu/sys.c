@@ -198,7 +198,7 @@ u8 *mem_ptr(u32 addr, int size)
 		retaddr = (u8 *) (M.abseg + addr);
 		//printk("retaddr now 0x%p\n", retaddr);
 	} else if (addr < 0x200) {
-		//printk("updating int vector 0x%x\n", addr >> 2);
+		printk("updating int vector 0x%x\n", addr >> 2);
 		retaddr = (u8 *) (M.mem_base + addr);
 	} else {
 		retaddr = (u8 *) (M.mem_base + addr);

@@ -19,7 +19,7 @@ int int1A_handler()
 
 	if (verbose) {
 		printf("\nint1a encountered.\n");
-		x86emu_dump_xregs();
+		//x86emu_dump_xregs();
 	}
 
 	switch (X86_AX) {

@@ -181,6 +181,8 @@ void 	X86EMU_halt_sys(void);
 #define DEBUG_TRACECALL_REGS_F  0x004000
 #define DEBUG_DECODE_NOPRINT_F  0x008000 
 #define DEBUG_SAVE_IP_CS_F      0x010000
+#define DEBUG_EXIT		0x020000
+#define DEBUG_SAVE_CS_IP	0x040000
 #define DEBUG_SYS_F             (DEBUG_SVC_F|DEBUG_FS_F|DEBUG_PROC_F)
 
 void 	X86EMU_trace_regs(void);

@@ -50,8 +50,8 @@ int run_bios_int(int num)
 	X86_CS = MEM_RW((num << 2) + 2);
 	X86_IP = MEM_RW(num << 2);
 
-	//printf("%s: INT %x CS:IP = %x:%x\n", __FUNCTION__,
-	//       num, MEM_RW((num << 2) + 2), MEM_RW(num << 2));
+	printf("%s: INT %x CS:IP = %x:%x\n", __FUNCTION__,
+	       num, MEM_RW((num << 2) + 2), MEM_RW(num << 2));
 
 	return 1;
 }
@@ -128,7 +128,7 @@ u8 x_inb(u16 port)
 
 	val = inb(port);
 
-	//printf("inb(0x%04x) = 0x%02x\n", port, val);
+	printf("inb(0x%04x) = 0x%02x\n", port, val);
 
 	return val;
 }
@@ -139,7 +139,7 @@ u16 x_inw(u16 port)
 
 	val = inw(port);
 
-	//printf("inw(0x%04x) = 0x%04x\n", port, val);
+	printf("inw(0x%04x) = 0x%04x\n", port, val);
 	return val;
 }
 
@@ -149,25 +149,26 @@ u32 x_inl(u16 port)
 
 	val = inl(port);
 
-	//printf("inl(0x%04x) = 0x%08x\n", port, val);
+	printf("inl(0x%04x) = 0x%08x\n", port, val);
 	return val;
 }
 
 void x_outb(u16 port, u8 val)
 {
-	//printf("outb(0x%02x, 0x%04x)\n", val, port);
+	printf("outb(0x%02x, 0x%04x)\n",
+		 val, port);
 	outb(val, port);
 }
 
 void x_outw(u16 port, u16 val)
 {
-	//printf("outw(0x%04x, 0x%04x)\n", val, port);
+	printf("outw(0x%04x, 0x%04x)\n", val, port);
 	outw(val, port);
 }
 
 void x_outl(u16 port, u32 val)
 {
-	//printf("outl(0x%08x, 0x%04x)\n", val, port);
+	printf("outl(0x%08x, 0x%04x)\n", val, port);
 	outl(val, port);
 }
 

@@ -76,7 +76,7 @@ void do_int(int num)
 
 	if (!ret) {
 		printf("\nint%x: not implemented\n", num);
-		x86emu_dump_xregs();
+		//x86emu_dump_xregs();
 	}
 }
 
@@ -317,10 +317,10 @@ int main(int argc, char **argv)
 
 	if (trace) {
 		printf("Switching to single step mode.\n");
-		X86EMU_trace_on();
+		//X86EMU_trace_on();
 	}
 	if (debugflag) {
-		X86EMU_set_debug(debugflag);
+		//X86EMU_set_debug(debugflag);
 	}
 	X86EMU_exec();
 	/* Cleaning up */

@@ -187,10 +187,14 @@ static void setup_com(struct superio *sio,
 				com->base, com->irq);
 		set_iobase0(sio, com->base);
 		set_irq0(sio, com->irq);
-		/* We are initialized so enable the device */
-		set_enable(sio, 1);
 		/* Now initialize the com port */
 		uart_init(com->base, divisor);
+		/* this piece of crap glitches like crazy when you change
+		 * the baud rate. Delay one second to try to help that.
+		 */
+		delay(1);
+		/* We are initialized so enable the device */
+		set_enable(sio, 1);
 	}
 }
 

@@ -2,6 +2,7 @@
 # Copyright (c) 2002 Christer Weinigel <wingel@hack.org>
 # Config file for the National Semiconductor CS5530 southbridge
 # a.k.a. companion chip
+option CONFIG_UDELAY_TSC=1
 
 object southbridge.o
 

@@ -8,6 +8,8 @@ southbridge_fixup()
 {
 #if (CONFIG_LINUXBIOS_ENABLE_IDE == 1)
         struct pci_dev *pcidev;
+        struct pci_dev *pcidevdebug;
+        int i;
 
         printk_info( "Enabling IDE...");
 
@@ -16,22 +18,24 @@ southbridge_fixup()
 	if (! pcidev) {
 		printk_err("Can't find piix4e\n");
 	} else {
-		unsigned char c;
+		unsigned short c;
 
-		pci_read_config_word(pcidev, 0x41, &c);
-		c |= 0x80;
-		pci_write_config_word(pcidev, 0x41, &c);
-		pci_read_config_word(pcidev, 0x43, &c);
-		c |= 0x80;
-		pci_write_config_word(pcidev, 0x43, &c);
+		pci_read_config_word(pcidev, 0x40, &c);
+		c |= 0x8000;
+		printk_info( "0x40 = 0x%04x\n", c);
+		pci_write_config_word(pcidev, 0x40, c);
+		pci_read_config_word(pcidev, 0x42, &c);
+		c |= 0x8000;
+		printk_info( "0x42 = 0x%04x\n", c);
+		pci_write_config_word(pcidev, 0x42, c);
 		printk_info("Enabled IDE for channels 1 and 2\n");
 #if (CONFIG_LINUXBIOS_LEGACY_IDE == 1)
 		printk_info("Enabling Legacy IDE\n");
 		pci_read_config_word(pcidev, 4, &c);
 		c |= 1;
-		pci_write_config_word(pcidev, 4, &c);
-		pci_read_config_word(pcidev, 4, &c);
-		printk_info("Word at 4 is now 0x%x\n", c);
+		pci_write_config_word(pcidev, 4, c);
+		pci_read_config_word(pcidev, 4, c);
+		printk_info("Word at 4 is now 0x%04x\n", c);
 #endif
 	}
 

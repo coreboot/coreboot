@@ -48,7 +48,7 @@ option CS5530_INTC=11
 option CS5530_INTD=15
 
 option CS5530_PRIMARY_IDE=1
-#option CS5530_SECONDARY_IDE=1
+option CS5530_SECONDARY_IDE=1
 
 ########################################################################
 

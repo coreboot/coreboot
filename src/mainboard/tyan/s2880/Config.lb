@@ -25,7 +25,6 @@ driver adaptec_scsi.o
 driver promise_sata.o
 driver intel_nic.o
 object reset.o
-#object static_devices.o
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
 #

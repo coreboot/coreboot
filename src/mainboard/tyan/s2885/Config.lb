@@ -13,7 +13,6 @@ uses ARCH
 ###
 ### Build the objects we have code for in this directory.
 ###
-##object mainboard.o
 config chip.h
 register "fixup_scsi" = "1"
 register "fixup_vga" = "1"
@@ -24,7 +23,6 @@ driver ti_firewire.o
 driver adaptec_scsi.o
 driver si_sata.o
 driver intel_nic.o
-#object static_devices.o
 object reset.o
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end

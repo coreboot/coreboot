@@ -134,9 +134,7 @@ arch i386 end
 ## Build the objects we have code for in this directory.
 ##
 
-#object mainboard.o
 driver mainboard.o
-#object static_devices.o
 # if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
 object reset.o

@@ -13,9 +13,9 @@
  *
  * - enable L1 I/D caches, otherwise performance will be slow
  * - set up DBATs for the following regions:
- *   - RAM (generally 0x00000000 - 0x7fffffff)
- *   - ROM (_ROMBASE - _ROMBASE + 16Mb)
- *   - I/O (generally 0xfc000000 - 0xfdffffff)
+ *   - RAM (generally 0x00000000 -> 0x7fffffff)
+ *   - ROM (_ROMBASE -> _ROMBASE + ROM_SIZE)
+ *   - I/O (generally 0xfc000000 -> 0xfdffffff)
  *   - the main purpose for setting up the DBATs is so the I/O region
  *     can be marked cache inhibited/write through
  * - set up IBATs for RAM and ROM
@@ -92,18 +92,19 @@
         /*
 	 * Set up DBATs 
 	 *
-	 * DBAT0 covers RAM (0 - 256Mb)
-	 * DBAT1 covers PCI memory and ROM (0xFC000000 - 0xFFFFFFFF)
-	 * DBAT1 covers PCI memory (0x80000000 - 0x8FFFFFFF)
+	 * DBAT0 covers RAM (0 -> 0x0FFFFFFF) (256Mb)
+	 * DBAT1 covers PCI memory and ROM (0xFD000000 -> 0xFFFFFFFF) (64Mb)
+	 * DBAT2 covers PCI memory (0x80000000 -> 0x8FFFFFFF) (256Mb)
+	 * DBAT3 is not used
 	 */
-        lis     r2, 0@ha
+        lis     r2, 0@h
         ori     r3, r2, BAT_BL_256M | BAT_VALID_SUPERVISOR | BAT_VALID_USER
-        ori     r2, r2, BAT_READ_WRITE
+        ori     r2, r2, BAT_READ_WRITE | BAT_GUARDED
         mtdbatu 0, r3
         mtdbatl 0, r2
 	isync
 
-        lis     r2, BSP_IOREGION2@ha
+        lis     r2, BSP_IOREGION2@h
         ori     r3, r2, BAT_BL_64M | BAT_VALID_SUPERVISOR | BAT_VALID_USER
         ori     r2, r2, BAT_CACHE_INHIBITED | BAT_GUARDED | BAT_READ_WRITE
         mtdbatu 1, r3
@@ -111,7 +112,7 @@
 	isync
 
         lis     r2, BSP_IOREGION1@h
-        ori     r3, r2, BSP_IOMASK1
+        ori     r3, r2, BAT_BL_256M | BAT_VALID_SUPERVISOR | BAT_VALID_USER
         ori     r2, r2, BAT_CACHE_INHIBITED | BAT_GUARDED | BAT_READ_WRITE
         mtdbatu 2, r3
         mtdbatl 2, r2
@@ -120,59 +121,59 @@
 	/*
 	 * IBATS
 	 *
-	 * IBAT0 covers RAM (0 - 256Mb)
-	 * IBAT1 covers ROM (_ROMBASE - _ROMBASE+16M)
+	 * IBAT0 covers RAM (0 -> 256Mb)
+	 * IBAT1 covers ROM (_ROMBASE -> _ROMBASE+ROM_SIZE)
 	 */
-        lis     r2, 0@ha
+        lis     r2, 0@h
         ori     r3, r2, BAT_BL_256M | BAT_VALID_SUPERVISOR | BAT_VALID_USER
         ori     r2, r2, BAT_READ_WRITE
         mtibatu 0, r3
         mtibatl 0, r2
 	isync
 
-        lis     r2, _ROMBASE@ha
+        lis     r2, _ROMBASE@h
+#if ROM_SIZE > 1048576
         ori     r3, r2, BAT_BL_16M | BAT_VALID_SUPERVISOR | BAT_VALID_USER
+#else
+        ori     r3, r2, BAT_BL_1M | BAT_VALID_SUPERVISOR | BAT_VALID_USER
+#endif
         ori     r2, r2, BAT_READ_ONLY
         mtibatu 1, r3
         mtibatl 1, r2
 	isync
-
-	/*
-	 * Invalidate tlb entries
-	 */
-	lis	r3, 0
-	lis	r5, 0x4
-	isync
-tlblp:
-	tlbie	r3
-	sync
-	addi	r3, r3, 0x1000
-	cmp	0, 0, r3, r5
-	blt	tlblp
-
-	sync
 
         /*
 	 * Enable MMU 
 	 */
         mfmsr   r2
         ori     r2, r2, MSR_DR | MSR_IR
-	isync
         mtmsr   r2
         isync
+	sync
 
         /*
-	 * Enable L1 dcache 
+	 * Enable and invalidate the L1 icache 
+	 */
+        mfspr   r2, HID0
+        ori     r2, r2, HID0_ICE | HID0_ICFI
+	isync
+        mtspr   HID0, r2
+        /*
+	 * Enable and invalidate the L1 dcache 
 	 */
         mfspr   r2, HID0
         ori     r2, r2, HID0_DCE | HID0_DCFI
 	sync
         mtspr   HID0, r2
 
-        /*
-	 * Enable L1 icache 
+	/*
+	 * Initialize data cache blocks 
+	 * (assumes cache block size of 32 bytes)
 	 */
-        mfspr   r2, HID0
-        ori     r2, r2, HID0_ICE | HID0_ICFI
-	isync
-        mtspr   HID0, r2
+	lis	r1, DCACHE_RAM_BASE@h
+	ori	r1, r1, DCACHE_RAM_BASE@l
+	li 	r3, (DCACHE_RAM_SIZE / 32)
+	mtctr	r3
+0:	dcbz	r0, r1
+	addi	r1, r1, 32
+	bdnz	0b

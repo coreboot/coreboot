@@ -642,10 +642,6 @@ static int setup_coherent_ht_domain(void)
 	}
 	coherent_ht_finalize(result.nodes);
 	result.needs_reset = apply_cpu_errata_fixes(result.nodes, result.needs_reset);
-
-#if CONFIG_MAX_CPUS > 1 /* Why doesn't this work on the solo? */
 	result.needs_reset = optimize_link_read_pointers(result.nodes, result.needs_reset);
-#endif
-
 	return result.needs_reset;
 }

@@ -1,9 +1,4 @@
 #define ASSEMBLY 1
-#undef MAXIMUM_CONSOLE_LOGLEVEL
-#undef DEFAULT_CONSOLE_LOGLEVEL
-#define MAXIMUM_CONSOLE_LOGLEVEL 9
-#define DEFAULT_CONSOLE_LOGLEVEL 9
-
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>

@@ -1,0 +1,93 @@
+diff -urN linux-2.4.0-test7-stock/Makefile linux-2.4.0-test7-linuxbios/Makefile
+--- linux-2.4.0-test7-stock/Makefile	Tue Aug 22 14:41:14 2000
++++ linux-2.4.0-test7-linuxbios/Makefile	Mon Aug 28 13:53:41 2000
+@@ -1,7 +1,7 @@
+ VERSION = 2
+ PATCHLEVEL = 4
+ SUBLEVEL = 0
+-EXTRAVERSION = -test7
++EXTRAVERSION = -test7-linuxbios
+ 
+ KERNELRELEASE=$(VERSION).$(PATCHLEVEL).$(SUBLEVEL)$(EXTRAVERSION)
+ 
+diff -urN linux-2.4.0-test7-stock/arch/i386/Linuxbios.in linux-2.4.0-test7-linuxbios/arch/i386/Linuxbios.in
+--- linux-2.4.0-test7-stock/arch/i386/Linuxbios.in	Wed Dec 31 19:00:00 1969
++++ linux-2.4.0-test7-linuxbios/arch/i386/Linuxbios.in	Mon Aug 28 13:52:38 2000
+@@ -0,0 +1,5 @@
++mainmenu_option next_comment
++comment 'Linuxbios Options'
++bool 'Force IDE Controllers on?' CONFIG_LINUXBIOS_FORCE_IDE_CONTROLLER_ON
++bool 'Wait for HDA to spin up?'  CONFIG_LINUXBIOS_WAIT_HDA_SPINUP
++endmenu
+diff -urN linux-2.4.0-test7-stock/arch/i386/config.in linux-2.4.0-test7-linuxbios/arch/i386/config.in
+--- linux-2.4.0-test7-stock/arch/i386/config.in	Tue Aug 22 14:57:15 2000
++++ linux-2.4.0-test7-linuxbios/arch/i386/config.in	Mon Aug 28 13:52:38 2000
+@@ -359,3 +359,13 @@
+ #bool 'Debug kmalloc/kfree' CONFIG_DEBUG_MALLOC
+ bool 'Magic SysRq key' CONFIG_MAGIC_SYSRQ
+ endmenu
++
++mainmenu_option next_comment
++comment 'LinuxBIOS'
++
++tristate 'LinuxBIOS Support' CONFIG_LINUXBIOS
++if [ "$CONFIG_LINUXBIOS" != "n" ]; then
++   source arch/i386/Linuxbios.in
++fi
++
++endmenu
+diff -urN linux-2.4.0-test7-stock/arch/i386/kernel/pci-irq.c linux-2.4.0-test7-linuxbios/arch/i386/kernel/pci-irq.c
+--- linux-2.4.0-test7-stock/arch/i386/kernel/pci-irq.c	Mon Jun 26 15:02:16 2000
++++ linux-2.4.0-test7-linuxbios/arch/i386/kernel/pci-irq.c	Mon Aug 28 13:52:38 2000
+@@ -460,7 +460,11 @@
+ 		 * Still no IRQ? Try to lookup one...
+ 		 */
+ 		if (pin && !dev->irq)
++#ifdef CONFIG_LINUXBIOS
++		        pcibios_lookup_irq(dev, 1);
++#else
+ 			pcibios_lookup_irq(dev, 0);
++#endif
+ 	}
+ }
+ 
+diff -urN linux-2.4.0-test7-stock/drivers/ide/ide-pci.c linux-2.4.0-test7-linuxbios/drivers/ide/ide-pci.c
+--- linux-2.4.0-test7-stock/drivers/ide/ide-pci.c	Thu Jul 27 19:40:57 2000
++++ linux-2.4.0-test7-linuxbios/drivers/ide/ide-pci.c	Mon Aug 28 13:52:38 2000
+@@ -570,8 +570,19 @@
+ 	for (port = 0; port <= 1; ++port) {
+ 		unsigned long base = 0, ctl = 0;
+ 		ide_pci_enablebit_t *e = &(d->enablebits[port]);
++#ifndef CONFIG_LINUXBIOS_FORCE_IDE_CONTROLLER_ON
+ 		if (e->reg && (pci_read_config_byte(dev, e->reg, &tmp) || (tmp & e->mask) != e->val))
+ 			continue;	/* port not enabled */
++#else
++		/* force 'em on! */
++ 		if (e->reg) {
++		  pci_read_config_byte(dev, e->reg, &tmp);
++		  tmp |= e->val;
++		  pci_write_config_byte(dev, e->reg, tmp);
++		  printk("%s: LINUXBIOS, so Jammed the enable on!\n", 
++			 d->name);
++ 		}
++#endif
+ 		if (IDE_PCI_DEVID_EQ(d->devid, DEVID_HPT366) && (port) && (class_rev < 0x03))
+ 			return;
+ 		if ((dev->class >> 8) != PCI_CLASS_STORAGE_IDE || (dev->class & (port ? 4 : 1)) != 0) {
+diff -urN linux-2.4.0-test7-stock/drivers/ide/ide-probe.c linux-2.4.0-test7-linuxbios/drivers/ide/ide-probe.c
+--- linux-2.4.0-test7-stock/drivers/ide/ide-probe.c	Thu Aug  3 19:29:49 2000
++++ linux-2.4.0-test7-linuxbios/drivers/ide/ide-probe.c	Mon Aug 28 13:52:38 2000
+@@ -308,6 +308,13 @@
+ 		if ((drive->media != ide_disk) && (cmd == WIN_IDENTIFY))
+ 			return 4;
+ 	}
++#ifdef CONFIG_LINUXBIOS_WAIT_HDA_SPINUP
++	if (! strncmp(drive->name, "hda", 3)) {
++	  printk("jamming drive present for %s\n", drive->name);
++	  drive->present = 1;
++	}
++#endif
++
+ #ifdef DEBUG
+ 	printk("probing for %s: present=%d, media=%d, probetype=%s\n",
+ 		drive->name, drive->present, drive->media,

@@ -1,0 +1,33 @@
+--- linux/arch/i386/kernel/pci-irq.c.orig	Mon Aug 21 15:16:52 2000
++++ linux/arch/i386/kernel/pci-irq.c	Tue Aug 22 11:39:52 2000
+@@ -460,7 +460,7 @@
+ 		 * Still no IRQ? Try to lookup one...
+ 		 */
+ 		if (pin && !dev->irq)
+-			pcibios_lookup_irq(dev, 0);
++		        pcibios_lookup_irq(dev, 1);
+ 	}
+ }
+ 
+--- linux/arch/i386/kernel/pci-i386.h.orig	Thu Jun 22 10:17:16 2000
++++ linux/arch/i386/kernel/pci-i386.h	Mon Aug 21 14:06:14 2000
+@@ -4,7 +4,7 @@
+  *	(c) 1999 Martin Mares <mj@ucw.cz>
+  */
+ 
+-#undef DEBUG
++#define DEBUG
+ 
+ #ifdef DEBUG
+ #define DBG(x...) printk(x)
+--- linux/drivers/pci/pci.c.orig	Mon Jun 19 16:42:38 2000
++++ linux/drivers/pci/pci.c	Tue Aug 22 10:29:50 2000
+@@ -24,7 +24,7 @@
+ #include <asm/page.h>
+ #include <asm/dma.h>	/* isa_dma_bridge_buggy */
+ 
+-#undef DEBUG
++#define DEBUG
+ 
+ #ifdef DEBUG
+ #define DBG(x...) printk(x)

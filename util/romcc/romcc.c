@@ -208,8 +208,13 @@ static char *slurp_file(const char *dirname, const char *filename, off_t *r_size
 }
 
 /* Long on the destination platform */
+#ifdef __x86_64__
+typedef unsigned int ulong_t;
+typedef int long_t;
+#else
 typedef unsigned long ulong_t;
 typedef long long_t;
+#endif
 
 struct file_state {
 	struct file_state *prev;
@@ -861,7 +866,11 @@ struct compile_state {
  * type-> holds the number of elements.
  */
 
+#ifdef __x86_64__
+#define ELEMENT_COUNT_UNSPECIFIED (~0U)
+#else
 #define ELEMENT_COUNT_UNSPECIFIED (~0UL)
+#endif
 
 struct type {
 	unsigned int type;
@@ -2952,8 +2961,13 @@ static long_t mprimary_expr(struct compile_state *state, int index)
 		meat(state, index, TOK_LIT_INT);
 		errno = 0;
 		val = strtol(state->token[index].val.str, &end, 0);
+#ifdef __x86_64__
+		if (((val == INT_MIN) || (val == INT_MAX)) &&
+			(errno == ERANGE)) {
+#else
 		if (((val == LONG_MIN) || (val == LONG_MAX)) &&
 			(errno == ERANGE)) {
+#endif
 			error(state, 0, "Integer constant to large");
 		}
 		break;
@@ -7101,7 +7115,11 @@ static struct triple *integer_constant(struct compile_state *state)
 	errno = 0;
 	decimal = (tk->val.str[0] != '0');
 	val = strtoul(tk->val.str, &end, 0);
+#ifdef __x86_64__
+	if ((val == UINT_MAX) && (errno == ERANGE)) {
+#else
 	if ((val == ULONG_MAX) && (errno == ERANGE)) {
+#endif
 		error(state, 0, "Integer constant to large");
 	}
 	u = l = 0;
@@ -7125,7 +7143,11 @@ static struct triple *integer_constant(struct compile_state *state)
 	}
 	else if (l) {
 		type = &long_type;
+#ifdef __x86_64__
+		if (!decimal && (val > INT_MAX)) {
+#else
 		if (!decimal && (val > LONG_MAX)) {
+#endif
 			type = &ulong_type;
 		}
 	}
@@ -7140,7 +7162,11 @@ static struct triple *integer_constant(struct compile_state *state)
 		if (!decimal && (val > INT_MAX) && (val <= UINT_MAX)) {
 			type = &uint_type;
 		}
+#ifdef __x86_64__
+		else if (!decimal && (val > INT_MAX)) {
+#else
 		else if (!decimal && (val > LONG_MAX)) {
+#endif
 			type = &ulong_type;
 		}
 		else if (val > INT_MAX) {

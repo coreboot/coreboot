@@ -37,7 +37,7 @@ void check_pirq_routing_table(void);
 #define check_pirq_routing_table() do {} while(0)
 #endif
 
-#if defined(HAVE_PIRQ_ROUTING_TABLE)
+#if defined(HAVE_PIRQ_TABLE)
 void copy_pirq_routing_table(void);
 #else
 #define copy_pirq_routing_table() do {} while(0)

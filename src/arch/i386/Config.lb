@@ -1,3 +1,5 @@
+uses CONFIG_SMP
+
 init config/crt0.base
 ldscript config/ldscript.lb
 
@@ -37,4 +39,6 @@ addaction clean "rm -f romimage payload.*"
 
 dir lib
 dir boot
-dir smp
+if CONFIG_SMP
+	dir smp
+end

@@ -14,6 +14,7 @@ uses PAYLOAD_SIZE
 uses _ROMBASE
 uses XIP_ROM_SIZE
 uses XIP_ROM_BASE
+uses HAVE_MP_TABLE
 
 ## ROM_SIZE is the size of boot ROM that this board will use.
 default ROM_SIZE  524288
@@ -28,6 +29,11 @@ default ROM_SIZE  524288
 option HAVE_FALLBACK_BOOT=1
 
 ##
+## no MP table
+##
+option HAVE_MP_TABLE=0
+
+##
 ## Build code to reset the motherboard from linuxBIOS
 ##
 option HAVE_HARD_RESET=1
@@ -37,29 +43,12 @@ option HAVE_HARD_RESET=1
 ##
 option HAVE_PIRQ_TABLE=1
 option IRQ_SLOT_COUNT=7
-
-##
-## Build code to export an x86 MP table
-## Useful for specifying IRQ routing values
-##
-option HAVE_MP_TABLE=1
+object irq_tables.o
 
 ##
 ## Build code to export a CMOS option table
 ##
 option HAVE_OPTION_TABLE=1
-
-##
-## Build code for SMP support
-## Only worry about 2 micro processors
-##
-option CONFIG_SMP=1
-option CONFIG_MAX_CPUS=2
-
-##
-## Build code to setup a generic IOAPIC
-##
-option CONFIG_IOAPIC=1
 
 ##
 ## Clean up the motherboard id strings
@@ -238,7 +227,7 @@ northbridge via/vt8601 "vt8601"
 	end
 end
 
-cpu p5 "cpu0"
+cpu p6 "cpu0"
 	
 end
 

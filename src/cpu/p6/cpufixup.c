@@ -1,18 +1,13 @@
 /* microcode.c:	Microcode update for PIII and later CPUS
  *
- * $Id$
  */
-
-#ifndef lint
-static char rcsid[] = "$Id$";
-#endif
-
-#include <pciconf.h>
-#include <subr.h>
+#include <console/console.h>
+#include <mem.h>
 #include <cpu/p6/msr.h>
-#include <printk.h>
 #include <cpu/p5/cpuid.h>
-#include <cpu/cpufixup.h>
+#include <cpu/k8/mtrr.h>
+#include <device/device.h>
+#include <device/chip.h>
 
 struct microcode {
 	unsigned int hdrver;
@@ -300,24 +295,33 @@ unsigned int microcode_updates [] = {
 	0x57688086,	0x218e4005,	0xca054e3d,	0xc1a3c3ec,
 };
 
+
 static void display_cpuid_update_microcode(void)
 {
 	unsigned int eax, ebx, ecx, edx;
 	unsigned int pf, rev, sig, val[2];
 	unsigned int x86_model, x86_family, i;
 	struct microcode *m;
-	
+	msr_t msr;
 	/* cpuid sets msr 0x8B iff a microcode update has been loaded. */
-	wrmsr(0x8B, 0, 0);
+	//wrmsr(0x8B, 0, 0);
+	msr.lo = msr.hi = 0;
+	wrmsr(0x8b, msr);
 	cpuid(1, &eax, &ebx, &ecx, &edx);
-	rdmsr(0x8B, val[0], rev);
+	//rdmsr(0x8B, val[0], rev);
+	msr = rdmsr(0x8b);
+	val[0] = msr.lo;
+	rev = msr.hi;
 	x86_model = (eax >>4) & 0x0f;
 	x86_family = (eax >>8) & 0x0f;
 	sig = eax;
 
 	pf = 0;
 	if ((x86_model >= 5)||(x86_family>6)) {
-		rdmsr(0x17, val[0], val[1]);
+	  //rdmsr(0x17, val[0], val[1]);
+	  msr = rdmsr(0x17);
+	  val[0] = msr.lo;
+	  val[1] = msr.hi;
 		pf = 1 << ((val[1] >> 18) & 7);
 	}
 	printk_debug("microcode_info: sig = 0x%08x pf=0x%08x rev = 0x%08x\n",
@@ -326,9 +330,16 @@ static void display_cpuid_update_microcode(void)
 	m = (void *)&microcode_updates;
 	for(i = 0; i < sizeof(microcode_updates)/sizeof(struct microcode); i++) {
 		if ((m[i].sig == sig) && (m[i].pf == pf)) {
-			wrmsr(0x79, (unsigned int)&m[i].bits, 0);
+		  //wrmsr(0x79, (unsigned int)&m[i].bits, 0);
+		  msr.lo = (unsigned int)&m[i].bits;
+		  msr.hi = 0;
+		  wrmsr(0x79, msr);
+
 			__asm__ __volatile__ ("cpuid" : : : "ax", "bx", "cx", "dx");
-			rdmsr(0x8B, val[0], val[1]);
+			//rdmsr(0x8B, val[0], val[1]);
+			msr = rdmsr(0x8b);
+			val[0] = msr.lo;
+			val[1] = msr.hi;
 			printk_info("microcode updated from revision %d to %d\n",
 			       rev, val[1]);
 		}

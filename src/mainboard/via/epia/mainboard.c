@@ -7,7 +7,6 @@
 
 #include <arch/io.h>
 #include <device/chip.h>
-#include "../../../northbridge/amd/amdk8/northbridge.h"
 #include "chip.h"
 
 
@@ -16,7 +15,7 @@ static struct device_operations mainboard_operations = {
 	.set_resources    = root_dev_set_resources,
 	.enable_resources = enable_childrens_resources,
 	.init             = 0,
-	.scan_bus         = vt8_scan_root_bus,
+	.scan_bus         = pci_scan_bridge,
 	.enable           = 0,
 };
 
@@ -32,6 +31,6 @@ static void enumerate(struct chip *chip)
 }
 struct chip_control mainboard_via_epia_control = {
 	.enumerate = enumerate, 
-	.name      = "Arima HDAMA mainboard ",
+	.name      = "VIA EPIA mainboard ",
 };
 

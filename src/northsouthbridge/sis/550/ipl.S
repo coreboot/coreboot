@@ -42,7 +42,8 @@
 
 sis630spd_start:
 	cli					# Disables the maskable
-						# hardware interrupts.
+        movw $0,%cx
+reset:						# hardware interrupts.
 
 	movw	%cs, %ax			# makes data segment ==
 	movw	%ax, %ds			#       code segment
@@ -55,13 +56,417 @@ lpc_init_start:					# inits LPC bridge for accessing
 
 	CALL_SP(write_lpc_register)
 	jmp	lpc_init_start
+        cmp     $1,%cx
+        je lpc_init_complete
 
-lpc_init_complete:	
+lpc_init_complete: 
 
-	movw	$0x5501, %ax			# MDOE# enable, this bit
+Check_CMOS:
+       movw $0x0070,%dx
+       movb $0x53,%al                  
+       outb %al,%dx
+       movw $0x0071,%dx
+       inb  %dx,%al
+       cmpb $0x5a,%al
+       jne  Mininum_Setting
+       
+       movw $0x0070,%dx
+       movb $0x54,%al
+       outb %al,%dx
+       movw $0x0071,%dx
+       inb  %dx,%al
+       cmpb $0xa5,%al
+       je   SET_VGA_SR13
+
+Mininum_Setting:
+       //Setting the flag 
+       movw $0x0070,%dx
+       movb $0x53,%al
+       outb %al,%dx
+       movb $0x5a,%al 
+       movw $0x0071,%dx
+       outb %al,%dx
+      
+       movw $0x0070,%dx
+       movb $0x54,%al
+       outb %al,%dx
+       movb $0xa5,%al
+       movw $0x0071,%dx
+       outb %al,%dx
+       
+       //Set the Host CPU/SDRAM/PCI to the minimum frequency
+       movw $0x0070,%dx
+       movb $0x50,%al
+       outb %al,%dx
+       movb $0x00,%al
+       movw $0x0071,%dx
+       outb %al,%dx
+  
+       //Set the SR13 to the minimun value
+       movw $0x0070,%dx
+       movb $0x51,%al
+       outb %al,%dx
+       movb $0x00,%al
+       movw $0x0071,%dx
+       outb %al,%dx
+
+       //Set the Shar Memory Size to 8M
+       movw $0x0070,%dx
+       movb $0x70,%al
+       outb %al,%dx
+       movb $0x20,%al
+       movw $0x0071,%dx
+       outb %al,%dx
+       
+       //Set SR14 to 0x03   
+       movw $0x0070,%dx
+       movb $0x71,%al
+       outb %al,%dx
+       movb $0x03,%al
+       movw $0x0071,%dx
+       outb %al,%dx
+
+       //Set Boot disk as master disk       
+       movw $0x0070,%dx
+       movb $0x62,%al
+       outb %al,%dx
+       movb $0x01,%al
+       movw $0x0071,%dx
+       outb %al,%dx
+
+       //Set SR16 to 0x00 
+       movw $0x0070,%dx
+       movb $0x61,%al
+       outb %al,%dx
+       movb $0x00,%al
+       movw $0x0071,%dx
+       outb %al,%dx
+       //Disable the flash write function
+       movw $0x0070,%dx
+       movb $0x52,%al
+       outb %al,%dx
+       movb $0x00,%al
+       movw $0x0071,%dx
+       outb %al,%dx
+
+
+SET_VGA_SR13:
+       movw $0x03c4,%dx           #SR5
+       movb $0x05,%al
+       outb %al,%dx
+       movw $0x03c5,%dx           #Enable
+       movb $0x86,%al
+       outb %al,%dx
+
+       movw $0x0070,%dx           
+       movb $0x51,%al             #SR13
+       outb %al,%dx
+       movw $0x0071,%dx
+       inb  %dx,%al
+       movb %al,%bl
+       andb $0xc0,%al
+       cmpb $0x80,%al
+       jne SET_VGA_SR14
+              
+       movw $0x03c4,%dx
+       movb $0x13,%al
+       outb %al,%dx
+       movw $0x03c5,%dx
+       movb %bl,%al
+       andb $0x3f,%al
+       outb %al,%dx
+
+SET_VGA_SR14: 
+       movw $0x0070,%dx
+       movb $0x71,%al             #SR14
+       outb %al,%dx
+       movw $0x0071,%dx
+       inb  %dx,%al
+       movb %al,%bl
+       andb $0x3f,%al
+       cmpb $0x0f,%al
+       jg   SET_VGA_SR16           
+
+       movw $0x03c4,%dx
+       movb $0x14,%al
+       outb %al,%dx
+       movw $0x03c5,%dx
+       movb %bl,%al
+       outb %al,%dx
+
+SET_VGA_SR16:
+       movw $0x0070,%dx
+       movb $0x61,%al             #SR16
+       outb %al,%dx
+       movw $0x0071,%dx
+       inb  %dx,%al
+       movb %al,%bl
+
+       movw $0x03c4,%dx
+       movb $0x16,%al
+       outb %al,%dx
+       movw $0x03c5,%dx
+       movb %bl,%al
+       outb %al,%dx
+
+SET_VGA_COMPLETE:
+
+
+
+
+        movw $0x0080,%dx
+        movb $1,%al
+        outb %al,%dx
+
+        //Get Base Address
+        movw $0xcf8,%dx
+        movl $0x80000874,%eax
+        outl %eax,%dx
+        movw $0xcfc,%dx
+        inl  %dx,%eax
+        movw %ax,%dx
+
+        //Disable Watch Dog Timer
+        addw $0x4b,%dx              #set 0x4b=0x00
+        movb $0x00,%al
+        outb %al,%dx
+      
+ 
+        movw $0x0080,%dx
+        movb $2,%al
+        outb %al,%dx
+
+        //Increse The Retry Counter
+        movw $0x0070,%dx
+        movb $0x60,%al
+        outb %al,%dx
+        movw $0x0071,%dx
+        inb  %dx,%al
+        addb $1,%al
+        outb %al,%dx
+
+
+Clock_Gen:
+        //Get Complete Flag & Parameter
+        movw $0x0070,%dx
+        movb $0x50,%al
+        outb %al,%dx
+        movw $0x0071,%dx
+        inb  %dx,%al
+        movb %al,%bl
+
+        andb $0x01,%al
+        cmpb $1,%al
+        jne  Clock_Gen_Backup
+        movb %bl,%al 
+        andb $0x08,%al
+        cmpb $0x08,%al
+        jne  Clock_Gen_Backup   
+        movb $0,%al    
+        movb %al,%bl        
+ 
+Clock_Gen_Backup:
+        movw $0x0080,%dx
+        movb $3,%al
+        outb %al,%dx
+
+        //backup the parameter
+        movb %bl,%al
+        andb $0x02,%al
+        cmpb $0x02,%al
+        je   Clock_Gen_Exit
+
+
+
+Clock_Gen_Adjust:
+        //Get The Retry Counter
+        movw $0x0070,%dx
+        movb $0x60,%al
+        outb %al,%dx
+        movw $0x0071,%dx
+        inb  %dx,%al
+        cmpb $3,%al               //It can try 2 times
+        jl   Clock_Gen_Start
+
+        //Clear The Retry Counter
+        movw $0x0070,%dx
+        movb $0x60,%al
+        outb %al,%dx
+        movb $0,%al
+        movw $0x0071,%dx
+        outb %al,%dx
+
+
+        movb $0,%al                     #degrade to default   
+        //Backup The New Parameter
+        movb %al,%bl
+
+             
+
+Clock_Gen_Start:
+        movw $0x0080,%dx
+        movb $4,%al
+        outb %al,%dx
+
+        //Restor The Parameter
+        movw $0x0070,%dx
+        movb $0x50,%al
+        outb %al,%dx
+        movb %bl,%al
+        movw $0x0071,%dx
+        outb %al,%dx
+
+
+
+        //Get Base Address
+        movw $0xcf8,%dx
+        movl $0x80000874,%eax
+        outl %eax,%dx
+        movw $0xcfc,%dx
+        inl  %dx,%eax
+        movw %ax,%dx
+
+        //Set Clock
+        addw $0x83,%dx           #set 0x83=0x20 KILL Operation
+        movb $0x20,%al
+        outb %al,%dx
+        addw $1,%dx              #set 0x84=0xd2,Salve=0xd2 Write operation
+        movb $0xd2,%al
+        outb %al,%dx
+        addw $3,%dx              #set 0x87=1 , ByteCount=1
+        movb $1,%al
+        outb %al,%dx
+        addw $1,%dx              #set 0x88=clock
+        movb %bl,%al
+        andb $0xf4,%al   
+        orb  $0x08,%al           #Clock Set by Software
+        outb %al,%dx
+        subw $5,%dx              #set 0x83=0x05, Block write
+        movb $5,%al
+        outb %al,%dx
+        movb $0x15,%al           #set 0x83=0x15, Start Block Write
+        outb %al,%dx
+
+        movw $0x0080,%dx
+        movb $5,%al
+        outb %al,%dx
+
+        //Get Base Address
+        movw $0xcf8,%dx
+        movl $0x80000874,%eax
+        outl %eax,%dx
+        movw $0xcfc,%dx
+        inl  %dx,%eax
+        movw %ax,%dx
+       
+        addw $0x80,%dx
+        movw $0xffff,%cx 
+
+Clock_Gen_Wait:
+        inb %dx,%al
+        andb $0x08,%al
+        cmpb $0x08,%al
+        je Clock_Gen_Complete
+        loop Clock_Gen_Wait 
+
+Clock_Gen_Fail:
+
+        movw $0x0080,%dx
+        movb $6,%al
+        outb %al,%dx
+
+        //Get Base Address
+        movw $0xcf8,%dx
+        movl $0x80000874,%eax
+        outl %eax,%dx
+        movw $0xcfc,%dx
+        inl  %dx,%eax
+        movw %ax,%dx
+
+
+        //Set Watch Dog Timer(200 ms)
+        addw $0x4a,%dx           #set 0x4a=50
+        movb $50,%al
+        outb %al,%dx
+        addw $1,%dx              #set 0x4b=0x83
+        movb $0x83,%al
+        outb %al,%dx
+
+        movw $0x0080,%dx
+        movb $7,%al
+        outb %al,%dx
+
+
+Clock_Gen_Delay1:
+        NOP 
+        jmp Clock_Gen_Delay1
+
+Clock_Gen_Complete:
+       //Set the Complete Flag
+        movw $0x0070,%dx
+        movb $0x50,%al
+        outb %al,%dx
+        movw $0x0071,%dx
+        inb  %dx,%al
+        orb  $0x02,%al
+        outb %al,%dx
+
+        movw $0x0080,%dx
+        movb $8,%al
+        outb %al,%dx
+
+
+        //Get Base Address
+        movw $0xcf8,%dx
+        movl $0x80000874,%eax
+        outl %eax,%dx
+        movw $0xcfc,%dx
+        inl  %dx,%eax
+        movw %ax,%dx
+
+        //Set Watch Dog Timer(200 ms)
+        addw $0x4a,%dx           #set 0x4a=50
+        movb $50,%al
+        outb %al,%dx
+        addw $1,%dx              #set 0x4b=0x83
+        movb $0x83,%al
+        outb %al,%dx
+
+
+        movw $0x0080,%dx
+        movb $9,%al
+        outb %al,%dx
+
+Clock_Gen_Delay2:
+        NOP
+        jmp Clock_Gen_Delay2
+
+
+Clock_Gen_Exit:
+        //Clear the Complete Flag
+        movw $0x0070,%dx
+        movb $0x50,%al
+        outb %al,%dx
+        movw $0x0071,%dx
+        inb  %dx,%al
+        andb $0xfd,%al
+        outb %al,%dx
+
+        //Clear The Retry Counter
+        movw $0x0070,%dx
+        movb $0x60,%al
+        outb %al,%dx
+        movb $0,%al
+        movw $0x0071,%dx
+        outb %al,%dx
+        
+        movw $0x0080,%dx
+        movb $0x10,%al
+        outb %al,%dx
+
+
+	movw	$0x5501, %ax			# Mode# enable, this bit
 	CALL_SP(write_pci_register)		# should be set before sizing.
-
-/* -----------------------------------------------------------------------------------------*/
 
 #ifdef SIZE_ALL
 	xorw	%bx, %bx			# clear %fs, %fs is used as "bitmap" of
@@ -188,7 +593,8 @@ no_sdram:
 	movw	%fs, %ax
 	movb	$0x63, %ah
 #ifdef HAVE_FRAMEBUFFER
-	orb	$SMA_SIZE, %al			# enable SMA 8 MB for VGA
+
+//	orb	$SMA_SIZE, %al			# enable SMA 8 MB for VGA
 #endif /* HAVE_FRAMEBUFFER */
 
 #else /* !SIZE_ALL */
@@ -196,7 +602,25 @@ no_sdram:
 no_sdram:
 #ifdef HAVE_FRAMEBUFFER
 	movb	$0x63, %ah			# enable DIMM 0 and
-	movb	$(SMA_SIZE + 0x01), %al		# enable SMA 8 MB for VGA
+
+        movw    $0x0070,%dx
+        movb    $0x70,%al
+        outb    %al,%dx
+        movw    $0x0071,%dx
+        inb     %dx,%al
+        andb    $0x70,%al
+        cmpb    $0x70,%al                       #Not supported yet
+        jne     CHECK_NEXT
+        movb    $0x20,%al                       #8MB
+        jmp     CHECK_OK
+CHECK_NEXT:
+        cmpb    $0x60,%al                       #Not supported yet
+        jne     CHECK_OK
+        movb    $0x20,%al                       #8MB   
+CHECK_OK:
+        orb     $0x81,%al
+
+//	movb	$(0xB0 + 0x01), %al		# enable SMA 8 MB for VGA
 #else /* HAVE_FRAMEBUFFER */
 	movw	$0x6301, %ax			# enable DIMM 0 
 #endif /* HAVE_FRAMEBUFFER */
@@ -205,7 +629,13 @@ no_sdram:
 
 	CALL_SP(write_pci_register)		# write register 0x63
 
-/* -----------------------------------------------------------------------------------------*/
+#if 0	
+	movw	$0x6006, %ax
+	CALL_SP(write_pci_register)		# write register 0x60~0x62 for each
+						# DIMM slot
+	movw	$0x63a1, %ax			# enable DIMM 0 
+	CALL_SP(write_pci_register)		# write register 0x63	
+#endif
 
 	movw	$pci_init_table, %si
 init_sdram:
@@ -217,9 +647,6 @@ init_sdram:
 	jmp	init_sdram
 
 init_complete:
-
-/* -----------------------------------------------------------------------------------------*/
-
 sis630ipl_start:
 	/* O.K. we have DRAM now, so set up STACK for CALL/RET */
 	movw	$DOC_STACK_SEG, %ax
@@ -233,7 +660,7 @@ sis630ipl_start:
 #else /* !STD_FLASH */
 #if (USE_DOC_MIL == 1) || (USE_DOC_2000_TSOP == 1)
 #	include "rom/doc_mil.inc"
-#elif (USE_DOC_MIL_PLUS == 1)
+#else (USE_DOC_MIL_PLUS == 1)
 #	include "rom/doc_mil_plus.inc"
 #endif
 #endif /* STD_FLASH */
@@ -241,7 +668,7 @@ sis630ipl_start:
 sis630ipl_end:
 	jmp	spl_vector			# jump to SPL vector
 
-/* -----------------------------------------------------------------------------------------*/
+/* ------------------------------------------------------------------------------------------*/
 
 write_lpc_register:
 	/* Input: AH - register number. AL - register value. */
@@ -264,11 +691,9 @@ write_common:
 	movw	$PCI_DATA_PORT, %dx
 	andb	$0x03, %al
 	addb	%al, %dl
-	movw	%cx, %ax			# Restore %ax
+	movb	%cl, %al
 	outb	%al, %dx
 	RET_SP					# End of write_[lpc|pci]_reg
-
-/* -----------------------------------------------------------------------------------------*/
 
 read_spd:
 	/* Input:  AH = 05h, AL = byte number of SPD to be read.
@@ -311,8 +736,6 @@ sis_set_smbus:
 	outb	%al, %dx
 	RET_BP					# End of sis_set_smbus
 
-/* -----------------------------------------------------------------------------------------*/
-
 sdram_type_bank_1:
 # Column Number	  8	  9	  10	  11	Row Number
 	.byte	0b0000,	0b0100,	0b1000,	0xff	# 11
@@ -325,8 +748,6 @@ sdram_type_bank_2:
 	.byte	0b0010,	0b0110,	0b1010,	0b1110	# 12
 	.byte	0b0011,	0b0111,	0b1011,	0b1111	# 13
 
-/* -----------------------------------------------------------------------------------------*/
-
 lpc_init_table:
 #	High Byte -> Register	Low Byte -> Value
 	.word	0x408a				# ACPI Enable, Decode E,F segment
@@ -337,12 +758,16 @@ lpc_init_table:
 	.word	0x7afe
 	.word	0x7bfe
 
-	.word	0x7550				# Store ACPI Base Address.
+	.word	0x7550				# Store ACPI Base Address
+      
 						# (for use of SMBus)
 	.word	0x0000	/* Null, End of table */
 	
 pci_init_table:
 #	High Byte -> Register	Low Byte -> Value
+
+//#include "dll.inc"
+
 	.word	0x8c44				# SDRCLK/SDWCLK
 	.word	0x8d86				# SDWCLK
 
@@ -355,8 +780,6 @@ pci_init_table:
 	.word	0x5720				# Refresh
 	.word	0x5201				# Refresh Cycle Enable
 	.word	0x0000	/* Null, End of table */
-
-/* -----------------------------------------------------------------------------------------*/
 
 #ifdef STD_FLASH
 	.org 0xfff0
@@ -377,8 +800,6 @@ reset_vector:
 spl_vector:
 	.byte	0xea				# jmp to 8000:0000, where SPL
 	.word	0x0000, SPL_RAM_SEG		# (LinuxBIOS) starts in RAM
-
-/* -----------------------------------------------------------------------------------------*/
 
 #ifdef STD_FLASH
 	.org 0xffff

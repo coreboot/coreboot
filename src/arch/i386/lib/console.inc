@@ -9,6 +9,9 @@ jmp	console0
 #define LINUXBIOS_EXTRA_VERSION
 #endif
 
+#ifndef ASM_CONSOLE_LOGLEVEL
+#define ASM_CONSOLE_LOGLEVEL 5
+#endif
 console_test:
 	.ascii	"\r\n\r\nLinuxBIOS-"
 	.ascii	STR(LINUXBIOS_VERSION)

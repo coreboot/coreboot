@@ -1,0 +1,14 @@
+object clog2.o
+object uart8250.o
+object memset.o
+object memcpy.o
+object memcmp.o
+object malloc.o
+object delay.o
+if HAVE_FALLBACK_BOOT
+  object fallback_boot.o
+end
+object compute_ip_checksum.o
+object version.o
+# Force version.o to recompile every time
+makedefine .PHONY : version.o

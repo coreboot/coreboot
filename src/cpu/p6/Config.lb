@@ -1,0 +1,5 @@
+option i686=1
+option INTEL_PPRO_MTRR=1
+#object microcode.o
+object mtrr.o
+#object l2_cache.o

@@ -1,0 +1,2 @@
+object elfboot.o
+object hardwaremain.o

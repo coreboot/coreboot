@@ -1,0 +1,3 @@
+option k7=1
+default  CPU_FIXUP=1
+#object cpufixup.o

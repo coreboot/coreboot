@@ -13,8 +13,10 @@ enum {
 	FINDDEV = 0xb102,
 	READCONFBYTE = 0xb108,
 	READCONFWORD = 0xb109,
+	READCONFDWORD = 0xb10a,
 	WRITECONFBYTE = 0xb10b,
-	WRITECONFWORD = 0xb10c
+	WRITECONFWORD = 0xb10c,
+	WRITECONFDWORD = 0xb10d
 };
 
 // errors go in AH. Just set these up so that word assigns
@@ -84,11 +86,14 @@ pcibios(
 		}
 	}
 	break;
+	case READCONFDWORD:
 	case READCONFWORD:
 	case READCONFBYTE:
+	case WRITECONFDWORD:
 	case WRITECONFWORD:
 	case WRITECONFBYTE:
 	{
+		unsigned long dword;
 		unsigned short word;
 		unsigned char byte;
 		unsigned char reg;
@@ -103,19 +108,31 @@ pcibios(
 			*peax = PCIBIOS_BADREG;
 			retval = -1;
 		}
-
-		if (func == READCONFBYTE) {
+	switch(func) {
+		case READCONFBYTE:
 			retval = pci_read_config_byte(dev, reg, &byte);
 			*pecx = byte;
-		} else if (func == READCONFWORD) {
+			break;
+		case READCONFWORD:
 			retval = pci_read_config_word(dev, reg, &word);
 			*pecx = word;
-		} else if (func == WRITECONFBYTE) {
+			break;
+		case READCONFDWORD:
+			retval = pci_read_config_dword(dev, reg, &dword);
+			*pecx = dword;
+			break;
+		case WRITECONFBYTE:
 			byte = *pecx;
                         retval = pci_write_config_byte(dev, reg, byte);
-                } else if (func == WRITECONFWORD) {
+			break;
+		case WRITECONFWORD:
 			word = *pecx;
                         retval = pci_write_config_word(dev, reg, word);
+			break;
+		case WRITECONFDWORD:
+			word = *pecx;
+                        retval = pci_write_config_dword(dev, reg, dword);
+			break;
                 }
 			
 		if (retval) 

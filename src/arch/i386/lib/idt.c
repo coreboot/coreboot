@@ -35,6 +35,10 @@ void handler(void) {
 	" 	pushal\n"
 	"	movl $0x10, %eax\n"
 	"	jmp 1f\n"
+	"idthandle42:\n"
+	" 	pushal\n"
+	"	movl $0x42, %eax\n"
+	"	jmp 1f\n"
 	"idthandle1a: \n"
 	" 	pushal\n"
 	"	movl $0x1a, %eax\n"
@@ -179,6 +183,7 @@ void
 setup_realmode_idt(void) {
 	extern unsigned char idthandle, end_idthandle;
 	extern unsigned char idthandle10, idthandle1a; 
+	extern unsigned char idthandle42;
 	int i;
 	struct realidt *idts = (struct realidt *) 0;
 
@@ -195,6 +200,9 @@ setup_realmode_idt(void) {
 	idts[0x1a].offset += &idthandle1a - &idthandle;
 	printk_debug("idts[0x1a].offset is now 0x%x\n", 
 			idts[0x1a].offset);
+	idts[0x42].offset += &idthandle42 - &idthandle;
+	printk_debug("idts[0x42].offset is now 0x%x\n", 
+			idts[0x42].offset);
 	
 	memcpy((void *) 1024, &idthandle, &end_idthandle - &idthandle);
 

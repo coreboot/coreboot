@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdint.h>
 
-void *smp_write_config_table(void *v, unsigned long * processor_map)
+void *smp_write_config_table(void *v)
 {
         static const char sig[4] = "PCMP";
         static const char oem[8] = "TYAN    ";
@@ -28,7 +28,7 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
         mc->mpe_checksum = 0;
         mc->reserved = 0;
 
-        smp_write_processors(mc, processor_map);
+        smp_write_processors(mc);
 
 
 /*Bus:		Bus ID	Type*/
@@ -41,19 +41,21 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 /*I/O APICs:	APIC ID	Version	State		Address*/
 	smp_write_ioapic(mc, 8, 0x20, 0xfec00000);
 	{
-		struct pci_dev *dev;
-		uint32_t base;
+                device_t dev;
+                struct resource *res;
 		dev = dev_find_slot(1, PCI_DEVFN(0x1e,0));
 		if (dev) {
-			base = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
-			base &= PCI_BASE_ADDRESS_MEM_MASK;
-			smp_write_ioapic(mc, 9, 0x20, base);
+                        res = find_resource(dev, PCI_BASE_ADDRESS_0);
+                        if (res) {
+                                smp_write_ioapic(mc, 0x09, 0x20, res->base);
+                        }		
 		}
 		dev = dev_find_slot(1, PCI_DEVFN(0x1c,0));
 		if (dev) {
-			base = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
-			base &= PCI_BASE_ADDRESS_MEM_MASK;
-			smp_write_ioapic(mc, 0xa, 0x20, base);
+                        res = find_resource(dev, PCI_BASE_ADDRESS_0);
+                        if (res) {
+                                smp_write_ioapic(mc, 0x0a, 0x20, res->base);
+                        }		
 		}
 	}
 /*I/O Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#
@@ -157,9 +159,9 @@ Compatibility Bus Address
 	return smp_next_mpe_entry(mc);
 }
 
-unsigned long write_smp_table(unsigned long addr, unsigned long *processor_map)
+unsigned long write_smp_table(unsigned long addr)
 {
 	void *v;
 	v = smp_write_floating_table(addr);
-	return (unsigned long)smp_write_config_table(v, processor_map);
+	return (unsigned long)smp_write_config_table(v);
 }

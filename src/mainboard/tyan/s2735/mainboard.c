@@ -139,10 +139,10 @@ static struct device_operations mainboard_operations = {
 
 static void enable_dev(device_t dev)
 {
-	dev->ops = &mainboard_ops;
+	dev->ops = &mainboard_operations;
 }
 
-struct chip_operations mainboard_tyan_s2735_control = {
+struct chip_operations mainboard_tyan_s2735_ops = {
         .enable_dev = enable_dev,
         .name      = "Tyan s2735 mainboard ",
 };

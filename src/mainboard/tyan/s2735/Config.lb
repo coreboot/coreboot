@@ -1,230 +1,200 @@
-uses HAVE_MP_TABLE
-uses HAVE_PIRQ_TABLE
-uses USE_FALLBACK_IMAGE
-uses LB_CKS_RANGE_START
-uses LB_CKS_RANGE_END
-uses LB_CKS_LOC
-uses MAINBOARD
-uses ARCH
-uses HARD_RESET_BUS
-uses HARD_RESET_DEVICE
-uses HARD_RESET_FUNCTION
-#
-#
-###
-### Set all of the defaults for an x86 architecture
-###
-#
-#
-###
-### Build the objects we have code for in this directory.
-###
-##object mainboard.o
-config chip.h
-register "fixup_scsi" = "1" 
-register "fixup_vga" = "1"
-
+##
+## Compute the location and size of where this firmware image
+## (linuxBIOS plus bootloader) will live in the boot rom chip.
+##
+if USE_FALLBACK_IMAGE
+	default ROM_SECTION_SIZE   = FALLBACK_SIZE
+	default ROM_SECTION_OFFSET = ( ROM_SIZE - FALLBACK_SIZE )
+else
+	default ROM_SECTION_SIZE   = ( ROM_SIZE - FALLBACK_SIZE )
+	default ROM_SECTION_OFFSET = 0
+end
 
 ##
-## Move the default LinuxBIOS cmos range off of AMD RTC registers
+## Compute the start location and size size of
+## The linuxBIOS bootloader.
 ##
-default LB_CKS_RANGE_START=49
-default LB_CKS_RANGE_END=122
-default LB_CKS_LOC=123
+default PAYLOAD_SIZE            = ( ROM_SECTION_SIZE - ROM_IMAGE_SIZE )
+default CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+
+##
+## Compute where this copy of linuxBIOS will start in the boot rom
+##
+default _ROMBASE      = ( CONFIG_ROM_STREAM_START + PAYLOAD_SIZE )
+
+##
+## Compute a range of ROM that can cached to speed up linuxBIOS,
+## execution speed.
+##
+## XIP_ROM_SIZE must be a power of 2.
+## XIP_ROM_BASE must be a multiple of XIP_ROM_SIZE
+##
+default XIP_ROM_SIZE=65536
+default XIP_ROM_BASE = ( _ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE )
+
+arch i386 end 
+
+##
+## Build the objects we have code for in this directory.
+##
 
 driver mainboard.o
-#dir /drvers/adaptec/7902
-#dir /drivers/si/3114
-#dir /drivers/intel/82551_ipmi
-#dir /drivers/ati/ragexl
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
-#
-#default HARD_RESET_BUS=1
-#default HARD_RESET_DEVICE=4
-#default HARD_RESET_FUNCTION=0
-#
-arch i386 end
-#
-###
-### Build our 16 bit and 32 bit linuxBIOS entry code
-###
-mainboardinit cpu/i386/entry16.inc
-mainboardinit cpu/i386/entry32.inc
-mainboardinit cpu/i386/bist32.inc
-ldscript /cpu/i386/entry16.lds
-ldscript /cpu/i386/entry32.lds
-#
-###
-### Build our reset vector (This is where linuxBIOS is entered)
-###
-if USE_FALLBACK_IMAGE 
-	mainboardinit cpu/i386/reset16.inc 
-	ldscript /cpu/i386/reset16.lds 
-else
-	mainboardinit cpu/i386/reset32.inc 
-	ldscript /cpu/i386/reset32.lds 
-end
-#
-#### Should this be in the northbridge code?
-mainboardinit arch/i386/lib/cpu_reset.inc
-#
-###
-### Include an id string (For safe flashing)
-###
-mainboardinit arch/i386/lib/id.inc
-ldscript /arch/i386/lib/id.lds
-#
-####
-#### This is the early phase of linuxBIOS startup 
-#### Things are delicate and we test to see if we should
-#### failover to another image.
-####
-#option MAX_REBOOT_CNT=2
-if USE_FALLBACK_IMAGE
-  ldscript /arch/i386/lib/failover.lds 
-end
-#
-###
-### Setup our mtrrs
-###
-#mainboardinit cpu/p6/earlymtrr.inc
-###
-### Only the bootstrap cpu makes it here.
-### Failover if we need to 
-###
-#
-if USE_FALLBACK_IMAGE
-  mainboardinit ./failover.inc
-end
+#object reset.o
 
-#
-#
-###
-### Setup the serial port
-###
-mainboardinit pc80/serial.inc
-mainboardinit arch/i386/lib/console.inc
-mainboardinit cpu/i386/bist32_fail.inc
-#
-####
-#### O.k. We aren't just an intermediary anymore!
-####
-#
-###
-### When debugging disable the watchdog timer
-###
-##option MAXIMUM_CONSOLE_LOGLEVEL=7
-#default MAXIMUM_CONSOLE_LOGLEVEL=7
-#
-#if USE_FALLBACK_IMAGE mainboardinit arch/i386/lib/noop_failover.inc  end
-#
-###
-### Romcc output
-###
-
+##
+## Romcc output
+##
 makerule ./failover.E
 	depends "$(MAINBOARD)/failover.c" 
 	action "$(CPP) -I$(TOP)/src $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/failover.c > ./failover.E"
 end
 
 makerule ./failover.inc
-	depends "./romcc ./failover.E"
+	depends "./failover.E ./romcc"
 	action "./romcc -O -o failover.inc --label-prefix=failover ./failover.E"
 end
 
 makerule ./auto.E 
-        depends "$(MAINBOARD)/auto.c option_table.h"
-        action  "$(CPP) -I$(TOP)/src -I. $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
+	depends	"$(MAINBOARD)/auto.c option_table.h " 
+	action	"$(CPP) -I$(TOP)/src -I. $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
 end
 makerule ./auto.inc 
-	depends "./romcc ./auto.E"
-	action "./romcc -O2 -mcpu=k8 -o auto.inc --label-prefix=auto ./auto.E" 
-#        action  "./romcc -O2 ./auto.E > auto.inc"
+	depends "./auto.E ./romcc"
+	action	"./romcc -mcpu=k8 -O2 ./auto.E > auto.inc"
 end
-mainboardinit cpu/p6/enable_mmx_sse.inc
-mainboardinit ./auto.inc
-mainboardinit cpu/p6/disable_mmx_sse.inc
-#
+
+##
+## Build our 16 bit and 32 bit linuxBIOS entry code
+##
+mainboardinit cpu/x86/16bit/entry16.inc
+mainboardinit cpu/x86/32bit/entry32.inc
+ldscript /cpu/x86/16bit/entry16.lds
+ldscript /cpu/x86/32bit/entry32.lds
+
+##
+## Build our reset vector (This is where linuxBIOS is entered)
+##
+if USE_FALLBACK_IMAGE 
+	mainboardinit cpu/x86/16bit/reset16.inc 
+	ldscript /cpu/x86/16bit/reset16.lds 
+else
+	mainboardinit cpu/x86/32bit/reset32.inc 
+	ldscript /cpu/x86/32bit/reset32.lds 
+end
+
+### Should this be in the northbridge code?
+mainboardinit arch/i386/lib/cpu_reset.inc
+
+##
+## Include an id string (For safe flashing)
+##
+mainboardinit arch/i386/lib/id.inc
+ldscript /arch/i386/lib/id.lds
+
 ###
-### Include the secondary Configuration files 
+### This is the early phase of linuxBIOS startup 
+### Things are delicate and we test to see if we should
+### failover to another image.
+###
+if USE_FALLBACK_IMAGE
+	ldscript /arch/i386/lib/failover.lds 
+	mainboardinit ./failover.inc
+end
+
+###
+### O.k. We aren't just an intermediary anymore!
 ###
 
+##
+## Setup RAM
+##
+mainboardinit cpu/x86/fpu/enable_fpu.inc
+mainboardinit cpu/x86/mmx/enable_mmx.inc
+mainboardinit cpu/x86/sse/enable_sse.inc
+mainboardinit ./auto.inc
+mainboardinit cpu/x86/sse/disable_sse.inc
+mainboardinit cpu/x86/mmx/disable_mmx.inc
+
+##
+## Include the secondary Configuration files 
+##
+dir /pc80
 config chip.h
 
+# sample config for tyan/s2735
 chip northbridge/intel/e7501
-	device pci_domain 0
-		device pci 0.0 on end 
-		device pci 0.1 on end
-		device pci 2.0 on 
-			chip southbridge/intel/i82870
-				device pci 1c.0
-				device pci 1d.0
-				device pci 1e.0
-				device pci 1f.0
-			end
-		end
-		device pci 6.0 on end
-		chip southbridge/intel/i82801er
-			device pci 1d.0 on end
-			device pci 1d.1 on end
-			device pci 1d.2 on end
-			device pci 1d.3 on end
-			device pci 1d.7 on end
-			device pci 1e.0 on end
-			device pci 1f.0 on 
-				# device pci 8.0 end
-				chip winbond/w83627hf
-		                        device pnp 2e.0 on     #  Floppy
-		                                 io 0x60 = 0x3f0
-		                                irq 0x70 = 6
-		                                drq 0x74 = 2
-					end
-		                        device pnp 2e.1 off     #  Parallel Port
-		                                 io 0x60 = 0x378
-		                                irq 0x70 = 7
-					end
-		                        device pnp 2e.2 on      #  Com1
-		                                 io 0x60 = 0x3f8
-		                                irq 0x70 = 4
-					end
-		                        device pnp 2e.3 off     #  Com2
-		                                 io 0x60 = 0x2f8
-		                                irq 0x70 = 3
-					end
-		                        device pnp 2e.5 on      #  Keyboard
-		                                 io 0x60 = 0x60
-		                                 io 0x62 = 0x64
-		                                irq 0x70 = 1
-						irq 0x72 = 12
-					end
-		                        device pnp 2e.6 off end #  CIR
-		                        device pnp 2e.7 off end #  GAME_MIDI_GIPO1
-		                        device pnp 2e.8 off end #  GPIO2
-		                        device pnp 2e.9 off end #  GPIO3
-		                        device pnp 2e.a off end #  ACPI
-		                        device pnp 2e.b on      #  HW Monitor
-						 io 0x60 = 0x290
-					end
-				end
-			end
-			device pci 1f.1 off end
-			device pci 1f.2 on end
-			device pci 1f.3 on end
-			device pci 1f.5 off end
-			device pci 1f.6 off end
-		
-		end
-	end
-	device apic_cluster 0
-		chip cpu/intel/socket_mPGA604_533Mhz
-			apic 0
-		end
-		chip cpu/intel/socket_mPGA604_533Mhz
-			apic 6
-		end
-	end
+        device pci_domain 0 on
+                device pci 0.0 on end
+                device pci 0.1 on end
+                device pci 2.0 on
+                        chip southbridge/intel/i82870
+                                device pci 1c.0 on end
+                                device pci 1d.0 on end
+                                device pci 1e.0 on end
+                                device pci 1f.0 on end
+                        end
+                end
+                device pci 6.0 on end
+                chip southbridge/intel/i82801er
+                        device pci 1d.0 on end
+                        device pci 1d.1 on end
+                        device pci 1d.2 on end
+                        device pci 1d.3 on end
+                        device pci 1d.7 on end
+                        device pci 1e.0 on end
+                        device pci 1f.0 on
+                                # device pci 8.0 end
+                                chip superio/winbond/w83627hf
+                                        device pnp 2e.0 on     #  Floppy
+                                                 io 0x60 = 0x3f0
+                                                irq 0x70 = 6
+                                                drq 0x74 = 2
+                                        end
+                                        device pnp 2e.1 off     #  Parallel Port
+                                                 io 0x60 = 0x378
+                                                irq 0x70 = 7
+                                        end
+                                        device pnp 2e.2 on      #  Com1
+                                                 io 0x60 = 0x3f8
+                                                irq 0x70 = 4
+                                        end
+                                        device pnp 2e.3 off     #  Com2
+                                                 io 0x60 = 0x2f8
+                                                irq 0x70 = 3
+                                        end
+                                        device pnp 2e.5 on      #  Keyboard
+                                                 io 0x60 = 0x60
+                                                 io 0x62 = 0x64
+                                                irq 0x70 = 1
+                                                irq 0x72 = 12
+                                        end
+                                        device pnp 2e.6 off end #  CIR
+                                        device pnp 2e.7 off end #  GAME_MIDI_GIPO1
+                                        device pnp 2e.8 off end #  GPIO2
+                                        device pnp 2e.9 off end #  GPIO3
+                                        device pnp 2e.a off end #  ACPI
+                                        device pnp 2e.b on      #  HW Monitor
+                                                 io 0x60 = 0x290
+                                        end
+                                end
+                        end
+                        device pci 1f.1 off end
+                        device pci 1f.2 on end
+                        device pci 1f.3 on end
+                        device pci 1f.5 off end
+                        device pci 1f.6 off end
+
+                end
+        end
+        device apic_cluster 0 on
+                chip cpu/intel/socket_mPGA604_533Mhz
+                        device apic 0 on end
+                end
+                chip cpu/intel/socket_mPGA604_533Mhz
+                        device apic 6 on end
+                end
+        end
 end
 
-dir /pc80
-#dir /bioscall

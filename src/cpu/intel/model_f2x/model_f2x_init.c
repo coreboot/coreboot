@@ -30,7 +30,7 @@ static uint32_t microcode_updates[] = {
 };
 
 
-static void model_f2x_init(device_t dev)
+static void model_f2x_init(device_t cpu)
 {
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
@@ -48,7 +48,7 @@ static void model_f2x_init(device_t dev)
 };
 
 static struct device_operations cpu_dev_ops = {
-	.init     = model_f1x_init,
+	.init     = model_f2x_init,
 };
 static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x0f22 },

@@ -1,10 +1,12 @@
 #define ASSEMBLY 1
+
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
-#include <arch/smp/lapic.h>
+#include <cpu/x86/lapic.h>
+#include <arch/cpu.h>
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
@@ -12,17 +14,13 @@
 #include "ram/ramtest.c"
 #include "southbridge/intel/i82801er/i82801er_early_smbus.c"
 #include "northbridge/intel/e7501/raminit.h"
-
-#if 1
-#include "cpu/p6/apic_timer.c"
+#include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
-#endif
-
-#include "cpu/p6/boot_cpu.c"
+#include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/intel/e7501/debug.c"
-#include "superio/winbond/w83627hf/w83627hf_early_serial.c" 
-
-#include "cpu/p6/earlymtrr.c"
+#include "superio/winbond/w83627hf/w83627hf_early_serial.c"
+#include "cpu/x86/mtrr/earlymtrr.c"
+#include "cpu/x86/bist.h"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
@@ -55,7 +53,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/intel/e7501/reset_test.c"
 #include "sdram/generic_sdram.c"
 
-static void main(void)
+static void main(unsigned long bist)
 {
 	static const struct mem_controller memctrl[] = {
 		{
@@ -66,14 +64,21 @@ static void main(void)
 		},
 	};
 
-#if 1
-        enable_lapic();
-        init_timer();
-#endif
-        
+        if (bist == 0) {
+                /* Skip this if there was a built in self test failure */
+                early_mtrr_init();
+                enable_lapic();
+                init_timer();
+
+        }
+
         w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
         uart_init();
         console_init();
+
+        /* Halt if there was a built in self test failure */
+	report_bist_failure(bist);
+
 //        setup_default_resource_map();
 #if 0
 	print_pci_devices();

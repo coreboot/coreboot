@@ -105,7 +105,7 @@ default LB_CKS_LOC=123
 ## Only worry about 2 micro processors
 ##
 default CONFIG_SMP=1
-default CONFIG_MAX_CPUS=2
+default CONFIG_MAX_CPUS=4
 
 ##
 ## Build code to setup a generic IOAPIC

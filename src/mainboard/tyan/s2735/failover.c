@@ -4,22 +4,14 @@
 #include <device/pci_ids.h>
 #include <arch/io.h>
 #include <arch/romcc_io.h>
-#include <arch/smp/lapic.h>
+#include <cpu/x86/lapic.h>
 #include "pc80/mc146818rtc_early.c"
 #include "southbridge/intel/i82801er/cmos_failover.c"
-#include "cpu/p6/boot_cpu.c"
+#include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/intel/e7501/reset_test.c"
 
-#define HAVE_REGPARM_SUPPORT 0
-#if HAVE_REGPARM_SUPPORT
 static unsigned long main(unsigned long bist)
 {
-#else
-static void main(void)
-{
-	unsigned long bist = 0;
-	
-#endif
 	/* Is this a deliberate reset by the bios */
 	if (bios_reset_detected() && last_boot_normal()) {
 		goto normal_image;
@@ -51,9 +43,5 @@ static void main(void)
 		);
 #endif
  fallback_image:
-#if HAVE_REGPARM_SUPPORT
 	return bist;
-#else
-	return;
-#endif
 }

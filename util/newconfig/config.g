@@ -108,7 +108,7 @@ class debug_info:
 			print str
 
 global debug
-debug = debug_info(debug_info.none)
+debug = debug_info(debug_info.dumptree)
 
 # -----------------------------------------------------------------------------
 #                    Error Handling
@@ -571,7 +571,7 @@ class option_value:
 
 class partobj:
 	"""A configuration part"""
-	def __init__ (self, image, dir, parent, part, type_name, instance_name, link, chip_or_device):
+	def __init__ (self, image, dir, parent, part, type_name, instance_name, chip_or_device):
 		debug.info(debug.object, "partobj dir %s parent %s part %s" \
 				% (dir, parent, part))
 
@@ -580,7 +580,9 @@ class partobj:
 
 		# links for static device tree
 		self.children = 0
-		self.siblings = 0
+		self.prev_sibling = 0
+		self.next_sibling = 0
+		self.prev_device = 0
 		self.next_device = 0
 		self.chip_or_device = chip_or_device
 
@@ -627,11 +629,9 @@ class partobj:
 		# Enabled state of the device
 		self.enabled = 1
 
-                # Link from parent device
-                if ((link < 0) or (link > 16)):
-        		fatal("Invalid link")
-                self.link = link
-		
+		# Flag if I am a dumplicate device
+		self.dup = 0
+
 		# If no instance name is supplied then generate
 		# a unique name
 		if (instance_name == 0):
@@ -642,11 +642,12 @@ class partobj:
 		else:
 			self.instance_name = instance_name
 			self.chipinfo_name = "%s_info_%d" % (self.instance_name, self.instance)
-			
+
 		# Link this part into the device list
 		if (self.chip_or_device == 'device'):
 			if (image.last_device):
 				image.last_device.next_device = self
+			self.prev_device = image.last_device
 			image.last_device = self
 
 		# Link this part into the tree
@@ -658,31 +659,43 @@ class partobj:
 			if (parent.children):
 				debug.info(debug.gencode, "add %s (%d) as sibling" % (parent.children.dir, parent.children.instance))
 				youngest = parent.children
-				while(youngest.siblings):
-					youngest = youngest.siblings
-				youngest.siblings = self
+				while(youngest.next_sibling):
+					youngest = youngest.next_sibling
+				youngest.next_sibling = self
+				self.prev_sibling = youngest
 			else:
 				parent.children = self
 		else:
 			self.parent = self
+
 
 	def info(self):
 		return "%s: %s" % (self.part, self.type)
 	def type(self):
 		return self.chip_or_device
 
+	def readable_name(self):
+		name = ""
+		name = "%s_%d" % (self.type_name, self.instance)
+		if (self.chip_or_device == 'chip'):
+			name = "%s %s %s" % (name, self.part, self.dir)
+		else:
+			name = "%s %s" % (name, self.path)
+		return name
+			
 	def dumpme(self, lvl):
 		"""Dump information about this part for debugging"""
+		print "%d: %s" % (lvl, self.readable_name())
 		print "%d: part %s" % (lvl, self.part)
 		print "%d: instance %d" % (lvl, self.instance)
+		print "%d: chip_or_device %s"  %  (lvl, self.chip_or_device)
 		print "%d: dir %s" % (lvl,self.dir)
 		print "%d: type_name %s" % (lvl,self.type_name)
-		print "%d: parent %s" % (lvl,self.parent.part)
-		print "%d: parent dir %s" % (lvl,self.parent.dir)
+		print "%d: parent: %s" % (lvl, self.parent.readable_name())
 		if (self.children):
-			print "%d: child %s" % (lvl, self.children.dir)
-		if (self.siblings):
-			print "%d: siblings %s" % (lvl, self.siblings.dir)
+			print "%d: child %s" % (lvl, self.children.readable_name())
+		if (self.next_sibling):
+			print "%d: siblings %s" % (lvl, self.next_sibling.readable_name())
 		print "%d: initcode " % lvl
 		for i in self.initcode:
 			print "\t%s" % i
@@ -704,12 +717,15 @@ class partobj:
 	def firstparentdevice(self):
 		"""Find the first device in the parent link."""
 		parent = self.parent
-		while (parent):
-			if ((parent.parent == parent) or (parent.chip_or_device == 'device')):
-				return parent
-			else:
-				parent = parent.parent
-		fatal("Device %s has no device parent; this is a config file error" % self.type_name)
+		while (parent and (parent.parent != parent) and (parent.chip_or_device != 'device')):
+			parent = parent.parent
+		if ((parent.parent != parent) and (parent.chip_or_device != 'device')):
+			parent = 0
+		while(parent and (parent.dup == 1)):
+			parent = parent.prev_sibling
+		if (not parent):
+			fatal("Device %s has no device parent; this is a config file error" % self.readable_name())
+		return parent
 
 	def firstparentchip(self):
 		"""Find the first chip in the parent link."""
@@ -719,19 +735,21 @@ class partobj:
 				return parent
 			else:
 				parent = parent.parent
-		fatal("Device %s has no chip parent; this is a config file error" % self.type_name)
+		fatal("Device %s has no chip parent; this is a config file error" % self.readable_name())
 
 	def firstsiblingdevice(self):
 		"""Find the first device in the sibling link."""
-		sibling = self.siblings
+		sibling = self.next_sibling
+		while(sibling and (sibling.path == self.path)):
+			sibling = sibling.next_sibling
 		if ((not sibling) and (self.parent.chip_or_device == 'chip')):
-			sibling = self.parent.siblings
+			sibling = self.parent.next_sibling
 		while(sibling):
 			if (sibling.chip_or_device == 'device'):
 				return sibling
 			else:
 				sibling = sibling.children
-		return 0		
+		return 0
 
 	def gencode(self, file, pass_num):
 		"""Generate static initalizer code for this part. Two passes
@@ -749,53 +767,44 @@ class partobj:
 			return
 		# This is pass the second, which is pass number 1
 		# this is really just a case statement ...
-		if ((self.instance) and (self.chip_or_device == 'chip') and (self.chipconfig)):
-			debug.info(debug.gencode, "gencode: chipconfig(%d)" % \
-					self.instance)
-			file.write("struct %s_config %s" % (self.type_name ,\
-					self.chipinfo_name))
-			if (self.registercode):
-				file.write("\t= {\n")
-				for f, v in self.registercode.items():
-					file.write( "\t.%s = %s,\n" % (f, v))
-				file.write("};\n")
-			else:
-				file.write(";")
-			file.write("\n")
-			return
-			
-		if (self.chipconfig):
-			debug.info(debug.gencode, "gencode: chipconfig(%d)" % \
-					self.instance)
-			file.write("struct %s_config %s" % (self.type_name ,\
-					self.chipinfo_name))
-			if (self.registercode):
-				file.write("\t= {\n")
-				for f, v in self.registercode.items():
-					file.write( "\t.%s = %s,\n" % (f, v))
-				file.write("};\n")
-			else:
-				file.write(";")
-			file.write("\n")
 
-		if (self.instance == 0):
-			self.instance_name = "dev_root"
-			file.write("struct device **last_dev_p = &%s.next;\n" % (self.image.last_device.instance_name))
-			file.write("struct device dev_root = {\n")
-			file.write("\t.ops = &default_dev_ops_root,\n")
-			file.write("\t.bus = &dev_root.link[0],\n")
-			file.write("\t.path = { .type = DEVICE_PATH_ROOT },\n")
-			file.write("\t.enabled = 1,\n\t.links = 1,\n")
-			file.write("\t.link = {\n\t\t[0] = {\n")
-			file.write("\t\t\t.dev=&dev_root,\n\t\t\t.link = 0,\n")
-			file.write("\t\t\t.children = &%s,\n" % self.firstchilddevice().instance_name)
-			file.write("\t\t},\n")
-			file.write("\t},\n")
+		if (self.chip_or_device == 'chip'):
 			if (self.chipconfig):
-				file.write("\t.chip_ops = &%s_ops,\n" % self.type_name)
-				file.write("\t.chip_info = &%s_info_%s,\n" % (self.type_name, self.instance))
-			file.write("\t.next = &%s,\n" % self.firstchilddevice().instance_name)
-			file.write("};\n")
+				debug.info(debug.gencode, "gencode: chipconfig(%d)" % \
+					self.instance)
+				file.write("struct %s_config %s" % (self.type_name ,\
+					self.chipinfo_name))
+				if (self.registercode):
+					file.write("\t= {\n")
+					for f, v in self.registercode.items():
+						file.write( "\t.%s = %s,\n" % (f, v))
+					file.write("};\n")
+				else:
+					file.write(";")
+				file.write("\n")
+
+			if (self.instance == 0):
+				self.instance_name = "dev_root"
+				file.write("struct device **last_dev_p = &%s.next;\n" % (self.image.last_device.instance_name))
+				file.write("struct device dev_root = {\n")
+				file.write("\t.ops = &default_dev_ops_root,\n")
+				file.write("\t.bus = &dev_root.link[0],\n")
+				file.write("\t.path = { .type = DEVICE_PATH_ROOT },\n")
+				file.write("\t.enabled = 1,\n\t.links = 1,\n")
+				file.write("\t.link = {\n\t\t[0] = {\n")
+				file.write("\t\t\t.dev=&dev_root,\n\t\t\t.link = 0,\n")
+				file.write("\t\t\t.children = &%s,\n" % self.firstchilddevice().instance_name)
+				file.write("\t\t},\n")
+				file.write("\t},\n")
+				if (self.chipconfig):
+					file.write("\t.chip_ops = &%s_ops,\n" % self.type_name)
+					file.write("\t.chip_info = &%s_info_%s,\n" % (self.type_name, self.instance))
+				file.write("\t.next = &%s,\n" % self.firstchilddevice().instance_name)
+				file.write("};\n")
+			return
+
+		# Don't print duplicate devices, just print their children
+		if (self.dup):
 			return
 
 		file.write("struct device %s = {\n" % self.instance_name)
@@ -806,14 +815,26 @@ class partobj:
 		if (self.resources):
 			file.write("\t.resources = %d,\n" % self.resources)
 			file.write("\t.resource = {%s\n\t },\n" % self.resource)
-		file.write("\t.links = 1,\n")
-		file.write("\t.link = {\n\t\t[0] = {\n")
-		file.write("\t\t\t.dev=&%s,\n\t\t\t.link = 0,\n" % self.instance_name)
-		if (self.firstchilddevice()):
-			file.write("\t\t\t.children = &%s,\n" % self.firstchilddevice().instance_name)
-		file.write("\t\t},\n")
+		file.write("\t.link = {\n");	
+		links = 0
+		bus = self
+		while(bus and (bus.path == self.path)):
+			child = bus.firstchilddevice()
+			if (child or (bus != self) or (bus.next_sibling and (bus.next_sibling.path == self.path))):
+				file.write("\t\t[%d] = {\n" % links)
+				file.write("\t\t\t.link = %d,\n" % links)
+				file.write("\t\t\t.dev = &%s,\n" % self.instance_name)
+				if (child):
+					file.write("\t\t\t.children = &%s,\n" %child.instance_name)
+				file.write("\t\t},\n")
+				links = links + 1
+			if (1):	
+				bus = bus.next_sibling
+			else:
+				bus = 0
 		file.write("\t},\n")
-		sibling = self.firstsiblingdevice();
+		file.write("\t.links = %d,\n" % (links))
+		sibling = self.firstsiblingdevice(); 
 		if (sibling):
 			file.write("\t.sibling = &%s,\n" % sibling.instance_name)
 		chip = self.firstparentchip()
@@ -825,40 +846,6 @@ class partobj:
 		file.write("};\n")
 		return
 
-
-
-		file.write("\t/* %s %s */\n" % (self.part, self.dir))
-                file.write("\t.link = %d,\n" % (self.link))
-#		if (self.path != ""):
-#			file.write("\t.path = { %s\n\t},\n" % (self.path) )
-		if (self.siblings):
-			debug.info(debug.gencode, "gencode: siblings(%d)" \
-				% self.siblings.instance)
-			file.write("\t.next = &%s,\n" \
-				% self.siblings.instance_name)
-		else:
-			file.write("\t.next = 0,\n")
-		if (self.children):
-			debug.info(debug.gencode, "gencode: children(%d)" \
-				% self.children.instance)
-			file.write("\t.children = &%s,\n" \
-				% self.children.instance_name)
-		else:
-			file.write("\t.children = 0,\n")
-		if (self.chipconfig):
-			# set the pointer to the structure for all this
-			# type of part
-			file.write("\t.control= &%s_control,\n" % \
-					self.type_name )
-			# generate the pointer to the isntance
-			# of the chip struct
-			file.write("\t.chip_info = (void *) &%s,\n" \
-					% self.chipinfo_name)
-		else:
-			file.write("\t.control= 0,\n")
-			file.write("\t.chip_info= 0,\n")
-		file.write("};\n")
-		
     	def addinit(self, code):
 		"""Add init file to this part"""
         	self.initcode.append(code)
@@ -870,6 +857,8 @@ class partobj:
 
     	def addregister(self, field, value):
 		"""Register static initialization information"""
+		if (self.chip_or_device != 'chip'):
+			fatal("Only chips can have register values")
 		field = dequote(field)
 		value = dequote(value)
         	setdict(self.registercode, field, value)
@@ -888,6 +877,19 @@ class partobj:
 		""" Add a resource to a device """
 		self.resource = "%s\n\t\t{ .flags=%s, .index=0x%x, .base=0x%x}," % (self.resource, type, index, value)
 		self.resources = self.resources + 1
+
+	def set_path(self, path):
+		self.path = path
+		if (self.prev_sibling and (self.prev_sibling.path == self.path)):
+			self.dup = 1
+			if (self.prev_device):
+				self.prev_device.next_device = self.next_device
+			if (self.next_device):	
+				self.next_device.prev_device = self.prev_device
+			if (self.image.last_device == self):
+				self.image.last_device = self.prev_device
+			self.prev_device = 0
+			self.next_device = 0
 		
 	def addpcipath(self, slot, function):
 		""" Add a relative pci style path from our parent to this device """
@@ -895,7 +897,7 @@ class partobj:
 			fatal("Invalid device id")
 		if ((function < 0) or (function > 7)):
 			fatal("Invalid function")
-		self.path = ".type=DEVICE_PATH_PCI,.u={.pci={ .devfn = PCI_DEVFN(0x%x,%d)}}" % (slot, function)
+		self.set_path(".type=DEVICE_PATH_PCI,.u={.pci={ .devfn = PCI_DEVFN(0x%x,%d)}}" % (slot, function))
 
 	def addpnppath(self, port, device):
 		""" Add a relative path to a pnp device hanging off our parent """
@@ -903,31 +905,31 @@ class partobj:
 			fatal("Invalid port")
 		if ((device < 0) or (device > 0xff)):
 			fatal("Invalid device")
-		self.path = ".type=DEVICE_PATH_PNP,.u={.pnp={ .port = 0x%x, .device = 0x%x }}" % (port, device)
+		self.set_path(".type=DEVICE_PATH_PNP,.u={.pnp={ .port = 0x%x, .device = 0x%x }}" % (port, device))
 		
 	def addi2cpath(self, device):
 		""" Add a relative path to a i2c device hanging off our parent """
 		if ((device < 0) or (device > 0x7f)):
 			fatal("Invalid device")
-		self.path = ".type=DEVICE_PATH_I2C,.u={.i2c={ .device = 0x%x }}" % (device)
+		self.set_path(".type=DEVICE_PATH_I2C,.u={.i2c={ .device = 0x%x }}" % (device))
 
 	def addapicpath(self, apic_id):
 		""" Add a relative path to a cpu device hanging off our parent """
 		if ((apic_id < 0) or (apic_id > 255)):
 			fatal("Invalid device")
-		self.path = ".type=DEVICE_PATH_APIC,.u={.apic={ .apic_id = 0x%x }}" % (apic_id)
+		self.set_path(".type=DEVICE_PATH_APIC,.u={.apic={ .apic_id = 0x%x }}" % (apic_id))
     
 	def addpci_domainpath(self, pci_domain):
 		""" Add a pci_domain number to a chip """
 		if ((pci_domain < 0) or (pci_domain > 0xffff)):
 			fatal("Invalid pci_domain: 0x%x is out of the range 0 to 0xffff" % pci_domain)
-		self.path = ".type=DEVICE_PATH_PCI_DOMAIN,.u={.pci_domain={ .domain = 0x%x }}" % (pci_domain)
+		self.set_path(".type=DEVICE_PATH_PCI_DOMAIN,.u={.pci_domain={ .domain = 0x%x }}" % (pci_domain))
     
 	def addapic_clusterpath(self, cluster):
 		""" Add a pci_domain number to a chip """
 		if ((cluster < 0) or (cluster > 15)):
 			fatal("Invalid apic cluster: %d is out of the range 0 to ff" % cluster)
-		self.path = ".type=DEVICE_PATH_APIC_CLUSTER,.u={.apic_cluster={ .cluster = 0x%x }}" % (cluster)
+		self.set_path(".type=DEVICE_PATH_APIC_CLUSTER,.u={.apic_cluster={ .cluster = 0x%x }}" % (cluster))
     
 	def usesoption(self, name):
 		"""Declare option that can be used by this part"""
@@ -1302,7 +1304,7 @@ def mainboard():
 	fulldir = os.path.join(srcdir, partdir)
 	type_name = flatten_name(partdir)
 	newpart = partobj(curimage, fulldir, partstack.tos(), 'mainboard', \
-		type_name, 0, 0, 'chip')
+		type_name, 0, 'chip')
 	#print "Configuring PART %s" % (type)
 	partstack.push(newpart)
 	#print "  new PART tos is now %s\n" %partstack.tos().info()
@@ -1356,21 +1358,21 @@ def cpudir(path):
 def devicepart(type):
 	global curimage, dirstack, partstack
 	newpart = partobj(curimage, 0, partstack.tos(), type, \
-			'', 0, 0, 'device')
+			'', 0, 'device')
 	#print "Configuring PART %s" % (type)
 	partstack.push(newpart)
 	#print "  new PART tos is now %s\n" %partstack.tos().info()
 	# just push TOS, so that we can pop later. 
 	dirstack.push(dirstack.tos())
 	
-def part(type, path, file, name, link):
+def part(type, path, file, name):
 	global curimage, dirstack, partstack
         partdir = os.path.join(type, path)
 	srcdir = os.path.join(treetop, 'src')
 	fulldir = os.path.join(srcdir, partdir)
 	type_name = flatten_name(partdir)
 	newpart = partobj(curimage, fulldir, partstack.tos(), type, \
-			type_name, name, link, 'chip')
+			type_name, name, 'chip')
 	#print "Configuring PART %s, path %s" % (type, path)
 	partstack.push(newpart)
 	#print "  new PART tos is now %s\n" %partstack.tos().info()
@@ -1441,7 +1443,7 @@ def setarch(my_arch):
 	print "SETTING ARCH %s\n" % my_arch
 	curimage.setarch(my_arch)
 	setdefault('ARCH', my_arch, 1)
-	part('arch', my_arch, 'Config.lb', 0, 0)
+	part('arch', my_arch, 'Config.lb', 0)
 
 def doconfigfile(path, confdir, file, rule):
 	rname = os.path.join(confdir, file)
@@ -1583,7 +1585,6 @@ parser Config:
     token APIC:			'apic'
     token APIC_CLUSTER:		'apic_cluster'
     token PCI_DOMAIN:		'pci_domain'
-    token LINK:                 'link'
 
 
     rule expr:		logical			{{ l = logical }}
@@ -1621,18 +1622,19 @@ parser Config:
     rule partid:	ID 			{{ return ID }}
 		|	PATH			{{ return PATH }}
 
-    rule parttype:	NORTHBRIDGE		{{ return 'northbridge' }} 
-    		|	SUPERIO 		{{ return 'superio' }}
-		|	PMC			{{ return 'pmc' }}
-		|	SOUTHBRIDGE		{{ return 'southbridge' }}
-		|	CPU			{{ return 'cpu' }}
-		|	CHIP                    {{ return '' }}
+#    rule parttype:	NORTHBRIDGE		{{ return 'northbridge' }} 
+#    		|	SUPERIO 		{{ return 'superio' }}
+#		|	PMC			{{ return 'pmc' }}
+#		|	SOUTHBRIDGE		{{ return 'southbridge' }}
+#		|	CPU			{{ return 'cpu' }}
+#		|	CHIP                    {{ return '' }}
+#
+    rule parttype:	CHIP                    {{ return '' }}
 
-    rule partdef<<C>>:				{{ name = 0 }} {{ link = 0 }}
-			parttype partid		{{ if (parttype == 'cpu'): link = 1 }}
+    rule partdef<<C>>:				{{ name = 0 }} 
+			parttype partid		
 			[ STR			{{ name = dequote(STR) }}
-                        ][ LINK NUM             {{ link = long(NUM, 10) }}
-			]                       {{ if (C): part(parttype, partid, 'Config.lb', name, link) }}
+			]                       {{ if (C): part(parttype, partid, 'Config.lb', name) }}
 			partend<<C>> 		
 
     rule arch<<C>>:	ARCH ID			{{ if (C): setarch(ID) }}
@@ -2166,15 +2168,20 @@ def dumptree(part, lvl):
 	# dump the siblings -- actually are there any? not sure
 	# siblings are:
 	debug.info(debug.dumptree, "DUMPTREE SIBLINGS are")
-	kid = part.siblings
+	kid = part.next_sibling
 	while (kid):
 		kid.dumpme(lvl)
-		kid = kid.siblings
+		kid = kid.next_sibling
 	# dump the kids
 	debug.info(debug.dumptree, "DUMPTREE KIDS are")
 	#for kid in part.children:
 	if (part.children):
 		dumptree(part.children, lvl+1)
+	kid = part.next_sibling
+	while (kid):
+		if (kid.children):
+			dumptree(kid.children, lvl + 1)
+		kid = kid.next_sibling
 	debug.info(debug.dumptree, "DONE DUMPTREE")
 
 def writecode(image):
@@ -2194,19 +2201,19 @@ def gencode(part, file, pass_num):
 	part.gencode(file, pass_num)
 	# dump the siblings -- actually are there any? not sure
 	debug.info(debug.gencode, "GENCODE SIBLINGS are")
-	kid = part.siblings
+	kid = part.next_sibling
 	while (kid):
 		kid.gencode(file, pass_num)
-		kid = kid.siblings
+		kid = kid.next_sibling
 	# now dump the children 
 	debug.info(debug.gencode, "GENCODE KIDS are")
 	if (part.children):
 		gencode(part.children, file, pass_num)
-	kid = part.siblings
+	kid = part.next_sibling
 	while (kid):
 		if (kid.children):
 			gencode(kid.children, file, pass_num)
-		kid = kid.siblings
+		kid = kid.next_sibling
 	debug.info(debug.gencode, "DONE GENCODE")
 
 def verifyparse():

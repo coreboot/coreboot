@@ -40,7 +40,7 @@ struct bus {
 };
 
 #define MAX_RESOURCES 12
-#define MAX_LINKS     3
+#define MAX_LINKS     4
 /*
  * There is one device structure for each slot-number/function-number
  * combination:

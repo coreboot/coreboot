@@ -234,8 +234,10 @@ main()
 
 	for(slot = 1; slot < 0xff; slot += 2) {
 		unsigned char val;
-		if (slot == 0x6a)
+		if (slot == 0x67) {
+			slot = 0x71;
 			continue;
+		}
 		smbus_read_byte(slot, 0, &val);
 		printf("slot 0x%x val 0x%x\n", slot, val);
 	}

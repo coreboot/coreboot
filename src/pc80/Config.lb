@@ -1,5 +1,6 @@
 uses CONFIG_IDE_STREAM
 uses CONFIG_KEYBOARD
+uses CONFIG_LEGACY_VGABIOS
 
 object mc146818rtc.o
 #object isa-dma.o

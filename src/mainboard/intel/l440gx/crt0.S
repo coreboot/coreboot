@@ -3,11 +3,10 @@
  *
  */
 
-#include <rom/asm.h>
-#include <rom/intel.h>
+#include <asm.h>
+#include <intel.h>
 
-#include "intel_conf.h"
-
+#include <pciconf.h>
 /*
  * This is the entry code (the mkrom(8) utility makes a jumpvector
  * to this adddess. 
@@ -23,29 +22,29 @@
  	.text
 	.code16
 
-#include "intel_start32.S"
+#include <cpu/p5/start32.inc>
 
-#include "NSC_SuperIO.S"
+#include <superio/NSC/pc87309/superio.inc>
 	
-#include "serial.S"
+#include <pc80/serial.inc>
 
 	TTYS0_TX_STRING($ttyS0_test)
 	
 	/* initialize the RAM */
 	/* different for each motherboard */
 
-#include "intel_440ram-2.S"
-#include "intel_ram.S"
+#include <northbridge/intel/440gx/raminit.inc>
+#include <sdram/generic_sdram.inc>
+	
 #undef RAMTEST
-#include "ramtest.S"
+#ifdef RAMTEST
+#include <ram/ramtest.inc>
 
-#if 0
+#include <cpu/p6/earlymtrr.inc>
 	movl $0x00000000, %eax
 	movl $0x0009ffff, %ebx
 	movl $24,%ecx
 	CALLSP(ramtest)
-#endif
-
 #if 0
 	movl $0x08000000, %eax
 	movl $0x08001000, %ebx
@@ -56,6 +55,7 @@
 	movl $0x10001000, %ebx
 	movl $24,%ecx
 	CALLSP(ramtest)
+#endif
 #endif
 
 /*

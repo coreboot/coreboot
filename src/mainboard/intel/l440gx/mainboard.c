@@ -1,10 +1,12 @@
 #include <printk.h>
 #include <pci.h>
 
+#include <cpu/p5/io.h>
+
 // this needs to be moved about a bit to northbridge.c etc.
 
 
-void intel_mainboard_fixup()
+void mainboard_fixup()
 {
 	struct pci_dev *pm_pcidev, *host_bridge_pcidev, *nic_pcidev;
 	unsigned smbus_io, pm_io;

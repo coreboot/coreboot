@@ -172,40 +172,29 @@ static void lpc_init(struct device *dev)
 
 static void i82801dbm_lpc_read_resources(device_t dev)
 {
-	unsigned int reg;
+	struct resource *res;
 
 	/* Get the normal pci resources of this device */
 	pci_dev_read_resources(dev);
 
-	/* Find my place in the resource list */
-	reg = dev->resources;
-
 	/* Add an extra subtractive resource for both memory and I/O */
-	dev->resource[reg].base  = 0;
-	dev->resource[reg].size  = 0;
-	dev->resource[reg].align = 0;
-	dev->resource[reg].gran  = 0;
-	dev->resource[reg].limit = 0;
-	dev->resource[reg].flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-	dev->resource[reg].index = 0;
-	reg++;
-	
-	dev->resource[reg].base  = 0;
-	dev->resource[reg].size  = 0;
-	dev->resource[reg].align = 0;
-	dev->resource[reg].gran  = 0;
-	dev->resource[reg].limit = 0;
-	dev->resource[reg].flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-	dev->resource[reg].index = 0;
-	reg++;
-	
-	dev->resources = reg;
+	res = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
+	res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+
+	res = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
+	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+}
+
+static void i82801dbm_lpc_enable_resources(device_t dev)
+{
+	pci_dev_enable_resources(dev);
+	enable_childrens_resources(dev);
 }
 
 static struct device_operations lpc_ops  = {
 	.read_resources   = i82801dbm_lpc_read_resources,
 	.set_resources    = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
+	.enable_resources = i82801dbm_lpc_enable_resources,
 	.init             = lpc_init,
 	.scan_bus         = scan_static_bus,
 	.enable           = i82801dbm_enable,

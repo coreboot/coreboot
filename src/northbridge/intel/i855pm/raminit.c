@@ -1,5 +1,5 @@
 
-/* This was originally for the e7500, modified for 855pm
+/* This was originally for the e7500, modified for i855pm
  */
 
 /* converted to C 6/2004 yhlu */

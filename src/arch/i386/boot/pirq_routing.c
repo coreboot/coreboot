@@ -5,21 +5,21 @@
 #ifdef DEBUG
 void check_pirq_routing_table(void)
 {
-	const u8 *addr;
+	const uint8_t *addr;
 	const struct irq_routing_table *rt;
 	int i;
-	u8 sum;
+	uint8_t sum;
 
 	printk_info("Checking IRQ routing tables...\n");
 
-#ifdef(IRQ_SLOT_COUNT)
+#if defined(IRQ_SLOT_COUNT)
 	if (sizeof(intel_irq_routing_table) != intel_irq_routing_table.size) {
 		printk_warning("Inconsistent IRQ routing table size\n");
 	}
 #endif
 
 	rt = &intel_irq_routing_table;
-	addr = (u8 *)rt;
+	addr = (uint8_t *)rt;
 
 	sum = 0;
 	for (i = 0; i < rt->size; i++)
@@ -60,10 +60,10 @@ void check_pirq_routing_table(void)
 int verify_copy_pirq_routing_table(unsigned long addr)
 {
 	int i;
-	u8 *rt_orig, *rt_curr;
+	uint8_t *rt_orig, *rt_curr;
 
-	rt_curr = (u8*)addr;
-	rt_orig = (u8*)&intel_irq_routing_table;
+	rt_curr = (uint8_t*)addr;
+	rt_orig = (uint8_t*)&intel_irq_routing_table;
 	printk_info("Verifing priq routing tables copy at 0x%x...", addr);
 	for (i = 0; i < intel_irq_routing_table.size; i++) {
 		if (*(rt_curr + i) != *(rt_orig + i)) {

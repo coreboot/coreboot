@@ -4,6 +4,7 @@
 #include <string.h>
 #include <cpu/cpu.h>
 #include <cpu/ppc/cpuid.h>
+#include <smp/start_stop.h>
 
 static void cache_on(struct mem_range *mem)
 {

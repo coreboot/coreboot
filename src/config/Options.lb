@@ -332,7 +332,7 @@ define DEFAULT_CONSOLE_LOGLEVEL
 end
 
 define MAXIMUM_CONSOLE_LOGLEVEL
-	default 7
+	default 8
 	export always
  	comment "Error messages up to this level can be printed"
 end

@@ -26,19 +26,20 @@ static void pnp_exit_ext_func_mode(device_t dev)
         outb(0xaa, dev->path.u.pnp.port);
 }
 
-static void pnp_write_hwm(unsigned long port_base, uint8_t reg, uint8_t value)
+static void pnp_write_index(unsigned long port_base, uint8_t reg, uint8_t value)
 {
-        outb(reg, port_base+5);
-        outb(value, port_base+6);
+        outb(reg, port_base);
+        outb(value, port_base + 1);
 }
 
-static uint8_t pnp_read_hwm(unsigned long port_base, uint8_t reg)
+static uint8_t pnp_read_index(unsigned long port_base, uint8_t reg)
 {
-        outb(reg, port_base + 5);
-        return inb(port_base + 6);
+        outb(reg, port_base);
+        return inb(port_base + 1);
 }       
 
 static void enable_hwm_smbus(device_t dev) {
+	/* set the pin 91,92 as I2C bus */
 	uint8_t reg, value;
 	reg = 0x2b;
 	value = pnp_read_config(dev, reg);
@@ -80,29 +81,27 @@ static void init_hwm(unsigned long base)
 	int i;
 
 	unsigned  hwm_reg_values[] = {
-//	       reg                mask             data
-              0x40     ,       0xff    ,       0x81,  //  ; Start Hardware Monitoring for WIN627
-              0x48     ,       0xaa    ,       0x2a,  //  ; Program SIO SMBus BAR to 54h>>1	
-//              0x48     ,       0xc8    ,       0x48,  //  ; Program SIO SMBus BAR to 90h>>1
-              0x4A     ,       0x21    ,       0x21,  //  ; Program T2 SMBus BAR to 92h>>1 &
-                                                     //  ; Program T3 SMBus BAR to 94h>>1
-              0x4E     ,       0x80    ,       0x00,  
-              0x43     ,       0x00    ,       0xFF,
-              0x44     ,       0x00    ,       0x3F,
-              0x4C     ,       0xBF    ,       0x18,
-              0x4D     ,       0xFF    ,       0x80   //  ; Turn Off Beep
+/*	      reg  mask  data */
+              0x40, 0xff, 0x81,  /* start HWM */
+              0x48, 0xaa, 0x2a,  /* set SMBus base to 0x54>>1	*/
+              0x4a, 0x21, 0x21,  /* set T2 SMBus base to 0x92>>1 and T3 SMBus base to 0x94>>1 */
+              0x4e, 0x80, 0x00,  
+              0x43, 0x00, 0xff,
+              0x44, 0x00, 0x3f,
+              0x4c, 0xbf, 0x18,
+              0x4d, 0xff, 0x80   /* turn off beep */
                                                                             
 	};
 
 	for(i = 0; i<  sizeof(hwm_reg_values)/sizeof(hwm_reg_values[0]); i+=3 ) { 
 		reg = hwm_reg_values[i];	
-	 	value = pnp_read_hwm(base, reg);		
+	 	value = pnp_read_index(base, reg);		
 		value &= 0xff & hwm_reg_values[i+1];
 		value |= 0xff & hwm_reg_values[i+2];
 #if 0
-		printk_debug("base = 0x%04x, reg = 0x%02x, value = 0x%02x\r\n", base,reg,value);
+		printk_debug("base = 0x%04x, reg = 0x%02x, value = 0x%02x\r\n", base, reg,value);
 #endif
-		pnp_write_hwm(base,reg, value);
+		pnp_write_index(base, reg, value);
 	}
 }
 
@@ -131,7 +130,8 @@ static void w83627hf_init(device_t dev)
 		break;
         case W83627HF_HWM:
                 res0 = find_resource(dev, PNP_IDX_IO0);
-                init_hwm(res0->base);
+#define HWM_INDEX_PORT 5
+                init_hwm(res0->base + HWM_INDEX_PORT);
                 break;
 	}
 	
@@ -160,7 +160,6 @@ void w83627hf_pnp_enable_resources(device_t dev)
 
         switch(dev->path.u.pnp.device) {
 	case W83627HF_HWM:
-		//set the pin 91,92 as I2C bus
 		printk_debug("w83627hf hwm smbus enabled\r\n");
 		enable_hwm_smbus(dev);
 		break;

@@ -62,6 +62,7 @@ _realstart:
 	movw	$0x10, %bx
 	movw	%bx, %es
 	movw	%bx, %ds
+	movw	%bx, %ss
 #ifdef USE_BIG_REAL
 	andb	$0xfe, %al
 	movl	%eax, %cr0
@@ -207,18 +208,23 @@ sizeram:
 #define DOC_SPL_SIZE_IN_PAGE	126     /* 1 page = 512 bytes, total 63kB */
 
 ipl_start:
+#if 0
+	/* stack and es already set. */
 	/* O.K. we have DRAM now, so set up STACK for CALL/RET */
 	movw	$DOC_STACK_SEG, %ax
 	movw	%ax, %ss
 	movw	$SPL_RAM_SEG, %ax
 	movw	%ax, %es
-
 	xorl	%sp, %sp			# clear %sp
+#endif
+	/* NOTE: in ollie's original code, %ds was at 0xfe00, i.e. 
+	 * 0xfe000, i.e. base of DoC. We have to adjust for that when 
+	 * we set %edi and %esi
+	 */
+	movl	$0x4000, %esp			# set %sp
 	xorl	%edx, %edx			# clear %dx, start of RAM
-	xorl	%esi, %esi
-	xorl	%edi, %edi
-	movw	$0x800, %si			# point %si to CDSN Data area
-	movw	$0x1000, %di			# point %di to CDSN Control area
+	movl	$0xfe800, %esi			# point %si to CDSN Data area
+	movl	$0xff000, %edi			# point %di to CDSN Control area
 	movl	$DOC_SPL_START_BLK, %ebp	# start page of LinuxBIOS
 
 	movb	$0x84, %al			# Reset DOC Millennium
@@ -228,7 +234,7 @@ ipl_start:
 	call	doc_reset
 	
 read_next_page:
-	movw	$0x1000, %di			# point %di to CDSN Control area
+	movl	$0xff000, %edi			# point %di to CDSN Control area
 
 flash_command:
 	movb	$0x03, 0x04(%edi)		# start command cycle
@@ -265,18 +271,31 @@ doc_delay:
 
 	movb	0x1d(%edi), %al			# init read pipeline
 	movw	$0x100, %cx			# 1 page = 512 bytes
-	movw	$0x800, %si			# point %si to CDSN Data area
-	movw	%dx, %di			# restore saved current destination
+	movl	$0xfe800, %esi			# point %si to CDSN Data area
+	movl	%edx, %edi			# restore saved current destination
 	rep
 	movsw
 
-	movw	%di, %dx			# save current destination
+	movl	%edi, %edx			# save current destination
 	incw	%bp				# increse current page number
 	cmpw	$128, %bp			# moved 63 KB ??
 	jl	read_next_page			# no, read next page
 
 sis630ipl_end:
 	jmp	spl_vector			# jump to SPL vector
+
+doc_reset:
+        /* Input: AL = value write to DOC_CONTROL register
+           Clobberd: CX */
+        movb    %al, 0x02(%edi)                  # write DoC Control retister
+        movb    %al, 0x02(%edi)                  # twice
+        ret                                     # End of doc_reset
+
+doc_cycle_end:
+        movb    $0x00, 0x1e(%edi)                # flush write pepeline
+        movb    $0x01, 0x04(%edi)                # end command cycle
+        ret
+
 
 /* we don't need these. We only do I/O to MCR 0 */
 #if 0

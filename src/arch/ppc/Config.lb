@@ -1,4 +1,4 @@
-ldscript config/ldscript.lb
+ldscript init/ldscript.lb
 
 makerule linuxbios.rom 
 	depends	"linuxbios" 

@@ -1,7 +1,7 @@
 uses CONFIG_SMP
 
-init config/crt0.base
-ldscript config/ldscript.lb
+init init/crt0.S.lb
+ldscript init/ldscript.lb
 
 makerule all
 	depends	"linuxbios.rom"

@@ -1,0 +1,94 @@
+/*
+ *	Memory map:
+ *
+ *	_ROMBASE		: start of ROM
+ *	_RESET			: reset vector (may be at top of ROM)
+ *	_EXCEPTIONS_VECTORS	: exception table
+ *
+ *	_ROMSTART 		: linuxbios text 
+ *				: payload text
+ *
+ *	_RAMBASE		: address to copy payload
+ */
+
+/*
+ *	Written by Johan Rydberg, based on work by Daniel Kahlin.
+ *      Rewritten by Eric Biederman
+ *	Re-rewritten by Greg Watson for PPC
+ */
+
+/*
+ *	We use ELF as output format. So that we can
+ *	debug the code in some form. 
+ */
+
+OUTPUT_FORMAT("elf32-powerpc")
+ENTRY(_start)
+
+TARGET(binary)
+INPUT(linuxbios_payload)
+SECTIONS
+{
+	/* 
+	 * Absolute location of base of ROM 
+	 */
+	. = _ROMBASE;
+
+	/*
+	 * Absolute location of reset vector. This may actually be at the
+	 * the top of ROM.
+	 */
+	. = _RESET;
+	.reset . : {
+		*(.rom.reset);
+		. = ALIGN(16);
+	}
+
+	/*
+	 * Absolute location of exception vector table.
+	 */
+	. = _EXCEPTION_VECTORS;
+	.exception_vectors . : {
+		*(.rom.exception_vectors);
+		. = ALIGN(16);
+	}
+
+	/*
+	 * Absolute location of LinuxBIOS initialization code in ROM.
+	 */
+	. = _ROMSTART;
+	.rom . : {
+		_rom = .;
+		*(.rom.text);
+		*(.text);
+		*(.rom.data);
+		*(.rodata);
+		*(EXCLUDE_FILE(linuxbios_payload) .data);
+		. = ALIGN(16);
+		_erom = .;
+	}
+	_lrom = LOADADDR(.rom);
+	_elrom = LOADADDR(.rom) + SIZEOF(.rom);
+	
+	/*
+	 * Payload is LinuxBIOS proper.
+	 */
+	.payload . : {
+		_payload = . ;
+		linuxbios_payload(*)
+		_epayload = . ;
+	}
+
+	/*
+	 * Absolute location of where payload will be relocated in RAM.
+	 */
+	_iseg = _RAMBASE;
+	_eiseg = _iseg + SIZEOF(.payload);
+	_liseg = _payload;
+	_eliseg = _epayload;
+
+	/DISCARD/ : {
+		*(.comment)
+		*(.note)
+	}
+}

@@ -367,8 +367,8 @@ static void setup_row_indirect(u8 source, u8 dest, u8 gateway, u8 diff)
 	val_s >>=16;
 	val_s &=0xfe;
 #if !CROSS_BAR_47_56
-	if(((source&1)!=(dest &1)) && (val_s!=val) ) { // use another connect as response
-		val_s -= val;
+	if(((source&1)!=(dest &1)) && (val_s!=(val&0xff)) ) { // use another connect as response
+		val_s -= val & 0xff;
 #if CONFIG_MAX_CPUS>4
 		uint8_t byte;
 		// Some node have two links left
@@ -396,8 +396,8 @@ static void setup_row_indirect(u8 source, u8 dest, u8 gateway, u8 diff)
 
 
 #else 
-        if(diff && (val_s!=val) ) { // use another connect as response
-                val_s -= val;
+        if(diff && (val_s!=(val&0xff)) ) { // use another connect as response
+                val_s -= val & 0xff;
 #if CONFIG_MAX_CPUS>4
 		uint8_t byte;
 		// Some node have two links left

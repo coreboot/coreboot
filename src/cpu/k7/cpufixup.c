@@ -31,7 +31,7 @@ cpufixup(unsigned long ram_kilobytes)
      * undefined side effects
      */
     lo = hi = 0;
-    for(i = IORR_FIRST; i < IORR_LAST; i++)
+    for(i = IORR_FIRST; i <= IORR_LAST; i++)
         wrmsr(i, lo, hi);
 
     rdmsr(SYSCFG, lo, hi);

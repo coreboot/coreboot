@@ -34,3 +34,6 @@ object irq_tables.o HAVE_PIRQ_TABLE
 
 cpu p5
 cpu p6
+
+option MAINBOARD_PART_NUMBER=M787CL+
+option MAINBOARD_VENDOR=PCCHIPS

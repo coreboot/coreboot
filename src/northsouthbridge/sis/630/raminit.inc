@@ -86,9 +86,32 @@ write_vga_register:
 	outb	%al, %dx
 #endif
 
-#ifdef DISABLE_INTERNAL_DEVICES
-	movw	$0x7c0e, %ax			# Writting undocumented LPC register
-write_lpc_register:
+#if DISABLE_INTERNAL_DEVICES
+#warning *********** EMBEDDED DEVICES DISABLED
+	/* Input: AH - register number. AL - register value. */
+	movw   $0x7c0f,%ax	# Initial value for the undocumented SIS LPC register
+				# Disable everything by default
+
+#if ENABLE_INTERNAL_AUDIO
+#warning *********** AUDIO ENABLED
+	andb    $0x0e,%al
+#endif
+
+#if ENABLE_INTERNAL_MODEM
+#warning *********** MODEM ENABLED
+	andb   $0x0d,%al
+#endif
+
+#if ENABLE_INTERNAL_LAN
+#warning *********** LAN ENABLED
+	andb   $0x0b,%al
+#endif
+
+#if ENABLE_INTERNAL_USB
+#warning *********** USB ENABLED
+	andb   $0x07,%al
+#endif
+
 	/* Input: AH - register number. AL - register value. */
 	movl	$LPC_BRIDGE_BASE_ADDR, %edx
 	movl	%eax, %ebx			# Save %eax to %ebx.

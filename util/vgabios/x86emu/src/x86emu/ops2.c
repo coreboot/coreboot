@@ -40,6 +40,7 @@
 /* $XFree86: xc/extras/x86emu/src/x86emu/ops2.c,v 1.4 2000/11/16 19:44:50 eich Exp $ */
 
 #include "x86emu/x86emui.h"
+#include <asm/msr.h>
 
 /*----------------------------- Implementation ----------------------------*/
 
@@ -62,6 +63,40 @@ void x86emuOp2_illegal_op(
     END_OF_INSTR();
 }
 
+/****************************************************************************
+REMARKS:
+Handles opcode 0x0f,0x31
+****************************************************************************/
+void x86emuOp2_rdtsc(u8 op2)
+{
+    static unsigned long eax = 0, edx = 0;
+    char *name = 0;
+
+    /* rdtsc */
+    START_OF_INSTR();
+    switch (op2) {
+      case 0x31:
+	name = "RDTSC\t";
+	//rdtsc(eax, edx);
+	eax++;
+	if (eax == 0)
+		edx++;
+	M.x86.R_EAX = eax;
+	M.x86.R_EDX = edx;
+	break;
+      default: 
+	DECODE_PRINTF("ILLEGAL EXTENDED X86 OPCODE(0f)\n");
+	TRACE_REGS();
+	printk("%04x:%04x: %02X ILLEGAL EXTENDED X86 OPCODE!\n",
+		M.x86.R_CS, M.x86.R_IP-2,op2);
+    	HALT_SYS();
+	break;
+    }
+    DECODE_PRINTF(name);
+    TRACE_AND_STEP();
+    DECODE_CLEAR_SEGOVR();
+    END_OF_INSTR();
+}
 #define xorl(a,b)   ((a) && !(b)) || (!(a) && (b))
 
 /****************************************************************************
@@ -2579,7 +2614,7 @@ void (*x86emu_optab2[256])(u8) =
 /*  0x2f */ x86emuOp2_illegal_op,
 
 /*  0x30 */ x86emuOp2_illegal_op,
-/*  0x31 */ x86emuOp2_illegal_op,
+/*  0x31 */ x86emuOp2_rdtsc,
 /*  0x32 */ x86emuOp2_illegal_op,
 /*  0x33 */ x86emuOp2_illegal_op,
 /*  0x34 */ x86emuOp2_illegal_op,

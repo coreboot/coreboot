@@ -6063,8 +6063,8 @@ static struct triple *string_constant(struct compile_state *state)
 		tk = &state->token[0];
 		str = tk->val.str + 1;
 		str_len = tk->str_len - 2;
-		if (str_len <= 0) {
-			error(state, 0, "empty string constant");
+		if (str_len < 0) {
+			error(state, 0, "negative string constant length");
 		}
 		end = str + str_len;
 		ptr = buf;

@@ -284,48 +284,26 @@ hostbridge_config_memory(int no_banks, sdram_bank_info * bank, int for_real)
     return address;
 }
 
-#define MPC107_I2CADDR  0x00
-#define MPC107_I2CFDR 	0x04
-#define MPC107_I2CCR	0x08
-#define MPC107_I2CSR	0x0c
-#define MPC107_I2CDR	0x10
-
-#define MPC107_CCR_MEN  0x80
-#define MPC107_CCR_MSTA 0x20
-#define MPC107_CCR_MTX  0x10
-#define MPC107_CCR_TXAK 0x08
-#define MPC107_CCR_RSTA 0x04
-
-#define MPC107_CSR_MCF  0x80
-#define MPC107_CSR_MAAS 0x40
-#define MPC107_CSR_MBB  0x20
-#define MPC107_CSR_MAL  0x10
-#define MPC107_CSR_SRW  0x04
-#define MPC107_CSR_MIF  0x02
-#define MPC107_CSR_RXAK 0x01
-
-#define i2c_base 0xfc003000
-
 static int
 i2c_wait(unsigned timeout, int writing)
 {
     u32 x;
-    while (((x = readl(i2c_base + MPC107_I2CSR)) & (MPC107_CSR_MCF | MPC107_CSR_MIF))
-	     != (MPC107_CSR_MCF | MPC107_CSR_MIF)) {
+    while (((x = readl(MPC107_BASE + MPC107_I2CSR)) & (MPC107_I2C_CSR_MCF | MPC107_I2C_CSR_MIF))
+	     != (MPC107_I2C_CSR_MCF | MPC107_I2C_CSR_MIF)) {
 	if (ticks_since_boot() > timeout)
 	    return -1;
     }
 
-    if (x & MPC107_CSR_MAL) {
+    if (x & MPC107_I2C_CSR_MAL) {
 	return -1;
     }
-    if (writing && (x & MPC107_CSR_RXAK)) {
+    if (writing && (x & MPC107_I2C_CSR_RXAK)) {
 	printk_info("No RXAK\n");
 	/* generate stop */
-    	writel(MPC107_CCR_MEN, i2c_base + MPC107_I2CCR);
+    	writel(MPC107_I2C_CCR_MEN, MPC107_BASE + MPC107_I2CCR);
  	return -1;
     }
-    writel(0, i2c_base + MPC107_I2CSR);
+    writel(0, MPC107_BASE + MPC107_I2CSR);
     return 0;
 }
 
@@ -333,16 +311,16 @@ static void
 mpc107_i2c_start(struct i2c_bus *bus)
 {
     /* Set clock */
-    writel(0x1031, i2c_base + MPC107_I2CFDR);
+    writel(0x1031, MPC107_BASE + MPC107_I2CFDR);
     /* Clear arbitration */
-    writel(0, i2c_base + MPC107_I2CSR);
+    writel(0, MPC107_BASE + MPC107_I2CSR);
 }
 
 static void 
 mpc107_i2c_stop(struct i2c_bus *bus)
 {
 	/* After last DIMM shut down I2C */
-	writel(0x0, i2c_base + MPC107_I2CCR);
+	writel(0x0, MPC107_BASE + MPC107_I2CCR);
 }
 
 static int 
@@ -353,29 +331,29 @@ mpc107_i2c_byte_write(struct i2c_bus *bus, int target, int address, u8 data)
 	/* Must wait here for clocks to start */
         sleep_ticks(get_hz() / 40);
 	/* Start with MEN */
-	writel(MPC107_CCR_MEN, i2c_base + MPC107_I2CCR);
+	writel(MPC107_I2C_CCR_MEN, MPC107_BASE + MPC107_I2CCR);
 	/* Start as master */
-	writel(MPC107_CCR_MEN | MPC107_CCR_MSTA | MPC107_CCR_MTX, i2c_base + MPC107_I2CCR);
+	writel(MPC107_I2C_CCR_MEN | MPC107_I2C_CCR_MSTA | MPC107_I2C_CCR_MTX, MPC107_BASE + MPC107_I2CCR);
 	/* Write target byte */
-	writel(target, i2c_base + MPC107_I2CDR);
+	writel(target, MPC107_BASE + MPC107_I2CDR);
 
 	if (i2c_wait(timeout, 1) < 0)
 	    return -1;
 
 	/* Write data address byte */
-	writel(address, i2c_base + MPC107_I2CDR);
+	writel(address, MPC107_BASE + MPC107_I2CDR);
 
 	if (i2c_wait(timeout, 1) < 0)
 	    return -1;
 	
 	/* Write data byte */
-    	writel(data, i2c_base + MPC107_I2CDR);
+    	writel(data, MPC107_BASE + MPC107_I2CDR);
 
 	if (i2c_wait(timeout, 1) < 0)
 	    return -1;
 	
 	/* generate stop */
-    	writel(MPC107_CCR_MEN, i2c_base + MPC107_I2CCR);
+    	writel(MPC107_I2C_CCR_MEN, MPC107_BASE + MPC107_I2CCR);
     return 0;
 }
 
@@ -403,35 +381,35 @@ mpc107_i2c_master_read(struct i2c_bus *bus, int target, int address,
 	/* Must wait here for clocks to start */
         sleep_ticks(get_hz() / 40);
 	/* Start with MEN */
-	writel(MPC107_CCR_MEN, i2c_base + MPC107_I2CCR);
+	writel(MPC107_I2C_CCR_MEN, MPC107_BASE + MPC107_I2CCR);
 	/* Start as master */
-	writel(MPC107_CCR_MEN | MPC107_CCR_MSTA | MPC107_CCR_MTX, i2c_base + MPC107_I2CCR);
+	writel(MPC107_I2C_CCR_MEN | MPC107_I2C_CCR_MSTA | MPC107_I2C_CCR_MTX, MPC107_BASE + MPC107_I2CCR);
 	/* Write target byte */
-	writel(target, i2c_base + MPC107_I2CDR);
+	writel(target, MPC107_BASE + MPC107_I2CDR);
 
 	if (i2c_wait(timeout, 1) < 0)
 	    return -1;
 
 	/* Write data address byte */
-	writel(address, i2c_base + MPC107_I2CDR);
+	writel(address, MPC107_BASE + MPC107_I2CDR);
 
 	if (i2c_wait(timeout, 1) < 0)
 	    return -1;
 
 	/* Switch to read - restart */
-	writel(MPC107_CCR_MEN | MPC107_CCR_MSTA | MPC107_CCR_MTX | MPC107_CCR_RSTA, i2c_base + MPC107_I2CCR);
+	writel(MPC107_I2C_CCR_MEN | MPC107_I2C_CCR_MSTA | MPC107_I2C_CCR_MTX | MPC107_I2C_CCR_RSTA, MPC107_BASE + MPC107_I2CCR);
 	/* Write target address byte - this time with the read flag set */
-	writel(target | 1, i2c_base + MPC107_I2CDR);
+	writel(target | 1, MPC107_BASE + MPC107_I2CDR);
 
 	if (i2c_wait(timeout, 0) < 0)
 	    return -1;
 
 	if (length == 1)
-	    writel(MPC107_CCR_MEN | MPC107_CCR_MSTA | MPC107_CCR_TXAK, i2c_base + MPC107_I2CCR);
+	    writel(MPC107_I2C_CCR_MEN | MPC107_I2C_CCR_MSTA | MPC107_I2C_CCR_TXAK, MPC107_BASE + MPC107_I2CCR);
 	else
-	    writel(MPC107_CCR_MEN | MPC107_CCR_MSTA, i2c_base + MPC107_I2CCR);
+	    writel(MPC107_I2C_CCR_MEN | MPC107_I2C_CCR_MSTA, MPC107_BASE + MPC107_I2CCR);
     	/* Dummy read */
-	readl(i2c_base + MPC107_I2CDR);
+	readl(MPC107_BASE + MPC107_I2CDR);
 
 	count = 0;
 	while (count < length) {
@@ -441,11 +419,11 @@ mpc107_i2c_master_read(struct i2c_bus *bus, int target, int address,
 
 	    /* Generate txack on next to last byte */
 	    if (count == length - 2)
-		writel(MPC107_CCR_MEN | MPC107_CCR_MSTA | MPC107_CCR_TXAK, i2c_base + MPC107_I2CCR);
+		writel(MPC107_I2C_CCR_MEN | MPC107_I2C_CCR_MSTA | MPC107_I2C_CCR_TXAK, MPC107_BASE + MPC107_I2CCR);
 	    /* Generate stop on last byte */
 	    if (count == length - 1)
-		writel(MPC107_CCR_MEN | MPC107_CCR_TXAK, i2c_base + MPC107_I2CCR);
-	    data[count] = readl(i2c_base + MPC107_I2CDR);
+		writel(MPC107_I2C_CCR_MEN | MPC107_I2C_CCR_TXAK, MPC107_BASE + MPC107_I2CCR);
+	    data[count] = readl(MPC107_BASE + MPC107_I2CDR);
 	    if (count == 0 && length == DIMM_LENGTH) {
 	    	if (data[0] == 0xff) {
 		    printk_debug("I2C device not present\n");
@@ -460,7 +438,7 @@ mpc107_i2c_master_read(struct i2c_bus *bus, int target, int address,
 	}
 	
 	/* Finish with disable master */
-	writel(MPC107_CCR_MEN, i2c_base + MPC107_I2CCR);
+	writel(MPC107_I2C_CCR_MEN, MPC107_BASE + MPC107_I2CCR);
 	return length;
 }
 

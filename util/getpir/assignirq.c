@@ -55,18 +55,22 @@ struct pci_access *pacc;
 struct pci_dev *dev;
 
 // work to minimize: irqused and num* used
-
-unsigned int irqused[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+// for hysterical reasons, we leave 0, 1, 2, 3, 4, 8, 14, and 15 out
+// of the picture. 
+#define M ((unsigned int) -1)
+unsigned int irqused[16] = {M, M, M, M, M, 0, 0, 0, M, 0, 0, 0, 0, 0, M, M};
 int numa = 0, numb = 0, numbc = 0, numd = 0;
 
+// start at 8 since things seem to like to use high ints
+// consider wrapping later ...
 int
 getint(u16 m){
-    int mask = m, i;
+    int mask = m>>8, i;
     unsigned int min = (unsigned int) -1;
     unsigned int minindex;
     /* find the least-used interrupt compatible with mask */
     printf("getint mask 0x%x\n", mask);
-    for(minindex = 0, i = 0; i < 16; i++, mask>>=1) {
+    for(minindex = 8, i = 8; i < 16; i++, mask>>=1) {
 	printf("Check %d\n", i);
 	if (! (mask & 1))
 	    continue;

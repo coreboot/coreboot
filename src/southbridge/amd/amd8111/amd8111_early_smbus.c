@@ -115,7 +115,7 @@ static int smbus_read_byte(unsigned device, unsigned address)
 
 static void smbus_write_byte(unsigned device, unsigned address, unsigned char val)
 {
-#if 0
+#if 1
 	if (smbus_wait_until_ready() < 0) {
 		return;
 	}

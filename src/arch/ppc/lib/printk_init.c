@@ -20,8 +20,8 @@ extern void uart8250_tx_byte(unsigned, unsigned char);
 void console_tx_byte(unsigned char byte)
 {
 	if (byte == '\n')
-		uart8250_tx_byte(UART0_IO_BASE, '\r');
-	uart8250_tx_byte(UART0_IO_BASE, byte);
+		uart8250_tx_byte(TTYS0_BASE, '\r');
+	uart8250_tx_byte(TTYS0_BASE, byte);
 }
 
 int do_printk(int msg_level, const char *fmt, ...)

@@ -55,5 +55,6 @@ struct flashchip {
 #define MSYSTEMS_MD2802   0x30 /* hmm -- both 0x30 */
 
 extern void myusec_delay(int time);
-
+extern void myusec_calibrate_delay();
+extern int enable_flash_write(void);
 #endif /* !__FLASH_H__ */

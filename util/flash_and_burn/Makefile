@@ -1,5 +1,5 @@
-OBJS = jedec.o sst28sf040.o am29f040b.o mx29f002.c sst39sf020.o m29f400bt.o \
-	w49f002u.o 82802ab.o msys_doc.o pm49fl004.o sst49lf040.o
+OBJS = flash_enable.o udelay.o jedec.o sst28sf040.o am29f040b.o mx29f002.c sst39sf020.o \
+	m29f400bt.o w49f002u.o 82802ab.o msys_doc.o pm49fl004.o sst49lf040.o
 CC = gcc -O2 -g -Wall -Werror
 
 all: flash_rom flash_on
@@ -28,5 +28,6 @@ sst39sf020.o: sst39sf020.c sst39sf020.h jedec.h flash.h
 sst49lf040.o: sst49lf040.c sst49lf040.h jedec.h flash.h
 w49f002u.o:   w49f002u.c   w49f002u.h   jedec.h flash.h
 pm49fl004.o:   pm49fl004.c   pm49fl004.h   jedec.h flash.h
-
+flash_enable.o: flash_enable.c
+udelay.o:	udelay.c
 jedec.o:      jedec.c                   jedec.h flash.h

@@ -80,7 +80,7 @@ static void enumerate(struct chip *chip)
 static void random_fixup() {
 	device_t pcidev = dev_find_slot(0, 0);
 
-	printk_spew("VT8601 random fixup ...\n");
+	printk_spew("VT8623 random fixup ...\n");
 	if (pcidev) {
 		pci_write_config8(pcidev, 0x70, 0xc0);
 		pci_write_config8(pcidev, 0x71, 0x88);
@@ -95,8 +95,8 @@ static void random_fixup() {
 static void northbridge_init(struct chip *chip, enum chip_pass pass)
 {
 
-	struct northbridge_via_vt8601_config *conf = 
-		(struct northbridge_via_vt8601_config *)chip->chip_info;
+	struct northbridge_via_vt8623_config *conf = 
+		(struct northbridge_via_vt8623_config *)chip->chip_info;
 
 	switch (pass) {
 	case CONF_PASS_PRE_PCI:
@@ -115,8 +115,8 @@ static void northbridge_init(struct chip *chip, enum chip_pass pass)
 	}
 }
 
-struct chip_control northbridge_via_vt8601_control = {
+struct chip_control northbridge_via_vt8623_control = {
 	.enumerate = enumerate,
 	.enable    = northbridge_init,
-	.name      = "VIA vt8601 Northbridge",
+	.name      = "VIA vt8623 Northbridge",
 };

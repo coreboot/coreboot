@@ -40,6 +40,6 @@ static void enumerate(struct chip *chip)
 }
 struct chip_control mainboard_via_epia_control = {
 	.enumerate = enumerate, 
-	.name      = "VIA EPIA mainboard ",
+	.name      = "VIA EPIA-M mainboard ",
 };
 

@@ -10,7 +10,7 @@
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
-#include "northbridge/via/vt8601/raminit.h"
+#include "northbridge/via/vt8623/raminit.h"
 #include "cpu/p6/earlymtrr.c"
 
 /*
@@ -26,10 +26,10 @@ void udelay(int usecs)
 #include "cpu/p6/boot_cpu.c"
 #include "debug.c"
 
-#include "southbridge/via/vt8231/vt8231_early_smbus.c"
+#include "southbridge/via/vt8231/vt8235_early_smbus.c"
 
 
-#include "southbridge/via/vt8231/vt8231_early_serial.c"
+#include "southbridge/via/vt8231/vt8235_early_serial.c"
 static void memreset_setup(void)
 {
 }
@@ -58,7 +58,7 @@ static void enable_mainboard_devices(void)
 	device_t dev;
 	/* dev 0 for southbridge */
   
-	dev = pci_locate_device(PCI_ID(0x1106,0x8231), 0);
+	dev = pci_locate_device(PCI_ID(0x1106,0x8235), 0);
   
 	if (dev == PCI_DEV_INVALID) {
 		die("Southbridge not found!!!\n");
@@ -99,7 +99,7 @@ static void main(void)
 	/*	init_timer();*/
 	outb(5, 0x80);
 	
-	enable_vt8231_serial();
+	enable_vt8235_serial();
 
 	uart_init();
 	console_init();

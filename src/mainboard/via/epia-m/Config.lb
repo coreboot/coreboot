@@ -210,18 +210,8 @@ mainboardinit ./auto.inc
 dir /pc80
 config chip.h
 
-northbridge via/vt8601 "vt8601"
-#	pci 0:0.0
-#	pci 0:1.0
-	southbridge via/vt8231 "vt8231"
-#		pci 0:11.0
-#		pci 0:11.1
-#		pci 0:11.2
-#		pci 0:11.3
-#		pci 0:11.4
-#		pci 0:11.5
-#		pci 0:11.6
-#		pci 0:12.0
+northbridge via/vt8623 "vt8623"
+	southbridge via/vt8235 "vt8235"
 		register "enable_usb" = "0"
 		register "enable_native_ide" = "0"
 		register "enable_com_ports" = "1"

@@ -1,6 +1,6 @@
-#ifndef NORTHBRIDGE_VIA_VT8601_H
-#define NORTHBRIDGE_VIA_VT8601_H
+#ifndef NORTHBRIDGE_VIA_VT8623_H
+#define NORTHBRIDGE_VIA_VT8623_H
 
-extern unsigned int vt8601_scan_root_bus(device_t root, unsigned int max);
+extern unsigned int vt8623_scan_root_bus(device_t root, unsigned int max);
 
-#endif /* NORTHBRIDGE_VIA_VT8601_H */
+#endif /* NORTHBRIDGE_VIA_VT8623_H */

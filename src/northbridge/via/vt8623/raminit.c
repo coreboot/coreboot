@@ -105,8 +105,8 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	device_t north = (device_t) 0;
 	uint8_t c, r;
 
-	print_err("vt8601 init starting\r\n");
-	north = pci_locate_device(PCI_ID(0x1106, 0x8601), 0);
+	print_err("vt8623 init starting\r\n");
+	north = pci_locate_device(PCI_ID(0x1106, 0x8623), 0);
 	north = 0;
 	print_debug_hex32(north);
 	print_debug(" is the north\n");
@@ -389,6 +389,6 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		print_debug(" is the MA type\r\n");
 		set_ma_mapping(north, slot, ma);
 	}
-	print_err("vt8601 done\r\n");
+	print_err("vt8623 done\r\n");
 	dumpnorth(north);
 }

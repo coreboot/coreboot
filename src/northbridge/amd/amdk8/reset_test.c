@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include <arch/smp/lapic.h>
+#include <cpu/x86/lapic.h>
 #define NODE_ID		0x60
 #define	HT_INIT_CONTROL 0x6c
 

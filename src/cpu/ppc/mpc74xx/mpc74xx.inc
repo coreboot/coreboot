@@ -172,15 +172,3 @@
         ori     r2, r2, HID0_DCE | HID0_DCFI
 	sync
         mtspr   HID0, r2
-
-	/*
-	 * Initialize data cache blocks 
-	 * (assumes cache block size of 32 bytes)
-	 */
-	lis	r1, DCACHE_RAM_BASE@h
-	ori	r1, r1, DCACHE_RAM_BASE@l
-	li 	r3, (DCACHE_RAM_SIZE / 32)
-	mtctr	r3
-0:	dcbz	r0, r1
-	addi	r1, r1, 32
-	bdnz	0b

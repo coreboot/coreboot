@@ -11,9 +11,9 @@ static inline void print_linkn_in (const char *strval, uint8_t byteval)
         print_debug(strval); print_debug_hex8(byteval); print_debug("\r\n");
 }
 
-static unsigned ht_lookup_slave_capability(device_t dev)
+static uint8_t ht_lookup_slave_capability(device_t dev)
 {
-	unsigned pos;
+	uint8_t pos;
 	uint8_t hdr_type;
 
 	hdr_type = pci_read_config8(dev, PCI_HEADER_TYPE);
@@ -44,7 +44,7 @@ static unsigned ht_lookup_slave_capability(device_t dev)
 	return pos;
 }
 
-static void ht_collapse_previous_enumeration(unsigned bus)
+static void ht_collapse_previous_enumeration(uint8_t bus)
 {
 	device_t dev;
 	uint32_t id;
@@ -62,7 +62,8 @@ static void ht_collapse_previous_enumeration(unsigned bus)
 	 */
 	for(dev = PCI_DEV(bus, 1, 0); dev <= PCI_DEV(bus, 0x1f, 0x7); dev += PCI_DEV(0, 1, 0)) {
 		uint32_t id;
-		unsigned pos, flags;
+		uint8_t pos;
+		uint16_t flags;
 		
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
 		if ((id == 0xffffffff) || (id == 0x00000000) ||
@@ -82,10 +83,10 @@ static void ht_collapse_previous_enumeration(unsigned bus)
 	}
 }
 
-static unsigned ht_read_freq_cap(device_t dev, unsigned pos)
+static uint16_t ht_read_freq_cap(device_t dev, uint8_t pos)
 {
 	/* Handle bugs in valid hypertransport frequency reporting */
-	unsigned freq_cap;
+	uint16_t freq_cap;
 	uint32_t id;
 
 	freq_cap = pci_read_config16(dev, pos);
@@ -200,8 +201,7 @@ static int ht_optimize_link(
 
 	return needs_reset;
 }
-
-static int ht_setup_chain(device_t udev, unsigned upos)
+static int ht_setup_chain(device_t udev, uint8_t upos)
 {
 	/* Assumption the HT chain that is bus 0 has the HT I/O Hub on it.
 	 * On most boards this just happens.  If a cpu has multiple
@@ -221,7 +221,9 @@ static int ht_setup_chain(device_t udev, unsigned upos)
 	do {
 		uint32_t id;
 		uint8_t pos;
-		unsigned flags, count;
+		uint16_t flags, count;
+		unsigned offs;
+
 		device_t dev = PCI_DEV(0, 0, 0);
 		last_unitid = next_unitid;
 
@@ -239,8 +241,11 @@ static int ht_setup_chain(device_t udev, unsigned upos)
 			break;
 		}
 
+		/* get ht direction */
+                offs = (pci_read_config16(dev, pos + PCI_CAP_FLAGS) & (1<<10)) ? PCI_HT_SLAVE1_OFFS : PCI_HT_SLAVE0_OFFS;
+
 		/* Setup the Hypertransport link */
-		reset_needed |= ht_optimize_link(udev, upos, uoffs, dev, pos, PCI_HT_SLAVE0_OFFS);
+		reset_needed |= ht_optimize_link(udev, upos, uoffs, dev, pos, offs);
 
 		/* Update the Unitid of the current device */
 		flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
@@ -251,7 +256,7 @@ static int ht_setup_chain(device_t udev, unsigned upos)
 		/* Remeber the location of the last device */
 		udev = PCI_DEV(0, next_unitid, 0);
 		upos = pos;
-		uoffs = PCI_HT_SLAVE1_OFFS;
+		uoffs = (offs != PCI_HT_SLAVE0_OFFS) ? PCI_HT_SLAVE0_OFFS : PCI_HT_SLAVE1_OFFS;
 
 		/* Compute the number of unitids consumed */
 		count = (flags >> 5) & 0x1f;
@@ -261,7 +266,7 @@ static int ht_setup_chain(device_t udev, unsigned upos)
 	return reset_needed;
 }
 
-static int ht_setup_chainx(device_t udev, unsigned upos, unsigned bus)
+static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus)
 {
 	unsigned next_unitid, last_unitid;
 	unsigned uoffs;
@@ -273,7 +278,8 @@ static int ht_setup_chainx(device_t udev, unsigned upos, unsigned bus)
 	do {
 		uint32_t id;
 		uint8_t pos;
-		unsigned flags, count;
+		uint16_t flags, count;
+		unsigned offs;
 		
 		device_t dev = PCI_DEV(bus, 0, 0);
 		last_unitid = next_unitid;
@@ -292,8 +298,11 @@ static int ht_setup_chainx(device_t udev, unsigned upos, unsigned bus)
 			break;
 		}
 
+                /* get ht direction */
+                offs = (pci_read_config16(dev, pos + PCI_CAP_FLAGS) & (1<<10)) ? PCI_HT_SLAVE1_OFFS : PCI_HT_SLAVE0_OFFS;
+
 		/* Setup the Hypertransport link */
-		reset_needed |= ht_optimize_link(udev, upos, uoffs, dev, pos, PCI_HT_SLAVE0_OFFS);
+		reset_needed |= ht_optimize_link(udev, upos, uoffs, dev, pos, offs);
 
 		/* Update the Unitid of the current device */
 		flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
@@ -304,7 +313,7 @@ static int ht_setup_chainx(device_t udev, unsigned upos, unsigned bus)
 		/* Remeber the location of the last device */
 		udev = PCI_DEV(bus, next_unitid, 0);
 		upos = pos;
-		uoffs = PCI_HT_SLAVE1_OFFS;
+		uoffs = ( offs != PCI_HT_SLAVE0_OFFS ) ? PCI_HT_SLAVE0_OFFS : PCI_HT_SLAVE1_OFFS;
 
 		/* Compute the number of unitids consumed */
 		count = (flags >> 5) & 0x1f;
@@ -314,7 +323,7 @@ static int ht_setup_chainx(device_t udev, unsigned upos, unsigned bus)
 	return reset_needed;
 }
 
-static int optimize_link_read_pointer(unsigned node, unsigned linkn, uint8_t linkt, unsigned val)
+static int optimize_link_read_pointer(uint8_t node, uint8_t linkn, uint8_t linkt, uint8_t val)
 {
 	uint32_t dword, dword_old;
 	uint8_t link_type;
@@ -338,18 +347,18 @@ static int optimize_link_read_pointer(unsigned node, unsigned linkn, uint8_t lin
 	return 0;
 }
 
-static int optimize_link_in_coherent(int ht_c_num)
+static int optimize_link_in_coherent(uint8_t ht_c_num)
 {
 	int reset_needed; 
-	int i;
+	uint8_t i;
 
 	reset_needed = 0;
 
 	for (i = 0; i < ht_c_num; i++) {
 		uint32_t reg;
-		unsigned nodeid, linkn;
-		unsigned busn;
-		unsigned val;
+		uint8_t nodeid, linkn;
+		uint8_t busn;
+		uint8_t val;
 
 		reg = pci_read_config32(PCI_DEV(0,0x18,1), 0xe0 + i * 4);
 		
@@ -373,7 +382,7 @@ static int optimize_link_in_coherent(int ht_c_num)
 	return reset_needed;
 }
 
-static int ht_setup_chains(int ht_c_num)
+static int ht_setup_chains(uint8_t ht_c_num)
 {
 	/* Assumption the HT chain that is bus 0 has the HT I/O Hub on it. 
 	 * On most boards this just happens.  If a cpu has multiple
@@ -381,18 +390,18 @@ static int ht_setup_chains(int ht_c_num)
 	 * links needs to be programed to point at bus 0.
 	 */
 	int reset_needed; 
-        unsigned upos;
+        uint8_t upos;
         device_t udev;
-	int i;
+	uint8_t i;
 
 	reset_needed = 0;
 
 	for (i = 0; i < ht_c_num; i++) {
 		uint32_t reg;
-		unsigned devpos;
+		uint8_t devpos;
 		unsigned regpos;
 		uint32_t dword;
-		unsigned busn;
+		uint8_t busn;
 		
 		reg = pci_read_config32(PCI_DEV(0,0x18,1), 0xe0 + i * 4);
 
@@ -412,7 +421,8 @@ static int ht_setup_chains(int ht_c_num)
 		upos = ((reg & 0xf00)>>8) * 0x20 + 0x80;
 		udev =  PCI_DEV(0, devpos, 0);
 		
-		reset_needed |= ht_setup_chainx(udev,upos,busn );
+		reset_needed |= ht_setup_chainx(udev,upos,busn);
+
 
 	}
 
@@ -423,12 +433,12 @@ static int ht_setup_chains(int ht_c_num)
 
 static int ht_setup_chains_x(void)
 {               
-        int nodeid;
+        uint8_t nodeid;
         uint32_t reg; 
 	uint32_t tempreg;
-        unsigned next_busn;
-        int ht_c_num;
-	int nodes;
+        uint8_t next_busn;
+        uint8_t ht_c_num;
+	uint8_t nodes;
       
         /* read PCI_DEV(0,0x18,0) 0x64 bit [8:9] to find out SbLink m */
         reg = pci_read_config32(PCI_DEV(0, 0x18, 0), 0x64);
@@ -447,14 +457,14 @@ static int ht_setup_chains_x(void)
 
         for(nodeid=0; nodeid<nodes; nodeid++) {
                 device_t dev; 
-                unsigned linkn;
+                uint8_t linkn;
                 dev = PCI_DEV(0, 0x18+nodeid,0);
                 for(linkn = 0; linkn<3; linkn++) {
                         unsigned regpos;
                         regpos = 0x98 + 0x20 * linkn;
                         reg = pci_read_config32(dev, regpos);
                         if ((reg & 0x17) != 7) continue; /* it is not non conherent or not connected*/
-			print_linkn_in("NC node/link=", ((nodeid & 0xf)<<4)|(linkn & 0xf));
+			print_linkn_in("NC node|link=", ((nodeid & 0xf)<<4)|(linkn & 0xf));
                         tempreg = 3 | (nodeid <<4) | (linkn<<8);
                         /*compare (temp & 0xffff), with (PCI(0, 0x18, 1) 0xe0 to 0xec & 0xfffff) */
                         for(ht_c_num=0;ht_c_num<4; ht_c_num++) {
@@ -488,7 +498,7 @@ static int ht_setup_chains_x(void)
         }
 	
 	/* recount ht_c_num*/
-	int i=0;
+	uint8_t i=0;
         for(ht_c_num=0;ht_c_num<4; ht_c_num++) {
 		reg = pci_read_config32(PCI_DEV(0, 0x18, 1), 0xe0 + ht_c_num * 4);
                 if(((reg & 0xf) != 0x0)) {

@@ -53,8 +53,10 @@ sis730spd_start:
 	movw	$0x7550, %ax			# Store ACPI Base Address.
 	CALL_SP(write_lpc_register)		# (for use of SMBus)
 
-	movw	$0x5501, %ax			# Mode# enable, this bit
+	movw	$0x5501, %ax			# MDOE# enable, this bit
 	CALL_SP(write_pci_register)		# should be set before sizing.
+
+/* -----------------------------------------------------------------------------------------*/
 
 #ifdef SIZE_ALL
 	xorw	%bx, %bx			# clear %fs, %fs is used as "bitmap" of
@@ -117,16 +119,6 @@ check_row_column:
 	jl	no_sdram
 #endif /* SAFTY_CHECK */
 
-#if 0
-	subb	$0x0b, %ch			# row = row - 11
-	shlb	$0x02, %ch			# row * 4
-
-	addb	%ch, %cl			# column + row * 4
-	movzbw	%cl, %bx			# Get the SDRAM type.
-
-	addw	%bx, %si			# sdram_type_bank[column + row * 4]
-	movb	-8(%si), %cl			# sdram_type_bank[column + row * 4 - 8]
-#else
 	/* This one is DANGEROUS TOO, be careful about OVERFLOW !!! */
 	shlb	$0x02, %ch			# row * 4
 
@@ -135,7 +127,6 @@ check_row_column:
 
 	addw	%cx, %si			# sdram_type_bank[column + row * 4]
 	movb	-52(%si), %cl			# sdram_type_bank[column + row * 4 - 52]
-#endif
 
 #ifdef SIZE_ALL
 	movb	%ah, %bh			# Restore DIMM slot number from AH to BH
@@ -198,6 +189,8 @@ no_sdram:
 
 	CALL_SP(write_pci_register)		# write register 0x63
 
+/* -----------------------------------------------------------------------------------------*/
+
 	movw	$pci_init_table, %si
 init_sdram:
 	lodsw	(%si), %ax
@@ -208,6 +201,9 @@ init_sdram:
 	jmp	init_sdram
 
 init_complete:
+
+/* -----------------------------------------------------------------------------------------*/
+
 sis730ipl_start:
 	/* O.K. we have DRAM now, so set up STACK for CALL/RET */
 	movw	$DOC_STACK_SEG, %ax
@@ -230,7 +226,7 @@ sis730ipl_start:
 sis730ipl_end:
 	jmp	spl_vector			# jump to SPL vector
 
-/* ------------------------------------------------------------------------------------------*/
+/* -----------------------------------------------------------------------------------------*/
 
 write_lpc_register:
 	/* Input: AH - register number. AL - register value. */
@@ -253,9 +249,11 @@ write_common:
 	movw	$PCI_DATA_PORT, %dx
 	andb	$0x03, %al
 	addb	%al, %dl
-	movb	%cl, %al
+	movw	%cx, %ax			# Resotre %ax
 	outb	%al, %dx
 	RET_SP					# End of write_[lpc|pci]_reg
+
+/* -----------------------------------------------------------------------------------------*/
 
 read_spd:
 	/* Input:  AH = 05h, AL = byte number of SPD to be read.
@@ -298,6 +296,8 @@ sis_set_smbus:
 	outb	%al, %dx
 	RET_BP					# End of sis_set_smbus
 
+/* -----------------------------------------------------------------------------------------*/
+
 sdram_type_bank_1:
 # Column Number	  8	  9	  10	  11	Row Number
 	.byte	0b0000,	0b0100,	0b1000,	0xff	# 11
@@ -309,6 +309,8 @@ sdram_type_bank_2:
 	.byte	0b1100,	0xff,	0xff,	0xff	# 11
 	.byte	0b0010,	0b0110,	0b1010,	0b1110	# 12
 	.byte	0b0011,	0b0111,	0b1011,	0b1111	# 13
+
+/* -----------------------------------------------------------------------------------------*/
 
 pci_init_table:
 #	High Byte -> Register	Low Byte -> Value
@@ -327,9 +329,9 @@ pci_init_table:
 
 	.word	0x50c5	# Refresh Cycle Enable
 
-	#.byte	0x5601	# CAS = 3T
-
 	.word	0x0000	/* Null, End of table */
+
+/* -----------------------------------------------------------------------------------------*/
 
 #ifdef STD_FLASH
 	.org 0xfff0
@@ -350,6 +352,8 @@ reset_vector:
 spl_vector:
 	.byte	0xea				# jmp to 8000:0000, where SPL
 	.word	0x0000, SPL_RAM_SEG		# (LinuxBIOS) starts in RAM
+
+/* -----------------------------------------------------------------------------------------*/
 
 sis950_init_table:
 	.byte	0x87, 0x01, 0x55, 0x55, 0x24

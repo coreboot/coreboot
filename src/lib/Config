@@ -13,7 +13,7 @@ object memcmp.o
 object malloc.o
 object elfboot.o USE_ELF_BOOT
 object do_inflate.o
-object floppy_subr.o
+object floppy_subr.o BOOT_FLOPPY
 object delay.o
 object fallback_boot.o HAVE_FALLBACK_BOOT
 object compute_ip_checksum.o

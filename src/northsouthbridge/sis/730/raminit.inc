@@ -22,7 +22,7 @@
  *
  *
  * Reference:
- *	1. SiS 730S Specification
+ *	1. SiS 730S Data Sheet, Rev. 1.0, Oct. 31, 2000
  *	2. SiS 730S Register Recommended Setting
  *	   Rev 1.0, Oct. 4, 2000
  *

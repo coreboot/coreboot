@@ -54,8 +54,8 @@ static const initreg_t ide_init[] = {
 	{ WORD, 0x2C, 0x00,	0x1039 },  /* Subsystem vendor ID. */
 	{ WORD, 0x2E, 0x00,	0x5513 },  /* Subsystem ID. */
 	{ BYTE, 0x3c, 0x00,	0x0e   },  /* reserved don't do this, sets irq 14 */
-	{ BYTE, 0x40, 0x00,	0x01   },  /* Primary master data recovery time. 1 PCICLK */
-	{ BYTE, 0x41, 0x00,	0xb3   },  /* Primary master data active time. UDMA Mode 2 */
+	{ BYTE, 0x40, 0x00,	0x04   },  /* Primary master data recovery time. 4 PCICLK */
+	{ BYTE, 0x41, 0x00,	0xb4   },  /* Primary master data active time. UDMA Mode 2 */
 	{ BYTE, 0x42, 0x00,	0x00   },  /* Primary slave data recovery time. */
 	{ BYTE, 0x43, 0x00,	0x00   },  /* Primary slave data active time. */   
 	{ BYTE, 0x44, 0x00,	0x00   },  /* Secondary master data recovery time. */
@@ -116,6 +116,7 @@ void keyboard_on()
 	u8 regval;
 	struct pci_dev *pcidev;
 	void pc_keyboard_init(void);
+
 	/* turn on sis630 keyboard/mouse controller */
 	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, (void *)NULL);
 	if (pcidev != NULL) {
@@ -138,23 +139,16 @@ void nvram_on()
 		/* Enable FFF80000 to FFFFFFFF decode. You have to also enable
 		   PCI Posted write for devices on sourthbridge */
 		pci_write_config_byte(pcidev, 0x40, 0x33);
-		/* Flash can be flashed */
-		pci_write_config_byte(pcidev, 0x45, 0x40);
-		printk_debug("Enabled in SIS 503 regs 0x40 and 0x45\n");
-
+		/* Flash can be flashed, enable USB device in undocumented Bit 6 */
+		pci_write_config_byte(pcidev, 0x45, 0x60);
 	}
-	printk_debug("Now try to turn off shadow\n");
 
+//#if !defined(STD_FLASH)
 	/* turn off nvram shadow in 0xc0000 ~ 0xfffff, i.e. accessing segment C - F
 	   is actually to the DRAM not NVRAM. For 512KB NVRAM case, this one should be
 	   disabled */
 	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_550, (void *)NULL);
-	printk_debug("device for SiS 550 is 0x%x\n", pcidev);
 	if (pcidev != NULL) {
-		/* read cycle goes to System Memory */
-		//pci_write_config_word(pcidev, 0x70, 0x1fff);
-		/* write cycle goest to System Memory */
-		//pci_write_config_word(pcidev, 0x72, 0x1fff);
 		pci_write_config_word(pcidev, 0x70, 0xFFFF);
 		pci_write_config_word(pcidev, 0x72, 0xFFFF);
 		pci_write_config_word(pcidev, 0x74, 0xFFFF);
@@ -162,6 +156,7 @@ void nvram_on()
 		printk_debug("Shadow memory disabled in SiS 550\n");
 
 	}
+//#endif
 }
 
 /* serial_irq_fixup: Enable Serial Interrupt. Serial interrupt is the IRQ line from SiS 950
@@ -192,15 +187,21 @@ south_fixup(void)
 
 	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, (void *)NULL);
 	if (pcidev != NULL) {
-	    u8 reg;
-	    pci_read_config_byte(pcidev, 0x77, &reg);
-	    pci_write_config_byte(pcidev, 0x77, reg & 0xEF);
+		u8 reg;
+		/* disable ROM delay transaction */
+		pci_read_config_byte(pcidev, 0x77, &reg);
+		pci_write_config_byte(pcidev, 0x77, reg & 0xEF);
 
-	    /* IO address for CIR */
-	    pci_write_config_byte(pcidev, 0x4A, 0x11);
-	    pci_write_config_byte(pcidev, 0x4B, 0x03);
-	    /* IRQ for CIR */
-	    pci_write_config_byte(pcidev, 0x6C, 0x05);
+		/* IO address for CIR */
+		pci_write_config_byte(pcidev, 0x4A, 0x11);
+		pci_write_config_byte(pcidev, 0x4B, 0x03);
+		/* IRQ for CIR */
+		pci_write_config_byte(pcidev, 0x6C, 0x05);
+	}
+
+	pcidev = pci_find_device(PCI_VENDOR_ID_SI, 0x7001, (void *)NULL);
+	if (pcidev != NULL) {
+		pci_read_config_byte(pcidev, 0x04, 0x17);
 	}
 }
 
@@ -212,46 +213,25 @@ acpi_fixup(void)
 	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, (void *)NULL);
 	if (pcidev != NULL) {
 		unsigned char val;
-		unsigned short acpibase = 0xc000, temp;
-		int i;
+		unsigned short acpibase = 0xc000;
 
 		// the following is to turn off software watchdogs. 
 		// we co-op the address space from c000-cfff here. Temporarily. 
 		// Later, we need a better way to do this. 
 		// But since Linux doesn't even understand this yet, no issue. 
 		// Set a base address for ACPI of 0xc000
-		pci_read_config_word(pcidev, 0x74, &temp);
-
-		printk_debug("acpibase was 0x%x\n", temp);
 		pci_write_config_word(pcidev, 0x74, acpibase);
-		pci_read_config_word(pcidev, 0x74, &temp);
-		printk_debug("acpibase is 0x%x\n", temp);
 
 		// now enable acpi
 		pci_read_config_byte(pcidev, 0x40, &val);
-		printk_debug("acpi enable reg was 0x%x\n", val);
 		val |= 0x80;
 		pci_write_config_byte(pcidev, 0x40, val);
-		pci_read_config_byte(pcidev, 0x40, &val);
-		printk_debug("acpi enable reg after set is 0x%x\n", val);
-		printk_debug("acpi status: word at 0x56 is 0x%x\n",
-		       inw(acpibase+0x56));
-		printk_debug("acpi status: byte at 0x4b is 0x%x\n", 
-		       inb(acpibase + 0x4b));
 
-		// now that it's on, get in there and call off the dogs. 
-		// that's the recommended thing to do if MD40 iso on. 
-		outw(0, acpibase + 0x56);
-		// does this help too? 
+		/* Disable Auto-Reset */
+		val = inb(acpibase + 0x56);
+		outw(val | 0x40, acpibase + 0x56);
+		/* Disable Software Watchdog */
 		outb(0, acpibase + 0x4b);
-		// ah ha! have to SET, NOT CLEAR!
-		outb(0x40, acpibase + 0x56);
-		printk_debug("acpibase + 0x56 is 0x%x\n", 
-		       inb(acpibase+0x56));
-		val &= (~0x80);
-		pci_write_config_byte(pcidev, 0x40, val);
-		pci_read_config_byte(pcidev, 0x40, &val);
-		printk_debug("acpi disable reg after set is 0x%x\n", val);
 	} else {
 		printk_emerg("Can't find south bridge!\n");
 	}

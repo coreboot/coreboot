@@ -1,8 +1,25 @@
-
 /*
- * Bootstrap code for the INTEL 
- * $Id$
+ * southbridge.c:        Southbridge Initialization For SiS 730
  *
+ * Copyright 2002 Silicon Integrated Systems Corp.
+ *
+ *      This program is free software; you can redistribute it and/or modify
+ *      it under the terms of the GNU General Public License as published by
+ *      the Free Software Foundation; either version 2 of the License, or
+ *      (at your option) any later version.
+ *
+ *      This program is distributed in the hope that it will be useful,
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *      GNU General Public License for more details.
+ *
+ *      You should have received a copy of the GNU General Public License
+ *      along with this program; if not, write to the Free Software
+ *      Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ *
+ * Reference:
+ *      1. SiS 730S Data Sheet Rev. 1.0, Otc. 21, 2000
  */
 
 #ifndef lint
@@ -54,8 +71,8 @@ static const initreg_t ide_init[] = {
 	{ WORD, 0x2C, 0x00,	0x1039 },  /* Subsystem vendor ID. */
 	{ WORD, 0x2E, 0x00,	0x5513 },  /* Subsystem ID. */
 	{ BYTE, 0x3c, 0x00,	0x0e   },  /* reserved don't do this, sets irq 14 */
-	{ BYTE, 0x40, 0x00,	0x01   },  /* Primary master data recovery time. 1 PCICLK */
-	{ BYTE, 0x41, 0x00,	0xb3   },  /* Primary master data active time. UDMA Mode 2 */
+	{ BYTE, 0x40, 0x00,	0x04   },  /* Primary master data recovery time. 4 PCICLK */
+	{ BYTE, 0x41, 0x00,	0xb4   },  /* Primary master data active time. UDMA Mode 2 */
 	{ BYTE, 0x42, 0x00,	0x00   },  /* Primary slave data recovery time. */
 	{ BYTE, 0x43, 0x00,	0x00   },  /* Primary slave data active time. */   
 	{ BYTE, 0x44, 0x00,	0x00   },  /* Secondary master data recovery time. */
@@ -143,19 +160,15 @@ void nvram_on()
 		printk_debug("Enabled in SIS 503 regs 0x40 and 0x45\n");
 
 	}
-	printk_debug("Now try to turn off shadow\n");
 
 #if !defined(STD_FLASH)
 	/* turn off nvram shadow in 0xc0000 ~ 0xfffff, i.e. accessing segment C - F
 	   is actually to the DRAM not NVRAM. For 512KB NVRAM case, this one should be
 	   disabled */
 	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_730, (void *)NULL);
-	printk_debug("device for SiS 730 is 0x%x\n", pcidev);
 	if (pcidev != NULL) {
-		/* read cycle goes to System Memory */
-		pci_write_config_word(pcidev, 0x70, 0x1fff);
-		/* write cycle goest to System Memory */
-		pci_write_config_word(pcidev, 0x72, 0x1fff);
+		/* read/write cycle goes to System Memory */
+		pci_write_config_byte(pcidev, 0x70, 0x03);
 		printk_debug("Shadow memory disabled in SiS 730\n");
 
 	}
@@ -185,9 +198,8 @@ serial_irq_fixedup(void)
 
 /* apc_fixup: Fix up the Mux-ed GPIO Lines controlled by APC registers 
  *
- * For SiS630A/B Mainboards, the MAC address of the internal SiS900 is stored in EEPROM
- * on the board. The EEPROM interface lines are muxed with GPIO pins and are selected by
- * some APC registers.
+ * SiS 730 Mux-ed Keyboard/Mouse controller pins with MII interface. We
+ * can choose only one. Most MBs just don't use the MII
  */
 static void
 apc_fixup(void)
@@ -202,15 +214,15 @@ apc_fixup(void)
 		pci_read_config_byte(isa_bridge, 0x48, &regval);
 		pci_write_config_byte(isa_bridge, 0x48, regval | 0x40);
 
-		/* Enable MAC Serial ROM Autoload */
-		outb(0x01, 0x70);
-		regval = inb(0x71);
-		outb(regval | 0x80, 0x71);
-
 		/* select Keyboard/Mouse function for GPIO Pin [14:10] */
 		outb(0x02, 0x70);
 		regval = inb(0x71);
 		outb(regval | 0x40, 0x71);
+
+		/* Disable MII Interface Interface for GPIO Pin [15-14, 9-8, 6-0] and OC1-0 */
+		outb(0x03, 0x70);
+		regval = inb(0x71) & 0xfc;
+		outb(regval, 0x71);
 
 		/* Enable ACPI S3,S5 */
 		outb(0x04, 0x70);
@@ -287,46 +299,25 @@ acpi_fixup(void)
 	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, (void *)NULL);
 	if (pcidev != NULL) {
 		unsigned char val;
-		unsigned short acpibase = 0xc000, temp;
-		int i;
+		unsigned short acpibase = 0xc000;
 
 		// the following is to turn off software watchdogs. 
 		// we co-op the address space from c000-cfff here. Temporarily. 
 		// Later, we need a better way to do this. 
 		// But since Linux doesn't even understand this yet, no issue. 
 		// Set a base address for ACPI of 0xc000
-		pci_read_config_word(pcidev, 0x74, &temp);
-
-		printk_debug("acpibase was 0x%x\n", temp);
 		pci_write_config_word(pcidev, 0x74, acpibase);
-		pci_read_config_word(pcidev, 0x74, &temp);
-		printk_debug("acpibase is 0x%x\n", temp);
 
 		// now enable acpi
 		pci_read_config_byte(pcidev, 0x40, &val);
-		printk_debug("acpi enable reg was 0x%x\n", val);
 		val |= 0x80;
 		pci_write_config_byte(pcidev, 0x40, val);
-		pci_read_config_byte(pcidev, 0x40, &val);
-		printk_debug("acpi enable reg after set is 0x%x\n", val);
-		printk_debug("acpi status: word at 0x56 is 0x%x\n",
-		       inw(acpibase+0x56));
-		printk_debug("acpi status: byte at 0x4b is 0x%x\n", 
-		       inb(acpibase + 0x4b));
 
-		// now that it's on, get in there and call off the dogs. 
-		// that's the recommended thing to do if MD40 iso on. 
-		outw(0, acpibase + 0x56);
-		// does this help too? 
+		/* Disable Auto-Reset */
+		val = inb(acpibase + 0x56);
+		outw(val | 0x40, acpibase + 0x56);
+		/* Disable Software Watchdog */
 		outb(0, acpibase + 0x4b);
-		// ah ha! have to SET, NOT CLEAR!
-		outb(0x40, acpibase + 0x56);
-		printk_debug("acpibase + 0x56 is 0x%x\n", 
-		       inb(acpibase+0x56));
-		val &= (~0x80);
-		pci_write_config_byte(pcidev, 0x40, val);
-		pci_read_config_byte(pcidev, 0x40, &val);
-		printk_debug("acpi disable reg after set is 0x%x\n", val);
 	} else {
 		printk_emerg("Can't find south bridge!\n");
 	}
@@ -337,39 +328,6 @@ acpi_fixup(void)
 void
 final_southbridge_fixup()
 {
-#ifdef OLD_KERNEL_HACK
-	struct pci_dev *pcidev;
-
-	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, (void *)NULL);
-	if (pcidev != NULL) {
-		printk_info("Remapping IRQ on southbridge for OLD_KERNEL_HACK\n");
-               // remap IRQ for PCI -- this is exactly what the BIOS does now.
-               pci_write_config_byte(pcidev, 0x42, 0xa);
-               pci_write_config_byte(pcidev, 0x43, 0xb);
-               pci_write_config_byte(pcidev, 0x44, 0xc);
-	}
-	// ethernet fixup. This should all work, and doesn't, yet. 
-	// so we hack it for now. 
-	// need a manifest constant for the enet device. 
-	pcidev = pci_find_device(PCI_VENDOR_ID_SI, 0x0900, (void *)NULL);
-	if (pcidev != NULL) {
-		u32 bar0 = 0xb001;
-		// set the BAR 0 to 0xb000. Safe, high value, known good. 
-		// pci config set doesn't work for reasons we don't understand. 
-		pci_write_config_dword(pcidev, PCI_BASE_ADDRESS_0, bar0);
-
-		// Make sure bus mastering is on. The tried-and-true probe in linuxpci.c 
-		// doesn't set this for some reason. 
-		pci_write_config_byte(pcidev, PCI_COMMAND, 
-				      PCI_COMMAND_IO | PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
-
-		// set the interrupt to 'b'
-		pci_write_config_byte(pcidev, PCI_INTERRUPT_LINE, 0xb);
-	} else {
-		printk_err("Can't find ethernet interface\n");
-	}
-#endif /* OLD_KERNEL_HACK */
-
 	timer0_fixup();
 	rtc_fixup();
 	apc_fixup();

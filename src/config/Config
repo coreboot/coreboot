@@ -64,3 +64,4 @@ addaction clean rm -f build_opt_tbl option_table.c crt0.S
 dir /src/lib
 dir /src/boot
 dir /src/rom
+dir /src/pc80

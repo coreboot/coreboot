@@ -61,6 +61,12 @@ northbridge_init_table:
 	.word	0x890c
 	.word	0x8b04
 
+	/* AGP GART */
+	.word	0x9440
+	.word	0x9501
+	.word	0x9701
+	.word	0x9800
+
 	/* IO Buffer */
 	.word	0x9b40
 	.word	0x9f10

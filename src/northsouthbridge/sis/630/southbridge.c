@@ -54,8 +54,8 @@ static const initreg_t ide_init[] = {
 	{ WORD, 0x2C, 0x00,	0x1039 },  /* Subsystem vendor ID. */
 	{ WORD, 0x2E, 0x00,	0x5513 },  /* Subsystem ID. */
 	{ BYTE, 0x3c, 0x00,	0x0e   },  /* reserved don't do this, sets irq 14 */
-	{ BYTE, 0x40, 0x00,	0x01   },  /* Primary master data recovery time. 1 PCICLK */
-	{ BYTE, 0x41, 0x00,	0xb3   },  /* Primary master data active time. UDMA Mode 2 */
+	{ BYTE, 0x40, 0x00,	0x04   },  /* Primary master data recovery time. 4 PCICLK, PIO Mode 2 */
+	{ BYTE, 0x41, 0x00,	0xb4   },  /* Primary master data active time. UDMA Mode 2 */
 	{ BYTE, 0x42, 0x00,	0x00   },  /* Primary slave data recovery time. */
 	{ BYTE, 0x43, 0x00,	0x00   },  /* Primary slave data active time. */   
 	{ BYTE, 0x44, 0x00,	0x00   },  /* Secondary master data recovery time. */
@@ -63,7 +63,7 @@ static const initreg_t ide_init[] = {
 	{ BYTE, 0x46, 0x00,	0x00   },  /* Secondary slave data recovery time. */ 
 	{ BYTE, 0x47, 0x00,	0x00   },  /* Secondary slave data active time. */   
 	{ BYTE, 0x48, 0x00,	0x05   },  /* Read/Write FIFO Threshold = 1/4 */
-	{ BYTE, 0x4A, 0x40,	0xe2   },  /* Enable Bus Master, Fast postwrite, IDE 0 */
+	{ BYTE, 0x4A, 0x40,	0xe6   },  /* Enable Bus Master, Fast postwrite, IDE 0,1 */
 	{ BYTE, 0x4B, 0x00,	0x11   },  /* Enable Postwrite and Prefech for IDE0, Master */
 	{ WORD, 0x4C, 0x00,	0x0200 },  /* Prefetch count of primary. */
 	{ WORD, 0x4E, 0x00,	0x0200 },  /* Prefetch count of secondary. */
@@ -72,7 +72,6 @@ static const initreg_t ide_init[] = {
 
 void ide_fixup(void)
 {
-
 	struct pci_dev *dev  = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_5513,
 					       (void *) NULL); 
 	int i;
@@ -116,6 +115,7 @@ void keyboard_on()
 	u8 regval;
 	struct pci_dev *pcidev;
 	void pc_keyboard_init(void);
+
 	/* turn on sis630 keyboard/mouse controller */
 	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, (void *)NULL);
 	if (pcidev != NULL) {
@@ -300,45 +300,25 @@ acpi_fixup(void)
 	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, (void *)NULL);
 	if (pcidev != NULL) {
 		unsigned char val;
-		unsigned short acpibase = 0xc000, temp;
+		unsigned short acpibase = 0xc000;
 
 		// the following is to turn off software watchdogs. 
 		// we co-op the address space from c000-cfff here. Temporarily. 
 		// Later, we need a better way to do this. 
 		// But since Linux doesn't even understand this yet, no issue. 
 		// Set a base address for ACPI of 0xc000
-		pci_read_config_word(pcidev, 0x74, &temp);
-
-		printk_debug("acpibase was 0x%x\n", temp);
 		pci_write_config_word(pcidev, 0x74, acpibase);
-		pci_read_config_word(pcidev, 0x74, &temp);
-		printk_debug("acpibase is 0x%x\n", temp);
 
 		// now enable acpi
 		pci_read_config_byte(pcidev, 0x40, &val);
-		printk_debug("acpi enable reg was 0x%x\n", val);
 		val |= 0x80;
 		pci_write_config_byte(pcidev, 0x40, val);
-		pci_read_config_byte(pcidev, 0x40, &val);
-		printk_debug("acpi enable reg after set is 0x%x\n", val);
-		printk_debug("acpi status: word at 0x56 is 0x%x\n",
-		       inw(acpibase+0x56));
-		printk_debug("acpi status: byte at 0x4b is 0x%x\n", 
-		       inb(acpibase + 0x4b));
 
-		// now that it's on, get in there and call off the dogs. 
-		// that's the recommended thing to do if MD40 iso on. 
-		outw(0, acpibase + 0x56);
-		// does this help too? 
+		/* Disable Auto-Reset */
+		val = inb(acpibase + 0x56);
+		outw(val | 0x40, acpibase + 0x56);
+		/* Disable Software Watchdog */
 		outb(0, acpibase + 0x4b);
-		// ah ha! have to SET, NOT CLEAR!
-		outb(0x40, acpibase + 0x56);
-		printk_debug("acpibase + 0x56 is 0x%x\n", 
-		       inb(acpibase+0x56));
-		val &= (~0x80);
-		pci_write_config_byte(pcidev, 0x40, val);
-		pci_read_config_byte(pcidev, 0x40, &val);
-		printk_debug("acpi disable reg after set is 0x%x\n", val);
 	} else {
 		printk_emerg("Can't find south bridge!\n");
 	}

@@ -135,14 +135,3 @@ _realstart:
 	movw	%ax, %fs
 	movw	%ax, %gs
 
-        /* This is a redundant stack setup. 
-         * It redoes the more complete stack setup
-         * in crt0.S. We do this here because on entry to crt0.S
-         * some chipsets have memory set up and others don't. We have found
-         * that some code in CRT0_PARAMETERS assume the stack is working
-         * enough for call/return. So we have to have working stack or 
-         * things will crash. This fix as of 8/23/01 RGM
-         */
-        /* set new stack */
-        movl    $_estack, %esp
-

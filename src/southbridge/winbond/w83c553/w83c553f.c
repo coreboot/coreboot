@@ -27,75 +27,30 @@
  * Enabling function 1 (IDE controller of the chip.
  */
 
+#ifndef CONFIG_ISA_IO
+#define CONFIG_ISA_IO         0xFE000000
+#endif
+
 #include <arch/io.h>
 #include <device/pci.h>
+#include <device/pci_ids.h>
 #include <device/chip.h>
 #include <console/console.h>
 #include "w83c553f.h"
-#include "chip.h"
-
-#ifndef CONFIG_ISA_MEM
-#define CONFIG_ISA_MEM		0xFD000000
-#endif
-#ifndef CONFIG_ISA_IO
-#define CONFIG_ISA_IO		0xFE000000
-#endif
-
-#ifndef CONFIG_IDE_MAXBUS
-#define CONFIG_IDE_MAXBUS	2
-#endif
-#ifndef CONFIG_IDE_MAXDEVICE
-#define CONFIG_IDE_MAXDEVICE	(CONFIG_IDE_MAXBUS*2)
-#endif
-
-uint32_t ide_bus_offset[CONFIG_IDE_MAXBUS];
 
 void initialise_pic(void);
 void initialise_dma(void);
 
-extern struct pci_ops pci_direct_ppc;
-
-#if 0
-void southbridge_early_init(void)
+static void 
+w83c553_init(struct device *dev)
 {
 	unsigned char reg8;
 
+	printk_info("Configure W83C553F\n");
+
+#ifdef SANDPOINT
 	/*
-	 * Set ISA memory space
-	 */
-	pci_direct_ppc.read_byte(0, 0x58, W83C553F_IPADCR, &reg8);
-	/* 16 MB ISA memory space */
-	reg8 |= (W83C553F_IPADCR_IPATOM4 | W83C553F_IPADCR_IPATOM5 | W83C553F_IPADCR_IPATOM6 | W83C553F_IPADCR_IPATOM7);
-	reg8 &= ~W83C553F_IPADCR_MBE512;
-	pci_direct_ppc.write_byte(0, 0x58, W83C553F_IPADCR, &reg8);
-}
-#endif
-
-void w83c553_init(void)
-{
-	struct device  *dev;
-	unsigned char reg8;
-	unsigned short reg16;
-	unsigned int reg32;
-
-	dev = dev_find_device(W83C553F_VID, W83C553F_DID, 0);
-	if (dev == 0)
-	{
-		printk_info("Error: Cannot find W83C553F controller on any PCI bus\n");
-		return;
-	}
-
-	printk_info("Found W83C553F controller\n");
-
-	/* always enabled */
-#if 0
-	reg16 = pci_read_config16(dev, PCI_COMMAND);
-	reg16 |= PCI_COMMAND_MASTER | PCI_COMMAND_IO | PCI_COMMAND_MEMORY;
-	pci_write_config16(dev, PCI_COMMAND, reg16);
-#endif
-
-	/*
-	 * Set ISA memory space
+	 * Set ISA memory space NOT SURE ABOUT THIS???
 	 */
 	reg8 = pci_read_config8(dev, W83C553F_IPADCR);
 	/* 16 MB ISA memory space */
@@ -111,7 +66,6 @@ void w83c553_init(void)
 	reg8 &= ~W83C553F_CSCR_BIOSWP;
 	pci_write_config8(dev, W83C553F_CSCR, reg8);
 
-
 	/*
 	 * Enable Port 92
 	 */
@@ -121,64 +75,8 @@ void w83c553_init(void)
 	/*
 	 * Route IDE interrupts to IRQ 14 & 15 on 8259.
 	 */
-	pci_write_config8(dev, W83C553F_IDEIRCR, 0xef);
-	pci_write_config16(dev, W83C553F_PCIIRCR, 0x0000);
-
-	/*
-	 * Read IDE bus offsets from function 1 device.
-	 * We must unmask the LSB indicating that it is an IO address.
-	 */
-	dev = dev_find_device(W83C553F_VID, W83C553F_IDE, 0);
-	if (dev == 0)
-	{
-		printk_info("Error: Cannot find W83C553F function 1 device\n");
-		return;
-	}
-
-	/*
-	 * Enable native mode on IDE ports and set base address.
-	 */
-	reg8 = W83C553F_PIR_P1NL | W83C553F_PIR_P0NL;
-	pci_write_config8(dev, W83C553F_PIR, reg8);
-	pci_write_config32(dev, PCI_BASE_ADDRESS_0, 0xffffffff);
-	reg32 = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
-	pci_write_config32(dev, PCI_BASE_ADDRESS_0, 0x1f0);
-	reg32 = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
-	pci_write_config32(dev, PCI_BASE_ADDRESS_1, 0xffffffff);
-	reg32 = pci_read_config32(dev, PCI_BASE_ADDRESS_1);
-	pci_write_config32(dev, PCI_BASE_ADDRESS_1, 0x3f6);
-	reg32 = pci_read_config32(dev, PCI_BASE_ADDRESS_1);
-	pci_write_config32(dev, PCI_BASE_ADDRESS_2, 0xffffffff);
-	reg32 = pci_read_config32(dev, PCI_BASE_ADDRESS_2);
-	pci_write_config32(dev, PCI_BASE_ADDRESS_2, 0x170);
-	reg32 = pci_read_config32(dev, PCI_BASE_ADDRESS_2);
-	pci_write_config32(dev, PCI_BASE_ADDRESS_3, 0xffffffff);
-	reg32 = pci_read_config32(dev, PCI_BASE_ADDRESS_3);
-	pci_write_config32(dev, PCI_BASE_ADDRESS_3, 0x376);
-	reg32 = pci_read_config32(dev, PCI_BASE_ADDRESS_3);
-
-	/*
-	 * Set read-ahead duration to 0xff
-	 * Enable P0 and P1
-	 */
-	reg32 = 0x00ff0000 | W83C553F_IDECSR_P1EN | W83C553F_IDECSR_P0EN;
-	pci_write_config32(dev, W83C553F_IDECSR, reg32);
-
-	ide_bus_offset[0] = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
-	printk_debug("ide bus offset = 0x%x\n", ide_bus_offset[0]);
-	ide_bus_offset[0] &= ~1;
-#if CONFIG_IDE_MAXBUS > 1
-	ide_bus_offset[1] = pci_read_config32(dev, PCI_BASE_ADDRESS_2);
-	ide_bus_offset[1] &= ~1;
-#endif
-
-	/*
-	 * Enable function 1, IDE -> busmastering and IO space access
-	 */
-	reg16 = pci_read_config16(dev, PCI_COMMAND);
-	reg16 |= PCI_COMMAND_MASTER | PCI_COMMAND_IO;
-	pci_write_config16(dev, PCI_COMMAND, reg16);
-	reg16 = pci_read_config16(dev, PCI_COMMAND);
+	pci_write_config8(dev, W83C553F_IDEIRCR, 0x90);
+	pci_write_config16(dev, W83C553F_PCIIRCR, 0xABEF);
 
 	/*
 	 * Initialise ISA interrupt controller
@@ -189,6 +87,7 @@ void w83c553_init(void)
 	 * Initialise DMA controller
 	 */
 	initialise_dma();
+#endif
 
 	printk_info("W83C553F configuration complete\n");
 }
@@ -286,23 +185,17 @@ void initialise_dma(void)
 	outw(W83C553F_DMA2 + W83C553F_DMA2_CS, 0x0000);
 }
 
-void southbridge_init(struct chip *chip, enum chip_pass pass)
-{
+struct device_operations w83c553_ops  = {
+        .read_resources   = pci_dev_read_resources,
+        .set_resources    = pci_dev_set_resources,
+        .enable_resources = pci_dev_enable_resources,
+        .init             = w83c553_init,
+        .scan_bus         = 0,
+};
 
-	struct southbridge_winbond_w83c553_config *conf = (struct southbridge_winbond_w83c553_config *)chip->chip_info;
-
-	switch (pass) {
-	case CONF_PASS_POST_PCI:
-		w83c553_init();
-		break;
-
-	default:
-		/* nothing yet */
-		break;
-	}
-}
-
-struct chip_control southbridge_winbond_w83c553_control = {
-	enable: southbridge_init,
-	name:   "Winbond W83C553"
+struct pci_driver w83c553f_pci_driver __pci_driver = {
+	/* w83c553f */
+	.ops = &w83c553_ops,
+	.device = PCI_DEVICE_ID_WINBOND_83C553,
+	.vendor = PCI_VENDOR_ID_WINBOND,
 };

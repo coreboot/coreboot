@@ -21,6 +21,9 @@
  * MA 02111-1307 USA
  */
 
+#ifndef _W83C553_H
+#define _W83C553_H
+
  /* winbond access routines and defines*/
 
 /* from the winbond data sheet -
@@ -192,4 +195,6 @@
 #define W83C553F_DMA2_CM		0xDC
 #define W83C553F_DMA2_RWAMB		0xDE
 
-void initialise_w83c553f(void);
+extern struct device_operations w83c553_ops;
+
+#endif /* _W83C553_H */

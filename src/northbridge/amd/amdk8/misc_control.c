@@ -1,7 +1,13 @@
 /* Turn off machine check triggers when reading
  * pci space where there are no devices.
  * This is necessary when scaning the bus for
- * devices which is done by the kernel */
+ * devices which is done by the kernel
+ *
+ * written in 2003 by Eric Biederman
+ * 
+ *  - Athlon64 workarounds by Stefan Reinauer
+ *  - "reset once" logic by Yinghai Lu
+ */
 
 #include <console/console.h>
 #include <device/device.h>
@@ -10,7 +16,7 @@
 #include <device/pci_ops.h>
 #include "./cpu_rev.c"
 
-static cpu_reset_count = 0; //By LYH
+static cpu_reset_count = 0;
 static void misc_control_init(struct device *dev)
 {
 	uint32_t cmd;
@@ -53,18 +59,30 @@ static void misc_control_init(struct device *dev)
 		cmd = 0x04e20707;
 		pci_write_config32(dev, 0xd4, cmd );
 	}
-#if 1
+
+/*
+ * FIXME: This preprocessor check is a mere workaround. 
+ * The right fix is to walk over all links on all nodes
+ * and set the FIFO read pointer optimization value to
+ * 0x25 for each link connected to an AMD HT device.
+ *
+ * The reason this is only enabled for machines with more 
+ * than one CPU is that Athlon64 machines don't have the
+ * link at all that is optimized in the code.
+ */
+
+#if CONFIG_MAX_CPUS > 1	
 #if HAVE_HARD_RESET==1
-	cpu_reset_count++;  //by LYH
+	cpu_reset_count++;
 	cmd = pci_read_config32(dev, 0xdc);
 	if((cmd & 0x0000ff00) != 0x02500) {
 		cmd &= 0xffff00ff;
 		cmd |= 0x00002500;
 		pci_write_config32(dev, 0xdc, cmd );
-	        if(cpu_reset_count==CONFIG_MAX_CPUS) { //By LYH
+	        if(cpu_reset_count==CONFIG_MAX_CPUS) {
 			printk_debug("resetting cpu\n");
 			hard_reset();
-		} //By LYH
+		}
 	} 
 #endif
 #endif	

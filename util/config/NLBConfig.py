@@ -393,12 +393,14 @@ def nsuperio(dir, superio_commands):
 	decl = '';
 	decl = "extern struct superio_control superio_"
 	decl = decl + superio_decl_name  + "_control; \n"
-	decl = decl + "struct superio superio_" + superio_decl_name 
+	decl = decl + "struct superio superio_" + "%s_%d" %(superio_decl_name,
+							   numsuperio)
 	decl = decl + "= { " 
 	decl = decl + "&superio_" + superio_decl_name+ "_control"
 	decl = decl + superio_cmds + "};\n"
 	superio_decls = superio_decls + decl;
-	superio_devices.append("&superio_" + superio_decl_name);
+	superio_devices.append("&superio_" + "%s_%d" % (superio_decl_name,
+						       numsuperio));
 	# note that we're using the new interface
 	option(dir, "USE_NEW_SUPERIO_INTERFACE=1")
 	numsuperio = numsuperio + 1

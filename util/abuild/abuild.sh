@@ -30,6 +30,11 @@ ARCH=`uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ \
 	-e s/arm.*/arm/ -e s/sa110/arm/ -e s/x86_64/amd64/ \
 	-e "s/Power Macintosh/ppc/"`
 
+function debug
+{
+	test "$verbose" == "true" && echo $*
+}
+	
 function vendors
 {
 	# make this a function so we can easily select
@@ -207,12 +212,10 @@ function build_target
 		if [ "$ARCH" == amd64 -a "$TARCH" == i386 ]; then
 			CC="gcc -m32"
 			found_crosscompiler=true
-			echo " ($TARCH: subset of $ARCH)"
 		fi
 		if [ "$ARCH" == ppc64 -a "$TARCH" == ppc ]; then
 			CC="gcc -m32"
 			found_crosscompiler=true
-			echo " ($TARCH: subset of $ARCH)"
 		fi
 		if [ "$found_crosscompiler" == "false" -a "$TARCH" == ppc ] ;then
 			for prefix in powerpc-eabi- powerpc-linux- ; do
@@ -232,7 +235,7 @@ function build_target
 			echo
 			return 0
 		else
-			echo " ($TARCH: ok)"
+			echo " ($TARCH: ok, though we're $ARCH)"
 		fi
 	fi
 	
@@ -294,6 +297,7 @@ EOF
 target=""
 buildall=false
 LBROOT=$( cd ../..; pwd )
+verbose=false
 
 # parse parameters
 args=`getopt -l version,verbose,help,all,target:,broken Vvhat:b -- "$@"`
@@ -320,7 +324,7 @@ done
 
 test -z "$1" || LBROOT=$1
 
-echo "LBROOT=$LBROOT"
+debug "LBROOT=$LBROOT"
 
 if [ "$target" != "" ]; then
 	# build a single board

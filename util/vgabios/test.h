@@ -76,25 +76,13 @@ typedef struct _mem {
     void(*wl)(ptr, int, u32);
 } mem;
 
-// I don't know why they did it this way. So I won't change it for now 
-// RGM
-#if 0
-#define MEM_WB(pint, where, what) (pint)->mem->wb(pint, where, what)
-#define MEM_WW(pint, where, what) (pint)->mem->ww(pint, where, what)
-#define MEM_WL(pint, where, what) (pint)->mem->wl(pint, where, what)
+#define MEM_WB(where, what) wrb(where,what)
+#define MEM_WW(where, what) wrw(where, what)
+#define MEM_WL(where, what) wrl(where, what)
 
-#define MEM_RB(pint, where) (pint)->mem->rb(pint, where)
-#define MEM_RW(pint, where) (pint)->mem->rw(pint, where)
-#define MEM_RL(pint, where) (pint)->mem->rl(pint, where)
-#endif
-
-#define MEM_WB(pint, where, what) wrb(where,what)
-#define MEM_WW(pint, where, what) wrw(where, what)
-#define MEM_WL(pint, where, what) wrl(where, what)
-
-#define MEM_RB(pint, where) rdb(where)
-#define MEM_RW(pint, where) rdw(where)
-#define MEM_RL(pint, where) rdl(where)
+#define MEM_RB(where) rdb(where)
+#define MEM_RW(where) rdw(where)
+#define MEM_RL(where) rdl(where)
 
 extern ptr current;
 

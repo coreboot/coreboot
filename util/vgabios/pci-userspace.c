@@ -1,5 +1,10 @@
 #include <stdio.h>
-#include "pci-userspace.h"
+#include <pci/pci.h>
+#include "pci.h"
+
+#define PCITAG struct pci_filter *
+
+#define DEBUG_PCI 1
 
 struct pci_access *pacc;
 struct pci_dev *dev;
@@ -7,7 +12,7 @@ struct pci_dev *dev;
 struct pci_filter ltag;
 
 
-int pciNumBuses=0;
+int pciNumBuses = 0;
 
 int pciInit(void)
 {
@@ -15,7 +20,9 @@ int pciInit(void)
 
 	pci_init(pacc);
 	pci_scan_bus(pacc);
-
+	for (dev = pacc->devices; dev; dev = dev->next) {
+		pci_fill_info(dev, PCI_FILL_IDENT | PCI_FILL_BASES);
+	}
 	return 0;
 }
 
@@ -24,67 +31,103 @@ int pciExit(void)
 	pci_cleanup(pacc);
 	return 0;
 }
-#if 0
-pciReadLong()
-{
-	int c;
-	pci_get_dev(struct pci_access *acc, int bus, int dev, int func);
-	pci_fill_info(dev, PCI_FILL_IDENT | PCI_FILL_BASES);
-	c=pci_read_dword(dev, regnum);
-}
-#endif
 
 PCITAG findPci(unsigned short bx)
 {
-    PCITAG tag=&ltag;
-    pciVideoPtr dev;
+	PCITAG tag = &ltag;
 
-    int bus  = (bx >> 8) & 0xFF;
-    int slot = (bx >> 3) & 0x1F;
-    int func = bx & 0x7;
+	int bus = (bx >> 8) & 0xFF;
+	int slot = (bx >> 3) & 0x1F;
+	int func = bx & 0x7;
 
-    tag->bus=bus; tag->slot=slot; tag->func=func;
+	tag->bus = bus;
+	tag->slot = slot;
+	tag->func = func;
 
-    if (pci_get_dev(pacc, bus, slot, func))
-        return tag;
+	if (pci_get_dev(pacc, bus, slot, func))
+		return tag;
 
-    return NULL;
+	return NULL;
 }
 
-CARD32 pciSlotBX(pciVideoPtr pvp)
+u32 pciSlotBX(PCITAG tag)
 {
-    return (pvp->bus << 8) | (pvp->dev << 3) | (pvp->func);
+	return (tag->bus << 8) | (tag->slot << 3) | (tag->func);
 }
 
-CARD8 pciReadByte(PCITAG tag, CARD32 idx)
+u8 pciReadByte(PCITAG tag, u32 idx)
 {
-	printf("pciReadByte: idx=%x\n",idx);
+	struct pci_dev *d;
+	if ((d = pci_get_dev(pacc, tag->bus, tag->slot, tag->func)))
+		return pci_read_byte(d, idx);
+#ifdef DEBUG_PCI
+	printf("PCI: device not found while read byte (%x:%x.%x)\n",
+	       tag->bus, tag->slot, tag->func);
+#endif
+	return 0;
 }
 
-CARD16 pciReadWord(PCITAG tag, CARD32 idx)
+u16 pciReadWord(PCITAG tag, u32 idx)
 {
-        printf("pciReadWord: idx=%x\n",idx);
+	struct pci_dev *d;
+	if ((d = pci_get_dev(pacc, tag->bus, tag->slot, tag->func)))
+		return pci_read_word(d, idx);
+#ifdef DEBUG_PCI
+	printf("PCI: device not found while read word (%x:%x.%x)\n",
+	       tag->bus, tag->slot, tag->func);
+#endif
+	return 0;
 }
 
-CARD32 pciReadLong(PCITAG tag, CARD32 idx)
+u32 pciReadLong(PCITAG tag, u32 idx)
 {
-        printf("pciReadWord: idx=%x\n",idx);
+	struct pci_dev *d;
+	if ((d = pci_get_dev(pacc, tag->bus, tag->slot, tag->func)))
+		return pci_read_long(d, idx);
+#ifdef DEBUG_PCI
+	printf("PCI: device not found while read long (%x:%x.%x)\n",
+	       tag->bus, tag->slot, tag->func);
+#endif
+	return 0;
 }
 
 
-void pciWriteLong(PCITAG tag, CARD32 idx, CARD32 data)
+void pciWriteLong(PCITAG tag, u32 idx, u32 data)
 {
-	printf("pciWriteLong: idx=%x, data=%x\n",idx,data);
+	struct pci_dev *d;
+	if ((d = pci_get_dev(pacc, tag->bus, tag->slot, tag->func)))
+		pci_write_long(d, idx, data);
+#ifdef DEBUG_PCI
+	else
+		printf
+		    ("PCI: device not found while write long (%x:%x.%x)\n",
+		     tag->bus, tag->slot, tag->func);
+#endif
 }
 
-void pciWriteWord(PCITAG tag, CARD32 idx, CARD16 data)
+void pciWriteWord(PCITAG tag, u32 idx, u16 data)
 {
-	printf("pciWriteWord: idx=%x, data=%x\n",idx,data);
+	struct pci_dev *d;
+	if ((d = pci_get_dev(pacc, tag->bus, tag->slot, tag->func)))
+		pci_write_word(d, idx, data);
+#ifdef DEBUG_PCI
+	else
+		printf
+		    ("PCI: device not found while write word (%x:%x.%x)\n",
+		     tag->bus, tag->slot, tag->func);
+#endif
+
 }
 
-
-void pciWriteByte(PCITAG tag, CARD32 idx, CARD8 data)
+void pciWriteByte(PCITAG tag, u32 idx, u8 data)
 {
-	printf("pciWriteByte: idx=%x, data=%x\n",idx,data);
+	struct pci_dev *d;
+	if ((d = pci_get_dev(pacc, tag->bus, tag->slot, tag->func)))
+		pci_write_long(d, idx, data);
+#ifdef DEBUG_PCI
+	else
+		printf
+		    ("PCI: device not found while write long (%x:%x.%x)\n",
+		     tag->bus, tag->slot, tag->func);
+#endif
 }
-

@@ -19,9 +19,7 @@
 #include <asm/io.h>
 #include <sys/time.h>
 
-int
-port_rep_inb(ptr pInt,
-	     u16 port, u32 base, int d_f, u32 count);
+int port_rep_inb(u16 port, u32 base, int d_f, u32 count);
 u8 x_inb(u16 port);
 u16 x_inw(u16 port);
 void x_outb(u16 port, u8 val);
@@ -30,113 +28,98 @@ u32 x_inl(u16 port);
 void x_outl(u16 port, u32 val);
 
 /* general software interrupt handler */
-u32
-getIntVect(ptr pInt,int num)
+u32 getIntVect(int num)
 {
-    return MEM_RW(pInt, num << 2) + (MEM_RW(pInt, (num << 2) + 2) << 4);
+    return MEM_RW(num << 2) + (MEM_RW((num << 2) + 2) << 4);
 }
 
 void
-pushw(ptr pInt, u16 val)
+pushw(u16 val)
 {
     X86_ESP -= 2;
-    MEM_WW(pInt, ((u32) X86_SS << 4) + X86_SP, val);
+    MEM_WW(((u32) X86_SS << 4) + X86_SP, val);
 }
 
-int
-run_bios_int(int num, ptr pInt)
+int run_bios_int(int num)
 {
     u32 eflags;
     eflags = X86_EFLAGS;
-    pushw(pInt, eflags);
-    pushw(pInt, X86_CS);
-    pushw(pInt, X86_IP);
-    X86_CS = MEM_RW(pInt, (num << 2) + 2);
-    X86_IP = MEM_RW(pInt,  num << 2);
+    pushw(eflags);
+    pushw(X86_CS);
+    pushw(X86_IP);
+    X86_CS = MEM_RW( (num << 2) + 2);
+    X86_IP = MEM_RW( num << 2);
 
     return 1;
 }
 
-int
-port_rep_inb(ptr pInt,
-	     u16 port, u32 base, int d_f, u32 count)
+int port_rep_inb(u16 port, u32 base, int d_f, u32 count)
 {
     register int inc = d_f ? -1 : 1;
     u32 dst = base;
     while (count--) {
-	MEM_WB(pInt, dst, x_inb(port));
+	MEM_WB(dst, x_inb(port));
 	dst += inc;
     }
     return dst - base;
 }
 
-int
-port_rep_inw(ptr pInt,
-	     u16 port, u32 base, int d_f, u32 count)
+int port_rep_inw(u16 port, u32 base, int d_f, u32 count)
 {
     register int inc = d_f ? -2 : 2;
     u32 dst = base;
     while (count--) {
-	MEM_WW(pInt, dst, x_inw(port));
+	MEM_WW(dst, x_inw(port));
 	dst += inc;
     }
     return dst - base;
 }
 
-int
-port_rep_inl(ptr pInt,
-	     u16 port, u32 base, int d_f, u32 count)
+int port_rep_inl(u16 port, u32 base, int d_f, u32 count)
 {
     register int inc = d_f ? -4 : 4;
     u32 dst = base;
     while (count--) {
-	MEM_WL(pInt, dst, x_inl(port));
+	MEM_WL(dst, x_inl(port));
 	dst += inc;
     }
     return dst - base;
 }
 
-int
-port_rep_outb(ptr pInt,
-	      u16 port, u32 base, int d_f, u32 count)
+int port_rep_outb(u16 port, u32 base, int d_f, u32 count)
 {
     register int inc = d_f ? -1 : 1;
     u32 dst = base;
     while (count--) {
-	x_outb(port, MEM_RB(pInt, dst));
+	x_outb(port, MEM_RB(dst));
 	dst += inc;
     }
     return dst - base;
 }
 
-int
-port_rep_outw(ptr pInt,
-	      u16 port, u32 base, int d_f, u32 count)
+int port_rep_outw(u16 port, u32 base, int d_f, u32 count)
 {
     register int inc = d_f ? -2 : 2;
     u32 dst = base;
     while (count--) {
-	x_outw(port, MEM_RW(pInt, dst));
+	x_outw(port, MEM_RW(dst));
 	dst += inc;
     }
     return dst - base;
 }
 
-int
-port_rep_outl(ptr pInt,
-	      u16 port, u32 base, int d_f, u32 count)
+int port_rep_outl(u16 port, u32 base, int d_f, u32 count)
 {
     register int inc = d_f ? -4 : 4;
     u32 dst = base;
     while (count--) {
-	x_outl(port, MEM_RL(pInt, dst));
+	x_outl(port, MEM_RL(dst));
 	dst += inc;
     }
     return dst - base;
 }
 
-u8
-x_inb(u16 port)
+u8 x_inb(u16 port)
 {
     u8 val;
 
@@ -152,16 +135,15 @@ x_inb(u16 port)
     return val;
 }
 
-void
-getsecs(unsigned long *sec, unsigned long *usec)
+void getsecs(unsigned long *sec, unsigned long *usec)
 {
   struct timeval tv;
   gettimeofday(&tv, 0);
   *sec = tv.tv_sec;
   *usec = tv.tv_usec;
 }
-u16
-x_inw(u16 port)
+
+u16 x_inw(u16 port)
 {
     u16 val;
 
@@ -175,8 +157,7 @@ x_inw(u16 port)
     return val;
 }
 
-void
-x_outb(u16 port, u8 val)
+void x_outb(u16 port, u8 val)
 {
     if ((port == 0x43) && (val == 0)) {
 	/*
@@ -193,15 +174,13 @@ x_outb(u16 port, u8 val)
     }
 }
 
-void
-x_outw(u16 port, u16 val)
+void x_outw(u16 port, u16 val)
 {
 
     outw(port, val);
 }
 
-u32
-x_inl(u16 port)
+u32 x_inl(u16 port)
 {
     u32 val;
 
@@ -210,44 +189,37 @@ x_inl(u16 port)
     return val;
 }
 
-void
-x_outl(u16 port, u32 val)
+void x_outl(u16 port, u32 val)
 {
     outl(port, val);
 }
 
-u8
-Mem_rb(int addr)
+u8 Mem_rb(int addr)
 {
     return (*current->mem->rb)(current, addr);
 }
 
-u16
-Mem_rw(int addr)
+u16 Mem_rw(int addr)
 {
     return (*current->mem->rw)(current, addr);
 }
 
-u32
-Mem_rl(int addr)
+u32 Mem_rl(int addr)
 {
     return (*current->mem->rl)(current, addr);
 }
 
-void
-Mem_wb(int addr, u8 val)
+void Mem_wb(int addr, u8 val)
 {
     (*current->mem->wb)(current, addr, val);
 }
 
-void
-Mem_ww(int addr, u16 val)
+void Mem_ww(int addr, u16 val)
 {
     (*current->mem->ww)(current, addr, val);
 }
 
-void
-Mem_wl(int addr, u32 val)
+void Mem_wl(int addr, u32 val)
 {
     (*current->mem->wl)(current, addr, val);
 }
@@ -256,8 +228,7 @@ Mem_wl(int addr, u32 val)
 #define TAG(Cfg1Addr) (Cfg1Addr & 0xffff00)
 #define OFFSET(Cfg1Addr) (Cfg1Addr & 0xff)
 
-u8
-bios_checksum(u8 *start, int size)
+u8 bios_checksum(u8 *start, int size)
 {
     u8 sum = 0;
 

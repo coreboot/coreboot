@@ -1,0 +1,17 @@
+arch i386
+mainboardinit cpu/i386/entry16.inc
+mainboardinit cpu/i386/entry32.inc
+ldscript cpu/i386/entry16.lds
+ldscript cpu/i386/entry32.lds
+
+mainboardinit pc80/serial.inc
+mainboardinit arch/i386/lib/console.inc
+
+northsouthbridge sis/550
+
+option FINAL_MAINBOARD_FIXUP
+option HAVE_PIRQ_TABLE=1
+object mainboard.o
+object irq_tables.o
+keyboard pc80
+cpu p5

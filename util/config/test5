@@ -1,0 +1,12 @@
+target winfast #comment
+#comment
+
+mainboard leadtek/winfast6300
+option SERIAL_CONSOLE
+raminit northsouthbridge/sis/630/raminit.inc
+# makerule LINUX=../../linux/vmlinux
+linux /usr/src/linux
+cpu p5
+cpu p6
+
+

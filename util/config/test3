@@ -1,0 +1,9 @@
+TOP ../..
+target Foo #comment
+#comment
+
+mainboard leadtek/winfast6300
+option SERIAL_CONSOLE
+cpu p6
+
+

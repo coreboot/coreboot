@@ -1,0 +1,11 @@
+TOP ~rminnich/src/bios/freebios
+target Foo #comment
+#comment
+
+northsouthbridge sis/630
+mainboard leadtek/winfast6300
+option SIS630
+option SERIAL_CONSOLE
+cpu Babbage
+
+

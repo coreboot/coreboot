@@ -24,7 +24,11 @@
 char buffer[16];
 
 extern struct stream rom_stream;
-struct lb_memory *lbmem;
+
+inline void reset(void)
+{
+	outb(0x0e, 0xcf9);
+}
 
 int main(void) {
 	int blocks;
@@ -35,10 +39,18 @@ int main(void) {
 
 		DPRINTF("Got lbmem struct: %08x\n", (unsigned int) lbmem);
 
-		if(choose_stream(&rom_stream) <0)
-			return(-1);
+		switch(choose_stream(&rom_stream)) {
+			case -1:
+				return(-1);
+				break;
+			case -2:
+				reset();
+				break;
 
-		elfboot(&rom_stream, preboot_param);
+			default:
+				elfboot(&rom_stream, preboot_param);
+				break;
+		}
 	}
 
 	outb(0x0e, 0x3f9);

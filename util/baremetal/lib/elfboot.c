@@ -676,6 +676,7 @@ int elfboot(struct stream *stream, pre_boot_param_t *param)
 		printk_err("Cannot Load ELF Image\n");
 
 		post_code(0xff);
+		return(-1);
 	}
 	return 0;
 

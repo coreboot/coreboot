@@ -16,10 +16,11 @@
 #include <printk.h>
 #include <serial_subr.h>
 
+int stream_default=1;
 
 int choose_stream(struct stream *stream)
 {
-	int stream_count, i,j;
+	int stream_count, i,j,max;
 	tag_head *directory, *current;
 
 	if(stream->init() < 0) {
@@ -50,7 +51,8 @@ int choose_stream(struct stream *stream)
 		current += current->block_count+1;
 	}
 
-	j=1;
+	max = j;
+
 	if(iskey()) {
 		j = ttys0_rx_char();
 		j=-1;
@@ -58,6 +60,10 @@ int choose_stream(struct stream *stream)
 		while(j<0) {
 			printk_info("Choose a stream: ");
 			j = ttys0_rx_char();
+
+			if(j == 'r' || j == 'R')
+				return(-2);
+
 			if(j == 0x1b || j == 'x')
 				return(-1);
 
@@ -65,12 +71,15 @@ int choose_stream(struct stream *stream)
 				printk_info(" INVALID RESPONSE\n");
 				j=-1;
 			} else
-				j-=0x30;
+				stream_default = (j-=0x30);
 		}
 	}
 
+	if(stream_default == max)
+		return(-2);
 
-	stream->load_tag(j);
+	stream->load_tag(stream_default);
+	stream_default++;
 
 	return(0);
 }

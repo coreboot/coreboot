@@ -118,6 +118,7 @@ void pnp_set_resources(device_t dev)
 	for(i = 0; i < dev->resources; i++) {
 		pnp_set_resource(dev, &dev->resource[i]);
 	}
+
 }
 
 void pnp_enable_resources(device_t dev)
@@ -129,8 +130,9 @@ void pnp_enable_resources(device_t dev)
 
 void pnp_enable(device_t dev)
 {
-	pnp_set_logical_device(dev);
-	if (!dev->enable) {
+
+        if (!dev->enable) {
+		pnp_set_logical_device(dev);
 		pnp_set_enable(dev, 0);
 	}
 }
@@ -165,7 +167,7 @@ static void get_resources(device_t dev, struct pnp_info *info)
 {
 	struct resource *resource;
 
-	pnp_set_logical_device(dev);
+//	pnp_set_logical_device(dev);   // coment out by LYH
 
 	if (info->flags & PNP_IO0) {
 		pnp_get_ioresource(dev, PNP_IDX_IO0, &info->io0);
@@ -206,12 +208,21 @@ void pnp_enumerate(struct chip *chip, unsigned functions,
 	chip_enumerate(chip);
 	path.type       = DEVICE_PATH_PNP;
 	path.u.pnp.port = chip->dev->path.u.pnp.port;
+
 	
 	/* Setup the ops and resources on the newly allocated devices */
 	for(i = 0; i < functions; i++) {
 		path.u.pnp.device = info[i].function;
+
 		dev = alloc_find_dev(chip->bus, &path);
-		dev->ops = ops;
+
+		if(info[i].ops == 0) {  // BY LYH
+		  dev->ops = ops;
+		} 
+		else { 
+		  dev->ops = info[i].ops;  // BY LYH
+		}
 		get_resources(dev, &info[i]);
+
 	}
 }

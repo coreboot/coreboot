@@ -36,9 +36,9 @@ default LB_CKS_LOC=123
 
 driver mainboard.o
 #driver broadcom_nic.o
-#driver ti_firewire.o
+driver ti_firewire.o
 #driver adaptec_scsi.o
-#driver si_sata.o
+driver si_sata.o
 #driver intel_nic.o
 #object reset.o
 if HAVE_MP_TABLE object mptable.o end
@@ -176,7 +176,7 @@ northbridge amd/amdk8 "mc0"
                 pci 1:0.2 on
                 pci 1:1.0 off
                 superio winbond/w83627hf link 1
-                        pnp 2e.0 off #  Floppy
+                        pnp 2e.0 on #  Floppy
                                  io 0x60 = 0x3f0
                                 irq 0x70 = 6
                                 drq 0x74 = 2
@@ -199,7 +199,8 @@ northbridge amd/amdk8 "mc0"
                         pnp 2e.8 off #  GPIO2
                         pnp 2e.9 off #  GPIO3
                         pnp 2e.a off #  ACPI
-                        pnp 2e.b off #  HW Monitor
+                        pnp 2e.b on #  HW Monitor
+				 io 0x60 = 0x290
                 end
 	end
         southbridge amd/amd8151 "amd8151" link 0
@@ -217,7 +218,6 @@ northbridge amd/amdk8 "mc1"
         pci 0:19.3
 end
 
-dir /pc80
 #dir /bioscall
 
 cpu k8 "cpu0"

@@ -132,7 +132,8 @@ end
 
 makerule ./failover.inc
 	depends "./romcc ./failover.E"
-	action "./romcc -O -o failover.inc --label-prefix=failover ./failover.E"end
+	action "./romcc -O -o failover.inc --label-prefix=failover ./failover.E"
+end
 
 makerule ./auto.E 
         depends "$(MAINBOARD)/auto.c option_table.h"
@@ -149,6 +150,7 @@ mainboardinit cpu/k8/disable_mmx_sse.inc
 ###
 ### Include the secondary Configuration files 
 ###
+
 northbridge amd/amdk8 "mc0"
         pci 0:18.0
         pci 0:18.0
@@ -175,7 +177,7 @@ northbridge amd/amdk8 "mc0"
                 pci 1:0.2 on
                 pci 1:1.0 off
                 superio winbond/w83627hf link 1
-                        pnp 2e.0 off #  Floppy
+                        pnp 2e.0 on #  Floppy
                                  io 0x60 = 0x3f0
                                 irq 0x70 = 6
                                 drq 0x74 = 2
@@ -198,7 +200,8 @@ northbridge amd/amdk8 "mc0"
                         pnp 2e.8 off #  GPIO2
                         pnp 2e.9 off #  GPIO3
                         pnp 2e.a off #  ACPI
-                        pnp 2e.b off #  HW Monitor
+                        pnp 2e.b on  #  HW Monitor
+				 io 0x60 = 0x290
                 end
         end
 end

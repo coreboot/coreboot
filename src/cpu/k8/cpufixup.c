@@ -134,10 +134,11 @@ static void set_init_ecc_mtrrs(void)
 {
 	msr_t msr;
 	int i;
+
 	disable_cache();
 
 	/* First clear all of the msrs to be safe */
-	for(i = 0; i < MTRR_COUNT; i++) {
+	for (i = 0; i < MTRR_COUNT; i++) {
 		msr_t zero;
 		zero.lo = zero.hi = 0;
 		wrmsr(MTRRphysBase_MSR(i), zero);
@@ -164,7 +165,6 @@ static void set_init_ecc_mtrrs(void)
 
 	enable_cache();
 }
-
 
 static void init_ecc_memory(void)
 {

@@ -126,14 +126,14 @@ unsigned long cpu_initialize(struct mem_range *mem)
 	unsigned long processor_id = this_processors_id();
 	printk_notice("Initializing CPU #%d\n", processor_id);
 
-	/* some cpus need a fixup done. This is the hook for doing that. */
-	cpufixup(mem);
-
 	/* Turn on caching if we haven't already */
 	cache_on(mem);
 
 	display_cpuid();
 	mtrr_check();
+
+	/* some cpus need a fixup done. This is the hook for doing that. */
+	cpufixup(mem);
 
 #if 0
 	/* now that everything is really up, enable the l2 cache if desired. 
@@ -142,6 +142,7 @@ unsigned long cpu_initialize(struct mem_range *mem)
 	 */
 	configure_l2_cache();
 #endif
+
 	interrupts_on();
 	processor_id = this_processors_id();
 	printk_info("CPU #%d Initialized\n", processor_id);

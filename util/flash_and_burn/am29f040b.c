@@ -69,15 +69,15 @@ static __inline__ int write_sector_29f040b(volatile char * bios, unsigned char *
 
 int probe_29f040b (struct flashchip * flash)
 {
-	volatile char * bios = flash->virt_addr;
+	volatile unsigned char * bios = flash->virt_addr;
 	unsigned char id1, id2;
 
 	*(bios + 0x555) = 0xAA;
 	*(bios + 0x2AA) = 0x55;
 	*(bios + 0x555) = 0x90;
     
-	id1 = *(unsigned char *) bios;
-	id2 = *(unsigned char *) (bios + 0x01);
+	id1 = * bios;
+	id2 = * (bios + 0x01);
 
 	*bios = 0xF0;
 

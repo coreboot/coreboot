@@ -1094,7 +1094,6 @@ spd_verify_dimm:
 	jmp	spd_unsupported_data
 1:
 
-a
 	/* tRCD RAS to CAS */
 	movb	$29, %bh
 	CALLSP(spd_read_paired_byte)

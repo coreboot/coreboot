@@ -33,7 +33,7 @@ ldscript arch/i386/lib/id.lds
 ##
 ## Startup code for secondary CPUS
 ##
-mainboardinit arch/i386/smp/secondary.inc
+# mainboardinit arch/i386/smp/secondary.inc
 
 ## This is the early phase of linuxBIOS startup 
 ## Things are delicate and we test to see if we should
@@ -78,7 +78,7 @@ mainboardinit ram/dump_northbridge.inc
 ##
 #mainboardinit southbridge/intel/82801/smbus.inc
 #mainboardinit sdram/generic_dump_spd.inc
-mainboardinit mainboard/supermicro/p4dpr/mainboard_raminit.inc
+mainboardinit mainboard/supermicro/p4dpe/mainboard_raminit.inc
 
 ##
 ## Include the secondary Configuration files 

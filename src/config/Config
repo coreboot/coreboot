@@ -59,7 +59,7 @@ makerule documentation: $(SOURCES) ; doxygen LinuxBIOSDoc.config
 
 makerule build_opt_tbl: $(TOP)/util/options/build_opt_tbl.c ; $(HOSTCC) $(HOSTCFLAGS) $< -o $@
 
-makerule /$(TARGET_DIR)/option_table.c : build_opt_tbl $(MAINBOARD)/cmos.layout ; ./build_opt_tbl -b  --config $(MAINBOARD)/cmos.layout 
+makerule /$(TARGET_DIR)/option_table.c : build_opt_tbl $(MAINBOARD)/cmos.conf ; ./build_opt_tbl -b  --config $(MAINBOARD)/cmos.conf 
 
 object /$(TARGET_DIR)/option_table.o HAVE_OPTION_TABLE
 

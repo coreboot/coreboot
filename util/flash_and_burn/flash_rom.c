@@ -150,6 +150,44 @@ enable_flash_e7500(struct pci_dev *dev, char *name) {
 }
 
 int
+enable_flash_vt8235(struct pci_dev *dev, char *name) {
+  unsigned char old, new, val;
+  unsigned int base;
+  int ok;
+  
+  /* get io privilege access PCI configuration space */
+  if (iopl(3) != 0) {
+      perror("Can not set io priviliage");
+      exit(1);
+  }
+
+  old = pci_read_byte(dev, 0x40);
+
+  new = old | 0x10;
+
+  if (new == old)
+      return 0;
+
+  ok = pci_write_byte(dev, 0x40, new);
+  if (ok != 0) {
+    printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n", 
+	   old, new, name);
+  }
+
+  /* enable GPIO15 which is connected to write protect. */
+  base = ((pci_read_byte(dev, 0x88) & 0x80) | pci_read_byte(dev, 0x89) << 8);
+  val = inb(base + 0x4d);
+  val |= 0x80;
+  outb(val, base + 0x4d);
+
+  if (ok != 0) {
+    return -1;
+  } else {
+    return 0;
+  }
+}
+
+int
 enable_flash_vt8231(struct pci_dev *dev, char *name) {
   unsigned char old, new;
   int ok;
@@ -325,6 +363,7 @@ FLASH_ENABLE enables[] = {
   {0x1, 0x1, "sis630 -- what's the ID?", enable_flash_sis630},
   {0x8086, 0x2480, "E7500", enable_flash_e7500},
   {0x1106, 0x8231, "VT8231", enable_flash_vt8231},
+  {0x1106, 0x3177, "VT8235", enable_flash_vt8235},
   {0x1078, 0x0100, "CS5530", enable_flash_cs5530},
   {0x1039, 0x8, "SIS5595", enable_flash_sis5595},
 };

@@ -33,6 +33,21 @@ system_reset:
 #if USE_DCACHE_RAM == 1
 #define DCACHE_RAM_END	(DCACHE_RAM_BASE + DCACHE_RAM_SIZE - 1)
 	/*
+	 * Initialize data cache blocks 
+	 * (assumes cache block size of 32 bytes)
+	 *
+	 * NOTE: This may need to be moved to FAMILY_INIT if
+	 *       dcbz is not supported on all CPU's
+	 */
+	lis     r1, DCACHE_RAM_BASE@h
+	ori     r1, r1, DCACHE_RAM_BASE@l
+	li      r3, (DCACHE_RAM_SIZE / 32)
+	mtctr   r3
+0:      dcbz    r0, r1
+	addi    r1, r1, 32
+	bdnz    0b
+
+	/*
 	 * Set up stack in cache. The SP must be 16-byte (4-word) aligned
 	 * for SYSV EABI or 8-byte (2-word) aligned for PPC EABI, so we make 
 	 * it 16-byte aligned to cover both cases. Also we have to ensure that

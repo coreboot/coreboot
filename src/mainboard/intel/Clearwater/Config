@@ -21,11 +21,11 @@ ldscript cpu/i386/entry32.lds
 ##
 ## Build our reset vector (This is where linuxBIOS is entered)
 ##
-mainboardinit cpu/i386/reset16.inc
-ldscript cpu/i386/reset16.lds
+mainboardinit cpu/i386/reset16.inc USE_FALLBACK_IMAGE
+ldscript cpu/i386/reset16.lds USE_FALLBACK_IMAGE
 
-#mainboardinit mainboard/intel/sv2/reset32.inc
-#ldscript mainboard/intel/sv2/reset32.lds
+mainboardinit cpu/i386/reset32.inc USE_NORMAL_IMAGE
+ldscript cpu/i386/reset32.lds USE_NORMAL_IMAGE
 
 ##
 ## Include an id string (For safe flashing)
@@ -43,10 +43,10 @@ ldscript arch/i386/lib/id.lds
 ## Things are delicate and we test to see if we should
 ## failover to another image.
 
-#mainboardinit northbridge/intel/82860/reset_test.inc
-#mainboardinit arch/i386/lib/noop_failover.inc USE_NORMAL_IMAGE
-#mainboardinit southbridge/intel/82801/cmos_failover.inc USE_FALLBACK_IMAGE
-#ldscript arch/i386/lib/failover.lds USE_FALLBACK_IMAGE
+mainboardinit northbridge/intel/82860/reset_test.inc
+mainboardinit arch/i386/lib/noop_failover.inc USE_NORMAL_IMAGE
+mainboardinit southbridge/intel/82801/cmos_failover.inc USE_FALLBACK_IMAGE
+ldscript mainboard/intel/Clearwater/failover.lds USE_FALLBACK_IMAGE
 
 ###
 ### O.k. We aren't just an intermediary anymore!
@@ -179,7 +179,7 @@ option HAVE_MP_TABLE=1
 ##
 ## Build code to export a CMOS option tabe table
 ##
-#option HAVE_OPTION_TABLE=1
+option HAVE_OPTION_TABLE=1
 
 ##
 ## Build code for SMP support
@@ -226,7 +226,7 @@ nooption MEMORY_HOLE
 ## If we aren't a fallback image we must be a normal image
 ## This is useful for optional includes
 ##
-option USE_FALLBACK_IMAGE=0
+option USE_FALLBACK_IMAGE=1
 expr USE_NORMAL_IMAGE=!USE_FALLBACK_IMAGE
 
 ###
@@ -244,8 +244,8 @@ option _RAMBASE=0x00008000
 
 ## For the trick of using cache as ram
 ## put the fake ram location at this address
-option CACHE_RAM_BASE=0xfff70000
-option CACHE_RAM_SIZE=0x00010000
+#option CACHE_RAM_BASE=0xfff70000
+#option CACHE_RAM_SIZE=0x00010000
 
 ##
 ## Use a small 8K stack
@@ -268,7 +268,7 @@ option PYRO_SERIAL=1
 ##
 ## Only use the option table in a normal image
 ##
-#expr USE_OPTION_TABLE=!USE_FALLBACK_IMAGE
+expr USE_OPTION_TABLE=!USE_FALLBACK_IMAGE
 
 ##
 ## Compute the location and size of where this firmware image
@@ -282,14 +282,16 @@ expr ROM_SECTION_OFFSET=(USE_FALLBACK_IMAGE*(ROM_SIZE-65536))+(USE_NORMAL_IMAGE*
 ## Compute the start location and size size of
 ## The linuxBIOS bootloader.
 ##
-expr ZKERNEL_START =(0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+#expr ZKERNEL_START =(0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+expr ZKERNEL_START = 0xfff00000
+
 expr PAYLOAD_SIZE  =ROM_SECTION_SIZE - ROM_IMAGE_SIZE
 
 ##
 ## Compute where this copy of linuxBIOS will start in the boot rom
 ##
 #expr _ROMBASE      =ZKERNEL_START + PAYLOAD_SIZE
-expr _ROMBASE		= 0xffff0000 - (USE_FALLBACK_IMAGE*0x10000)
+expr _ROMBASE		= 0xffff0000 - (USE_NORMAL_IMAGE*0x10000)
 
 ##
 ## Compute a range of ROM that can cached to speed of linuxBIOS,

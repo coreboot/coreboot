@@ -11,7 +11,7 @@ void check_pirq_routing_table(void)
 	int i;
 	u8 sum;
 
-	printk_info("Checking IRQ routing tables...");
+	printk_info("Checking IRQ routing tables...\n");
 
 	rt = &intel_irq_routing_table;
 	addr = (u8 *)rt;
@@ -53,6 +53,24 @@ void check_pirq_routing_table(void)
 }
 #endif
 
+int verify_copy_pirq_routing_table(unsigned long addr)
+{
+	int i;
+	u8 *rt_orig, *rt_curr;
+
+	rt_curr = (u8*)addr;
+	rt_orig = (u8*)&intel_irq_routing_table;
+	printk_info("Verifing priq routing tables copy at 0x%x...", addr);
+	for (i = 0; i < intel_irq_routing_table.size; i++) {
+		if (*(rt_curr + i) != *(rt_orig + i)) {
+			printk_info("failed\n");
+			return -1;
+		}
+	}
+	printk_info("succeed\n");
+	return 0;
+}
+
 unsigned long copy_pirq_routing_table(unsigned long addr)
 {
 	/* Align the table to be 16 byte aligned. */
@@ -63,6 +81,7 @@ unsigned long copy_pirq_routing_table(unsigned long addr)
 	printk_info("Copying IRQ routing tables to 0x%x...", addr);
 	memcpy((void *)addr, &intel_irq_routing_table, intel_irq_routing_table.size);
 	printk_info("done.\n");
-
+	verify_copy_pirq_routing_table(addr);
 	return addr + intel_irq_routing_table.size;
 }
+

@@ -1,5 +1,6 @@
 #include <console/console.h>
 #include <device/device.h>
+#include <device/smbus.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
@@ -46,7 +47,7 @@ static void print_pci_regs_all(void)
 				if(!dev->enabled) {
 					continue;
 				}
-			        printk_debug("\n%02x:%02x:%02x aka %s",i,j,k, dev_path(dev));
+				printk_debug("\n%02x:%02x:%02x aka %s",i,j,k, dev_path(dev));
 				print_pci_regs(dev);
 			}
 		}
@@ -56,28 +57,72 @@ static void print_pci_regs_all(void)
 
 static void print_msr()
 {
-        msr_t msr;
-        unsigned index;
-        unsigned eax, ebx, ecx, edx;
-        index = 0x80000007;
-        printk_debug("calling cpuid 0x%08x\n", index);
-        asm volatile(
-                "cpuid"
-                : "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx)
-                : "a" (index)
-                );
-        printk_debug("cpuid[%08x]: %08x %08x %08x %08x\n",
-                index, eax, ebx, ecx, edx);
-        if (edx & (3 << 1)) {
-                index = 0xC0010042;
-                printk_debug("Reading msr: 0x%08x\n", index);
-                msr = rdmsr(index);
-                printk_debug("msr[0x%08x]: 0x%08x%08x\n",
-                        index, msr.hi, msr.hi);
-        }
+	msr_t msr;
+	unsigned index;
+	unsigned eax, ebx, ecx, edx;
+	index = 0x80000007;
+	printk_debug("calling cpuid 0x%08x\n", index);
+	asm volatile(
+		"cpuid"
+		: "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx)
+		: "a" (index)
+		);
+	printk_debug("cpuid[%08x]: %08x %08x %08x %08x\n",
+		index, eax, ebx, ecx, edx);
+	if (edx & (3 << 1)) {
+		index = 0xC0010042;
+		printk_debug("Reading msr: 0x%08x\n", index);
+		msr = rdmsr(index);
+		printk_debug("msr[0x%08x]: 0x%08x%08x\n",
+			index, msr.hi, msr.hi);
+	}
 
 }
- 
+static void print_smbus_regs(struct device *dev)
+{               
+	int j;
+	printk_debug("smbus:  %s[%d]->",  dev_path(dev->bus->dev), dev->bus->link );
+	printk_debug("%s",  dev_path(dev));
+	for(j = 0; j < 256; j++) {
+		int status;
+		unsigned char byte;
+		if ((j & 0xf) == 0) {
+			printk_debug("\r\n%02x: ", j);
+		}
+		status = smbus_read_byte(dev, j);
+		if (status < 0) {
+			printk_debug("bad device status= %08x\r\n", status);
+			break;
+		}
+		byte = status & 0xff;
+		printk_debug("%02x ", byte);
+	}
+	printk_debug("\r\n");
+}
+
+static void print_smbus_regs_all(struct device *dev)
+{
+	struct device *child;
+	int i;
+	if (dev->enabled && dev->path.type == DEVICE_PATH_I2C)
+	{
+		// Here don't need to call smbus_set_link, because we scan it from top to down
+		if( dev->bus->dev->path.type == DEVICE_PATH_I2C) { // it's under i2c MUX so set mux at first
+			if(ops_smbus_bus(get_pbus_smbus(dev->bus->dev))) {
+				if(dev->bus->dev->ops && dev->bus->dev->ops->set_link) 
+					dev->bus->dev->ops->set_link(dev->bus->dev, dev->bus->link);
+			}
+		}
+		
+		if(ops_smbus_bus(get_pbus_smbus(dev))) print_smbus_regs(dev);	
+	}
+
+	for(i=0; i< dev->links; i++) {
+		for (child = dev->link[i].children; child; child = child->sibling) {
+			print_smbus_regs_all(child);
+        	}
+	}
+}
 static void debug_init(device_t dev)
 {
 	device_t parent;
@@ -102,6 +147,9 @@ static void debug_init(device_t dev)
 		break;
 	case 3:
 		print_msr();
+		break;
+	case 4: 
+		print_smbus_regs_all(&dev_root);
 		break;
 	}
 }

@@ -2,7 +2,7 @@
  * generic K8 debug code, used by mainboard specific auto.c
  *
  */
-
+#if 1
 static void print_debug_pci_dev(unsigned dev)
 {
 	print_debug("PCI: ");
@@ -17,7 +17,7 @@ static void print_pci_devices(void)
 {
 	device_t dev;
 	for(dev = PCI_DEV(0, 0, 0); 
-		dev <= PCI_DEV(0, 0x1f, 0x7); 
+		dev <= PCI_DEV(0xff, 0x1f, 0x7); 
 		dev += PCI_DEV(0,0,1)) {
 		uint32_t id;
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
@@ -56,7 +56,7 @@ static void dump_pci_devices(void)
 {
 	device_t dev;
 	for(dev = PCI_DEV(0, 0, 0); 
-		dev <= PCI_DEV(0, 0x1f, 0x7); 
+		dev <= PCI_DEV(0xff, 0x1f, 0x7); 
 		dev += PCI_DEV(0,0,1)) {
 		uint32_t id;
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
@@ -149,7 +149,9 @@ static void dump_smbus_registers(void)
                         }
                         status = smbus_read_byte(device, j);
                         if (status < 0) {
-                                print_debug("bad device\r\n");
+                                print_debug("bad device status=");
+				print_debug_hex32(status);
+				print_debug("\r\n");
                                 break;
                         }
                         byte = status & 0xff;
@@ -159,3 +161,27 @@ static void dump_smbus_registers(void)
                 print_debug("\r\n");
 	}	
 }
+
+static void dump_io_resources(unsigned port) 
+{
+
+	int i;
+        udelay(2000);
+        print_debug_hex16(port);
+        print_debug(":\r\n");
+        for(i=0;i<256;i++) {
+                uint8_t val;
+                if ((i & 0x0f) == 0) {
+                        print_debug_hex8(i);
+                        print_debug_char(':');
+                }
+                val = inb(port);
+                print_debug_char(' ');
+                print_debug_hex8(val);
+                if ((i & 0x0f) == 0x0f) {
+                        print_debug("\r\n");
+                }
+		port++;
+        }
+}
+#endif

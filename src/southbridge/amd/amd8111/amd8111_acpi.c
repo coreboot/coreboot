@@ -27,7 +27,7 @@ static int lsmbus_recv_byte(device_t dev)
 	struct resource *res;
 
 	device = dev->path.u.i2c.device;
-	res = find_resource(dev->bus->dev, 0x20);
+	res = find_resource(get_pbus_smbus(dev)->dev, 0x58);
 	
 	return do_smbus_recv_byte(res->base, device);
 }
@@ -38,7 +38,7 @@ static int lsmbus_send_byte(device_t dev, uint8_t val)
 	struct resource *res;
 
 	device = dev->path.u.i2c.device;
-	res = find_resource(dev->bus->dev, 0x20);
+	res = find_resource(get_pbus_smbus(dev)->dev, 0x58);
 
 	return do_smbus_send_byte(res->base, device, val);
 }
@@ -50,7 +50,7 @@ static int lsmbus_read_byte(device_t dev, uint8_t address)
 	struct resource *res;
 
 	device = dev->path.u.i2c.device;
-	res = find_resource(dev->bus->dev, 0x20);
+	res = find_resource(get_pbus_smbus(dev)->dev, 0x58);
 	
 	return do_smbus_read_byte(res->base, device, address);
 }
@@ -61,7 +61,7 @@ static int lsmbus_write_byte(device_t dev, uint8_t address, uint8_t val)
 	struct resource *res;
 
 	device = dev->path.u.i2c.device;
-	res = find_resource(dev->bus->dev, 0x20);
+	res = find_resource(get_pbus_smbus(dev)->dev, 0x58);
 	
 	return do_smbus_write_byte(res->base, device, address, val);
 }
@@ -166,6 +166,7 @@ static struct smbus_bus_operations lops_smbus_bus = {
 	.read_byte  = lsmbus_read_byte,
 	.write_byte = lsmbus_write_byte,
 };
+
 static struct pci_operations lops_pci = {
 	.set_subsystem = lpci_set_subsystem,
 };
@@ -176,7 +177,7 @@ static struct device_operations acpi_ops  = {
 	.enable_resources = acpi_enable_resources,
 	.init             = acpi_init,
 	.scan_bus         = scan_static_bus,
-	.enable           = amd8111_enable,
+//	.enable           = amd8111_enable,
 	.ops_pci          = &lops_pci,
 	.ops_smbus_bus    = &lops_smbus_bus,
 };

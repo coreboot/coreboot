@@ -5,3 +5,4 @@ object pci_device.o
 object pnp_device.o
 object hypertransport.o
 object pci_ops.o
+object smbus_ops.o

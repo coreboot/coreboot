@@ -33,6 +33,7 @@ struct device_operations {
 	void (*init)(device_t dev);
 	unsigned int (*scan_bus)(device_t bus, unsigned int max);
 	void (*enable)(device_t dev);
+	void (*set_link)(device_t dev, unsigned int link);
 	const struct pci_operations *ops_pci;
 	const struct smbus_bus_operations *ops_smbus_bus;
 	const struct pci_bus_operations *ops_pci_bus;
@@ -50,7 +51,7 @@ struct bus {
 };
 
 #define MAX_RESOURCES 12
-#define MAX_LINKS     4
+#define MAX_LINKS    8 
 /*
  * There is one device structure for each slot-number/function-number
  * combination:

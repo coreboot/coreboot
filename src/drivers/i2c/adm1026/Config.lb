@@ -1,0 +1,2 @@
+config chip.h
+object adm1026.o

@@ -152,30 +152,30 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #define TOTAL_CPUS (FIRST_CPU + SECOND_CPU)
 static void main(unsigned long bist)
 {
-	static const struct mem_controller cpu[] = {
+        static const struct mem_controller cpu[] = {
 #if FIRST_CPU
-		{
-			.node_id = 0,
-			.f0 = PCI_DEV(0, 0x18, 0),
-			.f1 = PCI_DEV(0, 0x18, 1),
-			.f2 = PCI_DEV(0, 0x18, 2),
-			.f3 = PCI_DEV(0, 0x18, 3),
-			.channel0 = { (0xa<<3)|0, (0xa<<3)|2, 0, 0 },
-			.channel1 = { (0xa<<3)|1, (0xa<<3)|3, 0, 0 },
-		},
+                {
+                        .node_id = 0,
+                        .f0 = PCI_DEV(0, 0x18, 0),
+                        .f1 = PCI_DEV(0, 0x18, 1),
+                        .f2 = PCI_DEV(0, 0x18, 2),
+                        .f3 = PCI_DEV(0, 0x18, 3),
+                        .channel0 = { (0xa<<3)|0, (0xa<<3)|2, 0, 0 },
+                        .channel1 = { (0xa<<3)|1, (0xa<<3)|3, 0, 0 },
+                },
 #endif
 #if SECOND_CPU
-		{
-			.node_id = 1,
-			.f0 = PCI_DEV(0, 0x19, 0),
-			.f1 = PCI_DEV(0, 0x19, 1),
-			.f2 = PCI_DEV(0, 0x19, 2),
-			.f3 = PCI_DEV(0, 0x19, 3),
-			.channel0 = { (0xa<<3)|4, (0xa<<3)|6, 0, 0 },
-			.channel1 = { (0xa<<3)|5, (0xa<<3)|7, 0, 0 },
-		},
+                {
+                        .node_id = 1,
+                        .f0 = PCI_DEV(0, 0x19, 0),
+                        .f1 = PCI_DEV(0, 0x19, 1),
+                        .f2 = PCI_DEV(0, 0x19, 2),
+                        .f3 = PCI_DEV(0, 0x19, 3),
+                        .channel0 = { (0xa<<3)|4, (0xa<<3)|6, 0, 0 },
+                        .channel1 = { (0xa<<3)|5, (0xa<<3)|7, 0, 0 },
+                },
 #endif
-	};
+        };
 
 #if 1
         static const struct ht_chain ht_c[] = {
@@ -245,33 +245,28 @@ static void main(unsigned long bist)
 	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
 
 #if 0
-	dump_pci_devices();
+        dump_pci_devices();
 #endif
+
+        /* Check all of memory */
 #if 0
-	dump_pci_device(PCI_DEV(0, 0x18, 1));
+        msr_t msr;
+        msr = rdmsr(TOP_MEM2);
+        print_debug("TOP_MEM2: ");
+        print_debug_hex32(msr.hi);
+        print_debug_hex32(msr.lo);
+        print_debug("\r\n");
 #endif
-	/* Check all of memory */
+
+#if  0
+        ram_check(0x00000000, msr.lo+(msr.hi<<32));
+#endif
+
 #if 0
-	msr_t msr;
-	msr = rdmsr(TOP_MEM2);
-	print_debug("TOP_MEM2: ");
-	print_debug_hex32(msr.hi);
-	print_debug_hex32(msr.lo);
-	print_debug("\r\n");
-	
-	ram_check(0x00000000, msr.lo+(msr.hi<<32));
-
-#endif
-
-#if 0 
-
-//#if TOTAL_CPUS < 2
-	// Check 16MB of memory @ 0
-	ram_check(0x00000000, 0x00100000);
-//#else
-	// Check 16MB of memory @ 2GB 
-//	ram_check(0x80000000, 0x80100000);
-//#endif
+        // Check 16MB of memory @ 0
+        ram_check(0x00000000, 0x00100000);
+        // Check 16MB of memory @ 2GB 
+        ram_check(0x80000000, 0x80100000);
 #endif
 
 

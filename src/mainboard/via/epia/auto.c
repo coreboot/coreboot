@@ -11,6 +11,7 @@
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
 #include "northbridge/via/vt8601/raminit.h"
+#include "cpu/p6/earlymtrr.c"
 /*
  */
 void udelay(int usecs) 
@@ -135,4 +136,5 @@ static void main(void)
 		ram_check(check_addrs[i].lo, check_addrs[i].hi);
 	}
 #endif
+	early_mtrr_init();
 }

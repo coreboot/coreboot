@@ -220,7 +220,7 @@ northbridge via/vt8601 "vt8601"
 #		pci 0:11.6
 #		pci 0:12.0
 		register "enable_usb" = "0"
-		register "enable_native_ide" = "1"
+		register "enable_native_ide" = "0"
 		register "enable_com_ports" = "1"
 		register "enable_keyboard" = "0"
 		register "enable_nvram" = "1"

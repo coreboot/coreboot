@@ -335,11 +335,11 @@ static void vt8231_init(struct southbridge_via_vt8231_config *conf)
 	//
 	// IDE setup
 	//
-	if (conf->enable_native_ide) {
+	if (! conf->enable_native_ide) {
 		// Run the IDE controller in 'compatiblity mode - i.e. don't use PCI
 		// interrupts.  Using PCI ints confuses linux for some reason.
 		
-		printk_info("%s: enabling native IDE addresses\n", __FUNCTION__);
+		printk_info("%s: enabling compatibility IDE addresses\n", __FUNCTION__);
 		enables = pci_read_config8(dev1, 0x42);
 		printk_debug("enables in reg 0x42 0x%x\n", enables);
 		enables &= ~0xc0;		// compatability mode

@@ -12,12 +12,6 @@
 #include <cpu/x86/mtrr.h>
 
 static uint32_t microcode_updates[] = {
-	/* WARNING - Intel has a new data structure that has variable length
-	 * microcode update lengths.  They are encoded in int 8 and 9.  A
-	 * dummy header of nulls must terminate the list.
-	 */
-#include "microcode_MU16810d.h"	
-#include "microcode_MU16930c.h"
 	/*  Dummy terminator  */
         0x0, 0x0, 0x0, 0x0,
         0x0, 0x0, 0x0, 0x0,
@@ -26,7 +20,7 @@ static uint32_t microcode_updates[] = {
 };
 
 
-static void model_6xx_init(device_t dev)
+static void model_6dx_init(device_t dev)
 {
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
@@ -40,17 +34,12 @@ static void model_6xx_init(device_t dev)
 };
 
 static struct device_operations cpu_dev_ops = {
-	.init     = model_6xx_init,
+	.init     = model_6dx_init,
 };
 static struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_INTEL, 0x0672 },
-	{ X86_VENDOR_INTEL, 0x0673 },
-	{ X86_VENDOR_INTEL, 0x0681 },
-	{ X86_VENDOR_INTEL, 0x0683 },
-	{ X86_VENDOR_INTEL, 0x0686 },
-	{ X86_VENDOR_INTEL, 0x06A0 },
-	{ X86_VENDOR_INTEL, 0x06A1 },
-	{ X86_VENDOR_INTEL, 0x06A4 },
+#if 0
+	{ X86_VENDOR_INTEL, 0x06D6 }, /* Pentium M on 90nm with 2MiB of L2 cache */
+#endif
 	{ 0, 0 },
 };
 

@@ -1,10 +1,10 @@
 #include <arch/pirq_routing.h>
 
-#define CHECKSUM 0x22
+#define CHECKSUM 0x26
 const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_SIGNATURE,	/* u32 signature */
 	PIRQ_VERSION,	/* u16 version   */
-	32+16*4,	/* there can be total 6 devices on the bus */
+	32+16*6,	/* there can be total 6 devices on the bus */
 	0x00,		/* Bus 0 */
 	0x08,		/* Device 1, Function 0 */
 	0x0C20,		/* reserve IRQ 11, 10, 5, for PCI */
@@ -25,7 +25,7 @@ const struct irq_routing_table intel_irq_routing_table = {
 		 0x00, 0x00},
 		{0x00, 0x10, {{0x41, 0xdef8}, {0x42, 0xdef8}, {0x43, 0xdef8}, {0x44, 0xdef8}},
 		 0x00, 0x00},
-		{0x00, 0x0a, {{0x41, 0xdef8}, {0x42, 0xdef8}, {0x43, 0xdef8}, {0x44, 0xdef8}},
+		{0x00, 0x08, {{0x41, 0xdef8}, {0x42, 0xdef8}, {0x43, 0xdef8}, {0x44, 0xdef8}},
 		 0x00, 0x00},
 	}
 };

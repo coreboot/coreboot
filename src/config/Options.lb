@@ -395,6 +395,12 @@ define TTYS0_BAUD
 	export always
 	comment "Default baud rate for serial console"
 end
+define TTYS0_DIV
+	default none
+	format "%d"
+	export used
+	comment "Allow UART divisor to be set explicitly"
+end
 define TTYS0_LCS
 	default 0x3
 	format "0x%x"

@@ -31,10 +31,10 @@
 #include <cpu/p6/msr.h>
 #include <cpu/p6/mtrr.h>
 #include <cpu/p5/cpuid.h>
-#include <printk.h>
 
 /* Include debugging code and outputs */
 #define DEBUG
+#include <printk.h>
 
 static int signal_l2(unsigned int address_high,
 		     unsigned int address_low,
@@ -53,12 +53,6 @@ static int set_l2_register4(int l);
 static int calculate_l2_cache_size(void);
 static int calculate_l2_physical_address_range(void);
 static int calculate_l2_ecc(void);
-
-#ifdef DEBUG
-#define DBG(x...) printk(KERN_DEBUG x)
-#else
-#define DBG(x...)
-#endif
 
 static void cache_disable(void)
 {
@@ -135,8 +129,7 @@ int intel_l2_configure()
 		/* Mask out [22-24] Clock frequency ratio */
 		eax &= 0x1c00000;
 		if (eax == 0xc00000 || eax == 0x1000000) {
-			printk(KERN_ERR
-			       "Incorrect clock frequency ratio %x\n",
+			printk(KERN_ERR "Incorrect clock frequency ratio %x\n",
 			       eax);
 			goto bad;
 		}
@@ -176,8 +169,7 @@ int intel_l2_configure()
 		/* Mask out [22-24] Clock frequency ratio */
 		eax &= 0x3c00000;
 		if (eax == 0xc00000 || eax == 0x3000000) {
-			printk(KERN_ERR
-			       "Incorrect clock frequency ratio %x\n",
+			printk(KERN_ERR "Incorrect clock frequency ratio %x\n",
 			       eax);
 			goto bad;
 		}

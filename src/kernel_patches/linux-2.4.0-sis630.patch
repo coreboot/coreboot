@@ -299,16 +299,27 @@ diff -urN linux-2.4.0-official/drivers/video/sis/Makefile linux-2.4.0-linuxbios/
  include $(TOPDIR)/Rules.make
 diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxbios/drivers/video/sis/sisfb_lite.c
 --- linux-2.4.0-official/drivers/video/sis/sisfb_lite.c	Thu Jan  1 08:00:00 1970
-+++ linux-2.4.0-linuxbios/drivers/video/sis/sisfb_lite.c	Mon Jan 15 14:34:31 2001
-@@ -0,0 +1,2215 @@
-+/*
-+ * SiS 300/630/540 frame buffer device For Kernal 2.4.x
++++ linux-2.4.0-linuxbios/drivers/video/sis/sisfb_lite.c	Thu Feb  1 14:57:11 2001
+@@ -0,0 +1,2265 @@
++/* sisfb_lite.c: SiSFB Lite, Frame Buffer Device Driver for SiS 540/630/730 requires no VGA BIOS
 + *
-+ * This driver is partly based on the VBE 2.0 compliant graphic 
-+ * boards framebuffer driver, which is 
++ * Copyright 2000 Ollie Lho <ollie@sis.com.tw>
++ *
++ * This driver is derived form an eraly version of sisfb.c which is:
++ * 	This driver is partly based on the VBE 2.0 compliant graphic 
++ * 	boards framebuffer driver, which is 
 + * 
-+ * (c) 1998 Gerd Knorr <kraxel@goldbach.in-berlin.de>
++ * 	(c) 1998 Gerd Knorr <kraxel@goldbach.in-berlin.de>
 + *
++ * This driver is implemented by the Author for his own personal interests and is NOT a
++ * commitment NOR supported officially by Silicon Integrated System Corp. Please direct
++ * any bug report/question to the Author and don't bother SiS Technical Support Personell.
++ *
++ *
++ * ToDo:
++ *	2. make sure we have to set_par when init or NOT !!!
++ *	4. MMAP
++ *	5. 2D Acceleration
 + */
 +#include <linux/module.h>
 +#include <linux/kernel.h>
@@ -341,10 +352,13 @@ diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxb
 +static struct pci_device_id  __devinitdata sisfb_pci_tbl [] = {
 +	{PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_630_VGA,
 +	 PCI_ANY_ID, PCI_ANY_ID, 0, 0, FB_ACCEL_SIS_GLAMOUR},
++	{PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_540_VGA,
++	 PCI_ANY_ID, PCI_ANY_ID, 0, 0, FB_ACCEL_SIS_GLAMOUR},
 +	{0,}
 +};
 +MODULE_DEVICE_TABLE (pci, sisfb_pci_tbl);
 +
++static char __initdata fontname[40] = { 0 };
 +static const char * mode_option __initdata = NULL;
 +
 +static struct fb_var_screeninfo __initdata default_var = {
@@ -420,7 +434,7 @@ diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxb
 +
 +/* Default values for PCI/AGP Timming control registers: SR21-SR25, SR32 */
 +static u8 __initdata pci_timming[] = {
-+	0xB6 /* 0x16 ?? */, 0xB2, 0xF6, 0x0D, 0x00, 0x11
++	0xB6, 0xBA, 0xF6, 0x0D, 0x00, 0x11
 +};
 +
 +/* The Programmable Clock Generator:
@@ -514,8 +528,6 @@ diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxb
 +	SIS300_ECLK = 0x2E
 +};
 +
-+static struct sisfb_info sisfb;
-+
 +static int inverse = 0;
 +
 +/* Interface used by the world */
@@ -524,6 +536,7 @@ diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxb
 +
 +/* Internal routines */
 +static void do_install_cmap(int con, struct fb_info *info);
++static void sisfb_set_dispsw(struct display * disp, struct sisfb_info * sisfb, int bpp, int accel);
 +/* ---------------------------------------------------------------------------------- */
 +static void sisfb_lock_regs(struct sisfb_info * sisfb);
 +static void sisfb_unlock_regs(struct sisfb_info * sisfb);
@@ -538,7 +551,6 @@ diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxb
 +static void sisfb_permute_dac_rgb(struct sisfb_info * sisfb, u8 * colors);
 +static void sisfb_load_default_palette(struct sisfb_info * sisfb);
 +static void sisfb_init_legacy_vga(struct sisfb_info * sisfb);
-+static void sisfb_init_300(struct sisfb_info * sisfb);
 +/* ---------------------------------------------------------------------------------- */
 +static unsigned long sisfb_calc_clock_freq(struct sisfb_clock_param * clock);
 +static int sisfb_calc_clock_param(struct sisfb_clock_param * clock, unsigned long freq);
@@ -550,6 +562,7 @@ diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxb
 +static int sisfb_config_memory(struct sisfb_info * sisfb);
 +static void sisfb_fake_vgabios(struct sisfb_info * sisfb);
 +static void sisfb_set_pci_agp_timming(struct sisfb_info * sisfb);
++static void sisfb_init_300(struct sisfb_info * sisfb);
 +/* ---------------------------------------------------------------------------------- */
 +static int sisfb_encode_fix(struct fb_fix_screeninfo * fix, struct sisfb_par * par,
 +			    struct sisfb_info * sisfb);
@@ -562,7 +575,7 @@ diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxb
 +			   unsigned * transp, struct fb_info * info);
 +static int sisfb_setcolreg(unsigned regno, unsigned red, unsigned green, unsigned blue,
 +			   unsigned transp, struct fb_info * info);
-+/* Interface to the low level console driver */
++/* ---------------------------------------------------------------------------------- */
 +static int sisfb_switch_con(int con, struct fb_info * info);
 +static void sisfb_blank(int blank, struct fb_info * info);
 +/* ----------------------------------------- fb_ops --------------------------------- */
@@ -1309,9 +1322,6 @@ diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxb
 +	}
 +#endif /* CONFIG_MTRR */
 +
-+	/* clear frame buffer memory */
-+	memset((unsigned char *) sisfb->video_base_virt, 0, sisfb->video_size_virt);
-+
 +	return 0;
 +}
 +
@@ -1390,12 +1400,9 @@ diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxb
 +	sisfb_set_seq_reg(sisfb, 0x21, tmp);
 +
 +	tmp = pci_timming[1];
-+#if 0
 +	if (AGP == 1)
 +		// Enable PCI Burst memory write
-+		// FixME: is it correct to & 0x20 ??
-+		tmp &= 0x20;
-+#endif
++		tmp |= 0x20;
 +	sisfb_set_seq_reg(sisfb, 0x22, tmp);
 +
 +	sisfb_set_seq_reg(sisfb, 0x23, pci_timming[2]);
@@ -1410,13 +1417,11 @@ diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxb
 + *
 + *	SiS 300 VGA core is used in SiS540/630/730 chipsets. This routine inits
 + *	the very SiS300 specific stuff.
-+ *
-+ *	FixME: This function is not finished and is almost BOGUS.
 + */
 +static void __devinit
 +sisfb_init_300(struct sisfb_info * sisfb)
 +{
-+	/* FixMe: The value in SRegsImit[0x07] differs from RomData */
++	/* set to High Speed DAC by default */
 +	sisfb_set_seq_reg(sisfb, 0x07, 0x13);
 +
 +	/* Disable DAC pedestal */
@@ -1490,7 +1495,7 @@ diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxb
 +		return;
 +	}
 +
-+	//display->scrollmode = SCROLL_YREDRAW;
++	disp->scrollmode = SCROLL_YREDRAW;
 +	//sisfb_sw.bmove = fbcon_redraw_bmove;
 +}    
 +
@@ -1574,8 +1579,8 @@ diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxb
 +{
 +	u8 tmp;
 +
-+	//tmp = 0x03;
-+	tmp = 0x02;
++	/* enable Enhanced Graphics Mode and Atuo Line Width Counter */
++	tmp = 0x03;
 +	switch (par->bits_per_pixel) {
 +	case 32:
 +		tmp |= 0x10;
@@ -1595,8 +1600,17 @@ diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxb
 +	sisfb_set_seq_reg(sisfb, 0x1E, 0x40);
 +}
 +
++/**
++ *	sisfb_set_crt1_pitch: - Set screen pitch registers for CRT1
++ *	@sisfb: SiS Frame Buffer structure
++ *
++ *	Set the screen pitch registers for CRT1. Screen pitch refers to the memory address
++ *	difference between two dots of the same col on two vertically neighboring scan lines.
++ *	The CRTC 0x13 is called "offset register" in VGA literatures. SiS VGA also defines
++ *	its own screen line width register SR 0x10.
++ */
 +static void
-+sisfb_set_crt1_offset(struct sisfb_info * sisfb, struct sisfb_par * par)
++sisfb_set_crt1_pitch(struct sisfb_info * sisfb, struct sisfb_par * par)
 +{
 +	/* FixME: take interlance into account */
 +	u16 pitch = par->line_length >> 3;
@@ -1650,7 +1664,7 @@ diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxb
 +	}
 +
 +	sisfb_set_seq_reg(sisfb, 0x07, tmp);
-+	//sisfb_set_seq_reg(sisfb, 0x32, tmp1);
++	sisfb_set_seq_reg(sisfb, 0x32, tmp1);
 +}
 +
 +static u8 latency_factor[] = {
@@ -1660,13 +1674,22 @@ diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxb
 +	 0, 70, 68, 62, 59, 37, 
 +};
 +
-+static void
++static int
 +sisfb_set_fifo_thresholds(struct sisfb_info * sisfb, struct sisfb_par * par)
 +{
-+	u32 vclk = par->dot_clock;
++	u32 vclk = par->dot_clock / 1000;
 +	unsigned int i = 0, threshold;
 +	int grant_timer, fg_queue, bg_queue;
-+	struct pci_dev * host;
++	struct pci_dev * host = NULL;
++	u8 queue, srf;
++
++	if ((host = pci_find_slot(0, 0)) == NULL) {
++		printk(KERN_EMERG "sisfb_lite: Can not find Host Controller !!!\n");
++		return -ENODEV;
++	}
++
++	pci_read_config_byte(host, 0x53, &queue);
++	queue &= 0xF0;
 +
 +	for (grant_timer = 1; grant_timer >= 0; grant_timer--) {
 +		for (fg_queue = 0; fg_queue <= 5; fg_queue++) {
@@ -1677,16 +1700,32 @@ diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxb
 +				if (threshold > 0x13 || threshold == 0x00)
 +					;
 +				else
-+					goto done;
++					goto set_threshold;
 +			}
 +		}
 +	}
 +
-+	/* FixME: do error check */
-+ done:
++	return -EINVAL;
++
++ set_threshold:
++	/* write froeground and backgroudn queue, GUI grant timer */
++	queue |= ((fg_queue << 1) | bg_queue);
++	pci_write_config_byte(host, 0x53, queue);
++	pci_write_config_byte(host, 0xA3, grant_timer);
++
++	/* Write CRT/CPU threshold low, CRT/Engine threshold high */
++	threshold += 1;
++	srf = sisfb_get_seq_reg(sisfb, 0x0F);
 +	sisfb_set_seq_reg(sisfb, 0x08, ((threshold & 0x0F) << 4 | 0x0F));
-+	//sisfb_set_seq_reg(sisfb, 0x0F, SRegs[0x0F]);
-+	sisfb_set_seq_reg(sisfb, 0x09, ((threshold + 4) & 0x0F) | 0x8F);
++	sisfb_set_seq_reg(sisfb, 0x0F, ((threshold & 0x10) << 1 | srf ));
++
++	/* Write CRT/CPU threshold high */
++	threshold += 3;
++	if (threshold > 0x0F)
++		threshold = 0x0F;
++	sisfb_set_seq_reg(sisfb, 0x09, (threshold & 0x0F));
++
++	return 0;
 +}
 +
 +/**
@@ -1767,7 +1806,7 @@ diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxb
 +		DPRINTK("depth not supported: %u\n", var->bits_per_pixel);
 +		return -EINVAL;
 +	}
-+#if 0
++
 +	if (var->xoffset) {
 +		DPRINTK("xoffset not supported\n");
 +		return -EINVAL;
@@ -1777,17 +1816,6 @@ diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxb
 +		DPRINTK("yoffset not supported\n");
 +		return -EINVAL;
 +	}
-+
-+	if (var->xres != var->xres_virtual) {
-+		DPRINTK("virtual x resolution != physical x resolution not supported\n");
-+		return -EINVAL;
-+	}
-+
-+	if (var->yres > var->yres_virtual) {
-+		DPRINTK("virtual y resolution < physical y resolution not possible\n");
-+		return -EINVAL;
-+	}
-+#endif
 +
 +	memset(par, 0, sizeof(struct sisfb_par));
 +
@@ -1915,7 +1943,7 @@ diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxb
 +	sisfb_set_crt1_crtc_regs(sisfb, par);
 +
 +	/* Extended Registers, other stuff */
-+	sisfb_set_crt1_offset(sisfb, par);
++	sisfb_set_crt1_pitch(sisfb, par);
 +	sisfb_set_crt1_vclk(sisfb, par);
 +	sisfb_set_crt1_mode_regs(sisfb, par);
 +	sisfb_set_fifo_thresholds(sisfb, par);
@@ -2184,10 +2212,10 @@ diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxb
 +	struct display * display;
 +	int err, oldbpp;
 +
-+	if (con >= 0)
-+		display = &fb_display[con];
-+	else
++	if (con == -1)
 +		display = &sisfb->disp;
++	else
++		display = &fb_display[con];
 +
 +	/* try to convert var to HW register values (par) */
 +	if ((err = sisfb_decode_var(var, &par, sisfb)))
@@ -2248,7 +2276,6 @@ diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxb
 +
 +	return 0;
 +}
-+
 +
 +/**
 + *	sisfb_get_cmap: - Get the Colormap
@@ -2372,7 +2399,7 @@ diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxb
 +	fb_get_cmap:	sisfb_get_cmap,
 +	fb_set_cmap:	sisfb_set_cmap,
 +	fb_ioctl:	sisfb_ioctl,
-+	fb_mmap:	sisfb_mmap,
++	//fb_mmap:	sisfb_mmap,
 +};
 +
 +int sisfb_setup(char * options)
@@ -2390,6 +2417,8 @@ diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxb
 +		if (!strcmp(this_opt, "inverse")) {
 +			inverse = 1;
 +			fb_invert_cmaps();
++		} else if (!strncmp(this_opt, "font:", 5)) {
++			strncpy(fontname, this_opt + 5, 40);
 +		} else {
 +			mode_option = this_opt;
 +		}
@@ -2400,74 +2429,92 @@ diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxb
 +static int __devinit
 +sisfb_probe(struct pci_dev * pci_dev, const struct pci_device_id * pci_id)
 +{
++	unsigned long tsc;
++	struct sisfb_info * sisfb;
 +	struct fb_var_screeninfo var;
++
++	rdtscl(tsc);
++	printk("sisfb init start TSC = %lu\n", tsc);
 +
 +	if (pci_enable_device(pci_dev))
 +		return -ENODEV;
 +
-+	sisfb.pci_dev = pci_dev;
++	if ((sisfb = kmalloc(sizeof(struct sisfb_info), GFP_KERNEL)) == NULL)
++		return -ENOMEM;
 +
-+	sisfb.video_base_phy = pci_resource_start(pci_dev, 0);
-+	sisfb.video_size_phy = pci_resource_len(pci_dev, 0);
-+	if (!request_mem_region(sisfb.video_base_phy, sisfb.video_size_phy, "sisfb FB")) {
++	sisfb->pci_dev = pci_dev;
++
++	sisfb->video_base_phy = pci_resource_start(pci_dev, 0);
++	sisfb->video_size_phy = pci_resource_len(pci_dev, 0);
++	if (!request_mem_region(sisfb->video_base_phy, sisfb->video_size_phy, "sisfb FB")) {
 +		printk(KERN_ERR "sisfb_lite: cannot reserve frame buffer memory\n");
 +		return -ENODEV;
 +	}
 +
-+	sisfb.mmio_base_phy = pci_resource_start(pci_dev, 1);
-+	sisfb.mmio_size_phy = pci_resource_len(pci_dev, 1);
-+	if (!request_mem_region(sisfb.mmio_base_phy, sisfb.mmio_size_phy, "sisfb MMIO")) {
++	sisfb->mmio_base_phy = pci_resource_start(pci_dev, 1);
++	sisfb->mmio_size_phy = pci_resource_len(pci_dev, 1);
++	if (!request_mem_region(sisfb->mmio_base_phy, sisfb->mmio_size_phy, "sisfb MMIO")) {
 +		printk(KERN_ERR "sisfb_lite: cannot reserve MMIO region\n");
-+		release_mem_region(sisfb.video_base_phy, sisfb.video_size_phy);
++		release_mem_region(sisfb->video_base_phy, sisfb->video_size_phy);
 +		return -ENODEV;
 +	}
 +
-+	sisfb.vga_io_base = pci_resource_start(pci_dev, 2);
-+	sisfb.vga_io_size = pci_resource_len(pci_dev, 2);
-+	if (!request_region(sisfb.vga_io_base, sisfb.vga_io_size, "sisfb IO")) {
++	sisfb->vga_io_base = pci_resource_start(pci_dev, 2);
++	sisfb->vga_io_size = pci_resource_len(pci_dev, 2);
++	if (!request_region(sisfb->vga_io_base, sisfb->vga_io_size, "sisfb IO")) {
 +		printk(KERN_ERR "sisfb_lite: cannot reserve I/O ports\n");
-+		release_mem_region(sisfb.video_base_phy, sisfb.video_size_phy);
-+		release_mem_region(sisfb.mmio_base_phy, sisfb.mmio_size_phy);
++		release_mem_region(sisfb->video_base_phy, sisfb->video_size_phy);
++		release_mem_region(sisfb->mmio_base_phy, sisfb->mmio_size_phy);
 +		return -ENODEV;
 +	}
-+	sisfb.vga_io_base += 0x30;
++	sisfb->vga_io_base += 0x30;
 +
-+	sisfb_unlock_regs(&sisfb);
-+	sisfb_config_memory(&sisfb);
-+	sisfb_init_legacy_vga(&sisfb);
-+	sisfb_init_300(&sisfb); 
++	sisfb_unlock_regs(sisfb);
++	sisfb_config_memory(sisfb);
++	sisfb_init_legacy_vga(sisfb);
++	sisfb_init_300(sisfb); 
 +
-+	strcpy(sisfb.info.modename, "SiSFB Lite");
++	strcpy(sisfb->info.modename, "SiSFB Lite");
 +
-+	sisfb.info.changevar  = NULL;
-+	sisfb.info.node       = -1;
-+	sisfb.info.fbops      = &sisfb_ops;
-+	sisfb.info.disp       = &sisfb.disp;
-+	sisfb.info.switch_con = &sisfb_switch_con;
-+	sisfb.info.updatevar  = NULL;
-+	sisfb.info.blank      = &sisfb_blank;
-+	sisfb.info.flags      = FBINFO_FLAG_DEFAULT;
++	sisfb->info.changevar  = NULL;
++	sisfb->info.node       = -1;
++	sisfb->info.fbops      = &sisfb_ops;
++	sisfb->info.disp       = &sisfb->disp;
++	strcpy(sisfb->info.fontname, fontname);
++	sisfb->info.switch_con = &sisfb_switch_con;
++	sisfb->info.updatevar  = NULL;
++	sisfb->info.blank      = &sisfb_blank;
++	sisfb->info.flags      = FBINFO_FLAG_DEFAULT;
 +
-+	sisfb.currcon = -1;
++	sisfb->currcon = -1;
 +
 +	memset(&var, 0, sizeof(var));
-+        if (fb_find_mode(&var, &sisfb.info, mode_option, NULL, 0, &sisfb_default_mode, 8) == 0)
++        if (fb_find_mode(&var, &sisfb->info, mode_option, NULL, 0, &sisfb_default_mode, 8) == 0)
 +		var = default_var;
 +
-+	sisfb_decode_var(&var, &sisfb.default_par, &sisfb);
-+	sisfb.current_par = sisfb.default_par;
++	/* get the default_par and make it as our current_par */
++	sisfb_decode_var(&var, &sisfb->default_par, sisfb);
++	sisfb->current_par = sisfb->default_par;
++	sisfb->disp.var = var;
 +
-+	sisfb.disp.var = var;
-+
-+	if (sisfb_set_var(&var, -1, &sisfb.info)) {
++#if 0
++	/* FixME: Not neceressary ?? */
++	if (sisfb_set_var(&var, -1, &sisfb->info)) {
 +		printk(KERN_EMERG "sisfb_lite: can't set default video mode\n");
 +		return -ENXIO;
 +	}
++#endif
 +
-+	sisfb.currcon = 0;
++	sisfb->currcon = 0;
 +
-+	if (register_framebuffer((struct fb_info *) &sisfb) < 0)
++	if (register_framebuffer((struct fb_info *) sisfb) < 0)
 +		return -EINVAL;
++
++	/* make sisfb a driver_data of the PCI device */
++	pci_dev->driver_data = sisfb;
++
++	rdtscl(tsc);
++	printk("sisfb init end TSC = %lu\n", tsc);
 +
 +	return 0;
 +}
@@ -2484,8 +2531,11 @@ diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxb
 +	release_mem_region(sisfb->mmio_base_phy, sisfb->mmio_size_phy);
 +	release_region(sisfb->vga_io_base, sisfb->vga_io_size);
 +
++#ifdef CONFIG_MTRR
 +	mtrr_del(sisfb->mtrr, sisfb->video_base_phy, sisfb->video_size_virt);
-+	//kfree(sis_fb_info);
++#endif /* CONFIG_MTRR */
++
++	kfree(sisfb);
 +}
 +
 +#define SISFB_MODULE_NAME "sisfb_lite"

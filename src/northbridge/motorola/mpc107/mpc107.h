@@ -111,7 +111,7 @@ typedef struct sdram_bank_info
     unsigned char actual_cas;
 } sdram_bank_info;
 
-extern void sdram_dimm_to_bank_info(const char *,  sdram_dimm_info *, int);
+extern void sdram_dimm_to_bank_info(const char *,  sdram_dimm_info *);
 extern void print_sdram_dimm_info(const sdram_dimm_info *);
 extern void print_sdram_bank_info(const sdram_bank_info *);
 

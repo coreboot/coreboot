@@ -291,8 +291,7 @@ class romimage:
 
 # A buildrom statement
 class buildrom:
-	def __init__ (self, payload, size, roms):
-		self.payload = payload
+	def __init__ (self, size, roms):
 		self.size = size
 		self.roms = roms
 
@@ -661,7 +660,9 @@ def getoption(name, image):
 	return v.contents()
 
 def setoption(name, value):
-	global loc, global_options, global_option_values, curimage
+	global loc, global_options, global_option_values, curimage, curpart
+	if (curpart and curpart.type != 'mainboard'):
+		fatal("Options may only be set in top-level and mainboard configuration files")
 	o = getdict(global_options, name)
 	if (o == 0):
 		fatal("Error: attempt to set nonexistent option %s" % name)
@@ -840,8 +841,8 @@ def addldscript(path):
 	curimage.addldscript(fullpath)
 
 def payload(path):
-	global main_payload
-	main_payload = path
+	global curimage
+	curimage.setpayload(path)
 #	adduserdefine("PAYLOAD:=%s"%path)
 #	addrule('payload')
 #	adddep('payload', path)
@@ -866,10 +867,10 @@ def endromimage():
 	curimage = 0
 	curpart = 0
 
-def addbuildrom(payload, size, roms):
+def addbuildrom(size, roms):
 	global buildroms
-	print "Build ROM payload %s size %d" % (payload, size)
-	b = buildrom(payload, size, roms)
+	print "Build ROM size %d" % size
+	b = buildrom(size, roms)
 	buildroms.append(b)
 
 def addinitobject(object_name):
@@ -1033,6 +1034,11 @@ def topify(path):
 	return path
 
 %%
+# to make if work without 2 passses, we use an old hack from SIMD, the 
+# context bit. If the bit is 1, then ops get done, otherwise
+# ops don't get done. From the top level, context is always
+# 1. In an if, context depends on eval of the if condition
+
 parser Config:
     ignore:			r'\s+'
     ignore:			"#.*?\r?\n"
@@ -1162,11 +1168,6 @@ parser Config:
 
     rule ldscript<<C>>:	LDSCRIPT DIRPATH	{{ if (C): addldscript(DIRPATH) }}
 
-    rule payload<<C>>:	PAYLOAD DIRPATH		{{ if (C): payload(DIRPATH) }}
-
-# if is a bad id ....
-# needs to be C and ID, but nested if's are, we hope, not going to 
-# happen. IF so, possibly ID && C could be used.
     rule iif<<C>>:	IF ID			{{ c = lookup(ID) }}
 			(stmt<<C and c>>)* 
 			[ ELSE (stmt<<C and not c>>)* ]
@@ -1202,16 +1203,12 @@ parser Config:
 			[ "," prtlist 		{{ val = val + prtlist }}
 			]			{{ if (C): print eval(val) }}
 
-# to make if work without 2 passses, we use an old hack from SIMD, the 
-# context bit. If the bit is 1, then ops get done, otherwise
-# ops don't get done. From the top level, context is always
-# 1. In an if, context depends on eval of the if condition
-    rule stmt<<C>>:	addaction<<C>>		{{ return addaction }}
-		|	arch<<C>>		{{ return arch}}
+    rule stmt<<C>>:	arch<<C>>		{{ return arch}}
+		|	addaction<<C>>		{{ return addaction }}
     		|	cpu<<C>>		{{ return cpu}}
 		|	dir<<C>>		{{ return dir}}
 		|	driver<<C>>		{{ return driver }}
-		|	iif<<C>>		{{ return iif }}
+		|	iif<<C>>	 	{{ return iif }}
 		|	init<<C>>	 	{{ return init }}
 		|	initinclude<<C>>	{{ return initinclude }}
 		|	initobject<<C>>		{{ return initobject }}
@@ -1221,7 +1218,7 @@ parser Config:
 		|	makerule<<C>>		{{ return makerule }}
 		|	northbridge<<C>>	{{ return northbridge }}
 		|	object<<C>>		{{ return object }}
-		|	payload<<C>>		{{ return payload}}
+		|	option<<C>>		{{ return option }}
 		|	pmc<<C>>		{{ return pmc}}
 		| 	prtstmt<<C>>		{{ return prtstmt}}
 		|	register<<C>> 		{{ return register}}
@@ -1252,17 +1249,30 @@ parser Config:
 		|	opif<<C>>
 		|	prtstmt<<C>>
 
+    rule payload<<C>>:	PAYLOAD DIRPATH		{{ if (C): payload(DIRPATH) }}
+
+    rule mainboard<<C>>:
+			MAINBOARD PATH		{{ if (C): mainboard(PATH) }}
+
+    rule romif<<C>>:	IF ID			{{ c = lookup(ID) }}
+			(romstmt<<C and c>>)* 
+			[ ELSE (romstmt<<C and not c>>)* ]
+			END
+
+    rule romstmt<<C>>:	romif<<C>>
+		|	option<<C>>
+		|	mainboard<<C>>
+		|	payload<<C>>
 
     rule romimage:	ROMIMAGE STR		{{ startromimage(dequote(STR)) }}
-			(opstmt<<1>>)*
-			MAINBOARD PATH		{{ mainboard(PATH) }}
+			(romstmt<<1>>)*
 			END			{{ endromimage() }}
 
     rule roms:		STR			{{ s = '(' + STR }}
 			( STR			{{ s = s + "," + STR }}
 			)*			{{ return eval(s + ')') }}
 
-    rule buildrom:	BUILDROM PATH expr roms	{{ addbuildrom(PATH, expr, roms) }}
+    rule buildrom:	BUILDROM expr roms	{{ addbuildrom(expr, roms) }}
 
     rule romstmts:	romimage 
 		|	buildrom

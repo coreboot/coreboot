@@ -22,22 +22,22 @@
 				outw %ax, %dx
 /* registers we use: 85, and the southbridge devfn is defined by the mainboard
  */
-#define SUPERIOCONFIG CONFIG_ADDR(0, SUPERIO_DEVFN, 0x85)
+#define SUPERIOCONFIG CONFIG_ADDR(0, SUPERIO_DEVFN, 0x50)
 /* first, you have to enable the superio and superio config. 
    put a 3 in devfn 38 register 85
  */
 	movl	$SUPERIOCONFIG, %eax
-	movb	$3, %dl
+	movb	$6, %dl
 	PCI_WRITE_CONFIG_BYTE
 // now go ahead and set up com1. 
 // set address
-	WRITESUPER($0xe7, $0xfe)
+	WRITESUPER($0xf4, $0xfe)
 // enable serial out
-	WRITESUPER($0xe2, $7)
+	WRITESUPER($0xf2, $7)
 // That's it for the sio stuff.
-	movl	$SUPERIOCONFIG, %eax
-	movb	$9, %dl
-	PCI_WRITE_CONFIG_BYTE
+//	movl	$SUPERIOCONFIG, %eax
+//	movb	$9, %dl
+//	PCI_WRITE_CONFIG_BYTE
 // set up register to set baud rate.
 	WRITESIOBYTE($0x3fb, $0x80)
 // Set 115 kb

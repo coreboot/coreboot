@@ -29,7 +29,7 @@
 #include <cpu/p5/start32.inc>
 
 /* turn on serial */
-#include <southbridge/via/vt82c686/setup_serial.inc>
+#include <superio/via/vt82c686/setup_serial.inc>
 
 #include <pc80/serial.inc>
 #include <pc80/i8259.inc>

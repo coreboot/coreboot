@@ -1,3 +1,6 @@
+/* 
+   v1.0 02/15/2001: To add "afteram.inc" file after test dram.
+*/ 
 /*
  * $ $
  *
@@ -26,17 +29,22 @@
 #include <cpu/p5/start32.inc>
 
 /* turn on serial */
-#include <southbridge/via/vt82c686/setup_serial.inc>
+#include <superio/via/vt82c686/setup_serial.inc>
 
 #include <pc80/serial.inc>
+#include <pc80/i8259.inc>
+/*
+ */
 
 	TTYS0_TX_STRING($ttyS0_test)
 	
 	/* initialize the RAM */
 	/* different for each motherboard */
 	
-#include <northbridge/via/vt8601/raminit.inc>
-
+#include <northbridge/via/vt8601/raminitspd.inc>
+#include <sdram/smbus_pcibus.inc>
+#include <sdram/generic_sdram.inc>
+	
 #ifdef RAMTEST
 #include <ram/ramtest.inc>
 
@@ -47,6 +55,8 @@
 
 	CALLSP(ramtest)
 #endif	
+
+#include <northbridge/via/vt8601/afteram.inc>
 /*
  *	Copy data into RAM and clear the BSS. Since these segments
  *	isn't really that big we just copy/clear using bytes, not

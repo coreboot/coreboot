@@ -3,6 +3,9 @@
  * written by Stefan Reinauer <stepan@openbios.org>
  * (c) 2003-2004 by SuSE Linux AG
  *
+ * (c) 2004 Tyan Computer
+ *  2004.12 yhlu added support to create support to create routing table dynamically.
+ *          it also support 8 ways too. (8 ways ladder or 8 ways crossbar)	
  * This code is licensed under GPL.
  */
 
@@ -24,7 +27,6 @@
  * don't want broadcast to be enabled for that node.
  */
 
-#define generate_temp_row(...) ((generate_row(__VA_ARGS__)&(~0x0f0000))|0x010000)
 #define enable_bsp_routing()	enable_routing(0)
 
 #define NODE_HT(x) PCI_DEV(0,24+x,0)
@@ -57,15 +59,6 @@ static u8 link_to_register(int ldt)
 	/* we should never get here */
 	print_spew("Unknown Link\n");
 	return 0;
-}
-
-static int link_connection(int src, int dest)
-{
-	/* we generate the needed link information from the rows
-	 * by taking the Request Route of the according row.
-	 */
-	
-	return generate_row(src, dest, CONFIG_MAX_CPUS) & 0x0f;
 }
 
 static void disable_probes(void)
@@ -146,6 +139,19 @@ static void fill_row(u8 node, u8 row, u32 value)
 {
 	pci_write_config32(NODE_HT(node), 0x40+(row<<2), value);
 }
+static u32 get_row(u8 node, u8 row)
+{
+	return pci_read_config32(NODE_HT(node), 0x40+(row<<2));
+}
+
+static int link_connection(u8 src, u8 dest)
+{
+        /* we generate the needed link information from the rows
+         * by taking the Request Route of the according row.
+         */
+
+        return get_row(src, dest) & 0x0f;
+}
 
 
 #if CONFIG_MAX_CPUS > 1
@@ -165,15 +171,10 @@ static void rename_temp_node(u8 node)
 	print_spew(" done.\r\n");
 }
 
-static bool check_connection(u8 src, u8 dest, u8 link)
+static bool check_connection(u8 dest)
 {
 	/* See if we have a valid connection to dest */
 	u32 val;
-	
-	/* Detect if the coherent HT link is connected. */
-	val = pci_read_config32(NODE_HT(src), 0x98+link);
-	if ( (val&0x17) != 0x03)
-		return 0;
 
 	/* Verify that the coherent hypertransport link is
 	 * established and actually working by reading the
@@ -281,29 +282,112 @@ static int optimize_connection(device_t node1, uint8_t link1, device_t node2, ui
 	return needs_reset;
 }
 
-static void setup_row(u8 source, u8 dest, u8 nodes)
+static void setup_row_local(u8 source, u8 row) // source will be 7 when it is for temp use
 {
-	fill_row(source,dest,generate_row(source,dest,nodes));
+	unsigned linkn;
+	uint32_t val;
+	val = 1;
+        for(linkn = 0; linkn<3; linkn++) { 
+                unsigned regpos; 
+		uint32_t reg;
+                regpos = 0x98 + 0x20 * linkn;
+                reg = pci_read_config32(NODE_HT(source), regpos);
+                if ((reg & 0x17) != 3) continue; // it is not conherent or not connected
+		val |= 1<<(linkn+1); 
+	}
+	val <<= 16;
+	val |= 0x0101;
+	fill_row(source,row, val);
 }
 
-static void setup_temp_row(u8 source, u8 dest, u8 nodes)
+static void setup_row_direct(u8 source, u8 dest, u8 linkn)
 {
-	fill_row(source,7,generate_temp_row(source,dest,nodes));
+	uint32_t val;
+	val = 1<<16; 
+	val |= 1<<(linkn+1);
+	val |= 1<<(linkn+1+8); //for direct connect response route should equal to request table
+	fill_row(source,dest, val);
+}
+#if CONFIG_MAX_CPUS>2
+static void setup_row_indirect(u8 source, u8 dest, u8 gateway)
+{
+	//for indirect connection, we need to compute the val from val_s(source, source), and val_g(source, gateway)
+	uint32_t val_s;
+	uint32_t val_g;
+	uint32_t val;
+#warning "FIXME is it the way to set the RESPONSE TABLE for indirect?"
+	val_s = get_row(source, source);
+	val_g = get_row(source, gateway);
+	
+	val = val_g & 0xff;
+	val_s >>=16;
+	val_s &=0xfe;
+	if(val_s!=val) { // use another connect as response
+		val_s -= val;
+#warning "FIXME I don't know how to set BROADCAST TABLE for indirect, 1?"
+		val |= (1<<16) | (val_s<<8);
+	} else {
+		val = val_g; // all the same to gateway
+	}
+
+	fill_row(source, dest, val);
+
+}
+static void setup_row_indirect_group(const u8 *conn, int num)
+{
+        int i;
+        for(i=0; i<num; i+=3) {
+		setup_row_indirect(conn[i*3], conn[i*3+1],conn[i*3+2]);
+        }  
+}
+#endif
+
+static void setup_temp_row(u8 source, u8 dest)
+{	
+	// copy val from (source, dest) to (source,7)
+	fill_row(source,7,get_row(source,dest));
 }
 
-static void setup_node(u8 node, u8 nodes)
+static void clear_temp_row(u8 source)
 {
-	u8 row;
-	for(row=0; row<nodes; row++)
-		setup_row(node, row, nodes);
+	fill_row(source, 7, DEFAULT);
 }
 
-static void setup_remote_row(u8 source, u8 dest, u8 nodes)
+static void setup_remote_row_direct(u8 source, u8 dest, u8 linkn)
 {
-	fill_row(7, dest, generate_row(source, dest, nodes));
-}
+        uint32_t val;
+        val = 1<<16; 
+        val |= 1<<(linkn+1);
+        val |= 1<<(linkn+1+8); //for direct connect response route should equal to request table
+        fill_row(7,dest, val );
+}       
+#if CONFIG_MAX_CPUS>2
+static void setup_remote_row_indirect(u8 source, u8 dest, u8 gateway)
+{
+        //for indirect connection, we need to compute the val from val_s(source, source), and val_g(source, gateway)
+        uint32_t val_s;
+        uint32_t val_g;
+        uint32_t val;
+        
+        val_s = get_row(7, source);
+        val_g = get_row(7, gateway);
+        
+        val = val_g & 0xff;
+        val_s >>=16;
+        val_s &=0xfe;
+        if(val_s!=val) { // use another connect as response
+                val_s -= val;
+                val |= 1 | (val_s<<8);
+        } else {
+                val = val_g; // all the same to gateway
+        }
 
-static void setup_remote_node(u8 node, u8 nodes)
+        fill_row(7, dest, val);
+
+}
+#endif
+
+static void setup_remote_node(u8 node)
 {
 	static const uint8_t pci_reg[] = { 
 		0x44, 0x4c, 0x54, 0x5c, 0x64, 0x6c, 0x74, 0x7c, 
@@ -314,12 +398,9 @@ static void setup_remote_node(u8 node, u8 nodes)
 		0xc0, 0xc8, 0xd0, 0xd8,
 		0xe0, 0xe4, 0xe8, 0xec,
 	};
-	uint8_t row;
 	int i;
 
 	print_spew("setup_remote_node: ");
-	for(row=0; row<nodes; row++)
-		setup_remote_row(node, row, nodes);
 
 	/* copy the default resource map from node 0 */
 	for(i = 0; i < sizeof(pci_reg)/sizeof(pci_reg[0]); i++) {
@@ -335,15 +416,6 @@ static void setup_remote_node(u8 node, u8 nodes)
 
 #endif
 
-#if CONFIG_MAX_CPUS > 2
-static void setup_temp_node(u8 node, u8 nodes)
-{
-	u8 row;
-	for(row=0; row<nodes; row++)
-		fill_row(7,row,generate_row(node,row,nodes));
-}
-#endif
-
 static void setup_uniprocessor(void)
 {
 	print_spew("Enabling UP settings\r\n");
@@ -355,20 +427,70 @@ struct setup_smp_result {
 	int needs_reset;
 };
 
+#if CONFIG_MAX_CPUS > 2
+static int optimize_connection_group(const u8 *opt_conn, int num) {
+        int needs_reset = 0;
+        int i;
+        for(i=0; i<num; i+=2) {
+                needs_reset = optimize_connection(
+                        NODE_HT(opt_conn[i*2]), 0x80 + link_to_register(link_connection(opt_conn[i*2],opt_conn[i*2+1])),
+                        NODE_HT(opt_conn[i*2+1]), 0x80 + link_to_register(link_connection(opt_conn[i*2+1],opt_conn[i*2])) );
+        }               
+        return needs_reset;
+}  
+#endif
+
 #if CONFIG_MAX_CPUS > 1
+static uint8_t get_linkn_first(uint8_t byte)
+{
+        if(byte & 0x02) { byte = 0; }
+        else if(byte & 0x04) { byte = 1; }
+        else if(byte & 0x08) { byte = 2; }
+	return byte;
+}
+static uint8_t get_linkn_last(uint8_t byte)
+{
+        if(byte & 0x02) { byte &= 0x0f; byte |= 0x00;  }
+        if(byte & 0x04) { byte &= 0x0f; byte |= 0x10;  }
+        if(byte & 0x08) { byte &= 0x0f; byte |= 0x20;  }
+        return byte>>4;
+}
+static uint8_t get_linkn_last_count(uint8_t byte)
+{
+	byte &= 0x3f;
+        if(byte & 0x02) { byte &= 0xcf; byte |= 0x00; byte+=0x40; }
+        if(byte & 0x04) { byte &= 0xcf; byte |= 0x10; byte+=0x40; }
+        if(byte & 0x08) { byte &= 0xcf; byte |= 0x20; byte+=0x40; }
+        return byte>>4;
+}
+
 static struct setup_smp_result setup_smp(void)
 {
 	struct setup_smp_result result;
+	u8 byte;
+	uint32_t val;
 	result.nodes = 2;
 	result.needs_reset = 0;
 
 	print_spew("Enabling SMP settings\r\n");
 
-	setup_row(0, 0, result.nodes);
-	/* Setup and check a temporary connection to node 1 */
-	setup_temp_row(0, 1, result.nodes);
+	setup_row_local(0, 0); // it will update the broadcast RT
 	
-	if (!check_connection(0, 7, link_to_register(link_connection(0,1)))) {
+	val = get_row(0,0);
+	byte = (val>>16) & 0xfe;
+	if(byte<0x2) { // no coherent connection so get out.
+		result.nodes = 1;
+		return result;
+	}
+
+	/* Setup and check a temporary connection to node 1 */
+	//find out linkn
+
+	byte = get_linkn_first(byte);	
+	setup_row_direct(0,1, byte);
+	setup_temp_row(0, 1);
+	
+	if (!check_connection(7)) {
 		print_spew("No connection to Node 1.\r\n");
 		setup_uniprocessor();	/* and get up working     */
 		result.nodes = 1;
@@ -376,11 +498,44 @@ static struct setup_smp_result setup_smp(void)
 	}
 
 	/* We found 2 nodes so far */
+	val = pci_read_config32(NODE_HT(7), 0x6c);
+	byte = (val>2) & 0x3; // get default link on 7 to 0
+	setup_row_local(7,1);
+	setup_remote_row_direct(1, 0, byte);
+
+#if CONFIG_MAX_CPUS>4    
+	val = get_row(7,1);
+        byte = (val>>16) & 0xfe;
+	byte = get_linkn_last_count(byte);
+        if((byte>>2)==3) { // Oh! we need to treat it as cpu2.
+	        val = get_row(0,0);
+	        byte = (val>>16) & 0xfe;
+		byte = get_linkn_last(byte);
+	        setup_row_direct(0,1, byte);
+	        setup_temp_row(0, 1);
+        
+	        if (!check_connection(7)) {
+        	        print_spew("No connection to Node 1.\r\n");
+	                setup_uniprocessor();   /* and get up working     */
+        	        result.nodes = 1;
+	                return result;
+        	}               
+                        
+	        /* We found 2 nodes so far */
+	        val = pci_read_config32(NODE_HT(7), 0x6c);
+        	byte = (val>2) & 0x3; // get default link on 7 to 0
+	        setup_row_local(7,1);
+	        setup_remote_row_direct(1, 0, byte);
+        }
+#endif
 	
-	setup_node(0, result.nodes);	/* Node 1 is there. Setup Node 0 correctly */
-	setup_remote_node(1, result.nodes);  /* Setup the routes on the remote node */
+	setup_remote_node(1);  /* Setup the regs on the remote node */
         rename_temp_node(1);    /* Rename Node 7 to Node 1  */
         enable_routing(1);      /* Enable routing on Node 1 */
+#if 0
+	// don't need and it is done by clear_dead_links
+	clear_temp_row(0);
+#endif
   	
 	result.needs_reset = optimize_connection(
 		NODE_HT(0), 0x80 + link_to_register(link_connection(0,1)),
@@ -388,11 +543,22 @@ static struct setup_smp_result setup_smp(void)
 
 #if CONFIG_MAX_CPUS > 2
 	result.nodes=4;
-	
-	/* Setup and check temporary connection from Node 0 to Node 2 */
-	setup_temp_row(0,2, result.nodes);
 
-	if (!check_connection(0, 7, link_to_register(link_connection(0,2))) ) {
+	/* Setup and check temporary connection from Node 0 to Node 2 */
+        val = get_row(0,0);
+        byte = ((val>>16) & 0xfe) - link_connection(0,1);
+	byte = get_linkn_last_count(byte);
+	
+        //find out linkn
+	if((byte>>2)==0) { // We should have two coherent for 4p and above
+		result.nodes = 2;
+		return result;
+	}
+	byte &= 3; // bit [3,2] is count-1
+	setup_row_direct(0, 2, byte);
+	setup_temp_row(0, 2);
+
+	if (!check_connection(7) ) {
 		print_spew("No connection to Node 2.\r\n");
 		result.nodes = 2;
 		return result;
@@ -401,46 +567,588 @@ static struct setup_smp_result setup_smp(void)
 	/* We found 3 nodes so far. Now setup a temporary
 	 * connection from node 0 to node 3 via node 1
 	 */
-
-	setup_temp_row(0,1, result.nodes); /* temp. link between nodes 0 and 1 */
-	setup_temp_row(1,3, result.nodes); /* temp. link between nodes 1 and 3 */
-
-	if (!check_connection(1, 7, link_to_register(link_connection(1,3)))) {
+	setup_temp_row(0,1); /* temp. link between nodes 0 and 1 */
+	/* here should setup_row_direct(1,3) at first, before that we should find the link in cpu 1 to 3*/
+	val = get_row(1,1);
+	byte = ((val>>16) & 0xfe) - link_connection(1,0);
+	byte = get_linkn_first(byte);
+	setup_row_direct(1,3,byte);
+	setup_temp_row(1,3); /* temp. link between nodes 1 and 3 */
+	
+	if (!check_connection(7)) {
 		print_spew("No connection to Node 3.\r\n");
 		result.nodes = 2;
 		return result;
 	}
 
 	/* We found 4 nodes so far. Now setup all nodes for 4p */
+	/* for indirect we will use clockwise routing */
+        static const u8 conn4_1[] = {
+                0,3,1,
+                1,2,3,
+        };	
 
-	setup_node(0, result.nodes);  /* The first 2 nodes are configured    */
-	setup_node(1, result.nodes);  /* already. Just configure them for 4p */
+	setup_row_indirect_group(conn4_1, sizeof(conn4_1)/sizeof(conn4_1[0]));
 	
-	setup_temp_row(0,2, result.nodes);
-	setup_temp_node(2, result.nodes);
-        rename_temp_node(2);
-        enable_routing(2);
+	setup_temp_row(0,2);
+
+        val = pci_read_config32(NODE_HT(7), 0x6c);
+        byte = (val>2) & 0x3; // get default link on 7 to 0
+
+        setup_row_local(7,2);
+        setup_remote_row_direct(2, 0, byte);
+        setup_remote_node(2);  /* Setup the regs on the remote node */
+
+        rename_temp_node(2);    /* Rename Node 7 to Node 2  */
+        enable_routing(2);      /* Enable routing on Node 2 */
+
   
-	setup_temp_row(0,1, result.nodes);
-	setup_temp_row(1,3, result.nodes);
-	setup_temp_node(3, result.nodes);
+	setup_temp_row(0,1);
+	setup_temp_row(1,3);
+
+        val = pci_read_config32(NODE_HT(7), 0x6c);
+        byte = (val>2) & 0x3; // get default link on 7 to 0
+
+        setup_row_local(7,3);
+        setup_remote_row_direct(3, 1, byte);
+        setup_remote_node(3);  /* Setup the regs on the remote node */
+
         rename_temp_node(3);
         enable_routing(3);      /* enable routing on node 3 (temp.) */
+
+	/* We need to init link between 2, and 3 direct link */
+	val = get_row(2,2);
+	byte = ((val>>16) & 0xfe) - link_connection(2,0);
+	byte = get_linkn_last_count(byte);
+#if CONFIG_MAX_CPUS>4
+	// We need to find out which link it so CPU3
+	// methods is try to access another 7 actully it is cpu4
+	if((byte>>2)==2) { // one to CPU3, one to cpu0, one to CPU4
+		setup_temp_row(0,2);
+	        setup_row_direct(2, 4, byte);
+       		setup_temp_row(2, 4);
+
+	        if (check_connection(7)) { // so the link is to CPU4
+			//We need to re compute it
+			val = get_row(2,2);
+			byte = (val>>16) & 0xfe;
+			byte = get_linkn_first(byte);
+        	}
+	}
+#endif
+	setup_row_direct(2,3, byte & 0x3);
 	
+        val = get_row(3,3);
+        byte = ((val>>16) & 0xfe) - link_connection(3,1);
+	byte = get_linkn_last_count(byte);
+#if CONFIG_MAX_CPUS>4
+        // We need to find out which link it so CPU2
+        // methods is try to access another 7 actully it is cpu5
+        if((byte>>2)==2) { // one to CPU2, one to cpu1, one to CPU5
+                setup_temp_row(0,1);
+		setup_temp_row(1,3);
+                setup_row_direct(3, 5, byte);
+                setup_temp_row(3, 5);
+
+                if (check_connection(7)) { // so the link is to CPU5
+                        //We need to re compute it
+                        val = get_row(3, 3);
+                        byte = (val>>16) & 0xfe;
+                        byte = get_linkn_first(byte);
+                }
+        }
+#endif
+        setup_row_direct(3,2, byte & 0x3);
+
+	/* Set indirect connection to 0, and 1  for indirect we will use clockwise routing */
+        static const u8 conn4_2[] = {
+                2,1,0,
+                3,0,2,
+        };
+
+        setup_row_indirect_group(conn4_2, sizeof(conn4_2)/sizeof(conn4_2[0]));
+	
+	// We need to do sth to reverse work for setup_temp_row (0,1) (1,3)
+#if 0
+	// it will be done by clear_dead_links
+	clear_temp_row(0);
+	clear_temp_row(1);
+#endif
+
 	/* optimize physical connections - by LYH */
-	result.needs_reset = optimize_connection(
-		NODE_HT(0), 0x80 + link_to_register(link_connection(0,2)),
-		NODE_HT(2), 0x80 + link_to_register(link_connection(2,0)) );
+	static const u8 opt_conn4[] = {
+		0,2,
+		1,3,
+		2,3,
+	};
 
-	result.needs_reset = optimize_connection(
-		NODE_HT(1), 0x80 + link_to_register(link_connection(1,3)),
-		NODE_HT(3), 0x80 + link_to_register(link_connection(3,1)) );
-
-	result.needs_reset = optimize_connection(
-		NODE_HT(2), 0x80 + link_to_register(link_connection(2,3)),
-		NODE_HT(3), 0x80 + link_to_register(link_connection(3,2)) );
+	result.needs_reset = optimize_connection_group(opt_conn4, sizeof(opt_conn4)/sizeof(opt_conn4[0]));
 
 #endif /* CONFIG_MAX_CPUS > 2 */
+
+#if CONFIG_MAX_CPUS > 4
+        result.nodes=6;
+
+        /* Setup and check temporary connection from Node 0 to Node 4 via 2 */
+        val = get_row(2,2);
+        byte = ((val>>16) & 0xfe) - link_connection(2,3) - link_connection(2,0);
+        byte = get_linkn_last_count(byte);
+        
+        //find out linkn
+        if((byte>>2)==0) { // We should have two coherent for 4p and above
+                result.nodes = 4;
+                return result;
+        }
+        byte &= 3; // bit [3,2] is count-1
+        setup_row_direct(2, 4, byte);
+        
+        /* Setup and check temporary connection from Node 0 to Node 4  through 2*/
+	for(byte=0; byte<4; byte+=2) {
+        	setup_temp_row(byte,byte+2); /* temp. link between nodes 0 and 2 */
+	}
+        
+        if (!check_connection(7) ) {
+                print_spew("No connection to Node 4.\r\n");
+                result.nodes = 4;
+                return result; 
+        }       
+        
+	/* Setup and check temporary connection from Node 0 to Node 5  through 1, 3*/
+
+        val = get_row(3,3);
+        byte = ((val>>16) & 0xfe) - link_connection(3,2) - link_connection(3,1);
+        byte = get_linkn_last_count(byte);
+        //find out linkn
+        if((byte>>2)==0) { // We should have two coherent for 4p and above
+                result.nodes = 4;
+                return result;
+        }
+
+        byte &= 3; // bit [3,2] is count-1
+        setup_row_direct(3, 5, byte);
+
+        setup_temp_row(0,1); /* temp. link between nodes 0 and 1 */
+	for(byte=0; byte<4; byte+=2) {
+        	setup_temp_row(byte+1,byte+3); /* temp. link between nodes 1 and 3 */
+	}
+        
+        if (!check_connection(7)) {
+                print_spew("No connection to Node 5.\r\n");
+                result.nodes = 4;
+                return result; 
+        }       
+        
+        /* We found 6 nodes so far. Now setup all nodes for 6p */
+        static const u8 conn6_1[] = {
+        	0, 4, 2,
+	        0, 5, 1,
+	        1, 4, 3,
+	        1, 5, 3,
+	        2, 5, 3,
+#if !CROSS_BAR_47_56
+        	3, 4, 5,
+#else
+		3, 4, 2,
+#endif
+        };
+
+        setup_row_indirect_group(conn6_1, sizeof(conn6_1)/sizeof(conn6_1[0]));
+
+	
+	for(byte=0; byte<4; byte+=2) {
+        	setup_temp_row(byte,byte+2);
+	}
+        val = pci_read_config32(NODE_HT(7), 0x6c);
+        byte = (val>2) & 0x3; // get default link on 7 to 0
+        
+        setup_row_local(7,4);
+        setup_remote_row_direct(4, 2, byte);
+        setup_remote_node(4);  /* Setup the regs on the remote node */
+        rename_temp_node(4);
+        enable_routing(4);
+
+        setup_temp_row(0,1);
+	for(byte=0; byte<4; byte+=2) {
+        	setup_temp_row(byte+1,byte+3);
+	}
+
+        val = pci_read_config32(NODE_HT(7), 0x6c);
+        byte = (val>2) & 0x3; // get default link on 7 to 0
+        setup_row_local(7,5);
+        setup_remote_row_direct(5, 3, byte);
+        setup_remote_node(5);  /* Setup the regs on the remote node */
+
+        rename_temp_node(5);
+        enable_routing(5);      /* enable routing on node 5 (temp.) */
+
+#if !CROSS_BAR_47_56
+        /* We need to init link between 4, and 5 direct link */
+        val = get_row(4,4);
+        byte = ((val>>16) & 0xfe) - link_connection(4,2);
+        byte = get_linkn_last_count(byte);
+#if CONFIG_MAX_CPUS>4
+        // We need to find out which link it so CPU5
+        // methods is try to access another 7 actully it is cpu6
+        if((byte>>2)==2) { // one to CPU5, one to cpu2, one to CPU6
+                setup_temp_row(0,2);
+		setup_temp_row(2,4);
+                setup_row_direct(4, 6, byte);
+                setup_temp_row(4, 6);
+        
+                if (check_connection(7)) { // so the link is to CPU4
+                        //We need to re compute it
+                        val = get_row(4,4);
+                        byte = (val>>16) & 0xfe;
+                        byte = get_linkn_first(byte);
+                }
+        }
+#endif
+        setup_row_direct(4,5, byte & 0x3);
+
+        val = get_row(5,5);
+        byte = ((val>>16) & 0xfe) - link_connection(5,3);
+        byte = get_linkn_last_count(byte);
+#if CONFIG_MAX_CPUS>4
+        // We need to find out which link it so CPU4
+        // methods is try to access another 7 actully it is cpu7
+        if((byte>>2)==2) { // one to CPU4, one to cpu3, one to CPU7
+                setup_temp_row(0,1);
+                setup_temp_row(1,3);
+		setup_temp_row(3,7);
+                setup_row_direct(5, 7, byte);
+                setup_temp_row(5, 7);
+
+                if (check_connection(7)) { // so the link is to CPU5
+                        //We need to re compute it
+                        val = get_row(5, 5);
+                        byte = (val>>16) & 0xfe;
+                        byte = get_linkn_first(byte);
+                }
+        }
+#endif
+        setup_row_direct(5,4, byte & 0x3);
+#endif // !CROSS_BAR_47_56
+
+        /* Set indirect connection to 0, to 3  for indirect we will use clockwise routing */
+        static const u8 conn6_2[] = {
+#if !CROSS_BAR_47_56
+                4, 0, 2,
+                4, 1, 2,
+                4, 3, 2,
+                5, 0, 4,
+                5, 2, 4,
+                5, 1, 3,
+#else
+
+        	4, 0, 2,
+	        4, 1, 2,
+	        4, 3, 2,
+		4, 5, 2,
+		5, 0, 3,
+		5, 2, 3,
+	        5, 1, 3,
+		5, 4, 3,
+#endif
+        };      
+        
+        setup_row_indirect_group(conn6_2, sizeof(conn6_2)/sizeof(conn6_2[0]));
+#if 0
+	// We need to do sth about reverse about setup_temp_row (0,1), (2,4), (1, 3), (3,5)
+	// It will be done by clear_dead_links
+	for(byte=0; byte<4; byte++) {
+		clear_temp_row(byte);
+	}
+#endif
+	
+	/* optimize physical connections - by LYH */
+	static const uint8_t opt_conn6[] ={
+        	2, 4,
+	        3, 5,
+#if !CROSS_BAR_47_56
+		4, 5,
+#endif
+	}; 
+	result.needs_reset = optimize_connection_group(opt_conn6, sizeof(opt_conn6)/sizeof(opt_conn6[0]));
+
+
+#endif /* CONFIG_MAX_CPUS > 4 */
+
+#if CONFIG_MAX_CPUS >6 
+        result.nodes=8;
+
+        /* Setup and check temporary connection from Node 0 to Node 6 via 2 and 4 to 7 */
+        val = get_row(4,4);
+#if !CROSS_BAR_47_56
+        byte = ((val>>16) & 0xfe) - link_connection(4,5) - link_connection(4,2);
+#else
+	byte = ((val>>16) & 0xfe) - link_connection(4,2);
+#endif
+        byte = get_linkn_last_count(byte); // Max link to 6
+        if((byte>>2)==0) { // We should have two coherent for 8p and above
+                result.nodes = 6;
+                return result;
+        }
+        byte &= 3; // bit [3,2] is count-1
+        setup_row_direct(4, 6, byte);
+
+        /* Setup and check temporary connection from Node 0 to Node 6  through 2, and 4*/
+        for(byte=0; byte<6; byte+=2) {
+                setup_temp_row(byte,byte+2); /* temp. link between nodes 0 and 2 */
+        }
+
+        if (!check_connection(7) ) {
+                print_spew("No connection to Node 6.\r\n");
+                result.nodes = 6;
+                return result;
+        }
+#if !CROSS_BAR_47_56
+        /* Setup and check temporary connection from Node 0 to Node 5  through 1, 3, 5*/
+
+        val = get_row(5,5);
+        byte = ((val>>16) & 0xfe) - link_connection(5,4) - link_connection(5,3);
+        byte = get_linkn_first(byte);
+        setup_row_direct(5, 7, byte);
+
+        setup_temp_row(0,1); /* temp. link between nodes 0 and 1 */
+        for(byte=0; byte<6; byte+=2) {
+                setup_temp_row(byte+1,byte+3); /* temp. link between nodes 1 and 3 */
+        }
+#else
+        val = get_row(4,4);
+        byte = ((val>>16) & 0xfe) - link_connection(4,2) ;
+        byte = get_linkn_first(byte); // min link to 7
+        setup_row_direct(4, 7, byte);
+
+        /* Setup and check temporary connection from Node 0 to Node 7 through 2, and 4*/
+        for(byte=0; byte<4; byte+=2) {
+                setup_temp_row(byte,byte+2); /* temp. link between nodes 0 and 2 */
+        }
+	setup_temp_row(4, 7);
+
+#endif
+
+        if (!check_connection(7)) {
+                print_spew("No connection to Node 7.\r\n");
+                result.nodes = 6;
+                return result;
+        }
+
+
+        /* We found 8 nodes so far. Now setup all nodes for 8p */
+        static const u8 conn8_1[] = {
+#if !CROSS_BAR_47_56
+		0, 6, 2,
+//       	0, 7, 1,
+	        1, 6, 3,
+//	        1, 7, 3,
+	        2, 6, 4,
+//	        2, 7, 3,
+	        3, 6, 5,
+//	        3, 7, 5,
+//	        4, 7, 5,
+#else
+                0, 6, 2,
+//              0, 7, 2,
+                1, 6, 3,
+//                1, 7, 3,
+                2, 6, 4,
+//                2, 7, 4,
+                3, 6, 5,
+//                3, 7, 5,
+#endif
+        };
+
+        setup_row_indirect_group(conn8_1,sizeof(conn8_1)/sizeof(conn8_1[0]));
+
+        for(byte=0; byte<6; byte+=2) {
+                setup_temp_row(byte,byte+2);
+        }
+        val = pci_read_config32(NODE_HT(7), 0x6c);
+        byte = (val>2) & 0x3; // get default link on 7 to 0
+
+        setup_row_local(7,6);
+        setup_remote_row_direct(6, 4, byte);
+        setup_remote_node(6);  /* Setup the regs on the remote node */
+        rename_temp_node(6);
+        enable_routing(6);
+
+#if !CROSS_BAR_47_56
+        setup_temp_row(0,1);
+        for(byte=0; byte<6; byte+=2) {
+                setup_temp_row(byte+1,byte+3);
+        }
+
+        val = pci_read_config32(NODE_HT(7), 0x6c);
+        byte = (val>2) & 0x3; // get default link on 7 to 0
+        setup_row_local(7,7);
+        setup_remote_row_direct(7, 5, byte);
+
+#else
+        for(byte=0; byte<4; byte+=2) {
+                setup_temp_row(byte,byte+2);
+        }
+	setup_temp_row(4,7);
+        val = pci_read_config32(NODE_HT(7), 0x6c);
+        byte = (val>2) & 0x3; // get default link on 7 to 0
+
+        setup_row_local(7,7);
+        setup_remote_row_direct(7, 4, byte);
+	// till now 4-7, 7-4 done.
+#endif
+        setup_remote_node(7);  /* Setup the regs on the remote node */
+//        rename_temp_node(7);
+        enable_routing(7);      /* enable routing on node 5 (temp.) */
+
+#if CROSS_BAR_47_56
+	//here init 5, 6 and 5, 7
+        /* Setup and check temporary connection from Node 0 to Node 5  through 1, 3, 5*/
+        
+        val = get_row(5,5);
+        byte = ((val>>16) & 0xfe) - link_connection(5,3);
+        byte = get_linkn_last(byte);
+        setup_row_direct(5, 7, byte);
+        
+        setup_temp_row(0,1); /* temp. link between nodes 0 and 1 */
+        for(byte=0; byte<6; byte+=2) {
+                setup_temp_row(byte+1,byte+3); /* temp. link between nodes 1 and 3 */
+        }
+
+        if (!check_connection(7)) {
+		// We need to recompute link to 7
+	        val = get_row(5,5);
+	        byte = ((val>>16) & 0xfe) - link_connection(5,3);
+	        byte = get_linkn_first(byte);
+
+	        byte &= 3; // bit [3,2] is count-1
+	        setup_row_direct(5, 7, byte);
+#if 0
+        	setup_temp_row(0,1); /* temp. link between nodes 0 and 1 */
+	        for(byte=0; byte<6; byte+=2) {
+        	        setup_temp_row(byte+1,byte+3); /* temp. link between nodes 1 and 3 */
+        	}
+#else
+		setup_temp_row(5,7);
+#endif
+		check_connection(7);
+	}
+        val = pci_read_config32(NODE_HT(7), 0x6c);
+        byte = (val>2) & 0x3; // get default link on 7 to 0
+//        setup_row_local(7,7);
+        setup_remote_row_direct(7, 5, byte);
+	//Till now 57, 75 done
+	
+	//init 5,6
+        val = get_row(5,5);
+        byte = ((val>>16) & 0xfe) - link_connection(5,3) - link_connection(5,7);
+        byte = get_linkn_first(byte);
+        setup_row_direct(5, 6, byte);
+
+
+        val = get_row(6,6);
+        byte = ((val>>16) & 0xfe) - link_connection(6,4);
+        byte = get_linkn_last(byte);
+        setup_row_direct(6, 7, byte);
+
+        for(byte=0; byte<6; byte+=2) {
+                setup_temp_row(byte,byte+2); /* temp. link between nodes 0 and 2 */
+        }
+	setup_temp_row(6,7);
+
+        if (!check_connection(7)) {
+                // We need to recompute link to 7
+                val = get_row(6,6);
+                byte = ((val>>16) & 0xfe) - link_connection(6,4);
+                byte = get_linkn_first(byte);
+
+                setup_row_direct(6, 7, byte);
+#if 0
+                for(byte=0; byte<6; byte+=2) {
+                        setup_temp_row(byte,byte+2); /* temp. link between nodes 0 and 2 */
+                }
+#endif
+                setup_temp_row(6,7);
+                check_connection(7);
+        }
+        val = pci_read_config32(NODE_HT(7), 0x6c);
+        byte = (val>2) & 0x3; // get default link on 7 to 0
+//        setup_row_local(7,7);
+        setup_remote_row_direct(7, 6, byte);
+        //Till now 67, 76 done
+
+        //init 6,5
+        val = get_row(6,6);
+        byte = ((val>>16) & 0xfe) - link_connection(6,4) - link_connection(6,7);
+        byte = get_linkn_first(byte);
+        setup_row_direct(6, 5, byte);
+
+#endif
+
+#if !CROSS_BAR_47_56
+        /* We need to init link between 6, and 7 direct link */
+        val = get_row(6,6);
+        byte = ((val>>16) & 0xfe) - link_connection(6,4);
+        byte = get_linkn_first(byte);
+        setup_row_direct(6,7, byte & 0x3);
+
+        val = get_row(7,7);
+        byte = ((val>>16) & 0xfe) - link_connection(7,5);
+        byte = get_linkn_first(byte);
+        setup_row_direct(7,6, byte & 0x3);
+#endif
+
+        /* Set indirect connection to 0, to 3  for indirect we will use clockwise routing */
+        static const u8 conn8_2[] = {
+#if !CROSS_BAR_47_56
+	        0, 7, 1,  // restore it
+                1, 7, 3,
+                2, 7, 3,
+                3, 7, 5,
+                4, 7, 5,
+
+        	6, 0, 4,
+	        6, 1, 4,
+	        6, 2, 4,
+	        6, 3, 4,
+	        6, 5, 4,
+	        7, 0, 6,
+	        7, 1, 5,
+	        7, 2, 6,
+	        7, 3, 5,
+	        7, 4, 6,
+#else
+                0, 7, 2,  // restore it
+                1, 7, 3,
+                2, 7, 4,
+                3, 7, 5,
+                
+                6, 0, 4,
+                6, 1, 4,
+                6, 2, 4,
+                6, 3, 4,
+                7, 0, 4,
+                7, 1, 5,
+                7, 2, 4,
+                7, 3, 5,
+                4, 5, 7,
+                5, 4, 6,
+#endif
+        };
+
+        setup_row_indirect_group(conn8_2, sizeof(conn8_2)/sizeof(conn8_2[0]));
+
+	static const uint8_t opt_conn8[] ={
+        	4, 6,
+#if CROSS_BAR_47_56
+	        4, 7,
+	        5, 6,
+#endif
+	        5, 7,
+	        6, 7,
+	};
+        /* optimize physical connections - by LYH */
+        result.needs_reset = optimize_connection_group(opt_conn8, sizeof(opt_conn6)/sizeof(opt_conn8[0]));
+
+#endif /* CONFIG_MAX_CPUS > 6 */
 
 	print_debug_hex8(result.nodes);
 	print_debug(" nodes initialized.\r\n");
@@ -481,6 +1189,9 @@ static void clear_dead_routes(unsigned nodes)
 {
 	int last_row;
 	int node, row;
+#if CONFIG_MAX_CPUS>6
+	if(nodes==8) return;// don't touch (7,7)
+#endif
 	last_row = nodes;
 	if (nodes == 1) {
 		last_row = 0;
@@ -640,7 +1351,7 @@ static int setup_coherent_ht_domain(void)
 	clear_dead_routes(result.nodes);
 	if (result.nodes == 1) {
 		setup_uniprocessor();
-	}
+	} 
 	coherent_ht_finalize(result.nodes);
 	result.needs_reset = apply_cpu_errata_fixes(result.nodes, result.needs_reset);
 	result.needs_reset = optimize_link_read_pointers(result.nodes, result.needs_reset);

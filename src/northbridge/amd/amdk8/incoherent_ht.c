@@ -1,3 +1,8 @@
+/*      
+        This should be done by Eric
+        2004.12 yhlu add multi ht chain dynamically support
+*/ 
+
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/hypertransport_def.h>
@@ -366,6 +371,7 @@ static int ht_setup_chains_x(void)
 	uint32_t tempreg;
         unsigned next_busn;
         int ht_c_num;
+	int nodes;
                         
         // read PCI_DEV(0,0x18,0) 0x64 bit [8:9] to find out SbLink m
         reg = pci_read_config32(PCI_DEV(0, 0x18, 0), 0x64);
@@ -377,18 +383,13 @@ static int ht_setup_chains_x(void)
         for(ht_c_num=1;ht_c_num<4; ht_c_num++) {
                 pci_write_config32(PCI_DEV(0, 0x18, 1), 0xe0 + ht_c_num * 4, 0);
         }
+	
+	nodes = ((pci_read_config32(PCI_DEV(0, 0x18, 0), 0x60)>>4) & 7) + 1;
  
-        for(nodeid=0; nodeid<8; nodeid++) {
+        for(nodeid=0; nodeid<nodes; nodeid++) {
                 device_t dev; 
                 unsigned linkn;
                 dev = PCI_DEV(0, 0x18+nodeid,0);
-                //read id, check id to see if dev exists ;
-                reg = pci_read_config32(dev, PCI_VENDOR_ID);
-                if (((reg & 0xffff) == 0x0000) || ((reg & 0xffff) == 0xffff) ||
-                        (((reg >> 16) & 0xffff) == 0xffff) ||
-                        (((reg >> 16) & 0xffff) == 0x0000)) {
-                        break;
-                }
                 for(linkn = 0; linkn<3; linkn++) {
                         unsigned regpos;
                         regpos = 0x98 + 0x20 * linkn;
@@ -412,17 +413,10 @@ static int ht_setup_chains_x(void)
         }
         //update 0xe0, 0xe4, 0xe8, 0xec from PCI_DEV(0, 0x18,1) to PCI_DEV(0, 0x19,1) to PCI_DEV(0, 0x1f,1);
 
-        for(nodeid = 1; nodeid<8; nodeid++) {
+        for(nodeid = 1; nodeid<nodes; nodeid++) {
                 int i;
                 device_t dev;
                 dev = PCI_DEV(0, 0x18+nodeid,1);
-                //read id, check id to see if dev exists ;
-                reg = pci_read_config32(dev, PCI_VENDOR_ID);
-                if (((reg & 0xffff) == 0x0000) || ((reg & 0xffff) == 0xffff) ||
-                        (((reg >> 16) & 0xffff) == 0xffff) ||
-                        (((reg >> 16) & 0xffff) == 0x0000)) {
-                        break;
-                }
                 for(i = 0; i< 4; i++) {
                         unsigned regpos;
                         regpos = 0xe0 + i * 4;

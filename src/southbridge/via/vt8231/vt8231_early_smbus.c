@@ -59,25 +59,54 @@ static inline void smbus_delay(void)
 	outb(0x80, 0x80);
 }
 
+static int smbus_wait_until_active(void)
+{
+        unsigned long loops;
+        loops = SMBUS_TIMEOUT;
+        do {
+                unsigned char val;
+                smbus_delay();
+                val = inb(SMBUS_IO_BASE + SMBHSTSTAT);
+                if ((val & 1)) {
+                        break;
+                }
+        } while(--loops);
+        return loops?0:-4;
+}
+
 static int smbus_wait_until_ready(void)
 {
-	unsigned char c;
-	unsigned long loops;
-	loops = SMBUS_TIMEOUT;
-	do {
-		unsigned char val;
-		smbus_delay();
-		c = inb(SMBUS_IO_BASE + SMBHSTSTAT);
-		while((c & 1) == 1) {
-			print_debug("c is ");
-			print_debug_hex8(c);
-			print_debug("\r\n");
-			c = inb(SMBUS_IO_BASE + SMBHSTSTAT);
-			/* nop */ 
-		}
+        unsigned long loops;
+        loops = SMBUS_TIMEOUT;
+        do {
+                unsigned char val;
+                smbus_delay();
+                val = inb(SMBUS_IO_BASE + SMBHSTSTAT);
+                if ((val & 1) == 0) {
+                        break;
+                }
+                if(loops == (SMBUS_TIMEOUT / 2)) {
+                        outb(inb(SMBUS_IO_BASE + SMBHSTSTAT),
+                                SMBUS_IO_BASE + SMBHSTSTAT);
+                }
+        } while(--loops);
+        return loops?0:-2;
+}
 
-	} while(--loops);
-	return loops?0:-1;
+static int smbus_wait_until_done(void)
+{
+        unsigned long loops;
+        loops = SMBUS_TIMEOUT;
+        do {
+                unsigned char val;
+                smbus_delay();
+
+                val = inb(SMBUS_IO_BASE + SMBHSTSTAT);
+                if ( (val & 1) == 0) {
+                        break;
+                }
+        } while(--loops);
+        return loops?0:-3;
 }
 
 void smbus_reset(void)
@@ -93,25 +122,6 @@ void smbus_reset(void)
 	print_debug("\r\n");
 }
   
-
-
-static int smbus_wait_until_done(void)
-{
-	unsigned long loops;
-	unsigned char byte;
-	loops = SMBUS_TIMEOUT;
-	do {
-		unsigned char val;
-		smbus_delay();
-		
-		byte = inb(SMBUS_IO_BASE + SMBHSTSTAT);
-		if (byte & 1)
-			break;
-		
-	} while(--loops);
-	return loops?0:-1;
-}
-
 static void smbus_print_error(unsigned char host_status_register)
 {
 
@@ -135,13 +145,71 @@ static void smbus_print_error(unsigned char host_status_register)
 	}
 }
 
+/*
+ * Copied from intel/i82801dbm early smbus code - suggested by rgm.
+ * Modifications/check against i2c-viapro driver code from linux-2.4.22
+ * and VT8231 Reference Docs - mw.
+ */
+static int smbus_read_byte(unsigned device, unsigned address)
+{
+        unsigned char global_control_register;
+        unsigned char global_status_register;
+        unsigned char byte;
 
+        if (smbus_wait_until_ready() < 0) {
+          outb(inb(SMBUS_IO_BASE + SMBHSTSTAT), SMBUS_IO_BASE + SMBHSTSTAT);
+          if ( smbus_wait_until_ready() < 0 ) {
+              return -2;
+          }
+        }
+
+        /* setup transaction */
+        /* disable interrupts */
+        outb(inb(SMBUS_IO_BASE + SMBHSTCTL) & 0xfe, SMBUS_IO_BASE + SMBHSTCTL);
+        /* set the device I'm talking too */
+        outb(((device & 0x7f) << 1) | 1, SMBUS_IO_BASE + SMBXMITADD);
+        /* set the command/address... */
+        outb(address & 0xFF, SMBUS_IO_BASE + SMBHSTCMD);
+        /* set up for a byte data read */
+        outb((inb(SMBUS_IO_BASE + SMBHSTCTL) & 0xe3) | (0x2<<2), SMBUS_IO_BASE + SMBHSTCTL);
+
+        /* clear any lingering errors, so the transaction will run */
+        outb(inb(SMBUS_IO_BASE + SMBHSTSTAT), SMBUS_IO_BASE + SMBHSTSTAT);
+
+        /* clear the data byte...*/
+        outb(0, SMBUS_IO_BASE + SMBHSTDAT0);
+
+        /* start a byte read, with interrupts disabled */
+        outb((inb(SMBUS_IO_BASE + SMBHSTCTL) | 0x40), SMBUS_IO_BASE + SMBHSTCTL);
+        /* poll for it to start */
+        if (smbus_wait_until_active() < 0) {
+                return -4;
+        }
+
+        /* poll for transaction completion */
+        if (smbus_wait_until_done() < 0) {
+                return -3;
+        }
+
+	/* Ignore the Host Busy & Command Complete ? */
+        global_status_register = inb(SMBUS_IO_BASE + SMBHSTSTAT) & ~((1<<1)|(1<<0));
+
+        /* read results of transaction */
+        byte = inb(SMBUS_IO_BASE + SMBHSTDAT0);
+
+        if (global_status_register != 0) {
+                return -1;
+        }
+        return byte;
+}
+
+#if 0
 /* SMBus routines borrowed from VIA's Trident Driver */
 /* this works, so I am not going to touch it for now -- rgm */
 static unsigned char smbus_read_byte(unsigned char devAdr, 
 				unsigned char bIndex) 
 {
-	unsigned short i;
+	unsigned int i;
 	unsigned char  bData;
 	unsigned char  sts = 0;
 	
@@ -149,10 +217,10 @@ static unsigned char smbus_read_byte(unsigned char devAdr,
 	outb(0xff, SMBUS_IO_BASE);
 	
 	/* check SMBUS ready */
-	for ( i = 0; i < 0xFFFF; i++ )
+	for ( i = 0; i < SMBUS_TIMEOUT; i++ )
 		if ( (inb(SMBUS_IO_BASE) & 0x01) == 0 )
 			break;
-	
+
 	/* set host command */
 	outb(bIndex, SMBUS_IO_BASE+3);
 	
@@ -163,7 +231,7 @@ static unsigned char smbus_read_byte(unsigned char devAdr,
 	outb(0x48, SMBUS_IO_BASE+2);
 	
 	/* SMBUS Wait Ready */
-	for ( i = 0; i < 0xFFFF; i++ )
+	for ( i = 0; i < SMBUS_TIMEOUT; i++ )
 		if ( ((sts = inb(SMBUS_IO_BASE)) & 0x01) == 0 )
 			break;
 	if ((sts & ~3) != 0) {
@@ -175,7 +243,7 @@ static unsigned char smbus_read_byte(unsigned char devAdr,
 	return bData;
 	
 }
-
+#endif
 /* for reference, here is the fancier version which we will use at some 
  * point
  */

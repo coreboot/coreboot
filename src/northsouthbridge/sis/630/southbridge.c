@@ -43,18 +43,23 @@ void nvram_on()
 	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, (void *)NULL);
 	if (pcidev != NULL) {
 		/* Enable FFF80000 to FFFFFFFF decode */
-		pci_write_config_byte(pcidev, 0x40, 0x33);
+		pci_write_config_byte(pcidev, 0x40, 0x3);
 		/* Flash can be flashed */
 		pci_write_config_byte(pcidev, 0x45, 0x40);
-	}
+		printk(KERN_INFO "Enabled in SIS 503 regs 0x40 and 0x45\n");
 
+	}
+	printk(KERN_INFO "Now try to turn off shadow\n");
 	/* turn off nvram shadow in 0xc0000 ~ 0xfffff */
 	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_630, (void *)NULL);
+	printk(KERN_INFO "device for SiS 630 is 0x%x\n", pcidev);
 	if (pcidev != NULL) {
 		/* read cycle goes to System Memory */
 		pci_write_config_word(pcidev, 0x70, 0x1fff);
 		/* write cycle goest to System Memory */
 		pci_write_config_word(pcidev, 0x72, 0x1fff);
+		printk(KERN_INFO "Shadow memory disabled in SiS 630\n");
+
 	}
 }
 

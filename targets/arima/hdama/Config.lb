@@ -11,8 +11,10 @@ uses CONFIG_IOAPIC
 uses CONFIG_ROM_STREAM
 uses CONFIG_ROM_STREAM_START
 uses ENABLE_FIXED_AND_VARIABLE_MTRRS
+uses FALLBACK_SIZE
 uses FINAL_MAINBOARD_FIXUP
 uses HAVE_FALLBACK_BOOT
+uses HAVE_MP_TABLE
 uses HAVE_PIRQ_TABLE
 uses HEAP_SIZE
 uses IRQ_SLOT_COUNT
@@ -34,6 +36,7 @@ uses USE_ELF_BOOT
 uses USE_FALLBACK_IMAGE
 uses USE_OPTION_TABLE
 
+option HAVE_MP_TABLE=0
 ### Customize our winbond superio chip for this motherboard
 ###
 option SIO_BASE=0x2e
@@ -85,8 +88,8 @@ option ENABLE_FIXED_AND_VARIABLE_MTRRS=1
 ###
 ### Clean up the motherboard id strings
 ###
-option MAINBOARD_PART_NUMBER="Solo7"
-option MAINBOARD_VENDOR="AMD"
+#option MAINBOARD_PART_NUMBER="Solo7"
+#option MAINBOARD_VENDOR="AMD"
 #
 ###
 ### Call the final_mainboard_fixup function
@@ -103,27 +106,17 @@ option USE_OPTION_TABLE=!USE_FALLBACK_IMAGE
 ### Compute the location and size of where this firmware image
 ### (linuxBIOS plus bootloader) will live in the boot rom chip.
 ###
-if USE_FALLBACK_IMAGE 
-  option ROM_SECTION_SIZE  = FALLBACK_SIZE
-  option ROM_SECTION_OFFSET= (ROM_SIZE - FALLBACK_SIZE)
-end
-if USE_NORMAL_IMAGE
-  option ROM_SECTION_SIZE  = (ROM_SIZE - FALLBACK_SIZE)
-  option ROM_SECTION_OFFSET= 0
-end
-#
-###
-### Compute the start location and size size of
-### The linuxBIOS bootloader.
-###
-option PAYLOAD_SIZE            = (ROM_SECTION_SIZE - ROM_IMAGE_SIZE)
-option CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
-option CONFIG_ROM_STREAM     = 1
-#
+#if USE_FALLBACK_IMAGE 
+#  option ROM_SECTION_SIZE  = FALLBACK_SIZE
+#  option ROM_SECTION_OFFSET= (ROM_SIZE - FALLBACK_SIZE)
+#end
+#if USE_NORMAL_IMAGE
+#  option ROM_SECTION_SIZE  = (ROM_SIZE - FALLBACK_SIZE)
+#  option ROM_SECTION_OFFSET= 0
+#end
 ###
 ### Compute where this copy of linuxBIOS will start in the boot rom
 ###
-option _ROMBASE      = (CONFIG_ROM_STREAM_START + PAYLOAD_SIZE)
 #
 ###
 ### Compute a range of ROM that can cached to speed up linuxBIOS,
@@ -167,6 +160,16 @@ option HEAP_SIZE=0x10000
 option ROM_SECTION_SIZE=ROM_SIZE
 option ROM_SECTION_OFFSET=0
 
+#
+###
+### Compute the start location and size size of
+### The linuxBIOS bootloader.
+###
+option PAYLOAD_SIZE            = (ROM_SECTION_SIZE - ROM_IMAGE_SIZE)
+option CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+option CONFIG_ROM_STREAM     = 1
+option _ROMBASE      = (CONFIG_ROM_STREAM_START + PAYLOAD_SIZE)
+#
 # Arima hdama
 mainboard arima/hdama
 	makedefine CFLAGS += -g

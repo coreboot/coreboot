@@ -17,11 +17,6 @@ if HAVE_PIRQ_TABLE object irq_tables.o end
 arch i386 end
 cpu k8 end
 #
-option DEBUG=1
-default USE_FALLBACK_IMAGE=1
-option A=(1+2)
-option B=0xa
-#
 ###
 ### Build our 16 bit and 32 bit linuxBIOS entry code
 ###
@@ -57,7 +52,7 @@ ldscript /arch/i386/lib/id.lds
 #### Things are delicate and we test to see if we should
 #### failover to another image.
 ####
-option MAX_REBOOT_CNT=2
+#option MAX_REBOOT_CNT=2
 ##ldscript arch/i386/lib/failover.lds USE_FALLBACK_IMAGE
 #
 ###

@@ -37,7 +37,7 @@ _RAMBASE	= 0x05000;
 _KERNSTK	= 0x90000;
 
 /* should be parameterized but is not, yuck! */
-_ROMBASE	= 0x80000;
+_ROMBASE	= 0xf0000;
 
 /*
  *	Entry point is not really nececary, since the mkrom(8)

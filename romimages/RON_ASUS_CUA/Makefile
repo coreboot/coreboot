@@ -5,12 +5,10 @@ CPUFLAGS += -DINTEL_PPRO_MTRR
 CPUFLAGS += -DNEWPCI
 CPUFLAGS += -DSERIAL_CONSOLE
 CPUFLAGS += -DFINAL_MAINBOARD_FIXUP
-CPUFLAGS += -DPROTECTED_MODE_STARTUP
 # If you enable FIXED_AND_VARIABLE it never makes it to the kernel!
 # you have to only enable variable. 
 CPUFLAGS += -DENABLE_FIXED_AND_VARIABLE_MTRRS
 CPUFLAGS += -DRAMTEST
-CPUFLAGS += -DUSE_DOC_MIL
 # This makes it fail sooner ...
 #CPUFLAGS += -DINBUF_COPY
 CPUFLAGS += -DCMD_LINE='"ro root=/dev/hda1 console=ttyS0,115200 single "'

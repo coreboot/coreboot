@@ -1,3 +1,4 @@
+#if 0
 /***
  *** sungeun
  ***
@@ -791,3 +792,136 @@ configure_next:
 /***
  *** END REAL STUFF
  ****/
+#endif
+#include <asm.h>
+#include <cpu/p5/macros.h>
+
+/* wow, the usual way to to this hurts. So we do it our way:
+ * 32-bit test not needed. 
+ */
+/* the MCR is 32-bits. You set it, it programs SDRAM. 
+ * first check: get Column address size (CAS)
+ * Start out assuming that it is 8 bits, then grow. 
+ * nicely, if we put the 32-bit MCR value in %ecs, we can 
+ * ror it 16 bits, and as we grow the CAS, we just inc cs, and that will
+ * set the right value. 
+ */
+#define INIT_MCR $0xf6621000
+#define WRITE_MCR0 movl %ecx, %eax ;  outl %eax, %dx
+/*#include <cpu/p5/start32.inc>*/
+
+/* make the flash writeable */
+/* select the south bridge, register 44 (base) */
+/* south bridge is device 7. 7 << 3 is 0x38 */
+	movl	$0x80003844, %eax
+	mov	$0x0cf8,%dx
+	outl	%eax,%dx
+/* but 0x40 makes flash writeable. You need this for DoC */
+	movb	$0x40, %al
+/* 0xff selects register 0x47 */
+	movb	$0xff, %dl
+	outb	%al,%dx
+
+	xorl	%edi, %edi
+	movl	$0x8000006c, %eax
+	mov	$0x0cf8,%dx
+	outl	%eax,%dx
+/*	movb	$0x8000006c, %al
+	CALLSP(pci_read_dword)*/
+	movb	$0xfc, %dl
+	inl	%dx, %eax
+	movl	%eax, %ecx
+	andl    $0xfffc, %ecx
+	orl	INIT_MCR,  %ecx
+	WRITE_MCR0
+	/*
+	movb	$0x6c, %al
+	CALLSP(pci_write_dword)
+	*/
+	rorl	$16, %ecx
+	/* clear out the CAS, since we assume start at zero
+	 * and increment 
+	 */
+	andb	$0xf0, %cl
+	/* test 8 bit CAS */
+	movb	$0, 0
+	movb	$1, 0x800
+	cmpb	$0,0
+	jnz	sizeram
+	inc	%cl
+	/* change the value we store each time. It makes debugging easier */
+	movb	$2, 0x1000
+	cmpb	$0, 0
+	jnz	sizeram
+	inc	%cl
+	movb	$3, 0x2000
+	cmpb	$0, 0
+	jnz	sizeram
+	inc	%cl
+	
+sizeram:		
+	rorl	$16, %ecx
+	/* clear the 'no multi page' bit. */
+	andw	$0xefff, %cx
+	WRITE_MCR0
+	/*
+	mov	$0x6c, %al
+	CALLSP(pci_write_dword)
+	*/
+/* size is now in cx[19:16] */
+/* now size the dram */
+/* you had best have at least 4M; that's as small as we go */
+/* rorr 20 the ecx value, to get row size into lsb */
+	movb	$0, 0
+	ror	$20, %ecx
+	/* clear the size out to 4 MB */
+	andb	$0xf8, %cl
+	/* 4 MB */
+	movl	$0x400000, %esi
+1:
+
+	/* move a 4 to the next power-of-two address. 
+	 * if there is no memory there, it will wrap to zero 
+	 */
+ 	movb	$4, %es:(%esi)
+
+	cmpb	$0, 0
+	/* if there is not a 0 at 0, the last write wrapped. Hop out */
+	jne	1f
+	inc	%cl
+	rol	$1, %esi
+	jmp	1b
+/* size is now in esi */
+/* %ecx has setting for register */
+1:
+	rol	$20, %ecx
+/* set 4 banks. */
+	orb	$1, %cl
+	WRITE_MCR0
+	/*
+	mov	$0x6c, %al
+	CALLSP(pci_write_dword)
+	*/
+/* bank detect */
+/* you don't need to even care how large CAS is. 
+ * Just set 4-bank mode, and set non-zero numbers into a few places. 
+ * if the byte at 0 changes, you have two banks. Trivial.
+ */
+	movb	$0, 0
+	movb	$5, 0x1000
+	movb	$6, 0x2000
+	movb	$7, 0x4000
+	cmpb	$0, 0
+	jz	1f /* only one bank */
+	orl	$0x80000, %ecx
+1: 
+	/* clear 4 banks */
+	andb	$0xfe, %cl
+	WRITE_MCR0
+	movl	$0x8000007c, %eax
+	movb	$0xf8, %dl
+	outl	%eax, %dx
+	movl	$0x2423c411, %eax
+	movb	$0xfc, %dl
+	outl	%eax, %dx
+

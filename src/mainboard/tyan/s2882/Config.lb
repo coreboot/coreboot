@@ -1,6 +1,9 @@
 uses HAVE_MP_TABLE
 uses HAVE_PIRQ_TABLE
 uses USE_FALLBACK_IMAGE
+uses LB_CKS_RANGE_START
+uses LB_CKS_RANGE_END
+uses LB_CKS_LOC
 uses MAINBOARD
 uses ARCH
 #
@@ -19,10 +22,18 @@ register "fixup_scsi" = "1"
 register "fixup_vga" = "1"
 
 
+##
+## Move the default LinuxBIOS cmos range off of AMD RTC registers
+##
+default LB_CKS_RANGE_START=49
+default LB_CKS_RANGE_END=122
+default LB_CKS_LOC=123
+
 driver mainboard.o
-driver adaptec_scsi.o
-driver si_sata.o
+#driver adaptec_scsi.o
+#driver si_sata.o
 driver intel_nic.o
+#driver broadcom_nic.o
 object reset.o
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
@@ -35,6 +46,7 @@ arch i386 end
 ###
 mainboardinit cpu/i386/entry16.inc
 mainboardinit cpu/i386/entry32.inc
+mainboardinit cpu/i386/bist32.inc
 ldscript /cpu/i386/entry16.lds
 ldscript /cpu/i386/entry32.lds
 #
@@ -86,9 +98,9 @@ end
 ###
 ### Setup the serial port
 ###
-#mainboardinit superiowinbond/w83627hf/setup_serial.inc
 mainboardinit pc80/serial.inc
 mainboardinit arch/i386/lib/console.inc
+mainboardinit cpu/i386/bist32_fail.inc
 #
 ####
 #### O.k. We aren't just an intermediary anymore!
@@ -119,8 +131,8 @@ makerule ./failover.inc
 	action "./romcc -O -o failover.inc --label-prefix=failover ./failover.E"end
 
 makerule ./auto.E 
-	depends	"$(MAINBOARD)/auto.c" 
-	action	"$(CPP) -I$(TOP)/src $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
+        depends "$(MAINBOARD)/auto.c option_table.h"
+        action  "$(CPP) -I$(TOP)/src -I. $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
 end
 makerule ./auto.inc 
 	depends "./romcc ./auto.E"
@@ -159,6 +171,31 @@ northbridge amd/amdk8 "mc0"
                 pci 1:0.1 on
                 pci 1:0.2 on
                 pci 1:1.0 off
+                superio winbond/w83627hf link 1
+                        pnp 2e.0 off #  Floppy
+                                 io 0x60 = 0x3f0
+                                irq 0x70 = 6
+                                drq 0x74 = 2
+                        pnp 2e.1 off #  Parallel Port
+                                 io 0x60 = 0x378
+                                irq 0x70 = 7
+                        pnp 2e.2 on #  Com1
+                                 io 0x60 = 0x3f8
+                                irq 0x70 = 4
+                        pnp 2e.3 off #  Com2
+                                 io 0x60 = 0x2f8
+                                irq 0x70 = 3
+                        pnp 2e.5 on #  Keyboard
+                                 io 0x60 = 0x60
+                                 io 0x62 = 0x64
+                                irq 0x70 = 1
+                        pnp 2e.6 off #  CIR
+                        pnp 2e.7 off #  GAME_MIDI_GIPO1
+                        pnp 2e.8 off #  GPIO2
+                        pnp 2e.9 off #  GPIO3
+                        pnp 2e.a off #  ACPI
+                        pnp 2e.b off #  HW Monitor
+                end
         end
 end
 
@@ -171,21 +208,8 @@ northbridge amd/amdk8 "mc1"
         pci 0:19.3
 end
  
-#northbridge amd/amdk8
-#end
-#southbridge amd/amd8111 "amd8111"
-#end
-#southbridge amd/amd8131 "amd8131"
-#end
-#mainboardinit archi386/smp/secondary.inc
-#superio NSC/pc87360
-#	register "com1" = "{1}"
-#	register "lpt" = "{1}"
-#end
 dir /pc80
-##dir /src/superio/winbond/w83627hf
 #dir /bioscall
-#dir /cpu/k8
 cpu k8 "cpu0"
   register "up" = "{.chip = &amd8131, .ht_width=16, .ht_speed=600}"
 end

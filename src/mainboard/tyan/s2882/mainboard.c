@@ -38,7 +38,7 @@ static void fixup_lsi_53c1030(struct device *pdev)
 }
 #endif
 //extern static void lsi_scsi_init(struct device *dev);
-#if 1
+#if 0
 static void print_pci_regs(struct device *dev)
 {
       uint8_t byte;
@@ -92,8 +92,8 @@ static void onboard_scsi_fixup(void)
 {
        struct device *dev;
 	unsigned char i,j,k;
-#if 0
-	for(i=0;i<=4;i++) {
+#if 0 
+	for(i=0;i<=5;i++) {
 		for(j=0;j<=0x1f;j++) {
 			for (k=0;k<=6;k++){
 				dev = dev_find_slot(i, PCI_DEVFN(j, k));

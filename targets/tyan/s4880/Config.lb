@@ -136,7 +136,8 @@ option MAINBOARD_VENDOR="Tyan"
 ### (linuxBIOS plus bootloader) will live in the boot rom chip.
 ###
 #option FALLBACK_SIZE=524288
-option FALLBACK_SIZE=98304
+#option FALLBACK_SIZE=98304
+option FALLBACK_SIZE=131072
 
 ## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
 option ROM_IMAGE_SIZE=65536
@@ -233,7 +234,8 @@ romimage "fallback"
 	option XIP_ROM_BASE = (_ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE)
 
 	mainboard tyan/s4880
-	payload ../../tg3.zelf
+#	payload ../../tg3--ide_disk.zelf
+	payload ../../filo.elf.d
 end
 
 buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"

@@ -24,15 +24,15 @@ static void pcix_init(device_t dev)
  	
 	/* Set drive strength */
 	word = pci_read_config16(dev, 0xe0);
-        word = 0x0404;
+        word = 0x0808;
         pci_write_config16(dev, 0xe0, word);
 	word = pci_read_config16(dev, 0xe4);
-        word = 0x0404;
+        word = 0x0808;
         pci_write_config16(dev, 0xe4, word);
 	
 	/* Set impedance */
 	word = pci_read_config16(dev, 0xe8);
-        word = 0x0404;
+        word = 0x0f0f;
         pci_write_config16(dev, 0xe8, word);
 
 	/* Set discard unrequested prefetch data */
@@ -105,6 +105,12 @@ static void ioapic_enable(device_t dev)
 		value &= ~((1 << 1) | (1 << 0));
 	}
 	pci_write_config32(dev, 0x44, value);
+
+//BY LYH
+        value = pci_read_config32(dev, 0x4);
+        value |= 6;
+        pci_write_config32(dev, 0x4, value);
+//BY LYH END
 }
 
 static struct device_operations ioapic_ops = {

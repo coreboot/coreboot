@@ -11,12 +11,16 @@
 
 static void agp3bridge_init(device_t dev)
 {
-	uint32_t dword;
+	uint8_t byte;
 	
-	dword = pci_read_config8(dev, 0x04);
-        dword |= 0x07;
-        pci_write_config8(dev, 0x04, dword);
- 	
+	byte = pci_read_config32(dev, 0x04);
+        byte |= 0x07;
+        pci_write_config8(dev, 0x04, byte);
+ 
+        byte = pci_read_config32(dev, 0xce);
+        byte |= 3<<2;
+        pci_write_config8(dev, 0xce, byte);
+	
 	return;
 }
 
@@ -31,7 +35,7 @@ static struct device_operations agp3bridge_ops  = {
 static struct pci_driver agp3bridge_driver __pci_driver = {
         .ops    = &agp3bridge_ops,
         .vendor = PCI_VENDOR_ID_AMD,
-        .device = 0x7455,
+        .device = 0x7455, // AGP Bridge
 };
 
 
@@ -41,19 +45,19 @@ static void agp3dev_enable(device_t dev)
 	
 	//  AGP enable
         value = pci_read_config32(dev, 0xa8);
-        value |= (1<<8);
+        value |= (3<<8)|2; //AGP 8x
         pci_write_config32(dev, 0xa8, value);
-
+/*
 	//  linkA 8bit-->16bit
         value = pci_read_config32(dev, 0xc4);
-        value |= (11<<24);
+        value |= (0x11<<24);
         pci_write_config32(dev, 0xc4, value);
 
         //  linkA 200-->600
         value = pci_read_config32(dev, 0xcc);
         value |= (4<<8);
         pci_write_config32(dev, 0xcc, value);
-  
+*/  
 
         value = pci_read_config32(dev, 0x4);
         value |= 6;
@@ -72,6 +76,6 @@ static struct device_operations agp3dev_ops = {
 static struct pci_driver agp3dev_driver __pci_driver = {
 	.ops    = &agp3dev_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
-	.device = 0x7454,
+	.device = 0x7454, //AGP Device
 	
 };

@@ -1,0 +1,2 @@
+object southbridge.o
+object northbridge.o

@@ -6,9 +6,9 @@ option SERIAL_CONSOLE=1
 option TTYS0_BAUD=38400
 
 option DEFAULT_CONSOLE_LOGLEVEL=9
-option DEBUG
+option DEBUG=1
 
-option RAMTEST
+option RAMTEST=1
 option USE_GENERIC_ROM=1
 option USE_ELF_BOOT=1
 option ZKERNEL_START=0xfffe0000

@@ -54,21 +54,21 @@ board_init(void)
 	/*
 	 * Enable FLASH, NVRAM, POR
 	 */
-	outb(0x9C, 0xF4000002);
+	out_8(0x9C, 0xF4000002);
 
 	/*
 	 * Enable UART0
 	 */
-	outb(0x20, 0xF4000003);
+	out_8(0x20, 0xF4000003);
 
 	/*
 	 * Cycle LEDs to show something is happening...
 	 */
-	outb(0x07, 0xF4000009);
+	out_8(0x07, 0xF4000009);
 	udelay(100000);
-	outb(0x0B, 0xF4000009);
+	out_8(0x0B, 0xF4000009);
 	udelay(100000);
-	outb(0x0D, 0xF4000009);
+	out_8(0x0D, 0xF4000009);
 	udelay(100000);
-	outb(0x0E, 0xF4000009);
+	out_8(0x0E, 0xF4000009);
 }

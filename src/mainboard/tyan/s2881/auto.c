@@ -65,8 +65,8 @@ static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 	uint32_t ret=0x00010101; /* default row entry */
 
 	static const unsigned int rows_2p[2][2] = {
-		{ 0x00050101, 0x00010404 },
-		{ 0x00010404, 0x00050101 }
+		{ 0x00030101, 0x00010202 },
+		{ 0x00010202, 0x00030101 }
 	};
 
 	if(maxnodes>2) {
@@ -101,6 +101,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
+
+#include "resourcemap.c" /* tyan does not want the default */
 
 static void enable_lapic(void)
 {
@@ -158,8 +160,8 @@ static void main(void)
 			.f1 = PCI_DEV(0, 0x19, 1),
 			.f2 = PCI_DEV(0, 0x19, 2),
 			.f3 = PCI_DEV(0, 0x19, 3),
-			.channel0 = { (0xa<<3)|4, 0, 0, 0 },
-			.channel1 = { (0xa<<3)|5, 0, 0, 0 },
+			.channel0 = { (0xa<<3)|4, (0xa<<3)|6, 0, 0 },
+			.channel1 = { (0xa<<3)|5, (0xa<<3)|7, 0, 0 },
 		},
 #endif
 	};
@@ -169,12 +171,12 @@ static void main(void)
 	enable_lapic();
 	init_timer();
 	if (!boot_cpu() ) {
-//		notify_bsp_ap_is_stopped();
+		notify_bsp_ap_is_stopped();
 		stop_this_cpu();
 	}
 	uart_init();
 	console_init();
-	setup_default_resource_map();
+	setup_s2881_resource_map();
 	setup_coherent_ht_domain();
 	enumerate_ht_chain(0);
 	distinguish_cpu_resets(0);

@@ -16,7 +16,7 @@
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "debug.c"
 #include "northbridge/amd/amdk8/cpu_rev.c"
-
+ 
 
 #define REV_B_RESET 0
 static void memreset_setup(void)
@@ -40,51 +40,9 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
 
 static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 {
-	/* Routing Table Node i 
-	 *
-	 * F0: 0x40, 0x44, 0x48, 0x4c, 0x50, 0x54, 0x58, 0x5c 
-	 *  i:    0,    1,    2,    3,    4,    5,    6,    7
-	 *
-	 * [ 0: 3] Request Route
-	 *     [0] Route to this node
-	 *     [1] Route to Link 0
-	 *     [2] Route to Link 1
-	 *     [3] Route to Link 2
-	 * [11: 8] Response Route
-	 *     [0] Route to this node
-	 *     [1] Route to Link 0
-	 *     [2] Route to Link 1
-	 *     [3] Route to Link 2
-	 * [19:16] Broadcast route
-	 *     [0] Route to this node
-	 *     [1] Route to Link 0
-	 *     [2] Route to Link 1
-	 *     [3] Route to Link 2
-	 */
-
 	uint32_t ret=0x00010101; /* default row entry */
 
-	static const unsigned int rows_2p[2][2] = {
-		{ 0x00050101, 0x00010404 },
-		{ 0x00010404, 0x00050101 }
-	};
-
-	if(maxnodes>2) {
-		print_debug("this mainboard is only designed for 2 cpus\r\n");
-		maxnodes=2;
-	}
-
-
-	if (!(node>=maxnodes || row>=maxnodes)) {
-		ret=rows_2p[node][row];
-	}
-
 	return ret;
-}
-
-static inline void activate_spd_rom(const struct mem_controller *ctrl)
-{
-	/* nothing to do */
 }
 
 static inline int spd_read_byte(unsigned device, unsigned address)
@@ -135,7 +93,7 @@ static void stop_this_cpu(void)
 	}
 }
 #define FIRST_CPU  1
-#define SECOND_CPU 1
+#define SECOND_CPU 0
 #define TOTAL_CPUS (FIRST_CPU + SECOND_CPU)
 static void main(void)
 {
@@ -158,8 +116,8 @@ static void main(void)
 			.f1 = PCI_DEV(0, 0x19, 1),
 			.f2 = PCI_DEV(0, 0x19, 2),
 			.f3 = PCI_DEV(0, 0x19, 3),
-			.channel0 = { (0xa<<3)|4, 0, 0, 0 },
-			.channel1 = { (0xa<<3)|5, 0, 0, 0 },
+			.channel0 = { (0xa<<3)|4, (0xa<<3)|6, 0, 0 },
+			.channel1 = { (0xa<<3)|5, (0xa<<3)|7, 0, 0 },
 		},
 #endif
 	};
@@ -169,7 +127,7 @@ static void main(void)
 	enable_lapic();
 	init_timer();
 	if (!boot_cpu() ) {
-//		notify_bsp_ap_is_stopped();
+		notify_bsp_ap_is_stopped();
 		stop_this_cpu();
 	}
 	uart_init();

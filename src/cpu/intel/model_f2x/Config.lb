@@ -1,3 +1,4 @@
+dir /cpu/x86/tsc
 dir /cpu/x86/mtrr
 dir /cpu/x86/fpu
 dir /cpu/x86/mmx

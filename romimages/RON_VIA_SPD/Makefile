@@ -8,7 +8,11 @@ CPUFLAGS += -DNEWPCI
 CPUFLAGS += -DSERIAL_CONSOLE
 # If you enable FIXED_AND_VARIABLE it never makes it to the kernel!
 # you have to only enable variable. 
-#CPUFLAGS += -DENABLE_FIXED_AND_VARIABLE_MTRRS
+# 1/25/01. Things just stopped working for no reason I can see (RGM). 
+# First test: enable fixed and variable MTRRs.
+# This wasn't the problem (My stupidity was) but it works ok, so leave
+# it in.
+CPUFLAGS += -DENABLE_FIXED_AND_VARIABLE_MTRRS
 CPUFLAGS += -DRAMTEST
 # This makes it fail sooner ...
 #CPUFLAGS += -DINBUF_COPY
@@ -22,7 +26,6 @@ CFLAGS=$(NOOPT_CFLAGS) -O2
 OBJECTS=crt0.o hardwaremain.o linuxbiosmain.o 
 OBJECTS += mainboard.o mtrr.o subr.o fill_inbuf.o params.o
 OBJECTS += southbridge.o northbridge.o
-#OBJECTS += pci.o
 OBJECTS += printk.o vsprintf.o
 OBJECTS += newpci.o linuxpci.o
 OBJECTS += cpuid.o 
@@ -31,7 +34,8 @@ OBJECTS += serial_subr.o
 OBJECTS += mpspec.o
 OBJECTS += microcode.o
 OBJECTS += keyboard.o
-LINUX=$(TOP)/../linux-2.4.0-test6.via/
+#LINUX=$(TOP)/../linux-2.4.0-test6.via/
+LINUX=$(TOP)/../linux-2.4.0-via/
 
 LINK = ld -T ldscript.ld -o $@ $(OBJECTS)
 CC=cc $(CFLAGS)

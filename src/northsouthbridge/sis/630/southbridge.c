@@ -138,6 +138,12 @@ apc_fixup(void)
 		regval = inb(0x71);
 		outb(regval | 0x40, 0x71);
 
+
+		/* Enable ACPI S3,S5 */
+		outb(0x04, 0x70);
+		regval = inb(0x71);
+		outb(regval | 0x03, 0x71);
+		
 		/* Register 0x48, select RTC registers */
 		pci_read_config_byte(isa_bridge, 0x48, &regval);
 		pci_write_config_byte(isa_bridge, 0x48, regval & ~0x40);

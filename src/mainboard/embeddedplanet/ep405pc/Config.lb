@@ -2,6 +2,14 @@
 ## Config file for the Embedded Planet EP405PC Computing Engine
 ##
 
+uses PCIC0_CFGADDR 
+uses PCIC0_CFGDATA 
+uses UART0_IO_BASE
+
+option PCIC0_CFGADDR=0xeec00000
+option PCIC0_CFGDATA=0xeec00004
+option UART0_IO_BASE=0xef600300
+
 arch ppc end
 cpu ppc/ppc4xx end
 

@@ -1,0 +1,20 @@
+# Sample config file for technoland sbc710
+
+target t23
+
+mainboard ibm/t23
+
+# Enable Serial Console for debugging
+option SERIAL_CONSOLE=1
+option NO_KEYBOARD
+
+option INBUF_COPY
+option DEFAULT_CONSOLE_LOGLEVEL=9
+option DEBUG
+option USE_GENERIC_ROM=1
+
+# Path to your kernel (vmlinux)
+linux ~/src/bios/linux-2.4.7-sis
+
+# Kernel command line parameters
+commandline root=/dev/hda6 console=ttyS0,115200 FS_MODE=ro hda=flash hdb=flash

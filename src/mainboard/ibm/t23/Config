@@ -1,0 +1,30 @@
+arch i386
+mainboardinit cpu/i386/entry16.inc
+ldscript cpu/i386/entry16.lds
+mainboardinit cpu/i386/reset16.inc
+ldscript cpu/i386/reset16.lds
+
+mainboardinit pc80/serial.inc
+mainboardinit arch/i386/lib/console.inc
+northbridge intel/82830
+southbridge intel/82801
+mainboardinit cpu/p6/earlymtrr.inc
+
+# option FLASH_ROM_SIZE=524288
+
+option ENABLE_FIXED_AND_VARIABLE_MTRRS
+option NO_KEYBOARD
+
+option HAVE_PIRQ_TABLE=1
+option ZKERNEL_START=0xfffc0000
+option ZKERNEL_MASK=0x7f 
+
+object mainboard.o
+object irq_tables.o
+
+cpu p6
+cpu p5
+
+
+
+

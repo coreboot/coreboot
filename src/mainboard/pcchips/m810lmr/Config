@@ -10,8 +10,8 @@ northsouthbridge sis/730
 nsuperio sis/950 com1={1} floppy=1  lpt=1
 mainboardinit cpu/p6/earlymtrr.inc
 
-option ENABLE_FIXED_AND_VARIABLE_MTRRS
-option FINAL_MAINBOARD_FIXUP
+option ENABLE_FIXED_AND_VARIABLE_MTRRS=1
+option FINAL_MAINBOARD_FIXUP=1
 option HAVE_PIRQ_TABLE=1
 object mainboard.o
 object irq_tables.o

@@ -6,6 +6,7 @@ loadoptions
 
 target ./hdama
 
+uses AMD8111_DEV
 uses CONFIG_COMPRESS
 uses CONFIG_IOAPIC
 uses CONFIG_ROM_STREAM

@@ -29,7 +29,8 @@ void w83627hf_exit_pnp(unsigned char port)
 static void setup_com(struct superio *sio,
 	struct com_ports *com, int device)
 {
-	int divisor = 115200/com->baud;
+	// set to baud; default to 115200 if no setting. 
+	int divisor = 115200/(com->baud ? com->baud : 1);
 	if ((com->base == TTYS0_BASE) && (!!pnp_read_enable(sio->port) == !!com->enable)) {
 		/* Don't reinitialize the console serial port,
 		 * This is especially nasty in SMP. 

@@ -4,6 +4,7 @@
 #include <subr.h>
 #include <stddef.h>
 #include <rom/read_bytes.h>
+#include <string.h>
 
 #ifndef DOC_KERNEL_START
 #define DOC_KERNEL_START 65536
@@ -30,6 +31,7 @@ static unsigned char *ram;
 static int 
 fill_inbuf(void)
 {
+	printk_spew(__FUNCTION__ "\n");
  	if (firstfill) {
 		if ((ram = malloc(K64)) == NULL) {
 			printk_emerg("%6d:%s() - ram malloc failed\n",
@@ -91,11 +93,12 @@ memcpy_from_doc_mil(void *dest, const void *src, size_t n)
 
 		/* copy 512 bytes of data from CDSN_IO registers */
 		dummy = *(volatile unsigned char *) (doc_mil + 0x101d);
-		memcpy(dest, doc_mil + 0x800, 0x200);
+		memcpy(dest, (const void *) (doc_mil + 0x800), 0x200);
 
 		dest += 0x200;
 		address += 0x200;
 	}
+	printk_debug("done " __FUNCTION__ "\n");
 
 }
 
@@ -108,6 +111,7 @@ memcpy_from_doc_mil(void *dest, const void *src, size_t n)
 static int
 init_bytes(void)
 {
+	printk_debug(__FUNCTION__ "\n");
 	// it is possible that we can get in here and the 
 	// doc has never been reset. So go ahead and reset it again.
 
@@ -122,7 +126,7 @@ init_bytes(void)
 static void
 fini_bytes(void)
 {
-	return 1;
+    printk_debug(__FUNCTION__ " \n");
 }
 
 static byte_offset_t
@@ -130,10 +134,16 @@ read_bytes(void *vdest, byte_offset_t count)
 {
 	byte_offset_t bytes = 0;
 	unsigned char *dest = vdest;
+	
 
 	while (bytes++ < count) {
-		*(dest++) = get_byte();
+		unsigned char c = get_byte();
+		printk_spew("%d:0x%x\n", inptr-1, c);
+				
+		*(dest++) = c;
 	}
+	printk_debug(__FUNCTION__ " vdest %p return count %d\n", 
+			vdest, count);
 	return count;
 }
 
@@ -141,6 +151,7 @@ static byte_offset_t
 skip_bytes(byte_offset_t count)
 {
 	byte_offset_t bytes = 0;
+	printk_spew(__FUNCTION__ " count %d\n", count);
 
 	while (bytes++ < count) {
 		unsigned char byte;

@@ -841,9 +841,12 @@ handle_superio(int pass, struct superio *s, int nsuperio)
   printk_debug("handle_superio start, s %p nsuperio %d s->super %p\n",
 	 s, nsuperio, s->super);
   for(i = 0; i < nsuperio; i++, s++){
- 
-    if (!s->super)
-      continue;
+      printk_debug(__FUNCTION__ " Pass %d, check #%d, s %p s->super %p\n",
+	  pass, i, s, s->super);
+    if (!s->super) {
+	printk_debug(__FUNCTION__ " Pass %d, Skipping #%d as it has no superio pointer!\n", pass, i);
+        continue;
+    }
     printk_debug("handle_superio: Pass %d, Superio %s\n", pass, 
 	   s->super->name);
     // if no port is assigned use the defaultport
@@ -871,6 +874,7 @@ handle_superio(int pass, struct superio *s, int nsuperio)
 	    printk_debug("  Call finishup\n");
 	    s->super->finishup(s);
 	  }
+    printk_debug(__FUNCTION__ " Pass %d, done #%d\n", pass, i);
   }
   printk_debug("handle_superio done\n");
 }

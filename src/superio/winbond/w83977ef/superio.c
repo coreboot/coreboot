@@ -133,7 +133,8 @@ static void setup_parallel(struct superio *sio)
 static void setup_com(struct superio *sio,
 	struct com_ports *com, int device)
 {
-	int divisor = 115200/com->baud;
+	// set baud, default to 115200 if not set.
+	int divisor = 115200/(com->baud ? com->baud : 1);
 	printk_debug("Enabling com device: %02x\n", device);
 	printk_debug("  iobase = 0x%04x  irq=%d\n", com->base, com->irq);
 	/* Select the device */
@@ -193,36 +194,6 @@ static void setup_keyboard(struct superio *sio)
 }
 #endif
 
-#if 0
-#ifdef MUST_ENABLE_FLOPPY
-
-void setup_floppy(struct superio *sio)
-{
-	/* now set the LDN to floppy LDN */
-	outb(0x7, sio->port);	/* pick reg. 7 */
-	outb(0x0, sio->port+1);	/* LDN 0 to reg. 7 */
-
-	/* now select register 0x30, and set bit 1 in that register */
-	outb(0x30, sio->port);
-	outb(0x1, sio->port+1);
-}
-#endif /* MUST_ENABLE_FLOPPY */
-
-void
-setup_com(struct superio *sio, int com)
-{
-    unsigned char b;
-    /* now set the LDN to com LDN */
-    outb(0x7, sio->port);	/* pick reg. 7 */
-    outb(com, sio->port+1);	/* LDN 0 to reg. 7 */
-
-    /* now select register 0x30, and set bit 1 in that register */
-    outb(0x30, sio->port);
-    outb(0x1, sio->port+1);
-
-}
-
-#endif
 static void setup_devices(struct superio *sio)
 {
 	if (sio->port == 0) {

@@ -67,7 +67,7 @@ static void set_logical_device(struct superio *sio, int device)
 static void set_enable(struct superio *sio, int enable)
 {
 	write_config(sio, enable?0x1:0x0, 0x30);
-#if 0
+#if 1
 	if (enable) {
 		printk_debug("enabled superio device: %d\n", 
 			read_config(sio, 0x07));
@@ -105,7 +105,8 @@ static void set_drq(struct superio *sio, unsigned drq)
 static void setup_com(struct superio *sio,
 	struct com_ports *com, int device)
 {
-	int divisor = 115200/com->baud;
+	// set baud, default to 115200 if not set.
+	int divisor = 115200/(com->baud ? com->baud : 1);
 	printk_debug("Enabling com device: %02x\n", device);
 	printk_debug("  iobase = 0x%04x  irq=%d\n", com->base, com->irq);
 	/* Select the device */
@@ -194,6 +195,7 @@ static void setup_acpi_registers(struct superio *sio)
 
 static void enable_devices(struct superio *sio)
 {
+	printk_info("Setting up %s\n", sio->super->name);
 	if (sio->port == 0) {
 		sio->port = sio->super->defaultport;
 	}
@@ -259,5 +261,9 @@ static void enable_devices(struct superio *sio)
 
 /* The base address is either 0x2e or 0x4e */
 struct superio_control superio_winbond_w83877tf_control = {
-	(void *)0, enable_devices, (void *)0, 0x2e, "w83877tf"
+	pre_pci_init : (void *)0, 
+	init:          enable_devices, 
+        finishup:      (void *)0, 
+        defaultport:   0x2e, 
+        name:          "w83877tf"
 };

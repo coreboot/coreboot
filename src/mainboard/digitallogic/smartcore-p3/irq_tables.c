@@ -4,7 +4,7 @@
 
    Documentation at : http://www.microsoft.com/hwdev/busbios/PCIIRQ.HTM
 */
-
+#define IRQ_SLOT_COUNT 19
 #include <arch/pirq_routing.h>
 
 const struct irq_routing_table intel_irq_routing_table = {

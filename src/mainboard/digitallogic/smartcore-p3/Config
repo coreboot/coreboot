@@ -32,6 +32,7 @@ option SMC_BASE=0x3F0
 option CONFIG_UDELAY_TSC=1
 option CONFIG_LINUXBIOS_ENABLE_IDE=1
 option CONFIG_LINUXBIOS_LEGACY_IDE=1
+option CONFIG_COMPRESS=0
 object mainboard.o
 object irq_tables.o
 

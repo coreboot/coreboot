@@ -57,6 +57,7 @@ static void *pci_ram_image_start = PCI_RAM_IMAGE_START;
 
 #if CONFIG_CONSOLE_VGA == 1
 int vga_inited = 0; // it will be used by vga_console 
+extern device_t vga_pri; // The only VGA
 #endif
 
 struct rom_header *pci_rom_load(struct device *dev, struct rom_header *rom_header)
@@ -71,7 +72,7 @@ struct rom_header *pci_rom_load(struct device *dev, struct rom_header *rom_heade
 
 	if (PCI_CLASS_DISPLAY_VGA == (rom_data->class_hi << 16 | rom_data->class_lo)) {
 #if CONFIG_CONSOLE_VGA == 1
-		if(vga_inited) return NULL; // only one VGA supported
+		if (dev != vga_pri) return NULL; // only one VGA supported
 		printk_spew("%s, copying VGA ROM Image from %x to %x, %x bytes\n",
 			    __func__, rom_header, PCI_VGA_RAM_IMAGE_START, rom_size);
 		memcpy(PCI_VGA_RAM_IMAGE_START, rom_header, rom_size);

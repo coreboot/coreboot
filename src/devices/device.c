@@ -363,35 +363,44 @@ void compute_allocate_resource(
 
 
 }
-
 #if CONFIG_CONSOLE_VGA == 1
+device_t vga_pri = 0;
 static void allocate_vga_resource(void)
 {
 #warning "FIXME modify allocate_vga_resource so it is less pci centric!"
 #warning "This function knows to much about PCI stuff, it should be just a ietrator/visitor."
 
 	/* FIXME handle the VGA pallette snooping */
-	struct device *dev, *vga;
+	struct device *dev, *vga, *vga_onboard;
 	struct bus *bus;
 	bus = 0;
 	vga = 0;
+	vga_onboard = 0;
 	for (dev = all_devices; dev; dev = dev->next) {
+		if ( !dev->enabled ) continue;
 		if (((dev->class >> 16) == PCI_BASE_CLASS_DISPLAY) &&
 		    ((dev->class >> 8) != PCI_CLASS_DISPLAY_OTHER)) {
 			if (!vga) {
-                                printk_debug("Allocating VGA resource %s\n", dev_path(dev));
-				vga = dev;
+				if (dev->on_mainboard) {
+					vga_onboard = dev;
+				} 
+				else {
+					vga = dev;
+				}
 			}
-			if (vga == dev) {
-				/* All legacy VGA cards have MEM & I/O space registers */
-				dev->command |= PCI_COMMAND_MEMORY | PCI_COMMAND_IO;
-			} else {
-				/* It isn't safe to enable other VGA cards */
-				dev->command &= ~(PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
-			}
+			/* It isn't safe to enable other VGA cards */
+			dev->command &= ~(PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
 		}
 	}
-	if (vga) {
+	
+	if (!vga) {
+		vga = vga_onboard;
+	}
+	
+	if (vga) { // vga is first add on card or the only onboard vga
+		printk_debug("Allocating VGA resource %s\n", dev_path(vga));
+		vga->command |= (PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
+		vga_pri = vga;
 		bus = vga->bus;
 	}
 	/* Now walk up the bridges setting the VGA enable */
@@ -402,7 +411,9 @@ static void allocate_vga_resource(void)
 		bus = (bus == bus->dev->bus)? 0 : bus->dev->bus;
 	} 
 }
+
 #endif
+
 
 /**
  * @brief  Assign the computed resources to the devices on the bus.
@@ -603,28 +614,27 @@ void dev_initialize(void)
 
 	printk_info("Initializing devices...\n");
 #if CONFIG_CONSOLE_VGA == 1
-        for (dev = all_devices; dev; dev = dev->next) {
-		if ( !dev->enabled ) continue;
-                if (dev->enabled && !dev->initialized &&
-                        dev->ops && dev->ops->init)
-                {
-			if( !dev->on_mainboard ) continue;  // process addon card in second run
-			else if( dev->rom_address!=0 ) continue; // onboard and it is assigned via MB Config.lb, process it later
-                        printk_debug("%s init\n", dev_path(dev));
-                        dev->initialized = 1;
-                        dev->ops->init(dev);
-                }
-        }
-#endif
 	for (dev = all_devices; dev; dev = dev->next) {
 		if (dev->enabled && !dev->initialized && 
 			dev->ops && dev->ops->init) 
 		{
+			if( !dev->on_mainboard ) continue;  // process addon card in second run
+			else if( dev->rom_address!=0 ) continue; // onboard and it is assigned via MB Config.lb, process it later
 			printk_debug("%s init\n", dev_path(dev));
 			dev->initialized = 1;
 			dev->ops->init(dev);
 		}
 	}
+#endif
+        for (dev = all_devices; dev; dev = dev->next) {
+                if (dev->enabled && !dev->initialized &&
+                        dev->ops && dev->ops->init)
+                {
+                        printk_debug("%s init\n", dev_path(dev));
+                        dev->initialized = 1;
+                        dev->ops->init(dev);
+                }
+        }
 	printk_info("Devices initialized\n");
 }
 

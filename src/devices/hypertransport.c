@@ -67,15 +67,17 @@ static int ht_setup_link(struct prev_link *prev, device_t dev, unsigned pos)
 	unsigned freq, old_freq;
 	unsigned present_width, upstream_width, old_width;
 	int reset_needed;
+	int linkb_to_host;
 
 	/* Set the hypertransport link width and frequency */
 	reset_needed = 0;
+	linkb_to_host = pci_read_config16(dev, pos + PCI_CAP_FLAGS) & (1<<10);
 
 	/* Read the capabilities */
-	present_freq_cap   = ht_read_freq_cap(dev, pos + PCI_HT_CAP_SLAVE_FREQ_CAP0);
+	present_freq_cap   = ht_read_freq_cap(dev, pos + (linkb_to_host ? PCI_HT_CAP_SLAVE_FREQ_CAP1: PCI_HT_CAP_SLAVE_FREQ_CAP0));
 	upstream_freq_cap  = ht_read_freq_cap(prev->dev, prev->pos + prev->freq_cap_off);
-	present_width_cap  = pci_read_config8(dev, pos + PCI_HT_CAP_SLAVE_WIDTH0);
-	upstream_width_cap = pci_read_config8(prev->dev, prev->pos + prev->config_off);
+	present_width_cap  = pci_read_config8(dev, pos + (linkb_to_host ? PCI_HT_CAP_SLAVE_WIDTH1: PCI_HT_CAP_SLAVE_WIDTH0));
+        upstream_width_cap = pci_read_config8(prev->dev, prev->pos + prev->config_off);
 	
 	/* Calculate the highest useable frequency */
 	freq = log2(present_freq_cap & upstream_freq_cap);
@@ -98,15 +100,15 @@ static int ht_setup_link(struct prev_link *prev, device_t dev, unsigned pos)
 	present_width  |= pow2_to_link_width[ln_upstream_width_out];
 
 	/* Set the current device */
-	old_freq = pci_read_config8(dev, pos + PCI_HT_CAP_SLAVE_FREQ0);
+	old_freq = pci_read_config8(dev, pos + (linkb_to_host ? PCI_HT_CAP_SLAVE_FREQ1:PCI_HT_CAP_SLAVE_FREQ0));
 	if (freq != old_freq) {
-		pci_write_config8(dev, pos + PCI_HT_CAP_SLAVE_FREQ0, freq);
+		pci_write_config8(dev, pos + (linkb_to_host ? PCI_HT_CAP_SLAVE_FREQ1:PCI_HT_CAP_SLAVE_FREQ0), freq);
 		reset_needed = 1;
 		printk_spew("HyperT FreqP old %x new %x\n",old_freq,freq);
 	}
-	old_width = pci_read_config8(dev, pos + PCI_HT_CAP_SLAVE_WIDTH0 + 1);
+	old_width = pci_read_config8(dev, pos + (linkb_to_host ? PCI_HT_CAP_SLAVE_WIDTH1: PCI_HT_CAP_SLAVE_WIDTH0) + 1);
 	if (present_width != old_width) {
-		pci_write_config8(dev, pos + PCI_HT_CAP_SLAVE_WIDTH0 + 1, present_width);
+		pci_write_config8(dev, pos + (linkb_to_host ? PCI_HT_CAP_SLAVE_WIDTH1: PCI_HT_CAP_SLAVE_WIDTH0) + 1, present_width);
 		reset_needed = 1;
 		printk_spew("HyperT widthP old %x new %x\n",old_width, present_width);
 	}
@@ -129,9 +131,16 @@ static int ht_setup_link(struct prev_link *prev, device_t dev, unsigned pos)
 	/* Remember the current link as the previous link */
 	prev->dev = dev;
 	prev->pos = pos;
-	prev->config_off   = PCI_HT_CAP_SLAVE_WIDTH1;
-	prev->freq_off     = PCI_HT_CAP_SLAVE_FREQ1;
-	prev->freq_cap_off = PCI_HT_CAP_SLAVE_FREQ_CAP1;
+        if(linkb_to_host) {
+	        prev->config_off   = PCI_HT_CAP_SLAVE_WIDTH0;
+	        prev->freq_off     = PCI_HT_CAP_SLAVE_FREQ0;
+	        prev->freq_cap_off = PCI_HT_CAP_SLAVE_FREQ_CAP0;
+        }
+        else {
+	        prev->config_off   = PCI_HT_CAP_SLAVE_WIDTH1;
+	        prev->freq_off     = PCI_HT_CAP_SLAVE_FREQ1;
+        	prev->freq_cap_off = PCI_HT_CAP_SLAVE_FREQ_CAP1;
+        }
 
 	return reset_needed;
 		
@@ -175,7 +184,7 @@ static void ht_collapse_early_enumeration(struct bus *bus)
 	/* Spin through the devices and collapse any early
 	 * hypertransport enumeration.
 	 */
-	for(devfn = 0; devfn <= 0xff; devfn += 8) {
+	for(devfn = PCI_DEVFN(1, 0); devfn <= 0xff; devfn += 8) {
 		struct device dummy;
 		uint32_t id;
 		unsigned pos, flags;
@@ -187,6 +196,7 @@ static void ht_collapse_early_enumeration(struct bus *bus)
 			id == 0x0000ffff || id == 0xffff0000) {
 			continue;
 		}
+
 		dummy.vendor = id & 0xffff;
 		dummy.device = (id >> 16) & 0xffff;
 		dummy.hdr_type = pci_read_config8(&dummy, PCI_HEADER_TYPE);
@@ -268,16 +278,14 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int max)
 			/* Now read the vendor and device id */
 			id = pci_read_config32(dev, PCI_VENDOR_ID);
 
-			
 			/* If the chain is fully enumerated quit */
 			if (id == 0xffffffff || id == 0x00000000 ||
-				id == 0x0000ffff || id == 0xffff0000) 
-			{
-				if (dev->enabled) {
-					printk_info("Disabling static device: %s\n",
-						dev_path(dev));
-					dev->enabled = 0;
-				}
+				id == 0x0000ffff || id == 0xffff0000) {
+	                               if (dev->enabled) {
+        	                               printk_info("Disabling static device: %s\n",
+                	                               dev_path(dev));
+                        	               dev->enabled = 0;
+                               	}
 				break;
 			}
 		}
@@ -305,6 +313,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int max)
 			break;
 		}
 		
+
 		/* Update the Unitid of the current device */
 		flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
 		flags &= ~0x1f; /* mask out base Unit ID */

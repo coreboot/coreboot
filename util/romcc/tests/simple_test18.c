@@ -1,0 +1,3 @@
+static void main(void)
+{
+}

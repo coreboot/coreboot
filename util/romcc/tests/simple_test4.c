@@ -2,7 +2,7 @@
 #define HAVE_CAST_SUPPORT            1
 #define HAVE_STATIC_ARRAY_SUPPORT    1
 #define HAVE_POINTER_SUPPORT         1
-#define HAVE_CONSTANT_PROPOGATION    1
+#define HAVE_CONSTANT_PROPOGATION    0
 #define CALCULATE_DRB_REG            1
 
 void outb(unsigned char value, unsigned short port)

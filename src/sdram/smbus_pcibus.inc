@@ -183,13 +183,17 @@ spd_set_drb:
 	xorl %ebp, %ebp /* clear the memory address */
 	movl $((DRAM_CONFIG_PORT << 16) |SMBUS_MEM_DEVICE_0), %ebx
 spd_set_drb_loop_top:	
+	// set -1 power-of-two for side 1 (called bank0 in most chipset docs)
 	xorl %edi, %edi
 	subl $1,   %edi
+	// set -1 power-of-two for side 2 (called bank1 in most chipset docs)
 	xorl %esi, %esi
 	subl $1,   %esi
 
 	movb $3,   %bh			/* rows */
 	CALLSP(smbus_read_byte)	
+	// If it's zero, then we just set current %ebp into the row 
+	// end register 
 	jz 20f
 	andl $0xf, %eax
 	addl %eax, %edi
@@ -220,25 +224,38 @@ spd_set_drb_loop_top:
 	addl %eax,  %edi
 	
 	/* now I have the ram size in bits as a power of two (less 1) */
+	// It is less 1 since we started with -1 above. 
+	// OK, BITS as power of two (but minus 1) 
+	// So, e.g., 8 MB is 64 Mb, 64 Mb is 26 bits. Subtract 
+	// (26-1) or 25
 	subl $25, %edi /* Make it multiples of 8MB */
 
 	/* side two */
 	movb $5,    %bh			/* number of physical banks */
 	CALLSP(smbus_read_byte)
 	cmp $1, %al
+	// it's only one bank
 	jbe 20f
-
+	// It's two banks. So assign edi to esi
 	/* for now only handle the symmetrical case */
+	// it's two banks, assume however that they're the same size. 
+	// it's stupid to have any other kind, right?
 	movl %edi, %esi
-
+20:
 	/* Compute the end address for the DRB register */
-	cmpl $8, %edi
-	jae 20f
+	// Has to be at least 64 MB? Not sure what Eric Biederman was doing
+	// here, but I think minimum SDRAM is 64 MB, so that would fit. 
+	// this covers somewhat for buggy SDRAMs. -- rgm
+	// If it's smaller, assume it is not there. 
+	// 2^3=8, times 8 mb, is 64 mb. 
+	cmpl $3, %edi
+	jae 21f
 	movl $1, %eax
 	movl %edi, %ecx
 	shll %cl, %eax
+	// increment row-end by the size of this DIMM half
 	addl %eax, %ebp
-20:
+21:
 	/* Write the comuputed value for the first half of the DIMM */
 	movl %ebp, %edx /* value to write into %edx */
 	movl %ebx, %eax
@@ -246,7 +263,7 @@ spd_set_drb_loop_top:
 	PCI_WRITE_CONFIG_BYTE
 	
 	/* Compute the end address for the DRB register */
-	cmpl $8, %esi
+	cmpl $3, %esi
 	jae 30f
 	mov $1, %eax
 	movl %esi, %ecx

@@ -28,7 +28,14 @@ unsigned long sizeram()
 	for(totalmem = mem = prevmem = 0, bank = firstbank; 
 	    bank <= lastbank; bank++) {
 		pci_read_config_byte(pcidev, bank, &mem);
-		totalmem += (mem - prevmem) * 8;
+		// sanity check. If the mem value is < prevmem, 
+		// that is an error, so skip this step. 
+		if (mem < prevmem) {
+			printk("ERROR: bank 0x%x, mem 0x%x TOO SMALL\n",
+				bank, prevmem);
+			printk("Should be >= 0x%x\n", prevmem);
+		} else 
+			totalmem += (mem - prevmem) * 8;
 		prevmem = mem;
 	}
 	

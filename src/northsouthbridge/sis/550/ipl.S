@@ -233,7 +233,7 @@ sis630ipl_start:
 #else /* !STD_FLASH */
 #if (USE_DOC_MIL == 1) || (USE_DOC_2000_TSOP == 1)
 #	include "rom/doc_mil.inc"
-#else (USE_DOC_MIL_PLUS == 1)
+#elif (USE_DOC_MIL_PLUS == 1)
 #	include "rom/doc_mil_plus.inc"
 #endif
 #endif /* STD_FLASH */

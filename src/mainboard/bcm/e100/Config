@@ -13,6 +13,8 @@ option FINAL_MAINBOARD_FIXUP
 option HAVE_PIRQ_TABLE=1
 dir /src/ram
 option USE_RAMTEST=1
+option MAINBOARD_VENDOR=BCM
+option MAINBOARD_PART_NUMBER=eb100
 object mainboard.o
 object irq_tables.o
 keyboard pc80

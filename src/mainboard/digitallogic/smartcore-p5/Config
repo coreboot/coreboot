@@ -5,13 +5,16 @@ ldscript cpu/i386/entry16.lds
 mainboardinit cpu/i386/reset16.inc
 ldscript cpu/i386/reset16.lds
 
+option SERIAL_SUPERIO_BASEADDRESS=0x3f0
+mainboardinit superio/SMC/fdc37c67x/setup_serial.inc
+
 mainboardinit pc80/serial.inc
 mainboardinit arch/i386/lib/console.inc
 northbridge intel/430tx
 southbridge intel/piix4e
 mainboardinit cpu/p6/earlymtrr.inc
 
-#superio SMC/fdc37c669 
+superio SMC/fdc37c67x 
 
 option ENABLE_FIXED_AND_VARIABLE_MTRRS
 option PIIX4_DEVFN=0x38

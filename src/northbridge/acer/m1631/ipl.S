@@ -71,8 +71,16 @@ Lunprotected:
 code16
 #endif
 
-	/* WARNING:	 The new CALLSP code trashes the stack! */
-	/* I will leave this here for now, but you should also set it later. */
+/* make the flash writeable */
+/* select the south bridge, register 44 (base) */
+	movl	$0x80000044, %eax
+	mov	$0x0cf8,%dx
+	outl	%eax,%dx
+/* but 0x40 makes flash writeable. You need this for DoC */
+	movb	$0x40, %al
+/* 0xff selects register 0x47 */
+	movb	$0xff, %dl
+	outb	%al,%dx
 
 	xorl	%edi, %edi
 	movl	$0x8000006c, %eax
@@ -223,6 +231,7 @@ ipl_start:
 	 */
 	movl	$0x4000, %esp			# set %sp
 	xorl	%edx, %edx			# clear %dx, start of RAM
+	xorl	%ecx, %ecx			# clear %ecx
 	movl	$0xfe800, %esi			# point %si to CDSN Data area
 	movl	$0xff000, %edi			# point %di to CDSN Control area
 	movl	$DOC_SPL_START_BLK, %ebp	# start page of LinuxBIOS

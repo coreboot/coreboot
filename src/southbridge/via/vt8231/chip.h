@@ -4,6 +4,13 @@
 extern struct chip_control southbridge_via_vt8231_control;
 
 struct southbridge_via_vt8231_config {
+	/* PCI function enables */
+	/* i.e. so that pci scan bus will find them. */
+	/* I am putting in IDE as an example but obviously this needs
+	 * to be more complete!
+	 */
+  int enable_ide;
+  /* enables of functions of devices */
   int enable_usb;
   int enable_native_ide;
   int enable_com_ports;

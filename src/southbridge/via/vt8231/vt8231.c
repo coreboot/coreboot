@@ -134,6 +134,24 @@ static void ethernet_fixup()
 }
 
 
+/* we need to do things in this function so that PCI scan will find 
+ * them.  One problem here is that we can't use ANY of the new device 
+ * stuff. This work here precedes all that.      
+ * Fundamental problem with linuxbios V2 architecture.
+ * You can't do pci control in the C code without having done a PCI scan.
+ * But in some cases you need to to pci control in the c code before doing
+ * a PCI scan. But you can't use arch/romcc_io.h (the code you need) because
+ * that has functions with the same name but different type signatures
+ * (e.g. device_t). This needs to get fixed. We need low-level pci scans
+ * in the C code. 
+ */
+static void vt8231_pci_enable(struct southbridge_via_vt8231_config *conf) {
+	unsigned long busdevfn = 0x8000;
+	if (conf->enable_ide) {
+		printk_spew("%s: enabling IDE function\n", __FUNCTION__);
+	}
+
+}
 static void vt8231_init(struct southbridge_via_vt8231_config *conf)
 {
   unsigned char enables;
@@ -144,7 +162,7 @@ static void vt8231_init(struct southbridge_via_vt8231_config *conf)
   // to do: use the pcibios_find function here, instead of 
   // hard coding the devfn. 
   // done - kevinh/Ispiri
-
+  printk_spew("vt8231 init\n");
   /* Base 8231 controller */
   dev0 = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8231, 0);
   /* IDE controller */
@@ -262,6 +280,7 @@ static void vt8231_init(struct southbridge_via_vt8231_config *conf)
     // Run the IDE controller in 'compatiblity mode - i.e. don't use PCI
     // interrupts.  Using PCI ints confuses linux for some reason.
 	  
+    printk_info("%s: enabling native IDE addresses\n", __FUNCTION__);
     enables = pci_read_config8(dev1, 0x42);
     printk_debug("enables in reg 0x42 0x%x\n", enables);
     enables &= ~0xc0;		// compatability mode
@@ -352,6 +371,10 @@ southbridge_init(struct chip *chip, enum chip_pass pass)
     (struct southbridge_via_vt8231_config *)chip->chip_info;
 
   switch (pass) {
+  case CONF_PASS_PRE_PCI:
+    vt8231_pci_enable(conf);
+    break;
+
   case CONF_PASS_POST_PCI:
     vt8231_init(conf);
     break;

@@ -91,8 +91,11 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, 0x8, 0xe, 0x2, 0xe);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, 0x8, 0xf, 0x2, 0xf);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x0, 0x76, 0x2, 0x12);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x2, 0x4, 0x4, 0x0);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x3, 0x4, 0x3, 0x0);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x3, 0x8, 0x3, 0x4);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x3, 0x9, 0x3, 0x5);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x6, 0x4, 0x5, 0x0);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x7, 0x4, 0x2, 0x10);
 /*Local Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#*/
 	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, 0x8, 0x0, MP_APIC_ALL, 0x0);
@@ -102,7 +105,8 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 	/* Compute the checksums */
 	mc->mpe_checksum = smp_compute_checksum(smp_next_mpc_entry(mc), mc->mpe_length);
 	mc->mpc_checksum = smp_compute_checksum(mc, mc->mpc_length);
-	printk_debug("Wrote the mp table end at: %p - %p\n",
+	printk_debug("Wrote the mp table end at: %p - %p
+",
 		mc, smp_next_mpe_entry(mc));
 	return smp_next_mpe_entry(mc);
 }

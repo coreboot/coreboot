@@ -61,11 +61,11 @@ void southbridge_early_init(void)
 	/*
 	 * Set ISA memory space
 	 */
-	pci_direct_ppc.read_byte(0, 0x58, WINBOND_IPADCR, &reg8);
+	pci_direct_ppc.read_byte(0, 0x58, W83C553F_IPADCR, &reg8);
 	/* 16 MB ISA memory space */
-	reg8 |= (IPADCR_IPATOM4 | IPADCR_IPATOM5 | IPADCR_IPATOM6 | IPADCR_IPATOM7);
-	reg8 &= ~IPADCR_MBE512;
-	pci_direct_ppc.write_byte(0, 0x58, WINBOND_IPADCR, &reg8);
+	reg8 |= (W83C553F_IPADCR_IPATOM4 | W83C553F_IPADCR_IPATOM5 | W83C553F_IPADCR_IPATOM6 | W83C553F_IPADCR_IPATOM7);
+	reg8 &= ~W83C553F_IPADCR_MBE512;
+	pci_direct_ppc.write_byte(0, 0x58, W83C553F_IPADCR, &reg8);
 }
 
 void southbridge_init(void)
@@ -94,30 +94,32 @@ void southbridge_init(void)
 	/*
 	 * Set ISA memory space
 	 */
-	pci_read_config_byte(devbusfn, WINBOND_IPADCR, &reg8);
+	pci_read_config_byte(devbusfn, W83C553F_IPADCR, &reg8);
 	/* 16 MB ISA memory space */
-	reg8 |= (IPADCR_IPATOM4 | IPADCR_IPATOM5 | IPADCR_IPATOM6 | IPADCR_IPATOM7);
-	reg8 &= ~IPADCR_MBE512;
-	pci_write_config_byte(devbusfn, WINBOND_IPADCR, reg8);
+	reg8 |= (W83C553F_IPADCR_IPATOM4 | W83C553F_IPADCR_IPATOM5 | W83C553F_IPADCR_IPATOM6 | W83C553F_IPADCR_IPATOM7);
+	reg8 &= ~W83C553F_IPADCR_MBE512;
+	pci_write_config_byte(devbusfn, W83C553F_IPADCR, reg8);
 
 	/*
 	 * Chip select: switch off BIOS write protection
 	 */
-	pci_read_config_byte(devbusfn, WINBOND_CSCR, &reg8);
-	reg8 |= CSCR_UBIOSCSE;
-	reg8 &= ~CSCR_BIOSWP;
-	pci_write_config_byte(devbusfn, WINBOND_CSCR, reg8);
+	pci_read_config_byte(devbusfn, W83C553F_CSCR, &reg8);
+	reg8 |= W83C553F_CSCR_UBIOSCSE;
+	reg8 &= ~W83C553F_CSCR_BIOSWP;
+	pci_write_config_byte(devbusfn, W83C553F_CSCR, reg8);
+
 
 	/*
-	 * Interrupt routing:
-	 *  - IDE  -> 9/0
-	 *  - INTA -> IRQ 10
-	 *  - INTB -> IRQ 11
-	 *  - INTC -> IRQ 14
-	 *  - INTD -> IRQ 15
+	 * Enable Port 92
 	 */
-	pci_write_config_byte(devbusfn, WINBOND_IDEIRCR, 0x90);
-	pci_write_config_word(devbusfn, WINBOND_PCIIRCR, 0xABEF);
+	reg8 = W83C553F_ATSCR_P92E | W83C553F_ATSCR_KRCEE;
+	pci_write_config_byte(devbusfn, W83C553F_CSCR, reg8);
+
+	/*
+	 * Route IDE interrupts to IRQ 14 & 15 on 8259.
+	 */
+	pci_write_config_byte(devbusfn, W83C553F_IDEIRCR, 0xef);
+	pci_write_config_word(devbusfn, W83C553F_PCIIRCR, 0x0000);
 
 	/*
 	 * Read IDE bus offsets from function 1 device.
@@ -131,20 +133,37 @@ void southbridge_init(void)
 	}
 
 	/*
-	 * Switch off legacy IRQ for IDE and IDE port 1.
+	 * Enable native mode on IDE ports and set base address.
 	 */
-	pci_write_config_byte(devbusfn, 0x09, 0x8F);
+	reg8 = W83C553F_PIR_P1NL | W83C553F_PIR_P0NL;
+	pci_write_config_byte(devbusfn, W83C553F_PIR, reg8);
+	pci_write_config_dword(devbusfn, PCI_BASE_ADDRESS_0, 0xffffffff);
+	pci_read_config_dword(devbusfn, PCI_BASE_ADDRESS_0, &reg32);
+	pci_write_config_dword(devbusfn, PCI_BASE_ADDRESS_0, 0x1f0);
+	pci_read_config_dword(devbusfn, PCI_BASE_ADDRESS_0, &reg32);
+	pci_write_config_dword(devbusfn, PCI_BASE_ADDRESS_1, 0xffffffff);
+	pci_read_config_dword(devbusfn, PCI_BASE_ADDRESS_1, &reg32);
+	pci_write_config_dword(devbusfn, PCI_BASE_ADDRESS_1, 0x3f6);
+	pci_read_config_dword(devbusfn, PCI_BASE_ADDRESS_1, &reg32);
+	pci_write_config_dword(devbusfn, PCI_BASE_ADDRESS_2, 0xffffffff);
+	pci_read_config_dword(devbusfn, PCI_BASE_ADDRESS_2, &reg32);
+	pci_write_config_dword(devbusfn, PCI_BASE_ADDRESS_2, 0x170);
+	pci_read_config_dword(devbusfn, PCI_BASE_ADDRESS_2, &reg32);
+	pci_write_config_dword(devbusfn, PCI_BASE_ADDRESS_3, 0xffffffff);
+	pci_read_config_dword(devbusfn, PCI_BASE_ADDRESS_3, &reg32);
+	pci_write_config_dword(devbusfn, PCI_BASE_ADDRESS_3, 0x376);
+	pci_read_config_dword(devbusfn, PCI_BASE_ADDRESS_3, &reg32);
 
 	/*
-	 * Set LEGIRQ (IDE->IRQD/E)
-	 * Disable secondary port ~P1EN (?)
-	 * Secondary port Mode 0 ~P1F16
+	 * Set read-ahead duration to 0xff
+	 * Enable P0 and P1
 	 */
-	pci_read_config_dword(devbusfn, WINDOND_IDECSR, &reg32);
-	reg32 &= ~(IDECSR_LEGIRQ | IDECSR_P1EN | IDECSR_P1F16);
-	pci_write_config_dword(devbusfn, WINDOND_IDECSR, reg32);
+	reg32 = 0x00ff0000 | W83C553F_IDECSR_P1EN | W83C553F_IDECSR_P0EN;
+	pci_write_config_dword(devbusfn, W83C553F_IDECSR, reg32);
+	pci_read_config_dword(devbusfn, W83C553F_IDECSR, &reg32);
 
 	pci_read_config_dword(devbusfn, PCI_BASE_ADDRESS_0, &ide_bus_offset[0]);
+	printk_debug("ide bus offset = 0x%x\n", ide_bus_offset[0]);
 	ide_bus_offset[0] &= ~1;
 #if CONFIG_IDE_MAXBUS > 1
 	pci_read_config_dword(devbusfn, PCI_BASE_ADDRESS_2, &ide_bus_offset[1]);
@@ -157,6 +176,7 @@ void southbridge_init(void)
 	pci_read_config_word(devbusfn, PCI_COMMAND, &reg16);
 	reg16 |= PCI_COMMAND_MASTER | PCI_COMMAND_IO;
 	pci_write_config_word(devbusfn, PCI_COMMAND, reg16);
+	pci_read_config_word(devbusfn, PCI_COMMAND, &reg16);
 
 	/*
 	 * Initialise ISA interrupt controller
@@ -173,19 +193,19 @@ void southbridge_init(void)
 
 void initialise_pic(void)
 {
-	outb(W83C553F_PIC1_ICW1, 0x11);
-	outb(W83C553F_PIC1_ICW2, 0x08);
-	outb(W83C553F_PIC1_ICW3, 0x04);
-	outb(W83C553F_PIC1_ICW4, 0x01);
-	outb(W83C553F_PIC1_OCW1, 0xfb);
-	outb(W83C553F_PIC1_ELC, 0x20);
+	outb(W83C553F_PIC1_ICW1, 0x11); /* start init sequence, ICW4 needed */
+	outb(W83C553F_PIC1_ICW2, 0x08); /* base address 00001 */
+	outb(W83C553F_PIC1_ICW3, 0x04); /* slave on IRQ2 */
+	outb(W83C553F_PIC1_ICW4, 0x01); /* x86 mode */
+	outb(W83C553F_PIC1_OCW1, 0xfb); /* enable IRQ 2 */
+	outb(W83C553F_PIC1_ELC, 0xf8);	/* all IRQ's edge sensitive */
 
-	outb(W83C553F_PIC2_ICW1, 0x11);
-	outb(W83C553F_PIC2_ICW2, 0x08);
-	outb(W83C553F_PIC2_ICW3, 0x02);
-	outb(W83C553F_PIC2_ICW4, 0x01);
-	outb(W83C553F_PIC2_OCW1, 0xff);
-	outb(W83C553F_PIC2_ELC, 0xce);
+	outb(W83C553F_PIC2_ICW1, 0x11); /* start init sequence, ICW4 needed */
+	outb(W83C553F_PIC2_ICW2, 0x08); /* base address 00001 */
+	outb(W83C553F_PIC2_ICW3, 0x02); /* slave ID 2 */
+	outb(W83C553F_PIC2_ICW4, 0x01); /* x86 mode */
+	outb(W83C553F_PIC2_OCW1, 0xff); /* disable all IRQ's */
+	outb(W83C553F_PIC2_ELC, 0xde);	/* all IRQ's edge sensitive */
 
 	outb(W83C553F_TMR1_CMOD, 0x74);
 

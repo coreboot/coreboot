@@ -34,42 +34,58 @@
 #define W83C553F_DID		0x0565
 #define W83C553F_IDE		0x0105
 
-#define WINBOND_PCICONTR	0x40  /*pci control reg*/
-#define WINBOND_SGBAR		0x41  /*scatter/gather base address reg*/
-#define WINBOND_LBCR		0x42  /*Line Buffer Control reg*/
-#define WINBOND_IDEIRCR		0x43  /*IDE Interrupt Routing Control  Reg*/
-#define WINBOND_PCIIRCR		0x44  /*PCI Interrupt Routing Control Reg*/
-#define WINBOND_BTBAR		0x46  /*BIOS Timer Base Address Register*/
-#define WINBOND_IPADCR		0x48  /*ISA to PCI Address Decoder Control Register*/
-#define WINBOND_IRADCR		0x49  /*ISA ROM Address Decoder Control Register*/
-#define WINBOND_IPMHSAR		0x4a  /*ISA to PCI Memory Hole STart Address Register*/
-#define WINBOND_IPMHSR		0x4b  /*ISA to PCI Memory Hols Size Register*/
-#define WINBOND_CDR			0x4c  /*Clock Divisor Register*/
-#define WINBOND_CSCR		0x4d  /*Chip Select Control Register*/
-#define WINBOND_ATSCR		0x4e  /*AT System Control register*/
-#define WINBOND_ATBCR		0x4f  /*AT Bus ControL Register*/
-#define WINBOND_IRQBEE0R	0x60  /*IRQ Break Event Enable 0 Register*/
-#define WINBOND_IRQBEE1R	0x61  /*IRQ Break Event Enable 1 Register*/
-#define WINBOND_ABEER		0x62  /*Additional Break Event Enable Register*/
-#define WINBOND_DMABEER		0x63  /*DMA Break Event Enable Register*/
+/* Function 0 registers */
+#define W83C553F_PCICONTR	0x40  /*pci control reg*/
+#define W83C553F_SGBAR		0x41  /*scatter/gather base address reg*/
+#define W83C553F_LBCR		0x42  /*Line Buffer Control reg*/
+#define W83C553F_IDEIRCR	0x43  /*IDE Interrupt Routing Control  Reg*/
+#define W83C553F_PCIIRCR	0x44  /*PCI Interrupt Routing Control Reg*/
+#define W83C553F_BTBAR		0x46  /*BIOS Timer Base Address Register*/
+#define W83C553F_IPADCR		0x48  /*ISA to PCI Address Decoder Control Register*/
+#define W83C553F_IRADCR		0x49  /*ISA ROM Address Decoder Control Register*/
+#define W83C553F_IPMHSAR	0x4a  /*ISA to PCI Memory Hole STart Address Register*/
+#define W83C553F_IPMHSR		0x4b  /*ISA to PCI Memory Hols Size Register*/
+#define W83C553F_CDR			0x4c  /*Clock Divisor Register*/
+#define W83C553F_CSCR		0x4d  /*Chip Select Control Register*/
+#define W83C553F_ATSCR		0x4e  /*AT System Control register*/
+#define W83C553F_ATBCR		0x4f  /*AT Bus ControL Register*/
+#define W83C553F_IRQBEE0R	0x60  /*IRQ Break Event Enable 0 Register*/
+#define W83C553F_IRQBEE1R	0x61  /*IRQ Break Event Enable 1 Register*/
+#define W83C553F_ABEER		0x62  /*Additional Break Event Enable Register*/
+#define W83C553F_DMABEER	0x63  /*DMA Break Event Enable Register*/
 
-#define WINDOND_IDECSR		0x40  /*IDE Control/Status Register, Function 1*/
+/* Function 1 registers */
+#define W83C553F_PIR		0x09  /*Programming Interface Register*/
+#define W83C553F_IDECSR		0x40  /*IDE Control/Status Register*/
 
-#define IPADCR_MBE512		0x1
-#define IPADCR_MBE640		0x2
-#define IPADCR_IPATOM4		0x10
-#define IPADCR_IPATOM5		0x20
-#define IPADCR_IPATOM6		0x40
-#define IPADCR_IPATOM7		0x80
+/* register bit definitions */
+#define W83C553F_IPADCR_MBE512		0x1
+#define W83C553F_IPADCR_MBE640		0x2
+#define W83C553F_IPADCR_IPATOM4		0x10
+#define W83C553F_IPADCR_IPATOM5		0x20
+#define W83C553F_IPADCR_IPATOM6		0x40
+#define W83C553F_IPADCR_IPATOM7		0x80
 
-#define CSCR_UBIOSCSE		0x10
-#define CSCR_BIOSWP			0x20
+#define W83C553F_CSCR_UBIOSCSE		0x10
+#define W83C553F_CSCR_BIOSWP		0x20
 
-#define IDECSR_P0EN			0x01
-#define IDECSR_P0F16		0x02
-#define IDECSR_P1EN			0x10
-#define IDECSR_P1F16		0x20
-#define IDECSR_LEGIRQ		0x800
+#define W83C553F_IDECSR_P0EN		0x01
+#define W83C553F_IDECSR_P0F16		0x02
+#define W83C553F_IDECSR_P1EN		0x10
+#define W83C553F_IDECSR_P1F16		0x20
+#define W83C553F_IDECSR_LEGIRQ		0x800
+
+#define W83C553F_ATSCR_ISARE		0x40
+#define W83C553F_ATSCR_FERRE		0x10
+#define W83C553F_ATSCR_P92E		0x04
+#define W83C553F_ATSCR_KRCEE		0x02
+#define W83C553F_ATSCR_KGA20EE		0x01
+
+#define W83C553F_PIR_BM			0x80
+#define W83C553F_PIR_P1PROG		0x08
+#define W83C553F_PIR_P1NL		0x04
+#define W83C553F_PIR_P0PROG		0x02
+#define W83C553F_PIR_P0NL		0x01
 
 /*
  * Interrupt controller

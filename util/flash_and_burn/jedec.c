@@ -24,6 +24,7 @@
  * $Id$
  */
 
+#include <stdio.h>
 #include "flash.h"
 #include "jedec.h"
 
@@ -68,9 +69,11 @@ int erase_jedec (struct flashchip * flash)
 
 	myusec_delay(10);
 	toggle_ready_jedec(bios);
+
+	return(0);
 }
 
-int write_jedec (struct flashchip * flash, char * buf)
+int write_jedec (struct flashchip * flash, unsigned char * buf)
 {
 	int i;
 	int total_size = flash->total_size *1024, page_size = flash->page_size;
@@ -90,4 +93,6 @@ int write_jedec (struct flashchip * flash, char * buf)
 	}
 	printf("\n");
 	protect_jedec (bios);
+
+	return(0);
 }

@@ -70,6 +70,8 @@ int erase_m29f400bt (struct flashchip * flash)
 
 	myusec_delay(10);
 	toggle_ready_m29f400bt(bios);
+
+	return(0);
 }
 
 int block_erase_m29f400bt (volatile char * bios ,volatile char * dst)
@@ -86,9 +88,11 @@ int block_erase_m29f400bt (volatile char * bios ,volatile char * dst)
 
 	myusec_delay(10);
 	toggle_ready_m29f400bt(bios);
+
+	return(0);
 }
 
-int write_m29f400bt (struct flashchip * flash, char * buf)
+int write_m29f400bt (struct flashchip * flash, unsigned char * buf)
 {
 	int i;
 	int total_size = flash->total_size *1024, page_size = flash->page_size;
@@ -138,11 +142,12 @@ int write_m29f400bt (struct flashchip * flash, char * buf)
 	
 	printf("\n");
 	//protect_m29f400bt (bios);
+
+	return(0);
 }
 
-int write_linuxbios_m29f400bt (struct flashchip * flash, char * buf)
+int write_linuxbios_m29f400bt (struct flashchip * flash, unsigned char * buf)
 {
-	int i;
 	volatile char * bios = flash->virt_addr;
 
 	printf ("Programming Page:\n ");
@@ -179,4 +184,6 @@ int write_linuxbios_m29f400bt (struct flashchip * flash, char * buf)
 	
 	printf("\n");
 	//protect_m29f400bt (bios);
+
+	return(0);
 }

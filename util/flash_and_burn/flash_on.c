@@ -33,8 +33,9 @@
 #include <sys/io.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <stdlib.h>
 
-main()
+int main()
 {
 	char b;
 
@@ -71,4 +72,6 @@ main()
 
 	outb(0x02, 0x2e);
 	outb(0x02, 0x2f);
+
+	return(0);
 }

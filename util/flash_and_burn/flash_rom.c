@@ -30,43 +30,55 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/io.h>
+#include <sys/time.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <pci/pci.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "flash.h"
 #include "jedec.h"
 #include "m29f400bt.h"
 #include "82802ab.h"
+#include "msys_doc.h"
+#include "am29f040b.h"
+#include "sst28sf040.h"
+#include "w49f002u.h"
+#include "sst39sf020.h"
+#include "mx29f002.h"
 
 struct flashchip flashchips[] = {
     {"Am29F040B",   AMD_ID,     AM_29F040B,   NULL, 512, 64*1024,
-     probe_29f040b, erase_29f040b, write_29f040b},
+     probe_29f040b, erase_29f040b, write_29f040b, NULL},
     {"At29C040A",   ATMEL_ID,   AT_29C040A,   NULL, 512, 256,
-     probe_jedec,   erase_jedec,   write_jedec},
+     probe_jedec,   erase_jedec,   write_jedec, NULL},
     {"Mx29f002",    MX_ID,      MX_29F002,    NULL, 256, 64*1024,
-     probe_29f002,  erase_29f002,  write_29f002},
+     probe_29f002,  erase_29f002,  write_29f002, NULL},
     {"SST29EE020A", SST_ID,     SST_29EE020A, NULL, 256, 128,
-     probe_jedec,   erase_jedec,   write_jedec},
+     probe_jedec,   erase_jedec,   write_jedec, NULL},
     {"SST28SF040A", SST_ID,     SST_28SF040,  NULL, 512, 256,
-     probe_28sf040, erase_28sf040, write_28sf040},
+     probe_28sf040, erase_28sf040, write_28sf040, NULL},
     {"SST39SF020A", SST_ID,     SST_39SF020,  NULL, 256, 4096,
-     probe_39sf020, erase_39sf020, write_39sf020},
+     probe_39sf020, erase_39sf020, write_39sf020, NULL},
     {"SST39VF020",  SST_ID,     SST_39VF020,  NULL, 256, 4096,
-     probe_39sf020, erase_39sf020, write_39sf020},
+     probe_39sf020, erase_39sf020, write_39sf020, NULL},
     {"W29C011",    WINBOND_ID, W_29C011,    NULL, 128, 128,
-     probe_jedec,   erase_jedec,   write_jedec},
+     probe_jedec,   erase_jedec,   write_jedec, NULL},
     {"W29C020C",    WINBOND_ID, W_29C020C,    NULL, 256, 128,
-     probe_jedec,   erase_jedec,   write_jedec},
+     probe_jedec,   erase_jedec,   write_jedec, NULL},
     {"W49F002U",    WINBOND_ID, W_49F002U,    NULL, 256, 128,
-     probe_49f002,   erase_49f002,   write_49f002},
+     probe_49f002,   erase_49f002,   write_49f002, NULL},
     {"M29F400BT",   ST_ID, ST_M29F400BT ,    NULL, 512, 64*1024,
-     probe_m29f400bt,   erase_m29f400bt,   write_linuxbios_m29f400bt},
+     probe_m29f400bt,   erase_m29f400bt,   write_linuxbios_m29f400bt, NULL},
     {"82802ab",   137, 173 ,    NULL, 512, 64*1024,
-     probe_82802ab,   erase_82802ab,   write_82802ab},
+     probe_82802ab,   erase_82802ab,   write_82802ab, NULL},
     {"82802ac",   137, 172 ,    NULL, 1024, 64*1024,
-     probe_82802ab,   erase_82802ab,   write_82802ab},
+     probe_82802ab,   erase_82802ab,   write_82802ab, NULL},
+    {"MD-2802 (M-Systems DiskOnChip Millennium Module)",
+     MSYSTEMS_ID, MSYSTEMS_MD2802,
+     NULL, 8, 8*1024,
+     probe_md2802, erase_md2802, write_md2802, read_md2802},
     {NULL,}
 };
 
@@ -208,7 +220,6 @@ enable_flash_vt8231(struct pci_dev *dev, char *name) {
 int
 enable_flash_cs5530(struct pci_dev *dev, char *name) {
   unsigned char new;
-  int ok;
   
   pci_write_byte(dev, 0x52, 0xee);
 
@@ -225,7 +236,6 @@ enable_flash_cs5530(struct pci_dev *dev, char *name) {
 int
 enable_flash_sc1100(struct pci_dev *dev, char *name) {
   unsigned char new;
-  int ok;
   
   pci_write_byte(dev, 0x52, 0xee);
 
@@ -280,6 +290,14 @@ struct flashchip * probe_flash(struct flashchip * flash)
 	}
 	printf("Trying %s, %d KB\n", flash->name, flash->total_size);
 	size = flash->total_size * 1024;
+/* BUG? what happens if getpagesize() > size!?
+   -> ``Error MMAP /dev/mem: Invalid argument'' NIKI */
+	if(getpagesize() > size)
+	{
+		size = getpagesize();
+		printf("%s: warning: size: %d -> %ld\n", __FUNCTION__,
+	 		flash->total_size * 1024, (unsigned long)size);
+	}
 	bios = mmap (0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
 		     fd_mem, (off_t) (0 - size));
 	if (bios == MAP_FAILED) {
@@ -291,7 +309,7 @@ struct flashchip * probe_flash(struct flashchip * flash)
 
 	if (flash->probe(flash) == 1) {
 	    printf ("%s found at physical address: 0x%lx\n",
-		    flash->name, (0 - size), bios);
+		    flash->name, (0 - size));
 	    return flash;
 	}
 	munmap ((void *) bios, size);
@@ -332,7 +350,6 @@ void
 myusec_calibrate_delay()
 {
         int count = 1000;
-	volatile unsigned long i;
 	unsigned long timeusec;
 	struct timeval start, end;
 	int ok = 0;
@@ -356,7 +373,7 @@ myusec_calibrate_delay()
 	// compute one microsecond. That will be count / time
 	micro = count / timeusec;
 
-	fprintf(stderr, "%dM loops per second\n", micro);
+	fprintf(stderr, "%ldM loops per second\n", (unsigned long)micro);
 
 
 }
@@ -391,7 +408,6 @@ enable_flash_write() {
   int i;
   struct pci_access *pacc;
   struct pci_dev *dev = 0;
-  unsigned int c;
   FLASH_ENABLE *enable = 0;
 
   pacc = pci_alloc();           /* Get the pci_access structure */
@@ -503,7 +519,10 @@ main (int argc, char * argv[])
             exit(1);
         }
         printf("Reading Flash...");
-        memcpy(buf, (const char *) flash->virt_addr, size);
+	if(flash->read == NULL)
+		memcpy(buf, (const char *) flash->virt_addr, size);
+	else
+		flash->read (flash, buf);
         fwrite(buf, sizeof(char), size, image);
         fclose(image);
         printf("done\n");

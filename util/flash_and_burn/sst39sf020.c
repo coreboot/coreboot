@@ -25,9 +25,10 @@
  * $Id$
  */
 
+#include <stdio.h>
 #include "flash.h"
 #include "jedec.h"
-#include <stdio.h>
+#include "sst39sf020.h"
 
 #define AUTO_PG_ERASE1		0x20
 #define AUTO_PG_ERASE2		0xD0
@@ -64,16 +65,18 @@ static __inline__ void unprotect_39sf020 (volatile char * bios)
 	tmp = *(volatile unsigned char *) (bios + 0x041A);
 }
 
-static __inline__ erase_sector_39sf020 (volatile char * bios, unsigned long address)
+static __inline__ int erase_sector_39sf020 (volatile char * bios, unsigned long address)
 {
 	*bios = AUTO_PG_ERASE1;
 	*(bios + address) = AUTO_PG_ERASE2;
 
 	/* wait for Toggle bit ready         */
 	toggle_ready_jedec(bios);
+
+	return(0);
 }
 
-static __inline__ write_sector_39sf020(volatile char * bios, 
+static __inline__ int write_sector_39sf020(volatile char * bios, 
 				       unsigned char * src,
 				       volatile unsigned char * dst, 
 				       unsigned int page_size)
@@ -84,7 +87,7 @@ static __inline__ write_sector_39sf020(volatile char * bios,
 	for (i = 0; i < page_size; i++) {
 		if (*dst != 0xff) {
 			printf("FATAL: dst %p not erased (val 0x%x\n", dst, *dst);
-			return;
+			return(-1);
 		}
 		/* transfer data from source to destination */
 		if (*src == 0xFF) {
@@ -101,10 +104,12 @@ static __inline__ write_sector_39sf020(volatile char * bios,
 		*dst = *src;
 		toggle_ready_jedec(bios);
 		if (*dst != *src)
-			printf("BAD! dst 0x%x val 0x%x src 0x%x\n",
-			       dst, *dst, *src);
+			printf("BAD! dst 0x%lx val 0x%x src 0x%x\n",
+			       (unsigned long)dst, *dst, *src);
 		dst++, src++;
 	}
+
+	return(0);
 }
 
 int probe_39sf020 (struct flashchip * flash)
@@ -162,9 +167,11 @@ int erase_39sf020 (struct flashchip * flash)
         *Temp = 0x10;       /* write data 0x55 to the address       */
 
 	myusec_delay(50000);
+
+	return(0);
 }
 
-int write_39sf020 (struct flashchip * flash, char * buf)
+int write_39sf020 (struct flashchip * flash, unsigned char * buf)
 {
 	int i;
 	int total_size = flash->total_size * 1024, page_size = flash->page_size;
@@ -187,4 +194,6 @@ int write_39sf020 (struct flashchip * flash, char * buf)
 	printf("\n");
 
 //	protect_39sf020 (bios);
+
+	return(0);
 }

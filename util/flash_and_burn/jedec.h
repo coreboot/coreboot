@@ -1,6 +1,9 @@
+#ifndef __JEDEC_H__
+#define __JEDEC_H__ 1
+
 extern int probe_jedec (struct flashchip * flash);
 extern int erase_jedec (struct flashchip * flash);
-extern int write_jedec (struct flashchip * flash, char * buf);
+extern int write_jedec (struct flashchip * flash, unsigned char * buf);
 
 extern __inline__ void toggle_ready_jedec (volatile char * dst)
 {
@@ -59,3 +62,5 @@ extern __inline__ void write_page_jedec (volatile char * bios, char * src, volat
 	usleep(100);
 	toggle_ready_jedec(dst-1);
 }
+
+#endif /* !__JEDEC_H__ */

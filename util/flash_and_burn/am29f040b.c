@@ -24,10 +24,11 @@
  * $Id$
  */
 
+#include <stdio.h>
 #include "flash.h"
 #include "jedec.h"
 
-static __inline__ erase_sector_29f040b (volatile char * bios, unsigned long address)
+static __inline__ int erase_sector_29f040b (volatile char * bios, unsigned long address)
 {
 	*(bios +   0x555) = 0xAA;
 	*(bios +   0x2AA) = 0x55;
@@ -40,15 +41,17 @@ static __inline__ erase_sector_29f040b (volatile char * bios, unsigned long addr
 
 	/* wait for Toggle bit ready         */
 	toggle_ready_jedec(bios + address);
+
+	return(0);
 }
 
-static __inline__ write_sector_29f040b(volatile char * bios, unsigned char * src,
+static __inline__ int write_sector_29f040b(volatile char * bios, unsigned char * src,
 				       volatile unsigned char * dst, unsigned int page_size)
 {
 	int i;
 
 	for (i = 0; i < page_size; i++) {
-		printf("0x%08x", (unsigned long) dst - (unsigned long) bios);
+		printf("0x%08lx", (unsigned long) dst - (unsigned long) bios);
 	
 		*(bios + 0x555) = 0xAA;
 		*(bios + 0x2AA) = 0x55;
@@ -60,6 +63,8 @@ static __inline__ write_sector_29f040b(volatile char * bios, unsigned char * src
 
 		printf("\b\b\b\b\b\b\b\b\b\b");
 	}
+
+	return(0);
 }
 
 int probe_29f040b (struct flashchip * flash)
@@ -98,9 +103,11 @@ int erase_29f040b (struct flashchip * flash)
 
 	myusec_delay(10);
 	toggle_ready_jedec(bios);
+
+	return(0);
 }
 
-int write_29f040b (struct flashchip * flash, char * buf)
+int write_29f040b (struct flashchip * flash, unsigned char * buf)
 {
 	int i;
 	int total_size = flash->total_size * 1024, page_size = flash->page_size;
@@ -118,4 +125,6 @@ int write_29f040b (struct flashchip * flash, char * buf)
 		printf ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 	}
 	printf("\n");
+
+	return(0);
 }

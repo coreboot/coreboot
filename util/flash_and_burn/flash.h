@@ -1,3 +1,6 @@
+#ifndef __FLASH_H__
+#define __FLASH_H__ 1
+
 #include <sys/io.h>
 #include <unistd.h>
 
@@ -12,7 +15,9 @@ struct flashchip {
 
 	int (*probe) (struct flashchip * flash);
 	int (*erase) (struct flashchip * flash);
-	int (*write) (struct flashchip * flash, char * buf);
+	int (*write) (struct flashchip * flash, unsigned char * buf);
+	int (*read)  (struct flashchip * flash, unsigned char * buf);
+
 	int fd_mem;
 	volatile char *virt_addr_2;
 };
@@ -40,22 +45,11 @@ struct flashchip {
 #define ST_ID       	  0x20	
 #define ST_M29F400BT      0xD5
 
-extern int probe_28sf040 (struct flashchip * flash);
-extern int erase_28sf040 (struct flashchip * flash);
-extern int write_28sf040 (struct flashchip * flash, char * buf);
+#define MSYSTEMS_ID       0x156f
+#define MSYSTEMS_MD2200   0xdb /* ? */
+#define MSYSTEMS_MD2800   0x30 /* hmm -- both 0x30 */
+#define MSYSTEMS_MD2802   0x30 /* hmm -- both 0x30 */
 
-extern int probe_39sf020 (struct flashchip * flash);
-extern int erase_39sf020 (struct flashchip * flash);
-extern int write_39sf020 (struct flashchip * flash, char * buf);
+extern void myusec_delay(int time);
 
-extern int probe_29f040b (struct flashchip * flash);
-extern int erase_29f040b (struct flashchip * flash);
-extern int write_29f040b (struct flashchip * flash, char * buf);
-
-extern int probe_29f002 (struct flashchip * flash);
-extern int erase_29f002 (struct flashchip * flash);
-extern int write_29f002 (struct flashchip * flash, char * buf);
-
-extern int probe_49f002 (struct flashchip * flash);
-extern int erase_49f002 (struct flashchip * flash);
-extern int write_49f002 (struct flashchip * flash, char * buf);
+#endif /* !__FLASH_H__ */

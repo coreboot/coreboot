@@ -25,13 +25,15 @@
  * $Id
  */
 
+#include <stdio.h>
 #include "flash.h"
 #include "jedec.h"
+#include "w49f002u.h"
 
 int probe_49f002 (struct flashchip * flash)
 {
 	volatile char * bios = flash->virt_addr;
-	unsigned char id1, id2, id3;
+	unsigned char id1, id2;
 
 	*(bios + 0x5555) = 0xAA;
 	*(bios + 0x2AAA) = 0x55;
@@ -56,7 +58,6 @@ int erase_49f002 (struct flashchip * flash)
 {
 	volatile char * bios = flash->virt_addr;
 
- again:
 	*(bios + 0x5555) = 0xAA;
 	*(bios + 0x2AAA) = 0x55;
 	*(bios + 0x5555) = 0x80;
@@ -80,14 +81,15 @@ int erase_49f002 (struct flashchip * flash)
 	*(bios + 0x3bfff) = 0x30;
 #endif
 
+	return(0);
 }
 
-int write_49f002 (struct flashchip * flash, char * buf)
+int write_49f002 (struct flashchip * flash, unsigned char * buf)
 {
     int i;
-    int total_size = flash->total_size * 1024, page_size = flash->page_size;
+    int total_size = flash->total_size * 1024;
     volatile char * bios = flash->virt_addr;
-    volatile char * dst = bios, * src = buf;
+    volatile char * dst = bios;
 
     *bios = 0xF0;
     myusec_delay(10);
@@ -98,7 +100,7 @@ int write_49f002 (struct flashchip * flash, char * buf)
     for (i = 0; i < total_size; i++) {
 	/* write to the sector */
 	if ((i & 0xfff) == 0)
-	    printf ("address: 0x%08lx", i);
+	    printf ("address: 0x%08lx", (unsigned long)i);
 	*(bios + 0x5555) = 0xAA;
 	*(bios + 0x2AAA) = 0x55;
 	*(bios + 0x5555) = 0xA0;
@@ -112,4 +114,6 @@ int write_49f002 (struct flashchip * flash, char * buf)
     }
 #endif
     printf("\n");
+
+    return(0);
 }

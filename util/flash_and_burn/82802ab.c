@@ -30,6 +30,7 @@
 #include <sys/io.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "flash.h"
 #include "82802ab.h"
@@ -145,11 +146,11 @@ int erase_82802ab_block(struct flashchip *flash, int offset)
 	status = wait_82802ab(flash->virt_addr);
 	//print_82802ab_status(status);
 	printf("DONE BLOCK 0x%x\n", offset);
+	return(0);
 }
 int erase_82802ab (struct flashchip * flash)
 {
 	int i;
-	volatile unsigned char * bios = flash->virt_addr;
 	unsigned int total_size = flash->total_size * 1024;
 
 	printf("total_size is %d; flash->page_size is %d\n", 
@@ -157,6 +158,7 @@ int erase_82802ab (struct flashchip * flash)
 	for(i = 0; i < total_size; i += flash->page_size)
 		erase_82802ab_block(flash, i);
 	printf("DONE ERASE\n");
+	return(0);
 }
 
 void write_page_82802ab (volatile char * bios, char * src, volatile char * dst,
@@ -173,7 +175,7 @@ void write_page_82802ab (volatile char * bios, char * src, volatile char * dst,
 
 }
 
-int write_82802ab (struct flashchip * flash, char * buf)
+int write_82802ab (struct flashchip * flash, unsigned char * buf)
 {
 	int i;
 	int total_size = flash->total_size *1024, page_size = flash->page_size;
@@ -193,4 +195,5 @@ int write_82802ab (struct flashchip * flash, char * buf)
 	}
 	printf("\n");
 	protect_82802ab (bios);
+	return(0);
 }

@@ -1,6 +1,9 @@
+#ifndef __82802AB_H__
+#define __82802AB_H__ 1
+
 extern int probe_82802ab (struct flashchip * flash);
 extern int erase_82802ab (struct flashchip * flash);
-extern int write_82802ab (struct flashchip * flash, char * buf);
+extern int write_82802ab (struct flashchip * flash, unsigned char * buf);
 
 extern __inline__ void toggle_ready_82802ab (volatile char * dst)
 {
@@ -42,3 +45,4 @@ extern __inline__ void protect_82802ab (volatile char * bios)
 	usleep(200);
 }
 
+#endif /* !__82802AB_H__ */

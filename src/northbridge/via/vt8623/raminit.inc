@@ -82,11 +82,11 @@ raminit:
 	/* MSR Enable */
 	CS_WRITE($0x6b, $0x03)
 	/* read 0x2000h */
-	movl $0x2000, %ecx
+	movl $0x2000, %esi
 	movl %ds:(%esi), %eax
 
 	/* read 0x800h */
-	movl $0x800, %ecx
+	movl $0x800, %esi
 	movl %ds:(%esi), %eax
 
 	/* All banks Precharge Command Enable */
@@ -116,7 +116,7 @@ raminit:
 	/* MSR Enable */
 	CS_WRITE($0x6b, $0x03)
 	/* 0x150 if CAS Latency 2 or 0x350 CAS Latency 2.5 */
-	movl $0x350, %ecx
+	movl $0x350, %esi
 	movl %ds:(%esi), %eax
 
 	/* Normal SDRAM Mode */

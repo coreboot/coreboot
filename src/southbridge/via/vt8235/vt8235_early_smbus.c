@@ -43,7 +43,7 @@ static void enable_smbus(void)
 	
 	/* make it work for I/O ...
 	 */
-	dev = pci_locate_device(PCI_ID(0x1106,0x8231), 0);
+	dev = pci_locate_device(PCI_ID(0x1106,0x8235), 0);
 	c = pci_read_config8(dev, 4);
 	c |= 1;
 	pci_write_config8(dev, 4, c);

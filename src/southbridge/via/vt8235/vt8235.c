@@ -6,22 +6,22 @@
 #include <device/pci_ids.h>
 #include <device/chip.h>
 #include <console/console.h>
-#include "vt8231.h"
+#include "vt8235.h"
 #include "chip.h"
 
 void pc_keyboard_init(void);
 
 void hard_reset(void) 
 {
-	printk_err("NO HARD RESET ON VT8231! FIX ME!\n");
+	printk_err("NO HARD RESET ON VT8235! FIX ME!\n");
 }
 
 static void usb_on(int enable)
 {
 	unsigned char regval;
 
-	/* Base 8231 controller */
-	device_t dev0 = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8231, 0);
+	/* Base 8235 controller */
+	device_t dev0 = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8235, 0);
 	/* USB controller 1 */
 	device_t dev2 = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C586_2, 0);
 	/* USB controller 2 */
@@ -72,8 +72,8 @@ static void keyboard_on(void)
 {
 	unsigned char regval;
 	
-	/* Base 8231 controller */
-	device_t dev0 = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8231, 0);
+	/* Base 8235 controller */
+	device_t dev0 = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8235, 0);
 	
 	/* kevinh/Ispiri - update entire function to use 
 	   new pci_write_config8 */
@@ -89,7 +89,7 @@ static void keyboard_on(void)
 static void nvram_on(void)
 {
 	/*
-	 * the VIA 8231 South has a very different nvram setup than the 
+	 * the VIA 8235 South has a very different nvram setup than the 
 	 * piix4e ...
 	 * turn on ProMedia nvram.
 	 * TO DO: use the PciWriteByte function here.
@@ -138,7 +138,7 @@ static void ethernet_fixup()
  * (e.g. device_t). This needs to get fixed. We need low-level pci scans
  * in the C code. 
  */
-static void vt8231_pci_enable(struct southbridge_via_vt8231_config *conf) 
+static void vt8235_pci_enable(struct southbridge_via_vt8235_config *conf) 
 {
 	/*
 	  unsigned long busdevfn = 0x8000;
@@ -166,7 +166,7 @@ static void pci_routing_fixup(void)
 {
 	device_t dev;
 
-        dev = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8231, 0);
+        dev = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8235, 0);
 	printk_info("%s: dev is %p\n", __FUNCTION__, dev);
 	if (dev) {
 		/* initialize PCI interupts - these assignments depend
@@ -201,7 +201,7 @@ void
 dump_south(void)
 {
 	device_t dev0;
-	dev0 = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8231, 0);
+	dev0 = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8235, 0);
 	int i,j;
 	
 	for(i = 0; i < 256; i += 16) {
@@ -213,7 +213,7 @@ dump_south(void)
 	}
 }
 
-static void vt8231_init(struct southbridge_via_vt8231_config *conf)
+static void vt8235_init(struct southbridge_via_vt8235_config *conf)
 {
 	unsigned char enables;
 	device_t dev0;
@@ -223,13 +223,13 @@ static void vt8231_init(struct southbridge_via_vt8231_config *conf)
 	// to do: use the pcibios_find function here, instead of 
 	// hard coding the devfn. 
 	// done - kevinh/Ispiri
-	printk_debug("vt8231 init\n");
-	/* Base 8231 controller */
-	dev0 = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8231, 0);
+	printk_debug("vt8235 init\n");
+	/* Base 8235 controller */
+	dev0 = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8235, 0);
 	/* IDE controller */
 	dev1 = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C586_1, 0);
 	/* Power management controller */
-	devpwr = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8231_4, 0);
+	devpwr = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8235_4, 0);
 
 	// enable the internal I/O decode
 	enables = pci_read_config8(dev0, 0x6C);
@@ -427,16 +427,16 @@ static void vt8231_init(struct southbridge_via_vt8231_config *conf)
 static void southbridge_init(struct chip *chip, enum chip_pass pass)
 {
 
-	struct southbridge_via_vt8231_config *conf = 
-		(struct southbridge_via_vt8231_config *)chip->chip_info;
+	struct southbridge_via_vt8235_config *conf = 
+		(struct southbridge_via_vt8235_config *)chip->chip_info;
 
 	switch (pass) {
 	case CONF_PASS_PRE_PCI:
-		vt8231_pci_enable(conf);
+		vt8235_pci_enable(conf);
 		break;
 		
 	case CONF_PASS_POST_PCI:
-		vt8231_init(conf);
+		vt8235_init(conf);
 		pci_routing_fixup();
 		break;
 
@@ -457,8 +457,8 @@ static void enumerate(struct chip *chip)
 	chip->dev->ops = &default_pci_ops_bus;
 }
 
-struct chip_control southbridge_via_vt8231_control = {
+struct chip_control southbridge_via_vt8235_control = {
 	.enumerate = enumerate,
 	.enable    = southbridge_init,
-	.name      = "VIA vt8231"
+	.name      = "VIA vt8235"
 };

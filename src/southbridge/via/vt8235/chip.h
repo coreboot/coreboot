@@ -1,9 +1,9 @@
-#ifndef _SOUTHBRIDGE_VIA_VT8231
-#define _SOUTHBRIDGE_VIA_VT8231
+#ifndef _SOUTHBRIDGE_VIA_VT8235
+#define _SOUTHBRIDGE_VIA_VT8235
 
-extern struct chip_control southbridge_via_vt8231_control;
+extern struct chip_control southbridge_via_vt8235_control;
 
-struct southbridge_via_vt8231_config {
+struct southbridge_via_vt8235_config {
 	/* PCI function enables */
 	/* i.e. so that pci scan bus will find them. */
 	/* I am putting in IDE as an example but obviously this needs
@@ -18,4 +18,4 @@ struct southbridge_via_vt8231_config {
 	int enable_nvram;
 };
 
-#endif /* _SOUTHBRIDGE_VIA_VT8231 */
+#endif /* _SOUTHBRIDGE_VIA_VT8235 */

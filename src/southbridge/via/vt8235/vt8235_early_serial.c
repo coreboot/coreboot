@@ -8,18 +8,18 @@
 #define SIO_BASE 0x3f0
 #define SIO_DATA  SIO_BASE+1
 
-static void vt8231_writesuper(uint8_t reg, uint8_t val) 
+static void vt8235_writesuper(uint8_t reg, uint8_t val) 
 {
 	outb(reg, SIO_BASE);
 	outb(val, SIO_DATA);
 }
 
-static void vt8231_writesiobyte(uint16_t reg, uint8_t val) 
+static void vt8235_writesiobyte(uint16_t reg, uint8_t val) 
 {
 	outb(val, reg);
 }
 
-static void vt8231_writesioword(uint16_t reg, uint16_t val) 
+static void vt8235_writesioword(uint16_t reg, uint16_t val) 
 {
 	outw(val, reg);
 }
@@ -29,13 +29,13 @@ static void vt8231_writesioword(uint16_t reg, uint16_t val)
    mainboard
  */
 
-static void enable_vt8231_serial(void) 
+static void enable_vt8235_serial(void) 
 {
 	unsigned long x;
 	uint8_t c;
 	device_t dev;
 	outb(6, 0x80);
-	dev = pci_locate_device(PCI_ID(0x1106,0x8231), 0);
+	dev = pci_locate_device(PCI_ID(0x1106,0x8235), 0);
 	
 	if (dev == PCI_DEV_INVALID) {
 		outb(7, 0x80);
@@ -51,25 +51,25 @@ static void enable_vt8231_serial(void)
 	outb(2, 0x80);
 	// now go ahead and set up com1. 
 	// set address
-	vt8231_writesuper(0xf4, 0xfe);
+	vt8235_writesuper(0xf4, 0xfe);
 	// enable serial out
-	vt8231_writesuper(0xf2, 7);
+	vt8235_writesuper(0xf2, 7);
 	// That's it for the sio stuff.
 	//	movl	$SUPERIOCONFIG, %eax
 	//	movb	$9, %dl
 	//	PCI_WRITE_CONFIG_BYTE
 	// set up reg to set baud rate.
-	vt8231_writesiobyte(0x3fb, 0x80);
+	vt8235_writesiobyte(0x3fb, 0x80);
 	// Set 115 kb
-	vt8231_writesioword(0x3f8, 1);
+	vt8235_writesioword(0x3f8, 1);
 	// Set 9.6 kb
 	//	WRITESIOWORD(0x3f8, 12)
 	// now set no parity, one stop, 8 bits
-	vt8231_writesiobyte(0x3fb, 3);
+	vt8235_writesiobyte(0x3fb, 3);
 	// now turn on RTS, DRT
-	vt8231_writesiobyte(0x3fc, 3);
+	vt8235_writesiobyte(0x3fc, 3);
 	// Enable interrupts
-	vt8231_writesiobyte(0x3f9, 0xf);
+	vt8235_writesiobyte(0x3f9, 0xf);
 	// should be done. Dump a char for fun.
-	vt8231_writesiobyte(0x3f8, 48);
+	vt8235_writesiobyte(0x3f8, 48);
 }

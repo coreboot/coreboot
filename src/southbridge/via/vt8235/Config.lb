@@ -1,2 +1,2 @@
 config chip.h
-object vt8231.o
+object vt8235.o

@@ -101,7 +101,7 @@ int write_29f002 (struct flashchip * flash, char * buf)
 	*(bios + 0x5555) = 0xAA;
 	*(bios + 0x2AAA) = 0x55;
 	*(bios + 0x5555) = 0xA0;
-	*dst++ = 0x33;
+	*dst++ = *buf++;
 
 	/* wait for Toggle bit ready */
 	toggle_ready_jedec(dst);

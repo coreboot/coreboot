@@ -60,9 +60,9 @@ static struct {
 int elf_check_arch(Elf_ehdr *ehdr)
 {
 	return (
-		((ehdr->e_machine == EM_386) ||	(ehdr->e_machine == EM_486)) &&
+		(ehdr->e_machine == EM_PPC) &&
 		(ehdr->e_ident[EI_CLASS] == ELFCLASS32) &&
-		(ehdr->e_ident[EI_DATA] == ELFDATA2LSB) 
+		(ehdr->e_ident[EI_DATA] == ELFDATA2MSB) 
 		);
 	
 }
@@ -92,91 +92,6 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer)
 	printk_spew("buffer   = 0x%08lx\n", buffer);
 	printk_spew("     elf_boot_notes = 0x%08lx\n", (unsigned long)&elf_boot_notes);
 	printk_spew("adjusted_boot_notes = 0x%08lx\n", adjusted_boot_notes);
-	
-	/* Jump to kernel */
-	__asm__ __volatile__(
-		"	cld	\n\t"
-		/* Save the callee save registers... */
-		"	pushl	%%esi\n\t"
-		"	pushl	%%edi\n\t"
-		"	pushl	%%ebx\n\t"
-		/* Save the parameters I was passed */
-		"	pushl	$0\n\t" /* 20 adjust */
-	        "	pushl	%0\n\t" /* 16 lb_start */
-		"	pushl	%1\n\t" /* 12 buffer */
-		"	pushl	%2\n\t" /*  8 lb_size */
-		"	pushl	%3\n\t" /*  4 entry */
-		"	pushl	%4\n\t" /*  0 elf_boot_notes */
-		/* Compute the adjustment */
-		"	xorl	%%eax, %%eax\n\t"
-		"	subl	16(%%esp), %%eax\n\t"
-		"	addl	12(%%esp), %%eax\n\t"
-		"	addl	 8(%%esp), %%eax\n\t"
-		"	movl	%%eax, 20(%%esp)\n\t"
-		/* Place a copy of linuxBIOS in it's new location */
-		/* Move ``longs'' the linuxBIOS size is 4 byte aligned */
-		"	movl	12(%%esp), %%edi\n\t"
-		"	addl	 8(%%esp), %%edi\n\t"
-		"	movl	16(%%esp), %%esi\n\t"
-		"	movl	 8(%%esp), %%ecx\n\n"
-		"	shrl	$2, %%ecx\n\t"
-		"	rep	movsl\n\t"
-
-		/* Adjust the stack pointer to point into the new linuxBIOS image */
-		"	addl	20(%%esp), %%esp\n\t"
-		/* Adjust the instruction pointer to point into the new linuxBIOS image */
-		"	movl	$1f, %%eax\n\t"
-		"	addl	20(%%esp), %%eax\n\t"
-		"	jmp	*%%eax\n\t"
-		"1:	\n\t"
-
-		/* Copy the linuxBIOS bounce buffer over linuxBIOS */
-		/* Move ``longs'' the linuxBIOS size is 4 byte aligned */
-		"	movl	16(%%esp), %%edi\n\t"
-		"	movl	12(%%esp), %%esi\n\t"
-		"	movl	 8(%%esp), %%ecx\n\t"
-		"	shrl	$2, %%ecx\n\t"
-		"	rep	movsl\n\t"
-
-		/* Now jump to the loaded image */
-		"	movl	$0x0E1FB007, %%eax\n\t"
-		"	movl	 0(%%esp), %%ebx\n\t"
-		"	call	*4(%%esp)\n\t"
-
-		/* The loaded image returned? */
-		"	cli	\n\t"
-		"	cld	\n\t"
-
-		/* Copy the saved copy of linuxBIOS where linuxBIOS runs */
-		/* Move ``longs'' the linuxBIOS size is 4 byte aligned */
-		"	movl	16(%%esp), %%edi\n\t"
-		"	movl	12(%%esp), %%esi\n\t"
-		"	addl	 8(%%esp), %%esi\n\t"
-		"	movl	 8(%%esp), %%ecx\n\t"
-		"	shrl	$2, %%ecx\n\t"
-		"	rep	movsl\n\t"
-
-		/* Adjust the stack pointer to point into the old linuxBIOS image */
-		"	subl	20(%%esp), %%esp\n\t"
-
-		/* Adjust the instruction pointer to point into the old linuxBIOS image */
-		"	movl	$1f, %%eax\n\t"
-		"	subl	20(%%esp), %%eax\n\t"
-		"	jmp	*%%eax\n\t"
-		"1:	\n\t"
-
-		/* Drop the parameters I was passed */
-		"	addl	$24, %%esp\n\t"
-
-		/* Restore the callee save registers */
-		"	popl	%%ebx\n\t"
-		"	popl	%%edi\n\t"
-		"	popl	%%esi\n\t"
-
-		:: 
-		"g" (lb_start), "g" (buffer), "g" (lb_size),
-		"g" (entry), "g"(adjusted_boot_notes)
-		);
 }
 
 

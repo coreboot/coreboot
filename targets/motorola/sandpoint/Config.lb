@@ -29,6 +29,9 @@ uses MAINBOARD_VENDOR
 ## use a cross compiler
 option CROSS_COMPILE="powerpc-eabi-"
 
+## Use chip configuration
+option CONFIG_CHIP_CONFIGURE=1
+
 ## We don't use compressed image
 option CONFIG_COMPRESS=0
 

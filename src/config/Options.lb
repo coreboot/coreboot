@@ -157,6 +157,11 @@ define LINUXBIOS_ASSEMBLER
 	export always
 	comment "Build assembler"
 end
+define CONFIG_CHIP_CONFIGURE
+	default 0
+	export used
+	comment "Use new chip_configure method for configuring (non-pci) devices"
+end
 
 ###############################################
 # ROM image options

@@ -242,3 +242,111 @@ static int ht_setup_chain(device_t udev, unsigned upos)
 	} while((last_unitid != next_unitid) && (next_unitid <= 0x1f));
 	return reset_needed;
 }
+struct ht_chain {
+        device_t udev;
+        unsigned upos;
+        unsigned devreg; 
+        unsigned mindev; 
+};              
+
+static int ht_setup_chains(const struct ht_chain *ht_c, int ht_c_num)
+{               
+        /* Assumption the HT chain that is bus 0 has the HT I/O Hub on it. 
+         * On most boards this just happens.  If a cpu has multiple
+         * non Coherent links the appropriate bus registers for the
+         * links needs to be programed to point at bus 0.
+         */     
+        unsigned next_unitid, last_unitid;
+        int reset_needed; 
+        unsigned uoffs;
+        unsigned upos;
+        device_t udev;
+        int i;
+
+        /* Make certain the HT bus is not enumerated */
+        ht_collapse_previous_enumeration(0);
+
+        reset_needed = 0;
+        next_unitid = 1;
+
+
+        for(i=0;i<ht_c_num;i++) {
+#if 0
+        unsigned tmp;
+        tmp = pci_read_config8(PCI_DEV(0,0x18,1),ht_c[i].devreg);
+#endif
+
+        pci_write_config8(PCI_DEV(0,0x18,1), ht_c[i].devreg, 0);
+#if CONFIG_MAX_CPUS > 1 
+        pci_write_config8(PCI_DEV(0,0x19,1), ht_c[i].devreg, 0);
+#endif
+#if CONFIG_MAX_CPUS > 2
+        pci_write_config8(PCI_DEV(0,0x1a,1), ht_c[i].devreg, 0);
+        pci_write_config8(PCI_DEV(0,0x1b,1), ht_c[i].devreg, 0);
+#endif
+
+        uoffs = PCI_HT_HOST_OFFS;
+        upos = ht_c[i].upos;
+        udev = ht_c[i].udev;
+        do {
+                uint32_t id;
+                uint8_t pos;
+                unsigned flags, count;
+                device_t dev = PCI_DEV(0, 0, 0);
+                last_unitid = next_unitid;
+                
+                id = pci_read_config32(dev, PCI_VENDOR_ID);
+                /* If the chain is enumerated quit */
+                if (((id & 0xffff) == 0x0000) || ((id & 0xffff) == 0xffff) ||
+                        (((id >> 16) & 0xffff) == 0xffff) ||
+                        (((id >> 16) & 0xffff) == 0x0000)) {
+                        break;
+                }       
+                pos = ht_lookup_slave_capability(dev);
+                if (!pos) {
+                        print_err("HT link capability not found\r\n");
+                        break;
+                }
+                /* Setup the Hypertransport link */
+                reset_needed |= ht_optimize_link(udev, upos, uoffs, dev, pos, PCI_HT_SLAVE0_OFFS);
+
+                /* Update the Unitid of the current device */
+                flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
+                flags &= ~0x1f; /* mask out the bse Unit ID */
+                flags |= next_unitid & 0x1f;
+                pci_write_config16(dev, pos + PCI_CAP_FLAGS, flags);
+
+                /* Remeber the location of the last device */
+                udev = PCI_DEV(0, next_unitid, 0);
+                upos = pos;
+                uoffs = PCI_HT_SLAVE1_OFFS;
+
+                /* Compute the number of unitids consumed */
+                count = (flags >> 5) & 0x1f;
+                next_unitid += count;
+
+        } while((last_unitid != next_unitid) && (next_unitid <= 0x1f));
+#if 0
+        pci_write_config8(PCI_DEV(0,0x18,1), ht_c[i].devreg, tmp);
+#if CONFIG_MAX_CPUS > 1 
+        pci_write_config8(PCI_DEV(0,0x19,1), ht_c[i].devreg, tmp);
+#endif
+#if CONFIG_MAX_CPUS > 2
+        pci_write_config8(PCI_DEV(0,0x1a,1), ht_c[i].devreg, tmp);
+        pci_write_config8(PCI_DEV(0,0x1b,1), ht_c[i].devreg, tmp);
+#endif
+#else
+        pci_write_config8(PCI_DEV(0,0x18,1), ht_c[i].devreg, ht_c[i].mindev);
+#if CONFIG_MAX_CPUS > 1 
+        pci_write_config8(PCI_DEV(0,0x19,1), ht_c[i].devreg, ht_c[i].mindev);
+#endif
+#if CONFIG_MAX_CPUS > 2
+        pci_write_config8(PCI_DEV(0,0x1a,1), ht_c[i].devreg, ht_c[i].mindev);
+        pci_write_config8(PCI_DEV(0,0x1b,1), ht_c[i].devreg, ht_c[i].mindev);
+#endif
+#endif
+
+        }
+
+        return reset_needed;
+}

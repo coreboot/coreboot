@@ -149,6 +149,22 @@ static void main(void)
 		},
 #endif
 	};
+
+        static const struct ht_chain ht_c[] = {
+                {
+                        .udev = PCI_DEV(0, 0x18, 0),
+                        .upos = 0xc0,
+                        .devreg = 0xe2,
+                        .mindev = 1,
+                },
+                {
+                        .udev = PCI_DEV(0, 0x18, 0),
+                        .upos = 0x80,
+                        .devreg = 0xe6,
+                        .mindev = 5,
+                
+                },      
+        };
         int needs_reset;
         enable_lapic();
         init_timer();
@@ -164,11 +180,16 @@ static void main(void)
         console_init();
         setup_s2885_resource_map();
         needs_reset = setup_coherent_ht_domain();
-        needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0xc0);
+//        needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0xc0);
+        needs_reset |= ht_setup_chains(ht_c, sizeof(ht_c)/sizeof(ht_c[0]));
         if (needs_reset) {
                 print_info("ht reset -");
                 soft_reset();
         }
+#if 0
+        dump_pci_devices();
+#endif
+
 
 #if 0
 	print_pci_devices();

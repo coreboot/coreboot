@@ -178,12 +178,18 @@ end
 ###############################################
 
 define HAVE_FALLBACK_BOOT
+	format "%d"
 	default 0
 	export always
 	comment "Set if fallback booting required"
 end
 define USE_FALLBACK_IMAGE
+<<<<<<< Options.lb
+	format "%d"
+	default 0
+=======
 	default 1
+>>>>>>> 1.23
 	export used
 	comment "Set to build a fallback image"
 end
@@ -409,6 +415,12 @@ define CONFIG_KEYBOARD
 	default 0
 	export used
 	comment "Run PC keyboard enable code"
+end
+
+define CONFIG_LEGACY_VGABIOS
+	default 0
+	export used
+	comment "Support for legacy VGA BIOS"
 end
 ###############################################
 # SMP options

@@ -18,3 +18,7 @@ end
 if CONFIG_KEYBOARD
 	object keyboard.o
 end
+
+if CONFIG_LEGACY_VGABIOS
+	object vgabios.o
+end

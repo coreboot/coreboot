@@ -19,13 +19,25 @@ static unsigned long __sizeram(void)
 
 	if (! pcidev)
 		return 0;
-
+	
+	// Documentation on VT8601 - Pg 51 Rev 1.3 Sept 1999 says
+	// Device 0 Offset FB - Frame buffer control
+	// bit
+	//  7  VGA Enable (0 disable, 1 enable)
+	//  6  VGA Reset (write 1 to reset)
+	// 5-4 Frame Buffer size
+	//      00 None (default)
+	//      01 2M
+	//      10 4M
+	//      11 8M
+	//  3  CPU Direct Access Frame Buffer (0 disable, 1 enable)
+	// 2-0 CPU Direct Access Frame Buffer Base Adddress <31:29>
 	pci_read_config_byte(pcidev, 0xfb, &sma_status);
 	sma_size_bits = (sma_status >> 4) & 0x03;
-	if (sma_size_bits > 3)
-		sma_size = 0;
-	else
+	if (sma_size_bits > 0)
 		sma_size = 0x01 << sma_size_bits;
+	else
+		sma_size = 0;
 
 	for(totalmem = mem = prevmem = 0, bank = firstbank; 
 	    bank <= lastbank; bank++) {

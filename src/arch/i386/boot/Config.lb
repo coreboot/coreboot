@@ -1,3 +1,5 @@
+uses HAVE_PIRQ_TABLE
+
 object boot.o
 object linuxbios_table.o
 object tables.o

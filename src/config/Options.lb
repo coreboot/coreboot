@@ -371,7 +371,7 @@ end
 ###############################################
 
 define CONFIG_SMP
-	default none
+	default 0
 	export always
 	comment "Define if we support SMP"
 end

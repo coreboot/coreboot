@@ -1,5 +1,5 @@
-default CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2=0
-option i586=1
+uses  CONFIG_UDELAY_TSC
+
 object cpuid.o
 if CONFIG_UDELAY_TSC object delay_tsc.o  end
 #object tsc.o

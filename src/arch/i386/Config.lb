@@ -1,4 +1,3 @@
-default ARCH=i386
 dir lib
 dir boot
 dir smp

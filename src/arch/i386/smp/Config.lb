@@ -1,3 +1,6 @@
+uses HAVE_MP_TABLE
+uses CONFIG_SMP
+
 if HAVE_MP_TABLE
   object mpspec.o 
 end

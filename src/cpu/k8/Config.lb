@@ -1,3 +1,4 @@
-default k8=1
-default  CPU_FIXUP=1
-object cpufixup.o
+uses CPU_FIXUP
+if CPU_FIXUP
+  object cpufixup.o
+end

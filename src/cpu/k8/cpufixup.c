@@ -36,7 +36,7 @@ void k8_cpufixup(struct mem_range *mem)
 
 	/* Setup TOP_MEM2 */
 	msr.hi = tomk >> 22;
-	msr.lo = tomk << 12;
+	msr.lo = tomk << 10;
 	wrmsr(TOP_MEM2, msr);
 
 	/* zero the IORR's before we enable to prevent
@@ -47,7 +47,7 @@ void k8_cpufixup(struct mem_range *mem)
 		wrmsr(i, msr);
 	}
 	
-	msr = rdmsr(SYSCFG);
+	msr = rdmsr(SYSCFG_MSR);
 	msr.lo |= SYSCFG_MSR_MtrrVarDramEn | SYSCFG_MSR_TOM2En;
-	wrmsr(SYSCFG, msr);
+	wrmsr(SYSCFG_MSR, msr);
 }

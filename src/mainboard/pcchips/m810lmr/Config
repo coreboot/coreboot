@@ -1,6 +1,7 @@
 arch i386
 northsouthbridge sis/730
-superio sis/950
+#superio sis/950
+nsuperio sis/950 com1={1} floppy=1  lpt=1
 
 option ENABLE_FIXED_AND_VARIABLE_MTRRS
 option FINAL_MAINBOARD_FIXUP

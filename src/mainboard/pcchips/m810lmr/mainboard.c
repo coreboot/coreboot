@@ -14,5 +14,7 @@ final_mainboard_fixup(void)
 	printk(KERN_INFO "PCCHIPS M810LMR (and similar)...");
 
 	final_southbridge_fixup();
+#ifndef USE_NEW_SUPERIO_INTERFACE
 	final_superio_fixup();
+#endif
 }

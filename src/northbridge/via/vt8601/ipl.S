@@ -61,7 +61,6 @@ register_table:
 	// LEAVE IT HERE. 
 	.byte REG(0x6c), 0x0
 	.byte 0x0
-
 _realstart:	
 
 	cli
@@ -110,11 +109,29 @@ _realstart:
 	orw	$FLASHREG, %ax
 	mov	$0xcf8,%dx
 	outl	%eax,%dx
+#if (SUPERIO_DEVFN == 0x88)
+	mov	$0xfc,%dl
+	inl     %dx,%eax 
+/*
+        For 8231:
+                Please see databook revision 1.2, November 13, 2000. Page68.
+                PCI to ISA bridge: Regx40[4]=1, Regx41[0-6]=1.
+*/
+	orw	$0x7f10, %ax
+	outl	%eax,%dx 
+#endif
+#if (SUPERIO_DEVFN == 0x38)
+                Please see databook revision 1.33, January 7, 2000. Page55
+and 56. 
+                PCI to ISA bridge: Regx40[0]=1 (write enable)
+Regx43[0-7]=1(all bits set to 1)
+
 /* but 0x01 makes flash writeable. You need this for DoC */
 	mov	$0x0cfc,%dx
 	inl     %dx,%eax 
 	orl	$0xc0000001, %eax
 	outl	%eax,%dx 
+#endif
 
 #define loop200 $0x5000
 #define loop100 $0x2500

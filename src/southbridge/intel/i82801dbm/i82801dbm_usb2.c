@@ -9,7 +9,7 @@
 
 static void usb2_init(struct device *dev)
 {
-	uint32_t cmd;
+  uint32_t cmd;
 
 #if 0
 	printk_debug("USB: Setting up controller.. ");

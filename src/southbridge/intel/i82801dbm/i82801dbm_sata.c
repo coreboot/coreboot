@@ -11,7 +11,7 @@ static void sata_init(struct device *dev)
         uint16_t word;
         uint8_t byte;
 	int enable_c=1, enable_d=1;
-	int i;
+	//	int i;
                 
         //Enable Serial ATA port
         byte = pci_read_config8(dev,0x90);

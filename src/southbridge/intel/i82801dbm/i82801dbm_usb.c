@@ -7,9 +7,10 @@
 
 static void usb_init(struct device *dev)
 {
-	uint32_t cmd;
+
 
 #if 0
+	uint32_t cmd;
 	printk_debug("USB: Setting up controller.. ");
 	cmd = pci_read_config32(dev, PCI_COMMAND);
 	pci_write_config32(dev, PCI_COMMAND, 

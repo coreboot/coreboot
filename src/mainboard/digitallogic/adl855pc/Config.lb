@@ -210,7 +210,7 @@ mainboardinit ./auto.inc
 dir /pc80
 config chip.h
 
-northbridge intel/855pm "855pm"
+northbridge intel/i855pm "i855pm"
 #	pci 0:0.0
 #	pci 0:1.0
 	southbridge intel/i82801dbm "i82801dbm"
@@ -224,9 +224,6 @@ northbridge intel/855pm "855pm"
 #		pci 0:12.0
 		register "enable_usb" = "0"
 		register "enable_native_ide" = "0"
-		register "enable_com_ports" = "1"
-		register "enable_keyboard" = "0"
-		register "enable_nvram" = "1"
 	end
 end
 

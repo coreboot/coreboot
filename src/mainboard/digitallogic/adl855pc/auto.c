@@ -13,6 +13,8 @@
 #include "northbridge/via/vt8601/raminit.h"
 #include "cpu/p6/earlymtrr.c"
 
+#include "southbridge/intel/i82801dbm/i82801dbm_early_smbus.c"
+
 /*
  */
 void udelay(int usecs) 

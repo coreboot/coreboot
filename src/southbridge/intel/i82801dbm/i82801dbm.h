@@ -1,13 +1,15 @@
 #ifndef I82801ER_H
 #define I82801ER_H
 
-struct southbridge_intel_i82801er_config 
+struct southbridge_intel_i82801dbm_config 
 {
+  int enable_usb;
+  int enable_native_ide;
 };
 struct chip_control;
-extern struct chip_control southbridge_intel_i82801er_control;
+extern struct chip_control southbridge_intel_i82801dbm_control;
 
-extern void i82801er_enable(device_t dev);
+extern void i82801dbm_enable(device_t dev);
 
 /*
 000 = Non-combined. P0 is primary master. P1 is secondary master.
@@ -78,4 +80,4 @@ channel disabled.
  */
 #define SMBUS_TIMEOUT (100*1000)
 
-#endif /* I82801ER_H */
+#endif /* I82801DBM_H */

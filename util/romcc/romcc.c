@@ -1329,9 +1329,9 @@ static struct triple zero_triple = {
 	.op        = OP_INTCONST,
 	.sizes     = TRIPLE_SIZES(0, 0, 0, 0),
 	.id        = -1, /* An invalid id */
-	.u = { .cval   = 0, },
+	.u = { .cval = 0, },
 	.occurance = &dummy_occurance,
-	.param { [0] = 0, [1] = 0, },
+	.param = { [0] = 0, [1] = 0, },
 };
 
 
@@ -4568,13 +4568,21 @@ static struct triple *array_to_pointer(struct compile_state *state, struct tripl
 {
 	if ((def->type->type & TYPE_MASK) == TYPE_ARRAY) {
 		struct type *type;
-		struct triple *addrconst;
 		type = new_type(
 			TYPE_POINTER | (def->type->type & QUAL_MASK),
 			def->type->left, 0);
-		addrconst = triple(state, OP_ADDRCONST, type, 0, 0);
-		MISC(addrconst, 0) = def;
-		def = addrconst;
+		if ((def->op == OP_SDECL) || is_const(def)) {
+			struct triple *addrconst;
+			if ((def->op != OP_SDECL) && (def->op != OP_BLOBCONST)) {
+				internal_error(state, def, "bad array constant");
+			}
+			addrconst = triple(state, OP_ADDRCONST, type, 0, 0);
+			MISC(addrconst, 0) = def;
+			def = addrconst;
+		}
+		else {
+			def = triple(state, OP_COPY, type, def, 0);
+		}
 	}
 	return def;
 }
@@ -5689,6 +5697,9 @@ static void mkconst(struct compile_state *state,
 static void mkaddr_const(struct compile_state *state,
 	struct triple *ins, struct triple *sdecl, ulong_t value)
 {
+	if (sdecl->op != OP_SDECL) {
+		internal_error(state, ins, "bad base for addrconst");
+	}
 	wipe_ins(state, ins);
 	ins->op = OP_ADDRCONST;
 	ins->sizes = TRIPLE_SIZES(0, 0, 1, 0);
@@ -5801,7 +5812,8 @@ static void flatten_structures(struct compile_state *state)
 	ins = first;
 	do {
 		ins->id &= ~TRIPLE_FLAG_FLATTENED;
-		if ((ins->type->type & TYPE_MASK) == TYPE_STRUCT) {
+		if ((ins->op != OP_BLOBCONST) && (ins->op != OP_SDECL) &&
+			((ins->type->type & TYPE_MASK) == TYPE_STRUCT)) {
 			internal_error(state, ins, "STRUCT_TYPE remains?");
 		}
 		if (ins->op == OP_DOT) {
@@ -16778,6 +16790,12 @@ static void print_const_val(
 			(long_t)(ins->u.cval));
 		break;
 	case OP_ADDRCONST:
+		if (MISC(ins, 0)->op != OP_SDECL) {
+			internal_error(state, ins, "bad base for addrconst");
+		}
+		if (MISC(ins, 0)->u.cval <= 0) {
+			internal_error(state, ins, "unlabeled constant");
+		}
 		fprintf(fp, " $L%s%lu+%lu ",
 			state->label_prefix, 
 			MISC(ins, 0)->u.cval,
@@ -16814,7 +16832,13 @@ static void print_const(struct compile_state *state,
 		}
 		break;
 	case OP_ADDRCONST:
-		fprintf(fp, " .int L%s%lu+%lu ",
+		if (MISC(ins, 0)->op != OP_SDECL) {
+			internal_error(state, ins, "bad base for addrconst");
+		}
+		if (MISC(ins, 0)->u.cval <= 0) {
+			internal_error(state, ins, "unlabeled constant");
+		}
+		fprintf(fp, ".int L%s%lu+%lu\n",
 			state->label_prefix,
 			MISC(ins, 0)->u.cval,
 			ins->u.cval);

@@ -24,7 +24,7 @@ dir /src/config
 
 makerule all : romimage ;
 makerule floppy : all ; mcopy -o romimage a:
-makerule romimage : linuxbios.rom vmlinux.bin.gz.block ; cat vmlinux.bin.gz.block linuxbios.rom > romimage
+makerule romimage : linuxbios.rom payload.bin.gz.block ; cat payload.bin.gz.block linuxbios.rom > romimage
 
 
 makerule linuxbios.rom: linuxbios.strip ; 
@@ -36,12 +36,12 @@ addaction linuxbios.rom dd if=linuxbios.strip of=linuxbios.rom bs=1 seek=`expr $
 makerule mkrom: $(TOP)/mkrom/mkrom.c ; $(CC) -o mkrom $<
 
 
-makerule vmlinux.bin.gz.block : vmlinux.bin.gz ; dd conv=sync bs=448k if=vmlinux.bin.gz of=vmlinux.bin.gz.block
-makerule vmlinux.bin.gz: vmlinux.bin ;gzip -f -3 vmlinux.bin
-makerule vmlinux.bin: $(LINUX)/vmlinux ;  objcopy -O binary -R .note -R .comment -S $< vmlinux.bin
+makerule payload.bin.gz.block : payload.bin.gz ; dd conv=sync bs=448k if=payload.bin.gz of=payload.bin.gz.block
+makerule payload.bin.gz: payload.bin ;gzip -f -3 payload.bin
+makerule payload.bin: $(PAYLOAD) ;  objcopy -O binary -R .note -R .comment -S $< payload.bin
 
 
-addaction clean rm -f romimage mkrom vmlinux.*
+addaction clean rm -f romimage mkrom payload.*
 
 # do standard config files that the user need not specify
 # for now, this is just 'lib', but it may be more later. 

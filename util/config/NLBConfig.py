@@ -360,9 +360,12 @@ def docipl(dir, ipl_name):
 	set_option("_RAMBASE", "0x4000")
 	set_option("_ROMBASE", "0x80000")
 
+def payload(dir, payload_name):
+	payloadrule = 'PAYLOAD=' + payload_name
+	makedefine(dir, payloadrule)
+	
 def linux(dir, linux_name):
-	linuxrule = 'LINUX=' + linux_name
-	makedefine(dir, linuxrule)
+	payload(dir, linux_name + '/vmlinux')
 
 def setrambase(dir, address):
 	set_option("_RAMBASE", address)
@@ -406,6 +409,7 @@ command_actions = {
 	'nsuperio'    : nsuperio,
 	'object'      : object,
 	'linux'       : linux,
+	'payload'     : payload,
 	'raminit'     : raminit,
 	'mainboardinit'     : mainboardinit,
 	'ldscript'    : ldscript,

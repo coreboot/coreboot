@@ -598,7 +598,7 @@ static void pci_domain_set_resources(device_t dev)
 		mem1->base = resource_max(mem1);
 	}
 
-#if 1
+#if 0
 		printk_debug("base1: 0x%08Lx limit1: 0x%08lx size: 0x%08Lx\n",
 			mem1->base, mem1->limit, mem1->size);
 		printk_debug("base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx\n",
@@ -702,7 +702,7 @@ static struct device_operations pci_domain_ops = {
 	.scan_bus         = pci_domain_scan_bus,
 };
 
-static unsigned int scan_cpu_bus(device_t dev, unsigned int max)
+static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 {
 	struct bus *cpu_bus;
 	unsigned reg;
@@ -750,18 +750,19 @@ static unsigned int scan_cpu_bus(device_t dev, unsigned int max)
 
 static void cpu_bus_init(device_t dev)
 {
-	printk_debug("cpu_bus_init\n");
-#if 0
 	initialize_cpus(&dev->link[0]);
-#endif
+}
+
+static void cpu_bus_noop(device_t dev) 
+{
 }
 
 static struct device_operations cpu_bus_ops = {
-	.read_resources   = 0,
-	.set_resources    = 0,
-	.enable_resources = 0,
+	.read_resources   = cpu_bus_noop,
+	.set_resources    = cpu_bus_noop,
+	.enable_resources = cpu_bus_noop,
 	.init             = cpu_bus_init,	
-	.scan_bus         = scan_cpu_bus,
+	.scan_bus         = cpu_bus_scan,
 };
 
 static void enable_dev(struct device *dev)

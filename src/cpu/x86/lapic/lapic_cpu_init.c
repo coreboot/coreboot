@@ -261,7 +261,7 @@ static void initialize_other_cpus(struct bus *cpu_bus)
 	active_count = atomic_read(&active_cpus);
 	while(active_count > 1) {
 		if (active_count != old_active_count) {
-			printk_info("Waiting for %d CPUS to stop\n", active_count);
+			printk_info("Waiting for %d CPUS to stop\n", active_count - 1);
 			old_active_count = active_count;
 		}
 		udelay(10);

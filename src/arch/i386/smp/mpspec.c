@@ -121,7 +121,7 @@ void smp_write_processors(struct mp_config_table *mc)
 		}
 		cpu_flag = MPC_CPU_ENABLED;
 		if (boot_apic_id == cpu->path.u.apic.apic_id) {
-			cpu_flag = MPC_CPU_ENABLED;
+			cpu_flag = MPC_CPU_ENABLED | MPC_CPU_BOOTPROCESSOR;
 		}
 		smp_write_processor(mc, 
 			cpu->path.u.apic.apic_id, apic_version,

@@ -6,6 +6,7 @@
 
 #include <stdarg.h>
 #include <string.h>
+#include <div64.h>
 
 /* haha, don't need ctype.c */
 #define isdigit(c)	((c) >= '0' && (c) <= '9')
@@ -62,14 +63,8 @@ static int skip_atoi(const char **s)
 #define SPECIAL	32		/* 0x */
 #define LARGE	64		/* use 'ABCDEF' instead of 'abcdef' */
 
-#define do_div(n,base) ({ \
-int __res; \
-__res = ((unsigned long) n) % (unsigned) base; \
-n = ((unsigned long) n) / (unsigned) base; \
-__res; })
-
-static int number(void (*tx_byte)(unsigned char byte), long num, int base, int size, int precision
-	,int type)
+static int number(void (*tx_byte)(unsigned char byte), 
+	unsigned long long num, int base, int size, int precision, int type)
 {
 	char c,sign,tmp[66];
 	const char *digits="0123456789abcdefghijklmnopqrstuvwxyz";
@@ -85,7 +80,7 @@ static int number(void (*tx_byte)(unsigned char byte), long num, int base, int s
 	c = (type & ZEROPAD) ? '0' : ' ';
 	sign = 0;
 	if (type & SIGN) {
-		if (num < 0) {
+		if ((signed long long)num < 0) {
 			sign = '-';
 			num = -num;
 			size--;
@@ -140,7 +135,7 @@ static int number(void (*tx_byte)(unsigned char byte), long num, int base, int s
 int vtxprintf(void (*tx_byte)(unsigned char byte), const char *fmt, va_list args)
 {
 	int len;
-	unsigned long num;
+	unsigned long long num;
 	int i, base;
 	const char *s;
 
@@ -205,6 +200,10 @@ int vtxprintf(void (*tx_byte)(unsigned char byte), const char *fmt, va_list args
 		if (*fmt == 'h' || *fmt == 'l' || *fmt == 'L') {
 			qualifier = *fmt;
 			++fmt;
+			if (*fmt == 'l') {
+				qualifier = 'L';
+				++fmt;
+			}
 		}
 
 		/* default base */
@@ -248,7 +247,10 @@ int vtxprintf(void (*tx_byte)(unsigned char byte), const char *fmt, va_list args
 
 
 		case 'n':
-			if (qualifier == 'l') {
+			if (qualifier == 'L') {
+				long long *ip = va_arg(args, long long *);
+				*ip = count;
+			} else if (qualifier == 'l') {
 				long * ip = va_arg(args, long *);
 				*ip = count;
 			} else {
@@ -286,16 +288,19 @@ int vtxprintf(void (*tx_byte)(unsigned char byte), const char *fmt, va_list args
 				--fmt;
 			continue;
 		}
-		if (qualifier == 'l')
+		if (qualifier == 'L') {
+			num = va_arg(args, unsigned long long);
+		} else if (qualifier == 'l') {
 			num = va_arg(args, unsigned long);
-		else if (qualifier == 'h') {
+		} else if (qualifier == 'h') {
 			num = (unsigned short) va_arg(args, int);
 			if (flags & SIGN)
 				num = (short) num;
-		} else if (flags & SIGN)
+		} else if (flags & SIGN) {
 			num = va_arg(args, int);
-		else
+		} else {
 			num = va_arg(args, unsigned int);
+		}
 		count += number(tx_byte, num, base, field_width, precision, flags);
 	}
 	return count;

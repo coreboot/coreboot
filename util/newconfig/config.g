@@ -724,6 +724,8 @@ class partobj:
 	def firstsiblingdevice(self):
 		"""Find the first device in the sibling link."""
 		sibling = self.siblings
+		if ((not sibling) and (self.parent.chip_or_device == 'chip')):
+			sibling = self.parent.siblings
 		while(sibling):
 			if (sibling.chip_or_device == 'device'):
 				return sibling
@@ -921,7 +923,7 @@ class partobj:
 			fatal("Invalid pci_domain: 0x%x is out of the range 0 to 0xffff" % pci_domain)
 		self.path = ".type=DEVICE_PATH_PCI_DOMAIN,.u={.pci_domain={ .domain = 0x%x }}" % (pci_domain)
     
-	def addapic_cluster(self, cluster):
+	def addapic_clusterpath(self, cluster):
 		""" Add a pci_domain number to a chip """
 		if ((cluster < 0) or (cluster > 15)):
 			fatal("Invalid apic cluster: %d is out of the range 0 to ff" % cluster)
@@ -1689,10 +1691,10 @@ parser Config:
 			) 			{{ if(C): partstack.tos().set_enabled(val) }}
 
     rule resource<<C>>:				{{ type = "" }}
-	    		(  IO			{{ type = "IORESOURCE_IO" }}
-			|   MEM			{{ type = "IORESOURCE_MEM" }}
-			|   IRQ			{{ type = "IORESOURCE_IRQ" }}
-			|   DRQ			{{ type = "IORESOURCE_DRQ" }}
+	    		(  IO			{{ type = "IORESOURCE_FIXED | IORESOURCE_IO" }}
+			|   MEM			{{ type = "IORESOURCE_FIXED | IORESOURCE_MEM" }}
+			|   IRQ			{{ type = "IORESOURCE_FIXED | IORESOURCE_IRQ" }}
+			|   DRQ			{{ type = "IORESOURCE_FIXED | IORESOURCE_DRQ" }}
 			)
 			term '='		{{ index = term }}
 			term			{{ value = term }}
@@ -1729,7 +1731,7 @@ parser Config:
 
     rule apic_cluster<<C>>: APIC_CLUSTER 	{{ if (C): devicepart('apic_cluster') }}
 			HEX_NUM			{{ cluster = int(HEX_NUM, 16) }}
-						{{ if (C): partstack.tos().addapicpath(cluster) }}
+						{{ if (C): partstack.tos().addapic_clusterpath(cluster) }}
 
     rule dev_path<<C>>:				
 	    		pci<<C>>		{{ return pci }}

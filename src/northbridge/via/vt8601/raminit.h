@@ -2,7 +2,7 @@
 #define RAMINIT_H
 
 struct mem_controller {
-  int empty;
+	int empty;
 };
 
 #endif /* RAMINIT_H */

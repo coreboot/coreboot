@@ -13,10 +13,11 @@
 #include "northbridge/via/vt8601/raminit.h"
 /*
  */
-void udelay(int usecs) {
-  int i;
-  for(i = 0; i < usecs; i++)
-    outb(i&0xff, 0x80);
+void udelay(int usecs) 
+{
+	int i;
+	for(i = 0; i < usecs; i++)
+		outb(i&0xff, 0x80);
 }
 
 #include "lib/delay.c"
@@ -40,9 +41,9 @@ static void memreset_setup(void)
 */
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
-  unsigned char c;
-  c = smbus_read_byte(device, address);
-  return c;
+	unsigned char c;
+	c = smbus_read_byte(device, address);
+	return c;
 }
 
 
@@ -52,84 +53,85 @@ static inline int spd_read_byte(unsigned device, unsigned address)
   #include "sdram/generic_sdram.c"
 */
 
-static void
-enable_mainboard_devices(void) {
-  device_t dev;
-  /* dev 0 for southbridge */
+static void enable_mainboard_devices(void) 
+{
+	device_t dev;
+	/* dev 0 for southbridge */
   
-  dev = pci_locate_device(PCI_ID(0x1106,0x8231), 0);
+	dev = pci_locate_device(PCI_ID(0x1106,0x8231), 0);
   
-  if (dev == PCI_DEV_INVALID) {
-    die("Southbridge not found!!!\n");
-  }
-  pci_write_config8(dev, 0x50, 7);
-  pci_write_config8(dev, 0x51, 0xff);
+	if (dev == PCI_DEV_INVALID) {
+		die("Southbridge not found!!!\n");
+	}
+	pci_write_config8(dev, 0x50, 7);
+	pci_write_config8(dev, 0x51, 0xff);
 #if 0
-  // This early setup switches IDE into compatibility mode before PCI gets 
-  // // a chance to assign I/Os
-  //         movl    $CONFIG_ADDR(0, 0x89, 0x42), %eax
-  //         //      movb    $0x09, %dl
-  //                 movb    $0x00, %dl
-  //                         PCI_WRITE_CONFIG_BYTE
-  //
+	// This early setup switches IDE into compatibility mode before PCI gets 
+	// // a chance to assign I/Os
+	//         movl    $CONFIG_ADDR(0, 0x89, 0x42), %eax
+	//         //      movb    $0x09, %dl
+	//                 movb    $0x00, %dl
+	//                         PCI_WRITE_CONFIG_BYTE
+	//
 #endif
-  /* we do this here as in V2, we can not yet do raw operations 
-   * to pci!
-   */
-  dev++; /* ICKY */
-  pci_write_config8(dev, 0x42, 0);
+	/* we do this here as in V2, we can not yet do raw operations 
+	 * to pci!
+	 */
+	dev++; /* ICKY */
+	pci_write_config8(dev, 0x42, 0);
 }
 
-static void
-enable_shadow_ram(void) {
-  device_t dev = 0; /* no need to look up 0:0.0 */
-  unsigned char shadowreg;
-  /* dev 0 for southbridge */
-  shadowreg = pci_read_config8(dev, 0x63);
-  /* 0xf0000-0xfffff */
-  shadowreg |= 0x30;
-  pci_write_config8(dev, 0x63, shadowreg);
+static void enable_shadow_ram(void) 
+{
+	device_t dev = 0; /* no need to look up 0:0.0 */
+	unsigned char shadowreg;
+	/* dev 0 for southbridge */
+	shadowreg = pci_read_config8(dev, 0x63);
+	/* 0xf0000-0xfffff */
+	shadowreg |= 0x30;
+	pci_write_config8(dev, 0x63, shadowreg);
 }
+
 static void main(void)
 {
-  unsigned long x;
-  /*	init_timer();*/
-  outb(5, 0x80);
-
-  enable_vt8231_serial();
-  enable_mainboard_devices();
-  uart_init();
-  console_init();
+	unsigned long x;
+	/*	init_timer();*/
+	outb(5, 0x80);
 	
-  enable_smbus();
-  enable_shadow_ram();
-  /*
-    memreset_setup();
-    this is way more generic than we need.
-    sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
-  */
-  sdram_set_registers((const struct mem_controller *) 0);
-  sdram_set_spd_registers((const struct mem_controller *) 0);
-  sdram_enable(0, (const struct mem_controller *) 0);
-
-  /* Check all of memory */
+	enable_vt8231_serial();
+	enable_mainboard_devices();
+	uart_init();
+	console_init();
+	
+	enable_smbus();
+	enable_shadow_ram();
+	/*
+	  memreset_setup();
+	  this is way more generic than we need.
+	  sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
+	*/
+	sdram_set_registers((const struct mem_controller *) 0);
+	sdram_set_spd_registers((const struct mem_controller *) 0);
+	sdram_enable(0, (const struct mem_controller *) 0);
+	
+	/* Check all of memory */
 #if 0
-  ram_check(0x00000000, msr.lo);
+	ram_check(0x00000000, msr.lo);
 #endif
 #if 0
-  static const struct {
-    unsigned long lo, hi;
-  } check_addrs[] = {
-    /* Check 16MB of memory @ 0*/
-    { 0x00000000, 0x01000000 },
+	static const struct {
+		unsigned long lo, hi;
+	} check_addrs[] = {
+		/* Check 16MB of memory @ 0*/
+		{ 0x00000000, 0x01000000 },
 #if TOTAL_CPUS > 1
-    /* Check 16MB of memory @ 2GB */
-    { 0x80000000, 0x81000000 },
+		/* Check 16MB of memory @ 2GB */
+		{ 0x80000000, 0x81000000 },
 #endif
-  };
-  int i;
-  for(i = 0; i < sizeof(check_addrs)/sizeof(check_addrs[0]); i++) {
-    ram_check(check_addrs[i].lo, check_addrs[i].hi);
-  }
+	};
+	int i;
+	for(i = 0; i < sizeof(check_addrs)/sizeof(check_addrs[0]); i++) {
+		ram_check(check_addrs[i].lo, check_addrs[i].hi);
+	}
 #endif
 }

@@ -227,6 +227,15 @@ void print_option_enumeration(struct lb_record *ptr, unsigned long addr)
 		rec->text);
 }
 
+void print_option_checksum(struct lb_record *ptr, unsigned long addr)
+{
+	struct cmos_checksum *rec;
+	rec = (struct cmos_checksum *)ptr;
+	printf("checksum %d, rec len %d, range %d-%d location %d type %d\n",
+		rec->tag, rec->size, 
+		rec->range_start, rec->range_end, rec->location, rec->type);
+}
+
 struct {
 	uint32_t type;
 	char *type_name;
@@ -250,6 +259,7 @@ struct {
 	{ LB_TAG_OPTION,            "Option",             print_option },
 	{ LB_TAG_OPTION_ENUM,       "Option Enumeration", print_option_enumeration },
 	{ LB_TAG_OPTION_DEFAULTS,   "Option Defaults",    nop_print },
+	{ LB_TAG_OPTION_CHECKSUM,   "Option Checksum",    print_option_checksum },
 	{ -1, "Unknown", 0 }
 };
 

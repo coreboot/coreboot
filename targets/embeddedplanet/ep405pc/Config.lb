@@ -22,10 +22,10 @@ uses ROM_SIZE ROM_IMAGE_SIZE
 uses ROM_SECTION_SIZE 
 uses ROM_SECTION_OFFSET 
 uses _RESET
+uses _EXCEPTION_VECTORS
 uses _ROMBASE
 uses _RAMBASE
-uses CACHE_RAM_BASE 
-uses CACHE_RAM_SIZE 
+uses EMBEDDED_RAM_SIZE
 uses STACK_SIZE HEAP_SIZE
 
 ## Enable PPC405 instructions
@@ -35,7 +35,7 @@ option CPU_OPT="-Wa,-m405"
 option CROSS_COMPILE="powerpc-eabi-"
 
 ## Use chip configuration
-option CONFIG_CHIP_CONFIGURE=1
+#option CONFIG_CHIP_CONFIGURE=1
 
 ## We don't use compressed image
 option CONFIG_COMPRESS=0
@@ -56,13 +56,11 @@ option IDE_OFFSET=0
 
 option ROM_SIZE=1048576
 
+## Board has fixed size RAM
+option EMBEDDED_RAM_SIZE=128*1024*1024
+
 ## LinuxBIOS C code runs at this location in RAM
 option _RAMBASE=0x00100000
-
-## For the trick of using cache as ram
-## put the fake ram location at this address
-option CACHE_RAM_BASE=0x00200000
-option CACHE_RAM_SIZE=0x00004000
 
 ##
 ## Use a 64K stack
@@ -89,8 +87,11 @@ romimage "normal"
 	## Reset vector address
 	option _RESET=0xfffffffc
 
+	## Exception vectors
+	option _EXCEPTION_VECTORS=0xfff00100
+
 	## linuxBIOS ROM start address
-	option _ROMBASE=0xfff00000
+	option _ROMBASE=0xfff03000
 
 	## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
 	option ROM_IMAGE_SIZE=49152

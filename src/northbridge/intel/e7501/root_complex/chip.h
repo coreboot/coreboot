@@ -1,5 +1,0 @@
-struct northbridge_intel_e7501_root_complex_config
-{
-};
-
-extern struct chip_operations northbridge_intel_e7501_root_complex_ops;

@@ -35,7 +35,7 @@ int smbus_devfn;
 #define SMBUS_PIN_CTL  0xf 
 
 /* Define register settings */
-#define HOST_RESET 0xfe
+#define HOST_RESET 0xff
 #define DIMM_BASE 0xa0        // 1010000 is base for DIMM in SMBus
 #define READ_CMD  0x01        // 1 in the 0 bit of SMBHSTADD states to READ
 

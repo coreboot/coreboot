@@ -28,25 +28,13 @@ void handler(void) {
  __asm__ __volatile__ ( 
 	".code16\n"
 	"idthandle:\n"
-	" 	pushal\n"
-	"	movl $0xff, %eax\n"
-	"	jmp 1f\n"
-	"idthandle10:\n"
-	" 	pushal\n"
-	"	movl $0x10, %eax\n"
-	"	jmp 1f\n"
-	"idthandle42:\n"
-	" 	pushal\n"
-	"	movl $0x42, %eax\n"
-	"	jmp 1f\n"
-	"idthandle1a: \n"
-	" 	pushal\n"
-	"	movl $0x1a, %eax\n"
-	"1:	outb %al, $0x80\n"
+	"	pushal\n"
+	"	movb $0, %al\n"
 	"	ljmp $0, $callbiosint16\n"
 	"end_idthandle:\n"
 	".code32\n"
 	);
+
 }
 
 // Calling conventions. The first C function is called with this stuff
@@ -59,6 +47,12 @@ void callbiosint(void) {
 __asm__ __volatile__ (
 	".code16\n"
 	"callbiosint16:\n"
+	// clean up the int #. To save space we put it in the lower
+	// byte. But the top 24 bits are junk. 
+	"andl $0xffffff00, %eax\n"
+	// this push does two things:
+	// - put the INT # on the stack as a parameter
+	// - provides us with a temp for the %cr0 mods.
 	"pushl	%eax\n"
  	"movl    %cr0, %eax\n"
        //"andl    $0x7FFAFFD1, %eax\n" /* PG,AM,WP,NE,TS,EM,MP = 0 */
@@ -179,31 +173,31 @@ biosint(
 	return ret;
 } 
 
+
 void
 setup_realmode_idt(void) {
 	extern unsigned char idthandle, end_idthandle;
-	extern unsigned char idthandle10, idthandle1a; 
-	extern unsigned char idthandle42;
 	int i;
 	struct realidt *idts = (struct realidt *) 0;
+	int codesize = &end_idthandle - &idthandle;
+	unsigned char *intbyte, *codeptr;
 
+	// for each int, we create a customized little handler
+	// that just pushes %ax, puts the int # in %al, 
+	// then calls the common interrupt handler. 
+	// this necessitated because intel didn't know much about 
+	// architecture when they did the 8086 (it shows)
+	// (hmm do they know anymore even now :-)
+	// obviously you can see I don't really care about memory 
+	// efficiency. If I did I would probe back through the stack
+	// and get it that way. But that's really disgusting.
 	for (i = 0; i < 256; i++) {
 		idts[i].cs = 0;
-		idts[i].offset = 1024;
+		codeptr = 1024 + i * codesize;
+		idts[i].offset = codeptr;
+		memcpy((void *) codeptr, &idthandle, codesize);
+		intbyte = codeptr + 3;
+		*intbyte = i;
 	}
-
-	// now adjust for int 0x10 and int 0x1a
-
-	idts[0x10].offset += &idthandle10 - &idthandle;
-	printk_debug("idts[0x10].offset is now 0x%x\n", 
-			idts[0x10].offset);
-	idts[0x1a].offset += &idthandle1a - &idthandle;
-	printk_debug("idts[0x1a].offset is now 0x%x\n", 
-			idts[0x1a].offset);
-	idts[0x42].offset += &idthandle42 - &idthandle;
-	printk_debug("idts[0x42].offset is now 0x%x\n", 
-			idts[0x42].offset);
-	
-	memcpy((void *) 1024, &idthandle, &end_idthandle - &idthandle);
 
 }

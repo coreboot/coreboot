@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
-#include <device/pnp.h>
+#include <device/pnp_def.h>
 #include <arch/romcc_io.h>
 #include <arch/smp/lapic.h>
 #include "option_table.h"
@@ -21,7 +21,7 @@
 #include "northbridge/amd/amdk8/cpu_rev.c"
 #include "superio/NSC/pc87360/pc87360_early_serial.c"
 
-#define SIO_BASE 0x2e
+#define SERIAL_DEV PNP_DEV(0x2e, PC87360_SP1)
 
 static void hard_reset(void)
 {
@@ -81,7 +81,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
@@ -105,19 +104,17 @@ static void main(void)
 	if (cpu_init_detected()) {
 		asm("jmp __cpu_reset");
 	}
-	enable_lapic();
-	init_timer();
 	distinguish_cpu_resets();
 	if (!boot_cpu()) {
 		print_err("This LinuxBIOS image is built for UP only.\n");
 		stop_this_cpu();
 	}
-	pc87360_enable_serial(SIO_BASE, TTYS0_BASE);
+	pc87360_enable_serial(SERIAL_DEV, TTYS0_BASE);
 	uart_init();
 	console_init();
 	setup_default_resource_map();
 	needs_reset = setup_coherent_ht_domain();
-	needs_reset = ht_setup_chain(PCI_DEV(0, 0x18, 0), 0x80);
+	needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0x80);
 	if (needs_reset) {
 		print_info("ht reset -");
 		soft_reset();
@@ -139,28 +136,6 @@ static void main(void)
 	dump_pci_device(PCI_DEV(0, 0x18, 2));
 #endif
 
-	/* Check all of memory */
-#if 0
-	msr_t msr;
-	msr = rdmsr(TOP_MEM);
-	print_debug("TOP_MEM: ");
-	print_debug_hex32(msr.hi);
-	print_debug_hex32(msr.lo);
-	print_debug("\r\n");
-#endif
-#if 0
-	ram_check(0x00000000, msr.lo);
-#endif
-#if 0
-	static const struct {
-		unsigned long lo, hi;
-	} check_addrs[] = {
-		/* Check 16MB of memory @ 0*/
-		{ 0x00000000, 0x01000000 },
-	};
-	int i;
-	for(i = 0; i < sizeof(check_addrs)/sizeof(check_addrs[0]); i++) {
-		ram_check(check_addrs[i].lo, check_addrs[i].hi);
-	}
-#endif
+	/* Check the first 1M */
+	ram_check(0x00000000, 0x000100000);
 }

@@ -1,0 +1,9 @@
+These are scripts for burning DoC. The DoC support as of 2.4.7 and 
+later should be fine. Be sure to set up (in drivers/mtd/devices/docprobe.c)
+#undef DOC_SINGLE_DRIVER
+
+Also use the millenium-only driver when you config your kernel. 
+
+Also I'm including the mtd erase.c here for those who don't have it.
+
+ron

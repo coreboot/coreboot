@@ -4,16 +4,23 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 
+#include "../drivers/pci/onboard/chip.h"
+
 struct rom_header * pci_rom_probe(struct device *dev)
 {
 	unsigned long rom_address;
 	struct rom_header *rom_header;
 	struct pci_data *rom_data;
 
+        if (dev->on_mainboard && (dev->rom_address != 0) ) {
+                rom_address = dev->rom_address;
+        }
+        else {
+                rom_address = pci_read_config32(dev, PCI_ROM_ADDRESS);
+        }
+
 	rom_address = pci_read_config32(dev, PCI_ROM_ADDRESS);
 	if (rom_address == 0x00000000 || rom_address == 0xffffffff) {
-		/* FixME: search in the LinuxBIOS Image for integrated
-		 * devices? */
 		return NULL;
 	}
 

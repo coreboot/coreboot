@@ -273,8 +273,10 @@ static void pci_read_bases(struct device *dev, unsigned int howmany, unsigned lo
 		resource = pci_get_resource(dev, index);
 		index += (resource->flags & IORESOURCE_PCI64)?8:4;
 	}
-	if (rom)
-		pci_get_rom_resource(dev, rom);
+	if (rom) {
+		if ((!dev->on_mainboard) || (dev->rom_address == 0))
+			pci_get_rom_resource(dev, rom);
+	}
 
 	compact_resources(dev);
 }

@@ -11,9 +11,16 @@
 #include <device/pci_ops.h>
 #include "chip.h"
 
+static void onboard_enable(device_t dev) 
+{
+	struct drivers_pci_onboard_config *conf;
+        conf = dev->chip_info;
+	dev->rom_address = conf->rom_address;
+}
 
 struct chip_operations drivers_pci_onboard_ops = {
 #if CONFIG_CHIP_NAME == 1
 	CHIP_NAME("Onboard PCI")
 #endif
+	.enable_dev = onboard_enable,
 };

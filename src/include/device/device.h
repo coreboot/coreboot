@@ -72,6 +72,7 @@ struct device {
 	unsigned int    initialized : 1; /* set if we have initialized the device */
 	unsigned int    have_resources : 1; /* Set if we have read the devices resources */
 	unsigned int    on_mainboard : 1;
+	unsigned long   rom_address;
 
 	uint8_t command;
 

@@ -544,7 +544,9 @@ static void sdram_set_registers(const struct mem_controller *ctrl) {
       print_err("no memory in this bank\r\n");
       /* No memory in this bank. Tell it to the bridge. */
       pci_write_config8(north,ramregs[c], 0);
-    } else {
+    } 
+    /* found something */
+    {
       uint8_t best = 0;
 
       /* Detect MA mapping type of the bank. */
@@ -582,7 +584,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl) {
 	print_err_hex32(eax); print_err(" ");
 	print_err_hex32(esi); print_err("\r\n");
 
-	if (eax < esi) { /* ??*/
+	if (eax > esi) { /* ??*/
 		      
 	  // This is the current best MA mapping.
 	  // Save the address and its MA mapping value.

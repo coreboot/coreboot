@@ -485,13 +485,19 @@ void compute_allocate_io(struct pci_bus *bus)
 				printk_debug("DEVIO: Bus 0x%x, devfn 0x%x, reg 0x%x: "
 				    "iosize 0x%lx\n",
 				    curdev->bus->number, curdev->devfn, i, iosize);
+				// Make sure that iosize is a minimum 
+				// size. 
+				iosize = round(iosize, IO_ALIGN);
+				// io_base must be aligned to the io size.
+				io_base = round(io_base, iosize);
+				printk_debug("  rounded size %d base 0x%x\n", 							iosize, io_base);
 				curdev->base_address[i] = io_base;
 				// some chipsets allow us to set/clear the IO bit. 
 				// (e.g. VIA 82c686a.) So set it to be safe)
 				curdev->base_address[i] |= 
 				    PCI_BASE_ADDRESS_SPACE_IO;
 				printk_debug("-->set base to 0x%lx\n", io_base);
-				io_base += round(iosize, IO_ALIGN);
+				io_base += iosize;
 				curdev->command |= PCI_COMMAND_IO;
 			}
 		}

@@ -319,7 +319,9 @@ spd_set_nbxcfg_done:
 	movl $0x6c, %eax      ; \
 	PCI_WRITE_CONFIG_BYTE ; \
 	CS_WRITE($0x78, $0x01) ; \
-	CS_WRITE($0x58, $0x80) ; \
+	movb	$0x80, %dl; \
+	movl	$0x58, %eax; \
+	PCI_WRITE_CONFIG_BYTE; \
 	CS_WRITE($0x6d, $0x57) ; \
 	CS_WRITE($0x70, $0xc0) ; \
 	CS_READ($0x71)	      ; \

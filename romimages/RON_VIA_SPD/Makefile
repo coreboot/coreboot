@@ -48,7 +48,6 @@ floppy: all
 # can put it on the floppy (see ROOTDOIT)
 romimage: linuxbios.rom vmlinux.bin.gz.block
 	cat vmlinux.bin.gz.block linuxbios.rom > romimage
-	cp romimage /tmp
 
 linuxbios.rom: linuxbios.strip mkrom 
 	./mkrom -s 64 -f -o linuxbios.rom linuxbios.strip

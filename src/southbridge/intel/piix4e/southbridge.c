@@ -30,6 +30,11 @@ void nvram_on()
 // for now, I am putting in the old keyboard code, until we figure out 
 // the best way to do this -- RGM
 
+#ifdef NO_KEYBOARD
+void keyboard_on()
+{
+}
+#else
 void keyboard_on()
 {
         u32 controlbits;
@@ -70,5 +75,5 @@ void keyboard_on()
 
         /* now keyboard should work, ha ha. */
         pc_keyboard_init();
-
 }
+#endif

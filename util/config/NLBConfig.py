@@ -22,6 +22,7 @@ linuxbiosbase = 0xf0000;
 
 objectrules = [];
 userrules = [];
+userdefines = [];
 
 # this is the absolute base rule, and so is very special. 
 mainrulelist = "all"
@@ -191,16 +192,16 @@ def adddepend(dir, rule):
         makebaserules[rulename][0] = makebaserules[rulename][0] + " " + depend
 
 def makedefine(dir, rule): 
-	userrules.append(rule)
+	userdefines.append(rule)
+
 def option(dir, option):
-	makeoptions[option] = 1;
+	makeoptions[option] = "-D" + option
 
 def nooption(dir, option):
-	makeoptions[option] = 0;
+	makeoptions[option] = "-U" + option
 
 def commandline(dir, command):
-	rule = "CMD_LINE=\'\"" + command + "\"\'"
-	makedefine(dir, rule)
+	makeoptions["CMD_LINE"] = "-DCMD_LINE=\'\"" + command + "\"\'"
 
 # we do all these rules by hand because docipl will always be special
 # it's more or less a stand-alone bootstrap
@@ -406,10 +407,8 @@ def writemakefile(path):
 	file.write("TOP=%s\n" % (treetop))
 	file.write("CPUFLAGS=\n")
 	for z in makeoptions.keys(): 
-		if (makeoptions[z]):
-			file.write("CPUFLAGS += -D%s\n" % (z))
-		else:
-			file.write("CPUFLAGS += -U%s\n" % (z))
+		print "key is %s, val %s\n" % (z, makeoptions[z])
+		file.write("CPUFLAGS += %s\n" % (makeoptions[z]))
 				
 	# print out all the object dependencies
 	# There is ALWAYS a crt0.o
@@ -417,14 +416,20 @@ def writemakefile(path):
 	for i in range(len(objectrules)):
 		file.write("OBJECTS += %s\n" % (objectrules[i][0]))
 		
-	# print out the base rules
 	
+	# print out the user defines
+	for i in range(len(userdefines)):
+		print "rule %d is %s" % (i, userdefines[i])
+		file.write("%s\n" % userdefines[i])
+		
+	# print out the base rules
 	# need to have a rule that counts on 'all'
 	file.write("mainrule: %s\n" % mainrulelist)
 #	for i in range(len(baserules)):
 #		file.write("%s\n" % baserules[i])
 
 	for i in range(len(userrules)):
+		print "rule %d is %s" % (i, userrules[i])
 		file.write("%s\n" % userrules[i])
 		
 	# print out any user rules

@@ -28,7 +28,7 @@
 #ifndef lint
 static char rcsid[] = "$Id$";
 #endif
-#define DEBUG
+
 #include <cpu/p6/msr.h>
 #include <cpu/p6/mtrr.h>
 #include <printk.h>

@@ -6,3 +6,7 @@
 void mainboard_fixup()
 {
 }
+
+void final_mainboard_fixup()
+{
+}

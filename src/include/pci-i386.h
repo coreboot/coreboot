@@ -6,14 +6,6 @@
  *	(c) 1999 Martin Mares <mj@ucw.cz>
  */
 
-#undef DEBUG
-
-#ifdef DEBUG
-#define DBG(x...) printk(x)
-#else
-#define DBG(x...)
-#endif
-
 #define PCI_PROBE_BIOS 1
 #define PCI_PROBE_CONF1 2
 #define PCI_PROBE_CONF2 4

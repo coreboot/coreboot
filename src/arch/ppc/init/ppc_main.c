@@ -9,7 +9,7 @@ extern unsigned _iseg[];
 extern unsigned _liseg[];
 extern unsigned _eliseg[];
 
-void (*hardwaremain)(int) = _iseg;
+void (*hardwaremain)(int) = (void (*)(int))_iseg;
 
 /*
  * At this point we're running out of flash with our

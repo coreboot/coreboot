@@ -237,6 +237,12 @@ define _RESET
 	export always
 	comment "Hardware reset vector address"
 end
+define _EXCEPTION_VECTORS
+	default {_ROMBASE+0x100}
+	format "0x%x"
+	export always
+	comment "Address of exception vector table"
+end
 define STACK_SIZE
 	default 0x2000
 	format "0x%x"
@@ -255,22 +261,22 @@ define _RAMBASE
 	export always
 	comment "Base address of LinuxBIOS in RAM"
 end
-define USE_CACHE_RAM
+define USE_DCACHE_RAM
 	default 0
 	export used
-	comment "Use cache as temporary RAM if possible"
+	comment "Use data cache as temporary RAM if possible"
 end
-define CACHE_RAM_BASE
-	default 0x00200000
+define DCACHE_RAM_BASE
+	default none
 	format "0x%x"
-	export always
-	comment "Base address of cache when using it for temporary RAM"
+	export used
+	comment "Base address of data cache when using it for temporary RAM"
 end
-define CACHE_RAM_SIZE
-	default 0x00004000
+define DCACHE_RAM_SIZE
+	default none
 	format "0x%x"
-	export always
-	comment "Size of cache when using it for temporary RAM"
+	export used
+	comment "Size of data cache when using it for temporary RAM"
 end
 define XIP_ROM_BASE
 	default 0
@@ -351,33 +357,30 @@ define DEFAULT_CONSOLE_LOGLEVEL
 	export always
 	comment "Console will log at this level unless changed"
 end
-
 define MAXIMUM_CONSOLE_LOGLEVEL
 	default 8
 	export always
  	comment "Error messages up to this level can be printed"
 end
-
 define NO_POST
 	default none
 	export always
 	comment "Disable POST codes"
 end
-
 define TTYS0_BASE
 	default 0x3f8
+	format "0x%x"
 	export always
 	comment "Base address for 8250 uart for the serial console"
 end
-
 define TTYS0_BAUD
 	default 115200
 	export always
 	comment "Default baud rate for serial console"
 end
-
 define TTYS0_LCS
 	default 0x3
+	format "0x%x"
 	export always
 	comment "Default flow control settings for the 8250 serial console uart"
 end
@@ -406,18 +409,17 @@ define CONFIG_SYS_CLK_FREQ
 	export used
 	comment "System clock frequency in MHz"
 end
-
 define CONFIG_KEYBOARD
 	default 0
 	export used
 	comment "Run PC keyboard enable code"
 end
-
 define CONFIG_LEGACY_VGABIOS
 	default 0
 	export used
 	comment "Support for legacy VGA BIOS"
 end
+
 ###############################################
 # SMP options
 ###############################################
@@ -512,6 +514,39 @@ define IDE_OFFSET
 	default 0
 	export always
 	comment "Sector at which to start searching for boot image"
+end
+
+###############################################
+# Options for memory mapped I/O
+###############################################
+
+define PCIC0_CFGADDR
+	default none
+	format "0x%x"
+	export used
+	comment "PCI Configuration Address Register"
+end
+define PCIC0_CFGDATA
+	default none
+	format "0x%x"
+	export used
+	comment "PCI Configuration Data Register"
+end
+define UART0_IO_BASE
+	default none
+	format "0x%x"
+	export used
+	comment "UART 0 base address"
+end
+
+###############################################
+# Options for embedded systems
+###############################################
+
+define EMBEDDED_RAM_SIZE
+	default none
+	export used
+	comment "Embedded boards generally have fixed RAM size"
 end
 
 ###############################################

@@ -705,7 +705,7 @@ def setoption(name, value):
 	curpart = partstack.tos()
 	if (curpart and curpart.type != 'mainboard'):
 		fatal("Options may only be set in top-level and mainboard configuration files")
-	o = getdict(global_options, name)
+	o = getdict(global_uses_options, name)
 	if (o == 0):
 		fatal("Attempt to set nonexistent option %s" % name)
 	v = option_value(value)
@@ -1728,8 +1728,8 @@ if __name__=='__main__':
 		fatal("Could not parse file")
 	loc.pop()
 
-	for r in romimages.keys():
-		verifyparse(getdict(romimages, r))
+	for image_name, image in romimages.items():
+		verifyparse(image)
 
 	# no longer need to check if an options has been used
 	alloptions = 1
@@ -1744,7 +1744,6 @@ if __name__=='__main__':
 			print "Creating directory %s" % img_dir
 			os.makedirs(img_dir)
 
-		# crt0 includes
 		if (debug.level(debug.dump)):
 			for i in image.getinitincludes():
 				debug.info(debug.dump, "crt0include file %s" % i)

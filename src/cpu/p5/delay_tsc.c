@@ -98,45 +98,39 @@ bad_ctc:
  */
 static unsigned long long calibrate_tsc(void)
 {
-    unsigned long long retval, start, end, delta;
-    unsigned long allones = (unsigned long) -1, result;
-    unsigned long startlow, starthigh;
-    unsigned long endlow, endhigh;
-    unsigned long count;
-
-    rdtsc(startlow,starthigh);
-    // no udivdi3, dammit.
-    // so we count to 1<< 20 and then right shift 20
-    for(count = 0; count < (1<<20); count ++)
-	outb(0x80, 0x80);
-    rdtsc(endlow,endhigh);
-
-    // make delta be (endhigh - starthigh) + (endlow - startlow)
-    // but >> 20
-    // do it this way to avoid gcc warnings.
-    start = starthigh;
-    start <<= 32;
-    start |= startlow;
-    end = endhigh;
-    end <<= 32;
-    end |= endlow;
-    delta = end - start;
-    // at this point we have a delta for 1,000,000 outbs. Now rescale for one microsecond.
-    delta >>= 20;
-    // save this for microsecond timing.
-    clocks_per_usec = delta;
-#define DEBUG
-#ifdef DEBUG
-    printk_notice("end %x:%x, start %x:%x\n",
-	endhigh, endlow, starthigh, startlow);
-    printk_notice("32-bit delta %d\n", (unsigned long) delta);
-#endif
-
-    retval = clocks_per_usec;
-#ifdef DEBUG
-    printk_notice(__FUNCTION__ " 32-bit result is %d\n", result);
-#endif
-    return retval;
+	unsigned long long retval, start, end, delta;
+	unsigned long allones = (unsigned long) -1, result;
+	unsigned long startlow, starthigh;
+	unsigned long endlow, endhigh;
+	unsigned long count;
+	
+	rdtsc(startlow,starthigh);
+	// no udivdi3, dammit.
+	// so we count to 1<< 20 and then right shift 20
+	for(count = 0; count < (1<<20); count ++)
+		outb(0x80, 0x80);
+	rdtsc(endlow,endhigh);
+	
+	// make delta be (endhigh - starthigh) + (endlow - startlow)
+	// but >> 20
+	// do it this way to avoid gcc warnings.
+	start = starthigh;
+	start <<= 32;
+	start |= startlow;
+	end = endhigh;
+	end <<= 32;
+	end |= endlow;
+	delta = end - start;
+	// at this point we have a delta for 1,000,000 outbs. Now rescale for one microsecond.
+	delta >>= 20;
+	// save this for microsecond timing.
+	result = delta;
+	printk_spew("end %x:%x, start %x:%x\n",
+		endhigh, endlow, starthigh, startlow);
+	printk_spew("32-bit delta %d\n", (unsigned long) delta);
+	
+	printk_spew(__FUNCTION__ " 32-bit result is %d\n", result);
+	return retval;
 }
 
 
@@ -149,7 +143,7 @@ void udelay(unsigned long us)
         unsigned long long clocks;
 
 	if (!clocks_per_usec) {
-		calibrate_tsc();
+		clocks_per_usec = calibrate_tsc();
 		printk_info("clocks_per_usec: %u\n", clocks_per_usec);
 	}
 	clocks = us;

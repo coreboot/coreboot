@@ -1,6 +1,7 @@
 
 Contributors (in alpha order):
 
+Eric Biederman <ebiederman@lnxi.com> - 440GX SPD, elfboot, mkelfImage, Athlon SMP, P4 Xeon, etc
 Jeff Garzik <jgarzik@mandrakesoft.com> - The essential /dev/fb! First freebios
 James Hendricks <jimi@lanl.gov> - SMP for 440GX among many other things
 Ollie Lho <ollie@sis.com.tw> - SIS 630

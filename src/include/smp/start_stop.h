@@ -1,7 +1,7 @@
 #ifndef SMP_START_STOP_H
 #define SMP_START_STOP_H
 
-#ifdef SMP
+#if SMP == 1
 #include <smp/atomic.h>
 unsigned long this_processors_id(void);
 int processor_index(unsigned long processor_id);

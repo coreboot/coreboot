@@ -89,7 +89,7 @@ void error(char errmsg[])
  */
 void post_code(uint8_t value)
 {
-#ifdef SERIAL_POST
+#if SERIAL_POST
 	unsigned long hi, lo;
 	// DAMMIT! This just broke!
 	//rdtsc(lo, hi);

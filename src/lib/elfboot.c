@@ -67,7 +67,7 @@ int verify_ip_checksum(
 	bytes += sizeof(*ehdr);
 	checksum = add_ip_checksums(bytes, checksum, 
 		compute_ip_checksum(phdr, ehdr->e_phnum*sizeof(*phdr)));
-	bytes += sizeof(*phdr);
+	bytes += ehdr->e_phnum*sizeof(*phdr);
 	for(ptr = head->phdr_next; ptr != head; ptr = ptr->phdr_next) {
 		checksum = add_ip_checksums(bytes, checksum,
 			compute_ip_checksum((void *)ptr->s_addr, ptr->s_memsz));
@@ -574,8 +574,6 @@ int elfload(struct stream *stream, struct lb_memory *mem,
 	/* Verify the loaded image */
 	if (!verify_loaded_image(cb_chain, ehdr, phdr, &head)) 
 		goto out;
-/*
- */
 
 	printk_info("verified segments\n");
 	/* Shutdown the stream device */
@@ -626,7 +624,7 @@ int elfboot(struct stream *stream, struct lb_memory *mem)
 	for(i = 0; i < ELF_HEAD_SIZE - (sizeof(Elf_ehdr) + sizeof(Elf_phdr)); i+=16) {
 		ehdr = (Elf_ehdr *)(&header[i]);
 		if (memcmp(ehdr->e_ident, ELFMAG, 4) != 0) {
-			printk_debug("NO header at %d\n", i);
+			printk_spew("NO header at %d\n", i);
 			continue;
 		}
 		printk_debug("Found ELF candiate at offset %d\n", i);
@@ -645,12 +643,12 @@ int elfboot(struct stream *stream, struct lb_memory *mem)
 		}
 		ehdr = 0;
 	}
-	printk_debug("header_offset is %d\n", header_offset);
+	printk_spew("header_offset is %d\n", header_offset);
 	if (header_offset == -1) {
 		goto out;
 	}
 
-	printk_debug("Try to load at offset 0x%x\n", header_offset);
+	printk_spew("Try to load at offset 0x%x\n", header_offset);
 	result = elfload(stream, mem, 
 		header + header_offset , ELF_HEAD_SIZE - header_offset);
  out:

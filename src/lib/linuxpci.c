@@ -23,8 +23,7 @@ static char rcsid[] = "$Id$";
 #include <string.h>
 #include <subr.h>
 
-// yes we could do Yet Another Include File, but ...
-int sprintf(char * buf, const char *fmt, ...);
+
 
 /**
  * This is the root of the PCI tree. A PCI tree always has 
@@ -119,7 +118,7 @@ void pci_set_master(struct pci_dev *dev)
  */
 static void pci_get_resource(struct pci_dev *dev, struct resource *resource, unsigned long index)
 {
-	uint32_t addr, size;
+	uint32_t addr, size, base;
 	unsigned long type;
 
 	/* Initialize the resources to nothing */
@@ -143,6 +142,10 @@ static void pci_get_resource(struct pci_dev *dev, struct resource *resource, uns
 	pci_write_config_dword(dev, index, ~0);
 	pci_read_config_dword(dev,  index, &size);
 
+	/* get the minimum value the bar can be set to */
+	pci_write_config_dword(dev, index, 0);
+	pci_read_config_dword(dev, index, &base);
+
 	/* restore addr */
 	pci_write_config_dword(dev, index, addr);
 
@@ -157,7 +160,7 @@ static void pci_get_resource(struct pci_dev *dev, struct resource *resource, uns
 	 * This incidentally catches the common case where registers 
 	 * read back as 0 for both address and size. 
 	 */
-	if (addr == size) {
+	if ((addr == size) && (addr == base)) {
 		if (size != 0) {
 			printk_debug(
 				"PCI: %02x:%02x.%01x register %02x(%08x), read-only ignoring it\n",
@@ -318,7 +321,7 @@ static void pci_bus_read_resources(struct pci_dev *dev)
 static void pci_set_resource(struct pci_dev *dev, struct resource *resource)
 {
 	unsigned long base, limit;
-	unsigned long bridge_align = MEM_BRIDGE_ALIGN; // stupid warnings.
+	unsigned long bridge_align = MEM_BRIDGE_ALIGN;
 	unsigned char buf[10];
 	
 	/* Make certain the resource has actually been set */
@@ -447,14 +450,6 @@ static void pci_dev_set_resources(struct pci_dev *dev)
 	pci_write_config_byte(dev, PCI_CACHE_LINE_SIZE, 64 >> 2);
 }
 
-
-// probably dead.
-#if 0
-static void pci_noop(struct pci_dev *dev)
-{
-	return;
-}
-#endif
 struct pci_dev_operations default_pci_ops_dev = {
 	.read_resources = pci_dev_read_resources,
 	.set_resources = pci_dev_set_resources,
@@ -483,7 +478,6 @@ static void set_pci_ops(struct pci_dev *dev)
 			break;
 		}
 	}
-#warning set_pci_dev_ops not yet finished
 	/* If I don't have a specific driver use the default operations */
 	switch(dev->hdr_type & 0x7f) {	/* header type */
 	case PCI_HEADER_TYPE_NORMAL:	/* standard header */

@@ -20,30 +20,30 @@ object clock.o
 arch ppc end
 
 if CONFIG_SANDPOINT_ALTIMUS
-	chip pmc/altimus/mpc7410 device pnp 0.0 on end end
-#	chip pmc/altimus/mpc7400 device pnp 0.0 on end end
-#	chip pmc/altimus/mpc75x device pnp 0.0 on end end
+	dir /pmc/altimus/mpc7410
+#	dir /pmc/altimus/mpc7400
+#	dir /pmc/altimus/mpc75x
 end
 if CONFIG_SANDPOINT_TALUS
-	chip pmc/talus/mpc74x device pnp 0.0 on end end
-	chip pmc/talus/mpc603 device pnp 0.0 on end end
+	dir /pmc/talus/mpc74x
+	dir /pmc/talus/mpc603
 end
 if CONFIG_SANDPOINT_UNITY
-	chip pmc/unity/mpc824x device pnp 0.0 on end end
+	dir /pmc/unity/mpc824x
 end
 if CONFIG_SANDPOINT_VALIS
-	chip pmc/valis/mpc745x device pnp 0.0 on end end
+	dir /pmc/valis/mpc745x
 end
 if CONFIG_SANDPOINT_GYRUS
-	chip pmc/gyrus/mpc744x device pnp 0.0 on end end
+	dir /pmc/gyrus/mpc744x
 end
 
 ##
 ## Include the secondary Configuration files 
 ##
-chip southbridge/winbond/w83c553 device pnp 0.0 on end end
+dir /southbridge/winbond/w83c553
 
-chip superio/NSC/pc97307 device pnp 0.0 on end end
+dir /superio/NSC/pc97307
 
 ##
 ## Build the objects we have code for in this directory.

@@ -8,8 +8,6 @@
 #include <bitops.h>
 #include "chip.h"
 
-#define BRIDGE_IO_MASK (IORESOURCE_IO | IORESOURCE_MEM)
-
 static void pci_domain_read_resources(device_t dev)
 {
         struct resource *resource;
@@ -67,7 +65,6 @@ static uint32_t find_pci_tolm(struct bus *bus)
 
 static void pci_domain_set_resources(device_t dev)
 {
-        struct resource *resource, *last;
 	device_t mc_dev;
         uint32_t pci_tolm;
 
@@ -157,6 +154,7 @@ static struct device_operations pci_domain_ops = {
         .enable_resources = enable_childrens_resources,
         .init             = 0,
         .scan_bus         = pci_domain_scan_bus,
+	.ops_pci_bus      = &pci_cf8_conf1,
 };  
 
 static void cpu_bus_init(device_t dev)
@@ -181,7 +179,6 @@ static void enable_dev(struct device *dev)
         /* Set the operations if it is a special bus type */
         if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
                 dev->ops = &pci_domain_ops;
-		pci_set_method_conf1();
         }
         else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
                 dev->ops = &cpu_bus_ops;

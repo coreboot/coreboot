@@ -9,6 +9,7 @@
 struct device;
 typedef struct device * device_t;
 struct pci_operations;
+struct pci_bus_operations;
 struct smbus_bus_operations;
 
 /* Chip operations */
@@ -30,10 +31,11 @@ struct device_operations {
 	void (*set_resources)(device_t dev);
 	void (*enable_resources)(device_t dev);
 	void (*init)(device_t dev);
-	unsigned int (*scan_bus)(device_t  bus, unsigned int max);
+	unsigned int (*scan_bus)(device_t bus, unsigned int max);
 	void (*enable)(device_t dev);
-	struct pci_operations *ops_pci;
-	struct smbus_bus_operations *ops_smbus_bus;
+	const struct pci_operations *ops_pci;
+	const struct smbus_bus_operations *ops_smbus_bus;
+	const struct pci_bus_operations *ops_pci_bus;
 };
 
 

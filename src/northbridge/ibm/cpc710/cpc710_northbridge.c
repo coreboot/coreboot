@@ -6,23 +6,23 @@
 #include <stdlib.h>
 #include <string.h>
 #include <bitops.h>
+#include <cpu/cpu.h>
 #include "chip.h"
-#include "northbridge.h"
-
-#define BRIDGE_IO_MASK (IORESOURCE_IO | IORESOURCE_MEM)
 
 static void pci_domain_read_resources(device_t dev)
 {
 	struct resource *resource;
 
 	/* Initialize the system wide io space constraints */
-	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0,0));
+	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
+	resource->base	= 0;
 	resource->limit = 0xffffUL;
 	resource->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 
 	/* Initialize the system wide memory resources constraints */
-	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1,0));
-	resource->limit = 0xffffffffULL;
+	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
+	resource->base	= 0x80000000ULL;
+	resource->limit = 0xfeffffffULL; /* We can put pci resources in the system controll area */
 	resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 }
 
@@ -41,60 +41,18 @@ static void ram_resource(device_t dev, unsigned long index,
 		IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 }
 
-static void tolm_test(void *gp, struct device *dev, struct resource *new)
-{
-	struct resource **best_p = gp;
-	struct resource *best;
-	best = *best_p;
-	if (!best || (best->base > new->base)) {
-		best = new;
-	}
-	*best_p = best;
-}
-
-static uint32_t find_pci_tolm(struct bus *bus)
-{
-	struct resource *min;
-	uint32_t tolm;
-	min = 0;
-	search_bus_resources(bus, IORESOURCE_MEM, IORESOURCE_MEM, tolm_test, &min);
-	tolm = 0xffffffffUL;
-	if (min && tolm > min->base) {
-		tolm = min->base;
-	}
-	return tolm;
-}
-
 static void pci_domain_set_resources(device_t dev)
 {
-	device_t mc_dev;
-	uint32_t pci_tolm;
-	uint32_t idx;
+	int idx;
 
-	pci_tolm = find_pci_tolm(&dev->link[0]);
-	mc_dev = dev->link[0].children;
-	if (mc_dev) {
-		unsigned long tomk, tolmk;
-		/* Hard code the Top of memory for now */
-		tomk = 65536;
-		/* Compute the top of Low memory */
-		tolmk = pci_tolm >> 10;
-		if (tolmk >= tomk) {
-			/* The PCI hole does not overlap memory.
-			 */
-			tolmk = tomk;
-		}
-		
-		/* Report the memory regions */
-		idx = 10;
-		ram_resource(dev, idx++, 0, 640);
-		ram_resource(dev, idx++, 768, tolmk - 768);
-		if (tomk > 4*1024*1024) {
-			ram_resource(dev, idx++, 4096*1024, tomk - 4*1024*1024);
-		}
-	}
+	/* Report the memory regions */
+	idx = 10;
+	ram_resource(dev, idx++, 0, 1024*1024); /* FIXME */
+
+	/* And assign the resources */
 	assign_resources(&dev->link[0]);
 }
+
 
 static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
 {
@@ -108,18 +66,38 @@ static struct device_operations pci_domain_ops = {
 	.enable_resources = enable_childrens_resources,
 	.init		  = 0,
 	.scan_bus	  = pci_domain_scan_bus,
+	.ops_pci_bus	  = &pci_ppc_conf1,
 };  
+
+static void cpu_bus_init(device_t dev)
+{
+	initialize_cpus(&dev->link[0]);
+}
+
+static void cpu_bus_noop(device_t dev)
+{
+}
+
+static struct device_operations cpu_bus_ops = {
+	.read_resources	  = cpu_bus_noop,
+	.set_resources	  = cpu_bus_noop,
+	.enable_resources = cpu_bus_noop,
+	.init		  = cpu_bus_init,
+	.scan_bus	  = 0,
+};
 
 static void enable_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
 		dev->ops = &pci_domain_ops;
-		pci_set_method(dev);
+	}
+	else if (dev->path.type == DEVICE_PATH_CPU_BUS) {
+		dev->ops = &cpu_bus_ops;
 	}
 }
 
-struct chip_operations northbridge_emulation_qemu_i386_ops = {
-	CHIP_NAME("QEMU Northbridge")
+struct chip_operations northbridge_ibm_cpc710_ops = {
+	CHIP_NAME("CPC710")
 	.enable_dev = enable_dev,
 };

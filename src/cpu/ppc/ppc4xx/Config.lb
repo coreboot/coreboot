@@ -24,3 +24,4 @@ object mem.o
 object clock.o
 object cache.S
 
+dir /cpu/simple_init

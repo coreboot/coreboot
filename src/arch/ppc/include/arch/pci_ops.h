@@ -1,6 +1,6 @@
-#ifndef ARCH_I386_PCI_OPS_H
-#define ARCH_I386_PCI_OPS_H
+#ifndef ARCH_PPC_PCI_OPS_H
+#define ARCH_PPC_PCI_OPS_H
 
-void pci_set_method(void);
+const struct pci_bus_operations pci_ppc_conf1;
 
-#endif /* ARCH_I386_PCI_OPS_H */
+#endif /* ARCH_PPC_PCI_OPS_H */

@@ -1,0 +1,64 @@
+##
+## Config file for the Motorola Sandpoint III development system.
+## Note that this has only been tested with the Altimus 7410 PMC.
+##
+
+##
+## Early board initialization, called from ppc_main()
+##
+initobject init.o
+initobject clock.o
+
+##
+## Stage 2 timer support
+##
+object clock.o
+
+##
+## Set our ARCH
+##
+arch ppc end
+
+##
+## Build the objects we have code for in this directory.
+##
+#object mpc7410.o
+
+chip northbridge/motorola/mpc107
+	device pci_domain 0 on
+		device pci 0.0 on
+			chip southbridge/winbond/w83c553
+				# FIXME  The function numbers are ok but the device id is wrong here!
+				device pci 0.0 on 
+					chip superio/NSC/pc97307
+						device pnp 2e.0 on end # Kyeboard
+						device pnp 2e.1 on end # Mouse
+						device pnp 2e.2 on end # Real-time Clock
+						device pnp 2e.3 on end # Floppy
+						device pnp 2e.4 on end # Parallel port
+						device pnp 2e.5 on end # com2
+						device pnp 2e.6 on end # com1
+						device pnp 2e.7 on end # gpio
+						device pnp 2e.8 on end # Power management
+					end
+				end # pci to isa bridge
+				device pci 0.1 on end # pci ide controller
+			end
+		end
+	end
+	device cpu_bus 0 on
+		chip cpu/ppc/mpc74xx
+			device cpu 0 on end
+		end
+	end
+end
+
+##
+## Build the objects we have code for in this directory.
+##
+
+dir nvram
+dir flash
+
+addaction linuxbios.a "$(CROSS_COMPILE)ranlib linuxbios.a"
+makedefine CFLAGS += -g

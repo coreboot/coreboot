@@ -4,13 +4,14 @@
 enum device_path_type {
 	DEVICE_PATH_NONE = 0,
 	DEVICE_PATH_ROOT,
-	DEVICE_PATH_DEFAULT_CPU,
 	DEVICE_PATH_PCI,
 	DEVICE_PATH_PNP,
 	DEVICE_PATH_I2C,
 	DEVICE_PATH_APIC,
 	DEVICE_PATH_PCI_DOMAIN,
 	DEVICE_PATH_APIC_CLUSTER,
+	DEVICE_PATH_CPU,
+	DEVICE_PATH_CPU_BUS,
 };
 
 struct pci_domain_path
@@ -44,16 +45,28 @@ struct apic_cluster_path
 	unsigned cluster;
 };
 
+struct cpu_path
+{
+	unsigned id;
+};
+
+struct cpu_bus_path
+{
+	unsigned id;
+};
+
 
 struct device_path {
 	enum device_path_type type;
 	union {
-		struct pci_path   pci;
-		struct pnp_path   pnp;
-		struct i2c_path   i2c;
-		struct apic_path  apic;
-		struct pci_domain_path pci_domain;
+		struct pci_path          pci;
+		struct pnp_path          pnp;
+		struct i2c_path          i2c;
+		struct apic_path         apic;
+		struct pci_domain_path   pci_domain;
 		struct apic_cluster_path apic_cluster;
+		struct cpu_path          cpu;
+		struct cpu_bus_path      cpu_bus;
 	} u;
 };
 

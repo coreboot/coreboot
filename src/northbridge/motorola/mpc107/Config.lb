@@ -2,10 +2,9 @@
 # Objects linked with linuxbios
 #
 
+config chip.h
 # We need sdram_init() in ppc_main()
 initobject meminfo.o
 initobject mpc107.o
 
-# We need sizeram() in hardwaremain()
-object meminfo.o
-object mpc107.o
+object mpc107_northbridge.c

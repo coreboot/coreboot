@@ -315,7 +315,6 @@ static void build_lb_mem_range(void *gp, struct device *dev, struct resource *re
 static struct lb_memory *build_lb_mem(struct lb_header *head)
 {
 	struct lb_memory *mem;
-	struct device *dev;
 
 	/* Record where the lb memory ranges will live */
 	mem = lb_memory(head);
@@ -343,7 +342,7 @@ unsigned long write_linuxbios_table(
 		struct lb_record *rec_dest, *rec_src;
 		/* Write the option config table... */
 		rec_dest = lb_new_record(head);
-		rec_src = (struct lb_record *)&option_table;
+		rec_src = (struct lb_record *)(void *)&option_table;
 		memcpy(rec_dest,  rec_src, rec_src->size);
 	}
 	/* Record where RAM is located */

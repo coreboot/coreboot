@@ -17,6 +17,8 @@
 _start:
 	/* 
 	 * init stack pointer to real ram now that memory is on
+	 * Note: We use the last 8 bytes on the stack to hold struct cpu_info,
+	 *       Which are initialized to zero as we clear the stack.
 	 */
 	li	r0, 0
 	lis     r1, _estack@ha

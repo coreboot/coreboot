@@ -1,12 +1,32 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <string.h>
+#include <device/device.h>
 #include <cpu/cpu.h>
 #include <cpu/ppc/cpuid.h>
 #include "ppc.h"
 #include "ppcreg.h"
 
-#error "FIXME what should call cpu_initialize?"
+#if 0
+static void set_cpu_ops(struct device *cpu)
+{
+	struct cpu_driver *driver;
+	cpu->ops = 0;
+	for (driver = cpu_drivers; driver < ecpu_drivers; driver++) {
+		struct cpu_device_id *id;
+		for(id = driver->id_table; id->pvr != 0; id++) {
+			if (cpu->device == id->pvr) 
+			{
+				goto found;
+			}
+		}
+	}
+	die("Unknown cpu");
+	return;
+ found:
+	cpu->ops = driver->ops;
+}
+#endif
 
 void cpu_initialize(void)
 {
@@ -27,7 +47,7 @@ void cpu_initialize(void)
 	}
 	
 	/* Find what type of cpu we are dealing with */
-	cpu->vendor 0;	/* PPC cpus do not have a vendor field */
+	cpu->vendor = 0; /* PPC cpus do not have a vendor field */
 	cpu->device = ppc_getpvr();
 	display_cpuid(cpu);
 
@@ -44,7 +64,6 @@ void cpu_initialize(void)
 #endif	
 	/* Turn on caching if we haven't already */
 
-	printk_info("CPU #%d Initialized\n", processor_id);
-	return processor_id;
+	printk_info("CPU #%d Initialized\n", info->index);
+	return;
 }
-

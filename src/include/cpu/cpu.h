@@ -2,6 +2,7 @@
 #define CPU_CPU_H
 
 struct device;
+struct bus;
 #include <arch/cpu.h>
 
 void cpu_initialize(void);

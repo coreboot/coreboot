@@ -420,7 +420,7 @@ void x86_exception(struct eregs *info)
 			if (	parse_ulong(&ptr, &addr) && 
 				(*ptr++ == ',') &&
 				parse_ulong(&ptr, &length)) {
-				copy_to_hex(out_buffer, addr, length);
+				copy_to_hex(out_buffer, (void *)addr, length);
 			} else {
 				memcpy(out_buffer, "E01", 4);
 			}

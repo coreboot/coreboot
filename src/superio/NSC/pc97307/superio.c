@@ -3,6 +3,8 @@
 
 #include <arch/io.h>
 #include <console/console.h>
+#include <device/device.h>
+#include <device/pnp.h>
 #include "chip.h"
 #include "pc97307.h"
 
@@ -14,7 +16,7 @@ static void init(device_t dev)
 	if (!dev->enabled) {
 		return;
 	}
-	conf = dev->chip;
+	conf = dev->chip_info;
 	switch(dev->path.u.pnp.device) {
 	case PC97307_SP1:
 		res0 = find_resource(dev, PNP_IDX_IO0);
@@ -39,6 +41,8 @@ static void init(device_t dev)
 		break;
 
 	case PC97307_FDC:
+	{
+		unsigned reg;
 		/* Set up floppy in PS/2 mode */
 		outb(0x09, SIO_CONFIG_RA);
 		reg = inb(SIO_CONFIG_RD);
@@ -46,7 +50,9 @@ static void init(device_t dev)
 		outb(reg, SIO_CONFIG_RD);
 		outb(reg, SIO_CONFIG_RD);       /* Have to write twice to change! */
 		break;
-
+	}
+	default:
+		break;
 	}
 }
 
@@ -76,7 +82,7 @@ static void enable_dev(struct device *dev)
 		sizeof(pnp_dev_info)/sizeof(pnp_dev_info[0]), pnp_dev_info);
 }
 
-struct chip_operations superio_NSC_pc97307_control = {
+struct chip_operations superio_NSC_pc97307_ops = {
 	CHIP_NAME("NSC 97307")
 	.enable_dev = enable_dev,
 };

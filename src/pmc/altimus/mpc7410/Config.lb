@@ -1,12 +1,12 @@
 ##
 ## CPU initialization
 ##
-chip cpu/ppc/mpc74xx device pnp 0.0 on end end
+dir /cpu/ppc/mpc74xx 
 
 ##
 ## Include the secondary Configuration files 
 ##
-chip northbridge/motorola/mpc107 device pnp 0.0 on end end
+dir /northbridge/motrola/mpc107
 
 ##
 ## Build the objects we have code for in this directory.

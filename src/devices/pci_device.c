@@ -480,7 +480,7 @@ void pci_dev_set_resources(struct device *dev)
 
 void pci_dev_enable_resources(struct device *dev)
 {
-	struct pci_operations *ops;
+	const struct pci_operations *ops;
 	uint16_t command;
 
 	/* Set the subsystem vendor and device id for mainboard devices */
@@ -515,6 +515,7 @@ void pci_bus_enable_resources(struct device *dev)
 	enable_childrens_resources(dev);
 }
 
+
 void pci_dev_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
 	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID, 
@@ -522,7 +523,7 @@ void pci_dev_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 }
 
 /** Default device operation for PCI devices */
-static struct pci_operations pci_ops_pci_dev = {
+static struct pci_operations pci_dev_ops_pci = {
 	.set_subsystem = pci_dev_set_subsystem,
 };
 
@@ -533,11 +534,11 @@ struct device_operations default_pci_ops_dev = {
 	.init		  = 0,
 	.scan_bus	  = 0,
 	.enable           = 0,
-	.ops_pci          = &pci_ops_pci_dev,
+	.ops_pci          = &pci_dev_ops_pci,
 };
 
 /** Default device operations for PCI bridges */
-static struct pci_operations pci_ops_pci_bus = {
+static struct pci_operations pci_bus_ops_pci = {
 	.set_subsystem = 0,
 };
 struct device_operations default_pci_ops_bus = {
@@ -547,7 +548,7 @@ struct device_operations default_pci_ops_bus = {
 	.init		  = 0,
 	.scan_bus	  = pci_scan_bridge,
 	.enable           = 0,
-	.ops_pci          = &pci_ops_pci_bus,
+	.ops_pci          = &pci_bus_ops_pci,
 };
 
 /**
@@ -857,6 +858,7 @@ unsigned int pci_scan_bridge(struct device *dev, unsigned int max)
 	uint16_t cr;
 
 	bus = &dev->link[0];
+	bus->dev = dev;
 	dev->links = 1;
 
 	/* Set up the primary, secondary and subordinate bus numbers. We have

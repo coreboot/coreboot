@@ -25,7 +25,6 @@
 #include <arch/pciconf.h>
 #include <timer.h>
 #include <clock.h>
-#include <mem.h>
 #include "i2c.h"
 #include "mpc107.h"
 
@@ -43,27 +42,6 @@ memory_init(void)
 	mpc107_init();
 	mpc107_probe_dimms(NUM_DIMMS, dimms, banks);
 	(void)mpc107_config_memory(NUM_BANKS, banks, 2);
-}
-
-struct mem_range *
-sizeram(void)
-{
-	int i;
-	struct sdram_dimm_info dimms[NUM_DIMMS];
-	struct sdram_bank_info banks[NUM_BANKS];
-	static struct mem_range meminfo;
-
-	meminfo.basek = 0;
-	meminfo.sizek = 0;
-
-	mpc107_probe_dimms(NUM_DIMMS, dimms, banks);
-
-	for (i = 0; i < NUM_BANKS; i++)
-		meminfo.sizek += banks[i].size;
-
-	meminfo.sizek >>= 10;
-
-	return &meminfo;
 }
 
 /*

@@ -26,6 +26,16 @@ struct pci_operations {
 	void (*set_subsystem)(device_t dev, unsigned vendor, unsigned device);
 };
 
+/* Common pci bus operations */
+struct pci_bus_operations {
+	uint8_t (*read8)   (struct bus *pbus, unsigned char bus, int devfn, int where);
+	uint16_t (*read16) (struct bus *pbus, unsigned char bus, int devfn, int where);
+	uint32_t (*read32) (struct bus *pbus, unsigned char bus, int devfn, int where);
+	void (*write8)  (struct bus *pbus, unsigned char bus, int devfn, int where, uint8_t val);
+	void (*write16) (struct bus *pbus, unsigned char bus, int devfn, int where, uint16_t val);
+	void (*write32) (struct bus *pbus, unsigned char bus, int devfn, int where, uint32_t val);
+};
+
 struct pci_driver {
 	struct device_operations *ops;
 	unsigned short vendor;
@@ -55,14 +65,24 @@ void pci_dev_set_subsystem(device_t dev, unsigned vendor, unsigned device);
 #define PCI_IO_BRIDGE_ALIGN 4096
 #define PCI_MEM_BRIDGE_ALIGN (1024*1024)
 
-static inline struct pci_operations *ops_pci(device_t dev)
+static inline const struct pci_operations *ops_pci(device_t dev)
 {
-	struct pci_operations *pops;
+	const struct pci_operations *pops;
 	pops = 0;
 	if (dev && dev->ops) {
 		pops = dev->ops->ops_pci;
 	}
 	return pops;
+}
+
+static inline const struct pci_bus_operations *ops_pci_bus(struct bus *bus)
+{
+	const struct pci_bus_operations *bops;
+	bops = 0;
+	if (bus && bus->dev && bus->dev->ops) {
+		bops = bus->dev->ops->ops_pci_bus;
+	}
+	return bops;
 }
 
 #endif /* PCI_H */

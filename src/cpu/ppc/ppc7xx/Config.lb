@@ -21,3 +21,5 @@ object clock.o
 object cache.S
 initobject clock.o
 initobject cache.S
+
+dir /cpu/simple_init

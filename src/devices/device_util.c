@@ -114,9 +114,6 @@ const char *dev_path(device_t dev)
 		case DEVICE_PATH_ROOT:
 			memcpy(buffer, "Root Device", 12);
 			break;
-		case DEVICE_PATH_DEFAULT_CPU:
-			memcpy(buffer, "Default CPU", 12);
-			break;
 		case DEVICE_PATH_PCI:
 			sprintf(buffer, "PCI: %02x:%02x.%01x",
 				dev->bus->secondary, 
@@ -142,6 +139,12 @@ const char *dev_path(device_t dev)
 			sprintf(buffer, "APIC_CLUSTER: %01x",
 				dev->path.u.apic_cluster.cluster);
 			break;
+		case DEVICE_PATH_CPU:
+			sprintf(buffer, "CPU: %02x", dev->path.u.cpu.id);
+			break;
+		case DEVICE_PATH_CPU_BUS:
+			sprintf(buffer, "CPU_BUS: %02x", dev->path.u.cpu_bus.id);
+			break;
 		default:
 			printk_err("Unknown device path type: %d\n", dev->path.type);
 			break;
@@ -158,9 +161,6 @@ int path_eq(struct device_path *path1, struct device_path *path2)
 		case DEVICE_PATH_NONE:
 			break;
 		case DEVICE_PATH_ROOT:
-			equal = 1;
-			break;
-		case DEVICE_PATH_DEFAULT_CPU:
 			equal = 1;
 			break;
 		case DEVICE_PATH_PCI:
@@ -181,6 +181,12 @@ int path_eq(struct device_path *path1, struct device_path *path2)
 			break;
 		case DEVICE_PATH_APIC_CLUSTER:
 			equal = (path1->u.apic_cluster.cluster == path2->u.apic_cluster.cluster);
+			break;
+		case DEVICE_PATH_CPU:
+			equal = (path1->u.cpu.id == path2->u.cpu.id);
+			break;
+		case DEVICE_PATH_CPU_BUS:
+			equal = (path1->u.cpu_bus.id == path2->u.cpu_bus.id);
 			break;
 		default:
 			printk_err("Uknown device type: %d\n", path1->type);

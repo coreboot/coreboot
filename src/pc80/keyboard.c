@@ -26,7 +26,6 @@ static int kbd_empty_output_buffer(void)
 static void pc_keyboard_init(struct pc_keyboard *keyboard)
 {
 	unsigned char regval;
-	unsigned long timeout;
 
 	/* send cmd = 0xAA, self test 8042 */
 	outb(0xaa, 0x64);

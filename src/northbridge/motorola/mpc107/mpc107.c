@@ -83,7 +83,7 @@ mpc107_init(void)
         /* 
 	 * PCI Cmd 
 	 */
-	pci_ppc_write_config16(0, 0, 0x04, 0x06);
+	pci_ppc_write_config16(0, 0, 0x04, 0x0006);
         
         /*
 	 * PCI Stat 
@@ -220,18 +220,18 @@ mpc107_init(void)
 	 * Assume each memory block is 32Mb. This is
 	 * most likely NOT correct.
 	 */
-	pci_ppc_write_config32(0, 0, 0x80, 0x60402000);
-	pci_ppc_write_config32(0, 0, 0x84, 0xe0c0a080);
+	pci_ppc_write_config32(0, 0, 0x80, 0xc0804000);
+	pci_ppc_write_config32(0, 0, 0x84, 0xc0804000);
 	pci_ppc_write_config32(0, 0, 0x88, 0x00000000);
-	pci_ppc_write_config32(0, 0, 0x8c, 0x00000000);
+	pci_ppc_write_config32(0, 0, 0x8c, 0x01010101);
 
 	/*
 	 * MEAR1/MEAR2/MEEAR1/MEEAR2
 	 */
-	pci_ppc_write_config32(0, 0, 0x90, 0x7f5f3f1f);
-	pci_ppc_write_config32(0, 0, 0x94, 0xffdfbf9f);
+	pci_ppc_write_config32(0, 0, 0x90, 0xffbf7f3f);
+	pci_ppc_write_config32(0, 0, 0x94, 0xffbf7f3f);
 	pci_ppc_write_config32(0, 0, 0x98, 0x00000000);
-	pci_ppc_write_config32(0, 0, 0x9c, 0x00000000);
+	pci_ppc_write_config32(0, 0, 0x9c, 0x10101010);
 
 	/*
 	 * ODCR
@@ -278,7 +278,8 @@ mpc107_init(void)
 
 	/*
 	 * MBEN
-	 *      0x03	Enable banks 0 and 1
+	 *      0x02	Enable bank 1
+	 *      0x01	Enable bank 0
 	 */
 	pci_ppc_write_config8(0, 0, 0xa0, 0x03);
 
@@ -292,7 +293,7 @@ mpc107_init(void)
 	 * Wait 200us
 	 */
 	udelay(200);
-	
+
 	/*
 	 * Now set memgo bit in MCCR1
 	 */
@@ -502,20 +503,48 @@ mpc107_config_memory(int no_banks, sdram_bank_info * bank, int for_real)
 
     if (for_real)
     {
-	pci_ppc_write_config8(0, 0, 0xa0, bank_enable);
-	pci_ppc_write_config32(0, 0, 0x80, memstart1);
-	pci_ppc_write_config32(0, 0, 0x84, memstart2);
-	pci_ppc_write_config32(0, 0, 0x88, extmemstart1);
-	pci_ppc_write_config32(0, 0, 0x8c, extmemstart2);
-	pci_ppc_write_config32(0, 0, 0x90, memend1);
-	pci_ppc_write_config32(0, 0, 0x94, memend2);
-	pci_ppc_write_config32(0, 0, 0x98, extmemend1);
-	pci_ppc_write_config32(0, 0, 0x9c, extmemend2);
-
-	pci_ppc_write_config32(0, 0, 0xfc, mccr4);
-	pci_ppc_write_config32(0, 0, 0xf8, mccr3);
-	pci_ppc_write_config32(0, 0, 0xf4, mccr2);
+	/*
+	 * Mask MEMGO bit before setting MCCR1
+	 */
+	mccr1 &= ~0x80000;
+	printk_info("MCCR1 = 0x%08x\n", mccr1);
 	pci_ppc_write_config32(0, 0, 0xf0, mccr1);
+
+	printk_info("MBEN = 0x%02x\n", bank_enable);
+	pci_ppc_write_config8(0, 0, 0xa0, bank_enable);
+	printk_info("MSAR1 = 0x%08x\n", memstart1);
+	pci_ppc_write_config32(0, 0, 0x80, memstart1);
+	printk_info("MSAR2 = 0x%08x\n", memstart2);
+	pci_ppc_write_config32(0, 0, 0x84, memstart2);
+	printk_info("MSAR3 = 0x%08x\n", extmemstart1);
+	pci_ppc_write_config32(0, 0, 0x88, extmemstart1);
+	printk_info("MSAR4 = 0x%08x\n", extmemstart2);
+	pci_ppc_write_config32(0, 0, 0x8c, extmemstart2);
+	printk_info("MEAR1 = 0x%08x\n", memend1);
+	pci_ppc_write_config32(0, 0, 0x90, memend1);
+	printk_info("MEAR2 = 0x%08x\n", memend2);
+	pci_ppc_write_config32(0, 0, 0x94, memend2);
+	printk_info("MEAR3 = 0x%08x\n", extmemend1);
+	pci_ppc_write_config32(0, 0, 0x98, extmemend1);
+	printk_info("MEAR4 = 0x%08x\n", extmemend2);
+	pci_ppc_write_config32(0, 0, 0x9c, extmemend2);
+	printk_info("MCCR2 = 0x%08x\n", mccr2);
+	pci_ppc_write_config32(0, 0, 0xf4, mccr2);
+	printk_info("MCCR3 = 0x%08x\n", mccr3);
+	pci_ppc_write_config32(0, 0, 0xf8, mccr3);
+	printk_info("MCCR4 = 0x%08x\n", mccr4);
+	pci_ppc_write_config32(0, 0, 0xfc, mccr4);
+
+	udelay(200);
+
+	/*
+	 * Set MEMGO bit
+	 */
+	mccr1 |= 0x80000;
+	printk_info("MCCR1 = 0x%08x\n", mccr1);
+	pci_ppc_write_config32(0, 0, 0xf0, mccr1);
+
+	udelay(10000);
     }
     
     return address;

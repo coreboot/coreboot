@@ -9,9 +9,9 @@
 
 static void usb2_init(struct device *dev)
 {
-#if 0
 	uint32_t cmd;
 
+#if 0
 	printk_debug("USB: Setting up controller.. ");
 	cmd = pci_read_config32(dev, PCI_COMMAND);
 	pci_write_config32(dev, PCI_COMMAND, 
@@ -29,7 +29,7 @@ static struct device_operations usb2_ops  = {
 	.enable_resources = pci_dev_enable_resources,
 	.init             = usb2_init,
 	.scan_bus         = 0,
-	.enable           = amd8111_enable,
+//	.enable           = amd8111_enable,
 };
 
 static struct pci_driver usb2_driver __pci_driver = {

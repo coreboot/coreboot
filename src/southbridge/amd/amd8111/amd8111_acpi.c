@@ -104,7 +104,7 @@ static struct device_operations acpi_ops  = {
 	.enable_resources = pci_dev_enable_resources,
 	.init             = acpi_init,
 	.scan_bus         = 0,
-	.enable           = amd8111_enable,
+//	.enable           = amd8111_enable,
 };
 
 static struct pci_driver acpi_driver __pci_driver = {

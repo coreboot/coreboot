@@ -194,7 +194,7 @@ static struct device_operations lpc_ops  = {
 	.enable_resources = pci_dev_enable_resources,
 	.init             = lpc_init,
 	.scan_bus         = scan_static_bus,
-	.enable           = amd8111_enable,
+//	.enable           = amd8111_enable,
 };
 
 static struct pci_driver lpc_driver __pci_driver = {

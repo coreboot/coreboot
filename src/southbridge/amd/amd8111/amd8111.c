@@ -9,8 +9,10 @@ void amd8111_enable(device_t dev)
 	device_t lpc_dev;
 	device_t bus_dev;
 	unsigned index;
+	uint32_t dword;
 	uint16_t reg_old, reg;
 	uint8_t byte;
+
 
 	/* See if we are on the behind the amd8111 pci bridge */
 	bus_dev = dev->bus->dev;
@@ -39,8 +41,13 @@ void amd8111_enable(device_t dev)
 		}
 	}
 
-        if ((dev->vendor == PCI_VENDOR_ID_AMD) &&
-            (dev->device == PCI_DEVICE_ID_AMD_8111_USB2)) {
+        /* Now read the vendor and device id */
+        dword= pci_read_config32(dev, PCI_VENDOR_ID);
+#if 0
+	printk_debug(" %s dev->vendor= %04x, dev->device= %04x, id = %08x\n", dev_path(dev), dev->vendor, dev->device, dword);
+#endif
+	
+        if (dword == (PCI_VENDOR_ID_AMD | (PCI_DEVICE_ID_AMD_8111_USB2 << 16)))  {
 		if(!dev->enabled) {
 		        byte = pci_read_config8(lpc_dev, 0x47);
 		        byte |= (1<<7);

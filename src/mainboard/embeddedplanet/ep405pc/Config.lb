@@ -6,8 +6,15 @@ uses PCIC0_CFGADDR
 uses PCIC0_CFGDATA 
 uses UART0_IO_BASE
 
+##
+## Set PCI registers
+##
 option PCIC0_CFGADDR=0xeec00000
 option PCIC0_CFGDATA=0xeec00004
+
+##
+## Set UART base address
+##
 option UART0_IO_BASE=0xef600300
 
 arch ppc end

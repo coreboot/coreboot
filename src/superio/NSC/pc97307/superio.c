@@ -17,7 +17,7 @@ void sio_enable(struct chip *chip, enum chip_pass pass)
 	struct superio_NSC_pc97307_config *conf = (struct superio_NSC_pc97307_config *)chip->chip_info;
 
 	switch (pass) {
-	case CHIP_PRE_CONSOLE:
+	case CONF_PASS_PRE_CONSOLE:
 		/* Enable Super IO Chip */
 		pnp_output(0x07, 6); /* LD 6 = UART1 */
 		pnp_output(0x30, 0); /* Dectivate */

@@ -7,9 +7,9 @@
 
 /* some of the types of resources chips can control */
 #ifndef CONFIG_CHIP_CONFIGURE
-#define CHIP_CONFIGURE(chip, pass) chip_configure(chip, pass)
+#define CONFIGURE(dev, pass) chip_configure(chip, pass)
 #else
-#define CHIP_CONFIGURE(chip, pass)
+#define CONFIGURE(dev, pass)
 #endif
 
 struct com_ports {
@@ -28,13 +28,13 @@ struct lpt_ports {
 };
 
 enum chip_pass {
-	CHIP_PASS_PRE_CONSOLE,
-	CHIP_PASS_PRE_PCI,
-	CHIP_PASS_PRE_DEVICE_ENUMERATE,
-	CHIP_PASS_PRE_DEVICE_CONFIGURE,
-	CHIP_PASS_PRE_DEVICE_ENABLE,
-	CHIP_PASS_PRE_DEVICE_INITIALIZE,
-	CHIP_PASS_PRE_BOOT
+	CONF_PASS_PRE_CONSOLE,
+	CONF_PASS_PRE_PCI,
+	CONF_PASS_PRE_DEVICE_ENUMERATE,
+	CONF_PASS_PRE_DEVICE_CONFIGURE,
+	CONF_PASS_PRE_DEVICE_ENABLE,
+	CONF_PASS_PRE_DEVICE_INITIALIZE,
+	CONF_PASS_PRE_BOOT
 };
 
 

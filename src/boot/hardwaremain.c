@@ -35,6 +35,7 @@ it with the version available from LANL.
 #include <part/sizeram.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/chip.h>
 #include <delay.h>
 #if 0
 #include <part/mainboard.h>
@@ -146,6 +147,9 @@ void hardwaremain(int boot_complete)
 	unsigned long totalmem;
 
 	post_code(0x80);
+	
+	CONFIGURE(CONF_PASS_PRE_CONSOLE);
+
 	/* displayinit MUST PRECEDE ALL PRINTK! */
 	console_init();
 	
@@ -163,6 +167,7 @@ void hardwaremain(int boot_complete)
 	}
 #endif
 	init_timer();
+	CONFIGURE(CONF_PASS_PRE_PCI);
 
 	/* pick how to scan the bus. This is first so we can get at memory size. */
 	printk_info("Finding PCI configuration type.\n");
@@ -214,6 +219,8 @@ void hardwaremain(int boot_complete)
 	 * write our configuration tables.
 	 */
 	lb_mem = write_tables(mem, processor_map);
+
+	CONFIGURE(CONF_PASS_PRE_PCI);
 
 	elfboot(lb_mem);
 }

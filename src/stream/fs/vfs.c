@@ -108,7 +108,6 @@ int file_open(const char *filename)
 	    path = 0;
 	}
     }
-    printk_debug("dev=%s, path=%s\n", dev, path);
 
     if (dev && dev[0]) {
 	if (!devopen(dev, &reopen)) {

@@ -625,11 +625,11 @@ class partobj:
 		if (instance_name == 0):
 			self.instance_name = self.type_name + \
 					"_dev%d" % self.instance
-			self.config_name = "%s_config_%d" \
+			self.chipinfo_name = "%s_info_%d" \
 					% (self.type_name, self.instance)
 		else:
 			self.instance_name = instance_name
-			self.config_name = "%s_config" % self.instance_name
+			self.chipinfo_name = "%s_config" % self.instance_name
 		
 		# Link this part into the tree
 		if (parent and (part != 'arch')):
@@ -658,7 +658,7 @@ class partobj:
 		print "%d: part %s" % (lvl, self.part)
 		print "%d: instance %d" % (lvl, self.instance)
 		print "%d: dir %s" % (lvl,self.dir)
-		print "%d: name %s" % (lvl,self.name)
+		print "%d: type_name %s" % (lvl,self.type_name)
 		print "%d: parent %s" % (lvl,self.parent.part)
 		print "%d: parent dir %s" % (lvl,self.parent.dir)
 		if (self.children):
@@ -673,22 +673,58 @@ class partobj:
 			print "\t%s = %s" % (f, v)
 		print "\n"
 
+	def firstchilddevice(self):
+		"""Find the first device in the children link."""
+		kid = self.children
+		while (kid):
+			if (kid.chip_or_device == 'device'):
+				return kid
+			else:
+				kid = kid.children
+		return 0
+
+	def firstparentdevice(self):
+		"""Find the first device in the parent link."""
+		parent = self.parent
+		while (parent):
+			if ((parent.parent == parent) or (parent.chip_or_device == 'device')):
+				return parent
+			else:
+				parent = parent.parent
+		fatal("Device %s has no device parent; this is a config file error" % self.type_name)
+
+	def firstparentchip(self):
+		"""Find the first chip in the parent link."""
+		parent = self.parent
+		while (parent):
+			if ((parent.parent == parent) or (parent.chip_or_device == 'chip')):
+				return parent
+			else:
+				parent = parent.parent
+		fatal("Device %s has no chip parent; this is a config file error" % self.type_name)
+
+
 	def gencode(self, file, pass_num):
 		"""Generate static initalizer code for this part. Two passes
 		are used - the first generates type information, and the second
 		generates instance information"""
 		if (pass_num == 0):
-			if (self.instance):
-				file.write("struct chip %s;\n" \
-					% self.instance_name)
+			if (self.chip_or_device == 'chip'):
+				return;
 			else:
-				file.write("struct chip static_root;\n")
+				if (self.instance):
+					file.write("struct device %s;\n" \
+						% self.instance_name)
+				else:
+					file.write("struct device dev_root;\n")
 			return
-		if (self.chipconfig):
+		# This is pass the second, which is pass number 1
+		# this is really just a case statement ...
+		if ((self.instance) and (self.chip_or_device == 'chip')):
 			debug.info(debug.gencode, "gencode: chipconfig(%d)" % \
 					self.instance)
 			file.write("struct %s_config %s" % (self.type_name ,\
-					self.config_name))
+					self.chipinfo_name))
 			if (self.registercode):
 				file.write("\t= {\n")
 				for f, v in self.registercode.items():
@@ -697,10 +733,62 @@ class partobj:
 			else:
 				file.write(";")
 			file.write("\n")
-		if (self.instance):
-			file.write("struct chip %s = {\n" % self.instance_name)
-		else:
-			file.write("struct chip static_root = {\n")
+			return
+			
+		if (self.chipconfig):
+			debug.info(debug.gencode, "gencode: chipconfig(%d)" % \
+					self.instance)
+			file.write("struct %s_config %s" % (self.type_name ,\
+					self.chipinfo_name))
+			if (self.registercode):
+				file.write("\t= {\n")
+				for f, v in self.registercode.items():
+					file.write( "\t.%s = %s,\n" % (f, v))
+				file.write("};\n")
+			else:
+				file.write(";")
+			file.write("\n")
+
+		if (self.instance == 0):
+			self.dumpme(0)
+			# KLUDGE
+			self.instance_name = "dev_root"
+			file.write("struct %s_config %s_info_%s;\n" % (self.type_name, self.type_name, self.instance))
+			file.write("struct device dev_root = {\n")
+			file.write("\t.ops = &default_dev_ops_root,\n")
+			file.write("\t.bus = &dev_root.link[0],\n")
+			file.write("\t.path = { .type = DEVICE_PATH_ROOT },\n")
+			file.write("\t.enable = 1\n\t.links = 1\n")
+			file.write("\t.link = {\n\t\t[0] = {\n")
+			file.write("\t\t\t.dev=&dev_root,\n\t\t\t.link = 0,\n")
+			file.write("\t\t\t.children = %s,\n" % self.firstchilddevice().instance_name)
+			file.write("\t\t},\n")
+			file.write("\t},\n")
+			file.write("\t.chip_control = &%s_control,\n" % self.type_name)
+			file.write("\t.chip_info = &%s_info_%s,\n" % (self.type_name, self.instance))
+			file.write("};\n")
+			return
+
+		file.write("struct device %s = {\n" % self.instance_name)
+		file.write("\t.ops = 0,\n")
+		file.write("\t.bus = &%s.link[0],\n" % self.firstparentdevice().instance_name)
+		file.write("\t%s,\n" % self.path)
+		file.write("\t.links = 1\n")
+		file.write("\t.link = {\n\t\t[0] = {\n")
+		file.write("\t\t\t.dev=&%s,\n\t\t\t.link = 0,\n" % self.instance_name)
+		if (self.firstchilddevice()):
+			file.write("\t\t\t.children = &%s,\n" % self.firstchilddevice().instance_name)
+		file.write("\t\t},\n")
+		file.write("\t},\n")
+		if (self.siblings):
+			file.write("\t.sibling = %s,\n" % self.siblings.instance_name)
+		file.write("\t.chip_control = &%s_control,\n" % self.firstparentchip().type_name)
+		file.write("\t.chip_info = &%s_info_%s,\n" % (self.firstparentchip().type_name, self.firstparentchip().instance))
+		file.write("};\n")
+		return
+
+
+
 		file.write("\t/* %s %s */\n" % (self.part, self.dir))
                 file.write("\t.link = %d,\n" % (self.link))
 		if (self.path != ""):
@@ -727,7 +815,7 @@ class partobj:
 			# generate the pointer to the isntance
 			# of the chip struct
 			file.write("\t.chip_info = (void *) &%s,\n" \
-					% self.config_name)
+					% self.chipinfo_name)
 		else:
 			file.write("\t.control= 0,\n")
 			file.write("\t.chip_info= 0,\n")
@@ -752,7 +840,7 @@ class partobj:
 		self.path = "%s, .resource={" % (self.path)
 
 	def end_resources(self):
-		self.path = "%s}}," % (self.path)
+		self.path = "%s}" % (self.path)
 
 	def add_resource(self, type, index, value):
 		""" Add a resource to a device """
@@ -768,7 +856,7 @@ class partobj:
 			fatal("Invalid device id")
 		if ((function < 0) or (function > 7)):
 			fatal("Invalid function")
-		self.path = "%s\n\t\t{ .enabled = %d, .path = {.type=DEVICE_PATH_PCI,.u={.pci={ .bus = 0x%x, .devfn = PCI_DEVFN(0x%x,%d)}}}" % (self.path, enable, bus, slot, function)
+		self.path = "%s\n\t\t .enabled = %d, .path = {.type=DEVICE_PATH_PCI,.u={.pci={ .bus = 0x%x, .devfn = PCI_DEVFN(0x%x,%d)}}" % (self.path, enable, bus, slot, function)
 
 	def addpnppath(self, enable, port, device):
 		""" Add a relative path to a pnp device hanging off our parent """
@@ -776,18 +864,25 @@ class partobj:
 			fatal("Invalid port")
 		if ((device < 0) or (device > 0xff)):
 			fatal("Invalid device")
-		self.path = "%s\n\t\t{ .enabled = %d, .path={.type=DEVICE_PATH_PNP,.u={.pnp={ .port = 0x%x, .device = 0x%x }}}" % (self.path, enable, port, device)
+		self.path = "%s\n\t\t.enabled = %d, .path={.type=DEVICE_PATH_PNP,.u={.pnp={ .port = 0x%x, .device = 0x%x }}" % (self.path, enable, port, device)
 		
 	def addi2cpath(self, enable, device):
 		""" Add a relative path to a i2c device hanging off our parent """
 		if ((device < 0) or (device > 0x7f)):
 			fatal("Invalid device")
-		self.path = "%s\n\t\t{ .enabled = %d, .path = {.type=DEVICE_PATH_I2C,.u={.i2c={ .device = 0x%x }}} " % (self.path, enable, device)
+		self.path = "%s\n\t\t .enabled = %d, .path = {.type=DEVICE_PATH_I2C,.u={.i2c={ .device = 0x%x }} " % (self.path, enable, device)
+
 	def addapicpath(self, enable, apic_id):
 		""" Add a relative path to a cpu device hanging off our parent """
 		if ((apic_id < 0) or (apic_id > 255)):
 			fatal("Invalid device")
-		self.path = "%s\n\t\t{ .enabled = %d, .path = {.type=DEVICE_PATH_APIC,.u={.apic={ .apic_id = 0x%x }}} " % (self.path, enable, apic_id)
+		self.path = "%s\n\t\t .enabled = %d, .path = {.type=DEVICE_PATH_APIC,.u={.apic={ .apic_id = 0x%x }} " % (self.path, enable, apic_id)
+    
+	def addpci_domainpath(self, enable, pci_domain):
+		""" Add a pci_domain number to a chip """
+		if ((pci_domain < 0) or (pci_domain > 0xffff)):
+			fatal("Invalid pci_domain: 0x%x is out of the range 0 to 0xffff" % pci_domain)
+		self.path = "%s\n\t\t .enabled = %d, .path = {.type=DEVICE_PATH_PCI_DOMAIN,.u={.pci_domain={ .pci_domain = 0x%x }} " % (self.path, enable, pci_domain)
     
 
 
@@ -1444,6 +1539,7 @@ parser Config:
     token PNP:			'pnp'
     token I2C:			'i2c'
     token APIC:			'apic'
+    token PCI_DOMAIN:		'pci_domain'
     token LINK:                 'link'
 
 
@@ -1597,12 +1693,21 @@ parser Config:
 						{{ if (C): partstack.tos().addapicpath(enable, apic_id) }}
 			resources<<C>>
 
+    rule pci_domain<<C>>:	
+			PCI_DOMAIN 		{{ if (C): devicepart('pci_domain') }}
+			HEX_NUM			{{ pci_domain = int(HEX_NUM, 16) }}
+			enable
+						{{ if (C): partstack.tos().addpci_domainpath(enable, pci_domain) }}
+			resources<<C>>
+			partend<<C>>
+
 
     rule dev_path<<C>>:				
 	    		pci<<C>>		{{ return pci }}
 	    	|	pnp<<C>>		{{ return pnp }}
 		|	i2c<<C>>		{{ return i2c }}
 		|	apic<<C>>		{{ return apic }}
+		|	pci_domain<<C>>		{{ return pci_domain }}
 		
     rule prtval:	expr			{{ return str(expr) }}
 		|	STR			{{ return STR }}

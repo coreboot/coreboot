@@ -2,7 +2,7 @@ uses HAVE_MP_TABLE
 uses HAVE_PIRQ_TABLE
 uses USE_FALLBACK_IMAGE
 uses USE_NORMAL_IMAGE
-uses AMD8111_DEV
+uses ENABLE_IOMMU
 #
 #
 ###
@@ -141,3 +141,5 @@ cpu p5 end
 cpu p6 end
 cpu k7 end
 cpu k8 end
+
+option ENABLE_IOMMU=1

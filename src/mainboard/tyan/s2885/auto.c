@@ -84,9 +84,11 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/cpu_ldtstop.c"
 #include "southbridge/amd/amd8111/amd8111_ldtstop.c"
 
-#include "northbridge/amd/amdk8/raminit.1.c"
+#include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.1.c"
 #include "sdram/generic_sdram.c"
+
+#include "resourcemap.c" /* tyan does not want the default */
 
 static void enable_lapic(void)
 {
@@ -164,7 +166,7 @@ static void main(void)
 	}
 	uart_init();
 	console_init();
-	setup_default_resource_map();
+	setup_s2885_resource_map();
 	setup_coherent_ht_domain();
         enumerate_ht_chain(0);
 	//setup_resource_map_x();

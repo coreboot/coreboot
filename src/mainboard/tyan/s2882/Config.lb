@@ -5,6 +5,7 @@ uses USE_NORMAL_IMAGE
 uses AMD8111_DEV
 uses MAINBOARD
 uses ARCH
+uses ENABLE_IOMMU
 #
 #
 ###
@@ -173,3 +174,5 @@ end
 
 cpu k8 "cpu1"
 end
+
+option ENABLE_IOMMU=1

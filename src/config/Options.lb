@@ -590,6 +590,11 @@ define DISABLE_WATCHDOG
 	export used
 	comment "Disable watchdog if we're doing lots of output"
 end
+define ENABLE_IOMMU
+	default 1
+	export used
+	comment "Enable IOMMU aperture"
+end
 
 ###############################################
 # Misc device options

@@ -919,12 +919,13 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	 * [31: 8] Reserved
 	 */
 	PCI_ADDR(0, 0x18, 3, 0x60), 0xffffff00, 0x00000000,
-//BY LYH  add IOMMU 64M APERTURE
+
+#if ENABLE_IOMMU != 0
+	/* BY LYH  add IOMMU 64M APERTURE */
 	PCI_ADDR(0, 0x18, 3, 0x94), 0xffff8000, 0x00000f70,
 	PCI_ADDR(0, 0x18, 3, 0x90), 0xffffff80, 0x00000002,
 	PCI_ADDR(0, 0x18, 3, 0x98), 0x0000000f, 0x00068300,
-
-//BY LYH END
+#endif
 	};
 	int i;
 	int max;

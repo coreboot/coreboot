@@ -50,7 +50,19 @@ static void misc_control_init(struct device *dev)
 		cmd = 0x04e20707;
 		pci_write_config32(dev, 0xd4, cmd );
 	}
-#if 1	
+
+/*
+ * FIXME: This preprocessor check is a mere workaround. 
+ * The right fix is to walk over all links on all nodes
+ * and set the FIFO read pointer optimization value to
+ * 0x25 for each link connected to an AMD HT device.
+ *
+ * The reason this is only enabled for machines with more 
+ * than one CPU is that Athlon64 machines don't have the
+ * link at all that is optimized in the code.
+ */
+
+#if CONFIG_MAX_CPUS > 1	
 	cmd = pci_read_config32(dev, 0xdc);
 	if((cmd & 0x0000ff00) != 0x02500) {
 		cmd &= 0xffff00ff;

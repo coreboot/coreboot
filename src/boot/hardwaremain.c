@@ -33,8 +33,8 @@ it with the version available from LANL.
 #include <smp/start_stop.h>
 #include <boot/tables.h>
 #include <part/sizeram.h>
-#include <device.h>
-#include <pci.h>
+#include <device/device.h>
+#include <device/pci.h>
 #if 0
 #include <part/mainboard.h>
 #endif

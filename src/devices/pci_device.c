@@ -13,9 +13,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <bitops.h>
-#include <pci.h>
-#include <pci_ids.h>
 #include <string.h>
+#include <device/device.h>
+#include <device/pci.h>
+#include <device/pci_ids.h>
 
 static unsigned int pci_scan_bridge(struct device *bus, unsigned int max);
 
@@ -219,7 +220,7 @@ static void pci_bridge_read_bases(struct device *dev)
 }
 
 
-static void pci_dev_read_resources(struct device *dev)
+void pci_dev_read_resources(struct device *dev)
 {
 	uint32_t addr;
 	dev->resources = 0;
@@ -229,7 +230,7 @@ static void pci_dev_read_resources(struct device *dev)
 	dev->rom_address = (addr == 0xffffffff)? 0 : addr;
 }
 
-static void pci_bus_read_resources(struct device *dev)
+void pci_bus_read_resources(struct device *dev)
 {
 	uint32_t addr;
 	dev->resources = 0;
@@ -345,7 +346,7 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 	return;
 }
 
-static void pci_dev_set_resources(struct device *dev)
+void pci_dev_set_resources(struct device *dev)
 {
 	struct resource *resource, *last;
 	uint8_t line;
@@ -399,9 +400,16 @@ static void set_pci_ops(struct device *dev)
 	 */
 	for(driver = &pci_drivers[0]; driver != &epci_drivers[0]; driver++) {
 		if ((driver->vendor == dev->vendor) &&
-			(driver->device = dev->device)) {
+			(driver->device == dev->device)) {
 			dev->ops = driver->ops;
-			break;
+#if 1
+			printk_debug("PCI: %02x:%02x.%01x [%04x/%04x] ops\n",
+				dev->bus->secondary,
+				PCI_SLOT(dev->devfn), PCI_FUNC(dev->devfn),
+				driver->vendor, driver->device
+				);
+#endif
+			return;
 		}
 	}
 	/* If I don't have a specific driver use the default operations */
@@ -450,6 +458,7 @@ static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
 }
 
 
+#define HYPERTRANSPORT_SUPPORT 1
 /** Scan the pci bus devices and bridges.
  * @param pci_bus pointer to the bus structure
  * @param max current bus number
@@ -461,6 +470,9 @@ unsigned int pci_scan_bus(struct device *bus, unsigned int max)
 	struct device *dev, **bus_last;
 	struct device *old_devices;
 	struct device *child;
+#if HYPERTRANSPORT_SUPPORT
+	unsigned next_unitid, last_unitid;
+#endif
 
 	printk_debug("PCI: pci_scan_bus for bus %d\n", bus->secondary);
 
@@ -470,6 +482,58 @@ unsigned int pci_scan_bus(struct device *bus, unsigned int max)
 
 	post_code(0x24);
 	
+
+#if HYPERTRANSPORT_SUPPORT
+	/* If present assign unitid to a hypertransport chain */
+	next_unitid = 1;
+	do {
+		struct device dummy;
+		uint32_t id;
+		uint8_t hdr_type, pos;
+		last_unitid = next_unitid;
+
+		dummy.bus   = bus;
+		dummy.devfn = 0;
+		pci_read_config_dword(&dummy, PCI_VENDOR_ID, &id);
+		if (id == 0xffffffff || id == 0x00000000 ||
+			id == 0x0000ffff || id == 0xffff0000) {
+			break;
+		}
+		pci_read_config_byte(&dummy, PCI_HEADER_TYPE, &hdr_type);
+		pos = 0;
+		switch(hdr_type & 0x7f) {
+		case PCI_HEADER_TYPE_NORMAL:
+		case PCI_HEADER_TYPE_BRIDGE:
+			pos = PCI_CAPABILITY_LIST;
+			break;
+		}
+		if (pos > PCI_CAP_LIST_NEXT) {
+			pci_read_config_byte(&dummy, pos, &pos);
+		}
+		while(pos != 0) {
+			uint8_t cap;
+			pci_read_config_byte(&dummy, pos + PCI_CAP_LIST_ID, &cap);
+			printk_debug("Capability: 0x%02x @ 0x%02x\n", cap, pos);
+			if (cap == PCI_CAP_ID_HT) {
+				uint16_t flags;
+				pci_read_config_word(&dummy, pos + PCI_CAP_FLAGS, &flags);
+				printk_debug("flags: 0x%04x\n", (unsigned)flags);
+				if ((flags >> 13) == 0) {
+					unsigned count;
+					flags &= ~0x1f;
+					flags |= next_unitid & 0x1f;
+					count = (flags >> 5) & 0x1f;
+					printk_debug("unitid: 0x%02x, count: 0x%02x\n",
+						next_unitid, count);
+					pci_write_config_word(&dummy, pos + PCI_CAP_FLAGS, flags);
+					next_unitid += count;
+					break;
+				}
+			}
+			pci_read_config_byte(&dummy, pos + PCI_CAP_LIST_NEXT, &pos);
+		}
+	} while((last_unitid != next_unitid) && (next_unitid <= 0x1f));
+#endif /* HYPERTRANSPORT_SUPPORT */
 
 	/* probe all devices on this bus with some optimization for non-existance and 
 	   single funcion devices */
@@ -575,7 +639,7 @@ unsigned int pci_scan_bus(struct device *bus, unsigned int max)
  * @param pci_bus pointer to the bus structure
  * @return The maximum bus number found, after scanning all subordinate busses
  */
-static unsigned int pci_scan_bridge(struct device *bus, unsigned int max)
+unsigned int pci_scan_bridge(struct device *bus, unsigned int max)
 {
 	uint32_t buses;
 	uint16_t cr;

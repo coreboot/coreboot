@@ -15,9 +15,9 @@
 
 #include <console/console.h>
 #include <bitops.h>
-#include <device.h>
 #include <arch/io.h>
-#include <pci.h>
+#include <device/device.h>
+#include <device/pci.h>
 
 /**
  * This is the root of the device tree. A PCI tree always has 

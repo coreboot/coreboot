@@ -1,42 +1,15 @@
 #include <console/console.h>
-#include <device/device.h>
-#include <device/pci.h>
-#include <device/pci_ids.h>
-#include <device/pci_ops.h>
+#include <arch/ioapic.h>
 
-
-unsigned long initial_apicid[MAX_CPUS] =
-{
-	0
-};
-
-void
-mainboard_fixup(void)
-{
-}
-
-void
-final_mainboard_fixup(void)
-{
-#if 0
-//	void final_southbridge_fixup(void);
-//	void final_superio_fixup(void);
-
-	printk_info("AMD Solo initializing...");
-
-//	final_southbridge_fixup();
-
-//#ifndef USE_NEW_SUPERIO_INTERFACE
-//final_superio_fixup();
-//#endif
-#endif
-}
-
+/* TODO: this must move to chip/intel */
+/* we have to do more than we thought. I assumed Linux would do all the
+ * interesting parts, and I was wrong. 
+ */
 struct ioapicreg {
 	unsigned int reg;
 	unsigned int value_low, value_high;
 };
-static struct ioapicreg ioapicregvalues[] = {
+struct ioapicreg ioapicregvalues[] = {
 #define ALL		(0xff << 24)
 #define NONE		(0)
 #define DISABLED	(1 << 16)
@@ -52,9 +25,9 @@ static struct ioapicreg ioapicregvalues[] = {
 #define SMI		(2 << 8)
 #define INT		(1 << 8)
 	/* mask, trigger, polarity, destination, delivery, vector */
-	{0x00, ENABLED | TRIGGER_EDGE | POLARITY_HIGH | PHYSICAL_DEST | ExtINT | 0, 0},
+	{0x00, DISABLED, NONE},
 	{0x01, DISABLED, NONE},
-	{0x02, ENABLED | TRIGGER_EDGE | POLARITY_HIGH | PHYSICAL_DEST | INT | 0,  0},
+	{0x02, DISABLED, NONE},
 	{0x03, DISABLED, NONE},
 	{0x04, DISABLED, NONE},
 	{0x05, DISABLED, NONE},
@@ -77,23 +50,24 @@ static struct ioapicreg ioapicregvalues[] = {
 	{0x15, DISABLED, NONE},
 	{0x16, DISABLED, NONE},
 	{0x17, DISABLED, NONE},
-	{0x18, DISABLED, NONE},
-	{0x19, DISABLED, NONE},
-	{0x20, DISABLED, NONE},
-	{0x21, DISABLED, NONE},
-	{0x22, DISABLED, NONE},
-	{0x23, DISABLED, NONE},
 };
 
-static void setup_ioapic(void)
+void setup_ioapic(void)
 {
 	int i;
 	unsigned long value_low, value_high;
-	unsigned long ioapic_base = 0xfec00000;
+	unsigned long nvram = 0xfec00000;
 	volatile unsigned long *l;
 	struct ioapicreg *a = ioapicregvalues;
 
-	l = (unsigned long *) ioapic_base;
+	l = (unsigned long *) nvram;
+#if defined(i786)
+	/* For the pentium 4 and above apic deliver their interrupts
+	 * on the front side bus, enable that.
+	 */
+	l[0] = 0x03;
+	l[4] = 1;
+#endif /* i786 */
 	for (i = 0; i < sizeof(ioapicregvalues) / sizeof(ioapicregvalues[0]);
 	     i++, a++) {
 		l[0] = (a->reg * 2) + 0x10;
@@ -110,28 +84,3 @@ static void setup_ioapic(void)
 			a->reg, a->value_low, a->value_high);
 	}
 }
-
-static void lpc_init(struct device *dev)
-{
-	uint8_t byte;
-	printk_debug("lpc_init\n");
-#if 0
-	pci_read_config_byte(dev, 0x4B, &byte);
-	byte |= 1;
-	pci_write_config_byte(dev, 0x4B, byte);
-	setup_ioapic();
-#endif
-}
-
-static struct device_operations lpc_ops  = {
-	.read_resources = pci_dev_read_resources,
-	.set_resources  = pci_dev_set_resources,
-	.init = lpc_init,
-	.scan_bus = 0,
-};
-
-static struct pci_driver lpc_driver __pci_driver = {
-	.ops    = &lpc_ops,
-	.vendor = PCI_VENDOR_ID_AMD,
-	.device = 0x7468,
-};

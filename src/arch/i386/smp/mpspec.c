@@ -113,14 +113,13 @@ void smp_write_processors(struct mp_config_table *mc,
 		unsigned long cpu_flag;
 		if(initial_apicid[i]==-1)
 			continue;
-		cpu_flag = MPC_CPU_ENABLED
+		cpu_flag = MPC_CPU_ENABLED;
 		if (processor_map[i] & CPU_BOOTPROCESSOR) {
 			cpu_flag |= MPC_CPU_BOOTPROCESSOR;
 		}
 		smp_write_processor(mc, cpu_apicid, apic_version,
 			cpu_flag, cpu_features, cpu_feature_flags
 		);
-	
 	}
 }
 

@@ -18,6 +18,7 @@
 #define APIC 1
 #endif
 
+
 static void cache_on(struct mem_range *mem)
 {
 	post_code(0x60);
@@ -90,6 +91,11 @@ static void interrupts_on()
 		| (APIC_LVT_REMOTE_IRR |APIC_SEND_PENDING | 
 			APIC_DELIVERY_MODE_NMI)
 		);
+#if 1
+	printk_debug(" apic_id: %d ",
+		apic_read(APIC_ID));
+#endif
+
 #else /* APIC */
 #ifdef i686
 	/* Only Pentium Pro and later have those MSR stuff */

@@ -49,7 +49,7 @@ SECTIONS
 		econsole_drivers = . ;
 		. = ALIGN(4);
 		pci_drivers = . ;
-		*(.rodata.pci_drivers)
+		*(.rodata.pci_driver)
 		epci_drivers = . ;
 		*(.rodata)
 		*(.rodata.*)

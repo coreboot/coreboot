@@ -1,5 +1,5 @@
 #include <console/console.h>
-#include <device.h>
+#include <device/device.h>
 
 /**
  * Given a bus and a devfn number, find the device structure

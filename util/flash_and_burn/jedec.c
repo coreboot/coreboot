@@ -30,7 +30,7 @@
 
 int probe_jedec(struct flashchip *flash)
 {
-	volatile char *bios = flash->virt_addr;
+	volatile unsigned char *bios = flash->virt_addr;
 	unsigned char id1, id2;
 
 	/* Issue JEDEC Product ID Entry command */
@@ -60,7 +60,7 @@ int probe_jedec(struct flashchip *flash)
 	return 0;
 }
 
-int erase_sector_jedec(volatile char *bios, unsigned int page)
+int erase_sector_jedec(volatile unsigned char *bios, unsigned int page)
 {
 	volatile unsigned char *Temp;
 
@@ -120,8 +120,8 @@ int erase_chip_jedec(struct flashchip *flash)
 	return (0);
 }
 
-void write_page_write_jedec(volatile char *bios, char *src, volatile char *dst,
-		      int page_size)
+void write_page_write_jedec(volatile unsigned char *bios, unsigned char *src,
+			    volatile unsigned char *dst, int page_size)
 {
 	int i;
 
@@ -146,7 +146,6 @@ int write_byte_program_jedec(volatile unsigned char *bios, unsigned char *src,
 
 	/* transfer data from source to destination */
 	if (*src == 0xFF) {
-		dst++, src++;
 		/* If the data is 0xFF, don't program it */
 		return 0;
 	}
@@ -164,8 +163,7 @@ int write_byte_program_jedec(volatile unsigned char *bios, unsigned char *src,
 }
 
 int write_sector_jedec(volatile unsigned char *bios, unsigned char *src,
-		       volatile unsigned char *dst,
-		       unsigned int page_size)
+		       volatile unsigned char *dst, unsigned int page_size)
 {
 	int i;
 

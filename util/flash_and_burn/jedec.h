@@ -4,9 +4,8 @@
 extern int probe_jedec(struct flashchip *flash);
 extern int erase_chip_jedec(struct flashchip *flash);
 extern int write_jedec(struct flashchip *flash, unsigned char *buf);
-extern int erase_sector_jedec(volatile char *bios, unsigned int page);
-extern int write_sector_jedec(volatile unsigned char *bios,
-			      unsigned char *src,
+extern int erase_sector_jedec(volatile unsigned char *bios, unsigned int page);
+extern int write_sector_jedec(volatile unsigned char *bios, unsigned char *src,
 			      volatile unsigned char *dst,
 			      unsigned int page_size);
 

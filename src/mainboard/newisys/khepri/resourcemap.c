@@ -259,7 +259,7 @@ static void setup_khepri_resource_map(void)
 	 * [31:24] Bus Number Limit i
 	 *	   This field defines the highest bus number in configuration regin i
 	 */
-	PCI_ADDR(0, 0x18, 1, 0xE0), 0x0000FC88, 0xff000003,
+	PCI_ADDR(0, 0x18, 1, 0xE0), 0x0000FC88, 0xff000003|(SB_LINK<<8),
 	PCI_ADDR(0, 0x18, 1, 0xE4), 0x0000FC88, 0x00000000,
 	PCI_ADDR(0, 0x18, 1, 0xE8), 0x0000FC88, 0x00000000,
 	PCI_ADDR(0, 0x18, 1, 0xEC), 0x0000FC88, 0x00000000,

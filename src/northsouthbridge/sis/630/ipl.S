@@ -72,21 +72,21 @@ spd_sizing_start:
 	CALL_BP(sis_set_smbus)
 
 	movb	$0x02, %al			# Read the RAM Type (SPD byte 2)
-	CALL_SP(read_spd)				# of the dram on current DIMM.
+	CALL_SP(read_spd)			# of the dram on current DIMM.
 
 	cmpb	$0x04, %bl			# If the RAM Type = SDRAM ??
 	jne	no_sdram			# no, exit
 
 	movb	$0x03, %al			# Read the Row number (SPD byte 3)
-	CALL_SP(read_spd)				# of the dram on current DIMM.
+	CALL_SP(read_spd)			# of the dram on current DIMM.
 	movb	%bl, %ch			# save the Row number in CH.
 
 	movb	$0x04, %al			# Read the Column number (SPD byte 4)
-	CALL_SP(read_spd)				# of the dram on current DIMM.
+	CALL_SP(read_spd)			# of the dram on current DIMM.
 	movb	%bl, %cl			# Save the Column number in CL.
 
 	movb	$0x11, %al			# Read the Bank number (SPD byte 17)
-	CALL_SP(read_spd)				# of the dram on current DIMM.
+	CALL_SP(read_spd)			# of the dram on current DIMM.
 
 #ifdef SIZE_ALL
 	movb	%bh, %ah			# Save the current DIMM slot number in AH
@@ -131,7 +131,7 @@ check_row_column:
 #endif /* SAFTY_CHECK */
 
 	movb	$0x05, %al			# Read the Side number (SPD byte 5)
-	CALL_SP(read_spd)				# of the dram on current DIMM.
+	CALL_SP(read_spd)			# of the dram on current DIMM.
 
 	cmpb	$0x02, %bl			# single or double sided ??
 	jne	single_side
@@ -199,7 +199,7 @@ sis630ipl_start:
 	movw	$0x2e, %dx			# and Flash ROM I/F 
 	rep
 	outsb
-	movb	$0xfc, %al			# enable write, CLKIN = 24 MHZ
+	movb	$0xfd, %al			# enable write, CLKIN = 24 MHZ
 	outb	%al, $0x2f
 
 	xorw	%sp, %sp			# clear %sp

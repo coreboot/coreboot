@@ -9,3 +9,8 @@
 #define PC87366_ACB  0x08
 #define PC87366_FSCM 0x09
 #define PC87366_WDT  0x0A
+#define PC87366_GMP  0x0b
+#define PC87366_MIDI  0x0C
+#define PC87366_VLM  0x0D
+#define PC87366_TMS  0x0E
+

@@ -9,9 +9,9 @@ static unsigned long __sizeram(void)
 {
 	unsigned long totalmem;
 	unsigned char bank, mem, prevmem;
-	// fix me later -- there are two more banks at 0x56 and 0x57
-	unsigned long firstbank = 0x5a, lastbank = 0x5f;
 	u8 sma_status, sma_size, sma_size_bits;	
+        // fixed so tha banks 56 & 57 are looked at as well.
+	unsigned long firstbank = 0x5a, lastbank = 0x61;
 	
         struct pci_dev *pcidev;
 
@@ -29,7 +29,12 @@ static unsigned long __sizeram(void)
 
 	for(totalmem = mem = prevmem = 0, bank = firstbank; 
 	    bank <= lastbank; bank++) {
-		pci_read_config_byte(pcidev, bank, &mem);
+		// last 2 banks are in regs before first bank so
+		// wrap round if > 0x5f
+		unsigned long rbank = (bank > 0x5f) ? bank - 10 : bank;
+
+		pci_read_config_byte(pcidev, rbank, &mem);
+
 		// sanity check. If the mem value is < prevmem, 
 		// that is an error, so skip this step. 
 		if (mem < prevmem) {

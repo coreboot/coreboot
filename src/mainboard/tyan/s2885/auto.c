@@ -1,5 +1,4 @@
-#define ASSEMBLY 1
- 
+#define ASSEMBLY 1 
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
@@ -40,24 +39,23 @@ static void soft_reset(void)
         pci_write_config8(PCI_DEV(0, 0x04, 0), 0x47, 1);
 }
 
-#define REV_B_RESET 0
 static void memreset_setup(void)
 {
-#if REV_B_RESET==1
-        outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=0
-#else
-        outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=1
-#endif
-        outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
+	if (is_cpu_pre_c0()) {
+		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
+		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=0
+	} else {
+		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=1
+	}
 }
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
-        udelay(800);
-#if REV_B_RESET==1
-        outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 17); //REVB_MEMRST_L=1
-#endif
-        udelay(90);
+	if (is_cpu_pre_c0()) {
+		udelay(800);
+		outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 17); //REVB_MEMRST_L=1
+		udelay(90);
+	}
 }
 
 static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
@@ -84,21 +82,20 @@ static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 	 *     [3] Route to Link 2
 	 */
 
-	uint32_t ret=0x00010101; /* default row entry */
+	uint32_t ret = 0x00010101; /* default row entry */
 
 	static const unsigned int rows_2p[2][2] = {
 		{ 0x00050101, 0x00010404 },
 		{ 0x00010404, 0x00050101 }
 	};
 
-	if(maxnodes>2) {
+	if (maxnodes > 2) {
 		print_debug("this mainboard is only designed for 2 cpus\r\n");
-		maxnodes=2;
+		maxnodes = 2;
 	}
 
-
-	if (!(node>=maxnodes || row>=maxnodes)) {
-		ret=rows_2p[node][row];
+	if (!(node >= maxnodes || row >= maxnodes)) {
+		ret = rows_2p[node][row];
 	}
 
 	return ret;
@@ -166,24 +163,29 @@ static void main(void)
                 },      
         };
         int needs_reset;
+
         enable_lapic();
         init_timer();
+
         if (cpu_init_detected()) {
                 asm("jmp __cpu_reset");
         }
+
         distinguish_cpu_resets();
         if (!boot_cpu()) {
                 stop_this_cpu();
         }
+
         w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
         uart_init();
         console_init();
+
         setup_s2885_resource_map();
         needs_reset = setup_coherent_ht_domain();
 //        needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0xc0);
         needs_reset |= ht_setup_chains(ht_c, sizeof(ht_c)/sizeof(ht_c[0]));
         if (needs_reset) {
-                print_info("ht reset -");
+                print_info("ht reset -\r\n");
                 soft_reset();
         }
 #if 0
@@ -194,18 +196,19 @@ static void main(void)
 #if 0
 	print_pci_devices();
 #endif
+
 	enable_smbus();
+
 #if 0
 	dump_spd_registers(&cpu[0]);
 #endif
+
 	memreset_setup();
 	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
 
-#if 0
+#if 1
 	dump_pci_devices();
-#endif
-#if 0
-	dump_pci_device(PCI_DEV(0, 0x18, 1));
+	//dump_pci_device(PCI_DEV(0, 0x18, 1));
 #endif
 
 	/* Check all of memory */
@@ -216,11 +219,7 @@ static void main(void)
 	print_debug_hex32(msr.hi);
 	print_debug_hex32(msr.lo);
 	print_debug("\r\n");
-#endif
-/*
-#if  0
 	ram_check(0x00000000, msr.lo+(msr.hi<<32));
-#else 
 #if TOTAL_CPUS < 2
 	// Check 16MB of memory @ 0
 	ram_check(0x00000000, 0x00100000);
@@ -229,5 +228,4 @@ static void main(void)
 	ram_check(0x80000000, 0x80100000);
 #endif
 #endif
-*/
 }

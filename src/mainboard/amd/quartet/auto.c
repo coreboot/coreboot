@@ -217,7 +217,7 @@ static void main(void)
 	needs_reset = setup_coherent_ht_domain();
 	needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0x80);
 	if (needs_reset) {
-		print_info("ht reset -");
+		print_info("ht reset -\r\n");
 		soft_reset();
 	}
 #if 0

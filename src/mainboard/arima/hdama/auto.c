@@ -39,6 +39,10 @@ static void soft_reset(void)
 	pci_write_config8(PCI_DEV(0, 0x04, 0), 0x47, 1);
 }
 
+/*
+ * GPIO28 of 8111 will control H0_MEMRESET_L
+ * GPIO29 of 8111 will control H1_MEMRESET_L
+ */
 static void memreset_setup(void)
 {
 	if (is_cpu_pre_c0()) {
@@ -46,8 +50,7 @@ static void memreset_setup(void)
 		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 28);
 		/* Ensure the BIOS has control of the memory lines */
 		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 29);
-	}
-	else {
+	} else {
 		/* Ensure the CPU has controll of the memory lines */
 		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 29);
 	}
@@ -87,21 +90,21 @@ static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 	 *     [3] Route to Link 2
 	 */
 
-	uint32_t ret=0x00010101; /* default row entry */
+	uint32_t ret = 0x00010101; /* default row entry */
 
 	static const unsigned int rows_2p[2][2] = {
 		{ 0x00050101, 0x00010404 },
 		{ 0x00010404, 0x00050101 }
 	};
 
-	if(maxnodes > 2) {
+	if (maxnodes > 2) {
 		print_debug("this mainboard is only designed for 2 cpus\r\n");
-		maxnodes=2;
+		maxnodes = 2;
 	}
 
 
 	if (!(node >= maxnodes || row >= maxnodes)) {
-		ret=rows_2p[node][row];
+		ret = rows_2p[node][row];
 	}
 
 	return ret;
@@ -121,18 +124,11 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
 
-
-
-
 #define FIRST_CPU  1
 #define SECOND_CPU 1
 #define TOTAL_CPUS (FIRST_CPU + SECOND_CPU)
 static void main(void)
 {
-	/*
-	 * GPIO28 of 8111 will control H0_MEMRESET_L
-	 * GPIO29 of 8111 will control H1_MEMRESET_L
-	 */
 	static const struct mem_controller cpu[] = {
 #if FIRST_CPU
 		{
@@ -157,40 +153,47 @@ static void main(void)
 		},
 #endif
 	};
+
 	int needs_reset;
 	enable_lapic();
 	init_timer();
+
 	if (cpu_init_detected()) {
 		asm("jmp __cpu_reset");
 	}
+
 	distinguish_cpu_resets();
 	if (!boot_cpu()) {
 		stop_this_cpu();
 	}
+
 	pc87360_enable_serial(SERIAL_DEV, TTYS0_BASE);
 	uart_init();
 	console_init();
+
 	setup_default_resource_map();
 	needs_reset = setup_coherent_ht_domain();
 	needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0x80);
 	if (needs_reset) {
-		print_info("ht reset -");
+		print_info("ht reset -\r\n");
 		soft_reset();
 	}
+
 #if 0
 	print_pci_devices();
 #endif
+
 	enable_smbus();
+
 #if 0
 	dump_spd_registers(&cpu[0]);
 #endif
+
 	memreset_setup();
 	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
 
 #if 0
 	dump_pci_devices();
-#endif
-#if 0
 	dump_pci_device(PCI_DEV(0, 0x18, 2));
 #endif
 

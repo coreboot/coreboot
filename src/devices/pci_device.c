@@ -672,8 +672,8 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned min_devfn,
 	}
 	post_code(0x25);
 
-	/* if the child provides scan_bus(), for example a bridge, scan the
-	 * bus behind that child */
+	/* if a child provides scan_bus(), for example a bridge, scan
+	 * buses behind that child */
 	for (child = bus->children; child; child = child->sibling) {
 		if (!child->ops->scan_bus) {
 			continue;

@@ -405,6 +405,11 @@ define CONFIG_SYS_CLK_FREQ
 	comment "System clock frequency in MHz"
 end
 
+define CONFIG_KEYBOARD
+	default 0
+	export used
+	comment "Run PC keyboard enable code"
+end
 ###############################################
 # SMP options
 ###############################################
@@ -562,7 +567,7 @@ define CONFIG_UDELAY_TSC
 end
 
 ###############################################
-# Board specifig options
+# Board specific options
 ###############################################
 
 ###############################################

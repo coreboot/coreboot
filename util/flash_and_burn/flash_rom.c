@@ -51,7 +51,6 @@
 #include "sst_fwhub.h"
 
 struct flashchip flashchips[] = {
-#if 1
 	{"Am29F040B",	AMD_ID, 	AM_29F040B,	NULL, 512, 64 * 1024,
 	 probe_29f040b, erase_29f040b,	write_29f040b,	NULL},
 	{"At29C040A",	ATMEL_ID,	AT_29C040A,	NULL, 512, 256,
@@ -70,18 +69,16 @@ struct flashchip flashchips[] = {
 	 probe_jedec, 	erase_chip_jedec, write_49lf040,NULL},
 	{"SST49LF080A",	SST_ID,		SST_49LF080A,	NULL, 1024, 4096,
 	 probe_jedec,	erase_chip_jedec, write_49lf040,NULL},
-	{"SST49LF002A",	SST_ID,		SST_49LF002A,	NULL, 256, 4096,
+	{"SST49LF002A/B", SST_ID,	SST_49LF002A,	NULL, 256, 16 * 1024,
 	 probe_sst_fwhub, erase_sst_fwhub, write_sst_fwhub, NULL},
-	{"SST49LF003A", SST_ID,		SST_49LF003A,	NULL, 384, 4096,
+	{"SST49LF003A/B", SST_ID,	SST_49LF003A,	NULL, 384, 64 * 1024,
 	 probe_sst_fwhub, erase_sst_fwhub, write_sst_fwhub,NULL},
-	{"SST49LF004A", SST_ID,		SST_49LF004A,	NULL, 512, 4096,
+	{"SST49LF004A/B", SST_ID,	SST_49LF004A,	NULL, 512, 64 * 1024,
 	 probe_sst_fwhub, erase_sst_fwhub, write_sst_fwhub,NULL},
-	{"SST49LF008A", SST_ID,		SST_49LF008A, 	NULL, 1024, 4096,
+	{"SST49LF008A", SST_ID,		SST_49LF008A, 	NULL, 1024, 64 * 1024 ,
 	 probe_sst_fwhub, erase_sst_fwhub, write_sst_fwhub, NULL},
-#endif
 	{"Pm49FL004",	PMC_ID,		PMC_49FL004,	NULL, 512, 64 * 1024,
 	 probe_jedec,	erase_chip_jedec, write_49fl004,NULL},
-#if 1
 	{"W29C011",	WINBOND_ID,	W_29C011,	NULL, 128, 128,
 	 probe_jedec,	erase_chip_jedec, write_jedec,	NULL},
 	{"W29C020C", 	WINBOND_ID, 	W_29C020C,	NULL, 256, 128,
@@ -98,7 +95,6 @@ struct flashchip flashchips[] = {
 	 MSYSTEMS_ID, MSYSTEMS_MD2802,
 	 NULL, 8, 8 * 1024,
 	 probe_md2802, erase_md2802, write_md2802, read_md2802},
-#endif
 	{NULL,}
 };
 
@@ -318,7 +314,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (exclude_end_position - exclude_start_position > 0)
-	    memcpy(buf+exclude_start_position,
+		memcpy(buf+exclude_start_position,
 		       (const char *) flash->virt_addr+exclude_start_position, 
 		       exclude_end_position-exclude_start_position);
 

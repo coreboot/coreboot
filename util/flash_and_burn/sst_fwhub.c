@@ -80,6 +80,7 @@ int probe_sst_fwhub(struct flashchip *flash)
 	myusec_delay(10);
 
 	// we need to mmap the write-protect space. 
+	printf("mapping control register at %x\n", 0 - 0x400000 -size);
 	bios = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
 		    flash->fd_mem, (off_t) (0 - 0x400000 - size));
 	if (bios == MAP_FAILED) {

@@ -224,10 +224,9 @@ static int enable_flash_amd8111(struct pci_dev *dev, char *name)
 	 * that it is hard to argue that we should quit at this point. 
 	 */
 
-	//dump_pci_device(dev); 
-
+	/* enable decoding at 0xffb00000 to 0xffffffff */
 	old = pci_read_byte(dev, 0x43);
-	new = old | 0x80;
+	new = old | 0xC0;
 	if (new != old) {
 		pci_write_byte(dev, 0x43, new);
 		if (pci_read_byte(dev, 0x43) != new) {

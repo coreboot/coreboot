@@ -1,5 +1,7 @@
 ##
 ## CPU initialization
 ##
-initinclude "EARLY_INIT" ppc/mpc74xx/mpc74xx.inc
+initinclude "EARLY_INIT" cpu/ppc/mpc74xx/mpc74xx.inc
+
+object clock.o
 

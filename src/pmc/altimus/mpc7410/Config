@@ -1,4 +1,9 @@
 ##
+## CPU initialization
+##
+mainboardinit pmc/altimus/mpc7410/mpc7410.inc
+
+##
 ## Include the secondary Configuration files 
 ##
 northbridge motorola/mpc107

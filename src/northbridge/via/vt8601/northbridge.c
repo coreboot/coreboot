@@ -1,3 +1,4 @@
+#include <printk.h>
 #include <pci.h>
 
 unsigned long sizeram()
@@ -21,9 +22,12 @@ unsigned long sizeram()
 		prevmem = mem;
 	}
 
+	printk("sizeram: returning 0x%x KB\n", totalmem);
+#if 0
 	printk("sizeram: NOT returning 0x%x KB\n", totalmem);
 	printk("sizeram: there are still some SPD problems ... \n");
 	totalmem = 64 * 1024;
 	printk("sizeram: SO we return only 0x%x KB\n", totalmem);
+#endif
 	return totalmem;
 }

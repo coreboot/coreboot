@@ -308,27 +308,90 @@ static void setup_row_direct(u8 source, u8 dest, u8 linkn)
 	val |= 1<<(linkn+1+8); //for direct connect response route should equal to request table
 	fill_row(source,dest, val);
 }
+static uint8_t get_linkn_first(uint8_t byte)
+{
+        if(byte & 0x02) { byte = 0; }
+        else if(byte & 0x04) { byte = 1; }
+        else if(byte & 0x08) { byte = 2; }
+        return byte; 
+}       
+static uint8_t get_linkn_last(uint8_t byte)
+{
+        if(byte & 0x02) { byte &= 0x0f; byte |= 0x00;  }
+        if(byte & 0x04) { byte &= 0x0f; byte |= 0x10;  }
+        if(byte & 0x08) { byte &= 0x0f; byte |= 0x20;  }
+        return byte>>4; 
+}
+static uint8_t get_linkn_last_count(uint8_t byte)
+{
+        byte &= 0x3f;
+        if(byte & 0x02) { byte &= 0xcf; byte |= 0x00; byte+=0x40; }
+        if(byte & 0x04) { byte &= 0xcf; byte |= 0x10; byte+=0x40; }
+        if(byte & 0x08) { byte &= 0xcf; byte |= 0x20; byte+=0x40; }
+        return byte>>4;
+}
+
 #if CONFIG_MAX_CPUS>2
+#if !CROSS_BAR_47_56
 static void setup_row_indirect(u8 source, u8 dest, u8 gateway)
+#else
+static void setup_row_indirect(u8 source, u8 dest, u8 gateway, u8 diff)
+#endif
 {
 	//for indirect connection, we need to compute the val from val_s(source, source), and val_g(source, gateway)
 	uint32_t val_s;
 	uint32_t val_g;
 	uint32_t val;
+	uint8_t byte;
 #warning "FIXME is it the way to set the RESPONSE TABLE for indirect?"
+#warning "FIXME I don't know how to set BROADCAST TABLE for indirect, 1?"
 	val_s = get_row(source, source);
 	val_g = get_row(source, gateway);
 	
 	val = val_g & 0xff;
 	val_s >>=16;
 	val_s &=0xfe;
-	if(val_s!=val) { // use another connect as response
+#if !CROSS_BAR_47_56
+	if(((source&1)!=(dest &1)) && (val_s!=val) ) { // use another connect as response
 		val_s -= val;
-#warning "FIXME I don't know how to set BROADCAST TABLE for indirect, 1?"
+#if CONFIG_MAX_CPUS>4
+		// Some node have two links left
+		byte = val_s;
+		byte = get_linkn_last_count(byte);
+		if((byte>>2)>1) {
+			if(source<dest) {
+				val_s-=link_connection(source, source-2); // - down
+			} else {
+				val_s-=link_connection(source, source+2); // - up
+			}
+		}
+#endif
 		val |= (1<<16) | (val_s<<8);
 	} else {
 		val = val_g; // all the same to gateway
 	}
+#else 
+        if(diff && (val_s!=val) ) { // use another connect as response
+                val_s -= val;
+#if CONFIG_MAX_CPUS>4
+		// Some node have two links left
+		// don't worry we only have (2, (3 as source need to handle
+                byte = val_s;
+                byte = get_linkn_last_count(byte);
+                if((byte>>2)>1) {
+                        if(source<dest) {
+                                val_s-=link_connection(source, source-2); // -down
+                        } else {
+                                val_s-=link_connection(source, source+2); // -up
+                        }
+                }
+#endif
+                val |= (1<<16) | (val_s<<8);
+        } else {
+                val = val_g; // all the same to gateway
+        }
+
+#endif
 
 	fill_row(source, dest, val);
 
@@ -336,8 +399,13 @@ static void setup_row_indirect(u8 source, u8 dest, u8 gateway)
 static void setup_row_indirect_group(const u8 *conn, int num)
 {
         int i;
-        for(i=0; i<num; i+=3) {
-		setup_row_indirect(conn[i*3], conn[i*3+1],conn[i*3+2]);
+        for(i=0; i<num; i+=4) {
+#if !CROSS_BAR_47_56
+	setup_row_indirect(conn[i*3], conn[i*3+1],conn[i*3+2]);
+#else
+	setup_row_indirect(conn[i*4], conn[i*4+1],conn[i*4+2], conn[i*4+3]);
+#endif
+
         }  
 }
 #endif
@@ -441,29 +509,6 @@ static int optimize_connection_group(const u8 *opt_conn, int num) {
 #endif
 
 #if CONFIG_MAX_CPUS > 1
-static uint8_t get_linkn_first(uint8_t byte)
-{
-        if(byte & 0x02) { byte = 0; }
-        else if(byte & 0x04) { byte = 1; }
-        else if(byte & 0x08) { byte = 2; }
-	return byte;
-}
-static uint8_t get_linkn_last(uint8_t byte)
-{
-        if(byte & 0x02) { byte &= 0x0f; byte |= 0x00;  }
-        if(byte & 0x04) { byte &= 0x0f; byte |= 0x10;  }
-        if(byte & 0x08) { byte &= 0x0f; byte |= 0x20;  }
-        return byte>>4;
-}
-static uint8_t get_linkn_last_count(uint8_t byte)
-{
-	byte &= 0x3f;
-        if(byte & 0x02) { byte &= 0xcf; byte |= 0x00; byte+=0x40; }
-        if(byte & 0x04) { byte &= 0xcf; byte |= 0x10; byte+=0x40; }
-        if(byte & 0x08) { byte &= 0xcf; byte |= 0x20; byte+=0x40; }
-        return byte>>4;
-}
-
 static struct setup_smp_result setup_smp(void)
 {
 	struct setup_smp_result result;
@@ -583,10 +628,17 @@ static struct setup_smp_result setup_smp(void)
 
 	/* We found 4 nodes so far. Now setup all nodes for 4p */
 	/* for indirect we will use clockwise routing */
+#if !CROSS_BAR_47_56
         static const u8 conn4_1[] = {
                 0,3,1,
                 1,2,3,
         };	
+#else
+        static const u8 conn4_1[] = {
+                0,3,1,1,
+                1,2,3,1,
+        };
+#endif
 
 	setup_row_indirect_group(conn4_1, sizeof(conn4_1)/sizeof(conn4_1[0]));
 	
@@ -661,10 +713,17 @@ static struct setup_smp_result setup_smp(void)
         setup_row_direct(3,2, byte & 0x3);
 
 	/* Set indirect connection to 0, and 1  for indirect we will use clockwise routing */
+#if !CROSS_BAR_47_56
         static const u8 conn4_2[] = {
                 2,1,0,
                 3,0,2,
         };
+#else
+        static const u8 conn4_2[] = {
+                2,1,0,1,
+                3,0,2,1,
+        };
+#endif
 
         setup_row_indirect_group(conn4_2, sizeof(conn4_2)/sizeof(conn4_2[0]));
 	
@@ -740,17 +799,22 @@ static struct setup_smp_result setup_smp(void)
         
         /* We found 6 nodes so far. Now setup all nodes for 6p */
         static const u8 conn6_1[] = {
+#if !CROSS_BAR_47_56
         	0, 4, 2,
 	        0, 5, 1,
 	        1, 4, 3,
 	        1, 5, 3,
 	        2, 5, 3,
-#if !CROSS_BAR_47_56
         	3, 4, 5,
 #else
-		3, 4, 2,
+                0, 4, 2, 0,
+                0, 5, 1, 1,
+                1, 4, 3, 1,
+                1, 5, 3, 0,
+                2, 5, 3, 0,
+                3, 4, 2, 0,
 #endif
-        };
+        }; 
 
         setup_row_indirect_group(conn6_1, sizeof(conn6_1)/sizeof(conn6_1[0]));
 
@@ -839,15 +903,14 @@ static struct setup_smp_result setup_smp(void)
                 5, 2, 4,
                 5, 1, 3,
 #else
-
-        	4, 0, 2,
-	        4, 1, 2,
-	        4, 3, 2,
-		4, 5, 2,
-		5, 0, 3,
-		5, 2, 3,
-	        5, 1, 3,
-		5, 4, 3,
+        	4, 0, 2, 0,
+	        4, 1, 2, 0,
+	        4, 3, 2, 0,
+		4, 5, 2, 0,
+		5, 0, 3, 0,
+		5, 2, 3, 0,
+	        5, 1, 3, 0,
+		5, 4, 3, 0,
 #endif
         };      
         
@@ -947,14 +1010,14 @@ static struct setup_smp_result setup_smp(void)
 //	        3, 7, 5,
 //	        4, 7, 5,
 #else
-                0, 6, 2,
-//              0, 7, 2,
-                1, 6, 3,
-//                1, 7, 3,
-                2, 6, 4,
-//                2, 7, 4,
-                3, 6, 5,
-//                3, 7, 5,
+                0, 6, 2, 0,
+//              0, 7, 2, 0,
+                1, 6, 3, 0,
+//                1, 7, 3, 0,
+                2, 6, 4, 0,
+//                2, 7, 4, 0,
+                3, 6, 5, 0,
+//                3, 7, 5, 0,
 #endif
         };
 
@@ -1116,21 +1179,21 @@ static struct setup_smp_result setup_smp(void)
 	        7, 3, 5,
 	        7, 4, 6,
 #else
-                0, 7, 2,  // restore it
-                1, 7, 3,
-                2, 7, 4,
-                3, 7, 5,
+                0, 7, 2, 0, // restore it
+                1, 7, 3, 0,
+                2, 7, 4, 0,
+                3, 7, 5, 0,
                 
-                6, 0, 4,
-                6, 1, 4,
-                6, 2, 4,
-                6, 3, 4,
-                7, 0, 4,
-                7, 1, 5,
-                7, 2, 4,
-                7, 3, 5,
-                4, 5, 7,
-                5, 4, 6,
+                6, 0, 4, 0,
+                6, 1, 5, 0,
+                6, 2, 4, 0,
+                6, 3, 5, 0,
+                7, 0, 4, 0,
+                7, 1, 5, 0,
+                7, 2, 4, 0,
+                7, 3, 5, 0,
+                4, 5, 7, 0,
+                5, 4, 6, 0,
 #endif
         };
 

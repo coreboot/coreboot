@@ -29,7 +29,13 @@ default _IO_BASE=ISA_IO_BASE
 ##
 ## Early board initialization, called from ppc_main()
 ##
-initobject init.c
+initobject init.o
+initobject clock.o
+
+##
+## Stage 2 timer support
+##
+object clock.o
 
 ##
 ## Set our ARCH

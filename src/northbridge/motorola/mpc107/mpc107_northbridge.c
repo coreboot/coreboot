@@ -41,15 +41,15 @@ static void pci_domain_set_resources(device_t dev)
 		unsigned long start, end, size;
 
 		/* Find the memory setup */
-		memstart1    = pci_read_config32(dev, 0x80);
-		memstart2    = pci_read_config32(dev, 0x84);
-		extmemstart1 = pci_read_config32(dev, 0x88);
-		extmemstart1 = pci_read_config32(dev, 0x8c);
-		memend1      = pci_read_config32(dev, 0x90);
-		memend2      = pci_read_config32(dev, 0x94);
-		extmemend1   = pci_read_config32(dev, 0x98);
-		extmemend2   = pci_read_config32(dev, 0x9c);
-		bank_enable  = pci_read_config32(dev, 0xa0);
+		memstart1    = pci_read_config32(mc_dev, 0x80);
+		memstart2    = pci_read_config32(mc_dev, 0x84);
+		extmemstart1 = pci_read_config32(mc_dev, 0x88);
+		extmemstart1 = pci_read_config32(mc_dev, 0x8c);
+		memend1      = pci_read_config32(mc_dev, 0x90);
+		memend2      = pci_read_config32(mc_dev, 0x94);
+		extmemend1   = pci_read_config32(mc_dev, 0x98);
+		extmemend2   = pci_read_config32(mc_dev, 0x9c);
+		bank_enable  = pci_read_config32(mc_dev, 0xa0);
 	
 		/* Report the memory regions */
 		idx = 10;

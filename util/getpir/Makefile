@@ -1,3 +1,5 @@
+# change to the path of your linuxbios tree
+#LINUXBIOSROOT=/home/rminnich/src//freebios/
 LINUXBIOSROOT=../..
 
 INCLUDEPATH=$(LINUXBIOSROOT)/src/arch/i386/include/arch

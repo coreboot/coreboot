@@ -18,10 +18,10 @@ mainboardinit cpu/p6/earlymtrr.inc
 nsuperio winbond/w83977ef keyboard=1 com1={1} com2={1} floppy=1
 nsuperio winbond/w83877tf
 
-option ENABLE_FIXED_AND_VARIABLE_MTRRS
-option  MTRR_ONLY_TOP_64K_FLASH
+option ENABLE_FIXED_AND_VARIABLE_MTRRS=1
+option  MTRR_ONLY_TOP_64K_FLASH=1
 option PIIX4_DEVFN=0x38
-option NO_KEYBOARD
+option NO_KEYBOARD=1
 option HAVE_PIRQ_TABLE=1
 option ZKERNEL_START=0xfffc0000
 option ZKERNEL_MASK=0x7f 
@@ -34,12 +34,12 @@ option ROM_SIZE=262144
 # fine. 
 # option DOC_KERNEL_START 0
 option DOC_MIL_BASE=0xd0000
-option L440BX
+option L440BX=1
 
 object mainboard.o
 object irq_tables.o
 
-option UPDATE_MICROCODE
+option UPDATE_MICROCODE=1
 
 cpu p6
 cpu p5

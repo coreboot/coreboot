@@ -171,6 +171,23 @@ enable_flash_vt8231(struct pci_dev *dev, char *name) {
   return 0;
 }
 
+int
+enable_flash_cs5530(struct pci_dev *dev, char *name) {
+  unsigned char new;
+  int ok;
+  
+  pci_write_byte(dev, 0x52, 0xee);
+
+  new = pci_read_byte(dev, 0x52);
+
+  if (new != 0xee) {
+    printf("tried to set register 0x%x to 0x%x on %s failed (WARNING ONLY)\n", 
+	   0x52, new, name);
+    return -1;
+  }
+  return 0;
+}
+
 struct flashchip * probe_flash(struct flashchip * flash)
 {
     int fd_mem;
@@ -285,6 +302,7 @@ FLASH_ENABLE enables[] = {
   {0x1, 0x1, "sis630 -- what's the ID?", enable_flash_sis630},
   {0x8086, 0x2480, "E7500", enable_flash_e7500},
   {0x1106, 0x8231, "VT8231", enable_flash_vt8231},
+  {0x1078, 0x0100, "CS5530", enable_flash_cs5530},
 };
   
 int
@@ -393,7 +411,7 @@ main (int argc, char * argv[])
 
     if (read_it) {
         if ((image = fopen (filename, "w")) == NULL) {
-            perror("Error opening image file");
+            perror(filename);
             exit(1);
         }
         printf("Reading Flash...");
@@ -403,7 +421,7 @@ main (int argc, char * argv[])
         printf("done\n");
     } else {
         if ((image = fopen (filename, "r")) == NULL) {
-            perror("Error opening image file");
+            perror(filename);
             exit(1);
         }
         fread (buf, sizeof(char), size, image);

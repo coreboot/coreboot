@@ -1,0 +1,344 @@
+The goal of this document is to define the configuration language for
+LinuxBIOS. We have looked at both the Linux CML and CML2; as well as
+BSD config. For various reasons, none of these work for what we
+need. What we need is something that lets us maintain lots of
+platforms out of one source tree (so the Linux way of doing things is
+out); at the same time, most of the BSD config language is too
+specific to kernels, is rather complex, and now supports editing of
+kernel binaries, which we don't need. Our needs are pretty simple, so
+we're going to try to cut our own. Since we hope to support
+non-Pentium architectures at some point, we're going to try to base
+this on an interpretive language. Since the person who has volunteered
+to do this knows Python well, we're going to use Python.
+
+Basics
+
+It looks like we're going to write the tool in Python. Rather than
+shoot for a full BNF (seems like overkill just now) we're going to try
+a simple textual description, since a BNF won't get us anywhere with
+Python anyway. (no YACC available in Python). 
+
+A config file consists of commands and comments. Comments are
+Python-style.  Commands consist of a keyword, an argument, and
+optional modifiers. Keywords and arguments are variable names as
+defined in Python. Values are quote-strings or numbers; numbers follow
+the C rules (i.e. 0x for hex, etc.). Commands are lower case. Commands
+and comments may be interspersed arbitrarily; for example, even though
+the target command must be first, it may be preceded by comments.
+
+Environment variables
+
+TOP
+TOP is the top of the bios source tree. All file substitutions are
+done relative to $(TOP). If TOP is not set, it is assumed to be
+"../". Note that relative pathnames should always be used.
+
+Commands
+
+target <target-name>
+
+target must be the first command in the file. This command may only be
+used once.  target names the target directory for building this
+instance of the BIOS.  The target directory will be in
+$(TOP)/<target-name>. 
+
+mainboard <mainboard name>
+
+The second command in the file is the mainboard command. This command
+may only be used once. The mainboard command names a mainboard source
+directory to use. If the file $(TOP)/src/<mainboard name>/Config
+exists, that file is opened and the commands in that file are executed. 
+
+cpu <cpu name>
+
+This command may only be used once for a given CPU name. If the file
+$(TOP)/src/cpu/<cpu name>/Config exists, it is opened and commands in that
+file are executed. 
+
+northbridge <vendor> <northbridge name>
+
+This command may only be used once. If the file
+$(TOP)/src/northbridge/vendor/<northbridge name>/Config exists, it is
+opened and commands in that file are executed.
+
+southbridge <vendor> <southbridge name>
+
+This command may only be used once. If the file
+$(TOP)/src/southbridge/vendor/<southbridge name>/Config exists, it is
+opened and commands in that file are executed.
+
+pcibridge <vendor> <bridge name>
+
+This command may be used as many times as needed. If the file
+$(TOP)/src/pcibridge/vendor/<pcibridge name>/Config exists, it is
+opened and commands in that file are executed.
+
+superio <vendor> <superio name>
+
+This command may be used as many times as needed. If the file
+$(TOP)/src/superio/vendor/<superio name>/Config exists, it is
+opened and commands in that file are executed.
+
+object <path-to-source>
+
+<path-to-source> is a pathname to a .c or .S file rooted at
+$(TOP)/<path-to-source>. This command adds a rule to the Makefile for
+the target such that:
+1) Basename of <path-to-source>.o depends on $(TOP)/<path-to-source>
+2) romimage has a dependency on the .o 
+3) includepath for compiling the .o includes the directory containing the 
+   source
+
+option <option-name> [<optional value>]
+
+This command affects the CFLAGS for the generated Makefile. If there is 
+no optional value, then the option should appear in CFLAGS as:
+CFLAGS += -D<option-name>
+If there is a value, then the option should appear as:
+CFLAGS += -D<option-name>=<optional value>
+
+Sample Makefile
+
+Here from the existing LinuxBIOS is a sample Makefile. 
+
+TOP=../..
+INCLUDES=-I $(TOP)/include -I. -I $(TOP)/linuxbios/include
+CFLAGS=$(INCLUDES) -O2 $(CPUFLAGS) -Ilinux/include -Wall
+# you need to include some linux files. You should use the linux soft link
+# in this directory, so you ensure you get the right includes!
+LINUXINCLUDE=-Ilinux/include
+OBJECTS=crt0.o main.o intel_main.o intel_mtrr.o intel_subr.o fill_inbuf.o params.o
+#OBJECTS += pci.o
+OBJECTS += printk.o vsprintf.o
+OBJECTS += newpci.o linuxpci.o
+OBJECTS += intel_cpuid.o intel_irq_tables.o
+OBJECTS += serial_subr.o
+OBJECTS += intel_mpspec.o
+OBJECTS += intel_microcode.o
+
+LINK = ld -T ldscript.ld -o $@ $(OBJECTS)
+CC=cc $(CFLAGS)
+CCASM=cc -I$(TOP)/chip/intel $(CFLAGS)
+
+# this is in for broken GAS
+# if you have problems with the crt0.S, something about garbage after
+# the data32, try setting this: 
+# setenv BROKEN_GAS -DBROKEN_GAS
+# Not a problem for 2.9.5 and later.
+CFLAGS += $(BROKEN_GAS)
+
+all: romimage
+floppy: all 
+	mcopy -o romimage a:
+# here's the problem: we shouldn't assume we come up with more than 
+# 64K of FLASH up. SO we need a working linuxbios at the tail, and it will
+# enable all flash and then gunzip the linuxbios. As a result, 
+# we need the vmlinux.bin.gz padded out and then cat the linuxbios.rom
+# at then end. We always copy it to /tmp so that a waiting root shell 
+# can put it on the floppy (see ROOTDOIT)
+romimage: linuxbios.rom vmlinux.bin.gz.block
+	cat vmlinux.bin.gz.block linuxbios.rom > romimage
+	cp romimage /tmp
+
+linuxbios.rom: linuxbios.strip mkrom 
+	./mkrom -s 64 -f -o linuxbios.rom linuxbios.strip
+
+linuxbios.strip: linuxbios
+	objcopy -O binary -R .note -R .comment -S linuxbios linuxbios.strip
+
+linuxbios: $(OBJECTS) vmlinux.bin.gz
+	@rm -f biosobject
+	$(LINK) 
+	nm -n linuxbios > linuxbios.map
+
+crt0.s: crt0.S 
+	$(CCASM) -E crt0.S > crt0.s
+
+crt0.o : crt0.s
+	$(CCASM) -c crt0.s
+
+mkrom: $(TOP)/mkrom/mkrom.c
+	cc -o mkrom $<
+
+main.o: ../inflate/main.c
+	cc $(CFLAGS) -c ../inflate/main.c
+
+fill_inbuf.o: ../inflate/fill_inbuf.c
+	cc $(CFLAGS) -c ../inflate/fill_inbuf.c
+
+params.o: ../lib/params.c
+	cc $(CFLAGS) $(LINUXINCLUDE) -c ../lib/params.c
+
+intel_main.o: ../../chip/intel/intel_main.c
+	cc $(CFLAGS) -c $<
+
+pci.o:  ../../chip/intel/pci.c
+	cc $(CFLAGS) -c $<
+
+intel_irq_tables.o: ../../chip/intel/intel_irq_tables.c
+	cc $(CFLAGS) -o $@ -c $<
+
+intel_mtrr.o: ../../chip/intel/intel_mtrr.c
+	cc $(CFLAGS) -c $<
+
+intel_subr.o: ../../chip/intel/intel_subr.c
+	cc $(CFLAGS) -c $<
+
+intel_cpuid.o: $(TOP)/chip/intel/intel_cpuid.c
+	cc $(CFLAGS) -c $<
+
+intel_mpspec.o: $(TOP)/chip/intel/intel_mpspec.c
+	$(CC) $(CFLAGS) -c $<
+
+intel_microcode.o: $(TOP)/chip/intel/intel_microcode.c
+	$(CC) $(CFLAGS) -c $<
+
+serial_subr.o: $(TOP)/chip/intel/serial_subr.c
+	cc $(CFLAGS) -c $<
+
+printk.o: $(TOP)/lib/printk.c
+	cc $(CFLAGS) -c $<
+
+vsprintf.o: $(TOP)/lib/vsprintf.c
+	cc $(CFLAGS) -c $<
+
+newpci.o: $(TOP)/lib/newpci.c
+	cc $(CFLAGS) -c $<
+
+linuxpci.o: $(TOP)/lib/linuxpci.c
+	cc $(CFLAGS) -c $<
+
+vmlinux.bin.gz.block: vmlinux.bin.gz
+	dd conv=sync bs=448k if=vmlinux.bin.gz of=vmlinux.bin.gz.block
+vmlinux.bin.gz: vmlinux.bin
+	gzip -f -3 vmlinux.bin 
+
+vmlinux.bin: linux/vmlinux
+	objcopy -O binary -R .note -R .comment -S $< vmlinux.bin
+
+alltags: 
+	gctags ../inflate/*.c ../../lib/*.c ../../chip/intel/*.c
+	etags ../inflate/*.c ../../lib/*.c ../../chip/intel/*.c
+
+
+clean:: 
+	rm -f linuxbios.* vmlinux.* *.o mkrom xa? *~ linuxbios romimage crt0.s
+	rm -f a.out *.s *.l
+	rm -f TAGS tags
+
+Sample crt0.S
+
+Here is a sample crt0.S from the existing LinuxBIOS. 
+/*
+ * $ $
+ *
+ */
+
+#include <rom/asm.h>
+#include <rom/intel.h>
+
+#include "intel_conf.h"
+#include <sis630.h>
+/*
+ * This is the entry code (the mkrom(8) utility makes a jumpvector
+ * to this adddess. 
+ *
+ * When we get here we are in x86 real mode.
+ *
+ *	%cs	= 0xf000	%ip	= 0x0000
+ *	%ds	= 0x0000	%es	= 0x0000
+ *	%dx	= 0x0yxx	(y = 3 for i386, 5 for pentium, 6 for P6,
+ *					where x is undefined)
+ *	%fl	= 0x0002
+ */
+ 	.text
+	.code16
+
+#include "intel_start32.S"
+
+/* turn on serial */
+#include "VIA_VT82C686A.S"
+
+#include "serial.S"
+
+	TTYS0_TX_STRING($ttyS0_test)
+	
+	/* initialize the RAM */
+	/* different for each motherboard */
+	
+#include "intel_pm133ram.S"
+
+#ifdef RAMTEST
+#include "ramtest.S"
+
+#include "./intel_mtrr.S"
+	mov $0x00000000, %eax
+	mov $0x0009ffff, %ebx
+	mov $16, %ecx
+
+	CALLSP(ramtest)
+#endif	
+/*
+ *	Copy data into RAM and clear the BSS. Since these segments
+ *	isn't really that big we just copy/clear using bytes, not
+ *	double words.
+ */
+	intel_chip_post_macro(0x11)	/* post 11 */
+	TTYS0_TX_STRING($str_after_ram)
+
+	cld				/* clear direction flag */
+	leal	EXT(_ldata), %esi
+	leal	EXT(_data), %edi
+	movl	$EXT(_eldata), %ecx
+	subl	%esi, %ecx
+	jz	.Lnodata		/* should not happen */
+	rep
+	movsb
+.Lnodata:
+	intel_chip_post_macro(0x12)	/* post 12 */
+	TTYS0_TX_STRING($str_after_copy)
+	
+	/** clear stack */
+	xorl	%edi, %edi
+	movl	$_PDATABASE, %ecx
+	xorl	%eax, %eax
+	rep
+	stosb
+	/** clear bss */
+	leal	EXT(_bss), %edi
+	movl	$EXT(_ebss), %ecx
+	subl	%edi, %ecx
+	jz	.Lnobss
+	xorl	%eax, %eax
+	rep
+	stosb
+.Lnobss:
+	
+/*
+ *	Now we are finished. Memory is up, data is copied and
+ *	bss is cleared.   Now we call the ``main´´ routine and
+ *	let it do the rest.
+ */ 
+	intel_chip_post_macro(0xfe)	/* post fe */
+	TTYS0_TX_STRING($str_pre_main)
+
+        /* set new stack */
+        movl    $_PDATABASE, %esp
+/* memory is up. Let's do the rest in C -- much easier. */
+	call	EXT(intel_main)
+	/*NOTREACHED*/
+.Lhlt:	hlt
+	jmp	.Lhlt
+
+ttyS0_test:	.string "\r\n\r\nHello world!!\r\n"
+str_after_ram:		.string "Ram Initialize?\r\n"
+str_after_copy:		.string "after copy?\r\n"
+str_pre_main:	.string "before main\r\n"
+newline:	.string "\r\n"
+
+
+
+
+
+
+

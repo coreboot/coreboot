@@ -1,6 +1,6 @@
 #define ASSEMBLY 1
-#define DEFAULT_CONSOLE_LOGLEVEL 7
-#define MAXIMUM_CONSOLE_LOGLEVEL 7
+#define DEFAULT_CONSOLE_LOGLEVEL 8
+#define MAXIMUM_CONSOLE_LOGLEVEL 8
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
@@ -48,8 +48,7 @@ static void memreset_setup(void)
 		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 16);
 		/* Ensure the BIOS has control of the memory lines */
 		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
-	}
-	else {
+	} else {
 		/* Ensure the CPU has controll of the memory lines */
 		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 17);
 	}
@@ -89,21 +88,21 @@ static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 	 *     [3] Route to Link 2
 	 */
 
-	uint32_t ret=0x00010101; /* default row entry */
+	uint32_t ret = 0x00010101; /* default row entry */
 
 	static const unsigned int rows_2p[2][2] = {
-		{ 0x00050101, 0x00010404 },
-		{ 0x00010404, 0x00050101 }
+		{ 0x00090101, 0x00010808 },
+		{ 0x00010808, 0x00090101 }
 	};
 
-	if(maxnodes > 2) {
+	if (maxnodes > 2) {
 		print_debug("this mainboard is only designed for 2 cpus\r\n");
-		maxnodes=2;
+		maxnodes = 2;
 	}
 
 
 	if (!(node >= maxnodes || row >= maxnodes)) {
-		ret=rows_2p[node][row];
+		ret = rows_2p[node][row];
 	}
 
 	return ret;
@@ -120,12 +119,12 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 }
 
 #include "northbridge/amd/amdk8/raminit.c"
+
+#define CONNECTION_0_1 DOWN
+
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
 #include "mainboard/ibm/e325/resourcemap.c"
-
-
-
 
 #define FIRST_CPU  1
 #define SECOND_CPU 1
@@ -178,7 +177,7 @@ static void main(void)
 	needs_reset = setup_coherent_ht_domain();
 	needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0x80);
 	if (needs_reset) {
-		print_info("ht reset -");
+		print_info("ht reset -\r\n");
 		soft_reset();
 	}
 
@@ -200,7 +199,7 @@ static void main(void)
 #endif
 
 
-#if 1
+#if 0
 	/* Check the first 1M */
 	ram_check(0x00000000, 0x001000000);
 #endif

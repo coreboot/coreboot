@@ -104,7 +104,7 @@ default STACK_SIZE=0x2000
 ##
 ## Use a small 16K heap
 ##
-default HEAP_SIZE=0x4000
+default HEAP_SIZE=0x8000
 
 ##
 ## Only use the option table in a normal image

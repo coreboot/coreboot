@@ -1,5 +1,5 @@
 #include <pci.h>
-
+#include <cpu/p5/io.h>
 
 unsigned long sizeram()
 {
@@ -30,7 +30,7 @@ unsigned long sizeram()
 
 #ifdef HAVE_FRAMEBUFFER
 
-void intel_framebuffer_on()
+void framebuffer_on()
 {
 	outl(0x8000a004, 0xcf8);
 	outb(0x03, 0xcfc);

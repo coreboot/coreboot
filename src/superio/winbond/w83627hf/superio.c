@@ -160,7 +160,7 @@ void w83627hf_pnp_enable_resources(device_t dev)
 
         switch(dev->path.u.pnp.device) {
 	case W83627HF_HWM:
-		printk_debug("w83627hf hwm smbus enabled\r\n");
+		printk_debug("w83627hf hwm smbus enabled\n");
 		enable_hwm_smbus(dev);
 		break;
 	}

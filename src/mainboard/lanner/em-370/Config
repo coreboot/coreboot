@@ -1,0 +1,27 @@
+northbridge intel/440bx
+southbridge intel/piix4e
+superio winbond/w83977ef
+raminit northbridge/intel/440bx/raminit.inc
+
+option INTEL_PPRO_MTRR
+option ENABLE_FIXED_AND_VARIABLE_MTRRS
+option CONFIGURE_L2_CACHE
+option FINAL_MAINBOARD_FIXUP
+option HAVE_PIRQ_TABLE
+option NEWPCI
+option PIIX4_DEVFN=0x90
+option PIIX4E_KEYBOARD
+option i586
+option i686
+option INTEL_BRIDGE_CONFIG
+option PIIX4E_NVRAM
+option __KERNEL__
+option RAMTEST
+
+object mainboard.o
+object irq_tables.o
+keyboard pc80
+cpu p5
+cpu p6
+
+

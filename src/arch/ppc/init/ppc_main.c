@@ -25,6 +25,8 @@ void ppc_main(void)
 	unsigned *from;
 	unsigned *to;
 
+	board_init();
+
 	sdram_init();
 
 	/*

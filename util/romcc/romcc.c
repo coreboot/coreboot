@@ -751,7 +751,6 @@ struct compile_state {
 	const char *label_prefix;
 	const char *ofilename;
 	FILE *output;
-	struct triple *vars;
 	struct file_state *file;
 	struct occurance *last_occurance;
 	const char *function;
@@ -4010,25 +4009,26 @@ static size_t size_of(struct compile_state *state, struct type *type)
 static size_t field_offset(struct compile_state *state, 
 	struct type *type, struct hash_entry *field)
 {
+	struct type *member;
 	size_t size, align;
 	if ((type->type & TYPE_MASK) != TYPE_STRUCT) {
 		internal_error(state, 0, "field_offset only works on structures");
 	}
 	size = 0;
-	type = type->left;
-	while((type->type & TYPE_MASK) == TYPE_PRODUCT) {
-		align = align_of(state, type->left);
+	member = type->left;
+	while((member->type & TYPE_MASK) == TYPE_PRODUCT) {
+		align = align_of(state, member->left);
 		size += needed_padding(size, align);
-		if (type->left->field_ident == field) {
-			type = type->left;
+		if (member->left->field_ident == field) {
+			member = member->left;
 			break;
 		}
-		size += size_of(state, type->left);
-		type = type->right;
+		size += size_of(state, member->left);
+		member = member->right;
 	}
-	align = align_of(state, type);
+	align = align_of(state, member);
 	size += needed_padding(size, align);
-	if (type->field_ident != field) {
+	if (member->field_ident != field) {
 		error(state, 0, "member %s not present", field->name);
 	}
 	return size;
@@ -4037,48 +4037,50 @@ static size_t field_offset(struct compile_state *state,
 static struct type *field_type(struct compile_state *state, 
 	struct type *type, struct hash_entry *field)
 {
+	struct type *member;
 	if ((type->type & TYPE_MASK) != TYPE_STRUCT) {
 		internal_error(state, 0, "field_type only works on structures");
 	}
-	type = type->left;
-	while((type->type & TYPE_MASK) == TYPE_PRODUCT) {
-		if (type->left->field_ident == field) {
-			type = type->left;
+	member = type->left;
+	while((member->type & TYPE_MASK) == TYPE_PRODUCT) {
+		if (member->left->field_ident == field) {
+			member = member->left;
 			break;
 		}
-		type = type->right;
+		member = member->right;
 	}
-	if (type->field_ident != field) {
+	if (member->field_ident != field) {
 		error(state, 0, "member %s not present", field->name);
 	}
-	return type;
+	return member;
 }
 
 static struct type *next_field(struct compile_state *state,
 	struct type *type, struct type *prev_member) 
 {
+	struct type *member;
 	if ((type->type & TYPE_MASK) != TYPE_STRUCT) {
 		internal_error(state, 0, "next_field only works on structures");
 	}
-	type = type->left;
-	while((type->type & TYPE_MASK) == TYPE_PRODUCT) {
+	member = type->left;
+	while((member->type & TYPE_MASK) == TYPE_PRODUCT) {
 		if (!prev_member) {
-			type = type->left;
+			member = member->left;
 			break;
 		}
-		if (type->left == prev_member) {
+		if (member->left == prev_member) {
 			prev_member = 0;
 		}
-		type = type->right;
+		member = member->right;
 	}
-	if (type == prev_member) {
+	if (member == prev_member) {
 		prev_member = 0;
 	}
 	if (prev_member) {
 		internal_error(state, 0, "prev_member %s not present", 
 			prev_member->field_ident->name);
 	}
-	return type;
+	return member;
 }
 
 static struct triple *struct_field(struct compile_state *state,
@@ -4477,6 +4479,8 @@ static struct triple *do_mk_addr_expr(struct compile_state *state,
 	struct triple *result;
 	clvalue(state, expr);
 
+	type = new_type(TYPE_POINTER | (type->type & QUAL_MASK), type, 0);
+
 	result = 0;
 	if (expr->op == OP_ADECL) {
 		error(state, expr, "address of auto variables not supported");
@@ -4497,13 +4501,7 @@ static struct triple *do_mk_addr_expr(struct compile_state *state,
 static struct triple *mk_addr_expr(
 	struct compile_state *state, struct triple *expr, ulong_t offset)
 {
-	struct type *type;
-	
-	type = new_type(
-		TYPE_POINTER | (expr->type->type & QUAL_MASK),
-		expr->type, 0);
-
-	return do_mk_addr_expr(state, expr, type, offset);
+	return do_mk_addr_expr(state, expr, expr->type, offset);
 }
 
 static struct triple *mk_deref_expr(
@@ -4513,6 +4511,21 @@ static struct triple *mk_deref_expr(
 	pointer(state, expr);
 	base_type = expr->type->left;
 	return triple(state, OP_DEREF, base_type, expr, 0);
+}
+
+static struct triple *array_to_pointer(struct compile_state *state, struct triple *def)
+{
+	if ((def->type->type & TYPE_MASK) == TYPE_ARRAY) {
+		struct type *type;
+		struct triple *addrconst;
+		type = new_type(
+			TYPE_POINTER | (def->type->type & QUAL_MASK),
+			def->type->left, 0);
+		addrconst = triple(state, OP_ADDRCONST, type, 0, 0);
+		MISC(addrconst, 0) = def;
+		def = addrconst;
+	}
+	return def;
 }
 
 static struct triple *deref_field(
@@ -4555,16 +4568,10 @@ static struct triple *read_expr(struct compile_state *state, struct triple *def)
 		return def;
 	}
 	/* Tranform an array to a pointer to the first element */
+	
 #warning "CHECK_ME is this the right place to transform arrays to pointers?"
 	if ((def->type->type & TYPE_MASK) == TYPE_ARRAY) {
-		struct type *type;
-		struct triple *result;
-		type = new_type(
-			TYPE_POINTER | (def->type->type & QUAL_MASK),
-			def->type->left, 0);
-		result = triple(state, OP_ADDRCONST, type, 0, 0);
-		MISC(result, 0) = def;
-		return result;
+		return array_to_pointer(state, def);
 	}
 	if (is_in_reg(state, def)) {
 		op = OP_READ;
@@ -8441,14 +8448,14 @@ static struct type *struct_or_union_specifier(
 	}
 	if (!ident || (peek(state) == TOK_LBRACE)) {
 		ulong_t elements;
+		struct type **next;
 		elements = 0;
 		eat(state, TOK_LBRACE);
+		next = &struct_type;
 		do {
 			struct type *base_type;
-			struct type **next;
 			int done;
 			base_type = specifier_qualifier_list(state);
-			next = &struct_type;
 			do {
 				struct type *type;
 				struct hash_entry *fident;
@@ -9106,6 +9113,9 @@ static struct triple *do_decl(struct compile_state *state,
 		break;
 	default:
 		internal_error(state, 0, "Undefined storage class");
+	}
+	if ((type->type & TYPE_MASK) == TYPE_FUNCTION) {
+		error(state, 0, "Function prototypes not supported");
 	}
 	if (ident && 
 		((type->type & STOR_MASK) == STOR_STATIC) &&

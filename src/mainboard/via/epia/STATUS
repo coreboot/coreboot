@@ -4,20 +4,20 @@
 # continuation, if needed, will be via the \ at the end of a line
 # comments are indicated by a '#' as the first character. 
 # the keywords are case-INSENSITIVE
-owner:	Ron Minnich
-email:	rminnich@lanl.gov
+owner:	Andrew Ip
+email:	aip@cwlinux.com
 #status: One of unsupported, unstable, stable
 status: unstable
-explanation: 
-flash-types: 
-payload-types: 
+explanation: problem with irq routing table
+flash-types: SST 39SF020A
+payload-types: etherboot
 # e.g. linux, plan 9, wince, etc.
-OS-types: 
+OS-types: linux
 # e.g. "Plan 9 interrupts don't work on this chipset"
-OS-issues:
-console-types:
+OS-issues: problem with irq routing table
+console-types: serial
 # vga is unsupported, unstable, or stable
-vga:
+vga: unsupported
 # Last-known-good follows the internationl date standard: day/month/year
 last-known-good: 0/0/0000
 Comments: 

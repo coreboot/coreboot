@@ -1,0 +1,28 @@
+# These are keyword-value pairs. 
+# a : separates the keyword from the value 
+# the value is arbitrary text delimited by newline. 
+# continuation, if needed, will be via the \ at the end of a line
+# comments are indicated by a '#' as the first character. 
+# the keywords are case-INSENSITIVE
+owner:	Felix Kloeckner
+email:	root@hamburg.de
+#status: One of unsupported, unstable, stable
+status: unstable
+explanation: try to get this board working
+flash-types:
+payload-types: etherboot
+# e.g. linux, plan 9, wince, etc.
+OS-types: Linux
+# e.g. "Plan 9 interrupts don't work on this chipset"
+OS-issues:
+console-types: serial, (vga)
+#console-types: serial, vga (framedev) //or this one
+# vga is unsupported, unstable, or stable
+vga:unstable
+# Last-known-good follows the internationl date standard: day/month/year
+last-known-good: 19/03/2003
+Comments: just tried it with normal flashrom (no DoC)
+Links:
+Mainboard-revision: 1.1
+# What other mainboards are like this one? List them here. 
+AKA: 

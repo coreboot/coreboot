@@ -3,7 +3,6 @@ import os
 import re
 import string
 
-debug = 0
 warnings = 0
 errors = 0
 
@@ -78,6 +77,31 @@ class stack:
 		return (len(self.stack) == 0)
 partstack = stack()
 dirstack = stack()
+
+class debug_info:
+	none = 0
+	gencode = 1
+	dumptree = 2
+	object = 3
+	dict = 4
+	statement = 5
+	dump = 6
+
+	def __init__(self, *level):
+		self.__level = level
+
+	def setdebug(self, *level):
+		self.__level = level
+
+	def level(self, level):
+		return level in self.__level
+
+	def info(self, level, str):
+		if level in self.__level:
+			print str
+
+global debug
+debug = debug_info(debug_info.none)
 
 # -----------------------------------------------------------------------------
 #                    Error Handling
@@ -154,11 +178,6 @@ def exitiferrors():
 	"""Exit parser if an error has been encountered"""
 	if (errors != 0):
 		sys.exit(1)
-
-def debug_print(level, str):
-	global debug
-	if (debug >= level):
-		print str
 
 # -----------------------------------------------------------------------------
 #                    Main classes
@@ -250,7 +269,7 @@ class romimage:
 		else:
 			source = os.path.join(dirstack.tos(), base + suffix)
 		object = base + '.o'
-		debug_print(1, "add object %s source %s" % (object_name, source))
+		debug.info(debug.object, "add object %s source %s" % (object_name, source))
 		l = getdict(dict, base)
 		if (l):
 			print "Warning, object/driver %s previously defined" % base
@@ -308,7 +327,7 @@ class romimage:
 		if (str != 0):
 			self.useinitincludes = 1
 
-		debug_print(2, "ADDCRT0: %s -> %s" % (str, path))
+		debug.info(debug.object, "ADDCRT0: %s -> %s" % (str, path))
 		o = getdict(self.initincludes, path)
 		if (o):
 			print "Warning, init include for %s previously defined" % path
@@ -501,20 +520,20 @@ class option_value:
 class partobj:
 	"""A configuration part"""
 	def __init__ (self, image, dir, parent, type, name):
-		debug_print(1, "partobj dir %s parent %s type %s" %(dir,parent,type))
+		debug.info(debug.object, "partobj dir %s parent %s type %s" %(dir,parent,type))
 		self.image = image
 		self.children = 0
+		self.siblings = 0
 		self.initcode = []
 		self.registercode = []
 		# sibling is not a list. 
-		self.siblings = 0
 		self.type = type
 		self.objects = []
 		self.dir = dir
 		self.irq = 0
 		self.instance = image.newpartinstance()
 		self.flatten_name = flatten_name(type + "/" + name)
-		debug_print(1, "INSTANCE %d" % self.instance)
+		debug.info(debug.object, "INSTANCE %d" % self.instance)
 		self.devfn = 0	
 		self.private = 0	
 		self.uses_options = {}
@@ -527,12 +546,12 @@ class partobj:
 			self.chipconfig = 0
 		
 		if (parent):
-			debug_print(1, "add to parent")
+			debug.info(debug.gencode, "add to parent")
 			self.parent   = parent
 			# add current child as my sibling, 
 			# me as the child.
 			if (parent.children):
-				debug_print(1, "add %s (%d) as sibling" % (parent.children.dir, parent.children.instance))
+				debug.info(debug.gencode, "add %s (%d) as sibling" % (parent.children.dir, parent.children.instance))
 				self.siblings = parent.children
 			parent.children = self
 		else:
@@ -559,6 +578,10 @@ class partobj:
 
 	def gencode(self, file):
 		if (self.chipconfig):
+			debug.info(debug.gencode, "gencode: chipconfig(%d)" % self.instance)
+			file.write("#include \"%s/chip.h\"\n" % self.dir)
+			file.write("extern struct superio_control %s_control;\n" % \
+					self.flatten_name)
 			file.write("struct %s_config %s_config_%d" % (\
 					self.flatten_name ,\
 					self.flatten_name , \
@@ -578,8 +601,10 @@ class partobj:
 		file.write("/* %s %s */\n" % (self.type, self.dir))
 		#file.write("  .devfn = %d,\n" % self.devfn)
 		if (self.siblings):
+			debug.info(debug.gencode, "gencode: siblings(%d)" % self.siblings.instance)
 			file.write("  .next = &dev%d,\n" % self.siblings.instance)
 		if (self.children):
+			debug.info(debug.gencode, "gencode: children(%d)" % self.children.instance)
 			file.write("  .children = &dev%d,\n" % \
 					self.children.instance)
 		if (self.private):
@@ -622,14 +647,14 @@ class partobj:
 
 def getdict(dict, name):
 	if name not in dict.keys(): 
-		debug_print(1, "Undefined: %s" % name)
+		debug.info(debug.dict, "Undefined: %s" % name)
 		return 0
 	v = dict.get(name, 0)
-	debug_print(1, "getdict %s returning %s" % (name, v))
+	debug.info(debug.dict, "getdict %s returning %s" % (name, v))
 	return v
 
 def setdict(dict, name, value):
-	debug_print(1, "setdict sets %s to %s" % (name, value))
+	debug.info(debug.dict, "setdict sets %s to %s" % (name, value))
 	dict[name] = value
 
 # options. 
@@ -860,7 +885,7 @@ def addldscript(path):
 		fullpath =  treetop + '/src/' + path
 	else:
 		fullpath = curdir + '/' + path
-	debug_print(1, "fullpath :%s: curdir :%s: path :%s:" % (fullpath, curdir, path))
+	debug.info(debug.statement, "fullpath :%s: curdir :%s: path :%s:" % (fullpath, curdir, path))
 	curimage.addldscript(fullpath)
 
 def payload(path):
@@ -965,7 +990,7 @@ def dodir(path, file):
 		path = re.sub('^/*', '', path)
 	else:
 		fullpath = dirstack.tos()
-	debug_print(1, "DODIR: path %s, fullpath %s" % (path, fullpath))
+	debug.info(debug.statement, "DODIR: path %s, fullpath %s" % (path, fullpath))
 	dirstack.push(os.path.join(fullpath, path))
 	doconfigfile(fullpath, path, file)
 	dirstack.pop()
@@ -1012,13 +1037,13 @@ def doconfigfile(path, confdir, file):
 #		MISC FUNCTIONS
 #=============================================================================
 def ternary(val, yes, no):
-	debug_print(1, "ternary %s" % expr)
-	debug_print(1, "expr %s a %d yes %d no %d"% (expr, a, yes, no))
+	debug.info(debug.statement, "ternary %s" % expr)
+	debug.info(debug.statement, "expr %s a %d yes %d no %d"% (expr, a, yes, no))
         if (val == 0):
-		debug_print("Ternary returns %d" % yes)
+		debug.info(debug.statement, "Ternary returns %d" % yes)
 		return yes
         else:
-		debug_print("Ternary returns %d" % no)
+		debug.info(debug.statement, "Ternary returns %d" % no)
 		return no
 
 def tohex(name):
@@ -1427,8 +1452,12 @@ def writeimagemakefile(image):
 	for objrule, obj in image.getobjectrules().items():
 		obj_name = obj[0]
 		obj_source = obj[1]
-		file.write("OBJECTS-1 += %s\n" % (obj_name))
+		file.write("OBJECTS += %s\n" % (obj_name))
 		file.write("SOURCES += %s\n" % (obj_source))
+
+	# for chip_target.c
+	file.write("OBJECTS += chip_%s.o\n" % target_name)
+	file.write("SOURCES += chip_%s.c\n" % target_name)
 
 	for driverrule, driver in image.getdriverrules().items():
 		obj_name = driver[0]
@@ -1481,17 +1510,21 @@ def writeimagemakefile(image):
 		file.write("\t$(CC) -c $(CFLAGS) -o $@ $<\n")
 		#file.write("%s\n" % objrule[2])
 
+	# special rule for chips_target.c
+	file.write("chip_%s.o: chip_%s.c\n" % (target_name, target_name))
+	file.write("\t$(CC) -c $(CFLAGS) -o $@ $<\n")
+
 	# Print out the rules that will make cause the files
 	# generated by NLBConfig.py to be remade if any dependencies change.
 
 	file.write("\n# Remember the automatically generated files\n")
 	file.write("GENERATED:=\n")
-	for genfile in [ 'Makefile',
+	for genfile in ['Makefile',
 			'nsuperio.c',
-			 'chip.c', 
+			'chip_%s.c' % target_name, 
 			'LinuxBIOSDoc.config' ]:
 		file.write("GENERATED += %s\n" % genfile)
-		file.write("GENERATED += %s\n" % image.getincludefilename())
+	file.write("GENERATED += %s\n" % image.getincludefilename())
 
 	#file.write("\n# Remake Makefile (and the other files generated by\n")
 	#file.write("# NLBConfig.py) if any config dependencies change.\n")
@@ -1581,44 +1614,67 @@ def writeldoptions(image):
 			file.write("%s = %s;\n" % (i, getformated(i, image)))
 	file.close()
 
-def verifyparse(image):
-	"""Add any run-time checks to verify that parsing the configuration
-	was successful"""
-	if (image.newformat() and image.getinitfile() == ''):
-		fatal("An init file must be specified")
-
 def dumptree(part, lvl):
-	debug_print(1, "DUMPTREE ME is")
+	debug.info(debug.dumptree, "DUMPTREE ME is")
 	part.dumpme(lvl)
 	# dump the siblings -- actually are there any? not sure
 	# siblings are:
-	debug_print(1, "DUMPTREE SIBLINGS are")
+	debug.info(debug.dumptree, "DUMPTREE SIBLINGS are")
 	kid = part.siblings
 	while (kid):
 		kid.dumpme(lvl)
 		kid = kid.siblings
 	# dump the kids
-	debug_print(1, "DUMPTREE KIDS are")
+	debug.info(debug.dumptree, "DUMPTREE KIDS are")
 	#for kid in part.children:
 	if (part.children):
 		dumptree(part.children, lvl+1)
-	debug_print(1, "DONE DUMPTREE")
+	debug.info(debug.dumptree, "DONE DUMPTREE")
+
+def writecode(image):
+	filename = os.path.join(img_dir, "chips_%s.c" % target_name)
+	print "Creating", filename
+	file = open(filename, 'w+')
+	# gen all the forward references
+
+	i = 0
+	file.write("#include <device/chip.h>\n")
+	file.write("struct chip ")
+	while (i <= image.numparts()):
+		if (i):
+			file.write("cdev%d "% i)
+		else:
+			file.write("root ")
+		i = i + 1
+	file.write(";\n")
+	gencode(image.getroot(), file)
+	file.close()
 
 def gencode(part, file):
-	debug_print(1, "GENCODE ME is")
+	debug.info(debug.gencode, "GENCODE ME is")
 	part.gencode(file)
 	# dump the siblings -- actually are there any? not sure
-	# dump the kids
-	debug_print(1, "GENCODE SIBLINGS are")
+	debug.info(debug.gencode, "GENCODE SIBLINGS are")
 	kid = part.siblings
 	while (kid):
 		kid.gencode(file)
 		kid = kid.siblings
-	debug_print(1, "GENCODE KIDS are")
-	#for kid in part.children:
+	# now dump the children 
+	debug.info(debug.gencode, "GENCODE KIDS are")
 	if (part.children):
 		gencode(part.children, file)
-	debug_print(1, "DONE GENCODE")
+	kid = part.siblings
+	while (kid):
+		if (kid.children):
+			gencode(kid.children, file)
+		kid = kid.siblings
+	debug.info(debug.gencode, "DONE GENCODE")
+
+def verifyparse(image):
+	"""Add any run-time checks to verify that parsing the configuration
+	was successful"""
+	if (image.newformat() and image.getinitfile() == ''):
+		fatal("An init file must be specified")
 
 #=============================================================================
 #		MAIN PROGRAM
@@ -1646,42 +1702,27 @@ if __name__=='__main__':
 	alloptions = 1
 
 	for image_name, image in romimages.items():
-		if (debug):
-			debug_print(1, "DEVICE TREE:")
+		if (debug.level(debug.dumptree)):
+			debug.info(debug.dumptree, "DEVICE TREE:")
 			dumptree(image.getroot(), 0)
 
 		img_dir = image.gettargetdir()
 		if not os.path.isdir(img_dir):
 			print "Creating directory %s" % img_dir
 			os.makedirs(img_dir)
-		filename = os.path.join(img_dir, "chips.c")
-		print "Creating", filename
-		file = open(filename, 'w+')
-		# gen all the forward references
-
-		i = 0
-		file.write("struct chip ")
-		while (i <= image.numparts()):
-			if (i):
-				file.write("cdev%d "% i)
-			else:
-				file.write("root ")
-			i = i + 1
-		file.write(";\n")
-		gencode(image.getroot(), file)
-		file.close()
 
 		# crt0 includes
-		if (debug):
+		if (debug.level(debug.dump)):
 			for i in image.getinitincludes().keys():
-				debug_print(1, "crt0include file %s" % i)
+				debug.info(debug.dump, "crt0include file %s" % i)
 			for i in image.getdriverrules().keys():
-				debug_print(1, "driver file %s" % i)
+				debug.info(debug.dump, "driver file %s" % i)
 			for i in image.getldscripts():
-				debug_print(1, "ldscript file %s" % i)
+				debug.info(debug.dump, "ldscript file %s" % i)
 			for i, m in image.getmakerules().items():
-				debug_print(1, " makerule %s dep %s act %s" % (i, m.dependency, m.actions))
+				debug.info(debug.dump, " makerule %s dep %s act %s" % (i, m.dependency, m.actions))
 
+		writecode(image)
 		writeimagesettings(image)
 		writeinitincludes(image)
 		writeimagemakefile(image)

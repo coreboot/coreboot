@@ -71,9 +71,9 @@ makerule linuxbios
 end
 
 makerule linuxbios.a   
-	depends	"$(OBJECTS-1)" 
+	depends	"$(OBJECTS)" 
 	action	"rm -f linuxbios.a"
-	action	"ar cr linuxbios.a $(OBJECTS-1)"
+	action	"ar cr linuxbios.a $(OBJECTS)"
 end
 
 #makerule crt0.S   
@@ -152,6 +152,7 @@ makerule clean
 	action	"rm -f TAGS tags"
 	action	"rm -f docipl"
 	action	"rm -f build_opt_tbl option_table.c crt0.S"
+	action	"rm -f chip_*.c"
 end
 
 # do standard config files that the user need not specify

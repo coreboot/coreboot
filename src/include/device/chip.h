@@ -22,6 +22,14 @@ struct lpt_ports {
                      irq;    // irq
 };
 
+enum chip_pass {
+	CHIP_PRE_CONSOLE,
+	CHIP_PRE_DEVICE_ENUMERATE,
+	CHIP_PRE_DEVICE_CONFIGURE,
+	CHIP_PRE_DEVICE_ENABLE,
+	CHIP_PRE_DEVICE_INITIALIZE,
+	CHIP_PRE_BOOT
+};
 
 
 /* linkages from devices of a type (e.g. superio devices) 
@@ -33,10 +41,7 @@ struct chip;
 
 /* there is one of these for each TYPE of chip */
 struct chip_control {
-  void (*alloc)(struct chip *s);
-  void (*pre_pci_init)(struct chip *s);
-  void (*init)(struct chip *s);
-  void (*finishup)(struct chip *s);
+  void (*enable)(struct chip *, enum chip_pass);
   char *path;     /* the default path. Can be overridden
 		   * by commands in config
 		   */
@@ -54,3 +59,5 @@ struct chip {
   void *chip_info; /* the dreaded "void *" */
 };
 
+extern struct chip *root;
+extern void chip_configure(struct chip *, enum chip_pass);

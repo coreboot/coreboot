@@ -2,6 +2,7 @@
 /* This code is distributed without warranty under the GPL v2 (see COPYING) */
 
 #include <arch/io.h>
+#include <device/chip.h>
 
 #ifndef PNP_INDEX_REG
 #define PNP_INDEX_REG	0x15C
@@ -18,26 +19,28 @@
 
 void pnp_output(char address, char data)
 {
-    outb(address, PNP_INDEX_REG);
-    outb(data, PNP_DATA_REG);
+	outb(address, PNP_INDEX_REG);
+	outb(data, PNP_DATA_REG);
 }
 
-void sio_enable(void)
+void sio_enable(struct chip *chip, enum chip_pass pass)
 {
-    /* Enable Super IO Chip */
-    pnp_output(0x07, 6); /* LD 6 = UART1 */
-    pnp_output(0x30, 0); /* Dectivate */
-    pnp_output(0x60, SIO_COM1_BASE >> 8); /* IO Base */
-    pnp_output(0x61, SIO_COM1_BASE & 0xFF); /* IO Base */
-    pnp_output(0x30, 1); /* Activate */
+	switch (pass) {
+	case CHIP_PRE_CONSOLE:
+		/* Enable Super IO Chip */
+		pnp_output(0x07, 6); /* LD 6 = UART1 */
+		pnp_output(0x30, 0); /* Dectivate */
+		pnp_output(0x60, chip->control->defaultport >> 8); /* IO Base */
+		pnp_output(0x61, chip->control->defaultport & 0xFF); /* IO Base */
+		pnp_output(0x30, 1); /* Activate */
+		break;
+	default:
+		/* nothing yet */
+	}
 }
 
-#if 0
 struct superio_control superio_NSC_pc97307_control = {
-	pre_pci_init:   (void *)0,
-	init:           (void *)0,
-	finishup:       (void *)0,
+	enable:   	sio_enable,
 	defaultport:    SIO_COM1_BASE,
 	name:           "NSC 87307"
 };
-#endif

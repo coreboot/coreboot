@@ -266,6 +266,7 @@ define CONFIG_COMPRESS
 	comment "Set for compressed image"
 end
 define CONFIG_UNCOMPRESSED
+	format "%d"
 	default {!CONFIG_COMPRESS}
 	export always
 	comment "Set for uncompressed image"

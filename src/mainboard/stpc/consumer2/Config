@@ -1,0 +1,38 @@
+arch i386
+mainboardinit cpu/i386/entry16.inc
+mainboardinit cpu/i386/entry32.inc
+ldscript cpu/i386/entry16.lds
+ldscript cpu/i386/entry32.lds
+mainboardinit cpu/i386/reset16.inc
+ldscript cpu/i386/reset16.lds
+
+# if you prefer 38400 for the console
+option TTYS0_BAUD=38400
+
+mainboardinit cpu/stpc/consumer2/stpc_chip.inc
+mainboardinit cpu/stpc/consumer2/stpc_ram_init.inc
+
+option SMC_BASE=0x370
+option HAVE_PIRQ_TABLE=1
+mainboardinit superio/SMC/fdc37b78x/setup_serial.inc
+
+mainboardinit pc80/serial.inc
+mainboardinit arch/i386/lib/console.inc
+
+mainboardinit cpu/stpc/consumer2/stpc_ioinit.inc
+mainboardinit cpu/stpc/consumer2/stpc_memsize.inc
+mainboardinit cpu/stpc/consumer2/stpc_framebuffer.inc
+mainboardinit cpu/stpc/consumer2/stpc_shadow_ram.inc
+mainboardinit cpu/stpc/consumer2/stpc_cache.inc
+
+option VGA_HARDWARE_FIXUP=1
+
+northsouthbridge stpc/consumer2
+
+nsuperio SMC/fdc37b78x com1={1,38400} floppy=1  lpt=1 keyboard=1
+
+cpu stpc/consumer2
+
+object mainboard.o
+object irq_tables.o HAVE_PIRQ_TABLE
+

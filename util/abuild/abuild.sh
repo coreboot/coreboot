@@ -82,14 +82,14 @@ EOF
 		cat <<EOF
 romimage "normal"
 	option USE_FALLBACK_IMAGE=0
-	option ROM_IMAGE_SIZE=0x12000
+	option ROM_IMAGE_SIZE=0x15000
 	option LINUXBIOS_EXTRA_VERSION=".0-normal"
 	payload PAYLOAD
 end
 
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
-	option ROM_IMAGE_SIZE=0x12000
+	option ROM_IMAGE_SIZE=0x15000
 	option LINUXBIOS_EXTRA_VERSION=".0-fallback"
 	payload PAYLOAD
 end

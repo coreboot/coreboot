@@ -238,8 +238,7 @@ int main(int argc, char *argv[])
 
 	printf("Part is %s\n", flash->name);
 	if (!filename) {
-		printf
-		    ("OK, only ENABLING flash write, but NOT FLASHING\n");
+		printf("OK, only ENABLING flash write, but NOT FLASHING\n");
 		return 0;
 	}
 	size = flash->total_size * 1024;

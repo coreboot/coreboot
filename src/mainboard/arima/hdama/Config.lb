@@ -149,7 +149,8 @@ southbridge amd/amd8131
 end
 #mainboardinit archi386/smp/secondary.inc
 superio NSC/pc87360
-	register ".com1={1}, .lpt=1"
+	register "com1" = "{1}"
+	register "lpt" = "{1}"
 end
 dir /pc80
 ##dir /src/superio/winbond/w83627hf

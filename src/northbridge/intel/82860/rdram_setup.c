@@ -15,6 +15,7 @@
 #include <superio/generic.h>
 #include <superio/w83627hf.h>
 #include <northbridge/intel/82860/rdram.h>
+#include <pc80/mc146818rtc.h>
 
 #define LPC_BUS 0
 #define LPC_DEVFN ((0x1f << 3) + 0)
@@ -605,7 +606,7 @@ void mch_init(void)
 	/* Memory Controller Hub Configuration */
 	/* 1 System Bus Stop Grant,300 or 400Mhz, Non-ECC, MDA Not Present, Apic Enabled */
 	pcibios_read_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_MCHCFG, &word); 
-	word &= ~((7 << 13) | (1 << 9) | (3 << 7) | (1 << 5) | (1 << 1));
+	word &= ~((7 << 13) | (1 << 11) | (1 << 9) | (3 << 7) | (1 << 5) | (1 << 1));
  	if(((spd_mhz_max[0]==400)&&(spd_mhz_max[1]==400)) ||
 	   ((spd_mhz_max[0]==400)&&(spd_mhz_max[1]==0)))
 		word |= (1 << 11);  /* Sets ram bus speed at 400 mhz, else 300 mhz */
@@ -773,6 +774,7 @@ static void ram_zap(unsigned long start, unsigned long stop)
 void init_memory(void)
 {
 	int i,j;
+	int ecc=1;
 	int rdram_devices=0;
 	u32 ricm;
 	u16 word;
@@ -849,9 +851,12 @@ void init_memory(void)
 		MCH_RICM, ricm);
 	
 	/* Memory Controller Hub Configuration Enable ECC */
-	pcibios_read_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_MCHCFG, &word); 
-	word |= (1 << 8);
-	pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_MCHCFG, word); 
+	get_option(&ecc,"ECC_memory");
+	if((ecc)&&(spd_data_width[0]==18)) {  /* ECC is enables, so turn it on */
+		pcibios_read_config_word(I860_MCH_BUS,I860_MCH_DEVFN,MCH_MCHCFG, &word);
+		word |= (1 << 8);
+		pcibios_write_config_word(I860_MCH_BUS,I860_MCH_DEVFN,MCH_MCHCFG,word);
+	}
 
 	/* Set write combine for the memory max of 2 gig */
 	printk_debug("set_var_mtrr\n");

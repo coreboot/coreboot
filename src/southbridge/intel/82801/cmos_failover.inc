@@ -64,7 +64,8 @@ __failover_boot:
 __rtc_failed:
 	movb	$RTC_BOOT_BYTE, %al
 	outb	%al, $0x70
-	xorb	%al, %al
+	inb	$0x71, %al
+	andb	$0xfc, %al
 	outb	%al, $0x71
 	jmp	__rtc_ok
 

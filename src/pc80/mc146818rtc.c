@@ -173,7 +173,7 @@ void rtc_init(int invalid)
 	      length = number of bits to include in the value
 	      ret = a character pointer to where the value is to be returned
 	output the value placed in ret
-	      returns 1 = successful, 0 = an error occurred
+	      returns 0 = successful, -1 = an error occurred
 */
 static int get_cmos_value(unsigned long bit, unsigned long length, void *vret)
 {

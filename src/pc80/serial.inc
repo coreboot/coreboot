@@ -1,3 +1,6 @@
+#include <part/fallback_boot.h>
+
+
 /* Base Address */
 #ifndef TTYS0_BASE
 #define TTYS0_BASE	0x3f8
@@ -41,6 +44,16 @@
 #define TTYS0_MSR (TTYS0_BASE+0x06)
 #define TTYS0_SCR (TTYS0_BASE+0x07)
 
+#if USE_OPTION_TABLE == 1
+.section ".rom.data"
+	.type	 div,@object
+	.size	 div,8
+div:
+.byte 1,2,3,5,12,24,48,96
+
+.previous
+#endif
+
 	jmp	serial0
 
 	/* uses:	ax, dx */
@@ -63,13 +76,28 @@ serial0:
 	out	%al, %dx
 
 	/* set Baud Rate Divisor to 1 ==> 115200 Buad */
+#if USE_OPTION_TABLE == 1
+	movb	$RTC_BOOT_BYTE, %al
+	outb	%al, $0x70
+	xorl	%edx,%edx
+	inb	$0x71, %al
+	sarb	$2,%al
+	andb	$7,%al
+	movb	%al,%dl
+	movb	div(%edx),%al
+	mov	$TTYS0_DLL, %dx
+	out	%al, %dx
+	mov	$TTYS0_DLM, %dx
+	xorb	%al,%al
+	out	%al, %dx
+#else
 	mov	$TTYS0_DLL, %dx
 	mov	$TTYS0_DIV_LO, %al
 	out	%al, %dx
 	mov	$TTYS0_DLM, %dx
 	mov	$TTYS0_DIV_HI, %al
 	out	%al, %dx
-
+#endif
 	/* Disable DLAB */
 	mov	$TTYS0_LCR, %dx
 	mov	$(TTYS0_LCS & 0x7f), %al

@@ -15,6 +15,7 @@ void boot_successful(void)
 	outb(index, RTC_PORT(0));
 
 	byte = inb(RTC_PORT(1));
+	byte &= 0xfe;
 	byte |= (byte & 2) >> 1;
 	outb(byte, RTC_PORT(1));
 }

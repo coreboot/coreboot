@@ -14,6 +14,7 @@ static char rcsid[] = "$Id$";
 #include <pci.h>
 #include <subr.h>
 #include <string.h>
+#include <pc80/mc146818rtc.h>
 
 #ifdef SERIAL_CONSOLE
 #include <serial_subr.h>
@@ -29,6 +30,8 @@ static char rcsid[] = "$Id$";
 // initialize the display
 void displayinit(void)
 {
+	get_option(&console_loglevel, "debug_level");
+
 #ifdef VIDEO_CONSOLE
 	video_init();
 #endif

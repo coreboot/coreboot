@@ -24,7 +24,7 @@ void udelay(int usecs) {
 #include "debug.c"
 
 #include "southbridge/via/vt8231/vt8231_early_smbus.c"
-#define SIO_BASE 0x2e
+
 #define MAXIMUM_CONSOLE_LOGLEVEL 9
 #define DEFAULT_CONSOLE_LOGLEVEL 9
 

@@ -316,18 +316,53 @@ msg_bytes:
 #define UDELAY(x) movl $x,%ecx; 9: outb %al,$0x81; loop 9b
 
 	  void dimms_read(unsigned long x) {
+
 	  unsigned long eax; 
 	  volatile unsigned long y;
 	  eax =  x;
-	  for(; eax < 0x60000000; eax += 0x10000000)
+	  for(; eax < 0x60000000; eax += 0x10000000){
+	    print_err("dimms_read: ");
+	    print_err_hex32(eax);
+	    print_err("\r\n");
 	    y = * (volatile unsigned long *) eax;
+	  }
 }
 	  void dimms_write(int x) {
+	  print_err("dimms_write: \r\n");
 	  unsigned long eax = x;
-	  for(; eax < 0x60000000; eax += 0x10000000)
+	  for(; eax < 0x60000000; eax += 0x10000000) {
+	    print_err("dimms_read: ");
+	    print_err_hex32(eax);
+	    print_err("\r\n");
 	    *(volatile unsigned long *) eax = 0;
+	  }
 }
 
+#define setnorthb pci_write_config8
+#if 0
+void setnorthb(device_t north, uint8_t reg, uint8_t val) {
+  print_err("setnorth: reg ");
+    print_err_hex8(reg);
+  print_err(" to ");
+  print_err_hex8(val);
+  print_err("\r\n");
+  pci_write_config8(north, reg, val);
+}
+#endif
+
+void
+dumpnorth(device_t north) {
+  uint8_t r, c;
+  for(r = 0; r < 256; r += 16) {
+    print_err_hex8(r);
+    print_err(":");
+    for(c = 0; c < 16; c++) {
+      print_err_hex8(pci_read_config8(north, r+c));
+      print_err(" ");
+    }
+    print_err("\r\n");
+  }
+}
 static void sdram_set_registers(const struct mem_controller *ctrl) {
 static const uint16_t raminit_ma_reg_table[] = {
   /* Values for MA type register to try */
@@ -339,11 +374,17 @@ static const uint16_t raminit_ma_reg_table[] = {
   uint8_t c, r;
 
   	print_err("vt8601 init starting\n");
-	north = pci_locate_device(PCI_ID(0x1106, 0x8601), north);
+	north = pci_locate_device(PCI_ID(0x1106, 0x8601), 0);
 	print_err_hex32(north);
 	print_err(" is the north\n");
+	print_err_hex16(pci_read_config16(north, 0));
+	print_err(" ");
+	print_err_hex16(pci_read_config16(north, 2));
+	print_err("\r\n");
+	
 	// memory clk enable. We are not using ECC
 	pci_write_config8(north,0x78, 0x01);
+	print_err_hex8(pci_read_config8(north, 0x78));
 	// dram control, see the book. 
 #if DIMM_PC133
 	pci_write_config8(north,0x68, 0x52);
@@ -354,6 +395,7 @@ static const uint16_t raminit_ma_reg_table[] = {
 	pci_write_config8(north,0x6B, 0x0c);
 	// Initial setting, 256MB in each bank, will be rewritten later.
 	pci_write_config8(north,0x5A, 0x20);
+	print_err_hex8(pci_read_config8(north, 0x5a));
 	pci_write_config8(north,0x5B, 0x40);
 	pci_write_config8(north,0x5C, 0x60);
 	pci_write_config8(north,0x5D, 0x80);
@@ -380,7 +422,7 @@ static const uint16_t raminit_ma_reg_table[] = {
 	pci_write_config8(north,0x65, 0xe4);
 	pci_write_config8(north,0x66, 0xe4);
 #endif
-
+	dumpnorth(north);
 	// dram frequency select.
 	// enable 4K pages for 64M dram. 
 #if DIMM_PC133
@@ -532,10 +574,11 @@ static const uint16_t raminit_ma_reg_table[] = {
 		  }
 		  
 		  pci_write_config8(north,0x58, raminit_ma_reg_table[best]);
-		  print_err("enabled first bank of ram ...\n");
+		  print_err("enabled first bank of ram ... ma is ");
+		  print_err_hex8(pci_read_config8(north, 0x58));
+		  print_err("\r\n");
 		}
 	  }
-
 	print_err("vt8601 done\n");
 
 }

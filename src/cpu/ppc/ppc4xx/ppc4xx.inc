@@ -57,17 +57,17 @@
 
 #include "ppc4xx.h"
 
-	addi	r4,r0,0x0000
+	li	r4,0x0000
 	mtspr	sgr,r4
 	mtspr	dcwr,r4
 	mtesr	r4			/* clear Exception Syndrome Reg */
 	mttcr	r4			/* clear Timer Control Reg */
 	mtxer	r4			/* clear Fixed-Point Exception Reg */
 	mtevpr	r4			/* clear Exception Vector Prefix Reg */
-	addi	r4,r0,0x1000		/* set ME bit (Machine Exceptions) */
+	li	r4,0x1000		/* set ME bit (Machine Exceptions) */
 	oris	r4,r4,0x0002		/* set CE bit (Critical Exceptions) */
-	mtmsr	r4			/* change MSR */
-	addi	r4,r0,(0xFFFF-0x10000)	/* set r4 to 0xFFFFFFFF (status in */
+//	mtmsr	r4			/* change MSR */
+	li	r4,(0xFFFF-0x10000)	/* set r4 to 0xFFFFFFFF (status in */
 					/* the dbsr is cleared by setting */
 					/* bits to 1) */
 	mtdbsr	r4			/* clear/reset the dbsr */
@@ -95,16 +95,16 @@
 
 	/*
 	 * Enable dcache region containing DCACHE_RAM_BASE
-	 * and set region to write-back
+	 * On reset all regions are set to write-back, so we
+	 * just leave them alone.
 	 */
 
         lis     r4, DCACHE_RAM_BASE@ha
 	addi    r4, r4, DCACHE_RAM_BASE@l
 	srwi	r4, r4, 27
+	subfic	r4, r4, 31
 	li	r0, 1
 	slw	r4, r0, r4
-	nor	r0, r4, r4
-	mtdcr	dcwr, r0		/* data cache write-back */
 	mtdccr	r4			/* data cache enable */
 	sync
 

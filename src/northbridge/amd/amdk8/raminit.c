@@ -2,171 +2,171 @@
 #include "raminit.h"
 
 /* Function 2 */
-#define DRAM_CSBASE        0x40
-#define DRAM_CSMASK        0x60
+#define DRAM_CSBASE	   0x40
+#define DRAM_CSMASK	   0x60
 #define DRAM_BANK_ADDR_MAP 0x80
-#define DRAM_TIMING_LOW    0x88
-#define  DTL_TCL_SHIFT     0
-#define  DTL_TCL_MASK      0x7
-#define   DTL_CL_2         1
-#define   DTL_CL_3         2
-#define   DTL_CL_2_5       5
-#define  DTL_TRC_SHIFT     4
-#define  DTL_TRC_MASK      0xf
-#define   DTL_TRC_BASE     7
-#define   DTL_TRC_MIN      7
-#define   DTL_TRC_MAX      22
-#define  DTL_TRFC_SHIFT    8
-#define  DTL_TRFC_MASK     0xf
-#define   DTL_TRFC_BASE    9
-#define   DTL_TRFC_MIN     9
-#define   DTL_TRFC_MAX     24
-#define  DTL_TRCD_SHIFT    12
-#define  DTL_TRCD_MASK     0x7
-#define   DTL_TRCD_BASE    0
-#define   DTL_TRCD_MIN     2
-#define   DTL_TRCD_MAX     6
-#define  DTL_TRRD_SHIFT    16
-#define  DTL_TRRD_MASK     0x7
-#define   DTL_TRRD_BASE    0
-#define   DTL_TRRD_MIN     2
-#define   DTL_TRRD_MAX     4
-#define  DTL_TRAS_SHIFT    20
-#define  DTL_TRAS_MASK     0xf
-#define   DTL_TRAS_BASE    0
-#define   DTL_TRAS_MIN     5
-#define   DTL_TRAS_MAX     15
-#define  DTL_TRP_SHIFT     24
-#define  DTL_TRP_MASK      0x7
-#define   DTL_TRP_BASE     0
-#define   DTL_TRP_MIN      2
-#define   DTL_TRP_MAX      6
-#define  DTL_TWR_SHIFT     28
-#define  DTL_TWR_MASK      0x1
-#define   DTL_TWR_BASE     2
-#define   DTL_TWR_MIN      2
-#define   DTL_TWR_MAX      3
+#define DRAM_TIMING_LOW	   0x88
+#define	 DTL_TCL_SHIFT	   0
+#define	 DTL_TCL_MASK	   0x7
+#define	  DTL_CL_2	   1
+#define	  DTL_CL_3	   2
+#define	  DTL_CL_2_5	   5
+#define	 DTL_TRC_SHIFT	   4
+#define	 DTL_TRC_MASK	   0xf
+#define	  DTL_TRC_BASE	   7
+#define	  DTL_TRC_MIN	   7
+#define	  DTL_TRC_MAX	   22
+#define	 DTL_TRFC_SHIFT	   8
+#define	 DTL_TRFC_MASK	   0xf
+#define	  DTL_TRFC_BASE	   9
+#define	  DTL_TRFC_MIN	   9
+#define	  DTL_TRFC_MAX	   24
+#define	 DTL_TRCD_SHIFT	   12
+#define	 DTL_TRCD_MASK	   0x7
+#define	  DTL_TRCD_BASE	   0
+#define	  DTL_TRCD_MIN	   2
+#define	  DTL_TRCD_MAX	   6
+#define	 DTL_TRRD_SHIFT	   16
+#define	 DTL_TRRD_MASK	   0x7
+#define	  DTL_TRRD_BASE	   0
+#define	  DTL_TRRD_MIN	   2
+#define	  DTL_TRRD_MAX	   4
+#define	 DTL_TRAS_SHIFT	   20
+#define	 DTL_TRAS_MASK	   0xf
+#define	  DTL_TRAS_BASE	   0
+#define	  DTL_TRAS_MIN	   5
+#define	  DTL_TRAS_MAX	   15
+#define	 DTL_TRP_SHIFT	   24
+#define	 DTL_TRP_MASK	   0x7
+#define	  DTL_TRP_BASE	   0
+#define	  DTL_TRP_MIN	   2
+#define	  DTL_TRP_MAX	   6
+#define	 DTL_TWR_SHIFT	   28
+#define	 DTL_TWR_MASK	   0x1
+#define	  DTL_TWR_BASE	   2
+#define	  DTL_TWR_MIN	   2
+#define	  DTL_TWR_MAX	   3
 #define DRAM_TIMING_HIGH   0x8c
-#define  DTH_TWTR_SHIFT    0
-#define  DTH_TWTR_MASK     0x1
-#define   DTH_TWTR_BASE    1
-#define   DTH_TWTR_MIN     1
-#define   DTH_TWTR_MAX     2
-#define  DTH_TRWT_SHIFT    4
-#define  DTH_TRWT_MASK     0x7
-#define   DTH_TRWT_BASE    1
-#define   DTH_TRWT_MIN     1
-#define   DTH_TRWT_MAX     6
-#define  DTH_TREF_SHIFT    8
-#define  DTH_TREF_MASK     0x1f
-#define   DTH_TREF_100MHZ_4K 0x00
-#define   DTH_TREF_133MHZ_4K 0x01
-#define   DTH_TREF_166MHZ_4K 0x02
-#define   DTH_TREF_200MHZ_4K 0x03
-#define   DTH_TREF_100MHZ_8K 0x08
-#define   DTH_TREF_133MHZ_8K 0x09
-#define   DTH_TREF_166MHZ_8K 0x0A
-#define   DTH_TREF_200MHZ_8K 0x0B
-#define  DTH_TWCL_SHIFT     20
-#define  DTH_TWCL_MASK      0x7
-#define   DTH_TWCL_BASE     1
-#define   DTH_TWCL_MIN      1
-#define   DTH_TWCL_MAX      2
-#define DRAM_CONFIG_LOW    0x90
-#define  DCL_DLL_Disable   (1<<0)
-#define  DCL_D_DRV         (1<<1)
-#define  DCL_QFC_EN        (1<<2)
-#define  DCL_DisDqsHys     (1<<3)
-#define  DCL_DramInit      (1<<8)
-#define  DCL_DramEnable    (1<<10)
-#define  DCL_MemClrStatus  (1<<11)
-#define  DCL_ESR           (1<<12)
-#define  DCL_SRS           (1<<13)
-#define  DCL_128BitEn      (1<<16)
-#define  DCL_DimmEccEn     (1<<17)
-#define  DCL_UnBufDimm     (1<<18)
-#define  DCL_32ByteEn      (1<<19)
-#define  DCL_x4DIMM_SHIFT  20
+#define	 DTH_TWTR_SHIFT	   0
+#define	 DTH_TWTR_MASK	   0x1
+#define	  DTH_TWTR_BASE	   1
+#define	  DTH_TWTR_MIN	   1
+#define	  DTH_TWTR_MAX	   2
+#define	 DTH_TRWT_SHIFT	   4
+#define	 DTH_TRWT_MASK	   0x7
+#define	  DTH_TRWT_BASE	   1
+#define	  DTH_TRWT_MIN	   1
+#define	  DTH_TRWT_MAX	   6
+#define	 DTH_TREF_SHIFT	   8
+#define	 DTH_TREF_MASK	   0x1f
+#define	  DTH_TREF_100MHZ_4K 0x00
+#define	  DTH_TREF_133MHZ_4K 0x01
+#define	  DTH_TREF_166MHZ_4K 0x02
+#define	  DTH_TREF_200MHZ_4K 0x03
+#define	  DTH_TREF_100MHZ_8K 0x08
+#define	  DTH_TREF_133MHZ_8K 0x09
+#define	  DTH_TREF_166MHZ_8K 0x0A
+#define	  DTH_TREF_200MHZ_8K 0x0B
+#define	 DTH_TWCL_SHIFT	    20
+#define	 DTH_TWCL_MASK	    0x7
+#define	  DTH_TWCL_BASE	    1
+#define	  DTH_TWCL_MIN	    1
+#define	  DTH_TWCL_MAX	    2
+#define DRAM_CONFIG_LOW	   0x90
+#define	 DCL_DLL_Disable   (1<<0)
+#define	 DCL_D_DRV	   (1<<1)
+#define	 DCL_QFC_EN	   (1<<2)
+#define	 DCL_DisDqsHys	   (1<<3)
+#define	 DCL_DramInit	   (1<<8)
+#define	 DCL_DramEnable	   (1<<10)
+#define	 DCL_MemClrStatus  (1<<11)
+#define	 DCL_ESR	   (1<<12)
+#define	 DCL_SRS	   (1<<13)
+#define	 DCL_128BitEn	   (1<<16)
+#define	 DCL_DimmEccEn	   (1<<17)
+#define	 DCL_UnBufDimm	   (1<<18)
+#define	 DCL_32ByteEn	   (1<<19)
+#define	 DCL_x4DIMM_SHIFT  20
 #define DRAM_CONFIG_HIGH   0x94
-#define  DCH_ASYNC_LAT_SHIFT  0
-#define  DCH_ASYNC_LAT_MASK   0xf
-#define   DCH_ASYNC_LAT_BASE  0
-#define   DCH_ASYNC_LAT_MIN   0
-#define   DCH_ASYNC_LAT_MAX   15
-#define  DCH_RDPREAMBLE_SHIFT 8
-#define  DCH_RDPREAMBLE_MASK  0xf
-#define   DCH_RDPREAMBLE_BASE ((2<<1)+0) /* 2.0 ns */
-#define   DCH_RDPREAMBLE_MIN  ((2<<1)+0) /* 2.0 ns */
-#define   DCH_RDPREAMBLE_MAX  ((9<<1)+1) /* 9.5 ns */
-#define  DCH_IDLE_LIMIT_SHIFT 16
-#define  DCH_IDLE_LIMIT_MASK  0x7
-#define   DCH_IDLE_LIMIT_0    0
-#define   DCH_IDLE_LIMIT_4    1
-#define   DCH_IDLE_LIMIT_8    2
-#define   DCH_IDLE_LIMIT_16   3
-#define   DCH_IDLE_LIMIT_32   4
-#define   DCH_IDLE_LIMIT_64   5
-#define   DCH_IDLE_LIMIT_128  6
-#define   DCH_IDLE_LIMIT_256  7
-#define  DCH_DYN_IDLE_CTR_EN (1 << 19)
-#define  DCH_MEMCLK_SHIFT     20
-#define  DCH_MEMCLK_MASK      0x7
-#define   DCH_MEMCLK_100MHZ   0
-#define   DCH_MEMCLK_133MHZ   2
-#define   DCH_MEMCLK_166MHZ   5
-#define   DCH_MEMCLK_200MHZ   7
-#define  DCH_MEMCLK_VALID     (1 << 25)
-#define  DCH_MEMCLK_EN0       (1 << 26) 
-#define  DCH_MEMCLK_EN1       (1 << 27) 
-#define  DCH_MEMCLK_EN2       (1 << 28) 
-#define  DCH_MEMCLK_EN3       (1 << 29) 
+#define	 DCH_ASYNC_LAT_SHIFT  0
+#define	 DCH_ASYNC_LAT_MASK   0xf
+#define	  DCH_ASYNC_LAT_BASE  0
+#define	  DCH_ASYNC_LAT_MIN   0
+#define	  DCH_ASYNC_LAT_MAX   15
+#define	 DCH_RDPREAMBLE_SHIFT 8
+#define	 DCH_RDPREAMBLE_MASK  0xf
+#define	  DCH_RDPREAMBLE_BASE ((2<<1)+0) /* 2.0 ns */
+#define	  DCH_RDPREAMBLE_MIN  ((2<<1)+0) /* 2.0 ns */
+#define	  DCH_RDPREAMBLE_MAX  ((9<<1)+1) /* 9.5 ns */
+#define	 DCH_IDLE_LIMIT_SHIFT 16
+#define	 DCH_IDLE_LIMIT_MASK  0x7
+#define	  DCH_IDLE_LIMIT_0    0
+#define	  DCH_IDLE_LIMIT_4    1
+#define	  DCH_IDLE_LIMIT_8    2
+#define	  DCH_IDLE_LIMIT_16   3
+#define	  DCH_IDLE_LIMIT_32   4
+#define	  DCH_IDLE_LIMIT_64   5
+#define	  DCH_IDLE_LIMIT_128  6
+#define	  DCH_IDLE_LIMIT_256  7
+#define	 DCH_DYN_IDLE_CTR_EN (1 << 19)
+#define	 DCH_MEMCLK_SHIFT     20
+#define	 DCH_MEMCLK_MASK      0x7
+#define	  DCH_MEMCLK_100MHZ   0
+#define	  DCH_MEMCLK_133MHZ   2
+#define	  DCH_MEMCLK_166MHZ   5
+#define	  DCH_MEMCLK_200MHZ   7
+#define	 DCH_MEMCLK_VALID     (1 << 25)
+#define	 DCH_MEMCLK_EN0	      (1 << 26) 
+#define	 DCH_MEMCLK_EN1	      (1 << 27) 
+#define	 DCH_MEMCLK_EN2	      (1 << 28) 
+#define	 DCH_MEMCLK_EN3	      (1 << 29) 
 
 /* Function 3 */
-#define SCRUB_CONTROL      0x58
-#define   SCRUB_NONE        0
-#define   SCRUB_40ns        1
-#define   SCRUB_80ns        2
-#define   SCRUB_160ns       3
-#define   SCRUB_320ns       4
-#define   SCRUB_640ns       5
-#define   SCRUB_1_28us      6
-#define   SCRUB_2_56us      7
-#define   SCRUB_5_12us      8
-#define   SCRUB_10_2us      9
-#define   SCRUB_20_5us     10
-#define   SCRUB_41_0us     11
-#define   SCRUB_81_9us     12
-#define   SCRUB_163_8us    13
-#define   SCRUB_327_7us    14
-#define   SCRUB_655_4us    15
-#define   SCRUB_1_31ms     16
-#define   SCRUB_2_62ms     17
-#define   SCRUB_5_24ms     18 
-#define   SCRUB_10_49ms    19
-#define   SCRUB_20_97ms    20
-#define   SCRUB_42ms       21
-#define   SCRUB_84ms       22
-#define  SC_DRAM_SCRUB_RATE_SHFIT  0
-#define  SC_DRAM_SCRUB_RATE_MASK   0x1f
-#define  SC_L2_SCRUB_RATE_SHIFT    8
-#define  SC_L2_SCRUB_RATE_MASK     0x1f
-#define  SC_L1D_SCRUB_RATE_SHIFT   16
-#define  SC_L1D_SCRUB_RATE_MASK    0x1f
-#define SCRUB_ADDR_LOW     0x5C
-#define SCRUB_ADDR_HIGH    0x60
-#define NORTHBRIDGE_CAP    0xE8
-#define  NBCAP_128Bit         0x0001
-#define  NBCAP_MP             0x0002
-#define  NBCAP_BIG_MP         0x0004
-#define  NBCAP_ECC            0x0004
-#define  NBCAP_CHIPKILL_ECC   0x0010
-#define  NBCAP_MEMCLK_SHIFT   5
-#define  NBCAP_MEMCLK_MASK    3
-#define  NBCAP_MEMCLK_100MHZ  3
-#define  NBCAP_MEMCLK_133MHZ  2
-#define  NBCAP_MEMCLK_166MHZ  1
-#define  NBCAP_MEMCLK_200MHZ  0
-#define  NBCAP_MEMCTRL        0x0100
+#define SCRUB_CONTROL	   0x58
+#define	  SCRUB_NONE	    0
+#define	  SCRUB_40ns	    1
+#define	  SCRUB_80ns	    2
+#define	  SCRUB_160ns	    3
+#define	  SCRUB_320ns	    4
+#define	  SCRUB_640ns	    5
+#define	  SCRUB_1_28us	    6
+#define	  SCRUB_2_56us	    7
+#define	  SCRUB_5_12us	    8
+#define	  SCRUB_10_2us	    9
+#define	  SCRUB_20_5us	   10
+#define	  SCRUB_41_0us	   11
+#define	  SCRUB_81_9us	   12
+#define	  SCRUB_163_8us	   13
+#define	  SCRUB_327_7us	   14
+#define	  SCRUB_655_4us	   15
+#define	  SCRUB_1_31ms	   16
+#define	  SCRUB_2_62ms	   17
+#define	  SCRUB_5_24ms	   18 
+#define	  SCRUB_10_49ms	   19
+#define	  SCRUB_20_97ms	   20
+#define	  SCRUB_42ms	   21
+#define	  SCRUB_84ms	   22
+#define	 SC_DRAM_SCRUB_RATE_SHFIT  0
+#define	 SC_DRAM_SCRUB_RATE_MASK   0x1f
+#define	 SC_L2_SCRUB_RATE_SHIFT	   8
+#define	 SC_L2_SCRUB_RATE_MASK	   0x1f
+#define	 SC_L1D_SCRUB_RATE_SHIFT   16
+#define	 SC_L1D_SCRUB_RATE_MASK	   0x1f
+#define SCRUB_ADDR_LOW	   0x5C
+#define SCRUB_ADDR_HIGH	   0x60
+#define NORTHBRIDGE_CAP	   0xE8
+#define	 NBCAP_128Bit	      0x0001
+#define	 NBCAP_MP	      0x0002
+#define	 NBCAP_BIG_MP	      0x0004
+#define	 NBCAP_ECC	      0x0004
+#define	 NBCAP_CHIPKILL_ECC   0x0010
+#define	 NBCAP_MEMCLK_SHIFT   5
+#define	 NBCAP_MEMCLK_MASK    3
+#define	 NBCAP_MEMCLK_100MHZ  3
+#define	 NBCAP_MEMCLK_133MHZ  2
+#define	 NBCAP_MEMCLK_166MHZ  1
+#define	 NBCAP_MEMCLK_200MHZ  0
+#define	 NBCAP_MEMCTRL	      0x0100
 
 
 static void setup_resource_map(const unsigned int *register_values, int max)
@@ -213,21 +213,21 @@ static void setup_default_resource_map(void)
 	 * F1:0x74 i = 6
 	 * F1:0x7C i = 7
 	 * [ 2: 0] Destination Node ID
-	 *         000 = Node 0
-	 *         001 = Node 1
-	 *         010 = Node 2
-	 *         011 = Node 3
-	 *         100 = Node 4
-	 *         101 = Node 5
-	 *         110 = Node 6
-	 *         111 = Node 7
+	 *	   000 = Node 0
+	 *	   001 = Node 1
+	 *	   010 = Node 2
+	 *	   011 = Node 3
+	 *	   100 = Node 4
+	 *	   101 = Node 5
+	 *	   110 = Node 6
+	 *	   111 = Node 7
 	 * [ 7: 3] Reserved
 	 * [10: 8] Interleave select
-	 *         specifies the values of A[14:12] to use with interleave enable.
+	 *	   specifies the values of A[14:12] to use with interleave enable.
 	 * [15:11] Reserved
 	 * [31:16] DRAM Limit Address i Bits 39-24
-	 *         This field defines the upper address bits of a 40 bit  address
-	 *         that define the end of the DRAM region.
+	 *	   This field defines the upper address bits of a 40 bit  address
+	 *	   that define the end of the DRAM region.
 	 */
 	PCI_ADDR(0, 0x18, 1, 0x44), 0x0000f8f8, 0x00000000,
 	PCI_ADDR(0, 0x18, 1, 0x4C), 0x0000f8f8, 0x00000001,
@@ -247,25 +247,25 @@ static void setup_default_resource_map(void)
 	 * F1:0x70 i = 6
 	 * F1:0x78 i = 7
 	 * [ 0: 0] Read Enable
-	 *         0 = Reads Disabled
-	 *         1 = Reads Enabled
+	 *	   0 = Reads Disabled
+	 *	   1 = Reads Enabled
 	 * [ 1: 1] Write Enable
-	 *         0 = Writes Disabled
-	 *         1 = Writes Enabled
+	 *	   0 = Writes Disabled
+	 *	   1 = Writes Enabled
 	 * [ 7: 2] Reserved
 	 * [10: 8] Interleave Enable
-	 *         000 = No interleave
-	 *         001 = Interleave on A[12] (2 nodes)
-	 *         010 = reserved
-	 *         011 = Interleave on A[12] and A[14] (4 nodes)
-	 *         100 = reserved
-	 *         101 = reserved
-	 *         110 = reserved
-	 *         111 = Interleve on A[12] and A[13] and A[14] (8 nodes)
+	 *	   000 = No interleave
+	 *	   001 = Interleave on A[12] (2 nodes)
+	 *	   010 = reserved
+	 *	   011 = Interleave on A[12] and A[14] (4 nodes)
+	 *	   100 = reserved
+	 *	   101 = reserved
+	 *	   110 = reserved
+	 *	   111 = Interleve on A[12] and A[13] and A[14] (8 nodes)
 	 * [15:11] Reserved
 	 * [13:16] DRAM Base Address i Bits 39-24
-	 *         This field defines the upper address bits of a 40-bit address
-	 *         that define the start of the DRAM region.
+	 *	   This field defines the upper address bits of a 40-bit address
+	 *	   that define the start of the DRAM region.
 	 */
 	PCI_ADDR(0, 0x18, 1, 0x40), 0x0000f8fc, 0x00000000,
 	PCI_ADDR(0, 0x18, 1, 0x48), 0x0000f8fc, 0x00000000,
@@ -286,27 +286,27 @@ static void setup_default_resource_map(void)
 	 * F1:0xB4 i = 6
 	 * F1:0xBC i = 7
 	 * [ 2: 0] Destination Node ID
-	 *         000 = Node 0
-	 *         001 = Node 1
-	 *         010 = Node 2
-	 *         011 = Node 3
-	 *         100 = Node 4
-	 *         101 = Node 5
-	 *         110 = Node 6
-	 *         111 = Node 7
+	 *	   000 = Node 0
+	 *	   001 = Node 1
+	 *	   010 = Node 2
+	 *	   011 = Node 3
+	 *	   100 = Node 4
+	 *	   101 = Node 5
+	 *	   110 = Node 6
+	 *	   111 = Node 7
 	 * [ 3: 3] Reserved
 	 * [ 5: 4] Destination Link ID
-	 *         00 = Link 0
-	 *         01 = Link 1
-	 *         10 = Link 2
-	 *         11 = Reserved
+	 *	   00 = Link 0
+	 *	   01 = Link 1
+	 *	   10 = Link 2
+	 *	   11 = Reserved
 	 * [ 6: 6] Reserved
 	 * [ 7: 7] Non-Posted
-	 *         0 = CPU writes may be posted
-	 *         1 = CPU writes must be non-posted
+	 *	   0 = CPU writes may be posted
+	 *	   1 = CPU writes must be non-posted
 	 * [31: 8] Memory-Mapped I/O Limit Address i (39-16)
-	 *         This field defines the upp adddress bits of a 40-bit address that
-	 *         defines the end of a memory-mapped I/O region n
+	 *	   This field defines the upp adddress bits of a 40-bit address that
+	 *	   defines the end of a memory-mapped I/O region n
 	 */
 	PCI_ADDR(0, 0x18, 1, 0x84), 0x00000048, 0x00000000,
 	PCI_ADDR(0, 0x18, 1, 0x8C), 0x00000048, 0x00000000,
@@ -327,21 +327,21 @@ static void setup_default_resource_map(void)
 	 * F1:0xB0 i = 6
 	 * F1:0xB8 i = 7
 	 * [ 0: 0] Read Enable
-	 *         0 = Reads disabled
-	 *         1 = Reads Enabled
+	 *	   0 = Reads disabled
+	 *	   1 = Reads Enabled
 	 * [ 1: 1] Write Enable
-	 *         0 = Writes disabled
-	 *         1 = Writes Enabled
+	 *	   0 = Writes disabled
+	 *	   1 = Writes Enabled
 	 * [ 2: 2] Cpu Disable
-	 *         0 = Cpu can use this I/O range
-	 *         1 = Cpu requests do not use this I/O range
+	 *	   0 = Cpu can use this I/O range
+	 *	   1 = Cpu requests do not use this I/O range
 	 * [ 3: 3] Lock
-	 *         0 = base/limit registers i are read/write
-	 *         1 = base/limit registers i are read-only
+	 *	   0 = base/limit registers i are read/write
+	 *	   1 = base/limit registers i are read-only
 	 * [ 7: 4] Reserved
 	 * [31: 8] Memory-Mapped I/O Base Address i (39-16)
-	 *         This field defines the upper address bits of a 40bit address 
-	 *         that defines the start of memory-mapped I/O region i
+	 *	   This field defines the upper address bits of a 40bit address 
+	 *	   that defines the start of memory-mapped I/O region i
 	 */
 	PCI_ADDR(0, 0x18, 1, 0x80), 0x000000f0, 0x00000000,
 	PCI_ADDR(0, 0x18, 1, 0x88), 0x000000f0, 0x00000000,
@@ -358,23 +358,23 @@ static void setup_default_resource_map(void)
 	 * F1:0xD4 i = 2
 	 * F1:0xDC i = 3
 	 * [ 2: 0] Destination Node ID
-	 *         000 = Node 0
-	 *         001 = Node 1
-	 *         010 = Node 2
-	 *         011 = Node 3
-	 *         100 = Node 4
-	 *         101 = Node 5
-	 *         110 = Node 6
-	 *         111 = Node 7
+	 *	   000 = Node 0
+	 *	   001 = Node 1
+	 *	   010 = Node 2
+	 *	   011 = Node 3
+	 *	   100 = Node 4
+	 *	   101 = Node 5
+	 *	   110 = Node 6
+	 *	   111 = Node 7
 	 * [ 3: 3] Reserved
 	 * [ 5: 4] Destination Link ID
-	 *         00 = Link 0
-	 *         01 = Link 1
-	 *         10 = Link 2
-	 *         11 = reserved
+	 *	   00 = Link 0
+	 *	   01 = Link 1
+	 *	   10 = Link 2
+	 *	   11 = reserved
 	 * [11: 6] Reserved
 	 * [24:12] PCI I/O Limit Address i
-	 *         This field defines the end of PCI I/O region n
+	 *	   This field defines the end of PCI I/O region n
 	 * [31:25] Reserved
 	 */
 	PCI_ADDR(0, 0x18, 1, 0xC4), 0xFE000FC8, 0x01fff000,
@@ -388,23 +388,23 @@ static void setup_default_resource_map(void)
 	 * F1:0xD0 i = 2
 	 * F1:0xD8 i = 3
 	 * [ 0: 0] Read Enable
-	 *         0 = Reads Disabled
-	 *         1 = Reads Enabled
+	 *	   0 = Reads Disabled
+	 *	   1 = Reads Enabled
 	 * [ 1: 1] Write Enable
-	 *         0 = Writes Disabled
-	 *         1 = Writes Enabled
+	 *	   0 = Writes Disabled
+	 *	   1 = Writes Enabled
 	 * [ 3: 2] Reserved
 	 * [ 4: 4] VGA Enable
-	 *         0 = VGA matches Disabled
-	 *         1 = matches all address < 64K and where A[9:0] is in the 
-	 *             range 3B0-3BB or 3C0-3DF independen of the base & limit registers
+	 *	   0 = VGA matches Disabled
+	 *	   1 = matches all address < 64K and where A[9:0] is in the 
+	 *	       range 3B0-3BB or 3C0-3DF independen of the base & limit registers
 	 * [ 5: 5] ISA Enable
-	 *         0 = ISA matches Disabled
-	 *         1 = Blocks address < 64K and in the last 768 bytes of eack 1K block
-	 *             from matching agains this base/limit pair
+	 *	   0 = ISA matches Disabled
+	 *	   1 = Blocks address < 64K and in the last 768 bytes of eack 1K block
+	 *	       from matching agains this base/limit pair
 	 * [11: 6] Reserved
 	 * [24:12] PCI I/O Base i
-	 *         This field defines the start of PCI I/O region n 
+	 *	   This field defines the start of PCI I/O region n 
 	 * [31:25] Reserved
 	 */
 	PCI_ADDR(0, 0x18, 1, 0xC0), 0xFE000FCC, 0x00000003,
@@ -418,35 +418,35 @@ static void setup_default_resource_map(void)
 	 * F1:0xE8 i = 2
 	 * F1:0xEC i = 3
 	 * [ 0: 0] Read Enable
-	 *         0 = Reads Disabled
-	 *         1 = Reads Enabled
+	 *	   0 = Reads Disabled
+	 *	   1 = Reads Enabled
 	 * [ 1: 1] Write Enable
-	 *         0 = Writes Disabled
-	 *         1 = Writes Enabled
+	 *	   0 = Writes Disabled
+	 *	   1 = Writes Enabled
 	 * [ 2: 2] Device Number Compare Enable
-	 *         0 = The ranges are based on bus number
-	 *         1 = The ranges are ranges of devices on bus 0
+	 *	   0 = The ranges are based on bus number
+	 *	   1 = The ranges are ranges of devices on bus 0
 	 * [ 3: 3] Reserved
 	 * [ 6: 4] Destination Node
-	 *         000 = Node 0
-	 *         001 = Node 1
-	 *         010 = Node 2
-	 *         011 = Node 3
-	 *         100 = Node 4
-	 *         101 = Node 5
-	 *         110 = Node 6
-	 *         111 = Node 7
+	 *	   000 = Node 0
+	 *	   001 = Node 1
+	 *	   010 = Node 2
+	 *	   011 = Node 3
+	 *	   100 = Node 4
+	 *	   101 = Node 5
+	 *	   110 = Node 6
+	 *	   111 = Node 7
 	 * [ 7: 7] Reserved
 	 * [ 9: 8] Destination Link
-	 *         00 = Link 0
-	 *         01 = Link 1
-	 *         10 = Link 2
-	 *         11 - Reserved
+	 *	   00 = Link 0
+	 *	   01 = Link 1
+	 *	   10 = Link 2
+	 *	   11 - Reserved
 	 * [15:10] Reserved
 	 * [23:16] Bus Number Base i
-	 *         This field defines the lowest bus number in configuration region i
+	 *	   This field defines the lowest bus number in configuration region i
 	 * [31:24] Bus Number Limit i
-	 *         This field defines the highest bus number in configuration regin i
+	 *	   This field defines the highest bus number in configuration regin i
 	 */
 	PCI_ADDR(0, 0x18, 1, 0xE0), 0x0000FC88, 0xff000003,
 	PCI_ADDR(0, 0x18, 1, 0xE4), 0x0000FC88, 0x00000000,
@@ -473,21 +473,21 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	 * F1:0x74 i = 6
 	 * F1:0x7C i = 7
 	 * [ 2: 0] Destination Node ID
-	 *         000 = Node 0
-	 *         001 = Node 1
-	 *         010 = Node 2
-	 *         011 = Node 3
-	 *         100 = Node 4
-	 *         101 = Node 5
-	 *         110 = Node 6
-	 *         111 = Node 7
+	 *	   000 = Node 0
+	 *	   001 = Node 1
+	 *	   010 = Node 2
+	 *	   011 = Node 3
+	 *	   100 = Node 4
+	 *	   101 = Node 5
+	 *	   110 = Node 6
+	 *	   111 = Node 7
 	 * [ 7: 3] Reserved
 	 * [10: 8] Interleave select
-	 *         specifies the values of A[14:12] to use with interleave enable.
+	 *	   specifies the values of A[14:12] to use with interleave enable.
 	 * [15:11] Reserved
 	 * [31:16] DRAM Limit Address i Bits 39-24
-	 *         This field defines the upper address bits of a 40 bit  address
-	 *         that define the end of the DRAM region.
+	 *	   This field defines the upper address bits of a 40 bit  address
+	 *	   that define the end of the DRAM region.
 	 */
 	PCI_ADDR(0, 0x18, 1, 0x44), 0x0000f8f8, 0x00000000,
 	PCI_ADDR(0, 0x18, 1, 0x4C), 0x0000f8f8, 0x00000001,
@@ -507,25 +507,25 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	 * F1:0x70 i = 6
 	 * F1:0x78 i = 7
 	 * [ 0: 0] Read Enable
-	 *         0 = Reads Disabled
-	 *         1 = Reads Enabled
+	 *	   0 = Reads Disabled
+	 *	   1 = Reads Enabled
 	 * [ 1: 1] Write Enable
-	 *         0 = Writes Disabled
-	 *         1 = Writes Enabled
+	 *	   0 = Writes Disabled
+	 *	   1 = Writes Enabled
 	 * [ 7: 2] Reserved
 	 * [10: 8] Interleave Enable
-	 *         000 = No interleave
-	 *         001 = Interleave on A[12] (2 nodes)
-	 *         010 = reserved
-	 *         011 = Interleave on A[12] and A[14] (4 nodes)
-	 *         100 = reserved
-	 *         101 = reserved
-	 *         110 = reserved
-	 *         111 = Interleve on A[12] and A[13] and A[14] (8 nodes)
+	 *	   000 = No interleave
+	 *	   001 = Interleave on A[12] (2 nodes)
+	 *	   010 = reserved
+	 *	   011 = Interleave on A[12] and A[14] (4 nodes)
+	 *	   100 = reserved
+	 *	   101 = reserved
+	 *	   110 = reserved
+	 *	   111 = Interleve on A[12] and A[13] and A[14] (8 nodes)
 	 * [15:11] Reserved
 	 * [13:16] DRAM Base Address i Bits 39-24
-	 *         This field defines the upper address bits of a 40-bit address
-	 *         that define the start of the DRAM region.
+	 *	   This field defines the upper address bits of a 40-bit address
+	 *	   that define the start of the DRAM region.
 	 */
 	PCI_ADDR(0, 0x18, 1, 0x40), 0x0000f8fc, 0x00000000,
 	PCI_ADDR(0, 0x18, 1, 0x48), 0x0000f8fc, 0x00000000,
@@ -546,16 +546,16 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	 * F2:0x58 i = 6
 	 * F2:0x5C i = 7
 	 * [ 0: 0] Chip-Select Bank Enable
-	 *         0 = Bank Disabled
-	 *         1 = Bank Enabled
+	 *	   0 = Bank Disabled
+	 *	   1 = Bank Enabled
 	 * [ 8: 1] Reserved
 	 * [15: 9] Base Address (19-13)
-	 *         An optimization used when all DIMM are the same size...
+	 *	   An optimization used when all DIMM are the same size...
 	 * [20:16] Reserved
 	 * [31:21] Base Address (35-25)
-	 *         This field defines the top 11 addresses bit of a 40-bit
-	 *         address that define the memory address space.  These
-	 *         bits decode 32-MByte blocks of memory.
+	 *	   This field defines the top 11 addresses bit of a 40-bit
+	 *	   address that define the memory address space.  These
+	 *	   bits decode 32-MByte blocks of memory.
 	 */
 	PCI_ADDR(0, 0x18, 2, 0x40), 0x001f01fe, 0x00000000,
 	PCI_ADDR(0, 0x18, 2, 0x44), 0x001f01fe, 0x00000000,
@@ -577,10 +577,10 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	 * Select bits to exclude from comparison with the DRAM Base address register.
 	 * [ 8: 0] Reserved
 	 * [15: 9] Address Mask (19-13)
-	 *         Address to be excluded from the optimized case
+	 *	   Address to be excluded from the optimized case
 	 * [20:16] Reserved
 	 * [29:21] Address Mask (33-25)
-	 *         The bits with an address mask of 1 are excluded from address comparison
+	 *	   The bits with an address mask of 1 are excluded from address comparison
 	 * [31:30] Reserved
 	 * 
 	 */
@@ -599,14 +599,14 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	 * [ 6: 4] CS3/2
 	 * [10: 8] CS5/4
 	 * [14:12] CS7/6
-	 *         000 = 32Mbyte  (Rows = 12 & Col =  8)
-	 *         001 = 64Mbyte  (Rows = 12 & Col =  9)
-	 *         010 = 128Mbyte (Rows = 13 & Col =  9)|(Rows = 12 & Col = 10)
-	 *         011 = 256Mbyte (Rows = 13 & Col = 10)|(Rows = 12 & Col = 11)
-	 *         100 = 512Mbyte (Rows = 13 & Col = 11)|(Rows = 14 & Col = 10)
-	 *         101 = 1Gbyte   (Rows = 14 & Col = 11)|(Rows = 13 & Col = 12)
-	 *         110 = 2Gbyte   (Rows = 14 & Col = 12)
-	 *         111 = reserved 
+	 *	   000 = 32Mbyte  (Rows = 12 & Col =  8)
+	 *	   001 = 64Mbyte  (Rows = 12 & Col =  9)
+	 *	   010 = 128Mbyte (Rows = 13 & Col =  9)|(Rows = 12 & Col = 10)
+	 *	   011 = 256Mbyte (Rows = 13 & Col = 10)|(Rows = 12 & Col = 11)
+	 *	   100 = 512Mbyte (Rows = 13 & Col = 11)|(Rows = 14 & Col = 10)
+	 *	   101 = 1Gbyte	  (Rows = 14 & Col = 11)|(Rows = 13 & Col = 12)
+	 *	   110 = 2Gbyte	  (Rows = 14 & Col = 12)
+	 *	   111 = reserved 
 	 * [ 3: 3] Reserved
 	 * [ 7: 7] Reserved
 	 * [11:11] Reserved
@@ -616,168 +616,168 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	/* DRAM Timing Low Register
 	 * F2:0x88
 	 * [ 2: 0] Tcl (Cas# Latency, Cas# to read-data-valid)
-	 *         000 = reserved
-	 *         001 = CL 2
-	 *         010 = CL 3
-	 *         011 = reserved
-	 *         100 = reserved
-	 *         101 = CL 2.5
-	 *         110 = reserved
-	 *         111 = reserved
+	 *	   000 = reserved
+	 *	   001 = CL 2
+	 *	   010 = CL 3
+	 *	   011 = reserved
+	 *	   100 = reserved
+	 *	   101 = CL 2.5
+	 *	   110 = reserved
+	 *	   111 = reserved
 	 * [ 3: 3] Reserved
 	 * [ 7: 4] Trc (Row Cycle Time, Ras#-active to Ras#-active/bank auto refresh)
-	 *         0000 =  7 bus clocks
-	 *         0001 =  8 bus clocks
-	 *         ...
-	 *         1110 = 21 bus clocks
-	 *         1111 = 22 bus clocks
+	 *	   0000 =  7 bus clocks
+	 *	   0001 =  8 bus clocks
+	 *	   ...
+	 *	   1110 = 21 bus clocks
+	 *	   1111 = 22 bus clocks
 	 * [11: 8] Trfc (Row refresh Cycle time, Auto-refresh-active to RAS#-active or RAS#auto-refresh)
-	 *         0000 = 9 bus clocks
-	 *         0010 = 10 bus clocks
-	 *         ....
-	 *         1110 = 23 bus clocks
-	 *         1111 = 24 bus clocks
+	 *	   0000 = 9 bus clocks
+	 *	   0010 = 10 bus clocks
+	 *	   ....
+	 *	   1110 = 23 bus clocks
+	 *	   1111 = 24 bus clocks
 	 * [14:12] Trcd (Ras#-active to Case#-read/write Delay)
-	 *         000 = reserved
-	 *         001 = reserved
-	 *         010 = 2 bus clocks
-	 *         011 = 3 bus clocks
-	 *         100 = 4 bus clocks
-	 *         101 = 5 bus clocks
-	 *         110 = 6 bus clocks
-	 *         111 = reserved
+	 *	   000 = reserved
+	 *	   001 = reserved
+	 *	   010 = 2 bus clocks
+	 *	   011 = 3 bus clocks
+	 *	   100 = 4 bus clocks
+	 *	   101 = 5 bus clocks
+	 *	   110 = 6 bus clocks
+	 *	   111 = reserved
 	 * [15:15] Reserved
 	 * [18:16] Trrd (Ras# to Ras# Delay)
-	 *         000 = reserved
-	 *         001 = reserved
-	 *         010 = 2 bus clocks
-	 *         011 = 3 bus clocks
-	 *         100 = 4 bus clocks
-	 *         101 = reserved
-	 *         110 = reserved
-	 *         111 = reserved
+	 *	   000 = reserved
+	 *	   001 = reserved
+	 *	   010 = 2 bus clocks
+	 *	   011 = 3 bus clocks
+	 *	   100 = 4 bus clocks
+	 *	   101 = reserved
+	 *	   110 = reserved
+	 *	   111 = reserved
 	 * [19:19] Reserved
 	 * [23:20] Tras (Minmum Ras# Active Time)
-	 *         0000 to 0100 = reserved
-	 *         0101 = 5 bus clocks
-	 *         ...
-	 *         1111 = 15 bus clocks
+	 *	   0000 to 0100 = reserved
+	 *	   0101 = 5 bus clocks
+	 *	   ...
+	 *	   1111 = 15 bus clocks
 	 * [26:24] Trp (Row Precharge Time)
-	 *         000 = reserved
-	 *         001 = reserved
-	 *         010 = 2 bus clocks
-	 *         011 = 3 bus clocks
-	 *         100 = 4 bus clocks
-	 *         101 = 5 bus clocks
-	 *         110 = 6 bus clocks
-	 *         111 = reserved
+	 *	   000 = reserved
+	 *	   001 = reserved
+	 *	   010 = 2 bus clocks
+	 *	   011 = 3 bus clocks
+	 *	   100 = 4 bus clocks
+	 *	   101 = 5 bus clocks
+	 *	   110 = 6 bus clocks
+	 *	   111 = reserved
 	 * [27:27] Reserved
 	 * [28:28] Twr (Write Recovery Time)
-	 *         0 = 2 bus clocks
-	 *         1 = 3 bus clocks
+	 *	   0 = 2 bus clocks
+	 *	   1 = 3 bus clocks
 	 * [31:29] Reserved
 	 */
 	PCI_ADDR(0, 0x18, 2, 0x88), 0xe8088008, 0x02522001 /* 0x03623125 */ ,
 	/* DRAM Timing High Register
 	 * F2:0x8C
 	 * [ 0: 0] Twtr (Write to Read Delay)
-	 *         0 = 1 bus Clocks
-	 *         1 = 2 bus Clocks
+	 *	   0 = 1 bus Clocks
+	 *	   1 = 2 bus Clocks
 	 * [ 3: 1] Reserved
 	 * [ 6: 4] Trwt (Read to Write Delay)
-	 *         000 = 1 bus clocks
-	 *         001 = 2 bus clocks
-	 *         010 = 3 bus clocks
-	 *         011 = 4 bus clocks
-	 *         100 = 5 bus clocks
-	 *         101 = 6 bus clocks
-	 *         110 = reserved
-	 *         111 = reserved
+	 *	   000 = 1 bus clocks
+	 *	   001 = 2 bus clocks
+	 *	   010 = 3 bus clocks
+	 *	   011 = 4 bus clocks
+	 *	   100 = 5 bus clocks
+	 *	   101 = 6 bus clocks
+	 *	   110 = reserved
+	 *	   111 = reserved
 	 * [ 7: 7] Reserved
 	 * [12: 8] Tref (Refresh Rate)
-	 *         00000 = 100Mhz 4K rows
-	 *         00001 = 133Mhz 4K rows
-	 *         00010 = 166Mhz 4K rows
-	 *         00011 = 200Mhz 4K rows
-	 *         01000 = 100Mhz 8K/16K rows
-	 *         01001 = 133Mhz 8K/16K rows
-	 *         01010 = 166Mhz 8K/16K rows
-	 *         01011 = 200Mhz 8K/16K rows
+	 *	   00000 = 100Mhz 4K rows
+	 *	   00001 = 133Mhz 4K rows
+	 *	   00010 = 166Mhz 4K rows
+	 *	   00011 = 200Mhz 4K rows
+	 *	   01000 = 100Mhz 8K/16K rows
+	 *	   01001 = 133Mhz 8K/16K rows
+	 *	   01010 = 166Mhz 8K/16K rows
+	 *	   01011 = 200Mhz 8K/16K rows
 	 * [19:13] Reserved
 	 * [22:20] Twcl (Write CAS Latency)
-	 *         000 = 1 Mem clock after CAS# (Unbuffered Dimms)
-	 *         001 = 2 Mem clocks after CAS# (Registered Dimms)
+	 *	   000 = 1 Mem clock after CAS# (Unbuffered Dimms)
+	 *	   001 = 2 Mem clocks after CAS# (Registered Dimms)
 	 * [31:23] Reserved
 	 */
 	PCI_ADDR(0, 0x18, 2, 0x8c), 0xff8fe08e, (0 << 20)|(0 << 8)|(0 << 4)|(0 << 0),
 	/* DRAM Config Low Register
 	 * F2:0x90
 	 * [ 0: 0] DLL Disable
-	 *         0 = Enabled
-	 *         1 = Disabled
+	 *	   0 = Enabled
+	 *	   1 = Disabled
 	 * [ 1: 1] D_DRV
-	 *         0 = Normal Drive
-	 *         1 = Weak Drive
+	 *	   0 = Normal Drive
+	 *	   1 = Weak Drive
 	 * [ 2: 2] QFC_EN
-	 *         0 = Disabled
-	 *         1 = Enabled
+	 *	   0 = Disabled
+	 *	   1 = Enabled
 	 * [ 3: 3] Disable DQS Hystersis  (FIXME handle this one carefully)
-	 *         0 = Enable DQS input filter 
-	 *         1 = Disable DQS input filtering 
+	 *	   0 = Enable DQS input filter 
+	 *	   1 = Disable DQS input filtering 
 	 * [ 7: 4] Reserved
 	 * [ 8: 8] DRAM_Init
-	 *         0 = Initialization done or not yet started.
-	 *         1 = Initiate DRAM intialization sequence
+	 *	   0 = Initialization done or not yet started.
+	 *	   1 = Initiate DRAM intialization sequence
 	 * [ 9: 9] SO-Dimm Enable
-	 *         0 = Do nothing
-	 *         1 = SO-Dimms present
+	 *	   0 = Do nothing
+	 *	   1 = SO-Dimms present
 	 * [10:10] DramEnable
-	 *         0 = DRAM not enabled
-	 *         1 = DRAM initialized and enabled
+	 *	   0 = DRAM not enabled
+	 *	   1 = DRAM initialized and enabled
 	 * [11:11] Memory Clear Status
-	 *         0 = Memory Clear function has not completed
-	 *         1 = Memory Clear function has completed
+	 *	   0 = Memory Clear function has not completed
+	 *	   1 = Memory Clear function has completed
 	 * [12:12] Exit Self-Refresh
-	 *         0 = Exit from self-refresh done or not yet started
-	 *         1 = DRAM exiting from self refresh
+	 *	   0 = Exit from self-refresh done or not yet started
+	 *	   1 = DRAM exiting from self refresh
 	 * [13:13] Self-Refresh Status
-	 *         0 = Normal Operation
-	 *         1 = Self-refresh mode active
+	 *	   0 = Normal Operation
+	 *	   1 = Self-refresh mode active
 	 * [15:14] Read/Write Queue Bypass Count
-	 *         00 = 2
-	 *         01 = 4
-	 *         10 = 8
-	 *         11 = 16
+	 *	   00 = 2
+	 *	   01 = 4
+	 *	   10 = 8
+	 *	   11 = 16
 	 * [16:16] 128-bit/64-Bit
-	 *         0 = 64bit Interface to DRAM
-	 *         1 = 128bit Interface to DRAM
+	 *	   0 = 64bit Interface to DRAM
+	 *	   1 = 128bit Interface to DRAM
 	 * [17:17] DIMM ECC Enable
-	 *         0 = Some DIMMs do not have ECC
-	 *         1 = ALL DIMMS have ECC bits
+	 *	   0 = Some DIMMs do not have ECC
+	 *	   1 = ALL DIMMS have ECC bits
 	 * [18:18] UnBuffered DIMMs
-	 *         0 = Buffered DIMMS
-	 *         1 = Unbuffered DIMMS
+	 *	   0 = Buffered DIMMS
+	 *	   1 = Unbuffered DIMMS
 	 * [19:19] Enable 32-Byte Granularity
-	 *         0 = Optimize for 64byte bursts
-	 *         1 = Optimize for 32byte bursts
+	 *	   0 = Optimize for 64byte bursts
+	 *	   1 = Optimize for 32byte bursts
 	 * [20:20] DIMM 0 is x4
 	 * [21:21] DIMM 1 is x4
 	 * [22:22] DIMM 2 is x4
 	 * [23:23] DIMM 3 is x4
-	 *         0 = DIMM is not x4
-	 *         1 = x4 DIMM present
+	 *	   0 = DIMM is not x4
+	 *	   1 = x4 DIMM present
 	 * [24:24] Disable DRAM Receivers
-	 *         0 = Receivers enabled
-	 *         1 = Receivers disabled
+	 *	   0 = Receivers enabled
+	 *	   1 = Receivers disabled
 	 * [27:25] Bypass Max
-	 *         000 = Arbiters chois is always respected
-	 *         001 = Oldest entry in DCQ can be bypassed 1 time
-	 *         010 = Oldest entry in DCQ can be bypassed 2 times
-	 *         011 = Oldest entry in DCQ can be bypassed 3 times
-	 *         100 = Oldest entry in DCQ can be bypassed 4 times
-	 *         101 = Oldest entry in DCQ can be bypassed 5 times
-	 *         110 = Oldest entry in DCQ can be bypassed 6 times
-	 *         111 = Oldest entry in DCQ can be bypassed 7 times
+	 *	   000 = Arbiters chois is always respected
+	 *	   001 = Oldest entry in DCQ can be bypassed 1 time
+	 *	   010 = Oldest entry in DCQ can be bypassed 2 times
+	 *	   011 = Oldest entry in DCQ can be bypassed 3 times
+	 *	   100 = Oldest entry in DCQ can be bypassed 4 times
+	 *	   101 = Oldest entry in DCQ can be bypassed 5 times
+	 *	   110 = Oldest entry in DCQ can be bypassed 6 times
+	 *	   111 = Oldest entry in DCQ can be bypassed 7 times
 	 * [31:28] Reserved
 	 */
 	PCI_ADDR(0, 0x18, 2, 0x90), 0xf0000000, 
@@ -790,65 +790,65 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	/* DRAM Config High Register
 	 * F2:0x94
 	 * [ 0: 3] Maximum Asynchronous Latency
-	 *         0000 = 0 ns
-	 *         ...
-	 *         1111 = 15 ns
+	 *	   0000 = 0 ns
+	 *	   ...
+	 *	   1111 = 15 ns
 	 * [ 7: 4] Reserved
 	 * [11: 8] Read Preamble
-	 *         0000 = 2.0 ns
-	 *         0001 = 2.5 ns
-	 *         0010 = 3.0 ns
-	 *         0011 = 3.5 ns
-	 *         0100 = 4.0 ns
-	 *         0101 = 4.5 ns
-	 *         0110 = 5.0 ns
-	 *         0111 = 5.5 ns
-	 *         1000 = 6.0 ns
-	 *         1001 = 6.5 ns
-	 *         1010 = 7.0 ns
-	 *         1011 = 7.5 ns
-	 *         1100 = 8.0 ns
-	 *         1101 = 8.5 ns
-	 *         1110 = 9.0 ns
-	 *         1111 = 9.5 ns
+	 *	   0000 = 2.0 ns
+	 *	   0001 = 2.5 ns
+	 *	   0010 = 3.0 ns
+	 *	   0011 = 3.5 ns
+	 *	   0100 = 4.0 ns
+	 *	   0101 = 4.5 ns
+	 *	   0110 = 5.0 ns
+	 *	   0111 = 5.5 ns
+	 *	   1000 = 6.0 ns
+	 *	   1001 = 6.5 ns
+	 *	   1010 = 7.0 ns
+	 *	   1011 = 7.5 ns
+	 *	   1100 = 8.0 ns
+	 *	   1101 = 8.5 ns
+	 *	   1110 = 9.0 ns
+	 *	   1111 = 9.5 ns
 	 * [15:12] Reserved
 	 * [18:16] Idle Cycle Limit
-	 *         000 = 0 cycles
-	 *         001 = 4 cycles
-	 *         010 = 8 cycles
-	 *         011 = 16 cycles
-	 *         100 = 32 cycles
-	 *         101 = 64 cycles
-	 *         110 = 128 cycles
-	 *         111 = 256 cycles
+	 *	   000 = 0 cycles
+	 *	   001 = 4 cycles
+	 *	   010 = 8 cycles
+	 *	   011 = 16 cycles
+	 *	   100 = 32 cycles
+	 *	   101 = 64 cycles
+	 *	   110 = 128 cycles
+	 *	   111 = 256 cycles
 	 * [19:19] Dynamic Idle Cycle Center Enable
-	 *         0 = Use Idle Cycle Limit
-	 *         1 = Generate a dynamic Idle cycle limit
+	 *	   0 = Use Idle Cycle Limit
+	 *	   1 = Generate a dynamic Idle cycle limit
 	 * [22:20] DRAM MEMCLK Frequency
-	 *         000 = 100Mhz
-	 *         001 = reserved
-	 *         010 = 133Mhz
-	 *         011 = reserved
-	 *         100 = reserved
-	 *         101 = 166Mhz
-	 *         110 = reserved
-	 *         111 = reserved
+	 *	   000 = 100Mhz
+	 *	   001 = reserved
+	 *	   010 = 133Mhz
+	 *	   011 = reserved
+	 *	   100 = reserved
+	 *	   101 = 166Mhz
+	 *	   110 = reserved
+	 *	   111 = reserved
 	 * [24:23] Reserved
 	 * [25:25] Memory Clock Ratio Valid (FIXME carefully enable memclk)
-	 *         0 = Disable MemClks
-	 *         1 = Enable MemClks
+	 *	   0 = Disable MemClks
+	 *	   1 = Enable MemClks
 	 * [26:26] Memory Clock 0 Enable
-	 *         0 = Disabled
-	 *         1 = Enabled
+	 *	   0 = Disabled
+	 *	   1 = Enabled
 	 * [27:27] Memory Clock 1 Enable
-	 *         0 = Disabled
-	 *         1 = Enabled
+	 *	   0 = Disabled
+	 *	   1 = Enabled
 	 * [28:28] Memory Clock 2 Enable
-	 *         0 = Disabled
-	 *         1 = Enabled
+	 *	   0 = Disabled
+	 *	   1 = Enabled
 	 * [29:29] Memory Clock 3 Enable
-	 *         0 = Disabled
-	 *         1 = Enabled
+	 *	   0 = Disabled
+	 *	   1 = Enabled
 	 * [31:30] Reserved
 	 */
 	PCI_ADDR(0, 0x18, 2, 0x94), 0xc180f0f0,
@@ -859,14 +859,14 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	 * Adjust the skew of the input DQS strobe relative to DATA
 	 * [15: 0] Reserved
 	 * [23:16] Delay Line Adjust
-	 *         Adjusts the DLL derived PDL delay by one or more delay stages
-	 *         in either the faster or slower direction.
+	 *	   Adjusts the DLL derived PDL delay by one or more delay stages
+	 *	   in either the faster or slower direction.
 	 * [24:24} Adjust Slower
-	 *         0 = Do Nothing
-	 *         1 = Adj is used to increase the PDL delay
+	 *	   0 = Do Nothing
+	 *	   1 = Adj is used to increase the PDL delay
 	 * [25:25] Adjust Faster
-	 *         0 = Do Nothing
-	 *         1 = Adj is used to decrease the PDL delay
+	 *	   0 = Do Nothing
+	 *	   1 = Adj is used to decrease the PDL delay
 	 * [31:26] Reserved
 	 */
 	PCI_ADDR(0, 0x18, 2, 0x98), 0xfc00ffff, 0x00000000,
@@ -878,37 +878,37 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	 * [15:13] reserved
 	 * [20:16] Dcache Scrub
 	 * [31:21] reserved
-	 *         Scrub Rates
-	 *         00000 = Do not scrub
-	 *         00001 =  40.00 ns
-	 *         00010 =  80.00 ns
-	 *         00011 = 160.00 ns
-	 *         00100 = 320.00 ns
-	 *         00101 = 640.00 ns
-	 *         00110 =   1.28 us
-	 *         00111 =   2.56 us
-	 *         01000 =   5.12 us
-	 *         01001 =  10.20 us
-	 *         01011 =  41.00 us
-	 *         01100 =  81.90 us
-	 *         01101 = 163.80 us
-	 *         01110 = 327.70 us
-	 *         01111 = 655.40 us
-	 *         10000 =   1.31 ms
-	 *         10001 =   2.62 ms
-	 *         10010 =   5.24 ms
-	 *         10011 =  10.49 ms
-	 *         10100 =  20.97 ms
-	 *         10101 =  42.00 ms
-	 *         10110 =  84.00 ms
-	 *         All Others = Reserved
+	 *	   Scrub Rates
+	 *	   00000 = Do not scrub
+	 *	   00001 =  40.00 ns
+	 *	   00010 =  80.00 ns
+	 *	   00011 = 160.00 ns
+	 *	   00100 = 320.00 ns
+	 *	   00101 = 640.00 ns
+	 *	   00110 =   1.28 us
+	 *	   00111 =   2.56 us
+	 *	   01000 =   5.12 us
+	 *	   01001 =  10.20 us
+	 *	   01011 =  41.00 us
+	 *	   01100 =  81.90 us
+	 *	   01101 = 163.80 us
+	 *	   01110 = 327.70 us
+	 *	   01111 = 655.40 us
+	 *	   10000 =   1.31 ms
+	 *	   10001 =   2.62 ms
+	 *	   10010 =   5.24 ms
+	 *	   10011 =  10.49 ms
+	 *	   10100 =  20.97 ms
+	 *	   10101 =  42.00 ms
+	 *	   10110 =  84.00 ms
+	 *	   All Others = Reserved
 	 */
 	PCI_ADDR(0, 0x18, 3, 0x58), 0xffe0e0e0, 0x00000000,
 	/* DRAM Scrub Address Low Register
 	 * F3:0x5C
 	 * [ 0: 0] DRAM Scrubber Redirect Enable
-	 *         0 = Do nothing
-	 *         1 = Scrubber Corrects errors found in normal operation
+	 *	   0 = Do nothing
+	 *	   1 = Scrubber Corrects errors found in normal operation
 	 * [ 5: 1] Reserved
 	 * [31: 6] DRAM Scrub Address 31-6
 	 */
@@ -922,7 +922,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 //BY LYH  add IOMMU 64M APERTURE
 	PCI_ADDR(0, 0x18, 3, 0x94), 0xffff8000, 0x00000f70,
 	PCI_ADDR(0, 0x18, 3, 0x90), 0xffffff80, 0x00000002,
-        PCI_ADDR(0, 0x18, 3, 0x98), 0x0000000f, 0x00068300,
+	PCI_ADDR(0, 0x18, 3, 0x98), 0x0000000f, 0x00068300,
 
 //BY LYH END
 	};
@@ -973,6 +973,7 @@ static int is_opteron(const struct mem_controller *ctrl)
 	 * FIXME Testing dual channel capability is correct for now
 	 * but a beter test is probably required.
 	 */
+#warning "FIXME implement a better test for opterons"
 	uint32_t nbcap;
 	nbcap = pci_read_config32(ctrl->f3, NORTHBRIDGE_CAP);
 	return !!(nbcap & NBCAP_128Bit);
@@ -1039,7 +1040,7 @@ static struct dimm_size spd_get_dimm_size(unsigned device)
 	value = spd_read_byte(device, 3);	/* rows */
 	if (value < 0) goto out;
 	if ((value & 0xf0) == 0) goto out;	/* If symmetrical we are done */
-	sz.side2 -= (value & 0x0f); 		/* Subtract out rows on side 1 */
+	sz.side2 -= (value & 0x0f);		/* Subtract out rows on side 1 */
 	sz.side2 += ((value >> 4) & 0x0f);	/* Add in rows on side 2 */
 
 	value = spd_read_byte(device, 4);	/* columns */
@@ -1122,23 +1123,7 @@ static void spd_set_ram_size(const struct mem_controller *ctrl)
 		set_dimm_size(ctrl, sz, i);
 	}
 }
-static void fill_last(unsigned long node_id,unsigned long base)
-{
-//BY LYH //Fill next base reg with right value
-        unsigned i;
-        unsigned base_reg;
-        base &=0xffff0000;
-	device_t device;
-        for(device = PCI_DEV(0, 0x18, 1); device <= PCI_DEV(0, 0x1f, 1); device
-+= PCI_DEV(0, 1, 0)) {
-        	for(i=node_id+1;i<=7;i++) {
-                	base_reg=0x40+(i<<3);
-                 	pci_write_config32(device,base_reg,base);
-		}
-        }
-//BY LYH END
-}
- 
+
 static void route_dram_accesses(const struct mem_controller *ctrl,
 	unsigned long base_k, unsigned long limit_k)
 {
@@ -1148,8 +1133,8 @@ static void route_dram_accesses(const struct mem_controller *ctrl,
 	unsigned base;
 	unsigned index;
 	unsigned limit_reg, base_reg;
-
 	device_t device;
+
 	node_id = ctrl->node_id;
 	index = (node_id << 3);
 	limit = (limit_k << 2);
@@ -1166,7 +1151,6 @@ static void route_dram_accesses(const struct mem_controller *ctrl,
 		pci_write_config32(device, limit_reg, limit);
 		pci_write_config32(device, base_reg, base);
 	}
-	
 }
 
 static void set_top_mem(unsigned tom_k)
@@ -1207,17 +1191,6 @@ static void order_dimms(const struct mem_controller *ctrl)
 
 	/* Compute the memory base address address */
 	base_k = 0;
-	for(node_id = 0; node_id < ctrl->node_id; node_id++) {
-		uint32_t limit, base;
-		unsigned index;
-		index = node_id << 3;
-		base = pci_read_config32(ctrl->f1, 0x40 + index);
-		/* Only look at the limit if the base is enabled */
-		if ((base & 3) == 3) {
-			limit = pci_read_config32(ctrl->f1, 0x44 + index);
-			base_k = ((limit + 0x00010000) & 0xffff0000) >> 2;
-		}
-	}
 	/* Remember which registers we have used in the high 8 bits of tom */
 	tom = base_k >> 15;
 	for(;;) {
@@ -1257,37 +1230,18 @@ static void order_dimms(const struct mem_controller *ctrl)
 		/* Remember the dimm size */
 		size = csbase >> 21;
 
-		/* If this is the first chip select, round base_k to
-		 * be a multiple of it's size.  Then set tom to equal
-		 * base_k.
-		 * I assume that size is a power of two.
-		 */
-		if ((tom & 0xff000000) == 0) {
-			unsigned size_k;
-			size_k = size << 15;
-			base_k = (base_k + size_k -1) & ~(size_k -1);
-			tom = base_k >> 15; 
-		}
-
 		/* Remember I have used this register */
 		tom |= (1 << (canidate + 24));
 
 		/* Recompute the cs base register value */
-#if 1  // BY LYH  Need to count from 0 for every memory controller
-		csbase = ((tom - (base_k>>15))<< 21) | 1;
-//		print_debug("csbase=");
-//		print_debug_hex32(csbase);
-//		print_debug("\r\n");
-#else  //BY LYH END
-               csbase = (tom << 21) | 1;
-#endif
+		csbase = (tom << 21) | 1;
 
 		/* Increment the top of memory */
 		tom += size;
 
 		/* Compute the memory mask */
 		csmask = ((size -1) << 21);
-		csmask |= 0xfe00; 		/* For now don't optimize */
+		csmask |= 0xfe00;		/* For now don't optimize */
 #warning "Don't forget to optimize the DIMM size"
 
 		/* Write the new base register */
@@ -1297,6 +1251,21 @@ static void order_dimms(const struct mem_controller *ctrl)
 		
 	}
 	tom_k = (tom & ~0xff000000) << 15;
+
+	/* Compute the memory base address */
+	base_k = 0;
+	for(node_id = 0; node_id < ctrl->node_id; node_id++) {
+		uint32_t limit, base;
+		unsigned index;
+		index = node_id << 3;
+		base = pci_read_config32(ctrl->f1, 0x40 + index);
+		/* Only look at the limit if the base is enabled */
+		if ((base & 3) == 3) {
+			limit = pci_read_config32(ctrl->f1, 0x44 + index);
+			base_k = ((limit + 0x00010000) & 0xffff0000) >> 2;
+		}
+	}
+	tom_k += base_k;
 #if 0
 	print_debug("tom: ");
 	print_debug_hex32(tom);
@@ -1307,18 +1276,6 @@ static void order_dimms(const struct mem_controller *ctrl)
 	print_debug("\r\n");
 #endif
 	route_dram_accesses(ctrl, base_k, tom_k);
-//BY LYH
-        fill_last(ctrl->node_id, tom_k<<2);
-//BY LYH END
-
-#if 0 //BY LYH
-        dump_pci_device(PCI_DEV(0, 0x18, 1));
- 
-//	if(ctrl->node_id==1) {
-//		pci_write_config32(ctrl->f2, DRAM_CSBASE, 0x00000001);
-//	}	
-#endif 
-
 	set_top_mem(tom_k);
 }
 
@@ -1386,7 +1343,7 @@ static void spd_enable_2channels(const struct mem_controller *ctrl)
 #warning "FINISHME review and see if these are the bytes I need"
 	/* FINISHME review and see if these are the bytes I need */
 	static const unsigned addresses[] = {
-		2, 	/* Type should be DDR SDRAM */
+		2,	/* Type should be DDR SDRAM */
 		3,	/* *Row addresses */
 		4,	/* *Column addresses */
 		5,	/* *Physical Banks */
@@ -1401,7 +1358,7 @@ static void spd_enable_2channels(const struct mem_controller *ctrl)
 		23,	/* *Cycle time at CAS Latnecy (CLX - 0.5) */
 		26,	/* *Cycle time at CAS Latnecy (CLX - 1.0) */
 		27,	/* *tRP Row precharge time */
-		28,     /* *Minimum Row Active to Row Active Delay (tRRD) */
+		28,	/* *Minimum Row Active to Row Active Delay (tRRD) */
 		29,	/* *tRCD RAS to CAS */
 		30,	/* *tRAS Activate to Precharge */
 		41,	/* *Minimum Active to Active/Auto Refresh Time(Trc) */
@@ -1450,7 +1407,7 @@ struct mem_param {
 	uint8_t tRFC;
 	uint32_t dch_memclk;
 	uint16_t dch_tref4k, dch_tref8k;
-	uint8_t  dtl_twr;
+	uint8_t	 dtl_twr;
 	char name[9];
 };
 
@@ -1458,44 +1415,44 @@ static const struct mem_param *get_mem_param(unsigned min_cycle_time)
 {
 	static const struct mem_param speed[] = {
 		{
-			.name       = "100Mhz\r\n",
+			.name	    = "100Mhz\r\n",
 			.cycle_time = 0xa0,
 			.divisor    = (10 <<1),
-			.tRC        = 0x46,
-			.tRFC       = 0x50,
+			.tRC	    = 0x46,
+			.tRFC	    = 0x50,
 			.dch_memclk = DCH_MEMCLK_100MHZ << DCH_MEMCLK_SHIFT,
 			.dch_tref4k = DTH_TREF_100MHZ_4K,
 			.dch_tref8k = DTH_TREF_100MHZ_8K,
 			.dtl_twr    = 2,
 		},
 		{
-			.name       = "133Mhz\r\n",
+			.name	    = "133Mhz\r\n",
 			.cycle_time = 0x75,
 			.divisor    = (7<<1)+1,
-			.tRC        = 0x41,
-			.tRFC       = 0x4B,
+			.tRC	    = 0x41,
+			.tRFC	    = 0x4B,
 			.dch_memclk = DCH_MEMCLK_133MHZ << DCH_MEMCLK_SHIFT,
 			.dch_tref4k = DTH_TREF_133MHZ_4K,
 			.dch_tref8k = DTH_TREF_133MHZ_8K,
 			.dtl_twr    = 2,
 		},
 		{
-			.name       = "166Mhz\r\n",
+			.name	    = "166Mhz\r\n",
 			.cycle_time = 0x60,
 			.divisor    = (6<<1),
-			.tRC        = 0x3C,
-			.tRFC       = 0x48,
+			.tRC	    = 0x3C,
+			.tRFC	    = 0x48,
 			.dch_memclk = DCH_MEMCLK_166MHZ << DCH_MEMCLK_SHIFT,
 			.dch_tref4k = DTH_TREF_166MHZ_4K,
 			.dch_tref8k = DTH_TREF_166MHZ_8K,
 			.dtl_twr    = 3,
 		},
 		{
-			.name       = "200Mhz\r\n",
+			.name	    = "200Mhz\r\n",
 			.cycle_time = 0x50,
 			.divisor    = (5<<1),
-			.tRC        = 0x37,
-			.tRFC       = 0x46,
+			.tRC	    = 0x37,
+			.tRFC	    = 0x46,
 			.dch_memclk = DCH_MEMCLK_200MHZ << DCH_MEMCLK_SHIFT,
 			.dch_tref4k = DTH_TREF_200MHZ_4K,
 			.dch_tref8k = DTH_TREF_200MHZ_8K,
@@ -1712,7 +1669,7 @@ static int update_dimm_Trc(const struct mem_controller *ctrl, const struct mem_p
 		clocks = old_clocks;
 	}
 	dtl &= ~(DTL_TRC_MASK << DTL_TRC_SHIFT);
-	dtl |=  ((clocks - DTL_TRC_BASE) << DTL_TRC_SHIFT);
+	dtl |=	((clocks - DTL_TRC_BASE) << DTL_TRC_SHIFT);
 	pci_write_config32(ctrl->f2, DRAM_TIMING_LOW, dtl);
 	return 0;
 }
@@ -2267,9 +2224,6 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		print_debug_hex32(dcl);
 		print_debug("\r\n");
 #endif
-#if 0
-		dcl &= ~DCL_DimmEccEn;
-#endif		
 #warning "FIXME set the ECC type to perform"
 #warning "FIXME initialize the scrub registers"
 #if 1
@@ -2303,7 +2257,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		} else {
 			print_debug(" done\r\n");
 		}
-#if 1
+#if 0
 		if (dcl & DCL_DimmEccEn) {
 			print_debug("Clearing memory: ");
 			loops = 0;

@@ -13,12 +13,12 @@ chip_configure(struct chip *root, enum chip_pass pass)
 	struct chip *c;
 
 	for (c = root; c; c = c->next) {
-		if (root->control && root->control->enable)
-			root->control->enable(root, pass);
+		if (c->control && c->control->enable)
+			c->control->enable(c, pass);
 	}
 
 	for (c = root; c; c = c->next) {
-		if (root->children)
-			chip_configure(root->children, pass);
+		if (c->children)
+			chip_configure(c->children, pass);
 	}
 }

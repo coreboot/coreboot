@@ -89,13 +89,6 @@
 	mtsr    15, r0
 	isync
 
-	/*
-	 * Initialize northbridge. This has to happen early because it
-	 * resets memory. Memory is on at this point, albeit with
-	 * pessimistic settings. We reconfigure later using I2C.
-	 */
-	bl	bsp_init_northbridge
-
         /*
 	 * Set up DBATs 
 	 *
@@ -183,8 +176,3 @@ tlblp:
         ori     r2, r2, HID0_ICE | HID0_ICFI
 	isync
         mtspr   HID0, r2
-
-	/*
-	 * Must branch to start_payload once CPU initialization is completed
-	 */
-	b	start_payload

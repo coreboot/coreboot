@@ -1,9 +1,3 @@
-#object params.o
-#object vgabios.o CONFIG_VGABIOS
-#object idt.o  CONFIG_REALMODE_IDT
-#object pci-irq.c CONFIG_PCIBIOS_IRQ
-#option CONFIG_LOGICAL_CPUS=1
-#option CONFIG_PCIBIOS_IRQ=0
 object c_start.S
 object cpu.c
 object pci_ops_conf1.c

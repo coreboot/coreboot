@@ -99,7 +99,16 @@
 
 #define PRIM_OPS_NO_REDEFINE_ASM
 #include "x86emui.h"
-#define abs(x) (x ? x>0: -x)
+
+#define abs(x) ({                               \
+                int __x = (x);                  \
+                (__x < 0) ? -__x : __x;         \
+        })
+
+#define labs(x) ({                              \
+                long __x = (x);                 \
+                (__x < 0) ? -__x : __x;         \
+        })
 
 /*------------------------- Global Variables ------------------------------*/
 

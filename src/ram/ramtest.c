@@ -93,13 +93,13 @@ void ram_check(unsigned long start, unsigned long stop)
 	 * test than a "Is my DRAM faulty?" test.  Not all bits
 	 * are tested.   -Tyson
 	 */
-	print_debug("Testing DRAM : ");
-	print_debug_hex32(start);
-	print_debug("-");	
-	print_debug_hex32(stop);
-	print_debug("\r\n");
+	print_err("Testing DRAM : ");
+	print_err_hex32(start);
+	print_err("-");	
+	print_err_hex32(stop);
+	print_err("\r\n");
 	ram_fill(start, stop);
 	ram_verify(start, stop);
-	print_debug("Done.\r\n");
+	print_err("Done.\r\n");
 }
 

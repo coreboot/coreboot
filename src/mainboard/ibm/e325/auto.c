@@ -161,7 +161,7 @@ static void main(void)
 #endif
 	};
 	int needs_reset;
-	print_emerg("H\n");
+
 	enable_lapic();
 	init_timer();
 	if (cpu_init_detected()) {
@@ -181,7 +181,7 @@ static void main(void)
 		print_info("ht reset -");
 		soft_reset();
 	}
-	print_emerg("HER\n");
+
 #if 0
 	print_pci_devices();
 #endif
@@ -199,10 +199,10 @@ static void main(void)
 	dump_pci_device(PCI_DEV(0, 0x18, 2));
 #endif
 
-	print_err("LET'S DO SOME MEMORY\n");
+
 #if 1
 	/* Check the first 1M */
-	ram_check(0x00000000, 0x000100000);
+	ram_check(0x00000000, 0x001000000);
 #endif
 	
 }

@@ -880,7 +880,7 @@ static struct dimm_size spd_get_dimm_size(unsigned device)
 	low = spd_read_byte(device, 6);	/* (low byte) */
 	if (low < 0) goto hw_err;
 	value = value | (low & 0xff);
-	if ((value != 72) && (value &= 64)) goto val_err;
+	if ((value != 72) && (value != 64)) goto val_err;
 	sz.side1 += log2(value);
 
 	/* side 2 */

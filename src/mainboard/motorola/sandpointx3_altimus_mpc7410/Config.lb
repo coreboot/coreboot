@@ -3,26 +3,11 @@
 ## Note that this has only been tested with the Altimus 7410 PMC.
 ##
 
-##
-## Early board initialization, called from ppc_main()
-##
-initobject init.o
-initobject clock.o
-
-##
-## Stage 2 timer support
-##
-object clock.o
-
-##
-## Set our ARCH
-##
-arch ppc end
+dir /mainboard/motorola/sandpoint
 
 ##
 ## Build the objects we have code for in this directory.
 ##
-#object mpc7410.o
 
 chip northbridge/motorola/mpc107
 	device pci_domain 0 on
@@ -50,13 +35,3 @@ chip northbridge/motorola/mpc107
 		end
 	end
 end
-
-##
-## Build the objects we have code for in this directory.
-##
-
-dir nvram
-dir flash
-
-addaction linuxbios.a "$(CROSS_COMPILE)ranlib linuxbios.a"
-makedefine CFLAGS += -g

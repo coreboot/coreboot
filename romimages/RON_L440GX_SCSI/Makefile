@@ -11,9 +11,11 @@ CPUFLAGS += -DCMD_LINE='"ro root=/dev/sda1 console=ttyS0,115200 debug 3 single"'
 CPUFLAGS += -DPIIX4_DEVFN=0x90
 CPUFLAGS += -DUPDATE_MICROCODE
 CPUFLAGS += -DCONFIGURE_L2_CACHE
-#CPUFLAGS += -DDEBUG
+CPUFLAGS += -DDEBUG
 
-LINUX=$(TOP)/../linux-2.4.0-test6.l440gx.scsi
+LINUX=$(TOP)/../linux-2.4.0-test11.l440gx.scsi
+#LINUX=$(TOP)/../linux-2.4.0-test6.l440gx.scsi
+#LINUX=$(TOP)/../linux-2.2.17
 
 TOP=../..
 INCLUDES=-nostdinc -I $(TOP)/src/include 

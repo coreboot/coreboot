@@ -24,6 +24,8 @@
 
 #include <cpu/p5/start32.inc>
 
+#include <pc80/i8259.inc>
+
 #include <superio/NSC/pc87309/superio.inc>
 	
 #include <pc80/serial.inc>

@@ -28,18 +28,13 @@
  * Intel Architecture Software Developer's Manual
  * Volume 3: System Programming
  */
-
-#ifndef lint
-static char rcsid[] = "$Id$";
-#endif
-
 #include <cpu/p6/msr.h>
 #include <cpu/p6/mtrr.h>
 #include <cpu/p5/cpuid.h>
+#include <printk.h>
 
 /* Include debugging code and outputs */
 #define DEBUG
-#include <printk.h>
 
 static int signal_l2(unsigned int address_high,
 		     unsigned int address_low,
@@ -59,11 +54,18 @@ static int calculate_l2_cache_size(void);
 static int calculate_l2_physical_address_range(void);
 static int calculate_l2_ecc(void);
 
+#ifdef DEBUG
+#define DBG(x...) printk(KERN_DEBUG x)
+#else
+#define DBG(x...)
+#endif
+
 static void cache_disable(void)
 {
 	unsigned int tmp;
 
 	/* Disable cache */
+	printk( KERN_INFO "Disable Cache\n");
 	/* Write back the cache and flush TLB */
 	asm volatile ("movl  %%cr0, %0\n\t"
 		      "orl  $0x40000000, %0\n\t"
@@ -81,21 +83,24 @@ static void cache_enable(void)
 		      "andl  $0x9fffffff, %0\n\t"
 		      "movl  %0, %%cr0\n\t"
 		      :"=r" (tmp) : : "memory");
+	printk( KERN_INFO "Enable Cache\n");
 }
 
+// GOTO bad and GOTO done added by rgm. 
+// there were too many ways that you could leave this thing with the 
+// cache turned off!
+// TODO: save whether it was on or not, and restore that state on exit.
 int intel_l2_configure()
 {
 	unsigned int eax, ebx, ecx, edx;
 	int signature, tmp;
 	int cache_size;
 
-	cache_disable();
-
 	intel_cpuid(0, &eax, &ebx, &ecx, &edx);
 
 	if (ebx != 0x756e6547 || edx != 0x49656e69 || ecx != 0x6c65746e) {
 		printk(KERN_ERR "Not 'GenuineIntel' Processor\n");
-		return -1;
+		goto bad;
 	}
 
 	intel_cpuid(1, &eax, &ebx, &ecx, &edx);
@@ -104,13 +109,13 @@ int intel_l2_configure()
 	signature = eax & 0xfff0;
 	if (signature & 0x1000) {
 		DBG("Overdrive chip no L2 cache configuration\n");
-		return 0;
+		goto done;
 	}
 
 	if (signature < 0x630 || signature >= 0x680) {
 		DBG("CPU signature of %x so no L2 cache configuration\n",
 		     signature);
-		return 0;
+		goto done;
 	}
 
 	/* Read BBL_CR_CTL3 */
@@ -118,7 +123,7 @@ int intel_l2_configure()
 	/* If bit 23 (L2 Hardware disable) is set then done */
 	if (eax & 0x800000) {
 		DBG("L2 Hardware disabled\n");
-		return 0;
+		goto done;
 	}
 
 	if (signature == 0x630) {
@@ -133,9 +138,10 @@ int intel_l2_configure()
 			printk(KERN_ERR
 			       "Incorrect clock frequency ratio %x\n",
 			       eax);
-			return -1;
+			goto bad;
 		}
 
+		cache_disable();
 		/* Read BBL_CR_CTL3 */
 		rdmsr(0x11e, eax, edx);
 		/* Mask out:
@@ -173,8 +179,10 @@ int intel_l2_configure()
 			printk(KERN_ERR
 			       "Incorrect clock frequency ratio %x\n",
 			       eax);
-			return -1;
+			goto bad;
 		}
+
+		cache_disable();
 
 		/* Read BBL_CR_CTL3 */
 		rdmsr(0x11e, eax, edx);
@@ -202,7 +210,7 @@ int intel_l2_configure()
 
 		/* Set the l2 latency in BBL_CR_CTL3 */
 		if (calculate_l2_latency() != 0)
-			return -1;
+			goto bad;
 
 		/* Read the new latency values back */
 		rdmsr(0x11e, calc_eax, edx);
@@ -218,7 +226,7 @@ int intel_l2_configure()
 
 		DBG("Sending %x to set_l2_register4\n", v);
 		if (set_l2_register4(v) != 0)
-			return -1;
+			goto bad;
 
 		/* Restore the correct latency value into BBL_CR_CTL3 */
 		wrmsr(0x11e, calc_eax, edx);
@@ -228,7 +236,7 @@ int intel_l2_configure()
 	tmp = read_l2(0);
 	if (tmp < 0) {
 		printk(KERN_ERR "Failed to read_l2(0)\n");
-		return -1;
+		goto bad;
 	}
 
 	/* test if L2(0) has bit 0x20 set */
@@ -243,18 +251,18 @@ int intel_l2_configure()
 
 	if (calculate_l2_ecc() != 0) {
 		printk(KERN_ERR "Failed to calculate L2 ECC\n");
-		return -1;
+		goto bad;
 	}
 
 	if (calculate_l2_physical_address_range() != 0) {
 		printk(KERN_ERR
 		       "Failed to calculate L2 physical address range\n");
-		return -1;
+		goto bad;
 	}
 
 	if (calculate_l2_cache_size() != 0) {
 		printk(KERN_ERR "Failed to calculate L2 cache size\n");
-		return -1;
+		goto bad;
 	}
 
 	/* Turn on cache. Only L1 is active at this time. */
@@ -286,7 +294,7 @@ int intel_l2_configure()
 				printk(KERN_ERR
 				       "Failed on signal_l2(%x, %x)\n",
 				       cache_size, way);
-				return -1;
+				goto bad;
 			}
 		}
 	}
@@ -306,7 +314,7 @@ int intel_l2_configure()
 	/* Write 0 to L2 control register 5 */
 	if (write_l2(5, 0) != 0) {
 		printk(KERN_ERR "write_l2(5, 0) failed\n");
-		return 0;
+		goto done;
 	}
 
 	if (signature == 0x650 || signature == 0x670) {
@@ -328,9 +336,14 @@ int intel_l2_configure()
 	wrmsr(0x11e, eax, edx);
 
 	/* Turn on cache. Both L1 and L2 are now active. Wahoo! */
+done:
 	cache_enable();
 
 	return 0;
+bad: 
+	// it was probably on when we got here, so turn it back on. 
+	cache_enable();
+	return -1;
 }
 
 /* Setup address_high:address_low, data_high:data_low into the L2

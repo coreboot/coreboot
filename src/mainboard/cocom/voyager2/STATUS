@@ -19,7 +19,7 @@ console-types:
 # vga is unsupported, unstable, or stable
 vga:
 # Last-known-good follows the internationl date standard: day/month/year
-last-known-good: 0/0/0000
+last-known-good: 1/8/2002
 Comments: 
 Links:
 Mainboard-revision: 

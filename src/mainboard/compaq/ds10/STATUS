@@ -8,7 +8,7 @@ owner:	Ron Minnich
 email:	rminnich@lanl.gov
 #status: One of unsupported, unstable, stable
 status: unsupported
-explanation: The Alphas is dead, dead, dead.
+explanation: The Alpha is dead, dead, dead.
 flash-types: Soldered-on; it's 2 Mbytes
 payload-types: Linux kernel
 # e.g. linux, plan 9, wince, etc.

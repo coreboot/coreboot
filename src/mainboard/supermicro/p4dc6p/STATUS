@@ -7,19 +7,19 @@
 owner:	Ron Minnich
 email:	rminnich@lanl.gov
 #status: One of unsupported, unstable, stable
-status: unstable
+status: stable
 explanation: 
-flash-types: 
-payload-types: 
+flash-types: Intel 82801CA
+payload-types: Etherboot
 # e.g. linux, plan 9, wince, etc.
-OS-types: 
+OS-types: Linux
 # e.g. "Plan 9 interrupts don't work on this chipset"
 OS-issues:
-console-types:
+console-types:serial
 # vga is unsupported, unstable, or stable
-vga:
+vga:unsupported
 # Last-known-good follows the internationl date standard: day/month/year
-last-known-good: 0/0/0000
+last-known-good: 15/11/2002
 Comments: 
 Links:
 Mainboard-revision: 

@@ -7,8 +7,8 @@
 owner:	Ron Minnich
 email:	rminnich@lanl.gov
 #status: One of unsupported, unstable, stable
-status: unstable
-explanation: 
+status: unsupported
+explanation: This is an obsolete board with no real docs, so we no longer use it
 flash-types: 
 payload-types: 
 # e.g. linux, plan 9, wince, etc.

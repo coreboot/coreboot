@@ -7,7 +7,7 @@
 owner:	Ron Minnich
 email:	rminnich@lanl.gov
 #status: One of unsupported, unstable, stable
-status: unsupported
+status: unstable -- no reported users
 explanation: 
 flash-types: 
 payload-types: 

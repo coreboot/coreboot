@@ -18,6 +18,116 @@ static char rcsid[] =
 #include <pci_ids.h>
 #include <cpu/p5/io.h>
 
+#include <types.h>
+
+/* 
+ * Something in the pci enumerator appears to be hosing
+ * values in the ide pci space. This is a temp workaround.
+ */
+#define BYTE sizeof(u8)
+#define WORD sizeof(u16)
+#define DBLE sizeof(u32)
+#define IDE_REG_EXTENDED_OFFSET (0x200u)
+#define IDE_REG_SECTOR_COUNT(base)  ((base) + 2u)
+#define IDE_REG_CONTROL(base)  ((base) + IDE_REG_EXTENDED_OFFSET + 6u)
+#define IDE_BASE1  (0x1F0u)  /* primary controller */
+#define ASIZE(x) (sizeof(x)/sizeof((x)[0]))
+
+
+void ide_fixup(void) {
+  volatile int delay;
+  struct pci_dev *dev  = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_5513, (void *)NULL); 
+  int i;
+  u8 val8;
+  u16 val16;
+  u32 val32;
+
+typedef struct {
+    u8 size;
+    u8 regno;
+    u32 andval;
+    u32 orval;
+} initreg_t;
+
+  static const initreg_t ide_init[] = {
+  /*
+   *  BUS(0), DEVICE(0), FUNCTION(1): IDE Interface. Bridge
+   */
+  /*SIZE  REG   AND-MASK     OR-MASK   */
+  { WORD, 0x04, 0x0,         0x0007 },  /* Command Register. sets mem+ */
+  { WORD, 0x06, 0x0,         0x3000 },  /* Status reg, clear aborts. */
+  { WORD, 0x09, 0x0A,        0x00 },    /* Programming interface =  Compatible mode. */
+  { BYTE, 0x0D, 0x0,         0x10 },    /* Latency Timer */
+  /* We let the pci enumerator assign these. */
+  // { DBLE, 0x10, 0x0,         0x1F1 },   /* Primary channel base addr. */
+  // { DBLE, 0x14, 0x0,         0x3F5 },   /* Primary channel control base addr. */
+  // { DBLE, 0x18, 0x0,         0x171 },   /* Secondary channel base addr. */
+  // { DBLE, 0x1C, 0x0,         0x375 },   /* Secondary channel control base addr. */
+  // { DBLE, 0x20, 0x0,         0x4001 },  /* Control register base addr. */
+  { WORD, 0x2C, 0x0,         0x1039 },  /* Subsystem vendor ID. */
+  { WORD, 0x2E, 0x0,         0x5513 },  /* Subsystem ID. */
+  { BYTE, 0x3c, 0x0,         0x0e },    /* reserved don't do this, sets irq 14 */
+  { BYTE, 0x40, 0x00,        0x01  },   /* Primary master data recovery time. */
+  { BYTE, 0x41, 0x00,        0xb3  },   /* Primary master data active time. UDMA */
+  { BYTE, 0x42, 0x00,        0x00  },   /* Primary slave data recovery time. */
+  { BYTE, 0x43, 0x00,        0x00  },   /* Primary slave data active time. */   
+  { BYTE, 0x44, 0x00,        0x00  },   /* Secondary master data recovery time. */
+  { BYTE, 0x45, 0x00,        0x00  },   /* Secondary master data active time. */  
+  { BYTE, 0x46, 0x00,        0x00  },   /* Secondary slave data recovery time. */ 
+  { BYTE, 0x47, 0x00,        0x00  },   /* Secondary slave data active time. */   
+  { BYTE, 0x48, 0x00,        0x05  },   /* Ide status */
+  { BYTE, 0x4A, 0x40,        0xe6  },   /* Ide general control 0  was 0x62 */
+  { BYTE, 0x4B, 0x00,        0x11  },   /* Ide general control 1 */
+  { WORD, 0x4C, 0x00,        0x0200},   /* prefetch of primary. */
+  { WORD, 0x4E, 0x00,        0x0200}    /* prefetch of secondary. */
+  //{ BYTE, 0x48, 0x00,        0x33  }, /* Ide status */
+  //{ BYTE, 0x4A, 0x00,        0xe2  }, /* Ide general control 0  was 0x62 */
+  //{ BYTE, 0x4B, 0x00,        0x00  } /* Ide general control 1 */
+  /*  The following register has recommended setting of 0x41 in 630 programming guide,
+   *  But no documentation in the manual.  It looks identical to the same register in the
+   *  530.
+   */
+  ,
+  { BYTE, 0x52, 0xFF,        0x14  }    /* Miscelaneous control (Only Doc). */
+  };
+  int initlen=ASIZE(ide_init);
+  const initreg_t * inittab = ide_init;
+
+
+
+  printk_info ("Entering the initregs process\n");
+
+  for (i = 0; i < initlen; ++i) {
+    u16 regno = inittab[i].regno;
+    switch (inittab[i].size) {
+    case BYTE:
+      pci_read_config_byte(dev, regno, &val8);
+      val8 = (val8 & inittab[i].andval) | inittab[i].orval;
+      pci_write_config_byte(dev, regno, val8);
+      break;
+    case WORD:
+      pci_read_config_word(dev, regno, &val16);
+      val16 = (val16 & inittab[i].andval) | inittab[i].orval;
+      pci_write_config_word(dev, regno, val16);
+      break;
+    case DBLE:
+      pci_read_config_dword(dev, regno, &val32);
+      val32 = (val32 & inittab[i].andval) | inittab[i].orval;
+      break;
+      
+    default:
+      outb_p(0xEE,0x80);
+      while(1);
+      break;
+    }
+  }
+
+
+
+}
+
+
+
 void keyboard_on()
 {
 	u8 regval;
@@ -34,6 +144,7 @@ void keyboard_on()
 	}
 	pc_keyboard_init();
 }
+
 
 void nvram_on()
 {
@@ -89,6 +200,7 @@ serial_irq_fixedup(void)
 		pci_write_config_byte(pcidev, 0x73, 0xff);
 	}
 }
+
 
 /* apc_fixup: Fix up the Mux-ed GPIO Lines controlled by APC registers 
  *
@@ -255,6 +367,7 @@ acpi_fixup(void)
 void
 final_southbridge_fixup()
 {
+
 #ifdef OLD_KERNEL_HACK
 	struct pci_dev *pcidev;
 
@@ -293,6 +406,7 @@ final_southbridge_fixup()
 	apc_fixup();
 	serial_irq_fixedup();
 	acpi_fixup();
+	ide_fixup();
 
 	printk_debug("Southbridge fixup done for SIS 503\n");
 }

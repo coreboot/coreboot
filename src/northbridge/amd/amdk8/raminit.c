@@ -924,7 +924,7 @@ static void set_dimm_size(const struct mem_controller *ctrl, struct dimm_size sz
 		sz.side2 = 0;
 	}
 	map = pci_read_config32(ctrl->f2, DRAM_BANK_ADDR_MAP);
-	map &= ~(0xf << (index + 4));
+	map &= ~(0xf << (index * 4));
 
 	/* For each base register.
 	 * Place the dimm size in 32 MB quantities in the bits 31 - 21.

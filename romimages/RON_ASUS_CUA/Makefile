@@ -30,7 +30,7 @@ OBJECTS += serial_subr.o
 OBJECTS += mpspec.o
 OBJECTS += microcode.o
 OBJECTS += keyboard.o
-LINUX=$(TOP)/../linux-2.4.0-test6.via/
+LINUX=$(TOP)/../linux-2.4.0-test6.sis/
 
 LINK = ld -T $(TOP)/src/mainboard/asus/cua/ldscript.ld -o $@ $(OBJECTS)
 CC=cc $(CFLAGS)

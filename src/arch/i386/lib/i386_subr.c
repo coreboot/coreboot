@@ -29,7 +29,7 @@ void cache_on(unsigned long totalram)
 	 * so absolute minimum needed to get it going. 
 	 */
 	/* OK, linux it turns out does nothing. We have to do it ... */
-#if defined(i686)
+#if defined(i686) 
 	// totalram here is in linux sizing, i.e. units of KB. 
 	// set_mtrr is responsible for getting it into the right units!
 	setup_mtrrs(totalram);

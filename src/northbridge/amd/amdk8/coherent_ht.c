@@ -1557,7 +1557,7 @@ static int apply_cpu_errata_fixes(unsigned nodes, int needs_reset)
 			}
 
 		}
-		else if(is_cpu_pre_d0()) { // d0 later don't need it 
+		else {
 			uint32_t cmd_ref;
 			/* Errata 98 
 			* Set Clk Ramp Hystersis to 7

@@ -547,31 +547,43 @@ define PCIC0_CFGADDR
 	default none
 	format "0x%x"
 	export used
-	comment "PCI Configuration Address Register"
+	comment "Address of PCI Configuration Address Register"
 end
 define PCIC0_CFGDATA
 	default none
 	format "0x%x"
 	export used
-	comment "PCI Configuration Data Register"
+	comment "Address of PCI Configuration Data Register"
+end
+define ISA_IO_BASE
+	default none
+	format "0x%x"
+	export used
+	comment "Base address of PCI/ISA I/O address range"
+end
+define ISA_MEM_BASE
+	default none
+	format "0x%x"
+	export used
+	comment "Base address of PCI/ISA memory address range"
 end
 define PNP_CFGADDR
 	default none
 	format "0x%x"
 	export used
-	comment "PNP Configuration Address Register"
+	comment "PNP Configuration Address Register offset"
 end
 define PNP_CFGDATA
 	default none
 	format "0x%x"
 	export used
-	comment "PNP Configuration Data Register"
+	comment "PNP Configuration Data Register offset"
 end
-define UART0_IO_BASE
+define _IO_BASE
 	default none
 	format "0x%x"
 	export used
-	comment "UART 0 base address"
+	comment "Base address of memory mapped I/O operations"
 end
 
 ###############################################

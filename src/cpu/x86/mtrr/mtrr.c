@@ -219,34 +219,9 @@ static unsigned fixed_mtrr_index(unsigned long addrk)
 
 static unsigned int range_to_mtrr(unsigned int reg, 
 	unsigned long range_startk, unsigned long range_sizek,
-	unsigned long next_range_startk)
+	unsigned long next_range_startk, unsigned char type)
 {
 	if (!range_sizek || (reg >= BIOS_MTRRS)) {
-		return reg;
-	}
-	if(next_range_startk == 4096*1024) {// There is a hole below 4G, We need to use UC to spare mtrr
-		unsigned long sizek;
-		sizek = 4096*1024;
-		printk_debug("Setting variable MTRR %d, base: %4dMB, range: %4dMB, type WB\n",
-			reg, range_startk >>10, sizek >> 10);
-		set_var_mtrr(reg++, range_startk, sizek, MTRR_TYPE_WRBACK);
-	        while(range_sizek) {
-        	        unsigned long max_align, align;
-                	/* Compute the maximum size I can make a range */
-	                max_align = fls(range_startk);
-	                align = fms(range_sizek);
-	                if (align > max_align) {
-        	                align = max_align;
-                	}
-	                sizek = 1 << align;
-        	        range_startk += sizek;
-                	range_sizek -= sizek;
-        	}
-		
-		range_startk = 4096*1024 - sizek;
-		printk_debug("Setting variable MTRR %d, base: %4dMB, range: %4dMB, type NC\n",
-			reg, range_startk >>10, sizek >> 10);
-		set_var_mtrr(reg++, range_startk, sizek, MTRR_TYPE_UNCACHEABLE);
 		return reg;
 	}
 	while(range_sizek) {
@@ -259,9 +234,12 @@ static unsigned int range_to_mtrr(unsigned int reg,
 			align = max_align;
 		}
 		sizek = 1 << align;
-		printk_debug("Setting variable MTRR %d, base: %4dMB, range: %4dMB, type WB\n",
-			reg, range_startk >>10, sizek >> 10);
-		set_var_mtrr(reg++, range_startk, sizek, MTRR_TYPE_WRBACK);
+		printk_debug("Setting variable MTRR %d, base: %4dMB, range: %4dMB, type %s\n",
+			reg, range_startk >>10, sizek >> 10, 
+			(type==MTRR_TYPE_UNCACHEABLE)?"NC":
+			    ((type==MTRR_TYPE_WRBACK)?"WB":"Other")
+			);
+		set_var_mtrr(reg++, range_startk, sizek, type);
 		range_startk += sizek;
 		range_sizek -= sizek;
 		if (reg >= BIOS_MTRRS)
@@ -300,6 +278,7 @@ static void set_fixed_mtrr_resource(void *gp, struct device *dev, struct resourc
 struct var_mtrr_state {
 	unsigned long range_startk, range_sizek;
 	unsigned int reg;
+	unsigned long hole_startk, hole_sizek;
 };
 
 void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res)
@@ -321,9 +300,20 @@ void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res)
 	}
 	/* Write the range mtrrs */
 	if (state->range_sizek != 0) {
-		state->reg = range_to_mtrr(state->reg, state->range_startk, state->range_sizek, basek);
+		if(state->hole_sizek == 0) {
+			// we need to put that on to hole.
+	                unsigned long endk = basek + sizek;
+			state->hole_startk = state->range_startk + state->range_sizek;
+			state->hole_sizek = basek - state->hole_startk;
+	                state->range_sizek = endk - state->range_startk;
+			return;
+		}
+		state->reg = range_to_mtrr(state->reg, state->range_startk, state->range_sizek, basek, MTRR_TYPE_WRBACK);
+		state->reg = range_to_mtrr(state->reg, state->hole_startk, state->hole_sizek, basek, MTRR_TYPE_UNCACHEABLE);
 		state->range_startk = 0;
 		state->range_sizek = 0;
+                state->hole_startk = 0;
+                state->hole_sizek = 0;
 	}
 	/* Allocate an msr */
 	state->range_startk = basek;
@@ -358,13 +348,16 @@ void x86_setup_mtrrs(void)
 	 */
 	var_state.range_startk = 0;
 	var_state.range_sizek = 0;
+	var_state.hole_startk = 0;
+	var_state.hole_sizek = 0;
 	var_state.reg = 0;
 	search_global_resources(
 		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
 		set_var_mtrr_resource, &var_state);
 
 	/* Write the last range */
-	var_state.reg = range_to_mtrr(var_state.reg, var_state.range_startk, var_state.range_sizek, 0);
+	var_state.reg = range_to_mtrr(var_state.reg, var_state.range_startk, var_state.range_sizek, 0, MTRR_TYPE_WRBACK);
+	var_state.reg = range_to_mtrr(var_state.reg, var_state.hole_startk, var_state.hole_sizek, 0, MTRR_TYPE_UNCACHEABLE);
 	printk_debug("DONE variable MTRRs\n");
 	printk_debug("Clear out the extra MTRR's\n");
 	/* Clear out the extra MTRR's */

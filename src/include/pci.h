@@ -461,15 +461,27 @@ struct com_ports {
   unsigned int enable,baud, base, irq;
 };
 
+// lpt port description. 
+// Note that for many superios you only really need to define the 
+// enable. 
+struct lpt_ports {
+	unsigned int enable, // 1 if this port is enabled
+		     mode,   // pp mode
+		     base,   // IO base of the parallel port 
+                     irq;    // irq
+};
+
 struct superio {
   struct superio_control *super; // the ops for the device. 
   unsigned int port; // if non-zero, overrides the default port
   // com ports. This is not done as an array (yet). 
   // We think it's easier to set up from python if it is not an array. 
   struct com_ports com1, com2, com3, com4;
+  // DMA, if it exists. 
+  struct lpt_ports lpt1, lpt2;
   /* flags for each device type. Unsigned int. */
   // low order bit ALWAYS means enable. Next bit means to enable
-  // DMA, if it exists. 
+  // LPT is in transition, so we leave this here for the moment. 
   unsigned int ide, floppy, lpt;
 };
 

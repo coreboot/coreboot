@@ -364,6 +364,7 @@ void compute_allocate_resource(
 
 }
 
+#if CONFIG_CONSOLE_VGA == 1
 static void allocate_vga_resource(void)
 {
 #warning "FIXME modify allocate_vga_resource so it is less pci centric!"
@@ -401,7 +402,7 @@ static void allocate_vga_resource(void)
 		bus = (bus == bus->dev->bus)? 0 : bus->dev->bus;
 	} 
 }
-
+#endif
 
 /**
  * @brief  Assign the computed resources to the devices on the bus.
@@ -556,8 +557,10 @@ void dev_configure(void)
 	mem->flags |= IORESOURCE_ASSIGNED;
 	mem->flags &= ~IORESOURCE_STORED;
 
+#if CONFIG_CONSOLE_VGA == 1
 	/* Allocate the VGA I/O resource.. */
 	allocate_vga_resource(); 
+#endif
 
 	/* Store the computed resource allocations into device registers ... */
 	printk_info("Setting resources...\n");

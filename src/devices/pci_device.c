@@ -551,10 +551,12 @@ void pci_bus_enable_resources(struct device *dev)
 {
 	uint16_t ctrl;
 
+#if CONFIG_CONSOLE_VGA == 1
 	/* enable IO in command register if there is VGA card
 	 * connected with (even it does not claim IO resource) */
 	if (dev->link[0].bridge_ctrl & PCI_BRIDGE_CTL_VGA)
 		dev->command |= PCI_COMMAND_IO;
+#endif
 
 	ctrl = pci_read_config16(dev, PCI_BRIDGE_CONTROL);
 	ctrl |= dev->link[0].bridge_ctrl;
@@ -573,6 +575,7 @@ void pci_dev_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 
+#if CONFIG_PCI_ROM_RUN == 1
 void pci_dev_init(struct device *dev)
 {
 	struct rom_header *rom, *ram;
@@ -581,9 +584,12 @@ void pci_dev_init(struct device *dev)
 	if (rom == NULL)
 		return;
 	ram = pci_rom_load(dev, rom);
+	if (ram == NULL)
+		return;
 
 	run_bios(dev, ram);
 }
+#endif
 
 /** Default device operation for PCI devices */
 static struct pci_operations pci_dev_ops_pci = {
@@ -594,7 +600,11 @@ struct device_operations default_pci_ops_dev = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
+#if CONFIG_PCI_ROM_RUN == 1
 	.init		  = pci_dev_init,
+#else
+	.init		  = 0,
+#endif
 	.scan_bus	  = 0,
 	.enable           = 0,
 	.ops_pci          = &pci_dev_ops_pci,

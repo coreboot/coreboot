@@ -51,6 +51,8 @@ uses CC
 uses HOSTCC
 uses OBJCOPY
 uses CONFIG_CHIP_NAME
+uses CONFIG_CONSOLE_VGA
+uses CONFIG_PCI_ROM_RUN
 
 ###
 ### Build options
@@ -115,7 +117,11 @@ default CONFIG_SMP=1
 default CONFIG_MAX_CPUS=1
 
 #BTEXT CONSOLE
-default CONFIG_CONSOLE_BTEXT=1
+#default CONFIG_CONSOLE_BTEXT=1
+
+#VGA
+default CONFIG_CONSOLE_VGA=1
+default CONFIG_PCI_ROM_RUN=1
 
 ##
 ## Build code to setup a generic IOAPIC

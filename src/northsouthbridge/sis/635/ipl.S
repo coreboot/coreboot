@@ -454,7 +454,7 @@ smbus_init_table:
 	.word	0x0000	/* Null, End of table */
 
 ddr_init_table:
-	.byte	PALL				# Percharge All
+	.byte	PALL				# Precharge All
 	.byte	DLL_EN_N			# DLL Enable Normal
 	.byte	DLL_RESET			# DLL Reset
 	.byte	PALL				# Precharge All

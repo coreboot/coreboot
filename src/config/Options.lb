@@ -383,6 +383,11 @@ define CONFIG_CONSOLE_VGA
 	export always
 	comment "Log messages to VGA"
 end
+define CONFIG_CONSOLE_BTEXT
+        default 0
+        export always
+        comment "Log messages to btext fb console"
+end
 define CONFIG_CONSOLE_LOGBUF
 	default 0
 	export always

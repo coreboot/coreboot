@@ -1,0 +1,14 @@
+#
+# Objects linked with linuxbios
+#
+object i2c.o
+object mpc107_pci.o
+object meminfo.o
+object mpc107.o
+object mpc107_utils.S
+
+#
+# Included in crt0.S
+#
+mainboardinit northbridge/motorola/mpc107/mpc107_init.inc
+mainboardinit northbridge/motorola/mpc107/mpc107_utils.inc

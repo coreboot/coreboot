@@ -162,13 +162,19 @@ main (int argc, char * argv[])
     FILE * image;
     struct flashchip * flash;
 
-    if (argc < 2){
-	printf("usage: %s romimage\n", argv[0]);
+    if (argc > 2){
+	printf("usage: %s [romimage]\n", argv[0]);
+	printf(" If no romimage is specified, then all that happens\n");
+	printf(" is that flash writes are enabled (useful for DoC)\n");
 	exit(1);
     }
 
     enable_flash_sis630 ();
 
+    if (argc < 2){
+	printf("OK, only ENABLING flash write, but NOT FLASHING\n");
+        exit(0);
+    }
     if ((flash = probe_flash (flashchips)) == NULL) {
 	printf("EEPROM not found\n");
 	exit(1);

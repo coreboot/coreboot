@@ -356,6 +356,38 @@ char *postamble[] = {
 0
 };
 
+char *ioapic_code[] = {
+"	smp_write_ioapic(mc, 2, 0x20, 0xfec00000);",
+"	{",
+"		struct pci_dev *dev;",
+"		uint32_t base;",
+"		dev = pci_find_slot(1, PCI_DEVFN(0x1e,0));",
+"		if (dev) {",
+"			pci_read_config_dword(dev, PCI_BASE_ADDRESS_0, &base);",
+"			base &= PCI_BASE_ADDRESS_MEM_MASK;",
+"			smp_write_ioapic(mc, 3, 0x20, base);",
+"		}",
+"		dev = pci_find_slot(1, PCI_DEVFN(0x1c,0));",
+"		if (dev) {",
+"			pci_read_config_dword(dev, PCI_BASE_ADDRESS_0, &base);",
+"			base &= PCI_BASE_ADDRESS_MEM_MASK;",
+"			smp_write_ioapic(mc, 4, 0x20, base);",
+"		}",
+"                dev = pci_find_slot(4, PCI_DEVFN(0x1e,0));",
+"                if (dev) {",
+"                        pci_read_config_dword(dev, PCI_BASE_ADDRESS_0, &base);",
+"                        base &= PCI_BASE_ADDRESS_MEM_MASK;",
+"                        smp_write_ioapic(mc, 5, 0x20, base);",
+"                }",
+"                dev = pci_find_slot(4, PCI_DEVFN(0x1c,0));",
+"                if (dev) {",
+"                        pci_read_config_dword(dev, PCI_BASE_ADDRESS_0, &base);",
+"                        base &= PCI_BASE_ADDRESS_MEM_MASK;",
+"                        smp_write_ioapic(mc, 8, 0x20, base);",
+"                }",
+"	}",
+0
+};
 static void
 usage( void )
 {
@@ -406,6 +438,8 @@ main( int argc, char *argv[] )
 	      grope = 1;
 	    } else  if ( strcmp( optarg, "-verbose") == 0 )
 	      verbose = 1;
+	    else  if ( strcmp( optarg, "-noisy") == 0 )
+	      noisy = 1;
 	    else usage();
     }
 
@@ -830,6 +864,8 @@ MPConfigTableHeader( void* pap )
         totalSize -= basetableEntryTypes[ 2 ].length;
     }
 
+    write_code(ioapic_code);
+
     /* process all the I/O Ints */
     printf( "/*I/O Ints:\tType\tPolarity    Trigger\tBus ID\t IRQ\tAPIC ID\tPIN#\n*/" );
     for ( t = totalSize, c = count; c; c-- ) {
@@ -1051,9 +1087,13 @@ ioApicEntry( void )
 
     apics[ entry.apicID ] = entry.apicID;
 
+    // the numbering and setup of ioapics is so irrational
+    // that for now we will punt. 
+#if 0
     if (entry.apicFlags & IOAPICENTRY_FLAG_EN)
       printf("\tsmp_write_ioapic(mc, 0x%x, 0x%x, 0x%x);\n",
 	     entry.apicID, entry.apicVersion, entry.apicAddress);
+#endif
     
 }
 
@@ -1082,7 +1122,7 @@ intEntry( void )
 	++nintr;
 
     if (noisy) {
-    printf( "\t\t%s", intTypes[ (int)entry.intType ] );
+    printf( "\n\t\t%s", intTypes[ (int)entry.intType ] );
 
     printf( "\t%9s", polarityMode[ (int)entry.intFlags & 0x03 ] );
     printf( "%12s", triggerMode[ ((int)entry.intFlags >> 2) & 0x03 ] );
@@ -1093,16 +1133,19 @@ intEntry( void )
 	        ((int)entry.srcBusIRQ >> 2) & 0x1f,
 	        ((int)entry.srcBusIRQ & 0x03) + 'A' );
     else
-	printf( "\t %3d", (int)entry.srcBusIRQ );
+	printf( "\t 0x%x:0x%x(0x%x)", 
+				(int)entry.srcBusIRQ>>2,
+				(int)entry.srcBusIRQ & 3,
+				(int)entry.srcBusIRQ );
     printf( "\t %6d", (int)entry.dstApicID );
     printf( "\t %3d\n", (int)entry.dstApicINT );
     }
-    printf("\tsmp_write_intsrc(mc, %s, %s|%s, 0x%x, 0x%c, 0x%x, 0x%x);\n",
+    printf("\tsmp_write_intsrc(mc, %s, %s|%s, 0x%x, 0x%x, 0x%x, 0x%x);\n",
 	   intTypes[ (int)entry.intType ],
 	   triggerMode[ ((int)entry.intFlags >> 2) & 0x03 ] ,
 	   polarityMode[ (int)entry.intFlags & 0x03 ],
-	   ((int)entry.srcBusIRQ >> 2) & 0x1f,
-	   ((int)entry.srcBusIRQ & 0x03) + 'A',
+	   (int)entry.srcBusID,
+	   (int)entry.srcBusIRQ,
 	   (int)entry.dstApicID ,
 	   (int)entry.dstApicINT );
 	   
@@ -1136,12 +1179,12 @@ lintEntry( void )
     printf( "\t %6d", (int)entry.dstApicID );
     printf( "\t %3d\n", (int)entry.dstApicINT );
     }
-    printf("\tsmp_write_intsrc(mc, %s, %s|%s, 0x%x, 0x%c, MP_APIC_ALL, 0x%x);\n",
+    printf("\tsmp_write_intsrc(mc, %s, %s|%s, 0x%x, 0x%x, MP_APIC_ALL, 0x%x);\n",
 	   intTypes[ (int)entry.intType ],
 	   triggerMode[ ((int)entry.intFlags >> 2) & 0x03 ] ,
 	   polarityMode[ (int)entry.intFlags & 0x03 ],
-	   ((int)entry.srcBusIRQ >> 2) & 0x1f,
-	   ((int)entry.srcBusIRQ & 0x03) + 'A',
+	   (int)entry.srcBusID,
+	   (int)entry.srcBusIRQ,
 	   (int)entry.dstApicINT );
 	   
 }

@@ -224,12 +224,13 @@ north_ok:
 
 // Recognize only 64 MBs of RAM for now!!!!!!!!!!!!!!
 
-	CS_WRITE_BYTE(0x60,0x10)		// DRB0 Register
-	CS_WRITE_BYTE(0x61,0x10)		// DRB1 Register
-	CS_WRITE_BYTE(0x62,0x10)		// DRB2 Register
-	CS_WRITE_BYTE(0x63,0x10)		// DRB3 Register
-	CS_WRITE_BYTE(0x64,0x10)		// DRB4 Register
+// per the 430tx errata do this backwards
 	CS_WRITE_BYTE(0x65,0x10)		// DRB5 Register
+	CS_WRITE_BYTE(0x64,0x10)		// DRB4 Register
+	CS_WRITE_BYTE(0x63,0x10)		// DRB3 Register
+	CS_WRITE_BYTE(0x62,0x10)		// DRB2 Register
+	CS_WRITE_BYTE(0x61,0x10)		// DRB1 Register
+	CS_WRITE_BYTE(0x60,0x00)		// DRB0 Register
 
 	// CS_WRITE_BYTE(0x67,0xf0)		DRTH DRAM Row Type High
 	CS_WRITE_BYTE(0x68,0xf0)		// DRTH DRAM Row Type Low
@@ -299,10 +300,10 @@ north_ok:
 	//mov 0x1d0, %eax
 	movl %eax, 0x1d0
 	/* delay 200 us*/
-        mov $0x1000, %ecx
+        mov $0x10000, %ecx
 	loop .
 	CONSOLE_DEBUG_TX_STRING($before_4m_nop)
-	movl %eax, 0x40001d0			// dummy read to issue SDRAM NOP
+	//movl %eax, 0x40001d0			// dummy read to issue SDRAM NOP
 	CONSOLE_DEBUG_TX_STRING($after_4m_nop)
 	/* delay 200 us*/
         mov $0x1000, %ecx
@@ -312,6 +313,113 @@ north_ok:
 
 /* Put SDRAM in normal mode and enable refresh */
 	CS_WRITE_WORD(0x54,0x0002)
+	movl	%eax, 0
+	movl	%eax, 0
+	movl	%eax, 0
+	movl	%eax, 0
+	movl	%eax, 0
+	movl	%eax, 0
+	movl	%eax, 0
+	movl	0, %eax
+	CALLSP(dumpnorth)
+
+
+// go around again ...
+	CS_WRITE_BYTE(0x65,0x20)		// DRB5 Register
+	CS_WRITE_BYTE(0x64,0x20)		// DRB4 Register
+	CS_WRITE_BYTE(0x63,0x20)		// DRB3 Register
+	CS_WRITE_BYTE(0x62,0x20)		// DRB2 Register
+	CS_WRITE_BYTE(0x61,0x20)		// DRB1 Register
+	CS_WRITE_BYTE(0x60,0x10)		// DRB0 Register
+
+#if 0
+	// CS_WRITE_BYTE(0x67,0xf0)		DRTH DRAM Row Type High
+	CS_WRITE_BYTE(0x68,0xf0)		// DRTH DRAM Row Type Low
+	CS_WRITE_BYTE(0x72,0x02)		// SMRAM Control Rgister
+	CS_WRITE_BYTE(0x90,0x00)		// Error Command Register
+#endif
+
+// HERE BEGINS THE DRAM SETUP
+	CS_WRITE_WORD(0x54, 0x0042)		// SDRAM Control Register
+        mov $0x1000, %ecx
+	loop .
+	CALLSP(dumpnorth)
+
+	//mov 0x00, %eax		// dummy read to issue SDRAM NOP
+	movl %eax, 0x00			// dummy read to issue SDRAM NOP
+	CONSOLE_DEBUG_TX_STRING($after_zero_nop)
+	/* delay 200 us*/
+        mov $0x1000, %ecx
+	loop .
+	CONSOLE_DEBUG_TX_STRING($before_4m_nop)
+	//movl %eax, 0x4000000			// dummy read to issue SDRAM NOP
+	CONSOLE_DEBUG_TX_STRING($after_4m_nop)
+	/* delay 200 us*/
+        mov $0x1000, %ecx
+	loop .
+
+	/* SDRAM Precharge all */
+	CS_WRITE_WORD(0x54,0x0082)
+        mov $0x1000, %ecx
+	loop .
+	CONSOLE_DEBUG_TX_STRING($after_fifty_four)
+
+	//mov 0x00, %eax		// dummy read to make precharge happen
+	movl %eax, 0x00			// dummy read to issue SDRAM NOP
+        mov $0x1000, %ecx
+	loop .
+	CONSOLE_DEBUG_TX_STRING($after_zero)
+	CONSOLE_DEBUG_TX_STRING($before_4m_nop)
+	//movl %eax, 0x4000000			// dummy read to issue SDRAM NOP
+	CONSOLE_DEBUG_TX_STRING($after_4m_nop)
+	/* delay 200 us*/
+        mov $0x1000, %ecx
+	loop .
+
+	/* SDRAM CBR Refresh */
+	CS_WRITE_WORD(0x54,0x0102)
+	mov $8, %ebx		// cycle 8 times
+9:
+	movl %eax, 0x00			// dummy read to issue SDRAM NOP
+	//mov 0x00, %eax		// dummy read
+        mov $10, %ecx		// brief delay
+	loop .
+	//movl %eax, 0x4000000			// dummy read to issue SDRAM NOP
+	/* delay 200 us*/
+        mov $0x1000, %ecx
+	loop .
+	dec %ebx
+	jnz 9b
+
+	CONSOLE_DEBUG_TX_STRING($after_4m_nop)
+	/* SDRAM MRS command mode */
+	CS_WRITE_WORD(0x54,0x00C2)
+
+/* kind of weird since the mode is actually the address bits [11..0].
+ * the address read is 1d0, which means burst length 4,
+ * wrap type interleaved, CAS latency 3 */
+
+	//mov 0x1d0, %eax
+	movl %eax, 0x1d0
+	/* delay 200 us*/
+        mov $0x1000, %ecx
+	loop .
+	//CONSOLE_DEBUG_TX_STRING($before_4m_nop)
+	//movl %eax, 0x40001d0			// dummy read to issue SDRAM NOP
+	//CONSOLE_DEBUG_TX_STRING($after_4m_nop)
+	/* delay 200 us*/
+        mov $0x1000, %ecx
+	loop .
+/* note if we ever add more banks of memory we'll have to add more lines
+ * like the last one */
+
+/* Put SDRAM in normal mode and enable refresh */
+	CS_WRITE_WORD(0x54,0x0002)
+
+
+
+
+// enable refresh
 	CONSOLE_DEBUG_TX_STRING($firsttime)
 // HERE ENDS DRAM SETUP
 

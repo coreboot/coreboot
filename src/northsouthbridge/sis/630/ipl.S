@@ -2,7 +2,7 @@
  * ipl.S:	 Initial Program Loader (IPL) for SiS 630 and M-System DoC Millennium
  *
  *
- * Copyright 2000 Silicon Integrated System Corporation
+ * Copyright 2000 Silicon Integrated Systems Corporation
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -364,16 +364,16 @@ sdram_type_bank_2:
 	.byte	0b0011,	0b0111,	0b1011,	0b1111	# 13
 
 pci_init_table:
-#		Reg.	Value	times
+#		Reg.	Value
 
 #include "dll.inc"
 
-	.byte	0x57,	0x80	#0x01
-	.byte	0x57,	0x40	#0x01
-	.byte	0x57,	0x20	#0x06
-	.byte	0x57,	0x20	#0x06
-	.byte	0x57,	0x20	#0x06
-	.byte	0x52,	0x01	#0x01
+	.byte	0x57,	0x80	# Precharge
+	.byte	0x57,	0x40	# Mode Register Set
+	.byte	0x57,	0x20	# Refresh
+	.byte	0x57,	0x20	# Refresh
+	.byte	0x57,	0x20	# Refresh
+	.byte	0x52,	0x01	# Refresh Cycle Enable
 	.byte	0x00 /* Null, End of table */
 
 	.org 0x01f0

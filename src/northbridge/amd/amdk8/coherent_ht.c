@@ -606,6 +606,7 @@ static int optimize_link_read_pointers(unsigned nodes, int needs_reset)
 		for(link = 0; link < 3; link = link + 1) {
 			uint32_t link_type;
 			unsigned reg;
+			/* This works on an Athlon64 because unimplemented links return 0 */
 			reg = 0x98 + (link * 0x20);
 			link_type = pci_read_config32(f0_dev, reg);
 			if (link_type & LinkConnected) {

@@ -1,0 +1,18 @@
+northbridge intel/440bx
+southbridge intel/piix4e
+
+superio SMC/fdc37n769
+option SMC_BASE=0x370
+
+option ENABLE_FIXED_AND_VARIABLE_MTRRS
+option HAVE_PIRQ_TABLE
+option HAVE_MTRR_TABLE
+option PIIX4_DEVFN=0x38
+option MAINBOARD_FIXUP_IN_CHARGE
+
+object mainboard.o
+object irq_tables.o
+object mtrr_table.o
+
+cpu p5
+cpu p6

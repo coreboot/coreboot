@@ -17,6 +17,31 @@
 
 void nvram_on()
 {
+        struct pci_dev *dev;
+        u8 b;
+
+        printk_info("Enable FLASH\n");
+
+        dev = pci_find_device(PCI_VENDOR_ID_CYRIX,
+                              PCI_DEVICE_ID_CYRIX_5530_LEGACY,
+                              (void *)NULL);
+        if (!dev) {
+                printk_warning(NAME "Can't find PCI bridge\n");
+                return;
+        }
+	
+	pci_read_config_byte(dev, 0x52, &b);
+	printk_debug("Set F0/0x52 to 0xee\n");
+	b = 0xee;
+	pci_write_config_byte(dev, 0x52, b);
+
+	// now set PCI decode
+	pci_read_config_byte(dev, 0x5b, &b);
+	b |= 1 << 5;
+	printk_debug("Set F0/0x5b to |= 1 << 5(0x%x)\n", b);
+	pci_write_config_byte(dev, 0x5b, b);
+
+
 }
 
 void final_southbridge_fixup()

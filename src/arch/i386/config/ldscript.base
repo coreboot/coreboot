@@ -46,6 +46,7 @@ SECTIONS
 	}
 	.rodata (.) :  {
 		_rodata = .;
+		. = ALIGN(4);
 		streams = . ;
 		*(.rodata.streams)
 		estreams = .;

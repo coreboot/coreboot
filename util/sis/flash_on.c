@@ -49,8 +49,8 @@ main()
 	b = inb(0x0cfc) | 0x0b;
 	outb(b, 0xcfc);
 	/* Flash write enable on SiS 540/630 */
-	outl(0x80000844, 0x0cf8);
-	b = inb(0x0cfd) | 0x40;
+	outl(0x80000845, 0x0cf8);
+	b = inb(0x0cfd) & 0x40;
 	outb(b, 0xcfd);
 
 	/* The same thing on SiS 950 SuperIO side */

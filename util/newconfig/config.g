@@ -3,10 +3,9 @@ import os
 import re
 import string
 
-debug = 3
+debug = 0
 
 arch = ''
-makebase = ''
 ldscriptbase = ''
 payloadfile = ''
 
@@ -29,6 +28,7 @@ driverrules = {}
 ldscripts = []
 userdefines = []
 curpart = 0
+root = 0
 
 globalvars = {}       # We will globals here
 parts = {}
@@ -104,53 +104,116 @@ class makerule:
 
 class option:
 	def __init__ (self, name):
-		self.name = name
-		self.loc = 0
-		self.value = 0
-		self.set = 0
-		self.default = 0
+		self.name = name	# name of option
+		self.loc = 0		# current location
+		self.value = 0		# option value
+		self.set = 0		# option has been set
+		self.default = 0	# option has default value (otherwise
+					# it is undefined)
+		self.comment = ''	# description of option
+		self.export = 0		# option is able to be exported
+		self.exported = 0	# option is exported
+		self.defined = 0	# option has a value
+		self.format = '%s'	# option print format
 
 	def setvalue(self, value, loc):
 		if (self.set):
-			print "Option %s: \n" % self.name
-			print "Attempt to set %s at %s\n" % (value, loc.at()) 
-			print "Already set to %s at %s\n" % \
+			print "Option %s: " % self.name
+			print "Attempt to set %s at %s" % (value, loc.at()) 
+			print "Already set to %s at %s" % \
 					(self.value, self.loc.at())
 			sys.exit(1)
 		self.set = 1
 		self.value = value
+		self.defined = 1
 		self.loc = loc
 
-
-	def getvalue(self):
-		self.set = 1
-		return self.value
+	def getvalue(self, part):
+		global curpart
+		if (not (type(self.value) is str)):
+			return self.value
+		if (self.value == '' or self.value[0] != '{'):
+			return self.value
+		# evaluate expression
+		a = re.sub("^{", "", self.value)
+		a = re.sub("}$", "", a)
+		# save curpart so we can evaluate expression
+		# in context of part
+		s = curpart
+		curpart = part
+		v = parse('value', a)
+		curpart = s
+		return v
 
 	def setdefault(self, value, loc):
 		if (self.default):
 			print "%s: " % self.name
-			print "Attempt to default %s at %s\n" % (value, loc) 
-			print "Already defaulted to %s at %s\n" %  \
+			print "Attempt to default %s at %s" % (value, loc) 
+			print "Already defaulted to %s at %s" %  \
 					(self.value, self.loc.at())
-			print "Warning only\n"
+			print "Warning only"
 		if (self.set):
 			print "%s: " % self.name
-			print "Attempt to default %s at %s\n" % (value, loc) 
-			print "Already set to %s at %s\n" % \
+			print "Attempt to default %s at %s" % (value, loc) 
+			print "Already set to %s at %s" % \
 					(self.value, self.loc.at())
-			print "Warning only\n"
+			print "Warning only"
 			return
-		self.default = 1
 		self.value = value
+		self.defined = 1
+		self.default = 1
 		self.loc = loc
+
+	def setnodefault(self, loc):
+		self.default = 1
+		self.defined = 0
+		self.loc = loc
+
 	def where(self):
 		return self.loc
 
+	def setcomment(self, value, loc):
+		if (self.comment != ''):
+			print "%s: " % self.name
+			print "Attempt to modify comment at %s" % loc 
+			return
+		self.comment = value
+
+	def setexport(self):
+		self.export = 1
+
+	def setexported(self):
+		self.export = 1
+		self.exported = 1
+
+	def setnoexport(self):
+		self.export = 0
+		self.exported = 0
+
+	def setformat(self, fmt):
+		self.format = fmt
+
+	def getformat(self):
+		return self.format
+
+	def used(self):
+		if (self.export):
+			self.exported = 1
+
+	def isexported(self):
+		return (self.exported and self.defined)
+
+	def isdefined(self):
+		return (self.defined)
+
+	def isset(self):
+		return (self.set)
 
 class partobj:
 	def __init__ (self, dir, parent, type):
 		global partinstance
-		print "partobj dir %s parent %s type %s" %(dir,parent,type)
+		if (debug):
+			print "partobj dir %s parent %s type %s" %(dir,parent,type)
 		self.children = []
 		self.initcode = []
 		self.registercode = []
@@ -163,8 +226,10 @@ class partobj:
 		partinstance = partinstance + 1
 		self.devfn = 0	
 		self.private = 0	
+		self.options = {}
 		if (parent):
-			print "add to parent"
+			if (debug):
+				print "add to parent"
 			self.parent   = parent
 			parent.children.append(self)
 		else:
@@ -177,10 +242,10 @@ class partobj:
 		print "%d: parent dir %s" % (lvl,self.parent.dir)
 		print "%d: initcode " % lvl
 		for i in self.initcode:
-			print "  %s\n" % i
+			print "  %s" % i
 		print "%d: registercode " % lvl
 		for i in self.registercode:
-			print "  %s\n" % i
+			print "  %s" % i
 
 	def gencode(self):
 		print "struct cdev dev%d = {" % self.instance
@@ -204,8 +269,16 @@ class partobj:
 		
     	def addregister(self, code):
         	self.registercode.append(code)
-		
-	
+
+	def usesoption(self, name):
+		o = getvalue(options, name)
+		if (o == 0):
+			fatal("Error: can't use undefined option %s" % name)
+		o.used()
+		setvalue(self.options, name, o)
+		if (debug):
+			print "option %s used in %s" % (name, self)
+
 class partsstack:
 	def __init__ (self):
 		self.stack = []
@@ -246,21 +319,24 @@ def warning(string):
 # -----------------------------------------------------------------------------
 
 def getvalue(dict, name):
-    if name not in dict.keys(): print 'Undefined:', name
-    v = dict.get(name, 0)
-    if (debug > 1):
-	print "getvalue %s returning %s\n" % (name, v)
-    return v
+	if name not in dict.keys(): 
+		if (debug >1):
+			print 'Undefined:', name
+		return 0
+	v = dict.get(name, 0)
+	if (debug > 1):
+		print "getvalue %s returning %s" % (name, v)
+	return v
 
 def setvalue(dict, name, value):
-	print "name %s value %s" % (name, value)
-	if name in dict.keys(): print "Warning, %s previously defined" % name
+	if name in dict.keys(): 
+		print "Warning, %s previously defined" % name
     	if (debug > 1):
-		print "setvalue sets %s to %s\n" % (name, value)
+		print "setvalue sets %s to %s" % (name, value)
 	dict[name] = value
 
 # options. 
-# to create an option, it has to no exist. 
+# to create an option, it has to not exist. 
 # When an option value is fetched, the fact that it was used is 
 # remembered. 
 # Legal things to do:
@@ -269,38 +345,157 @@ def setvalue(dict, name, value):
 # Illegal:
 # use the value, then try to set the value
 
-def getoption(name):
-	print "getoption %s" % name
+def newoption(name):
+	o = getvalue(options, name)
+	if (o):
+		print "option %s already defined" % name
+		sys.exit(1)
+	o = option(name)
+	setvalue(options, name, o)
+	options_by_order.append(name)
+
+# option must be declared before being used in a part
+# if we're not processing a part, then we must
+# be at the top level where all options are available
+def getoption(name, part):
+	global options
+	if (part):
+		o = getvalue(part.options, name)
+	else:
+		o = getvalue(options, name)
+	if (o == 0 or not o.defined):
+		fatal( "Error: Option %s Undefined." % name)
+	v = o.getvalue(part)
+	if (debug > 2):
+		print "getoption returns %s" % v
+		print "%s" % o.where()
+	return v
+
+# setoptionstmt only allowed at top level
+def setoptionstmt(name, value):
+	global curpart
+	if (curpart != root):
+		fatal("Error: options can only be set in target configuration file")
+	setoption(name, value)
+
+def setoption(name, value):
+	global loc
 	o = getvalue(options, name)
 	if (o == 0):
-		fatal( "Error. Option %s Undefined. Fix me.\n" % name)
-	if (debug > 2):
-		print "returns %s" % o
-		print "%s" % o.where()
-	return o.getvalue()
-
-# stupid code, refactor later. 
-def setoption(name, value):
-	o = getvalue(options, name)
-	if (o):
-		o.setvalue(value, loc)
-		return
-	o = option(name)
+		fatal("Error: attempt set nonexistent option %s" % name)
 	o.setvalue(value, loc)
-	setvalue(options, name, o)
-	options_by_order.append(name)
 
 def setdefault(name, value):
+	global loc
 	o = getvalue(options, name)
-	if (o):
-		o.setdefault(value, loc)
+	if (not o):
 		return
-	print "setdefault: %s not here, setting to %s" % \
-			(name, value)
-	o = option(name)
+	if (o.default):
+		print "setdefault: attempt to duplicate default for %s" % name
+		return
 	o.setdefault(value, loc)
-	setvalue(options, name, o)
-	options_by_order.append(name)
+
+def setnodefault(name):
+	global loc
+	o = getvalue(options, name)
+	if (not o):
+		return
+	if (o.default):
+		print "setdefault: attempt to duplicate default for %s" % name
+		return
+	o.setnodefault(loc)
+
+def setcomment(name, value):
+	o = getvalue(options, name)
+	if (not o):
+		fatal("setcomment: %s not here" % name)
+	o.setcomment(value, loc)
+
+def setexported(name):
+	o = getvalue(options, name)
+	if (not o):
+		fatal("setexported: %s not here" % name)
+	o.setexported()
+
+def setnoexport(name):
+	o = getvalue(options, name)
+	if (not o):
+		fatal("setnoexport: %s not here" % name)
+	o.setnoexport()
+
+def setexport(name):
+	o = getvalue(options, name)
+	if (not o):
+		fatal("setexport: %s not here" % name)
+	o.setexport()
+
+def setformat(name, fmt):
+	o = getvalue(options, name)
+	if (not o):
+		fatal("setexport: %s not here" % name)
+	o.setformat(fmt)
+
+def getformated(name, part):
+	global options
+	if (part):
+		o = getvalue(part.options, name)
+	else:
+		o = getvalue(options, name)
+	if (o == 0 or not o.defined):
+		fatal( "Error: Option %s Undefined." % name)
+	v = o.getvalue(part)
+	f = o.getformat()
+	return (f % v)
+
+def isexported(name, part):
+	if (part):
+		o = getvalue(part.options, name)
+	else:
+		o = getvalue(options, name)
+	if (o):
+		return o.isexported()
+	return 0
+
+def isdefined(name, part):
+	if (part):
+		o = getvalue(part.options, name)
+	else:
+		o = getvalue(options, name)
+	if (o):
+		return o.isdefined()
+	return 0
+
+def isset(name, part):
+	if (part):
+		o = getvalue(part.options, name)
+	else:
+		o = getvalue(options, name)
+	if (o):
+		return o.isset()
+	return 0
+
+def usesoption(name):
+	global curpart
+	curpart.usesoption(name)
+
+def validdef(name, defval):
+	o = getvalue(options, name)
+	if (not o):
+		fatal("validdef: %s not here" % name)
+	if ((defval & 1) != 1):
+	    fatal("Error: must specify default value for option %s" % name)
+	if ((defval & 2) != 2):
+	    fatal("Error: must specify export for option %s" % name)
+	if ((defval & 4) != 4):
+	    fatal("Error: must specify comment for option %s" % name)
+
+def loadoptions():
+	global treetop
+	optionsfile = os.path.join(treetop, 'src', 'config', 'Options.lb')
+	loc.push_file(optionsfile)
+	if (not parse('options', open(optionsfile, 'r').read())):
+		fatal("Error: Could not parse file")
+	loc.pop_file()
 
 # we do the crt0include as a dictionary, so that if needed we
 # can trace who added what when. Also it makes the keys
@@ -314,7 +509,7 @@ def addcrt0include(path):
 	# later. 
 	fullpath = path
 	if (debug > 2):
-		print "ADDCRT0: %s\n" % fullpath
+		print "ADDCRT0: %s" % fullpath
 	crt0includes.append(fullpath)
 
 def addldscript(path):
@@ -326,7 +521,7 @@ def addldscript(path):
 	#fullpath = os.path.join(curdir, path)
 	#setvalue(ldscripts, fullpath, loc)
 	if (debug):
-		print "fullpath :%s: curdir :%s: path :%s:\n" % (fullpath, curdir, path)
+		print "fullpath :%s: curdir :%s: path :%s:" % (fullpath, curdir, path)
 	ldscripts.append(fullpath)
 
 def payload(path):
@@ -342,7 +537,6 @@ def payload(path):
 # such kludgery. If the name starts with '.' then make the 
 # dependency be on ./thing.x gag me.
 def addobjectdriver(dict, object_name):
-	print "add object object_name %s" % object_name
 	suffix = object_name[-2:]
 	if (suffix == '.o'):
 		suffix = '.c'
@@ -352,7 +546,8 @@ def addobjectdriver(dict, object_name):
 	else:
 		source = os.path.join(curdir, base + suffix)
 	object = base + '.o'
-	print "addobject %s source %s\n" % (object, source)
+	if (debug):
+		print "add object %s source %s" % (object_name, source)
 	setvalue(dict, base, [object, source])
 
 def addobject(object_name):
@@ -364,42 +559,34 @@ def adddriver(driver_name):
 def target(targ_name):
         global target_dir
 	global curpart
-	print "TARGET loc.file is %s\n" % loc.file()
+	global root
+	print "Configuring TARGET %s" % targ_name
         target_dir = os.path.join(os.path.dirname(loc.file()), targ_name)
-	print "TARGET dir.loc.file is %s\n" % os.path.dirname(loc.file())
         if not os.path.isdir(target_dir):
-                print 'Creating directory', target_dir
+                print "Creating directory" % target_dir
                 os.makedirs(target_dir)
-        print 'Will place Makefile, crt0.S, etc. in ', target_dir
-	print '%s\n' % loc.file()
-	board = partobj(target_dir, 0, 'board')
-	curpart = board
-
-
+        print "Will place Makefile, crt0.S, etc. in %s" % target_dir
+	root = partobj(target_dir, 0, 'board')
+	curpart = root
 
 def part(name, path, file):
-	global curpart,curdir
-	if (debug):
-		print "%s " % name
+	global curpart,curdir,treetop
 	dirstack.append(curdir)
 	curdir = os.path.join(treetop, 'src', name, path)
 	newpart = partobj(curdir, curpart, name)
-	print "PUSH part " , curpart.dir
+	print "Configuring PART %s" % name
+	if (debug):
+		print "PUSH part %s %s" % (name, curpart.dir)
 	pstack.push(curpart)
 	curpart = newpart
-	#	option(parts, name, path)
-	# open the file, and parse it. 
-#        curpart.option('MAINBOARD_PART_NUMBER', 
-#			os.path.basename(lookup(parts, 'mainboard')))
-#        option(options, 'MAINBOARD_VENDOR', os.path.dirname(getvalue(parts, 'mainboard')))
-
 	doconfigfile(curdir, file)
 
 def partpop():
 	global curpart,curdir
 	curpart = pstack.pop()
 	curdir = dirstack.pop()
-	print "POP PART %s\n" % curpart.dir
+	if (debug):
+		print "POP PART %s" % curpart.dir
 
 # dodir is like part but there is no new part
 def dodir(path, file):
@@ -412,8 +599,8 @@ def dodir(path, file):
 	else:
 		fullpath = os.path.join(curdir,  path)
 	if (debug):
-		print "DODIR: path %s, fullpath %s\n" % (path, fullpath)
-		print "DODIR: curdis %s treetop %s\n" % (curdir, treetop)
+		print "DODIR: path %s, fullpath %s" % (path, fullpath)
+		print "DODIR: curdis %s treetop %s" % (curdir, treetop)
 	dirstack.append(curdir)
 	curdir = fullpath
 	file = os.path.join(fullpath, file)
@@ -422,15 +609,20 @@ def dodir(path, file):
 	curdir = dirstack.pop()
 
 def ternary(expr, yes, no):
-	print "ternary %s" % expr
+	if (debug):
+		print "ternary %s" % expr
         a = tohex(expr) # expr # eval(expr)
-        print "expr %s a %d yes %d no %d\n"% (expr, a, yes, no)
+	if (debug):
+		print "expr %s a %d yes %d no %d"% (expr, a, yes, no)
         if (a == 0):
-	    print "Ternary returns %d\n" % yes
-            return yes
+		if (debug):
+		    print "Ternary returns %d" % yes
+		return yes
         else:
-	    print "Ternary returns %d\n" % no
-            return no
+		if (debug):
+			print "Ternary returns %d" % no
+		return no
+
 # atoi is in the python library, but not strtol? Weird!
 def tohex(name):
 	return eval('int(%s)' % name)
@@ -479,23 +671,24 @@ def topify(path):
 
 # arch is 'different' ... darn it.
 def set_arch(my_arch):
-	global arch, makebase
+	global arch
 	global curdir
 	arch = my_arch
-	setdefault('ARCH', my_arch)
+	setoption('ARCH', my_arch)
 	part('arch', my_arch, 'config/make.base.lb')
 
 
 def mainboard(path):
-	global mainboard_dir
+	global mainboard_dir, treetop
 	mainboard_dir = path
 	full_mainboard_dir = os.path.join(treetop, 'src/mainboard', path)
-	setdefault('MAINBOARD', full_mainboard_dir)
+	setoption('MAINBOARD', full_mainboard_dir)
         vendor = re.sub("/.*", "", path)
         mainboard_part_number = re.sub("[^/]/", "", path)
-	setdefault('MAINBOARD_VENDOR', vendor)
-	setdefault('MAINBOARD_PART_NUMBER', mainboard_part_number)
+	setoption('MAINBOARD_VENDOR', vendor)
+	setoption('MAINBOARD_PART_NUMBER', mainboard_part_number)
 	part('mainboard', path, 'Config.lb')
+
 #=============================================================================
 #		FILE OUTPUT 
 #=============================================================================
@@ -506,7 +699,7 @@ def writemakefileheader(file, fname):
 
 
 def writemakefilesettings(path):
-	global treetop, arch, mainboard_dir, target_dir, options
+	global treetop, arch, mainboard_dir, target_dir, options_by_order, root
 	# Write Makefile.settings to seperate the settings
 	# from the actual makefile creation
 	# In practice you need to rerun NLBConfig.py to change
@@ -521,25 +714,19 @@ def writemakefilesettings(path):
 	#file.write("MAINBOARD:=%s\n" % (mainboard_dir))
 	file.write("TARGET_DIR:=%s\n" % (target_dir))
 	for i in options_by_order:
-		o = options[i]
-		# get the number in hex
-		v =  o.getvalue()
-		if IsInt(v):
-			vi = int(v)
-			s = "export %s:=0x%x\n"% (i, vi)
-			file.write(s)
-		else:
-			file.write("export %s:=%s\n" % (i, v))
-	file.write("export VARIABLES := ");
+		if (isexported(i, 0)):
+			file.write("export %s:=%s\n" % (i, getformated(i, 0)))
+	file.write("export VARIABLES := ")
 	for i in options.keys():
-		file.write("%s " % i)
-	file.write("\n");
-#	file.write("CPUFLAGS := ");
+		if (isexported(i, 0)):
+			file.write("%s " % i)
+	file.write("\n")
+#	file.write("CPUFLAGS := ")
 #	for i in options.keys():
 #		o = options[i]
 #		file.write("-D%s=%s " % (i, o.getvalue()))
-#	file.write("\n");
-	file.close();
+#	file.write("\n")
+	file.close()
 
 
 # write the makefile
@@ -547,6 +734,7 @@ def writemakefilesettings(path):
 # first, dump all the -D stuff
 
 def writemakefile(path):
+	global root
 	makefilepath = os.path.join(path, "Makefile")
 	print "Creating", makefilepath
 	file = open(makefilepath, 'w+')
@@ -570,7 +758,7 @@ CPUFLAGS := $(foreach _var_,$(VARIABLES),$(call D_item,$(_var_)))
 
 	for i in userdefines:
 		file.write("%s\n" %i)
-	file.write("\n");
+	file.write("\n")
 
 	# print out all the object dependencies
 	file.write("\n# object dependencies (objectrules:)\n")
@@ -603,9 +791,6 @@ CPUFLAGS := $(foreach _var_,$(VARIABLES),$(call D_item,$(_var_)))
 		else:
 			file.write("CRT0_INCLUDES += $(TOP)/src/%s\n" % i)
 
-
-
-		
 	file.write("\nSOURCES=\n")
 	#for source in sources:
 		#file.write("SOURCES += %s\n" % source)
@@ -669,7 +854,7 @@ CPUFLAGS := $(foreach _var_,$(VARIABLES),$(call D_item,$(_var_)))
 	file.write("\tpython $(TOP)/util/config/NLBConfig.py %s $(TOP)\n"
 			% top_config_file)
 
-	keys = makeoptions.keys()
+	keys = root.options.keys()
 	keys.sort()
 	file.write("\necho:\n")
 	for key in keys:
@@ -684,7 +869,7 @@ CPUFLAGS := $(foreach _var_,$(VARIABLES),$(call D_item,$(_var_)))
 		file.write("\n")
 		for i in m.actions:
 			file.write("\t%s\n" % i)
-	file.close();
+	file.close()
 
 # Write out crt0_includes.h (top-level assembly language) include file.
 def writecrt0_includes(path):
@@ -695,218 +880,294 @@ def writecrt0_includes(path):
 	for i in crt0includes:
 		file.write("#include <%s>\n" % i)
 
-	file.close();
+	file.close()
 
 
 %%
 parser Config:
-    ignore:      r'\s+'
-    ignore:      "#.*?\r?\n"
-    token NUM:   r'[0-9]+'
-    token XNUM:   r'0x[0-9a-fA-F]+'
-# Why is path separate? Because paths to resources have to at least
-# have a slash, we thinks
-    token PATH:    r'[a-zA-Z0-9_.][a-zA-Z0-9/_.]+[a-zA-Z0-9_.]+'
-# Dir's on the other hand are abitrary
-# this may all be stupid.
-    token DIRPATH:    r'[a-zA-Z0-9_$()./]+'
-    token ID:    r'[a-zA-Z_.]+[a-zA-Z0-9_.]*'
-    token STR:   r'"([^\\"]+|\\.)*"'
-    token RAWTEXT: r'.*'
-    token OPTION: 'option'
-    token MAINBOARD: 'mainboard'
-    token MAINBOARDINIT: 'mainboardinit'
-    token EQ: '='
-    token END: '$|end'
-    token TARGET: 'target'
-    token OBJECT: 'object'
-    token DRIVER: 'driver'
-    token NORTHBRIDGE: 'northbridge'
-    token SOUTHBRIDGE: 'southbridge'
-    token SUPERIO: 'superio'
-    token IF: 'if'
-    token MAKERULE: 'makerule'
-    token DEP: 'dep'
-    token ACT: 'act'
-    token MAKEDEFINE: 'makedefine'
-    token ADDACTION: 'addaction'
-    token DEFAULT: 'default'
-    token INIT: 'init'
-    token REGISTER: 'register'
-    token CPU: 'cpu'
-    token ARCH: 'arch'
-    token DIR: 'dir'
-    token LDSCRIPT: 'ldscript'
-    token PAYLOAD: 'payload'
+    ignore:			r'\s+'
+    ignore:			"#.*?\r?\n"
 
-    # An expression is the sum and difference of factors
-    rule expr<<V>>:   factor<<V>>         {{ n = factor }}
-                     ( "[+]" factor<<V>>  {{ n = n+factor }}
-                     |  "-"  factor<<V>>  {{ n = n-factor }}
-                     )*                   {{ return n }}
+    # less general tokens should come first, otherwise they get matched
+    # by the re's
+    token ACT:			'act'
+    token ADDACTION:		'addaction'
+    token ALWAYS:		'always'
+    token ARCH:			'arch'
+    token COMMENT:		'comment'
+    token CPU:			'cpu'
+    token DEFAULT:		'default'
+    token DEFINE:		'define'
+    token DEP:			'dep'
+    token DIR:			'dir'
+    token DRIVER:		'driver'
+    token END:			'$|end'
+    token EQ:			'='
+    token EXPORT:		'export'
+    token FORMAT:		'format'
+    token IF:			'if'
+    token INIT:			'init'
+    token LDSCRIPT:		'ldscript'
+    token LOADOPTIONS:		'loadoptions'
+    token MAINBOARD:		'mainboard'
+    token MAINBOARDINIT:	'mainboardinit'
+    token MAKEDEFINE:		'makedefine'
+    token MAKERULE:		'makerule'
+    token NEVER:		'never'
+    token NONE:			'none'
+    token NORTHBRIDGE:		'northbridge'
+    token OBJECT:		'object'
+    token OPTION:		'option'
+    token PAYLOAD:		'payload'
+    token PMC:			'pmc'
+    token REGISTER:		'register'
+    token SOUTHBRIDGE:		'southbridge'
+    token SUPERIO:		'superio'
+    token TARGET:		'target'
+    token USED:			'used'
+    token USES:			'uses'
+    token NUM:			r'[0-9]+'
+    token XNUM:			r'0x[0-9a-fA-F]+'
+    # Why is path separate? Because paths to resources have to at least
+    # have a slash, we thinks
+    token PATH:			r'[a-zA-Z0-9_.][a-zA-Z0-9/_.]+[a-zA-Z0-9_.]+'
+    # Dir's on the other hand are abitrary
+    # this may all be stupid.
+    token DIRPATH:		r'[a-zA-Z0-9_$()./]+'
+    token ID:			r'[a-zA-Z_.]+[a-zA-Z0-9_.]*'
+    token DELEXPR:		r'{([^}]+|\\.)*}'
+    token STR:			r'"([^\\"]+|\\.)*"'
+    token RAWTEXT:		r'.*'
 
-    # A factor is the product and division of terms
-    rule factor<<V>>: term<<V>>           {{ v = term }}
-                     ( "[*]" term<<V>>    {{ v = v*term }}
-                     |  "/"  term<<V>>    {{ v = v/term }}
-                     |  "<<"  term<<V>>    {{ v = v << term }}
-                     |  ">=" term<<V>>    {{ v = (v < term)}}
-                     )*                   {{ return v }}
+    rule expr<<V>>:	logical<<V>>		{{ l = logical }}
+			( "&&" logical<<V>>	{{ l = l and logical }}
+			| "||"  logical<<V>>	{{ l = l or logical }}
+			)*			{{ return l }}
 
-    rule unop<<V>>: "!" ID                     {{ return ternary(getoption(ID), 1, 0)}}
+    rule logical<<V>>:	factor<<V>>		{{ n = factor }}
+			( "[+]" factor<<V>>	{{ n = n+factor }}
+			| "-"  factor<<V>>	{{ n = n-factor }}
+			)*			{{ return n }}
+
+    rule factor<<V>>:	term<<V>>		{{ v = term }}
+			( "[*]" term<<V>>	{{ v = v*term }}
+			| "/"  term<<V>>	{{ v = v/term }}
+			| "<<"  term<<V>>	{{ v = v << term }}
+			| ">=" term<<V>>	{{ v = (v < term)}}
+			)*			{{ return v }}
+
+    rule unop<<V>>:	"!" ID			{{ return ternary(getoption(ID, curpart), 1, 0)}}
+
     # A term is a number, variable, or an expression surrounded by parentheses
-    rule term<<V>>:
-                 NUM                      {{ return atoi(NUM) }}
-               | XNUM                      {{ return tohex(XNUM) }}
-               | ID                      {{ return tohex(getoption(ID)) }}
-               | unop<<V>>                 {{ return unop }}
-               | "\\(" expr<<V>> "\\)"         {{ return expr }}
+    rule term<<V>>:	NUM			{{ return atoi(NUM) }}
+		|	XNUM			{{ return tohex(XNUM) }}
+		|	ID			{{ return tohex(getoption(ID, curpart)) }}
+		|	unop<<V>>		{{ return unop }}
+		|	"\\(" expr<<V>> "\\)"	{{ return expr }}
 
-    rule option<<C>>: OPTION ID EQ 
-				(
-			STR {{ if (C): setoption(ID, dequote(STR)) }} 
-			|	term<<[]>> {{ if (C): setoption(ID, term) }}
-			)
-    rule default<<C>>: DEFAULT ID EQ RAWTEXT {{ if (C): setdefault(ID, RAWTEXT) }}
+    rule partend<<C>>:	partstmts<<C>> END  
 
-    rule partend<<C>>: partstmts<<C>> END  
-    rule mainboard: MAINBOARD PATH {{mainboard(PATH) }} 
-				partend<<1>>
+    rule mainboard:	MAINBOARD PATH		{{ mainboard(PATH) }}
+			partend<<1>>
 			
-    rule northbridge<<C>>: NORTHBRIDGE PATH 
-			{{if (C): part('northbridge', PATH, 'Config.lb')}} partend<<C>>
-    rule superio<<C>>: SUPERIO PATH 
-			{{if (C): part('superio', PATH, 'Config.lb')}} partend<<C>>
-    rule cpu<<C>>: CPU ID 
-			{{if (C): part('cpu', ID, 'Config.lb')}} partend<<C>>
-    rule arch<<C>>: ARCH ID 
-			{{if (C): set_arch(ID) }} partend<<C>>
-    rule southbridge<<C>>: SOUTHBRIDGE PATH 
-			{{if (C): part('southbridge', PATH, 'Config.lb')}} partend<<C>>
+    rule northbridge<<C>>:
+			NORTHBRIDGE PATH	{{ if (C): part('northbridge', PATH, 'Config.lb') }}
+			partend<<C>>
+
+    rule superio<<C>>:	SUPERIO PATH		{{ if (C): part('superio', PATH, 'Config.lb') }}
+			partend<<C>>
+
+    rule cpu<<C>>:	CPU ID			{{ if (C): part('cpu', ID, 'Config.lb') }}
+			partend<<C>>
+
+    rule pmc<<C>>:	PMC PATH		{{ if (C): part('pmc', PATH, 'Config.lb') }}
+			partend<<C>>
+
+    rule arch<<C>>:	ARCH ID			{{ if (C): set_arch(ID) }}
+			partend<<C>>
+
+    rule southbridge<<C>>:
+			SOUTHBRIDGE PATH	{{ if (C): part('southbridge', PATH, 'Config.lb')}}
+			partend<<C>>
 
     rule mainboardinit<<C>>: 
-		 MAINBOARDINIT DIRPATH {{ if (C): addcrt0include(DIRPATH)}}
+			MAINBOARDINIT DIRPATH	{{ if (C): addcrt0include(DIRPATH)}}
 
-    rule object<<C>>: OBJECT DIRPATH {{if (C): addobject(DIRPATH)}}
-    rule driver<<C>>: DRIVER DIRPATH {{if (C): adddriver(DIRPATH)}}
-    rule dir<<C>>:	DIR DIRPATH  {{if (C): dodir(DIRPATH, 'Config.lb') }}
+    rule object<<C>>:	OBJECT DIRPATH		{{ if (C): addobject(DIRPATH)}}
 
-    rule ldscript<<C>>: LDSCRIPT DIRPATH {{if (C): addldscript(DIRPATH) }}
-    rule payload<<C>>: PAYLOAD DIRPATH {{if (C): payload(DIRPATH) }}
+    rule driver<<C>>:	DRIVER DIRPATH		{{ if (C): adddriver(DIRPATH)}}
+
+    rule dir<<C>>:	DIR DIRPATH 		{{ if (C): dodir(DIRPATH, 'Config.lb') }}
+
+    rule ldscript<<C>>:	LDSCRIPT DIRPATH	{{ if (C): addldscript(DIRPATH) }}
+
+    rule payload<<C>>:	PAYLOAD DIRPATH		{{ if (C): payload(DIRPATH) }}
+
 # if is a bad id ....
-    rule iif<<C>>:
 # needs to be C and ID, but nested if's are, we hope, not going to 
 # happen. IF so, possibly ID && C could be used.
-		IF ID {{ c = tohex(getoption(ID)); print "IF %d\n" % c }} (stmt<<c>>)* END
+    rule iif<<C>>:	IF ID			{{ c = tohex(getoption(ID, curpart)) }} 
+			(stmt<<c>>)* END
 
-    rule depsacts<<ID, C>>: (
-			DEP  STR {{ if (C): adddep(ID, STR) }}
-			| ACT STR {{ if (C): addaction(ID, STR) }}
+    rule depsacts<<ID, C>>:
+			( DEP STR		{{ if (C): adddep(ID, STR) }}
+			| ACT STR		{{ if (C): addaction(ID, STR) }}
 			)*
-    rule makerule<<C>>: MAKERULE DIRPATH {{ if (C): addrule(DIRPATH) }} 
+
+    rule makerule<<C>>:	MAKERULE DIRPATH	{{ if (C): addrule(DIRPATH) }} 
 			depsacts<<DIRPATH, C>> 
-    rule makedefine<<C>>: MAKEDEFINE RAWTEXT
-			 {{ if (C): adduserdefine(RAWTEXT) }}
-    rule addaction<<C>>: ADDACTION ID STR
-			 {{ if (C): addaction(ID, STR) }}
-    rule init<<C>>:   INIT  STR  {{ if (C): curpart.addinit(STR) }}
-    rule register<<C>>:   REGISTER  STR  {{ if (C): curpart.addregister(STR) }}
+
+    rule makedefine<<C>>:
+			MAKEDEFINE RAWTEXT	{{ if (C): adduserdefine(RAWTEXT) }}
+
+    rule addaction<<C>>:
+			ADDACTION ID STR	{{ if (C): addaction(ID, STR) }}
+
+    rule init<<C>>:	INIT STR		{{ if (C): curpart.addinit(STR) }}
+
+    rule register<<C>>:	REGISTER STR		{{ if (C): curpart.addregister(STR) }}
 
 # to make if work without 2 passses, we use an old hack from SIMD, the 
 # context bit. If the bit is 1, then ops get done, otherwise
 # ops don't get done. From the top level, context is always
 # 1. In an if, context depends on eval of the if condition
-    rule stmt<<C>>:   
-		  option<<C>>		  {{ return option }}
-		| default<<C>>	  {{ return default }}
-        	| cpu<<C>>          {{ return cpu}}
-        	| arch<<C>>          {{ return arch}}
-		| northbridge<<C>>	  {{ return northbridge }}
-		| southbridge<<C>>	  {{ return southbridge }}
-		| superio<<C>>	  {{ return superio }}
-		| object<<C>>	  {{ return object }}
-		| driver<<C>>	  {{ return driver }}
-		| mainboardinit<<C>>   {{ return mainboardinit }}
-		| makerule<<C>> 	  {{ return makerule }}
-		| makedefine<<C>> 	  {{ return makedefine }}
-		| addaction<<C>> 	  {{ return addaction }}
-		| init<<C>> 		  {{ return init }}
-		| register<<C>> 		  {{ return register}}
-		| iif<<C>>	  {{ return iif }}
-		| dir<<C>>		{{ return dir}}
-		| ldscript<<C>>		{{ return ldscript}}
-		| payload<<C>>		{{ return payload}}
+    rule stmt<<C>>:	cpu<<C>>		{{ return cpu}}
+		|	pmc<<C>>		{{ return pmc}}
+		|	arch<<C>>		{{ return arch}}
+		|	northbridge<<C>>	{{ return northbridge }}
+		|	southbridge<<C>>	{{ return southbridge }}
+		|	superio<<C>>		{{ return superio }}
+		|	object<<C>>		{{ return object }}
+		|	driver<<C>>		{{ return driver }}
+		|	mainboardinit<<C>>	{{ return mainboardinit }}
+		|	makerule<<C>>		{{ return makerule }}
+		|	makedefine<<C>> 	{{ return makedefine }}
+		|	addaction<<C>>		{{ return addaction }}
+		|	init<<C>>	 	{{ return init }}
+		|	register<<C>> 		{{ return register}}
+		|	iif<<C>>		{{ return iif }}
+		|	dir<<C>>		{{ return dir}}
+		|	ldscript<<C>>		{{ return ldscript}}
+		|	payload<<C>>		{{ return payload}}
 
-    rule stmts<<C>>: (stmt<<C>>)* 		{{  }}
+    rule stmts<<C>>:	(stmt<<C>>)*	 	{{ }}
 
-    rule partstmts<<C>>: (stmt<<C>>)* 		{{  partpop()}}
+    rule partstmts<<C>>:
+			(uses<<C>>)*
+			(stmt<<C>>)*	 	{{  partpop()}}
+
 # need this to get from python to the rules, I think.
+    rule pstmts:	(uses<<1>>)* stmts<<1>>	{{ return 1 }}
 
-    rule pstmts: stmts<<1>> 			{{ }}
-    rule target: TARGET DIRPATH            {{target(DIRPATH)}}
-    rule board: target mainboard   {{ }}
+    rule usesid<<C>>:	ID			{{ if (C): usesoption(ID) }}
+
+    rule uses<<C>>:	USES (usesid<<C>>)+
+
+    rule value:		STR			{{ return dequote(STR) }} 
+		| 	term<<[]>>		{{ return term }}
+		|	DELEXPR			{{ return DELEXPR }}
+
+    rule option:	OPTION ID EQ value	{{ setoptionstmt(ID, value) }}
+
+    rule board:		LOADOPTIONS		{{ loadoptions() }}
+	    		TARGET DIRPATH		{{ target(DIRPATH) }}
+			(uses<<1>>)*
+			(option)*
+			mainboard		{{ return 1 }}
+
+    rule defstmts<<ID>>:			{{ d = 0 }}
+			( DEFAULT
+			  ( value		{{ setdefault(ID, value) }}
+			  | NONE		{{ setnodefault(ID) }}
+			  )			{{ d |= 1 }}
+			| FORMAT STR		{{ setformat(ID, dequote(STR)) }}
+			| EXPORT 
+			  ( ALWAYS		{{ setexported(ID) }}
+			  | USED		{{ setexport(ID) }}
+			  | NEVER		{{ setnoexport(ID) }}
+			  )			{{ d |= 2 }}
+			| COMMENT STR 		{{ setcomment(ID, dequote(STR)); d |= 4 }}
+			)+			{{ return d }}
+		
+    rule define:	DEFINE ID 		{{ newoption(ID) }}
+			defstmts<<ID>> END	{{ validdef(ID, defstmts) }}
+
+    rule options:	(define)* END		{{ return 1 }}
 %%
 
 def dumptree(part, lvl):
-	print "DUMPTREE ME is"
+	if (debug):
+		print "DUMPTREE ME is"
 	part.dumpme(lvl)
 	# dump the siblings -- actually are there any? not sure
 	# dump the kids
-	print "DUMPTREE KIDS are"
+	if (debug):
+		print "DUMPTREE KIDS are"
 	for kid in part.children:
 		dumptree(kid, lvl+1)
-	print "DONE DUMPTREE"
+	if (debug):
+		print "DONE DUMPTREE"
 
 def gencode(part):
-	print "GENCODE ME is"
-	part.gencode()
+	if (debug):
+		print "GENCODE ME is"
+	if (debug):
+		part.gencode()
 	# dump the siblings -- actually are there any? not sure
 	# dump the kids
-	print "GENCODE KIDS are"
+	if (debug):
+		print "GENCODE KIDS are"
 	for kid in part.children:
 		gencode(kid)
-	print "DONE GENCODE"
+	if (debug):
+		print "DONE GENCODE"
 	
 
 def doconfigfile(path, file):
 	if (debug):
 		print "DOCONFIGFILE", path, " ", file
 	filename = os.path.join(path, file)
-	loc.push_file(filename);
-	parse('pstmts', open(filename, 'r').read())
+	loc.push_file(filename)
+	if (not parse('pstmts', open(filename, 'r').read())):
+		fatal("Error: Could not parse file")
 
 if __name__=='__main__':
-    from sys import argv
-    if (len(argv) < 3):
-	print 'Args: <file> <path to linuxbios>'
+	from sys import argv
+	if (len(argv) < 3):
+		print 'Args: <file> <path to linuxbios>'
+		sys.exit(1)
 
-    top_config_file = os.path.abspath(sys.argv[1])
+	top_config_file = os.path.abspath(sys.argv[1])
 
-    treetop = os.path.abspath(sys.argv[2])
+	treetop = os.path.abspath(sys.argv[2])
 
-    # Set the default locations for config files.
-    makebase = os.path.join(treetop, "util/config/make.base")
-    crt0base = os.path.join(treetop, "arch/i386/config/crt0.base")
-    doxyscriptbase = os.path.join(treetop, "src/config/doxyscript.base")
-    
-    # Now read in the customizing script...
-    loc.push_file(argv[1]);
-    parse('board', open(argv[1], 'r').read())
-    dumptree(curpart, 0)
-    gencode(curpart)
-    for i in options.keys():
-	o = options[i]
-	print "key %s @%s: val %s" % (i, o.where(), o.getvalue())
-    # crt0 includes
-    for i in crt0includes:
-    	print "crt0include file %s \n" % (i)
-    for i in driverrules.keys():
-    	print "driver file %s \n" % (i)
-    for i in ldscripts:
-	print "ldscript file %s\n" % (i)
-    for i in makebaserules.keys():
-	m = makebaserules[i]
-	print " makerule %s dep %s act %s\n" % (i, m.dependency, m.actions)
-    writemakefilesettings(target_dir)
-    writecrt0_includes(target_dir)
-    writemakefile(target_dir)
+	# Now read in the customizing script...
+	loc.push_file(argv[1])
+	if (not parse('board', open(argv[1], 'r').read())):
+		fatal("Error: Could not parse file")
+
+	if (debug):
+		print "DEVICE TREE:"
+		dumptree(root, 0)
+
+	gencode(root)
+
+	for i in options.keys():
+		if (isexported(i, 0) and not isset(i, 0)):
+			print "WARNING: Option %s using default value %s" % (i, getformated(i, 0))
+
+	# crt0 includes
+	if (debug):
+		for i in crt0includes:
+			print "crt0include file %s" % (i)
+		for i in driverrules.keys():
+			print "driver file %s" % (i)
+		for i in ldscripts:
+			print "ldscript file %s" % (i)
+		for i in makebaserules.keys():
+			m = makebaserules[i]
+			print " makerule %s dep %s act %s" % (i, m.dependency, m.actions)
+
+	writemakefilesettings(target_dir)
+	writecrt0_includes(target_dir)
+	writemakefile(target_dir)

@@ -32,20 +32,20 @@
 #include "jedec.h"
 #include "w49f002u.h"
 
-int write_49f002 (struct flashchip * flash, unsigned char * buf)
+int write_49f002(struct flashchip *flash, unsigned char *buf)
 {
 	int i;
 	int total_size = flash->total_size * 1024;
-	volatile char * bios = flash->virt_addr;
-	volatile char * dst = bios;
+	volatile char *bios = flash->virt_addr;
+	volatile char *dst = bios;
 
-	erase_jedec(flash);
+	erase_chip_jedec(flash);
 
-	printf ("Programming Page: ");
+	printf("Programming Page: ");
 	for (i = 0; i < total_size; i++) {
 		/* write to the sector */
 		if ((i & 0xfff) == 0)
-			printf ("address: 0x%08lx", (unsigned long)i);
+			printf("address: 0x%08lx", (unsigned long) i);
 		*(bios + 0x5555) = 0xAA;
 		*(bios + 0x2AAA) = 0x55;
 		*(bios + 0x5555) = 0xA0;
@@ -55,9 +55,9 @@ int write_49f002 (struct flashchip * flash, unsigned char * buf)
 		toggle_ready_jedec(dst);
 
 		if ((i & 0xfff) == 0)
-			printf ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+			printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 	}
 	printf("\n");
 
-	return(0);
+	return (0);
 }

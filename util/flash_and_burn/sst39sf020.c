@@ -39,7 +39,8 @@
 #define RESET			0xFF
 #define READ_ID			0x90
 
-static __inline__ int erase_sector_39sf020 (volatile char * bios, unsigned long address)
+static __inline__ int erase_sector_39sf020(volatile char *bios,
+					   unsigned long address)
 {
 	*bios = AUTO_PG_ERASE1;
 	*(bios + address) = AUTO_PG_ERASE2;
@@ -47,30 +48,32 @@ static __inline__ int erase_sector_39sf020 (volatile char * bios, unsigned long 
 	/* wait for Toggle bit ready         */
 	toggle_ready_jedec(bios);
 
-	return(0);
+	return (0);
 }
 
-int write_39sf020 (struct flashchip * flash, unsigned char * buf)
+int write_39sf020(struct flashchip *flash, unsigned char *buf)
 {
 	int i;
-	int total_size = flash->total_size * 1024, page_size = flash->page_size;
-	volatile char * bios = flash->virt_addr;
+	int total_size = flash->total_size * 1024, page_size =
+	    flash->page_size;
+	volatile char *bios = flash->virt_addr;
 
-	erase_jedec(flash);
+	erase_chip_jedec(flash);
 
-	printf ("Programming Page: ");
-	for (i = 0; i < total_size/page_size; i++) {
+	printf("Programming Page: ");
+	for (i = 0; i < total_size / page_size; i++) {
 		/* erase the page before programming */
 		//erase_sector_39sf020(bios, i * page_size);
 
 		/* write to the sector */
-		printf ("%04d at address: 0x%08x", i, i * page_size);
-		write_sector_jedec(bios, buf + i * page_size, bios + i * page_size,
-				     page_size);
-		printf ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
-                fflush(stdout);
+		printf("%04d at address: 0x%08x", i, i * page_size);
+		write_sector_jedec(bios, buf + i * page_size,
+				   bios + i * page_size, page_size);
+		printf
+		    ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		fflush(stdout);
 	}
 	printf("\n");
 
-	return(0);
+	return (0);
 }

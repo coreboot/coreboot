@@ -73,5 +73,5 @@ int main()
 	outb(0x02, 0x2e);
 	outb(0x02, 0x2f);
 
-	return(0);
+	return (0);
 }

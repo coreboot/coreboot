@@ -36,7 +36,7 @@
 #define RESET			0xFF
 #define READ_ID			0x90
 
-static __inline__ void protect_28sf040 (volatile char * bios)
+static __inline__ void protect_28sf040(volatile char *bios)
 {
 	/* ask compiler not to optimize this */
 	volatile unsigned char tmp;
@@ -50,7 +50,7 @@ static __inline__ void protect_28sf040 (volatile char * bios)
 	tmp = *(volatile unsigned char *) (bios + 0x040A);
 }
 
-static __inline__ void unprotect_28sf040 (volatile char * bios)
+static __inline__ void unprotect_28sf040(volatile char *bios)
 {
 	/* ask compiler not to optimize this */
 	volatile unsigned char tmp;
@@ -64,7 +64,8 @@ static __inline__ void unprotect_28sf040 (volatile char * bios)
 	tmp = *(volatile unsigned char *) (bios + 0x041A);
 }
 
-static __inline__ int erase_sector_28sf040 (volatile char * bios, unsigned long address)
+static __inline__ int erase_sector_28sf040(volatile char *bios,
+					   unsigned long address)
 {
 	*bios = AUTO_PG_ERASE1;
 	*(bios + address) = AUTO_PG_ERASE2;
@@ -72,11 +73,13 @@ static __inline__ int erase_sector_28sf040 (volatile char * bios, unsigned long 
 	/* wait for Toggle bit ready         */
 	toggle_ready_jedec(bios);
 
-	return(0);
+	return (0);
 }
 
-static __inline__ int write_sector_28sf040(volatile char * bios, unsigned char * src,
-				       volatile unsigned char * dst, unsigned int page_size)
+static __inline__ int write_sector_28sf040(volatile char *bios,
+					   unsigned char *src,
+					   volatile unsigned char *dst,
+					   unsigned int page_size)
 {
 	int i;
 
@@ -88,20 +91,20 @@ static __inline__ int write_sector_28sf040(volatile char * bios, unsigned char *
 			continue;
 		}
 		/*issue AUTO PROGRAM command */
-		*dst =  AUTO_PGRM;
+		*dst = AUTO_PGRM;
 		*dst++ = *src++;
 
 		/* wait for Toggle bit ready */
 		toggle_ready_jedec(bios);
 	}
 
-	return(0);
+	return (0);
 }
 
-int probe_28sf040 (struct flashchip * flash)
+int probe_28sf040(struct flashchip *flash)
 {
-	volatile char * bios = flash->virt_addr;
-	unsigned char  id1, id2, tmp;
+	volatile char *bios = flash->virt_addr;
+	unsigned char id1, id2, tmp;
 
 	/* save the value at the beginning of the Flash */
 	tmp = *bios;
@@ -118,7 +121,7 @@ int probe_28sf040 (struct flashchip * flash)
 	*bios = RESET;
 	myusec_delay(10);
 
-	printf("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__ , id1, id2);
+	printf("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, id1, id2);
 	if (id1 == flash->manufacture_id && id2 == flash->model_id)
 		return 1;
 
@@ -127,43 +130,45 @@ int probe_28sf040 (struct flashchip * flash)
 	return 0;
 }
 
-int erase_28sf040 (struct flashchip * flash)
+int erase_28sf040(struct flashchip *flash)
 {
-	volatile char * bios = flash->virt_addr;
+	volatile char *bios = flash->virt_addr;
 
-	unprotect_28sf040 (bios);
+	unprotect_28sf040(bios);
 	*bios = CHIP_ERASE;
 	*bios = CHIP_ERASE;
-	protect_28sf040 (bios);
+	protect_28sf040(bios);
 
 	myusec_delay(10);
 	toggle_ready_jedec(bios);
 
-	return(0);
+	return (0);
 }
 
-int write_28sf040 (struct flashchip * flash, unsigned char * buf)
+int write_28sf040(struct flashchip *flash, unsigned char *buf)
 {
 	int i;
-	int total_size = flash->total_size * 1024, page_size = flash->page_size;
-	volatile char * bios = flash->virt_addr;
+	int total_size = flash->total_size * 1024, page_size =
+	    flash->page_size;
+	volatile char *bios = flash->virt_addr;
 
-	unprotect_28sf040 (bios);
+	unprotect_28sf040(bios);
 
-	printf ("Programming Page: ");
-	for (i = 0; i < total_size/page_size; i++) {
+	printf("Programming Page: ");
+	for (i = 0; i < total_size / page_size; i++) {
 		/* erase the page before programming */
 		erase_sector_28sf040(bios, i * page_size);
 
 		/* write to the sector */
-		printf ("%04d at address: 0x%08x", i, i * page_size);
-		write_sector_28sf040(bios, buf + i * page_size, bios + i * page_size,
-				     page_size);
-		printf ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		printf("%04d at address: 0x%08x", i, i * page_size);
+		write_sector_28sf040(bios, buf + i * page_size,
+				     bios + i * page_size, page_size);
+		printf
+		    ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 	}
 	printf("\n");
 
-	protect_28sf040 (bios);
+	protect_28sf040(bios);
 
-	return(0);
+	return (0);
 }

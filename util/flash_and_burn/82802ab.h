@@ -1,11 +1,11 @@
 #ifndef __82802AB_H__
 #define __82802AB_H__ 1
 
-extern int probe_82802ab (struct flashchip * flash);
-extern int erase_82802ab (struct flashchip * flash);
-extern int write_82802ab (struct flashchip * flash, unsigned char * buf);
+extern int probe_82802ab(struct flashchip *flash);
+extern int erase_82802ab(struct flashchip *flash);
+extern int write_82802ab(struct flashchip *flash, unsigned char *buf);
 
-extern __inline__ void toggle_ready_82802ab (volatile char * dst)
+extern __inline__ void toggle_ready_82802ab(volatile char *dst)
 {
 	unsigned int i = 0;
 	char tmp1, tmp2;
@@ -21,7 +21,7 @@ extern __inline__ void toggle_ready_82802ab (volatile char * dst)
 	}
 }
 
-extern __inline__ void data_polling_82802ab (volatile char * dst, char data)
+extern __inline__ void data_polling_82802ab(volatile char *dst, char data)
 {
 	unsigned int i = 0;
 	char tmp;
@@ -36,7 +36,7 @@ extern __inline__ void data_polling_82802ab (volatile char * dst, char data)
 	}
 }
 
-extern __inline__ void protect_82802ab (volatile char * bios)
+extern __inline__ void protect_82802ab(volatile char *bios)
 {
 	*(volatile char *) (bios + 0x5555) = 0xAA;
 	*(volatile char *) (bios + 0x2AAA) = 0x55;
@@ -45,4 +45,4 @@ extern __inline__ void protect_82802ab (volatile char * bios)
 	usleep(200);
 }
 
-#endif /* !__82802AB_H__ */
+#endif				/* !__82802AB_H__ */

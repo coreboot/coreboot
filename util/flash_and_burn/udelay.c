@@ -7,8 +7,7 @@ unsigned long micro = 1;
 void myusec_delay(int time)
 {
 	volatile unsigned long i;
-	for (i = 0; i < time * micro; i++)
-		;
+	for (i = 0; i < time * micro; i++);
 }
 
 void myusec_calibrate_delay()
@@ -23,10 +22,10 @@ void myusec_calibrate_delay()
 		gettimeofday(&start, 0);
 		myusec_delay(count);
 		gettimeofday(&end, 0);
-		timeusec = 1000000 * (end.tv_sec - start.tv_sec ) + 
-			(end.tv_usec - start.tv_usec);
+		timeusec = 1000000 * (end.tv_sec - start.tv_sec) +
+		    (end.tv_usec - start.tv_usec);
 		count *= 2;
-		if (timeusec < 1000000/4)
+		if (timeusec < 1000000 / 4)
 			continue;
 		ok = 1;
 	}
@@ -34,5 +33,5 @@ void myusec_calibrate_delay()
 	// compute one microsecond. That will be count / time
 	micro = count / timeusec;
 
-	fprintf(stderr, "%ldM loops per second\n", (unsigned long)micro);
+	fprintf(stderr, "%ldM loops per second\n", (unsigned long) micro);
 }

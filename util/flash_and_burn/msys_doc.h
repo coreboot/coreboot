@@ -107,4 +107,4 @@ extern int write_md2802(struct flashchip *flash, unsigned char *buf);
 
 
 
-#endif /* !__MSYS_DOC_H__ */
+#endif				/* !__MSYS_DOC_H__ */

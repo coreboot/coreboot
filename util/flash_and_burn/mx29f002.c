@@ -30,18 +30,18 @@
 #include "jedec.h"
 #include "mx29f002.h"
 
-int probe_29f002 (struct flashchip * flash)
+int probe_29f002(struct flashchip *flash)
 {
-	volatile char * bios = flash->virt_addr;
+	volatile char *bios = flash->virt_addr;
 	unsigned char id1, id2;
 
 	*(bios + 0x5555) = 0xAA;
 	*(bios + 0x2AAA) = 0x55;
 	*(bios + 0x5555) = 0x90;
-    
+
 	id1 = *(volatile unsigned char *) bios;
 	id2 = *(volatile unsigned char *) (bios + 0x01);
- 
+
 	*bios = 0xF0;
 
 	myusec_delay(10);
@@ -53,9 +53,9 @@ int probe_29f002 (struct flashchip * flash)
 	return 0;
 }
 
-int erase_29f002 (struct flashchip * flash)
+int erase_29f002(struct flashchip *flash)
 {
-	volatile char * bios = flash->virt_addr;
+	volatile char *bios = flash->virt_addr;
 
 	*(bios + 0x555) = 0xF0;
 	*(bios + 0x555) = 0xAA;
@@ -81,39 +81,39 @@ int erase_29f002 (struct flashchip * flash)
 	*(bios + 0x3bfff) = 0x30;
 #endif
 
-	return(0);
+	return (0);
 }
 
-int write_29f002 (struct flashchip * flash, unsigned char * buf)
+int write_29f002(struct flashchip *flash, unsigned char *buf)
 {
-    int i;
-    int total_size = flash->total_size * 1024;
-    volatile char * bios = flash->virt_addr;
-    volatile char * dst = bios;
+	int i;
+	int total_size = flash->total_size * 1024;
+	volatile char *bios = flash->virt_addr;
+	volatile char *dst = bios;
 
-    *bios = 0xF0;
-    myusec_delay(10);
-    erase_29f002(flash);
-    //*bios = 0xF0;
+	*bios = 0xF0;
+	myusec_delay(10);
+	erase_29f002(flash);
+	//*bios = 0xF0;
 #if 1
-   printf ("Programming Page: ");
-    for (i = 0; i < total_size; i++) {
-	/* write to the sector */
-	if ((i & 0xfff) == 0)
-	    printf ("address: 0x%08lx", (unsigned long)i);
-	*(bios + 0x5555) = 0xAA;
-	*(bios + 0x2AAA) = 0x55;
-	*(bios + 0x5555) = 0xA0;
-	*dst++ = *buf++;
+	printf("Programming Page: ");
+	for (i = 0; i < total_size; i++) {
+		/* write to the sector */
+		if ((i & 0xfff) == 0)
+			printf("address: 0x%08lx", (unsigned long) i);
+		*(bios + 0x5555) = 0xAA;
+		*(bios + 0x2AAA) = 0x55;
+		*(bios + 0x5555) = 0xA0;
+		*dst++ = *buf++;
 
-	/* wait for Toggle bit ready */
-	toggle_ready_jedec(dst);
+		/* wait for Toggle bit ready */
+		toggle_ready_jedec(dst);
 
-	if ((i & 0xfff) == 0)
-	    printf ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
-    }
+		if ((i & 0xfff) == 0)
+			printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+	}
 #endif
-    printf("\n");
+	printf("\n");
 
-    return(0);
+	return (0);
 }

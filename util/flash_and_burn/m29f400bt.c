@@ -27,10 +27,10 @@
 #include "flash.h"
 #include "m29f400bt.h"
 
-int probe_m29f400bt (struct flashchip * flash)
+int probe_m29f400bt(struct flashchip *flash)
 {
-	volatile char * bios = flash->virt_addr;
-	unsigned char  id1, id2;
+	volatile char *bios = flash->virt_addr;
+	unsigned char id1, id2;
 
 	*(volatile char *) (bios + 0xAAA) = 0xAA;
 	*(volatile char *) (bios + 0x555) = 0x55;
@@ -47,7 +47,7 @@ int probe_m29f400bt (struct flashchip * flash)
 
 	myusec_delay(10);
 
-	printf("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, id1, id2);	
+	printf("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, id1, id2);
 
 
 	if (id1 == flash->manufacture_id && id2 == flash->model_id)
@@ -56,9 +56,9 @@ int probe_m29f400bt (struct flashchip * flash)
 	return 0;
 }
 
-int erase_m29f400bt (struct flashchip * flash)
+int erase_m29f400bt(struct flashchip *flash)
 {
-	volatile char * bios = flash->virt_addr;
+	volatile char *bios = flash->virt_addr;
 
 	*(volatile char *) (bios + 0xAAA) = 0xAA;
 	*(volatile char *) (bios + 0x555) = 0x55;
@@ -71,10 +71,10 @@ int erase_m29f400bt (struct flashchip * flash)
 	myusec_delay(10);
 	toggle_ready_m29f400bt(bios);
 
-	return(0);
+	return (0);
 }
 
-int block_erase_m29f400bt (volatile char * bios ,volatile char * dst)
+int block_erase_m29f400bt(volatile char *bios, volatile char *dst)
 {
 
 	*(volatile char *) (bios + 0xAAA) = 0xAA;
@@ -84,22 +84,23 @@ int block_erase_m29f400bt (volatile char * bios ,volatile char * dst)
 	*(volatile char *) (bios + 0xAAA) = 0xAA;
 	*(volatile char *) (bios + 0x555) = 0x55;
 	//*(volatile char *) (bios + 0xAAA) = 0x10;
-	*dst  = 0x30;
+	*dst = 0x30;
 
 	myusec_delay(10);
 	toggle_ready_m29f400bt(bios);
 
-	return(0);
+	return (0);
 }
 
-int write_m29f400bt (struct flashchip * flash, unsigned char * buf)
+int write_m29f400bt(struct flashchip *flash, unsigned char *buf)
 {
 	int i;
-	int total_size = flash->total_size *1024, page_size = flash->page_size;
-	volatile char * bios = flash->virt_addr;
+	int total_size = flash->total_size * 1024, page_size =
+	    flash->page_size;
+	volatile char *bios = flash->virt_addr;
 
 	//erase_m29f400bt (flash);
-	printf ("Programming Page:\n ");
+	printf("Programming Page:\n ");
 	/*********************************
 	*Pages for M29F400BT:
 	* 16	0x7c000		0x7ffff		TOP
@@ -115,42 +116,47 @@ int write_m29f400bt (struct flashchip * flash, unsigned char * buf)
 	* 64	0x10000		0x1ffff
 	* 64	0x00000		0x0ffff		BOTTOM
 	*********************************/
-	printf("total_size/page_size = %d\n",total_size/page_size);
-	for (i = 0; i < (total_size/page_size)-1; i++) {
+	printf("total_size/page_size = %d\n", total_size / page_size);
+	for (i = 0; i < (total_size / page_size) - 1; i++) {
 		printf("%04d at address: 0x%08x\n", i, i * page_size);
 		block_erase_m29f400bt(bios, bios + i * page_size);
-		write_page_m29f400bt(bios, buf + i * page_size, bios + i * page_size,
-				 page_size);
-		printf ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		write_page_m29f400bt(bios, buf + i * page_size,
+				     bios + i * page_size, page_size);
+		printf
+		    ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 	}
 
-	printf("%04d at address: 0x%08x\n",7,0x70000);
-	block_erase_m29f400bt(bios , bios + 0x70000);
-	write_page_m29f400bt(bios,buf + 0x70000, bios + 0x70000, 32*1024);
-	
-	printf("%04d at address: 0x%08x\n",8,0x78000);
-	block_erase_m29f400bt(bios , bios + 0x78000);
-	write_page_m29f400bt(bios,buf + 0x78000, bios + 0x78000, 8*1024);
-	
-	printf("%04d at address: 0x%08x\n",9,0x7a000);
-	block_erase_m29f400bt(bios , bios + 0x7a000);
-	write_page_m29f400bt(bios,buf + 0x7a000, bios + 0x7a000, 8*1024);
-	
-	printf("%04d at address: 0x%08x\n",10,0x7c000);
-	block_erase_m29f400bt(bios , bios + 0x7c000);
-	write_page_m29f400bt(bios,buf + 0x7c000, bios + 0x7c000, 16*1024);
-	
+	printf("%04d at address: 0x%08x\n", 7, 0x70000);
+	block_erase_m29f400bt(bios, bios + 0x70000);
+	write_page_m29f400bt(bios, buf + 0x70000, bios + 0x70000,
+			     32 * 1024);
+
+	printf("%04d at address: 0x%08x\n", 8, 0x78000);
+	block_erase_m29f400bt(bios, bios + 0x78000);
+	write_page_m29f400bt(bios, buf + 0x78000, bios + 0x78000,
+			     8 * 1024);
+
+	printf("%04d at address: 0x%08x\n", 9, 0x7a000);
+	block_erase_m29f400bt(bios, bios + 0x7a000);
+	write_page_m29f400bt(bios, buf + 0x7a000, bios + 0x7a000,
+			     8 * 1024);
+
+	printf("%04d at address: 0x%08x\n", 10, 0x7c000);
+	block_erase_m29f400bt(bios, bios + 0x7c000);
+	write_page_m29f400bt(bios, buf + 0x7c000, bios + 0x7c000,
+			     16 * 1024);
+
 	printf("\n");
 	//protect_m29f400bt (bios);
 
-	return(0);
+	return (0);
 }
 
-int write_linuxbios_m29f400bt (struct flashchip * flash, unsigned char * buf)
+int write_linuxbios_m29f400bt(struct flashchip *flash, unsigned char *buf)
 {
-	volatile char * bios = flash->virt_addr;
+	volatile char *bios = flash->virt_addr;
 
-	printf ("Programming Page:\n ");
+	printf("Programming Page:\n ");
 	/*********************************
 	*Pages for M29F400BT:
 	* 16	0x7c000		0x7ffff		TOP
@@ -166,24 +172,28 @@ int write_linuxbios_m29f400bt (struct flashchip * flash, unsigned char * buf)
 	* 64	0x10000		0x1ffff
 	* 64	0x00000		0x0ffff		BOTTOM
 	*********************************/
-	printf("%04d at address: 0x%08x\n",7,0x00000);
-	block_erase_m29f400bt(bios , bios + 0x00000);
-	write_page_m29f400bt(bios,buf + 0x00000, bios + 0x00000, 64*1024);
-	
-	printf("%04d at address: 0x%08x\n",7,0x10000);
-	block_erase_m29f400bt(bios , bios + 0x10000);
-	write_page_m29f400bt(bios,buf + 0x10000, bios + 0x10000, 64*1024);
-	
-	printf("%04d at address: 0x%08x\n",7,0x20000);
-	block_erase_m29f400bt(bios , bios + 0x20000);
-	write_page_m29f400bt(bios,buf + 0x20000, bios + 0x20000, 64*1024);
-	
-	printf("%04d at address: 0x%08x\n",7,0x30000);
-	block_erase_m29f400bt(bios , bios + 0x30000);
-	write_page_m29f400bt(bios,buf + 0x30000, bios + 0x30000, 64*1024);
-	
+	printf("%04d at address: 0x%08x\n", 7, 0x00000);
+	block_erase_m29f400bt(bios, bios + 0x00000);
+	write_page_m29f400bt(bios, buf + 0x00000, bios + 0x00000,
+			     64 * 1024);
+
+	printf("%04d at address: 0x%08x\n", 7, 0x10000);
+	block_erase_m29f400bt(bios, bios + 0x10000);
+	write_page_m29f400bt(bios, buf + 0x10000, bios + 0x10000,
+			     64 * 1024);
+
+	printf("%04d at address: 0x%08x\n", 7, 0x20000);
+	block_erase_m29f400bt(bios, bios + 0x20000);
+	write_page_m29f400bt(bios, buf + 0x20000, bios + 0x20000,
+			     64 * 1024);
+
+	printf("%04d at address: 0x%08x\n", 7, 0x30000);
+	block_erase_m29f400bt(bios, bios + 0x30000);
+	write_page_m29f400bt(bios, buf + 0x30000, bios + 0x30000,
+			     64 * 1024);
+
 	printf("\n");
 	//protect_m29f400bt (bios);
 
-	return(0);
+	return (0);
 }

@@ -3,13 +3,14 @@
 
 #include <stdio.h>
 
-extern int probe_m29f400bt (struct flashchip * flash);
-extern int erase_m29f400bt (struct flashchip * flash);
-extern int block_erase_m29f400bt (volatile char * bios, volatile char * dst);
-extern int write_m29f400bt (struct flashchip * flash, unsigned char * buf);
-extern int write_linuxbios_m29f400bt (struct flashchip * flash, unsigned char * buf);
+extern int probe_m29f400bt(struct flashchip *flash);
+extern int erase_m29f400bt(struct flashchip *flash);
+extern int block_erase_m29f400bt(volatile char *bios, volatile char *dst);
+extern int write_m29f400bt(struct flashchip *flash, unsigned char *buf);
+extern int write_linuxbios_m29f400bt(struct flashchip *flash,
+				     unsigned char *buf);
 
-extern __inline__ void toggle_ready_m29f400bt (volatile char * dst)
+extern __inline__ void toggle_ready_m29f400bt(volatile char *dst)
 {
 	unsigned int i = 0;
 	char tmp1, tmp2;
@@ -25,7 +26,8 @@ extern __inline__ void toggle_ready_m29f400bt (volatile char * dst)
 	}
 }
 
-extern __inline__ void data_polling_m29f400bt (volatile char * dst, unsigned char data)
+extern __inline__ void data_polling_m29f400bt(volatile char *dst,
+					      unsigned char data)
 {
 	unsigned int i = 0;
 	char tmp;
@@ -40,7 +42,7 @@ extern __inline__ void data_polling_m29f400bt (volatile char * dst, unsigned cha
 	}
 }
 
-extern __inline__ void protect_m29f400bt (volatile char * bios)
+extern __inline__ void protect_m29f400bt(volatile char *bios)
 {
 	*(volatile char *) (bios + 0xAAA) = 0xAA;
 	*(volatile char *) (bios + 0x555) = 0x55;
@@ -49,11 +51,12 @@ extern __inline__ void protect_m29f400bt (volatile char * bios)
 	usleep(200);
 }
 
-extern __inline__ void write_page_m29f400bt (volatile char * bios, char * src, volatile char * dst,
-					 int page_size)
+extern __inline__ void write_page_m29f400bt(volatile char *bios, char *src,
+					    volatile char *dst,
+					    int page_size)
 {
 	int i;
-	
+
 	for (i = 0; i < page_size; i++) {
 		*(volatile char *) (bios + 0xAAA) = 0xAA;
 		*(volatile char *) (bios + 0x555) = 0x55;
@@ -64,11 +67,13 @@ extern __inline__ void write_page_m29f400bt (volatile char * bios, char * src, v
 		//*(volatile char *) (bios) = 0xF0;
 		//usleep(5);
 		toggle_ready_m29f400bt(dst);
-		printf("Value in the flash at address %p = %#x, want %#x\n",(char *)(dst-bios), *dst, *src);
+		printf
+		    ("Value in the flash at address %p = %#x, want %#x\n",
+		     (char *) (dst - bios), *dst, *src);
 		dst++;
 		src++;
 	}
 
 }
 
-#endif /* !__M29F400BT_H__ */
+#endif				/* !__M29F400BT_H__ */

@@ -40,14 +40,13 @@ static void doc_write_cdsncontrol(volatile char *bios, unsigned char data);
 
 
 
-int
-probe_md2802(struct flashchip * flash)
+int probe_md2802(struct flashchip *flash)
 {
 	volatile char *bios = flash->virt_addr;
 	unsigned char chipid;
 #ifndef MSYSTEMS_DOC_NO_55AA_CHECKING
 	unsigned char id_0x55, id_0xAA;
-#endif /* !MSYSTEMS_DOC_NO_55AA_CHECKING */
+#endif				/* !MSYSTEMS_DOC_NO_55AA_CHECKING */
 	int i, toggle_a, toggle_b;
 
 	printf("%s:\n", __FUNCTION__);
@@ -66,14 +65,15 @@ probe_md2802(struct flashchip * flash)
 	doc_write(0x85, bios, DOCControl);
 	doc_write(0x85, bios, DOCControl);
 	doc_read_4nop(bios);
-	if(doc_wait(bios, 5000))
-		return(-1);
+	if (doc_wait(bios, 5000))
+		return (-1);
 	printf("%s: switching off reset mode ... done\n", __FUNCTION__);
 	printf("%s:\n", __FUNCTION__);
 
 	printf("%s: switching off write protection ...\n", __FUNCTION__);
-	doc_write_cdsncontrol(bios, doc_read_cdsncontrol(bios)&(~0x08));
-	printf("%s: switching off write protection ... done\n", __FUNCTION__);
+	doc_write_cdsncontrol(bios, doc_read_cdsncontrol(bios) & (~0x08));
+	printf("%s: switching off write protection ... done\n",
+	       __FUNCTION__);
 	printf("%s:\n", __FUNCTION__);
 
 
@@ -81,129 +81,128 @@ probe_md2802(struct flashchip * flash)
 #ifndef MSYSTEMS_DOC_NO_55AA_CHECKING
 	id_0x55 = doc_read(bios, IPL_0x0000);
 	id_0xAA = doc_read(bios, IPL_0x0001);
-#endif /* !MSYSTEMS_DOC_NO_55AA_CHECKING */
+#endif				/* !MSYSTEMS_DOC_NO_55AA_CHECKING */
 	printf("%s: IPL_0x0000: 0x%02x\n", __FUNCTION__, id_0x55);
 	printf("%s: IPL_0x0001: 0x%02x\n", __FUNCTION__, id_0xAA);
 	printf("%s: IPL_0x0002: 0x%02x\n", __FUNCTION__,
-		doc_read(bios, IPL_0x0002));
+	       doc_read(bios, IPL_0x0002));
 	printf("%s: IPL_0x0003: 0x%02x\n", __FUNCTION__,
-		doc_read(bios, IPL_0x0003));
+	       doc_read(bios, IPL_0x0003));
 	printf("%s:\n", __FUNCTION__);
 	printf("%s: ChipID: 0x%02x\n", __FUNCTION__, chipid);
 	printf("%s: DOCStatus: 0x%02x\n", __FUNCTION__,
-		doc_read_docstatus(bios));
+	       doc_read_docstatus(bios));
 	printf("%s: FloorSelect: 0x%02x\n", __FUNCTION__,
-		doc_read(bios, FloorSelect));
+	       doc_read(bios, FloorSelect));
 	printf("%s: CDSNControl: 0x%02x\n", __FUNCTION__,
-		doc_read_cdsncontrol(bios));
+	       doc_read_cdsncontrol(bios));
 	printf("%s: CDSNDeviceSelect: 0x%02x\n", __FUNCTION__,
-		doc_read(bios, CDSNDeviceSelect));
+	       doc_read(bios, CDSNDeviceSelect));
 	printf("%s: ECCConfiguration: 0x%02x\n", __FUNCTION__,
-		doc_read(bios, ECCConfiguration));
+	       doc_read(bios, ECCConfiguration));
 	printf("%s: CDSNSlowIO: 0x%02x\n", __FUNCTION__,
-		doc_read(bios, CDSNSlowIO));
+	       doc_read(bios, CDSNSlowIO));
 	printf("%s: ECCSyndrome0: 0x%02x\n", __FUNCTION__,
-		doc_read(bios, ECCSyndrome0));
+	       doc_read(bios, ECCSyndrome0));
 	printf("%s: ECCSyndrome1: 0x%02x\n", __FUNCTION__,
-		doc_read(bios, ECCSyndrome1));
+	       doc_read(bios, ECCSyndrome1));
 	printf("%s: ECCSyndrome2: 0x%02x\n", __FUNCTION__,
-		doc_read(bios, ECCSyndrome2));
+	       doc_read(bios, ECCSyndrome2));
 	printf("%s: ECCSyndrome3: 0x%02x\n", __FUNCTION__,
-		doc_read(bios, ECCSyndrome3));
+	       doc_read(bios, ECCSyndrome3));
 	printf("%s: ECCSyndrome4: 0x%02x\n", __FUNCTION__,
-		doc_read(bios, ECCSyndrome4));
+	       doc_read(bios, ECCSyndrome4));
 	printf("%s: ECCSyndrome5: 0x%02x\n", __FUNCTION__,
-		doc_read(bios, ECCSyndrome5));
+	       doc_read(bios, ECCSyndrome5));
 	printf("%s: AliasResolution: 0x%02x\n", __FUNCTION__,
-		doc_read(bios, AliasResolution));
+	       doc_read(bios, AliasResolution));
 	printf("%s: ConfigurationInput: 0x%02x\n", __FUNCTION__,
-		doc_read(bios, ConfigurationInput));
+	       doc_read(bios, ConfigurationInput));
 	printf("%s: ReadPipelineInitialization: 0x%02x\n", __FUNCTION__,
-		doc_read(bios, ReadPipelineInitialization));
+	       doc_read(bios, ReadPipelineInitialization));
 	printf("%s: LastDataRead: 0x%02x\n", __FUNCTION__,
-		doc_read(bios, LastDataRead));
+	       doc_read(bios, LastDataRead));
 	printf("%s:\n", __FUNCTION__);
 
 	printf("%s: checking ECCConfiguration toggle bit\n", __FUNCTION__);
 	printf("%s:", __FUNCTION__);
 	toggle_a = toggle_b = 0;
-	for(i=0; i<10; i++)
-	{
+	for (i = 0; i < 10; i++) {
 		unsigned char toggle = doc_toggle(bios);
 
 		printf(" 0x%02x", toggle);
 
-		if(i%2)
+		if (i % 2)
 			toggle_a += toggle;
 		else
 			toggle_b += toggle;
-	} /* for(i=0; i<10; i++) */
-	printf("\n%s: toggle result: %d/%d\n", __FUNCTION__, toggle_a, toggle_b);
+	}			/* for(i=0; i<10; i++) */
+	printf("\n%s: toggle result: %d/%d\n", __FUNCTION__, toggle_a,
+	       toggle_b);
 
-	if(chipid == flash->model_id
-		&& ((toggle_a==5 && toggle_b==0)||(toggle_a==0 && toggle_b==5))
+	if (chipid == flash->model_id
+	    && ((toggle_a == 5 && toggle_b == 0)
+		|| (toggle_a == 0 && toggle_b == 5))
 #ifndef MSYSTEMS_DOC_NO_55AA_CHECKING
-		&& id_0x55 == 0x55 && id_0xAA == 0xaa
-#endif /* !MSYSTEMS_DOC_NO_55AA_CHECKING */
-		)
-	{
-		return(1);
+	    && id_0x55 == 0x55 && id_0xAA == 0xaa
+#endif				/* !MSYSTEMS_DOC_NO_55AA_CHECKING */
+	    ) {
+		return (1);
 	}
 
-	return(0);
-} /* int probe_md2802(struct flashchip *flash) */
+	return (0);
+}				/* int probe_md2802(struct flashchip *flash) */
 
 
 
-int
-read_md2802(struct flashchip *flash, unsigned char *buf)
+int read_md2802(struct flashchip *flash, unsigned char *buf)
 {
-	
-	return(0);
-} /* int read_md2802(struct flashchip *flash, unsigned char *buf) */
+
+	return (0);
+}				/* int read_md2802(struct flashchip *flash, unsigned char *buf) */
 
 
 
-int
-erase_md2802(struct flashchip *flash)
+int erase_md2802(struct flashchip *flash)
 {
 	volatile char *bios = flash->virt_addr;
 
-	return(1);
-	*(volatile char *)(bios + 0x5555) = 0xAA;
-	*(volatile char *)(bios + 0x2AAA) = 0x55;
-	*(volatile char *)(bios + 0x5555) = 0x80;
+	return (1);
+	*(volatile char *) (bios + 0x5555) = 0xAA;
+	*(volatile char *) (bios + 0x2AAA) = 0x55;
+	*(volatile char *) (bios + 0x5555) = 0x80;
 
-	*(volatile char *)(bios + 0x5555) = 0xAA;
-	*(volatile char *)(bios + 0x2AAA) = 0x55;
-	*(volatile char *)(bios + 0x5555) = 0x10;
-} /* int erase_md2802(struct flashchip *flash) */
+	*(volatile char *) (bios + 0x5555) = 0xAA;
+	*(volatile char *) (bios + 0x2AAA) = 0x55;
+	*(volatile char *) (bios + 0x5555) = 0x10;
+}				/* int erase_md2802(struct flashchip *flash) */
 
 
 
-int
-write_md2802(struct flashchip *flash, unsigned char *buf)
+int write_md2802(struct flashchip *flash, unsigned char *buf)
 {
 	int i;
-	int total_size = flash->total_size *1024, page_size = flash->page_size;
-	volatile unsigned char * bios = flash->virt_addr;
+	int total_size = flash->total_size * 1024, page_size =
+	    flash->page_size;
+	volatile unsigned char *bios = flash->virt_addr;
 
-	return(1);
-	erase_md2802 (flash);
-	if (*bios != (unsigned char ) 0xff) {
+	return (1);
+	erase_md2802(flash);
+	if (*bios != (unsigned char) 0xff) {
 		printf("ERASE FAILED\n");
 		return -1;
 	}
-	printf ("Programming Page: ");
-	for (i = 0; i < total_size/page_size; i++) {
-		printf ("%04d at address: 0x%08x", i, i * page_size);
+	printf("Programming Page: ");
+	for (i = 0; i < total_size / page_size; i++) {
+		printf("%04d at address: 0x%08x", i, i * page_size);
 		//write_page_md2802(bios, buf + i * page_size, bios + i * page_size, page_size);
-		printf ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		printf
+		    ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 	}
 	printf("\n");
 	//protect_md2802(bios);
 
-} /* int write_md2802(struct flashchip *flash, char *buf) */
+}				/* int write_md2802(struct flashchip *flash, char *buf) */
 
 
 
@@ -216,74 +215,67 @@ write_md2802(struct flashchip *flash, unsigned char *buf)
 		0: ready
 		-1: timeout expired
 */
-static int
-doc_wait(volatile char *bios, int timeout)
+static int doc_wait(volatile char *bios, int timeout)
 {
 	int i = 20;
 
 	doc_read_4nop(bios);
 
-	while(_doc_busy(bios) && (i != 0))
-	{
-		usleep(timeout*1000/20);
+	while (_doc_busy(bios) && (i != 0)) {
+		usleep(timeout * 1000 / 20);
 		i--;
 	}
 
 	doc_read_2nop(bios);
 
-	if(_doc_busy(bios))
-	{
+	if (_doc_busy(bios)) {
 		doc_read_2nop(bios);
-		return(-1);
+		return (-1);
 	}
 
-	return(0);
-} /* static int doc_wait(volatile char *bios, int timeout) */
+	return (0);
+}				/* static int doc_wait(volatile char *bios, int timeout) */
 
 
 
-static unsigned char
-doc_read_docstatus(volatile char *bios)
+static unsigned char doc_read_docstatus(volatile char *bios)
 {
 	doc_read(bios, CDSNSlowIO);
 	doc_read_2nop(bios);
 
-	return(doc_read(bios, _DOCStatus));
-} /* static unsigned char doc_read_docstatus(volatile char *bios) */
+	return (doc_read(bios, _DOCStatus));
+}				/* static unsigned char doc_read_docstatus(volatile char *bios) */
 
 
 
-static unsigned char
-doc_read_chipid(volatile char *bios)
+static unsigned char doc_read_chipid(volatile char *bios)
 {
 	doc_read(bios, CDSNSlowIO);
 	doc_read_2nop(bios);
 
-	return(doc_read(bios, _ChipID));
-} /* static unsigned char doc_read_chipid(volatile char *bios) */
+	return (doc_read(bios, _ChipID));
+}				/* static unsigned char doc_read_chipid(volatile char *bios) */
 
 
 
-static unsigned char
-doc_read_cdsncontrol(volatile char *bios)
+static unsigned char doc_read_cdsncontrol(volatile char *bios)
 {
 	unsigned char value;
 
 	/* the delays might be necessary when reading the busy bit,
-		but because a read to this reg reads the busy bit
-		anyway we better do this delays... */
+	   but because a read to this reg reads the busy bit
+	   anyway we better do this delays... */
 	doc_read_4nop(bios);
 	value = doc_read(bios, _CDSNControl);
 	doc_read_2nop(bios);
 
-	return(value);
-} /* static unsigned char doc_read_chipid(volatile char *bios) */
+	return (value);
+}				/* static unsigned char doc_read_chipid(volatile char *bios) */
 
 
 
-static void
-doc_write_cdsncontrol(volatile char *bios, unsigned char data)
+static void doc_write_cdsncontrol(volatile char *bios, unsigned char data)
 {
 	doc_write(data, bios, _CDSNControl);
 	doc_read_4nop(bios);
-} /* static void doc_write_chipid(volatile char *bios, unsigned char data) */
+}				/* static void doc_write_chipid(volatile char *bios, unsigned char data) */

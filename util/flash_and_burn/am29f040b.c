@@ -28,13 +28,14 @@
 #include "flash.h"
 #include "jedec.h"
 
-static __inline__ int erase_sector_29f040b (volatile char * bios, unsigned long address)
+static __inline__ int erase_sector_29f040b(volatile char *bios,
+					   unsigned long address)
 {
-	*(bios +   0x555) = 0xAA;
-	*(bios +   0x2AA) = 0x55;
-	*(bios +   0x555) = 0x80;
-	*(bios +   0x555) = 0xAA;
-	*(bios +   0x2AA) = 0x55;
+	*(bios + 0x555) = 0xAA;
+	*(bios + 0x2AA) = 0x55;
+	*(bios + 0x555) = 0x80;
+	*(bios + 0x555) = 0xAA;
+	*(bios + 0x2AA) = 0x55;
 	*(bios + address) = 0x30;
 
 	sleep(2);
@@ -42,17 +43,20 @@ static __inline__ int erase_sector_29f040b (volatile char * bios, unsigned long 
 	/* wait for Toggle bit ready         */
 	toggle_ready_jedec(bios + address);
 
-	return(0);
+	return (0);
 }
 
-static __inline__ int write_sector_29f040b(volatile char * bios, unsigned char * src,
-				       volatile unsigned char * dst, unsigned int page_size)
+static __inline__ int write_sector_29f040b(volatile char *bios,
+					   unsigned char *src,
+					   volatile unsigned char *dst,
+					   unsigned int page_size)
 {
 	int i;
 
 	for (i = 0; i < page_size; i++) {
-		printf("0x%08lx", (unsigned long) dst - (unsigned long) bios);
-	
+		printf("0x%08lx",
+		       (unsigned long) dst - (unsigned long) bios);
+
 		*(bios + 0x555) = 0xAA;
 		*(bios + 0x2AA) = 0x55;
 		*(bios + 0x555) = 0xA0;
@@ -64,25 +68,25 @@ static __inline__ int write_sector_29f040b(volatile char * bios, unsigned char *
 		printf("\b\b\b\b\b\b\b\b\b\b");
 	}
 
-	return(0);
+	return (0);
 }
 
-int probe_29f040b (struct flashchip * flash)
+int probe_29f040b(struct flashchip *flash)
 {
-	volatile unsigned char * bios = flash->virt_addr;
+	volatile unsigned char *bios = flash->virt_addr;
 	unsigned char id1, id2;
 
 	*(bios + 0x555) = 0xAA;
 	*(bios + 0x2AA) = 0x55;
 	*(bios + 0x555) = 0x90;
-    
-	id1 = * bios;
-	id2 = * (bios + 0x01);
+
+	id1 = *bios;
+	id2 = *(bios + 0x01);
 
 	*bios = 0xF0;
 
 	myusec_delay(10);
-    
+
 	printf("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, id1, id2);
 	if (id1 == flash->manufacture_id && id2 == flash->model_id)
 		return 1;
@@ -90,9 +94,9 @@ int probe_29f040b (struct flashchip * flash)
 	return 0;
 }
 
-int erase_29f040b (struct flashchip * flash)
+int erase_29f040b(struct flashchip *flash)
 {
-	volatile unsigned char * bios = flash->virt_addr;
+	volatile unsigned char *bios = flash->virt_addr;
 
 	*(bios + 0x555) = 0xAA;
 	*(bios + 0x2AA) = 0x55;
@@ -104,27 +108,28 @@ int erase_29f040b (struct flashchip * flash)
 	myusec_delay(10);
 	toggle_ready_jedec(bios);
 
-	return(0);
+	return (0);
 }
 
-int write_29f040b (struct flashchip * flash, unsigned char * buf)
+int write_29f040b(struct flashchip *flash, unsigned char *buf)
 {
 	int i;
-	int total_size = flash->total_size * 1024, page_size = flash->page_size;
-	volatile char * bios = flash->virt_addr;
+	int total_size = flash->total_size * 1024, page_size =
+	    flash->page_size;
+	volatile char *bios = flash->virt_addr;
 
-	printf ("Programming Page: ");
-	for (i = 0; i < total_size/page_size; i++) {
+	printf("Programming Page: ");
+	for (i = 0; i < total_size / page_size; i++) {
 		/* erase the page before programming */
 		erase_sector_29f040b(bios, i * page_size);
 
 		/* write to the sector */
-		printf ("%04d at address: ", i);
-		write_sector_29f040b(bios, buf + i * page_size, bios + i * page_size,
-				     page_size);
-		printf ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		printf("%04d at address: ", i);
+		write_sector_29f040b(bios, buf + i * page_size,
+				     bios + i * page_size, page_size);
+		printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 	}
 	printf("\n");
 
-	return(0);
+	return (0);
 }

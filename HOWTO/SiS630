@@ -1,0 +1,170 @@
+This file contains instructions for the SiS 630 based mainboards.
+
+WARNING: we assume you've built kernels, know how to open up your PC, and how
+to yank the flash part out and put in a different part. There is NO WARRANTY, 
+express or implied, with this software. In fact, if you don't know what you're
+doing, and you get careless, you're going to end up with a nice paperweight
+instead of a motherboard. YOU HAVE BEEN WARNED. 
+
+That said, this process is pretty hard to screw up. 
+
+The mainboards that are "known good" are:
+Matsonic MS7308E
+Winfast 6300MAX
+
+Mainboards with SiS630 that we KNOW will not work are:
+Any ASUS (uses the wrong kind of flash part)
+Matsonic MS7308D (no Ethernet connector)
+
+Vendors we have experience with that work:
+www.aaronix.com
+
+Clueless vendors, who ship the wrong board:
+www.dknypc.com
+
+Vendors who might work:
+www.eurocomla.com
+
+----
+The steps for loading linuxbios are simple:
+1) get a kernel, patch it, then build it
+2) config and build linuxbios
+3) get linux installed on your machine
+4) put a Disk On Chip into the flash socket
+5) Burn the chip
+6) hit reset. You're up.
+
+---
+Step 1:
+o 	to www.kernel.org and get linux-2.4.0-test11
+
+o	Once you have pulled this file down and untar'ed it, 
+	apply the proper patch from the freebios/src/kernel_patches 
+	directory.  Here's the current favorite for test11:
+ 	linux-2.4.0-test11-sis630-fat-sisfb.patch
+
+o	Now copy config-2.4.0-test11.sis to .config, then
+	make oldconfig
+	make clean
+	make dep
+	make vmlinux
+
+You now have a kernel for linuxbios.
+
+Step 2:
+
+o	You need to get linuxbios source.
+cvs -d:pserver:anonymous@cvs.freebios.sourceforge.net:/cvsroot/freebios login 
+
+cvs -z3 -d:pserver:anonymous@cvs.freebios.sourceforge.net:/cvsroot/freebios co freebios 
+
+
+o	You now need to figure out where you want to put your build images. 
+	DO NOT PUT THESE IN THE LINUXBIOS SOURCE TREE. 
+	You want to put them OUTSIDE THE TREE, so you can always
+	cvs update
+	and not lose any of your build directory. 
+	Linuxbios does all the builds in a single directory, outside the 
+	source tree, much as BSD does. To build the initial Makefile, 
+	assembly stub, and ld script, we have a config tool. 
+	You need to build a config file (simple), run the config tool,
+	cd to the build directory, and type 'make'. 
+	Here is a config file for the winfast 6300
+
+	# This will make a target directory of ./winfast
+	# Note that this is RELATIVE TO WHERE YOU ARE WHEN YOU RUN THE 
+	# CONFIG TOOL. Make it absolute if you like
+	target winfast 
+
+	# WinFast 6300 MAX mainboard
+	mainboard leadtek/winfast6300
+
+	# Enable Serial Console for debugging
+	# It will come up at 115200,8n1
+	option SERIAL_CONSOLE
+
+	# Enable MicroCode update and L2 Cache init for PII and PIII
+	option UPDATE_MICROCODE
+	option CONFIGURE_L2_CACHE
+
+	# Use the internal VGA frame buffer device
+	option HAVE_FRAMEBUFFER
+
+	# Path to your kernel (vmlinux)
+	linux /usr/src/linux
+
+	# Kernel command line parameters
+	commandline root=/dev/hda1 
+
+	
+	The target command names the build directory. The mainboard command
+	names the mainboard. We have set options for a serial console which
+	will get you linuxbios debug output via the serial port; updating
+	microcode on the PIII (mandatory for coppermine!); configuring the
+	L2 cache (harmless, leave it in); framebuffer init (leave it in
+	if you want a console). You have to tell it where to find the vmlinux
+	you build (the 'linux' command); and finally you need a commandline
+	for now. 
+
+	That's the file. Here's what it looks like when you run it. 
+ 	python LBConfig.py winfast.config ~/src/bios/freebios
+	winfast is not a directory. 
+ 	I know I should make this, but I'm too paranoid
+ 	To fix this, type
+	mkdir -p  winfast
+ 	then run this program again
+
+	Note this first time, we got an error, since I forgot to make
+	the 'target' directory.
+	mkdir -p winfast
+
+	python LBConfig.py winfast.config ~/src/bios/freebios
+	Will place Makefile, crt0.S, ldscript.ld in  winfast
+	Process config file:  /users/rminnich/src/bios/freebios/src/mainboard/leadtek/winfast6300/Config
+	Process config file:  /users/rminnich/src/bios/freebios/src/northsouthbridge/sis/630/Config
+	Added ram init file:  northsouthbridge/sis/630/raminit.inc
+	Process config file:  /users/rminnich/src/bios/freebios/src/cpu/p5/Config
+	Process config file:  /users/rminnich/src/bios/freebios/src/cpu/p6/Config
+	Process config file:  /users/rminnich/src/bios/freebios/src/lib/Config
+	Trying to create  winfast/Makefile
+	Trying to create  winfast/ldscript.ld
+	Trying to create  winfast/crt0.S
+	Check for crt0.S param file: /users/rminnich/src/bios/freebios/src/include/northsouthbridge/sis/630/param.h
+ 	Adding include to crt0.S for this parameter file
+
+	OK, all those messages are normal. Now we do a make:
+
+	(for a full transcript, see later in the file)
+
+	We now have three files to be loaded into the Disk On Chip. The first
+	is called docipl. It is 512 bytes. The second is called linuxbios.strip,
+	and is the binary image of the linuxbios that gets loaded into Doc. 
+	The third file  is you kernel, and is stripped and compressed, 
+	vmlinux.bin.gz
+
+	-rw-------    1 rminnich CIC-ACL       512 Dec 20 08:41 docipl
+	-rwx------    1 rminnich CIC-ACL     33494 Dec 20 08:41 linuxbios.strip*
+	-rwx------    1 rminnich CIC-ACL    756069 Dec 20 08:41 vmlinux.bin.gz*
+
+
+	You're now ready to burn the Disk On Chip, but first .... 
+
+Step 3) 
+	Get Linux installed on your machine. You still have to do this first.
+	We can't yet boot alternate media such as cdroms. 
+	Be sure and get a kernel running which has MTD on as MODULES. 
+
+Step 4) open the machine (LEAVE THE POWER ON), yank the flash, and 
+	plug in the DoC. We recommend you practice this first with the 
+	power off. Make sure that whatever you do, you are not shorting 
+	things out. 
+
+	NOTE: YOU CAN HURT YOURSELF AT THIS STEP. We can't take any
+	responsibility for what happens to you here. If you haven't 
+	done this, or are not trained, or have a history of getting
+	hurt by hardware, DON'T DO IT.
+
+Step 5) Run the following script:
+
+Step 6) Hit reset. Linuxbios should come up in a few seconds. 
+

@@ -320,6 +320,10 @@ void hardwaremain(int boot_complete)
 	/* make certain we are the only cpu running in linuxBIOS */
 	wait_for_other_cpus();
 
+#if CONFIG_REALMODE_IDT == 1
+	printk_debug("INSTALL REAL-MODE IDT\n");
+	setup_realmode_idt();
+#endif
 #if CONFIG_VGABIOS == 1
 	printk_debug("DO THE VGA BIOS\n");
 	do_vgabios();

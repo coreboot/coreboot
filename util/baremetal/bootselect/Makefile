@@ -3,7 +3,7 @@ ARCH = i386
 
 CC = gcc
 
-CFLAGS = -I ../include -I ../include/$(ARCH) -O2
+CFLAGS = -I ../include -I ../include/$(ARCH) -O2 -DZKERNEL_START=0xfff00000
 
 DEPS =  bootselect.o rom_fill_inbuf.o chooser.o   ../lib/baremetal.a
 

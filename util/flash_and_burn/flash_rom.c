@@ -136,9 +136,34 @@ enable_flash_e7500(struct pci_dev *dev, char *name) {
 
   new = old | 1;
 
+  if (new == old)
+      return 0;
+
   ok = pci_write_byte(dev, 0x4e, new);
 
   if (ok != new) {
+    printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n", 
+	   old, new, name);
+    return -1;
+  }
+  return 0;
+}
+
+int
+enable_flash_vt8231(struct pci_dev *dev, char *name) {
+  unsigned char old, new;
+  int ok;
+  
+  old = pci_read_byte(dev, 0x40);
+
+  new = old | 0x10;
+
+  if (new == old)
+      return 0;
+
+  ok = pci_write_byte(dev, 0x40, new);
+
+  if (ok != 0) {
     printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n", 
 	   old, new, name);
     return -1;
@@ -206,29 +231,29 @@ int verify_flash (struct flashchip * flash, char * buf, int verbose)
 
 // count to a billion. Time it. If it's < 1 sec, count to 10B, etc.
 
-unsigned long micro = 0;
+unsigned long micro = 1;
 
 void 
 myusec_calibrate_delay()
 {
-	unsigned long count = 10 *  1024 * 1024;
+        int count = 1000;
 	volatile unsigned long i;
 	unsigned long timeusec;
 	struct timeval start, end;
 	int ok = 0;
+	void myusec_delay(int time);
 
 	printf("Setting up microsecond timing loop\n");
 	while (! ok) {
 		//fprintf(stderr, "Try %d\n", count);
 		gettimeofday(&start, 0);
-		for( i = count; i; i--)
-			;
+                myusec_delay(count);
 		gettimeofday(&end, 0);
 		timeusec = 1000000 * (end.tv_sec - start.tv_sec ) + 
 				(end.tv_usec - start.tv_usec);
-		fprintf(stderr, "timeusec is %d\n", timeusec);
-		count *= 100;
-		if (timeusec < 1000000)
+		//fprintf(stderr, "timeusec is %d\n", timeusec);
+		count *= 2;
+		if (timeusec < 1000000/4)
 			continue;
 		ok = 1;
 	}
@@ -236,18 +261,17 @@ myusec_calibrate_delay()
 	// compute one microsecond. That will be count / time
 	micro = count / timeusec;
 
-	//fprintf(stderr, "one us is %d count\n", micro);
+	fprintf(stderr, "%dM loops per second\n", micro);
 
 
 }
 
 void
-myusec_delay(time)
+myusec_delay(int time)
 {
   volatile unsigned long i;
   for(i = 0; i < time * micro; i++)
 	;
-
 }
 
 typedef struct penable {
@@ -260,6 +284,7 @@ FLASH_ENABLE enables[] = {
 
   {0x1, 0x1, "sis630 -- what's the ID?", enable_flash_sis630},
   {0x8086, 0x2480, "E7500", enable_flash_e7500},
+  {0x1106, 0x8231, "VT8231", enable_flash_vt8231},
 };
   
 int
@@ -291,8 +316,23 @@ enable_flash_write() {
   }
 
   /* now do the deed. */
-  enable->doit(dev, enable->name);
+  if (enable) {
+      printf("Enabling flash write on %s...", enable->name);
+      if (enable->doit(dev, enable->name) == 0)
+          printf("OK\n");
+  }
   return 0;
+}
+
+void usage(const char *name)
+{
+    printf("usage: %s [-rwv] [file]\n", name);
+    printf("-r: read flash and save into file\n"
+        "-w: write file into flash (default when file is specified)\n"
+        "-v: verify flash against file\n"
+        " If no file is specified, then all that happens\n"
+        " is that flash info is dumped\n");
+    exit(1);
 }
 
 int
@@ -302,12 +342,36 @@ main (int argc, char * argv[])
     unsigned long size;
     FILE * image;
     struct flashchip * flash;
-
-    if (argc > 2){
-	printf("usage: %s [romimage]\n", argv[0]);
-	printf(" If no romimage is specified, then all that happens\n");
-	printf(" is that flash info is dumped\n");
+    int opt;
+    int read_it = 0, write_it = 0, verify_it = 0;
+    char *filename = NULL;
+    while ((opt = getopt(argc, argv, "rwv")) != EOF) {
+        switch (opt) {
+        case 'r':
+            read_it = 1;
+            break;
+        case 'w':
+            write_it = 1;
+            break;
+        case 'v':
+            verify_it = 1;
+            break;
+        default:
+            usage(argv[0]);
+            break;
+        }
     }
+    if (read_it && write_it) {
+        printf("-r and -w are mutually exclusive\n");
+        usage(argv[0]);
+    }
+
+    if (optind < argc)
+        filename = argv[optind++];
+
+    printf("Calibrating timer since microsleep sucks ... takes a second\n");
+    myusec_calibrate_delay();
+    printf("OK, calibrated, now do the deed\n");
 
     /* try to enable it. Failure IS an option, since not all motherboards
      * really need this to be done, etc., etc. It sucks.
@@ -320,25 +384,35 @@ main (int argc, char * argv[])
     }
 
     printf("Part is %s\n", flash->name);
-    if (argc < 2){
+    if (!filename){
 	printf("OK, only ENABLING flash write, but NOT FLASHING\n");
 	return 0;
     }
     size = flash->total_size * 1024;
+    buf = (char *) calloc (size, sizeof(char));
 
-    if ((image = fopen (argv[1], "r")) == NULL) {
-	perror("Error opening image file");
-	exit(1);
+    if (read_it) {
+        if ((image = fopen (filename, "w")) == NULL) {
+            perror("Error opening image file");
+            exit(1);
+        }
+        printf("Reading Flash...");
+        memcpy(buf, (const char *) flash->virt_addr, size);
+        fwrite(buf, sizeof(char), size, image);
+        fclose(image);
+        printf("done\n");
+    } else {
+        if ((image = fopen (filename, "r")) == NULL) {
+            perror("Error opening image file");
+            exit(1);
+        }
+        fread (buf, sizeof(char), size, image);
+        fclose(image);
     }
 
-    buf = (char *) calloc (size, sizeof(char));
-    fread (buf, sizeof(char), size, image);
-
-    printf("Calibrating timer since microsleep sucks ... takes a second\n");
-    myusec_calibrate_delay();
-    printf("OK, calibrated, now do the deed\n");
-
-    flash->write (flash, buf);
-    verify_flash (flash, buf, /* verbose = */ 0);
+    if (write_it)
+        flash->write (flash, buf);
+    if (verify_it)
+        verify_flash (flash, buf, /* verbose = */ 0);
     return 0;
 }

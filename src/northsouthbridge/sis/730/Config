@@ -1,4 +1,4 @@
-option SIS730
+option SIS730=1
 option SMA_SIZE=0xA0
 raminit northsouthbridge/sis/730/raminit.inc
 

@@ -12,7 +12,7 @@ southbridge via/vt82c686
 superio via/vt82c686
 mainboardinit cpu/p6/earlymtrr.inc
 
-option ENABLE_FIXED_AND_VARIABLE_MTRRS
+option ENABLE_FIXED_AND_VARIABLE_MTRRS=1
 option SUPERIO_DEVFN=0x88
 object mainboard.o
 keyboard pc80

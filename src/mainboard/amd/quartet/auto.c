@@ -17,7 +17,7 @@
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "debug.c"
 
-static void memreset_setup(const struct mem_controller *ctrl)
+static void memreset_setup(void)
 {
 	/* Set the memreset low */
 	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 28);
@@ -25,12 +25,12 @@ static void memreset_setup(const struct mem_controller *ctrl)
 	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 29);
 }
 
-static void memreset(const struct mem_controller *ctrl)
+static void memreset(int controllers, const struct mem_controller *ctrl)
 {
 	udelay(800);
 	/* Set memreset_high */
 	outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 28);
-	udelay(50);
+	udelay(90);
 }
 
 /*
@@ -160,65 +160,67 @@ static void main(void)
 	 * GPIO29 of 8111 will control H1_MEMRESET_L
 	 */
 
-	static const struct mem_controller cpu0 = {
-		.f0 = PCI_DEV(0, 0x18, 0),
-		.f1 = PCI_DEV(0, 0x18, 1),
-		.f2 = PCI_DEV(0, 0x18, 2),
-		.f3 = PCI_DEV(0, 0x18, 3),
-		.channel0 = { (0xa<<3)|0, (0xa<<3)|2, 0, 0 },
-		.channel1 = { (0xa<<3)|1, (0xa<<3)|3, 0, 0 },
+	static const struct mem_controller cpu[] = {
+		{
+			.f0 = PCI_DEV(0, 0x18, 0),
+			.f1 = PCI_DEV(0, 0x18, 1),
+			.f2 = PCI_DEV(0, 0x18, 2),
+			.f3 = PCI_DEV(0, 0x18, 3),
+			.channel0 = { (0xa<<3)|0, (0xa<<3)|2, 0, 0 },
+			.channel1 = { (0xa<<3)|1, (0xa<<3)|3, 0, 0 },
+		},
+		{
+			.f0 = PCI_DEV(0, 0x19, 0),
+			.f1 = PCI_DEV(0, 0x19, 1),
+			.f2 = PCI_DEV(0, 0x19, 2),
+			.f3 = PCI_DEV(0, 0x19, 3),
+			.channel0 = { (0xa<<3)|4, (0xa<<3)|6, 0, 0 },
+			.channel1 = { (0xa<<3)|5, (0xa<<3)|7, 0, 0 },
+		},
+		{
+			.f0 = PCI_DEV(0, 0x1a, 0),
+			.f1 = PCI_DEV(0, 0x1a, 1),
+			.f2 = PCI_DEV(0, 0x1a, 2),
+			.f3 = PCI_DEV(0, 0x1a, 3),
+			.channel0 = { (0xa<<3)|8, (0xa<<3)|10, 0, 0 },
+			.channel1 = { (0xa<<3)|9, (0xa<<3)|11, 0, 0 },
+		},
+		{
+			.f0 = PCI_DEV(0, 0x1b, 0),
+			.f1 = PCI_DEV(0, 0x1b, 1),
+			.f2 = PCI_DEV(0, 0x1b, 2),
+			.f3 = PCI_DEV(0, 0x1b, 3),
+			.channel0 = { (0xa<<3)|12, (0xa<<3)|14, 0, 0 },
+			.channel1 = { (0xa<<3)|13, (0xa<<3)|15, 0, 0 },
+		}
 	};
-	static const struct mem_controller cpu1 = {
-		.f0 = PCI_DEV(0, 0x19, 0),
-		.f1 = PCI_DEV(0, 0x19, 1),
-		.f2 = PCI_DEV(0, 0x19, 2),
-		.f3 = PCI_DEV(0, 0x19, 3),
-		.channel0 = { (0xa<<3)|4, (0xa<<3)|6, 0, 0 },
-		.channel1 = { (0xa<<3)|5, (0xa<<3)|7, 0, 0 },
-	};
-	static const struct mem_controller cpu2 = {
-		.f0 = PCI_DEV(0, 0x1a, 0),
-		.f1 = PCI_DEV(0, 0x1a, 1),
-		.f2 = PCI_DEV(0, 0x1a, 2),
-		.f3 = PCI_DEV(0, 0x1a, 3),
-		.channel0 = { (0xa<<3)|8, (0xa<<3)|10, 0, 0 },
-		.channel1 = { (0xa<<3)|9, (0xa<<3)|11, 0, 0 },
-	};
-	static const struct mem_controller cpu3 = {
-		.f0 = PCI_DEV(0, 0x1b, 0),
-		.f1 = PCI_DEV(0, 0x1b, 1),
-		.f2 = PCI_DEV(0, 0x1b, 2),
-		.f3 = PCI_DEV(0, 0x1b, 3),
-		.channel0 = { (0xa<<3)|12, (0xa<<3)|14, 0, 0 },
-		.channel1 = { (0xa<<3)|13, (0xa<<3)|15, 0, 0 },
-	};
-	
 	if (cpu_init_detected()) {
 		asm("jmp __cpu_reset");
+	}
+	enable_lapic();
+	init_timer();
+	if (!boot_cpu()) {
+		stop_this_cpu();
 	}
 	pc87360_enable_serial();
 	uart_init();
 	console_init();
-	enable_lapic();
-	if (!boot_cpu()) {
-		stop_this_cpu();
-	}
-	init_timer();
 	setup_default_resource_map();
 	setup_coherent_ht_domain();
 	enumerate_ht_chain(0);
-	distinguish_cpu_resets();
+	distinguish_cpu_resets(0);
 	
-#if 1 
+#if 0
 	print_pci_devices();
 #endif
 	enable_smbus();
 #if 0
-	dump_spd_registers(&cpu0);
+	dump_spd_registers(&cpu[0]);
 #endif
-	sdram_initialize(&cpu0);
+	memreset_setup();
+	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
 
-#if 1
+#if 0
 	dump_pci_devices();
 #endif
 #if 0

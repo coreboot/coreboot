@@ -34,6 +34,9 @@
 
 #define NORTH_BRIDGE_BASE_ADDR	0x80000000
 
+	/* set new stack */
+	movl	$_estack, %esp
+
 register_setting_start:
 	movl	$northbridge_init_table, %esi
 	movl	$(northbridge_init_table_end - northbridge_init_table), %ecx

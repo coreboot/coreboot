@@ -39,6 +39,10 @@
 #define CONNECTION_0_2 UP
 #endif
 
+#ifndef CONNECTION_1_0 
+#define CONNECTION_1_0 ACROSS
+#endif
+
 #ifndef CONNECTION_1_3 
 #define CONNECTION_1_3 UP
 #endif
@@ -403,7 +407,7 @@ static u8 setup_smp(void)
 	}
 
 	/* We found 2 nodes so far */
-	optimize_connection(0, ACROSS, 7, ACROSS);
+	optimize_connection(0, CONNECTION_0_1, 7, CONNECTION_1_0);
 	setup_node(0, cpus);	/* Node 1 is there. Setup Node 0 correctly */
 	setup_remote_node(1, cpus);  /* Setup the routes on the remote node */
         rename_temp_node(1);    /* Rename Node 7 to Node 1  */

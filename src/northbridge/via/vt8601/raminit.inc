@@ -19,58 +19,66 @@ it with the version available from LANL.
 /* Copyright 2000, Ron Minnich, Advanced Computing Lab, LANL
  * rminnich@lanl.gov
  */
+/*
+ * 11/26/02 - kevinh@ispiri.com - The existing comments implied that
+ * this didn't work yet.  Therefore, I've updated it so that it works
+ * correctly - at least on my VIA epia motherboard.  64MB DIMM in slot 0.
+ */
 
 #define loop200 $0x5000
 #define loop100 $0x2500
+
+raminit:
+	intel_chip_post_macro(0x35)
 
 /*; new code... pulled from via stuff.*/
 /*  initialize registers */
 	// memory clk enable. We are not using ECC
 	CS_WRITE($0x78, $0x01)
 	// dram control, see the book. 
-	CS_WRITE($0x68, $0x00)
+	CS_WRITE($0x68, $0x42)
 	// dram control, see the book. 
-	CS_WRITE($0x6B, $0x00)
+	CS_WRITE($0x6B, $0x0d)
 	// 64/128 MB dram
-	CS_WRITE($0x58, $0x88)
+	CS_WRITE($0x58, $0x80)
 	// 64/128 MB dram
-	CS_WRITE($0x59, $0x88)
+	CS_WRITE($0x59, $0x00)
 	// bank 0 ends at 64 MB 
 	CS_WRITE($0x5A, $0x08)
 	// bank 1 ends at 64 MB
-	CS_WRITE($0x5B, $0x10)
+	CS_WRITE($0x5B, $0x08)
 	// bank 2 ends at 64 MB
-	CS_WRITE($0x5C, $0x10)
+	CS_WRITE($0x5C, $0x08)
 	// bank 2 ends at 64 MB
-	CS_WRITE($0x5D, $0x10)
+	CS_WRITE($0x5D, $0x08)
 	// bank 2 ends at 64 MB
-	CS_WRITE($0x5E, $0x10)
+	CS_WRITE($0x5E, $0x08)
 	// bank 2 ends at 64 MB
-	CS_WRITE($0x5F, $0x10)
+	CS_WRITE($0x5F, $0x08)
 
 	// SDRAM in all banks
-	CS_WRITE($0x60, $0xFF)
+	CS_WRITE($0x60, $0x3F)
 	// DRAM timing. I'm suspicious of this
 	// This is for all banks, 64 is 0,1.  65 is 2,3. 66 is 4,5.
 	// ras precharge 4T, RAS pulse 5T, CAS 2T
 	// as per the note below, we change to cas 3 2000/8/31
 	// cas2 is 0xd6, cas3 is 0xe6
 	// we're also backing off write pulse width to 2T, so result is 0xee
-	CS_WRITE($0x64, $0xee)
-	CS_WRITE($0x65, $0xee)
-	CS_WRITE($0x66, $0xee)
+	CS_WRITE($0x64, $0xe6)
+	CS_WRITE($0x65, $0x95)
+	CS_WRITE($0x66, $0x95)
 
 	// dram frequency select. We set 66/66.
 	// no 256 m, enable 4K pages for 64M dram. 
-	CS_WRITE($0x69, $0x04)
+	CS_WRITE($0x69, $0xac)
 	// refresh counter, disabled.
 	CS_WRITE($0x6A, $0x00)
-	// clkenable configuration. Not sure this is right!
+	// clkenable configuration. kevinh FIXME - add precharge
 	CS_WRITE($0x6C, $0x00)
 	// dram read latch delay of 1 ns, MD drive 8 mA,
 	// high drive strength on MA[2:	13], we#, cas#, ras#
 	// As per Cindy Lee, set to 0x37, not 0x57
-	CS_WRITE($0x6D, $0x37)
+	CS_WRITE($0x6D, $0x7f)
 
 /* begin to initialize*/
 	// I forget why we need this, but we do
@@ -134,7 +142,7 @@ it with the version available from LANL.
 	movl (%ecx), %eax
 
 /* set to normal mode */
-	CS_WRITE($0x6C, $0x00)
+	CS_WRITE($0x6C, $0x08)
 	movl $0x55aa55aa, %eax
 	mov %eax, 0x0
 	mov 0x0, %eax
@@ -169,3 +177,5 @@ it with the version available from LANL.
  */
         CS_WRITE($0x56, $0x10)
         CS_WRITE($0x57, $0x10)
+
+	intel_chip_post_macro(0x36)

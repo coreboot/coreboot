@@ -21,7 +21,7 @@ void mainboard_fixup()
 	// host_bridge_pcidev = pci_find_slot(0, PCI_DEVFN(0,0));
 #endif
 #if 1
-	pci_write_config_byte(nic_pcidev, 0x3c, 21);
+	pci_write_config_byte(nic_pcidev, 0x3c, 5);
 #endif
 #if 0
 	{

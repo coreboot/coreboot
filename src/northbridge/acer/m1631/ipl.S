@@ -1,4 +1,11 @@
 #include <cpu/p5/macros.h>
+#define DOC_WIN_SEG		0xfe00
+#define DOC_STACK_SEG		0x0400
+#define SPL_RAM_SEG		0x8000
+
+#define DOC_SPL_START_BLK	2	/* 0,1 for IPL */
+#define DOC_SPL_SIZE_IN_PAGE	126     /* 1 page = 512 bytes, total 63kB */
+
 /* wow, the usual way to to this hurts. So we do it our way:
  * 32-bit test not needed. 
  */
@@ -9,10 +16,13 @@
  * ror it 16 bits, and as we grow the CAS, we just inc cs, and that will
  * set the right value. 
  */
-#define INIT_MCR 0
+#define INIT_MCR $0xf6640000
 	xorl	%edi, %edi
-	movl	$INIT_MCR,  %ecx
-	mov	$0x6c, %al
+	movb	$0x6c, %al
+	CALLSP(pci_read_dword)
+	andl    $0xfffc, %ecx
+	orl	INIT_MCR,  %ecx
+	movb	$0x6c, %al
 	CALLSP(pci_write_dword)
 	rorl	$16, %ecx
 	/* test 8 bit CAS */
@@ -88,3 +98,23 @@ pci_write_dword:
 	mov	%ecx, %eax
 	outl	%eax,%dx
 	RETSP
+pci_read_dword:
+	mov	$0,%ah
+	mov	$0x80000000,%edx
+	or	%ax,%dx
+	mov	%edx,%eax
+	mov	$0x0cf8,%dx
+	outl	%eax,%dx
+	mov	$0x0fc,%dl
+	inl	%dx, %eax
+	mov	%eax, %ecx
+	RETSP
+	.org 0x01f0
+reset_vector:
+	.byte	0xea				# jmp to fe00:0000, where IPL
+	.word	0x0000, DOC_WIN_SEG		# starts in DoC
+
+spl_vector:
+	.byte	0xea				# jmp to 8000:0000, where SPL
+	.word	0x0000, SPL_RAM_SEG		# (LinuxBIOS) starts in RAM
+

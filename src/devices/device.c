@@ -274,7 +274,7 @@ static void allocate_vga_resource(void)
 	bus = vga = 0;
 	for(dev = all_devices; dev; dev = dev->next) {
 		uint32_t class_revision;
-		pci_read_config_dword(dev, PCI_CLASS_REVISION, &class_revision);
+		class_revision = pci_read_config32(dev, PCI_CLASS_REVISION);
 		if (((class_revision >> 24) == 0x03) && 
 		    ((class_revision >> 16) != 0x380)) {
 			if (!vga) {
@@ -296,9 +296,9 @@ static void allocate_vga_resource(void)
 	/* Now walk up the bridges setting the VGA enable */
 	while(bus) {
 		uint16_t ctrl;
-		pci_read_config_word(bus, PCI_BRIDGE_CONTROL, &ctrl);
+		ctrl = pci_read_config16(bus, PCI_BRIDGE_CONTROL);
 		ctrl |= PCI_BRIDGE_CTL_VGA;
-		pci_write_config_word(bus, PCI_BRIDGE_CONTROL, ctrl);
+		pci_write_config16(bus, PCI_BRIDGE_CONTROL, ctrl);
 		bus = (bus == bus->bus)? 0 : bus->bus;
 	} 
 }
@@ -331,13 +331,13 @@ static void enable_resources(struct device *bus)
 	 */
 	for (curdev = all_devices; curdev; curdev = curdev->next) {
 		uint16_t command;
-		pci_read_config_word(curdev, PCI_COMMAND, &command);
+		command = pci_read_config16(curdev, PCI_COMMAND);
 		command |= curdev->command;
 		printk_debug("DEV: %02x:%02x.%01x cmd <- %02x\n",
 			curdev->bus->secondary,
 			PCI_SLOT(curdev->devfn), PCI_FUNC(curdev->devfn),
 			command);
-		pci_write_config_word(curdev, PCI_COMMAND, command);
+		pci_write_config16(curdev, PCI_COMMAND, command);
 	}
 }
 

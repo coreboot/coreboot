@@ -14,7 +14,7 @@ static void ide_init(struct device *dev)
 
         printk_debug("ide_init\n");
 
-	pci_read_config_word(dev, 0x40, &word);
+	word = pci_read_config16(dev, 0x40);
 	/* Ensure prefetch is disabled */
 	word &= ~((1 << 15) | (1 << 13));
 	if (enable_b) {
@@ -31,10 +31,10 @@ static void ide_init(struct device *dev)
 	word |= (1<<12);
 	word |= (1<<14);
 
-	pci_write_config_word(dev, 0x40, word);
+	pci_write_config16(dev, 0x40, word);
 
 	word = 0x0f;
-	pci_write_config_word(dev, 0x42, word);
+	pci_write_config16(dev, 0x42, word);
 
 	/* The AMD768 has a bug where the BM DMA address must be
 	 * 256 byte aligned while it is only 16 bytes long.
@@ -43,11 +43,11 @@ static void ide_init(struct device *dev)
 	 * FIXME: I assume the 8111 does the same thing. We should
 	 * clarify. stepan@suse.de
 	 */
-	pci_write_config_dword(dev, 0x20, 0xf01);
+	pci_write_config32(dev, 0x20, 0xf01);
 
-	pci_write_config_dword(dev, 0x48, 0x205e5e5e);
+	pci_write_config32(dev, 0x48, 0x205e5e5e);
 	word = 0x06a;
-	pci_write_config_word(dev, 0x4c, word);
+	pci_write_config16(dev, 0x4c, word);
 }
 
 static struct device_operations ide_ops  = {

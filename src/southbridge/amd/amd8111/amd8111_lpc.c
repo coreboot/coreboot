@@ -1,3 +1,6 @@
+/*
+ * (C) 2003 Linux Networx 
+ */
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -94,24 +97,24 @@ static void lpc_init(struct device *dev)
 
 #if 0
 	/* IO APIC initialization */
-	pci_read_config_byte(dev, 0x4B, &byte);
+	byte = pci_read_config8(dev, 0x4B);
 	byte |= 1;
-	pci_write_config_byte(dev, 0x4B, byte);
+	pci_write_config8(dev, 0x4B, byte);
 	setup_ioapic();
 #endif
 
 	/* posted memory write enable */
-	pci_read_config_byte(dev, 0x46, &byte);
-	pci_write_config_byte(dev, 0x46, byte | (1<<0));
+	byte = pci_read_config8(dev, 0x46);
+	pci_write_config8(dev, 0x46, byte | (1<<0));
 
 	/* power after power fail */
-	pci_read_config_byte(dev, 0x43, &byte);
+	byte = pci_read_config8(dev, 0x43);
 	if (pwr_on) { 
 		byte &= ~(1<<6);
 	} else {
 		byte |= (1<<6);
 	}
-	pci_write_config_byte(dev, 0x43, byte);
+	pci_write_config8(dev, 0x43, byte);
 
 
 }

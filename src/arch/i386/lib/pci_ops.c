@@ -7,12 +7,12 @@
 
 static const struct pci_ops *conf;
 struct pci_ops {
-	int (*read_byte) (uint8_t bus, int devfn, int where, uint8_t * val);
-	int (*read_word) (uint8_t bus, int devfn, int where, uint16_t * val);
-	int (*read_dword) (uint8_t bus, int devfn, int where, uint32_t * val);
-	int (*write_byte) (uint8_t bus, int devfn, int where, uint8_t val);
-	int (*write_word) (uint8_t bus, int devfn, int where, uint16_t val);
-	int (*write_dword) (uint8_t bus, int devfn, int where, uint32_t val);
+	uint8_t (*read8)   (uint8_t bus, int devfn, int where);
+	uint16_t (*read16) (uint8_t bus, int devfn, int where);
+	uint32_t (*read32) (uint8_t bus, int devfn, int where);
+	void (*write8)  (uint8_t bus, int devfn, int where, uint8_t val);
+	void (*write16) (uint8_t bus, int devfn, int where, uint16_t val);
+	void (*write32) (uint8_t bus, int devfn, int where, uint32_t val);
 };
 
 /*
@@ -26,58 +26,52 @@ struct pci_ops {
 
 #define CONFIG_CMD(bus,devfn, where)   (0x80000000 | (bus << 16) | (devfn << 8) | (where & ~3))
 
-static int pci_conf1_read_config_byte(unsigned char bus, int devfn, int where, uint8_t * value)
+static uint8_t pci_conf1_read_config8(unsigned char bus, int devfn, int where)
 {
 	outl(CONFIG_CMD(bus, devfn, where), 0xCF8);
-	*value = inb(0xCFC + (where & 3));
-	return 0;
+	return inb(0xCFC + (where & 3));
 }
 
-static int pci_conf1_read_config_word(unsigned char bus, int devfn, int where, uint16_t * value)
+static uint16_t pci_conf1_read_config16(unsigned char bus, int devfn, int where)
 {
 	outl(CONFIG_CMD(bus, devfn, where), 0xCF8);
-	*value = inw(0xCFC + (where & 2));
-	return 0;
+	return inw(0xCFC + (where & 2));
 }
 
-static int pci_conf1_read_config_dword(unsigned char bus, int devfn, int where, uint32_t * value)
+static uint32_t pci_conf1_read_config32(unsigned char bus, int devfn, int where)
 {
 	outl(CONFIG_CMD(bus, devfn, where), 0xCF8);
-	*value = inl(0xCFC);
-	return 0;
+	return inl(0xCFC);
 }
 
-static int pci_conf1_write_config_byte(unsigned char bus, int devfn, int where, uint8_t value)
+static void  pci_conf1_write_config8(unsigned char bus, int devfn, int where, uint8_t value)
 {
 	outl(CONFIG_CMD(bus, devfn, where), 0xCF8);
 	outb(value, 0xCFC + (where & 3));
-	return 0;
 }
 
-static int pci_conf1_write_config_word(unsigned char bus, int devfn, int where, uint16_t value)
+static void pci_conf1_write_config16(unsigned char bus, int devfn, int where, uint16_t value)
 {
 	outl(CONFIG_CMD(bus, devfn, where), 0xCF8);
 	outw(value, 0xCFC + (where & 2));
-	return 0;
 }
 
-static int pci_conf1_write_config_dword(unsigned char bus, int devfn, int where, uint32_t value)
+static void pci_conf1_write_config32(unsigned char bus, int devfn, int where, uint32_t value)
 {
 	outl(CONFIG_CMD(bus, devfn, where), 0xCF8);
 	outl(value, 0xCFC);
-	return 0;
 }
 
 #undef CONFIG_CMD
 
 static const struct pci_ops pci_direct_conf1 =
 {
-	pci_conf1_read_config_byte,
-	pci_conf1_read_config_word,
-	pci_conf1_read_config_dword,
-	pci_conf1_write_config_byte,
-	pci_conf1_write_config_word,
-	pci_conf1_write_config_dword
+	.read8  = pci_conf1_read_config8,
+	.read16 = pci_conf1_read_config16,
+	.read32 = pci_conf1_read_config32,
+	.write8  = pci_conf1_write_config8,
+	.write16 = pci_conf1_write_config16,
+	.write32 = pci_conf1_write_config32,
 };
 
 /*
@@ -86,54 +80,54 @@ static const struct pci_ops pci_direct_conf1 =
 
 #define IOADDR(devfn, where)	((0xC000 | ((devfn & 0x78) << 5)) + where)
 #define FUNC(devfn)		(((devfn & 7) << 1) | 0xf0)
-#define SET(bus,devfn)		if (devfn & 0x80) return -1;outb(FUNC(devfn), 0xCF8); outb(bus, 0xCFA);
+#define SET(bus,devfn)		outb(FUNC(devfn), 0xCF8); outb(bus, 0xCFA);
 
-static int pci_conf2_read_config_byte(unsigned char bus, int devfn, int where, uint8_t * value)
+static uint8_t pci_conf2_read_config8(unsigned char bus, int devfn, int where)
 {
+	uint8_t value;
 	SET(bus, devfn);
-	*value = inb(IOADDR(devfn, where));
+	value = inb(IOADDR(devfn, where));
 	outb(0, 0xCF8);
-	return 0;
+	return value;
 }
 
-static int pci_conf2_read_config_word(unsigned char bus, int devfn, int where, uint16_t * value)
+static uint16_t pci_conf2_read_config16(unsigned char bus, int devfn, int where)
 {
+	uint16_t value;
 	SET(bus, devfn);
-	*value = inw(IOADDR(devfn, where));
+	value = inw(IOADDR(devfn, where));
 	outb(0, 0xCF8);
-	return 0;
+	return value;
 }
 
-static int pci_conf2_read_config_dword(unsigned char bus, int devfn, int where, uint32_t * value)
+static uint32_t pci_conf2_read_config32(unsigned char bus, int devfn, int where)
 {
+	uint32_t value;
 	SET(bus, devfn);
-	*value = inl(IOADDR(devfn, where));
+	value = inl(IOADDR(devfn, where));
 	outb(0, 0xCF8);
-	return 0;
+	return value;
 }
 
-static int pci_conf2_write_config_byte(unsigned char bus, int devfn, int where, uint8_t value)
+static void pci_conf2_write_config8(unsigned char bus, int devfn, int where, uint8_t value)
 {
 	SET(bus, devfn);
 	outb(value, IOADDR(devfn, where));
 	outb(0, 0xCF8);
-	return 0;
 }
 
-static int pci_conf2_write_config_word(unsigned char bus, int devfn, int where, uint16_t value)
+static void pci_conf2_write_config16(unsigned char bus, int devfn, int where, uint16_t value)
 {
 	SET(bus, devfn);
 	outw(value, IOADDR(devfn, where));
 	outb(0, 0xCF8);
-	return 0;
 }
 
-static int pci_conf2_write_config_dword(unsigned char bus, int devfn, int where, uint32_t value)
+static void pci_conf2_write_config32(unsigned char bus, int devfn, int where, uint32_t value)
 {
 	SET(bus, devfn);
 	outl(value, IOADDR(devfn, where));
 	outb(0, 0xCF8);
-	return 0;
 }
 
 #undef SET
@@ -142,12 +136,12 @@ static int pci_conf2_write_config_dword(unsigned char bus, int devfn, int where,
 
 static const struct pci_ops pci_direct_conf2 =
 {
-	pci_conf2_read_config_byte,
-	pci_conf2_read_config_word,
-	pci_conf2_read_config_dword,
-	pci_conf2_write_config_byte,
-	pci_conf2_write_config_word,
-	pci_conf2_write_config_dword
+	.read8  = pci_conf2_read_config8,
+	.read16 = pci_conf2_read_config16,
+	.read32 = pci_conf2_read_config32,
+	.write8  = pci_conf2_write_config8,
+	.write16 = pci_conf2_write_config16,
+	.write32 = pci_conf2_write_config32,
 };
 
 /*
@@ -162,7 +156,7 @@ static const struct pci_ops pci_direct_conf2 =
  */
 static int pci_sanity_check(const struct pci_ops *o)
 {
-	uint16_t x;
+	uint16_t class, vendor;
 	uint8_t bus;
 	int devfn;
 #define PCI_CLASS_BRIDGE_HOST		0x0600
@@ -171,12 +165,15 @@ static int pci_sanity_check(const struct pci_ops *o)
 #define PCI_VENDOR_ID_INTEL		0x8086
 #define PCI_VENDOR_ID_MOTOROLA		0x1057
 
-	for (bus = 0, devfn = 0; devfn < 0x100; devfn++)
-		if ((!o->read_word(bus, devfn, PCI_CLASS_DEVICE, &x) &&
-		     (x == PCI_CLASS_BRIDGE_HOST || x == PCI_CLASS_DISPLAY_VGA)) ||
-		    (!o->read_word(bus, devfn, PCI_VENDOR_ID, &x) &&
-		     (x == PCI_VENDOR_ID_INTEL || x == PCI_VENDOR_ID_COMPAQ || x == PCI_VENDOR_ID_MOTOROLA)))
+	for (bus = 0, devfn = 0; devfn < 0x100; devfn++) {
+		class = o->read16(bus, devfn, PCI_CLASS_DEVICE);
+		vendor = o->read16(bus, devfn, PCI_VENDOR_ID);
+		if (((class == PCI_CLASS_BRIDGE_HOST) || (class == PCI_CLASS_DISPLAY_VGA)) ||
+			((vendor == PCI_VENDOR_ID_INTEL) || (vendor == PCI_VENDOR_ID_COMPAQ) ||
+				(vendor == PCI_VENDOR_ID_MOTOROLA))) { 
 			return 1;
+		}
+	}
 	printk_err("PCI: Sanity check failed\n");
 	return 0;
 }
@@ -220,54 +217,52 @@ static const struct pci_ops *pci_check_direct(void)
 	return 0;
 }
 
-int pci_read_config_byte(struct device *dev, uint8_t where, uint8_t * val)
+uint8_t pci_read_config8(device_t dev, unsigned where)
 {
-	int res; 
-	res = conf->read_byte(dev->bus->secondary, dev->devfn, where, val);
-	printk_spew("Read config byte bus %d,devfn 0x%x,reg 0x%x,val 0x%x,res 0x%x\n",
-		    dev->bus->secondary, dev->devfn, where, *val, res);
-	return res;
-
-
+	uint8_t value;
+	value = conf->read8(dev->bus->secondary, dev->devfn, where);
+	printk_spew("Read config 8 bus %d,devfn 0x%x,reg 0x%x,val 0x%x\n",
+		    dev->bus->secondary, dev->devfn, where, value);
+	return value;
 }
 
-int pci_read_config_word(struct device *dev, uint8_t where, uint16_t * val)
+uint16_t pci_read_config16(device_t dev, unsigned where)
 {
-	int res; 
-	res = conf->read_word(dev->bus->secondary, dev->devfn, where, val);
-	printk_spew( "Read config word bus %d,devfn 0x%x,reg 0x%x,val 0x%x,res 0x%x\n",
-		     dev->bus->secondary, dev->devfn, where, *val, res);
-	return res;
+	uint16_t value;
+	value = conf->read16(dev->bus->secondary, dev->devfn, where);
+	printk_spew( "Read config 16 bus %d,devfn 0x%x,reg 0x%x,val 0x%x\n",
+		     dev->bus->secondary, dev->devfn, where, value);
+	return value;
 }
 
-int pci_read_config_dword(struct device *dev, uint8_t where, uint32_t * val)
+uint32_t pci_read_config32(device_t dev, unsigned where)
 {
-	int res; 
-	res = conf->read_dword(dev->bus->secondary, dev->devfn, where, val);
-	printk_spew( "Read config dword bus %d,devfn 0x%x,reg 0x%x,val 0x%x,res 0x%x\n",
-		     dev->bus->secondary, dev->devfn, where, *val, res);
-	return res;
+	uint32_t value;
+	value = conf->read32(dev->bus->secondary, dev->devfn, where);
+	printk_spew( "Read config 32 bus %d,devfn 0x%x,reg 0x%x,val 0x%x\n",
+		     dev->bus->secondary, dev->devfn, where, *val);
+	return value;
 }
 
-int pci_write_config_byte(struct device *dev, uint8_t where, uint8_t val)
+void pci_write_config8(device_t dev, unsigned where, uint8_t val)
 {
-	printk_spew( "Write config byte bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
+	printk_spew( "Write config 8 bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
 		     dev->bus->secondary, dev->devfn, where, val);
-	return conf->write_byte(dev->bus->secondary, dev->devfn, where, val);
+	conf->write8(dev->bus->secondary, dev->devfn, where, val);
 }
 
-int pci_write_config_word(struct device *dev, uint8_t where, uint16_t val)
+void pci_write_config16(device_t dev, unsigned where, uint16_t val)
 {
-	printk_spew( "Write config word bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
+	printk_spew( "Write config 16 bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
 		     dev->bus->secondary, dev->devfn, where, val);
-	return conf->write_word(dev->bus->secondary, dev->devfn, where, val);
+	conf->write16(dev->bus->secondary, dev->devfn, where, val);
 }
 
-int pci_write_config_dword(struct device *dev, uint8_t where, uint32_t val)
+void pci_write_config32(device_t dev, unsigned where, uint32_t val)
 {
-	printk_spew( "Write config dword bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
+	printk_spew( "Write config 32 bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
 		     dev->bus->secondary, dev->devfn, where, val);
-	return conf->write_dword(dev->bus->secondary, dev->devfn, where, val);
+	conf->write32(dev->bus->secondary, dev->devfn, where, val);
 }
 
 /** Set the method to be used for PCI, type I or type II

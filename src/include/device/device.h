@@ -4,11 +4,13 @@
 #include <device/resource.h>
 
 struct device;
+typedef struct device * device_t;
+
 struct device_operations {
-	void (*read_resources)(struct device *dev);
-	void (*set_resources)(struct device *dev);
-	void (*init)(struct device *dev);
-	unsigned int (*scan_bus)(struct device *bus, unsigned int max);
+	void (*read_resources)(device_t dev);
+	void (*set_resources)(device_t dev);
+	void (*init)(device_t dev);
+	unsigned int (*scan_bus)(device_t  bus, unsigned int max);
 };
 
 
@@ -19,10 +21,10 @@ struct device_operations {
  */
 
 struct device {
-	struct device	*bus;		/* bus this device is on */
-	struct device	*children;	/* devices behind this bridge */
-	struct device	*sibling;	/* next device on this bus */
-	struct device	*next;		/* chain of all devices */
+	device_t bus;		/* bus this device is on */
+	device_t children;	/* devices behind this bridge */
+	device_t sibling;	/* next device on this bus */
+	device_t next;		/* chain of all devices */
 
 	unsigned int	devfn;		/* encoded device & function index */
 	unsigned short	vendor;
@@ -68,18 +70,18 @@ extern void dev_enable(void);
 extern void dev_initialize(void);
 
 /* Generic device helper functions */
-void append_device(struct device *dev);
-void compute_allocate_resource(struct device *bus, struct resource *bridge,
+void append_device(device_t dev);
+void compute_allocate_resource(device_t bus, struct resource *bridge,
 	unsigned long type_mask, unsigned long type);
-void assign_resources(struct device *bus);
+void assign_resources(device_t bus);
 void enumerate_static_device(void);
 unsigned long device_memory_base;
 
 
 /* Helper functions */
-struct device *dev_find_device (unsigned int vendor, unsigned int device, struct device *from);
-struct device *dev_find_class (unsigned int class, struct device *from);
-struct device *dev_find_slot (unsigned int bus, unsigned int devfn);
+device_t dev_find_device (unsigned int vendor, unsigned int device, device_t from);
+device_t dev_find_class (unsigned int class, device_t from);
+device_t dev_find_slot (unsigned int bus, unsigned int devfn);
 
 /* Rounding for boundaries. 
  * Due to some chip bugs, go ahead and roung IO to 16

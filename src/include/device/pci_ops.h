@@ -2,14 +2,15 @@
 #define PCI_OPS_H
 
 #include <stdint.h>
-struct device;
+#include <device/device.h>
 
-int pci_read_config_byte(struct device *dev, uint8_t where, uint8_t *val);
-int pci_read_config_word(struct device *dev, uint8_t where, uint16_t *val);
-int pci_read_config_dword(struct device *dev, uint8_t where, uint32_t *val);
-int pci_write_config_byte(struct device *dev, uint8_t where, uint8_t val);
-int pci_write_config_word(struct device *dev, uint8_t where, uint16_t val);
-int pci_write_config_dword(struct device *dev, uint8_t where, uint32_t val);
+uint8_t  pci_read_config8(device_t dev, unsigned where);
+uint16_t pci_read_config16(device_t dev, unsigned where);
+uint32_t pci_read_config32(device_t dev, unsigned where);
+void pci_write_config8(device_t dev, unsigned where, uint8_t val);
+void pci_write_config16(device_t dev, unsigned where, uint16_t val);
+void pci_write_config32(device_t dev, unsigned where, uint32_t val);
+
 void pci_set_method(void);
 
 #endif /* PCI_OPS_H */

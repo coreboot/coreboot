@@ -9,8 +9,8 @@ static void usb_init(struct device *dev)
 	uint32_t cmd;
 
 	printk_debug("USB: Setting up controller.. ");
-	pci_read_config_dword(dev, PCI_COMMAND, &cmd);
-	pci_write_config_dword(dev, PCI_COMMAND, 
+	cmd = pci_read_config32(dev, PCI_COMMAND);
+	pci_write_config32(dev, PCI_COMMAND, 
 		cmd | PCI_COMMAND_IO | PCI_COMMAND_MEMORY | 
 		PCI_COMMAND_MASTER | PCI_COMMAND_INVALIDATE);
 

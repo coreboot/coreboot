@@ -17,12 +17,41 @@ struct pci_ops {
 
 struct pci_ops pci_direct_ppc;
 
-extern unsigned __pci_config_read_32(unsigned address);
-extern unsigned __pci_config_read_16(unsigned address);
-extern unsigned __pci_config_read_8(unsigned address);
-extern void __pci_config_write_32(unsigned address, unsigned data);
-extern void __pci_config_write_16(unsigned address, unsigned short data);
-extern void __pci_config_write_8(unsigned address, unsigned char data);
+static unsigned __pci_config_read_32(unsigned address) 
+{
+	out_le32((unsigned *)PCIC0_CFGADDR, address);
+	return in_le32((unsigned *)PCIC0_CFGDATA);
+}
+
+static unsigned __pci_config_read_16(unsigned address) 
+{
+	out_le32((unsigned *)PCIC0_CFGADDR, address);
+	return in_le16((unsigned short *)PCIC0_CFGDATA);
+}
+
+static unsigned __pci_config_read_8(unsigned address) 
+{
+	out_le32((unsigned *)PCIC0_CFGADDR, address);
+	return in_8((unsigned char *)PCIC0_CFGDATA);
+}
+
+static void __pci_config_write_32(unsigned address, unsigned data) 
+{
+	out_le32((unsigned *)PCIC0_CFGADDR, address);
+	out_le32((unsigned *)PCIC0_CFGDATA, data);
+}
+
+static void __pci_config_write_16(unsigned address, unsigned short data) 
+{
+	out_le32((unsigned *)PCIC0_CFGADDR, address);
+	out_le16((unsigned short *)PCIC0_CFGDATA, data);
+}
+
+static void __pci_config_write_8(unsigned address, unsigned char data) 
+{
+	out_le32((unsigned *)PCIC0_CFGADDR, address);
+	out_8((unsigned char *)PCIC0_CFGDATA, data);
+}
 
 #define CONFIG_CMD(bus,devfn,where) (bus << 16 | devfn << 8 | where | 0x80000000)
 
@@ -50,13 +79,17 @@ static int pci_sanity_check(const struct pci_ops *o)
 #define PCI_VENDOR_ID_COMPAQ            0x0e11
 #define PCI_VENDOR_ID_INTEL             0x8086
 #define PCI_VENDOR_ID_MOTOROLA          0x1057
+#define PCI_VENDOR_ID_IBM	        0x1014
 
 	for (bus = 0, devfn = 0; devfn < 0x100; devfn++) {
 		class = o->read16(bus, devfn, PCI_CLASS_DEVICE);
 		vendor = o->read16(bus, devfn, PCI_VENDOR_ID);
-		if (((class == PCI_CLASS_BRIDGE_HOST) || (class == PCI_CLASS_DISPLAY_VGA)) ||
-			((vendor == PCI_VENDOR_ID_INTEL) || (vendor == PCI_VENDOR_ID_COMPAQ) ||
-				(vendor == PCI_VENDOR_ID_MOTOROLA))) {
+		if (((class == PCI_CLASS_BRIDGE_HOST) || 
+		     (class == PCI_CLASS_DISPLAY_VGA)) ||
+			((vendor == PCI_VENDOR_ID_INTEL) || 
+			(vendor == PCI_VENDOR_ID_COMPAQ) ||
+			(vendor == PCI_VENDOR_ID_MOTOROLA) ||
+			(vendor == PCI_VENDOR_ID_IBM))) {
 			return 1;
 		}
 	}

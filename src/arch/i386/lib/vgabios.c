@@ -73,8 +73,12 @@ static void real_mode_switch_call_vga(void)
 {
   __asm__ __volatile__
       (
-       /* Now that our memcpy is done we can get to 16 bit code
-	* segment.  This configures CS properly for real mode. */
+	/* save the stack */
+	"mov %esp, __stack\n"
+	"jmp 1f\n"
+	"__stack: .long 0\n"
+	"1:\n"
+	/*  This configures CS properly for real mode. */
        "    ljmp $0x28, $__rms_16bit\n"
        "__rms_16bit:                 \n"
        ".code16                      \n" /* 16 bit code from here on... */
@@ -130,42 +134,13 @@ static void real_mode_switch_call_vga(void)
        "    mov  %ax, %es          \n"
        "    mov  %ax, %fs          \n"
        "    mov  %ax, %gs          \n"
-       "ret\n"
+       "    mov  %ax, %ss          \n"
+       "    mov  __stack, %esp\n"
        );
 }
 __asm__ (".text\n""real_mode_switch_end:\n");
 extern char real_mode_switch_end[];
 
-#if 0
-//static
-int monte_restart(unsigned long entry_addr, unsigned long flags) {
-    void * ptr;
-    struct page *pg;
-
-    /*----- POINT OF NO RETURN IS HERE --------------------------------------*/
-
-    /* Ok, now the real monkey business begins.... Please keep hands
-     * and feet inside the memory space and remain seated until the
-     * ride comes to a complete stop. */
-    __asm__ __volatile__
-	(/* Install the IDT and GDT we copied to page zero. */
-	 "lidt  %0             \n"
-	 "lgdt  %1             \n"
-
-	 
-	 /* Function call with args... sort of */
-	 "pushl %4             \n"
-	 "pushl %3             \n"
-	 "pushl %2             \n" /* Push args on the stack */
-	 "sub $4, %%esp        \n" /* bogo return address */
-	 "ljmp $0x10, $0x1000-(real_mode_switch_end-real_mode_switch) \n" : :
-	 "m" (real_mode_idt), "m" (real_mode_gdt),
-	 "r" (m_pg_list), "r" (entry_addr), "r" (flags)
-	 : "memory");
-    /* NOT REACHED */
-    while(1);			/* Shut up gcc. */
-}
-#endif
 void
 do_vgabios(void)
 {

@@ -147,7 +147,8 @@ final_southbridge_fixup()
  	}
 #endif
  
- }
+	pci_routing_fixup();
+}
  
 void write_protect_vgabios(void)
 {

@@ -240,7 +240,7 @@ uint32_t pci_read_config32(device_t dev, unsigned where)
 	uint32_t value;
 	value = conf->read32(dev->bus->secondary, dev->devfn, where);
 	printk_spew( "Read config 32 bus %d,devfn 0x%x,reg 0x%x,val 0x%x\n",
-		     dev->bus->secondary, dev->devfn, where, *val);
+		     dev->bus->secondary, dev->devfn, where, value);
 	return value;
 }
 

@@ -1,7 +1,11 @@
+uses CONFIG_CHIP_NAME
 uses AGP_APERTURE_SIZE
 default AGP_APERTURE_SIZE=0x4000000
 
-config chip.h
+if CONFIG_CHIP_NAME
+	config chip.h
+end
+
 object northbridge.o
 driver misc_control.o
 

@@ -269,7 +269,9 @@ void write_smp_table(void *v, unsigned long *processor_map);
 
 
 #else /* HAVE_MP_TABLE */
-#define write_smp_table(v) do {} while(0)
+#define CPU_ENABLED		1	/* Processor is available */
+#define CPU_BOOTPROCESSOR	2	/* Processor is the BP */
+#define write_smp_table(v,p) do {} while(0)
 #endif /* HAVE_MP_TABLE */
 
 #endif

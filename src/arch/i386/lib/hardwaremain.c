@@ -142,9 +142,11 @@ void intel_main()
 	post_code(0x90);
 	printk(KERN_INFO "done.\n");
 
+#ifdef IOAPIC
 	/* set up the IO-APIC for the clock interrupt. */
 	post_code(0x92);
 	setup_ioapic();
+#endif /* IOAPIC */
 
 	// generic mainboard fixup
 	mainboard_fixup();

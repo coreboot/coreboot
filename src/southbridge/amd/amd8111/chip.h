@@ -3,7 +3,10 @@
 
 struct southbridge_amd_amd8111_config 
 {
+	unsigned int ide0_enable : 1;
+	unsigned int ide1_enable : 1;
 };
+
 struct chip_operations;
 extern struct chip_operations southbridge_amd_amd8111_ops;
 

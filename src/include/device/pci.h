@@ -50,6 +50,7 @@ void pci_bus_enable_resources(device_t dev);
 unsigned int pci_scan_bridge(device_t bus, unsigned int max);
 unsigned int pci_scan_bus(struct bus *bus, unsigned min_devfn, unsigned max_devfn, unsigned int max);
 struct resource *pci_get_resource(struct device *dev, unsigned long index);
+void pci_dev_set_subsystem(device_t dev, unsigned vendor, unsigned device);
 
 #define PCI_IO_BRIDGE_ALIGN 4096
 #define PCI_MEM_BRIDGE_ALIGN (1024*1024)

@@ -7,11 +7,6 @@
 #include <arch/io.h>
 #include "chip.h"
 
-void cpufixup(unsigned long mem)
-{
-	printk_spew("Welcome to LinuxBIOS CPU fixup. done.\n");
-}
-
 static int mainboard_scan_bus(device_t root, int maxbus) 
 {
 	int retval;
@@ -24,25 +19,18 @@ static int mainboard_scan_bus(device_t root, int maxbus)
 static struct device_operations mainboard_operations = {
 	.read_resources   = root_dev_read_resources,
 	.set_resources    = root_dev_set_resources,
-	.enable_resources = enable_childrens_resources,
-	.init             = 0,
+	.enable_resources = root_dev_enable_resources,
+	.init             = root_dev_init,
 	.scan_bus         = mainboard_scan_bus,
-	.enable           = 0,
 };
 
-static void enumerate(struct chip *chip)
+static void enable_dev(struct device *dev)
 {
-	struct chip *child;
-	dev_root.ops = &mainboard_operations;
-	chip->dev = &dev_root;
-	chip->bus = 0;
-	for(child = chip->children; child; child = child->next) {
-		child->bus = &dev_root.link[0];
-	}
+	dev->ops = &mainboard_operations;
 }
 
-struct chip_control mainboard_emulation_qemu_i386_control = {
-	.enumerate = enumerate, 
-	.name      = "qemu mainboard ",
+struct chip_operations mainboard_emulation_qemu_i386_control = {
+	.enable_dev = enable_dev, 
+	.name       = "qemu mainboard ",
 };
 

@@ -68,47 +68,6 @@ struct mem_range *sizeram(void)
 	return mem;
 }
 
-static void enumerate(struct chip *chip)
-{
-	extern struct device_operations default_pci_ops_bus;
-	chip_enumerate(chip);
-	chip->dev->ops = &default_pci_ops_bus;
-}
-
-static void random_fixup() {
-	device_t pcidev = dev_find_slot(0, 0);
-
-	printk_warning("QEMU random fixup ...\n");
-	if (pcidev) {
-		// pci_write_config8(pcidev, 0x0, 0x0);
-	}
-}
-
-static void northbridge_init(struct chip *chip, enum chip_pass pass)
-{
-
-	struct northbridge_dummy_qemu_i386_config *conf = 
-		(struct northbridge_dummy_qemu_i386_config *)chip->chip_info;
-
-	switch (pass) {
-	case CONF_PASS_PRE_PCI:
-		break;
-		
-	case CONF_PASS_POST_PCI:
-		break;
-		
-	case CONF_PASS_PRE_BOOT:
-		random_fixup();
-		break;
-		
-	default:
-		/* nothing yet */
-		break;
-	}
-}
-
-struct chip_control northbridge_emulation_qemu_i386_control = {
-	.enumerate = enumerate,
-	.enable    = northbridge_init,
+struct chip_operations northbridge_emulation_qemu_i386_control = {
 	.name      = "QEMU Northbridge",
 };

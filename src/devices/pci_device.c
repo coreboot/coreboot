@@ -485,7 +485,7 @@ void pci_dev_enable_resources(struct device *dev)
 
 	/* Set the subsystem vendor and device id for mainboard devices */
 	ops = ops_pci(dev);
-	if (dev->chip_ops && ops && ops->set_subsystem) {
+	if (dev->on_mainboard && ops && ops->set_subsystem) {
 		printk_debug("%s subsystem <- %02x/%02x\n",
 			dev_path(dev), 
 			MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID,
@@ -499,8 +499,6 @@ void pci_dev_enable_resources(struct device *dev)
 	command |= (PCI_COMMAND_PARITY + PCI_COMMAND_SERR); /* error check */
 	printk_debug("%s cmd <- %02x\n", dev_path(dev), command);
 	pci_write_config16(dev, PCI_COMMAND, command);
-
-	enable_childrens_resources(dev);
 }
 
 void pci_bus_enable_resources(struct device *dev)
@@ -513,9 +511,11 @@ void pci_bus_enable_resources(struct device *dev)
 	pci_write_config16(dev, PCI_BRIDGE_CONTROL, ctrl);
 
 	pci_dev_enable_resources(dev);
+
+	enable_childrens_resources(dev);
 }
 
-static void pci_dev_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+void pci_dev_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
 	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID, 
 		((device & 0xffff) << 16) | (vendor & 0xffff));

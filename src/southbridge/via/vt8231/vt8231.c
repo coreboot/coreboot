@@ -449,15 +449,7 @@ static void southbridge_init(struct chip *chip, enum chip_pass pass)
 	}
 }
 
-static void enumerate(struct chip *chip)
-{
-	extern struct device_operations default_pci_ops_bus;
-	chip_enumerate(chip);
-	chip->dev->ops = &default_pci_ops_bus;
-}
-
-struct chip_control southbridge_via_vt8231_control = {
-	.enumerate = enumerate,
+struct chip_operations southbridge_via_vt8231_control = {
 	.enable    = southbridge_init,
 	.name      = "VIA vt8231"
 };

@@ -50,7 +50,7 @@ void i82801dbm_enable(device_t dev)
 
 }
 
-struct chip_control southbridge_intel_i82801dbm_control = {
+struct chip_operations southbridge_intel_i82801dbm_control = {
 	.name       = "Intel 82801dbm Southbridge",
 	.enable_dev = i82801dbm_enable,
 };

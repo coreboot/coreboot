@@ -141,7 +141,7 @@ static void enumerate(struct chip *chip)
 	chip->dev->ops = &default_pci_ops_bus;
 }
 
-struct chip_control superio_via_vt1211_control = {
+struct chip_operations superio_via_vt1211_control = {
 	.enumerate = enumerate,
 	.enable    = superio_init,
 	.name      = "VIA vt1211"

@@ -320,15 +320,6 @@ void compute_allocate_resource(
 			bridge->align = resource->align;
 		}
 
-		/* Propogate the resource limit to the bridge register */
-		if (bridge->limit > resource->limit) {
-			bridge->limit = resource->limit;
-		}
-		/* Artificially deny limits between DEVICE_MEM_HIGH and 0xffffffff */
-		if ((bridge->limit > DEVICE_MEM_HIGH) && (bridge->limit <= 0xffffffff)) {
-			bridge->limit = DEVICE_MEM_HIGH;
-		}
-
 		/* Make certain we are dealing with a good minimum size */
 		size = resource->size;
 		align = resource->align;
@@ -337,6 +328,14 @@ void compute_allocate_resource(
 		}
 		if (resource->flags & IORESOURCE_FIXED) {
 			continue;
+		}
+		/* Propogate the resource limit to the bridge register */
+		if (bridge->limit > resource->limit) {
+			bridge->limit = resource->limit;
+		}
+		/* Artificially deny limits between DEVICE_MEM_HIGH and 0xffffffff */
+		if ((bridge->limit > DEVICE_MEM_HIGH) && (bridge->limit <= 0xffffffff)) {
+			bridge->limit = DEVICE_MEM_HIGH;
 		}
 		if (resource->flags & IORESOURCE_IO) {
 			/* Don't allow potential aliases over the

@@ -3,10 +3,12 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <device/smbus.h>
 #include <pc80/mc146818rtc.h>
 #include <bitops.h>
 #include <arch/io.h>
 #include "amd8111.h"
+#include "amd8111_smbus.h"
 
 #define PREVIOUS_POWER_STATE 0x43
 #define MAINBOARD_POWER_OFF 0
@@ -19,6 +21,51 @@
 #endif
 
 
+static int lsmbus_recv_byte(device_t dev)
+{
+	unsigned device;
+	struct resource *res;
+
+	device = dev->path.u.i2c.device;
+	res = find_resource(dev->bus->dev, 0x20);
+	
+	return do_smbus_recv_byte(res->base, device);
+}
+
+static int lsmbus_send_byte(device_t dev, uint8_t val)
+{
+	unsigned device;
+	struct resource *res;
+
+	device = dev->path.u.i2c.device;
+	res = find_resource(dev->bus->dev, 0x20);
+
+	return do_smbus_send_byte(res->base, device, val);
+}
+
+
+static int lsmbus_read_byte(device_t dev, uint8_t address)
+{
+	unsigned device;
+	struct resource *res;
+
+	device = dev->path.u.i2c.device;
+	res = find_resource(dev->bus->dev, 0x20);
+	
+	return do_smbus_read_byte(res->base, device, address);
+}
+
+static int lsmbus_write_byte(device_t dev, uint8_t address, uint8_t val)
+{
+	unsigned device;
+	struct resource *res;
+
+	device = dev->path.u.i2c.device;
+	res = find_resource(dev->bus->dev, 0x20);
+	
+	return do_smbus_write_byte(res->base, device, address, val);
+}
+
 static void acpi_init(struct device *dev)
 {
 	uint8_t byte;
@@ -29,29 +76,26 @@ static void acpi_init(struct device *dev)
 
 #if 0
 	printk_debug("ACPI: disabling NMI watchdog.. ");
-	pci_read_config_byte(dev, 0x49, &byte);
-	pci_write_config_byte(dev, 0x49, byte | (1<<2));
+	byte = pci_read_config8(dev, 0x49);
+	pci_write_config8(dev, 0x49, byte | (1<<2));
 
 
-	pci_read_config_byte(dev, 0x41, &byte);
-	pci_write_config_byte(dev, 0x41, byte | (1<<6)|(1<<2));
+	byte = pci_read_config8(dev, 0x41);
+	pci_write_config8(dev, 0x41, byte | (1<<6)|(1<<2));
 
 	/* added from sourceforge */
-	pci_read_config_byte(dev, 0x48, &byte);
-	pci_write_config_byte(dev, 0x48, byte | (1<<3));
+	byte = pci_read_config8(dev, 0x48);
+	pci_write_config8(dev, 0x48, byte | (1<<3));
 
 	printk_debug("done.\n");
 
 
 	printk_debug("ACPI: Routing IRQ 12 to PS2 port.. ");
-	pci_read_config_word(dev, 0x46, &word);
-	pci_write_config_word(dev, 0x46, word | (1<<9));
+	word = pci_read_config16(dev, 0x46);
+	pci_write_config16(dev, 0x46, word | (1<<9));
 	printk_debug("done.\n");
 
 	
-	printk_debug("ACPI: setting PM class code.. ");
-	pci_write_config_dword(dev, 0x60, 0x06800000);
-	printk_debug("done.\n");
 #endif
 	on = MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 	get_option(&on, "power_on_after_fail");
@@ -78,33 +122,63 @@ static void acpi_init(struct device *dev)
 
 static void acpi_read_resources(device_t dev)
 {
+	struct resource *resource;
+
 	/* Handle the generic bars */
 	pci_dev_read_resources(dev);
 
-	if ((dev->resources + 1) < MAX_RESOURCES) {
-		struct resource *resource = &dev->resource[dev->resources];
-		dev->resources++;
-		resource->base  = 0;
-		resource->size  = 256;
-		resource->align = log2(256);
-		resource->gran  = log2(256);
-		resource->limit = 65536;
-		resource->flags = IORESOURCE_IO;
-		resource->index = 0x58;
-	}
-	else {
-		printk_err("%s Unexpected resource shortage\n",
-			dev_path(dev));
-	}
+	/* Add the ACPI/SMBUS bar */
+	resource = new_resource(dev, 0x58);
+	resource->base  = 0;
+	resource->size  = 256;
+	resource->align = log2(256);
+	resource->gran  = log2(256);
+	resource->limit = 65536;
+	resource->flags = IORESOURCE_IO;
+	resource->index = 0x58;
 }
+
+static void acpi_enable_resources(device_t dev)
+{
+	uint8_t byte;
+	/* Enable the generic pci resources */
+	pci_dev_enable_resources(dev);
+
+	/* Enable the ACPI/SMBUS Bar */
+	byte = pci_read_config8(dev, 0x41);
+	byte |= (1 << 7);
+	pci_write_config8(dev, 0x41, byte);
+
+	/* Set the class code */
+	pci_write_config32(dev, 0x60, 0x06800000);
+	
+}
+
+static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+{
+	pci_write_config32(dev, 0x7c, 
+		((device & 0xffff) << 16) | (vendor & 0xffff));
+}
+
+static struct smbus_bus_operations lops_smbus_bus = {
+	.recv_byte  = lsmbus_recv_byte,
+	.send_byte  = lsmbus_send_byte,
+	.read_byte  = lsmbus_read_byte,
+	.write_byte = lsmbus_write_byte,
+};
+static struct pci_operations lops_pci = {
+	.set_subsystem = lpci_set_subsystem,
+};
 
 static struct device_operations acpi_ops  = {
 	.read_resources   = acpi_read_resources,
 	.set_resources    = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
+	.enable_resources = acpi_enable_resources,
 	.init             = acpi_init,
-	.scan_bus         = 0,
-//	.enable           = amd8111_enable,
+	.scan_bus         = scan_static_bus,
+	.enable           = amd8111_enable,
+	.ops_pci          = &lops_pci,
+	.ops_smbus_bus    = &lops_smbus_bus,
 };
 
 static struct pci_driver acpi_driver __pci_driver = {

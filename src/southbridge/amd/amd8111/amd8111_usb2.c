@@ -23,13 +23,24 @@ static void usb2_init(struct device *dev)
 #endif
 }
 
+static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+{
+	pci_write_config32(dev, 0x70, 
+		((device & 0xffff) << 16) | (vendor & 0xffff));
+}
+
+static struct pci_operations lops_pci = {
+	.set_subsystem = lpci_set_subsystem,
+};
+
 static struct device_operations usb2_ops  = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = usb2_init,
 	.scan_bus         = 0,
-//	.enable           = amd8111_enable,
+	.enable           = amd8111_enable,
+	.ops_pci          = &lops_pci,
 };
 
 static struct pci_driver usb2_driver __pci_driver = {

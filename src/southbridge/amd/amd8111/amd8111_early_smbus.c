@@ -1,13 +1,6 @@
+#include "amd8111_smbus.h"
+
 #define SMBUS_IO_BASE 0x0f00
-
-#define SMBGSTATUS 0xe0
-#define SMBGCTL    0xe2
-#define SMBHSTADDR 0xe4
-#define SMBHSTDAT  0xe6
-#define SMBHSTCMD  0xe8
-#define SMBHSTFIFO 0xe9
-
-#define SMBUS_TIMEOUT (100*1000*10)
 
 static void enable_smbus(void)
 {
@@ -25,114 +18,22 @@ static void enable_smbus(void)
 	outw(inw(SMBUS_IO_BASE + SMBGSTATUS), SMBUS_IO_BASE + SMBGSTATUS);
 }
 
-
-static inline void smbus_delay(void)
+static int smbus_recv_byte(unsigned device)
 {
-	outb(0x80, 0x80);
+	return do_smbus_recv_byte(SMBUS_IO_BASE, device);
 }
 
-static int smbus_wait_until_ready(void)
+static int smbus_send_byte(unsigned device, unsigned char val)
 {
-	unsigned long loops;
-	loops = SMBUS_TIMEOUT;
-	do {
-		unsigned short val;
-		smbus_delay();
-		val = inw(SMBUS_IO_BASE + SMBGSTATUS);
-		if ((val & 0x800) == 0) {
-			break;
-		}
-		if(loops == (SMBUS_TIMEOUT / 2)) {
-			outw(inw(SMBUS_IO_BASE + SMBGSTATUS), 
-				SMBUS_IO_BASE + SMBGSTATUS);
-		}
-	} while(--loops);
-	return loops?0:-2;
-}
-
-static int smbus_wait_until_done(void)
-{
-	unsigned long loops;
-	loops = SMBUS_TIMEOUT;
-	do {
-		unsigned short val;
-		smbus_delay();
-		
-		val = inw(SMBUS_IO_BASE + SMBGSTATUS);
-		if (((val & 0x8) == 0) | ((val & 0x437) != 0)) {
-			break;
-		}
-	} while(--loops);
-	return loops?0:-3;
+	return do_smbus_send_byte(SMBUS_IO_BASE, device, val);
 }
 
 static int smbus_read_byte(unsigned device, unsigned address)
 {
-	unsigned char global_control_register;
-	unsigned char global_status_register;
-	unsigned char byte;
-
-	if (smbus_wait_until_ready() < 0) {
-		return -2;
-	}
-	
-	/* setup transaction */
-	/* disable interrupts */
-	outw(inw(SMBUS_IO_BASE + SMBGCTL) & ~((1<<10)|(1<<9)|(1<<8)|(1<<4)), SMBUS_IO_BASE + SMBGCTL);
-	/* set the device I'm talking too */
-	outw(((device & 0x7f) << 1) | 1, SMBUS_IO_BASE + SMBHSTADDR);
-	/* set the command/address... */
-	outb(address & 0xFF, SMBUS_IO_BASE + SMBHSTCMD);
-	/* set up for a byte data read */
-	outw((inw(SMBUS_IO_BASE + SMBGCTL) & ~7) | (0x2), SMBUS_IO_BASE + SMBGCTL);
-
-	/* clear any lingering errors, so the transaction will run */
-	/* Do I need to write the bits to a 1 to clear an error? */
-	outw(inw(SMBUS_IO_BASE + SMBGSTATUS), SMBUS_IO_BASE + SMBGSTATUS);
-
-	/* clear the data word...*/
-	outw(0, SMBUS_IO_BASE + SMBHSTDAT);
-
-	/* start the command */
-	outw((inw(SMBUS_IO_BASE + SMBGCTL) | (1 << 3)), SMBUS_IO_BASE + SMBGCTL);
-
-
-	/* poll for transaction completion */
-	if (smbus_wait_until_done() < 0) {
-		return -3;
-	}
-
-	global_status_register = inw(SMBUS_IO_BASE + SMBGSTATUS);
-
-	/* read results of transaction */
-	byte = inw(SMBUS_IO_BASE + SMBHSTDAT) & 0xff;
-
-	if (global_status_register != (1 << 4)) {
-		return -1;
-	}
-	return byte;
+	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }
 
-static void smbus_write_byte(unsigned device, unsigned address, unsigned char val)
+static int smbus_write_byte(unsigned device, unsigned address, unsigned char val)
 {
-	if (smbus_wait_until_ready() < 0) {
-		return;
-	}
-
-	/* by LYH */
-	outb(0x37,SMBUS_IO_BASE + SMBGSTATUS);
-	/* set the device I'm talking too */
-	outw(((device & 0x7f) << 1) | 0, SMBUS_IO_BASE + SMBHSTADDR);
-
-	/* data to send */
-	outb(val, SMBUS_IO_BASE + SMBHSTDAT);
-
-	outb(address & 0xFF, SMBUS_IO_BASE + SMBHSTCMD);
-
-	/* start the command */
-	outb(0xa, SMBUS_IO_BASE + SMBGCTL);
-
-	/* poll for transaction completion */
-	smbus_wait_until_done();
-	return;
+	return do_smbus_write_byte(SMBUS_IO_BASE, device, address, val);
 }

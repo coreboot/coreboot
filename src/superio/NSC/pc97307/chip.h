@@ -14,9 +14,13 @@
 #define SIO_COM2_BASE   0x2F8
 #endif
 
-extern struct chip_control superio_NSC_pc97307_control;
+extern struct chip_operations superio_NSC_pc97307_control;
+
+#include <pc80/keyboard.h>
+#include <uart8250.h>
 
 struct superio_NSC_pc97307_config {
-    int port;
+	struct uart8250 com1, com2;
+	struct pc_keyboard keyboard;
 };
 #endif /* _SUPERIO_NSC_PC97307 */

@@ -1,96 +1,42 @@
-#include <smbus.h>
-#include <pci.h>
+/*
+ * (C) 2004 Linux Networx
+ */
+#include <console/console.h>
+#include <device/device.h>
+#include <device/pci.h>
+#include <device/pci_ids.h>
+#include <device/pci_ops.h>
+#include <device/chip.h>
+#include <device/smbus.h>
 #include <arch/io.h>
+#include "amd8111.h"
 
-#define PM_BUS 0
-#define PM_DEVFN PCI_DEVFN(0x7,3)
 
-#define SMBUS_IO_BASE 0x1000
-#define SMBHSTSTAT 0
-#define SMBHSTCTL  2
-#define SMBHSTCMD  3
-#define SMBHSTADD  4
-#define SMBHSTDAT0 5
-#define SMBHSTDAT1 6
-#define SMBBLKDAT  7
-
-void smbus_enable(void)
+static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
-	unsigned char byte;
-#if 0
-	/* iobase addr */
-	pcibios_write_config_dword(PM_BUS, PM_DEVFN, 0x90, SMBUS_IO_BASE | 1);
-	/* smbus enable */
-	pcibios_write_config_byte(PM_BUS, PM_DEVFN, 0xd2, (0x4 << 1) | 1);
-	/* iospace enable */
-	pcibios_write_config_word(PM_BUS, PM_DEVFN, 0x4, 1);
-#endif
-	/* Set PMIOEN, leaving default address 0xDD00 in 0x58 */
-	byte=pcibios_read_config_byte(0,PCI_DEVFN(0x7,3), 0x41);
-	pcibios_write_config_byte(0,PCI_DEVFN(0x7,3), byte | 0x80 );
-
-
-	/* cont reading 207 */
+	pci_write_config32(dev, 0x44, 
+		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 
-void smbus_setup(void)
-{
-	outb(0, SMBUS_IO_BASE + SMBHSTSTAT);
-}
+static struct smbus_bus_operations lops_smbus_bus = {
+	/* I haven't seen the 2.0 SMBUS controller used yet. */
+};
+static struct pci_operations lops_pci = {
+	.set_subsystem = lpci_set_subsystem,
+};
+static struct device_operations smbus_ops = {
+	.read_resources   = pci_dev_read_resources,
+	.set_resources    = pci_dev_set_resources,
+	.enable_resources = pci_dev_enable_resources,
+	.init             = 0,
+	.scan_bus         = scan_static_bus,
+	.enable           = amd8111_enable,
+	.ops_pci          = &lops_pci,
+	.ops_smbus_bus    = &lops_smbus_bus,
+};
 
-static void smbus_wait_until_ready(void)
-{
-	while((inb(SMBUS_IO_BASE + SMBHSTSTAT) & 1) == 1) {
-		/* nop */
-	}
-}
-
-static void smbus_wait_until_done(void)
-{
-	unsigned char byte;
-	do {
-		byte = inb(SMBUS_IO_BASE + SMBHSTSTAT);
-	}
-	while((byte &1) == 1);
-	while( (byte & ~1) == 0) {
-		byte = inb(SMBUS_IO_BASE + SMBHSTSTAT);
-	}
-}
-
-int smbus_read_byte(unsigned device, unsigned address, unsigned char *result)
-{
-	unsigned char host_status_register;
-	unsigned char byte;
-
-	smbus_wait_until_ready();
-
-	/* setup transaction */
-	/* disable interrupts */
-	outb(inb(SMBUS_IO_BASE + SMBHSTCTL) & (~1), SMBUS_IO_BASE + SMBHSTCTL);
-	/* set the device I'm talking too */
-	outb(((device & 0x7f) << 1) | 1, SMBUS_IO_BASE + SMBHSTADD);
-	/* set the command/address... */
-	outb(address & 0xFF, SMBUS_IO_BASE + SMBHSTCMD);
-	/* set up for a byte data read */
-	outb((inb(SMBUS_IO_BASE + SMBHSTCTL) & 0xE3) | (0x2 << 2), SMBUS_IO_BASE + SMBHSTCTL);
-
-	/* clear any lingering errors, so the transaction will run */
-	outb(inb(SMBUS_IO_BASE + SMBHSTSTAT), SMBUS_IO_BASE + SMBHSTSTAT);
-
-	/* clear the data byte...*/
-	outb(0, SMBUS_IO_BASE + SMBHSTDAT0);
-
-	/* start the command */
-	outb((inb(SMBUS_IO_BASE + SMBHSTCTL) | 0x40), SMBUS_IO_BASE + SMBHSTCTL);
-
-	/* poll for transaction completion */
-	smbus_wait_until_done();
-
-	host_status_register = inb(SMBUS_IO_BASE + SMBHSTSTAT);
-
-	/* read results of transaction */
-	byte = inb(SMBUS_IO_BASE + SMBHSTDAT0);
-
-	*result = byte;
-	return host_status_register != 0x02;
-}
+static struct pci_driver smbus_driver __pci_driver = {
+	.ops = &smbus_ops,
+	.vendor = PCI_VENDOR_ID_AMD,
+	.device = PCI_DEVICE_ID_AMD_8111_SMB,
+};

@@ -23,19 +23,19 @@ static void init(device_t dev)
 	if (!dev->enabled) {
 		return;
 	}
-	conf = dev->chip->chip_info;
+	conf = dev->chip_info;
 	switch(dev->path.u.pnp.device) {
 	case PC87366_SP1: 
-		res0 = get_resource(dev, PNP_IDX_IO0);
+		res0 = find_resource(dev, PNP_IDX_IO0);
 		init_uart8250(res0->base, &conf->com1);
 		break;
 	case PC87366_SP2:
-		res0 = get_resource(dev, PNP_IDX_IO0);
+		res0 = find_resource(dev, PNP_IDX_IO0);
 		init_uart8250(res0->base, &conf->com2);
 		break;
 	case PC87366_KBCK:
-		res0 = get_resource(dev, PNP_IDX_IO0);
-		res1 = get_resource(dev, PNP_IDX_IO1);
+		res0 = find_resource(dev, PNP_IDX_IO0);
+		res1 = find_resource(dev, PNP_IDX_IO1);
 		init_pc_keyboard(res0->base, res1->base, &conf->keyboard);
 		break;
 	}
@@ -64,13 +64,13 @@ static struct pnp_info pnp_dev_info[] = {
 };
 
 
-static void enumerate(struct chip *chip)
+static void enable_dev(struct device *dev)
 {
-	pnp_enumerate(chip, sizeof(pnp_dev_info)/sizeof(pnp_dev_info[0]), 
-		&pnp_ops, pnp_dev_info);
+	pnp_enable_device(dev, &pnp_ops, 
+		sizeof(pnp_dev_info)/sizeof(pnp_dev_info[0]), pnp_dev_info);
 }
 
-struct chip_control superio_NSC_pc87366_control = {
-	.enumerate = enumerate,
-	.name      = "NSC 87366"
+struct chip_operations superio_NSC_pc87366_control = {
+	.enable_dev = enable_dev,
+	.name       = "NSC 87366"
 };

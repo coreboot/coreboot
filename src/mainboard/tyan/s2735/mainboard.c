@@ -6,10 +6,7 @@
 #include "chip.h"
 //#include <part/mainboard.h>
 //#include "lsi_scsi.c"
-unsigned long initial_apicid[CONFIG_MAX_CPUS] =
-{
-	0, 6, 1, 7
-};
+
 #if 0
 static void fixup_lsi_53c1030(struct device *pdev)
 {
@@ -122,29 +119,6 @@ static void vga_fixup(void) {
 }
  */
 
-static void
-enable(struct chip *chip, enum chip_pass pass)
-{
-
-        struct mainboard_tyan_s2735_config *conf = 
-		(struct mainboard_tyan_s2735_config *)chip->chip_info;
-
-        switch (pass) {
-		default: break;
-//		case CONF_PASS_PRE_CONSOLE:
-//		case CONF_PASS_PRE_PCI:
-		case CONF_PASS_POST_PCI:		
-                case CONF_PASS_PRE_BOOT:
-//			if (conf->fixup_scsi)
-//        			onboard_scsi_fixup();
-//			if (conf->fixup_vga)
-//				vga_fixup();
-//			printk_debug("mainboard fixup pass %d done\r\n",pass);
-			break;
-	}
-
-}
-
 static int
 mainboard_scan_bus(device_t root, int maxbus)
 {
@@ -158,25 +132,18 @@ mainboard_scan_bus(device_t root, int maxbus)
 static struct device_operations mainboard_operations = {
         .read_resources   = root_dev_read_resources,
         .set_resources    = root_dev_set_resources,
-        .enable_resources = enable_childrens_resources,
-        .init             = 0,
+        .enable_resources = root_dev_enable_resources,
+        .init             = root_dev_init,
         .scan_bus         = mainboard_scan_bus,
-        .enable           = 0,
 };
 
-static void enumerate(struct chip *chip)
+static void enable_dev(device_t dev)
 {
-        struct chip *child;
-        dev_root.ops = &mainboard_operations;
-        chip->dev = &dev_root;
-        chip->bus = 0;
-        for(child = chip->children; child; child = child->next) {
-                child->bus = &dev_root.link[0];
-        }
+	dev->ops = &mainboard_ops;
 }
-struct chip_control mainboard_tyan_s2735_control = {
-        .enable = enable,
-        .enumerate = enumerate,
+
+struct chip_operations mainboard_tyan_s2735_control = {
+        .enable_dev = enable_dev,
         .name      = "Tyan s2735 mainboard ",
 };
 

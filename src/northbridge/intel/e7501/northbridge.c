@@ -113,38 +113,7 @@ struct mem_range *sizeram(void)
 	
 	return mem;
 }
-static void enumerate(struct chip *chip)
-{
-        extern struct device_operations default_pci_ops_bus;
-        chip_enumerate(chip);
-        chip->dev->ops = &default_pci_ops_bus;
-}
-#if 0
-static void northbridge_init(struct chip *chip, enum chip_pass pass)
-{
 
-        struct northbridge_intel_e7501_config *conf =
-                (struct northbridge_intel_e7501_config *)chip->chip_info;
-
-        switch (pass) {
-        case CONF_PASS_PRE_PCI:
-                break;
-
-        case CONF_PASS_POST_PCI:
-                break;
-
-        case CONF_PASS_PRE_BOOT:
-                break;
-
-        default:
-                /* nothing yet */
-                break;
-        }
-}
-#endif
-
-struct chip_control northbridge_intel_e7501_control = {
-        .enumerate = enumerate,
-//        .enable    = northbridge_init,
+struct chip_operations northbridge_intel_e7501_control = {
         .name      = "intel E7501 Northbridge",
 };

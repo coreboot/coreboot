@@ -77,22 +77,16 @@ dump_south(void)
 }
 
 
-static void rl5c476_init(struct southbridge_rl5c476_config *conf)
+static void rl5c476_init(device_t dev)
 {
 	//unsigned char enables;
-	device_t dev;
 	pc16reg_t *pc16;
 	int i;
 
-	printk_debug("rl5c476 init\n");
+#error "FIXME implement carbus bridge support"
+#error "FIXME this code is close to a but the conversion needs more work"
 	/* cardbus controller function 1 for CF Socket */
-	dev = dev_find_device(PCI_VENDOR_ID_RICOH, PCI_DEVICE_ID_RICOH_RL5C476, 0);
-
-	if (!dev ){
-		// probably an epia-m rather than mii
-		printk_debug("No rl5c476 found\n");
-		return;
-	}	
+	printk_debug("rl5c476 init\n");
 
 	/* setup pci header manually because 'pci_device.c' doesn't know how to handle
          * pci to cardbus bridges - (header type 2 I think)
@@ -214,41 +208,21 @@ static void rl5c476_init(struct southbridge_rl5c476_config *conf)
 
 }
 
-static void southbridge_init(struct chip *chip, enum chip_pass pass)
-{
+static struct device_operations ricoh_rl5c476_ops = {
+	.read_resources   = pci_bus_read_resources,
+	.set_resources    = pci_dev_set_resources,
+	.enable_resources = pci_bus_enable_resources,
+	.inti             = rl5c476_init,
+	.scan_bus         = pci_scan_bridge,
+};
 
-	struct southbridge_rl5c476_config *conf = 
-		(struct southbridge_rl5c476_config *)chip->chip_info;
+static struct pci_driver ricoh_rl5c476_driver __pci_driver = {
+	.ops    = &ricoh_rl5c476_ops,
+	.vendor = PCI_VENDOR_ID_RICOH,
+	.device = PCI_DEVICE_ID_RICOH_RL5C476,
+};
 
-	switch (pass) {
-	case CONF_PASS_PRE_PCI:
-		//rl5c476_pci_enable(conf);
-		break;
-		
-	case CONF_PASS_POST_PCI:
-		rl5c476_init(conf);
-
-		break;
-
-	case CONF_PASS_PRE_BOOT:
-		//dump_south();
-		break;
-		
-	default:
-		/* nothing yet */
-		break;
-	}
-}
-
-static void enumerate(struct chip *chip)
-{
-	extern struct device_operations default_pci_ops_bus;
-	chip_enumerate(chip);
-	chip->dev->ops = &default_pci_ops_bus;
-}
-
-struct chip_control southbridge_ricoh_rl5c476_control = {
-	.enumerate = enumerate,
+struct chip_operations southbridge_ricoh_rl5c476_control = {
 	.enable    = southbridge_init,
 	.name      = "RICOH RL5C476"
 };

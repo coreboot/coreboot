@@ -7,9 +7,8 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <pc80/mc146818rtc.h>
+#include <pc80/isa-dma.h>
 #include "amd8111.h"
-
-void isa_dma_init(void); /* from /pc80/isa-dma.c */
 
 #define NMI_OFF 0
 
@@ -85,7 +84,7 @@ static void setup_ioapic(void)
 			return;
 		}
 		printk_spew("for IRQ, reg 0x%08x value 0x%08x 0x%08x\n", 
-			    a->reg, a->value_low, a->value_high);
+			a->reg, a->value_low, a->value_high);
 	}
 }
 
@@ -158,43 +157,36 @@ static void lpc_init(struct device *dev)
 
 static void amd8111_lpc_read_resources(device_t dev)
 {
-	unsigned int reg;
+	struct resource *res;
 
 	/* Get the normal pci resources of this device */
 	pci_dev_read_resources(dev);
 
-	/* Find my place in the resource list */
-	reg = dev->resources;
-
 	/* Add an extra subtractive resource for both memory and I/O */
-	dev->resource[reg].base  = 0;
-	dev->resource[reg].size  = 0;
-	dev->resource[reg].align = 0;
-	dev->resource[reg].gran  = 0;
-	dev->resource[reg].limit = 0;
-	dev->resource[reg].flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-	dev->resource[reg].index = 0;
-	reg++;
+	res = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
+	res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 	
-	dev->resource[reg].base  = 0;
-	dev->resource[reg].size  = 0;
-	dev->resource[reg].align = 0;
-	dev->resource[reg].gran  = 0;
-	dev->resource[reg].limit = 0;
-	dev->resource[reg].flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-	dev->resource[reg].index = 0;
-	reg++;
-	
-	dev->resources = reg;
+	res = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
+	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 }
 
+
+static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+{
+	pci_write_config32(dev, 0x70, 
+		((device & 0xffff) << 16) | (vendor & 0xffff));
+}
+static struct pci_operations lops_pci = {
+	.set_subsystem = lpci_set_subsystem,
+};
 static struct device_operations lpc_ops  = {
 	.read_resources   = amd8111_lpc_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = lpc_init,
 	.scan_bus         = scan_static_bus,
-//	.enable           = amd8111_enable,
+	.enable           = amd8111_enable,
+	.ops_pci          = &lops_pci,
 };
 
 static struct pci_driver lpc_driver __pci_driver = {

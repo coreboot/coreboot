@@ -1,3 +1,10 @@
+- 1.1.7
+  - The configuration language has been cleaned up.  No more link keyword.
+  - Everything is now in the device tree.
+  - The static and dynamic device trees have been unified
+  - Support for setting the pci subsystem vendor and pci subsystem device has been added.
+  - 64bit resource support
+  - Generic smbus support
 - 1.1.6
   - pnp/superio devices are now handled cleanly with very little code
   - Initial support for finding x86 BIST errors

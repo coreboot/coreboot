@@ -45,12 +45,17 @@ static void pci_init(struct device *dev)
 	pci_write_config32(dev, 0x1c, dword);
 }
 
+static struct pci_operations lops_pci = {
+	.set_subsystem = 0,
+};
+
 static struct device_operations pci_ops  = {
 	.read_resources   = pci_bus_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_bus_enable_resources,
 	.init             = pci_init,
 	.scan_bus         = pci_scan_bridge,
+	.ops_pci          = &lops_pci,
 };
 
 static struct pci_driver pci_driver __pci_driver = {

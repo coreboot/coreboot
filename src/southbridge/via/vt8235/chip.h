@@ -1,7 +1,7 @@
 #ifndef _SOUTHBRIDGE_VIA_VT8235
 #define _SOUTHBRIDGE_VIA_VT8235
 
-extern struct chip_control southbridge_via_vt8235_control;
+extern struct chip_operations southbridge_via_vt8235_control;
 
 struct southbridge_via_vt8235_config {
 	/* PCI function enables */

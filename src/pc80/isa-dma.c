@@ -1,4 +1,5 @@
 #include <arch/io.h>
+#include <pc80/isa-dma.h>
 
 /* DMA controller registers */
 #define DMA1_CMD_REG		0x08	/* command register (w) */

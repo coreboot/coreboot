@@ -132,7 +132,7 @@ struct device_operations pnp_ops = {
 static void pnp_get_ioresource(device_t dev, unsigned index, struct io_info *info)
 {
 	struct resource *resource;
-	uint32_t size;
+	unsigned moving, gran, step;
 
 	resource = new_resource(dev, index);
 	
@@ -140,11 +140,32 @@ static void pnp_get_ioresource(device_t dev, unsigned index, struct io_info *inf
 	resource->limit = 0xffff;
 	resource->flags |= IORESOURCE_IO;
 	
+	/* Get the resource size */
+	moving = info->mask;
+	gran = 15;
+	step = 1 << gran;
+	/* Find the first bit that moves */
+	while((moving & step) == 0) {
+		gran--;
+		step >>= 1;
+	}
+	/* Now find the first bit that does not move */
+	while((moving & step) != 0) {
+		gran--;
+		step >>= 1;
+	}
+	/* Of the moving bits the last bit in the first group,
+	 * tells us the size of this resource.
+	 */
+	if ((moving & step) == 0) {
+		gran++;
+		step <<= 1;
+	}
 	/* Set the resource size and alignment */
-	size = (0xffff & info->mask);
-	resource->size  = (~(size | 0xfffff800) + 1);
-	resource->align = log2(resource->size);
-	resource->gran  = resource->align;
+	resource->gran  = gran;
+	resource->align = gran;
+	resource->limit = info->mask | (step - 1);
+	resource->size  = 1 << gran;
 }
 
 static void get_resources(device_t dev, struct pnp_info *info)

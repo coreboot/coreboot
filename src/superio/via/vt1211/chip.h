@@ -1,7 +1,7 @@
 #ifndef _SUPERIO_VIA_VT1211
 #define _SUPERIO_VIA_VT1211
 
-extern struct chip_control superio_via_vt1211_control;
+extern struct chip_operations superio_via_vt1211_control;
 
 struct superio_via_vt1211_config {
 	/* PCI function enables */

@@ -4,12 +4,12 @@ static void amd8111_enable_rom(void)
 	unsigned char byte;
 	device_t dev;
 
-	/* Enable 4MB rom access at 0xFFC00000 - 0xFFFFFFFF */
+	/* Enable 5MB rom access at 0xFFB00000 - 0xFFFFFFFF */
 	/* Locate the amd8111 */
 	dev = pci_locate_device(PCI_ID(0x1022, 0x7468), 0);
 
-	/* Set the 4MB enable bit bit */
+	/* Set the 5MB enable bits */
 	byte = pci_read_config8(dev, 0x43);
-	byte |= 0x80;
+	byte |= 0xC0;
 	pci_write_config8(dev, 0x43, byte);
 }

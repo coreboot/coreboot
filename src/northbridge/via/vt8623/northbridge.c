@@ -65,12 +65,6 @@ struct mem_range *sizeram(void)
 
 	return mem;
 }
-static void enumerate(struct chip *chip)
-{
-	extern struct device_operations default_pci_ops_bus;
-	chip_enumerate(chip);
-	chip->dev->ops = &default_pci_ops_bus;
-}
 
 /*
  * This fixup is based on capturing values from an Award bios.  Without
@@ -164,8 +158,7 @@ static void northbridge_init(struct chip *chip, enum chip_pass pass)
 	}
 }
 
-struct chip_control northbridge_via_vt8623_control = {
-	.enumerate = enumerate,
+struct chip_operations northbridge_via_vt8623_control = {
 	.enable    = northbridge_init,
 	.name      = "VIA vt8623 Northbridge",
 };

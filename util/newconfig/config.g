@@ -807,6 +807,7 @@ class partobj:
 				file.write("\t.bus = &dev_root.link[0],\n")
 				file.write("\t.path = { .type = DEVICE_PATH_ROOT },\n")
 				file.write("\t.enabled = 1,\n\t.links = 1,\n")
+				file.write("\t.on_mainboard = 1,\n")
 				file.write("\t.link = {\n\t\t[0] = {\n")
 				file.write("\t\t\t.dev=&dev_root,\n\t\t\t.link = 0,\n")
 				file.write("\t\t\t.children = &%s,\n" % self.firstchilddevice().instance_name)
@@ -830,6 +831,7 @@ class partobj:
 			self.firstparentdevicelink()))
 		file.write("\t.path = {%s},\n" % self.path)
 		file.write("\t.enabled = %d,\n" % self.enabled)
+		file.write("\t.on_mainboard = 1,\n")
 		if (self.resources):
 			file.write("\t.resources = %d,\n" % self.resources)
 			file.write("\t.resource = {%s\n\t },\n" % self.resource)

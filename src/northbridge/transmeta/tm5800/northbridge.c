@@ -118,13 +118,6 @@ static struct pci_driver mcf0_driver __pci_driver = {
 	.device = 0x1100,
 };
 
-static void enumerate(struct chip *chip)
-{
-	chip_enumerate(chip);
-	chip->dev->ops = &northbridge_operations;
-}
-
-struct chip_control northbridge_amd_tm5800_control = {
-	.name   = "Transmeta  tm5800 Northbridge",
-	.enumerate = enumerate,
+struct chip_operations northbridge_amd_tm5800_control = {
+	.name   = "Transmeta tm5800 Northbridge",
 };

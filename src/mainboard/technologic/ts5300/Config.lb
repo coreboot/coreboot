@@ -210,22 +210,13 @@ mainboardinit ./auto.inc
 dir /pc80
 config chip.h
 
-northbridge amd/sc520 "elan_nb"
-	southbridge amd/sc520 "elan_sb"
+chip northbridge/amd/sc520
+	chip southbridge amd/sc520
 		register "enable_usb" = "0"
 		register "enable_native_ide" = "1"
 		register "enable_com_ports" = "1"
 		register "enable_keyboard" = "0"
 		register "enable_nvram" = "1"
 	end
+	chip cpu/amd/sc520
 end
-
-cpu p6 "cpu0"
-	
-end
-
-##
-## Include the old serial code for those few places that still need it.
-##
-mainboardinit pc80/serial.inc
-mainboardinit arch/i386/lib/console.inc

@@ -151,11 +151,10 @@ void root_dev_init(device_t root)
  * @brief Default device operation for root device
  *
  * This is the default device operation for root devices in PCI based systems.
- * The static enumeration code chip_control::enumerate() of mainboards usually
- * override this operation with their own device operations. An notable
- * example is mainboard operations for AMD K8 mainboards. They replace the
- * scan_bus() method with amdk8_scan_root_bus() due to the special device
- * layout of AMD K8 systems.
+ * These operations should be fully usable as is.  However the 
+ * chip_operations::dev_enable of a motherboard can override this if you
+ * want non-default behavior.  Currently src/mainboard/arima/hdama/mainbaord.c
+ * does this for debugging purposes.
  */
 struct device_operations default_dev_ops_root = {
 	.read_resources   = root_dev_read_resources,

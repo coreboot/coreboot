@@ -1,5 +1,5 @@
 /*
- * (C) 2003 Linux Networx
+ * (C) 2003-2004 Linux Networx
  */
 #include <console/console.h>
 #include <device/device.h>
@@ -106,20 +106,19 @@ static void ioapic_enable(device_t dev)
 		value &= ~((1 << 1) | (1 << 0));
 	}
 	pci_write_config32(dev, 0x44, value);
-
-	/* We have to enable MEM and Bus Master for IOAPIC */
-        value = pci_read_config32(dev, 0x4);
-        value |= 6;
-        pci_write_config32(dev, 0x4, value);
 }
 
+static struct pci_operations pci_ops_pci_dev = {
+	.set_subsystem    = pci_dev_set_subsystem,
+};
 static struct device_operations ioapic_ops = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init     = 0,
-	.scan_bus = 0,
-	.enable   = ioapic_enable,
+	.init             = 0,
+	.scan_bus         = 0,
+	.enable           = ioapic_enable,
+	.ops_pci          = &pci_ops_pci_dev,
 };
 
 static struct pci_driver ioapic_driver __pci_driver = {

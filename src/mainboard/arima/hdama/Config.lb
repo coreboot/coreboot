@@ -123,7 +123,7 @@ mainboardinit cpu/x86/mmx/disable_mmx.inc
 dir /pc80
 config chip.h
 
-# sample config for arima/hdama
+# config for arima/hdama
 chip northbridge/amd/amdk8
 	device pci_domain 0 on
 		device pci 18.0 on #  northbridge 
@@ -141,7 +141,7 @@ chip northbridge/amd/amdk8
 				device pci 0.0 on
 					device pci 0.0 on end
 					device pci 0.1 on end
-					device pci 0.2 on end
+					device pci 0.2 off end
 					device pci 1.0 off end
 				end
 				device pci 1.0 on
@@ -218,6 +218,8 @@ chip northbridge/amd/amdk8
 				end
 				device pci 1.5 off end
 				device pci 1.6 on end
+				register "ide0_enable" = "1"
+				register "ide1_enable" = "1"
 			end
 		end #  device pci 18.0 
 		

@@ -23,6 +23,12 @@ linuxbiosbase = 0xf0000;
 objectrules = [];
 userrules = [];
 
+# this is the absolute base rule, and so is very special. 
+mainrulelist = "all"
+
+def add_main_rule_dependency(new_dependency):
+	global mainrulelist
+	mainrulelist = mainrulelist + ' ' + new_dependency
 # function to add an object to the set of objects to be made. 
 # this is a tuple, object name, source it depends on, 
 # and an optional rule (can be empty) for actually building
@@ -202,6 +208,7 @@ def docipl(dir, ipl_name):
 	mainboard = command_vals['mainboard']
 	mainboard_dir = os.path.join(treetop, 'src', mainboard)
 	# add the docipl rule
+	add_main_rule_dependency('docipl')
 	userrules.append("docipl: ipl.o")
 	userrules.append("\tobjcopy -O binary -R .note -R .comment -S ipl.o docipl")
 	# now, add the ipl.o rule
@@ -336,10 +343,10 @@ def writep5crt0(path):
 	superioserial = "#include <%s/setup_serial.inc>\n" % command_vals['superio']
 	crt0lines = readfile(crt0base)
 
-#	if (debug):
-	print "CRT0 ", crt0lines
+	if (debug):
+		print "CRT0 ", crt0lines
         for line in crt0lines:
-		if (string.strip(line) <> "PARAM"):
+		if (string.strip(line) <> "CRT0_PARAMETERS"):
 			file.write(line)
 		else:
 			file.write(paramfileinclude)
@@ -372,7 +379,8 @@ def writeldscript(path):
 	file.write('_ROMBASE	= 0x%x;\n' % linuxbiosbase)
 
 	ldlines = readfile(ldscriptbase)
-	print "LDLINES ",ldlines
+	if (debug):
+		print "LDLINES ",ldlines
         for line in ldlines:
 		file.write(line)
 	file.close();
@@ -406,7 +414,7 @@ def writemakefile(path):
 	# print out the base rules
 	
 	# need to have a rule that counts on 'all'
-	file.write("mainrule: all\n")
+	file.write("mainrule: %s\n" % mainrulelist)
 #	for i in range(len(baserules)):
 #		file.write("%s\n" % baserules[i])
 

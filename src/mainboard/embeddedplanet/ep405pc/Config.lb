@@ -17,6 +17,11 @@ option PCIC0_CFGDATA=0xeec00004
 ##
 option UART0_IO_BASE=0xef600300
 
+##
+## Early board initialization, called from ppc_main()
+##
+initobject init.c
+
 arch ppc end
 cpu ppc/ppc4xx end
 
@@ -30,4 +35,4 @@ southbridge winbond/w83c553 end
 ##
 
 addaction linuxbios.a "$(CROSS_COMPILE)ranlib linuxbios.a"
-makedefine CFLAGS += -g
+makedefine CFLAGS += -msoft-float

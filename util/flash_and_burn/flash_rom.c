@@ -46,10 +46,12 @@
 #include "sst28sf040.h"
 #include "w49f002u.h"
 #include "sst39sf020.h"
+#include "pm49fl004.h"
 #include "mx29f002.h"
 
 struct flashchip flashchips[] = {
-    {"Am29F040B",   AMD_ID,     AM_29F040B,   NULL, 512, 64*1024,
+#if  1
+   {"Am29F040B",   AMD_ID,     AM_29F040B,   NULL, 512, 64*1024,
      probe_29f040b, erase_29f040b, write_29f040b, NULL},
     {"At29C040A",   ATMEL_ID,   AT_29C040A,   NULL, 512, 256,
      probe_jedec,   erase_jedec,   write_jedec, NULL},
@@ -63,6 +65,12 @@ struct flashchip flashchips[] = {
      probe_39sf020, erase_39sf020, write_39sf020, NULL},
     {"SST39VF020",  SST_ID,     SST_39VF020,  NULL, 256, 4096,
      probe_39sf020, erase_39sf020, write_39sf020, NULL},
+#endif
+//By LYH begin
+    {"Pm49FL004",  PMC_ID,     PMC_49FL004,  NULL, 512, 64*1024,
+     probe_49fl004, erase_49fl004, write_49fl004, NULL},
+//END
+#if 1
     {"W29C011",    WINBOND_ID, W_29C011,    NULL, 128, 128,
      probe_jedec,   erase_jedec,   write_jedec, NULL},
     {"W29C020C",    WINBOND_ID, W_29C020C,    NULL, 256, 128,
@@ -80,10 +88,11 @@ struct flashchip flashchips[] = {
      NULL, 8, 8*1024,
      probe_md2802, erase_md2802, write_md2802, read_md2802},
     {NULL,}
+#endif
 };
 
 char *chip_to_probe = NULL;
-
+#if 1
 int enable_flash_sis630 (struct pci_dev *dev, char *name)
 {
     char b;
@@ -271,6 +280,71 @@ enable_flash_sis5595(struct pci_dev *dev, char *name) {
   }
   return 0;
 }
+#endif
+//BY LYH
+#if 0
+static void dump_pci_device(struct pci_dev *dev)
+{
+        int i;
+
+	printf("\n");
+        for(i = 0; i <= 255; i++) {
+                unsigned char val;
+                if ((i & 0x0f) == 0) {
+                        printf("0x%02x:",i);
+                }
+                val = pci_read_byte(dev, i);
+		printf(" 0x%02x",val);
+                if ((i & 0x0f) == 0x0f) {
+                        printf("\r\n");
+                }
+        }
+}
+
+#endif
+
+int
+enable_flash_amd8111(struct pci_dev *dev, char *name) {
+  /* register 4e.b gets or'ed with one */
+  unsigned char old, new;
+  /* if it fails, it fails. There are so many variations of broken mobos
+   * that it is hard to argue that we should quit at this point. 
+   */
+
+//  dump_pci_device(dev); 
+ 
+  old = pci_read_byte(dev, 0x43);
+
+  new = old | 0x80;
+
+  if (new != old) {
+
+  	pci_write_byte(dev, 0x43, new);
+
+  	if (pci_read_byte(dev, 0x43) != new) {
+    		printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
+          	 0x43, new, name);
+  	}
+  }
+
+	
+  old = pci_read_byte(dev, 0x40);
+  
+  new = old | 0x01;
+  
+  if (new == old)
+      return 0;
+      
+  pci_write_byte(dev, 0x40, new);
+  
+  if (pci_read_byte(dev, 0x40) != new) {
+    printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
+           0x40, new, name);
+    return -1;
+  }
+  return 0;
+}
+//By LYH END
 
 struct flashchip * probe_flash(struct flashchip * flash)
 {
@@ -299,7 +373,7 @@ struct flashchip * probe_flash(struct flashchip * flash)
 	 		flash->total_size * 1024, (unsigned long)size);
 	}
 	bios = mmap (0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
-		     fd_mem, (off_t) (0 - size));
+		     fd_mem, (off_t) (0-size));
 	if (bios == MAP_FAILED) {
 	    perror("Error MMAP /dev/mem");
 	    exit(1);
@@ -393,7 +467,7 @@ typedef struct penable {
 } FLASH_ENABLE;
 
 FLASH_ENABLE enables[] = {
-
+#if 1
   {0x1, 0x1, "sis630 -- what's the ID?", enable_flash_sis630},
   {0x8086, 0x2480, "E7500", enable_flash_e7500},
   {0x1106, 0x8231, "VT8231", enable_flash_vt8231},
@@ -401,6 +475,8 @@ FLASH_ENABLE enables[] = {
   {0x1078, 0x0100, "CS5530", enable_flash_cs5530},
   {0x100b, 0x0510, "SC1100", enable_flash_sc1100},
   {0x1039, 0x8, "SIS5595", enable_flash_sis5595},
+#endif
+  {0x1022, 0x7468, "AMD8111", enable_flash_amd8111},
 };
   
 int

@@ -1,4 +1,4 @@
-#This file was created by <root> Tue Jan 16 10:39:48 2001
+#This file was created by <root> Tue Jun 19 09:13:32 2001
 #LyX 1.0 (C) 1995-1999 Matthias Ettrich and the LyX Team
 \lyxformat 2.15
 \textclass article
@@ -797,7 +797,7 @@ Resource directories contain C source code for LinuxBIOS.
 \layout Standard
 \align center \LyXTable
 multicol5
-12 2 0 0 -1 -1 -1 -1
+14 2 0 0 -1 -1 -1 -1
 1 1 0 0
 1 0 0 0
 1 0 0 0
@@ -810,6 +810,8 @@ multicol5
 1 0 0 0
 1 0 0 0
 1 1 0 0
+1 1 0 0
+0 1 1 0
 2 1 0 "1in" ""
 2 1 1 "4in" ""
 0 8 1 0 0 0 0 "" ""
@@ -834,6 +836,10 @@ multicol5
 0 8 1 0 0 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
 
@@ -888,6 +894,16 @@ TOP/src/superio/<vendor>/<partname>
 pcibridge
 \newline 
 TOP/src/pcibridge/<vendor>/<partname>
+\newline 
+arch
+\newline 
+Set the architecture.
+ Current valid values are i386 and alpha.
+\newline 
+
+\newline 
+This command should only appear in the mainboard file.
+ 
 \layout Caption
 
 

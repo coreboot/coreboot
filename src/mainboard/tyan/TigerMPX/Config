@@ -90,8 +90,8 @@ mainboardinit mainboard/tyan/TigerMPX/mainboard_raminit.inc
 
 
 # debugging SMJ
-mainboardinit mainboard/tyan/TigerMPX/dumpdev.inc
-mainboardinit mainboard/tyan/TigerMPX/preram.inc
+#mainboardinit mainboard/tyan/TigerMPX/dumpdev.inc
+#mainboardinit mainboard/tyan/TigerMPX/preram.inc
 
 
 ##

@@ -8,7 +8,7 @@ owner:	Steven James
 email:	pyro@linuxlabs.com
 #status: One of unsupported, unstable, stable
 status: unstable
-explanation: just entering alpha primary/fallback config not tested
+explanation: appears functional now.
 flash-types: 
 payload-types: ELF, etherboot, bootselect
 # e.g. linux, plan 9, wince, etc.
@@ -19,7 +19,7 @@ console-types: serial
 # vga is unsupported, unstable, or stable
 vga: unsupported
 # Last-known-good follows the internationl date standard: day/month/year
-last-known-good: 10/01/2003
+last-known-good: 13/01/2003
 Comments: 
 Links:
 Mainboard-revision: 

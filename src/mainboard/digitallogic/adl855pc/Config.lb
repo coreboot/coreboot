@@ -213,7 +213,7 @@ config chip.h
 northbridge intel/855pm "855pm"
 #	pci 0:0.0
 #	pci 0:1.0
-	southbridge via/vt8231 "vt8231"
+	southbridge intel/i82801dbm "i82801dbm"
 #		pci 0:11.0
 #		pci 0:11.1
 #		pci 0:11.2

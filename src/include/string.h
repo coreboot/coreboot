@@ -104,6 +104,11 @@ static inline int isxdigit(int c)
 		(c >= 'A' && c <= 'F'));
 }
 
+static inline int isupper(int c)
+{
+	return (c >= 'A' && c <= 'Z');
+}
+
 static inline int islower(int c)
 {
 	return (c >= 'a' && c <= 'z');
@@ -113,6 +118,13 @@ static inline int toupper(int c)
 {
         if (islower(c))
                 c -= 'a'-'A';
+        return c;
+}
+
+static inline int tolower(int c)
+{
+        if (isupper(c))
+                c -= 'A'-'a';
         return c;
 }
 #endif /* STRING_H */

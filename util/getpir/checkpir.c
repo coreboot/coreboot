@@ -16,7 +16,7 @@
 #define PIRQ_SIGNATURE  (('$' << 0) + ('P' << 8) + ('I' << 16) + ('R' << 24))
 #define PIRQ_VERS 0x0100
 
-extern struct irq_routing_table intel_irq_routing_table;
+//extern struct irq_routing_table intel_irq_routing_table;
 
 struct irq_info se_arr[50];
 struct irq_routing_table *rt;

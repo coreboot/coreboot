@@ -83,6 +83,8 @@ static const char rcsid[] =
 
 #define MAXPNSTR		132
 
+#define LINUXBIOS_MP_TABLE      0
+
 enum busTypes {
     CBUS = 1,
     CBUSII = 2,
@@ -342,7 +344,7 @@ char *postamble[] = {
 "	/* Compute the checksums */",
 "	mc->mpe_checksum = smp_compute_checksum(smp_next_mpc_entry(mc), mc->mpe_length);",
 "	mc->mpc_checksum = smp_compute_checksum(mc, mc->mpc_length);",
-"	printk_debug(\"Wrote the mp table end at: %p - %p\n\",",
+"	printk_debug(\"Wrote the mp table end at: %p - %p\\n\",",
 "		mc, smp_next_mpe_entry(mc));",
 "	return smp_next_mpe_entry(mc);",
 "}",
@@ -530,6 +532,23 @@ apic_probe( vm_offset_t* paddr, int* where )
 	if ( verbose )
 	    printf( "NOT found\n" );
     }
+
+    target = 0;
+    segment = 0;
+    if ( verbose )
+        printf( " searching for LinuxBIOS MP table  @ 0x%08x (%dK)\n",
+	        target, segment );
+    seekEntry( target );
+    readEntry( buffer, ONE_KBYTE );
+
+    for ( x = 0; x < ONE_KBYTE / sizeof ( unsigned int ); NEXT(x) ) {
+        if ( buffer[ x ] == MP_SIG ) {
+            *where = 2;
+            *paddr = (x * sizeof( unsigned int )) + target;
+            return;
+        }
+    }
+
 
     /* read CMOS for real top of mem */
     seekEntry( (vm_offset_t)TOPOFMEM_POINTER );

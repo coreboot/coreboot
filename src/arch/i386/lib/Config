@@ -1,6 +1,7 @@
 object i386_subr.o
 object params.o
 object hardwaremain.o
+object c_start.S
 object pirq_routing.o HAVE_PIRQ_TABLE
 object vgabios.o CONFIG_VGABIOS
 object idt.o  CONFIG_REALMODE_IDT

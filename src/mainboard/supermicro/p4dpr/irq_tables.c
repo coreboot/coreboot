@@ -1,5 +1,5 @@
 /* PCI: Interrupt Routing Table found at 0x4011ce40 size = 416 */
-
+#define IRQ_SLOT_COUNT 24
 #include <arch/pirq_routing.h>
 
 const struct irq_routing_table intel_irq_routing_table = {

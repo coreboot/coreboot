@@ -26,4 +26,7 @@ manual/index.html: yapps2.aux yapps2.tex
 
 DISTRIB:
 	cd ..; zip -u yapps2.zip yapps2/{LICENSE,yapps2.py,yappsrt.py,parsedesc.g,examples/*.g,NOTES,yapps2.tex,Makefile,manual/*.html,manual/*.css,manual/*.png}
-
+										
+clean:
+	rm -f config.py yappsrt.pyc parsedesc.py
+	

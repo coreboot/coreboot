@@ -224,7 +224,7 @@ static void pci_get_rom_resource(struct device *dev, unsigned long index)
 	/* for on board device with embedded ROM image, the ROM image is at
 	 * fixed address specified in the Config.lb, the dev->rom_address is
 	 * inited by driver_pci_onboard_ops::enable_dev() */
-	if ((dev->on_mainboard) && (dev->rom_address == 0)) {
+	if ((dev->on_mainboard) && (dev->rom_address != 0)) {
 		resource->base   = dev->rom_address; 
 		resource->flags |= IORESOURCE_MEM | IORESOURCE_READONLY |
 			IORESOURCE_ASSIGNED | IORESOURCE_FIXED;

@@ -44,6 +44,8 @@ void pnp_output(char address, char data)
 void
 board_init(void)
 {
+	unsigned char reg8;
+
 	/*
 	 * Configure FLASH
 	 */
@@ -54,11 +56,16 @@ board_init(void)
 	
 	/*
 	 * Enable UART0
+	 *
+	 * NOTE: this configuration assumes that the PCI/ISA IO
+	 * address space is properly configured by default on board
+	 * reset. While this seems to be the case with the X3, it may not
+ 	 * always work.
 	 */
 	pnp_output(0x07, 6); /* LD 6 = UART0 */
 	pnp_output(0x30, 0); /* Dectivate */
-	pnp_output(0x60, UART0_IO_BASE >> 8); /* IO Base */
-	pnp_output(0x61, UART0_IO_BASE & 0xFF); /* IO Base */
+	pnp_output(0x60, TTYS0_BASE >> 8); /* IO Base */
+	pnp_output(0x61, TTYS0_BASE & 0xFF); /* IO Base */
 	pnp_output(0x30, 1); /* Activate */
 	uart8250_init(TTYS0_BASE, 115200/TTYS0_BAUD, TTYS0_LCS);
 	printk_info("Board initialized...\n");

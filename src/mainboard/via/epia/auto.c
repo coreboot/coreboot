@@ -7,8 +7,9 @@
 #include <device/pci_def.h>
 #include <cpu/p6/apic.h>
 #include <arch/io.h>
-#include <device/pnp.h>
+#include <device/pnp_def.h>
 #include <arch/romcc_io.h>
+#include <arch/hlt.h>
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"

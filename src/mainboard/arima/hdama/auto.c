@@ -9,165 +9,6 @@
 #include "southbridge/amd/amd8111/amd8111_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
 
-#warning "FIXME move these delay functions somewhere more appropriate"
-#warning "FIXME use the apic timer instead it needs no calibration on an Opteron it runs at 200Mhz"
-static void print_clock_multiplier(void)
-{
-	msr_t msr;
-	print_debug("clock multipler: 0x");
-	msr = rdmsr(0xc0010042);
-	print_debug_hex32(msr.lo & 0x3f);
-	print_debug(" = 0x");
-	print_debug_hex32(((msr.lo & 0x3f) + 8) * 100);
-	print_debug("Mhz\r\n");
-}
-
-static unsigned usecs_to_ticks(unsigned usecs)
-{
-#warning "FIXME make usecs_to_ticks work properly"
-#if 1
-	return usecs *2000;
-#else
-	/* This can only be done if cpuid says fid changing is supported
-	 * I need to look up the base frequency another way for other
-	 * cpus.  Is it worth dedicating a global register to this?
-	 * Are the PET timers useable for this purpose?
-	 */
-	msr_t msr;
-	msr = rdmsr(0xc0010042);
-	return ((msr.lo & 0x3f) + 8) * 100 *usecs;
-#endif
-}
-
-static void init_apic_timer(void)
-{
-	volatile uint32_t *apic_reg = (volatile uint32_t *)0xfee00000;
-	uint32_t start, end;
-	/* Set the apic timer to no interrupts and periodic mode */
-	apic_reg[0x320 >> 2] = (1 << 17)|(1<< 16)|(0 << 12)|(0 << 0);
-	/* Set the divider to 1, no divider */
-	apic_reg[0x3e0 >> 2] = (1 << 3) | 3;
-	/* Set the initial counter to 0xffffffff */
-	apic_reg[0x380 >> 2] = 0xffffffff;
-}
-
-static void udelay(unsigned usecs)
-{
-#if 1
-	uint32_t start, ticks;
-	tsc_t tsc;
-	/* Calculate the number of ticks to run for */
-	ticks = usecs_to_ticks(usecs);
-	/* Find the current time */
-	tsc = rdtsc();
-	start = tsc.lo;
-	do {
-		tsc = rdtsc();
-	} while((tsc.lo - start) < ticks);
-#else
-	volatile uint32_t *apic_reg = (volatile uint32_t *)0xfee00000;
-	uint32_t start, value, ticks;
-	/* Calculate the number of ticks to run for */
-	ticks = usecs * 200;
-	start = apic_reg[0x390 >> 2];
-	do {
-		value = apic_reg[0x390 >> 2];
-	} while((start - value) < ticks);
-#endif
-}
-
-static void mdelay(unsigned msecs)
-{
-	int i;
-	for(i = 0; i < msecs; i++) {
-		udelay(1000);
-	}
-}
-
-static void delay(unsigned secs)
-{
-	int i;
-	for(i = 0; i < secs; i++) {
-		mdelay(1000);
-	}
-}
-
-
-static void memreset_setup(const struct mem_controller *ctrl)
-{
-	/* Set the memreset low */
-	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 28);
-	/* Ensure the BIOS has control of the memory lines */
-	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 29);
-	print_debug("memreset lo\r\n");
-}
-
-static void memreset(const struct mem_controller *ctrl)
-{
-	udelay(800);
-	/* Set memreset_high */
-	outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 28);
-	print_debug("memreset hi\r\n");
-	udelay(50);
-}
-
-
-#include "northbridge/amd/amdk8/raminit.c"
-#include "northbridge/amd/amdk8/coherent_ht.c"
-#include "sdram/generic_sdram.c"
-
-#define NODE_ID		0x60
-#define	HT_INIT_CONTROL 0x6c
-
-#define HTIC_ColdR_Detect  (1<<4)
-#define HTIC_BIOSR_Detect  (1<<5)
-#define HTIC_INIT_Detect   (1<<6)
-
-static int boot_cpu(void)
-{
-	volatile unsigned long *local_apic;
-	unsigned long apic_id;
-	int bsp;
-	msr_t msr;
-	msr = rdmsr(0x1b);
-	bsp = !!(msr.lo & (1 << 8));
-	if (bsp) {
-		print_debug("Bootstrap cpu\r\n");
-	}
-
-	return bsp;
-}
-
-static int cpu_init_detected(void)
-{
-	unsigned long dcl;
-	int cpu_init;
-
-	unsigned long htic;
-
-	htic = pci_read_config32(PCI_DEV(0, 0x18, 0), HT_INIT_CONTROL);
-#if 0
-	print_debug("htic: ");
-	print_debug_hex32(htic);
-	print_debug("\r\n");
-
-	if (!(htic & HTIC_ColdR_Detect)) {
-		print_debug("Cold Reset.\r\n");
-	}
-	if ((htic & HTIC_ColdR_Detect) && !(htic & HTIC_BIOSR_Detect)) {
-		print_debug("BIOS generated Reset.\r\n");
-	}
-	if (htic & HTIC_INIT_Detect) {
-		print_debug("Init event.\r\n");
-	}
-#endif
-	cpu_init = (htic & HTIC_INIT_Detect);
-	if (cpu_init) {
-		print_debug("CPU INIT Detected.\r\n");
-	}
-	return cpu_init;
-}
-
 
 static void print_debug_pci_dev(unsigned dev)
 {
@@ -196,7 +37,6 @@ static void print_pci_devices(void)
 		print_debug("\r\n");
 	}
 }
-
 
 static void dump_pci_device(unsigned dev)
 {
@@ -296,6 +136,165 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 		}
 	}
 }
+
+#warning "FIXME move these delay functions somewhere more appropriate"
+#warning "FIXME use the apic timer instead it needs no calibration on an Opteron it runs at 200Mhz"
+static void print_clock_multiplier(void)
+{
+	msr_t msr;
+	print_debug("clock multipler: 0x");
+	msr = rdmsr(0xc0010042);
+	print_debug_hex32(msr.lo & 0x3f);
+	print_debug(" = 0x");
+	print_debug_hex32(((msr.lo & 0x3f) + 8) * 100);
+	print_debug("Mhz\r\n");
+}
+
+static unsigned usecs_to_ticks(unsigned usecs)
+{
+#warning "FIXME make usecs_to_ticks work properly"
+#if 1
+	return usecs *2000;
+#else
+	/* This can only be done if cpuid says fid changing is supported
+	 * I need to look up the base frequency another way for other
+	 * cpus.  Is it worth dedicating a global register to this?
+	 * Are the PET timers useable for this purpose?
+	 */
+	msr_t msr;
+	msr = rdmsr(0xc0010042);
+	return ((msr.lo & 0x3f) + 8) * 100 *usecs;
+#endif
+}
+
+static void init_apic_timer(void)
+{
+	volatile uint32_t *apic_reg = (volatile uint32_t *)0xfee00000;
+	uint32_t start, end;
+	/* Set the apic timer to no interrupts and periodic mode */
+	apic_reg[0x320 >> 2] = (1 << 17)|(1<< 16)|(0 << 12)|(0 << 0);
+	/* Set the divider to 1, no divider */
+	apic_reg[0x3e0 >> 2] = (1 << 3) | 3;
+	/* Set the initial counter to 0xffffffff */
+	apic_reg[0x380 >> 2] = 0xffffffff;
+}
+
+static void udelay(unsigned usecs)
+{
+#if 1
+	uint32_t start, ticks;
+	tsc_t tsc;
+	/* Calculate the number of ticks to run for */
+	ticks = usecs_to_ticks(usecs);
+	/* Find the current time */
+	tsc = rdtsc();
+	start = tsc.lo;
+	do {
+		tsc = rdtsc();
+	} while((tsc.lo - start) < ticks);
+#else
+	volatile uint32_t *apic_reg = (volatile uint32_t *)0xfee00000;
+	uint32_t start, value, ticks;
+	/* Calculate the number of ticks to run for */
+	ticks = usecs * 200;
+	start = apic_reg[0x390 >> 2];
+	do {
+		value = apic_reg[0x390 >> 2];
+	} while((start - value) < ticks);
+#endif
+}
+
+static void mdelay(unsigned msecs)
+{
+	int i;
+	for(i = 0; i < msecs; i++) {
+		udelay(1000);
+	}
+}
+
+static void delay(unsigned secs)
+{
+	int i;
+	for(i = 0; i < secs; i++) {
+		mdelay(1000);
+	}
+}
+
+
+static void memreset_setup(const struct mem_controller *ctrl)
+{
+	/* Set the memreset low */
+	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 28);
+	/* Ensure the BIOS has control of the memory lines */
+	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 29);
+}
+
+static void memreset(const struct mem_controller *ctrl)
+{
+	udelay(800);
+	/* Set memreset_high */
+	outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 28);
+	udelay(50);
+}
+
+
+#include "northbridge/amd/amdk8/raminit.c"
+#include "northbridge/amd/amdk8/coherent_ht.c"
+#include "sdram/generic_sdram.c"
+
+#define NODE_ID		0x60
+#define	HT_INIT_CONTROL 0x6c
+
+#define HTIC_ColdR_Detect  (1<<4)
+#define HTIC_BIOSR_Detect  (1<<5)
+#define HTIC_INIT_Detect   (1<<6)
+
+static int boot_cpu(void)
+{
+	volatile unsigned long *local_apic;
+	unsigned long apic_id;
+	int bsp;
+	msr_t msr;
+	msr = rdmsr(0x1b);
+	bsp = !!(msr.lo & (1 << 8));
+	if (bsp) {
+		print_debug("Bootstrap cpu\r\n");
+	}
+
+	return bsp;
+}
+
+static int cpu_init_detected(void)
+{
+	unsigned long dcl;
+	int cpu_init;
+
+	unsigned long htic;
+
+	htic = pci_read_config32(PCI_DEV(0, 0x18, 0), HT_INIT_CONTROL);
+#if 0
+	print_debug("htic: ");
+	print_debug_hex32(htic);
+	print_debug("\r\n");
+
+	if (!(htic & HTIC_ColdR_Detect)) {
+		print_debug("Cold Reset.\r\n");
+	}
+	if ((htic & HTIC_ColdR_Detect) && !(htic & HTIC_BIOSR_Detect)) {
+		print_debug("BIOS generated Reset.\r\n");
+	}
+	if (htic & HTIC_INIT_Detect) {
+		print_debug("Init event.\r\n");
+	}
+#endif
+	cpu_init = (htic & HTIC_INIT_Detect);
+	if (cpu_init) {
+		print_debug("CPU INIT Detected.\r\n");
+	}
+	return cpu_init;
+}
+
+
 
 static void pnp_write_config(unsigned char port, unsigned char value, unsigned char reg)
 {
@@ -397,18 +396,30 @@ static void main(void)
 	uart_init();
 	console_init();
 	if (boot_cpu() && !cpu_init_detected()) {
-#if 1
+#if 0
 		init_apic_timer();
 #endif
+#if 1
 		setup_default_resource_map();
+#endif
+
+#if 0
+		dump_pci_device(PCI_DEV(0, 0x18, 0));
+#endif
+
 		setup_coherent_ht_domain();
+#if 1
+		disable_probes();
+#endif
 		enumerate_ht_chain();
 		print_pci_devices();
 		enable_smbus();
+#if 0
 		dump_spd_registers(&cpu0);
+#endif
 		sdram_initialize(&cpu0);
 
-#if 0
+#if 1
 		dump_pci_devices();
 #endif
 #if 0
@@ -416,22 +427,21 @@ static void main(void)
 #endif
 
 		/* Check all of memory */
+#if 0
 		msr_t msr;
 		msr = rdmsr(TOP_MEM);
 		print_debug("TOP_MEM: ");
 		print_debug_hex32(msr.hi);
 		print_debug_hex32(msr.lo);
 		print_debug("\r\n");
+#endif
 #if 0
 		ram_check(0x00000000, msr.lo);
 #else
+#if 1
 		/* Check 16MB of memory */
-		ram_check(0x00000000, 0x1600000);
+		ram_check(0x00000000, 0x01000000);
 #endif
-#if 0
-		print_debug("sleeping 15s\r\n");
-		delay(15);
-		print_debug("sleeping 15s done\r\n");
 #endif
 	}
 }

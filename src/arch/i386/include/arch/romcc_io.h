@@ -1,3 +1,6 @@
+#ifndef ARCH_ROMCC_IO_H
+#define ARCH_ROMCC_IO_H 1
+
 static void outb(unsigned char value, unsigned short port)
 {
 	__builtin_outb(value, port);
@@ -182,3 +185,4 @@ static device_t pci_locate_device(unsigned pci_id, device_t dev)
 	return PCI_DEV_INVALID;
 }
 
+#endif /* ARCH_ROMCC_IO_H */

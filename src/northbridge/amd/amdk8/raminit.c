@@ -1051,7 +1051,7 @@ static void set_dimm_size(const struct mem_controller *ctrl, struct dimm_size sz
 	uint32_t base0, base1, map;
 	uint32_t dch;
 
-#if 1
+#if 0
 	print_debug("set_dimm_size: (");
 	print_debug_hex32(sz.side1);
 	print_debug_char(',');
@@ -1133,6 +1133,11 @@ static void route_dram_accesses(const struct mem_controller *ctrl,
 	limit -= 0x00010000;
 	pci_write_config32(ctrl->f1, 0x44, limit | (0 << 7) | (link_id << 4) | (node_id << 0));
 	pci_write_config32(ctrl->f1, 0x40, (base_k << 2) | (0 << 8) | (1<<1) | (1<<0));
+
+#if 1
+	pci_write_config32(PCI_DEV(0, 0x19, 1), 0x44, limit | (0 << 7) | (link_id << 4) | (node_id << 0));
+	pci_write_config32(PCI_DEV(0, 0x19, 1), 0x40, (base_k << 2) | (0 << 8) | (1<<1) | (1<<0));
+#endif
 }
 
 static void set_top_mem(unsigned tom_k)
@@ -1141,8 +1146,19 @@ static void set_top_mem(unsigned tom_k)
 	if (!tom_k) {
 		die("No memory");
 	}
+
 	/* Now set top of memory */
 	msr_t msr;
+	msr.lo = (tom_k & 0x003fffff) << 10;
+	msr.hi = (tom_k & 0xffc00000) >> 22;
+	wrmsr(TOP_MEM2, msr);
+
+	/* Leave a 64M hole between TOP_MEM and TOP_MEM2
+	 * so I can see my rom chip and other I/O devices.
+	 */
+	if (tom_k >= 0x003f0000) {
+		tom_k = 0x3f0000;
+	}
 	msr.lo = (tom_k & 0x003fffff) << 10;
 	msr.hi = (tom_k & 0xffc00000) >> 22;
 	wrmsr(TOP_MEM, msr);
@@ -1219,7 +1235,7 @@ static void order_dimms(const struct mem_controller *ctrl)
 		
 	}
 	tom_k = (tom & ~0xff000000) << 15;
-#if 1
+#if 0
 	print_debug("tom: ");
 	print_debug_hex32(tom);
 	print_debug(" tom_k: ");
@@ -1277,7 +1293,7 @@ static void spd_handle_unbuffered_dimms(const struct mem_controller *ctrl)
 		dcl |= DCL_UnBufDimm;
 	}
 	pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW, dcl);
-#if 1
+#if 0
 	if (is_registered(ctrl)) {
 		print_debug("Registered\r\n");
 	} else {
@@ -1450,7 +1466,7 @@ static const struct mem_param *spd_set_memclk(const struct mem_controller *ctrl)
 	min_cycle_time = min_cycle_times[(value >> NBCAP_MEMCLK_SHIFT) & NBCAP_MEMCLK_MASK];
 	min_latency = 2;
 
-#if 1
+#if 0
 	print_debug("min_cycle_time: "); 
 	print_debug_hex8(min_cycle_time); 
 	print_debug(" min_latency: ");
@@ -1570,7 +1586,7 @@ static const struct mem_param *spd_set_memclk(const struct mem_controller *ctrl)
 	dimm_err:
 		disable_dimm(ctrl, i);
 	}
-#if 1
+#if 0
 	print_debug("min_cycle_time: "); 
 	print_debug_hex8(min_cycle_time); 
 	print_debug(" min_latency: ");
@@ -1746,7 +1762,7 @@ static int update_dimm_Trp(const struct mem_controller *ctrl, const struct mem_p
 #else
 	clocks = (value + ((param->divisor & 0xff) << 1) - 1)/((param->divisor & 0xff) << 1);
 #endif
-#if 1
+#if 0
 	print_debug("Trp: ");
 	print_debug_hex8(clocks);
 	print_debug(" spd value: ");
@@ -2172,7 +2188,7 @@ static void sdram_enable(const struct mem_controller *ctrl)
 
 #warning "FIXME set the ECC type to perform"
 #warning "FIXME initialize the scrub registers"
-#if 1
+#if 0
 	if (dcl & DCL_DimmEccEn) {
 		print_debug("ECC enabled\r\n");
 	}

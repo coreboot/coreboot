@@ -294,24 +294,6 @@ struct superio_control superio_winbond_w83977ef_control = {
         init:           setup_devices, 
         finishup:       (void *) 0,
         defaultport:    PNPADDR,
-        name:           "WinBond w83977tf"
+        name:           "SMC fdc37b72x"
 };
 
-#ifndef USE_NEW_SUPERIO_INTERFACE
-
-// this must die soon. 
-void
-final_superio_fixup()
-{
-	static struct superio temp = { &superio_winbond_w83977ef_control, 
-				       .com1={1}, .floppy=1};
-	
-	finishup(&temp); 
-/*
-    enable_com(PNP_COM1_DEVICE);
-    enable_com(PNP_COM2_DEVICE);
-
-    exit_pnp();
-*/
-}
-#endif

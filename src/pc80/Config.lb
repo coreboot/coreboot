@@ -1,6 +1,6 @@
 uses CONFIG_IDE_STREAM
+uses CONFIG_KEYBOARD
 
-#object keyboard.o
 object mc146818rtc.o
 #object isa-dma.o
 #object i8259.o CONFIG_I8259
@@ -13,4 +13,8 @@ object mc146818rtc.o
 
 if CONFIG_IDE_STREAM
 	dir ide
+end
+
+if CONFIG_KEYBOARD
+	object keyboard.o
 end

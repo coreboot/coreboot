@@ -16,7 +16,6 @@ void sio_enable(struct chip *chip, enum chip_pass pass)
 {
 
 	unsigned char reg;
-	struct superio_NSC_pc97307_config *conf = (struct superio_NSC_pc97307_config *)chip->chip_info;
 
 	switch (pass) {
 	case CONF_PASS_PRE_PCI:

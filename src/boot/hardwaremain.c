@@ -46,6 +46,10 @@ it with the version available from LANL.
 #define CONFIG_MAX_PHYSICAL_CPUS CONFIG_MAX_CPUS
 #endif
 
+#if CONFIG_FS_STREAM == 1
+extern int filo(struct lb_memory *);
+#endif
+
 /* The processor map. 
  * Now that SMP is in linuxbios, and Linux counts on us
  * giving accurate information about processors, we need a map

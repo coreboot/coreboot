@@ -48,7 +48,7 @@ unsigned char ttyS0_rx_byte(void)
 	return uart8250_rx_byte(TTYS0_BASE);
 }
 
-int ttyS0_tst_byte(unsigned char data) 
+int ttyS0_tst_byte(void) 
 {
 	return uart8250_can_rx_byte(TTYS0_BASE);
 }

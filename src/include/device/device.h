@@ -82,6 +82,7 @@ extern void compute_allocate_resource(struct bus *bus, struct resource *bridge,
 extern void assign_resources(struct bus *bus);
 extern void enable_resources(struct device *dev);
 extern void enumerate_static_device(void);
+extern void enumerate_static_devices(void);
 extern const char *dev_path(device_t dev);
 extern void compact_resources(device_t dev);
 extern struct resource *get_resource(device_t dev, unsigned index);

@@ -44,8 +44,6 @@ void initialise_dma(void);
 static void 
 w83c553_init(struct device *dev)
 {
-	unsigned char reg8;
-
 	printk_info("Configure W83C553F ISA Bridge (Function 0)\n");
 
 #if 0

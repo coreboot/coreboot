@@ -135,7 +135,6 @@ void rtc_init(int invalid)
 			PC_CKS_RANGE_END,PC_CKS_LOC);
 
 	if (invalid || cmos_invalid || checksum_invalid) {
-		int i;
 		printk_warning("RTC:%s%s%s zeroing cmos\n",
 			invalid?" Clear requested":"", 
 			cmos_invalid?" Power Problem":"",

@@ -34,6 +34,7 @@
 #include <ppc.h>
 #include <arch/io.h>
 #include <printk.h>
+#include <uart8250.h>
 
 void pnp_output(char address, char data)
 {
@@ -44,8 +45,6 @@ void pnp_output(char address, char data)
 void
 board_init(void)
 {
-	unsigned char reg8;
-
 	/*
 	 * Configure FLASH
 	 */

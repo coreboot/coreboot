@@ -241,7 +241,7 @@ void intel_check_irq_routing_table(void)
 		sum += addr[i];
 
 	printk(KERN_DEBUG "%s:%6d:%s() - "
-	       "irq_routing_table located at: 0x%08x\n",
+	       "irq_routing_table located at: 0x%p\n",
 	       __FILE__, __LINE__, __FUNCTION__, addr);
 
 	sum = (unsigned char)(rt->checksum-sum);

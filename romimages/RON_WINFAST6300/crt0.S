@@ -7,7 +7,7 @@
 #include <intel.h>
 
 #include <pciconf.h>
-
+#include <northsouthbridge/sis/630/param.h>
 /*
  * This is the entry code (the mkrom(8) utility makes a jumpvector
  * to this adddess. 
@@ -25,37 +25,20 @@
 
 #include <cpu/p5/start32.inc>
 
-/* turn on serial */
-#include <southbridge/via/vt82c686/setup_serial.inc>
-
-#include <pc80/serial.inc>
-
-	TTYS0_TX_STRING($ttyS0_test)
-	
 	/* initialize the RAM */
 	/* different for each motherboard */
-	
-#include <northbridge/via/vt8601/raminit.inc>
+#include <northsouthbridge/sis/630/raminit.inc>
 
-#ifdef RAMTEST
-#include <ram/ramtest.inc>
-
-#include <cpu/p6/earlymtrr.inc>
-	mov $0x00000000, %eax
-	mov $0x0009ffff, %ebx
-	mov $16, %ecx
-
-	CALLSP(ramtest)
-#endif	
 /*
  *	Copy data into RAM and clear the BSS. Since these segments
  *	isn't really that big we just copy/clear using bytes, not
  *	double words.
  */
-	intel_chip_post_macro(0x11)	/* post 11 */
-	TTYS0_TX_STRING($str_after_ram)
+	intel_chip_post_macro(0x11)		/* post 11 */
 
 	cld				/* clear direction flag */
+
+	/* copy data segment from FLASH ROM to RAM */
 	leal	EXT(_ldata), %esi
 	leal	EXT(_data), %edi
 	movl	$EXT(_eldata), %ecx
@@ -64,8 +47,7 @@
 	rep
 	movsb
 .Lnodata:
-	intel_chip_post_macro(0x12)	/* post 12 */
-	TTYS0_TX_STRING($str_after_copy)
+	intel_chip_post_macro(0x12)		/* post 12 */
 	
 	/** clear stack */
 	xorl	%edi, %edi
@@ -73,6 +55,7 @@
 	xorl	%eax, %eax
 	rep
 	stosb
+
 	/** clear bss */
 	leal	EXT(_bss), %edi
 	movl	$EXT(_ebss), %ecx
@@ -89,20 +72,14 @@
  *	let it do the rest.
  */ 
 	intel_chip_post_macro(0xfe)	/* post fe */
-	TTYS0_TX_STRING($str_pre_main)
 
-        /* set new stack */
-        movl    $_PDATABASE, %esp
 /* memory is up. Let's do the rest in C -- much easier. */
+
+	/* set new stack */
+	movl	$_PDATABASE, %esp
+
 	call	EXT(intel_main)
 	/*NOTREACHED*/
 .Lhlt:	hlt
 	jmp	.Lhlt
-
-ttyS0_test:	.string "\r\n\r\nHello world!!\r\n"
-str_after_ram:		.string "Ram Initialize?\r\n"
-str_after_copy:		.string "after copy?\r\n"
-str_pre_main:	.string "before main\r\n"
-newline:	.string "\r\n"
-
 

@@ -12,10 +12,11 @@ static char rcsid[] =
 
 
 #include <printk.h>
-#include <intel_conf.h>
-#include <intel_subr.h>
-#include <lbpci.h>
-#include <sis630.h>
+#include <pciconf.h>
+#include <subr.h>
+#include <pci.h>
+#include <pci_ids.h>
+#include <northsouthbridge/sis/630/param.h>
 
 /* these functions query the hardware to figure out how much ram is in
  * the machine. They then place that information in the parameter block. 
@@ -27,7 +28,7 @@ static char rcsid[] =
  */
 
 /* table for calculate the DRAM size, the unit is Mega Bytes */
-const static ramsizes[16] =
+const static int ramsizes[16] =
 {
 	8, 32, 32, 64, 16, 64, 64, 128,
 	32, 128, 128, 256, 16, 256, 256, 512
@@ -94,11 +95,11 @@ unsigned long sizeram()
 
 #ifdef HAVE_FRAMEBUFFER
 
-void intel_framebuffer_on()
+void framebuffer_on()
 {
 	unsigned long devfn = PCI_DEVFN(0, 0);
-	unsigned int bus = 0;
-	u8 dramstatus;
+	//	unsigned int bus = 0;
+	//	u8 dramstatus;
 	u32 command;
 
 #if 0
@@ -120,12 +121,6 @@ void intel_framebuffer_on()
 }
 
 #endif	/* HAVE_FRAMEBUFFER */
-
-// mainboard fixup. 
-
-void mainboard_fixup()
-{
-}
 
 #define RTABLE_DEST 0xf0000
 

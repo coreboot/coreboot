@@ -12,10 +12,11 @@ static char rcsid[] =
 
 
 #include <printk.h>
-#include <intel_conf.h>
-#include <intel_subr.h>
-#include <lbpci.h>
-#include <sis630.h>
+#include <pciconf.h>
+#include <subr.h>
+#include <pci.h>
+#include <pci_ids.h>
+#include <northsouthbridge/sis/630/param.h>
 
 void keyboard_on()
 {

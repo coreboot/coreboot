@@ -1,7 +1,6 @@
 #include <console/console.h>
 #include <arch/ioapic.h>
 
-/* TODO: this must move to chip/intel */
 /* we have to do more than we thought. I assumed Linux would do all the
  * interesting parts, and I was wrong. 
  */

@@ -152,7 +152,7 @@ void hardwaremain(int boot_complete)
 	unsigned long totalmem;
 
 	post_code(0x80);
-	
+
 	CONFIGURE(CONF_PASS_PRE_CONSOLE);
 
 	/* displayinit MUST PRECEDE ALL PRINTK! */

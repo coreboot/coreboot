@@ -115,6 +115,7 @@ var_iorr_msr:
 mem_top:
 	.long	0xC001001A, 0xC001001D
 	.long	0x000 /* NULL, end of table */
+
 earlymtrr_end:
 	/* Restore the BIST value */
 	movl	%ebp, %eax

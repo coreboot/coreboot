@@ -1,7 +1,9 @@
 - 1.1.2
   Add back in the hard_reset method from freebios1 this allows generic
-  code to reset the box.  The hypertransport setup code now uses it to
-  reset the box when the hypertransport link speeds need to change.
+  code to reset the box.  
+  Update the hypertransport setup code to automatically optimize
+  hypertransport link widths and frequencies, and to call hard_reset
+  if necessary for the changes to go into effect.
 - 1.1.1
   Updates to the new configuration system so it works more reliably
   Removed a bunch of unused configuration variables

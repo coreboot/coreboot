@@ -22,6 +22,8 @@
  * Reference:
  *	W49F002U data sheet
  *
+ * ToDo: Consilidated to standard JEDEC code.
+ *
  * $Id$
  */
 
@@ -80,7 +82,6 @@ int write_49f002 (struct flashchip * flash, unsigned char * buf)
 	volatile char * bios = flash->virt_addr;
 	volatile char * dst = bios;
 
-	myusec_delay(10);
 	erase_49f002(flash);
 
 	printf ("Programming Page: ");

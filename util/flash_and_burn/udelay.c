@@ -17,17 +17,14 @@ void myusec_calibrate_delay()
 	unsigned long timeusec;
 	struct timeval start, end;
 	int ok = 0;
-	void myusec_delay(int time);
 
 	printf("Setting up microsecond timing loop\n");
 	while (!ok) {
-		//fprintf(stderr, "Try %d\n", count);
 		gettimeofday(&start, 0);
 		myusec_delay(count);
 		gettimeofday(&end, 0);
 		timeusec = 1000000 * (end.tv_sec - start.tv_sec ) + 
 			(end.tv_usec - start.tv_usec);
-		//fprintf(stderr, "timeusec is %d\n", timeusec);
 		count *= 2;
 		if (timeusec < 1000000/4)
 			continue;

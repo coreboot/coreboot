@@ -115,8 +115,7 @@ struct flashchip * probe_flash(struct flashchip * flash)
 			       flash->total_size * 1024, (unsigned long)size);
 		}
 		bios = mmap (0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
-			     //fd_mem, (off_t) (0x100000000-size));
-			     fd_mem, (off_t) (0xffffffff-size+1));
+			     fd_mem, (off_t) (0xffffffff - size + 1));
 		if (bios == MAP_FAILED) {
 			perror("Error MMAP /dev/mem");
 			exit(1);
@@ -126,7 +125,7 @@ struct flashchip * probe_flash(struct flashchip * flash)
 
 		if (flash->probe(flash) == 1) {
 			printf ("%s found at physical address: 0x%lx\n",
-				flash->name, (0 - size));
+				flash->name, (0xffffffff - size + 1));
 			return flash;
 		}
 		munmap ((void *) bios, size);

@@ -21,6 +21,8 @@
  * Reference:
  *      4 MEgabit (512K x 8) SuperFlash EEPROM, SST49lF040 data sheet
  *
+ * ToDo: Consilidated to standard JEDEC code.
+ *
  * $Id$
  */
 #include <stdio.h>
@@ -59,7 +61,7 @@ static int erase_sector_49lf040 (volatile char * bios, unsigned int page)
 	myusec_delay(10);
         Temp  = bios + page; /* set up address to be the current sector */
         *Temp = 0x30;       /* write data 0x30 to the address       */
-	myusec_delay(25000);
+	myusec_delay(50000);
 	
 	/* wait for Toggle bit ready         */
 	toggle_ready_jedec(bios);

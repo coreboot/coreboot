@@ -22,6 +22,8 @@
  * Reference:
  *	4 MEgabit (512K x 8) SuperFlash EEPROM, SST28SF040 data sheet
  *
+ * ToDo: Consilidated to standard JEDEC code.
+ *
  * $Id$
  */
 
@@ -37,34 +39,6 @@
 #define RESET			0xFF
 #define READ_ID			0x90
 
-static __inline__ void protect_39sf020 (volatile char * bios)
-{
-	/* ask compiler not to optimize this */
-	volatile unsigned char tmp;
-
-	tmp = *(volatile unsigned char *) (bios + 0x1823);
-	tmp = *(volatile unsigned char *) (bios + 0x1820);
-	tmp = *(volatile unsigned char *) (bios + 0x1822);
-	tmp = *(volatile unsigned char *) (bios + 0x0418);
-	tmp = *(volatile unsigned char *) (bios + 0x041B);
-	tmp = *(volatile unsigned char *) (bios + 0x0419);
-	tmp = *(volatile unsigned char *) (bios + 0x040A);
-}
-
-static __inline__ void unprotect_39sf020 (volatile char * bios)
-{
-	/* ask compiler not to optimize this */
-	volatile unsigned char tmp;
-
-	tmp = *(volatile unsigned char *) (bios + 0x1823);
-	tmp = *(volatile unsigned char *) (bios + 0x1820);
-	tmp = *(volatile unsigned char *) (bios + 0x1822);
-	tmp = *(volatile unsigned char *) (bios + 0x0418);
-	tmp = *(volatile unsigned char *) (bios + 0x041B);
-	tmp = *(volatile unsigned char *) (bios + 0x0419);
-	tmp = *(volatile unsigned char *) (bios + 0x041A);
-}
-
 static __inline__ int erase_sector_39sf020 (volatile char * bios, unsigned long address)
 {
 	*bios = AUTO_PG_ERASE1;
@@ -77,9 +51,9 @@ static __inline__ int erase_sector_39sf020 (volatile char * bios, unsigned long 
 }
 
 static __inline__ int write_sector_39sf020(volatile char * bios, 
-				       unsigned char * src,
-				       volatile unsigned char * dst, 
-				       unsigned int page_size)
+					   unsigned char * src,
+					   volatile unsigned char * dst, 
+					   unsigned int page_size)
 {
 	int i;
 	volatile char *Temp;
@@ -177,8 +151,8 @@ int write_39sf020 (struct flashchip * flash, unsigned char * buf)
 	int total_size = flash->total_size * 1024, page_size = flash->page_size;
 	volatile char * bios = flash->virt_addr;
 
-//	unprotect_39sf020 (bios);
 	erase_39sf020(flash);
+
 	printf ("Programming Page: ");
 	for (i = 0; i < total_size/page_size; i++) {
 		/* erase the page before programming */
@@ -192,8 +166,6 @@ int write_39sf020 (struct flashchip * flash, unsigned char * buf)
                 fflush(stdout);
 	}
 	printf("\n");
-
-//	protect_39sf020 (bios);
 
 	return(0);
 }

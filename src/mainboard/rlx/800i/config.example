@@ -1,0 +1,26 @@
+# Sample config file for Winfast 6300 with DoC Millennium (as root)
+# This will make a target directory of ./winfast
+target 800i
+
+# WinFast 6300 MAX mainboard
+mainboard rlx/800i
+
+# Enable Serial Console for debugging
+option SERIAL_CONSOLE=1
+option DEFAULT_CONSOLE_LOGLEVEL=9
+option DEBUG
+option RAMTEST
+
+# Enable MicroCode update and L2 Cache init for PII and PIII
+option UPDATE_MICROCODE=1
+option CONFIGURE_L2_CACHE=1
+
+# No Payload
+payload ../eepro100.ebi
+
+option USE_GENERIC_ROM=1
+option USE_ELF_BOOT=1
+option ROM_SIZE=262144
+option PAYLOAD_SIZE=196608
+
+

@@ -5,8 +5,15 @@
 /*                                            */
 /**********************************************/
 
+#define CHAR_256 0
 
-static unsigned char vga_font[cmapsz] BTDATA = {
+#if CHAR_256==1
+#define cmapsz	(16*256)
+#else
+#define cmapsz        (16*96)
+#endif
+
+static unsigned char vga_font[cmapsz] = {
 #if CHAR_256==1
 	/* 0 0x00 '^@' */
 	0x00, /* 00000000 */

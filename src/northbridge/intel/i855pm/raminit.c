@@ -19,8 +19,8 @@
 /* converted to C 6/2004 yhlu */
 
 #define DEBUG_RAM_CONFIG 1
-#define ASM_CONSOLE_LOGLEVEL 10
-#define dumpnorth() dump_pci_device(PCI_DEV(0, 0, 0)) 
+#define ASM_CONSOLE_LOGLEVEL 9
+#define dumpnorth() dump_pci_device(PCI_DEV(0, 0, 1)) 
 
 /* DDR DIMM Mode register Definitions */
 
@@ -46,6 +46,7 @@
 //#define CAS_LATENCY  CAS_2_5
 //#define CAS_LATENCY  CAS_1_5
 
+/* WOW! this could be bad! sets casl to 2 without checking! */
 #define MRS_VALUE (MODE_NORM | CAS_LATENCY | BURST_TYPE | BURST_LENGTH)
 #define EMRS_VALUE 0x000
 
@@ -65,7 +66,7 @@ static inline void do_ram_command (const struct mem_controller *ctrl, uint32_t v
         uint8_t byte;
         int i;
         uint32_t result;
-#if DEBUG_RAM_CONFIG >= 2
+#if DEBUG_RAM_CONFIG >=2
         print_debug("P:");
         print_debug_hex8(value);
         print_debug("\r\n");
@@ -73,12 +74,19 @@ static inline void do_ram_command (const struct mem_controller *ctrl, uint32_t v
         /* %ecx - initial address to read from */
         /* Compute the offset */
         dword = value >> 16;
-        for(i=0;i<8;i++) {
+	//        for(i=0;i<4;i++) {
+        for(i=0;i<1;i++) {
                 /* Set the ram command */
-                byte = pci_read_config8(ctrl->d0, 0x7c);
+                byte = pci_read_config8(ctrl->d0, 0x70);
                 byte &= 0x8f;
                 byte |= (uint8_t)(value & 0xff);
-                pci_write_config8(ctrl->d0, 0x7c, byte);
+#if DEBUG_RAM_CONFIG  
+                print_debug("R:");
+                print_debug_hex8(byte);
+                print_debug("\r\n");
+#endif
+
+                pci_write_config8(ctrl->d0, 0x70, byte);
 
                 /* Assert the command to the memory */
 #if DEBUG_RAM_CONFIG  >= 2
@@ -87,16 +95,18 @@ static inline void do_ram_command (const struct mem_controller *ctrl, uint32_t v
                 print_debug("\r\n");
 #endif
 
-                result = read32(dword);
-
+		result = read32(dword);
+		
+#if DEBUG_RAM_CONFIG
+		print_debug("Done\r\n");
+#endif
                 /* Go to the next base address */
-                dword += 0x04000000;
+                dword += 0x0200000;
 
         } 
 
         /* The command has been sent to all dimms so get out */
 }
-
 
 static inline void RAM_CMD(const struct mem_controller *ctrl, uint32_t command, uint32_t offset)  {
 	uint32_t value = 	((offset) << (MD_SHIFT + 16))|((command << 4) & 0x70) ; 
@@ -116,10 +126,10 @@ static inline void ram_mrs(const struct mem_controller *ctrl, uint32_t value){
 	/* Read the cas latency setting */
 	uint8_t byte;
 	uint32_t dword;
-	byte = pci_read_config8(ctrl->d0, 0x78); 
+	byte = pci_read_config8(ctrl->d0, 0x60); 
 	/* Transform it into the form expected by SDRAM */
-	dword = ram_cas_latency[(byte>>4) & 3];
-
+	dword = ram_cas_latency[(byte>>5) & 1];
+#warning RAM_MRS -- using BROKEN hard-wired CAS 2.0. FIX ME SOON
 	value  |= (dword<<(16+MD_SHIFT));
 	
 	value |= (MODE_NORM | BURST_TYPE | BURST_LENGTH) << (16+MD_SHIFT);
@@ -131,10 +141,10 @@ static inline void ram_mrs(const struct mem_controller *ctrl, uint32_t value){
 
 static void RAM_NORMAL(const struct mem_controller *ctrl) {
 	uint8_t byte;
-	byte = pci_read_config8(ctrl->d0, 0x7c);
+	byte = pci_read_config8(ctrl->d0, 0x70);
 	byte &=  0x8f;
 	byte |= (RAM_COMMAND_NORMAL << 4);
-	pci_write_config8(ctrl->d0, 0x7c, byte);
+	pci_write_config8(ctrl->d0, 0x70, byte);
 }
 
 static void  RAM_RESET_DDR_PTR(const struct mem_controller *ctrl) {
@@ -150,9 +160,9 @@ static void  RAM_RESET_DDR_PTR(const struct mem_controller *ctrl) {
 static void ENABLE_REFRESH(const struct mem_controller *ctrl) 
 {
 	uint32_t dword;
-	dword = pci_read_config32(ctrl->d0, 0x7c);
+	dword = pci_read_config32(ctrl->d0, 0x70);
 	dword |= (1 << 29);
-	pci_write_config32(ctrl->d0, 0x7c, dword);
+	pci_write_config32(ctrl->d0, 0x70, dword);
 }
 
 	/*
@@ -279,8 +289,8 @@ static const long register_values[] = {
 	 *       10 == Write Only (Writes to DRAM, Reads to memory mapped I/O space)
 	 *       11 == Normal (All Access go to DRAM)
 	 */
-	0x90, 0xcccccf7f, (0x00 << 0) | (0x30 << 8) | (0x33 << 16) | (0x33 << 24),
-	0x94, 0xcccccccc, (0x33 << 0) | (0x33 << 8) | (0x33 << 16) | (0x33 << 24),
+	//	0x90, 0xcccccf7f, (0x00 << 0) | (0x30 << 8) | (0x33 << 16) | (0x33 << 24),
+	//0x94, 0xcccccccc, (0x33 << 0) | (0x33 << 8) | (0x33 << 16) | (0x33 << 24),
 
 
 	/* FIXME why was I attempting to set a reserved bit? */
@@ -330,6 +340,8 @@ static const long register_values[] = {
 	 * [00:00] DRAM type --hardwired to 1 to indicate DDR
 	 */
 	0x70, 0xdf0f6c7f, 0,
+	/* undocumnted shit */
+	0x80, 0, 0xaf0031,
 
 };
 
@@ -347,25 +359,6 @@ static const long register_values[] = {
 	 *		Which are a triple of configuration regiser, mask, and value.
 	 *		
 	 */
-/* from 1M or 512K */
-#define RCOMP_MMIO 0x100000
-
-	/* DDR RECOMP table */
-
-static const long ddr_rcomp_1[] = {
-	0x44332211, 0xc9776655, 0xffffffff, 0xffffffff,
-	0x22111111, 0x55444332, 0xfffca876, 0xffffffff,
-};
-static const long ddr_rcomp_2[] = {
-	0x00000000, 0x76543210, 0xffffeca8, 0xffffffff,
-	0x21000000, 0xa8765432, 0xffffffec, 0xffffffff,
-};
-static const long ddr_rcomp_3[] = {
-	0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
-	0x88888888, 0x88888888, 0x88888888, 0x88888888,
-};
-
-#define rcomp_init_str "Setting RCOMP registers.\r\n"
 
 static void write_8dwords(uint32_t src_addr, uint32_t dst_addr) {
 	int i;
@@ -382,90 +375,6 @@ static void write_8dwords(uint32_t src_addr, uint32_t dst_addr) {
 //#define SLOW_DOWN_IO inb(0x80);
 #define SLOW_DOWN_IO udelay(40);
 
-static void ram_set_rcomp_regs(const struct mem_controller *ctrl) {
-	uint32_t dword;
-#if DEBUG_RAM_CONFIG
-	print_debug(rcomp_init_str);
-#endif
-
-	/*enable access to the rcomp bar */
-	/* for e7501 they also set bit 31 ... */
-	dword = pci_read_config32(ctrl->d0, 0x0f4);
-        dword |= 1<<22;
-        pci_write_config32(ctrl->d0, 0x0f4, dword);
-        
-
-	/* Set the MMIO address to 512K */
-        pci_write_config32(ctrl->d0, 0x14, RCOMP_MMIO);
-
-	dword = read32(RCOMP_MMIO + 0x20);
-	dword |= (1<<9);
-	write32(RCOMP_MMIO + 0x20, dword);
-	
-#ifdef NOTNOW
-	/* Begin to write the RCOMP registers */
-	
-	write8(RCOMP_MMIO + 0x2c, 0xff);
-	write32(RCOMP_MMIO + 0x30, 0x01040444);
-	write8(RCOMP_MMIO + 0x34, 0x04);
-	write32(RCOMP_MMIO + 0x40, 0);
-	write16(RCOMP_MMIO + 0x44, 0);
-	write16(RCOMP_MMIO + 0x48, 0);
-	write16(RCOMP_MMIO + 0x50, 0);
-	write_8dwords((uint32_t)ddr_rcomp_1, RCOMP_MMIO + 0x60);
-	write_8dwords((uint32_t)ddr_rcomp_2, RCOMP_MMIO + 0x80);
-	write_8dwords((uint32_t)ddr_rcomp_2, RCOMP_MMIO + 0xa0);
-	write_8dwords((uint32_t)ddr_rcomp_2, RCOMP_MMIO + 0x140);
-	write_8dwords((uint32_t)ddr_rcomp_2, RCOMP_MMIO + 0x1c0);
-	write_8dwords((uint32_t)ddr_rcomp_3, RCOMP_MMIO + 0x180);
-
-#if 0	/* Print the RCOMP registers */
-	movl    $RCOMP_MMIO, %ecx
-1:	movl	%ecx, %eax
-	andb	$0x0f, %al
-	jnz	2f
-	CONSOLE_INFO_TX_CHAR($'\r')
-        CONSOLE_INFO_TX_CHAR($'\n')
-	CONSOLE_INFO_TX_HEX32(%ecx)
-	CONSOLE_INFO_TX_CHAR($' ')
-	CONSOLE_INFO_TX_CHAR($'-')
-	CONSOLE_INFO_TX_CHAR($' ')
-2:	movl    (%ecx), %eax
-	CONSOLE_INFO_TX_HEX32(%eax)
-	CONSOLE_INFO_TX_CHAR($' ')
-	addl	$4, %ecx
-	cmpl	$(RCOMP_MMIO + 0x1e0), %ecx
-	jnz	1b
-        CONSOLE_INFO_TX_CHAR($'\r')
-        CONSOLE_INFO_TX_CHAR($'\n')
-#endif
-
-	dword = read32(RCOMP_MMIO + 0x20);
-	dword &= ~(3);
-	dword |= 1;
-	write32(RCOMP_MMIO + 0x20, dword);
-
-	/* Wait 40 usec */
-	SLOW_DOWN_IO;
-	
-	/* unblock updates */
-	dword = read32(RCOMP_MMIO + 0x20);
-	dword &= ~(1<<9);
-	write32(RCOMP_MMIO+0x20, dword);
-	dword |= (1<<8);
-	write32(RCOMP_MMIO+0x20, dword);
-	dword &= ~(1<<8);
-	write32(RCOMP_MMIO+0x20, dword);
-	
-	/* Wait 40 usec */
-	SLOW_DOWN_IO;
-#endif
-	/*disable access to the rcomp bar */
-	dword = pci_read_config32(ctrl->d0, 0x0f4);
-	dword &= ~(1<<22);
-	pci_write_config32(ctrl->d0, 0x0f4, dword);	
-
-}
 
 static void ram_set_d0f0_regs(const struct mem_controller *ctrl) {
 #if DEBUG_RAM_CONFIG
@@ -494,7 +403,6 @@ static void ram_set_d0f0_regs(const struct mem_controller *ctrl) {
 #endif
 }
 static void sdram_set_registers(const struct mem_controller *ctrl){
-  //        ram_set_rcomp_regs(ctrl);
         ram_set_d0f0_regs(ctrl);
 }
 
@@ -677,6 +585,23 @@ static struct dimm_size spd_get_dimm_size(unsigned device)
          * a multiple of 4MB.  The way we do it now we can size both
          * sides of an assymetric dimm.
          */
+	/* the hell with that! just use byte 31 -- rgm */
+        value = spd_read_byte(device, 31); /* size * 4 MB */
+	value = log2(value);
+	/* this is in 4 MB chunks, or 32 MBits chunks. 
+	 * log base 2 of 32 Mbits is log2 of (32*1024*1024) is 25
+	 * so add 25 
+	 */
+	value += 25;
+        sz.side1 = value;
+        sz.side2 = 0;
+#if DEBUG_RAM_CONFIG
+	print_debug("returned size log 2 in bits is :");
+	print_debug_hex32(value);
+	print_debug("\r\n");
+#endif
+	goto out;
+#if 0
         value = spd_read_byte(device, 3);       /* rows */
         if (value < 0) goto hw_err;
 //        if ((value & 0xf) == 0) goto val_err;
@@ -727,6 +652,7 @@ static struct dimm_size spd_get_dimm_size(unsigned device)
         sz.side2 += ((value >> 4) & 0x0f);      /* Add in columsn on side 2 */
         goto out;
 
+#endif
  val_err:
         die("Bad SPD value\r\n");
         /* If an hw_error occurs report that I have no memory */
@@ -1249,7 +1175,7 @@ static const uint16_t cas_latency_80_4dimms[] = {
 
 
 static const uint8_t cas_latency_78[] = {
-	DRT_CAS_1_5, DRT_CAS_2_0, DRT_CAS_2_5
+	DRT_CAS_2_0, DRT_CAS_2_5
 };
 
 static long spd_set_cas_latency(const struct mem_controller *ctrl, long dimm_mask) {
@@ -1376,6 +1302,13 @@ static long spd_set_cas_latency(const struct mem_controller *ctrl, long dimm_mas
 
 }
 
+static const unsigned int bustimings[8] = {
+  /* first four are for GM part */
+  266, 200, 200, -1,
+  /* and then the GME part */
+  266, 200, 200, 333
+};
+
 static long spd_set_dram_timing(const struct mem_controller *ctrl, long dimm_mask) {
 	/* Walk through all dimms and find the interesection of the
 	 * supported dram timings.
@@ -1385,8 +1318,51 @@ static long spd_set_dram_timing(const struct mem_controller *ctrl, long dimm_mas
         uint32_t dword;
         int value;
 
+	/* well, shit. Intel has not seen fit to document the observed
+	 * setting for these bits. On my chipset it is 3 right now, and
+	 * that's not in the table documented for this chip. 
+	 * What a shame. We will assume 133 mhz I guess? not sure. 
+	 * also they say in one place it is two bits and in another
+	 * they say it is 3 bits! we'll assume two bits, that's
+	 * the only one that makes sense. 
+	 */
+	uint32_t rambusfrequency;
+	uint32_t ramindex;
+
+	/* what kind of chip is it? */
+	/* only bit that really matters is high order bit ... */
+	/* here is a problem with the memory controller struct ...
+	 * ram control is spread across d0/d1 on this part!
+	 */
+	ramindex = pci_read_config8(PCI_DEV(0,0,0), 0x44);
+	ramindex >>= 5;
+
+	/* compute the index into the table. Use the type of chip
+	 * as the high order bit and the 0:0.3:c0 & 7 as the low 
+	 * order four bits. 
+	 */
+	
+	ramindex |= pci_read_config8(PCI_DEV(0,0,3), 0xc0) & 7;
+	/* we now have an index into the clock rate table ... */
+	
+	rambusfrequency = bustimings[ramindex];
+
         /* Read the inititial state */
         dword = pci_read_config32(ctrl->d0, 0x60);
+#if DEBUG_RAM_CONFIG >= 10
+	print_debug("spd_detect_dimms: bus timing index: ");
+	print_debug_hex32(ramindex);
+	print_debug(" and speed ");
+	print_debug_hex32(rambusfrequency);
+	print_debug("\r\n");
+#endif
+
+	/* for now, since we are on deadline, set to "known good" and 
+	 * fix later. 
+	 */
+	pci_write_config32(ctrl->d0, 0x60, 0x2a004425);
+	return dimm_mask;
+
 #if 0
 # Intel clears top bit here, should we?
 # No the default is on and for normal timming it should be on.  Tom Z
@@ -1394,7 +1370,7 @@ static long spd_set_dram_timing(const struct mem_controller *ctrl, long dimm_mas
 #endif
         
 
-HERE. WHat's the frequency kenneth?        
+// HERE. WHat's the frequency kenneth?        
         for(i = 0; i < DIMM_SOCKETS; i++) {
 		if (!(dimm_mask & (1 << i))) {
                         continue;
@@ -1515,47 +1491,49 @@ static uint32_t set_dimm_size(const struct mem_controller *ctrl, struct dimm_siz
         uint32_t dch;
 	uint8_t byte;
 
+	/* I think size2 is always 0 ... */
         /* Double the size if we are using dual channel memory */
-//        if (is_dual_channel(ctrl)) {
-                /* Since I have 2 identical channels double the sizes */
-                sz.side1++ ;
-                sz.side2++;
-//        }
-              
 	if (sz.side1 != sz.side2) {
                 sz.side2 = 0;
         } 
- 
-        /* Make certain side1 of the dimm is at least 64MB */
-        if (sz.side1 >= (25 + 4)) {
-                memsz += (1 << (sz.side1 - (25 + 4)) ) ;
-        }
-	 /* Write the size of side 1 of the dimm */
-	byte = memsz;
-        pci_write_config8(ctrl->d0, 0x60+(index<<1), byte);
 
-        /* Make certain side2 of the dimm is at least 64MB */
-        if (sz.side2 >= (25 + 4)) {
-                memsz += (1 << (sz.side2 - (25 + 4)) ) ;
-        }
-        
-         /* Write the size of side 2 of the dimm */
+
+        /* Make certain side1 of the dimm is at least 32MB */
+	/* This 28 is weird. 
+	 * sz.size1 is log2 size in bits. 
+	 * so what's 28? So think of it as this: 
+	 * in log2 space: 10 + 10 + 8, i.e. 1024 * 1024 * 256 or
+	 * 256 Mbits, or 32 Mbytes. 
+	 */
+	/* this is from the e7500 code and it's just wrong for small dimes (< 64 MB)
+	 * However, realistically, this case will never happen! the dimms are all bigger ...
+	 * so skip the conditional completely. 
+	 *  if (sz.side1 >= (28)) { }
+	 */
+	memsz += (1 << (sz.side1 - (28)) ) ;
+
+	 /* Write the size of side 1 of the dimm */
+ #if DEBUG_RAM_CONFIG
+	print_debug("Write size ");
+	print_debug_hex8(memsz);
+	print_debug(" to ");
+	print_debug_hex8(0x40 + index);
+	print_debug("\r\n");
+#endif
 	byte = memsz;
-        pci_write_config8(ctrl->d0, 0x61+(index<<1), byte);
-        
+        pci_write_config8(ctrl->d0, 0x40+index, byte);
+
         /* now, fill in DRBs where no physical slot exists */
         
         for(i=index+1;i<4;i++) {
-                pci_write_config8(ctrl->d0, 0x60+(i<<1),byte);
-                pci_write_config8(ctrl->d0, 0x61+(i<<1),byte);
-        
+                pci_write_config8(ctrl->d0, 0x40+i, byte);
         }
         
         return memsz;
 
 }
-/* LAST_DRB_SLOT is a constant for any E7500 board */
-#define LAST_DRB_SLOT 0x67
+
+#define LAST_DRB_SLOT 0x43
 
 static long spd_set_ram_size(const struct mem_controller *ctrl, long dimm_mask)
 {
@@ -1582,6 +1560,7 @@ static long spd_set_ram_size(const struct mem_controller *ctrl, long dimm_mask)
                 }
                 memsz = set_dimm_size(ctrl, sz, memsz, i);
         }
+#if 0 
         /* For now hardset everything at 128MB boundaries */
         /* %ebp has the ram size in multiples of 64MB */
 //        cmpl    $0, %ebp        /* test if there is no mem - smbus went bad */
@@ -1613,6 +1592,7 @@ static long spd_set_ram_size(const struct mem_controller *ctrl, long dimm_mask)
         	pci_write_config16(ctrl->d0, 0xc8, word);
 
         }
+#endif
 
         return dimm_mask;
 }
@@ -1643,19 +1623,25 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl) {
 
         if (dimm_mask < 0)
                 goto hw_spd_err;	
+
+	/* skip for now until we just get "known good" up
 	dimm_mask = spd_set_cas_latency(ctrl,dimm_mask);
-	dump_pci_device(PCI_DEV(0,0,1));
+	*/
+
         if (dimm_mask < 0)
                 goto hw_spd_err;
 	dimm_mask = spd_set_dram_timing(ctrl,dimm_mask);
         if (dimm_mask < 0)
                 goto hw_spd_err;
+
 #if DEBUG_RAM_CONFIG
 	print_debug(spd_post_init);
 #endif
 	//moved from dram_post_init
 	spd_set_ram_size(ctrl, dimm_mask);
-	        return;
+	dump_pci_device(PCI_DEV(0,0,1));
+	return;
+
  hw_spd_err:
         /* Unrecoverable error reading SPD data */
         print_err("SPD error - reset\r\n");
@@ -1754,42 +1740,26 @@ static void dram_finish(const struct mem_controller *ctrl)
 	uint32_t dword;
 	uint8_t byte;
 	/* Test to see if ECC support is enabled */
-	dword = pci_read_config32(ctrl->d0, 0x7c);
+	dword = pci_read_config32(ctrl->d0, 0x70);
 	dword >>=20;
-	dword &=3;
-	if(dword == 2)  {
+	dword &=1;
+	if(dword == 1)  {
 		
 #if DEBUG_RAM_CONFIG	
 		print_debug(ecc_pre_init);
 #endif
-		/* Initialize ECC bits , use ECC zero mode (new to 7501)*/
-		pci_write_config8(ctrl->d0, 0x52, 0x06);
-		pci_write_config8(ctrl->d0, 0x52, 0x07);
-		do {
-			byte = pci_read_config8(ctrl->d0, 0x52);
-
-		} while ( (byte & 0x08 ) == 0);
-
-		pci_write_config8(ctrl->d0, 0x52, byte & 0xfc);
 #if DEBUG_RAM_CONFIG		
 		print_debug(ecc_post_init);	
 #endif
-
-		/* Clear the ECC error bits */
 #if 0
-		pci_write_config8(ctrl->d0f1, 0x80, 0x03); /* dev 0, function 1, offset 80 */
-		pci_write_config8(ctrl->d0f1, 0x82, 0x03); /* dev 0, function 1, offset 82 */
-
-		pci_write_config32(ctrl->d0f1, 0x40, 1<<18); /* clear dev 0, function 1, offset 40; bit 18 by writing a 1 to it */
-  	        pci_write_config32(ctrl->d0f1, 0x44, 1<<18); /* clear dev 0, function 1, offset 44; bit 18 by writing a 1 to it */
-#endif
-		pci_write_config8(ctrl->d0, 0x52, 0x0d);
-	}
-	
+		/* Clear the ECC error bits */
+		/*	
 	dword = pci_read_config32(ctrl->d0, 0x7c); /* FCS_EN */
 	dword |= (1<<17);
 	pci_write_config32(ctrl->d0, 0x7c, dword);
-
+*/
+#endif
+	  }
 
 #if DEBUG_RAM_CONFIG 
 	dumpnorth();
@@ -1863,15 +1833,23 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	int i;
 	uint32_t mchtst;
 	/* 1 & 2 Power up and start clocks */
-	/* arg! the parts are memory mapped! For now, just grab address 0xc0000000 as the base, since I want to use
-	 * constants, not variables, for this. 
+	/* let the games begin. More undocumented shit, so we'll just set it
+	 * as intel sets it
 	 */
-	mchtst = pci_read_config32(ctrl->d0, 0xf4);
-	mchtst |= (1 << 22);
-	pci_write_config32(ctrl->d0, 0xf4, mchtst);
-
+	mchtst = pci_read_config32(ctrl->d0, 0x68);
 #if DEBUG_RAM_CONFIG 
 	print_debug(ram_enable_1);
+	print_debug_hex32(mchtst);
+	dumpnorth();
+#endif	
+	/*
+	  mchtst = 0x10f10038;
+	  pci_write_config32(ctrl->d0, 0x68, mchtst);
+	  * can't find a ram power register ...
+	*/
+
+#if DEBUG_RAM_CONFIG 
+
 	print_debug(ram_enable_2);
 #endif
 
@@ -1882,15 +1860,17 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	/* 3. Apply NOP */
 #if DEBUG_RAM_CONFIG 
+	  dump_pci_device(PCI_DEV(0, 0, 0)) ;
 	print_debug(ram_enable_3);
 #endif
 	RAM_NOP(ctrl);
 	EXTRA_DELAY
-
+#define DEBUG_RAM_CONFIG 0
 	/* 4 Precharge all */
 #if DEBUG_RAM_CONFIG 
 	print_debug(ram_enable_4);
 #endif
+#define DEBUG_RAM_CONFIG 0
 	RAM_PRECHARGE(ctrl);
 	EXTRA_DELAY
 	
@@ -1975,6 +1955,13 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	//SPECIAL_FINISHUP();
 	dram_finish(ctrl);
+	{ char *c = (char *) 0;
+	*c = 'a';
+	print_debug("Test: ");
+	print_debug_hex8(*c);
+	print_debug("\r\n");
+	}
+	
 
 }
 

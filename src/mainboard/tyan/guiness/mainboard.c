@@ -93,7 +93,8 @@ static void fixup_adaptec_7899P(struct pci_dev *pdev)
 	/* Set the device id */
 	pci_write_config_word(pdev, PCI_DEVICE_ID, PCI_DEVICE_ID_ADAPTEC2_7899P);
 	/* Set the subsytem vendor id */
-	pci_write_config_word(pdev, PCI_SUBSYSTEM_VENDOR_ID, PCI_VENDOR_ID_TYAN);
+//	pci_write_config_word(pdev, PCI_SUBSYSTEM_VENDOR_ID, PCI_VENDOR_ID_TYAN);
+	pci_write_config_word(pdev, PCI_SUBSYSTEM_VENDOR_ID, 0x10f1);
 	/* Set the subsytem id */
 	pci_write_config_word(pdev, PCI_SUBSYSTEM_ID, 0x2462);
 	/* Disable writes to the device id */
@@ -130,11 +131,11 @@ static void set_power_on_after_power_fail(int setting)
 	case MAINBOARD_POWER_ON:
 	default:
 		amd766_power_after_power_fail(1);
-		w832627hf_power_after_power_fail(POWER_ON);
+		w83627hf_power_after_power_fail(POWER_ON);
 		break;
 	case MAINBOARD_POWER_OFF:
 		amd766_power_after_power_fail(0);
-		w832627hf_power_after_power_fail(POWER_OFF);
+		w83627hf_power_after_power_fail(POWER_OFF);
 		break;
 
 	}

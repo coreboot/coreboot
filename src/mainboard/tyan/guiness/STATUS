@@ -4,22 +4,22 @@
 # continuation, if needed, will be via the \ at the end of a line
 # comments are indicated by a '#' as the first character. 
 # the keywords are case-INSENSITIVE
-owner:	Ron Minnich
-email:	rminnich@lanl.gov
+owner:	Steven James
+email:	pyro@linuxlabs.com
 #status: One of unsupported, unstable, stable
 status: unstable
-explanation: 
+explanation: still testing for stability
 flash-types: 
-payload-types: 
+payload-types: ELF, etherboot, bootselect
 # e.g. linux, plan 9, wince, etc.
-OS-types: 
+OS-types: linux
 # e.g. "Plan 9 interrupts don't work on this chipset"
 OS-issues:
-console-types:
+console-types: serial
 # vga is unsupported, unstable, or stable
-vga:
+vga: unsupported
 # Last-known-good follows the internationl date standard: day/month/year
-last-known-good: 0/0/0000
+last-known-good: 19/12/2002
 Comments: 
 Links:
 Mainboard-revision: 

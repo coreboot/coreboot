@@ -12,6 +12,7 @@ errors = 0
 target_dir = ''
 target_name = ''
 treetop = ''
+full_mainboard_path = ''
 global_options = {}
 global_options_by_order = []
 global_option_values = {}
@@ -841,6 +842,7 @@ def newoptionvalue(name, image):
 
 def getoptionvalue(name, op, image):
 	global global_option_values
+	#print "getoptionvalue name %s op %s image %s\n" % (name, op,image)
 	if (op == 0):
 		fatal("Option %s undefined (missing use command?)" % name)
 	if (image):
@@ -856,12 +858,16 @@ def getoption(name, image):
 
 	global global_uses_options, alloptions, curimage
 
+	#print "getoption: name %s image %s alloptions %s curimage %s\n\n" % (name, image, alloptions, curimage)
 	curpart = partstack.tos()
 	if (alloptions):
+		#print "ALLOPTIONS\n"
 		o = getdict(global_options, name)
 	elif (curpart):
+		#print "CURPART\n"
 		o = getdict(curpart.uses_options, name)
 	else:
+		#print "GLOBAL_USES_OPTIONS\n"
 		o = getdict(global_uses_options, name)
 	v = getoptionvalue(name, o, image)
 	if (v == 0):
@@ -1057,12 +1063,12 @@ def validdef(name, defval):
 	if ((defval & 4) != 4):
 	    fatal("Must specify comment for option %s" % name)
 
-def loadoptions():
-	file = os.path.join('src', 'config', 'Options.lb')
+def loadoptions(path, file, rule):
+	file = os.path.join('src', path, file)
 	optionsfile = os.path.join(treetop, file)
 	fp = safe_open(optionsfile, 'r')
 	loc.push(file)
-	if (not parse('options', fp.read())):
+	if (not parse(rule, fp.read())):
 		fatal("Could not parse file")
 	loc.pop()
 
@@ -1112,7 +1118,7 @@ def payload(path):
 
 def startromimage(name):
 	global romimages, curimage, target_dir, target_name
-	print "Configuring ROMIMAGE %s" % name
+	print "Configuring ROMIMAGE %s Curimage %s" % (name, curimage)
 	o = getdict(romimages, name)
 	if (o):
 		fatal("romimage %s previously defined" % name)
@@ -1124,19 +1130,29 @@ def startromimage(name):
 
 def endromimage():
 	global curimage
+	mainboard()
 	print "End ROMIMAGE"
 	curimage = 0
 	#curpart = 0
 
-def mainboard(path):
-	full_path = os.path.join(treetop, 'src', 'mainboard', path)
+def mainboardsetup(path):
+	global full_mainboard_path
+	mainboard_path = os.path.join('mainboard', path)
+	loadoptions(mainboard_path, 'Options.lb', 'mainboardvariables')
+	full_mainboard_path = os.path.join(treetop, 'src', 'mainboard', path)
 	vendor = re.sub("/.*", "", path)
         part_number = re.sub("[^/]*/", "", path)
-	setdefault('MAINBOARD', full_path, 0)
+	setdefault('MAINBOARD', full_mainboard_path, 0)
 	setdefault('MAINBOARD_VENDOR', vendor, 0)
 	setdefault('MAINBOARD_PART_NUMBER', part_number, 0)
-	dodir('/config', 'Config.lb')
-	part('mainboard', path, 'Config.lb', 0, 0)
+
+def mainboard():
+	# a mainboard is no longer really a part as such. 
+	# so just do the config file for the mainboard
+	#part('mainboard', full_mainboard_path, 'Config.lb', 0, 0)
+	global full_mainboard_path
+	mainboard_path = os.path.join(full_mainboard_path)
+	loadoptions(mainboard_path, 'Config.lb', 'cfgfile')
 	curimage.setroot(partstack.tos())
 	partpop()
 
@@ -1177,6 +1193,16 @@ def cpudir(path):
 	dodir(srcdir, "Config.lb")
 	cpu_type = path
 	
+def simplepart(type):
+	global curimage, dirstack, partstack
+	newpart = partobj(curimage, 0, partstack.tos(), type, \
+			'', 0, 0)
+	print "Configuring PART %s" % (type)
+	partstack.push(newpart)
+	print "  new PART tos is now %s\n" %partstack.tos()
+	# just push TOS, so that we can pop later. 
+	dirstack.push(dirstack.tos())
+	
 def part(type, path, file, name, link):
 	global curimage, dirstack, partstack
         partdir = os.path.join(type, path)
@@ -1187,6 +1213,7 @@ def part(type, path, file, name, link):
 			type_name, name, link)
 	print "Configuring PART %s, path %s" % (type, path)
 	partstack.push(newpart)
+	print "  new PART tos is now %s\n" %partstack.tos()
 	dirstack.push(fulldir)
 	# special case for 'cpu' parts. 
 	# we could add a new function too, but this is rather trivial.
@@ -1209,6 +1236,7 @@ def partpop():
 			notice("Option %s using default value %s" % (op, getformated(op, curpart.image)))
 	partstack.pop()
 	dirstack.pop()
+	print "partstack.pop, TOS is now %s\n" % partstack.tos()
 
 def dodir(path, file):
 	"""dodir is like part but there is no new part"""
@@ -1334,6 +1362,7 @@ parser Config:
     token DEFAULT:		'default'
     token DEFINE:		'define'
     token DEPENDS:		'depends'
+    token DEVICE:		'device'
     token DIR:			'dir'
     token DRIVER:		'driver'
     token DRQ:			'drq'
@@ -1514,26 +1543,32 @@ parser Config:
 						{{ if (C): partstack.tos().end_resources() }}
 	    
     
-    rule pci<<C>>:	PCI HEX_NUM		{{ bus = int(HEX_NUM,16) }}
-    			':' HEX_NUM		{{ slot = int(HEX_NUM,16) }}
+    rule pci<<C>>:	PCI 			{{ if (C): simplepart('pci') }}
+
+    			HEX_NUM			{{ slot = int(HEX_NUM,16) }}
 			'.' HEX_NUM		{{ function = int(HEX_NUM, 16) }}
 			enable 
-						{{ if (C): partstack.tos().addpcipath(enable, bus, slot, function) }}
+						{{ if (C): partstack.tos().addpcipath(enable, 0, slot, function) }}
 			resources<<C>>
+			partend<<C>>
 
-    rule pnp<<C>>:	PNP HEX_NUM		{{ port = int(HEX_NUM,16) }}
+    rule pnp<<C>>:	PNP  			{{ if (C): simplepart('pnp') }}
+			HEX_NUM			{{ port = int(HEX_NUM,16) }}
 			'.' HEX_NUM		{{ device = int(HEX_NUM, 16) }}
 			enable
 						{{ if (C): partstack.tos().addpnppath(enable, port, device) }}
 			resources<<C>>
+			partend<<C>>
 
 
-    rule i2c<<C>>:	I2C HEX_NUM		{{ device = int(HEX_NUM, 16) }}
+    rule i2c<<C>>:	I2C   			{{ if (C): simplepart('i2c') }}
+			HEX_NUM			{{ device = int(HEX_NUM, 16) }}
 			enable
 						{{ if (C): partstack.tos().addi2cpath(enable, device) }}
 			resources<<C>>
 
-    rule apic<<C>>:	APIC HEX_NUM		{{ apic_id = int(HEX_NUM, 16) }}
+    rule apic<<C>>:	APIC   			{{ if (C): simplepart('apic') }}
+			HEX_NUM			{{ apic_id = int(HEX_NUM, 16) }}
 			enable
 						{{ if (C): partstack.tos().addapicpath(enable, apic_id) }}
 			resources<<C>>
@@ -1558,6 +1593,8 @@ parser Config:
 
     rule config<<C>>:	CONFIG PATH		{{ if (C): addconfig(PATH) }}
 
+    rule device<<C>>:   DEVICE dev_path<<C>> 
+
     rule stmt<<C>>:	arch<<C>>		{{ return arch}}
 		|	addaction<<C>>		{{ return addaction }}
     		|	config<<C>>		{{ return config}}
@@ -1577,9 +1614,13 @@ parser Config:
 		|	partdef<<C>>		{{ return partdef }}
 		| 	prtstmt<<C>>		{{ return prtstmt }}
 		|	register<<C>> 		{{ return register }}
-		|	dev_path<<C>>		{{ return dev_path }}	
+		|	device<<C>>		{{ return device }}
 
     # ENTRY for parsing Config.lb file
+    rule cfgfile:	(uses<<1>>)* 
+    			(stmt<<1>>)*
+			EOF			{{ return 1 }}
+
     rule cfgfile:	(uses<<1>>)* 
     			(stmt<<1>>)*
 			EOF			{{ return 1 }}
@@ -1587,6 +1628,11 @@ parser Config:
     rule usesid<<C>>:	ID			{{ if (C): usesoption(ID) }}
 
     rule uses<<C>>:	USES (usesid<<C>>)+
+
+    rule mainboardvariables:	(uses<<1>>)*
+				(default<<1>>)*
+				(option<<1>>)*
+				END		{{ return 1}}
 
     rule value:		STR			{{ return dequote(STR) }} 
 		| 	expr			{{ return expr }}
@@ -1605,8 +1651,8 @@ parser Config:
 
     rule payload<<C>>:	PAYLOAD DIRPATH		{{ if (C): payload(DIRPATH) }}
 
-    rule mainboard<<C>>:
-			MAINBOARD PATH		{{ if (C): mainboard(PATH) }}
+    rule mainboard:
+			MAINBOARD PATH		{{ mainboardsetup(PATH) }}
 
     rule romif<<C>>:	IF ID			{{ c = lookup(ID) }}
 			(romstmt<<C and c>>)* 
@@ -1615,7 +1661,6 @@ parser Config:
 
     rule romstmt<<C>>:	romif<<C>>
 		|	option<<C>>
-		|	mainboard<<C>>
 		|	payload<<C>>
 
     rule romimage:	ROMIMAGE STR		{{ startromimage(dequote(STR)) }}
@@ -1633,9 +1678,9 @@ parser Config:
 		|	opstmt<<1>>
 
     # ENTRY for parsing root part
-    rule board:		LOADOPTIONS		{{ loadoptions() }}
+    rule board:		{{ loadoptions("config", "Options.lb", "options") }}
 	    		TARGET DIRPATH		{{ target(DIRPATH) }}
-			(uses<<1>>)*
+			mainboard
 			(romstmts)*		
 			EOF			{{ return 1 }}
 

@@ -714,7 +714,7 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 
 	/* Find which cpus are present */
 	cpu_bus = &dev->link[0];
-	for(i = 0; i < 7; i++) {
+	for(i = 0; i < 8; i++) {
 		device_t dev, cpu;
 		struct device_path cpu_path;
 

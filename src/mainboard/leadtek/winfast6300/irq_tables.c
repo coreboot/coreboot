@@ -1,4 +1,4 @@
-#include <i386_subr.h>
+#include <arch/pirq_routing.h>
 
 #ifndef SIS630S
 #define CHECKSUM 0xe6

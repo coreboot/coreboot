@@ -1,4 +1,4 @@
-#include <i386_subr.h>
+#include <arch/pirq_routing.h>
 
 #define CHECKSUM 0xe6
 const struct irq_routing_table intel_irq_routing_table = {

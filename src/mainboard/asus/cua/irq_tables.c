@@ -1,4 +1,4 @@
-#include <i386_subr.h>
+#include <arch/pirq_routing.h>
 
 /* NOTE -- THIS IS A PLACEHOLDER -- WE NEED TO FIX THIS */
 #define CHECKSUM 0xe6

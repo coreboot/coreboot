@@ -8,6 +8,7 @@ Need to define PIIX4_DEVFN=0x38 as compile time flag
 */
 
 #include <subr.h>
+#include <arch/pirq_routing.h>
 
 /*
  * This table must be located between 0x000f0000 and 0x000fffff.

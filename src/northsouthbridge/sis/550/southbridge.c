@@ -105,6 +105,12 @@ south_fixup(void)
 	    u8 reg;
 	    pci_read_config_byte(pcidev, 0x77, &reg);
 	    pci_write_config_byte(pcidev, 0x77, reg & 0xEF);
+
+	    /* IO address for CIR */
+	    pci_write_config_byte(pcidev, 0x4A, 0x11);
+	    pci_write_config_byte(pcidev, 0x4B, 0x03);
+	    /* IRQ for CIR */
+	    pci_write_config_byte(pcidev, 0x6C, 0x05);
 	}
 }
 

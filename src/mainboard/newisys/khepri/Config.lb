@@ -165,9 +165,10 @@ arch i386 end
 ##
 
 driver mainboard.o
-driver blade3d.o
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
+
+dir /drivers/trident/blade3d
 
 ##
 ## Romcc output

@@ -453,6 +453,23 @@ def addaction(dir, rule):
         print "    actions ", actions
         makebaserules[rulename].append(actions)
 	
+# add a dependency
+def adddepend(dir, rule):
+        wspc = string.whitespace
+        rest = "(.*)"
+        w = "[" + wspc + "]*"
+        namepat = "(.*)"
+        cmd = "([^" + wspc + "]*)"
+        pat = cmd  + w + rest + w
+        print "pat :", pat, ":", rule
+        command_re = re.compile(pat)
+        m = command_re.match(rule)
+        rulename = m.group(1)
+        depend = m.group(2)
+        print "rulename :", rulename
+        print "    depend ", depend
+        makebaserules[rulename][0] = makebaserules[rulename][0] + " " + depend
+
 def makedefine(dir, rule): 
 	userrules.append(rule)
 def option(dir, option):
@@ -470,8 +487,6 @@ def commandline(dir, command):
 def docipl(dir, ipl_name):
 	mainboard = command_vals['mainboard']
 	mainboard_dir = os.path.join(treetop, 'src', mainboard)
-	# add a rule for the docipl
-	userrules.append("romimage::docipl")
 	# add the docipl rule
 	userrules.append("docipl: ipl.o")
 	userrules.append("\tobjcopy -O binary -R .note -R .comment -S ipl.o docipl")
@@ -644,17 +659,19 @@ def writemakefile(path):
 		
 	# print out the base rules
 	
+	# need to have a rule that counts on 'all'
+	file.write("mainrule: all\n")
 #	for i in range(len(baserules)):
 #		file.write("%s\n" % baserules[i])
 
+	for i in range(len(userrules)):
+		file.write("%s\n" % userrules[i])
+		
 	# print out any user rules
 	for z in makebaserules.keys(): 
 		file.write("%s: %s\n" % (z, makebaserules[z][0]))
 		for i in range(len(makebaserules[z]) - 1):
 			file.write("\t%s\n" % makebaserules[z][i+1])
-	for i in range(len(userrules)):
-		file.write("%s\n" % userrules[i])
-		
 	for i in range(len(objectrules)):
 		base = objectrules[i][0]
 		base = base[0:len(base)-2]
@@ -666,8 +683,8 @@ def writemakefile(path):
 	# print out the linux rules
 	# these go here because some pieces depend on user rules
 	
-	for i in range(len(linuxrules)):
-		file.write("%s\n" % linuxrules[i])
+#	for i in range(len(linuxrules)):
+#		file.write("%s\n" % linuxrules[i])
 
 	file.close();
 #	except IOError:

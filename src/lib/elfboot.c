@@ -42,6 +42,12 @@ static int safe_range(unsigned long start, unsigned long len)
 	for(i = 0; i < sizeof(bad_ranges)/sizeof(bad_ranges[0]); i++) {
 		if ((start < bad_ranges[i].end) &&
 			(end > bad_ranges[i].start)) {
+			printk_err(__FUNCTION__ " start 0x%x end 0x%x\n", 
+					start, end);
+			printk_err(__FUNCTION__ " Conflicts with range %d\n",
+				i);
+			printk_err("  which starts at 0x%x ends at 0x%x\n", 
+				bad_ranges[i].start, bad_ranges[i].end);	
 			return 0;
 		}
 	}

@@ -944,6 +944,27 @@ spd_set_nbxcfg:
 	movl %esi, %edx
 	movl $0x53, %eax
 	PCI_WRITE_CONFIG_BYTE
+	/* Now see if esi is 0xff. If it is we are done. If not, 
+	 * we need to set 0x18 into register 0x50.l
+	 * we will do this in two steps, first or in 0x80 to 0x50.b, 
+	 * then or in 0x1 to 0x51.b
+         */
+	mov	%esi, %eax
+	cmpb	$0xff, %al
+	je	1f
+	movl	$0x50, %eax
+	PCI_READ_CONFIG_BYTE
+	orb	$0x80, %al
+	movb	%al, %dl
+	movl	$0x50, %eax
+	PCI_WRITE_CONFIG_BYTE
+	movl	$0x51, %eax
+	PCI_READ_CONFIG_BYTE
+	orb	$0x1, %al
+	movb	%al, %dl
+	movl	$0x51, %eax
+	PCI_WRITE_CONFIG_BYTE
+1:	
 	RET_LABEL(spd_set_nbxcfg)
 
 

@@ -6,6 +6,7 @@
 #include <arch/pirq_routing.h>
 #include <arch/smp/mpspec.h>
 #include <arch/acpi.h>
+#include <pc80/mc146818rtc.h>
 #include "linuxbios_table.h"
 
 #if CONFIG_SMP && CONFIG_MAX_PHYSICAL_CPUS && (CONFIG_MAX_PHYSICAL_CPUS < CONFIG_MAX_CPUS)

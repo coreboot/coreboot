@@ -39,7 +39,7 @@
 #define CONFIG_IDE_MAXDEVICE	(CONFIG_IDE_MAXBUS*2)
 #endif
 
-uint32_t ide_bus_offset[CONFIG_IDE_MAXBUS];
+uint32_t ide_base[CONFIG_IDE_MAXBUS]; 
 
 static void 
 w83c553_ide_init(struct device *dev)
@@ -50,7 +50,6 @@ w83c553_ide_init(struct device *dev)
 
 	printk_info("Configure W83C553F IDE (Function 1)\n");
 
-#if 0
 	/*
 	 * Enable native mode on IDE ports and set base address.
 	 */
@@ -80,12 +79,12 @@ w83c553_ide_init(struct device *dev)
 	reg32 = 0x00ff0000 | W83C553F_IDECSR_P1EN | W83C553F_IDECSR_P0EN;
 	pci_write_config32(dev, W83C553F_IDECSR, reg32);
 
-	ide_bus_offset[0] = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
-	printk_debug("ide bus offset = 0x%x\n", ide_bus_offset[0]);
-	ide_bus_offset[0] &= ~1;
+	ide_base[0] = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
+	printk_debug("ide bus offset = 0x%x\n", ide_base[0]);
+	ide_base[0] &= ~1;
 #if CONFIG_IDE_MAXBUS > 1
-	ide_bus_offset[1] = pci_read_config32(dev, PCI_BASE_ADDRESS_2);
-	ide_bus_offset[1] &= ~1;
+	ide_base[1] = pci_read_config32(dev, PCI_BASE_ADDRESS_2);
+	ide_base[1] &= ~1;
 #endif
 
 	/*
@@ -94,7 +93,6 @@ w83c553_ide_init(struct device *dev)
 	reg16 = pci_read_config16(dev, PCI_COMMAND);
 	reg16 |= PCI_COMMAND_MASTER | PCI_COMMAND_IO;
 	pci_write_config16(dev, PCI_COMMAND, reg16);
-#endif
 
 	printk_info("IDE configuration complete\n");
 }

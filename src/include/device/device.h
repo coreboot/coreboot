@@ -75,9 +75,7 @@ struct device {
 
 	uint8_t command;
 
-	/* Base registers for this device, can be adjusted by
-	 * pcibios_fixup() as necessary.
-	 */
+	/* Base registers for this device. I/O, MEM and Expansion ROM */
 	struct resource resource[MAX_RESOURCES];
 	unsigned int resources;
 
@@ -87,7 +85,6 @@ struct device {
 	/* number of buses attached to the device */
 	unsigned int links;
 
-	unsigned long rom_address;
 	struct device_operations *ops;
 	struct chip_operations *chip_ops;
 	void *chip_info;

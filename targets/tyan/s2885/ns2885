@@ -1,0 +1,6 @@
+#!/bin/bash
+TYANMB=s2885
+cd "$TYANMB"
+make
+cat ./normal/linuxbios.rom ./fallback/linuxbios.rom > $TYANMB"_linuxbios.rom"
+cp -f $TYANMB"_linuxbios.rom" /home/yhlu/

@@ -10,7 +10,7 @@ mainboardinit superio/ITE/it8712f/setup_serial.inc
 mainboardinit pc80/serial.inc
 mainboardinit arch/i386/lib/console.inc
 northbridge intel/815ep
-southbridge intel/ich2
+southbridge intel/82801
 mainboardinit cpu/p6/earlymtrr.inc
 
 superio ITE/it8712f

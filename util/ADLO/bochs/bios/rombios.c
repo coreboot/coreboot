@@ -131,6 +131,7 @@
 
 #define DEBUG_ROMBIOS      1
 
+#define DEBUG_SERIAL       1
 #define DEBUG_ATA          1
 #define DEBUG_INT13_HD     0
 #define DEBUG_INT13_CD     0
@@ -1425,17 +1426,75 @@ wrch(c)
   ASM_END
 }
  
+
+#if DEBUG_SERIAL
+
+/* Data */
+#define UART_RBR 0x00
+#define UART_TBR 0x00
+
+/* Control */
+#define UART_IER 0x01
+#define UART_IIR 0x02
+#define UART_FCR 0x02
+#define UART_LCR 0x03
+#define UART_MCR 0x04
+#define UART_DLL 0x00
+#define UART_DLM 0x01
+
+/* Status */
+#define UART_LSR 0x05
+#define UART_MSR 0x06
+#define UART_SCR 0x07
+
+int uart_can_tx_byte(base_port)
+	Bit16u base_port;
+{
+	return inb(base_port + UART_LSR) & 0x20;
+}
+
+void uart_wait_to_tx_byte(base_port)
+	Bit16u base_port;
+{
+	while(!uart_can_tx_byte(base_port))
+		;
+}
+
+void uart_wait_until_sent(base_port)
+	Bit16u base_port;
+{
+	while(!(inb(base_port + UART_LSR) & 0x40))
+		;
+}
+
+void uart_tx_byte(base_port, data)
+	Bit16u base_port;
+	Bit8u  data;
+{
+	uart_wait_to_tx_byte(base_port);
+	outb(base_port + UART_TBR, data);
+	/* Make certain the data clears the fifos */
+	uart_wait_until_sent(base_port);
+}
+
+#endif
+
   void
 send(action, c)
   Bit16u action;
   Bit8u  c;
 {
+#if DEBUG_SERIAL // hcyun
+	if ( c == '\n') uart_tx_byte(0x3f8, '\r');
+	uart_tx_byte(0x3f8, c);
+#else
   if (action & BIOS_PRINTF_DEBUG) outb(DEBUG_PORT, c);
   if (action & BIOS_PRINTF_INFO) outb(INFO_PORT, c);
   if (action & BIOS_PRINTF_SCREEN) {
     if (c == '\n') wrch('\r');
     wrch(c);
     }
+#endif
 }
 
   void

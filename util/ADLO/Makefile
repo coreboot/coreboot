@@ -12,6 +12,7 @@ PIRQ_W=
 PIRQ_M=pirq/pirq-MS7308E.bin
 PIRQ_P=pirq/pirq-P6STMT.bin
 PIRQ_T=pirq/pirq-ThinkPad.T23.bin
+PIRQ_EPIA=pirq/pirq-EPIA.bin
 
 BOCHS_R=bochs
 BOCHS_B=bochs/bios
@@ -25,6 +26,7 @@ BIOS_X=${BOCHS_X}/rombios.bin
 VIDEO64W=video/video.bios-WINFAST64kb.bin
 VIDEO64M=
 VIDEO64P=video/video.bios-P6STMT-64kb.bin
+VIDEO64EPIA=video/video.bios-EPIA-64kb.bin
 
 PAYLOAD=payload
 
@@ -36,6 +38,8 @@ all: clean build #install
 
 #-------------------------------------------------
 
+epia: loader.o bios
+	cat ${ELF129} ${LOADER} ${PIRQ_EPIA} ${BIOS_B} ${VIDEO64EPIA} > ${PAYLOAD}
 build: loader.o bios
 	cat ${ELF129} ${LOADER} ${PIRQ_M} ${BIOS_B} ${VIDEO64P} > ${PAYLOAD}
 

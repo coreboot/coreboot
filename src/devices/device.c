@@ -19,6 +19,7 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_ids.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -385,15 +386,14 @@ static void allocate_vga_resource(void)
 #warning "This function knows to much about PCI stuff, it should be just a ietrator/visitor."
 
 	/* FIXME handle the VGA pallette snooping */
-	struct device *dev, *vga;
-	struct bus *bus;
-	bus = 0;
-	vga = 0;
-	for(dev = all_devices; dev; dev = dev->next) {
-		if (((dev->class >> 16) == 0x03) &&
-			((dev->class >> 8) != 0x380)) {
+	struct device *dev, *vga = 0;
+	struct bus *bus = 0;
+
+	for (dev = all_devices; dev; dev = dev->next) {
+		if (((dev->class >> 16) == PCI_BASE_CLASS_DISPLAY) &&
+		    ((dev->class >> 8)  != PCI_CLASS_DISPLAY_OTHER)) {
 			if (!vga) {
-				printk_debug("Allocating VGA resource\n");
+				printk_debug("Allocating VGA resource %s\n", dev_path(dev));
 				vga = dev;
 			}
 			if (vga == dev) {
@@ -408,8 +408,9 @@ static void allocate_vga_resource(void)
 	if (vga) {
 		bus = vga->bus;
 	}
+
 	/* Now walk up the bridges setting the VGA enable */
-	while(bus) {
+	while (bus) {
 		bus->bridge_ctrl |= PCI_BRIDGE_CTL_VGA;
 		bus = (bus == bus->dev->bus)? 0 : bus->dev->bus;
 	} 
@@ -511,8 +512,7 @@ void dev_configure(void)
 {
 	struct device *root = &dev_root;
 
-	printk_info("Allocating resources...");
-	printk_debug("\n");
+	printk_info("Allocating resources...\n");
 
 	root->ops->read_resources(root);
 

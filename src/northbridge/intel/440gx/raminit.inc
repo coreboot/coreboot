@@ -427,6 +427,12 @@ jmp intel_440_out
 	CS_WRITE_BYTE(0xee, 0x00)	; \
 	CS_WRITE_BYTE(0xef, 0x00)
 
+/* PMCR -- BIOS sets 0x90 into it. 
+ * 0x10 is REQUIRED.
+ * we have never used it. So why did this ever work?
+ */
+#define SET_PMCR \
+	CS_WRITE_BYTE(0x7a, 0x90);
 
 ram_set_registers:
 	SET_NBXCFG
@@ -443,6 +449,7 @@ ram_set_registers:
 	SET_MBFS
 	SET_DWTC
 	SET_DRTC
+	SET_PMCR	
 	RET_LABEL(ram_set_registers)
 
 
@@ -727,8 +734,30 @@ spd_set_dramc:
 	
 spd_set_dramc_out:
 	testb $0x12, %al
+	/* $8 is bit value for non-registered DRAM */
 	movl $8, %eax
 	jz 1f
+	/* this is a registered part. 
+	 * observation: for register parts, BIOS zeros (!) 
+         * registers CA-CC. This has an undocumented meaning.
+         */
+	xorl %edx, %edx
+	movl $0xca, %eax
+	PCI_WRITE_CONFIG_BYTE
+	xorl %edx, %edx
+	movl $0xcb, %eax
+	PCI_WRITE_CONFIG_BYTE
+	xorl %edx, %edx
+	movl $0xcc, %eax
+	PCI_WRITE_CONFIG_BYTE
+/* next block is for Ron's attempt to get registered to work. */
+#ifdef INTEL_RAM_TEST_REGISTERED
+	/* BIOS makes weird page size for registered! */
+	movl	$2, %edx
+	movl	$0x74, %eax
+	PCI_WRITE_CONFIG_BYTE
+#endif
+	/* now set the bit value for registered sdram into %eax */
 	movl $0x10, %eax
 1:	movl %eax, %edx
 	movl $0x57, %eax
@@ -949,7 +978,7 @@ spd_set_nbxcfg:
 	 * we will do this in two steps, first or in 0x80 to 0x50.b, 
 	 * then or in 0x1 to 0x51.b
          */
-	mov	%esi, %eax
+	mov	%esi, %eax 
 	cmpb	$0xff, %al
 	je	1f
 	movl	$0x50, %eax
@@ -963,6 +992,17 @@ spd_set_nbxcfg:
 	orb	$0x1, %al
 	movb	%al, %dl
 	movl	$0x51, %eax
+	PCI_WRITE_CONFIG_BYTE
+	// try this. 
+	// we should be setting bit 2 in register 76 and we're not
+	// technically we should see if CL=2 for the ram, 
+	// but registered is so screwed up that it's kind of a lost
+	// cause. 
+	movl	$0x76, %eax
+	PCI_READ_CONFIG_BYTE
+	orb	$0x4, %al
+	movb	%al, %dl
+	movl	$0x76, %eax
 	PCI_WRITE_CONFIG_BYTE
 1:	
 	RET_LABEL(spd_set_nbxcfg)

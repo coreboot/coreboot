@@ -106,11 +106,6 @@ final_southbridge_fixup()
 		int i;
 		// put symbolic names in here soon ... so much typing, so little time. 
 
-		// remap IRQ for PCI -- this is exactly what the BIOS does now. 
-		pci_write_config_byte(pcidev, 0x42, 0xa);
-		pci_write_config_byte(pcidev, 0x43, 0xb);
-		pci_write_config_byte(pcidev, 0x44, 0xc);
-
 		// now set up legacy serial interrupts
 		// that doesn't mean serial ports -- it's a serial interrupt
 		// line from the superio (LPC)

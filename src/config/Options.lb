@@ -515,26 +515,6 @@ define IDE_OFFSET
 end
 
 ###############################################
-# SMBUS options
-###############################################
-
-define SMBUS_MEM_DEVICE_START
-	default (0xa << 3)
-	export always
-	comment "Start address of SMBUS device"
-end
-define SMBUS_MEM_DEVICE_END
-	default {SMBUS_MEM_DEVICE_START +1}
-	export always
-	comment "End address of SMBUS device"
-end
-define SMBUS_MEM_DEVICE_INC
-	default 1
-	export always
-	comment "Increment value SMBUS"
-end
-
-###############################################
 # Misc options
 ###############################################
 

@@ -740,6 +740,7 @@ end
 define AGP_APERTURE_SIZE
 	default none
 	export used
+	format "0x%x"
 	comment "AGP graphics virtual memory aperture size"
 end
 

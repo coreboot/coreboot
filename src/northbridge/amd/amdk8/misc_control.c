@@ -18,15 +18,15 @@
 #include "./cpu_rev.c"
 #include "amdk8.h"
 
-#define IOMMU_APETURE_SIZE (64*1024*1024) /* 64M */
 static void mcf3_read_resources(device_t dev)
 {
 	struct resource *resource;
+
 	/* Read the generic PCI resources */
 	pci_dev_read_resources(dev);
 
 	/* If we are not the first processor don't allocate the gart apeture */
-	if (dev->path.u.pci.devfn != PCI_DEVFN(24, 3)) {
+	if (dev->path.u.pci.devfn != PCI_DEVFN(0x18, 0x3)) {
 		return;
 	}
 		
@@ -35,14 +35,13 @@ static void mcf3_read_resources(device_t dev)
 		resource = &dev->resource[dev->resources];
 		dev->resources++;
 		resource->base  = 0;
-		resource->size  = IOMMU_APETURE_SIZE;
+		resource->size  = AGP_APERTURE_SIZE;
 		resource->align = log2(resource->size);
 		resource->gran  = log2(resource->size);
 		resource->limit = 0xffffffff; /* 4G */
 		resource->flags = IORESOURCE_MEM;
 		resource->index = 0x94;
-	}
-	else {
+	} else {
 		printk_err("%s Unexpeted resource shortage\n", dev_path(dev));
 	}
 }
@@ -51,17 +50,17 @@ static void mcf3_set_resources(device_t dev)
 {
 	struct resource *resource, *last;
 	last = &dev->resource[dev->resources];
-	for(resource = &dev->resource[0]; resource < last; resource++) {
+	for (resource = &dev->resource[0]; resource < last; resource++) {
 		if (resource->index == 0x94) {
 			device_t pdev;
 			uint32_t base;
 			uint32_t size;
 			
-			size = (0<<6)|(0<<5)|(0<<4)|((log2(resource->size) - 25) << 1)|(0<<0);
+			size = (0<<6)|(0<<5)|(0<<4)|
+			    ((log2(resource->size) - 25) << 1)|(0<<0);
 			base = ((resource->base) >> 25) & 0x00007fff;
-			
 			pdev = 0;
-			while(pdev = dev_find_device(PCI_VENDOR_ID_AMD, 0x1103, pdev)) {
+			while (pdev = dev_find_device(PCI_VENDOR_ID_AMD, 0x1103, pdev)) {
 				/* I want a 64M GART apeture */
 				pci_write_config32(pdev, 0x90, (0<<6)|(0<<5)|(0<<4)|(1<<1)|(0<<0));
 				/* Store the GART base address */
@@ -69,15 +68,12 @@ static void mcf3_set_resources(device_t dev)
 				/* Don't set the GART Table base address */
 				pci_write_config32(pdev, 0x98, 0);
 
-				printk_debug(
-					"%s %02x <- [0x%08lx - 0x%08lx] mem <gart>\n",
-					dev_path(pdev),
-					resource->index, 
-					resource->base, resource->base + resource->size - 1);
+				printk_debug("%s %02x <- [0x%08lx - 0x%08lx] mem <gart>\n",
+					     dev_path(pdev), resource->index, resource->base,
+					     resource->base + resource->size - 1);
 			}
 			/* Remember this resource has been stored */
 			resource->flags |= IORESOURCE_STORED;
-
 		}
 	}
 	/* Set the generic PCI resources */

@@ -12,15 +12,17 @@
 static void agp3bridge_init(device_t dev)
 {
 	uint8_t byte;
-	
+
+	/* Enable BM and IO */
 	byte = pci_read_config32(dev, 0x04);
         byte |= 0x07;
         pci_write_config8(dev, 0x04, byte);
- 
-        byte = pci_read_config32(dev, 0xce);
+
+	/* Eable VGA/ISA decoding */
+        byte = pci_read_config32(dev, 0x3e);
         byte |= 3<<2;
-        pci_write_config8(dev, 0xce, byte);
-	
+        pci_write_config8(dev, 0x3e, byte);
+
 	return;
 }
 
@@ -37,7 +39,6 @@ static struct pci_driver agp3bridge_driver __pci_driver = {
         .vendor = PCI_VENDOR_ID_AMD,
         .device = 0x7455, // AGP Bridge
 };
-
 
 static void agp3dev_enable(device_t dev)
 {

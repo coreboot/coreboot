@@ -109,7 +109,7 @@ ttys0_rx_line(buffer, &buflen);
 	printk("TFTP init complete (%d)\n",buflen);
 	buflen = 512;	// I know, not it's purpose, 
 				// but it isn't being used at this point.
-	bufptr = initrd_start = 0x0400000;
+	bufptr = (char *) initrd_start = 0x0400000;
 	while(buflen == 512) {
 		buflen = tftp_fetchone(bufptr);
 #ifdef DEBUG_TFTP
@@ -117,7 +117,7 @@ printk("Got block, bufptr = %lu, size= %u\n",bufptr, buflen);
 #endif
 		bufptr += buflen;
 	}
- 	initrd_size = bufptr - initrd_start;
+ 	initrd_size = (unsigned long) bufptr - initrd_start;
 
 	printk("Initrd loaded\n");
 

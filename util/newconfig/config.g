@@ -428,9 +428,16 @@ class romimage:
 
 class buildrom:
 	"""A buildrom statement"""
-	def __init__ (self, size, roms):
+	def __init__ (self, filename, size, roms):
+		self.name = filename
 		self.size = size
 		self.roms = roms
+	
+	def __len__ (self):
+		return len(self.roms)
+
+	def __getitem__(self,i):
+		return self.roms[i]
 
 class initinclude:
 	"""include file for initialization code"""
@@ -1073,10 +1080,10 @@ def mainboard(path):
 	curimage.setroot(partstack.tos())
 	partpop()
 
-def addbuildrom(size, roms):
+def addbuildrom(filename, size, roms):
 	global buildroms
 	print "Build ROM size %d" % size
-	b = buildrom(size, roms)
+	b = buildrom(filename, size, roms)
 	buildroms.append(b)
 
 def addinitobject(object_name):
@@ -1518,7 +1525,7 @@ parser Config:
 			( STR			{{ s = s + "," + STR }}
 			)*			{{ return eval(s + ')') }}
 
-    rule buildrom:	BUILDROM expr roms	{{ addbuildrom(expr, roms) }}
+    rule buildrom:	BUILDROM DIRPATH expr roms	{{ addbuildrom(DIRPATH, expr, roms) }}
 
     rule romstmts:	romimage 
 		|	buildrom
@@ -1781,7 +1788,7 @@ def writemakefile(path):
 	file.write("all: ")
 	for i in romimages.keys():
 		file.write("%s-rom " % i)
-	file.write("\n\n")
+	file.write("buildroms\n\n")
 	for i, o in romimages.items():
 		file.write("%s-rom:\n" % o.getname())
 		file.write("\tif (cd %s; \\\n" % o.getname())
@@ -1794,6 +1801,15 @@ def writemakefile(path):
 	for i, o in romimages.items():
 		file.write("%s-clean:\n" % o.getname())
 		file.write("\t(cd %s; make clean)\n" % o.getname())
+	
+	file.write("\nbuildroms:\n")
+	for i in range(len(buildroms)):
+		file.write("\tcat ");
+		for j in range(len(buildroms[i])):
+			file.write("%s/linuxbios.rom " % buildroms[i][j] )
+		file.write("> %s\n" % buildroms[i].name);
+	file.write("\n\n")
+	
 	file.close()
 
 def writeinitincludes(image):

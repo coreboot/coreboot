@@ -277,18 +277,6 @@ void hardwaremain(int boot_complete)
 	pci_enable();
 	post_code(0x89);
 
-	// it's not clear where I should do this. We'll try here. 
-	// Seems to be ok in practice.
-#if CONFIG_REALMODE_IDT == 1
-	printk_debug("INSTALL REAL-MODE IDT\n");
-	setup_realmode_idt();
-#endif
-#if CONFIG_VGABIOS == 1
-	printk_debug("DO THE VGA BIOS\n");
-	do_vgabios();
-	post_code(0x90);
-#endif
-
 	// generic mainboard fixup
 	mainboard_fixup();
 
@@ -332,6 +320,20 @@ void hardwaremain(int boot_complete)
 	/* make certain we are the only cpu running in linuxBIOS */
 	wait_for_other_cpus();
 
+	// we do this right here because: 
+	// - all the hardware is working, and some VGA bioses seem to need 
+	//   that
+	// - we need page 0 below for linuxbios tables. 
+#if CONFIG_REALMODE_IDT == 1
+	printk_debug("INSTALL REAL-MODE IDT\n");
+	setup_realmode_idt();
+#endif
+#if CONFIG_VGABIOS == 1
+	printk_debug("DO THE VGA BIOS\n");
+	do_vgabios();
+	post_code(0x93);
+#endif
+
 	/* Now that we have collected all of our information
 	 * write our configuration tables.
 	 */
@@ -345,5 +347,8 @@ void hardwaremain(int boot_complete)
 	linuxbiosmain(0, totalram);
 #endif /* LINUXBIOS */
 }
+
+
+
 
 

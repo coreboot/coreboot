@@ -49,7 +49,7 @@ __asm__ __volatile__ (
 	"callbiosint16:\n"
 	// clean up the int #. To save space we put it in the lower
 	// byte. But the top 24 bits are junk. 
-	"andl $0xffffff00, %eax\n"
+	"andl $0xff, %eax\n"
 	// this push does two things:
 	// - put the INT # on the stack as a parameter
 	// - provides us with a temp for the %cr0 mods.
@@ -115,7 +115,8 @@ __asm__ __volatile__ (
 
 
 enum {
-	PCIBIOS = 0x1a
+	PCIBIOS = 0x1a, 
+	MEMSIZE = 0x12
 	};
 #ifdef CONFIG_PCIBIOS
 int
@@ -161,14 +162,28 @@ biosint(
 		intnumber, eax, ebx, ecx, edx);
 	printk_debug("biosint: ebp 0x%lx esp 0x%lx edi 0x%lx esi 0x%lx\n", ebp, esp, edi, esi);
 	printk_debug("biosint: ip 0x%x cs 0x%x flags 0x%x\n", ip, cs, flags);
+	// cases in a good compiler are just as good as your own tables. 
+	switch (intnumber) {
 #ifdef CONFIG_PCIBIOS
-	if (intnumber == PCIBIOS)
-		ret = pcibios( &edi, &esi, &ebp, &esp, &ebx, &edx, &ecx, &eax, &flags);
+	case PCIBIOS:
+		ret = pcibios( &edi, &esi, &ebp, &esp, 
+				&ebx, &edx, &ecx, &eax, &flags);
+		break;
+#endif
+	case MEMSIZE: 
+		// who cares. 
+		eax = 64 * 1024;
+		ret = 0;
+		break;
+	default:
+		printk_info(__FUNCTION__ ": Unsupport int #0x%x\n", 
+					intnumber);
+		break;
+	}
 	if (ret)
 		flags |= 1; // carry flags
 	else
 		flags &= ~1;
-#endif
 	stackflags = flags;
 	return ret;
 } 

@@ -303,9 +303,28 @@ static void setup_row_local(u8 source, u8 row) // source will be 7 when it is fo
 static void setup_row_direct(u8 source, u8 dest, u8 linkn)
 {
 	uint32_t val;
-	val = 1<<16; 
-	val |= 1<<(linkn+1);
+	uint32_t val_s;
+	val = 1<<(linkn+1);
 	val |= 1<<(linkn+1+8); //for direct connect response route should equal to request table
+
+#if !CROSS_BAR_47_56
+	if((source &1)!=(dest &1)){
+		val |= (1<<16);
+	} else {
+		val_s = get_row(source, source);
+		val |= ((val_s>>16) - (1<<(linkn+1)))<<16; 	
+	}
+#else
+        if(((source &1)!=(dest &1)) && (source<4) &&(dest<<4)){
+                val |= (1<<16);
+        } else {
+                //for CROSS_BAR_47_56  47, 74, 56, 65 should be here too
+                val_s = get_row(source, source);
+                val |= ((val_s>>16) - (1<<(linkn+1)))<<16;                  
+        }
+
+#endif
+
 	fill_row(source,dest, val);
 }
 static uint8_t get_linkn_first(uint8_t byte)
@@ -340,25 +359,22 @@ static void setup_row_indirect(u8 source, u8 dest, u8 gateway, u8 diff)
 {
 	//for indirect connection, we need to compute the val from val_s(source, source), and val_g(source, gateway)
 	uint32_t val_s;
-	uint32_t val_g;
 	uint32_t val;
-	uint8_t byte;
-#warning "FIXME is it the way to set the RESPONSE TABLE for indirect?"
-#warning "FIXME I don't know how to set BROADCAST TABLE for indirect, 1?"
 	val_s = get_row(source, source);
-	val_g = get_row(source, gateway);
+	val = get_row(source, gateway);
 	
-	val = val_g & 0xff;
+	val &= 0xffff;
 	val_s >>=16;
 	val_s &=0xfe;
 #if !CROSS_BAR_47_56
 	if(((source&1)!=(dest &1)) && (val_s!=val) ) { // use another connect as response
 		val_s -= val;
 #if CONFIG_MAX_CPUS>4
+		uint8_t byte;
 		// Some node have two links left
 		byte = val_s;
 		byte = get_linkn_last_count(byte);
-		if((byte>>2)>1) {
+		if((byte>>2)>1) { // make sure not the corner
 			if(source<dest) {
 				val_s-=link_connection(source, source-2); // - down
 			} else {
@@ -366,19 +382,29 @@ static void setup_row_indirect(u8 source, u8 dest, u8 gateway, u8 diff)
 			}
 		}
 #endif
-		val |= (1<<16) | (val_s<<8);
-	} else {
-		val = val_g; // all the same to gateway
+		val &= 0xff;
+		val |= (val_s<<8);
+	} 
+
+	if((source&1)!=(dest &1)) { // different rungs
+		val |= (1<<16);
 	}
+	else {
+                val_s = get_row(source, source);
+		val |= ((val_s>>16) - link_connection(source, gateway))<<16; 
+	}
+
+
 #else 
         if(diff && (val_s!=val) ) { // use another connect as response
                 val_s -= val;
 #if CONFIG_MAX_CPUS>4
+		uint8_t byte;
 		// Some node have two links left
 		// don't worry we only have (2, (3 as source need to handle
                 byte = val_s;
                 byte = get_linkn_last_count(byte);
-                if((byte>>2)>1) {
+                if((byte>>2)>1) { // make sure not the corner
                         if(source<dest) {
                                 val_s-=link_connection(source, source-2); // -down
                         } else {
@@ -386,9 +412,16 @@ static void setup_row_indirect(u8 source, u8 dest, u8 gateway, u8 diff)
                         }
                 }
 #endif
-                val |= (1<<16) | (val_s<<8);
-        } else {
-                val = val_g; // all the same to gateway
+		val &= 0xff;
+                val |= (val_s<<8);
+        } 
+
+        if(diff) { // cross rung?
+                val |= (1<<16);
+        }
+        else {
+                val_s = get_row(source, source);
+		val |= ((val_s>>16) - link_connection(source, gateway))<<16; 
         }
 
 #endif
@@ -424,36 +457,30 @@ static void clear_temp_row(u8 source)
 static void setup_remote_row_direct(u8 source, u8 dest, u8 linkn)
 {
         uint32_t val;
-        val = 1<<16; 
-        val |= 1<<(linkn+1);
+        uint32_t val_s;
+        val = 1<<(linkn+1);
         val |= 1<<(linkn+1+8); //for direct connect response route should equal to request table
+
+#if !CROSS_BAR_47_56
+        if((source &1)!=(dest &1)){
+                val |= (1<<16);
+        } else {
+                //for CROSS_BAR_47_56  47, 74, 56, 65 should be here too
+                val_s = get_row(7, source);
+                val |= ((val_s>>16) - (1<<(linkn+1)))<<16; 
+        }
+#else   
+        if(((source &1)!=(dest &1)) && (source<4) &&(dest<<4)){
+                val |= (1<<16);
+        } else {
+                //for CROSS_BAR_47_56  47, 74, 56, 65 should be here too
+                val_s = get_row(7, source);
+                val |= ((val_s>>16) - (1<<(linkn+1)))<<16; 
+        }
+        
+#endif  
         fill_row(7,dest, val );
 }       
-#if CONFIG_MAX_CPUS>2
-static void setup_remote_row_indirect(u8 source, u8 dest, u8 gateway)
-{
-        //for indirect connection, we need to compute the val from val_s(source, source), and val_g(source, gateway)
-        uint32_t val_s;
-        uint32_t val_g;
-        uint32_t val;
-        
-        val_s = get_row(7, source);
-        val_g = get_row(7, gateway);
-        
-        val = val_g & 0xff;
-        val_s >>=16;
-        val_s &=0xfe;
-        if(val_s!=val) { // use another connect as response
-                val_s -= val;
-                val |= 1 | (val_s<<8);
-        } else {
-                val = val_g; // all the same to gateway
-        }
-
-        fill_row(7, dest, val);
-
-}
-#endif
 
 static void setup_remote_node(u8 node)
 {
@@ -487,6 +514,10 @@ static void setup_remote_node(u8 node)
 static void setup_uniprocessor(void)
 {
 	print_spew("Enabling UP settings\r\n");
+#if CONFIG_LOGICAL_CPUS==1
+	unsigned tmp = (pci_read_config32(NODE_MC(0), 0xe8) >> 12) & 3;
+	if (tmp>0) return;
+#endif
 	disable_probes();
 }
 
@@ -1247,6 +1278,7 @@ static unsigned verify_mp_capabilities(unsigned nodes)
 	print_err("One of the CPUs is not MP capable. Going back to UP\r\n");
 	return 1;
 }
+
 
 static void clear_dead_routes(unsigned nodes)
 {

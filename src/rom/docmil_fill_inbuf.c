@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <subr.h>
 #include <stddef.h>
+#include <rom/read_bytes.h>
+
 #include <rom/fill_inbuf.h>
 
 #ifdef USE_NEW_DOC_CODE
@@ -635,6 +637,6 @@ static struct stream doc_mil_stream __stream = {
 	.read = read_bytes,	       
 	.skip = skip_bytes,
 	.fini = fini_bytes,
-}
+};
 
 #endif /* USE_DOC_MIL */

@@ -6,6 +6,9 @@ uses LB_CKS_RANGE_END
 uses LB_CKS_LOC
 uses MAINBOARD
 uses ARCH
+uses HARD_RESET_BUS
+uses HARD_RESET_DEVICE
+uses HARD_RESET_FUNCTION
 #
 #
 ###
@@ -34,9 +37,13 @@ driver mainboard.o
 #driver si_sata.o
 driver intel_nic.o
 #driver broadcom_nic.o
-object reset.o
+#object reset.o
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
+#
+default HARD_RESET_BUS=1
+default HARD_RESET_DEVICE=4
+default HARD_RESET_FUNCTION=0
 #
 arch i386 end
 #cpu k8 end

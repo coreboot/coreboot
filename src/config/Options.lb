@@ -675,6 +675,21 @@ define HAVE_HARD_RESET
 	export used
 	comment "Have hard reset"
 end
+define HARD_RESET_BUS
+	default 1
+	export always
+	comment "Bus number of southbridge device doing reset"
+end
+define HARD_RESET_DEVICE
+	default 5
+	export always
+	comment "Device number of southbridge device doing reset"
+end
+define HARD_RESET_FUNCTION
+	default 0
+	export always
+	comment "Function number of southbridge device doing reset"
+end
 define MEMORY_HOLE
 	default none
 	export used

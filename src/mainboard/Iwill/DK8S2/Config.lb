@@ -3,6 +3,9 @@ uses HAVE_PIRQ_TABLE
 uses USE_FALLBACK_IMAGE
 uses HAVE_FALLBACK_BOOT
 uses HAVE_HARD_RESET
+uses HARD_RESET_BUS
+uses HARD_RESET_DEVICE
+uses HARD_RESET_FUNCTION
 uses IRQ_SLOT_COUNT
 uses HAVE_OPTION_TABLE
 uses CONFIG_MAX_CPUS
@@ -40,6 +43,10 @@ default HAVE_FALLBACK_BOOT=1
 ## Build code to reset the motherboard from linuxBIOS
 ##
 default HAVE_HARD_RESET=1
+
+default HARD_RESET_BUS=1
+default HARD_RESET_DEVICE=4
+default HARD_RESET_FUNCTION=0
 
 ##
 ## Build code to export a programmable irq routing table
@@ -149,7 +156,6 @@ driver mainboard.o
 #object static_devices.o
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
-object reset.o
 
 ##
 ## Romcc output

@@ -104,6 +104,7 @@ main ()
 	fprintf(fpir,"\t%#x,		 /* Crap (miniport) */\n",rt.miniport_data);
 	fprintf(fpir,"\t{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, /* u8 rfu[11] */\n");
 	fprintf(fpir,"\t%#x,         /*  u8 checksum , this hase to set to some value that would give 0 after the sum of all bytes for this structure (including checksum) */\n",rt.checksum);
+	fprintf(fpir,"bus, devfn, {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap}, slot, rfu  \n");
 	fprintf(fpir,"\t{\n");
 	for (i=0;i<ts;i++) {
 		fprintf(fpir,"\t\t{0x%02x,(0x%02x<<3)|0x%01x, {{0x%02x, 0x%04x}, {0x%02x, 0x%04x}, {0x%02x, 0x%04x}, {0x%02x, 0x0%04x}}, 0x%x, 0x%x},\n",

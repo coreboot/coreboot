@@ -206,9 +206,9 @@ static void main(void)
 	memreset_setup();
 	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
 
-#if 1
+#if 0
 	dump_pci_devices();
-	//dump_pci_device(PCI_DEV(0, 0x18, 1));
+	dump_pci_device(PCI_DEV(0, 0x18, 1));
 #endif
 
 	/* Check all of memory */

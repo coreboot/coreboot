@@ -142,6 +142,12 @@ static void enable_routing(u8 node)
 	print_spew(" done.\r\n");
 }
 
+static void fill_row(u8 node, u8 row, u32 value)
+{
+	pci_write_config32(NODE_HT(node), 0x40+(row<<2), value);
+}
+
+
 #if CONFIG_MAX_CPUS > 1
 
 static void rename_temp_node(u8 node)
@@ -273,11 +279,6 @@ static int optimize_connection(device_t node1, uint8_t link1, device_t node2, ui
 	pci_write_config8(node2, link2 + PCI_HT_CAP_HOST_WIDTH + 1, width);
 
 	return needs_reset;
-}
-
-static void fill_row(u8 node, u8 row, u32 value)
-{
-	pci_write_config32(NODE_HT(node), 0x40+(row<<2), value);
 }
 
 static void setup_row(u8 source, u8 dest, u8 nodes)

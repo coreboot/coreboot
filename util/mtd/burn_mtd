@@ -16,7 +16,8 @@ if [ $2x = "x" ]; then
 else
   linux=$2
 fi
-../flash/flash_rom
+
+../flash/flash_on
 
 insmod /lib/modules/${v}/kernel/drivers/mtd/doc2001.o
 insmod /lib/modules/${v}/kernel/drivers/mtd/docprobe.o

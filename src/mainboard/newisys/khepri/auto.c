@@ -102,6 +102,8 @@ static void coherent_ht_mainboard(unsigned cpus)
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
 
+#include "resourcemap.c" /* newisys khepri does not want the default */
+
 static void enable_lapic(void)
 {
 
@@ -155,9 +157,6 @@ static void pc87360_enable_serial(void)
 	pnp_set_iobase0(SIO_BASE, 0x3f8);
 }
 
-#define FIRST_CPU  1
-#define SECOND_CPU 0
-#define TOTAL_CPUS (FIRST_CPU + SECOND_CPU)
 static void main(void)
 {
 	/*
@@ -165,7 +164,6 @@ static void main(void)
 	 * GPIO29 of 8111 will control H1_MEMRESET_L
 	 */
 	static const struct mem_controller cpu[] = {
-#if FIRST_CPU
 		{
 			.node_id = 0,
 			.f0 = PCI_DEV(0, 0x18, 0),
@@ -175,8 +173,6 @@ static void main(void)
 			.channel0 = { (0xa<<3)|0, (0xa<<3)|2, 0, 0 },
 			.channel1 = { (0xa<<3)|1, (0xa<<3)|3, 0, 0 },
 		},
-#endif
-#if SECOND_CPU
 		{
 			.node_id = 1,
 			.f0 = PCI_DEV(0, 0x19, 0),
@@ -186,7 +182,6 @@ static void main(void)
 			.channel0 = { (0xa<<3)|4, (0xa<<3)|6, 0, 0 },
 			.channel1 = { (0xa<<3)|5, (0xa<<3)|7, 0, 0 },
 		},
-#endif
 	};
 	if (cpu_init_detected()) {
 		asm("jmp __cpu_reset");
@@ -199,7 +194,7 @@ static void main(void)
 	pc87360_enable_serial();
 	uart_init();
 	console_init();
-	setup_default_resource_map();
+	setup_khepri_resource_map();
 	setup_coherent_ht_domain();
 	enumerate_ht_chain(0);
 	distinguish_cpu_resets(0);
@@ -233,12 +228,7 @@ static void main(void)
 #if 0
 	ram_check(0x00000000, msr.lo);
 #else
-#if TOTAL_CPUS < 2
 	/* Check 16MB of memory @ 0*/
 	ram_check(0x00000000, 0x01000);
-#else
-	/* Check 16MB of memory @ 2GB */
-	ram_check(0x80000000, 0x81000000);
-#endif
 #endif
 }

@@ -28,16 +28,23 @@
 #define BSP_IOMASK2	BAT_BL_64M | BAT_VALID_SUPERVISOR | BAT_VALID_USER
 
         isync
+	sync
 
 	/* 
-	 * Disable dcache and MMU, so we're in a known state
+	 * Disable dcache and MMU
+	 * Clear IR & DR
+	 * Enable FP
 	 */   
         li      r0, 0
-	sync
         mtspr	HID0, r0
-        sync
-        mtmsr	r0 
+	sync
+	mfmsr	r3
+	li	r4, 0x0030	/* IR & DR */
+	andc	r3, r3, r4
+	ori	r3, r3, 0x2000	/* FP */
+	mtmsr	r3
         isync
+        sync
 
 	/*
 	 * Invalidate D & I BATS

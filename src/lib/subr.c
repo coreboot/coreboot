@@ -185,7 +185,6 @@ void intel_interrupts_on()
 }
 
 
-#ifdef NEWPCI
 /* These functions should be chip-set independent -tds */
 void intel_zero_irq_settings(void)
 {
@@ -260,4 +259,3 @@ void intel_copy_irq_routing_table(void)
 #endif
 }
 
-#endif /* NEWPCI */

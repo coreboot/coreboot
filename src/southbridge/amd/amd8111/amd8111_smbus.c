@@ -6,7 +6,6 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <device/chip.h>
 #include <device/smbus.h>
 #include <arch/io.h>
 #include "amd8111.h"

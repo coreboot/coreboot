@@ -52,7 +52,10 @@ unsigned long sizeram()
 	if ((ram & 0x1800000) == 0x1800000)
 		size <<= 1;
 	printk("size in 0x6c is 0x%x\n", size);
+#if 1
+	printk("NOT SIZING OTHER TWO SLOTS. ONLY ONE SLOT RIGHT NOW\n");
 	return size/1024;
+#endif
 	cp = (unsigned char *) size;
 	// now do the other two banks. 
 #define INIT_MCR 0xf663b83c

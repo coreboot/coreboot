@@ -11,3 +11,4 @@ object irq_tables.o
 keyboard pc80
 cpu p5
 cpu p6
+cpu k7

@@ -121,6 +121,9 @@ void error(char errmsg[])
 void intel_post(char value)
 {
 	outb(value, 0x80);
+#ifdef SERIAL_POST
+	printk(KERN_INFO "POST: 0x%02x\n", value);
+#endif
 }
 
 void intel_cache_on(unsigned long base, unsigned long totalram)

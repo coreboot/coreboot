@@ -17,6 +17,7 @@
 #include "cpu/p6/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "debug.c"
+#include "northbridge/amd/amdk8/cpu_rev.c"
 
 #define SIO_BASE 0x2e
 
@@ -52,9 +53,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 static void coherent_ht_mainboard(unsigned cpus)
 {
 }
-
-#include "northbridge/amd/amdk8/cpu_ldtstop.c"
-#include "southbridge/amd/amd8111/amd8111_ldtstop.c"
 
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
@@ -138,11 +136,12 @@ static void main(void)
 	enable_lapic();
 	init_timer();
 
-	/* Solo boards only have 1 CPU, this check is not needed!? */
+#if 0
+	/* Enabling this will make romcc segfault - 2003/10/13 */
 	if (!boot_cpu()) {
-		notify_bsp_ap_is_stopped();
-		stop_this_cpu();
+		print_err("This LinuxBIOS image is built for UP only.\n");
 	}
+#endif
 
 	pc87360_enable_serial();
 

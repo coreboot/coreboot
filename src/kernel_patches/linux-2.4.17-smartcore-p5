@@ -151,7 +151,7 @@ $Id$
 +
 +struct linuxbios_control controls[] = {
 +#ifdef CONFIG_LINUXBIOS_PM_SIS503
-+	{PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, sis503_off, sis503_reset}
++	{PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, sis503_off, sis503_reset},
 +#endif
 +#ifdef CONFIG_LINUXBIOS_PM_PIIX4E
 +	{PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82371AB_3, 

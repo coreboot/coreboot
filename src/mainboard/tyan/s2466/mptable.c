@@ -42,12 +42,16 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 	smp_write_bus(mc, 1, "PCI   ");
 	smp_write_bus(mc, 2, "PCI   ");
 	smp_write_bus(mc, 3, "ISA   ");
-
+#if 0
 	for(i=apic=0;i<MAX_CPUS;i++)
 		if(processor_map[i])
 			apic++;
+#endif
+
+	apic=2;
 
 	smp_write_ioapic(mc, apic, 0x11, 0xfec00000);
+
 	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,
 	        0x03, 0x00, apic, 0x00);
 	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,

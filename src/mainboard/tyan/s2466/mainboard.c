@@ -90,16 +90,23 @@ static void print_whami(void)
 static void check_cpus(void)
 {
         struct pci_dev *dev;
-        u32 biu1;
+        u32 biu0,biu1;
+
         /* Find out which processor I'm running on, and if it was the boot
          * procesor so I can verify everything was setup correctly
          */
         dev = pci_find_device(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_FE_GATE_700C,0);
         if (dev  != NULL) {
+                pci_read_config_dword(dev, 0x60, &biu0);
+		if( !(biu0 & 0x80000000)) { 
+			initial_apicid[0] = -1;
+		}
                 pci_read_config_dword(dev, 0x68, &biu1);
 		if( !(biu1 & 0x80000000)) { 
 			initial_apicid[1] = -1;
 		}
+                printk_debug("biu0 = 0x%08lx, apicid[0] = %d\n", biu0, 
+			initial_apicid[0]);
                 printk_debug("biu1 = 0x%08lx, apicid[1] = %d\n", biu1, 
 			initial_apicid[1]);
         }
@@ -234,14 +241,6 @@ static void hide_devices(void)
 
 void mainboard_cpu_fixup(int cpu)
 {
-	if(cpu == 1) {
-		check_cpus();
-		if(initial_apicid[1] == -1) {
-			printk_err("Only one CPU installed. Linux Bios requires 2\n");
-			while(1);  /* print error and spin */
-			return;   /* no apic because no cpu */
-		}
-	}
 	/*  This is an error, something is locked up  */
 	full_reset();
 }

@@ -42,10 +42,12 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 	smp_write_bus(mc, 1, "PCI   ");
 	smp_write_bus(mc, 2, "PCI   ");
 	smp_write_bus(mc, 3, "ISA   ");
-
+#if 0
 	for(i=apic=0;i<MAX_CPUS;i++)
 		if(processor_map[i])
 			apic++;
+#endif
+	apic=2;
 
 	smp_write_ioapic(mc, apic, 0x11, 0xfec00000);
 

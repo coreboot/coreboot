@@ -382,7 +382,7 @@ static void allocate_vga_resource(void)
 	}
 	/* Now walk up the bridges setting the VGA enable */
 	while(bus) {
-		bus->bridge_ctrl |= PCI_BRIDGE_CONTROL;
+		bus->bridge_ctrl |= PCI_BRIDGE_CTL_VGA;
 		bus = (bus == bus->dev->bus)? 0 : bus->dev->bus;
 	} 
 }

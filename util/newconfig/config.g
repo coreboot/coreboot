@@ -1941,42 +1941,6 @@ def writeldoptions(image):
 			file.write("%s = %s;\n" % (o.name, getformated(o.name, image)))
 	file.close()
 
-# Write doxygen file.
-def writedoxygenfile(image):
-	doxyscriptbase = os.path.join(treetop, "src/config/doxyscript.base")
-	doxyfilepath = os.path.join(image.gettargetdir(), "LinuxBIOSDoc.config")
-	print "Creating", doxyfilepath
-	file = safe_open(doxyfilepath, 'w+')
-
-# FIXME. Should be computing .c once. Fix this in objectrules.append
-	file.write("INPUT= \\\n")
-	for irule, init in image.getinitobjectrules().items():
-		source = init[1]
-		if (source[-2:] != '.c'): # no suffix. Build name.
-			base = init[0][:-2]
-			source = os.path.join(source, base) + ".c"
-		file.write("%s \\\n" % source)
-	for objrule, obj in image.getobjectrules().items():
-		source = obj[1]
-		if (source[-2:] != '.c'): # no suffix. Build name.
-			base = obj[0][:-2]
-			source = os.path.join(source, base) + ".c"
-		file.write("%s \\\n" % source)
-	for driverrule, driver in image.getdriverrules().items():
-		source = driver[1]
-		if (source[-2:] != '.c'): # no suffix. Build name.
-			base = driver[0][:-2]
-			source = os.path.join(source, base) + ".c"
-		file.write("%s \\\n" % source)
-
-	fp = safe_open(doxyscriptbase, 'r')
-	doxylines = fp.readlines()
-	if (debug):
-		print "DOXYLINES ",doxylines
-        for line in doxylines:
-		file.write(line)
-	file.close();
-
 def dumptree(part, lvl):
 	debug.info(debug.dumptree, "DUMPTREE ME is")
 	part.dumpme(lvl)
@@ -2092,7 +2056,6 @@ if __name__=='__main__':
 		writeinitincludes(image)
 		writeimagemakefile(image)
 		writeldoptions(image)
-		writedoxygenfile(image)
 
 	writemakefilesettings(target_dir)
 	writemakefile(target_dir)

@@ -217,8 +217,12 @@ void compute_allocate_resource(
 		if (resource->flags & IORESOURCE_IO) {
 			/* Don't allow potential aliases over the
 			 * legacy pci expansion card addresses.
+			 * The legacy pci decodes only 10 bits,
+			 * uses 100h - 3ffh. Therefor, only 0 - ff
+			 * can be used out of each 400h block of io
+			 * space.
 			 */
-			if ((base > 0x3ff) && ((base & 0x300) != 0)) {
+			if ((base & 0x300) != 0) {
 				base = (base & ~0x3ff) + 0x400;
 			}
 			/* Don't allow allocations in the VGA IO range.

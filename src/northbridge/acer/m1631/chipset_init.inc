@@ -6,8 +6,6 @@
 /* table of settings for initial registers */
 /* format is register #, and value, OR value */
 register_table: 
-	// something in here is breaking the CUA very badly.
-	// So I turned it off for now -- RGM
 	.byte 0x45, 0xff, 0x14
 	.byte 0x49, 0xff, 0x60
 	.byte 0x50, 0xf7, 0x00
@@ -19,6 +17,7 @@ register_table:
 	.byte 0x62, 0x00, 0x01  /* 0x80 */
 	.byte 0x63, 0x00, 0x08
 	.byte 0x67, 0xff, 0x09	/*0x08*/       
+       
 #ifndef USE_DOC_MIL
 	/* these are set in ipl.S */
 	.byte 0x6c, 0xfc, 0x00       	
@@ -37,15 +36,23 @@ register_table:
 #	.byte 0x7d, 0x00, 0xc4 /* MCLK = 66 MHZ */
 #	.byte 0x7e, 0x03, 0x28
 
-	.byte 0x91, 0x00, 0x70  /*cheng 0629 add for test*/
+/* THIS LINE BREAKS THE ASUS FOR 2.4.0! */
+
+#	.byte 0x91, 0x00, 0x70  /*cheng 0629 add for test*/
+
+/*******************************************/
+
 	.byte 0x7f, 0xef, 0x20	/*cheng 0629   0x24*/
 	.byte 0x80, 0xf9, 0x01
-	.byte 0x81, 0xb3, 0x00
+
+#	.byte 0x81, 0xb3, 0x00 /* We DON'T want framebuffers on (yet)!*/ 
+
+        .byte 0x81, 0x33, 0x00
+
 	.byte 0x83, 0x00, 0x00
 	.byte 0x84, 0xfe, 0x00
 	.byte 0x87, 0xff, 0x00
 	.byte 0x88, 0xff, 0x08
-
 	.byte 0x93, 0xff, 0x07
 	.byte 0xa0, 0x00, 0x30
 	.byte 0xa1, 0x00, 0x40		
@@ -88,8 +95,6 @@ m1535_table:
 	.byte 0x44, 0x00, 0x1d	// set edge mode, primary channel IRQ 14
 				// for IDE 1
 	.byte 0x47, 0xff, 0x40	// enable flash rom r/w
-	// something in here is breaking the CUA very badly.
-	// So I turned it off for now -- RGM
 	.byte 0x41, 0x00, 0x0d	// enable superIO recovery
 
 
@@ -164,3 +169,11 @@ m1535_init:
 	inc %esi
 	jmp 1b
 done_m1535_init:
+# m5229_init:
+#	movl	$0x00008009, %eax	// m5229  is 0x10 function 0 so 0x80
+#	PCI_READ_CONFIG_BYTE
+#	orb	$5, %al
+#	movb	%al, %dl
+#	movl	$0x00008009, %eax	// m5229  is 0x10 function 0 so 0x80
+#	PCI_WRITE_CONFIG_BYTE
+#done_m5229_init:

@@ -105,7 +105,9 @@ int probe_28sf040 (struct flashchip * flash)
 	usleep(10);
 
 	*bios = READ_ID;
+	usleep(10);
 	id1 = *(unsigned char *) bios;
+	usleep(10);
 	id2 = *(unsigned char *) (bios + 0x01);
 
 	*bios = RESET;

@@ -154,6 +154,10 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 	mc->mpc_checksum = smp_compute_checksum(mc, mc->mpc_length);
 	printk_debug("Wrote the mp table end at: %p - %p\n",
 		mc, smp_next_mpe_entry(mc));
+#if CONFIG_DEBUG_MPTABLE == 1
+	hexdump ("_MP_", 0x10, 0x20);
+	hexdump("TABLE", mc, 0x1e4-0x20);
+#endif
 	return smp_next_mpe_entry(mc);
 }
 

@@ -28,6 +28,11 @@
  * Intel Architecture Software Developer's Manual
  * Volume 3: System Programming
  */
+
+#ifndef lint
+static char rcsid[] = "$Id$";
+#endif
+
 #include <cpu/p6/msr.h>
 #include <cpu/p6/mtrr.h>
 #include <cpu/p5/cpuid.h>

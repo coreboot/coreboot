@@ -27,6 +27,10 @@
 #define PCI_MEM_START 0x80000000
 #define PCI_IO_START 0x1000
 
+#ifndef lint
+static char rcsid[] = "$Id$";
+#endif
+
 // historical functions, sometimes very useful. 
 /*
  *    Write the special configuration registers on the INTEL

@@ -1,3 +1,8 @@
+
+#ifndef lint
+static char rcsid[] = "$Id$";
+#endif
+
 #include <pciconf.h>
 #include <subr.h>
 #include <printk.h>

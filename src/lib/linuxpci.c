@@ -9,10 +9,10 @@
  *      Copyright 1997 -- 1999 Martin Mares <mj@atrey.karlin.mff.cuni.cz>
  */
 
-/* the intent of this file is to easily copy any new pci.c from the 
- * linux source tree, so keep your mods to a minimum, please
- * RGM
- */
+#ifndef lint
+static char rcsid[] = "$Id$";
+#endif
+
 #include <pci.h>
 #include <pci_ids.h>
 #include <cpu/p5/io.h>

@@ -1,22 +1,31 @@
 uses HAVE_MP_TABLE
 uses HAVE_PIRQ_TABLE
 uses USE_FALLBACK_IMAGE
-uses MAINBOARD
-uses ARCH
+uses HAVE_FALLBACK_BOOT
+uses HAVE_HARD_RESET
+uses IRQ_SLOT_COUNT
+uses HAVE_OPTION_TABLE
+uses CONFIG_MAX_CPUS
+uses CONFIG_IOAPIC
+uses CONFIG_SMP
 uses FALLBACK_SIZE
 uses ROM_SIZE
 uses ROM_SECTION_SIZE
 uses ROM_IMAGE_SIZE
 uses ROM_SECTION_SIZE
 uses ROM_SECTION_OFFSET
+uses CONFIG_ROM_STREAM
 uses CONFIG_ROM_STREAM_START
 uses PAYLOAD_SIZE
 uses _ROMBASE
 uses XIP_ROM_SIZE
 uses XIP_ROM_BASE
+uses STACK_SIZE
+uses HEAP_SIZE
+uses USE_OPTION_TABLE
 
 ## ROM_SIZE is the size of boot ROM that this board will use.
-default ROM_SIZE 524288
+default ROM_SIZE=524288
 
 ###
 ### Build options
@@ -25,94 +34,94 @@ default ROM_SIZE 524288
 ##
 ## Build code for the fallback boot
 ##
-option HAVE_FALLBACK_BOOT=1
+default HAVE_FALLBACK_BOOT=1
 
 ##
 ## Build code to reset the motherboard from linuxBIOS
 ##
-option HAVE_HARD_RESET=1
+default HAVE_HARD_RESET=1
 
 ##
 ## Build code to export a programmable irq routing table
 ##
-option HAVE_PIRQ_TABLE=1
-option IRQ_SLOT_COUNT=7
+default HAVE_PIRQ_TABLE=1
+default IRQ_SLOT_COUNT=7
 
 ##
 ## Build code to export an x86 MP table
 ## Useful for specifying IRQ routing values
 ##
-option HAVE_MP_TABLE=1
+default HAVE_MP_TABLE=1
 
 ##
 ## Build code to export a CMOS option table
 ##
-option HAVE_OPTION_TABLE=1
+default HAVE_OPTION_TABLE=1
 
 ##
 ## Build code for SMP support
 ## Only worry about 2 micro processors
 ##
-option CONFIG_SMP=1
-option CONFIG_MAX_CPUS=4
+default CONFIG_SMP=1
+default CONFIG_MAX_CPUS=4
 
 ##
 ## Build code to setup a generic IOAPIC
 ##
-option CONFIG_IOAPIC=1
+default CONFIG_IOAPIC=1
 
 ##
 ## Clean up the motherboard id strings
 ##
-option MAINBOARD_PART_NUMBER="QUARTET"
-option MAINBOARD_VENDOR="AMD"
+#default MAINBOARD_PART_NUMBER="QUARTET"
+#default MAINBOARD_VENDOR="AMD"
 
 ###
 ### LinuxBIOS layout values
 ###
 
 ## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
-option ROM_IMAGE_SIZE = 65536
+default ROM_IMAGE_SIZE = 65536
 
 ##
 ## Use a small 8K stack
 ##
-option STACK_SIZE=0x2000
+default STACK_SIZE=0x2000
 
 ##
 ## Use a small 16K heap
 ##
-option HEAP_SIZE=0x4000
+default HEAP_SIZE=0x4000
 
 ##
 ## Only use the option table in a normal image
 ##
-option USE_OPTION_TABLE = !USE_FALLBACK_IMAGE
+default USE_OPTION_TABLE = !USE_FALLBACK_IMAGE
 
 ##
 ## Compute the location and size of where this firmware image
 ## (linuxBIOS plus bootloader) will live in the boot rom chip.
 ##
 if USE_FALLBACK_IMAGE
-	option ROM_SECTION_SIZE   = FALLBACK_SIZE
-	option ROM_SECTION_OFFSET = ( ROM_SIZE - FALLBACK_SIZE )
+	default ROM_SECTION_SIZE   = FALLBACK_SIZE
+	default ROM_SECTION_OFFSET = ( ROM_SIZE - FALLBACK_SIZE )
 else
-	option ROM_SECTION_SIZE   = ( ROM_SIZE - FALLBACK_SIZE )
-	option ROM_SECTION_OFFSET = 0
+	default ROM_SECTION_SIZE   = ( ROM_SIZE - FALLBACK_SIZE )
+	default ROM_SECTION_OFFSET = 0
 end
 
 ##
 ## Compute the start location and size size of
 ## The linuxBIOS bootloader.
 ##
-option PAYLOAD_SIZE            = ( ROM_SECTION_SIZE - ROM_IMAGE_SIZE )
-option CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
-option CONFIG_ROM_STREAM     = 1
+default PAYLOAD_SIZE            = ( ROM_SECTION_SIZE - ROM_IMAGE_SIZE )
+default CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+default CONFIG_ROM_STREAM     = 1
 
 ##
 ## Compute where this copy of linuxBIOS will start in the boot rom
 ##
-option _ROMBASE      = ( CONFIG_ROM_STREAM_START + PAYLOAD_SIZE )
+default _ROMBASE      = ( CONFIG_ROM_STREAM_START + PAYLOAD_SIZE )
 
 ##
 ## Compute a range of ROM that can cached to speed up linuxBIOS,
@@ -121,8 +130,8 @@ option _ROMBASE      = ( CONFIG_ROM_STREAM_START + PAYLOAD_SIZE )
 ## XIP_ROM_SIZE must be a power of 2.
 ## XIP_ROM_BASE must be a multiple of XIP_ROM_SIZE
 ##
-option XIP_ROM_SIZE=65536
-option XIP_ROM_BASE = ( _ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE )
+default XIP_ROM_SIZE=65536
+default XIP_ROM_BASE = ( _ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE )
 
 ##
 ## Set all of the defaults for an x86 architecture
@@ -159,7 +168,7 @@ makerule ./auto.E
 end
 makerule ./auto.inc 
 	depends "./auto.E ./romcc"
-	action	"./romcc -mcpu=k8 -O2 ./auto.E > auto.inc"
+	action	"./romcc -mcpu=k8 -O ./auto.E > auto.inc"
 end
 
 ##

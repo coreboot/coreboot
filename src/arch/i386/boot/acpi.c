@@ -26,7 +26,7 @@ static u8 acpi_checksum(u8 *table, u32 length)
 		ret += *table;
 		table++;
 	}
-	return ret;
+	return -ret;
 }
 
 static void acpi_add_table(acpi_rsdt_t *rsdt, void *table)
@@ -42,7 +42,7 @@ static void acpi_add_table(acpi_rsdt_t *rsdt, void *table)
 			rsdt->header.checksum=acpi_checksum((u8 *)rsdt,
 					rsdt->header.length);
 			
-			printk_debug("ACPI: added table %d/8\n",i);
+			printk_debug("ACPI: added table %d/8\n",i+1);
 			return;
 		}
 	}
@@ -55,6 +55,8 @@ static void acpi_create_hpet(acpi_hpet_t *hpet)
 #define HPET_ADDR  0xfed00000ULL
 	acpi_header_t *header=&(hpet->header);
 	acpi_addr_t *addr=&(hpet->addr);
+	
+	memset((void *)hpet, 0, sizeof(acpi_hpet_t));
 	
 	/* fill out header fields */
 	memcpy(header->signature, HPET_NAME, 4);
@@ -76,6 +78,7 @@ static void acpi_create_hpet(acpi_hpet_t *hpet)
 	hpet->number	= 0;
 	hpet->min_tick  = 4096;
 	
+	header->checksum	= acpi_checksum((void *)hpet, sizeof(acpi_hpet_t));
 }
 
 static void acpi_write_rsdt(acpi_rsdt_t *rsdt)
@@ -107,16 +110,21 @@ static void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt)
 	
 	rsdp->length		= sizeof(acpi_rsdp_t);
 	rsdp->rsdt_address	= (u32)rsdt;
-	rsdp->checksum		= acpi_checksum((void *)rsdp, sizeof(acpi_rsdp_t));
+	rsdp->checksum		= acpi_checksum((void *)rsdp, 20);
+	rsdp->ext_checksum	= acpi_checksum((void *)rsdp, sizeof(acpi_rsdp_t));
 	
 }
 
 unsigned long write_acpi_tables(unsigned long start)
 {
-	unsigned long current = start;
+	unsigned long current;
 	acpi_rsdp_t *rsdp;
 	acpi_rsdt_t *rsdt;
 	acpi_hpet_t *hpet;
+	
+	/* Align ACPI tables to 16byte */
+	start   = ( start + 0x0f ) & -0x10;
+	current = start;
 	
 	printk_info("ACPI: Writing ACPI tables at %lx...\n", start);
 
@@ -141,7 +149,6 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	hpet = (acpi_hpet_t *) current;
 	current += sizeof(acpi_hpet_t);
-	
 	acpi_create_hpet(hpet);
 	acpi_add_table(rsdt,hpet);
 #endif

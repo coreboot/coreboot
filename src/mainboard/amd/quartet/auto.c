@@ -25,6 +25,8 @@ static void memreset_setup(void)
 	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 28);
 	/* Ensure the BIOS has control of the memory lines */
 	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 29);
+	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 30);
+	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 31);
 }
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
@@ -211,7 +213,7 @@ static void main(void)
 	enable_lapic();
 	init_timer();
 	if (!boot_cpu()) {
-		notify_bsp_ap_is_stopped();
+//		notify_bsp_ap_is_stopped();
 		stop_this_cpu();
 	}
 	pc87360_enable_serial();

@@ -12,8 +12,7 @@ static unsigned ht_lookup_slave_capability(device_t dev)
 	hdr_type &= 0x7f;
 
 	if ((hdr_type == PCI_HEADER_TYPE_NORMAL) ||
-		(hdr_type == PCI_HEADER_TYPE_BRIDGE))
-	{
+	    (hdr_type == PCI_HEADER_TYPE_BRIDGE)) {
 		pos = PCI_CAPABILITY_LIST;
 	}
 	if (pos > PCI_CAP_LIST_NEXT) {
@@ -39,18 +38,26 @@ static unsigned ht_lookup_slave_capability(device_t dev)
 static void ht_collapse_previous_enumeration(unsigned bus)
 {
 	device_t dev;
+	uint32_t id;
 	
+	/* Check if is already collapsed */
+	dev = PCI_DEV(bus, 0, 0);
+        id = pci_read_config32(dev, PCI_VENDOR_ID);
+        if ( ! ( (id == 0xffffffff) || (id == 0x00000000) ||
+            (id == 0x0000ffff) || (id == 0xffff0000) ) ) {
+                     return;
+        }
+
 	/* Spin through the devices and collapse any previous
 	 * hypertransport enumeration.
 	 */
-	for(dev = PCI_DEV(bus, 0, 0); dev <= PCI_DEV(bus, 0x1f, 0x7); dev += PCI_DEV(0, 1, 0)) {
+	for(dev = PCI_DEV(bus, 1, 0); dev <= PCI_DEV(bus, 0x1f, 0x7); dev += PCI_DEV(0, 1, 0)) {
 		uint32_t id;
 		unsigned pos, flags;
 		
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
 		if ((id == 0xffffffff) || (id == 0x00000000) ||
-			(id == 0x0000ffff) || (id == 0xffff0000)) 
-		{
+		    (id == 0x0000ffff) || (id == 0xffff0000)) {
 			continue;
 		}
 		
@@ -92,7 +99,7 @@ static unsigned ht_read_freq_cap(device_t dev, unsigned pos)
 	return freq_cap;
 }
 
-#define LINK_OFFS(WIDTH,FREQ,FREQ_CAP) \
+#define LINK_OFFS(WIDTH,FREQ,FREQ_CAP)					\
 	(((WIDTH & 0xff) << 16) | ((FREQ & 0xff) << 8) | (FREQ_CAP & 0xFF))
 
 #define LINK_WIDTH(OFFS)    ((OFFS >> 16) & 0xFF)
@@ -196,8 +203,6 @@ static int ht_setup_chain(device_t udev, unsigned upos)
 	int reset_needed;
 	unsigned uoffs;
 
-#warning "FIXME handle multiple chains!"
-
 	/* Make certain the HT bus is not enumerated */
 	ht_collapse_previous_enumeration(0);
 
@@ -214,8 +219,8 @@ static int ht_setup_chain(device_t udev, unsigned upos)
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
 		/* If the chain is enumerated quit */
 		if (((id & 0xffff) == 0x0000) || ((id & 0xffff) == 0xffff) ||
-			(((id >> 16) & 0xffff) == 0xffff) ||
-			(((id >> 16) & 0xffff) == 0x0000)) {
+		    (((id >> 16) & 0xffff) == 0xffff) ||
+		    (((id >> 16) & 0xffff) == 0x0000)) {
 			break;
 		}
 
@@ -247,9 +252,6 @@ static int ht_setup_chain(device_t udev, unsigned upos)
 	return reset_needed;
 }
 
-struct ht_chain {
-	unsigned devreg; 
-};
 static int ht_setup_chainx(device_t udev, unsigned upos, unsigned bus)
 {
 	unsigned next_unitid, last_unitid;
@@ -274,15 +276,7 @@ static int ht_setup_chainx(device_t udev, unsigned upos, unsigned bus)
 		    (((id >> 16) & 0xffff) == 0x0000)) {
 			break;
 		}
-#if 0
-		print_debug("bus=");
-		print_debug_hex8(bus);
-		print_debug(" id =");
-		print_debug_hex32(id);
-		print_debug("\r\n");
-#endif
 
-		
 		pos = ht_lookup_slave_capability(dev);
 		if (!pos) {
 			print_err("HT link capability not found\r\n");
@@ -311,7 +305,7 @@ static int ht_setup_chainx(device_t udev, unsigned upos, unsigned bus)
 	return reset_needed;
 }
 
-static int ht_setup_chains(const struct ht_chain *ht_c, int ht_c_num)
+static int ht_setup_chains(int ht_c_num)
 {
 	/* Assumption the HT chain that is bus 0 has the HT I/O Hub on it. 
 	 * On most boards this just happens.  If a cpu has multiple
@@ -332,7 +326,7 @@ static int ht_setup_chains(const struct ht_chain *ht_c, int ht_c_num)
 		uint32_t dword;
 		unsigned busn;
 		
-		reg = pci_read_config32(PCI_DEV(0,0x18,1), ht_c[i].devreg);
+		reg = pci_read_config32(PCI_DEV(0,0x18,1), 0xe0 + i * 4);
 
 		//We need setup 0x94, 0xb4, and 0xd4 according to the reg
 		devpos = ((reg & 0xf0)>>4)+0x18; // nodeid; it will decide 0x18 or 0x19
@@ -343,13 +337,9 @@ static int ht_setup_chains(const struct ht_chain *ht_c, int ht_c_num)
 		dword &= ~(0xffff<<8);
 		dword |= (reg & 0xffff0000)>>8;
 		pci_write_config32( PCI_DEV(0, devpos,0), regpos , dword);
+
 #if 0
-		print_debug("udev=(0,0x");
-		print_debug_hex8(devpos);
-		print_debug(",0) 0x");
-		print_debug_hex8(regpos);
-		print_debug("=");
-		print_debug_hex32(dword);
+		dump_pci_devices_on_bus(busn);
 #endif
 		
 	        /* Make certain the HT bus is not enumerated */
@@ -357,15 +347,100 @@ static int ht_setup_chains(const struct ht_chain *ht_c, int ht_c_num)
 
 		upos = ((reg & 0xf00)>>8) * 0x20 + 0x80;
 		udev =  PCI_DEV(0, devpos, 0);
+
 #if 0
-                print_debug("\tupos=0x");
-                print_debug_hex32(upos);
-                print_debug("\r\n");
-#endif		
+                dump_pci_devices_on_bus(busn);
+#endif
 		
 		reset_needed |= ht_setup_chainx(udev,upos,busn );
 
 	}
 
 	return reset_needed;
+}
+
+static int ht_setup_chains_x(void)
+{               
+        int nodeid;
+        uint32_t reg; 
+	uint32_t tempreg;
+        unsigned next_busn;
+        int ht_c_num;
+                        
+        // read PCI_DEV(0,0x18,0) 0x64 bit [8:9] to find out SbLink m
+        reg = pci_read_config32(PCI_DEV(0, 0x18, 0), 0x64);
+        //update PCI_DEV(0, 0x18, 1) 0xe0 to 0x05000m03, and next_busn=5+1;
+        tempreg = 3 | ( 0<<4) | (((reg>>8) & 3)<<8) | (0<<16)| (5<<24);
+        pci_write_config32(PCI_DEV(0, 0x18, 1), 0xe0, tempreg);
+        next_busn=5+1; // 0 will be used ht chain with SB we need to keep SB in bus0 in auto stage
+	// clean others
+        for(ht_c_num=1;ht_c_num<4; ht_c_num++) {
+                pci_write_config32(PCI_DEV(0, 0x18, 1), 0xe0 + ht_c_num * 4, 0);
+        }
+ 
+        for(nodeid=0; nodeid<8; nodeid++) {
+                device_t dev; 
+                unsigned linkn;
+                dev = PCI_DEV(0, 0x18+nodeid,0);
+                //read id, check id to see if dev exists ;
+                reg = pci_read_config32(dev, PCI_VENDOR_ID);
+                if (((reg & 0xffff) == 0x0000) || ((reg & 0xffff) == 0xffff) ||
+                        (((reg >> 16) & 0xffff) == 0xffff) ||
+                        (((reg >> 16) & 0xffff) == 0x0000)) {
+                        break;
+                }
+                for(linkn = 0; linkn<3; linkn++) {
+                        unsigned regpos;
+                        regpos = 0x98 + 0x20 * linkn;
+                        reg = pci_read_config32(dev, regpos);
+                        if ((reg & 7) != 7) continue; // it is not non conherent or not connected
+                        tempreg = 3 | (nodeid <<4) | (linkn<<8);
+                        //compare (temp & 0xffff), with (PCI(0, 0x18, 1) 0xe0 to 0xec & 0xfffff)
+                        for(ht_c_num=0;ht_c_num<4; ht_c_num++) {
+                                reg = pci_read_config32(PCI_DEV(0, 0x18, 1), 0xe0 + ht_c_num * 4);
+                                if(((reg & 0xffff) == (tempreg & 0xffff)) || ((reg & 0xffff) == 0x0000)) {  // we got it
+                                        break;
+                                }
+                        }
+                        if(ht_c_num == 4) break; //used up onle 4 non conherent allowed
+                        //update to 0xe0...
+			if((reg & 0xf) == 3) continue; //SBLink so don't touch it 
+                        tempreg |= (next_busn<<16)|((next_busn+5)<<24);
+                        pci_write_config32(PCI_DEV(0, 0x18, 1), 0xe0 + ht_c_num * 4, tempreg);
+                        next_busn+=5+1;
+                }
+        }
+        //update 0xe0, 0xe4, 0xe8, 0xec from PCI_DEV(0, 0x18,1) to PCI_DEV(0, 0x19,1) to PCI_DEV(0, 0x1f,1);
+
+        for(nodeid = 1; nodeid<8; nodeid++) {
+                int i;
+                device_t dev;
+                dev = PCI_DEV(0, 0x18+nodeid,1);
+                //read id, check id to see if dev exists ;
+                reg = pci_read_config32(dev, PCI_VENDOR_ID);
+                if (((reg & 0xffff) == 0x0000) || ((reg & 0xffff) == 0xffff) ||
+                        (((reg >> 16) & 0xffff) == 0xffff) ||
+                        (((reg >> 16) & 0xffff) == 0x0000)) {
+                        break;
+                }
+                for(i = 0; i< 4; i++) {
+                        unsigned regpos;
+                        regpos = 0xe0 + i * 4;
+                        reg = pci_read_config32(PCI_DEV(0, 0x18, 1), regpos);
+                        pci_write_config32(dev, regpos, reg);
+
+                }
+        }
+	
+	// recount ht_c_num
+	int i=0;
+        for(ht_c_num=0;ht_c_num<4; ht_c_num++) {
+		reg = pci_read_config32(PCI_DEV(0, 0x18, 1), 0xe0 + ht_c_num * 4);
+                if(((reg & 0xf) != 0x0)) {
+			i++;
+		}
+        }
+
+        return ht_setup_chains(i);
+
 }

@@ -177,17 +177,6 @@ static void main(unsigned long bist)
 #endif
         };
 
-#if 1
-        static const struct ht_chain ht_c[] = {
-                { /* Link 2 of CPU0 */
-                        .devreg = 0xe0,  /* Preset bus num in resource map */
-                }, 
-                { /* Link 0 of CPU0 */
-                        .devreg = 0xe4,  /* Preset bus num in resource map */
-                },
-        };
-#endif
-
         int needs_reset;
 	if (bist == 0) {
 		/* Skip this if there was a built in self test failure */
@@ -228,9 +217,9 @@ static void main(unsigned long bist)
         setup_s2885_resource_map();
         needs_reset = setup_coherent_ht_domain();
 #if 0
-        needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0xc0);
+	needs_reset |= ht_setup_chains(2);
 #else
-        needs_reset |= ht_setup_chains(ht_c, sizeof(ht_c)/sizeof(ht_c[0]));
+        needs_reset |= ht_setup_chains_x();
 #endif
         if (needs_reset) {
                 print_info("ht reset -\r\n");

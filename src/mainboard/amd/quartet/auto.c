@@ -208,15 +208,6 @@ static void main(unsigned long bist)
 		 }
 	};
 
-        static const struct ht_chain ht_c[] = {
-                {  /* Link 2 of CPU0 */
-                        .devreg = 0xe0,  /* Preset bus num in resource map */
-                }, 
-                {  /* Link 1 of CPU1 */
-                        .devreg = 0xe4,  /* Preset bus num in resource map */
-                },
-        };  
-
 	int needs_reset;
 
 	if (bist == 0) {
@@ -245,8 +236,11 @@ static void main(unsigned long bist)
 
 	setup_quartet_resource_map();
 	needs_reset = setup_coherent_ht_domain();
-//	needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0x80);
-        needs_reset |= ht_setup_chains(ht_c, sizeof(ht_c)/sizeof(ht_c[0]));
+#if 0
+        needs_reset |= ht_setup_chains(2);
+#else
+	needs_reset |= ht_setup_chains_x();
+#endif
 	if (needs_reset) {
 		print_info("ht reset -\r\n");
 		soft_reset();

@@ -7,6 +7,9 @@
  * The ACPI table structs are based on the Linux kernel sources.
  * 
  */
+/* ACPI FADT & FACS added by Nick Barker <nick.barker9@btinternet.com>
+ * those parts (C) 2004 Nick Barker
+ */
 
 
 #ifndef __ASM_ACPI_H
@@ -134,7 +137,77 @@ typedef struct acpi_madt_irqoverride {
 } __attribute__ ((packed)) acpi_madt_irqoverride_t;
 
 
+typedef struct acpi_fadt {
+	struct acpi_table_header header;
+	u32 firmware_ctrl;
+	u32 dsdt;
+	u8 res1;
+	u8 preferred_pm_profile;
+	u16 sci_int;
+	u32 smi_cmd;
+	u8 acpi_enable;
+	u8 acpi_disable;
+	u8 s4bios_req;
+	u8 pstate_cnt;
+	u32 pm1a_evt_blk;
+	u32 pm1b_evt_blk;
+	u32 pm1a_cnt_blk;
+	u32 pm1b_cnt_blk;
+	u32 pm2_cnt_blk;
+	u32 pm_tmr_blk;
+	u32 gpe0_blk;
+	u32 gpe1_blk;
+	u8 pm1_evt_len;
+	u8 pm1_cnt_len;
+	u8 pm2_cnt_len;
+	u8 pm_tmr_len;
+	u8 gpe0_blk_len;
+	u8 gpe1_blk_len;
+	u8 gpe1_base;
+	u8 cst_cnt;
+	u16 p_lvl2_lat;
+	u16 p_lvl3_lat;
+	u16 flush_size;
+	u16 flush_stride;
+	u8 duty_offset;
+	u8 duty_width;
+	u8 day_alrm;
+	u8 mon_alrm;
+	u8 century;
+	u16 iapc_boot_arch;
+	u8 res2;
+	u32 flags;
+	struct acpi_gen_regaddr reset_reg;
+	u8 reset_value;
+	u8 res3;
+	u8 res4;
+	u8 res5;
+	u32 x_firmware_ctl_l;
+	u32 x_firmware_ctl_h;
+	u32 x_dsdt_l;
+	u32 x_dsdt_h;
+	struct acpi_gen_regaddr x_pm1a_evt_blk;
+	struct acpi_gen_regaddr x_pm1b_evt_blk;
+	struct acpi_gen_regaddr x_pm1a_cnt_blk;
+	struct acpi_gen_regaddr	x_pm1b_cnt_blk;
+	struct acpi_gen_regaddr x_pm2_cnt_blk;
+	struct acpi_gen_regaddr x_pm_tmr_blk;
+	struct acpi_gen_regaddr x_gpe0_blk;
+	struct acpi_gen_regaddr x_gpe1_blk;
+} __attribute__ ((packed)) acpi_fadt_t;
 
+typedef struct acpi_facs {
+	char signature[4];
+	u32 length;
+	u32 hardware_signature;
+	u32 firmware_waking_vector;
+	u32 global_lock;
+	u32 flags;
+	u32 x_firmware_waking_vector_l;
+	u32 x_firmware_waking_vector_h;
+	u8 version;
+	u8 resv[33];
+} __attribute__ ((packed)) acpi_facs_t;
 
 
 unsigned long write_acpi_tables(unsigned long addr);

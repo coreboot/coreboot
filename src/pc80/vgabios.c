@@ -1,8 +1,10 @@
-#include <pci.h>
-#include <pci_ids.h>
+#include <console/console.h>
+#include <device/pci.h>
+#include <device/pci_ids.h>
+#include <device/pci_ops.h>
 #undef __KERNEL__
 #include <arch/io.h>
-#include <printk.h>
+//#include <printk.h>
 #include <string.h>
 #include "vgachip.h"
 
@@ -121,6 +123,8 @@ static void real_mode_switch_call_vga(unsigned long devfn)
 		"    mov  %ax, %es          \n"
 		"    mov  %ax, %fs          \n"
 		"    mov  %ax, %gs          \n"
+		"    mov  $0x40, %ax          \n"
+		"    mov  %ax, %ds          \n"
 		"    mov %cx, %ax	\n"
 		" .byte 0x9a, 0x03, 0, 0, 0xc0  \n"
 		" movb $0x55, %al\noutb %al, $0x80\n"
@@ -151,10 +155,99 @@ static void real_mode_switch_call_vga(unsigned long devfn)
 __asm__ (".text\n""real_mode_switch_end:\n");
 extern char real_mode_switch_end[];
 
+/* call vga bios int 10 function 0x4f14 to enable main console 
+   epia-m does not always autosence the main console so forcing it on is good !! */
+ 
+void vga_enable_console()
+{
+	__asm__ __volatile__ (
+		// paranoia -- does ecx get saved? not sure. This is 
+		// the easiest safe thing to do.
+		"	pushal\n"
+		/* save the stack */
+		"	mov %esp, __stack\n"
+
+		/*  This configures CS properly for real mode. */
+		"	ljmp $0x28, $__vga_ec_16bit\n"
+		"__vga_ec_16bit:                 \n"
+		".code16                      \n"
+		/* 16 bit code from here on... */
+
+		/* Load the segment registers w/ properly configured segment
+		 * descriptors.  They will retain these configurations (limits,
+		 * writability, etc.) once protected mode is turned off. */
+		"	mov  $0x30, %ax         \n"
+		"	mov  %ax, %ds          \n"
+		"	mov  %ax, %es          \n"
+		"	mov  %ax, %fs          \n"
+		"	mov  %ax, %gs          \n"
+		"	mov  %ax, %ss          \n"
+
+		/* Turn off protection (bit 0 in CR0) */
+		"	movl %cr0, %eax        \n"
+		"	andl $0xFFFFFFFE, %eax  \n"
+		"	movl %eax, %cr0        \n"
+
+		/* Now really going into real mode */
+		"	ljmp $0,  $__vga_ec_real \n"
+		"__vga_ec_real:                  \n"
+
+		// put the stack at the end of page zero. 
+		// that way we can easily share it between real and protected, 
+		// since the 16-bit ESP at segment 0 will work for any case. 
+		/* Setup a stack */
+		"    mov  $0x0, %ax       \n"
+		"    mov  %ax, %ss          \n"
+		"    movl  $0x1000, %eax       \n"
+		"    movl  %eax, %esp          \n"
+		/* debugging for RGM */
+		"    mov $0x11, %al	\n"
+		" outb	%al, $0x80\n"
+
+		/* Dump zeros in the other segregs */
+		"    xor  %ax, %ax          \n"
+		"    mov  %ax, %ds          \n"
+		"    mov  %ax, %es          \n"
+		"    mov  %ax, %fs          \n"
+		"    mov  %ax, %gs          \n"
+		/* ask bios to enable main console */
+		/* set up for int 10 call - values found from X server bios call routines */
+		"    movw $0x4f14,%ax    \n"
+		"    movw $0x8003,%bx     \n"
+		"    movw $1, %cx          \n"
+		"    movw $0, %dx          \n"
+		"    movw $0, %di          \n"
+		"  .byte 0xcd, 0x10             \n"
+		" movb $0x55, %al\noutb %al, $0x80\n"
+		/* if we got here, just about done. 
+		 * Need to get back to protected mode */
+		"movl	%cr0, %eax\n"
+		//       "andl	$0x7FFAFFD1, %eax\n" /* PG,AM,WP,NE,TS,EM,MP = 0 */
+		//	"orl	$0x60000001, %eax\n" /* CD, NW, PE = 1 */
+		"orl	$0x0000001, %eax\n" /* PE = 1 */
+		"movl	%eax, %cr0\n"
+		/* Now that we are in protected mode jump to a 32 bit code segment. */
+		"data32	ljmp	$0x10, $vga_ec_restart\n"
+		"vga_ec_restart:\n"
+		".code32\n"
+		"    movw $0x18, %ax          \n"
+		"    mov  %ax, %ds          \n"
+		"    mov  %ax, %es          \n"
+		"    mov  %ax, %fs          \n"
+		"    mov  %ax, %gs          \n"
+		"    mov  %ax, %ss          \n"
+		".globl vga__ec_exit\n"
+		"vga_ec_exit:\n"
+		"    mov  __stack, %esp\n"
+		"    popal\n"
+		);
+}
+
+
 void
 do_vgabios(void)
 {
-	struct pci_dev *dev;
+	device_t dev;
 	unsigned long busdevfn;
 	unsigned int rom = 0;
 	unsigned char *buf;
@@ -162,17 +255,17 @@ do_vgabios(void)
 	int i;
 	
 	for (i=0x400; i<0x500; i++) {
-		printk_debug("%02x%c", *(unsigned char *)i,
-			     i%16==15 ? '\n' : ' ');
+		//printk_debug("%02x%c", *(unsigned char *)i,
+		//	     i%16==15 ? '\n' : ' ');
 		*(unsigned char *) i = 0;
 	}
 
-	for (i=0x400; i<0x500; i++) {
+/*	for (i=0x400; i<0x500; i++) {
 		printk_debug("%02x%c", *(unsigned char *)i,
 			     i%16==15 ? '\n' : ' ');
 	}
-
-	dev = pci_find_class(PCI_CLASS_DISPLAY_VGA <<8, NULL);
+*/
+	dev = dev_find_class(PCI_CLASS_DISPLAY_VGA<<8 , 0);
 
 	if (! dev) {
 		printk_debug("NO VGA FOUND\n");
@@ -184,7 +277,7 @@ do_vgabios(void)
 	// Use VGA BIOS blob at specified address
 	rom = VGABIOS_START;
 #else
-	pci_read_config32(dev, PCI_ROM_ADDRESS, &rom);
+	rom = pci_read_config32(dev, PCI_ROM_ADDRESS);
 	// paranoia
 	rom = 0xf0000000;
 	pci_write_config32(dev, PCI_ROM_ADDRESS, rom|1);
@@ -193,12 +286,28 @@ do_vgabios(void)
 	buf = (unsigned char *) rom;
 	if ((buf[0] == 0x55) && (buf[1] == 0xaa)) {
 		memcpy((void *) 0xc0000, buf, size);
+
+#define VGABIOS_WRITE_PROTECT 1
+#ifdef VGABIOS_WRITE_PROTECT
+		write_protect_vgabios();
+#endif
+
+	  	for(i = 0; i < 16; i++)
+	    		printk_debug("0x%x ", buf[i]);
+	  	// check signature again
+		buf = (unsigned char *) 0xc0000;
+		if (buf[0]==0x55 && buf[1]==0xAA) {
+			busdevfn = (dev->bus->secondary << 8) | dev->path.u.pci.devfn;
+			printk_debug("bus/devfn = %#x\n", busdevfn);
+
+		    	real_mode_switch_call_vga(busdevfn);
+			//for( i = 0 ; i < 0x500; i++){
+			//	printk_debug("%02x%c",*(unsigned char *)i,
+			//		i%16 == 15 ? '\n':' ');
+			//}
+		} else
+			printk_debug("Failed to copy VGA BIOS to 0xc0000\n");
 		
-		for(i = 0; i < 16; i++)
-			printk_debug("0x%x ", buf[i]);
-		// check signature here later!
-		busdevfn = (dev->bus->secondary << 8) | dev->devfn;
-		real_mode_switch_call_vga(busdevfn);
 	} else 
 		printk_debug("BAD SIGNATURE 0x%x 0x%x\n", buf[0], buf[1]);
 #ifndef VGABIOS_START
@@ -253,6 +362,10 @@ void callbiosint(void) {
 	__asm__ __volatile__ (
 		".code16\n"
 		"callbiosint16:\n"
+		" push %ds \n"
+		" push %es \n"
+		" push %fs \n"
+		" push %gs \n"
 		// clean up the int #. To save space we put it in the lower
 		// byte. But the top 24 bits are junk. 
 		"andl $0xff, %eax\n"
@@ -277,8 +390,8 @@ void callbiosint(void) {
 		"    mov  %ax, %ss          \n"
 		"	call	biosint	\n"
 		// back to real mode ...
-		"    ljmp $0x28, $__rms_16bit\n"
-		"__rms_16bit:                 \n"
+		"    ljmp $0x28, $__rms_16bit2\n"
+		"__rms_16bit2:                 \n"
 		".code16                      \n" /* 16 bit code from here on... */
 		
 		/* Load the segment registers w/ properly configured segment
@@ -297,8 +410,8 @@ void callbiosint(void) {
 		"    movl %eax, %cr0        \n"
 		
 		/* Now really going into real mode */
-		"    ljmp $0,  $__rms_real \n"
-		"__rms_real:                  \n"
+		"    ljmp $0,  $__rms_real2 \n"
+		"__rms_real2:                  \n"
 		
 		/* Setup a stack */
 		"    mov  $0x0, %ax       \n"
@@ -311,10 +424,16 @@ void callbiosint(void) {
 		"    mov  %ax, %es          \n"
 		"    mov  %ax, %fs          \n"
 		"    mov  %ax, %gs          \n"
+		"    mov  $0x40, %ax        \n"
+		"    mov  %ax, %ds          \n"
 		// pop the INT # that you pushed earlier
 		"   popl	%eax\n"
-		" 	popal\n"
-		"	iret\n"
+		"   pop %gs \n"
+		"   pop %fs \n"
+		"   pop %es \n"
+		"   pop %ds \n"
+		"   popal\n"
+		"   iret\n"
 		".code32\n"
 		);
 }
@@ -336,12 +455,26 @@ pcibios(
         unsigned long *peax,
         unsigned long *pflags
         );
+int
+handleint21(
+        unsigned long *pedi,
+        unsigned long *pesi,
+        unsigned long *pebp,
+        unsigned long *pesp,
+        unsigned long *pebx,
+        unsigned long *pedx,
+        unsigned long *pecx,
+        unsigned long *peax,
+        unsigned long *pflags
+        );
 
 extern void vga_exit(void);
 
 int
 biosint(
 	unsigned long intnumber,
+	unsigned long gsfs,
+	unsigned long dses,
 	unsigned long edi, 
 	unsigned long esi,
 	unsigned long ebp, 
@@ -393,8 +526,12 @@ biosint(
 		eax = 64 * 1024;
 		ret = 0;
 		break;
+	case 0x15:
+		ret=handleint21( &edi, &esi, &ebp, &esp, 
+				&ebx, &edx, &ecx, &eax, &flags);
+		break;
 	default:
-		printk_info(__FUNCTION__ ": Unsupport int #0x%x\n", 
+		printk_info("BIOSINT: Unsupport int #0x%x\n", 
 			    intnumber);
 		break;
 	}
@@ -491,7 +628,7 @@ pcibios(
 	unsigned short devid, vendorid, devfn;
 	short devindex; /* Use short to get rid of gabage in upper half of 32-bit register */
 	unsigned char bus;
-	struct pci_dev *dev;
+	device_t dev;
 	
 	switch(func) {
 	case  CHECK:
@@ -505,7 +642,7 @@ pcibios(
 		vendorid = *pedx;
 		devindex = *pesi;
 		dev = 0;
-		while ((dev = pci_find_device(vendorid, devid, dev))) {
+		while ((dev = dev_find_device(vendorid, devid, dev))) {
 			if (devindex <= 0)
 				break;
 			devindex--;
@@ -516,7 +653,7 @@ pcibios(
 			// busnum is an unsigned char;
 			// devfn is an int, so we mask it off. 
 			busdevfn = (dev->bus->secondary << 8)
-				| (dev->devfn & 0xff);
+				| (dev->path.u.pci.devfn & 0xff);
 			printk_debug("0x%x: return 0x%x\n", func, busdevfn);
 			*pebx = busdevfn;
 			retval = 0;
@@ -541,7 +678,7 @@ pcibios(
 		devfn = *pebx & 0xff;
 		bus = *pebx >> 8;
 		reg = *pedi;
-		dev = pci_find_slot(bus, devfn);
+		dev = dev_find_slot(bus, devfn);
 		if (! dev) {
 			printk_debug("0x%x: BAD DEVICE bus %d devfn 0x%x\n", func, bus, devfn);
 			// idiots. the pcibios guys assumed you'd never pass a bad bus/devfn!
@@ -563,15 +700,15 @@ pcibios(
 			break;
 		case WRITECONFBYTE:
 			byte = *pecx;
-			write_config8(dev, reg, byte);
+			pci_write_config8(dev, reg, byte);
 			break;
 		case WRITECONFWORD:
 			word = *pecx;
-			write_config16(dev, reg, word);
+			pci_write_config16(dev, reg, word);
 			break;
 		case WRITECONFDWORD:
-			word = *pecx;
-			write_config32(dev, reg, dword);
+			dword = *pecx;
+			pci_write_config32(dev, reg, dword);
 			break;
 		}
 		
@@ -590,31 +727,46 @@ pcibios(
 	return retval;
 } 
 
-static void vga_init(struct chip *chip, enum chip_pass pass)
-{
 
-	struct pc80_vgabios_config *conf = 
-		(struct pc80_vgabios_config *)chip->chip_info;
-	
-	switch (pass) {
-	case CONF_PASS_PRE_BOOT:
-		
+
+int handleint21( unsigned long *edi, unsigned long *esi, unsigned long *ebp,
+			  unsigned long *esp, unsigned long *ebx, unsigned long *edx,
+			  unsigned long *ecx, unsigned long *eax, unsigned long *flags)
+{
+int res=-1;
+	switch(*eax&0xffff)
+	{
+	case 0x5f19:
 		break;
-		
-	default:
-		/* nothing yet */
+	case 0x5f18:
+		*eax=0x5f;
+		*ebx=0x545; // MCLK = 133, 32M frame buffer, 256 M main memory
+		// *ebx = 0x515;  // MCLK = 133, 32M frame buffer, 128 M main memory
+		*ecx=0x060;
+		res=0;
+		break;
+	case 0x5f00:
+		*eax = 0x8600;
+		break;
+	case 0x5f01:
+		*eax = 0x5f;
+		*ecx = (*ecx & 0xffffff00 ) | 2; // panel type =  2 = 1024 * 768
+		res = 0;
+		break;
+	case 0x5f02:
+		*eax=0x5f;
+		*ebx= (*ebx & 0xffff0000) | 2;
+		*ecx= (*ecx & 0xffff0000) | 0x401;  // PAL + crt only 
+		*edx= (*edx & 0xffff0000) | 0;  // TV Layout - default
+		res=0;
+		break;
+	case 0x5f0f:
+		*eax=0x860f;
+		//*ebx=0;
+		//*ecx=0;
+		//*edx=0;
+		//res=0;
 		break;
 	}
+	return res;
 }
-
-static void enumerate(struct chip *chip)
-{
-	/* don't really need to do anything */
-
-}
-
-struct chip_control southbridge_via_vt8231_control = {
-	.enumerate = enumerate,
-	.enable    = vga_init,
-	.name      = "Legacy VGA bios"
-};

@@ -3,6 +3,10 @@
  * written by Stefan Reinauer <stepan@openbios.org>
  * (C) 2004 SUSE LINUX AG
  */
+/* ACPI FADT, FACS, and DSDT table support added by 
+ * Nick Barker <nick.barker9@btinternet.com>, and those portions
+ * (C) Copyright 2004 Nick Barker
+ */
 
 #include <console/console.h>
 #include <string.h>
@@ -22,7 +26,15 @@
 #define OEM_ID                "LXBIOS"
 #define ASLC                  "NONE"
 
-static u8 acpi_checksum(u8 *table, u32 length)
+
+// FIX ME - define needs declaring / setting in Config files
+#define HAVE_ACPI_FADT 
+
+#ifdef HAVE_ACPI_FADT
+extern unsigned char AmlCode[];
+#endif
+
+u8 acpi_checksum(u8 *table, u32 length)
 {
 	u8 ret=0;
 	while (length--) {
@@ -43,13 +55,15 @@ static void acpi_add_table(acpi_rsdt_t *rsdt, void *table)
 	for (i=0; i<8; i++) {
 		if(rsdt->entry[i]==0) {
 			rsdt->entry[i]=(u32)table;
+			/* fix length to stop kernel winging about invalid entries */
+			rsdt->header.length = sizeof(acpi_header_t) + (sizeof(u32) * (i+1));
 			/* fix checksum */
 			/* hope this won't get optimized away */
 			rsdt->header.checksum=0;
 			rsdt->header.checksum=acpi_checksum((u8 *)rsdt,
 					rsdt->header.length);
 			
-			printk_debug("ACPI: added table %d/8\n",i+1);
+			printk_debug("ACPI: added table %d/8 Length now %d\n",i+1,rsdt->header.length);
 			return;
 		}
 	}
@@ -181,6 +195,22 @@ static void acpi_create_hpet(acpi_hpet_t *hpet)
 	header->checksum	= acpi_checksum((void *)hpet, sizeof(acpi_hpet_t));
 }
 
+static void acpi_create_facs(acpi_facs_t *facs)
+{
+
+	memset( (void *)facs,0, sizeof(acpi_facs_t));
+
+	memcpy(facs->signature,"FACS",4);
+	facs->length = sizeof(acpi_facs_t);
+	facs->hardware_signature = 0;
+	facs->firmware_waking_vector = 0;
+	facs->global_lock = 0;
+	facs->flags = 0;
+	facs->x_firmware_waking_vector_l = 0;
+	facs->x_firmware_waking_vector_h = 0;
+	facs->version = 1;
+
+}
 static void acpi_write_rsdt(acpi_rsdt_t *rsdt)
 { 
 	acpi_header_t *header=&(rsdt->header);
@@ -222,6 +252,9 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_rsdt_t *rsdt;
 	acpi_hpet_t *hpet;
 	acpi_madt_t *madt;
+	acpi_fadt_t *fadt;
+	acpi_facs_t *facs;
+	acpi_header_t *dsdt;
 	
 	/* Align ACPI tables to 16byte */
 	start   = ( start + 0x0f ) & -0x10;
@@ -244,7 +277,6 @@ unsigned long write_acpi_tables(unsigned long start)
 	/*
 	 * We explicitly add these tables later on:
 	 */
-#define HAVE_ACPI_HPET
 #ifdef HAVE_ACPI_HPET
 	printk_debug("ACPI:    * HPET\n");
 
@@ -263,6 +295,35 @@ unsigned long write_acpi_tables(unsigned long start)
 
 
 #endif
+
+#ifdef HAVE_ACPI_FADT
+
+
+	printk_debug("ACPI:     * FACS\n");
+	facs = (acpi_facs_t *) current;
+	current += sizeof(acpi_facs_t);
+	acpi_create_facs(facs);
+
+
+	dsdt = (acpi_header_t *)current;
+	current += ((acpi_header_t *)AmlCode)->length;
+	memcpy((void *)dsdt,(void *)AmlCode, ((acpi_header_t *)AmlCode)->length);
+	dsdt->checksum = 0; // don't trust intel iasl compiler to get this right
+	dsdt->checksum = acpi_checksum(dsdt,dsdt->length);
+	printk_debug("ACPI:     * DSDT @ %08x Length %x\n",dsdt,dsdt->length);
+	printk_debug("ACPI:     * FADT\n");
+
+	fadt = (acpi_fadt_t *) current;
+	current += sizeof(acpi_fadt_t);
+
+	acpi_create_fadt(fadt,facs,dsdt);
+	acpi_add_table(rsdt,fadt);
+
+
+#endif	
+
+
+
 	printk_info("ACPI: done.\n");
 	return current;
 }

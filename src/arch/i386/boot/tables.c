@@ -60,8 +60,13 @@ struct lb_memory *write_tables(struct mem_range *mem, unsigned long *processor_m
 	low_table_end = write_smp_table(low_table_end, processor_map);
 
 	/* Write ACPI tables */
-	low_table_end = write_acpi_tables(low_table_end);
-	
+	/* write them in the rom area because DSDT can be large (8K on epia-m) which
+	 * pushes linuxbios table out of first 4K if set up in low table area 
+         */
+
+	rom_table_end = write_acpi_tables(rom_table_end);
+	rom_table_end = (rom_table_end+1023) & ~1023;
+
 	/* Don't write anything in the traditional x86 BIOS data segment */
 	if (low_table_end < 0x500) {
 		low_table_end = 0x500;

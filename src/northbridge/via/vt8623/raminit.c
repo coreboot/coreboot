@@ -47,16 +47,17 @@ it with the version available from LANL.
 #define DIMM_CL2 0
 #endif
 
-void dimms_read(unsigned long x) 
+
+
+
+
+void dimm_read(unsigned long x) 
 {
-	uint8_t c;
 	unsigned long eax; 
 	volatile unsigned long y;
 	eax =  x;
-	for(c = 0; c < 6; c++) {
-		y = * (volatile unsigned long *) eax;
-		eax += 0x10000000;
-	}
+	y = * (volatile unsigned long *) eax;
+
 }
 
 void dimms_write(int x) 
@@ -88,7 +89,7 @@ void setnorthb(device_t north, uint8_t reg, uint8_t val)
 void
 dumpnorth(device_t north) 
 {
-	uint8_t r, c;
+	uint16_t r, c;
 	for(r = 0; r < 256; r += 16) {
 		print_debug_hex8(r);
 		print_debug(":");
@@ -106,7 +107,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	uint8_t c, r;
 
 	print_err("vt8623 init starting\r\n");
-	north = pci_locate_device(PCI_ID(0x1106, 0x8623), 0);
+	north = pci_locate_device(PCI_ID(0x1106, 0x3123), 0);
 	north = 0;
 	print_debug_hex32(north);
 	print_debug(" is the north\n");
@@ -118,66 +119,57 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	/* All we are doing now is setting initial known-good values that will
 	 * be revised later as we read SPD
 	 */	
-	// memory clk enable. We are not using ECC
-	pci_write_config8(north,0x78, 0x01);
-	print_debug_hex8(pci_read_config8(north, 0x78));
-	// dram control, see the book. 
-#if DIMM_PC133
-	pci_write_config8(north,0x68, 0x52);
-#else
-	pci_write_config8(north,0x68, 0x42);
-#endif
-	// dram control, see the book. 
-	pci_write_config8(north,0x6B, 0x0c);
-	// Initial setting, 256MB in each bank, will be rewritten later.
-	pci_write_config8(north,0x5A, 0x20);
-	print_debug_hex8(pci_read_config8(north, 0x5a));
-	pci_write_config8(north,0x5B, 0x40);
-	pci_write_config8(north,0x5C, 0x60);
-	pci_write_config8(north,0x5D, 0x80);
-	pci_write_config8(north,0x5E, 0xA0);
-	pci_write_config8(north,0x5F, 0xC0);
-	// It seems we have to take care of these 2 registers as if 
-	// they are bank 6 and 7.
-	pci_write_config8(north,0x56, 0xC0);
-	pci_write_config8(north,0x57, 0xC0);
+
+	pci_write_config8(north,0x75,0x08);
+
+	/* since we only support epia-m at the moment, only ddr is supported */
+	/* setup cpu */
+	pci_write_config8(north,0x50,0xc8);
+	pci_write_config8(north,0x51,0xde);
+	pci_write_config8(north,0x52,0xcf);
+	pci_write_config8(north,0x53,0x88);
+	pci_write_config8(north,0x55,0x07);
+
+	/* DRAM MA Map Type */
+	pci_write_config8(north,0x58,0xe0);
+
+	/* DRAM bank 0 - 3 size = 512M */
+	pci_write_config8(north,0x5a,0x10);
+	pci_write_config8(north,0x5b,0x10);
+	pci_write_config8(north,0x5c,0x10);
+	pci_write_config8(north,0x5d,0x10);
+
+	/* set DRAM timing for all banks */
+	pci_write_config8(north,0x64,0xe6);
+
+	/* set DRAM type to DDR */
+	pci_write_config8(north,0x60,0x02);
+
+
+	/* DRAM arbitration timer */
+	pci_write_config8(north,0x65,0x32);
+	pci_write_config8(north,0x66,0x01);
+	pci_write_config8(north,0x68,0x59);
+
+
+	/* DRAM Frequency */
+	pci_write_config8(north,0x54,0xe0);
+	pci_write_config8(north,0x69,0x2d);
+
+	/* Enable CKE */
+	pci_write_config8(north,0x6b,0x10);
 	
-	// SDRAM in all banks
-	pci_write_config8(north,0x60, 0x3F);
-	// DRAM timing. I'm suspicious of this
-	// This is for all banks, 64 is 0,1.  65 is 2,3. 66 is 4,5.
-	// ras precharge 4T, RAS pulse 5T
-	// cas2 is 0xd6, cas3 is 0xe6
-	// we're also backing off write pulse width to 2T, so result is 0xee
-#if DIMM_CL2
-	pci_write_config8(north,0x64, 0xd4);
-	pci_write_config8(north,0x65, 0xd4);
-	pci_write_config8(north,0x66, 0xd4);
-#else // CL=3
-	pci_write_config8(north,0x64, 0xe4);
-	pci_write_config8(north,0x65, 0xe4);
-	pci_write_config8(north,0x66, 0xe4);
-#endif
+	/* Disable DRAM refresh */
+	pci_write_config8(north,0x6a,0x0);
 
-	// dram frequency select.
-	// enable 4K pages for 64M dram. 
-#if DIMM_PC133
-	pci_write_config8(north,0x69, 0x3c);
-#else
-	pci_write_config8(north,0x69, 0xac);
-#endif
+	/* set heavy drive */
+	pci_write_config8(north,0x6d,0x44);
 
-	/* IMPORTANT -- disable refresh counter */
-	// refresh counter, disabled.
-	pci_write_config8(north,0x6A, 0x00);
-	
 
-	// clkenable configuration. kevinh FIXME - add precharge
-	pci_write_config8(north,0x6C, 0x00);
-	// dram read latch delay of 1 ns, MD drive 8 mA,
-	// high drive strength on MA[2:	13], we#, cas#, ras#
-	// As per Cindy Lee, set to 0x37, not 0x57
-	pci_write_config8(north,0x6D, 0x7f);
+	pci_write_config8(north,0x61,0xff);
+
+
+
 }
 
 /* slot is the dram slot. Return size of side0 in lower 16-bit,
@@ -291,104 +283,87 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	};
 	device_t north = 0;
 	uint32_t size, base, slot, ma;
-	/* begin to initialize*/
-	// I forget why we need this, but we do
-	dimms_write(0xa55a5aa5);
 	
-	/* set NOP*/
-	pci_write_config8(north,0x6C, 0x01);
-	print_debug("NOP\r\n");
-	/* wait 200us*/
-	// You need to do the memory reference. That causes the nop cycle. 
-	dimms_read(0);
-	udelay(400);
-	print_debug("PRECHARGE\r\n");
-	/* set precharge */
-	pci_write_config8(north,0x6C, 0x02);
-	print_debug("DUMMY READS\r\n");
-	/* dummy reads*/
-	dimms_read(0);
-	udelay(200);
-	print_debug("CBR\r\n");
-	/* set CBR*/
-	pci_write_config8(north,0x6C, 0x04);
-	
-	/* do 8 reads and wait >100us between each - from via*/
-	dimms_read(0);
-	udelay(200);
-	dimms_read(0);
-	udelay(200);
-	dimms_read(0);
-	udelay(200);
-	dimms_read(0);
-	udelay(200);
-	dimms_read(0);
-	udelay(200);
-	dimms_read(0);
-	udelay(200);
-	dimms_read(0);
-	udelay(200);
-	dimms_read(0);
-	udelay(200);
-	print_debug("MRS\r\n");
-	/* set MRS*/
-	pci_write_config8(north,0x6c, 0x03);
-#if DIMM_CL2
-	dimms_read(0x150);
-#else // CL=3
-	dimms_read(0x1d0);
-#endif
-	udelay(200);
-	print_debug("NORMAL\r\n");
-	/* set to normal mode */
-	pci_write_config8(north,0x6C, 0x08);
-	
-	dimms_write(0x55aa55aa);
-	dimms_read(0);
-	udelay(200);
-	print_debug("set ref. rate\r\n");
-	// Set the refresh rate. 
-#if DIMM_PC133
-	pci_write_config8(north,0x6A, 0x86);
-#else
-	pci_write_config8(north,0x6A, 0x65);
-#endif
-	print_debug("enable multi-page open\r\n");
-	// enable multi-page open
-	pci_write_config8(north,0x6B, 0x0d);
-	
-	base = 0;
-	for(slot = 0; slot < 4; slot++) {
-		size = spd_module_size(slot);
-		/* side 0 */
-		base += size & 0xffff;
-		pci_write_config8(north, ramregs[2*slot], base);
-		/* side 1 */
-		base += size >> 16;
-		if (base > 0xff)
-			base = 0xff;
-		pci_write_config8(north, ramregs[2*slot + 1], base);
 
-		if (!size)
-			continue;
+	/* NOP command enable */
+	pci_write_config8(north,0x6b,0x01);
 
-		/* Calculate the value of MA mapping type register,
-		 * based on size of SDRAM chips. */
-		size = (size & 0xffff) << (3 + 3);
-			/* convert module size to be in Mbits */
-		size /= spd_num_chips(slot);
-		print_debug_hex16(size);
-		print_debug(" is the chip size\r\n");
-		if (size < 64)
-			ma = 0;
-		if (size < 256)
-			ma = 8;
-		else
-			ma = 0xe;
-		print_debug_hex16(ma);
-		print_debug(" is the MA type\r\n");
-		set_ma_mapping(north, slot, ma);
-	}
-	print_err("vt8623 done\r\n");
+	/* read a double word from any addree of the dimm */
+	dimm_read(0x1f000);
+	udelay(200);
+
+	/* All bank precharge Command Enable */
+	pci_write_config8(north,0x6b,0x02);
+	dimm_read(0x1f000);
+
+	/* MSR Enable */
+	pci_write_config8(north,0x6b,0x03);
+	dimm_read(0x2000);
+
+	dimm_read(0x800);
+
+	/* All banks precharge Command Enable */
+	pci_write_config8(north,0x6b,0x02);
+	dimm_read(0x1f200);
+
+	/* CBR Cycle Enable */
+	pci_write_config8(north,0x6b,0x04);
+
+	/* Read 8 times */
+	dimm_read(0x1f300);
+	udelay(100);
+	dimm_read(0x1f400);
+	udelay(100);
+	dimm_read(0x1f500);
+	udelay(100);
+	dimm_read(0x1f600);
+	udelay(100);
+	dimm_read(0x1f700);
+	udelay(100);
+	dimm_read(0x1f800);
+	udelay(100);
+	dimm_read(0x1f900);
+	udelay(100);
+	dimm_read(0x1fa00);
+	udelay(100);
+
+	/* MSR Enable */
+	pci_write_config8(north,0x6b,0x03);
+
+	/* 0x150 if CAS Latency 2 or 0x350 CAS Latency 2.5 */
+	dimm_read(0x350);
+
+	/* Normal SDRAM Mode */
+	pci_write_config8(north,0x6b,0x58 );
+
+
+	/* Set the refresh rate */
+	pci_write_config8(north,0x6a,0x43);
+	pci_write_config8(north,0x67,0x22);
+
+	/* pci */
+	pci_write_config8(north,0x70,0x82);
+	pci_write_config8(north,0x73,0x01);
+	pci_write_config8(north,0x76,0x50);
+
+
+	pci_write_config8(north,0x71,0xc8);
+	
+
+	/* graphics aperture base */
+	pci_write_config8(north,0x13,0xd0);
+
+	//pci_write_config8(north,0x56,0x10);
+	//pci_write_config8(north,0x57,0x10);
+
+	pci_write_config8(north,0xe0,0x80);
+	pci_write_config8(north,0xe1,0xdf);
+	pci_write_config8(north,0xe2,0x42);
+
+	pci_write_config8(north,0xa8,0x04);
+	pci_write_config8(north,0xac,0x2f);
+	pci_write_config8(north,0xae,0x04);
+
+        print_err("vt8623 done\r\n");
 	dumpnorth(north);
 }

@@ -49,7 +49,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 
 
-#include "northbridge/via/vt8601/raminit.c"
+#include "northbridge/via/vt8623/raminit.c"
 /*
   #include "sdram/generic_sdram.c"
 */
@@ -64,8 +64,9 @@ static void enable_mainboard_devices(void)
 	if (dev == PCI_DEV_INVALID) {
 		die("Southbridge not found!!!\n");
 	}
-	pci_write_config8(dev, 0x50, 7);
-	pci_write_config8(dev, 0x51, 0xff);
+	pci_write_config8(dev, 0x50, 0);
+	pci_write_config8(dev, 0x51, 0xfd);
+	pci_write_config8(dev, 0x94, 0xb2);
 #if 0
 	// This early setup switches IDE into compatibility mode before PCI gets 
 	// // a chance to assign I/Os
@@ -97,9 +98,15 @@ static void enable_shadow_ram(void)
 static void main(void)
 {
 	unsigned long x;
+	device_t dev;
 	/*	init_timer();*/
 	outb(5, 0x80);
+
 	
+	pci_write_config8( 0xd*8,0x15,0x1c);
+	pci_write_config8( 0 , 0xe1, 0xdd);
+ 
+	outb(5, 0x80);	
 	enable_smbus();
 	enable_vt8235_serial();
 

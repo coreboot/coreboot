@@ -481,7 +481,11 @@ define CONFIG_LEGACY_VGABIOS
 	export used
 	comment "Support for legacy VGA BIOS"
 end
-
+define VGABIOS_START
+	default 0
+	export used
+	comment "Base of Legacy VGA in Rom"
+end
 ###############################################
 # SMP options
 ###############################################

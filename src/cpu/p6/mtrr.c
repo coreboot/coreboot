@@ -45,6 +45,7 @@ static unsigned int mtrr_msr[] = {
 	MTRRfix4K_E0000_MSR, MTRRfix4K_E8000_MSR, MTRRfix4K_F0000_MSR, MTRRfix4K_F8000_MSR,
 };
 
+static int mtrr_count = 0;
 
 static void intel_enable_fixed_mtrr(void)
 {
@@ -79,6 +80,12 @@ static inline void disable_cache(void)
 		::"memory");
 }
 
+static inline void wbinvd(void)
+{
+	asm volatile (
+		"wbinvd\n\t");
+}
+
 static inline void enable_cache(void)
 {
 	unsigned int tmp;
@@ -92,15 +99,19 @@ static inline void enable_cache(void)
 }
 
 /* setting variable mtrr, comes from linux kernel source */
+/* funtion nows saves and restores state of deftype regs so that extra mtrr's can be set-up
+ * after the initial main memory mtrr's
+ */
 static void intel_set_var_mtrr(unsigned int reg, unsigned long basek, unsigned long sizek, unsigned char type)
 {
-	msr_t base, mask;
+	msr_t base, mask, def,defsave;
 
 	base.hi = basek >> 22;
 	base.lo  = basek << 10;
 
 	//printk_debug("ADDRESS_MASK_HIGH=%#x\n", ADDRESS_MASK_HIGH);
 
+	printk_debug("Adding mtrr #%d at %08x size %x\n",reg,base.lo,sizek<<10);
 	if (sizek < 4*1024*1024) {
 		mask.hi = ADDRESS_MASK_HIGH;
 		mask.lo = ~((sizek << 10) -1);
@@ -116,6 +127,10 @@ static void intel_set_var_mtrr(unsigned int reg, unsigned long basek, unsigned l
 	// it is recommended that we disable and enable cache when we 
 	// do this. 
 	disable_cache();
+	def = defsave = rdmsr(MTRRdefType_MSR);
+	def.lo &= 0xf300;
+	wrmsr(MTRRdefType_MSR,def);
+
 	if (sizek == 0) {
 		msr_t zero;
 		zero.lo = zero.hi = 0;
@@ -129,6 +144,8 @@ static void intel_set_var_mtrr(unsigned int reg, unsigned long basek, unsigned l
 		wrmsr (MTRRphysBase_MSR(reg), base);
 		wrmsr (MTRRphysMask_MSR(reg), mask);
 	}
+	wbinvd();
+	wrmsr(MTRRdefType_MSR,defsave);
 	enable_cache();
 }
 
@@ -262,7 +279,16 @@ static unsigned fixed_mtrr_index(unsigned long addrk)
 	}
 	return index;
 }
+// Externally visible function to add extra non system memory based mtrr's such
+// as AGP mtrr's - needs to be called after setup_mtrrs
 
+void add_var_mtrr(unsigned long range_startk, unsigned long range_sizek, 
+		unsigned char type)
+{
+	intel_set_var_mtrr(mtrr_count++,range_startk,range_sizek,type);
+
+}
+	
 static unsigned int range_to_mtrr(unsigned int reg, 
 	unsigned long range_startk, unsigned long range_sizek,
 	unsigned long next_range_startk)
@@ -382,6 +408,7 @@ void setup_mtrrs(struct mem_range *mem)
 	}
 	/* Write the last range */
 	reg = range_to_mtrr(reg, range_startk, range_sizek, 0);
+	mtrr_count = reg;
 	printk_debug("DONE variable MTRRs\n");
 	printk_debug("Clear out the extra MTRR's\n");
 	/* Clear out the extra MTRR's */

@@ -116,7 +116,7 @@ gdt:
 	.word	0x0000, 0x0000		/* dummy */
 	.byte	0x00, 0x00, 0x00, 0x00
 
-#if defined(CONFIG_VGABIOS) && (CONFIG_VGABIOS == 1)
+#if defined(CONFIG_LEGACY_VGABIOS) && (CONFIG_LEGACY_VGABIOS == 1)
 	// from monty:
 	/* 0x00009a00,0000ffffULL,   20h: 16-bit 64k code at 0x00000000 */
         /* 0x00009200,0000ffffULL    28h: 16-bit 64k data at 0x00000000 */

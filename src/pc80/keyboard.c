@@ -5,7 +5,7 @@
 
 /* much better keyboard init courtesy ollie@sis.com.tw 
    TODO: Typematic Setting, the keyboard is too slow for me */
-static void pc_keyboard_init(struct pc_keyboard *keyboard)
+void pc_keyboard_init(struct pc_keyboard *keyboard)
 {
 	volatile unsigned char regval;
 

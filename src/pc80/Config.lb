@@ -3,7 +3,7 @@ uses CONFIG_LEGACY_VGABIOS
 
 object mc146818rtc.o
 object isa-dma.o
-#object i8259.o CONFIG_I8259
+object i8259.o 
 #object udelay_timer2.o CONFIG_UDELAY_TIMER2
 #object beep.o CONFIG_BEEP
 #object vga_load_regs.o VIDEO_CONSOLE

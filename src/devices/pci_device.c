@@ -679,6 +679,10 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned min_devfn,
 	/* if a child provides scan_bus(), for example a bridge, scan
 	 * buses behind that child */
 	for (child = bus->children; child; child = child->sibling) {
+		// make sure that we have an ops structure
+		if (!child->ops) {
+			continue;
+		}
 		if (!child->ops->scan_bus) {
 			continue;
 		}
@@ -767,17 +771,17 @@ static void pci_level_irq(unsigned char intNum)
 {
 	unsigned short intBits = inb(0x4d0) | (((unsigned) inb(0x4d1)) << 8);
 
-	printk_spew("%s: current ints are 0x%x\n", __FUNCTION__, intBits);
+	printk_debug("%s: current ints are 0x%x\n", __FUNCTION__, intBits);
 	intBits |= (1 << intNum);
 
-	printk_spew("%s: try to set ints 0x%x\n", __FUNCTION__, intBits);
+	printk_debug("%s: try to set ints 0x%x\n", __FUNCTION__, intBits);
 
 	// Write new values
 	outb((unsigned char) intBits, 0x4d0);
 	outb((unsigned char) (intBits >> 8), 0x4d1);
 
 	/* this seems like an error but is not ... */
-#if 0
+#if 1
 	if (inb(0x4d0) != (intBits & 0xf)) {
 	  printk_err("%s: lower order bits are wrong: want 0x%x, got 0x%x\n",
 		     __FUNCTION__, intBits &0xf, inb(0x4d0));

@@ -23,6 +23,7 @@ uses _ROMBASE
 uses XIP_ROM_SIZE
 uses XIP_ROM_BASE
 uses HAVE_MP_TABLE
+uses HAVE_ACPI_TABLES
 
 ## ROM_SIZE is the size of boot ROM that this board will use.
 default ROM_SIZE  = 256*1024
@@ -130,6 +131,11 @@ arch i386 end
 driver mainboard.o
 #object reset.o
 
+if HAVE_ACPI_TABLES
+	object fadt.o
+	object dsdt.o
+end
+
 ##
 ## Romcc output
 ##
@@ -217,6 +223,14 @@ northbridge via/vt8623 "vt8623"
 		register "enable_com_ports" = "1"
 		register "enable_keyboard" = "0"
 		register "enable_nvram" = "1"
+	end
+	southbridge ricoh/rl5c476 "rl5c476"
+	end
+	superio via/vt1211 "vt1211"
+		register "enable_com_ports" = "1"
+		register "enable_hwmon" = "1"
+		register "enable_lpt" = "1"
+		register "enable_fdc" = "1"
 	end
 end
 

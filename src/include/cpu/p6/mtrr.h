@@ -34,6 +34,7 @@
 #if !defined(ASSEMBLY)
 
 void set_var_mtrr(unsigned int reg, unsigned long base, unsigned long size, unsigned char type);
+void add_var_mtrr(unsigned long basek, unsigned long sizek, unsigned char type);
 #if defined(INTEL_PPRO_MTRR) 
 struct mem_range;
 void setup_mtrrs(struct mem_range *mem);

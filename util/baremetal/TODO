@@ -1,0 +1,3 @@
+
+1. Figure out why the trick of moving out of the way when loading a new ELF 
+	image is failing

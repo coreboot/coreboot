@@ -1,0 +1,28 @@
+	This is the bare metal toolkit for LinuxBIOS.
+
+It was produced and is maintained by Steven James <pyro@linuxlabs.com>
+
+It's purpose is to simplify development of standalone ELF executables suitable 
+as a payload for LinuxBIOS.  Two examples are included, hello  and bootselect. 
+Most of this toolkit comes from LinuxBIOS itself. A few pieces are borrowed 
+from Etherboot (such as code to locate and use the LinuxBIOS table).
+
+It is important to note that even though the main part is a Library, Since
+it is built from GPL code, it falls under GPL, not LGPL. This may matter to
+you in production since that means your project will also need to be GPL in
+order to be linked with this toolkit. 
+
+This is an early release. It has been used successfully to produce several 
+payloads. However, as it is an early release, if you intend to use the payloads 
+in production, it may be best to maintain your own production snapshot for a bit.
+
+	Hello is a simple example program. All it does is say hello, then you 
+hit reset :-)
+
+	Bootselect allows for multiple choice payloads. It scans the flash ROM 
+for tagged executable images and checks to see if a character is waiting on the 
+serial console. If not, the first image is run immediatly.  If a character is 
+waiting, it is dropped, a list of tagged images is presented. The user selects 
+the image by number. This can come in quite handy for testing, or for loading 
+diagnostic and other secondary firmware.
+

@@ -92,7 +92,7 @@ int probe_29f040b (struct flashchip * flash)
 
 int erase_29f040b (struct flashchip * flash)
 {
-	volatile char * bios = flash->virt_addr;
+	volatile unsigned char * bios = flash->virt_addr;
 
 	*(bios + 0x555) = 0xAA;
 	*(bios + 0x2AA) = 0x55;

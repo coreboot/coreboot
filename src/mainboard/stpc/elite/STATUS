@@ -1,0 +1,30 @@
+# These are keyword-value pairs. 
+# a : separates the keyword from the value 
+# the value is arbitrary text delimited by newline. 
+# continuation, if needed, will be via the \ at the end of a line
+# comments are indicated by a '#' as the first character. 
+# the keywords are case-INSENSITIVE
+#
+# stpc Elite Evaluation Motherboard
+#
+owner:	Peter Fox
+email:	peter.fox@aeroflex.com
+#status: One of unsupported, unstable, stable
+status: stable
+explanation: okay
+flash-types: AT49F040-70PC
+payload-types: filo
+# e.g. linux, plan 9, wince, etc.
+OS-types: linux
+# e.g. "Plan 9 interrupts don't work on this chipset"
+OS-issues: 
+console-types: serial
+# vga is unsupported, unstable, or stable
+vga: unsupported
+# Last-known-good follows the internationl date standard: day/month/year
+last-known-good: 23/02/2004
+Comments: 
+Links: http://www.stmcu.com/
+Mainboard-revision: 1.1
+# What other mainboards are like this one? List them here. 
+AKA: Same mainboard used for Consumer-II and Consumer-S

@@ -1,0 +1,7 @@
+#
+# by Steve M. Gehlbach
+#
+option STPC_ELITE=1
+
+object nsbridge.c
+

@@ -15,7 +15,6 @@ northbridge intel/440bx
 southbridge intel/piix4e
 mainboardinit cpu/p6/earlymtrr.inc
 
-#superio NSC/pc87309
 nsuperio winbond/w83977ef keyboard=1
 nsuperio winbond/w83877tf
 
@@ -23,7 +22,7 @@ option ENABLE_FIXED_AND_VARIABLE_MTRRS
 option  MTRR_ONLY_TOP_64K_FLASH
 option PIIX4_DEVFN=0x38
 option NO_KEYBOARD
-option HAVE_PIRQ_TABLE
+option HAVE_PIRQ_TABLE=1
 option ZKERNEL_START=0xfffc0000
 option ZKERNEL_MASK=0x7f 
 # For those people who use DoC

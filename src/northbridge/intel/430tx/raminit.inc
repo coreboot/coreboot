@@ -241,7 +241,7 @@ north_ok:
 	CS_WRITE_WORD(0x54, 0x0042)		// SDRAM Control Register
         mov $0x1000, %ecx
 	loop .
-	CALLSP(dumpnorth)
+//	CALLSP(dumpnorth)
 
 	//mov 0x00, %eax		// dummy read to issue SDRAM NOP
 	movl %eax, 0x00			// dummy read to issue SDRAM NOP
@@ -321,7 +321,7 @@ north_ok:
 	movl	%eax, 0
 	movl	%eax, 0
 	movl	0, %eax
-	CALLSP(dumpnorth)
+//	CALLSP(dumpnorth)
 
 
 // go around again ...
@@ -343,7 +343,7 @@ north_ok:
 	CS_WRITE_WORD(0x54, 0x0042)		// SDRAM Control Register
         mov $0x1000, %ecx
 	loop .
-	CALLSP(dumpnorth)
+//	CALLSP(dumpnorth)
 
 	//mov 0x00, %eax		// dummy read to issue SDRAM NOP
 	movl %eax, 0x00			// dummy read to issue SDRAM NOP
@@ -429,7 +429,7 @@ north_ok:
 	CS_WRITE_WORD(0x54, 0x0042)		// SDRAM Control Register
         mov $0x1000, %ecx
 	loop .
-	CALLSP(dumpnorth)
+//	CALLSP(dumpnorth)
 
 	CONSOLE_DEBUG_TX_STRING($before_zero_nop)
 	mov 0x00, %eax		// dummy read to issue SDRAM NOP

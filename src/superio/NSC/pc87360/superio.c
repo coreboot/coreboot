@@ -27,16 +27,16 @@ static void init(device_t dev)
 	conf = dev->chip->chip_info;
 	switch(dev->path.u.pnp.device) {
 	case PC87360_SP1: 
-		res0 = get_resource(dev, PNP_IDX_IO0);
+		res0 = find_resource(dev, PNP_IDX_IO0);
 		init_uart8250(res0->base, &conf->com1);
 		break;
 	case PC87360_SP2:
-		res0 = get_resource(dev, PNP_IDX_IO0);
+		res0 = find_resource(dev, PNP_IDX_IO0);
 		init_uart8250(res0->base, &conf->com2);
 		break;
 	case PC87360_KBCK:
-		res0 = get_resource(dev, PNP_IDX_IO0);
-		res1 = get_resource(dev, PNP_IDX_IO1);
+		res0 = find_resource(dev, PNP_IDX_IO0);
+		res1 = find_resource(dev, PNP_IDX_IO1);
 		init_pc_keyboard(res0->base, res1->base, &conf->keyboard);
 		break;
 	}

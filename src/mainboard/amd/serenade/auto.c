@@ -119,10 +119,9 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 }
 
 #include "northbridge/amd/amdk8/raminit.c"
-
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
-#include "mainboard/amd/serenade/resourcemap.c"
+#include "resourcemap.c"
 
 #define FIRST_CPU  1
 #define SECOND_CPU 1

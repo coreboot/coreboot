@@ -99,7 +99,6 @@ static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 		maxnodes=2;
 	}
 
-
 	if (!(node>=maxnodes || row>=maxnodes)) {
 		ret=rows_2p[node][row];
 	}
@@ -120,6 +119,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
+#include "northbridge/amd/amdk8/resourcemap.c"
 
 #define FIRST_CPU  1
 #define SECOND_CPU 1

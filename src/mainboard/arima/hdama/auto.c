@@ -92,6 +92,7 @@ static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 
 	uint32_t ret = 0x00010101; /* default row entry */
 
+	/* CPU0 LDT1 <-> LDT1 CPU1 */
 	static const unsigned int rows_2p[2][2] = {
 		{ 0x00050101, 0x00010404 },
 		{ 0x00010404, 0x00050101 }
@@ -101,7 +102,6 @@ static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 		print_debug("this mainboard is only designed for 2 cpus\r\n");
 		maxnodes = 2;
 	}
-
 
 	if (!(node >= maxnodes || row >= maxnodes)) {
 		ret = rows_2p[node][row];
@@ -123,6 +123,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
+#include "northbridge/amd/amdk8/resourcemap.c"
 
 #define FIRST_CPU  1
 #define SECOND_CPU 1
@@ -173,6 +174,7 @@ static void main(void)
 
 	setup_default_resource_map();
 	needs_reset = setup_coherent_ht_domain();
+	/* Non-coherent HT is on LDT0 */
 	needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0x80);
 	if (needs_reset) {
 		print_info("ht reset -\r\n");

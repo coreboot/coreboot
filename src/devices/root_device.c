@@ -11,7 +11,6 @@ void root_dev_read_resources(device_t root)
 {
 	int res = 0;
 
-	printk_spew("%s . Root is %p\n", __FUNCTION__, dev_path(root));
 	/* Initialize the system wide io space constraints */
 	root->resource[res].base  = 0x400;
 	root->resource[res].size  = 0;
@@ -20,10 +19,8 @@ void root_dev_read_resources(device_t root)
 	root->resource[res].limit = 0xffffUL;
 	root->resource[res].flags = IORESOURCE_IO;
 	root->resource[res].index = 0;
-	printk_spew("%s . link %p, resource %p\n", __FUNCTION__, 
-		    &root->link[0], &root->resource[res]);
 	compute_allocate_resource(&root->link[0], &root->resource[res], 
-				  IORESOURCE_IO, IORESOURCE_IO);
+		IORESOURCE_IO, IORESOURCE_IO);
 	res++;
 
 	/* Initialize the system wide memory resources constraints */
@@ -34,14 +31,12 @@ void root_dev_read_resources(device_t root)
 	root->resource[res].limit = 0xffffffffUL;
 	root->resource[res].flags = IORESOURCE_MEM;
 	root->resource[res].index = 1;
-	printk_spew("%s . link %p, resource %p\n", __FUNCTION__, 
-		    &root->link[0], &root->resource[res]);
 	compute_allocate_resource(&root->link[0], &root->resource[res], 
-				  IORESOURCE_MEM, IORESOURCE_MEM);
+		IORESOURCE_MEM, IORESOURCE_MEM);
 	res++;
 
 	root->resources = res;
-	printk_spew("%s DONE\n", __FUNCTION__);
+	printk_spew("%s DONE\n", __func__);
 }
 
 /**
@@ -51,12 +46,13 @@ void root_dev_read_resources(device_t root)
  */
 void root_dev_set_resources(device_t root)
 {
-	struct bus *bus = &root->link[0];
+	struct bus *bus;
 
-	compute_allocate_resource(bus, &root->resource[0],
-				  IORESOURCE_IO, IORESOURCE_IO);
-	compute_allocate_resource(bus, &root->resource[1],
-				  IORESOURCE_MEM, IORESOURCE_MEM);
+	bus = &root->link[0];
+	compute_allocate_resource(bus,
+		&root->resource[0], IORESOURCE_IO, IORESOURCE_IO);
+	compute_allocate_resource(bus, 
+		&root->resource[1], IORESOURCE_MEM, IORESOURCE_MEM);
 	assign_resources(bus);
 }
 
@@ -80,20 +76,21 @@ unsigned int scan_static_bus(device_t bus, unsigned int max)
 {
 	device_t child;
 	unsigned link;
+	
+	printk_debug("%s for %s\n", __func__, dev_path(bus));
 
-	printk_debug("%s for %s\n", __FUNCTION__, dev_path(bus));
-
-	for (link = 0; link < bus->links; link++) {
-		for (child = bus->link[link].children; child; child = child->sibling) {
+	for(link = 0; link < bus->links; link++) {
+		for(child = bus->link[link].children; child; child = child->sibling) {
 			if (child->ops && child->ops->enable) {
 				child->ops->enable(child);
 			}
-			printk_debug("%s %s\n", dev_path(child),
-				     child->enabled?"enabled": "disabled");
+			printk_debug("%s %s\n",
+				dev_path(child),
+				child->enabled?"enabled": "disabled");
 		}
 	}
-	for (link = 0; link < bus->links; link++) {
-		for (child = bus->link[link].children; child; child = child->sibling) {
+	for(link = 0; link < bus->links; link++) {
+		for(child = bus->link[link].children; child; child = child->sibling) {
 			if (!child->ops || !child->ops->scan_bus)
 				continue;
 			printk_debug("%s scanning...\n", dev_path(child));
@@ -101,7 +98,7 @@ unsigned int scan_static_bus(device_t bus, unsigned int max)
 		}
 	}
 
-	printk_debug("%s done\n", __FUNCTION__);
+	printk_debug("%s done\n", __func__);
 
 	return max;
 }
@@ -119,9 +116,9 @@ unsigned int scan_static_bus(device_t bus, unsigned int max)
 void enable_childrens_resources(device_t dev)
 {
 	unsigned link;
-	for (link = 0; link < dev->links; link++) {
+	for(link = 0; link < dev->links; link++) {
 		device_t child;
-		for (child = dev->link[link].children; child; child = child->sibling) {
+		for(child = dev->link[link].children; child; child = child->sibling) {
 			enable_resources(child);
 		}
 	}
@@ -172,11 +169,11 @@ struct device dev_root = {
 	.bus = &dev_root.link[0],
 	.path = { .type = DEVICE_PATH_ROOT },
 	.enabled = 1,
-	.links   = 1,
-	.link    = {
-		 [0] = {
-			 .dev = &dev_root,
-			 .link = 0,
-		 },
-	 },
+	.links = 1,
+	.link = {
+		[0] = {
+			.dev = &dev_root,
+			.link = 0,
+		},
+	},
 };

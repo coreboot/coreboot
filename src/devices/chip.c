@@ -69,7 +69,7 @@ void chip_enumerate(struct chip *chip)
 		printk_debug("Enumerating: %s\n", chip->control->name);
 	}
 
-	for (i = 0; i < MAX_CHIP_PATHS; i++) {
+	for(i = 0; i < MAX_CHIP_PATHS; i++) {
 		int identical_paths;
 		identical_paths = 
 			(i > 0) &&
@@ -90,7 +90,7 @@ void chip_enumerate(struct chip *chip)
 					device_t dev;
 					int i = 1;
 					dev = chip->dev;
-					while (dev && (i != bus)) {
+					while(dev && (i != bus)) {
 						dev = dev->next;
 						i++;
 					}
@@ -103,21 +103,21 @@ void chip_enumerate(struct chip *chip)
 				dev = alloc_dev(parent, &chip->path[i].path);
 				break;
 			}
-		} else {
+		}
+		else {
 			link += 1;
 		}
 
 		if (dev) {
 			struct chip_resource *res, *res_limit;
-			printk_spew("path (%p) %s %s",
-				    dev, dev_path(dev),
-				    identical_paths?"identical":"");
+			printk_spew("path (%p) %s %s", 
+				dev, dev_path(dev), identical_paths?"identical":"");
 			printk_spew(" parent: (%p) %s\n",
-				    dev->bus->dev,  dev_path(dev->bus->dev));
+				dev->bus->dev,  dev_path(dev->bus->dev));
 			dev->chip = chip;
 			dev->enabled = chip->path[i].enabled;
 			dev->links = link + 1;
-			for (child = chip->children; child; child = child->next) {
+			for(child = chip->children; child; child = child->next) {
 				if (!child->bus && child->link == i) {
 					child->bus = &dev->link[link];
 				}
@@ -138,8 +138,10 @@ void chip_enumerate(struct chip *chip)
 			chip->dev = dev;
 		}
 	}
-
-	for (child = chip->children; child; child = child->next) {
+	if (chip->children && !chip->dev) {
+		die("No device but children?");
+	}
+	for(child = chip->children; child; child = child->next) {
 		if (!child->bus) {
 			child->bus = &chip->dev->link[0];
 		}
@@ -167,8 +169,7 @@ void chip_enumerate(struct chip *chip)
 static void enumerate_static_device_chain(struct chip *root)
 {
 	struct chip *chip;
-
-	for (chip = root; chip; chip = chip->next) {
+	for(chip = root; chip; chip = chip->next) {
 		void (*enumerate)(struct chip *chip);
 		enumerate = chip_enumerate;
 		if (chip->control && chip->control->enumerate) {
@@ -177,7 +178,7 @@ static void enumerate_static_device_chain(struct chip *root)
 		enumerate(chip);
 	}
 
-	for (chip = root; chip; chip = chip->next) {
+	for(chip = root; chip; chip = chip->next) {
 		if (chip->children) {
 			enumerate_static_device_chain(chip->children);
 		}
@@ -208,5 +209,6 @@ static void enumerate_static_device_chain(struct chip *root)
 void enumerate_static_devices(void)
 {
 	printk_info("Enumerating static devices...\n");
+	static_root.dev = &dev_root;
 	enumerate_static_device_chain(&static_root);
 }

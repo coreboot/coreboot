@@ -54,10 +54,9 @@ device_t alloc_dev(struct bus *parent, struct device_path *path)
 	int link;
 
 	/* Find the last child of our parent */
-	for (child = parent->children; child && child->sibling; ) {
+	for(child = parent->children; child && child->sibling; ) {
 		child = child->sibling;
 	}
-
 	dev = malloc(sizeof(*dev));
 	if (dev == 0) {
 		die("DEV: out of memory.\n");
@@ -72,19 +71,18 @@ device_t alloc_dev(struct bus *parent, struct device_path *path)
 	last_dev_p = &dev->next;
 
 	/* Initialize the back pointers in the link fields */
-	for (link = 0; link < MAX_LINKS; link++) {
+	for(link = 0; link < MAX_LINKS; link++) {
 		dev->link[link].dev  = dev;
 		dev->link[link].link = link;
 	}
 
-	/* Add the new device as a children of the bus. */
+	/* Add the new device to the list of children of the bus. */
 	dev->bus = parent;
 	if (child) {
 		child->sibling = dev;
 	} else {
 		parent->children = dev;
 	}
-
 	/* If we don't have any other information about a device enable it */
 	dev->enabled = 1;
 
@@ -125,7 +123,7 @@ static void read_resources(struct bus *bus)
 	struct device *curdev;
 
 	/* Walk through all of the devices and find which resources they need. */
-	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
+	for(curdev = bus->children; curdev; curdev = curdev->sibling) {
 		unsigned links;
 		int i;
 		if (curdev->resources > 0) {
@@ -133,22 +131,20 @@ static void read_resources(struct bus *bus)
 		}
 		if (!curdev->ops || !curdev->ops->read_resources) {
 			printk_err("%s missing read_resources\n",
-				   dev_path(curdev));
+				dev_path(curdev));
 			continue;
 		}
 		if (!curdev->enabled) {
 			continue;
 		}
-
 		curdev->ops->read_resources(curdev);
-
 		/* Read in subtractive resources behind the current device */
 		links = 0;
-		for (i = 0; i < curdev->resources; i++) {
+		for(i = 0; i < curdev->resources; i++) {
 			struct resource *resource;
 			resource = &curdev->resource[i];
 			if ((resource->flags & IORESOURCE_SUBTRACTIVE) &&
-			    (!(links & (1 << resource->index))))
+				(!(links & (1 << resource->index))))
 			{
 				links |= (1 << resource->index);
 				read_resources(&curdev->link[resource->index]);
@@ -165,8 +161,8 @@ struct pick_largest_state {
 	int seen_last;
 };
 
-static void pick_largest_resource(struct pick_largest_state *state,
-				  struct device *dev, struct resource *resource)
+static void pick_largest_resource(struct pick_largest_state *state, 
+	struct device *dev, struct resource *resource)
 {
 	struct resource *last;
 	last = state->last;
@@ -175,33 +171,31 @@ static void pick_largest_resource(struct pick_largest_state *state,
 		state->seen_last = 1;
 		return;
 	}
-	if (last &&
-	    ((last->align < resource->align) ||
-	     ((last->align == resource->align) &&
-	      (last->size < resource->size)) ||
-	     ((last->align == resource->align) &&
-	      (last->size == resource->size) &&
-	      (!state->seen_last)))) {
+	if (last && (
+		    (last->align < resource->align) ||
+		    ((last->align == resource->align) &&
+			    (last->size < resource->size)) ||
+		    ((last->align == resource->align) &&
+			    (last->size == resource->size) &&
+			    (!state->seen_last)))) {
 		return;
 	}
-	if (!state->result ||
-	    (state->result->align < resource->align) ||
-	    ((state->result->align == resource->align) &&
-	     (state->result->size < resource->size))) {
+	if (!state->result || 
+		(state->result->align < resource->align) ||
+		((state->result->align == resource->align) &&
+			(state->result->size < resource->size))) {
 		state->result_dev = dev;
 		state->result = resource;
 	}    
 }
 
 static void find_largest_resource(struct pick_largest_state *state, 
-				  struct bus *bus, unsigned long type_mask,
-				  unsigned long type)
+	struct bus *bus, unsigned long type_mask, unsigned long type)
 {
 	struct device *curdev;
-
-	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
+	for(curdev = bus->children; curdev; curdev = curdev->sibling) {
 		int i;
-		for (i = 0; i < curdev->resources; i++) {
+		for(i = 0; i < curdev->resources; i++) {
 			struct resource *resource = &curdev->resource[i];
 			/* If it isn't the right kind of resource ignore it */
 			if ((resource->flags & type_mask) != type) {
@@ -211,8 +205,7 @@ static void find_largest_resource(struct pick_largest_state *state,
 			if (resource->flags & IORESOURCE_SUBTRACTIVE) {
 				struct bus *subbus;
 				subbus = &curdev->link[resource->index];
-				find_largest_resource(state, subbus,
-						      type_mask, type);
+				find_largest_resource(state, subbus, type_mask, type);
 				continue;
 			}
 			/* See if this is the largest resource */
@@ -281,12 +274,12 @@ void compute_allocate_resource(
 	min_align = 0;
 	base = bridge->base;
 
-	printk_spew("%s compute_allocate_%s: base: %08lx size: %08lx "
-		    "align: %d gran: %d\n", 
-		    dev_path(bus->dev),
-		    (bridge->flags & IORESOURCE_IO)? "io":
-		    (bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",
-		    base, bridge->size, bridge->align, bridge->gran);
+	printk_spew("%s compute_allocate_%s: base: %08lx size: %08lx align: %d gran: %d\n", 
+		dev_path(bus->dev),
+		(bridge->flags & IORESOURCE_IO)? "io":
+		(bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",
+		base, bridge->size, bridge->align, bridge->gran);
+
 
 	/* We want different minimum alignments for different kinds of
 	 * resources.  These minimums are not device type specific
@@ -305,9 +298,10 @@ void compute_allocate_resource(
 	/* Remember I haven't found anything yet. */
 	resource = 0;
 
-	/* Walk through all the devices on the current bus and compute the
-	 * addresses */
-	while ((dev = largest_resource(bus, &resource, type_mask, type))) {
+	/* Walk through all the devices on the current bus and 
+	 * compute the addresses.
+	 */
+	while((dev = largest_resource(bus, &resource, type_mask, type))) {
 		unsigned long size;
 		/* Do NOT I repeat do not ignore resources which have zero size.
 		 * If they need to be ignored dev->read_resources should not even
@@ -355,12 +349,13 @@ void compute_allocate_resource(
 			resource->flags &= ~IORESOURCE_STORED;
 			base += size;
 			
-			printk_spew("%s %02x *  [0x%08lx - 0x%08lx] %s\n",
-				    dev_path(dev),
-				    resource->index, resource->base,
-				    resource->base + resource->size - 1,
-				    (resource->flags & IORESOURCE_IO)? "io":
-				    (resource->flags & IORESOURCE_PREFETCH)? "prefmem": "mem");
+			printk_spew(
+				"%s %02x *  [0x%08lx - 0x%08lx] %s\n",
+				dev_path(dev),
+				resource->index, 
+				resource->base, resource->base + resource->size - 1,
+				(resource->flags & IORESOURCE_IO)? "io":
+				(resource->flags & IORESOURCE_PREFETCH)? "prefmem": "mem");
 		}
 	}
 	/* A pci bridge resource does not need to be a power
@@ -372,10 +367,10 @@ void compute_allocate_resource(
 	bridge->size = round(base, 1UL << bridge->gran) - bridge->base;
 
 	printk_spew("%s compute_allocate_%s: base: %08lx size: %08lx align: %d gran: %d done\n", 
-		    dev_path(dev),
-		    (bridge->flags & IORESOURCE_IO)? "io":
-		    (bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",
-		    base, bridge->size, bridge->align, bridge->gran);
+		dev_path(dev),
+		(bridge->flags & IORESOURCE_IO)? "io":
+		(bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",
+		base, bridge->size, bridge->align, bridge->gran);
 
 
 }
@@ -386,14 +381,16 @@ static void allocate_vga_resource(void)
 #warning "This function knows to much about PCI stuff, it should be just a ietrator/visitor."
 
 	/* FIXME handle the VGA pallette snooping */
-	struct device *dev, *vga = 0;
-	struct bus *bus = 0;
-
-	for (dev = all_devices; dev; dev = dev->next) {
+	struct device *dev, *vga;
+	struct bus *bus;
+	bus = 0;
+	vga = 0;
+	for(dev = all_devices; dev; dev = dev->next) {
 		if (((dev->class >> 16) == PCI_BASE_CLASS_DISPLAY) &&
 		    ((dev->class >> 8)  != PCI_CLASS_DISPLAY_OTHER)) {
 			if (!vga) {
-				printk_debug("Allocating VGA resource %s\n", dev_path(dev));
+				printk_debug("Allocating VGA resource %s\n",
+					dev_path(dev));
 				vga = dev;
 			}
 			if (vga == dev) {
@@ -408,9 +405,8 @@ static void allocate_vga_resource(void)
 	if (vga) {
 		bus = vga->bus;
 	}
-
 	/* Now walk up the bridges setting the VGA enable */
-	while (bus) {
+	while(bus) {
 		bus->bridge_ctrl |= PCI_BRIDGE_CTL_VGA;
 		bus = (bus == bus->dev->bus)? 0 : bus->dev->bus;
 	} 
@@ -432,7 +428,7 @@ void assign_resources(struct bus *bus)
 	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
 		if (!curdev->ops || !curdev->ops->set_resources) {
 			printk_err("%s missing set_resources\n",
-				   dev_path(curdev));
+				dev_path(curdev));
 			continue;
 		}
 		if (!curdev->enabled) {
@@ -474,25 +470,26 @@ void enable_resources(struct device *dev)
  * @brief Determine the existence of dynamic devices and construct dynamic
  * device tree.
  *
- * Start form the root device 'dev_root', scan the buses in the system
+ * Start from the root device 'dev_root', scan the buses in the system
  * recursively, build the dynamic device tree according to the result
  * of the probe.
  *
  * This function has no idea how to scan and probe buses and devices at all.
  * It depends on the bus/device specific scan_bus() method to do it. The
- * scan_bus() function also have to create the device structure and attach
+ * scan_bus() function also has to create the device structure and attach
  * it to the device tree. 
  */
 void dev_enumerate(void)
 {
 	struct device *root;
 	unsigned subordinate;
-
 	printk_info("Enumerating buses...\n");
-
 	root = &dev_root;
+	if (!root->ops || !root->ops->scan_bus) {
+		printk_err("dev_root missing scan_bus operation");
+		return;
+	}
 	subordinate = root->ops->scan_bus(root, 0);
-
 	printk_info("done\n");
 }
 
@@ -510,29 +507,38 @@ void dev_enumerate(void)
  */
 void dev_configure(void)
 {
-	struct device *root = &dev_root;
+	struct device *root;
 
 	printk_info("Allocating resources...\n");
 
+	root = &dev_root;
+	if (!root->ops || !root->ops->read_resources) {
+		printk_err("dev_root missing read_resources\n");
+		return;
+	}
+	if (!root->ops || !root->ops->set_resources) {
+		printk_err("dev_root missing set_resources\n");
+		return;
+	}
 	root->ops->read_resources(root);
 
 	/* Make certain the io devices are allocated somewhere safe. */
 	root->resource[0].base = DEVICE_IO_START;
 	root->resource[0].flags |= IORESOURCE_ASSIGNED;
 	root->resource[0].flags &= ~IORESOURCE_STORED;
-
-	/* Now reallocate the pci resources memory with the highest
-	 * addresses I can manage.*/
+	/* Now reallocate the pci resources memory with the
+	 * highest addresses I can manage.
+	 */
 	root->resource[1].base = 
 		round_down(DEVICE_MEM_HIGH - root->resource[1].size,
-			   1UL << root->resource[1].align);
+			1UL << root->resource[1].align);
 	root->resource[1].flags |= IORESOURCE_ASSIGNED;
 	root->resource[1].flags &= ~IORESOURCE_STORED;
 
 	/* Allocate the VGA I/O resource.. */
 	allocate_vga_resource(); 
 
-	/* now just set things into registers ... we hope ... */
+	/* Store the computed resource allocations into device registers ... */
 	root->ops->set_resources(root);
 
 	printk_info("done.\n");
@@ -565,13 +571,11 @@ void dev_initialize(void)
 	struct device *dev;
 
 	printk_info("Initializing devices...\n");
-
 	for (dev = all_devices; dev; dev = dev->next) {
 		if (dev->enabled && dev->ops && dev->ops->init) {
 			printk_debug("%s init\n", dev_path(dev));
 			dev->ops->init(dev);
 		}
 	}
-
 	printk_info("Devices initialized\n");
 }

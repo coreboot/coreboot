@@ -118,21 +118,18 @@ static void print_spew_hex16(unsigned short value){ __console_tx_hex16(BIOS_SPEW
 static void print_spew_hex32(unsigned int value) { __console_tx_hex32(BIOS_SPEW, value); }
 static void print_spew(const char *str) { __console_tx_string(BIOS_SPEW, str); }
 
-#define __STR(X) #X
-#define STR(X) __STR(X)
-
 #ifndef LINUXBIOS_EXTRA_VERSION
-#define LINUXBIOS_EXTRA_VERSION
+#define LINUXBIOS_EXTRA_VERSION ""
 #endif
 
 static void console_init(void)
 {
 	static const char console_test[] = 
 		"\r\n\r\nLinuxBIOS-"
-		STR(LINUXBIOS_VERSION)
-		STR(LINUXBIOS_EXTRA_VERSION)
+		LINUXBIOS_VERSION
+		LINUXBIOS_EXTRA_VERSION
 		" "
-		STR(LINUXBIOS_BUILD)
+		LINUXBIOS_BUILD
 		" starting...\r\n";
 	print_info(console_test);
 }

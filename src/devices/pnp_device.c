@@ -76,25 +76,30 @@ static void pnp_set_resource(device_t dev, struct resource *resource)
 	/* Now store the resource */
 	if (resource->flags & IORESOURCE_IO) {
 		pnp_set_iobase(dev, resource->index, resource->base);
-	} else if (resource->flags & IORESOURCE_DRQ) {
+	}
+	else if (resource->flags & IORESOURCE_DRQ) {
 		pnp_set_drq(dev, resource->index, resource->base);
-	} else if (resource->flags  & IORESOURCE_IRQ) {
+	}
+	else if (resource->flags  & IORESOURCE_IRQ) {
 		pnp_set_irq(dev, resource->index, resource->base);
-	} else {
+	}
+	else {
 		printk_err("ERROR: %s %02x unknown resource type\n",
-			   dev_path(dev), resource->index);
+			dev_path(dev), resource->index);
 		return;
 	}
 	resource->flags |= IORESOURCE_STORED;
 
-	printk_debug("%s %02x <- [0x%08lx - 0x%08lx] %s\n", dev_path(dev),
-		     resource->index, resource->base,
-		     resource->base + resource->size - 1,
-		     (resource->flags & IORESOURCE_IO)? "io":
-		     (resource->flags & IORESOURCE_DRQ)? "drq":
-		     (resource->flags & IORESOURCE_IRQ)? "irq":
-		     (resource->flags & IORESOURCE_MEM)? "mem":
-		     "???");
+	printk_debug(
+		"%s %02x <- [0x%08lx - 0x%08lx] %s\n",
+		dev_path(dev),
+		resource->index,
+		resource->base,  resource->base + resource->size - 1,
+		(resource->flags & IORESOURCE_IO)? "io":
+		(resource->flags & IORESOURCE_DRQ)? "drq":
+		(resource->flags & IORESOURCE_IRQ)? "irq":
+		(resource->flags & IORESOURCE_MEM)? "mem":
+		"???");
 }
 
 void pnp_set_resources(device_t dev)
@@ -105,7 +110,7 @@ void pnp_set_resources(device_t dev)
 	pnp_set_logical_device(dev);
 
 	/* Paranoia says I should disable the device here... */
-	for (i = 0; i < dev->resources; i++) {
+	for(i = 0; i < dev->resources; i++) {
 		pnp_set_resource(dev, &dev->resource[i]);
 	}
 }
@@ -133,8 +138,7 @@ struct device_operations pnp_ops = {
 
 /* PNP chip opertations */
 
-static void pnp_get_ioresource(device_t dev, unsigned index,
-			       struct io_info *info)
+static void pnp_get_ioresource(device_t dev, unsigned index, struct io_info *info)
 {
 	struct resource *resource;
 	uint32_t size;
@@ -156,13 +160,17 @@ static void get_resources(device_t dev, struct pnp_info *info)
 {
 	struct resource *resource;
 
-//	pnp_set_logical_device(dev);   // coment out by LYH
-
 	if (info->flags & PNP_IO0) {
 		pnp_get_ioresource(dev, PNP_IDX_IO0, &info->io0);
 	}
 	if (info->flags & PNP_IO1) {
 		pnp_get_ioresource(dev, PNP_IDX_IO1, &info->io1);
+	}
+	if (info->flags & PNP_IO2) {
+		pnp_get_ioresource(dev, PNP_IDX_IO2, &info->io2);
+	}
+	if (info->flags & PNP_IO3) {
+		pnp_get_ioresource(dev, PNP_IDX_IO3, &info->io3);
 	}
 	if (info->flags & PNP_IRQ0) {
 		resource = get_resource(dev, PNP_IDX_IRQ0);
@@ -187,7 +195,7 @@ static void get_resources(device_t dev, struct pnp_info *info)
 } 
 
 void pnp_enumerate(struct chip *chip, unsigned functions, 
-		   struct device_operations *ops, struct pnp_info *info)
+	struct device_operations *ops, struct pnp_info *info)
 {
 	struct device_path path;
 	device_t dev;
@@ -199,14 +207,13 @@ void pnp_enumerate(struct chip *chip, unsigned functions,
 	path.u.pnp.port = chip->dev->path.u.pnp.port;
 	
 	/* Setup the ops and resources on the newly allocated devices */
-	for (i = 0; i < functions; i++) {
+	for(i = 0; i < functions; i++) {
 		path.u.pnp.device = info[i].function;
-
 		dev = alloc_find_dev(chip->bus, &path);
 
 		if (info[i].ops == 0) {
 			dev->ops = ops;
-		} else { 
+		} else {
 			dev->ops = info[i].ops;
 		}
 		get_resources(dev, &info[i]);

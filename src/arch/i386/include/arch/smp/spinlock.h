@@ -54,4 +54,10 @@ static inline void spin_unlock(spinlock_t *lock)
 		:"=m" (lock->lock) : : "memory");
 }
 
+/* REP NOP (PAUSE) is a good thing to insert into busy-wait loops. */
+static inline void cpu_relax(void)
+{
+	__asm__ __volatile__("rep;nop": : :"memory");
+}
+
 #endif /* ARCH_SMP_SPINLOCK_H */

@@ -2,7 +2,7 @@
 
 uses HAVE_OPTION_TABLE
 
-makedefine CPP:= $(CC) -no-gcc -x assembler-with-cpp -DASSEMBLY -E
+makedefine CPP:= $(CC) -x assembler-with-cpp -DASSEMBLY -E
 makedefine LIBGCC_FILE_NAME := $(shell $(CC) -print-libgcc-file-name)
 makedefine GCC_INC_DIR := $(shell $(CC) -print-search-dirs | sed -ne "s/install: \(.*\)/\1include/gp")
 

@@ -9,7 +9,7 @@ static void hlt(void)
 
 #endif
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__ROMCC__)
 static inline void hlt(void)
 {
 	asm("hlt");

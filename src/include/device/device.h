@@ -42,8 +42,8 @@ struct device {
 	device_t	next;		/* chain of all devices */
 
 	struct device_path path;
-	unsigned short	vendor;
-	unsigned short	device;
+	unsigned 	vendor;
+	unsigned 	device;
 	unsigned int	class;		/* 3 bytes: (base,sub,prog-if) */
 	unsigned int	hdr_type;	/* PCI header type */
 	unsigned int    enabled : 1;	/* set if we should enable the device */

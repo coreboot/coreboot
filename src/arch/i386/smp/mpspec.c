@@ -1,10 +1,9 @@
 #include <console/console.h>
 #include <cpu/cpu.h>
-#include <smp/start_stop.h>
 #include <arch/smp/mpspec.h>
 #include <string.h>
-#include <cpu/p5/cpuid.h>
-#include <cpu/p6/apic.h>
+#include <arch/cpu.h>
+#include <cpu/x86/lapic.h>
 
 unsigned char smp_compute_checksum(void *v, int len)
 {
@@ -94,30 +93,33 @@ void smp_write_processor(struct mp_config_table *mc,
  * Having the proper apicid's in the table so the non-bootstrap
  *  processors can be woken up should be enough.
  */
-void smp_write_processors(struct mp_config_table *mc, 
-			unsigned long *processor_map)
+void smp_write_processors(struct mp_config_table *mc)
 {
-	int i;
-	int processor_id;
+	int boot_apic_id;
 	unsigned apic_version;
 	unsigned cpu_features;
 	unsigned cpu_feature_flags;
-	int eax, ebx, ecx, edx;
-	processor_id = this_processors_id();
-	apic_version = apic_read(APIC_LVR) & 0xff;
-	cpuid(1, &eax, &ebx, &ecx, &edx);
-	cpu_features = eax;
-	cpu_feature_flags = edx;
-	for(i = 0; i < CONFIG_MAX_CPUS; i++) {
-		unsigned long cpu_apicid = initial_apicid[i];
+	struct cpuid_result result;
+	device_t cpu;
+	boot_apic_id = lapicid();
+	apic_version = lapic_read(LAPIC_LVR) & 0xff;
+	result = cpuid(1);
+	cpu_features = result.eax;
+	cpu_feature_flags = result.edx;
+	for(cpu = dev_root.link[1].children; cpu; cpu = cpu->sibling) {
 		unsigned long cpu_flag;
-		if(initial_apicid[i]==-1)
+		if (cpu->path.type != DEVICE_PATH_APIC) {
 			continue;
-		cpu_flag = MPC_CPU_ENABLED;
-		if (processor_map[i] & CPU_BOOTPROCESSOR) {
-			cpu_flag |= MPC_CPU_BOOTPROCESSOR;
 		}
-		smp_write_processor(mc, cpu_apicid, apic_version,
+		if (!cpu->enabled) {
+			continue;
+		}
+		cpu_flag = MPC_CPU_ENABLED;
+		if (boot_apic_id == cpu->path.u.apic.apic_id) {
+			cpu_flag = MPC_CPU_ENABLED;
+		}
+		smp_write_processor(mc, 
+			cpu->path.u.apic.apic_id, apic_version,
 			cpu_flag, cpu_features, cpu_feature_flags
 		);
 	}
@@ -136,8 +138,8 @@ void smp_write_bus(struct mp_config_table *mc,
 }
 
 void smp_write_ioapic(struct mp_config_table *mc,
-		      unsigned char id, unsigned char ver, 
-		      unsigned long apicaddr)
+	unsigned char id, unsigned char ver, 
+	unsigned long apicaddr)
 {
 	struct mpc_config_ioapic *mpc;
 	mpc = smp_next_mpc_entry(mc);

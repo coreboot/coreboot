@@ -30,11 +30,11 @@
 #include "fbcon.h"
 
 struct aty_cmap_regs {
-    u8 windex;
-    u8 lut;
-    u8 mask;
-    u8 rindex;
-    u8 cntl;
+	u8 windex;
+	u8 lut;
+	u8 mask;
+	u8 rindex;
+	u8 cntl;
 };
 
 #include <console/btext.h>
@@ -427,31 +427,29 @@ int default_blu[] = {0x00,0x00,0x00,0x00,0xaa,0xaa,0xaa,0xaa,
 #endif
 
 struct fb_var_screeninfo default_var = {
-    /* 640x480, 60 Hz, Non-Interlaced (25.175 MHz dotclock) */
-    640, 480, 640, 480, 0, 0, 8, 0,
-    {0, 8, 0}, {0, 8, 0}, {0, 8, 0}, {0, 0, 0},
-    0, 0, -1, -1, 0, 39722, 48, 16, 33, 10, 96, 2,
-    0, FB_VMODE_NONINTERLACED
+	/* 640x480, 60 Hz, Non-Interlaced (25.175 MHz dotclock) */
+	640, 480, 640, 480, 0, 0, 8, 0,
+	{0, 8, 0}, {0, 8, 0}, {0, 8, 0}, {0, 0, 0},
+	0, 0, -1, -1, 0, 39722, 48, 16, 33, 10, 96, 2,
+	0, FB_VMODE_NONINTERLACED
 };
 
 #endif /*CONFIG_CONSOLE_BTEXT*/
 
 static struct {
-    u16 pci_id, chip_type;
-    u8 rev_mask, rev_val;
-    const char *name;
-    int pll, mclk, xclk;
-    u32 features;
+	u16 pci_id, chip_type;
+	u8 rev_mask, rev_val;
+	const char *name;
+	int pll, mclk, xclk;
+	u32 features;
 } aty_chips[] = {
-    /* 3D RAGE XL PCI-66/BGA */
-    { 0x474f, 0x474f, 0x00, 0x00, m64n_xl_66, 230, 83, 63, M64F_GT | M64F_INTEGRATED | M64F_RESET_3D | M64F_GTB_DSP | M64F_SDRAM_MAGIC_PLL | M64F_EXTRA_BRIGHT | M64F_XL_DLL | M64F_MFB_TIMES_4 },
-    /* 3D RAGE XL PCI-33/BGA */
-    { 0x4752, 0x4752, 0x00, 0x00, m64n_xl_33, 230, 83, 63, M64F_GT | M64F_INTEGRATED | M64F_RESET_3D | M64F_GTB_DSP | M64F_SDRAM_MAGIC_PLL | M64F_EXTRA_BRIGHT | M64F_XL_DLL | M64F_MFB_TIMES_4 },
+	/* 3D RAGE XL PCI-66/BGA */
+	{ 0x474f, 0x474f, 0x00, 0x00, m64n_xl_66, 230, 83, 63, M64F_GT | M64F_INTEGRATED | M64F_RESET_3D | M64F_GTB_DSP | M64F_SDRAM_MAGIC_PLL | M64F_EXTRA_BRIGHT | M64F_XL_DLL | M64F_MFB_TIMES_4 },
+	/* 3D RAGE XL PCI-33/BGA */
+	{ 0x4752, 0x4752, 0x00, 0x00, m64n_xl_33, 230, 83, 63, M64F_GT | M64F_INTEGRATED | M64F_RESET_3D | M64F_GTB_DSP | M64F_SDRAM_MAGIC_PLL | M64F_EXTRA_BRIGHT | M64F_XL_DLL | M64F_MFB_TIMES_4 },
 };
 #if CONFIG_CONSOLE_BTEXT==1
-static void aty_calc_mem_refresh(struct fb_info_aty *info,
-                                        u16 id,
-                                        int xclk)
+static void aty_calc_mem_refresh(struct fb_info_aty *info, u16 id, int xclk)
 {
         int i, size;
 #if 0
@@ -484,7 +482,8 @@ static void aty_calc_mem_refresh(struct fb_info_aty *info,
         info->mem_refresh_rate = i;
 }
 #endif /*CONFIG_CONSOLE_BTEXT */
-static void ati_ragexl_init(device_t dev) {
+static void ati_ragexl_init(device_t dev) 
+{
         u32 chip_id;
 	u32 i;
     	int j;

@@ -1,8 +1,5 @@
 #include <arch/asm.h>
 #include <arch/intel.h>
-#if CONFIG_SMP==1
-#include <cpu/p6/apic.h>
-#endif
 	.section ".text"
 	.code32
 	.globl _start
@@ -39,27 +36,10 @@ _start:
 
 	/* set new stack */
 	movl	$_estack, %esp
-#if CONFIG_SMP==1
-	/* Get the cpu id */
-	movl	$APIC_DEFAULT_BASE, %edi
-	movl	APIC_ID(%edi), %eax
-	shrl	$24, %eax
 
-	/* Get the cpu index (CONFIG_MAX_CPUS on error) */
-	movl	$-4, %ebx
-1:	addl	$4, %ebx
-	cmpl	$(CONFIG_MAX_CPUS << 2), %ebx
-	je	2
-	cmpl	%eax, initial_apicid(%ebx)
-	jne	1b
-2:	shrl	$2, %ebx
-
-	/* Now compute the appropriate stack */
-	movl	%ebx, %eax
-	movl	$STACK_SIZE, %ebx
-	mull	%ebx
-	subl	%eax, %esp
-#endif
+	/* Push the cpu index and struct cpu */
+	pushl	$0
+	pushl	$0
 
 	/* push the boot_complete flag */
 	pushl	%ebp
@@ -74,7 +54,7 @@ _start:
 	 */ 
 	intel_chip_post_macro(0xfe)	/* post fe */
 
-	/* Resort the stack location */
+	/* Restore the stack location */
 	movl	%ebp, %esp
 	
 	/* The boot_complete flag has already been pushed */

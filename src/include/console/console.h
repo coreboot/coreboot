@@ -10,7 +10,7 @@ void console_tx_flush(void);
 unsigned char console_rx_byte(void);
 int console_tst_byte(void);
 void post_code(uint8_t value);
-void die(char *msg);
+void die(const char *msg);
 
 struct console_driver {
 	void (*init)(void);
@@ -20,7 +20,7 @@ struct console_driver {
 	int (*tst_byte)(void);
 };
 
-#define __console	__attribute__((unused, __section__ (".rodata.console_drivers")))
+#define __console	__attribute__((used, __section__ (".rodata.console_drivers")))
 
 /* Defined by the linker... */
 extern struct console_driver console_drivers[];

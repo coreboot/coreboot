@@ -1,39 +1,13 @@
 #include <console/console.h>
-#include <mem.h>
 #include <cpu/cpu.h>
 #include <boot/tables.h>
 #include <boot/linuxbios_tables.h>
 #include <arch/pirq_routing.h>
 #include <arch/smp/mpspec.h>
 #include <arch/acpi.h>
-#include <pc80/mc146818rtc.h>
 #include "linuxbios_table.h"
 
-#if CONFIG_SMP && CONFIG_MAX_PHYSICAL_CPUS && (CONFIG_MAX_PHYSICAL_CPUS < CONFIG_MAX_CPUS)
-static void remove_logical_cpus(unsigned long *processor_map)
-{
-	/* To turn off hyperthreading just remove the logical
-	 * cpus from the processor map.
-	 */
-	int disable_logical_cpus = !CONFIG_LOGICAL_CPUS;
-	if (get_option(&disable_logical_cpus,"hyper_threading")) {
-		disable_logical_cpus = !CONFIG_LOGICAL_CPUS;
-	}
-	if (disable_logical_cpus) {
-		/* disable logical cpus */
-		int cnt;
-		for(cnt=CONFIG_MAX_PHYSICAL_CPUS;cnt<CONFIG_MAX_CPUS;cnt++)
-			processor_map[cnt]=0;
-		printk_debug("logical cpus disabled\n");
-	}
-}
-#else
-
-#define remove_logical_cpus(processor_map) do {} while(0) 
-
-#endif /* CONFIG_SMP && CONFIG_MAX_PHYSICAL_CPUS */
-
-struct lb_memory *write_tables(struct mem_range *mem, unsigned long *processor_map)
+struct lb_memory *write_tables(void)
 {
 	unsigned long low_table_start, low_table_end;
 	unsigned long rom_table_start, rom_table_end;
@@ -56,8 +30,7 @@ struct lb_memory *write_tables(struct mem_range *mem, unsigned long *processor_m
 	post_code(0x96);
 
 	/* The smp table must be in 0-1K, 639K-640K, or 960K-1M */
-	remove_logical_cpus(processor_map);
-	low_table_end = write_smp_table(low_table_end, processor_map);
+	low_table_end = write_smp_table(low_table_end);
 
 	/* Write ACPI tables */
 	/* write them in the rom area because DSDT can be large (8K on epia-m) which
@@ -73,7 +46,7 @@ struct lb_memory *write_tables(struct mem_range *mem, unsigned long *processor_m
 	}
 
 	/* The linuxbios table must be in 0-4K or 960K-1M */
-	write_linuxbios_table(processor_map, mem,
+	write_linuxbios_table(
 			      low_table_start, low_table_end,
 			      rom_table_start >> 10, rom_table_end >> 10);
 

@@ -48,6 +48,9 @@ SECTIONS
 		pci_drivers = . ;
 		*(.rodata.pci_driver)
 		epci_drivers = . ;
+		cpu_drivers = . ;
+		*(.rodata.cpu_driver)
+		ecpu_drivers = . ;
 		*(.rodata)
 		*(.rodata.*)
 		/*
@@ -84,10 +87,11 @@ SECTIONS
 	}
 	_ebss = .;
 	_end = .;
+	. = ALIGN(STACK_SIZE);
 	_stack = .;
 	.stack . : {
-		/* Reserve a stack for each possible cpu, +1 extra */
-		. = ((CONFIG_MAX_CPUS * STACK_SIZE) + STACK_SIZE) ; 
+		/* Reserve a stack for each possible cpu */
+		. = (CONFIG_MAX_CPUS * STACK_SIZE) ;
 	}
 	_estack = .;
 	_heap = .;
@@ -105,5 +109,6 @@ SECTIONS
 	/DISCARD/ : {
 		*(.comment)
 		*(.note)
+		*(.note.*)
 	}
 }

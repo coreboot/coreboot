@@ -2,11 +2,8 @@
 
 jmp	console0
 
-#define __STR(X) #X
-#define STR(X) __STR(X)
-
 #ifndef  LINUXBIOS_EXTRA_VERSION
-#define LINUXBIOS_EXTRA_VERSION
+#define LINUXBIOS_EXTRA_VERSION ""
 #endif
 
 #ifndef ASM_CONSOLE_LOGLEVEL
@@ -14,13 +11,12 @@ jmp	console0
 #endif
 console_test:
 	.ascii	"\r\n\r\nLinuxBIOS-"
-	.ascii	STR(LINUXBIOS_VERSION)
-	.ascii	STR(LINUXBIOS_EXTRA_VERSION)
+	.ascii	LINUXBIOS_VERSION
+	.ascii	LINUXBIOS_EXTRA_VERSION
 	.ascii	" "
-	.ascii	STR(LINUXBIOS_BUILD)
+	.ascii	LINUXBIOS_BUILD
 	.asciz	" starting...\r\n"
 
-#undef STR
 	/* uses:	ax, dx */
 #if CONFIG_CONSOLE_SERIAL8250
 #define __CONSOLE_INLINE_TX_AL TTYS0_TX_AL

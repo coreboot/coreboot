@@ -5,6 +5,8 @@
 #include "linuxbios_table.h"
 #include <string.h>
 #include <version.h>
+#include <device/device.h>
+#include <stdlib.h>
 
 
 struct lb_header *lb_table_init(unsigned long addr)
@@ -217,18 +219,75 @@ struct lb_memory *get_lb_mem(void)
 	return mem_ranges;
 }
 
+struct mem_range *sizeram(void)
+{
+	struct mem_range *mem, *rmem;
+	struct device *dev;
+	unsigned int count;
+	count = 0;
+	for(dev = all_devices; dev; dev = dev->next) {
+		struct resource *res, *last;
+		last = &dev->resource[dev->resources];
+		for(res = &dev->resource[0]; res < last; res++) {
+			if ((res->flags & IORESOURCE_MEM) &&
+				(res->flags & IORESOURCE_CACHEABLE)) 
+			{
+				count++;
+			}
+		}
+	}
+	rmem = mem = malloc(sizeof(*mem) * (count + 1));
+	for(dev = all_devices; dev; dev = dev->next) {
+		struct resource *res, *last;
+		last = &dev->resource[dev->resources];
+		for(res = &dev->resource[0]; res < last; res++) {
+			if ((res->flags & IORESOURCE_MEM) &&
+				(res->flags & IORESOURCE_CACHEABLE)) 
+			{
+				mem->basek = res->base >> 10;
+				mem->sizek = res->size >> 10;
+				mem++;
+			}
+		}
+	}
+	mem->basek = 0;
+	mem->sizek = 0;
+#if 0
+	for(mem = rmem; mem->sizek; mem++) {
+		printk_debug("basek: %lu sizek: %lu\n",
+			mem->basek, mem->sizek);
+	}
+#endif
+	return rmem;
+}
+
+static struct mem_range *get_ramsize(void)
+{
+	struct mem_range *mem = 0;
+	if (!mem) {
+		mem = sizeram();
+	}
+	if (!mem) {
+		printk_emerg("No memory size information!\n");
+		for(;;) {
+			/* Ensure this loop is not optimized away */
+			asm volatile("":/* outputs */:/*inputs */ :"memory");
+		}
+	}
+	return mem;
+}
+
 unsigned long write_linuxbios_table( 
-	unsigned long *processor_map, 
-	struct mem_range *ram,
 	unsigned long low_table_start, unsigned long low_table_end,
 	unsigned long rom_table_startk, unsigned long rom_table_endk)
 {
 	unsigned long table_size;
-	struct mem_range *ramp;
+	struct mem_range *ram, *ramp;
 	struct lb_header *head;
 	struct lb_memory *mem;
 	struct lb_record *rec_dest, *rec_src;
 
+	ram = get_ramsize();
 	head = lb_table_init(low_table_end);
 	low_table_end = (unsigned long)head;
 #if HAVE_OPTION_TABLE == 1

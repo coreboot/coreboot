@@ -15,7 +15,7 @@
 device_t alloc_find_dev(struct bus *parent, struct device_path *path)
 {
 	device_t child;
-	for (child = parent->children; child; child = child->sibling) {
+	for(child = parent->children; child; child = child->sibling) {
 		if (path_eq(path, &child->path)) {
 			return child;
 		}
@@ -184,7 +184,7 @@ struct resource *get_resource(device_t dev, unsigned index)
 
 	/* See if there is a resource with the appropriate index */
 	resource = 0;
-	for (i = 0; i < dev->resources; i++) {
+	for(i = 0; i < dev->resources; i++) {
 		if (dev->resource[i].index == index) {
 			resource = &dev->resource[i];
 			break;

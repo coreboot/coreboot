@@ -191,6 +191,11 @@ static inline void pnp_set_iobase(device_t dev, unsigned index, unsigned iobase)
 	pnp_write_config(dev, index + 1, iobase & 0xff);
 }
 
+static inline uint16_t pnp_read_iobase(device_t dev, unsigned index)
+{
+	return (uint16_t)((pnp_read_config(dev, index) << 8) | pnp_read_config(dev, index + 1));
+}
+
 static inline void pnp_set_irq(device_t dev, unsigned index, unsigned irq)
 {
 	pnp_write_config(dev, index, irq);

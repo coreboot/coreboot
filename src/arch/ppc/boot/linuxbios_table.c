@@ -218,7 +218,6 @@ struct lb_memory *get_lb_mem(void)
 }
 
 unsigned long write_linuxbios_table( 
-	unsigned long *processor_map, 
 	struct mem_range *ram,
 	unsigned long low_table_start, unsigned long low_table_end,
 	unsigned long rom_table_startk, unsigned long rom_table_endk)

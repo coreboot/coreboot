@@ -31,6 +31,8 @@ uses LB_CKS_RANGE_END
 uses LB_CKS_LOC
 uses MAINBOARD_PART_NUMBER
 uses MAINBOARD_VENDOR
+uses MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+uses MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 
 
 ## ROM_SIZE is the size of boot ROM that this board will use.
@@ -95,6 +97,8 @@ default CONFIG_IOAPIC=1
 ##
 default MAINBOARD_PART_NUMBER="HDAMA"
 default MAINBOARD_VENDOR="ARIMA"
+default MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID=0x161f
+default MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID=0x3016
 
 ###
 ### LinuxBIOS layout values
@@ -109,9 +113,9 @@ default ROM_IMAGE_SIZE = 65536
 default STACK_SIZE=0x2000
 
 ##
-## Use a small 16K heap
+## Use a small 32K heap
 ##
-default HEAP_SIZE=0x4000
+default HEAP_SIZE=0x8000
 
 ##
 ## Only use the option table in a normal image
@@ -158,7 +162,6 @@ default XIP_ROM_BASE = ( _ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE )
 ##
 
 arch i386 end
-#cpu k8 end
 
 ##
 ## Build the objects we have code for in this directory.
@@ -193,21 +196,20 @@ end
 ##
 ## Build our 16 bit and 32 bit linuxBIOS entry code
 ##
-mainboardinit cpu/i386/entry16.inc
-mainboardinit cpu/i386/entry32.inc
-mainboardinit cpu/i386/bist32.inc
-ldscript /cpu/i386/entry16.lds
-ldscript /cpu/i386/entry32.lds
+mainboardinit cpu/x86/16bit/entry16.inc
+mainboardinit cpu/x86/32bit/entry32.inc
+ldscript /cpu/x86/16bit/entry16.lds
+ldscript /cpu/x86/32bit/entry32.lds
 
 ##
 ## Build our reset vector (This is where linuxBIOS is entered)
 ##
 if USE_FALLBACK_IMAGE 
-	mainboardinit cpu/i386/reset16.inc 
-	ldscript /cpu/i386/reset16.lds 
+	mainboardinit cpu/x86/16bit/reset16.inc 
+	ldscript /cpu/x86/16bit/reset16.lds 
 else
-	mainboardinit cpu/i386/reset32.inc 
-	ldscript /cpu/i386/reset32.lds 
+	mainboardinit cpu/x86/32bit/reset32.inc 
+	ldscript /cpu/x86/32bit/reset32.lds 
 end
 
 ### Should this be in the northbridge code?
@@ -218,11 +220,6 @@ mainboardinit arch/i386/lib/cpu_reset.inc
 ##
 mainboardinit arch/i386/lib/id.inc
 ldscript /arch/i386/lib/id.lds
-
-##
-## Setup our mtrrs
-##
-mainboardinit cpu/k8/earlymtrr.inc
 
 ###
 ### This is the early phase of linuxBIOS startup 
@@ -241,9 +238,12 @@ end
 ##
 ## Setup RAM
 ##
-mainboardinit cpu/k8/enable_mmx_sse.inc
+mainboardinit cpu/x86/fpu/enable_fpu.inc
+mainboardinit cpu/x86/mmx/enable_mmx.inc
+mainboardinit cpu/x86/sse/enable_sse.inc
 mainboardinit ./auto.inc
-mainboardinit cpu/k8/disable_mmx_sse.inc
+mainboardinit cpu/x86/sse/disable_sse.inc
+mainboardinit cpu/x86/mmx/disable_mmx.inc
 
 ##
 ## Include the secondary Configuration files 
@@ -252,30 +252,25 @@ dir /pc80
 config chip.h
 
 northbridge amd/amdk8 "mc0"
-	pci 0:18.0
-	pci 0:18.0
-	pci 0:18.0
-	pci 0:18.1
-	pci 0:18.2
-	pci 0:18.3
-	southbridge amd/amd8131 "amd8131" link 0
+	pnp cf8.0
+	northbridge amd/amdk8 "mc1" link 0
+		pci 0:19.0
+		pci 0:19.0
+		pci 0:19.0
+		pci 0:19.1
+		pci 0:19.2
+		pci 0:19.3
+	end
+	pci 1:18.0
+	southbridge amd/amd8131 "amd8131" link 1
 		pci 0:0.0
 		pci 0:0.1
 		pci 0:1.0
 		pci 0:1.1
 	end
-	southbridge amd/amd8111 "amd8111" link 0
+	southbridge amd/amd8111 "amd8111" link 1
 		pci 0:0.0
 		pci 0:1.0 on
-		pci 0:1.1 on
-		pci 0:1.2 on
-		pci 0:1.3 on
-		pci 0:1.5 off
-		pci 0:1.6 off
-		pci 1:0.0 on
-		pci 1:0.1 on
-		pci 1:0.2 on
-		pci 1:1.0 off
 		superio NSC/pc87360 link 1
 			pnp 2e.0 off  # Floppy 
 				 io 0x60 = 0x3f0
@@ -301,29 +296,64 @@ northbridge amd/amdk8 "mc0"
 			pnp 2e.9 off # FSCM
 			pnp 2e.a off # WDT  
 		end
+		pci 0:1.1 on
+		pci 0:1.2 on 
+		pci 0:1.3 on # ACPI/SMBUS
+			chip drivers/generic/generic link 4 
+				#phillips pca9545 smbus mux
+				i2c 70
+					# analog_devices adm1026	
+					chip drivers/generic/generic link 0
+						i2c 2c
+					end
+				i2c 70
+				i2c 70
+				i2c 70
+			end
+			chip drivers/generic/generic link 4 #dimm 0-0-0
+				i2c 50
+			end
+			chip drivers/generic/generic link 4 #dimm 0-0-1
+				i2c 51
+			end 
+			chip drivers/generic/generic link 4 #dimm 0-1-0
+				i2c 52
+			end 
+			chip drivers/generic/generic link 4 #dimm 0-1-1
+				i2c 53
+			end 
+			chip drivers/generic/generic link 4 #dimm 1-0-0
+				i2c 54
+			end
+			chip drivers/generic/generic link 4 #dimm 1-0-1
+				i2c 55
+			end 
+			chip drivers/generic/generic link 4 #dimm 1-1-0
+				i2c 56
+			end 
+			chip drivers/generic/generic link 4 #dimm 1-1-1
+				i2c 57
+			end 
+		pci 0:1.5 off
+		pci 0:1.6 off
+		pci 1:0.0 on
+		pci 1:0.1 on
+		pci 1:0.2 on
+		pci 1:1.0 off
 	end
+	pci 1:18.0
+	pci 1:18.0
+	pci 1:18.1
+	pci 1:18.2
+	pci 1:18.3
 end
 
-northbridge amd/amdk8 "mc1"
-	pci 0:19.0
-	pci 0:19.0
-	pci 0:19.0
-	pci 0:19.1
-	pci 0:19.2
-	pci 0:19.3
+
+cpu amd/socket_940 "cpu0" link 1
+	apic 0
 end
 
-cpu k8 "cpu0"
-	register "ldt0" = "{ .chip = &amd8131, .ht_width=16, .ht_speed=600 }"
+cpu amd/socket_940 "cpu1" link 1
+	apic 1
 end
-
-cpu k8 "cpu1" 
-end
-
-##
-## Include the old serial code for those few places that still need it.
-##
-mainboardinit pc80/serial.inc
-mainboardinit arch/i386/lib/console.inc
-mainboardinit cpu/i386/bist32_fail.inc
 

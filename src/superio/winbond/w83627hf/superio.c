@@ -100,7 +100,7 @@ static void set_drq(struct superio *sio, unsigned drq)
 	write_config(sio, drq & 0xff, 0x74);
 }
 
-static void enable_com(struct superio *sio,
+static void setup_com(struct superio *sio,
 	struct com_ports *com, int device)
 {
 	int divisor = 115200/com->baud;
@@ -120,7 +120,7 @@ static void enable_com(struct superio *sio,
 	}
 }
 
-static void enable_floppy(struct superio *sio)
+static void setup_floppy(struct superio *sio)
 {
 	/* Remember the default resources */
 	unsigned iobase = FLOPPY_DEFAULT_IOBASE;
@@ -130,7 +130,7 @@ static void enable_floppy(struct superio *sio)
 	set_logical_device(sio, FLOPPY_DEVICE);
 	/* Disable it while initializing */
 	set_enable(sio, 0);
-	if (sio->lpt) {
+	if (sio->floppy) {
 		set_iobase0(sio, iobase);
 		set_irq0(sio, irq);
 		set_drq(sio, drq);
@@ -138,7 +138,7 @@ static void enable_floppy(struct superio *sio)
 	}
 }
 
-static void enable_parallel(struct superio *sio)
+static void setup_parallel(struct superio *sio)
 {
 	/* Remember the default resources */
 	unsigned iobase = PARALLEL_DEFAULT_IOBASE;
@@ -156,7 +156,7 @@ static void enable_parallel(struct superio *sio)
 	}
 }
 
-static void enable_keyboard(struct superio *sio)
+static void setup_keyboard(struct superio *sio)
 {
 	/* Remember the default resources */
 	unsigned iobase0 = KBC_DEFAULT_IOBASE0;
@@ -167,7 +167,7 @@ static void enable_keyboard(struct superio *sio)
 	set_logical_device(sio, KBC_DEVICE);
 	/* Disable it while initializing */
 	set_enable(sio, 0);
-	if (sio->lpt) {
+	if (sio->keyboard) {
 		set_iobase0(sio, iobase0);
 		set_iobase1(sio, iobase1);
 		set_irq0(sio, irq0);
@@ -203,44 +203,44 @@ static void enable_devices(struct superio *sio)
 
 	enter_pnp(sio);
 
-	/* enable floppy */
-	enable_floppy(sio);
+	/* enable/disable floppy */
+	setup_floppy(sio);
 
-	/* enable parallel */
-	enable_parallel(sio);
+	/* enable or disable parallel */
+	setup_parallel(sio);
 
-	/* enable com1 */
-	enable_com(sio, &sio->com1,  COM1_DEVICE);
+	/* enable/disable com1 */
+	setup_com(sio, &sio->com1,  COM1_DEVICE);
 
-	/* enable com2 */
-	enable_com(sio, &sio->com2,  COM2_DEVICE);
+	/* enable/disable com2 */
+	setup_com(sio, &sio->com2,  COM2_DEVICE);
 
-	/* enable keyboard */
-	enable_keyboard(sio);
+	/* enable/disable keyboard */
+	setup_keyboard(sio);
 
-	/* disable cir */
+	/* enable/disable cir */
 	set_logical_device(sio, CIR_DEVICE);
-	set_enable(sio, 0);
+	set_enable(sio, sio->cir);
 
-	/* disable game */
+	/*  game */
 	set_logical_device(sio, GAME_PORT_DEVICE);
-	set_enable(sio, 0);
+	set_enable(sio, sio->game);
 
-	/* disable gpio_port2 */
+	/*  gpio_port2 */
 	set_logical_device(sio, GPIO_PORT2_DEVICE);
-	set_enable(sio, 0);
+	set_enable(sio, sio->gpio2);
 
-	/* disable gpio_port3  */
+	/*  gpio_port3  */
 	set_logical_device(sio, GPIO_PORT3_DEVICE);
-	set_enable(sio, 0);
+	set_enable(sio, sio->gpio3);
 
-	/* disable acpi  */
+	/* enable/disable acpi  */
 	set_logical_device(sio, ACPI_DEVICE);
-	set_enable(sio, 0);
+	set_enable(sio, sio->acpi);
 
-	/* disable hw monitor */
+	/* enable/disable hw monitor */
 	set_logical_device(sio, HW_MONITOR_DEVICE);
-	set_enable(sio, 0);
+	set_enable(sio, sio->hwmonitor);
 
 #if 0
 	/* setup acpi registers so I am certain to get
@@ -249,6 +249,7 @@ static void enable_devices(struct superio *sio)
 	setup_acpi_registers(sio);
 #endif
 
+	// what's this.
 	write_config(sio, 1, 0x30);
 	exit_pnp(sio);
 }

@@ -473,17 +473,22 @@ struct lpt_ports {
 };
 
 struct superio {
-  struct superio_control *super; // the ops for the device. 
-  unsigned int port; // if non-zero, overrides the default port
-  // com ports. This is not done as an array (yet). 
-  // We think it's easier to set up from python if it is not an array. 
-  struct com_ports com1, com2, com3, com4;
-  // DMA, if it exists. 
-  struct lpt_ports lpt1, lpt2;
-  /* flags for each device type. Unsigned int. */
-  // low order bit ALWAYS means enable. Next bit means to enable
-  // LPT is in transition, so we leave this here for the moment. 
-  unsigned int ide, floppy, lpt;
+	struct superio_control *super; // the ops for the device. 
+	unsigned int port; // if non-zero, overrides the default port
+	// com ports. This is not done as an array (yet). 
+	// We think it's easier to set up from python if it is not an array. 
+	struct com_ports com1, com2, com3, com4;
+	// DMA, if it exists. 
+	struct lpt_ports lpt1, lpt2;
+	/* flags for each device type. Unsigned int. */
+	// low order bit ALWAYS means enable. Next bit means to enable
+	// LPT is in transition, so we leave this here for the moment. 
+	// The winbond chips really stretched the way this works. 
+	// so many functions!
+	unsigned int ide, floppy, lpt;
+	unsigned int keyboard, cir, game;
+	unsigned int gpio1, gpio2, gpio3;
+	unsigned int acpi,hwmonitor;
 };
 
 struct southbridge;

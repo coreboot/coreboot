@@ -1,0 +1,16 @@
+#!/bin/sh
+phlash=$1
+if [ "$phlash" = "" ] ; then
+    phlash=p11-0102
+fi
+dd bs=65696 conv=sync of=/tmp/$phlash.bi1 if=$phlash.bi1  	
+dd bs=65696 conv=sync of=/tmp/$phlash.bio if=$phlash.bio  	
+dd bs=65696 conv=sync of=/tmp/$phlash.bi3 if=$phlash.bi3  	
+dd bs=65696 conv=sync of=/tmp/$phlash.bi2 if=$phlash.bi2  	
+dd bs=65696 conv=sync of=/tmp/$phlash.bi5 if=$phlash.bi5  	
+dd bs=65696 conv=sync of=/tmp/$phlash.bi4 if=$phlash.bi4  	
+dd bs=65696 conv=sync of=/tmp/$phlash.bi7 if=$phlash.bi7  	
+dd bs=65696 conv=sync of=/tmp/$phlash.bi6 if=$phlash.bi6
+dd bs=65696 conv=sync of=/tmp/$phlash.bi9 if=$phlash.bi9  	
+dd bs=65696 conv=sync of=/tmp/$phlash.bi8 if=$phlash.bi8  	
+dd bs=65696 conv=sync of=/tmp/$phlash.bia if=$phlash.bia

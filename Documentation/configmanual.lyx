@@ -1,0 +1,900 @@
+#This file was created by <root> Thu Jan 11 12:04:16 2001
+#LyX 1.0 (C) 1995-1999 Matthias Ettrich and the LyX Team
+\lyxformat 2.15
+\textclass article
+\language default
+\inputencoding latin1
+\fontscheme default
+\graphics default
+\paperfontsize default
+\spacing single 
+\papersize Default
+\paperpackage a4
+\use_geometry 0
+\use_amsmath 0
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+The LinuxBIOS Configuration Tool
+\layout Author
+
+Ron Minnich
+\layout Section
+
+All you need to know
+\layout Standard
+
+LinuxBIOS consists of two parts: a small bootstrap, which brings the hardware
+ up; and a Linux kernel.
+ The kernel is built in the usual manner.
+ The bootstrap is built in a build directory, using source components that
+ reside in a source tree.
+ Unlike Linux, and very much like BSD, the bootstrap is intended to be built
+ in a directory that is the 
+\emph on 
+outside
+\emph default 
+ the source tree.
+ We structure it this way so that users can easily load the newest snapshot
+ of LinuxBIOS from the sourceforge.net server, and then build a new LinuxBIOS.
+ The directory in which LinuxBIOS is built is called the 
+\emph on 
+build
+\emph default 
+ directory; the source directory is called the 
+\emph on 
+source
+\emph default 
+ directory, and the Linux kernel directory is called (strangely enough)
+ the 
+\emph on 
+kernel
+\emph default 
+ directory.
+ 
+\layout Standard
+
+The build directory is initially empty.
+ Three files are needed to build a complete LInuxBIOS: a Makefile; a crt0.S
+ (assembly startup) file; and ldscript.ld, a script for ld to link the objects
+ into a bootstrap.
+ Note that the bootstrap and the kernel are not linked via ld; they are
+ totally seperated components.
+ The Makefile contains the list of objects used to build the bootstrap;
+ the location of the source tree; the location of the kernel; and any other
+ commands needed to build a full LinuxBIOS romimage.
+ The crt0.S file contains is just enough code to make the machine usable
+ for the rest of the bootstrap, which is itself written in C.
+ The ldscript.ld file defines address relocations for the bootstrap so it
+ will run correctly from FLASH or Disk On Chip.
+ 
+\layout Standard
+
+The LinuxBIOS configuration tool is used to build these three critical files.
+ The user writes a top-level configuration file and then runs the configuration
+ tool.
+ The tool uses other files in the source tree to set parameters for the
+ generated files, and then writes the configuration files for a given build.
+ 
+\layout Subsection
+
+Configuration file Format
+\layout Standard
+
+We show an example of a configuration file in Figure 
+\begin_inset LatexCommand \ref{sampleconfig}
+
+\end_inset 
+
+.
+ 
+\layout Standard
+
+We will describe this file line by line.
+ First, we name the build directory, in this case matsonic.
+ Next, we name the mainboard: matsonic/ms7308e.
+ Next we set a few options, such as SERIAL_CONSOLE (enable serial console
+ logging); UPDATE_MICROCODE (the bootstrap will load new microcode on the
+ broken Coppermine PIIIs if needed); ENABLE_L2_CACHE (the bootstrap will
+ correctly enable L2 cache if needed); and finally, enable the VGA frame
+ buffer.
+ The next command (
+\family typewriter 
+\size footnotesize 
+linux /usr/src/linux
+\family default 
+\size default 
+) defines the path to vmlinux.
+ Finally, the 
+\family typewriter 
+\size footnotesize 
+commandline
+\family default 
+\size default 
+ command sets the command line for Linux.
+ The minimum commandline currently required is the one which sets the root
+ file system.
+ 
+\layout Standard
+
+\begin_float fig 
+\layout Standard
+
+
+\family typewriter 
+\size footnotesize 
+# Sample config file for Matsonic MS7308E with DoC Millennium (as root)
+\layout Standard
+
+
+\family typewriter 
+\size footnotesize 
+
+\protected_separator 
+
+\layout Standard
+
+
+\family typewriter 
+\size footnotesize 
+# This will make a target directory of ./matsonic
+\layout Standard
+
+
+\family typewriter 
+\size footnotesize 
+target matsonic 
+\layout Standard
+
+
+\family typewriter 
+\size footnotesize 
+
+\protected_separator 
+
+\layout Standard
+
+
+\family typewriter 
+\size footnotesize 
+# Matsonic MS7308E mainboard
+\layout Standard
+
+
+\family typewriter 
+\size footnotesize 
+mainboard matsonic/ms7308e
+\layout Standard
+
+
+\family typewriter 
+\size footnotesize 
+
+\protected_separator 
+
+\layout Standard
+
+
+\family typewriter 
+\size footnotesize 
+# Enable Serial Console for debugging
+\layout Standard
+
+
+\family typewriter 
+\size footnotesize 
+option SERIAL_CONSOLE
+\layout Standard
+
+
+\family typewriter 
+\size footnotesize 
+
+\protected_separator 
+
+\layout Standard
+
+
+\family typewriter 
+\size footnotesize 
+# Enable MicroCode update and L2 Cache init for PII and PIII 
+\layout Standard
+
+
+\family typewriter 
+\size footnotesize 
+option UPDATE_MICROCODE
+\layout Standard
+
+
+\family typewriter 
+\size footnotesize 
+option CONFIGURE_L2_CACHE
+\layout Standard
+
+
+\family typewriter 
+\size footnotesize 
+
+\protected_separator 
+
+\layout Standard
+
+
+\family typewriter 
+\size footnotesize 
+# Use the internal VGA frame buffer device
+\layout Standard
+
+
+\family typewriter 
+\size footnotesize 
+option HAVE_FRAMEBUFFER
+\layout Standard
+
+
+\family typewriter 
+\size footnotesize 
+
+\protected_separator 
+
+\layout Standard
+
+
+\family typewriter 
+\size footnotesize 
+# Path to your kernel (vmlinux)
+\layout Standard
+
+
+\family typewriter 
+\size footnotesize 
+linux /usr/src/linux
+\layout Standard
+
+
+\family typewriter 
+\size footnotesize 
+
+\protected_separator 
+
+\layout Standard
+
+
+\family typewriter 
+\size footnotesize 
+# Kernel command line parameters
+\layout Standard
+
+
+\family typewriter 
+\size footnotesize 
+commandline root=/dev/nftla1 single
+\layout Standard
+
+
+\family typewriter 
+\size footnotesize 
+
+\protected_separator 
+
+\layout Caption
+
+
+\begin_inset LatexCommand \label{sampleconfig}
+
+\end_inset 
+
+A Sample Configuration File for the Matsonic MS7308E
+\end_float 
+\layout Standard
+
+This sample configuration file is all that you will usually need.
+ In fact, all the configuration files we have written to date involve small
+ variations on this file.
+ 
+\layout Subsection
+
+The commands you need to know
+\layout Standard
+
+There are only five commands used in the file above.
+ We describe them in Table 
+\begin_inset LatexCommand \ref{fivecommands}
+
+\end_inset 
+
+.
+ 
+\layout Standard
+
+\begin_float tab 
+\layout Standard
+\align center \LyXTable
+multicol5
+10 2 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+1 0 0 0
+0 0 1 0
+0 0 1 0
+0 0 1 0
+0 0 1 0
+1 0 0 0
+1 1 0 0
+1 1 0 0
+8 1 0 "" ""
+8 1 1 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+
+Command
+\newline 
+What it does
+\newline 
+target
+\newline 
+Name the build directory.
+ (Should we remove this? seems pointless.)
+\newline 
+mainboard
+\newline 
+Name the mainboard to be used for this build.
+ This command will 
+\newline 
+
+\newline 
+cause the tool to look in the source tree for
+\newline 
+
+\newline 
+src/<mainboard name>/Config
+\newline 
+
+\newline 
+Commands in that Config file are processed.
+ 
+\newline 
+
+\newline 
+
+\newline 
+option
+\newline 
+Set an option in the Makefile
+\newline 
+linux
+\newline 
+Name the directory in which the kernel image (vmlinux) resides
+\newline 
+commandline
+\newline 
+Set the command line for Linux
+\layout Standard
+
+
+\begin_inset LatexCommand \label{fivecommands}
+
+\end_inset 
+
+
+\end_float 
+\layout Comment
+
+A question on the target command.
+ Shouldn't it be part of the invocation of the command? We're not sure we
+ like this command.
+ 
+\layout Subsection
+
+Running the configuration tool
+\layout Standard
+
+To run the configuration tool, you need to make a build directory, then
+ run the tool.
+ The standard BSD config tool will delete and re-create build directories
+ as needed, but we are not that confident.
+ If you want the build directory removed or created, it is up to you.
+ 
+\layout Standard
+
+We show a sample run in Figure 
+\begin_inset LatexCommand \ref{samplerun}
+
+\end_inset 
+
+.
+ We cd to /tmp, make a build directory (matsonic), make a build file (matsonic.co
+nfig), and run the config tool using Python.
+ The tool will show the additional config files it processes.
+ Error handling right now is not very good, but there are some errors that
+ it will show.
+ 
+\layout Standard
+
+\begin_float fig 
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+[root@maxroach /tmp]# cd /tmp
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+[root@maxroach /tmp]# mkdir matsonic
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+[root@maxroach /tmp]# cat > matsonic.config
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+target matsonic 
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+
+\protected_separator 
+
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+# Matsonic MS7308E mainboard
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+mainboard matsonic/ms7308e
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+
+\protected_separator 
+
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+# Enable Serial Console for debugging
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+option SERIAL_CONSOLE
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+
+\protected_separator 
+
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+# Enable MicroCode update and L2 Cache init for PII and PIII 
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+option UPDATE_MICROCODE
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+option CONFIGURE_L2_CACHE
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+
+\protected_separator 
+
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+# Use the internal VGA frame buffer device
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+option HAVE_FRAMEBUFFER
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+
+\protected_separator 
+
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+# Path to your kernel (vmlinux)
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+linux /usr/src/linux
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+
+\protected_separator 
+
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+# Kernel command line parameters
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+commandline root=/dev/hda1
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+[root@maxroach /tmp]# python ~/src/freebios/util/config/NLBConfig.py matsonic.conf
+ig ~/src/freebios
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+Will place Makefile, crt0.S, ldscript.ld in
+\protected_separator 
+ matsonic
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+Process config file:
+\protected_separator 
+ /root/src/freebios/src/mainboard/matsonic/ms7308e/Config
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+Process config file:
+\protected_separator 
+ /root/src/freebios/src/northsouthbridge/sis/630/Config
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+Added ram init file:
+\protected_separator 
+ northsouthbridge/sis/630/raminit.inc
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+Process config file:
+\protected_separator 
+ /root/src/freebios/src/cpu/p5/Config
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+Process config file:
+\protected_separator 
+ /root/src/freebios/src/cpu/p6/Config
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+Process config file:
+\protected_separator 
+ /root/src/freebios/src/lib/Config
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+Now Process the base files
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+Makebase is : /root/src/freebios/util/config/make.base :
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+Trying to create
+\protected_separator 
+ matsonic/Makefile
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+Trying to create
+\protected_separator 
+ matsonic/ldscript.ld
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+Trying to create
+\protected_separator 
+ matsonic/crt0.S
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+Check for crt0.S param file: /root/src/freebios/src/include/northsouthbridge/sis/
+630/param.h
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+
+\protected_separator 
+Adding include to crt0.S for this parameter file:
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+
+\protected_separator 
+ #include <northsouthbridge/sis/630/param.h>
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+
+\protected_separator 
+
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+[root@maxroach /tmp]# 
+\layout Standard
+
+
+\family typewriter 
+\size scriptsize 
+
+\protected_separator 
+
+\layout Caption
+
+
+\begin_inset LatexCommand \label{samplerun}
+
+\end_inset 
+
+Running the config tool.
+ Your output may vary somewhat.
+ 
+\end_float 
+\layout Standard
+
+That is about all you should need to know to build most Linux kernels.
+ In the next section we will cover more detail, for those who need to know
+ more.
+ 
+\layout Section
+
+More than you need to know
+\layout Standard
+
+The config tool is written in Python, and processes files written in a little
+ language.
+ Most of the commands in the little language set values of variables in
+ the program, or add elements to lists.
+ Some of the commands result in other files being read in and processed.
+ In most cases these are other configuration files.
+ Commands that name hardware (such as the 
+\family typewriter 
+mainboard
+\family default 
+ command) in most cases search for a configuration file in the path TOP/src/<nam
+e>/Config, where TOP represents the top of the source tree.
+ For an example, see Table 
+\begin_inset LatexCommand \ref{fivecommands}
+
+\end_inset 
+
+.
+ 
+\layout Standard
+
+The naming of resources in most cases is <vendor id>/<hardware>.
+ We show the resource names in Table 
+\begin_inset LatexCommand \ref{resourcepaths}
+
+\end_inset 
+
+.
+ 
+\layout Standard
+
+\begin_float tab 
+\layout Standard
+\align center \LyXTable
+multicol5
+12 2 0 0 -1 -1 -1 -1
+1 1 0 0
+1 0 0 0
+1 0 0 0
+0 0 1 0
+0 0 1 0
+1 0 0 0
+1 0 0 0
+0 0 1 0
+0 0 1 0
+1 0 0 0
+1 0 0 0
+1 1 0 0
+8 1 0 "" ""
+8 1 1 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+
+Resource Name
+\newline 
+Path
+\newline 
+mainboard
+\newline 
+TOP/src/mainboard/<vendor>/<partname>
+\newline 
+cpu
+\newline 
+TOP/src/cpu/<partname>.
+ 
+\newline 
+
+\newline 
+NOTE: no vendor in this path.
+ We did this because so much of this 
+\newline 
+
+\newline 
+code is generic.
+ Was this right?
+\newline 
+northbridge
+\newline 
+TOP/src/northbridge/<vendor>/<partname>
+\newline 
+northsouthbridge
+\newline 
+TOP/src/northsouthbridge/<vendor>/<partname>
+\newline 
+
+\newline 
+NOTE: sets path for northbridge and southbridge, 
+\newline 
+
+\newline 
+since this command is for integrated chipsets (i.e.
+ SiS 630)
+\newline 
+southbridge
+\newline 
+TOP/src/southbridge/<vendor>/<partname>
+\newline 
+superio
+\newline 
+TOP/src/superio/<vendor>/<partname>
+\newline 
+pcibridge
+\newline 
+TOP/src/pcibridge/<vendor>/<partname>
+\layout Caption
+
+
+\begin_inset LatexCommand \label{resourcepaths}
+
+\end_inset 
+
+How resources are named
+\end_float 
+\layout Standard
+
+The commands and their effects are shown in Table 
+\layout Standard
+
+\the_end

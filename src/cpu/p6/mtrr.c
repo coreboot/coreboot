@@ -120,9 +120,20 @@ void intel_set_fixed_mtrr()
 /* setting variable mtrr, comes from linux kernel source */
 void intel_set_var_mtrr(unsigned int reg, unsigned long base, unsigned long size, unsigned char type)
 {
+	unsigned int tmp;
+
 	if (reg >= 8)
 		return;
 
+	// it is recommended that we disable and enable cache when we 
+	// do this. 
+	/* Disable cache */
+	/* Write back the cache and flush TLB */
+	asm volatile ("movl  %%cr0, %0\n\t"
+		      "orl  $0x40000000, %0\n\t"
+		      "wbinvd\n\t"
+		      "movl  %0, %%cr0\n\t"
+		      "wbinvd\n\t":"=r" (tmp)::"memory");
 	if (size == 0) {
 		/* The invalid bit is kept in the mask, so we simply clear the
 		   relevant mask register to disable a range. */
@@ -131,6 +142,13 @@ void intel_set_var_mtrr(unsigned int reg, unsigned long base, unsigned long size
 		wrmsr (MTRRphysBase_MSR (reg), base | type, 0);
 		wrmsr (MTRRphysMask_MSR (reg), ~(size - 1) | 0x800, 0);
 	}
+
+	// turn cache back on. 
+
+	asm volatile ("movl  %%cr0, %0\n\t"
+		      "andl  $0x9fffffff, %0\n\t"
+		      "movl  %0, %%cr0\n\t":"=r" (tmp)::"memory");
+
 }
 
 /* setting up variable and fixed mtrr
@@ -154,7 +172,7 @@ void intel_set_mtrr(unsigned long rambase, unsigned long ramsizeK)
 	// so there is no problem with letting MTRR 0 overlap MTRR 1
 	printk(KERN_INFO "set_mtrr: rambase is 0x%x, ramsizeK is 0x%x\n", 
 		rambase, ramsizeK);
-#if 0
+#if 1
 	// why doesn't this work! machine hangs!
 	printk(KERN_INFO "setting MTRR 0 size to 0x%x\n", 
 	       (ramsizeK + 4096) * 1024);

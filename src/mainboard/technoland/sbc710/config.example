@@ -1,0 +1,23 @@
+# Sample config file for technoland sbc710
+
+target tlsbc710
+
+mainboard technoland/sbc710
+
+# Enable Serial Console for debugging
+option SERIAL_CONSOLE
+option NO_KEYBOARD
+
+# Enable MicroCode update and L2 Cache init for PII and PIII
+option UPDATE_MICROCODE
+#option CONFIGURE_L2_CACHE
+
+option INBUF_COPY
+option DEFAULT_CONSOLE_LOGLEVEL=9
+option DEBUG
+
+# Path to your kernel (vmlinux)
+linux ~/src/bios/linux-2.4.7-sis
+
+# Kernel command line parameters
+commandline root=/dev/hda6 console=ttyS0,115200 FS_MODE=ro hda=flash hdb=flash

@@ -1,0 +1,32 @@
+arch i386
+mainboardinit cpu/i386/entry16.inc
+ldscript cpu/i386/entry16.lds
+mainboardinit cpu/i386/reset16.inc
+ldscript cpu/i386/reset16.lds
+
+# mainboardinit superio/NSC/pc87309/setup_serial.inc
+mainboardinit pc80/serial.inc
+northbridge intel/440bx
+southbridge intel/piix4e
+mainboardinit cpu/p6/earlymtrr.inc
+
+#superio NSC/pc87309
+nsuperio winbond/w83977ef
+nsuperio winbond/w83877tf
+
+option ENABLE_FIXED_AND_VARIABLE_MTRRS
+option PIIX4_DEVFN=0x38
+option NO_KEYBOARD
+option HAVE_PIRQ_TABLE
+option ZKERNEL_START=0xfffc0000
+option ZKERNEL_MASK=0x7f 
+option L440BX
+
+object mainboard.o
+object irq_tables.o
+
+cpu p6
+cpu p5
+
+
+

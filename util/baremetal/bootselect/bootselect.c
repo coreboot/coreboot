@@ -15,12 +15,11 @@
 #include <printk.h>
 #include <rom/read_bytes.h>
 #include <boot/elf.h>
+#include <preboot.h>
 
 
 #define DPRINTF( x... ) 
 //#define DPRINTF printk
-
-extern struct lb_memory *get_lbmem(void);
 
 char buffer[16];
 
@@ -34,14 +33,12 @@ int main(void) {
 	while(1) {
 		printk("Welcome to the LinuxLabs boot chooser!\n");
 
-		lbmem = get_lbmem();
-
 		DPRINTF("Got lbmem struct: %08x\n", (unsigned int) lbmem);
 
 		if(choose_stream(&rom_stream) <0)
 			return(-1);
 
-		elfboot(&rom_stream, lbmem);
+		elfboot(&rom_stream, preboot_param);
 	}
 
 	outb(0x0e, 0x3f9);

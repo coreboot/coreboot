@@ -8,6 +8,8 @@ LB_SOURCE=../../../src
 
 DEPS = printk.o serial_subr.o subr.o vsprintf.o memcpy.o malloc.o memset.o compute_ip_checksum.o elfboot.o boot.o ide.o linuxbios.o delay_tsc.o
 
+all: baremetal.a _main.o
+
 baremetal.a : $(DEPS)
 	ar -cr baremetal.a $(DEPS)	
 

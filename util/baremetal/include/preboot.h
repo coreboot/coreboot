@@ -10,4 +10,13 @@ typedef struct pre_boot_param {
 	struct lb_memory *lbmem;
 } __attribute__ ((packed)) pre_boot_param_t;
 
+
+extern struct lb_memory *lbmem;
+extern struct lb_memory *get_lbmem(void);
+
+extern unsigned long int preboot_ramtop;
+extern pre_boot_param_t *preboot_param;
+
+extern int main();
+
 #endif

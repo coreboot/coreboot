@@ -1,0 +1,20 @@
+on the cs5530 southbridge, 
+
+setpci -s 0:12.0 52.b=ee
+setpci -x 0:12.0 5b.b= 0x20 (| with whatever is there)
+
+I am making this a general-purpose userland flash burner -- RGM
+
+Earlier notes from Ollie:
+
+Here is some utilities for using/programming flash ROM on SiS 630/950 M/Bs
+
+	1. flash_on, turnning on the flash writer enable for 630/950 M/Bs,
+ 	   you have to run this before load DoC drivers.
+
+	2. flash_rom, use your 630/950 M/Bs as a flash programmer for some
+	   flash parts. This utility is made as modular as possible. If
+	   you find your flash part is not supported, you can add a driver
+	   your own. Or sending me the data sheet.
+
+Ollie

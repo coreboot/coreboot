@@ -142,7 +142,7 @@ static void enumerate(struct chip *chip)
 }
 
 struct chip_operations superio_via_vt1211_control = {
+	CHIP_NAME("VIA vt1211")
 	.enumerate = enumerate,
 	.enable    = superio_init,
-	.name      = "VIA vt1211"
 };

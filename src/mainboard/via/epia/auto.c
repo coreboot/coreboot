@@ -2,7 +2,9 @@
 
 #include <stdint.h>
 #include <device/pci_def.h>
+#if 0
 #include <cpu/x86/lapic.h>
+#endif
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
@@ -12,6 +14,7 @@
 #include "ram/ramtest.c"
 #include "northbridge/via/vt8601/raminit.h"
 #include "cpu/x86/mtrr/earlymtrr.c"
+#include "cpu/x86/bist.h"
 
 /*
  */
@@ -93,14 +96,19 @@ static void enable_shadow_ram(void)
 	pci_write_config8(dev, 0x63, shadowreg);
 }
 
-static void main(void)
+static void main(unsigned long bist)
 {
 	unsigned long x;
 	
+	if (bist == 0) {
+		early_mtrr_init();
+	}
 	enable_vt8231_serial();
-
 	uart_init();
 	console_init();
+
+	/* Halt if there was a built in self test failure */
+	report_bist_failure(bist);
 	
 	enable_mainboard_devices();
 	enable_smbus();
@@ -134,5 +142,4 @@ static void main(void)
 		ram_check(check_addrs[i].lo, check_addrs[i].hi);
 	}
 #endif
-	early_mtrr_init();
 }

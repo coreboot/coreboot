@@ -3,14 +3,9 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-
-#include <arch/io.h>
-#include "../../../northbridge/amd/amdk8/northbridge.h"
 #include "chip.h"
 
-
-struct chip_operations mainboard_Iwill_DK8S2_control = {
-	.enumerate = enumerate, 
-	.name      = "Iwill DK8S2 mainboard ",
+struct chip_operations mainboard_Iwill_DK8S2_ops = {
+	CHIP_NAME("Iwill DK8S2 mainboard")
 };
 

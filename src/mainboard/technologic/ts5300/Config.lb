@@ -134,22 +134,22 @@ driver mainboard.o
 ## Romcc output
 ##
 makerule ./failover.E
-	depends "$(MAINBOARD)/failover.c" 
-	action "$(CPP) -I$(TOP)/src $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/failover.c > ./failover.E"
+	depends "$(MAINBOARD)/failover.c ./romcc" 
+	action "./romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
 end
 
 makerule ./failover.inc
-	depends "./failover.E ./romcc"
-	action "./romcc -O -mcpu=c3 -o failover.inc --label-prefix=failover ./failover.E"
+	depends "$(MAINBOARD)/failover.c ./romcc"
+	action "./romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
 end
 
 makerule ./auto.E 
-	depends	"$(MAINBOARD)/auto.c" 
-	action	"$(CPP) -I$(TOP)/src $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
+	depends	"$(MAINBOARD)/auto.c option_table.h ./romcc" 
+	action	"./romcc -E -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
 end
 makerule ./auto.inc 
-	depends "./auto.E ./romcc"
-	action	"./romcc   -O -mcpu=c3 ./auto.E "
+	depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
+	action	"./romcc    -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
 end
 
 ##
@@ -218,5 +218,6 @@ chip northbridge/amd/sc520
 		register "enable_keyboard" = "0"
 		register "enable_nvram" = "1"
 	end
-	chip cpu/amd/sc520
+	chip cpu/amd/sc520 
+	end
 end

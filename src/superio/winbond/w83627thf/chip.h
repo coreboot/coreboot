@@ -5,7 +5,7 @@
 #define SIO_COM2_BASE   0x2F8
 #endif
 
-extern struct chip_operations superio_winbond_w83627thf_control;
+extern struct chip_operations superio_winbond_w83627thf_ops;
 
 #include <pc80/keyboard.h>
 #include <uart8250.h>

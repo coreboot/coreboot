@@ -16,21 +16,23 @@
 #include "w83627hf.h"
 
 
-void pnp_enter_ext_func_mode(device_t dev) {
+static void pnp_enter_ext_func_mode(device_t dev) 
+{
         outb(0x87, dev->path.u.pnp.port);
         outb(0x87, dev->path.u.pnp.port);
 }
-void pnp_exit_ext_func_mode(device_t dev) {
+static void pnp_exit_ext_func_mode(device_t dev) 
+{
         outb(0xaa, dev->path.u.pnp.port);
 }
 
-void pnp_write_hwm(unsigned long port_base, uint8_t reg, uint8_t value)
+static void pnp_write_hwm(unsigned long port_base, uint8_t reg, uint8_t value)
 {
         outb(reg, port_base+5);
         outb(value, port_base+6);
 }
 
-uint8_t pnp_read_hwm(unsigned long port_base, uint8_t reg)
+static uint8_t pnp_read_hwm(unsigned long port_base, uint8_t reg)
 {
         outb(reg, port_base + 5);
         return inb(port_base + 6);
@@ -215,7 +217,7 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations superio_winbond_w83627hf_ops = {
-//	.name       = "Winbond w83627hf",
+	CHIP_NAME("Winbond w83627hf")
 	.enable_dev = enable_dev,
 };
 

@@ -6,7 +6,8 @@
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
-#include <arch/smp/lapic.h>
+#include <cpu/x86/lapic.h>
+#include <arch/cpu.h>
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
@@ -15,13 +16,15 @@
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/amd/amd8111/amd8111_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
-#include "cpu/k8/apic_timer.c"
+#include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
-#include "cpu/p6/boot_cpu.c"
+#include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
 #include "northbridge/amd/amdk8/cpu_rev.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
+#include "cpu/amd/mtrr/amd_earlymtrr.c"
+#include "cpu/x86/bist.h"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
@@ -41,6 +44,10 @@ static void soft_reset(void)
 	pci_write_config8(PCI_DEV(0, 0x04, 0), 0x47, 1);
 }
 
+/*
+ * GPIO16 of 8111 will control H0_MEMRESET_L
+ * GPIO17 of 8111 will control H1_MEMRESET_L
+ */
 static void memreset_setup(void)
 {
 	if (is_cpu_pre_c0()) {
@@ -126,12 +133,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #define FIRST_CPU  1
 #define SECOND_CPU 1
 #define TOTAL_CPUS (FIRST_CPU + SECOND_CPU)
-static void main(void)
+static void main(unsigned long bist)
 {
-	/*
-	 * GPIO28 of 8111 will control H0_MEMRESET_L
-	 * GPIO29 of 8111 will control H1_MEMRESET_L
-	 */
 	static const struct mem_controller cpu[] = {
 #if FIRST_CPU
 		{
@@ -156,23 +159,30 @@ static void main(void)
 		},
 #endif
 	};
+
 	int needs_reset;
+	if (bist == 0) {
+		/* Skip this if there was a built in self test failure */
+		amd_early_mtrr_init();
+		enable_lapic();
+		init_timer();
+		/* Has this cpu already booted? */
+		if (cpu_init_detected()) {
+			asm volatile ("jmp __cpu_reset");
+		}
 
-	enable_lapic();
-	init_timer();
-
-	if (cpu_init_detected()) {
-		asm("jmp __cpu_reset");
+		distinguish_cpu_resets();
+		if (!boot_cpu()) {
+			stop_this_cpu();
+		}
 	}
-
-	distinguish_cpu_resets();
-	if (!boot_cpu()) {
-		stop_this_cpu();
-	}
-
+	/* Setup the console */
         w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
 	uart_init();
 	console_init();
+
+	/* Halt if there was a built in self test failure */
+	report_bist_failure(bist);
 
 #if 0
 	print_pci_devices();

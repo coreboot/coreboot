@@ -5,7 +5,10 @@
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
+#if 0
 #include <arch/smp/lapic.h>
+#endif
+#include <arch/hlt.h>
 //#include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
@@ -14,16 +17,16 @@
 #include "southbridge/intel/i82801dbm/i82801dbm_early_smbus.c"
 #include "northbridge/intel/i855pm/raminit.h"
 
-#if 1
+#if 0
 #include "cpu/p6/apic_timer.c"
 #include "lib/delay.c"
 #endif
 
-#include "cpu/p6/boot_cpu.c"
+#include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/intel/i855pm/debug.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c" 
-
-#include "cpu/p6/earlymtrr.c"
+#include "cpu/x86/mtrr/earlymtrr.c"
+#include "cpu/x86/bist.h"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
@@ -57,7 +60,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/intel/i855pm/reset_test.c"
 #include "sdram/generic_sdram.c"
 
-static void main(void)
+static void main(unsigned long bist)
 {
 	static const struct mem_controller memctrl[] = {
 		{
@@ -66,15 +69,21 @@ static void main(void)
 		},
 	};
 
-#if 1
-        enable_lapic();
-        init_timer();
+	if (bist == 0) {
+		early_mtrr_init();
+#if 0
+		enable_lapic();
+		init_timer();
 #endif
+	}
         
         w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
         uart_init();
         console_init();
 
+	/* Halt if there was a built in self test failure */
+	report_bist_failure(bist);
+	
 #if 0
 	print_pci_devices();
 #endif

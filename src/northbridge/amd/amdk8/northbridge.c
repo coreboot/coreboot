@@ -717,6 +717,7 @@ static void enable_dev(struct device *dev)
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
 		dev->ops = &pci_domain_ops;
+		pci_set_method_conf1();
 	}
 	else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
 		dev->ops = &cpu_bus_ops;
@@ -724,5 +725,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations northbridge_amd_amdk8_ops = {
+	CHIP_NAME("AMD K8 Northbridge")
 	.enable_dev = enable_dev,
 };

@@ -2,7 +2,9 @@
 
 #include <stdint.h>
 #include <device/pci_def.h>
-#include <cpu/p6/apic.h>
+#if 0
+#include <cpu/x86/lapic.h>
+#endif
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
@@ -11,7 +13,8 @@
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
 #include "northbridge/via/vt8601/raminit.h"
-#include "cpu/p6/earlymtrr.c"
+#include "cpu/x86/mtrr/earlymtrr.c"
+#include "cpu/x86/bist.h"
 
 /*
  */
@@ -23,10 +26,22 @@ void udelay(int usecs)
 }
 
 #include "lib/delay.c"
-#include "cpu/p6/boot_cpu.c"
+#include "cpu/x86/lapic/boot_cpu.c"
 #include "debug.c"
 
+#include "southbridge/via/vt8231/vt8231_early_smbus.c"
+
+
 #include "southbridge/via/vt8231/vt8231_early_serial.c"
+static inline int spd_read_byte(unsigned device, unsigned address)
+{
+	unsigned char c;
+	c = smbus_read_byte(device, address);
+	return c;
+}
+
+#include "northbridge/via/vt8601/raminit.c"
+
 
 static void enable_mainboard_devices(void) 
 {
@@ -68,16 +83,22 @@ static void enable_shadow_ram(void)
 	pci_write_config8(dev, 0x63, shadowreg);
 }
 
-static void main(void)
+static void main(unsigned long bist)
 {
 	unsigned long x;
-	/*	init_timer();*/
-	outb(5, 0x80);
-	
-	enable_vt8231_serial();
 
+	if (bist == 0) {
+		early_mtrr_init();
+	}
+	enable_vt8231_serial();
 	uart_init();
 	console_init();
+
+	/* Halt if there was a built in self test failure */
+	report_bist_failure(bist);
+
+	/*	init_timer();*/
+	outb(5, 0x80);
 	
 	enable_mainboard_devices();
 	enable_smbus();
@@ -102,5 +123,4 @@ static void main(void)
 		ram_check(check_addrs[i].lo, check_addrs[i].hi);
 	}
 #endif
-	early_mtrr_init();
 }

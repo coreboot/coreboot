@@ -7,6 +7,8 @@
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
+#include "option_table.h"
+#include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 

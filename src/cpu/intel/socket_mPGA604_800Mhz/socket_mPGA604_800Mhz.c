@@ -3,5 +3,5 @@
 
 
 struct chip_operations cpu_intel_socket_mPGA604_800Mhz_control = {
-	.name = "socket mPGA604_800Mhz",
+	CHIP_NAME("socket mPGA604_800Mhz")
 };

@@ -117,6 +117,8 @@ default CONFIG_IOAPIC=1
 ##
 default MAINBOARD_PART_NUMBER="E325"
 default MAINBOARD_VENDOR="IBM"
+#default MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID=0x161f
+#default MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID=0x3016
 
 ###
 ### LinuxBIOS layout values
@@ -133,7 +135,7 @@ default STACK_SIZE=0x2000
 ##
 ## Use a small 16K heap
 ##
-default HEAP_SIZE=0x4000
+default HEAP_SIZE=0x8000
 
 ##
 ## Only use the option table in a normal image

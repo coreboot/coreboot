@@ -1,12 +1,14 @@
 #include <arch/romcc_io.h>
 #include "w83627hf.h"
 
-static inline void pnp_enter_ext_func_mode(device_t dev) {
+static inline void pnp_enter_ext_func_mode(device_t dev) 
+{
 	unsigned port = dev>>8;
         outb(0x87, port);
         outb(0x87, port);
 }
-static void pnp_exit_ext_func_mode(device_t dev) {
+static void pnp_exit_ext_func_mode(device_t dev) 
+{
 	unsigned port = dev>>8;
         outb(0xaa, port);
 }

@@ -3,11 +3,8 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-
-#include <arch/io.h>
-#include "../../../northbridge/amd/amdk8/northbridge.h"
 #include "chip.h"
 
-struct chip_operations mainboard_ibm_e325_control = {
-	.name      = "IBM E325 mainboard ",
+struct chip_operations mainboard_ibm_e325_ops = {
+	CHIP_NAME("IBM E325 mainboard ")
 };

@@ -3,5 +3,5 @@
 
 
 struct chip_operations cpu_amd_socket_754_ops = {
-	.name = "socket 754",
+	CHIP_NAME("socket 754")
 };

@@ -11,15 +11,19 @@
 #  archive for more details.
 #     
 
+LBROOT=$1
 
 # /path/to/freebios2/
-LBROOT=$( cd ../..; pwd )
+if [ -z "$LBROOT" ] ; then
+	LBROOT=$( cd ../..; pwd )
+fi
+
 
 # Where shall we place all the build trees?
 TARGET=$( pwd )/linuxbios-builds
 
 # path to payload. Should be more generic
-PAYLOAD=$HOME/tg3--ide_disk.zelf
+PAYLOAD=/dev/null
 
 # Lines of error context to be printed in FAILURE case
 CONTEXT=5
@@ -46,7 +50,7 @@ function mainboards
 	
 	VENDOR=$1
 	
-	ls -1 $LBROOT/src/mainboard/$VENDOR | grep -v CVS
+	ls -1 $LBROOT/src/mainboard/$VENDOR | grep -v CVS 
 }
 
 function architecture
@@ -71,14 +75,14 @@ mainboard VENDOR/MAINBOARD
 
 romimage "normal"
 	option USE_FALLBACK_IMAGE=0
-	option ROM_IMAGE_SIZE=0x10000
+	option ROM_IMAGE_SIZE=0x13000
 	option LINUXBIOS_EXTRA_VERSION=".0-normal"
 	payload PAYLOAD
 end
 
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
-	option ROM_IMAGE_SIZE=0x10000
+	option ROM_IMAGE_SIZE=0x13000
 	option LINUXBIOS_EXTRA_VERSION=".0-fallback"
 	payload PAYLOAD
 end
@@ -148,8 +152,10 @@ function compile_target
 	cd $TARGET/${VENDOR}_${MAINBOARD}
 	eval $MAKE &> make.log
 	if [ $? -eq 0 ]; then
+		echo "ok" > compile.status
 		echo "ok."
 		cd $CURR
+		return 0
 	else
 		echo "FAILED! Log excerpt:"
 		tail -n $CONTEXT make.log
@@ -158,25 +164,40 @@ function compile_target
 	fi
 }
 
+function built_successfully
+{
+	CURR=`pwd`
+	cd $TARGET/${VENDOR}_${MAINBOARD}
+	status="fail"
+	if [ -r compile.status ] ; then
+		status=`cat compile.status`
+	fi
+	cd $CURR
+	[ "$status" == "ok" ]
+}
 function build_target
 {
 	VENDOR=$1
 	MAINBOARD=$2
 	TARCH=$( architecture $VENDOR $MAINBOARD )
 	
-	echo -n "Processing mainboard $VENDOR $MAINBOARD"
+	echo -n "Processing mainboard/$VENDOR/$MAINBOARD"
 	if [ "$ARCH" == "$TARCH" ]; then
 		echo " ($TARCH: ok)"
-		create_buildenv $VENDOR $MAINBOARD
-		if [ $? -eq 0 ]; then
-			compile_target $VENDOR $MAINBOARD
+		if ! built_successfully $VENDOR $MAINBOARD  ; then
+			create_buildenv $VENDOR $MAINBOARD
+			if [ $? -eq 0 ]; then
+				compile_target $VENDOR $MAINBOARD
+			fi
+		else
+			echo " ( mainboard/$VENDOR/$MAINBOARD previously ok )"
 		fi
-		echo
+
 	else
 		# cross compiling not supported yet.
 		echo " ($TARCH: skipped, we're $ARCH)"
-		echo
 	fi
+	echo
 }
 
 for VENDOR in $( vendors ); do

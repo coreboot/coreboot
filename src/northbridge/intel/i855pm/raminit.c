@@ -19,6 +19,7 @@
 /* converted to C 6/2004 yhlu */
 
 #define DEBUG_RAM_CONFIG 1
+#undef ASM_CONSOLE_LOGLEVEL
 #define ASM_CONSOLE_LOGLEVEL 9
 #define dumpnorth() dump_pci_device(PCI_DEV(0, 0, 1)) 
 

@@ -3,5 +3,5 @@
 
 
 struct chip_operations cpu_intel_slot_2_control = {
-	.name = "slot 2",
+	CHIP_NAME("slot 2")
 };

@@ -223,6 +223,6 @@ static struct pci_driver ricoh_rl5c476_driver __pci_driver = {
 };
 
 struct chip_operations southbridge_ricoh_rl5c476_control = {
+	CHIP_NAME("RICOH RL5C476")
 	.enable    = southbridge_init,
-	.name      = "RICOH RL5C476"
 };

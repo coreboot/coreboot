@@ -1,5 +1,5 @@
-extern struct chip_operations mainboard_arima_hdama_control;
+extern struct chip_operations mainboard_Iwill_DK8X_ops;
 
-struct mainboard_arima_hdama_config {
+struct mainboard_Iwill_DK8X_config {
 	int nothing;
 };

@@ -32,7 +32,11 @@ default _ROMBASE      = ( CONFIG_ROM_STREAM_START + PAYLOAD_SIZE )
 default XIP_ROM_SIZE=65536
 default XIP_ROM_BASE = ( _ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE )
 
-arch i386 end 
+##
+## Set all of the defaults for an x86 architecture
+##
+
+arch i386 end
 
 ##
 ## Build the objects we have code for in this directory.
@@ -77,11 +81,11 @@ ldscript /cpu/x86/32bit/entry32.lds
 ## Build our reset vector (This is where linuxBIOS is entered)
 ##
 if USE_FALLBACK_IMAGE 
-	mainboardinit cpu/x86/16bit/reset16.inc 
-	ldscript /cpu/x86/16bit/reset16.lds 
+	mainboardinit cpu/x86/16bit/reset16.inc
+	ldscript /cpu/x86/16bit/reset16.lds
 else
-	mainboardinit cpu/x86/32bit/reset32.inc 
-	ldscript /cpu/x86/32bit/reset32.lds 
+	mainboardinit cpu/x86/32bit/reset32.inc
+	ldscript /cpu/x86/32bit/reset32.lds
 end
 
 ### Should this be in the northbridge code?

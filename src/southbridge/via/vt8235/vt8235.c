@@ -558,6 +558,6 @@ static void southbridge_init(struct chip *chip, enum chip_pass pass)
 }
 
 struct chip_operations southbridge_via_vt8235_control = {
+	CHIP_NAME("VIA vt8235")
 	.enable    = southbridge_init,
-	.name      = "VIA vt8235"
 };

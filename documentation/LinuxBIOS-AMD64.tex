@@ -551,13 +551,14 @@ do:
 
 \begin{verbatim}
 makerule ./auto.E
-        depends "$(MAINBOARD)/auto.c"
-        action "$(CPP) ­I$(TOP)/src $(ROMCCPPFLAGS) $(CPPFLAGS) \
-                $(MAINBOARD)/auto.c > ./auto.E"
+        depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
+        action "./romcc -E -mcpu=k8 -O2 ­I$(TOP)/src -I. $(CPPFLAGS) \
+		$(MAINBOARD)/auto.c -o $@"
 end
 makerule ./auto.inc
-        depends "./auto.E ./romcc"
-        action "./romcc ­mcpu=k8 ­O ./auto.E > auto.inc"
+        depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
+        action "./romcc    -mcpu=k8 -O2 ­I$(TOP)/src -I. $(CPPFLAGS) \
+                $(MAINBOARD)/auto.c -o $@"
 end
 \end{verbatim}
 

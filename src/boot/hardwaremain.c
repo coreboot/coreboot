@@ -69,21 +69,15 @@ void hardwaremain(int boot_complete)
 	/* FIXME: Is there a better way to handle this? */
 	init_timer(); 
 
-	/* pick how to scan the bus. This is first so we can get at memory size. */
-	printk_info("Finding PCI configuration type.\n");
-	pci_set_method();
-	post_code(0x5f);
+	/* Find the devices we don't have hard coded knowledge about. */
 	dev_enumerate();
 	post_code(0x66);
-	/* Now do the real bus.
-	 * We round the total ram up a lot for thing like the SISFB, which 
-	 * shares high memory with the CPU. 
-	 */
+	/* Now compute and assign the bus resources. */
 	dev_configure();
 	post_code(0x88);
-
+	/* Now actually enable devices on the bus */
 	dev_enable();
-
+	/* And of course initialize devices on the bus */
 	dev_initialize();
 	post_code(0x89);
 

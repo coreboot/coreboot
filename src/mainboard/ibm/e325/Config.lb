@@ -1,123 +1,3 @@
-uses HAVE_MP_TABLE
-uses HAVE_PIRQ_TABLE
-uses USE_FALLBACK_IMAGE
-uses HAVE_FALLBACK_BOOT
-uses HAVE_HARD_RESET
-uses HARD_RESET_BUS
-uses HARD_RESET_DEVICE
-uses HARD_RESET_FUNCTION
-uses IRQ_SLOT_COUNT
-uses HAVE_OPTION_TABLE
-uses CONFIG_MAX_CPUS
-uses CONFIG_IOAPIC
-uses CONFIG_SMP
-uses FALLBACK_SIZE
-uses ROM_SIZE
-uses ROM_SECTION_SIZE
-uses ROM_IMAGE_SIZE
-uses ROM_SECTION_SIZE
-uses ROM_SECTION_OFFSET
-uses CONFIG_ROM_STREAM
-uses CONFIG_ROM_STREAM_START
-uses PAYLOAD_SIZE
-uses _ROMBASE
-uses XIP_ROM_SIZE
-uses XIP_ROM_BASE
-uses STACK_SIZE
-uses HEAP_SIZE
-uses USE_OPTION_TABLE
-uses LB_CKS_RANGE_START
-uses LB_CKS_RANGE_END
-uses LB_CKS_LOC
-uses MAINBOARD_PART_NUMBER
-uses MAINBOARD_VENDOR
-
-
-## ROM_SIZE is the size of boot ROM that this board will use.
-default ROM_SIZE=524288
-
-###
-### Build options
-###
-
-##
-## Build code for the fallback boot
-##
-default HAVE_FALLBACK_BOOT=1
-
-##
-## Build code to reset the motherboard from linuxBIOS
-##
-default HAVE_HARD_RESET=1
-
-default HARD_RESET_BUS=1
-default HARD_RESET_DEVICE=4
-default HARD_RESET_FUNCTION=0
-
-##
-## Build code to export a programmable irq routing table
-##
-default HAVE_PIRQ_TABLE=1
-default IRQ_SLOT_COUNT=12
-
-##
-## Build code to export an x86 MP table
-## Useful for specifying IRQ routing values
-##
-default HAVE_MP_TABLE=1
-
-##
-## Build code to export a CMOS option table
-##
-default HAVE_OPTION_TABLE=1
-
-##
-## Move the default LinuxBIOS cmos range off of AMD RTC registers
-##
-default LB_CKS_RANGE_START=49
-default LB_CKS_RANGE_END=122
-default LB_CKS_LOC=123
-
-##
-## Build code for SMP support
-## Only worry about 2 micro processors
-##
-default CONFIG_SMP=1
-default CONFIG_MAX_CPUS=2
-
-##
-## Build code to setup a generic IOAPIC
-##
-default CONFIG_IOAPIC=1
-
-##
-## Clean up the motherboard id strings
-##
-default MAINBOARD_PART_NUMBER="HDAMA"
-default MAINBOARD_VENDOR="ARIMA"
-
-###
-### LinuxBIOS layout values
-###
-
-## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
-default ROM_IMAGE_SIZE = 65536
-
-##
-## Use a small 8K stack
-##
-default STACK_SIZE=0x2000
-
-##
-## Use a small 16K heap
-##
-default HEAP_SIZE=0x8000
-
-##
-## Only use the option table in a normal image
-##
-default USE_OPTION_TABLE = !USE_FALLBACK_IMAGE
-
 ##
 ## Compute the location and size of where this firmware image
 ## (linuxBIOS plus bootloader) will live in the boot rom chip.
@@ -136,7 +16,6 @@ end
 ##
 default PAYLOAD_SIZE            = ( ROM_SECTION_SIZE - ROM_IMAGE_SIZE )
 default CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
-default CONFIG_ROM_STREAM     = 1
 
 ##
 ## Compute where this copy of linuxBIOS will start in the boot rom
@@ -158,7 +37,6 @@ default XIP_ROM_BASE = ( _ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE )
 ##
 
 arch i386 end
-#cpu k8 end
 
 ##
 ## Build the objects we have code for in this directory.
@@ -172,42 +50,41 @@ if HAVE_PIRQ_TABLE object irq_tables.o end
 ## Romcc output
 ##
 makerule ./failover.E
-	depends "$(MAINBOARD)/failover.c" 
-	action "$(CPP) -I$(TOP)/src $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/failover.c > ./failover.E"
+	depends "$(MAINBOARD)/failover.c ./romcc" 
+	action "./romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
 end
 
 makerule ./failover.inc
-	depends "./failover.E ./romcc"
-	action "./romcc -O -o failover.inc --label-prefix=failover ./failover.E"
+	depends "$(MAINBOARD)/failover.c ./romcc"
+	action "./romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
 end
 
 makerule ./auto.E 
-	depends	"$(MAINBOARD)/auto.c option_table.h " 
-	action	"$(CPP) -I$(TOP)/src -I. $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
+	depends	"$(MAINBOARD)/auto.c option_table.h ./romcc" 
+	action	"./romcc -E -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
 end
 makerule ./auto.inc 
-	depends "./auto.E ./romcc"
-	action	"./romcc -mcpu=k8 -O2 ./auto.E > auto.inc"
+	depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
+	action	"./romcc    -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
 end
 
 ##
 ## Build our 16 bit and 32 bit linuxBIOS entry code
 ##
-mainboardinit cpu/i386/entry16.inc
-mainboardinit cpu/i386/entry32.inc
-mainboardinit cpu/i386/bist32.inc
-ldscript /cpu/i386/entry16.lds
-ldscript /cpu/i386/entry32.lds
+mainboardinit cpu/x86/16bit/entry16.inc
+mainboardinit cpu/x86/32bit/entry32.inc
+ldscript /cpu/x86/16bit/entry16.lds
+ldscript /cpu/x86/32bit/entry32.lds
 
 ##
 ## Build our reset vector (This is where linuxBIOS is entered)
 ##
 if USE_FALLBACK_IMAGE 
-	mainboardinit cpu/i386/reset16.inc 
-	ldscript /cpu/i386/reset16.lds 
+	mainboardinit cpu/x86/16bit/reset16.inc 
+	ldscript /cpu/x86/16bit/reset16.lds 
 else
-	mainboardinit cpu/i386/reset32.inc 
-	ldscript /cpu/i386/reset32.lds 
+	mainboardinit cpu/x86/32bit/reset32.inc 
+	ldscript /cpu/x86/32bit/reset32.lds 
 end
 
 ### Should this be in the northbridge code?
@@ -218,11 +95,6 @@ mainboardinit arch/i386/lib/cpu_reset.inc
 ##
 mainboardinit arch/i386/lib/id.inc
 ldscript /arch/i386/lib/id.lds
-
-##
-## Setup our mtrrs
-##
-mainboardinit cpu/k8/earlymtrr.inc
 
 ###
 ### This is the early phase of linuxBIOS startup 
@@ -241,9 +113,12 @@ end
 ##
 ## Setup RAM
 ##
-mainboardinit cpu/k8/enable_mmx_sse.inc
+mainboardinit cpu/x86/fpu/enable_fpu.inc
+mainboardinit cpu/x86/mmx/enable_mmx.inc
+mainboardinit cpu/x86/sse/enable_sse.inc
 mainboardinit ./auto.inc
-mainboardinit cpu/k8/disable_mmx_sse.inc
+mainboardinit cpu/x86/sse/disable_sse.inc
+mainboardinit cpu/x86/mmx/disable_mmx.inc
 
 ##
 ## Include the secondary Configuration files 
@@ -331,11 +206,4 @@ chip northbridge/amd/amdk8
 		end
 	end
 end
-
-##
-## Include the old serial code for those few places that still need it.
-##
-mainboardinit pc80/serial.inc
-mainboardinit arch/i386/lib/console.inc
-mainboardinit cpu/i386/bist32_fail.inc
 

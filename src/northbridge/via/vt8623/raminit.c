@@ -1,4 +1,4 @@
-#include <cpu/p6/mtrr.h>
+#include <cpu/x86/mtrr.h>
 #include "raminit.h"
 
 /*

@@ -66,11 +66,11 @@ static struct pnp_info pnp_dev_info[] = {
 
 static void enable_dev(struct device *dev)
 {
-	pnp_enable_device(dev, &pnp_ops, 
+	pnp_enable_devices(dev, &pnp_ops, 
 		sizeof(pnp_dev_info)/sizeof(pnp_dev_info[0]), pnp_dev_info);
 }
 
-struct chip_operations superio_NSC_pc87366_control = {
+struct chip_operations superio_NSC_pc87366_ops = {
+	CHIP_NAME("NSC 87366")
 	.enable_dev = enable_dev,
-	.name       = "NSC 87366"
 };

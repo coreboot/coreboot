@@ -1,4 +1,4 @@
-#This file was created by <root> Tue Jan 16 09:39:36 2001
+#This file was created by <root> Tue Jan 16 10:39:48 2001
 #LyX 1.0 (C) 1995-1999 Matthias Ettrich and the LyX Team
 \lyxformat 2.15
 \textclass article
@@ -797,7 +797,7 @@ Resource directories contain C source code for LinuxBIOS.
 \layout Standard
 \align center \LyXTable
 multicol5
-12 3 0 0 -1 -1 -1 -1
+12 2 0 0 -1 -1 -1 -1
 1 1 0 0
 1 0 0 0
 1 0 0 0
@@ -810,37 +810,24 @@ multicol5
 1 0 0 0
 1 0 0 0
 1 1 0 0
-8 1 0 "" ""
+2 1 0 "1in" ""
 2 1 1 "4in" ""
-2 1 1 "4in" ""
 0 8 1 0 0 0 0 "" ""
-0 8 1 0 0 0 0 "" ""
-0 8 1 0 0 0 0 "" ""
-0 8 1 0 0 0 0 "" ""
-0 8 1 0 0 0 0 "" ""
-0 8 1 0 0 0 0 "" ""
-0 8 1 0 0 0 0 "" ""
-0 8 1 0 1 0 0 "" ""
-0 8 1 0 1 0 0 "" ""
-0 8 1 0 0 0 0 "" ""
-0 8 1 0 1 0 0 "" ""
-0 8 1 0 1 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
 0 2 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
+0 8 1 0 1 0 0 "" ""
+0 8 1 0 0 0 0 "" ""
 0 2 1 0 0 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
-0 8 1 0 0 0 0 "" ""
-0 8 1 0 1 0 0 "" ""
 0 8 1 0 1 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
 0 8 1 0 1 0 0 "" ""
-0 8 1 0 1 0 0 "" ""
-0 8 1 0 0 0 0 "" ""
-0 8 1 0 0 0 0 "" ""
-0 8 1 0 0 0 0 "" ""
-0 8 1 0 0 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
@@ -854,13 +841,9 @@ Resource Name
 \newline 
 Path
 \newline 
-
-\newline 
 inboard
 \newline 
 TOP/src/mainboard/<vendor>/<partname>
-\newline 
-
 \newline 
 cpu
 \newline 
@@ -869,25 +852,17 @@ TOP/src/cpu/<partname>.
 \newline 
 
 \newline 
-
-\newline 
 NOTE: no vendor in this path.
  We did this because so much of this 
-\newline 
-
 \newline 
 
 \newline 
 code is generic.
  Was this right?
 \newline 
-
-\newline 
 northbridge
 \newline 
 TOP/src/northbridge/<vendor>/<partname>
-\newline 
-
 \newline 
 northsouthbridge
 \newline 
@@ -895,36 +870,24 @@ TOP/src/northsouthbridge/<vendor>/<partname>
 \newline 
 
 \newline 
-
-\newline 
 NOTE: sets path for northbridge and southbridge, 
-\newline 
-
 \newline 
 
 \newline 
 since this command is for integrated chipsets (i.e.
  SiS 630)
 \newline 
-
-\newline 
 southbridge
 \newline 
 TOP/src/southbridge/<vendor>/<partname>
-\newline 
-
 \newline 
 superio
 \newline 
 TOP/src/superio/<vendor>/<partname>
 \newline 
-
-\newline 
 pcibridge
 \newline 
 TOP/src/pcibridge/<vendor>/<partname>
-\newline 
-
 \layout Caption
 
 
@@ -1004,11 +967,11 @@ multicol5
 0 0 1 0
 0 0 1 0
 1 1 0 0
-8 1 0 "" ""
+2 1 0 "2in" ""
 2 1 1 "4in" ""
 0 8 1 0 0 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
-0 8 1 0 0 0 0 "" ""
+0 2 1 0 0 0 0 "" ""
 0 2 1 0 1 0 0 "" ""
 0 8 1 0 0 0 0 "" ""
 0 2 1 0 1 0 0 "" ""

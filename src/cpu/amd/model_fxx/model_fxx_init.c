@@ -140,13 +140,12 @@ static void set_init_ecc_mtrrs(void)
 }
 
 
-static void init_ecc_memory(void)
+static void init_ecc_memory(unsigned node_id)
 {
 	unsigned long startk, begink, endk;
 	unsigned long basek;
 	struct mtrr_state mtrr_state;
 	device_t f1_dev, f2_dev, f3_dev;
-	int node_id;
 	int enable_scrubbing;
 	uint32_t dcl;
 	
@@ -314,6 +313,7 @@ void model_fxx_init(device_t dev)
 	unsigned long mmio_basek, tomk;
 	unsigned long i;
 	msr_t msr;
+	unsigned nodeid;
 
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
@@ -336,7 +336,8 @@ void model_fxx_init(device_t dev)
 	/* Is this a bad location?  In particular can another node prefecth
 	 * data from this node before we have initialized it?
 	 */
-	init_ecc_memory();
+	nodeid = lapicid() & 0xf;
+	init_ecc_memory(nodeid);
 
 	/* Enable the local cpu apics */
 	setup_lapic();

@@ -126,6 +126,11 @@ end
 
 # sample config for tyan/s2850
 chip northbridge/amd/amdk8/root_complex
+        device apic_cluster 0 on
+                chip cpu/amd/socket_940
+                        device apic 0 on end
+                end
+        end
 	device pci_domain 0 on
 		chip northbridge/amd/amdk8
 			device pci 18.0 on # LDT0
@@ -201,10 +206,5 @@ chip northbridge/amd/amdk8/root_complex
 			device pci 18.3 on end
 		end
 	end 
-	device apic_cluster 0 on
-		chip cpu/amd/socket_940
-			device apic 0 on end
-		end
-	end
 end
 

@@ -152,14 +152,10 @@ sub build_elf_image
 	print " Running $cmd";
 	system("$cmd");
 	die "rc = $?" unless ($? == 0);
-	my $cmd2 = "$params->{OBJCOPY} ${dst}.fat ${dst} -S -R .comment -R .note0"; 
-	if (!$params->{RAMDISK}) {
-		$cmd2 .= " -R .ramdisk";
-	}
+	my $cmd2 = "$params->{OBJCOPY} -O binary ${dst}.fat ${dst}"; 
 	print " Running $cmd";
 	system("$cmd2");
 	die "rc = $?" unless ($? == 0);
-
 	unlink("${dst}.obj",$lscript);
 	unlink("${dst}.fat",$lscript);
 	return $dst;
@@ -302,16 +298,17 @@ sub build
 	my $tempdir=getcwd();
 	
 	$params->{PREFIX} = "$params->{MYDATA}/$params->{OUTPUT_FORMAT}";
+	push(@objects, compile_file($params, "head.S", 
+		"$tempdir/head_$$.o"));
+
+	push(@objects, compile_file($params, "convert_params.c",
+		"$tempdir/convert_params_$$.o"));
+
 	push(@objects,build_kernel_piggy($params, "kernel", 
 		$params->{VMLINUX}, "$tempdir/kernel_piggy_$$.o"));
 	
 	push(@objects, build_ramdisk_piggy($params, "ramdisk",
 		$params->{RAMDISK}, "$tempdir/ramdisk_piggy_$$.o"));
-
-	push(@objects, compile_file($params, "convert_params.c",
-		"$tempdir/convert_params_$$.o"));
-	push(@objects, compile_file($params, "head.S", 
-		"$tempdir/head_$$.o"));
 	build_elf_image($params, $params->{TARGET}, @objects);
 	unlink(@objects);
 	write_ip_checksum($params->{TARGET});

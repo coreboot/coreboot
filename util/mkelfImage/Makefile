@@ -7,8 +7,8 @@
 #PREFIX=/usr/local/
 #PREFIX= /users/rminnich/src/bios/mkelf2
 PERLPATH=/usr/bin/perl
-VERSION="1.12"
-DATE="26 January 2002"
+VERSION="1.14"
+DATE="28 June 2002"
 
 SHAREDIR=$(PREFIX)/share/mkelfImage
 BINDIR=$(PREFIX)/bin
@@ -46,6 +46,7 @@ $(DIRS):
 mkelfImage:  mkelfImage.pl Makefile
 	echo 's|^$$params{MYDATA}=".";$$|$$params{MYDATA}="$(SHAREDIR)";|' > sedfile
 	echo 's|^#!/usr/bin/perl|#!$(PERLPATH)|' >> sedfile
+	echo 's|^my $$VERSION="";$$|my $$VERSION=$(VERSION);|' >> sedfile
 	sed -f sedfile mkelfImage.pl > $@
 	chmod a+x $@
 	rm -f sedfile

@@ -19,30 +19,20 @@ INCLUDE mkelfImage.lds
 OUTPUT_FORMAT("elf32-i386", "elf32-i386", "elf32-i386")
 OUTPUT_ARCH(i386)
 
-PHDRS
-{
-	note PT_NOTE ;
-	low PT_LOAD ;
-	middle PT_LOAD ;
-	upper PT_LOAD ;
-	ramdisk PT_LOAD ;
-}
 
 ENTRY(startup_32)
 SECTIONS
 {
-  . = 0x10000 ;
+  /* . = 0x10000 - (startup_32 - elf_header); */
+  . = 0x10000 - (elf_note - elf_header);
   _text = .;			/* Text and read-only data */
-  .note . : {
-	*(.note.data)
-  } :note :low
   .text . : {
 	*(.text)
 	*(.fixup)
 	*(.gnu.warning)
-	} :low  = 0x9090
-  .rodata (.): { *(.rodata) } :low 
-  .kstrtab (.): { *(.kstrtab) } :low 
+	}  = 0x9090
+  .rodata (.): { *(.rodata) }
+  .kstrtab (.): { *(.kstrtab) }
 
 
   . = ALIGN(16);		/* Exception table */
@@ -51,30 +41,24 @@ SECTIONS
   .data (.): {			/* Data */
 	*(.data)
 	CONSTRUCTORS
-	} :low 
+	}
 
   _edata = .;			/* End of data section */
   __bss_start = .;		/* BSS */
   .bss (.): {
 	*(.bss)
-	}  :low 
+	}
   _end = . ;
 
-
-  . = 0x91000 ;
-  .nokill (.): {
-    *(.nokill)
-  } :middle
-
-  . = 0x100000 ;
   .kernel (.): { 
-    *(.kernel)
-  } :upper
-  . = initrd_base;
-  .ramdisk (ALIGN(4096)) : {
-    *(.ramdisk)
-  }  :ramdisk
+  	*(.kernel)
+  }
+  kernel_data_size = (kernel_data_end - kernel_data);
+  .ramdisk (.) : {
+  	*(.ramdisk)
+  }
   ramdisk_data_size = (ramdisk_data_end - ramdisk_data);
+
   /* Stabs debugging sections.  */
   .stab 0 : { *(.stab) }
   .stabstr 0 : { *(.stabstr) }

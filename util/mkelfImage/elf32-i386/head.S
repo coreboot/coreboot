@@ -42,9 +42,207 @@
 	mov	byte, %al	; \
 	TTYS0_TX_AL
 #endif
-	
+
 .text
-	.code32
+.code32
+
+#define GDTLOC	0x91000
+
+#define ET_EXEC 2
+#define EM_386	3
+#define ELF32_PHDR_SIZE (8*4)
+#define PT_NULL 0
+#define PT_LOAD 1
+#define PT_NOTE 4
+#define PF_X	(1<< 0)
+#define PF_W	(1<< 1)
+#define PF_R	(1<< 2)
+
+
+	/* ELF Header */
+		.globl elf_header
+elf_header:	
+e_ident:	.byte	0x7f, 'E', 'L', 'F', 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0
+e_type:		.short	ET_EXEC
+e_machine:	.short	EM_386
+e_version:	.long	1
+e_entry:	.long	startup_32
+e_phoff:	.long	elf_program_header - elf_header
+e_shoff:	.long	0
+e_flags:	.long	0
+e_ehsize:	.short	elf_header_end - elf_header
+e_phentsize:	.short	ELF32_PHDR_SIZE
+e_phnum:	.short	(elf_program_header_end - elf_program_header)/ELF32_PHDR_SIZE
+e_shentsize:	.short	0
+e_shnum:	.short	0
+e_shstrndx:	.short	0
+elf_header_end:
+	
+elf_program_header:
+phdr1_p_type:	.long	PT_NOTE
+phdr1_p_offset:	.long	elf_note - elf_header
+phdr1_p_vaddr:	.long	elf_note
+phdr1_p_paddr:	.long	elf_note
+phdr1_p_filesz:	.long	elf_note_end - elf_note
+phdr1_p_memsz:	.long	elf_note_end - elf_note
+phdr1_p_flags:	.long	PF_R | PF_W | PF_X
+phdr1_p_align:	.long	0
+
+/* Fixup code */
+phdr2_p_type:	.long	PT_LOAD
+phdr2_p_offset:	.long	elf_note - elf_header
+phdr2_p_vaddr:	.long	elf_note
+phdr2_p_paddr:	.long	elf_note
+phdr2_p_filesz:	.long	_edata - elf_header
+phdr2_p_memsz:	.long	_end - elf_header
+phdr2_p_flags:	.long	PF_R | PF_W | PF_X
+phdr2_p_align:	.long	0
+
+/* Claim space for the gdt */
+phdr3_p_type:	.long	PT_LOAD
+phdr3_p_offset:	.long	_end - elf_header
+phdr3_p_vaddr:	.long	GDTLOC
+phdr3_p_paddr:	.long	GDTLOC
+phdr3_p_filesz:	.long	0
+phdr3_p_memsz:	.long	gdt_end - gdt
+phdr3_p_flags:	.long	PF_R | PF_W | PF_X
+phdr3_p_align:	.long	0
+
+/* The kernel */
+phdr4_p_type:	.long	PT_LOAD
+phdr4_p_offset:	.long	kernel_data - elf_header
+phdr4_p_vaddr:	.long	0x100000
+phdr4_p_paddr:	.long	0x100000
+phdr4_p_filesz:	.long	kernel_data_size
+phdr4_p_memsz:	.long	0x700000
+phdr4_p_flags:	.long	PF_R | PF_W | PF_X
+phdr4_p_align:	.long	0
+
+/* The ramdisk */
+phdr5_p_type:	.long	PT_LOAD
+phdr5_p_offset:	.long	ramdisk_data - elf_header
+phdr5_p_vaddr:	.long	initrd_base
+phdr5_p_paddr:	.long	initrd_base
+phdr5_p_filesz:	.long	ramdisk_data_size
+phdr5_p_memsz:	.long	ramdisk_data_size
+phdr5_p_flags:	.long	PF_R | PF_W | PF_X
+phdr5_p_align:	.long	0
+	
+elf_program_header_end:
+
+#include "elf_boot.h"
+	.globl elf_note
+elf_note:
+/* You can probably do this in C if everything was all in one structure,
+ * but doing it pieces resulted in strange alignments of the data structures.
+ * Since that breaks the definition of the .note section I do it here in
+ * in assembly.  The control is better and for simplicity it is a toss up.
+ */
+	.balign 4
+	.int 2f - 1f
+	.int 4f - 3f
+	.int EIN_PROGRAM_NAME
+1:	.asciz "ELFBoot"
+2:
+	.balign 4
+3:	
+	.asciz "Linux"
+4:
+
+
+	.balign 4
+	.int 2f - 1f
+	.int 4f - 3f
+	.int EIN_PROGRAM_VERSION
+1:	.asciz "ELFBoot"
+2:
+	.balign 4
+3:	
+	.asciz DEFAULT_PROGRAM_VERSION
+4:
+
+	.balign 4
+	.int 2f - 1f
+	.int 4f - 3f
+	.int EIN_PROGRAM_CHECKSUM
+1:	.asciz "ELFBoot"
+2:
+	.balign 4
+3:	
+	.word 0
+4:
+
+
+	.balign 4
+	.int 2f - 1f
+	.int 4f - 3f
+	.int LIN_COMMAND_LINE
+1:	.asciz "Linux"
+2:
+	.balign 4
+3:
+	.globl note_command_line
+note_command_line:
+	.asciz DEFAULT_COMMAND_LINE
+33:
+	.fill 256 - (33b - 3b), 1, 0
+4:	
+	
+
+	.balign 4
+	.int 2f - 1f
+	.int 4f - 3f
+	.int LIN_ROOT_DEV
+1:	.asciz "Linux"
+2:
+	.balign 4
+3:
+	.globl note_root_dev
+note_root_dev:
+	.word DEFAULT_ROOT_DEV
+4:
+	
+	.balign 4
+	.int 2f - 1f
+	.int 4f - 3f
+	.int LIN_RAMDISK_FLAGS
+1:	.asciz "Linux"
+2:
+	.balign 4
+3:
+	.globl note_ramdisk_flags
+note_ramdisk_flags:
+	.word  0
+4:
+
+	.balign 4
+	.int 2f - 1f
+	.int 4f - 3f
+	.int LIN_INITRD_START
+1:	.asciz "Linux"
+2:
+	.balign 4
+3:
+	.globl note_initrd_start
+note_initrd_start:
+	.int initrd_base
+4:
+
+	.balign 4
+	.int 2f - 1f
+	.int 4f - 3f
+	.int LIN_INITRD_SIZE
+1:	.asciz "Linux"
+2:
+	.balign 4
+3:
+	.globl note_initrd_size
+note_initrd_size:
+	.int ramdisk_data_size
+4:
+	.balign 4
+elf_note_end:
+	
 	.globl startup_32
 startup_32:
 	cld
@@ -70,6 +268,12 @@ startup_32:
 	rep
 	stosb
 
+	# Move the gdt where Linux will not smash it during decompression
+	movl	$gdt, %esi
+	movl	$GDTLOC, %edi
+	movl	$(gdt_end - gdt), %ecx
+	rep	movsb
+	
 	# Linux makes stupid assumptions about the segments
 	# that are already setup, so setup a new gdt & ldt
 	# and then reload the segment registers.
@@ -365,12 +569,11 @@ idt_48:
 gdt_48:
 	.word	0x28				# gdt limit=40,
 						# (5 GDT entries)
-	.long   gdt				# gdt base
+	.long   GDTLOC				# gdt base
 
 # Descriptor tables
 # These need to be in a seperate section so I can be
 # certain later activities dont stomp them
-.section .nokill, "awx", @progbits
 gdt:
 	.word	0, 0, 0, 0			# dummy
 
@@ -393,119 +596,4 @@ gdt:
 	/* 16 bit real mode data segment */
 	.word	0xffff,(RELOC&0xffff)
 	.byte	(RELOC>>16),0x93,0x00,(RELOC>>24)
-
-
-.section ".note.data", "a", @progbits
-#include "elf_boot.h"
-/* You can probably do this in C if everything was all in one structure,
- * but doing it pieces resulted in strange alignments of the data structures.
- * Since that breaks the definition of the .note section I do it here in
- * in assembly.  The control is better and for simplicity it is a toss up.
- */
-	.balign 4
-	.int 2f - 1f
-	.int 4f - 3f
-	.int EIN_PROGRAM_NAME
-1:	.asciz "ELFBoot"
-2:
-	.balign 4
-3:	
-	.asciz "Linux"
-4:
-
-
-	.balign 4
-	.int 2f - 1f
-	.int 4f - 3f
-	.int EIN_PROGRAM_VERSION
-1:	.asciz "ELFBoot"
-2:
-	.balign 4
-3:	
-	.asciz DEFAULT_PROGRAM_VERSION
-4:
-
-
-	
-	.balign 4
-	.int 2f - 1f
-	.int 4f - 3f
-	.int EIN_PROGRAM_CHECKSUM
-1:	.asciz "ELFBoot"
-2:
-	.balign 4
-3:	
-	.word 0
-4:
-
-
-	.balign 4
-	.int 2f - 1f
-	.int 4f - 3f
-	.int LIN_COMMAND_LINE
-1:	.asciz "Linux"
-2:
-	.balign 4
-3:
-	.globl note_command_line
-note_command_line:
-	.asciz DEFAULT_COMMAND_LINE
-33:
-	.fill 256 - (33b - 3b), 1, 0
-4:	
-	
-
-	.balign 4
-	.int 2f - 1f
-	.int 4f - 3f
-	.int LIN_ROOT_DEV
-1:	.asciz "Linux"
-2:
-	.balign 4
-3:
-	.globl note_root_dev
-note_root_dev:
-	.word DEFAULT_ROOT_DEV
-4:
-	
-	.balign 4
-	.int 2f - 1f
-	.int 4f - 3f
-	.int LIN_RAMDISK_FLAGS
-1:	.asciz "Linux"
-2:
-	.balign 4
-3:
-	.globl note_ramdisk_flags
-note_ramdisk_flags:
-	.word  0
-4:
-
-	.balign 4
-	.int 2f - 1f
-	.int 4f - 3f
-	.int LIN_INITRD_START
-1:	.asciz "Linux"
-2:
-	.balign 4
-3:
-	.globl note_initrd_start
-note_initrd_start:
-	.int ramdisk_data 
-4:
-
-	.balign 4
-	.int 2f - 1f
-	.int 4f - 3f
-	.int LIN_INITRD_SIZE
-1:	.asciz "Linux"
-2:
-	.balign 4
-3:
-	.globl note_initrd_size
-note_initrd_size:
-	.int ramdisk_data_size
-4:
-	.balign 4
-	.previous
-
+gdt_end:

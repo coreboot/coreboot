@@ -237,7 +237,7 @@ expr USE_NORMAL_IMAGE=!USE_FALLBACK_IMAGE
 option ROM_SIZE=1048576
 
 ## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
-option ROM_IMAGE_SIZE=65536
+option ROM_IMAGE_SIZE=35328
 
 ## LinuxBIOS C code runs at this location in RAM
 option _RAMBASE=0x00008000
@@ -283,7 +283,8 @@ expr ROM_SECTION_OFFSET=(USE_FALLBACK_IMAGE*(ROM_SIZE-65536))+(USE_NORMAL_IMAGE*
 ## The linuxBIOS bootloader.
 ##
 #expr ZKERNEL_START =(0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
-expr ZKERNEL_START = 0xfff00000 + (USE_NORMAL_IMAGE * 0x10000)
+#expr ZKERNEL_START = 0xfff00000 + (USE_NORMAL_IMAGE * 0x10000)
+expr ZKERNEL_START = 0xfff00000 + (USE_FALLBACK_IMAGE * 0xf0000)
 
 expr PAYLOAD_SIZE  =ROM_SECTION_SIZE - ROM_IMAGE_SIZE
 
@@ -291,7 +292,8 @@ expr PAYLOAD_SIZE  =ROM_SECTION_SIZE - ROM_IMAGE_SIZE
 ## Compute where this copy of linuxBIOS will start in the boot rom
 ##
 #expr _ROMBASE      =ZKERNEL_START + PAYLOAD_SIZE
-expr _ROMBASE		= 0xffff0000 - (USE_NORMAL_IMAGE*0x10000)
+#expr _ROMBASE		= 0xffff0000 - (USE_NORMAL_IMAGE*0x10000)
+expr _ROMBASE		= 0x100000000 - (USE_NORMAL_IMAGE * 0x10000) - ROM_IMAGE_SIZE
 
 ##
 ## Compute a range of ROM that can cached to speed of linuxBIOS,

@@ -41,6 +41,8 @@ ram_set_registers:
 	/* address is first, then data */
 	movl	$register_table, %esi
 1: 
+	/* zero out eax. In fact, this is unnecessary right now, but be safe */
+	xor	%eax, %eax
 	movb	(%esi), %al
 	testb 	%al, %al
 	jz	done_ram_set_registers

@@ -56,7 +56,7 @@ ldscript arch/i386/lib/id.lds
 ##
 ## Setup our mtrrs
 ##
-#mainboardinit cpu/i786/earlymtrr.inc
+mainboardinit cpu/i786/earlymtrr.inc
 
 ##
 ## TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

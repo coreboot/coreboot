@@ -79,6 +79,7 @@ void display(char *string)
 void error(char errmsg[])
 {
 	display(errmsg);
+	post_code(0xff);
 	while (1);		/* Halt */
 }
 
@@ -89,7 +90,8 @@ void post_code(uint8_t value)
 {
 #ifdef SERIAL_POST
 	unsigned long hi, lo;
-	rdtsc(lo, hi);
+	// DAMMIT! This just broke!
+	//rdtsc(lo, hi);
 	printk_info("POST: 0x%02x, TSC Lo: %d, Hi: %d\n",
 	       value, lo, hi);
 #endif

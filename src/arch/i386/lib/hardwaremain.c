@@ -207,7 +207,7 @@ void hardwaremain(int boot_complete)
 #ifdef USE_NEW_SUPERIO_INTERFACE
 	extern struct superio *all_superio[];
 	extern int nsuperio;
-	extern void handle_superio(int pass, struct superio *s, int nsuperio);
+	extern void handle_superio(int pass, struct superio *s[], int nsuperio);
 #endif
 	/* the order here is a bit tricky. We don't want to do much of 
 	 * anything that uses config registers until after PciAllocateResources
@@ -220,6 +220,9 @@ void hardwaremain(int boot_complete)
 	unsigned long totalram = 0;
 	extern void linuxbiosmain(unsigned long membase, unsigned long totalram);
 
+	// we don't call post code for this one -- since serial post could cause real 
+	// trouble.
+	outb(0x38, 0x80);
 	/* displayinit MUST PRECEDE ALL PRINTK! */
 	displayinit();
 	

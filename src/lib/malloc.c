@@ -2,7 +2,7 @@
 #include <printk.h>
 #include <subr.h>
 
-#if 1
+#if 0
 #define MALLOCDBG(x)
 #else
 #define MALLOCDBG(x) printk_spew x
@@ -28,6 +28,7 @@ void *malloc(size_t size)
 {
 	void *p;
 
+	MALLOCDBG((__FUNCTION__ " Enter, size %d, free_mem_ptr %p\n", size, free_mem_ptr));
 	if (size < 0)
 		error("Error! malloc: Size < 0");
 	if (free_mem_ptr <= 0)

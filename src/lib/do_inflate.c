@@ -98,6 +98,7 @@ static void flush_window(void)
 void gunzip_setup(void)
 {
 	/* common globals -- don't rely on init! */
+	printk_debug(__FUNCTION__ "\n");
 	outcnt = 0;
 	bytes_out = 0;
 	output_ptr = 0;

@@ -143,7 +143,7 @@ read_bytes(void *vdest, byte_offset_t count)
 				
 		*(dest++) = c;
 	}
-	printk_debug(__FUNCTION__ " vdest %p return count %d\n", 
+	printk_spew(__FUNCTION__ " vdest %p return count %d\n", 
 			vdest, count);
 	return count;
 }

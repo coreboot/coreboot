@@ -40,9 +40,7 @@ it with the version available from LANL.
 #if 0
 #include <part/mainboard.h>
 #endif
-#if 0
 #include <part/hard_reset.h>
-#endif
 #include <smp/atomic.h>
 #include <boot/elf.h>
 
@@ -160,12 +158,10 @@ void hardwaremain(int boot_complete)
 
 	post_code(0x40);
 
-#if 0
 	/* If we have already booted attempt a hard reboot */
 	if (boot_complete) {
 		hard_reset();
 	}
-#endif
 	init_timer(); /* needs to be moved into static configuration */
 	CONFIGURE(CONF_PASS_PRE_PCI);
 

@@ -6,6 +6,9 @@
 void
 southbridge_fixup()
 {
+
+	struct pci_dev *pm_pcidev;
+	unsigned smbus_io, pm_io;
 #if (CONFIG_LINUXBIOS_ENABLE_IDE == 1)
         struct pci_dev *pcidev;
         struct pci_dev *pcidevdebug;
@@ -38,9 +41,35 @@ southbridge_fixup()
 		printk_info("Word at 4 is now 0x%04x\n", c);
 #endif
 	}
+#endif
+	pm_pcidev = pci_find_device(0x8086, 0x7113, 0);
+	if (! pm_pcidev) {
+		printk_err("Can't find piix4e PM\n");
+	} else {
+	  
+	  printk_debug("enabling smbus\n");
+#if 0
+	  smbus_io = NewPciIo(0x10);
+#else
+	  smbus_io = 0xFFF0;
+#endif
+	  pci_write_config_dword(pm_pcidev, 0x90, smbus_io | 1); /* iobase addr */
+	  pci_write_config_byte(pm_pcidev, 0xd2,  (0x4 << 1) | 1); /* smbus enable */
+	  pci_write_config_word(pm_pcidev, 0x4, 1); /* iospace enable */
+	  
+	  
+	  printk_debug("enable pm functions\n");
+#if 0
+	  pm_io = NewPciIo(0x40);
+#else
+	  pm_io = 0xFF80;
+#endif
+	  pci_write_config_dword(pm_pcidev, 0x40, pm_io | 1); /* iobase addr */
+	  pci_write_config_byte(pm_pcidev, 0x80, 1);  /* enable pm io address */
+	}
 
         printk_info("done.\n");
-#endif
+
 }
 
 void nvram_on()

@@ -54,7 +54,7 @@ void mainboard_fixup()
 
 	printk_debug("Disable Nmi\n");
 	outb(0, 0x70);
-
+#if 0 // moved to piix4e southbridge code
 	printk_debug("enabling smbus\n");
 #if 0
 	smbus_io = NewPciIo(0x10);
@@ -74,7 +74,7 @@ void mainboard_fixup()
 #endif
 	pci_write_config_dword(pm_pcidev, 0x40, pm_io | 1); /* iobase addr */
 	pci_write_config_byte(pm_pcidev, 0x80, 1);  /* enable pm io address */
-
+#endif
 	printk_debug("disabling smi\n");
 	/* GLBEN */
 	outw(0x00,      pm_io + 0x20);

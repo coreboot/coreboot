@@ -108,7 +108,7 @@ class debug_info:
 			print str
 
 global debug
-debug = debug_info(debug_info.dumptree)
+debug = debug_info(debug_info.none)
 
 # -----------------------------------------------------------------------------
 #                    Error Handling
@@ -727,6 +727,22 @@ class partobj:
 			fatal("Device %s has no device parent; this is a config file error" % self.readable_name())
 		return parent
 
+	def firstparentdevicelink(self):
+		"""Find the first device in the parent link and record which link it is."""
+		link = 0
+		parent = self.parent
+		while (parent and (parent.parent != parent) and (parent.chip_or_device != 'device')):
+			parent = parent.parent
+		if ((parent.parent != parent) and (parent.chip_or_device != 'device')):
+			parent = 0
+		while(parent and (parent.dup == 1)):
+			parent = parent.prev_sibling
+			link = link + 1
+		if (not parent):
+			fatal("Device %s has no device parent; this is a config file error" % self.readable_name())
+		return link
+
+
 	def firstparentchip(self):
 		"""Find the first chip in the parent link."""
 		parent = self.parent
@@ -809,7 +825,9 @@ class partobj:
 
 		file.write("struct device %s = {\n" % self.instance_name)
 		file.write("\t.ops = 0,\n")
-		file.write("\t.bus = &%s.link[0],\n" % self.firstparentdevice().instance_name)
+		file.write("\t.bus = &%s.link[%d],\n" % \
+			(self.firstparentdevice().instance_name, \
+			self.firstparentdevicelink()))
 		file.write("\t.path = {%s},\n" % self.path)
 		file.write("\t.enabled = %d,\n" % self.enabled)
 		if (self.resources):

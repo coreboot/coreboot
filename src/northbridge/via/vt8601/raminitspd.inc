@@ -2,6 +2,8 @@
 #define PM_DEVFN  CONFIG_ADDR(0, 0x3c, 0)
 #define DRAM_CONFIG_PORT 0x5a
 #define REGISTERED_DRAM_REGISTER $0x69
+#define LAST_SMBUS_MEM_DEVICE SMBUS_MEM_DEVICE_2
+
 jmp raminitspd_end
 /* table of settings for initial registers */
 register_table: 
@@ -21,9 +23,10 @@ register_table:
 /* set these to 0xee (128 MB VC SDRAM).  In our working code we set to 
  * 0x88, but VIA code recommends 0xee. Since we are SPD, in the end, 
  * this initial setting will be over-ridden by SPD probe values. 
+ * leave at 88 for now -- deal with this mess later
  */	
-	.byte 0x58, 0xee
-	.byte 0x59, 0xee
+	.byte 0x58, 0x88
+	.byte 0x59, 0x88
 /* size the banks at max, they will be resized later. */
 	.byte 0x5a, 0x20
 	.byte 0x5b, 0x40
@@ -41,7 +44,7 @@ ram_set_registers:
 	/* address is first, then data */
 	movl	$register_table, %esi
 1: 
-	/* zero out eax. In fact, this is unnecessary right now, but be safe */
+	/* zero out eax. This is a must right here. */
 	xor	%eax, %eax
 	movb	(%esi), %al
 	testb 	%al, %al
@@ -147,6 +150,8 @@ spd_set_nbxcfg_done:
 	SET_RAM_COMMAND(RAM_COMMAND_MRS)	; \
 	COMPUTE_CAS_MODE	; \
 	shll $3,    %eax	; \
+	/* FIX ME -- set to cas3 no matter what for now */ ; \
+	movl	$0x1d0, %eax; \
 	movl %eax,  %ebx	; \
 	DIMMS_READ_EBX_OFFSET
 

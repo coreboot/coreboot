@@ -259,7 +259,7 @@ spd_set_drb_loop_top:
 	PCI_WRITE_CONFIG_BYTE
 
 	addl $0x00020001, %ebx /* increment the smbus device & the config port */
-	cmpb $SMBUS_MEM_DEVICE_3, %bl /* see if I have reached the end */
+	cmpb $LAST_SMBUS_MEM_DEVICE, %bl /* see if I have reached the end */
 	jbe spd_set_drb_loop_top
 
 	/* o.k. I'm done return now */
@@ -297,7 +297,7 @@ spd_set_dramc:
 	jmp spd_set_dramc_out
 
 2:	addl $1, %ebx	/* increment the device */
-	cmpb $SMBUS_MEM_DEVICE_3, %bl
+	cmpb $LAST_SMBUS_MEM_DEVICE, %bl
 	jbe 1b
 	/* We couldn't find anything we must have no memory */
 	jmp no_memory	
@@ -337,7 +337,7 @@ spd_read_refresh:
 	jmp spd_enable_refresh_out
 
 2:	addl $1, %ebx	/* increment the device */
-	cmpb $SMBUS_MEM_DEVICE_3, %bl
+	cmpb $LAST_SMBUS_MEM_DEVICE, %bl
 	jbe 1b
 	/* We couldn't find anything we must have no memory */
 	xorl %eax, %eax
@@ -389,7 +389,7 @@ spd_set_rps:
 
 2:	addl $1, %ebx	/* increment the device */
 	addl $4, %ecx   /* increment the shift count */
-	cmpb $SMBUS_MEM_DEVICE_3, %bl
+	cmpb $LAST_SMBUS_MEM_DEVICE, %bl
 	jbe 1b
 
 	movl $0x7f, %eax
@@ -442,7 +442,7 @@ spd_set_pgpol:
 
 2:	addl $1, %ebx	/* increment the device */
 	addl $2, %ecx   /* increment the shift count */
-	cmpb $SMBUS_MEM_DEVICE_3, %bl
+	cmpb $LAST_SMBUS_MEM_DEVICE, %bl
 	jbe 1b
 
 	shll $8, %esi
@@ -497,7 +497,7 @@ spd_set_nbxcfg:
 
 2:	addl $1, %ebx	/* increment the device */
 	addl $2, %ecx   /* increment the shift count */
-	cmpb $SMBUS_MEM_DEVICE_3, %bl
+	cmpb $LAST_SMBUS_MEM_DEVICE, %bl
 	jbe 1b
 
 	movl %esi, %edx

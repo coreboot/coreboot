@@ -35,6 +35,33 @@ static void hlt(void)
 	__builtin_hlt();
 }
 
+typedef __builtin_div_t div_t;
+typedef __builtin_ldiv_t ldiv_t;
+typedef __builtin_udiv_t udiv_t;
+typedef __builtin_uldiv_t uldiv_t;
+
+static div_t div(int numer, int denom)
+{
+	return __builtin_div(numer, denom);
+}
+
+static ldiv_t ldiv(long numer, long denom)
+{
+	return __builtin_ldiv(numer, denom);
+}
+
+static udiv_t udiv(unsigned numer, unsigned denom)
+{
+	return __builtin_udiv(numer, denom);
+}
+
+static uldiv_t uldiv(unsigned long numer, unsigned long denom)
+{
+	return __builtin_uldiv(numer, denom);
+}
+
+
+
 int log2(int value)
 {
 	/* __builtin_bsr is a exactly equivalent to the x86 machine
@@ -58,6 +85,25 @@ static void wrmsr(unsigned long index, msr_t msr)
 {
 	__builtin_wrmsr(index, msr.lo, msr.hi);
 }
+
+
+struct tsc_struct {
+	unsigned lo;
+	unsigned hi;
+};
+typedef struct tsc_struct tsc_t;
+
+static tsc_t rdtsc(void)
+{
+	tsc_t res;
+	asm ("rdtsc"
+		: "=a" (res.lo), "=d"(res.hi) /* outputs */
+		: /* inputs */
+		: /* Clobbers */
+		);
+	return res;
+}
+
 
 #define PCI_ADDR(BUS, DEV, FN, WHERE) ( \
 	(((BUS) & 0xFF) << 16) | \

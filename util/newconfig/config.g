@@ -7,44 +7,20 @@ debug = 0
 warnings = 0
 errors = 0
 
-arch = ''
-ldscriptbase = ''
-payloadfile = ''
-initfile = ''
-
-# Key is the rule name. Value is a mkrule object.
-makebaserules = {}
-
-# List of targets in the order defined by makerule commands.
-#makerule_targets = {}
-
-treetop = ''
 target_dir = ''
-
-#sources = {}
-objectrules = {}
-initobjectrules = {}
-# make these a hash so they will be unique.
-driverrules = {}
-ldscripts = []
-userdefines = []
+target_name = ''
+treetop = ''
+global_options = {}
+global_options_by_order = []
+global_option_values = {}
+global_uses_options = {}
+romimages = {}
+buildroms = []
+curimage = 0
 curpart = 0
-root = 0
-
-globalvars = {}       # We will globals here
-parts = {}
-
-options = {}
-# options in order defined. These will be unique due to use of hash 
-# for options. 
-options_by_order = []
-crt0includes = []
-initincludes = {}
-useinitincludes = 0 # transitional
-partinstance = 0
 curdir = '' 
 dirstack = []
-config_file_list = []
+alloptions = 0 # override uses at top level
 
 local_path = re.compile(r'^\.')
 include_pattern = re.compile(r'%%([^%]+)%%')
@@ -53,6 +29,8 @@ include_pattern = re.compile(r'%%([^%]+)%%')
 #                    Error Handling
 # -----------------------------------------------------------------------------
 
+# Used to keep track of our current location while parsing
+# configuration files
 class location:
 	class place:
                 def __init__(self, file, line, command):
@@ -85,6 +63,262 @@ class location:
                 return self.stack[-1].at()
 loc = location()
 
+# Print error message
+def error(string):      
+        global errors, loc
+	errors = errors + 1
+        size = len(loc.stack)
+        i = 0
+        while(i < size -1): 
+                print loc.stack[i].at()
+                i = i + 1
+        print "%s: %s"% (loc.at(), string)
+
+# Print error message and exit
+def fatal(string):      
+	error(string)
+        exitiferrors()
+
+# Print warning message
+def warning(string):
+        global warnings, loc
+	warnings = warnings + 1
+        print "===> Warning:"
+        size = len(loc.stack)
+        i = 0
+        while(i < size -1):
+                print loc.stack[i].at()
+                i = i + 1
+        print "%s: %s"% (loc.at(), string)
+
+# Exit parser if an error has been encountered
+def exitiferrors():
+	if (errors != 0):
+		sys.exit(1)
+
+# -----------------------------------------------------------------------------
+#                    Main classes
+# -----------------------------------------------------------------------------
+
+# A rom image is the ultimate goal of linuxbios
+class romimage:
+	def __init__ (self, name):
+		self.name = name
+		self.arch = ''
+		self.payload = ''
+		self.initfile = ''
+		self.makebaserules = {}
+		self.objectrules = {}
+		self.initobjectrules = {}
+		self.driverrules = {}
+		self.ldscripts = []
+		self.userdefines = []
+		self.initincludes = {}
+		self.useinitincludes = 0 # transitional
+		self.partinstance = 0
+		self.root = 0
+		self.target_dir = ''
+		self.values = {}
+
+	def getname(self):
+		return self.name
+
+	def setarch(self, arch):
+		self.arch = arch
+
+	def setpayload(self, payload):
+		self.payload = payload
+
+	def setinitfile(self, initfile):
+		self.initfile = initfile
+
+	def getinitfile(self):
+		return self.initfile
+
+	def addmakerule(self, id):
+		o = getdict(self.makebaserules, id)
+		if (o):
+			print "Warning, rule %s previously defined" % id
+		o = makerule(id)
+		setdict(self.makebaserules, id, o)
+
+	def getmakerules(self):
+		return self.makebaserules
+
+	def getmakerule(self, id):
+		o = getdict(self.makebaserules, id)
+		if (o):
+			return o
+		fatal("No such make rule \"%s\"" % id);
+
+	def addmakeaction(self, id, str):
+		o = getdict(self.makebaserules, id)
+		if (o):
+			a = dequote(str)
+			o.addaction(a)
+			return
+		fatal("No such rule \"%s\" for addmakeaction" % id);
+
+	def addmakedepend(self, id, str):
+		o = getdict(self.makebaserules, id)
+		if (o):
+			a = dequote(str)
+			o.adddependency(a)
+			return
+		fatal("No such rule \"%s\" for addmakedepend" % id);
+
+	# this is called with an an object name. 
+	# the easiest thing to do is add this object to the current 
+	# component.
+	# such kludgery. If the name starts with '.' then make the 
+	# dependency be on ./thing.x gag me.
+	def addobjectdriver(self, dict, object_name):
+		global curdir
+		suffix = object_name[-2:]
+		if (suffix == '.o'):
+			suffix = '.c'
+		base = object_name[:-2]
+		if (object_name[0] == '.'):
+			source = base + suffix
+		else:
+			source = os.path.join(curdir, base + suffix)
+		object = base + '.o'
+		if (debug):
+			print "add object %s source %s" % (object_name, source)
+		l = getdict(dict, base)
+		if (l):
+			print "Warning, object/driver %s previously defined" % base
+		setdict(dict, base, [object, source])
+
+	def addinitobjectrule(self, name):
+		self.addobjectdriver(self.initobjectrules, name)
+
+	def addobjectrule(self, name):
+		self.addobjectdriver(self.objectrules, name)
+
+	def adddriverrule(self, name):
+		self.addobjectdriver(self.driverrules, name)
+
+	def getinitobjectrules(self):
+		return self.initobjectrules
+
+	def getinitobjectrule(self, name):
+		o = getdict(self.initobjectrules, name)
+		if (o):
+			return o
+		fatal("No such init object rule \"%s\"" % name);
+
+	def getobjectrules(self):
+		return self.objectrules
+
+	def getobjectrule(self, name):
+		o = getdict(self.objectrules, name)
+		if (o):
+			return o
+		fatal("No such object rule \"%s\"" % name);
+
+	def getdriverrules(self):
+		return self.driverrules
+
+	def getdriverrule(self, name):
+		o = getdict(self.driverrules, name)
+		if (o):
+			return o
+		fatal("No such driver rule \"%s\"" % name);
+
+	def addldscript(self, path):
+		self.ldscripts.append(path)
+
+	def getldscripts(self):
+		return self.ldscripts
+
+	def adduserdefine(self, str):
+		self.userdefines.append(str)
+
+	def getuserdefines(self):
+		return self.userdefines
+
+	def addinitinclude(self, str, path):
+		if (str != 0):
+			self.useinitincludes = 1
+
+		if (debug > 2):
+			print "ADDCRT0: %s -> %s" % str, path
+		o = getdict(self.initincludes, path)
+		if (o):
+			print "Warning, init include for %s previously defined" % path
+		o = initinclude(str, path)
+		setdict(self.initincludes, path, o)
+
+	def getinitincludes(self):
+		return self.initincludes
+
+	def getinitinclude(self, path):
+		o = getdict(self.initincludes, path)
+		if (o):
+			return o
+		fatal("No such init include \"%s\"" % path);
+
+	def getincludefilename(self):
+		if (self.useinitincludes):
+			return "crt0.S"
+		else:
+			return "crt0_include.h"
+	
+	def newformat(self):
+		return self.useinitincludes
+
+	def setpartinstance(self, val):
+		self.partinstance = val
+
+	def getpartinstance(self):
+		return self.partinstance
+
+	def setroot(self, part):
+		self.root = part
+
+	def getroot(self):
+		return self.root
+
+	def settargetdir(self, path):
+		self.targetdir = path
+
+	def gettargetdir(self):
+		return self.targetdir
+
+	def getvalues(self):
+		return self.values
+
+# A buildrom statement
+class buildrom:
+	def __init__ (self, size, roms):
+		self.size = size
+		self.roms = roms
+
+# this is called with an an object name. 
+# the easiest thing to do is add this object to the current 
+# component.
+# such kludgery. If the name starts with '.' then make the 
+# dependency be on ./thing.x gag me.
+def addobjectdriver(dict, object_name):
+	global curimage, curdir
+	suffix = object_name[-2:]
+	if (suffix == '.o'):
+		suffix = '.c'
+	base = object_name[:-2]
+	if (object_name[0] == '.'):
+		source = base + suffix
+	else:
+		source = os.path.join(curdir, base + suffix)
+	object = base + '.o'
+	if (debug):
+		print "add object %s source %s" % (object_name, source)
+	l = getdict(dict, base)
+	if (l):
+		print "Warning, object/driver %s previously defined" % base
+	setdict(dict, base, [object, source])
+
+# include file for initialization code
 class initinclude:
 	def __init__ (self, str, path):
 		self.string = str
@@ -96,6 +330,7 @@ class initinclude:
 	def getpath(self):
 		return self.path
 
+# Rule to be included in Makefile
 class makerule:
 	def __init__ (self, target):
 		self.target = target
@@ -117,11 +352,12 @@ class makerule:
 	def gaction(self):
 		return self.actions
 
+# Configuration option
 class option:
 	def __init__ (self, name):
 		self.name = name	# name of option
 		self.loc = 0		# current location
-		self.value = 0		# option value
+		#self.value = 0		# option value
 		self.set = 0		# option has been set
 		self.used = 0		# option has been set
 		self.default = 0	# option has default value (otherwise
@@ -132,33 +368,32 @@ class option:
 		self.defined = 0	# option has a value
 		self.format = '%s'	# option print format
 
-	def setvalue(self, value, loc):
-		if (self.set):
-			fatal("Error: option %s already set" % self.name)
+	def setvalue(self, value, values, loc):
+		#if (self.set):
+		#	fatal("Error: option %s already set" % self.name)
 		self.set = 1
-		self.value = value
 		self.defined = 1
 		self.loc = loc
+		#self.value = value
+		setdict(values, self.name, value)
 
-	def getvalue(self, part):
-		global curpart
-		if (not (type(self.value) is str)):
-			return self.value
-		if (self.value == '' or self.value[0] != '{'):
-			return self.value
-		# save curpart so we can evaluate expression
-		# in context of part
-		s = curpart
-		curpart = part
-		v = parse('delexpr', self.value)
+	def getvalue(self, values):
+		#global curpart
+		v = getdict(values, self.name)
+		if (not (type(v) is str)):
+			return v
+		if (v == '' or v[0] != '{'):
+			return v
+		v = parse('delexpr', v)
 		# TODO: need to check for parse errors!
-		curpart = s
 		return v
 
 	def setdefault(self, value, loc):
+		global global_option_values
 		if (self.default):
 			fatal("Error: default value for %s already set" % self.name)
-		self.value = value
+		#self.value = value
+		setdict(global_option_values, self.name, value)
 		self.defined = 1
 		self.default = 1
 		self.loc = loc
@@ -171,12 +406,12 @@ class option:
 	def where(self):
 		return self.loc
 
-	def setcomment(self, value, loc):
+	def setcomment(self, comment, loc):
 		if (self.comment != ''):
 			print "%s: " % self.name
 			print "Attempt to modify comment at %s" % loc 
 			return
-		self.comment = value
+		self.comment = comment
 
 	def setexportable(self):
 		self.exportable = 1
@@ -203,20 +438,21 @@ class option:
 	def isexported(self):
 		return (self.exported and self.defined)
 
-	def isdefined(self):
-		return (self.defined)
+#	def isdefined(self):
+#		return (self.defined)
 
 	def isset(self):
 		return (self.set)
 
-	def isused(self):
-		return (self.used)
+#	def isused(self):
+#		return (self.used)
 
+# A configuration part
 class partobj:
-	def __init__ (self, dir, parent, type, name):
-		global partinstance
+	def __init__ (self, image, dir, parent, type, name):
 		if (debug):
 			print "partobj dir %s parent %s type %s" %(dir,parent,type)
+		self.image = image
 		self.children = 0
 		self.initcode = []
 		self.registercode = []
@@ -226,14 +462,14 @@ class partobj:
 		self.objects = []
 		self.dir = dir
 		self.irq = 0
-		self.instance = partinstance + 1
+		self.instance = image.getpartinstance() + 1
 		self.flatten_name = flatten_name(type + "/" + name)
 		if (debug):
 			print "INSTANCE %d" % self.instance
-		partinstance = partinstance + 1
+		image.setpartinstance(image.getpartinstance() + 1)
 		self.devfn = 0	
 		self.private = 0	
-		self.options = {}
+		self.uses_options = {}
 		# chip initialization. If there is a chip.h in the 
 		# directory, generate the structs etc. to 
 		# initialize the code
@@ -249,7 +485,7 @@ class partobj:
 			# me as the child.
 			if (debug):
 				if (parent.children):
-					print "add %s (%d) as isbling" % (parent.children.dir, parent.children.instance)
+					print "add %s (%d) as sibling" % (parent.children.dir, parent.children.instance)
 			self.siblings = parent.children
 			parent.children = self
 		else:
@@ -322,15 +558,17 @@ class partobj:
         	self.registercode.append(code)
 
 	def usesoption(self, name):
-		o = getvalue(options, name)
+		global global_options
+		o = getdict(global_options, name)
 		if (o == 0):
 			fatal("Error: can't use undefined option %s" % name)
 		o.setused()
-		o1 = getvalue(self.options, name)
+		o1 = getdict(self.uses_options, name)
 		if (o1):
 			return
-		setvalue(self.options, name, o)
+		setdict(self.uses_options, name, o)
 
+# Used to keep track of the current part
 class partsstack:
 	def __init__ (self):
 		self.stack = []
@@ -343,57 +581,28 @@ class partsstack:
 
 	def tos(self):
 		return self.stack[-1]
+
+	def empty(self):
+		return (len(self.stack) == 0)
 pstack = partsstack()
-
-def error(string):      
-        global errors, loc
-	errors = errors + 1
-        size = len(loc.stack)
-        i = 0
-        while(i < size -1): 
-                print loc.stack[i].at()
-                i = i + 1
-        print "%s: %s"% (loc.at(), string)
-
-def exitiferrors():
-	if (errors != 0):
-		sys.exit(1)
-
-def fatal(string):      
-	error(string)
-        exitiferrors()
-
-def warning(string):
-        global warnings, loc
-	warnings = warnings + 1
-        print "===> Warning:"
-        size = len(loc.stack)
-        i = 0
-        while(i < size -1):
-                print loc.stack[i].at()
-                i = i + 1
-        print "%s: %s"% (loc.at(), string)
-
 
 # -----------------------------------------------------------------------------
 #                    statements 
 # -----------------------------------------------------------------------------
 
-def getvalue(dict, name):
+def getdict(dict, name):
 	if name not in dict.keys(): 
 		if (debug >1):
 			print 'Undefined:', name
 		return 0
 	v = dict.get(name, 0)
 	if (debug > 1):
-		print "getvalue %s returning %s" % (name, v)
+		print "getdict %s returning %s" % (name, v)
 	return v
 
-def setvalue(dict, name, value):
-	if name in dict.keys(): 
-		print "Warning, %s previously defined" % name
+def setdict(dict, name, value):
     	if (debug > 1):
-		print "setvalue sets %s to %s" % (name, value)
+		print "setdict sets %s to %s" % (name, value)
 	dict[name] = value
 
 # options. 
@@ -407,49 +616,49 @@ def setvalue(dict, name, value):
 # use the value, then try to set the value
 
 def newoption(name):
-	o = getvalue(options, name)
+	global global_options, global_options_by_order
+	o = getdict(global_options, name)
 	if (o):
 		print "option %s already defined" % name
 		sys.exit(1)
 	o = option(name)
-	setvalue(options, name, o)
-	options_by_order.append(name)
+	setdict(global_options, name, o)
+	global_options_by_order.append(name)
 
 # option must be declared before being used in a part
 # if we're not processing a part, then we must
 # be at the top level where all options are available
 def getoption(name, part):
-	global options
+	global global_uses_options, global_option_values
 	if (part):
-		o = getvalue(part.options, name)
+		o = getdict(part.uses_options, name)
+	elif (alloptions):
+		o = getdict(global_options, name)
 	else:
-		o = getvalue(options, name)
+		o = getdict(global_uses_options, name)
 	if (o == 0 or not o.defined):
 		error("Error: Option %s undefined (missing use command?)." % name)
 		return
-	v = o.getvalue(part)
-	if (debug > 2):
-		print "getoption returns %s" % v
-		print "%s" % o.where()
+	v = 0
+	if (part):
+		v = o.getvalue(part.image.getvalues())
+	if (v == 0):
+		v = o.getvalue(global_option_values)
 	return v
 
-# setoptionstmt only allowed at top level
-def setoptionstmt(name, value):
-	global curpart
-	if (curpart != root):
-		fatal("Error: options can only be set in target configuration file")
-	setoption(name, value)
-
 def setoption(name, value):
-	global loc
-	o = getvalue(options, name)
+	global loc, global_options, global_option_values, curimage
+	o = getdict(global_options, name)
 	if (o == 0):
-		fatal("Error: attempt set nonexistent option %s" % name)
-	o.setvalue(value, loc)
+		fatal("Error: attempt to set nonexistent option %s" % name)
+	if (curimage):
+		o.setvalue(value, curimage.getvalues(), loc)
+	else:
+		o.setvalue(value, global_option_values, loc)
 
 def setdefault(name, value):
-	global loc
-	o = getvalue(options, name)
+	global loc, global_options
+	o = getdict(global_options, name)
 	if (not o):
 		return
 	if (o.default):
@@ -458,8 +667,8 @@ def setdefault(name, value):
 	o.setdefault(value, loc)
 
 def setnodefault(name):
-	global loc
-	o = getvalue(options, name)
+	global loc, global_options
+	o = getdict(global_options, name)
 	if (not o):
 		return
 	if (o.default):
@@ -468,89 +677,107 @@ def setnodefault(name):
 	o.setnodefault(loc)
 
 def setcomment(name, value):
-	o = getvalue(options, name)
+	global loc, global_options
+	o = getdict(global_options, name)
 	if (not o):
 		fatal("setcomment: %s not here" % name)
 	o.setcomment(value, loc)
 
 def setexported(name):
-	o = getvalue(options, name)
+	global global_options
+	o = getdict(global_options, name)
 	if (not o):
 		fatal("setexported: %s not here" % name)
 	o.setexported()
 
 def setnoexport(name):
-	o = getvalue(options, name)
+	global global_options
+	o = getdict(global_options, name)
 	if (not o):
 		fatal("setnoexport: %s not here" % name)
 	o.setnoexport()
 
 def setexportable(name):
-	o = getvalue(options, name)
+	global global_options
+	o = getdict(global_options, name)
 	if (not o):
 		fatal("setexportable: %s not here" % name)
 	o.setexportable()
 
 def setformat(name, fmt):
-	o = getvalue(options, name)
+	global global_options
+	o = getdict(global_options, name)
 	if (not o):
 		fatal("setformat: %s not here" % name)
 	o.setformat(fmt)
 
-def getformated(name, part):
-	global options
-	if (part):
-		o = getvalue(part.options, name)
-	else:
-		o = getvalue(options, name)
+def getformated(name, values):
+	global global_options, global_option_values
+	o = getdict(global_options, name)
 	if (o == 0 or not o.defined):
-		fatal( "Error: Option %s undefined (missing use command?)." % name)
-	v = o.getvalue(part)
+		fatal( "Error: Option %s undefined." % name)
+	v = 0
+	if (values):
+		v = o.getvalue(values)
+	if (v == 0):
+		v = o.getvalue(global_option_values)
 	f = o.getformat()
 	return (f % v)
 
-def isexported(name, part):
-	if (part):
-		o = getvalue(part.options, name)
-	else:
-		o = getvalue(options, name)
+def isexported(name):
+	global global_options
+	o = getdict(global_options, name)
 	if (o):
 		return o.isexported()
 	return 0
 
-def isdefined(name, part):
-	if (part):
-		o = getvalue(part.options, name)
-	else:
-		o = getvalue(options, name)
-	if (o):
-		return o.isdefined()
-	return 0
+#def isdefined(name, part):
+#	global global_options
+#	if (part):
+#		o = getdict(part.uses_options, name)
+#	else:
+#		o = getdict(global_options, name)
+#	if (o):
+#		return o.isdefined()
+#	return 0
 
 def isset(name, part):
+	global global_uses_options
 	if (part):
-		o = getvalue(part.options, name)
+		o = getdict(part.uses_options, name)
 	else:
-		o = getvalue(options, name)
+		o = getdict(global_uses_options, name)
 	if (o):
 		return o.isset()
 	return 0
 
-def isused(name, part):
-	if (part):
-		o = getvalue(part.options, name)
-	else:
-		o = getvalue(options, name)
-	if (o):
-		return o.isused()
-	return 0
+#def isused(name, part):
+#	global global_options
+#	if (part):
+#		o = getdict(part.uses_options, name)
+#	else:
+#		o = getdict(global_options, name)
+#	if (o):
+#		return o.isused()
+#	return 0
 
 def usesoption(name):
-	global curpart
-	curpart.usesoption(name)
+	global curpart, global_options, global_uses_options
+	if (curpart):
+		curpart.usesoption(name)
+		return
+	o = getdict(global_options, name)
+	if (o == 0):
+		fatal("Error: can't use undefined option %s" % name)
+	o.setused()
+	o1 = getdict(global_uses_options, name)
+	if (o1):
+		return
+	setdict(global_uses_options, name, o)
 
 def validdef(name, defval):
-	o = getvalue(options, name)
+	global global_options
+	o = getdict(global_options, name)
 	if (not o):
 		fatal("validdef: %s not here" % name)
 	if ((defval & 1) != 1):
@@ -561,7 +788,6 @@ def validdef(name, defval):
 	    fatal("Error: must specify comment for option %s" % name)
 
 def loadoptions():
-	global treetop
 	optionsfile = os.path.join(treetop, 'src', 'config', 'Options.lb')
 	loc.push_file(optionsfile)
 	if (not parse('options', open(optionsfile, 'r').read())):
@@ -569,115 +795,111 @@ def loadoptions():
 	loc.pop_file()
 
 def addinit(path):
-	global initfile
+	global curimage, curdir
 	if (path[0] == '/'):
-		initfile =  treetop + '/src/' + path
+		curimage.setinitfile(treetop + '/src/' + path)
 	else:
-		initfile = curdir + '/' + path
+		curimage.setinitfile(curdir + '/' + path)
 	print "Adding init file: %s" % path
 
 # we do the crt0include as a dictionary, so that if needed we
 # can trace who added what when. Also it makes the keys
 # nice and unique. 
 def addcrt0include(path):
-	global crt0includes
-	if (debug > 2):
-		print "ADDCRT0: %s" % path
-	crt0includes.append(path)
+	global curimage
+	curimage.addinitinclude(0, path)
 
 def addinitinclude(str, path):
-	global initincludes, useinitincludes
-	useinitincludes = 1
-	if (debug > 2):
-		print "ADDCRT0: %s -> %s" % str, path
-	o = initinclude(dequote(str), path)
-	setvalue(initincludes, path, o)
+	global curimage
+	curimage.addinitinclude(dequote(str), path)
 
 def addldscript(path):
-	global ldscripts
+	global curimage, curdir
 	if (path[0] == '/'):
 		fullpath =  treetop + '/src/' + path
 	else:
 		fullpath = curdir + '/' + path
-	#fullpath = os.path.join(curdir, path)
-	#setvalue(ldscripts, fullpath, loc)
 	if (debug):
 		print "fullpath :%s: curdir :%s: path :%s:" % (fullpath, curdir, path)
-	ldscripts.append(fullpath)
+	curimage.addldscript(fullpath)
 
 def payload(path):
-	global payloadfile
+	global curimage
 	adduserdefine("PAYLOAD:=%s"%path)
+	curimage.addpayload(path)
 #	addrule('payload')
 #	adddep('payload', path)
 #	addaction('payload', 'cp $< $@')
 
-# this is called with an an object name. 
-# the easiest thing to do is add this object to the current 
-# component.
-# such kludgery. If the name starts with '.' then make the 
-# dependency be on ./thing.x gag me.
-def addobjectdriver(dict, object_name):
-	suffix = object_name[-2:]
-	if (suffix == '.o'):
-		suffix = '.c'
-	base = object_name[:-2]
-	if (object_name[0] == '.'):
-		source = base + suffix
-	else:
-		source = os.path.join(curdir, base + suffix)
-	object = base + '.o'
-	if (debug):
-		print "add object %s source %s" % (object_name, source)
-	setvalue(dict, base, [object, source])
+def addromimage(name):
+	global romimages, curimage, curpart, target_dir, target_name
+	print "Configuring ROMIMAGE %s" % name
+	curimage = romimage(name)
+	curimage.settargetdir(os.path.join(target_dir, name))
+	o = partobj(curimage, target_dir, 0, 'board', target_name)
+	curimage.setroot(o)
+	curpart = o
+	o = getdict(romimages, name)
+	if (o):
+		fatal("romimage %s previously defined" % name)
+	setdict(romimages, name, curimage)
+
+def addbuildrom(size, roms):
+	global buildroms
+	print "Build ROM size %d" % size
+	b = buildrom(size, roms)
+	buildroms.append(b)
 
 def addinitobject(object_name):
-	addobjectdriver(initobjectrules, object_name)
+	global curimage
+	curimage.addinitobjectrule(object_name)
 
 def addobject(object_name):
-	addobjectdriver(objectrules, object_name)
+	global curimage
+	curimage.addobjectrule(object_name)
 
 def adddriver(driver_name):
-	addobjectdriver(driverrules, driver_name)
+	global curimage
+	curimage.adddriverrule(driver_name)
 
-def target(targ_name):
-        global target_dir
-	global curpart
-	global root
-	print "Configuring TARGET %s" % targ_name
-        target_dir = os.path.join(os.path.dirname(loc.file()), targ_name)
-        if not os.path.isdir(target_dir):
-                print "Creating directory %s" % target_dir
-                os.makedirs(target_dir)
-        print "Will place Makefile, crt0.S, etc. in %s" % target_dir
-	root = partobj(target_dir, 0, 'board', targ_name)
-	curpart = root
+def target(name):
+        global target_dir, target_name
+	print "Configuring TARGET %s" % name
+	target_name = name
+	target_dir = os.path.join(os.path.dirname(loc.file()), name)
+	if not os.path.isdir(target_dir):
+		print "Creating directory %s" % target_dir
+		os.makedirs(target_dir)
+	print "Will place Makefile, crt0.S, etc. in %s" % target_dir
+
 
 def part(name, path, file):
-	global curpart,curdir,treetop
+	global curimage, curpart, curdir, dirstack, pstack
 	dirstack.append(curdir)
 	curdir = os.path.join(treetop, 'src', name, path)
-	newpart = partobj(curdir, curpart, name, path)
+	newpart = partobj(curimage, curdir, curpart, name, path)
 	print "Configuring PART %s, path %s" % (name,path)
 	if (debug):
-		print "PUSH part %s %s" % (name, curpart.dir)
+		print "PUSH part %s %s" % (name, curdir)
 	pstack.push(curpart)
 	curpart = newpart
 	doconfigfile(curdir, file)
 
 def partpop():
-	global curpart,curdir
+	global curpart, curdir, dirstack, pstack
 	print "End PART %s" % curpart.type
 	# Warn if options are used without being set in this part
-	for i in curpart.options.keys():
+	for i in curpart.uses_options.keys():
 		if (not isset(i, curpart)):
-			print "WARNING: Option %s using default value %s" % (i, getformated(i, curpart))
+			print "WARNING: Option %s using default value %s" % (i, getformated(i, curpart.image.getvalues()))
 	curpart = pstack.pop()
+	if pstack.empty():
+		curpart = 0
 	curdir = dirstack.pop()
 
 # dodir is like part but there is no new part
 def dodir(path, file):
-	global curdir,  treetop
+	global curimage, curpart, curdir, dirstack
 	# if the first char is '/', it is relative to treetop, 
 	# else relative to curdir
 	# os.path.join screws up if the name starts with '/', sigh.
@@ -692,16 +914,61 @@ def dodir(path, file):
 	dirstack.append(curdir)
 	curdir = fullpath
 	file = os.path.join(fullpath, file)
-	config_file_list.append(file)
 	doconfigfile(fullpath, file)
 	curdir = dirstack.pop()
 
 def lookup(name):
-	global curpart
-	v = getoption(name, curpart)
+	global curimage, curpart
+	if (curpart):
+		v = getoption(name, curpart)
+	else:
+		v = getoption(name, 0)
 	exitiferrors()
 	return v
 
+def addrule(id):
+	global curimage
+	curimage.addmakerule(id)
+	
+def adduserdefine(str):
+	global curimage
+	curimage.adduserdefine(str)
+
+def addaction(id, str):
+	global curimage
+	curimage.addmakeaction(id, str)
+
+def adddep(id, str):
+	global curimage
+	curimage.addmakedepend(id, str)
+
+# arch is 'different' ... darn it.
+def set_arch(my_arch):
+	global curimage
+	curimage.setarch(my_arch)
+	setoption('ARCH', my_arch)
+	part('arch', my_arch, 'Config.lb')
+
+def mainboard(path):
+	full_path = os.path.join(treetop, 'src/mainboard', path)
+	setoption('MAINBOARD', full_path)
+        vendor = re.sub("/.*", "", path)
+        part_number = re.sub("[^/]/", "", path)
+	setoption('MAINBOARD_VENDOR', vendor)
+	setoption('MAINBOARD_PART_NUMBER', part_number)
+	dodir('/config', 'Config.lb')
+	part('mainboard', path, 'Config.lb')
+
+def doconfigfile(path, file):
+	filename = os.path.join(path, file)
+	loc.push_file(filename)
+	if (not parse('cfgfile', open(filename, 'r').read())):
+		fatal("Error: Could not parse file")
+	exitiferrors()
+
+#=============================================================================
+#		MISC FUNCTIONS
+#=============================================================================
 def ternary(val, yes, no):
 	if (debug):
 		print "ternary %s" % expr
@@ -728,13 +995,6 @@ def IsInt( str ):
 	except ValueError:
 		return 0
 
-def addrule(id):
-	o = makerule(id)
-	setvalue(makebaserules, id, o)
-	
-def adduserdefine(str):
-	userdefines.append(str)
-
 def dequote(str):
 	a = re.sub("^\"", "", str)
 	a = re.sub("\"$", "", a)
@@ -746,311 +1006,14 @@ def flatten_name(str):
 	a = re.sub("/", "_", str)
 	return a
 
-def addaction(id, str):
-	o = getvalue(makebaserules, id)
-	if (o):
-		a = dequote(str)
-		o.addaction(a)
-		return
-	fatal("No such rule \"%s\" for addaction" % id);
-
-def adddep(id, str):
-	o = getvalue(makebaserules, id)
-	if (o):
-		a = dequote(str)
-		o.adddependency(a)
-		return
-	fatal("No such rule \"%s\" for adddependency" % id);
-
 # If the first part of <path> matches treetop, replace that part with "$(TOP)"
 def topify(path):
-	global treetop
 	if path[0:len(treetop)] == treetop:
 		path = path[len(treetop):len(path)]
 		if (path[0:1] == "/"):
 			path = path[1:len(path)]
 		path = "$(TOP)/" + path
 	return path
-
-# arch is 'different' ... darn it.
-def set_arch(my_arch):
-	global arch
-	global curdir
-	arch = my_arch
-	setoption('ARCH', my_arch)
-	#part('arch', my_arch, 'config/make.base.lb')
-	part('arch', my_arch, 'Config.lb')
-
-
-def mainboard(path):
-	global mainboard_dir, treetop
-	mainboard_dir = path
-	full_mainboard_dir = os.path.join(treetop, 'src/mainboard', path)
-	setoption('MAINBOARD', full_mainboard_dir)
-        vendor = re.sub("/.*", "", path)
-        mainboard_part_number = re.sub("[^/]/", "", path)
-	setoption('MAINBOARD_VENDOR', vendor)
-	setoption('MAINBOARD_PART_NUMBER', mainboard_part_number)
-	dodir('/config', 'Config.lb')
-	part('mainboard', path, 'Config.lb')
-
-#=============================================================================
-#		FILE OUTPUT 
-#=============================================================================
-def writemakefileheader(file, fname):
-	file.write("# File: %s\n" % fname)
-	file.write("# This file was generated by '%s %s %s'\n\n"
-		% (sys.argv[0], sys.argv[1], sys.argv[2]))
-
-
-def writemakefilesettings(path):
-	global treetop, arch, mainboard_dir, target_dir, root
-	global options_by_order, options
-	# Write Makefile.settings to seperate the settings
-	# from the actual makefile creation
-	# In practice you need to rerun NLBConfig.py to change
-	# these but in theory you shouldn't need to.
-
-	filename = os.path.join(path, "Makefile.settings")
-	print "Creating", filename
-	file = open(filename, 'w+')
-	writemakefileheader(file, filename)
-	file.write("TOP:=%s\n" % (treetop))
-	#file.write("ARCH:=%s\n" % (arch))
-	#file.write("MAINBOARD:=%s\n" % (mainboard_dir))
-	file.write("TARGET_DIR:=%s\n" % (target_dir))
-	for i in options_by_order:
-		if (isexported(i, 0)):
-			file.write("export %s:=%s\n" % (i, getformated(i, 0)))
-	file.write("export VARIABLES := ")
-	for i in options.keys():
-		if (isexported(i, 0)):
-			file.write("%s " % i)
-	file.write("\n")
-#	file.write("CPUFLAGS := ")
-#	for i in options.keys():
-#		o = options[i]
-#		file.write("-D%s=%s " % (i, o.getvalue()))
-#	file.write("\n")
-	file.close()
-
-
-# write the makefile
-# let's try the Makefile
-# first, dump all the -D stuff
-
-def writemakefile(path):
-	global root, useinitincludes
-	makefilepath = os.path.join(path, "Makefile")
-	print "Creating", makefilepath
-	file = open(makefilepath, 'w+')
-	writemakefileheader(file, makefilepath)
-
-	# file.write("include Makefile.settings\n")
-	# file.write("include cpuflags\n")
-	# Putting "include cpuflags" in the Makefile has the problem that the
-	# cpuflags file would be generated _after_ we want to include it.
-	# Instead, let make do the work of computing CPUFLAGS:
-	file.write("""\
-# Get the value of TOP, VARIABLES, and several other variables.
-include Makefile.settings
-
-# Function to create an item like -Di586 or -DMAX_CPUS='1' or -Ui686
-D_item = $(if $(subst undefined,,$(origin $1)),-D$1$(if $($1),='$($1)',),-U$1)
-
-# Compute the value of CPUFLAGS here during make's first pass.
-CPUFLAGS := $(foreach _var_,$(VARIABLES),$(call D_item,$(_var_)))
-""")
-
-	for i in userdefines:
-		file.write("%s\n" %i)
-	file.write("\n")
-
-	# main rule
-	file.write("all: linuxbios.rom")
-	# print out all the object dependencies
-	file.write("\n# object dependencies (objectrules:)\n")
-	file.write("INIT-OBJECTS :=\n")
-	file.write("OBJECTS :=\n")
-	file.write("DRIVER :=\n")
-	file.write("\nSOURCES :=\n")
-	for irule in initobjectrules.keys():
-		init = initobjectrules[irule]
-		i_name = init[0]
-		i_source = init[1]
-		file.write("INIT-OBJECTS += %s\n" % (i_name))
-		file.write("SOURCES += %s\n" % (i_source))
-
-	for objrule in objectrules.keys():
-		obj = objectrules[objrule]
-		obj_name = obj[0]
-		obj_source = obj[1]
-		file.write("OBJECTS-1 += %s\n" % (obj_name))
-		file.write("SOURCES += %s\n" % (obj_source))
-
-	for driverrule in driverrules.keys():
-		driver = driverrules[driverrule]
-		obj_name = driver[0]
-		obj_source = driver[1]
-		file.write("DRIVER += %s\n" % (obj_name))
-		file.write("SOURCES += %s\n" % (obj_source))
-
-	# Print out all ldscript.ld dependencies.
-	file.write("\n# ldscript.ld dependencies:\n")
-	file.write("LDSUBSCRIPTS-1 := \n" )
-	for script in ldscripts:
-		file.write("LDSUBSCRIPTS-1 += %s\n" % topify(script))
-
-	# Print out the dependencies for crt0_includes.h
-	file.write("\n# Dependencies for crt0_includes.h\n")
-	file.write("CRT0_INCLUDES:=\n")
-	if (useinitincludes):
-		for inc in initincludes.keys():
-			if (local_path.match(inc)):
-				file.write("CRT0_INCLUDES += %s\n" % inc)
-			else:
-				file.write("CRT0_INCLUDES += $(TOP)/src/%s\n" % inc)
-	else:
-		for i in crt0includes:
-			if (local_path.match(i)):
-				file.write("CRT0_INCLUDES += %s\n" % i)
-			else:
-				file.write("CRT0_INCLUDES += $(TOP)/src/%s\n" % i)
-
-
-	# Print out the user defines.
-	file.write("\n# userdefines:\n")
-	#for udef in userdefines:
-		#file.write("%s\n" % udef)
-		
-	# Print out the base rules.
-	# Need to have a rule that counts on 'all'.
-	file.write("\n# mainrulelist:")
-	#file.write("\nmainrule: %s\n" % mainrulelist)
-
-	# Print out any user rules.
-	file.write("\n# From makerule or docipl commands:\n")
-	# Old way (hash order): for target in makebaserules.keys():
-	# New way (config file order):
-	#for target in makerule_targets:
-		#makebaserules[target].write(file)
-
-	file.write("\n# objectrules:\n")
-	for objrule in objectrules.keys():
-		obj = objectrules[objrule]
-		source = topify(obj[1])
-		file.write("%s: %s\n" % (obj[0], source))
-		file.write("\t$(CC) -c $(CFLAGS) -o $@ $<\n")
-		#file.write("%s\n" % objrule[2])
-
-	for driverrule in driverrules.keys():
-		driver = driverrules[driverrule]
-		source = topify(driver[1])
-		file.write("%s: %s\n" % (driver[0], source))
-		file.write("\t$(CC) -c $(CFLAGS) -o $@ $<\n")
-		#file.write("%s\n" % objrule[2])
-
-	# Print out the rules that will make cause the files
-	# generated by NLBConfig.py to be remade if any dependencies change.
-
-	file.write("\n# Remember the automatically generated files\n")
-	file.write("GENERATED:=\n")
-	for genfile in [ 'Makefile',
-			'Makefile.settings',
-			'nsuperio.c',
-			 'chip.c', 
-			'LinuxBIOSDoc.config' ]:
-		file.write("GENERATED += %s\n" % genfile)
-	if (useinitincludes):
-		file.write("GENERATED += crt0.S\n")
-	else:
-		file.write("GENERATED += crt0_includes.h\n")
-
-	file.write("\n# Remake Makefile (and the other files generated by\n")
-	file.write("# NLBConfig.py) if any config dependencies change.\n")
-
-	for cfile in config_file_list:
-		file.write("$(GENERATED): %s\n" % topify(cfile))
-
-	for depfile in [ '%s' % top_config_file,    # This a duplicate, remove?
-			'$(TOP)/util/config/NLBConfig.py',
-			'$(TOP)/src/arch/$(ARCH)/config/make.base' ]:
-		file.write("$(GENERATED): %s\n" % depfile)
-
-	file.write("$(GENERATED):\n")
-	file.write("\tpython $(TOP)/util/config/NLBConfig.py %s $(TOP)\n"
-			% top_config_file)
-
-	keys = root.options.keys()
-	keys.sort()
-	file.write("\necho:\n")
-	for key in keys:
-		 file.write("\t@echo %s='$(%s)'\n"% (key,key))
-	
-
-	for i in makebaserules.keys():
-		m = makebaserules[i]
-		file.write("%s: " %i)
-		for i in m.dependency:
-			file.write("%s " % i)
-		file.write("\n")
-		for i in m.actions:
-			file.write("\t%s\n" % i)
-	file.close()
-
-# Write out crt0_includes.h (top-level assembly language) include file.
-def writecrt0_includes(path):
-	crt0filepath = os.path.join(path, "crt0_includes.h")
-	print "Creating", crt0filepath
-	file = open(crt0filepath, 'w+')
-	for i in crt0includes:
-		file.write("#include <%s>\n" % i)
-
-	file.close()
-
-def writeinitincludes(path):
-	global initfile, include_pattern, crt0_includes
-	crt0filepath = os.path.join(path, "crt0.S")
-	print "Creating", crt0filepath
-	infile = open(initfile, 'r')
-	outfile = open(crt0filepath, 'w+')
-
-	line = infile.readline()
-	while (line):
-		p = include_pattern.match(line)
-		if (p):
-			for i in initincludes.keys():
-				inc = initincludes[i]
-				if (inc.getstring() == p.group(1)):
-					outfile.write("#include \"%s\"\n" % inc.getpath())
-		else:
-			outfile.write(line);
-		line = infile.readline()
-
-	infile.close()
-	outfile.close()
-
-def writeldoptions(path):
-	global options
-	# Write Makefile.settings to seperate the settings
-	# from the actual makefile creation
-	# In practice you need to rerun NLBConfig.py to change
-	# these but in theory you shouldn't need to.
-
-	filename = os.path.join(path, "ldoptions")
-	print "Creating", filename
-	file = open(filename, 'w+')
-	for i in options.keys():
-		if (isexported(i, 0) and IsInt(getoption(i, 0))):
-			file.write("%s = %s;\n" % (i, getformated(i, 0)))
-	file.close()
-
-# Add any run-time checks to verify that parsing the configuration
-# was successful
-def verifyparse():
-	global useinitincludes, initfile
-	if (useinitincludes and initfile == ''):
-		fatal("An init file must be specified")
 
 %%
 parser Config:
@@ -1063,6 +1026,7 @@ parser Config:
     token ADDACTION:		'addaction'
     token ALWAYS:		'always'
     token ARCH:			'arch'
+    token BUILDROM:		'buildrom'
     token COMMENT:		'comment'
     token CPU:			'cpu'
     token DEFAULT:		'default'
@@ -1071,7 +1035,8 @@ parser Config:
     token DIR:			'dir'
     token DRIVER:		'driver'
     token ELSE:			'else'
-    token END:			'$|end'
+    token END:			'end'
+    token EOF:			'$'
     token EQ:			'='
     token EXPORT:		'export'
     token FORMAT:		'format'
@@ -1094,6 +1059,7 @@ parser Config:
     token PMC:			'pmc'
     token PRINT:		'print'
     token REGISTER:		'register'
+    token ROMIMAGE:		'romimage'
     token SOUTHBRIDGE:		'southbridge'
     token SUPERIO:		'superio'
     token TARGET:		'target'
@@ -1138,11 +1104,8 @@ parser Config:
 
     rule unop:		"!" expr		{{ return not(expr) }}
 
-    rule partend<<C>>:	(stmt<<C>>)* END 	{{ partpop()}}
+    rule partend<<C>>:	(stmt<<C>>)* END 	{{ if (C): partpop()}}
 
-    rule mainboard:	MAINBOARD PATH		{{ mainboard(PATH) }}
-			partend<<1>>
-			
     rule northbridge<<C>>:
 			NORTHBRIDGE PATH	{{ if (C): part('northbridge', PATH, 'Config.lb') }}
 			partend<<C>>
@@ -1188,7 +1151,9 @@ parser Config:
 # needs to be C and ID, but nested if's are, we hope, not going to 
 # happen. IF so, possibly ID && C could be used.
     rule iif<<C>>:	IF ID			{{ c = lookup(ID) }}
-			(stmt<<c>>)* [ ELSE (stmt<<not c>>)* ] END
+			(stmt<<C and c>>)* 
+			[ ELSE (stmt<<C and not c>>)* ]
+			END
 
     rule depsacts<<ID, C>>:
 			( DEPENDS STR		{{ if (C): adddep(ID, STR) }}
@@ -1209,54 +1174,6 @@ parser Config:
 
     rule register<<C>>:	REGISTER STR		{{ if (C): curpart.addregister(STR) }}
 
-# to make if work without 2 passses, we use an old hack from SIMD, the 
-# context bit. If the bit is 1, then ops get done, otherwise
-# ops don't get done. From the top level, context is always
-# 1. In an if, context depends on eval of the if condition
-    rule stmt<<C>>:	cpu<<C>>		{{ return cpu}}
-		|	pmc<<C>>		{{ return pmc}}
-		|	arch<<C>>		{{ return arch}}
-		|	northbridge<<C>>	{{ return northbridge }}
-		|	southbridge<<C>>	{{ return southbridge }}
-		|	superio<<C>>		{{ return superio }}
-		|	initobject<<C>>		{{ return initobject }}
-		|	object<<C>>		{{ return object }}
-		|	driver<<C>>		{{ return driver }}
-		|	mainboardinit<<C>>	{{ return mainboardinit }}
-		|	initinclude<<C>>	{{ return initinclude }}
-		|	makerule<<C>>		{{ return makerule }}
-		|	makedefine<<C>> 	{{ return makedefine }}
-		|	addaction<<C>>		{{ return addaction }}
-		|	init<<C>>	 	{{ return init }}
-		|	register<<C>> 		{{ return register}}
-		|	iif<<C>>		{{ return iif }}
-		|	dir<<C>>		{{ return dir}}
-		|	ldscript<<C>>		{{ return ldscript}}
-		|	payload<<C>>		{{ return payload}}
-		| 	prtstmt<<C>>		{{ return prtstmt}}
-
-    # ENTRY for parsing Config.lb file
-    rule cfgfile:	(uses<<1>>)* (stmt<<1>>)*
-						{{ return 1 }}
-
-    rule usesid<<C>>:	ID			{{ if (C): usesoption(ID) }}
-
-    rule uses<<C>>:	USES (usesid<<C>>)+
-
-    rule value:		STR			{{ return dequote(STR) }} 
-		| 	expr			{{ return expr }}
-		|	DELEXPR			{{ return DELEXPR }}
-
-    rule option<<C>>:	OPTION ID EQ value	{{ if (C): setoptionstmt(ID, value) }}
-
-    rule opif<<C>>:	IF ID			{{ c = lookup(ID) }}
-			(opstmt<<C and c>>)* 
-			[ ELSE (opstmt<<C and not c>>)* ] END
-
-    rule opstmt<<C>>:	option<<C>>
-		|	opif<<C>>
-		|	prtstmt<<C>>
-
     rule prtval:	expr			{{ return str(expr) }}
 		|	STR			{{ return STR }}
 
@@ -1268,15 +1185,81 @@ parser Config:
 			[ "," prtlist 		{{ val = val + prtlist }}
 			]			{{ if (C): print eval(val) }}
 
-    # ENTRY for parsing a delayed value
-    rule delexpr:	"{" expr "}"		{{ return expr }}
+# to make if work without 2 passses, we use an old hack from SIMD, the 
+# context bit. If the bit is 1, then ops get done, otherwise
+# ops don't get done. From the top level, context is always
+# 1. In an if, context depends on eval of the if condition
+    rule stmt<<C>>:	addaction<<C>>		{{ return addaction }}
+		|	arch<<C>>		{{ return arch}}
+    		|	cpu<<C>>		{{ return cpu}}
+		|	dir<<C>>		{{ return dir}}
+		|	driver<<C>>		{{ return driver }}
+		|	iif<<C>>		{{ return iif }}
+		|	init<<C>>	 	{{ return init }}
+		|	initinclude<<C>>	{{ return initinclude }}
+		|	initobject<<C>>		{{ return initobject }}
+		|	ldscript<<C>>		{{ return ldscript}}
+		|	mainboardinit<<C>>	{{ return mainboardinit }}
+		|	makedefine<<C>> 	{{ return makedefine }}
+		|	makerule<<C>>		{{ return makerule }}
+		|	northbridge<<C>>	{{ return northbridge }}
+		|	object<<C>>		{{ return object }}
+		|	payload<<C>>		{{ return payload}}
+		|	pmc<<C>>		{{ return pmc}}
+		| 	prtstmt<<C>>		{{ return prtstmt}}
+		|	register<<C>> 		{{ return register}}
+		|	southbridge<<C>>	{{ return southbridge }}
+		|	superio<<C>>		{{ return superio }}
+
+    # ENTRY for parsing Config.lb file
+    rule cfgfile:	(uses<<1>>)* 
+    			(stmt<<1>>)*
+			EOF			{{ return 1 }}
+
+    rule usesid<<C>>:	ID			{{ if (C): usesoption(ID) }}
+
+    rule uses<<C>>:	USES (usesid<<C>>)+
+
+    rule value:		STR			{{ return dequote(STR) }} 
+		| 	expr			{{ return expr }}
+		|	DELEXPR			{{ return DELEXPR }}
+
+    rule option<<C>>:	OPTION ID EQ value	{{ if (C): setoption(ID, value) }}
+
+    rule opif<<C>>:	IF ID			{{ c = lookup(ID) }}
+			(opstmt<<C and c>>)* 
+			[ ELSE (opstmt<<C and not c>>)* ] 
+			END
+
+    rule opstmt<<C>>:	option<<C>>
+		|	opif<<C>>
+		|	prtstmt<<C>>
+
+
+    rule romimage:	ROMIMAGE STR		{{ addromimage(dequote(STR)) }}
+			(option<<1>>)*
+			MAINBOARD PATH		{{ mainboard(PATH) }}
+			END			{{ partpop(); print "End ROMIMAGE" }}
+
+    rule roms:		STR			{{ s = '(' + STR }}
+			( STR			{{ s = s + "," + STR }}
+			)*			{{ return eval(s + ')') }}
+
+    rule buildrom:	BUILDROM expr roms	{{ addbuildrom(expr, roms) }}
+
+    rule romstmts:	(romimage)* 
+			buildrom
 
     # ENTRY for parsing root part
     rule board:		LOADOPTIONS		{{ loadoptions() }}
 	    		TARGET DIRPATH		{{ target(DIRPATH) }}
 			(uses<<1>>)*
 			(opstmt<<1>>)*
-			mainboard		{{ return 1 }}
+			(romstmts)*		
+			EOF			{{ return 1 }}
+
+    # ENTRY for parsing a delayed value
+    rule delexpr:	"{" expr "}" EOF	{{ return expr }}
 
     rule defstmts<<ID>>:			{{ d = 0 }}
 			( DEFAULT
@@ -1296,8 +1279,273 @@ parser Config:
 			defstmts<<ID>> END	{{ validdef(ID, defstmts) }}
 
     # ENTRY for parsing Options.lb file
-    rule options:	(define)* END		{{ return 1 }}
+    rule options:	(define)* EOF		{{ return 1 }}
 %%
+
+#=============================================================================
+#		FILE OUTPUT 
+#=============================================================================
+def writemakefileheader(file, fname):
+	file.write("# File: %s\n" % fname)
+	file.write("# This file was generated by '%s %s %s'\n\n"
+		% (sys.argv[0], sys.argv[1], sys.argv[2]))
+
+def writemakefilesettings(path):
+	global treetop, target_dir
+	# Write Makefile.settings to seperate the settings
+	# from the actual makefile creation
+	# In practice you need to rerun NLBConfig.py to change
+	# these but in theory you shouldn't need to.
+
+	filename = os.path.join(path, "Makefile.settings")
+	print "Creating", filename
+	file = open(filename, 'w+')
+	writemakefileheader(file, filename)
+	file.write("TOP:=%s\n" % (treetop))
+	file.write("TARGET_DIR:=%s\n" % target_dir)
+#	for i in global_options_by_order:
+#		if (isexported(i, 0)):
+#			file.write("export %s:=%s\n" % (i, getformated(i, 0)))
+#	file.write("export VARIABLES := ")
+#	for i in global_options.keys():
+#		if (isexported(i, 0)):
+#			file.write("%s " % i)
+	file.write("\n")
+	file.close()
+
+def writeimagesettings(image):
+	global treetop
+	global global_options_by_order
+	# Write Makefile.settings to seperate the settings
+	# from the actual makefile creation
+	# In practice you need to rerun NLBConfig.py to change
+	# these but in theory you shouldn't need to.
+
+	filename = os.path.join(image.gettargetdir(), "Makefile.settings")
+	print "Creating", filename
+	file = open(filename, 'w+')
+	writemakefileheader(file, filename)
+	file.write("TOP:=%s\n" % (treetop))
+	file.write("TARGET_DIR:=%s\n" % (image.gettargetdir()))
+	for i in global_options_by_order:
+		if (isexported(i)):
+			file.write("export %s:=%s\n" % (i, getformated(i, image.getvalues())))
+	file.write("export VARIABLES := ")
+	for i in global_options_by_order:
+		if (isexported(i)):
+			file.write("%s " % i)
+	file.write("\n")
+	file.close()
+
+# write the romimage makefile
+# let's try the Makefile
+# first, dump all the -D stuff
+
+def writeimagemakefile(image):
+	makefilepath = os.path.join(image.gettargetdir(), "Makefile")
+	print "Creating", makefilepath
+	file = open(makefilepath, 'w+')
+	writemakefileheader(file, makefilepath)
+
+	#file.write("include cpuflags\n")
+	# Putting "include cpuflags" in the Makefile has the problem that the
+	# cpuflags file would be generated _after_ we want to include it.
+	# Instead, let make do the work of computing CPUFLAGS:
+	file.write("# Get the value of TOP, VARIABLES, and several other variables.\n")
+	file.write("include Makefile.settings\n\n")
+	file.write("# Function to create an item like -Di586 or -DMAX_CPUS='1' or -Ui686\n")
+	file.write("D_item = $(if $(subst undefined,,$(origin $1)),-D$1$(if $($1),='$($1)',),-U$1)\n\n")
+	file.write("# Compute the value of CPUFLAGS here during make's first pass.\n")
+	file.write("CPUFLAGS := $(foreach _var_,$(VARIABLES),$(call D_item,$(_var_)))\n\n")
+
+	for i in image.getuserdefines():
+		file.write("%s\n" %i)
+	file.write("\n")
+
+	# main rule
+	file.write("all: linuxbios.rom")
+	# print out all the object dependencies
+	file.write("\n# object dependencies (objectrules:)\n")
+	file.write("INIT-OBJECTS :=\n")
+	file.write("OBJECTS :=\n")
+	file.write("DRIVER :=\n")
+	file.write("\nSOURCES :=\n")
+	for irule in image.getinitobjectrules().keys():
+		init = image.getinitobjectrule(irule)
+		i_name = init[0]
+		i_source = init[1]
+		file.write("INIT-OBJECTS += %s\n" % (i_name))
+		file.write("SOURCES += %s\n" % (i_source))
+
+	for objrule in image.getobjectrules().keys():
+		obj = image.getobjectrule(objrule)
+		obj_name = obj[0]
+		obj_source = obj[1]
+		file.write("OBJECTS-1 += %s\n" % (obj_name))
+		file.write("SOURCES += %s\n" % (obj_source))
+
+	for driverrule in image.getdriverrules().keys():
+		driver = image.getdriverrule(driverrule)
+		obj_name = driver[0]
+		obj_source = driver[1]
+		file.write("DRIVER += %s\n" % (obj_name))
+		file.write("SOURCES += %s\n" % (obj_source))
+
+	# Print out all ldscript.ld dependencies.
+	file.write("\n# ldscript.ld dependencies:\n")
+	file.write("LDSUBSCRIPTS-1 := \n" )
+	for script in image.getldscripts():
+		file.write("LDSUBSCRIPTS-1 += %s\n" % topify(script))
+
+	# Print out the dependencies for crt0_includes.h
+	file.write("\n# Dependencies for crt0_includes.h\n")
+	file.write("CRT0_INCLUDES:=\n")
+	for inc in image.getinitincludes().keys():
+		if (local_path.match(inc)):
+			file.write("CRT0_INCLUDES += %s\n" % inc)
+		else:
+			file.write("CRT0_INCLUDES += $(TOP)/src/%s\n" % inc)
+
+	# Print out the user defines.
+	file.write("\n# userdefines:\n")
+	#for udef in image.userdefines:
+		#file.write("%s\n" % udef)
+		
+	# Print out the base rules.
+	# Need to have a rule that counts on 'all'.
+	file.write("\n# mainrulelist:")
+	#file.write("\nmainrule: %s\n" % image.mainrulelist)
+
+	# Print out any user rules.
+	file.write("\n# From makerule or docipl commands:\n")
+	# Old way (hash order): for target in makebaserules.keys():
+	# New way (config file order):
+	#for target in image.makerule_targets:
+		#image.makebaserules[target].write(file)
+
+	file.write("\n# objectrules:\n")
+	for objrule in image.getobjectrules().keys():
+		obj = image.getobjectrule(objrule)
+		source = topify(obj[1])
+		file.write("%s: %s\n" % (obj[0], source))
+		file.write("\t$(CC) -c $(CFLAGS) -o $@ $<\n")
+		#file.write("%s\n" % objrule[2])
+
+	for driverrule in image.getdriverrules().keys():
+		driver = image.getdriverrule(driverrule)
+		source = topify(driver[1])
+		file.write("%s: %s\n" % (driver[0], source))
+		file.write("\t$(CC) -c $(CFLAGS) -o $@ $<\n")
+		#file.write("%s\n" % objrule[2])
+
+	# Print out the rules that will make cause the files
+	# generated by NLBConfig.py to be remade if any dependencies change.
+
+	file.write("\n# Remember the automatically generated files\n")
+	file.write("GENERATED:=\n")
+	for genfile in [ 'Makefile',
+			'nsuperio.c',
+			 'chip.c', 
+			'LinuxBIOSDoc.config' ]:
+		file.write("GENERATED += %s\n" % genfile)
+		file.write("GENERATED += %s\n" % image.getincludefilename())
+
+	#file.write("\n# Remake Makefile (and the other files generated by\n")
+	#file.write("# NLBConfig.py) if any config dependencies change.\n")
+
+	#for cfile in image.config_file_list:
+	#	file.write("$(GENERATED): %s\n" % topify(cfile))
+
+	#for depfile in [ '%s' % top_config_file,    # This a duplicate, remove?
+	#		'$(TOP)/util/config/NLBConfig.py',
+	#		'$(TOP)/src/arch/$(ARCH)/config/make.base' ]:
+	#	file.write("$(GENERATED): %s\n" % depfile)
+
+	#file.write("$(GENERATED):\n")
+	#file.write("\tpython $(TOP)/util/config/NLBConfig.py %s $(TOP)\n"
+	#		% top_config_file)
+
+	keys = image.getroot().uses_options.keys()
+	keys.sort()
+	file.write("\necho:\n")
+	for key in keys:
+		 file.write("\t@echo %s='$(%s)'\n"% (key,key))
+
+	for i in image.getmakerules().keys():
+		m = image.getmakerule(i)
+		file.write("%s: " %i)
+		for i in m.dependency:
+			file.write("%s " % i)
+		file.write("\n")
+		for i in m.actions:
+			file.write("\t%s\n" % i)
+	file.close()
+
+#
+def writemakefile(path):
+	makefilepath = os.path.join(path, "Makefile")
+	print "Creating", makefilepath
+	file = open(makefilepath, 'w+')
+	writemakefileheader(file, makefilepath)
+
+	# main rule
+	file.write("all: ")
+	for i in romimages.keys():
+		file.write("%s-rom " % i)
+	file.write("\n\n")
+	for i in romimages.keys():
+		o = getdict(romimages, i)
+		file.write("%s-rom:\n" % o.getname())
+		file.write("\tif (cd %s; \\\n" % o.getname())
+		file.write("\t\tmake linuxbios.rom)\\\n");
+		file.write("\tthen true; else exit 1; fi;\n\n")
+	file.close()
+
+def writeinitincludes(image):
+	global include_pattern
+	filepath = os.path.join(image.gettargetdir(), image.getincludefilename())
+	print "Creating", filepath
+	outfile = open(filepath, 'w+')
+	if (image.newformat()):
+		infile = open(image.getinitfile(), 'r')
+
+		line = infile.readline()
+		while (line):
+			p = include_pattern.match(line)
+			if (p):
+				for i in image.getinitincludes().keys():
+					inc = image.getinitinclude(i)
+					if (inc.getstring() == p.group(1)):
+						outfile.write("#include \"%s\"\n" % inc.getpath())
+			else:
+				outfile.write(line);
+			line = infile.readline()
+
+		infile.close()
+	else:
+		for i in image.getinitincludes().keys():
+			outfile.write("#include <%s>\n" % i)
+	outfile.close()
+
+def writeldoptions(image):
+	# Write Makefile.settings to seperate the settings
+	# from the actual makefile creation
+	# In practice you need to rerun NLBConfig.py to change
+	# these but in theory you shouldn't need to.
+
+	filename = os.path.join(image.gettargetdir(), "ldoptions")
+	print "Creating", filename
+	file = open(filename, 'w+')
+	for i in global_options.keys():
+		if (isexported(i) and IsInt(getoption(i, 0))):
+			file.write("%s = %s;\n" % (i, getformated(i, image.getvalues())))
+	file.close()
+
+# Add any run-time checks to verify that parsing the configuration
+# was successful
+def verifyparse(image):
+	if (image.newformat() and image.getinitfile() == ''):
+		fatal("An init file must be specified")
 
 def dumptree(part, lvl):
 	if (debug):
@@ -1339,15 +1587,10 @@ def gencode(part, file):
 		gencode(part.children, file)
 	if (debug):
 		print "DONE GENCODE"
-	
 
-def doconfigfile(path, file):
-	filename = os.path.join(path, file)
-	loc.push_file(filename)
-	if (not parse('cfgfile', open(filename, 'r').read())):
-		fatal("Error: Could not parse file")
-	exitiferrors()
-
+#=============================================================================
+#		MAIN PROGRAM
+#=============================================================================
 if __name__=='__main__':
 	from sys import argv
 	if (len(argv) < 3):
@@ -1363,42 +1606,55 @@ if __name__=='__main__':
 	if (not parse('board', open(argv[1], 'r').read())):
 		fatal("Error: Could not parse file")
 
-	verifyparse()
+	for r in romimages.keys():
+		verifyparse(getdict(romimages, r))
 
-	if (debug):
-		print "DEVICE TREE:"
-		dumptree(root, 0)
+	# no longer need to check if an options has been used
+	alloptions = 1
 
-	filename = os.path.join(target_dir, "chips.c")
-	print "Creating", filename
-	file = open(filename, 'w+')
-	# gen all the forward references
+	for r in romimages.keys():
+		image = getdict(romimages, r)
 
-	i = 0
-	file.write("struct chip ")
-	while (i <= partinstance):
-		file.write("cdev%d "% i)
-		i = i + 1
-	file.write(";\n")
-	gencode(root, file)
-	file.close()
+		if (debug):
+			print "DEVICE TREE:"
+			dumptree(image.getroot(), 0)
 
-	# crt0 includes
-	if (debug):
-		for i in crt0includes:
-			print "crt0include file %s" % (i)
-		for i in driverrules.keys():
-			print "driver file %s" % (i)
-		for i in ldscripts:
-			print "ldscript file %s" % (i)
-		for i in makebaserules.keys():
-			m = makebaserules[i]
-			print " makerule %s dep %s act %s" % (i, m.dependency, m.actions)
+		img_dir = image.gettargetdir()
+		if not os.path.isdir(img_dir):
+			print "Creating directory %s" % img_dir
+			os.makedirs(img_dir)
+		filename = os.path.join(img_dir, "chips.c")
+		print "Creating", filename
+		file = open(filename, 'w+')
+		# gen all the forward references
+
+		i = 0
+		file.write("struct chip ")
+		while (i <= image.getpartinstance()):
+			file.write("cdev%d "% i)
+			i = i + 1
+		file.write(";\n")
+		gencode(image.getroot(), file)
+		file.close()
+
+		# crt0 includes
+		if (debug):
+			for i in image.getinitincludes().keys():
+				print "crt0include file %s" % (i)
+			for i in image.getdriverrules().keys():
+				print "driver file %s" % (i)
+			for i in image.getldscripts():
+				print "ldscript file %s" % (i)
+			for i in image.getmakerules().keys():
+				m = image.getmakerule(i)
+				print " makerule %s dep %s act %s" % (i, m.dependency, m.actions)
+
+		writeimagesettings(image)
+		writeinitincludes(image)
+		writeimagemakefile(image)
+		writeldoptions(image)
 
 	writemakefilesettings(target_dir)
-	if (useinitincludes):
-		writeinitincludes(target_dir)
-	else:
-		writecrt0_includes(target_dir)
 	writemakefile(target_dir)
-	writeldoptions(target_dir)
+
+	sys.exit(0)

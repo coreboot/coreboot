@@ -437,7 +437,6 @@ static void southbridge_init(struct chip *chip, enum chip_pass pass)
 		
 	case CONF_PASS_POST_PCI:
 		vt8231_init(conf);
-		printk_err("FUCK! ROUTING FIXUP!\n");
 		pci_routing_fixup();
 		
 		break;

@@ -47,8 +47,8 @@ static void enable_smbus(void)
 	c = pci_read_config8(dev, 4);
 	c |= 1;
 	pci_write_config8(dev, 4, c);
-	print_err_hex8(c);
-	print_err(" is the comm register\n");
+	print_debug_hex8(c);
+	print_debug(" is the comm register\r\n");
 	
 	print_debug("SMBus controller enabled\r\n");
 }
@@ -69,9 +69,9 @@ static int smbus_wait_until_ready(void)
 		smbus_delay();
 		c = inb(SMBUS_IO_BASE + SMBHSTSTAT);
 		while((c & 1) == 1) {
-			print_err("c is ");
-			print_err_hex8(c);
-			print_err("\n");
+			print_debug("c is ");
+			print_debug_hex8(c);
+			print_debug("\r\n");
 			c = inb(SMBUS_IO_BASE + SMBHSTSTAT);
 			/* nop */ 
 		}
@@ -88,9 +88,9 @@ void smbus_reset(void)
 	outb(HOST_RESET, SMBUS_IO_BASE + SMBHSTSTAT);
 	
 	smbus_wait_until_ready();
-	print_err("After reset status ");
-	print_err_hex8( inb(SMBUS_IO_BASE + SMBHSTSTAT));
-	print_err("\n");
+	print_debug("After reset status ");
+	print_debug_hex8( inb(SMBUS_IO_BASE + SMBHSTSTAT));
+	print_debug("\r\n");
 }
   
 
@@ -117,21 +117,21 @@ static void smbus_print_error(unsigned char host_status_register)
 
 	print_err("smbus_error: ");
 	print_err_hex8(host_status_register);
-	print_err("\n");
+	print_err("\r\n");
 	if (host_status_register & (1 << 4)) {
-		print_err("Interrup/SMI# was Failed Bus Transaction\n");
+		print_err("Interrup/SMI# was Failed Bus Transaction\r\n");
 	}
 	if (host_status_register & (1 << 3)) {
-		print_err("Bus Error\n");
+		print_err("Bus Error\r\n");
 	}
 	if (host_status_register & (1 << 2)) {
-		print_err("Device Error\n");
+		print_err("Device Error\r\n");
 	}
 	if (host_status_register & (1 << 1)) {
-		print_err("Interrupt/SMI# was Successful Completion\n");
+		print_err("Interrupt/SMI# was Successful Completion\r\n");
 	}
 	if (host_status_register & (1 << 0)) {
-		print_err("Host Busy\n");
+		print_err("Host Busy\r\n");
 	}
 }
 

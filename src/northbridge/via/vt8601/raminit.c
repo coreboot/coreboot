@@ -455,11 +455,10 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	//  for(i = 0; i < 8; i++)
 	base = do_module_size(0); /*, base);*/
 	pci_write_config8(north, ramregs[0], base);
-	base = do_module_size(1); /*, base);*/
-	base += pci_read_config8(north, ramregs[0]);
+	base += do_module_size(1); /*, base);*/
 	pci_write_config8(north, ramregs[1], base);
 	/* runs out of code space. */
-	for(i = 0; i < 8; i++){
+	for(i = 2; i < 8; i++){
 		pci_write_config8(north, ramregs[i], base);
 		/*
 		  pci_write_config8(north, ramregs[3], base);

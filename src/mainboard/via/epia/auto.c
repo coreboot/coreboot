@@ -1,5 +1,7 @@
 #define ASSEMBLY 1
 
+#define MAXIMUM_CONSOLE_LOGLEVEL 6
+#define DEFAULT_CONSOLE_LOGLEVEL 6
 
 #include <stdint.h>
 #include <device/pci_def.h>
@@ -27,8 +29,6 @@ void udelay(int usecs)
 
 #include "southbridge/via/vt8231/vt8231_early_smbus.c"
 
-#define MAXIMUM_CONSOLE_LOGLEVEL 6
-#define DEFAULT_CONSOLE_LOGLEVEL 6
 
 #include "southbridge/via/vt8231/vt8231_early_serial.c"
 static void memreset_setup(void)

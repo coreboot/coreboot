@@ -176,7 +176,7 @@ biosint(
 		    printk_debug("\n");
 		}
 		printk_debug("biosint: Bailing out\n");
-		// "longjmp"
+		// Should be replaced by longjmp for generalization.
 		vga_exit();
 		break;
 #ifdef CONFIG_PCIBIOS
@@ -230,14 +230,23 @@ setup_realmode_idt(void) {
 		*intbyte = i;
 	}
 
-	// fixed entry points
+	// Support for fixed entry points
 
-	// VGA BIOSes tend to hardcode f000:f065 as the previous handler of
-	// int10. 
+	// First off, fill 0xCC (breakpoint) from f000:e000 to f000:ffff
+	// so we can catch the calls to unimplemented entry points.
+	// This 8KB area is where the fixed entry points are at. 
+	// Maybe the original IBM PC had only this much of ROM.
+	memset((void *) 0xfe000, 0xCC, 0x2000);
+
+	// VGA BIOSes tend to hardcode f000:f065 as the default handler for
+	// int10.
 	// calling convention here is the same as INTs, we can reuse
 	// the int entry code.
 	codeptr = (char*) 0xff065;
 	memcpy(codeptr, &idthandle, codesize);
 	intbyte = codeptr + 3;
 	*intbyte = 0x42; /* int42 is the relocated int10 */
+
+	// Clear the BIOS Data Area, not to confuse the realmode code.
+	memset((void *) 0x400, 0, 0x100);
 }

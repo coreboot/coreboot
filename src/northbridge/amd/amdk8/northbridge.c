@@ -13,6 +13,7 @@
 #include "root_complex/chip.h"
 #include "northbridge.h"
 #include "amdk8.h"
+#include <cpu/x86/lapic.h>
 
 #define FX_DEVS 8
 static device_t __f0_dev[FX_DEVS];

@@ -58,7 +58,6 @@ static char rcsid[] = "$Id$";
 #include <smp/atomic.h>
 #if defined(SMP)
 #include<arch/smp/mpspec.h>
-#include<arch/smp/atomic.h>
 #endif
 
 

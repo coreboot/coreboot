@@ -5,7 +5,7 @@
 #include <arch/smp/atomic.h>
 #else
 
-typedef struct { int counter } atomic_t;
+typedef struct { int counter; } atomic_t;
 #define ATOMIC_INIT(i) { (i) }
 
 /**

@@ -221,28 +221,35 @@ def nsuperio(dir, superio_commands):
 # this is a list. 
 def raminit(dir, file):
 	ramfilelist = command_vals['mainboardinit']
-	ramfilelist.append(file)
+	ramfilelist.append([file, ''])
 	print "Added ram init file: ", file
 
 # A list of files for initializing a motherboard
-def mainboardinit(dir, file):
+def mainboardinit(dir, command):
+	wspc = string.whitespace
+	m = re.match("([^" + wspc + "]+)([" + wspc + "]([^" + wspc + "]*)|)", command); 
+	file = m.group(1)
+	condition = m.group(3)
 	mainboardfilelist = command_vals['mainboardinit']
-	mainboardfilelist.append(file)
+	mainboardfilelist.append([file, condition])
 	print "Added mainboard init file: ", file
 
 
 # A set of linker scripts needed by linuxBIOS.
-def ldscript(dir, file):
+def ldscript(dir, command):
+	wspc = string.whitespace
+	m = re.match("([^" + wspc + "]+)([" + wspc + "]([^" + wspc + "]*)|)", command); 
+	file = m.group(1)
+	condition = m.group(3)
 	ldscripts = command_vals['ldscripts']
 	filepath = os.path.join(treetop, 'src');
 	filepath = os.path.join(filepath, file);
-	ldscripts.append(filepath)
+	ldscripts.append([filepath, condition])
 	print "Added ldscript init file: ", filepath
 
 def object(dir, command):
 	wspc = string.whitespace
-	command_re = re.compile("([^" + wspc + "]+)([" + wspc + "]([^" + wspc + "]*)|)")
-	m = command_re.match(command)
+	m = re.match("([^" + wspc + "]+)([" + wspc + "]([^" + wspc + "]*)|)", command)
 	obj_name = m.group(1)
 	condition = m.group(3)
 	addobject_defaultrule(obj_name, dir, condition)
@@ -479,23 +486,10 @@ def config_dir():
 def writecrt0(path):
 	crt0filepath = os.path.join(path, "crt0.S")
 	mainboardinitfiles = command_vals['mainboardinit']
-	#paramfile = os.path.join(treetop, 'src/include', 
-	#		command_vals['northbridge'][0], "param.h")
-	#paramfileinclude = ''
 
 	print "Trying to create ", crt0filepath
 #	try: 
 	file = open(crt0filepath, 'w+')
-
-	#print "Check for crt0.S param file:", paramfile
-	#if os.path.isfile(paramfile):
-	#	 ipfile = os.path.join(command_vals['northbridge'][0],"param.h")
-	#	 paramfileinclude = "#include <%s>\n" %  ipfile
-	#	 print " Adding include to crt0.S for this parameter file:"
-	#	 print " ", paramfileinclude
-	#
-	## serial for superio
-	#superioserial = "#include <%s/setup_serial.inc>\n" % command_vals['superio']
 
 	crt0lines = readfile(crt0base)
 
@@ -505,26 +499,20 @@ def writecrt0(path):
 		if (string.strip(line) <> "CRT0_PARAMETERS"):
 			file.write(line)
 		else:
-			#file.write(paramfileinclude)
-			## we will do this better at some point. 
-			## possible we need a 'console' command.
-			#file.write("\n");
-			#file.write("#ifdef SERIAL_CONSOLE\n");
-			#file.write(superioserial)
-			#file.write("#include <pc80/serial.inc>\n");
-			#file.write("TTYS0_TX_STRING($ttyS0_test)\n")
-			#file.write("#endif /* SERIAL_CONSOLE */\n")
-			#file.write("\n");
-
 			for i in range(len(mainboardinitfiles)):
-				file.write("#include <%s>\n" % mainboardinitfiles[i])
+				if mainboardinitfiles[i][1]:
+					file.write("#if %s == 1\n#include <%s>\n#endif\n" % 
+						(mainboardinitfiles[i][1],
+						mainboardinitfiles[i][0]));
+				else:
+					file.write("#include <%s>\n" % 
+						mainboardinitfiles[i][0])
 
 	file.close();
 
-# write ldscript
-def writeldscript(path):
-	ldfilepath = os.path.join(path, "ldscript.ld")
-	ldscripts = command_vals['ldscripts']
+# write ldoptions
+def writeldoptions(path):
+	ldfilepath = os.path.join(path, "ldoptions")
 	print "Trying to create ", ldfilepath
 #	try: 
 	file = open(ldfilepath, 'w+')
@@ -536,15 +524,6 @@ def writeldscript(path):
 		regexp = re.compile(r"^(0x[0-9a-fA-F]+|0[0-7]+|[0-9]+)$")
 		if value and regexp.match(value):
 			file.write("%s = %s;\n" % (key, value))
-		
-	ldlines = readfile(ldscriptbase)
-	if (debug):
-		print "LDLINES ",ldlines
-        for line in ldlines:
-		file.write(line)
-
-	for i in range(len(ldscripts)):
-		file.write("INCLUDE %s\n" % ldscripts[i])
 		
 	file.close();
 
@@ -618,6 +597,17 @@ def writemakefile(path):
 			file.write("OBJECTS-1 += %s\n" % (obj_name))
 		else:
 			file.write("OBJECTS-$(%s) += %s\n" % (obj_cond, obj_name))
+
+	# print out all ldscript.ld dependencies
+	file.write("LDSUBSCRIPTS-1 := %s\n" % ldscriptbase )
+	for i in range(len(ldscripts)):
+		script = ldscripts[i][0];
+		condition = ldscripts[i][1];
+		if condition:
+			file.write("LDSUBSCRIPTS-$(%s) += %s\n" % (condition, script))
+		else:
+			file.write("LDSUBSCRIPTS-1 += %s\n" % (script))
+
 		
 	file.write("SOURCES=\n")
 	
@@ -652,22 +642,13 @@ def writemakefile(path):
 		file.write( "%s\n" % objectrules[i][2])
 		file.write("SOURCES += %s\n" % source)
 
-	# print out the linux rules
-	# these go here because some pieces depend on user rules
-	
-#	for i in range(len(linuxrules)):
-#		file.write("%s\n" % linuxrules[i])
-
 	# print out the dependencies for crt0.s
 	for i in range(len(mainboardinitfiles)):
-		file.write("crt0.s: $(TOP)/src/%s\n" % mainboardinitfiles[i])
+		file.write("crt0.s: $(TOP)/src/%s\n" % mainboardinitfiles[i][0])
 
-	# print out the dependencis for ldscript.ld
-	for i in range(len(ldscripts)):
-		file.write("ldscript.ld: %s\n" % ldscripts[i])
 
 	# print out the dependencies for Makefile
-	file.write("Makefile crt0.S ldscript.ld nsuperio.c: %s $(TOP)/util/config/NLBConfig.py $(TOP)/src/arch/$(ARCH)/config/make.base $(TOP)/src/arch/$(ARCH)/config/ldscript.base $(TOP)/src/arch/$(ARCH)/config/crt0.base \n\tpython $(TOP)/util/config/NLBConfig.py %s $(TOP)\n" 
+	file.write("Makefile crt0.S ldoptions nsuperio.c: %s $(TOP)/util/config/NLBConfig.py $(TOP)/src/arch/$(ARCH)/config/make.base $(TOP)/src/arch/$(ARCH)/config/crt0.base \n\tpython $(TOP)/util/config/NLBConfig.py %s $(TOP)\n" 
 		% (config_file, config_file))
 	for i in range(len(config_file_list)):
 		file.write("Makefile: %s\n" % config_file_list[i])
@@ -721,7 +702,7 @@ doconfigfile(treetop, config_file)
 #	print key, val
 
 writemakefile(outputdir)
-writeldscript(outputdir)
+writeldoptions(outputdir)
 writecrt0(outputdir)
 writesuperiofile(outputdir)
 writedoxygenfile(outputdir)

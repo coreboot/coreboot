@@ -31,6 +31,8 @@ makerule linuxbios.strip: linuxbios ; objcopy -O binary linuxbios linuxbios.stri
 
 makerule linuxbios.o : crt0.o linuxbios.a $(LIBGCC_FILE_NAME)  ; $(CC) -nostdlib -r -o $@ crt0.o linuxbios.a $(LIBGCC_FILE_NAME)
 
+makerule ldscript.ld : ldoptions $(LDSUBSCRIPTS-1) ; echo "INCLUDE ldoptions" > ldscript.ld ; for file in $(LDSUBSCRIPTS-1) ; do echo "INCLUDE $$file" >> ldscript.ld ; done
+
 makerule linuxbios: linuxbios.o ldscript.ld ; $(CC) -nostdlib -nostartfiles -static -o $@ -T ldscript.ld linuxbios.o 
 addaction linuxbios nm -n linuxbios > linuxbios.map
 

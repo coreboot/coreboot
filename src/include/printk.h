@@ -19,7 +19,7 @@ extern int console_loglevel;
 int do_printk(int msg_level, const char *fmt, ...);
 
 #define printk_emerg(fmt, arg...)   do_printk(BIOS_EMERG   ,fmt, ##arg)
-#define printk_alart(fmt, arg...)   do_printk(BIOS_ALERT   ,fmt, ##arg)
+#define printk_alert(fmt, arg...)   do_printk(BIOS_ALERT   ,fmt, ##arg)
 #define printk_crit(fmt, arg...)    do_printk(BIOS_CRIT    ,fmt, ##arg)
 #define printk_err(fmt, arg...)     do_printk(BIOS_ERR     ,fmt, ##arg)
 #define printk_warning(fmt, arg...) do_printk(BIOS_WARNING ,fmt, ##arg)

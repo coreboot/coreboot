@@ -16,6 +16,8 @@ makerule documentation: $(SOURCES) ; doxygen LinuxBIOSDoc.config
 addaction linuxbios $(LINK) 
 addaction linuxbios nm -n linuxbios > linuxbios.map
 
+makerule ldscript.ld : ldscript.options $(LDSUBSCRIPTS-1) ; echo "INCLUDE ldscript.options" > ldscript.ld ; for file in $(LDSUBSCRIPTS-1) ; do echo "INCLUDE $$file" >> ldscript.ld ; done
+
 makerule linuxbios.a : $(OBJECTS-1) ; rm -f linuxbios.a
 addaction linuxbios.a ar cr linuxbios.a $(OBJECTS-1)
 

@@ -1,5 +1,5 @@
 #define ASSEMBLY 1
-
+#define ASM_CONSOLE_LOGLEVEL 10
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
@@ -80,22 +80,29 @@ static void main(unsigned long bist)
         w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
         uart_init();
         console_init();
+	print_err("HARD MAIN0\n");
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 	
-#if 0
+	print_err("HARD MAIN\n");
+#if 1
 	print_pci_devices();
 #endif
+	print_err("after print pci dev   \n");
 	if(!bios_reset_detected()) {
         	enable_smbus();
+	print_err("after enable smbus\n");
 #if 1
       	dump_spd_registers(&memctrl[0]);
 	//        	dump_smbus_registers();
 #endif
 
+	print_err("after dump spd registers\n");
 		memreset_setup();
+	print_err("memreset setup\n");
 		sdram_initialize(sizeof(memctrl)/sizeof(memctrl[0]), memctrl);
+	print_err("sdram init\n");
 	} 
 #if 0
 	else {

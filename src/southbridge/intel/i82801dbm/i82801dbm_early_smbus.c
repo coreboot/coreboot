@@ -105,7 +105,9 @@ static int smbus_read_byte(unsigned device, unsigned address)
 	unsigned char global_status_register;
 	unsigned char byte;
 
+print_err("smbus_read_byte\r\n");
 	if (smbus_wait_until_ready() < 0) {
+		print_err_hex8(-2);
 		return -2;
 	}
 	
@@ -129,11 +131,13 @@ static int smbus_read_byte(unsigned device, unsigned address)
 	outb((inb(SMBUS_IO_BASE + SMBHSTCTL) | 0x40), SMBUS_IO_BASE + SMBHSTCTL);
 	/* poll for it to start */
 	if (smbus_wait_until_active() < 0) {
+		print_err_hex8(-4);
 		return -4;
 	}
 
 	/* poll for transaction completion */
 	if (smbus_wait_until_done() < 0) {
+		print_err_hex8(-3);
 		return -3;
 	}
 
@@ -143,8 +147,12 @@ static int smbus_read_byte(unsigned device, unsigned address)
 	byte = inb(SMBUS_IO_BASE + SMBHSTDAT0);
 
 	if (global_status_register != 2) {
+		print_err_hex8(-1);
 		return -1;
 	}
+        print_err("smbus_read_byte: ");
+	print_err_hex32(device); print_err(" ad "); print_err_hex32(address);
+	print_err("value "); print_err_hex8(byte); print_err("\r\n");
 	return byte;
 }
 #if 0

@@ -11,10 +11,12 @@
 #define DEFAULT_CONSOLE_LOGLEVEL 8 /* anything MORE serious than BIOS_SPEW */
 #endif
 
+#ifndef ASM_CONSOLE_LOGLEVEL
 #if (DEFAULT_CONSOLE_LOGLEVEL <= MAXIMUM_CONSOLE_LOGLEVEL)
 #define ASM_CONSOLE_LOGLEVEL DEFAULT_CONSOLE_LOGLEVEL
 #else
 #define ASM_CONSOLE_LOGLEVEL MAXIMUM_CONSOLE_LOGLEVEL
+#endif
 #endif
 
 #define BIOS_EMERG      0   /* system is unusable                   */

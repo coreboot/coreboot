@@ -17,9 +17,9 @@
 
 /* converted to C 6/2004 yhlu */
 
-#define DEBUG_RAM_CONFIG 1
+#define DEBUG_RAM_CONFIG 12
 #undef ASM_CONSOLE_LOGLEVEL
-#define ASM_CONSOLE_LOGLEVEL 9
+#define ASM_CONSOLE_LOGLEVEL 10
 #define dumpnorth() dump_pci_device(PCI_DEV(0, 0, 1)) 
 
 /* DDR DIMM Mode register Definitions */

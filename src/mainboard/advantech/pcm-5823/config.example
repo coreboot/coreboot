@@ -1,0 +1,19 @@
+target pcm-5823
+mainboard advantech/pcm-5823
+
+# Enable Serial Console for debugging
+option SERIAL_CONSOLE=1
+option TTYS0_BAUD=38400
+
+option DEFAULT_CONSOLE_LOGLEVEL=9
+option DEBUG
+
+option RAMTEST
+option USE_GENERIC_ROM=1
+option USE_ELF_BOOT=1
+option ROM_SIZE=262144
+option STD_FLASH=1
+
+payload ../eepro100.ebi
+
+option PAYLOAD_SIZE=196608

@@ -1,0 +1,62 @@
+# Copyright (c) 2002 Christer Weinigel <wingel@hack.org>
+
+# This is a config file for the advantech pcm-5823
+
+# The board is a National Semiconductor GX1 + CS5530 + SMC37b727
+# design.  It is a fairly complete PC with VGA, one serial port, one
+# IrDA header, one parallel port, two USB ports, a PS/2 Keyboard
+# connector (can also be used for a PS/2 Mouse using a splitter
+# cable), floppy, IDE and finally one ethernet port using a EEPRO100
+# ethernet chip.  Other than that the board has a DiskOnChip socket
+# and a PC104 connector for expansion.
+
+arch i386
+cpu p5
+mainboardinit cpu/i386/entry16.inc
+mainboardinit cpu/i386/entry32.inc
+ldscript cpu/i386/entry16.lds
+ldscript cpu/i386/entry32.lds
+mainboardinit cpu/i386/reset16.inc
+ldscript cpu/i386/reset16.lds
+
+########################################################################
+
+mainboardinit superio/SMC/fdc37b72x/setup_serial.inc
+option SMC_BASE=0x370
+mainboardinit pc80/serial.inc
+mainboardinit arch/i386/lib/console.inc
+
+########################################################################
+
+northbridge nsc/gx1
+southbridge nsc/cs5530
+nsuperio SMC/fdc37b72x com1={1} port=0x370
+
+########################################################################
+# Lots of constans, you probably don't need to change anything here.
+
+# GX_BASE is the address of a configuration memory region for the GX1
+# processor.  You probably don't want to change this.
+option GX_BASE=0x40000000
+
+########################################################################
+# Southbridge configuration
+
+option CS5530_INTA=9
+option CS5530_INTB=10
+option CS5530_INTC=11
+option CS5530_INTD=15
+
+option CS5530_PRIMARY_IDE=1
+#option CS5530_SECONDARY_IDE=1
+
+########################################################################
+
+option NO_KEYBOARD
+option FINAL_MAINBOARD_FIXUP=1
+object mainboard.o
+option ZKERNEL_START=0xfffc0000
+
+# Local variables:
+#   compile-command: "make -C /export/bios/voyager2"
+# End:

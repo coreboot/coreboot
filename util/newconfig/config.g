@@ -1189,7 +1189,13 @@ parser Config:
     rule superio<<C>>:	SUPERIO PATH		{{ if (C): part('superio', PATH, 'Config.lb') }}
 			partend<<C>>
 
-    rule cpu<<C>>:	CPU ID			{{ if (C): part('cpu', ID, 'Config.lb') }}
+    # This is needed because the legacy cpu command could not distinguish
+    # between cpu vendors. It should just be PATH, but getting this change
+    # into the source tree will be tricky...
+    rule cpuid:		ID 			{{ return ID }}
+		|	PATH			{{ return PATH }}
+
+    rule cpu<<C>>:	CPU cpuid		{{ if (C): part('cpu', cpuid, 'Config.lb') }}
 			partend<<C>>
 
     rule pmc<<C>>:	PMC PATH		{{ if (C): part('pmc', PATH, 'Config.lb') }}

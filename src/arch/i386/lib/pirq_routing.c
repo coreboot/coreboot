@@ -1,6 +1,7 @@
 #include <printk.h>
 #include <pci.h>
 #include <arch/pirq_routing.h>
+#include <string.h>
 
 #ifdef DEBUG
 void check_pirq_routing_table(void)

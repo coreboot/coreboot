@@ -1,31 +1,43 @@
 arch i386
-mainboardinit cpu/i386/entry16.inc
-ldscript cpu/i386/entry16.lds
-mainboardinit cpu/i386/reset16.inc
-ldscript cpu/i386/reset16.lds
+mainboardinit cpu/i386/entry16.inc 
+ldscript cpu/i386/entry16.lds 
+mainboardinit cpu/i386/entry32.inc
+mainboardinit cpu/i386/reset16.inc USE_FALLBACK_IMAGE
+ldscript cpu/i386/reset16.lds USE_FALLBACK_IMAGE
+mainboardinit cpu/i386/reset32.inc USE_NORMAL_IMAGE
+ldscript cpu/i386/reset32.lds USE_NORMAL_IMAGE
 
-#rambase  0x04000000
-biosbase 0xffff0000
-option XIP_ROM_BASE=0xffff0000
-option XIP_ROM_SIZE=0x10000
+option ROM_IMAGE_SIZE=32768
+rambase 0x00008000
+option USE_CACHE_RAM=1
 option CACHE_RAM_BASE=0xfff70000
 option CACHE_RAM_SIZE=0x00010000
-option USE_CACHE_RAM=1
 nooption USE_DEFAULT_LAYOUT
-#rambase 0xfff70000
-rambase 0x00000800
 option STACK_SIZE=0x2000
+option USE_FALLBACK_BOOT=1
 
+#/* falback */
+option ZKERNEL_START=0xffff0000
+option _ROMBASE=     0xffff8000 
+option XIP_ROM_BASE= 0xffff8000
+option XIP_ROM_SIZE= 0x00008000
+##/* normal image */
+#option ZKERNEL_START=0xfff80000
+#option _ROMBASE=     0xfffe8000 
+#option XIP_ROM_BASE= 0xfffe8000
+#option XIP_ROM_SIZE= 0x00008000
 
 mainboardinit northbridge/intel/82860/reset_test.inc
+mainboardinit arch/i386/lib/noop_failover.inc USE_NORMAL_IMAGE
+mainboardinit southbridge/intel/82801/cmos_failover.inc USE_FALLBACK_IMAGE
+ldscript arch/i386/lib/failover.lds USE_FALLBACK_IMAGE
 
-#mainboardinit southbridge/intel/82801/definitions.inc
-#mainboardinit southbridge/intel/82801/disable_watchdog.inc
-#mainboardinit southbridge/intel/82801/lpc_com1.inc
 mainboardinit cpu/i786/earlymtrr.inc
+
 mainboardinit superio/winbond/w83627hf/setup_serial.inc
 mainboardinit pc80/serial.inc
 mainboardinit arch/i386/lib/console.inc
+
 #mainboardinit ram/ramtest.inc
 #mainboardinit northbridge/intel/82860/reset_test.inc
 mainboardinit cpu/i786/cache_ram_init.inc
@@ -52,6 +64,7 @@ object mptable.o HAVE_MP_TABLE
 object irq_tables.o HAVE_PIRQ_TABLE
 #keyboard pc80
 dir ../../../pc80
+dir /src/superio/winbond/w83627hf
 
 # FIXME are the SMBUS DIMM locations documented anywhere? 
 option SMBUS_MEM_DEVICE_START=(0xa << 3)

@@ -1,0 +1,2 @@
+dir /src/superio/generic
+object w83627hf_power.o

@@ -139,12 +139,12 @@ void pci_get_size(struct pci_dev *dev, unsigned long reg, unsigned long addr)
 	// This incidentally catches the common case where registers 
 	// read back as 0 for both address and size. 
 	if (addr == size) {
-               printk_err(__FUNCTION__
-                          "dev_fn 0x%x, register %d, read-only"
-                          " SO, ignoring it\n",
-                           dev->devfn, reg);
-                 printk_err("addr was 0x%x, size was 0x%x\n",addr,size); 
-         	type = 0;
+		printk_debug(__FUNCTION__
+			"dev_fn 0x%x, register %d, read-only"
+			" SO, ignoring it\n",
+			dev->devfn, reg);
+		printk_debug("addr was 0x%x, size was 0x%x\n",addr,size); 
+		type = 0;
          	size = 0;
          }
 	// Now compute the actual size, See PCI Spec 6.2.5.1 ... 

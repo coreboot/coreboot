@@ -324,7 +324,7 @@ int vtxprintf(void (*tx_byte)(unsigned char byte), const char *fmt, va_list args
 /* FIXME this global makes vsprintf non-reentrant
  */
 static char *str_buf;
-static void str_tx_byte(char byte)
+static void str_tx_byte(unsigned char byte)
 {
 	*str_buf = byte;
 	str_buf++;

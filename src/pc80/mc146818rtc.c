@@ -1,7 +1,6 @@
 #include <arch/io.h>
 #include <printk.h>
-
-#define RTC_PORT(x)	(0x70 + (x))
+#include <pc80/mc146818rtc.h>
 
 #define CMOS_READ(addr) ({ \
 outb_p((addr),RTC_PORT(0)); \
@@ -83,10 +82,6 @@ outb_p((val),RTC_PORT(1)); \
 /**********************************************************************/
 
 
-/* On PCs, the checksum is built only over bytes 16..45 */
-#define PC_CKS_RANGE_START	16
-#define PC_CKS_RANGE_END	45
-#define PC_CKS_LOC		46
 
 static int rtc_checksum_valid(void)
 {
@@ -123,32 +118,40 @@ static void rtc_set_checksum(void)
 #define RTC_CONTROL_DEFAULT (RTC_SQWE | RTC_24H)
 #define RTC_FREQ_SELECT_DEFAULT (RTC_REF_CLCK_32KHZ | RTC_RATE_1024HZ)
 #endif
-void rtc_init(void)
+void rtc_init(int invalid)
 {
 	unsigned char x;
-	int cmos_valid;
+	int cmos_invalid, checksum_invalid;
 	/* See if there has been a CMOS power problem. */
 	x = CMOS_READ(RTC_VALID);
-	cmos_valid = !(x & RTC_VRT);
+	cmos_invalid = !(x & RTC_VRT);
 
 	/* See if there is a CMOS checksum error */
-	cmos_valid = rtc_checksum_valid();
+	checksum_invalid = !rtc_checksum_valid();
 
-	if (!cmos_valid) {
+	if (invalid || cmos_invalid || checksum_invalid) {
 		int i;
-		printk_warning("RTC power problem, zeroing cmos\n");
-		for(i = 0x0; i < 128; i++) {
+		printk_warning("RTC:%s%s%s zeroing cmos\n",
+			invalid?" Clear requested":"", 
+			cmos_invalid?" Power Problem":"",
+			checksum_invalid?" Checksum invalid":"");
+		CMOS_WRITE(0, 0x01);
+		CMOS_WRITE(0, 0x03);
+		CMOS_WRITE(0, 0x05);
+		for(i = 10; i < 128; i++) {
 			CMOS_WRITE(0, i);
 		}
 		
-		/* Now setup a default date of Sat 1 January 2000 */
-		CMOS_WRITE(0, 0x00); /* seconds */
-		CMOS_WRITE(0, 0x02); /* minutes */
-		CMOS_WRITE(1, 0x04); /* hours */
-		CMOS_WRITE(7, 0x06); /* day of week */
-		CMOS_WRITE(1, 0x07); /* day of month */
-		CMOS_WRITE(1, 0x08); /* month */
-		CMOS_WRITE(0, 0x09); /* year */
+		if (cmos_invalid) {
+			/* Now setup a default date of Sat 1 January 2000 */
+			CMOS_WRITE(0, 0x00); /* seconds */
+			CMOS_WRITE(0, 0x02); /* minutes */
+			CMOS_WRITE(1, 0x04); /* hours */
+			CMOS_WRITE(7, 0x06); /* day of week */
+			CMOS_WRITE(1, 0x07); /* day of month */
+			CMOS_WRITE(1, 0x08); /* month */
+			CMOS_WRITE(0, 0x09); /* year */
+		}
 	}
 	/* Setup the real time clock */
 	CMOS_WRITE(RTC_CONTROL_DEFAULT, RTC_CONTROL);

@@ -4,7 +4,12 @@
 #include <delay.h>
 #include <string.h>
 
-
+#ifndef START_CPU_SEG
+#define START_CPU_SEG 0x90000
+#endif
+#if (START_CPU_SEG&0xffff) != 0
+#error START_CPU_SEG must be 64k aligned
+#endif
 
 static inline void hlt(void)
 {
@@ -142,13 +147,13 @@ int start_cpu(unsigned long apicid)
 		return 0;
 	}
 
-	start_eip = 0x90000 + (((unsigned long)_start) & 0xf000);
+	start_eip = START_CPU_SEG + (((unsigned long)_start) & 0xf000);
 	if ((((unsigned long)_start) & 0xfff) != 0) {
 		printk_err("_start is not 4K aligned!\n");
 		return 0;
 	}
 	memcpy((void *)start_eip, _start, _estart - _start);
-	printk_spew("start eip=0x%08lx\n", start_eip);
+	printk_spew("start_eip=0x%08lx\n", start_eip);
        
 	num_starts = 2;
 
@@ -160,7 +165,7 @@ int start_cpu(unsigned long apicid)
 	maxlvt = 4;
 
 	for (j = 1; j <= num_starts; j++) {
-		printk_spew("Sending STARTUP #%d.\n",j);
+		printk_spew("Sending STARTUP #%d to %u.\n", j, apicid);
 		apic_read_around(APIC_SPIV);
 		apic_write(APIC_ESR, 0);
 		apic_read(APIC_ESR);

@@ -14,16 +14,13 @@ static char rcsid[] = "$Id$";
 #include <stdarg.h>
 #include <subr.h>
 #include <smp/spinlock.h>
+#include <printk.h>
 
 /* printk's without a loglevel use this.. */
 #define DEFAULT_MESSAGE_LOGLEVEL 4 /* BIOS_WARNING */
 
 /* We show everything that is MORE important than this.. */
 #define MINIMUM_CONSOLE_LOGLEVEL 1 /* Minimum loglevel we let people use */
-
-#ifndef DEFAULT_CONSOLE_LOGLEVEL
-#define DEFAULT_CONSOLE_LOGLEVEL 8 /* anything MORE serious than BIOS_SPEW */
-#endif
 
 /* Keep together for sysctl support */
 

@@ -3,6 +3,7 @@
 #include <arch/io.h>
 #include <printk.h>
 #include <arch/pirq_routing.h>
+#include <pc80/mc146818rtc.h>
 
 #define CHECKSUM 0x8d
 
@@ -168,6 +169,6 @@ void mainboard_fixup(void)
 	southbridge_fixup();
 	pci_functions_fixup();
 	load_irq_routing_table();
-//	rtc_init();
+//	rtc_init(0);
 //	pci_dump();
 }

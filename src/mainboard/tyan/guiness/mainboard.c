@@ -6,6 +6,7 @@
 #include <part/mainboard.h>
 #include <part/hard_reset.h>
 #include <arch/smp/mpspec.h>
+#include <pc80/mc146818rtc.h>
 
 unsigned long initial_apicid[MAX_CPUS] =
 {
@@ -515,7 +516,7 @@ void mainboard_fixup(void)
 	setup_ide_devices();
 	onboard_scsi_fixup();
 	cpu_reset_sends_init();
-	rtc_init();
+	rtc_init(0);
 	decode_stop_grant_fixup();
 	posted_memory_write_enable();
 	pm_controller_classcode_fixup();

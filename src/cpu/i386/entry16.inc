@@ -25,8 +25,6 @@ it with the version available from LANL.
  * protected mode. 
  */
 
-#include <arch/cache_ram.h>
-
 .text
 .code16
 .globl	EXT(_start)
@@ -41,8 +39,8 @@ EXT(_start):
 /* any further code.  Even though paging is disabled we could still get*/
 /*false address translations due to the TLB if we didn't invalidate it.*/
 /**/
-	xor	%eax, %eax
-	mov	%eax, %cr3    /* Invalidate TLB*/
+	xorl	%eax, %eax
+	movl	%eax, %cr3    /* Invalidate TLB*/
 
 	/* invalidate the cache */
 	invd 
@@ -66,18 +64,28 @@ EXT(_start):
 	 * So while this code is relocateable it isn't arbitrarily
 	 * relocatable.
 	 *
-	 * In particular this code can be run with the base address of
-	 * the code segment at either 0xffff0000 or 0xf0000.
-	 * The first is what is initiallly loaded when the processor 
-	 * powers on.  The second is normal real mode segment 0xf000.
+	 * The criteria for relocation have been relaxed to their 
+	 * utmost, so that we can use the same code for both
+	 * our initial entry point and startup of the second cpu.
+	 * The code assumes when executing at _start that:
+	 * (((cs & 0xfff) == 0) and (ip == _start & 0xffff))
+	 * or
+	 * ((cs == anything) and (ip == 0)).
 	 *
-	 * At this point all the linker script does when calculating
-	 * gdtptr_offset is return the low 16 bits so your segment
-	 * must be 64K aligned.  So it wouldn't be too much work
-	 * to support other segments, I just don't see the point
-	 * right now.
+	 * The restrictions in reset16.inc mean that _start initially
+	 * must be loaded at or above 0xffff0000 or below 0x100000.
+	 *
+	 * The linker scripts computs gdtptr16_offset by simply returning
+	 * the low 16 bits.  This means that the intial segment used
+	 * when start is called must be 64K aligned.  This should not
+	 * restrict the address as the ip address can be anything.
 	 */
-	data32	lgdt %cs:EXT(gdtptr_offset)
+
+	movw	%cs, %ax
+	shlw	$4, %ax
+	movw	$EXT(gdtptr16_offset), %bx
+	subw	%ax, %bx
+	data32  lgdt %cs:(%bx)
 
 	movl	%cr0, %eax
 	andl	$0x7FFAFFD1, %eax /* PG,AM,WP,NE,TS,EM,MP = 0 */
@@ -85,62 +93,19 @@ EXT(_start):
 	movl	%eax, %cr0
 
 	/* Now that we are in protected mode jump to a 32 bit code segment. */
-	data32	ljmp	$0x10, $_protected_start
+	data32	ljmp	$0x10, $__protected_start
 
-
-/** This gdt has a 4 Gb code segment at 0x10, and a 4 GB data segment
+/** The gdt has a 4 Gb code segment at 0x10, and a 4 GB data segment
  * at 0x18; these are Linux-compatible. 
  */
 
-
-/** GDT. we have modified this from the original freebios to make it 
- * compatible with linux. This puts text at seg 0x10 and data at 0x18
- */
 .align	4
-.globl EXT(gdtptr)
-EXT(gdtptr):
+.globl EXT(gdtptr16)
+EXT(gdtptr16):
 	.word	4*8-1
 	.long	gdt		/* we know the offset */
 
 .globl EXT(_estart)
 EXT(_estart):
-
-gdt:
-	.word	0x0000, 0x0000		/* dummy */
-	.byte	0x00, 0x00, 0x00, 0x00
-
-	.word	0xffff, (CACHE_RAM_SEG_BASE & 0xffff)		/* flat offset data segment */
-	.byte	((CACHE_RAM_SEG_BASE >> 16)& 0xff), 0x93, 0xcf
-	.byte	((CACHE_RAM_SEG_BASE >> 24) & 0xff)
-	
-	.word	0xffff, 0x0000		/* flat code segment */
-	.byte	0x00, 0x9b, 0xcf, 0x00	
-	
-	.word	0xffff, 0x0000		/* flat data segment */
-	.byte	0x00, 0x93, 0xcf, 0x00	
-
-
-/*
- *	When we come here we are in protected mode. We expand 
- *	the stack and copies the data segment from ROM to the
- *	memory.
- *
- *	After that, we call the chipset bootstrap routine that
- *	does what is left of the chipset initialization. 
- *
- *	NOTE aligned to 4 so that we are sure that the prefetch
- *	cache will be reloaded.
- */
-	.align	4
-_protected_start:
 	.code32
-	intel_chip_post_macro(0x10)	/* post 10 */
-
-	movw	$0x18, %ax
-	movw	%ax, %ds
-	movw	%ax, %es
-	movw	%ax, %ss
-	movw	%ax, %fs
-	movw	%ax, %gs
-
 

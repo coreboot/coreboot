@@ -783,7 +783,7 @@ refresh_rates:
 #if USE_SPD
 spd_enable_refresh:
 	/* Find the first dimm and assume the rest are the same */
-	/* Load the smbus device and port int %ebx */
+	/* Load the smbus device and port into %ebx */
 	movl $((12 << 8) | SMBUS_MEM_DEVICE_0), %ebx
 1:	CALLSP(smbus_read_byte)
 	jz 2f
@@ -798,7 +798,7 @@ spd_enable_refresh:
 
 spd_enable_refresh_out:
 	cmpb $0x06, %al		/* see if the ram refresh is a supported one */
-	ja	1f
+	jae	1f
 	addl $refresh_rates, %eax /* convert SPD refresh rates to 440GX refresh rates */
 	movb (%eax), %cl
 	jmp 2f

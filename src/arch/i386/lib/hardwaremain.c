@@ -49,6 +49,7 @@ static char rcsid[] = "$Id$";
 #include <part/floppy.h>
 #include <part/sizeram.h>
 #include <part/hard_reset.h>
+#include <part/fallback_boot.h>
 #include <arch/ioapic.h>
 #include <pc80/i8259.h>
 #include <pc80/keyboard.h>
@@ -288,6 +289,9 @@ void hardwaremain(int boot_complete)
 	/* copy the smp block to address 0 */
 	post_code(0x96);
 	write_smp_table((void *)16, processor_map);
+
+	/* Reset to booting from this image as late as possible */
+	boot_successful();
 
 #ifdef LINUXBIOS
 	printk_info("Jumping to linuxbiosmain()...\n");

@@ -2,3 +2,8 @@ object nvram.o
 object ich2_ioapic.o
 object ich2_lpc.o
 object ich2_ide.o
+object ich2_reset.o
+object ich2_smbus.o
+object ich2_cpu.o
+object ich2_rtc.o
+object ich2_power.o

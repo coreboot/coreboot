@@ -6,7 +6,7 @@ jmp cpu_reset_out
 
 .section ".rodata"
 
-#if ASM_CONSOLE_LOGLEVEL >= BIOS_DEBUG
+#if ASM_CONSOLE_LOGLEVEL >= BIOS_SPEW
 cpu_reset_str:		.string "cpu_reset\r\n";
 cpu_apic_str:		.string "apic: ";
 cpu_size_set_str:	.string	"cpu memory size set\r\n";
@@ -16,7 +16,7 @@ cpu_size_set_str:	.string	"cpu memory size set\r\n";
 .text
 
 __cpu_reset:
-	CONSOLE_DEBUG_TX_STRING($cpu_reset_str)
+	CONSOLE_SPEW_TX_STRING($cpu_reset_str)
 
 #ifdef SMP
 	/* Enable the local apic, and map it where we expext it */
@@ -32,15 +32,15 @@ __cpu_reset:
 	movl	(APIC_ID + APIC_DEFAULT_BASE), %edi
 	shrl	$24, %edi
 
-	CONSOLE_DEBUG_TX_STRING($cpu_apic_str)
-	CONSOLE_DEBUG_TX_HEX32(%edi)
-	CONSOLE_DEBUG_TX_CHAR($'\r')
-	CONSOLE_DEBUG_TX_CHAR($'\n')
+	CONSOLE_SPEW_TX_STRING($cpu_apic_str)
+	CONSOLE_SPEW_TX_HEX32(%edi)
+	CONSOLE_SPEW_TX_CHAR($'\r')
+	CONSOLE_SPEW_TX_CHAR($'\n')
 #endif
 
 	CALLSP(set_memory_size)
 
-	CONSOLE_DEBUG_TX_STRING($cpu_size_set_str);
+	CONSOLE_SPEW_TX_STRING($cpu_size_set_str);
 
 #ifdef SMP
 	/* Test to see if we are the boot strap processor.

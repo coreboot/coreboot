@@ -57,7 +57,7 @@ ecc_ram_initialize:
 	cld
 
 #if !defined(HAVE_PC80_MEMORY_HOLE)
-	/* The 640KB - 1MB memory should not be enabled at this point. */
+	/* The 640KB - 1MB memory hole should not be enabled at this point. */
 	xorl	%eax, %eax
 	xorl	%edi, %edi
 	movl	%ebp, %ecx

@@ -1,0 +1,4 @@
+object generic_sdram.o USE_GENERIC_SDRAM
+object generic_sdram_enable.o  USE_GENERIC_SDRAM_ENABLE
+object generic_dump_spd.o USE_GENERIC_DUMP_SPD
+object generic_zero_ecc_sdram.o USE_GENERIC_ZERO_ECC_SDRAM

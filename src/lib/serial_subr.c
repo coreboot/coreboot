@@ -6,7 +6,9 @@ static char rcsid[] = "$Id$";
 #include <serial_subr.h>
 
 /* Base Address */
-#define TTYS0 0x3f8
+#ifndef TTYS0_BASE
+#define TTYS0_BASE 0x3f8
+#endif
 
 #ifndef TTYS0_BAUD
 #define TTYS0_BAUD 115200
@@ -153,29 +155,29 @@ inline void uart_init(unsigned base_port, unsigned divisor)
 
 void ttys0_init(void)
 {
-	uart_init(TTYS0, TTYS0_DIV);
+	uart_init(TTYS0_BASE, TTYS0_DIV);
 }
 
 void ttys0_tx_byte(unsigned char data) 
 {
-	uart_tx_byte(TTYS0, data);
+	uart_tx_byte(TTYS0_BASE, data);
 }
 
 unsigned char ttys0_rx_byte(void)
 {
-	return uart_rx_byte(TTYS0);
+	return uart_rx_byte(TTYS0_BASE);
 }
 
 unsigned long ttys0_rx_bytes(char *buffer, unsigned long size)
 {
-	return uart_rx_bytes(TTYS0, buffer, size);
+	return uart_rx_bytes(TTYS0_BASE, buffer, size);
 }
 
 #ifdef PYRO_SERIAL
 /* experimental serial read stuffs */
 int iskey(void) 
 {
-	return uart_have_rx_byte(TTYS0);
+	return uart_have_rx_byte(TTYS0_BASE);
 }
 
 char ttys0_rx_char(void) 

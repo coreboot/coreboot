@@ -6,5 +6,5 @@
 	 */
 	movl	$MCH_RICM, %eax
 	PCI_READ_CONFIG_DWORD
-	testl $RICM_DONE, %eax
-	jnz __cpu_reset
+	testl	$RICM_DONE, %eax
+	setnz	%al

@@ -20,5 +20,8 @@ EXT(reset_vector):
 #error	_ROMBASE is an unsupported value
 #endif
 
+	. = 0x8;
 	.code32
+	jmp	EXT(protected_start)
+
 	.previous

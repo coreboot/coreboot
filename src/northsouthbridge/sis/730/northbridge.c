@@ -1,6 +1,5 @@
 /*
-<<<<<<< northbridge.c
- * southbridge.c:	Norththbridge Initialization For SiS 730
+ * northbridge.c:	Norththbridge Initialization For SiS 730
  *
  * Copyright 2002 Silicon Integrated Systems Corp.
  *
@@ -28,6 +27,8 @@ static char rcsid[] =
 #endif
 
 
+#include <mem.h>
+#include <part/sizeram.h>
 #include <printk.h>
 #include <pciconf.h>
 #include <subr.h>
@@ -56,7 +57,7 @@ const static int ramsizes[16] =
 #define SIS630_DIMM_LOCATION_FOR_SMA 0x65
 #define MAX_DIMM_SLOTS 3
 
-unsigned long sizeram()
+static unsigned long __sizeram(void)
 {
 	struct pci_dev *pcidev;
 	unsigned int dimm_slot, dimm_reg, sides;
@@ -109,6 +110,22 @@ unsigned long sizeram()
 	/* return the memory size in KB */
 	total_size *= 1024;
 	return total_size;
+}
+
+struct mem_range *sizeram(void)
+{
+	static struct mem_range mem[3];
+	mem[0].basek = 0;
+	mem[0].sizek = 640;
+	mem[1].basek = 1024;
+	mem[1].sizek = __sizeram();
+	mem[2].basek = 0;
+	mem[2].sizek = 0;
+	if (mem[1].sizek == 0) {
+		mem[1].sizek = 64*1024;
+	}
+	mem[1].sizek -= mem[1].basek;
+	return &mem;
 }
 
 #ifdef HAVE_FRAMEBUFFER

@@ -5,6 +5,8 @@
    Do chipset setup for a National Semiconductor SCx200 CPU.
 */
 
+#include <mem.h>
+#include <part/sizeram.h>
 #include <printk.h>
 #include <pci.h>
 #include <pci_ids.h>
@@ -26,8 +28,9 @@ static unsigned calc_dimm(int index, unsigned cfg)
 	}
 }
 
-unsigned long sizeram()
+struct mem_range *sizeram(void)
 {
+	static struct mem_range mem[3];
 	u32 mem_bank_cfg;
 	unsigned mem_size;
 
@@ -37,7 +40,13 @@ unsigned long sizeram()
 	mem_size += calc_dimm(0, mem_bank_cfg);
 	mem_size += calc_dimm(1, mem_bank_cfg >> 16);
 
-	return mem_size;
+	mem[0].basek = 0;
+	mem[0].sizek = 640;
+	mem[1].basek = 1024;
+	mem[1].sizek = mem_size - mem[1].basek;
+	mem[2].basek = 0;
+	mem[2].sizek = 0;
+	return &mem;
 }
 
 /*

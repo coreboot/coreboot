@@ -1,9 +1,12 @@
+#include <mem.h>
+#include <part/sizeram.h>
 #include <pci.h>
 #include <cpu/p5/io.h>
 #include <printk.h>
 
-unsigned long sizeram()
+struct mem_range *sizeram(void)
 {
+	static struct mem_range mem[3];
 	//unsigned long totalmemKB = 1024*1024;
 	struct pci_dev *pcidev;
 	unsigned long totalmemKB = 0 ,memfound = 0;
@@ -64,9 +67,14 @@ unsigned long sizeram()
 			pci_read_config_byte(pcidev,(0x80+i),&value);
 		}
 	}
-		
-	return totalmemKB;
-	//return 1024*1024;
+	
+	mem[0].basek = 0;
+	mem[0].sizek = 640;
+	mem[1].basek = 1024;
+	mem[1].sizek = totalmemKB - mem[1].basek;
+	mem[2].basek = 0;
+	mem[2].sizek = 0;
+	return &mem;
 }
 
 

@@ -12,22 +12,36 @@ void print_lb_records(struct lb_record *rec, struct lb_record *last, unsigned lo
 
 unsigned long compute_checksum(void *addr, unsigned long length)
 {
-	unsigned short *ptr;
+	uint8_t *ptr;
+	volatile union {
+		uint8_t  byte[2];
+		uint16_t word;
+	} value;
 	unsigned long sum;
-	unsigned long len;
-	/* Assumes len is a multiple of two, and addr is 2 byte aligned. */
-	/* compute an ip style checksum */
+	unsigned long i;
+	/* In the most straight forward way possible,
+	 * compute an ip style checksum.
+	 */
 	sum = 0;
-	len = length >> 1;
 	ptr = addr;
-	while (len--) {
-		sum += *(ptr++);
-		if (sum > 0xFFFF)
-			sum -= 0xFFFF;
+	for(i = 0; i < length; i++) {
+		unsigned long value;
+		value = ptr[i];
+		if (i & 1) {
+			value <<= 8;
+		}
+		/* Add the new value */
+		sum += value;
+		/* Wrap around the carry */
+		if (sum > 0xFFFF) {
+			sum = (sum + (sum >> 16)) & 0xFFFF;
+		}
 	}
-	return (~sum) & 0xFFFF;
-	
+	value.byte[0] = sum & 0xff;
+	value.byte[1] = (sum >> 8) & 0xff;
+	return (~value.word) & 0xFFFF;
 }
+
 #define for_each_lbrec(head, rec) \
 	for(rec = (struct lb_record *)(((char *)head) + sizeof(*head)); \
 		(((char *)rec) < (((char *)head) + sizeof(*head) + head->table_bytes))  && \
@@ -157,8 +171,17 @@ void print_mainboard(struct lb_record *ptr, unsigned long addr)
 	rec = (struct lb_mainboard *)ptr;
 	max_size = rec->size - sizeof(*rec);
 	printf("vendor: %.*s part number: %.*s\n",
-		max_size - rec->vendor_idx, rec->strings + rec->vendor_idx, 
-		max_size - rec->vendor_idx, rec->strings + rec->part_number_idx);
+		max_size - rec->vendor_idx,      rec->strings + rec->vendor_idx, 
+		max_size - rec->part_number_idx, rec->strings + rec->part_number_idx);
+}
+
+void print_string(struct lb_record *ptr, unsigned long addr)
+{
+	struct lb_string *rec;
+	int max_size;
+	rec = (struct lb_string *)ptr;
+	max_size = rec->size - sizeof(*rec);
+	printf("%.*s\n", max_size, rec->string);
 }
 
 void print_option_table(struct lb_record *ptr, unsigned long addr)
@@ -213,6 +236,16 @@ struct {
 	{ LB_TAG_MEMORY,            "Memory",             print_memory },
 	{ LB_TAG_HWRPB,             "HWRPB",              nop_print },
 	{ LB_TAG_MAINBOARD,         "Mainboard",          print_mainboard },
+	{ LB_TAG_VERSION,           "Version",            print_string },
+	{ LB_TAG_EXTRA_VERSION,     "Extra Version",      print_string },
+	{ LB_TAG_BUILD,             "Build",              print_string },
+	{ LB_TAG_COMPILE_TIME,      "Compile Time",       print_string },
+	{ LB_TAG_COMPILE_BY,        "Compile By",         print_string },
+	{ LB_TAG_COMPILE_HOST,      "Compile Host",       print_string },
+	{ LB_TAG_COMPILE_DOMAIN,    "Compile Domain",     print_string },
+	{ LB_TAG_COMPILER,          "Compiler",           print_string },
+	{ LB_TAG_LINKER,            "Linker",             print_string },
+	{ LB_TAG_ASSEMBLER,         "Assembler",          print_string },
 	{ LB_TAG_CMOS_OPTION_TABLE, "CMOS option table",  print_option_table },
 	{ LB_TAG_OPTION,            "Option",             print_option },
 	{ LB_TAG_OPTION_ENUM,       "Option Enumeration", print_option_enumeration },

@@ -1,3 +1,4 @@
 option i586=1
 object cpuid.o
+object delay_tsc.o
 #object tsc.o

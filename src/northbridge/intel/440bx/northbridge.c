@@ -1,8 +1,11 @@
+#include <mem.h>
+#include <part/sizeram.h>
 #include <pci.h>
 
 
-unsigned long sizeram()
+struct mem_range *sizeram(void)
 {
+	static struct mem_range mem[3];
 	/*
 	 * This is written for BX but should work also for GX.
 	 */
@@ -24,7 +27,14 @@ unsigned long sizeram()
 		totalmem = 0x80000000UL;
 	}
 
-	return totalmem;
+	mem[0].basek = 0;
+	mem[0].sizek = 640;
+	mem[1].basek = 1024;
+	mem[1].sizek = totalmem - mem[1].basek;
+	mem[2].basek = 0;
+	mem[2].sizek = 0;
+
+	return &mem;
 }
 
 

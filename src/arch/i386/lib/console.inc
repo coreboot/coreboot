@@ -2,8 +2,22 @@
 
 jmp	console0
 
-console_test:        .string "\r\n\r\nLinuxBIOS starting...\r\n"
+#define __STR(X) #X
+#define STR(X) __STR(X)
 
+#ifndef  LINUXBIOS_EXTRA_VERSION
+#define LINUXBIOS_EXTRA_VERSION
+#endif
+
+console_test:
+	.ascii	"\r\n\r\nLinuxBIOS-"
+	.ascii	STR(LINUXBIOS_VERSION)
+	.ascii	STR(LINUXBIOS_EXTRA_VERSION)
+	.ascii	" "
+	.ascii	STR(LINUXBIOS_BUILD)
+	.asciz	" starting...\r\n"
+
+#undef STR
 	/* uses:	ax, dx */
 #if defined(SERIAL_CONSOLE)
 #define __CONSOLE_INLINE_TX_AL TTYS0_TX_AL
@@ -229,7 +243,7 @@ console_test:        .string "\r\n\r\nLinuxBIOS starting...\r\n"
 #define CONSOLE_SPEW_TX_STRING(string)        __CONSOLE_TX_STRING(string)
 #define CONSOLE_SPEW_INLINE_TX_STRING(string) __CONSOLE_INLINE_TX_STRING(string)
 
-#if ASM_CONSOLE_LOGLEVEL <= BIOS_SPEW
+#if ASM_CONSOLE_LOGLEVEL <= BIOS_EMERG
 #undef  CONSOLE_EMERG_TX_CHAR
 #undef  CONSOLE_EMERG_INLINE_TX_CHAR
 #undef  CONSOLE_EMERG_TX_HEX8

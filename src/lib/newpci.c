@@ -21,7 +21,7 @@ static char rcsid[] = "$Id$";
 
 #define ONEMEG (1 << 20)
 
-#define PCI_MEM_START 0x80000000
+#define PCI_MEM_START 0xC0000000
 #define PCI_IO_START 0x1000
 
 // historical functions, sometimes very useful. 

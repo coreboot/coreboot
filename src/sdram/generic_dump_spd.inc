@@ -8,15 +8,14 @@ dump_spd_reg_dimm:
 	CONSOLE_DEBUG_TX_CHAR($'m')
 	CONSOLE_DEBUG_TX_CHAR($'m')
 	CONSOLE_DEBUG_TX_CHAR($' ')
-	movb %bl, %al
-	CALLSP(ttys0_tx_hex8)	
+	CONSOLE_DEBUG_TX_HEX8(%bl)
 	CONSOLE_DEBUG_TX_CHAR($'\r')
 	CONSOLE_DEBUG_TX_CHAR($'\n')
 dump_spd_reg_byte:
 	CALLSP(smbus_read_byte)
 	jz dump_spd_reg_next_dimm
 
-	CALLSP(ttys0_tx_hex8)
+	CONSOLE_DEBUG_TX_HEX8(%al)
 	CONSOLE_DEBUG_TX_CHAR($' ')
 	incb %bh
 	testb $0x0F, %bh

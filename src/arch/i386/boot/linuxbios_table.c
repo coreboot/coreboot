@@ -1,8 +1,11 @@
+#include <mem.h>
 #include <ip_checksum.h>
 #include <boot/linuxbios_tables.h>
 #include <boot/linuxbios_table.h>
 #include <printk.h>
 #include <string.h>
+#include <version.h>
+
 
 struct lb_header *lb_table_init(unsigned long addr)
 {
@@ -73,26 +76,56 @@ struct lb_memory *lb_memory(struct lb_header *header)
 
 struct lb_mainboard *lb_mainboard(struct lb_header *header)
 {
-#define __STR(X) #X
-#define STR(X) __STR(X)
-	static const char vendor[] = STR(MAINBOARD_VENDOR);
-	static const char part_number[] = STR(MAINBOARD_PART_NUMBER);
 	struct lb_record *rec;
 	struct lb_mainboard *mainboard;
 	rec = lb_new_record(header);
 	mainboard = (struct lb_mainboard *)rec;
 	mainboard->tag = LB_TAG_MAINBOARD;
-	mainboard->size = sizeof(*mainboard) + 	
-		sizeof(vendor) + sizeof(part_number);
+
+	mainboard->size = (sizeof(*mainboard) +
+		strlen(mainboard_vendor) + 1 + 
+		strlen(mainboard_part_number) + 1 +
+		3) & ~3;
+
 	mainboard->vendor_idx = 0;
-	mainboard->part_number_idx = sizeof(vendor);
+	mainboard->part_number_idx = strlen(mainboard_vendor) + 1;
+
 	memcpy(mainboard->strings + mainboard->vendor_idx,
-		vendor, sizeof(vendor));
+		mainboard_vendor,      strlen(mainboard_vendor) + 1);
 	memcpy(mainboard->strings + mainboard->part_number_idx,
-		part_number, sizeof(part_number));
-#undef STR
-#undef __STR
+		mainboard_part_number, strlen(mainboard_part_number) + 1);
+
 	return mainboard;
+}
+
+void lb_strings(struct lb_header *header)
+{
+	static const struct {
+		uint32_t tag;
+		const uint8_t *string;
+	} strings[] = {
+		{ LB_TAG_VERSION,        linuxbios_version,        },
+		{ LB_TAG_EXTRA_VERSION,  linuxbios_extra_version,  },
+		{ LB_TAG_BUILD,          linuxbios_build,          },
+		{ LB_TAG_COMPILE_TIME,   linuxbios_compile_time,   },
+		{ LB_TAG_COMPILE_BY,     linuxbios_compile_by,     },
+		{ LB_TAG_COMPILE_HOST,   linuxbios_compile_host,   },
+		{ LB_TAG_COMPILE_DOMAIN, linuxbios_compile_domain, },
+		{ LB_TAG_COMPILER,       linuxbios_compiler,       },
+		{ LB_TAG_LINKER,         linuxbios_linker,         },
+		{ LB_TAG_ASSEMBLER,      linuxbios_assembler,      },
+	};
+	int i;
+	for(i = 0; i < sizeof(strings)/sizeof(strings[0]); i++) {
+		struct lb_string *rec;
+		size_t len;
+		rec = lb_new_record(header);
+		len = strlen(strings[i].string);
+		rec->tag = strings[i].tag;
+		rec->size = (sizeof(*rec) + len + 1 + 3) & ~3;
+		memcpy(rec->string, strings[i].string, len+1);
+	}
+
 }
 
 /* Some version of gcc have problems with 64 bit types so
@@ -105,6 +138,19 @@ void lb_memory_range(struct lb_memory *mem,
 	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
 	mem->map[entries].start = start;
 	mem->map[entries].size = size;
+	mem->map[entries].type = type;
+	mem->size += sizeof(mem->map[0]);
+}
+
+static void lb_memory_rangek(struct lb_memory *mem,
+	uint32_t type, unsigned long startk, unsigned long endk)
+{
+	int entries;
+	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
+	mem->map[entries].start = startk;
+	mem->map[entries].start <<= 10;
+	mem->map[entries].size = endk - startk;
+	mem->map[entries].size <<= 10;
 	mem->map[entries].type = type;
 	mem->size += sizeof(mem->map[0]);
 }
@@ -173,14 +219,16 @@ struct lb_memory *get_lb_mem(void)
 
 unsigned long write_linuxbios_table( 
 	unsigned long *processor_map, 
-	unsigned long totalram,
+	struct mem_range *ram,
 	unsigned long low_table_start, unsigned long low_table_end,
-	unsigned long rom_table_start, unsigned long rom_table_end)
+	unsigned long rom_table_startk, unsigned long rom_table_endk)
 {
+	unsigned long table_size;
+	struct mem_range *ramp;
 	struct lb_header *head;
 	struct lb_memory *mem;
 	struct lb_record *rec_dest, *rec_src;
-	
+
 	head = lb_table_init(low_table_end);
 	low_table_end = (unsigned long)head;
 #if HAVE_OPTION_TABLE == 1
@@ -191,18 +239,40 @@ unsigned long write_linuxbios_table(
 #endif	
 	mem = lb_memory(head);
 	mem_ranges = mem;
+	/* I assume there is always ram at address 0 */
 	/* Reserve our tables in low memory */
-	lb_memory_range(mem, LB_MEM_RESERVED, low_table_start, low_table_end - low_table_start);
-	lb_memory_range(mem, LB_MEM_RAM,      low_table_end, 640*1024 - low_table_end);
-	/* Reserve the whole dos BIOS reserved area, we can probably do
-	 * better but it isn't too important right now
+	table_size = (low_table_end - low_table_start);
+	lb_memory_range(mem, LB_MEM_TABLE, 0, table_size);
+	lb_memory_range(mem, LB_MEM_RAM, table_size, (ram[0].sizek << 10) - table_size);
+	/* Reserving pci memory mapped  space will keep the kernel from booting seeing
+	 * any pci resources.
 	 */
-	lb_memory_range(mem, LB_MEM_RESERVED, 0x000a0000, 0x00060000);
-	/* Now show all of memory */
-	lb_memory_range(mem, LB_MEM_RAM,      0x00100000, (totalram - 1024) << 10);
+	for(ramp = &ram[1]; ramp->sizek; ramp++) {
+		unsigned long startk, endk;
+		startk = ramp->basek;
+		endk = startk + ramp->sizek;
+		if ((startk < rom_table_startk) && (endk > rom_table_startk)) {
+			lb_memory_rangek(mem, LB_MEM_RAM, startk, rom_table_startk);
+			startk = rom_table_startk;
+		}
+		if ((startk == rom_table_startk) && (endk > startk)) {
+			unsigned long tend;
+			tend = rom_table_endk;
+			if (tend > endk) {
+				tend = endk;
+			}
+			lb_memory_rangek(mem, LB_MEM_TABLE, rom_table_startk, tend);
+			startk = tend;
+		}
+		if (endk > startk) {
+			lb_memory_rangek(mem, LB_MEM_RAM, startk, endk);
+		}
+	}
 
 	/* Record our motheboard */
 	lb_mainboard(head);
+	/* Record our various random string information */
+	lb_strings(head);
 
 	low_table_end = lb_table_fini(head);
 

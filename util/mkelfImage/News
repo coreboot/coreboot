@@ -1,0 +1,5 @@
+1.14
+
+- Use much less complex ld magic
+- Fix a small bug in the LinuxBIOS checksum verification code
+

@@ -1,3 +1,5 @@
+#include <mem.h>
+#include <part/sizeram.h>
 #include <pci.h>
 #include <printk.h>
 
@@ -25,7 +27,7 @@ void refresh_set(int turn_it_on)
 //	printk_info( __FUNCTION__ "refresh is now 0x%lx\n", ref);
 }
 // FIX ME!
-unsigned long sizeram()
+static unsigned long __sizeram(void)
 {
 	extern void cache_disable(void), cache_enable(void);
 	int i;
@@ -177,7 +179,21 @@ unsigned long sizeram()
 	cache_enable();
 	return 0; //64*1024*1024;
 }
-
+struct mem_range *sizeram(void)
+{
+	static struct mem_range mem[3];
+	mem[0].basek = 0;
+	mem[0].sizek = 640;
+	mem[1].basek = 1024;
+	mem[1].sizek = __sizeram();
+	mem[2].basek = 0;
+	mem[2].sizek = 0;
+	if (mem[1].sizek == 0) {
+		mem[1].sizek = 64*1024;
+	}
+	mem[1].sizek -= mem[1].basek;
+	return &mem;
+}
 
 #ifdef HAVE_FRAMEBUFFER
 

@@ -3,11 +3,14 @@
    Intel 830 sizing.
 */ 
 
+#include <mem.h>
+#include <part/sizeram.h>
 #include <pci.h>
 #include <printk.h>
 
-unsigned long sizeram()
+struct mem_range *sizeram(void)
 {
+  static struct mem_range mem[3];
   unsigned long totalmem;
   unsigned char regval;
 
@@ -23,7 +26,14 @@ unsigned long sizeram()
       totalmem += regval * 32;
     }
 
-  return totalmem * 1024; 
+
+  mem[0].basek = 0;
+  mem[0].sizek = 640;
+  mem[1].basek = 1024;
+  mem[1].sizek = totalmem*1024 - mem[1].basek;
+  mem[2].basek = 0;
+  mem[2].sizek = 0;
+  return &mem;
 }
 
 

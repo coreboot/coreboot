@@ -1,9 +1,11 @@
+#include <mem.h>
+#include <part/sizeram.h>
 #include <printk.h>
 #include <pci.h>
 #include <pciconf.h>
 
 
-unsigned long sizeram()
+static unsigned long __sizeram(void)
 {
 	unsigned long totalmem;
 	unsigned char bank, mem, prevmem;
@@ -52,13 +54,21 @@ unsigned long sizeram()
 	return totalmem;
 }
 
-
-/*
-unsigned long sizeram()
+struct mem_range *sizeram(void)
 {
-	return 0;
+	static struct mem_range mem[3];
+	mem[0].basek = 0;
+	mem[0].sizek = 640;
+	mem[1].basek = 1024;
+	mem[1].sizek = __sizeram();
+	mem[2].basek = 0;
+	mem[2].sizek = 0;
+	if (mem[1].sizek == 0) {
+		mem[1].sizek = 64*1024;
+	}
+	mem[1].sizek -= mem[1].basek;
+	return &mem;
 }
-*/
 
 #ifdef HAVE_FRAMEBUFFER
 void framebuffer_on()

@@ -334,7 +334,7 @@ static void display_cpuid_update_microcode(void)
 	}
 }
 
-void p6_cpufixup(unsigned long totalram)
+void p6_cpufixup(struct mem_range *mem)
 {
 	printk_info("Updating microcode\n");
 	display_cpuid_update_microcode();

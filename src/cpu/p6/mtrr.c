@@ -29,6 +29,7 @@
 static char rcsid[] = "$Id$";
 #endif
 
+#include <mem.h>
 #include <cpu/p6/msr.h>
 #include <cpu/p6/mtrr.h>
 #include <cpu/k7/mtrr.h>
@@ -43,120 +44,6 @@ static unsigned int mtrr_msr[] = {
 	MTRRfix4K_E0000_MSR, MTRRfix4K_E8000_MSR, MTRRfix4K_F0000_MSR, MTRRfix4K_F8000_MSR,
 };
 
-#ifndef HAVE_MTRR_TABLE
-
-/* We want to cache memory as efficiently as possible.
- */
-#define MTRR_TYPE_RAM MTRR_TYPE_WRBACK
-/* We can't use Write Combining on a legacy frame buffer because
- * it is incompatible with EGA 16 color video modes...
- */
-#define MTRR_TYPE_FB  MTRR_TYPE_UNCACHABLE
-/* For areas that are supposed to cover roms it makes no
- * sense to cache writes.
- */
-#define MTRR_TYPE_ROM MTRR_TYPE_WRPROT
-
-
-#ifdef MEMORY_HOLE
-#define RAM MTRR_TYPE_RAM
-#define FB  MTRR_TYPE_FB
-#define ROM MTRR_TYPE_ROM
-#else
-#define RAM MTRR_TYPE_RAM
-#define FB  MTRR_TYPE_RAM
-#define ROM MTRR_TYPE_RAM
-#endif /* MEMORY_HOLE */
-
-#ifdef MTRR_ONLY_TOP_64K_FLASH
-
-// This is for boards that only support flash in low memory at 0xf0000
-// and above, such as the technoland sbc 710. This type of board
-// is so common that we put it here instead of in the sbc710 mainboard.c
-
-static unsigned char fixed_mtrr_values[][4] = {
-	/* MTRRfix64K_00000_MSR, defines memory range from 0KB to 512 KB, each byte cover 64KB area */
-	{RAM, RAM, RAM, RAM}, {RAM, RAM, RAM, RAM},
-
-	/* MTRRfix16K_80000_MSR, defines memory range from 512KB to 640KB, each byte cover 16KB area */
-	{RAM, RAM, RAM, RAM}, {RAM, RAM, RAM, RAM},
-
-	/* MTRRfix16K_A0000_MSR, defines memory range from A0000 to C0000, each byte cover 16KB area */
-	{FB,  FB,  FB,  FB},  {FB,  FB,  FB,  FB},
-
-	/* MTRRfix4K_C0000_MSR, defines memory range from C0000 to C8000, each byte cover 4KB area */
-	{FB, FB, FB, FB}, {FB, FB, FB, FB},
-
-	/* MTRRfix4K_C8000_MSR, defines memory range from C8000 to D0000, each byte cover 4KB area */
-	{FB, FB, FB, FB}, {FB, FB, FB, FB},
-
-	/* MTRRfix4K_D0000_MSR, defines memory range from D0000 to D8000, each byte cover 4KB area */
-	{FB, FB, FB, FB}, {FB, FB, FB, FB},
-
-	/* MTRRfix4K_D8000_MSR, defines memory range from D8000 to E0000, each byte cover 4KB area */
-	{FB, FB, FB, FB}, {FB, FB, FB, FB},
-
-	/* MTRRfix4K_E0000_MSR, defines memory range from E0000 to E8000, each byte cover 4KB area */
-	{FB, FB, FB, FB}, {FB, FB, FB, FB},
-
-	/* MTRRfix4K_E8000_MSR, defines memory range from E8000 to F0000, each byte cover 4KB area */
-	{FB, FB, FB, FB}, {FB, FB, FB, FB},
-
-	/* MTRRfix4K_F0000_MSR, defines memory range from F0000 to F8000, each byte cover 4KB area */
-	{ROM, ROM, ROM, ROM}, {ROM, ROM, ROM, ROM},
-
-	/* MTRRfix4K_F8000_MSR, defines memory range from F8000 to 100000, each byte cover 4KB area */
-	{ROM, ROM, ROM, ROM}, {ROM, ROM, ROM, ROM},
-};
-#else
-
-static unsigned char fixed_mtrr_values[][4] = {
-	/* MTRRfix64K_00000_MSR, defines memory range from 0KB to 512 KB, each byte cover 64KB area */
-	{RAM, RAM, RAM, RAM}, {RAM, RAM, RAM, RAM},
-
-	/* MTRRfix16K_80000_MSR, defines memory range from 512KB to 640KB, each byte cover 16KB area */
-	{RAM, RAM, RAM, RAM}, {RAM, RAM, RAM, RAM},
-
-	/* MTRRfix16K_A0000_MSR, defines memory range from A0000 to C0000, each byte cover 16KB area */
-	{FB,  FB,  FB,  FB},  {FB,  FB,  FB,  FB},
-
-	/* MTRRfix4K_C0000_MSR, defines memory range from C0000 to C8000, each byte cover 4KB area */
-	{ROM, ROM, ROM, ROM}, {ROM, ROM, ROM, ROM},
-
-	/* MTRRfix4K_C8000_MSR, defines memory range from C8000 to D0000, each byte cover 4KB area */
-	{ROM, ROM, ROM, ROM}, {ROM, ROM, ROM, ROM},
-
-	/* MTRRfix4K_D0000_MSR, defines memory range from D0000 to D8000, each byte cover 4KB area */
-	{ROM, ROM, ROM, ROM}, {ROM, ROM, ROM, ROM},
-
-	/* MTRRfix4K_D8000_MSR, defines memory range from D8000 to E0000, each byte cover 4KB area */
-	{ROM, ROM, ROM, ROM}, {ROM, ROM, ROM, ROM},
-
-	/* MTRRfix4K_E0000_MSR, defines memory range from E0000 to E8000, each byte cover 4KB area */
-	{ROM, ROM, ROM, ROM}, {ROM, ROM, ROM, ROM},
-
-	/* MTRRfix4K_E8000_MSR, defines memory range from E8000 to F0000, each byte cover 4KB area */
-	{ROM, ROM, ROM, ROM}, {ROM, ROM, ROM, ROM},
-
-	/* MTRRfix4K_F0000_MSR, defines memory range from F0000 to F8000, each byte cover 4KB area */
-	{ROM, ROM, ROM, ROM}, {ROM, ROM, ROM, ROM},
-
-	/* MTRRfix4K_F8000_MSR, defines memory range from F8000 to 100000, each byte cover 4KB area */
-	{ROM, ROM, ROM, ROM}, {ROM, ROM, ROM, ROM},
-};
-
-#endif
-
-#undef FB
-#undef RAM
-#undef ROM
-#undef MTRR_TYPE_RAM
-#undef MTRR_TYPE_FB
-#undef MTRR_TYPE_ROM
-
-#else
-extern unsigned char fixed_mtrr_values[][4];
-#endif
 
 static void intel_enable_fixed_mtrr(void)
 {
@@ -176,24 +63,25 @@ static void intel_enable_var_mtrr(void)
 	wrmsr(MTRRdefType_MSR, low, high);
 }
 
-/* setting fixed mtrr, you can do some experiments with different memory type 
-   defined in the table "fixed_mtrr_values" */ 
-static void intel_set_fixed_mtrr(void)
-{
-	unsigned int i;
-	unsigned long low, high;
-
-	for (i = 0; i < arraysize(mtrr_msr); i++) {
-		low = *(unsigned long *) fixed_mtrr_values[i*2];
-		high = *(unsigned long *) fixed_mtrr_values[i*2+1];
-		wrmsr(mtrr_msr[i], low, high);
-	}
-}
 
 /* setting variable mtrr, comes from linux kernel source */
-static void intel_set_var_mtrr(unsigned int reg, unsigned long base, unsigned long size, unsigned char type)
+static void intel_set_var_mtrr(unsigned int reg, unsigned long basek, unsigned long sizek, unsigned char type)
 {
 	unsigned int tmp;
+	unsigned long base_high, base_low;
+	unsigned long  mask_high, mask_low;
+
+	base_high = basek >> 22;
+	base_low  = basek << 10;
+
+	if (sizek < 4*1024*1024) {
+		mask_high = 0x0F;
+		mask_low = ~((sizek << 10) -1);
+	}
+	else {
+		mask_high = 0x0F & (~((sizek >> 22) -1));
+		mask_low = 0;
+	}
 
 	if (reg >= 8)
 		return;
@@ -208,14 +96,14 @@ static void intel_set_var_mtrr(unsigned int reg, unsigned long base, unsigned lo
 		      "movl  %0, %%cr0\n\t"
 		      "wbinvd\n\t":"=r" (tmp)::"memory");
 
-	if (size == 0) {
+	if (sizek == 0) {
 		/* The invalid bit is kept in the mask, so we simply clear the
 		   relevant mask register to disable a range. */
 		wrmsr (MTRRphysMask_MSR (reg), 0, 0);
 	} else {
 		/* Bit 32-35 of MTRRphysMask should be set to 1 */
-		wrmsr (MTRRphysBase_MSR (reg), base | type, 0);
-		wrmsr (MTRRphysMask_MSR (reg), ~(size - 1) | 0x800, 0x0F);
+		wrmsr (MTRRphysBase_MSR(reg), base_low | type, base_high);
+		wrmsr (MTRRphysMask_MSR(reg), mask_low | 0x800, mask_high);
 	}
 
 	// turn cache back on. 
@@ -262,13 +150,25 @@ void set_var_mtrr(unsigned int reg, unsigned long base, unsigned long size, unsi
 }
 
 /* fms: find most sigificant bit set, stolen from Linux Kernel Source. */
-static __inline__ unsigned int fms(unsigned int x)
+static inline unsigned int fms(unsigned int x)
 {
 	int r;
 
 	__asm__("bsrl %1,%0\n\t"
 	        "jnz 1f\n\t"
 	        "movl $0,%0\n"
+	        "1:" : "=r" (r) : "g" (x));
+	return r;
+}
+
+/* fms: find least sigificant bit set */
+static inline unsigned int fls(unsigned int x)
+{
+	int r;
+
+	__asm__("bsfl %1,%0\n\t"
+	        "jnz 1f\n\t"
+	        "movl $32,%0\n"
 	        "1:" : "=r" (r) : "g" (x));
 	return r;
 }
@@ -299,81 +199,152 @@ static __inline__ unsigned int fms(unsigned int x)
 #define OS_MTRRS   2
 #define MTRRS        (BIOS_MTRRS + OS_MTRRS)
 
-void setup_mtrrs(unsigned long ramsizeK)
+
+static void set_fixed_mtrrs(unsigned int first, unsigned int last, unsigned char type)
 {
-	unsigned int reg = 0;
-	unsigned long range_wb, range_uc;
-	unsigned long rambase;
-	unsigned long romendK;
-
-	printk_debug("\n");
-	rambase = 0;
-
-	while (ramsizeK != 0 && reg < BIOS_MTRRS) {
-		post_code(0x60 + reg);
-
-		range_wb = 1 << (fms(ramsizeK - 1) + 1);
-		range_uc = range_wb - ramsizeK;
-
-		if ((range_uc == 0) || ((ramsizeK % range_uc) == 0)) {
-			printk_debug("Setting variable MTRR %d, base: %4dMB, range: %4dMB, type: WB\n",
-			    reg, rambase >> 10, range_wb >> 10);
-			intel_set_var_mtrr(reg++, rambase * 1024, range_wb * 1024,
-					   MTRR_TYPE_WRBACK);
-			rambase += ramsizeK;
-
-			if (range_uc) {
-				printk_debug("Setting variable MTRR %d, base: %4dMB, range: %4dMB, type: UC\n",
-					reg, rambase >> 10, range_uc >> 10);
-				intel_set_var_mtrr(reg++, rambase * 1024, range_uc * 1024,
-					MTRR_TYPE_UNCACHABLE);
+	unsigned int i;
+	unsigned int fixed_msr = NUM_FIXED_RANGES >> 3;
+	unsigned long low, high;
+	low = high = 0; /* Shut up gcc */
+	for(i = first; i < last; i++) {
+		/* When I switch to a new msr read it in */
+		if (fixed_msr != i >> 3) {
+			/* But first write out the old msr */
+			if (fixed_msr < (NUM_FIXED_RANGES >> 3)) {
+				wrmsr(mtrr_msr[fixed_msr], low, high);
 			}
-			ramsizeK = 0; /* effectivly a break */
+			fixed_msr = i>>3;
+			rdmsr(mtrr_msr[fixed_msr], low, high);
+		}
+		if ((i & 7) < 4) {
+			low &= ~(0xff << ((i&3)*8));
+			low |= type << ((i&3)*8);
 		} else {
-			range_wb >>= 1;
-
-			printk_debug("Setting variable MTRR %d, base: %4dMB, range: %4dMB, type: WB\n",
-			    reg, rambase >> 10, range_wb >> 10);
-			intel_set_var_mtrr(reg++, rambase * 1024, range_wb * 1024,
-					   MTRR_TYPE_WRBACK);
-
-			rambase += range_wb;
-			ramsizeK -= range_wb;
+			high &= ~(0xff << ((i&3)*8));
+			high |= type << ((i&3)*8);
 		}
 	}
-	printk_debug("DONE variable MTRRs\n");
-#if defined(XIP_ROM_SIZE) && defined(XIP_ROM_BASE)
-#if XIP_ROM_SIZE < 4096
-#error XIP_ROM_SIZE must be at least 4K
-#endif
-#if XIP_ROM_SIZE & (XIP_ROM_SIZE -1)
-#error XIP_ROM_SIZE must be a power of two
-#endif
-#if XIP_ROM_BASE & (XIP_ROM_SIZE -1)
-#error XIP_ROM_BASE must be a multiple of XIP_ROM_SIZE
-#endif
-	/* I assume that XIP_ROM_SIZE is a power of two
-	 * and that XIP_ROM_BASE is power of tow aligned.
-	 */
-	romendK = (XIP_ROM_BASE + XIP_ROM_SIZE) >>10;
-	if ((reg < BIOS_MTRRS) && 
-		((XIP_ROM_BASE > rambase) || (romendK > rambase))) {
-		intel_set_var_mtrr(reg++, XIP_ROM_BASE, XIP_ROM_SIZE,
-			MTRR_TYPE_WRPROT);
+	/* Write out the final msr */
+	if (fixed_msr < (NUM_FIXED_RANGES >> 3)) {
+		wrmsr(mtrr_msr[fixed_msr], low, high);
 	}
-#endif /* XIP_ROM_SIZE && XIP_ROM_BASE */
+}
+
+static unsigned fixed_mtrr_index(unsigned long addrk)
+{
+	unsigned index;
+	index = (addrk - 0) >> 6;
+	if (index >= 8) {
+		index = ((addrk - 8*64) >> 4) + 8;
+	}
+	if (index >= 24) {
+		index = ((addrk - (8*64 + 16*16)) >> 2) + 24;
+	}
+	if (index > NUM_FIXED_RANGES) {
+		index = NUM_FIXED_RANGES;
+	}
+	return index;
+}
+
+static unsigned int range_to_mtrr(unsigned int reg, 
+	unsigned long range_startk, unsigned long range_sizek)
+{
+	if (!range_sizek || (reg >= BIOS_MTRRS)) {
+		return reg;
+	}
+	while(range_sizek) {
+		unsigned long max_align, align;
+		unsigned long sizek;
+		/* Compute the maximum size I can make a range */
+		max_align = fls(range_startk);
+		align = fms(range_sizek); 
+		if (align > max_align) {
+			align = max_align;
+		}
+		sizek = 1 << align;
+		printk_debug("Setting variable MTRR %d, base: %4dMB, range: %4dMB, type WB\n",
+			reg, range_startk >>10, sizek >> 10);
+		intel_set_var_mtrr(reg++, range_startk, sizek, MTRR_TYPE_WRBACK);
+		range_startk += sizek;
+		range_sizek -= sizek;
+		if (reg >= BIOS_MTRRS)
+			break;
+	}
+	return reg;
+}
+
+void setup_mtrrs(struct mem_range *mem)
+{
+	/* Try this the simple way of incrementally adding together
+	 * mtrrs.  If this doesn't work out we can get smart again 
+	 * and clear out the mtrrs.
+	 */
+	struct mem_range *memp;
+	unsigned long range_startk, range_sizek;
+	unsigned int reg;
+
+	printk_debug("\n");
+	/* Initialized the fixed_mtrrs to uncached */
+	printk_debug("Setting fixed MTRRs(%d-%d) type: UC\n", 
+		0, NUM_FIXED_RANGES);
+	set_fixed_mtrrs(0, NUM_FIXED_RANGES, MTRR_TYPE_UNCACHABLE);
+
+	/* Now see which of the fixed mtrrs cover ram.
+	 */
+	for(memp = mem; memp->sizek; memp++) {
+		unsigned int start_mtrr;
+		unsigned int last_mtrr;
+		start_mtrr = fixed_mtrr_index(memp->basek);
+		last_mtrr = fixed_mtrr_index(memp->basek + memp->sizek);
+		if (start_mtrr >= NUM_FIXED_RANGES) {
+			break;
+		}
+		printk_debug("Setting fixed MTRRs(%d-%d) type: WB\n",
+			start_mtrr, last_mtrr);
+		set_fixed_mtrrs(start_mtrr, last_mtrr, MTRR_TYPE_WRBACK);
+	}
+	printk_debug("DONE fixed MTRRs\n");
+	/* Cache as many memory areas as possible */
+	/* FIXME is there an algorithm for computing the optimal set of mtrrs? 
+	 * In some cases it is definitely possible to do better.
+	 */
+	range_startk = 0;
+	range_sizek = 0;
+	reg = 0;
+	for (memp = mem; memp->sizek; memp++) {
+		/* See if I can merge with the last range 
+		 * Either I am below 1M and the fixed mtrrs handle it, or
+		 * the ranges touch.
+		 */
+		if ((memp->basek <= 1024) || (range_startk + range_sizek == memp->basek)) {
+			unsigned long endk = memp->basek + memp->sizek;
+			range_sizek = endk - range_startk;
+			continue;
+		}
+		/* Write the range mtrrs */
+		if (range_sizek != 0) {
+			reg = range_to_mtrr(reg, range_startk, range_sizek);
+			range_startk = 0;
+			range_sizek = 0;
+			if (reg >= BIOS_MTRRS)
+				break;
+		}
+		/* Allocate an msr */
+		range_startk = memp->basek;
+		range_sizek = memp->sizek;
+	}
+	/* Write the last range */
+	reg = range_to_mtrr(reg, range_startk, range_sizek);
+	printk_debug("DONE variable MTRRs\n");
 	printk_debug("Clear out the extra MTRR's\n");
 	/* Clear out the extra MTRR's */
 	while(reg < MTRRS) {
 		intel_set_var_mtrr(reg++, 0, 0, 0);
 	}
-	printk_debug("call intel_set_fixed_mtrr()\n");
-	intel_set_fixed_mtrr();
-
 	/* enable fixed MTRR */
 	printk_debug("call intel_enable_fixed_mtrr()\n");
 	intel_enable_fixed_mtrr();
 	printk_debug("call intel_enable_var_mtrr()\n");
 	intel_enable_var_mtrr();
-	printk_debug("Leave " __FUNCTION__ "\n");
+	printk_debug("Leave %s\n", __FUNCTION__);
 }

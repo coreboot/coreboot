@@ -1803,7 +1803,7 @@ spd_set_dram_timing_out:
 	 * Arguments:	%bl device on the smbus to read from
 	 *		%esi an initially zeroed copy of the 
 	 *		 DRAM mode register.
-	 *		%ebp Pointer to infomration that varies by memory bus speed
+	 *		%ebp Pointer to information that varies by memory bus speed
 	 *
 	 * Results:	cf clear
 	 *		%esi updated with dimm with setting

@@ -61,8 +61,9 @@ struct lb_memory_range {
 	uint64_t start;
 	uint64_t size;
 	uint32_t type;
-#define LB_MEM_RAM      1
-#define LB_MEM_RESERVED 2
+#define LB_MEM_RAM       1	/* Memory anyone can use */
+#define LB_MEM_RESERVED  2	/* Don't use this memory region */
+#define LB_MEM_TABLE     16	/* Ram configuration tables are kept in */
 	
 };
 
@@ -88,7 +89,21 @@ struct lb_mainboard {
 	uint8_t  strings[0];
 };
 
-
+#define LB_TAG_VERSION		0x0004
+#define LB_TAG_EXTRA_VERSION	0x0005
+#define LB_TAG_BUILD		0x0006
+#define LB_TAG_COMPILE_TIME	0x0007
+#define LB_TAG_COMPILE_BY	0x0008
+#define LB_TAG_COMPILE_HOST	0x0009
+#define LB_TAG_COMPILE_DOMAIN	0x000a
+#define LB_TAG_COMPILER		0x000b
+#define LB_TAG_LINKER		0x000c
+#define LB_TAG_ASSEMBLER	0x000d
+struct lb_string {
+	uint32_t tag;
+	uint32_t size;
+	uint8_t  string[0];
+};
 
 /* The following structures are for the cmos definitions table */
 #define LB_TAG_CMOS_OPTION_TABLE 200

@@ -17,3 +17,6 @@ object floppy_subr.o BOOT_FLOPPY
 object delay.o
 object fallback_boot.o HAVE_FALLBACK_BOOT
 object compute_ip_checksum.o
+object version.o
+# Force version.o to recompile every time
+makedefine .PHONY : version.o

@@ -42,6 +42,8 @@ static char rcsid[] = "$Id$";
 #include <pci.h>
 #include <subr.h>
 #include <printk.h>
+#include <mem.h>
+#include <version.h>
 #include <smp/start_stop.h>
 #include <cpu/l2_cache.h>
 #include <cpu/cpufixup.h>
@@ -76,7 +78,7 @@ static char rcsid[] = "$Id$";
  */
 static unsigned long processor_map[MAX_CPUS];
 
-static unsigned long cpu_initialize(unsigned long totalram)
+static unsigned long cpu_initialize(struct mem_range *mem)
 {
 	/* Because we busy wait at the printk spinlock.
 	 * It is important to keep the number of printed messages
@@ -87,10 +89,10 @@ static unsigned long cpu_initialize(unsigned long totalram)
 	printk_notice("Initializing CPU #%d\n", processor_id);
 	
 	/* some cpus need a fixup done. This is the hook for doing that. */
-	cpufixup(totalram);
+	cpufixup(mem);
 
 	/* Turn on caching if we haven't already */
-	cache_on(totalram);
+	cache_on(mem);
 
 	display_cpuid();
 	mtrr_check();
@@ -105,16 +107,18 @@ static unsigned long cpu_initialize(unsigned long totalram)
 	return processor_id;
 }
 
-static unsigned long get_ramsize(void)
+
+static struct mem_range *get_ramsize(void)
 {
-	unsigned long totalram;
-	totalram = sizeram();
-	// can't size just yet ... 
-	// mainboard totalram sizing may not be up yet. If it is not ready, 
-	// take a default of 64M
-	if (!totalram)
-		totalram = 64 * 1024;
-	return totalram;
+	static struct mem_range *mem = 0;
+	if (!mem) {
+		mem = sizeram();
+	}
+	if (!mem) {
+		printk_err("No memory size information!\n");
+		for(;;);
+	}
+	return mem;
 }
 
 #ifdef SMP
@@ -123,14 +127,14 @@ static atomic_t active_cpus = ATOMIC_INIT(1);
 
 void secondary_cpu_init(void)
 {
-	unsigned long totalram;
+	struct mem_range *mem;
 	unsigned long id;
 	int index;
 
 	atomic_inc(&active_cpus);
 	printk_debug(__FUNCTION__ "\n");
-	totalram = get_ramsize();
-	id = cpu_initialize(totalram);
+	mem = get_ramsize();
+	id = cpu_initialize(mem);
 	index = processor_index(id);
 	printk_debug(__FUNCTION__ "  %d/%u\n", index, id);
 	processor_map[index] = CPU_ENABLED;
@@ -153,7 +157,7 @@ static void wait_for_other_cpus(void)
 		}
 		active_count = atomic_read(&active_cpus);
 	}
-	for (i = 0; i < MAX_CPUS; i++) {
+	for(i = 0; i < MAX_CPUS; i++) {
 		if (!(processor_map[i] & CPU_ENABLED)) {
 			printk_err("CPU %d/%u did not initialize!\n",
 				i, initial_apicid[i]);
@@ -185,7 +189,7 @@ static void remove_logical_cpus(void)
 #endif /* SMP */
 
 
-void write_tables(unsigned long totalram)
+void write_tables(struct mem_range *mem)
 {
 	unsigned long low_table_start, low_table_end;
 	unsigned long rom_table_start, rom_table_end;
@@ -193,7 +197,7 @@ void write_tables(unsigned long totalram)
 	rom_table_start = 0xf0000;
 	rom_table_end =   0xf0000;
 	/* Start low addr at 16 bytes instead of 0 because of a buglet
-	 * in the generic linux bunzip code, as it tests for the a20 line.
+	 * in the generic linux unzip code, as it tests for the a20 line.
 	 */
 	low_table_start = 0;
 	low_table_end = 16;
@@ -202,6 +206,7 @@ void write_tables(unsigned long totalram)
 	check_pirq_routing_table();
 	/* This table must be betweeen 0xf0000 & 0x100000 */
 	rom_table_end = copy_pirq_routing_table(rom_table_end);
+	rom_table_end = (rom_table_end + 1023) & ~1023;
 
 	/* copy the smp block to address 0 */
 	post_code(0x96);
@@ -214,9 +219,9 @@ void write_tables(unsigned long totalram)
 		low_table_end = 0x500;
 	}
 	/* The linuxbios table must be in 0-4K or 960K-1M */
-	write_linuxbios_table(processor_map, totalram,
+	write_linuxbios_table(processor_map, mem,
 			      low_table_start, low_table_end,
-			      rom_table_start, rom_table_end);
+			      rom_table_start >> 10, rom_table_end >> 10);
 }
 
 void hardwaremain(int boot_complete)
@@ -244,8 +249,9 @@ void hardwaremain(int boot_complete)
 	 * things, so that the other work can use the PciRead* and PciWrite*
 	 * functions. 
 	 */
-	unsigned long totalram = 0;
-	extern void linuxbiosmain(unsigned long membase, unsigned long totalram);
+	struct mem_range *mem, *tmem;
+	unsigned long totalmem;
+	extern void linuxbiosmain(struct mem_range *mem);
 
 	// we don't call post code for this one -- since serial post could cause real 
 	// trouble.
@@ -254,8 +260,9 @@ void hardwaremain(int boot_complete)
 	displayinit();
 	
 	post_code(0x39);
-
-	printk_notice("LinuxBIOS %s...\n", (boot_complete) ? "rebooting" : "booting");
+	printk_notice("LinuxBIOS-%s%s %s %s...\n", 
+		linuxbios_version, linuxbios_extra_version, linuxbios_build,
+		(boot_complete)?"rebooting":"booting");
 
 	post_code(0x40);
 
@@ -278,12 +285,17 @@ void hardwaremain(int boot_complete)
 	// So you really need to run this before you size ram. 
 	framebuffer_on();
 
-	totalram = get_ramsize();
+	mem = get_ramsize();
 	post_code(0x70);
-	printk_info("totalram: %ldM\n", totalram/1024);
+	totalmem = 0;
+	for(tmem = mem; tmem->sizek; tmem++) {
+		totalmem += tmem->sizek;
+	}
+	printk_info("totalram: %ldM\n", 
+		(totalmem + 512) >> 10); /* Round to the nearest meg */
 
 	/* Fully initialize the cpu before configuring the bus */
-	boot_cpu = cpu_initialize(totalram);
+	boot_cpu = cpu_initialize(mem);
 	boot_index = processor_index(boot_cpu);
 	printk_spew("BOOT CPU is %d\n", boot_cpu);
 	processor_map[boot_index] = CPU_BOOTPROCESSOR|CPU_ENABLED;
@@ -378,19 +390,16 @@ void hardwaremain(int boot_complete)
 	/* Now that we have collected all of our information
 	 * write our configuration tables.
 	 */
-	write_tables(totalram);
+	write_tables(mem);
 
 
 #ifdef LINUXBIOS
 	printk_info("Jumping to linuxbiosmain()...\n");
 	// we could go to argc, argv, for main but it seems like overkill.
 	post_code(0xed);
-	linuxbiosmain(0, totalram);
+	linuxbiosmain(mem);
 #endif /* LINUXBIOS */
 }
-
-
-
 
 
 

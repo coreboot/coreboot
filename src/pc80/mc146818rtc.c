@@ -236,7 +236,7 @@ int get_option(void *dest, char *name)
 		}
 	}
 	if(!found) {
-		printk_err("ERR: No cmos option '%s'\n", name);
+		printk_err("ERROR: No cmos option '%s'\n", name);
 		return(-2);
 	}
 	

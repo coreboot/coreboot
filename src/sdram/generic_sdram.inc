@@ -7,11 +7,14 @@ ram_4:		.string "Ram4\r\n"
 ram_5:		.string "Ram5\r\n"
 ram_6:		.string "Ram6\r\n"
 
+no_memory_str:	.string "ERROR: No memory!"
+crlf:		.string "\r\n"
 
-no_memory_str:	.string "No memory!\r\n"
-
-no_memory:	CONSOLE_DEBUG_TX_STRING($no_memory_str)
-1:		hlt /* stick here.. */
+no_memory:	CONSOLE_ERR_TX_STRING($no_memory_str)
+mem_stop:
+		CONSOLE_ERR_TX_STRING($crlf)
+1:
+		hlt /* stick here.. */
 		jmp 1b
 
 ram_initialize:

@@ -35,7 +35,8 @@
 
 void set_var_mtrr(unsigned int reg, unsigned long base, unsigned long size, unsigned char type);
 #if defined(INTEL_PPRO_MTRR) 
-void setup_mtrrs(unsigned long ramsizeK);
+struct mem_range;
+void setup_mtrrs(struct mem_range *mem);
 #endif
 
 #endif /* ASSEMBLY */

@@ -1,5 +1,7 @@
 ## This is Architecture independant part of the makefile
 
+option LINUXBIOS_VERSION=1.0.0
+
 option CROSS_COMPILE=
 
 makedefine CC:=$(CROSS_COMPILE)gcc 
@@ -13,6 +15,15 @@ makedefine CFLAGS := $(CPU_OPT) $(CPPFLAGS) -Os -nostdinc -nostdlib -fno-builtin
 
 makedefine HOSTCC:=gcc
 makedefine HOSTCFLAGS:= -Os -Wall
+
+option LINUXBIOS_BUILD          = $(shell date)	
+option LINUXBIOS_COMPILE_TIME   = $(shell date +%T)
+option LINUXBIOS_COMPILE_BY     = $(shell whoami)
+option LINUXBIOS_COMPILE_HOST   = $(shell hostname)
+option LINUXBIOS_COMPILE_DOMAIN = $(shell dnsdomainname)
+option LINUXBIOS_COMPILER       = $(shell  $(CC) $(CFLAGS) -v 2>&1 | tail -1)
+option LINUXBIOS_LINKER         = $(shell  $(CC) -Wl,-v 2>&1 | grep version | tail -1)
+option LINUXBIOS_ASSEMBLER      = $(shell  touch dummy.s ; $(CC) -c -Wa,-v dummy.s 2>&1; rm -f dummy.s dummy.o )
 
 makerule ldscript.ld : ldoptions $(LDSUBSCRIPTS-1) ; echo "INCLUDE ldoptions" > $@ ; for file in $(LDSUBSCRIPTS-1) ; do echo "INCLUDE $$file" >> $@ ; done
 
@@ -34,6 +45,8 @@ addaction linuxbios.a ar cr linuxbios.a $(OBJECTS-1)
 option CRT0=$(TOP)/src/arch/$(ARCH)/config/crt0.base
 makerule crt0.S: $(CRT0) ; cp $< $@
 
+# Force crt0.s (which has build time version code in it to rebuild every time)
+makedefine .PHONY : crt0.s
 makerule crt0.s: crt0.S crt0_includes.h $(CRT0_INCLUDES); @echo "$(CPP) ... $< > $@ "
 addaction crt0.s @$(CPP) $(CPPFLAGS) -I$(TOP)/src  $< > $@.new && mv $@.new $@ 
 

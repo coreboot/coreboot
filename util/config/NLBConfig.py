@@ -373,7 +373,7 @@ def nsuperio(dir, superio_commands):
 	superio_decls = superio_decls + decl;
 	superio_devices.append("&superio_" + superio_decl_name);
 	# note that we're using the new interface
-	option(dir, "USE_NEW_SUPERIO_INTERFACE")
+	option(dir, "USE_NEW_SUPERIO_INTERFACE=1")
 	numsuperio = numsuperio + 1
 
 
@@ -705,6 +705,10 @@ def option(dir, option):
 	value = ""
 	if m and m.group(1):
 		(key, value) = m.groups()
+	else:
+		warning("Invalid option specifcation: %s assuming you meant %s=1" % 
+			(option, option) )
+		value = "1"
 	m = option_re.match(key)
 	if not m:
 		fatal("Invalid option name: %s" % (key))

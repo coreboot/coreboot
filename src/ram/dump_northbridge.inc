@@ -12,36 +12,27 @@ dn_after:       .string "After setting values: \r\n"
 	.previous
 	
 
-	dumpnorth:
+dumpnorth:
 	mov %esp, %ebp
 	CONSOLE_INFO_TX_STRING($dn_banner)
 	xorl     %ecx, %ecx
 1:
-	CONSOLE_INFO_TX_HEX32(%ecx)
-	CONSOLE_INFO_TX_CHAR($'-')
-	movl	%ecx, %eax
+	CONSOLE_INFO_TX_HEX8(%cl)
+	CONSOLE_INFO_TX_CHAR($':')
+	CONSOLE_INFO_TX_CHAR($' ')
 
-	PCI_READ_CONFIG_DWORD
-#if 0
-	CONSOLE_INFO_TX_HEX32(%eax)
-#else
-	CONSOLE_INFO_TX_HEX8(%al)
+2:
 	movl	%ecx, %eax
-	PCI_READ_CONFIG_DWORD
-	shrl	$8,%eax
+	PCI_READ_CONFIG_BYTE
 	CONSOLE_INFO_TX_HEX8(%al)
-	movl	%ecx, %eax
-	PCI_READ_CONFIG_DWORD
-	shrl	$16,%eax
-	CONSOLE_INFO_TX_HEX8(%al)
-	movl	%ecx, %eax
-	PCI_READ_CONFIG_DWORD
-	shrl	$24,%eax
-	CONSOLE_INFO_TX_HEX8(%al)
-#endif
+	CONSOLE_INFO_TX_CHAR($' ')
+	
+	incl	%ecx
+	testb	$0xf, %cl
+	jnz	2b
+
 	CONSOLE_INFO_TX_CHAR($'\r')
 	CONSOLE_INFO_TX_CHAR($'\n')
-	addl    $0x4, %ecx
 	cmpl	$256, %ecx
 	jne	1b
 	CONSOLE_INFO_TX_STRING($dn_done)

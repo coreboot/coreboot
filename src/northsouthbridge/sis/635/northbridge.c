@@ -23,6 +23,8 @@
  *
  */
 
+#include <mem.h>
+#include <part/sizeram.h>
 #include <printk.h>
 #include <pciconf.h>
 #include <subr.h>
@@ -49,8 +51,7 @@ const static int ramsizes[16] =
 #define SIS635_BANK1 0x61
 #define SIS635_BANK2 0x62
 #define SIS635_BANK3 0x63
-unsigned 
-long sizeram()
+static unsigned long __sizeram(void)
 {
 	struct pci_dev *pcidev;
 	unsigned int dimm_slot, dimm_reg, sides;
@@ -86,6 +87,24 @@ long sizeram()
 	total_size *= 1024;
 	return total_size;
 }
+
+
+struct mem_range *sizeram(void)
+{
+	static struct mem_range mem[3];
+	mem[0].basek = 0;
+	mem[0].sizek = 640;
+	mem[1].basek = 1024;
+	mem[1].sizek = __sizeram();
+	mem[2].basek = 0;
+	mem[2].sizek = 0;
+	if (mem[1].sizek == 0) {
+		mem[1].sizek = 64*1024;
+	}
+	mem[1].sizek -= mem[1].basek;
+	return &mem;
+}
+
 
 #ifdef HAVE_FRAMEBUFFER
 void framebuffer_on()

@@ -10,18 +10,22 @@
 
 //extern inline int strlen(char *src) { int i = 0; while (*src++) i++; return i;}
 
-static inline size_t strnlen(const char *src, size_t max) { 
-  int i = 0; 
-  if (max<0) {
-    while (*src++) 
-      i++; 
-    return i;
-  }
-  else {
-    while ((*src++) && (i < max)) 
-      i++; 
-    return i;
-  }
+static inline size_t strnlen(const char *src, size_t max) 
+{ 
+	size_t i = 0;
+	while((*src++) && (i < max)) {
+		i++;
+	}
+	return i;
+}
+
+static inline size_t strlen(const char *src)
+{
+	size_t i = 0;
+	while(*src++) {
+		i++;
+	}
+	return i;
 }
 
 extern void *memcpy(void *dest, const void *src, size_t n);

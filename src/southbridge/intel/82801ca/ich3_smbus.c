@@ -4,21 +4,6 @@
 #include <southbridge/intel/82801.h>
 #include "82801.h"
 
-
-#define SMBUS_IO_BASE 0x1000
-
-#define SMBHSTSTAT 0x0
-#define SMBHSTCTL  0x2
-#define SMBHSTCMD  0x3
-#define SMBXMITADD 0x4
-#define SMBHSTDAT0 0x5
-#define SMBHSTDAT1 0x6
-#define SMBBLKDAT  0x7
-#define SMBTRNSADD 0x9
-#define SMBSLVDATA 0xa
-#define SMLINK_PIN_CTL 0xe
-#define SMBUS_PIN_CTL  0xf 
-
 void smbus_setup(void)
 {
 	pcibios_write_config_dword(SMBUS_BUS, SMBUS_DEVFN, 0x20, SMBUS_IO_BASE | 1);

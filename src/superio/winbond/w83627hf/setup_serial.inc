@@ -19,30 +19,31 @@
 	outb	%al, $(SIO_BASE)
 
 #define SIO_WRITE_CONFIG(value, reg) \
-	movb	$reg, %al		; \
+	movb	reg, %al		; \
 	outb	%al, $(SIO_INDEX)	; \
-	movb	$value, %al		; \
+	movb	value, %al		; \
 	outb	%al, $(SIO_DATA)
 
-#define SIO_READ_CONFIG(value, reg) \
-	movb	$reg, %al		; \
+#define SIO_READ_CONFIG(reg) \
+	movb	reg, %al		; \
 	outb	%al, $(SIO_INDEX)	; \
-	inb	%al, $(SIO_DATA)
+	inb	$(SIO_DATA), %al
 
 #define SIO_SET_LOGICAL_DEVICE(device) \
-	SIO_WRITE_CONFIG(device, 0x07)
+	SIO_WRITE_CONFIG(device, $0x07)
+
 
 	/* Enable pnp */
 	SIO_ENTER_PNP_MODE()
 
 #if defined(SIO_SYSTEM_CLK_INPUT)
 	/* Setup up the clock input */
-	SIO_WRITE_CONFIG((0x84 | SIO_SYSTEM_CLK_INPUT), 0x24)
+	SIO_WRITE_CONFIG($(0x84 | SIO_SYSTEM_CLK_INPUT), $0x24)
 #endif
 	/* enable serial 1 */
-	SIO_SET_LOGICAL_DEVICE(COM1_DEVICE)
-	SIO_WRITE_CONFIG(1, 0x30)
-	SIO_WRITE_CONFIG(0x3, 0x60)
-	SIO_WRITE_CONFIG(0xf8, 0x61)
+	SIO_SET_LOGICAL_DEVICE($COM1_DEVICE)
+	SIO_WRITE_CONFIG($1, $0x30)
+	SIO_WRITE_CONFIG($0x3, $0x60)
+	SIO_WRITE_CONFIG($0xf8, $0x61)
 	SIO_EXIT_PNP_MODE()
 

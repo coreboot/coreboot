@@ -1,3 +1,4 @@
+#include <mem.h>
 #include <cpu/p5/io.h>
 #include <cpu/p5/macros.h>
 #include <cpu/p6/msr.h>
@@ -13,7 +14,7 @@
 #define APIC 1
 #endif
 
-void cache_on(unsigned long totalram)
+void cache_on(struct mem_range *mem)
 {
 	post_code(0x60);
 	printk_info("Enabling cache...");
@@ -32,7 +33,7 @@ void cache_on(unsigned long totalram)
 #if defined(i686) 
 	// totalram here is in linux sizing, i.e. units of KB. 
 	// set_mtrr is responsible for getting it into the right units!
-	setup_mtrrs(totalram);
+	setup_mtrrs(mem);
 #endif
 
 	post_code(0x6A);

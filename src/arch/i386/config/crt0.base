@@ -124,6 +124,6 @@ __main:
 	jmp	.Lhlt
 
 .section ".rom.data"
-str_after_ram:       .string "Ram Initialize?\r\n"
-str_pre_main:        .string "before main\r\n"
+str_after_ram:       .string "Copying LinuxBIOS to ram.\r\n"
+str_pre_main:        .string "Jumping to LinuxBIOS.\r\n"
 .previous

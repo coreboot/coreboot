@@ -8,6 +8,7 @@ struct mem_range *sizeram(void)
 	static struct mem_range mem[3];
 	uint32_t size;
 	/* Convert size in bytes to size in K */
+#warning "FINISH sizeram"
 	/* FIXME  hardcoded for now */
 	size = 512*1024;
 

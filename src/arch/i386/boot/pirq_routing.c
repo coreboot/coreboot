@@ -70,14 +70,14 @@ int verify_copy_pirq_routing_table(unsigned long addr)
 
 	rt_curr = (uint8_t*)addr;
 	rt_orig = (uint8_t*)&intel_irq_routing_table;
-	printk_info("Verifing priq routing tables copy at 0x%x...", addr);
+	printk_info("Verifing copy of IRQ routing tables at 0x%x...", addr);
 	for (i = 0; i < intel_irq_routing_table.size; i++) {
 		if (*(rt_curr + i) != *(rt_orig + i)) {
 			printk_info("failed\n");
 			return -1;
 		}
 	}
-	printk_info("succeed\n");
+	printk_info("done\n");
 	return 0;
 }
 #else

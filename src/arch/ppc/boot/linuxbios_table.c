@@ -1,8 +1,8 @@
+#include <console/console.h>
 #include <mem.h>
 #include <ip_checksum.h>
 #include <boot/linuxbios_tables.h>
 #include "linuxbios_table.h"
-#include <console/console.h>
 #include <string.h>
 #include <version.h>
 
@@ -115,17 +115,15 @@ void lb_strings(struct lb_header *header)
 		{ LB_TAG_LINKER,         linuxbios_linker,         },
 		{ LB_TAG_ASSEMBLER,      linuxbios_assembler,      },
 	};
-	int i;
+	unsigned int i;
 	for(i = 0; i < sizeof(strings)/sizeof(strings[0]); i++) {
-		struct lb_record *rec;
-		struct lb_string *str;
+		struct lb_string *rec;
 		size_t len;
-		rec = lb_new_record(header);
-		str = (struct lb_string *)rec;
+		rec = (struct lb_string *)lb_new_record(header);
 		len = strlen(strings[i].string);
-		str->tag = strings[i].tag;
-		str->size = (sizeof(*rec) + len + 1 + 3) & ~3;
-		memcpy(str->string, strings[i].string, len+1);
+		rec->tag = strings[i].tag;
+		rec->size = (sizeof(*rec) + len + 1 + 3) & ~3;
+		memcpy(rec->string, strings[i].string, len+1);
 	}
 
 }
@@ -229,9 +227,7 @@ unsigned long write_linuxbios_table(
 	struct mem_range *ramp;
 	struct lb_header *head;
 	struct lb_memory *mem;
-#if HAVE_OPTION_TABLE == 1
 	struct lb_record *rec_dest, *rec_src;
-#endif	
 
 	head = lb_table_init(low_table_end);
 	low_table_end = (unsigned long)head;

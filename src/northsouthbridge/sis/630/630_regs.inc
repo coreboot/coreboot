@@ -39,7 +39,11 @@ northbridge_init_table:
 	/* SiS 630 specific registers. See SiS 630 Registers Recommended Setting */
 	
 	/* Host Control Interface */
+#ifdef ENABLE_SIS630_CPU_PIPELINE
 	.byte	0x50,	0x9E	#
+#else
+	.byte	0x50,	0x9C	#
+#endif
 	.byte	0x51,	0x00	#
 
 	/* DRAM Control */

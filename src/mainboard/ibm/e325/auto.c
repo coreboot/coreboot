@@ -173,19 +173,20 @@ static void main(void)
 	console_init();
 	setup_ibm_e325_resource_map();
 	needs_reset = setup_coherent_ht_domain();
-	needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0x80);
+	needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0xA0);
 	if (needs_reset) {
 		print_info("ht reset -\r\n");
 		soft_reset();
 	}
 
-#if 0
+#if 1
 	print_pci_devices();
 #endif
 	enable_smbus();
 #if 0
 	dump_spd_registers(&cpu[0]);
 #endif
+
 	memreset_setup();
 	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
 
@@ -195,7 +196,6 @@ static void main(void)
 #if 0
 	dump_pci_device(PCI_DEV(0, 0x18, 2));
 #endif
-
 
 #if 0
 	/* Check the first 1M */

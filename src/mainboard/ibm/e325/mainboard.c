@@ -281,6 +281,6 @@ static void enumerate(struct chip *chip)
 }
 struct chip_control mainboard_arima_hdama_control = {
 	.enumerate = enumerate, 
-	.name      = "Arima HDAMA mainboard ",
+	.name      = "IBM E325 mainboard ",
 };
 

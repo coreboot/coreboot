@@ -354,15 +354,13 @@ void compute_allocate_resource(
 			resource->flags &= ~IORESOURCE_STORED;
 			base += size;
 			
-			printk_spew(
-				"%s %02x *  [0x%08lx - 0x%08lx] %s\n",
-				dev_path(dev),
-				resource->index, 
-				resource->base, resource->base + resource->size -1,
-				(resource->flags & IORESOURCE_IO)? "io":
-				(resource->flags & IORESOURCE_PREFETCH)? "prefmem": "mem");
+			printk_spew("%s %02x *  [0x%08lx - 0x%08lx] %s\n",
+				    dev_path(dev),
+				    resource->index, resource->base,
+				    resource->base + resource->size - 1,
+				    (resource->flags & IORESOURCE_IO)? "io":
+				    (resource->flags & IORESOURCE_PREFETCH)? "prefmem": "mem");
 		}
-
 	}
 	/* A pci bridge resource does not need to be a power
 	 * of two size, but it does have a minimum granularity.
@@ -373,10 +371,10 @@ void compute_allocate_resource(
 	bridge->size = round(base, 1UL << bridge->gran) - bridge->base;
 
 	printk_spew("%s compute_allocate_%s: base: %08lx size: %08lx align: %d gran: %d done\n", 
-		dev_path(dev),
-		(bridge->flags & IORESOURCE_IO)? "io":
-		(bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",
-		base, bridge->size, bridge->align, bridge->gran);
+		    dev_path(dev),
+		    (bridge->flags & IORESOURCE_IO)? "io":
+		    (bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",
+		    base, bridge->size, bridge->align, bridge->gran);
 
 
 }
@@ -420,7 +418,8 @@ static void allocate_vga_resource(void)
 
 /** Assign the computed resources to the bridges and devices on the bus.
  * Recurse to any bridges found on this bus first. Then do the devices
- * on this bus. 
+ * on this bus.
+ * 
  * @param bus Pointer to the structure for this bus
  */ 
 void assign_resources(struct bus *bus)
@@ -443,15 +442,23 @@ void assign_resources(struct bus *bus)
 	printk_debug("ASSIGNED RESOURCES, bus %d\n", bus->secondary);
 }
 
+/**
+ * @brief Enable the resources for a specific device
+ *
+ * @param dev the device whose resources are to be enabled
+ *
+ * Enable resources of the device by calling the device specific
+ * enable_resources() method.
+ *
+ * The parent's resources should be enabled first to avoid having enabling
+ * order problem. This is done by calling the parent's enable_resources()
+ * method and let the method to call it's children's enable_resoruces() via
+ * enable_childrens_resources().
+ */
 void enable_resources(struct device *dev)
 {
-	/* Enable the resources for a specific device.
-	 * The parents resources should be enabled first to avoid
-	 * having enabling ordering problems.
-	 */
 	if (!dev->ops || !dev->ops->enable_resources) {
-		printk_err("%s missing enable_resources\n",
-			   dev_path(dev));
+		printk_err("%s missing enable_resources\n", dev_path(dev));
 		return;
 	}
 	if (!dev->enable) {
@@ -464,12 +471,13 @@ void enable_resources(struct device *dev)
  * @brief Determine the existence of dynamic devices and construct dynamic
  * device tree.
  *
- * Start for the root device 'dev_root', scan the buses in the system, build
- * the dynamic device tree according to the result of the probe.
+ * Start for the root device 'dev_root', scan the buses in the system
+ * recursively, build the dynamic device tree according to the result
+ * of the probe.
  *
- * This function have no idea how to scan and probe the buses and devices at
- * all. It depends on the bus/device specific scan_bus() method to do it.
- * The scan_bus() function also have to create the device structure and attach
+ * This function has no idea how to scan and probe buses and devices at all.
+ * It depends on the bus/device specific scan_bus() method to do it. The
+ * scan_bus() function also have to create the device structure and attach
  * it to the device tree. 
  */
 void dev_enumerate(void)
@@ -488,9 +496,14 @@ void dev_enumerate(void)
 /**
  * @brief Configure devices on the devices tree.
  * 
- * Starting at the root, compute what resources are needed and allocate them. 
- * I/O starts at PCI_IO_START. Since the assignment is hierarchical we
- * set the values into the dev_root struct. 
+ * Starting at the root of the dynamic device tree, travel recursively,
+ * compute resources needed by each device and allocate them.
+ *
+ * I/O resources start at DEVICE_IO_START and grow upward. MEM resources start
+ * at DEVICE_MEM_START and grow downward.
+ *
+ * Since the assignment is hierarchical we set the values into the dev_root
+ * struct. 
  */
 void dev_configure(void)
 {

@@ -507,7 +507,7 @@ static void coherent_ht_finalize(unsigned cpus)
 	 * registers on Hammer A0 revision.
 	 */
 
-#if 0
+#if 1
 	print_debug("coherent_ht_finalize\r\n");
 #endif
 	rev_a0 = is_cpu_rev_a0();
@@ -537,15 +537,14 @@ static void coherent_ht_finalize(unsigned cpus)
 		pci_write_config32(dev, 0x68, val);
 
 		if (rev_a0) {
+			print_debug("shit it is an old cup\n");
 			pci_write_config32(dev, 0x94, 0);
 			pci_write_config32(dev, 0xb4, 0);
 			pci_write_config32(dev, 0xd4, 0);
 		}
-
-
 	}
 
-#if 0
+#if 1
 	print_debug("done\r\n");
 #endif
 }
@@ -619,7 +618,8 @@ static int optimize_link_read_pointers(unsigned cpus, int needs_reset)
 			link_type = pci_read_config32(f0_dev, reg);
 			if (link_type & LinkConnected) {
 				cmd &= 0xff << (link *8);
-				/* FIXME this assumes the device on the other side is an AMD device */
+				/* FIXME this assumes the device on the other
+				 * side is an AMD device */
 				cmd |= 0x25 << (link *8);
 			}
 		}

@@ -6,10 +6,10 @@
 	.code32
 
 	.align	4
-.globl EXT(gdtptr)
+.globl gdtptr
 
 gdt:
-EXT(gdtptr):
+gdtptr:
 	.word	gdt_end - gdt -1 /* compute the table limit */
 	.long	gdt		 /* we know the offset */
 	.word	0
@@ -37,8 +37,8 @@ gdt_end:
  *	cache will be reloaded.
  */
 	.align	4
-.globl EXT(protected_start)
-EXT(protected_start):
+.globl protected_start
+protected_start:
 
 	lgdt	%cs:gdtptr
 	ljmp	$ROM_CODE_SEG, $__protected_start

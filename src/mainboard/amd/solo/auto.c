@@ -7,6 +7,16 @@
 #include "ram/ramtest.c"
 #include "northbridge/amd/amdk8/early_ht.c"
 #include "southbridge/amd/amd8111/amd8111_early_smbus.c"
+#include "northbridge/amd/amdk8/raminit.h"
+
+static void memreset_setup(const struct mem_controller *ctrl)
+{
+}
+
+static void memreset(const struct mem_controller *ctrl)
+{
+}
+
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"

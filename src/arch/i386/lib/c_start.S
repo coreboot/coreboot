@@ -20,16 +20,16 @@ _start:
 	intel_chip_post_macro(0x13)		/* post 12 */
 
 	/** clear stack */
-	leal	EXT(_stack), %edi
-	movl	$EXT(_estack), %ecx
+	leal	_stack, %edi
+	movl	$_estack, %ecx
 	subl	%edi, %ecx
 	xorl	%eax, %eax
 	rep
 	stosb
 
 	/** clear bss */
-	leal	EXT(_bss), %edi
-	movl	$EXT(_ebss), %ecx
+	leal	_bss, %edi
+	movl	$_ebss, %ecx
 	subl	%edi, %ecx
 	jz	.Lnobss
 	xorl	%eax, %eax
@@ -50,7 +50,7 @@ _start:
 1:	addl	$4, %ebx
 	cmpl	$(MAX_CPUS << 2), %ebx
 	je	2
-	cmpl	%eax, EXT(initial_apicid)(%ebx)
+	cmpl	%eax, initial_apicid(%ebx)
 	jne	1b
 2:	shrl	$2, %ebx
 
@@ -78,7 +78,7 @@ _start:
 	movl	%ebp, %esp
 	
 	/* The boot_complete flag has already been pushed */
-	call	EXT(hardwaremain)
+	call	hardwaremain
 	/*NOTREACHED*/
 .Lhlt:
 	intel_chip_post_macro(0xee)	/* post fe */

@@ -28,10 +28,10 @@ it with the version available from LANL.
 /* .section ".rom.text" */
 #include <arch/rom_segs.h>
 .code16
-.globl	EXT(_start)
-.type EXT(_start), @function
+.globl _start
+.type _start, @function
 
-EXT(_start): 
+_start: 
 	cli
 
 /* thanks to kmliu@sis.tw.com for this TBL fix ... */
@@ -84,7 +84,7 @@ EXT(_start):
 
 	movw	%cs, %ax
 	shlw	$4, %ax
-	movw	$EXT(gdtptr16_offset), %bx
+	movw	$gdtptr16_offset, %bx
 	subw	%ax, %bx
 	data32  lgdt %cs:(%bx)
 
@@ -101,12 +101,12 @@ EXT(_start):
  */
 
 .align	4
-.globl EXT(gdtptr16)
-EXT(gdtptr16):
+.globl gdtptr16
+gdtptr16:
 	.word	gdt_end - gdt -1 /* compute the table limit */
 	.long	gdt		 /* we know the offset */
 
-.globl EXT(_estart)
-EXT(_estart):
+.globl _estart
+_estart:
 	.code32
 

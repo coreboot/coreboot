@@ -1,0 +1,10 @@
+object fill_inbuf.o
+object hardwaremain.o
+object linuxbiosmain.o
+object linuxpci.o
+object newpci.o
+object params.o
+object printk.o
+object serial_subr.o
+object subr.o
+object vsprintf.o

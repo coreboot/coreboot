@@ -35,7 +35,8 @@ struct flashchip {
 #define SST_29EE020A      0x10	/* SST 29EE020 device code	*/
 #define SST_28SF040       0x04    /* SST 29EE040 device code	*/
 #define SST_39SF020       0xB6    /* SST 39SF020  device        */
-#define SST_39VF020       0xD6    /* SST 39SF020  device        */
+#define SST_39VF020       0xD6    /* SST 39VF020  device        */
+#define SST_49LF040	  0x51	/* SST 49LF040 device */
 
 #define PMC_ID            0x9D  /* PMC Manufacturer ID[B code   */
 #define PMC_49FL004       0x6E  /* PMC 49FL004 device code      */

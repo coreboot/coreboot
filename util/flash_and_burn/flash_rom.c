@@ -46,6 +46,7 @@
 #include "sst28sf040.h"
 #include "w49f002u.h"
 #include "sst39sf020.h"
+#include "sst49lf040.h"
 #include "pm49fl004.h"
 #include "mx29f002.h"
 
@@ -65,6 +66,9 @@ struct flashchip flashchips[] = {
      probe_39sf020, erase_39sf020, write_39sf020, NULL},
     {"SST39VF020",  SST_ID,     SST_39VF020,  NULL, 256, 4096,
      probe_39sf020, erase_39sf020, write_39sf020, NULL},
+    {"SST49LF040",  SST_ID,	SST_49LF040,  NULL, 512, 4096,
+     probe_49lf040, erase_49lf040, write_49lf040, NULL},
+
 #endif
 //By LYH begin
     {"Pm49FL004",  PMC_ID,     PMC_49FL004,  NULL, 512, 64*1024,
@@ -373,7 +377,8 @@ struct flashchip * probe_flash(struct flashchip * flash)
 	 		flash->total_size * 1024, (unsigned long)size);
 	}
 	bios = mmap (0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
-		     fd_mem, (off_t) (0-size));
+		     //fd_mem, (off_t) (0x100000000-size));
+		     fd_mem, (off_t) (0x0-size));
 	if (bios == MAP_FAILED) {
 	    perror("Error MMAP /dev/mem");
 	    exit(1);

@@ -1,6 +1,5 @@
-# Sample config file for Motorola Sandpoint X3 Demo Board with
-# the Arima HDAMA
-# This will make a target directory of ./hdama
+# Sample config file for EPIA
+# This will make a target directory of ./epia
 
 loadoptions
 

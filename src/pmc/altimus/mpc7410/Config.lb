@@ -1,7 +1,7 @@
 ##
 ## CPU initialization
 ##
-initinclude "EARLY_INIT" pmc/altimus/mpc7410/mpc7410.inc
+cpu ppc/mpc74xx end
 
 ##
 ## Include the secondary Configuration files 

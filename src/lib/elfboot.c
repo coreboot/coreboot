@@ -2,7 +2,7 @@
 #include <printk.h>
 #include <part/fallback_boot.h>
 #include <boot/elf.h>
-#include <boot/uniform_boot.h>
+#include <boot/elf_boot.h>
 #include <rom/read_bytes.h>
 #include <string.h>
 #include <subr.h>
@@ -57,7 +57,7 @@ static int safe_range(unsigned long start, unsigned long len)
 	return 1;
 }
 
-int elfboot(size_t totalram)
+int elfboot(void)
 {
 	static unsigned char header[ELF_HEAD_SIZE];
 	unsigned long offset;
@@ -68,15 +68,14 @@ int elfboot(size_t totalram)
 	int i;
 
 	printk_info("\n");
-	printk_info("Welcome to elfboot, the open sourced starter.\n");
-	printk_info("Febuary 2001, Eric Biederman.\n");
-	printk_info("Version 0.9999\n");
+	printk_info("Welcome to %s, the open sourced starter.\n", BOOTLOADER);
+	printk_info("January 2002, Eric Biederman.\n");
+	printk_info("Version %s\n", BOOTLOADER_VERSION);
 	printk_info("\n");
 	if (streams->init() < 0) {
 		printk_err("Could not initialize driver...\n");
 		goto out;
 	}
-	ptr = get_ube_pointer(totalram);
 
 	post_code(0xf8);
 	/* Read in the initial ELF_HEAD_SIZE bytes */
@@ -228,7 +227,7 @@ int elfboot(size_t totalram)
 	post_code(0xfe);
 
 	/* Jump to kernel */
-	jmp_to_elf_entry(entry, ptr);
+	jmp_to_elf_entry(entry);
 
  out:
 	printk_err("Bad ELF Image\n");

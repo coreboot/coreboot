@@ -82,7 +82,7 @@ void cache_ram_start(void)
 
         init_memory();
 
-#if 1
+#if 0
         {
                 unsigned long addr;
                 for(addr =  0; addr < 0x20000000; addr += 0x02000000) {
@@ -97,6 +97,7 @@ void cache_ram_start(void)
                 }
         }
 #endif
+#if 0
         error |= ramcheck(0x00000000, 0x00080000, 20);
         error |= ramcheck(0x02000000, 0x02080000, 20);
         error |= ramcheck(0x04000000, 0x04080000, 20);
@@ -114,13 +115,14 @@ void cache_ram_start(void)
         error |= ramcheck(0x1a000000, 0x1a080000, 20);
         error |= ramcheck(0x1c000000, 0x1c080000, 20);
         error |= ramcheck(0x1e000000, 0x1e080000, 20);
+#endif
 #if 0
         error |= ramcheck(0x00000000, 0x00080000, 20);
 #endif
-#if 1
+#if 0
 	display_rdram_regs(rdram_chips );
 #endif
-#if 1
+#if 0
 	display_mch_regs();
 #endif
         if (error) {

@@ -51,7 +51,7 @@ int linuxbiosmain(unsigned long base, unsigned long totalram)
 #endif /* USE_TFTP */
 
 #if USE_ELF_BOOT
-	return elfboot(totalram);
+	return elfboot();
 #else /* !ELF_BOOT */
 	printk_info("\n");
 	printk_info("Welcome to start32, the open sourced starter.\n");

@@ -38,9 +38,9 @@ void check_pirq_routing_table(void);
 #endif
 
 #if defined(HAVE_PIRQ_TABLE)
-void copy_pirq_routing_table(void);
+unsigned long copy_pirq_routing_table(unsigned long start);
 #else
-#define copy_pirq_routing_table() do {} while(0)
+#define copy_pirq_routing_table(start) (start)
 #endif
 
 #endif /* ARCH_PIRQ_ROUTING_H */

@@ -16,8 +16,8 @@ nooption USE_DEFAULT_LAYOUT
 option STACK_SIZE=0x2000
 option USE_FALLBACK_BOOT=1
 
-option USE_RAMTEST=1
-dir /src/ram
+#option USE_RAMTEST=1
+#dir /src/ram
 
 #/* falback */
 option ZKERNEL_START=0xffff0000

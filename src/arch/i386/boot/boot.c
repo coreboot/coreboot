@@ -1,86 +1,59 @@
-#include <boot/uniform_boot.h>
+#include <ip_checksum.h>
 #include <boot/elf.h>
+#include <boot/elf_boot.h>
+#include <string.h>
 
 #ifndef CMD_LINE
 #define CMD_LINE ""
 #endif
 
-/* FIXME: the current placement of ube_all could lead to problems... 
- * It should be in a location normally reserved for the bios.
- */
+
+
+#define UPSZ(X) ((sizeof(X) + 3) &~3)
 
 static struct {
-	struct uniform_boot_header header;
-	struct linuxbios_header lb_header;
-	struct {
-		struct {
-			struct ube_memory memory;
-			struct ube_memory_range range[2];
-		} mem;
-	}env;
-	unsigned char command_line[1024];
-} ube_all = {
-	.header = {
-		.header_bytes = sizeof(ube_all.header),
-		.header_checksum = 0,
-		.arg = (unsigned long)&ube_all.command_line,
-		.arg_bytes = sizeof(ube_all.command_line),
-		.env = (unsigned long)&ube_all.env,
-		.env_bytes = sizeof(ube_all.env),
+	Elf_Bhdr hdr;
+	Elf_Nhdr ft_hdr;
+	unsigned char ft_desc[UPSZ(FIRMWARE_TYPE)];
+	Elf_Nhdr bl_hdr;
+	unsigned char bl_desc[UPSZ(BOOTLOADER)];
+	Elf_Nhdr blv_hdr;
+	unsigned char blv_desc[UPSZ(BOOTLOADER_VERSION)];
+	Elf_Nhdr cmd_hdr;
+	unsigned char cmd_desc[UPSZ(CMD_LINE)];
+} elf_boot_notes = {
+	.hdr = {
+		.b_signature = 0x0E1FB007,
+		.b_size = sizeof(elf_boot_notes),
+		.b_checksum = 0,
+		.b_records = 4,
 	},
-	.lb_header = {
-		.signature = { 'L', 'B', 'I', 'O' },
-		.header_bytes = sizeof(ube_all.lb_header),
-		.header_checksum = 0,
-		.env_bytes = sizeof(ube_all.env),
-		.env_checksum = 0,
-		.env_entries = 0,
+	.ft_hdr = {
+		.n_namesz = 0,
+		.n_descsz = sizeof(FIRMWARE_TYPE),
+		.n_type = EBN_FIRMWARE_TYPE,
 	},
-	.env = {
-		.mem = {
-			.memory = {
-				.tag = UBE_TAG_MEMORY,
-				.size = sizeof(ube_all.env.mem),
-			},
-			.range = {
-#if 0
-				{
-					.start = 0,
-					.size = 0xa0000, /* 640k */
-					.type = UBE_MEM_RAM,
-				},
-#else
-				{
-					.start = 4096,	/* skip the first page */
-					.size = 0x9f000, /* 640k */
-					.type = UBE_MEM_RAM,
-				},
-#endif
-				{
-					.start = 0x00100000, /* 1M */
-					.size = 0, /* Fill in the size */
-					.type = UBE_MEM_RAM,
-				},
-			},
-		},
-		
+	.ft_desc = FIRMWARE_TYPE,
+	.bl_hdr = {
+		.n_namesz = 0,
+		.n_descsz = sizeof(BOOTLOADER),
+		.n_type = EBN_BOOTLOADER_NAME,
 	},
-	.command_line = CMD_LINE,
+	.bl_desc = BOOTLOADER,
+	.blv_hdr = {
+		.n_namesz = 0,
+		.n_descsz = sizeof(BOOTLOADER_VERSION),
+		.n_type = EBN_BOOTLOADER_VERSION,
+	},
+	.blv_desc = BOOTLOADER_VERSION,
+	.cmd_hdr = {
+		.n_namesz = 0,
+		.n_descsz = sizeof(CMD_LINE),
+		.n_type = EBN_COMMAND_LINE,
+	},
+	.cmd_desc = CMD_LINE,
 };
 
-void *get_ube_pointer(unsigned long totalram)
-{
-	ube_all.env.mem.range[1].size = ((totalram - 1024) << 10);
-	ube_all.header.header_checksum = 0;
-	ube_all.header.header_checksum = 
-		uniform_boot_compute_header_checksum(&ube_all.header);
-	ube_all.lb_header.env_entries = 1; /* FIXME remove this hardcode.. */
-	ube_all.lb_header.env_checksum = 
-		compute_checksum(&ube_all.env, sizeof(ube_all.env));
-	ube_all.lb_header.header_checksum = 
-		compute_checksum(&ube_all.lb_header, sizeof(ube_all.lb_header));
-	return &ube_all.header;
-}
 
 int elf_check_arch(Elf_ehdr *ehdr)
 {
@@ -92,9 +65,11 @@ int elf_check_arch(Elf_ehdr *ehdr)
 	
 }
 
-void jmp_to_elf_entry(void *entry, void *ube)
+void jmp_to_elf_entry(void *entry)
 {
-	unsigned long type = 0x0A11B007;
+	unsigned long type = 0x0E1FB007;
+	elf_boot_notes.hdr.b_checksum = 
+		compute_ip_checksum(&elf_boot_notes, sizeof(elf_boot_notes));
 
 	/* Jump to kernel */
 	__asm__ __volatile__(
@@ -104,7 +79,7 @@ void jmp_to_elf_entry(void *entry, void *ube)
 		"popl  %%ebx\n\t"
 		"popl  %%eax\n\t"
 		"ret\n\t"
-		:: "g" (entry), "g"(type), "g"(ube));
+		:: "g" (entry), "g"(type), "g"(&elf_boot_notes));
 }
 
 

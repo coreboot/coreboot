@@ -57,6 +57,7 @@ static char rcsid[] = "$Id$";
 #include <arch/ioapic.h>
 #include <smp/atomic.h>
 #include <arch/smp/mpspec.h>
+#include <boot/linuxbios_table.h>
 
 
 /* The processor map. 
@@ -156,6 +157,36 @@ static void wait_for_other_cpus(void)
 #else /* SMP */
 #define wait_for_other_cpus() do {} while(0)
 #endif /* SMP */
+
+void write_tables(unsigned long totalram)
+{
+	unsigned long low_table_start, low_table_end;
+	unsigned long rom_table_start, rom_table_end;
+	
+	rom_table_start = 0xf0000;
+	rom_table_end =   0xf0000;
+	/* Start low addr at 16 bytes instead of 0 because of a buglet
+	 * in the generic linux bunzip code, as it tests for the a20 line.
+	 */
+	low_table_start = 0;
+	low_table_end = 16;
+
+	post_code(0x9a);
+	check_pirq_routing_table();
+	/* This table must be betweeen 0xf0000 & 0x100000 */
+	rom_table_end = copy_pirq_routing_table(rom_table_end);
+
+	/* copy the smp block to address 0 */
+	post_code(0x96);
+	/* The smp table must be in 0-1K, 639K-640K, or 960K-1M */
+	low_table_end = write_smp_table(low_table_end, processor_map);
+
+	/* The linuxbios table must be in 0-1K or 960K-1M */
+	write_linuxbios_table(
+		processor_map, totalram,
+		low_table_start, low_table_end,
+		rom_table_start, rom_table_end);
+}
 
 void hardwaremain(int boot_complete)
 {
@@ -266,10 +297,7 @@ void hardwaremain(int boot_complete)
 
 	pci_zero_irq_settings();
 
-	check_pirq_routing_table();
-	copy_pirq_routing_table();
 
-	post_code(0x9a);
 
 	/* to do: intel_serial_on(); */
 
@@ -285,9 +313,11 @@ void hardwaremain(int boot_complete)
 	/* make certain we are the only cpu running in linuxBIOS */
 	wait_for_other_cpus();
 
-	/* copy the smp block to address 0 */
-	post_code(0x96);
-	write_smp_table((void *)16, processor_map);
+	/* Now that we have collected all of our information
+	 * write our configuration tables.
+	 */
+	write_tables(totalram);
+
 
 #ifdef LINUXBIOS
 	printk_info("Jumping to linuxbiosmain()...\n");

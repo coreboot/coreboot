@@ -2,7 +2,7 @@
 #include <string.h>
 #include <printk.h>
 
-void smp_write_config_table(void *v, unsigned long * processor_map)
+void *smp_write_config_table(void *v, unsigned long * processor_map)
 {
 	int ioapicid = 0;
 	static const char sig[4] = "PCMP";
@@ -120,12 +120,14 @@ void smp_write_config_table(void *v, unsigned long * processor_map)
 	mc->mpc_checksum = smp_compute_checksum(mc, mc->mpc_length);
 	printk_debug("Wrote the mp table end at: %p - %p\n",
 		mc, smp_next_mpe_entry(mc));
+	return smp_next_mpe_entry(mc);
 }
 
-void write_smp_table(void *v, unsigned long *processor_map)
+unsigned long write_smp_table(unsigned long addr, unsigned long *processor_map)
 {
-	smp_write_floating_table(v);
-	smp_write_config_table(v, processor_map);
+	void *v;
+	v = smp_write_floating_table(addr);
+	return (unsigned long)smp_write_config_table(v, processor_map);
 }
 
 

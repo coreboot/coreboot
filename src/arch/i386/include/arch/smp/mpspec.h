@@ -264,8 +264,8 @@ void smp_write_compatibility_address_space(struct mp_config_table *mc,
 	unsigned char busid, unsigned char address_modifier,
 	unsigned int range_list);
 unsigned char smp_compute_checksum(void *v, int len);
-void smp_write_floating_table(void *v);
-void write_smp_table(void *v, unsigned long *processor_map);
+void *smp_write_floating_table(unsigned long addr);
+unsigned long write_smp_table(unsigned long addr, unsigned long *processor_map);
 
 /* A table (per mainboard) listing the initial apicid of each cpu. */
 extern unsigned long initial_apicid[MAX_CPUS];
@@ -273,7 +273,7 @@ extern unsigned long initial_apicid[MAX_CPUS];
 #else /* HAVE_MP_TABLE */
 #define CPU_ENABLED		1	/* Processor is available */
 #define CPU_BOOTPROCESSOR	2	/* Processor is the BP */
-#define write_smp_table(v,p) do {} while(0)
+#define write_smp_table(v,p) ({ p; v; })
 #endif /* HAVE_MP_TABLE */
 
 #endif

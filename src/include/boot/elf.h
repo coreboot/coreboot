@@ -390,6 +390,11 @@ typedef Elf64_Phdr Elf_phdr;
 #endif
 
 extern int elf_check_arch(Elf_ehdr *ehdr);
-extern void jmp_to_elf_entry(void *entry, void *ube);
-extern int elfboot(size_t totalram);
+extern void jmp_to_elf_entry(void *entry);
+extern int elfboot(void);
+
+#define FIRMWARE_TYPE "LinuxBIOS"
+#define BOOTLOADER "elfboot"
+#define BOOTLOADER_VERSION "0.99999"
+
 #endif	/* elf.h */

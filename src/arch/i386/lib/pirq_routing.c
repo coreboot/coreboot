@@ -53,11 +53,16 @@ void check_pirq_routing_table(void)
 }
 #endif
 
-#define RTABLE_DEST 0xf0000
-
-void copy_pirq_routing_table(void)
+unsigned long copy_pirq_routing_table(unsigned long addr)
 {
+	/* Align the table to be 16 byte aligned. */
+	addr += 15;
+	addr &= ~15;
+
+	/* This table must be betweeen 0xf0000 & 0x100000 */
 	printk_info("Copying IRQ routing tables...");
-	memcpy((char *) RTABLE_DEST, &intel_irq_routing_table, intel_irq_routing_table.size);
+	memcpy((void *)addr, &intel_irq_routing_table, intel_irq_routing_table.size);
 	printk_info("done.\n");
+
+	return addr + intel_irq_routing_table.size;
 }

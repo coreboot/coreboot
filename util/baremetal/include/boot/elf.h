@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <arch/boot/boot.h>
+#include <preboot.h>
 
 /* Type for a 16-bit quantity.  */
 typedef uint16_t Elf32_Half;
@@ -393,9 +394,9 @@ extern int elf_check_arch(Elf_ehdr *ehdr);
 extern void jmp_to_elf_entry(void *entry, unsigned long buffer);
 struct stream;
 struct lb_memory;
-extern int elfload(struct stream *stream, struct lb_memory *mem,
+extern int elfload(struct stream *stream, pre_boot_param_t *param,
 	unsigned char *header, unsigned long header_size);
-extern int elfboot(struct stream *stream, struct lb_memory *mem);
+extern int elfboot(struct stream *stream, pre_boot_param_t *param);
 
 #define FIRMWARE_TYPE "LinuxBIOS"
 #define BOOTLOADER "elfboot"

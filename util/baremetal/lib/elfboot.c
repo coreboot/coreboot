@@ -9,9 +9,7 @@
 #include <subr.h>
 #include <stdint.h>
 #include <stdlib.h>
-
-extern unsigned int free_ramtop;
-unsigned int old_free_ramtop;
+#include <preboot.h>
 
 /* Maximum physical address we can use for the linuxBIOS bounce buffer.
  */
@@ -21,6 +19,8 @@ unsigned int old_free_ramtop;
 
 extern unsigned char _ram_seg;
 extern unsigned char _eram_seg;
+
+unsigned long int save;
 
 struct segment {
 	struct segment *next;
@@ -107,7 +107,7 @@ int verify_ip_checksum(
  * 
  */
 
-static unsigned long get_bounce_buffer(struct lb_memory *mem)
+static unsigned long get_bounce_buffer(pre_boot_param_t *param)
 {
 	unsigned long lb_size;
 	unsigned long mem_entries;
@@ -118,13 +118,14 @@ static unsigned long get_bounce_buffer(struct lb_memory *mem)
 	/* Double linuxBIOS size so I have somewhere to place a copy to return to */
 	lb_size = lb_size + lb_size;
 #if 1
-	old_free_ramtop = free_ramtop;
+	printk("get_bounce_buffer: param = %08x\n", param);
+	save = param->free_ramtop;
 
-	free_ramtop -= lb_size;
-	free_ramtop -= lb_size;
-	printk("get_bounce_buffer: old_free_ramtop = %08x, free_ramtop = %08x\n", old_free_ramtop, free_ramtop);
-	return(free_ramtop);
-#endif
+	param->free_ramtop -= lb_size;
+//	free_ramtop -= lb_size;
+	printk("get_bounce_buffer: save = %08x, free_ramtop = %08x\n", save, param->free_ramtop);
+	return(param->free_ramtop);
+#else
 	mem_entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
 	buffer = 0;
 	for(i = 0; i < mem_entries; i++) {
@@ -148,6 +149,7 @@ static unsigned long get_bounce_buffer(struct lb_memory *mem)
 		buffer = tbuffer;
 	}
 	return buffer;
+#endif
 }
 
 
@@ -544,7 +546,7 @@ static int verify_loaded_image(
 	return ok;
 }
 
-int elfload(struct stream *stream, struct lb_memory *mem,
+int elfload(struct stream *stream, pre_boot_param_t *param,
 	unsigned char *header, unsigned long header_size)
 {
 	Elf_ehdr *ehdr;
@@ -555,7 +557,7 @@ int elfload(struct stream *stream, struct lb_memory *mem,
 	unsigned long bounce_buffer;
 
 	/* Find a bounce buffer so I can load to linuxBIOS's current location */
-	bounce_buffer = get_bounce_buffer(mem);
+	bounce_buffer = get_bounce_buffer(param);
 	if (!bounce_buffer) {
 		printk_err("Could not find a bounce buffer...\n");
 		goto out;
@@ -575,7 +577,7 @@ int elfload(struct stream *stream, struct lb_memory *mem,
 
 	/* Preprocess the elf segments */
 	if (!build_elf_segment_list(&head, 
-		bounce_buffer, mem, phdr, ehdr->e_phnum))
+		bounce_buffer, param->lbmem, phdr, ehdr->e_phnum))
 		goto out;
 
 	/* Load the segments */
@@ -601,7 +603,7 @@ int elfload(struct stream *stream, struct lb_memory *mem,
 	/* Jump to kernel */
 	jmp_to_elf_entry(entry, bounce_buffer);
 #if 1
-	free_ramtop = old_free_ramtop;
+	param->free_ramtop = save;
 #endif
 	return 1;
 
@@ -609,7 +611,7 @@ int elfload(struct stream *stream, struct lb_memory *mem,
 	return 0;
 }
 
-int elfboot(struct stream *stream, struct lb_memory *mem)
+int elfboot(struct stream *stream, pre_boot_param_t *param)
 {
 	Elf_ehdr *ehdr;
 	static unsigned char header[ELF_HEAD_SIZE];
@@ -664,7 +666,7 @@ int elfboot(struct stream *stream, struct lb_memory *mem)
 	}
 
 	printk_spew("Try to load at offset 0x%x\n", header_offset);
-	result = elfload(stream, mem, 
+	result = elfload(stream, param, 
 		header + header_offset , ELF_HEAD_SIZE - header_offset);
  out:
 	if (!result) {

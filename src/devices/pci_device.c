@@ -584,7 +584,6 @@ unsigned int pci_scan_bus(struct device *bus, unsigned int max)
 			dev->enable = 1;
 		}
 
-
 		/* Look at the vendor and device id, or at least the 
 		 * header type and class and figure out which set of configuration
 		 * methods to use.

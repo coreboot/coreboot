@@ -39,14 +39,6 @@ it with the version available from LANL.
 
 void hardwaremain(int boot_complete)
 {
-	/* the order here is a bit tricky. We don't want to do much of 
-	 * anything that uses config registers until after PciAllocateResources
-	 * since that function also figures out what kind of config strategy
-	 * to use (type 1 or type 2). 
-	 * so we turn on cache, then worry about PCI setup, then do other 
-	 * things, so that the other work can use the PciRead* and PciWrite*
-	 * functions. 
-	 */
 	struct lb_memory *lb_mem;
 
 	post_code(0x80);

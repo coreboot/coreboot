@@ -1,6 +1,4 @@
 //2003 Copywright Tyan
-//BY LYH
-
 
 #include <console/console.h>
 #include <device/device.h>

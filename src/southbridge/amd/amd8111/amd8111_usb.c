@@ -7,19 +7,17 @@
 
 static void usb_init(struct device *dev)
 {
+#if 0
 	uint32_t cmd;
 
-#if 0
 	printk_debug("USB: Setting up controller.. ");
 	cmd = pci_read_config32(dev, PCI_COMMAND);
 	pci_write_config32(dev, PCI_COMMAND, 
 		cmd | PCI_COMMAND_IO | PCI_COMMAND_MEMORY | 
 		PCI_COMMAND_MASTER | PCI_COMMAND_INVALIDATE);
 
-
 	printk_debug("done.\n");
 #endif
-
 }
 
 static struct device_operations usb_ops  = {

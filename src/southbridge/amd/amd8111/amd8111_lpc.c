@@ -10,6 +10,8 @@
 #include <pc80/mc146818rtc.h>
 #include "amd8111.h"
 
+void isa_dma_init(void); /* from /pc80/isa-dma.c */
+
 #define NMI_OFF 0
 
 struct ioapicreg {

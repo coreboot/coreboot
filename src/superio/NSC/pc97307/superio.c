@@ -5,7 +5,6 @@
 #include <ppc.h>
 #include <ppcreg.h>
 #include <types.h>
-#include <pci.h>
 #include <arch/io.h>
 
 #ifndef PNP_INDEX_REG
@@ -37,6 +36,7 @@ void sio_enable(void)
     pnp_output(0x30, 1); /* Activate */
 }
 
+#if 0
 struct superio_control superio_NSC_pc97307_control = {
 	pre_pci_init:   (void *)0,
 	init:           (void *)0,
@@ -44,4 +44,4 @@ struct superio_control superio_NSC_pc97307_control = {
 	defaultport:    SIO_COM1_BASE,
 	name:           "NSC 87307"
 };
-
+#endif

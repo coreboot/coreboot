@@ -2,7 +2,6 @@
 /* Copyright 2000  AG Electronics Ltd. */
 /* This code is distributed without warranty under the GPL v2 (see COPYING) */
 
-#include <types.h>
 #include <console/console.h>
 #include <stdlib.h>
 #include "../flash.h"
@@ -19,7 +18,7 @@ static const char *identify_amd (struct flash_device *flash_device);
 static int erase_flash_amd800 (void *data, unsigned offset, unsigned length);
 static int program_flash_amd800 (void *data, unsigned offset, const void *source,
 				 unsigned length);
-static u8 read_byte_amd800(void *data, unsigned offset);
+static uint8_t read_byte_amd800(void *data, unsigned offset);
 
 static flash_fn fn_amd800 = {
     identify_amd,
@@ -221,7 +220,7 @@ int program_flash_amd800 (void *data, unsigned offset, const void *source,
     return 0;
 }
 
-u8 read_byte_amd800 (void *data, unsigned offset)
+uint8_t read_byte_amd800 (void *data, unsigned offset)
 {
     struct data_amd800 *d800 = data;
     volatile unsigned char *flash = (volatile unsigned char *) d800->base;

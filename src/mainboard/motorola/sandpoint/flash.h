@@ -14,7 +14,7 @@ typedef struct flash_fn
     int (* erase_all)(void *data);
     int (* erase)(void *data, unsigned offset, unsigned length);
     int (* program)(void *data, unsigned offset, const void *source, unsigned length);    
-    u8 ( *read_byte)(void *data, unsigned offset);
+    uint8_t ( *read_byte)(void *data, unsigned offset);
 } flash_fn;
 
 typedef struct flash_device

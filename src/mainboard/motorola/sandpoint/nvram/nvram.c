@@ -2,7 +2,6 @@
 /* Copyright 2000  AG Electronics Ltd. */
 /* This code is distributed without warranty under the GPL v2 (see COPYING) */
 
-#include <types.h>
 #include <console/console.h>
 #include <stdlib.h>
 #include "../nvram.h"
@@ -20,7 +19,7 @@
 static nvram_device *nvram_dev = 0;
 static unsigned char *nvram_buffer = 0;
 static unsigned nvram_size = 0;
-static u8 nvram_csum = 0;
+static uint8_t nvram_csum = 0;
 #define NVRAM_INVALID (! nvram_dev)
 
 static void update_device(unsigned i, unsigned char data)

@@ -1,4 +1,4 @@
-#include <types.h>
+#include <stdint.h>
 #include <device/pci.h>
 #include "mpc107.h"
 
@@ -10,10 +10,10 @@ wait_for_other_cpus(void)
 unsigned long
 this_processors_id(void)
 {
-	u32 pic1;          
+	uint32_t pic1;          
 	struct device *dev;
 
-	if ((dev = dev_find_slot(0, 0)) == NULL)
+	if ((dev = dev_find_slot(0, 0)) == 0)
 		return 0;
 
 	pic1 = pci_read_config32(dev, MPC107_PIC1);

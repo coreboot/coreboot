@@ -28,9 +28,9 @@ typedef struct i2c_fn
     void (* start)(struct i2c_bus *bus);
     void (* stop)(struct i2c_bus *bus);
     int (* master_write)(struct i2c_bus *bus, int target, int address,
-	    const u8 *data, int length);
+	    const uint8_t *data, int length);
     int (* master_read)(struct i2c_bus *bus, int target, int address,
-	    u8 *data, int length);
+	    uint8_t *data, int length);
 } i2c_fn;
 
 typedef struct i2c_bus
@@ -47,9 +47,9 @@ int register_i2c_bus(const i2c_fn *fn, char *tag, void *data);
 void i2c_start(struct i2c_bus *bus);
 void i2c_stop(struct i2c_bus *bus);
 int i2c_master_write(struct i2c_bus *bus, int target, int address,
-	    const u8 *data, int length);
+	    const uint8_t *data, int length);
 int i2c_master_read(struct i2c_bus *bus, int target, int address,
-	    u8 *data, int length);
+	    uint8_t *data, int length);
 void init_i2c_nvram(const char *i2c_tag);
 
 extern i2c_fn mpc107_i2c_fn;

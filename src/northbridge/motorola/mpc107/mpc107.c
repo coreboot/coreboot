@@ -17,12 +17,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
  */
+#include <stdint.h>
 #include <bsp.h>
 #include <ppc.h>
-#include <types.h>
 #include <device/pci.h>
 #include <mem.h>
-#include <types.h>
 #include <string.h>
 #include <console/console.h>
 #include <arch/io.h>
@@ -88,16 +87,16 @@ hostbridge_config_memory(int no_banks, sdram_bank_info * bank, int for_real)
     unsigned acttorw, acttopre;
     unsigned pretoact, bstopre;
     enum sdram_error_detect error_detect;
-    u32 mccr1;
-    u32 mccr2;
-    u32 mccr3;
-    u32 mccr4;
-    u8 bank_enable;
-    u32 memstart1, memstart2;
-    u32 extmemstart1, extmemstart2;
-    u32 memend1, memend2;
-    u32 extmemend1, extmemend2;
-    u32 address;
+    uint32_t mccr1;
+    uint32_t mccr2;
+    uint32_t mccr3;
+    uint32_t mccr4;
+    uint8_t bank_enable;
+    uint32_t memstart1, memstart2;
+    uint32_t extmemstart1, extmemstart2;
+    uint32_t memend1, memend2;
+    uint32_t extmemend1, extmemend2;
+    uint32_t address;
     struct device *dev;
 
     if ((dev = dev_find_slot(0, 0)) == NULL )
@@ -248,7 +247,7 @@ hostbridge_config_memory(int no_banks, sdram_bank_info * bank, int for_real)
     bank_enable = 0;
     for (i = 0; i < no_banks; i++) {
 	if (! ignore[i]) {
-	    u32 end = address + bank[i].size - 1;
+	    uint32_t end = address + bank[i].size - 1;
 	    bank_enable |= 1 << i;
 	    if (i < 4) {
 		memstart1 |= ((address >> 20) & 0xff) << (8 * i);
@@ -290,7 +289,7 @@ hostbridge_config_memory(int no_banks, sdram_bank_info * bank, int for_real)
 static int
 i2c_wait(unsigned timeout, int writing)
 {
-    u32 x;
+    uint32_t x;
     while (((x = readl(MPC107_BASE + MPC107_I2CSR)) & (MPC107_I2C_CSR_MCF | MPC107_I2C_CSR_MIF))
 	     != (MPC107_I2C_CSR_MCF | MPC107_I2C_CSR_MIF)) {
 	if (ticks_since_boot() > timeout)
@@ -327,7 +326,7 @@ mpc107_i2c_stop(struct i2c_bus *bus)
 }
 
 static int 
-mpc107_i2c_byte_write(struct i2c_bus *bus, int target, int address, u8 data)
+mpc107_i2c_byte_write(struct i2c_bus *bus, int target, int address, uint8_t data)
 {
     	unsigned timeout = ticks_since_boot() + 3 * get_hz();
 
@@ -361,7 +360,7 @@ mpc107_i2c_byte_write(struct i2c_bus *bus, int target, int address, u8 data)
 }
 
 static int 
-mpc107_i2c_master_write(struct i2c_bus *bus, int target, int address, const u8 *data, int length)
+mpc107_i2c_master_write(struct i2c_bus *bus, int target, int address, const uint8_t *data, int length)
 {
     	unsigned count;
 	for(count = 0; count < length; count++)
@@ -376,7 +375,7 @@ mpc107_i2c_master_write(struct i2c_bus *bus, int target, int address, const u8 *
 
 static int 
 mpc107_i2c_master_read(struct i2c_bus *bus, int target, int address,
-	    u8 *data, int length)
+	    uint8_t *data, int length)
 {
     	unsigned timeout = ticks_since_boot() + 3 * get_hz();
     	unsigned count;

@@ -27,7 +27,6 @@
  * Enabling function 1 (IDE controller of the chip.
  */
 
-#include <types.h>
 #include <arch/io.h>
 #include <device/pci.h>
 #include <console/console.h>
@@ -47,7 +46,7 @@
 #define CONFIG_IDE_MAXDEVICE	(CONFIG_IDE_MAXBUS*2)
 #endif
 
-u32 ide_bus_offset[CONFIG_IDE_MAXBUS];
+uint32_t ide_bus_offset[CONFIG_IDE_MAXBUS];
 
 void initialise_pic(void);
 void initialise_dma(void);

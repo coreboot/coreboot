@@ -49,6 +49,6 @@ static int bsp_write_byte(struct nvram_device *data, unsigned offset, unsigned c
 }
 
 nvram_device bsp_nvram = {
-    bsp_size, bsp_read_block, bsp_write_byte, NULL, NULL   
+    bsp_size, bsp_read_block, bsp_write_byte, 0, 0   
 };
     

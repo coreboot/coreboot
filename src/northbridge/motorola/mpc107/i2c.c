@@ -18,8 +18,8 @@
  * MA 02111-1307 USA
  */
  
-#include <types.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include "i2c.h"
 
@@ -80,7 +80,7 @@ void i2c_stop(struct i2c_bus *bus)
 }
 
 int i2c_master_write(struct i2c_bus *bus, int target, int address,
-	    const u8 *data, int length)
+	    const uint8_t *data, int length)
 {
     if (! bus)
 	bus = first_i2c;
@@ -89,7 +89,7 @@ int i2c_master_write(struct i2c_bus *bus, int target, int address,
 }
 
 int i2c_master_read(struct i2c_bus *bus, int target, int address,
-	    u8 *data, int length)
+	    uint8_t *data, int length)
 {
     if (! bus)
 	bus = first_i2c;

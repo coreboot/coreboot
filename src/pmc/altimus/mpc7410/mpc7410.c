@@ -4,7 +4,6 @@
 
 #include <ppc.h>
 #include <ppcreg.h>
-#include <types.h>
 #include <string.h>
 #include <console/console.h>
 

@@ -9,7 +9,7 @@ void keyboard_on()
 	struct pci_dev *dev;
 
 	printk_debug("keyboard_on\n");
-	/*  regval = intel_conf_readb(0x8000385A); */
+	/*  pcibios_read_config_byte(0, 0x38, 0x5A, &regval); */
 	/*regval |= 0x01; */
 	regval = 0xff;
 

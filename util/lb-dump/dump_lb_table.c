@@ -107,16 +107,16 @@ void nop_print(struct lb_record *rec, unsigned long addr)
 
 void pretty_print_number(FILE *stream, uint64_t value)
 {
-	if (value > 1024ULL*1024*1024*1024*1024) {
-		value /= 1024ULL*1024*1024*1024*1024;
+	if (value >      1024ULL*1024*1024*1024*1024*1024) {
+		value /= 1024ULL*1024*1024*1024*1024*1024;
 		fprintf(stream, "%lldEB", value);
+	}
+	else if (value > 1024ULL*1024*1024*1024*1024) {
+		value /= 1024ULL*1024*1024*1024*1024;
+		fprintf(stream, "%lldPB", value);
 	}
 	else if (value > 1024ULL*1024*1024*1024) {
 		value /= 1024ULL*1024*1024*1024;
-		fprintf(stream, "%lldPB", value);
-	}
-	else if (value > 1024ULL*1024*1024) {
-		value /= 1024ULL*1024*1024;
 		fprintf(stream, "%lldTB", value);
 	}
 	else if (value > 1024ULL*1024*1024) {

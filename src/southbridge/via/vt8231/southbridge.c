@@ -6,24 +6,24 @@ void keyboard_on()
 {
 	volatile unsigned char regval;
 
-	/*  regval = intel_conf_readb(0x80008851); */
+	/*  pcibios_read_config_byte(0, 0x88, 0x51, &regval); */
 	/*regval |= 0x01; */
 	regval = 0xcf;
-	intel_conf_writeb(0x80008851, regval);
+	pcibios_write_config_byte(0, 0x88, 0x51, regval);
 
 	/* disable USB1 */
-	intel_conf_writeb(0x80008A3C, 0x00);
-	intel_conf_writeb(0x80008A04, 0x00);
-	regval = intel_conf_readb(0x80008850);
+	pcibios_write_config_byte(0, 0x8A, 0x3c, 0x00);
+	pcibios_write_config_byte(0, 0x8A, 0x04, 0x00);
+	pcibios_read_config_byte(0, 0x88, 0x50, &regval);
 	regval |= 0x10;
-	intel_conf_writeb(0x80008850, regval);
+	pcibios_read_config_byte(0, 0x88, 0x50, regval);
 
 	/* disable USB2 */
-	intel_conf_writeb(0x80008B3C, 0x00);
-	intel_conf_writeb(0x80008B04, 0x00);
-	regval = intel_conf_readb(0x80008850);
+	pcibios_write_config_byte(0, 0x8B, 0x3c, 0x00);
+	pcibios_write_config_byte(0, 0x8B, 0x04, 0x00);
+	pcibios_read_config_byte(0, 0x88, 0x50, &regval);
 	regval |= 0x20;
-	intel_conf_writeb(0x80008850, regval);
+	pcibios_write_config_byte(0, 0x88, 0x50, regval);
 
 	pc_keyboard_init();
 
@@ -34,7 +34,7 @@ void nvram_on()
 	/* the VIA 686A South has a very different nvram setup than the piix4e ... */
 	/* turn on ProMedia nvram. */
 	/* TO DO: use the PciWriteByte function here. */
-	intel_conf_writeb(0x80008841, 0xFF);
+	pcibios_write_config_byte(0, 0x88, 0x41, 0xff);
 }
 
 void southbridge_fixup()

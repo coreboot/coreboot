@@ -40,6 +40,7 @@ makerule_targets = []
 treetop = ''
 target_dir = ''
 
+sources = []
 objectrules = []
 userdefines = []
 
@@ -116,8 +117,8 @@ def add_main_rule_dependency(new_dependency):
 # and an optional rule (can be empty) for actually building
 # the object
 def addobject(object, sourcepath, rule, condition, variable):
-	objectrules.append([object, topify(sourcepath),
-			    rule, condition, variable])
+	sourcepath = topify(sourcepath)
+	objectrules.append([object, sourcepath, rule, condition, variable])
 
 # OK, let's face it, make sucks. 
 # if you have a rule like this: 
@@ -125,8 +126,26 @@ def addobject(object, sourcepath, rule, condition, variable):
 # make won't apply the .c.o rule. Toy!
 
 def addobject_defaultrule(object, sourcepath, condition, variable):
-	# defaultrule = "\t $(CC) -c $(CFLAGS) -o $@ $<"
-	defaultrule = "\t@echo $(CC) ... -o $@ $<\n\t@$(CC) -c $(CFLAGS) -o $@ $<"
+	# c_defaultrule = "$(CC) -c $(CFLAGS) -o $@ $<"
+	c_defaultrule = "@echo $(CC) ... -o $@ $<\n\t@$(CC) -c $(CFLAGS) -o $@ $<"
+	s_defaultrule = "@echo $(CC) ... -o $@ $<\n\t@$(CC) -c $(CPU_OPT) -o $@ $<"
+	S_defaultrule = "@echo $(CPP) ... $< > $@\n\t@$(CPP) $(CPPFLAGS) $< >$@.new && mv $@.new $@"
+	# Compute the source file name
+	if (sourcepath[-2:] != '.c') and (sourcepath[-2:] != '.S'):
+		base = object[:-2]
+		sourcepath = os.path.join(sourcepath, base) + '.c'
+
+	sources.append(sourcepath)
+	if (sourcepath[-2:] == '.c'):
+		defaultrule = "\t" + c_defaultrule
+	elif (sourcepath[-2:] == '.S'):
+		base = os.path.basename(sourcepath)
+		s_name = base[:-2] + '.s'
+		mkrule(s_name, sourcepath, [ S_defaultrule ] )
+		sourcepath = s_name
+		defaultrule = "\t" + s_defaultrule
+	else:
+		fatal("Invalid object suffix")
 	addobject(object, sourcepath, defaultrule, condition, variable)
 
 
@@ -426,7 +445,14 @@ def ldscript(dir, command):
 #
 def object(dir, command):
 	(obj_name, condition) = match(splitargs_re, command)
-	addobject_defaultrule(obj_name, dir, condition, 'OBJECTS')
+	if (obj_name[-2:] == '.c') or (obj_name[-2:] == '.S'):
+		source_name = os.path.join(dir, obj_name)
+		obj_name = obj_name[:-2] + '.o'
+	elif (obj_name[-2:] == '.o'):
+		source_name = os.path.join(dir, obj_name[:-2] + '.c')
+	else:
+		fatal("Invalid object name")
+	addobject_defaultrule(obj_name, source_name, condition, 'OBJECTS')
 
 # COMMAND: driver <path-to-source> [<condition>]
 #
@@ -1053,6 +1079,8 @@ CPUFLAGS := $(foreach _var_,$(VARIABLES),$(call D_item,$(_var_)))
 
 		
 	file.write("\nSOURCES=\n")
+	for source in sources:
+		file.write("SOURCES += %s\n" % source)
 	
 	# Print out the user defines.
 	file.write("\n# userdefines:\n")
@@ -1074,10 +1102,6 @@ CPUFLAGS := $(foreach _var_,$(VARIABLES),$(call D_item,$(_var_)))
 	file.write("\n# objectrules:\n")
 	for objrule in objectrules:
 		source = objrule[1]
-		if (source[-2:] != '.c'): # no suffix. Build name.
-			base = objrule[0][:-2]
-			source = os.path.join(source, base) + ".c"
-		file.write("\nSOURCES += %s\n" % source)
 		file.write("%s: %s\n" % (objrule[0], source))
 		file.write("%s\n" % objrule[2])
 

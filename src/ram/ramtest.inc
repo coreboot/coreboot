@@ -3,8 +3,9 @@
 	 * test than a "Is my SDRAM faulty?" test.  Not all bits
 	 * are tested.   -Tyson
 	 */
-	
+
 	jmp	rt_skip
+#if RAMTEST	
 	.section ".rom.data"
 
 rt_test:	.string "Testing SDRAM : "
@@ -13,9 +14,10 @@ rt_verify:	.string "SDRAM verify:\r\n"
 rt_toomany:	.string "Too many errors.\r\n"
 rt_done:	.string "Done.\r\n"
 	.previous
+#endif
 	
 ramtest:
-#ifdef RAMTEST
+#if RAMTEST
 	mov %eax, %esi
 	mov %ebx, %edi
 	mov %esp, %ebp
@@ -42,7 +44,14 @@ ramtest:
 	CONSOLE_INFO_TX_HEX32(%ebx)
 	CONSOLE_INFO_TX_CHAR($'\r')
 2:
+#if	i786
+	/* Use a non temporal store to go faster and
+	 * to bypass the cache.
+	 */
+	movnti	%ebx, (%ebx)
+#else
 	mov %ebx, (%ebx)
+#endif
 	add $4, %ebx
 	cmp %edi, %ebx
 	jl 1b

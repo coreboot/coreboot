@@ -3,6 +3,5 @@
 
 void nvram_on(void)
 {
-	printk_notice("Please turn on nvram\n");
 	return;
 }

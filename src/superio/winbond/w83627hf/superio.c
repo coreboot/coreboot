@@ -111,6 +111,19 @@ static void setup_keyboard(struct superio *sio)
 	}
 }
 
+static void setup_hw_monitor(struct superio *sio)
+{
+	unsigned iobase0 = HW_MONITOR_DEFAULT_IOBASE0;
+	/* Select the device */
+	pnp_set_logical_device(sio->port, HW_MONITOR_DEVICE);
+	/* Disable it while initializing */
+	pnp_set_enable(sio->port, 0);
+	if (sio->hwmonitor) {
+		pnp_set_iobase0(sio->port, iobase0);
+		pnp_set_enable(sio->port, 1);
+	}
+}
+
 
 #if 0
 static void setup_acpi_registers(struct superio *sio)
@@ -177,8 +190,7 @@ static void enable_devices(struct superio *sio)
 	pnp_set_enable(sio->port, sio->acpi);
 
 	/* enable/disable hw monitor */
-	pnp_set_logical_device(sio->port, HW_MONITOR_DEVICE);
-	pnp_set_enable(sio->port, sio->hwmonitor);
+	setup_hw_monitor(sio);
 
 #if 0
 	/* setup acpi registers so I am certain to get

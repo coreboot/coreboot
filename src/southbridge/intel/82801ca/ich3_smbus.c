@@ -14,22 +14,48 @@ void smbus_setup(void)
 	outb(0, SMBUS_IO_BASE + SMBHSTCTL);
 }
 
-static void smbus_wait_until_ready(void)
+static inline void smbus_delay(void)
 {
-	while((inb(SMBUS_IO_BASE + SMBHSTSTAT) & 1) == 1) {
-		/* nop */
-	}
+	outb(0x80, 0x80);
 }
 
-static void smbus_wait_until_done(void)
+static int smbus_wait_until_ready(void)
 {
+	unsigned loops = SMBUS_TIMEOUT;
 	unsigned char byte;
 	do {
+		smbus_delay();
+		if (--loops == 0)
+			break;
 		byte = inb(SMBUS_IO_BASE + SMBHSTSTAT);
-	} while((byte &1) == 1);
-	while( (byte & ~((1<<6)|(1<<0))) == 0) {
+	} while(byte & 1);
+	return loops?0:-1;
+}
+
+static int smbus_wait_until_done(void)
+{
+	unsigned loops = SMBUS_TIMEOUT;
+	unsigned char byte;
+	do {
+		smbus_delay();
+		if (--loops == 0)
+			break;
 		byte = inb(SMBUS_IO_BASE + SMBHSTSTAT);
-	}
+	} while((byte & 1) || (byte & ~((1<<6)|(1<<0))) == 0);
+	return loops?0:-1;
+}
+
+static int smbus_wait_until_next(void)
+{
+	unsigned loops = SMBUS_TIMEOUT;
+	unsigned char byte;
+	do {
+		smbus_delay();
+		if (--loops == 0)
+			break;
+		byte = inb(SMBUS_IO_BASE + SMBHSTSTAT);
+	} while((byte & ~((1<<6)|(1<<1)|(1<<0))) == 0);
+	return loops?0:-1;
 }
 
 #if 0
@@ -69,7 +95,8 @@ int smbus_read_byte(unsigned device, unsigned address, unsigned char *result)
 	unsigned char host_status_register;
 	unsigned char byte;
 
-	smbus_wait_until_ready();
+	if (smbus_wait_until_ready() < 0)
+		return -1;
 
 	/* setup transaction */
 	/* disable interrupts */
@@ -91,7 +118,8 @@ int smbus_read_byte(unsigned device, unsigned address, unsigned char *result)
 	outb((inb(SMBUS_IO_BASE + SMBHSTCTL) | 0x40), SMBUS_IO_BASE + SMBHSTCTL);
 
 	/* poll for transaction completion */
-	smbus_wait_until_done();
+	if (smbus_wait_until_done() < 0)
+		return -1;
 
 	host_status_register = inb(SMBUS_IO_BASE + SMBHSTSTAT);
 
@@ -104,3 +132,54 @@ int smbus_read_byte(unsigned device, unsigned address, unsigned char *result)
 	*result = byte;
 	return host_status_register != 0x02;
 }
+
+#if 0
+int smbus_read_block(unsigned device, unsigned address, unsigned bytes, unsigned char *results)
+{
+	unsigned char host_status_register;
+	unsigned char byte;
+	int count;
+
+	if (smbus_wait_until_ready() < 0)
+		return 0;
+
+	/* setup transaction */
+	/* disable interrupts */
+	outb(inb(SMBUS_IO_BASE + SMBHSTCTL) & (~1), SMBUS_IO_BASE + SMBHSTCTL);
+	/* set the device I'm talking too */
+	outb(((device & 0x7f) << 1) | 1, SMBUS_IO_BASE + SMBXMITADD);
+	/* set the command/address... */
+	outb(address & 0xFF, SMBUS_IO_BASE + SMBHSTCMD);
+	/* set up for a block data read/write */
+	outb((inb(SMBUS_IO_BASE + SMBHSTCTL) & 0xE3) | (0x5 << 2), SMBUS_IO_BASE + SMBHSTCTL);
+
+	/* set the block count */
+	outb(bytes & 0xff, SMBUS_IO_BASE + SMBHSTDAT0);
+
+	/* clear any lingering errors, so the transaction will run */
+	outb(inb(SMBUS_IO_BASE + SMBHSTSTAT), SMBUS_IO_BASE + SMBHSTSTAT);
+
+	/* start the command */
+	outb((inb(SMBUS_IO_BASE + SMBHSTCTL) | 0x40), SMBUS_IO_BASE + SMBHSTCTL);
+
+	for(count = 0; count < bytes; count++) {
+		/* Wait until the controller has more data ready */
+		if (smbus_wait_until_next() < 0) {
+			break;
+		}
+		host_status_register = inb(SMBUS_IO_BASE + SMBHSTSTAT);
+
+		/* Test the status to see if an error occured */
+		if (host_status_register & (1 << 7))
+			break;
+
+		/* read the next byte */
+		byte = inb(SMBUS_IO_BASE + SMBBLKDAT);
+		results[count] = byte;
+
+		/* finish this byte read */
+		outb((1<<7), SMBUS_IO_BASE + SMBHSTSTAT);
+	}
+	return count;
+}
+#endif

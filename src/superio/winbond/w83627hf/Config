@@ -1,2 +1,3 @@
 dir /src/superio/generic
 object w83627hf_power.o
+object power_led.o

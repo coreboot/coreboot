@@ -1,3 +1,3 @@
 object northbridge.o
-object via_vga.o
+object via_vga.o VIDEO_CONSOLE
 

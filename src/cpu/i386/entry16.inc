@@ -39,6 +39,7 @@ EXT(_start): jmp _realstart
 /** GDT. we have modified this from the original freebios to make it 
  * compatible with linux. This puts text at seg 0x10 and data at 0x18
  */
+.align	4
 .globl EXT(gdtptr)
 EXT(gdtptr):
 	.word	4*8-1
@@ -51,10 +52,10 @@ gdt:
 	.byte	0x0, 0x0, 0x0, 0x0
 	
 	.word	0xffff, 0x0000		/* flat code segment */
-	.byte	0x0, 0x9a, 0xcf, 0x0	
+	.byte	0x0, 0x9b, 0xcf, 0x0	
 	
 	.word	0xffff, 0x0000		/* flat data segment */
-	.byte	0x0, 0x92, 0xcf, 0x0	
+	.byte	0x0, 0x93, 0xcf, 0x0	
 
 
 _realstart:
@@ -63,7 +64,7 @@ _realstart:
 /* thanks to kmliu@sis.tw.com for this TBL fix ... */
 /**/
 /* IMMEDIATELY invalidate the translation lookaside buffer before executing*/
-/* any further code.  Even though paging is we, disabled could still get*/
+/* any further code.  Even though paging is disabled we could still get*/
 /*false address translations due to the TLB if we didn't invalidate it.*/
 /**/
 	xor	%eax, %eax
@@ -134,4 +135,5 @@ _realstart:
 	movw	%ax, %ss
 	movw	%ax, %fs
 	movw	%ax, %gs
+
 

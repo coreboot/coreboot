@@ -84,7 +84,7 @@ static void setup_ioapic(void)
 			return;
 		}
 		printk_spew("for IRQ, reg 0x%08x value 0x%08x 0x%08x\n", 
-			a->reg, a->value_low, a->value_high);
+			    a->reg, a->value_low, a->value_high);
 	}
 }
 
@@ -176,15 +176,16 @@ static void amd8111_lpc_enable_resources(device_t dev)
 	enable_childrens_resources(dev);
 }
 
-
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
 	pci_write_config32(dev, 0x70, 
-		((device & 0xffff) << 16) | (vendor & 0xffff));
+			   ((device & 0xffff) << 16) | (vendor & 0xffff));
 }
+
 static struct pci_operations lops_pci = {
 	.set_subsystem = lpci_set_subsystem,
 };
+
 static struct device_operations lpc_ops  = {
 	.read_resources   = amd8111_lpc_read_resources,
 	.set_resources    = pci_dev_set_resources,

@@ -22,7 +22,7 @@ static device_t __f1_dev[FX_DEVS];
 static void debug_fx_devs(void)
 {
 	int i;
-	for(i = 0; i < FX_DEVS; i++) {
+	for (i = 0; i < FX_DEVS; i++) {
 		device_t dev;
 		dev = __f0_dev[i];
 		if (dev) {
@@ -44,7 +44,7 @@ static void get_fx_devs(void)
 	if (__f1_dev[0]) {
 		return;
 	}
-	for(i = 0; i < FX_DEVS; i++) {
+	for (i = 0; i < FX_DEVS; i++) {
 		__f0_dev[i] = dev_find_slot(0, PCI_DEVFN(0x18 + i, 0));
 		__f1_dev[i] = dev_find_slot(0, PCI_DEVFN(0x18 + i, 1));
 	}
@@ -63,7 +63,7 @@ static void f1_write_config32(unsigned reg, uint32_t value)
 {
 	int i;
 	get_fx_devs();
-	for(i = 0; i < FX_DEVS; i++) {
+	for (i = 0; i < FX_DEVS; i++) {
 		device_t dev;
 		dev = __f1_dev[i];
 		if (dev && dev->enabled) {
@@ -84,9 +84,9 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 	nodeid = amdk8_nodeid(dev);
 #if 0
 	printk_debug("%s amdk8_scan_chains max: %d starting...\n", 
-		dev_path(dev), max);
+		     dev_path(dev), max);
 #endif
-	for(link = 0; link < dev->links; link++) {
+	for (link = 0; link < dev->links; link++) {
 		uint32_t link_type;
 		uint32_t busses, config_busses;
 		unsigned free_reg, config_reg;
@@ -103,9 +103,10 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 		if (!(link_type & NonCoherent)) {
 			continue;
 		}
-		/* See if there is an available configuration space mapping register in function 1. */
+		/* See if there is an available configuration space mapping
+		 * register in function 1. */
 		free_reg = 0;
-		for(config_reg = 0xe0; config_reg <= 0xec; config_reg += 4) {
+		for (config_reg = 0xe0; config_reg <= 0xec; config_reg += 4) {
 			uint32_t config;
 			config = f1_read_config32(config_reg);
 			if (!free_reg && ((config & 3) == 0)) {
@@ -113,22 +114,23 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 				continue;
 			}
 			if (((config & 3) == 3) && 
-				(((config >> 4) & 7) == nodeid) &&
-				(((config >> 8) & 3) == link)) {
+			    (((config >> 4) & 7) == nodeid) &&
+			    (((config >> 8) & 3) == link)) {
 				break;
 			}
 		}
 		if (free_reg && (config_reg > 0xec)) {
 			config_reg = free_reg;
 		}
-		/* If we can't find an available configuration space mapping register skip this bus */
+		/* If we can't find an available configuration space mapping
+		 * register skip this bus */
 		if (config_reg > 0xec) {
 			continue;
 		}
 
-		/* Set up the primary, secondary and subordinate bus numbers.  We have
-		 * no idea how many busses are behind this bridge yet, so we set the subordinate
-		 * bus number to 0xff for the moment.
+		/* Set up the primary, secondary and subordinate bus numbers.
+		 * We have no idea how many busses are behind this bridge yet,
+		 * so we set the subordinate bus number to 0xff for the moment.
 		 */
 		dev->link[link].secondary = ++max;
 		dev->link[link].subordinate = 0xff;
@@ -138,15 +140,15 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 		 */
 		busses = pci_read_config32(dev, dev->link[link].cap + 0x14);
 		config_busses = f1_read_config32(config_reg);
-		
+
 		/* Configure the bus numbers for this bridge: the configuration
-		 * transactions will not be propagates by the bridge if it is not
-		 * correctly configured
+		 * transactions will not be propagates by the bridge if it is
+		 * not correctly configured
 		 */
 		busses &= 0xff000000;
 		busses |= (((unsigned int)(dev->bus->secondary) << 0) |
-			((unsigned int)(dev->link[link].secondary) << 8) |
-			((unsigned int)(dev->link[link].subordinate) << 16));
+			   ((unsigned int)(dev->link[link].secondary) << 8) |
+			   ((unsigned int)(dev->link[link].subordinate) << 16));
 		pci_write_config32(dev, dev->link[link].cap + 0x14, busses);
 
 		config_busses &= 0x000fc88;
@@ -161,29 +163,31 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 #if 0
 		printk_debug("%s Hyper transport scan link: %d max: %d\n", 
 			dev_path(dev), link, max);
-#endif		
-		/* Now we can scan all of the subordinate busses i.e. the chain on the hypertranport link */
+#endif
+		/* Now we can scan all of the subordinate busses i.e. the
+		 * chain on the hypertranport link */
 		max = hypertransport_scan_chain(&dev->link[link], max);
 
 #if 0
 		printk_debug("%s Hyper transport scan link: %d new max: %d\n",
 			dev_path(dev), link, max);
-#endif		
+#endif
 
-		/* We know the number of busses behind this bridge.  Set the subordinate
-		 * bus number to it's real value
+		/* We know the number of busses behind this bridge.  Set the
+		 * subordinate bus number to it's real value
 		 */
 		dev->link[link].subordinate = max;
 		busses = (busses & 0xff00ffff) |
 			((unsigned int) (dev->link[link].subordinate) << 16);
 		pci_write_config32(dev, dev->link[link].cap + 0x14, busses);
 
-		config_busses = (config_busses & 0x00ffffff) | (dev->link[link].subordinate << 24);
+		config_busses = (config_busses & 0x00ffffff) |
+			(dev->link[link].subordinate << 24);
 		f1_write_config32(config_reg, config_busses);
 #if 0
 		printk_debug("%s Hypertransport scan link: %d done\n",
 			dev_path(dev), link);
-#endif		
+#endif
 	}
 #if 0
 	printk_debug("%s amdk8_scan_chains max: %d done\n", 
@@ -199,31 +203,30 @@ static int reg_useable(unsigned reg,
 	unsigned nodeid, link;
 	int result;
 	res = 0;
-	for(nodeid = 0; !res && (nodeid < 8); nodeid++) {
+	for (nodeid = 0; !res && (nodeid < 8); nodeid++) {
 		device_t dev;
 		dev = __f0_dev[nodeid];
-		for(link = 0; !res && (link < 3); link++) {
+		for (link = 0; !res && (link < 3); link++) {
 			res = probe_resource(dev, 0x100 + (reg | link));
 		}
 	}
 	result = 2;
 	if (res) {
 		result = 0;
-		if (	(goal_link == (link - 1)) && 
-			(goal_nodeid == (nodeid - 1)) &&
-			(res->flags <= 1)) {
+		if ((goal_link == (link - 1)) && 
+		    (goal_nodeid == (nodeid - 1)) &&
+		    (res->flags <= 1)) {
 			result = 1;
 		}
 	}
 #if 0
 	printk_debug("reg: %02x result: %d gnodeid: %u glink: %u nodeid: %u link: %u\n",
-		reg, result, 
-		goal_nodeid, goal_link, 
-		nodeid, link);
+		     reg, result, 
+		     goal_nodeid, goal_link, 
+		     nodeid, link);
 #endif
 	return result;
 }
-
 
 static struct resource *amdk8_find_iopair(device_t dev, unsigned nodeid, unsigned link)
 {
@@ -231,7 +234,7 @@ static struct resource *amdk8_find_iopair(device_t dev, unsigned nodeid, unsigne
 	unsigned free_reg, reg;
 	resource = 0;
 	free_reg = 0;
-	for(reg = 0xc0; reg <= 0xd8; reg += 0x8) {
+	for (reg = 0xc0; reg <= 0xd8; reg += 0x8) {
 		int result;
 		result = reg_useable(reg, dev, nodeid, link);
 		if (result == 1) {
@@ -258,7 +261,7 @@ static struct resource *amdk8_find_mempair(device_t dev, unsigned nodeid, unsign
 	unsigned free_reg, reg;
 	resource = 0;
 	free_reg = 0;
-	for(reg = 0x80; reg <= 0xb8; reg += 0x8) {
+	for (reg = 0x80; reg <= 0xb8; reg += 0x8) {
 		int result;
 		result = reg_useable(reg, dev, nodeid, link);
 		if (result == 1) {
@@ -278,6 +281,7 @@ static struct resource *amdk8_find_mempair(device_t dev, unsigned nodeid, unsign
 	}
 	return resource;
 }
+
 static void amdk8_link_read_bases(device_t dev, unsigned nodeid, unsigned link)
 {
 	struct resource *resource;
@@ -328,7 +332,7 @@ static void amdk8_read_resources(device_t dev)
 {
 	unsigned nodeid, link;
 	nodeid = amdk8_nodeid(dev);
-	for(link = 0; link < dev->links; link++) {
+	for (link = 0; link < dev->links; link++) {
 		if (dev->link[link].children) {
 			amdk8_link_read_bases(dev, nodeid, link);
 		}
@@ -416,6 +420,26 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 	report_resource_stored(dev, resource, buf);
 }
 
+static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
+{
+	struct resource *resource;
+	unsigned link;
+	for (link = 0; link < dev->links; link++) {
+		if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
+			printk_info("%s: bridge on link %d has VGA device\n",
+				    dev_path(dev), link);
+			printk_info("creating MEM pair for VGA memory\n");
+			/* Initialize the io space constraints on the current bus */
+			resource =  amdk8_find_mempair(dev, nodeid, link);
+			printk_info("MEM pair register %x\n", resource->index - 0x100);
+			resource->base = 0xa0000;
+			resource->size = 0x00000;
+			resource->gran = 16;
+			resource->align = 16;
+			resource->flags = IORESOURCE_PREFETCH | IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_ASSIGNED;
+		}
+	}
+}
 static void amdk8_set_resources(device_t dev)
 {
 	unsigned nodeid, link;
@@ -424,8 +448,10 @@ static void amdk8_set_resources(device_t dev)
 	/* Find the nodeid */
 	nodeid = amdk8_nodeid(dev);	
 
+	amdk8_create_vga_resource(dev, nodeid);
+	
 	/* Set each resource we have found */
-	for(i = 0; i < dev->resources; i++) {
+	for (i = 0; i < dev->resources; i++) {
 		amdk8_set_resource(dev, &dev->resource[i], nodeid);
 	}
 	

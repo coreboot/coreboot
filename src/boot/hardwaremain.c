@@ -37,6 +37,15 @@ it with the version available from LANL.
 #include <part/init_timer.h>
 #include <boot/elf.h>
 
+/**
+ * @brief Main function of the DRAM part of LinuxBIOS.
+ *
+ * LinuxBIOS is divided into Pre-DRAM part and DRAM part. 
+ *
+ * 
+ * Device Enumeration:
+ *	In the dev_enumerate() phase, 
+ */
 void hardwaremain(int boot_complete)
 {
 	struct lb_memory *lb_mem;
@@ -48,8 +57,8 @@ void hardwaremain(int boot_complete)
 	
 	post_code(0x39);
 	printk_notice("LinuxBIOS-%s%s %s %s...\n", 
-		linuxbios_version, linuxbios_extra_version, linuxbios_build,
-		(boot_complete)?"rebooting":"booting");
+		      linuxbios_version, linuxbios_extra_version, linuxbios_build,
+		      (boot_complete)?"rebooting":"booting");
 
 	post_code(0x40);
 

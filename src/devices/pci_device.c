@@ -117,7 +117,7 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 
 	/* If it is a 64bit resource look at the high half as well */
 	if (((attr & PCI_BASE_ADDRESS_SPACE_IO) == 0) &&
-		((attr & PCI_BASE_ADDRESS_MEM_LIMIT_MASK) == PCI_BASE_ADDRESS_MEM_LIMIT_64))
+	    ((attr & PCI_BASE_ADDRESS_MEM_LIMIT_MASK) == PCI_BASE_ADDRESS_MEM_LIMIT_64))
 	{
 		/* Find the high bits that move */
 		moving |= ((resource_t)pci_moving_config32(dev, index + 4)) << 32;
@@ -611,13 +611,14 @@ static void set_pci_ops(struct device *dev)
  * @brief See if we have already allocated a device structure for a given devfn.
  *
  * Given a linked list of PCI device structures and a devfn number, find the
- * device structure correspond to the devfn, if present.
+ * device structure correspond to the devfn, if present. This function also
+ * removes the device structure from the linked list.
  *
  * @param list the device structure list
  * @param devfn a device/function number
  *
- * @return pointer to the device structure found or null of we have not allocated
- *         a device for this devfn yet.
+ * @return pointer to the device structure found or null of we have not
+ *	   allocated a device for this devfn yet.
  */
 static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
 {
@@ -626,7 +627,7 @@ static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
 	for(; *list; list = &(*list)->sibling) {
 		if ((*list)->path.type != DEVICE_PATH_PCI) {
 			printk_err("child %s not a pci device\n",
-				dev_path(*list));
+				   dev_path(*list));
 			continue;
 		}
 		if ((*list)->path.u.pci.devfn == devfn) {
@@ -637,15 +638,15 @@ static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
 			break;
 		}
 	}
-	/* Just like alloc_dev add the device to the 
-	 * list of device on the bus.  When the list of devices was formed
-	 * we removed all of the parents children, and now we are interleaving
-	 * static and dynamic devices in order on the bus.
+	/* Just like alloc_dev add the device to the list of device on the bus.
+	 * When the list of devices was formed we removed all of the parents
+	 * children, and now we are interleaving static and dynamic devices in
+	 * order on the bus.
 	 */
 	if (dev) {
 		device_t child;
 		/* Find the last child of our parent */
-		for(child = dev->bus->children; child && child->sibling; ) {
+		for (child = dev->bus->children; child && child->sibling; ) {
 			child = child->sibling;
 		}
 		/* Place the device on the list of children of it's parent. */
@@ -854,6 +855,8 @@ unsigned int pci_scan_bridge(struct device *dev, unsigned int max)
 	uint32_t buses;
 	uint16_t cr;
 
+	printk_spew("%s for %s\n", __func__, dev_path(dev));
+
 	bus = &dev->link[0];
 	bus->dev = dev;
 	dev->links = 1;
@@ -882,15 +885,15 @@ unsigned int pci_scan_bridge(struct device *dev, unsigned int max)
 	 */
 	buses &= 0xff000000;
 	buses |= (((unsigned int) (dev->bus->secondary) << 0) |
-		((unsigned int) (bus->secondary) << 8) |
-		((unsigned int) (bus->subordinate) << 16));
+		  ((unsigned int) (bus->secondary) << 8) |
+		  ((unsigned int) (bus->subordinate) << 16));
 	pci_write_config32(dev, PCI_PRIMARY_BUS, buses);
-	
+
 	/* Now we can scan all subordinate buses 
 	 * i.e. the bus behind the bridge.
 	 */
 	max = pci_scan_bus(bus, 0x00, 0xff, max);
-	
+
 	/* We know the number of buses behind this bridge. Set the subordinate
 	 * bus number to its real value.
 	 */
@@ -899,7 +902,7 @@ unsigned int pci_scan_bridge(struct device *dev, unsigned int max)
 		((unsigned int) (bus->subordinate) << 16);
 	pci_write_config32(dev, PCI_PRIMARY_BUS, buses);
 	pci_write_config16(dev, PCI_COMMAND, cr);
-		
+
 	printk_spew("%s returns max %d\n", __func__, max);
 	return max;
 }

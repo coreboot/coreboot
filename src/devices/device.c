@@ -56,10 +56,12 @@ device_t alloc_dev(struct bus *parent, struct device_path *path)
 	int link;
 
 	spin_lock(&dev_lock);	
+
 	/* Find the last child of our parent */
-	for(child = parent->children; child && child->sibling; ) {
+	for (child = parent->children; child && child->sibling; ) {
 		child = child->sibling;
 	}
+
 	dev = malloc(sizeof(*dev));
 	if (dev == 0) {
 		die("DEV: out of memory.\n");
@@ -67,13 +69,12 @@ device_t alloc_dev(struct bus *parent, struct device_path *path)
 	memset(dev, 0, sizeof(*dev));
 	memcpy(&dev->path, path, sizeof(*path));
 
-
 	/* Initialize the back pointers in the link fields */
-	for(link = 0; link < MAX_LINKS; link++) {
+	for (link = 0; link < MAX_LINKS; link++) {
 		dev->link[link].dev  = dev;
 		dev->link[link].link = link;
 	}
-	
+
 	/* By default devices are enabled */
 	dev->enabled = 1;
 
@@ -118,10 +119,10 @@ static void read_resources(struct bus *bus)
 	struct device *curdev;
 
 	printk_spew("%s read_resources bus %d link: %d\n",
-		dev_path(bus->dev), bus->secondary, bus->link);
+		    dev_path(bus->dev), bus->secondary, bus->link);
 
 	/* Walk through all of the devices and find which resources they need. */
-	for(curdev = bus->children; curdev; curdev = curdev->sibling) {
+	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
 		unsigned links;
 		int i;
 		if (curdev->have_resources) {
@@ -139,7 +140,7 @@ static void read_resources(struct bus *bus)
 		curdev->have_resources = 1;
 		/* Read in subtractive resources behind the current device */
 		links = 0;
-		for(i = 0; i < curdev->resources; i++) {
+		for (i = 0; i < curdev->resources; i++) {
 			struct resource *resource;
 			unsigned link;
 			resource = &curdev->resource[i];
@@ -148,7 +149,7 @@ static void read_resources(struct bus *bus)
 			link = IOINDEX_SUBTRACTIVE_LINK(resource->index);
 			if (link > MAX_LINKS) {
 				printk_err("%s subtractive index on link: %d\n",
-					dev_path(curdev), link);
+					   dev_path(curdev), link);
 				continue;
 			}
 			if (!(links & (1 << link))) {
@@ -159,7 +160,7 @@ static void read_resources(struct bus *bus)
 		}
 	}
 	printk_spew("%s read_resources bus %d link: %d done\n",
-		dev_path(bus->dev), bus->secondary, bus->link);
+		    dev_path(bus->dev), bus->secondary, bus->link);
 }
 
 struct pick_largest_state {
@@ -190,9 +191,9 @@ static void pick_largest_resource(void *gp,
 		return;
 	}
 	if (!state->result || 
-		(state->result->align < resource->align) ||
-		((state->result->align == resource->align) &&
-			(state->result->size < resource->size))) {
+	    (state->result->align < resource->align) ||
+	    ((state->result->align == resource->align) &&
+	     (state->result->size < resource->size))) {
 		state->result_dev = dev;
 		state->result = resource;
 	}    
@@ -257,11 +258,10 @@ void compute_allocate_resource(
 	base = bridge->base;
 
 	printk_spew("%s compute_allocate_%s: base: %08Lx size: %08Lx align: %d gran: %d\n", 
-		dev_path(bus->dev),
-		(bridge->flags & IORESOURCE_IO)? "io":
-		(bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",
-		base, bridge->size, bridge->align, bridge->gran);
-
+		    dev_path(bus->dev),
+		    (bridge->flags & IORESOURCE_IO)? "io":
+		    (bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",
+		    base, bridge->size, bridge->align, bridge->gran);
 
 	/* We want different minimum alignments for different kinds of
 	 * resources.  These minimums are not device type specific
@@ -283,14 +283,13 @@ void compute_allocate_resource(
 	/* Walk through all the devices on the current bus and 
 	 * compute the addresses.
 	 */
-	while((dev = largest_resource(bus, &resource, type_mask, type))) {
+	while ((dev = largest_resource(bus, &resource, type_mask, type))) {
 		resource_t size;
 		/* Do NOT I repeat do not ignore resources which have zero size.
 		 * If they need to be ignored dev->read_resources should not even
 		 * return them.   Some resources must be set even when they have
 		 * no size.  PCI bridge resources are a good example of this.
 		 */
-
 		/* Propogate the resource alignment to the bridge register  */
 		if (resource->align > bridge->align) {
 			bridge->align = resource->align;
@@ -339,14 +338,13 @@ void compute_allocate_resource(
 			resource->flags &= ~IORESOURCE_STORED;
 			base += size;
 			
-			printk_spew(
-				"%s %02x *  [0x%08Lx - 0x%08Lx] %s\n",
-				dev_path(dev),
-				resource->index, 
-				resource->base, 
-				resource->base + resource->size - 1,
-				(resource->flags & IORESOURCE_IO)? "io":
-				(resource->flags & IORESOURCE_PREFETCH)? "prefmem": "mem");
+			printk_spew("%s %02x *  [0x%08Lx - 0x%08Lx] %s\n",
+				    dev_path(dev),
+				    resource->index, 
+				    resource->base, 
+				    resource->base + resource->size - 1,
+				    (resource->flags & IORESOURCE_IO)? "io":
+				    (resource->flags & IORESOURCE_PREFETCH)? "prefmem": "mem");
 		}
 	}
 	/* A pci bridge resource does not need to be a power
@@ -358,10 +356,10 @@ void compute_allocate_resource(
 	bridge->size = round(base, bridge->gran) - bridge->base;
 
 	printk_spew("%s compute_allocate_%s: base: %08Lx size: %08Lx align: %d gran: %d done\n", 
-		dev_path(bus->dev),
-		(bridge->flags & IORESOURCE_IO)? "io":
-		(bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",
-		base, bridge->size, bridge->align, bridge->gran);
+		     dev_path(bus->dev),
+		     (bridge->flags & IORESOURCE_IO)? "io":
+		     (bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",
+		     base, bridge->size, bridge->align, bridge->gran);
 
 
 }
@@ -380,10 +378,6 @@ static void allocate_vga_resource(void)
 		if (((dev->class >> 16) == PCI_BASE_CLASS_DISPLAY) &&
 		    ((dev->class >> 8) != PCI_CLASS_DISPLAY_OTHER)) {
 			if (!vga) {
-				printk_debug("Allocating VGA resource %s\n",
-					     dev_path(dev));
-				printk_debug("parent of the vga device %s\n",
-					     dev_path(dev->bus->dev));
 				vga = dev;
 			}
 			if (vga == dev) {
@@ -400,8 +394,6 @@ static void allocate_vga_resource(void)
 	}
 	/* Now walk up the bridges setting the VGA enable */
 	while (bus) {
-		printk_info("Enabling VGA forward on bus connect to %s\n",
-			    dev_path(bus->dev));
 		bus->bridge_ctrl |= PCI_BRIDGE_CTL_VGA;
 		bus = (bus == bus->dev->bus)? 0 : bus->dev->bus;
 	} 
@@ -545,7 +537,7 @@ void dev_configure(void)
 
 	printk_info("Reading resources...\n");
 	root->ops->read_resources(root);
-	printk_info("Done\n");
+	printk_info("Done reading resources.\n");
 
 	/* Get the resources */
 	io  = &root->resource[0];
@@ -567,13 +559,13 @@ void dev_configure(void)
 	/* Store the computed resource allocations into device registers ... */
 	printk_info("Setting resources...\n");
 	root->ops->set_resources(root);
-	printk_info("Done\n");
+	printk_info("Done setting resources.\n");
 #if 0
 	mem->flags |= IORESOURCE_STORED;
 	report_resource_stored(root, mem, "");
 #endif
 
-	printk_info("done.\n");
+	printk_info("Done allocating resources.\n");
 }
 
 /**

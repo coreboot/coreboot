@@ -15,12 +15,6 @@ default PCIC0_CFGADDR=0xff508000
 default PCIC0_CFGDATA=0xff508010
 
 ##
-## Set IDE control registers
-##
-default PNP_CFGADDR=0x1f0
-default PNP_CFGDATA=0x1f1
-
-##
 ## Set UART base address
 ##
 default TTYS0_BASE=0x3f8
@@ -28,8 +22,13 @@ default TTYS0_BASE=0x3f8
 ##
 ## Early board initialization, called from ppc_main()
 ##
-initobject init.c
-driver pci_bridge.c
+initobject init.o
+initobject clock.o
+
+##
+## Stage 2 timer support
+##
+object clock.o
 
 arch ppc end
 
@@ -43,6 +42,7 @@ end
 ##
 ## Include the secondary Configuration files 
 ##
+northbridge ibm/cpc710 end
 southbridge winbond/w83c553 end
 
 ##

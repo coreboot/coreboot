@@ -76,12 +76,40 @@
 #define			APIC_MODE_EXINT		0x7
 #define APIC_LVT1	0x360
 #define APIC_LVTERR	0x370
+#define	APIC_TMICT	0x380
+#define	APIC_TMCCT	0x390
+#define	APIC_TDCR	0x3E0
+#define		APIC_TDR_DIV_TMBASE	(1<<2)
+#define		APIC_TDR_DIV_1		0xB
+#define		APIC_TDR_DIV_2		0x0
+#define		APIC_TDR_DIV_4		0x1
+#define		APIC_TDR_DIV_8		0x2
+#define		APIC_TDR_DIV_16		0x3
+#define		APIC_TDR_DIV_32		0x8
+#define		APIC_TDR_DIV_64		0x9
+#define		APIC_TDR_DIV_128	0xA
 
+#if defined(__ROMCC__) || !defined(ASSEMBLY)
+
+static inline unsigned long apic_read(unsigned long reg)
+{
+	return *((volatile unsigned long *)(APIC_DEFAULT_BASE+reg));
+}
+
+static inline void apic_write(unsigned long reg, unsigned long v)
+{
+	*((volatile unsigned long *)(APIC_DEFAULT_BASE+reg)) = v;
+}
+
+static inline void apic_wait_icr_idle(void)
+{
+	do { } while ( apic_read( APIC_ICR ) & APIC_ICR_BUSY );
+}
+
+
+#endif
 
 #if !defined(ASSEMBLY)
-
-#include <console/console.h>
-
 
 #define xchg(ptr,v) ((__typeof__(*(ptr)))__xchg((unsigned long)(v),(ptr),sizeof(*(ptr))))
 
@@ -119,25 +147,11 @@ static inline unsigned long __xchg(unsigned long x, volatile void * ptr, int siz
 }
 
 
-static inline unsigned long apic_read(unsigned long reg)
-{
-	return *((volatile unsigned long *)(APIC_DEFAULT_BASE+reg));
-}
-
 extern inline void apic_write_atomic(unsigned long reg, unsigned long v)
 {
 	xchg((volatile unsigned long *)(APIC_DEFAULT_BASE+reg), v);
 }
 
-static inline void apic_write(unsigned long reg, unsigned long v)
-{
-	*((volatile unsigned long *)(APIC_DEFAULT_BASE+reg)) = v;
-}
-
-static inline void apic_wait_icr_idle(void)
-{
-	do { } while ( apic_read( APIC_ICR ) & APIC_ICR_BUSY );
-}
 
 #ifdef CONFIG_X86_GOOD_APIC
 # define FORCE_READ_AROUND_WRITE 0

@@ -35,6 +35,7 @@ it with the version available from LANL.
 #include <part/sizeram.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <delay.h>
 #if 0
 #include <part/mainboard.h>
 #endif
@@ -74,7 +75,7 @@ static struct mem_range *get_ramsize(void)
 }
 
 
-#if SMP == 1
+#if CONFIG_SMP == 1
 /* Number of cpus that are currently running in linuxbios */
 static atomic_t active_cpus = ATOMIC_INIT(1);
 
@@ -111,10 +112,9 @@ static void wait_for_other_cpus(void)
 	}
 	for(i = 0; i < MAX_CPUS; i++) {
 		if (!(processor_map[i] & CPU_ENABLED)) {
-			printk_err("CPU %d/%u did not initialize!\n",
-				i, initial_apicid[i]);
+			printk_err("CPU %d did not initialize!\n", i);
 			processor_map[i] = 0;
-			mainboard_cpu_fixup(i);
+#warning "FIXME do I need a mainboard_cpu_fixup function?"
 		}
 	}
 	printk_debug("All AP CPUs stopped\n");
@@ -159,7 +159,7 @@ void hardwaremain(int boot_complete)
 		hard_reset();
 	}
 #endif
-#if 1
+	init_timer();
 
 	/* pick how to scan the bus. This is first so we can get at memory size. */
 	printk_info("Finding PCI configuration type.\n");
@@ -181,7 +181,6 @@ void hardwaremain(int boot_complete)
 
 	dev_initialize();
 	post_code(0x89);
-#endif
 
 	mem = get_ramsize();
 	post_code(0x70);

@@ -3,6 +3,7 @@
 #include <cpu/p6/apic.h>
 #include <delay.h>
 #include <string.h>
+#include <console/console.h>
 
 #ifndef START_CPU_SEG
 #define START_CPU_SEG 0x90000

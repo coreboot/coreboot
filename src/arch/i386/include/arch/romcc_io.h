@@ -1,37 +1,6 @@
 #ifndef ARCH_ROMCC_IO_H
 #define ARCH_ROMCC_IO_H 1
 
-static void outb(unsigned char value, unsigned short port)
-{
-	__builtin_outb(value, port);
-}
-
-static void outw(unsigned short value, unsigned short port)
-{
-	__builtin_outw(value, port);
-}
-
-static void outl(unsigned int value, unsigned short port)
-{
-	__builtin_outl(value, port);
-}
-
-
-static unsigned char inb(unsigned short port)
-{
-	return __builtin_inb(port);
-}
-
-
-static unsigned char inw(unsigned short port)
-{
-	return __builtin_inw(port);
-}
-
-static unsigned char inl(unsigned short port)
-{
-	return __builtin_inl(port);
-}
 
 static void hlt(void)
 {
@@ -75,38 +44,6 @@ int log2(int value)
 	 */
 	return __builtin_bsr(value);
 }
-
-
-typedef __builtin_msr_t msr_t;
-
-static msr_t rdmsr(unsigned long index)
-{
-	return __builtin_rdmsr(index);
-}
-
-static void wrmsr(unsigned long index, msr_t msr)
-{
-	__builtin_wrmsr(index, msr.lo, msr.hi);
-}
-
-
-struct tsc_struct {
-	unsigned lo;
-	unsigned hi;
-};
-typedef struct tsc_struct tsc_t;
-
-static tsc_t rdtsc(void)
-{
-	tsc_t res;
-	asm ("rdtsc"
-		: "=a" (res.lo), "=d"(res.hi) /* outputs */
-		: /* inputs */
-		: /* Clobbers */
-		);
-	return res;
-}
-
 
 #define PCI_ADDR(BUS, DEV, FN, WHERE) ( \
 	(((BUS) & 0xFF) << 16) | \

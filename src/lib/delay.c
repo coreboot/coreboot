@@ -1,14 +1,14 @@
 #include <delay.h>
-void mdelay(int msecs)
+void mdelay(unsigned msecs)
 {
-	int i;
+	unsigned i;
 	for(i = 0; i < msecs; i++) {
 		udelay(1000);
 	}
 }
-void delay(int secs)
+void delay(unsigned secs)
 {
-	int i;
+	unsigned i;
 	for(i = 0; i < secs; i++) {
 		mdelay(1000);
 	}

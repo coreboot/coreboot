@@ -40,20 +40,20 @@ static unsigned int mtrr_msr[] = {
 
 static void intel_enable_fixed_mtrr(void)
 {
-	unsigned long low, high;
+	msr_t msr;
 
-	rdmsr(MTRRdefType_MSR, low, high);
-	low |= 0xc00;
-	wrmsr(MTRRdefType_MSR, low, high);
+	msr = rdmsr(MTRRdefType_MSR);
+	msr.lo |= 0xc00;
+	wrmsr(MTRRdefType_MSR, msr);
 }
 
 static void intel_enable_var_mtrr(void)
 {
-	unsigned long low, high;
+	msr_t msr;
 
-	rdmsr(MTRRdefType_MSR, low, high);
-	low |= 0x800;
-	wrmsr(MTRRdefType_MSR, low, high);
+	msr = rdmsr(MTRRdefType_MSR);
+	msr.lo |= 0x800;
+	wrmsr(MTRRdefType_MSR, msr);
 }
 
 static inline void disable_cache(void)
@@ -86,19 +86,18 @@ static inline void enable_cache(void)
 /* setting variable mtrr, comes from linux kernel source */
 static void intel_set_var_mtrr(unsigned int reg, unsigned long basek, unsigned long sizek, unsigned char type)
 {
-	unsigned long base_high, base_low;
-	unsigned long  mask_high, mask_low;
+	msr_t base, mask;
 
-	base_high = basek >> 22;
-	base_low  = basek << 10;
+	base.hi = basek >> 22;
+	base.lo  = basek << 10;
 
 	if (sizek < 4*1024*1024) {
-		mask_high = 0x0F;
-		mask_low = ~((sizek << 10) -1);
+		mask.hi = 0x0F;
+		mask.lo = ~((sizek << 10) -1);
 	}
 	else {
-		mask_high = 0x0F & (~((sizek >> 22) -1));
-		mask_low = 0;
+		mask.hi = 0x0F & (~((sizek >> 22) -1));
+		mask.lo = 0;
 	}
 
 	if (reg >= 8)
@@ -108,13 +107,17 @@ static void intel_set_var_mtrr(unsigned int reg, unsigned long basek, unsigned l
 	// do this. 
 	disable_cache();
 	if (sizek == 0) {
+		msr_t zero;
+		zero.lo = zero.hi = 0;
 		/* The invalid bit is kept in the mask, so we simply clear the
 		   relevant mask register to disable a range. */
-		wrmsr (MTRRphysMask_MSR (reg), 0, 0);
+		wrmsr (MTRRphysMask_MSR(reg), zero);
 	} else {
 		/* Bit 32-35 of MTRRphysMask should be set to 1 */
-		wrmsr (MTRRphysBase_MSR(reg), base_low | type, base_high);
-		wrmsr (MTRRphysMask_MSR(reg), mask_low | 0x800, mask_high);
+		base.lo |= type;
+		mask.lo |= 0x800;
+		wrmsr (MTRRphysBase_MSR(reg), base);
+		wrmsr (MTRRphysMask_MSR(reg), mask);
 	}
 	enable_cache();
 }
@@ -131,11 +134,18 @@ void set_var_mtrr(unsigned int reg, unsigned long base, unsigned long size, unsi
 	if (size == 0) {
 		/* The invalid bit is kept in the mask, so we simply clear the
 		   relevant mask register to disable a range. */
-		wrmsr (MTRRphysMask_MSR (reg), 0, 0);
+		msr_t zero;
+		zero.lo = zero.hi = 0;
+		wrmsr (MTRRphysMask_MSR(reg), zero);
 	} else {
 		/* Bit 32-35 of MTRRphysMask should be set to 1 */
-		wrmsr (MTRRphysBase_MSR (reg), base | type, 0);
-		wrmsr (MTRRphysMask_MSR (reg), ~(size - 1) | 0x800, 0x0F);
+		msr_t basem, maskm;
+		basem.lo = base | type;
+		basem.hi = 0;
+		maskm.lo = ~(size - 1) | 0x800;
+		maskm.hi = 0x0F;
+		wrmsr (MTRRphysBase_MSR(reg), basem);
+		wrmsr (MTRRphysMask_MSR(reg), maskm);
 	}
 
 	// turn cache back on. 
@@ -197,32 +207,32 @@ static void set_fixed_mtrrs(unsigned int first, unsigned int last, unsigned char
 {
 	unsigned int i;
 	unsigned int fixed_msr = NUM_FIXED_RANGES >> 3;
-	unsigned long low, high;
-	low = high = 0; /* Shut up gcc */
+	msr_t msr;
+	msr.lo = msr.hi = 0; /* Shut up gcc */
 	for(i = first; i < last; i++) {
 		/* When I switch to a new msr read it in */
 		if (fixed_msr != i >> 3) {
 			/* But first write out the old msr */
 			if (fixed_msr < (NUM_FIXED_RANGES >> 3)) {
 				disable_cache();
-				wrmsr(mtrr_msr[fixed_msr], low, high);
+				wrmsr(mtrr_msr[fixed_msr], msr);
 				enable_cache();
 			}
 			fixed_msr = i>>3;
-			rdmsr(mtrr_msr[fixed_msr], low, high);
+			msr = rdmsr(mtrr_msr[fixed_msr]);
 		}
 		if ((i & 7) < 4) {
-			low &= ~(0xff << ((i&3)*8));
-			low |= type << ((i&3)*8);
+			msr.lo &= ~(0xff << ((i&3)*8));
+			msr.lo |= type << ((i&3)*8);
 		} else {
-			high &= ~(0xff << ((i&3)*8));
-			high |= type << ((i&3)*8);
+			msr.hi &= ~(0xff << ((i&3)*8));
+			msr.hi |= type << ((i&3)*8);
 		}
 	}
 	/* Write out the final msr */
 	if (fixed_msr < (NUM_FIXED_RANGES >> 3)) {
 		disable_cache();
-		wrmsr(mtrr_msr[fixed_msr], low, high);
+		wrmsr(mtrr_msr[fixed_msr], msr);
 		enable_cache();
 	}
 }

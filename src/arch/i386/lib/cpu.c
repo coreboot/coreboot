@@ -57,16 +57,16 @@ static void interrupts_on()
 
 #if defined(APIC)
 	/* Only Pentium Pro and later have those MSR stuff */
-	unsigned long low, high;
+	msr_t msr;
 
 	printk_info("Setting up local apic...");
 
 	/* Enable the local apic */
-	rdmsr(APIC_BASE_MSR, low, high);
-	low |= APIC_BASE_MSR_ENABLE;
-	low &= ~APIC_BASE_MSR_ADDR_MASK;
-	low |= APIC_DEFAULT_BASE;
-	wrmsr(APIC_BASE_MSR, low, high);
+	msr = rdmsr(APIC_BASE_MSR);
+	msr.lo |= APIC_BASE_MSR_ENABLE;
+	msr.lo &= ~APIC_BASE_MSR_ADDR_MASK;
+	msr.lo |= APIC_DEFAULT_BASE;
+	wrmsr(APIC_BASE_MSR, msr);
 
 	/*
 	 * Set Task Priority to 'accept all'.
@@ -103,13 +103,13 @@ static void interrupts_on()
 #else /* APIC */
 #ifdef i686
 	/* Only Pentium Pro and later have those MSR stuff */
-	unsigned long low, high;
+	msr_t msr;
 
 	printk_info("Disabling local apic...");
 
-	rdmsr(APIC_BASE_MSR, low, high);
-	low &= ~APIC_BASE_MSR_ENABLE;
-	wrmsr(APIC_BASE_MSR, low, high);
+	msr = rdmsr(APIC_BASE_MSR);
+	msr.lo &= ~APIC_BASE_MSR_ENABLE;
+	wrmsr(APIC_BASE_MSR, msr);
 #endif /* i686 */
 #endif /* APIC */
 	printk_info("done.\n");
@@ -143,6 +143,7 @@ unsigned long cpu_initialize(struct mem_range *mem)
 	configure_l2_cache();
 #endif
 	interrupts_on();
+	processor_id = this_processors_id();
 	printk_info("CPU #%d Initialized\n", processor_id);
 	return processor_id;
 }

@@ -1135,7 +1135,7 @@ static void route_dram_accesses(const struct mem_controller *ctrl,
 	pci_write_config32(ctrl->f1, 0x44, limit | (0 << 8) | (node_id << 0));
 	pci_write_config32(ctrl->f1, 0x40, base  | (0 << 8) | (1<<1) | (1<<0));
 
-#if 0
+#if 1
 	pci_write_config32(PCI_DEV(0, 0x19, 1), 0x44, limit | (0 << 8) | (1 << 4) | (node_id << 0));
 	pci_write_config32(PCI_DEV(0, 0x19, 1), 0x40, base  | (0 << 8) | (1<<1) | (1<<0));
 #endif

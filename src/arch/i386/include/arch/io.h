@@ -1,76 +1,142 @@
 #ifndef _ASM_IO_H
 #define _ASM_IO_H
 
+#include <stdint.h>
+
 /*
  * This file contains the definitions for the x86 IO instructions
  * inb/inw/inl/outb/outw/outl and the "string versions" of the same
- * (insb/insw/insl/outsb/outsw/outsl).
- *
- * This file is not meant to be obfuscating: it's just complicated
- * to (a) handle it all in a way that makes gcc able to optimize it
- * as well as possible and (b) trying to avoid writing the same thing
- * over and over again with slight variations and possibly making a
- * mistake somewhere.
+ * (insb/insw/insl/outsb/outsw/outsl). You can also use "pausing"
+ * versions of the single-IO instructions (inb_p/inw_p/..).
  */
 
- /*
-  *  Bit simplified and optimized by Jan Hubicka
-  *  Support of BIGMEM added by Gerhard Wichert, Siemens AG, July 1999.
-  */
+#ifdef __ROMCC__
+static void outb(unsigned char value, unsigned short port)
+{
+	__builtin_outb(value, port);
+}
 
-/*
- * Talk about misusing macros..
- */
-#define __OUT1(s,x) \
-extern inline void out##s(unsigned x value, unsigned short port) {
+static void outw(unsigned short value, unsigned short port)
+{
+	__builtin_outw(value, port);
+}
 
-#define __OUT2(s,s1,s2) \
-__asm__ __volatile__ ("out" #s " %" s1 "0,%" s2 "1"
+static void outl(unsigned int value, unsigned short port)
+{
+	__builtin_outl(value, port);
+}
 
-#define __OUT(s,s1,x) \
-__OUT1(s,x) __OUT2(s,s1,"w") : : "a" (value), "Nd" (port)); } 
 
-#define __IN1(s) \
-extern inline RETURN_TYPE in##s(unsigned short port) { RETURN_TYPE _v;
+static unsigned char inb(unsigned short port)
+{
+	return __builtin_inb(port);
+}
 
-#define __IN2(s,s1,s2) \
-__asm__ __volatile__ ("in" #s " %" s2 "1,%" s1 "0"
 
-#define __IN(s,s1,i...) \
-__IN1(s) __IN2(s,s1,"w") : "=a" (_v) : "Nd" (port) ,##i ); return _v; } 
+static unsigned char inw(unsigned short port)
+{
+	return __builtin_inw(port);
+}
 
-#define __INS(s) \
-extern inline void ins##s(unsigned short port, void * addr, unsigned long count) \
-{ __asm__ __volatile__ ("cld ; rep ; ins" #s \
-: "=D" (addr), "=c" (count) : "d" (port),"0" (addr),"1" (count)); }
+static unsigned char inl(unsigned short port)
+{
+	return __builtin_inl(port);
+}
 
-#define __OUTS(s) \
-extern inline void outs##s(unsigned short port, const void * addr, unsigned long count) \
-{ __asm__ __volatile__ ("cld ; rep ; outs" #s \
-: "=S" (addr), "=c" (count) : "d" (port),"0" (addr),"1" (count)); }
+#else
 
-#define RETURN_TYPE unsigned char
-__IN(b,"")
-#undef RETURN_TYPE
-#define RETURN_TYPE unsigned short
-__IN(w,"")
-#undef RETURN_TYPE
-#define RETURN_TYPE unsigned int
-__IN(l,"")
-#undef RETURN_TYPE
+static inline void outb(uint8_t value, uint16_t port)
+{
+	__asm__ __volatile__ ("outb %b0, %w1" : : "a" (value), "Nd" (port));
+}
 
-__OUT(b,"b",char)
-__OUT(w,"w",short)
-__OUT(l,,int)
+static inline void outw(uint16_t value, uint16_t port)
+{
+	__asm__ __volatile__ ("outw %w0, %w1" : : "a" (value), "Nd" (port));
+}
 
-__INS(b)
-__INS(w)
-__INS(l)
+static inline void outl(uint32_t value, uint16_t port)
+{
+	__asm__ __volatile__ ("outl %0, %w1" : : "a" (value), "Nd" (port));
+}
 
-__OUTS(b)
-__OUTS(w)
-__OUTS(l)
+static inline uint8_t inb(uint16_t port)
+{
+	uint8_t value;
+	__asm__ __volatile__ ("inb %w1, %b0" : "=a"(value) : "Nd" (port));
+	return value;
+}
 
+static inline uint16_t inw(uint16_t port)
+{
+	uint16_t value;
+	__asm__ __volatile__ ("inw %w1, %w0" : "=a"(value) : "Nd" (port));
+	return value;
+}
+
+static inline uint32_t inl(uint16_t port)
+{
+	uint32_t value;
+	__asm__ __volatile__ ("inl %w1, %0" : "=a"(value) : "Nd" (port));
+	return value;
+}
+
+#endif /* __ROMCC__ */
+
+static inline void outsb(uint16_t port, const void *addr, unsigned long count)
+{
+	__asm__ __volatile__ (
+		"cld ; rep ; outsb " 
+		: "=S" (addr), "=c" (count)
+		: "d"(port), "0"(addr), "1" (count)
+		);
+}
+
+static inline void outsw(uint16_t port, const void *addr, unsigned long count)
+{
+	__asm__ __volatile__ (
+		"cld ; rep ; outsw " 
+		: "=S" (addr), "=c" (count)
+		: "d"(port), "0"(addr), "1" (count)
+		);
+}
+
+static inline void outsl(uint16_t port, const void *addr, unsigned long count)
+{
+	__asm__ __volatile__ (
+		"cld ; rep ; outsl " 
+		: "=S" (addr), "=c" (count)
+		: "d"(port), "0"(addr), "1" (count)
+		);
+}
+
+
+static inline void insb(uint16_t port, void *addr, unsigned long count)
+{
+	__asm__ __volatile__ (
+		"cld ; rep ; insb " 
+		: "=D" (addr), "=c" (count)
+		: "d"(port), "0"(addr), "1" (count)
+		);
+}
+
+static inline void insw(uint16_t port, void *addr, unsigned long count)
+{
+	__asm__ __volatile__ (
+		"cld ; rep ; insw " 
+		: "=D" (addr), "=c" (count)
+		: "d"(port), "0"(addr), "1" (count)
+		);
+}
+
+static inline void insl(uint16_t port, void *addr, unsigned long count)
+{
+	__asm__ __volatile__ (
+		"cld ; rep ; insl " 
+		: "=D" (addr), "=c" (count)
+		: "d"(port), "0"(addr), "1" (count)
+		);
+}
 
 #endif
 

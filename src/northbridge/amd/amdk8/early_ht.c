@@ -1,11 +1,12 @@
-static void enumerate_ht_chain(void)
+static int enumerate_ht_chain(unsigned link)
 {
 	/* Assumption the HT chain that is bus 0 has the HT I/O Hub on it.
 	 * On most boards this just happens.  If a cpu has multiple
 	 * non Coherent links the appropriate bus registers for the
 	 * links needs to be programed to point at bus 0.
 	 */
-	unsigned next_unitid, last_unitid;;
+	unsigned next_unitid, last_unitid;
+	int reset_needed = 0;
 	next_unitid = 1;
 	do {
 		uint32_t id;
@@ -46,4 +47,5 @@ static void enumerate_ht_chain(void)
 			pos = pci_read_config8(PCI_DEV(0, 0, 0), pos + PCI_CAP_LIST_NEXT);
 		}
 	} while((last_unitid != next_unitid) && (next_unitid <= 0x1f));
+	return reset_needed;
 }

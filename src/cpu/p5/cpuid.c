@@ -9,21 +9,20 @@ int mtrr_check(void)
 {
 #ifdef i686
 	/* Only Pentium Pro and later have MTRR */
-	unsigned long low, high;
-
+	msr_t msr;
 	printk_debug("\nMTRR check\n");
 
-	rdmsr(0x2ff, low, high);
-	low = low >> 10;
+	msr = rdmsr(0x2ff);
+	msr.lo >>= 10;
 
 	printk_debug("Fixed MTRRs   : ");
-	if (low & 0x01)
+	if (msr.lo & 0x01)
 		printk_debug("Enabled\n");
 	else
 		printk_debug("Disabled\n");
 
 	printk_debug("Variable MTRRs: ");
-	if (low & 0x02)
+	if (msr.lo & 0x02)
 		printk_debug("Enabled\n");
 	else
 		printk_debug("Disabled\n");
@@ -31,7 +30,7 @@ int mtrr_check(void)
 	printk_debug("\n");
 
 	post_code(0x93);
-	return ((int) low);
+	return ((int) msr.lo);
 #else /* !i686 */
 	return 0;
 #endif /* i686 */

@@ -4,7 +4,7 @@
 #ifndef MAX_REBOOT_CNT
 #error "MAX_REBOOT_CNT not defined"
 #endif
-#if  MAX_REBOOT_CNT > 15
+#if  MAX_REBOOT_CNT > 14
 #error "MAX_REBOOT_CNT too high"
 #endif
 
@@ -46,6 +46,13 @@ static int cmos_chksum_valid(void)
 	return sum == old_sum;
 }
 
+
+static int last_boot_normal(void)
+{
+	unsigned char byte;
+	byte = cmos_read(RTC_BOOT_BYTE);
+	return (byte & (1 << 1));
+}
 
 static int do_normal_boot(void)
 {

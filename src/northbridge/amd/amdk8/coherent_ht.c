@@ -440,13 +440,7 @@ static void enable_routing(u8 node)
 	print_debug_hex32(node);
 
 	val=pci_read_config32(NODE_HT(node), 0x6c);
-	val |= (1 << 6) | (1 << 5) | (1 << 4);
-#if 0
 	val &= ~((1<<1)|(1<<0));
-#else
-	/* Don't enable requests here as the indicated processor starts booting */
-	val &= ~(1<<0);
-#endif
 	pci_write_config32(NODE_HT(node), 0x6c, val);
 
 	print_debug(" done.\r\n");
@@ -456,7 +450,7 @@ static void enable_routing(u8 node)
 
 static void rename_temp_node(u8 node)
 {
-	u32 val;
+	uint32_t val;
 
 	print_debug("Renaming current temp node to ");
 	print_debug_hex32(node);
@@ -678,8 +672,8 @@ static u8 setup_smp(void)
 	/* We found 2 nodes so far */
 	setup_node(0, cpus);	/* Node 1 is there. Setup Node 0 correctly */
 	setup_remote_node(1, cpus);  /* Setup the routes on the remote node */
-	enable_routing(7);	/* Enable routing on Node 1 */
 	rename_temp_node(1);	/* Rename Node 7 to Node 1  */
+	enable_routing(1);	/* Enable routing on Node 1 */
 	
 	clear_temp_row(0);	/* delete temporary connection */
 	
@@ -716,14 +710,14 @@ static u8 setup_smp(void)
 	
 	setup_temp_row(0,2,cpus);
 	setup_temp_node(2,cpus);
-	enable_routing(7);
 	rename_temp_node(2);
+	enable_routing(2);
 
 	setup_temp_row(0,1,cpus);
 	setup_temp_row(1,3,cpus);
 	setup_temp_node(3,cpus);
-	enable_routing(7);	/* enable routing on node 3 (temp.) */
 	rename_temp_node(3);
+	enable_routing(3);	/* enable routing on node 3 (temp.) */
 	
 	clear_temp_row(0);
 	clear_temp_row(1);
@@ -820,13 +814,14 @@ static void coherent_ht_finalize(unsigned cpus)
 	}
 
 #if 1
-	print_debug("done\n");
+	print_debug("done\r\n");
 #endif
 }
 
-static void setup_coherent_ht_domain(void)
+static int setup_coherent_ht_domain(void)
 {
 	unsigned cpus;
+	int reset_needed = 0;
 
 	enable_bsp_routing();
 
@@ -837,6 +832,8 @@ static void setup_coherent_ht_domain(void)
 	cpus=detect_mp_capabilities(cpus);
 #endif
 	coherent_ht_finalize(cpus);
+
+	return reset_needed;
 }
 
 #endif

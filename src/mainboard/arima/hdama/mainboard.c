@@ -7,5 +7,5 @@
 
 unsigned long initial_apicid[MAX_CPUS] =
 {
-	0
+	0, 1,
 };

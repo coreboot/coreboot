@@ -4,20 +4,26 @@
 
 uses PCIC0_CFGADDR 
 uses PCIC0_CFGDATA 
-uses UART0_IO_BASE
+uses TTYS0_BASE
 uses CONFIG_BRIQ_750FX
 uses CONFIG_BRIQ_7400
 
 ##
 ## Set PCI registers
 ##
-default PCIC0_CFGADDR=0xeec00000
-default PCIC0_CFGDATA=0xeec00004
+default PCIC0_CFGADDR=0xff508000
+default PCIC0_CFGDATA=0xff508010
+
+##
+## Set IDE control registers
+##
+default PNP_CFGADDR=0x1f0
+default PNP_CFGDATA=0x1f1
 
 ##
 ## Set UART base address
 ##
-default UART0_IO_BASE=0xef600300
+default TTYS0_BASE=0x3f8
 
 ##
 ## Early board initialization, called from ppc_main()

@@ -22,6 +22,7 @@
 #include <device/pci_ids.h>
 #include <stdlib.h>
 #include <string.h>
+#include <smp/spinlock.h>
 
 /** Linked list of ALL devices */
 struct device *all_devices = &dev_root;
@@ -30,7 +31,7 @@ static struct device **last_dev_p = &dev_root.next;
 
 /** The upper limit of MEM resource of the devices.
  * Reserve 20M for the system */
-#define DEVICE_MEM_HIGH 0xFEC00000UL
+#define DEVICE_MEM_HIGH 0xFEBFFFFFUL
 /** The lower limit of IO resource of the devices.
  * Reserve 4k for ISA/Legacy devices */
 #define DEVICE_IO_START 0x1000
@@ -53,6 +54,7 @@ device_t alloc_dev(struct bus *parent, struct device_path *path)
 	device_t dev, child;
 	int link;
 
+	spin_lock(&dev_lock);	
 	/* Find the last child of our parent */
 	for(child = parent->children; child && child->sibling; ) {
 		child = child->sibling;
@@ -64,17 +66,15 @@ device_t alloc_dev(struct bus *parent, struct device_path *path)
 	memset(dev, 0, sizeof(*dev));
 	memcpy(&dev->path, path, sizeof(*path));
 
-	/* Append a new device to the global device list.
-	 * The list is used to find devices once everything is set up.
-	 */
-	*last_dev_p = dev;
-	last_dev_p = &dev->next;
 
 	/* Initialize the back pointers in the link fields */
 	for(link = 0; link < MAX_LINKS; link++) {
 		dev->link[link].dev  = dev;
 		dev->link[link].link = link;
 	}
+	
+	/* By default devices are enabled */
+	dev->enabled = 1;
 
 	/* Add the new device to the list of children of the bus. */
 	dev->bus = parent;
@@ -83,9 +83,14 @@ device_t alloc_dev(struct bus *parent, struct device_path *path)
 	} else {
 		parent->children = dev;
 	}
-	/* If we don't have any other information about a device enable it */
-	dev->enabled = 1;
 
+	/* Append a new device to the global device list.
+	 * The list is used to find devices once everything is set up.
+	 */
+	*last_dev_p = dev;
+	last_dev_p = &dev->next;
+
+	spin_unlock(&dev_lock);
 	return dev;
 }
 
@@ -269,7 +274,7 @@ void compute_allocate_resource(
 {
 	struct device *dev;
 	struct resource *resource;
-	unsigned long base;
+	resource_t base;
 	unsigned long align, min_align;
 	min_align = 0;
 	base = bridge->base;
@@ -302,7 +307,7 @@ void compute_allocate_resource(
 	 * compute the addresses.
 	 */
 	while((dev = largest_resource(bus, &resource, type_mask, type))) {
-		unsigned long size;
+		resource_t size;
 		/* Do NOT I repeat do not ignore resources which have zero size.
 		 * If they need to be ignored dev->read_resources should not even
 		 * return them.   Some resources must be set even when they have
@@ -312,6 +317,15 @@ void compute_allocate_resource(
 		/* Propogate the resource alignment to the bridge register  */
 		if (resource->align > bridge->align) {
 			bridge->align = resource->align;
+		}
+
+		/* Propogate the resource limit to the bridge register */
+		if (bridge->limit > resource->limit) {
+			bridge->limit = resource->limit;
+		}
+		/* Artificially deny limits between DEVICE_MEM_HIGH and 0xffffffff */
+		if ((bridge->limit > DEVICE_MEM_HIGH) && (bridge->limit <= 0xffffffff)) {
+			bridge->limit = DEVICE_MEM_HIGH;
 		}
 
 		/* Make certain we are dealing with a good minimum size */
@@ -341,19 +355,20 @@ void compute_allocate_resource(
 				base = 0x3e0;
 			}
 		}
-		if (((round(base, 1UL << align) + size) -1) <= resource->limit) {
+		if (((round(base, align) + size) -1) <= resource->limit) {
 			/* base must be aligned to size */
-			base = round(base, 1UL << align);
+			base = round(base, align);
 			resource->base = base;
 			resource->flags |= IORESOURCE_ASSIGNED;
 			resource->flags &= ~IORESOURCE_STORED;
 			base += size;
 			
 			printk_spew(
-				"%s %02x *  [0x%08lx - 0x%08lx] %s\n",
+				"%s %02x *  [0x%08Lx - 0x%08Lx] %s\n",
 				dev_path(dev),
 				resource->index, 
-				resource->base, resource->base + resource->size - 1,
+				resource->base, 
+				resource->base + resource->size - 1,
 				(resource->flags & IORESOURCE_IO)? "io":
 				(resource->flags & IORESOURCE_PREFETCH)? "prefmem": "mem");
 		}
@@ -364,10 +379,10 @@ void compute_allocate_resource(
 	 * know not to place something else at an address postitively
 	 * decoded by the bridge.
 	 */
-	bridge->size = round(base, 1UL << bridge->gran) - bridge->base;
+	bridge->size = round(base, bridge->gran) - bridge->base;
 
 	printk_spew("%s compute_allocate_%s: base: %08lx size: %08lx align: %d gran: %d done\n", 
-		dev_path(dev),
+		dev_path(bus->dev),
 		(bridge->flags & IORESOURCE_IO)? "io":
 		(bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",
 		base, bridge->size, bridge->align, bridge->gran);
@@ -387,7 +402,8 @@ static void allocate_vga_resource(void)
 	vga = 0;
 	for(dev = all_devices; dev; dev = dev->next) {
 		if (((dev->class >> 16) == PCI_BASE_CLASS_DISPLAY) &&
-		    ((dev->class >> 8)  != PCI_CLASS_DISPLAY_OTHER)) {
+			((dev->class >> 8) != PCI_CLASS_DISPLAY_OTHER)) 
+		{
 			if (!vga) {
 				printk_debug("Allocating VGA resource %s\n",
 					dev_path(dev));
@@ -423,20 +439,22 @@ void assign_resources(struct bus *bus)
 {
 	struct device *curdev;
 
-	printk_debug("ASSIGN RESOURCES, bus %d\n", bus->secondary);
+	printk_spew("%s assign_resources, bus %d link: %d\n", 
+		dev_path(bus->dev), bus->secondary, bus->link);
 
-	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
+	for(curdev = bus->children; curdev; curdev = curdev->sibling) {
+		if (!curdev->enabled || !curdev->resources) {
+			continue;
+		}
 		if (!curdev->ops || !curdev->ops->set_resources) {
 			printk_err("%s missing set_resources\n",
 				dev_path(curdev));
 			continue;
 		}
-		if (!curdev->enabled) {
-			continue;
-		}
 		curdev->ops->set_resources(curdev);
 	}
-	printk_debug("ASSIGNED RESOURCES, bus %d\n", bus->secondary);
+	printk_spew("%s assign_resources, bus %d link: %d\n", 
+		dev_path(bus->dev), bus->secondary, bus->link);
 }
 
 /**
@@ -456,11 +474,11 @@ void assign_resources(struct bus *bus)
  */
 void enable_resources(struct device *dev)
 {
-	if (!dev->ops || !dev->ops->enable_resources) {
-		printk_err("%s missing enable_resources\n", dev_path(dev));
+	if (!dev->enabled) {
 		return;
 	}
-	if (!dev->enabled) {
+	if (!dev->ops || !dev->ops->enable_resources) {
+		printk_err("%s missing enable_resources\n", dev_path(dev));
 		return;
 	}
 	dev->ops->enable_resources(dev);
@@ -493,11 +511,12 @@ void dev_enumerate(void)
 	printk_info("done\n");
 }
 
+
 /**
  * @brief Configure devices on the devices tree.
  * 
  * Starting at the root of the dynamic device tree, travel recursively,
- * compute resources needed by each device and allocate them.
+ * and compute resources needed by each device and allocate them.
  *
  * I/O resources start at DEVICE_IO_START and grow upward. MEM resources start
  * at DEVICE_MEM_START and grow downward.
@@ -507,6 +526,7 @@ void dev_enumerate(void)
  */
 void dev_configure(void)
 {
+	struct resource *io, *mem;
 	struct device *root;
 
 	printk_info("Allocating resources...\n");
@@ -522,24 +542,30 @@ void dev_configure(void)
 	}
 	root->ops->read_resources(root);
 
+	/* Get the resources */
+	io  = &root->resource[0];
+	mem = &root->resource[1];
 	/* Make certain the io devices are allocated somewhere safe. */
-	root->resource[0].base = DEVICE_IO_START;
-	root->resource[0].flags |= IORESOURCE_ASSIGNED;
-	root->resource[0].flags &= ~IORESOURCE_STORED;
+	io->base = DEVICE_IO_START;
+	io->flags |= IORESOURCE_ASSIGNED;
+	io->flags &= ~IORESOURCE_STORED;
 	/* Now reallocate the pci resources memory with the
 	 * highest addresses I can manage.
 	 */
-	root->resource[1].base = 
-		round_down(DEVICE_MEM_HIGH - root->resource[1].size,
-			1UL << root->resource[1].align);
-	root->resource[1].flags |= IORESOURCE_ASSIGNED;
-	root->resource[1].flags &= ~IORESOURCE_STORED;
+	mem->base = resource_max(&root->resource[1]);
+	mem->flags |= IORESOURCE_ASSIGNED;
+	mem->flags &= ~IORESOURCE_STORED;
 
 	/* Allocate the VGA I/O resource.. */
 	allocate_vga_resource(); 
 
 	/* Store the computed resource allocations into device registers ... */
 	root->ops->set_resources(root);
+
+#if 0
+	mem->flags |= IORESOURCE_STORED;
+	report_resource_stored(root, mem, "");
+#endif
 
 	printk_info("done.\n");
 }
@@ -571,9 +597,12 @@ void dev_initialize(void)
 	struct device *dev;
 
 	printk_info("Initializing devices...\n");
-	for (dev = all_devices; dev; dev = dev->next) {
-		if (dev->enabled && dev->ops && dev->ops->init) {
+	for(dev = all_devices; dev; dev = dev->next) {
+		if (dev->enabled && !dev->initialized && 
+			dev->ops && dev->ops->init) 
+		{
 			printk_debug("%s init\n", dev_path(dev));
+			dev->initialized = 1;
 			dev->ops->init(dev);
 		}
 	}

@@ -69,7 +69,7 @@ static void pnp_set_resource(device_t dev, struct resource *resource)
 {
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
 		printk_err("ERROR: %s %02x not allocated\n",
-			   dev_path(dev), resource->index);
+			dev_path(dev), resource->index);
 		return;
 	}
 
@@ -90,16 +90,7 @@ static void pnp_set_resource(device_t dev, struct resource *resource)
 	}
 	resource->flags |= IORESOURCE_STORED;
 
-	printk_debug(
-		"%s %02x <- [0x%08lx - 0x%08lx] %s\n",
-		dev_path(dev),
-		resource->index,
-		resource->base,  resource->base + resource->size - 1,
-		(resource->flags & IORESOURCE_IO)? "io":
-		(resource->flags & IORESOURCE_DRQ)? "drq":
-		(resource->flags & IORESOURCE_IRQ)? "irq":
-		(resource->flags & IORESOURCE_MEM)? "mem":
-		"???");
+	report_resource_stored(dev, resource, "");
 }
 
 void pnp_set_resources(device_t dev)
@@ -143,7 +134,7 @@ static void pnp_get_ioresource(device_t dev, unsigned index, struct io_info *inf
 	struct resource *resource;
 	uint32_t size;
 
-	resource = get_resource(dev, index);
+	resource = new_resource(dev, index);
 	
 	/* Initilize the resource */
 	resource->limit = 0xffff;
@@ -173,22 +164,22 @@ static void get_resources(device_t dev, struct pnp_info *info)
 		pnp_get_ioresource(dev, PNP_IDX_IO3, &info->io3);
 	}
 	if (info->flags & PNP_IRQ0) {
-		resource = get_resource(dev, PNP_IDX_IRQ0);
+		resource = new_resource(dev, PNP_IDX_IRQ0);
 		resource->size = 1;
 		resource->flags |= IORESOURCE_IRQ;
 	}
 	if (info->flags & PNP_IRQ1) {
-		resource = get_resource(dev, PNP_IDX_IRQ1);
+		resource = new_resource(dev, PNP_IDX_IRQ1);
 		resource->size = 1;
 		resource->flags |= IORESOURCE_IRQ;
 	}
 	if (info->flags & PNP_DRQ0) {
-		resource = get_resource(dev, PNP_IDX_DRQ0);
+		resource = new_resource(dev, PNP_IDX_DRQ0);
 		resource->size = 1;
 		resource->flags |= IORESOURCE_DRQ;
 	}
 	if (info->flags & PNP_DRQ1) {
-		resource = get_resource(dev, PNP_IDX_DRQ1);
+		resource = new_resource(dev, PNP_IDX_DRQ1);
 		resource->size = 1;
 		resource->flags |= IORESOURCE_DRQ;
 	}	

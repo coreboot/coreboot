@@ -4,6 +4,24 @@
 #include <device/pci.h>
 #include <string.h>
 
+/**
+ * @brief See if a device structure exists for path
+ *
+ * @param bus The bus to find the device on
+ * @param path The relative path from the bus to the appropriate device
+ * @return pointer to a device structure for the device on bus at path
+ *         or 0/NULL if no device is found
+ */
+device_t find_dev_path(struct bus *parent, struct device_path *path)
+{
+	device_t child;
+	for(child = parent->children; child; child = child->sibling) {
+		if (path_eq(path, &child->path)) {
+			break;
+		}
+	}
+	return child;
+}
 
 /**
  * @brief See if a device structure already exists and if not allocate it
@@ -15,12 +33,11 @@
 device_t alloc_find_dev(struct bus *parent, struct device_path *path)
 {
 	device_t child;
-	for(child = parent->children; child; child = child->sibling) {
-		if (path_eq(path, &child->path)) {
-			return child;
-		}
+	child = find_dev_path(parent, path);
+	if (!child) {
+		child = alloc_dev(parent, path);
 	}
-	return alloc_dev(parent, path);
+	return child;
 }
 
 /**
@@ -96,6 +113,9 @@ const char *dev_path(device_t dev)
 		case DEVICE_PATH_ROOT:
 			memcpy(buffer, "Root Device", 12);
 			break;
+		case DEVICE_PATH_DEFAULT_CPU:
+			memcpy(buffer, "Default CPU", 12);
+			break;
 		case DEVICE_PATH_PCI:
 			sprintf(buffer, "PCI: %02x:%02x.%01x",
 				dev->bus->secondary, 
@@ -108,6 +128,10 @@ const char *dev_path(device_t dev)
 		case DEVICE_PATH_I2C:
 			sprintf(buffer, "I2C: %02x",
 				dev->path.u.i2c.device);
+			break;
+		case DEVICE_PATH_APIC:
+			sprintf(buffer, "APIC: %02x",
+				dev->path.u.apic.apic_id);
 			break;
 		default:
 			printk_err("Unknown device path type: %d\n", dev->path.type);
@@ -127,6 +151,9 @@ int path_eq(struct device_path *path1, struct device_path *path2)
 		case DEVICE_PATH_ROOT:
 			equal = 1;
 			break;
+		case DEVICE_PATH_DEFAULT_CPU:
+			equal = 1;
+			break;
 		case DEVICE_PATH_PCI:
 			equal = (path1->u.pci.bus == path2->u.pci.bus) &&
 				(path1->u.pci.devfn == path2->u.pci.devfn);
@@ -137,6 +164,9 @@ int path_eq(struct device_path *path1, struct device_path *path2)
 			break;
 		case DEVICE_PATH_I2C:
 			equal = (path1->u.i2c.device == path2->u.i2c.device);
+			break;
+		case DEVICE_PATH_APIC:
+			equal = (path1->u.apic.apic_id == path2->u.apic.apic_id);
 			break;
 		default:
 			printk_err("Uknown device type: %d\n", path1->type);
@@ -168,20 +198,17 @@ void compact_resources(device_t dev)
 	}
 }
 
+
 /**
- * See if a resource structure already exists for a given index and if
- * not allocate one.
+ * See if a resource structure already exists for a given index
  * @param dev The device to find the resource on
  * @param index  The index of the resource on the device.
+ * @return the resource if it already exists
  */
-struct resource *get_resource(device_t dev, unsigned index)
+struct resource *probe_resource(device_t dev, unsigned index)
 {
 	struct resource *resource;
 	int i;
-
-	/* First move all of the free resources to the end */
-	compact_resources(dev);
-
 	/* See if there is a resource with the appropriate index */
 	resource = 0;
 	for(i = 0; i < dev->resources; i++) {
@@ -190,6 +217,25 @@ struct resource *get_resource(device_t dev, unsigned index)
 			break;
 		}
 	}
+	return resource;
+}
+
+/**
+ * See if a resource structure already exists for a given index and if
+ * not allocate one.  Then initialize the initialize the resource
+ * to default values.
+ * @param dev The device to find the resource on
+ * @param index  The index of the resource on the device.
+ */
+struct resource *new_resource(device_t dev, unsigned index)
+{
+	struct resource *resource;
+
+	/* First move all of the free resources to the end */
+	compact_resources(dev);
+
+	/* See if there is a resource with the appropriate index */
+	resource = probe_resource(dev, index);
 	if (!resource) {
 		if (dev->resources == MAX_RESOURCES) {
 			die("MAX_RESOURCES exceeded.");
@@ -212,3 +258,120 @@ struct resource *get_resource(device_t dev, unsigned index)
 	return resource;
 }
 
+/**
+ * Return an existing resource structure for a given index.
+ * @param dev The device to find the resource on
+ * @param index  The index of the resource on the device.
+ */
+struct resource *find_resource(device_t dev, unsigned index)
+{
+	struct resource *resource;
+
+	/* See if there is a resource with the appropriate index */
+	resource = probe_resource(dev, index);
+	if (!resource) {
+		printk_emerg("%s missing resource: %02x\n",
+			dev_path(dev), index);
+		die("");
+	}
+	return resource;
+}
+
+
+/**
+ * @brief round a number up to the next multiple of gran
+ * @param val the starting value
+ * @param gran granularity we are aligning the number to.
+ * @returns aligned value
+ */
+static resource_t align_up(resource_t val, unsigned long gran)
+{
+	resource_t mask;
+	mask = (1ULL << gran) - 1ULL;
+	val += mask;
+	val &= ~mask;
+	return val;
+}
+
+/**
+ * @brief round a number up to the previous multiple of gran
+ * @param val the starting value
+ * @param gran granularity we are aligning the number to.
+ * @returns aligned value
+ */
+static resource_t align_down(resource_t val, unsigned long gran)
+{
+	resource_t mask;
+	mask = (1ULL << gran) - 1ULL;
+	val &= ~mask;
+	return val;
+}
+
+/**
+ * @brief Compute the maximum address that is part of a resource
+ * @param resource the resource whose limit is desired
+ * @returns the end
+ */
+resource_t resource_end(struct resource *resource)
+{
+	resource_t base, end;
+	/* get the base address */
+	base = resource->base;
+
+	/* For a non bridge resource granularity and alignment are the same.
+	 * For a bridge resource align is the largest needed alignment below
+	 * the bridge.  While the granularity is simply how many low bits of the
+	 * address cannot be set.
+	 */
+	
+	/* Get the end (rounded up) */
+	end = base + align_up(resource->size, resource->gran) - 1;
+
+	return end;
+}
+
+/**
+ * @brief Compute the maximum legal value for resource->base
+ * @param resource the resource whose maximum is desired
+ * @returns the maximum
+ */
+resource_t resource_max(struct resource *resource)
+{
+	resource_t max;
+
+	max = align_down(resource->limit - resource->size + 1, resource->align);
+
+	return max;
+}
+
+/**
+ * @brief print the resource that was just stored.
+ * @param dev the device the stored resorce lives on
+ * @param resource the resource that was just stored.
+ */
+void report_resource_stored(device_t dev, struct resource *resource, const char *comment)
+{
+	if (resource->flags & IORESOURCE_STORED) {
+		unsigned char buf[10];
+		unsigned long long base, end;
+		base = resource->base;
+		end = resource_end(resource);
+		buf[0] = '\0';
+		if (resource->flags & IORESOURCE_PCI_BRIDGE) {
+			sprintf(buf, "bus %d ", dev->link[0].secondary);
+		}
+		printk_debug(
+			"%s %02x <- [0x%010Lx - 0x%010Lx] %s%s%s%s\n",
+			dev_path(dev),
+			resource->index,
+			base, end,
+			buf,
+			(resource->flags & IORESOURCE_PREFETCH) ? "pref" : "",
+			(resource->flags & IORESOURCE_IO)? "io":
+			(resource->flags & IORESOURCE_DRQ)? "drq":
+			(resource->flags & IORESOURCE_IRQ)? "irq":
+			(resource->flags & IORESOURCE_MEM)? "mem": 
+			"????",
+			comment);
+	}
+}

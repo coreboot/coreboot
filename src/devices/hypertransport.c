@@ -14,9 +14,9 @@ static device_t ht_scan_get_devs(device_t *old_devices)
 	device_t first, last;
 	first = *old_devices;
 	last = first;
-	while (last && last->sibling && 
-	       (last->sibling->path.type == DEVICE_PATH_PCI) &&
-	       (last->sibling->path.u.pci.devfn > last->path.u.pci.devfn)) {
+	while(last && last->sibling && 
+		(last->sibling->path.type == DEVICE_PATH_PCI) &&
+		(last->sibling->path.u.pci.devfn > last->path.u.pci.devfn)) {
 		last = last->sibling;
 	}
 	if (first) {
@@ -264,19 +264,21 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int max)
 			*chain_last = dev;
 			/* Run the magice enable sequence for the device */
 			if (dev->chip && dev->chip->control && dev->chip->control->enable_dev) {
-				int enable  = dev->enabled;
-				dev->enabled = 1;
 				dev->chip->control->enable_dev(dev);
-				dev->enabled = enable;
 			}
 			/* Now read the vendor and device id */
 			id = pci_read_config32(dev, PCI_VENDOR_ID);
 
+			
 			/* If the chain is fully enumerated quit */
 			if (id == 0xffffffff || id == 0x00000000 ||
-				id == 0x0000ffff || id == 0xffff0000) {
-				printk_err("Missing static device: %s\n",
-					dev_path(dev));
+				id == 0x0000ffff || id == 0xffff0000) 
+			{
+				if (dev->enabled) {
+					printk_info("Disabling static device: %s\n",
+						dev_path(dev));
+					dev->enabled = 0;
+				}
 				break;
 			}
 		}

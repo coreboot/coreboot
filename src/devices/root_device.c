@@ -9,34 +9,29 @@
  */
 void root_dev_read_resources(device_t root)
 {
-	int res = 0;
+	struct resource *resource;
 
 	/* Initialize the system wide io space constraints */
-	root->resource[res].base  = 0x400;
-	root->resource[res].size  = 0;
-	root->resource[res].align = 0;
-	root->resource[res].gran  = 0;
-	root->resource[res].limit = 0xffffUL;
-	root->resource[res].flags = IORESOURCE_IO;
-	root->resource[res].index = 0;
-	compute_allocate_resource(&root->link[0], &root->resource[res], 
+	resource = new_resource(root, 0);
+	resource->base  = 0x400;
+	resource->size  = 0;
+	resource->align = 0;
+	resource->gran  = 0;
+	resource->limit = 0xffffUL;
+	resource->flags = IORESOURCE_IO;
+	compute_allocate_resource(&root->link[0], resource, 
 		IORESOURCE_IO, IORESOURCE_IO);
-	res++;
 
 	/* Initialize the system wide memory resources constraints */
-	root->resource[res].base  = 0;
-	root->resource[res].size  = 0;
-	root->resource[res].align = 0;
-	root->resource[res].gran  = 0;
-	root->resource[res].limit = 0xffffffffUL;
-	root->resource[res].flags = IORESOURCE_MEM;
-	root->resource[res].index = 1;
-	compute_allocate_resource(&root->link[0], &root->resource[res], 
+	resource = new_resource(root, 1);
+	resource->base  = 0;
+	resource->size  = 0;
+	resource->align = 0;
+	resource->gran  = 0;
+	resource->limit = 0xffffffffUL;
+	resource->flags = IORESOURCE_MEM;
+	compute_allocate_resource(&root->link[0], resource,
 		IORESOURCE_MEM, IORESOURCE_MEM);
-	res++;
-
-	root->resources = res;
-	printk_spew("%s DONE\n", __func__);
 }
 
 /**
@@ -124,8 +119,13 @@ void enable_childrens_resources(device_t dev)
 	}
 }
 
+void root_dev_enable_resources(device_t dev)
+{
+	enable_childrens_resources(dev);
+}
+
 /**
- * @brief Scan root bus for generic PCI systems
+ * @brief Scan root bus for generic systems
  *
  * @param root The root device structure
  * @param max The current bus number scanned so fat, usually 0x00
@@ -135,9 +135,14 @@ void enable_childrens_resources(device_t dev)
  * generic PCI bus system is at Bus 0, Dev 0, Fun 0 so we scan the whole PCI
  * buses from there. 
  */
-unsigned int root_dev_scan_pci_bus(device_t root, unsigned int max)
+unsigned int root_dev_scan_bus(device_t root, unsigned int max)
 {
-	return pci_scan_bus(&root->link[0], 0, 0xff, max);
+	return scan_static_bus(root, max);
+}
+
+void root_dev_init(device_t root)
+{
+	initialize_cpus(root);
 }
 
 /**
@@ -153,9 +158,9 @@ unsigned int root_dev_scan_pci_bus(device_t root, unsigned int max)
 struct device_operations default_dev_ops_root = {
 	.read_resources   = root_dev_read_resources,
 	.set_resources    = root_dev_set_resources,
-	.enable_resources = enable_childrens_resources,
-	.init             = 0,
-	.scan_bus         = root_dev_scan_pci_bus,
+	.enable_resources = root_dev_enable_resources,
+	.init             = root_dev_init,
+	.scan_bus         = root_dev_scan_bus,
 };
 
 /**
@@ -169,11 +174,4 @@ struct device dev_root = {
 	.bus = &dev_root.link[0],
 	.path = { .type = DEVICE_PATH_ROOT },
 	.enabled = 1,
-	.links = 1,
-	.link = {
-		[0] = {
-			.dev = &dev_root,
-			.link = 0,
-		},
-	},
 };

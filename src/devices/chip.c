@@ -112,8 +112,9 @@ void chip_enumerate(struct chip *chip)
 			struct chip_resource *res, *res_limit;
 			printk_spew("path (%p) %s %s", 
 				dev, dev_path(dev), identical_paths?"identical":"");
-			printk_spew(" parent: (%p) %s\n",
-				dev->bus->dev,  dev_path(dev->bus->dev));
+			printk_spew(" parent: (%p):%d %s\n",
+				dev->bus->dev,  dev->bus->link,
+				dev_path(dev->bus->dev));
 			dev->chip = chip;
 			dev->enabled = chip->path[i].enabled;
 			dev->links = link + 1;
@@ -127,7 +128,7 @@ void chip_enumerate(struct chip *chip)
 			for(; res < res_limit; res++) {
 				if (res->flags) {
 					struct resource *resource;
-					resource = get_resource(dev, res->index);
+					resource = new_resource(dev, res->index);
 					resource->flags = res->flags | IORESOURCE_FIXED | IORESOURCE_ASSIGNED;
 					resource->base = res->base;
 				}
@@ -208,7 +209,24 @@ static void enumerate_static_device_chain(struct chip *root)
  */
 void enumerate_static_devices(void)
 {
+	struct chip *child;
+	int i;
 	printk_info("Enumerating static devices...\n");
 	static_root.dev = &dev_root;
+	dev_root.links  = MAX_LINKS;
+	for(i = 0; i < MAX_LINKS; i++) {
+		dev_root.link[i].link = i;
+		dev_root.link[i].dev = &dev_root;
+		for(child = static_root.children; child; child = child->next) {
+			if (!child->bus && child->link == i) {
+				child->bus = &dev_root.link[i];
+			}
+		}
+	}
+	for(child = static_root.children; child; child = child->next) {
+		if (!child->bus) {
+			child->bus = &dev_root.link[0];
+		}
+	}
 	enumerate_static_device_chain(&static_root);
 }

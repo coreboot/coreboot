@@ -18,6 +18,7 @@ default DCACHE_RAM_SIZE=16384
 initinclude "FAMILY_INIT" cpu/ppc/ppc4xx/ppc4xx.inc
 initobject cache.S
 initobject sdram.c
+initobject clock.c
 
 object mem.o
 object clock.o

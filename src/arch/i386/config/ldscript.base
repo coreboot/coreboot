@@ -64,6 +64,10 @@ SECTIONS
 		streams = . ;
 		*(.rodata.streams)
 		estreams = .;
+		. = ALIGN(4);
+		pci_drivers = . ;
+		*(.rodata.pci_drivers)
+		epci_drivers = . ;
 		*(.rodata)
 		*(.rodata.*)
 		_erodata = .;

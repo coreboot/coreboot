@@ -1,14 +1,11 @@
 #
 # Objects linked with linuxbios
 #
-initobject i2c.o
+
+# We need sdram_init() in ppc_main()
 initobject meminfo.o
 initobject mpc107.o
-#object mpc107_smp.o
-#object mpc107_utils.S
 
-#
-# Included in crt0.S
-#
-#initinclude "NORTHBRIDGE_INIT" northbridge/motorola/mpc107/mpc107_init.inc
-#initinclude "NORTHBRIDGE_INIT" northbridge/motorola/mpc107/mpc107_utils.inc
+# We need sizeram() in hardwaremain()
+object meminfo.o
+object mpc107.o

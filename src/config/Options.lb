@@ -364,7 +364,7 @@ end
 ###############################################
 
 define CRT0
-	default "$(TOP)/src/arch/$(ARCH)/config/crt0.base"
+	default "$(TOP)/src/arch/$(ARCH)/init/crt0.S.lb"
 	export always
 	comment "Main initialization target"
 end

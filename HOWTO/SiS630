@@ -68,9 +68,11 @@ The steps for loading linuxbios are simple:
 2) get a 2.4.0-test12 kernel, patch it, then build it
 3) config and build linuxbios
 4) Get the MTD utilities from http://www.linux-mtd.infradead.org/ 
-5) put a Disk On Chip into the flash socket
-6) Burn the chip
-7) hit reset. You're up.
+	and build the 'erase' utility
+5) Set up the 'flash_on' program in your path
+6) put a Disk On Chip into the flash socket
+7) Burn the chip
+8) hit reset. You're up.
 
 ---
 Step 0) 
@@ -226,9 +228,18 @@ o	You now need to figure out where you want to put your build images.
 	You're now ready to burn the Disk On Chip, but first .... 
 
 Step 4) Get the MTD utilities from http://www.linux-mtd.infradead.org/ 
+	cvs -d :pserver:anoncvs@cvs.infradead.org:/home/cvs co mtd
+	cd mtd-xxyyzz/util
+	make
+	(You need the erase utility)
 	Install the erase utility where it is in your path. 
 
-Step 5) 
+Step 5) Set up flash_on utiliy
+	flash_on.c is found in freebios/util/sis/flash_on.c
+	cd to that directory, make the utility, and put it in your path
+	(i.e. /usr/bin or in your private path)
+
+Step 6) 
 	NOTE: BE ADVISED THAT THIS STEP CAN HURT OR KILL YOU!
 	YOU ARE WORKING WITH A POWERED-ON COMPUTER AT THIS POINT. 
 	THE COMPUTER NEEDS TO BE OPENED  UP, AND YOU NEED TO REMOVE A CHIP
@@ -250,12 +261,12 @@ Step 5)
 	done this, or are not trained, or have a history of getting
 	hurt by hardware, DON'T DO IT.
 
-Step 6) Run the following script:
+Step 7) Run the following script:
 	Run the burn_mtd script from util/mtd
 	Here's how it looks when you run it:
 
 
-Step 7) Hit reset. Linuxbios should come up in a few seconds. 
+Step 8) Hit reset. Linuxbios should come up in a few seconds. 
 
 If it doesn't work: 
 

@@ -17,19 +17,19 @@ else
   linux=$2
 fi
 
-../flash/flash_on
+flash_on
 
 insmod /lib/modules/${v}/kernel/drivers/mtd/doc2001.o
 insmod /lib/modules/${v}/kernel/drivers/mtd/docprobe.o
 
-dd conv=sync bs=65536 if=${linux} of=vmlinux.bin.gz.block
-dd conv=sync bs=63k if=${linuxbios} of=linuxbios.block
+dd conv=notrunc conv=sync bs=65536 if=${linux} of=vmlinux.bin.gz.block
+dd conv=notrunc conv=sync bs=63k if=${linuxbios} of=linuxbios.block
 
-./erase /dev/mtd0 0 128
-dd if=docipl of=/dev/mtd0 
-dd if=docipl of=/dev/mtd0 seek=1
-dd if=linuxbios.block of=/dev/mtd0 seek=2
-dd if=vmlinux.bin.gz.block of=/dev/mtd0 seek=128
+erase /dev/mtd0 0 128
+dd conv=notrunc if=docipl of=/dev/mtd0 
+dd conv=notrunc if=docipl of=/dev/mtd0 seek=1
+dd conv=notrunc if=linuxbios.block of=/dev/mtd0 seek=2
+dd conv=notrunc if=vmlinux.bin.gz.block of=/dev/mtd0 seek=128
 
 rmmod doc2001
 rmmod docprobe

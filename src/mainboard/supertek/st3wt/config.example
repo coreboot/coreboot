@@ -1,0 +1,21 @@
+target st3wt
+mainboard supertek/st3wt
+
+# Enable Serial Console for debugging
+option SERIAL_CONSOLE=1
+option TTYS0_BAUD=38400
+
+option DEFAULT_CONSOLE_LOGLEVEL=9
+option DEBUG
+
+option RAMTEST
+option USE_GENERIC_ROM=1
+option USE_ELF_BOOT=1
+option ZKERNEL_START=0xfffe0000
+option ZKERNEL_MASK=0xffff
+option ROM_SIZE=262144
+option STD_FLASH=1
+
+# Kernel command line parameters
+commandline root=/dev/hda3 console=ttyS0,38400 reboot=h
+

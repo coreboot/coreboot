@@ -570,19 +570,22 @@ int elfload(struct stream *stream, struct lb_memory *mem,
 	if (!load_elf_segments(&head, stream, header, header_size))
 		goto out;
 
+	printk_info("Loaded segments\n");
 	/* Verify the loaded image */
-/*
 	if (!verify_loaded_image(cb_chain, ehdr, phdr, &head)) 
 		goto out;
+/*
  */
 
+	printk_info("verified segments\n");
 	/* Shutdown the stream device */
 	stream->fini();
 	
+	printk_info("closed down stream\n");
 	/* Reset to booting from this image as late as possible */
 	boot_successful();
 
-	printk_debug("Jumping to boot code\n");
+	printk_debug("Jumping to boot code at 0x%x\n", entry);
 	post_code(0xfe);
 
 	/* Jump to kernel */

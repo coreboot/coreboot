@@ -29,6 +29,8 @@ option ZKERNEL_START=0xfffc0000
 option ZKERNEL_MASK=0x7f 
 option L430TX
 option SMC_BASE=0x3F0
+option CONFIG_UDELAY_TSC
+
 
 object mainboard.o
 object irq_tables.o

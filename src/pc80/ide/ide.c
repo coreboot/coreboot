@@ -99,7 +99,7 @@ int ide_read_data(unsigned base, void * buf, size_t size)
 	register unsigned short * ptr = (unsigned short *) buf;
 
 	if (wait_for_dataready(base)) {
-		printk_debug("data not ready...\n");
+		printk_info("data not ready...\n");
 		return 1;
 	}
 
@@ -151,7 +151,7 @@ static int init_drive(unsigned base, int driveno)
 
 	if ((inb_p(IDE_REG_STATUS(base)) & 1) != 0) {
 		/* Well, if that command didn't work, we probably don't have drive. */
-		printk_debug("Drive %d: detect FAILED\n", driveno);
+		printk_info("Drive %d: detect FAILED\n", driveno);
 		return 1;
 	}
 	ide_read_data(base, buffer, IDE_SECTOR_SIZE);
@@ -165,16 +165,16 @@ static int init_drive(unsigned base, int driveno)
 	memcpy(harddisk_info[driveno].model_number, ((unsigned short*)&(drive_info[27])), 40);
 	harddisk_info[driveno].drive_exists = 1;
 
-	printk_debug("%s \n", harddisk_info[driveno].model_number);
+	printk_info("%s \n", harddisk_info[driveno].model_number);
 
-	printk_debug(__FUNCTION__ " sectors_per_track=[%d], num_heads=[%d], num_cylinders=[%d]\n",
+	printk_info(__FUNCTION__ " sectors_per_track=[%d], num_heads=[%d], num_cylinders=[%d]\n",
 		     harddisk_info[driveno].num_sectors_per_track,
 		     harddisk_info[driveno].num_heads,
 		     harddisk_info[driveno].num_cylinders);
 
 #define HD harddisk_info[driveno]
 	if(drive_info[49] != 0) {
-		printk_debug("IDE%d %d/%d/%d cap: %04x\n",
+		printk_info("IDE%d %d/%d/%d cap: %04x\n",
 			     (int)driveno,
 			     (int)HD.num_heads, (int)HD.num_cylinders,
 			     (int)HD.num_sectors_per_track, 
@@ -248,18 +248,18 @@ static int init_drive(unsigned base, int driveno)
 
 #if 0
 	/* Exercise the drive to see if it works OK */
-	printk_debug("Exercising HardDisk- buffer=0x%08lX\n", (unsigned long) buffer);
+	printk_info("Exercising HardDisk- buffer=0x%08lX\n", (unsigned long) buffer);
 	outb_p(0x42, 0xeb);
 	while (1) {
 		for (idx = 0; idx < harddisk_info[driveno].num_sectors; ++idx) {
 			outb_p(idx & 0xFF, 0x80);
 			retval = ide_read_sector(driveno, buffer, idx);
 			if (retval != 0) {
-				printk_debug("readsector(driveno=%d, sector=%lu) returned %d!\n",
+				printk_info("readsector(driveno=%d, sector=%lu) returned %d!\n",
 					     driveno, (unsigned long) idx, retval);
 			}
 		}
-		printk_debug("Exercise complete!\n");
+		printk_info("Exercise complete!\n");
 		outb(0x42, 0xeb);
 	}
 #endif /* 0 */
@@ -274,12 +274,12 @@ static int init_controller(unsigned base, int basedrive) {
 	/* First, check to see if the controller even exists */
 	outb_p(0x5, IDE_REG_SECTOR_COUNT(base));
 	if (inb_p(IDE_REG_SECTOR_COUNT(base)) != 0x5) {
-		printk_debug("Controller %d: detect FAILED (1)\n", basedrive / 2);
+		printk_info("Controller %d: detect FAILED (1)\n", basedrive / 2);
 		return -1;
 	}
 	outb_p(0xA, IDE_REG_SECTOR_COUNT(base));
 	if (inb_p(IDE_REG_SECTOR_COUNT(base)) != 0xA) {
-		printk_debug("Controller %d: detect FAILED (2)\n", basedrive / 2);
+		printk_info("Controller %d: detect FAILED (2)\n", basedrive / 2);
 		return -2;
 	}
 
@@ -299,10 +299,10 @@ static int init_controller(unsigned base, int basedrive) {
 int ide_init(void)
 {
 	outb_p(0x42, 0xEB);
-	printk_debug ("I am now initializing the ide system\n");
+	printk_info ("I am now initializing the ide system\n");
 
 	if (init_controller(IDE_BASE1, 0) < 0) {
-		printk_debug ("Initializing the main controller failed!\n");
+		printk_info ("Initializing the main controller failed!\n");
 		/* error return error */
 		return -1;
 	};
@@ -332,13 +332,13 @@ int ide_read_sector(int drive, void * buffer, unsigned int block, int byte_offse
 	int address_mode = harddisk_info[drive].address_mode;
 	//int i;
 
-	//printk_debug(__FUNCTION__ " drive[%d], buffer[%08x], block[%08x], offset[%d], n_bytes[%d]\n",
-	//     drive, buffer, block, byte_offset, n_bytes);
-	//    printk_debug(__FUNCTION__ " block(%08x) to addr(%08x)\r", block, (int)buffer);
+	printk_info(__FUNCTION__ " drive[%d], buffer[%08x], block[%08x], offset[%d], n_bytes[%d]\n",
+	     drive, buffer, block, byte_offset, n_bytes);
+	    printk_info(__FUNCTION__ " block(%08x) to addr(%08x)\r", block, (int)buffer);
 	if ((drive < 0) || (drive >= NUM_HD) ||
 	    (harddisk_info[drive].drive_exists == 0))
 	{
-		printk_debug("unknown drive\n");
+		printk_info("unknown drive\n");
 		return 1;
 	}
 	base = harddisk_info[drive].controller_port;
@@ -360,9 +360,8 @@ int ide_read_sector(int drive, void * buffer, unsigned int block, int byte_offse
 			IDE_DH_HEAD(track % harddisk_info[drive].num_heads) |
 			IDE_DH_DRIVE(drive) |
 			IDE_DH_CHS;
+		printk_info(__FUNCTION__ " CHS: track=[%d], sector_number=[%d], cylinder=[%d]\n", track, cmd.sector_number, cmd.cylinder);
 		/*
-		  printk_debug(__FUNCTION__ " CHS: track=[%d], sector_number=[%d], cylinder=[%d]\n",
-		  track, cmd.sector_number, cmd.cylinder);
 		*/
 	} else {
 #if 1
@@ -380,15 +379,15 @@ int ide_read_sector(int drive, void * buffer, unsigned int block, int byte_offse
 			IDE_DH_DRIVE(drive) |
 			IDE_DH_LBA;
 #endif
-		/*
-		  printk_debug(__FUNCTION__ " LBA: drivehead[%0x], cylinder[%04x], sector[%0x], block[%8x]\n",
+		printk_info(__FUNCTION__ " LBA: drivehead[%0x], cylinder[%04x], sector[%0x], block[%8x]\n",
 		  cmd.drivehead, cmd.cylinder, cmd.sector_number, block & 0x0fffffff);
+		/*
 		*/
 	}
 	
 	write_command(base, IDE_CMD_READ_MULTI_RETRY, &cmd);
 	if ((inb_p(IDE_REG_STATUS(base)) & 1) != 0) {
-		printk_debug("ide not ready...\n");
+		printk_info("ide not ready...\n");
 		return 1;
 	}
 	if (n_bytes != IDE_SECTOR_SIZE) {
@@ -435,8 +434,8 @@ int ide_read_sector(int drive, void * buffer, unsigned int block, int byte_offse
 		IDE_DH_DRIVE(drive) |
 		IDE_DH_CHS;
 
-//    printk_debug(__FUNCTION__ " track=[%d], sector_number=[%d], cylinder=[%d]\n",
-//	   track, cmd.sector_number, cmd.cylinder);
+    printk_info(__FUNCTION__ " track=[%d], sector_number=[%d], cylinder=[%d]\n",
+	   track, cmd.sector_number, cmd.cylinder);
 	write_command(base, IDE_CMD_READ_MULTI_RETRY, &cmd);
 	if ((inb_p(IDE_REG_STATUS(base)) & 1) != 0) {
 		return 1;
@@ -449,7 +448,7 @@ int ide_read_sector(int drive, void * buffer, unsigned int block, int byte_offse
 	} else {
 		status = ide_read_data(base, buffer, IDE_SECTOR_SIZE);
 	}
-//    printk_debug(__FUNCTION__ " status = [%d]\n", status);
+    printk_info(__FUNCTION__ " status = [%d]\n", status);
 	return status;
 }
 #endif

@@ -20,9 +20,19 @@ southbridge_fixup()
 
 		pci_read_config_word(pcidev, 0x41, &c);
 		c |= 0x80;
+		pci_write_config_word(pcidev, 0x41, &c);
 		pci_read_config_word(pcidev, 0x43, &c);
 		c |= 0x80;
+		pci_write_config_word(pcidev, 0x43, &c);
 		printk_info("Enabled IDE for channels 1 and 2\n");
+#if (CONFIG_LINUXBIOS_LEGACY_IDE == 1)
+		printk_info("Enabling Legacy IDE\n");
+		pci_read_config_word(pcidev, 4, &c);
+		c |= 1;
+		pci_write_config_word(pcidev, 4, &c);
+		pci_read_config_word(pcidev, 4, &c);
+		printk_info("Word at 4 is now 0x%x\n", c);
+#endif
 	}
 
         printk_info("done.\n");

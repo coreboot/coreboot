@@ -180,4 +180,5 @@ void mainboard_fixup()
 		__rdtsc_delay2(1000000000UL, pm_io);
 	}
 #endif
+	southbridge_fixup();
 }

@@ -52,7 +52,7 @@ option CS5530_PRIMARY_IDE=1
 
 ########################################################################
 
-option NO_KEYBOARD
+option NO_KEYBOARD=1
 option FINAL_MAINBOARD_FIXUP=1
 object mainboard.o
 object irq_tables.o

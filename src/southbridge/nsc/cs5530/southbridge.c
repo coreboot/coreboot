@@ -38,6 +38,19 @@ void nvram_on()
 	// now set PCI decode
 	pci_read_config_byte(dev, 0x5b, &b);
 	b |= 1 << 5;
+	/* why would you ever turn these off? */
+#define CONFIG_CS5530_PRIMARY_IDE
+#define CONFIG_CS5530_SECONDARY_IDE
+
+#ifdef CONFIG_CS5530_PRIMARY_IDE
+	printk_info(NAME "Enabling Primary IDE Controller\n");
+	b |= 1<<3;
+#endif
+#ifdef CONFIG_CS5530_SECONDARY_IDE
+	printk_info(NAME "Enabling Secondary IDE Controller\n");
+	b |= 1<<4;
+#endif
+
 	printk_debug("Set F0/0x5b to |= 1 << 5(0x%x)\n", b);
 	pci_write_config_byte(dev, 0x5b, b);
 

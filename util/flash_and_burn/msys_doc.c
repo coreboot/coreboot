@@ -202,6 +202,7 @@ int write_md2802(struct flashchip *flash, unsigned char *buf)
 	printf("\n");
 	//protect_md2802(bios);
 
+	return 0;
 }				/* int write_md2802(struct flashchip *flash, char *buf) */
 
 

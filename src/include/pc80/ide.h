@@ -48,7 +48,7 @@ struct harddisk_info {
 
 
 #define IDE_SECTOR_SIZE 0x200
-#define CDROM_SECTOR_SIZE 0x400
+#define CDROM_SECTOR_SIZE 0x800
 
 #define IDE_BASE0             (0x1F0u) /* primary controller */
 #define IDE_BASE1             (0x170u) /* secondary */

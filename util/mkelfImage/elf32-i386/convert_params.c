@@ -382,6 +382,7 @@ void append_command_line(struct parameters *real_mode, char *arg, int arg_bytes)
 	}
 	len = strnlen(arg, max);
 	memcpy(dest, arg, len);
+	dest += len;
 	/* Null terminate the string */
 	*dest++ = '\0';
 }

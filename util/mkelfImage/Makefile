@@ -6,8 +6,8 @@
 # the result will be a directory tree  that you can run mkelfImage in
 PREFIX=/usr/local/
 PERLPATH=/usr/bin/perl
-VERSION="1.10"
-DATE="21 January 2002"
+VERSION="1.11"
+DATE="24 January 2002"
 
 SHAREDIR=$(PREFIX)/share/mkelfImage
 BINDIR=$(PREFIX)/bin
@@ -23,6 +23,10 @@ all: $(FILES)
 
 clean:
 	rm -f $(FILES)
+
+distclean: clean
+	find . -type f -name '*~' | xargs rm -f
+
 
 install: $(DIRS) $(FILES)
 	mkdir -p $(SHAREDIR) $(BINDIR) $(MANDIR)

@@ -280,7 +280,7 @@ if [ -z "$LBROOT" ] ; then
 	LBROOT=$( cd ../..; pwd )
 fi
 
-if [ $target != "" ]; then
+if [ "$target" != "" ]; then
   # build a single board
   VENDOR=`echo $target|tr -d \'|cut -f1 -d/`
   MAINBOARD=`echo $target|tr -d \'|cut -f2 -d/`

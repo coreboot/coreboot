@@ -11,7 +11,7 @@ jmp intel_E7501_out
  * Steven James 02/06/2003
  */
 
-#define DEBUG_RAM_CONFIG 1
+#define DEBUG_RAM_CONFIG 0
 
 
 /* DDR DIMM Mode register Definitions */
@@ -34,7 +34,8 @@ jmp intel_E7501_out
 
 #define BURST_LENGTH BURST_4
 #define BURST_TYPE   BURST_INTERLEAVED
-#define CAS_LATENCY  CAS_2_5
+#define CAS_LATENCY  CAS_2_0
+//#define CAS_LATENCY  CAS_2_5
 //#define CAS_LATENCY  CAS_1_5
 
 #define MRS_VALUE (MODE_NORM | CAS_LATENCY | BURST_TYPE | BURST_LENGTH)
@@ -196,17 +197,10 @@ constant_register_values:
 	 */
 #if CAS_LATENCY == CAS_2_5
 #	.long 0x80, 0xfffffe00, 0x06 /* Intel E7500 recommended */
-#	.long 0x80, 0xfffff000, 0x0bb6 /* Intel E7500 recommended */
-#	.long 0x80, 0xfffff000, 0x0662 /* from Factory Bios */
-	.long 0x80, 0xfffff000, 0x0bb1 /* values for register 0x80 */
+	.long 0x80, 0xfffff000, 0x0662 /* from Factory Bios */
 #elif CAS_LATENCY == CAS_2_0
 #	.long 0x80, 0xfffffe00, 0x0d /* values for register 0x80 */
 	.long 0x80, 0xfffff000, 0x0bb1 /* values for register 0x80 */
-#	.long 0x80, 0xfffff000, 0x0662 /* from Factory Bios */
-#elif CAS_LATENCY == CAS_1_5
-#	.long 0x80, 0xfffffe00, 0x05
-#	.long 0x80, 0xfffff000, 0x0bb5
-	.long 0x80, 0xfffff000, 0x0662 /* from Factory Bios */
 #endif
 
 	/* Enable periodic memory recalibration */
@@ -373,7 +367,7 @@ constant_register_values:
 	 *         11 == Reserved
 	 * [19:18] Reserved
 	 *         Must equal 01
-	 * [17:17] Reserved	Intel BIOS sets this to 1
+	 * [17:17] (Intel Undocumented)	should always be set to 1
 	 * [16:16] Command Per Clock - Address/Control Assertion Rule (CPC)
 	 *         0 == 2n Rule
 	 *         1 == 1n rule
@@ -398,7 +392,12 @@ constant_register_values:
 	 */
 #	.long 0x7c, 0xffcefcff, (1<<22)|(2 << 20)|(1 << 16)| (0 << 8)
 #	.long 0x7c, 0xff8cfcff, (1<<22)|(2 << 20)|(1 << 17)|(1 << 16)| (0 << 8)
+//	.long 0x7c, 0xff80fcff, (1<<22)|(2 << 20)|(1 << 18)|(1 << 17)|(1 << 16)| (0 << 8)
 	.long 0x7c, 0xff82fcff, (1<<22)|(2 << 20)|(1 << 18)|(1 << 16)| (0 << 8)
+
+
+	/* Another Intel undocumented register */
+	.long 0x88, 0x080007ff, (1<<31)|(1 << 30)|(1<<28)|(0 << 26)|(0x10 << 21)|(10 << 16)|(0x13 << 11)
 
 	/* CLOCK_DIS - CK/CK# Disable Register
 	 * 0x8C
@@ -458,6 +457,9 @@ constant_register_values:
 	 *         1 == Absent
 	 */
 	.long 0xe0, 0xffffffe2, (1<<4)|(1<<3)|(1<<2)|(0<<0)
+	.long 0xd8, 0xffff9fff, 0x00000000
+	.long 0xf4, 0x3f8ffffd, 0x40300002
+	.long 0x1050, 0xffffffcf, 0x00000030
 
 constant_register_values_end:
 
@@ -474,126 +476,154 @@ constant_register_values_end:
 	 *		Which are a triple of configuration regiser, mask, and value.
 	 *		
 	 */
-	/* DDR RECOMP/SCOMP table */
+
+#define RCOMP_MMIO 0x080000
+
+	/* DDR RECOMP table */
 	.p2align 3
-ddr_rcomp_scomp_table:
-	/* register, function 2, function 3 */
-	.long 0x054, 0x000000000, 0x000000000
-	.long 0x058, 0x076433221, 0x076433221
-	.long 0x05c, 0x0fedca988, 0x0fedca988
-	.long 0x060, 0x0ffffffff, 0x0ffffffff
-	.long 0x064, 0x000000000, 0x000000000
-	.long 0x068, 0x076433221, 0x076433221
-	.long 0x06c, 0x0fedca988, 0x0fedca988
-	.long 0x070, 0x0ffffffff, 0x0ffffffff
-	.long 0x084, 0x000000000, 0x099999999
-	.long 0x088, 0x076433221, 0x099999999
-	.long 0x08c, 0x0fedca988, 0x099999999
-	.long 0x090, 0x0ffffffff, 0x099999999
-	.long 0x094, 0x000000000, 0x0aaaaaaaa
-	.long 0x098, 0x076433221, 0x0aaaaaaaa
-	.long 0x09c, 0x0fedca988, 0x0aaaaaaaa
-	.long 0x0a0, 0x0ffffffff, 0x0aaaaaaaa
-	.long 0x0b4, 0x000000000, 0x000000000
-	.long 0x0b8, 0x076433221, 0x076433221
-	.long 0x0bc, 0x0fedca988, 0x0fedca988
-	.long 0x0c0, 0x0ffffffff, 0x0ffffffff
-	.long 0x0c4, 0x000000000, 0x000000000
-	.long 0x0c8, 0x076433221, 0x076433221
-	.long 0x0cc, 0x0fedca988, 0x0fedca988
-	.long 0x0d0, 0x0ffffffff, 0x0ffffffff
-ddr_rcomp_scomp_table_end:
+ddr_rcomp_1:
+	.long 0x44332211, 0xc9776655, 0xffffffff, 0xffffffff
+	.long 0x22111111, 0x55444332, 0xfffca876, 0xffffffff
+ddr_rcomp_2:
+	.long 0x00000000, 0x76543210, 0xffffeca8, 0xffffffff
+	.long 0x21000000, 0xa8765432, 0xffffffec, 0xffffffff
+ddr_rcomp_3:
+	.long 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff
+	.long 0x88888888, 0x88888888, 0x88888888, 0x88888888
+
 
 	.p2align 3
 ram_set_registers:
 	CALL_LABEL(ram_set_rcomp_regs)
 	CALL_LABEL(ram_set_d0f0_regs)
 	RET_LABEL(ram_set_registers)
+
+rcomp_init_str:     .string "Setting RCOMP registers.\r\n"
+
+write_8dwords:
+	mov %esp, %ebp
+	movl	%ecx, %edx
+	addl	$32, %edx
+1:	movl	(%ecx), %eax
+	movl	%eax, (%ebx)
+	addl	$4, %ecx
+	addl	$4, %ebx
+	cmpl	%ecx, %edx
+	jnz	1b
+	subl	$32, %ecx
+	mov %ebp, %esp
+        RETSP
+
+
 ram_set_rcomp_regs:
-	movl	$0x0e0, %eax	/*enable device 0 functions 2 & 3 */
-	PCI_READ_CONFIG_BYTE
-	andb	$~(1<<1), %al
-	movb	%al, %dl	/* Put data in dl */
-	movl	$0x0e0, %eax	/* write to offset e0 */
-	PCI_WRITE_CONFIG_BYTE
 
-	/* load the tables in device 0 functions 2 and 3 */
-	movl	$ddr_rcomp_scomp_table, %ebx
-1:	movl	0(%ebx), %eax	/* get the register address */
-	orl	$0x200, %eax	/* set to function 2 */
-	movl	4(%ebx), %ecx	/* get the data for function 2 */
-	PCI_WRITE_CONFIG_DWORD
-	movl	0(%ebx), %eax	/* get the register address */
-	orl	$0x300, %eax	/* set to function 3 */
-	movl	8(%ebx), %ecx	/* get the data for function 3 */
-	PCI_WRITE_CONFIG_DWORD
-	addl	$12, %ebx
-	cmpl	$ddr_rcomp_scomp_table_end, %ebx
-	jb	1b
+	CONSOLE_INFO_TX_STRING($rcomp_init_str)
 
-	movl	$0x088, %eax	/* RCOMP evaluation phase */
-	PCI_READ_CONFIG_BYTE
-	andb	$~(1<<5), %al
-	movb	%al, %dl	/* Put data in dl */
-	movb	%al, %cl	/* save the byte */
-	movl	$0x088, %eax	/* write to offset 88 */
-	PCI_WRITE_CONFIG_BYTE
-	orb	$(1<<5), %cl
-	movb	%cl, %dl	/* Put data in dl */
-	movl	$0x088, %eax	/* write to offset 88 */
-	PCI_WRITE_CONFIG_BYTE
-2:	movl	$0x088, %eax	/* poll for RCOMP evaluation complete */
-	PCI_READ_CONFIG_BYTE
-	andb	$(1<<5), %al
-	jnz	2b
-	movl	$0x088, %eax	/* RCOMP/SCOMP register update */
-	PCI_READ_CONFIG_BYTE
-	andb	$~(1<<6), %al
-	movb	%al, %dl	/* Put data in dl */
-	movb	%al, %cl	/* save the byte */
-	movl	$0x088, %eax	/* write to offset 88 */
-	PCI_WRITE_CONFIG_BYTE
-	orb	$(1<<6), %cl
-	movb	%cl, %dl	/* Put data in dl */
-	movl	$0x088, %eax	/* write to offset 88 */
-	PCI_WRITE_CONFIG_BYTE
-3:	movl	$0x088,%eax	/* poll for RCOMP/SCOMP update complete */
-	PCI_READ_CONFIG_BYTE
-	andb	$(1<<6), %al
-	jnz	3b
-
-	/* place the command clock drive strength comp in static override */
-	movl	$0x0380, %eax	/* read function 3 offset 80 */
+	movl	$0x0f4, %eax	/*enable access to the rcomp bar */
 	PCI_READ_CONFIG_DWORD
-    /* not sure this next section is correct, documentation on device 0
-	function 3, register 80 is lacking. */
-	movl	%eax, %ecx
+	andl	$~(1<<31), %eax
+	orl	$((1<<30)|(1<<22)), %eax
+	movl	%eax, %ecx	/* Put data in ecx */
+	movl	$0x0f4, %eax	/* write to offset f4 */
+	PCI_WRITE_CONFIG_DWORD
 
-	andl	$0xff01ffff, %ecx
-	shrl	$7, %eax
-	andl	$0x00fe0000, %eax
-	orl	%eax, %ecx
-	movl	$0x0380, %eax
-	PCI_WRITE_CONFIG_DWORD	/* Set pull up values */
-	movl	%ecx, %eax
-	andl	$0xffffff01, %ecx
-	shrl	$7, %eax
-	andl	$0x000000fe, %eax
-	orl	%eax, %ecx
-	movl	$0x0380, %eax
-	PCI_WRITE_CONFIG_DWORD	/* Set pull down values */
-	orl	$0x80008000, %ecx
-	movl	$0x0380, %eax
-	PCI_WRITE_CONFIG_DWORD	/* enable mode overide */
+	/* Set the MMIO address to 512K */
+	movl    $RCOMP_MMIO, %ecx
+	movl	$0x14, %eax
+	PCI_WRITE_CONFIG_DWORD
 
-	movl	$0x0088, %eax	/* enable periodic compensaion */
-	PCI_READ_CONFIG_BYTE
-	orb	$(1<<7), %al
-	mov	%al, %dl
-	movl	$0x0088, %eax	
-	PCI_WRITE_CONFIG_BYTE
+	movl	$(RCOMP_MMIO + 0x20), %ecx
+	movl	(%ecx), %eax
+	orl	$(1<<9), %eax
+	movl	%eax, (%ecx)
+
+	/* Begin to write the RCOMP registers */
+	movl	$(RCOMP_MMIO + 0x2c), %ebx
+	movb	$0xff, (%ebx)
+	movl    $(RCOMP_MMIO + 0x30), %ebx
+	movl	$0x01040444, (%ebx)
+	movl    $(RCOMP_MMIO + 0x34), %ebx
+        movb    $0x04, (%ebx)
+        movl    $(RCOMP_MMIO + 0x40), %ebx
+	xorl	%eax, %eax
+        movl    %eax, (%ebx)
+        movb    $0x44, %bl
+        movw    %ax, (%ebx)
+        movb    $0x48, %bl
+        movw    %ax, (%ebx)
+        movb    $0x4c, %bl
+        movw    %ax, (%ebx)
+        movb    $0x50, %bl
+        movw    %ax, (%ebx)
+	movl	$(RCOMP_MMIO + 0x60), %ebx
+	movl	$ddr_rcomp_1, %ecx
+	CALLSP(write_8dwords)
+	movl	$(RCOMP_MMIO + 0x80), %ebx
+	movl	$ddr_rcomp_2, %ecx
+	CALLSP(write_8dwords)
+	movl	$(RCOMP_MMIO + 0xa0), %ebx
+	CALLSP(write_8dwords)
+	movl	$(RCOMP_MMIO + 0x140), %ebx
+	CALLSP(write_8dwords)
+	movl	$(RCOMP_MMIO + 0x1c0), %ebx
+	CALLSP(write_8dwords)
+	movl	$(RCOMP_MMIO + 0x180), %ebx
+	movl	$ddr_rcomp_3, %ecx
+	CALLSP(write_8dwords)
+
+#if 0	/* Print the RCOMP registers */
+	movl    $RCOMP_MMIO, %ecx
+1:	movl	%ecx, %eax
+	andb	$0x0f, %al
+	jnz	2f
+	CONSOLE_INFO_TX_CHAR($'\r')
+        CONSOLE_INFO_TX_CHAR($'\n')
+	CONSOLE_INFO_TX_HEX32(%ecx)
+	CONSOLE_INFO_TX_CHAR($' ')
+	CONSOLE_INFO_TX_CHAR($'-')
+	CONSOLE_INFO_TX_CHAR($' ')
+2:	movl    (%ecx), %eax
+	CONSOLE_INFO_TX_HEX32(%eax)
+	CONSOLE_INFO_TX_CHAR($' ')
+	addl	$4, %ecx
+	cmpl	$(RCOMP_MMIO + 0x1e0), %ecx
+	jnz	1b
+        CONSOLE_INFO_TX_CHAR($'\r')
+        CONSOLE_INFO_TX_CHAR($'\n')
+#endif
+
+	movl	$(RCOMP_MMIO + 0x20), %ecx
+	movl	(%ecx), %eax
+	andl	$~(3), %eax
+	orl	$(1), %eax
+	movl	%eax, (%ecx)
+
+	/* Wait 40 usec */
+	SLOW_DOWN_IO
+	
+	/* unblock updates */
+	movl	$(RCOMP_MMIO + 0x20), %ecx
+	movl	(%ecx), %eax
+	andl	$~(1<<9), %eax
+	movl	%eax, (%ecx)
+	orl	$(1<<8), %eax
+	movl	%eax, (%ecx)
+	andl	$~(1<<8), %eax
+	movl	%eax, (%ecx)
+	
+	/* Wait 40 usec */
+	SLOW_DOWN_IO
+	
+	movl	$0x0f4, %eax	/*disable access to the rcomp bar */
+	PCI_READ_CONFIG_DWORD
+	andl	$~(1<<22), %eax
+	movl	%eax, %ecx	/* Put data in ecx */
+	movl	$0x0f4, %eax	/* write to offset f4 */
+	PCI_WRITE_CONFIG_DWORD
+
 	RET_LABEL(ram_set_rcomp_regs)
 
+	
 ram_set_d0f0_regs:
 #if DEBUG_RAM_CONFIG
 	CALLSP(dumpnorth)
@@ -1389,8 +1419,11 @@ cas_latency_80:
  	 
 #	.byte 0x05, 0x01, 0x06 
 #	.byte 0xb5, 0xb1, 0xb6 
-#	.byte 0x62, 0x62, 0x62   /* factory setting for 0 undocumented reg tnz */ 
-	.byte 0xb1, 0xb1, 0xb1   /* factory setting for 0 undocumented reg tnz */ 
+	.word 0x0, 0x0bb1, 0x0662   /* RCVEN */ 
+cas_latency_80_4dimms:
+        .word 0x0, 0x0bb1, 0x0882
+
+
 cas_latency_78:
 	.byte DRT_CAS_1_5, DRT_CAS_2_0, DRT_CAS_2_5
 
@@ -1492,6 +1525,7 @@ spd_set_cas_latency_next_dimm:
 	movl	$0x88, %eax	/* set master DLL reset */
 	PCI_READ_CONFIG_DWORD
 	orl	$(1<<26), %eax
+	shll	$1, %ecx	/* the rest of the references are words */
 	movl	%ecx, %ebx
 	movl	%eax, %ecx
 	movl	$0x88, %eax
@@ -1507,15 +1541,35 @@ spd_set_cas_latency_next_dimm:
 	PCI_WRITE_CONFIG_DWORD
 	movl	%ebx, %ecx
 	movl	$0x80, %eax
-	movb	cas_latency_80(%ecx), %dl
-	PCI_WRITE_CONFIG_BYTE
+	PCI_READ_CONFIG_WORD
+	andl	$~(0x0fff), %eax
+	movl	%eax, %ebx
+	orw	cas_latency_80(%ecx), %bx
+	movl	$0x70, %eax
+	PCI_READ_CONFIG_DWORD
+	andb	$0xff, %al
+	jz	1f
+	shrl	$8, %eax
+        andb    $0xff, %al
+        jz      1f
+        shrl    $8, %eax
+        andb    $0xff, %al
+        jz      1f
+        shrl    $8, %eax
+        andb    $0xff, %al
+        jz      1f
+        andl    $~(0x0fff), %ebx  /* we have dimms in all 4 slots */ 
+        orw     cas_latency_80_4dimms(%ecx), %bx
+1:	movl	%ebx, %ecx
+	movl	$0x80, %eax
+	PCI_WRITE_CONFIG_WORD
 	movl	$0x88, %eax	/* reset master DLL reset */
 	PCI_READ_CONFIG_DWORD
 	andl	$~(1<<26), %eax
 	movl	%eax, %ecx
 	movl	$0x88, %eax
 	PCI_WRITE_CONFIG_DWORD
-	
+	RAM_RESET_DDR_PTR()	
 	RET_LABEL(spd_set_cas_latency)
 
 spd_set_dram_timing:
@@ -1569,7 +1623,14 @@ spd_get_dram_timing:
 	subb	$1, %al
 	andl	$0xff, %eax	/* Clear the upper bits of eax */
 	divb	%dl, %al
-
+#if 0
+	CONSOLE_DEBUG_TX_HEX32(%eax)
+	CONSOLE_DEBUG_TX_CHAR($'-')
+	CONSOLE_DEBUG_TX_CHAR($'x')
+	CONSOLE_DEBUG_TX_CHAR($'7')
+	CONSOLE_DEBUG_TX_CHAR($'8')
+	jmp	1f
+#endif
 	/* Don't even process small timings */
 	cmpb	$5, %al
 	jbe	1f
@@ -1587,6 +1648,7 @@ spd_get_dram_timing:
 	andl	$3, %ecx
 	notl	%ecx
 	subl	$1, %ecx
+	andl	$3, %ecx
 
 	/* See if we need a slower timing */
 	cmpb	%cl, %al
@@ -1596,6 +1658,7 @@ spd_get_dram_timing:
 	movb	%al, %cl
 	addb	$1, %cl
 	notl	%ecx
+	andl	$3, %ecx
 	shll	$9, %ecx
 	andl	$~(3<<9), %esi
 	orl	%ecx, %esi
@@ -1604,35 +1667,54 @@ spd_get_dram_timing:
 	/* 
 	 * tRD 
 	 */
-	/* Set to a 7 clock read delay */
-	andl	$~(7<<24), %esi
+	/* Set to a 7 clock read delay. This is for 133Mhz
+	 *  with a CAS latency of 2.5  if 2.0 a 6 clock
+	 *  delay is good  */
+	movl	$0x78, %eax
+	PCI_READ_CONFIG_BYTE
+	andb	$0x30, %al
+	jnz	1f
+	andl	$~(7<<24), %esi /* CAS latency is 2.5, make 7 clks */
 
 	/*
 	 * Back to Back Read Turn Around
 	 */
-	/* Set to a 4 clock back to back read turn around */
-#	andl	$~(1<<27), %esi
+	/* Set to a 3 clock back to back read turn around.  This
+	 *  is good for CAS latencys 2.5 and 2.0 */
+1:	orl	$(1<<27), %esi
 	/*
 	 * Back to Back Read-Write Turn Around
 	 */
-	/* Set to a 5 clock back to back read to write turn around */
+	/* Set to a 5 clock back to back read to write turn around.
+	 *  4 is a good delay if the CAS latency is 2.0 */
+	movl	$0x78, %eax
+	PCI_READ_CONFIG_BYTE
+	and	$(1<<4), %al
+	jnz	2f
 	andl	$~(1<<28), %esi
 	/*
 	 * Back to Back Write-Read Turn Around
 	 */
-	/* Set to a 3 clock back to back write to read turn around */
-#	andl	$~(1<<29), %esi
-			
+	/* Set to a 2 clock back to back write to read turn around.
+	 *  This is good for 2.5 and 2.0 CAS Latencies. */
+2:	orl	$(1<<29), %esi
 spd_set_dram_timing_next_dimm:
+#if 1			
 	/* go to the next DIMM */
 	addb	$(SMBUS_MEM_DEVICE_INC), %bl /* increment the smbus device */
 	cmpb	$SMBUS_MEM_DEVICE_END, %bl
 	jbe	spd_get_dram_timing
-
+#endif
 	movl	$0x78, %eax
 	movl	%esi, %ecx
 	PCI_WRITE_CONFIG_DWORD
-	
+#if 0
+	CONSOLE_DEBUG_TX_HEX32(%ecx)
+	CONSOLE_DEBUG_TX_CHAR($'-')
+	CONSOLE_DEBUG_TX_CHAR($'x')
+	CONSOLE_DEBUG_TX_CHAR($'7')
+	CONSOLE_DEBUG_TX_CHAR($'8')
+#endif	
 	RET_LABEL(spd_set_dram_timing)
 
 
@@ -1889,9 +1971,17 @@ dram_finish:
 
 noecc_init:
 
+	movl    $0x7c, %eax	/* FCS_EN */
+        PCI_READ_CONFIG_DWORD
+	orl     $(1<<17), %eax
+	movl	%eax, %ecx
+        movl    $0x7c, %eax
+        PCI_WRITE_CONFIG_DWORD
+
 #if DEBUG_RAM_CONFIG 
 	CALLSP(dumpnorth)
 #endif
+
 	CALL_LABEL(verify_ram)
 	RET_LABEL(dram_finish)
 

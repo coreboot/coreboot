@@ -8,3 +8,4 @@ mainboardinit sdram/generic_sdram.inc
 mainboardinit sdram/generic_cache_linuxbios.inc
 
 object northbridge.o
+object pci_parity.o

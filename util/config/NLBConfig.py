@@ -254,7 +254,7 @@ def docipl(dir, ipl_name):
 	iplpath = os.path.join(treetop, 'src', ipl_name)
 	userrules.append("ipl.o: " + iplpath)
 	# Now we need a mainboard-specific include path
-	userrules.append("\tcc $(CPUFLAGS) -I%s -c $<" % mainboard_dir)
+	userrules.append("\tcc $(CFLAGS) -I%s -c $<" % mainboard_dir)
 	# now set new values for the ldscript.ld.  Should be a script? 
 	rambase = 0x4000
 	linuxbiosbase = 0x80000

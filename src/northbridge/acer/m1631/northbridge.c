@@ -1,5 +1,5 @@
 #include <pci.h>
-
+#include <printk.h>
 
 // FIX ME!
 unsigned long sizeram()
@@ -15,8 +15,13 @@ void intel_framebuffer_on()
 }
 #endif
 
+void
 final_northbridge_fixup()
 {
     printk("SET THAT BIT!\n");
     /* set bit 4 of north bridge register d4 to 1 */
 }
+
+
+
+

@@ -5,12 +5,10 @@
 
 void mainboard_fixup()
 {
-	struct pci_dev *pm_pcidev, *host_bridge_pcidev, *nic_pcidev;
-	unsigned smbus_io, pm_io;
-	unsigned int i, j;
-	printk("intel_mainboard_fixup()\n");
 
+	printk("intel_mainboard_fixup()\n");
 #if 0
+	struct pci_dev *pm_pcidev, *host_bridge_pcidev, *nic_pcidev;
 	// put in the right values for acer stuff
 	pm_pcidev = pci_find_device(0x8086, 0x7113, 0);
 	nic_pcidev = pci_find_device(0x8086, 0x1229, 0);

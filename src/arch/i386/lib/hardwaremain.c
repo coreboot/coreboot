@@ -35,6 +35,7 @@ static char rcsid[] = "$Id$";
 #include <cpu/p5/io.h>
 #include <intel.h>
 #include <pciconf.h>
+#include <pci.h>
 #include <cpu/p5/cpuid.h>
 #include <cpu/p6/ioapic.h>
 #include <subr.h>
@@ -48,6 +49,11 @@ void intel_main()
 	void keyboard_on(void);
 	void framebuffer_on(void);
 	void intel_copy_irq_routing_table(void);
+	unsigned long sizeram(void);
+	void intel_cache_on(unsigned long base, unsigned long totalram);
+	void intel_zero_irq_settings(void);
+	void intel_check_irq_routing_table(void);
+	void intel_interrupts_on();
 
 #ifdef FINAL_MAINBOARD_FIXUP
 	void final_mainboard_fixup(void);

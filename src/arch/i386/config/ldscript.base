@@ -95,8 +95,8 @@ SECTIONS
 
 	.heap (.): {
 		_heap = .;
-		/* Reserve 64K for the heap */
-		. = . + 0x10000;
+		/* Reserve 256K for the heap */
+		. = . + 0x40000;
 		_eheap = .;
 	}
 	.stack (.) : {

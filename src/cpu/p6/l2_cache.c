@@ -88,6 +88,8 @@ int intel_l2_configure()
 	int signature, tmp;
 	int cache_size;
 
+	cache_disable();
+
 	intel_cpuid(0, &eax, &ebx, &ecx, &edx);
 
 	if (ebx != 0x756e6547 || edx != 0x49656e69 || ecx != 0x6c65746e) {

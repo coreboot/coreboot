@@ -1,4 +1,3 @@
-uses i686
 uses INTEL_PPRO_MTRR
 dir /cpu/p5
 object cpufixup.o

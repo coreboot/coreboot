@@ -39,13 +39,13 @@ struct irq_routing_table {
 
 extern const struct irq_routing_table intel_irq_routing_table;
 
-#if defined(DEBUG) && defined(HAVE_PIRQ_TABLE)
+#if (DEBUG==1 && HAVE_PIRQ_TABLE==1)
 void check_pirq_routing_table(void);
 #else
 #define check_pirq_routing_table() do {} while(0)
 #endif
 
-#if defined(HAVE_PIRQ_TABLE)
+#if HAVE_PIRQ_TABLE==1
 unsigned long copy_pirq_routing_table(unsigned long start);
 #else
 #define copy_pirq_routing_table(start) (start)

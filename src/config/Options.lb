@@ -63,27 +63,27 @@ define ARCH
 end
 define k7
 	default none
-	export always
+	export used
 	comment "We're a k7"
 end
 define k8
 	default none
-	export always
+	export used
 	comment "We're a k8"
 end
 define i586
 	default none
-	export always
+	export used
 	comment "We're a 586"
 end
 define i686
 	default none
-	export always
+	export used
 	comment "We're a 686"
 end
 define CPU_FIXUP
 	default none
-	export always
+	export used
 	comment "Do CPU fixups"
 end
 
@@ -263,7 +263,7 @@ end
 define HEAP_SIZE
 	default 0x2000
 	format "0x%x"
-	export used
+	export always
 	comment "Default heap size"
 end
 define _RAMBASE
@@ -415,7 +415,7 @@ define CONFIG_SERIAL_POST
 end
 define NO_POST
 	default none
-	export always
+	export used
 	comment "Disable POST codes"
 end
 define TTYS0_BASE
@@ -503,7 +503,7 @@ define CONFIG_LOGICAL_CPUS
 end
 define HAVE_MP_TABLE
 	default none
-	export always
+	export used
 	comment "Define to build an MP table"
 end
 
@@ -565,22 +565,22 @@ end
 
 define HAVE_PIRQ_TABLE
 	default none
-	export always
+	export used
 	comment "Define if we have a PIRQ table"
 end
 define IRQ_SLOT_COUNT
 	default none
-	export always
+	export used
 	comment "Number of IRQ slots"
 end
 define CONFIG_PCIBIOS_IRQ
 	default none
-	export always
+	export used
 	comment "PCIBIOS IRQ support"
 end
 define CONFIG_IOAPIC
 	default none
-	export always
+	export used
 	comment "IOAPIC support"
 end
 
@@ -600,7 +600,7 @@ define IDE_BOOT_DRIVE
 end
 define IDE_SWAB
 	default none
-	export always
+	export used
 	comment "Swap bytes when reading from IDE device"
 end
 define IDE_OFFSET

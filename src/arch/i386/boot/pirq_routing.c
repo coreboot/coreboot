@@ -2,7 +2,7 @@
 #include <arch/pirq_routing.h>
 #include <string.h>
 
-#if DEBUG==1
+#if (DEBUG==1 && HAVE_PIRQ_TABLE==1)
 void check_pirq_routing_table(void)
 {
 	const uint8_t *addr;
@@ -84,6 +84,7 @@ int verify_copy_pirq_routing_table(unsigned long addr)
 #define verify_copy_pirq_routing_table(addr)
 #endif
 
+#if HAVE_PIRQ_TABLE==1
 unsigned long copy_pirq_routing_table(unsigned long addr)
 {
 	/* Align the table to be 16 byte aligned. */
@@ -97,3 +98,4 @@ unsigned long copy_pirq_routing_table(unsigned long addr)
 	verify_copy_pirq_routing_table(addr);
 	return addr + intel_irq_routing_table.size;
 }
+#endif

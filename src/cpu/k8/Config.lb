@@ -1,4 +1,6 @@
+uses k8
 uses CPU_FIXUP
+default k8=1
 dir /cpu/k7
 config chip.h
 if CPU_FIXUP

@@ -17,13 +17,67 @@ global_uses_options = {}
 romimages = {}
 buildroms = []
 curimage = 0
-curpart = 0
-curdir = '' 
-dirstack = []
 alloptions = 0 # override uses at top level
 
 local_path = re.compile(r'^\.')
 include_pattern = re.compile(r'%%([^%]+)%%')
+
+# -----------------------------------------------------------------------------
+#                    Utility Classes
+# -----------------------------------------------------------------------------
+
+# Used to keep track of the current part or dir
+class stack:
+	class __stack_iter:
+		def __init__ (self, stack):
+			self.index = 0
+			self.len = len(stack)
+			self.stack = stack
+
+		def __iter__ (self):
+			return self
+
+		def next (self):
+			if (self.index < self.len):
+				s = self.stack[self.index]
+				self.index = self.index + 1
+				return s
+			raise StopIteration
+
+	def __init__ (self):
+		self.stack = []
+
+	def __len__ (self):
+		return len(self.stack)
+
+	def __getitem__ (self, i):
+		try:
+			return self.stack[i]
+		except IndexError:
+			return 0
+
+	def __iter__ (self):
+		return self.__stack_iter(self.stack)
+
+	def push(self, part):
+		self.stack.append(part)
+
+	def pop(self):
+		try:
+			return self.stack.pop()
+		except IndexError:
+			return 0
+
+	def tos(self):
+		try:
+			return self.stack[-1]
+		except IndexError:
+			return 0
+
+	def empty(self):
+		return (len(self.stack) == 0)
+partstack = stack()
+dirstack = stack()
 
 # -----------------------------------------------------------------------------
 #                    Error Handling
@@ -32,7 +86,7 @@ include_pattern = re.compile(r'%%([^%]+)%%')
 # Used to keep track of our current location while parsing
 # configuration files
 class location:
-	class place:
+	class __place:
                 def __init__(self, file, line, command):
                         self.file = file
                         self.line = line
@@ -44,35 +98,45 @@ class location:
                         return "%s:%d" % (self.file, self.line)
         
         def __init__ (self):
-                self.stack = []
+                self.stack = stack()
+
+	def __str__ (self):
+		s = ''
+		for p in self.stack:
+			if (s == ''):
+				s = p.at()
+			else:
+				s = s + '\n' + p.at()
+		return s
 
         def file(self):
-                return self.stack[-1].file
-        def line(self):
-                 return self.stack[-1].line
-        def command(self):
-                return self.stack[-1].command
+                return self.stack.tos().file
 
-        def push_file(self, file):
-                self.stack.append(self.place(file, 0, ""))
-        def pop_file(self):
+        def line(self):
+                return self.stack.tos().line
+
+        def command(self):
+                return self.stack.tos().command
+
+        def push(self, file):
+                self.stack.push(self.__place(os.path.normpath(file), 0, ""))
+
+        def pop(self):
                 self.stack.pop()
+
         def next_line(self, command):
-                self.stack[-1].next_line(command)
+                self.stack.tos().next_line(command)
+
         def at(self):
-                return self.stack[-1].at()
+                return self.stack.tos().at()
 loc = location()
 
 # Print error message
 def error(string):      
         global errors, loc
 	errors = errors + 1
-        size = len(loc.stack)
-        i = 0
-        while(i < size -1): 
-                print loc.stack[i].at()
-                i = i + 1
-        print "%s: %s"% (loc.at(), string)
+        print "===> ERROR: %s" % string
+        print "%s" % loc
 
 # Print error message and exit
 def fatal(string):      
@@ -83,18 +147,18 @@ def fatal(string):
 def warning(string):
         global warnings, loc
 	warnings = warnings + 1
-        print "===> Warning:"
-        size = len(loc.stack)
-        i = 0
-        while(i < size -1):
-                print loc.stack[i].at()
-                i = i + 1
-        print "%s: %s"% (loc.at(), string)
+        print "===> Warning: %s" % string
+        print "%s" % loc
 
 # Exit parser if an error has been encountered
 def exitiferrors():
 	if (errors != 0):
 		sys.exit(1)
+
+def debug_print(level, str):
+	global debug
+	if (debug >= level):
+		print str
 
 # -----------------------------------------------------------------------------
 #                    Main classes
@@ -176,7 +240,7 @@ class romimage:
 	# such kludgery. If the name starts with '.' then make the 
 	# dependency be on ./thing.x gag me.
 	def addobjectdriver(self, dict, object_name):
-		global curdir
+		global dirstack
 		suffix = object_name[-2:]
 		if (suffix == '.o'):
 			suffix = '.c'
@@ -184,10 +248,9 @@ class romimage:
 		if (object_name[0] == '.'):
 			source = base + suffix
 		else:
-			source = os.path.join(curdir, base + suffix)
+			source = os.path.join(dirstack.tos(), base + suffix)
 		object = base + '.o'
-		if (debug):
-			print "add object %s source %s" % (object_name, source)
+		debug_print(1, "add object %s source %s" % (object_name, source))
 		l = getdict(dict, base)
 		if (l):
 			print "Warning, object/driver %s previously defined" % base
@@ -245,8 +308,7 @@ class romimage:
 		if (str != 0):
 			self.useinitincludes = 1
 
-		if (debug > 2):
-			print "ADDCRT0: %s -> %s" % str, path
+		debug_print(2, "ADDCRT0: %s -> %s" % (str, path))
 		o = getdict(self.initincludes, path)
 		if (o):
 			print "Warning, init include for %s previously defined" % path
@@ -271,11 +333,13 @@ class romimage:
 	def newformat(self):
 		return self.useinitincludes
 
-	def setpartinstance(self, val):
-		self.partinstance = val
-
-	def getpartinstance(self):
+	def numparts(self):
 		return self.partinstance
+
+	def newpartinstance(self):
+		i = self.partinstance
+		self.partinstance = self.partinstance + 1
+		return i
 
 	def setroot(self, part):
 		self.root = part
@@ -301,7 +365,7 @@ class buildrom:
 # such kludgery. If the name starts with '.' then make the 
 # dependency be on ./thing.x gag me.
 def addobjectdriver(dict, object_name):
-	global curimage, curdir
+	global dirstack
 	suffix = object_name[-2:]
 	if (suffix == '.o'):
 		suffix = '.c'
@@ -309,10 +373,9 @@ def addobjectdriver(dict, object_name):
 	if (object_name[0] == '.'):
 		source = base + suffix
 	else:
-		source = os.path.join(curdir, base + suffix)
+		source = os.path.join(dirstack.tos(), base + suffix)
 	object = base + '.o'
-	if (debug):
-		print "add object %s source %s" % (object_name, source)
+	debug_print(1, "add object %s source %s" % (object_name, source))
 	l = getdict(dict, base)
 	if (l):
 		print "Warning, object/driver %s previously defined" % base
@@ -357,7 +420,6 @@ class option:
 	def __init__ (self, name):
 		self.name = name	# name of option
 		self.loc = 0		# current location
-		#self.value = 0		# option value
 		self.set = 0		# option has been set
 		self.used = 0		# option has been set
 		self.default = 0	# option has default value (otherwise
@@ -369,8 +431,6 @@ class option:
 		self.format = '%s'	# option print format
 
 	def setvalue(self, value, values, loc):
-		#if (self.set):
-		#	fatal("Error: option %s already set" % self.name)
 		self.set = 1
 		self.defined = 1
 		self.loc = loc
@@ -398,7 +458,6 @@ class option:
 		global global_option_values
 		if (self.default):
 			fatal("Error: default value for %s already set" % self.name)
-		#self.value = value
 		setdict(global_option_values, self.name, value)
 		self.defined = 1
 		self.default = 1
@@ -463,8 +522,7 @@ class option_value:
 # A configuration part
 class partobj:
 	def __init__ (self, image, dir, parent, type, name):
-		if (debug):
-			print "partobj dir %s parent %s type %s" %(dir,parent,type)
+		debug_print(1, "partobj dir %s parent %s type %s" %(dir,parent,type))
 		self.image = image
 		self.children = 0
 		self.initcode = []
@@ -475,31 +533,28 @@ class partobj:
 		self.objects = []
 		self.dir = dir
 		self.irq = 0
-		self.instance = image.getpartinstance() + 1
+		self.instance = image.newpartinstance()
 		self.flatten_name = flatten_name(type + "/" + name)
-		if (debug):
-			print "INSTANCE %d" % self.instance
-		image.setpartinstance(image.getpartinstance() + 1)
+		debug_print(1, "INSTANCE %d" % self.instance)
 		self.devfn = 0	
 		self.private = 0	
 		self.uses_options = {}
 		# chip initialization. If there is a chip.h in the 
 		# directory, generate the structs etc. to 
 		# initialize the code
-		self.chipconfig = 0
 		if (os.path.exists(dir + "/" + "chip.h")): 
 			self.chipconfig = 1
+		else:
+			self.chipconfig = 0
 		
 		if (parent):
-			if (debug):
-				print "add to parent"
+			debug_print(1, "add to parent")
 			self.parent   = parent
 			# add current child as my sibling, 
 			# me as the child.
-			if (debug):
-				if (parent.children):
-					print "add %s (%d) as sibling" % (parent.children.dir, parent.children.instance)
-			self.siblings = parent.children
+			if (parent.children):
+				debug_print(1, "add %s (%d) as sibling" % (parent.children.dir, parent.children.instance))
+				self.siblings = parent.children
 			parent.children = self
 		else:
 			self.parent = self
@@ -537,7 +592,10 @@ class partobj:
 			else:
 				file.write(";")
 			file.write("\n");
-		file.write("struct chip dev%d = {\n" % self.instance)
+		if (self.instance):
+			file.write("struct chip dev%d = {\n" % self.instance)
+		else:
+			file.write("struct chip root = {\n")
 		file.write("/* %s %s */\n" % (self.type, self.dir))
 		#file.write("  .devfn = %d,\n" % self.devfn)
 		if (self.siblings):
@@ -557,8 +615,6 @@ class partobj:
 			file.write("  .chip_config = (void *) &%s_config_%d,\n" %\
 					(self.flatten_name, self.instance ))
 		file.write("};\n")
-					
-
 		
 	def irq(self, irq):
 		self.irq = irq
@@ -581,41 +637,20 @@ class partobj:
 			return
 		setdict(self.uses_options, name, o)
 
-# Used to keep track of the current part
-class partsstack:
-	def __init__ (self):
-		self.stack = []
-
-	def push(self, part):
-		self.stack.append(part)
-
-	def pop(self):
-		return self.stack.pop()
-
-	def tos(self):
-		return self.stack[-1]
-
-	def empty(self):
-		return (len(self.stack) == 0)
-pstack = partsstack()
-
 # -----------------------------------------------------------------------------
 #                    statements 
 # -----------------------------------------------------------------------------
 
 def getdict(dict, name):
 	if name not in dict.keys(): 
-		if (debug >1):
-			print 'Undefined:', name
+		debug_print(1, "Undefined: %s" % name)
 		return 0
 	v = dict.get(name, 0)
-	if (debug > 1):
-		print "getdict %s returning %s" % (name, v)
+	debug_print(1, "getdict %s returning %s" % (name, v))
 	return v
 
 def setdict(dict, name, value):
-    	if (debug > 1):
-		print "setdict sets %s to %s" % (name, value)
+	debug_print(1, "setdict sets %s to %s" % (name, value))
 	dict[name] = value
 
 # options. 
@@ -642,7 +677,8 @@ def newoption(name):
 # if we're not processing a part, then we must
 # be at the top level where all options are available
 def getoption(name, image):
-	global curpart, global_uses_options, global_option_values
+	global global_uses_options, global_option_values
+	curpart = partstack.tos()
 	if (curpart):
 		o = getdict(curpart.uses_options, name)
 	elif (alloptions):
@@ -650,7 +686,7 @@ def getoption(name, image):
 	else:
 		o = getdict(global_uses_options, name)
 	if (o == 0 or not o.defined):
-		error("Error: Option %s undefined (missing use command?)." % name)
+		error("Option %s undefined (missing use command?)" % name)
 		return
 	v = 0
 	if (image):
@@ -660,12 +696,13 @@ def getoption(name, image):
 	return v.contents()
 
 def setoption(name, value):
-	global loc, global_options, global_option_values, curimage, curpart
+	global loc, global_options, global_option_values, curimage
+	curpart = partstack.tos()
 	if (curpart and curpart.type != 'mainboard'):
 		fatal("Options may only be set in top-level and mainboard configuration files")
 	o = getdict(global_options, name)
 	if (o == 0):
-		fatal("Error: attempt to set nonexistent option %s" % name)
+		fatal("Attempt to set nonexistent option %s" % name)
 	v = option_value(value)
 	if (curimage):
 		o.setvalue(v, curimage.getvalues(), loc)
@@ -732,7 +769,7 @@ def getformated(name, image):
 	global global_options, global_option_values
 	o = getdict(global_options, name)
 	if (o == 0 or not o.defined):
-		fatal( "Error: Option %s undefined." % name)
+		fatal( "Option %s undefined." % name)
 	v = 0
 	if (image):
 		v = o.getvalue(image, image.getvalues())
@@ -779,13 +816,14 @@ def isset(name, part):
 #	return 0
 
 def usesoption(name):
-	global curpart, global_options, global_uses_options
+	global global_options, global_uses_options
+	curpart = partstack.tos()
 	if (curpart):
 		curpart.usesoption(name)
 		return
 	o = getdict(global_options, name)
 	if (o == 0):
-		fatal("Error: can't use undefined option %s" % name)
+		fatal("Can't use undefined option %s" % name)
 	o.setused()
 	o1 = getdict(global_uses_options, name)
 	if (o1):
@@ -798,26 +836,32 @@ def validdef(name, defval):
 	if (not o):
 		fatal("validdef: %s not here" % name)
 	if ((defval & 1) != 1):
-	    fatal("Error: must specify default value for option %s" % name)
+	    fatal("Must specify default value for option %s" % name)
 	if ((defval & 2) != 2):
-	    fatal("Error: must specify export for option %s" % name)
+	    fatal("Must specify export for option %s" % name)
 	if ((defval & 4) != 4):
-	    fatal("Error: must specify comment for option %s" % name)
+	    fatal("Must specify comment for option %s" % name)
 
 def loadoptions():
-	optionsfile = os.path.join(treetop, 'src', 'config', 'Options.lb')
-	loc.push_file(optionsfile)
+	file = os.path.join('src', 'config', 'Options.lb')
+	optionsfile = os.path.join(treetop, file)
+	loc.push(file)
 	if (not parse('options', open(optionsfile, 'r').read())):
-		fatal("Error: Could not parse file")
-	loc.pop_file()
+		fatal("Could not parse file")
+	loc.pop()
 
 def addinit(path):
-	global curimage, curdir
+	global curimage, dirstack
 	if (path[0] == '/'):
 		curimage.setinitfile(treetop + '/src/' + path)
 	else:
-		curimage.setinitfile(curdir + '/' + path)
+		curimage.setinitfile(dirstack.tos() + '/' + path)
 	print "Adding init file: %s" % path
+
+def addregister(code):
+	global partstack
+	curpart = partstack.tos()
+	curpart.addregister(code)
 
 # we do the crt0include as a dictionary, so that if needed we
 # can trace who added what when. Also it makes the keys
@@ -831,13 +875,13 @@ def addinitinclude(str, path):
 	curimage.addinitinclude(dequote(str), path)
 
 def addldscript(path):
-	global curimage, curdir
+	global curimage, dirstack
+	curdir = dirstack.tos()
 	if (path[0] == '/'):
 		fullpath =  treetop + '/src/' + path
 	else:
 		fullpath = curdir + '/' + path
-	if (debug):
-		print "fullpath :%s: curdir :%s: path :%s:" % (fullpath, curdir, path)
+	debug_print(1, "fullpath :%s: curdir :%s: path :%s:" % (fullpath, curdir, path))
 	curimage.addldscript(fullpath)
 
 def payload(path):
@@ -849,23 +893,34 @@ def payload(path):
 #	addaction('payload', 'cp $< $@')
 
 def startromimage(name):
-	global romimages, curimage, curpart, target_dir, target_name
+	global romimages, curimage, target_dir, target_name
 	print "Configuring ROMIMAGE %s" % name
-	curimage = romimage(name)
-	curimage.settargetdir(os.path.join(target_dir, name))
-	o = partobj(curimage, target_dir, 0, 'board', target_name)
-	curimage.setroot(o)
 	o = getdict(romimages, name)
 	if (o):
 		fatal("romimage %s previously defined" % name)
+	curimage = romimage(name)
+	curimage.settargetdir(os.path.join(target_dir, name))
+	#o = partobj(curimage, target_dir, 0, 'board', target_name)
+	#curimage.setroot(o)
 	setdict(romimages, name, curimage)
 
 def endromimage():
 	global curimage
-	partpop()
 	print "End ROMIMAGE"
 	curimage = 0
-	curpart = 0
+	#curpart = 0
+
+def mainboard(path):
+	full_path = os.path.join(treetop, 'src', 'mainboard', path)
+	setoption('MAINBOARD', full_path)
+        vendor = re.sub("/.*", "", path)
+        part_number = re.sub("[^/]*/", "", path)
+	setoption('MAINBOARD_VENDOR', vendor)
+	setoption('MAINBOARD_PART_NUMBER', part_number)
+	dodir('/config', 'Config.lb')
+	part('mainboard', path, 'Config.lb')
+	curimage.setroot(partstack.tos())
+	partpop()
 
 def addbuildrom(size, roms):
 	global buildroms
@@ -897,46 +952,44 @@ def target(name):
 
 
 def part(name, path, file):
-	global curimage, curpart, curdir, dirstack, pstack
-	dirstack.append(curdir)
-	curdir = os.path.join(treetop, 'src', name, path)
-	newpart = partobj(curimage, curdir, curpart, name, path)
-	print "Configuring PART %s, path %s" % (name,path)
-	if (debug):
-		print "PUSH part %s %s" % (name, curdir)
-	pstack.push(curpart)
-	curpart = newpart
-	doconfigfile(curdir, file)
+	global curimage, dirstack, partstack
+	partdir = os.path.join(name, path)
+	srcdir = os.path.join(treetop, 'src')
+	fulldir = os.path.join(srcdir, partdir)
+	newpart = partobj(curimage, fulldir, partstack.tos(), name, path)
+	print "Configuring PART %s, path %s" % (name, path)
+	partstack.push(newpart)
+	dirstack.push(fulldir)
+	doconfigfile(srcdir, partdir, file)
 
 def partpop():
-	global curpart, curdir, dirstack, pstack
+	global dirstack, partstack
+	curpart = partstack.pop()
+	if (curpart == 0):
+		fatal("Trying to pop non-existent part")
 	print "End PART %s" % curpart.type
 	# Warn if options are used without being set in this part
 	for i in curpart.uses_options.keys():
 		if (not isset(i, curpart)):
 			print "WARNING: Option %s using default value %s" % (i, getformated(i, curpart.image))
-	curpart = pstack.pop()
-	curdir = dirstack.pop()
+	dirstack.pop()
 
 # dodir is like part but there is no new part
 def dodir(path, file):
-	global curimage, curpart, curdir, dirstack
+	global dirstack
 	# if the first char is '/', it is relative to treetop, 
 	# else relative to curdir
 	# os.path.join screws up if the name starts with '/', sigh.
-	if (path[0] == '/'):
-		fullpath = treetop + '/src/' + path 
-	else:
-		fullpath = os.path.join(curdir,  path)
-	if (debug):
-		print "DODIR: path %s, fullpath %s" % (path, fullpath)
-		print "DODIR: curdis %s treetop %s" % (curdir, treetop)
 	print "Configuring DIR %s" % os.path.join(path, file)
-	dirstack.append(curdir)
-	curdir = fullpath
-	file = os.path.join(fullpath, file)
-	doconfigfile(fullpath, file)
-	curdir = dirstack.pop()
+	if (path[0] == '/'):
+		fullpath = os.path.join(treetop, 'src')
+		path = re.sub('^/*', '', path)
+	else:
+		fullpath = dirstack.tos()
+	debug_print(1, "DODIR: path %s, fullpath %s" % (path, fullpath))
+	dirstack.push(os.path.join(fullpath, path))
+	doconfigfile(fullpath, path, file)
+	dirstack.pop()
 
 def lookup(name):
 	global curimage
@@ -967,38 +1020,26 @@ def set_arch(my_arch):
 	setoption('ARCH', my_arch)
 	part('arch', my_arch, 'Config.lb')
 
-def mainboard(path):
-	full_path = os.path.join(treetop, 'src/mainboard', path)
-	setoption('MAINBOARD', full_path)
-        vendor = re.sub("/.*", "", path)
-        part_number = re.sub("[^/]/", "", path)
-	setoption('MAINBOARD_VENDOR', vendor)
-	setoption('MAINBOARD_PART_NUMBER', part_number)
-	dodir('/config', 'Config.lb')
-	part('mainboard', path, 'Config.lb')
-
-def doconfigfile(path, file):
-	filename = os.path.join(path, file)
-	loc.push_file(filename)
-	if (not parse('cfgfile', open(filename, 'r').read())):
-		fatal("Error: Could not parse file")
+def doconfigfile(path, confdir, file):
+	rname = os.path.join(confdir, file)
+	loc.push(rname)
+	fullpath = os.path.join(path, rname)
+	if (not parse('cfgfile', open(fullpath, 'r').read())):
+		fatal("Could not parse file")
 	exitiferrors()
+	loc.pop()
 
 #=============================================================================
 #		MISC FUNCTIONS
 #=============================================================================
 def ternary(val, yes, no):
-	if (debug):
-		print "ternary %s" % expr
-	if (debug):
-		print "expr %s a %d yes %d no %d"% (expr, a, yes, no)
+	debug_print(1, "ternary %s" % expr)
+	debug_print(1, "expr %s a %d yes %d no %d"% (expr, a, yes, no))
         if (val == 0):
-		if (debug):
-		    print "Ternary returns %d" % yes
+		debug_print("Ternary returns %d" % yes)
 		return yes
         else:
-		if (debug):
-			print "Ternary returns %d" % no
+		debug_print("Ternary returns %d" % no)
 		return no
 
 # atoi is in the python library, but not strtol? Weird!
@@ -1190,7 +1231,7 @@ parser Config:
 
     rule init<<C>>:	INIT DIRPATH		{{ if (C): addinit(DIRPATH) }}
 
-    rule register<<C>>:	REGISTER STR		{{ if (C): curpart.addregister(STR) }}
+    rule register<<C>>:	REGISTER STR		{{ if (C): addregister(STR) }}
 
     rule prtval:	expr			{{ return str(expr) }}
 		|	STR			{{ return STR }}
@@ -1397,22 +1438,19 @@ def writeimagemakefile(image):
 	file.write("OBJECTS :=\n")
 	file.write("DRIVER :=\n")
 	file.write("\nSOURCES :=\n")
-	for irule in image.getinitobjectrules().keys():
-		init = image.getinitobjectrule(irule)
+	for irule, init in image.getinitobjectrules().items():
 		i_name = init[0]
 		i_source = init[1]
 		file.write("INIT-OBJECTS += %s\n" % (i_name))
 		file.write("SOURCES += %s\n" % (i_source))
 
-	for objrule in image.getobjectrules().keys():
-		obj = image.getobjectrule(objrule)
+	for objrule, obj in image.getobjectrules().items():
 		obj_name = obj[0]
 		obj_source = obj[1]
 		file.write("OBJECTS-1 += %s\n" % (obj_name))
 		file.write("SOURCES += %s\n" % (obj_source))
 
-	for driverrule in image.getdriverrules().keys():
-		driver = image.getdriverrule(driverrule)
+	for driverrule, driver in image.getdriverrules().items():
 		obj_name = driver[0]
 		obj_source = driver[1]
 		file.write("DRIVER += %s\n" % (obj_name))
@@ -1451,15 +1489,13 @@ def writeimagemakefile(image):
 		#image.makebaserules[target].write(file)
 
 	file.write("\n# objectrules:\n")
-	for objrule in image.getobjectrules().keys():
-		obj = image.getobjectrule(objrule)
+	for objrule, obj in image.getobjectrules().items():
 		source = topify(obj[1])
 		file.write("%s: %s\n" % (obj[0], source))
 		file.write("\t$(CC) -c $(CFLAGS) -o $@ $<\n")
 		#file.write("%s\n" % objrule[2])
 
-	for driverrule in image.getdriverrules().keys():
-		driver = image.getdriverrule(driverrule)
+	for driverrule, driver in image.getdriverrules().items():
 		source = topify(driver[1])
 		file.write("%s: %s\n" % (driver[0], source))
 		file.write("\t$(CC) -c $(CFLAGS) -o $@ $<\n")
@@ -1498,8 +1534,7 @@ def writeimagemakefile(image):
 	for key in keys:
 		 file.write("\t@echo %s='$(%s)'\n"% (key,key))
 
-	for i in image.getmakerules().keys():
-		m = image.getmakerule(i)
+	for i, m in image.getmakerules().items():
 		file.write("%s: " %i)
 		for i in m.dependency:
 			file.write("%s " % i)
@@ -1520,8 +1555,7 @@ def writemakefile(path):
 	for i in romimages.keys():
 		file.write("%s-rom " % i)
 	file.write("\n\n")
-	for i in romimages.keys():
-		o = getdict(romimages, i)
+	for i, o in romimages.items():
 		file.write("%s-rom:\n" % o.getname())
 		file.write("\tif (cd %s; \\\n" % o.getname())
 		file.write("\t\tmake linuxbios.rom)\\\n");
@@ -1540,8 +1574,7 @@ def writeinitincludes(image):
 		while (line):
 			p = include_pattern.match(line)
 			if (p):
-				for i in image.getinitincludes().keys():
-					inc = image.getinitinclude(i)
+				for i, inc in image.getinitincludes().items():
 					if (inc.getstring() == p.group(1)):
 						outfile.write("#include \"%s\"\n" % inc.getpath())
 			else:
@@ -1575,45 +1608,37 @@ def verifyparse(image):
 		fatal("An init file must be specified")
 
 def dumptree(part, lvl):
-	if (debug):
-		print "DUMPTREE ME is"
+	debug_print(1, "DUMPTREE ME is")
 	part.dumpme(lvl)
 	# dump the siblings -- actually are there any? not sure
 	# siblings are:
-	if (debug):
-		print "DUMPTREE SIBLINGS are"
+	debug_print(1, "DUMPTREE SIBLINGS are")
 	kid = part.siblings
 	while (kid):
 		kid.dumpme(lvl)
 		kid = kid.siblings
 	# dump the kids
-	if (debug):
-		print "DUMPTREE KIDS are"
+	debug_print(1, "DUMPTREE KIDS are")
 	#for kid in part.children:
 	if (part.children):
 		dumptree(part.children, lvl+1)
-	if (debug):
-		print "DONE DUMPTREE"
+	debug_print(1, "DONE DUMPTREE")
 
 def gencode(part, file):
-	if (debug):
-		print "GENCODE ME is"
+	debug_print(1, "GENCODE ME is")
 	part.gencode(file)
 	# dump the siblings -- actually are there any? not sure
 	# dump the kids
-	if (debug):
-		print "GENCODE SIBLINGS are"
+	debug_print(1, "GENCODE SIBLINGS are")
 	kid = part.siblings
 	while (kid):
 		kid.gencode(file)
 		kid = kid.siblings
-	if (debug):
-		print "GENCODE KIDS are"
+	debug_print(1, "GENCODE KIDS are")
 	#for kid in part.children:
 	if (part.children):
 		gencode(part.children, file)
-	if (debug):
-		print "DONE GENCODE"
+	debug_print(1, "DONE GENCODE")
 
 #=============================================================================
 #		MAIN PROGRAM
@@ -1629,9 +1654,10 @@ if __name__=='__main__':
 	treetop = os.path.abspath(sys.argv[2])
 
 	# Now read in the customizing script...
-	loc.push_file(argv[1])
+	loc.push(argv[1])
 	if (not parse('board', open(argv[1], 'r').read())):
-		fatal("Error: Could not parse file")
+		fatal("Could not parse file")
+	loc.pop()
 
 	for r in romimages.keys():
 		verifyparse(getdict(romimages, r))
@@ -1639,11 +1665,9 @@ if __name__=='__main__':
 	# no longer need to check if an options has been used
 	alloptions = 1
 
-	for r in romimages.keys():
-		image = getdict(romimages, r)
-
+	for image_name, image in romimages.items():
 		if (debug):
-			print "DEVICE TREE:"
+			debug_print(1, "DEVICE TREE:")
 			dumptree(image.getroot(), 0)
 
 		img_dir = image.gettargetdir()
@@ -1657,8 +1681,11 @@ if __name__=='__main__':
 
 		i = 0
 		file.write("struct chip ")
-		while (i <= image.getpartinstance()):
-			file.write("cdev%d "% i)
+		while (i <= image.numparts()):
+			if (i):
+				file.write("cdev%d "% i)
+			else:
+				file.write("root ")
 			i = i + 1
 		file.write(";\n")
 		gencode(image.getroot(), file)
@@ -1667,14 +1694,13 @@ if __name__=='__main__':
 		# crt0 includes
 		if (debug):
 			for i in image.getinitincludes().keys():
-				print "crt0include file %s" % (i)
+				debug_print(1, "crt0include file %s" % i)
 			for i in image.getdriverrules().keys():
-				print "driver file %s" % (i)
+				debug_print(1, "driver file %s" % i)
 			for i in image.getldscripts():
-				print "ldscript file %s" % (i)
-			for i in image.getmakerules().keys():
-				m = image.getmakerule(i)
-				print " makerule %s dep %s act %s" % (i, m.dependency, m.actions)
+				debug_print(1, "ldscript file %s" % i)
+			for i, m in image.getmakerules().items():
+				debug_print(1, " makerule %s dep %s act %s" % (i, m.dependency, m.actions))
 
 		writeimagesettings(image)
 		writeinitincludes(image)

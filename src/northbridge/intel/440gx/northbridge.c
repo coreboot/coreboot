@@ -33,6 +33,7 @@ dumpramregs(struct pci_dev *pcidev)
 }
 struct mem_range *sizeram(void)
 {
+	static struct mem_range mem[4];
 	/*
 	 * This is written for BX but should work also for GX.
 	 */
@@ -58,7 +59,7 @@ struct mem_range *sizeram(void)
 	mem[0].basek = 0;
 	mem[0].sizek = 640;
 	mem[1].basek = 1024;
-	mem[1].sizek = totalmem - mem[1].basek;
+	mem[1].sizek = totalmem - 1024;
 	mem[2].basek = 0;
 	mem[2].sizek = 0;
 	return &mem;

@@ -1,0 +1,11 @@
+2000-03-05  Jeff Garzik  <jgarzik@mandrakesoft.com>
+
+	* ChangeLog: new file, describing each committed change
+	* */Makefile.am, */.cvsignore, acconfig.h,
+	  configure.in: automake support
+	* COPYING: Removed from CVS.  automake automatically adds this
+	  file to the distribution tarball.
+	* README: Replaced old STPC with quick new README for FreeBIOS.
+	* AUTHORS, NEWS: automake-recommended files (small, for now)
+	* Moved rom/device/* to device/*
+

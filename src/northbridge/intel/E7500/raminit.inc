@@ -1749,8 +1749,8 @@ verify_ram:
 5:	
 	/* Now find the next bank and side to spot check */
 	incl	%ecx
-	cmpl	$(SMBUS_MEM_DEVICE_START - SMBUS_MEM_DEVICE_END), %ecx
-	jl	1b
+	cmpl	$((SMBUS_MEM_DEVICE_END - SMBUS_MEM_DEVICE_START)<<1), %ecx
+	jb	1b
 	RET_LABEL(verify_ram)
 	
 

@@ -36,16 +36,19 @@ struct harddisk_info {
 	uint8_t  slave;
 	sector_t sectors;
 	int  address_mode;	/* am i lba (0x40) or chs (0x00) */
-#define ADDRESS_MODE_CHS   0
-#define ADDRESS_MODE_LBA   1
-#define ADDRESS_MODE_LBA48 2
-	int drive_exists;
-	int slave_absent;
-	int basedrive;
+#define ADDRESS_MODE_CHS    0
+#define ADDRESS_MODE_LBA    1
+#define ADDRESS_MODE_LBA48  2
+#define ADDRESS_MODE_PACKET 3
+	uint32_t hw_sector_size;
+	unsigned drive_exists : 1;
+	unsigned slave_absent : 1;
+	unsigned removable : 1;
 };
 
 
 #define IDE_SECTOR_SIZE 0x200
+#define CDROM_SECTOR_SIZE 0x400
 
 #define IDE_BASE0             (0x1F0u) /* primary controller */
 #define IDE_BASE1             (0x170u) /* secondary */
@@ -196,15 +199,15 @@ struct ide_pio_command
 #define IDE_FEATURE_ENABLE_REVERTING_TO_POWERON_DEFAULTS    0xCC
 #define IDE_FEATURE_DISABLE_SERVICE_INTERRUPT               0xDE
 
-#define NUM_HD (4)
+#define IDE_MAX_CONTROLLERS 2
+#define IDE_MAX_DRIVES (IDE_MAX_CONTROLLERS*2)
 #define SECTOR_SIZE 512
 #define SECTOR_SHIFT 9
 
 /* Maximum block_size that may be set. */
 #define DISK_BUFFER_SIZE (18 * SECTOR_SIZE)
 
-extern struct harddisk_info harddisk_info[NUM_HD];
+extern struct harddisk_info harddisk_info[];
 
-extern int ide_init(void);
-extern int ide_read_sector(int driveno, void * buf, unsigned int sector,
-                           int byte_offset, int n_bytes);
+extern int ide_probe(int drive);
+extern int ide_read(int drive, sector_t sector, void *buffer);

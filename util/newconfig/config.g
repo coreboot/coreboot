@@ -1686,12 +1686,14 @@ parser Config:
 			enable
 						{{ if (C): partstack.tos().addi2cpath(enable, device) }}
 			resources<<C>>
+			partend<<C>>
 
     rule apic<<C>>:	APIC   			{{ if (C): devicepart('apic') }}
 			HEX_NUM			{{ apic_id = int(HEX_NUM, 16) }}
 			enable
 						{{ if (C): partstack.tos().addapicpath(enable, apic_id) }}
 			resources<<C>>
+			partend<<C>>
 
     rule pci_domain<<C>>:	
 			PCI_DOMAIN 		{{ if (C): devicepart('pci_domain') }}

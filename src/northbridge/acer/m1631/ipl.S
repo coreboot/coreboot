@@ -39,7 +39,7 @@ it with the version available from LANL.
  * ror it 16 bits, and as we grow the CAS, we just inc cs, and that will
  * set the right value. 
  */
-#define INIT_MCR $0xf663f83c
+#define INIT_MCR $0xf663b83c
 /* GNU AS misassembles this. I can't believe what a piece of 
  * trash gas has turned out to be ...
 #define LONGDELAY movw	$0x1000, ax; 1: dec %ax; jnz 1b
@@ -142,6 +142,7 @@ code16
 	outb	%al,%dx
 
 	// move 68 to al, we add 4 below, this is for looping
+#if 0
 	movb	$0x68, %al
 	movl	%eax, %esp
 	/*	CALLSP(pci_read_dword)*/
@@ -154,6 +155,8 @@ sizeloop:
 	// handle empty banks
 	cmpb	$0x70, %al
 	jge	sizedone
+#endif
+	movb	$0x6c, %al
 	movb	$0xf8,%dl
 	outl	%eax,%dx
 	movl	%eax, %esp
@@ -185,26 +188,32 @@ nonregistered:
 	/* test 8 bit CAS */
 Secondtry: 
 	movl	$0x800, %esi
-	movb	$0, (%edi)
+	movl	%edi, (%edi)
+	movb	$3, %bl
+1:
 	movb	$1, (%esi) // esi is at 0x800
-	cmpb	$0,(%edi)
+	cmpl	%edi,(%edi)
 	jnz	sizeram
 	inc	%cl
 	roll	%esi
+	dec	%bl
+	jnz	1b
+#if 0
 	/* change the value we store each time. It makes debugging easier */
 	movb	$2, (%esi) // esi is at 0x1000
-	cmpb	$0, (%edi)
+	cmpl	%edi, (%edi)
 	jnz	sizeram
 	inc	%cl
 	roll	%esi
 	movb	$3, (%esi) // esi is at 0x2000
-	cmpb	$0, (%edi)
+	cmpl	%edi, (%edi)
 	jnz	sizeram
 	inc	%cl
 	roll	%esi
 	movb	$4, (%esi) // esi is at 0x4000
-	cmpb	$0, (%edi)
+	cmpl	%edi, (%edi)
 	jnz	sizeram
+#endif
 #if 0
 	// This code does not work ...
 	// OK, nothing matched. 
@@ -232,7 +241,7 @@ sizeram:
 /* now size the dram */
 /* you had best have at least 4M; that's as small as we go */
 /* rorr 20 the ecx value, to get row size into lsb */
-	movb	$0, (%edi)
+	movl	%edi, (%edi)
 	ror	$20, %ecx
 	/* clear the size out to 4 MB */
 	andb	$0xf8, %cl
@@ -245,13 +254,13 @@ sizeram:
 	/* move a 4 to the next power-of-two address. 
 	 * if there is no memory there, it will wrap to zero 
 	 */
- 	movb	$4, %es:(%esi)
+ 	movb	$4, (%esi)
 #endif
-	cmpb	$0, (%edi)
+	cmpl	%edi, (%edi)
 	/* if there is not a 0 at 0, the last write wrapped. Hop out */
 	jne	1f
 	inc	%cl
-	rol	$1, %esi
+	roll	%esi
 	jmp	1b
 /* size is now in esi */
 /* %ecx has setting for register */
@@ -262,7 +271,7 @@ sizeram:
 /* COMMENT 3-22-01 RGM -- I THINK WE WANT THIS HERE TO TURN
  * MULTIBANK ON
  */
-	andw	$0xefff, %cx
+	andb	$0xef, %ch
 	WRITE_MCR0
 	/*
 	mov	$0x6c, %al
@@ -275,13 +284,13 @@ sizeram:
 	LONGDELAY
  */
 	movl	$0x1000, %esi
-	movb	$0, (%edi)
+	movl	%edi, (%edi)
 	movb	$5, (%esi)
-	roll	$1, %esi
+	roll	%esi
 	movb	$6, (%esi)
-	roll	$1, %esi
+	roll	%esi
 	movb	$7, (%esi)
-	cmpb	$0, (%edi)
+	cmpl	%edi, (%edi)
 	// If @0 is unchanged, then we have four banks.
 	jz	1f /* 4 banks */
 	// If @0 got overwritten, then we only have two banks.
@@ -289,20 +298,36 @@ sizeram:
 	andb	$0xfe, %cl
 1:
 	WRITE_MCR0
-	jmp	sizeloop
+/* Detect single/double side */
+	movl	%ecx, %ebx
+	andl	$0xe07fffff, %ecx // disable sdram
+	WRITE_MCR0
+	movl	%ecx, %ebp
+	orl	$0x11800000, %ecx 
+	WRITE_MCR0
+	movl	%edi, (%edi)
+	movb	$0x5a, 8(%edi)
+	cmpl	%edi, (%edi)
+	jnz	1f
+	orl	%ecx, %ebx // double side
+1:
+	movl	%ebp, %ecx
+	WRITE_MCR0
+	movl	%ebx, %ecx 
+	WRITE_MCR0
+
+/*	jmp	sizeloop
+*/
 	
 sizedone:
 /* Next line ASSUMES that eax contains 8000000xx */
 	movb	$0x7c, %al
 	movb	$0xf8, %dl
 	outl	%eax, %dx
+
 	movl	$0x2428c411, %eax
 	movb	$0xfc, %dl
 	outl	%eax, %dx
-	/*
-	mov	$0x6c, %al
-	CALLSP(pci_write_dword)
-	*/
 	/* at this point, dram slot 0 is up.  we hope. */
 
 	/* now for flash ... */

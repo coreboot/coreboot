@@ -4,6 +4,7 @@
 #include <stddef.h>
 
 extern void *malloc(size_t size);
+extern void *realloc(void *mem, size_t size);
 void free(void *ptr);
 
 /* Extensions to malloc... */

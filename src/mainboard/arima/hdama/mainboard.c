@@ -1,3 +1,4 @@
+
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -6,6 +7,7 @@
 
 #include <arch/io.h>
 #include <device/chip.h>
+#include "../../../northbridge/amd/amdk8/northbridge.h"
 #include "chip.h"
 
 
@@ -14,22 +16,27 @@ unsigned long initial_apicid[CONFIG_MAX_CPUS] =
 	0, 1,
 };
 
-static void
-enable(struct chip *chip, enum chip_pass pass)
+static struct device_operations mainboard_operations = {
+	.read_resources   = root_dev_read_resources,
+	.set_resources    = root_dev_set_resources,
+	.enable_resources = enable_childrens_resources,
+	.init             = 0,
+	.scan_bus         = amdk8_scan_root_bus,
+	.enable           = 0,
+};
+
+static void enumerate(struct chip *chip)
 {
-
-        struct mainboard_arima_hdama_config *conf =
-                (struct mainboard_arima_hdama_config *)chip->chip_info;
-
-        switch (pass) {
-	default: break;
-	case CONF_PASS_PRE_BOOT:
-		break;
-        }
-
+	struct chip *child;
+	dev_root.ops = &mainboard_operations;
+	chip->dev = &dev_root;
+	chip->bus = 0;
+	for(child = chip->children; child; child = child->next) {
+		child->bus = &dev_root.link[0];
+	}
 }
 struct chip_control mainboard_arima_hdama_control = {
-                enable: enable,
-                name:   "Arima HDAMA mainboard "
+	.enumerate = enumerate, 
+	.name      = "Arima HDAMA mainboard ",
 };
 

@@ -117,7 +117,7 @@ define OBJCOPY
 	comment "Objcopy command"
 end
 define LINUXBIOS_VERSION
-	default "1.1.3"
+	default "1.1.4"
 	export always
 	comment "LinuxBIOS version"
 end

@@ -222,6 +222,7 @@ mainboardinit cpu/k8/disable_mmx_sse.inc
 ## Include the secondary Configuration files 
 ##
 dir /pc80
+config chip.h
 
 northbridge amd/amdk8 "mc0"
 	pci 0:18.0
@@ -263,12 +264,12 @@ northbridge amd/amdk8 "mc0"
 end
 
 northbridge amd/amdk8 "mc1"
-	#pci 0:19.0
-	#pci 0:19.0
-	#pci 0:19.0
-	#pci 0:19.1
-	#pci 0:19.2
-	#pci 0:19.3
+	pci 0:19.0
+	pci 0:19.0
+	pci 0:19.0
+	pci 0:19.1
+	pci 0:19.2
+	pci 0:19.3
 end
 
 cpu k8 "cpu0"

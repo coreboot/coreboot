@@ -9,29 +9,26 @@
 
 static int cpu_init_detected(void)
 {
-	unsigned long dcl;
-	int cpu_init;
-
 	unsigned long htic;
-
 	htic = pci_read_config32(PCI_DEV(0, 0x18, 0), HT_INIT_CONTROL);
-#if 0
-	print_debug("htic: ");
-	print_debug_hex32(htic);
-	print_debug("\r\n");
 
-	if (!(htic & HTIC_ColdR_Detect)) {
-		print_debug("Cold Reset.\r\n");
-	}
-	if ((htic & HTIC_ColdR_Detect) && !(htic & HTIC_BIOSR_Detect)) {
-		print_debug("BIOS generated Reset.\r\n");
-	}
-	if (htic & HTIC_INIT_Detect) {
-		print_debug("Init event.\r\n");
-	}
-#endif
-	cpu_init = (htic & HTIC_INIT_Detect);
-	return cpu_init;
+	return !!(htic & HTIC_INIT_Detect);
+}
+
+static int bios_reset_detected(void)
+{
+	unsigned long htic;
+	htic = pci_read_config32(PCI_DEV(0, 0x18, 0), HT_INIT_CONTROL);
+
+	return (htic & HTIC_ColdR_Detect) && !(htic & HTIC_BIOSR_Detect);
+}
+
+static int cold_reset_detected(void)
+{
+	unsigned long htic;
+	htic = pci_read_config32(PCI_DEV(0, 0x18, 0), HT_INIT_CONTROL);
+
+	return !(htic & HTIC_ColdR_Detect);
 }
 
 static void distinguish_cpu_resets(unsigned node_id)
@@ -42,4 +39,12 @@ static void distinguish_cpu_resets(unsigned node_id)
 	htic = pci_read_config32(device, HT_INIT_CONTROL);
 	htic |= HTIC_ColdR_Detect | HTIC_BIOSR_Detect | HTIC_INIT_Detect;
 	pci_write_config32(device, HT_INIT_CONTROL, htic);
+}
+
+static void set_bios_reset(void)
+{
+	unsigned long htic;
+	htic = pci_read_config32(PCI_DEV(0, 0x18, 0), HT_INIT_CONTROL);
+	htic &= ~HTIC_BIOSR_Detect;
+	pci_write_config32(PCI_DEV(0, 0x18, 0), HT_INIT_CONTROL, htic);
 }

@@ -44,12 +44,12 @@ void get_sys_info (struct ppc4xx_sys_info * sysInfo)
 	/*
 	 * Read PLL Mode register
 	 */
-	pllmr = ppc_getdcr(CPC0_PLLMR);
+	pllmr = mfdcr(CPC0_PLLMR);
 
 	/*
 	 * Read Pin Strapping register
 	 */
-	psr = ppc_getdcr(CPC0_PSR);
+	psr = mfdcr(CPC0_PSR);
 
 	/*
 	 * Determine FWD_DIV.

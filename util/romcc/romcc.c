@@ -17,9 +17,13 @@
 #define DEBUG_CONSISTENCY 2
 #define DEBUG_RANGE_CONFLICTS 0
 #define DEBUG_COALESCING 0
+#define DEBUG_SDP_BLOCKS 0
+#define DEBUG_TRIPLE_COLOR 0
 
 #warning "FIXME boundary cases with small types in larger registers"
 #warning "FIXME give clear error messages about unused variables"
+#warning "FIXME properly handle multi dimensional arrays"
+#warning "FIXME fix scc_transform"
 
 /*  Control flow graph of a loop without goto.
  * 
@@ -261,23 +265,25 @@ struct token {
 /* Operations on general purpose registers.
  */
 
-#define OP_SMUL       0
-#define OP_UMUL       1
-#define OP_SDIV       2
-#define OP_UDIV       3
-#define OP_SMOD       4
-#define OP_UMOD       5
-#define OP_ADD        6
-#define OP_SUB        7
-#define OP_SL         8
-#define OP_USR        9
-#define OP_SSR       10 
-#define OP_AND       11 
-#define OP_XOR       12
-#define OP_OR        13
-#define OP_POS       14 /* Dummy positive operator don't use it */
-#define OP_NEG       15
-#define OP_INVERT    16
+#define OP_SDIVT      0
+#define OP_UDIVT      1
+#define OP_SMUL       2
+#define OP_UMUL       3
+#define OP_SDIV       4
+#define OP_UDIV       5
+#define OP_SMOD       6
+#define OP_UMOD       7
+#define OP_ADD        8
+#define OP_SUB        9
+#define OP_SL        10
+#define OP_USR       11
+#define OP_SSR       12 
+#define OP_AND       13 
+#define OP_XOR       14
+#define OP_OR        15
+#define OP_POS       16 /* Dummy positive operator don't use it */
+#define OP_NEG       17
+#define OP_INVERT    18
 		     
 #define OP_EQ        20
 #define OP_NOTEQ     21
@@ -295,6 +301,10 @@ struct token {
 
 #define OP_LOAD      32
 #define OP_STORE     33
+/* For OP_STORE ->type holds the type
+ * RHS(0) holds the destination address
+ * RHS(1) holds the value to store.
+ */
 
 #define OP_NOOP      34
 
@@ -318,8 +328,8 @@ struct token {
 
 #define OP_WRITE     60 
 /* OP_WRITE moves one pseudo register to another.
- * LHS(0) holds the destination pseudo register, which must be an OP_DECL.
- * RHS(0) holds the psuedo to move.
+ * RHS(0) holds the destination pseudo register, which must be an OP_DECL.
+ * RHS(1) holds the psuedo to move.
  */
 
 #define OP_READ      61
@@ -509,6 +519,8 @@ struct op_info {
 	.targ = (TARG), \
 	 }
 static const struct op_info table_ops[] = {
+[OP_SDIVT      ] = OP( 2,  2, 0, 0, PURE | BLOCK , "sdivt"),
+[OP_UDIVT      ] = OP( 2,  2, 0, 0, PURE | BLOCK , "udivt"),
 [OP_SMUL       ] = OP( 0,  2, 0, 0, PURE | DEF | BLOCK , "smul"),
 [OP_UMUL       ] = OP( 0,  2, 0, 0, PURE | DEF | BLOCK , "umul"),
 [OP_SDIV       ] = OP( 0,  2, 0, 0, PURE | DEF | BLOCK , "sdiv"),
@@ -541,7 +553,7 @@ static const struct op_info table_ops[] = {
 [OP_LTRUE      ] = OP( 0,  1, 0, 0, PURE | DEF | BLOCK , "ltrue"),
 
 [OP_LOAD       ] = OP( 0,  1, 0, 0, IMPURE | DEF | BLOCK, "load"),
-[OP_STORE      ] = OP( 1,  1, 0, 0, IMPURE | BLOCK , "store"),
+[OP_STORE      ] = OP( 0,  2, 0, 0, IMPURE | BLOCK , "store"),
 
 [OP_NOOP       ] = OP( 0,  0, 0, 0, PURE | BLOCK, "noop"),
 
@@ -549,7 +561,7 @@ static const struct op_info table_ops[] = {
 [OP_BLOBCONST  ] = OP( 0,  0, 0, 0, PURE, "blobconst"),
 [OP_ADDRCONST  ] = OP( 0,  0, 1, 0, PURE | DEF, "addrconst"),
 
-[OP_WRITE      ] = OP( 1,  1, 0, 0, PURE | BLOCK, "write"),
+[OP_WRITE      ] = OP( 0,  2, 0, 0, PURE | BLOCK, "write"),
 [OP_READ       ] = OP( 0,  1, 0, 0, PURE | DEF | BLOCK, "read"),
 [OP_COPY       ] = OP( 0,  1, 0, 0, PURE | DEF | BLOCK, "copy"),
 [OP_PIECE      ] = OP( 0,  0, 1, 0, PURE | DEF, "piece"),
@@ -864,9 +876,9 @@ struct type {
 #define MAX_REG_EQUIVS     16
 #define REGISTER_BITS      16
 #define MAX_VIRT_REGISTERS (1<<REGISTER_BITS)
-#define TEMPLATE_BITS      6
+#define TEMPLATE_BITS      7
 #define MAX_TEMPLATES      (1<<TEMPLATE_BITS)
-#define MAX_REGC           12
+#define MAX_REGC           14
 #define REG_UNSET          0
 #define REG_UNNEEDED       1
 #define REG_VIRT0          (MAX_REGISTERS + 0)
@@ -961,7 +973,7 @@ static int get_col(struct file_state *file)
 static void loc(FILE *fp, struct compile_state *state, struct triple *triple)
 {
 	int col;
-	if (triple) {
+	if (triple && triple->occurance) {
 		struct occurance *spot;
 		spot = triple->occurance;
 		while(spot->parent) {
@@ -1557,7 +1569,7 @@ static struct triple *post_triple(struct compile_state *state,
 	}
 	/* If I have a left hand side skip over it */
 	zlhs = TRIPLE_LHS(base->sizes);
-	if (zlhs && (base->op != OP_WRITE) && (base->op != OP_STORE)) {
+	if (zlhs) {
 		base = LHS(base, zlhs - 1);
 	}
 
@@ -1626,6 +1638,14 @@ static void display_triple(FILE *fp, struct triple *ins)
 			ptr->col);
 	}
 	fprintf(fp, "\n");
+#if 0
+	{
+		struct triple_set *user;
+		for(user = ptr->use; user; user = user->next) {
+			fprintf(fp, "use: %p\n", user->member);
+		}
+	}
+#endif
 	fflush(fp);
 }
 
@@ -1654,6 +1674,23 @@ static int triple_is_branch(struct compile_state *state, struct triple *ins)
 	valid_ins(state, ins);
 	is_branch = (table_ops[ins->op].targ != 0);
 	return is_branch;
+}
+
+static int triple_is_cond_branch(struct compile_state *state, struct triple *ins)
+{
+	/* A conditional branch has the condition argument as a single
+	 * RHS parameter.
+	 */
+	return triple_is_branch(state, ins) &&
+		(TRIPLE_RHS(ins->sizes) == 1);
+}
+
+static int triple_is_uncond_branch(struct compile_state *state, struct triple *ins)
+{
+	/* A unconditional branch has no RHS parameters.
+	 */
+	return triple_is_branch(state, ins) &&
+		(TRIPLE_RHS(ins->sizes) == 0);
 }
 
 static int triple_is_def(struct compile_state *state, struct triple *ins)
@@ -4191,6 +4228,10 @@ static int equiv_types(struct type *left, struct type *right)
 		return 0;
 	}
 	type = left->type & TYPE_MASK;
+	/* If the basic types match and it is a void type we are done */
+	if (type == TYPE_VOID) {
+		return 1;
+	}
 	/* if the basic types match and it is an arithmetic type we are done */
 	if (TYPE_ARITHMETIC(type)) {
 		return 1;
@@ -5132,13 +5173,6 @@ static struct triple *flatten(
 			return ptr;
 		}
 		switch(ptr->op) {
-		case OP_WRITE:
-		case OP_STORE:
-			RHS(ptr, 0) = flatten(state, first, RHS(ptr, 0));
-			LHS(ptr, 0) = flatten(state, first, LHS(ptr, 0));
-			use_triple(LHS(ptr, 0), ptr);
-			use_triple(RHS(ptr, 0), ptr);
-			break;
 		case OP_COMMA:
 			RHS(ptr, 0) = flatten(state, first, RHS(ptr, 0));
 			ptr = RHS(ptr, 1);
@@ -5474,6 +5508,22 @@ static int is_one(struct triple *ins)
 	return is_const(ins) && (ins->u.cval == 1);
 }
 
+static long_t bit_count(ulong_t value)
+{
+	int count;
+	int i;
+	count = 0;
+	for(i = (sizeof(ulong_t)*8) -1; i >= 0; i--) {
+		ulong_t mask;
+		mask = 1;
+		mask <<= i;
+		if (value & mask) {
+			count++;
+		}
+	}
+	return count;
+	
+}
 static long_t bsr(ulong_t value)
 {
 	int i;
@@ -5700,8 +5750,8 @@ static void flatten_structures(struct compile_state *state)
 				ulong_t i;
 
 				op = ins->op;
-				src = RHS(ins, 0);
-				dst = LHS(ins, 0);
+				src = RHS(ins, 1);
+				dst = RHS(ins, 0);
 				get_occurance(ins->occurance);
 				next = alloc_triple(state, OP_VAL_VEC, ins->type, -1, -1,
 					ins->occurance);
@@ -5949,19 +5999,22 @@ static void simplify_add(struct compile_state *state, struct triple *ins)
 		RHS(ins, 1) = tmp;
 	}
 	if (is_const(RHS(ins, 0)) && is_const(RHS(ins, 1))) {
-		if (!is_pointer(RHS(ins, 0))) {
+		if (RHS(ins, 0)->op == OP_INTCONST) {
 			ulong_t left, right;
 			left  = read_const(state, ins, &RHS(ins, 0));
 			right = read_const(state, ins, &RHS(ins, 1));
 			mkconst(state, ins, left + right);
 		}
-		else /* op == OP_ADDRCONST */ {
+		else if (RHS(ins, 0)->op == OP_ADDRCONST) {
 			struct triple *sdecl;
 			ulong_t left, right;
 			sdecl = MISC(RHS(ins, 0), 0);
 			left  = RHS(ins, 0)->u.cval;
 			right = RHS(ins, 1)->u.cval;
 			mkaddr_const(state, ins, sdecl, left + right);
+		}
+		else {
+			internal_warning(state, ins, "Optimize me!");
 		}
 	}
 	else if (is_const(RHS(ins, 0)) && !is_const(RHS(ins, 1))) {
@@ -5975,19 +6028,22 @@ static void simplify_add(struct compile_state *state, struct triple *ins)
 static void simplify_sub(struct compile_state *state, struct triple *ins)
 {
 	if (is_const(RHS(ins, 0)) && is_const(RHS(ins, 1))) {
-		if (!is_pointer(RHS(ins, 0))) {
+		if (RHS(ins, 0)->op == OP_INTCONST) {
 			ulong_t left, right;
 			left  = read_const(state, ins, &RHS(ins, 0));
 			right = read_const(state, ins, &RHS(ins, 1));
 			mkconst(state, ins, left - right);
 		}
-		else /* op == OP_ADDRCONST */ {
+		else if (RHS(ins, 0)->op == OP_ADDRCONST) {
 			struct triple *sdecl;
 			ulong_t left, right;
 			sdecl = MISC(RHS(ins, 0), 0);
 			left  = RHS(ins, 0)->u.cval;
 			right = RHS(ins, 1)->u.cval;
 			mkaddr_const(state, ins, sdecl, left - right);
+		}
+		else {
+			internal_warning(state, ins, "Optimize me!");
 		}
 	}
 }
@@ -6372,6 +6428,65 @@ static void simplify_branch(struct compile_state *state, struct triple *ins)
 	}
 }
 
+int phi_present(struct block *block)
+{
+	struct triple *ptr;
+	if (!block) {
+		return 0;
+	}
+	ptr = block->first;
+	do {
+		if (ptr->op == OP_PHI) {
+			return 1;
+		}
+		ptr = ptr->next;
+	} while(ptr != block->last);
+	return 0;
+}
+
+static void simplify_label(struct compile_state *state, struct triple *ins)
+{
+#warning "FIXME enable simplify_label"
+	struct triple *first, *last;
+	first = RHS(state->main_function, 0);
+	last = first->prev;
+	/* Ignore the first and last instructions */
+	if ((ins == first) || (ins == last)) {
+		return;
+	}
+	if (ins->use == 0) {
+		ins->op = OP_NOOP;
+	}
+	else if (ins->prev->op == OP_LABEL) {
+		struct block *block;
+		block = ins->prev->u.block;
+		/* In general it is not safe to merge one label that
+		 * imediately follows another.  The problem is that the empty
+		 * looking block may have phi functions that depend on it.
+		 */
+		if (!block || 
+			(!phi_present(block->left) && 
+			!phi_present(block->right))) 
+		{
+			struct triple_set *user, *next;
+			ins->op = OP_NOOP;
+			for(user = ins->use; user; user = next) {
+				struct triple *use;
+				next = user->next;
+				use = user->member;
+				if (TARG(use, 0) == ins) {
+					TARG(use, 0) = ins->prev;
+					unuse_triple(ins, use);
+					use_triple(ins->prev, use);
+				}
+			}
+			if (ins->use) {
+				internal_error(state, ins, "noop use != 0");
+			}
+		}
+	}
+}
+
 static void simplify_phi(struct compile_state *state, struct triple *ins)
 {
 	struct triple **expr;
@@ -6414,6 +6529,10 @@ static void simplify_bsr(struct compile_state *state, struct triple *ins)
 
 typedef void (*simplify_t)(struct compile_state *state, struct triple *ins);
 static const simplify_t table_simplify[] = {
+#if 1
+#define simplify_sdivt    simplify_noop
+#define simplify_udivt    simplify_noop
+#endif
 #if 0
 #define simplify_smul     simplify_noop
 #define simplify_umul	  simplify_noop
@@ -6472,6 +6591,9 @@ static const simplify_t table_simplify[] = {
 #if 0
 #define simplify_branch	  simplify_noop
 #endif
+#if 1
+#define simplify_label	  simplify_noop
+#endif
 
 #if 0
 #define simplify_phi	  simplify_noop
@@ -6482,6 +6604,8 @@ static const simplify_t table_simplify[] = {
 #define simplify_bsr      simplify_noop
 #endif
 
+[OP_SDIVT      ] = simplify_sdivt,
+[OP_UDIVT      ] = simplify_udivt,
 [OP_SMUL       ] = simplify_smul,
 [OP_UMUL       ] = simplify_umul,
 [OP_SDIV       ] = simplify_sdiv,
@@ -6533,7 +6657,7 @@ static const simplify_t table_simplify[] = {
 
 [OP_LIST       ] = simplify_noop,
 [OP_BRANCH     ] = simplify_branch,
-[OP_LABEL      ] = simplify_noop,
+[OP_LABEL      ] = simplify_label,
 [OP_ADECL      ] = simplify_noop,
 [OP_SDECL      ] = simplify_noop,
 [OP_PHI        ] = simplify_phi,
@@ -6581,7 +6705,7 @@ static void simplify_all(struct compile_state *state)
 	do {
 		simplify(state, ins);
 		ins = ins->next;
-	} while(ins != first);
+	}while(ins != first);
 }
 
 /*
@@ -6758,7 +6882,31 @@ static struct type *register_builtin_type(struct compile_state *state,
 
 static void register_builtins(struct compile_state *state)
 {
+	struct type *div_type, *ldiv_type;
+	struct type *udiv_type, *uldiv_type;
 	struct type *msr_type;
+
+	div_type = register_builtin_type(state, "__builtin_div_t",
+		partial_struct(state, "quot", &int_type,
+		partial_struct(state, "rem",  &int_type, 0)));
+	ldiv_type = register_builtin_type(state, "__builtin_ldiv_t",
+		partial_struct(state, "quot", &long_type,
+		partial_struct(state, "rem",  &long_type, 0)));
+	udiv_type = register_builtin_type(state, "__builtin_udiv_t",
+		partial_struct(state, "quot", &uint_type,
+		partial_struct(state, "rem",  &uint_type, 0)));
+	uldiv_type = register_builtin_type(state, "__builtin_uldiv_t",
+		partial_struct(state, "quot", &ulong_type,
+		partial_struct(state, "rem",  &ulong_type, 0)));
+
+	register_builtin_function(state, "__builtin_div",   OP_SDIVT, div_type,
+		&int_type, &int_type);
+	register_builtin_function(state, "__builtin_ldiv",  OP_SDIVT, ldiv_type,
+		&long_type, &long_type);
+	register_builtin_function(state, "__builtin_udiv",  OP_UDIVT, udiv_type,
+		&uint_type, &uint_type);
+	register_builtin_function(state, "__builtin_uldiv", OP_UDIVT, uldiv_type,
+		&ulong_type, &ulong_type);
 
 	register_builtin_function(state, "__builtin_inb", OP_INB, &uchar_type, 
 		&ushort_type);
@@ -8404,24 +8552,23 @@ static struct type *enum_specifier(
 	return type;
 }
 
-#if 0
 static struct type *struct_declarator(
 	struct compile_state *state, struct type *type, struct hash_entry **ident)
 {
 	int tok;
-#warning "struct_declarator is complicated because of bitfields, kill them?"
 	tok = peek(state);
 	if (tok != TOK_COLON) {
 		type = declarator(state, type, ident, 1);
 	}
 	if ((tok == TOK_COLON) || (peek(state) == TOK_COLON)) {
+		struct triple *value;
 		eat(state, TOK_COLON);
-		constant_expr(state);
+		value = constant_expr(state);
+#warning "FIXME implement bitfields to reduce register usage"
+		error(state, 0, "bitfields not yet implemented");
 	}
-	FINISHME();
 	return type;
 }
-#endif
 
 static struct type *struct_or_union_specifier(
 	struct compile_state *state, unsigned int spec)
@@ -8466,7 +8613,7 @@ static struct type *struct_or_union_specifier(
 				struct type *type;
 				struct hash_entry *fident;
 				done = 1;
-				type = declarator(state, base_type, &fident, 1);
+				type = struct_declarator(state, base_type, &fident);
 				elements++;
 				if (peek(state) == TOK_COMMA) {
 					done = 0;
@@ -9363,14 +9510,6 @@ static int do_print_triple(struct compile_state *state, struct triple *ins, int 
 	if ((ins->op == OP_BRANCH) && ins->use) {
 		internal_error(state, ins, "branch used?");
 	}
-#if 0
-	{
-		struct triple_set *user;
-		for(user = ins->use; user; user = user->next) {
-			printf("use: %p\n", user->member);
-		}
-	}
-#endif
 	if (triple_is_branch(state, ins)) {
 		printf("\n");
 	}
@@ -9497,12 +9636,15 @@ static void walk_blocks(struct compile_state *state,
 	ptr = first;
 	do {
 		struct block *block;
-		if (ptr->op == OP_LABEL) {
+		if (triple_stores_block(state, ptr)) {
 			block = ptr->u.block;
 			if (block && (block != last_block)) {
 				cb(state, block, arg);
 			}
 			last_block = block;
+		}
+		if (block && (block->last == ptr)) {
+			block = 0;
 		}
 		ptr = ptr->next;
 	} while(ptr != first);
@@ -9511,10 +9653,11 @@ static void walk_blocks(struct compile_state *state,
 static void print_block(
 	struct compile_state *state, struct block *block, void *arg)
 {
+	struct block_set *user;
 	struct triple *ptr;
 	FILE *fp = arg;
 
-	fprintf(fp, "\nblock: %p (%d), %p<-%p %p<-%p\n", 
+	fprintf(fp, "\nblock: %p (%d)  %p<-%p %p<-%p\n", 
 		block, 
 		block->vertex,
 		block->left, 
@@ -9525,51 +9668,17 @@ static void print_block(
 		fprintf(fp, "%p:\n", block->first);
 	}
 	for(ptr = block->first; ; ptr = ptr->next) {
-		struct triple_set *user;
-		int op = ptr->op;
-		
-		if (triple_stores_block(state, ptr)) {
-			if (ptr->u.block != block) {
-				internal_error(state, ptr, 
-					"Wrong block pointer: %p\n",
-					ptr->u.block);
-			}
-		}
-		if (op == OP_ADECL) {
-			for(user = ptr->use; user; user = user->next) {
-				if (!user->member->u.block) {
-					internal_error(state, user->member, 
-						"Use %p not in a block?\n",
-						user->member);
-				}
-			}
-		}
 		display_triple(fp, ptr);
-
-#if 0
-		for(user = ptr->use; user; user = user->next) {
-			fprintf(fp, "use: %p\n", user->member);
-		}
-#endif
-
-		/* Sanity checks... */
-		valid_ins(state, ptr);
-		for(user = ptr->use; user; user = user->next) {
-			struct triple *use;
-			use = user->member;
-			valid_ins(state, use);
-			if (triple_stores_block(state, user->member) &&
-				!user->member->u.block) {
-				internal_error(state, user->member,
-					"Use %p not in a block?",
-					user->member);
-			}
-		}
-
 		if (ptr == block->last)
 			break;
 	}
-	fprintf(fp,"\n");
+	fprintf(fp, "users %d: ", block->users);
+	for(user = block->use; user; user = user->next) {
+		fprintf(fp, "%p (%d) ", 
+			user->member,
+			user->member->vertex);
+	}
+	fprintf(fp,"\n\n");
 }
 
 
@@ -9595,6 +9704,9 @@ static void prune_nonblock_triples(struct compile_state *state)
 		if (!block) {
 			release_triple(state, ins);
 		}
+		if (block && block->last == ins) {
+			block = 0;
+		}
 		ins = next;
 	} while(ins != first);
 }
@@ -9615,10 +9727,6 @@ static void setup_basic_blocks(struct compile_state *state)
 	if (!state->last_block) {
 		internal_error(state, 0, "end not used?");
 	}
-	/* Insert an extra unused edge from start to the end 
-	 * This helps with reverse control flow calculations.
-	 */
-	use_block(state->first_block, state->last_block);
 	/* If we are debugging print what I have just done */
 	if (state->debug & DEBUG_BASIC_BLOCKS) {
 		print_blocks(state, stdout);
@@ -9770,7 +9878,8 @@ static int initialize_sdblock(struct sdom_block *sd,
 	return vertex;
 }
 
-static int initialize_sdpblock(struct sdom_block *sd,
+static int initialize_sdpblock(
+	struct compile_state *state, struct sdom_block *sd,
 	struct block *parent, struct block *block, int vertex)
 {
 	struct block_set *user;
@@ -9787,7 +9896,38 @@ static int initialize_sdpblock(struct sdom_block *sd,
 	sd[vertex].ancestor = 0;
 	sd[vertex].vertex   = vertex;
 	for(user = block->use; user; user = user->next) {
-		vertex = initialize_sdpblock(sd, block, user->member, vertex);
+		vertex = initialize_sdpblock(state, sd, block, user->member, vertex);
+	}
+	return vertex;
+}
+
+static int setup_sdpblocks(struct compile_state *state, struct sdom_block *sd)
+{
+	struct block *block;
+	int vertex;
+	/* Setup as many sdpblocks as possible without using fake edges */
+	vertex = initialize_sdpblock(state, sd, 0, state->last_block, 0);
+
+	/* Walk through the graph and find unconnected blocks.  If 
+	 * we can, add a fake edge from the unconnected blocks to the
+	 * end of the graph.
+	 */
+	block = state->first_block->last->next->u.block;
+	for(; block && block != state->first_block; block =  block->last->next->u.block) {
+		if (sd[block->vertex].block == block) {
+			continue;
+		}
+		if (block->left != 0) {
+			continue;
+		}
+
+#if DEBUG_SDP_BLOCKS
+		fprintf(stderr, "Adding %d\n", vertex +1);
+#endif
+
+		block->left = state->last_block;
+		use_block(block->left, block);
+		vertex = initialize_sdpblock(state, sd, state->last_block, block, vertex);
 	}
 	return vertex;
 }
@@ -10027,10 +10167,15 @@ static void find_immediate_dominators(struct compile_state *state)
 static void find_post_dominators(struct compile_state *state)
 {
 	struct sdom_block *sd;
+	int vertex;
 	/* Step 1 initialize the basic block information */
 	sd = xcmalloc(sizeof(*sd) * (state->last_vertex + 1), "sdom_state");
 
-	initialize_sdpblock(sd, 0, state->last_block, 0);
+	vertex = setup_sdpblocks(state, sd);
+	if (vertex != state->last_vertex) {
+		internal_error(state, 0, "missing %d blocks\n",
+			state->last_vertex - vertex);
+	}
 
 	/* Step 2 compute the semidominators */
 	/* Step 3 implicitly define the immediate dominator of each vertex */
@@ -10440,8 +10585,8 @@ static void rename_block_variables(
 		/* LHS(A) */
 		if (ptr->op == OP_WRITE) {
 			struct triple *var, *val, *tval;
-			var = LHS(ptr, 0);
-			tval = val = RHS(ptr, 0);
+			var = RHS(ptr, 0);
+			tval = val = RHS(ptr, 1);
 			if ((val->op == OP_WRITE) || (val->op == OP_READ)) {
 				internal_error(state, val, "bad value in write");
 			}
@@ -10456,7 +10601,7 @@ static void rename_block_variables(
 					use_triple(val, tval);
 				}
 				unuse_triple(val, ptr);
-				RHS(ptr, 0) = tval;
+				RHS(ptr, 1) = tval;
 				use_triple(tval, ptr);
 			}
 			propogate_use(state, ptr, tval);
@@ -10491,9 +10636,9 @@ static void rename_block_variables(
 		}
 		if (ptr->op == OP_WRITE) {
 			struct triple *var;
-			var = LHS(ptr, 0);
+			var = RHS(ptr, 0);
 			/* Pop OP_WRITE ptr->right from the stack of variable uses */
-			pop_triple(var, RHS(ptr, 0));
+			pop_triple(var, RHS(ptr, 1));
 			release_triple(state, ptr);
 			continue;
 		}
@@ -10645,6 +10790,7 @@ static void transform_from_ssa_form(struct compile_state *state)
 			unuse_triple(phi, use->member);
 		}
 
+#warning "CHECK_ME does the OP_ADECL need to be placed somewhere that dominates all of the incoming phi edges?"
 		/* A variable to replace the phi function */
 		var = post_triple(state, phi, OP_ADECL, phi->type, 0,0);
 		/* A read of the single value that is set into the variable */
@@ -10659,7 +10805,7 @@ static void transform_from_ssa_form(struct compile_state *state)
 		for(edge = 0, set = block->use; set; set = set->next, edge++) {
 			struct block *eblock;
 			struct triple *move;
-			struct triple *val;
+			struct triple *val, *base;
 			eblock = set->member;
 			val = slot[edge];
 			slot[edge] = 0;
@@ -10671,20 +10817,21 @@ static void transform_from_ssa_form(struct compile_state *state)
 				continue;
 			}
 			
-			move = post_triple(state, 
-				val, OP_WRITE, phi->type, var, val);
+			/* Make certain the write is placed in the edge block... */
+			base = eblock->first;
+			if (block_of_triple(state, val) == eblock) {
+				base = val;
+			}
+			move = post_triple(state, base, OP_WRITE, phi->type, var, val);
 			use_triple(val, move);
 			use_triple(var, move);
 		}		
 		/* See if there are any writers of var */
 		used = 0;
 		for(use = var->use; use; use = use->next) {
-			struct triple **expr;
-			expr = triple_lhs(state, use->member, 0);
-			for(; expr; expr = triple_lhs(state, use->member, expr)) {
-				if (*expr == var) {
-					used = 1;
-				}
+			if ((use->member->op == OP_WRITE) &&
+				(RHS(use->member, 0) == var)) {
+				used = 1;
 			}
 		}
 		/* If var is not used free it */
@@ -10792,7 +10939,7 @@ static struct reg_info find_lhs_post_color(
 	struct triple_set *set;
 	struct reg_info info;
 	struct triple *lhs;
-#if 0
+#if DEBUG_TRIPLE_COLOR
 	fprintf(stderr, "find_lhs_post_color(%p, %d)\n",
 		ins, index);
 #endif
@@ -10836,7 +10983,7 @@ static struct reg_info find_lhs_post_color(
 			info.regcm &= rinfo.regcm;
 		}
 	}
-#if 0
+#if DEBUG_TRIPLE_COLOR
 	fprintf(stderr, "find_lhs_post_color(%p, %d) -> ( %d, %x)\n",
 		ins, index, info.reg, info.regcm);
 #endif
@@ -10848,7 +10995,7 @@ static struct reg_info find_rhs_post_color(
 {
 	struct reg_info info, rinfo;
 	int zlhs, i;
-#if 0
+#if DEBUG_TRIPLE_COLOR
 	fprintf(stderr, "find_rhs_post_color(%p, %d)\n",
 		ins, index);
 #endif
@@ -10871,7 +11018,7 @@ static struct reg_info find_rhs_post_color(
 			if (tinfo.reg >= MAX_REGISTERS) {
 				tinfo.reg = REG_UNSET;
 			}
-			info.regcm &= linfo.reg;
+			info.regcm &= linfo.regcm;
 			info.regcm &= tinfo.regcm;
 			if (info.reg != REG_UNSET) {
 				internal_error(state, ins, "register conflict");
@@ -10882,7 +11029,7 @@ static struct reg_info find_rhs_post_color(
 			info.reg = tinfo.reg;
 		}
 	}
-#if 0
+#if DEBUG_TRIPLE_COLOR
 	fprintf(stderr, "find_rhs_post_color(%p, %d) -> ( %d, %x)\n",
 		ins, index, info.reg, info.regcm);
 #endif
@@ -10893,7 +11040,7 @@ static struct reg_info find_lhs_color(
 	struct compile_state *state, struct triple *ins, int index)
 {
 	struct reg_info pre, post, info;
-#if 0
+#if DEBUG_TRIPLE_COLOR
 	fprintf(stderr, "find_lhs_color(%p, %d)\n",
 		ins, index);
 #endif
@@ -10909,9 +11056,10 @@ static struct reg_info find_lhs_color(
 	if (info.reg == REG_UNSET) {
 		info.reg = post.reg;
 	}
-#if 0
-	fprintf(stderr, "find_lhs_color(%p, %d) -> ( %d, %x)\n",
-		ins, index, info.reg, info.regcm);
+#if DEBUG_TRIPLE_COLOR
+	fprintf(stderr, "find_lhs_color(%p, %d) -> ( %d, %x) ... (%d, %x) (%d, %x)\n",
+		ins, index, info.reg, info.regcm,
+		pre.reg, pre.regcm, post.reg, post.regcm);
 #endif
 	return info;
 }
@@ -11503,6 +11651,12 @@ static void eliminate_inefectual_code(struct compile_state *state)
 		if (!triple_is_pure(state, ins) || triple_is_branch(state, ins)) {
 			awaken(state, dtriple, &ins, &work_list_tail);
 		}
+#if 1
+		/* Unconditionally keep the very last instruction */
+		else if (ins->next == first) {
+			awaken(state, dtriple, &ins, &work_list_tail);
+		}
+#endif
 		i++;
 		ins = ins->next;
 	} while(ins != first);
@@ -11829,7 +11983,6 @@ static void print_interference_block(
 		fprintf(fp, "%p:\n", block->first);
 	}
 	for(done = 0, ptr = block->first; !done; ptr = ptr->next) {
-		struct triple_set *user;
 		struct live_range *lr;
 		unsigned id;
 		int op;
@@ -11837,23 +11990,6 @@ static void print_interference_block(
 		done = (ptr == block->last);
 		lr = rstate->lrd[ptr->id].lr;
 		
-		if (triple_stores_block(state, ptr)) {
-			if (ptr->u.block != block) {
-				internal_error(state, ptr, 
-					"Wrong block pointer: %p",
-					ptr->u.block);
-			}
-		}
-		if (op == OP_ADECL) {
-			for(user = ptr->use; user; user = user->next) {
-				if (!user->member->u.block) {
-					internal_error(state, user->member, 
-						"Use %p not in a block?",
-						user->member);
-				}
-				
-			}
-		}
 		id = ptr->id;
 		ptr->id = rstate->lrd[id].orig_id;
 		SET_REG(ptr->id, lr->color);
@@ -11894,23 +12030,6 @@ static void print_interference_block(
 		if ((ptr->id < 0) || (ptr->id > rstate->defs)) {
 			internal_error(state, ptr, "Invalid triple id: %d",
 				ptr->id);
-		}
-		for(user = ptr->use; user; user = user->next) {
-			struct triple *use;
-			struct live_range *ulr;
-			use = user->member;
-			valid_ins(state, use);
-			if ((use->id < 0) || (use->id > rstate->defs)) {
-				internal_error(state, use, "Invalid triple id: %d",
-					use->id);
-			}
-			ulr = rstate->lrd[user->member->id].lr;
-			if (triple_stores_block(state, user->member) &&
-				!user->member->u.block) {
-				internal_error(state, user->member,
-					"Use %p not in a block?",
-					user->member);
-			}
 		}
 	}
 	if (rb->out) {
@@ -12451,7 +12570,6 @@ static void initialize_live_ranges(
 #if DEBUG_COALESCING > 1
 		fprintf(stderr, "mandatory coalesce: %p %d %d\n",
 			ins, zlhs, zrhs);
-		
 #endif		
 		for(i = 0; i < zlhs; i++) {
 			struct reg_info linfo;
@@ -13028,6 +13146,10 @@ struct triple *find_constrained_def(
 		 * least dominated one first.
 		 */
 		if (is_constrained) {
+#if DEBUG_RANGE_CONFLICTS
+			fprintf(stderr, "canidate: %p %-8s regcm: %x %x\n",
+				lrd->def, tops(lrd->def->op), regcm, info.regcm);
+#endif
 			if (!constrained || 
 				tdominates(state, lrd->def, constrained))
 			{
@@ -13060,8 +13182,8 @@ static int split_constrained_ranges(
 		constrained = find_constrained_def(state, range, constrained);
 	}
 #if DEBUG_RANGE_CONFLICTS
-	fprintf(stderr, "constrained: %s %p\n",
-		tops(constrained->op), constrained);
+	fprintf(stderr, "constrained: %p %-8s\n",
+		constrained, tops(constrained->op));
 #endif
 	if (constrained) {
 		ids_from_rstate(state, rstate);
@@ -13106,7 +13228,6 @@ static int split_ranges(
 	}
 	return split;
 }
-
 
 #if DEBUG_COLOR_GRAPH > 1
 #define cgdebug_printf(...) fprintf(stdout, __VA_ARGS__)
@@ -13165,8 +13286,6 @@ static int select_free_color(struct compile_state *state,
 	}	
 #endif
 
-#warning "FIXME detect conflicts caused by the source and destination being the same register"
-
 	/* If a color is already assigned see if it will work */
 	if (range->color != REG_UNSET) {
 		struct live_range_def *lrd;
@@ -13207,6 +13326,7 @@ static int select_free_color(struct compile_state *state,
 		entry = lrd->def->use;
 		for(;(range->color == REG_UNSET) && entry; entry = entry->next) {
 			struct live_range_def *insd;
+			unsigned regcm;
 			insd = &rstate->lrd[entry->member->id];
 			if (insd->lr->defs == 0) {
 				continue;
@@ -13215,8 +13335,11 @@ static int select_free_color(struct compile_state *state,
 				!interfere(rstate, range, insd->lr)) {
 				phi = insd;
 			}
-			if ((insd->lr->color == REG_UNSET) ||
-				((insd->lr->classes & range->classes) == 0) ||
+			if (insd->lr->color == REG_UNSET) {
+				continue;
+			}
+			regcm = insd->lr->classes;
+			if (((regcm & range->classes) == 0) ||
 				(used[insd->lr->color])) {
 				continue;
 			}
@@ -13239,12 +13362,16 @@ static int select_free_color(struct compile_state *state,
 			expr = triple_rhs(state, phi->def, 0);
 			for(; expr; expr = triple_rhs(state, phi->def, expr)) {
 				struct live_range *lr;
+				unsigned regcm;
 				if (!*expr) {
 					continue;
 				}
 				lr = rstate->lrd[(*expr)->id].lr;
-				if ((lr->color == REG_UNSET) || 
-					((lr->classes & range->classes) == 0) ||
+				if (lr->color == REG_UNSET) {
+					continue;
+				}
+				regcm = lr->classes;
+				if (((regcm & range->classes) == 0) ||
 					(used[lr->color])) {
 					continue;
 				}
@@ -13261,12 +13388,16 @@ static int select_free_color(struct compile_state *state,
 		expr = triple_rhs(state, lrd->def, 0);
 		for(; expr; expr = triple_rhs(state, lrd->def, expr)) {
 			struct live_range *lr;
+			unsigned regcm;
 			if (!*expr) {
 				continue;
 			}
 			lr = rstate->lrd[(*expr)->id].lr;
-			if ((lr->color == -1) || 
-				((lr->classes & range->classes) == 0) ||
+			if (lr->color == REG_UNSET) {
+				continue;
+			}
+			regcm = lr->classes;
+			if (((regcm & range->classes) == 0) ||
 				(used[lr->color])) {
 				continue;
 			}
@@ -13322,8 +13453,8 @@ static int select_free_color(struct compile_state *state,
 		internal_error(state, range->defs->def, "too few registers");
 #endif
 	}
-	range->classes = arch_reg_regcm(state, range->color);
-	if (range->color == -1) {
+	range->classes &= arch_reg_regcm(state, range->color);
+	if ((range->color == REG_UNSET) || (range->classes == 0)) {
 		internal_error(state, range->defs->def, "select_free_color did not?");
 	}
 	return 1;
@@ -14503,6 +14634,7 @@ static void verify_blocks_present(struct compile_state *state)
 	first = RHS(state->main_function, 0);
 	ins = first;
 	do {
+		valid_ins(state, ins);
 		if (triple_stores_block(state, ins)) {
 			if (!ins->u.block) {
 				internal_error(state, ins, 
@@ -14518,18 +14650,72 @@ static void verify_blocks(struct compile_state *state)
 {
 	struct triple *ins;
 	struct block *block;
+	int blocks;
 	block = state->first_block;
 	if (!block) {
 		return;
 	}
+	blocks = 0;
 	do {
+		int users;
+		struct block_set *user;
+		blocks++;
 		for(ins = block->first; ins != block->last->next; ins = ins->next) {
-			if (!triple_stores_block(state, ins)) {
-				continue;
-			}
-			if (ins->u.block != block) {
+			if (triple_stores_block(state, ins) && (ins->u.block != block)) {
 				internal_error(state, ins, "inconsitent block specified");
 			}
+			valid_ins(state, ins);
+		}
+		users = 0;
+		for(user = block->use; user; user = user->next) {
+			users++;
+			if ((block == state->last_block) &&
+				(user->member == state->first_block)) {
+				continue;
+			}
+			if ((user->member->left != block) &&
+				(user->member->right != block)) {
+				internal_error(state, user->member->first,
+					"user does not use block");
+			}
+		}
+		if (triple_is_branch(state, block->last) &&
+			(block->right != block_of_triple(state, TARG(block->last, 0))))
+		{
+			internal_error(state, block->last, "block->right != TARG(0)");
+		}
+		if (!triple_is_uncond_branch(state, block->last) &&
+			(block != state->last_block) &&
+			(block->left != block_of_triple(state, block->last->next)))
+		{
+			internal_error(state, block->last, "block->left != block->last->next");
+		}
+		if (block->left) {
+			for(user = block->left->use; user; user = user->next) {
+				if (user->member == block) {
+					break;
+				}
+			}
+			if (!user || user->member != block) {
+				internal_error(state, block->first,
+					"block does not use left");
+			}
+		}
+		if (block->right) {
+			for(user = block->right->use; user; user = user->next) {
+				if (user->member == block) {
+					break;
+				}
+			}
+			if (!user || user->member != block) {
+				internal_error(state, block->first,
+					"block does not use right");
+			}
+		}
+		if (block->users != users) {
+			internal_error(state, block->first, 
+				"computed users %d != stored users %d\n",
+				users, block->users);
 		}
 		if (!triple_stores_block(state, block->last->next)) {
 			internal_error(state, block->last->next, 
@@ -14541,6 +14727,10 @@ static void verify_blocks(struct compile_state *state)
 				"bad next block");
 		}
 	} while(block != state->first_block);
+	if (blocks != state->last_vertex) {
+		internal_error(state, 0, "computed blocks != stored blocks %d\n",
+			blocks, state->last_vertex);
+	}
 }
 
 static void verify_domination(struct compile_state *state)
@@ -14585,9 +14775,6 @@ static void verify_piece(struct compile_state *state)
 		struct triple *ptr;
 		int lhs, i;
 		lhs = TRIPLE_LHS(ins->sizes);
-		if ((ins->op == OP_WRITE) || (ins->op == OP_STORE)) {
-			lhs = 0;
-		}
 		for(ptr = ins->next, i = 0; i < lhs; i++, ptr = ptr->next) {
 			if (ptr != LHS(ins, i)) {
 				internal_error(state, ins, "malformed lhs on %s",
@@ -14644,8 +14831,18 @@ static void optimize(struct compile_state *state)
 	analyze_idominators(state);
 	analyze_ipdominators(state);
 
-	/* Transform the code to ssa form */
+	/* Transform the code to ssa form. */
+	/*
+	 * The transformation to ssa form puts a phi function
+	 * on each of edge of a dominance frontier where that
+	 * phi function might be needed.  At -O2 if we don't
+	 * eleminate the excess phi functions we can get an
+	 * exponential code size growth.  So I kill the extra
+	 * phi functions early and I kill them often.
+	 */
 	transform_to_ssa_form(state);
+	eliminate_inefectual_code(state);
+
 	verify_consistency(state);
 	if (state->debug & DEBUG_CODE_ELIMINATION) {
 		fprintf(stdout, "After transform_to_ssa_form\n");
@@ -14654,11 +14851,21 @@ static void optimize(struct compile_state *state)
 	/* Do strength reduction and simple constant optimizations */
 	if (state->optimize >= 1) {
 		simplify_all(state);
+		transform_from_ssa_form(state);
+		free_basic_blocks(state);
+		setup_basic_blocks(state);
+		analyze_idominators(state);
+		analyze_ipdominators(state);
+		transform_to_ssa_form(state);
+		eliminate_inefectual_code(state);
+	}
+	if (state->debug & DEBUG_CODE_ELIMINATION) {
+		fprintf(stdout, "After simplify_all\n");
+		print_blocks(state, stdout);
 	}
 	verify_consistency(state);
 	/* Propogate constants throughout the code */
 	if (state->optimize >= 2) {
-#warning "FIXME fix scc_transform"
 		scc_transform(state);
 		transform_from_ssa_form(state);
 		free_basic_blocks(state);
@@ -14666,6 +14873,7 @@ static void optimize(struct compile_state *state)
 		analyze_idominators(state);
 		analyze_ipdominators(state);
 		transform_to_ssa_form(state);
+		eliminate_inefectual_code(state);
 	}
 	verify_consistency(state);
 #warning "WISHLIST implement single use constants (least possible register pressure)"
@@ -14781,37 +14989,41 @@ static void print_op_asm(struct compile_state *state,
 #define CPU_DEFAULT  CPU_I386
 
 /* The x86 register classes */
-#define REGC_FLAGS    0
-#define REGC_GPR8     1
-#define REGC_GPR16    2
-#define REGC_GPR32    3
-#define REGC_GPR64    4
-#define REGC_MMX      5
-#define REGC_XMM      6
-#define REGC_GPR32_8  7
-#define REGC_GPR16_8  8
-#define REGC_IMM32    9
-#define REGC_IMM16   10
-#define REGC_IMM8    11
+#define REGC_FLAGS       0
+#define REGC_GPR8        1
+#define REGC_GPR16       2
+#define REGC_GPR32       3
+#define REGC_DIVIDEND64  4
+#define REGC_DIVIDEND32  5
+#define REGC_MMX         6
+#define REGC_XMM         7
+#define REGC_GPR32_8     8
+#define REGC_GPR16_8     9
+#define REGC_GPR8_LO    10
+#define REGC_IMM32      11
+#define REGC_IMM16      12
+#define REGC_IMM8       13
 #define LAST_REGC  REGC_IMM8
 #if LAST_REGC >= MAX_REGC
 #error "MAX_REGC is to low"
 #endif
 
 /* Register class masks */
-#define REGCM_FLAGS   (1 << REGC_FLAGS)
-#define REGCM_GPR8    (1 << REGC_GPR8)
-#define REGCM_GPR16   (1 << REGC_GPR16)
-#define REGCM_GPR32   (1 << REGC_GPR32)
-#define REGCM_GPR64   (1 << REGC_GPR64)
-#define REGCM_MMX     (1 << REGC_MMX)
-#define REGCM_XMM     (1 << REGC_XMM)
-#define REGCM_GPR32_8 (1 << REGC_GPR32_8)
-#define REGCM_GPR16_8 (1 << REGC_GPR16_8)
-#define REGCM_IMM32   (1 << REGC_IMM32)
-#define REGCM_IMM16   (1 << REGC_IMM16)
-#define REGCM_IMM8    (1 << REGC_IMM8)
-#define REGCM_ALL     ((1 << (LAST_REGC + 1)) - 1)
+#define REGCM_FLAGS      (1 << REGC_FLAGS)
+#define REGCM_GPR8       (1 << REGC_GPR8)
+#define REGCM_GPR16      (1 << REGC_GPR16)
+#define REGCM_GPR32      (1 << REGC_GPR32)
+#define REGCM_DIVIDEND64 (1 << REGC_DIVIDEND64)
+#define REGCM_DIVIDEND32 (1 << REGC_DIVIDEND32)
+#define REGCM_MMX        (1 << REGC_MMX)
+#define REGCM_XMM        (1 << REGC_XMM)
+#define REGCM_GPR32_8    (1 << REGC_GPR32_8)
+#define REGCM_GPR16_8    (1 << REGC_GPR16_8)
+#define REGCM_GPR8_LO    (1 << REGC_GPR8_LO)
+#define REGCM_IMM32      (1 << REGC_IMM32)
+#define REGCM_IMM16      (1 << REGC_IMM16)
+#define REGCM_IMM8       (1 << REGC_IMM8)
+#define REGCM_ALL        ((1 << (LAST_REGC + 1)) - 1)
 
 /* The x86 registers */
 #define REG_EFLAGS  2
@@ -14825,12 +15037,10 @@ static void print_op_asm(struct compile_state *state,
 #define REG_BH      8
 #define REG_CH      9
 #define REG_DH      10
+#define REGC_GPR8_LO_FIRST REG_AL
+#define REGC_GPR8_LO_LAST  REG_DL
 #define REGC_GPR8_FIRST  REG_AL
-#if X86_4_8BIT_GPRS
-#define REGC_GPR8_LAST   REG_DL
-#else 
 #define REGC_GPR8_LAST   REG_DH
-#endif
 #define REG_AX     11
 #define REG_BX     12
 #define REG_CX     13
@@ -14852,26 +15062,29 @@ static void print_op_asm(struct compile_state *state,
 #define REGC_GPR32_FIRST REG_EAX
 #define REGC_GPR32_LAST  REG_ESP
 #define REG_EDXEAX 27
-#define REGC_GPR64_FIRST REG_EDXEAX
-#define REGC_GPR64_LAST  REG_EDXEAX
-#define REG_MMX0   28
-#define REG_MMX1   29
-#define REG_MMX2   30
-#define REG_MMX3   31
-#define REG_MMX4   32
-#define REG_MMX5   33
-#define REG_MMX6   34
-#define REG_MMX7   35
+#define REGC_DIVIDEND64_FIRST REG_EDXEAX
+#define REGC_DIVIDEND64_LAST  REG_EDXEAX
+#define REG_DXAX   28
+#define REGC_DIVIDEND32_FIRST REG_DXAX
+#define REGC_DIVIDEND32_LAST  REG_DXAX
+#define REG_MMX0   29
+#define REG_MMX1   30
+#define REG_MMX2   31
+#define REG_MMX3   32
+#define REG_MMX4   33
+#define REG_MMX5   34
+#define REG_MMX6   35
+#define REG_MMX7   36
 #define REGC_MMX_FIRST REG_MMX0
 #define REGC_MMX_LAST  REG_MMX7
-#define REG_XMM0   36
-#define REG_XMM1   37
-#define REG_XMM2   38
-#define REG_XMM3   39
-#define REG_XMM4   40
-#define REG_XMM5   41
-#define REG_XMM6   42
-#define REG_XMM7   43
+#define REG_XMM0   37
+#define REG_XMM1   38
+#define REG_XMM2   39
+#define REG_XMM3   40
+#define REG_XMM4   41
+#define REG_XMM5   42
+#define REG_XMM6   43
+#define REG_XMM7   44
 #define REGC_XMM_FIRST REG_XMM0
 #define REGC_XMM_LAST  REG_XMM7
 #warning "WISHLIST figure out how to use pinsrw and pextrw to better use extended regs"
@@ -14895,35 +15108,39 @@ static void print_op_asm(struct compile_state *state,
 
 
 static unsigned regc_size[LAST_REGC +1] = {
-	[REGC_FLAGS]   = REGC_FLAGS_LAST   - REGC_FLAGS_FIRST + 1,
-	[REGC_GPR8]    = REGC_GPR8_LAST    - REGC_GPR8_FIRST + 1,
-	[REGC_GPR16]   = REGC_GPR16_LAST   - REGC_GPR16_FIRST + 1,
-	[REGC_GPR32]   = REGC_GPR32_LAST   - REGC_GPR32_FIRST + 1,
-	[REGC_GPR64]   = REGC_GPR64_LAST   - REGC_GPR64_FIRST + 1,
-	[REGC_MMX]     = REGC_MMX_LAST     - REGC_MMX_FIRST + 1,
-	[REGC_XMM]     = REGC_XMM_LAST     - REGC_XMM_FIRST + 1,
-	[REGC_GPR32_8] = REGC_GPR32_8_LAST - REGC_GPR32_8_FIRST + 1,
-	[REGC_GPR16_8] = REGC_GPR16_8_LAST - REGC_GPR16_8_FIRST + 1,
-	[REGC_IMM32]   = 0,
-	[REGC_IMM16]   = 0,
-	[REGC_IMM8]    = 0,
+	[REGC_FLAGS]      = REGC_FLAGS_LAST      - REGC_FLAGS_FIRST + 1,
+	[REGC_GPR8]       = REGC_GPR8_LAST       - REGC_GPR8_FIRST + 1,
+	[REGC_GPR16]      = REGC_GPR16_LAST      - REGC_GPR16_FIRST + 1,
+	[REGC_GPR32]      = REGC_GPR32_LAST      - REGC_GPR32_FIRST + 1,
+	[REGC_DIVIDEND64] = REGC_DIVIDEND64_LAST - REGC_DIVIDEND64_FIRST + 1,
+	[REGC_DIVIDEND32] = REGC_DIVIDEND32_LAST - REGC_DIVIDEND32_FIRST + 1,
+	[REGC_MMX]        = REGC_MMX_LAST        - REGC_MMX_FIRST + 1,
+	[REGC_XMM]        = REGC_XMM_LAST        - REGC_XMM_FIRST + 1,
+	[REGC_GPR32_8]    = REGC_GPR32_8_LAST    - REGC_GPR32_8_FIRST + 1,
+	[REGC_GPR16_8]    = REGC_GPR16_8_LAST    - REGC_GPR16_8_FIRST + 1,
+	[REGC_GPR8_LO]    = REGC_GPR8_LO_LAST    - REGC_GPR8_LO_FIRST + 1,
+	[REGC_IMM32]      = 0,
+	[REGC_IMM16]      = 0,
+	[REGC_IMM8]       = 0,
 };
 
 static const struct {
 	int first, last;
 } regcm_bound[LAST_REGC + 1] = {
-	[REGC_FLAGS]   = { REGC_FLAGS_FIRST,   REGC_FLAGS_LAST },
-	[REGC_GPR8]    = { REGC_GPR8_FIRST,    REGC_GPR8_LAST },
-	[REGC_GPR16]   = { REGC_GPR16_FIRST,   REGC_GPR16_LAST },
-	[REGC_GPR32]   = { REGC_GPR32_FIRST,   REGC_GPR32_LAST },
-	[REGC_GPR64]   = { REGC_GPR64_FIRST,   REGC_GPR64_LAST },
-	[REGC_MMX]     = { REGC_MMX_FIRST,     REGC_MMX_LAST },
-	[REGC_XMM]     = { REGC_XMM_FIRST,     REGC_XMM_LAST },
-	[REGC_GPR32_8] = { REGC_GPR32_8_FIRST, REGC_GPR32_8_LAST },
-	[REGC_GPR16_8] = { REGC_GPR16_8_FIRST, REGC_GPR16_8_LAST },
-	[REGC_IMM32]   = { REGC_IMM32_FIRST,   REGC_IMM32_LAST },
-	[REGC_IMM16]   = { REGC_IMM16_FIRST,   REGC_IMM16_LAST },
-	[REGC_IMM8]    = { REGC_IMM8_FIRST,    REGC_IMM8_LAST },
+	[REGC_FLAGS]      = { REGC_FLAGS_FIRST,      REGC_FLAGS_LAST },
+	[REGC_GPR8]       = { REGC_GPR8_FIRST,       REGC_GPR8_LAST },
+	[REGC_GPR16]      = { REGC_GPR16_FIRST,      REGC_GPR16_LAST },
+	[REGC_GPR32]      = { REGC_GPR32_FIRST,      REGC_GPR32_LAST },
+	[REGC_DIVIDEND64] = { REGC_DIVIDEND64_FIRST, REGC_DIVIDEND64_LAST },
+	[REGC_DIVIDEND32] = { REGC_DIVIDEND32_FIRST, REGC_DIVIDEND32_LAST },
+	[REGC_MMX]        = { REGC_MMX_FIRST,        REGC_MMX_LAST },
+	[REGC_XMM]        = { REGC_XMM_FIRST,        REGC_XMM_LAST },
+	[REGC_GPR32_8]    = { REGC_GPR32_8_FIRST,    REGC_GPR32_8_LAST },
+	[REGC_GPR16_8]    = { REGC_GPR16_8_FIRST,    REGC_GPR16_8_LAST },
+	[REGC_GPR8_LO]    = { REGC_GPR8_LO_FIRST,    REGC_GPR8_LO_LAST },
+	[REGC_IMM32]      = { REGC_IMM32_FIRST,      REGC_IMM32_LAST },
+	[REGC_IMM16]      = { REGC_IMM16_FIRST,      REGC_IMM16_LAST },
+	[REGC_IMM8]       = { REGC_IMM8_FIRST,       REGC_IMM8_LAST },
 };
 
 static int arch_encode_cpu(const char *cpu)
@@ -14959,8 +15176,9 @@ static unsigned arch_regc_size(struct compile_state *state, int class)
 static int arch_regcm_intersect(unsigned regcm1, unsigned regcm2)
 {
 	/* See if two register classes may have overlapping registers */
-	unsigned gpr_mask = REGCM_GPR8 | REGCM_GPR16_8 | REGCM_GPR16 |
-		REGCM_GPR32_8 | REGCM_GPR32 | REGCM_GPR64;
+	unsigned gpr_mask = REGCM_GPR8 | REGCM_GPR8_LO | REGCM_GPR16_8 | REGCM_GPR16 |
+		REGCM_GPR32_8 | REGCM_GPR32 | 
+		REGCM_DIVIDEND32 | REGCM_DIVIDEND64;
 
 	/* Special case for the immediates */
 	if ((regcm1 & (REGCM_IMM32 | REGCM_IMM16 | REGCM_IMM8)) &&
@@ -14987,6 +15205,7 @@ static void arch_reg_equivs(
 #endif
 		*equiv++ = REG_AX;
 		*equiv++ = REG_EAX;
+		*equiv++ = REG_DXAX;
 		*equiv++ = REG_EDXEAX;
 		break;
 	case REG_AH:
@@ -14995,6 +15214,7 @@ static void arch_reg_equivs(
 #endif
 		*equiv++ = REG_AX;
 		*equiv++ = REG_EAX;
+		*equiv++ = REG_DXAX;
 		*equiv++ = REG_EDXEAX;
 		break;
 	case REG_BL:  
@@ -15033,6 +15253,7 @@ static void arch_reg_equivs(
 #endif
 		*equiv++ = REG_DX;
 		*equiv++ = REG_EDX;
+		*equiv++ = REG_DXAX;
 		*equiv++ = REG_EDXEAX;
 		break;
 	case REG_DH:
@@ -15041,12 +15262,14 @@ static void arch_reg_equivs(
 #endif
 		*equiv++ = REG_DX;
 		*equiv++ = REG_EDX;
+		*equiv++ = REG_DXAX;
 		*equiv++ = REG_EDXEAX;
 		break;
 	case REG_AX:
 		*equiv++ = REG_AL;
 		*equiv++ = REG_AH;
 		*equiv++ = REG_EAX;
+		*equiv++ = REG_DXAX;
 		*equiv++ = REG_EDXEAX;
 		break;
 	case REG_BX:
@@ -15063,6 +15286,7 @@ static void arch_reg_equivs(
 		*equiv++ = REG_DL;
 		*equiv++ = REG_DH;
 		*equiv++ = REG_EDX;
+		*equiv++ = REG_DXAX;
 		*equiv++ = REG_EDXEAX;
 		break;
 	case REG_SI:  
@@ -15081,6 +15305,7 @@ static void arch_reg_equivs(
 		*equiv++ = REG_AL;
 		*equiv++ = REG_AH;
 		*equiv++ = REG_AX;
+		*equiv++ = REG_DXAX;
 		*equiv++ = REG_EDXEAX;
 		break;
 	case REG_EBX:
@@ -15097,6 +15322,7 @@ static void arch_reg_equivs(
 		*equiv++ = REG_DL;
 		*equiv++ = REG_DH;
 		*equiv++ = REG_DX;
+		*equiv++ = REG_DXAX;
 		*equiv++ = REG_EDXEAX;
 		break;
 	case REG_ESI: 
@@ -15111,6 +15337,17 @@ static void arch_reg_equivs(
 	case REG_ESP: 
 		*equiv++ = REG_SP;
 		break;
+	case REG_DXAX: 
+		*equiv++ = REG_AL;
+		*equiv++ = REG_AH;
+		*equiv++ = REG_DL;
+		*equiv++ = REG_DH;
+		*equiv++ = REG_AX;
+		*equiv++ = REG_DX;
+		*equiv++ = REG_EAX;
+		*equiv++ = REG_EDX;
+		*equiv++ = REG_EDXEAX;
+		break;
 	case REG_EDXEAX: 
 		*equiv++ = REG_AL;
 		*equiv++ = REG_AH;
@@ -15120,6 +15357,7 @@ static void arch_reg_equivs(
 		*equiv++ = REG_DX;
 		*equiv++ = REG_EAX;
 		*equiv++ = REG_EDX;
+		*equiv++ = REG_DXAX;
 		break;
 	}
 	*equiv++ = REG_UNSET; 
@@ -15128,8 +15366,10 @@ static void arch_reg_equivs(
 static unsigned arch_avail_mask(struct compile_state *state)
 {
 	unsigned avail_mask;
-	avail_mask = REGCM_GPR8 | REGCM_GPR16_8 | REGCM_GPR16 | 
-		REGCM_GPR32 | REGCM_GPR32_8 | REGCM_GPR64 |
+	/* REGCM_GPR8 is not available */
+	avail_mask = REGCM_GPR8_LO | REGCM_GPR16_8 | REGCM_GPR16 | 
+		REGCM_GPR32 | REGCM_GPR32_8 | 
+		REGCM_DIVIDEND32 | REGCM_DIVIDEND64 |
 		REGCM_IMM32 | REGCM_IMM16 | REGCM_IMM8 | REGCM_FLAGS;
 	switch(state->cpu) {
 	case CPU_P3:
@@ -15141,12 +15381,6 @@ static unsigned arch_avail_mask(struct compile_state *state)
 		avail_mask |= REGCM_MMX | REGCM_XMM;
 		break;
 	}
-#if 0
-	/* Don't enable 8 bit values until I can force both operands
-	 * to be 8bits simultaneously.
-	 */
-	avail_mask &= ~(REGCM_GPR8 | REGCM_GPR16_8 | REGCM_GPR16);
-#endif
 	return avail_mask;
 }
 
@@ -15155,7 +15389,6 @@ static unsigned arch_regcm_normalize(struct compile_state *state, unsigned regcm
 	unsigned mask, result;
 	int class, class2;
 	result = regcm;
-	result &= arch_avail_mask(state);
 
 	for(class = 0, mask = 1; mask; mask <<= 1, class++) {
 		if ((result & mask) == 0) {
@@ -15171,6 +15404,7 @@ static unsigned arch_regcm_normalize(struct compile_state *state, unsigned regcm
 			}
 		}
 	}
+	result &= arch_avail_mask(state);
 	return result;
 }
 
@@ -15209,19 +15443,19 @@ static struct reg_info arch_reg_constraint(
 		unsigned int mask;
 		unsigned int reg;
 	} constraints[] = {
-		{ 'r', REGCM_GPR32, REG_UNSET },
-		{ 'g', REGCM_GPR32, REG_UNSET },
-		{ 'p', REGCM_GPR32, REG_UNSET },
-		{ 'q', REGCM_GPR8,  REG_UNSET },
+		{ 'r', REGCM_GPR32,   REG_UNSET },
+		{ 'g', REGCM_GPR32,   REG_UNSET },
+		{ 'p', REGCM_GPR32,   REG_UNSET },
+		{ 'q', REGCM_GPR8_LO, REG_UNSET },
 		{ 'Q', REGCM_GPR32_8, REG_UNSET },
-		{ 'x', REGCM_XMM,   REG_UNSET },
-		{ 'y', REGCM_MMX,   REG_UNSET },
-		{ 'a', REGCM_GPR32, REG_EAX },
-		{ 'b', REGCM_GPR32, REG_EBX },
-		{ 'c', REGCM_GPR32, REG_ECX },
-		{ 'd', REGCM_GPR32, REG_EDX },
-		{ 'D', REGCM_GPR32, REG_EDI },
-		{ 'S', REGCM_GPR32, REG_ESI },
+		{ 'x', REGCM_XMM,     REG_UNSET },
+		{ 'y', REGCM_MMX,     REG_UNSET },
+		{ 'a', REGCM_GPR32,   REG_EAX },
+		{ 'b', REGCM_GPR32,   REG_EBX },
+		{ 'c', REGCM_GPR32,   REG_ECX },
+		{ 'd', REGCM_GPR32,   REG_EDX },
+		{ 'D', REGCM_GPR32,   REG_EDI },
+		{ 'S', REGCM_GPR32,   REG_ESI },
 		{ '\0', 0, REG_UNSET },
 	};
 	unsigned int regcm;
@@ -15368,7 +15602,13 @@ static int arch_select_free_register(
 	for(i = REGC_GPR8_FIRST; (reg == REG_UNSET) && (i <= REGC_GPR8_LAST); i++) {
 		reg = do_select_reg(state, used, i, classes);
 	}
-	for(i = REGC_GPR64_FIRST; (reg == REG_UNSET) && (i <= REGC_GPR64_LAST); i++) {
+	for(i = REGC_GPR8_LO_FIRST; (reg == REG_UNSET) && (i <= REGC_GPR8_LO_LAST); i++) {
+		reg = do_select_reg(state, used, i, classes);
+	}
+	for(i = REGC_DIVIDEND32_FIRST; (reg == REG_UNSET) && (i <= REGC_DIVIDEND32_LAST); i++) {
+		reg = do_select_reg(state, used, i, classes);
+	}
+	for(i = REGC_DIVIDEND64_FIRST; (reg == REG_UNSET) && (i <= REGC_DIVIDEND64_LAST); i++) {
 		reg = do_select_reg(state, used, i, classes);
 	}
 	for(i = REGC_FLAGS_FIRST; (reg == REG_UNSET) && (i <= REGC_FLAGS_LAST); i++) {
@@ -15390,10 +15630,10 @@ static unsigned arch_type_to_regcm(struct compile_state *state, struct type *typ
 		break;
 	case TYPE_CHAR:
 	case TYPE_UCHAR:
-		mask = REGCM_GPR8 | 
+		mask = REGCM_GPR8 | REGCM_GPR8_LO |
 			REGCM_GPR16 | REGCM_GPR16_8 | 
 			REGCM_GPR32 | REGCM_GPR32_8 |
-			REGCM_GPR64 |
+			REGCM_DIVIDEND32 | REGCM_DIVIDEND64 |
 			REGCM_MMX | REGCM_XMM |
 			REGCM_IMM32 | REGCM_IMM16 | REGCM_IMM8;
 		break;
@@ -15401,7 +15641,7 @@ static unsigned arch_type_to_regcm(struct compile_state *state, struct type *typ
 	case TYPE_USHORT:
 		mask = 	REGCM_GPR16 | REGCM_GPR16_8 |
 			REGCM_GPR32 | REGCM_GPR32_8 |
-			REGCM_GPR64 |
+			REGCM_DIVIDEND32 | REGCM_DIVIDEND64 |
 			REGCM_MMX | REGCM_XMM |
 			REGCM_IMM32 | REGCM_IMM16;
 		break;
@@ -15411,7 +15651,8 @@ static unsigned arch_type_to_regcm(struct compile_state *state, struct type *typ
 	case TYPE_ULONG:
 	case TYPE_POINTER:
 		mask = 	REGCM_GPR32 | REGCM_GPR32_8 |
-			REGCM_GPR64 | REGCM_MMX | REGCM_XMM |
+			REGCM_DIVIDEND32 | REGCM_DIVIDEND64 |
+			REGCM_MMX | REGCM_XMM |
 			REGCM_IMM32;
 		break;
 	default:
@@ -15469,63 +15710,79 @@ static int get_imm8(struct triple *ins, struct triple **expr)
 	return 1;
 }
 
-#define TEMPLATE_NOP         0
-#define TEMPLATE_INTCONST8   1
-#define TEMPLATE_INTCONST32  2
-#define TEMPLATE_COPY8_REG   3
-#define TEMPLATE_COPY16_REG  4
-#define TEMPLATE_COPY32_REG  5
-#define TEMPLATE_COPY_IMM8   6
-#define TEMPLATE_COPY_IMM16  7
-#define TEMPLATE_COPY_IMM32  8
-#define TEMPLATE_PHI8        9
-#define TEMPLATE_PHI16      10
-#define TEMPLATE_PHI32      11
-#define TEMPLATE_STORE8     12
-#define TEMPLATE_STORE16    13
-#define TEMPLATE_STORE32    14
-#define TEMPLATE_LOAD8      15
-#define TEMPLATE_LOAD16     16
-#define TEMPLATE_LOAD32     17
-#define TEMPLATE_BINARY_REG 18
-#define TEMPLATE_BINARY_IMM 19
-#define TEMPLATE_SL_CL      20
-#define TEMPLATE_SL_IMM     21
-#define TEMPLATE_UNARY      22
-#define TEMPLATE_CMP_REG    23
-#define TEMPLATE_CMP_IMM    24
-#define TEMPLATE_TEST       25
-#define TEMPLATE_SET        26
-#define TEMPLATE_JMP        27
-#define TEMPLATE_INB_DX     28
-#define TEMPLATE_INB_IMM    29
-#define TEMPLATE_INW_DX     30
-#define TEMPLATE_INW_IMM    31
-#define TEMPLATE_INL_DX     32
-#define TEMPLATE_INL_IMM    33
-#define TEMPLATE_OUTB_DX    34
-#define TEMPLATE_OUTB_IMM   35
-#define TEMPLATE_OUTW_DX    36
-#define TEMPLATE_OUTW_IMM   37
-#define TEMPLATE_OUTL_DX    38
-#define TEMPLATE_OUTL_IMM   39
-#define TEMPLATE_BSF        40
-#define TEMPLATE_RDMSR      41
-#define TEMPLATE_WRMSR      42
-#define TEMPLATE_UMUL       43
-#define TEMPLATE_DIV        44
-#define TEMPLATE_MOD        45
-#define LAST_TEMPLATE       TEMPLATE_MOD
+#define TEMPLATE_NOP           0
+#define TEMPLATE_INTCONST8     1
+#define TEMPLATE_INTCONST32    2
+#define TEMPLATE_COPY8_REG     3
+#define TEMPLATE_COPY16_REG    4
+#define TEMPLATE_COPY32_REG    5
+#define TEMPLATE_COPY_IMM8     6
+#define TEMPLATE_COPY_IMM16    7
+#define TEMPLATE_COPY_IMM32    8
+#define TEMPLATE_PHI8          9
+#define TEMPLATE_PHI16        10
+#define TEMPLATE_PHI32        11
+#define TEMPLATE_STORE8       12
+#define TEMPLATE_STORE16      13
+#define TEMPLATE_STORE32      14
+#define TEMPLATE_LOAD8        15
+#define TEMPLATE_LOAD16       16
+#define TEMPLATE_LOAD32       17
+#define TEMPLATE_BINARY8_REG  18
+#define TEMPLATE_BINARY16_REG 19
+#define TEMPLATE_BINARY32_REG 20
+#define TEMPLATE_BINARY8_IMM  21
+#define TEMPLATE_BINARY16_IMM 22
+#define TEMPLATE_BINARY32_IMM 23
+#define TEMPLATE_SL8_CL       24
+#define TEMPLATE_SL16_CL      25
+#define TEMPLATE_SL32_CL      26
+#define TEMPLATE_SL8_IMM      27
+#define TEMPLATE_SL16_IMM     28
+#define TEMPLATE_SL32_IMM     29
+#define TEMPLATE_UNARY8       30
+#define TEMPLATE_UNARY16      31
+#define TEMPLATE_UNARY32      32
+#define TEMPLATE_CMP8_REG     33
+#define TEMPLATE_CMP16_REG    34
+#define TEMPLATE_CMP32_REG    35
+#define TEMPLATE_CMP8_IMM     36
+#define TEMPLATE_CMP16_IMM    37
+#define TEMPLATE_CMP32_IMM    38
+#define TEMPLATE_TEST8        39
+#define TEMPLATE_TEST16       40
+#define TEMPLATE_TEST32       41
+#define TEMPLATE_SET          42
+#define TEMPLATE_JMP          43
+#define TEMPLATE_INB_DX       44
+#define TEMPLATE_INB_IMM      45
+#define TEMPLATE_INW_DX       46
+#define TEMPLATE_INW_IMM      47
+#define TEMPLATE_INL_DX       48
+#define TEMPLATE_INL_IMM      49
+#define TEMPLATE_OUTB_DX      50
+#define TEMPLATE_OUTB_IMM     51
+#define TEMPLATE_OUTW_DX      52
+#define TEMPLATE_OUTW_IMM     53
+#define TEMPLATE_OUTL_DX      54
+#define TEMPLATE_OUTL_IMM     55
+#define TEMPLATE_BSF          56
+#define TEMPLATE_RDMSR        57
+#define TEMPLATE_WRMSR        58
+#define TEMPLATE_UMUL8        59
+#define TEMPLATE_UMUL16       60
+#define TEMPLATE_UMUL32       61
+#define TEMPLATE_DIV8         62
+#define TEMPLATE_DIV16        63
+#define TEMPLATE_DIV32        64
+#define LAST_TEMPLATE       TEMPLATE_DIV32
 #if LAST_TEMPLATE >= MAX_TEMPLATES
 #error "MAX_TEMPLATES to low"
 #endif
 
-#define COPY8_REGCM     (REGCM_GPR64 | REGCM_GPR32 | REGCM_GPR16 | REGCM_GPR8 | REGCM_MMX | REGCM_XMM)
-#define COPY16_REGCM    (REGCM_GPR64 | REGCM_GPR32 | REGCM_GPR16 | REGCM_MMX | REGCM_XMM)  
-#define COPY32_REGCM    (REGCM_GPR64 | REGCM_GPR32 | REGCM_MMX | REGCM_XMM)
-#define COPYIMM8_REGCM  (REGCM_GPR32 | REGCM_GPR16 | REGCM_GPR8)
-#define COPYIMM16_REGCM (REGCM_GPR32 | REGCM_GPR16)
-#define COPYIMM32_REGCM (REGCM_GPR32)
+#define COPY8_REGCM     (REGCM_DIVIDEND64 | REGCM_DIVIDEND32 | REGCM_GPR32 | REGCM_GPR16 | REGCM_GPR8_LO | REGCM_MMX | REGCM_XMM)
+#define COPY16_REGCM    (REGCM_DIVIDEND64 | REGCM_DIVIDEND32 | REGCM_GPR32 | REGCM_GPR16 | REGCM_MMX | REGCM_XMM)  
+#define COPY32_REGCM    (REGCM_DIVIDEND64 | REGCM_DIVIDEND32 | REGCM_GPR32 | REGCM_MMX | REGCM_XMM)
 
 
 static struct ins_template templates[] = {
@@ -15549,15 +15806,15 @@ static struct ins_template templates[] = {
 		.rhs = { [0] = { REG_UNSET, COPY32_REGCM }  },
 	},
 	[TEMPLATE_COPY_IMM8] = {
-		.lhs = { [0] = { REG_UNSET, COPYIMM8_REGCM } },
+		.lhs = { [0] = { REG_UNSET, COPY8_REGCM } },
 		.rhs = { [0] = { REG_UNNEEDED, REGCM_IMM8 } },
 	},
 	[TEMPLATE_COPY_IMM16] = {
-		.lhs = { [0] = { REG_UNSET, COPYIMM16_REGCM } },
+		.lhs = { [0] = { REG_UNSET, COPY16_REGCM } },
 		.rhs = { [0] = { REG_UNNEEDED, REGCM_IMM16 | REGCM_IMM8 } },
 	},
 	[TEMPLATE_COPY_IMM32] = {
-		.lhs = { [0] = { REG_UNSET, COPYIMM32_REGCM } },
+		.lhs = { [0] = { REG_UNSET, COPY32_REGCM } },
 		.rhs = { [0] = { REG_UNNEEDED, REGCM_IMM32 | REGCM_IMM16 | REGCM_IMM8 } },
 	},
 	[TEMPLATE_PHI8] = { 
@@ -15621,19 +15878,25 @@ static struct ins_template templates[] = {
 			[15] = { REG_VIRT0, COPY32_REGCM },
 		}, },
 	[TEMPLATE_STORE8] = {
-		.lhs = { [0] = { REG_UNSET, REGCM_GPR32 } },
-		.rhs = { [0] = { REG_UNSET, REGCM_GPR8 } },
+		.rhs = { 
+			[0] = { REG_UNSET, REGCM_GPR32 },
+			[1] = { REG_UNSET, REGCM_GPR8_LO },
+		},
 	},
 	[TEMPLATE_STORE16] = {
-		.lhs = { [0] = { REG_UNSET, REGCM_GPR32 } },
-		.rhs = { [0] = { REG_UNSET, REGCM_GPR16 } },
+		.rhs = { 
+			[0] = { REG_UNSET, REGCM_GPR32 },
+			[1] = { REG_UNSET, REGCM_GPR16 },
+		},
 	},
 	[TEMPLATE_STORE32] = {
-		.lhs = { [0] = { REG_UNSET, REGCM_GPR32 } },
-		.rhs = { [0] = { REG_UNSET, REGCM_GPR32 } },
+		.rhs = { 
+			[0] = { REG_UNSET, REGCM_GPR32 },
+			[1] = { REG_UNSET, REGCM_GPR32 },
+		},
 	},
 	[TEMPLATE_LOAD8] = {
-		.lhs = { [0] = { REG_UNSET, REGCM_GPR8 } },
+		.lhs = { [0] = { REG_UNSET, REGCM_GPR8_LO } },
 		.rhs = { [0] = { REG_UNSET, REGCM_GPR32 } },
 	},
 	[TEMPLATE_LOAD16] = {
@@ -15644,69 +15907,169 @@ static struct ins_template templates[] = {
 		.lhs = { [0] = { REG_UNSET, REGCM_GPR32 } },
 		.rhs = { [0] = { REG_UNSET, REGCM_GPR32 } },
 	},
-	[TEMPLATE_BINARY_REG] = {
+	[TEMPLATE_BINARY8_REG] = {
+		.lhs = { [0] = { REG_VIRT0, REGCM_GPR8_LO } },
+		.rhs = { 
+			[0] = { REG_VIRT0, REGCM_GPR8_LO },
+			[1] = { REG_UNSET, REGCM_GPR8_LO },
+		},
+	},
+	[TEMPLATE_BINARY16_REG] = {
+		.lhs = { [0] = { REG_VIRT0, REGCM_GPR16 } },
+		.rhs = { 
+			[0] = { REG_VIRT0, REGCM_GPR16 },
+			[1] = { REG_UNSET, REGCM_GPR16 },
+		},
+	},
+	[TEMPLATE_BINARY32_REG] = {
 		.lhs = { [0] = { REG_VIRT0, REGCM_GPR32 } },
 		.rhs = { 
 			[0] = { REG_VIRT0, REGCM_GPR32 },
 			[1] = { REG_UNSET, REGCM_GPR32 },
 		},
 	},
-	[TEMPLATE_BINARY_IMM] = {
+	[TEMPLATE_BINARY8_IMM] = {
+		.lhs = { [0] = { REG_VIRT0, REGCM_GPR8_LO } },
+		.rhs = { 
+			[0] = { REG_VIRT0,    REGCM_GPR8_LO },
+			[1] = { REG_UNNEEDED, REGCM_IMM8 },
+		},
+	},
+	[TEMPLATE_BINARY16_IMM] = {
+		.lhs = { [0] = { REG_VIRT0, REGCM_GPR16 } },
+		.rhs = { 
+			[0] = { REG_VIRT0,    REGCM_GPR16 },
+			[1] = { REG_UNNEEDED, REGCM_IMM16 },
+		},
+	},
+	[TEMPLATE_BINARY32_IMM] = {
 		.lhs = { [0] = { REG_VIRT0, REGCM_GPR32 } },
 		.rhs = { 
 			[0] = { REG_VIRT0,    REGCM_GPR32 },
 			[1] = { REG_UNNEEDED, REGCM_IMM32 },
 		},
 	},
-	[TEMPLATE_SL_CL] = {
+	[TEMPLATE_SL8_CL] = {
+		.lhs = { [0] = { REG_VIRT0, REGCM_GPR8_LO } },
+		.rhs = { 
+			[0] = { REG_VIRT0, REGCM_GPR8_LO },
+			[1] = { REG_CL, REGCM_GPR8_LO },
+		},
+	},
+	[TEMPLATE_SL16_CL] = {
+		.lhs = { [0] = { REG_VIRT0, REGCM_GPR16 } },
+		.rhs = { 
+			[0] = { REG_VIRT0, REGCM_GPR16 },
+			[1] = { REG_CL, REGCM_GPR8_LO },
+		},
+	},
+	[TEMPLATE_SL32_CL] = {
 		.lhs = { [0] = { REG_VIRT0, REGCM_GPR32 } },
 		.rhs = { 
 			[0] = { REG_VIRT0, REGCM_GPR32 },
-			[1] = { REG_CL, REGCM_GPR8 },
+			[1] = { REG_CL, REGCM_GPR8_LO },
 		},
 	},
-	[TEMPLATE_SL_IMM] = {
+	[TEMPLATE_SL8_IMM] = {
+		.lhs = { [0] = { REG_VIRT0, REGCM_GPR8_LO } },
+		.rhs = { 
+			[0] = { REG_VIRT0,    REGCM_GPR8_LO },
+			[1] = { REG_UNNEEDED, REGCM_IMM8 },
+		},
+	},
+	[TEMPLATE_SL16_IMM] = {
+		.lhs = { [0] = { REG_VIRT0, REGCM_GPR16 } },
+		.rhs = { 
+			[0] = { REG_VIRT0,    REGCM_GPR16 },
+			[1] = { REG_UNNEEDED, REGCM_IMM8 },
+		},
+	},
+	[TEMPLATE_SL32_IMM] = {
 		.lhs = { [0] = { REG_VIRT0, REGCM_GPR32 } },
 		.rhs = { 
 			[0] = { REG_VIRT0,    REGCM_GPR32 },
 			[1] = { REG_UNNEEDED, REGCM_IMM8 },
 		},
 	},
-	[TEMPLATE_UNARY] = {
+	[TEMPLATE_UNARY8] = {
+		.lhs = { [0] = { REG_VIRT0, REGCM_GPR8_LO } },
+		.rhs = { [0] = { REG_VIRT0, REGCM_GPR8_LO } },
+	},
+	[TEMPLATE_UNARY16] = {
+		.lhs = { [0] = { REG_VIRT0, REGCM_GPR16 } },
+		.rhs = { [0] = { REG_VIRT0, REGCM_GPR16 } },
+	},
+	[TEMPLATE_UNARY32] = {
 		.lhs = { [0] = { REG_VIRT0, REGCM_GPR32 } },
 		.rhs = { [0] = { REG_VIRT0, REGCM_GPR32 } },
 	},
-	[TEMPLATE_CMP_REG] = {
+	[TEMPLATE_CMP8_REG] = {
+		.lhs = { [0] = { REG_EFLAGS, REGCM_FLAGS } },
+		.rhs = {
+			[0] = { REG_UNSET, REGCM_GPR8_LO },
+			[1] = { REG_UNSET, REGCM_GPR8_LO },
+		},
+	},
+	[TEMPLATE_CMP16_REG] = {
+		.lhs = { [0] = { REG_EFLAGS, REGCM_FLAGS } },
+		.rhs = {
+			[0] = { REG_UNSET, REGCM_GPR16 },
+			[1] = { REG_UNSET, REGCM_GPR16 },
+		},
+	},
+	[TEMPLATE_CMP32_REG] = {
 		.lhs = { [0] = { REG_EFLAGS, REGCM_FLAGS } },
 		.rhs = {
 			[0] = { REG_UNSET, REGCM_GPR32 },
 			[1] = { REG_UNSET, REGCM_GPR32 },
 		},
 	},
-	[TEMPLATE_CMP_IMM] = {
+	[TEMPLATE_CMP8_IMM] = {
+		.lhs = { [0] = { REG_EFLAGS, REGCM_FLAGS } },
+		.rhs = {
+			[0] = { REG_UNSET, REGCM_GPR8_LO },
+			[1] = { REG_UNNEEDED, REGCM_IMM8 },
+		},
+	},
+	[TEMPLATE_CMP16_IMM] = {
+		.lhs = { [0] = { REG_EFLAGS, REGCM_FLAGS } },
+		.rhs = {
+			[0] = { REG_UNSET, REGCM_GPR16 },
+			[1] = { REG_UNNEEDED, REGCM_IMM16 },
+		},
+	},
+	[TEMPLATE_CMP32_IMM] = {
 		.lhs = { [0] = { REG_EFLAGS, REGCM_FLAGS } },
 		.rhs = {
 			[0] = { REG_UNSET, REGCM_GPR32 },
 			[1] = { REG_UNNEEDED, REGCM_IMM32 },
 		},
 	},
-	[TEMPLATE_TEST] = {
+	[TEMPLATE_TEST8] = {
+		.lhs = { [0] = { REG_EFLAGS, REGCM_FLAGS } },
+		.rhs = { [0] = { REG_UNSET, REGCM_GPR8_LO } },
+	},
+	[TEMPLATE_TEST16] = {
+		.lhs = { [0] = { REG_EFLAGS, REGCM_FLAGS } },
+		.rhs = { [0] = { REG_UNSET, REGCM_GPR16 } },
+	},
+	[TEMPLATE_TEST32] = {
 		.lhs = { [0] = { REG_EFLAGS, REGCM_FLAGS } },
 		.rhs = { [0] = { REG_UNSET, REGCM_GPR32 } },
 	},
 	[TEMPLATE_SET] = {
-		.lhs = { [0] = { REG_UNSET, REGCM_GPR8 } },
+		.lhs = { [0] = { REG_UNSET, REGCM_GPR8_LO } },
 		.rhs = { [0] = { REG_EFLAGS, REGCM_FLAGS } },
 	},
 	[TEMPLATE_JMP] = {
 		.rhs = { [0] = { REG_EFLAGS, REGCM_FLAGS } },
 	},
 	[TEMPLATE_INB_DX] = {
-		.lhs = { [0] = { REG_AL,  REGCM_GPR8 } },  
+		.lhs = { [0] = { REG_AL,  REGCM_GPR8_LO } },  
 		.rhs = { [0] = { REG_DX, REGCM_GPR16 } },
 	},
 	[TEMPLATE_INB_IMM] = {
-		.lhs = { [0] = { REG_AL,  REGCM_GPR8 } },  
+		.lhs = { [0] = { REG_AL,  REGCM_GPR8_LO } },  
 		.rhs = { [0] = { REG_UNNEEDED, REGCM_IMM8 } },
 	},
 	[TEMPLATE_INW_DX]  = { 
@@ -15727,13 +16090,13 @@ static struct ins_template templates[] = {
 	},
 	[TEMPLATE_OUTB_DX] = { 
 		.rhs = {
-			[0] = { REG_AL,  REGCM_GPR8 },
+			[0] = { REG_AL,  REGCM_GPR8_LO },
 			[1] = { REG_DX, REGCM_GPR16 },
 		},
 	},
 	[TEMPLATE_OUTB_IMM] = { 
 		.rhs = {
-			[0] = { REG_AL,  REGCM_GPR8 },  
+			[0] = { REG_AL,  REGCM_GPR8_LO },  
 			[1] = { REG_UNNEEDED, REGCM_IMM8 },
 		},
 	},
@@ -15779,30 +16142,54 @@ static struct ins_template templates[] = {
 			[2] = { REG_EDX, REGCM_GPR32 },
 		},
 	},
-	[TEMPLATE_UMUL] = {
-		.lhs = { [0] = { REG_EDXEAX, REGCM_GPR64 } },
+	[TEMPLATE_UMUL8] = {
+		.lhs = { [0] = { REG_AX, REGCM_GPR16 } },
+		.rhs = { 
+			[0] = { REG_AL, REGCM_GPR8_LO },
+			[1] = { REG_UNSET, REGCM_GPR8_LO },
+		},
+	},
+	[TEMPLATE_UMUL16] = {
+		.lhs = { [0] = { REG_DXAX, REGCM_DIVIDEND32 } },
+		.rhs = { 
+			[0] = { REG_AX, REGCM_GPR16 },
+			[1] = { REG_UNSET, REGCM_GPR16 },
+		},
+	},
+	[TEMPLATE_UMUL32] = {
+		.lhs = { [0] = { REG_EDXEAX, REGCM_DIVIDEND64 } },
 		.rhs = { 
 			[0] = { REG_EAX, REGCM_GPR32 },
 			[1] = { REG_UNSET, REGCM_GPR32 },
 		},
 	},
-	[TEMPLATE_DIV] = {
+	[TEMPLATE_DIV8] = {
+		.lhs = { 
+			[0] = { REG_AL, REGCM_GPR8_LO },
+			[1] = { REG_AH, REGCM_GPR8 },
+		},
+		.rhs = {
+			[0] = { REG_AX, REGCM_GPR16 },
+			[1] = { REG_UNSET, REGCM_GPR8_LO },
+		},
+	},
+	[TEMPLATE_DIV16] = {
+		.lhs = { 
+			[0] = { REG_AX, REGCM_GPR16 },
+			[1] = { REG_DX, REGCM_GPR16 },
+		},
+		.rhs = {
+			[0] = { REG_DXAX, REGCM_DIVIDEND32 },
+			[1] = { REG_UNSET, REGCM_GPR16 },
+		},
+	},
+	[TEMPLATE_DIV32] = {
 		.lhs = { 
 			[0] = { REG_EAX, REGCM_GPR32 },
 			[1] = { REG_EDX, REGCM_GPR32 },
 		},
 		.rhs = {
-			[0] = { REG_EDXEAX, REGCM_GPR64 },
-			[1] = { REG_UNSET, REGCM_GPR32 },
-		},
-	},
-	[TEMPLATE_MOD] = {
-		.lhs = { 
-			[0] = { REG_EDX, REGCM_GPR32 },
-			[1] = { REG_EAX, REGCM_GPR32 },
-		},
-		.rhs = {
-			[0] = { REG_EDXEAX, REGCM_GPR64 },
+			[0] = { REG_EDXEAX, REGCM_DIVIDEND64 },
 			[1] = { REG_UNSET, REGCM_GPR32 },
 		},
 	},
@@ -15828,11 +16215,11 @@ static void fixup_branches(struct compile_state *state,
 			branch = entry->member;
 			test = pre_triple(state, branch,
 				cmp->op, cmp->type, left, right);
-			test->template_id = TEMPLATE_TEST; 
+			test->template_id = TEMPLATE_TEST32; 
 			if (cmp->op == OP_CMP) {
-				test->template_id = TEMPLATE_CMP_REG;
+				test->template_id = TEMPLATE_CMP32_REG;
 				if (get_imm32(test, &RHS(test, 1))) {
-					test->template_id = TEMPLATE_CMP_IMM;
+					test->template_id = TEMPLATE_CMP32_IMM;
 				}
 			}
 			use_triple(RHS(test, 0), test);
@@ -15859,11 +16246,11 @@ static void bool_cmp(struct compile_state *state,
 
 	/* Modify the comparison operator */
 	ins->op = cmp_op;
-	ins->template_id = TEMPLATE_TEST;
+	ins->template_id = TEMPLATE_TEST32;
 	if (cmp_op == OP_CMP) {
-		ins->template_id = TEMPLATE_CMP_REG;
+		ins->template_id = TEMPLATE_CMP32_REG;
 		if (get_imm32(ins, &RHS(ins, 1))) {
-			ins->template_id =  TEMPLATE_CMP_IMM;
+			ins->template_id =  TEMPLATE_CMP32_IMM;
 		}
 	}
 	/* Generate the instruction sequence that will transform the
@@ -15972,6 +16359,47 @@ struct reg_info arch_reg_rhs(struct compile_state *state, struct triple *ins, in
 		internal_error(state, ins, "rhs %d regcm == 0", index);
 	}
 	return result;
+}
+
+static struct triple *mod_div(struct compile_state *state,
+	struct triple *ins, int div_op, int index)
+{
+	struct triple *div, *piece0, *piece1;
+	
+	/* Generate a piece to hold the remainder */
+	piece1 = post_triple(state, ins, OP_PIECE, ins->type, 0, 0);
+	piece1->u.cval = 1;
+
+	/* Generate a piece to hold the quotient */
+	piece0 = post_triple(state, ins, OP_PIECE, ins->type, 0, 0);
+	piece0->u.cval = 0;
+
+	/* Generate the appropriate division instruction */
+	div = post_triple(state, ins, div_op, ins->type, 0, 0);
+	RHS(div, 0) = RHS(ins, 0);
+	RHS(div, 1) = RHS(ins, 1);
+	LHS(div, 0) = piece0;
+	LHS(div, 1) = piece1;
+	div->template_id  = TEMPLATE_DIV32;
+	use_triple(RHS(div, 0), div);
+	use_triple(RHS(div, 1), div);
+	use_triple(LHS(div, 0), div);
+	use_triple(LHS(div, 1), div);
+
+	/* Hook on piece0 */
+	MISC(piece0, 0) = div;
+	use_triple(div, piece0);
+
+	/* Hook on piece1 */
+	MISC(piece1, 0) = div;
+	use_triple(div, piece1);
+	
+	/* Replate uses of ins with the appropriate piece of the div */
+	propogate_use(state, ins, LHS(div, index));
+	release_triple(state, ins);
+
+	/* Return the address of the next instruction */
+	return piece1->next;
 }
 
 static struct triple *transform_to_arch_instruction(
@@ -16089,38 +16517,45 @@ static struct triple *transform_to_arch_instruction(
 	case OP_XOR:
 	case OP_OR:
 	case OP_SMUL:
-		ins->template_id = TEMPLATE_BINARY_REG;
+		ins->template_id = TEMPLATE_BINARY32_REG;
 		if (get_imm32(ins, &RHS(ins, 1))) {
-			ins->template_id = TEMPLATE_BINARY_IMM;
+			ins->template_id = TEMPLATE_BINARY32_IMM;
 		}
 		break;
-#if 0
-		/* This code does not work yet */
+	case OP_SDIVT:
+	case OP_UDIVT:
+		ins->template_id = TEMPLATE_DIV32;
+		next = after_lhs(state, ins);
+		break;
+		/* FIXME UMUL does not work yet.. */
 	case OP_UMUL:
-		ins->template_id = TEMPLATE_UMUL;
+		ins->template_id = TEMPLATE_UMUL32;
 		break;
 	case OP_UDIV:
+		next = mod_div(state, ins, OP_UDIVT, 0);
+		break;
 	case OP_SDIV:
-		ins->template_id = TEMPLATE_DIV;
+		next = mod_div(state, ins, OP_SDIVT, 0);
 		break;
 	case OP_UMOD:
-	case OP_SMOD:
-		ins->template_id = TEMPLATE_MOD;
+		next = mod_div(state, ins, OP_UDIVT, 1);
 		break;
-#endif
+	case OP_SMOD:
+		next = mod_div(state, ins, OP_SDIVT, 1);
+		break;
 	case OP_SL:
 	case OP_SSR:
 	case OP_USR:
-		ins->template_id = TEMPLATE_SL_CL;
+		ins->template_id = TEMPLATE_SL32_CL;
 		if (get_imm8(ins, &RHS(ins, 1))) {
-			ins->template_id = TEMPLATE_SL_IMM;
+			ins->template_id = TEMPLATE_SL32_IMM;
 		} else if (size_of(state, RHS(ins, 1)->type) > 1) {
 			typed_pre_copy(state, &char_type, ins, 1);
 		}
 		break;
 	case OP_INVERT:
 	case OP_NEG:
-		ins->template_id = TEMPLATE_UNARY;
+		ins->template_id = TEMPLATE_UNARY32;
 		break;
 	case OP_EQ: 
 		bool_cmp(state, ins, OP_CMP, OP_JMP_EQ, OP_SET_EQ); 
@@ -16209,12 +16644,12 @@ static struct triple *transform_to_arch_instruction(
 		break;
 		/* Already transformed instructions */
 	case OP_TEST:
-		ins->template_id = TEMPLATE_TEST;
+		ins->template_id = TEMPLATE_TEST32;
 		break;
 	case OP_CMP:
-		ins->template_id = TEMPLATE_CMP_REG;
+		ins->template_id = TEMPLATE_CMP32_REG;
 		if (get_imm32(ins, &RHS(ins, 1))) {
-			ins->template_id = TEMPLATE_CMP_IMM;
+			ins->template_id = TEMPLATE_CMP32_IMM;
 		}
 		break;
 	case OP_JMP_EQ:      case OP_JMP_NOTEQ:
@@ -16241,18 +16676,21 @@ static struct triple *transform_to_arch_instruction(
 	return next;
 }
 
+static long next_label(struct compile_state *state)
+{
+	static long label_counter = 0;
+	return ++label_counter;
+}
 static void generate_local_labels(struct compile_state *state)
 {
 	struct triple *first, *label;
-	int label_counter;
-	label_counter = 0;
 	first = RHS(state->main_function, 0);
 	label = first;
 	do {
 		if ((label->op == OP_LABEL) || 
 			(label->op == OP_SDECL)) {
 			if (label->use) {
-				label->u.cval = ++label_counter;
+				label->u.cval = next_label(state);
 			} else {
 				label->u.cval = 0;
 			}
@@ -16281,6 +16719,9 @@ static int check_reg(struct compile_state *state,
 
 static const char *arch_reg_str(int reg)
 {
+#if REG_XMM7 != 44
+#error "Registers have renumberd fix arch_reg_str"
+#endif
 	static const char *regs[] = {
 		"%unset",
 		"%unneeded",
@@ -16289,6 +16730,7 @@ static const char *arch_reg_str(int reg)
 		"%ax", "%bx", "%cx", "%dx", "%si", "%di", "%bp", "%sp",
 		"%eax", "%ebx", "%ecx", "%edx", "%esi", "%edi", "%ebp", "%esp",
 		"%edx:%eax",
+		"%dx:%ax",
 		"%mm0", "%mm1", "%mm2", "%mm3", "%mm4", "%mm5", "%mm6", "%mm7",
 		"%xmm0", "%xmm1", "%xmm2", "%xmm3", 
 		"%xmm4", "%xmm5", "%xmm6", "%xmm7",
@@ -16343,11 +16785,75 @@ static void print_const_val(
 	}
 }
 
+static void print_const(struct compile_state *state,
+	struct triple *ins, FILE *fp)
+{
+	switch(ins->op) {
+	case OP_INTCONST:
+		switch(ins->type->type & TYPE_MASK) {
+		case TYPE_CHAR:
+		case TYPE_UCHAR:
+			fprintf(fp, ".byte 0x%02lx\n", ins->u.cval);
+			break;
+		case TYPE_SHORT:
+		case TYPE_USHORT:
+			fprintf(fp, ".short 0x%04lx\n", ins->u.cval);
+			break;
+		case TYPE_INT:
+		case TYPE_UINT:
+		case TYPE_LONG:
+		case TYPE_ULONG:
+			fprintf(fp, ".int %lu\n", ins->u.cval);
+			break;
+		default:
+			internal_error(state, ins, "Unknown constant type");
+		}
+		break;
+	case OP_ADDRCONST:
+		fprintf(fp, " .int L%s%lu+%lu ",
+			state->label_prefix,
+			MISC(ins, 0)->u.cval,
+			ins->u.cval);
+		break;
+	case OP_BLOBCONST:
+	{
+		unsigned char *blob;
+		size_t size, i;
+		size = size_of(state, ins->type);
+		blob = ins->u.blob;
+		for(i = 0; i < size; i++) {
+			fprintf(fp, ".byte 0x%02x\n",
+				blob[i]);
+		}
+		break;
+	}
+	default:
+		internal_error(state, ins, "Unknown constant type");
+		break;
+	}
+}
+
+#define TEXT_SECTION ".rom.text"
+#define DATA_SECTION ".rom.data"
+
+static long get_const_pool_ref(
+	struct compile_state *state, struct triple *ins, FILE *fp)
+{
+	long ref;
+	ref = next_label(state);
+	fprintf(fp, ".section \"" DATA_SECTION "\"\n");
+	fprintf(fp, ".balign %d\n", align_of(state, ins->type));
+	fprintf(fp, "L%s%lu:\n", state->label_prefix, ref);
+	print_const(state, ins, fp);
+	fprintf(fp, ".section \"" TEXT_SECTION "\"\n");
+	return ref;
+}
+
 static void print_binary_op(struct compile_state *state,
 	const char *op, struct triple *ins, FILE *fp) 
 {
 	unsigned mask;
-	mask = REGCM_GPR32 | REGCM_GPR16 | REGCM_GPR8;
+	mask = REGCM_GPR32 | REGCM_GPR16 | REGCM_GPR8_LO;
 	if (RHS(ins, 0)->id != ins->id) {
 		internal_error(state, ins, "invalid register assignment");
 	}
@@ -16375,7 +16881,7 @@ static void print_unary_op(struct compile_state *state,
 	const char *op, struct triple *ins, FILE *fp)
 {
 	unsigned mask;
-	mask = REGCM_GPR32 | REGCM_GPR16 | REGCM_GPR8;
+	mask = REGCM_GPR32 | REGCM_GPR16 | REGCM_GPR8_LO;
 	fprintf(fp, "\t%s %s\n",
 		op,
 		reg(state, RHS(ins, 0), mask));
@@ -16385,7 +16891,7 @@ static void print_op_shift(struct compile_state *state,
 	const char *op, struct triple *ins, FILE *fp)
 {
 	unsigned mask;
-	mask = REGCM_GPR32 | REGCM_GPR16 | REGCM_GPR8;
+	mask = REGCM_GPR32 | REGCM_GPR16 | REGCM_GPR8_LO;
 	if (RHS(ins, 0)->id != ins->id) {
 		internal_error(state, ins, "invalid register assignment");
 	}
@@ -16398,7 +16904,7 @@ static void print_op_shift(struct compile_state *state,
 	else {
 		fprintf(fp, "\t%s %s, %s\n",
 			op,
-			reg(state, RHS(ins, 1), REGCM_GPR8),
+			reg(state, RHS(ins, 1), REGCM_GPR8_LO),
 			reg(state, RHS(ins, 0), mask));
 	}
 }
@@ -16410,7 +16916,7 @@ static void print_op_in(struct compile_state *state, struct triple *ins, FILE *f
 	int dreg;
 	mask = 0;
 	switch(ins->op) {
-	case OP_INB: op = "inb", mask = REGCM_GPR8; break;
+	case OP_INB: op = "inb", mask = REGCM_GPR8_LO; break;
 	case OP_INW: op = "inw", mask = REGCM_GPR16; break;
 	case OP_INL: op = "inl", mask = REGCM_GPR32; break;
 	default:
@@ -16448,7 +16954,7 @@ static void print_op_out(struct compile_state *state, struct triple *ins, FILE *
 	int lreg;
 	mask = 0;
 	switch(ins->op) {
-	case OP_OUTB: op = "outb", mask = REGCM_GPR8; break;
+	case OP_OUTB: op = "outb", mask = REGCM_GPR8_LO; break;
 	case OP_OUTW: op = "outw", mask = REGCM_GPR16; break;
 	case OP_OUTL: op = "outl", mask = REGCM_GPR32; break;
 	default:
@@ -16493,10 +16999,6 @@ static void print_op_move(struct compile_state *state,
 		src = RHS(ins, 0);
 		dst = ins;
 	}
-	else if (ins->op == OP_WRITE) {
-		dst = LHS(ins, 0);
-		src = RHS(ins, 0);
-	}
 	else {
 		internal_error(state, ins, "unknown move operation");
 		src = dst = 0;
@@ -16504,13 +17006,13 @@ static void print_op_move(struct compile_state *state,
 	if (!is_const(src)) {
 		int src_reg, dst_reg;
 		int src_regcm, dst_regcm;
-		src_reg = ID_REG(src->id);
+		src_reg   = ID_REG(src->id);
 		dst_reg   = ID_REG(dst->id);
 		src_regcm = arch_reg_regcm(state, src_reg);
-		dst_regcm   = arch_reg_regcm(state, dst_reg);
+		dst_regcm = arch_reg_regcm(state, dst_reg);
 		/* If the class is the same just move the register */
 		if (src_regcm & dst_regcm & 
-			(REGCM_GPR8 | REGCM_GPR16 | REGCM_GPR32)) {
+			(REGCM_GPR8_LO | REGCM_GPR16 | REGCM_GPR32)) {
 			if ((src_reg != dst_reg) || !omit_copy) {
 				fprintf(fp, "\tmov %s, %s\n",
 					reg(state, src, src_regcm),
@@ -16539,7 +17041,7 @@ static void print_op_move(struct compile_state *state,
 		}
 		/* Move 32bit to 8bit */
 		else if ((src_regcm & REGCM_GPR32_8) &&
-			(dst_regcm & REGCM_GPR8))
+			(dst_regcm & REGCM_GPR8_LO))
 		{
 			src_reg = (src_reg - REGC_GPR32_8_FIRST) + REGC_GPR8_FIRST;
 			if ((src_reg != dst_reg) || !omit_copy) {
@@ -16550,7 +17052,7 @@ static void print_op_move(struct compile_state *state,
 		}
 		/* Move 16bit to 8bit */
 		else if ((src_regcm & REGCM_GPR16_8) &&
-			(dst_regcm & REGCM_GPR8))
+			(dst_regcm & REGCM_GPR8_LO))
 		{
 			src_reg = (src_reg - REGC_GPR16_8_FIRST) + REGC_GPR8_FIRST;
 			if ((src_reg != dst_reg) || !omit_copy) {
@@ -16560,7 +17062,7 @@ static void print_op_move(struct compile_state *state,
 			}
 		}
 		/* Move 8/16bit to 16/32bit */
-		else if ((src_regcm & (REGCM_GPR8 | REGCM_GPR16)) && 
+		else if ((src_regcm & (REGCM_GPR8_LO | REGCM_GPR16)) && 
 			(dst_regcm & (REGCM_GPR16 | REGCM_GPR32))) {
 			const char *op;
 			op = is_signed(src->type)? "movsx": "movzx";
@@ -16577,14 +17079,25 @@ static void print_op_move(struct compile_state *state,
 					reg(state, dst, dst_regcm));
 			}
 		}
-		/* Move between mmx registers or mmx & sse  registers */
-		else if ((src_regcm & (REGCM_MMX | REGCM_XMM)) &&
-			(dst_regcm & (REGCM_MMX | REGCM_XMM))) {
+		/* Move between mmx registers */
+		else if ((src_regcm & dst_regcm & REGCM_MMX)) {
 			if ((src_reg != dst_reg) || !omit_copy) {
 				fprintf(fp, "\tmovq %s, %s\n",
 					reg(state, src, src_regcm),
 					reg(state, dst, dst_regcm));
 			}
+		}
+		/* Move from sse to mmx registers */
+		else if ((src_regcm & REGCM_XMM) && (dst_regcm & REGCM_MMX)) {
+			fprintf(fp, "\tmovdq2q %s, %s\n",
+				reg(state, src, src_regcm),
+				reg(state, dst, dst_regcm));
+		}
+		/* Move from mmx to sse registers */
+		else if ((src_regcm & REGCM_MMX) && (dst_regcm & REGCM_XMM)) {
+			fprintf(fp, "\tmovq2dq %s, %s\n",
+				reg(state, src, src_regcm),
+				reg(state, dst, dst_regcm));
 		}
 		/* Move between 32bit gprs & mmx/sse registers */
 		else if ((src_regcm & (REGCM_GPR32 | REGCM_MMX | REGCM_XMM)) &&
@@ -16607,7 +17120,6 @@ static void print_op_move(struct compile_state *state,
 				arch_reg_str(mid_reg),
 				arch_reg_str(dst_reg));
 		}
-
 		/* Move from mmx/sse registers to 16bit gprs */
 		else if ((src_regcm & (REGCM_MMX | REGCM_XMM)) &&
 			(dst_regcm & REGCM_GPR16)) {
@@ -16616,10 +17128,49 @@ static void print_op_move(struct compile_state *state,
 				arch_reg_str(src_reg),
 				arch_reg_str(dst_reg));
 		}
-
+		/* Move from gpr to 64bit dividend */
+		else if ((src_regcm & (REGCM_GPR32 | REGCM_GPR16 | REGCM_GPR8_LO))  &&
+			(dst_regcm & REGCM_DIVIDEND64)) {
+			const char *extend;
+			extend = is_signed(src->type)? "cltd":"movl $0, %edx";
+			fprintf(fp, "\tmov %s, %%eax\n\t%s\n",
+				arch_reg_str(src_reg), 
+				extend);
+		}
+		/* Move from 64bit gpr to gpr */
+		else if ((src_regcm & REGCM_DIVIDEND64) &&
+			(dst_regcm & (REGCM_GPR32 | REGCM_GPR16 | REGCM_GPR8_LO))) {
+			if (dst_regcm & REGCM_GPR32) {
+				src_reg = REG_EAX;
+			} 
+			else if (dst_regcm & REGCM_GPR16) {
+				src_reg = REG_AX;
+			}
+			else if (dst_regcm & REGCM_GPR8_LO) {
+				src_reg = REG_AL;
+			}
+			fprintf(fp, "\tmov %s, %s\n",
+				arch_reg_str(src_reg),
+				arch_reg_str(dst_reg));
+		}
+		/* Move from mmx/sse registers to 64bit gpr */
+		else if ((src_regcm & (REGCM_MMX | REGCM_XMM)) &&
+			(dst_regcm & REGCM_DIVIDEND64)) {
+			const char *extend;
+			extend = is_signed(src->type)? "cltd": "movl $0, %edx";
+			fprintf(fp, "\tmovd %s, %%eax\n\t%s\n",
+				arch_reg_str(src_reg),
+				extend);
+		}
+		/* Move from 64bit gpr to mmx/sse register */
+		else if ((src_regcm & REGCM_DIVIDEND64) &&
+			(dst_regcm & (REGCM_XMM | REGCM_MMX))) {
+			fprintf(fp, "\tmovd %%eax, %s\n",
+				arch_reg_str(dst_reg));
+		}
 #if X86_4_8BIT_GPRS
 		/* Move from 8bit gprs to  mmx/sse registers */
-		else if ((src_regcm & REGCM_GPR8) && (src_reg <= REG_DL) &&
+		else if ((src_regcm & REGCM_GPR8_LO) && (src_reg <= REG_DL) &&
 			(dst_regcm & (REGCM_MMX | REGCM_XMM))) {
 			const char *op;
 			int mid_reg;
@@ -16634,7 +17185,7 @@ static void print_op_move(struct compile_state *state,
 		}
 		/* Move from mmx/sse registers and 8bit gprs */
 		else if ((src_regcm & (REGCM_MMX | REGCM_XMM)) &&
-			(dst_regcm & REGCM_GPR8) && (dst_reg <= REG_DL)) {
+			(dst_regcm & REGCM_GPR8_LO) && (dst_reg <= REG_DL)) {
 			int mid_reg;
 			mid_reg = (dst_reg - REGC_GPR8_FIRST) + REGC_GPR32_FIRST;
 			fprintf(fp, "\tmovd %s, %s\n",
@@ -16643,7 +17194,7 @@ static void print_op_move(struct compile_state *state,
 		}
 		/* Move from 32bit gprs to 8bit gprs */
 		else if ((src_regcm & REGCM_GPR32) &&
-			(dst_regcm & REGCM_GPR8)) {
+			(dst_regcm & REGCM_GPR8_LO)) {
 			dst_reg = (dst_reg - REGC_GPR8_FIRST) + REGC_GPR32_FIRST;
 			if ((src_reg != dst_reg) || !omit_copy) {
 				fprintf(fp, "\tmov %s, %s\n",
@@ -16653,7 +17204,7 @@ static void print_op_move(struct compile_state *state,
 		}
 		/* Move from 16bit gprs to 8bit gprs */
 		else if ((src_regcm & REGCM_GPR16) &&
-			(dst_regcm & REGCM_GPR8)) {
+			(dst_regcm & REGCM_GPR8_LO)) {
 			dst_reg = (dst_reg - REGC_GPR8_FIRST) + REGC_GPR16_FIRST;
 			if ((src_reg != dst_reg) || !omit_copy) {
 				fprintf(fp, "\tmov %s, %s\n",
@@ -16667,10 +17218,44 @@ static void print_op_move(struct compile_state *state,
 		}
 	}
 	else {
-		fprintf(fp, "\tmov ");
-		print_const_val(state, src, fp);
-		fprintf(fp, ", %s\n",
-			reg(state, dst, REGCM_GPR32 | REGCM_GPR16 | REGCM_GPR8));
+		int dst_reg;
+		int dst_regcm;
+		dst_reg = ID_REG(dst->id);
+		dst_regcm = arch_reg_regcm(state, dst_reg);
+		if (dst_regcm & (REGCM_GPR32 | REGCM_GPR16 | REGCM_GPR8_LO)) {
+			fprintf(fp, "\tmov ");
+			print_const_val(state, src, fp);
+			fprintf(fp, ", %s\n",
+				reg(state, dst, REGCM_GPR32 | REGCM_GPR16 | REGCM_GPR8_LO));
+		}
+		else if (dst_regcm & REGCM_DIVIDEND64) {
+			if (size_of(state, dst->type) > 4) {
+				internal_error(state, ins, "64bit constant...");
+			}
+			fprintf(fp, "\tmov $0, %%edx\n");
+			fprintf(fp, "\tmov ");
+			print_const_val(state, src, fp);
+			fprintf(fp, ", %%eax\n");
+		}
+		else if (dst_regcm & REGCM_DIVIDEND32) {
+			if (size_of(state, dst->type) > 2) {
+				internal_error(state, ins, "32bit constant...");
+			}
+			fprintf(fp, "\tmov $0, %%dx\n");
+			fprintf(fp, "\tmov ");
+			print_const_val(state, src, fp);
+			fprintf(fp, ", %%ax");
+		}
+		else if (dst_regcm & (REGCM_XMM | REGCM_MMX)) {
+			long ref;
+			ref = get_const_pool_ref(state, src, fp);
+			fprintf(fp, "\tmovq L%s%lu, %s\n",
+				state->label_prefix, ref,
+				reg(state, dst, (REGCM_XMM | REGCM_MMX)));
+		}
+		else {
+			internal_error(state, ins, "unknown copy immediate type");
+		}
 	}
 }
 
@@ -16685,7 +17270,7 @@ static void print_op_load(struct compile_state *state,
 	}
 	fprintf(fp, "\tmov (%s), %s\n",
 		reg(state, src, REGCM_GPR32),
-		reg(state, dst, REGCM_GPR8 | REGCM_GPR16 | REGCM_GPR32));
+		reg(state, dst, REGCM_GPR8_LO | REGCM_GPR16 | REGCM_GPR32));
 }
 
 
@@ -16693,8 +17278,8 @@ static void print_op_store(struct compile_state *state,
 	struct triple *ins, FILE *fp)
 {
 	struct triple *dst, *src;
-	dst = LHS(ins, 0);
-	src = RHS(ins, 0);
+	dst = RHS(ins, 0);
+	src = RHS(ins, 1);
 	if (is_const(src) && (src->op == OP_INTCONST)) {
 		long_t value;
 		value = (long_t)(src->u.cval);
@@ -16706,7 +17291,7 @@ static void print_op_store(struct compile_state *state,
 	else if (is_const(dst) && (dst->op == OP_INTCONST)) {
 		fprintf(fp, "\tmov%s %s, 0x%08lx\n",
 			type_suffix(state, src->type),
-			reg(state, src, REGCM_GPR8 | REGCM_GPR16 | REGCM_GPR32),
+			reg(state, src, REGCM_GPR8_LO | REGCM_GPR16 | REGCM_GPR32),
 			dst->u.cval);
 	}
 	else {
@@ -16715,7 +17300,7 @@ static void print_op_store(struct compile_state *state,
 		}
 		fprintf(fp, "\tmov%s %s, (%s)\n",
 			type_suffix(state, src->type),
-			reg(state, src, REGCM_GPR8 | REGCM_GPR16 | REGCM_GPR32),
+			reg(state, src, REGCM_GPR8_LO | REGCM_GPR16 | REGCM_GPR32),
 			reg(state, dst, REGCM_GPR32));
 	}
 	
@@ -16742,7 +17327,7 @@ static void print_op_cmp(struct compile_state *state,
 {
 	unsigned mask;
 	int dreg;
-	mask = REGCM_GPR32 | REGCM_GPR16 | REGCM_GPR8;
+	mask = REGCM_GPR32 | REGCM_GPR16 | REGCM_GPR8_LO;
 	dreg = check_reg(state, ins, REGCM_FLAGS);
 	if (!reg_is_reg(state, dreg, REG_EFLAGS)) {
 		internal_error(state, ins, "bad dest register for cmp");
@@ -16770,7 +17355,7 @@ static void print_op_test(struct compile_state *state,
 	struct triple *ins, FILE *fp)
 {
 	unsigned mask;
-	mask = REGCM_GPR32 | REGCM_GPR16 | REGCM_GPR8;
+	mask = REGCM_GPR32 | REGCM_GPR16 | REGCM_GPR8_LO;
 	fprintf(fp, "\ttest %s, %s\n",
 		reg(state, RHS(ins, 0), mask),
 		reg(state, RHS(ins, 0), mask));
@@ -16857,7 +17442,7 @@ static void print_op_set(struct compile_state *state,
 		break;
 	}
 	fprintf(fp, "\t%s %s\n",
-		sop, reg(state, set, REGCM_GPR8));
+		sop, reg(state, set, REGCM_GPR8_LO));
 }
 
 static void print_op_bit_scan(struct compile_state *state, 
@@ -16883,50 +17468,6 @@ static void print_op_bit_scan(struct compile_state *state,
 		reg(state, ins, REGCM_GPR32));
 }
 
-static void print_const(struct compile_state *state,
-	struct triple *ins, FILE *fp)
-{
-	switch(ins->op) {
-	case OP_INTCONST:
-		switch(ins->type->type & TYPE_MASK) {
-		case TYPE_CHAR:
-		case TYPE_UCHAR:
-			fprintf(fp, ".byte 0x%02lx\n", ins->u.cval);
-			break;
-		case TYPE_SHORT:
-		case TYPE_USHORT:
-			fprintf(fp, ".short 0x%04lx\n", ins->u.cval);
-			break;
-		case TYPE_INT:
-		case TYPE_UINT:
-		case TYPE_LONG:
-		case TYPE_ULONG:
-			fprintf(fp, ".int %lu\n", ins->u.cval);
-			break;
-		default:
-			internal_error(state, ins, "Unknown constant type");
-		}
-		break;
-	case OP_BLOBCONST:
-	{
-		unsigned char *blob;
-		size_t size, i;
-		size = size_of(state, ins->type);
-		blob = ins->u.blob;
-		for(i = 0; i < size; i++) {
-			fprintf(fp, ".byte 0x%02x\n",
-				blob[i]);
-		}
-		break;
-	}
-	default:
-		internal_error(state, ins, "Unknown constant type");
-		break;
-	}
-}
-
-#define TEXT_SECTION ".rom.text"
-#define DATA_SECTION ".rom.data"
 
 static void print_sdecl(struct compile_state *state,
 	struct triple *ins, FILE *fp)
@@ -16970,7 +17511,6 @@ static void print_instruction(struct compile_state *state,
 	case OP_SDECL:
 		print_sdecl(state, ins, fp);
 		break;
-	case OP_WRITE: 
 	case OP_COPY:	
 		print_op_move(state, ins, fp);
 		break;
@@ -17020,6 +17560,15 @@ static void print_instruction(struct compile_state *state,
 	case OP_HLT:
 		fprintf(fp, "\thlt\n");
 		break;
+	case OP_SDIVT:
+		fprintf(fp, "\tidiv %s\n", reg(state, RHS(ins, 1), REGCM_GPR32));
+		break;
+	case OP_UDIVT:
+		fprintf(fp, "\tdiv %s\n", reg(state, RHS(ins, 1), REGCM_GPR32));
+		break;
+	case OP_UMUL:
+		fprintf(fp, "\tmul %s\n", reg(state, RHS(ins, 1), REGCM_GPR32));
+		break;
 	case OP_LABEL:
 		if (!ins->use) {
 			return;
@@ -17029,11 +17578,9 @@ static void print_instruction(struct compile_state *state,
 		/* Ignore OP_PIECE */
 	case OP_PIECE:
 		break;
-		/* Operations I am not yet certain how to handle */
-	case OP_UMUL:
+		/* Operations that should never get here */
 	case OP_SDIV: case OP_UDIV:
 	case OP_SMOD: case OP_UMOD:
-		/* Operations that should never get here */
 	case OP_LTRUE:   case OP_LFALSE:  case OP_EQ:      case OP_NOTEQ:
 	case OP_SLESS:   case OP_ULESS:   case OP_SMORE:   case OP_UMORE:
 	case OP_SLESSEQ: case OP_ULESSEQ: case OP_SMOREEQ: case OP_UMOREEQ:
@@ -17050,6 +17597,8 @@ static void print_instructions(struct compile_state *state)
 	int print_location;
 	struct occurance *last_occurance;
 	FILE *fp;
+	int max_inline_depth;
+	max_inline_depth = 0;
 	print_location = 1;
 	last_occurance = 0;
 	fp = state->output;
@@ -17068,8 +17617,11 @@ static void print_instructions(struct compile_state *state)
 			}
 			else {
 				struct occurance *ptr;
+				int inline_depth;
 				fprintf(fp, "\t/*\n");
+				inline_depth = 0;
 				for(ptr = ins->occurance; ptr; ptr = ptr->parent) {
+					inline_depth++;
 					fprintf(fp, "\t * %s,%s:%d.%d\n",
 						ptr->function,
 						ptr->filename,
@@ -17077,7 +17629,9 @@ static void print_instructions(struct compile_state *state)
 						ptr->col);
 				}
 				fprintf(fp, "\t */\n");
-				
+				if (inline_depth > max_inline_depth) {
+					max_inline_depth = inline_depth;
+				}
 			}
 			if (last_occurance) {
 				put_occurance(last_occurance);
@@ -17089,8 +17643,12 @@ static void print_instructions(struct compile_state *state)
 		print_instruction(state, ins, fp);
 		ins = ins->next;
 	} while(ins != first);
-	
+	if (print_location) {
+		fprintf(fp, "/* max inline depth %d */\n",
+			max_inline_depth);
+	}
 }
+
 static void generate_code(struct compile_state *state)
 {
 	generate_local_labels(state);

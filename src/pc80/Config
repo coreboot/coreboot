@@ -1,5 +1,6 @@
 object keyboard.o
 object mc146818rtc.o CONFIG_MC146818RTC
+option CONFIG_MC146818RTC=1
 object isa-dma.o
 object i8259.o CONFIG_I8259
 object udelay_timer2.o CONFIG_UDELAY_TIMER2

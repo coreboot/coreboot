@@ -4,8 +4,8 @@
 # continuation, if needed, will be via the \ at the end of a line
 # comments are indicated by a '#' as the first character. 
 # the keywords are case-INSENSITIVE
-owner:	Ron Minnich
-email:	rminnich@lanl.gov
+owner:	 Felix Kloeckner 
+email:	root@hamburg.de
 #status: One of unsupported, unstable, stable
 status: unstable
 explanation: 

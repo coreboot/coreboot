@@ -15,6 +15,7 @@ static char rcsid[] = "$Id$";
 #include <subr.h>
 #include <string.h>
 #include <pc80/mc146818rtc.h>
+#include <cpu/p6/msr.h>
 
 #ifdef SERIAL_CONSOLE
 #include <serial_subr.h>
@@ -89,9 +90,17 @@ void error(char errmsg[])
  */
 void post_code(uint8_t value)
 {
-#ifdef SERIAL_POST
+#if (SERIAL_POST_TSC==1)
+	unsigned int tsc_high, tsc_low;
+	rdtsc(tsc_low, tsc_high);
+	printk_info("0x%x%xPOST: 0x%02x\n", tsc_high, tsc_low, value);
+#endif
+
+#if (SERIAL_POST==1)
 	printk_info("POST: 0x%02x\n", value);
-#elsif !define(NO_POST)
+#endif
+
+#if !defined(NO_POST)
 	outb(value, 0x80);
 #endif
 }

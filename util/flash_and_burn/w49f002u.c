@@ -32,49 +32,6 @@
 #include "jedec.h"
 #include "w49f002u.h"
 
-int probe_49f002 (struct flashchip * flash)
-{
-	volatile char * bios = flash->virt_addr;
-	unsigned char id1, id2;
-
-	*(volatile char *) (bios + 0x5555) = 0xAA;
-	*(volatile char *) (bios + 0x2AAA) = 0x55;
-	*(volatile char *) (bios + 0x5555) = 0x90;
-    
-	id1 = *(volatile unsigned char *) bios;
-	id2 = *(volatile unsigned char *) (bios + 0x01);
-
-	*(volatile char *) (bios + 0x5555) = 0xAA;
-        *(volatile char *) (bios + 0x2AAA) = 0x55;
-	*(volatile char *) (bios + 0x5555) = 0xF0;
-
-	myusec_delay(10);
-
-	printf("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, id1, id2);	
-
-	if (id1 == flash->manufacture_id && id2 == flash->model_id)
-		return 1;
-
-	return 0;
-}
-
-int erase_49f002 (struct flashchip * flash)
-{
-	volatile char * bios = flash->virt_addr;
-
-	*(bios + 0x5555) = 0xAA;
-	*(bios + 0x2AAA) = 0x55;
-	*(bios + 0x5555) = 0x80;
-	*(bios + 0x5555) = 0xAA;
-	*(bios + 0x2AAA) = 0x55;
-	*(bios + 0x5555) = 0x10;
-
-	myusec_delay(100);
-	toggle_ready_jedec(bios);
-
-	return(0);
-}
-
 int write_49f002 (struct flashchip * flash, unsigned char * buf)
 {
 	int i;
@@ -82,7 +39,7 @@ int write_49f002 (struct flashchip * flash, unsigned char * buf)
 	volatile char * bios = flash->virt_addr;
 	volatile char * dst = bios;
 
-	erase_49f002(flash);
+	erase_jedec(flash);
 
 	printf ("Programming Page: ");
 	for (i = 0; i < total_size; i++) {

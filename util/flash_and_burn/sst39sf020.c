@@ -50,108 +50,13 @@ static __inline__ int erase_sector_39sf020 (volatile char * bios, unsigned long 
 	return(0);
 }
 
-static __inline__ int write_sector_39sf020(volatile char * bios, 
-					   unsigned char * src,
-					   volatile unsigned char * dst, 
-					   unsigned int page_size)
-{
-	int i;
-	volatile char *Temp;
-
-	for (i = 0; i < page_size; i++) {
-		if (*dst != 0xff) {
-			printf("FATAL: dst %p not erased (val 0x%x\n", dst, *dst);
-			return(-1);
-		}
-		/* transfer data from source to destination */
-		if (*src == 0xFF) {
-			dst++, src++;
-			/* If the data is 0xFF, don't program it */
-			continue;
-		}
-		Temp =   (bios + 0x5555); 
-		*Temp = 0xAA;                   
-		Temp =  bios + 0x2AAA; 
-		*Temp = 0x55; 
-		Temp =  bios + 0x5555; 
-		*Temp = 0xA0;                   
-		*dst = *src;
-		toggle_ready_jedec(bios);
-		if (*dst != *src)
-			printf("BAD! dst 0x%lx val 0x%x src 0x%x\n",
-			       (unsigned long)dst, *dst, *src);
-		dst++, src++;
-	}
-
-	return(0);
-}
-
-int probe_39sf020 (struct flashchip * flash)
-{
-        volatile char * bios = flash->virt_addr;
-        unsigned char  id1, id2;
-
-        *(volatile char *) (bios + 0x5555) = 0xAA;
-        myusec_delay(10);
-        *(volatile char *) (bios + 0x2AAA) = 0x55;
-        myusec_delay(10);
-        *(volatile char *) (bios + 0x5555) = 0x90;
-
-        myusec_delay(10);
-
-        id1 = *(volatile unsigned char *) bios;
-        id2 = *(volatile unsigned char *) (bios + 0x01);
-
-        *(volatile char *) (bios + 0x5555) = 0xAA;
-        *(volatile char *) (bios + 0x2AAA) = 0x55;
-        *(volatile char *) (bios + 0x5555) = 0xF0;
-
-        myusec_delay(10);
-
-	printf("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, id1, id2);
-
-        if (id1 == flash->manufacture_id && id2 == flash->model_id)
-                return 1;
-
-        return 0;
-}
-
-int erase_39sf020 (struct flashchip * flash)
-{
-	volatile unsigned char * bios = flash->virt_addr;
-	volatile unsigned char *Temp;
-
-        /*  Issue the Sector Erase command to 39SF020   */
-        Temp  = bios + 0x5555; /* set up address to be C000:5555h      */
-        *Temp = 0xAA;            /* write data 0xAA to the address       */
-	myusec_delay(10);
-        Temp  = bios + 0x2AAA; /* set up address to be C000:2AAAh      */
-        *Temp = 0x55;         /* write data 0x55 to the address       */
-	myusec_delay(10);
-        Temp  = bios + 0x5555; /* set up address to be C000:5555h      */
-        *Temp = 0x80;            /* write data 0x80 to the address       */
-	myusec_delay(10);
-        Temp  = bios + 0x5555; /* set up address to be C000:5555h      */
-        *Temp = 0xAA;         /* write data 0xAA to the address       */
-	myusec_delay(10);
-        Temp  = bios + 0x2AAA; /* set up address to be C000:2AAAh      */
-        *Temp = 0x55;          /* write data 0x55 to the address       */
-	myusec_delay(10);
-        Temp  = bios + 0x5555; /* set up address to be C000:5555h      */
-        *Temp = 0x10;       /* write data 0x55 to the address       */
-
-	myusec_delay(50000);
-
-	return(0);
-}
-
 int write_39sf020 (struct flashchip * flash, unsigned char * buf)
 {
 	int i;
 	int total_size = flash->total_size * 1024, page_size = flash->page_size;
 	volatile char * bios = flash->virt_addr;
 
-	erase_39sf020(flash);
+	erase_jedec(flash);
 
 	printf ("Programming Page: ");
 	for (i = 0; i < total_size/page_size; i++) {
@@ -160,7 +65,7 @@ int write_39sf020 (struct flashchip * flash, unsigned char * buf)
 
 		/* write to the sector */
 		printf ("%04d at address: 0x%08x", i, i * page_size);
-		write_sector_39sf020(bios, buf + i * page_size, bios + i * page_size,
+		write_sector_jedec(bios, buf + i * page_size, bios + i * page_size,
 				     page_size);
 		printf ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
                 fflush(stdout);

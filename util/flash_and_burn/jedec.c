@@ -30,44 +30,89 @@
 
 int probe_jedec (struct flashchip * flash)
 {
-	volatile char * bios = flash->virt_addr;
-	unsigned char  id1, id2;
+        volatile char * bios = flash->virt_addr;
+        unsigned char  id1, id2;
 
-	*(volatile char *) (bios + 0x5555) = 0xAA;
-	*(volatile char *) (bios + 0x2AAA) = 0x55;
-	*(volatile char *) (bios + 0x5555) = 0x90;
+        *(volatile char *) (bios + 0x5555) = 0xAA;
+        myusec_delay(10);
+        *(volatile char *) (bios + 0x2AAA) = 0x55;
+        myusec_delay(10);
+        *(volatile char *) (bios + 0x5555) = 0x90;
+        myusec_delay(10);
 
-	myusec_delay(10);
+        id1 = *(volatile unsigned char *) bios;
+        id2 = *(volatile unsigned char *) (bios + 0x01);
 
-	id1 = *(volatile unsigned char *) bios;
-	id2 = *(volatile unsigned char *) (bios + 0x01);
-
-	*(volatile char *) (bios + 0x5555) = 0xAA;
-	*(volatile char *) (bios + 0x2AAA) = 0x55;
-	*(volatile char *) (bios + 0x5555) = 0xF0;
-
-	myusec_delay(10);
+        *(volatile char *) (bios + 0x5555) = 0xAA;
+        myusec_delay(10);
+        *(volatile char *) (bios + 0x2AAA) = 0x55;
+        myusec_delay(10);
+        *(volatile char *) (bios + 0x5555) = 0xF0;
+        myusec_delay(10);
 
 	printf("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, id1, id2);
-	if (id1 == flash->manufacture_id && id2 == flash->model_id)
-		return 1;
+        if (id1 == flash->manufacture_id && id2 == flash->model_id)
+                return 1;
 
-	return 0;
+        return 0;
+}
+
+int erase_sector_jedec (volatile char * bios, unsigned int page)
+{
+	/* Chip erase function does not exist for LPC mode on 49lf040.
+	 * Erase sector-by-sector instead. */
+	volatile unsigned char *Temp;
+
+        /*  Issue the Sector Erase command to 40LF040   */
+        Temp  = bios + 0x5555; 	/* set up address to be C000:5555h      */
+        *Temp = 0xAA;		/* write data 0xAA to the address       */
+	myusec_delay(10);
+        Temp  = bios + 0x2AAA;	/* set up address to be C000:2AAAh      */
+        *Temp = 0x55;		/* write data 0x55 to the address       */
+	myusec_delay(10);
+        Temp  = bios + 0x5555;	/* set up address to be C000:5555h      */
+        *Temp = 0x80;		/* write data 0x80 to the address       */
+	myusec_delay(10);
+        Temp  = bios + 0x5555;	/* set up address to be C000:5555h      */
+        *Temp = 0xAA;		/* write data 0xAA to the address       */
+	myusec_delay(10);
+        Temp  = bios + 0x2AAA;	/* set up address to be C000:2AAAh      */
+        *Temp = 0x55;		/* write data 0x55 to the address       */
+	myusec_delay(10);
+        Temp  = bios + page;	/* set up address to be the current sector */
+        *Temp = 0x30;		/* write data 0x30 to the address       */
+	
+	/* wait for Toggle bit ready         */
+	toggle_ready_jedec(bios);
+
+	return(0);
 }
 
 int erase_jedec (struct flashchip * flash)
 {
-	volatile char * bios = flash->virt_addr;
+	volatile unsigned char * bios = flash->virt_addr;
+	volatile unsigned char *Temp;
 
-	*(volatile char *) (bios + 0x5555) = 0xAA;
-	*(volatile char *) (bios + 0x2AAA) = 0x55;
-	*(volatile char *) (bios + 0x5555) = 0x80;
-
-	*(volatile char *) (bios + 0x5555) = 0xAA;
-	*(volatile char *) (bios + 0x2AAA) = 0x55;
-	*(volatile char *) (bios + 0x5555) = 0x10;
-
+        /*  Issue the Sector Erase command to 39SF020   */
+        Temp  = bios + 0x5555;	/* set up address to be C000:5555h      */
+        *Temp = 0xAA;		/* write data 0xAA to the address       */
 	myusec_delay(10);
+        Temp  = bios + 0x2AAA;	/* set up address to be C000:2AAAh      */
+        *Temp = 0x55;		/* write data 0x55 to the address       */
+	myusec_delay(10);
+        Temp  = bios + 0x5555;	/* set up address to be C000:5555h      */
+        *Temp = 0x80;		/* write data 0x80 to the address       */
+	myusec_delay(10);
+        Temp  = bios + 0x5555;	/* set up address to be C000:5555h      */
+        *Temp = 0xAA;		/* write data 0xAA to the address       */
+	myusec_delay(10);
+        Temp  = bios + 0x2AAA;	/* set up address to be C000:2AAAh      */
+        *Temp = 0x55;		/* write data 0x55 to the address       */
+	myusec_delay(10);
+        Temp  = bios + 0x5555;	/* set up address to be C000:5555h      */
+        *Temp = 0x10;		/* write data 0x55 to the address       */
+	myusec_delay(10);
+
 	toggle_ready_jedec(bios);
 
 	return(0);

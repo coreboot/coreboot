@@ -59,33 +59,30 @@ struct flashchip flashchips[] = {
 	{"SST28SF040A", SST_ID,     SST_28SF040,  NULL, 512, 256,
 	 probe_28sf040, erase_28sf040, write_28sf040, NULL},
 	{"SST39SF020A", SST_ID,     SST_39SF020,  NULL, 256, 4096,
-	 probe_39sf020, erase_39sf020, write_39sf020, NULL},
+	 probe_jedec,   erase_jedec, write_39sf020, NULL},
 	{"SST39VF020",  SST_ID,     SST_39VF020,  NULL, 256, 4096,
-	 probe_39sf020, erase_39sf020, write_39sf020, NULL},
+	 probe_jedec,   erase_jedec, write_39sf020, NULL},
 	{"SST49LF040",  SST_ID,     SST_49LF040,  NULL, 512, 4096,
-	 probe_49lf040, erase_49lf040, write_49lf040, NULL},
+	 probe_jedec,   erase_jedec, write_49lf040, NULL},
 	{"SST49LF080A", SST_ID,     SST_49LF080A,  NULL, 1024, 4096,
-	 probe_49lf040, erase_49lf040, write_49lf040, NULL},
+	 probe_jedec,   erase_jedec, write_49lf040, NULL},
 	{"SST49LF002A", SST_ID,     SST_49LF002A,  NULL, 256, 4096,
-	 probe_49lf040, erase_49lf040, write_49lf040, NULL},
+	 probe_jedec,   erase_jedec, write_49lf040, NULL},
 	{"SST49LF003A", SST_ID,     SST_49LF003A,  NULL, 384, 4096,
-	 probe_49lf040, erase_49lf040, write_49lf040, NULL},
+	 probe_jedec,   erase_jedec, write_49lf040, NULL},
 	{"SST49LF004A", SST_ID,     SST_49LF004A,  NULL, 512, 4096,
-	 probe_49lf040, erase_49lf040, write_49lf040, NULL},
+	 probe_jedec,   erase_jedec, write_49lf040, NULL},
 	{"SST49LF008A", SST_ID,     SST_49LF008A,  NULL, 1024, 4096,
-	 probe_49lf040, erase_49lf040, write_49lf040, NULL},
-	
-	//By LYH begin
+	 probe_jedec,   erase_jedec, write_49lf040, NULL},
 	{"Pm49FL004",   PMC_ID,     PMC_49FL004,  NULL, 512, 64*1024,
-	 probe_49fl004, erase_49fl004, write_49fl004, NULL},
-	//END
+	 probe_jedec,   erase_jedec, write_49fl004, NULL},
 	{"W29C011",     WINBOND_ID, W_29C011,    NULL, 128, 128,
 	 probe_jedec,   erase_jedec,   write_jedec, NULL},
 	{"W29C020C",    WINBOND_ID, W_29C020C,    NULL, 256, 128,
 	 probe_jedec,   erase_jedec,   write_jedec, NULL},
 	{"W49F002U",    WINBOND_ID, W_49F002U,    NULL, 256, 128,
-	 probe_49f002,  erase_49f002,   write_49f002, NULL},
-	{"M29F400BT",   ST_ID, ST_M29F400BT ,    NULL, 512, 64*1024,
+	 probe_jedec,   erase_jedec,   write_49f002, NULL},
+	{"M29F400BT",   ST_ID,      ST_M29F400BT ,NULL, 512, 64*1024,
 	 probe_m29f400bt,   erase_m29f400bt,   write_linuxbios_m29f400bt, NULL},
 	{"82802ab",     137,   173 ,    NULL, 512, 64*1024,
 	 probe_82802ab, erase_82802ab,   write_82802ab, NULL},
@@ -253,7 +250,7 @@ int main (int argc, char * argv[])
 			exit(1);
 		}
 		printf("Reading Flash...");
-		if(flash->read == NULL)
+		if (flash->read == NULL)
 			memcpy(buf, (const char *) flash->virt_addr, size);
 		else
 			flash->read (flash, buf);

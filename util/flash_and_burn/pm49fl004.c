@@ -35,23 +35,23 @@ static __inline__ int erase_block_49fl004 ( volatile unsigned char * bios ,unsig
 {
         volatile unsigned char *Temp;
 
-        Temp  = bios + 0x5555; /* set up address to be C000:5555h      */
-        *Temp = 0xAA;            /* write data 0xAA to the address       */
+        Temp  = bios + 0x5555;	/* set up address to be C000:5555h      */
+        *Temp = 0xAA;		/* write data 0xAA to the address       */
         myusec_delay(10);
-        Temp  = bios + 0x2AAA; /* set up address to be C000:2AAAh      */
-        *Temp = 0x55;         /* write data 0x55 to the address       */
+        Temp  = bios + 0x2AAA;	/* set up address to be C000:2AAAh      */
+        *Temp = 0x55;		/* write data 0x55 to the address       */
         myusec_delay(10);
-        Temp  = bios + 0x5555; /* set up address to be C000:5555h      */
-        *Temp = 0x80;            /* write data 0x80 to the address       */
+        Temp  = bios + 0x5555;	/* set up address to be C000:5555h      */
+        *Temp = 0x80;		/* write data 0x80 to the address       */
         myusec_delay(10);
-        Temp  = bios + 0x5555; /* set up address to be C000:5555h      */
-        *Temp = 0xAA;         /* write data 0xAA to the address       */
+        Temp  = bios + 0x5555;	/* set up address to be C000:5555h      */
+        *Temp = 0xAA;		/* write data 0xAA to the address       */
         myusec_delay(10);
-        Temp  = bios + 0x2AAA; /* set up address to be C000:2AAAh      */
-        *Temp = 0x55;          /* write data 0x55 to the address       */
+        Temp  = bios + 0x2AAA;	/* set up address to be C000:2AAAh      */
+        *Temp = 0x55;		/* write data 0x55 to the address       */
         myusec_delay(10);
-        Temp  = bios + address; /* set up address to be C000:5555h      */
-        *Temp = 0x50;       /* write data 0x55 to the address       */
+        Temp  = bios + address;	/* set up address to be C000:5555h      */
+        *Temp = 0x50;		/* write data 0x50 to the address       */
 
 	/* wait for Toggle bit ready         */
         toggle_ready_jedec(bios);
@@ -91,66 +91,6 @@ static __inline__ int write_block_49fl004(volatile char * bios,
 			       (unsigned long)dst, *dst, *src);
 		dst++, src++;
 	}
-
-	return(0);
-}
-
-int probe_49fl004 (struct flashchip * flash)
-{
-        volatile char * bios = flash->virt_addr;
-        unsigned char  id1, id2;
-
-        *(volatile char *) (bios + 0x5555) = 0xAA;
-        myusec_delay(10);
-        *(volatile char *) (bios + 0x2AAA) = 0x55;
-        myusec_delay(10);
-        *(volatile char *) (bios + 0x5555) = 0x90;
-
-        myusec_delay(10);
-
-        id1 = *(volatile unsigned char *) bios;
-        id2 = *(volatile unsigned char *) (bios + 0x01);
-
-        *(volatile char *) (bios + 0x5555) = 0xAA;
-        *(volatile char *) (bios + 0x2AAA) = 0x55;
-        *(volatile char *) (bios + 0x5555) = 0xF0;
-
-        myusec_delay(10);
-
-	printf("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, id1, id2);
-
-        if (id1 == flash->manufacture_id && id2 == flash->model_id)
-                return 1;
-
-        return 0;
-}
-
-int erase_49fl004 (struct flashchip * flash)
-{
-	volatile unsigned char * bios = flash->virt_addr;
-	volatile unsigned char *Temp;
-
-        Temp  = bios + 0x5555; /* set up address to be C000:5555h      */
-        *Temp = 0xAA;            /* write data 0xAA to the address       */
-	myusec_delay(10);
-        Temp  = bios + 0x2AAA; /* set up address to be C000:2AAAh      */
-        *Temp = 0x55;         /* write data 0x55 to the address       */
-	myusec_delay(10);
-        Temp  = bios + 0x5555; /* set up address to be C000:5555h      */
-        *Temp = 0x80;            /* write data 0x80 to the address       */
-	myusec_delay(10);
-        Temp  = bios + 0x5555; /* set up address to be C000:5555h      */
-        *Temp = 0xAA;         /* write data 0xAA to the address       */
-	myusec_delay(10);
-        Temp  = bios + 0x2AAA; /* set up address to be C000:2AAAh      */
-        *Temp = 0x55;          /* write data 0x55 to the address       */
-	myusec_delay(10);
-        Temp  = bios + 0x5555; /* set up address to be C000:5555h      */
-        *Temp = 0x10;       /* write data 0x10  to the address       */
-
-
-        /* wait for Toggle bit ready         */
-        toggle_ready_jedec(bios);
 
 	return(0);
 }

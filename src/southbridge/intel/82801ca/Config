@@ -9,3 +9,4 @@ object ich3_rtc.o
 object ich3_power.o
 object ich3_1e0_misc.o
 object ich3_1f0_misc.o
+object ich3_pci_parity.o

@@ -1,2 +1,3 @@
 object p64h2_ioapic.o
 object p64h2_pcibridge.o
+object p64h2_pci_parity.o

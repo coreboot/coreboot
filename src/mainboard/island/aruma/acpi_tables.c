@@ -8,17 +8,18 @@
 #include <string.h>
 #include <arch/acpi.h>
 #include <device/pci.h>
+#include <device/pci_ids.h>
 
 extern unsigned char AmlCode[];
-extern unsigned char oem_config[];
 
 #define IO_APIC_ADDR	0xfec00000UL
 
 unsigned long acpi_dump_apics(unsigned long current)
 {
-	unsigned int gsi_base=0x18;
+	unsigned int gsi_base=0x18, ioapic_nr=2;
+	device_t dev=0;
+ 
 	/* create all subtables for 4p */
-	/* CPUs are called 1234 in regular bios */
 	current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, 0, 16);
 	current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, 1, 17);
 	current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, 2, 18);
@@ -29,21 +30,10 @@ unsigned long acpi_dump_apics(unsigned long current)
 			IO_APIC_ADDR, 0);
 
         /* Write all 8131 IOAPICs */
-        /* (8131: bus, dev, fn) , id, version */
-        ACPI_WRITE_MADT_IOAPIC(0x01,1,1, 2);
-        ACPI_WRITE_MADT_IOAPIC(0x01,2,1, 3);
-        ACPI_WRITE_MADT_IOAPIC(0x05,1,1, 4);
-        ACPI_WRITE_MADT_IOAPIC(0x05,2,1, 5);
-        ACPI_WRITE_MADT_IOAPIC(0x05,3,1, 6);
-        ACPI_WRITE_MADT_IOAPIC(0x05,4,1, 7);
-        ACPI_WRITE_MADT_IOAPIC(0x0c,1,1, 8);
-        ACPI_WRITE_MADT_IOAPIC(0x0c,2,1, 9);
-        ACPI_WRITE_MADT_IOAPIC(0x0c,3,1, 10);
-        ACPI_WRITE_MADT_IOAPIC(0x0c,4,1, 11);
-        ACPI_WRITE_MADT_IOAPIC(0x11,1,1, 12);
-        ACPI_WRITE_MADT_IOAPIC(0x11,2,1, 13);
-        ACPI_WRITE_MADT_IOAPIC(0x11,3,1, 14);
-        ACPI_WRITE_MADT_IOAPIC(0x11,4,1, 15);
+	while((dev = dev_find_device(PCI_VENDOR_ID_AMD, 0x7451, dev))) {
+        	ACPI_WRITE_MADT_IOAPIC(dev, ioapic_nr);
+		ioapic_nr++;
+	}
 	
 	current += acpi_create_madt_irqoverride( (acpi_madt_irqoverride_t *)
 			current, 1, 0, 2, 0 );
@@ -54,6 +44,68 @@ unsigned long acpi_dump_apics(unsigned long current)
 	return current;
 }
 
+
+/* The next two tables are used by our DSDT and are freely defined
+ * here. This construct is used because the bus numbers containing 
+ * the 8131 bridges may vary so that we need to pass LinuxBIOS 
+ * knowledge into the DSDT
+ */
+typedef struct lnxc_busses {
+	u8 secondary;
+	u8 subordinate;
+} acpi_lnxb_busses_t;
+
+typedef struct acpi_lnxb {
+	struct acpi_table_header header;
+	acpi_lnxb_busses_t busses[5];
+} acpi_lnxb_t;
+
+/* special linuxbios acpi table */
+void acpi_create_lnxb(acpi_lnxb_t *lnxb)
+{
+	device_t dev;
+	int busidx=0;
+	
+        acpi_header_t *header=&(lnxb->header);
+
+        /* fill out header fields */
+        memcpy(header->signature, "LNXB", 4);
+        memcpy(header->oem_id, OEM_ID, 6);
+        memcpy(header->oem_table_id, "LNXBIOS ", 8);
+        memcpy(header->asl_compiler_id, ASLC, 4);
+
+        header->length = sizeof(acpi_lnxb_t);
+        header->revision = 1;
+
+	/* 
+	 * Write external 8131 bus ranges 
+	 */
+	/* first skip the onboard 8131 */
+	dev=dev_find_device(PCI_VENDOR_ID_AMD, 0x7450, 0);
+	dev=dev_find_device(PCI_VENDOR_ID_AMD, 0x7450, dev);
+	/* now look at the last 8131 in each chain, 
+	 * as it contains the valid bus ranges
+	 */
+	while((dev = dev_find_device(PCI_VENDOR_ID_AMD, 0x7450, dev)) 
+			&& busidx<5 ) {
+		int subu, fn, slot;
+		acpi_lnxb_busses_t *busses;
+		
+		if(PCI_SLOT(dev->path.u.pci.devfn)!=4)
+			continue;
+		
+		busses=&(lnxb->busses[busidx]);
+		lnxb->busses[busidx].secondary	 = dev->bus->secondary;
+		lnxb->busses[busidx].subordinate = 
+			pci_read_config8(dev, PCI_SUBORDINATE_BUS);
+	
+		busidx++;
+	}
+        header->checksum = acpi_checksum((void *)lnxb, sizeof(acpi_lnxb_t));
+}
+
+
+
 unsigned long write_acpi_tables(unsigned long start)
 {
 	unsigned long current;
@@ -63,9 +115,9 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_madt_t *madt;
 	acpi_fadt_t *fadt;
 	acpi_facs_t *facs;
+	acpi_lnxb_t *lnxb;
 	acpi_header_t *dsdt;
-	acpi_header_t *oemb;
-	
+
 	/* Align ACPI tables to 16byte */
 	start   = ( start + 0x0f ) & -0x10;
 	current = start;
@@ -102,6 +154,11 @@ unsigned long write_acpi_tables(unsigned long start)
 	current+=madt->header.length;
 	acpi_add_table(rsdt,madt);
 
+	printk_debug("ACPI:    * LNXB\n");
+	lnxb=(acpi_lnxb_t *)current;
+	current += sizeof(acpi_facs_t);
+	acpi_create_lnxb(lnxb);
+	
 	printk_debug("ACPI:    * FACS\n");
 	facs = (acpi_facs_t *) current;
 	current += sizeof(acpi_facs_t);
@@ -112,12 +169,15 @@ unsigned long write_acpi_tables(unsigned long start)
 	memcpy((void *)dsdt,(void *)AmlCode, \
 			((acpi_header_t *)AmlCode)->length);
 
+	/* fix up dsdt */
+	((u32 *)dsdt)[11]=((u32)lnxb)+sizeof(acpi_header_t);
+	
 	/* recalculate checksum */
 	dsdt->checksum = 0;
 	dsdt->checksum = acpi_checksum(dsdt,dsdt->length);
 	printk_debug("ACPI:    * DSDT @ %08x Length %x\n",dsdt,dsdt->length);
 	printk_debug("ACPI:    * FADT\n");
-
+	
 	fadt = (acpi_fadt_t *) current;
 	current += sizeof(acpi_fadt_t);
 

@@ -115,7 +115,7 @@ default LB_CKS_LOC=123
 ##
 default CONFIG_SMP=1
 default CONFIG_MAX_CPUS=4
-default ALLOW_HT_OVERCLOCKING=1
+#default ALLOW_HT_OVERCLOCKING=1
 
 ##
 ## Build code to setup a generic IOAPIC

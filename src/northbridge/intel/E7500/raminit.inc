@@ -525,12 +525,7 @@ ram_set_rcomp_regs:
     /* not sure this next section is correct, documentation on device 0
 	function 3, register 80 is lacking. */
 	movl	%eax, %ecx
-#if 0
-	CONSOLE_DEBUG_TX_HEX32(%ecx)
-	movl	$0x0380, %eax	/* read function 3 offset 80 */
-	PCI_READ_CONFIG_DWORD
-	movl	%eax, %ecx
-#endif
+
 	andl	$0xff01ffff, %ecx
 	shrl	$7, %eax
 	andl	$0x00fe0000, %eax
@@ -547,12 +542,7 @@ ram_set_rcomp_regs:
 	orl	$0x80008000, %ecx
 	movl	$0x0380, %eax
 	PCI_WRITE_CONFIG_DWORD	/* enable mode overide */
-#if 0
-	movl	$0x0380, %eax	/* read function 3 offset 80 */
-	PCI_READ_CONFIG_DWORD
-	movl	%eax, %ecx
-	CONSOLE_DEBUG_TX_HEX32(%ecx)
-#endif
+
 	movl	$0x0088, %eax	/* enable periodic compensaion */
 	PCI_READ_CONFIG_BYTE
 	orb	$(1<<7), %al
@@ -1454,7 +1444,7 @@ spd_set_cas_latency_next_dimm:
 	movl	%ebx, %ecx
 	movl	$0x80, %eax
 	movb	cas_latency_80(%ecx), %dl
-	PCI_WRITE_CONFIG_BYTE	
+	PCI_WRITE_CONFIG_BYTE
 	movl	$0x88, %eax	/* reset master DLL reset */
 	PCI_READ_CONFIG_DWORD
 	andl	$~(1<<26), %eax
@@ -1647,16 +1637,17 @@ spd_get_dimm_size:
 	jbe	spd_get_dimm_size
 
 	/* now, fill in DRBs where no physical slot exists */
+	movl	$(SMBUS_MEM_DEVICE_END - SMBUS_MEM_DEVICE_START), %ecx
+	addl	%ecx, %ecx
+	addl	$0x61, %ecx
 1:
-	incl	%eax
-	cmpb	$LAST_DRB_SLOT, %al
-	jg	spd_set_ram_size_computed
+	incl	%ecx
+	cmpl	$LAST_DRB_SLOT, %ecx
+	ja	spd_set_ram_size_computed
 	movl	%ebp, %edx
-	movl	%eax, %ecx
-	PCI_WRITE_CONFIG_BYTE
 	movl	%ecx, %eax
+	PCI_WRITE_CONFIG_BYTE
 	jmp	1b
-
 	
 spd_set_ram_size_computed:
 	/* For now hardset everything at 128MB boundaries */

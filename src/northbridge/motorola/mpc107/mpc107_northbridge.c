@@ -9,6 +9,13 @@
 #include <cpu/cpu.h>
 #include "chip.h"
 
+/*
+ * pci_domain_read_resources needs to create two resource regions,
+ * one for memory and one for I/O. These are required for the 
+ * resource allocation code to function correctly. The regions should
+ * be large enough to hold all expected resources for all PCI
+ * devices.
+ */
 static void pci_domain_read_resources(device_t dev)
 {
 	struct resource *resource;
@@ -26,6 +33,11 @@ static void pci_domain_read_resources(device_t dev)
 	resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 }
 
+/*
+ * pci_domain_set_resources creates memory resources describing the
+ * fixed memory on the system. This is not actually used anywhere
+ * except when the linuxbios table is generated.
+ */
 static void pci_domain_set_resources(device_t dev)
 {
 	device_t mc_dev;
@@ -52,7 +64,8 @@ static void pci_domain_set_resources(device_t dev)
 		bank_enable  = pci_read_config32(mc_dev, 0xa0);
 	
 		/* Report the memory regions */
-		idx = 10;
+		idx = 10; /* Why does idx start at 10? */
+
 		for(i = 0; i < 8; i++) {
 			struct resource *res;
 			/* Ignore banks that are not enabled */

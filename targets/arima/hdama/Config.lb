@@ -46,6 +46,10 @@ uses USE_NORMAL_IMAGE
 uses USE_OPTION_TABLE
 uses HAVE_OPTION_TABLE
 
+option  MAXIMUM_CONSOLE_LOGLEVEL=7
+option  DEFAULT_CONSOLE_LOGLEVEL=7
+option  CONFIG_CONSOLE_SERIAL8250=1
+
 option HAVE_OPTION_TABLE=1
 option HAVE_MP_TABLE=1
 option CPU_FIXUP=1
@@ -55,7 +59,7 @@ option i586=1
 option INTEL_PPRO_MTRR=1
 option k7=1
 option k8=1
-option ROM_SIZE=524288
+option ROM_SIZE=0x100000
 
 ### Customize our winbond superio chip for this motherboard
 ###
@@ -115,7 +119,7 @@ option FINAL_MAINBOARD_FIXUP=1
 ### Compute the location and size of where this firmware image
 ### (linuxBIOS plus bootloader) will live in the boot rom chip.
 ###
-#option FALLBACK_SIZE=524288
+option FALLBACK_SIZE=0x100000
 ###
 ### Compute where this copy of linuxBIOS will start in the boot rom
 ###
@@ -138,9 +142,6 @@ option CONFIG_COMPRESS=0
 
 option USE_ELF_BOOT=1
 
-## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
-option ROM_IMAGE_SIZE=49152
-
 ## LinuxBIOS C code runs at this location in RAM
 option _RAMBASE=0x00100000
 
@@ -159,28 +160,34 @@ option HEAP_SIZE=0x10000
 ### Compute the start location and size size of
 ### The linuxBIOS bootloader.
 ###
-option PAYLOAD_SIZE            = (ROM_SECTION_SIZE - ROM_IMAGE_SIZE)
-option CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
-option CONFIG_ROM_STREAM     = 1
-option _ROMBASE      = (CONFIG_ROM_STREAM_START + PAYLOAD_SIZE)
 
 #
 # Arima hdama
-romimage "normal"
-	option USE_FALLBACK_IMAGE=0
-	option ROM_SECTION_SIZE  = (ROM_SIZE - FALLBACK_SIZE)
-	option ROM_SECTION_OFFSET= 0
-	mainboard arima/hdama
-	payload ../eepro100.ebi 
-end
+#romimage "normal"
+#	option USE_FALLBACK_IMAGE=0
+#	option ROM_SECTION_SIZE  = (ROM_SIZE - FALLBACK_SIZE)
+#	option ROM_SECTION_OFFSET= 0
+#	option PAYLOAD_SIZE            = (ROM_SECTION_SIZE - ROM_IMAGE_SIZE)
+#	option CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+#	option CONFIG_ROM_STREAM     = 1
+#	option _ROMBASE      = (CONFIG_ROM_STREAM_START + PAYLOAD_SIZE)
+#	mainboard arima/hdama
+#	payload ../eepro100.ebi 
+#end
 
 romimage "fallback" 
+	option ROM_IMAGE_SIZE=0x10000
+#	option ROM_IMAGE_SIZE=120*1024
 	option USE_FALLBACK_IMAGE=1
 	option HAVE_FALLBACK_BOOT=1
 	option ROM_SECTION_SIZE  = FALLBACK_SIZE
 	option ROM_SECTION_OFFSET= (ROM_SIZE - FALLBACK_SIZE)
+	option PAYLOAD_SIZE            = (ROM_SECTION_SIZE - ROM_IMAGE_SIZE)
+	option CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+	option CONFIG_ROM_STREAM     = 1
+	option _ROMBASE      = (CONFIG_ROM_STREAM_START + PAYLOAD_SIZE)
 	mainboard arima/hdama
-	payload ../eepro100.ebi 
+	payload ../../../../opteron_phase1
 end
 
 buildrom ROM_SIZE "normal" "fallback"

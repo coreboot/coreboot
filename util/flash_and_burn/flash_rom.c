@@ -63,6 +63,8 @@ struct flashchip flashchips[] = {
      probe_m29f400bt,   erase_m29f400bt,   write_linuxbios_m29f400bt},
     {"82802ab",   137, 173 ,    NULL, 512, 64*1024,
      probe_82802ab,   erase_82802ab,   write_82802ab},
+    {"82802ac",   137, 172 ,    NULL, 1024, 64*1024,
+     probe_82802ab,   erase_82802ab,   write_82802ab},
     {NULL,}
 };
 

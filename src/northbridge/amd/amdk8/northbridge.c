@@ -590,7 +590,7 @@ static void pci_domain_set_resources(device_t dev)
 		/* Now place the memory as high up as it will go */
 		mem2->base = resource_max(mem2);
 		mem1->limit = mem2->base - 1;
-		mem1->base = resource_max(mem2);
+		mem1->base = resource_max(mem1);
 	}
 	else {
 		/* Place the resources as high up as they will go */

@@ -6,7 +6,7 @@
  */
 
 /* some of the types of resources chips can control */
-#ifndef CONFIG_CHIP_CONFIGURE
+#if CONFIG_CHIP_CONFIGURE == 1
 #define CONFIGURE(pass) chip_configure(&static_root, pass)
 #else
 #define CONFIGURE(pass)

@@ -73,6 +73,7 @@ object mptable.o HAVE_MP_TABLE
 object irq_tables.o HAVE_PIRQ_TABLE
 
 
+
 ###
 ### Build options
 ###
@@ -122,6 +123,11 @@ option NO_KEYBOARD
 ## Useful for specifying IRQ routing values
 ##
 option HAVE_MP_TABLE=1
+
+##
+## Build code to export a CMOS option tabe table
+##
+option HAVE_OPTION_TABLE=1
 
 ##
 ## Build code for SMP support
@@ -197,6 +203,11 @@ option STACK_SIZE=0x2000
 ## Use a small 8K heap
 ##
 option HEAP_SIZE=0x2000
+
+##
+## Only use the option table in a normal image
+##
+expr USE_OPTION_TABLE=!USE_FALLBACK_IMAGE
 
 ##
 ## Compute the location and size of where this firmware image

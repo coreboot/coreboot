@@ -13,6 +13,7 @@
 #include <smbus.h>
 #include <ramtest.h>
 #include <northbridge/intel/82860/rdram.h>
+#include <pc80/mc146818rtc.h>
 
 
 #define SMBUS_MEM_DEVICE_0 (0xa << 3)
@@ -52,6 +53,8 @@ static void set_power_on_after_power_fail(int setting)
 }
 void mainboard_fixup(void)
 {
+	int cpu_clock_multiplier;
+	int power_on_after_power_fail;
 	ich2_enable_ioapic();
 	ich2_enable_serial_irqs();
 	ich2_enable_ide(1,1);
@@ -59,9 +62,13 @@ void mainboard_fixup(void)
 	ich2_lpc_route_dma(0xff);
 	isa_dma_init();
 
-	ich2_set_cpu_multiplier(CPU_CLOCK_MULTIPLIER);
+	cpu_clock_multiplier = CPU_CLOCK_MULTIPLIER;
+	get_option(&cpu_clock_multiplier, "CPU_clock_speed");
+	ich2_set_cpu_multiplier(cpu_clock_multiplier);
 
-	set_power_on_after_power_fail(MAINBOARD_POWER_ON_AFTER_POWER_FAIL);
+	power_on_after_power_fail = MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+	get_option(&power_on_after_power_fail, "power_on_after_power_fail");
+	set_power_on_after_power_fail(power_on_after_power_fail);
 	return;
 }
 

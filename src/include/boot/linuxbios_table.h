@@ -25,4 +25,6 @@ unsigned long lb_table_fini(struct lb_header *header);
  */
 struct lb_memory *get_lb_mem(void);
 
+extern struct cmos_option_table option_table;
+
 #endif /* LINUXBIOS_TABLE_H */

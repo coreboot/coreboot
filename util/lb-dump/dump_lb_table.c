@@ -8,6 +8,8 @@
 #include <sys/mman.h>
 #include "../../src/include/boot/linuxbios_tables.h"
 
+void print_lb_records(struct lb_record *rec, struct lb_record *last, unsigned long addr);
+
 unsigned long compute_checksum(void *addr, unsigned long length)
 {
 	unsigned short *ptr;
@@ -26,46 +28,65 @@ unsigned long compute_checksum(void *addr, unsigned long length)
 	return (~sum) & 0xFFFF;
 	
 }
+#define for_each_lbrec(head, rec) \
+	for(rec = (struct lb_record *)(((char *)head) + sizeof(*head)); \
+		(((char *)rec) < (((char *)head) + sizeof(*head) + head->table_bytes))  && \
+		(rec->size >= 1) && \
+		((((char *)rec) + rec->size) <= (((char *)head) + sizeof(*head) + head->table_bytes)); \
+		rec = (struct lb_record *)(((char *)rec) + rec->size)) 
+		
 
-int count_lb_records(void *start, unsigned long length)
+static int  count_lb_records(struct lb_header *head)
 {
 	struct lb_record *rec;
-	void *end;
 	int count;
 	count = 0;
-	end = ((char *)start) + length;
-	for(rec = start; ((void *)rec < end) &&
-		    (rec->size <= (end - (void *)rec)); 
-	    rec = (void *)(((char *)rec) + rec->size)) {
+	for_each_lbrec(head, rec) {
 		count++;
 	}
 	return count;
 }
 
-void *find_lb_table(void *start, void *end)
+
+struct lb_header *find_lb_table(void *base, unsigned long start, unsigned long end)
 {
-	unsigned char *ptr;
+	unsigned long addr;
 	/* For now be stupid.... */
-	for(ptr = start; (void *)ptr < end; ptr += 16) {
-		struct lb_header *head = (void *)ptr;
-		if ((head->signature[0] == 'L') && 
-			(head->signature[1] == 'B') &&
-			(head->signature[2] == 'I') &&
-			(head->signature[3] == 'O') &&
-			(head->header_bytes == sizeof(*head)) &&
-			(compute_checksum(head, sizeof(*head)) == 0) &&
-			(compute_checksum(ptr + sizeof(*head), head->table_bytes) ==
-				head->table_checksum) &&
-			(count_lb_records(ptr + sizeof(*head), head->table_bytes) ==
-				head->table_entries)
-			) {
-			return ptr;
+	for(addr = start; addr < end; addr += 16) {
+		struct lb_header *head = (struct lb_header *)(((char*)base) + addr);
+		struct lb_record *recs = (struct lb_record *)(((char*)base) + addr + sizeof(*head));
+		if (memcmp(head->signature, "LBIO", 4) != 0)
+			continue;
+		fprintf(stdout, "Found canidate at: %08lx-%08lx\n", 
+			addr, addr + head->table_bytes);
+		if (head->header_bytes != sizeof(*head)) {
+			fprintf(stderr, "Header bytes of %d are incorrect\n",
+				head->header_bytes);
+			continue;
 		}
+		if (count_lb_records(head) != head->table_entries) {
+			fprintf(stderr, "bad record count: %d\n",
+				head->table_entries);
+			continue;
+		}
+		if (compute_checksum((unsigned char *)head, sizeof(*head)) != 0) {
+			fprintf(stderr, "bad header checksum\n");
+			continue;
+		}
+		if (compute_checksum(recs, head->table_bytes)
+			!= head->table_checksum) {
+			fprintf(stderr, "bad table checksum: %04x\n",
+				head->table_checksum);
+			continue;
+		}
+		fprintf(stdout, "Found LinuxBIOS table at: %08lx\n", addr);
+		return head;
+
 	};
 	return 0;
 }
 
-void nop_print(struct lb_record *rec)
+void nop_print(struct lb_record *rec, unsigned long addr)
 {
 	return;
 }
@@ -101,7 +122,7 @@ void pretty_print_number(FILE *stream, uint64_t value)
 	}
 }
 
-void print_memory(struct lb_record *ptr)
+void print_memory(struct lb_record *ptr, unsigned long addr)
 {
 	struct lb_memory *rec = (void *)ptr;
 	int entries;
@@ -128,49 +149,113 @@ void print_memory(struct lb_record *ptr)
 		printf(")\n");
 	}
 }
+
+void print_option_table(struct lb_record *ptr, unsigned long addr)
+{
+	struct lb_record *rec, *last;
+	struct cmos_option_table *hdr;
+	hdr = (struct cmos_option_table *)ptr;
+	rec  = (struct lb_record *)(((char *)hdr) + hdr->header_length);
+	last = (struct lb_record *)(((char *)hdr) + hdr->size);
+	printf("cmos option header record = type %d, size %d, header length %d\n",
+		hdr->tag, hdr->size, hdr->header_length);
+	print_lb_records(rec, last, addr + hdr->header_length);
+#if 0
+	{
+		unsigned char *data = (unsigned char *)ptr;
+		int i;
+		for(i = 0; i < hdr->size; i++) {
+			if ((i %10) == 0 ) {
+				fprintf(stderr, "\n\t");
+			}
+			fprintf(stderr, "0x%02x,", data[i]);
+		}
+	}
+#endif
+
+}
+
+void print_option(struct lb_record *ptr, unsigned long addr)
+{
+	struct cmos_entries *rec;
+	rec= (struct cmos_entries *)ptr;
+	printf("entry %d, rec len %d, start %d, length %d, conf %d, id %d, %s\n",
+		rec->tag, rec->size, rec->bit, rec->length,
+		rec->config, rec->config_id, rec->name);
+}
+
+void print_option_enumeration(struct lb_record *ptr, unsigned long addr)
+{
+	struct cmos_enums *rec;
+	rec = (struct cmos_enums *)ptr;
+	printf("enumeration %d, rec len %d, id %d, value %d, %s\n",
+		rec->tag, rec->size, rec->config_id, rec->value,
+		rec->text);
+}
+
+
 struct {
 	uint32_t type;
 	char *type_name;
-	void (*print)(struct lb_record *rec);
+	void (*print)(struct lb_record *rec, unsigned long addr);
 } lb_types[] = {
-	{ 0, "Unused", nop_print },
-	{ 1, "Memory", print_memory },
-	{ 2, "HWRPB", nop_print },
+	{ LB_TAG_UNUSED,            "Unused",             nop_print },
+	{ LB_TAG_MEMORY,            "Memory",             print_memory },
+	{ LB_TAG_HWRPB,             "HWRPB",              nop_print },
+	{ LB_TAG_CMOS_OPTION_TABLE, "CMOS option table",  print_option_table },
+	{ LB_TAG_OPTION,            "Option",             print_option },
+	{ LB_TAG_OPTION_ENUM,       "Option Enumeration", print_option_enumeration },
+	{ LB_TAG_OPTION_DEFAULTS,   "Option Defaults",    nop_print },
 	{ -1, "Unknown", 0 }
 };
 
-void print_lb_records(struct lb_header *head)
+static struct lb_record *next_record(struct lb_record *rec)
 {
-	struct lb_record *rec;
-	void *start, *end;
+	return (struct lb_record *)(((char *)rec) + rec->size);
+}
+
+void print_lb_records(struct lb_record *rec, struct lb_record *last, 
+	unsigned long addr)
+{
+	struct lb_record *next;
 	int i;
 	int count;
 	count = 0;
-	start = ((char *)head) + head->header_bytes;
-	end = ((char *)start) + head->table_bytes;
 
-	printf("LinuxBIOS header\n");
-	for(rec = start; 
-	    ((void *)rec < end) && (rec->size <= (end - (void *)rec)); 
-		rec = (void *)(((char *)rec) + rec->size)) {
+	for(next = next_record(rec); (rec < last) && (next <= last); 
+		rec = next, addr += rec->size) { 
+		next = next_record(rec);
 		count++;
 		for(i = 0; lb_types[i].print != 0; i++) {
 			if (lb_types[i].type == rec->tag) {
 				break;
 			}
 		}
-		printf("lb_record #%d type %d %s\n",
-			count, rec->tag, lb_types[i].type_name);
+		printf("lb_record #%d type %d @ 0x%08lx %s\n",
+			count, rec->tag, addr, lb_types[i].type_name);
 		if (lb_types[i].print) {
-			lb_types[i].print(rec);
+			lb_types[i].print(rec, addr);
 		}
 	}
+}
+
+void print_lb_table(struct lb_header *head, unsigned long addr)
+{
+	struct lb_record *rec, *last;
+
+	rec  = (struct lb_record *)(((char *)head) + head->header_bytes);
+	last = (struct lb_record *)(((char *)rec) + head->table_bytes);
+
+	printf("LinuxBIOS header(%d) checksum: %04x table(%d) checksum: %04x entries: %d\n",
+		head->header_bytes, head->header_checksum,
+		head->table_bytes, head->table_checksum, head->table_entries);
+	print_lb_records(rec, last, addr + head->header_bytes);
 }
 
 int main(int argc, char **argv) 
 {
 	unsigned char *low_1MB;
-	void *lb_table;
+	struct lb_header *lb_table;
 	int fd;
 	fd = open("/dev/mem", O_RDONLY);
 	if (fd < 0) {
@@ -185,13 +270,13 @@ int main(int argc, char **argv)
 	}
 	lb_table = 0;
 	if (!lb_table)
-		lb_table = find_lb_table(low_1MB + 0x00000, low_1MB + 0x1000);
+		lb_table = find_lb_table(low_1MB, 0x00000, 0x1000);
 	if (!lb_table)
-		lb_table = find_lb_table(low_1MB + 0xf0000, low_1MB + 1024*1024);
+		lb_table = find_lb_table(low_1MB, 0xf0000, 1024*1024);
 	if (lb_table) {
-		printf("lb_table = 0x%08x\n", 
-			lb_table - (void *)low_1MB);
-		print_lb_records(lb_table);
+		unsigned long addr;
+		addr = ((char *)lb_table) - ((char *)low_1MB);
+		print_lb_table(lb_table, addr);
 	}
 	else {
 		printf("lb_table not found\n");

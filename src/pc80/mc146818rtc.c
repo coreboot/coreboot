@@ -1,6 +1,9 @@
 #include <arch/io.h>
 #include <printk.h>
 #include <pc80/mc146818rtc.h>
+#include <boot/linuxbios_tables.h>
+#include <boot/linuxbios_table.h>
+#include <string.h>
 
 #define CMOS_READ(addr) ({ \
 outb_p((addr),RTC_PORT(0)); \
@@ -162,3 +165,68 @@ void rtc_init(int invalid)
 	/* Clear any pending interrupts */
 	(void) CMOS_READ(RTC_INTR_FLAGS);
 }
+
+
+#if USE_OPTION_TABLE == 1
+/* This routine returns the value of the requested bits
+	input bit = bit count from the beginning of the cmos image
+	      length = number of bits to include in the value
+	      ret = a character pointer to where the value is to be returned
+	output the value placed in ret
+	      returns 1 = successful, 0 = an error occurred
+*/
+static int get_cmos_value(unsigned long bit, unsigned long length, void *vret)
+{
+	unsigned char *ret;
+	unsigned long byte,byte_bit;
+	unsigned long i;
+	unsigned char uchar;
+
+	/* The table is checked when it is built to ensure all values are valid. */
+	ret = vret;
+	byte=bit/8;	/* find the byte where the data starts */
+	byte_bit=bit%8; /* find the bit in the byte where the data starts */
+	if(length<9) {	/* one byte or less */
+		uchar = CMOS_READ(byte); /* load the byte */
+		uchar >>= byte_bit;	/* shift the bits to byte align */
+		/* clear unspecified bits */
+		ret[0] = uchar & ((1 << length) -1);
+	}
+	else {	/* more that one byte so transfer the whole bytes */
+		for(i=0;length;i++,length-=8,byte++) {
+			/* load the byte */
+			ret[i]=CMOS_READ(byte);
+		}
+	}
+	return 0;
+}
+
+
+int get_option(void *dest, char *name)
+{
+	extern struct cmos_option_table option_table;
+	struct cmos_option_table *ct;
+	struct cmos_entries *ce;
+	size_t namelen;
+	int found=0;
+
+	/* Figure out how long name is */
+	namelen = strnlen(name, CMOS_MAX_NAME_LENGTH);
+	
+	/* find the requested entry record */
+	ct=&option_table;
+	ce=(struct cmos_entries*)((unsigned char *)ct + ct->header_length);
+	for(;ce->tag==LB_TAG_OPTION;
+		ce=(struct cmos_entries*)((unsigned char *)ce + ce->size)) {
+		if (memcmp(ce->name, name, namelen) == 0) {
+			found=1;
+			break;
+		}
+	}
+	if(!found) return(-2);
+	
+	if(get_cmos_value(ce->bit, ce->length, dest))
+		return(-3);
+	return(0);
+}
+#endif /* USE_OPTION_TABLE */

@@ -90,6 +90,11 @@
 
 #if !defined(ASSEMBLY)
 void rtc_init(int invalid);
+#if USE_OPTION_TABLE == 1
+int get_option(void *dest, char *name);
+#else
+#define get_option(dest, name) (-2)
+#endif
 #endif
 
 #endif /*  PC80_MC146818RTC_H */

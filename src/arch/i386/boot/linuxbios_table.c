@@ -2,6 +2,7 @@
 #include <boot/linuxbios_tables.h>
 #include <boot/linuxbios_table.h>
 #include <printk.h>
+#include <string.h>
 
 struct lb_header *lb_table_init(unsigned long addr)
 {
@@ -86,25 +87,16 @@ void lb_memory_range(struct lb_memory *mem,
 
 static void lb_reserve_table_memory(struct lb_header *head)
 {
-	struct lb_record *rec, *last_rec;
+	struct lb_record *last_rec;
 	struct lb_memory *mem;
 	uint64_t start;
 	uint64_t end;
 	int i, entries;
+
 	last_rec = lb_last_record(head);
-	mem = 0;
-	for(rec = lb_first_record(head); rec < last_rec; lb_next_record(rec)) {
-		if (rec->tag == LB_TAG_MEMORY) {
-			mem = (struct lb_memory *)rec;
-			break;
-		}
-	}
-	if (!mem)
-		return;
-printk_debug("head = %p last_rec = %p\n", head, last_rec);
+	mem = get_lb_mem();
 	start = (unsigned long)head;
 	end = (unsigned long)last_rec;
-printk_debug("start = 0x%08lx end = 0x%08lx\n", (unsigned long)start, (unsigned long)end);
 	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
 	/* Resize the right two memory areas so this table is in
 	 * a reserved area of memory.  Everything has been carefully
@@ -137,7 +129,7 @@ unsigned long lb_table_fini(struct lb_header *head)
 	head->table_checksum = compute_ip_checksum(first_rec, head->table_bytes);
 	head->header_checksum = 0;
 	head->header_checksum = compute_ip_checksum(head, sizeof(*head));
-	printk_debug("Write linuxbios table at: %p - %p\n",
+	printk_debug("Wrote linuxbios table at: %p - %p\n",
 		head, rec);
 	return (unsigned long)rec;
 }
@@ -162,11 +154,18 @@ unsigned long write_linuxbios_table(
 {
 	struct lb_header *head;
 	struct lb_memory *mem;
+	struct lb_record *rec_dest, *rec_src;
 	
 	head = lb_table_init(low_table_end);
 	low_table_end = (unsigned long)head;
-
+#if HAVE_OPTION_TABLE == 1
+	/* Write the option config table... */
+	rec_dest = lb_new_record(head);
+	rec_src = (struct lb_record *)&option_table;
+	memcpy(rec_dest,  rec_src, rec_src->size);
+#endif	
 	mem = lb_memory(head);
+	mem_ranges = mem;
 	/* Reserve our tables in low memory */
 	lb_memory_range(mem, LB_MEM_RESERVED, low_table_start, low_table_end - low_table_start);
 	lb_memory_range(mem, LB_MEM_RAM,      low_table_end, 640*1024 - low_table_end);
@@ -180,6 +179,5 @@ unsigned long write_linuxbios_table(
 	low_table_end = lb_table_fini(head);
 
 	/* Remember where my valid memory ranges are */
-	mem_ranges = mem;
 	return low_table_end;
 }

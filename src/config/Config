@@ -1,12 +1,18 @@
 ## This is Architecture independant part of the makefile
 
-makedefine CC:=gcc 
-makedefine CPP:= gcc -x assembler-with-cpp -DASSEMBLY -E
+option CROSS_COMPILE
+
+makedefine CC:=$(CROSS_COMPILE)gcc 
+makedefine CPP:= $(CROSS_COMPILE)gcc -x assembler-with-cpp -DASSEMBLY -E
+makedefine OBJCOPY:=$(CROSS_COMPILE)objcopy
 makedefine LIBGCC_FILE_NAME := $(shell $(CC) -print-libgcc-file-name)
 makedefine GCC_INC_DIR := $(shell $(CC) -print-search-dirs | sed -ne "s/install: \(.*\)/\1include/gp")
 
 makedefine CPPFLAGS := -I$(TOP)/src/include -I$(TOP)/src/arch/$(ARCH)/include -I$(GCC_INC_DIR) $(CPUFLAGS)
 makedefine CFLAGS := $(CPU_OPT) $(CPPFLAGS) -Os -nostdinc -nostdlib -fno-builtin  -Wall
+
+makedefine HOSTCC:=gcc
+makedefine HOSTCFLAGS:= -Os -Wall
 
 makerule ldscript.ld : ldoptions $(LDSUBSCRIPTS-1) ; echo "INCLUDE ldoptions" > $@ ; for file in $(LDSUBSCRIPTS-1) ; do echo "INCLUDE $$file" >> $@ ; done
 
@@ -14,7 +20,7 @@ makerule cpuflags : Makefile.settings ; perl -e 'print "CPUFLAGS :=\n"; foreach 
 
 makerule ldoptions : Makefile.settings ; perl -e 'foreach $$var (split(" ", $$ENV{VARIABLES})) { if ($$ENV{$$var} =~ m/^(0x[0-9a-fA-F]+|0[0-7]+|[0-9]+)$$/) { print "$$var = $$ENV{$$var};\n"; }}' > $@
 
-makerule linuxbios.strip: linuxbios ; objcopy -O binary linuxbios linuxbios.strip
+makerule linuxbios.strip: linuxbios ; $(OBJCOPY) -O binary linuxbios linuxbios.strip
 
 makerule linuxbios.o : crt0.o $(DRIVERS-1) linuxbios.a $(LIBGCC_FILE_NAME)  ; $(CC) -nostdlib -r -o $@ crt0.o $(DRIVERS-1) linuxbios.a $(LIBGCC_FILE_NAME)
 
@@ -39,12 +45,19 @@ makerule etags: $(SOURCES) ; etags $(SOURCES)
 makerule tags: $(SOURCES) ; ctags $(SOURCES)
 makerule documentation: $(SOURCES) ; doxygen LinuxBIOSDoc.config 
 
+makerule build_opt_tbl: $(TOP)/util/options/build_opt_tbl.c ; $(HOSTCC) $(HOSTCFLAGS) $< -o $@
+
+makerule /$(TARGET_DIR)/option_table.c : build_opt_tbl $(MAINBOARD)/cmos.conf ; ./build_opt_tbl -b  --config $(MAINBOARD)/cmos.conf 
+
+object /$(TARGET_DIR)/option_table.o HAVE_OPTION_TABLE
+
 makerule clean : ; rm -f linuxbios.* *~
 addaction clean rm -f linuxbios 
 addaction clean rm -f ldoptions cpuflags ldscript.ld
 addaction clean rm -f a.out *.s *.l *.o
 addaction clean rm -f TAGS tags
 addaction clean rm -f docipl
+addaction clean rm -f build_opt_tbl option_table.c crt0.S
 
 # do standard config files that the user need not specify
 # for now, this is just 'lib', but it may be more later. 

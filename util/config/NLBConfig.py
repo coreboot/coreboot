@@ -676,13 +676,17 @@ def set_expr(option, value):
 # Also, put "<option>:=<value>" and add <option> to VARIABLES in
 # Makefile.settings
 #
-option_re = re.compile(r"^([A-Za-z_][A-Za-z_0-9]+)\s*=(.*)$")
+option_re = re.compile(r"^([A-Za-z_][A-Za-z_0-9]+)\s*$")
+option_arg_re = re.compile(r"^([A-Za-z_][A-Za-z_0-9]+)\s*=(.*)$")
 def option(dir, option):
-	m = option_re.match(option)
-	key=option
-	value= ""
+	m = option_arg_re.match(option)
+	key = option
+	value = ""
 	if m and m.group(1):
 		(key, value) = m.groups()
+	m = option_re.match(key)
+	if not m:
+		fatal("Invalid option name: %s" % (key))
 	set_option(key, value)
 
 # COMMAND: nooption <option-name>
@@ -692,10 +696,12 @@ def nooption(dir, option):
 
 # COMMAND: expr
 def expr(dir, option):
-	m = option_re.match(option)
+	m = option_arg_re.match(option)
 	value= ""
 	if m and m.group(1):
 		(key, value) = m.groups()
+	else:
+		fatal("Invalid expression: %s" % (option))
 	set_expr(key, value)
 	
 # COMMAND: commandline <stuff>
@@ -930,6 +936,8 @@ def writemakefilesettings(path):
 
 	file.write("TOP:=%s\n" % (treetop))
 	file.write("ARCH:=%s\n" % (arch))
+	file.write("MAINBOARD:=%s\n" % (mainboard_dir))
+	file.write("TARGET_DIR:=%s\n" % (target_dir))
 
 	keys = makeoptions.keys()
 	keys.sort()
@@ -1050,9 +1058,9 @@ CPUFLAGS := $(foreach _var_,$(VARIABLES),$(call D_item,$(_var_)))
 	file.write("\n# Remember the automatically generated files\n")
 	file.write("GENERATED:=\n")
 	for genfile in [ 'Makefile',
-			'Makefile.settings'
-			'crt0_includes.h'
-			'nsuperio.c'
+			'Makefile.settings',
+			'crt0_includes.h',
+			'nsuperio.c',
 			'LinuxBIOSDoc.config' ]:
 		file.write("GENERATED += %s\n" % genfile)
 

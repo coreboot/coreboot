@@ -181,7 +181,11 @@ void write_tables(unsigned long totalram)
 	/* The smp table must be in 0-1K, 639K-640K, or 960K-1M */
 	low_table_end = write_smp_table(low_table_end, processor_map);
 
-	/* The linuxbios table must be in 0-1K or 960K-1M */
+	/* Don't write anything in the traditional x86 BIOS data segment */
+	if (low_table_end < 0x500) {
+		low_table_end = 0x500;
+	}
+	/* The linuxbios table must be in 0-4K or 960K-1M */
 	write_linuxbios_table(
 		processor_map, totalram,
 		low_table_start, low_table_end,

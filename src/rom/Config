@@ -1,5 +1,9 @@
+option USE_DOC_MIL=0
+option USE_DOC_2000_TSOP=0
+expr USE_DOC = USE_DOC_MIL | USE_DOC_2000_TSOP
+
 driver rom_fill_inbuf.o USE_GENERIC_ROM
-driver docmil_fill_inbuf.o
+driver docmil_fill_inbuf.o USE_DOC
 #driver docplus_fill_inbuf.o
 driver tsunami_tigbus_rom_fill_inbuf.o USE_TSUNAMI_TIGBUS_ROM
 driver serial_fill_inbuf.o USE_SERIAL_FILL_INBUF

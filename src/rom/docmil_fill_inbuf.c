@@ -1,5 +1,3 @@
-#if defined(USE_DOC_MIL) || defined(USE_DOC_2000_TSOP)
-
 #include <cpu/p5/io.h>
 #include <printk.h>
 #include <stdlib.h>
@@ -157,5 +155,3 @@ static struct stream doc_mil_stream __stream = {
 	.skip = skip_bytes,
 	.fini = fini_bytes,
 };
-
-#endif /* USE_DOC_MIL */

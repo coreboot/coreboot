@@ -194,7 +194,7 @@ define FALLBACK_SIZE
 	comment "Default fallback image size"
 end
 define ROM_SIZE
-	default 262144
+	default none
 	format "0x%x"
 	export used
 	comment "Size of your ROM"

@@ -17,6 +17,7 @@ default DCACHE_RAM_SIZE=0x8000
 
 initinclude "FAMILY_INIT" cpu/ppc/mpc74xx/mpc74xx.inc
 object clock.o
+object cache.S
 initobject clock.o
-initobject cache.o
+initobject cache.S
 

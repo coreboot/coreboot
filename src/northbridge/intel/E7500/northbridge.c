@@ -8,6 +8,8 @@
 struct mem_range *sizeram(void)
 {
 	static struct mem_range mem[4];
+	/* the units of tolm are 64 KB */
+	/* the units of drb16 are 64 MB */
 	uint16_t tolm, remapbase, remaplimit, drb16;
 	uint16_t tolm_r, remapbase_r, remaplimit_r;
 	uint8_t  drb;
@@ -21,13 +23,21 @@ struct mem_range *sizeram(void)
         if(get_option(&remap_high, "remap_memory_high")){
                 remap_high = 0;
         }
+	printk_debug("remap_high is %d\n", remap_high);
+	/* get out the value of the highest DRB. This tells the end of 
+	 * physical memory. The units are ticks of 64 MB i.e. 1 means
+	 * 64 MB. 
+	 */
 	pcibios_read_config_byte(0, 0, 0x67, &drb);
 	drb16 = (uint16_t)drb;
 	if(remap_high && (drb16 > 0x08)) {
 		/* We only come here if we have at least 512MB of memory,
 		 * so it is safe to hard code tolm.
+		 * 0x2000 means 512MB 
 		 */
+
 		tolm = 0x2000;
+		/* i.e 0x40 * 0x40 is 0x1000 which is 4 GB */
 		if(drb16 > 0x0040) {
 			/* There is more than 4GB of memory put
 			 * the remap window at the end of ram.

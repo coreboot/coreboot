@@ -107,7 +107,10 @@ void error(char errmsg[])
 {
 	display(errmsg);
 
+/* what a bad idea -- this wipes out the most recent POST!
+ * comment out unless someone comes up with a great reason to keep it.
 	intel_post(0xee);
+ */
 
 	while (1);		/* Halt */
 }

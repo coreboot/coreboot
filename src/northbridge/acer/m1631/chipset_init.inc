@@ -6,6 +6,9 @@
 /* table of settings for initial registers */
 /* format is register #, and value, OR value */
 register_table: 
+	// something in here is breaking the CUA very badly.
+	// So I turned it off for now -- RGM
+	.byte 0x0
 	.byte 0x45, 0xff, 0x14
 	.byte 0x49, 0xff, 0x60
 	.byte 0x50, 0xf7, 0x00
@@ -81,11 +84,15 @@ register_table:
 	.byte 0x0 /* end of table */
 
 m1535_table:
+	.byte 0x58, 0x00, 0x4c	// enable IDE controller
+	.byte 0x0
+	// something in here is breaking the CUA very badly.
+	// So I turned it off for now -- RGM
+	.byte 0x0
 	.byte 0x41, 0x00, 0x0d	// enable superIO recovery
 	.byte 0x47, 0xff, 0x40	// enable flash rom r/w
 	.byte 0x44, 0x00, 0x1d	// set edge mode, primary channel IRQ 14
 #	.byte 0x75, 0x00, 0x0f	// secondary channel IRQ 15
-	.byte 0x58, 0x00, 0x4c	// enable IDE controller
 #0706cheng	.byte 0x70, 0x00, 0x12	// set serial IRQ data frame
 	.byte 0x72, 0x00, 0x0a		/*cheng 0706 add*/
 

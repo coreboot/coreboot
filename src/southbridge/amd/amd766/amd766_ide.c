@@ -1,7 +1,7 @@
 #include <pci.h>
 #include <pci_ids.h>
 #include <southbridge/amd/amd766.h>
-#include <ide.h>
+#include <pc80/ide.h>
 
 void amd766_enable_ide(int enable_a, int enable_b)
 {

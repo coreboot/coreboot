@@ -18,6 +18,6 @@ struct mem_range *sizeram(void)
 	mem[1].sizek = size - mem[1].basek;
 	mem[2].basek = 0;
 	mem[2].sizek = 0;
-	return &mem;
+	return mem;
 }
 

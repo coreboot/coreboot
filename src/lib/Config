@@ -1,6 +1,7 @@
 object linuxbiosmain.o
 object linuxpci.o
 object newpci.o
+object clog2.o
 object printk.o
 object serial_subr.o SERIAL_CONSOLE
 object video_subr.o VIDEO_CONSOLE

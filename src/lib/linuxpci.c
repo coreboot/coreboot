@@ -23,7 +23,8 @@ static char rcsid[] = "$Id$";
 #include <string.h>
 #include <subr.h>
 
-
+// yes we could do Yet Another Include File, but ...
+int sprintf(char * buf, const char *fmt, ...);
 
 /**
  * This is the root of the PCI tree. A PCI tree always has 
@@ -317,7 +318,7 @@ static void pci_bus_read_resources(struct pci_dev *dev)
 static void pci_set_resource(struct pci_dev *dev, struct resource *resource)
 {
 	unsigned long base, limit;
-	unsigned long bridge_align;
+	unsigned long bridge_align = MEM_BRIDGE_ALIGN; // stupid warnings.
 	unsigned char buf[10];
 	
 	/* Make certain the resource has actually been set */
@@ -447,11 +448,13 @@ static void pci_dev_set_resources(struct pci_dev *dev)
 }
 
 
-
+// probably dead.
+#if 0
 static void pci_noop(struct pci_dev *dev)
 {
 	return;
 }
+#endif
 struct pci_dev_operations default_pci_ops_dev = {
 	.read_resources = pci_dev_read_resources,
 	.set_resources = pci_dev_set_resources,

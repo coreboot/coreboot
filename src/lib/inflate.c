@@ -1097,9 +1097,9 @@ int gunzip(void)
 	    return -1;
     }
     (ulg)get_byte();	/* Get timestamp */
-    ((ulg)get_byte()) << 8;
-    ((ulg)get_byte()) << 16;
-    ((ulg)get_byte()) << 24;
+    ((ulg)get_byte());// << 8;
+    ((ulg)get_byte());// << 16;
+    ((ulg)get_byte());// << 24;
 
     (void)get_byte();  /* Ignore extra flags for the moment */
     (void)get_byte();  /* Ignore OS type for the moment */

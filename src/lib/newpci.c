@@ -540,7 +540,7 @@ void compute_allocate_resource(
 	resource = 0;
 
 	/* Walk through all the devices on the current bus and compute the addresses */
-	while(dev = largest_resource(bus, &resource, type_mask, type)) {
+	while((dev = largest_resource(bus, &resource, type_mask, type))) {
 		unsigned long size;
 		/* Do NOT I repeat do not ignore resources which have zero size.
 		 * If they need to be ignored dev->read_resources should not even
@@ -879,13 +879,13 @@ void pci_initialize(void)
 void
 handle_superio(int pass, struct superio *all_superio[], int nsuperio)
 {
-	int i;
-	struct superio *s;
+    int i = 0;
+    struct superio *s = all_superio[0];
 
 	printk_debug("handle_superio start, s %p nsuperio %d s->super %p\n",
 		     s, nsuperio, s->super);
 
-	for (i = 0; i < nsuperio; i++){
+	for (; i < nsuperio; i++){
 		s = all_superio[i];
 		printk_debug(__FUNCTION__
 			     " Pass %d, check #%d, s %p s->super %p\n",

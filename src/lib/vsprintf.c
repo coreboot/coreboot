@@ -335,7 +335,9 @@ int vsprintf(char * buf, const char *fmt, va_list args)
 	int i;
 	str_buf = buf;
 	i = vtxprintf(str_tx_byte, fmt, args);
-	str_buf = 0;
+	/* maeder/Ispiri -- The null termination was missing a deference */
+	/*                  and was just zeroing out the pointer instead */
+	*str_buf = '\0';
 	return i;
 }
 

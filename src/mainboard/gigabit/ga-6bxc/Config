@@ -1,0 +1,15 @@
+northbridge intel/440bx
+southbridge intel/piix4e
+
+superio ITE/it8671f
+
+option ENABLE_FIXED_AND_VARIABLE_MTRRS
+option FINAL_MAINBOARD_FIXUP
+option HAVE_PIRQ_TABLE
+option PIIX4_DEVFN=0x38
+
+object mainboard.o
+object irq_tables.o
+
+cpu p5
+cpu p6

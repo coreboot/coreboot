@@ -1,0 +1,3 @@
+raminit northbridge/intel/440bx/raminit.inc
+
+object northbridge.o

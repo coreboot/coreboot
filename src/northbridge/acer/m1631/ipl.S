@@ -17,10 +17,12 @@
  * ror it 16 bits, and as we grow the CAS, we just inc cs, and that will
  * set the right value. 
  */
+	/*	SDRAM (28:27 == 10), 1st row present (26:25=11),
+	 * no 2nd row yet (24:23=00), 256 MB (22:20 = 110),
+	 * 10 bits CA (minimum for SDRAM 19:16=2), CAS3 (12:11 = 10)
+	 */
+	/* 0xf in high order due to other settings */
 #define INIT_MCR $0xf6621000
-#undef INIT_MCR
-/* I think that f662 is wrong. We need to make it 0xf6601000 */
-#define INIT_MCR $0xf6021000
 
 #define WRITE_MCR0 movl %ecx, %eax ;  outl %eax, %dx
 /*#include <cpu/p5/start32.inc>*/
@@ -110,6 +112,10 @@ code16
 	rorl	$16, %ecx
 	/* clear out the CAS, since we assume start at zero
 	 * and increment 
+	 */
+	/* NOTE: we set 10-bit above. If it only uses 8 bits it will
+	 * wrap. So it is OK that we clear out the CAS to 0
+	 * (WE THINK ...)
 	 */
 	andb	$0xf0, %cl
 	/* test 8 bit CAS */

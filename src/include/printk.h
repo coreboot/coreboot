@@ -11,14 +11,17 @@
 #define KERN_NOTICE     "<5>"   /* normal but significant condition     */
 #define KERN_INFO       "<6>"   /* informational                        */
 #define KERN_DEBUG      "<7>"   /* debug-level messages                 */
+#define KERN_SPEW       "<8>"   /* Way too many details                 */
 
 extern int console_loglevel;
 int printk(const char *fmt, ...);
 
 #ifdef DEBUG
 #define DBG(x...) printk(KERN_DEBUG x)
+#define PRINTK(x...) printk(x)
 #else
 #define DBG(x...)
+#define PRINTK(x...)
 #endif
 
 #endif

@@ -1480,11 +1480,17 @@ void setup_apic()
 	}
 }
 
+unsigned char *zkernel_start;
+unsigned long zkernel_mask;
+
 int
 linuxbiosmain(unsigned long base, unsigned long totalram)
 {
 	unsigned char *empty_zero_page;
 	extern int firstfill;
+
+	unsigned char *cmd_line;
+	unsigned long initrd_start, initrd_size;
 
 	/* common globals -- don't rely on init! */
 	insize = 0;
@@ -1501,6 +1507,36 @@ linuxbiosmain(unsigned long base, unsigned long totalram)
 	printk("January 2000, James Hendricks, Dale Webster, and Ron Minnich.\n");
 	printk("Version 0.1\n");
 	printk("\n");
+
+	initrd_start = 0;
+	initrd_size  = 0;
+#ifdef CMD_LINE
+	cmd_line = CMD_LINE;
+#else
+	cmd_line = "root=/dev/hda1 single";
+#endif
+
+#ifdef ZKERNEL_START
+	zkernel_start = (unsigned char *)ZKERNEL_START;
+#else
+	zkernel_start = (unsigned char *)0xfff80000;
+#endif
+
+#ifdef ZKERNEL_MASK
+	zkernel_mask = ZKERNEL_MASK;
+#else
+	zkernel_mask = 0x0000ffff;
+#endif
+
+#ifdef LOADER_SETUP
+	loader_setup(base,
+		     totalram,
+		     &initrd_start,
+		     &initrd_size,
+		     &cmd_line,
+		     &zkernel_start,
+		     &zkernel_mask);
+#endif
 
 	setup_output_buffer();
 
@@ -1532,16 +1568,13 @@ linuxbiosmain(unsigned long base, unsigned long totalram)
 	 */
 	set_memory_size(empty_zero_page, 0x3c00, totalram - 2048);
 	intel_post(0xfa);
-#ifdef CMD_LINE
-	DBG("using custom command line - [%s]\n", CMD_LINE);
-#else
-#define CMD_LINE "root=/dev/hda1 single"
-	DBG("using default command line - [%s]\n", CMD_LINE);
-#endif
 
-	set_command_line(empty_zero_page, CMD_LINE);
+	PRINTK(KERN_NOTICE "command line - [%s]\n", cmd_line);
+
+	set_command_line(empty_zero_page, cmd_line);
 	set_root_rdonly(empty_zero_page);
 	set_display(empty_zero_page, 25, 80);
+	set_initrd(empty_zero_page, initrd_start, initrd_size);
 
 	/* set up the IO-APIC for the clock interrupt. */
 	/* this needs to move to intel_main.c at some point. */

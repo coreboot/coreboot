@@ -101,6 +101,7 @@ static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 }
 
 
+#if ( FAKE_SPDROM != 1 )
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
 #define SMBUS_HUB 0x30
@@ -113,6 +114,9 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device & 0xff, address);
 }
+#else
+#include "fakespd.c"
+#endif
 
 /* no specific code here. this should go away completely */
 static void coherent_ht_mainboard(unsigned cpus)

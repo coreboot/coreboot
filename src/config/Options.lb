@@ -408,6 +408,11 @@ define MAXIMUM_CONSOLE_LOGLEVEL
 	export always
  	comment "Error messages up to this level can be printed"
 end
+define CONFIG_SERIAL_POST
+	default 0
+	export always
+	comment "Enable SERIAL POST codes"
+end
 define NO_POST
 	default none
 	export always

@@ -179,6 +179,12 @@ def exitiferrors():
 	if (errors != 0):
 		sys.exit(1)
 
+def safe_open(file, mode):
+	try:
+		return open(file, mode)
+	except IOError:
+		fatal("Could not open file \"%s\"" % file)
+
 # -----------------------------------------------------------------------------
 #                    Main classes
 # -----------------------------------------------------------------------------
@@ -850,8 +856,9 @@ def validdef(name, defval):
 def loadoptions():
 	file = os.path.join('src', 'config', 'Options.lb')
 	optionsfile = os.path.join(treetop, file)
+	fp = safe_open(optionsfile, 'r')
 	loc.push(file)
-	if (not parse('options', open(optionsfile, 'r').read())):
+	if (not parse('options', fp.read())):
 		fatal("Could not parse file")
 	loc.pop()
 
@@ -1034,7 +1041,8 @@ def doconfigfile(path, confdir, file):
 	rname = os.path.join(confdir, file)
 	loc.push(rname)
 	fullpath = os.path.join(path, rname)
-	if (not parse('cfgfile', open(fullpath, 'r').read())):
+	fp = safe_open(fullpath, 'r')
+	if (not parse('cfgfile', fp.read())):
 		fatal("Could not parse file")
 	exitiferrors()
 	loc.pop()
@@ -1390,7 +1398,7 @@ def writemakefilesettings(path):
 
 	filename = os.path.join(path, "Makefile.settings")
 	print "Creating", filename
-	file = open(filename, 'w+')
+	file = safe_open(filename, 'w+')
 	writemakefileheader(file, filename)
 	file.write("TOP:=%s\n" % (treetop))
 	file.write("TARGET_DIR:=%s\n" % target_dir)
@@ -1414,7 +1422,7 @@ def writeimagesettings(image):
 
 	filename = os.path.join(image.gettargetdir(), "Makefile.settings")
 	print "Creating", filename
-	file = open(filename, 'w+')
+	file = safe_open(filename, 'w+')
 	writemakefileheader(file, filename)
 	file.write("TOP:=%s\n" % (treetop))
 	file.write("TARGET_DIR:=%s\n" % (image.gettargetdir()))
@@ -1435,7 +1443,7 @@ def writeimagesettings(image):
 def writeimagemakefile(image):
 	makefilepath = os.path.join(image.gettargetdir(), "Makefile")
 	print "Creating", makefilepath
-	file = open(makefilepath, 'w+')
+	file = safe_open(makefilepath, 'w+')
 	writemakefileheader(file, makefilepath)
 
 	#file.write("include cpuflags\n")
@@ -1591,7 +1599,7 @@ def writeimagemakefile(image):
 def writemakefile(path):
 	makefilepath = os.path.join(path, "Makefile")
 	print "Creating", makefilepath
-	file = open(makefilepath, 'w+')
+	file = safe_open(makefilepath, 'w+')
 	writemakefileheader(file, makefilepath)
 
 	# main rule
@@ -1617,9 +1625,9 @@ def writeinitincludes(image):
 	global include_pattern
 	filepath = os.path.join(image.gettargetdir(), image.getincludefilename())
 	print "Creating", filepath
-	outfile = open(filepath, 'w+')
+	outfile = safe_open(filepath, 'w+')
 	if (image.newformat()):
-		infile = open(image.getinitfile(), 'r')
+		infile = safe_open(image.getinitfile(), 'r')
 
 		line = infile.readline()
 		while (line):
@@ -1647,7 +1655,7 @@ def writeldoptions(image):
 
 	filename = os.path.join(image.gettargetdir(), "ldoptions")
 	print "Creating", filename
-	file = open(filename, 'w+')
+	file = safe_open(filename, 'w+')
 	for i in global_options.keys():
 		if (isexported(i) and IsInt(getoption(i, image))):
 			file.write("%s = %s;\n" % (i, getformated(i, image)))
@@ -1673,7 +1681,7 @@ def dumptree(part, lvl):
 def writecode(image):
 	filename = os.path.join(img_dir, "static.c")
 	print "Creating", filename
-	file = open(filename, 'w+')
+	file = safe_open(filename, 'w+')
 	# gen all the forward references
 
 	i = 0
@@ -1730,7 +1738,8 @@ if __name__=='__main__':
 
 	# Now read in the customizing script...
 	loc.push(argv[1])
-	if (not parse('board', open(argv[1], 'r').read())):
+	fp = safe_open(argv[1], 'r')
+	if (not parse('board', fp.read())):
 		fatal("Could not parse file")
 	loc.pop()
 

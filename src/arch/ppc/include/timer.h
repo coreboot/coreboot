@@ -4,9 +4,9 @@
 #ifndef _TIMER_H
 #define __TIMER_H
 
-unsigned get_hz(void);
-unsigned ticks_since_boot(void);
-void sleep_ticks(unsigned);
+unsigned long get_hz(void);
+unsigned long ticks_since_boot(void);
+void sleep_ticks(unsigned long);
 void udelay(int);
 
 #endif

@@ -276,6 +276,18 @@ define CACHE_RAM_SIZE
 	export always
 	comment "Size of cache when using it for temporary RAM"
 end
+define XIP_ROM_BASE
+	default 0xffff8000
+	format "0x%x"
+	export used
+	comment "base address of range of ROM that can be cached to speed up linuxBIOS"
+end
+define XIP_ROM_SIZE
+	default 0x8000
+	format "0x%x"
+	export used
+	comment "size of range of ROM that can be cached to speed up linuxBIOS"
+end
 define CONFIG_COMPRESS
 	default 1
 	export always

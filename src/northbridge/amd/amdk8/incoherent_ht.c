@@ -241,26 +241,31 @@ static int ht_setup_chain(device_t udev, uint8_t upos)
 			break;
 		}
 
-		/* get ht direction */
-                offs = ( (pci_read_config16(dev, pos + PCI_CAP_FLAGS) >> 10) & 1) ? PCI_HT_SLAVE1_OFFS : PCI_HT_SLAVE0_OFFS;
+                /* Update the Unitid of the current device */
+                flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
+                flags &= ~0x1f; /* mask out the bse Unit ID */
+                flags |= next_unitid & 0x1f;
+                pci_write_config16(dev, pos + PCI_CAP_FLAGS, flags);
 
-		/* Setup the Hypertransport link */
-		reset_needed |= ht_optimize_link(udev, upos, uoffs, dev, pos, offs);
+                dev = PCI_DEV(0, next_unitid, 0);
 
-		/* Update the Unitid of the current device */
-		flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
-		flags &= ~0x1f; /* mask out the bse Unit ID */
-		flags |= next_unitid & 0x1f;
-		pci_write_config16(dev, pos + PCI_CAP_FLAGS, flags);
+                /* Compute the number of unitids consumed */
+                count = (flags >> 5) & 0x1f;
+                next_unitid += count;
+        
+                /* get ht direction */
+                flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS); // double read ??
+                
+                offs = ((flags>>10) & 1) ? PCI_HT_SLAVE1_OFFS : PCI_HT_SLAVE0_OFFS;
 
-		/* Remeber the location of the last device */
-		udev = PCI_DEV(0, next_unitid, 0);
-		upos = pos;
-		uoffs = (offs != PCI_HT_SLAVE0_OFFS) ? PCI_HT_SLAVE0_OFFS : PCI_HT_SLAVE1_OFFS;
+                /* Setup the Hypertransport link */
+                reset_needed |= ht_optimize_link(udev, upos, uoffs, dev, pos, offs);
 
-		/* Compute the number of unitids consumed */
-		count = (flags >> 5) & 0x1f;
-		next_unitid += count;
+                /* Remeber the location of the last device */
+                udev = dev;
+                upos = pos;
+                uoffs = (offs != PCI_HT_SLAVE0_OFFS) ? PCI_HT_SLAVE0_OFFS : PCI_HT_SLAVE1_OFFS;
+
 
 	} while((last_unitid != next_unitid) && (next_unitid <= 0x1f));
 	return reset_needed;
@@ -298,26 +303,30 @@ static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus)
 			break;
 		}
 
+                /* Update the Unitid of the current device */
+                flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
+                flags &= ~0x1f; /* mask out the bse Unit ID */
+                flags |= next_unitid & 0x1f;
+                pci_write_config16(dev, pos + PCI_CAP_FLAGS, flags);
+
+                dev = PCI_DEV(bus, next_unitid, 0);
+
+                /* Compute the number of unitids consumed */
+                count = (flags >> 5) & 0x1f;
+                next_unitid += count;
+
                 /* get ht direction */
-		offs = ((pci_read_config16(dev, pos + PCI_CAP_FLAGS)>>10) & 1) ? PCI_HT_SLAVE1_OFFS : PCI_HT_SLAVE0_OFFS;
+                flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS); // double read ??
 
-		/* Setup the Hypertransport link */
-		reset_needed |= ht_optimize_link(udev, upos, uoffs, dev, pos, offs);
+                offs = ((flags>>10) & 1) ? PCI_HT_SLAVE1_OFFS : PCI_HT_SLAVE0_OFFS;
 
-		/* Update the Unitid of the current device */
-		flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
-		flags &= ~0x1f; /* mask out the bse Unit ID */
-		flags |= next_unitid & 0x1f;
-		pci_write_config16(dev, pos + PCI_CAP_FLAGS, flags);
+                /* Setup the Hypertransport link */
+                reset_needed |= ht_optimize_link(udev, upos, uoffs, dev, pos, offs);
 
-		/* Remeber the location of the last device */
-		udev = PCI_DEV(bus, next_unitid, 0);
-		upos = pos;
-		uoffs = ( offs != PCI_HT_SLAVE0_OFFS ) ? PCI_HT_SLAVE0_OFFS : PCI_HT_SLAVE1_OFFS;
-
-		/* Compute the number of unitids consumed */
-		count = (flags >> 5) & 0x1f;
-		next_unitid += count;
+                /* Remeber the location of the last device */
+                udev = dev;
+                upos = pos;
+                uoffs = ( offs != PCI_HT_SLAVE0_OFFS ) ? PCI_HT_SLAVE0_OFFS : PCI_HT_SLAVE1_OFFS;
 
 	} while((last_unitid != next_unitid) && (next_unitid <= 0x1f));
 	return reset_needed;

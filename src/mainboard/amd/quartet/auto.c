@@ -4,14 +4,16 @@
 
 #include <stdint.h>
 #include <device/pci_def.h>
-#include <cpu/p6/apic.h>
 #include <arch/io.h>
-#include <device/pnp.h>
+#include <device/pnp_def.h>
 #include <arch/romcc_io.h>
+#include <arch/smp/lapic.h>
+#include "option_table.h"
+#include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
-#include "northbridge/amd/amdk8/early_ht.c"
+#include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/amd/amd8111/amd8111_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/k8/apic_timer.c"
@@ -20,8 +22,25 @@
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "debug.c"
 #include "northbridge/amd/amdk8/cpu_rev.c"
+#include "superio/NSC/pc87360/pc87360_early_serial.c"
 
-#define SIO_BASE 0x2e
+#define SERIAL_DEV PNP_DEV(0x2e, PC87360_SP1)
+
+static void hard_reset(void)
+{
+	set_bios_reset();
+	/* enable cf9 */
+	pci_write_config8(PCI_DEV(0, 0x04, 3), 0x41, 0xf1);
+	/* reset */
+	outb(0x0e, 0x0cf9);
+}
+
+static void soft_reset(void)
+{
+	set_bios_reset();
+	pci_write_config8(PCI_DEV(0, 0x04, 0), 0x47, 1);
+}
+	
 
 static void memreset_setup(void)
 {
@@ -134,59 +153,6 @@ static void coherent_ht_mainboard(unsigned cpus)
 
 #include "resourcemap.c" /* quartet does not want the default */
 
-static void enable_lapic(void)
-{
-
-	msr_t msr;
-	msr = rdmsr(0x1b);
-	msr.hi &= 0xffffff00;
-	msr.lo &= 0x000007ff;
-	msr.lo |= APIC_DEFAULT_BASE | (1 << 11);
-	wrmsr(0x1b, msr);
-}
-
-static void stop_this_cpu(void)
-{
-	unsigned apicid;
-	apicid = apic_read(APIC_ID) >> 24;
-
-	/* Send an APIC INIT to myself */
-	apic_write(APIC_ICR2, SET_APIC_DEST_FIELD(apicid));
-	apic_write(APIC_ICR, APIC_INT_LEVELTRIG | APIC_INT_ASSERT | APIC_DM_INIT);
-	/* Wait for the ipi send to finish */
-	apic_wait_icr_idle();
-
-	/* Deassert the APIC INIT */
-	apic_write(APIC_ICR2, SET_APIC_DEST_FIELD(apicid));
-	apic_write(APIC_ICR,  APIC_INT_LEVELTRIG | APIC_DM_INIT);
-	/* Wait for the ipi send to finish */
-	apic_wait_icr_idle();
-
-	/* If I haven't halted spin forever */
-	for(;;) {
-		hlt();
-	}
-}
-
-#define PC87360_FDC  0x00
-#define PC87360_PP   0x01
-#define PC87360_SP2  0x02
-#define PC87360_SP1  0x03
-#define PC87360_SWC  0x04
-#define PC87360_KBCM 0x05
-#define PC87360_KBCK 0x06
-#define PC87360_GPIO 0x07
-#define PC87360_ACB  0x08
-#define PC87360_FSCM 0x09
-#define PC87360_WDT  0x0A
-
-static void pc87360_enable_serial(void)
-{
-	pnp_set_logical_device(SIO_BASE, PC87360_SP1);
-	pnp_set_enable(SIO_BASE, 1);
-	pnp_set_iobase0(SIO_BASE, 0x3f8);
-}
-
 #define RC0 ((1<<1)<<8)
 #define RC1 ((1<<2)<<8)
 #define RC2 ((1<<3)<<8)
@@ -237,23 +203,31 @@ static void main(void)
 			.channel1 = { RC3|DIMM1, RC3|DIMM3, 0, 0 },
 		}
 	};
+	int needs_reset;
+
+	enable_lapic();
+	init_timer();
+	
 	if (cpu_init_detected()) {
 		asm("jmp __cpu_reset");
 	}
-	enable_lapic();
-	init_timer();
+	
+	distinguish_cpu_resets();
+	
 	if (!boot_cpu()) {
-//		notify_bsp_ap_is_stopped();
 		stop_this_cpu();
 	}
-	pc87360_enable_serial();
+	
+	pc87360_enable_serial(SERIAL_DEV, TTYS0_BASE);
 	uart_init();
 	console_init();
 	setup_quartet_resource_map();
-	setup_coherent_ht_domain();
-	enumerate_ht_chain(0);
-	distinguish_cpu_resets(0);
-	
+	needs_reset = setup_coherent_ht_domain();
+	needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0x80);
+	if (needs_reset) {
+		print_info("ht reset -");
+		soft_reset();
+	}
 #if 0
 	print_pci_devices();
 #endif
@@ -270,33 +244,8 @@ static void main(void)
 #if 0
 	dump_pci_device(PCI_DEV(0, 0x18, 2));
 #endif
-
-	/* Check all of memory */
 #if 0
-	msr_t msr;
-	msr = rdmsr(TOP_MEM);
-	print_debug("TOP_MEM: ");
-	print_debug_hex32(msr.hi);
-	print_debug_hex32(msr.lo);
-	print_debug("\r\n");
-#endif
-#if 0
-	ram_check(0x00000000, msr.lo);
-#endif
-#if 0
-	static const struct {
-		unsigned long lo, hi;
-	} check_addrs[] = {
-		/* Check 16MB of memory @ 0*/
-		{ 0x00000000, 0x01000000 },
-#if 0
-		/* Check 16MB of memory @ 2GB */
-		{ 0x80000000, 0x81000000 },
-#endif
-	};
-	int i;
-	for(i = 0; i < sizeof(check_addrs)/sizeof(check_addrs[0]); i++) {
-		ram_check(check_addrs[i].lo, check_addrs[i].hi);
-	}
+	/* Check the first 1M */
+	ram_check(0x00000000, 0x000100000);
 #endif
 }

@@ -23,6 +23,12 @@ uses XIP_ROM_BASE
 uses STACK_SIZE
 uses HEAP_SIZE
 uses USE_OPTION_TABLE
+uses LB_CKS_RANGE_START
+uses LB_CKS_RANGE_END
+uses LB_CKS_LOC
+uses MAINBOARD_PART_NUMBER
+uses MAINBOARD_VENDOR
+
 
 ## ROM_SIZE is the size of boot ROM that this board will use.
 default ROM_SIZE=524288
@@ -45,7 +51,7 @@ default HAVE_HARD_RESET=1
 ## Build code to export a programmable irq routing table
 ##
 default HAVE_PIRQ_TABLE=1
-default IRQ_SLOT_COUNT=7
+default IRQ_SLOT_COUNT=9
 
 ##
 ## Build code to export an x86 MP table
@@ -57,6 +63,13 @@ default HAVE_MP_TABLE=1
 ## Build code to export a CMOS option table
 ##
 default HAVE_OPTION_TABLE=1
+
+##
+## Move the default LinuxBIOS cmos range off of AMD RTC registers
+##
+default LB_CKS_RANGE_START=49
+default LB_CKS_RANGE_END=122
+default LB_CKS_LOC=123
 
 ##
 ## Build code for SMP support
@@ -73,8 +86,8 @@ default CONFIG_IOAPIC=1
 ##
 ## Clean up the motherboard id strings
 ##
-#default MAINBOARD_PART_NUMBER="QUARTET"
-#default MAINBOARD_VENDOR="AMD"
+default MAINBOARD_PART_NUMBER="QUARTET"
+default MAINBOARD_VENDOR="AMD"
 
 ###
 ### LinuxBIOS layout values
@@ -163,12 +176,12 @@ makerule ./failover.inc
 end
 
 makerule ./auto.E 
-	depends	"$(MAINBOARD)/auto.c" 
-	action	"$(CPP) -I$(TOP)/src $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
+	depends	"$(MAINBOARD)/auto.c option_table.h" 
+	action	"$(CPP) -I$(TOP)/src -I. $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
 end
 makerule ./auto.inc 
 	depends "./auto.E ./romcc"
-	action	"./romcc -mcpu=k8 -O ./auto.E > auto.inc"
+	action	"./romcc -mcpu=k8 -O2 ./auto.E > auto.inc"
 end
 
 ##
@@ -176,6 +189,7 @@ end
 ##
 mainboardinit cpu/i386/entry16.inc
 mainboardinit cpu/i386/entry32.inc
+mainboardinit cpu/i386/bist32.inc
 ldscript /cpu/i386/entry16.lds
 ldscript /cpu/i386/entry32.lds
 
@@ -334,4 +348,5 @@ end
 ##
 mainboardinit pc80/serial.inc
 mainboardinit arch/i386/lib/console.inc
+mainboardinit cpu/i386/bist32_fail.inc
 

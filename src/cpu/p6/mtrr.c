@@ -31,7 +31,6 @@ static char rcsid[] = "$Id$";
 
 #include <cpu/p6/msr.h>
 #include <cpu/p6/mtrr.h>
-#define DEBUG
 #include <printk.h>
 
 #define arraysize(x)   (sizeof(x)/sizeof((x)[0]))

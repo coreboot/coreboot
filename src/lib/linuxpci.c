@@ -103,14 +103,14 @@ void pci_set_master(struct pci_dev *dev)
 
 	pci_read_config_word(dev, PCI_COMMAND, &cmd);
 	if (!(cmd & PCI_COMMAND_MASTER)) {
-		printk("PCI: Enabling bus mastering for device %02x:%02x\n",
+		DBG("PCI: Enabling bus mastering for device %02x:%02x\n",
 		       dev->bus->number, dev->devfn);
 		cmd |= PCI_COMMAND_MASTER;
 		pci_write_config_word(dev, PCI_COMMAND, cmd);
 	}
 	pci_read_config_byte(dev, PCI_LATENCY_TIMER, &lat);
 	if (lat < 16) {
-		printk("PCI: Increasing latency timer of device %02x:%02x to 64\n",
+		DBG("PCI: Increasing latency timer of device %02x:%02x to 64\n",
 		       dev->bus->number, dev->devfn);
 		pci_write_config_byte(dev, PCI_LATENCY_TIMER, 64);
 	}
@@ -180,7 +180,7 @@ void pci_read_bases(struct pci_dev *dev, unsigned int howmany)
 #if BITS_PER_LONG == 64
 				dev->base_address[reg - 1] |= ((unsigned long) addr) << 32;
 #else
-				printk("PCI: Unable to handle 64-bit address for device "
+				printk(KERN_ERR "PCI: Unable to handle 64-bit address for device "
 				       "%02x:%02x\n", dev->bus->number, dev->devfn);
 				dev->base_address[reg - 1] = 0;
 #endif
@@ -246,7 +246,7 @@ unsigned int pci_scan_bus(struct pci_bus *bus)
 		}
 
 		if ((dev = kmalloc(sizeof(*dev), GFP_ATOMIC)) == 0) {
-			printk("PCI: out of memory.\n");
+			printk(KERN_ERR "PCI: out of memory.\n");
 			continue;
 		}
 
@@ -291,8 +291,8 @@ unsigned int pci_scan_bus(struct pci_bus *bus)
 			break;
 		default:	/* unknown header */
 		bad:
-			printk("PCI: %02x:%02x [%04x/%04x/%06x] has unknown header type %02x, "
-			       "ignoring.\n",
+			printk(KERN_ERR "PCI: %02x:%02x [%04x/%04x/%06x] has unknown header "
+			       "type %02x, ignoring.\n",
 			       bus->number, dev->devfn, dev->vendor, dev->device, class,
 			       hdr_type);
 			continue;
@@ -373,7 +373,7 @@ unsigned int pci_scan_bus(struct pci_bus *bus)
 #endif
 			/* Insert it into the tree of buses. */
 			if ((child = kmalloc(sizeof(*child), GFP_ATOMIC)) == 0) {
-				printk("PCI: out of memory for bridge.\n");
+				printk(KERN_ERR "PCI: out of memory for bridge.\n");
 				continue;
 			}
 			memset(child, 0, sizeof(*child));

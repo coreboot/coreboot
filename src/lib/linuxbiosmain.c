@@ -1494,6 +1494,7 @@ linuxbiosmain(unsigned long base, unsigned long totalram)
 	bytes_out = 0;
 	output_ptr = 0;
 
+	printk("\n");
 	printk("Welcome to start32, the open sourced starter.\n");
 	printk("This space will eventually hold more diagnostic information.\n");
 	printk("\n");

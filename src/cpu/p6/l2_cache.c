@@ -61,7 +61,7 @@ static void cache_disable(void)
 	unsigned int tmp;
 
 	/* Disable cache */
-	printk( KERN_INFO "Disable Cache\n");
+	DBG("Disable Cache\n");
 
 	/* Write back the cache and flush TLB */
 	asm volatile ("movl  %%cr0, %0\n\t"
@@ -81,7 +81,7 @@ static void cache_enable(void)
 		      "movl  %0, %%cr0\n\t"
 		      :"=r" (tmp) : : "memory");
 
-	printk( KERN_INFO "Enable Cache\n");
+	DBG("Enable Cache\n");
 }
 
 // GOTO bad and GOTO done added by rgm. 

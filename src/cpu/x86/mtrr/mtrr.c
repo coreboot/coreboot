@@ -22,7 +22,9 @@
  *
  * Reference: Intel Architecture Software Developer's Manual, Volume 3: System Programming
  */
-
+/*
+	2005.1 yhlu add NC support to spare mtrrs for 64G memory stored
+*/
 #include <stddef.h>
 #include <console/console.h>
 #include <device/device.h>
@@ -31,7 +33,11 @@
 #include <cpu/x86/cache.h>
 
 #warning "FIXME I do not properly handle address more than 36 physical address bits"
-#ifdef k8
+
+//#define k8 0
+#define k8 1
+
+#if k8
 # define ADDRESS_BITS 40
 #else
 # define ADDRESS_BITS 36
@@ -218,6 +224,31 @@ static unsigned int range_to_mtrr(unsigned int reg,
 	if (!range_sizek || (reg >= BIOS_MTRRS)) {
 		return reg;
 	}
+	if(next_range_startk == 4096*1024) {// There is a hole below 4G, We need to use UC to spare mtrr
+		unsigned long sizek;
+		sizek = 4096*1024;
+		printk_debug("Setting variable MTRR %d, base: %4dMB, range: %4dMB, type WB\n",
+			reg, range_startk >>10, sizek >> 10);
+		set_var_mtrr(reg++, range_startk, sizek, MTRR_TYPE_WRBACK);
+	        while(range_sizek) {
+        	        unsigned long max_align, align;
+                	/* Compute the maximum size I can make a range */
+	                max_align = fls(range_startk);
+	                align = fms(range_sizek);
+	                if (align > max_align) {
+        	                align = max_align;
+                	}
+	                sizek = 1 << align;
+        	        range_startk += sizek;
+                	range_sizek -= sizek;
+        	}
+		
+		range_startk = 4096*1024 - sizek;
+		printk_debug("Setting variable MTRR %d, base: %4dMB, range: %4dMB, type NC\n",
+			reg, range_startk >>10, sizek >> 10);
+		set_var_mtrr(reg++, range_startk, sizek, MTRR_TYPE_UNCACHEABLE);
+		return reg;
+	}
 	while(range_sizek) {
 		unsigned long max_align, align;
 		unsigned long sizek;
@@ -306,7 +337,7 @@ void x86_setup_mtrrs(void)
 	 * and clear out the mtrrs.
 	 */
 	struct var_mtrr_state var_state;
-
+#if !k8
 	printk_debug("\n");
 	/* Initialized the fixed_mtrrs to uncached */
 	printk_debug("Setting fixed MTRRs(%d-%d) type: UC\n", 
@@ -319,6 +350,7 @@ void x86_setup_mtrrs(void)
 		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
 		set_fixed_mtrr_resource, NULL);
 	printk_debug("DONE fixed MTRRs\n");
+#endif
 
 	/* Cache as many memory areas as possible */
 	/* FIXME is there an algorithm for computing the optimal set of mtrrs? 
@@ -330,7 +362,7 @@ void x86_setup_mtrrs(void)
 	search_global_resources(
 		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
 		set_var_mtrr_resource, &var_state);
- last_msr:
+
 	/* Write the last range */
 	var_state.reg = range_to_mtrr(var_state.reg, var_state.range_startk, var_state.range_sizek, 0);
 	printk_debug("DONE variable MTRRs\n");

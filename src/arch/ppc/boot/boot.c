@@ -2,7 +2,7 @@
 #include <boot/elf.h>
 #include <boot/elf_boot.h>
 #include <string.h>
-#include <printk.h>
+#include <console/console.h>
 
 
 #ifndef CMD_LINE

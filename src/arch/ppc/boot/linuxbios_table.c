@@ -1,8 +1,8 @@
 #include <mem.h>
 #include <ip_checksum.h>
 #include <boot/linuxbios_tables.h>
-#include <boot/linuxbios_table.h>
-#include <printk.h>
+#include "linuxbios_table.h"
+#include <console/console.h>
 #include <string.h>
 #include <version.h>
 

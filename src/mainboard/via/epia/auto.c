@@ -11,6 +11,8 @@
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
 #include "northbridge/via/vt8601/raminit.h"
+/*
+ */
 void udelay(int usecs) {
   int i;
   for(i = 0; i < usecs; i++)
@@ -43,21 +45,24 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 
 #include "northbridge/via/vt8601/raminit.c"
-#include "sdram/generic_sdram.c"
 /*
+#include "sdram/generic_sdram.c"
  */
 
 static void main(void)
 {
-  struct mem_controller cpu[1];
-  //	init_timer();
+  /*	init_timer();*/
 
 	uart_init();
 	console_init();
 	
 	enable_smbus();
+	/*
 	memreset_setup();
-//	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
+	 this is way more generic than we need.
+	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
+	*/
+	sdram_set_registers((const struct mem_controller *) 0);
 
 
 	/* Check all of memory */

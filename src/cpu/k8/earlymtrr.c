@@ -30,7 +30,7 @@ static void early_mtrr_init(void)
 	/* Enable the access to AMD RdDram and WrDram extension bits */
 	msr = rdmsr(SYSCFG_MSR);
 	msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
-	wrmsr(msr);
+	wrmsr(SYSCFG_MSR, msr);
 
 	/* Inialize all of the relevant msrs to 0 */
 	msr.lo = 0;
@@ -43,7 +43,7 @@ static void early_mtrr_init(void)
 	/* Disable the access to AMD RdDram and WrDram extension bits */
 	msr = rdmsr(SYSCFG_MSR);
 	msr.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
-	wrmsr(msr);
+	wrmsr(SYSCFG_MSR, msr);
 
 	/* Enable memory access for 0 - 1MB using top_mem */
 	msr.hi = 0;
@@ -87,7 +87,7 @@ static void early_mtrr_init(void)
 	
 	/* Enale the MTRRs in SYSCFG */
 	msr = rdmsr(SYSCFG_MSR);
-	msr.lo |= SYSCFG_MSR_MtrrrVarDramEn;
+	msr.lo |= SYSCFG_MSR_MtrrVarDramEn;
 	wrmsr(SYSCFG_MSR, msr);
 
 	/* Enable the cache */

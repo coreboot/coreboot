@@ -168,9 +168,7 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 
 	nodeid = amdk8_nodeid(dev);
 
-#if 1
-	printk_debug("amdk8_scan_chains max: %d starting...\n", max);
-#endif
+	printk_spew("amdk8_scan_chains max: %d starting...\n", max);
 
 	for (link = 0; link < dev->links; link++) {
 		uint32_t link_type;
@@ -246,19 +244,15 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 			((dev->link[link].subordinate) << 24);
 		f1_write_config32(config_reg, config_busses);
 
-#if 1
-		printk_debug("Hyper transport scan link: %d max: %d\n",
+		printk_spew("Hyper transport scan link: %d max: %d\n",
 			     link, max);
-#endif
 
 		/* Now we can scan all of the subordinate busses i.e. the
 		 * chain on the hypertranport link */
 		max = hypertransport_scan_chain(&dev->link[link], max);
 
-#if 1
-		printk_debug("Hyper transport scan link: %d new max: %d\n",
+		printk_spew("Hyper transport scan link: %d new max: %d\n",
 			     link, max);
-#endif		
 
 		/* We know the number of busses behind this bridge.  Set the
 		 * subordinate bus number to it's real value
@@ -271,13 +265,10 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 		config_busses = (config_busses & 0x00ffffff) |
 			(dev->link[link].subordinate << 24);
 		f1_write_config32(config_reg, config_busses);
-#if 1
-		printk_debug("Hypertransport scan link done\n");
-#endif		
+		printk_spew("Hypertransport scan link done\n");
 	}
-#if 1
-	printk_debug("amdk8_scan_chains max: %d done\n", max);
-#endif
+
+	printk_spew("amdk8_scan_chains max: %d done\n", max);
 	return max;
 }
 
@@ -324,8 +315,8 @@ static unsigned amdk8_find_mempair(unsigned nodeid, unsigned link)
 		}
 		/* Do I have a match for this node and link? */
 		if (((base & 3) == 3) &&
-			((limit & 7) == nodeid) &&
-			(((limit >> 4) & 3) == link)) {
+		    ((limit & 7) == nodeid) &&
+		    (((limit >> 4) & 3) == link)) {
 			break;
 		}
 	}
@@ -438,7 +429,6 @@ static void amdk8_set_resource(device_t dev, struct resource *resource,
 		if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_NO_ISA) {
 			base |= PCI_IO_BASE_NO_ISA;
 		}
-		
 		f1_write_config32(reg + 0x4, limit);
 		f1_write_config32(reg, base);
 	} else if (resource->flags & IORESOURCE_MEM) {
@@ -494,7 +484,7 @@ static void amdk8_set_resources(device_t dev)
  * The root device in a AMD K8 system is not at Bus 0, Device 0, Fun 0
  * as other PCI based systems. The northbridge is at Bus 0, Device 0x18,
  * Fun 0. We have to call the pci_scan_bus() with PCI_DEVFN(0x18,0) as
- * the starting device instead of PCI_DEVFN(0x0, 0) as in the default
+ * the starting device instead of PCI_DEVFN(0x00, 0) as in the default
  * root_dev_scan_pci_bus().
  *
  * This function is set up as the default scan_bus() method for mainboards'
@@ -507,17 +497,17 @@ unsigned int amdk8_scan_root_bus(device_t root, unsigned int max)
 {
 	unsigned reg;
 
-	printk_debug("amdk8_scan_root_bus\n");
+	printk_spew("amdk8_scan_root_bus\n");
 
-	/* Unmap all of the HT chains */
+	/* Unmap all of the HT chains by clearing the Configuration
+	 * Map registers */
 	for (reg = 0xe0; reg <= 0xec; reg += 4) {
 		f1_write_config32(reg, 0);
 	}
 
-	printk_debug("amdk8_scan_root_bus: start scaning pci bus\n");
 	max = pci_scan_bus(&root->link[0], PCI_DEVFN(0x18, 0), 0xff, max);
 
-	printk_debug("amdk8_scan_root_bus: done\n");
+	printk_spew("amdk8_scan_root_bus: done\n");
 	return max;
 }
 
@@ -526,7 +516,7 @@ static void mcf0_control_init(struct device *dev)
 	uint32_t cmd;
 
 #if 1	
-	printk_debug("NB: Function 0 Misc Control.. ");
+	printk_spew("NB: Function 0 Misc Control.. ");
 	/* improve latency and bandwith on HT */
 	cmd = pci_read_config32(dev, 0x68);
 	cmd &= 0xffff80ff;
@@ -540,8 +530,9 @@ static void mcf0_control_init(struct device *dev)
 	cmd &= 0xfffff0ff;
 	cmd |= 0x00000600;
 	pci_write_config32(dev, 0xdc, cmd );
-#endif	
-	printk_debug("done.\n");
+#endif
+
+	printk_spew("done.\n");
 }
 
 
@@ -556,7 +547,15 @@ static void amdk8_enable_resources(struct device *dev)
 	printk_debug("%s bridge ctrl <- %04x\n", dev_path(dev), ctrl);
 	pci_write_config16(dev, PCI_BRIDGE_CONTROL, ctrl);
 
-#if 0
+#if 1
+	/* No, don;t do it here, we should create phantom PCI resource
+	 * for leagcy VGA resources in VGA device driver and use the
+	 * generic resource allocation/assignment code to do it
+	 *
+	 * TOO BAD, the generic resource allcation code refuses to do
+	 * abything with VGA and the AMDK8 resource code does want
+	 * more than one discontinous IO/MEM regions */
+
 	/* let's see what link VGA is on */
 	for (link = 0; link < dev->links; link++) {
 		device_t child;
@@ -566,22 +565,32 @@ static void amdk8_enable_resources(struct device *dev)
 			vgalink = link;
 	}
 
-	if (vgalink != 1) {
-		/* now find the IOPAIR that goes to vgalink and set the vga
-		 * enable in the base part (0x30) */
-		/* now allocate an MMIOPAIR and point it to the CPU0,
+	if (vgalink != -1) {
+		uint32_t base, limit;
+		unsigned reg;
+		/* now allocate an MMPAIR and point it to the CPU0,
 		 * LINK=vgalink */
-		/* now set IORR1 so it has a hole for the 0xa0000-0xcffff
-		 * region */
+		/* Set up mem pair
+		 * FIXME: add amdk8_find_free_mempair() */
+		//reg = amdk8_find_mempair(0, vgalink);
+		reg = 0x90;
+		/* Set base of 0xa0000 */
+		base = 0xa03;
+		limit = 0xd00 | (vgalink << 4);
+		printk_debug("setting MMIO routing for VGA reg:0x%x, base: 0x%x, limit 0x%x\n",
+			     reg, base, limit);
+		f1_write_config32(reg, base);
+		f1_write_config32(reg + 4, limit);
 	}
 #endif
+
 	pci_dev_enable_resources(dev);
 }
 
 static struct device_operations northbridge_operations = {
 	.read_resources   = amdk8_read_resources,
 	.set_resources    = amdk8_set_resources,
-	.enable_resources = pci_dev_enable_resources,
+	.enable_resources = amdk8_enable_resources,
 	.init             = mcf0_control_init,
 	.scan_bus         = amdk8_scan_chains,
 	.enable           = 0,

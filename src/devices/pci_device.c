@@ -456,6 +456,17 @@ static void set_pci_ops(struct device *dev)
 		}
 	}
 
+#if 0
+	extern struct pci_driver generic_vga_driver;
+	/* TODO: Install generic VGA driver for VGA devices, base on the
+	 * class ID */
+	if ((dev->class >> 8)  == PCI_CLASS_DISPLAY_VGA) {
+		printk_debug("setting up generic VGA driver\n");
+		dev->ops = generic_vga_driver.ops;
+		return;
+	}
+#endif
+
 	/* If I don't have a specific driver use the default operations */
 	switch(dev->hdr_type & 0x7f) {	/* header type */
 	case PCI_HEADER_TYPE_NORMAL:	/* standard header */

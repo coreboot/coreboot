@@ -89,7 +89,7 @@ enable_mtrr:
 	/* Enable the MTRRs and IORRs in SYSCFG */
 	movl	$SYSCFG_MSR, %ecx
 	rdmsr
-	/* Don't enable SYSCFG_MSR_MtrrFixDramEn) untill we have done with VGA BIOS */
+	/* Don't enable SYSCFG_MSR_MtrrFixDramEn untill we have done with VGA BIOS */
 	orl	$(SYSCFG_MSR_MtrrVarDramEn), %eax
 	wrmsr
 

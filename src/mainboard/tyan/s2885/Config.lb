@@ -39,6 +39,7 @@ driver mainboard.o
 #dir /drivers/si/3114
 #dir /drivers/intel/82551
 driver ti_firewire.o
+#dir /drivers/vga
 
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end

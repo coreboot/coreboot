@@ -300,6 +300,14 @@ void setup_mtrrs(struct mem_range *mem)
 	struct mem_range *memp;
 	unsigned long range_startk, range_sizek;
 	unsigned int reg;
+	msr_t msr;
+
+#if defined(k7) || defined(k8)
+	/* Enable the access to AMD RdDram and WrDram extension bits */
+	msr = rdmsr(SYSCFG_MSR);
+	msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
+	wrmsr(SYSCFG_MSR, msr);
+#endif
 
 	printk_debug("\n");
 	/* Initialized the fixed_mtrrs to uncached */
@@ -318,15 +326,30 @@ void setup_mtrrs(struct mem_range *mem)
 			break;
 		}
 
-#if defined(k7) || defined(k8)
-#warning "FIXME: dealing with RdMEM/WrMEM for Athlon/Opteron"
-#endif
-
 		printk_debug("Setting fixed MTRRs(%d-%d) type: WB\n",
 			     start_mtrr, last_mtrr);
-		set_fixed_mtrrs(start_mtrr, last_mtrr, MTRR_TYPE_WRBACK);
+
+
+#if defined(k7) || defined(k8)
+		set_fixed_mtrrs(start_mtrr, last_mtrr,
+				MTRR_TYPE_WRBACK | MTRR_READ_MEM| MTRR_WRITE_MEM);
+#else
+		set_fixed_mtrrs(start_mtrr, last_mtrr,
+				MTRR_TYPE_WRBACK);
+#endif
 	}
 	printk_debug("DONE fixed MTRRs\n");
+
+#if defined(k7) || defined(k8)
+	/* Disable the access to AMD RdDram and WrDram extension bits */
+	msr = rdmsr(SYSCFG_MSR);
+	msr.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
+	wrmsr(SYSCFG_MSR, msr);
+	/* Enale the RdMEM and WrMEM bits in SYSCFG */
+	msr = rdmsr(SYSCFG_MSR);
+	msr.lo |= SYSCFG_MSR_MtrrFixDramEn;
+	wrmsr(SYSCFG_MSR, msr);
+#endif
 
 	/* Cache as many memory areas as possible */
 	/* FIXME is there an algorithm for computing the optimal set of mtrrs? 

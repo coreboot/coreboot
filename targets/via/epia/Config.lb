@@ -61,6 +61,7 @@ option CONFIG_UDELAY_TSC=0
 option i686=1
 option i586=1
 option INTEL_PPRO_MTRR=1
+option ROM_SIZE=256*1024
 
 option HAVE_OPTION_TABLE=1
 option CONFIG_ROM_STREAM=1

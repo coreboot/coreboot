@@ -206,9 +206,9 @@ def addaction(dir, rule):
         m = command_re.match(rule)
         rulename = m.group(1)
         actions = m.group(2)
-        # print "rulename :", rulename
-        # print "    actions ", actions, "\n"
-	# print "rules[rulename]=", makebaserules[rulename], "\n"
+        print "rulename :", rulename
+        print "    actions ", actions, "\n"
+	print "rules[rulename]=", makebaserules[rulename], "\n"
         makebaserules[rulename].append(actions)
 	
 # add a dependency

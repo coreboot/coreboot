@@ -39,13 +39,13 @@ it with the version available from LANL.
  * ror it 16 bits, and as we grow the CAS, we just inc cs, and that will
  * set the right value. 
  */
-#define INIT_MCR $0xf6621000
+#define INIT_MCR $0xf663f83c
 /* GNU AS misassembles this. I can't believe what a piece of 
  * trash gas has turned out to be ...
 #define LONGDELAY movw	$0x1000, ax; 1: dec %ax; jnz 1b
  */
 #define LONGDELAY  1: dec %ax; jnz 1b
-#define WDELAY outb %al, $0x80; jmp 1f; 1: outb %al, $0x80
+#define WDELAY outb %al, $0x80; 1: outb %al, $0x80
 #define WRITE_MCR0 movl %ecx, %eax ;  outl %eax, %dx ; WDELAY
 /*#include <cpu/p5/start32.inc>*/
 .org 0xfe000
@@ -89,11 +89,12 @@ _realstart:
 .Lprotected:
 	.code32
 	movw	$0x18, %bx
-	movw	%bx, %es
 	movw	%bx, %ds
 	movw	%bx, %es
+/*
 	movw	%bx, %fs
 	movw	%bx, %gs
+ */
 	movw	%bx, %ss
 	xorl	%edi, %edi
 #ifdef USE_BIG_REAL
@@ -140,13 +141,24 @@ code16
 	movb	$0x10,%al
 	outb	%al,%dx
 
-	movb	$0x6c, %al
+	// move 68 to al, we add 4 below, this is for looping
+	movb	$0x68, %al
+	movl	%eax, %esp
+	/*	CALLSP(pci_read_dword)*/
+sizeloop:
+	movl	%esp, %eax
+	addb	$4, %al
+	// cmpb	$0x78, %al
+	// for now, just do the first bank. 
+	// We don't have enough bytes to figure out how to 
+	// handle empty banks
+	cmpb	$0x70, %al
+	jge	sizedone
 	movb	$0xf8,%dl
 	outl	%eax,%dx
-/*	movb	$0x8000006c, %al
-	CALLSP(pci_read_dword)*/
+	movl	%eax, %esp
 	movb	$0xfc, %dl
-	movl	$0xf663f83c, %ecx
+	movl	INIT_MCR, %ecx
 	WRITE_MCR0
 // Not only does this not work, it screws up the programming. 
 #if 0
@@ -277,8 +289,10 @@ sizeram:
 	andb	$0xfe, %cl
 1:
 	WRITE_MCR0
+	jmp	sizeloop
 	
-/* Next line ASSUMES that eax contains 8000000xx
+sizedone:
+/* Next line ASSUMES that eax contains 8000000xx */
 	movb	$0x7c, %al
 	movb	$0xf8, %dl
 	outl	%eax, %dx

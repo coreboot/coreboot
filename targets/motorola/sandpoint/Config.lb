@@ -21,6 +21,7 @@ uses IDE_SWAB IDE_OFFSET
 uses ROM_SIZE ROM_IMAGE_SIZE 
 uses ROM_SECTION_SIZE 
 uses ROM_SECTION_OFFSET 
+uses _RESET
 uses _ROMBASE
 uses _RAMBASE
 uses CACHE_RAM_BASE 
@@ -31,8 +32,8 @@ uses MAINBOARD_PART_NUMBER
 uses MAINBOARD_VENDOR
 
 ## use a cross compiler
-#option CROSS_COMPILE="powerpc-eabi-"
-option CROSS_COMPILE="ppc_74xx-"
+option CROSS_COMPILE="powerpc-eabi-"
+#option CROSS_COMPILE="ppc_74xx-"
 
 ## Use chip configuration
 option CONFIG_CHIP_CONFIGURE=1
@@ -56,9 +57,6 @@ option IDE_OFFSET=0
 
 option ROM_SIZE=1048576
 
-## LinuxBIOS C code runs at this location in RAM
-option _RAMBASE=0x00100000
-
 ## For the trick of using cache as ram
 ## put the fake ram location at this address
 option CACHE_RAM_BASE=0x00200000
@@ -80,13 +78,18 @@ option HEAP_SIZE=0x10000
 option ROM_SECTION_SIZE=ROM_SIZE
 option ROM_SECTION_OFFSET=0
 
-##
-## Compute where this copy of linuxBIOS will start in the boot rom
-## 
-option _ROMBASE=0xfff00000
-
 # Sandpoint Demo Board
 romimage "normal"
+	## Sandpoint reset vector
+	option _RESET=0xfff00100
+
+	## Start of linuxBIOS in the boot rom
+	## = _RESET + exeception vector table size
+	option _ROMBASE=0xfff03100
+
+	## LinuxBIOS C code runs at this location in RAM
+	option _RAMBASE=0x00100000
+
 	## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
 	option ROM_IMAGE_SIZE=49152
 	option CONFIG_SANDPOINT_ALTIMUS=1

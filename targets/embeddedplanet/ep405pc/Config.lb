@@ -5,25 +5,33 @@ loadoptions
 
 target ep405pc
 
-uses ARCH CROSS_COMPILE 
+uses ARCH 
+uses CPU_OPT
+uses CROSS_COMPILE 
 uses HAVE_OPTION_TABLE
-uses CONFIG_SANDPOINT_ALTIMUS 
 uses CONFIG_COMPRESS 
+uses CONFIG_CHIP_CONFIGURE
 uses NO_POST
 uses CONFIG_IDE_STREAM 
+uses CONFIG_SYS_CLK_FREQ
 uses IDE_BOOT_DRIVE
 uses USE_ELF_BOOT 
 uses IDE_SWAB IDE_OFFSET 
 uses ROM_SIZE ROM_IMAGE_SIZE 
 uses ROM_SECTION_SIZE 
 uses ROM_SECTION_OFFSET 
+uses _RESET
 uses _ROMBASE
+uses _RAMBASE
 uses CACHE_RAM_BASE 
 uses CACHE_RAM_SIZE 
 uses STACK_SIZE HEAP_SIZE
 uses MAINBOARD 
 uses MAINBOARD_PART_NUMBER 
 uses MAINBOARD_VENDOR
+
+## Enable PPC405 instructions
+option CPU_OPT="-Wa,-m405"
 
 ## use a cross compiler
 option CROSS_COMPILE="powerpc-eabi-"
@@ -71,14 +79,19 @@ option ROM_SECTION_SIZE=ROM_SIZE
 option ROM_SECTION_OFFSET=0
 
 ##
-## Compute where this copy of linuxBIOS will start in the boot rom
-## 
-option _ROMBASE=0xfff00000
+## System clock
+##
+option CONFIG_SYS_CLK_FREQ=33
 
 romimage "normal"
+	## Reset vector address
+	option _RESET=0xfffffffc
+
+	## linuxBIOS ROM start address
+	option _ROMBASE=0xfff00000
+
 	## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
 	option ROM_IMAGE_SIZE=49152
-	option CONFIG_SANDPOINT_ALTIMUS=1
 
 	mainboard embeddedplanet/ep405pc
 end

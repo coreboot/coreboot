@@ -14,6 +14,8 @@ static char rcsid[] = "$Id$";
 #include <stdarg.h>
 #include <smp/spinlock.h>
 
+// KEEP THIS GLOBAL. 
+// I need the address so I can watch it with the ARIUM hardware. RGM.
 char log_buf[1024];
 
 /* printk's without a loglevel use this.. */

@@ -160,6 +160,7 @@ void hardwaremain(int boot_complete)
 
 	/* If we have already booted attempt a hard reboot */
 	if (boot_complete) {
+		printk_spew("calling hard_reset\n");
 		hard_reset();
 	}
 	CONFIGURE(CONF_PASS_PRE_PCI);

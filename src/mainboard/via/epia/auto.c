@@ -50,6 +50,30 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "sdram/generic_sdram.c"
  */
 
+static void
+enable_mainboard_devices(void) {
+  device_t dev;
+  /* dev 0 for southbridge */
+  
+  dev = pci_locate_device(PCI_ID(0x1106,0x8231), 0);
+  
+  if (dev == PCI_DEV_INVALID) {
+    die("Southbridge not found!!!\n");
+  }
+  pci_write_config8(dev, 0x50, 7);
+  pci_write_config8(dev, 0x51, 0xff);
+}
+
+static void
+enable_shadow_ram(void) {
+  device_t dev = 0; /* no need to look up 0:0.0 */
+  unsigned char shadowreg;
+  /* dev 0 for southbridge */
+  shadowreg = pci_read_config8(dev, 0x63);
+  /* 0xf0000-0xfffff */
+  shadowreg |= 0x30;
+  pci_write_config8(dev, 0x63, shadowreg);
+}
 static void main(void)
 {
   unsigned long x;
@@ -57,10 +81,12 @@ static void main(void)
   outb(5, 0x80);
 
 	enable_vt8231_serial();
+	enable_mainboard_devices();
 	uart_init();
 	console_init();
 	
 	enable_smbus();
+	enable_shadow_ram();
 	/*
 	memreset_setup();
 	 this is way more generic than we need.

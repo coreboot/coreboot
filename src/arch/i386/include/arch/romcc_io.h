@@ -35,6 +35,18 @@ static void hlt(void)
 	__builtin_hlt();
 }
 
+int log2(int value)
+{
+	/* __builtin_bsr is a exactly equivalent to the x86 machine
+	 * instruction with the exception that it returns -1  
+	 * when the value presented to it is zero.
+	 * Otherwise __builtin_bsr returns the zero based index of
+	 * the highest bit set.
+	 */
+	return __builtin_bsr(value);
+}
+
+
 typedef __builtin_msr_t msr_t;
 
 static msr_t rdmsr(unsigned long index)

@@ -11,6 +11,13 @@
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
 
+#define NODE_ID		0x60
+#define	HT_INIT_CONTROL 0x6c
+
+#define HTIC_ColdR_Detect  (1<<4)
+#define HTIC_BIOSR_Detect  (1<<5)
+#define HTIC_INIT_Detect   (1<<6)
+
 static int boot_cpu(void)
 {
 	volatile unsigned long *local_apic;
@@ -59,6 +66,16 @@ static int cpu_init_detected(void)
 }
 
 
+static void print_debug_pci_dev(unsigned dev)
+{
+	print_debug("PCI: ");
+	print_debug_hex8((dev >> 16) & 0xff);
+	print_debug_char(':');
+	print_debug_hex8((dev >> 11) & 0x1f);
+	print_debug_char('.');
+	print_debug_hex8((dev >> 8) & 7);
+}
+
 static void print_pci_devices(void)
 {
 	device_t dev;
@@ -72,14 +89,32 @@ static void print_pci_devices(void)
 			(((id >> 16) & 0xffff) == 0x0000)) {
 			continue;
 		}
-		print_debug("PCI: 00:");
-		print_debug_hex8(dev >> 11);
-		print_debug_char('.');
-		print_debug_hex8((dev >> 8) & 7);
+		print_debug_pci_dev(dev);
 		print_debug("\r\n");
 	}
 }
 
+
+static void dump_pci_device(unsigned dev)
+{
+	int i;
+	print_debug_pci_dev(dev);
+	print_debug("\r\n");
+	
+	for(i = 0; i <= 255; i++) {
+		unsigned char val;
+		if ((i & 0x0f) == 0) {
+			print_debug_hex8(i);
+			print_debug_char(':');
+		}
+		val = pci_read_config8(dev, i);
+		print_debug_char(' ');
+		print_debug_hex8(val);
+		if ((i & 0x0f) == 0x0f) {
+			print_debug("\r\n");
+		}
+	}
+}
 
 static void dump_spd_registers(void)
 {
@@ -112,6 +147,7 @@ static void dump_spd_registers(void)
 	}
 }
 
+
 static void main(void)
 {
 	uart_init();
@@ -132,7 +168,16 @@ static void main(void)
 		sdram_initialize();
 
 		dump_spd_registers();
-		/* Check the first 8M */
-		ram_check(0x00100000, 0x00800000);
+		dump_pci_device(PCI_DEV(0, 0x18, 2));
+		
+		/* Check the first 512M */
+		msr_t msr;
+		msr = rdmsr(TOP_MEM);
+		print_debug("TOP_MEM: ");
+		print_debug_hex32(msr.hi);
+		print_debug_hex32(msr.lo);
+		print_debug("\r\n");
+#warning "FIXME if I pass msr.lo somehow I get the value 0x00000030 as stop in ram_check"
+		ram_check(0x00000000, 0x20000000);
 	}
 }

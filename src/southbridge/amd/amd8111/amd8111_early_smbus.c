@@ -53,7 +53,7 @@ static int smbus_wait_until_done(void)
 		smbus_delay();
 		
 		val = inw(SMBUS_IO_BASE + SMBGSTATUS);
-		if (((val & 0x8) == 0) || ((val & 0x437) != 0)) {
+		if (((val & 0x8) == 0) | ((val & 0x437) != 0)) {
 			break;
 		}
 	} while(--loops);

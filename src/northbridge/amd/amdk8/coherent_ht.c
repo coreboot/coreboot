@@ -1,11 +1,3 @@
-#define COHERENT_AMD_SOLO    1 /* AMD Solo motherboard */
-#define COHERENT_ARIMA_HDAMA 2 /* Arima HDAMA motherboard */
-
-#ifndef COHERENT_CONFIG
-#define COHERENT_CONFIG COHERENT_AMD_SOLO
-#endif
-
-
 static void setup_coherent_ht_domain(void)
 {
 	static const unsigned int register_values[] = {

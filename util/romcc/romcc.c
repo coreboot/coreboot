@@ -1428,6 +1428,10 @@ static struct triple *pre_triple(struct compile_state *state,
 {
 	struct block *block;
 	struct triple *ret;
+	/* If I am an OP_PIECE jump to the real instruction */
+	if (base->op == OP_PIECE) {
+		base = MISC(base, 0);
+	}
 	block = block_of_triple(state, base);
 	ret = build_triple(state, op, type, left, right, 
 		base->filename, base->line, base->col);
@@ -1447,6 +1451,17 @@ static struct triple *post_triple(struct compile_state *state,
 {
 	struct block *block;
 	struct triple *ret;
+	int zlhs;
+	/* If I am an OP_PIECE jump to the real instruction */
+	if (base->op == OP_PIECE) {
+		base = MISC(base, 0);
+	}
+	/* If I have a left hand side skip over it */
+	zlhs = TRIPLE_LHS(base->sizes);
+	if (zlhs && (base->op != OP_WRITE) && (base->op != OP_STORE)) {
+		base = LHS(base, zlhs - 1);
+	}
+
 	block = block_of_triple(state, base);
 	ret = build_triple(state, op, type, left, right, 
 		base->filename, base->line, base->col);
@@ -1491,7 +1506,7 @@ static void display_triple(FILE *fp, struct triple *ins)
 			fprintf(fp, " %-10p", ins->param[i]);
 		}
 		for(; i < 2; i++) {
-			printf("           ");
+			fprintf(fp, "           ");
 		}
 		fprintf(fp, " @ %s:%d.%d\n", 
 			ins->filename, ins->line, ins->col);
@@ -12248,6 +12263,7 @@ struct least_conflict {
 	struct triple *ins;
 	struct triple_reg_set *live;
 	size_t count;
+	int constraints;
 };
 static void least_conflict(struct compile_state *state,
 	struct reg_block *blocks, struct triple_reg_set *live,
@@ -12257,19 +12273,13 @@ static void least_conflict(struct compile_state *state,
 	struct live_range_edge *edge;
 	struct triple_reg_set *set;
 	size_t count;
-
-#if 0
-#define HI() fprintf(stderr, "%-10p(%-15s) %d\n", ins, tops(ins->op), __LINE__)
-#else
-#define HI()
-#endif
+	int constraints;
 
 #warning "FIXME handle instructions with left hand sides..."
 	/* Only instructions that introduce a new definition
 	 * can be the conflict instruction.
 	 */
 	if (!triple_is_def(state, ins)) {
-HI();
 		return;
 	}
 
@@ -12280,22 +12290,25 @@ HI();
 	for(set = live; set; set = set->next) {
 		struct live_range *lr;
 		lr = conflict->rstate->lrd[set->member->id].lr;
+		/* Ignore it if there cannot be an edge between these two nodes */
+		if (!arch_regcm_intersect(conflict->ref_range->classes, lr->classes)) {
+			continue;
+		}
 		for(edge = conflict->ref_range->edges; edge; edge = edge->next) {
 			if (edge->node == lr) {
 				break;
 			}
 		}
 		if (!edge && (lr != conflict->ref_range)) {
-HI();
 			return;
 		}
 		count++;
 	}
 	if (count <= 1) {
-HI();
 		return;
 	}
 
+#if 0
 	/* See if there is an uncolored member in this subset. 
 	 */
 	 for(set = live; set; set = set->next) {
@@ -12306,11 +12319,79 @@ HI();
 		}
 	}
 	if (!set && (conflict->ref_range != REG_UNSET)) {
-HI();
+		return;
+	}
+#endif
+
+	/* See if any of the live registers are constrained,
+	 * if not it won't be productive to pick this as
+	 * a conflict instruction.
+	 */
+	constraints = 0;
+	for(set = live; set; set = set->next) {
+		struct triple_set *uset;
+		struct reg_info info;
+		unsigned classes;
+		unsigned cur_size, size;
+		/* Skip this instruction */
+		if (set->member == ins) {
+			continue;
+		}
+		/* Find how many registers this value can potentially 
+		 * be assigned to.
+		 */
+		classes = arch_type_to_regcm(state, set->member->type);
+		size = regc_max_size(state, classes);
+		
+		/* Find how many registers we allow this value to
+		 * be assigned to.
+		 */
+		info = arch_reg_lhs(state, set->member, 0);
+		
+		/* If the value does not live in a register it
+		 * isn't constrained.
+		 */
+		if (info.reg == REG_UNNEEDED) {
+			continue;
+		}
+		
+		if ((info.reg == REG_UNSET) || (info.reg >= MAX_REGISTERS)) {
+			cur_size = regc_max_size(state, info.regcm);
+		} else {
+			cur_size = 1;
+		}
+
+		/* If there is no difference between potential and
+		 * actual register count there is not a constraint
+		 */
+		if (cur_size >= size) {
+			continue;
+		}
+		
+		/* If this live_range feeds into conflict->inds
+		 * it isn't a constraint we can relieve.
+		 */
+		for(uset = set->member->use; uset; uset = uset->next) {
+			if (uset->member == ins) {
+				break;
+			}
+		}
+		if (uset) {
+			continue;
+		}
+		constraints = 1;
+		break;
+	}
+	/* Don't drop canidates with constraints */
+	if (conflict->constraints && !constraints) {
 		return;
 	}
 
 
+#if 0
+	fprintf(stderr, "conflict ins? %p %s count: %d constraints: %d\n",
+		ins, tops(ins->op), count, constraints);
+#endif
 	/* Find the instruction with the largest possible subset of
 	 * conflict ranges and that dominates any other instruction
 	 * with an equal sized set of conflicting ranges.
@@ -12322,6 +12403,7 @@ HI();
 		/* Remember the canidate instruction */
 		conflict->ins = ins;
 		conflict->count = count;
+		conflict->constraints = constraints;
 		/* Free the old collection of live registers */
 		for(set = conflict->live; set; set = next) {
 			next = set->next;
@@ -12353,7 +12435,6 @@ HI();
 			;
 		}
 	}
-HI();
 	return;
 }
 
@@ -12362,12 +12443,6 @@ static void find_range_conflict(struct compile_state *state,
 	struct least_conflict *conflict)
 {
 
-#if 0
-	static void verify_blocks(struct compile_state *stae);
-	verify_blocks(state);
-	print_blocks(state, stderr);
-	print_dominators(state, stderr);
-#endif
 	/* there are 3 kinds ways conflicts can occure.
 	 * 1) the life time of 2 values simply overlap.
 	 * 2) the 2 values feed into the same instruction.
@@ -12387,37 +12462,25 @@ static void find_range_conflict(struct compile_state *state,
 	 *    is at or after the instruction.
 	 */
 	memset(conflict, 0, sizeof(*conflict));
-	conflict->rstate    = rstate;
-	conflict->ref_range = ref_range;
-	conflict->ins       = 0;
-	conflict->count     = 0;
-	conflict->live      = 0;
+	conflict->rstate      = rstate;
+	conflict->ref_range   = ref_range;
+	conflict->ins         = 0;
+	conflict->live        = 0;
+	conflict->count       = 0;
+	conflict->constraints = 0;
 	walk_variable_lifetimes(state, rstate->blocks, least_conflict, conflict);
 
 	if (!conflict->ins) {
-		struct live_range_edge *edge;
-		struct live_range_def *lrd;
-		fprintf(stderr, "edges:\n");
-		for(edge = ref_range->edges; edge; edge = edge->next) {
-			lrd = edge->node->defs;
-			do {
-				fprintf(stderr, " %-10p(%s)", lrd->def, tops(lrd->def->op));
-				lrd = lrd->next;
-			} while(lrd != edge->node->defs);
-			fprintf(stderr, "|\n");
-		}
-		fprintf(stderr, "range:\n");
-		lrd = ref_range->defs;
-		do {
-			fprintf(stderr, " %-10p(%s)", lrd->def, tops(lrd->def->op));
-			lrd = lrd->next;
-		} while(lrd != ref_range->defs);
-		fprintf(stderr,"\n");
 		internal_error(state, ref_range->defs->def, "No conflict ins?");
 	}
 	if (!conflict->live) {
 		internal_error(state, ref_range->defs->def, "No conflict live?");
 	}
+#if 0
+	fprintf(stderr, "conflict ins: %p %s count: %d constraints: %d\n", 
+		conflict->ins, tops(conflict->ins->op),
+		conflict->count, conflict->constraints);
+#endif
 	return;
 }
 
@@ -12452,6 +12515,13 @@ static struct triple *split_constrained_range(struct compile_state *state,
 		 * be assigned to.
 		 */
 		info = arch_reg_lhs(state, cset->member, 0);
+
+		/* If the register doesn't need a register 
+		 * splitting it can't help.
+		 */
+		if (info.reg == REG_UNNEEDED) {
+			continue;
+		}
 #warning "FIXME do I need a call to arch_reg_rhs around here somewhere?"
 		if ((info.reg == REG_UNSET) || (info.reg >= MAX_REGISTERS)) {
 			cur_size = regc_max_size(state, info.regcm);
@@ -12497,6 +12567,10 @@ static int split_ranges(
 {
 	struct triple *new;
 
+#if 0
+	fprintf(stderr, "split_ranges %d %s %p\n", 
+		rstate->passes, tops(range->defs->def->op), range->defs->def);
+#endif
 	if ((range->color == REG_UNNEEDED) ||
 		(rstate->passes >= rstate->max_passes)) {
 		return 0;
@@ -12506,6 +12580,9 @@ static int split_ranges(
 	if (arch_select_free_register(state, used, range->classes) == REG_UNSET) {
 		struct least_conflict conflict;
 
+#if 0
+	fprintf(stderr, "find_range_conflict\n");
+#endif
 		/* Find where in the set of registers the conflict
 		 * actually occurs.
 		 */
@@ -12528,6 +12605,11 @@ static int split_ranges(
 		 *
 		 */
 #warning "WISHLIST implement live range splitting..."
+#if 0
+			print_blocks(state, stderr);
+			print_dominators(state, stderr);
+
+#endif
 			return 0;
 		}
 	}
@@ -12536,7 +12618,13 @@ static int split_ranges(
 		new->id = rstate->defs;
 		rstate->defs++;
 #if 0
-		fprintf(stderr, "new: %p\n", new);
+		fprintf(stderr, "new: %p old: %s %p\n", 
+			new, tops(RHS(new, 0)->op), RHS(new, 0));
+#endif
+#if 0
+		print_blocks(state, stderr);
+		print_dominators(state, stderr);
+
 #endif
 		return 1;
 	}
@@ -12717,17 +12805,29 @@ static int select_free_color(struct compile_state *state,
 			arch_select_free_register(state, used, range->classes);
 	}
 	if (range->color == REG_UNSET) {
+		struct live_range_def *lrd;
 		int i;
 		if (split_ranges(state, rstate, used, range)) {
 			return 0;
 		}
 		for(edge = range->edges; edge; edge = edge->next) {
-			if (edge->node->color == REG_UNSET) {
-				continue;
-			}
-			warning(state, edge->node->defs->def, "reg %s", 
+			warning(state, edge->node->defs->def, "edge reg %s",
 				arch_reg_str(edge->node->color));
+			lrd = edge->node->defs;
+			do {
+				warning(state, lrd->def, " %s",
+					tops(lrd->def->op));
+				lrd = lrd->next;
+			} while(lrd != edge->node->defs);
 		}
+		warning(state, range->defs->def, "range: ");
+		lrd = range->defs;
+		do {
+			warning(state, lrd->def, " %s",
+				tops(lrd->def->op));
+			lrd = lrd->next;
+		} while(lrd != range->defs);
+			
 		warning(state, range->defs->def, "classes: %x",
 			range->classes);
 		for(i = 0; i < MAX_REGISTERS; i++) {

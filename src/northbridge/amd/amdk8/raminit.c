@@ -1,3 +1,4 @@
+#include <cpu/k8/mtrr.h>
 #define MEMORY_SUSE_SOLO  1 /* SuSE Solo configuration */
 #define MEMORY_LNXI_SOLO  2 /* LNXI Solo configuration */
 #define MEMORY_LNXI_HDAMA 3 /* LNXI HDAMA configuration */
@@ -1112,6 +1113,192 @@ static void sdram_set_registers(void)
 	print_debug("done.\r\n");
 }
 
+
+struct dimm_size {
+	unsigned long side1;
+	unsigned long side2;
+};
+static struct dimm_size spd_get_dimm_size(unsigned device)
+{
+	/* Calculate the log base 2 size of a DIMM in bits */
+	struct dimm_size sz;
+	int value, low;
+	sz.side1 = 0;
+	sz.side2 = 0;
+
+	/* Note it might be easier to use byte 31 here, it has the DIMM size as
+	 * a multiple of 4MB.  The way we do it now we can size both
+	 * sides of an assymetric dimm.
+	 */
+	value = smbus_read_byte(device, 3);	/* rows */
+	if (value < 0) return sz;
+	sz.side1 += value & 0xf;
+
+	value = smbus_read_byte(device, 4);	/* columns */
+	if (value < 0) return sz;
+	sz.side1 += value & 0xf;
+
+	value = smbus_read_byte(device, 17);	/* banks */
+	if (value < 0) return sz;
+	sz.side1 += log2(value & 0xff);
+
+	/* Get the module data widht and convert it to a power of two */
+	value = smbus_read_byte(device, 7);	/* (high byte) */
+	if (value < 0) return sz;
+	value &= 0xff;
+	value <<= 8;
+	
+	low = smbus_read_byte(device, 6);	/* (low byte) */
+	if (low < 0) return sz;
+	value = value | (low & 0xff);
+	sz.side1 += log2(value);
+
+	/* side 2 */
+	value = smbus_read_byte(device, 5);	/* number of physical banks */
+	if (value <= 1) return sz;
+
+	/* Start with the symmetrical case */
+	sz.side2 = sz.side1;
+
+	value = smbus_read_byte(device, 3);	/* rows */
+	if (value < 0) return sz;
+	if ((value & 0xf0) == 0) return sz;	/* If symmetrical we are done */
+	sz.side2 -= (value & 0x0f); 		/* Subtract out rows on side 1 */
+	sz.side2 += ((value >> 4) & 0x0f);	/* Add in rows on side 2 */
+
+	value = smbus_read_byte(device, 4);	/* columns */
+	if (value < 0) return sz;
+	sz.side2 -= (value & 0x0f);		/* Subtract out columns on side 1 */
+	sz.side2 += ((value >> 4) & 0x0f);	/* Add in columsn on side 2 */
+	return sz;
+}
+
+static unsigned spd_to_dimm_side0(unsigned device)
+{
+	return (device - SMBUS_MEM_DEVICE_START) << 1;
+}
+
+static unsigned spd_to_dimm_side1(unsigned device)
+{
+	return ((device - SMBUS_MEM_DEVICE_START) << 1) + 1;
+}
+
+static void set_dimm_size(unsigned long size, unsigned index)
+{
+	unsigned value = 0;
+	/* Make certain the dimm is at least 32MB */
+	if (size >= (25 + 3)) {
+		/* Place the dimm size in 32 MB quantities in the bits 31 - 21.
+		 * The initialize dimm size is in bits.
+		 * Set the base enable bit0.
+		 */
+		value = (1 << ((size - (25 + 3)) + 21)) | 1;
+	}
+	/* Set the appropriate DIMM base address register */
+	pci_write_config32(PCI_DEV(0, 0x18, 2), 0x40 + (index << 2), value);
+}
+
+static void spd_set_ram_size(void)
+{
+	unsigned device;
+	for(device = SMBUS_MEM_DEVICE_START; 
+		device <= SMBUS_MEM_DEVICE_END;
+		device += SMBUS_MEM_DEVICE_INC) 
+	{
+		struct dimm_size sz;
+		sz = spd_get_dimm_size(device);
+		set_dimm_size(sz.side1, spd_to_dimm_side0(device));
+		set_dimm_size(sz.side2, spd_to_dimm_side1(device));
+	}
+}
+
+static void set_top_mem(unsigned tom_k)
+{
+	/* Error if I don't have memory */
+	if (!tom_k) {
+		die("No memory");
+	}
+	/* Now set top of memory */
+	msr_t msr;
+	msr.lo = (tom_k & 0x003fffff) << 10;
+	msr.hi = (tom_k & 0xffc00000) >> 22;
+	wrmsr(TOP_MEM, msr);
+
+#if 1
+	/* And report the amount of memory.  (I run out of registers if i don't) */
+	print_debug("RAM: 0x");
+	print_debug_hex32(tom_k);
+	print_debug(" KB\r\n");
+#endif
+}
+
+static void order_dimms(void)
+{
+	unsigned long tom;
+	unsigned mask;
+	unsigned index;
+
+	/* Remember which registers we have used in the high 8 bits of tom */
+	tom = 0;
+	for(;;) {
+		/* Find the largest remaining canidate */
+		unsigned canidate;
+		uint32_t csbase, csmask;
+		unsigned size;
+		csbase = 0;
+		canidate = 0;
+		for(index = 0; index < 8; index++) {
+			uint32_t value;
+			value = pci_read_config32(PCI_DEV(0, 0x18, 2), 0x40 + (index << 2));
+
+			/* Is it enabled? */
+			if (!(value & 1)) {
+				continue;
+			}
+			
+			/* Is it greater? */
+			if (value <= csbase) {
+				continue;
+			}
+			
+			/* Has it already been selected */
+			if (tom & (1 << (index + 24))) {
+				continue;
+			}
+			/* I have a new canidate */
+			csbase = value;
+			canidate = index;
+		}
+		/* See if I have found a new canidate */
+		if (csbase == 0) {
+			break;
+		}
+
+		/* Remember I have used this register */
+		tom |= (1 << (canidate + 24));
+
+		/* Remember the dimm size */
+		size = csbase >> 21;
+
+		/* Recompute the cs base register value */
+		csbase = (tom << 21) | 1;
+
+		/* Increment the top of memory */
+		tom += size;
+
+		/* Compute the memory mask */
+		csmask = ((size -1) << 21);
+		csmask |= 0xfe00; 		/* For now don't optimize */
+
+		/* Write the new base register */
+		pci_write_config32(PCI_DEV(0, 0x18, 2), 0x40 + (canidate << 2), csbase);
+		pci_write_config32(PCI_DEV(0, 0x18, 2), 0x60 + (canidate << 2), csmask);
+		
+	}
+	set_top_mem((tom & ~0xff000000) << 15);
+}
+
+
 #define DRAM_CONFIG_LOW 0x90
 #define  DCL_DLL_Disable   (1<<0)
 #define  DCL_D_DRV         (1<<1)
@@ -1122,20 +1309,21 @@ static void sdram_set_registers(void)
 #define  DCL_MemClrStatus  (1<<11)
 #define  DCL_DimmEcEn      (1<<17)
 
-#define NODE_ID		0x60
-#define	HT_INIT_CONTROL 0x6c
 
-#define HTIC_ColdR_Detect  (1<<4)
-#define HTIC_BIOSR_Detect  (1<<5)
-#define HTIC_INIT_Detect   (1<<6)
-
-static void sdram_set_spd_registers(void) 
+static void spd_set_ecc_mode(void)
 {
 	unsigned long dcl;
 	dcl = pci_read_config32(PCI_DEV(0, 0x18, 2), DRAM_CONFIG_LOW);
 	/* Until I know what is going on disable ECC support */
 	dcl &= ~DCL_DimmEcEn;
 	pci_write_config32(PCI_DEV(0, 0x18, 2), DRAM_CONFIG_LOW, dcl);
+
+}
+static void sdram_set_spd_registers(void) 
+{
+	spd_set_ram_size();
+	spd_set_ecc_mode();
+	order_dimms();
 }
 
 #define TIMEOUT_LOOPS 300000

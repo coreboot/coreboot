@@ -3,6 +3,9 @@ mainboardinit cpu/i386/entry16.inc
 mainboardinit cpu/i386/entry32.inc
 ldscript cpu/i386/entry16.lds
 
+mainboardinit pc80/serial.inc
+mainboardinit arch/i386/lib/console.inc
+
 northsouthbridge sis/550
 
 option FINAL_MAINBOARD_FIXUP

@@ -12,7 +12,7 @@ nsuperio NSC/pc97307 com1={1} com2={1} floppy=0 lpt=1 keyboard=1 hwmonitor=1
 ##
 ## Build the objects we have code for in this directory.
 ##
-object main.o
+object hardwaremain.o
 object sandpoint.o
 
 dir nvram
@@ -88,7 +88,7 @@ expr PAYLOAD_SIZE  =ROM_SECTION_SIZE - ROM_IMAGE_SIZE
 ##
 ## Compute where this copy of linuxBIOS will start in the boot rom
 ##
-expr _ROMBASE=0xff000000
+expr _ROMBASE=0xfff00000
 
 ##
 ## SMP in the future?

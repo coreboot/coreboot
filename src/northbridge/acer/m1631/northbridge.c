@@ -34,6 +34,7 @@ unsigned long sizeram()
 
 	u32 ram;
 	unsigned long size;
+	unsigned long sizeall=0;
 	pcidev = pci_find_slot(0, PCI_DEVFN(0,0));
 
 	if (! pcidev)
@@ -45,17 +46,24 @@ unsigned long sizeram()
 
 		pci_read_config_dword(pcidev, i, &ram);
 		size = (1 << (((ram >> 20) & 0x7))) * (0x400000);
+		if ((ram & 0x6000000) == 0x00000000)
+			size=0;
 		printk("0x%x 0x%x, size 0x%x\n", i, ram, size);
 	}
-	pci_read_config_dword(pcidev, 0x6c, &ram);
+
+	for(i = 0x6c; i < 0x78; i +=4)
+	{
+	pci_read_config_dword(pcidev, i, &ram);
 	size = (1 << (((ram >> 20) & 0x7))) * (0x400000);
 	if ((ram & 0x1800000) == 0x1800000)
 		size <<= 1;
-	printk("size in 0x6c is 0x%x\n", size);
-#if 1
-	printk("NOT SIZING OTHER TWO SLOTS. ONLY ONE SLOT RIGHT NOW\n");
-	return size/1024;
-#endif
+	if ((ram & 0x6000000) == 0x00000000)
+		size=0;
+	
+	printk("size in 0x%x is 0x%x\n", i, size);
+	sizeall=sizeall+size;
+	}
+	return sizeall/1024;
 	cp = (unsigned char *) size;
 	// now do the other two banks. 
 #define INIT_MCR 0xf663b83c

@@ -1,0 +1,13 @@
+arch i386
+northbridge acer/m1631
+southbridge acer/m1535
+superio acer/m1535
+
+option ENABLE_FIXED_AND_VARIABLE_MTRRS
+option FINAL_MAINBOARD_FIXUP
+option HAVE_PIRQ_TABLE
+object mainboard.o
+object irq_tables.o
+keyboard pc80
+cpu p5
+cpu p6

@@ -65,8 +65,8 @@ makerule linuxbios_payload
 end
 
 makerule linuxbios   
-	depends	"crt0.o linuxbios_payload ldscript.ld" 
-	action	"$(CC) -nostdlib -nostartfiles -static -o $@ -T ldscript.ld crt0.o"
+	depends	"crt0.o $(INIT-OBJECTS) linuxbios_payload ldscript.ld" 
+	action	"$(CC) -nostdlib -nostartfiles -static -o $@ -T ldscript.ld crt0.o $(INIT-OBJECTS)"
 	action	"$(CROSS_COMPILE)nm -n linuxbios | sort > linuxbios.map"
 end
 
@@ -96,9 +96,9 @@ makerule crt0.s
 end
 
 makerule crt0.o  
-	depends	"crt0.s $(INIT-OBJECTS)" 
+	depends	"crt0.s" 
 	action	"@echo $(CC) ... -o $@ $<"
-	action	"@$(CC) -c $(CPU_OPT) -o $@ $< $(INIT-OBJECTS)"
+	action	"@$(CC) -c $(CPU_OPT) -o $@ $<"
 end
 
 makerule etags   

@@ -1,7 +1,7 @@
 #include "linux_syscall.h"
 #include "linux_console.h"
 
-int log2(int value)
+inline int log2(int value)
 {
 	/* __builtin_bsr is a exactly equivalent to the x86 machine
 	 * instruction with the exception that it returns -1  

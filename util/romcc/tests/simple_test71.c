@@ -6,16 +6,10 @@ static void main(void)
 {
 	int i;
 
-#if 1
 	foo();
-#endif
-#if 1
 	foo();
-#endif
 	for(i = 0; i < 10; i++) {
-#if 1
 		foo();
-#endif
 #if 0
 		foo();
 #endif

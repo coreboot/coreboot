@@ -27,6 +27,6 @@ static void test(void)
 	const struct mem_param *param;
 	param = &param0;
 	value = 0x48;
-#warning "this generates word loads instead of byte loads"
+#warning "this generated word loads instead of byte loads"
 	clocks = (value + (param->divisor << 1) - 1)/(param->divisor << 1);
 }

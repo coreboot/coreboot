@@ -1,11 +1,8 @@
-VERSION:=0.38
-RELEASE_DATE:=18 December 2003
-PACKAGE:=romcc
 
 
 # Move the configuration defines to makefile.conf
 CC=gcc
-CPPFLAGS=-DVERSION='"$(VERSION)"' -DRELEASE_DATE='"$(RELEASE_DATE)"'
+CPPFLAGS=
 CFLAGS= -g -Wall $(CPPFLAGS)
 CPROF_FLAGS=-pg -fprofile-arcs
 
@@ -26,11 +23,16 @@ LINUX_TESTS=\
 	linux_test6.c \
 	linux_test7.c \
 	linux_test8.c \
+	linux_test9.c \
+	linux_test10.c \
+	linux_test11.c \
+	linux_test12.c \
+	linux_test13.c \
 
 TESTS=\
-	hello_world.c \
+	hello_world1.c \
 	hello_world2.c \
-	simple_test.c \
+	simple_test1.c \
 	simple_test2.c \
 	simple_test3.c \
 	simple_test4.c \
@@ -91,10 +93,24 @@ TESTS=\
 	simple_test67.c \
 	simple_test68.c \
 	simple_test69.c \
+	simple_test70.c \
 	simple_test71.c \
 	simple_test72.c \
 	simple_test73.c \
-	raminit_test.c \
+	simple_test74.c \
+	simple_test75.c \
+	simple_test76.c \
+	simple_test77.c \
+	simple_test78.c \
+	simple_test79.c \
+	simple_test80.c \
+	simple_test81.c \
+	simple_test82.c \
+	simple_test83.c \
+	simple_test84.c \
+	simple_test85.c \
+	simple_test86.c \
+	raminit_test1.c \
 	raminit_test2.c \
 	raminit_test3.c \
 	raminit_test4.c \
@@ -111,6 +127,9 @@ FAIL_TESTS = \
 	fail_test6.c \
 	fail_test7.c \
 	fail_test8.c \
+	fail_test9.c \
+	fail_test10.c \
+	fail_test11.c \
 
 TEST_SRCS:=$(patsubst %, tests/%, $(TESTS))
 TEST_ASM:=$(patsubst %.c, tests/%.S, $(TESTS))
@@ -128,7 +147,8 @@ TEST_ASM_O2_mmmx_msse:=$(patsubst %.c, tests/%.S-O2-mmmx-msse, $(TESTS))
 TEST_ASM_O2_mmmx_call     :=$(patsubst %.c, tests/%.S-O2-mmmx-call, $(TESTS))
 TEST_ASM_O2_mmmx_msse_call:=$(patsubst %.c, tests/%.S-O2-mmmx-msse-call, $(TESTS))
 TEST_ASM_ALL:= $(TEST_ASM) $(TEST_ASM_O) $(TEST_ASM_O2) $(TEST_ASM_mmmx) $(TEST_ASM_msse) $(TEST_ASM_mmmx_msse) $(TEST_ASM_O_mmmx) $(TEST_ASM_O_msse) $(TEST_ASM_O_mmmx_msse) $(TEST_ASM_O2_mmmx) $(TEST_ASM_O2_msse) $(TEST_ASM_O2_mmmx_msse) $(TEST_ASM_O2_mmmx_call) $(TEST_ASM_O2_mmmx_msse_call)
-TEST_ASM_MOST:= $(TEST_ASM_O) $(TEST_ASM_O_mmmx) $(TEST_ASM_O_msse) $(TEST_ASM_O_mmmx_msse) $(TEST_ASM_O2) $(TEST_ASM_O2_mmmx) $(TEST_ASM_O2_msse) $(TEST_ASM_O2_mmmx_msse) $(TEST_ASM_O2_mmmx_call) $(TEST_ASM_O2_mmmx_msse_call)
+TEST_ASM_MOST:= $(TEST_ASM_O) $(TEST_ASM_O_mmmx) $(TEST_ASM_O_msse) $(TEST_ASM_O_mmmx_msse) $(TEST_ASM_O2) $(TEST_ASM_O2_mmmx) $(TEST_ASM_O2_msse) $(TEST_ASM_O2_mmmx_msse) 
+# $(TEST_ASM_O2_mmmx_call) $(TEST_ASM_O2_mmmx_msse_call)
 TEST_OBJ:=$(patsubst %.c, tests/%.o, $(TESTS))
 TEST_ELF:=$(patsubst %.c, tests/%.elf, $(TESTS))
 LINUX_ELF:=$(patsubst %.c, tests/%.elf, $(LINUX_TESTS))
@@ -138,7 +158,7 @@ FAIL_SRCS:=$(patsubst %, tests/%, $(FAIL_TESTS))
 FAIL_OUT:=$(patsubst %.c, tests/%.out, $(FAIL_TESTS))
 
 
-ROMCC_OPTS=-fmax-allocation-passes=8 -fdebug-live-range-conflicts
+ROMCC_OPTS=-fmax-allocation-passes=8 -fdebug-live-range-conflicts -Itests/include
 
 $(TEST_ASM): %.S: %.c romcc
 	export ALLOC_CHECK_=2; ./romcc $(ROMCC_OPTS) -o $@ $< > $*.debug
@@ -189,6 +209,8 @@ $(TEST_ASM_O2_mmmx_msse_call): %.S-O2-mmmx-msse-call: %.c romcc
 $(FAIL_OUT): %.out: %.c romcc
 	export ALLOC_CHECK_=2; if ./romcc $(ROMCC_OPTS) -O2  -o $*.S $< > $*.debug 2> $@ ; then exit 1 ; else exit 0 ; fi
 
+#$(TEST_OBJ): %.o: %.S-O2-mmmx-call
+
 $(TEST_OBJ): %.o: %.S-O2-mmmx
 	as $< -o $@
 
@@ -205,6 +227,7 @@ run_linux: $(LINUX_OUT)
 echo:
 	echo "TEST_SRCS=$(TEST_SRCS)"
 	echo "TEST_ASM=$(TEST_ASM)"
+	echo "TEST_ASM=$(TEST_ASM_MOST)"
 	echo "TEST_OBJ=$(TEST_OBJ)"
 	echo "TEST_ELF=$(TEST_ELF)"
 	echo ""

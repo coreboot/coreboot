@@ -4,6 +4,7 @@ ENTRY(_start)
 SECTIONS
 {
 	. = 0x1000;
+	__cpu_reset = 0xdeadbeef;
 	.text . : {
 		. = ALIGN(16);
 		_start = . ;

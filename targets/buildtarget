@@ -32,8 +32,13 @@ if [ ! -f $config_lb ]; then
 fi
 
 if [ ! -f $config_py ]; then
-	echo "No linuxbios config file found"
-	exit 1
+	echo "No linuxbios config script found. Rebuilding it.."
+	( 
+	  cd $config_dir 
+	  make config.py
+	)
+	echo "done."
+	# exit 1
 fi
 
 # make sure config.py is up-to-date

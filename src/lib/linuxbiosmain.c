@@ -122,7 +122,8 @@ printk("Got block, bufptr = %lu, size= %u\n",bufptr, buflen);
 	printk("Initrd loaded\n");
 
 	if(tftp_init("cmdline") >=0) {
-		tftp_fetchone(buffer);
+                buflen = tftp_fetchone(buffer);
+                buffer[buflen] = '\0';
 		cmd_line=buffer;
 	}
 

@@ -10,9 +10,10 @@
 
 #define MTRRVARDRAMEN (1 << 20)
 void
-cpufixup(unsigned long ram_megabytes)
+cpufixup(unsigned long ram_kilobytes)
 {
     unsigned long lo = 0, hi = 0, i;
+    unsigned long ram_megabytes = ram_kilobytes * 1024;
 	// 8 MB alignment please
     ram_megabytes += 0x7fffff;
     ram_megabytes &= (~0x7fffff);

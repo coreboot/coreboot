@@ -7,10 +7,10 @@ ldscript cpu/i386/entry32.lds
 mainboardinit superio/sis/950/setup_serial.inc
 mainboardinit pc80/serial.inc
 mainboardinit arch/i386/lib/console.inc
-northsouthbridge sis/630
-# superio sis/950
-nsuperio sis/950 com1={1} floppy=1  lpt=1
 mainboardinit cpu/p6/earlymtrr.inc
+
+northsouthbridge sis/630
+nsuperio sis/950 com1={1} floppy=1  lpt=1
 
 option ENABLE_FIXED_AND_VARIABLE_MTRRS
 option FINAL_MAINBOARD_FIXUP

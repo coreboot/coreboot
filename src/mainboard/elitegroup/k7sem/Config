@@ -7,18 +7,16 @@ ldscript cpu/i386/entry32.lds
 mainboardinit superio/sis/950/setup_serial.inc
 mainboardinit pc80/serial.inc
 mainboardinit arch/i386/lib/console.inc
+mainboardinit cpu/k7/earlymtrr.inc
+
 northsouthbridge sis/730
-# superio sis/950
 nsuperio sis/950 com1={1} floppy=1  lpt=1
-mainboardinit cpu/p6/earlymtrr.inc
 
 option ENABLE_FIXED_AND_VARIABLE_MTRRS=1
 option FINAL_MAINBOARD_FIXUP=1
 option HAVE_PIRQ_TABLE=1
 option DISABLE_INTERNAL_DEVICES
 
-# this makes ipl.S too big
-#option CONFIG_SIS_DISABLE_ETHERNET
 object mainboard.o
 object irq_tables.o
 keyboard pc80

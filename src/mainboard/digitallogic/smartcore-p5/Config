@@ -12,11 +12,15 @@ mainboardinit pc80/serial.inc
 mainboardinit arch/i386/lib/console.inc
 northbridge intel/430tx
 southbridge intel/piix4e
-mainboardinit cpu/p6/earlymtrr.inc
+#mainboardinit cpu/p6/earlymtrr.inc
+mainboardinit ram/dump_northbridge.inc
+mainboardinit ram/ramtest.inc
+mainboardinit mainboard/digitallogic/smartcore-p5/do_ramtest.inc
+
 
 superio SMC/fdc37c67x 
 
-option ENABLE_FIXED_AND_VARIABLE_MTRRS
+#option ENABLE_FIXED_AND_VARIABLE_MTRRS
 option PIIX4_DEVFN=0x38
 option NO_KEYBOARD
 option ZKERNEL_START=0xfffc0000
@@ -26,6 +30,8 @@ option SMC_BASE=0x3F0
 
 object mainboard.o
 
-cpu p6
+#cpu p6
 cpu p5
+
+#option RAM_TEST
 

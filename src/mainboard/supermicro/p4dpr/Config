@@ -68,7 +68,6 @@ mainboardinit mainboard/supermicro/p4dpr/select_i2c_spd.inc
 ##
 ## Setup RAM
 ##
-mainboardinit ram/spotcheck.inc
 #mainboardinit ram/dump_northbridge.inc
 #mainboardinit sdram/generic_dump_smbus.inc
 #mainboardinit sdram/generic_dump_spd.inc

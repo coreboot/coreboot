@@ -331,13 +331,11 @@ int main(int argc, char **argv)
 		if(fgets(line, INPUT_LINE_MAX,fp)==NULL)
 			break; /* end if no more input */
 
-		printf("line: %s\n", line);
-
 		/* skip commented and blank lines */
 		if (line[0]=='#') continue;
 		if (line[strspn(line, " ")]=='\n') continue;
 		if (memcmp(line, "checksum", 8) != 0) continue;
-		printf("Found checksum record: \n");
+
 		/* get the information */
 		ptr = line + 8;
 		skip_spaces(line, &ptr);

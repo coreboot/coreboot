@@ -40,7 +40,10 @@ it with the version available from LANL.
  * set the right value. 
  */
 #define INIT_MCR $0xf6621000
-#define WRITE_MCR0 movl %ecx, %eax ;  outl %eax, %dx
+#define WDELAY movw	$0x1000, ax; 1: dec %ax; jnz 1b
+#undef WDELAY
+#define WDELAY outb %al, %dx; jmp 1f; 1: outb %al, %dx
+#define WRITE_MCR0 movl %ecx, %eax ;  outl %eax, %dx ; WDELAY
 /*#include <cpu/p5/start32.inc>*/
 .org 0xfe000
 .code16
@@ -142,6 +145,8 @@ code16
 	movb	$0xfc, %dl
 	movl	$0xf662f83c, %ecx
 	WRITE_MCR0
+// Not only does this not work, it screws up the programming. 
+#if 0
 	/* check for registered. All this means is write to 0,
 	 * read back, if it's not the same, set 'registered',
 	 * read back, it it's the same you're ok.
@@ -156,23 +161,27 @@ code16
 	CALLSP(pci_write_dword)
 	*/
 nonregistered:	 
+#endif
 	rorl	$16, %ecx
 	/* clear out the CAS, since we assume start at zero
 	 * and increment 
 	 */
 	andb	$0xf0, %cl
 	/* test 8 bit CAS */
+	movl	$0x800, %esi
 	movb	$0, (%edi)
-	movb	$1, 0x800
+	movb	$1, (%esi) // esi is at 0x800
 	cmpb	$0,(%edi)
 	jnz	sizeram
 	inc	%cl
+	roll	%esi
 	/* change the value we store each time. It makes debugging easier */
-	movb	$2, 0x1000
+	movb	$2, (%esi) // esi is at 0x1000
 	cmpb	$0, (%edi)
 	jnz	sizeram
 	inc	%cl
-	movb	$3, 0x2000
+	roll	%esi
+	movb	$3, (%esi) // esi is at 0x2000
 	cmpb	$0, (%edi)
 	jnz	sizeram
 	inc	%cl
@@ -195,6 +204,8 @@ sizeram:
 	/* clear the size out to 4 MB */
 	andb	$0xf8, %cl
 	/* 4 MB */
+	// esi is at 0x2000 at this point. To get to 0x400000, 
+	// roll it 13 bits
 	movl	$0x400000, %esi
 1:
 #ifdef USE_BIG_REAL
@@ -227,10 +238,13 @@ sizeram:
  * Just set 4-bank mode, and set non-zero numbers into a few places. 
  * if the byte at 0 changes, you have two banks. Trivial.
  */
+	movl	$0x1000, %esi
 	movb	$0, (%edi)
-	movb	$5, 0x1000
-	movb	$6, 0x2000
-	movb	$7, 0x4000
+	movb	$5, (%esi)
+	roll	$1, %esi
+	movb	$6, (%esi)
+	roll	$1, %esi
+	movb	$7, (%esi)
 	cmpb	$0, (%edi)
 	jz	1f /* 4 banks */
 	orl	$0x80000, %ecx

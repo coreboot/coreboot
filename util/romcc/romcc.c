@@ -957,10 +957,13 @@ static void loc(FILE *fp, struct compile_state *state, struct triple *triple)
 {
 	int col;
 	if (triple) {
+		struct occurance *spot;
+		spot = triple->occurance;
+		while(spot->parent) {
+			spot = spot->parent;
+		}
 		fprintf(fp, "%s:%d.%d: ", 
-			triple->occurance->filename, 
-			triple->occurance->line, 
-			triple->occurance->col);
+			spot->filename, spot->line, spot->col);
 		return;
 	}
 	if (!state->file) {
@@ -4007,10 +4010,11 @@ static size_t field_offset(struct compile_state *state,
 	while((type->type & TYPE_MASK) == TYPE_PRODUCT) {
 		if (type->left->field_ident == field) {
 			type = type->left;
+			break;
 		}
 		size += size_of(state, type->left);
 		type = type->right;
-		align = align_of(state, type->left);
+		align = align_of(state, type);
 		pad = align - (size % align);
 		size += pad;
 	}
@@ -4379,22 +4383,26 @@ static int is_lvalue(struct compile_state *state, struct triple *def)
 	if (!is_stable(state, def)) {
 		return 0;
 	}
-	if (def->type->type & QUAL_CONST) {
-		ret = 0;
-	}
-	else if (def->op == OP_DOT) {
+	if (def->op == OP_DOT) {
 		ret = is_lvalue(state, RHS(def, 0));
 	}
 	return ret;
 }
 
-static void lvalue(struct compile_state *state, struct triple *def)
+static void clvalue(struct compile_state *state, struct triple *def)
 {
 	if (!def) {
 		internal_error(state, def, "nothing where lvalue expected?");
 	}
 	if (!is_lvalue(state, def)) { 
 		error(state, def, "lvalue expected");
+	}
+}
+static void lvalue(struct compile_state *state, struct triple *def)
+{
+	clvalue(state, def);
+	if (def->type->type & QUAL_CONST) {
+		error(state, def, "modifable lvalue expected");
 	}
 }
 
@@ -4432,7 +4440,7 @@ static struct triple *do_mk_addr_expr(struct compile_state *state,
 	struct triple *expr, struct type *type, ulong_t offset)
 {
 	struct triple *result;
-	lvalue(state, expr);
+	clvalue(state, expr);
 
 	result = 0;
 	if (expr->op == OP_ADECL) {
@@ -4469,10 +4477,6 @@ static struct triple *mk_deref_expr(
 	struct type *base_type;
 	pointer(state, expr);
 	base_type = expr->type->left;
-	if (!TYPE_PTR(base_type->type) && !TYPE_ARITHMETIC(base_type->type)) {
-		error(state, 0, 
-			"Only pointer and arithmetic values can be dereferenced");
-	}
 	return triple(state, OP_DEREF, base_type, expr, 0);
 }
 
@@ -4592,6 +4596,9 @@ static struct triple *write_expr(
 	}
 	if (!is_lvalue(state, dest)) {
 		internal_error(state, 0, "writing to a non lvalue?");
+	}
+	if (dest->type->type & QUAL_CONST) {
+		internal_error(state, 0, "modifable lvalue expexted");
 	}
 
 	write_compatible(state, dest->type, rval->type);
@@ -4789,6 +4796,9 @@ static int expr_depth(struct compile_state *state, struct triple *ins)
 
 static struct triple *flatten(
 	struct compile_state *state, struct triple *first, struct triple *ptr);
+
+static struct triple *mk_add_expr(
+	struct compile_state *state, struct triple *left, struct triple *right);
 
 static struct triple *flatten_generic(
 	struct compile_state *state, struct triple *first, struct triple *ptr)
@@ -5145,8 +5155,15 @@ static struct triple *flatten(
 		{
 			struct triple *base;
 			base = RHS(ptr, 0);
-			base = flatten(state, first, base);
-			if (base->op == OP_VAL_VEC) {
+			if (base->op == OP_DEREF) {
+				ulong_t offset;
+				offset = field_offset(state, base->type, ptr->u.field);
+				ptr = mk_add_expr(state, RHS(base, 0), 
+					int_const(state, &ulong_type, offset));
+				free_triple(state, base);
+			}
+			else if (base->op == OP_VAL_VEC) {
+				base = flatten(state, first, base);
 				ptr = struct_field(state, base, ptr->u.field);
 			}
 			break;
@@ -5694,13 +5711,13 @@ static void flatten_structures(struct compile_state *state)
 	do {
 		ins->id &= ~TRIPLE_FLAG_FLATTENED;
 		if ((ins->type->type & TYPE_MASK) == TYPE_STRUCT) {
-			internal_error(state, 0, "STRUCT_TYPE remains?");
+			internal_error(state, ins, "STRUCT_TYPE remains?");
 		}
 		if (ins->op == OP_DOT) {
-			internal_error(state, 0, "OP_DOT remains?");
+			internal_error(state, ins, "OP_DOT remains?");
 		}
 		if (ins->op == OP_VAL_VEC) {
-			internal_error(state, 0, "OP_VAL_VEC remains?");
+			internal_error(state, ins, "OP_VAL_VEC remains?");
 		}
 		ins = ins->next;
 	} while(ins != first);
@@ -7432,25 +7449,31 @@ static struct triple *eval_const_expr(
 	struct compile_state *state, struct triple *expr)
 {
 	struct triple *def;
-	struct triple *head, *ptr;
-	head = label(state); /* dummy initial triple */
-	flatten(state, head, expr);
-	for(ptr = head->next; ptr != head; ptr = ptr->next) {
-		simplify(state, ptr);
+	if (is_const(expr)) {
+		def = expr;
+	} 
+	else {
+		/* If we don't start out as a constant simplify into one */
+		struct triple *head, *ptr;
+		head = label(state); /* dummy initial triple */
+		flatten(state, head, expr);
+		for(ptr = head->next; ptr != head; ptr = ptr->next) {
+			simplify(state, ptr);
+		}
+		/* Remove the constant value the tail of the list */
+		def = head->prev;
+		def->prev->next = def->next;
+		def->next->prev = def->prev;
+		def->next = def->prev = def;
+		if (!is_const(def)) {
+			error(state, 0, "Not a constant expression");
+		}
+		/* Free the intermediate expressions */
+		while(head->next != head) {
+			release_triple(state, head->next);
+		}
+		free_triple(state, head);
 	}
-	/* Remove the constant value the tail of the list */
-	def = head->prev;
-	def->prev->next = def->next;
-	def->next->prev = def->prev;
-	def->next = def->prev = def;
-	if (!is_const(def)) {
-		internal_error(state, 0, "Not a constant expression");
-	}
-	/* Free the intermediate expressions */
-	while(head->next != head) {
-		release_triple(state, head->next);
-	}
-	free_triple(state, head);
 	return def;
 }
 
@@ -8364,7 +8387,7 @@ static struct type *struct_declarator(
 #endif
 
 static struct type *struct_or_union_specifier(
-	struct compile_state *state, unsigned int specifiers)
+	struct compile_state *state, unsigned int spec)
 {
 	struct type *struct_type;
 	struct hash_entry *ident;
@@ -8424,13 +8447,13 @@ static struct type *struct_or_union_specifier(
 			eat(state, TOK_SEMI);
 		} while(peek(state) != TOK_RBRACE);
 		eat(state, TOK_RBRACE);
-		struct_type = new_type(TYPE_STRUCT, struct_type, 0);
+		struct_type = new_type(TYPE_STRUCT | spec, struct_type, 0);
 		struct_type->type_ident = ident;
 		struct_type->elements = elements;
 		symbol(state, ident, &ident->sym_struct, 0, struct_type);
 	}
 	if (ident && ident->sym_struct) {
-		struct_type = ident->sym_struct->type;
+		struct_type = clone_type(spec, 	ident->sym_struct->type);
 	}
 	else if (ident && !ident->sym_struct) {
 		error(state, 0, "struct %s undeclared", ident->name);
@@ -8762,34 +8785,67 @@ static struct type *decl_specifiers(struct compile_state *state)
 	return type;
 }
 
-static unsigned designator(struct compile_state *state)
+struct field_info {
+	struct type *type;
+	size_t offset;
+};
+
+static struct field_info designator(struct compile_state *state, struct type *type)
 {
 	int tok;
-	unsigned index;
-	index = -1U;
+	struct field_info info;
+	info.offset = ~0U;
+	info.type = 0;
 	do {
 		switch(peek(state)) {
 		case TOK_LBRACKET:
 		{
 			struct triple *value;
+			if ((type->type & TYPE_MASK) != TYPE_ARRAY) {
+				error(state, 0, "Array designator not in array initializer");
+			}
 			eat(state, TOK_LBRACKET);
 			value = constant_expr(state);
 			eat(state, TOK_RBRACKET);
-			index = value->u.cval;
+
+			info.type = type->left;
+			info.offset = value->u.cval * size_of(state, info.type);
 			break;
 		}
 		case TOK_DOT:
+		{
+			struct hash_entry *field;
+			struct type *member;
+			if ((type->type & TYPE_MASK) != TYPE_STRUCT) {
+				error(state, 0, "Struct designator not in struct initializer");
+			}
 			eat(state, TOK_DOT);
 			eat(state, TOK_IDENT);
-			error(state, 0, "Struct Designators not currently supported");
+			field = state->token[0].ident;
+			info.offset = 0;
+			member = type->left;
+			while((member->type & TYPE_MASK) == TYPE_PRODUCT) {
+				if (member->left->field_ident == field) {
+					member = member->left;
+					break;
+				}
+				info.offset += size_of(state, member->left);
+				member = member->right;
+			}
+			if (member->field_ident != field) {
+				error(state, 0, "%s is not a member", 
+					field->name);
+			}
+			info.type = member;
 			break;
+		}
 		default:
 			error(state, 0, "Invalid designator");
 		}
 		tok = peek(state);
 	} while((tok == TOK_LBRACKET) || (tok == TOK_DOT));
 	eat(state, TOK_EQ);
-	return index;
+	return info;
 }
 
 static struct triple *initializer(
@@ -8801,74 +8857,87 @@ static struct triple *initializer(
 	}
 	else {
 		int comma;
-		unsigned index, max_index;
+		size_t max_offset;
+		struct field_info info;
 		void *buf;
-		max_index = index = 0;
-		if ((type->type & TYPE_MASK) == TYPE_ARRAY) {
-			max_index = type->elements;
-			if (type->elements == ELEMENT_COUNT_UNSPECIFIED) {
-				type->elements = 0;
-			}
-		} else {
-			error(state, 0, "Struct initializers not currently supported");
+		if (((type->type & TYPE_MASK) != TYPE_ARRAY) &&
+			((type->type & TYPE_MASK) != TYPE_STRUCT)) {
+			internal_error(state, 0, "unknown initializer type");
 		}
-		buf = xcmalloc(size_of(state, type), "initializer");
+		info.offset = 0;
+		info.type = type->left;
+		if (type->elements == ELEMENT_COUNT_UNSPECIFIED) {
+			max_offset = 0;
+		} else {
+			max_offset = size_of(state, type);
+		}
+		buf = xcmalloc(max_offset, "initializer");
 		eat(state, TOK_LBRACE);
 		do {
 			struct triple *value;
 			struct type *value_type;
 			size_t value_size;
+			void *dest;
 			int tok;
 			comma = 0;
 			tok = peek(state);
 			if ((tok == TOK_LBRACKET) || (tok == TOK_DOT)) {
-				index = designator(state);
+				info = designator(state, type);
 			}
-			if ((max_index != ELEMENT_COUNT_UNSPECIFIED) &&
-				(index > max_index)) {
+			if ((type->elements != ELEMENT_COUNT_UNSPECIFIED) &&
+				(info.offset >= max_offset)) {
 				error(state, 0, "element beyond bounds");
 			}
-			value_type = 0;
-			if ((type->type & TYPE_MASK) == TYPE_ARRAY) {
+			value_type = info.type;
+			if ((value_type->type & TYPE_MASK) == TYPE_PRODUCT) {
 				value_type = type->left;
 			}
 			value = eval_const_expr(state, initializer(state, value_type));
 			value_size = size_of(state, value_type);
 			if (((type->type & TYPE_MASK) == TYPE_ARRAY) &&
-				(max_index == ELEMENT_COUNT_UNSPECIFIED) &&
-				(type->elements <= index)) {
+				(type->elements == ELEMENT_COUNT_UNSPECIFIED) &&
+				(max_offset <= info.offset)) {
 				void *old_buf;
 				size_t old_size;
 				old_buf = buf;
-				old_size = size_of(state, type);
-				type->elements = index + 1;
-				buf = xmalloc(size_of(state, type), "initializer");
+				old_size = max_offset;
+				max_offset = info.offset + value_size;
+				buf = xmalloc(max_offset, "initializer");
 				memcpy(buf, old_buf, old_size);
 				xfree(old_buf);
 			}
+			dest = ((char *)buf) + info.offset;
 			if (value->op == OP_BLOBCONST) {
-				memcpy((char *)buf + index * value_size, value->u.blob, value_size);
+				memcpy(dest, value->u.blob, value_size);
 			}
 			else if ((value->op == OP_INTCONST) && (value_size == 1)) {
-				*(((uint8_t *)buf) + index) = value->u.cval & 0xff;
+				*((uint8_t *)dest) = value->u.cval & 0xff;
 			}
 			else if ((value->op == OP_INTCONST) && (value_size == 2)) {
-				*(((uint16_t *)buf) + index) = value->u.cval & 0xffff;
+				*((uint16_t *)dest) = value->u.cval & 0xffff;
 			}
 			else if ((value->op == OP_INTCONST) && (value_size == 4)) {
-				*(((uint32_t *)buf) + index) = value->u.cval & 0xffffffff;
+				*((uint32_t *)dest) = value->u.cval & 0xffffffff;
 			}
 			else {
 				fprintf(stderr, "%d %d\n",
 					value->op, value_size);
 				internal_error(state, 0, "unhandled constant initializer");
 			}
+			free_triple(state, value);
 			if (peek(state) == TOK_COMMA) {
 				eat(state, TOK_COMMA);
 				comma = 1;
 			}
-			index += 1;
+			info.offset += value_size;
+			if ((info.type->type & TYPE_MASK) == TYPE_PRODUCT) {
+				info.type = info.type->right;
+			}
 		} while(comma && (peek(state) != TOK_RBRACE));
+		if ((type->elements == ELEMENT_COUNT_UNSPECIFIED) &&
+			((type->type & TYPE_MASK) == TYPE_ARRAY)) {
+			type->elements = max_offset / size_of(state, type->left);
+		}
 		eat(state, TOK_RBRACE);
 		result = triple(state, OP_BLOBCONST, type, 0, 0);
 		result->u.blob = buf;
@@ -9028,7 +9097,8 @@ static struct triple *do_decl(struct compile_state *state,
 	default:
 		internal_error(state, 0, "Undefined storage class");
 	}
-	if (((type->type & STOR_MASK) == STOR_STATIC) &&
+	if (ident && 
+		((type->type & STOR_MASK) == STOR_STATIC) &&
 		((type->type & QUAL_CONST) == 0)) {
 		error(state, 0, "non const static variables not supported");
 	}

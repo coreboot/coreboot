@@ -244,7 +244,9 @@ static void main(unsigned long bist)
                 nodeid = lapicid() & 0xf;
         #if ENABLE_APIC_EXT_ID == 1
                 enable_apic_ext_id(nodeid);
-                lapic_write(LAPIC_ID, ( lapic_read(LAPIC_ID) | (APIC_ID_OFFSET<<24) ) ); // CPU apicid is from 0x10
+		if(nodeid != 0) {
+	                lapic_write(LAPIC_ID, ( lapic_read(LAPIC_ID) | (APIC_ID_OFFSET<<24) ) ); // CPU apicid is from 0x10
+		}
         #endif
                 if (cpu_init_detected(nodeid)) {
                         asm volatile ("jmp __cpu_reset");

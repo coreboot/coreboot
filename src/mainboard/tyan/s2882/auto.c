@@ -126,12 +126,12 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-#include "northbridge/amd/amdk8/setup_resource_map.c"
-#include "northbridge/amd/amdk8/resourcemap.c"
+//#include "northbridge/amd/amdk8/setup_resource_map.c"
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
 
+#include "northbridge/amd/amdk8/resourcemap.c"
 
 #define FIRST_CPU  1
 #define SECOND_CPU 1

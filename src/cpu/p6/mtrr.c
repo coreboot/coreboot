@@ -158,6 +158,7 @@ void intel_set_var_mtrr(unsigned int reg, unsigned long base, unsigned long size
 #ifdef ENABLE_FIXED_AND_VARIABLE_MTRRS
 void intel_set_mtrr(unsigned long rambase, unsigned long ramsizeK)
 {
+
 #ifdef SIS630
 	/* hardcoded for 128MB SDRAM, 4 MB SMA */
 	// change this 10/29/00 RGM 
@@ -172,33 +173,13 @@ void intel_set_mtrr(unsigned long rambase, unsigned long ramsizeK)
 	// so there is no problem with letting MTRR 0 overlap MTRR 1
 	printk(KERN_INFO "set_mtrr: rambase is 0x%x, ramsizeK is 0x%x\n", 
 		rambase, ramsizeK);
-#if 1
-	// why doesn't this work! machine hangs!
+
 	printk(KERN_INFO "setting MTRR 0 size to 0x%x\n", 
 	       (ramsizeK + 4096) * 1024);
 	intel_set_var_mtrr(0, 0, (ramsizeK + 4096) * 1024, MTRR_TYPE_WRBACK);
 	intel_set_var_mtrr(1, (ramsizeK * 1024), 
 			   4096 * 1024, MTRR_TYPE_UNCACHABLE);
-#else
-	// Ollie, this is a hack! Sorry! Ron
-	printk(KERN_INFO "Setting 256M MTRR 0\n");
-	intel_set_var_mtrr(0, 0, 128 * 1024 * 1024, MTRR_TYPE_WRBACK);
-	intel_set_var_mtrr(1, 124 *1024 * 1024, 4096 * 1024, MTRR_TYPE_UNCACHABLE);
-
-#ifdef HAVE_FRAMEBUFFER
-	// for SiS, ramsizeK is the base of the framebuffer. 
-	// but  if it's less than 60M, don't bother ...
-	if (ramsizeK > 60*1024)
-	{
-		printk(KERN_INFO "Setting %dM, 4M size MTRR 1\n", 
-			ramsizeK);
-//		intel_set_var_mtrr(1, ramsizeK * 1024, 4096 * 1024, 
-//				   MTRR_TYPE_UNCACHABLE);
-	}
-#endif /* HAVE_FRAMEBUFFER*/
-
 	printk(KERN_INFO "MTRRs set\n");
-#endif
 
 #else /* SIS630 */
 	printk("Setting variable MTRR 0 to %dK\n", ramsizeK);

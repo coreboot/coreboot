@@ -260,7 +260,7 @@ static void test(void)
 #if 1
 	outb(m, 0xab);
 #endif
-#if 0
+#if 1
 	outb(n, 0xab);
 #endif
 #if 0

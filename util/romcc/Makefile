@@ -1,5 +1,5 @@
-VERSION:=0.23
-RELEASE_DATE:=08 May 2003
+VERSION:=0.27
+RELEASE_DATE:=10 June 2003
 PACKAGE:=romcc
 
 
@@ -35,8 +35,19 @@ TESTS=\
 	simple_test18.c \
 	simple_test19.c \
 	simple_test20.c \
+	simple_test21.c \
+	simple_test22.c \
+	simple_test23.c \
+	simple_test24.c \
+	simple_test25.c \
+	simple_test26.c \
+	simple_test27.c \
+	simple_test28.c \
+	simple_test29.c \
+	simple_test30.c \
 	raminit_test.c \
-	raminit_test2.c
+	raminit_test2.c \
+	raminit_test3.c
 
 TEST_SRCS:=$(patsubst %, tests/%, $(TESTS))
 TEST_ASM:=$(patsubst %.c, tests/%.S, $(TESTS))
@@ -44,13 +55,13 @@ TEST_OBJ:=$(patsubst %.c, tests/%.o, $(TESTS))
 TEST_ELF:=$(patsubst %.c, tests/%.elf, $(TESTS))
 
 $(TEST_ASM): %.S: %.c romcc
-	export ALLOC_CHECK_=2; ./romcc -O $< > $@
+	export ALLOC_CHECK_=2; ./romcc -O -o $@ $< > $*.debug
 
 $(TEST_OBJ): %.o: %.S
 	as $< -o $@
 
-$(TEST_ELF): %.elf: %.o
-	ld -Ttext 0x1000 $< -o $@
+$(TEST_ELF): %.elf: %.o tests/ldscript.ld
+	ld -T tests/ldscript.ld $< -o $@
 
 test: $(TEST_ELF)
 
@@ -61,5 +72,5 @@ echo:
 	echo "TEST_ELF=$(TEST_ELF)"
 
 clean:
-	rm -f romcc core $(TEST_ASM) $(TEST_OBJ) $(TEST_ELF)
+	rm -f romcc core $(TEST_ASM) $(TEST_OBJ) $(TEST_ELF) tests/*.debug tests/*.debug2
 

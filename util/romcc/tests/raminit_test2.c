@@ -1,7 +1,8 @@
-#define HAVE_STRING_SUPPORT          0
-#define HAVE_CAST_SUPPORT            0
-#define HAVE_STATIC_ARRAY_SUPPORT    0
-#define HAVE_POINTER_SUPPORT         0
+#define HAVE_STRING_SUPPORT          1
+#define HAVE_CAST_SUPPORT            1
+#define HAVE_STATIC_ARRAY_SUPPORT    1
+#define HAVE_POINTER_SUPPORT         1
+#define HAVE_MACRO_ARG_SUPPORT       0
 
 void outb(unsigned char value, unsigned short port)
 {
@@ -196,7 +197,7 @@ void __console_tx_string(char *str)
 {
 	unsigned char ch;
 	while((ch = *str++) != '\0') {
-		__console_tx_byte(ch);
+		__console_tx_char(ch);
 	}
 }
 #else
@@ -1112,7 +1113,11 @@ static void dimms_read(unsigned long offset)
 		print_debug("\n");
 #endif
 #if HAVE_POINTER_SUPPORT
+#if HAVE_MACRO_ARG_SUPPORT
 		dummy = RAM(unsigned long, addr);
+#else
+		dummy = *((volatile unsigned long *)(addr));
+#endif
 #endif
 #if HAVE_STRING_SUPPORT
 		print_debug("Reading "); 
@@ -1120,7 +1125,11 @@ static void dimms_read(unsigned long offset)
 		print_debug("\n");
 #endif
 #if HAVE_POINTER_SUPPORT
+#if HAVE_MACRO_ARG_SUPPORT
 		dummy = RAM(unsigned long, addr ^ 0xdff8);
+#else
+		dummy = *((volatile unsigned long *)(addr ^ 0xdff8));
+#endif
 #endif
 #if HAVE_STRING_SUPPORT
 		print_debug("Read "); 

@@ -50,11 +50,7 @@ raminit:
 
 	/* set DRAM type to DDR */
 	CS_WRITE($0x60, $0x02)
-#if 0
-	CS_WRITE($0x61, $0xaa)
-	CS_WRITE($0x62, $0xaf)
-	CS_WRITE($0x63, $0xa0)
-#endif
+
 	/* DRAM Arbitration Timer */
 	CS_WRITE($0x65, $0x32)
 	CS_WRITE($0x66, $0x01)
@@ -76,57 +72,52 @@ raminit:
 	/* NOP Command Enable */
 	CS_WRITE($0x6b, $0x01)
 	/* read a double word from any address of the dimm */
-	movl %eax, %ds:(%esi)
+	movl %ds:(%esi), %eax
 	DELAY(loop200)
 
 	/* All bank Precharge Command Enable */
 	CS_WRITE($0x6b, $0x02)
-	movl %eax, %ds:(%esi)
+	movl %ds:(%esi), %eax
 
 	/* MSR Enable */
 	CS_WRITE($0x6b, $0x03)
 	/* read 0x2000h */
 	movl $0x2000, %ecx
-	movl (%ecx), %eax
-//	movl $0x4002000, %ecx
-//	movl (%ecx), %eax
+	movl %ds:(%esi), %eax
+
 	/* read 0x800h */
 	movl $0x800, %ecx
-	movl (%ecx), %eax
-//	movl $0x4000800, %ecx
-//	movl (%ecx), %eax
+	movl %ds:(%esi), %eax
 
 	/* All banks Precharge Command Enable */
 	CS_WRITE($0x6b, $0x02)
-	movl %eax, %ds:(%esi)
+	movl %ds:(%esi), %eax
 
 	/* CBR Cycle Enable */
 	CS_WRITE($0x6b, $0x04)
 	/* Read 8 times */
-	movl %eax, %ds:(%esi)
+	movl %ds:(%esi), %eax
 	DELAY(loop100)
-	movl %eax, %ds:(%esi)
+	movl %ds:(%esi), %eax
 	DELAY(loop100)
-	movl %eax, %ds:(%esi)
+	movl %ds:(%esi), %eax
 	DELAY(loop100)
-	movl %eax, %ds:(%esi)
+	movl %ds:(%esi), %eax
 	DELAY(loop100)
-	movl %eax, %ds:(%esi)
+	movl %ds:(%esi), %eax
 	DELAY(loop100)
-	movl %eax, %ds:(%esi)
+	movl %ds:(%esi), %eax
 	DELAY(loop100)
-	movl %eax, %ds:(%esi)
+	movl %ds:(%esi), %eax
 	DELAY(loop100)
-	movl %eax, %ds:(%esi)
+	movl %ds:(%esi), %eax
 	DELAY(loop100)
 
 	/* MSR Enable */
 	CS_WRITE($0x6b, $0x03)
 	/* 0x150 if CAS Latency 2 or 0x350 CAS Latency 2.5 */
 	movl $0x350, %ecx
-	movl (%ecx), %eax
-//	movl $0x4000350, %ecx
-//	movl (%ecx), %eax
+	movl %ds:(%esi), %eax
 
 	/* Normal SDRAM Mode */
 	CS_WRITE($0x6b, $0x58)
@@ -143,16 +134,6 @@ raminit:
 
 	CS_WRITE($0x71, $0xc8)
 
-#if 0
-	CS_WRITE($0x80, $0x0f)
-	CS_WRITE($0x84, $0x80)
-	CS_WRITE($0x88, $0x02)
-
-	CS_WRITE($0xb8, $0x8a)
-	CS_WRITE($0xe0, $0x81)
-	CS_WRITE($0xe1, $0xdd)
-	CS_WRITE($0xe2, $0x42)
-#endif
 	/* graphics aperture base */
 	CS_WRITE($0x13, $0xd0)
 

@@ -1,4 +1,4 @@
-#define SMBUS_IO_BASE 0x5000
+#define SMBUS_IO_BASE 0xf00
 
 #define SMBHSTSTAT 0x0
 #define SMBSLVSTAT 0x1
@@ -22,12 +22,15 @@
 
 #define SMBUS_TIMEOUT (100*1000*10)
 
+#define  I2C_TRANS_CMD          0x40
+#define  CLOCK_SLAVE_ADDRESS    0x69
+
 static void enable_smbus(void)
 {
 	device_t dev;
 	unsigned char c;
 	/* Power management controller */
-	dev = pci_locate_device(PCI_ID(0x1106,0x8235), 0);
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8235), 0);
 	
 	if (dev == PCI_DEV_INVALID) {
 		die("SMBUS controller not found\r\n");
@@ -37,20 +40,26 @@ static void enable_smbus(void)
 	pci_write_config32(dev, 0x90, SMBUS_IO_BASE|1);
 	
 	// Enable SMBus 
-	c = pci_read_config8(dev, 0xd2);
-	c |= 5;
-	pci_write_config8(dev, 0xd2, c);
+	pci_write_config8(dev, 0xd2, (0x4 << 1)|1);
 	
 	/* make it work for I/O ...
 	 */
-	dev = pci_locate_device(PCI_ID(0x1106,0x8235), 0);
-	c = pci_read_config8(dev, 4);
-	c |= 1;
-	pci_write_config8(dev, 4, c);
-	print_debug_hex8(c);
-	print_debug(" is the comm register\r\n");
-	
-	print_debug("SMBus controller enabled\r\n");
+	pci_write_config8(dev, 4, 1);
+
+/* The VT1211 serial port needs 48 mhz clock, on power up it is getting
+   only 24 mhz, there is some mysterious device on the smbus that can
+   fix this...this code below does it. */
+	outb(0xff, SMBUS_IO_BASE+SMBHSTSTAT); 
+	outb(0x7f, SMBUS_IO_BASE+SMBHSTDAT0); 
+	outb(0x83, SMBUS_IO_BASE+SMBHSTCMD);
+        outb(CLOCK_SLAVE_ADDRESS<<1, SMBUS_IO_BASE+SMBXMITADD);
+        outb(8 | I2C_TRANS_CMD, SMBUS_IO_BASE+SMBHSTCTL);
+
+	for (;;) {
+		c = inb(SMBUS_IO_BASE+SMBHSTSTAT);
+		if (c & 1 == 0)
+			break;
+	}
 }
 
 

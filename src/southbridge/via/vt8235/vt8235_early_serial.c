@@ -8,11 +8,18 @@
 #define SIO_BASE 0x3f0
 #define SIO_DATA  SIO_BASE+1
 
-static void vt8235_writesuper(uint8_t reg, uint8_t val) 
+static void vt8235_writepnpaddr(uint8_t val) 
 {
-	outb(reg, SIO_BASE);
-	outb(val, SIO_DATA);
+	outb(val, 0x2e);
+	outb(val, 0xeb);
 }
+
+static void vt8235_writepnpdata(uint8_t val) 
+{
+	outb(val, 0x2f);
+	outb(val, 0xeb);
+}
+
 
 static void vt8235_writesiobyte(uint16_t reg, uint8_t val) 
 {
@@ -34,30 +41,28 @@ static void enable_vt8235_serial(void)
 	unsigned long x;
 	uint8_t c;
 	device_t dev;
-	outb(6, 0x80);
-	dev = pci_locate_device(PCI_ID(0x1106,0x8235), 0);
-	
-	if (dev == PCI_DEV_INVALID) {
-		outb(7, 0x80);
-		die("Serial controller not found\r\n");
-	}
-	
-	/* first, you have to enable the superio and superio config. 
-	   put a 6 reg 80
-	*/
-	c = pci_read_config8(dev, 0x50);
-	c |= 6;
-	pci_write_config8(dev, 0x50, c);
-	outb(2, 0x80);
+	// turn on pnp
+	vt8235_writepnpaddr(0x87);
+	vt8235_writepnpaddr(0x87);
 	// now go ahead and set up com1. 
 	// set address
-	vt8235_writesuper(0xf4, 0xfe);
+	vt8235_writepnpaddr(0x7);
+	vt8235_writepnpdata(0x2);
 	// enable serial out
-	vt8235_writesuper(0xf2, 7);
-	// That's it for the sio stuff.
-	//	movl	$SUPERIOCONFIG, %eax
-	//	movb	$9, %dl
-	//	PCI_WRITE_CONFIG_BYTE
+	vt8235_writepnpaddr(0x30);
+	vt8235_writepnpdata(0x1);
+	// serial port 1 base address (FEh)
+	vt8235_writepnpaddr(0x60);
+	vt8235_writepnpdata(0xfe);
+	// serial port 1 IRQ (04h)
+	vt8235_writepnpaddr(0x70);
+	vt8235_writepnpdata(0x4);
+	// serial port 1 control
+	vt8235_writepnpaddr(0xf0);
+	vt8235_writepnpdata(0x2);
+	// turn of pnp
+	vt8235_writepnpaddr(0xaa);
+
 	// set up reg to set baud rate.
 	vt8235_writesiobyte(0x3fb, 0x80);
 	// Set 115 kb

@@ -229,7 +229,7 @@ static void vt8235_init(struct southbridge_via_vt8235_config *conf)
 	/* IDE controller */
 	dev1 = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C586_1, 0);
 	/* Power management controller */
-	devpwr = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8235_4, 0);
+	//devpwr = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8235_4, 0);
 
 	// enable the internal I/O decode
 	enables = pci_read_config8(dev0, 0x6C);
@@ -315,22 +315,22 @@ static void vt8235_init(struct southbridge_via_vt8235_config *conf)
 	// Power management setup
 	//
 	// Set ACPI base address to IO 0x4000
-	pci_write_config32(devpwr, 0x48, 0x4001);
+	//pci_write_config32(devpwr, 0x48, 0x4001);
 	
 	// Enable ACPI access (and setup like award)
-	pci_write_config8(devpwr, 0x41, 0x84);
+	//pci_write_config8(devpwr, 0x41, 0x84);
 	
 	// Set hardware monitor base address to IO 0x6000
-	pci_write_config32(devpwr, 0x70, 0x6001);
+	//pci_write_config32(devpwr, 0x70, 0x6001);
 	
 	// Enable hardware monitor (and setup like award)
-	pci_write_config8(devpwr, 0x74, 0x01);
+	//pci_write_config8(devpwr, 0x74, 0x01);
 	
 	// set IO base address to 0x5000
-	pci_write_config32(devpwr, 0x90, 0x5001);
+	//pci_write_config32(devpwr, 0x90, 0x5001);
 	
 	// Enable SMBus 
-	pci_write_config8(devpwr, 0xd2, 0x01);
+	//pci_write_config8(devpwr, 0xd2, 0x01);
 	
 	//
 	// IDE setup

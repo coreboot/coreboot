@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <device/pci_def.h>
+#include <device/pci_ids.h>
 #include <cpu/p6/apic.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
@@ -26,10 +27,10 @@ void udelay(int usecs)
 #include "cpu/p6/boot_cpu.c"
 #include "debug.c"
 
-#include "southbridge/via/vt8231/vt8235_early_smbus.c"
+#include "southbridge/via/vt8235/vt8235_early_smbus.c"
 
 
-#include "southbridge/via/vt8231/vt8235_early_serial.c"
+#include "southbridge/via/vt8235/vt8235_early_serial.c"
 static void memreset_setup(void)
 {
 }
@@ -58,7 +59,7 @@ static void enable_mainboard_devices(void)
 	device_t dev;
 	/* dev 0 for southbridge */
   
-	dev = pci_locate_device(PCI_ID(0x1106,0x8235), 0);
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8235), 0);
   
 	if (dev == PCI_DEV_INVALID) {
 		die("Southbridge not found!!!\n");
@@ -99,13 +100,13 @@ static void main(void)
 	/*	init_timer();*/
 	outb(5, 0x80);
 	
+	enable_smbus();
 	enable_vt8235_serial();
 
 	uart_init();
 	console_init();
 	
 	enable_mainboard_devices();
-	enable_smbus();
 	enable_shadow_ram();
 	/*
 	  memreset_setup();

@@ -1,5 +1,5 @@
-struct chip_control mainboard_via_epia_control;
+struct chip_control mainboard_via_epia_m_control;
 
-struct mainboard_via_epia_config {
+struct mainboard_via_epia_m_config {
 	int nothing;
 };

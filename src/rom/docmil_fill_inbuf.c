@@ -68,7 +68,7 @@ memcpy_from_doc_mil(void *dest, const void *src, size_t n)
 	int i;
 	unsigned long address = (unsigned long) src;
 
-	for (i = n; i >= 0; i -= 0x200) {
+	for (i = n; i > 0; i -= 0x200) {
 		unsigned short c = 0x1000;
 		volatile unsigned char dummy;
 

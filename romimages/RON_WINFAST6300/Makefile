@@ -8,7 +8,7 @@ CPUFLAGS += -DNEWPCI
 CPUFLAGS += -DENABLE_FIXED_AND_VARIABLE_MTRRS
 CPUFLAGS += -DINBUF_COPY
 CPUFLAGS += -DUSE_DOC_MIL
-CPUFLAGS += -DCMD_LINE='"root=/dev/nftla1 single"'
+CPUFLAGS += -DCMD_LINE='"root=/dev/hda1 single"'
 
 LINUXPATH=$(TOP)/../linux-2.4.0-test6.sis
 LINUX=$(LINUXPATH)/vmlinux

@@ -94,6 +94,12 @@ int start_cpu(int apicid)
 		printk_err("CPU %d: First apic write timed out. Disabling\n",
 			 apicid);
 		// too bad. 
+		printk_err("ESR is 0x%x\n", apic_read(APIC_ESR));
+		if (apic_read(APIC_ESR)) {
+			printk_err("Try to reset ESR\n");
+			apic_write_around(APIC_ESR, 0);
+			printk_err("ESR is 0x%x\n", apic_read(APIC_ESR));
+		}
 		return 0;
 	}
 

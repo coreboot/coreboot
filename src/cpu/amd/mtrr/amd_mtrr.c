@@ -24,6 +24,11 @@ void amd_setup_mtrrs(void)
 	device_t dev;
 	msr_t msr;
 
+	/* Disable the access to AMD RdDram and WrDram extension bits */
+	msr = rdmsr(SYSCFG_MSR);
+	msr.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
+	wrmsr(SYSCFG_MSR, msr);
+
 	x86_setup_mtrrs();
 
 	/* Except for the PCI MMIO hole just before 4GB there are no

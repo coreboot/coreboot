@@ -89,6 +89,35 @@ int erase_sector_jedec(volatile unsigned char *bios, unsigned int page)
 
 	return (0);
 }
+int erase_block_jedec(volatile unsigned char *bios, unsigned int block)
+{
+	volatile unsigned char *Temp;
+
+	/*  Issue the Sector Erase command   */
+	Temp = bios + 0x5555;	/* set up address to be BASE:5555h      */
+	*Temp = 0xAA;		/* write data 0xAA to the address       */
+	myusec_delay(10);
+	Temp = bios + 0x2AAA;	/* set up address to be BASE:2AAAh      */
+	*Temp = 0x55;		/* write data 0x55 to the address       */
+	myusec_delay(10);
+	Temp = bios + 0x5555;	/* set up address to be BASE:5555h      */
+	*Temp = 0x80;		/* write data 0x80 to the address       */
+	myusec_delay(10);
+	Temp = bios + 0x5555;	/* set up address to be BASE:5555h      */
+	*Temp = 0xAA;		/* write data 0xAA to the address       */
+	myusec_delay(10);
+	Temp = bios + 0x2AAA;	/* set up address to be BASE:2AAAh      */
+	*Temp = 0x55;		/* write data 0x55 to the address       */
+	myusec_delay(10);
+	Temp = bios + block;	/* set up address to be the current sector */
+	*Temp = 0x50;		/* write data 0x30 to the address       */
+	myusec_delay(10);
+
+	/* wait for Toggle bit ready         */
+	toggle_ready_jedec(bios);
+
+	return (0);
+}
 
 int erase_chip_jedec(struct flashchip *flash)
 {

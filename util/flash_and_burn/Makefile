@@ -1,5 +1,5 @@
 OBJS = flash_enable.o udelay.o jedec.o sst28sf040.o am29f040b.o mx29f002.c sst39sf020.o \
-	m29f400bt.o w49f002u.o 82802ab.o msys_doc.o pm49fl004.o sst49lf040.o
+	m29f400bt.o w49f002u.o 82802ab.o msys_doc.o pm49fl004.o sst49lf040.o sst_fwhub.o
 CC = gcc -O2 -g -Wall -Werror
 
 all: flash_rom flash_on

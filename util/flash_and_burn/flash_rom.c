@@ -46,6 +46,7 @@
 #include "sst49lf040.h"
 #include "pm49fl004.h"
 #include "mx29f002.h"
+#include "sst_fwhub.h"
 
 struct flashchip flashchips[] = {
 	{"Am29F040B",	AMD_ID, 	AM_29F040B,	NULL, 512, 64 * 1024,
@@ -73,7 +74,7 @@ struct flashchip flashchips[] = {
 	{"SST49LF004A", SST_ID,		SST_49LF004A,	NULL, 512, 4096,
 	 probe_jedec,	erase_chip_jedec, write_49lf040,NULL},
 	{"SST49LF008A", SST_ID,		SST_49LF008A, 	NULL, 1024, 4096,
-	 probe_jedec, 	erase_chip_jedec, write_49lf040,NULL},
+	 probe_sst_fwhub, erase_sst_fwhub, write_sst_fwhub, NULL},
 	{"Pm49FL004",	PMC_ID,		PMC_49FL004,	NULL, 512, 64 * 1024,
 	 probe_jedec,	erase_chip_jedec, write_49fl004,NULL},
 	{"W29C011",	WINBOND_ID,	W_29C011,	NULL, 128, 128,

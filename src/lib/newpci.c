@@ -1,0 +1,993 @@
+/*
+ *    Low-Level PCI Support for PC
+ *
+ *      (c) 1999--2000 Martin Mares <mj@suse.cz>
+ */
+/* lots of mods by ron minnich (rminnich@lanl.gov), with 
+ * the final architecture guidance from Tom Merritt (tjm@codegen.com)
+ * In particular, we changed from the one-pass original version to 
+ * Tom's recommended multiple-pass version. I wasn't sure about doing 
+ * it with multiple passes, until I actually started doing it and saw
+ * the wisdom of Tom's recommendations ...
+ */
+/* single-pass allocation appears to be the way to go.  */
+#include <lbpci.h>
+#undef __KERNEL__
+#include <asm/io.h>
+#include <printk.h>
+
+#ifdef EMULATE
+#define DEBUG
+#endif
+
+#define DEBUG
+
+#ifdef DEBUG
+#define DBG(x...) printk(KERN_DEBUG x)
+#else
+#define DBG(x...)
+#endif
+
+#define ONEMEG (1 << 20)
+#undef TWO_PASS_ALLOCATE
+
+#define PCI_MEM_START 0x80000000
+#define PCI_IO_START 0x1000
+
+static const struct pci_ops *conf;
+
+struct pci_ops {
+	int (*read_byte) (u8 bus, int devfn, int where, u8 * val);
+	int (*read_word) (u8 bus, int devfn, int where, u16 * val);
+	int (*read_dword) (u8 bus, int devfn, int where, u32 * val);
+	int (*write_byte) (u8 bus, int devfn, int where, u8 val);
+	int (*write_word) (u8 bus, int devfn, int where, u16 val);
+	int (*write_dword) (u8 bus, int devfn, int where, u32 val);
+};
+
+
+/*
+ * Direct access to PCI hardware...
+ */
+
+
+/*
+ * Functions for accessing PCI configuration space with type 1 accesses
+ */
+
+#define CONFIG_CMD(bus,devfn, where)   (0x80000000 | (bus << 16) | (devfn << 8) | (where & ~3))
+
+static int pci_conf1_read_config_byte(unsigned char bus, int devfn, int where, u8 * value)
+{
+	outl(CONFIG_CMD(bus, devfn, where), 0xCF8);
+	*value = inb(0xCFC + (where & 3));
+	return 0;
+}
+
+static int pci_conf1_read_config_word(unsigned char bus, int devfn, int where, u16 * value)
+{
+	outl(CONFIG_CMD(bus, devfn, where), 0xCF8);
+	*value = inw(0xCFC + (where & 2));
+	return 0;
+}
+
+static int pci_conf1_read_config_dword(unsigned char bus, int devfn, int where, u32 * value)
+{
+	outl(CONFIG_CMD(bus, devfn, where), 0xCF8);
+	*value = inl(0xCFC);
+	return 0;
+}
+
+static int pci_conf1_write_config_byte(unsigned char bus, int devfn, int where, u8 value)
+{
+	outl(CONFIG_CMD(bus, devfn, where), 0xCF8);
+	outb(value, 0xCFC + (where & 3));
+	return 0;
+}
+
+static int pci_conf1_write_config_word(unsigned char bus, int devfn, int where, u16 value)
+{
+	outl(CONFIG_CMD(bus, devfn, where), 0xCF8);
+	outw(value, 0xCFC + (where & 2));
+	return 0;
+}
+
+static int pci_conf1_write_config_dword(unsigned char bus, int devfn, int where, u32 value)
+{
+	outl(CONFIG_CMD(bus, devfn, where), 0xCF8);
+	outl(value, 0xCFC);
+	return 0;
+}
+
+#undef CONFIG_CMD
+
+static const struct pci_ops pci_direct_conf1 =
+{
+	pci_conf1_read_config_byte,
+	pci_conf1_read_config_word,
+	pci_conf1_read_config_dword,
+	pci_conf1_write_config_byte,
+	pci_conf1_write_config_word,
+	pci_conf1_write_config_dword
+};
+
+/*
+ * Functions for accessing PCI configuration space with type 2 accesses
+ */
+
+#define IOADDR(devfn, where)	((0xC000 | ((devfn & 0x78) << 5)) + where)
+#define FUNC(devfn)		(((devfn & 7) << 1) | 0xf0)
+#define SET(bus,devfn)		if (devfn & 0x80) return -1;outb(FUNC(devfn), 0xCF8); outb(bus, 0xCFA);
+
+static int pci_conf2_read_config_byte(unsigned char bus, int devfn, int where, u8 * value)
+{
+	SET(bus, devfn);
+	*value = inb(IOADDR(devfn, where));
+	outb(0, 0xCF8);
+	return 0;
+}
+
+static int pci_conf2_read_config_word(unsigned char bus, int devfn, int where, u16 * value)
+{
+	SET(bus, devfn);
+	*value = inw(IOADDR(devfn, where));
+	outb(0, 0xCF8);
+	return 0;
+}
+
+static int pci_conf2_read_config_dword(unsigned char bus, int devfn, int where, u32 * value)
+{
+	SET(bus, devfn);
+	*value = inl(IOADDR(devfn, where));
+	outb(0, 0xCF8);
+	return 0;
+}
+
+static int pci_conf2_write_config_byte(unsigned char bus, int devfn, int where, u8 value)
+{
+	SET(bus, devfn);
+	outb(value, IOADDR(devfn, where));
+	outb(0, 0xCF8);
+	return 0;
+}
+
+static int pci_conf2_write_config_word(unsigned char bus, int devfn, int where, u16 value)
+{
+	SET(bus, devfn);
+	outw(value, IOADDR(devfn, where));
+	outb(0, 0xCF8);
+	return 0;
+}
+
+static int pci_conf2_write_config_dword(unsigned char bus, int devfn, int where, u32 value)
+{
+	SET(bus, devfn);
+	outl(value, IOADDR(devfn, where));
+	outb(0, 0xCF8);
+	return 0;
+}
+
+#undef SET
+#undef IOADDR
+#undef FUNC
+
+static const struct pci_ops pci_direct_conf2 =
+{
+	pci_conf2_read_config_byte,
+	pci_conf2_read_config_word,
+	pci_conf2_read_config_dword,
+	pci_conf2_write_config_byte,
+	pci_conf2_write_config_word,
+	pci_conf2_write_config_dword
+};
+
+/*
+ * Before we decide to use direct hardware access mechanisms, we try to do some
+ * trivial checks to ensure it at least _seems_ to be working -- we just test
+ * whether bus 00 contains a host bridge (this is similar to checking
+ * techniques used in XFree86, but ours should be more reliable since we
+ * attempt to make use of direct access hints provided by the PCI BIOS).
+ *
+ * This should be close to trivial, but it isn't, because there are buggy
+ * chipsets (yes, you guessed it, by Intel and Compaq) that have no class ID.
+ */
+static int pci_sanity_check(const struct pci_ops *o)
+{
+	u16 x;
+	u8 bus;
+	int devfn;
+#define PCI_CLASS_BRIDGE_HOST		0x0600
+#define PCI_CLASS_DISPLAY_VGA		0x0300
+#define PCI_VENDOR_ID_COMPAQ		0x0e11
+#define PCI_VENDOR_ID_INTEL		0x8086
+
+	for (bus = 0, devfn = 0; devfn < 0x100; devfn++)
+		if ((!o->read_word(bus, devfn, PCI_CLASS_DEVICE, &x) &&
+		     (x == PCI_CLASS_BRIDGE_HOST || x == PCI_CLASS_DISPLAY_VGA)) ||
+		    (!o->read_word(bus, devfn, PCI_VENDOR_ID, &x) &&
+		(x == PCI_VENDOR_ID_INTEL || x == PCI_VENDOR_ID_COMPAQ)))
+			return 1;
+	printk(KERN_ERR "PCI: Sanity check failed\n");
+	return 0;
+}
+
+static const struct pci_ops *pci_check_direct(void)
+{
+	unsigned int tmp;
+
+	/*
+	 * Check if configuration type 1 works.
+	 */
+	{
+		outb(0x01, 0xCFB);
+		tmp = inl(0xCF8);
+		outl(0x80000000, 0xCF8);
+		if (inl(0xCF8) == 0x80000000 &&
+		    pci_sanity_check(&pci_direct_conf1)) {
+			outl(tmp, 0xCF8);
+			printk(KERN_INFO "PCI: Using configuration type 1\n");
+			return &pci_direct_conf1;
+		}
+		outl(tmp, 0xCF8);
+	}
+
+	/*
+	 * Check if configuration type 2 works.
+	 */
+	{
+		outb(0x00, 0xCFB);
+		outb(0x00, 0xCF8);
+		outb(0x00, 0xCFA);
+		if (inb(0xCF8) == 0x00 && inb(0xCFA) == 0x00 &&
+		    pci_sanity_check(&pci_direct_conf2)) {
+			printk(KERN_INFO "PCI: Using configuration type 2\n");
+			return &pci_direct_conf2;
+		}
+	}
+
+	return 0;
+}
+// Need to merge all these functions. Sorry about this. 
+// changing horses in mid-stream!
+
+
+int pci_read_config_byte(struct pci_dev *dev, u8 where, u8 * val)
+{
+	return conf->read_byte(dev->bus->number, dev->devfn, where, val);
+}
+
+int pci_read_config_word(struct pci_dev *dev, u8 where, u16 * val)
+{
+	return conf->read_word(dev->bus->number, dev->devfn, where, val);
+}
+
+int pci_read_config_dword(struct pci_dev *dev, u8 where, u32 * val)
+{
+	return conf->read_dword(dev->bus->number, dev->devfn, where, val);
+}
+
+int pci_write_config_byte(struct pci_dev *dev, u8 where, u8 val)
+{
+	return conf->write_byte(dev->bus->number, dev->devfn, where, val);
+}
+
+int pci_write_config_word(struct pci_dev *dev, u8 where, u16 val)
+{
+	return conf->write_word(dev->bus->number, dev->devfn, where, val);
+}
+
+int pci_write_config_dword(struct pci_dev *dev, u8 where, u32 val)
+{
+	return conf->write_dword(dev->bus->number, dev->devfn, where, val);
+}
+
+int pci_debugwrite_config_byte(struct pci_dev *dev, u8 where, u8 val)
+{
+#ifndef DEBUG
+	return conf->write_byte(dev->bus->number, dev->devfn, where, val);
+#else
+	printk("Write config byte bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
+	       dev->bus->number, dev->devfn, where, val);
+	return 0;
+#endif
+
+}
+
+int pci_debugwrite_config_word(struct pci_dev *dev, u8 where, u16 val)
+{
+#ifndef DEBUG
+	return conf->write_word(dev->bus->number, dev->devfn, where, val);
+#else
+	printk("Write config byte bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
+	       dev->bus->number, dev->devfn, where, val);
+	return 0;
+#endif
+}
+
+int pci_debugwrite_config_dword(struct pci_dev *dev, u8 where, u32 val)
+{
+#ifndef DEBUG
+	return conf->write_dword(dev->bus->number, dev->devfn, where, val);
+#else
+	printk("Write config byte bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
+	       dev->bus->number, dev->devfn, where, val);
+	return 0;
+#endif
+}
+
+
+int pcibios_read_config_byte(unsigned char bus, unsigned char devfn, u8 where, u8 * val)
+{
+	return conf->read_byte(bus, devfn, where, val);
+}
+
+int pcibios_read_config_word(unsigned char bus, unsigned char devfn, u8 where, u16 * val)
+{
+	return conf->read_word(bus, devfn, where, val);
+}
+
+int pcibios_read_config_dword(unsigned char bus, unsigned char devfn, u8 where, u32 * val)
+{
+	return conf->read_dword(bus, devfn, where, val);
+}
+
+int pcibios_write_config_byte(unsigned char bus, unsigned char devfn, u8 where, u8 val)
+{
+	return conf->write_byte(bus, devfn, where, val);
+}
+
+int pcibios_write_config_word(unsigned char bus, unsigned char devfn, u8 where, u16 val)
+{
+	return conf->write_word(bus, devfn, where, val);
+}
+
+int pcibios_write_config_dword(unsigned char bus, unsigned char devfn, u8 where, u32 val)
+{
+	return conf->write_dword(bus, devfn, where, val);
+}
+
+
+int pcibios_debugwrite_config_byte(unsigned char bus, unsigned char devfn, u8 where, u8 val)
+{
+#ifndef DEBUG
+	return conf->write_byte(bus, devfn, where, val);
+#else
+	printk("Write byte bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
+	       bus, devfn, where, val);
+	return 0;
+#endif
+}
+
+int pcibios_debugwrite_config_word(unsigned char bus, unsigned char devfn, u8 where, u16 val)
+{
+#ifndef DEBUG
+	return conf->write_word(bus, devfn, where, val);
+#else
+	printk("Write word bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
+	       bus, devfn, where, val);
+	return 0;
+#endif
+
+}
+
+int pcibios_debugwrite_config_dword(unsigned char bus, unsigned char devfn, u8 where, u32 val)
+{
+#ifndef DEBUG
+	return conf->write_dword(bus, devfn, where, val);
+#else
+	printk("Write doubleword bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
+	       bus, devfn, where, val);
+	return 0;
+#endif
+
+}
+
+/** round a number to an alignment. 
+ * @param val the starting value
+ * @param roundup Alignment as a power of two
+ * @returns rounded up number
+ */
+unsigned long round(unsigned long val, unsigned long roundup)
+{
+	// ROUNDUP MUST BE A POWER OF TWO. 
+	unsigned long inverse;
+	inverse = ~(roundup - 1);
+	val += (roundup - 1);
+	val &= inverse;
+	return val;
+}
+
+/** Set the method to be used for PCI, type I or type II
+ */
+void pci_set_method()
+{
+	conf = &pci_direct_conf1;
+	conf = pci_check_direct();
+}
+
+/* allocating resources on PCI is a mess. The reason is that 
+ * the BAR size is actually two things: one is the size, and
+ * the other is the alignment of the data. Take, for example, the 
+ * SiS agp hardware. BAR 0 reports a size as follows: 0xf8000008. 
+ * This means prefetchable, and you can compute the size of 
+ * 0x8000000 (128 Mbytes). But it also turns you that only the 
+ * top five bits of the address are decoded. So you can not, for 
+ * example, allocate address space at 0x400000 for 0x8000000 bytes, 
+ * because in the register that will turn into 0. You have
+ * to allocate address space using only the top five bits of the 
+ * PCI address space, i.e. you have to start allocating at 0x8000000. 
+ * 
+ * we have a more complex algorithm for address space allocation in the
+ * works, that is actually simple code but gets the desired behavior. 
+ * For now, though, we operate as follows: 
+ * as you encounter BAR values, just round up the current usage
+ * to be aligned to the BAR size. Then allocate. 
+ * This has the advantage of being simple, and in practice there are 
+ * so few large BAR areas that we expect it to cover all cases. 
+ * If we find problems with this strategy we'll go to the more complex
+ * algorithm. 
+ */
+/* it's worse than I thought ... 
+ * rules: 
+ * bridges contain all sub-bridges, and the address space for mem and 
+ * prefetch has to be contiguous. 
+ * Anyway, this has gotten so complicated we're going to a one-pass 
+ * allocate for now. 
+ */
+
+#ifdef TWO_PASS_ALLOCATE
+void compute_resources(struct pci_bus *bus)
+{
+	int i;
+	struct pci_bus *curbus;
+	struct pci_dev *curdev;
+	unsigned long mem, prefmem, io;
+	mem = prefmem = io = 0;
+	// first, walk all the bridges
+	// Sum up the memory requirements of each bridge and add it into the 
+	// total. 
+	for (curbus = bus->children; curbus; curbus = curbus->next) {
+
+		compute_resources(curbus);
+		mem += curbus->mem;
+		prefmem += curbus->prefmem;
+		io += curbus->io;
+		printk(KERN_DEBUG "Bridge Bus %d,mem 0x%lx, "
+		       "prefmem 0x%lx, io 0x%lx\n",
+		       curbus->number, mem, prefmem, io);
+	}
+
+	// second, walk all the devices. Add these. 
+	for (curdev = bus->devices; curdev; curdev = curdev->sibling) {
+		for (i = 0; i < 6; i++) {
+			unsigned long size = curdev->size[i];
+			if (size & PCI_BASE_ADDRESS_SPACE_IO) {
+				unsigned long iosize;
+				iosize = size & PCI_BASE_ADDRESS_IO_MASK;
+				printk(KERN_DEBUG "Bus %d, devfn 0x%x, "
+				       "reg %d: io 0x%lx\n",
+				       curdev->bus->number, curdev->devfn,
+				       i, iosize);
+				io += round(iosize, IO_ALIGN);
+			} else {
+				unsigned long memorysize = size & (PCI_BASE_ADDRESS_MEM_MASK);
+				unsigned long type = size & (~PCI_BASE_ADDRESS_MEM_MASK);
+				// at this point it's memory. What kind? 
+				if (type == 0) {	// normal
+
+					unsigned long regmem;
+					// align the memory value
+					regmem = round(memorysize, MEM_ALIGN);
+					mem = round(mem, regmem);
+					printk(KERN_DEBUG "Bus %d, "
+					       "devfn 0x%x, reg %d: "
+					       "mem 0x%lx\n",
+					       curdev->bus->number,
+					       curdev->devfn, i, regmem);
+					mem += regmem;
+				} else if (type & PCI_BASE_ADDRESS_MEM_PREFETCH) {
+					unsigned long regmem;
+					// align the memory value
+					regmem = round(memorysize, MEM_ALIGN);
+					prefmem = round(prefmem, regmem);
+					printk(KERN_DEBUG "Bus %d, "
+					       "devfn 0x%x, reg %d: "
+					       "prefmem 0x%lx\n",
+					       curdev->bus->number,
+					       curdev->devfn, i, regmem);
+					prefmem += regmem;
+				} else
+					printk(KERN_DEBUG "Bus %d, "
+					       "devfn 0x%x: Unsupported "
+					       "memory type 0x%lx\n",
+					       curdev->bus->number,
+					       curdev->devfn, type);
+
+			}
+		}
+	}
+
+	// assign to this bus. 
+	bus->mem = round(mem, ONEMEG);
+	bus->prefmem = round(prefmem, ONEMEG);
+	bus->io = round(io, IO_BRIDGE_ALIGN);
+}
+
+void allocate_resources(struct pci_bus *bus)
+{
+	int i;
+	struct pci_bus *curbus;
+	struct pci_dev *curdev;
+	unsigned long mem, io, prefmem;
+
+	// first, walk all the bridges
+	// Give each bridge what it needs, then call that bridge to configure 
+	// itself and its devices. 
+	mem = bus->membase;
+	prefmem = bus->prefmembase;
+	io = bus->iobase;
+
+	for (curbus = bus->children; curbus; curbus = curbus->next) {
+		unsigned long memincrement;
+		unsigned long ioincrement;
+		// we don't need to round here -- all sizes are already rounded!
+
+		if (curbus->mem) {
+			curbus->membase = mem;
+			memincrement = curbus->mem;
+			curbus->memlimit = curbus->membase + memincrement - 1;
+			mem += memincrement;
+		}
+		if (curbus->prefmem) {
+			curbus->prefmembase = prefmem;
+			memincrement = curbus->prefmem;
+			curbus->prefmemlimit = curbus->prefmembase + memincrement - 1;
+			prefmem += memincrement;
+		}
+		if (curbus->io) {
+			curbus->iobase = io;
+			ioincrement = curbus->io;
+			curbus->iolimit = curbus->io + ioincrement - 1;
+			io += ioincrement;
+		}
+		allocate_resources(curbus);
+
+		printk(KERN_DEBUG "Bridge Bus %d,mem 0x%lx, "
+		       "prefmem 0x%lx, io 0x%lx\n",
+		       curbus->number, mem, prefmem, io);
+	}
+
+	// Now hand out device memory. 
+	for (curdev = bus->devices; curdev; curdev = curdev->sibling) {
+		for (i = 0; i < 6; i++) {
+			if (!curdev->size[i])
+				continue;
+			if (curdev->size[i] & PCI_BASE_ADDRESS_SPACE_IO) {
+				curdev->command |= PCI_COMMAND_IO;
+				curdev->base_address[i] = io;
+				printk(KERN_DEBUG "bus %d devfn 0x%x "
+				       "reg %d io 0x%lx\n",
+				       bus->number, curdev->devfn, i, io);
+				io += curdev->size[i] & PCI_BASE_ADDRESS_IO_MASK;
+			} else {
+				if (curdev->size[i] & PCI_BASE_ADDRESS_MEM_PREFETCH) {
+					unsigned long size = curdev->size[i] & PCI_BASE_ADDRESS_MEM_MASK;
+					// align the memory
+					size = round(size, MEM_ALIGN);
+					prefmem = round(prefmem, size);
+					curdev->command |= PCI_COMMAND_MEMORY;
+					curdev->base_address[i] = prefmem;
+					printk(KERN_DEBUG "bus %d devfn 0x%x "
+					       "reg %d prefmem 0x%lx\n",
+					       bus->number, curdev->devfn,
+					       i, prefmem);
+					prefmem += size;
+				} else {
+					unsigned long size = curdev->size[i] & PCI_BASE_ADDRESS_MEM_MASK;
+					// align the memory
+					size = round(size, MEM_ALIGN);
+					mem = round(mem, size);
+					curdev->command |= PCI_COMMAND_MEMORY;
+					curdev->base_address[i] = mem;
+					printk(KERN_DEBUG "bus %d devfn 0x%x "
+					       "reg %d mem 0x%lx\n",
+					       bus->number, curdev->devfn,
+					       i, mem);
+					mem += size;
+
+				}
+			}
+		}
+	}
+
+
+}
+
+#else /* single pass allocation */
+/** Given a desired amount of io, round it to IO_BRIDGE_ALIGN
+ * @param amount Amount of memory desired. 
+ */
+unsigned long iolimit(unsigned long amount)
+{
+	amount = round(amount, IO_BRIDGE_ALIGN) - 1;
+	return amount;
+}
+
+/** Given a desired amount of memory, round it to ONEMEG
+ * @param amount Amount of memory desired. 
+ */
+unsigned long memlimit(unsigned long amount)
+{
+	amount = round(amount, ONEMEG) - 1;
+	return amount;
+}
+
+/** Compute and allocate the io for this bus. 
+ * @param bus Pointer to the struct for this bus. 
+ */
+void compute_allocate_io(struct pci_bus *bus)
+{
+	int i;
+	struct pci_bus *curbus;
+	struct pci_dev *curdev;
+	unsigned long io_base;
+
+	io_base = bus->iobase;
+	DBG("compute_allocate_mem: base 0x%lx\n", bus->iobase);
+
+	/* First, walk all the bridges. When you return, grow the limit of the current bus
+	   since sub-busses need IO rounded to 4096 */
+	for (curbus = bus->children; curbus; curbus = curbus->next) {
+		curbus->iobase = io_base;
+		compute_allocate_io(curbus);
+		io_base = round(curbus->iolimit, IO_BRIDGE_ALIGN);
+		DBG("BUSIO: done Bridge Bus 0x%x, iobase now 0x%lx\n",
+		    curbus->number, io_base);
+	}
+
+	/* Walk through all the devices on current bus and oompute IO address space.*/
+	for (curdev = bus->devices; curdev; curdev = curdev->sibling) {
+		for (i = 0; i < 6; i++) {
+			unsigned long size = curdev->size[i];
+			if (size & PCI_BASE_ADDRESS_SPACE_IO) {
+				unsigned long iosize = size & PCI_BASE_ADDRESS_IO_MASK;
+				if (!iosize)
+					continue;
+
+				DBG("DEVIO: Bus 0x%x, devfn 0x%x, reg 0x%x: "
+				    "iosize 0x%lx\n",
+				    curdev->bus->number, curdev->devfn, i, iosize);
+				curdev->base_address[i] = io_base;
+				// some chipsets allow us to set/clear the IO bit. 
+				// (e.g. VIA 82c686a.) So set it to be safe)
+				curdev->base_address[i] |= 
+				    PCI_BASE_ADDRESS_SPACE_IO;
+				DBG("-->set base to 0x%lx\n", io_base);
+				io_base += round(iosize, IO_ALIGN);
+				curdev->command |= PCI_COMMAND_IO;
+			}
+		}
+	}
+	bus->iolimit = iolimit(io_base);
+
+	DBG("BUS %d: set iolimit to 0x%lx\n", bus->number, bus->iolimit);
+}
+
+/** Compute and allocate the memory for this bus. 
+ * @param bus Pointer to the struct for this bus. 
+ */
+void compute_allocate_mem(struct pci_bus *bus)
+{
+	int i;
+	struct pci_bus *curbus;
+	struct pci_dev *curdev;
+	unsigned long mem_base;
+
+	mem_base = bus->membase;
+	DBG("compute_allocate_mem: base 0x%lx\n", bus->membase);
+
+	/* First, walk all the bridges. When you return, grow the limit of the current bus
+	   since sub-busses need MEMORY rounded to 1 Mega */
+	for (curbus = bus->children; curbus; curbus = curbus->next) {
+		curbus->membase = mem_base;
+		compute_allocate_mem(curbus);
+		mem_base = round(curbus->memlimit, ONEMEG);
+		DBG("BUSMEM: Bridge Bus 0x%x,membase now 0x%lx\n",
+		    curbus->number, mem_base);
+	}
+
+	/* Walk through all the devices on current bus and oompute MEMORY address space.*/
+	for (curdev = bus->devices; curdev; curdev = curdev->sibling) {
+		for (i = 0; i < 6; i++) {
+			unsigned long size = curdev->size[i];
+			unsigned long memorysize = size & (PCI_BASE_ADDRESS_MEM_MASK);
+			unsigned long type = size & (~PCI_BASE_ADDRESS_MEM_MASK);
+
+			if (!memorysize)
+				continue;
+
+			if (type == 0) {	
+				/* this is normal memory space */
+				unsigned long regmem;
+
+				/* PCI BUS Spec suggests that the memory address should be
+				   consumed in 4KB unit */
+				regmem = round(memorysize, MEM_ALIGN);
+				mem_base = round(mem_base, regmem);
+				DBG("DEVMEM: Bus 0x%x, devfn 0x%x, reg 0x%x: "
+				    "memsize 0x%lx\n",
+				    curdev->bus->number, curdev->devfn, i, regmem);
+				curdev->base_address[i] = mem_base;
+				DBG("-->set base to 0x%lx\n", mem_base);
+				mem_base += regmem;
+				curdev->command |= PCI_COMMAND_MEMORY;
+			}
+		}
+	}
+	bus->memlimit = memlimit(mem_base);
+
+	DBG("BUS %d: set memlimit to 0x%lx\n", bus->number, bus->memlimit);
+}
+
+/** Compute and allocate the prefetch memory for this bus. 
+ * @param bus Pointer to the struct for this bus. 
+ */
+void compute_allocate_prefmem(struct pci_bus *bus)
+{
+	int i;
+	struct pci_bus *curbus;
+	struct pci_dev *curdev;
+	unsigned long prefmem_base;
+
+	prefmem_base = bus->prefmembase;
+	DBG("Compute_allocate_prefmem: base 0x%lx\n", bus->prefmembase);
+
+	/* First, walk all the bridges. When you return, grow the limit of the current bus
+	   since sub-busses need MEMORY rounded to 1 Mega */
+	for (curbus = bus->children; curbus; curbus = curbus->next) {
+		curbus->prefmembase = prefmem_base;
+		compute_allocate_prefmem(curbus);
+		prefmem_base = round(curbus->prefmemlimit, ONEMEG);
+		DBG("BUSPREFMEM: Bridge Bus 0x%x, prefmem base now 0x%lx\n",
+		    curbus->number, prefmem_base);
+	}
+
+	/* Walk through all the devices on current bus and oompute PREFETCHABLE MEMORY address space.*/
+	for (curdev = bus->devices; curdev; curdev = curdev->sibling) {
+		for (i = 0; i < 6; i++) {
+			unsigned long size = curdev->size[i];
+			unsigned long memorysize = size & (PCI_BASE_ADDRESS_MEM_MASK);
+			unsigned long type = size & (~PCI_BASE_ADDRESS_MEM_MASK);
+
+			if (!memorysize)
+				continue;
+
+			if (type & PCI_BASE_ADDRESS_MEM_PREFETCH) {
+				/* this is a prefetchable memory area */
+				unsigned long regmem;
+
+				/* PCI BUS Spec suggests that the memory address should be
+				   consumed in 4KB unit */
+				regmem = round(memorysize, MEM_ALIGN);
+				prefmem_base = round(prefmem_base, regmem);
+				DBG("DEVPREFMEM: Bus 0x%x, devfn 0x%x, reg 0x%x: "
+				    "prefmemsize 0x%lx\n",
+				    curdev->bus->number, curdev->devfn, i, regmem);
+				curdev->base_address[i] = prefmem_base;
+				DBG("-->set base to 0x%lx\n", prefmem_base);
+				prefmem_base += regmem;
+				curdev->command |= PCI_COMMAND_MEMORY;
+			}
+		}
+	}
+	bus->prefmemlimit = memlimit(prefmem_base);
+
+	DBG("BUS %d: set prefmemlimit to 0x%lx\n", bus->number, bus->prefmemlimit);
+}
+
+/** Compute and allocate resources. 
+ * This is a one-pass process. We first compute all the IO, then 
+ * memory, then prefetchable memory. 
+ * This is really only called at the top level
+ * @param bus Pointer to the struct for this bus. 
+ */
+void compute_allocate_resources(struct pci_bus *bus)
+{
+	DBG("COMPUTE_ALLOCATE: do IO\n");
+	compute_allocate_io(bus);
+
+	DBG("COMPUTE_ALLOCATE: do MEM\n");
+	compute_allocate_mem(bus);
+
+	// now put the prefetchable memory at the end of the memory
+	bus->prefmembase = round(bus->memlimit, ONEMEG);
+
+	DBG("COMPUTE_ALLOCATE: do PREFMEM\n");
+	compute_allocate_prefmem(bus);
+}
+
+#endif /* TWO_PASS_ALLOCATE */
+
+/** Assign the computed resources to the bridges and devices on the bus.
+ * Recurse to any bridges found on this bus first. Then do the devices
+ * on this bus. 
+ * @param bus Pointer to the structure for this bus
+ */ 
+ 
+void assign_resources(struct pci_bus *bus)
+{
+	struct pci_dev *curdev = pci_devices;
+	struct pci_bus *curbus;
+
+	DBG("ASSIGN RESOURCES, bus %d\n", bus->number);
+
+	/* wlak trhough all the buses, assign resources for bridges */
+	for (curbus = bus->children; curbus; curbus = curbus->next) {
+		curbus->self->command = 0;
+
+		/* set the IO ranges
+		   WARNING: we don't really do 32-bit addressing for IO yet! */
+		if (curbus->iobase) {
+			curbus->self->command |= PCI_COMMAND_IO;
+			pci_write_config_byte(curbus->self, PCI_IO_BASE,
+					      curbus->iobase >> 8);
+			pci_write_config_byte(curbus->self, PCI_IO_LIMIT,
+					      curbus->iolimit >> 8);
+			DBG("Bus 0x%x iobase to 0x%x iolimit 0x%x\n",
+			    bus->number, curbus->iobase, curbus->iolimit);
+		}
+
+		// set the memory range
+		if (curbus->membase) {
+			curbus->self->command |= PCI_COMMAND_MEMORY;
+			pci_write_config_word(curbus->self, PCI_MEMORY_BASE,
+					      curbus->membase >> 16);
+			pci_write_config_word(curbus->self, PCI_MEMORY_LIMIT,
+					      curbus->memlimit >> 16);
+			DBG("Bus 0x%x membase to 0x%x memlimit 0x%x\n",
+			    bus->number, curbus->membase, curbus->memlimit);
+
+		}
+
+		// set the prefetchable memory range
+		if (curbus->prefmembase) {
+			curbus->self->command |= PCI_COMMAND_MEMORY;
+			pci_write_config_word(curbus->self, PCI_PREF_MEMORY_BASE,
+					      curbus->prefmembase >> 16);
+			pci_write_config_word(curbus->self, PCI_PREF_MEMORY_LIMIT,
+					      curbus->prefmemlimit >> 16);
+			DBG("Bus 0x%x prefmembase to 0x%x prefmemlimit 0x%x\n",
+			    bus->number, curbus->prefmembase, curbus->prefmemlimit);
+
+		}
+		curbus->self->command |= PCI_COMMAND_MASTER;
+	}
+
+	for (curdev = pci_devices; curdev; curdev = curdev->next) {
+		int i;
+		for (i = 0; i < 6; i++) {
+			unsigned long reg;
+			if (curdev->base_address[i] == 0)
+				continue;
+
+			reg = PCI_BASE_ADDRESS_0 + (i << 2);
+			pci_write_config_dword(curdev, reg, curdev->base_address[i]);
+			DBG("Bus 0x%x devfn 0x%x reg 0x%x base to 0x%lx\n",
+			    curdev->bus->number, curdev->devfn, i, 
+			    curdev->base_address[i]);
+		}
+	}
+}
+
+void enable_resources(struct pci_bus *bus)
+{
+	struct pci_dev *curdev = pci_devices;
+
+	/* walk through the chain of all pci device, this time we don't have to deal
+	   with the device v.s. bridge stuff, since every bridge has its own pci_dev
+	   assocaited with it */
+	for (curdev = pci_devices; curdev; curdev = curdev->next) {
+		u16 command;
+		pci_read_config_word(curdev, PCI_COMMAND, &command);
+		command |= curdev->command;
+		pci_write_config_word(curdev, PCI_COMMAND, command);
+		DBG("DEV Set command bus 0x%x devfn 0x%x to 0x%x\n",
+		    curdev->bus->number, curdev->devfn, command);
+	}
+}
+
+/** Enumerate the resources on the PCI by calling pci_init
+ */
+void pci_enumerate()
+{
+	// scan it. 
+	pci_init();
+}
+
+/** Starting at the root, compute what resources are needed and allocate them. 
+ * We start memory, prefetchable memory at PCI_MEM_START. I/O starts at 
+ * PCI_IO_START. Since the assignment is hierarchical we set the values
+ * into the pci_root struct. 
+ */
+void pci_configure()
+{
+	pci_root.membase = PCI_MEM_START;
+	pci_root.prefmembase = PCI_MEM_START;
+	pci_root.iobase = PCI_IO_START;
+
+	compute_allocate_resources(&pci_root);
+	// now just set things into registers ... we hope ...
+	assign_resources(&pci_root);
+}
+
+/** Starting at the root, walk the tree and enable all devices/bridges. 
+ * What really happens is computed COMMAND bits get set in register 4
+ */
+void pci_enable()
+{
+	// now enable everything.
+	enable_resources(&pci_root);
+}
+
+// is this dead code? think so. -- RGM
+int configure_pci(unsigned long memstart, unsigned long iostart)
+{
+#ifdef EMULATE
+	int iopl(int level);
+	iopl(3);
+	// pick how to scan the bus
+	pci_set_method();
+#else
+	// FIX ME. We really should use whatever is set up elsewhere. 
+	void malloc_init(unsigned long start, unsigned long end);
+	// pick the last 1M of memory to put our structures in. 
+	malloc_init(memstart - ONEMEG, memstart - 1);
+#endif
+
+	// scan it. 
+	pci_init();
+
+#ifdef TWO_PASS_ALLOCATE
+	/* compute the memory resources. You can't just add up the 
+	 * per-device resources. You have to walk the bridges, because 
+	 * bridges require 1M granularity at 1M alignments (!)
+	 */
+	pci_root.mem = pci_root.prefmem = pci_root.io = 0;
+	compute_resources(&pci_root);
+	printk(KERN_DEBUG "Total: 0x%lx mem, 0x%lx prefmem, 0x%lx io\n",
+	       pci_root.mem, pci_root.prefmem, pci_root.io);
+	// set in the bases and limits for the root. These really apply to the 
+	// subordinate busses and devices. 
+	pci_root.membase = memstart;
+	pci_root.memlimit = pci_root.membase + pci_root.mem - 1;
+	pci_root.prefmembase = round(pci_root.memlimit, ONEMEG);
+	pci_root.prefmemlimit = pci_root.prefmembase + pci_root.prefmem - 1;
+	pci_root.iobase = iostart;
+	pci_root.iolimit = 0xffff - iostart;
+	allocate_resources(&pci_root);
+#else
+	pci_root.membase = PCI_MEM_START;
+	pci_root.prefmembase = PCI_MEM_START;
+	pci_root.iobase = PCI_IO_START;
+	compute_allocate_resources(&pci_root);
+#endif	/* TWO_PASS_ALLOCATE */
+
+	// now just set things into registers ... we hope ...
+	assign_resources(&pci_root);
+	//  now enable everything.
+	enable_resources(&pci_root);
+	return 0;
+}
+
+#ifdef EMULATE
+/** deprecated, you can run this code in user mode for certain testing
+ * We haven't used this recently so it's unclear if it works. 
+ */
+int main()
+{
+	unsigned long memstart = 0x40000000;
+	unsigned long iostart = 0x1000;
+	configure_pci(memstart, iostart);
+	return 0;
+}
+#endif

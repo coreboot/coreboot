@@ -14,7 +14,7 @@ unsigned int microcode_updates [] = {
 	  any other purpose.  
 	*/
 #include "microcode_m02f2410.c"	/* microcode for CPUID f24, PI 02, Patch 0x10 */
-#include "microcode_m02f2728.c" /* microcode for CPUID f27, PI 02, Patch 0x28 */
+#include "microcode_m02f2734.c" /* microcode for CPUID f27, PI 02, Patch 0x34 */
 #include "microcode_m02f2203.c" /* microcode for CPUID f22, PI 02, Patch 0x03 */
 };
 

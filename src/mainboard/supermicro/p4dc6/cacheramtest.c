@@ -9,10 +9,11 @@
 #include <cpu/p6/msr.h>
 #include <cpu/p6/mtrr.h>
 #include <arch/cache_ram.h>
-
-
-#define SMBUS_BUS 0
-#define SMBUS_DEVFN  ((0x1f << 3) + 3)
+#include <smbus.h>
+#include <ramtest.h>
+#include <southbridge/intel/82801.h>
+#include <superio/generic.h>
+#include <superio/w83627hf.h>
 
 #define LPC_BUS 0
 #define LPC_DEVFN ((0x1f << 3) + 0)
@@ -31,245 +32,24 @@
 
 #define SMBUS_MEM_DEVICE_0 (0xa << 3)
 
-static struct smbus_info{
-	u32 base;
-} smbus; 
-
-
-#define SMBHSTSTAT 0x0
-#define SMBHSTCTL  0x2
-#define SMBHSTCMD  0x3
-#define SMBXMITADD 0x4
-#define SMBHSTDAT0 0x5
-#define SMBHSTDAT1 0x6
-#define SMBBLKDAT  0x7
-#define SMBTRNSADD 0x9
-#define SMBSLVDATA 0xa
-#define SMLINK_PIN_CTL 0xe
-#define SMBUS_PIN_CTL  0xf 
-
-
-void smbus_setup(void)
-{
-	u8  smbus_enable;
-	u16 smbus_func_enable;
-
-	pcibios_write_config_dword(SMBUS_BUS, SMBUS_DEVFN, 0x20, 0x1000 | 1);
-	pcibios_write_config_byte(SMBUS_BUS, SMBUS_DEVFN, 0x40, 1);
-	pcibios_write_config_word(SMBUS_BUS, SMBUS_DEVFN, 0x4, 1);
-
-	pcibios_read_config_dword(SMBUS_BUS, SMBUS_DEVFN, 0x20, &smbus.base);
-	pcibios_read_config_byte(SMBUS_BUS, SMBUS_DEVFN, 0x40, &smbus_enable);
-	pcibios_read_config_word(SMBUS_BUS, SMBUS_DEVFN, 0x4, &smbus_func_enable);
-	
-	printk_debug("smbus.base = %08x\n", smbus.base);
-	printk_debug("smbus.enable = %02x\n", smbus_enable);
-	printk_debug("smbus.func_enable = %04x\n", smbus_func_enable);
-
-	smbus.base &= ~1;
-	printk_debug("\n");
-	printk_debug("smbus.base = %08x\n", smbus.base);
-	printk_debug("smbus.enable = %02x\n", smbus_enable);
-	printk_debug("smbus.func_enable = %04x\n", smbus_func_enable);
-
-	/* Disable interrupt generation */
-	outb(0, smbus.base + SMBHSTCTL);
-}
-
-static void smbus_wait_until_ready(void)
-{
-	while((inb(smbus.base + SMBHSTSTAT) & 1) == 1) {
-		/* nop */
-	}
-}
-
-static void smbus_wait_until_done(void)
-{
-	unsigned char byte;
-	do {
-		byte = inb(smbus.base + SMBHSTSTAT);
-	}
-	while((byte &1) == 1);
-	while( (byte & ~(1|(1<<6))) == 0) {
-		byte = inb(smbus.base + SMBHSTSTAT);
-	}
-}
-
-
-#if 0
-static void smbus_print_error(unsigned char host_status_register)
-{
-
-	printk_debug("smbus_error: 0x%02x\n", host_status_register);
-	if (host_status_register & (1 << 7)) {
-		printk_debug("Byte Done Status\n");
-	}
-	if (host_status_register & (1 << 6)) {
-		printk_debug("In Use Status\n");
-	}
-	if (host_status_register & (1 << 5)) {
-		printk_debug("SMBus Alert Status\n");
-	}
-	if (host_status_register & (1 << 4)) {
-		printk_debug("Interrup/SMI# was Failed Bus Transaction\n");
-	}
-	if (host_status_register & (1 << 3)) {
-		printk_debug("Bus Error\n");
-	}
-	if (host_status_register & (1 << 2)) {
-		printk_debug("Device Error\n");
-	}
-	if (host_status_register & (1 << 1)) {
-		printk_debug("Interrupt/SMI# was Successful Completion\n");
-	}
-	if (host_status_register & (1 << 0)) {
-		printk_debug("Host Busy\n");
-	}
-}
-#endif
-
-static int smbus_read_byte(unsigned device, unsigned address, unsigned char *result)
-{
-	unsigned char host_status_register;
-	unsigned char byte;
-
-	smbus_wait_until_ready();
-
-	/* setup transaction */
-	/* disable interrupts */
-	outb(inb(smbus.base + SMBHSTCTL) & (~1), smbus.base + SMBHSTCTL);
-	/* set the device I'm talking too */
-	outb(((device & 0x7f) << 1) | 1, smbus.base + SMBXMITADD);
-	/* set the command/address... */
-	outb(address & 0xFF, smbus.base + SMBHSTCMD);
-	/* set up for a byte data read */
-	outb((inb(smbus.base + SMBHSTCTL) & 0xE3) | (0x2 << 2), smbus.base + SMBHSTCTL);
-
-	/* clear any lingering errors, so the transaction will run */
-	outb(inb(smbus.base + SMBHSTSTAT), smbus.base + SMBHSTSTAT);
-
-	/* clear the data byte...*/
-	outb(0, smbus.base + SMBHSTDAT0);
-
-	/* start the command */
-	outb((inb(smbus.base + SMBHSTCTL) | 0x40), smbus.base + SMBHSTCTL);
-
-	/* poll for transaction completion */
-	smbus_wait_until_done();
-
-	host_status_register = inb(smbus.base + SMBHSTSTAT);
-#if 1
-	/* Ignore the In Use Status... */
-	host_status_register &= ~(1 << 6);
-#endif	
-
-	/* read results of transaction */
-	byte = inb(smbus.base + SMBHSTDAT0);
-
-#if 0
-	if (host_status_register != 0x02) {
-		smbus_print_error(host_status_register);
-	}
-#endif
-
-	*result = byte;
-	return host_status_register != 0x02;
-}
-
-#define FLOPPY_DEVICE 0
-#define PARALLEL_DEVICE 1
-#define COM1_DEVICE 2
-#define COM2_DEVICE 3
-#define KBC_DEVICE  5
-#define CIR_DEVICE  6
-#define GAME_PORT_DEVICE 7
-#define GPIO_PORT2_DEVICE 8
-#define GPIO_PORT3_DEVICE 9
-#define ACPI_DEVICE 0xa
-#define HW_MONITOR_DEVICE 0xb
-
-#define SIO_PORT 0x2e
-
-static void enter_pnp(void)
-{
-	outb(0x87, SIO_PORT);
-	outb(0x87, SIO_PORT);
-}
-
-static void exit_pnp(void)
-{
-	outb(0xaa, SIO_PORT);
-}
-
-static void write_config(unsigned char value, unsigned char reg)
-{
-	outb(reg, SIO_PORT);
-	outb(value, SIO_PORT +1);
-}
-
-static unsigned char read_config(unsigned char reg)
-{
-	outb(reg, SIO_PORT);
-	return inb(SIO_PORT +1);
-}
-static void set_logical_device(int device)
-{
-	write_config(device, 0x07);
-}
-
-static void set_enable(int enable)
-{
-	write_config(enable?0x1:0x0, 0x30);
-#if 0
-	if (enable) {
-		printk_debug("enabled superio device: %d\n", 
-			read_config(0x07));
-	}
-#endif
-}
-
-#if 0
-static void set_iobase0(unsigned iobase)
-{
-	write_config((iobase >> 8) & 0xff, 0x60);
-	write_config(iobase & 0xff, 0x61);
-}
-
-static void set_iobase1(unsigned iobase)
-{
-	write_config((iobase >> 8) & 0xff, 0x62);
-	write_config(iobase & 0xff, 0x63);
-}
-
-static void set_irq0(unsigned irq)
-{
-	write_config(irq, 0x70);
-}
-
-static void set_irq1(unsigned irq)
-{
-	write_config(irq, 0x72);
-}
-
-static void set_drq(unsigned drq)
-{
-	write_config(drq & 0xff, 0x74);
-}
-#endif
+#define TSCYCLE_SLOW 1000  /* ns */
+#define TSCYCLE_FAST 10    /* ns */
+static void ndelay(unsigned long);
+static void ram_zap(unsigned long, unsigned long);
 
 static void select_rdram_i2c(void)
 {
 	unsigned char byte;
-	enter_pnp();
-	byte = read_config(0x2b);
+	w83627hf_enter_pnp(SIO_BASE);
+	byte = pnp_read_config(SIO_BASE, 0x2b);
 	byte |= 0x30;
-	write_config(byte, 0x2b);
-	set_logical_device(GPIO_PORT2_DEVICE);
-	set_enable(1);
-	byte = read_config(0xf0);
+	pnp_write_config(SIO_BASE, byte, 0x2b);
+	pnp_set_logical_device(SIO_BASE, GPIO_PORT2_DEVICE);
+	pnp_set_enable(SIO_BASE, 1);
+	byte = pnp_read_config(SIO_BASE, 0xf0);
 	byte &= ~(1 << 3);
-	write_config(byte, 0xf0);
-	exit_pnp();
+	pnp_write_config(SIO_BASE, byte, 0xf0);
+	w83627hf_exit_pnp(SIO_BASE);
 }
 
 #define I860_MCH_BUS 0
@@ -407,6 +187,7 @@ static void rdram_wait_until_ready(void)
 	do {
 		pcibios_read_config_dword(I860_MCH_BUS, I860_MCH_DEVFN, MCH_RICM, &ricm);
 	} while(ricm & RICM_BUSY);
+	ndelay(1000);   /* delay after ready because the documentation says to */
 }
 
 struct rdram_reg_values {
@@ -414,15 +195,49 @@ struct rdram_reg_values {
 	u16 channel_b;
 };
 
-u16 tparm[5]={0x3a,0x3a,0x3a,0x4a,0x5a};
-u16 tcdly1[5]={0,1,2,2,2};
+/* rdram timing tables */
+static u16 tparm[5]={0x3a,0x3a,0x3a,0x4a,0x5a};
+static u16 tcdly1[5]={0,1,2,2,2};
 
-u8 spd_devices[4]={0,0,0,0};
-u8 spd_row_col[4]={0,0,0,0};
-u8 spd_banks[4]={0,0,0,0};
-u8 spd_size[2]={0,0};
+/* serial presence detect needed variables */
+/* Byte 99 number of devices for each stick */
+static u8 spd_devices[4]={0,0,0,0};
+/* Byte 4 # of row address bits, # of column address bits */
+static u8 spd_row_col[4]={0,0,0,0};
+/* Byte 5 # of bank bits lower nibble */
+static u8 spd_banks[4]={0,0,0,0};
+/* Byte 9 Misc. Device configuration S28, and S3 bits are used  */
+static u8 spd_misc_conf[4]={0,0,0,0};
+/* Byte 31 power down exit max time phase A (tPDNXA,max) */
+static u8 spd_pdnxa_max[4]={0,0,0,0};
+/* Byte 32 power down exit max time phase B (tPDNXB,max) */
+static u8 spd_pdnxb_max[4]={0,0,0,0};
+/* Byte 33 Map exit max time phase A (tNAPXA,max) */
+static u8 spd_napxa_max[4]={0,0,0,0};
+/* Byte 34 Nap exit max time phase B (tNAPXB,max) */
+static u8 spd_napxb_max[4]={0,0,0,0};
+/* Byte 12 Min ras to cas cycles */ 
+static u8 spd_rcd_min[4]={0,0,0,0};
+/* Byte 100 Module data width */ 
+static u8 spd_data_width[4]={0,0,0,0};
+/* Byte 35 bits 0-3<<8 + byte 37 give the rdram max mhz rate */
+static u16 spd_mhz_max[4]={0,0,0,0};
+/* Byte 35 bits 4-7<<4 + byte 36 give the rdram min mhz rate */
+static u16 spd_mhz_min[4]={0,0,0,0};
+/* The size of each device in mega bytes. */
+static u8 spd_size[2]={0,0};
 
-int rdram_chips=0;
+static int rdram_chips=0; /* number of ram chips on the rimms */
+static u32 total_rdram;   /* Total rdram found */
+
+/* register index tables */
+static u8  mch_gar[16] ={MCH_GAR0,MCH_GAR1,MCH_GAR2,MCH_GAR3,MCH_GAR4,MCH_GAR5,
+			MCH_GAR6,MCH_GAR7,MCH_GAR8,MCH_GAR9,MCH_GAR10,MCH_GAR11,
+			MCH_GAR12,MCH_GAR13,MCH_GAR14,MCH_GAR15};
+
+static u8  mch_gba[16] ={MCH_GBA0,MCH_GBA1,MCH_GBA2,MCH_GBA3,MCH_GBA4,MCH_GBA5,
+			MCH_GBA6,MCH_GBA7,MCH_GBA8,MCH_GBA9,MCH_GBA10,MCH_GBA11,
+			MCH_GBA12,MCH_GBA13,MCH_GBA14,MCH_GBA15};
 
 static void __rdram_run_command(u8 channel, u16 sdevice_id, u16 reg, u16 command)
 {
@@ -454,7 +269,6 @@ static void __rdram_run_command(u8 channel, u16 sdevice_id, u16 reg, u16 command
 
 	/* Wait until the command completes */
 	rdram_wait_until_ready();
-
 }
 
 static void rdram_run_command(u8 channel, u16 sdevice_id, u16 command)
@@ -602,7 +416,8 @@ static void rdram_read_domain_initialization(int rdram_devices)
 	u8 adj_a[32],adj_b[32];
 	u8 l=20;
 
-	/* Set all the rdram devices to the slowest clock cycles */
+	total_rdram=0;
+	/* Set all the rdram devices to the fastest clock cycles */
 	rdram_write_reg(0, BCAST, REG_TCDLY1, 0, 0 );
 	rdram_write_reg(0, BCAST, REG_TPARM, 0x3a, 0x3a);
 
@@ -622,7 +437,7 @@ static void rdram_read_domain_initialization(int rdram_devices)
 		adj_b[j]=(mem[4]&0x0ff)-1;
 		if(adj_a[j]<l) l=adj_a[j];
 		if(adj_b[j]<l) l=adj_b[j];
-		if(j<16) {
+		if(j<spd_devices[0]) {
 			if(spd_size[0]==32)
 				mem+=0x1000000;  /* add 64 meg */
 			else
@@ -644,8 +459,6 @@ static void rdram_read_domain_initialization(int rdram_devices)
 	}
 	/* RDRAM Device Timing */
 	pcibios_write_config_byte(I860_MCH_BUS,I860_MCH_DEVFN,MCH_RDT,rdt);
-
-//	for(;;) i=1;
 
 	for(i = 0; i < rdram_devices; i++) {
 		rdram_write_reg(0, i, REG_TCDLY1, tcdly1[adj_a[i]], tcdly1[adj_b[i]]);
@@ -685,11 +498,21 @@ static void ndelay(unsigned long ns)
 
 static void rdram_set_clear_reset(void)
 {
+	int delay=0;
+	int tcycle;
+
 	rdram_write_reg(0, BCAST, REG_TEST78, 0x04, 0x04);
 	rdram_write_reg(0, BCAST, REG_TEST34, 0x40, 0x40);
 	rdram_run_command(0, BCAST, CMD_RDRAM_SET_RESET);
-	/* FIXME Compute max of 16 * Tscycle or 2816 * Tcycle */
-	ndelay(7040);
+	/* Compute max of 16 * Tscycle or 2816 * Tcycle */
+	if(spd_mhz_min[0]) {
+		tcycle=(999+spd_mhz_min[0])/spd_mhz_min[0];
+		delay=tcycle*2816;
+	}	
+	if(delay>(16*TSCYCLE_SLOW))
+		ndelay(delay);
+	else
+		ndelay(16*TSCYCLE_SLOW);
 	rdram_run_command(0, BCAST, CMD_RDRAM_CLEAR_RESET);
 	rdram_write_reg(0, BCAST, REG_TEST34, 0, 0);
 	rdram_write_reg(0, BCAST, REG_TEST78, 0, 0);
@@ -708,6 +531,11 @@ static void rdram_set_clear_reset(void)
 */
 static void rdram_init(int rdram_devices)
 {
+	u16 tcycle;
+	u16 pdnxa,pdnxb,pdnx,napx,napxa,napxb;
+	u16 tfrm;
+	int i;
+
 	/* 3.1/3.2 RDRAM SIO reset */
 	rdram_run_command(0, 0, CMD_RDRAM_SIO_RESET);
 
@@ -715,8 +543,13 @@ static void rdram_init(int rdram_devices)
 	rdram_write_reg(0, BCAST, REG_TEST77, 0, 0);
 	
 	/* 3.4 Write Tcycle */
-	/* FIXME Hard coded as 400Mhz for now */
-	rdram_write_reg(0, BCAST, REG_TCYCLE, 0x27, 0x27);
+	/* Calculate the Tcycle */
+	for(tcycle=spd_mhz_max[0],i=1;i<4;i++)
+		if(spd_mhz_max[i]&&(tcycle>spd_mhz_max[i]))
+			tcycle=spd_mhz_max[i];
+	tcycle = 15625 / tcycle;
+	rdram_write_reg(0, BCAST, REG_TCYCLE, tcycle, tcycle);
+  printk_debug("Tcycle = %x\n",tcycle);
 	
 	/* 3.5 Set SDEVID */
 	set_sdevid(rdram_devices);
@@ -725,29 +558,61 @@ static void rdram_init(int rdram_devices)
 	set_devid(rdram_devices);
 
 	/* 3.7 Write PDNX, PDNXA Registers */
-	/* FIXME don't hard code these timings... */
-	rdram_write_reg(0, BCAST, REG_PDNXA, 0x7, 0x7);
-	rdram_write_reg(0, BCAST, REG_PDNX, 0x5, 0x5);
+	/* tscycle=10ns or <= 100MHz MCH datasheet pg 156 */
+	for(pdnxa=(u16)spd_pdnxa_max[0],i=1;i<4;i++)
+		if(pdnxa<spd_pdnxa_max[i])
+			pdnxa=spd_pdnxa_max[i];
+	for(pdnxb=(u16)spd_pdnxb_max[0],i=1;i<4;i++)
+		if(pdnxb<(u16)spd_pdnxb_max[i])
+			pdnxb=(u16)spd_pdnxb_max[i];
+	/* spd-31*1000 + 635 as a round up factor / (64*SCK) */
+	pdnx=(pdnxa*1000+635)/640;
+  printk_debug("PDNXA = %d\n",pdnx);
+	rdram_write_reg(0, BCAST, REG_PDNXA, pdnx, pdnx);
+	/* spd-31*1000 + spd-32*64 + 2555 round up factor / (256*SCK) */
+	pdnx=((pdnxa*1000)+(pdnxb*64)+2555)/2560;
+	rdram_write_reg(0, BCAST, REG_PDNX, pdnx, pdnx);
+  printk_debug("PDNX = %d\n",pdnx);
 
 	/* 3.8 Write NAPX */
-	/* FIXME don't hard code this timing */
-	rdram_write_reg(0, BCAST, REG_NAPX, 0x525, 0x525);
+	/* (1<<10 DQS)+(((spd-33+spd-34)/SCK)<<5)+(spd-33/SCK) */
+	/* find the max values of the spds for napxa and napxb */
+	for(napxa=(u16)spd_napxa_max[0],i=1;i<4;i++)
+		if(napxa<spd_napxa_max[i])
+			napxa=spd_napxa_max[i];
+	for(napxb=(u16)spd_napxb_max[0],i=1;i<4;i++)
+		if(napxb<spd_napxb_max[i])
+			napxb=spd_napxb_max[i];
+	if(spd_misc_conf[0]&1)
+		napx=(1<<10);
+	else
+		napx=0;
+	napx+=(((napxa+napxb+9)/10)<<5)+((napxa+9)/10);
+	rdram_write_reg(0, BCAST, REG_NAPX, napx, napx);
+  printk_debug("NAPX = %x\n",napx);
 	
 	/* 3.9 Write TPARM */
-	/* FIXME figure how to compute this initial timing. */
+	/* Use max times for initial timing. Then redo in step 6.2 */
 	rdram_write_reg(0, BCAST, REG_TPARM, 0x3a, 0x3a);
 
 	/* 3.10 Write TCDLY1 Register */
-	/* FIXME figure how to compute this initial timing. */
+	/* Use max times for initial timing. Then redo in step 6.2 */
 	rdram_write_reg(0, BCAST, REG_TCDLY1, 2, 2);
 
 	/* 3.11 Write TFRM Register */
-	/* FIXME refine the computation on this register. */
-#if 0
-	rdram_write_reg(0, BCAST, REG_TFRM, 10, 10);
-#else
-	rdram_write_reg(0, BCAST, REG_TFRM, 9, 9);
-#endif
+	/* As far as I can tell the equation for TFRM is correct, */
+	/* however, the documention is not clear, and some assumptions */
+	/* were made.  If ram does not work, this would be a good */
+	/* CHECKME */
+	if(spd_rcd_min[0]) {
+		tfrm = spd_rcd_min[0] - 1;
+		while(tfrm > 10)
+			tfrm-=4;
+	}
+	else {
+		tfrm = 9;
+	}
+	rdram_write_reg(0, BCAST, REG_TFRM, tfrm, tfrm);
 
 	/* 3.12 SETR/CLRR */
 	rdram_set_clear_reset();
@@ -756,13 +621,13 @@ static void rdram_init(int rdram_devices)
 	/* Program all Current controll registers with
 	 * an initial approximation.  1/2 their maximum is recommended.
 	 */
-	/* FIXME figure out voltage assymetry */
 	rdram_write_reg(0, BCAST, REG_CCA, 0x40, 0x40);
 	rdram_write_reg(0, BCAST, REG_CCB, 0x40, 0x40);
 
 	/* 3.14 Powerdown Exit */
-	/* FIXME not all RDRAMS models need this */
-	rdram_run_command(0, BCAST, CMD_RDRAM_POWERDOWN_EXIT);
+	/* test is S28IECO is set, if yes power up ram from PDN state */
+	if(spd_misc_conf[0]&4)
+		rdram_run_command(0, BCAST, CMD_RDRAM_POWERDOWN_EXIT);
 
 	/* 3.15 SETF */
 	rdram_run_command(0, BCAST, CMD_SET_FAST_CLK);
@@ -772,60 +637,64 @@ void mch_init(void)
 {
 	u8 byte;
 	u16 word;
-	u32 dword;
-	u16 word2;
+//	u32 dword;
+	u16 top;
 	int bits1,bits2;
+	int reg,reg_last,dev;
+
 	/* Program Group Attribute Registers */
 	/* Calculate the GAR value */
 	bits1=(spd_row_col[0]>>4)+(spd_row_col[0]&0x0f)+spd_banks[0];
 	byte=0x80;
 	if(bits1==21) {
-		byte=0xc4;
+		byte=0x84;
 		spd_size[0]=32;
 	}
 	else if(bits1==20) {
 		byte=0x82;
 		spd_size[0]=16;
 	}
-	if(byte!=0x80)
+	if(byte!=0x80) {
 		if(spd_banks[0]==5)  byte|=0x10;
-	pcibios_write_config_byte(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GAR0, byte); 
-	pcibios_write_config_byte(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GAR1, byte); 
-	pcibios_write_config_byte(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GAR2, byte); 
-	pcibios_write_config_byte(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GAR3, byte); 
+		if((spd_row_col[0]&0x0f)==7) byte|=0x40;
+	}
+	for(reg=dev=0;dev<spd_devices[0];reg++,dev+=4) {
+		pcibios_write_config_byte(I860_MCH_BUS, I860_MCH_DEVFN, mch_gar[reg], byte); 
+  printk_debug("GAR reg = %x, byte = %x\n",mch_gar[reg],byte);
+	}
 	/* Test for 2nd set of rimms */
 	bits2=(spd_row_col[1]>>4)+(spd_row_col[1]&0x0f)+spd_banks[1];
 	byte=0x80;
 	if(bits2==21) {
-		byte=0xd4;
+		byte=0x84;
 		spd_size[1]=32;
 	}
 	else if(bits2==20) {
-		byte=0x92;
+		byte=0x82;
 		spd_size[1]=16;
 	}
-	if(byte!=0x80)
-		if(spd_banks[2]==5)  byte|=0x10;
-	pcibios_write_config_byte(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GAR4, byte); 
-	pcibios_write_config_byte(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GAR5, byte); 
-	pcibios_write_config_byte(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GAR6, byte); 
-	pcibios_write_config_byte(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GAR7, byte);
+	if(byte!=0x80) {
+		if(spd_banks[1]==5)  byte|=0x10;
+		if((spd_row_col[1]&0x0f)==7) byte|=0x40;
+	}
+	for(dev=0;dev<spd_devices[1];reg++,dev+=4) {
+		pcibios_write_config_byte(I860_MCH_BUS, I860_MCH_DEVFN, mch_gar[reg], byte); 
+  printk_debug("GAR reg = %x, byte = %x\n",mch_gar[reg],byte);
+	}
 
-	/* The rest are not used because the board has 4 slots & no repeter hubs */ 
-	pcibios_write_config_byte(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GAR8, 0x80); 
-	pcibios_write_config_byte(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GAR9, 0x80); 
-	pcibios_write_config_byte(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GAR10, 0x80); 
-	pcibios_write_config_byte(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GAR11, 0x80); 
-	pcibios_write_config_byte(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GAR12, 0x80); 
-	pcibios_write_config_byte(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GAR13, 0x80); 
-	pcibios_write_config_byte(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GAR14, 0x80); 
-	pcibios_write_config_byte(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GAR15, 0x80); 
+	/* The rest are not used because the board has 4 slots & no repeter hubs */
+	for(;reg<16;reg++) {
+		pcibios_write_config_byte(I860_MCH_BUS, I860_MCH_DEVFN, mch_gar[reg], 0x80); 
+  printk_debug("GAR reg = %x, byte = 0x80\n",mch_gar[reg]);
+	}
 
 	/* Memory Controller Hub Configuration */
-	/* 2 System Bus Stop Grant, 400Mhz, Non-ECC, MDA Not Present, Apic Enabled */
+	/* 1 System Bus Stop Grant,300 or 400Mhz, Non-ECC, MDA Not Present, Apic Enabled */
 	pcibios_read_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_MCHCFG, &word); 
-	word &= ~((7 << 13) | (1 << 9) | (3 << 7) | (1 << 5) | (1 << 0));
-	word |= (1 << 13) | (1 << 11);
+	word &= ~((7 << 13) | (1 << 9) | (3 << 7) | (1 << 5) | (1 << 1));
+ 	if(((spd_mhz_max[0]==400)&&(spd_mhz_max[1]==400)) ||
+	   ((spd_mhz_max[0]==400)&&(spd_mhz_max[1]==0)))
+		word |= (1 << 11);  /* Sets ram bus speed at 400 mhz, else 300 mhz */
 	pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_MCHCFG, word); 
 	
 	/* Fixed DRAM Hole Control */
@@ -847,34 +716,27 @@ void mch_init(void)
 	/* RDRAM Device Group Boundary Addresses */
 	if(bits1==21) word=16;
 	else word=8;
-	pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GBA0, (0<<11)|(word));
-	pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GBA1, (1<<11)|(word*2));
-	pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GBA2, (2<<11)|(word*3));
-	pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GBA3, (3<<11)|(word*4));
-	/* The rest of the groups are empty */
-	word*=4;
-	word2=0;
-	if(bits2==21){
-	word2=16;
+	for(reg=dev=0,top=0;dev<spd_devices[0];dev+=4,reg++) {
+		top+=word;
+		pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, mch_gba[reg], (reg<<11)|top);
+  printk_debug("GBA reg = %x, word = %x\n",mch_gba[reg],(reg<<11)|top);
 	}
-	else if(bits2==20){
-	word2=8;
+
+	word=0;
+	if(bits2==21) word=16;
+	else if(bits2==20) word=8;
+	
+	for(dev=0;dev<spd_devices[1];dev+=4,reg++) {
+		top+=word;
+		pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, mch_gba[reg], (reg<<11)|top);
+  printk_debug("GBA reg = %x, word = %x\n",mch_gba[reg],(reg<<11)|top);
 	}
-	pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GBA4, (4<<11)|(word+(word2)));
-	pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GBA5, (5<<11)|(word+(word2*2)));
-	pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GBA6, (6<<11)|(word+(word2*3)));
-	pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GBA7, (7<<11)|(word+(word2*4)));
 
 	/* The rest are filled with the high address */
-	word=word+(word2*4);
-	pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GBA8, (7<<11)|word);
-	pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GBA9, (7<<11)|word);
-	pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GBA10, (7<<11)|word);
-	pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GBA11, (7<<11)|word);
-	pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GBA12, (7<<11)|word);
-	pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GBA13, (7<<11)|word);
-	pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GBA14, (7<<11)|word);
-	pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_GBA15, (7<<11)|word);
+	for(reg_last=reg-1;reg<16;reg++) {
+		pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, mch_gba[reg], (reg_last<<11)|top);
+  printk_debug("GBA reg = %x, word = %x\n",mch_gba[reg],(reg_last<<11)|top);
+	}
 
 	/* RDRAM Deice Pool Sizeing Register */
 	pcibios_write_config_byte(I860_MCH_BUS, I860_MCH_DEVFN, MCH_RDPS, 0x0f);
@@ -883,8 +745,8 @@ void mch_init(void)
 	pcibios_write_config_byte(I860_MCH_BUS, I860_MCH_DEVFN, MCH_RDT, 0x8e);
 
 	/* Top of Memory */
-//	pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_TOM, 0x2000);
-	pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_TOM, word<<8);
+	pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_TOM, top<<8);
+  printk_debug("TOM = %x <<8\n",top);
 	
 	/* Error Command Register */
 	/* Disable reporting errors for now */
@@ -899,16 +761,89 @@ void mch_init(void)
 	pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_SCICMD, 0);
 
 	/* RDRAM Device Refresh Control */
+	/* Hard coded the faster refrest time to make sure memory is refreshed */
 	pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_DRAMRC, 1);
-};
+}
 
+
+static void load_spd_vars(void)
+{
+	int j;
+	int status;
+	unsigned char byte;
+	u16 max,min;
+
+	for(j = SMBUS_MEM_DEVICE_0; j < SMBUS_MEM_DEVICE_0 + 4; j++) {
+		status = 0;
+		if ((j == 0x1b) || 0) {
+			continue;
+		}
+		status = smbus_read_byte(j, 4, &byte);
+		if (status == 0) {
+			spd_row_col[j-SMBUS_MEM_DEVICE_0]=byte;
+		}
+		status = smbus_read_byte(j, 5, &byte);
+		if (status == 0) {
+			spd_banks[j-SMBUS_MEM_DEVICE_0]=byte&0xf;
+		}
+		status = smbus_read_byte(j, 9, &byte);
+		if (status == 0) {
+			spd_misc_conf[j-SMBUS_MEM_DEVICE_0]=byte;
+		}
+		status = smbus_read_byte(j, 12, &byte);
+		if (status == 0) {
+			spd_rcd_min[j-SMBUS_MEM_DEVICE_0]=byte;
+		}
+		status = smbus_read_byte(j, 31, &byte);
+		if (status == 0) {
+			spd_pdnxa_max[j-SMBUS_MEM_DEVICE_0]=byte;
+		}
+		status = smbus_read_byte(j, 32, &byte);
+		if (status == 0) {
+			spd_pdnxb_max[j-SMBUS_MEM_DEVICE_0]=byte;
+		}
+		status = smbus_read_byte(j, 33, &byte);
+		if (status == 0) {
+			spd_napxa_max[j-SMBUS_MEM_DEVICE_0]=byte;
+		}
+		status = smbus_read_byte(j, 34, &byte);
+		if (status == 0) {
+			spd_napxb_max[j-SMBUS_MEM_DEVICE_0]=byte;
+		}
+		status = smbus_read_byte(j, 35, &byte);
+		if (status == 0) {
+			min=((u16)byte<<4)&0x0f00;  /* shift the high 4 bits into the next byte */
+			max=((u16)byte<<8)&0x0f00;  /* shift the low 4 bits into the next byte */
+			status = smbus_read_byte(j, 36, &byte);
+			if (status == 0) {
+				spd_mhz_min[j-SMBUS_MEM_DEVICE_0] =  min | byte;
+			}
+			status = smbus_read_byte(j, 37, &byte);
+			if (status == 0) {
+				spd_mhz_max[j-SMBUS_MEM_DEVICE_0] = max | byte;
+			}
+		}
+		else {
+			spd_mhz_min[j-SMBUS_MEM_DEVICE_0] = 0;
+			spd_mhz_max[j-SMBUS_MEM_DEVICE_0] = 0;
+		}
+		status = smbus_read_byte(j, 99, &byte);
+		if (status == 0) {
+			spd_devices[j-SMBUS_MEM_DEVICE_0]=byte;
+		}
+		status = smbus_read_byte(j, 100, &byte);
+		if (status == 0) {
+			spd_data_width[j-SMBUS_MEM_DEVICE_0]=byte;
+		}
+	}
+}
 
 static void init_memory(void)
 {
-	int i;
-//	int rdram_devices = 16;
+	int i,j;
 	int rdram_devices=0;
 	u32 ricm;
+	u16 word;
 
 	for(i=0;i<4;i++)
  	 	printk_debug("Devices %d, Row Bits %d, Col Bits %d, Bank Bits %d\n",
@@ -921,6 +856,7 @@ static void init_memory(void)
 	}
 	if(rdram_devices==0){
 		printk_debug("ERROR - Memory Rimms are not matched.\n");
+		for(;;) i=1;  /* Freeze the system error */
 	}
 	else {
 		rdram_chips=rdram_devices;
@@ -948,183 +884,78 @@ static void init_memory(void)
 	/* You can disable the final memory initialized bit 
 	 * to see if this is working and it isn't!
 	 * It is close though.
+	 * FIXME manual current calibration.
 	 */
-#if 1
+
 	rdram_run_command(0, 0, CMD_MCH_RAC_CURRENT_CALIBRATION);
-#endif
-#if 0
-	rdram_run_command(0, 0, CMD_MANUAL_CURRENT_CALIBRATION);
-#endif
+
+	/* Do not do the following command.  It will cause a lock up */
+	/* rdram_run_command(0, 0, CMD_MANUAL_CURRENT_CALIBRATION);  */
+
 	for(i = 0; i < 128; i++) {
-		rdram_run_command(0, BCAST, CMD_RDRAM_CURRENT_CALIBRATION);
+		for(j=0;j<rdram_chips;j++) {
+			rdram_run_command(0, j, CMD_RDRAM_CURRENT_CALIBRATION);
+		}
 	}
+
 #if 0
+	for(i = 0; i < rdram_chips; i++) {
+		for(j = 0; j < sizeof(rdram_regs)/sizeof(rdram_regs[0]); j++) {
+			struct rdram_reg_values values;
+			u16 reg = rdram_regs[j];
+			rdram_read_reg(0, i, reg, &values);
+			printk_debug("rdram: %2d reg: %02x %10s a: 0x%04x b: 0x%04x\n",
+				i, reg, rdram_reg_names[j], values.channel_a, values.channel_b);
+		}
+	}
 #endif
+
 	rdram_run_command(0, BCAST, CMD_TEMP_CALIBRATE_ENABLE);
 	rdram_run_command(0, BCAST, CMD_TEMP_CALIBRATE);
 
 	/* 6.2 RDRAM Read Domain Initialization */
-#if 1
 	rdram_read_domain_initialization(rdram_devices);
-#endif
 
 	/* 7.0 Remaining init bits (LSR, NSR, PSR) */
 	set_init_bits(rdram_devices);
 
 	/* Final Set the memory initialized bit */
-#if 1
 	pcibios_read_config_dword(I860_MCH_BUS, I860_MCH_DEVFN, MCH_RICM, &ricm);
 	ricm |= RICM_DONE;
 	pcibios_write_config_dword(I860_MCH_BUS, I860_MCH_DEVFN,
 		MCH_RICM, ricm);
-#endif
 	
+	/* Memory Controller Hub Configuration Enable ECC */
+	pcibios_read_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_MCHCFG, &word); 
+	word |= (1 << 8);
+	pcibios_write_config_word(I860_MCH_BUS, I860_MCH_DEVFN, MCH_MCHCFG, word); 
+
+	/* Set write combine for the memory max of 2 gig */
+	printk_debug("set_var_mtrr\n");
+	set_var_mtrr(0, 0, 2*1024*1024*1024UL, MTRR_TYPE_WRCOMB);
+
+	/* Clear all memory to 0's */
+	total_rdram=(unsigned long)(((unsigned long)spd_size[0]<<21)*spd_devices[0])+
+			(((unsigned long)spd_size[1]<<21)*spd_devices[1]);
+	ram_zap(0,0x0a0000);
+	ram_zap(0x0c0000,(unsigned long)total_rdram);
 }
 
-static void ram_fill(unsigned long start, unsigned long stop)
+static void ram_zap(unsigned long start, unsigned long stop)
 {
 	unsigned long addr;
 	/* 
 	 * Fill.
 	 */
-	printk_spew("DRAM fill: %08lx-%08lx\n", start, stop);
+	printk_debug("DRAM zero: %08lx-%08lx\n", start, stop);
 	for(addr = start; addr < stop ; addr += 4) {
 		/* Display address being filled */
-		if ((addr & 0xffff) == 0)
+		if ((addr & 0x0fffffff) == 0)
 			printk_spew("%08lx\r", addr);
-		RAM(unsigned long, addr) = addr;
+		RAM(unsigned long, addr) = 0;
 	};
 	/* Display final address */
-	printk_spew("%08lx\nDRAM filled\n", addr);
-
-	
-}
-
-static int ram_verify(unsigned long start, unsigned long stop, int max_errors)
-{
-	unsigned long addr;
-	int errors = 0;
-	/* 
-	 * Verify.
-	 */
-	printk_spew("DRAM verify: %08lx-%08lx\n", start, stop);
-	for(addr = start; addr < stop ; addr += 4) {
-		unsigned long value;
-		/* Display address being tested */
-		if ((addr & 0xffff) == 0)
-			printk_spew("%08lx\r", addr); 
-		value = RAM(unsigned long, addr);
-		if (value != addr) {
-			if (++errors <= max_errors) {
-				/* Display address with error */
-				printk_err("%08lx:%08lx\n", addr, value);
-			}
-		}
-	}
-	/* Display final address */
-	printk_spew("%08lx\nDRAM verified %d/%d errors\n", 
-		addr, errors, (stop - start)/4);
-	return errors;
-}
-
-
-static int ram_odd_verify(unsigned long start, unsigned long stop, int max_errors)
-{
-	unsigned long addr;
-	int errors = 0;
-	/* 
-	 * Verify.
-	 */
-	printk_spew("DRAM odd verify: %08lx-%08lx\n", start, stop);
-	for(addr = start; addr < stop ; addr += 4) {
-		unsigned long value;
-		/* Display address being tested */
-		if ((addr & 0xffff) == 0)
-			printk_spew("%08lx\r", addr); 
-		value = RAM(unsigned long, addr);
-		if (value != (addr ^ 0x20)) {
-			if (++errors < max_errors) {
-				/* Display address with error */
-				printk_err("%08lx:%08lx\n", addr, value);
-			}
-		}
-	}
-	/* Display final address */
-	printk_spew("%08lx\nDRAM odd verified %d/%d errors\n", 
-		addr, errors, (stop - start)/4);
-	return 0;
-}
-
-
-static int ramcheck(unsigned long start, unsigned long stop, int max_errors)
-{
-	int result;
-	/*
-	 * This is much more of a "Is my DRAM properly configured?"
-	 * test than a "Is my DRAM faulty?" test.  Not all bits
-	 * are tested.   -Tyson
-	 */
-	printk_spew("Testing DRAM : %08lx-%08lx\n",
-		start, stop);
-
-	ram_fill(start, stop);
-	result = ram_verify(start, stop, max_errors);
-	printk_spew("Done.\n");
-	return result;
-}
-
-
-static int ramcheck2(unsigned long start, unsigned long stop, int max_errors)
-{
-	int result;
-	/*
-	 * This is much more of a "Is my DRAM properly configured?"
-	 * test than a "Is my DRAM faulty?" test.  Not all bits
-	 * are tested.   -Tyson
-	 */
-	printk_spew("Testing DRAM : %08lx-%08lx\n",
-		start, stop);
-
-	ram_fill(start, stop);
-	result = ram_odd_verify(start, stop, max_errors);
-
-	printk_spew("Done.\n");
-	return result;
-}
-
-/* setting variable mtrr, comes from linux kernel source */
-static void set_var_mtrr(unsigned int reg, unsigned long base, unsigned long size, unsigned char type)
-{
-	unsigned int tmp;
-
-	if (reg >= 8)
-		return;
-
-	// it is recommended that we disable and enable cache when we 
-	// do this. 
-	/* Disable cache */
-	/* Write back the cache and flush TLB */
-	asm volatile (
-		"movl  %%cr0, %0\n\t"
-		"orl  $0x40000000, %0\n\t"
-		"movl  %0, %%cr0\n\t"
-		:"=r" (tmp)
-		::"memory");
-
-	if (size == 0) {
-		/* The invalid bit is kept in the mask, so we simply clear the
-		   relevant mask register to disable a range. */
-		wrmsr (MTRRphysMask_MSR (reg), 0, 0);
-	} else {
-		/* Bit 32-35 of MTRRphysMask should be set to 1 */
-		wrmsr (MTRRphysBase_MSR (reg), base | type, 0);
-		wrmsr (MTRRphysMask_MSR (reg), ~(size - 1) | 0x800, 0x0F);
-	}
-
-	// turn cache back on. 
-	asm volatile ("movl  %%cr0, %0\n\t"
-		      "andl  $0x9fffffff, %0\n\t"
-		      "movl  %0, %%cr0\n\t":"=r" (tmp)::"memory");
+	printk_debug("%08lx\nDRAM filled\n", addr);
 
 }
 
@@ -1140,6 +971,7 @@ void cache_ram_start(void)
 	pci_set_method();
 	printk_info("Setting up smbus controller\n");
 	smbus_setup();
+	ich2_rtc_init();
 	printk_info("Selecting rdram i2c bus\n");
 	select_rdram_i2c();	
 
@@ -1162,21 +994,12 @@ void cache_ram_start(void)
 			if ((i &0x0f) == 0x0f) {
 				printk_debug("\n");
 			}
-			if(i==99) spd_devices[j-SMBUS_MEM_DEVICE_0]=byte;
-			if(i==4)  spd_row_col[j-SMBUS_MEM_DEVICE_0]=byte;
-			if(i==5)  spd_banks[j-SMBUS_MEM_DEVICE_0]=byte&0x0f;
 		}
 	}
 	printk_debug("\n");
 #endif
+	load_spd_vars();
 	init_memory();
-	printk_debug("set_var_mtrr\n");
-#if 0
-	set_var_mtrr(0, 0, 512*1024*1024, MTRR_TYPE_WRBACK);
-#else
-	set_var_mtrr(0, 0, 512*1024*1024, MTRR_TYPE_WRCOMB);
-#endif
-	printk_debug("set_var_mtrr done\n");
 #if 0
 	error |= ramcheck(0x000f0000, 0x000f1000, 20);
 #endif
@@ -1201,15 +1024,6 @@ void cache_ram_start(void)
 		}
 	}
 #endif
-#if 0
-	error |= ramcheck( 0x00000000, 0x00000400, 128);
-	error |= ramcheck2(0x00000000, 0x00000400, 128);
-	error |= ramcheck( 0x14000000, 0x14000400, 128);
-	error |= ramcheck2(0x14000000, 0x14000400, 128);
-#endif
-#if 0
-	error |= ramcheck2(0x00100000, 0x00180000, 128);
-#endif
 	error |= ramcheck(0x00000000, 0x00080000, 20);
 	error |= ramcheck(0x02000000, 0x02080000, 20);
 	error |= ramcheck(0x04000000, 0x04080000, 20);
@@ -1230,7 +1044,7 @@ void cache_ram_start(void)
 #if 0
 	error |= ramcheck(0x00000000, 0x00080000, 20);
 #endif
-#if 0
+#if 1
 	for(i = 0; i < rdram_chips; i++) {
 		for(j = 0; j < sizeof(rdram_regs)/sizeof(rdram_regs[0]); j++) {
 			struct rdram_reg_values values;
@@ -1253,5 +1067,11 @@ void cache_ram_start(void)
 		printk_debug("\n");
 	}
 #endif
-	if (error) while(1);
+	if (error) {
+		printk_err("Something isn't working!!!\n");
+		while(1);
+	} else {
+		printk_info("Leaving cacheram...\n");
+	}
+		      
 }

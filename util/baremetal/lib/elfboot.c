@@ -10,6 +10,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+extern unsigned int free_ramtop;
+unsigned int old_free_ramtop;
+
 /* Maximum physical address we can use for the linuxBIOS bounce buffer.
  */
 #ifndef MAX_ADDR
@@ -110,9 +113,18 @@ static unsigned long get_bounce_buffer(struct lb_memory *mem)
 	unsigned long mem_entries;
 	unsigned long buffer;
 	int i;
+
 	lb_size = (unsigned long)(&_eram_seg - &_ram_seg);
 	/* Double linuxBIOS size so I have somewhere to place a copy to return to */
 	lb_size = lb_size + lb_size;
+#if 1
+	old_free_ramtop = free_ramtop;
+
+	free_ramtop -= lb_size;
+	free_ramtop -= lb_size;
+	printk("get_bounce_buffer: old_free_ramtop = %08x, free_ramtop = %08x\n", old_free_ramtop, free_ramtop);
+	return(free_ramtop);
+#endif
 	mem_entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
 	buffer = 0;
 	for(i = 0; i < mem_entries; i++) {
@@ -588,6 +600,9 @@ int elfload(struct stream *stream, struct lb_memory *mem,
 
 	/* Jump to kernel */
 	jmp_to_elf_entry(entry, bounce_buffer);
+#if 1
+	free_ramtop = old_free_ramtop;
+#endif
 	return 1;
 
  out:

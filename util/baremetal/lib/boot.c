@@ -67,7 +67,7 @@ int elf_check_arch(Elf_ehdr *ehdr)
 	
 }
 
-#if 0
+#if 1
 void jmp_to_elf_entry(void *entry, unsigned long buffer)
 {
 	extern unsigned char _ram_seg, _eram_seg;
@@ -86,13 +86,13 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer)
 	adjusted_boot_notes = (unsigned long)&elf_boot_notes;
 	adjusted_boot_notes += adjust; 
 
-	printk_spew("entry    = 0x%08lx\n", (unsigned long)entry);
-	printk_spew("lb_start = 0x%08lx\n", lb_start);
-	printk_spew("lb_size  = 0x%08lx\n", lb_size);
-	printk_spew("adjust   = 0x%08lx\n", adjust);
-	printk_spew("buffer   = 0x%08lx\n", buffer);
-	printk_spew("     elf_boot_notes = 0x%08lx\n", (unsigned long)&elf_boot_notes);
-	printk_spew("adjusted_boot_notes = 0x%08lx\n", adjusted_boot_notes);
+	printk("entry    = 0x%08lx\n", (unsigned long)entry);
+	printk("lb_start = 0x%08lx\n", lb_start);
+	printk("lb_size  = 0x%08lx\n", lb_size);
+	printk("adjust   = 0x%08lx\n", adjust);
+	printk("buffer   = 0x%08lx\n", buffer);
+	printk("     elf_boot_notes = 0x%08lx\n", (unsigned long)&elf_boot_notes);
+	printk("adjusted_boot_notes = 0x%08lx\n", adjusted_boot_notes);
 	
 	/* Jump to kernel */
 	__asm__ __volatile__(
@@ -122,15 +122,19 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer)
 		"	movl	 8(%%esp), %%ecx\n\n"
 		"	shrl	$2, %%ecx\n\t"
 		"	rep	movsl\n\t"
-
+#ifdef MOVE_STACK
 		/* Adjust the stack pointer to point into the new linuxBIOS image */
 		"	addl	20(%%esp), %%esp\n\t"
+#endif
 		/* Adjust the instruction pointer to point into the new linuxBIOS image */
 		"	movl	$1f, %%eax\n\t"
 		"	addl	20(%%esp), %%eax\n\t"
+		"	movl	$2f, %%ecx\n\t"
 		"	jmp	*%%eax\n\t"
 		"1:	\n\t"
 
+
+		"	movl	%%ecx, 20(%%esp)\n\t"
 		/* Copy the linuxBIOS bounce buffer over linuxBIOS */
 		/* Move ``longs'' the linuxBIOS size is 4 byte aligned */
 		"	movl	16(%%esp), %%edi\n\t"
@@ -143,6 +147,10 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer)
 		"	movl	$0x0E1FB007, %%eax\n\t"
 		"	movl	 0(%%esp), %%ebx\n\t"
 		"	call	*4(%%esp)\n\t"
+// debygging
+		"	mov $0x41, %%al\n\t"
+		"	mov $0x3f8, %%dx\n\t"
+		"	outb %%al, %%dx\n\t"
 
 		/* The loaded image returned? */
 		"	cli	\n\t"
@@ -156,15 +164,22 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer)
 		"	movl	 8(%%esp), %%ecx\n\t"
 		"	shrl	$2, %%ecx\n\t"
 		"	rep	movsl\n\t"
-
+#ifdef MOVE_STACK
 		/* Adjust the stack pointer to point into the old linuxBIOS image */
 		"	subl	20(%%esp), %%esp\n\t"
+#endif
 
 		/* Adjust the instruction pointer to point into the old linuxBIOS image */
-		"	movl	$1f, %%eax\n\t"
-		"	subl	20(%%esp), %%eax\n\t"
+//		"	movl	$1f, %%eax\n\t"
+//		"	subl	20(%%esp), %%eax\n\t"
+		"	movl	20(%%esp), %%eax\n\t"
 		"	jmp	*%%eax\n\t"
-		"1:	\n\t"
+		"2:	\n\t"
+
+// debygging
+		"	mov $0x42, %%al\n\t"
+		"	mov $0x3f8, %%dx\n\t"
+		"	outb %%al, %%dx\n\t"
 
 		/* Drop the parameters I was passed */
 		"	addl	$24, %%esp\n\t"
@@ -178,6 +193,8 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer)
 		"g" (lb_start), "g" (buffer), "g" (lb_size),
 		"g" (entry), "g"(adjusted_boot_notes)
 		);
+
+		printk("jmp_to_elf_entry returning\n");
 }
 
 #else

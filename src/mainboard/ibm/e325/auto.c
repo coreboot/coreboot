@@ -1,6 +1,6 @@
 #define ASSEMBLY 1
-#define DEFAULT_CONSOLE_LOGLEVEL 8
-#define MAXIMUM_CONSOLE_LOGLEVEL 8
+#define DEFAULT_CONSOLE_LOGLEVEL 7
+#define MAXIMUM_CONSOLE_LOGLEVEL 7
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
@@ -45,13 +45,13 @@ static void memreset_setup(void)
 {
 	if (is_cpu_pre_c0()) {
 		/* Set the memreset low */
-		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 28);
+		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 16);
 		/* Ensure the BIOS has control of the memory lines */
-		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 29);
+		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
 	}
 	else {
 		/* Ensure the CPU has controll of the memory lines */
-		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 29);
+		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 17);
 	}
 }
 
@@ -60,7 +60,7 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
 	if (is_cpu_pre_c0()) {
 		udelay(800);
 		/* Set memreset_high */
-		outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 28);
+		outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);
 		udelay(90);
 	}
 }
@@ -161,6 +161,7 @@ static void main(void)
 #endif
 	};
 	int needs_reset;
+	print_emerg("H\n");
 	enable_lapic();
 	init_timer();
 	if (cpu_init_detected()) {
@@ -180,6 +181,7 @@ static void main(void)
 		print_info("ht reset -");
 		soft_reset();
 	}
+	print_emerg("HER\n");
 #if 0
 	print_pci_devices();
 #endif
@@ -197,8 +199,10 @@ static void main(void)
 	dump_pci_device(PCI_DEV(0, 0x18, 2));
 #endif
 
-#if 0
+	print_err("LET'S DO SOME MEMORY\n");
+#if 1
 	/* Check the first 1M */
 	ram_check(0x00000000, 0x000100000);
 #endif
+	
 }

@@ -28,8 +28,10 @@
 
 CRT0_PARAMETERS
 
+#ifdef INTEL_PPRO_MTRR
 /* Turn on mtrr for faster boot */
 #include <cpu/p6/earlymtrr.inc>
+#endif /* INTEL_PPRO_MTRR */
 
 /*
  *	Copy data into RAM and clear the BSS. Since these segments

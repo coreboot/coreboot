@@ -1598,6 +1598,13 @@ def writemakefile(path):
 		file.write("\tif (cd %s; \\\n" % o.getname())
 		file.write("\t\tmake linuxbios.rom)\\\n");
 		file.write("\tthen true; else exit 1; fi;\n\n")
+	file.write("clean: ")
+	for i in romimages.keys():
+		file.write("%s-clean " % i)
+	file.write("\n\n")
+	for i, o in romimages.items():
+		file.write("%s-clean:\n" % o.getname())
+		file.write("\t(cd %s; make clean)\n" % o.getname())
 	file.close()
 
 def writeinitincludes(image):

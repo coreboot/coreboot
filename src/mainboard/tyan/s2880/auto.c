@@ -123,7 +123,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 }
 
 
-#include "northbridge/amd/amdk8/setup_resource_map.c"
+//#include "northbridge/amd/amdk8/setup_resource_map.c"
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"

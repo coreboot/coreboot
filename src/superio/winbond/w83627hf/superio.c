@@ -215,7 +215,7 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations superio_winbond_w83627hf_ops = {
-	.name       = "Winbond w83627hf",
+//	.name       = "Winbond w83627hf",
 	.enable_dev = enable_dev,
 };
 

@@ -34,16 +34,13 @@ addaction linuxbios.rom echo $$size ; \
 addaction linuxbios.rom dd if=linuxbios.strip of=linuxbios.rom bs=1 seek=`expr $(ROM_IMAGE_SIZE) - $$size`
 
 
-makerule mkrom: $(TOP)/mkrom/mkrom.c ; $(CC) -o mkrom $<
-
-
 makerule payload.block : $(if $(PAYLOAD),$(PAYLOAD), linux.bin.gz) ; dd conv=sync bs=$(PAYLOAD_SIZE) if=$< of=$@
 
 makerule linux.bin.gz: linux.bin ;gzip -f -3 linux.bin
 makerule linux.bin: $(LINUX) ;  objcopy -O binary -R .note -R .comment -S $< $@
 
 
-addaction clean rm -f romimage mkrom linux.* payload.*
+addaction clean rm -f romimage linux.* payload.*
 
 # do standard config files that the user need not specify
 # for now, this is just 'lib', but it may be more later. 

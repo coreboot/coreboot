@@ -120,12 +120,13 @@ static void rtc_set_checksum(int range_start, int range_end, int cks_loc)
 #define RTC_CONTROL_DEFAULT (RTC_SQWE | RTC_24H)
 #define RTC_FREQ_SELECT_DEFAULT (RTC_REF_CLCK_32KHZ | RTC_RATE_1024HZ)
 #endif
+
 void rtc_init(int invalid)
 {
 	unsigned char x;
 	int cmos_invalid, checksum_invalid;
 
-  printk_debug("RTC Init\n");
+	printk_debug("RTC Init\n");
 	/* See if there has been a CMOS power problem. */
 	x = CMOS_READ(RTC_VALID);
 	cmos_invalid = !(x & RTC_VRT);

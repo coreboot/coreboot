@@ -8,5 +8,6 @@
 unsigned get_hz(void);
 unsigned ticks_since_boot(void);
 void sleep_ticks(unsigned);
+void udelay(int);
 
 #endif

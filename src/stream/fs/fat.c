@@ -17,8 +17,11 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include <console/console.h>
+#include <string.h>
 #include <fs/fs.h>
 #include <fs/fat.h>
+#include <arch/byteorder.h>
 
 struct fat_superblock 
 {
@@ -72,8 +75,6 @@ __ilog2(unsigned long x)
 static __inline__ unsigned long
 log2(unsigned long x)
 {
-        if ((x = ~x) == 0)
-                return 32;
         return __ilog2(x & -x);
 }
 #endif
@@ -98,24 +99,36 @@ fat_mount (void)
      zero division.  */
   if (bpb.sects_per_clust == 0)
     return 0;
-  
-  FAT_SUPER->sectsize_bits = log2 (FAT_CVT_U16 (bpb.bytes_per_sect));
+
+  FAT_SUPER->sectsize_bits = log2(FAT_CVT_U16(bpb.bytes_per_sect));
   FAT_SUPER->clustsize_bits
-    = FAT_SUPER->sectsize_bits + log2 (bpb.sects_per_clust);
+    = FAT_SUPER->sectsize_bits + log2(bpb.sects_per_clust);
+
+printk_debug("BytsPerSec = %d\n", FAT_CVT_U16(bpb.bytes_per_sect));
+printk_debug("SecPerClus = %d\n", bpb.sects_per_clust);
   
   /* Fill in info about super block */
-  FAT_SUPER->num_sectors = FAT_CVT_U16 (bpb.short_sectors) 
-    ? FAT_CVT_U16 (bpb.short_sectors) : bpb.long_sectors;
+  FAT_SUPER->num_sectors = FAT_CVT_U16(bpb.short_sectors)
+    ? FAT_CVT_U16(bpb.short_sectors) : FAT_CVT_U32(bpb.long_sectors);
+
+printk_debug("TotSec16 = %d\n", FAT_CVT_U16(bpb.short_sectors));
+printk_debug("TotSec32 = %d\n", FAT_CVT_U32(bpb.long_sectors));
   
   /* FAT offset and length */
-  FAT_SUPER->fat_offset = FAT_CVT_U16 (bpb.reserved_sects);
-  FAT_SUPER->fat_length = 
-    bpb.fat_length ? bpb.fat_length : bpb.fat32_length;
+  FAT_SUPER->fat_offset = FAT_CVT_U16(bpb.reserved_sects);
+  FAT_SUPER->fat_length = FAT_CVT_U16(bpb.fat_length) 
+    ? FAT_CVT_U16(bpb.fat_length) : FAT_CVT_U32(bpb.fat32_length);
+
+printk_debug("RsvdSecCnt = %d\n", FAT_CVT_U16(bpb.reserved_sects));
+printk_debug("FATSx16 = %d\n", FAT_CVT_U16(bpb.fat_length));
+printk_debug("FATSx32 = %d\n", FAT_CVT_U32(bpb.fat32_length));
   
   /* Rootdir offset and length for FAT12/16 */
   FAT_SUPER->root_offset = 
     FAT_SUPER->fat_offset + bpb.num_fats * FAT_SUPER->fat_length;
   FAT_SUPER->root_max = FAT_DIRENTRY_LENGTH * FAT_CVT_U16(bpb.dir_entries);
+
+printk_debug("RootEntCnt = %d\n", FAT_CVT_U16(bpb.dir_entries));
   
   /* Data offset and number of clusters */
   FAT_SUPER->data_offset = 
@@ -125,24 +138,27 @@ fat_mount (void)
     2 + ((FAT_SUPER->num_sectors - FAT_SUPER->data_offset) 
 	 / bpb.sects_per_clust);
   FAT_SUPER->sects_per_clust = bpb.sects_per_clust;
-  
+
   if (!bpb.fat_length)
     {
       /* This is a FAT32 */
       if (FAT_CVT_U16(bpb.dir_entries))
  	return 0;
       
-      if (bpb.flags & 0x0080)
+printk_debug("We seem to be FAT32\n");
+printk_debug("ExtFlags = 0x%x\n", FAT_CVT_U16(bpb.flags));
+printk_debug("RootClus = %d\n", FAT_CVT_U32(bpb.root_cluster));
+      if (FAT_CVT_U16(bpb.flags) & 0x0080)
 	{
 	  /* FAT mirroring is disabled, get active FAT */
-	  int active_fat = bpb.flags & 0x000f;
+	  int active_fat = FAT_CVT_U16(bpb.flags) & 0x000f;
 	  if (active_fat >= bpb.num_fats)
 	    return 0;
 	  FAT_SUPER->fat_offset += active_fat * FAT_SUPER->fat_length;
 	}
       
       FAT_SUPER->fat_size = 8;
-      FAT_SUPER->root_cluster = bpb.root_cluster;
+      FAT_SUPER->root_cluster = FAT_CVT_U32(bpb.root_cluster);
 
       /* Yes the following is correct.  FAT32 should be called FAT28 :) */
       FAT_SUPER->clust_eof_marker = 0xffffff8;
@@ -152,6 +168,7 @@ fat_mount (void)
       if (!FAT_SUPER->root_max)
  	return 0;
       
+printk_debug("We seem to be FAT12/16\n");
       FAT_SUPER->root_cluster = -1;
       if (FAT_SUPER->num_clust > FAT_MAX_12BIT_CLUST) 
 	{
@@ -164,7 +181,6 @@ fat_mount (void)
 	  FAT_SUPER->clust_eof_marker = 0xff8;
 	}
     }
-  
   
   /* Now do some sanity checks */
   
@@ -183,19 +199,21 @@ fat_mount (void)
                sizeof(first_fat), (char *)&first_fat))
     return 0;
 
+printk_debug("Media = 0x%x\n", bpb.media);
+
   if (FAT_SUPER->fat_size == 8)
     {
-      first_fat &= 0x0fffffff;
+      first_fat = le32_to_cpu(first_fat) & 0x0fffffff;
       magic = 0x0fffff00;
     }
   else if (FAT_SUPER->fat_size == 4)
     {
-      first_fat &= 0x0000ffff;
+      first_fat = le32_to_cpu(first_fat) & 0x0000ffff;
       magic = 0xff00;
     }
   else
     {
-      first_fat &= 0x00000fff;
+      first_fat = le32_to_cpu(first_fat) & 0x00000fff;
       magic = 0x0f00;
     }
 
@@ -255,7 +273,7 @@ fat_read (char *buf, int len)
 	      if (!devread (sector, 0, FAT_CACHE_SIZE, (char*) FAT_BUF))
 		return 0;
 	    }
-	  next_cluster = * (unsigned long *) (FAT_BUF + (cached_pos >> 1));
+	  next_cluster = FAT_CVT_U32(FAT_BUF + (cached_pos >> 1));
 	  if (FAT_SUPER->fat_size == 3)
 	    {
 	      if (cached_pos & 1)
@@ -288,7 +306,7 @@ fat_read (char *buf, int len)
       
       devread(sector, offset, size, buf);
       
-      disk_read_func = NULL;
+      disk_read_func = 0;
       
       len -= size;
       buf += size;
@@ -317,7 +335,7 @@ fat_dir (char *dirname)
   { 1, 3, 5, 7, 9, 14, 16, 18, 20, 22, 24, 28, 30 };
   int slot = -2;
   int alias_checksum = -1;
-  
+
   FAT_SUPER->file_cluster = FAT_SUPER->root_cluster;
   filepos = 0;
   FAT_SUPER->current_cluster_num = MAXINT;

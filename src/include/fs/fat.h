@@ -42,25 +42,27 @@ struct fat_bpb {
 	__u8	reserved_sects[2];	/* reserved sectors */
 	__u8	num_fats;	/* number of FATs */
 	__u8	dir_entries[2];	/* root directory entries */
-	__u8	short_sectors[2];	/* number of sectors */
+	__u8	short_sectors[2];/* number of sectors */
 	__u8	media;		/* media code (unused) */
-	__u16	fat_length;	/* sectors/FAT */
-	__u16	secs_track;	/* sectors per track */
-	__u16	heads;		/* number of heads */
-	__u32	hidden;		/* hidden sectors (unused) */
-	__u32	long_sectors;	/* number of sectors (if short_sectors == 0) */
+	__u8	fat_length[2];	/* sectors/FAT */
+	__u8	secs_track[2];	/* sectors per track */
+	__u8	heads[2];	/* number of heads */
+	__u8	hidden[2];	/* hidden sectors (unused) */
+	__u8	long_sectors[2];/* number of sectors (if short_sectors == 0) */
 
 	/* The following fields are only used by FAT32 */
-	__u32	fat32_length;	/* sectors/FAT */
-	__u16	flags;		/* bit 8: fat mirroring, low 4: active fat */
+	__u8	fat32_length[2];/* sectors/FAT */
+	__u8	flags[2];	/* bit 8: fat mirroring, low 4: active fat */
 	__u8	version[2];	/* major, minor filesystem version */
-	__u32	root_cluster;	/* first cluster in root directory */
-	__u16	info_sector;	/* filesystem info sector */
-	__u16	backup_boot;	/* backup boot sector */
-	__u16	reserved2[6];	/* Unused */
+	__u8	root_cluster[4];/* first cluster in root directory */
+	__u8	info_sector[2];	/* filesystem info sector */
+	__u8	backup_boot[2];	/* backup boot sector */
+	__u8	reserved2[12];	/* Unused */
 };
 
-#define FAT_CVT_U16(bytarr) (* (__u16*)(bytarr))
+#define FAT_CVT_U8(byte)    (* (__u8*)(byte))
+#define FAT_CVT_U16(bytarr) le16_to_cpu(* (__u16*)(bytarr))
+#define FAT_CVT_U32(bytarr) le32_to_cpu(* (__u32*)(bytarr))
 
 /*
  *  Defines how to differentiate a 12-bit and 16-bit FAT.
@@ -84,17 +86,17 @@ struct fat_bpb {
 #define FAT_DIRENTRY_LENGTH       32
 
 #define FAT_DIRENTRY_ATTRIB(entry) \
-  (*((unsigned char *) (entry+11)))
+  FAT_CVT_U8(entry+11)
 #define FAT_DIRENTRY_VALID(entry) \
-  ( ((*((unsigned char *) entry)) != 0) \
-    && ((*((unsigned char *) entry)) != 0xE5) \
+  ( (FAT_CVT_U8(entry) != 0) \
+    && (FAT_CVT_U8(entry) != 0xE5) \
     && !(FAT_DIRENTRY_ATTRIB(entry) & FAT_ATTRIB_NOT_OK_MASK) )
 #define FAT_DIRENTRY_FIRST_CLUSTER(entry) \
-  ((*((unsigned short *) (entry+26)))+(*((unsigned short *) (entry+20)) << 16))
+  (FAT_CVT_U16(entry+26)+(FAT_CVT_U16(entry+20) << 16))
 #define FAT_DIRENTRY_FILELENGTH(entry) \
-  (*((unsigned long *) (entry+28)))
+  FAT_CVT_U32(entry+28)
 
 #define FAT_LONGDIR_ID(entry) \
-  (*((unsigned char *) (entry)))
+  FAT_CVT_U8(entry)
 #define FAT_LONGDIR_ALIASCHECKSUM(entry) \
-  (*((unsigned char *) (entry+13)))
+  FAT_CVT_U8(entry+13)

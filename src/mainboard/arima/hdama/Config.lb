@@ -141,3 +141,5 @@ cpu p5 end
 cpu p6 end
 cpu k7 end
 cpu k8 end
+
+makedefine CFLAGS += -g

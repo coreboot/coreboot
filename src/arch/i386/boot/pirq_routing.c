@@ -2,7 +2,7 @@
 #include <arch/pirq_routing.h>
 #include <string.h>
 
-#ifdef DEBUG
+#if DEBUG==1
 void check_pirq_routing_table(void)
 {
 	const uint8_t *addr;

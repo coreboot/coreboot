@@ -16,9 +16,11 @@ uses ARCH
 ### Build the objects we have code for in this directory.
 ###
 ##object mainboard.o
-config chip.h
-register "fixup_scsi" = "1"
+#config chip.h
+#register "fixup_scsi" = "1"
+
 driver mainboard.o
+driver lsi_scsi.o
 object static_devices.o
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
@@ -128,8 +130,9 @@ makerule ./auto.E
 	action	"$(CPP) -I$(TOP)/src $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
 end
 makerule ./auto.inc 
-	depends "./romcc ./auto.E" 
-	action	"./romcc -mcpu=k8  -O ./auto.E > auto.inc"
+	depends "./romcc ./auto.E"
+	action "./romcc -O -mcpu=k8 -o auto.inc --label-prefix=auto ./auto.E" 
+#	action	"./romcc -mcpu=k8  -O ./auto.E > auto.inc"
 end
 mainboardinit cpu/k8/enable_mmx_sse.inc
 mainboardinit ./auto.inc
@@ -152,10 +155,10 @@ end
 southbridge amd/amd8131
 end
 #mainboardinit archi386/smp/secondary.inc
-superio NSC/pc87360
-	register "com1" = "{1}"
-	register "lpt" = "{1}"
-end
+#superio NSC/pc87360
+#	register "com1" = "{1}"
+#	register "lpt" = "{1}"
+#end
 dir /pc80
 ##dir /src/superio/winbond/w83627hf
 cpu p5 end

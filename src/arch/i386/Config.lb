@@ -7,7 +7,7 @@ end
 
 makerule floppy 
 	depends	"all" 
-	action	"mcopy -o romimage a:"
+	action	"mcopy -o linuxbios.rom a:"
 end
 
 makerule nrv2b 

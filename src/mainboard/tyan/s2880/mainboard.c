@@ -1,10 +1,10 @@
 #include <console/console.h>
 #include <device/device.h>
-#include <device/chip.h>
+//#include <device/chip.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include "chip.h"
+//#include "chip.h"
 //#include <part/mainboard.h>
 //#include "lsi_scsi.c"
 unsigned long initial_apicid[MAX_CPUS] =
@@ -105,7 +105,7 @@ static void onboard_scsi_fixup(void)
 */
 }
  
-
+/*
 static void
 enable(struct chip *chip, enum chip_pass pass)
 {
@@ -135,4 +135,4 @@ struct chip_control mainboard_tyan_s2880_control = {
 	        enable: enable,
 	        name:   "Tyan s2880 mainboard "
 };
-
+*/

@@ -1,13 +1,13 @@
 #include <console/console.h>
 #include <cpu/p5/cpuid.h>
-#ifdef i586
+#if i586==1
 #include <cpu/p6/msr.h>
 #endif
 
 
 int mtrr_check(void)
 {
-#ifdef i686
+#if i686==1
 	/* Only Pentium Pro and later have MTRR */
 	msr_t msr;
 	printk_debug("\nMTRR check\n");

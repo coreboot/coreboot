@@ -1,7 +1,7 @@
 #ifndef __ASM_MPSPEC_H
 #define __ASM_MPSPEC_H
 
-#ifdef HAVE_MP_TABLE
+#if HAVE_MP_TABLE==1
 
 /*
  * Structure definitions for SMP machines following the

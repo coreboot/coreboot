@@ -57,7 +57,7 @@ void console_tx_byte(unsigned char byte)
  */
 void post_code(uint8_t value)
 {
-#ifdef CONFIG_SERIAL_POST
+#if CONFIG_SERIAL_POST==1
 	printk_info("POST: 0x%02x\n", value);
 #elsif !define(NO_POST)
 	outb(value, 0x80);

@@ -35,7 +35,7 @@ static void cache_on(struct mem_range *mem)
 	 * so absolute minimum needed to get it going. 
 	 */
 	/* OK, linux it turns out does nothing. We have to do it ... */
-#if defined(i686) 
+#if i686==1
 	// totalram here is in linux sizing, i.e. units of KB. 
 	// set_mtrr is responsible for getting it into the right units!
 	setup_mtrrs(mem);
@@ -101,7 +101,7 @@ static void interrupts_on()
 		apic_read(APIC_ID));
 
 #else /* APIC */
-#ifdef i686
+#if i686==1
 	/* Only Pentium Pro and later have those MSR stuff */
 	msr_t msr;
 

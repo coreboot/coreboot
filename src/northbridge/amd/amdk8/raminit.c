@@ -919,6 +919,12 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	 * [31: 8] Reserved
 	 */
 	PCI_ADDR(0, 0x18, 3, 0x60), 0xffffff00, 0x00000000,
+//BY LYH  add IOMMU 64M APERTURE
+	PCI_ADDR(0, 0x18, 3, 0x94), 0xffff8000, 0x00000f70,
+	PCI_ADDR(0, 0x18, 3, 0x90), 0xffffff80, 0x00000002,
+        PCI_ADDR(0, 0x18, 3, 0x98), 0x0000000f, 0x00068300,
+
+//BY LYH END
 	};
 	int i;
 	int max;
@@ -1116,7 +1122,23 @@ static void spd_set_ram_size(const struct mem_controller *ctrl)
 		set_dimm_size(ctrl, sz, i);
 	}
 }
-
+static void fill_last(unsigned long node_id,unsigned long base)
+{
+//BY LYH //Fill next base reg with right value
+        unsigned i;
+        unsigned base_reg;
+        base &=0xffff0000;
+	device_t device;
+        for(device = PCI_DEV(0, 0x18, 1); device <= PCI_DEV(0, 0x1f, 1); device
++= PCI_DEV(0, 1, 0)) {
+        	for(i=node_id+1;i<=7;i++) {
+                	base_reg=0x40+(i<<3);
+                 	pci_write_config32(device,base_reg,base);
+		}
+        }
+//BY LYH END
+}
+ 
 static void route_dram_accesses(const struct mem_controller *ctrl,
 	unsigned long base_k, unsigned long limit_k)
 {
@@ -1126,6 +1148,7 @@ static void route_dram_accesses(const struct mem_controller *ctrl,
 	unsigned base;
 	unsigned index;
 	unsigned limit_reg, base_reg;
+
 	device_t device;
 	node_id = ctrl->node_id;
 	index = (node_id << 3);
@@ -1143,6 +1166,7 @@ static void route_dram_accesses(const struct mem_controller *ctrl,
 		pci_write_config32(device, limit_reg, limit);
 		pci_write_config32(device, base_reg, base);
 	}
+	
 }
 
 static void set_top_mem(unsigned tom_k)
@@ -1251,9 +1275,9 @@ static void order_dimms(const struct mem_controller *ctrl)
 		/* Recompute the cs base register value */
 #if 1  // BY LYH  Need to count from 0 for every memory controller
 		csbase = ((tom - (base_k>>15))<< 21) | 1;
-		print_debug("csbase=");
-		print_debug_hex32(csbase);
-		print_debug("\r\n");
+//		print_debug("csbase=");
+//		print_debug_hex32(csbase);
+//		print_debug("\r\n");
 #else  //BY LYH END
                csbase = (tom << 21) | 1;
 #endif
@@ -1283,12 +1307,16 @@ static void order_dimms(const struct mem_controller *ctrl)
 	print_debug("\r\n");
 #endif
 	route_dram_accesses(ctrl, base_k, tom_k);
+//BY LYH
+        fill_last(ctrl->node_id, tom_k<<2);
+//BY LYH END
 
 #if 0 //BY LYH
-	if(ctrl->node_id==1) {
-		pci_write_config32(ctrl->f2, DRAM_CSBASE, 0x00000001);
-	
-	}	
+        dump_pci_device(PCI_DEV(0, 0x18, 1));
+ 
+//	if(ctrl->node_id==1) {
+//		pci_write_config32(ctrl->f2, DRAM_CSBASE, 0x00000001);
+//	}	
 #endif 
 
 	set_top_mem(tom_k);

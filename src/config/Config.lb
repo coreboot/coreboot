@@ -7,7 +7,7 @@ makedefine LIBGCC_FILE_NAME := $(shell $(CC) -print-libgcc-file-name)
 makedefine GCC_INC_DIR := $(shell $(CC) -print-search-dirs | sed -ne "s/install: \(.*\)/\1include/gp")
 
 makedefine CPPFLAGS := -I$(TOP)/src/include -I$(TOP)/src/arch/$(ARCH)/include -I$(GCC_INC_DIR) $(CPUFLAGS)
-makedefine ROMCCPPFLAGS := -D__ROMCC__=0 -D__ROMCC_MINOR__=23
+makedefine ROMCCPPFLAGS := -D__ROMCC__=0 -D__ROMCC_MINOR__=34
 makedefine CFLAGS := $(CPU_OPT) $(CPPFLAGS) -Os -nostdinc -nostdlib -fno-builtin  -Wall
 
 makedefine HOSTCFLAGS:= -Os -Wall
@@ -116,7 +116,7 @@ end
 
 makerule ./romcc   
 	depends	"$(TOP)/util/romcc/romcc.c" 
-	action	"$(HOSTCC) -g $(HOSTCFLAGS) -DVERSION='\"0.21\"' -DRELEASE_DATE='\"7 april 2003\"' $< -o $@"
+	action	"$(HOSTCC) -g $(HOSTCFLAGS) -DVERSION='\"0.34\"' -DRELEASE_DATE='\"4 July 2003\"' $< -o $@"
 end
 
 makerule build_opt_tbl   

@@ -183,21 +183,21 @@ static void main(void)
 	dump_pci_devices();
 #endif
 #if 0
-	dump_pci_device(PCI_DEV(0, 0x18, 2));
+	dump_pci_device(PCI_DEV(0, 0x18, 1));
 #endif
 
 	/* Check all of memory */
 #if 0
 	msr_t msr;
-	msr = rdmsr(TOP_MEM);
-	print_debug("TOP_MEM: ");
+	msr = rdmsr(TOP_MEM2);
+	print_debug("TOP_MEM2: ");
 	print_debug_hex32(msr.hi);
 	print_debug_hex32(msr.lo);
 	print_debug("\r\n");
 #endif
 /*
-#if 1
-	ram_check(0x00000000, msr.lo);
+#if  0
+	ram_check(0x00000000, msr.lo+(msr.hi<<32));
 #else
 #if TOTAL_CPUS < 2
 	// Check 16MB of memory @ 0

@@ -1,6 +1,6 @@
 #include <arch/asm.h>
 #include <arch/intel.h>
-#ifdef CONFIG_SMP
+#if CONFIG_SMP==1
 #include <cpu/p6/apic.h>
 #endif
 	.section ".text"
@@ -39,7 +39,7 @@ _start:
 
 	/* set new stack */
 	movl	$_estack, %esp
-#ifdef CONFIG_SMP
+#if CONFIG_SMP==1
 	/* Get the cpu id */
 	movl	$APIC_DEFAULT_BASE, %edi
 	movl	APIC_ID(%edi), %eax

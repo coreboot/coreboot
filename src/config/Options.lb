@@ -121,6 +121,11 @@ define LINUXBIOS_VERSION
 	export always
 	comment "LinuxBIOS version"
 end
+define LINUXBIOS_EXTRA_VERSION
+        default ""
+        export used
+        comment "LinuxBIOS extra version"
+end
 define LINUXBIOS_BUILD
 	default "$(shell date)"
 	export always
@@ -249,7 +254,7 @@ define HEAP_SIZE
 	comment "Default heap size"
 end
 define _RAMBASE
-	default 0x4000
+	default none
 	format "0x%x"
 	export always
 	comment "Base address of LinuxBIOS in RAM"
@@ -405,6 +410,11 @@ define CONFIG_SMP
 	default 0
 	export always
 	comment "Define if we support SMP"
+end
+define CONFIG_MAX_CPUS
+        default 1
+        export always
+        comment "Config CPU count for this machine"
 end
 define MAX_CPUS
 	default 1

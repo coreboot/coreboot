@@ -48,15 +48,12 @@ uses CONFIG_CHIP_CONFIGURE
 uses XIP_ROM_SIZE
 uses XIP_ROM_BASE
 uses LINUXBIOS_EXTRA_VERSION
-uses TTYS0_BAUD
-
-option TTYS0_BAUD=19200
 
 option CONFIG_CHIP_CONFIGURE=1
 option CONFIG_KEYBOARD=1
 
-option  MAXIMUM_CONSOLE_LOGLEVEL=7
-option  DEFAULT_CONSOLE_LOGLEVEL=7
+option  MAXIMUM_CONSOLE_LOGLEVEL=10
+option  DEFAULT_CONSOLE_LOGLEVEL=10
 option  CONFIG_CONSOLE_SERIAL8250=1
 
 option CPU_FIXUP=1
@@ -94,7 +91,8 @@ romimage "normal"
 	mainboard via/epia
 #	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
 #	payload ../../../../tg3--ide_disk.zelf	
-	payload ../../../../../lnxieepro100.ebi
+#	payload ../../../../../lnxieepro100.ebi
+	payload ../../../../../../filo.elf
 end
 
 romimage "fallback" 
@@ -104,7 +102,8 @@ romimage "fallback"
 	mainboard via/epia
 #	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
 #	payload ../../../../tg3--ide_disk.zelf	
-	payload ../../../../../lnxieepro100.ebi
+#	payload ../../../../../lnxieepro100.ebi
+	payload ../../../../../../filo.elf
 end
 
 buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"

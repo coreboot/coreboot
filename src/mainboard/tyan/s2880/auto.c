@@ -15,6 +15,8 @@
 #include "cpu/p6/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "debug.c"
+#include "northbridge/amd/amdk8/cpu_rev.c"
+
 
 #define REV_B_RESET 0
 static void memreset_setup(void)
@@ -88,8 +90,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 /* include mainboard specific ht code */
 #include "hypertransport.c"
 
-#include "northbridge/amd/amdk8/cpu_ldtstop.c"
-#include "southbridge/amd/amd8111/amd8111_ldtstop.c"
+//#include "northbridge/amd/amdk8/cpu_ldtstop.c"
+//#include "southbridge/amd/amd8111/amd8111_ldtstop.c"
 
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
@@ -162,7 +164,7 @@ static void main(void)
 	enable_lapic();
 	init_timer();
 	if (!boot_cpu() ) {
-		notify_bsp_ap_is_stopped();
+//		notify_bsp_ap_is_stopped();
 		stop_this_cpu();
 	}
 	uart_init();

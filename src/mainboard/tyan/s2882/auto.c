@@ -15,6 +15,8 @@
 #include "cpu/p6/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "debug.c"
+#include "northbridge/amd/amdk8/cpu_rev.c"
+ 
 
 static void memreset_setup(void)
 {
@@ -84,8 +86,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 /* include mainboard specific ht code */
 #include "hypertransport.c"
 
-#include "northbridge/amd/amdk8/cpu_ldtstop.c"
-#include "southbridge/amd/amd8111/amd8111_ldtstop.c"
+//#include "northbridge/amd/amdk8/cpu_ldtstop.c"
+//#include "southbridge/amd/amd8111/amd8111_ldtstop.c"
 
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
@@ -182,7 +184,7 @@ static void main(void)
 	memreset_setup();
 	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
 
-#if 1
+#if 0
 	dump_pci_devices();
 #endif
 #if 0

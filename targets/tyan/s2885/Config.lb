@@ -41,7 +41,6 @@ uses USE_FALLBACK_IMAGE
 uses USE_OPTION_TABLE
 uses HAVE_OPTION_TABLE
 uses CONFIG_CHIP_CONFIGURE
-uses CONFIG_LEGACY_VGABIOS
  
 uses CONFIG_CONSOLE_SERIAL8250
 uses TTYS0_BAUD
@@ -56,10 +55,10 @@ uses XIP_ROM_SIZE
 uses XIP_ROM_BASE
 uses HAVE_HARD_RESET
 
-uses CONFIG_VGABIOS
-uses CONFIG_REALMODE_IDT
-uses CONFIG_PCIBIOS
-uses VGABIOS_START
+#uses CONFIG_VGABIOS
+#uses CONFIG_REALMODE_IDT
+#uses CONFIG_PCIBIOS
+#uses VGABIOS_START
 #uses SCSIFW_START
 
 #
@@ -76,7 +75,7 @@ option k7=1
 option k8=1
 option ROM_SIZE=524288
 
-option CONFIG_LEGACY_VGABIOS=1
+#option CONFIG_VGABIOS=1
 #option CONFIG_REALMODE_IDT=1
 #option CONFIG_PCIBIOS=1
 #option VGABIOS_START=1
@@ -235,4 +234,4 @@ romimage "fallback"
 	payload ../../tg3--ide_disk.zelf
 end
 
-buildrom ROM_SIZE "normal" "fallback"
+buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"

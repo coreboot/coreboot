@@ -699,6 +699,8 @@ static void pci_level_irq(unsigned char intNum)
 	outb((unsigned char) intBits, 0x4d0);
 	outb((unsigned char) (intBits >> 8), 0x4d1);
 
+	/* this seems like an error but is not ... */
+#if 0
 	if (inb(0x4d0) != (intBits & 0xf)) {
 	  printk_err("%s: lower order bits are wrong: want 0x%x, got 0x%x\n",
 		     __FUNCTION__, intBits &0xf, inb(0x4d0));
@@ -707,6 +709,7 @@ static void pci_level_irq(unsigned char intNum)
 	  printk_err("%s: lower order bits are wrong: want 0x%x, got 0x%x\n",
 		     __FUNCTION__, (intBits>>8) &0xf, inb(0x4d1));
 	}
+#endif
 }
 
 /*

@@ -88,7 +88,7 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 #endif
 //Onboard SI Serial ATA
 //	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x4, 0x14, 0x2, 0x11);
-#if 0
+#if 1
 //Slot 3 PCIX 100/66
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x2, 0x20, 0x3, 0x3);
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x2, 0x21, 0x3, 0x0);
@@ -107,7 +107,7 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 //On Board NIC
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x2, 0x24, 0x3, 0x0);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x2, 0x25, 0x3, 0x1);
-#if 0
+#if 1
 //Slot 1 PCI-X 133/100/66
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x3, 0xc, 0x4, 0x0);
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x3, 0xd, 0x4, 0x1);

@@ -56,11 +56,11 @@ uses XIP_ROM_BASE
 
 uses HAVE_HARD_RESET
 
-uses CONFIG_VGABIOS
-uses CONFIG_REALMODE_IDT
-uses CONFIG_PCIBIOS
-uses VGABIOS_START
-uses SCSIFW_START
+#uses CONFIG_VGABIOS
+#uses CONFIG_REALMODE_IDT
+#uses CONFIG_PCIBIOS
+#uses VGABIOS_START
+#uses SCSIFW_START
 
 #
 #uses CONFIG_LSI_SCSI_FW_FIXUP
@@ -78,11 +78,11 @@ option k7=1
 option k8=1
 option ROM_SIZE=524288
 
-option CONFIG_VGABIOS=0
-option CONFIG_REALMODE_IDT=0
-option CONFIG_PCIBIOS=0
-option VGABIOS_START=0xfff8c000
-option SCSIFW_START=0xfff80000
+#option CONFIG_VGABIOS=0
+#option CONFIG_REALMODE_IDT=0
+#option CONFIG_PCIBIOS=0
+#option VGABIOS_START=0xfff8c000
+#option SCSIFW_START=0xfff80000
 
 
 option HAVE_FALLBACK_BOOT=1
@@ -236,4 +236,4 @@ romimage "fallback"
 	payload ../../tg3.zelf
 end
 
-buildrom ROM_SIZE "normal" "fallback"
+buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"

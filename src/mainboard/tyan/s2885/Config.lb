@@ -13,6 +13,7 @@ uses ARCH
 ###
 ### Build the objects we have code for in this directory.
 ###
+##object mainboard.o
 config chip.h
 register "fixup_scsi" = "1"
 register "fixup_vga" = "1"
@@ -141,24 +142,29 @@ northbridge amd/amdk8 "mc0"
         pci 0:18.1
         pci 0:18.2
         pci 0:18.3
-        southbridge amd/amd8131 "amd8131"
+        southbridge amd/amd8131 "amd8131" link 2
                 pci 0:0.0
                 pci 0:0.1
                 pci 0:1.0
                 pci 0:1.1
 	end
-	southbridge amd/amd8111 "amd8111"
+	southbridge amd/amd8111 "amd8111" link 2
        	       	pci 0:0.0
-	       	pci 0:1.0
-	        pci 0:1.1
-	        pci 0:1.2
-	        pci 0:1.3
-	        pci 0:1.5
-	        pci 0:1.6
+	       	pci 0:1.0 on
+	        pci 0:1.1 on
+	        pci 0:1.2 on
+	        pci 0:1.3 on
+	        pci 0:1.5 on
+	        pci 0:1.6 off
+                pci 1:0.0 on
+                pci 1:0.1 on
+                pci 1:0.2 on
+                pci 1:1.0 off
+ 
 	end
-        southbridge amd/amd8151 "amd8151"
-                pci 2:0.0
-                pci 2:1.0
+        southbridge amd/amd8151 "amd8151" link 0
+                pci 0:0.0
+                pci 0:1.0
         end
 end
 
@@ -187,7 +193,7 @@ end
 #end
 dir /pc80
 ##dir /src/superio/winbond/w83627hf
-dir /bioscall
+#dir /bioscall
 #dir /cpu/k8
 cpu k8 "cpu0"
   register "up" = "{.chip = &amd8151, .ht_width=16, .ht_speed=600}"

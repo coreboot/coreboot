@@ -29,6 +29,5 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations mainboard_amd_solo_ops = {
-	.name = "AMD Solo7 mainboard ",
 	.enable_dev = enable_dev,
 };

@@ -74,9 +74,13 @@ int write_jedec (struct flashchip * flash, char * buf)
 {
 	int i;
 	int total_size = flash->total_size *1024, page_size = flash->page_size;
-	volatile char * bios = flash->virt_addr;
+	volatile unsigned char * bios = flash->virt_addr;
 
 	erase_jedec (flash);
+	if (*bios != (unsigned char ) 0xff) {
+		printf("ERASE FAILED\n");
+		return -1;
+	}
 	printf ("Programming Page: ");
 	for (i = 0; i < total_size/page_size; i++) {
 		printf ("%04d at address: 0x%08x", i, i * page_size);

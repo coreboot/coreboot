@@ -13,6 +13,8 @@ struct flashchip {
 	int (*probe) (struct flashchip * flash);
 	int (*erase) (struct flashchip * flash);
 	int (*write) (struct flashchip * flash, char * buf);
+	int fd_mem;
+	volatile char *virt_addr_2;
 };
 
 #define AMD_ID            0x01

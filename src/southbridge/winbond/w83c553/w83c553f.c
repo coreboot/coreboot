@@ -29,8 +29,8 @@
 
 #include <types.h>
 #include <arch/io.h>
-#include <pci.h>
-#include <printk.h>
+#include <device/pci.h>
+#include <console/console.h>
 #include "w83c553f.h"
 
 #ifndef CONFIG_ISA_MEM
@@ -54,6 +54,7 @@ void initialise_dma(void);
 
 extern struct pci_ops pci_direct_ppc;
 
+#if 0
 void southbridge_early_init(void)
 {
 	unsigned char reg8;
@@ -67,16 +68,17 @@ void southbridge_early_init(void)
 	reg8 &= ~W83C553F_IPADCR_MBE512;
 	pci_direct_ppc.write_byte(0, 0x58, W83C553F_IPADCR, &reg8);
 }
+#endif
 
 void southbridge_init(void)
 {
-	struct pci_dev  *devbusfn;
+	struct device  *dev;
 	unsigned char reg8;
 	unsigned short reg16;
 	unsigned int reg32;
 
-	devbusfn = pci_find_device(W83C553F_VID, W83C553F_DID, 0);
-	if (devbusfn == 0)
+	dev = dev_find_device(W83C553F_VID, W83C553F_DID, 0);
+	if (dev == 0)
 	{
 		printk_info("Error: Cannot find W83C553F controller on any PCI bus\n");
 		return;
@@ -86,47 +88,47 @@ void southbridge_init(void)
 
 	/* always enabled */
 #if 0
-	pci_read_config_word(devbusfn, PCI_COMMAND, &reg16);
+	reg16 = pci_read_config16(dev, PCI_COMMAND);
 	reg16 |= PCI_COMMAND_MASTER | PCI_COMMAND_IO | PCI_COMMAND_MEMORY;
-	pci_write_config_word(devbusfn, PCI_COMMAND, reg16);
+	pci_write_config16(dev, PCI_COMMAND, reg16);
 #endif
 
 	/*
 	 * Set ISA memory space
 	 */
-	pci_read_config_byte(devbusfn, W83C553F_IPADCR, &reg8);
+	reg8 = pci_read_config8(dev, W83C553F_IPADCR);
 	/* 16 MB ISA memory space */
 	reg8 |= (W83C553F_IPADCR_IPATOM4 | W83C553F_IPADCR_IPATOM5 | W83C553F_IPADCR_IPATOM6 | W83C553F_IPADCR_IPATOM7);
 	reg8 &= ~W83C553F_IPADCR_MBE512;
-	pci_write_config_byte(devbusfn, W83C553F_IPADCR, reg8);
+	pci_write_config8(dev, W83C553F_IPADCR, reg8);
 
 	/*
 	 * Chip select: switch off BIOS write protection
 	 */
-	pci_read_config_byte(devbusfn, W83C553F_CSCR, &reg8);
+	reg8 = pci_read_config8(dev, W83C553F_CSCR);
 	reg8 |= W83C553F_CSCR_UBIOSCSE;
 	reg8 &= ~W83C553F_CSCR_BIOSWP;
-	pci_write_config_byte(devbusfn, W83C553F_CSCR, reg8);
+	pci_write_config8(dev, W83C553F_CSCR, reg8);
 
 
 	/*
 	 * Enable Port 92
 	 */
 	reg8 = W83C553F_ATSCR_P92E | W83C553F_ATSCR_KRCEE;
-	pci_write_config_byte(devbusfn, W83C553F_CSCR, reg8);
+	pci_write_config8(dev, W83C553F_CSCR, reg8);
 
 	/*
 	 * Route IDE interrupts to IRQ 14 & 15 on 8259.
 	 */
-	pci_write_config_byte(devbusfn, W83C553F_IDEIRCR, 0xef);
-	pci_write_config_word(devbusfn, W83C553F_PCIIRCR, 0x0000);
+	pci_write_config8(dev, W83C553F_IDEIRCR, 0xef);
+	pci_write_config16(dev, W83C553F_PCIIRCR, 0x0000);
 
 	/*
 	 * Read IDE bus offsets from function 1 device.
 	 * We must unmask the LSB indicating that it is an IO address.
 	 */
-	devbusfn = pci_find_device(W83C553F_VID, W83C553F_IDE, 0);
-	if (devbusfn == 0)
+	dev = dev_find_device(W83C553F_VID, W83C553F_IDE, 0);
+	if (dev == 0)
 	{
 		printk_info("Error: Cannot find W83C553F function 1 device\n");
 		return;
@@ -136,47 +138,46 @@ void southbridge_init(void)
 	 * Enable native mode on IDE ports and set base address.
 	 */
 	reg8 = W83C553F_PIR_P1NL | W83C553F_PIR_P0NL;
-	pci_write_config_byte(devbusfn, W83C553F_PIR, reg8);
-	pci_write_config_dword(devbusfn, PCI_BASE_ADDRESS_0, 0xffffffff);
-	pci_read_config_dword(devbusfn, PCI_BASE_ADDRESS_0, &reg32);
-	pci_write_config_dword(devbusfn, PCI_BASE_ADDRESS_0, 0x1f0);
-	pci_read_config_dword(devbusfn, PCI_BASE_ADDRESS_0, &reg32);
-	pci_write_config_dword(devbusfn, PCI_BASE_ADDRESS_1, 0xffffffff);
-	pci_read_config_dword(devbusfn, PCI_BASE_ADDRESS_1, &reg32);
-	pci_write_config_dword(devbusfn, PCI_BASE_ADDRESS_1, 0x3f6);
-	pci_read_config_dword(devbusfn, PCI_BASE_ADDRESS_1, &reg32);
-	pci_write_config_dword(devbusfn, PCI_BASE_ADDRESS_2, 0xffffffff);
-	pci_read_config_dword(devbusfn, PCI_BASE_ADDRESS_2, &reg32);
-	pci_write_config_dword(devbusfn, PCI_BASE_ADDRESS_2, 0x170);
-	pci_read_config_dword(devbusfn, PCI_BASE_ADDRESS_2, &reg32);
-	pci_write_config_dword(devbusfn, PCI_BASE_ADDRESS_3, 0xffffffff);
-	pci_read_config_dword(devbusfn, PCI_BASE_ADDRESS_3, &reg32);
-	pci_write_config_dword(devbusfn, PCI_BASE_ADDRESS_3, 0x376);
-	pci_read_config_dword(devbusfn, PCI_BASE_ADDRESS_3, &reg32);
+	pci_write_config8(dev, W83C553F_PIR, reg8);
+	pci_write_config32(dev, PCI_BASE_ADDRESS_0, 0xffffffff);
+	reg32 = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
+	pci_write_config32(dev, PCI_BASE_ADDRESS_0, 0x1f0);
+	reg32 = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
+	pci_write_config32(dev, PCI_BASE_ADDRESS_1, 0xffffffff);
+	reg32 = pci_read_config32(dev, PCI_BASE_ADDRESS_1);
+	pci_write_config32(dev, PCI_BASE_ADDRESS_1, 0x3f6);
+	reg32 = pci_read_config32(dev, PCI_BASE_ADDRESS_1);
+	pci_write_config32(dev, PCI_BASE_ADDRESS_2, 0xffffffff);
+	reg32 = pci_read_config32(dev, PCI_BASE_ADDRESS_2);
+	pci_write_config32(dev, PCI_BASE_ADDRESS_2, 0x170);
+	reg32 = pci_read_config32(dev, PCI_BASE_ADDRESS_2);
+	pci_write_config32(dev, PCI_BASE_ADDRESS_3, 0xffffffff);
+	reg32 = pci_read_config32(dev, PCI_BASE_ADDRESS_3);
+	pci_write_config32(dev, PCI_BASE_ADDRESS_3, 0x376);
+	reg32 = pci_read_config32(dev, PCI_BASE_ADDRESS_3);
 
 	/*
 	 * Set read-ahead duration to 0xff
 	 * Enable P0 and P1
 	 */
 	reg32 = 0x00ff0000 | W83C553F_IDECSR_P1EN | W83C553F_IDECSR_P0EN;
-	pci_write_config_dword(devbusfn, W83C553F_IDECSR, reg32);
-	pci_read_config_dword(devbusfn, W83C553F_IDECSR, &reg32);
+	pci_write_config32(dev, W83C553F_IDECSR, reg32);
 
-	pci_read_config_dword(devbusfn, PCI_BASE_ADDRESS_0, &ide_bus_offset[0]);
+	ide_bus_offset[0] = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 	printk_debug("ide bus offset = 0x%x\n", ide_bus_offset[0]);
 	ide_bus_offset[0] &= ~1;
 #if CONFIG_IDE_MAXBUS > 1
-	pci_read_config_dword(devbusfn, PCI_BASE_ADDRESS_2, &ide_bus_offset[1]);
+	ide_bus_offset[1] = pci_read_config32(dev, PCI_BASE_ADDRESS_2);
 	ide_bus_offset[1] &= ~1;
 #endif
 
 	/*
 	 * Enable function 1, IDE -> busmastering and IO space access
 	 */
-	pci_read_config_word(devbusfn, PCI_COMMAND, &reg16);
+	reg16 = pci_read_config16(dev, PCI_COMMAND);
 	reg16 |= PCI_COMMAND_MASTER | PCI_COMMAND_IO;
-	pci_write_config_word(devbusfn, PCI_COMMAND, reg16);
-	pci_read_config_word(devbusfn, PCI_COMMAND, &reg16);
+	pci_write_config16(dev, PCI_COMMAND, reg16);
+	reg16 = pci_read_config16(dev, PCI_COMMAND);
 
 	/*
 	 * Initialise ISA interrupt controller

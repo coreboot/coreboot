@@ -13,6 +13,7 @@ static void paging_off(void)
 		/* Disable pae */
 		"movl	%%cr4, %%eax\n\t"
 		"andl	$0xFFFFFFDF, %%eax\n\t"
+		"movl	%%eax, %%cr4\n\t"
 		:
 		:
 		: "eax"

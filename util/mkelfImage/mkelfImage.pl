@@ -55,7 +55,7 @@ sub build_kernel_piggy
 	if ($elf_sig eq "\x7FELF") {
 		# It's an elf image
 		# Assume the input file uses contiguous memory...
-		system("objcopy ${src} -O binary ${dst}.obj");
+		system("$params->{OBJCOPY} ${src} -O binary ${dst}.obj");
 		die "rc = $?" unless ($? == 0);
 	}
 	elsif ($bootsector_sig == 0xAA55) {
@@ -148,11 +148,20 @@ sub build_elf_image
 	$fd->print("initrd_base = $params->{INITRD_BASE};\n");
 	$fd->close();
 	my $script = "$params->{PREFIX}/elfImage.lds";
-	my $cmd = "$params->{LD} -o ${dst}  -T $script " . join(" ", @srcs);
+	my $cmd = "$params->{LD} -o ${dst}.fat  -T $script " . join(" ", @srcs);
 	print " Running $cmd";
 	system("$cmd");
 	die "rc = $?" unless ($? == 0);
+	my $cmd2 = "$params->{OBJCOPY} ${dst}.fat ${dst} -S -R .comment -R .note0"; 
+	if (!$params->{RAMDISK}) {
+		$cmd2 .= " -R .ramdisk";
+	}
+	print " Running $cmd";
+	system("$cmd2");
+	die "rc = $?" unless ($? == 0);
+
 	unlink("${dst}.obj",$lscript);
+	unlink("${dst}.fat",$lscript);
 	return $dst;
 }
 

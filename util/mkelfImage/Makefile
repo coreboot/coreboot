@@ -6,8 +6,8 @@
 # the result will be a directory tree  that you can run mkelfImage in
 PREFIX=/usr/local/
 PERLPATH=/usr/bin/perl
-VERSION="1.11"
-DATE="24 January 2002"
+VERSION="1.12"
+DATE="26 January 2002"
 
 SHAREDIR=$(PREFIX)/share/mkelfImage
 BINDIR=$(PREFIX)/bin

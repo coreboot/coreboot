@@ -1085,8 +1085,10 @@ static int bootloader_query_firmware_class(struct param_info *info)
 
 	hdr = find_elf_note(info->data, 0, 0, EBN_FIRMWARE_TYPE);
 	if (!hdr) {
-		info->has_pcbios = 1;
-		detected_firmware_type = 1;
+		/* If I'm not explicitly told the firmware type
+		 * do my best to guess it for myself.
+		 */
+		detected_firmware_type = 0;
 	} else {
 		note = (char *)hdr;
 		n_name = note + sizeof(*hdr);
@@ -1149,7 +1151,7 @@ static void query_firmware_class(struct param_info *info)
 	/* Now print out the firmware type... */
 	puts("Firmware type:");
 	if (info->has_linuxbios) {
-		puts(" linuxBIOS");
+		puts(" LinuxBIOS");
 	}
 	if (info->has_pcbios) {
 		puts(" PCBIOS");

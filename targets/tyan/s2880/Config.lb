@@ -54,6 +54,8 @@ uses LINUXBIOS_EXTRA_VERSION
 uses XIP_ROM_SIZE
 uses XIP_ROM_BASE
 
+uses HAVE_HARD_RESET
+
 uses CONFIG_VGABIOS
 uses CONFIG_REALMODE_IDT
 uses CONFIG_PCIBIOS
@@ -62,6 +64,8 @@ uses SCSIFW_START
 
 #
 #uses CONFIG_LSI_SCSI_FW_FIXUP
+
+option HAVE_HARD_RESET=1
 
 option HAVE_OPTION_TABLE=1
 option HAVE_MP_TABLE=1
@@ -74,10 +78,10 @@ option k7=1
 option k8=1
 option ROM_SIZE=524288
 
-#option CONFIG_VGABIOS=1
-#option CONFIG_REALMODE_IDT=1
-#option CONFIG_PCIBIOS=1
-#option VGABIOS_START=0xfff8c000
+option CONFIG_VGABIOS=0
+option CONFIG_REALMODE_IDT=0
+option CONFIG_PCIBIOS=0
+option VGABIOS_START=0xfff8c000
 option SCSIFW_START=0xfff80000
 
 
@@ -176,14 +180,14 @@ option DEBUG=1
 option _RAMBASE=0x004000
 
 ##
-## Use a 64K stack
+## Use a 128K stack
 ##
-option STACK_SIZE=0x2000
+option STACK_SIZE=0x4000
 
 ##
-## Use a 64K heap
+## Use a 256K heap
 ##
-option HEAP_SIZE=0x2000
+option HEAP_SIZE=0x8000
 
 #
 ###
@@ -200,6 +204,7 @@ romimage "normal"
 #	48K for SCSI FW and 48K for ATI ROM
 #	option ROM_SIZE = 425984  
         option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
+	option USE_FALLBACK_IMAGE=0
 	option ROM_SECTION_SIZE  = (ROM_SIZE - FALLBACK_SIZE)
 	option ROM_SECTION_OFFSET= 0
 
@@ -231,4 +236,4 @@ romimage "fallback"
 	payload ../../tg3.zelf
 end
 
-buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
+buildrom ROM_SIZE "normal" "fallback"

@@ -1,7 +1,7 @@
 #include <superio/generic.h>
 #include <superio/w83627hf.h>
 
-void w832627hf_power_after_power_fail(int state)
+void w83627hf_power_after_power_fail(int state)
 {
 	unsigned char byte;
 	w83627hf_enter_pnp(SIO_BASE);

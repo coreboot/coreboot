@@ -1,7 +1,7 @@
 #include <superio/generic.h>
 #include <superio/w83627hf.h>
 
-void power_led(int state)
+void w83627hf_power_led(int state)
 {
 	unsigned char byte;
 

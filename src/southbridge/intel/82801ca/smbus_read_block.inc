@@ -1,29 +1,14 @@
 .section ".rom.data"
 
-	/*
-	 * Routine:	smbus_read_byte
-	 * Arguments:	%esp return address
-	 *              %bl device on the smbus to read from 
-	 *              %bh address on the smbus to read
-	 *
-	 * Results:	zf clear
-	 *              byte read %eax
-	 * 	On Error:	
-	 *              zf set
-	 *              %eax trashed
-	 *
-	 * Trashed:	%edx, %eax
-	 * Effects:	reads a byte off of the smbus
-	 */
-
-#define SMBUS_READ_BYTE(device, address) \
-	movl $( (device) | ((address) << 8)), %ebx ; \
-	CALLSP(smbus_read_byte)
-
-smbus_read_byte:
+/* smbus read a block of data
+	input: 	bl device, bh command, cl count, 
+		esi pointer to data block
+	output: cf set on error
+*/
+smbus_read_block:
 	/* poll until the smbus is ready for commands */
 	SMBUS_WAIT_UNTIL_READY()
-	jc	smbus_read_byte_failed
+	jc	smbus_block_read_error
 
 	/* setup transaction */
 	/* disable interrupts */
@@ -32,7 +17,7 @@ smbus_read_byte:
 	andb	$0xFE, %al
 	outb	%al, %dx
 
-	/* set the device I'm talking to */
+	/* set the device I'm talking to and specify a read */
 	movl	$(SMBUS_IO_BASE + SMBXMITADD), %edx
 	movb	%bl /* device */, %al
 	shlb	$1, %al
@@ -44,11 +29,16 @@ smbus_read_byte:
 	movb	%bh /* address */, %al
 	outb	%al, %dx
 
-	/* setup for a byte data read */
+	/* setup for a block data read/write */
 	movl	$(SMBUS_IO_BASE + SMBHSTCTL), %edx
 	inb	%dx, %al
 	andb	$0xE3, %al
-	orb	$(0x2 << 2), %al
+	orb	$(0x5 << 2), %al
+	outb	%al, %dx
+
+	/* set the block count */
+	movl	$(SMBUS_IO_BASE + SMBHSTDAT0), %edx
+	movb	%cl /* count */, %al
 	outb	%al, %dx
 
 	/* clear any lingering errors, so the transaction will run */
@@ -56,36 +46,40 @@ smbus_read_byte:
 	inb	%dx, %al
 	outb	%al, %dx
 
-	/* clear the data byte... */
-	movl	$(SMBUS_IO_BASE + SMBHSTDAT0), %edx
-	xorl	%eax, %eax
-	outb	%al, %dx
-
-	/* start a byte read, with interrupts disabled */
+	/* start a block read, with interrupts disabled */
 	movl	$(SMBUS_IO_BASE + SMBHSTCTL), %edx
 	inb	%dx, %al
-	orb	$0x40, %al
+	orb	$(1 << 6), %al
 	outb	%al, %dx
 
-	/* poll for transaction completion */
-	SMBUS_WAIT_UNTIL_DONE()
-	jc	smbus_read_byte_failed
+smbus_block_read_next:
+	/* wait until the controller has more data ready */
+	SMBUS_WAIT_UNTIL_NEXT()
+	jc	smbus_block_read_error
 
-	/* read the results and see if we succeded */
-	movl	$(SMBUS_IO_BASE + SMBHSTSTAT), %edx
-	inb	%dx, %al
-	andb	$~(1 << 6), %al		/* Ignore the In Use Status... */
-	cmpb	$0x02, %al
-	jne	smbus_read_byte_failed
+	/* Test the results to see if we succeeded */
+	testb	$(1<<7), %al
+	jz	smbus_block_read_error
 
-	movl $(SMBUS_IO_BASE + SMBHSTDAT0), %edx
-	testl	%edx, %edx	/* clear zf */
+	/* read the next byte */
+        movl    $(SMBUS_IO_BASE + SMBBLKDAT), %edx
 	inb	%dx, %al
-smbus_read_byte_done:
+        stosb   %al, (%esi) 
+
+	/* finish this byte read */
+	movl    $(SMBUS_IO_BASE + SMBHSTSTAT), %edx
+	movb	$(1<<7), %al
+        outb    %al, %dx
+	decb	%cl
+	jnz	smbus_block_read_next
+
+	/* No error I am done */
+	clc
+smbus_block_read_end:
 	RETSP
-smbus_read_byte_failed:
+smbus_block_read_error:
 	SMBUS_KILL_COMMAND()
-	xorl	%eax, %eax		/* set zf */
-	jmp smbus_read_byte_done
+	stc
+	jmp smbus_block_noop_read_end
 
 .previous

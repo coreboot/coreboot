@@ -1,3 +1,7 @@
+* 1.16 29 August 2002
+ - Include the source for my spec file in the tarball.
+ - Fix the make install target
+
 * 1.15 23 August 2002
  - Rewrote the perl ip checksum code to be reasonably fast
  - Fixes to the initial parameter passing in head.S thanks to Jake Page <jake@CS.Stanford.EDU>

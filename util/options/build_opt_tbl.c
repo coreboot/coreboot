@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <sys/io.h>
 #include <string.h>
+#include <ctype.h>
+#include "../../src/include/pc80/mc146818rtc.h"
 #include "../../src/include/boot/linuxbios_tables.h"
 
 #define CMOS_IMAGE_BUFFER_SIZE 128
@@ -101,8 +103,32 @@ void display_usage(void)
 }
 
 
+static void skip_spaces(char *line, char **ptr)
+{
+	if (!isspace(**ptr)) {
+		printf("Error missing whitespace in line\n%s\n", line);
+		exit(1);
+	}
+	while(isspace(**ptr)) {
+		(*ptr)++;
+	}
+	return;
+}
+static unsigned long get_number(char *line, char **ptr, int base)
+{
+	unsigned long value;
+	char *ptr2;
+	value = strtoul(*ptr, &ptr2, base);
+	if (ptr2 == *ptr) {
+		printf("Error missing digits at: \n%s\n in line:\n%s\n", 
+			*ptr, line);
+		exit(1);
+	}
+	*ptr = ptr2;
+	return value;
+}
 
-/* This routine builds the cmos definition table from the cmos configuration file
+/* This routine builds the cmos definition table from the cmos layout file
 	input The input comes from the configuration file which contains two parts
 		entries and enumerations. Each section is started with the key words
 		entries and enumerations.  Records then follow in their respective 
@@ -123,10 +149,12 @@ int main(int argc, char **argv)
 	struct cmos_option_table *ct;
 	struct cmos_entries *ce;
 	struct cmos_enums *c_enums, *c_enums_start;
+	struct cmos_checksum *cs;
 	unsigned char line[INPUT_LINE_MAX];
 	unsigned char uc;
 	int entry_mode=0;
 	int enum_mode=0;
+	int checksum_mode=0;
 	int ptr,cnt;
 	char *cptr;
 	int offset,entry_start;
@@ -176,8 +204,8 @@ int main(int argc, char **argv)
 		}
 	}
 	else {  /* no configuration file specified, so try the default */
-		if((fp=fopen("cmos.conf","r"))==NULL){
-			printf("Error - Can not open cmos.conf\n");
+		if((fp=fopen("cmos.layout","r"))==NULL){
+			printf("Error - Can not open cmos.layout\n");
 			exit(1);  /* end of no configuration file is found */
 		}
 	}
@@ -187,6 +215,7 @@ int main(int argc, char **argv)
 	ct->tag = LB_TAG_CMOS_OPTION_TABLE;
 	/* put in the header length */
 	ct->header_length=sizeof(*ct);
+
 	/* Get the entry records */
 	ce=(struct cmos_entries*)(cmos_table+(ct->header_length));
 	cptr = (char*)ce;
@@ -194,18 +223,24 @@ int main(int argc, char **argv)
 		if(fgets(line,INPUT_LINE_MAX,fp)==NULL) 
 			break; /* end if no more input */
 		if(!entry_mode) {  /* skip input until the entries key word */
-			if((ptr=(int)strstr(line,"entries"))){
+			if (strstr(line,"entries") != 0) {
 				entry_mode=1;
 				continue;
 			}
 		}
 		else{  /* Test if we are done with entries and starting enumerations */
-			if((ptr=(int)strstr(line,"enumerations"))){
+			if (strstr(line,"enumerations") != 0){
 				entry_mode=0;
 				enum_mode=1;
 				break;
 			}
+			if (strstr(line, "checksums") != 0) {
+				enum_mode=0;
+				checksum_mode=1;
+				break;
+			}
 		}
+
 		/* skip commented and blank lines */
 		if(line[0]=='#') continue;
 		if(line[strspn(line," ")]=='\n') continue;
@@ -248,7 +283,15 @@ int main(int argc, char **argv)
 	test_for_entry_overlaps(entry_start,offset);
 
 	for(;enum_mode;){ /* loop to build the enumerations section */
-		if(fgets(line,INPUT_LINE_MAX,fp)==NULL) break; /* go till end of input */
+		if(fgets(line,INPUT_LINE_MAX,fp)==NULL) 
+			break; /* go till end of input */
+
+		if (strstr(line, "checksums") != 0) {
+			enum_mode=0;
+			checksum_mode=1;
+			break;
+		}
+
 		/* skip commented and blank lines */
 		if(line[0]=='#') continue;
 		if(line[strspn(line," ")]=='\n') continue;
@@ -279,6 +322,86 @@ int main(int argc, char **argv)
 	/* save the enumerations length */
 	enum_length=(int)c_enums-(int)c_enums_start;
 	ct->size=ct->header_length+enum_length+entries_length;
+
+	/* Get the checksum records */
+	cs=(struct cmos_checksum *)(cmos_table+(ct->size));
+	cptr = (char*)cs;
+	for(;checksum_mode;) { /* This section finds the checksums */
+		char *ptr;
+		if(fgets(line, INPUT_LINE_MAX,fp)==NULL)
+			break; /* end if no more input */
+
+		printf("line: %s\n", line);
+
+		/* skip commented and blank lines */
+		if (line[0]=='#') continue;
+		if (line[strspn(line, " ")]=='\n') continue;
+		if (memcmp(line, "checksum", 8) != 0) continue;
+		printf("Found checksum record: \n");
+		/* get the information */
+		ptr = line + 8;
+		skip_spaces(line, &ptr);
+		cs->range_start = get_number(line, &ptr, 10);
+
+		skip_spaces(line, &ptr);
+		cs->range_end = get_number(line, &ptr, 10);
+
+		skip_spaces(line, &ptr);
+		cs->location = get_number(line, &ptr, 10);
+		
+		/* Make certain there are spaces until the end of the line */
+		skip_spaces(line, &ptr);
+
+		if ((cs->range_start%8) != 0) {
+			printf("Error - range start is not byte aligned in line\n%s\n", line);
+			exit(1);
+		}
+		if (cs->range_start >= (CMOS_IMAGE_BUFFER_SIZE*8)) {
+			printf("Error - range start is to big in line\n%s\n", line);
+			exit(1);
+		}
+		if ((cs->range_end%8) != 7) {
+			printf("Error - range end is not byte aligned in line\n%s\n", line);
+			exit(1);
+		}
+		if ((cs->range_end) >= (CMOS_IMAGE_BUFFER_SIZE*8)) {
+			printf("Error - range end is to long in line\n%s\n", line);
+			exit(1);
+		}
+		if ((cs->location%8) != 0) {
+			printf("Error - location is not byte aligned in line\n%s\n", line);
+			exit(1);
+		}
+		if ((cs->location >= (CMOS_IMAGE_BUFFER_SIZE*8)) ||
+			((cs->location + 16) > (CMOS_IMAGE_BUFFER_SIZE*8))) 
+		{
+			printf("Error - location is to big in line\n%s\n", line);
+			exit(1);
+		}
+		/* And since we are not ready to be fully general purpose yet.. */
+		if ((cs->range_start/8) != LB_CKS_RANGE_START) {
+			printf("Error - Range start(%d) does not match define(%d) in line\n%s\n", 
+				cs->range_start/8, LB_CKS_RANGE_START, line);
+			exit(1);
+		}
+		if ((cs->range_end/8) != LB_CKS_RANGE_END) {
+			printf("Error - Range end does not match define in line\n%s\n", line);
+			exit(1);
+		}
+		if ((cs->location/8) != LB_CKS_LOC) {
+			printf("Error - Location does not match define in line\n%s\n", line);
+			exit(1);
+		}
+
+		cs->tag = LB_TAG_OPTION_CHECKSUM;
+		cs->size = sizeof(*cs);
+		cs->type = CHECKSUM_PCBIOS;
+		cptr = (char *)cs;
+		cptr += cs->size;
+		cs = (struct cmos_checksum *)cptr;
+
+	}
+	ct->size += (cptr - (char *)(cmos_table + ct->size));
 	fclose(fp);
 
 	/* test if an alternate file is to be created */

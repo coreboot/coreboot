@@ -1,6 +1,6 @@
 include Makefile.conf
-VERSION:=1.15
-RELEASE_DATE:=23 August 2002
+VERSION:=1.16
+RELEASE_DATE:=29 August 2002
 PACKAGE:=mkelfImage
 
 # You can specify DESTDIR on the command line to do a add
@@ -16,23 +16,24 @@ MANS=mkelfImage.1
 SPEC=mkelfImage-$(VERSION).spec
 TARBALL=mkelfImage-$(VERSION).tar.gz
 SRCS:=$(shell find ./AUTHORS ./COPYING ./Makefile ./Makefile.conf.in ./News \
-	./mkelfImage.pl ./elf32-i386 ./kunzip_src \
-	./configure.in ./configure ./config \
+	./configure.in ./configure \
+	./mkelfImage.pl ./mkelfImage.spec.in \
+	./elf32-i386 ./kunzip_src ./config \
 	! -path '*CVS*' ! -name '*~' ! -name '.*' -type f -print )
 SRCS+=$(SPEC)
 PSRCS:=$(patsubst ./%,mkelfImage-$(VERSION)/%,$(SRCS))
 
 SBIN_TARGETS=mkelfImage 
 MAN1_TARGETS=mkelfImage.1
-PKGDATADIR_TARGETS=\
-	elf32-i386/convert_params.c \
-	elf32-i386/elf_boot.h \
-	elf32-i386/linuxbios_tables.h \
-	elf32-i386/elfImage.lds \
-	elf32-i386/head.S \
-	elf32-i386/uniform_boot.h
+PKGDATADIR_TARGETS_I386=\
+	 elf32-i386/convert_params.c \
+	 elf32-i386/elf_boot.h \
+	 elf32-i386/linuxbios_tables.h \
+	 elf32-i386/elfImage.lds \
+	 elf32-i386/head.S \
+	 elf32-i386/uniform_boot.h
 
-TARGETS:=$(SBIN_TARGETS) $(MAN1_TARGETS) $(PKGDATADIR_TARGETS)
+TARGETS:=$(SBIN_TARGETS) $(MAN1_TARGETS) $(PKGDATADIR_TARGETS_I386)
 
 all: $(TARGETS)
 
@@ -51,10 +52,10 @@ maintainer-clean: dist-clean
 
 
 install: $(TARGETS)
-	mkdir -p $(DESTDIR)/$(pkgdatadir) $(DESTDIR)/$(sbindir) $(DESTDIR)/$(mandir)/man1
-	cp -a $(SBIN_TARGETS) $(DESTDIR)/$(sbindir)/
-	cp -a $(MAN1_TARGETS) $(DESTDIR)/$(mandir)/man1/
-	cp -a $(PKGDATADIR_TARGETS) $(DESTDIR)/$(pkgdatadir)/
+	mkdir -p $(DESTDIR)/$(pkgdatadir)/elf32-i386/ $(DESTDIR)/$(sbindir) $(DESTDIR)/$(mandir)/man1
+	cp -ar $(SBIN_TARGETS) $(DESTDIR)/$(sbindir)/
+	cp -ar $(MAN1_TARGETS) $(DESTDIR)/$(mandir)/man1/
+	cp -ar $(PKGDATADIR_TARGETS_I386) $(DESTDIR)/$(pkgdatadir)/elf32-i386/
 
 
 %.1 : %.pl Makefile
@@ -98,3 +99,5 @@ $(SPEC): mkelfImage.spec.in Makefile
 .PHONY: echo install realinstall
 
 
+echo:
+	echo $(SRCS)

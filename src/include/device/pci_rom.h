@@ -24,8 +24,8 @@ struct  pci_data {
 	uint16_t	reserved_1;
 	uint16_t	dlen;
 	uint8_t		drevision;
-	uint8_t		class_hi;
-	uint16_t	class_lo;
+	uint8_t		class_lo;
+	uint16_t	class_hi;
 	uint16_t	ilen;
 	uint16_t	irevision;
 	uint8_t		type;

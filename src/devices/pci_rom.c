@@ -13,41 +13,45 @@ struct rom_header * pci_rom_probe(struct device *dev)
 	rom_address = pci_read_config32(dev, PCI_ROM_ADDRESS);
 
 	if (rom_address == 0x00000000 || rom_address == 0xffffffff) {
-		return NULL;
+		if(dev->on_mainboard && (dev->rom_address!=0) ) { // in case some device PCI_ROM_ADDRESS can not be set 
+			rom_address = dev->rom_address;
+		}
+		else 
+			return NULL;
 	}
 
-	printk_debug("%s, rom address for %s = %x\n",
-		    __func__, dev_path(dev), rom_address);
+	printk_debug("rom address for %s = %x\n",
+		    dev_path(dev), rom_address);
 
 	/* enable expansion ROM address decoding */
 	pci_write_config32(dev, PCI_ROM_ADDRESS, rom_address|PCI_ROM_ADDRESS_ENABLE);
 
 	rom_header = rom_address;
-	printk_spew("%s, PCI Expansion ROM, signature 0x%04x, \n\t"
+	printk_spew("PCI Expansion ROM, signature 0x%04x, \n\t"
 		    "INIT size 0x%04x, data ptr 0x%04x\n",
-		    __func__, le32_to_cpu(rom_header->signature),
+		    le32_to_cpu(rom_header->signature),
 		    rom_header->size * 512, le32_to_cpu(rom_header->data));
 	if (le32_to_cpu(rom_header->signature) != PCI_ROM_HDR) {
-		printk_err("%s, Incorrect Expansion ROM Header Signature %04x\n",
-			   __func__, le32_to_cpu(rom_header->signature));
+		printk_err("Incorrect Expansion ROM Header Signature %04x\n",
+			   le32_to_cpu(rom_header->signature));
 		return NULL;
 	}
 
 	rom_data = (unsigned char *) rom_header + le32_to_cpu(rom_header->data);
-	printk_spew("%s, PCI ROM Image,  Vendor %04x, Device %04x,\n",
-		    __func__, rom_data->vendor, rom_data->device);
+	printk_spew("PCI ROM Image,  Vendor %04x, Device %04x,\n",
+		    rom_data->vendor, rom_data->device);
 	if (dev->vendor != rom_data->vendor || dev->device != rom_data->device) {
-		printk_err("%s, Device or Vendor ID mismatch\n");
+		printk_err("Device or Vendor ID mismatch Vendor %04x, Device %04x\n", rom_data->vendor, rom_data->device);
 		return NULL;
 	}
 
-	printk_spew("%s, PCI ROM Image,  Class Code %02x%04x, Code Type %02x\n",
-		    __func__, rom_data->class_hi, rom_data->class_lo,
+	printk_spew("PCI ROM Image,  Class Code %04x%02x, Code Type %02x\n",
+		    rom_data->class_hi, rom_data->class_lo,
 		    rom_data->type);
-	if ((dev->class >> 8) != (rom_data->class_hi << 16 | rom_data->class_lo)) {
-		printk_err("%s, Class Code mismatch %x\n",
-			   __func__, dev->class);
-		return NULL;
+	if (dev->class != ((rom_data->class_hi << 8) | rom_data->class_lo)) {
+		printk_err("Class Code mismatch ROM %08x, dev %08x\n", 
+			    (rom_data->class_hi << 8) | rom_data->class_lo, dev->class);
+//		return NULL;
 	}
 
 	return rom_header;
@@ -70,7 +74,7 @@ struct rom_header *pci_rom_load(struct device *dev, struct rom_header *rom_heade
 	rom_data = (unsigned char *) rom_header + le32_to_cpu(rom_header->data);
 	rom_size = rom_header->size*512;
 
-	if (PCI_CLASS_DISPLAY_VGA == (rom_data->class_hi << 16 | rom_data->class_lo)) {
+	if (PCI_CLASS_DISPLAY_VGA == rom_data->class_hi) {
 #if CONFIG_CONSOLE_VGA == 1
 		if (dev != vga_pri) return NULL; // only one VGA supported
 		printk_spew("%s, copying VGA ROM Image from %x to %x, %x bytes\n",

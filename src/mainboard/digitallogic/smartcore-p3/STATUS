@@ -19,8 +19,8 @@ console-types:Serial
 # vga is unsupported, unstable, or stable
 vga:unsupported
 # Last-known-good follows the internationl date standard: day/month/year
-last-known-good: 15/11/2002
-Comments: 
+last-known-good: 18/11/2002
+Comments: You must set CONFIG_COMPRESS to 0 in your config file (see the example)
 Links:
 Mainboard-revision: 
 # What other mainboards are like this one? List them here. 

@@ -62,128 +62,6 @@ X86EMU_sysEnv _X86EMU_env;	/* Global emulator machine state */
 X86EMU_intrFuncs _X86EMU_intrTab[256];
 
 /*----------------------------- Implementation ----------------------------*/
-#if defined(__alpha__) || defined(__alpha)
-/* to cope with broken egcs-1.1.2 :-(((( */
-
-/*
- * inline functions to do unaligned accesses
- * from linux/include/asm-alpha/unaligned.h
- */
-
-/*
- * EGCS 1.1 knows about arbitrary unaligned loads.  Define some
- * packed structures to talk about such things with.
- */
-
-#if __GNUC__ > 2 || __GNUC_MINOR__ >= 91
-struct __una_u64 {
-	unsigned long x __attribute__ ((packed));
-};
-struct __una_u32 {
-	unsigned int x __attribute__ ((packed));
-};
-struct __una_u16 {
-	unsigned short x __attribute__ ((packed));
-};
-#endif
-
-static __inline__ unsigned long ldq_u(unsigned long *r11)
-{
-#if __GNUC__ > 2 || __GNUC_MINOR__ >= 91
-	const struct __una_u64 *ptr = (const struct __una_u64 *) r11;
-	return ptr->x;
-#else
-	unsigned long r1, r2;
-      __asm__("ldq_u %0,%3\n\t" "ldq_u %1,%4\n\t" "extql %0,%2,%0\n\t" "extqh %1,%2,%1":"=&r"(r1),
-		"=&r"
-		(r2)
-      :	"r"(r11), "m"(*r11),
-		"m"(*(const unsigned long *) (7 + (char *) r11)));
-	return r1 | r2;
-#endif
-}
-
-static __inline__ unsigned long ldl_u(unsigned int *r11)
-{
-#if __GNUC__ > 2 || __GNUC_MINOR__ >= 91
-	const struct __una_u32 *ptr = (const struct __una_u32 *) r11;
-	return ptr->x;
-#else
-	unsigned long r1, r2;
-      __asm__("ldq_u %0,%3\n\t" "ldq_u %1,%4\n\t" "extll %0,%2,%0\n\t" "extlh %1,%2,%1":"=&r"(r1),
-		"=&r"
-		(r2)
-      :	"r"(r11), "m"(*r11),
-		"m"(*(const unsigned long *) (3 + (char *) r11)));
-	return r1 | r2;
-#endif
-}
-
-static __inline__ unsigned long ldw_u(unsigned short *r11)
-{
-#if __GNUC__ > 2 || __GNUC_MINOR__ >= 91
-	const struct __una_u16 *ptr = (const struct __una_u16 *) r11;
-	return ptr->x;
-#else
-	unsigned long r1, r2;
-      __asm__("ldq_u %0,%3\n\t" "ldq_u %1,%4\n\t" "extwl %0,%2,%0\n\t" "extwh %1,%2,%1":"=&r"(r1),
-		"=&r"
-		(r2)
-      :	"r"(r11), "m"(*r11),
-		"m"(*(const unsigned long *) (1 + (char *) r11)));
-	return r1 | r2;
-#endif
-}
-
-/*
- * Elemental unaligned stores 
- */
-
-static __inline__ void stq_u(unsigned long r5, unsigned long *r11)
-{
-#if __GNUC__ > 2 || __GNUC_MINOR__ >= 91
-	struct __una_u64 *ptr = (struct __una_u64 *) r11;
-	ptr->x = r5;
-#else
-	unsigned long r1, r2, r3, r4;
-
-      __asm__("ldq_u %3,%1\n\t" "ldq_u %2,%0\n\t" "insqh %6,%7,%5\n\t" "insql %6,%7,%4\n\t" "mskqh %3,%7,%3\n\t" "mskql %2,%7,%2\n\t" "bis %3,%5,%3\n\t" "bis %2,%4,%2\n\t" "stq_u %3,%1\n\t" "stq_u %2,%0":"=m"(*r11),
-		"=m"(*(unsigned long *) (7 + (char *) r11)),
-		"=&r"(r1), "=&r"(r2), "=&r"(r3), "=&r"(r4)
-      :	"r"(r5), "r"(r11));
-#endif
-}
-
-static __inline__ void stl_u(unsigned long r5, unsigned int *r11)
-{
-#if __GNUC__ > 2 || __GNUC_MINOR__ >= 91
-	struct __una_u32 *ptr = (struct __una_u32 *) r11;
-	ptr->x = r5;
-#else
-	unsigned long r1, r2, r3, r4;
-
-      __asm__("ldq_u %3,%1\n\t" "ldq_u %2,%0\n\t" "inslh %6,%7,%5\n\t" "insll %6,%7,%4\n\t" "msklh %3,%7,%3\n\t" "mskll %2,%7,%2\n\t" "bis %3,%5,%3\n\t" "bis %2,%4,%2\n\t" "stq_u %3,%1\n\t" "stq_u %2,%0":"=m"(*r11),
-		"=m"(*(unsigned long *) (3 + (char *) r11)),
-		"=&r"(r1), "=&r"(r2), "=&r"(r3), "=&r"(r4)
-      :	"r"(r5), "r"(r11));
-#endif
-}
-
-static __inline__ void stw_u(unsigned long r5, unsigned short *r11)
-{
-#if __GNUC__ > 2 || __GNUC_MINOR__ >= 91
-	struct __una_u16 *ptr = (struct __una_u16 *) r11;
-	ptr->x = r5;
-#else
-	unsigned long r1, r2, r3, r4;
-
-      __asm__("ldq_u %3,%1\n\t" "ldq_u %2,%0\n\t" "inswh %6,%7,%5\n\t" "inswl %6,%7,%4\n\t" "mskwh %3,%7,%3\n\t" "mskwl %2,%7,%2\n\t" "bis %3,%5,%3\n\t" "bis %2,%4,%2\n\t" "stq_u %3,%1\n\t" "stq_u %2,%0":"=m"(*r11),
-		"=m"(*(unsigned long *) (1 + (char *) r11)),
-		"=&r"(r1), "=&r"(r2), "=&r"(r3), "=&r"(r4)
-      :	"r"(r5), "r"(r11));
-#endif
-}
-#endif
 
 /* compute a pointer. This replaces code scattered all over the place! */
 u8 *mem_ptr(u32 addr, int size)
@@ -194,27 +72,11 @@ u8 *mem_ptr(u32 addr, int size)
 		DB(printk("mem_ptr: address %#lx out of range!\n", addr);)
 		    HALT_SYS();
 	}
-	/* a or b segment? */
-	/* & with e to clear low-order bit, if it is a or b it will be a */
-#if 0
-	if (((addr & 0xfffe0000) == 0xa0000) && M.abseg) {
-		//printk("It's a0000\n");
-		//addr &= ~0xfffe0000;
-		retaddr = (u8 *) (M.mem_base + addr);
-		//printk("retaddr now 0x%p\n", retaddr);
-	} else
-#endif
 	if (addr < 0x200) {
 		//printk("%x:%x updating int vector 0x%x\n",
 		//       M.x86.R_CS, M.x86.R_IP, addr >> 2);
-
-		retaddr = (u8 *) (M.mem_base + addr);
-	} else {
-		retaddr = (u8 *) (M.mem_base + addr);
 	}
-
-	//printk_debug("%s, %x:%x ask address %x return address %x\n",
-	//	     __func__,  M.x86.R_CS, M.x86.R_IP, addr, retaddr);
+	retaddr = (u8 *) (M.mem_base + addr);
 
 	return retaddr;
 }
@@ -258,25 +120,11 @@ u16 X86API rdw(u32 addr)
 	u8 *ptr;
 
 	ptr = mem_ptr(addr, 2);
+	val = *(u16 *) (ptr);
 
-	if (addr > M.mem_size - 2) {
-		DB(printk("mem_read: address %#lx out of range!\n", (unsigned long) addr);
-		    )
-		    HALT_SYS();
-	}
-#ifdef __BIG_ENDIAN__
-	if (addr & 0x1) {
-		val = (*ptr | (*(ptr + 1) << 8));
-	} else
-#endif
-#if defined(__alpha__) || defined(__alpha)
-		val = ldw_u((u16 *) (ptr));
-#else
-		val = *(u16 *) (ptr);
-#endif
 	DB(if (DEBUG_MEM_TRACE())
 	   printk("%#08x 2 -> %#x\n", addr, val);)
-		return val;
+	return val;
 }
 
 /****************************************************************************
@@ -294,22 +142,11 @@ u32 X86API rdl(u32 addr)
 	u8 *ptr;
 
 	ptr = mem_ptr(addr, 4);
+       	val = *(u32 *) (ptr);
 
-#ifdef __BIG_ENDIAN__
-	if (addr & 0x3) {
-		val = (*(u8 *) (ptr + 0) |
-		       (*(u8 *) (ptr + 1) << 8) |
-		       (*(u8 *) (ptr + 2) << 16) | (*(u8 *) (ptr + 3) << 24));
-	} else
-#endif
-#if defined(__alpha__) || defined(__alpha)
-		val = ldl_u((u32 *) (ptr));
-#else
-		val = *(u32 *) (ptr);
-#endif
 	DB(if (DEBUG_MEM_TRACE())
 	   printk("%#08x 4 -> %#x\n", addr, val);)
-		return val;
+	return val;
 }
 
 /****************************************************************************
@@ -325,9 +162,10 @@ void X86API wrb(u32 addr, u8 val)
 	u8 *ptr;
 
 	ptr = mem_ptr(addr, 1);
+	*(u8 *) (ptr) = val;
+
 	DB(if (DEBUG_MEM_TRACE())
 	   printk("%#08x 1 <- %#x\n", addr, val);)
-		*(u8 *) (ptr) = val;
 }
 
 /****************************************************************************
@@ -343,19 +181,10 @@ void X86API wrw(u32 addr, u16 val)
 	u8 *ptr;
 
 	ptr = mem_ptr(addr, 2);
+	*(u16 *) (ptr) = val;
+
 	DB(if (DEBUG_MEM_TRACE())
 	   printk("%#08x 2 <- %#x\n", addr, val);)
-#ifdef __BIG_ENDIAN__
-		if (addr & 0x1) {
-			*(u8 *) (ptr + 0) = (val >> 0) & 0xff;
-			*(u8 *) (ptr + 1) = (val >> 8) & 0xff;
-		} else
-#endif
-#if defined(__alpha__) || defined(__alpha)
-			stw_u(val, (u16 *) (ptr));
-#else
-			*(u16 *) (ptr) = val;
-#endif
 }
 
 /****************************************************************************
@@ -371,21 +200,12 @@ void X86API wrl(u32 addr, u32 val)
 	u8 *ptr;
 
 	ptr = mem_ptr(addr, 4);
+	*(u32 *) (ptr) = val;
+
 	DB(if (DEBUG_MEM_TRACE())
 	   printk("%#08x 4 <- %#x\n", addr, val);)
-#ifdef __BIG_ENDIAN__
-		if (addr & 0x1) {
-			*(u8 *) (ptr + 0) = (val >> 0) & 0xff;
-			*(u8 *) (ptr + 1) = (val >> 8) & 0xff;
-			*(u8 *) (ptr + 2) = (val >> 16) & 0xff;
-			*(u8 *) (ptr + 3) = (val >> 24) & 0xff;
-		} else
-#endif
-#if defined(__alpha__) || defined(__alpha)
-			stl_u(val, (u32 *) (ptr));
-#else
-			*(u32 *) (ptr) = val;
-#endif
+
+
 }
 
 /****************************************************************************
@@ -587,9 +407,4 @@ void X86EMU_setMemBase(void *base, size_t size)
 {
 	M.mem_base = (int) base;
 	M.mem_size = size;
-}
-
-void X86EMU_setabseg(void *abseg)
-{
-	M.abseg = (unsigned long) abseg;
 }

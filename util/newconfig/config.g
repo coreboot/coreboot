@@ -16,6 +16,7 @@ global_options = {}
 global_options_by_order = []
 global_option_values = {}
 global_uses_options = {}
+global_exported_options = []
 romimages = {}
 buildroms = []
 curimage = 0
@@ -249,8 +250,11 @@ class romimage:
 		# name of target directory specified by 'target' directive
 		self.target_dir = ''
 
-		# option values set in rom image
+		# option values used in rom image
 		self.values = {}
+
+		# exported options
+		self.exported_options = []
 
 	def getname(self):
 		return self.name
@@ -481,52 +485,12 @@ class option:
 	def __init__ (self, name):
 		self.name = name	# name of option
 		self.loc = 0		# current location
-		self.set = 0		# option has been set
-		self.used = 0		# option has been set
-		self.default = 0	# option has default value (otherwise
+		self.used = 0		# option has been used
 					# it is undefined)
 		self.comment = ''	# description of option
 		self.exportable = 0	# option is able to be exported
-		self.exported = 0	# option is exported
-		self.defined = 0	# option has a value
 		self.format = '%s'	# option print format
 		self.write = []		# parts that can set this option
-
-	def setvalue(self, value, values, loc):
-		self.set = 1
-		self.defined = 1
-		self.loc = loc
-		#self.value = value
-		setdict(values, self.name, value)
-
-	def getvalue(self, image, values):
-		global curimage
-		v = getdict(values, self.name)
-		if (v == 0):
-			return 0
-		val = v.contents()
-		if (not (type(val) is types.StringType)):
-			return v
-		if (val == '' or val[0] != '{'):
-			return v
-		s = curimage
-		curimage = image
-		val = parse('delexpr', val)
-		curimage = s
-		# TODO: need to check for parse errors!
-		return option_value(val)
-
-	def setdefault(self, value, loc):
-		global global_option_values
-		setdict(global_option_values, self.name, value)
-		self.defined = 1
-		self.default = 1
-		self.loc = loc
-
-	def setnodefault(self, loc):
-		self.default = 1
-		self.defined = 0
-		self.loc = loc
 
 	def where(self):
 		return self.loc
@@ -541,13 +505,8 @@ class option:
 	def setexportable(self):
 		self.exportable = 1
 
-	def setexported(self):
-		self.exportable = 1
-		self.exported = 1
-
 	def setnoexport(self):
 		self.exportable = 0
-		self.exported = 0
 
 	def setformat(self, fmt):
 		self.format = fmt
@@ -563,22 +522,46 @@ class option:
 	def setwrite(self, part):
 		self.write.append(part)
 
-	def isexported(self):
-		return (self.exported and self.defined)
-
-	def isset(self):
-		return (self.set)
+	def isexportable(self):
+		return self.exportable
 
 	def iswritable(self, part):
 		return (part in self.write)
 
 class option_value:
-	"""Value of a configuration option"""
-	def __init__(self, value):
+	"""Value of a configuration option. The option has a default
+        value which can be changed at any time. Once an option has been
+	set the default value is no longer used."""
+	def __init__(self, name, prev):
+		self.name = name
+		self.value = ''
+		self.set = 0
+		if (prev):
+			self.value   = prev.value
+			self.set     = prev.set
+		
+
+	def setvalue(self, value):
+		if ((self.set & 2) == 2):
+			warning("Changing option %s" % self.name)
+		else:
+			self.set |= 2
 		self.value = value
+
+	def setdefault(self, value):
+		if ((self.set & 1) == 1):
+			notice("Changing default value of %s" % self.name)
+		
+		if ((self.set & 2) == 0):
+			self.value = value
+			self.set |= 1
 
 	def contents(self):
 		return self.value
+
+	def isset(self):
+		return (self.set & 2) == 2
+
 
 class partobj:
 	"""A configuration part"""
@@ -787,11 +770,11 @@ class partobj:
 		o = getdict(global_options, name)
 		if (o == 0):
 			fatal("can't use undefined option %s" % name)
-		o.setused()
 		o1 = getdict(self.uses_options, name)
 		if (o1):
 			return
 		setdict(self.uses_options, name, o)
+		exportoption(o, self.image.exported_options)
 
 # -----------------------------------------------------------------------------
 #                    statements 
@@ -823,33 +806,60 @@ def newoption(name):
 	global global_options, global_options_by_order
 	o = getdict(global_options, name)
 	if (o):
-		print "option %s already defined" % name
-		sys.exit(1)
+		fatal("option %s already defined" % name)
 	o = option(name)
 	setdict(global_options, name, o)
 	global_options_by_order.append(name)
 
+def newoptionvalue(name, image):
+	g = getdict(global_option_values, name)
+	v = option_value(name, g)
+	if (image):
+		setdict(image.getvalues(), name, v)
+	else:
+		setdict(global_option_values, name, v)
+	return v
+
+def getoptionvalue(name, op, image):
+	global global_option_values
+	if (op == 0):
+		fatal("Option %s undefined (missing use command?)" % name)
+	if (image):
+		v = getdict(image.getvalues(), name)
+	else:
+		v = getdict(global_option_values, name)
+	return v
+
 def getoption(name, image):
 	"""option must be declared before being used in a part
 	if we're not processing a part, then we must
-	be at the top level where all options are available
-	global global_uses_options, global_option_values"""
+	be at the top level where all options are available"""
+
+	global global_uses_options, alloptions, curimage
+
 	curpart = partstack.tos()
-	if (curpart):
-		o = getdict(curpart.uses_options, name)
-	elif (alloptions):
+	if (alloptions):
 		o = getdict(global_options, name)
+	elif (curpart):
+		o = getdict(curpart.uses_options, name)
 	else:
 		o = getdict(global_uses_options, name)
-	if (o == 0 or not o.defined):
-		error("Option %s undefined (missing use command?)" % name)
-		return
-	v = 0
-	if (image):
-		v = o.getvalue(image, image.getvalues())
+	v = getoptionvalue(name, o, image)
 	if (v == 0):
-		v = o.getvalue(image, global_option_values)
-	return v.contents()
+		v = getoptionvalue(name, o, 0)
+	if (v == 0):
+		fatal("No value for option %s" % name)
+	val = v.contents()
+	if (not (type(val) is types.StringType)):
+		return v.contents()
+	if (val == '' or val[0] != '{'):
+		return v.contents()
+	s = curimage
+	curimage = image
+	val = parse('delexpr', val)
+	curimage = s
+	exitiferrors()
+	return val
 
 def setoption(name, value, imp):
 	"""Set an option from within a configuration file. Normally this
@@ -872,13 +882,16 @@ def setoption(name, value, imp):
 		o = getdict(global_uses_options, name)
 	if (not o):
 		fatal("Attempt to set nonexistent option %s (missing USES?)" % name)
-	if (o.isset()):
-		warning("Changing option %s" % name)
-	v = option_value(value)
-	if (curimage):
-		o.setvalue(v, curimage.getvalues(), loc)
-	else:
-		o.setvalue(v, global_option_values, loc)
+	v = getoptionvalue(name, o, curimage)
+	if (v == 0):
+		v = newoptionvalue(name, curimage)
+	v.setvalue(value)
+
+def exportoption(op, exported_options):
+	if (not op.isexportable()):
+		return
+	if (not op in exported_options):
+		exported_options.append(op)
 
 def setdefault(name, value, isdef):
 	"""Set the default value of an option from within a configuration 
@@ -887,12 +900,13 @@ def setdefault(name, value, isdef):
 	If 'isdef' is set, we're defining the option in Options.lb so
 	there is no need for 'uses'."""
 
-	global loc, global_options
+	global loc, global_options, curimage
 
 	if (isdef):
 		o = getdict(global_options, name)
 		if (not o):
 			return
+		image = 0
 	else:
 		curpart = partstack.tos()
 		if (curpart):
@@ -901,21 +915,22 @@ def setdefault(name, value, isdef):
 			o = getdict(global_uses_options, name)
 		if (not o):
 			fatal("Attempt to set default for nonexistent option %s (missing USES?)" % name)
+		image = curimage
 
-	if (o.defined):
-		warning("Changing default value of %s" % name)
-	v = option_value(value)
-	o.setdefault(v, loc)
+	v = getoptionvalue(name, o, image)
+	if (v == 0):
+		v = newoptionvalue(name, image)
+	v.setdefault(value)
 
 def setnodefault(name):
 	global loc, global_options
 	o = getdict(global_options, name)
 	if (not o):
 		return
-	if (o.default):
-		print "setdefault: attempt to duplicate default for %s" % name
-		return
-	o.setnodefault(loc)
+	v = getdict(global_option_values, name)
+	if (v != 0):
+		warning("removing default for %s" % name)
+		del global_option_values[name]
 
 def setcomment(name, value):
 	global loc, global_options
@@ -929,7 +944,8 @@ def setexported(name):
 	o = getdict(global_options, name)
 	if (not o):
 		fatal("setexported: %s not here" % name)
-	o.setexported()
+	o.setexportable()
+	global_exported_options.append(o)
 
 def setnoexport(name):
 	global global_options
@@ -937,6 +953,8 @@ def setnoexport(name):
 	if (not o):
 		fatal("setnoexport: %s not here" % name)
 	o.setnoexport()
+	if (o in global_exported_options):
+		global_exported_options.remove(o)
 
 def setexportable(name):
 	global global_options
@@ -955,15 +973,9 @@ def setformat(name, fmt):
 def getformated(name, image):
 	global global_options, global_option_values
 	o = getdict(global_options, name)
-	if (o == 0 or not o.defined):
-		fatal( "Option %s undefined." % name)
-	v = 0
-	if (image):
-		v = o.getvalue(image, image.getvalues())
-	if (v == 0):
-		v = o.getvalue(image, global_option_values)
+	v = getoption(name, image)
 	f = o.getformat()
-	return (f % v.contents())
+	return (f % v)
 
 def setwrite(name, part):
 	global global_options
@@ -972,22 +984,32 @@ def setwrite(name, part):
 		fatal("setwrite: %s not here" % name)
 	o.setwrite(part)
 
-def isexported(name):
+def hasvalue(name, image):
 	global global_options
 	o = getdict(global_options, name)
-	if (o):
-		return o.isexported()
-	return 0
+	if (o == 0):
+		return 0
+	v = 0
+	if (image):
+		v = getdict(image.getvalues(), name)
+	if (v == 0):
+		v = getdict(global_option_values, name)
+	return (v != 0)
 
 def isset(name, part):
-	global global_uses_options
+	global global_uses_options, global_option_values, curimage
 	if (part):
 		o = getdict(part.uses_options, name)
 	else:
 		o = getdict(global_uses_options, name)
-	if (o):
-		return o.isset()
-	return 0
+	if (o == 0):
+		return 0
+	v = 0
+	if (curimage):
+		v = getdict(curimage.getvalues(), name)
+	if (v == 0):
+		v = getdict(global_option_values, name)
+	return (v != 0 and v.isset())
 
 def usesoption(name):
 	global global_options, global_uses_options
@@ -998,11 +1020,11 @@ def usesoption(name):
 	o = getdict(global_options, name)
 	if (o == 0):
 		fatal("Can't use undefined option %s" % name)
-	o.setused()
 	o1 = getdict(global_uses_options, name)
 	if (o1):
 		return
 	setdict(global_uses_options, name, o)
+	exportoption(o, global_exported_options)
 
 def validdef(name, defval):
 	global global_options
@@ -1068,9 +1090,6 @@ def payload(path):
 	global curimage
 	curimage.setpayload(path)
 	adduserdefine("PAYLOAD:=%s"%path)
-#	addrule('payload')
-#	adddep('payload', path)
-#	addaction('payload', 'cp $< $@')
 
 def startromimage(name):
 	global romimages, curimage, target_dir, target_name
@@ -1092,11 +1111,11 @@ def endromimage():
 
 def mainboard(path):
 	full_path = os.path.join(treetop, 'src', 'mainboard', path)
-	setoption('MAINBOARD', full_path, 1)
         vendor = re.sub("/.*", "", path)
         part_number = re.sub("[^/]*/", "", path)
-	setoption('MAINBOARD_VENDOR', vendor, 1)
-	setoption('MAINBOARD_PART_NUMBER', part_number, 1)
+	setdefault('MAINBOARD', full_path, 0)
+	setdefault('MAINBOARD_VENDOR', vendor, 0)
+	setdefault('MAINBOARD_PART_NUMBER', part_number, 0)
 	dodir('/config', 'Config.lb')
 	part('mainboard', path, 'Config.lb', 0, 0)
 	curimage.setroot(partstack.tos())
@@ -1161,14 +1180,15 @@ def part(type, path, file, name, link):
 
 def partpop():
 	global dirstack, partstack
-	curpart = partstack.pop()
+	curpart = partstack.tos()
 	if (curpart == 0):
 		fatal("Trying to pop non-existent part")
 	print "End PART %s" % curpart.part
 	# Warn if options are used without being set in this part
-	for i in curpart.uses_options.keys():
-		if (not isset(i, curpart)):
-			notice("Option %s using default value %s" % (i, getformated(i, curpart.image)))
+	for op in curpart.uses_options.keys():
+		if (not isset(op, curpart)):
+			notice("Option %s using default value %s" % (op, getformated(op, curpart.image)))
+	partstack.pop()
 	dirstack.pop()
 
 def dodir(path, file):
@@ -1190,9 +1210,7 @@ def dodir(path, file):
 
 def lookup(name):
 	global curimage
-	v = getoption(name, curimage)
-	exitiferrors()
-	return v
+	return getoption(name, curimage)
 
 def addrule(id):
 	global curimage
@@ -1214,7 +1232,7 @@ def setarch(my_arch):
 	"""arch is 'different' ... darn it."""
 	global curimage
 	curimage.setarch(my_arch)
-	setoption('ARCH', my_arch, 1)
+	setdefault('ARCH', my_arch, 1)
 	part('arch', my_arch, 'Config.lb', 0, 0)
 
 def doconfigfile(path, confdir, file, rule):
@@ -1244,7 +1262,7 @@ def tohex(name):
 	"""atoi is in the python library, but not strtol? Weird!"""
 	return eval('int(%s)' % name)
 
-def IsInt( str ):
+def IsInt(str):
 	""" Is the given string an integer?"""
 	try:
 		num = long(str)
@@ -1601,9 +1619,7 @@ def writemakefileheader(file, fname):
 
 def writemakefilesettings(path):
 	""" Write Makefile.settings to seperate the settings
-	from the actual makefile creation. In practice you need to 
-	rerun NLBConfig.py to change these but in theory you shouldn't 
-	need to."""
+	from the actual makefile creation."""
 
 	global treetop, target_dir
 
@@ -1613,14 +1629,11 @@ def writemakefilesettings(path):
 	writemakefileheader(file, filename)
 	file.write("TOP:=%s\n" % (treetop))
 	file.write("TARGET_DIR:=%s\n" % target_dir)
-	file.write("\n")
 	file.close()
 
 def writeimagesettings(image):
 	"""Write Makefile.settings to seperate the settings
-	from the actual makefile creation. In practice you need to 
-	rerun NLBConfig.py to change these but in theory you shouldn't 
-	need to."""
+	from the actual makefile creation."""
 
 	global treetop
 	global global_options_by_order
@@ -1631,13 +1644,22 @@ def writeimagesettings(image):
 	writemakefileheader(file, filename)
 	file.write("TOP:=%s\n" % (treetop))
 	file.write("TARGET_DIR:=%s\n" % (image.gettargetdir()))
-	for i in global_options_by_order:
-		if (isexported(i)):
-			file.write("export %s:=%s\n" % (i, getformated(i, image)))
-	file.write("export VARIABLES := ")
-	for i in global_options_by_order:
-		if (isexported(i)):
-			file.write("%s " % i)
+	file.write("\n")
+	exported = []
+	for o in global_exported_options:
+		exported.append(o)
+	for o in image.exported_options:
+		if (not o in exported):
+			exported.append(o)
+	for o in exported:
+		file.write("export %s:=" % o.name)
+		if (hasvalue(o.name, image)):
+			file.write("%s" % getformated(o.name, image))
+		file.write("\n")
+	file.write("\n")
+	file.write("export VARIABLES :=\n")
+	for o in exported:
+		file.write("export VARIABLES += %s\n" % o.name)
 	file.write("\n")
 	file.close()
 
@@ -1803,6 +1825,7 @@ def writemakefile(path):
 	print "Creating", makefilepath
 	file = safe_open(makefilepath, 'w+')
 	writemakefileheader(file, makefilepath)
+	file.write("include Makefile.settings\n\n")
 
 	# main rule
 	file.write("all: ")
@@ -1859,15 +1882,16 @@ def writeinitincludes(image):
 	outfile.close()
 
 def writeldoptions(image):
-	"""Write Makefile.settings to seperate the settings
-	from the actual makefile creation."""
-
+	"""Write ldoptions file."""
 	filename = os.path.join(image.gettargetdir(), "ldoptions")
 	print "Creating", filename
 	file = safe_open(filename, 'w+')
-	for i in global_options.keys():
-		if (isexported(i) and IsInt(getoption(i, image))):
-			file.write("%s = %s;\n" % (i, getformated(i, image)))
+	for o in global_exported_options:
+		if (hasvalue(o.name, image) and IsInt(getoption(o.name, image))):
+			file.write("%s = %s;\n" % (o.name, getformated(o.name, image)))
+	for o in image.exported_options:
+		if (not o in global_exported_options and hasvalue(o.name, image) and IsInt(getoption(o.name, image))):
+			file.write("%s = %s;\n" % (o.name, getformated(o.name, image)))
 	file.close()
 
 def dumptree(part, lvl):
@@ -1919,20 +1943,29 @@ def gencode(part, file, pass_num):
 		kid = kid.siblings
 	debug.info(debug.gencode, "DONE GENCODE")
 
-def verifyparse(image):
+def verifyparse():
 	"""Add any run-time checks to verify that parsing the configuration
 	was successful"""
-	if (image.newformat() and image.getinitfile() == ''):
-		fatal("An init file must be specified")
 
+	for image in romimages.values():
+		print("Verifying ROMIMAGE %s" % image.name)
+		if (image.newformat() and image.getinitfile() == ''):
+			fatal("An init file must be specified")
+		for op in image.exported_options:
+			if (getoptionvalue(op.name, op, image) == 0 and getoptionvalue(op.name, op, 0) == 0):
+				warning("Exported option %s has no value (check Options.lb)" % op.name);
+	print("Verifing global options")
+	for op in global_exported_options:
+		if (getoptionvalue(op.name, op, 0) == 0):
+			notice("Exported option %s has no value (check Options.lb)" % op.name);
+			
 #=============================================================================
 #		MAIN PROGRAM
 #=============================================================================
 if __name__=='__main__':
 	from sys import argv
 	if (len(argv) < 3):
-		print 'Args: <file> <path to linuxbios>'
-		sys.exit(1)
+		fatal("Args: <file> <path to linuxbios>")
 
 	top_config_file = os.path.abspath(sys.argv[1])
 
@@ -1945,8 +1978,7 @@ if __name__=='__main__':
 		fatal("Could not parse file")
 	loc.pop()
 
-	for image_name, image in romimages.items():
-		verifyparse(image)
+	verifyparse()
 
 	# no longer need to check if an options has been used
 	alloptions = 1

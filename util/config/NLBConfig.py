@@ -510,6 +510,7 @@ def writemakefile(path):
 	for i in range(len(objectrules)):
 		file.write("OBJECTS += %s\n" % (objectrules[i][0]))
 		
+	file.write("SOURCES=\n")
 	
 	# print out the user defines
 	for i in range(len(userdefines)):
@@ -540,6 +541,7 @@ def writemakefile(path):
 			source = source + ".c"
 		file.write( "%s: %s\n" % (objectrules[i][0], source))
 		file.write( "%s\n" % objectrules[i][2])
+		file.write("SOURCES += %s\n" % source)
 
 	# print out the linux rules
 	# these go here because some pieces depend on user rules

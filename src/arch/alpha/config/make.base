@@ -8,6 +8,7 @@ makerule all : linuxbios.rom ;
 makerule linuxbios.rom: linuxbios.strip makerom ; ./makerom -l0x310000 -i7 -v linuxbios.strip -o linuxbios.rom
 makerule linuxbios.strip: linuxbios ; objcopy -O binary -R .note -R .comment -S linuxbios linuxbios.strip
 makerule linuxbios: linuxbios.a ; @rm -f biosobject
+makerule etags: $(SOURCES) ; etags $(SOURCES)
 addaction linuxbios $(LINK) 
 addaction linuxbios nm -n linuxbios > linuxbios.map
 

@@ -10,6 +10,7 @@ makerule romimage : linuxbios.rom vmlinux.bin.gz.block ; cat vmlinux.bin.gz.bloc
 makerule linuxbios.rom: linuxbios.strip mkrom ; ./mkrom -s 64 -f -o linuxbios.rom linuxbios.strip
 makerule linuxbios.strip: linuxbios ; objcopy -O binary -R .note -R .comment -S linuxbios linuxbios.strip
 makerule linuxbios: linuxbios.a vmlinux.bin.gz ; @rm -f biosobject
+makerule etags: $(SOURCES) ; etags $(SOURCES)
 addaction linuxbios $(LINK) 
 addaction linuxbios nm -n linuxbios > linuxbios.map
 

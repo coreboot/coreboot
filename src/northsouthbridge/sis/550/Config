@@ -1,0 +1,7 @@
+option SIS550
+option USE_DOC_MIL
+docipl northsouthbridge/sis/550/ipl.S
+raminit northsouthbridge/sis/550/raminit.inc
+
+object southbridge.o
+object northbridge.o

@@ -115,7 +115,7 @@ sizeram:
 #else
  	movb	$4, %es:(%esi)
 #endif
-	cmpb	$4, %es:(%esi)
+	cmpb	$4, 0
 	jne	1f
 	inc	%cl
 	rol	$1, %esi
@@ -123,7 +123,6 @@ sizeram:
 /* size is now in esi */
 /* %ecx has setting for register */
 1:
-	ror	$1, %esi
 	rol	$20, %ecx
 /* set 4 banks. */
 	orb	$1, %cl
@@ -140,7 +139,7 @@ sizeram:
 	movb	$7, 0x4000
 	cmpb	$0, 0
 	jz	1f /* only one bank */
-	orl	$80000, %ecx
+	orl	$0x80000, %ecx
 1: 
 	/* clear 4 banks */
 	andb	$0xfe, %cl

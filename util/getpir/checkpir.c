@@ -4,23 +4,11 @@
 */
 
 #include <stdio.h>
-
-#include <device/pci.h>
 #include <arch/pirq_routing.h>
 
-struct irq_info se_arr[50];
+#include "checksum.h"
+
 struct irq_routing_table *rt;
-
-int calc_checksum(struct irq_routing_table *rt)
-{
-	long sum = 0, i;
-	uint8_t *addr, sum2 = 0;
-
-	addr = (uint8_t *) rt;
-	for (i = 0; i < rt->size; i++)
-		sum2 += addr[i];
-	return (sum2);
-}
 
 main()
 {

@@ -236,12 +236,9 @@ void acpi_create_facs(acpi_facs_t *facs);
 void acpi_write_rsdt(acpi_rsdt_t *rsdt);
 void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt);
 
-#define ACPI_WRITE_MADT_IOAPIC(bus,device,fn,id)        \
+#define ACPI_WRITE_MADT_IOAPIC(dev,id)        		\
 do {                                                    \
-        device_t dev;                                   \
         struct resource *res;                           \
-        dev = dev_find_slot(bus, PCI_DEVFN(device,fn)); \
-        if (!dev) break;                                \
         res = find_resource(dev, PCI_BASE_ADDRESS_0);   \
         if (!res) break;                                \
 	current += acpi_create_madt_ioapic(		\

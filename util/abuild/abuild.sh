@@ -12,12 +12,21 @@
 #     
 
 
+# /path/to/freebios2/
 LBROOT=$( cd ../..; pwd )
+
+# Where shall we place all the build trees?
 TARGET=$( pwd )/linuxbios-builds
 
-PAYLOAD=/usr/share/openbios/openbios.elf
-PYTHON=python
+# path to payload. Should be more generic
+PAYLOAD=$HOME/tg3--ide_disk.zelf
+
+# Lines of error context to be printed in FAILURE case
+CONTEXT=5
+
+# One might want to adjust these in case of cross compiling
 MAKE="make"
+PYTHON=python
 
 ARCH=`uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ \
 	-e s/arm.*/arm/ -e s/sa110/arm/ -e s/x86_64/amd64/ \
@@ -115,7 +124,8 @@ function create_builddir
 	if [ $? -eq 0 ]; then
 		echo "ok"
 	else
-		echo "FAILED!"
+		echo "FAILED! Log excerpt:"
+		tail -n $CONTEXT $build_dir/config.log
 		return 1
 	fi
 }
@@ -141,7 +151,8 @@ function compile_target
 		echo "ok."
 		cd $CURR
 	else
-		echo "FAILED!"
+		echo "FAILED! Log excerpt:"
+		tail -n $CONTEXT make.log
 		cd $CURR
 		return 1
 	fi

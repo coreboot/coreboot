@@ -205,7 +205,7 @@ void hardwaremain(int boot_complete)
 	 * for now -- rgm. 
 	 */
 #ifdef USE_NEW_SUPERIO_INTERFACE
-	extern struct superio all_superio[];
+	extern struct superio *all_superio[];
 	extern int nsuperio;
 	extern void handle_superio(int pass, struct superio *s, int nsuperio);
 #endif

@@ -835,12 +835,14 @@ void pci_zero_irq_settings(void)
 }
 
 void
-handle_superio(int pass, struct superio *s, int nsuperio)
+handle_superio(int pass, struct superio *all_superio[], int nsuperio)
 {
   int i;
+  struct superio *s;
   printk_debug("handle_superio start, s %p nsuperio %d s->super %p\n",
 	 s, nsuperio, s->super);
-  for(i = 0; i < nsuperio; i++, s++){
+  for(i = 0; i < nsuperio; i++){
+      s = all_superio[i];
       printk_debug(__FUNCTION__ " Pass %d, check #%d, s %p s->super %p\n",
 	  pass, i, s, s->super);
     if (!s->super) {

@@ -135,13 +135,15 @@ static void setup_com(struct superio *sio,
 {
 	// set baud, default to 115200 if not set.
 	int divisor = 115200/(com->baud ? com->baud : 1);
-	printk_debug("Enabling com device: %02x\n", device);
-	printk_debug("  iobase = 0x%04x  irq=%d\n", com->base, com->irq);
+	printk_debug("%s com device: %02x\n", 
+			com->enable? "Enabling" : "Disabling", device);
 	/* Select the device */
 	set_logical_device(sio, device);
 	/* Disable it while it is initialized */
 	set_enable(sio, 0);
 	if (com->enable) {
+		printk_debug("  iobase = 0x%04x  irq=%d\n", 
+				com->base, com->irq);
 		set_iobase0(sio, com->base);
 		set_irq0(sio, com->irq);
 		/* We are initialized so enable the device */

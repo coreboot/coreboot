@@ -54,6 +54,10 @@ static void agp3dev_enable(device_t dev)
 #endif
 }
 
+static struct pci_operations pci_ops_pci_dev = {
+        .set_subsystem    = pci_dev_set_subsystem,
+};
+
 static struct device_operations agp3dev_ops = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
@@ -61,6 +65,7 @@ static struct device_operations agp3dev_ops = {
 	.init     = 0,
 	.scan_bus = 0,
 	.enable   = agp3dev_enable,
+	.ops_pci  = &pci_ops_pci_dev,
 };
 
 static struct pci_driver agp3dev_driver __pci_driver = {

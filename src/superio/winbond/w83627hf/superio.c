@@ -201,11 +201,11 @@ static struct pnp_info pnp_dev_info[] = {
         // No 4 { 0,},
         { &ops, W83627HF_KBC,  PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, { 0x7ff, 0 }, { 0x7ff, 0x4}, },
         { &ops, W83627HF_CIR, PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-        { &ops, W83627HF_GAME_MIDI_GPIO1, PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x7ff, 0 }, {0x7fe, 4} },
-        { &ops, W83627HF_GPIO2,},
-        { &ops, W83627HF_GPIO3,},
-        { &ops, W83627HF_ACPI, PNP_IRQ0,  },
-        { &ops, W83627HF_HWM,  PNP_IO0 | PNP_IRQ0, { 0xff8, 0 } },
+        { &ops, W83627HF_GAME_MIDI_GPIO1, PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x7ff, 0 }, {0x7fe, 0x4}, },
+        { &ops, W83627HF_GPIO2, },
+        { &ops, W83627HF_GPIO3, },
+        { &ops, W83627HF_ACPI, },
+        { &ops, W83627HF_HWM,  PNP_IO0 | PNP_IRQ0, { 0xff8, 0 }, },
 };
 
 static void enable_dev(struct device *dev)

@@ -177,13 +177,20 @@ chip northbridge/amd/amdk8
                                 			irq 0x70 = 1
 							irq 0x72 = 12
 						end
-                        			device pnp 2e.6 off end #  CIR
-                        			device pnp 2e.7 off end #  GAME_MIDI_GIPO1
+                        			device pnp 2e.6 off #  CIR
+							io 0x60 = 0x100
+						end
+                        			device pnp 2e.7 off #  GAME_MIDI_GIPO1
+							io 0x60 = 0x201
+							io 0x62 = 0x330
+							irq 0x70 = 9
+						end						
                         			device pnp 2e.8 off end #  GPIO2
                         			device pnp 2e.9 off end #  GPIO3
                         			device pnp 2e.a off end #  ACPI
                         			device pnp 2e.b on #  HW Monitor
  				 			io 0x60 = 0x290
+							irq 0x70 = 5
                 				end
 					end
 				end
@@ -192,6 +199,8 @@ chip northbridge/amd/amdk8
 				device pci 1.3 on end
 				device pci 1.5 on end
 				device pci 1.6 off end
+#                                register "ide0_enable" = "1"
+#                                register "ide1_enable" = "1"
 			end
 		end #  device pci 18.0 
 		

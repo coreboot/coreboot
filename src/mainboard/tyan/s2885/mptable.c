@@ -149,7 +149,7 @@ void *smp_write_config_table(void *v)
 //  AGP Display Adapter
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8151_1, 0x0, 0x2, 0x10);
 
-// Onboard Serial ATA        
+//Onboard Serial ATA        
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_1, (0x0b<<2)|0, 0x2, 0x11);
 //Onboard Firewire
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_1, (0x0c<<2)|0, 0x2, 0x13);

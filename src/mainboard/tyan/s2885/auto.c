@@ -50,22 +50,28 @@ static void soft2_reset(void)
 
 static void memreset_setup(void)
 {
+#if 0
    if (is_cpu_pre_c0()) {
         outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=0
    }
    else {
+#endif
         outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=1
+#if 0
    }
+#endif
         outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
 }
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
+#if 0
    if (is_cpu_pre_c0()) {
         udelay(800);
         outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 17); //REVB_MEMRST_L=1
         udelay(90);
    }
+#endif
 }
 
 static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
@@ -111,7 +117,7 @@ static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 	};
 
 	if(maxnodes>2) {
-		print_debug("this mainboard is only designed for 2 cpus\r\n");
+//		print_debug("this mainboard is only designed for 2 cpus\r\n");
 		maxnodes=2;
 	}
 

@@ -66,7 +66,7 @@
 	mtevpr	r4			/* clear Exception Vector Prefix Reg */
 	li	r4,0x1000		/* set ME bit (Machine Exceptions) */
 	oris	r4,r4,0x0002		/* set CE bit (Critical Exceptions) */
-//	mtmsr	r4			/* change MSR */
+	mtmsr	r4			/* change MSR */
 	li	r4,(0xFFFF-0x10000)	/* set r4 to 0xFFFFFFFF (status in */
 					/* the dbsr is cleared by setting */
 					/* bits to 1) */
@@ -97,6 +97,8 @@
 	 * Enable dcache region containing DCACHE_RAM_BASE
 	 * On reset all regions are set to write-back, so we
 	 * just leave them alone.
+	 *
+	 * dccr = (1 << (0x1F - (DCACHE_RAM_BASE >> 27))
 	 */
 
         lis     r4, DCACHE_RAM_BASE@ha
@@ -107,9 +109,3 @@
 	slw	r4, r0, r4
 	mtdccr	r4			/* data cache enable */
 	sync
-
-	/* DMA Status, clear to come up clean */
-
-        addis   r3,r0, 0xFFFF         /* Clear all existing DMA status */
-        ori     r3,r3, 0xFFFF
-        mtdcr   dmasr, r3

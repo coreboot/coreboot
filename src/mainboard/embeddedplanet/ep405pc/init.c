@@ -52,9 +52,9 @@ board_init(void)
 	mtebc(pb4ap, 0x04050000);
 	
 	/*
-	 * Enable PCI
+	 * Enable FLASH, NVRAM, POR
 	 */
-	outb(0x80, 0xF4000001);
+	outb(0x9C, 0xF4000002);
 
 	/*
 	 * Enable UART0

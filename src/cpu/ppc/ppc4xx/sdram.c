@@ -26,20 +26,49 @@
 #include <ppc4xx.h>
 #include <timer.h>
 #include <clock.h>
+#include <stdint.h>
 
 #define CONFIG_SDRAM_BANK0
 #ifdef CONFIG_SDRAM_BANK0
 
+/*
+ * According to the PPC405GPr Users Manual, only non-reserved
+ * bits of SDRAM registers can be set. This means reading the
+ * contents and masking off bits to be set.
+ */
+#define CMD_BITS	0x80C00000
+#define CMD_MASK	0xFFE00000
+#define TR_BITS		0x010E8016
+#define TR_MASK		0x018FC01F
+#define B0CR_BITS	0x00084001
+#define B0CR_MASK	0xFFCEE001
+#define RTR_BITS	0x08080000
+#define RTR_MASK	0xFFFF0000
+#define ECCCF_BITS	0x00000000
+#define ECCCF_MASK	0x00F00000
+#define PMIT_BITS	0x0F000000
+#define PMIT_MASK	0xFFC00000
+
+#define mfsdram0(reg, data)  mtdcr(memcfga,reg);data = mfdcr(memcfgd)
 #define mtsdram0(reg, data)  mtdcr(memcfga,reg);mtdcr(memcfgd,data)
+
+#define set_sdram0(reg, val) \
+	mfsdram0(reg, reg32); \
+	reg32 &= ~(val##_MASK); \
+	reg32 |= (val##_BITS); \
+	mtsdram0(reg, reg32)
 
 /*-----------------------------------------------------------------------
  */
 void sdram_init(void)
 {
+#if 0
 	unsigned long speed;
 	unsigned long sdtr1;
-	unsigned long rtr;
+#endif
+	uint32_t reg32;
 
+#if 0
 	/*
 	 * Determine SDRAM speed
 	 */
@@ -61,6 +90,7 @@ void sdram_init(void)
 		sdtr1 = 0x0086400d;
 		rtr = 0x05f00000;
 	}
+#endif
 
         /*
 	 * Disable memory controller.
@@ -69,31 +99,17 @@ void sdram_init(void)
 	//mtsdram0(mem_mcopt1, 0x00000000);
 
 #if EMBEDDED_RAM_SIZE==128*1024*1024
-	/*
-	 * Set MB0CF for bank 0. (0-128MB) Address Mode 3 since 13x10(4)
-	 */
-	mtsdram0(mem_mb0cf, 0x000A4001);
-
-	mtsdram0(mem_sdtr1, sdtr1);
-	mtsdram0(mem_rtr, rtr);
+	/* TODO */
 #elif EMBEDDED_RAM_SIZE==64*1024*1024
-	/*
-	 * Set MB0CF for bank 0. (0-64MB) Address Mode 3 since 13x9(4)
-	 */
-	mtsdram0(mem_mb0cf, 0x00084001);
-
-	mtsdram0(mem_sdtr1, sdtr1);
-	mtsdram0(mem_rtr, rtr);
+	set_sdram0(mem_sdtr1, TR);
+	set_sdram0(mem_mb0cf, B0CR);
+	set_sdram0(mem_rtr, RTR);
+	set_sdram0(mem_ecccf, ECCCF);
+	set_sdram0(mem_pmit, PMIT);
 #elif EMBEDDED_RAM_SIZE==32*1024*1024
-	/*
-	 * Set MB0CF for bank 0. (0-32MB) Address Mode 2 since 12x9(4)
-	 */
-	mtsdram0(mem_mb0cf, 0x00062001);
+	/* TODO */
 #elif EMBEDDED_RAM_SIZE==16*1024*1024
-	/*
-	 * Set MB0CF for bank 0. (0-16MB) Address Mode 4 since 12x8(4)
-	 */
-	mtsdram0(mem_mb0cf, 0x00046001);
+	/* TODO */
 #endif
 
 	/*
@@ -106,7 +122,7 @@ void sdram_init(void)
 	 * Set DC_EN to '1' and BRD_PRF to '01' for 16 byte PLB Burst
 	 * read/prefetch.
 	 */
-	mtsdram0(mem_mcopt1, 0x80800000);
+	set_sdram0(mem_mcopt1, CMD);
 
 	/*
 	 * Wait for 10ms

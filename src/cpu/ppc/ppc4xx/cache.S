@@ -55,9 +55,9 @@ invalidate_icache:
 
 	.globl	invalidate_dcache
 invalidate_dcache:
-	addi	r6,0,0x0000		/* clear GPR 6 */
+	li	r6,0x0000		/* clear GPR 6 */
 	/* Do loop for # of dcache congruence classes. */
-	addi	r7,r0, (DCACHE_RAM_SIZE / CACHELINE_SIZE / 2)
+	li	r7,(DCACHE_RAM_SIZE / CACHELINE_SIZE / 2)
 					/* NOTE: dccci invalidates both */
 	mtctr	r7			/* ways in the D cache */
 1:
@@ -68,21 +68,21 @@ invalidate_dcache:
 
 	.globl	flush_dcache
 flush_dcache:
-	addis	r9,r0,0x0002		/* set mask for EE and CE msr bits */
+	lis	r9,0x0002		/* set mask for EE and CE msr bits */
 	ori	r9,r9,0x8000
 	mfmsr	r12			/* save msr */
 	andc	r9,r12,r9
 	mtmsr	r9			/* disable EE and CE */
-	addi	r10,r0,0x0001		/* enable data cache for unused memory */
+	li	r10,0x0001		/* enable data cache for unused memory */
 	mfdccr	r9			/* region 0xF8000000-0xFFFFFFFF via */
 	or	r10,r10,r9		/* bit 31 in dccr */
 	mtdccr	r10
 
 	/* do loop for # of congruence classes. */
-	addi	r10,r0,(DCACHE_RAM_SIZE / CACHELINE_SIZE / 2)
-	addi	r11,r0,(DCACHE_RAM_SIZE / 2) /* D cache set size - 2 way sets */
+	li	r10,(DCACHE_RAM_SIZE / CACHELINE_SIZE / 2)
+	li	r11,(DCACHE_RAM_SIZE / 2) /* D cache set size - 2 way sets */
 	mtctr	r10
-	addi	r10,r0,(0xE000-0x10000)	/* start at 0xFFFFE000 */
+	li	r10,(0xE000-0x10000)	/* start at 0xFFFFE000 */
 	add	r11,r10,r11		/* add to get to other side of cache line */
 1:
 	lwz	r3,0(r10)		/* least recently used side */
@@ -102,13 +102,13 @@ icache_enable:
 	bl	invalidate_icache
 	mtlr	r8
 	isync
-	addis	r3,r0, 0x8000	      /* set bit 0 */
+	lis	r3,0x8000	      /* set bit 0 */
 	mticcr	r3
 	blr
 
 	.globl	icache_disable
 icache_disable:
-	addis	r3,r0, 0x0000	      /* clear bit 0 */
+	lis	r3,0x0000	      /* clear bit 0 */
 	mticcr	r3
 	isync
 	blr
@@ -125,7 +125,7 @@ dcache_enable:
 	bl	invalidate_dcache
 	mtlr	r8
 	isync
-	addis	r3,r0, 0x8000	      /* set bit 0 */
+	lis	r3,0x8000	      /* set bit 0 */
 	mtdccr	r3
 	blr
 
@@ -134,7 +134,7 @@ dcache_disable:
 	mflr	r8
 	bl	flush_dcache
 	mtlr	r8
-	addis	r3,r0, 0x0000	      /* clear bit 0 */
+	lis	r3,0x0000	      /* clear bit 0 */
 	mtdccr	r3
 	blr
 

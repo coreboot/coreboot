@@ -2,17 +2,12 @@ init config/crt0.base
 ldscript config/ldscript.lb
 
 makerule all
-	depends	"romimage"
+	depends	"linuxbios.rom"
 end
 
 makerule floppy 
 	depends	"all" 
 	action	"mcopy -o romimage a:"
-end
-
-makerule romimage 
-	depends	"linuxbios.rom payload.block"
-	action	"cat payload.block linuxbios.rom > romimage"
 end
 
 makerule nrv2b 

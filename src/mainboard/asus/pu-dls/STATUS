@@ -1,0 +1,27 @@
+# These are keyword-value pairs. 
+# a : separates the keyword from the value 
+# the value is arbitrary text delimited by newline. 
+# continuation, if needed, will be via the \ at the end of a line
+# comments are indicated by a '#' as the first character. 
+# the keywords are case-INSENSITIVE
+owner:	
+email:
+#status: One of unsupported, unstable, stable
+status: unstable
+explanation: Brand new
+flash-types: SST 49LF004 FirmWare Hub. Intel 82802ac8 FWH (8Mbit) or  82802ab8 (4Mbit) can be substituted
+payload-types: etherboot, memtest86, pforth (an embedded Forth environment)
+# e.g. linux, plan 9, wince, etc.
+OS-types: linux
+# e.g. "Plan 9 interrupts don't work on this chipset"
+OS-issues:
+console-types: serial
+# vga is unsupported, unstable, or stable
+vga: unsupported
+# Last-known-good follows the internationl date standard: day/month/year
+last-known-good: 04/12/2003
+Comments: 
+Links:
+Mainboard-revision: 1
+# What other mainboards are like this one? List them here. 
+AKA: 

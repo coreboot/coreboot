@@ -1,0 +1,40 @@
+#define S0_WAIT() \
+	movw $0x3fd, %dx	;\
+9:	inb %dx, %al	;\
+	test $0x40, %al	;\
+	je 9b
+
+#define S0_EMIT(char) \
+9:	movw $0x3fd, %dx	;\
+	inb %dx, %al	;\
+	test $0x20, %al	;\
+	je 9b			;\
+	movb $char,%al	;\
+	movw $0x3f8, %dx	;\
+	outb %al, %dx
+
+#define __CONSOLE_INLINE_TX_HEX8(byte)	\
+	movb	byte, %al	; \
+	shr	$4, %al		; \
+	add	$'0', %al	; \
+	cmp	$'9', %al	; \
+	jle	9f		; \
+	add	$39, %al	; \
+9:				; \
+    movw $0x3f8, %dx	;\
+    outb %al, %dx	;\
+10: movw $0x3fd, %dx	;\
+    inb %dx, %al	;\
+    test $0x20, %al	;\
+    je 10b	;\
+    movw $0x3f8, %dx	;\
+	mov	byte, %al	; \
+	and	$0x0f, %al	; \
+	add	$'0', %al	; \
+	cmp	$'9', %al	; \
+	jle	9f		; \
+	add	$39, %al	; \
+9:				; \
+    movw $0x3f8, %dx	;\
+    outb %al, %dx
+

@@ -37,7 +37,7 @@ makerule linuxbios: linuxbios.o ldscript.ld ; $(CC) -nostdlib -nostartfiles -sta
 addaction linuxbios nm -n linuxbios > linuxbios.map
 
 makerule etags: $(SOURCES) ; etags $(SOURCES)
-makerule tags: $(SOURCES) ; gctags $(SOURCES)
+makerule tags: $(SOURCES) ; ctags $(SOURCES)
 makerule documentation: $(SOURCES) ; doxygen LinuxBIOSDoc.config 
 
 makerule linuxbios.a : $(OBJECTS-1) ; rm -f linuxbios.a

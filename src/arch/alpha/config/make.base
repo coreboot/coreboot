@@ -11,7 +11,7 @@ makerule linuxbios.rom: linuxbios.strip makerom ; ./makerom -l0x310000 -i7 -v li
 makerule linuxbios.strip: linuxbios ; objcopy -O binary -R .note -R .comment -S linuxbios linuxbios.strip
 makerule linuxbios: linuxbios.a ; @rm -f biosobject
 makerule etags: $(SOURCES) ; etags $(SOURCES)
-makerule tags: $(SOURCES) ; gctags $(SOURCES)
+makerule tags: $(SOURCES) ; ctags $(SOURCES)
 makerule documentation: $(SOURCES) ; doxygen LinuxBIOSDoc.config 
 addaction linuxbios $(LINK) 
 addaction linuxbios nm -n linuxbios > linuxbios.map

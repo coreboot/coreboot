@@ -50,10 +50,10 @@ Recommended: you really ought to get a 32-DIP Zero Insertion Force (ZIF)
 socket for the flash part. This makes taking out flash and putting in Disk
 On Chip much easier. 
 
-You need to have a target machine (the machine that runs LinuxBIOS)
+You need to have a LinuxBIOS machine (the machine that runs LinuxBIOS)
 and a build machine (which will let you build LinuxBIOS). These can be
 one and the same machine. In this HOWTO we assume they're the same. 
-We nevertheless refer to a 'build' machine and 'target' machine in case you
+We nevertheless refer to a 'build' machine and 'LinuxBIOS' machine in case you
 want to use a different machine. 
 
 Also, freebios and linuxbios still share the same source tree. We use the 
@@ -63,7 +63,7 @@ are the same source base.
 ----
 NOTE: these steps are tested up to step 3, and work. 
 The steps for loading linuxbios are simple:
-0) get linux installed on your target machine
+0) get linux installed on your LinuxBIOS machine
 1) Get Linuxbios source from the sourceforge
 2) get a 2.4.0-test12 kernel, patch it, then build it
 3) config and build linuxbios
@@ -76,7 +76,7 @@ The steps for loading linuxbios are simple:
 
 ---
 Step 0) 
-	Get Linux installed on your target machine. We have used 
+	Get Linux installed on your LinuxBIOS machine. We have used 
 	RedHat 6.2, but any recent Linux distribution should work, such
 	as Mandrake 7.0. 
 
@@ -99,7 +99,9 @@ o	Once you have pulled this file down and untar'ed it,
 	directory.  The patch is:
 
 	linux-2.4.0-test12-sis630-sisfb_lite.patch
-
+	Your patch command will look like this:
+	cd linux_directory
+	patch -p1 < ~/freebios/src/kernel_patches/linux-2.4.0-test12-sis630-sisfb_lite.patch
 o	Now copy config-2.4.0-test12.sis to .config, then
 	make oldconfig
 	make clean
@@ -110,8 +112,8 @@ o	Now copy config-2.4.0-test12.sis to .config, then
 	make bzdisk (You should test boot this floppy disk just to be safe)
 
 	You now have a kernel for linuxbios.
-	And then try booting this kernel on the target to make sure it works. 
-	If you want, you can also install this kernel on the target machine,
+	And then try booting this kernel on the LinuxBIOS to make sure it works. 
+	If you want, you can also install this kernel on the LinuxBIOS machine,
 	and install the modules as well, since you will need the Disk On Chip
 	modules to burn the Disk On Chip part. 
 
@@ -197,20 +199,20 @@ o	You now need to figure out where you want to put your build images.
 
 	mkdir -p winfast
 
-	python LBConfig.py winfast.config ~/src/bios/freebios
+	python ~/src/freebios/util/config/NLBConfig.py winfast.config ~/src/freebios
 
 	The output of the tool is:
 	Will place Makefile, crt0.S, ldscript.ld in  winfast
-	Process config file:  /users/rminnich/src/bios/freebios/src/mainboard/leadtek/winfast6300/Config
-	Process config file:  /users/rminnich/src/bios/freebios/src/northsouthbridge/sis/630/Config
+	Process config file:  /users/rminnich/src/freebios/src/mainboard/leadtek/winfast6300/Config
+	Process config file:  /users/rminnich/src/freebios/src/northsouthbridge/sis/630/Config
 	Added ram init file:  northsouthbridge/sis/630/raminit.inc
-	Process config file:  /users/rminnich/src/bios/freebios/src/cpu/p5/Config
-	Process config file:  /users/rminnich/src/bios/freebios/src/cpu/p6/Config
-	Process config file:  /users/rminnich/src/bios/freebios/src/lib/Config
+	Process config file:  /users/rminnich/src/freebios/src/cpu/p5/Config
+	Process config file:  /users/rminnich/src/freebios/src/cpu/p6/Config
+	Process config file:  /users/rminnich/src/freebios/src/lib/Config
 	Trying to create  winfast/Makefile
 	Trying to create  winfast/ldscript.ld
 	Trying to create  winfast/crt0.S
-	Check for crt0.S param file: /users/rminnich/src/bios/freebios/src/include/northsouthbridge/sis/630/param.h
+	Check for crt0.S param file: /users/rminnich/src/freebios/src/include/northsouthbridge/sis/630/param.h
  	Adding include to crt0.S for this parameter file
 
 	OK, all those messages are normal. Now we do a make:
@@ -232,8 +234,9 @@ o	You now need to figure out where you want to put your build images.
 	You're now ready to burn the Disk On Chip, but first .... 
 
 Step 4) Get the MTD utilities from http://www.linux-mtd.infradead.org/ 
+	(see the instructions at that site)
 	cvs -d :pserver:anoncvs@cvs.infradead.org:/home/cvs co mtd
-	cd mtd-xxyyzz/util
+	cd mtd/util
 	make
 	(You need the erase utility)
 	Install the erase utility where it is in your path. 
@@ -242,6 +245,7 @@ Step 5) Set up flash_on utiliy
 	flash_on.c is found in freebios/util/sis/flash_on.c
 	cd to that directory, make the utility, and put it in your path
 	(i.e. /usr/bin or in your private path)
+	(e.g. cp erase /usr/bin)
 
 Step 6) 
 	NOTE: BE ADVISED THAT THIS STEP CAN HURT OR KILL YOU!
@@ -252,7 +256,7 @@ Step 6)
 	WE TAKE NO RESPONSIBILITY FOR ANYTHING THAT HAPPENS AT THIS STEP.
 	BEFORE DOING THIS STEP WITH POWER ON, YOU SHOULD TRY IT WITH POWER OFF.
 
-	Figure out if you're going to burn the DoC on the build or target
+	Figure out if you're going to burn the DoC on the build or LinuxBIOS
 	machine. It has to be the machine with MTD modules. 
 
 	Open the machine (LEAVE THE POWER ON), yank the flash, and 
@@ -266,15 +270,21 @@ Step 6)
 	hurt by hardware, DON'T DO IT.
 
 Step 7) Run the following script:
-	Run the burn_mtd script from util/mtd
+	RUN THIS SCRIPT FROM THE BUILD DIRECTORY FOR LINUXBIOS
+	Run the burn_mtd script from freebios/util/mtd
 	Here's how it looks when you run it:
+	(We'll fill this in later, sorry!)
 
 
-Step 8) Hit reset. Linuxbios should come up in a few seconds. 
+Step 8) POWER OFF THE MACHINE. DoC requires this. 
+	Turn it back on. Linuxbios should come up in a few seconds. 
 
 If it doesn't work: 
 
-1) if you can, hook up a serial line to your target, settings 115200,8n1
+1) if you can, hook up a serial line to your LinuxBIOS machine, 
+   settings 115200,8n1
    and see what messages come out. If you can capture them, send them
    to linuxbios@lanl.gov with a description of your problem. 
+
+
 

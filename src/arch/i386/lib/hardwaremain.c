@@ -367,19 +367,13 @@ void hardwaremain(int boot_complete)
 	final_mainboard_fixup();
 	post_code(0xec);
 
-
-#endif /* MAINBOARD_FIXUP_IN_CHARGE */
-
-#ifdef USE_NEW_SUPERIO_INTERFACE
-	handle_superio(2, all_superio, nsuperio);
-#endif
-	/* make certain we are the only cpu running in linuxBIOS */
-	wait_for_other_cpus();
-
 	// we do this right here because: 
 	// - all the hardware is working, and some VGA bioses seem to need 
 	//   that
 	// - we need page 0 below for linuxbios tables. 
+	// This seems to be as early as possible to do this, since 
+	// final_mainboard_fixup may need to run before we can do
+	// anything with vga.
 #if CONFIG_REALMODE_IDT == 1
 	printk_debug("INSTALL REAL-MODE IDT\n");
 	setup_realmode_idt();
@@ -389,6 +383,15 @@ void hardwaremain(int boot_complete)
 	do_vgabios();
 	post_code(0x93);
 #endif
+
+#endif /* MAINBOARD_FIXUP_IN_CHARGE */
+
+#ifdef USE_NEW_SUPERIO_INTERFACE
+	handle_superio(2, all_superio, nsuperio);
+#endif
+	/* make certain we are the only cpu running in linuxBIOS */
+	wait_for_other_cpus();
+
 
 	/* Now that we have collected all of our information
 	 * write our configuration tables.

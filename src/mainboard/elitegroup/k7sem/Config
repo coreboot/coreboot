@@ -15,7 +15,10 @@ mainboardinit cpu/p6/earlymtrr.inc
 option ENABLE_FIXED_AND_VARIABLE_MTRRS=1
 option FINAL_MAINBOARD_FIXUP=1
 option HAVE_PIRQ_TABLE=1
-option CONFIG_SIS_DISABLE_ETHERNET
+option DISABLE_INTERNAL_DEVICES
+
+# this makes ipl.S too big
+#option CONFIG_SIS_DISABLE_ETHERNET
 object mainboard.o
 object irq_tables.o
 keyboard pc80

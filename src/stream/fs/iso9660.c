@@ -141,7 +141,7 @@ iso9660_dir (char *dirname)
 	      const char *name = idr->name;
 	      unsigned int name_len = isonum_711(idr->name_len);
 
-	      file_type = ((unsigned int)idr->flags & 2) ? ISO_DIRECTORY : ISO_REGULAR;
+	      file_type = (isonum_711(idr->flags) & 2) ? ISO_DIRECTORY : ISO_REGULAR;
 	      if (name_len == 1)
 	      {
 		  if ((name[0] == 0) ||	/* self */
@@ -161,8 +161,8 @@ iso9660_dir (char *dirname)
 	       *  Parse Rock-Ridge extension
 	       */
 	      rr_len = (isonum_711(idr->length) - isonum_711(idr->name_len)
-			- (unsigned char)sizeof(struct iso_directory_record)
-			+ (unsigned char)sizeof(idr->name));
+			- sizeof(struct iso_directory_record)
+			+ sizeof(idr->name));
 	      rr_ptr.ptr = ((unsigned char *)idr + isonum_711(idr->name_len)
 			    + sizeof(struct iso_directory_record)
 			    - sizeof(idr->name));
@@ -180,9 +180,10 @@ iso9660_dir (char *dirname)
 		      printk_debug(
 			    "Non-supported version (%d) RockRidge chunk "
 			    "`%c%c'\n", rr_ptr.rr->version,
-			    rr_ptr.rr->signature & 0xFF,
-			    rr_ptr.rr->signature >> 8);
+			    rr_ptr.rr->signature[0],
+			    rr_ptr.rr->signature[1]);
 #endif
+		    break;
 		  }
 		  else if (rr_ptr.rr->signature[0] == 'R'
 			   && rr_ptr.rr->signature[1] == 'R'

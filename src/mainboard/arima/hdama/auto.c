@@ -1,4 +1,7 @@
 #define ASSEMBLY 1
+#define MAXIMUM_CONSOLE_LOGLEVEL 9
+#define DEFAULT_CONSOLE_LOGLEVEL 9
+
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <cpu/p6/apic.h>
@@ -222,7 +225,7 @@ static void main(void)
 #else
 #if TOTAL_CPUS < 2
 	/* Check 16MB of memory @ 0*/
-	ram_check(0x00000000, 0x01000000);
+	ram_check(0x00000000, 0x01000);
 #else
 	/* Check 16MB of memory @ 2GB */
 	ram_check(0x80000000, 0x81000000);

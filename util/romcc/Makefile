@@ -34,6 +34,7 @@ TESTS=\
 	simple_test17.c \
 	simple_test18.c \
 	simple_test19.c \
+	simple_test20.c \
 	raminit_test.c \
 	raminit_test2.c
 

@@ -10195,6 +10195,14 @@ static void walk_variable_lifetimes(struct compile_state *state,
 				}
 				do_triple_set(&live, *expr, 0);
 			}
+			expr = triple_lhs(state, ptr, 0);
+			for(;expr; expr = triple_lhs(state, ptr, expr)) {
+				/* If the triple is not a definition skip it. */
+				if (!*expr || !triple_is_def(state, *expr)) {
+					continue;
+				}
+				do_triple_set(&live, *expr, 0);
+			}
 
 		}
 		/* Free live */
@@ -11017,21 +11025,58 @@ static void color_graph(struct compile_state *state, struct reg_state *rstate)
 	cgdebug_printf(" %s\n", arch_reg_str(range->color));
 }
 
+static void verify_colors(struct compile_state *state, struct reg_state *rstate)
+{
+	struct live_range *lr;
+	struct live_range_edge *edge;
+	struct triple *ins, *first;
+	char used[MAX_REGISTERS];
+	first = RHS(state->main_function, 0);
+	ins = first;
+	do {
+		if (triple_is_def(state, ins)) {
+			if ((ins->id < 0) || (ins->id > rstate->ranges)) {
+				internal_error(state, ins, 
+					"triple without a live range");
+			}
+			lr = &rstate->lr[ins->id];
+			if (lr->color == REG_UNSET) {
+				internal_error(state, ins,
+					"triple without a color");
+			}
+			/* Find the registers used by the edges */
+			memset(used, 0, sizeof(used));
+			for(edge = lr->edges; edge; edge = edge->next) {
+				if (edge->node->color == REG_UNSET) {
+					internal_error(state, 0,
+						"live range without a color");
+			}
+				reg_fill_used(state, used, edge->node->color);
+			}
+			if (used[lr->color]) {
+				internal_error(state, ins,
+					"triple with already used color");
+			}
+		}
+		ins = ins->next;
+	} while(ins != first);
+}
+
 static void color_triples(struct compile_state *state, struct reg_state *rstate)
 {
 	struct live_range *lr;
-	struct triple *first, *triple;
+	struct triple *first, *ins;
 	first = RHS(state->main_function, 0);
-	triple = first;
+	ins = first;
 	do {
-		if ((triple->id < 0) || (triple->id > rstate->ranges)) {
-			internal_error(state, triple, 
+		if ((ins->id < 0) || (ins->id > rstate->ranges)) {
+			internal_error(state, ins, 
 				"triple without a live range");
 		}
-		lr = &rstate->lr[triple->id];
-		triple->id = MK_REG_ID(lr->color, 0);
-		triple = triple->next;
-	} while (triple != first);
+		lr = &rstate->lr[ins->id];
+		ins->id = MK_REG_ID(lr->color, 0);
+		ins = ins->next;
+	} while (ins != first);
 }
 
 static void print_interference_block(
@@ -11298,6 +11343,9 @@ static void allocate_registers(struct compile_state *state)
 	}
 	/* Color the live_ranges */
 	color_graph(state, &rstate);
+
+	/* Verify the graph was properly colored */
+	verify_colors(state, &rstate);
 
 	/* Move the colors from the graph to the triples */
 	color_triples(state, &rstate);

@@ -52,9 +52,11 @@ struct lb_memory *write_tables(struct mem_range *mem, unsigned long *processor_m
 
 	/* copy the smp block to address 0 */
 	post_code(0x96);
+#if CONFIG_SMP 
 	/* The smp table must be in 0-1K, 639K-640K, or 960K-1M */
 	remove_logical_cpus(processor_map);
 	low_table_end = write_smp_table(low_table_end, processor_map);
+#endif
 
 	/* Don't write anything in the traditional x86 BIOS data segment */
 	if (low_table_end < 0x500) {

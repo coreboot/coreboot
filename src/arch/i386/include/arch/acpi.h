@@ -80,6 +80,62 @@ typedef struct acpi_hpet {
 	u8 attributes;
 } __attribute__ ((packed)) acpi_hpet_t;
 
+typedef struct acpi_madt {
+	struct acpi_table_header header;
+	u32 lapic_addr;
+	u32 flags;
+} __attribute__ ((packed)) acpi_madt_t;
+
+enum acpi_apic_types {
+	LocalApic		= 0,
+	IOApic			= 1,
+	IRQSourceOverride	= 2,
+	NMI			= 3,
+	LocalApicNMI		= 4,
+	LApicAddressOverride	= 5,
+	IOSApic			= 6,
+	LocalSApic		= 7,
+	PlatformIRQSources	= 8
+};
+
+typedef struct acpi_madt_lapic {
+	u8 type;
+	u8 length;
+	u8 processor_id;
+	u8 apic_id;
+	u32 flags;
+} __attribute__ ((packed)) acpi_madt_lapic_t;
+
+typedef struct acpi_madt_lapic_nmi {
+	u8 type;
+	u8 length;
+	u8 processor_id;
+	u16 flags;
+	u8 lint;
+} __attribute__ ((packed)) acpi_madt_lapic_nmi_t;
+
+
+typedef struct acpi_madt_ioapic {
+	u8 type;
+	u8 length;
+	u8 ioapic_id;
+	u8 reserved;
+	u32 ioapic_addr;
+	u32 gsi_base;
+} __attribute__ ((packed)) acpi_madt_ioapic_t;
+
+typedef struct acpi_madt_irqoverride {
+	u8 type;
+	u8 length;
+	u8 bus;
+	u8 source;
+	u32 gsirq;
+	u16 flags;
+} __attribute__ ((packed)) acpi_madt_irqoverride_t;
+
+
+
+
 
 unsigned long write_acpi_tables(unsigned long addr);
 

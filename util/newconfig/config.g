@@ -11,19 +11,16 @@ arch = ''
 ldscriptbase = ''
 payloadfile = ''
 
-makeoptions = {}
-makeexpressions = []
-
 # Key is the rule name. Value is a mkrule object.
 makebaserules = {}
 
 # List of targets in the order defined by makerule commands.
-makerule_targets = {}
+#makerule_targets = {}
 
 treetop = ''
 target_dir = ''
 
-sources = {}
+#sources = {}
 objectrules = {}
 # make these a hash so they will be unique.
 driverrules = {}
@@ -121,11 +118,7 @@ class option:
 
 	def setvalue(self, value, loc):
 		if (self.set):
-			print "Option %s: " % self.name
-			print "Attempt to set %s at %s" % (value, loc.at()) 
-			print "Already set to %s at %s" % \
-					(self.value, self.loc.at())
-			sys.exit(1)
+			fatal("Error: option %s already set" % self.name)
 		self.set = 1
 		self.value = value
 		self.defined = 1
@@ -148,18 +141,7 @@ class option:
 
 	def setdefault(self, value, loc):
 		if (self.default):
-			print "%s: " % self.name
-			print "Attempt to default %s at %s" % (value, loc) 
-			print "Already defaulted to %s at %s" %  \
-					(self.value, self.loc.at())
-			print "Warning only"
-		if (self.set):
-			print "%s: " % self.name
-			print "Attempt to default %s at %s" % (value, loc) 
-			print "Already set to %s at %s" % \
-					(self.value, self.loc.at())
-			print "Warning only"
-			return
+			fatal("Error: default value for %s already set" % self.name)
 		self.value = value
 		self.defined = 1
 		self.default = 1
@@ -652,10 +634,10 @@ def dodir(path, file):
 	curdir = dirstack.pop()
 
 def lookup(name):
-    global curpart
-    v = getoption(name, curpart)
-    exitiferrors()
-    return v
+	global curpart
+	v = getoption(name, curpart)
+	exitiferrors()
+	return v
 
 def ternary(val, yes, no):
 	if (debug):
@@ -1101,7 +1083,7 @@ parser Config:
 		|	dir<<C>>		{{ return dir}}
 		|	ldscript<<C>>		{{ return ldscript}}
 		|	payload<<C>>		{{ return payload}}
-		| 	pprint<<C>>		{{ return pprint}}
+		| 	prtstmt<<C>>		{{ return prtstmt}}
 
     # ENTRY for parsing Config.lb file
     rule cfgfile:	(uses<<1>>)* (stmt<<1>>)*
@@ -1123,13 +1105,18 @@ parser Config:
 
     rule opstmt<<C>>:	option<<C>>
 		|	opif<<C>>
-		|	pprint<<C>>
+		|	prtstmt<<C>>
 
-    # print clashes with a python keyword
-    rule pprint<<C>>:   PRINT 
-			( STR		{{ if (C): print "%s" % dequote(STR) }}
-			| ID		{{ if (C): print "%s" % getformated(ID, curpart) }}
-			)
+    rule prtval:	expr			{{ return str(expr) }}
+		|	STR			{{ return STR }}
+
+    rule prtlist:	prtval			{{ el = "%(" + prtval }}
+			( "," prtval 		{{ el = el + "," + prtval }}
+			)*			{{ return el + ")" }}	
+
+    rule prtstmt<<C>>:	PRINT STR 		{{ val = STR }}
+			[ "," prtlist 		{{ val = val + prtlist }}
+			]			{{ if (C): print eval(val) }}
 
     # ENTRY for parsing a delayed value
     rule delexpr:	"{" expr "}"		{{ return expr }}

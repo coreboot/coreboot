@@ -44,6 +44,12 @@
 #define KBC_DEFAULT_IOBASE1	0x64
 #define KBC_DEFAULT_IRQ0	0x1
 #define KBC_DEFAULT_IRQ1	0xc
+#define HW_MONITOR_DEFAULT_IOBASE0    0x295
+
+#define LED_OFF               0x00
+#define LED_ON                0x40
+#define LED_BLINK_1SEC        0x80
+#define LED_BLINK_4SEC        0xC0
 
 #if !defined(ASSEMBLY)
 void w83627hf_enter_pnp(unsigned char port);

@@ -31,6 +31,8 @@ static char rcsid[] = "$Id$";
  */
 #define PCI_ALLOCATE_TIGHT 1
 
+unsigned long pci_memory_base = 0xc0000000;
+
 static const struct pci_ops *conf;
 
 struct pci_ops {
@@ -540,7 +542,7 @@ void compute_allocate_resource(
 	resource = 0;
 
 	/* Walk through all the devices on the current bus and compute the addresses */
-	while((dev = largest_resource(bus, &resource, type_mask, type))) {
+	while(dev = largest_resource(bus, &resource, type_mask, type)) {
 		unsigned long size;
 		/* Do NOT I repeat do not ignore resources which have zero size.
 		 * If they need to be ignored dev->read_resources should not even
@@ -775,6 +777,7 @@ void assign_resources(struct pci_dev *bus)
 	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
 		curdev->ops->set_resources(curdev);
 	}
+	printk_debug("ASSIGNED RESOURCES, bus %d\n", bus->secondary);
 }
 
 static void enable_resources(struct pci_dev *bus)
@@ -836,6 +839,7 @@ void pci_configure(void)
 #else
 	root->resource[1].base = PCI_MEM_START;
 #endif
+	pci_memory_base = root->resource[1].base;
 	root->resource[1].flags |= IORESOURCE_SET;
 	// now just set things into registers ... we hope ...
 	root->ops->set_resources(root);
@@ -879,30 +883,29 @@ void pci_initialize(void)
 void
 handle_superio(int pass, struct superio *all_superio[], int nsuperio)
 {
-    int i = 0;
-    struct superio *s = all_superio[0];
+	int i;
+	struct superio *s;
 
-	printk_debug("handle_superio start, s %p nsuperio %d s->super %p\n",
-		     s, nsuperio, s->super);
+	printk_debug("handle_superio start, nsuperio %d\n", nsuperio);
 
-	for (; i < nsuperio; i++){
+	for (i = 0; i < nsuperio; i++){
 		s = all_superio[i];
 		printk_debug(__FUNCTION__
-			     " Pass %d, check #%d, s %p s->super %p\n",
-			     pass, i, s, s->super);
+			" Pass %d, check #%d, s %p s->super %p\n",
+			pass, i, s, s->super);
 		if (!s->super) {
 			printk_debug(__FUNCTION__
-				     " Pass %d, Skipping #%d as it has no superio pointer!\n",
-				     pass, i);
+				" Pass %d, Skipping #%d as it has no superio pointer!\n",
+				pass, i);
 			continue;
 		}
 
 		printk_debug("handle_superio: Pass %d, Superio %s\n",
-			     pass, s->super->name);
+			pass, s->super->name);
 
 		// if no port is assigned use the defaultport
 		printk_info(__FUNCTION__ "  port 0x%x, defaultport 0x%x\n",
-			    s->port, s->super->defaultport);
+			s->port, s->super->defaultport);
 		if (!s->port)
 			s->port = s->super->defaultport;
 

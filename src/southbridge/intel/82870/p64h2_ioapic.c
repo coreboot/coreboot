@@ -31,7 +31,7 @@ void p64h2_enable_ioapic(void)
 		}
 		/* Read the MBAR address for setting up the io apic in io memory space */
 		pci_read_config_dword(dev, PCI_BASE_ADDRESS_0, &dword);
-		ioapic_a=dword;
+		ioapic_a = (u32 *) dword;
 		ioapic_d = ioapic_a +0x04;
 		printk_debug("IOAPIC %d at %02x:%02x.%01x  MBAR = %x DataAddr = %x\n",
 			addr, dev->bus->secondary,

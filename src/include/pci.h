@@ -425,6 +425,7 @@ extern void compute_allocate_resource(struct pci_dev *bus, struct resource *brid
 	unsigned long type_mask, unsigned long type);
 extern void assign_resources(struct pci_dev *bus);
 extern void enumerate_static_device(void);
+extern unsigned long pci_memory_base;
 #include <pciconf.h>
 
 /* linkages from devices of a type (e.g. superio devices) 

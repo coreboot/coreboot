@@ -9,8 +9,8 @@ void ich3_enable_ioapic(void)
 {
 	struct pci_dev *dev;
 	u32 dword;
-	volatile u32 *ioapic_sba=0xfec00000;
-	volatile u32 *ioapic_sbd=0xfec00010;
+	volatile u32 *ioapic_sba = (volatile u32 *)0xfec00000;
+	volatile u32 *ioapic_sbd = (volatile u32 *)0xfec00010;
 
 	dev = pci_find_device(PCI_VENDOR_ID_INTEL, 
 			PCI_DEVICE_ID_INTEL_82801CA_1F0, 0);

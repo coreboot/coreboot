@@ -58,6 +58,9 @@ uses LINUXBIOS_EXTRA_VERSION
 uses XIP_ROM_SIZE
 uses XIP_ROM_BASE
 
+uses CONFIG_FS_STREAM
+uses CONFIG_IDE
+
 uses HAVE_HARD_RESET
 
 #uses CONFIG_VGABIOS
@@ -88,6 +91,9 @@ option CONFIG_CONSOLE_BTEXT=1
 #option CONFIG_PCIBIOS=1
 #option VGABIOS_START=0xfff8c000
 #option SCSIFW_START=0xfff80000
+
+#option CONFIG_FS_STREAM=1
+#option CONFIG_IDE=1
 
 option HAVE_FALLBACK_BOOT=1
   
@@ -213,7 +219,7 @@ romimage "normal"
 #	48K for SCSI FW and 48K for ATI ROM
 #	option ROM_SIZE = 425984  
 #       64K for Etherboot
-        option ROM_SIZE = 458752
+#        option ROM_SIZE = 458752
         option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
         option USE_FALLBACK_IMAGE=0
 	option ROM_SECTION_SIZE  = (ROM_SIZE - FALLBACK_SIZE)
@@ -230,7 +236,10 @@ romimage "normal"
 	mainboard tyan/s2882
 #	payload ../../../payloads/tg3--ide_disk.zelf
 #        payload ../../../payloads/filo.elf
-	payload ../../../payloads/filo_mem_btext.elf
+#        payload ../../../payloads/filo_mem.elf
+#	payload ../../../payloads/filo_mem_btext.elf
+#	payload ../../../payloads/filo_btext.zelf
+	payload ../../../payloads/tg3--filo_btext.zelf
 #	SMDC support
 #	payload ../../tg3--ide_disk_com1_2.zelf 
 end
@@ -252,7 +261,9 @@ romimage "fallback"
 	mainboard tyan/s2882
 #	payload ../../../payloads/tg3--ide_disk.zelf
 #        payload ../../../payloads/filo_mem.elf
-	payload ../../../payloads/filo_mem_btext.elf
+#	payload ../../../payloads/filo_mem_btext.elf
+	payload ../../../payloads/tg3_btext.zelf
+	
 #SMDC support
 #	payload ../../tg3--ide_disk_com1_2.zelf
 end

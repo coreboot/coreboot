@@ -48,7 +48,13 @@ static u32 g_loc_Y;
 static u32 g_max_loc_X;
 static u32 g_max_loc_Y;
 
+#define CHAR_256 0
+
+#if CHAR_256==1
 #define cmapsz	(16*256)
+#else
+#define cmapsz        (16*96)
+#endif
 
 static unsigned char vga_font[cmapsz];
 
@@ -285,7 +291,7 @@ void BTEXT btext_drawchar(char c)
 	}
 #endif
 }
-
+#if 0
 void BTEXT
 btext_drawstring(const char *c)
 {
@@ -312,13 +318,17 @@ btext_drawhex(u32 v)
 	btext_drawchar(hex_table[(v >>  0) & 0x0000000FUL]);
 	btext_drawchar(' ');
 }
-
+#endif
 static void BTEXT
 draw_byte(unsigned char c, u32 locX, u32 locY)
 {
 	boot_infos_t* bi	= &disp_bi;
 	unsigned char *base	= calc_base(bi, locX << 3, locY << 4);
-	unsigned char *font	= &vga_font[((u32)c) * 16];
+#if CHAR_256==1
+        unsigned char *font     = &vga_font[((u32)c) * 16];
+#else
+	unsigned char *font	= &vga_font[((u32)c-0x20) * 16]; // skip the first 0x20
+#endif
 	u32 rb			= bi->dispDeviceRowBytes;
 
 	switch(bi->dispDeviceDepth) {
@@ -451,7 +461,7 @@ static struct console_driver btext_console __console = {
 
 
 static unsigned char vga_font[cmapsz] BTDATA = {
-
+#if CHAR_256==1
 	/* 0 0x00 '^@' */
 	0x00, /* 00000000 */
 	0x00, /* 00000000 */
@@ -1027,7 +1037,7 @@ static unsigned char vga_font[cmapsz] BTDATA = {
 	0x00, /* 00000000 */
 	0x00, /* 00000000 */
 	0x00, /* 00000000 */
-
+#endif
 	/* 32 0x20 ' ' */
 	0x00, /* 00000000 */
 	0x00, /* 00000000 */
@@ -2755,7 +2765,7 @@ static unsigned char vga_font[cmapsz] BTDATA = {
 	0x00, /* 00000000 */
 	0x00, /* 00000000 */
 	0x00, /* 00000000 */
-
+#if CHAR_256==1
 	/* 128 0x80 '€' */
 	0x00, /* 00000000 */
 	0x00, /* 00000000 */
@@ -5059,6 +5069,6 @@ static unsigned char vga_font[cmapsz] BTDATA = {
 	0x00, /* 00000000 */
 	0x00, /* 00000000 */
 	0x00, /* 00000000 */
-
+#endif
 };
 

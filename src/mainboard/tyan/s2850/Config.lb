@@ -33,10 +33,12 @@ default LB_CKS_RANGE_END=122
 default LB_CKS_LOC=123
 
 driver mainboard.o
-#driver adaptec_scsi.o
-#driver si_sata.o
-#driver intel_nic_ipmi.o
-#driver broadcom_nic_ipmi.o
+#dir /drivers/lsi/53c1030
+#dir /drivers/adaptec/7902
+#dir /drivers/si/3114
+#dir /drivers/intel/82551
+#dir /drivers/broadcom/tg3_ipmi
+dir /drivers/ati/ragexl
 #object reset.o
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end

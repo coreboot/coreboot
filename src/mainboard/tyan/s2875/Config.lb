@@ -35,8 +35,9 @@ default LB_CKS_RANGE_END=122
 default LB_CKS_LOC=123
 
 driver mainboard.o
-#driver si_sata.o
-#driver intel_nic.o
+#dir /drivers/adaptec/7902
+#dir /drivers/si/3114
+#dir /driver/intel/82551
 #object reset.o
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end

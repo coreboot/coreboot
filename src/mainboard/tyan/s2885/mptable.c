@@ -15,6 +15,7 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
         unsigned char bus_isa;
         unsigned char bus_8131_1;
         unsigned char bus_8131_2;
+	unsigned char bus_8111_0;
         unsigned char bus_8111_1;
 	unsigned char bus_8151_1;
 
@@ -44,6 +45,7 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
                 /* 8111 */
                 dev = dev_find_slot(3, PCI_DEVFN(0x03,0));
                 if (dev) {
+			bus_8111_0 = pci_read_config8(dev, PCI_PRIMARY_BUS);
                         bus_8111_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
                         bus_isa    = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
                         bus_isa++;
@@ -136,9 +138,9 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0xe, 0x2, 0xe);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0xf, 0x2, 0xf);
 //??? What
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x3, (4<<2)|3, 0x2, 0x13);
-//Onboard AMD AC97 Audio ???
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x3, (4<<2)|1, 0x2, 0x11);
+        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_0, (4<<2)|3, 0x2, 0x13);
+//Onboard AMD AC97 Audio 
+        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_0, (4<<2)|1, 0x2, 0x11);
 // Onboard AMD USB
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_1, (0<<2)|3, 0x2, 0x13);
 

@@ -20,6 +20,8 @@
 
 
 #define max(x,y) (x>=y)?x:y
+
+#if CONFIG_CONSOLE_BTEXT==1
     /*
      *  Elements of the hardware specific atyfb_par structure
      */
@@ -38,6 +40,7 @@ struct crtc {
     u32 dp_pix_width;	/* acceleration */
     u32 dp_chain_mask;	/* acceleration */
 };
+#endif /* CONFIG_CONSOLE_BTEXT */
 #if 0
 struct pll_514 {
     u8 m;
@@ -83,7 +86,9 @@ union aty_pll {
      *  The hardware parameters for each card
      */
 struct atyfb_par {
+#if CONFIG_CONSOLE_BTEXT==1
     struct crtc crtc;
+#endif
     union aty_pll pll;
     u32 accel_flags;
 };
@@ -105,7 +110,11 @@ struct aty_cursor {
 };
 #endif
 struct fb_info_aty {
+#if CONFIG_CONSOLE_BTEXT==1
+#if PLL_CRTC_DECODE==1
     struct fb_info fb_info;
+#endif
+#endif
 #if 0
     struct fb_info_aty *next;
     unsigned long ati_regbase_phys;
@@ -125,7 +134,7 @@ struct fb_info_aty {
     struct { u8 red, green, blue, pad; } palette[256];
 #endif
     struct atyfb_par default_par;
-#if 0
+#if PLL_CRTC_DECODE==1
     struct atyfb_par current_par;
 #endif
 

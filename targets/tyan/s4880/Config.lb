@@ -41,7 +41,8 @@ uses USE_FALLBACK_IMAGE
 uses USE_OPTION_TABLE
 uses HAVE_OPTION_TABLE
 uses CONFIG_CHIP_CONFIGURE
- 
+
+#uses CONFIG_CONSOLE_BTEXT 
 uses CONFIG_CONSOLE_SERIAL8250
 uses TTYS0_BAUD
 uses DEFAULT_CONSOLE_LOGLEVEL
@@ -78,6 +79,7 @@ option k7=1
 option k8=1
 option ROM_SIZE=524288
 
+#option CONFIG_CONSOLE_BTEXT=1
 #option CONFIG_VGABIOS=0
 #option CONFIG_REALMODE_IDT=0
 #option CONFIG_PCIBIOS=0
@@ -201,7 +203,7 @@ option CONFIG_ROM_STREAM     = 1
 # 
 romimage "normal"
 #	48K for SCSI FW
-        option ROM_SIZE = 475136
+#        option ROM_SIZE = 475136
 #	48K for SCSI FW and 48K for ATI ROM
 #	option ROM_SIZE = 425984  
         option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
@@ -218,7 +220,14 @@ romimage "normal"
 	option XIP_ROM_BASE = (_ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE)
 
 	mainboard tyan/s4880
-	payload ../../tg3--ide_disk.zelf 
+#       payload ../../../payloads/tg3--ide_disk.zelf
+#        payload ../../../payloads/filo.elf
+#        payload ../../../payloads/filo_mem.elf
+#       payload ../../../payloads/filo_mem_btext.elf
+#       payload ../../../payloads/filo_btext.zelf
+#        payload ../../../payloads/tg3--filo_btext.zelf
+#       payload ../../../payloads/filo.zelf
+        payload ../../../payloads/tg3--filo.zelf
 end
 
 romimage "fallback" 
@@ -236,8 +245,14 @@ romimage "fallback"
 	option XIP_ROM_BASE = (_ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE)
 
 	mainboard tyan/s4880
-#	payload ../../tg3--ide_disk.zelf
-	payload ../../filo.elf.d
+#       payload ../../../payloads/tg3--ide_disk.zelf
+#        payload ../../../payloads/filo.elf
+#        payload ../../../payloads/filo_mem.elf
+#       payload ../../../payloads/filo_mem_btext.elf
+#       payload ../../../payloads/filo_btext.zelf
+#        payload ../../../payloads/tg3--filo_btext.zelf
+#       payload ../../../payloads/filo.zelf
+        payload ../../../payloads/tg3--filo.zelf
 end
 
 buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"

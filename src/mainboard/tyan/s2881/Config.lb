@@ -34,11 +34,11 @@ default LB_CKS_LOC=123
 
 
 driver mainboard.o
-#driver adaptec_scsi.o
-#driver si_sata.o
-#driver intel_nic.o
-#dir ../drivers/broadcom_nic_ipmi
-dir ../drivers/ati_graph
+#dir /drivers/adaptec/7902
+#dir /drivers/si/3114
+#dir /drivers/intel/82551
+#dir /drivers/broadcom/tg3_ipmi
+dir /drivers/ati/ragexl
 #object reset.o
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
@@ -171,33 +171,33 @@ northbridge amd/amdk8 "mc0"
                 pci 1:0.1 on
                 pci 1:0.2 on
                 pci 1:1.0 off
-#                superio winbond/w83627hf link 1
-#                        pnp 2e.0 on #  Floppy
-#                                 io 0x60 = 0x3f0
-#                                irq 0x70 = 6
-#                                drq 0x74 = 2
-#                        pnp 2e.1 off #  Parallel Port
-#                                 io 0x60 = 0x378
-#                                irq 0x70 = 7
-#                        pnp 2e.2 on #  Com1
-#                                 io 0x60 = 0x3f8
-#                                irq 0x70 = 4
-#                        pnp 2e.3 off #  Com2
-#                                 io 0x60 = 0x2f8
-#                                irq 0x70 = 3
-#                        pnp 2e.5 on #  Keyboard
-#                                 io 0x60 = 0x60
-#                                 io 0x62 = 0x64
-#                                irq 0x70 = 1
-#				irq 0x72 = 12
-#                        pnp 2e.6 off #  CIR
-#                        pnp 2e.7 off #  GAME_MIDI_GIPO1
-#                        pnp 2e.8 off #  GPIO2
-#                        pnp 2e.9 off #  GPIO3
-#                        pnp 2e.a off #  ACPI
-#                        pnp 2e.b on #  HW Monitor
-#				 io 0x60 = 0x290
-#                end
+                superio winbond/w83627hf link 1
+                        pnp 2e.0 on #  Floppy
+                                 io 0x60 = 0x3f0
+                                irq 0x70 = 6
+                                drq 0x74 = 2
+                        pnp 2e.1 off #  Parallel Port
+                                 io 0x60 = 0x378
+                                irq 0x70 = 7
+                        pnp 2e.2 on #  Com1
+                                 io 0x60 = 0x3f8
+                                irq 0x70 = 4
+                        pnp 2e.3 off #  Com2
+                                 io 0x60 = 0x2f8
+                                irq 0x70 = 3
+                        pnp 2e.5 on #  Keyboard
+                                 io 0x60 = 0x60
+                                 io 0x62 = 0x64
+                                irq 0x70 = 1
+				irq 0x72 = 12
+                        pnp 2e.6 off #  CIR
+                        pnp 2e.7 off #  GAME_MIDI_GIPO1
+                        pnp 2e.8 off #  GPIO2
+                        pnp 2e.9 off #  GPIO3
+                        pnp 2e.a off #  ACPI
+                        pnp 2e.b on #  HW Monitor
+				 io 0x60 = 0x290
+                end
         end
 end
 

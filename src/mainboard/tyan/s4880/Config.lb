@@ -33,10 +33,11 @@ default LB_CKS_RANGE_END=122
 default LB_CKS_LOC=123
 
 driver mainboard.o
-dir ../common/lsi_scsi
-#driver adaptec_scsi.o
-#driver si_sata.o
-#driver intel_nic.o
+#dir /drivers/lsi/53c1030
+#dir /drivers/adaptec/7902
+#dir /drivers/si/3114
+#dir /drivers/intel/82551
+#dir /drivers/ati/ragexl
 #object reset.o
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
@@ -184,12 +185,14 @@ northbridge amd/amdk8 "mc0"
                                  io 0x60 = 0x60
                                  io 0x62 = 0x64
                                 irq 0x70 = 1
+				irq 0x72 = 12
                         pnp 2e.6 off #  CIR
                         pnp 2e.7 off #  GAME_MIDI_GIPO1
                         pnp 2e.8 off #  GPIO2
                         pnp 2e.9 off #  GPIO3
                         pnp 2e.a off #  ACPI
-                        pnp 2e.b off #  HW Monitor
+                        pnp 2e.b on  #  HW Monitor
+                                 io 0x60 = 0x290
                 end
         end
 end
@@ -227,7 +230,7 @@ dir /pc80
 #dir /bioscall
 
 cpu k8 "cpu0"
-  register "up" = "{.chip = &amd8131, .ht_width=16, .ht_speed=600}"
+  register "down" = "{.chip = &amd8131, .ht_width=16, .ht_speed=600}"
 end
 
 cpu k8 "cpu1"

@@ -33,10 +33,10 @@ default LB_CKS_RANGE_END=122
 default LB_CKS_LOC=123
 
 driver mainboard.o
-#driver adaptec_scsi.o
-#driver si_sata.o
-#driver intel_nic.o
-#driver broadcom_nic.o
+#dir /drvers/adaptec/7902
+#dir /drivers/si/3114
+#dir /drivers/intel/82551_ipmi
+dir /drivers/ati/ragexl
 #object reset.o
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
@@ -132,7 +132,7 @@ end
 
 makerule ./failover.inc
 	depends "./romcc ./failover.E"
-	action "./romcc -O -o failover.inc --label-prefix=failover ./failover.E"
+	action "./romcc -O2 -o failover.inc --label-prefix=failover ./failover.E"
 end
 
 makerule ./auto.E 

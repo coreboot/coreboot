@@ -110,6 +110,7 @@
 #define FB_ACCEL_NEOMAGIC_NM2360 97	/* NeoMagic NM2360              */
 #define FB_ACCEL_NEOMAGIC_NM2380 98	/* NeoMagic NM2380              */
 
+#if 0
 
 struct fb_fix_screeninfo {
 	char id[16];			/* identification string eg "TT Builtin" */
@@ -129,6 +130,8 @@ struct fb_fix_screeninfo {
 	u32 accel;			/* Type of acceleration available */
 	u16 reserved[3];		/* Reserved for future compatibility */
 };
+
+#endif
 
 /* Interpretation of offset for color fields: All offsets are from the right,
  * inside a "pixel" value, which is exactly 'bits_per_pixel' wide (means: you
@@ -309,7 +312,9 @@ struct fb_info {
    int flags;
    int open;                            /* Has this been open already ? */
    struct fb_var_screeninfo var;        /* Current var */
+#if 0
    struct fb_fix_screeninfo fix;        /* Current fix */
+#endif
    struct fb_monspecs monspecs;         /* Current Monitor specs */
    struct fb_cmap cmap;                 /* Current cmap */
 //   struct fb_ops *fbops;

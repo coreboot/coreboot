@@ -21,7 +21,7 @@ OUTPUT_ARCH(i386)
 
 HEAPSIZE = DEFINED(HEAPSIZE) ? HEAPSIZE : 0x8000;
 
-ENTRY(main)
+ENTRY(_main)
 SECTIONS
 {
 /*  . = 0x10000 - (elf_note - elf_header); */

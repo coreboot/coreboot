@@ -115,14 +115,11 @@ void intel_set_fixed_mtrr()
 		high = *(unsigned long *) fixed_mtrr_values[i*2+1];
 		wrmsr(mtrr_msr[i], low, high);
 	}
-
 }
 
 /* setting variable mtrr, comes from linux kernel source */
 void intel_set_var_mtrr(unsigned int reg, unsigned long base, unsigned long size, unsigned char type)
 {
-
-
 	if (reg >= 8)
 		return;
 
@@ -134,17 +131,6 @@ void intel_set_var_mtrr(unsigned int reg, unsigned long base, unsigned long size
 		wrmsr (MTRRphysBase_MSR (reg), base | type, 0);
 		wrmsr (MTRRphysMask_MSR (reg), ~(size - 1) | 0x800, 0);
 	}
-}
-
-/* some secret MSR registers make 5x performance boost,
-   hardcoded for 128MB SDRAM on Celeron and PII */
-void intel_l2_cache_on()
-{
-	unsigned long low, high;
-
-        low = 0x134052b;
-        high = 0x00;
-        wrmsr(0x11e, low, high);	
 }
 
 /* setting up variable and fixed mtrr
@@ -169,16 +155,18 @@ void intel_set_mtrr(unsigned long rambase, unsigned long ramsizeK)
 	printk(KERN_INFO "set_mtrr: rambase is 0x%x, ramsizeK is 0x%x\n", 
 		rambase, ramsizeK);
 #if 0
-// why doesn't this work! machine hangs!
+	// why doesn't this work! machine hangs!
 	printk(KERN_INFO "setting MTRR 0 size to 0x%x\n", 
-		(ramsizeK + 4096) * 1024);
+	       (ramsizeK + 4096) * 1024);
 	intel_set_var_mtrr(0, 0, (ramsizeK + 4096) * 1024, MTRR_TYPE_WRBACK);
 	intel_set_var_mtrr(1, (ramsizeK * 1024), 
-		4096 * 1024, MTRR_TYPE_UNCACHABLE);
+			   4096 * 1024, MTRR_TYPE_UNCACHABLE);
 #else
 	// Ollie, this is a hack! Sorry! Ron
 	printk(KERN_INFO "Setting 256M MTRR 0\n");
-	intel_set_var_mtrr(0, 0, 256 * 1024 * 1024, MTRR_TYPE_WRBACK);
+	intel_set_var_mtrr(0, 0, 128 * 1024 * 1024, MTRR_TYPE_WRBACK);
+	intel_set_var_mtrr(1, 124 *1024 * 1024, 4096 * 1024, MTRR_TYPE_UNCACHABLE);
+
 #ifdef HAVE_FRAMEBUFFER
 	// for SiS, ramsizeK is the base of the framebuffer. 
 	// but  if it's less than 60M, don't bother ...
@@ -186,23 +174,24 @@ void intel_set_mtrr(unsigned long rambase, unsigned long ramsizeK)
 	{
 		printk(KERN_INFO "Setting %dM, 4M size MTRR 1\n", 
 			ramsizeK);
-		intel_set_var_mtrr(1, ramsizeK * 1024, 4096 * 1024, 
-			MTRR_TYPE_UNCACHABLE);
+//		intel_set_var_mtrr(1, ramsizeK * 1024, 4096 * 1024, 
+//				   MTRR_TYPE_UNCACHABLE);
 	}
-#endif
+#endif /* HAVE_FRAMEBUFFER*/
+
 	printk(KERN_INFO "MTRRs set\n");
 #endif
-#else
+
+#else /* SIS630 */
 	printk("Setting variable MTRR 0 to %dK\n", ramsizeK);
 	intel_set_var_mtrr(0, 0, ramsizeK * 1024, MTRR_TYPE_WRBACK);
-#endif
+#endif /* SIS630 */
+
 	intel_set_fixed_mtrr();
 
 	/* enable fixed MTRR */
 	intel_enable_fixed_mtrr();
 	intel_enable_var_mtrr();
-
-	//intel_l2_cache_on();
 }
 #else /* ENABLE_FIXED_AND_VARIABLE_MTRRS */
 void intel_set_mtrr(unsigned long rambase, unsigned long ramsizeK)

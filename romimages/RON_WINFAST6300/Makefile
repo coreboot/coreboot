@@ -1,4 +1,4 @@
-CPUFLAGS=-DSIS630 -Di386 -Di486 -Di686 -Di586  -D__KERNEL__
+CPUFLAGS  = -DSIS630 -Di386 -Di486 -Di686 -Di586  -D__KERNEL__
 CPUFLAGS += -DINTEL_BRIDGE_CONFIG -DSIS630_NVRAM
 CPUFLAGS += -DINTEL_PPRO_MTRR  -DSIS630_KEYBOARD
 # CPUFLAGS += -DMUST_ENABLE_FLOPPY
@@ -11,7 +11,7 @@ CPUFLAGS += -DUSE_DOC_MIL
 CPUFLAGS += -DCMD_LINE='"root=/dev/hda1 single"'
 CPUFLAGS += -DFINAL_MAINBOARD_FIXUP
 
-LINUX=$(TOP)/../linux-2.4.0-test6.sis
+LINUX=$(TOP)/linux-2.4.0-test11-linuxbios
 
 TOP=../..
 INCLUDES=-nostdinc -I $(TOP)/src/include 
@@ -75,47 +75,46 @@ mkrom: $(TOP)/mkrom/mkrom.c
 	cc -o mkrom $<
 
 linuxbiosmain.o: $(TOP)/src/lib/linuxbiosmain.c
-	cc $(CFLAGS) -c $<
+	$(CC) -c $<
 
 mainboard.o: $(TOP)/src/mainboard/leadtek/winfast6300/mainboard.c
-	cc $(CFLAGS) -c $<
+	$(CC) -c $<
 
 fill_inbuf.o: $(TOP)/src/lib/fill_inbuf.c
-	cc $(CFLAGS) -c $<
+	$(CC) -c $<
 
 params.o: $(TOP)/src/lib/params.c
-	cc $(CFLAGS) $(LINUXINCLUDE) -c $<
+	$(CC) $(LINUXINCLUDE) -c $<
 
 hardwaremain.o: $(TOP)/src/lib/hardwaremain.c
-	cc $(CFLAGS) -c $<
+	$(CC) -c $<
 
 southbridge.o: $(TOP)/src/northsouthbridge/sis/630/southbridge.c
-	cc $(CFLAGS) -c $<
+	$(CC) -c $<
 
 northbridge.o: $(TOP)/src/northsouthbridge/sis/630/northbridge.c
-	cc $(CFLAGS) -c $<
+	$(CC) -c $<
 
 superio.o: $(TOP)/src/superio/sis/950/superio.c
-	cc $(CFLAGS) -c $<
+	$(CC) -c $<
 
 pci.o:  $(TOP)/src/lib/pci.c
-	cc $(CFLAGS) -c $<
-
+	$(CC) -c $<
 
 irq_tables.o: $(TOP)/src/mainboard/leadtek/winfast6300/irq_tables.c
-	cc $(CFLAGS) -o $@ -c $<
+	$(CC) -o $@ -c $<
 
 mtrr.o: $(TOP)/src/cpu/p6/mtrr.c
-	cc $(CFLAGS) -c $<
+	$(CC) -c $<
 
 subr.o: $(TOP)/src/lib/subr.c
-	cc $(CFLAGS) -c $<
+	$(CC) -c $<
 
 keyboard.o: $(TOP)/src/pc80/keyboard.c
-	cc $(CFLAGS) -c $<
+	$(CC) -c $<
 
 cpuid.o: $(TOP)/src/cpu/p5/cpuid.c
-	cc $(CFLAGS) -c $<
+	$(CC) -c $<
 
 mpspec.o: $(TOP)/src/cpu/p6/mpspec.c
 	$(CC) $(CFLAGS) -c $<
@@ -124,22 +123,24 @@ microcode.o: $(TOP)/src/cpu/p6/microcode.c
 	$(CC) $(CFLAGS) -c $<
 
 serial_subr.o: $(TOP)/src/lib/serial_subr.c
-	cc $(CFLAGS) -c $<
+	$(CC) -c $<
 
 printk.o: $(TOP)/src/lib/printk.c
-	cc $(CFLAGS) -c $<
+	$(CC) -c $<
 
 vsprintf.o: $(TOP)/src/lib/vsprintf.c
-	cc $(CFLAGS) -c $<
+	$(CC) -c $<
 
 newpci.o: $(TOP)/src/lib/newpci.c
-	cc $(CFLAGS) -c $<
+	$(CC) -c $<
 
 linuxpci.o: $(TOP)/src/lib/linuxpci.c
-	cc $(CFLAGS) -c $<
+	$(CC) -c $<
 
+# I have noe idea why you can not use $(CPUFLAGS) to compile ipl.S
+# a bug with -Di686 ??
 ipl.o: $(TOP)/src/northsouthbridge/sis/630/ipl.S
-	gcc -c -I$(TOP)/northsouthbridge/sis/630 $<
+	gcc -c -DHAVE_FRAMEBUFFER -I$(TOP)/northsouthbridge/sis/630 $<
 
 vmlinux.bin.gz.block: vmlinux.bin.gz
 	dd conv=sync bs=448k if=vmlinux.bin.gz of=vmlinux.bin.gz.block

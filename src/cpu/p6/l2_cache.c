@@ -64,250 +64,232 @@ static int calculate_l2_ecc(void);
 
 static void cache_disable(void)
 {
-    unsigned int tmp;
+	unsigned int tmp;
 
-    /* Disable cache */
-    /* Write back the cache and flush TLB */
-    asm volatile ("movl  %%cr0, %0\n\t"
-		  "orl  $0x40000000, %0\n\t"
-		  "wbinvd\n\t"
-		  "movl  %0, %%cr0\n\t"
-		  "wbinvd\n\t"
-		  : "=r" (tmp) : : "memory");
+	/* Disable cache */
+	/* Write back the cache and flush TLB */
+	asm volatile ("movl  %%cr0, %0\n\t"
+		      "orl  $0x40000000, %0\n\t"
+		      "wbinvd\n\t"
+		      "movl  %0, %%cr0\n\t"
+		      "wbinvd\n\t"
+		      : "=r" (tmp) : : "memory");
 }
-  
+
 static void cache_enable(void)
 {
-    unsigned int tmp;
+	unsigned int tmp;
 
-    asm volatile ("movl  %%cr0, %0\n\t"
-		  "andl  $0x9fffffff, %0\n\t"
-		  "movl  %0, %%cr0\n\t"
-		  : "=r" (tmp) : : "memory");
+	asm volatile ("movl  %%cr0, %0\n\t"
+		      "andl  $0x9fffffff, %0\n\t"
+		      "movl  %0, %%cr0\n\t"
+		      : "=r" (tmp) : : "memory");
 }
   
 int intel_l2_configure()
 {
-    unsigned int eax, ebx, ecx, edx;
-    int signature, tmp;
-    int cache_size;
-  
-    intel_cpuid(0, &eax, &ebx, &ecx, &edx);
-  
-    if (ebx != 0x756e6547 ||
-	edx != 0x49656e69 ||
-	ecx != 0x6c65746e)
-    {
-	printk(KERN_ERR "Not 'GenuineIntel' Processor\n");
-	return -1;
-    }
-  
-    intel_cpuid(1, &eax, &ebx, &ecx, &edx);
+	unsigned int eax, ebx, ecx, edx;
+	int signature, tmp;
+	int cache_size;
 
-    /* Mask out the stepping */
-    signature = eax & 0xfff0;
-    if (signature & 0x1000)
-    {
-	DBG("Overdrive chip no L2 cache configuration\n");
-	return 0;
-    }
-  
-    if (signature < 0x630 || signature >= 0x680)
-    {
-	DBG("CPU signature of %x so no need for L2 cache configuration\n",
-	    signature);
-	return 0;
-    }
-  
-    /* Read BBL_CR_CTL3 */
-    rdmsr(0x11e, eax, edx);
-    /* If bit 23 (L2 Hardware disable is set then done */
-    if (eax & 0x800000)
-    {
-	DBG("L2 Hardware disabled\n");
-	return 0;
-    }
-  
-    if (signature == 0x630)
-    {
-	/* 0x630 signature setup */
+	intel_cpuid(0, &eax, &ebx, &ecx, &edx);
 
-	/* Read EBL_CR_POWERON */
-	rdmsr(0x2a, eax, edx);
-      
-	/* Mask out [22-24] Clock frequency ratio */
-	eax &= 0x1c00000;
-	if (eax == 0xc00000 || eax == 0x1000000)
-	{
-	    printk(KERN_ERR "Incorrect clock frequency ratio %x\n", eax);
-	    return -1;
-	}
-      
-	/* Read BBL_CR_CTL3 */
-	rdmsr(0x11e, eax, edx);
-	/* Mask out:
-	 * [0] L2 Configured
-	 * [5] ECC Check Enable
-	 * [6] Address Parity Check Enable
-	 * [7] CRTN Parity Check Enable
-	 * [8] L2 Enabled
-	 * [12:11] Number of L2 banks
-	 * [17:13] Cache size per bank
-	 * [18] Cache state error checking enable
-	 * [22:20] L2 Physical Address Range Support
-	 */
-	eax &= 0xff88061e;
-
-	/* Set:
-	 * [17:13] = 00010 = 512Kbyte Cache size per bank
-	 * [18] Cache state error checking enable
-	 */
-	eax |= 0x44000;
-	/* Write BBL_CR_CTL3 */
-	wrmsr(0x11e, eax, edx);
-    }
-    else
-    {
-	int calc_eax;
-	int v;
-
-	/* After 0x630 signature setup */
-
-	/* Read EBL_CR_POWERON */
-	rdmsr(0x2a, eax, edx);
-      
-	/* Mask out [22-24] Clock frequency ratio */
-	eax &= 0x3c00000;
-	if (eax == 0xc00000 || eax == 0x3000000)
-	{
-	    printk(KERN_ERR "Incorrect clock frequency ratio %x\n", eax);
-	    return -1;
-	}
-      
-	/* Read BBL_CR_CTL3 */
-	rdmsr(0x11e, eax, edx);
-
-	/* Mask out:
-	 * [0] L2 Configured
-	 * [5] ECC Check Enable
-	 * [6] Address Parity Check Enable
-	 * [7] CRTN Parity Check Enable
-	 * [8] L2 Enabled
-	 * [12:11] Number of L2 banks
-	 * [17:13] Cache size per bank
-	 * [18] Cache state error checking enable
-	 * [22:20] L2 Physical Address Range Support
-	 */
-	eax &= 0xff88061e;
-	/* Set:
-	 * [17:13] = 00000 = 128Kbyte Cache size per bank
-	 * [18] Cache state error checking enable
-	 */
-	eax |= 0x40000;
-
-	/* Write BBL_CR_CTL3 */
-	wrmsr(0x11e, eax, edx);
-
-	/* Set the l2 latency in BBL_CR_CTL3 */
-	if (calculate_l2_latency() != 0)
-	    return -1;
-
-	/* Read the new latency values back */
-	rdmsr(0x11e, calc_eax, edx);
-
-	/* Write back the original default value */
-	wrmsr(0x11e, eax, edx);
-
-	/* Mask [27:26] out of BBL_CR_CTL3 - Reserved?? */
-	v = calc_eax & 0xc000000;
-	
-	/* Shift to [1:0] */
-	v >>= 26;
-
-	DBG("Sending %x to set_l2_register4\n", v);
-	if (set_l2_register4(v) != 0)
-	    return -1;
-	   
-	/* Restore the correct latency value into BBL_CR_CTL3 */
-	wrmsr(0x11e, calc_eax, edx);
-    }
-  
-    /* Read L2 register 0 */
-    tmp = read_l2(0);
-    if (tmp < 0)
-    {
-	printk(KERN_ERR "Failed to read_l2(0)\n");
-	return -1;
-    }
-
-    /* test if L2(0) has bit 0x20 set */
-    if ((tmp & 0x20) != 0)
-    {
-	/* Read BBL_CR_CTL3 */
-	rdmsr(0x11e, eax, edx);
-	/* Set bits [6-7] CRTN + Address Parity enable */
-	eax |= 0xc0;
-	/* Write BBL_CR_CTL3 */
-	wrmsr(0x11e, eax, edx);
-    }
-
-    if (calculate_l2_ecc() != 0)
-    {
-	printk(KERN_ERR "Failed to calculate L2 ECC\n");
-	return -1;
-    }
-
-    if (calculate_l2_physical_address_range() != 0)
-    {
-	printk(KERN_ERR "Failed to calculate L2 physical address range\n");
-	return -1;
-    }
-
-    if (calculate_l2_cache_size() != 0)
-    {
-	printk(KERN_ERR "Failed to calculate L2 cache size\n");
-	return -1;
-    }
-
-    /* Turn on cache. Only L1 is active at this time. */
-    cache_enable();
-
-    /* Get the calculated cache size from BBL_CR_CTL3 [17:13]*/
-    rdmsr(0x11e, eax, edx);
-    cache_size = (eax & 0x3e000);
-    if (cache_size == 0)
-	cache_size = 0x1000;
-    cache_size = cache_size << 3;
-
-    /* Cache is 4 way for each address */
-    DBG("L2 Cache size is %dK\n", cache_size*4/1024);
-  
-    /* Write to all cache lines to initialize */
-    while(cache_size > 0)
-    {
-	int way;
-
-	/* Each Cache line in 32 bytes */
-	cache_size -= 0x20;
-      
-	/* Update each way */
-	for(way = 0; way < 4; way++)
-	{
-	    /* Send Tag Write w/Data Write (TWW) to L2 controller 
-	     * MESI = Invalid
-	     */
-	    if (signal_l2(0, cache_size, 0, 0, way, 0x1c) != 0)
-	    {
-		printk(KERN_ERR "Failed on signal_l2(%x, %x)\n",
-		       cache_size, way);
+	if (ebx != 0x756e6547 || edx != 0x49656e69 ||
+	    ecx != 0x6c65746e) {
+		printk(KERN_ERR "Not 'GenuineIntel' Processor\n");
 		return -1;
-	    }
 	}
-    }
-    DBG("L2 Cache lines initialized\n");
 
-    /* Disable cache */
-    cache_disable();
+	intel_cpuid(1, &eax, &ebx, &ecx, &edx);
+
+	/* Mask out the stepping */
+	signature = eax & 0xfff0;
+	if (signature & 0x1000) {
+		DBG("Overdrive chip no L2 cache configuration\n");
+		return 0;
+	}
+
+	if (signature < 0x630 || signature >= 0x680) {
+		DBG("CPU signature of %x so no need for L2 cache configuration\n",
+		    signature);
+		return 0;
+	}
+
+	/* Read BBL_CR_CTL3 */
+	rdmsr(0x11e, eax, edx);
+	/* If bit 23 (L2 Hardware disable) is set then done */
+	if (eax & 0x800000) {
+		DBG("L2 Hardware disabled\n");
+		return 0;
+	}
+  
+	if (signature == 0x630) {
+		/* 0x630 signature setup */
+
+		/* Read EBL_CR_POWERON */
+		rdmsr(0x2a, eax, edx);
+      
+		/* Mask out [22-24] Clock frequency ratio */
+		eax &= 0x1c00000;
+		if (eax == 0xc00000 || eax == 0x1000000) {
+			printk(KERN_ERR "Incorrect clock frequency ratio %x\n", eax);
+			return -1;
+		}
+
+		/* Read BBL_CR_CTL3 */
+		rdmsr(0x11e, eax, edx);
+		/* Mask out:
+		 * [0] L2 Configured
+		 * [5] ECC Check Enable
+		 * [6] Address Parity Check Enable
+		 * [7] CRTN Parity Check Enable
+		 * [8] L2 Enabled
+		 * [12:11] Number of L2 banks
+		 * [17:13] Cache size per bank
+		 * [18] Cache state error checking enable
+		 * [22:20] L2 Physical Address Range Support
+		 */
+		eax &= 0xff88061e;
+
+		/* Set:
+		 * [17:13] = 00010 = 512Kbyte Cache size per bank
+		 * [18] Cache state error checking enable
+		 */
+		eax |= 0x44000;
+		/* Write BBL_CR_CTL3 */
+		wrmsr(0x11e, eax, edx);
+	} else {
+		int calc_eax;
+		int v;
+
+		/* After 0x630 signature setup */
+
+		/* Read EBL_CR_POWERON */
+		rdmsr(0x2a, eax, edx);
+
+		/* Mask out [22-24] Clock frequency ratio */
+		eax &= 0x3c00000;
+		if (eax == 0xc00000 || eax == 0x3000000) {
+			printk(KERN_ERR "Incorrect clock frequency ratio %x\n", eax);
+			return -1;
+		}
+
+		/* Read BBL_CR_CTL3 */
+		rdmsr(0x11e, eax, edx);
+
+		/* Mask out:
+		 * [0] L2 Configured
+		 * [5] ECC Check Enable
+		 * [6] Address Parity Check Enable
+		 * [7] CRTN Parity Check Enable
+		 * [8] L2 Enabled
+		 * [12:11] Number of L2 banks
+		 * [17:13] Cache size per bank
+		 * [18] Cache state error checking enable
+		 * [22:20] L2 Physical Address Range Support
+		 */
+		eax &= 0xff88061e;
+		/* Set:
+		 * [17:13] = 00000 = 128Kbyte Cache size per bank
+		 * [18] Cache state error checking enable
+		 */
+		eax |= 0x40000;
+
+		/* Write BBL_CR_CTL3 */
+		wrmsr(0x11e, eax, edx);
+
+		/* Set the l2 latency in BBL_CR_CTL3 */
+		if (calculate_l2_latency() != 0)
+			return -1;
+
+		/* Read the new latency values back */
+		rdmsr(0x11e, calc_eax, edx);
+
+		/* Write back the original default value */
+		wrmsr(0x11e, eax, edx);
+
+		/* Mask [27:26] out of BBL_CR_CTL3 - Reserved?? */
+		v = calc_eax & 0xc000000;
+
+		/* Shift to [1:0] */
+		v >>= 26;
+
+		DBG("Sending %x to set_l2_register4\n", v);
+		if (set_l2_register4(v) != 0)
+			return -1;
+
+		/* Restore the correct latency value into BBL_CR_CTL3 */
+		wrmsr(0x11e, calc_eax, edx);
+	}
+
+	/* Read L2 register 0 */
+	tmp = read_l2(0);
+	if (tmp < 0) {
+		printk(KERN_ERR "Failed to read_l2(0)\n");
+		return -1;
+	}
+
+	/* test if L2(0) has bit 0x20 set */
+	if ((tmp & 0x20) != 0) {
+		/* Read BBL_CR_CTL3 */
+		rdmsr(0x11e, eax, edx);
+		/* Set bits [6-7] CRTN + Address Parity enable */
+		eax |= 0xc0;
+		/* Write BBL_CR_CTL3 */
+		wrmsr(0x11e, eax, edx);
+	}
+
+	if (calculate_l2_ecc() != 0) {
+		printk(KERN_ERR "Failed to calculate L2 ECC\n");
+		return -1;
+	}
+
+	if (calculate_l2_physical_address_range() != 0) {
+		printk(KERN_ERR "Failed to calculate L2 physical address range\n");
+		return -1;
+	}
+
+	if (calculate_l2_cache_size() != 0) {
+		printk(KERN_ERR "Failed to calculate L2 cache size\n");
+		return -1;
+	}
+
+	/* Turn on cache. Only L1 is active at this time. */
+	cache_enable();
+
+	/* Get the calculated cache size from BBL_CR_CTL3 [17:13]*/
+	rdmsr(0x11e, eax, edx);
+	cache_size = (eax & 0x3e000);
+	if (cache_size == 0)
+		cache_size = 0x1000;
+	cache_size = cache_size << 3;
+
+	/* Cache is 4 way for each address */
+	DBG("L2 Cache size is %dK\n", cache_size*4/1024);
+
+	/* Write to all cache lines to initialize */
+	while(cache_size > 0) {
+		int way;
+
+		/* Each Cache line in 32 bytes */
+		cache_size -= 0x20;
+
+		/* Update each way */
+		for(way = 0; way < 4; way++) {
+			/* Send Tag Write w/Data Write (TWW) to L2 controller 
+			 * MESI = Invalid
+			 */
+			if (signal_l2(0, cache_size, 0, 0, way, 0x1c) != 0) {
+				printk(KERN_ERR "Failed on signal_l2(%x, %x)\n",
+				       cache_size, way);
+				return -1;
+			}
+		}
+	}
+	DBG("L2 Cache lines initialized\n");
+
+	/* Disable cache */
+	cache_disable();
 
     /* Set L2 cache configured in BBL_CR_CTL3 */
     rdmsr(0x11e, eax, edx);

@@ -1,0 +1,5 @@
+#!/bin/sh
+echo "Commands to enable PIIX4E flash writes. "
+setpci  -s 0:7.0 4e.w
+setpci  -s 0:7.0 4e.w=2f4
+setpci  -s 0:7.0 4e.w

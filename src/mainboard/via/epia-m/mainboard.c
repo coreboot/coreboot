@@ -9,7 +9,7 @@ static const unsigned char usbIrqs[4] = { 11, 10, 12, 5 };
 static const unsigned char enetIrqs[4] = { 11, 5, 10, 12 };
 static const unsigned char slotIrqs[4] = { 10, 12, 5, 11 };
 static const unsigned char firewireIrqs[4] = {10, 12, 5, 11 };
-static const unsigned char vt8235Irqs[4] = { 5,10, 12, 11 }; // (DA) ???
+static const unsigned char vt8235Irqs[4] = { 5,10, 12, 11 };
 
 
 /*
@@ -55,7 +55,7 @@ static void pci_routing_fixup(void)
 	pci_assign_irqs(0, 0x14, slotIrqs);
 
 	// vt8235 slot
-	printk_info("setting pci slot\n");
+	printk_info("setting vt8235 slot\n");
 	pci_assign_irqs(0, 0x11, vt8235Irqs);
 }
 

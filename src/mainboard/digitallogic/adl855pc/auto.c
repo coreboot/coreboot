@@ -61,7 +61,7 @@ static void main(void)
 {
 	static const struct mem_controller memctrl[] = {
 		{
-			.d0 = PCI_DEV(0, 0, 0),
+			.d0 = PCI_DEV(0, 0, 1),
 			.channel0 = { (0xa<<3)|0, 0 },
 		},
 	};

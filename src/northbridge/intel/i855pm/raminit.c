@@ -2,6 +2,20 @@
 /* This was originally for the e7500, modified for i855pm
  */
 
+/* the 855pm uses only 
+ * memory type (must be ddr)
+ * number of row addresses, not counting bank addresses
+ * number of column addresses
+ * number of so-dimm banks
+ * ecc, no ecc
+ * refresh rate/type
+ * number banks on each device
+ * 
+ * that's it. No other bytes are used. 
+ * these are bytes
+ * 2, 3, 4, 5, 11, 12 17
+ */
+
 /* converted to C 6/2004 yhlu */
 
 #define DEBUG_RAM_CONFIG 1
@@ -152,7 +166,7 @@ static const long register_values[] = {
 	 *     granularity.   
 	 */
 	/* Conservatively say each row has 32MB of ram, we will fix this up later */
-	0x60, 0x00000000, (0x01 << 0) | (0x02 << 8) | (0x03 << 16) | (0x04 << 24),
+	0x40, 0x00000000, (0x01 << 0) | (0x02 << 8) | (0x03 << 16) | (0x04 << 24),
 	/* DRA - DRAM Row Attribute Register 
 	 * 0x70 Row 0,1
 	 * 0x71 Row 2,3
@@ -175,85 +189,68 @@ static const long register_values[] = {
 		(((0<<3)|(0<<0))<<28),
 	*/
 	/* DRT - DRAM Time Register
-	 * 0x78
-	 * [31:31] Additional CKE to CS Clock for Read/Write
-	 * [30:30] Additional CKE to CS clock for Precharge/Activate
-	 * [29:29] Back to Back Write-Read Turn Around
-	 *         Intel recommends set to 1
+	 * 0x60
+	 * [31:31] tWTR -- MBZ
+	 * [30:30] tWR 0 is 2, 1 is 3 clocks
+	 * [29:28] back to back write-read commands spacing
+	 *         different rows
+	 *         00 4, 01 3, 10 2, 11 reserved
 	 *         
-	 * [28:28] Back to Back Read-Write Turn Around
-	 *         Intel recommends 0 for CL 2.5 and 1 for CL 2
+	 * [27:26] same or different
+	 *         CL + .5x BL + TA(RD-WR) - DQSS
+	 *         wow that's hard! 
+	 *         00 7, 01 6, 10 5, 11 4
+	 *         00 4, 01 3, 10 2, 11 reserved
 	 *         
-	 * [27:27] Back to Back Read Turn Around
-	 *         Intel recommends 1 for all configs
-	 *        
-	 * [26:24] Read Delay (tRD)
-	 *         000 == 9 clocks
-	 *         001 == 8 clocks
-	 *         010 == 7 clocks
-	 *         011 == 6 clocks
-	 *         100 == 5 clocks
-	 *         101 == 4 clocks
-	 *         110 == 3 clocks
-	 *         Others == Reserved
-	 * [23:20] Reserved
-	 * [19:19] No Wake for DDR page closes 
-	 *         0 is default
-	 * [18:16] Page Close Counter
-	 *	000 == infinite
-	 *	010 == 8-15 clocks
-	 *	011 == 16-31 clocks
-	 *	100 == 64-127 clocks
-	 *	101 == 128-255 clocks
-	 *	110 == 192-383 clocks
-	 *	111 == 255-510 clocks
+	 * [25:25] Back to Back Read-read spacing
+	 *         .5xBL + TA(RD-RD)
+	 *         0 4 , 1 3  
+	 *         
+	 * [24:15] Reserved
 	 *
-	 * [15:12] Reserved
-	 * [11:11] DQS Slave DLL Dynamic Management
-	 *         power saving, when set to 1, slave DLLS disabled
-	 *         we'll leave it at 0 for now
+	 * [14:12] Refresh cycle time
+	 * 000 14, 001 13, 010 12, 011 11, 100 10, 101 9, 110 8, 111 7
+	 *
+	 * [11:11] tRAS, max
+	 *         0 120 us, 1 reserved
+	 *         
 	 * [10:09] Active to Precharge (tRAS)
-	 *         00 == 7 clocks
-	 *         01 == 6 clocks
-	 *         10 == 5 clocks
-	 *         11 == Reserved
-	 * [08:06] Reserved
-	 * [05:04] Cas Latency (tCL)
+	 *         00 == 8 clocks
+	 *         01 == 7 clocks
+	 *         10 == 6 clocks
+	 *         11 == 5 clocks
+	 * [08:07] Reserved
+	 * [06:05] Cas Latency (tCL)
 	 *         00 == 2.5 Clocks
 	 *         01 == 2.0 Clocks (default)
-	 *         10 == 1.5 Clocks
+	 *         10 == Reserved
 	 *         11 == Reserved
-	 * [03:03] Reserved
-	 * [02:02] Ras# to Cas# Delay (tRCD)
-	 *         0 == 3 DRAM Clocks
-	 *         1 == 2 DRAM Clocks
- 	 * [01:01] Reserved
-	 * [00:00] DRAM RAS# to Precharge (tRP)
-	 *         0 == 3 DRAM Clocks
-	 *         1 == 2 DRAM Clocks
+	 * [04:04] Reserved
+	 * [03:02] Ras# to Cas# Delay (tRCD)
+	 *         00 == 4 DRAM Clocks
+	 *         01 == 3 DRAM Clocks
+	 *         10 == 2 DRAM Clocks
+	 *         11 == reserved
+	 * [01:00] DRAM RAS# to Precharge (tRP)
+	 *         00 == 4 DRAM Clocks
+	 *         01 == 3 DRAM Clocks
+	 *         10 == 2 DRAM Clocks
+	 *         11 == reserved
 	 */
 
-#define DRT_CAS_2_5 (0<<4)
-#define DRT_CAS_2_0 (1<<4)   
-#define DRT_CAS_1_5 (2<<4)
-#define DRT_CAS_MASK (3<<4)
+#define DRT_CAS_2_5 (0<<5)
+#define DRT_CAS_2_0 (1<<5)   
+#define DRT_CAS_MASK (3<<5)
 
 #if CAS_LATENCY == CAS_2_5
 #define DRT_CL DRT_CAS_2_5
 #elif CAS_LATENCY == CAS_2_0
 #define DRT_CL DRT_CAS_2_0
-#elif CAS_LATENCY == CAS_1_5
-#define DRT_CL DRT_CAS_1_5
 #endif
 
-	/* Most unaggressive settings possible */
-	/* clear bits 26:24,18:16,11,10:9,5:4,2:2,0 */
-	/*  ~ (7<<26)|(7<<18)|(1<<11)|(3<<10)|(3<<5)|(1<<2)|1 */
-//	0x78, 0xc0fff8c4, (1<<29)|(1<<28)|(1<<27)|(2<<24)|(2<<9)|DRT_CL|(1<<3)|(1<<1)|(1<<0),
-//	0x78, 0xc0f8f8c0, (1<<29)|(1<<28)|(1<<27)|(1<<24)|(1<<16)|(2<<9)|DRT_CL|(1<<3)|(3<<1)|(1<<0),
-//	0x78, 0xc0f8f9c0, (1<<29)|(1<<28)|(1<<27)|(1<<24)|(1<<16)|(2<<9)|DRT_CL|(1<<3)|(3<<1)|(1<<0),
-	0x78, ~((7<<26)|(7<<18)|(1<<11)|(3<<10)|(3<<5)|(1<<2)|1), 
-	(1<<29)|(1<<28)|(9<<26)|(0<<18)|(0<<11)|(0<<10)|(0<<5)|(0<<2)|(0<<0),
+	/* bios is 0x2a004425 */
+	/* default hardware is 18004425 */
+	/* no setting for now */
 
 	/* FDHC - Fixed DRAM Hole Control
 	 * 0x97
@@ -332,11 +329,7 @@ static const long register_values[] = {
 	 * [03:01] Reserved
 	 * [00:00] DRAM type --hardwired to 1 to indicate DDR
 	 */
-//	.long 0x7c, 0xffcefcff, (1<<22)|(2 << 20)|(1 << 16)| (0 << 8),
-//	.long 0x7c, 0xff8cfcff, (1<<22)|(2 << 20)|(1 << 17)|(1 << 16)| (0 << 8),
-//	.long 0x7c, 0xff80fcff, (1<<22)|(2 << 20)|(1 << 18)|(1 << 17)|(1 << 16)| (0 << 8),
-//	0x7c, 0xff82fcff, (1<<22)|(2 << 20)|(1 << 18)|(1 << 16)| (0 << 8),
-	0x7c, 0xff82f8ff, (1<<22)|(2 << 20)|(1 << 18)|(1 << 16)| (0 << 8),
+	0x70, 0xdf0f6c7f, 0,
 
 };
 
@@ -501,7 +494,7 @@ static void ram_set_d0f0_regs(const struct mem_controller *ctrl) {
 #endif
 }
 static void sdram_set_registers(const struct mem_controller *ctrl){
-        ram_set_rcomp_regs(ctrl);
+  //        ram_set_rcomp_regs(ctrl);
         ram_set_d0f0_regs(ctrl);
 }
 
@@ -771,7 +764,7 @@ hw_err:
 	 */
 static long spd_set_row_attributes(const struct mem_controller *ctrl, long dimm_mask) {
 	int i;  
-        uint32_t dword=0;
+        uint16_t word=0x7777;
         int value;
         
 
@@ -803,14 +796,17 @@ static long spd_set_row_attributes(const struct mem_controller *ctrl, long dimm_
 				print_err("unsupported page size\r\n");
 			}
 
-	 		/* double because I have 2 channels */
-			sz.side1++;
-
 			/* Convert to the format needed for the DRA register */
+			/* subtract 3 (there are 8 bytes)
+			 * then subtract 11
+			 * (since 12 bit size should map to a value of 1)
+			 * so subtract 14 total
+			 */
 			sz.side1-=14;	
 
 			/* Place in the %ebp the dra place holder */ //i
-			dword |= sz.side1<<(i<<3);
+			word &= ~(7<<i);
+			word |= sz.side1<<(i<<3);
 			
 			/* Test to see if the second side is present */
 
@@ -821,47 +817,20 @@ static long spd_set_row_attributes(const struct mem_controller *ctrl, long dimm_
                 	                print_err("unsupported page size\r\n");
                         	}
 
-                        	/* double because I have 2 channels */
-                        	sz.side2++;
-
                         	/* Convert to the format needed for the DRA register */
                         	sz.side2-=14;
 
 	                        /* Place in the %ebp the dra place holder */ //i
-        	                dword |= sz.side2<<((i<<3) + 4 );
+				word &= ~(7<<i);
+        	                word |= sz.side2<<((i<<3) + 4 );
 
 			}
 		}
-
-		/* Now add the SDRAM chip width to the DRA */
-		struct dimm_width wd;
-		wd = sdram_spd_get_width(ctrl->channel0[i]);
-
-#if DEBUG_RAM_CONFIG
-                print_debug("width =");
-                print_debug_hex32(wd.side1);
-                print_debug(" ");
-                print_debug_hex32(wd.side2);
-                print_debug("\r\n");
-#endif
-		
-		if(wd.side1 == 0) continue;
-		if(wd.side1 == 4) {
-			/* Enable an x4 device */
-			dword |= 0x08 << (i<<3);
-		}
-
-		if(wd.side2 == 0) continue;
-                if(wd.side2 == 4) {
-                        /* Enable an x4 device */
-                        dword |= 0x08 << ((i<<3 ) + 4);
-                }
-		
 	/* go to the next DIMM */
 	}
 
 	/* Write the new row attributes register */
-	pci_write_config32(ctrl->d0, 0x70, dword);
+	pci_write_config32(ctrl->d0, 0x50, word);
 
 	return dimm_mask;
 
@@ -1122,9 +1091,9 @@ static const uint32_t refresh_rate_index[] = {
 	 * 7.8us    -> 7.8us
 	 * 31.3s    -> 15.6us
 	 * 62.5us   -> 15.6us
-	 * 125us    -> 64us
+	 * 125us    -> 15.6us
 	 */
-	1, 0xff, 2, 1, 1, 3
+	1, 0xff, 2, 1, 1, 1
 };
 #define MAX_SPD_REFRESH_RATE 5
 
@@ -1135,9 +1104,19 @@ static long spd_set_dram_controller_mode (const struct mem_controller *ctrl, lon
         int value;
 	uint32_t ecx;
 	uint32_t edx;
+	/* on this chipset we only do refresh "slow" or "fast" for now */
+	/* we start out assuming "slow" (15.6 microseconds) */
+	uint32_t refrate = 1; /* better than 7.8 */
         
         /* Read the inititial state */
-        dword = pci_read_config32(ctrl->d0, 0x7c);
+        dword = pci_read_config32(ctrl->d0, 0x70);
+	// WTF? 
+	//dword |= 0x10000;
+#if 0 // DEBUG_RAM_CONFIG
+	print_debug("spd_detect_dimms: 0x70.l is:");
+	print_debug_hex32(dword);
+	print_debug("\r\n");
+#endif
 
 #if 0
         /* Test if ECC cmos option is enabled */
@@ -1165,8 +1144,17 @@ static long spd_set_dram_controller_mode (const struct mem_controller *ctrl, lon
                 value = spd_read_byte(ctrl->channel0[i], 11);  /* SDRAM type */
                 if(value < 0) continue;
 		if(value !=2 ) {
+#if DEBUG_RAM_CONFIG
+	print_debug("spd_detect_dimms:\r\n");
+#endif
 			/* Clear the ecc enable */
 			dword &= ~(3 << 20);
+#if 0 &&DEBUG_RAM_CONFIG
+	print_debug("spd_detect_dimms: no ecc so set:");
+	print_debug_hex32(dword);
+	print_debug("\r\n");
+#endif
+
 		}
 		value = spd_read_byte(ctrl->channel0[i], 12);  /* SDRAM refresh rate */
 		if(value < 0 ) continue;
@@ -1174,34 +1162,36 @@ static long spd_set_dram_controller_mode (const struct mem_controller *ctrl, lon
 		if(value > MAX_SPD_REFRESH_RATE) { print_err("unsupported refresh rate\r\n");}
 //		if(value == 0xff) { print_err("unsupported refresh rate\r\n");}
 		
-		ecx = refresh_rate_index[value];
-
-		/* Isolate the old refresh rate setting */
-		/* Load the refresh rate ranks */
-		edx = refresh_rate_rank[(dword >> 8) & 3]<<8;
-		edx |= refresh_rate_rank[ecx] & 0xff; 
-	
-		/* See if the new refresh rate is more conservative than the old
-	 	* refresh rate setting. (Lower ranks are more conservative)
-	 	*/
-		if((edx & 0xff)< ((edx >> 8) & 0xff) ) {
-			/* Clear the old refresh rate */
-			dword &= ~(3<<8);
-			/* Move in the new refresh rate */
-			dword |= (ecx<<8);
-		}
-		
+#if DEBUG_RAM_CONFIG
+	print_debug("spd_detect_dimms: ref rate index:");
+	print_debug_hex8(value);
+	print_debug("\r\n");
+#endif
+	if (value == 2) /* have to go faster */
+	  refrate = 2;
+#if 0 &&DEBUG_RAM_CONFIG
+	print_debug("spd_detect_dimms: dword is now w/refresh:");
+	print_debug_hex32(dword);
+	print_debug("\r\n");
+#endif
+		/* no applicability here but there are similar things
+		 * we'll try later. 
+		 */
+#if 0
 		value = spd_read_byte(ctrl->channel0[i], 33); /* Address and command hold time after clock */
 		if(value < 0) continue;
 		if(value >= 0xa0) { 		/* At 133Mhz this constant should be 0x75 */
 			dword &= ~(1<<16);	/* Use two clock cyles instead of one */
 		}
+#endif
 	
 	/* go to the next DIMM */
 	}
 
+	/* set the refrate now */
+	dword |= (refrate << 7);
 	/* Now write the controller mode */
-	pci_write_config32(ctrl->d0, 0x7c, dword);
+	pci_write_config32(ctrl->d0, 0x70, dword);
 	
 	return dimm_mask;
 
@@ -1396,14 +1386,15 @@ static long spd_set_dram_timing(const struct mem_controller *ctrl, long dimm_mas
         int value;
 
         /* Read the inititial state */
-        dword = pci_read_config32(ctrl->d0, 0x78);
+        dword = pci_read_config32(ctrl->d0, 0x60);
 #if 0
 # Intel clears top bit here, should we?
 # No the default is on and for normal timming it should be on.  Tom Z
         andl    $0x7f, %esi
 #endif
         
-        
+
+HERE. WHat's the frequency kenneth?        
         for(i = 0; i < DIMM_SOCKETS; i++) {
 		if (!(dimm_mask & (1 << i))) {
                         continue;
@@ -1485,7 +1476,7 @@ static long spd_set_dram_timing(const struct mem_controller *ctrl, long dimm_mas
 		dword |= (1<<29);
 	}
 	
-	pci_write_config32(ctrl->d0, 0x78, dword);
+	pci_write_config32(ctrl->d0, 0x60, dword);
 	
 	return dimm_mask;
 
@@ -1512,23 +1503,7 @@ static unsigned int spd_detect_dimms(const struct mem_controller *ctrl)
                                 dimm_mask |= (1 << i);
                         }
                 }
-#if 0
-                device = ctrl->channel1[i];
-                if (device) {
-                        byte = spd_read_byte(ctrl->channel1[i], 2);
-                        if (byte == 7) {
-                                dimm_mask |= (1 << (i + DIMM_SOCKETS));
-                        }
-                }
-#endif
         }       
-#if 1
-	i = (dimm_mask>>DIMM_SOCKETS);
-	if(i != (dimm_mask & ( (1<<DIMM_SOCKETS) - 1) ) ) {
-		die("now we only support dual channel\r\n");
-	}
-
-#endif
 
         return dimm_mask;
 }               
@@ -1661,12 +1636,15 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl) {
 	print_debug(spd_pre_set);
 #endif
 	dimm_mask = spd_set_row_attributes(ctrl,dimm_mask);
+
         if (dimm_mask < 0)
                 goto hw_spd_err;
 	dimm_mask = spd_set_dram_controller_mode(ctrl,dimm_mask);
+
         if (dimm_mask < 0)
                 goto hw_spd_err;	
 	dimm_mask = spd_set_cas_latency(ctrl,dimm_mask);
+	dump_pci_device(PCI_DEV(0,0,1));
         if (dimm_mask < 0)
                 goto hw_spd_err;
 	dimm_mask = spd_set_dram_timing(ctrl,dimm_mask);

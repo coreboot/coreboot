@@ -1,5 +1,5 @@
-VERSION:=0.29
-RELEASE_DATE:=19 June 2003
+VERSION:=0.30
+RELEASE_DATE:=20 June 2003
 PACKAGE:=romcc
 
 
@@ -57,6 +57,7 @@ TESTS=\
 	simple_test35.c \
 	simple_test36.c \
 	simple_test37.c \
+	simple_test38.c \
 	raminit_test.c \
 	raminit_test2.c \
 	raminit_test3.c \

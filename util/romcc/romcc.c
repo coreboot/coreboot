@@ -14,7 +14,7 @@
 #define DEBUG_ERROR_MESSAGES 0
 #define DEBUG_COLOR_GRAPH 0
 #define DEBUG_SCC 0
-#define DEBUG_CONSISTENCY 1
+#define DEBUG_CONSISTENCY 2
 
 #warning "FIXME boundary cases with small types in larger registers"
 #warning "FIXME give clear error messages about unused variables"
@@ -858,11 +858,7 @@ struct type {
 
 #define MAX_REGISTERS      75
 #define MAX_REG_EQUIVS     16
-#if 1
 #define REGISTER_BITS      16
-#else
-#define REGISTER_BITS      28
-#endif
 #define MAX_VIRT_REGISTERS (1<<REGISTER_BITS)
 #define TEMPLATE_BITS      6
 #define MAX_TEMPLATES      (1<<TEMPLATE_BITS)
@@ -881,7 +877,6 @@ struct type {
 #define REG_VIRT9          (MAX_REGISTERS + 5)
 
 /* Provision for 8 register classes */
-#if 1
 #define REG_SHIFT  0
 #define REGC_SHIFT REGISTER_BITS
 #define REGC_MASK (((1 << MAX_REGC) - 1) << REGISTER_BITS)
@@ -892,11 +887,6 @@ struct type {
 #define SET_REGCM(ID, REGCM)	((ID) = (((ID) & ~REGC_MASK) | (((REGCM) << REGC_SHIFT) & REGC_MASK)))
 #define SET_INFO(ID, INFO)	((ID) = (((ID) & ~(REG_MASK | REGC_MASK)) | \
 		(((INFO).reg) & REG_MASK) | ((((INFO).regcm) << REGC_SHIFT) & REGC_MASK)))
-#else
-#define REG_MASK (MAX_VIRT_REGISTERS -1)
-#define ID_REG(ID)              ((ID) & REG_MASK)
-#define SET_REG(ID, REG)        ((ID) = (((ID) & ~REG_MASK) | ((REG) & REG_MASK)))
-#endif
 
 static unsigned arch_reg_regcm(struct compile_state *state, int reg);
 static unsigned arch_regcm_normalize(struct compile_state *state, unsigned regcm);
@@ -933,7 +923,8 @@ static struct triple *transform_to_arch_instruction(
 #define DEBUG_CODE_ELIMINATION  0x0200
 #define DEBUG_INSERTED_COPIES   0x0400
 
-#define GLOBAL_SCOPE_DEPTH 1
+#define GLOBAL_SCOPE_DEPTH   1
+#define FUNCTION_SCOPE_DEPTH (GLOBAL_SCOPE_DEPTH + 1)
 
 static void compile_file(struct compile_state *old_state, const char *filename, int local);
 
@@ -2167,6 +2158,22 @@ static void symbol(
 	sym->scope_depth = state->scope_depth;
 	sym->next = *chain;
 	*chain    = sym;
+}
+
+static void label_symbol(struct compile_state *state, 
+	struct hash_entry *ident, struct triple *label)
+{
+	struct symbol *sym;
+	if (ident->sym_label) {
+		error(state, 0, "label %s already defined", ident->name);
+	}
+	sym = xcmalloc(sizeof(*sym), "label");
+	sym->ident = ident;
+	sym->def   = label;
+	sym->type  = &void_type;
+	sym->scope_depth = FUNCTION_SCOPE_DEPTH;
+	sym->next  = 0;
+	ident->sym_label = sym;
 }
 
 static void start_scope(struct compile_state *state)
@@ -7793,22 +7800,46 @@ static void continue_statement(struct compile_state *state, struct triple *first
 
 static void goto_statement(struct compile_state *state, struct triple *first)
 {
-	FINISHME();
+	struct hash_entry *ident;
 	eat(state, TOK_GOTO);
 	eat(state, TOK_IDENT);
+	ident = state->token[0].ident;
+	if (!ident->sym_label) {
+		/* If this is a forward branch allocate the label now,
+		 * it will be flattend in the appropriate location later.
+		 */
+		struct triple *ins;
+		ins = label(state);
+		label_symbol(state, ident, ins);
+ 	}
 	eat(state, TOK_SEMI);
-	error(state, 0, "goto is not implemeted");
-	FINISHME();
+
+	flatten(state, first, branch(state, ident->sym_label->def, 0));
 }
 
 static void labeled_statement(struct compile_state *state, struct triple *first)
 {
-	FINISHME();
+	struct triple *ins;
+	struct hash_entry *ident;
 	eat(state, TOK_IDENT);
+
+	ident = state->token[0].ident;
+	if (ident->sym_label && ident->sym_label->def) {
+		ins = ident->sym_label->def;
+		put_occurance(ins->occurance);
+		ins->occurance = new_occurance(state);
+	}
+	else {
+		ins = label(state);
+		label_symbol(state, ident, ins);
+	}
+	if (ins->id & TRIPLE_FLAG_FLATTENED) {
+		error(state, 0, "label %s already defined", ident->name);
+	}
+	flatten(state, first, ins);
+
 	eat(state, TOK_COLON);
 	statement(state, first);
-	error(state, 0, "labeled statements are not implemented");
-	FINISHME();
 }
 
 static void switch_statement(struct compile_state *state, struct triple *first)
@@ -8845,6 +8876,30 @@ static struct triple *initializer(
 	return result;
 }
 
+static void resolve_branches(struct compile_state *state)
+{
+	/* Make a second pass and finish anything outstanding
+	 * with respect to branches.  The only outstanding item
+	 * is to see if there are goto to labels that have not
+	 * been defined and to error about them.
+	 */
+	int i;
+	for(i = 0; i < HASH_TABLE_SIZE; i++) {
+		struct hash_entry *entry;
+		for(entry = state->hash_table[i]; entry; entry = entry->next) {
+			struct triple *ins;
+			if (!entry->sym_label) {
+				continue;
+			}
+			ins = entry->sym_label->def;
+			if (!(ins->id & TRIPLE_FLAG_FLATTENED)) {
+				error(state, ins, "label `%s' used but not defined",
+					entry->name);
+			}
+		}
+	}
+}
+
 static struct triple *function_definition(
 	struct compile_state *state, struct type *type)
 {
@@ -8926,8 +8981,12 @@ static struct triple *function_definition(
 	/* Now get the actual function definition */
 	compound_statement(state, end);
 
+	/* Finish anything unfinished with branches */
+	resolve_branches(state);
+
 	/* Remove the parameter scope */
 	end_scope(state);
+
 #if 0
 	fprintf(stdout, "\n");
 	loc(stdout, state, 0);
@@ -10781,6 +10840,9 @@ static struct triple *pre_copy(
 	 */
 	struct triple *in;
 	struct triple **expr;
+	if (ins->op == OP_PHI) {
+		internal_error(state, ins, "pre_copy on a phi?");
+	}
 	expr = &RHS(ins, index);
 	in = pre_triple(state, ins, OP_COPY, (*expr)->type, *expr, 0);
 	unuse_triple(*expr, ins);
@@ -11772,6 +11834,19 @@ static void remove_live_edges(struct reg_state *rstate, struct live_range *range
 	}
 }
 
+static void transfer_live_edges(struct reg_state *rstate, 
+	struct live_range *dest, struct live_range *src)
+{
+	struct live_range_edge *edge, *next;
+	for(edge = src->edges; edge; edge = next) {
+		struct live_range *other;
+		next = edge->next;
+		other = edge->node;
+		remove_live_edge(rstate, src, other);
+		add_live_edge(rstate, dest, other);
+	}
+}
+
 
 /* Interference graph...
  * 
@@ -11887,7 +11962,7 @@ static struct live_range *coalesce_ranges(
 		fprintf(stderr, "lr2 pre\n");
 	}
 #endif
-#if 1
+#if 0
 	fprintf(stderr, "coalesce color1(%p): %3d color2(%p) %3d\n",
 		lr1->defs->def,
 		lr1->color,
@@ -11898,6 +11973,12 @@ static struct live_range *coalesce_ranges(
 	lr1->classes = classes;
 	/* Append lr2 onto lr1 */
 #warning "FIXME should this be a merge instead of a splice?"
+	/* This FIXME item applies to the correctness of live_range_end 
+	 * and to the necessity of making multiple passes of coalesce_live_ranges.
+	 * A failure to find some coalesce opportunities in coaleace_live_ranges
+	 * does not impact the correct of the compiler just the efficiency with
+	 * which registers are allocated.
+	 */
 	head = lr1->defs;
 	mid1 = lr1->defs->prev;
 	mid2 = lr2->defs;
@@ -11927,6 +12008,9 @@ static struct live_range *coalesce_ranges(
 
 	lr1->color   = color;
 	lr1->classes = classes;
+
+	/* Keep the graph in sync by transfering the edges from lr2 to lr1 */
+	transfer_live_edges(rstate, lr1, lr2);
 
 	return lr1;
 }
@@ -12505,6 +12589,7 @@ static void fix_tangles(struct compile_state *state,
 	struct reg_block *blocks, struct triple_reg_set *live,
 	struct reg_block *rb, struct triple *ins, void *arg)
 {
+	int *tangles = arg;
 	struct triple *tangle;
 	do {
 		char used[MAX_REGISTERS];
@@ -12531,6 +12616,13 @@ static void fix_tangles(struct compile_state *state,
 			if (used[info.reg] < 2) {
 				continue;
 			}
+			/* Changing copies that feed into phi functions
+			 * is incorrect.
+			 */
+			if (set->member->use && 
+				(set->member->use->member->op == OP_PHI)) {
+				continue;
+			}
 			if (!tangle || tdominates(state, set->member, tangle)) {
 				tangle = set->member;
 			}
@@ -12538,6 +12630,7 @@ static void fix_tangles(struct compile_state *state,
 		/* If I have found a tangle resolve it */
 		if (tangle) {
 			struct triple *post_copy;
+			(*tangles)++;
 			post_copy = resolve_tangle(state, tangle);
 			if (post_copy) {
 				replace_block_use(state, blocks, tangle, post_copy);
@@ -12550,11 +12643,14 @@ static void fix_tangles(struct compile_state *state,
 	return;
 }
 
-static void correct_tangles(
+static int correct_tangles(
 	struct compile_state *state, struct reg_block *blocks)
 {
+	int tangles;
+	tangles = 0;
 	color_instructions(state);
-	walk_variable_lifetimes(state, blocks, fix_tangles, 0);
+	walk_variable_lifetimes(state, blocks, fix_tangles, &tangles);
+	return tangles;
 }
 
 struct least_conflict {
@@ -13536,6 +13632,7 @@ static void cleanup_rstate(struct compile_state *state, struct reg_state *rstate
 	rstate->blocks = 0;
 }
 
+static void verify_consistency(struct compile_state *state);
 static void allocate_registers(struct compile_state *state)
 {
 	struct reg_state rstate;
@@ -13547,7 +13644,12 @@ static void allocate_registers(struct compile_state *state)
 
 	do {
 		struct live_range **point, **next;
+		int tangles;
 		int coalesced;
+
+#if 0
+		fprintf(stderr, "pass: %d\n", rstate.passes);
+#endif
 
 		/* Restore ids */
 		ids_from_rstate(state, &rstate);
@@ -13562,30 +13664,42 @@ static void allocate_registers(struct compile_state *state)
 		walk_variable_lifetimes(
 			state, rstate.blocks, fix_coalesce_conflicts, 0);
 
-		/* Fix two simultaneous uses of the same register */
-		correct_tangles(state, rstate.blocks);
+		/* Fix two simultaneous uses of the same register.
+		 * In a few pathlogical cases a partial untangle moves
+		 * the tangle to a part of the graph we won't revisit.
+		 * So we keep looping until we have no more tangle fixes
+		 * to apply.
+		 */
+		do {
+			tangles = correct_tangles(state, rstate.blocks);
+		} while(tangles);
 
 		if (state->debug & DEBUG_INSERTED_COPIES) {
 			printf("After resolve_tangles\n");
 			print_blocks(state, stdout);
 			print_control_flow(state);
 		}
-
+		verify_consistency(state);
 		
 		/* Allocate and initialize the live ranges */
 		initialize_live_ranges(state, &rstate);
-		
-		do {
-			/* Forget previous live range edge calculations */
-			cleanup_live_edges(&rstate);
 
+		/* Note current doing coalescing in a loop appears to 
+		 * buys me nothing.  The code is left this way in case
+		 * there is some value in it.  Or if a future bugfix
+		 *  yields some benefit.
+		 */
+		do {
 #if 0
 			fprintf(stderr, "coalescing\n");
 #endif			
+			/* Remove any previous live edge calculations */
+			cleanup_live_edges(&rstate);
+
 			/* Compute the interference graph */
 			walk_variable_lifetimes(
 				state, rstate.blocks, graph_ins, &rstate);
-		
+			
 			/* Display the interference graph if desired */
 			if (state->debug & DEBUG_INTERFERENCE) {
 				printf("\nlive variables by block\n");
@@ -13595,14 +13709,25 @@ static void allocate_registers(struct compile_state *state)
 					state, rstate.blocks, 
 					print_interference_ins, &rstate);
 			}
-#if DEBUG_CONSISTENCY
-			/* Verify the interference graph */
-			walk_variable_lifetimes(
-				state, rstate.blocks, verify_graph_ins, &rstate);
-#endif
 			
 			coalesced = coalesce_live_ranges(state, &rstate);
+
+#if 0
+			fprintf(stderr, "coalesced: %d\n", coalesced);
+#endif
 		} while(coalesced);
+
+#if DEBUG_CONSISTENCY > 1
+# if 0
+		fprintf(stderr, "verify_graph_ins...\n");
+# endif
+		/* Verify the interference graph */
+		walk_variable_lifetimes(
+			state, rstate.blocks, verify_graph_ins, &rstate);
+# if 0
+		fprintf(stderr, "verify_graph_ins done\n");
+#endif
+#endif
 			
 		/* Build the groups low and high.  But with the nodes
 		 * first sorted by degree order.
@@ -14545,7 +14670,7 @@ static void verify_consistency(struct compile_state *state)
 	verify_ins_colors(state);
 }
 #else 
-#define verify_consistency(state) do {} while(0)
+static void verify_consistency(struct compile_state *state) {}
 #endif /* DEBUG_USES */
 
 static void optimize(struct compile_state *state)

@@ -22,10 +22,10 @@
  */
 
 #include <arch/io.h>
-#include <printk.h>
+#include <console/console.h>
 #include <string.h>
 #include <delay.h>
-#include <pci.h>
+#include <device/pci.h>
 #include <pc80/ide.h>
 #include <arch/io.h>
 

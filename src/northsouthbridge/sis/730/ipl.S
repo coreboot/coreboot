@@ -280,9 +280,6 @@ doc_delay:
 	jl	read_next_page			# no, read next page
 
 sis730ipl_end:
-	movb $0x77, %al
-        outb %al,$0x80
-
 	jmp	spl_vector			# jump to SPL vector
 
 /* ------------------------------------------------------------------------------------------*/
@@ -381,9 +378,10 @@ pci_init_table:
 #	High Byte -> Register	Low Byte -> Value
 
 #include "dll.inc"
+	
+        .word   0x0407	# Turn on Bus Master, Memory/IO Space
 
-	.word	0x5280	#
-        .word   0x0407	# Turn on Bus Master
+	.word	0x5280	# Set Memory Connamd Output Timming to Delay 1T
 
 	.word	0x5680	# Precharge
 	.word	0x5640	# Mode Register Set
@@ -391,9 +389,10 @@ pci_init_table:
 	.word	0x5620	# Refresh
 	.word	0x5620	# Refresh
 
-	.byte	0x5601	# CAS = 3T
-
 	.word	0x50c5	# Refresh Cycle Enable
+
+	#.byte	0x5601	# CAS = 3T
+
 	.word	0x0000	/* Null, End of table */
 
 	.org 0x01f0

@@ -15,17 +15,18 @@ static unsigned char *nvram;
 static int block_count;
 static int firstfill = 1;
 
-void memcpy_from_doc_mil(void *dest, const void *src, size_t n);
-unsigned char *doc_mil = (unsigned char *) 0xffffe000;
+static void memcpy_from_doc_mil(void *dest, const void *src, size_t n);
+static unsigned char *doc_mil = (unsigned char *) 0xffffe000;
 #ifdef CHECK_DOC_MIL
-unsigned char *checkbuf;
+static unsigned char *checkbuf;
 #endif /* CHECK_DOC_MIL */
 
 static unsigned char *ram;
 #define K64 (64 * 1024)
 
 
-int fill_inbuf(void)
+int
+fill_inbuf(void)
 {
 	if (firstfill) {
 		if ((ram = malloc(K64)) == NULL) {
@@ -51,6 +52,7 @@ int fill_inbuf(void)
 	}
 
 	memcpy_from_doc_mil(ram, nvram, K64);
+
 #ifdef CHECK_DOC_MIL
 	if (checkbuf) {
 		memcpy_from_doc_mil(checkbuf, nvram, K64);
@@ -62,11 +64,12 @@ int fill_inbuf(void)
 	{ 
 		int i;
 		printk(KERN_INFO "First 16 bytes of block: ");
-		for(i = 0; i < 16; i++)
+		for (i = 0; i < 16; i++)
 			printk("0x%x ", ram[i]);
 		printk(KERN_INFO "\n");
 	}
 #endif
+
 	DBG("%6d:%s() - nvram:0x%p  block_count:%d\n",
 	       __LINE__, __FUNCTION__, nvram, block_count);
 
@@ -80,7 +83,8 @@ int fill_inbuf(void)
 	return inbuf[0];
 }
 
-void memcpy_from_doc_mil(void *dest, const void *src, size_t n)
+static void
+memcpy_from_doc_mil(void *dest, const void *src, size_t n)
 {
 	int i;
 	unsigned long address = (unsigned long) src;

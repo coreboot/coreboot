@@ -104,8 +104,7 @@ static void intel_set_var_mtrr(unsigned int reg, unsigned long basek, unsigned l
 	if (sizek < 4*1024*1024) {
 		mask.hi = ADDRESS_MASK_HIGH;
 		mask.lo = ~((sizek << 10) -1);
-	}
-	else {
+	} else {
 		mask.hi = ADDRESS_MASK_HIGH & (~((sizek >> 22) -1));
 		mask.lo = 0;
 	}
@@ -129,36 +128,6 @@ static void intel_set_var_mtrr(unsigned int reg, unsigned long basek, unsigned l
 		wrmsr (MTRRphysBase_MSR(reg), base);
 		wrmsr (MTRRphysMask_MSR(reg), mask);
 	}
-	enable_cache();
-}
-
-/* setting variable mtrr, comes from linux kernel source */
-void set_var_mtrr(unsigned int reg, unsigned long base, unsigned long size, unsigned char type)
-{
-	if (reg >= 8)
-		return;
-
-	// it is recommended that we disable and enable cache when we 
-	// do this. 
-	disable_cache();
-	if (size == 0) {
-		/* The invalid bit is kept in the mask, so we simply clear the
-		   relevant mask register to disable a range. */
-		msr_t zero;
-		zero.lo = zero.hi = 0;
-		wrmsr (MTRRphysMask_MSR(reg), zero);
-	} else {
-		/* Bit 32-35 of MTRRphysMask should be set to 1 */
-		msr_t basem, maskm;
-		basem.lo = base | type;
-		basem.hi = 0;
-		maskm.lo = ~(size - 1) | 0x800;
-		maskm.hi = 0x0F;
-		wrmsr (MTRRphysBase_MSR(reg), basem);
-		wrmsr (MTRRphysMask_MSR(reg), maskm);
-	}
-
-	// turn cache back on. 
 	enable_cache();
 }
 
@@ -281,7 +250,7 @@ static unsigned int range_to_mtrr(unsigned int reg,
 		}
 		sizek = 1 << align;
 		printk_debug("Setting variable MTRR %d, base: %4dMB, range: %4dMB, type WB\n",
-			reg, range_startk >>10, sizek >> 10);
+			     reg, range_startk >>10, sizek >> 10);
 		intel_set_var_mtrr(reg++, range_startk, sizek, MTRR_TYPE_WRBACK);
 		range_startk += sizek;
 		range_sizek -= sizek;

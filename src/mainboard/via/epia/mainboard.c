@@ -5,6 +5,22 @@
 
 #include <types.h>
 
+void pci_routing_fixup(void)
+{
+	struct pci_dev *dev;
+
+	dev = pci_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8231, 0);
+	if (dev != NULL) {
+		/* 
+		 * initialize PCI interupts - these assignments depend
+		 * on the PCB routing of PINTA-D
+		 */
+		pci_write_config_byte(dev, 0x55, 0xb0);
+		pci_write_config_byte(dev, 0x56, 0xa5);
+		pci_write_config_byte(dev, 0x57, 0xc0);
+	}
+}
+
 void
 ethernet_fixup()
 {
@@ -51,6 +67,7 @@ final_southbridge_fixup()
 	nvram_on();
 	keyboard_on();
 	southbridge_fixup();
+	pci_routing_fixup();
 	ethernet_fixup();
 }
 

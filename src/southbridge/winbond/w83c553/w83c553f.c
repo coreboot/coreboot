@@ -46,7 +46,7 @@ w83c553_init(struct device *dev)
 {
 	unsigned char reg8;
 
-	printk_info("Configure W83C553F\n");
+	printk_info("Configure W83C553F ISA Bridge (Function 0)\n");
 
 #ifdef SANDPOINT
 	/*

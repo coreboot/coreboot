@@ -48,7 +48,7 @@ w83c553_ide_init(struct device *dev)
 	unsigned short reg16;
 	unsigned int reg32;
 
-	printk_info("Configure W83C553F IDE\n");
+	printk_info("Configure W83C553F IDE (Function 1)\n");
 
 #if 0
 	/*

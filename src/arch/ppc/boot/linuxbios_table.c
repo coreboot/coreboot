@@ -227,7 +227,6 @@ unsigned long write_linuxbios_table(
 	struct mem_range *ramp;
 	struct lb_header *head;
 	struct lb_memory *mem;
-	struct lb_record *rec_dest, *rec_src;
 
 	head = lb_table_init(low_table_end);
 	low_table_end = (unsigned long)head;

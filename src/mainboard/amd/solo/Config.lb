@@ -24,8 +24,6 @@ default CONFIG_UDELAY_TSC=0
 ###
 ### Customize our winbond superio chip for this motherboard
 ###
-option SIO_BASE=0x2e
-option SIO_SYSTEM_CLK_INPUT=0
 option CONFIG_CONSOLE_SERIAL8250=0
 #
 ###
@@ -51,16 +49,11 @@ option IRQ_SLOT_COUNT=7
 ##option HAVE_MP_TABLE=1
 #
 ###
-### Do not build special code for the keyboard
-###
-default NO_KEYBOARD=1
-#
-###
 ### Build code for SMP support
 ### Only worry about 2 micro processors
 ###
 ##option CONFIG_SMP=1
-option MAX_CPUS=1
+option CONFIG_MAX_CPUS=1
 #
 ###
 ### Build code to setup a generic IOAPIC
@@ -79,29 +72,10 @@ option CONFIG_IOAPIC=1
 option MEMORY_HOLE=0
 #
 ###
-### Enable both fixed and variable MTRRS
-### When we setup MTRRs in mtrr.c  
-###
-### We must setup the fixed mtrrs or we confuse SMP secondary
-### processor identification
-###
-option ENABLE_FIXED_AND_VARIABLE_MTRRS=1
-#
-###
 ### Clean up the motherboard id strings
 ###
 option MAINBOARD_PART_NUMBER="Solo7"
 option MAINBOARD_VENDOR="AMD"
-#
-###
-### Let Assembly code know where on the pci bus the AMD southbridge is
-###
-option AMD8111_DEV=0x3800
-#
-###
-### Call the final_mainboard_fixup function
-###
-option FINAL_MAINBOARD_FIXUP=1
 #
 ###
 ### Figure out which type of linuxBIOS image to build
@@ -109,7 +83,6 @@ option FINAL_MAINBOARD_FIXUP=1
 ### This is useful for optional includes
 ###
 default USE_FALLBACK_IMAGE=0
-option USE_NORMAL_IMAGE=(! USE_FALLBACK_IMAGE)
 #
 ####
 #### LinuxBIOS layout values
@@ -144,8 +117,7 @@ default FALLBACK_SIZE=65536
 if USE_FALLBACK_IMAGE 
   option ROM_SECTION_SIZE  = FALLBACK_SIZE
   option ROM_SECTION_OFFSET= (ROM_SIZE - FALLBACK_SIZE)
-end
-if USE_NORMAL_IMAGE
+else
   option ROM_SECTION_SIZE  = (ROM_SIZE - FALLBACK_SIZE)
   option ROM_SECTION_OFFSET= 0
 end
@@ -175,13 +147,6 @@ option _ROMBASE      = (CONFIG_ROM_STREAM_START + PAYLOAD_SIZE)
 ## XIP_ROM_SIZE && XIP_ROM_BASE values that work.
 ##option XIP_ROM_SIZE=0x8000
 ##option XIP_ROM_BASE=0xffff8000
-#
-###
-### Compute where the SMP startup code needs to live
-### FIXME I don't see how to make this work for the normal image....
-###
-option START_CPU_SEG=0xf0000
-#
 #
 ###
 ### Set all of the defaults for an x86 architecture
@@ -217,13 +182,11 @@ ldscript /cpu/i386/entry32.lds
 ### Build our reset vector (This is where linuxBIOS is entered)
 ###
 if USE_FALLBACK_IMAGE 
-  mainboardinit cpu/i386/reset16.inc 
-  ldscript /cpu/i386/reset16.lds 
-end
-
-if USE_NORMAL_IMAGE
-  mainboardinit cpu/i386/reset32.inc 
-  ldscript /cpu/i386/reset32.lds 
+	mainboardinit cpu/i386/reset16.inc 
+	ldscript /cpu/i386/reset16.lds 
+else
+	mainboardinit cpu/i386/reset32.inc 
+	ldscript /cpu/i386/reset32.lds 
 end
 #
 #### Should this be in the northbridge code?
@@ -251,15 +214,6 @@ end
 mainboardinit cpu/k8/earlymtrr.inc
 #
 #
-###
-### Only the bootstrap cpu makes it here.
-### Failover if we need to 
-###
-#
-if USE_FALLBACK_IMAGE
-  mainboardinit southbridge/amd/amd8111/cmos_boot_failover.inc 
-end
-#
 ####
 #### O.k. We aren't just an intermediary anymore!
 ####
@@ -269,10 +223,6 @@ end
 ###
 ##option MAXIMUM_CONSOLE_LOGLEVEL=7
 #default MAXIMUM_CONSOLE_LOGLEVEL=7
-#option DISABLE_WATCHDOG= (MAXIMUM_CONSOLE_LOGLEVEL >= 8) 
-#if DISABLE_WATCHDOG
-#  mainboardinit southbridgeamd/amd8111/disable_watchdog.inc 
-#end
 #
 ###
 ### Setup the serial port
@@ -291,13 +241,6 @@ if USE_FALLBACK_IMAGE mainboardinit archi386/lib/noop_failover.inc  end
 makerule ./auto.E dep "$(MAINBOARD)/auto.c" act "$(CPP) -I$(TOP)/src -$(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
 makerule ./auto.inc dep "./romcc ./auto.E" act "./romcc -O ./auto.E > auto.inc"
 mainboardinit ./auto.inc
-#
-###
-### Setup RAM
-###
-mainboardinit ram/ramtest.inc
-mainboardinit southbridge/amd/amd8111/smbus.inc
-mainboardinit sdram/generic_dump_spd.inc
 #
 ###
 ### Include the secondary Configuration files 

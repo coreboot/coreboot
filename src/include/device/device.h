@@ -1,6 +1,7 @@
 #ifndef DEVICE_H
 #define DEVICE_H
 
+#include <stdint.h>
 #include <device/resource.h>
 
 struct device;

@@ -268,7 +268,7 @@ void *smp_write_floating_table(unsigned long addr);
 unsigned long write_smp_table(unsigned long addr, unsigned long *processor_map);
 
 /* A table (per mainboard) listing the initial apicid of each cpu. */
-extern unsigned long initial_apicid[MAX_CPUS];
+extern unsigned long initial_apicid[CONFIG_MAX_CPUS];
 
 #else /* HAVE_MP_TABLE */
 static inline 

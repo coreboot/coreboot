@@ -87,7 +87,7 @@ SECTIONS
 	_stack = .;
 	.stack . : {
 		/* Reserve a stack for each possible cpu, +1 extra */
-		. = ((MAX_CPUS * STACK_SIZE) + STACK_SIZE) ; 
+		. = ((CONFIG_MAX_CPUS * STACK_SIZE) + STACK_SIZE) ; 
 	}
 	_estack = .;
 	_heap = .;

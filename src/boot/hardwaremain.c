@@ -60,7 +60,7 @@ it with the version available from LANL.
  * info per processor at some point. I hope we don't need 
  * anything more complex than an int.
  */
-static unsigned long processor_map[MAX_CPUS];
+static unsigned long processor_map[CONFIG_MAX_CPUS];
 
 static struct mem_range *get_ramsize(void)
 {
@@ -114,7 +114,7 @@ static void wait_for_other_cpus(void)
 		}
 		active_count = atomic_read(&active_cpus);
 	}
-	for(i = 0; i < MAX_CPUS; i++) {
+	for(i = 0; i < CONFIG_MAX_CPUS; i++) {
 		if (!(processor_map[i] & CPU_ENABLED)) {
 			printk_err("CPU %d did not initialize!\n", i);
 			processor_map[i] = 0;

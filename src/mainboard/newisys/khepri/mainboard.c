@@ -9,7 +9,7 @@
 #include "chip.h"
 
 
-unsigned long initial_apicid[MAX_CPUS] =
+unsigned long initial_apicid[CONFIG_MAX_CPUS] =
 {
 	0, 1,
 };

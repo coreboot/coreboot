@@ -7,7 +7,7 @@
 #include "chip.h"
 //#include <part/mainboard.h>
 //#include "lsi_scsi.c"
-unsigned long initial_apicid[MAX_CPUS] =
+unsigned long initial_apicid[CONFIG_MAX_CPUS] =
 {
 	0,1
 };

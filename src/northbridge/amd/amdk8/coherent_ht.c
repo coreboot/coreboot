@@ -157,7 +157,7 @@ static void enable_routing(u8 node)
 	print_debug(" done.\r\n");
 }
 
-#if MAX_CPUS > 1
+#if CONFIG_MAX_CPUS > 1
 
 static void rename_temp_node(u8 node)
 {
@@ -290,7 +290,7 @@ static void setup_remote_node(u8 node, u8 cpus)
 
 #endif
 
-#if MAX_CPUS > 2
+#if CONFIG_MAX_CPUS > 2
 static void setup_temp_node(u8 node, u8 cpus)
 {
 	u8 row;
@@ -306,7 +306,7 @@ static u8 setup_uniprocessor(void)
 	return 1;
 }
 
-#if MAX_CPUS > 1
+#if CONFIG_MAX_CPUS > 1
 static u8 setup_smp(void)
 {
 	u8 cpus=2;
@@ -332,7 +332,7 @@ static u8 setup_smp(void)
   	
 	clear_temp_row(0);	/* delete temporary connection */
 	
-#if MAX_CPUS > 2
+#if CONFIG_MAX_CPUS > 2
 	cpus=4;
 	
 	/* Setup and check temporary connection from Node 0 to Node 2 */
@@ -386,7 +386,7 @@ static u8 setup_smp(void)
 }
 #endif
 
-#if MAX_CPUS > 1
+#if CONFIG_MAX_CPUS > 1
 static unsigned detect_mp_capabilities(unsigned cpus)
 {
 	unsigned node, row, mask;
@@ -479,7 +479,7 @@ static int setup_coherent_ht_domain(void)
 
 	enable_bsp_routing();
 
-#if MAX_CPUS == 1
+#if CONFIG_MAX_CPUS == 1
 	cpus=setup_uniprocessor();
 #else
 	cpus=setup_smp();

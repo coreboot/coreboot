@@ -1,3 +1,9 @@
+- 1.1.1
+  Updates to the new configuration system so it works more reliably
+  Removed a bunch of unused configuration variables
+  Removed a bunch of unused assembly code
+- 1.1.0
+  A whole bunch of random ppc and opteron work we never put a good label on
 - 1.1.0
 Intial development release of LinuxBIOS.
 Everything is thrown overboard and will be reincluded as necessary so we can

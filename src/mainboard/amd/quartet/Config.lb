@@ -1,8 +1,6 @@
 uses HAVE_MP_TABLE
 uses HAVE_PIRQ_TABLE
 uses USE_FALLBACK_IMAGE
-uses USE_NORMAL_IMAGE
-uses ENABLE_IOMMU
 #
 #
 ###
@@ -34,15 +32,11 @@ ldscript /cpu/i386/entry32.lds
 ### Build our reset vector (This is where linuxBIOS is entered)
 ###
 if USE_FALLBACK_IMAGE 
-  mainboardinit cpu/i386/reset16.inc 
-  ldscript /cpu/i386/reset16.lds 
+	mainboardinit cpu/i386/reset16.inc 
+	ldscript /cpu/i386/reset16.lds 
 else
-  print "NO FALLBACK USED!"
-end
-
-if USE_NORMAL_IMAGE
-  mainboardinit cpu/i386/reset32.inc 
-  ldscript /cpu/i386/reset32.lds 
+	mainboardinit cpu/i386/reset32.inc 
+	ldscript /cpu/i386/reset32.lds 
 end
 #
 #### Should this be in the northbridge code?
@@ -76,15 +70,6 @@ end
 mainboardinit cpu/k8/earlymtrr.inc
 #
 #
-###
-### Only the bootstrap cpu makes it here.
-### Failover if we need to 
-###
-#
-if USE_FALLBACK_IMAGE
-  mainboardinit southbridge/amd/amd8111/cmos_boot_failover.inc 
-end
-#
 ####
 #### O.k. We aren't just an intermediary anymore!
 ####
@@ -94,10 +79,6 @@ end
 ###
 ##option MAXIMUM_CONSOLE_LOGLEVEL=7
 #default MAXIMUM_CONSOLE_LOGLEVEL=7
-#option DISABLE_WATCHDOG= (MAXIMUM_CONSOLE_LOGLEVEL >= 8) 
-#if DISABLE_WATCHDOG
-#  mainboardinit southbridgeamd/amd8111/disable_watchdog.inc 
-#end
 #
 if USE_FALLBACK_IMAGE mainboardinit arch/i386/lib/noop_failover.inc  end
 #
@@ -118,13 +99,6 @@ end
 mainboardinit ./auto.inc
 #
 ###
-### Setup RAM
-###
-mainboardinit ram/ramtest.inc
-mainboardinit southbridge/amd/amd8111/smbus.inc
-mainboardinit sdram/generic_dump_spd.inc
-#
-###
 ### Include the secondary Configuration files 
 ###
 northbridge amd/amdk8
@@ -142,4 +116,3 @@ cpu p6 end
 cpu k7 end
 cpu k8 end
 
-option ENABLE_IOMMU=1

@@ -4,6 +4,8 @@ import re
 import string
 import types
 
+import traceback
+
 warnings = 0
 errors = 0
 
@@ -54,10 +56,7 @@ class stack:
 		return len(self.stack)
 
 	def __getitem__ (self, i):
-		try:
-			return self.stack[i]
-		except IndexError:
-			return 0
+		return self.stack[i]
 
 	def __iter__ (self):
 		return self.__stack_iter(self.stack)
@@ -618,6 +617,9 @@ class partobj:
 		# definitions for this part (only want to do it once)
 		self.done_types = 0
 
+		# Path to the device
+		self.path = ""
+		
 		# If no instance name is supplied then generate
 		# a unique name
 		if (instance_name == 0):
@@ -637,8 +639,12 @@ class partobj:
 			# me as the child.
 			if (parent.children):
 				debug.info(debug.gencode, "add %s (%d) as sibling" % (parent.children.dir, parent.children.instance))
-				self.siblings = parent.children
-			parent.children = self
+				youngest = parent.children;
+				while(youngest.siblings):
+					youngest = youngest.siblings
+				youngest.siblings = self
+			else:
+				parent.children = self
 		else:
 			self.parent = self
 
@@ -656,10 +662,10 @@ class partobj:
 			print "%d: siblings %s" % (lvl, self.siblings.dir)
 		print "%d: initcode " % lvl
 		for i in self.initcode:
-			print "  %s" % i
+			print "\t%s" % i
 		print "%d: registercode " % lvl
 		for f, v in self.registercode.items():
-			print "  %s = %s" % (f, v)
+			print "\t%s = %s" % (f, v)
 		print "\n"
 
 	def gencode(self, file, pass_num):
@@ -681,7 +687,7 @@ class partobj:
 			if (self.registercode):
 				file.write("\t= {\n")
 				for f, v in self.registercode.items():
-					file.write( "  .%s = %s,\n" % (f, v))
+					file.write( "\t.%s = %s,\n" % (f, v))
 				file.write("};\n")
 			else:
 				file.write(";")
@@ -690,33 +696,35 @@ class partobj:
 			file.write("struct chip %s = {\n" % self.instance_name)
 		else:
 			file.write("struct chip static_root = {\n")
-		file.write("/* %s %s */\n" % (self.part, self.dir))
+		file.write("\t/* %s %s */\n" % (self.part, self.dir))
+		if (self.path != ""):
+			file.write("\t.path = { %s\n\t},\n" % (self.path) );
 		if (self.siblings):
 			debug.info(debug.gencode, "gencode: siblings(%d)" \
 				% self.siblings.instance)
-			file.write("  .next = &%s,\n" \
+			file.write("\t.next = &%s,\n" \
 				% self.siblings.instance_name)
 		else:
-			file.write("  .next = 0,\n")
+			file.write("\t.next = 0,\n")
 		if (self.children):
 			debug.info(debug.gencode, "gencode: children(%d)" \
 				% self.children.instance)
-			file.write("  .children = &%s,\n" \
+			file.write("\t.children = &%s,\n" \
 				% self.children.instance_name)
 		else:
-			file.write("  .children = 0,\n")
+			file.write("\t.children = 0,\n")
 		if (self.chipconfig):
 			# set the pointer to the structure for all this
 			# type of part
-			file.write("  .control= &%s_control,\n" % \
+			file.write("\t.control= &%s_control,\n" % \
 					self.type_name )
 			# generate the pointer to the isntance
 			# of the chip struct
-			file.write("  .chip_info = (void *) &%s,\n" \
+			file.write("\t.chip_info = (void *) &%s,\n" \
 					% self.config_name)
 		else:
-			file.write("  .control= 0,\n")
-			file.write("  .chip_info= 0,\n")
+			file.write("\t.control= 0,\n")
+			file.write("\t.chip_info= 0,\n")
 		file.write("};\n")
 		
     	def addinit(self, code):
@@ -733,6 +741,34 @@ class partobj:
 		field = dequote(field)
 		value = dequote(value)
         	setdict(self.registercode, field, value)
+
+	def addpcipath(self, enable, channel, slot, function):
+		""" Add a relative pci style path from our parent to this device """
+		if (channel < 0):
+			fatal("Invalid channel")
+		if ((slot < 0) or (slot > 0x1f)):
+			fatal("Invalid device id")
+		if ((function < 0) or (function > 7)):
+			fatal("Invalid function")
+		self.path = "%s\n\t\t{ .channel = %d, .enable = %d, .path = {.type=DEVICE_PATH_PCI,.u={.pci={ .devfn = PCI_DEVFN(0x%x,%d) }}}}," % (self.path, channel, enable, slot, function)
+
+	def addpnppath(self, enable, channel, port, device):
+		""" Add a relative path to a pnp device hanging off our parent """
+		if (channel < 0):
+			fatal("Invalid channel")
+		if ((port < 0) or (port > 65536)):
+			fatal("Invalid port")
+		if ((device < 0) or (device > 0xff)):
+			fatal("Invalid device")
+		self.path = "%s\n\t\t{ .channel = %d, .enable = %d, .path={.type=DEVICE_PATH_PNP,.u={.pnp={ .port = 0x%x, .device = 0x%x }}}}," % (self.path, channel, enable, port, device)
+
+	def addi2cpath(self, enable, channel, device):
+		""" Add a relative path to a i2c device hanging off our parent """
+		if (channel < 0):
+			fatal("Invalid channel")
+		if ((device < 0) or (device > 0x7f)):
+			fatal("Invalid device")
+		self.path = "%s\n\t\t{ .channel = %d, .enable = %d, .path = {.type=DEVICE_PATH_I2C,.u={.i2c={ .device = 0x%x }}}}, " % (self.path, channel, enable, device)
 
 	def usesoption(self, name):
 		"""Declare option that can be used by this part"""
@@ -1070,10 +1106,9 @@ def cpudir(path):
 	global cpu_type
 	if (cpu_type and (cpu_type != path)):
 		fatal("Two different CPU types: %s and %s" % (cpu_type, path))
-	if (not cpu_type):
-		srcdir = "/cpu/%s" % path
-		dodir(srcdir, "Config.lb")
-		cpu_type = path
+	srcdir = "/cpu/%s" % path
+	dodir(srcdir, "Config.lb")
+	cpu_type = path
 	
 def part(type, path, file, name):
 	global curimage, dirstack, partstack
@@ -1183,7 +1218,7 @@ def tohex(name):
 def IsInt( str ):
 	""" Is the given string an integer?"""
 	try:
-		num = int(str)
+		num = long(str)
 		return 1
 	except ValueError:
 		return 0
@@ -1265,8 +1300,9 @@ parser Config:
     token TARGET:		'target'
     token USED:			'used'
     token USES:			'uses'
-    token NUM:			r'[0-9]+'
-    token XNUM:			r'0x[0-9a-fA-F]+'
+    token NUM:			'[0-9]+'
+    token HEX_NUM:		'[0-9a-fA-F]+'
+    token HEX_PREFIX:		'0x'
     # Why is path separate? Because paths to resources have to at least
     # have a slash, we thinks
     token PATH:			r'[a-zA-Z0-9_.][a-zA-Z0-9/_.]+[a-zA-Z0-9_.]+'
@@ -1277,6 +1313,12 @@ parser Config:
     token DELEXPR:		r'{([^}]+|\\.)*}'
     token STR:			r'"([^\\"]+|\\.)*"'
     token RAWTEXT:		r'.*'
+    token ON:			'on'
+    token OFF:			'off'
+    token PCI:			'pci'
+    token PNP:			'pnp'
+    token I2C:			'i2c'
+
 
     rule expr:		logical			{{ l = logical }}
 			( "&&" logical		{{ l = l and logical }}
@@ -1296,8 +1338,8 @@ parser Config:
 			)*			{{ return v }}
 
     # A term is a number, variable, or an expression surrounded by parentheses
-    rule term:		NUM			{{ return atoi(NUM) }}
-		|	XNUM			{{ return tohex(XNUM) }}
+    rule term:		NUM			{{ return long(NUM, 10) }}
+		|	HEX_PREFIX HEX_NUM	{{ return long(HEX_NUM, 16) }}
 		|	ID			{{ return lookup(ID) }}
 		|	unop			{{ return unop }}
 		|	"\\(" expr "\\)"	{{ return expr }}
@@ -1373,6 +1415,28 @@ parser Config:
 
     rule register<<C>>:	REGISTER field '=' STR	{{ if (C): addregister(field, STR) }}
 
+    rule enable:				{{ val = 1 }}
+	    		[ ( ON 			{{ val = 1 }}
+			| OFF			{{ val = 0 }}
+			) ]			{{ return val }}
+    
+    rule pci<<C>>:	PCI HEX_NUM		{{ channel = int(HEX_NUM,16) }}
+    			':' HEX_NUM		{{ slot = int(HEX_NUM,16) }}
+			'.' HEX_NUM		{{ function = int(HEX_NUM, 16) }}
+			enable 
+						{{ if (C): partstack.tos().addpcipath(enable, channel, slot, function) }}
+
+    rule pnp<<C>>:	PNP HEX_NUM		{{ channel = int(HEX_NUM,16) }}
+    			':' HEX_NUM		{{ port = int(HEX_NUM,16) }}
+			'.' HEX_NUM		{{ device = int(HEX_NUM, 16) }}
+			enable
+						{{ if (C): partstack.tos().addpnppath(enable, channel, port, device) }}
+
+    rule i2c<<C>>:	I2C HEX_NUM		{{ channel = int(HEX_NUM, 16) }}
+    			':' HEX_NUM		{{ device = int(HEX_NUM, 16) }}
+			enable
+						{{ if (C): partstatck.tos().addi2cpath(enable, channel, device) }}
+			
     rule prtval:	expr			{{ return str(expr) }}
 		|	STR			{{ return STR }}
 
@@ -1402,8 +1466,10 @@ parser Config:
 		|	object<<C>>		{{ return object }}
 		|	option<<C>>		{{ return option }}
 		|	partdef<<C>>		{{ return partdef }}
-		| 	prtstmt<<C>>		{{ return prtstmt}}
-		|	register<<C>> 		{{ return register}}
+		| 	prtstmt<<C>>		{{ return prtstmt }}
+		|	register<<C>> 		{{ return register }}
+		|	pci<<C>>		{{ return pci }}
+		|	pnp<<C>>		{{ return pnp }}
 
     # ENTRY for parsing Config.lb file
     rule cfgfile:	(uses<<1>>)* 
@@ -1560,7 +1626,7 @@ def writeimagemakefile(image):
 	# Instead, let make do the work of computing CPUFLAGS:
 	file.write("# Get the value of TOP, VARIABLES, and several other variables.\n")
 	file.write("include Makefile.settings\n\n")
-	file.write("# Function to create an item like -Di586 or -DMAX_CPUS='1' or -Ui686\n")
+	file.write("# Function to create an item like -Di586 or -DCONFIG_MAX_CPUS='1' or -Ui686\n")
 	file.write("D_item = $(if $(subst undefined,,$(origin $1)),-D$1$(if $($1),='$($1)',),-U$1)\n\n")
 	file.write("# Compute the value of CPUFLAGS here during make's first pass.\n")
 	file.write("CPUFLAGS := $(foreach _var_,$(VARIABLES),$(call D_item,$(_var_)))\n\n")
@@ -1688,7 +1754,8 @@ def writeimagemakefile(image):
 	#file.write("\tpython $(TOP)/util/config/NLBConfig.py %s $(TOP)\n"
 	#		% top_config_file)
 
-	keys = image.getroot().uses_options.keys()
+	#keys = image.getroot().uses_options.keys()
+	keys = global_options_by_order
 	keys.sort()
 	file.write("\necho:\n")
 	for key in keys:
@@ -1791,6 +1858,7 @@ def writecode(image):
 	print "Creating", filename
 	file = safe_open(filename, 'w+')
 	file.write("#include <device/chip.h>\n")
+	file.write("#include <device/pci.h>\n")
 	for path in image.getconfigincludes().values():
 		file.write("#include \"%s\"\n" % path)
 	gencode(image.getroot(), file, 0)

@@ -117,7 +117,7 @@ define OBJCOPY
 	comment "Objcopy command"
 end
 define LINUXBIOS_VERSION
-	default "1.1.0"
+	default "1.1.1"
 	export always
 	comment "LinuxBIOS version"
 end
@@ -148,7 +148,7 @@ define LINUXBIOS_COMPILE_HOST
 end
 
 define LINUXBIOS_COMPILE_DOMAIN
-	default ""
+	default "$(shell dnsdomainname)"
 	export always
 	comment "Build domain name"
 end
@@ -183,15 +183,9 @@ define HAVE_FALLBACK_BOOT
 	comment "Set if fallback booting required"
 end
 define USE_FALLBACK_IMAGE
-	default 0
+	default 1
 	export used
 	comment "Set to build a fallback image"
-end
-define USE_NORMAL_IMAGE
-	format "%d"
-	default {!USE_FALLBACK_IMAGE}
-	export used
-	comment "Set to build a normal image"
 end
 define FALLBACK_SIZE
 	default 65536
@@ -277,16 +271,16 @@ define CACHE_RAM_SIZE
 	comment "Size of cache when using it for temporary RAM"
 end
 define XIP_ROM_BASE
-	default 0xffff8000
+	default 0
 	format "0x%x"
 	export used
-	comment "base address of range of ROM that can be cached to speed up linuxBIOS"
+	comment "Start address of area to cache during LinuxBIOS execution directly from ROM"
 end
 define XIP_ROM_SIZE
-	default 0x8000
+	default 0
 	format "0x%x"
 	export used
-	comment "size of range of ROM that can be cached to speed up linuxBIOS"
+	comment "Size of area to cache during LinuxBIOS execution directly from ROM"
 end
 define CONFIG_COMPRESS
 	default 1
@@ -348,14 +342,8 @@ end
 define CONFIG_CONSOLE_SERIAL8250
 	default 0
 	export always
-	comment "Log messages to serial 8250 console"
+	comment "Log messages to 8250 uart based serial console"
 end
-define SERIAL_CONSOLE
-	default none
-	export used
-	comment "Log messages to serial console"
-end
-
 define DEFAULT_CONSOLE_LOGLEVEL
 	default 7
 	export always
@@ -373,17 +361,25 @@ define NO_POST
 	export always
 	comment "Disable POST codes"
 end
+
+define TTYS0_BASE
+	default 0x3f8
+	export always
+	comment "Base address for 8250 uart for the serial console"
+end
+
 define TTYS0_BAUD
 	default 115200
 	export always
 	comment "Default baud rate for serial console"
 end
-define NO_KEYBOARD
-	default none
-	export never
-	comment "Set if we don't have a keyboard"
-end
 
+define TTYS0_LCS
+	default 0x3
+	export always
+	comment "Default flow control settings for the 8250 serial console uart"
+end
+	
 ###############################################
 # Mainboard options
 ###############################################
@@ -403,11 +399,6 @@ define MAINBOARD_VENDOR
 	export always
 	comment "Vendor of mainboard"
 end
-define FINAL_MAINBOARD_FIXUP
-	default 0
-	export used
-	comment "Do final mainboard fixups"
-end
 define CONFIG_SYS_CLK_FREQ
 	default none
 	export used
@@ -426,22 +417,17 @@ end
 define CONFIG_MAX_CPUS
         default 1
         export always
-        comment "Config CPU count for this machine"
+        comment "Maximum CPU count for this machine"
 end
-define MAX_CPUS
-	default 1
-	export always
-	comment "CPU count for this machine"
-end
-define CONFIG_LOGICAL_CPUS
-	default 1
-	export always
-	comment "Logical CPU count for this machine"
-end
-define MAX_PHYSICAL_CPUS
-	default 1
+define CONFIG_MAX_PHYSICAL_CPUS
+	default {CONFIG_MAX_CPUS}
 	export always
 	comment "Physical CPU count for this machine"
+end
+define CONFIG_LOGICAL_CPUS
+	default 0
+	export always
+	comment "Should multiple cpus per die be enabled?"
 end
 define HAVE_MP_TABLE
 	default none
@@ -453,11 +439,6 @@ end
 # Boot options
 ###############################################
 
-define USE_ELF_BOOT
-	default none
-	export always
-	comment "Use ELF boot loader"
-end
 define CONFIG_IDE_STREAM
 	default 0
 	export always
@@ -541,21 +522,6 @@ define SMBUS_MEM_DEVICE_INC
 end
 
 ###############################################
-# SuperIO options
-###############################################
-
-define SIO_BASE
-	default none
-	export used
-	comment "Superio base address"
-end
-define SIO_SYSTEM_CLK_INPUT
-	default none
-	export used
-	comment "Superio CLK input default"
-end
-
-###############################################
 # Misc options
 ###############################################
 
@@ -569,31 +535,10 @@ define MEMORY_HOLE
 	export used
 	comment "Set to deal with memory hole"
 end
-define ENABLE_FIXED_AND_VARIABLE_MTRRS
-	default none
-	export used
-	comment "Enable fixed and variable mtrrs"
-end
-define START_CPU_SEG
-	default 0xf0000
-	format "0x%x"
-	export always
-	comment "Start CPU segment"
-end
 define MAX_REBOOT_CNT
-	default 2
+	default 3
 	export always
 	comment "Set maximum reboots"
-end
-define DISABLE_WATCHDOG
-	default {MAXIMUM_CONSOLE_LOGLEVEL >= 8}
-	export used
-	comment "Disable watchdog if we're doing lots of output"
-end
-define ENABLE_IOMMU
-	default 1
-	export used
-	comment "Enable IOMMU aperture"
 end
 
 ###############################################
@@ -601,25 +546,19 @@ end
 ###############################################
 
 define CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
-	default none
+	default 0
 	export used
-	comment ""
+	comment "Use timer2 to callibrate the x86 time stamp counter"
 end
 define INTEL_PPRO_MTRR
 	default none
 	export always
 	comment ""
 end
-define AMD8111_DEV
-	default 0x3800
-	format "0x%x"
-	export used
-	comment ""
-end
 define CONFIG_UDELAY_TSC
 	default 0
 	export used
-	comment ""
+	comment "Implement udelay with the x86 time stamp counter"
 end
 
 ###############################################

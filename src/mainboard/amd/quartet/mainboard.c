@@ -5,7 +5,7 @@
 #include <device/pci_ops.h>
 
 
-unsigned long initial_apicid[MAX_CPUS] =
+unsigned long initial_apicid[CONFIG_MAX_CPUS] =
 {
 	0, 1, 2, 3
 };

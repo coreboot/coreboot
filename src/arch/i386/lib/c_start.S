@@ -45,10 +45,10 @@ _start:
 	movl	APIC_ID(%edi), %eax
 	shrl	$24, %eax
 
-	/* Get the cpu index (MAX_CPUS on error) */
+	/* Get the cpu index (CONFIG_MAX_CPUS on error) */
 	movl	$-4, %ebx
 1:	addl	$4, %ebx
-	cmpl	$(MAX_CPUS << 2), %ebx
+	cmpl	$(CONFIG_MAX_CPUS << 2), %ebx
 	je	2
 	cmpl	%eax, initial_apicid(%ebx)
 	jne	1b

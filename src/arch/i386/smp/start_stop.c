@@ -5,13 +5,6 @@
 #include <string.h>
 #include <console/console.h>
 
-#ifndef START_CPU_SEG
-#define START_CPU_SEG 0x90000
-#endif
-#if (START_CPU_SEG&0xffff) != 0
-#error START_CPU_SEG must be 64k aligned
-#endif
-
 static inline void hlt(void)
 {
 	asm("hlt");
@@ -26,7 +19,7 @@ unsigned long this_processors_id(void)
 int processor_index(unsigned long apicid)
 {
 	int i;
-	for(i = 0; i < MAX_CPUS; i++) {
+	for(i = 0; i < CONFIG_MAX_CPUS; i++) {
 		if (initial_apicid[i] == apicid) {
 			return i;
 		}
@@ -230,7 +223,7 @@ void startup_other_cpus(unsigned long *processor_map)
 	int i;
 
 	/* Assume the cpus are densly packed by apicid */
-	for(i = 0; i < MAX_CPUS; i++) {
+	for(i = 0; i < CONFIG_MAX_CPUS; i++) {
 		unsigned long cpu_apicid = initial_apicid[i];
 		if (cpu_apicid == -1) {
 			printk_err("CPU %d not found\n",i);

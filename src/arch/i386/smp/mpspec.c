@@ -108,7 +108,7 @@ void smp_write_processors(struct mp_config_table *mc,
 	cpuid(1, &eax, &ebx, &ecx, &edx);
 	cpu_features = eax;
 	cpu_feature_flags = edx;
-	for(i = 0; i < MAX_CPUS; i++) {
+	for(i = 0; i < CONFIG_MAX_CPUS; i++) {
 		unsigned long cpu_apicid = initial_apicid[i];
 		unsigned long cpu_flag;
 		if(initial_apicid[i]==-1)

@@ -20,6 +20,8 @@
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "debug.c"
 
+#define SIO_BASE 0x2e
+
 static void memreset_setup(void)
 {
 	/* Set the memreset low */

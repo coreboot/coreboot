@@ -15,7 +15,6 @@ uses NO_POST
 uses CONFIG_IDE_STREAM 
 uses CONFIG_SYS_CLK_FREQ
 uses IDE_BOOT_DRIVE
-uses USE_ELF_BOOT 
 uses IDE_SWAB IDE_OFFSET 
 uses ROM_SIZE ROM_IMAGE_SIZE 
 uses ROM_SECTION_SIZE 
@@ -48,7 +47,6 @@ option NO_POST=1
 ## Boot linux from IDE
 option CONFIG_IDE_STREAM=1
 option IDE_BOOT_DRIVE=0
-option USE_ELF_BOOT=1
 option IDE_SWAB=1
 option IDE_OFFSET=0
 

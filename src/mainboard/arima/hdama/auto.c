@@ -1,6 +1,4 @@
 #define ASSEMBLY 1
-#define MAXIMUM_CONSOLE_LOGLEVEL 9
-#define DEFAULT_CONSOLE_LOGLEVEL 9
 
 #include <stdint.h>
 #include <device/pci_def.h>
@@ -19,6 +17,8 @@
 #include "cpu/p6/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "debug.c"
+
+#define SIO_BASE 0x2e
 
 static void memreset_setup(void)
 {
@@ -151,7 +151,7 @@ static void pc87360_enable_serial(void)
 }
 
 #define FIRST_CPU  1
-#define SECOND_CPU 0
+#define SECOND_CPU 1
 #define TOTAL_CPUS (FIRST_CPU + SECOND_CPU)
 static void main(void)
 {
@@ -209,7 +209,7 @@ static void main(void)
 	memreset_setup();
 	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
 
-#if 1
+#if 0
 	dump_pci_devices();
 #endif
 #if 0
@@ -227,13 +227,21 @@ static void main(void)
 #endif
 #if 0
 	ram_check(0x00000000, msr.lo);
-#else
-#if TOTAL_CPUS < 2
-	/* Check 16MB of memory @ 0*/
-	ram_check(0x00000000, 0x01000);
-#else
-	/* Check 16MB of memory @ 2GB */
-	ram_check(0x80000000, 0x81000000);
 #endif
+#if 0
+	static const struct {
+		unsigned long lo, hi;
+	} check_addrs[] = {
+		/* Check 16MB of memory @ 0*/
+		{ 0x00000000, 0x01000000 },
+#if TOTAL_CPUS > 1
+		/* Check 16MB of memory @ 2GB */
+		{ 0x80000000, 0x81000000 },
+#endif
+	};
+	int i;
+	for(i = 0; i < sizeof(check_addrs)/sizeof(check_addrs[0]); i++) {
+		ram_check(check_addrs[i].lo, check_addrs[i].hi);
+	}
 #endif
 }

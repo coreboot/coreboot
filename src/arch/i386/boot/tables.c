@@ -20,7 +20,7 @@ static void remove_logical_cpus(unsigned long *processor_map)
 	if (disable_logical_cpus) {
 		/* disable logical cpus */
 		int cnt;
-		for(cnt=MAX_PHYSICAL_CPUS;cnt<MAX_CPUS;cnt++)
+		for(cnt=CONFIG_MAX_PHYSICAL_CPUS;cnt<CONFIG_MAX_CPUS;cnt++)
 			processor_map[cnt]=0;
 		printk_debug("logical cpus disabled\n");
 	}

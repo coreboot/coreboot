@@ -48,10 +48,10 @@ _secondary_start:
 	movl	(APIC_ID + APIC_DEFAULT_BASE), %edi
 	shrl	$24, %edi
 
-	/* Get the cpu index (MAX_CPUS on error) */
+	/* Get the cpu index (CONFIG_MAX_CPUS on error) */
 	movl	$-4, %ebx
 1:	addl	$4, %ebx
-	cmpl	$(MAX_CPUS << 2), %ebx
+	cmpl	$(CONFIG_MAX_CPUS << 2), %ebx
 	je	2
 	cmpl	%edi, initial_apicid(%ebx)
 	jne	1b

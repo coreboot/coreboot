@@ -1,6 +1,8 @@
 #include <cpu/k8/mtrr.h>
 #include "raminit.h"
 
+#define ENABLE_IOMMU 1
+
 /* Function 2 */
 #define DRAM_CSBASE	   0x40
 #define DRAM_CSMASK	   0x60

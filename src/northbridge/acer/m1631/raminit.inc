@@ -937,7 +937,7 @@ sizeram:
 	movl	$0x8000007c, %eax
 	movb	$0xf8, %dl
 	outl	%eax, %dx
-	movl	$0x2423c411, %eax
+	movl	$0x242bc411, %eax
 	movb	$0xfc, %dl
 	outl	%eax, %dx
 

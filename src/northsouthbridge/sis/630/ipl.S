@@ -257,11 +257,11 @@ doc_delay:
 	jz	wait_for_flash_ready
 
 	movb	0x1d(%di), %al			# init read pipeline
-	movw	$0x200, %cx			# 1 page = 512 bytes
+	movw	$0x100, %cx			# 1 page = 512 bytes
 	movw	$0x800, %si			# point %si to CDSN Data area
 	movw	%dx, %di			# restore saved current destination
 	rep
-	movsb
+	movsw
 
 	movw	%di, %dx			# save current destination
 	incw	%bp				# increse current page number

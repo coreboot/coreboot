@@ -10,7 +10,10 @@
  * it with multiple passes, until I actually started doing it and saw
  * the wisdom of Tom's recommendations ...
  */
-/* single-pass allocation appears to be the way to go.  */
+#ifndef lint
+static char rcsid[] = "$Id$";
+#endif
+
 #include <pci.h>
 #undef __KERNEL__
 #include <cpu/p5/io.h>
@@ -26,10 +29,6 @@
 
 #define PCI_MEM_START 0x80000000
 #define PCI_IO_START 0x1000
-
-#ifndef lint
-static char rcsid[] = "$Id$";
-#endif
 
 // historical functions, sometimes very useful. 
 /*

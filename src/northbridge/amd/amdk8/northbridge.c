@@ -9,6 +9,7 @@
 #include <string.h>
 #include <bitops.h>
 #include <cpu/cpu.h>
+#include "chip.h"
 #include "root_complex/chip.h"
 #include "northbridge.h"
 #include "amdk8.h"

@@ -1,7 +1,7 @@
 #include <arch/pirq_routing.h>
 #include <device/pci.h>
 
-#define IRQ_ROUTER_BUS		1
+#define IRQ_ROUTER_BUS		0
 #define IRQ_ROUTER_DEVFN	PCI_DEVFN(4,3)
 #define IRQ_ROUTER_VENDOR	0x1022
 #define IRQ_ROUTER_DEVICE	0x746b
@@ -39,8 +39,8 @@ const struct irq_routing_table intel_irq_routing_table = {
 		/* AMD-8131 PCI-X Bridge */
 		IRQ_SLOT(0x0, 0x00,0x02,0x0, 0,0,0,0),
 		/* PCI Slot 1-2 */
-		IRQ_SLOT(0x1, 0x02,0x04,0x0, 1,2,3,4),
-		IRQ_SLOT(0x2, 0x02,0x03,0x0, 2,3,4,1),
+		IRQ_SLOT(0x1, 0x02,0x03,0x0, 1,2,3,4),
+		IRQ_SLOT(0x2, 0x02,0x04,0x0, 2,3,4,1),
 		/* AMD-8111 PCI Bridge */
 		IRQ_SLOT(0x0, 0x00,0x03,0x0, 0,0,0,0),
 		/* USB Controller */

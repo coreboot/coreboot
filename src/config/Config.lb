@@ -21,7 +21,7 @@ makerule ldoptions   dep "Makefile.settings" act " perl -e 'foreach $$var (split
 makerule linuxbios.strip  dep "linuxbios" act " $(OBJCOPY) -O binary linuxbios linuxbios.strip"
 
 
-makerule linuxbios_c.o   dep "$(DRIVERS-1) linuxbios.a $(LIBGCC_FILE_NAME)" act  " $(CC) -nostdlib -r -o $@ c_start.o $(DRIVERS-1) linuxbios.a $(LIBGCC_FILE_NAME)"
+makerule linuxbios_c.o   dep "$(DRIVER) linuxbios.a $(LIBGCC_FILE_NAME)" act  " $(CC) -nostdlib -r -o $@ c_start.o $(DRIVER) linuxbios.a $(LIBGCC_FILE_NAME)"
 
 makerule linuxbios_c  dep "linuxbios_c.o $(TOP)/src/config/linuxbios_c.ld ldoptions" act " $(CC) -nostdlib -nostartfiles -static -o $@ -T $(TOP)/src/config/linuxbios_c.ld linuxbios_c.o"
 

@@ -19,6 +19,7 @@ uses FINAL_MAINBOARD_FIXUP
 uses HAVE_FALLBACK_BOOT
 uses HAVE_MP_TABLE
 uses HAVE_PIRQ_TABLE
+uses i586
 uses i686
 uses INTEL_PPRO_MTRR
 uses HEAP_SIZE
@@ -49,6 +50,7 @@ option HAVE_MP_TABLE=1
 option CPU_FIXUP=1
 option CONFIG_UDELAY_TSC=0
 option i686=1
+option i586=1
 option INTEL_PPRO_MTRR=1
 option k7=1
 option k8=1
@@ -190,4 +192,5 @@ option _ROMBASE      = (CONFIG_ROM_STREAM_START + PAYLOAD_SIZE)
 # Arima hdama
 mainboard arima/hdama
 	makedefine CFLAGS += -g
+	payload ../eepro100.ebi
 end

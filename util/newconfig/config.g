@@ -796,7 +796,7 @@ CPUFLAGS := $(foreach _var_,$(VARIABLES),$(call D_item,$(_var_)))
 	# print out all the object dependencies
 	file.write("\n# object dependencies (objectrules:)\n")
 	file.write("OBJECTS :=\n")
-	file.write("DRIVERS :=\n")
+	file.write("DRIVER :=\n")
 	for objrule in objectrules.keys():
 		obj = objectrules[objrule]
 		obj_name = obj[0]
@@ -857,6 +857,7 @@ CPUFLAGS := $(foreach _var_,$(VARIABLES),$(call D_item,$(_var_)))
 		driver = driverrules[driverrule]
 		source = topify(driver[1])
 		file.write("%s: %s\n" % (driver[0], source))
+		file.write("\t$(CC) -c $(CFLAGS) -o $@ $<\n")
 		#file.write("%s\n" % objrule[2])
 
 	# Print out the rules that will make cause the files

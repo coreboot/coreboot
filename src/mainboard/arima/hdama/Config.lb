@@ -95,7 +95,7 @@ end
 #mainboardinit superiowinbond/w83627hf/setup_serial.inc
 mainboardinit pc80/serial.inc
 mainboardinit arch/i386/lib/console.inc
-if USE_FALLBACK_IMAGE mainboardinit archi386/lib/noop_failover.inc  end
+if USE_FALLBACK_IMAGE mainboardinit arch/i386/lib/noop_failover.inc  end
 #
 ###
 ### Romcc output

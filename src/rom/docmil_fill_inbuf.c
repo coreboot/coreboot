@@ -56,7 +56,9 @@ reset_doc()
 int
 fill_inbuf(void)
 {
+#ifdef CHECK_DOC_MIL
 redo:
+#endif
 	if (firstfill) {
 		// it is possible that we can get in here and the 
 		// doc has never been reset. So go ahead and reset it again.

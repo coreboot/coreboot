@@ -72,7 +72,7 @@ static const initreg_t ide_init[] = {
 
 void ide_fixup(void)
 {
-	volatile int delay;
+
 	struct pci_dev *dev  = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_5513,
 					       (void *) NULL); 
 	int i;

@@ -11,7 +11,7 @@ void root_dev_read_resources(device_t root)
 {
 	int res = 0;
 
-	printk_spew("%s . Root is %p\n", __FUNCTION__, root);
+	printk_spew("%s . Root is %p\n", __FUNCTION__, dev_path(root));
 	/* Initialize the system wide io space constraints */
 	root->resource[res].base  = 0x400;
 	root->resource[res].size  = 0;
@@ -63,11 +63,12 @@ void root_dev_set_resources(device_t root)
 /**
  * @brief Scan devices on static buses.
  *
- * The existence of devices on certain buses can be completely determined at
- * compile time by the config file. Typical expamles are the 'PNP' devices
- * on an legacy ISA/LPC bus. There is no need of probing of any kind, the
- * only thing we have to do is to walk through the bus and enable or disable
- * devices as indicated in the config file.
+ * The enumeration of certain buses is purely static. The existence of
+ * devices on those buses can be completely determined at compile time
+ * by the config file. Typical expamles are the 'PNP' devices on a legacy
+ * ISA/LPC bus. There is no need of probing of any kind, the only thing
+ * we have to do is to walk through the bus and enable or disable devices
+ * as indicated in the config file.
  *
  * This function is the default scan_bus() method for LPC bridges.
  *
@@ -80,7 +81,7 @@ unsigned int scan_static_bus(device_t bus, unsigned int max)
 	device_t child;
 	unsigned link;
 
-	printk_debug("%s entered\n", __FUNCTION__);
+	printk_debug("%s for %s\n", __FUNCTION__, dev_path(bus));
 
 	for (link = 0; link < bus->links; link++) {
 		for (child = bus->link[link].children; child; child = child->sibling) {
@@ -110,7 +111,10 @@ unsigned int scan_static_bus(device_t bus, unsigned int max)
  *
  * @param dev the device whos children's resources are to be enabled
  *
- * This function is call by the enable_resource()
+ * This function is call by the enable_resource() indirectly via the
+ * enable_resources() method of devices.
+ *
+ * Indirect mutual recursion:
  */
 void enable_childrens_resources(device_t dev)
 {
@@ -144,10 +148,10 @@ unsigned int root_dev_scan_pci_bus(device_t root, unsigned int max)
  *
  * This is the default device operation for root devices in PCI based systems.
  * The static enumeration code chip_control::enumerate() of mainboards usually
- * override this operation with their own device operations. An notable example
- * is mainboard operations for AMD K8 mainboards. They replace the scan_bus()
- * method with amdk8_scan_root_bus() due to the special device layout of AMD K8
- * systems.
+ * override this operation with their own device operations. An notable
+ * example is mainboard operations for AMD K8 mainboards. They replace the
+ * scan_bus() method with amdk8_scan_root_bus() due to the special device
+ * layout of AMD K8 systems.
  */
 struct device_operations default_dev_ops_root = {
 	.read_resources   = root_dev_read_resources,

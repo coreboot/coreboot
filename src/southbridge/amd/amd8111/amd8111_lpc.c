@@ -84,7 +84,7 @@ static void setup_ioapic(void)
 			return;
 		}
 		printk_spew("for IRQ, reg 0x%08x value 0x%08x 0x%08x\n", 
-			a->reg, a->value_low, a->value_high);
+			    a->reg, a->value_low, a->value_high);
 	}
 }
 
@@ -141,7 +141,7 @@ static void lpc_init(struct device *dev)
 	pci_write_config8(dev, 0x40, byte);
 	nmi_option = NMI_OFF;
 	get_option(&nmi_option, "nmi");
-	if(nmi_option) {			
+	if (nmi_option) {			
 		byte |= (1 << 7); /* set NMI */
 		pci_write_config8(dev, 0x40, byte);
 	}
@@ -193,7 +193,7 @@ static struct device_operations lpc_ops  = {
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = lpc_init,
-	.scan_bus         = walk_static_devices,
+	.scan_bus         = scan_static_bus,
 	.enable           = amd8111_enable,
 };
 

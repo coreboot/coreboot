@@ -37,8 +37,8 @@ static struct device **last_dev_p = &dev_root.next;
 /**
  * @brief Allocate a new device structure.
  * 
- * Allocte a new device structure and attached it to the device tree as a child
- * of the parent bus.
+ * Allocte a new device structure and attached it to the device tree as a
+ * child of the parent bus.
  *
  * @param parent parent bus the newly created device attached to.
  * @param path path to the device to be created.
@@ -76,7 +76,7 @@ device_t alloc_dev(struct bus *parent, struct device_path *path)
 		dev->link[link].link = link;
 	}
 
-	/* Add the new device to the children of the bus. */
+	/* Add the new device as a children of the bus. */
 	dev->bus = parent;
 	if (child) {
 		child->sibling = dev;
@@ -452,8 +452,10 @@ void assign_resources(struct bus *bus)
  *
  * The parent's resources should be enabled first to avoid having enabling
  * order problem. This is done by calling the parent's enable_resources()
- * method and let the method to call it's children's enable_resoruces() via
+ * method and let that method to call it's children's enable_resoruces() via
  * enable_childrens_resources().
+ *
+ * Indirect mutual recursion:
  */
 void enable_resources(struct device *dev)
 {

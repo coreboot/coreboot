@@ -10,7 +10,6 @@
 #include <device/device.h>
 #include <device/pnp.h>
 
-
 /* PNP fundamental operations */
 
 void pnp_write_config(device_t dev, uint8_t reg, uint8_t value)
@@ -53,7 +52,6 @@ void pnp_set_irq(device_t dev, unsigned index, unsigned irq)
 	pnp_write_config(dev, index, irq);
 }
 
-
 void pnp_set_drq(device_t dev, unsigned drq, unsigned index)
 {
 	/* Index == 0x74 */
@@ -76,7 +74,6 @@ static void pnp_set_resource(device_t dev, struct resource *resource)
 	}
 
 	/* Now store the resource */
-	resource->flags |= IORESOURCE_STORED;
 	if (resource->flags & IORESOURCE_IO) {
 		pnp_set_iobase(dev, resource->index, resource->base);
 	} else if (resource->flags & IORESOURCE_DRQ) {
@@ -84,12 +81,11 @@ static void pnp_set_resource(device_t dev, struct resource *resource)
 	} else if (resource->flags  & IORESOURCE_IRQ) {
 		pnp_set_irq(dev, resource->index, resource->base);
 	} else {
-		/* Don't let me think I stored the resource */
-		resource->flags &= ~IORESOURCE_STORED;
 		printk_err("ERROR: %s %02x unknown resource type\n",
 			   dev_path(dev), resource->index);
 		return;
 	}
+	resource->flags |= IORESOURCE_STORED;
 
 	printk_debug("%s %02x <- [0x%08lx - 0x%08lx] %s\n", dev_path(dev),
 		     resource->index, resource->base,

@@ -29,6 +29,8 @@ static int init_bytes(void)
 
 #ifdef ONE_TRACK
 	offset = (ONE_TRACK*512);
+#elif defined(IDE_OFFSET)
+	offset = IDE_OFFSET;
 #else
 	offset = 0x7e00;
 #endif
@@ -41,6 +43,21 @@ static void fini_bytes(void)
 {
 	return;
 }
+
+#ifdef IDE_SWAB
+/* from string/swab.c */
+void
+swab (const char *from, char *to, int n)
+{
+	n &= ~1;
+	while (n > 1)
+	{
+		const char b0 = from[--n], b1 = from[--n];
+		to[n] = b0;
+		to[n + 1] = b1;
+	}
+}
+#endif
 
 static unsigned char buffer[512];
 static unsigned int block_num = 0;
@@ -86,7 +103,11 @@ static byte_offset_t ide_read(void *vdest, byte_offset_t offset, byte_offset_t c
 			len = (count - bytes);
 		}
 
+#ifdef IDE_SWAB
+		swab(buffer + byte_offset, dest, len);
+#else
 		memcpy(dest, buffer + byte_offset, len);
+#endif
 
 		offset += len;
 		bytes += len;

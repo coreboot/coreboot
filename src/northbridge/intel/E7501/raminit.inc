@@ -197,11 +197,12 @@ constant_register_values:
 #if CAS_LATENCY == CAS_2_5
 #	.long 0x80, 0xfffffe00, 0x06 /* Intel E7500 recommended */
 #	.long 0x80, 0xfffff000, 0x0bb6 /* Intel E7500 recommended */
-	.long 0x80, 0xfffff000, 0x0662 /* from Factory Bios */
+#	.long 0x80, 0xfffff000, 0x0662 /* from Factory Bios */
+	.long 0x80, 0xfffff000, 0x0bb1 /* values for register 0x80 */
 #elif CAS_LATENCY == CAS_2_0
 #	.long 0x80, 0xfffffe00, 0x0d /* values for register 0x80 */
-#	.long 0x80, 0xfffff000, 0x0bb1 /* values for register 0x80 */
-	.long 0x80, 0xfffff000, 0x0662 /* from Factory Bios */
+	.long 0x80, 0xfffff000, 0x0bb1 /* values for register 0x80 */
+#	.long 0x80, 0xfffff000, 0x0662 /* from Factory Bios */
 #elif CAS_LATENCY == CAS_1_5
 #	.long 0x80, 0xfffffe00, 0x05
 #	.long 0x80, 0xfffff000, 0x0bb5
@@ -1388,7 +1389,8 @@ cas_latency_80:
  	 
 #	.byte 0x05, 0x01, 0x06 
 #	.byte 0xb5, 0xb1, 0xb6 
-	.byte 0x62, 0x62, 0x62   /* factory setting for 0 undocumented reg tnz */ 
+#	.byte 0x62, 0x62, 0x62   /* factory setting for 0 undocumented reg tnz */ 
+	.byte 0xb1, 0xb1, 0xb1   /* factory setting for 0 undocumented reg tnz */ 
 cas_latency_78:
 	.byte DRT_CAS_1_5, DRT_CAS_2_0, DRT_CAS_2_5
 

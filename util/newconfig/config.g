@@ -219,9 +219,10 @@ class partobj:
 		global partinstance
 		if (debug):
 			print "partobj dir %s parent %s type %s" %(dir,parent,type)
-		self.children = []
+		self.children = 0
 		self.initcode = []
 		self.registercode = []
+		# sibling is not a list. 
 		self.siblings = 0
 		self.type = type
 		self.objects = []
@@ -236,7 +237,10 @@ class partobj:
 			if (debug):
 				print "add to parent"
 			self.parent   = parent
-			parent.children.append(self)
+			# add current child as my sibling, 
+			# me as the child.
+			self.siblings = parent.children
+			parent.children = self
 		else:
 			self.parent = self
 
@@ -252,18 +256,18 @@ class partobj:
 		for i in self.registercode:
 			print "  %s" % i
 
-	def gencode(self):
-		print "struct cdev dev%d = {" % self.instance
-		print "/* %s %s */" % (self.type, self.dir)
-		print "  .devfn = %d" % self.devfn
+	def gencode(self, file):
+		file.write("struct cdev dev%d = {\n" % self.instance)
+		file.write("/* %s %s */\n" % (self.type, self.dir))
+		file.write("  .devfn = %d\n" % self.devfn)
 		if (self.siblings):
-			print "  .next = &dev%d" % self.sibling.instance
+			file.write("  .next = &dev%d\n" % self.siblings.instance)
 		if (self.children):
-			print "  .children = &dev%d" %  \
-					self.children[0].instance
+			file.write("  .children = &dev%d\n" % \
+					self.children.instance)
 		if (self.private):
-			print "  .private = private%d" % self.instance
-		print "};"
+			file.write("  .private = private%d\n" % self.instance)
+		file.write("};\n")
 
 		
 	def irq(self, irq):
@@ -1152,25 +1156,36 @@ def dumptree(part, lvl):
 		print "DUMPTREE ME is"
 	part.dumpme(lvl)
 	# dump the siblings -- actually are there any? not sure
+	# siblings are:
+	kid = part
+	#print "First sibling is %d\n" % kid.siblings
+	while (kid.siblings):
+		kid.dumpme(lvl)
+		kid = kid.siblings
 	# dump the kids
 	if (debug):
 		print "DUMPTREE KIDS are"
-	for kid in part.children:
-		dumptree(kid, lvl+1)
+	#for kid in part.children:
+	if (part.children):
+		dumptree(part.children, lvl+1)
 	if (debug):
 		print "DONE DUMPTREE"
 
-def gencode(part):
+def gencode(part, file):
 	if (debug):
 		print "GENCODE ME is"
-	if (debug):
-		part.gencode()
+	part.gencode(file)
 	# dump the siblings -- actually are there any? not sure
 	# dump the kids
+	kid = part
+	while (kid.siblings):
+		kid.gencode(file)
+		kid = kid.siblings
 	if (debug):
 		print "GENCODE KIDS are"
-	for kid in part.children:
-		gencode(kid)
+	#for kid in part.children:
+	if (part.children):
+		gencode(part.children, file)
 	if (debug):
 		print "DONE GENCODE"
 	
@@ -1197,11 +1212,15 @@ if __name__=='__main__':
 	if (not parse('board', open(argv[1], 'r').read())):
 		fatal("Error: Could not parse file")
 
+	debug = 1
 	if (debug):
 		print "DEVICE TREE:"
 		dumptree(root, 0)
 
-	gencode(root)
+	filename = os.path.join(target_dir, "chips.c")
+	print "Creating", filename
+	file = open(filename, 'w+')
+	gencode(root, file)
 
 	# crt0 includes
 	if (debug):

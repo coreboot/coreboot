@@ -39,7 +39,7 @@ static unsigned long __sizeram(void)
 		// that is an error, so skip this step. 
 		if (mem < prevmem) {
 			printk_err("ERROR: bank 0x%x, mem 0x%x TOO SMALL\n",
-				bank, prevmem);
+				rbank, prevmem);
 			printk_err("Should be >= 0x%x\n", prevmem);
 		} else 
 			totalmem += (mem - prevmem) * 8;

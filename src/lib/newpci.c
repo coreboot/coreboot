@@ -16,12 +16,6 @@
 #include <cpu/p5/io.h>
 #include <printk.h>
 
-#ifdef EMULATE
-#define DEBUG
-#endif
-
-#define DEBUG
-
 #ifdef DEBUG
 #define DBG(x...) printk(KERN_DEBUG x)
 #else
@@ -29,7 +23,6 @@
 #endif
 
 #define ONEMEG (1 << 20)
-#undef TWO_PASS_ALLOCATE
 
 #define PCI_MEM_START 0x80000000
 #define PCI_IO_START 0x1000
@@ -271,8 +264,6 @@ static const struct pci_ops *pci_check_direct(void)
 
 	return 0;
 }
-// Need to merge all these functions. Sorry about this. 
-// changing horses in mid-stream!
 
 
 int pci_read_config_byte(struct pci_dev *dev, u8 where, u8 * val)
@@ -292,53 +283,25 @@ int pci_read_config_dword(struct pci_dev *dev, u8 where, u32 * val)
 
 int pci_write_config_byte(struct pci_dev *dev, u8 where, u8 val)
 {
+	DBG("Write config byte bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
+	    dev->bus->number, dev->devfn, where, val);
 	return conf->write_byte(dev->bus->number, dev->devfn, where, val);
 }
 
 int pci_write_config_word(struct pci_dev *dev, u8 where, u16 val)
 {
+	DBG("Write config byte bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
+	    dev->bus->number, dev->devfn, where, val);
 	return conf->write_word(dev->bus->number, dev->devfn, where, val);
+
 }
 
 int pci_write_config_dword(struct pci_dev *dev, u8 where, u32 val)
 {
+	DBG("Write config byte bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
+	    dev->bus->number, dev->devfn, where, val);
 	return conf->write_dword(dev->bus->number, dev->devfn, where, val);
 }
-
-int pci_debugwrite_config_byte(struct pci_dev *dev, u8 where, u8 val)
-{
-#ifndef DEBUG
-	return conf->write_byte(dev->bus->number, dev->devfn, where, val);
-#else
-	printk("Write config byte bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
-	       dev->bus->number, dev->devfn, where, val);
-	return 0;
-#endif
-
-}
-
-int pci_debugwrite_config_word(struct pci_dev *dev, u8 where, u16 val)
-{
-#ifndef DEBUG
-	return conf->write_word(dev->bus->number, dev->devfn, where, val);
-#else
-	printk("Write config byte bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
-	       dev->bus->number, dev->devfn, where, val);
-	return 0;
-#endif
-}
-
-int pci_debugwrite_config_dword(struct pci_dev *dev, u8 where, u32 val)
-{
-#ifndef DEBUG
-	return conf->write_dword(dev->bus->number, dev->devfn, where, val);
-#else
-	printk("Write config byte bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
-	       dev->bus->number, dev->devfn, where, val);
-	return 0;
-#endif
-}
-
 
 int pcibios_read_config_byte(unsigned char bus, unsigned char devfn, u8 where, u8 * val)
 {
@@ -357,53 +320,25 @@ int pcibios_read_config_dword(unsigned char bus, unsigned char devfn, u8 where, 
 
 int pcibios_write_config_byte(unsigned char bus, unsigned char devfn, u8 where, u8 val)
 {
+	DBG("Write byte bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
+	    bus, devfn, where, val);
 	return conf->write_byte(bus, devfn, where, val);
+
 }
 
 int pcibios_write_config_word(unsigned char bus, unsigned char devfn, u8 where, u16 val)
 {
+	DBG("Write word bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
+	    bus, devfn, where, val);
 	return conf->write_word(bus, devfn, where, val);
+
 }
 
 int pcibios_write_config_dword(unsigned char bus, unsigned char devfn, u8 where, u32 val)
 {
+    	DBG("Write doubleword bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
+	    bus, devfn, where, val);
 	return conf->write_dword(bus, devfn, where, val);
-}
-
-
-int pcibios_debugwrite_config_byte(unsigned char bus, unsigned char devfn, u8 where, u8 val)
-{
-#ifndef DEBUG
-	return conf->write_byte(bus, devfn, where, val);
-#else
-	printk("Write byte bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
-	       bus, devfn, where, val);
-	return 0;
-#endif
-}
-
-int pcibios_debugwrite_config_word(unsigned char bus, unsigned char devfn, u8 where, u16 val)
-{
-#ifndef DEBUG
-	return conf->write_word(bus, devfn, where, val);
-#else
-	printk("Write word bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
-	       bus, devfn, where, val);
-	return 0;
-#endif
-
-}
-
-int pcibios_debugwrite_config_dword(unsigned char bus, unsigned char devfn, u8 where, u32 val)
-{
-#ifndef DEBUG
-	return conf->write_dword(bus, devfn, where, val);
-#else
-	printk("Write doubleword bus %d, devfn 0x%x, reg 0x%x, val 0x%x\n",
-	       bus, devfn, where, val);
-	return 0;
-#endif
-
 }
 
 /** round a number to an alignment. 
@@ -459,175 +394,7 @@ void pci_set_method()
  * allocate for now. 
  */
 
-#ifdef TWO_PASS_ALLOCATE
-void compute_resources(struct pci_bus *bus)
-{
-	int i;
-	struct pci_bus *curbus;
-	struct pci_dev *curdev;
-	unsigned long mem, prefmem, io;
-	mem = prefmem = io = 0;
-	// first, walk all the bridges
-	// Sum up the memory requirements of each bridge and add it into the 
-	// total. 
-	for (curbus = bus->children; curbus; curbus = curbus->next) {
 
-		compute_resources(curbus);
-		mem += curbus->mem;
-		prefmem += curbus->prefmem;
-		io += curbus->io;
-		printk(KERN_DEBUG "Bridge Bus %d,mem 0x%lx, "
-		       "prefmem 0x%lx, io 0x%lx\n",
-		       curbus->number, mem, prefmem, io);
-	}
-
-	// second, walk all the devices. Add these. 
-	for (curdev = bus->devices; curdev; curdev = curdev->sibling) {
-		for (i = 0; i < 6; i++) {
-			unsigned long size = curdev->size[i];
-			if (size & PCI_BASE_ADDRESS_SPACE_IO) {
-				unsigned long iosize;
-				iosize = size & PCI_BASE_ADDRESS_IO_MASK;
-				printk(KERN_DEBUG "Bus %d, devfn 0x%x, "
-				       "reg %d: io 0x%lx\n",
-				       curdev->bus->number, curdev->devfn,
-				       i, iosize);
-				io += round(iosize, IO_ALIGN);
-			} else {
-				unsigned long memorysize = size & (PCI_BASE_ADDRESS_MEM_MASK);
-				unsigned long type = size & (~PCI_BASE_ADDRESS_MEM_MASK);
-				// at this point it's memory. What kind? 
-				if (type == 0) {	// normal
-
-					unsigned long regmem;
-					// align the memory value
-					regmem = round(memorysize, MEM_ALIGN);
-					mem = round(mem, regmem);
-					printk(KERN_DEBUG "Bus %d, "
-					       "devfn 0x%x, reg %d: "
-					       "mem 0x%lx\n",
-					       curdev->bus->number,
-					       curdev->devfn, i, regmem);
-					mem += regmem;
-				} else if (type & PCI_BASE_ADDRESS_MEM_PREFETCH) {
-					unsigned long regmem;
-					// align the memory value
-					regmem = round(memorysize, MEM_ALIGN);
-					prefmem = round(prefmem, regmem);
-					printk(KERN_DEBUG "Bus %d, "
-					       "devfn 0x%x, reg %d: "
-					       "prefmem 0x%lx\n",
-					       curdev->bus->number,
-					       curdev->devfn, i, regmem);
-					prefmem += regmem;
-				} else
-					printk(KERN_DEBUG "Bus %d, "
-					       "devfn 0x%x: Unsupported "
-					       "memory type 0x%lx\n",
-					       curdev->bus->number,
-					       curdev->devfn, type);
-
-			}
-		}
-	}
-
-	// assign to this bus. 
-	bus->mem = round(mem, ONEMEG);
-	bus->prefmem = round(prefmem, ONEMEG);
-	bus->io = round(io, IO_BRIDGE_ALIGN);
-}
-
-void allocate_resources(struct pci_bus *bus)
-{
-	int i;
-	struct pci_bus *curbus;
-	struct pci_dev *curdev;
-	unsigned long mem, io, prefmem;
-
-	// first, walk all the bridges
-	// Give each bridge what it needs, then call that bridge to configure 
-	// itself and its devices. 
-	mem = bus->membase;
-	prefmem = bus->prefmembase;
-	io = bus->iobase;
-
-	for (curbus = bus->children; curbus; curbus = curbus->next) {
-		unsigned long memincrement;
-		unsigned long ioincrement;
-		// we don't need to round here -- all sizes are already rounded!
-
-		if (curbus->mem) {
-			curbus->membase = mem;
-			memincrement = curbus->mem;
-			curbus->memlimit = curbus->membase + memincrement - 1;
-			mem += memincrement;
-		}
-		if (curbus->prefmem) {
-			curbus->prefmembase = prefmem;
-			memincrement = curbus->prefmem;
-			curbus->prefmemlimit = curbus->prefmembase + memincrement - 1;
-			prefmem += memincrement;
-		}
-		if (curbus->io) {
-			curbus->iobase = io;
-			ioincrement = curbus->io;
-			curbus->iolimit = curbus->io + ioincrement - 1;
-			io += ioincrement;
-		}
-		allocate_resources(curbus);
-
-		printk(KERN_DEBUG "Bridge Bus %d,mem 0x%lx, "
-		       "prefmem 0x%lx, io 0x%lx\n",
-		       curbus->number, mem, prefmem, io);
-	}
-
-	// Now hand out device memory. 
-	for (curdev = bus->devices; curdev; curdev = curdev->sibling) {
-		for (i = 0; i < 6; i++) {
-			if (!curdev->size[i])
-				continue;
-			if (curdev->size[i] & PCI_BASE_ADDRESS_SPACE_IO) {
-				curdev->command |= PCI_COMMAND_IO;
-				curdev->base_address[i] = io;
-				printk(KERN_DEBUG "bus %d devfn 0x%x "
-				       "reg %d io 0x%lx\n",
-				       bus->number, curdev->devfn, i, io);
-				io += curdev->size[i] & PCI_BASE_ADDRESS_IO_MASK;
-			} else {
-				if (curdev->size[i] & PCI_BASE_ADDRESS_MEM_PREFETCH) {
-					unsigned long size = curdev->size[i] & PCI_BASE_ADDRESS_MEM_MASK;
-					// align the memory
-					size = round(size, MEM_ALIGN);
-					prefmem = round(prefmem, size);
-					curdev->command |= PCI_COMMAND_MEMORY;
-					curdev->base_address[i] = prefmem;
-					printk(KERN_DEBUG "bus %d devfn 0x%x "
-					       "reg %d prefmem 0x%lx\n",
-					       bus->number, curdev->devfn,
-					       i, prefmem);
-					prefmem += size;
-				} else {
-					unsigned long size = curdev->size[i] & PCI_BASE_ADDRESS_MEM_MASK;
-					// align the memory
-					size = round(size, MEM_ALIGN);
-					mem = round(mem, size);
-					curdev->command |= PCI_COMMAND_MEMORY;
-					curdev->base_address[i] = mem;
-					printk(KERN_DEBUG "bus %d devfn 0x%x "
-					       "reg %d mem 0x%lx\n",
-					       bus->number, curdev->devfn,
-					       i, mem);
-					mem += size;
-
-				}
-			}
-		}
-	}
-
-
-}
-
-#else /* single pass allocation */
 /** Given a desired amount of io, round it to IO_BRIDGE_ALIGN
  * @param amount Amount of memory desired. 
  */
@@ -830,14 +597,11 @@ void compute_allocate_resources(struct pci_bus *bus)
 	compute_allocate_prefmem(bus);
 }
 
-#endif /* TWO_PASS_ALLOCATE */
-
 /** Assign the computed resources to the bridges and devices on the bus.
  * Recurse to any bridges found on this bus first. Then do the devices
  * on this bus. 
  * @param bus Pointer to the structure for this bus
  */ 
- 
 void assign_resources(struct pci_bus *bus)
 {
 	struct pci_dev *curdev = pci_devices;
@@ -952,66 +716,3 @@ void pci_enable()
 	// now enable everything.
 	enable_resources(&pci_root);
 }
-
-// is this dead code? think so. -- RGM
-int configure_pci(unsigned long memstart, unsigned long iostart)
-{
-#ifdef EMULATE
-	int iopl(int level);
-	iopl(3);
-	// pick how to scan the bus
-	pci_set_method();
-#else
-	// FIX ME. We really should use whatever is set up elsewhere. 
-	void malloc_init(unsigned long start, unsigned long end);
-	// pick the last 1M of memory to put our structures in. 
-	malloc_init(memstart - ONEMEG, memstart - 1);
-#endif
-
-	// scan it. 
-	pci_init();
-
-#ifdef TWO_PASS_ALLOCATE
-	/* compute the memory resources. You can't just add up the 
-	 * per-device resources. You have to walk the bridges, because 
-	 * bridges require 1M granularity at 1M alignments (!)
-	 */
-	pci_root.mem = pci_root.prefmem = pci_root.io = 0;
-	compute_resources(&pci_root);
-	printk(KERN_DEBUG "Total: 0x%lx mem, 0x%lx prefmem, 0x%lx io\n",
-	       pci_root.mem, pci_root.prefmem, pci_root.io);
-	// set in the bases and limits for the root. These really apply to the 
-	// subordinate busses and devices. 
-	pci_root.membase = memstart;
-	pci_root.memlimit = pci_root.membase + pci_root.mem - 1;
-	pci_root.prefmembase = round(pci_root.memlimit, ONEMEG);
-	pci_root.prefmemlimit = pci_root.prefmembase + pci_root.prefmem - 1;
-	pci_root.iobase = iostart;
-	pci_root.iolimit = 0xffff - iostart;
-	allocate_resources(&pci_root);
-#else
-	pci_root.membase = PCI_MEM_START;
-	pci_root.prefmembase = PCI_MEM_START;
-	pci_root.iobase = PCI_IO_START;
-	compute_allocate_resources(&pci_root);
-#endif	/* TWO_PASS_ALLOCATE */
-
-	// now just set things into registers ... we hope ...
-	assign_resources(&pci_root);
-	//  now enable everything.
-	enable_resources(&pci_root);
-	return 0;
-}
-
-#ifdef EMULATE
-/** deprecated, you can run this code in user mode for certain testing
- * We haven't used this recently so it's unclear if it works. 
- */
-int main()
-{
-	unsigned long memstart = 0x40000000;
-	unsigned long iostart = 0x1000;
-	configure_pci(memstart, iostart);
-	return 0;
-}
-#endif

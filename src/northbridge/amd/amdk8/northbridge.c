@@ -766,7 +766,7 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 		if (cpu) {
                         if(enable_apic_ext_id) {
                         	if(cpu->path.u.apic.apic_id<apic_id_offset) { //all add offset except bsp cores
-                                	if( (cpu->path.u.apic.apic_id > siblings) || (bsp_apic_id!=0) )
+                                	if( (cpu->path.u.apic.apic_id > 0) || (bsp_apic_id!=0) )
                                         	cpu->path.u.apic.apic_id += apic_id_offset;
                                 }
                         }  

@@ -264,7 +264,7 @@ write_common:
 	movw	$PCI_DATA_PORT, %dx
 	andb	$0x03, %al
 	addb	%al, %dl
-	movb	%cx, %ax			# Restore %ax
+	movw	%cx, %ax			# Restore %ax
 	outb	%al, %dx
 	RET_SP					# End of write_[lpc|pci]_reg
 

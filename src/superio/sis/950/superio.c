@@ -10,7 +10,7 @@ static char rcsid[] = "$Id$";
 #include <cpu/p5/io.h>
 
 void
-enter_pnp()
+enter_pnp(void)
 {
 	// unlock it XXX make this a subr at some point 
 	outb(0x87, 0x2e);
@@ -20,7 +20,7 @@ enter_pnp()
 }
 
 void
-exit_pnp()
+exit_pnp(void)
 {
 	/* all done. */
 	// select configure control
@@ -29,8 +29,8 @@ exit_pnp()
 }
 
 #ifdef MUST_ENABLE_FLOPPY
-
-void enable_floppy()
+void
+enable_floppy(void)
 {
 	/* now set the LDN to floppy LDN */
 	outb(0x7, 0x2e);	/* pick reg. 7 */
@@ -48,7 +48,7 @@ enable_com(int com)
 	unsigned char b;
 	/* now set the LDN to com LDN */
 	outb(0x7, 0x2e);	/* pick reg. 7 */
-	outb(com, 0x2f);	/* LDN 0 to reg. 7 */
+	outb(com, 0x2f);	/* LDN 1,2 to reg. 7 */
 
 	/* now select register 0x30, and set bit 1 in that register */
 	outb(0x30, 0x2e);
@@ -61,15 +61,35 @@ enable_com(int com)
 	outb(b, 0x2f);
 }
 
+#ifdef MUST_ENABLE_LPT
 void
-final_superio_fixup()
+enable_lpt(void)
+{
+	/* now set the LDN to floppy LDN */
+	outb(0x7, 0x2e);	/* pick reg. 7 */
+	outb(0x3, 0x2f);	/* LDN 3 to reg. 7 */
+
+	/* now select register 0x30, and set bit 1 in that register */
+	outb(0x30, 0x2e);
+	outb(0x1, 0x2f);
+}
+#endif /* MUST_ENABLE_LPT */
+
+void
+final_superio_fixup(void)
 {
 	enter_pnp();
+
 #ifdef MUST_ENABLE_FLOPPY
 	enable_floppy();
-#endif
+#endif /* MUST_ENABLE_LPT */
+
 	enable_com(PNP_COM1_DEVICE);
 	enable_com(PNP_COM2_DEVICE);
+
+#ifdef MUST_ENABLE_LPT
+	enable_lpt();
+#endif /* MUST_ENABLE_LPT */
 
 	exit_pnp();
 }

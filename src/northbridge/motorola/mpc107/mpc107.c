@@ -671,7 +671,8 @@ mpc107_probe_dimms(int no_dimms, sdram_dimm_info *dimms, sdram_bank_info * bank)
     unsigned char data[256];
     unsigned dimm;
 
-    printk_debug("i2c testing\n");
+    printk_debug("Probing DIMMS...\n");
+
     mpc107_i2c_start(NULL);
 
     for(dimm = 0; dimm < no_dimms; dimm++)
@@ -691,7 +692,7 @@ mpc107_probe_dimms(int no_dimms, sdram_dimm_info *dimms, sdram_bank_info * bank)
 		data, DIMM_LENGTH);
 
 	if (limit > 3) {
-	    sdram_dimm_to_bank_info(data, dimms + dimm, 0);
+	    sdram_dimm_to_bank_info(data, dimms + dimm, 1);
 	    memcpy(dimms[dimm].part_number, data + 73, 18);
 	    dimms[dimm].part_number[18] = 0;
 	    printk_debug("Part Number: %s\n", dimms[dimm].part_number);

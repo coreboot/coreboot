@@ -1,0 +1,58 @@
+#!/bin/bash
+# arg1 is the linuxbios.strip to use. default is linuxbios.strip
+# arg2 is the stripped, gzipp'ed kernel. Default is vmlinux.bin.gz
+# the old script that does insmod by hand is in burn_mtd.old
+
+erase_size(){
+	blocksize=512
+	echo "blocksize = ${blocksize}"
+	offset=`expr 128 \* ${blocksize}`
+	echo "offset = ${offset}"
+	totalsize=`expr $1 + ${offset}`
+	echo "totalsize = ${totalsize}"
+	erasesize=`expr ${totalsize} + 65535`
+	erasesize=`expr ${erasesize} / 65536`
+	erasesize=`expr ${erasesize} \* 65536`
+	echo erasesize is ${erasesize}
+	count=`expr ${erasesize} \/ 8192`
+	echo "count = ${count}"
+	erase /dev/mtd0 0 ${count}
+}
+
+rmmod docprobe
+rmmod doc2001
+rmmod docecc
+
+if [ $1x = "x" ]; then
+  linuxbios=linuxbios.strip
+else
+  linuxbios=$1
+fi
+
+if [ $2x = "x" ]; then
+  linux=vmlinux.bin.gz
+else
+  linux=$2
+fi
+
+flash_on
+
+modprobe doc2001
+modprobe docprobe
+
+dd conv=notrunc conv=sync bs=65536 if=${linux} of=vmlinux.bin.gz.block
+dd conv=notrunc conv=sync bs=63k if=${linuxbios} of=linuxbios.block
+
+SIZE=`wc -c vmlinux.bin.gz.block | sed -e "s/vmlinux.bin.gz.block//" `
+echo "size is $SIZE"
+erase_size $SIZE
+#erase /dev/mtd0 0 1024
+
+dd conv=notrunc if=docipl of=/dev/mtd0 
+dd conv=notrunc if=docipl of=/dev/mtd0 seek=1
+dd conv=notrunc if=linuxbios.block of=/dev/mtd0 seek=2
+dd conv=notrunc if=vmlinux.bin.gz.block of=/dev/mtd0 seek=128
+
+rmmod docprobe
+rmmod doc2001
+rmmod docecc

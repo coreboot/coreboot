@@ -1,6 +1,7 @@
 object hardwaremain.o
+object params.o
 
-makedefine OBJECTS-+= __divqu.o __remqu.o __divlu.o __remlu.o
+makedefine OBJECTS-1+= __divqu.o __remqu.o __divlu.o __remlu.o
 
 makerule __divqu.o: $(TOP)/src/arch/alpha/lib/divide.S; $(CC) $(CFLAGS) -DDIV -c -o __divqu.o $<
 makerule __remqu.o: $(TOP)/src/arch/alpha/lib/divide.S; $(CC) $(CFLAGS) -DREM -c -o __remqu.o $<

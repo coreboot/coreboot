@@ -1,35 +1,58 @@
+/*
+ *      Memory map:
+ *
+ *      _RAMBASE
+ *                              : data segment
+ *                              : bss segment
+ *                              : heap
+ *                              : stack
+ *      _ROMBASE
+ *                              : linuxbios text
+ *                              : readonly text
+ */
+
 OUTPUT_FORMAT("elf64-alpha")
-ENTRY(__start_offset)
-PHDRS { kernel PT_LOAD AT(0x310000); }
-__start_offset = start + 0x310000;
+ENTRY(start)
 SECTIONS
 {
-	. = _ROMBASE;
+        . = DEFINED(_ROMBASE)? _ROMBASE : _RAMBASE;
+
+	.rom . : {
+		_rom = .;
+		*(.rom.text);
+		*(.rom.data);
+		. = ALIGN(16);
+		_erom = .;
+	}
+	_lrom = LOADADDR(.rom);
+	_elrom = LOADADDR(.rom) + SIZEOF(.rom);
+
 	/*
 	 * First we place the code and read only data (typically const declared).
 	 * This get placed in rom.
 	 */
 	.text : {
 		_text = .;
-		*(.text)
+		*(.text);
+		*(.text.*);
+		. = ALIGN(16);
 		_etext = .;
-	} : kernel
+	}
 
-/* streams starts here */
-        _ltext = LOADADDR(.text);
-        _eltext = LOADADDR(.text) + SIZEOF(.text);
-        .rodata . : AT(_eltext){
-                _rodata = .;
-                . = ALIGN(4);
-                streams = . ;
-                *(.rodata.streams)
-                estreams = .;
-                *(.rodata)
-                *(.rodata.*)
-                _erodata = .;
-        }
- 
-/* streams ends here */
+	_ltext = LOADADDR(.text);
+	_eltext = LOADADDR(.text) + SIZEOF(.text);
+	.rodata . : AT(_eltext){
+		_rodata = .;
+		. = ALIGN(4);
+		streams = . ;
+		*(.rodata.streams)
+		estreams = .;
+		*(.rodata)
+		*(.rodata.*)
+		_erodata = .;
+	}	
+	_lrodata = LOADADDR(.rodata);
+	_elrodata = LOADADDR(.rodata) + SIZEOF(.rodata);
 
 
 	. = _RAMBASE;
@@ -45,6 +68,27 @@ SECTIONS
 	_ldata	= LOADADDR(.data);
 	_eldata	= LOADADDR(.data) + SIZEOF(.data);
 
+	/*
+	 * After the code we place initialized data (typically initialized
+	 * global variables). This gets copied into ram by startup code.
+	 * __data_start and __data_end shows where in ram this should be placed,
+	 * whereas __data_loadstart and __data_loadend shows where in rom to
+	 * copy from.
+	 */
+	.data . : AT(_elrodata) {
+		_data = .;
+		*(.data)
+		_edata = .;
+	}
+	_ldata	= LOADADDR(.data);
+	_eldata	= LOADADDR(.data) + SIZEOF(.data);
+	/* The initialized data segment.  
+	 * This is all of the data that we copy from rom into the ram.
+	 */
+	_iseg = _text;
+	_eiseg = _edata;
+	_liseg = _ltext;
+	_eliseg = _eldata;
 	
 	/* Important align _bss so bss may be zeroed with quadword access */
 	. = ALIGN(8);

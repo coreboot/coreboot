@@ -50,6 +50,8 @@ void hardwaremain(unsigned long signature, unsigned long memsize,
 	    unsigned long totalram);
 	void prepare_hwrpb(unsigned long totalram);
 		
+	post_code(0x55);
+	while(1);
 
 	early_mainboard_init();
 	displayinit();

@@ -185,7 +185,7 @@ int linuxbiosmain(unsigned long base, unsigned long totalram)
 			     :: "i" (0x100000));
 
 #else
-	printk_error("UH OH\n");
+	printk_emerg("UH OH you didn't tell me how to jump to kernel\n");
 #endif
 	return 0;		/* It should not ever return */
 }

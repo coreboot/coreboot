@@ -108,10 +108,11 @@ class option:
 		self.loc = 0		# current location
 		self.value = 0		# option value
 		self.set = 0		# option has been set
+		self.used = 0		# option has been set
 		self.default = 0	# option has default value (otherwise
 					# it is undefined)
 		self.comment = ''	# description of option
-		self.export = 0		# option is able to be exported
+		self.exportable = 0	# option is able to be exported
 		self.exported = 0	# option is exported
 		self.defined = 0	# option has a value
 		self.format = '%s'	# option print format
@@ -179,15 +180,15 @@ class option:
 			return
 		self.comment = value
 
-	def setexport(self):
-		self.export = 1
+	def setexportable(self):
+		self.exportable = 1
 
 	def setexported(self):
-		self.export = 1
+		self.exportable = 1
 		self.exported = 1
 
 	def setnoexport(self):
-		self.export = 0
+		self.exportable = 0
 		self.exported = 0
 
 	def setformat(self, fmt):
@@ -196,9 +197,10 @@ class option:
 	def getformat(self):
 		return self.format
 
-	def used(self):
-		if (self.export):
+	def setused(self):
+		if (self.exportable):
 			self.exported = 1
+		self.used = 1
 
 	def isexported(self):
 		return (self.exported and self.defined)
@@ -208,6 +210,9 @@ class option:
 
 	def isset(self):
 		return (self.set)
+
+	def isused(self):
+		return (self.used)
 
 class partobj:
 	def __init__ (self, dir, parent, type):
@@ -274,7 +279,7 @@ class partobj:
 		o = getvalue(options, name)
 		if (o == 0):
 			fatal("Error: can't use undefined option %s" % name)
-		o.used()
+		o.setused()
 		setvalue(self.options, name, o)
 		if (debug):
 			print "option %s used in %s" % (name, self)
@@ -423,16 +428,16 @@ def setnoexport(name):
 		fatal("setnoexport: %s not here" % name)
 	o.setnoexport()
 
-def setexport(name):
+def setexportable(name):
 	o = getvalue(options, name)
 	if (not o):
-		fatal("setexport: %s not here" % name)
-	o.setexport()
+		fatal("setexportable: %s not here" % name)
+	o.setexportable()
 
 def setformat(name, fmt):
 	o = getvalue(options, name)
 	if (not o):
-		fatal("setexport: %s not here" % name)
+		fatal("setformat: %s not here" % name)
 	o.setformat(fmt)
 
 def getformated(name, part):
@@ -472,6 +477,15 @@ def isset(name, part):
 		o = getvalue(options, name)
 	if (o):
 		return o.isset()
+	return 0
+
+def isused(name, part):
+	if (part):
+		o = getvalue(part.options, name)
+	else:
+		o = getvalue(options, name)
+	if (o):
+		return o.isused()
 	return 0
 
 def usesoption(name):
@@ -583,10 +597,13 @@ def part(name, path, file):
 
 def partpop():
 	global curpart,curdir
+	print "End PART %s" % curpart.type
+	# Warn if options are used without being set in this part
+	for i in curpart.options.keys():
+		if (not isset(i, curpart)):
+			print "WARNING: Option %s using default value %s" % (i, getformated(i, curpart))
 	curpart = pstack.pop()
 	curdir = dirstack.pop()
-	if (debug):
-		print "POP PART %s" % curpart.dir
 
 # dodir is like part but there is no new part
 def dodir(path, file):
@@ -601,10 +618,11 @@ def dodir(path, file):
 	if (debug):
 		print "DODIR: path %s, fullpath %s" % (path, fullpath)
 		print "DODIR: curdis %s treetop %s" % (curdir, treetop)
+	print "Configuring DIR %s" % os.path.join(path, file)
 	dirstack.append(curdir)
 	curdir = fullpath
 	file = os.path.join(fullpath, file)
-	config_file_list.append(file)
+	config_file_list.append(path)
 	doconfigfile(fullpath, file)
 	curdir = dirstack.pop()
 
@@ -965,7 +983,7 @@ parser Config:
 		|	unop<<V>>		{{ return unop }}
 		|	"\\(" expr<<V>> "\\)"	{{ return expr }}
 
-    rule partend<<C>>:	partstmts<<C>> END  
+    rule partend<<C>>:	(stmt<<C>>)* END 	{{ partpop()}}
 
     rule mainboard:	MAINBOARD PATH		{{ mainboard(PATH) }}
 			partend<<1>>
@@ -1050,25 +1068,22 @@ parser Config:
 		|	ldscript<<C>>		{{ return ldscript}}
 		|	payload<<C>>		{{ return payload}}
 
-    rule stmts<<C>>:	(stmt<<C>>)*	 	{{ }}
-
-    rule partstmts<<C>>:
-			(uses<<C>>)*
-			(stmt<<C>>)*	 	{{  partpop()}}
-
-# need this to get from python to the rules, I think.
-    rule pstmts:	(uses<<1>>)* stmts<<1>>	{{ return 1 }}
+    # ENTRY for parsing Config.lb file
+    rule cfgfile:	(uses<<1>>)* (stmt<<1>>)*
+						{{ return 1 }}
 
     rule usesid<<C>>:	ID			{{ if (C): usesoption(ID) }}
 
     rule uses<<C>>:	USES (usesid<<C>>)+
 
+    # ENTRY for parsing a value
     rule value:		STR			{{ return dequote(STR) }} 
 		| 	term<<[]>>		{{ return term }}
 		|	DELEXPR			{{ return DELEXPR }}
 
     rule option:	OPTION ID EQ value	{{ setoptionstmt(ID, value) }}
 
+    # ENTRY for parsing root part
     rule board:		LOADOPTIONS		{{ loadoptions() }}
 	    		TARGET DIRPATH		{{ target(DIRPATH) }}
 			(uses<<1>>)*
@@ -1083,7 +1098,7 @@ parser Config:
 			| FORMAT STR		{{ setformat(ID, dequote(STR)) }}
 			| EXPORT 
 			  ( ALWAYS		{{ setexported(ID) }}
-			  | USED		{{ setexport(ID) }}
+			  | USED		{{ setexportable(ID) }}
 			  | NEVER		{{ setnoexport(ID) }}
 			  )			{{ d |= 2 }}
 			| COMMENT STR 		{{ setcomment(ID, dequote(STR)); d |= 4 }}
@@ -1092,6 +1107,7 @@ parser Config:
     rule define:	DEFINE ID 		{{ newoption(ID) }}
 			defstmts<<ID>> END	{{ validdef(ID, defstmts) }}
 
+    # ENTRY for parsing Options.lb file
     rule options:	(define)* END		{{ return 1 }}
 %%
 
@@ -1124,11 +1140,9 @@ def gencode(part):
 	
 
 def doconfigfile(path, file):
-	if (debug):
-		print "DOCONFIGFILE", path, " ", file
 	filename = os.path.join(path, file)
 	loc.push_file(filename)
-	if (not parse('pstmts', open(filename, 'r').read())):
+	if (not parse('cfgfile', open(filename, 'r').read())):
 		fatal("Error: Could not parse file")
 
 if __name__=='__main__':
@@ -1151,10 +1165,6 @@ if __name__=='__main__':
 		dumptree(root, 0)
 
 	gencode(root)
-
-	for i in options.keys():
-		if (isexported(i, 0) and not isset(i, 0)):
-			print "WARNING: Option %s using default value %s" % (i, getformated(i, 0))
 
 	# crt0 includes
 	if (debug):

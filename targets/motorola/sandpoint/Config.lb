@@ -12,6 +12,7 @@ uses CONFIG_SANDPOINT_ALTIMUS
 uses CONFIG_COMPRESS 
 uses DEFAULT_CONSOLE_LOGLEVEL 
 uses CONFIG_USE_INIT
+uses CONFIG_CHIP_CONFIGURE
 uses NO_POST
 uses CONFIG_CONSOLE_SERIAL8250 
 uses TTYS0_BASE 
@@ -34,6 +35,9 @@ uses HEAP_SIZE
 
 ## Use stage 1 initialization code
 option CONFIG_USE_INIT=1
+
+## Use static configuration
+option CONFIG_CHIP_CONFIGURE=1
 
 ## We don't use compressed image
 option CONFIG_COMPRESS=0

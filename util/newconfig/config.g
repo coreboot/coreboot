@@ -164,11 +164,11 @@ def error(string):
         global errors, loc
 	errors = errors + 1
         print "===> ERROR: %s" % string
-        print "%s" % loc
 
 def fatal(string):      
 	"""Print error message and exit"""
 	error(string)
+        print "%s" % loc
         exitiferrors()
 
 def warning(string):
@@ -288,7 +288,7 @@ class romimage:
 		o = getdict(self.makebaserules, id)
 		if (o):
 			return o
-		fatal("No such make rule \"%s\"" % id);
+		fatal("No such make rule \"%s\"" % id)
 
 	def addmakeaction(self, id, str):
 		o = getdict(self.makebaserules, id)
@@ -296,7 +296,7 @@ class romimage:
 			a = dequote(str)
 			o.addaction(a)
 			return
-		fatal("No such rule \"%s\" for addmakeaction" % id);
+		fatal("No such rule \"%s\" for addmakeaction" % id)
 
 	def addmakedepend(self, id, str):
 		o = getdict(self.makebaserules, id)
@@ -304,7 +304,7 @@ class romimage:
 			a = dequote(str)
 			o.adddependency(a)
 			return
-		fatal("No such rule \"%s\" for addmakedepend" % id);
+		fatal("No such rule \"%s\" for addmakedepend" % id)
 
 	# this is called with an an object name. 
 	# the easiest thing to do is add this object to the current 
@@ -345,7 +345,7 @@ class romimage:
 		o = getdict(self.initobjectrules, name)
 		if (o):
 			return o
-		fatal("No such init object rule \"%s\"" % name);
+		fatal("No such init object rule \"%s\"" % name)
 
 	def getobjectrules(self):
 		return self.objectrules
@@ -354,7 +354,7 @@ class romimage:
 		o = getdict(self.objectrules, name)
 		if (o):
 			return o
-		fatal("No such object rule \"%s\"" % name);
+		fatal("No such object rule \"%s\"" % name)
 
 	def getdriverrules(self):
 		return self.driverrules
@@ -363,7 +363,7 @@ class romimage:
 		o = getdict(self.driverrules, name)
 		if (o):
 			return o
-		fatal("No such driver rule \"%s\"" % name);
+		fatal("No such driver rule \"%s\"" % name)
 
 	def addldscript(self, path):
 		self.ldscripts.append(path)
@@ -396,7 +396,7 @@ class romimage:
 		o = getdict(self.initincludes, path)
 		if (o):
 			return o
-		fatal("No such init include \"%s\"" % path);
+		fatal("No such init include \"%s\"" % path)
 
 	def addconfiginclude(self, part, path):
 		setdict(self.configincludes, part, path)
@@ -513,11 +513,6 @@ class option:
 
 	def getformat(self):
 		return self.format
-
-	def setused(self):
-		if (self.exportable):
-			self.exported = 1
-		self.used = 1
 
 	def setwrite(self, part):
 		self.write.append(part)
@@ -636,7 +631,7 @@ class partobj:
 			# me as the child.
 			if (parent.children):
 				debug.info(debug.gencode, "add %s (%d) as sibling" % (parent.children.dir, parent.children.instance))
-				youngest = parent.children;
+				youngest = parent.children
 				while(youngest.siblings):
 					youngest = youngest.siblings
 				youngest.siblings = self
@@ -688,7 +683,7 @@ class partobj:
 				file.write("};\n")
 			else:
 				file.write(";")
-			file.write("\n");
+			file.write("\n")
 		if (self.instance):
 			file.write("struct chip %s = {\n" % self.instance_name)
 		else:
@@ -696,7 +691,7 @@ class partobj:
 		file.write("\t/* %s %s */\n" % (self.part, self.dir))
                 file.write("\t.link = %d,\n" % (self.link))
 		if (self.path != ""):
-			file.write("\t.path = { %s\n\t},\n" % (self.path) );
+			file.write("\t.path = { %s\n\t},\n" % (self.path) )
 		if (self.siblings):
 			debug.info(debug.gencode, "gencode: siblings(%d)" \
 				% self.siblings.instance)
@@ -787,7 +782,10 @@ class partobj:
 		if (o1):
 			return
 		setdict(self.uses_options, name, o)
-		exportoption(o, self.image.exported_options)
+
+	def exportoption(self, op):
+		"""Export option that is used by this part"""
+		exportoption(op, self.image.exported_options)
 
 # -----------------------------------------------------------------------------
 #                    statements 
@@ -874,6 +872,12 @@ def getoption(name, image):
 	exitiferrors()
 	return val
 
+def exportoption(op, exported_options):
+	if (not op.isexportable()):
+		return
+	if (not op in exported_options):
+		exported_options.append(op)
+
 def setoption(name, value, imp):
 	"""Set an option from within a configuration file. Normally this
 	is only permitted in the target (top level) configuration file.
@@ -899,19 +903,19 @@ def setoption(name, value, imp):
 	if (v == 0):
 		v = newoptionvalue(name, curimage)
 	v.setvalue(value)
-
-def exportoption(op, exported_options):
-	if (not op.isexportable()):
-		return
-	if (not op in exported_options):
-		exported_options.append(op)
+	if (curpart):
+		curpart.exportoption(o)
+	else:
+		exportoption(o, global_exported_options)
 
 def setdefault(name, value, isdef):
 	"""Set the default value of an option from within a configuration 
 	file. This is permitted from any configuration file, but will
 	result in a warning if the default is set more than once.
 	If 'isdef' is set, we're defining the option in Options.lb so
-	there is no need for 'uses'."""
+	there is no need for 'uses'.
+	Note also that changing an options default value will export
+	the option, if it is exportable."""
 
 	global loc, global_options, curimage
 
@@ -934,6 +938,12 @@ def setdefault(name, value, isdef):
 	if (v == 0):
 		v = newoptionvalue(name, image)
 	v.setdefault(value)
+	if (isdef):
+		return
+	if (curpart):
+		curpart.exportoption(o)
+	else:
+		exportoption(o, global_exported_options)
 
 def setnodefault(name):
 	global loc, global_options
@@ -1037,7 +1047,6 @@ def usesoption(name):
 	if (o1):
 		return
 	setdict(global_uses_options, name, o)
-	exportoption(o, global_exported_options)
 
 def validdef(name, defval):
 	global global_options
@@ -1873,7 +1882,7 @@ def writemakefile(path):
 	for i, o in romimages.items():
 		file.write("%s-rom:\n" % o.getname())
 		file.write("\tif (cd %s; \\\n" % o.getname())
-		file.write("\t\tmake linuxbios.rom)\\\n");
+		file.write("\t\tmake linuxbios.rom)\\\n")
 		file.write("\tthen true; else exit 1; fi;\n\n")
 	file.write("clean: ")
 	for i in romimages.keys():
@@ -1885,10 +1894,10 @@ def writemakefile(path):
 	
 	file.write("\nbuildroms:\n")
 	for i in buildroms:
-		file.write("\tcat ");
+		file.write("\tcat ")
 		for j in i.roms:
 			file.write("%s/linuxbios.rom " % j )
-		file.write("> %s\n" % i.name);
+		file.write("> %s\n" % i.name)
 	file.write("\n")
 	
 	file.close()
@@ -1910,7 +1919,7 @@ def writeinitincludes(image):
 					if (inc.getstring() == p.group(1)):
 						outfile.write("#include \"%s\"\n" % inc.getpath())
 			else:
-				outfile.write(line);
+				outfile.write(line)
 			line = infile.readline()
 
 		infile.close()
@@ -1991,11 +2000,12 @@ def verifyparse():
 			fatal("An init file must be specified")
 		for op in image.exported_options:
 			if (getoptionvalue(op.name, op, image) == 0 and getoptionvalue(op.name, op, 0) == 0):
-				warning("Exported option %s has no value (check Options.lb)" % op.name);
+				error("Exported option %s has no value (check Options.lb)" % op.name)
 	print("Verifing global options")
 	for op in global_exported_options:
 		if (getoptionvalue(op.name, op, 0) == 0):
-			notice("Exported option %s has no value (check Options.lb)" % op.name);
+			error("Exported option %s has no value (check Options.lb)" % op.name)
+	exitiferrors()
 			
 #=============================================================================
 #		MAIN PROGRAM

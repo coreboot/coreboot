@@ -26,19 +26,31 @@ const struct irq_routing_table intel_irq_routing_table = {
 	IRQ_ROUTER_DEVICE,	/* Device */
 	0x00,			/* Crap (miniport) */
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, /* u8 rfu[11] */
-	0xb0,           /*  u8 checksum , mod 256 checksum must give zero */
+	0x45,           /*  u8 checksum , mod 256 checksum must give zero */
 	{	/* slot(0=onboard), devfn, irqlinks (line id, 0=not routed) */
-		/* PCI Slot 1-6 */
-		IRQ_SLOT(1, 3,1,0, 2,3,4,1 ),
-		IRQ_SLOT(2, 3,2,0, 3,4,1,2 ),
-		IRQ_SLOT(3, 2,1,0, 2,3,4,1 ),
-		IRQ_SLOT(4, 2,2,0, 3,4,1,2 ),
-		IRQ_SLOT(5, 4,5,0, 2,3,4,1 ),
-		IRQ_SLOT(6, 4,4,0, 1,2,3,4 ),
-		/* Onboard NICs */
-		IRQ_SLOT(0, 2,3,0, 4,0,0,0 ),
-		IRQ_SLOT(0, 2,4,0, 4,0,0,0 ),
-		/* Let Linux know about bus 1 */
-		IRQ_SLOT(0, 1,4,3, 0,0,0,0 ),
+		/* Northbridge, Node 0 */
+		IRQ_SLOT(0x0, 0x00,0x18,0x0, 0,0,0,0),
+		/* AMD-8131 PCI-X Bridge */
+		IRQ_SLOT(0x0, 0x00,0x01,0x0, 0,0,0,0),
+		/* Onboard LSI SCSI Controller */
+		IRQ_SLOT(0x0, 0x01,0x02,0x0, 3,0,0,0),
+		/* Onboard Broadcom NICs */
+		IRQ_SLOT(0x0, 0x01,0x01,0x0, 1,2,0,0),
+		/* AMD-8131 PCI-X Bridge */
+		IRQ_SLOT(0x0, 0x00,0x02,0x0, 0,0,0,0),
+		/* PCI Slot 1-2 */
+		IRQ_SLOT(0x1, 0x02,0x04,0x0, 1,2,3,4),
+		IRQ_SLOT(0x2, 0x02,0x03,0x0, 2,3,4,1),
+		/* AMD-8111 PCI Bridge */
+		IRQ_SLOT(0x0, 0x00,0x03,0x0, 0,0,0,0),
+		/* USB Controller */
+		IRQ_SLOT(0x0, 0x03,0x00,0x0, 0,0,0,4),
+		/* ATI Rage XL VGA */
+		IRQ_SLOT(0x0, 0x03,0x05,0x0, 1,0,0,0),
+		/* AMD-8111 LPC Dridge */
+		IRQ_SLOT(0x0, 0x00,0x04,0x0, 0,0,0,0),
+		/* Northbridge, Node 1 */
+		IRQ_SLOT(0x0, 0x00,0x18,0x0, 0,0,0,0),
+
 	}
 };

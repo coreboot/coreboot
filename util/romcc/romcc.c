@@ -17,6 +17,8 @@
 #define DEBUG_SCC 0
 #define DEBUG_CONSISTENCY 1
 
+#warning "FIXME boundary cases with small types in larger registers"
+
 /*  Control flow graph of a loop without goto.
  * 
  *        AAA
@@ -737,6 +739,7 @@ struct hash_entry {
 #define HASH_TABLE_SIZE 2048
 
 struct compile_state {
+	const char *label_prefix;
 	const char *ofilename;
 	FILE *output;
 	struct triple *vars;
@@ -9806,28 +9809,6 @@ static int tdominates(struct compile_state *state,
 	return result;
 }
 
-static int tdistance(struct compile_state *state,
-	struct triple *dom, struct triple *sub)
-{
-	int count;
-	struct block *bdom, *bsub;
-	if (!tdominates(state, dom, sub)) {
-		internal_error(state, 0, "dom does not dom sub");
-	}
-	bdom = block_of_triple(state, dom);
-	bsub = block_of_triple(state, sub);
-	count = 0;
-	for(; bsub != bdom; (bsub = bsub->idom), sub = bsub->last) {
-		for(; sub != bsub->first; sub = sub->prev) {
-			count++;
-		}
-	}
-	for(; sub != dom; sub = sub->prev) {
-		count++;
-	}
-	return count;
-}
-
 static void insert_phi_operations(struct compile_state *state)
 {
 	size_t size;
@@ -9864,6 +9845,9 @@ static void insert_phi_operations(struct compile_state *state)
 			if (!block) {
 				warning(state, user->member, "dead code");
 			}
+			if (work[block->vertex] >= iter) {
+				continue;
+			}
 			work[block->vertex] = iter;
 			*work_list_tail = block;
 			block->work_next = 0;
@@ -9897,7 +9881,7 @@ static void insert_phi_operations(struct compile_state *state)
 					front->last = front->first->next;
 				}
 				has_already[front->vertex] = iter;
-				
+
 				/* If necessary plan to visit the basic block */
 				if (work[front->vertex] >= iter) {
 					continue;
@@ -11972,6 +11956,7 @@ static int coalesce_live_ranges(
 			}
 		}
 	next:
+		;
 	}
 	return coalesced;
 }
@@ -12220,6 +12205,7 @@ static struct triple *least_conflict(struct compile_state *state,
 			}
 			do_triple_set(&conflict->live, set->member, set->new);
 		next:
+			;
 		}
 	}
 	return ins;
@@ -12325,6 +12311,7 @@ static struct triple *split_constrained_range(struct compile_state *state,
 			constrained_size = size;
 		}
 	next:
+		;
 	}
 	if (constrained) {
 		new = post_copy(state, constrained);
@@ -14021,6 +14008,10 @@ static void optimize(struct compile_state *state)
 	/* Transform the code to ssa form */
 	transform_to_ssa_form(state);
 	verify_consistency(state);
+	if (state->debug & DEBUG_CODE_ELIMINATION) {
+		fprintf(stdout, "After transform_to_ssa_form\n");
+		print_blocks(state, stdout);
+	}
 	/* Do strength reduction and simple constant optimizations */
 	if (state->optimize >= 1) {
 		simplify_all(state);
@@ -15554,7 +15545,8 @@ static void print_const_val(
 			(long_t)(ins->u.cval));
 		break;
 	case OP_ADDRCONST:
-		fprintf(fp, " $L%lu+%lu ",
+		fprintf(fp, " $L%s%lu+%lu ",
+			state->label_prefix, 
 			MISC(ins, 0)->u.cval,
 			ins->u.cval);
 		break;
@@ -16017,8 +16009,10 @@ static void print_op_branch(struct compile_state *state,
 		}
 		
 	}
-	fprintf(fp, "\t%s L%lu\n",
-		bop, TARG(branch, 0)->u.cval);
+	fprintf(fp, "\t%s L%s%lu\n",
+		bop, 
+		state->label_prefix,
+		TARG(branch, 0)->u.cval);
 }
 
 static void print_op_set(struct compile_state *state,
@@ -16128,7 +16122,7 @@ static void print_sdecl(struct compile_state *state,
 {
 	fprintf(fp, ".section \"" DATA_SECTION "\"\n");
 	fprintf(fp, ".balign %d\n", align_of(state, ins->type));
-	fprintf(fp, "L%lu:\n", ins->u.cval);
+	fprintf(fp, "L%s%lu:\n", state->label_prefix, ins->u.cval);
 	print_const(state, MISC(ins, 0), fp);
 	fprintf(fp, ".section \"" TEXT_SECTION "\"\n");
 		
@@ -16219,7 +16213,7 @@ static void print_instruction(struct compile_state *state,
 		if (!ins->use) {
 			return;
 		}
-		fprintf(fp, "L%lu:\n", ins->u.cval);
+		fprintf(fp, "L%s%lu:\n", state->label_prefix, ins->u.cval);
 		break;
 		/* Ignore OP_PIECE */
 	case OP_PIECE:
@@ -16299,7 +16293,7 @@ static void print_tokens(struct compile_state *state)
 }
 
 static void compile(const char *filename, const char *ofilename, 
-	int cpu, int debug, int opt)
+	int cpu, int debug, int opt, const char *label_prefix)
 {
 	int i;
 	struct compile_state state;
@@ -16320,6 +16314,8 @@ static void compile(const char *filename, const char *ofilename,
 		error(&state, 0, "Cannot open output file %s\n",
 			ofilename);
 	}
+	/* Remember the label prefix */
+	state.label_prefix = label_prefix;
 	/* Prep the preprocessor */
 	state.if_depth = 0;
 	state.if_value = 0;
@@ -16380,11 +16376,13 @@ int main(int argc, char **argv)
 {
 	const char *filename;
 	const char *ofilename;
+	const char *label_prefix;
 	int cpu;
 	int last_argc;
 	int debug;
 	int optimize;
 	cpu = CPU_DEFAULT;
+	label_prefix = "";
 	ofilename = "auto.inc";
 	optimize = 0;
 	debug = 0;
@@ -16393,6 +16391,11 @@ int main(int argc, char **argv)
 		last_argc = argc;
 		if (strncmp(argv[1], "--debug=", 8) == 0) {
 			debug = atoi(argv[1] + 8);
+			argv++;
+			argc--;
+		}
+		else if (strncmp(argv[1], "--label-prefix=", 15) == 0) {
+			label_prefix= argv[1] + 15;
 			argv++;
 			argc--;
 		}
@@ -16426,7 +16429,7 @@ int main(int argc, char **argv)
 		arg_error("Wrong argument count %d\n", argc);
 	}
 	filename = argv[1];
-	compile(filename, ofilename, cpu, debug, optimize);
+	compile(filename, ofilename, cpu, debug, optimize, label_prefix);
 
 	return 0;
 }

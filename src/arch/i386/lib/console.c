@@ -136,3 +136,12 @@ static void console_init(void)
 		" starting...\r\n";
 	print_info(console_test);
 }
+
+
+static void die(const char *str)
+{
+	print_emerg(str);
+	do {
+		hlt();
+	} while(1);
+}

@@ -53,6 +53,9 @@ static void wrmsr(unsigned long index, msr_t msr)
 	(((FN) & 0x07) << 8) | \
 	((WHERE) & 0xFF))
 
+#define PCI_ID(VENDOR_ID, DEVICE_ID) \
+	((((DEVICE_ID) & 0xFFFF) << 16) | ((VENDOR_ID) & 0xFFFF))
+
 static unsigned char pci_read_config8(unsigned addr)
 {
 	outl(0x80000000 | (addr & ~3), 0xCF8);
@@ -87,4 +90,17 @@ static void pci_write_config32(unsigned addr, unsigned int value)
 {
 	outl(0x80000000 | (addr & ~3), 0xCF8);
 	outl(value, 0xCFC);
+}
+
+static unsigned pci_locate_device(unsigned pci_id, unsigned addr)
+{
+	addr &= ~0xff;
+	for(; addr <= PCI_ADDR(255, 31, 7, 0); addr += PCI_ADDR(0,0,1,0)) {
+		unsigned int id;
+		id = pci_read_config32(addr);
+		if (id == pci_id) {
+			return addr;
+		}
+	}
+	return ~0U;
 }

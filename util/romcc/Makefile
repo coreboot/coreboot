@@ -7,11 +7,15 @@ PACKAGE:=romcc
 CC=gcc
 CPPFLAGS=-DVERSION='"$(VERSION)"' -DRELEASE_DATE='"$(RELEASE_DATE)"'
 CFLAGS=-O -g -Wall $(CPPFLAGS)
+CPROF_FLAGS=-pg -fprofile-arcs
 
 all: romcc test
 
 romcc: romcc.c Makefile
 	$(CC) $(CFLAGS) -o $@ $<
+
+romcc_pg: romcc.c Makefile
+	$(CC) $(CFLAGS) $(CPROF_FLAGS) -o $@ $<
 
 TESTS=\
 	hello_world.c \
@@ -45,6 +49,7 @@ TESTS=\
 	simple_test28.c \
 	simple_test29.c \
 	simple_test30.c \
+	simple_test31.c \
 	raminit_test.c \
 	raminit_test2.c \
 	raminit_test3.c

@@ -1,6 +1,10 @@
+arch i386
+mainboardinit superio/sis/950/setup_serial.inc
+mainboardinit pc80/serial.inc
 northsouthbridge sis/540
 # superio sis/950
 nsuperio sis/950 com1={1} floppy=1  lpt=1
+mainboardinit cpu/p6/earlymtrr.inc
 
 option FINAL_MAINBOARD_FIXUP
 option HAVE_PIRQ_TABLE

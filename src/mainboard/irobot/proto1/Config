@@ -1,6 +1,9 @@
 arch i386
+mainboardinit superio/SMC/fdc37n769/setup_serial.inc
+mainboardinit pc80/serial.inc
 northbridge intel/440bx
 southbridge intel/piix4e
+mainboardinit cpu/p6/earlymtrr.inc
 
 superio SMC/fdc37n769
 option SMC_BASE=0x370

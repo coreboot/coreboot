@@ -2,4 +2,5 @@ object fill_inbuf.o
 object rom_fill_inbuf.o
 object docmil_fill_inbuf.o
 object tsunami_tigbus_rom_fill_inbuf.o
+object serial_fill_inbuf.o
 object tftp_fill_inbuf.o

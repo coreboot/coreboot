@@ -221,3 +221,4 @@ serial0:
 	mov	$TTYS0_LCR, %dx
 	mov	$0x03, %al
 	out	%al, %dx
+

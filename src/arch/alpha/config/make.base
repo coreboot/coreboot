@@ -1,9 +1,11 @@
 biosbase 0
 rambase 0x8000
-makedefine LINK = ld -T ldscript.ld -o $@ crt0.o linuxbios.a
-makedefine CPPFLAGS= -I$(TOP)/src/include -I$(TOP)/src/arch/$(ARCH)/include $(CPUFLAGS)
+makedefine CC:=gcc
+makedefine LIBGCC_FILE_NAME := $(shell $(CC) -print-libgcc-file-name)
+makedefine GCC_INC_DIR := $(shell $(CC) -print-search-dirs | sed -ne "s/install: \(.*\)\`include/gp")
+makedefine CPPFLAGS= -I$(TOP)/src/include -I$(TOP)/src/arch/$(ARCH)/include -I$(GCC_INC_DIR) $(CPUFLAGS)
 makedefine CFLAGS= $(CPU_OPT) $(CPPFLAGS) -O2 -nostdinc -nostdlib -fno-builtin -Wall
-makedefine CC=cc 
+makedefine LINK = ld -T ldscript.ld -o $@ crt0.o linuxbios.a
 makerule all : linuxbios.rom ;
 makerule linuxbios.rom: linuxbios.strip makerom ; ./makerom -l0x310000 -i7 -v linuxbios.strip -o linuxbios.rom
 makerule linuxbios.strip: linuxbios ; objcopy -O binary -R .note -R .comment -S linuxbios linuxbios.strip

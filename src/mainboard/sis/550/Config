@@ -1,4 +1,6 @@
+arch i386
 northsouthbridge sis/550
+mainboardinit cpu/p6/earlymtrr.inc
 
 option FINAL_MAINBOARD_FIXUP
 option HAVE_PIRQ_TABLE

@@ -9,6 +9,9 @@
  *	_ROMBASE
  *				: linuxbios text 
  *				: readonly text
+ *
+ *      _ROMTOP                 : The top of the rom used where we
+ *				  need to put the reset vector.
  */
 /*
  * Bootstrap code for the STPC Consumer
@@ -18,6 +21,9 @@
  *
  */
 
+_ROMTOP = (_ROMBASE >= 0xffff0000)? 0xfffffff0 : 0xffff0;
+_start_offset = _start & 0xffff;
+gdtptr_offset = gdtptr & 0xffff;
 /*
  *	Written by Johan Rydberg, based on work by Daniel Kahlin.
  *      Rewritten by Eric Biederman
@@ -28,13 +34,6 @@
  */
 OUTPUT_FORMAT("elf32-i386", "elf32-i386", "elf32-i386")
 OUTPUT_ARCH(i386)
-/* oh, barf. This wont work if all you use is .o's.  -- RGM */
-
-
-	/*  These are now set by the config tool 
-	_RAMBASE	= 0x04000;
-	_ROMBASE	= 0x80000;
-	*/
 
 /*
  *	Entry point is not really nececary, since the mkrom(8)
@@ -49,18 +48,21 @@ SECTIONS
 	 * First we place the code and read only data (typically const declared).
 	 * This get placed in rom.
 	 */
-	.text _ROMBASE : {
+	. = _ROMBASE;
+	.text (.) : {
 		_text = .;
 		*(.text);
+		*(.text.*)
 		_etext = .;
 	}
-	.rodata (.) : {
+	.rodata (.) :  {
 		_rodata = .;
-		*(.rodata);
+		*(.rodata)
 		_erodata = .;
 	}
 
 	. = _RAMBASE;
+
 	/*
 	 * After the code we place initialized data (typically initialized
 	 * global variables). This gets copied into ram by startup code.
@@ -68,17 +70,15 @@ SECTIONS
 	 * whereas __data_loadstart and __data_loadend shows where in rom to
 	 * copy from.
 	 */
-	.data (.): AT (_erodata) {
+	.data (.): AT(_erodata) {
 		_data = .;
 		*(.data)
 		*(.sdata)
 		*(.sdata2)
-		*(.got)
 		_edata = .;
 	}
 	_ldata	= LOADADDR(.data);
-	_eldata	= LOADADDR(.data) + SIZEOF(.data); 	
-    
+	_eldata	= LOADADDR(.data) + SIZEOF(.data);
 	/*
 	 * bss does not contain data, it is just a space that should be zero
 	 * initialized on startup. (typically uninitialized global variables)
@@ -96,21 +96,28 @@ SECTIONS
 	.heap (.): {
 		_heap = .;
 		/* Reserve 256K for the heap */
-		. = . + 0x40000;
+		. = . + ( HEAP_SIZE );
 		_eheap = .;
 	}
 	.stack (.) : {
 		_stack = .;
-		/* Resever 64k for the stack */
-		. = . + 0x10000;
+		/* Reserve 64k stack for each possible cpu */
+		. = . + ((MAX_CPUS) * (STACK_SIZE));
 		_estack = .;
 	}
+	_lreset = _eldata;
+	. = _lreset;
+	_deadspace = (_ROMTOP - _lreset);
+	.reset (.) : AT (_lreset) {
+		. = . + _deadspace;
+		_reset_vector = .;
+		*(.reset_vector)
+		_ereset_vector = . ;
+		. = .  + (16 - (1 + (_ereset_vector - _reset_vector)));
+		BYTE(0x00);
+	} 
+	_elreset = _lreset + SIZEOF(.reset);
+	/DISCARD/ : {
+		*(*)
+	}
 }
-
-/*
- *	This provides the start and end address for the whole image 
- */
-_image	= LOADADDR(.text);
-_eimage	= LOADADDR(.data) + SIZEOF(.data);
-
-/* EOF */

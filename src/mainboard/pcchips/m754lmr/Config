@@ -1,7 +1,10 @@
 arch i386
+mainboardinit superio/acer/m1535/setup_serial.inc
+mainboardinit pc80/serial.inc
 northbridge acer/m1631
 southbridge acer/m1535
 superio acer/m1535
+mainboardinit cpu/p6/earlymtrr.inc
 
 option ENABLE_FIXED_AND_VARIABLE_MTRRS
 option FINAL_MAINBOARD_FIXUP

@@ -85,8 +85,12 @@ void jmp_to_elf_entry(void *entry, void *ube)
 	/* Jump to kernel */
 	__asm__ __volatile__(
 		"pushl %0\n\t"
+		"pushl %1\n\t"
+		"pushl %2\n\t"
+		"popl  %%ebx\n\t"
+		"popl  %%eax\n\t"
 		"ret\n\t"
-		:: "g" (entry), "a"(type), "b"(ube));
+		:: "g" (entry), "g"(type), "g"(ube));
 }
 
 

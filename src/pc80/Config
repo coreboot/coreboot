@@ -1,1 +1,5 @@
 object keyboard.o
+object mc146818rtc.o
+object isa-dma.o
+object i8259.o
+

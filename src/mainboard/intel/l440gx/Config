@@ -1,6 +1,9 @@
 arch i386
+mainboardinit superio/NSC/pc87309/setup_serial.inc
+mainboardinit pc80/serial.inc
 northbridge intel/440gx
 southbridge intel/piix4e
+mainboardinit cpu/p6/earlymtrr.inc
 
 superio NSC/pc87309
 

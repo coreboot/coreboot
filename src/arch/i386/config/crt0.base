@@ -3,8 +3,8 @@
  *
  */
 
-#include <asm.h>
-#include <intel.h>
+#include <arch/asm.h>
+#include <arch/intel.h>
 
 #include <pciconf.h>
 /*
@@ -24,25 +24,22 @@
 
 #include <cpu/p5/start32.inc>
 
-#include <pc80/i8259.inc>
-
 CRT0_PARAMETERS
 
-#ifdef INTEL_PPRO_MTRR
-/* Turn on mtrr for faster boot */
-#include <cpu/p6/earlymtrr.inc>
-#endif /* INTEL_PPRO_MTRR */
-
-/*
- *	Copy data into RAM and clear the BSS. Since these segments
- *	isn\'t really that big we just copy/clear using bytes, not
- *	double words.
- */
-	intel_chip_post_macro(0x11)		/* post 11 */
-
-#ifdef SERIAL_CONSOLE
+#if defined(SERIAL_CONSOLE) && defined(DEBUG)
         TTYS0_TX_STRING($str_after_ram)
-#endif /* SERIAL_CONSOLE */
+#endif /* defined(SERIAL_CONSOLE) && defined(DEBUG) */
+
+	/* clear boot_complete flag */
+	xorl	%ebp, %ebp
+__main:
+
+	/*
+	 *	Copy data into RAM and clear the BSS. Since these segments
+	 *	isn\'t really that big we just copy/clear using bytes, not
+	 *	double words.
+	 */
+	intel_chip_post_macro(0x11)		/* post 11 */
 
 	cld				/* clear direction flag */
 
@@ -56,10 +53,6 @@ CRT0_PARAMETERS
 	movsb
 .Lnodata:
 	intel_chip_post_macro(0x12)		/* post 12 */
-
-#ifdef SERIAL_CONSOLE
-        TTYS0_TX_STRING($str_after_ram)
-#endif /* SERIAL_CONSOLE */
 
 	/** clear stack */
 	leal	EXT(_stack), %edi
@@ -79,25 +72,44 @@ CRT0_PARAMETERS
 	stosb
 .Lnobss:
 
-/*
- *	Now we are finished. Memory is up, data is copied and
- *	bss is cleared.   Now we call the main routine and
- *	let it do the rest.
- */ 
-	intel_chip_post_macro(0xfe)	/* post fe */
-
-#ifdef SERIAL_CONSOLE
-        TTYS0_TX_STRING($str_pre_main)
-#endif /* SERIAL_CONSOLE */
-
-
-/* memory is up. Let\'s do the rest in C -- much easier. */
-
 	/* set new stack */
 	movl	$_estack, %esp
+#ifdef SMP
+	movl	$APIC_DEFAULT_BASE, %edi
+	movl	APIC_ID(%edi), %eax
+	shrl	$24, %eax
+	movl	$STACK_SIZE, %ebx
+	mull	%ebx
+	subl	%eax, %esp
+#endif
+
+	/* push the boot_complete flag */
+	pushl	%ebp
+
+	/* Save the stack location */
+	movl	%esp, %ebp
+
+	/*
+	 *	Now we are finished. Memory is up, data is copied and
+	 *	bss is cleared.   Now we call the main routine and
+	 *	let it do the rest.
+	 */ 
+	intel_chip_post_macro(0xfe)	/* post fe */
+
+#if defined(SERIAL_CONSOLE) && defined(DEBUG)
+        TTYS0_TX_STRING($str_pre_main)
+#endif /* defined(SERIAL_CONSOLE) && defined(DEBUG) */
+
+
+	/* memory is up. Let\'s do the rest in C -- much easier. */
 
 	intel_chip_post_macro(0xfd)	/* post fe */
-	call	EXT(intel_main)
+
+	/* Resort the stack location */
+	movl	%ebp, %esp
+	
+	/* The boot_complete flag has already been pushed */
+	call	EXT(hardwaremain)
 	/*NOTREACHED*/
 .Lhlt:	
 	intel_chip_post_macro(0xee)	/* post fe */
@@ -109,3 +121,17 @@ str_after_ram:       .string "Ram Initialize?\r\n"
 str_after_copy:      .string "after copy?\r\n"
 str_pre_main:        .string "before main\r\n"
 newline:             .string "\r\n"
+
+	.section ".reset_vector"
+	.code16
+.globl	EXT(reset_vector)
+EXT(reset_vector):
+#if _ROMBASE >= 0xffff0000
+	jmp	EXT(_start)
+#elif (_ROMBASE < 0x100000)
+	ljmp	$((_ROMBASE & 0xf0000)>>4),$EXT(_start_offset);
+#else
+#error	_ROMBASE is an unsupported value
+#endif
+
+	

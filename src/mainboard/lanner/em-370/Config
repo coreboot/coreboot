@@ -1,8 +1,11 @@
 arch i386
+mainboardinit superio/winbond/w83977ef/setup_serial.inc
+mainboardinit pc80/serial.inc
 northbridge intel/440bx
 southbridge intel/piix4e
 superio winbond/w83977ef
 raminit northbridge/intel/440bx/raminit.inc
+mainboardinit cpu/p6/earlymtrr.inc
 
 option INTEL_PPRO_MTRR
 option ENABLE_FIXED_AND_VARIABLE_MTRRS

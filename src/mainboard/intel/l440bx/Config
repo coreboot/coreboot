@@ -1,5 +1,9 @@
+arch i386
+mainboardinit superio/SMC/fdc37c669/setup_serial.inc
+mainboardinit pc80/serial.inc
 northbridge intel/440bx
 southbridge intel/piix4e
+mainboardinit cpu/p6/earlymtrr.inc
 
 superio SMC/fdc37c669 
 

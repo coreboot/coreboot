@@ -12876,6 +12876,7 @@ static void transform_to_arch_instructions(struct compile_state *state)
 				in = pre_copy(state, ins, &RHS(ins, 0),
 					REG_DX, REGCM_GPR16);
 			}
+			post_copy(state, ins);
 			break;
 		case OP_OUTB:
 		case OP_OUTW:

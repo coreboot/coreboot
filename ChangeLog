@@ -2,6 +2,8 @@
 
 	* configure.in, chip/Makefile.am, chip/intel/*:
 	  Stubs for Intel-specific chipset code.
+	* configure.in: Make version 0.1.43cvs to indicate a version
+	  pulled from CVS.
 
 2000-03-05  Jeff Garzik  <jgarzik@mandrakesoft.com>
 

@@ -101,4 +101,4 @@ romimage "fallback"
 	payload /usr/share/LinuxBIOS/tg3--ide_disk.zelf
 end
 
-buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
+buildrom ./khepri.rom ROM_SIZE "normal" "fallback"

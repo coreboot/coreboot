@@ -95,7 +95,13 @@ static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
+#define SMBUS_HUB 0x30
+	unsigned hub = device >> 8;
+	
+	device &= 0xff;
+	// smbus_write_byte(SMBUS_HUB, hub);
 	return smbus_read_byte(device, address);
+	
 }
 
 /* no specific code here. this should go away completely */
@@ -170,13 +176,18 @@ static void pc87360_enable_serial(void)
 	pnp_set_iobase0(SIO_BASE, 0x3f8);
 }
 
+#define RC0 (0<<8)
+#define RC1 (1<<8)
+#define RC2 (2<<8)
+#define RC3 (3<<8)
+
+#define DIMM0 0xa0
+#define DIMM1 0xa2
+#define DIMM2 0xa4
+#define DIMM3 0xa8
+
 static void main(void)
 {
-	/*
-	 * GPIO28 of 8111 will control H0_MEMRESET_L
-	 * GPIO29 of 8111 will control H1_MEMRESET_L
-	 */
-
 	static const struct mem_controller cpu[] = {
 		{
 			.node_id = 0,
@@ -184,8 +195,8 @@ static void main(void)
 			.f1 = PCI_DEV(0, 0x18, 1),
 			.f2 = PCI_DEV(0, 0x18, 2),
 			.f3 = PCI_DEV(0, 0x18, 3),
-			.channel0 = { (0xa<<3)|0, (0xa<<3)|2, 0, 0 },
-			.channel1 = { (0xa<<3)|1, (0xa<<3)|3, 0, 0 },
+			.channel0 = { RC0|DIMM0, RC0|DIMM2, 0, 0 },
+			.channel1 = { RC0|DIMM1, RC0|DIMM3, 0, 0 },
 		},
 		{
 			.node_id = 1,
@@ -193,8 +204,8 @@ static void main(void)
 			.f1 = PCI_DEV(0, 0x19, 1),
 			.f2 = PCI_DEV(0, 0x19, 2),
 			.f3 = PCI_DEV(0, 0x19, 3),
-			.channel0 = { (0xa<<3)|4, (0xa<<3)|6, 0, 0 },
-			.channel1 = { (0xa<<3)|5, (0xa<<3)|7, 0, 0 },
+			.channel0 = { RC1|DIMM0, RC1|DIMM2, 0, 0 },
+			.channel1 = { RC1|DIMM1, RC1|DIMM3, 0, 0 },
 		},
 		{
 			.node_id = 2,
@@ -202,8 +213,8 @@ static void main(void)
 			.f1 = PCI_DEV(0, 0x1a, 1),
 			.f2 = PCI_DEV(0, 0x1a, 2),
 			.f3 = PCI_DEV(0, 0x1a, 3),
-			.channel0 = { (0xa<<3)|8, (0xa<<3)|10, 0, 0 },
-			.channel1 = { (0xa<<3)|9, (0xa<<3)|11, 0, 0 },
+			.channel0 = { RC2|DIMM0, RC2|DIMM2, 0, 0 },
+			.channel1 = { RC2|DIMM1, RC2|DIMM3, 0, 0 },
 		},
 		{
 			.node_id = 3,
@@ -211,8 +222,8 @@ static void main(void)
 			.f1 = PCI_DEV(0, 0x1b, 1),
 			.f2 = PCI_DEV(0, 0x1b, 2),
 			.f3 = PCI_DEV(0, 0x1b, 3),
-			.channel0 = { (0xa<<3)|12, (0xa<<3)|14, 0, 0 },
-			.channel1 = { (0xa<<3)|13, (0xa<<3)|15, 0, 0 },
+			.channel0 = { RC3|DIMM0, RC3|DIMM2, 0, 0 },
+			.channel1 = { RC3|DIMM1, RC3|DIMM3, 0, 0 },
 		}
 	};
 	if (cpu_init_detected()) {

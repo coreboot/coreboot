@@ -289,7 +289,7 @@ static unsigned amdk8_find_iopair(unsigned nodeid, unsigned link)
 		}
 		/* Do I have a match for this node and link? */
 		if (((base & 3) == 3) &&
-			((limit & 3) == nodeid) &&
+			((limit & 7) == nodeid) &&
 			(((limit >> 4) & 3) == link)) {
 			break;
 		}
@@ -316,7 +316,7 @@ static unsigned amdk8_find_mempair(unsigned nodeid, unsigned link)
 		}
 		/* Do I have a match for this node and link? */
 		if (((base & 3) == 3) &&
-			((limit & 3) == nodeid) &&
+			((limit & 7) == nodeid) &&
 			(((limit >> 4) & 3) == link)) {
 			break;
 		}
@@ -414,7 +414,7 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 		limit &= 0xfe000fc8;
 		limit |= rlimit & 0x01fff000;
 		limit |= (link & 3) << 4;
-		limit |= (nodeid & 3);
+		limit |= (nodeid & 7);
 		if (reg == 0xc8){
 			/* hack to set vga for test */
 			/* factory: b0: 03 0a 00 00 00 0b 00 00 */
@@ -437,7 +437,7 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 		limit &= 0x00000048;
 		limit |= (rlimit & 0xffff0000) >> 8;
 		limit |= (link & 3) << 4;
-		limit |= (nodeid & 3);
+		limit |= (nodeid & 7);
 		f1_write_config32(reg + 0x4, limit);
 		f1_write_config32(reg, base);
 	}

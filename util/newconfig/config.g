@@ -1070,9 +1070,10 @@ def cpudir(path):
 	global cpu_type
 	if (cpu_type and (cpu_type != path)):
 		fatal("Two different CPU types: %s and %s" % (cpu_type, path))
-	srcdir = "/cpu/%s" % path
-	dodir(srcdir, "Config.lb")
-	cpu_type = path
+	if (not cpu_type):
+		srcdir = "/cpu/%s" % path
+		dodir(srcdir, "Config.lb")
+		cpu_type = path
 	
 def part(type, path, file, name):
 	global curimage, dirstack, partstack

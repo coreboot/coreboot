@@ -33,7 +33,7 @@ static int cpu_init_detected(void)
 
 	unsigned long htic;
 
-	htic = pci_read_config32(PCI_ADDR(0, 0x18, 0, HT_INIT_CONTROL));
+	htic = pci_read_config32(PCI_DEV(0, 0x18, 0), HT_INIT_CONTROL);
 #if 0
 	print_debug("htic: ");
 	print_debug_hex32(htic);
@@ -59,21 +59,21 @@ static int cpu_init_detected(void)
 
 static void print_pci_devices(void)
 {
-	uint32_t addr;
-	for(addr = PCI_ADDR(0, 0, 0, 0); 
-		addr <= PCI_ADDR(0, 0x1f, 0x7, 0); 
-		addr += PCI_ADDR(0,0,1,0)) {
+	device_t dev;
+	for(dev = PCI_DEV(0, 0, 0); 
+		dev <= PCI_DEV(0, 0x1f, 0x7); 
+		dev += PCI_DEV(0,0,1)) {
 		uint32_t id;
-		id = pci_read_config32(addr + PCI_VENDOR_ID);
+		id = pci_read_config32(dev, PCI_VENDOR_ID);
 		if (((id & 0xffff) == 0x0000) || ((id & 0xffff) == 0xffff) ||
 			(((id >> 16) & 0xffff) == 0xffff) ||
 			(((id >> 16) & 0xffff) == 0x0000)) {
 			continue;
 		}
 		print_debug("PCI: 00:");
-		print_debug_hex8(addr >> 11);
+		print_debug_hex8(dev >> 11);
 		print_debug_char('.');
-		print_debug_hex8((addr >> 8) & 7);
+		print_debug_hex8((dev >> 8) & 7);
 		print_debug("\r\n");
 	}
 }
@@ -111,82 +111,10 @@ static void dump_spd_registers(void)
 }
 
 
-static void pnp_write_config(unsigned char port, unsigned char value, unsigned char reg)
-{
-	outb(reg, port);
-	outb(value, port +1);
-}
 
-static unsigned char pnp_read_config(unsigned char port, unsigned char reg)
-{
-	outb(reg, port);
-	return inb(port +1);
-}
-
-static void pnp_set_logical_device(unsigned char port, int device)
-{
-	pnp_write_config(port, device, 0x07);
-}
-
-static void pnp_set_enable(unsigned char port, int enable)
-{
-	pnp_write_config(port, enable?0x1:0x0, 0x30);
-}
-
-static int pnp_read_enable(unsigned char port)
-{
-	return !!pnp_read_config(port, 0x30);
-}
-
-static void pnp_set_iobase0(unsigned char port, unsigned iobase)
-{
-	pnp_write_config(port, (iobase >> 8) & 0xff, 0x60);
-	pnp_write_config(port, iobase & 0xff, 0x61);
-}
-
-static void pnp_set_iobase1(unsigned char port, unsigned iobase)
-{
-	pnp_write_config(port, (iobase >> 8) & 0xff, 0x62);
-	pnp_write_config(port, iobase & 0xff, 0x63);
-}
-
-static void pnp_set_irq0(unsigned char port, unsigned irq)
-{
-	pnp_write_config(port, irq, 0x70);
-}
-
-static void pnp_set_irq1(unsigned char port, unsigned irq)
-{
-	pnp_write_config(port, irq, 0x72);
-}
-
-static void pnp_set_drq(unsigned char port, unsigned drq)
-{
-	pnp_write_config(port, drq & 0xff, 0x74);
-}
-
-#define PC87360_FDC  0x00
-#define PC87360_PP   0x01
-#define PC87360_SP2  0x02
-#define PC87360_SP1  0x03
-#define PC87360_SWC  0x04
-#define PC87360_KBCM 0x05
-#define PC87360_KBCK 0x06
-#define PC87360_GPIO 0x07
-#define PC87360_ACB  0x08
-#define PC87360_FSCM 0x09
-#define PC87360_WDT  0x0A
-
-static void pc87360_enable_serial(void)
-{
-	pnp_set_logical_device(SIO_BASE, PC87360_SP1);
-	pnp_set_enable(SIO_BASE, 1);
-	pnp_set_iobase0(SIO_BASE, 0x3f8);
-}
 
 static void main(void)
 {
-	pc87360_enable_serial();
 	uart_init();
 	console_init();
 	if (boot_cpu() && !cpu_init_detected()) {

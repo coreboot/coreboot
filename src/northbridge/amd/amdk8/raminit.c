@@ -692,6 +692,8 @@ static void sdram_set_registers(void)
 	print_debug("setting up CPU0 northbridge registers\r\n");
 	max = sizeof(register_values)/sizeof(register_values[0]);
 	for(i = 0; i < max; i += 3) {
+		device_t dev;
+		unsigned where;
 		unsigned long reg;
 #if 0
 		print_debug_hex32(register_values[i]);
@@ -699,10 +701,19 @@ static void sdram_set_registers(void)
 		print_debug_hex32(register_values[i+2]);
 		print_debug("\r\n");
 #endif
+		dev = register_values[i] & ~0xff;
+		where = register_values[i] & 0xff;
+		reg = pci_read_config32(dev, where);
+		reg &= register_values[i+1];
+		reg |= register_values[i+2];
+		pci_write_config32(dev, where, reg);
+#if 0
+
 		reg = pci_read_config32(register_values[i]);
 		reg &= register_values[i+1];
 		reg |= register_values[i+2];
 		pci_write_config32(register_values[i], reg);
+#endif
 	}
 	print_debug("done.\r\n");
 }
@@ -727,10 +738,10 @@ static void sdram_set_registers(void)
 static void sdram_set_spd_registers(void) 
 {
 	unsigned long dcl;
-	dcl = pci_read_config32(PCI_ADDR(0, 0x18, 2, DRAM_CONFIG_LOW));
+	dcl = pci_read_config32(PCI_DEV(0, 0x18, 2), DRAM_CONFIG_LOW);
 	/* Until I know what is going on disable ECC support */
 	dcl &= ~DCL_DimmEcEn;
-	pci_write_config32(PCI_ADDR(0, 0x18, 2, DRAM_CONFIG_LOW), dcl);
+	pci_write_config32(PCI_DEV(0, 0x18, 2), DRAM_CONFIG_LOW, dcl);
 }
 
 #define TIMEOUT_LOOPS 300000
@@ -739,23 +750,23 @@ static void sdram_enable(void)
 	unsigned long dcl;
 
 	/* Toggle DisDqsHys to get it working */
-	dcl = pci_read_config32(PCI_ADDR(0, 0x18, 2, DRAM_CONFIG_LOW));
+	dcl = pci_read_config32(PCI_DEV(0, 0x18, 2), DRAM_CONFIG_LOW);
 	print_debug("dcl: ");
 	print_debug_hex32(dcl);
 	print_debug("\r\n");
 	dcl |= DCL_DisDqsHys;
-	pci_write_config32(PCI_ADDR(0, 0x18, 2, DRAM_CONFIG_LOW), dcl);
+	pci_write_config32(PCI_DEV(0, 0x18, 2), DRAM_CONFIG_LOW, dcl);
 	dcl &= ~DCL_DisDqsHys;
 	dcl &= ~DCL_DLL_Disable;
 	dcl &= ~DCL_D_DRV;
 	dcl &= ~DCL_QFC_EN;
 	dcl |= DCL_DramInit;
-	pci_write_config32(PCI_ADDR(0, 0x18, 2, DRAM_CONFIG_LOW), dcl);
+	pci_write_config32(PCI_DEV(0, 0x18, 2), DRAM_CONFIG_LOW, dcl);
 	
 	print_debug("Initializing memory: ");
 	int loops = 0;
 	do {
-		dcl = pci_read_config32(PCI_ADDR(0, 0x18, 2, DRAM_CONFIG_LOW));
+		dcl = pci_read_config32(PCI_DEV(0, 0x18, 2), DRAM_CONFIG_LOW);
 		loops += 1;
 		if ((loops & 1023) == 0) {
 			print_debug(".");
@@ -771,7 +782,7 @@ static void sdram_enable(void)
 	print_debug("Clearing memory: ");
 	loops = 0;
 	do {
-		dcl = pci_read_config32(PCI_ADDR(0, 0x18, 2, DRAM_CONFIG_LOW));
+		dcl = pci_read_config32(PCI_DEV(0, 0x18, 2), DRAM_CONFIG_LOW);
 		loops += 1;
 		if ((loops & 1023) == 0) {
 			print_debug(" ");

@@ -574,6 +574,8 @@ static void setup_coherent_ht_domain(void)
 	print_debug("setting up coherent ht domain....\r\n");
 	max = sizeof(register_values)/sizeof(register_values[0]);
 	for(i = 0; i < max; i += 3) {
+		device_t dev;
+		unsigned where;
 		unsigned long reg;
 #if 0
 		print_debug_hex32(register_values[i]);
@@ -581,10 +583,18 @@ static void setup_coherent_ht_domain(void)
 		print_debug_hex32(register_values[i+2]);
 		print_debug("\r\n");
 #endif
+		dev = register_values[i] & ~0xff;
+		where = register_values[i] & 0xff;
+		reg = pci_read_config32(dev, where);
+		reg &= register_values[i+1];
+		reg |= register_values[i+2];
+		pci_write_config32(dev, where, reg);
+#if 0
 		reg = pci_read_config32(register_values[i]);
 		reg &= register_values[i+1];
 		reg |= register_values[i+2] & ~register_values[i+1];
 		pci_write_config32(register_values[i], reg);
+#endif
 	}
 	print_debug("done.\r\n");
 }

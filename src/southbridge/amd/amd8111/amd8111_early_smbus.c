@@ -11,16 +11,16 @@
 
 static void enable_smbus(void)
 {
-	uint32_t addr;
-	addr = pci_locate_device(PCI_ID(0x1022, 0x746b), 0);
-	if (addr == ~0U) {
+	device_t dev;
+	dev = pci_locate_device(PCI_ID(0x1022, 0x746b), 0);
+	if (dev == PCI_DEV_INVALID) {
 		die("SMBUS controller not found\r\n");
 	}
 	uint8_t enable;
 	print_debug("SMBus controller enabled\r\n");
-	pci_write_config32(addr + 0x58, SMBUS_IO_BASE | 1);
-	enable = pci_read_config8(addr + 0x41);
-	pci_write_config8(addr + 0x41, enable | (1 << 7));
+	pci_write_config32(dev, 0x58, SMBUS_IO_BASE | 1);
+	enable = pci_read_config8(dev, 0x41);
+	pci_write_config8(dev, 0x41, enable | (1 << 7));
 }
 
 

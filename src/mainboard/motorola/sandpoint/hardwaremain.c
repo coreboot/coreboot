@@ -11,6 +11,7 @@
 #include <version.h>
 #include <part/hard_reset.h>
 #include <boot/elf.h>
+#include <boot/linuxbios_table.h>
 #include <rom/read_bytes.h>
 #include <northbridge/motorola/mpc107/epic.h>
 #include "nvram.h"

@@ -175,7 +175,10 @@ def warning(string):
         global warnings, loc
 	warnings = warnings + 1
         print "===> WARNING: %s" % string
-        print "%s" % loc
+
+def notice(string):
+	"""Print notice message"""
+        print "===> NOTE: %s" % string
 
 def exitiferrors():
 	"""Exit parser if an error has been encountered"""
@@ -377,7 +380,7 @@ class romimage:
 		debug.info(debug.object, "ADDCRT0: %s -> %s" % (str, path))
 		o = getdict(self.initincludes, path)
 		if (o):
-			warning("Warning, init include for %s previously defined" % path)
+			warning("init include for %s previously defined" % path)
 		o = initinclude(str, path)
 		setdict(self.initincludes, path, o)
 		self.initincludesorder.append(path)
@@ -487,6 +490,7 @@ class option:
 		self.exported = 0	# option is exported
 		self.defined = 0	# option has a value
 		self.format = '%s'	# option print format
+		self.write = []		# parts that can set this option
 
 	def setvalue(self, value, values, loc):
 		self.set = 1
@@ -514,8 +518,6 @@ class option:
 
 	def setdefault(self, value, loc):
 		global global_option_values
-		if (self.default):
-			fatal("default value for %s already set" % self.name)
 		setdict(global_option_values, self.name, value)
 		self.defined = 1
 		self.default = 1
@@ -558,17 +560,17 @@ class option:
 			self.exported = 1
 		self.used = 1
 
+	def setwrite(self, part):
+		self.write.append(part)
+
 	def isexported(self):
 		return (self.exported and self.defined)
-
-#	def isdefined(self):
-#		return (self.defined)
 
 	def isset(self):
 		return (self.set)
 
-#	def isused(self):
-#		return (self.used)
+	def iswritable(self, part):
+		return (part in self.write)
 
 class option_value:
 	"""Value of a configuration option"""
@@ -849,28 +851,59 @@ def getoption(name, image):
 		v = o.getvalue(image, global_option_values)
 	return v.contents()
 
-def setoption(name, value):
+def setoption(name, value, imp):
+	"""Set an option from within a configuration file. Normally this
+	is only permitted in the target (top level) configuration file.
+	If 'imp' is true, then set an option implicitly (e.g. 'arch' 
+	and 'mainboard' statements). Implicit options can be set anywhere 
+	the statements are legal, but also performs an implicit 'uses' 
+	for the option"""
+
 	global loc, global_options, global_option_values, curimage
+
 	curpart = partstack.tos()
-	if (curpart and curpart.part != 'mainboard'):
-		fatal("Options may only be set in top-level and mainboard configuration files")
-	o = getdict(global_uses_options, name)
-	if (o == 0):
-		fatal("Attempt to set nonexistent option %s" % name)
+	if (not imp and curpart):
+		fatal("Options may only be set in target configuration file")
+	if (imp):
+		usesoption(name)
+	if (curpart):
+		o = getdict(curpart.uses_options, name)
+	else:
+		o = getdict(global_uses_options, name)
+	if (not o):
+		fatal("Attempt to set nonexistent option %s (missing USES?)" % name)
+	if (o.isset()):
+		warning("Changing option %s" % name)
 	v = option_value(value)
 	if (curimage):
 		o.setvalue(v, curimage.getvalues(), loc)
 	else:
 		o.setvalue(v, global_option_values, loc)
 
-def setdefault(name, value):
+def setdefault(name, value, isdef):
+	"""Set the default value of an option from within a configuration 
+	file. This is permitted from any configuration file, but will
+	result in a warning if the default is set more than once.
+	If 'isdef' is set, we're defining the option in Options.lb so
+	there is no need for 'uses'."""
+
 	global loc, global_options
-	o = getdict(global_options, name)
-	if (not o):
-		return
-	if (o.default):
-		print "setdefault: attempt to duplicate default for %s" % name
-		return
+
+	if (isdef):
+		o = getdict(global_options, name)
+		if (not o):
+			return
+	else:
+		curpart = partstack.tos()
+		if (curpart):
+			o = getdict(curpart.uses_options, name)
+		else:
+			o = getdict(global_uses_options, name)
+		if (not o):
+			fatal("Attempt to set default for nonexistent option %s (missing USES?)" % name)
+
+	if (o.defined):
+		warning("Changing default value of %s" % name)
 	v = option_value(value)
 	o.setdefault(v, loc)
 
@@ -932,22 +965,19 @@ def getformated(name, image):
 	f = o.getformat()
 	return (f % v.contents())
 
+def setwrite(name, part):
+	global global_options
+	o = getdict(global_options, name)
+	if (not o):
+		fatal("setwrite: %s not here" % name)
+	o.setwrite(part)
+
 def isexported(name):
 	global global_options
 	o = getdict(global_options, name)
 	if (o):
 		return o.isexported()
 	return 0
-
-#def isdefined(name, part):
-#	global global_options
-#	if (part):
-#		o = getdict(part.uses_options, name)
-#	else:
-#		o = getdict(global_options, name)
-#	if (o):
-#		return o.isdefined()
-#	return 0
 
 def isset(name, part):
 	global global_uses_options
@@ -958,16 +988,6 @@ def isset(name, part):
 	if (o):
 		return o.isset()
 	return 0
-
-#def isused(name, part):
-#	global global_options
-#	if (part):
-#		o = getdict(part.uses_options, name)
-#	else:
-#		o = getdict(global_options, name)
-#	if (o):
-#		return o.isused()
-#	return 0
 
 def usesoption(name):
 	global global_options, global_uses_options
@@ -1072,11 +1092,11 @@ def endromimage():
 
 def mainboard(path):
 	full_path = os.path.join(treetop, 'src', 'mainboard', path)
-	setoption('MAINBOARD', full_path)
+	setoption('MAINBOARD', full_path, 1)
         vendor = re.sub("/.*", "", path)
         part_number = re.sub("[^/]*/", "", path)
-	setoption('MAINBOARD_VENDOR', vendor)
-	setoption('MAINBOARD_PART_NUMBER', part_number)
+	setoption('MAINBOARD_VENDOR', vendor, 1)
+	setoption('MAINBOARD_PART_NUMBER', part_number, 1)
 	dodir('/config', 'Config.lb')
 	part('mainboard', path, 'Config.lb', 0, 0)
 	curimage.setroot(partstack.tos())
@@ -1137,10 +1157,7 @@ def part(type, path, file, name, link):
 	if (type == 'cpu'):
 		cpudir(path)
 	else:
-        	if (type == 'mainboard'):
-			doconfigfile(srcdir, partdir, file, 'mainboard_cfgfile')
-		else:
-			doconfigfile(srcdir, partdir, file, 'cfgfile')
+		doconfigfile(srcdir, partdir, file, 'cfgfile')
 
 def partpop():
 	global dirstack, partstack
@@ -1151,7 +1168,7 @@ def partpop():
 	# Warn if options are used without being set in this part
 	for i in curpart.uses_options.keys():
 		if (not isset(i, curpart)):
-			warning("Option %s using default value %s" % (i, getformated(i, curpart.image)))
+			notice("Option %s using default value %s" % (i, getformated(i, curpart.image)))
 	dirstack.pop()
 
 def dodir(path, file):
@@ -1197,7 +1214,7 @@ def setarch(my_arch):
 	"""arch is 'different' ... darn it."""
 	global curimage
 	curimage.setarch(my_arch)
-	setoption('ARCH', my_arch)
+	setoption('ARCH', my_arch, 1)
 	part('arch', my_arch, 'Config.lb', 0, 0)
 
 def doconfigfile(path, confdir, file, rule):
@@ -1312,6 +1329,7 @@ parser Config:
     token TARGET:		'target'
     token USED:			'used'
     token USES:			'uses'
+    token WRITE:		'write'
     token NUM:			'[0-9]+'
     token HEX_NUM:		'[0-9a-fA-F]+'
     token HEX_PREFIX:		'0x'
@@ -1401,6 +1419,8 @@ parser Config:
 
     rule dir<<C>>:	DIR DIRPATH 		{{ if (C): dodir(DIRPATH, 'Config.lb') }}
 
+    rule default<<C>>:	DEFAULT ID EQ value	{{ if (C): setdefault(ID, value, 0) }}
+
     rule ldscript<<C>>:	LDSCRIPT DIRPATH	{{ if (C): addldscript(DIRPATH) }}
 
     rule iif<<C>>:	IF ID			{{ c = lookup(ID) }}
@@ -1465,6 +1485,7 @@ parser Config:
     rule stmt<<C>>:	arch<<C>>		{{ return arch}}
 		|	addaction<<C>>		{{ return addaction }}
     		|	config<<C>>		{{ return config}}
+		|	default<<C>>		{{ return default}}
 		|	dir<<C>>		{{ return dir}}
 		|	driver<<C>>		{{ return driver }}
 		|	iif<<C>>	 	{{ return iif }}
@@ -1487,12 +1508,6 @@ parser Config:
     rule cfgfile:	(uses<<1>>)* 
     			(stmt<<1>>)*
 			EOF			{{ return 1 }}
-    #mainboard config files are special, in that they can also have
-    # default values.
-    rule mainboard_cfgfile:	(uses<<1>>)* 
-                            (defstmts<<1>>)*
-    			(stmt<<1>>)*
-			EOF			{{ return 1 }}
 
     rule usesid<<C>>:	ID			{{ if (C): usesoption(ID) }}
 
@@ -1502,7 +1517,7 @@ parser Config:
 		| 	expr			{{ return expr }}
 		|	DELEXPR			{{ return DELEXPR }}
 
-    rule option<<C>>:	OPTION ID EQ value	{{ if (C): setoption(ID, value) }}
+    rule option<<C>>:	OPTION ID EQ value	{{ if (C): setoption(ID, value, 0) }}
 
     rule opif<<C>>:	IF ID			{{ c = lookup(ID) }}
 			(opstmt<<C and c>>)* 
@@ -1552,9 +1567,11 @@ parser Config:
     # ENTRY for parsing a delayed value
     rule delexpr:	"{" expr "}" EOF	{{ return expr }}
 
+    rule wrstr<<ID>>:	STR			{{ setwrite(ID, dequote(STR)) }}
+
     rule defstmts<<ID>>:			{{ d = 0 }}
 			( DEFAULT
-			  ( value		{{ setdefault(ID, value) }}
+			  ( value		{{ setdefault(ID, value, 1) }}
 			  | NONE		{{ setnodefault(ID) }}
 			  )			{{ d = d | 1 }}
 			| FORMAT STR		{{ setformat(ID, dequote(STR)) }}
@@ -1564,6 +1581,7 @@ parser Config:
 			  | NEVER		{{ setnoexport(ID) }}
 			  )			{{ d = d | 2 }}
 			| COMMENT STR 		{{ setcomment(ID, dequote(STR)); d = d | 4 }}
+			| WRITE (wrstr<<ID>>)+
 			)+			{{ return d }}
 		
     rule define:	DEFINE ID 		{{ newoption(ID) }}
@@ -1582,11 +1600,12 @@ def writemakefileheader(file, fname):
 		% (sys.argv[0], sys.argv[1], sys.argv[2]))
 
 def writemakefilesettings(path):
+	""" Write Makefile.settings to seperate the settings
+	from the actual makefile creation. In practice you need to 
+	rerun NLBConfig.py to change these but in theory you shouldn't 
+	need to."""
+
 	global treetop, target_dir
-	# Write Makefile.settings to seperate the settings
-	# from the actual makefile creation
-	# In practice you need to rerun NLBConfig.py to change
-	# these but in theory you shouldn't need to.
 
 	filename = os.path.join(path, "Makefile.settings")
 	print "Creating", filename
@@ -1594,23 +1613,17 @@ def writemakefilesettings(path):
 	writemakefileheader(file, filename)
 	file.write("TOP:=%s\n" % (treetop))
 	file.write("TARGET_DIR:=%s\n" % target_dir)
-#	for i in global_options_by_order:
-#		if (isexported(i, 0)):
-#			file.write("export %s:=%s\n" % (i, getformated(i, 0)))
-#	file.write("export VARIABLES := ")
-#	for i in global_options.keys():
-#		if (isexported(i, 0)):
-#			file.write("%s " % i)
 	file.write("\n")
 	file.close()
 
 def writeimagesettings(image):
+	"""Write Makefile.settings to seperate the settings
+	from the actual makefile creation. In practice you need to 
+	rerun NLBConfig.py to change these but in theory you shouldn't 
+	need to."""
+
 	global treetop
 	global global_options_by_order
-	# Write Makefile.settings to seperate the settings
-	# from the actual makefile creation
-	# In practice you need to rerun NLBConfig.py to change
-	# these but in theory you shouldn't need to.
 
 	filename = os.path.join(image.gettargetdir(), "Makefile.settings")
 	print "Creating", filename
@@ -1700,20 +1713,32 @@ def writeimagemakefile(image):
 
 	# Print out the user defines.
 	file.write("\n# userdefines:\n")
-	#for udef in image.userdefines:
-		#file.write("%s\n" % udef)
 		
 	# Print out the base rules.
 	# Need to have a rule that counts on 'all'.
 	file.write("\n# mainrulelist:")
-	#file.write("\nmainrule: %s\n" % image.mainrulelist)
 
 	# Print out any user rules.
 	file.write("\n# From makerule or docipl commands:\n")
-	# Old way (hash order): for target in makebaserules.keys():
-	# New way (config file order):
-	#for target in image.makerule_targets:
-		#image.makebaserules[target].write(file)
+
+	file.write("\n# initobjectrules:\n")
+	for irule, init in image.getinitobjectrules().items():
+		source = topify(init[1])
+		type = init[2]
+		if (type  == 'S'):
+			# for .S, .o depends on .s
+			file.write("%s: %s.s\n" % (init[0], init[3]))
+        		file.write("\t@echo $(CC) ... -o $@ $<\n")
+        		file.write("\t$(CC) -c $(CPU_OPT) -o $@ $<\n")
+			# and .s depends on .S
+			file.write("%s.s: %s\n" % (init[3], source))
+			file.write("\t@echo $(CPP) ... $< > $@\n")
+			# Note: next 2 lines are ONE output line!
+        		file.write("\t$(CPP) $(CPPFLAGS) $< ")
+			file.write(">$@.new && mv $@.new $@\n")
+		else:
+			file.write("%s: %s\n" % (init[0], source))
+			file.write("\t$(CC) -c $(CFLAGS) -o $@ $<\n")
 
 	file.write("\n# objectrules:\n")
 	for objrule, obj in image.getobjectrules().items():
@@ -1757,22 +1782,6 @@ def writeimagemakefile(image):
 		file.write("GENERATED += %s\n" % genfile)
 	file.write("GENERATED += %s\n" % image.getincludefilename())
 
-	#file.write("\n# Remake Makefile (and the other files generated by\n")
-	#file.write("# NLBConfig.py) if any config dependencies change.\n")
-
-	#for cfile in image.config_file_list:
-	#	file.write("$(GENERATED): %s\n" % topify(cfile))
-
-	#for depfile in [ '%s' % top_config_file,    # This a duplicate, remove?
-	#		'$(TOP)/util/config/NLBConfig.py',
-	#		'$(TOP)/src/arch/$(ARCH)/config/make.base' ]:
-	#	file.write("$(GENERATED): %s\n" % depfile)
-
-	#file.write("$(GENERATED):\n")
-	#file.write("\tpython $(TOP)/util/config/NLBConfig.py %s $(TOP)\n"
-	#		% top_config_file)
-
-	#keys = image.getroot().uses_options.keys()
 	keys = global_options_by_order
 	keys.sort()
 	file.write("\necho:\n")
@@ -1850,10 +1859,8 @@ def writeinitincludes(image):
 	outfile.close()
 
 def writeldoptions(image):
-	# Write Makefile.settings to seperate the settings
-	# from the actual makefile creation
-	# In practice you need to rerun NLBConfig.py to change
-	# these but in theory you shouldn't need to.
+	"""Write Makefile.settings to seperate the settings
+	from the actual makefile creation."""
 
 	filename = os.path.join(image.gettargetdir(), "ldoptions")
 	print "Creating", filename

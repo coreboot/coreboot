@@ -35,7 +35,9 @@ option NO_KEYBOARD=1
 ##
 ## Limit board rate to DINK speed for the moment
 ##
-option TTYS0_BAUD=38400
+#option TTYS0_BAUD=38400
+#option TTYS0_BAUD=9600
+option TTYS0_BAUD=115200
 
 ###
 ### LinuxBIOS layout values

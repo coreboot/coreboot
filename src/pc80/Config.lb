@@ -1,4 +1,4 @@
-uses CONFIG_IDE_STREAM
+uses CONFIG_IDE
 uses CONFIG_LEGACY_VGABIOS
 
 object mc146818rtc.o
@@ -11,7 +11,7 @@ object isa-dma.o
 #object vga_set_mode.o VIDEO_CONSOLE
 #object vga_load_pcx.o VIDEO_CONSOLE
 
-if CONFIG_IDE_STREAM
+if CONFIG_IDE
 	dir ide
 end
 

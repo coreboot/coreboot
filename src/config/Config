@@ -20,8 +20,8 @@ option LINUXBIOS_COMPILE_TIME   = $(shell date +%T)
 option LINUXBIOS_COMPILE_BY     = $(shell whoami)
 option LINUXBIOS_COMPILE_HOST   = $(shell hostname)
 option LINUXBIOS_COMPILE_DOMAIN = $(shell dnsdomainname)
-option LINUXBIOS_COMPILER       = $(shell  $(CC) $(CFLAGS) -v 2>&1 | tail -1)
-option LINUXBIOS_LINKER         = $(shell  $(CC) -Wl,-v 2>&1 | grep version | tail -1)
+option LINUXBIOS_COMPILER       = $(shell  $(CC) $(CFLAGS) -v 2>&1 | tail -n 1)
+option LINUXBIOS_LINKER         = $(shell  $(CC) -Wl,-v 2>&1 | grep version | tail -n 1)
 option LINUXBIOS_ASSEMBLER      = $(shell  touch dummy.s ; $(CC) -c -Wa,-v dummy.s 2>&1; rm -f dummy.s dummy.o )
 
 makerule ldscript.ld : ldoptions $(LDSUBSCRIPTS-1) ; echo "INCLUDE ldoptions" > $@ ; for file in $(LDSUBSCRIPTS-1) ; do echo "INCLUDE $$file" >> $@ ; done

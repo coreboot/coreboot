@@ -98,7 +98,7 @@ bad_ctc:
  */
 static unsigned long long calibrate_tsc(void)
 {
-	unsigned long long retval, start, end, delta;
+	unsigned long long start, end, delta;
 	unsigned long allones = (unsigned long) -1, result;
 	unsigned long startlow, starthigh;
 	unsigned long endlow, endhigh;
@@ -130,7 +130,7 @@ static unsigned long long calibrate_tsc(void)
 	printk_spew("32-bit delta %d\n", (unsigned long) delta);
 	
 	printk_spew(__FUNCTION__ " 32-bit result is %d\n", result);
-	return retval;
+	return delta;
 }
 
 

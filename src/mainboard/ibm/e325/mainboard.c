@@ -31,6 +31,7 @@ static void enumerate(struct chip *chip)
 		printk_debug("Enumerating: %s\n", chip->control->name);
 	}
 
+	/* update device operation for dynamic root */
 	dev_root.ops = &mainboard_operations;
 	chip->dev = &dev_root;
 	chip->bus = 0;

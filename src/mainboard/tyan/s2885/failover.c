@@ -60,17 +60,17 @@ static void main(void)
 		goto fallback_image;
 	}
  normal_image:
-	asm("jmp __normal_image" 
-		: /* outputs */ 
-		: "a" (bist) /* inputs */
-		: /* clobbers */
-		);
+	asm volatile ("jmp __normal_image" 
+		      : /* outputs */ 
+		      : "a" (bist) /* inputs */
+		      : /* clobbers */
+		      );
  cpu_reset:
-	asm("jmp __cpu_reset"
-		: /* outputs */ 
-		: "a"(bist) /* inputs */
-		: /* clobbers */
-		);
+	asm volatile ("jmp __cpu_reset"
+		      : /* outputs */ 
+		      : "a"(bist) /* inputs */
+		      : /* clobbers */
+		      );
  fallback_image:
 #if HAVE_REGPARM_SUPPORT
 	return bist;

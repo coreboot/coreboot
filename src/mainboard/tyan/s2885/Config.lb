@@ -6,26 +6,42 @@ uses LB_CKS_RANGE_END
 uses LB_CKS_LOC
 uses MAINBOARD
 uses ARCH
+uses HAVE_HARD_RESET
 uses HARD_RESET_BUS
 uses HARD_RESET_DEVICE
 uses HARD_RESET_FUNCTION
+uses IRQ_SLOT_COUNT
+uses HAVE_OPTION_TABLE
+uses CONFIG_MAX_CPUS
+uses CONFIG_IOAPIC
+uses CONFIG_SMP
+uses MAINBOARD_PART_NUMBER
+uses MAINBOARD_VENDOR
 
-#
-#
-###
-### Set all of the defaults for an x86 architecture
-###
+##
+## Build code to reset the motherboard from linuxBIOS
+##
+default HAVE_HARD_RESET=1
+default HARD_RESET_BUS=3
+default HARD_RESET_DEVICE=4
+default HARD_RESET_FUNCTION=0
 
-#
-#
 ###
-### Build the objects we have code for in this directory.
+### Build code to export a programmable irq routing table
 ###
+default HAVE_PIRQ_TABLE=1
+default IRQ_SLOT_COUNT=11
 
-config chip.h
-register "fixup_scsi" = "1"
-register "fixup_vga" = "1"
+##
+## Build code to export an x86 MP table
+## Useful for specifying IRQ routing values
+##
+default HAVE_MP_TABLE=1
 
+##
+## Build code to export a CMOS option table
+##
+default HAVE_OPTION_TABLE=1
 
 ##
 ## Move the default LinuxBIOS cmos range off of AMD RTC registers
@@ -34,22 +50,43 @@ default LB_CKS_RANGE_START=49
 default LB_CKS_RANGE_END=122
 default LB_CKS_LOC=123
 
+###
+### Build code for SMP support
+### Only worry about 2 micro processors
+###
+default CONFIG_SMP=1
+default CONFIG_MAX_CPUS=2
+
+#
+###
+### Build code to setup a generic IOAPIC
+###
+default CONFIG_IOAPIC=1
+
+###
+### Clean up the motherboard id strings
+###
+default MAINBOARD_PART_NUMBER="S2885"
+default MAINBOARD_VENDOR="Tyan"
+
+###
+### Set all of the defaults for an x86 architecture
+###
+
+arch i386 end
+
+###
+### Build the objects we have code for in this directory.
+###
 driver mainboard.o
 #dir /drvers/adaptec/7902
 #dir /drivers/si/3114
 #dir /drivers/intel/82551
-driver ti_firewire.o
+#driver ti_firewire.o
 #dir /drivers/vga
 
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
-#
-default HARD_RESET_BUS=3
-default HARD_RESET_DEVICE=4
-default HARD_RESET_FUNCTION=0
-#
-#
-arch i386 end
 
 #
 ###
@@ -72,7 +109,7 @@ else
 	mainboardinit cpu/i386/reset32.inc 
 	ldscript /cpu/i386/reset32.lds 
 end
-#
+
 #### Should this be in the northbridge code?
 mainboardinit arch/i386/lib/cpu_reset.inc
 #
@@ -149,6 +186,9 @@ mainboardinit cpu/k8/disable_mmx_sse.inc
 ### Include the secondary Configuration files 
 ###
 dir /pc80
+config chip.h
+register "fixup_scsi" = "1"
+register "fixup_vga" = "1"
 
 northbridge amd/amdk8 "mc0"
         pci 0:18.0
@@ -192,7 +232,7 @@ northbridge amd/amdk8 "mc0"
                         pnp 2e.5 on #  Keyboard
                                  io 0x60 = 0x60
                                  io 0x62 = 0x64
-                               irq 0x70 = 1
+                                irq 0x70 = 1
 				irq 0x72 = 12
                         pnp 2e.6 off #  CIR
                         pnp 2e.7 off #  GAME_MIDI_GIPO1
@@ -218,11 +258,9 @@ northbridge amd/amdk8 "mc1"
         pci 0:19.3
 end
 
-#dir /bioscall
-
 cpu k8 "cpu0"
-  register "ldt0" = "{.chip = &amd8151, .ht_width=16, .ht_speed=600}"
-  register "ldt2" = "{.chip = &amd8131, .ht_width=16, .ht_speed=600}"
+	register "ldt0" = "{.chip = &amd8151, .ht_width=16, .ht_speed=600}"
+  	register "ldt2" = "{.chip = &amd8131, .ht_width=16, .ht_speed=600}"
 end
 
 cpu k8 "cpu1"

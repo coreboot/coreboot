@@ -106,3 +106,35 @@ static int smbus_read_byte(unsigned device, unsigned address)
 	}
 	return byte;
 }
+
+static void smbus_write_byte(unsigned device, unsigned address, unsigned char val)
+{
+#if 0
+	if (smbus_wait_until_ready() < 0) {
+		return;
+	}
+
+	/* setup transaction */
+	/* disable interrupts */
+	outw(inw(SMBUS_IO_BASE + SMBGCTL) & ~((1<<10)|(1<<9)|(1<<8)|(1<<4)),
+			SMBUS_IO_BASE + SMBGCTL);
+	/* set the device I'm talking too */
+	outw(((device & 0x7f) << 1) | 1, SMBUS_IO_BASE + SMBHSTADDR);
+	outb(address & 0xFF, SMBUS_IO_BASE + SMBHSTCMD);
+	/* set up for a byte data write */ /* FIXME */
+	outw((inw(SMBUS_IO_BASE + SMBGCTL) & ~7) | (0x1), SMBUS_IO_BASE + SMBGCTL);
+	/* clear any lingering errors, so the transaction will run */
+	/* Do I need to write the bits to a 1 to clear an error? */
+	outw(inw(SMBUS_IO_BASE + SMBGSTATUS), SMBUS_IO_BASE + SMBGSTATUS);
+
+	/* clear the data word...*/
+	outw(val, SMBUS_IO_BASE + SMBHSTDAT);
+
+	/* start the command */
+	outw((inw(SMBUS_IO_BASE + SMBGCTL) | (1 << 3)), SMBUS_IO_BASE + SMBGCTL);
+
+	/* poll for transaction completion */
+	smbus_wait_until_done();
+#endif
+	return;
+}

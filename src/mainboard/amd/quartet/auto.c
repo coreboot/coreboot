@@ -99,9 +99,10 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	unsigned hub = device >> 8;
 	
 	device &= 0xff;
-	// smbus_write_byte(SMBUS_HUB, hub);
+	smbus_write_byte(SMBUS_HUB, 0x01, 1<<hub);
+	smbus_write_byte(SMBUS_HUB, 0x03, 0);
+
 	return smbus_read_byte(device, address);
-	
 }
 
 /* no specific code here. this should go away completely */

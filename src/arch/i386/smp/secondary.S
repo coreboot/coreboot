@@ -1,9 +1,8 @@
-.text
-#include <cpu/p6/mtrr.h>
-#include <cpu/p6/apic.h>
 #include <arch/asm.h>
 #include <arch/intel.h>
-
+#include <cpu/p6/mtrr.h>
+#include <cpu/p6/apic.h>
+	.text
 	.globl _secondary_start
 	.balign 4096
 _secondary_start:
@@ -45,9 +44,6 @@ _secondary_start:
 	orl	$APIC_DEFAULT_BASE, %eax
 	wrmsr
 
-	/* Do I want to set the absolute memory limits in C ? */
-	CALLSP(set_memory_size)
-
 	/* Get the apic_id */
 	movl	(APIC_ID + APIC_DEFAULT_BASE), %edi
 	shrl	$24, %edi
@@ -69,11 +65,12 @@ _secondary_start:
 	subl	%eax, %esp
 
 	call	EXT(secondary_cpu_init)
-	jmp	__cpu_reset	
+1:	hlt
+	jmp	1b
 
 gdtaddr:
-	.word	gdt_end - gdt - 1 /* compute the table limit */
-	.long	gdt                /* we know the offset */
-		
-.previous
+	.word	gdt_limit	/* the table limit */
+	.long	gdt		/* we know the offset */
+
+
 .code32

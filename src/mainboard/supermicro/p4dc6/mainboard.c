@@ -42,11 +42,11 @@ static void set_power_on_after_power_fail(int setting)
 	case MAINBOARD_POWER_ON:
 	default:
 		ich2_power_after_power_fail(1);
-		w832627hf_power_after_power_fail(POWER_ON);
+		w83627hf_power_after_power_fail(POWER_ON);
 		break;
 	case MAINBOARD_POWER_OFF:
 		ich2_power_after_power_fail(0);
-		w832627hf_power_after_power_fail(POWER_OFF);
+		w83627hf_power_after_power_fail(POWER_OFF);
 		break;
 
 	}
@@ -55,6 +55,8 @@ void mainboard_fixup(void)
 {
 	int cpu_clock_multiplier;
 	int power_on_after_power_fail;
+
+	w83627hf_power_led(LED_ON);
 	ich2_enable_ioapic();
 	ich2_enable_serial_irqs();
 	ich2_enable_ide(1,1);
@@ -161,11 +163,4 @@ void cache_ram_start(void)
         } else {
                 printk_info("Leaving cacheram...\n");
         }
-
 }
-
-
-
-
-
-

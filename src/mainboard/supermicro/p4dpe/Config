@@ -12,11 +12,6 @@ ldscript cpu/i386/entry16.lds
 ldscript cpu/i386/entry32.lds 
 
 ##
-## Test for logical cpu thats not BSP
-##
-mainboardinit cpu/i786/logical_cpu.inc USE_FALLBACK_IMAGE
-
-##
 ## Build our reset vector (This is where linuxBIOS is entered)
 ##
 mainboardinit cpu/i386/reset16.inc USE_FALLBACK_IMAGE
@@ -30,23 +25,17 @@ ldscript cpu/i386/reset32.lds USE_NORMAL_IMAGE
 mainboardinit arch/i386/lib/id.inc
 ldscript arch/i386/lib/id.lds
 
-##
-## Startup code for secondary CPUS
-##
-# mainboardinit arch/i386/smp/secondary.inc
-
 ## This is the early phase of linuxBIOS startup 
 ## Things are delicate and we test to see if we should
 ## failover to another image.
-mainboardinit northbridge/intel/82860/reset_test.inc
+mainboardinit northbridge/intel/E7500/reset_test.inc
 mainboardinit arch/i386/lib/noop_failover.inc USE_NORMAL_IMAGE
-mainboardinit southbridge/intel/82801/cmos_failover.inc USE_FALLBACK_IMAGE
+mainboardinit southbridge/intel/82801ca/cmos_failover.inc USE_FALLBACK_IMAGE
 ldscript arch/i386/lib/failover.lds USE_FALLBACK_IMAGE
 
 ###
 ### O.k. We aren't just an intermediary anymore!
 ###
-
 
 ##
 ## Setup our mtrrs
@@ -59,28 +48,31 @@ mainboardinit cpu/i786/earlymtrr.inc
 mainboardinit superio/winbond/w83627hf/setup_serial.inc
 mainboardinit pc80/serial.inc
 mainboardinit arch/i386/lib/console.inc
+mainboardinit southbridge/intel/82801ca/watchdog_disable.inc
 
 ##
-## Switch temporarily into C code to setup RAM
+## Reset pci clock for hardware bug work around
 ##
-#mainboardinit cpu/i786/cache_ram_init.inc
-## mainboardinit cpu/i786/cache_ram_test.inc
-#mainboardinit cpu/i786/cache_ram_start.inc
-#mainboardinit cpu/i786/cache_ram_fini.inc
-#ldscript cpu/i786/cache_ram.lds
+mainboardinit southbridge/intel/82801ca/smbus.inc
+mainboardinit southbridge/intel/82801ca/smbus_write_block.inc
+mainboardinit mainboard/supermicro/p4dpe/pci_clk_reset.inc
 
-mainboardinit ram/ramtest.inc
-option RAMTEST=1
-mainboardinit ram/dump_northbridge.inc
+##
+## Smbus functions
+##
+mainboardinit southbridge/intel/82801ca/smbus_read_byte.inc
+#mainboardinit southbridge/intel/82801ca/smbus_read_block.inc
+#mainboardinit southbridge/intel/82801ca/smbus_print_block.inc
+mainboardinit mainboard/supermicro/p4dpe/select_i2c_spd.inc
 
 ##
 ## Setup RAM
 ##
-#mainboardinit southbridge/intel/82801/smbus.inc
+mainboardinit ram/spotcheck.inc
+#mainboardinit ram/dump_northbridge.inc
+#mainboardinit sdram/generic_dump_smbus.inc
 #mainboardinit sdram/generic_dump_spd.inc
 mainboardinit mainboard/supermicro/p4dpe/mainboard_raminit.inc
-mainboardinit ram/spotcheck.inc
-
 
 ##
 ## Include the secondary Configuration files 
@@ -88,7 +80,7 @@ mainboardinit ram/spotcheck.inc
 northbridge intel/E7500
 southbridge intel/82801ca
 southbridge intel/82870
-nsuperio winbond/w83627hf com1={1} com2={1} floppy=1 lpt=1 keyboard=1
+nsuperio winbond/w83627hf com1={1} com2={1} floppy=1 lpt=1 keyboard=1 hwmonitor=1
 dir /src/pc80
 dir /src/superio/winbond/w83627hf
 dir /src/ram/
@@ -100,7 +92,7 @@ cpu i786
 ## Build the objects we have code for in this directory.
 ##
 object mainboard.o
-object mtrr_values.o
+#object devices.o
 object mptable.o HAVE_MP_TABLE
 object irq_tables.o HAVE_PIRQ_TABLE
 
@@ -118,7 +110,6 @@ option SMBUS_MEM_DEVICE_END=(SMBUS_MEM_DEVICE_START +3)
 option SMBUS_MEM_DEVICE_INC=1
 option SMBUS_MEM_CHANNEL_OFF=4
 
-
 ##
 ## Customize our winbond superio chip for this motherboard
 ##
@@ -133,7 +124,14 @@ option HAVE_FALLBACK_BOOT=1
 ##
 ## Build code for using cache as RAM
 ##
-option USE_CACHE_RAM=1
+#option USE_CACHE_RAM=0
+
+##
+## Delay timer options
+##
+option CONFIG_UDELAY_TSC=1
+option CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2=1
+
 
 ##
 ## Build code to reset the motherboard from linuxBIOS
@@ -187,22 +185,6 @@ option IOAPIC=1
 nooption MEMORY_HOLE
 
 ##
-## Don't do a generic MTRR setup
-## Instead use values from the fixed_mtrr_values array
-##
-option HAVE_MTRR_TABLE=1
-
-##
-## Enable both fixed and variable MTRRS
-## When we setup MTRRs in mtrr.c  
-##
-## We must setup the fixed mtrrs or we confuse SMP secondary
-## processor identification
-##
-option ENABLE_FIXED_AND_VARIABLE_MTRRS=1
-
-
-##
 ## Figure out which type of linuxBIOS image to build
 ## If we aren't a fallback image we must be a normal image
 ## This is useful for optional includes
@@ -241,8 +223,11 @@ option HEAP_SIZE=0x2000
 ##
 ## Clean up the motherboard id strings
 ##
-option MAINBOARD_PART_NUMBER=P4DPR
+option MAINBOARD_PART_NUMBER=P4DP6
 option MAINBOARD_VENDOR=Supermicro
+
+option UPDATE_MICROCODE=1
+option CPU_FIXUP=1
 
 ##
 ## Only use the option table in a normal image

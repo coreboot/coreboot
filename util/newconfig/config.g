@@ -1076,12 +1076,6 @@ def cpudir(path):
 	
 def part(type, path, file, name):
 	global curimage, dirstack, partstack
-	# special case for 'cpu' parts. 
-	# we could add a new function too, but this is rather trivial.
-	# if the part is a cpu, and we haven't seen it before, 
-	# arrange to source the directory /cpu/'type'
-	if (type == 'cpu'):
-		cpudir(path)
 	partdir = os.path.join(type, path)
 	srcdir = os.path.join(treetop, 'src')
 	fulldir = os.path.join(srcdir, partdir)
@@ -1091,7 +1085,14 @@ def part(type, path, file, name):
 	print "Configuring PART %s, path %s" % (type, path)
 	partstack.push(newpart)
 	dirstack.push(fulldir)
-	doconfigfile(srcdir, partdir, file)
+	# special case for 'cpu' parts. 
+	# we could add a new function too, but this is rather trivial.
+	# if the part is a cpu, and we haven't seen it before, 
+	# arrange to source the directory /cpu/'type'
+	if (type == 'cpu'):
+		cpudir(path)
+	else:
+		doconfigfile(srcdir, partdir, file)
 
 def partpop():
 	global dirstack, partstack

@@ -17,7 +17,7 @@ extern __inline__ void toggle_ready_jedec(volatile char *dst)
 
 	tmp1 = *dst & 0x40;
 
-	while (i++ < 0xFFFFFF) {
+	while (i++ < 0xFFFFFFF) {
 		tmp2 = *dst & 0x40;
 		if (tmp1 == tmp2) {
 			break;
@@ -33,7 +33,7 @@ extern __inline__ void data_polling_jedec(volatile char *dst, char data)
 
 	data &= 0x80;
 
-	while (i++ < 0xFFFFFF) {
+	while (i++ < 0xFFFFFFF) {
 		tmp = *dst & 0x80;
 		if (tmp == data) {
 			break;

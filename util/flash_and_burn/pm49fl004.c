@@ -55,43 +55,6 @@ static __inline__ int erase_block_49fl004(volatile unsigned char *bios,
 	return (0);
 }
 
-static __inline__ int write_block_49fl004(volatile char *bios,
-					  unsigned char *src,
-					  volatile unsigned char *dst,
-					  unsigned int page_size)
-{
-	int i;
-	volatile char *Temp;
-
-	for (i = 0; i < page_size; i++) {
-		if (*dst != 0xff) {
-			printf("FATAL: dst %p not erased (val 0x%x\n", dst,
-			       *dst);
-			return (-1);
-		}
-		/* transfer data from source to destination */
-		if (*src == 0xFF) {
-			dst++, src++;
-			/* If the data is 0xFF, don't program it */
-			continue;
-		}
-		Temp = (bios + 0x5555);
-		*Temp = 0xAA;
-		Temp = bios + 0x2AAA;
-		*Temp = 0x55;
-		Temp = bios + 0x5555;
-		*Temp = 0xA0;
-		*dst = *src;
-		toggle_ready_jedec(bios);
-		if (*dst != *src)
-			printf("BAD! dst 0x%lx val 0x%x src 0x%x\n",
-			       (unsigned long) dst, *dst, *src);
-		dst++, src++;
-	}
-
-	return (0);
-}
-
 int write_49fl004(struct flashchip *flash, unsigned char *buf)
 {
 	int i;
@@ -106,10 +69,9 @@ int write_49fl004(struct flashchip *flash, unsigned char *buf)
 
 		/* write to the sector */
 		printf("%04d at address: 0x%08x", i, i * page_size);
-		write_block_49fl004(bios, buf + i * page_size,
-				    bios + i * page_size, page_size);
-		printf
-		    ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		write_sector_jedec(bios, buf + i * page_size,
+				   bios + i * page_size, page_size);
+		printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 		fflush(stdout);
 	}
 	printf("\n");

@@ -31,7 +31,7 @@ struct flashchip {
 #define MX_ID             0xC2
 #define MX_29F002         0xB0
 
-#define SST_ID            0xBF	/* SST Manufacturer ID[B code   */
+#define SST_ID            0xBF	/* SST Manufacturer ID code   */
 #define SST_29EE020A      0x10	/* SST 29EE020 device code      */
 #define SST_28SF040       0x04	/* SST 29EE040 device code    */
 #define SST_39SF020       0xB6	/* SST 39SF020  device        */

@@ -75,9 +75,8 @@ static int enable_flash_e7500(struct pci_dev *dev, char *name)
 	pci_write_byte(dev, 0x4e, new);
 
 	if (pci_read_byte(dev, 0x4e) != new) {
-		printf
-		    ("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
-		     0x4e, new, name);
+		printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
+		       0x4e, new, name);
 		return -1;
 	}
 	return 0;
@@ -104,15 +103,12 @@ static int enable_flash_vt8235(struct pci_dev *dev, char *name)
 
 	ok = pci_write_byte(dev, 0x40, new);
 	if (ok != 0) {
-		printf
-		    ("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
-		     old, new, name);
+		printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
+		       old, new, name);
 	}
 
 	/* enable GPIO15 which is connected to write protect. */
-	base =
-	    ((pci_read_byte(dev, 0x88) & 0x80) | pci_read_byte(dev, 0x89)
-	     << 8);
+	base = ((pci_read_byte(dev, 0x88) & 0x80) | pci_read_byte(dev, 0x89) << 8);
 	val = inb(base + 0x4d);
 	val |= 0x80;
 	outb(val, base + 0x4d);
@@ -133,9 +129,8 @@ static int enable_flash_vt8231(struct pci_dev *dev, char *name)
 	pci_write_byte(dev, 0x40, val);
 
 	if (pci_read_byte(dev, 0x40) != val) {
-		printf
-		    ("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
-		     0x40, val, name);
+		printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
+		       0x40, val, name);
 		return -1;
 	}
 	return 0;
@@ -150,9 +145,8 @@ static int enable_flash_cs5530(struct pci_dev *dev, char *name)
 	new = pci_read_byte(dev, 0x52);
 
 	if (new != 0xee) {
-		printf
-		    ("tried to set register 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
-		     0x52, new, name);
+		printf("tried to set register 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
+		       0x52, new, name);
 		return -1;
 	}
 	return 0;
@@ -167,9 +161,8 @@ static int enable_flash_sc1100(struct pci_dev *dev, char *name)
 	new = pci_read_byte(dev, 0x52);
 
 	if (new != 0xee) {
-		printf
-		    ("tried to set register 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
-		     0x52, new, name);
+		printf("tried to set register 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
+		       0x52, new, name);
 		return -1;
 	}
 	return 0;
@@ -190,9 +183,8 @@ static int enable_flash_sis5595(struct pci_dev *dev, char *name)
 
 	newer = pci_read_byte(dev, 0x45);
 	if (newer != new) {
-		printf
-		    ("tried to set register 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
-		     0x45, new, name);
+		printf("tried to set register 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
+		       0x45, new, name);
 		printf("Stuck at 0x%x\n", newer);
 		return -1;
 	}
@@ -214,9 +206,8 @@ static int enable_flash_amd8111(struct pci_dev *dev, char *name)
 	if (new != old) {
 		pci_write_byte(dev, 0x43, new);
 		if (pci_read_byte(dev, 0x43) != new) {
-			printf
-			    ("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
-			     0x43, new, name);
+			printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
+			       0x43, new, name);
 		}
 	}
 
@@ -227,9 +218,8 @@ static int enable_flash_amd8111(struct pci_dev *dev, char *name)
 	pci_write_byte(dev, 0x40, new);
 
 	if (pci_read_byte(dev, 0x40) != new) {
-		printf
-		    ("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
-		     0x40, new, name);
+		printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
+		       0x40, new, name);
 		return -1;
 	}
 	return 0;

@@ -33,8 +33,8 @@
 int write_49lf040(struct flashchip *flash, unsigned char *buf)
 {
 	int i;
-	int total_size = flash->total_size * 1024, page_size =
-	    flash->page_size;
+	int total_size = flash->total_size * 1024;
+	int page_size = flash->page_size;
 	volatile char *bios = flash->virt_addr;
 
 	printf("Programming Page: ");
@@ -48,8 +48,7 @@ int write_49lf040(struct flashchip *flash, unsigned char *buf)
 		printf("%04d at address: 0x%08x ", i, i * page_size);
 		write_sector_jedec(bios, buf + i * page_size,
 				   bios + i * page_size, page_size);
-		printf
-		    ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 		fflush(stdout);
 	}
 	printf("\n");

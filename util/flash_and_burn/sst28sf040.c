@@ -163,8 +163,7 @@ int write_28sf040(struct flashchip *flash, unsigned char *buf)
 		printf("%04d at address: 0x%08x", i, i * page_size);
 		write_sector_28sf040(bios, buf + i * page_size,
 				     bios + i * page_size, page_size);
-		printf
-		    ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 	}
 	printf("\n");
 

@@ -81,8 +81,8 @@ internal_bank_tbl:
 
 
 #define cmos_data_in \
-	out	%al,$0x70	; \
-	in	$0x71,%al
+	outb	%al,$0x70	; \
+	inb	$0x71,%al
 
 
 #define pci_write_byte \
@@ -92,30 +92,30 @@ internal_bank_tbl:
 	shl	$16,%edx	; \
 	mov	$0x0cf8,%dx	; \
 	and	$0x0fc,%al	; \
-	out	%eax,%dx	; \
+	outl	%eax,%dx	; \
 	shr	$16,%edx	; \
 	mov	%dl,%al		; \
 	and	$3,%al		; \
 	mov	$0x0cfc,%dx	; \
 	add	%dl,%al		; \
 	mov	%cl,%al		; \
-	out	%al,%dx
+	outb	%al,%dx
 
 
 #define pci_read_byte \
 	mov	$0x80000000,%edx ; \
-	or	%dx,%ax		; \
+	or	%ax,%dx		; \
 	mov	%edx,%eax	; \
 	shl	$16,%edx	; \
 	mov	$0x0cf8,%dx	; \
 	and	$0x0fc,%al	; \
-	out	%eax,%dx	; \
+	outl	%eax,%dx	; \
 	shr	$16,%edx	; \
 	mov	%dl,%al		; \
 	and	$3,%al		; \
 	mov	$0x0cfc,%dx	; \
 	add	%al,%dl		; \
-	in	%dx,%al
+	inb	%dx,%al
 
 
 #define pci_write_dword \
@@ -124,10 +124,10 @@ internal_bank_tbl:
 	or	%ax,%dx		; \
 	mov	%edx,%eax	; \
 	mov	$0x0cf8,%dx	; \
-	out	%eax,%dx	; \
+	outl	%eax,%dx	; \
 	mov	$0x0fc,%dl	; \
 	mov	%edi,%eax	; \
-	out	%eax,%dx
+	outl	%eax,%dx
 
 
 #define pci_read_dword \
@@ -136,9 +136,9 @@ internal_bank_tbl:
 	or	%ax,%dx		; \
 	mov	%edx,%eax	; \
 	mov	$0x0cf8,%dx	; \
-	out	%eax,%dx	; \
+	outl	%eax,%dx	; \
 	mov	$0x0fc,%dl	; \
-	in	%dx,%eax
+	inl	%dx,%eax
 
 
 #define save_dram_type \
@@ -226,13 +226,13 @@ internal_bank_tbl:
  ***/
 raminit_start:
 	mov	$0x81,%ax
-	mov	(0b01111111 << 8)+0b00000000,%cx
+	mov	$0x7f00,%cx
 	pci_read_write_byte
 	mov	$0x82,%ax
-	mov	(0b11111111 << 8)+0b00010000,%cx
+	mov	$0xff10,%cx
 	pci_read_write_byte
 	mov	$0x84,%ax
-	mov	(0b11111110 << 8)+0b00000000,%cx
+	mov	$0xfe00,%cx
 	pci_read_write_byte
 
 	movl	$dram_temp,%esi
@@ -255,7 +255,7 @@ detect_block_again:
 	jmp	detect_ma_size
 odd_bank_detect:
 	shl	$3,%bx
-	and	(~0x10000),%ebx
+	and	$(~0x10000),%ebx
 	mov     (%esi),%al
 	add	$3,%al
 	mov	$0x0e9,%cl
@@ -283,7 +283,7 @@ detect_ma_size:
 	jmp	 dram_type_detect_end
 detect_sdram:
 	mov $0x7e,%ax
-	mov (0b11110111 << 8)+0b00000000, %cx
+	mov $0xf700, %cx
 	pci_read_write_byte
 	mov (%esi),%al
 	mov %al,%ah
@@ -342,7 +342,7 @@ chk_vc_sdram_type:
 	mov	(%esi),%al
 	pci_read_dword
 	mov	$0x7e,%ax
-	mov	(0b11110111 << 8)+0b00000000,%cx
+	mov	$0xf700,%cx
 	pci_read_write_byte
 	mov	(%esi),%al
 	pci_write_dword
@@ -499,7 +499,7 @@ ma_detect_end:
 	jz	 1f
 	jmp	detect_ma_table
 1:	
-	and	(~0x40000),%ebx
+	and	$(~0x40000),%ebx
 	mov	%di,%si
 	mov	$0x10,%ch
 	test	$0x10000,%ebx
@@ -616,7 +616,7 @@ determine_bank_number:
 	/***
 	 *** sungeun *** BEGIN "inlined" macro bank_number
 	 ***/
-	and	(~0x80000),%ebx
+	and	$(~0x80000),%ebx
 	test	$0x40000,%ebx
 	jnz	configure_internal_bank_end 
 	mov	%cx,%di
@@ -677,8 +677,8 @@ configure_internal_bank_end:
 	 *** sungeun *** END "inlined" macro bank_number
 	 ***/
 EDO_T:
-	and	(~0x20000),%ebx
-	and	(~0x40000),%ebx
+	and	$(~0x20000),%ebx
+	and	$(~0x40000),%ebx
 	/***
 	 *** sungeun *** END "inlined" macro MEMORY_SIZING
 	 ***/
@@ -771,14 +771,14 @@ configure_next:
 	 *** sungeun *** END "inlined" macro CONFIGURE_MEMORY
 	 ***/
 	mov	$0x7e,%ax
-	mov	(0b11110111 << 8)+0b00000000,%cx
+	mov	$0xf700,%cx
 	pci_read_write_byte
 	mov	$1000,%ax
 1:	
 	dec	%ax
 	jnz	1b
 	mov	$0x7e,%ax
-	mov	(0x11111111 << 8)+0x00001000,%cx
+	mov	$0xff10,%cx
 	pci_read_write_byte
 
 /***

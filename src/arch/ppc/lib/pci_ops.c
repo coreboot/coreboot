@@ -17,43 +17,8 @@ struct pci_ops {
 
 struct pci_ops pci_direct_ppc;
 
-static unsigned __pci_config_read_32(unsigned address) 
-{
-	out_le32((unsigned *)PCIC0_CFGADDR, address);
-	return in_le32((unsigned *)PCIC0_CFGDATA);
-}
-
-static unsigned __pci_config_read_16(unsigned address) 
-{
-	out_le32((unsigned *)PCIC0_CFGADDR, address);
-	return in_le16((unsigned short *)PCIC0_CFGDATA);
-}
-
-static unsigned __pci_config_read_8(unsigned address) 
-{
-	out_le32((unsigned *)PCIC0_CFGADDR, address);
-	return in_8((unsigned char *)PCIC0_CFGDATA);
-}
-
-static void __pci_config_write_32(unsigned address, unsigned data) 
-{
-	out_le32((unsigned *)PCIC0_CFGADDR, address);
-	out_le32((unsigned *)PCIC0_CFGDATA, data);
-}
-
-static void __pci_config_write_16(unsigned address, unsigned short data) 
-{
-	out_le32((unsigned *)PCIC0_CFGADDR, address);
-	out_le16((unsigned short *)PCIC0_CFGDATA, data);
-}
-
-static void __pci_config_write_8(unsigned address, unsigned char data) 
-{
-	out_le32((unsigned *)PCIC0_CFGADDR, address);
-	out_8((unsigned char *)PCIC0_CFGDATA, data);
-}
-
-#define CONFIG_CMD(bus,devfn,where) (bus << 16 | devfn << 8 | where | 0x80000000)
+#define CONFIG_CMD(bus,devfn,where) \
+		((bus << 16) | (devfn << 8) | (where & ~3) | 0x80000000)
 
 /*
  * Direct access to PCI hardware...
@@ -138,35 +103,56 @@ void pci_set_method(void)
 
 static uint8_t pci_ppc_read_config8(unsigned char bus, int devfn, int where)
 {
-    return (uint8_t)__pci_config_read_8(CONFIG_CMD(bus, devfn, where));
+	uint8_t res;
+
+	out_le32((unsigned *)PCIC0_CFGADDR, CONFIG_CMD(bus, devfn, where));
+	res = in_8((unsigned char *)PCIC0_CFGDATA + (where & 3));
+	printk_spew("read8(0x%x,0x%x,0x%x)=0x%x\n", bus, devfn, where, res);
+	return res;
 }
 
 static uint16_t pci_ppc_read_config16(unsigned char bus, int devfn, int where)
 {
-    return (uint16_t)__pci_config_read_16(CONFIG_CMD(bus, devfn, where));
+	uint16_t res;
+
+	out_le32((unsigned *)PCIC0_CFGADDR, CONFIG_CMD(bus, devfn, where));
+	res = in_le16((unsigned short *)PCIC0_CFGDATA + (where & 2));
+	printk_spew("read16(0x%x,0x%x,0x%x)=0x%x\n", bus, devfn, where, res);
+	return res;
 }
 
 static uint32_t pci_ppc_read_config32(unsigned char bus, int devfn, int where)
 {
-    return (uint32_t)__pci_config_read_32(CONFIG_CMD(bus, devfn, where));
+	uint32_t res;
+
+	out_le32((unsigned *)PCIC0_CFGADDR, CONFIG_CMD(bus, devfn, where));
+	res = in_le32((unsigned *)PCIC0_CFGDATA);
+	printk_spew("read32(0x%x,0x%x,0x%x)=0x%x\n", bus, devfn, where, res);
+	return res;
 }
 
 static int pci_ppc_write_config8(unsigned char bus, int devfn, int where, uint8_t data)
 {
-    __pci_config_write_8(CONFIG_CMD(bus, devfn, where), data);
-    return 0;
+	out_le32((unsigned *)PCIC0_CFGADDR, CONFIG_CMD(bus, devfn, where));
+	out_8((unsigned char *)PCIC0_CFGDATA + (where & 3), data);
+	printk_spew("write8(0x%x,0x%x,0x%x)<-0x%x\n", bus, devfn, where, data);
+	return 0;
 }
 
 static int pci_ppc_write_config16(unsigned char bus, int devfn, int where, uint16_t data)
 {
-    __pci_config_write_16(CONFIG_CMD(bus, devfn, where), data);
-    return 0;
+	out_le32((unsigned *)PCIC0_CFGADDR, CONFIG_CMD(bus, devfn, where));
+	out_le16((unsigned short *)PCIC0_CFGDATA + (where & 2), data);
+	printk_spew("write16(0x%x,0x%x,0x%x)<-0x%x\n", bus, devfn, where, data);
+	return 0;
 }
 
 static int pci_ppc_write_config32(unsigned char bus, int devfn, int where, uint32_t data)
 {
-    __pci_config_write_32(CONFIG_CMD(bus, devfn, where), data);
-    return 0;
+	out_le32((unsigned *)PCIC0_CFGADDR, CONFIG_CMD(bus, devfn, where));
+	out_le32((unsigned *)PCIC0_CFGDATA, data);
+	printk_spew("write32(0x%x,0x%x,0x%x)<-0x%x\n", bus, devfn, where, data);
+	return 0;
 }
 
 struct pci_ops pci_direct_ppc =

@@ -15,6 +15,7 @@
 .globl _start
 
 _start:
+#if CONFIG_USE_INIT == 0
 	/* 
 	 * init stack pointer to real ram now that memory is on
 	 */
@@ -106,3 +107,4 @@ __DTOR_LIST__:
 .globl __DTOR_END__
 __DTOR_END__:
         blr
+#endif

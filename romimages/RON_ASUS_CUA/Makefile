@@ -45,9 +45,18 @@ floppy: all
 # we need the vmlinux.bin.gz padded out and then cat the linuxbios.rom
 # at then end. We always copy it to /tmp so that a waiting root shell 
 # can put it on the floppy (see ROOTDOIT)
-romimage: linuxbios.rom vmlinux.bin.gz.block
+romimage: linuxbios.rom vmlinux.bin.gz.block docipl
 	cat vmlinux.bin.gz.block linuxbios.rom > romimage
 	cp romimage /tmp
+
+docipl: ipl.o
+	objcopy -O binary -R .note -R .comment -S ipl.o adocipl
+	dd if=adocipl of=docipl bs=1 skip=1040384
+
+# I have noe idea why you can not use $(CPUFLAGS) to compile ipl.S
+# a bug with -Di686 ??
+ipl.o: $(TOP)/src/northbridge/acer/m1631/ipl.S
+	gcc -save-temps -c -I$(TOP)/src/include -I$(TOP)/src $<
 
 linuxbios.rom: linuxbios.strip mkrom 
 	./mkrom -s 64 -f -o linuxbios.rom linuxbios.strip

@@ -177,11 +177,26 @@
 static void setup_resource_map(const unsigned int *register_values, int max)
 {
 	int i;
+
+    unsigned int amd8111_link_nr;
+
+    print_debug("setting up resource map....\r\n");
+    /*
+     * determine the HT link number the southbridge is connected to
+     * bits 8-9 of the Unit ID register
+     */
+    amd8111_link_nr = (pci_read_config32(PCI_DEV(0, 0x18, 0), 0x64) & 0x00000300) >> 8;
+    print_debug(" AMD8111 southbridge is connected to HT link ");
+    print_debug_hex32(amd8111_link_nr);
+    print_debug("\r\n");
+			
+	
 	print_debug("setting up resource map....\r\n");
 	for(i = 0; i < max; i += 3) {
 		device_t dev;
 		unsigned where;
 		unsigned long reg;
+
 #if 0
 		print_debug_hex32(register_values[i]);
 		print_debug(" <-");
@@ -193,6 +208,19 @@ static void setup_resource_map(const unsigned int *register_values, int max)
 		reg = pci_read_config32(dev, where);
 		reg &= register_values[i+1];
 		reg |= register_values[i+2];
+
+        /*
+	 * set correct HT link to the southbridge
+	 * otherwise we cut of the acces to the flash we are from
+	 *
+	 */
+	if (where == 0xBC)
+	  reg |= amd8111_link_nr << 4;
+	if (where == 0xC4)
+	  reg |= amd8111_link_nr << 4;
+	if (where == 0xE0)
+	  reg |= amd8111_link_nr << 8;				
+		
 		pci_write_config32(dev, where, reg);
 #if 0
 		reg = pci_read_config32(register_values[i]);

@@ -407,7 +407,7 @@ def writemakefile(path):
 	file.write("TOP=%s\n" % (treetop))
 	file.write("CPUFLAGS=\n")
 	for z in makeoptions.keys(): 
-		print "key is %s, val %s\n" % (z, makeoptions[z])
+#		print "key is %s, val %s\n" % (z, makeoptions[z])
 		file.write("CPUFLAGS += %s\n" % (makeoptions[z]))
 				
 	# print out all the object dependencies
@@ -419,7 +419,7 @@ def writemakefile(path):
 	
 	# print out the user defines
 	for i in range(len(userdefines)):
-		print "rule %d is %s" % (i, userdefines[i])
+#		print "rule %d is %s" % (i, userdefines[i])
 		file.write("%s\n" % userdefines[i])
 		
 	# print out the base rules
@@ -429,7 +429,7 @@ def writemakefile(path):
 #		file.write("%s\n" % baserules[i])
 
 	for i in range(len(userrules)):
-		print "rule %d is %s" % (i, userrules[i])
+#		print "rule %d is %s" % (i, userrules[i])
 		file.write("%s\n" % userrules[i])
 		
 	# print out any user rules

@@ -968,17 +968,14 @@ ram_set_spd_registers:
 #endif
 	RET_LABEL(ram_set_spd_registers)
 
-#if 1
-#define HAVE_ECC_RAM_SIZE
-get_ecc_ram_size_ebx:
+get_ecc_ram_size_bytes_ebx:
+	/* FIXME handle the no ram case. */
 	movl	$0x67, %eax		/* Read the RAM SIZE */
 	PCI_READ_CONFIG_BYTE
 	andl	$0x000000ff, %eax	/* Convert it to bytes */
 	movl	%eax, %ebx
 	shll	$23, %ebx
-	RET_LABEL(get_ecc_ram_size_ebx)
-#endif /* HAVE_ECC_RAM_SIZE */
-
+	RET_LABEL(get_ecc_ram_size_bytes_ebx)
 	
 /* things that are not used */
 #define FIRST_NORMAL_REFERENCE()

@@ -12,4 +12,4 @@ typedef unsigned int wint_t;
 
 #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 
-#endif //I386_STDDEF_H
+#endif /* I386_STDDEF_H */

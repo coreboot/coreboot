@@ -3,7 +3,6 @@
 #include <printk.h>
 #include <cpu/p6/apic.h>
 
-#define USE_ALL_CPUS 1
 void smp_write_config_table(void *v)
 {
 	static const char sig[4] = "PCMP";

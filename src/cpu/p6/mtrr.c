@@ -214,8 +214,6 @@ static __inline__ unsigned int fms(unsigned int x)
  * or a 156MB (128MB + 32MB - 4MB SMA) example:
  *	ramsize = 156MB == 128MB WB (at 0MB) + 32MB WB (at 128MB) + 4MB UC (at 156MB)
  */
-#ifdef INTEL_PPRO_MTRR
-
 /* 2 MTRRS are reserved for the operating system */
 #define BIOS_MTRRS 6
 #define OS_MTRRS   2
@@ -291,4 +289,3 @@ void setup_mtrrs(unsigned long ramsizeK)
 	intel_enable_fixed_mtrr();
 	intel_enable_var_mtrr();
 }
-#endif /* INTEL_PPRO_MTRR */

@@ -16,8 +16,7 @@ static char rcsid[] =
 #include <subr.h>
 #include <pci.h>
 #include <pci_ids.h>
-#include <northsouthbridge/sis/630/param.h>
-#include <cpu/p5/io.h>
+#include <arch/io.h>
 
 void keyboard_on()
 {

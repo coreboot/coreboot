@@ -1,4 +1,6 @@
 arch i386
+mainboardinit cpu/i386/entry32.inc
+
 mainboardinit superio/acer/m1535/setup_serial.inc
 mainboardinit pc80/serial.inc
 northbridge acer/m1631

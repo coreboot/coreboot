@@ -9,9 +9,6 @@
  *	_ROMBASE
  *				: linuxbios text 
  *				: readonly text
- *
- *      _ROMTOP                 : The top of the rom used where we
- *				  need to put the reset vector.
  */
 /*
  * Bootstrap code for the STPC Consumer
@@ -21,9 +18,6 @@
  *
  */
 
-_ROMTOP = (_ROMBASE >= 0xffff0000)? 0xfffffff0 : 0xffff0;
-_start_offset = _start & 0xffff;
-gdtptr_offset = gdtptr & 0xffff;
 /*
  *	Written by Johan Rydberg, based on work by Daniel Kahlin.
  *      Rewritten by Eric Biederman
@@ -35,11 +29,6 @@ gdtptr_offset = gdtptr & 0xffff;
 OUTPUT_FORMAT("elf32-i386", "elf32-i386", "elf32-i386")
 OUTPUT_ARCH(i386)
 
-/*
- *	Entry point is not really nececary, since the mkrom(8)
- *	tool creates a entry point that jumps to $0xc000:0x0000.
- */
-/* baloney, but ... RGM*/
 ENTRY(_start)
 
 SECTIONS
@@ -52,7 +41,6 @@ SECTIONS
 	.text (.) : {
 		_text = .;
 		*(.text);
-		*(.text.*)
 		_etext = .;
 	}
 	.rodata (.) :  {
@@ -73,8 +61,6 @@ SECTIONS
 	.data (.): AT(_erodata) {
 		_data = .;
 		*(.data)
-		*(.sdata)
-		*(.sdata2)
 		_edata = .;
 	}
 	_ldata	= LOADADDR(.data);
@@ -105,14 +91,8 @@ SECTIONS
 		. = ((MAX_CPUS) * (STACK_SIZE)); 
 		_estack = .;
 	}
-	_lreset = _ROMTOP;
-	. = _lreset;
-	.reset (.) : AT (_lreset) {
-		*(.reset_vector)
-		. = 15 ;
-		BYTE(0x00);
-	} 
-	_elreset = _lreset + SIZEOF(.reset);
+
+
 	/DISCARD/ : {
 		*(*)
 	}

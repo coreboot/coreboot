@@ -1,5 +1,6 @@
-#include <cpu/p6/mpspec.h>
+#include <arch/smp/mpspec.h>
 #include <string.h>
+#include <printk.h>
 
 void smp_write_config_table(void *v)
 {

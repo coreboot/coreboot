@@ -1,4 +1,7 @@
 arch i386
+mainboardinit cpu/i386/entry16.inc
+ldscript cpu/i386/entry16.lds
+
 northsouthbridge sis/550
 mainboardinit cpu/p6/earlymtrr.inc
 

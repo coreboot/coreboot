@@ -36,6 +36,7 @@ mainrulelist = "all"
 def add_main_rule_dependency(new_dependency):
 	global mainrulelist
 	mainrulelist = mainrulelist + ' ' + new_dependency
+
 # function to add an object to the set of objects to be made. 
 # this is a tuple, object name, source it depends on, 
 # and an optional rule (can be empty) for actually building
@@ -62,7 +63,7 @@ def top(dir, top_name):
 
 def target(dir, targ_name):
 	global outputdir
-	outputdir = targ_name
+	outputdir = os.path.join(config_dir(), targ_name)
 	if os.path.isdir(outputdir):
 		print 'Will place Makefile, crt0.S, ldscript.ld in ', outputdir
 	else:
@@ -229,6 +230,15 @@ def mainboardinit(dir, file):
 	mainboardfilelist.append(file)
 	print "Added mainboard init file: ", file
 
+
+# A set of linker scripts needed by linuxBIOS.
+def ldscript(dir, file):
+	ldscripts = command_vals['ldscripts']
+	filepath = os.path.join(treetop, 'src');
+	filepath = os.path.join(filepath, file);
+	ldscripts.append(filepath)
+	print "Added ldscript init file: ", filepath
+
 def object(dir, command):
 	wspc = string.whitespace
 	command_re = re.compile("([^" + wspc + "]+)([" + wspc + "]([^" + wspc + "]*)|)")
@@ -341,8 +351,8 @@ def docipl(dir, ipl_name):
 	# Now we need a mainboard-specific include path
 	userrules.append("\tcc $(CFLAGS) -I%s -c $<" % mainboard_dir)
 	# now set new values for the ldscript.ld.  Should be a script? 
-	set_option("_RAMBASE", 0x4000)
-	set_option("_ROMBASE", 0x80000)
+	set_option("_RAMBASE", "0x4000")
+	set_option("_ROMBASE", "0x80000")
 
 def linux(dir, linux_name):
 	linuxrule = 'LINUX=' + linux_name
@@ -373,6 +383,7 @@ command_vals = {
 	'object'      : {},   # path/filename.[cS]
 	'mainboardinit'     : [],   # set of files to include for mainboard init
 	'config_files'      : [],   # set of files we built the makefile from
+	'ldscripts'         : [],   # set of files we build the linker script from
 	}
 
 command_actions = {
@@ -391,6 +402,7 @@ command_actions = {
 	'linux'       : linux,
 	'raminit'     : raminit,
 	'mainboardinit'     : mainboardinit,
+	'ldscript'    : ldscript,
 	'dir'         : dir,
 	'keyboard'    : keyboard, 
 	'docipl'      : docipl,
@@ -457,6 +469,11 @@ def doconfigfile(dir, filename):
 				print verb, "is not a valid command! \n"
 				sys.exit()
 
+def config_dir():
+	config_file_list = command_vals['config_files']
+	config_file = config_file_list[len(config_file_list) -1]
+	return os.path.dirname(config_file)
+
 # output functions
 # write crt0
 def writecrt0(path):
@@ -507,6 +524,7 @@ def writecrt0(path):
 # write ldscript
 def writeldscript(path):
 	ldfilepath = os.path.join(path, "ldscript.ld")
+	ldscripts = command_vals['ldscripts']
 	print "Trying to create ", ldfilepath
 #	try: 
 	file = open(ldfilepath, 'w+')
@@ -515,7 +533,8 @@ def writeldscript(path):
 	keys.sort()
 	for key in keys:
 		value = makeoptions[key]
-		if re.match("^(0x[0-9a-fA-F]+|0[0-7]+|[0-9]+)$", value):
+		regexp = re.compile(r"^(0x[0-9a-fA-F]+|0[0-7]+|[0-9]+)$")
+		if value and regexp.match(value):
 			file.write("%s = %s;\n" % (key, value))
 		
 	ldlines = readfile(ldscriptbase)
@@ -523,6 +542,10 @@ def writeldscript(path):
 		print "LDLINES ",ldlines
         for line in ldlines:
 		file.write(line)
+
+	for i in range(len(ldscripts)):
+		file.write("INCLUDE %s\n" % ldscripts[i])
+		
 	file.close();
 
 # write doxygen file
@@ -561,6 +584,7 @@ def writemakefile(path):
 	makefilepath = os.path.join(path, "Makefile")
 	mainboardinitfiles = command_vals['mainboardinit']
 	config_file_list = command_vals['config_files']
+	ldscripts = command_vals['ldscripts']
 
 	print "Trying to create ", makefilepath
 	keys = makeoptions.keys()
@@ -572,7 +596,7 @@ def writemakefile(path):
 		if makeoptions[key] :
 			file.write("%s=%s\n" % (key, makeoptions[key]))
 
-	file.write("CPUFLAGS=\n")
+	file.write("CPUFLAGS :=\n")
 	for key in keys: 
 #		print "key is %s, val %s\n" % (key, makeoptions[key])
 #		file.write("CPUFLAGS += %s\n" % (makeoptions[key]))
@@ -638,9 +662,13 @@ def writemakefile(path):
 	for i in range(len(mainboardinitfiles)):
 		file.write("crt0.s: $(TOP)/src/%s\n" % mainboardinitfiles[i])
 
+	# print out the dependencis for ldscript.ld
+	for i in range(len(ldscripts)):
+		file.write("ldscript.ld: %s\n" % ldscripts[i])
+
 	# print out the dependencies for Makefile
-	file.write("Makefile crt0.S ldscript.ld nsuperio.c: %s/%s $(TOP)/util/config/NLBConfig.py $(TOP)/src/arch/$(ARCH)/config/make.base $(TOP)/src/arch/$(ARCH)/config/ldscript.base $(TOP)/src/arch/$(ARCH)/config/crt0.base \n\tpython $(TOP)/util/config/NLBConfig.py %s/%s $(TOP)\n" 
-		% (config_path, config_file, config_path, config_file))
+	file.write("Makefile crt0.S ldscript.ld nsuperio.c: %s $(TOP)/util/config/NLBConfig.py $(TOP)/src/arch/$(ARCH)/config/make.base $(TOP)/src/arch/$(ARCH)/config/ldscript.base $(TOP)/src/arch/$(ARCH)/config/crt0.base \n\tpython $(TOP)/util/config/NLBConfig.py %s $(TOP)\n" 
+		% (config_file, config_file))
 	for i in range(len(config_file_list)):
 		file.write("Makefile: %s\n" % config_file_list[i])
 
@@ -667,10 +695,10 @@ if len(sys.argv) != 3:
 	print "LBConfig <Config Filename> <src-path>\n"
 	sys.exit()
 
-config_path, config_file = os.path.split(sys.argv[1])
+config_file = os.path.abspath(sys.argv[1])
 
 # determine current directory and set default TOP
-command_vals['TOP'] = sys.argv[2]
+command_vals['TOP'] = os.path.abspath(sys.argv[2])
 treetop = command_vals['TOP']
 	
 # set the default locations for config files
@@ -685,7 +713,7 @@ doxyscriptbase = os.path.join(treetop, "src/config/doxyscript.base")
 #doconfigfile(treetop, makebase)
 
 # now read in the customizing script
-doconfigfile(treetop, sys.argv[1])
+doconfigfile(treetop, config_file)
 
 # print out command values
 #print "Command Values:"

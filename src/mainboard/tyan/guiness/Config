@@ -1,4 +1,9 @@
 arch i386
+mainboardinit cpu/i386/entry16.inc
+ldscript cpu/i386/entry16.lds
+mainboardinit cpu/i386/reset16.inc
+ldscript cpu/i386/reset16.lds
+
 mainboardinit northbridge/amd/amd76x/reset_test.inc
 mainboardinit cpu/k7/earlymtrr.inc
 mainboardinit northbridge/amd/amd76x/mpinit.inc

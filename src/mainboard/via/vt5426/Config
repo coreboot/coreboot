@@ -1,4 +1,7 @@
 arch i386
+mainboardinit cpu/i386/entry16.inc
+ldscript cpu/i386/entry16.lds
+
 mainboardinit superio/via/vt82c686/setup_serial.inc
 mainboardinit pc80/serial.inc
 northbridge via/vt8601 

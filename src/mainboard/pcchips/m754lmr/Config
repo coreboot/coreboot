@@ -1,4 +1,9 @@
 arch i386
+mainboardinit cpu/i386/entry16.inc
+ldscript cpu/i386/entry16.lds
+mainboardinit cpu/i386/reset16.inc
+ldscript cpu/i386/reset16.lds
+
 mainboardinit superio/acer/m1535/setup_serial.inc
 mainboardinit pc80/serial.inc
 northbridge acer/m1631

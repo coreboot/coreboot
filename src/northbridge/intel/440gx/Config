@@ -1,5 +1,6 @@
-raminit northbridge/intel/440gx/raminit.inc
-raminit sdram/generic_sdram.inc
-raminit sdram/generic_sdram_enable.inc
+mainboardinit northbridge/intel/440gx/raminit.inc
+mainboardinit sdram/generic_sdram_enable.inc
+mainboardinit sdram/generic_sdram.inc
+mainboardinit sdram/generic_zero_ecc_sdram.inc
 
 object northbridge.o

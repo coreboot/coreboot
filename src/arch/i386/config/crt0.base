@@ -7,6 +7,9 @@
 #include <arch/intel.h>
 
 #include <pciconf.h>
+#ifdef SMP
+#include <cpu/p6/apic.h>
+#endif
 /*
  * This is the entry code (the mkrom(8) utility makes a jumpvector
  * to this adddess. 
@@ -20,9 +23,6 @@
  *	%fl	= 0x0002
  */
  	.text
-	.code16
-
-#include <cpu/p5/start32.inc>
 
 CRT0_PARAMETERS
 
@@ -121,17 +121,3 @@ str_after_ram:       .string "Ram Initialize?\r\n"
 str_after_copy:      .string "after copy?\r\n"
 str_pre_main:        .string "before main\r\n"
 newline:             .string "\r\n"
-
-	.section ".reset_vector"
-	.code16
-.globl	EXT(reset_vector)
-EXT(reset_vector):
-#if _ROMBASE >= 0xffff0000
-	jmp	EXT(_start)
-#elif (_ROMBASE < 0x100000)
-	ljmp	$((_ROMBASE & 0xf0000)>>4),$EXT(_start_offset);
-#else
-#error	_ROMBASE is an unsupported value
-#endif
-
-	

@@ -132,6 +132,9 @@ pcibios(
         unsigned long *pflags
         );
 #endif
+
+extern void vga_exit(void);
+
 int
 biosint(
 	unsigned long intnumber,
@@ -143,19 +146,16 @@ biosint(
 	unsigned long edx, 
 	unsigned long ecx, 
 	unsigned long eax, 
-	// these came in from 16-bit land
-	// but gcc does something weird we have to undo.
-	unsigned short stackip,
-	unsigned short stackflags,
-	unsigned short stackcs
+	unsigned long cs_ip,
+	unsigned short stackflags
 	) {
 	unsigned long ip; 
 	unsigned long cs; 
 	unsigned long flags;
 	int ret = -1;
 
-	ip = stackip;
-	cs = stackcs;
+	ip = cs_ip & 0xffff;
+	cs = cs_ip >> 16;
 	flags = stackflags;
 
 	printk_debug("biosint: # 0x%lx, eax 0x%lx ebx 0x%lx ecx 0x%lx edx 0x%lx\n", 
@@ -164,6 +164,21 @@ biosint(
 	printk_debug("biosint: ip 0x%x cs 0x%x flags 0x%x\n", ip, cs, flags);
 	// cases in a good compiler are just as good as your own tables. 
 	switch (intnumber) {
+	case 0 ... 15:
+		// These are not BIOS service, but the CPU-generated exceptions
+		printk_info("biosint: Oops, exception %u\n", intnumber);
+		if (esp < 0x1000) {
+		    printk_debug("Stack contents: ");
+		    while (esp < 0x1000) {
+			printk_debug("0x%04x ", *(unsigned short *) esp);
+			esp += 2;
+		    }
+		    printk_debug("\n");
+		}
+		printk_debug("biosint: Bailing out\n");
+		// "longjmp"
+		vga_exit();
+		break;
 #ifdef CONFIG_PCIBIOS
 	case PCIBIOS:
 		ret = pcibios( &edi, &esi, &ebp, &esp, 
@@ -208,11 +223,21 @@ setup_realmode_idt(void) {
 	// and get it that way. But that's really disgusting.
 	for (i = 0; i < 256; i++) {
 		idts[i].cs = 0;
-		codeptr = 1024 + i * codesize;
-		idts[i].offset = codeptr;
-		memcpy((void *) codeptr, &idthandle, codesize);
+		codeptr = (char*) 4096 + i * codesize;
+		idts[i].offset = (unsigned) codeptr;
+		memcpy(codeptr, &idthandle, codesize);
 		intbyte = codeptr + 3;
 		*intbyte = i;
 	}
 
+	// fixed entry points
+
+	// VGA BIOSes tend to hardcode f000:f065 as the previous handler of
+	// int10. 
+	// calling convention here is the same as INTs, we can reuse
+	// the int entry code.
+	codeptr = (char*) 0xff065;
+	memcpy(codeptr, &idthandle, codesize);
+	intbyte = codeptr + 3;
+	*intbyte = 0x42; /* int42 is the relocated int10 */
 }

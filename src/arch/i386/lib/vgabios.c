@@ -69,15 +69,21 @@ static char rcsid[] = "$Id$";
 
 
 /* The address arguments to this function are PHYSICAL ADDRESSES */ 
-static void real_mode_switch_call_vga(void)
+static void real_mode_switch_call_vga(unsigned long devfn)
 {
   __asm__ __volatile__
       (
+       // paranoia -- does ecx get saved? not sure. This is 
+       // the easiest safe thing to do.
+       "pushal\n"
 	/* save the stack */
 	"mov %esp, __stack\n"
 	"jmp 1f\n"
 	"__stack: .long 0\n"
 	"1:\n"
+	/* get devfn into %ecx */
+	"movl    %esp, %ebp\n"
+	"movl    8(%ebp), %ecx\n"
 	/*  This configures CS properly for real mode. */
        "    ljmp $0x28, $__rms_16bit\n"
        "__rms_16bit:                 \n"
@@ -110,7 +116,7 @@ static void real_mode_switch_call_vga(void)
        "    mov  %ax, %ss          \n"
        "    movl  $0x1000, %eax       \n"
        "    movl  %eax, %esp          \n"
- 	/* ebugging for RGM */
+ 	/* debugging for RGM */
        "    mov $0x11, %al	\n"
 	" outb	%al, $0x80\n"
 
@@ -120,6 +126,7 @@ static void real_mode_switch_call_vga(void)
        "    mov  %ax, %es          \n"
        "    mov  %ax, %fs          \n"
        "    mov  %ax, %gs          \n"
+       "    mov %cx, %ax	\n"
 	" .byte 0x9a, 0x03, 0, 0, 0xc0  \n"
 	" movb $0x55, %al\noutb %al, $0x80\n"
        /* if we got here, just about done. 
@@ -139,7 +146,10 @@ static void real_mode_switch_call_vga(void)
        "    mov  %ax, %fs          \n"
        "    mov  %ax, %gs          \n"
        "    mov  %ax, %ss          \n"
+	".globl vga_exit\n"
+	"vga_exit:\n"
        "    mov  __stack, %esp\n"
+       "    popal\n"
        );
 }
 __asm__ (".text\n""real_mode_switch_end:\n");
@@ -149,10 +159,20 @@ void
 do_vgabios(void)
 {
   struct pci_dev *dev;
+  unsigned long busdevfn;
   unsigned int rom = 0;
   unsigned char *buf;
   unsigned int size = 64*1024;
   int i;
+
+for (i=0x400; i<0x500; i++) {
+  printk_debug("%02x%c", *(unsigned char *)i, i%16==15 ? '\n' : ' ');
+  *(unsigned char *) i = 0;
+}
+
+for (i=0x400; i<0x500; i++) {
+  printk_debug("%02x%c", *(unsigned char *)i, i%16==15 ? '\n' : ' ');
+}
 
   dev = pci_find_class(PCI_CLASS_DISPLAY_VGA <<8, NULL);
 
@@ -179,7 +199,8 @@ do_vgabios(void)
   	for(i = 0; i < 16; i++)
     		printk_debug("0x%x ", buf[i]);
   	// check signature here later!
-  	real_mode_switch_call_vga();
+	busdevfn = (dev->bus->secondary << 8) | dev->devfn;
+  	real_mode_switch_call_vga(busdevfn);
   } else 
 	printk_debug("BAD SIGNATURE 0x%x 0x%x\n", buf[0], buf[1]);
 #ifndef VGABIOS_START

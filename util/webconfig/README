@@ -1,0 +1,14 @@
+Written by: Bob Drzyzgula <bob@drzyzgula.org>
+
+Cd to webconfig/server and run 
+./pyserv.py -f <your cvs checkout>/freebios &
+
+Then you can browse to http://localhost:8083/cgi-bin/index.py
+
+Select a manufacturer, click enter. Select a mainboard, click
+enter. Then you get sent to a new CGI script that puts up
+the beginnings of a form to fill out the details for that
+mainboard. The next thing to do, IMHO, is to build some
+mechanism to present to the user a list of options and
+value entry fields which are relevent to the selected
+mainboard. 

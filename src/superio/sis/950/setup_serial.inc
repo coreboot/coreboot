@@ -1,15 +1,17 @@
 #define OUTIT(val, port) movb val, %al; \
 	outb %al, port
 
-#define OUT2E(val) OUTIT(val, $0x2e)
-#define OUT2F(val) OUTIT(val, $0x2f)
+#define OUT2E(val) OUTIT(val, $0x2e); OUTIT(val, $0xeb)
+#define OUT2F(val) OUTIT(val, $0x2f); OUTIT(val, $0xeb)
+
 /* to do: move this to a common include file! */
 #define WRITESIOBYTE(register, value) movw register, %dx ;\
 				movb value, %al ;\
-				outb %al, %dx
+				outb %al, %dx; 	OUTIT(%al, $0x80)
+
 #define WRITESIOWORD(register, value) movw register, %dx ;\
 				movw value, %ax ;\
-				outw %ax, %dx
+				outw %ax, %dx; 	OUTIT(%al, $0x80)
 
 /* turn on PnP */
 	OUT2E($0x87)
@@ -23,6 +25,12 @@
 /* set the enable in reg. 0x30 */
 	OUT2E($0x30)
 	OUT2F($1)
+/* set the proper control bits for clock etc. in register 0x24 */
+	OUT2E($0x24)
+/* NOTE: this also turns on all the proper bits for FLASH. 
+ * they're combined in here. 
+ */
+	OUT2F($0xfd)
 /* turn off PnP */
 	OUT2E($2)
 	OUT2F($2)
@@ -30,9 +38,10 @@
 // set up register to set baud rate.
 	WRITESIOBYTE($0x3fb, $0x80)
 // Set 115 kb
-	WRITESIOWORD($0x3f8, $1)
-// Set 9.6 kb
-//	WRITESIOWORD($0x3f8, $12)
+// I don't think this thing can run at that rate. 
+//	WRITESIOWORD($0x3f8, $1)
+// Set 38.4 kb
+	WRITESIOWORD($0x3f8, $3)
 // now set no parity, one stop, 8 bits
 	WRITESIOBYTE($0x3fb, $3)
 // now turn on RTS, DRT

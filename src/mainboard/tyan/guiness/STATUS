@@ -19,9 +19,9 @@ console-types: serial
 # vga is unsupported, unstable, or stable
 vga: unsupported
 # Last-known-good follows the internationl date standard: day/month/year
-last-known-good: 19/12/2002
+last-known-good: 07/01/2003
 Comments: 
 Links:
 Mainboard-revision: 
 # What other mainboards are like this one? List them here. 
-AKA: 
+AKA: Tyan ThunderK7 Tyan TigerMP

@@ -68,6 +68,7 @@
 	movb	%al, %bl
 
 	/* Now finally test the checksum */
+	xorw	$0xffff, %cx
 	cmpw	%cx, %bx
 	je	__rtc_ok
 

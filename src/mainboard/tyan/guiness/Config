@@ -210,7 +210,7 @@ option FINAL_MAINBOARD_FIXUP=1
 ## This is useful for optional includes
 ##
 option USE_FALLBACK_IMAGE=0
-expr USE_NORMAL_IMAGE=!USE_FALLBACK_IMAGE
+expr BUILD_NORMAL_IMAGE=!USE_FALLBACK_IMAGE
 
 ###
 ### LinuxBIOS layout values
@@ -241,8 +241,8 @@ expr USE_OPTION_TABLE=!USE_FALLBACK_IMAGE
 ## Compute the location and size of where this firmware image
 ## (linuxBIOS plus bootloader) will live in the boot rom chip.
 ##
-expr ROM_SECTION_SIZE  =(USE_FALLBACK_IMAGE*65536)+(USE_NORMAL_IMAGE*(ROM_SIZE - 65536))
-expr ROM_SECTION_OFFSET=(USE_FALLBACK_IMAGE*(ROM_SIZE-65536))+(USE_NORMAL_IMAGE*0)
+expr ROM_SECTION_SIZE  =(USE_FALLBACK_IMAGE*65536)+(BUILD_NORMAL_IMAGE*(ROM_SIZE - 65536))
+expr ROM_SECTION_OFFSET=(USE_FALLBACK_IMAGE*(ROM_SIZE-65536))+(BUILD_NORMAL_IMAGE*0)
 
 ##
 ## Compute the start location and size size of
@@ -257,7 +257,7 @@ expr PAYLOAD_SIZE  =ROM_SECTION_SIZE - ROM_IMAGE_SIZE
 ## Compute where this copy of linuxBIOS will start in the boot rom
 ##
 #expr _ROMBASE      =ZKERNEL_START + PAYLOAD_SIZE
-expr _ROMBASE = 0xffff0000 - ( 0x10000 * USE_NORMAL_IMAGE)
+expr _ROMBASE = 0xffff0000 - ( 0x10000 * BUILD_NORMAL_IMAGE)
 
 
 ##

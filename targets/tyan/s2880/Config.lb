@@ -231,4 +231,4 @@ romimage "fallback"
 	payload ../../tg3.zelf
 end
 
-buildrom ROM_SIZE "normal" "fallback"
+buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"

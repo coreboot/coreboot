@@ -95,4 +95,4 @@ romimage "normal"
 	mainboard motorola/sandpoint
 end
 
-buildrom ROM_SIZE "normal"
+buildrom ./linuxbios.rom ROM_SIZE "normal"

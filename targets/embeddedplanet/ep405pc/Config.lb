@@ -94,4 +94,4 @@ romimage "normal"
 	mainboard embeddedplanet/ep405pc
 end
 
-buildrom ROM_SIZE "normal"
+buildrom ./linuxbios.rom ROM_SIZE "normal"

@@ -1,1 +1,2 @@
+config chip.h
 object superio.o

@@ -1,0 +1,40 @@
+#!/bin/sh
+
+# Target build script
+
+if [ $# -lt 1 ]; then
+	echo "usage: buildtarget target [path-to-linuxbios]"
+	exit 1
+fi
+
+if [ $# -gt 1 ]; then
+	lbpath=$2
+else
+	lbpath=`pwd`
+	lbpath=`dirname $lbpath`
+fi
+
+target_dir=$lbpath/targets
+config_lb=$1/Config.lb
+config_py=$lbpath/util/newconfig/config.py
+
+if [ ! -d $target_dir ]; then
+	echo "Target directory not found"
+	exit 1
+fi
+
+cd $target_dir
+
+if [ ! -f $config_lb ]; then
+	echo "No target config file found"
+	exit 1
+fi
+
+if [ ! -f $config_py ]; then
+	echo "No linuxbios config file found"
+	exit 1
+fi
+
+python $config_py $config_lb $lbpath
+
+exit $?

@@ -492,8 +492,11 @@ static void write_8dwords(uint32_t src_addr, uint32_t dst_addr) {
 	}
 }
 
-//#define SLOW_DOWN_IO inb(0x80);
+#if 1
+#define SLOW_DOWN_IO inb(0x80);
+#else
 #define SLOW_DOWN_IO udelay(40);
+#endif
 
 static void ram_set_rcomp_regs(const struct mem_controller *ctrl) {
 	uint32_t dword;
@@ -1978,10 +1981,17 @@ static void mem_err {
 	/* Estimate that SLOW_DOWN_IO takes about 50&76us*/
 	/* delay for 200us */
 
+#if 1
+static void do_delay(void)
+{
+	int i;
+	for(i = 0; i < 16; i++) { SLOW_DOWN_IO }
+}
+#define DO_DELAY do_delay();
+#else
 #define DO_DELAY \
 	udelay(200);
-//	for(i=0; i<16;i++)  { 	SLOW_DOWN_IO	}
-		
+#endif		
 
 #define EXTRA_DELAY DO_DELAY
 

@@ -1,0 +1,300 @@
+uses HAVE_MP_TABLE
+uses HAVE_PIRQ_TABLE
+uses USE_FALLBACK_IMAGE
+uses HAVE_FALLBACK_BOOT
+uses HAVE_HARD_RESET
+uses IRQ_SLOT_COUNT
+uses HAVE_OPTION_TABLE
+uses CONFIG_MAX_CPUS
+uses CONFIG_IOAPIC
+uses CONFIG_SMP
+uses FALLBACK_SIZE
+uses ROM_SIZE
+uses ROM_SECTION_SIZE
+uses ROM_IMAGE_SIZE
+uses ROM_SECTION_SIZE
+uses ROM_SECTION_OFFSET
+uses CONFIG_ROM_STREAM
+uses CONFIG_ROM_STREAM_START
+uses PAYLOAD_SIZE
+uses _ROMBASE
+uses XIP_ROM_SIZE
+uses XIP_ROM_BASE
+uses STACK_SIZE
+uses HEAP_SIZE
+uses USE_OPTION_TABLE
+
+## ROM_SIZE is the size of boot ROM that this board will use.
+default ROM_SIZE=524288
+
+###
+### Build options
+###
+
+##
+## Build code for the fallback boot
+##
+default HAVE_FALLBACK_BOOT=1
+
+##
+## Build code to reset the motherboard from linuxBIOS
+##
+default HAVE_HARD_RESET=1
+
+##
+## Build code to export a programmable irq routing table
+##
+default HAVE_PIRQ_TABLE=1
+default IRQ_SLOT_COUNT=9
+
+##
+## Build code to export an x86 MP table
+## Useful for specifying IRQ routing values
+##
+default HAVE_MP_TABLE=1
+
+##
+## Build code to export a CMOS option table
+##
+default HAVE_OPTION_TABLE=1
+
+##
+## Build code for SMP support
+## Only worry about 2 micro processors
+##
+default CONFIG_SMP=1
+default CONFIG_MAX_CPUS=2
+
+##
+## Build code to setup a generic IOAPIC
+##
+default CONFIG_IOAPIC=1
+
+##
+## Clean up the motherboard id strings
+##
+#default MAINBOARD_PART_NUMBER="HDAMA"
+#default MAINBOARD_VENDOR="ARIMA"
+
+###
+### LinuxBIOS layout values
+###
+
+## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
+default ROM_IMAGE_SIZE = 65536
+
+##
+## Use a small 8K stack
+##
+default STACK_SIZE=0x2000
+
+##
+## Use a small 16K heap
+##
+default HEAP_SIZE=0x4000
+
+##
+## Only use the option table in a normal image
+##
+default USE_OPTION_TABLE = !USE_FALLBACK_IMAGE
+
+##
+## Compute the location and size of where this firmware image
+## (linuxBIOS plus bootloader) will live in the boot rom chip.
+##
+if USE_FALLBACK_IMAGE
+	default ROM_SECTION_SIZE   = FALLBACK_SIZE
+	default ROM_SECTION_OFFSET = ( ROM_SIZE - FALLBACK_SIZE )
+else
+	default ROM_SECTION_SIZE   = ( ROM_SIZE - FALLBACK_SIZE )
+	default ROM_SECTION_OFFSET = 0
+end
+
+##
+## Compute the start location and size size of
+## The linuxBIOS bootloader.
+##
+default PAYLOAD_SIZE            = ( ROM_SECTION_SIZE - ROM_IMAGE_SIZE )
+default CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+default CONFIG_ROM_STREAM     = 1
+
+##
+## Compute where this copy of linuxBIOS will start in the boot rom
+##
+default _ROMBASE      = ( CONFIG_ROM_STREAM_START + PAYLOAD_SIZE )
+
+##
+## Compute a range of ROM that can cached to speed up linuxBIOS,
+## execution speed.
+##
+## XIP_ROM_SIZE must be a power of 2.
+## XIP_ROM_BASE must be a multiple of XIP_ROM_SIZE
+##
+default XIP_ROM_SIZE=65536
+default XIP_ROM_BASE = ( _ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE )
+
+##
+## Set all of the defaults for an x86 architecture
+##
+
+arch i386 end
+#cpu k8 end
+
+##
+## Build the objects we have code for in this directory.
+##
+
+#object mainboard.o
+driver mainboard.o
+#object static_devices.o
+if HAVE_MP_TABLE object mptable.o end
+if HAVE_PIRQ_TABLE object irq_tables.o end
+object reset.o
+
+##
+## Romcc output
+##
+makerule ./failover.E
+	depends "$(MAINBOARD)/failover.c" 
+	action "$(CPP) -I$(TOP)/src $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/failover.c > ./failover.E"
+end
+
+makerule ./failover.inc
+	depends "./failover.E ./romcc"
+	action "./romcc -O -o failover.inc --label-prefix=failover ./failover.E"
+end
+
+makerule ./auto.E 
+	depends	"$(MAINBOARD)/auto.c" 
+	action	"$(CPP) -I$(TOP)/src $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
+end
+makerule ./auto.inc 
+	depends "./auto.E ./romcc"
+	action	"./romcc -mcpu=k8 -O2 ./auto.E > auto.inc"
+end
+
+##
+## Build our 16 bit and 32 bit linuxBIOS entry code
+##
+mainboardinit cpu/i386/entry16.inc
+mainboardinit cpu/i386/entry32.inc
+ldscript /cpu/i386/entry16.lds
+ldscript /cpu/i386/entry32.lds
+
+##
+## Build our reset vector (This is where linuxBIOS is entered)
+##
+if USE_FALLBACK_IMAGE 
+	mainboardinit cpu/i386/reset16.inc 
+	ldscript /cpu/i386/reset16.lds 
+else
+	mainboardinit cpu/i386/reset32.inc 
+	ldscript /cpu/i386/reset32.lds 
+end
+
+### Should this be in the northbridge code?
+mainboardinit arch/i386/lib/cpu_reset.inc
+
+##
+## Include an id string (For safe flashing)
+##
+mainboardinit arch/i386/lib/id.inc
+ldscript /arch/i386/lib/id.lds
+
+##
+## Setup our mtrrs
+##
+mainboardinit cpu/k8/earlymtrr.inc
+
+###
+### This is the early phase of linuxBIOS startup 
+### Things are delicate and we test to see if we should
+### failover to another image.
+###
+if USE_FALLBACK_IMAGE
+	ldscript /arch/i386/lib/failover.lds 
+	mainboardinit ./failover.inc
+end
+
+###
+### O.k. We aren't just an intermediary anymore!
+###
+
+##
+## Setup RAM
+##
+mainboardinit cpu/k8/enable_mmx_sse.inc
+mainboardinit ./auto.inc
+mainboardinit cpu/k8/disable_mmx_sse.inc
+
+##
+## Include the secondary Configuration files 
+##
+dir /pc80
+config chip.h
+
+northbridge amd/amdk8 "mc0"
+	pci 0:18.0
+	pci 0:18.0
+	pci 0:18.0
+	pci 0:18.1
+	pci 0:18.2
+	pci 0:18.3
+	southbridge amd/amd8131 "amd8131" link 0
+		pci 0:0.0
+		pci 0:0.1
+		pci 0:1.0
+		pci 0:1.1
+	end
+	southbridge amd/amd8111 "amd8111" link 0
+		pci 0:0.0
+		pci 0:1.0 on
+		pci 0:1.1 on
+		pci 0:1.2 on
+		pci 0:1.3 on
+		pci 0:1.5 off
+		pci 0:1.6 off
+		pci 1:0.0 on
+		pci 1:0.1 on
+		pci 1:0.2 on
+		pci 1:1.0 off
+		superio winbond/w83627thf link 1
+			pnp 2e.0
+			pnp 2e.1
+			pnp 2e.2
+			pnp 2e.3
+			pnp 2e.4
+			pnp 2e.5
+			pnp 2e.6
+			pnp 2e.7
+			pnp 2e.8
+			pnp 2e.9
+			pnp 2e.a
+			register "com1" = "{1, 0, 0x3f8, 4}"
+			register "lpt" = "{1}"
+		end
+	end
+end
+
+northbridge amd/amdk8 "mc1"
+	pci 0:19.0
+	pci 0:19.0
+	pci 0:19.0
+	pci 0:19.1
+	pci 0:19.2
+	pci 0:19.3
+end
+
+cpu k8 "cpu0"
+	register "up" = "{ .chip = &amd8131, .ht_width=16, .ht_speed=600 }"
+end
+
+cpu k8 "cpu1" 
+end
+
+##
+## Include the old serial code for those few places that still need it.
+##
+mainboardinit pc80/serial.inc
+mainboardinit arch/i386/lib/console.inc
+

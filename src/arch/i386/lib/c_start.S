@@ -59,6 +59,7 @@ _start:
 	movl	$STACK_SIZE, %ebx
 	mull	%ebx
 	subl	%eax, %esp
+#endif
 
 	/* push the boot_complete flag */
 	pushl	%ebp
@@ -83,7 +84,6 @@ _start:
 	intel_chip_post_macro(0xee)	/* post fe */
 	hlt
 	jmp	.Lhlt
-#endif
 
 
 	.globl gdt, gdt_end, gdt_limit

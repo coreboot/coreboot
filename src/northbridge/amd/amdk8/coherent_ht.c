@@ -99,15 +99,17 @@ static void notify_bsp_ap_is_stopped(void)
 	unsigned long apic_id;
         apic_id = *((volatile unsigned long *)(APIC_DEFAULT_BASE+APIC_ID));
 	apic_id >>= 24;
-/*      print_debug("applicaton cpu apic_id: ");
-        print_debug_hex32(apic_id);
-        print_debug("\r\n");
-        }*/
-        if(apic_id!=0) { //AP  apic_id == node_id ??
-//              set the ColdResetbit to notify BSP that AP is stopped
+#if 0
+	print_debug("applicaton cpu apic_id: ");
+	print_debug_hex32(apic_id);
+	print_debug("\r\n");
+#endif
+	/* AP  apic_id == node_id ? */
+        if(apic_id != 0) {
+		/* set the ColdResetbit to notify BSP that AP is stopped */
                 reg = pci_read_config32(NODE_HT(apic_id), 0x6C);
                 reg |= 1<<4;
-                pci_write_config32(NODE_HT(apic_id),  0x6C, reg);
+                pci_write_config32(NODE_HT(apic_id), 0x6C, reg);
         }
  
 }

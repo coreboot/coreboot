@@ -300,7 +300,7 @@ diff -urN linux-2.4.0-official/drivers/video/sis/Makefile linux-2.4.0-linuxbios/
 diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxbios/drivers/video/sis/sisfb_lite.c
 --- linux-2.4.0-official/drivers/video/sis/sisfb_lite.c	Thu Jan  1 08:00:00 1970
 +++ linux-2.4.0-linuxbios/drivers/video/sis/sisfb_lite.c	Thu Feb  1 14:57:11 2001
-@@ -0,0 +1,2265 @@
+@@ -0,0 +1,2266 @@
 +/* sisfb_lite.c: SiSFB Lite, Frame Buffer Device Driver for SiS 540/630/730 requires no VGA BIOS
 + *
 + * Copyright 2000 Ollie Lho <ollie@sis.com.tw>
@@ -2441,6 +2441,7 @@ diff -urN linux-2.4.0-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-linuxb
 +
 +	if ((sisfb = kmalloc(sizeof(struct sisfb_info), GFP_KERNEL)) == NULL)
 +		return -ENOMEM;
++	memset(sisfb, 0, sizeof(struct sisfb_info));
 +
 +	sisfb->pci_dev = pci_dev;
 +

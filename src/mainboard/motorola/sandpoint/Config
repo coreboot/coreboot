@@ -1,0 +1,98 @@
+##
+## Config file for the Motorola Sandpoint III development system.
+## Note that this has only been tested with the Altimus 7410 PMC.
+##
+
+##
+## Include the secondary Configuration files 
+##
+southbridge winbond/w83c553
+nsuperio NSC/pc97307 com1={1} com2={1} floppy=0 lpt=1 keyboard=1 hwmonitor=1
+
+##
+## Build the objects we have code for in this directory.
+##
+object main.o
+object sandpoint.o
+
+dir nvram
+dir flash
+
+###
+### Build options
+###
+
+##
+## Build code for using cache as RAM
+##
+option USE_CACHE_RAM=0
+
+##
+## Do not build special code to the keyboard
+##
+option NO_KEYBOARD=1
+
+##
+## Limit board rate to DINK speed for the moment
+##
+option TTYS0_BAUD=38400
+
+###
+### LinuxBIOS layout values
+###
+
+## ROM_SIZE is the size of boot ROM that this board will use.
+option ROM_SIZE=1048576
+
+## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
+option ROM_IMAGE_SIZE=49152
+ 
+## LinuxBIOS C code runs at this location in RAM
+option _RAMBASE=0x00100000
+
+## For the trick of using cache as ram
+## put the fake ram location at this address
+option CACHE_RAM_BASE=0x00200000
+option CACHE_RAM_SIZE=0x00004000
+
+##
+## Use a 64K stack
+##
+option STACK_SIZE=0x10000
+
+##
+## Use a 64K heap
+##
+option HEAP_SIZE=0x10000
+
+##
+## Clean up the motherboard id strings
+##
+option MAINBOARD_PART_NUMBER=SPX3
+option MAINBOARD_VENDOR=Motorola
+
+##
+## Compute the location and size of where this firmware image
+## (linuxBIOS plus bootloader) will live in the boot rom chip.
+##
+expr ROM_SECTION_SIZE=ROM_SIZE
+expr ROM_SECTION_OFFSET=0
+
+##
+## Compute the start location and size size of
+## The linuxBIOS bootloader.
+##
+expr ZKERNEL_START =(0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+expr PAYLOAD_SIZE  =ROM_SECTION_SIZE - ROM_IMAGE_SIZE
+
+##
+## Compute where this copy of linuxBIOS will start in the boot rom
+##
+expr _ROMBASE=0xff000000
+
+##
+## SMP in the future?
+##
+#option SMP=1
+option MAX_CPUS=1
+option MAX_PHYSICAL_CPUS=1

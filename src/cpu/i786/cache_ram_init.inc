@@ -54,9 +54,8 @@ start_cacheram:        .string "Start cache ram\r\n"
 	cmpl	%esi, %edi
 	jnz	1b
 
-  intel_chip_post_macro(0x02)
 	/* Load a different set of data segments */
-	movw	$0x08, %ax
+	movw	$CACHE_RAM_DATA_SEG, %ax
 	movw	%ax, %ds
 	movw	%ax, %es
 	movw	%ax, %ss

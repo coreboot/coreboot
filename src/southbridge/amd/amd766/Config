@@ -1,4 +1,4 @@
-option CONFIG_UDELAY_TSC
+option CONFIG_UDELAY_TSC=1
 object southbridge.o
 object nvram.o
 object amd766_ioapic.o

@@ -32,11 +32,22 @@ makerule ldoptions : Makefile.settings ; perl -e 'foreach $$var (split(" ", $$EN
 
 makerule linuxbios.strip: linuxbios ; $(OBJCOPY) -O binary linuxbios linuxbios.strip
 
-makerule linuxbios.o : crt0.o $(DRIVERS-1) linuxbios.a $(LIBGCC_FILE_NAME)  ; $(CC) -nostdlib -r -o $@ crt0.o $(DRIVERS-1) linuxbios.a $(LIBGCC_FILE_NAME)
 
+makerule linuxbios_c.o: $(DRIVERS-1) linuxbios.a $(LIBGCC_FILE_NAME)  ; $(CC) -nostdlib -r -o $@ c_start.o $(DRIVERS-1) linuxbios.a $(LIBGCC_FILE_NAME)
 
-makerule linuxbios: linuxbios.o ldscript.ld ; $(CC) -nostdlib -nostartfiles -static -o $@ -T ldscript.ld linuxbios.o 
-addaction linuxbios nm -n linuxbios > linuxbios.map
+makerule linuxbios_c: linuxbios_c.o $(TOP)/src/config/linuxbios_c.ld ldoptions ; $(CC) -nostdlib -nostartfiles -static -o $@ -T $(TOP)/src/config/linuxbios_c.ld linuxbios_c.o
+
+option CONFIG_COMPRESS=1
+expr CONFIG_UNCOMPRESSED=!CONFIG_COMPRESS
+makedefine LINUXBIOS_PAYLOAD-$(CONFIG_COMPRESS):=linuxbios_payload.nrv2b
+makedefine LINUXBIOS_PAYLOAD-$(CONFIG_UNCOMPRESSED):=linuxbios_payload.bin
+
+addaction linuxbios_c nm -n linuxbios_c | sort > linuxbios_c.map
+makerule linuxbios_payload.bin: linuxbios_c; $(OBJCOPY) -O binary $< $@
+makerule linuxbios_payload.nrv2b: linuxbios_payload.bin nrv2b ; ./nrv2b e $< $@
+makerule linuxbios_payload: $(LINUXBIOS_PAYLOAD-1) ; cp $(LINUXBIOS_PAYLOAD-1) linuxbios_payload
+makerule linuxbios: crt0.o linuxbios_payload ldscript.ld ; $(CC) -nostdlib -nostartfiles -static -o $@ -T ldscript.ld crt0.o
+addaction linuxbios nm -n linuxbios | sort > linuxbios.map
 
 makerule linuxbios.a : $(OBJECTS-1) ; rm -f linuxbios.a
 addaction linuxbios.a ar cr linuxbios.a $(OBJECTS-1)
@@ -57,9 +68,9 @@ makerule etags: $(SOURCES) ; etags $(SOURCES)
 makerule tags: $(SOURCES) ; ctags $(SOURCES)
 makerule documentation: $(SOURCES) ; doxygen LinuxBIOSDoc.config 
 
-makerule build_opt_tbl: $(TOP)/util/options/build_opt_tbl.c ; $(HOSTCC) $(HOSTCFLAGS) $< -o $@
+makerule build_opt_tbl: $(TOP)/util/options/build_opt_tbl.c $(TOP)/src/include/pc80/mc146818rtc.h $(TOP)/src/include/boot/linuxbios_tables.h ; $(HOSTCC) $(HOSTCFLAGS) $< -o $@
 
-makerule /$(TARGET_DIR)/option_table.c : build_opt_tbl $(MAINBOARD)/cmos.conf ; ./build_opt_tbl -b  --config $(MAINBOARD)/cmos.conf 
+makerule /$(TARGET_DIR)/option_table.c : build_opt_tbl $(MAINBOARD)/cmos.layout ; ./build_opt_tbl -b  --config $(MAINBOARD)/cmos.layout 
 
 object /$(TARGET_DIR)/option_table.o HAVE_OPTION_TABLE
 

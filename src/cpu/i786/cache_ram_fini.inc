@@ -30,7 +30,7 @@
 	movl	%eax, %cr0
 
 	/* Reload the normal data segments */
-	movw	$0x18, %ax
+	movw	$ROM_DATA_SEG, %ax
 	movw	%ax, %ds
 	movw	%ax, %es
 	movw	%ax, %ss

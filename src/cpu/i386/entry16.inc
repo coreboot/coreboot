@@ -26,6 +26,7 @@ it with the version available from LANL.
  */
 
 /* .section ".rom.text" */
+#include <arch/rom_segs.h>
 .code16
 .globl	EXT(_start)
 .type EXT(_start), @function
@@ -93,7 +94,7 @@ EXT(_start):
 	movl	%eax, %cr0
 
 	/* Now that we are in protected mode jump to a 32 bit code segment. */
-	data32	ljmp	$0x10, $__protected_start
+	data32	ljmp	$ROM_CODE_SEG, $__protected_start
 
 /** The gdt has a 4 Gb code segment at 0x10, and a 4 GB data segment
  * at 0x18; these are Linux-compatible. 

@@ -5,3 +5,5 @@ object pirq_routing.o HAVE_PIRQ_TABLE
 object vgabios.o CONFIG_VGABIOS
 object idt.o  CONFIG_REALMODE_IDT
 option CONFIG_LOGICAL_CPUS=1
+object c_start.S
+

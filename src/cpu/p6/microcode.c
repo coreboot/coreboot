@@ -304,7 +304,7 @@ static void display_cpuid_update_microcode(void)
 {
 	unsigned int eax, ebx, ecx, edx;
 	unsigned int pf, rev, sig, val[2];
-	unsigned int x86_model, i;
+	unsigned int x86_model, x86_family, i;
 	struct microcode *m;
 	
 	/* cpuid sets msr 0x8B iff a microcode update has been loaded. */
@@ -312,15 +312,16 @@ static void display_cpuid_update_microcode(void)
 	cpuid(1, &eax, &ebx, &ecx, &edx);
 	rdmsr(0x8B, val[0], rev);
 	x86_model = (eax >>4) & 0x0f;
+	x86_family = (eax >>8) & 0x0f;
 	sig = eax;
 
 	pf = 0;
-	if (x86_model >= 5) {
+	if ((x86_model >= 5)||(x86_family>6)) {
 		rdmsr(0x17, val[0], val[1]);
 		pf = 1 << ((val[1] >> 18) & 7);
 	}
-	printk_info("microcode_info: sig = 0x%08x pf=0x%08x rev = 0x%08x\n",
-	       sig, pf, rev);
+	printk_debug("microcode_info: sig = 0x%08x pf=0x%08x rev = 0x%08x\n",
+		sig, pf, rev);
 
 	m = (void *)&microcode_updates;
 	for(i = 0; i < sizeof(microcode_updates)/sizeof(struct microcode); i++) {
@@ -336,6 +337,6 @@ static void display_cpuid_update_microcode(void)
 
 void p6_cpufixup(struct mem_range *mem)
 {
-	printk_info("Updating microcode\n");
+	printk_debug("Updating microcode\n");
 	display_cpuid_update_microcode();
 }

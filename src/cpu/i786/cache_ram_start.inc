@@ -34,11 +34,11 @@
 	 * - I change teh code segments back to my normal segment with
 	 *   a 4GB limit and a base address of 0.
 	 */
-	ljmp	$0x20, $___cache_ram_code_start
+	ljmp	$CACHE_RAM_CODE_SEG, $___cache_ram_code_start
 .globl __cache_ram_code_start
 __cache_ram_code_start:
-	lcall	$0x20, $cache_ram_start
-	ljmp	$0x10, $__cache_ram_code_done
+	lcall	$CACHE_RAM_CODE_SEG, $cache_ram_start
+	ljmp	$ROM_CODE_SEG, $__cache_ram_code_done
 .globl __cache_ram_code_done
 __cache_ram_code_done:
 

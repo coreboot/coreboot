@@ -6,11 +6,11 @@ struct mem_range;
 #include <cpu/k7/cpufixup.h>
 #include <cpu/p6/cpufixup.h>
 
-#ifdef CPU_FIXUP
+#if CPU_FIXUP == 1 
 #  if defined(k7)
 #    define cpufixup(mem) k7_cpufixup(mem)
 #  elif defined(i786)
-#    define cpufixup(mem) p6_cpufixup(mem)
+#    define cpufixup(mem) i786_cpufixup(mem)
 #  elif defined(i686)
 #    define cpufixup(mem) p6_cpufixup(mem)
 #  endif

@@ -163,6 +163,21 @@ struct cmos_defaults {
 	uint8_t default_set[CMOS_IMAGE_BUFFER_SIZE]; /* default settings */
 };
 
+#define LB_TAG_OPTION_CHECKSUM 204
+struct	cmos_checksum {
+	uint32_t tag;
+	uint32_t size;
+	/* In practice everything is byte aligned, but things are measured
+	 * in bits to be consistent.
+	 */
+	uint32_t range_start;	/* First bit that is checksummed (byte aligned) */
+	uint32_t range_end;	/* Last bit that is checksummed (byte aligned) */
+	uint32_t location;	/* First bit of the checksum (byte aligned) */
+	uint32_t type;		/* Checksum algorithm that is used */
+#define CHECKSUM_NONE	0
+#define CHECKSUM_PCBIOS	1
+};
+
 
 
 #endif /* LINUXBIOS_TABLES_H */

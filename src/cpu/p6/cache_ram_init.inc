@@ -41,7 +41,7 @@
 	jnz	1b
 
 	/* Load a different set of data segments */
-	movw	$0x08, %ax
+	movw	$CACHE_RAM_DATA_SEG, %ax
 	movw	%ax, %ds
 	movw	%ax, %es
 	movw	%ax, %ss

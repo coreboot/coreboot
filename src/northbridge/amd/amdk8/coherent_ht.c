@@ -474,7 +474,8 @@ static void rename_temp_node(u8 node)
 static bool check_connection(u8 src, u8 dest, u8 link)
 {
 	/* this function does 2 things:
-	 * 1) detect whether the coherent HT link is connected
+	 * 1) detect whether the coherent HT link is connected.
+         *    After this step follows a small idle loop.
 	 * 2) verify that the coherent hypertransport link
 	 *    is established and actually working by reading the
 	 *    remote node's vendor/device id
@@ -490,6 +491,9 @@ static bool check_connection(u8 src, u8 dest, u8 link)
 	val=pci_read_config32(NODE_HT(src), 0x98+link);
 	if ( (val&0x17) != 0x03)
 		return 0;
+
+	/* idle loop to make sure the link is established */
+	for (val=0;val<16;val++);
 
 	/* 2) */
         val=pci_read_config32(NODE_HT(dest),0);
@@ -673,7 +677,7 @@ static u8 setup_smp(void)
 	/* We found 2 nodes so far */
 	setup_node(0, cpus);	/* Node 1 is there. Setup Node 0 correctly */
 	setup_remote_node(1, cpus);  /* Setup the routes on the remote node */
-	enable_routing(1);	/* Enable routing on Node 1 */
+	enable_routing(7);	/* Enable routing on Node 1 */
 	rename_temp_node(1);	/* Rename Node 7 to Node 1  */
 	
 	clear_temp_row(0);	/* delete temporary connection */
@@ -687,7 +691,6 @@ static u8 setup_smp(void)
 	if (!check_connection(0, 7, UP)) {	// Link: UP
 		print_debug("No connection to Node 2.\r\n");
 		clear_temp_row(0);	 /* delete temp connection */
-		// detect_mp_capability(2); /* and get 2p working     */
 		return 2;
 	}
 
@@ -698,11 +701,10 @@ static u8 setup_smp(void)
 	setup_temp_row(0,1,cpus); /* temp. link between nodes 0 and 1 */
 	setup_temp_row(1,3,cpus); /* temp. link between nodes 1 and 3 */
 
-	if (!check_connection(0, 7, UP)) {	// Link: UP
+	if (!check_connection(1, 7, UP)) {	// Link: UP
 		print_debug("No connection to Node 3.\r\n");
 		clear_temp_row(0);	 /* delete temp connection */
 		clear_temp_row(1);	 /* delete temp connection */
-		//detect_mp_capability(2); /* and get 2p working     */
 		return 2;
 	}
 
@@ -719,7 +721,7 @@ static u8 setup_smp(void)
 	setup_temp_row(0,1,cpus);
 	setup_temp_row(1,3,cpus);
 	setup_temp_node(3,cpus);
-	enable_routing(3);
+	enable_routing(7);	/* enable routing on node 3 (temp.) */
 	rename_temp_node(3);
 	
 	clear_temp_row(0);
@@ -746,12 +748,12 @@ static unsigned detect_mp_capabilities(unsigned cpus)
 	print_debug("\r\n");
 #endif
 	if (cpus>2)
-		mask=0x04;	/* BigMPCap */
+		mask=0x06;	/* BigMPCap */
 	else
 		mask=0x02;	/* MPCap    */
 
 	for (node=0; node<cpus; node++) {
-		if (!(pci_read_config32(NODE_MC(node), 0xe8) & mask))
+		if ((pci_read_config32(NODE_MC(node), 0xe8) & mask)!=mask)
 			mp_cap=FALSE;
 	}
 
@@ -801,7 +803,7 @@ static void coherent_ht_finalize(unsigned cpus)
 	for (node=0; node<cpus; node++) {
 		u32 val;
 		val=pci_read_config32(NODE_HT(node), 0x60);
-		val &= 0x000F0070;
+		val &= (~0x000F0070);
 		val |= ((cpus-1)<<16)|((cpus-1)<<4);
 		pci_write_config32(NODE_HT(node),0x60,val);
 

@@ -1,3 +1,4 @@
+option CONFIG_UDELAY_TSC
 object southbridge.o
 object nvram.o
 object amd766_ioapic.o
@@ -10,7 +11,4 @@ object amd766_watchdog.o
 object amd766_power.o
 object amd766_reboot.o
 object amd766_ide.o
-
-
-
 

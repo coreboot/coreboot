@@ -2,5 +2,6 @@ object keyboard.o
 object mc146818rtc.o
 object isa-dma.o
 object i8259.o
+object udelay_timer2.o CONFIG_UDELAY_TIMER2
 dir ide
 

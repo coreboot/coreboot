@@ -4,7 +4,7 @@
 
 static unsigned long clocks_per_usec;
 
-
+#if (CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2 == 1)
 #define CLOCK_TICK_RATE	1193180U /* Underlying HZ */
 
 /* ------ Calibrate the TSC ------- 
@@ -79,6 +79,73 @@ bad_ctc:
 	return 0;
 }
 
+#else /*  CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2 */
+
+/*
+ * this is the "no timer2" version.
+ * to calibrate tsc, we get a TSC reading, then do 1,000,000 outbs to port 0x80
+ * then we read TSC again, and divide the difference by 1,000,000
+ * we have found on a wide range of machines that this gives us a a 
+ * good microsecond value
+ * to +- 10%. On a dual AMD 1.6 Ghz box, it gives us .97 microseconds, and on a
+ * 267 Mhz. p5, it gives us 1.1 microseconds.
+ * also, since gcc now supports long long, we use that.
+ * also no unsigned long long / operator, so we play games.
+ * about the only thing you can do with long longs, it seems, 
+ *is return them and assign them.
+ * (and do asm on them, yuck)
+ * so avoid all ops on long longs.
+ */
+static unsigned long long calibrate_tsc(void)
+{
+    unsigned long long retval, start, end, delta;
+    unsigned long allones = (unsigned long) -1, result;
+    unsigned long startlow, starthigh;
+    unsigned long endlow, endhigh;
+    unsigned long count;
+
+    rdtsc(startlow,starthigh);
+    // no udivdi3, dammit.
+    // so we count to 1<< 20 and then right shift 20
+    for(count = 0; count < (1<<20); count ++)
+	outb(0x80, 0x80);
+    rdtsc(endlow,endhigh);
+
+    // make delta be (endhigh - starthigh) + (endlow - startlow)
+    // but >> 20
+    // do it this way to avoid gcc warnings.
+    start = starthigh;
+    start <<= 32;
+    start |= startlow;
+    end = endhigh;
+    end <<= 32;
+    end |= endlow;
+    delta = end - start;
+    // at this point we have a delta for 1,000,000 outbs. Now rescale for one microsecond.
+    delta >>= 20;
+    // save this for microsecond timing.
+    clocks_per_usec = delta;
+#ifdef DEBUG
+    printf("end %x:%x, start %x:%x\n",
+	endhigh, endlow, starthigh, startlow);
+    printf("32-bit delta %d\n", (unsigned long) delta);
+#endif
+
+    // ok now we don't have divide for unsigned long long.
+    // so what we do is set an unsigned long to all 1's, which is just 1 less than
+    // 1 << 32. then we divide by an unsigned long version of delta (we now that delta fits
+    // easily in 32 bits). that way we avoid assembly code.
+    // avoid gcc complaints.
+    result = allones / (unsigned long) delta;
+    retval = result;
+#ifdef DEBUG
+    printf(__FUNCTION__ " 32-bit result is %d\n", result);
+#endif
+    return retval;
+}
+
+
+#endif /* CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2*/
 
 void udelay(unsigned long us)
 {

@@ -66,87 +66,88 @@
 /* The address arguments to this function are PHYSICAL ADDRESSES */ 
 static void real_mode_switch_call_vga(unsigned long devfn)
 {
-	__asm__ __volatile__
-		(
-			// paranoia -- does ecx get saved? not sure. This is 
-			// the easiest safe thing to do.
-			"pushal\n"
-			/* save the stack */
-			"mov %esp, __stack\n"
-			"jmp 1f\n"
-			"__stack: .long 0\n"
-			"1:\n"
-			/* get devfn into %ecx */
-			"movl    %esp, %ebp\n"
-			"movl    8(%ebp), %ecx\n"
-			/*  This configures CS properly for real mode. */
-			"    ljmp $0x28, $__rms_16bit\n"
-			"__rms_16bit:                 \n"
-			".code16                      \n" /* 16 bit code from here on... */
-			
-			/* Load the segment registers w/ properly configured segment
-			 * descriptors.  They will retain these configurations (limits,
-			 * writability, etc.) once protected mode is turned off. */
-			"    mov  $0x30, %ax         \n"
-			"    mov  %ax, %ds          \n"
-			"    mov  %ax, %es          \n"
-			"    mov  %ax, %fs          \n"
-			"    mov  %ax, %gs          \n"
-			"    mov  %ax, %ss          \n"
-			
-			/* Turn off protection (bit 0 in CR0) */
-			"    movl %cr0, %eax        \n"
-			"    andl $0xFFFFFFFE, %eax  \n"
-			"    movl %eax, %cr0        \n"
-			
-			/* Now really going into real mode */
-			"    ljmp $0,  $__rms_real \n"
-			"__rms_real:                  \n"
-			
-			// put the stack at the end of page zero. 
-			// that way we can easily share it between real and protected, 
-			// since the 16-bit ESP at segment 0 will work for any case. 
-			/* Setup a stack */
-			"    mov  $0x0, %ax       \n"
-			"    mov  %ax, %ss          \n"
-			"    movl  $0x1000, %eax       \n"
-			"    movl  %eax, %esp          \n"
-			/* debugging for RGM */
-			"    mov $0x11, %al	\n"
-			" outb	%al, $0x80\n"
-			
-			/* Dump zeros in the other segregs */
-			"    xor  %ax, %ax          \n"
-			"    mov  %ax, %ds          \n"
-			"    mov  %ax, %es          \n"
-			"    mov  %ax, %fs          \n"
-			"    mov  %ax, %gs          \n"
-			"    mov %cx, %ax	\n"
-			" .byte 0x9a, 0x03, 0, 0, 0xc0  \n"
-			" movb $0x55, %al\noutb %al, $0x80\n"
-			/* if we got here, just about done. 
-			 * Need to get back to protected mode */
-			"movl	%cr0, %eax\n"
-			//       "andl	$0x7FFAFFD1, %eax\n" /* PG,AM,WP,NE,TS,EM,MP = 0 */
-			//	"orl	$0x60000001, %eax\n" /* CD, NW, PE = 1 */
-			"orl	$0x0000001, %eax\n" /* PE = 1 */
-			"movl	%eax, %cr0\n"
-			/* Now that we are in protected mode jump to a 32 bit code segment. */
-			"data32	ljmp	$0x10, $vgarestart\n"
-			"vgarestart:\n"
-			".code32\n"
-			"    movw $0x18, %ax          \n"
-			"    mov  %ax, %ds          \n"
-			"    mov  %ax, %es          \n"
-			"    mov  %ax, %fs          \n"
-			"    mov  %ax, %gs          \n"
-			"    mov  %ax, %ss          \n"
-			".globl vga_exit\n"
-			"vga_exit:\n"
-			"    mov  __stack, %esp\n"
-			"    popal\n"
-			);
+	__asm__ __volatile__ (
+		// paranoia -- does ecx get saved? not sure. This is 
+		// the easiest safe thing to do.
+		"	pushal\n"
+		/* save the stack */
+		"	mov %esp, __stack\n"
+		"	jmp 1f\n"
+		"__stack: .long 0\n"
+		"1:\n"
+		/* get devfn into %ecx */
+		"	movl    %esp, %ebp\n"
+		"	movl    8(%ebp), %ecx\n"
+		/*  This configures CS properly for real mode. */
+		"	ljmp $0x28, $__rms_16bit\n"
+		"__rms_16bit:                 \n"
+		".code16                      \n"
+		/* 16 bit code from here on... */
+
+		/* Load the segment registers w/ properly configured segment
+		 * descriptors.  They will retain these configurations (limits,
+		 * writability, etc.) once protected mode is turned off. */
+		"	mov  $0x30, %ax         \n"
+		"	mov  %ax, %ds          \n"
+		"	mov  %ax, %es          \n"
+		"	mov  %ax, %fs          \n"
+		"	mov  %ax, %gs          \n"
+		"	mov  %ax, %ss          \n"
+
+		/* Turn off protection (bit 0 in CR0) */
+		"	movl %cr0, %eax        \n"
+		"	andl $0xFFFFFFFE, %eax  \n"
+		"	movl %eax, %cr0        \n"
+
+		/* Now really going into real mode */
+		"	ljmp $0,  $__rms_real \n"
+		"__rms_real:                  \n"
+
+		// put the stack at the end of page zero. 
+		// that way we can easily share it between real and protected, 
+		// since the 16-bit ESP at segment 0 will work for any case. 
+		/* Setup a stack */
+		"    mov  $0x0, %ax       \n"
+		"    mov  %ax, %ss          \n"
+		"    movl  $0x1000, %eax       \n"
+		"    movl  %eax, %esp          \n"
+		/* debugging for RGM */
+		"    mov $0x11, %al	\n"
+		" outb	%al, $0x80\n"
+
+		/* Dump zeros in the other segregs */
+		"    xor  %ax, %ax          \n"
+		"    mov  %ax, %ds          \n"
+		"    mov  %ax, %es          \n"
+		"    mov  %ax, %fs          \n"
+		"    mov  %ax, %gs          \n"
+		"    mov %cx, %ax	\n"
+		" .byte 0x9a, 0x03, 0, 0, 0xc0  \n"
+		" movb $0x55, %al\noutb %al, $0x80\n"
+		/* if we got here, just about done. 
+		 * Need to get back to protected mode */
+		"movl	%cr0, %eax\n"
+		//       "andl	$0x7FFAFFD1, %eax\n" /* PG,AM,WP,NE,TS,EM,MP = 0 */
+		//	"orl	$0x60000001, %eax\n" /* CD, NW, PE = 1 */
+		"orl	$0x0000001, %eax\n" /* PE = 1 */
+		"movl	%eax, %cr0\n"
+		/* Now that we are in protected mode jump to a 32 bit code segment. */
+		"data32	ljmp	$0x10, $vgarestart\n"
+		"vgarestart:\n"
+		".code32\n"
+		"    movw $0x18, %ax          \n"
+		"    mov  %ax, %ds          \n"
+		"    mov  %ax, %es          \n"
+		"    mov  %ax, %fs          \n"
+		"    mov  %ax, %gs          \n"
+		"    mov  %ax, %ss          \n"
+		".globl vga_exit\n"
+		"vga_exit:\n"
+		"    mov  __stack, %esp\n"
+		"    popal\n"
+		);
 }
+
 __asm__ (".text\n""real_mode_switch_end:\n");
 extern char real_mode_switch_end[];
 
@@ -161,16 +162,18 @@ do_vgabios(void)
 	int i;
 	
 	for (i=0x400; i<0x500; i++) {
-		printk_debug("%02x%c", *(unsigned char *)i, i%16==15 ? '\n' : ' ');
+		printk_debug("%02x%c", *(unsigned char *)i,
+			     i%16==15 ? '\n' : ' ');
 		*(unsigned char *) i = 0;
 	}
-	
+
 	for (i=0x400; i<0x500; i++) {
-		printk_debug("%02x%c", *(unsigned char *)i, i%16==15 ? '\n' : ' ');
+		printk_debug("%02x%c", *(unsigned char *)i,
+			     i%16==15 ? '\n' : ' ');
 	}
-	
+
 	dev = pci_find_class(PCI_CLASS_DISPLAY_VGA <<8, NULL);
-	
+
 	if (! dev) {
 		printk_debug("NO VGA FOUND\n");
 		return;
@@ -360,7 +363,7 @@ biosint(
 	flags = stackflags;
 	
 	printk_debug("biosint: # 0x%lx, eax 0x%lx ebx 0x%lx ecx 0x%lx edx 0x%lx\n", 
-		intnumber, eax, ebx, ecx, edx);
+		     intnumber, eax, ebx, ecx, edx);
 	printk_debug("biosint: ebp 0x%lx esp 0x%lx edi 0x%lx esi 0x%lx\n", ebp, esp, edi, esi);
 	printk_debug("biosint: ip 0x%x cs 0x%x flags 0x%x\n", ip, cs, flags);
 	// cases in a good compiler are just as good as your own tables. 
@@ -383,7 +386,7 @@ biosint(
 		
 	case PCIBIOS:
 		ret = pcibios( &edi, &esi, &ebp, &esp, 
-			&ebx, &edx, &ecx, &eax, &flags);
+			       &ebx, &edx, &ecx, &eax, &flags);
 		break;
 	case MEMSIZE: 
 		// who cares. 
@@ -392,7 +395,7 @@ biosint(
 		break;
 	default:
 		printk_info(__FUNCTION__ ": Unsupport int #0x%x\n", 
-			intnumber);
+			    intnumber);
 		break;
 	}
 	if (ret)

@@ -617,6 +617,11 @@ define CONFIG_UDELAY_TSC
 	export used
 	comment "Implement udelay with the x86 time stamp counter"
 end
+define FAKE_SPDROM
+	default 0
+	export always
+	comment "Use this to fake spd rom values"
+end
 
 ###############################################
 # Board specific options

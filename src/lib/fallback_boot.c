@@ -16,7 +16,7 @@ void boot_successful(void)
 
 	byte = inb(RTC_PORT(1));
 	byte &= 0xfe;
-	byte |= (byte & 2) >> 1;
+	byte |= (byte & (1 << 1)) >> 1;
 
 	/* If we are in normal mode set the boot count to 0 */
 	if(byte & 1)

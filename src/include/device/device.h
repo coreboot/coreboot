@@ -17,7 +17,7 @@ struct device_operations {
 
 #define MAX_RESOURCES 6
 /*
- * There is one pci_dev structure for each slot-number/function-number
+ * There is one device structure for each slot-number/function-number
  * combination:
  */
 
@@ -75,8 +75,6 @@ void compute_allocate_resource(device_t bus, struct resource *bridge,
 	unsigned long type_mask, unsigned long type);
 void assign_resources(device_t bus);
 void enumerate_static_device(void);
-unsigned long device_memory_base;
-
 
 /* Helper functions */
 device_t dev_find_device (unsigned int vendor, unsigned int device, device_t from);

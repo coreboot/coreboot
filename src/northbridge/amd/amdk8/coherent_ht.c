@@ -104,12 +104,12 @@ static void enable_routing(u8 node)
 	 *
 	 */
 
-	/* Enable routing table for BSP */
+	/* Enable routing table */
 	print_debug("Enabling routing table for node ");
 	print_debug_hex32(node);
 
 	val=pci_read_config32(NODE_HT(node), 0x6c);
-	val &= ~((1<<1)|(1<<0));
+	val &= ~((1<<6)|(1<<5)|(1<<4)|(1<<1)|(1<<0));
 	pci_write_config32(NODE_HT(node), 0x6c, val);
 
 	print_debug(" done.\r\n");

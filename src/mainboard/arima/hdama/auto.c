@@ -17,7 +17,7 @@
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "debug.c"
 
-static void memreset_setup(const struct mem_controller *ctrl)
+static void memreset_setup(void)
 {
 	/* Set the memreset low */
 	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 28);
@@ -25,12 +25,12 @@ static void memreset_setup(const struct mem_controller *ctrl)
 	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 29);
 }
 
-static void memreset(const struct mem_controller *ctrl)
+static void memreset(int controllers, const struct mem_controller *ctrl)
 {
 	udelay(800);
 	/* Set memreset_high */
 	outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 28);
-	udelay(50);
+	udelay(90);
 }
 
 static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
@@ -75,6 +75,11 @@ static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 	}
 
 	return ret;
+}
+
+static inline int spd_read_byte(unsigned device, unsigned address)
+{
+	return smbus_read_byte(device, address);
 }
 
 #include "northbridge/amd/amdk8/cpu_ldtstop.c"
@@ -137,53 +142,64 @@ static void pc87360_enable_serial(void)
 	pnp_set_iobase0(SIO_BASE, 0x3f8);
 }
 
+#define FIRST_CPU  1
+#define SECOND_CPU 0
+#define TOTAL_CPUS (FIRST_CPU + SECOND_CPU)
 static void main(void)
 {
 	/*
 	 * GPIO28 of 8111 will control H0_MEMRESET_L
 	 * GPIO29 of 8111 will control H1_MEMRESET_L
 	 */
-
-	static const struct mem_controller cpu0 = {
-		.f0 = PCI_DEV(0, 0x18, 0),
-		.f1 = PCI_DEV(0, 0x18, 1),
-		.f2 = PCI_DEV(0, 0x18, 2),
-		.f3 = PCI_DEV(0, 0x18, 3),
-		.channel0 = { (0xa<<3)|0, (0xa<<3)|2, 0, 0 },
-		.channel1 = { (0xa<<3)|1, (0xa<<3)|3, 0, 0 },
-	};
-	static const struct mem_controller cpu1 = {
-		.f0 = PCI_DEV(0, 0x19, 0),
-		.f1 = PCI_DEV(0, 0x19, 1),
-		.f2 = PCI_DEV(0, 0x19, 2),
-		.f3 = PCI_DEV(0, 0x19, 3),
-		.channel0 = { (0xa<<3)|4, (0xa<<3)|6, 0, 0 },
-		.channel1 = { (0xa<<3)|5, (0xa<<3)|7, 0, 0 },
+	static const struct mem_controller cpu[] = {
+#if FIRST_CPU
+		{
+			.node_id = 0,
+			.f0 = PCI_DEV(0, 0x18, 0),
+			.f1 = PCI_DEV(0, 0x18, 1),
+			.f2 = PCI_DEV(0, 0x18, 2),
+			.f3 = PCI_DEV(0, 0x18, 3),
+			.channel0 = { (0xa<<3)|0, (0xa<<3)|2, 0, 0 },
+			.channel1 = { (0xa<<3)|1, (0xa<<3)|3, 0, 0 },
+		},
+#endif
+#if SECOND_CPU
+		{
+			.node_id = 1,
+			.f0 = PCI_DEV(0, 0x19, 0),
+			.f1 = PCI_DEV(0, 0x19, 1),
+			.f2 = PCI_DEV(0, 0x19, 2),
+			.f3 = PCI_DEV(0, 0x19, 3),
+			.channel0 = { (0xa<<3)|4, (0xa<<3)|6, 0, 0 },
+			.channel1 = { (0xa<<3)|5, (0xa<<3)|7, 0, 0 },
+		},
+#endif
 	};
 	if (cpu_init_detected()) {
 		asm("jmp __cpu_reset");
 	}
-	pc87360_enable_serial();
-	uart_init();
-	console_init();
 	enable_lapic();
+	init_timer();
 	if (!boot_cpu()) {
 		stop_this_cpu();
 	}
-	init_timer();
+	pc87360_enable_serial();
+	uart_init();
+	console_init();
 	setup_default_resource_map();
 	setup_coherent_ht_domain();
 	enumerate_ht_chain(0);
-	distinguish_cpu_resets();
+	distinguish_cpu_resets(0);
 	
-#if 1 
+#if 0
 	print_pci_devices();
 #endif
 	enable_smbus();
 #if 0
-	dump_spd_registers(&cpu0);
+	dump_spd_registers(&cpu[0]);
 #endif
-	sdram_initialize(&cpu0);
+	memreset_setup();
+	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
 
 #if 1
 	dump_pci_devices();
@@ -204,7 +220,12 @@ static void main(void)
 #if 0
 	ram_check(0x00000000, msr.lo);
 #else
-	/* Check 16MB of memory */
+#if TOTAL_CPUS < 2
+	/* Check 16MB of memory @ 0*/
 	ram_check(0x00000000, 0x01000000);
+#else
+	/* Check 16MB of memory @ 2GB */
+	ram_check(0x80000000, 0x81000000);
+#endif
 #endif
 }

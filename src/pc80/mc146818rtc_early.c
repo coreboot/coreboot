@@ -4,7 +4,7 @@
 #ifndef MAX_REBOOT_CNT
 #error "MAX_REBOOT_CNT not defined"
 #endif
-#if  MAX_REBOOT_CNT > 14
+#if  MAX_REBOOT_CNT > 15
 #error "MAX_REBOOT_CNT too high"
 #endif
 
@@ -78,6 +78,12 @@ static int do_normal_boot(void)
 		byte &= 0x0f; /* yes, clear the boot count */
 	}
 
+	/* Properly set the last boot flag */
+	byte &= 0xfc;
+	if ((byte >> 4) < MAX_REBOOT_CNT) {
+		byte |= (1<<1);
+	}
+
 	/* Are we already at the max count? */
 	if ((byte >> 4) < MAX_REBOOT_CNT) {
 		byte += 1 << 4; /* No, add 1 to the count */
@@ -86,13 +92,8 @@ static int do_normal_boot(void)
 		byte &= 0xfc;	/* Yes, put in fallback mode */
 	}
 
-	/* Is this the first boot? */
-	if ((byte >> 4) <= 1) {
-		byte = (byte & 0xfc) | ((byte & 1) << 1); /* yes, shift the boot bits */
-	}
-
 	/* Save the boot byte */
 	cmos_write(byte, RTC_BOOT_BYTE);
 
-	return ((byte >> 4) < MAX_REBOOT_CNT);
+	return (byte & (1<<1));
 }

@@ -87,6 +87,7 @@ static void setup_ioapic(void)
 static void lpc_init(struct device *dev)
 {
 	uint8_t byte;
+	uint16_t word;
 	int pwr_on=-1;
 
 	printk_debug("lpc_init\n");
@@ -100,6 +101,13 @@ static void lpc_init(struct device *dev)
 	/* posted memory write enable */
 	byte = pci_read_config8(dev, 0x46);
 	pci_write_config8(dev, 0x46, byte | (1<<0));
+
+//BY LYH
+        /* Disable AC97 and Ethernet */
+        word = pci_read_config16(dev, 0x48);
+        pci_write_config16(dev, 0x48, word & ~((1<<5)|(1<<6)|(1<<9)));
+//BY LYH END
+ 
 
 	/* power after power fail */
 	byte = pci_read_config8(dev, 0x43);

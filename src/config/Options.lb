@@ -380,11 +380,6 @@ define CONFIG_SMP
 	export always
 	comment "Define if we support SMP"
 end
-define SMP
-	default none
-	export always
-	comment "Define if we support SMP"
-end
 define MAX_CPUS
 	default 1
 	export always

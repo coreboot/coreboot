@@ -14,7 +14,7 @@
 #define DEBUG_ERROR_MESSAGES 0
 #define DEBUG_COLOR_GRAPH 0
 #define DEBUG_SCC 0
-#define DEBUG_CONSISTENCY 2
+#define DEBUG_CONSISTENCY 1
 #define DEBUG_RANGE_CONFLICTS 0
 #define DEBUG_COALESCING 0
 #define DEBUG_SDP_BLOCKS 0
@@ -12952,6 +12952,23 @@ static void verify_graph_ins(
 	return;
 }
 
+#if DEBUG_CONSISTENCY > 1
+static void verify_interference_graph(
+	struct compile_state *state, struct reg_state *rstate)
+{
+#if 0
+	fprintf(stderr, "verify_interference_graph...\n");
+#endif
+
+	walk_variable_lifetimes(state, rstate->blocks, verify_graph_ins, rstate);
+#if 0
+	fprintf(stderr, "verify_interference_graph done\n");
+#endif
+}
+#else
+static inline void verify_interference_graph(
+	struct compile_state *state, struct reg_state *rstate) {}
+#endif
 
 static void print_interference_ins(
 	struct compile_state *state, 
@@ -13765,6 +13782,7 @@ static int color_graph(struct compile_state *state, struct reg_state *rstate)
 	return colored;
 }
 
+#if DEBUG_CONSISTENCY
 static void verify_colors(struct compile_state *state, struct reg_state *rstate)
 {
 	struct live_range *lr;
@@ -13801,6 +13819,9 @@ static void verify_colors(struct compile_state *state, struct reg_state *rstate)
 		ins = ins->next;
 	} while(ins != first);
 }
+#else
+static inline void verify_colors(struct compile_state *state, struct reg_state *rstate) {}
+#endif
 
 static void color_triples(struct compile_state *state, struct reg_state *rstate)
 {
@@ -14005,17 +14026,8 @@ static void allocate_registers(struct compile_state *state)
 #endif
 		} while(coalesced);
 
-#if DEBUG_CONSISTENCY > 1
-# if 0
-		fprintf(stderr, "verify_graph_ins...\n");
-# endif
 		/* Verify the interference graph */
-		walk_variable_lifetimes(
-			state, rstate.blocks, verify_graph_ins, &rstate);
-# if 0
-		fprintf(stderr, "verify_graph_ins done\n");
-#endif
-#endif
+		verify_interference_graph(state, &rstate);
 			
 		/* Build the groups low and high.  But with the nodes
 		 * first sorted by degree order.

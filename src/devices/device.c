@@ -33,9 +33,6 @@ static struct device **last_dev_p = &all_devices;
 #define DEVICE_IO_START 0x1000
 
 
-unsigned long device_memory_base;
-
-
 /* Append a new device to the global device chain.
  * The chain is used to find devices once everything is set up.
  */
@@ -379,7 +376,6 @@ void dev_configure(void)
 	root->resource[1].base = 
 		round_down(DEVICE_MEM_HIGH - root->resource[1].size,
 			1UL << root->resource[1].align);
-	device_memory_base = root->resource[1].base;
 	root->resource[1].flags |= IORESOURCE_SET;
 	// now just set things into registers ... we hope ...
 	root->ops->set_resources(root);

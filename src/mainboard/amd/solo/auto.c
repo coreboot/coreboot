@@ -25,6 +25,12 @@ static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
         return 0x00010101; /* default row entry */
 }
 
+static inline int spd_read_byte(unsigned device, unsigned address)
+{
+	return smbus_read_byte(device, address);
+}
+
+
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"

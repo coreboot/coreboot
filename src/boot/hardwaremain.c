@@ -68,8 +68,11 @@ static struct mem_range *get_ramsize(void)
 		mem = sizeram();
 	}
 	if (!mem) {
-		printk_err("No memory size information!\n");
-		for(;;);
+		printk_emerg("No memory size information!\n");
+		for(;;) {
+			/* Ensure this loop is not optimized away */
+			asm volatile("":/* outputs */:/*inputs */ :"memory");
+		}
 	}
 	return mem;
 }
@@ -120,9 +123,9 @@ static void wait_for_other_cpus(void)
 	printk_debug("All AP CPUs stopped\n");
 }
 
-#else /* SMP */
+#else /* CONIFG_SMP */
 #define wait_for_other_cpus() do {} while(0)
-#endif /* SMP */
+#endif /* CONFIG_SMP */
 
 void hardwaremain(int boot_complete)
 {

@@ -1,9 +1,9 @@
 #ifndef SMP_SPINLOCK_H
 #define SMP_SPINLOCK_H
 
-#ifdef SMP
+#ifdef CONFIG_SMP
 #include <arch/smp/spinlock.h>
-#else /* !SMP */
+#else /* !CONFIG_SMP */
 
 /* Most GCC versions have a nasty bug with empty initializers */
 #if (__GNUC__ > 2) 

@@ -922,10 +922,9 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	};
 	int i;
 	int max;
-#if 1
-	memreset_setup(ctrl);
-#endif
-	print_debug("setting up CPU0 northbridge registers\r\n");
+	print_debug("setting up CPU");
+	print_debug_hex8(ctrl->node_id);
+	print_debug(" northbridge registers\r\n");
 	max = sizeof(register_values)/sizeof(register_values[0]);
 	for(i = 0; i < max; i += 3) {
 		device_t dev;
@@ -1001,43 +1000,43 @@ static struct dimm_size spd_get_dimm_size(unsigned device)
 	 * a multiple of 4MB.  The way we do it now we can size both
 	 * sides of an assymetric dimm.
 	 */
-	value = smbus_read_byte(device, 3);	/* rows */
+	value = spd_read_byte(device, 3);	/* rows */
 	if (value < 0) goto out;
 	sz.side1 += value & 0xf;
 
-	value = smbus_read_byte(device, 4);	/* columns */
+	value = spd_read_byte(device, 4);	/* columns */
 	if (value < 0) goto out;
 	sz.side1 += value & 0xf;
 
-	value = smbus_read_byte(device, 17);	/* banks */
+	value = spd_read_byte(device, 17);	/* banks */
 	if (value < 0) goto out;
 	sz.side1 += log2(value & 0xff);
 
 	/* Get the module data width and convert it to a power of two */
-	value = smbus_read_byte(device, 7);	/* (high byte) */
+	value = spd_read_byte(device, 7);	/* (high byte) */
 	if (value < 0) goto out;
 	value &= 0xff;
 	value <<= 8;
 	
-	low = smbus_read_byte(device, 6);	/* (low byte) */
+	low = spd_read_byte(device, 6);	/* (low byte) */
 	if (low < 0) goto out;
 	value = value | (low & 0xff);
 	sz.side1 += log2(value);
 
 	/* side 2 */
-	value = smbus_read_byte(device, 5);	/* number of physical banks */
+	value = spd_read_byte(device, 5);	/* number of physical banks */
 	if (value <= 1) goto out;
 
 	/* Start with the symmetrical case */
 	sz.side2 = sz.side1;
 
-	value = smbus_read_byte(device, 3);	/* rows */
+	value = spd_read_byte(device, 3);	/* rows */
 	if (value < 0) goto out;
 	if ((value & 0xf0) == 0) goto out;	/* If symmetrical we are done */
 	sz.side2 -= (value & 0x0f); 		/* Subtract out rows on side 1 */
 	sz.side2 += ((value >> 4) & 0x0f);	/* Add in rows on side 2 */
 
-	value = smbus_read_byte(device, 4);	/* columns */
+	value = spd_read_byte(device, 4);	/* columns */
 	if (value < 0) goto out;
 	sz.side2 -= (value & 0x0f);		/* Subtract out columns on side 1 */
 	sz.side2 += ((value >> 4) & 0x0f);	/* Add in columsn on side 2 */
@@ -1121,24 +1120,29 @@ static void spd_set_ram_size(const struct mem_controller *ctrl)
 static void route_dram_accesses(const struct mem_controller *ctrl,
 	unsigned long base_k, unsigned long limit_k)
 {
-#warning "FIXME this is hardcoded for one cpu"
+	/* Route the addresses to the controller node */
 	unsigned node_id;
 	unsigned limit;
 	unsigned base;
-	node_id = 0;
-	/* Route the addresses to node 0 */
+	unsigned index;
+	unsigned limit_reg, base_reg;
+	device_t device;
+	node_id = ctrl->node_id;
+	index = (node_id << 3);
 	limit = (limit_k << 2);
 	limit &= 0xffff0000;
 	limit -= 0x00010000;
+	limit |= ( 0 << 8) | (node_id << 0);
 	base = (base_k << 2);
 	base &= 0xffff0000;
-	pci_write_config32(ctrl->f1, 0x44, limit | (0 << 8) | (node_id << 0));
-	pci_write_config32(ctrl->f1, 0x40, base  | (0 << 8) | (1<<1) | (1<<0));
+	base |= (0 << 8) | (1<<1) | (1<<0);
 
-#if 1
-	pci_write_config32(PCI_DEV(0, 0x19, 1), 0x44, limit | (0 << 8) | (1 << 4) | (node_id << 0));
-	pci_write_config32(PCI_DEV(0, 0x19, 1), 0x40, base  | (0 << 8) | (1<<1) | (1<<0));
-#endif
+	limit_reg = 0x44 + index;
+	base_reg = 0x40 + index;
+	for(device = PCI_DEV(0, 0x18, 1); device <= PCI_DEV(0, 0x1f, 1); device += PCI_DEV(0, 1, 0)) {
+		pci_write_config32(device, limit_reg, limit);
+		pci_write_config32(device, base_reg, base);
+	}
 }
 
 static void set_top_mem(unsigned tom_k)
@@ -1147,6 +1151,13 @@ static void set_top_mem(unsigned tom_k)
 	if (!tom_k) {
 		die("No memory");
 	}
+
+#if 1
+	/* Report the amount of memory. */
+	print_debug("RAM: 0x");
+	print_debug_hex32(tom_k);
+	print_debug(" KB\r\n");
+#endif
 
 	/* Now set top of memory */
 	msr_t msr;
@@ -1163,21 +1174,28 @@ static void set_top_mem(unsigned tom_k)
 	msr.lo = (tom_k & 0x003fffff) << 10;
 	msr.hi = (tom_k & 0xffc00000) >> 22;
 	wrmsr(TOP_MEM, msr);
-
-#if 1
-	/* And report the amount of memory. */
-	print_debug("RAM: 0x");
-	print_debug_hex32(tom_k);
-	print_debug(" KB\r\n");
-#endif
 }
 
 static void order_dimms(const struct mem_controller *ctrl)
 {
-	unsigned long tom, tom_k;
+	unsigned long tom, tom_k, base_k;
+	unsigned node_id;
 
+	/* Compute the memory base address address */
+	base_k = 0;
+	for(node_id = 0; node_id < ctrl->node_id; node_id++) {
+		uint32_t limit, base;
+		unsigned index;
+		index = node_id << 3;
+		base = pci_read_config32(ctrl->f1, 0x40 + index);
+		/* Only look at the limit if the base is enabled */
+		if ((base & 3) == 3) {
+			limit = pci_read_config32(ctrl->f1, 0x44 + index);
+			base_k = ((limit + 0x00010000) & 0xffff0000) >> 2;
+		}
+	}
 	/* Remember which registers we have used in the high 8 bits of tom */
-	tom = 0;
+	tom = base_k >> 15;
 	for(;;) {
 		/* Find the largest remaining canidate */
 		unsigned index, canidate;
@@ -1212,11 +1230,23 @@ static void order_dimms(const struct mem_controller *ctrl)
 			break;
 		}
 
-		/* Remember I have used this register */
-		tom |= (1 << (canidate + 24));
-
 		/* Remember the dimm size */
 		size = csbase >> 21;
+
+		/* If this is the first chip select, round base_k to
+		 * be a multiple of it's size.  Then set tom to equal
+		 * base_k.
+		 * I assume that size is a power of two.
+		 */
+		if ((tom & 0xff000000) == 0) {
+			unsigned size_k;
+			size_k = size << 15;
+			base_k = (base_k + size_k -1) & ~(size_k -1);
+			tom = base_k >> 15; 
+		}
+
+		/* Remember I have used this register */
+		tom |= (1 << (canidate + 24));
 
 		/* Recompute the cs base register value */
 		csbase = (tom << 21) | 1;
@@ -1239,11 +1269,13 @@ static void order_dimms(const struct mem_controller *ctrl)
 #if 0
 	print_debug("tom: ");
 	print_debug_hex32(tom);
+	print_debug(" base_k: ");
+	print_debug_hex32(base_k);
 	print_debug(" tom_k: ");
 	print_debug_hex32(tom_k);
 	print_debug("\r\n");
 #endif
-	route_dram_accesses(ctrl, 0, tom_k);
+	route_dram_accesses(ctrl, base_k, tom_k);
 	set_top_mem(tom_k);
 }
 
@@ -1267,7 +1299,7 @@ static void spd_handle_unbuffered_dimms(const struct mem_controller *ctrl)
 	registered = 0;
 	for(i = 0; (i < 4) && (ctrl->channel0[i]); i++) {
 		int value;
-		value = smbus_read_byte(ctrl->channel0[i], 21);
+		value = spd_read_byte(ctrl->channel0[i], 21);
 		if (value < 0) {
 			disable_dimm(ctrl, i);
 			continue;
@@ -1307,31 +1339,30 @@ static void spd_enable_2channels(const struct mem_controller *ctrl)
 {
 	int i;
 	uint32_t nbcap;
-	/* SMBUS addresses to verify are identical */
+	/* SPD addresses to verify are identical */
 #warning "FINISHME review and see if these are the bytes I need"
 	/* FINISHME review and see if these are the bytes I need */
 	static const unsigned addresses[] = {
 		2, 	/* Type should be DDR SDRAM */
-		3,	/* Row addresses */
-		4,	/* Column addresses */
-		5,	/* Physical Banks */
-		6,	/* Module Data Width low */
-		7,	/* Module Data Width high */
-		9,	/* Cycle time at highest CAS Latency CL=X */
-		11,	/* SDRAM Type */
-		12,	/* Refresh Interval */
-		13,	/* SDRAM Width */
-		15,	/* Back-to-Back Random Column Access */
-		16,	/* Burst Lengths */
-		17,	/* Logical Banks */
-		18,	/* Supported CAS Latencies */
-		23,	/* Cycle time at CAS Latnecy (CLX - 0.5) */
-		26,	/* Cycle time at CAS Latnecy (CLX - 1.0) */
-		27,	/* tRP Row precharge time */
-		29,	/* tRCD RAS to CAS */
-		30,	/* tRAS Activate to Precharge */
-		31,	/* Module Bank Density */
-		33,	/* Address and Command Hold Time After Clock */
+		3,	/* *Row addresses */
+		4,	/* *Column addresses */
+		5,	/* *Physical Banks */
+		6,	/* *Module Data Width low */
+		7,	/* *Module Data Width high */
+		9,	/* *Cycle time at highest CAS Latency CL=X */
+		11,	/* *SDRAM Type */
+		13,	/* *SDRAM Width */
+		17,	/* *Logical Banks */
+		18,	/* *Supported CAS Latencies */
+		21,	/* *SDRAM Module Attributes */
+		23,	/* *Cycle time at CAS Latnecy (CLX - 0.5) */
+		26,	/* *Cycle time at CAS Latnecy (CLX - 1.0) */
+		27,	/* *tRP Row precharge time */
+		28,     /* *Minimum Row Active to Row Active Delay (tRRD) */
+		29,	/* *tRCD RAS to CAS */
+		30,	/* *tRAS Activate to Precharge */
+		41,	/* *Minimum Active to Active/Auto Refresh Time(Trc) */
+		42,	/* *Minimum Auto Refresh Command Time(Trfc) */
 	};
 	nbcap = pci_read_config32(ctrl->f3, NORTHBRIDGE_CAP);
 	if (!(nbcap & NBCAP_128Bit)) {
@@ -1348,11 +1379,11 @@ static void spd_enable_2channels(const struct mem_controller *ctrl)
 		for(j = 0; j < sizeof(addresses)/sizeof(addresses[0]); j++) {
 			unsigned addr;
 			addr = addresses[j];
-			value0 = smbus_read_byte(device0, addr);
+			value0 = spd_read_byte(device0, addr);
 			if (value0 < 0) {
 				break;
 			}
-			value1 = smbus_read_byte(device1, addr);
+			value1 = spd_read_byte(device1, addr);
 			if (value1 < 0) {
 				return;
 			}
@@ -1498,7 +1529,7 @@ static const struct mem_param *spd_set_memclk(const struct mem_controller *ctrl)
 		new_cycle_time = 0xa0;
 		new_latency = 5;
 
-		latencies = smbus_read_byte(ctrl->channel0[i], 18);
+		latencies = spd_read_byte(ctrl->channel0[i], 18);
 		if (latencies <= 0) continue;
 
 		/* Compute the lowest cas latency supported */
@@ -1511,7 +1542,7 @@ static const struct mem_param *spd_set_memclk(const struct mem_controller *ctrl)
 				(!(latencies & (1 << latency)))) {
 				continue;
 			}
-			value = smbus_read_byte(ctrl->channel0[i], latency_indicies[index]);
+			value = spd_read_byte(ctrl->channel0[i], latency_indicies[index]);
 			if (value < 0) {
 				continue;
 			}
@@ -1553,7 +1584,7 @@ static const struct mem_param *spd_set_memclk(const struct mem_controller *ctrl)
 		int index;
 		int value;
 		int dimm;
-		latencies = smbus_read_byte(ctrl->channel0[i], 18);
+		latencies = spd_read_byte(ctrl->channel0[i], 18);
 		if (latencies <= 0) {
 			goto dimm_err;
 		}
@@ -1575,7 +1606,7 @@ static const struct mem_param *spd_set_memclk(const struct mem_controller *ctrl)
 		}
 		
 		/* Read the min_cycle_time for this latency */
-		value = smbus_read_byte(ctrl->channel0[i], latency_indicies[index]);
+		value = spd_read_byte(ctrl->channel0[i], latency_indicies[index]);
 		
 		/* All is good if the selected clock speed 
 		 * is what I need or slower.
@@ -1619,7 +1650,7 @@ static int update_dimm_Trc(const struct mem_controller *ctrl, const struct mem_p
 	unsigned clocks, old_clocks;
 	uint32_t dtl;
 	int value;
-	value = smbus_read_byte(ctrl->channel0[i], 41);
+	value = spd_read_byte(ctrl->channel0[i], 41);
 	if (value < 0) return -1;
 	if ((value == 0) || (value == 0xff)) {
 		value = param->tRC;
@@ -1648,7 +1679,7 @@ static int update_dimm_Trfc(const struct mem_controller *ctrl, const struct mem_
 	unsigned clocks, old_clocks;
 	uint32_t dtl;
 	int value;
-	value = smbus_read_byte(ctrl->channel0[i], 42);
+	value = spd_read_byte(ctrl->channel0[i], 42);
 	if (value < 0) return -1;
 	if ((value == 0) || (value == 0xff)) {
 		value = param->tRFC;
@@ -1677,7 +1708,7 @@ static int update_dimm_Trcd(const struct mem_controller *ctrl, const struct mem_
 	unsigned clocks, old_clocks;
 	uint32_t dtl;
 	int value;
-	value = smbus_read_byte(ctrl->channel0[i], 29);
+	value = spd_read_byte(ctrl->channel0[i], 29);
 	if (value < 0) return -1;
 #if 0
 	clocks = (value + (param->divisor << 1) -1)/(param->divisor << 1);
@@ -1706,7 +1737,7 @@ static int update_dimm_Trrd(const struct mem_controller *ctrl, const struct mem_
 	unsigned clocks, old_clocks;
 	uint32_t dtl;
 	int value;
-	value = smbus_read_byte(ctrl->channel0[i], 28);
+	value = spd_read_byte(ctrl->channel0[i], 28);
 	if (value < 0) return -1;
 	clocks = (value + ((param->divisor & 0xff) << 1) -1)/((param->divisor & 0xff) << 1);
 	if (clocks < DTL_TRRD_MIN) {
@@ -1731,7 +1762,7 @@ static int update_dimm_Tras(const struct mem_controller *ctrl, const struct mem_
 	unsigned clocks, old_clocks;
 	uint32_t dtl;
 	int value;
-	value = smbus_read_byte(ctrl->channel0[i], 30);
+	value = spd_read_byte(ctrl->channel0[i], 30);
 	if (value < 0) return -1;
 	clocks = ((value << 1) + param->divisor - 1)/param->divisor;
 	if (clocks < DTL_TRAS_MIN) {
@@ -1756,7 +1787,7 @@ static int update_dimm_Trp(const struct mem_controller *ctrl, const struct mem_p
 	unsigned clocks, old_clocks;
 	uint32_t dtl;
 	int value;
-	value = smbus_read_byte(ctrl->channel0[i], 27);
+	value = spd_read_byte(ctrl->channel0[i], 27);
 	if (value < 0) return -1;
 #if 0
 	clocks = (value + (param->divisor << 1) - 1)/(param->divisor << 1);
@@ -1813,7 +1844,7 @@ static int update_dimm_Tref(const struct mem_controller *ctrl, const struct mem_
 	uint32_t dth;
 	int value;
 	unsigned tref, old_tref;
-	value = smbus_read_byte(ctrl->channel0[i], 3);
+	value = spd_read_byte(ctrl->channel0[i], 3);
 	if (value < 0) return -1;
 	value &= 0xf;
 
@@ -1841,7 +1872,7 @@ static int update_dimm_x4(const struct mem_controller *ctrl, const struct mem_pa
 	uint32_t dcl;
 	int value;
 	int dimm;
-	value = smbus_read_byte(ctrl->channel0[i], 13);
+	value = spd_read_byte(ctrl->channel0[i], 13);
 	if (value < 0) {
 		return -1;
 	}
@@ -1860,7 +1891,7 @@ static int update_dimm_ecc(const struct mem_controller *ctrl, const struct mem_p
 {
 	uint32_t dcl;
 	int value;
-	value = smbus_read_byte(ctrl->channel0[i], 11);
+	value = spd_read_byte(ctrl->channel0[i], 11);
 	if (value < 0) {
 		return -1;
 	}
@@ -2169,78 +2200,89 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 }
 
 #define TIMEOUT_LOOPS 300000
-static void sdram_enable(const struct mem_controller *ctrl)
+static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 {
-	uint32_t dcl, dch;
+	int i;
 
 	/* Before enabling memory start the memory clocks */
-	dch = pci_read_config32(ctrl->f2, DRAM_CONFIG_HIGH);
-	dch |= DCH_MEMCLK_VALID;
-	pci_write_config32(ctrl->f2, DRAM_CONFIG_HIGH, dch);
+	for(i = 0; i < controllers; i++) {
+		uint32_t dch;
+		dch = pci_read_config32(ctrl[i].f2, DRAM_CONFIG_HIGH);
+		dch |= DCH_MEMCLK_VALID;
+		pci_write_config32(ctrl[i].f2, DRAM_CONFIG_HIGH, dch);
+	}
 
 	/* And if necessary toggle the the reset on the dimms by hand */
-	memreset(ctrl);
+	memreset(controllers, ctrl);
 
-	/* Toggle DisDqsHys to get it working */
-	dcl = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
-	print_debug("dcl: ");
-	print_debug_hex32(dcl);
-	print_debug("\r\n");
-
+	for(i = 0; i < controllers; i++) {
+		uint32_t dcl;
+		/* Toggle DisDqsHys to get it working */
+		dcl = pci_read_config32(ctrl[i].f2, DRAM_CONFIG_LOW);
+#if 0
+		print_debug("dcl: ");
+		print_debug_hex32(dcl);
+		print_debug("\r\n");
+#endif
+#if 1
+		dcl &= ~DCL_DimmEccEn;
+#endif		
 #warning "FIXME set the ECC type to perform"
 #warning "FIXME initialize the scrub registers"
 #if 0
-	if (dcl & DCL_DimmEccEn) {
-		print_debug("ECC enabled\r\n");
-	}
-#endif
-	dcl |= DCL_DisDqsHys;
-	pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW, dcl);
-	dcl &= ~DCL_DisDqsHys;
-	dcl &= ~DCL_DLL_Disable;
-	dcl &= ~DCL_D_DRV;
-	dcl &= ~DCL_QFC_EN;
-	dcl |= DCL_DramInit;
-	pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW, dcl);
-	
-	print_debug("Initializing memory: ");
-	int loops = 0;
-	do {
-		dcl = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
-		loops += 1;
-		if ((loops & 1023) == 0) {
-			print_debug(".");
+		if (dcl & DCL_DimmEccEn) {
+			print_debug("ECC enabled\r\n");
 		}
-	} while(((dcl & DCL_DramInit) != 0) && (loops < TIMEOUT_LOOPS));
-	if (loops >= TIMEOUT_LOOPS) {
-		print_debug(" failed\r\n");
-	} else {
-		print_debug(" done\r\n");
+#endif
+		dcl |= DCL_DisDqsHys;
+		pci_write_config32(ctrl[i].f2, DRAM_CONFIG_LOW, dcl);
+		dcl &= ~DCL_DisDqsHys;
+		dcl &= ~DCL_DLL_Disable;
+		dcl &= ~DCL_D_DRV;
+		dcl &= ~DCL_QFC_EN;
+		dcl |= DCL_DramInit;
+		pci_write_config32(ctrl[i].f2, DRAM_CONFIG_LOW, dcl);
+
 	}
-
-#if 0
-
-	if (dcl & DCL_DimmEccEn) {
-		print_debug("Clearing memory: ");
-		loops = 0;
-		dcl &= ~DCL_MemClrStatus;
-		pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW, dcl);
-		
+	for(i = 0; i < controllers; i++) {
+		uint32_t dcl;
+		print_debug("Initializing memory: ");
+		int loops = 0;
 		do {
-			dcl = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
+			dcl = pci_read_config32(ctrl[i].f2, DRAM_CONFIG_LOW);
 			loops += 1;
 			if ((loops & 1023) == 0) {
-				print_debug(" ");
-				print_debug_hex32(loops);
+				print_debug(".");
 			}
-		} while(((dcl & DCL_MemClrStatus) == 0) && (loops < TIMEOUT_LOOPS));
+		} while(((dcl & DCL_DramInit) != 0) && (loops < TIMEOUT_LOOPS));
 		if (loops >= TIMEOUT_LOOPS) {
-			print_debug("failed\r\n");
+			print_debug(" failed\r\n");
 		} else {
-			print_debug("done\r\n");
+			print_debug(" done\r\n");
 		}
-		pci_write_config32(ctrl->f3, SCRUB_ADDR_LOW, 0);
-		pci_write_config32(ctrl->f3, SCRUB_ADDR_HIGH, 0);
-	}
+#if 0
+		if (dcl & DCL_DimmEccEn) {
+			print_debug("Clearing memory: ");
+			loops = 0;
+			dcl &= ~DCL_MemClrStatus;
+			pci_write_config32(ctrl[i].f2, DRAM_CONFIG_LOW, dcl);
+			
+			do {
+				dcl = pci_read_config32(ctrl[i].f2, DRAM_CONFIG_LOW);
+				loops += 1;
+				if ((loops & 1023) == 0) {
+					print_debug(" ");
+					print_debug_hex32(loops);
+				}
+			} while(((dcl & DCL_MemClrStatus) == 0) && (loops < TIMEOUT_LOOPS));
+			if (loops >= TIMEOUT_LOOPS) {
+				print_debug("failed\r\n");
+			} else {
+				print_debug("done\r\n");
+			}
+			pci_write_config32(ctrl[i].f3, SCRUB_ADDR_LOW, 0);
+			pci_write_config32(ctrl[i].f3, SCRUB_ADDR_HIGH, 0);
+		}
 #endif
+	}
 }

@@ -34,10 +34,12 @@ static int cpu_init_detected(void)
 	return cpu_init;
 }
 
-static void distinguish_cpu_resets(void)
+static void distinguish_cpu_resets(unsigned node_id)
 {
 	uint32_t htic;
-	htic = pci_read_config32(PCI_DEV(0, 0x18, 0), HT_INIT_CONTROL);
+	device_t device;
+	device = PCI_DEV(0, 0x18 + node_id, 0);
+	htic = pci_read_config32(device, HT_INIT_CONTROL);
 	htic |= HTIC_ColdR_Detect | HTIC_BIOSR_Detect | HTIC_INIT_Detect;
-	pci_write_config32(PCI_DEV(0, 0x18, 0), HT_INIT_CONTROL, htic);
+	pci_write_config32(device, HT_INIT_CONTROL, htic);
 }

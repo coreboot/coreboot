@@ -1,4 +1,4 @@
-LBConfig is a simply Python program to build files that are in turned
+LBConfig is a simply Python program to build files that are in turn
 used to build the LinuxBIOS. Typically, LBConfig builds three files:
 
 Makefile
@@ -31,14 +31,26 @@ target		 Specify the target directory for builds.
 mainboard	 Specify the mainboard vendor and name in Unix pathname
 		 format, e.g. leadtek/winfast6300 means the leadtek 
 		 winfast6300 board
+		 Looks for a config file in $(TOP)/src/mainboard/<name>
 cpu		 Specify the cpu, e.g. cpu p6
+		 Looks for a config file in $(TOP)/src/cpu/<name>
 northbridge	 Specify the northbridge vendor and name, e.g. via/vt8601
+		 Looks for a config file in $(TOP)/src/northbridge/<name>
+
 southbridge	 Specify the southbridge vendor and name, e.g. via/vt826c686a
+		 Looks for a config file in $(TOP)/src/southbridge/<name>
+
 northsouthbridge For combined north and south bridge parts, specify 
 		 them as one, e.g. sis/630
+		 Looks for a config file in $(TOP)/src/northsouthbridge/<name>
+
 pcibridge	 This has not been used yet, but it is for pcibridges, 
 		 which are NOT the same as the other bridges
+		 Looks for a config file in $(TOP)/src/pcibridge/<name>
+
 superio		 Specify the superio, e.g. winbond/w83977ef
+		 Doesn't look for a config file (yet).
+
 object		 Add an object to the set of objects, e.g. object keyboard.o
 raminit		 Add a .S file to the list of files used for ram init. 
 		 The path is rooted at $(TOP)/src

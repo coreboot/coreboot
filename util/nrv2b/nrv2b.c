@@ -783,8 +783,8 @@ find_match ( struct ucl_compress *c, struct ucl_swd *s,
 				break;
 			if (in != m)
 				if (memcmp(in,ip,c->m_len+1) == 0)
-					printf("%p %p %p
-%5d\n",in,ip,m,c->m_len);
+					printf("%p %p %p %5d\n",
+						in, ip, m, c->m_len);
 
 			in++;
 		}
@@ -1445,11 +1445,8 @@ int main(int argc, char *argv[])
 		rewind(infile = f);
 	}
 	else if (argc != 4) {
-		Fprintf((stderr, "'lzhuf e file1 file2' encodes file1 into
-file2.\n"
-
-			"'lzhuf d file2 file1' decodes file2 into
-file1.\n"));
+		Fprintf((stderr, "'nrv2b e file1 file2' encodes file1 into file2.\n"
+			"'nrv2b d file2 file1' decodes file2 into file1.\n"));
 
 		return EXIT_FAILURE;
 	}

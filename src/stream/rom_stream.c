@@ -17,7 +17,7 @@ int stream_init(void)
 {
 	rom = rom_start;
 
-	printk_spew("%6d:%s() - rom_stream: 0x%08lx - 0x%08lx\n"
+	printk_spew("%6d:%s() - rom_stream: 0x%08lx - 0x%08lx\n",
 		__LINE__, __FUNCTION__,
 		(unsigned long)rom_start,
 		(unsigned long)rom_end);

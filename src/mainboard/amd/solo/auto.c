@@ -5,6 +5,11 @@
 #include "ram/ramtest.c"
 
 
+#define MEMORY_512MB  0  /* SuSE Solo configuration */
+#define MEMORY_1024MB 1  /* LNXI Solo configuration */
+
+
+
 static void sdram_set_registers(void)
 {
 	static const unsigned int register_values[] = {
@@ -330,7 +335,12 @@ static void sdram_set_registers(void)
 	 *         This field defines the upper address bits of a 40 bit  address
 	 *         that define the end of the DRAM region.
 	 */
+#if MEMORY_1024MB
 	0xC144, 0x0000f8f8, 0x003f0000,
+#endif
+#if MEMORY_512MB
+	0xC144, 0x0000f8f8, 0x001f0000,
+#endif
 	0xC14C, 0x0000f8f8, 0x00000001,
 	0xC154, 0x0000f8f8, 0x00000002,
 	0xC15C, 0x0000f8f8, 0x00000003,
@@ -369,6 +379,7 @@ static void sdram_set_registers(void)
 	 *         that define the start of the DRAM region.
 	 */
 	0xC140, 0x0000f8fc, 0x00000003,
+#if MEMORY_1024MB
 	0xC148, 0x0000f8fc, 0x00400000,
 	0xC150, 0x0000f8fc, 0x00400000,
 	0xC158, 0x0000f8fc, 0x00400000,
@@ -376,6 +387,16 @@ static void sdram_set_registers(void)
 	0xC168, 0x0000f8fc, 0x00400000,
 	0xC170, 0x0000f8fc, 0x00400000,
 	0xC178, 0x0000f8fc, 0x00400000,
+#endif
+#if MEMORY_512MB
+	0xC148, 0x0000f8fc, 0x00200000,
+	0xC150, 0x0000f8fc, 0x00200000,
+	0xC158, 0x0000f8fc, 0x00200000,
+	0xC160, 0x0000f8fc, 0x00200000,
+	0xC168, 0x0000f8fc, 0x00200000,
+	0xC170, 0x0000f8fc, 0x00200000,
+	0xC178, 0x0000f8fc, 0x00200000,
+#endif
 
 	/* Memory-Mapped I/O Limit i Registers
 	 * F1:0x84 i = 0
@@ -416,7 +437,7 @@ static void sdram_set_registers(void)
 	0xC1A4, 0x00000048, 0x00000000,
 	0xC1AC, 0x00000048, 0x00000000,
 	0xC1B4, 0x00000048, 0x00000b00,
-
+	0xC1BC, 0x00000048, 0x00fe0b00,
 
 	/* Memory-Mapped I/O Base i Registers
 	 * F1:0x80 i = 0
@@ -444,7 +465,6 @@ static void sdram_set_registers(void)
 	 *         This field defines the upper address bits of a 40bit address 
 	 *         that defines the start of memory-mapped I/O region i
 	 */
-	0xC1BC, 0x00000048, 0x00fe0b00,
 	0xC180, 0x000000f0, 0x00e00003,
 	0xC188, 0x000000f0, 0x00d80003,
 	0xC190, 0x000000f0, 0x00e20003,
@@ -452,7 +472,12 @@ static void sdram_set_registers(void)
 	0xC1A0, 0x000000f0, 0x00000000,
 	0xC1A8, 0x000000f0, 0x00000000,
 	0xC1B0, 0x000000f0, 0x00000a03,
+#if MEMORY_1024MB
 	0xC1B8, 0x000000f0, 0x00400003,
+#endif
+#if MEMORY_512MB
+	0xC1B8, 0x000000f0, 0x00200003,
+#endif
 
 	/* PCI I/O Limit i Registers
 	 * F1:0xC4 i = 0
@@ -577,9 +602,16 @@ static void sdram_set_registers(void)
 	 *         bits decode 32-MByte blocks of memory.
 	 */
 	0xC240, 0x001f01fe, 0x00000001,
+#if MEMORY_1024MB
 	0xC244, 0x001f01fe, 0x01000001,
 	0xC248, 0x001f01fe, 0x02000001,
 	0xC24C, 0x001f01fe, 0x03000001,
+#endif
+#if MEMORY_512MB
+	0xC244, 0x001f01fe, 0x00800001,
+	0xC248, 0x001f01fe, 0x01000001,
+	0xC24C, 0x001f01fe, 0x01800001,
+#endif
 	0xC250, 0x001f01fe, 0x00000000,
 	0xC254, 0x001f01fe, 0x00000000,
 	0xC258, 0x001f01fe, 0x00000000,
@@ -603,10 +635,18 @@ static void sdram_set_registers(void)
 	 * [31:30] Reserved
 	 * 
 	 */
+#if MEMORY_1024MB
 	0xC260, 0xC01f01ff, 0x00e0fe00,
 	0xC264, 0xC01f01ff, 0x00e0fe00,
 	0xC268, 0xC01f01ff, 0x00e0fe00,
 	0xC26C, 0xC01f01ff, 0x00e0fe00,
+#endif
+#if MEMORY_512MB
+	0xC260, 0xC01f01ff, 0x0060fe00,
+	0xC264, 0xC01f01ff, 0x0060fe00,
+	0xC268, 0xC01f01ff, 0x0060fe00,
+	0xC26C, 0xC01f01ff, 0x0060fe00,
+#endif
 	0xC270, 0xC01f01ff, 0x00000000,
 	0xC274, 0xC01f01ff, 0x00000000,
 	0xC278, 0xC01f01ff, 0x00000000,
@@ -631,7 +671,12 @@ static void sdram_set_registers(void)
 	 * [11:11] Reserved
 	 * [31:15]
 	 */
+#if MEMORY_1024MB
 	0xC280, 0xffff8888, 0x00000033,
+#endif
+#if MEMORY_512MB
+	0xC280, 0xffff8888, 0x00000022,
+#endif
 	/* DRAM Timing Low Register
 	 * F2:0x88
 	 * [ 2: 0] Tcl (Cas# Latency, Cas# to read-data-valid)
@@ -726,7 +771,12 @@ static void sdram_set_registers(void)
 	 *         001 = 2 Mem clocks after CAS# (Registered Dimms)
 	 * [31:23] Reserved
 	 */
+#if MEMORY_1024MB
 	0xC28c, 0xff8fe08e, 0x00000930,
+#endif
+#if MEMORY_512MB
+	0xC28c, 0xff8fe08e, 0x00000130,
+#endif
 
 	/* DRAM Config Low Register
 	 * F2:0x90
@@ -869,7 +919,12 @@ static void sdram_set_registers(void)
 	 *         1 = Enabled
 	 * [31:30] Reserved
 	 */
+#if MEMORY_1024MB
 	0xC294, 0xc180f0f0, 0x0e2b0a05,
+#endif
+#if MEMORY_512MB
+	0xC294, 0xc180f0f0, 0x0e2b0a06,
+#endif
 	/* DRAM Delay Line Register
 	 * F2:0x98
 	 * Adjust the skew of the input DQS strobe relative to DATA

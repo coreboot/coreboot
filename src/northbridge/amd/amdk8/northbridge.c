@@ -13,7 +13,7 @@ struct mem_range *sizeram(void)
 
 	mem[0].basek = 0;
 	mem[0].sizek = 640;
-	mem[1].basek = 1024;
+	mem[1].basek = 960;
 	mem[1].sizek = size - mem[1].basek;
 	mem[2].basek = 0;
 	mem[2].sizek = 0;

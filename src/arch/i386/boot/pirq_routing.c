@@ -28,7 +28,8 @@ void check_pirq_routing_table(void)
 	printk_debug("%s:%6d:%s() - irq_routing_table located at: 0x%p\n",
 	    __FILE__, __LINE__, __FUNCTION__, addr);
 
-	sum = (unsigned char)(rt->checksum-sum);
+	
+	sum = rt->checksum - sum;
 
 	if (sum != rt->checksum) {
 		printk_warning("%s:%6d:%s() - "

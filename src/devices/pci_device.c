@@ -221,6 +221,16 @@ static void pci_get_rom_resource(struct device *dev, unsigned long index)
 	/* Initialize the resources to nothing */
 	resource = new_resource(dev, index);
 
+	/* for on board device with embedded ROM image, the ROM image is at
+	 * fixed address specified in the Config.lb, the dev->rom_address is
+	 * inited by driver_pci_onboard_ops::enable_dev() */
+	if ((dev->on_mainboard) && (dev->rom_address == 0)) {
+		resource->base   = dev->rom_address; 
+		resource->flags |= IORESOURCE_MEM | IORESOURCE_READONLY |
+			IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+		return;
+	}
+
 	/* Get the initial value */
 	value = pci_read_config32(dev, index);
 
@@ -273,10 +283,8 @@ static void pci_read_bases(struct device *dev, unsigned int howmany, unsigned lo
 		resource = pci_get_resource(dev, index);
 		index += (resource->flags & IORESOURCE_PCI64)?8:4;
 	}
-	if (rom) {
-		if ((!dev->on_mainboard) || (dev->rom_address == 0))
-			pci_get_rom_resource(dev, rom);
-	}
+	if (rom)
+		pci_get_rom_resource(dev, rom);
 
 	compact_resources(dev);
 }

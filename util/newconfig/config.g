@@ -118,10 +118,13 @@ class romimage:
 		self.partinstance = 0
 		self.root = 0
 		self.target_dir = ''
-		self.values = {}
+		self.values = {} # values of options set in romimage
 
 	def getname(self):
 		return self.name
+
+	def getvalues(self):
+		return self.values
 
 	def setarch(self, arch):
 		self.arch = arch
@@ -286,12 +289,10 @@ class romimage:
 	def gettargetdir(self):
 		return self.targetdir
 
-	def getvalues(self):
-		return self.values
-
 # A buildrom statement
 class buildrom:
-	def __init__ (self, size, roms):
+	def __init__ (self, payload, size, roms):
+		self.payload = payload
 		self.size = size
 		self.roms = roms
 
@@ -377,16 +378,22 @@ class option:
 		#self.value = value
 		setdict(values, self.name, value)
 
-	def getvalue(self, values):
-		#global curpart
+	def getvalue(self, image, values):
+		global curimage
 		v = getdict(values, self.name)
-		if (not (type(v) is str)):
+		if (v == 0):
+			return 0
+		val = v.contents()
+		if (not (type(val) is str)):
 			return v
-		if (v == '' or v[0] != '{'):
+		if (val == '' or val[0] != '{'):
 			return v
-		v = parse('delexpr', v)
+		s = curimage
+		curimage = image
+		val = parse('delexpr', val)
+		curimage = s
 		# TODO: need to check for parse errors!
-		return v
+		return option_value(val)
 
 	def setdefault(self, value, loc):
 		global global_option_values
@@ -446,6 +453,13 @@ class option:
 
 #	def isused(self):
 #		return (self.used)
+
+class option_value:
+	def __init__(self, value):
+		self.value = value
+
+	def contents(self):
+		return self.value
 
 # A configuration part
 class partobj:
@@ -628,10 +642,10 @@ def newoption(name):
 # option must be declared before being used in a part
 # if we're not processing a part, then we must
 # be at the top level where all options are available
-def getoption(name, part):
-	global global_uses_options, global_option_values
-	if (part):
-		o = getdict(part.uses_options, name)
+def getoption(name, image):
+	global curpart, global_uses_options, global_option_values
+	if (curpart):
+		o = getdict(curpart.uses_options, name)
 	elif (alloptions):
 		o = getdict(global_options, name)
 	else:
@@ -640,21 +654,22 @@ def getoption(name, part):
 		error("Error: Option %s undefined (missing use command?)." % name)
 		return
 	v = 0
-	if (part):
-		v = o.getvalue(part.image.getvalues())
+	if (image):
+		v = o.getvalue(image, image.getvalues())
 	if (v == 0):
-		v = o.getvalue(global_option_values)
-	return v
+		v = o.getvalue(image, global_option_values)
+	return v.contents()
 
 def setoption(name, value):
 	global loc, global_options, global_option_values, curimage
 	o = getdict(global_options, name)
 	if (o == 0):
 		fatal("Error: attempt to set nonexistent option %s" % name)
+	v = option_value(value)
 	if (curimage):
-		o.setvalue(value, curimage.getvalues(), loc)
+		o.setvalue(v, curimage.getvalues(), loc)
 	else:
-		o.setvalue(value, global_option_values, loc)
+		o.setvalue(v, global_option_values, loc)
 
 def setdefault(name, value):
 	global loc, global_options
@@ -664,7 +679,8 @@ def setdefault(name, value):
 	if (o.default):
 		print "setdefault: attempt to duplicate default for %s" % name
 		return
-	o.setdefault(value, loc)
+	v = option_value(value)
+	o.setdefault(v, loc)
 
 def setnodefault(name):
 	global loc, global_options
@@ -711,18 +727,18 @@ def setformat(name, fmt):
 		fatal("setformat: %s not here" % name)
 	o.setformat(fmt)
 
-def getformated(name, values):
+def getformated(name, image):
 	global global_options, global_option_values
 	o = getdict(global_options, name)
 	if (o == 0 or not o.defined):
 		fatal( "Error: Option %s undefined." % name)
 	v = 0
-	if (values):
-		v = o.getvalue(values)
+	if (image):
+		v = o.getvalue(image, image.getvalues())
 	if (v == 0):
-		v = o.getvalue(global_option_values)
+		v = o.getvalue(image, global_option_values)
 	f = o.getformat()
-	return (f % v)
+	return (f % v.contents())
 
 def isexported(name):
 	global global_options
@@ -824,30 +840,36 @@ def addldscript(path):
 	curimage.addldscript(fullpath)
 
 def payload(path):
-	global curimage
-	adduserdefine("PAYLOAD:=%s"%path)
-	curimage.addpayload(path)
+	global main_payload
+	main_payload = path
+#	adduserdefine("PAYLOAD:=%s"%path)
 #	addrule('payload')
 #	adddep('payload', path)
 #	addaction('payload', 'cp $< $@')
 
-def addromimage(name):
+def startromimage(name):
 	global romimages, curimage, curpart, target_dir, target_name
 	print "Configuring ROMIMAGE %s" % name
 	curimage = romimage(name)
 	curimage.settargetdir(os.path.join(target_dir, name))
 	o = partobj(curimage, target_dir, 0, 'board', target_name)
 	curimage.setroot(o)
-	curpart = o
 	o = getdict(romimages, name)
 	if (o):
 		fatal("romimage %s previously defined" % name)
 	setdict(romimages, name, curimage)
 
-def addbuildrom(size, roms):
+def endromimage():
+	global curimage
+	partpop()
+	print "End ROMIMAGE"
+	curimage = 0
+	curpart = 0
+
+def addbuildrom(payload, size, roms):
 	global buildroms
-	print "Build ROM size %d" % size
-	b = buildrom(size, roms)
+	print "Build ROM payload %s size %d" % (payload, size)
+	b = buildrom(payload, size, roms)
 	buildroms.append(b)
 
 def addinitobject(object_name):
@@ -891,10 +913,8 @@ def partpop():
 	# Warn if options are used without being set in this part
 	for i in curpart.uses_options.keys():
 		if (not isset(i, curpart)):
-			print "WARNING: Option %s using default value %s" % (i, getformated(i, curpart.image.getvalues()))
+			print "WARNING: Option %s using default value %s" % (i, getformated(i, curpart.image))
 	curpart = pstack.pop()
-	if pstack.empty():
-		curpart = 0
 	curdir = dirstack.pop()
 
 # dodir is like part but there is no new part
@@ -918,11 +938,8 @@ def dodir(path, file):
 	curdir = dirstack.pop()
 
 def lookup(name):
-	global curimage, curpart
-	if (curpart):
-		v = getoption(name, curpart)
-	else:
-		v = getoption(name, 0)
+	global curimage
+	v = getoption(name, curimage)
 	exitiferrors()
 	return v
 
@@ -1236,25 +1253,25 @@ parser Config:
 		|	prtstmt<<C>>
 
 
-    rule romimage:	ROMIMAGE STR		{{ addromimage(dequote(STR)) }}
-			(option<<1>>)*
+    rule romimage:	ROMIMAGE STR		{{ startromimage(dequote(STR)) }}
+			(opstmt<<1>>)*
 			MAINBOARD PATH		{{ mainboard(PATH) }}
-			END			{{ partpop(); print "End ROMIMAGE" }}
+			END			{{ endromimage() }}
 
     rule roms:		STR			{{ s = '(' + STR }}
 			( STR			{{ s = s + "," + STR }}
 			)*			{{ return eval(s + ')') }}
 
-    rule buildrom:	BUILDROM expr roms	{{ addbuildrom(expr, roms) }}
+    rule buildrom:	BUILDROM PATH expr roms	{{ addbuildrom(PATH, expr, roms) }}
 
-    rule romstmts:	(romimage)* 
-			buildrom
+    rule romstmts:	romimage 
+		|	buildrom
+		|	opstmt<<1>>
 
     # ENTRY for parsing root part
     rule board:		LOADOPTIONS		{{ loadoptions() }}
 	    		TARGET DIRPATH		{{ target(DIRPATH) }}
 			(uses<<1>>)*
-			(opstmt<<1>>)*
 			(romstmts)*		
 			EOF			{{ return 1 }}
 
@@ -1329,7 +1346,7 @@ def writeimagesettings(image):
 	file.write("TARGET_DIR:=%s\n" % (image.gettargetdir()))
 	for i in global_options_by_order:
 		if (isexported(i)):
-			file.write("export %s:=%s\n" % (i, getformated(i, image.getvalues())))
+			file.write("export %s:=%s\n" % (i, getformated(i, image)))
 	file.write("export VARIABLES := ")
 	for i in global_options_by_order:
 		if (isexported(i)):
@@ -1537,8 +1554,8 @@ def writeldoptions(image):
 	print "Creating", filename
 	file = open(filename, 'w+')
 	for i in global_options.keys():
-		if (isexported(i) and IsInt(getoption(i, 0))):
-			file.write("%s = %s;\n" % (i, getformated(i, image.getvalues())))
+		if (isexported(i) and IsInt(getoption(i, image))):
+			file.write("%s = %s;\n" % (i, getformated(i, image)))
 	file.close()
 
 # Add any run-time checks to verify that parsing the configuration

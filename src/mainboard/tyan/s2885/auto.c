@@ -1,4 +1,5 @@
 #define ASSEMBLY 1
+ 
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <cpu/p6/apic.h>
@@ -16,20 +17,24 @@
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "debug.c"
 
+#define REV_B_RESET 0
 static void memreset_setup(void)
 {
-	/* Set the memreset low */
-	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16); // BY LYH 28->16  0<<0 --> 1<<0
-	/* Ensure the BIOS has control of the memory lines */
-	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17); // BY LYH 29->17
+#if REV_B_RESET==1
+        outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=0
+#else
+        outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=1
+#endif
+        outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
 }
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
-	udelay(800);
-	/* Set memreset_high */
-//	outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 17); // BY LYH 28->17  
-	udelay(90);
+        udelay(800);
+#if REV_B_RESET==1
+        outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 17); //REVB_MEMRST_L=1
+#endif
+        udelay(90);
 }
 
 static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
@@ -130,10 +135,6 @@ static void stop_this_cpu(void)
 #define TOTAL_CPUS (FIRST_CPU + SECOND_CPU)
 static void main(void)
 {
-	/*
-	 * GPIO28 of 8111 will control H0_MEMRESET_L
-	 * GPIO29 of 8111 will control H1_MEMRESET_L
-	 */
 	static const struct mem_controller cpu[] = {
 #if FIRST_CPU
 		{
@@ -172,8 +173,6 @@ static void main(void)
 	setup_s2885_resource_map();
 	setup_coherent_ht_domain();
         enumerate_ht_chain(0);
-	//setup_resource_map_x();
-	//enumerate_ht_chain(0);
 	distinguish_cpu_resets(0);
 	
 #if 0
@@ -186,7 +185,7 @@ static void main(void)
 	memreset_setup();
 	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
 
-#if 1
+#if 0
 	dump_pci_devices();
 #endif
 #if 0

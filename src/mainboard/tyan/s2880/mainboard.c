@@ -4,6 +4,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include "../../../northbridge/amd/amdk8/northbridge.h"
 #include "chip.h"
 //#include <part/mainboard.h>
 //#include "lsi_scsi.c"
@@ -46,7 +47,7 @@ static void print_pci_regs(struct device *dev)
       for(i=0;i<256;i++) {
 	     byte = pci_read_config8(dev, i);
    
-             if((i%16)==0) printk_info("\n%02x:",i);
+             if((i%16)==0) printk_debug("\n%02x:",i);
              printk_debug(" %02x",byte);
       }
       printk_debug("\n");
@@ -89,10 +90,11 @@ static void amd8111_enable_rom(void)
 #endif
 static void onboard_scsi_fixup(void)
 {
-       struct device *dev;
+        struct device *dev;
+#if 0
 	unsigned char i,j,k;
-#if 1
-	for(i=0;i<=4;i++) {
+
+	for(i=0;i<=6;i++) {
 		for(j=0;j<=0x1f;j++) {
 			for (k=0;k<=6;k++){
 				dev = dev_find_slot(i, PCI_DEVFN(j, k));
@@ -118,7 +120,7 @@ static void onboard_scsi_fixup(void)
 //	print_mem();
 //	amd8111_enable_rom();
 }
-/*
+#if 1
 static void vga_fixup(void) {
         // we do this right here because:
         // - all the hardware is working, and some VGA bioses seem to need
@@ -135,7 +137,7 @@ static void vga_fixup(void) {
 #endif
 
 }
- */
+#endif 
 
 static void
 enable(struct chip *chip, enum chip_pass pass)
@@ -152,8 +154,8 @@ enable(struct chip *chip, enum chip_pass pass)
                 case CONF_PASS_PRE_BOOT:
 			if (conf->fixup_scsi)
         			onboard_scsi_fixup();
-//			if (conf->fixup_vga)
-//				vga_fixup();
+			if (conf->fixup_vga)
+				vga_fixup();
 			printk_debug("mainboard fixup pass %d done\r\n",
 					pass);
 			break;
@@ -166,9 +168,29 @@ void final_mainboard_fixup(void)
         enable_ide_devices();
 #endif
 }
-
-struct chip_control mainboard_tyan_s2880_control = {
-	        .enable= enable,
-	        .name=   "Tyan s2880 mainboard "
+static struct device_operations mainboard_operations = {
+        .read_resources   = root_dev_read_resources,
+        .set_resources    = root_dev_set_resources,
+        .enable_resources = enable_childrens_resources,
+        .init             = 0,
+        .scan_bus         = amdk8_scan_root_bus,
+        .enable           = 0,
 };
+
+static void enumerate(struct chip *chip)
+{
+        struct chip *child;
+        dev_root.ops = &mainboard_operations;
+        chip->dev = &dev_root;
+        chip->bus = 0;
+        for(child = chip->children; child; child = child->next) {
+                child->bus = &dev_root.link[0];
+        }
+}
+struct chip_control mainboard_tyan_s2880_control = {
+        .enable = enable,
+        .enumerate = enumerate,
+        .name      = "Tyan s2880 mainboard ",
+};
+
 

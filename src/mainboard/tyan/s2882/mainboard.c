@@ -4,6 +4,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include "../../../northbridge/amd/amdk8/northbridge.h"
 #include "chip.h"
 //#include <part/mainboard.h>
 //#include "lsi_scsi.c"
@@ -91,7 +92,7 @@ static void onboard_scsi_fixup(void)
 {
        struct device *dev;
 	unsigned char i,j,k;
-#if 1
+#if 0
 	for(i=0;i<=4;i++) {
 		for(j=0;j<=0x1f;j++) {
 			for (k=0;k<=6;k++){
@@ -166,9 +167,28 @@ void final_mainboard_fixup(void)
         enable_ide_devices();
 #endif
 }
+static struct device_operations mainboard_operations = {
+        .read_resources   = root_dev_read_resources,
+        .set_resources    = root_dev_set_resources,
+        .enable_resources = enable_childrens_resources,
+        .init             = 0,
+        .scan_bus         = amdk8_scan_root_bus,
+        .enable           = 0,
+};
 
+static void enumerate(struct chip *chip)
+{
+        struct chip *child;
+        dev_root.ops = &mainboard_operations;
+        chip->dev = &dev_root;
+        chip->bus = 0;
+        for(child = chip->children; child; child = child->next) {
+                child->bus = &dev_root.link[0];
+        }
+}
 struct chip_control mainboard_tyan_s2882_control = {
-	        .enable= enable,
-	        .name=   "Tyan s2882 mainboard "
+        .enable = enable,
+        .enumerate = enumerate,
+        .name      = "Tyan s2882 mainboard ",
 };
 

@@ -51,6 +51,8 @@ uses CC
 uses HOSTCC
 uses OBJCOPY
 uses CONFIG_CHIP_NAME
+uses CONFIG_CONSOLE_VGA
+uses CONFIG_PCI_ROM_RUN
 
 ###
 ### Build options
@@ -118,6 +120,10 @@ default CONFIG_MAX_CPUS=2
 ## Build code to setup a generic IOAPIC
 ##
 default CONFIG_IOAPIC=1
+
+#VGA
+default CONFIG_CONSOLE_VGA=1
+default CONFIG_PCI_ROM_RUN=1
 
 ##
 ## Clean up the motherboard id strings

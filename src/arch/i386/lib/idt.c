@@ -190,9 +190,18 @@ biosint(
 		eax = 64 * 1024;
 		ret = 0;
 		break;
+#ifdef CONFIG_INT21HANDLER
+	case 0x15:
+		ret=handleint21( &edi, &esi, &ebp, &esp, 
+				&ebx, &edx, &ecx, &eax, &flags);
+		break;
+#endif
 	default:
 		printk_info(__FUNCTION__ ": Unsupport int #0x%x\n", 
 					intnumber);
+#ifdef CONFIG_UNSUPPORTINT_RECOVER
+		unsupportint_recover();
+#endif
 		break;
 	}
 	if (ret)

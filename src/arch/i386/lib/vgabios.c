@@ -159,6 +159,13 @@ __asm__ (
 "	ret\n"
 );
 
+#ifdef CONFIG_UNSUPPORTINT_RECOVER
+void unsupportint_recover(void)
+{
+  __asm__ __volatile__ ( "  jmp vgarestart  \n" );
+}
+#endif
+
 void
 do_vgabios(void)
 {
@@ -192,6 +199,9 @@ do_vgabios(void)
   if ((buf[0] == 0x55) && (buf[1] == 0xaa)) {
 
   	memcpy((void *) 0xc0000, buf, size);
+#ifdef VGABIOS_WRITE_PROTECT
+	write_protect_vgabios();
+#endif
 
   	for(i = 0; i < 16; i++)
     		printk_debug("0x%x ", buf[i]);

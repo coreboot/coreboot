@@ -910,7 +910,6 @@ static int find_ide_controller(struct controller *ctrl, int ctrl_index)
 		if (find_ide_controller_compat(ctrl, ctrl_index) != 0)
 			return -1;
 	}
-	printk_debug("cmd_base=%#x ctrl_base=%#x\n", ctrl->cmd_base, ctrl->ctrl_base);
 	return 0;
 }
 

@@ -8,6 +8,8 @@
 #include <part/hard_reset.h>
 #include <part/fallback_boot.h>
 
+#define OPT_HT_LINK 0
+
 static device_t ht_scan_get_devs(device_t *old_devices)
 {
 	device_t first, last;
@@ -24,7 +26,7 @@ static device_t ht_scan_get_devs(device_t *old_devices)
 	}
 	return first;
 }
-
+#if OPT_HT_LINK == 1
 static unsigned ht_read_freq_cap(device_t dev, unsigned pos)
 {
 	/* Handle bugs in valid hypertransport frequency reporting */
@@ -37,15 +39,15 @@ static unsigned ht_read_freq_cap(device_t dev, unsigned pos)
 	if ((dev->vendor == PCI_VENDOR_ID_AMD) &&
 		(dev->device == PCI_DEVICE_ID_AMD_8131_PCIX)) {
 		freq_cap &= ~(1 << HT_FREQ_800Mhz);
-	}
+	} else
 	/* AMD 8151 Errata 23 */
 	if ((dev->vendor == PCI_VENDOR_ID_AMD) &&
 		(dev->device == PCI_DEVICE_ID_AMD_8151_SYSCTRL)) {
 		freq_cap &= ~(1 << HT_FREQ_800Mhz);
-	}
+	} else
 	/* AMD K8 Unsupported 1Ghz? */
 	if ((dev->vendor == PCI_VENDOR_ID_AMD) && (dev->device == 0x1100)) {
-		freq_cap &= ~(1 << HT_FREQ_1000Mhz);
+			freq_cap &= ~(1 << HT_FREQ_1000Mhz);
 	}
 	return freq_cap;
 }
@@ -145,6 +147,7 @@ static int ht_setup_link(struct prev_link *prev, device_t dev, unsigned pos)
 	return reset_needed;
 		
 }
+#endif
 
 static unsigned ht_lookup_slave_capability(struct device *dev)
 {
@@ -217,11 +220,12 @@ static void ht_collapse_early_enumeration(struct bus *bus)
 unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int max)
 {
 	unsigned next_unitid, last_unitid, previous_unitid;
-	uint8_t previous_pos;
 	device_t old_devices, dev, func, *chain_last;
 	unsigned min_unitid = 1;
+#if OPT_HT_LINK == 1
 	int reset_needed;
 	struct prev_link prev;
+#endif
 
 	/* Restore the hypertransport chain to it's unitialized state */
 	ht_collapse_early_enumeration(bus);
@@ -232,20 +236,22 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int max)
 	chain_last = &bus->children;
 
 	/* Initialize the hypertransport enumeration state */
+#if OPT_HT_LINK == 1
 	reset_needed = 0;
 	prev.dev = bus->dev;
 	prev.pos = bus->cap;
 	prev.config_off   = PCI_HT_CAP_HOST_WIDTH;
 	prev.freq_off     = PCI_HT_CAP_HOST_FREQ;
 	prev.freq_cap_off = PCI_HT_CAP_HOST_FREQ_CAP;
+#endif
 	
 	/* If present assign unitid to a hypertransport chain */
 	last_unitid = min_unitid -1;
 	next_unitid = min_unitid;
-	previous_pos = 0;
 	do {
 		uint32_t id, class;
-		uint8_t hdr_type, pos;
+		uint8_t hdr_type;
+		unsigned pos;
 		uint16_t flags;
 		unsigned count, static_count;
 
@@ -293,17 +299,6 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int max)
 		for(func = dev; func; func = func->sibling) {
 			chain_last = &func->sibling;
 		}
-		
-		/* Read the rest of the pci configuration information */
-		hdr_type = pci_read_config8(dev, PCI_HEADER_TYPE);
-		class = pci_read_config32(dev, PCI_CLASS_REVISION);
-		
-		/* Store the interesting information in the device structure */
-		dev->vendor = id & 0xffff;
-		dev->device = (id >> 16) & 0xffff;
-		dev->hdr_type = hdr_type;
-		/* class code, the upper 3 bytes of PCI_CLASS_REVISION */
-		dev->class = class >> 8;
 
 		/* Find the hypertransport link capability */
 		pos = ht_lookup_slave_capability(dev);
@@ -328,6 +323,17 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int max)
 				- (dev->path.u.pci.devfn >> 3) + 1;
 		}
 
+                /* Read the rest of the pci configuration information */
+                hdr_type = pci_read_config8(dev, PCI_HEADER_TYPE);
+                class = pci_read_config32(dev, PCI_CLASS_REVISION);
+
+                /* Store the interesting information in the device structure */
+                dev->vendor = id & 0xffff;
+                dev->device = (id >> 16) & 0xffff;
+                dev->hdr_type = hdr_type;
+                /* class code, the upper 3 bytes of PCI_CLASS_REVISION */
+                dev->class = class >> 8;
+
 		/* Compute the number of unitids consumed */
 		count = (flags >> 5) & 0x1f; /* get unit count */
 		printk_spew("%s count: %04x static_count: %04x\n", 
@@ -339,8 +345,10 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int max)
 		/* Update the Unitid of the next device */
 		next_unitid += count;
 
+#if OPT_HT_LINK == 1
 		/* Setup the hypetransport link */
 		reset_needed |= ht_setup_link(&prev, dev, pos);
+#endif
 
 		printk_debug("%s [%04x/%04x] %s next_unitid: %04x\n",
 			dev_path(dev),
@@ -348,6 +356,8 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int max)
 			(dev->enabled? "enabled": "disabled"), next_unitid);
 
 	} while((last_unitid != next_unitid) && (next_unitid <= 0x1f));
+
+#if OPT_HT_LINK == 1
 #if HAVE_HARD_RESET == 1
 	if(reset_needed) {
 		printk_info("HyperT reset needed\n");
@@ -356,6 +366,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int max)
 	else {
 		printk_debug("HyperT reset not needed\n");
 	}
+#endif
 #endif
 	if (next_unitid > 0x1f) {
 		next_unitid = 0x1f;

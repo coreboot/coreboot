@@ -103,8 +103,8 @@ south_fixup(void)
 	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, (void *)NULL);
 	if (pcidev != NULL) {
 	    u8 reg;
-	    pci_read_config_word(pcidev, 0x77, &temp);
-	    pci_write_config_byte(pci_dev, 0x77, temp & 0xEF);
+	    pci_read_config_byte(pcidev, 0x77, &reg);
+	    pci_write_config_byte(pcidev, 0x77, reg & 0xEF);
 	}
 }
 

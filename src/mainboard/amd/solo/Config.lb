@@ -16,7 +16,7 @@ uses XIP_ROM_SIZE
 uses XIP_ROM_BASE
 
 ## ROM_SIZE is the size of boot ROM that this board will use.
-default ROM_SIZE 524288
+default ROM_SIZE 262144
 
 ###
 ### Build options

@@ -113,7 +113,7 @@ int probe_28sf040 (struct flashchip * flash)
 	*bios = RESET;
 	myusec_delay(10);
 
-	printf(__FUNCTION__ "id1 %d, id2 %d\n", id1, id2);
+	printf("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__ , id1, id2);
 	if (id1 == flash->manufacture_id && id2 == flash->model_id)
 		return 1;
 

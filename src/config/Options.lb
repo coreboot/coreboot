@@ -578,6 +578,11 @@ end
 # IDE specific options
 ###############################################
 
+define CONFIG_IDE
+	default 0
+	export always
+	comment "Define to include IDE support"
+end
 define IDE_BOOT_DRIVE
 	default 0
 	export always

@@ -1,0 +1,46 @@
+##
+## Config file for the Total Impact briQ
+##
+
+uses PCIC0_CFGADDR 
+uses PCIC0_CFGDATA 
+uses UART0_IO_BASE
+uses CONFIG_BRIQ_750FX
+uses CONFIG_BRIQ_7400
+
+##
+## Set PCI registers
+##
+default PCIC0_CFGADDR=0xeec00000
+default PCIC0_CFGDATA=0xeec00004
+
+##
+## Set UART base address
+##
+default UART0_IO_BASE=0xef600300
+
+##
+## Early board initialization, called from ppc_main()
+##
+initobject init.c
+driver pci_bridge.c
+
+arch ppc end
+
+if CONFIG_BRIQ_750FX
+	cpu ppc/ppc7xx end
+end
+if CONFIG_BRIQ_7400
+	cpu ppc/mpc74xx end
+end
+
+##
+## Include the secondary Configuration files 
+##
+southbridge winbond/w83c553 end
+
+##
+## Build the objects we have code for in this directory.
+##
+
+addaction linuxbios.a "$(CROSS_COMPILE)ranlib linuxbios.a"

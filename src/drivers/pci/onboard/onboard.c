@@ -11,6 +11,58 @@
 #include <device/pci_ops.h>
 #include "chip.h"
 
+/*you need to 
+	1.add
+                                                chip drivers/pci/onboard
+                                                        device pci x.0 on end
+                                                        register "rom_address" = "0xfff80000"
+                                                end
+	in your MB mainboard Config.lb
+	2. add 
+		#       48K for SCSI FW or ATI ROM
+		        option ROM_SIZE = 475136
+	in your MB targets Config.lb, afer romimage "normal"
+	3. create you vgabios.bin under normal bios and put that in dir that targets Config residues.
+		# dd if=/dev/mem of=atix.rom skip=1536 count=96
+	4. after build linuxbios.rom
+		# cat ../atix.rom ./normal/linuxbios.rom ./fallback/linuxbios.rom > linuxbios.rom
+	or use nsxv to build you image
+		# time ./nsxv s2850
+
+put following in nsxv and put nsxv in your LBROOT
+
+#!/bin/bash
+MBVENDOR=tyan
+MBMODEL=$1
+LBROOT=/home/yhlu/xx/xx
+
+echo $1
+date
+
+cd "$LBROOT/freebios2/targets"
+rm -rf "$MBVENDOR/$MBMODEL/$MBMODEL"
+./buildtarget "$MBVENDOR/$MBMODEL" &> "$LBROOT/x_b.txt"
+cd "$MBVENDOR/$MBMODEL/$MBMODEL"
+#make clean
+eval make &> "$LBROOT/x_m.txt"
+        if [ $? -eq 0 ]; then
+                echo "ok."
+        else
+                echo "FAILED! Log excerpt:"
+                tail -n 15 "$LBROOT/x_m.txt"
+                exit
+        fi
+cat ../atix.rom ./normal/linuxbios.rom ./fallback/linuxbios.rom > "$LBROOT/rom/"$MBMODEL"_linuxbios.rom"
+cp -f "$LBROOT/rom/"$MBMODEL"_linuxbios.rom" /home/yhlu/
+
+date
+
+
+*/
+		
+
+
+
 static void onboard_enable(device_t dev) 
 {
 	struct drivers_pci_onboard_config *conf;

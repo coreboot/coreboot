@@ -160,16 +160,18 @@ static void main(unsigned long bist)
 	};
 
 	int needs_reset;
+	unsigned nodeid;
 	if (bist == 0) {
 		/* Skip this if there was a built in self test failure */
 		amd_early_mtrr_init();
 		enable_lapic();
 		init_timer();
+		nodeid = lapicid() & 0xf;
 		/* Has this cpu already booted? */
-		if (cpu_init_detected()) {
+		if (cpu_init_detected(nodeid)) {
 			asm volatile ("jmp __cpu_reset");
 		}
-		distinguish_cpu_resets();
+		distinguish_cpu_resets(nodeid);
 		if (!boot_cpu()) {
 			stop_this_cpu();
 		}

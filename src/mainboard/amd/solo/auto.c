@@ -108,6 +108,7 @@ static void main(unsigned long bist)
 	};
 
 	int needs_reset;
+	unsigned nodeid;
 
 	if (bist == 0) {
 		/* Skip this if there was a built in self test failure */
@@ -115,12 +116,14 @@ static void main(unsigned long bist)
 		
 		enable_lapic();
 		init_timer();
+
+		nodeid = lapicid() & 0xf;
 		
-		if (cpu_init_detected()) {
+		if (cpu_init_detected(nodeid)) {
 			asm volatile ("jmp __cpu_reset");
 		}
 
-		distinguish_cpu_resets();
+		distinguish_cpu_resets(nodeid);
 		
 		if (!boot_cpu()) {
 			/* This LinuxBIOS image is built for UP only */

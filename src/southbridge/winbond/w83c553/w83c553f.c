@@ -29,8 +29,10 @@
 
 #include <arch/io.h>
 #include <device/pci.h>
+#include <device/chip.h>
 #include <console/console.h>
 #include "w83c553f.h"
+#include "chip.h"
 
 #ifndef CONFIG_ISA_MEM
 #define CONFIG_ISA_MEM		0xFD000000
@@ -69,7 +71,7 @@ void southbridge_early_init(void)
 }
 #endif
 
-void southbridge_init(void)
+void w83c553_init(void)
 {
 	struct device  *dev;
 	unsigned char reg8;
@@ -283,3 +285,24 @@ void initialise_dma(void)
 	outb(W83C553F_DMA1 + W83C553F_DMA1_CS, 0x00);
 	outw(W83C553F_DMA2 + W83C553F_DMA2_CS, 0x0000);
 }
+
+void southbridge_init(struct chip *chip, enum chip_pass pass)
+{
+
+	struct southbridge_winbond_w83c553_config *conf = (struct southbridge_winbond_w83c553_config *)chip->chip_info;
+
+	switch (pass) {
+	case CONF_PASS_POST_PCI:
+		w83c553_init();
+		break;
+
+	default:
+		/* nothing yet */
+		break;
+	}
+}
+
+struct chip_control southbridge_winbond_w83c553_control = {
+	enable: southbridge_init,
+	name:   "Winbond W83C553"
+};

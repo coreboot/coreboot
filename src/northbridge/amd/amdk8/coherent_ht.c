@@ -91,9 +91,7 @@ typedef uint32_t u32;
 
 static inline void print_linkn (const char *strval, uint8_t byteval) 
 {
-#if 1
 	print_debug(strval); print_debug_hex8(byteval); print_debug("\r\n");
-#endif
 }
 
 static void disable_probes(void)
@@ -133,22 +131,25 @@ static void disable_probes(void)
 
 }
 
+
 #ifndef ENABLE_APIC_EXT_ID
 #define ENABLE_APIC_EXT_ID 0 
 #endif
 
-static void enable_apic_ext_id(u8 node)
+static void enable_apic_ext_id(u8 node) 
 {
 #if ENABLE_APIC_EXT_ID==1
 #warning "FIXME Is the right place to enable apic ext id here?"
 
-        u32 val;
+	u32 val;
 
         val = pci_read_config32(NODE_HT(node), 0x68);
         val |= (HTTC_APIC_EXT_SPUR | HTTC_APIC_EXT_ID | HTTC_APIC_EXT_BRD_CST);
         pci_write_config32(NODE_HT(node), 0x68, val);
 #endif
 }
+
+
 
 static void enable_routing(u8 node)
 {
@@ -179,7 +180,9 @@ static void enable_routing(u8 node)
 	/* Enable routing table */
 	print_spew("Enabling routing table for node ");
 	print_spew_hex8(node);
-	
+
+//	enable_apic_ext_id(node);
+
 	val=pci_read_config32(NODE_HT(node), 0x6c);
 	val &= ~((1<<1)|(1<<0));
 	pci_write_config32(NODE_HT(node), 0x6c, val);
@@ -683,7 +686,6 @@ static struct setup_smp_result setup_smp2(void)
 		NODE_HT(0), 0x80 + link_to_register(link_connection(0,1)),
 		NODE_HT(1), 0x80 + link_to_register(link_connection(1,0)) );
 
-
 	return result;
 }
 #endif /*CONFIG_MAX_CPUS > 1 */
@@ -850,7 +852,7 @@ static struct setup_smp_result setup_smp4(int needs_reset)
 	};
 
 	result.needs_reset = optimize_connection_group(opt_conn4, sizeof(opt_conn4)/sizeof(opt_conn4[0]));
-	
+
 	return result;
 
 }
@@ -1390,15 +1392,18 @@ static struct setup_smp_result setup_smp(void)
 		
 	result = setup_smp2();
 #if CONFIG_MAX_CPUS > 2
-	result = setup_smp4(result.needs_reset);
+	if(result.nodes == 2 ) 
+		result = setup_smp4(result.needs_reset);
 #endif
 	
 #if CONFIG_MAX_CPUS > 4
-	result = setup_smp6(result.needs_reset);
+	if(result.nodes == 4)
+		result = setup_smp6(result.needs_reset);
 #endif
 
 #if CONFIG_MAX_CPUS > 6
-	result = setup_smp6(result.needs_reset);
+	if(result.nodes == 6) 
+		result = setup_smp8(result.needs_reset);
 #endif
 
 	print_debug_hex8(result.nodes);
@@ -1552,7 +1557,7 @@ static int apply_cpu_errata_fixes(unsigned nodes, int needs_reset)
 			}
 
 		}
-		else {
+		else if(is_cpu_pre_d0()) { // d0 later don't need it 
 			uint32_t cmd_ref;
 			/* Errata 98 
 			* Set Clk Ramp Hystersis to 7
@@ -1585,7 +1590,7 @@ static int optimize_link_read_pointers(unsigned nodes, int needs_reset)
 			/* This works on an Athlon64 because unimplemented links return 0 */
 			reg = 0x98 + (link * 0x20);
 			link_type = pci_read_config32(f0_dev, reg);
-			if ((link_type & 7) == 3) { 
+			if ((link_type & 7) == 3) { /* only handle coherent link here*/
 				cmd &= ~(0xff << (link *8));
 				cmd |= 0x25 << (link *8);
 			}

@@ -1,0 +1,221 @@
+uses HAVE_MP_TABLE
+uses HAVE_PIRQ_TABLE
+uses USE_FALLBACK_IMAGE
+uses MAINBOARD
+uses ARCH
+#
+#
+###
+### Set all of the defaults for an x86 architecture
+###
+#
+#
+###
+### Build the objects we have code for in this directory.
+###
+##object mainboard.o
+config chip.h
+#register "fixup_scsi" = "1" 
+#register "fixup_vga" = "1"
+
+
+driver mainboard.o
+driver lsi_scsi.o
+#driver adaptec_scsi.o
+driver si_sata.o
+#driver intel_nic.o
+object reset.o
+if HAVE_MP_TABLE object mptable.o end
+if HAVE_PIRQ_TABLE object irq_tables.o end
+#
+arch i386 end
+#cpu k8 end
+#
+###
+### Build our 16 bit and 32 bit linuxBIOS entry code
+###
+mainboardinit cpu/i386/entry16.inc
+mainboardinit cpu/i386/entry32.inc
+ldscript /cpu/i386/entry16.lds
+ldscript /cpu/i386/entry32.lds
+#
+###
+### Build our reset vector (This is where linuxBIOS is entered)
+###
+if USE_FALLBACK_IMAGE 
+	mainboardinit cpu/i386/reset16.inc 
+	ldscript /cpu/i386/reset16.lds 
+else
+	mainboardinit cpu/i386/reset32.inc 
+	ldscript /cpu/i386/reset32.lds 
+end
+#
+#### Should this be in the northbridge code?
+mainboardinit arch/i386/lib/cpu_reset.inc
+#
+###
+### Include an id string (For safe flashing)
+###
+mainboardinit arch/i386/lib/id.inc
+ldscript /arch/i386/lib/id.lds
+#
+####
+#### This is the early phase of linuxBIOS startup 
+#### Things are delicate and we test to see if we should
+#### failover to another image.
+####
+#option MAX_REBOOT_CNT=2
+if USE_FALLBACK_IMAGE
+  ldscript /arch/i386/lib/failover.lds 
+end
+#
+###
+### Setup our mtrrs
+###
+mainboardinit cpu/k8/earlymtrr.inc
+###
+### Only the bootstrap cpu makes it here.
+### Failover if we need to 
+###
+#
+if USE_FALLBACK_IMAGE
+  mainboardinit ./failover.inc
+end
+
+#
+#
+###
+### Setup the serial port
+###
+#mainboardinit superiowinbond/w83627hf/setup_serial.inc
+mainboardinit pc80/serial.inc
+mainboardinit arch/i386/lib/console.inc
+#
+####
+#### O.k. We aren't just an intermediary anymore!
+####
+#
+###
+### When debugging disable the watchdog timer
+###
+##option MAXIMUM_CONSOLE_LOGLEVEL=7
+#default MAXIMUM_CONSOLE_LOGLEVEL=7
+#
+#if USE_FALLBACK_IMAGE mainboardinit arch/i386/lib/noop_failover.inc  end
+#
+###
+### Romcc output
+###
+#makerule ./failover.E dep "$(MAINBOARD)/failover.c" act "$(CPP) -I$(TOP)/src $(CPPFLAGS) $(MAINBOARD)/failover.c > ./failever.E"
+#makerule ./failover.inc dep "./romcc ./failover.E" act "./romcc -O ./failover.E > failover.inc"
+#mainboardinit .failover.inc
+
+makerule ./failover.E
+	depends "$(MAINBOARD)/failover.c" 
+	action "$(CPP) -I$(TOP)/src $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/failover.c > ./failover.E"
+end
+
+makerule ./failover.inc
+	depends "./romcc ./failover.E"
+	action "./romcc -O -o failover.inc --label-prefix=failover ./failover.E"end
+
+makerule ./auto.E 
+	depends	"$(MAINBOARD)/auto.c" 
+	action	"$(CPP) -I$(TOP)/src $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
+end
+makerule ./auto.inc 
+	depends "./romcc ./auto.E"
+	action "./romcc -O -mcpu=k8 -o auto.inc --label-prefix=auto ./auto.E" 
+#	action	"./romcc -mcpu=k8  -O ./auto.E > auto.inc"
+end
+mainboardinit cpu/k8/enable_mmx_sse.inc
+mainboardinit ./auto.inc
+mainboardinit cpu/k8/disable_mmx_sse.inc
+#
+###
+### Include the secondary Configuration files 
+###
+northbridge amd/amdk8 "mc0"
+        pci 0:18.0
+        pci 0:18.0
+        pci 0:18.0
+        pci 0:18.1
+        pci 0:18.2
+        pci 0:18.3
+        southbridge amd/amd8131 "amd8131" link 2
+                pci 0:0.0
+                pci 0:0.1
+                pci 0:1.0
+                pci 0:1.1
+	end
+        southbridge amd/amd8111 "amd8111" link 2
+                pci 0:0.0
+                pci 0:1.0 on
+                pci 0:1.1 on
+                pci 0:1.2 on
+                pci 0:1.3 on
+                pci 0:1.5 off
+                pci 0:1.6 off
+                pci 1:0.0 on
+                pci 1:0.1 on
+                pci 1:0.2 on
+                pci 1:1.0 off
+        end
+end
+
+northbridge amd/amdk8 "mc1"
+        pci 0:19.0
+        pci 0:19.0
+        pci 0:19.0
+        pci 0:19.1
+        pci 0:19.2
+        pci 0:19.3
+end
+
+northbridge amd/amdk8 "mc2"
+        pci 0:1a.0
+        pci 0:1a.0
+        pci 0:1a.0
+        pci 0:1a.1
+        pci 0:1a.2
+        pci 0:1a.3
+end
+
+
+northbridge amd/amdk8 "mc3"
+        pci 0:1b.0
+        pci 0:1b.0
+        pci 0:1b.0
+        pci 0:1b.1
+        pci 0:1b.2
+        pci 0:1b.3
+end
+
+
+#northbridge amd/amdk8
+#end
+#southbridge amd/amd8111 "amd8111"
+#end
+#southbridge amd/amd8131 "amd8131"
+#end
+#mainboardinit archi386/smp/secondary.inc
+#superio NSC/pc87360
+#	register "com1" = "{1}"
+#	register "lpt" = "{1}"
+#end
+dir /pc80
+##dir /src/superio/winbond/w83627hf
+#dir /bioscall
+#dir /cpu/k8
+cpu k8 "cpu0"
+  register "up" = "{.chip = &amd8131, .ht_width=16, .ht_speed=600}"
+end
+
+cpu k8 "cpu1"
+end
+
+cpu k8 "cpu2"
+end
+
+cpu k8 "cpu3"
+end

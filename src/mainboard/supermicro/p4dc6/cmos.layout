@@ -1,0 +1,81 @@
+entries
+
+#start-bit length  config config-ID    name
+#0            8       r       0        seconds
+#8            8       r       0        alarm_seconds
+#16           8       r       0        minutes
+#24           8       r       0        alarm_minutes
+#32           8       r       0        hours
+#40           8       r       0        alarm_hours
+#48           8       r       0        day_of_week
+#56           8       r       0        day_of_month
+#64           8       r       0        month
+#72           8       r       0        year
+#80           4       r       0        rate_select
+#84           3       r       0        REF_Clock
+#87           1       r       0        UIP
+#88           1       r       0        auto_switch_DST
+#89           1       r       0        24_hour_mode
+#90           1       r       0        binary_values_enable
+#91           1       r       0        square-wave_out_enable
+#92           1       r       0        update_finished_enable
+#93           1       r       0        alarm_interrupt_enable
+#94           1       r       0        periodic_interrupt_enable
+#95           1       r       0        disable_clock_updates
+#96         288       r       0        temporary_filler
+0          384       r       0        reserved_memory
+384          1       e       4        boot_option
+385          1       e       4        last_boot
+392          3       e       5        baud_rate
+396          4       e       6        debug_level
+400          1       e       1        power_on_after_fail
+401          1       e       1        ECC_memory
+#402          1       e       2        hda_disk
+#403          1       e       2        hdb_disk
+#404          1       e       2        hdc_disk
+#405          1       e       2        hdd_disk
+#406          2       e       7        boot_device
+408          4       e       9        CPU_clock_speed
+
+enumerations
+
+#ID value   text
+1     0     Disable
+1     1     Enable
+#2     0     No
+#2     1     Yes
+4     0     FallBack
+4     1     Normal
+5     0     115200
+5     1     57600
+5     2     38400
+5     3     19200
+5     4     9600
+5     5     4800
+5     6     2400
+5     7     1200
+6     6     Notice
+6     7     Info
+6     8     Debug
+6     9     Spew
+#7     0     Network
+#7     1     HDD
+#7     2     Floppy
+#7     3     ROM
+9     15    800MHZ
+9     11    900MHZ
+9     13    1GHZ
+9      9    1.1GHZ
+9     14    1.2GHZ
+9     10    1.3GHZ
+9     12    1.4GHZ
+9      8    1.5GHZ
+9      7    1.6GHZ
+9      3    1.7GHZ
+9      5    1.8GHZ
+9      1    1.9GHZ
+9      6    2.0GHZ
+9      2    2.1GHZ
+9      4    2.2GHZ
+9      0    2.3GHZ
+

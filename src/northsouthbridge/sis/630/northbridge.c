@@ -96,14 +96,14 @@ unsigned long sizeram()
 #ifdef HAVE_FRAMEBUFFER
 void framebuffer_on()
 {
-	unsigned long devfn = PCI_DEVFN(0, 0);
-	u32 command;
+	unsigned long devfn;
+	u16 command;
 
-	/* enable legacy VGA register (0x3?4, 0x3?5), not actually needed */
+	/* enable legacy VGA register (0x3?4, 0x3?5), needed for XFree86 3.3.6 */
 	devfn = PCI_DEVFN(2, 0);
-	pcibios_read_config_dword(0, devfn, 0x3e, &command);
+	pcibios_read_config_word(0, devfn, 0x3e, &command);
 	command |= 0x08;
-	pcibios_write_config_dword(0, devfn, 0x3e, command);
+	pcibios_write_config_word(0, devfn, 0x3e, command);
 }
 #endif	/* HAVE_FRAMEBUFFER */
 

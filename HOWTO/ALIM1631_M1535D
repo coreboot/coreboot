@@ -1,0 +1,764 @@
+This file contains instructions for the Acer Ali M1535D Southbridge
+and M1631 Northbridge based mainboards.
+
+Unfortunately, there is a step in this HOWTO that could be hazardous. The 
+hazards include (but are not limited to)
+1) destroying your motherboard
+2) hurting yourself
+3) killing yourself
+
+Because of these hazards, you must take full responsibility if you
+decide to install LinuxBIOS following these procedures. Neither Los
+Alamos National Labs nor any lab personnel can be held responsible for
+any adverse consequences of your attempt to follow these procedures.
+
+WARNING: we assume you've built kernels, know how to open up your PC,
+and how to yank the flash part out while power is on and put in a
+different part. There is NO WARRANTY, express or implied, with this
+software. In fact, if you don't know what you're doing, and you get
+careless, you're going to end up with a nice paperweight instead of a
+motherboard, an emergency room bill, or a funeral service.
+
+			YOU HAVE BEEN WARNED.
+
+	Now that we're done with the mandatory US legal jargon
+
+
+The mainboards that are "known good" are:
+ASUS CUA Rev 1.03.  
+
+This board already has a 32-DIP Zero Insertion Force
+(ZIF) socket for the flash part.  This makes putting in Disk On Chip much
+easier.
+
+Linux distribution: RedHat 7.1 or later. We haven't tried anything else. 
+	They may all work fine. 
+
+Other software notes: You MUST have 'as' version 2.9.5 or later. 
+			You MUST have ssh to connect to sourceforge
+
+You need to have a LinuxBIOS machine (the machine that runs LinuxBIOS)
+and a build machine (which will let you build LinuxBIOS). These can be
+one and the same machine. In this HOWTO we assume they're the same. 
+We nevertheless refer to a 'build' machine and 'LinuxBIOS' machine in case you
+want to use a different machine.  However, since we just use a console
+via the serial port, you need at least two machines if you want to see
+the output once you start LinuxBIOS.
+
+CAUTION:  We have NOT YET configured the graphics card on the Asus.  If your 
+LinuxBIOS machine and build machine are the same, you can't see any output 
+from  LinuxBIOS, unless you can get your hands on a terminal.  If this is 
+the ONLY computer you have, use EXTREME CAUTION.  Do NOT destroy your BIOS 
+chip once you remove it from the socket, you will be stuck!  
+YOU HAVE BEEN WARNED!
+
+Also, freebios and linuxbios still share the same source tree. We use the 
+name 'linuxbios' where it makes sense, and 'freebios' otherwise. But they 
+are the same source base. 
+
+----
+NOTE: these steps are tested all the way up to the end, they work.
+
+The steps for loading linuxbios are simple:
+0) get linux installed on your LinuxBIOS machine
+1) Get Linuxbios source from the sourceforge
+2) get a 2.4.9 kernel for LinuxBIOS, patch it, then build it
+3) config and build linuxbios
+4) Get the MTD utilities from http://www.linux-mtd.infradead.org/ 
+	and build the 'erase' utility
+5) Configure a new 2.4.9 kernel for burning Disk On Chip
+6) put a Disk On Chip into the flash socket
+7) Burn the chip 
+8) Configure serial connection and hit reset.
+
+
+---
+Step 0) 
+	Get Linux installed on your LinuxBIOS machine. We have used 
+	RedHat 7.1, but any recent Linux distribution should work, such
+	as Mandrake 7.0. 
+
+Step 1)
+o	You need to get linuxbios source.
+	cd to the directory you want the source tree to be.
+	Then:
+	export CVS_RSH=ssh (or in tcsh setenv CVS_RSH ssh)
+cvs -d:pserver:anonymous@cvs.freebios.sourceforge.net:/cvsroot/freebios login 
+	(at the password prompt, just hit <return>)
+
+cvs -z3 -d:pserver:anonymous@cvs.freebios.sourceforge.net:/cvsroot/freebios co freebios 
+
+
+Step 2)
+o 	go to www.kernel.org and get linux-2.4.9
+
+o	Once you have pulled this file down and untar'ed it, 
+	apply the proper patch from the freebios/src/kernel_patches 
+	directory.  The patch is:
+
+	ide-spinup-2.4.9-asus.patch
+
+	Your patch command will look like this:
+	cd linux_directory
+	patch -p1 < ~/freebios/src/kernel_patches/ide-spinup-2.4.9-asus.patch
+	Here is the output I get when I apply the patch:
+	 
+	patching file arch/i386/Linuxbios.in
+	patching file arch/i386/config.in
+	patching file drivers/ide/ide-probe.c
+
+	You should NOT get any rejects when applying this patch.  If you do,
+	please make sure your patch command is correct.  The most common
+	error is supplying an incorrect patch level (the -p option).  Please
+	refer to the patch man page for details.
+
+o       There are a couple of things you have to fix in the 2.4.9 kernel.
+
+	First, you need to fix a keyboard bug for using the serial console. 
+	IF YOU DON'T DO THIS, LINUXBIOS WILL BOOT UP, BUT YOU WON'T BE ABLE
+	TO TYPE ANYTHING USING YOUR TERMINAL KEYBOARD.
+
+	Go to linux-directory/drivers/char
+	Edit the file serial.c and comment out lines 1772 and 1773
+
+	if ((cflag & CREAD) == 0)
+                info->ignore_status_mask |= UART_LSR_DR;
+
+	Secondly, if you need to burn Disk On Chip MILLENIUM
+
+	Go to linux-directory/drivers/mtd/devices/
+	Edit the file docprobe.c and change line 42.
+
+	Original line 42:  #define DOC_SINGLE_DRIVER
+
+	New line 42:       #undef  DOC_SINGLE_DRIVER
+
+o	Now copy config-2.4.9-asus (from /freebios/src/kernel_patches)
+	to .config, then
+	make oldconfig
+	make clean
+	make dep
+	make vmlinux
+
+	In our config file, we turned of a LOT of options OFF and we have only
+	a bare-bones kernel, enough to bring LinuxBIOS up on the Asus.  
+	Nevertheless, important stuff we did are:
+
+        1.  Changed PCI access mode to DIRECT
+	2.  Turn on MTD support (as a MODULE)
+	3.  DISABLED Virtual terminal
+	4.  Turned on AliM15x3 support in IDE, ATA and ATAPI Block devices
+	5.  Enabled Console for serial port
+	6.  Turned on all LinuxBIOS support options (Do NOT make them as
+	loadable modules!)
+
+	If you wanna see the changes we did, run make menuconfig from
+	your linux-directory or examine the .config file.  Once you
+	make sure that a small kernel works on your ASUS, you can
+	turn on options in the kernel as you need them.
+
+	You now have a kernel for linuxbios.
+
+Step 3)
+
+o	You now need to figure out where you want to put your build images. 
+	DO NOT PUT THESE IN THE LINUXBIOS SOURCE TREE. 
+	You want to put them OUTSIDE THE TREE, so you can always
+	cvs update
+	and not lose any of your build directory. 
+	Linuxbios does all the builds in a single directory, much as BSD does. 
+	To build linuxbios requires a Makefile, a crt0.S file, and a ld script
+	file. These are generated by a config tool located in 
+	freebios/utils/config
+	The config tool is a Python program originally written by 
+	Dean Risinger of the ACL. 
+	To build the initial Makefile, assembly stub, and ld script, 
+	you need to build a config file (simple), run the config tool,
+	cd to the build directory, and type 'make'. 
+
+	Here is a config file for the ASUS CUA
+
+	# Sample config file for ACER M1631 CHIPSET ON A ASUS
+	# with DoC Millennium (as root)
+
+	# This will make a target directory of ./asus-cua
+	target asus-cua
+
+	# ASUS CUA  main board
+	mainboard asus/cua
+
+	# ****************** NEED CORRECT DOC IPL
+	# use DOC MIL
+	option USE_DOC_MIL
+	docipl mainboard/asus/cua/ipl.S
+
+	# Enable Serial Console for debugging
+	option SERIAL_CONSOLE
+
+	# Enable MicroCode update and L2 Cache init for PII and PIII
+	option UPDATE_MICROCODE
+	option CONFIGURE_L2_CACHE
+
+	# Use the internal VGA frame buffer device - DISABLED FOR NOW!
+	# option HAVE_FRAMEBUFFER
+
+	# I want that floppy ...
+	option MUST_ENABLE_FLOPPY
+
+	# *****************MODIFIED BY BHARATH********************
+	# Path to your kernel (vmlinux) 
+	linux /usr/src/vmlinux-acer-2.4.9
+
+	# Kernel command line parameters
+	#commandline root=/dev/hda2 console=ttyS0,115200 console=tty0 single
+	# *******************MODIFIED BY BHARATH **************** 
+	commandline root=/dev/hda5 console=ttyS0,115200 floppy=nodma single 
+	
+	The target command names the build directory. The mainboard command
+	names the mainboard. We have set options for a serial console which
+	will get you linuxbios debug output via the serial port; updating
+	microcode on the PIII (mandatory for coppermine!); configuring the
+	L2 cache (harmless, leave it in); disable frame buffer init (no VGA
+	support yet).  You have to tell it where to find the vmlinux
+	you build (the 'linux' command); and finally you need a commandline
+	for now. 
+
+	That's the file. 
+	To run the config tool, you need two args: the first is the
+	name of a config file, and the second is the (absolute) pathname
+	of the freebios source tree. 
+
+	The config tool is NLBConfig.py. Make sure you use that and not
+	LBConfig.py, the older version. 
+
+	Here's what it looks like when you run it. 
+
+ 	python ~/src/freebois/util/config/NLBConfig.py asus-cua.config ~/src/freebios
+
+	/root/linuxbios/config_files/asus-cua is not a directory. 
+	 I know I should make this, but I'm too paranoid
+	 To fix this, type
+	mkdir -p  /root/linuxbios/config_files/asus-cua
+	 then run this program again
+
+	Note this first time, we got an error, since I forgot to make
+	the 'target' directory.
+	So, for the second run, I do the mkdir, then run the tool:
+
+	mkdir -p asus-cua
+
+	python ~/src/freebios/util/config/NLBConfig.py asus-cua.config ~/src/freebios
+
+	The output of the tool is:
+	Will place Makefile, crt0.S, ldscript.ld in  /root/linuxbios/config_files/asus-c
+ua
+	Process config file:  /root/linuxbios/freebios/src/mainboard/asus/cua/Config
+	Now Process the  i386  base files
+	Process config file:  /root/linuxbios/freebios/src/arch/i386/Config
+	Process config file:  /root/linuxbios/freebios/src/arch/i386/boot/Config
+	Process config file:  /root/linuxbios/freebios/src/arch/i386/lib/Config
+	Process config file:  /root/linuxbios/freebios/src/arch/i386/smp/Config
+	Process config file:  /root/linuxbios/freebios/src/lib/Config
+	Process config file:  /root/linuxbios/freebios/src/boot/Config
+	Process config file:  /root/linuxbios/freebios/src/rom/Config
+	Added mainboard init file:  cpu/i386/entry16.inc
+	Added ldscript init file:  /root/linuxbios/freebios/src/cpu/i386/entry16.lds
+	Added mainboard init file:  northbridge/acer/m1631/chipset_init.inc
+	Added mainboard init file:  superio/acer/m1535/setup_serial.inc
+	Added mainboard init file:  pc80/serial.inc
+	Process config file:  /root/linuxbios/freebios/src/northbridge/acer/m1631/Config
+	Process config file:  /root/linuxbios/freebios/src/southbridge/acer/m1535/Config
+	Added mainboard init file:  cpu/p6/earlymtrr.inc
+	Process config file:  /root/linuxbios/freebios/src/cpu/p5/Config
+	Process config file:  /root/linuxbios/freebios/src/cpu/p6/Config
+	Trying to create  /root/linuxbios/config_files/asus-cua/Makefile
+	Trying to create  /root/linuxbios/config_files/asus-cua/ldoptions
+	Trying to create  /root/linuxbios/config_files/asus-cua/crt0.S
+	Trying to create  /root/linuxbios/config_files/asus-cua/LinuxBIOSDoc.config
+
+	OK, all those messages are normal. Now we do a make:
+
+	cd asus-cua
+	make
+
+	We now have three files to be loaded into the Disk On Chip. The first
+	is called docipl. It is 512 bytes. The second is called linuxbios.strip,
+	and is the binary image of the linuxbios that gets loaded into Doc. 
+	The third file  is your kernel, and is stripped and compressed, 
+	vmlinux.bin.gz
+
+	-rw-------    1 rminnich CIC-ACL       512 Dec 20 08:41 docipl
+	-rwx------    1 rminnich CIC-ACL     33494 Dec 20 08:41 linuxbios.strip*
+	-rwx------    1 rminnich CIC-ACL    756069 Dec 20 08:41 vmlinux.bin.gz*
+
+
+	You're now ready to burn the Disk On Chip, but first .... 
+
+Step 4) Get the MTD utilities from http://www.linux-mtd.infradead.org/ 
+	(see the instructions at that site)
+	cvs -d :pserver:anoncvs@cvs.infradead.org:/home/cvs co mtd
+	cd mtd/util
+	sh -x MAKEDEV
+	make
+	(You need the erase utility)
+	Install the erase utility where it is in your path. 
+
+Step 5) Configuring your kernel for Disk on Chip.
+
+	You are going to use the script burn_mtd_asus_cua.  PLEASE
+	NOTE:  THIS SCRIPT WORKS ONLY ON MOTHERBOARDS WITH THE ACER ALI
+	M1631 northbridge.  WE TESTED THIS SCRIPT ON THE ASUS CUA.
+
+	The fix for other chipsets seems simple enough:  just change
+	the setpci line in burn_mtd_asus_cua to enable your chipset to write
+	to flash.  However, you have to get this information from the chipset
+	documentation.  THIS, IN OUR EXPERIENCE, IS HARD!  
+
+	You need a new 2.4.9 kernel for your build machine so you can
+	burn the Disk On Chip.
+
+	Get a 2.4.9 kernel, untar it.  This is a NEW kernel source.  You
+	should have two 2.4.9 kernels on your build machine - one for
+	LinuxBIOS and one for burning the Disk On Chip.  DO NOT MIX THEM UP.
+
+	Change the files linux-directory/drivers/char/serial.c and
+	linux-directory/drivers/char/mtd/devices/docprobe.c as shown
+	in Step 2)
+
+	Copy the file config-2.4.9-flash-burn from freebios/src/kernel_patches
+	to your 2.4.9 directory as .config
+
+	make oldconfig
+	make clean
+	make dep
+	make bzImage
+	make modules
+	make modules_install
+	
+	You should test this kernel by making a boot floppy.  Once you
+	are satisfied this kernel works, add an entry to lilo.conf.
+Step 6) 
+	NOTE: BE ADVISED THAT THIS STEP CAN HURT OR KILL YOU!
+	YOU ARE WORKING WITH A POWERED-ON COMPUTER AT THIS POINT. 
+	THE COMPUTER NEEDS TO BE OPENED  UP, AND YOU NEED TO REMOVE A CHIP
+	WHILE THE COMPUTER IS ON. 
+	IF YOU HAVE NOT DONE THIS TYPE OF WORK, DO NOT DO IT!
+	WE TAKE NO RESPONSIBILITY FOR ANYTHING THAT HAPPENS AT THIS STEP.
+	BEFORE DOING THIS STEP WITH POWER ON, YOU SHOULD TRY IT WITH POWER OFF.
+
+	Open your build machine (LEAVE THE POWER ON), yank the flash, and 
+	plug in the DoC. We recommend you practice this first with the 
+	power off. Make sure that whatever you do, you are not shorting 
+	things out. Avoid using a metal tool!
+
+	NOTE: YOU CAN HURT YOURSELF AT THIS STEP. We can't take any
+	responsibility for what happens to you here. If you haven't 
+	done this, or are not trained, or have a history of getting
+	hurt by hardware, DON'T DO IT.
+
+Step 7) Run the following script:
+	RUN THIS SCRIPT FROM THE BUILD DIRECTORY FOR LINUXBIOS
+
+	Run the burn_mtd_asus_cua script from freebios/util/mtd
+	Here's what the output looks like when you run it:
+	
+	mmod: module docprobe is not loaded
+	rmmod: module doc2001 is not loaded
+	rmmod: module docecc is not loaded
+
+	6+1 records in
+	7+0 records out
+	0+1 records in
+	1+0 records out
+	Erase Total 128 Units
+	Performing Flash Erase of length 8192 at offset 0xfe000 done
+	1+0 records in
+	1+0 records out
+	1+0 records in
+	1+0 records out
+	126+0 records in
+	126+0 records out
+	896+0 records in
+	896+0 records out
+
+	AGAIN, PLEASE NOTE:  THIS SCRIPT ONLY WORKS ON A MOTHERBOARD
+	WITH THE ACER ALI M1631 Northbridge. IF YOUR BUILD MACHINE
+	DOES NOT USE THIS CHIPSET, YOU NEED TO FIGURE OUT HOW TO
+	ENABLE FLASH WRITING FOR YOUR CHIPSET!
+
+Step 8) Hook a serial cable form your LinuxBIOS machine to your terminal.
+	Settings are 115200 baud, 8 data bits, no parity, 1 stop bit.
+	POWER OFF THE MACHINE. DoC requires this. 
+	Turn it back on. Linuxbios should come up in a few seconds. 
+	Here is a dump from minicom when I booted my LinuxBIOS machine and
+	typed in an ls command:
+	
+LinuxBIOS booting...
+Finding PCI configuration type.
+PCI: Using configuration type 1
+Scanning PCI bus...PCI: pci_scan_bus for bus 0
+pci_get_sizedev_fn 0x0, register 0, read-only SO, ignoring it
+addr was 0x8, size was 0x8
+pci_get_sizedev_fn 0x0, register 1, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+pci_get_sizedev_fn 0x0, register 2, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+pci_get_sizedev_fn 0x0, register 3, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+pci_get_sizedev_fn 0x0, register 4, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+pci_get_sizedev_fn 0x0, register 5, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+PCI: 00:00 [10b9/1621]
+pci_get_sizedev_fn 0x8, register 0, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+pci_get_sizedev_fn 0x8, register 1, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+PCI: 00:08 [10b9/5247]
+pci_get_sizedev_fn 0x30, register 2, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+pci_get_sizedev_fn 0x30, register 3, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+pci_get_sizedev_fn 0x30, register 4, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+pci_get_sizedev_fn 0x30, register 5, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+PCI: 00:30 [10b9/5451]
+pci_get_sizedev_fn 0x38, register 0, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+pci_get_sizedev_fn 0x38, register 1, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+pci_get_sizedev_fn 0x38, register 2, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+pci_get_sizedev_fn 0x38, register 3, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+pci_get_sizedev_fn 0x38, register 4, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+pci_get_sizedev_fn 0x38, register 5, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+PCI: 00:38 [10b9/1533]
+pci_get_sizedev_fn 0x80, register 0, read-only SO, ignoring it
+addr was 0x1f1, size was 0x1f1
+pci_get_sizedev_fn 0x80, register 1, read-only SO, ignoring it
+addr was 0x3f5, size was 0x3f5
+pci_get_sizedev_fn 0x80, register 2, read-only SO, ignoring it
+addr was 0x171, size was 0x171
+pci_get_sizedev_fn 0x80, register 3, read-only SO, ignoring it
+addr was 0x375, size was 0x375
+pci_get_sizedev_fn 0x80, register 5, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+PCI: 00:80 [10b9/5229]
+pci_get_sizedev_fn 0x88, register 0, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+pci_get_sizedev_fn 0x88, register 1, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+pci_get_sizedev_fn 0x88, register 2, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+pci_get_sizedev_fn 0x88, register 3, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+pci_get_sizedev_fn 0x88, register 4, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+pci_get_sizedev_fn 0x88, register 5, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+PCI: 00:88 [10b9/7101]
+pci_get_sizedev_fn 0xa0, register 1, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+pci_get_sizedev_fn 0xa0, register 2, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+pci_get_sizedev_fn 0xa0, register 3, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+pci_get_sizedev_fn 0xa0, register 4, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+pci_get_sizedev_fn 0xa0, register 5, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+PCI: 00:a0 [10b9/5237]
+PCI: pci_scan_bus for bus 1
+pci_get_sizedev_fn 0x0, register 2, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+pci_get_sizedev_fn 0x0, register 3, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+pci_get_sizedev_fn 0x0, register 4, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+pci_get_sizedev_fn 0x0, register 5, read-only SO, ignoring it
+addr was 0x0, size was 0x0
+PCI: 01:00 [10de/00a0]
+PCI: pci_scan_bus returning with max=01
+PCI: pci_scan_bus returning with max=01
+done
+Acer sizeram pcidev 00005d68
+0x6c 0xf7d2a83d, size 0x8000000
+0x70 0xf7c1a82d, size 0x4000000
+0x74 0xf7d2a82d, size 0x8000000
+size in 0x6c is 0x10000000
+size in 0x70 is 0x8000000
+size in 0x74 is 0x10000000
+totalram: 640M
+Initializing CPU #0
+Updating microcode
+microcode_info: sig = 0x00000683 pf=0x00000010 rev = 0x00000000
+Enabling cache...
+Setting variable MTRR 0, base:    0MB, range:  512MB, type: WB
+Setting variable MTRR 1, base:  512MB, range:  128MB, type: WB
+Setting variable MTRR 2, base:  640MB, range:    0MB, type: UC
+done.
+
+Max cpuid index    : 3
+Vendor ID          : GenuineIntel
+Processor Type     : 0x00
+Processor Family   : 0x06
+Processor Model    : 0x08
+Processor Mask     : 0x00
+Processor Stepping : 0x03
+Feature flags      : 0x0387fbff
+
+Cache/TLB descriptor values: 1 reads required
+Desc 0x01 : Instr TLB: 4KB pages, 4-way set assoc, 32 entries
+Desc 0x02 : Instr TLB: 4MB pages, fully assoc, 2 entries
+Desc 0x03 : Data TLB: 4KB pages, 4-way set assoc, 64 entries
+Desc 0x00 : null
+Desc 0x00 : null
+Desc 0x00 : null
+Desc 0x00 : null
+Desc 0x00 : null
+Desc 0x00 : null
+Desc 0x00 : null
+Desc 0x00 : null
+Desc 0x82 : L2 Unified cache: 256K bytes, 8-way set assoc, 32 byte line size
+Desc 0x08 : Inst cache: 16K bytes, 4-way set assoc, 32 byte line size
+Desc 0x04 : Data TLB: 4MB pages, 4-way set assoc, 8 entries
+Desc 0x0c : Data cache: 16K bytes, 2-way or 4-way set assoc, 32 byte line size
+
+op: 0x03  eax:0x00000000  ebx:0x00000000  ecx:0x4744fe9c  edx:0x0001a723
+
+
+MTRR check
+Fixed MTRRs   : Enabled
+Variable MTRRs: Enabled
+
+Configuring L2 cache...CPU signature of 680 so no L2 cache configuration
+Enable Cache
+done.
+Disabling local apic...done.
+CPU #0 Initialized
+Allocating PCI resources...COMPUTE_ALLOCATE: do IO
+compute_allocate_io: base 0x1000
+compute_allocate_io: base 0x1000
+BUS 1: set iolimit to 0xfff
+BUSIO: done Bridge Bus 0x1, iobase now 0x1000
+DEVIO: Bus 0x0, devfn 0x30, reg 0x0: iosize 0x100
+-->set base to 0x1000
+DEVIO: Bus 0x0, devfn 0x80, reg 0x4: iosize 0x10
+-->set base to 0x1100
+BUS 0: set iolimit to 0x1fff
+COMPUTE_ALLOCATE: do MEM
+compute_allocate_mem: base 0x80000000
+compute_allocate_mem: base 0x80000000
+DEVMEM: Bus 0x1, devfn 0x0, reg 0x0: memsize 0x1000000
+-->set base to 0x80000000
+BUS 1: set memlimit to 0x80ffffff
+BUSMEM: Bridge Bus 0x1,membase now 0x81000000
+DEVMEM: Bus 0x0, devfn 0x30, reg 0x1: memsize 0x1000
+-->set base to 0x81000000
+DEVMEM: Bus 0x0, devfn 0xa0, reg 0x0: memsize 0x1000
+-->set base to 0x81001000
+BUS 0: set memlimit to 0x810fffff
+COMPUTE_ALLOCATE: do PREFMEM
+Compute_allocate_prefmem: base 0x81100000
+Compute_allocate_prefmem: base 0x81100000
+DEVPREFMEM: Bus 0x1, devfn 0x0, reg 0x1: prefmemsize 0x2000000
+-->set base to 0x82000000
+BUS 1: set prefmemlimit to 0x83ffffff
+BUSPREFMEM: Bridge Bus 0x1, prefmem base now 0x84000000
+BUS 0: set prefmemlimit to 0x83ffffff
+ASSIGN RESOURCES, bus 0
+Bus 0x0 iobase to 0x1000 iolimit 0xfff
+Bus 0x0 membase to 0x80000000 memlimit 0x80ffffff
+Bus 0x0 prefmembase to 0x81100000 prefmemlimit 0x83ffffff
+Bus 0x0 devfn 0x30 reg 0x0 base to 0x1001
+Bus 0x0 devfn 0x30 reg 0x1 base to 0x81000000
+Bus 0x0 devfn 0x80 reg 0x4 base to 0x1101
+Bus 0x0 devfn 0xa0 reg 0x0 base to 0x81001000
+Bus 0x1 devfn 0x0 reg 0x0 base to 0x80000000
+Bus 0x1 devfn 0x0 reg 0x1 base to 0x82000000
+done.
+Enabling PCI resourcess...DEV Set command bus 0x0 devfn 0x0 to 0x6
+DEV Set command bus 0x0 devfn 0x8 to 0x7
+DEV Set command bus 0x0 devfn 0x30 to 0x3
+DEV Set command bus 0x0 devfn 0x38 to 0xf
+DEV Set command bus 0x0 devfn 0x80 to 0x1
+DEV Set command bus 0x0 devfn 0x88 to 0x0
+DEV Set command bus 0x0 devfn 0xa0 to 0x2
+DEV Set command bus 0x1 devfn 0x0 to 0x2
+done.
+intel_mainboard_fixup()
+Zeroing PCI IRQ settings...done.
+Copying IRQ routing tables...done.
+SET THAT BIT!
+Jumping to linuxbiosmain()...
+
+Welcome to start32, the open sourced starter.
+This space will eventually hold more diagnostic information.
+
+January 2000, James Hendricks, Dale Webster, and Ron Minnich.
+Version 0.1
+
+Gunzip setup
+output data is 0x00100000
+Gunzipping boot code
+    46:fill_inbuf() - ram buffer:0x0000e0ac
+    73:fill_inbuf() - nvram:0x00010000  block_count:0
+flush 0x00100000 count 0x00008000
+flush 0x00108000 count 0x00008000
+flush 0x00110000 count 0x00008000
+flush 0x00118000 count 0x00008000
+    73:fill_inbuf() - nvram:0x00020000  block_count:1
+flush 0x00120000 count 0x00008000
+flush 0x00128000 count 0x00008000
+flush 0x00130000 count 0x00008000
+    73:fill_inbuf() - nvram:0x00030000  block_count:2
+flush 0x00138000 count 0x00008000
+flush 0x00140000 count 0x00008000
+flush 0x00148000 count 0x00008000
+flush 0x00150000 count 0x00008000
+    73:fill_inbuf() - nvram:0x00040000  block_count:3
+flush 0x00158000 count 0x00008000
+flush 0x00160000 count 0x00008000
+flush 0x00168000 count 0x00008000
+    73:fill_inbuf() - nvram:0x00050000  block_count:4
+flush 0x00170000 count 0x00008000
+flush 0x00178000 count 0x00008000
+flush 0x00180000 count 0x00008000
+flush 0x00188000 count 0x00008000
+flush 0x00190000 count 0x00008000
+flush 0x00198000 count 0x00008000
+flush 0x001a0000 count 0x00008000
+    73:fill_inbuf() - nvram:0x00060000  block_count:5
+flush 0x001a8000 count 0x00008000
+flush 0x001b0000 count 0x00008000
+flush 0x001b8000 count 0x00008000
+flush 0x001c0000 count 0x00008000
+    73:fill_inbuf() - nvram:0x00070000  block_count:6
+flush 0x001c8000 count 0x00008000
+flush 0x001d0000 count 0x00005720
+<991> command line - [root=/dev/hda5 console=ttyS0,115200 floppy=nodma single]
+Jumping to boot code
+Linux version 2.4.9 (root@localhost.localdomain) (gcc version 2.96 20000731 (Red Hat Linux 7.1 2.96-81)) #2 Sun Oct 21 13:47:17 MST 2001
+BIOS-provided physical RAM map:
+ BIOS-e801: 0000000000000000 - 000000000009f000 (usable)
+ BIOS-e801: 0000000000100000 - 0000000027f00000 (usable)
+On node 0 totalpages: 163584
+zone(0): 4096 pages.
+zone(1): 159488 pages.
+zone(2): 0 pages.
+Kernel command line: root=/dev/hda5 console=ttyS0,115200 floppy=nodma single
+Initializing CPU#0
+Detected 400.896 MHz processor.
+Calibrating delay loop... 799.53 BogoMIPS
+Memory: 642048k/654336k available (495k kernel code, 11900k reserved, 165k data, 172k init, 0k highmem)
+Dentry-cache hash table entries: 131072 (order: 8, 1048576 bytes)
+Inode-cache hash table entries: 65536 (order: 7, 524288 bytes)
+Mount-cache hash table entries: 16384 (order: 5, 131072 bytes)
+Buffer-cache hash table entries: 65536 (order: 6, 262144 bytes)
+Page-cache hash table entries: 262144 (order: 8, 1048576 bytes)
+CPU: L1 I cache: 16K, L1 D cache: 16K
+CPU: L2 cache: 256K
+Intel machine check architecture supported.
+Intel machine check reporting enabled on CPU#0.
+CPU serial number disabled.
+CPU: Intel Pentium III (Coppermine) stepping 03
+Enabling fast FPU save and restore... done.
+Enabling unmasked SIMD FPU exception support... done.
+Checking 'hlt' instruction... OK.
+POSIX conformance testing by UNIFIX
+mtrr: v1.40 (20010327) Richard Gooch (rgooch@atnf.csiro.au)
+mtrr: detected mtrr type: Intel
+PCI: Using configuration type 1
+PCI: Probing PCI hardware
+Unknown bridge resource 0: assuming transparent
+Linux NET4.0 for Linux 2.4
+Based upon Swansea University Computer Society NET3.039
+IA-32 Microcode Update Driver: v1.08 <tigran@veritas.com>
+Starting kswapd v1.8
+pty: 256 Unix98 ptys configured
+Serial driver version 5.05c (2001-07-08) with MANY_PORTS SHARE_IRQ SERIAL_PCI enabled
+ttyS00 at 0x03f8 (irq = 4) is a 16550A
+block: 128 slots per queue, batch=16
+Uniform Multi-Platform E-IDE driver Revision: 6.31
+ide: Assuming 33MHz system bus speed for PIO modes; override with idebus=xx
+ALI15X3: IDE controller on PCI bus 00 dev 80
+PCI: No IRQ known for interrupt pin A of device 00:10.0. Please try using pci=biosirq.
+ALI15X3: chipset revision 195
+ALI15X3: not 100% native mode: will probe irqs later
+ALI15X3: simplex device: DMA will fail!!
+ALI15X3: simplex device:  DMA disabled
+ide0: ALI15X3 Bus-Master DMA disabled (BIOS)
+ALI15X3: simplex device:  DMA disabled
+ide1: ALI15X3 Bus-Master DMA disabled (BIOS)
+hd0: C/H/S=0/0/0 from BIOS ignored
+jamming drive present for hda
+hda: IBM-DTLA-307030, ATA DISK drive
+ide: Assuming 33MHz system bus speed for PIO modes; override with idebus=xx
+hdc: CREATIVE CD5233E, ATAPI CD/DVD-ROM drive
+ide0 at 0x1f0-0x1f7,0x3f6 on irq 14
+ide1 at 0x170-0x177,0x376 on irq 15
+ide1: probed IRQ 15 failed, using default.
+hda: 60036480 sectors (30739 MB) w/1916KiB Cache, CHS=59560/16/63
+Partition check:
+ hda: [PTBL] [3737/255/63] hda1 hda2 < hda5 hda6 >
+VFS: Mounted root (ext2 filesystem) readonly.
+Freeing unused kernel memory: 172k freed
+modprobe: modprobe: Can't locate module char-major-4
+INIT: version 2.78 booting
+			Welcome to Red Hat Linux
+		Press 'I' to enter interactive startup.
+Mounting proc filesystem:  [  OK  ]
+Configuring kernel parameters:  [  OK  ]
+modprobe: modprobe: Can't locate module char-major-4
+Setting clock  (localtime): Sun Oct 21 14:29:59 MST 2001 [  OK  ]
+Activating swap partitions:  [  OK  ]
+Setting hostname localhost.localdomain:  [  OK  ]
+Checking root filesystem
+/: clean, 120199/2191168 files, 608787/4377704 blocks
+[/sbin/fsck.ext2 -- /] fsck.ext2 -a /dev/hda5 
+[  OK  ]
+Remounting root filesystem in read-write mode:  [  OK  ]
+Finding module dependencies:  [  OK  ]
+Checking filesystems
+/boot: clean, 33/14056 files, 9221/56196 blocks
+Checking all file systems.
+[/sbin/fsck.ext2 -- /boot] fsck.ext2 -a /dev/hda1 
+[  OK  ]
+Mounting local filesystems:  [  OK  ]
+Turning on user and group quotas for local filesystems:  [  OK  ]
+Enabling swap space:  [  OK  ]
+sh-2.04# ls 
+bin   core  etc   lib	      misc  mtd_utils  proc  sbin  usr
+boot  dev   home  lost+found  mnt   opt        root  tmp   var
+sh-2.04# poweroff
+INIT: Switching to runlevel: 0
+sh-2.04# INIT: Sending processes the TERM signal
+INIT: Starting killall:  [  OK  ]
+Sending all processes the TERM signal... 
+Sending all processes the KILL signal... 
+Syncing hardware clock to system time modprobe: modprobe: Can't locate module char-major-4
+
+Turning off swap:  
+Turning off quotas:  
+Unmounting file systems:  
+Unmounting proc file system:  
+Halting system...
+ifdown: Power down.
+socket: Address family not supported by protocol
+
+
+If it doesn't work: 
+
+ 	Please email the dump from your terminal 
+	to linuxbios@lanl.gov with a description of your problem. 
+
+
+
+
+
+
+

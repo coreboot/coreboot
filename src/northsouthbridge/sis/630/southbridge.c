@@ -44,14 +44,18 @@ void nvram_on()
 	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, (void *)NULL);
 	if (pcidev != NULL) {
 		/* Enable FFF80000 to FFFFFFFF decode */
-		pci_write_config_byte(pcidev, 0x40, 0x3);
+		pci_write_config_byte(pcidev, 0x40, 0x03);
 		/* Flash can be flashed */
 		pci_write_config_byte(pcidev, 0x45, 0x40);
 		printk(KERN_INFO "Enabled in SIS 503 regs 0x40 and 0x45\n");
 
 	}
 	printk(KERN_INFO "Now try to turn off shadow\n");
-	/* turn off nvram shadow in 0xc0000 ~ 0xfffff */
+
+#ifdef USE_DOC_MIL
+	/* turn off nvram shadow in 0xc0000 ~ 0xfffff, i.e. accessing segment C - F
+	   is actually to the DRAM not NVRAM. For 512KB NVRAM case, this one should be
+	   disabled */
 	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_630, (void *)NULL);
 	printk(KERN_INFO "device for SiS 630 is 0x%x\n", pcidev);
 	if (pcidev != NULL) {
@@ -62,6 +66,7 @@ void nvram_on()
 		printk(KERN_INFO "Shadow memory disabled in SiS 630\n");
 
 	}
+#endif
 }
 
 // simple fixup (which we hope can leave soon) for the sis southbridge part

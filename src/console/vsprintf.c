@@ -15,16 +15,6 @@
 #define isdigit(c)	((c) >= '0' && (c) <= '9')
 #define is_digit isdigit
 #define isxdigit(c)	(((c) >= '0' && (c) <= '9') || ((c) >= 'a' && (c) <= 'f') || ((c) >= 'A' && (c) <= 'F'))
-#define islower(c)	((c) >= 'a' && (c) <= 'z')
-#define toupper(c) __toupper(c)
-
-static inline unsigned char __toupper(unsigned char c)
-{
-        if (islower(c))
-                c -= 'a'-'A';
-        return c;
-}
-
 
 unsigned long simple_strtoul(const char *cp,char **endp,unsigned int base)
 {

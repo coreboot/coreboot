@@ -320,6 +320,10 @@ void hardwaremain(int boot_complete)
 	/* make certain we are the only cpu running in linuxBIOS */
 	wait_for_other_cpus();
 
+#if CONFIG_VGABIOS == 1
+	printk_debug("DO THE VGA BIOS\n");
+	do_vgabios();
+#endif
 	/* Now that we have collected all of our information
 	 * write our configuration tables.
 	 */

@@ -75,7 +75,7 @@ static void real_mode_switch_call_vga(void)
       (
        /* Now that our memcpy is done we can get to 16 bit code
 	* segment.  This configures CS properly for real mode. */
-       "    ljmp $0x28, $0x1000-(real_mode_switch_end - __rms_16bit) \n"
+       "    ljmp $0x28, $__rms_16bit\n"
        "__rms_16bit:                 \n"
        ".code16                      \n" /* 16 bit code from here on... */
 
@@ -95,7 +95,7 @@ static void real_mode_switch_call_vga(void)
        "    movl %eax, %cr0        \n"
 
        /* Now really going into real mode */
-       "    ljmp $0, $0x1000-(real_mode_switch_end - __rms_real) \n"
+       "    ljmp $0,  $__rms_real \n"
        "__rms_real:                  \n"
 
        /* Setup a stack */
@@ -172,6 +172,7 @@ do_vgabios(void)
   struct pci_dev *dev;
   unsigned int rom = 0;
   unsigned char *buf;
+  unsigned int size = 64*1024;
   int i;
 
   dev = pci_find_class(PCI_CLASS_DISPLAY_VGA <<8, NULL);
@@ -183,17 +184,20 @@ do_vgabios(void)
   printk_debug("found VGA: vid=%ux, did=%ux\n", dev->vendor, dev->device);
   pci_read_config_dword(dev, PCI_ROM_ADDRESS, &rom);
   // paranoia
-  rom &= ~1;
+  rom = 0xf0000000;
   pci_write_config_dword(dev, PCI_ROM_ADDRESS, rom|1);
   printk_debug("rom base, size: %x\n", rom);
   buf = (unsigned char *) rom;
-  memcpy((void *) 0xc0000, buf, 64*1024);
+  if ((buf[0] == 0x55) && (buf[1] = 0xaa)) {
+  	memcpy((void *) 0xc0000, buf, size);
 
-  for(i = 0; i < 16; i++)
-    printk_debug("0x%x ", buf[i]);
-  pci_write_config_dword(dev, PCI_ROM_ADDRESS, rom);
-  // check signature here later!
-  real_mode_switch_call_vga();
+  	for(i = 0; i < 16; i++)
+    		printk_debug("0x%x ", buf[i]);
+  	// check signature here later!
+  	real_mode_switch_call_vga();
+  } else 
+	printk_debug("BAD SIGNATURE 0x%x 0x%x\n", buf[0], buf[1]);
+  pci_write_config_dword(dev, PCI_ROM_ADDRESS, 0);
 }
 
 #endif // (CONFIG_VGABIOS == 1)

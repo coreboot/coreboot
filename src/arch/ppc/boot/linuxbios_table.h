@@ -7,8 +7,6 @@ struct mem_range;
 
 /* This file holds function prototypes for building the linuxbios table. */
 unsigned long write_linuxbios_table(
-	unsigned long *processor_map, 
-	struct mem_range *ram,
 	unsigned long low_table_start, unsigned long low_table_end,
 	unsigned long rom_table_start, unsigned long rom_table_end);
 

@@ -32,6 +32,7 @@ uses STACK_SIZE
 uses HEAP_SIZE
 uses CONFIG_BRIQ_750FX 
 uses CONFIG_BRIQ_7400
+uses CONFIG_SYS_CLK_FREQ
 
 uses MAINBOARD
 uses MAINBOARD_VENDOR
@@ -89,6 +90,11 @@ default ROM_SIZE=1048576
 # Set stack and heap sizes (stage 2)
 default STACK_SIZE=0x10000
 default HEAP_SIZE=0x10000
+
+##
+## System clock
+##
+default CONFIG_SYS_CLK_FREQ=33
 
 # Sandpoint Demo Board
 ## Base of ROM

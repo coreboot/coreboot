@@ -3,6 +3,7 @@
 
 #include "ppc.h"
 #include "ppcreg.h"
+#include <device/device.h>
 #include <console/console.h>
 
 void display_cpuid(struct device *cpu)

@@ -129,7 +129,7 @@ void lb_strings(struct lb_header *header)
 }
 
 void lb_memory_range(struct lb_memory *mem,
-	uint32_t type, uint64_t start, uint64_t size)
+	uint32_t type, unsigned long start, unsigned long size)
 {
 	int entries;
 	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);

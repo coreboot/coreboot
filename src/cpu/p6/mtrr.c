@@ -28,7 +28,7 @@
 #ifndef lint
 static char rcsid[] = "$Id$";
 #endif
-
+#define DEBUG
 #include <cpu/p6/msr.h>
 #include <cpu/p6/mtrr.h>
 #include <printk.h>
@@ -144,8 +144,9 @@ void intel_set_var_mtrr(unsigned int reg, unsigned long base, unsigned long size
 		   relevant mask register to disable a range. */
 		wrmsr (MTRRphysMask_MSR (reg), 0, 0);
 	} else {
+		/* Bit 32-35 of MTRRphysMask should be set to 1 */
 		wrmsr (MTRRphysBase_MSR (reg), base | type, 0);
-		wrmsr (MTRRphysMask_MSR (reg), ~(size - 1) | 0x800, 0);
+		wrmsr (MTRRphysMask_MSR (reg), ~(size - 1) | 0x800, 0x0F);
 	}
 
 	// turn cache back on. 
@@ -156,7 +157,7 @@ void intel_set_var_mtrr(unsigned int reg, unsigned long base, unsigned long size
 }
 
 /* fms: find most sigificant bit set, stolen from Linux Kernel Source. */
-static __inline__ int fms(int x)
+static __inline__ unsigned int fms(unsigned int x)
 {
 	int r;
 

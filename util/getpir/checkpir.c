@@ -3,15 +3,10 @@
    Aug 26 2001 , Nikolai Vladychevski, <niko@isl.net.mx>
 */
 
-#include <unistd.h>
 #include <stdio.h>
-#include <string.h>
 
 #include <device/pci.h>
-#include <pirq_routing.h>
-
-#define PIRQ_SIGNATURE  (('$' << 0) + ('P' << 8) + ('I' << 16) + ('R' << 24))
-#define PIRQ_VERS 0x0100
+#include <arch/pirq_routing.h>
 
 struct irq_info se_arr[50];
 struct irq_routing_table *rt;

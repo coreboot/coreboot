@@ -36,6 +36,38 @@ static char rcsid[] = "$Id$";
 
 #define TTYS0_DIV	(115200/TTYS0_BAUD)
 
+#ifdef PYRO_SERIAL
+
+/* experimental serial read stuffs */
+int iskey(void) {
+	if( inb(TTYS0_LSR) & 0x01)
+		return(1);
+
+	return(0);
+}
+
+char ttys0_rx_char(void) {
+	char result;
+
+	while(!(inb(TTYS0_LSR) & 0x01));
+
+	result = inb(TTYS0_RBR);
+	return(result);
+}
+
+void ttys0_rx_line(char *buffer, int *len) {
+	int pos=0;
+	char chargot=0;
+
+	while(chargot != '\r' && chargot != '\n' && pos< *len) {
+		chargot = ttys0_rx_char();
+		buffer[pos++] = chargot;
+	}
+
+	*len = pos-1;
+}
+
+#endif
 void ttys0_init(void)
 {
 	/* disable interrupts */

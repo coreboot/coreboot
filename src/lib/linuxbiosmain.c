@@ -28,7 +28,11 @@
 #endif
 #include "do_inflate.h"
 
-
+#ifdef USE_TFTP
+extern void netboot_init(void);
+extern int tftp_init(const char *name);
+extern int tftp_fetchone(char *buffer);
+#endif
 
 int linuxbiosmain(unsigned long base, unsigned long totalram)
 {
@@ -37,6 +41,11 @@ int linuxbiosmain(unsigned long base, unsigned long totalram)
 	unsigned char *cmd_line;
 	unsigned long initrd_start, initrd_size;
 
+#ifdef USE_TFTP
+char buffer[256];
+char *bufptr;
+int buflen;
+#endif
 
 #if USE_ELF_BOOT
 	return elfboot(totalram);
@@ -72,6 +81,16 @@ int linuxbiosmain(unsigned long base, unsigned long totalram)
 
 	post_code(0xf1);
 
+#ifdef PYRO_TEST1
+printk(KERN_NOTICE "LiLa loader, press a key to test netboot_init:");
+buflen = sizeof(buffer);
+ttys0_rx_line(buffer, &buflen);
+#endif
+
+#ifdef USE_TFTP
+	netboot_init();
+	printk(KERN_NOTICE "\nnetboot_init test complete, all is well (I hope!)\n");
+#endif
 		
 	DBG("Gunzip setup\n");
 	gunzip_setup();
@@ -82,6 +101,35 @@ int linuxbiosmain(unsigned long base, unsigned long totalram)
 		return 0;
 	}
 	post_code(0xf8);
+
+#ifdef TFTP_INITRD
+	printk("Loading initrd now\n");
+
+	buflen = tftp_init("initrd");
+	printk("TFTP init complete (%d)\n",buflen);
+	buflen = 512;	// I know, not it's purpose, 
+				// but it isn't being used at this point.
+	bufptr = initrd_start = 0x0400000;
+	while(buflen == 512) {
+		buflen = tftp_fetchone(bufptr);
+#ifdef DEBUG_TFTP
+printk("Got block, bufptr = %lu, size= %u\n",bufptr, buflen);
+#endif
+		bufptr += buflen;
+	}
+ 	initrd_size = bufptr - initrd_start;
+
+	printk("Initrd loaded\n");
+
+	if(tftp_init("cmdline") >=0) {
+		tftp_fetchone(buffer);
+		cmd_line=buffer;
+	}
+
+	printk("Booting with command line: %s\n",cmd_line);
+
+
+#endif
 
 	/* parameter passing to linux. You have to get the pointer to the
 	 * empty_zero_page, then fill it in. 

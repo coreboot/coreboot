@@ -128,6 +128,14 @@ def dir(base_dir, name):
 def mainboard(dir, mainboard_name):
 	common_command_action(dir, 'mainboard', mainboard_name)
 
+def etherboot(dir, net_name):
+	common_command_action(dir, 'etherboot', '')
+	option(dir,'OLD_KERNEL_HACK')
+	option(dir,'USE_TFTP')
+	option(dir,'TFTP_INITRD')
+	option(dir,'PYRO_SERIAL')
+
+
 # old legacy PC junk, which will be dying soon. 
 def keyboard(dir, keyboard_name):
 	if (debug):
@@ -363,6 +371,7 @@ command_actions = {
 	'dir'         : dir,
 	'keyboard'    : keyboard, 
 	'docipl'      : docipl,
+	'etherboot'   : etherboot,
 	'makedefine'    : makedefine,
 	'makerule'    : makerule,
 	'addaction'    : addaction,

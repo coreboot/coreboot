@@ -1,0 +1,91 @@
+How I added the SIS900 card to Etherboot
+
+Author: Marty Connor (mdc@thinguin.org)
+
+Date:   25 Febrary 2001
+
+Description:
+
+This file is intended to help people who want to write an Etherboot
+driver or port another driver to Etherboot.  It is a starting point.
+Perhaps someday I may write a more detailed description of writing an
+Etherboot driver. This text should help get people started, and
+studying sis900.[ch] should help show the basic structure and
+techniques involved in writing and Etherboot driver.
+
+***********************************************************************
+
+0. Back up all the files I need to modify:
+
+cd etherboot-4.7.20/src
+cp Makefile Makefile.orig
+cp config.c config.c.orig
+cp pci.h pci.h.orig
+cp NIC NIC.orig
+cp cards.h cards.h.orig
+
+1. Edit src/Makefile to add SIS900FLAGS to defines
+
+SIS900FLAGS=	       	-DINCLUDE_SIS900
+
+2. edit src/pci.h to add PCI signatures for card
+
+#define PCI_VENDOR_ID_SIS         	0x1039
+#define PCI_DEVICE_ID_SIS900     	0x0900   
+#define PCI_DEVICE_ID_SIS7016    	0x7016  
+
+3. Edit src/config.c to add the card to the card probe list
+
+#if defined(INCLUDE_NS8390)  || defined(INCLUDE_EEPRO100)  || 
+    defined(INCLUDE_LANCE)   || defined(INCLUDE_EPIC100)   || 
+    defined(INCLUDE_TULIP)   || defined(INCLUDE_OTULIP)    ||
+    defined(INCLUDE_3C90X)   || defined(INCLUDE_3C595)     ||
+    defined(INCLUDE_RTL8139) || defined(INCLUDE_VIA_RHINE) || 
+    defined(INCLUDE_SIS900)  || defined(INCLUDE_W89C840)
+
+... and ...
+
+#ifdef INCLUDE_SIS900
+       { PCI_VENDOR_ID_SIS,     	PCI_DEVICE_ID_SIS900,
+         "SIS900", 0, 0, 0, 0},
+       { PCI_VENDOR_ID_SIS,     	PCI_DEVICE_ID_SIS7016,
+	 "SIS7016", 0, 0, 0, 0},
+#endif
+
+... and ...
+
+#ifdef INCLUDE_SIS900
+	{ "SIS900", sis900_probe, pci_ioaddrs },	
+#endif
+
+4. Edit NIC to add sis900 and sis7016 to NIC list
+
+# SIS 900 and SIS 7016
+sis900		sis900		0x1039,0x0900
+sis7016		sis900		0x1039,0x7016
+
+5. Edit cards.h to add sis900 probe routine declaration
+
+#ifdef	INCLUDE_SIS900
+extern struct nic	*sis900_probe(struct nic *, unsigned short *
+                        PCI_ARG(struct pci_device *));
+#endif
+
+***********************************************************************
+
+At this point, you can begin creating your driver source file.  See
+the "Writing and Etherboot Driver" section of the Etherboot
+documentation for some hints.  See the skel.c file for a starting
+point.  If there is a Linux driver for the card, you may be able to
+use that.  Copy and learn from existing Etherboot drivers (this is GPL
+/ Open Source software!).
+
+Join the etherboot-developers and etherboot-users mailing lists
+(information is on etherboot.sourceforge.net) for information and
+assistance. We invite more developers to help improve Etherboot.
+
+Visit the http://etherboot.sourceforge.net, http://thinguin.org, 
+http://rom-o-matic.net, and http://ltsp.org sites for information and
+assistance.
+
+Enjoy.

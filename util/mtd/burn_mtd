@@ -1,0 +1,34 @@
+#!/bin/bash
+# arg1 is the linuxbios.strip to use. default is linuxbios.strip
+# arg2 is the stripped, gzipp'ed kernel. Default is vmlinux.bin.gz
+v=`uname -r`
+rmmod doc2001
+rmmod docprobe
+
+if [ $1x = "x" ]; then
+  linuxbios=linuxbios.strip
+else
+  linuxbios=$1
+fi
+
+if [ $2x = "x" ]; then
+  linux=vmlinux.bin.gz
+else
+  linux=$2
+fi
+../flash/flash_rom
+
+insmod /lib/modules/${v}/kernel/drivers/mtd/doc2001.o
+insmod /lib/modules/${v}/kernel/drivers/mtd/docprobe.o
+
+dd conv=sync bs=65536 if=${linux} of=vmlinux.bin.gz.block
+dd conv=sync bs=63k if=${linuxbios} of=linuxbios.block
+
+./erase /dev/mtd0 0 128
+dd if=docipl of=/dev/mtd0 
+dd if=docipl of=/dev/mtd0 seek=1
+dd if=linuxbios.block of=/dev/mtd0 seek=2
+dd if=vmlinux.bin.gz.block of=/dev/mtd0 seek=128
+
+rmmod doc2001
+rmmod docprobe

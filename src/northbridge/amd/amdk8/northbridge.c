@@ -9,7 +9,7 @@
 #include <string.h>
 #include <bitops.h>
 #include <cpu/cpu.h>
-#include "chip.h"
+#include "root_complex/chip.h"
 #include "northbridge.h"
 #include "amdk8.h"
 
@@ -488,6 +488,11 @@ static struct pci_driver mcf0_driver __pci_driver = {
 };
 
 
+struct chip_operations northbridge_amd_amdk8_ops = {
+	CHIP_NAME("AMD K8 Northbridge")
+	.enable_dev = 0,
+};
+
 static void pci_domain_read_resources(device_t dev)
 {
 	struct resource *resource;
@@ -712,7 +717,7 @@ static struct device_operations cpu_bus_ops = {
 	.scan_bus         = cpu_bus_scan,
 };
 
-static void enable_dev(struct device *dev)
+static void root_complex_enable_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
@@ -724,7 +729,7 @@ static void enable_dev(struct device *dev)
 	}
 }
 
-struct chip_operations northbridge_amd_amdk8_ops = {
-	CHIP_NAME("AMD K8 Northbridge")
-	.enable_dev = enable_dev,
+struct chip_operations northbridge_amd_amdk8_root_complex_ops = {
+	CHIP_NAME("AMD K8 Root Complex")
+	.enable_dev = root_complex_enable_dev,
 };

@@ -144,11 +144,8 @@ static void coherent_ht_mainboard(unsigned cpus)
 
 #include "northbridge/amd/amdk8/raminit.c"
 
-#define CONNECTION_0_1 UP
-#define CONNECTION_0_2 ACROSS
-#define CONNECTION_1_3 DOWN
-
 #include "northbridge/amd/amdk8/coherent_ht.c"
+
 #include "sdram/generic_sdram.c"
 
 #include "resourcemap.c" /* quartet does not want the default */

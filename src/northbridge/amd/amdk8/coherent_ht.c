@@ -20,33 +20,6 @@
 #include "arch/romcc_io.h"
 #include "amdk8.h"
 
-/*
- * Until we have a completely dynamic setup we want
- * to be able to map different cpu graphs.
- */
-
-#define UP	0x00
-#define ACROSS	0x20
-#define DOWN	0x40
-
-/* 
- * set some default values. These are used if they are not
- * differently defined in the motherboard's auto.c file.
- * See src/mainboard/amd/quartet/auto.c for an example.
- */
-
-#ifndef CONNECTION_0_1 
-#define CONNECTION_0_1 ACROSS
-#endif
-
-#ifndef CONNECTION_0_2 
-#define CONNECTION_0_2 UP
-#endif
-
-#ifndef CONNECTION_1_3 
-#define CONNECTION_1_3 UP
-#endif
-
 /* when generating a temporary row configuration we
  * don't want broadcast to be enabled for that node.
  */
@@ -67,6 +40,34 @@ typedef int bool;
 
 #define TRUE  (-1)
 #define FALSE (0)
+
+static u8 link_to_register(int ldt)
+{
+	/*
+	 * [ 0: 3] Request Route
+	 *     [0] Route to this node
+	 *     [1] Route to Link 0
+	 *     [2] Route to Link 1
+	 *     [3] Route to Link 2
+	 */
+
+	if (ldt&0x08) return 0x40;
+	if (ldt&0x04) return 0x20;
+	if (ldt&0x02) return 0x00;
+	
+	/* we should never get here */
+	print_debug("Unknown Link\n");
+	return 0;
+}
+
+static int link_connection(int src, int dest)
+{
+	/* we generate the needed link information from the rows
+	 * by taking the Request Route of the according row.
+	 */
+	
+	return generate_row(src, dest, CONFIG_MAX_CPUS) & 0x0f;
+}
 
 static void disable_probes(void)
 {
@@ -367,7 +368,7 @@ static struct setup_smp_result setup_smp(void)
 	/* Setup and check a temporary connection to node 1 */
 	setup_temp_row(0, 1, result.cpus);
 	
-	if (!check_connection(0, 7, CONNECTION_0_1)) {
+	if (!check_connection(0, 7, link_to_register(link_connection(0,1)))) {
 		print_debug("No connection to Node 1.\r\n");
 		clear_temp_row(0);	/* delete temp connection */
 		setup_uniprocessor();	/* and get up working     */
@@ -376,8 +377,7 @@ static struct setup_smp_result setup_smp(void)
 	}
 
 	/* We found 2 nodes so far */
-	result.needs_reset = 
-		optimize_connection(NODE_HT(0), 0x80 + CONNECTION_0_1, NODE_HT(7), 0x80 + CONNECTION_0_1);
+	
 	setup_node(0, result.cpus);	/* Node 1 is there. Setup Node 0 correctly */
 	setup_remote_node(1, result.cpus);  /* Setup the routes on the remote node */
         rename_temp_node(1);    /* Rename Node 7 to Node 1  */
@@ -385,13 +385,17 @@ static struct setup_smp_result setup_smp(void)
   	
 	clear_temp_row(0);	/* delete temporary connection */
 	
+	result.needs_reset = optimize_connection(
+		NODE_HT(0), 0x80 + link_to_register(link_connection(0,1)),
+		NODE_HT(1), 0x80 + link_to_register(link_connection(1,0)) );
+	
 #if CONFIG_MAX_CPUS > 2
 	result.cpus=4;
 	
 	/* Setup and check temporary connection from Node 0 to Node 2 */
 	setup_temp_row(0,2, result.cpus);
 
-	if (!check_connection(0, 7, CONNECTION_0_2)) {
+	if (!check_connection(0, 7, link_to_register(link_connection(0,2))) ) {
 		print_debug("No connection to Node 2.\r\n");
 		clear_temp_row(0);	 /* delete temp connection */
 		result.cpus = 2;
@@ -405,15 +409,13 @@ static struct setup_smp_result setup_smp(void)
 	setup_temp_row(0,1, result.cpus); /* temp. link between nodes 0 and 1 */
 	setup_temp_row(1,3, result.cpus); /* temp. link between nodes 1 and 3 */
 
-	if (!check_connection(1, 7, CONNECTION_1_3)) {
+	if (!check_connection(1, 7, link_to_register(link_connection(1,3)))) {
 		print_debug("No connection to Node 3.\r\n");
 		clear_temp_row(0);	 /* delete temp connection */
 		clear_temp_row(1);	 /* delete temp connection */
 		result.cpus = 2;
 		return result;
 	}
-
-#warning "FIXME optimize the physical connections"
 
 	/* We found 4 nodes so far. Now setup all nodes for 4p */
 
@@ -435,6 +437,19 @@ static struct setup_smp_result setup_smp(void)
 	clear_temp_row(1);
 	clear_temp_row(2);
 	clear_temp_row(3);
+
+	/* optimize physical connections - by LYH */
+	result.needs_reset = optimize_connection(
+		NODE_HT(0), 0x80 + link_to_register(link_connection(0,2)),
+		NODE_HT(2), 0x80 + link_to_register(link_connection(2,0)) );
+
+	result.needs_reset = optimize_connection(
+		NODE_HT(1), 0x80 + link_to_register(link_connection(1,3)),
+		NODE_HT(3), 0x80 + link_to_register(link_connection(3,1)) );
+
+	result.needs_reset = optimize_connection(
+		NODE_HT(2), 0x80 + link_to_register(link_connection(2,3)),
+		NODE_HT(3), 0x80 + link_to_register(link_connection(3,2)) );
 
 #endif
 	print_debug_hex8(result.cpus);

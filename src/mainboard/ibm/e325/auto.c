@@ -120,8 +120,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "northbridge/amd/amdk8/raminit.c"
 
-#define CONNECTION_0_1 DOWN
-
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
 #include "mainboard/ibm/e325/resourcemap.c"

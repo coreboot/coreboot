@@ -3,3 +3,4 @@ option INTEL_PPRO_MTRR
 object microcode.o
 object mpspec.o
 object mtrr.o
+object l2_cache.o

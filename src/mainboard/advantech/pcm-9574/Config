@@ -1,0 +1,38 @@
+arch i386
+mainboardinit cpu/i386/entry16.inc
+mainboardinit cpu/i386/entry32.inc
+ldscript cpu/i386/entry16.lds
+ldscript cpu/i386/entry32.lds
+mainboardinit cpu/i386/reset16.inc
+ldscript cpu/i386/reset16.lds
+
+option SERIAL_SUPERIO_BASEADDRESS=0x370
+mainboardinit superio/winbond/w83977ef/setup_serial.inc
+
+mainboardinit pc80/serial.inc
+mainboardinit arch/i386/lib/console.inc
+northbridge intel/440bx
+southbridge intel/piix4e
+mainboardinit cpu/p6/earlymtrr.inc
+
+nsuperio winbond/w83977ef keyboard=1 com1={1} com2={1} floppy=1
+nsuperio winbond/w83877tf
+
+option ENABLE_FIXED_AND_VARIABLE_MTRRS
+option  MTRR_ONLY_TOP_64K_FLASH
+option PIIX4_DEVFN=0x38
+option NO_KEYBOARD
+option HAVE_PIRQ_TABLE=1
+option ZKERNEL_START=0xfffc0000
+option ZKERNEL_MASK=0x7f 
+option ROM_SIZE=262144
+
+option L440BX
+
+object mainboard.o
+object irq_tables.o
+
+option UPDATE_MICROCODE
+
+cpu p6
+cpu p5

@@ -19,7 +19,7 @@
 #include <device/resource.h>
 #include <device/device.h>
 #include <device/pci_ops.h>
-
+#include <device/pci_rom.h>
 
 /* Common pci operations without a standard interface */
 struct pci_operations {

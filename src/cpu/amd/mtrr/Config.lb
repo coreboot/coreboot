@@ -1,2 +1,2 @@
 dir /cpu/x86/mtrr
-object amd_mtrr.c
+object amd_mtrr.o

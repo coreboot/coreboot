@@ -548,11 +548,22 @@ void pci_bus_enable_resources(struct device *dev)
 	enable_childrens_resources(dev);
 }
 
-
 void pci_dev_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
 	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID, 
 		((device & 0xffff) << 16) | (vendor & 0xffff));
+}
+
+void pci_dev_init(struct device *dev)
+{
+	struct rom_header *rom, *ram;
+
+	rom = pci_rom_probe(dev);
+	if (rom == NULL)
+		return;
+	ram = pci_rom_load(dev, rom);
+
+	run_bios(dev, ram);
 }
 
 /** Default device operation for PCI devices */
@@ -564,7 +575,7 @@ struct device_operations default_pci_ops_dev = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init		  = 0,
+	.init		  = pci_dev_init,
 	.scan_bus	  = 0,
 	.enable           = 0,
 	.ops_pci          = &pci_dev_ops_pci,
@@ -574,6 +585,7 @@ struct device_operations default_pci_ops_dev = {
 static struct pci_operations pci_bus_ops_pci = {
 	.set_subsystem = 0,
 };
+
 struct device_operations default_pci_ops_bus = {
 	.read_resources   = pci_bus_read_resources,
 	.set_resources    = pci_dev_set_resources,

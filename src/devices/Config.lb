@@ -6,3 +6,6 @@ object pnp_device.o
 object hypertransport.o
 object pci_ops.o
 object smbus_ops.o
+
+object pci_rom.o
+dir emulator

@@ -1,5 +1,4 @@
 uses CONFIG_IDE
-uses CONFIG_LEGACY_VGABIOS
 
 object mc146818rtc.o
 object isa-dma.o

@@ -14,6 +14,8 @@ mainboardinit southbridge/via/vt8235/setup_ethernet.inc
 #mainboardinit mainboard/via/epia-m/dumpdev.inc
 #mainboardinit mainboard/via/epia-m/do_dumpdev.inc
 #mainboardinit southbridge/via/vt8235/setup_misc.inc
+mainboardinit mainboard/via/epia-m/smbus.inc
+mainboardinit mainboard/via/epia-m/earlysetup.inc
 mainboardinit northbridge/via/vt8623/raminit.inc
 #mainboardinit mainboard/via/epia-m/do_dumpdev.inc
 # mainboardinit ram/dump_northbridge.inc

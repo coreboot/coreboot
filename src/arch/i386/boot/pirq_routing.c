@@ -3,29 +3,24 @@
 #include <string.h>
 
 #if (DEBUG==1 && HAVE_PIRQ_TABLE==1)
-void check_pirq_routing_table(void)
+static void check_pirq_routing_table(struct irq_routing_table *rt)
 {
-	const uint8_t *addr;
-	const struct irq_routing_table *rt;
+	uint8_t *addr = (uint8_t *)rt;
+	uint8_t sum=0;
 	int i;
-	uint8_t sum;
 
-	printk_info("Checking IRQ routing tables...\n");
+	printk_info("Checking IRQ routing table consistency...\n");
 
 #if defined(IRQ_SLOT_COUNT)
-	if (sizeof(intel_irq_routing_table) != intel_irq_routing_table.size) {
+	if (sizeof(struct irq_routing_table) != rt->size) {
 		printk_warning("Inconsistent IRQ routing table size (0x%x/0x%x)\n",
-			       sizeof(intel_irq_routing_table),
-			       intel_irq_routing_table.size
+			       sizeof(struct irq_routing_table),
+			       rt->size
 			);
-		intel_irq_routing_table.size=sizeof(intel_irq_routing_table);
+		rt->size=sizeof(struct irq_routing_table);
 	}
 #endif
 
-	rt = &intel_irq_routing_table;
-	addr = (uint8_t *)rt;
-
-	sum = 0;
 	for (i = 0; i < rt->size; i++)
 		sum += addr[i];
 
@@ -43,7 +38,7 @@ void check_pirq_routing_table(void)
 	}
 
 	if (rt->signature != PIRQ_SIGNATURE || rt->version != PIRQ_VERSION ||
-	    rt->size % 16 || rt->size < sizeof(struct irq_routing_table)) {
+	    rt->size % 16 ) {
 		printk_warning("%s:%6d:%s() - "
 			       "Interrupt Routing Table not valid\n",
 			       __FILE__, __LINE__, __FUNCTION__);
@@ -63,7 +58,7 @@ void check_pirq_routing_table(void)
 	printk_info("done.\n");
 }
 
-int verify_copy_pirq_routing_table(unsigned long addr)
+static int verify_copy_pirq_routing_table(unsigned long addr)
 {
 	int i;
 	uint8_t *rt_orig, *rt_curr;
@@ -78,6 +73,9 @@ int verify_copy_pirq_routing_table(unsigned long addr)
 		}
 	}
 	printk_info("done\n");
+	
+	check_pirq_routing_table((struct irq_routing_table *)addr);
+	
 	return 0;
 }
 #else

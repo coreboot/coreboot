@@ -46,7 +46,6 @@ struct lb_memory *write_tables(struct mem_range *mem, unsigned long *processor_m
 	low_table_end = 16;
 
 	post_code(0x9a);
-	check_pirq_routing_table();
 
 	/* This table must be betweeen 0xf0000 & 0x100000 */
 	rom_table_end = copy_pirq_routing_table(rom_table_end);

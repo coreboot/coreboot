@@ -39,12 +39,6 @@ struct irq_routing_table {
 
 extern const struct irq_routing_table intel_irq_routing_table;
 
-#if (DEBUG==1 && HAVE_PIRQ_TABLE==1)
-void check_pirq_routing_table(void);
-#else
-#define check_pirq_routing_table() do {} while(0)
-#endif
-
 #if HAVE_PIRQ_TABLE==1
 unsigned long copy_pirq_routing_table(unsigned long start);
 #else

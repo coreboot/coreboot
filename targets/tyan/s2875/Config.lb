@@ -1,10 +1,10 @@
 # Sample config file for 
-# the Tyan s2850 
-# This will make a target directory of ./s2850
+# the Tyan s2875 
+# This will make a target directory of ./s2875
 
 loadoptions
 
-target s2850
+target s2875
 
 uses ARCH
 uses CONFIG_COMPRESS
@@ -53,7 +53,6 @@ uses CONFIG_MAX_PHYSICAL_CPUS
 uses LINUXBIOS_EXTRA_VERSION
 uses XIP_ROM_SIZE
 uses XIP_ROM_BASE
-
 uses HAVE_HARD_RESET
 
 #uses CONFIG_VGABIOS
@@ -64,8 +63,6 @@ uses HAVE_HARD_RESET
 
 #
 #uses CONFIG_LSI_SCSI_FW_FIXUP
-
-option HAVE_HARD_RESET=1
 
 option HAVE_OPTION_TABLE=1
 option HAVE_MP_TABLE=1
@@ -78,10 +75,10 @@ option k7=1
 option k8=1
 option ROM_SIZE=524288
 
-#option CONFIG_VGABIOS=0
-#option CONFIG_REALMODE_IDT=0
-#option CONFIG_PCIBIOS=0
-#option VGABIOS_START=0xfff8c000
+#option CONFIG_VGABIOS=1
+#option CONFIG_REALMODE_IDT=1
+#option CONFIG_PCIBIOS=1
+#option VGABIOS_START=1
 #option SCSIFW_START=0xfff80000
 
 
@@ -93,21 +90,22 @@ option CONFIG_CHIP_CONFIGURE=1
 #option CONFIG_LSI_SCSI_FW_FIXUP=1
 
 
-#
+option HAVE_HARD_RESET=1
+
 ###
 ### Build code to export a programmable irq routing table
 ###
 option HAVE_PIRQ_TABLE=1
-option IRQ_SLOT_COUNT=12
+option IRQ_SLOT_COUNT=13
 #
 ###
 ### Build code for SMP support
 ### Only worry about 2 micro processors
 ###
 option CONFIG_SMP=1
-option CONFIG_MAX_CPUS=1
+option CONFIG_MAX_CPUS=2
 option CONFIG_LOGICAL_CPUS=0
-option CONFIG_MAX_PHYSICAL_CPUS=1
+option CONFIG_MAX_PHYSICAL_CPUS=2
 #
 ###
 ### Build code to setup a generic IOAPIC
@@ -128,7 +126,7 @@ option CONFIG_IOAPIC=1
 ###
 ### Clean up the motherboard id strings
 ###
-option MAINBOARD_PART_NUMBER="S2850"
+option MAINBOARD_PART_NUMBER="S2875"
 option MAINBOARD_VENDOR="Tyan"
 #
 ###
@@ -181,14 +179,14 @@ option DEBUG=1
 option _RAMBASE=0x004000
 
 ##
-## Use a 128K stack
+## Use a 32K stack
 ##
-option STACK_SIZE=0x4000
+option STACK_SIZE=0x8000
 
 ##
-## Use a 256K heap
+## Use a 56K heap
 ##
-option HEAP_SIZE=0x8000
+option HEAP_SIZE=0xe000
 
 #
 ###
@@ -205,7 +203,7 @@ romimage "normal"
 #	48K for SCSI FW and 48K for ATI ROM
 #	option ROM_SIZE = 425984  
         option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
-	option USE_FALLBACK_IMAGE=0
+        option USE_FALLBACK_IMAGE=0
 	option ROM_SECTION_SIZE  = (ROM_SIZE - FALLBACK_SIZE)
 	option ROM_SECTION_OFFSET= 0
 
@@ -213,12 +211,12 @@ romimage "normal"
 	option CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
 	option _ROMBASE      = (CONFIG_ROM_STREAM_START + PAYLOAD_SIZE)
 
-	option XIP_ROM_SIZE = FALLBACK_SIZE
+#	option XIP_ROM_SIZE = FALLBACK_SIZE
+        option XIP_ROM_SIZE = 65536
 	option XIP_ROM_BASE = (_ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE)
 
-	mainboard tyan/s2850
-#	payload ../../tg3--ide_disk_dev.zelf 
-	payload ../../eepro100--ide_diskx.zelf
+	mainboard tyan/s2875
+	payload ../../e1000--ide_disk.zelf 
 end
 
 romimage "fallback" 
@@ -231,12 +229,13 @@ romimage "fallback"
 	option CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
 	option _ROMBASE      = (CONFIG_ROM_STREAM_START + PAYLOAD_SIZE)
 
-	option XIP_ROM_SIZE = FALLBACK_SIZE
+#	option XIP_ROM_SIZE = FALLBACK_SIZE
+        option XIP_ROM_SIZE = 65536
 	option XIP_ROM_BASE = (_ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE)
 
-	mainboard tyan/s2850
-#        payload ../../tg3--ide_disk_dev.zelf 
-        payload ../../eepro100--ide_diskx.zelf
+	mainboard tyan/s2875
+	payload ../../e1000--ide_disk.zelf
+#	payload ../../filo.elf.d
 end
 
 buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"

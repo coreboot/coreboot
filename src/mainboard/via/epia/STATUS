@@ -8,13 +8,13 @@ owner:	Andrew Ip
 email:	aip@cwlinux.com
 #status: One of unsupported, unstable, stable
 status: unstable
-explanation: problem with irq routing table
+explanation: slow performance
 flash-types: SST 39SF020A
-payload-types: etherboot
+payload-types: etherboot, memtest
 # e.g. linux, plan 9, wince, etc.
 OS-types: linux
 # e.g. "Plan 9 interrupts don't work on this chipset"
-OS-issues: problem with irq routing table
+OS-issues:
 console-types: serial
 # vga is unsupported, unstable, or stable
 vga: unsupported

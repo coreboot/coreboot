@@ -32,7 +32,7 @@
 
 \title{LinuxBIOS on AMD64}
 \author{Stefan Reinauer $<$stepan@openbios.org$>$}
-\date{February 10th, 2004}
+\date{June 2nd, 2004}
 
 \begin{document}
 
@@ -50,7 +50,7 @@
 
 \section{Abstract}
 
-This document targets porting LinuxBIOS to new Motherboards and creating
+This document targets porting LinuxBIOS to new mainboards and creating
 custom firmware images using LinuxBIOS. It describes how to build
 LinuxBIOS images for the AMD64 platform, including hypertransport
 configuration and pertinent utilities. If you are missing information or
@@ -64,8 +64,9 @@ find errors in the following descriptions, contact
 
 \section{Changes}
  \begin{itemize}
- \item 2003/11/18 initial release 
+ \item 2004/06/02 url and language fixes from Ken Fuchs $<$kfuchs@winternet.com$>$
  \item 2004/02/10 acpi and option rom updates
+ \item 2003/11/18 initial release 
  \end{itemize}
 
 
@@ -116,12 +117,21 @@ The following toolchain is recommended:
 \section{Getting the Sources}
 
 The latest LinuxBIOS sources are available via CVS. The CVS repository
-is maintained at SourceForge.net (the project name is \emph{FreeBIOS}). You
-can get the entire source tree via CVS:
+is maintained at SourceForge.net (the project name is \emph{FreeBIOS}). 
+First you should create a directory for your LinuxBIOS trees:
+
+{ \small
+\begin{verbatim}
+$ mkdir linuxbios
+$ cd linuxbios
+\end{verbatim}
+}
+
+You can get the entire source tree via CVS:
 
 { \small 
 \begin{verbatim}
-% cvs -d:pserver:anonymous@cvs.freebios.sourceforge.net:/cvsroot/freebios login
+$ cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/freebios login
 \end{verbatim}
 }
 
@@ -130,7 +140,7 @@ the freebios source tree as follows:
 
 { \small
 \begin{verbatim}
-% cvs -z3 -d:pserver:anonymous@cvs.freebios.sourceforge.net:/cvsroot/freebios co freebios2
+$ cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/freebios co freebios2
 \end{verbatim}
 }
 
@@ -163,18 +173,18 @@ lot of configuration options that can be tweaked in several ways:
 \item 
 Firmware image specific configuration options can be set in the image
 configuration file which is usually found in
-\texttt{freebios2/targets/$<$vendor$>$/$<$motherboard$>$/}.  Such
+\texttt{freebios2/targets/$<$vendor$>$/$<$mainboard$>$/}.  Such
 options are the default amount of output verbosity during bootup, image
 size, use of fallback mechanisms, firmware image size and payloads
 (Linux Kernel, Bootloader...) The default configuration file name is
 \texttt{Config.lb}, but LinuxBIOS allows multiple configurations to
 reside in that directory.
 
-\item Motherboard specific configuration options can be set in the
-motherboard configuration file placed in
-\texttt{freebios2/src/mainboard/$<$vendor$>$/$<$motherboard$>$}. The
-motherboard configuration file is always called \texttt{Config.lb}. It
-contains information on the onboard components of the motherboard like
+\item Mainboard specific configuration options can be set in the
+mainboard configuration file placed in
+\texttt{freebios2/src/mainboard/$<$vendor$>$/$<$mainboard$>$}. The
+mainboard configuration file is always called \texttt{Config.lb}. It
+contains information on the onboard components of the mainboard like
 CPU type, northbridge, southbridge, hypertransport configuration and
 SuperIO configuration.  This configuration file also allows to include
 addon code to hook into the LinuxBIOS initialization mechanism at
@@ -191,8 +201,8 @@ LinuxBIOS source tree when building for AMD64.
 
 \section{Building LinuxBIOS}
 One of the design goals for building LinuxBIOS was to keep object files
-out of the source tree in a seperate place. This is mandatory for
-building parallel LinuxBIOS images for several distinct motherboards
+out of the source tree in a separate place. This is mandatory for
+building parallel LinuxBIOS images for several distinct mainboards
 and/or platforms. Therefore building LinuxBIOS consists of two steps:
 \begin{itemize}
 \item
@@ -204,7 +214,7 @@ compiling the LinuxBIOS code and creating a flashable firmware image.
 
 The first of these two steps is accomplished by the \texttt{buildtarget}
 script found in \texttt{freebios2/targets/}. To build LinuxBIOS for
-instance for the AMD Solo Athlon64 motherboard enter:
+instance for the AMD Solo Athlon64 mainboard enter:
 
 \begin{verbatim}
 % cd freebios2/targets
@@ -214,7 +224,7 @@ instance for the AMD Solo Athlon64 motherboard enter:
 This will create a directory containing a Makefile and other software
 components needed for this build. The directory name is defined in the
 firmware image specific configuration file. In the case of AMD's Solo
-motherboard the default directory resides in 
+mainboard the default directory resides in 
 \texttt{freebios2/targets/amd/solo/solo}. To build the LinuxBIOS image, do
 
 \begin{verbatim}
@@ -223,7 +233,7 @@ motherboard the default directory resides in
 \end{verbatim}
 
 The LinuxBIOS image filename is specified in the firmware image specific
-configuration file. The default filename for AMD's Solo motherboard is
+configuration file. The default filename for AMD's Solo mainboard is
 \texttt{solo.rom}.
 
 %
@@ -239,7 +249,7 @@ software flash programming, find detailed information:
 
 \begin{itemize}
 \item \url{http://www.openbios.org/development/devbios.html} (/dev/bios)
-\item \url{http://www.linuxmtd.infradead.org/} (Memory Technology Device Subsystem MTD)
+\item \url{http://www.linux-mtd.infradead.org/} (Memory Technology Device Subsystem MTD)
 \end{itemize}
 
 \newpage
@@ -265,7 +275,7 @@ LinuxBIOS distinguishes between statements and options. Statements cause
 the LinuxBIOS configuration mechanism to act, whereas options set
 variables that are used by the build scripts or source code.
 \item 
-Default configuration values can be set in the motherboard configuration
+Default configuration values can be set in the mainboard configuration
 files (keyword default)
 \item 
 Option overrides to the default configuration can only be specified in
@@ -294,7 +304,7 @@ variable is known.
 \item \begin{verbatim}default\end{verbatim}
 
 The \texttt{default} statement is used to set a configuration variable
-with an overridable default value. It is commonly used in motherboard
+with an overridable default value. It is commonly used in mainboard
 configuration files.  
 
 Example:
@@ -330,7 +340,7 @@ The \texttt{option} statement basically behaves identically to the
 build target configuration files
 (\texttt{freebios2/targets/$<$vendor$>$/$<$mainboard$>$}). The option
 statement allows either to set new options or to override default values
-set with the default statement in a motherboard configuration file.
+set with the default statement in a mainboard configuration file.
 Syntax and application are the same as with default.
 
 \end{itemize}
@@ -340,8 +350,8 @@ LinuxBIOS allows to create different firmware images for the same
 hardware. Such images can differ in the amount of output they produce,
 the payload, the number of subimages they consist of etc.
 
-The firmware image specific configuration file can be found in
-\texttt{freebios2/targets/$<$vendor$>$/<motherboard$>$}.
+The firmware image specific configuration file can be found in \\
+\texttt{freebios2/targets/$<$vendor$>$/<mainboard$>$}.
 
 \subsubsection{Firmware image specific keywords}
 In addition to the above described keywords the following statements are
@@ -389,7 +399,7 @@ the images and the final image size:
 In addition to the definitions described above there are a number of
 commonly used options. Configuration options set in the firmware image
 specific configuration file can override default selections from the
-Motherboard specific configuration.  See above examples about
+Mainboard specific configuration.  See above examples about
 option on how to set them.
 
 \begin{itemize}
@@ -403,7 +413,7 @@ machine.
 \item \begin{verbatim}CONFIG_CHIP_CONFIGURE \end{verbatim}
 
 Use new \textit{chip\_configure} method for configuring (nonpci)
-devices. Set to \texttt{1} for all AMD64 motherboards.
+devices. Set to \texttt{1} for all AMD64 mainboards.
 
 \item \begin{verbatim}MAXIMUM_CONSOLE_LOGLEVEL\end{verbatim}
 
@@ -433,7 +443,7 @@ This does not include the fallback payload.
 \item \begin{verbatim}HAVE_OPTION_TABLE\end{verbatim}
 
 Export CMOS option table. Default is \texttt{0}. Set to \texttt{1} if
-your motherboard has CMOS memory and you want to use it to store
+your mainboard has CMOS memory and you want to use it to store
 LinuxBIOS parameters (Loglevel, serial line speed, ...)
 
 \item \begin{verbatim}CONFIG_ROM_STREAM\end{verbatim}
@@ -470,29 +480,29 @@ to any string to add an extra version string to your LinuxBIOS build.
 
 \newpage
 
-\subsection{Motherboard specific configuration}
+\subsection{Mainboard specific configuration}
 
-Motherboard specific configuration files describe the onboard
-motherboard components, i.e. bridges, number and type of CPUs. They also
+Mainboard specific configuration files describe the onboard
+mainboard components, i.e. bridges, number and type of CPUs. They also
 contain rules for building the low level start code which is translated
 using romcc and/or the GNU assembler.  This code enables caches and
 registers, early mtrr settings, fallback mechanisms, dram init and
 possibly more.
 
-\textbf{NOTE:} The option keyword can not be used in motherboard specific
-configuration files.  Options shall instead be set using the default
-keyword so that they can be overridden by the image specific
-configuration files if needed.
+\textbf{NOTE:} The \texttt{option} keyword can not be used in mainboard 
+specific configuration files.  Options shall instead be set using the 
+\texttt{default} keyword so that they can be overridden by the image 
+specific configuration files if needed.
 
-\subsubsection{Motherboard specific keywords}
+\subsubsection{Mainboard specific keywords}
 
-The following statements are used in motherboard specific configuration
+The following statements are used in mainboard specific configuration
 files:
 
 \begin{itemize}
 \item \begin{verbatim}arch\end{verbatim}
 
-Sets the CPU architecture. This should be \texttt{i386} for AMD64 boards.
+Sets the CPU architecture. This should be \texttt{i386} for AMD64 boards.\\
 Example:
 
 \begin{verbatim}
@@ -551,9 +561,9 @@ makerule ./auto.inc
 end
 \end{verbatim}
 
-Each makerule section contains file dependencies (using the depend
-keyword) and an action that is taken when the dependencies are satisfied
-(using the action keyword).
+Each \texttt{makerule} section contains file dependencies (using the
+texttt{depends} keyword) and an action that is taken when the dependencies 
+are satisfied (using the \texttt{action} keyword).
 
 \item \begin{verbatim}mainboardinit\end{verbatim}
 
@@ -583,8 +593,8 @@ creation. Example:
 \item \begin{verbatim}dir\end{verbatim}
 
 LinuxBIOS reuses as much code between the different ports as possible.
-To achieve this, commonly used code can be stored in a seperate
-directory. For a new motherboard, it is enough to know that the code in
+To achieve this, commonly used code can be stored in a separate
+directory. For a new mainboard, it is enough to know that the code in
 that directory can be used as is.
 
 LinuxBIOS will also read a \texttt{Config.lb} file stored in that
@@ -606,7 +616,8 @@ used as:
 
 \item \begin{verbatim}register\end{verbatim}
 The \texttt{register} keyword can occur in any section, passing
-additional parameters to the code handling the according device.
+additional \\
+parameters to the code handling the associated device.
 Example:
 
 \begin{verbatim}
@@ -619,7 +630,8 @@ The \texttt{northbridge} keyword describes a system northbridge. Some
 systems, like AMD64, can have more than one northbridge, i.e. one per
 CPU node. Each northbridge is described by the path to the northbridge
 code in LinuxBIOS (relative to \texttt{freebios2/src/northbridge}), i.e.
-\texttt{amd/amdk8} and a unique name (i.e ´mc0' ) Example:
+\texttt{amd/amdk8} and a unique name (i.e \texttt{mc0}) \\
+Example:
 
 \begin{verbatim}
         northbridge amd/amdk8 "mc0"
@@ -732,9 +744,9 @@ end
 
 \newpage
 
-\subsubsection{Motherboard specific configuration options}
+\subsubsection{Mainboard specific configuration options}
 
-The following options are commonly used in motherboard specific
+The following options are commonly used in mainboard specific
 configuration files.
 
 They should be set using the \texttt{default} keyword:
@@ -818,9 +830,9 @@ decompression is needed).
 
 \section{Tweaking the source code}
 Besides configuring the existing code it is sometimes necessary or
-wished to tweak certain parts of LinuxBIOS by direct changes to the
+desirable to tweak certain parts of LinuxBIOS by direct changes to the
 code. This chapter covers some possible enhancements and changes that
-are needed when porting LinuxBIOS to a new motherboard or just come
+are needed when porting LinuxBIOS to a new mainboard or just come
 handy now and then.
 
 \subsection{Hypertransport configuration}
@@ -829,9 +841,9 @@ attached to these CPUs (and thus, see all devices attached to the
 system) it has to initialize the coherent hypertransport devices.
 
 The current algorithms to do coherent hypertransport initialization are
-not fully automatically evaluating the hypertransport chain graph.
+not fully, automatically evaluating the hypertransport chain graph.
 Therefore the code needs to be adapted when porting LinuxBIOS to a new
-AMD64 motherboard. An example arrangement of hypertransport devices
+AMD64 mainboard. An example arrangement of hypertransport devices
 looks like this:
 
 \begin{figure}[htb]
@@ -989,7 +1001,7 @@ timings, size and other properties.  The SPD data is usually read
 utilizing the I2C SMBUS interface of the southbridge.
 
 There is one central data structure that describes the RAM controllers
-available on an AMD64 system and the concerned devices:
+available on an AMD64 system and the associated devices:
 
 \begin{verbatim}
 struct mem_controller {
@@ -1000,15 +1012,15 @@ struct mem_controller {
 };
 \end{verbatim}
 
-Available motherboard implementations and CPUs create the need to add
+Available mainboard implementations and CPUs create the need to add
 special setup code to RAM initialization in a number of places.
 LinuxBIOS provides hooks to easily add code in these places without
 having to change the generic code.  Whether these hooks have to be used
-depends on the motherboard design. In many cases the functions executed
+depends on the mainboard design. In many cases the functions executed
 by the hooks just carry out trivial default settings or they are even
 empty.
 
-Some motherboard/CPU combinations need to trigger an additional memory
+Some mainboard/CPU combinations need to trigger an additional memory
 controller reset before the memory can be initialized properly. This is,
 for example, used to get memory working on preC stepping AMD64
 processors. LinuxBIOS provides two hooks for triggering onboard memory
@@ -1020,7 +1032,7 @@ reset logic:
 		mem_controller *ctrl)\end{verbatim}
 \end{itemize}
 
-Some motherboards utilize an SMBUS hub or possibly other mechanisms to
+Some mainboards utilize an SMBUS hub or possibly other mechanisms to
 allow using a large number of SPDROMs and thus ram sockets. The result
 is that only the SPDROM information of one cpu node is visible at a
 time. The following function, defined in \texttt{auto.c}, is called every time
@@ -1032,13 +1044,13 @@ static inline void activate_spd_rom (const struct mem_controller *ctrl)
 \end{verbatim}
 
 The way SMBUS hub information is coded into the \texttt{mem\_controller}
-structure is motherboard implementation specific and not closer
+structure is mainboard implementation specific and not
 described here.  See \texttt{freebios2/src/mainboard/amd/quartet/auto.c}
 for an example.
 
 LinuxBIOS folks have agreed on SPD data being the central information
-source for RAM specific information. But not all motherboards/RAM
-modules feature a physical SPD ROM. To still allow an easytouse SPD
+source for RAM specific information. But not all mainboards/RAM
+modules feature a physical SPD ROM. To still allow an easy to use SPD
 driven setup, there is a hook that abstracts reading the SPD ROM
 ingredients that are used by the memory initialization mechanism:
 
@@ -1065,7 +1077,7 @@ as indices to this array.
 
 \subsection {IRQ Tables}
 
-Motherboards that provide an IRQ table should have the following two
+Mainboards that provide an IRQ table should have the following two
 variables set in their \texttt{Config.lb} file:
 
 \begin{verbatim}
@@ -1073,8 +1085,8 @@ default HAVE_PIRQ_TABLE=1
 default IRQ_SLOT_COUNT=7
 \end{verbatim}
 
-This will make LinuxBIOS look for the file
-\texttt{freebios2/src/mainboard/<vendor>/<motherboard>/irq\_tables.c} which
+This will make LinuxBIOS look for the file \\
+\texttt{freebios2/src/mainboard/<vendor>/<mainboard>/irq\_tables.c} which
 contains the source code definition of the IRQ table. LinuxBIOS corrects
 small inconsistencies in the IRQ table during startup (checksum and
 number of entries), but it is not yet writing IRQ tables in a completely 
@@ -1208,7 +1220,7 @@ initialize and operate the device:
 By separating the two structures above, M:N relations between compatible
 devices and drivers can be described. The driver source code containing
 above data structures and code have to be added to a LinuxBIOS image
-using the driver keyword in the motherboard specific configuration file
+using the driver keyword in the mainboard specific configuration file \\
 \texttt{freebios2/src/mainboard/<vendor>/<mainboard>/Config.lb}:
 
 \begin{verbatim}
@@ -1309,7 +1321,7 @@ initialization can be factored and reused more easily among mainboards
 and platforms.
 
 Since no memory is available during this early initialization point,
-romcc has to map all used variables in registers for their time being.
+romcc has to map all used variables in registers for the time being.
 Same applies for their stack usage.  Generally the less registers are
 used up by the algorithms, the better code can be factored, resulting in
 a smaller object size. Since getting the best register usage is an NP
@@ -1318,7 +1330,7 @@ time. If you run out of registers during compilation, try to refactor
 your code.
 
 \subsection{CMOS handling}
-LinuxBIOS can use the motherboard's CMOS memory to store information
+LinuxBIOS can use the mainboard's CMOS memory to store information
 defined in a data structure called the CMOS table . This information
 contains serial line speed, fallback boot control, output verbosity,
 default boot device, ECC control, and more. It can be easily enhanced by
@@ -1401,7 +1413,7 @@ the following line in \texttt{/etc/inetd.conf}:
     tftp dgram udp wait root /usr/sbin/in.tftpd in.tftpd -s /tftpboot
 \end{verbatim}
 
-Then put your kernel image \texttt{vmlinuz.elf} to \texttt{/tftpboot} on
+Then put your kernel image \texttt{vmlinuz.elf} in \texttt{/tftpboot} on
 the \texttt{tftp} server.
 
 
@@ -1415,7 +1427,7 @@ the \texttt{tftp} server.
 
 Like software, today's hardware is getting more and more complex. To
 stay flexible many hardware vendors start breaking hardware
-compatibility to old standards as VGA. Thus, VGA is still supported by
+compatibility to old standards like VGA. Thus, VGA is still supported by
 most cards, but emulation has to be enabled by the firmware for the
 device to operate properly.  Also, many expansion cards are small
 discrete systems that have to initialize attached ram, download

@@ -21,6 +21,8 @@ void (*payload)(void) = (void (*)(void))_iseg;
  * - start hardwaremain() which does remainder of setup
  */
 
+extern void flush_dcache(void);
+
 void ppc_main(void)
 {
 	unsigned *from;
@@ -40,5 +42,13 @@ void ppc_main(void)
 			*to++ = *from++;
 	}
 
+	/*
+	 * Flush cache to memory because linux will try and
+	 * invalidate it.
+	 */
+	flush_dcache();
+
 	payload();
+
+	/* NOT REACHED */
 }

@@ -33,8 +33,6 @@ unsigned long sizeram(void);
 void intel_set_mtrr(unsigned long rambase, unsigned long ramsizeK);
 #endif
 
-#ifdef NEWPCI  /* IRQ routing stuff */
-
 #include <pci.h>
 #include <pci-i386.h>
 
@@ -45,7 +43,5 @@ extern const struct irq_routing_table intel_irq_routing_table;
 
 void intel_zero_irq_settings(void);
 void intel_check_irq_routing_table(void);
-
-#endif
 
 #endif /* SUBR_H_ */

@@ -1,3 +1,4 @@
+arch i386
 northsouthbridge sis/730
 superio sis/950
 

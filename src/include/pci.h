@@ -439,4 +439,68 @@ unsigned char intel_conf_readb(unsigned long port);
 
 #include <pciconf.h>
 
+/* linkages from devices of a type (e.g. superio devices) 
+ * to the actual physical PCI device. This type is used in an array of 
+ * structs built by NLBConfig.py. We owe this idea to Plan 9.
+ */
+
+struct superio;
+
+struct superio_control {
+  void (*pre_pci_init)(struct superio *s);
+  void (*init)(struct superio *s);
+  void (*finishup)(struct superio *s);
+  unsigned int defaultport;     /* the defaultport. Can be overridden
+				 * by commands in config
+				 */
+  // This is the print name for debugging
+  char *name;
+};
+
+struct com_ports {
+  unsigned int enable,baud, base, irq;
+};
+
+struct superio {
+  struct superio_control *super; // the ops for the device. 
+  unsigned int port; // if non-zero, overrides the default port
+  // com ports. This is not done as an array (yet). 
+  // We think it's easier to set up from python if it is not an array. 
+  struct com_ports com1, com2, com3, com4;
+  /* flags for each device type. Unsigned int. */
+  // low order bit ALWAYS means enable. Next bit means to enable
+  // DMA, if it exists. 
+  unsigned int ide, floppy, lpt;
+};
+
+struct southbridge;
+
+struct southbridge_control {
+  void (*pre_pci_init)(struct southbridge *s);
+  void (*init)(struct southbridge *s);
+  void (*finishup)(struct southbridge *s);
+  // this is the  vendor and device id
+  unsigned int vendor, device;
+  // This is the print name for debugging
+  char *name;
+};
+
+struct southbridge {
+  struct pci_dev *device; // the device. 
+  struct southbridge_control *southbridge; // the ops for the device. 
+  unsigned int devfn;     /* the devfn. 
+			   * if devfn is known, the device can be 
+			   * configured for PCI discovery. 
+			   * this is needed for some devices such as acer m1535
+			   */
+  /* flags for each device type. Unsigned int. */
+  // low order bit ALWAYS means enable. Next bit means to enable
+  // DMA, if it exists. 
+  unsigned int ide;
+};
+
 #endif /* PCI_H */
+
+
+
+

@@ -1,3 +1,4 @@
+arch i386
 northbridge intel/440gx
 southbridge intel/piix4e
 

@@ -58,7 +58,11 @@ void intel_main()
 #ifdef FINAL_MAINBOARD_FIXUP
 	void final_mainboard_fixup(void);
 #endif /* FINAL_MAINBOARD_FIXUP */
-
+#ifdef USE_NEW_SUPERIO_INTERFACE
+	extern struct superio *all_superio;
+	extern int nsuperio;
+	extern void handle_superio(int pass, struct superio *s, int nsuperio);
+#endif
 #ifdef CONFIGURE_L2_CACHE
 	int intel_l2_configure();
 #endif /* CONFIGURE_L2_CACHE */
@@ -98,7 +102,9 @@ void intel_main()
 	printk(KERN_INFO "Finding PCI confiuration type...\n");
 	pci_set_method();
 	post_code(0x5f);
-
+#ifdef USE_NEW_SUPERIO_INTERFACE
+	handle_superio(0, all_superio, nsuperio);
+#endif
 	printk(KERN_INFO "Scanning PCI bus...");
 	pci_enumerate();
 	post_code(0x66);
@@ -150,14 +156,21 @@ void intel_main()
 	intel_display_cpuid();
 	intel_mtrr_check();
 
+
 #ifndef NO_KEYBOARD
+
 	keyboard_on();
 #endif /* NO_KEYBOARD */
 
+#ifndef USE_NEW_SUPERIO_INTERFACE
 #ifdef MUST_ENABLE_FLOPPY
 	enable_floppy();
 	post_code(0x95);
 #endif /* MUST_ENABLE_FLOPPY */
+#endif
+#ifdef USE_NEW_SUPERIO_INTERFACE
+	handle_superio(1, all_superio, nsuperio);
+#endif
 
 #ifdef SMP
 	/* copy the smp block to address 0 */
@@ -194,6 +207,10 @@ void intel_main()
 
 #endif /* MAINBOARD_FIXUP_IN_CHARGE */
 
+#ifdef USE_NEW_SUPERIO_INTERFACE
+	handle_superio(2, all_superio, nsuperio);
+#endif
+
 #ifdef LINUXBIOS
 	printk(KERN_INFO "Jumping to linuxbiosmain()...\n");
 	// we could go to argc, argv, for main but it seems like overkill.
@@ -201,3 +218,5 @@ void intel_main()
 	linuxbiosmain(0, totalram);
 #endif /* LINUXBIOS */
 }
+
+

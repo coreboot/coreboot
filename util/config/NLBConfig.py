@@ -7,6 +7,11 @@ import string
 
 debug = 0;
 
+# device variables
+superio_decls = '';
+superio_devices = [];
+numsuperio = 0;
+
 # Architecture variables
 arch = '';
 makebase = '';
@@ -159,6 +164,55 @@ def superio(dir,  superio_name):
 	dir = os.path.join(treetop, 'src', 'superio', superio_name)
 	addobject_defaultrule('superio.o', dir)
 
+# commands are of the form: 
+# superio_name [name=val]*
+def nsuperio(dir, superio_commands):
+	global superio_decls,  superio_devices, numsuperio, outputdir
+	# need python code to bust this into separate words ...
+	wspc = string.whitespace
+	rest = "(.*)"
+	w = "[" + wspc + "]*"
+	name = "([^" + wspc + "]*)"
+	# break into name + commands
+	pat = name + w + rest + w
+	#	print "pat :", pat, ":", rule
+	command_re = re.compile(pat)
+	m = command_re.match(superio_commands)
+	# note that superio is w.r.t. treetop
+	superio_name = m.group(1);
+	superio_decl_name = re.sub("/", "_", superio_name)
+	buildfullpath('superio', superio_name)
+	dir = os.path.join(treetop, 'src', 'superio', superio_name)
+	defaultrule = "\t $(CC) -c $(CFLAGS) -o $@ $<"
+	object="superio_%s.o" % superio_decl_name
+	superio_source = dir + "/superio.c"
+	objectrules.append([object, superio_source, defaultrule])
+	addobject_defaultrule('nsuperio.o', "")
+	rest = m.group(2)
+	superio_cmds = '';
+	m = command_re.match(rest)
+	cmd = m.group(1)
+	rest = m.group(2)
+	while (cmd):
+		superio_cmds = superio_cmds + ", ." + cmd
+		m = command_re.match(rest)
+		cmd = m.group(1)
+		rest = m.group(2)
+	# now build the declaration
+	decl = '';
+	decl = "extern struct superio_control superio_"
+	decl = decl + superio_decl_name  + "_control; \n"
+	decl = decl + "struct superio superio_" + superio_decl_name 
+	decl = decl + "= { " 
+	decl = decl + "&superio_" + superio_decl_name+ "_control"
+	decl = decl + superio_cmds + "};\n"
+	superio_decls = superio_decls + decl;
+	superio_devices.append("&superio_" + superio_decl_name);
+	# note that we're using the new interface
+	option(dir, "USE_NEW_SUPERIO_INTERFACE")
+	numsuperio = numsuperio + 1
+
+
 # arg, what's a good way to do this ...
 # basically raminit can have a whole list of files. That's why
 # this is a list. 
@@ -206,9 +260,9 @@ def addaction(dir, rule):
         m = command_re.match(rule)
         rulename = m.group(1)
         actions = m.group(2)
-        print "rulename :", rulename
-        print "    actions ", actions, "\n"
-	print "rules[rulename]=", makebaserules[rulename], "\n"
+	#        print "rulename :", rulename
+	#        print "    actions ", actions, "\n"
+	#	print "rules[rulename]=", makebaserules[rulename], "\n"
         makebaserules[rulename].append(actions)
 	
 # add a dependency
@@ -302,6 +356,7 @@ command_actions = {
 	'northsouthbridge' : northsouthbridge,
 	'pcibridge'   : pcibridge,
 	'superio'     : superio,
+	'nsuperio'    : nsuperio,
 	'object'      : object,
 	'linux'       : linux,
 	'raminit'     : raminit,
@@ -352,8 +407,11 @@ def doconfigfile(dir, filename):
 			verb = command.group(1)
 			args = command.group(3)
 			
-			if ((arch == '') and (verb != 'arch')):
-				print "arch must be the first command not ", verb, "\n"
+			if ((arch == '') and (
+			    (verb != 'arch') and (verb != 'mainboard') and 
+				(verb != 'target')) ):
+				print "arch, target, or mainboard must be "
+				print "the first commands not ", verb, "\n"
 				sys.exit()
 			if command_actions.has_key(verb):
 				command_actions[verb](dir, args)
@@ -474,10 +532,12 @@ def writemakefile(path):
 		for i in range(len(makebaserules[z]) - 1):
 			file.write("\t%s\n" % makebaserules[z][i+1])
 	for i in range(len(objectrules)):
-		base = objectrules[i][0]
-		base = base[0:len(base)-2]
-		source = os.path.join(objectrules[i][1], base)
-		source = source + ".c"
+		source = objectrules[i][1]
+		if (source[-2:] != '.c'): # no suffix. Build name. 
+			base = objectrules[i][0]
+			base = base[0:len(base)-2]
+			source = os.path.join(objectrules[i][1], base)
+			source = source + ".c"
 		file.write( "%s: %s\n" % (objectrules[i][0], source))
 		file.write( "%s\n" % objectrules[i][2])
 
@@ -490,6 +550,17 @@ def writemakefile(path):
 	file.close();
 #	except IOError:
 #		print "File open and write failed for ", makefilepath
+
+def writesuperiofile(path):
+	superiofile = os.path.join(path, "nsuperio.c")
+	file = open(superiofile, 'w+')
+	file.write("#include <pci.h>\n")
+	file.write(superio_decls)
+        file.write("struct superio *all_superio[] = {");
+	for i in range(len(superio_devices)):
+		file.write("%s,\n" %superio_devices[i])
+        file.write("};\n")
+	file.write("unsigned long nsuperio = %d;\n" % numsuperio)
 
 # ---------------------------------------------------------------------
 #                        MAIN
@@ -526,3 +597,4 @@ doconfigfile(treetop, sys.argv[1])
 writemakefile(outputdir)
 writeldscript(outputdir)
 writecrt0(outputdir)
+writesuperiofile(outputdir)

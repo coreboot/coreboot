@@ -7,9 +7,10 @@ static char rcsid[] = "$Id$";
 #define PNP_COM2_DEVICE 0x2
 
 #include <subr.h>
+#include <pci.h>
 #include <cpu/p5/io.h>
 
-void
+static void
 enter_pnp(void)
 {
 	// unlock it XXX make this a subr at some point 
@@ -19,7 +20,7 @@ enter_pnp(void)
 	outb(0x55, 0x2e);
 }
 
-void
+static void
 exit_pnp(void)
 {
 	/* all done. */
@@ -28,8 +29,8 @@ exit_pnp(void)
 	outb(2, 0x2f);
 }
 
-#ifdef MUST_ENABLE_FLOPPY
-void
+
+static void
 enable_floppy(void)
 {
 	/* now set the LDN to floppy LDN */
@@ -40,9 +41,9 @@ enable_floppy(void)
 	outb(0x30, 0x2e);
 	outb(0x1, 0x2f);
 }
-#endif /* MUST_ENABLE_FLOPPY */
 
-void
+
+static void
 enable_com(int com)
 {
 	unsigned char b;
@@ -61,8 +62,8 @@ enable_com(int com)
 	outb(b, 0x2f);
 }
 
-#ifdef MUST_ENABLE_LPT
-void
+
+static void
 enable_lpt(void)
 {
 	/* now set the LDN to floppy LDN */
@@ -73,23 +74,37 @@ enable_lpt(void)
 	outb(0x30, 0x2e);
 	outb(0x1, 0x2f);
 }
-#endif /* MUST_ENABLE_LPT */
 
-void
-final_superio_fixup(void)
+static void
+finishup(struct superio *s)
 {
 	enter_pnp();
 
-#ifdef MUST_ENABLE_FLOPPY
-	enable_floppy();
-#endif /* MUST_ENABLE_LPT */
+	// don't fool with IDE just yet ...
+	if (s->floppy)
+	  enable_floppy();
 
-	enable_com(PNP_COM1_DEVICE);
-	enable_com(PNP_COM2_DEVICE);
+	if (s->com1.enable)
+	  enable_com(PNP_COM1_DEVICE);
+	if (s->com2.enable)
+	  enable_com(PNP_COM2_DEVICE);
 
-#ifdef MUST_ENABLE_LPT
-	enable_lpt();
-#endif /* MUST_ENABLE_LPT */
+	if (s->lpt)
+	  enable_lpt();
 
 	exit_pnp();
 }
+
+struct superio_control superio_sis_950_control = {
+  (void *)0, (void *)0, finishup, 0x2e, "SiS 950"
+};
+
+#if 0
+void
+final_superio_fixup(void)
+{
+  superio_sis_950.finishup((struct superio *) 0);
+}
+#endif
+
+

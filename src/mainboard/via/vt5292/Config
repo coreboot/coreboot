@@ -1,3 +1,4 @@
+arch i386
 northbridge via/vt8601 
 southbridge via/vt82c686 
 superio via/vt82c686

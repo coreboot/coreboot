@@ -785,3 +785,92 @@ void pci_enable()
 	// now enable everything.
 	enable_resources(&pci_root);
 }
+
+void
+handle_superio(int pass, struct superio *s, int nsuperio)
+{
+  int i;
+  printk(KERN_INFO "handle_superio start, s %p nsuperio %d s->super %p\n",
+	 s, nsuperio, s->super);
+  for(i = 0; i < nsuperio; i++, s++){
+ 
+    if (!s->super)
+      continue;
+    printk(KERN_INFO "handle_superio: Pass %d, Superio %s\n", pass, 
+	   s->super->name);
+    // need to have both pre_pci_init and devfn defined.
+    if (s->super->pre_pci_init && (pass == 0)) {
+      printk(KERN_INFO "  Call pre_pci_init\n");
+      s->super->pre_pci_init(s);
+    }
+    else
+      if (s->super->init && (pass == 1)) 
+	{
+	  printk(KERN_INFO "  Call init\n");
+	  s->super->init(s);
+	}
+      else
+	if (s->super->finishup && (pass == 2))
+	  {
+	    printk(KERN_INFO "  Call finishup\n");
+	    s->super->finishup(s);
+	  }
+  }
+  printk(KERN_INFO "handle_superio done\n");
+}
+
+void
+handle_southbridge(int pass, struct southbridge *s, int nsouthbridge)
+{
+  int i;
+  for(i = 0; i < nsouthbridge; i++, s++){
+    
+    if (!s->southbridge)
+      continue;
+    printk(KERN_INFO "handle_southbridge: Pass %d, Superio %s\n", pass, 
+	   s->southbridge->name);
+
+    // need to have both pre_pci_init and devfn defined.
+    if (s->southbridge->pre_pci_init && (pass == 0) && (s->devfn)) {
+      printk(KERN_INFO "  Call pre_pci_init\n");
+      s->southbridge->pre_pci_init(s);
+    }
+    else
+      {
+	// first, have to set up any device not set up. 
+	// policy: we ignore the devfn here. First, it's in the pcidev, and
+	// second, it's really only to be used BEFORE pci config is done. 
+	if (! s->device)
+	  s->device = pci_find_device(s->southbridge->vendor, 
+				      s->southbridge->device, 0);
+
+	if (! s->device) { // not there!
+	  printk(KERN_INFO "  No such device\n");
+	  continue;
+	}
+	// problem. We have to handle multiple devices of same type. 
+	// We don't do this yet. One way is to mark the pci device used at
+	// this point, i.e. 
+	// s->device->inuse = 1
+	// and then continue looking if the device is in use.
+	// For now, let's get this basic thing to work.
+	if (s->southbridge->init && (pass == 1)) {
+	  printk(KERN_INFO "  Call init\n");
+	  s->southbridge->init(s);
+	}
+	else
+	  if (s->southbridge->finishup && (pass == 2)) {
+	    printk(KERN_INFO "  Call finishup\n");
+	    s->southbridge->finishup(s);
+	  }
+      }
+  }
+}
+
+
+
+
+
+
+
+

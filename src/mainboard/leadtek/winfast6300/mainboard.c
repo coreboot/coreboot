@@ -15,5 +15,7 @@ final_mainboard_fixup(void)
 	   "Winfast 6300 (and similar)...");
 
     final_southbridge_fixup();
+#ifndef USE_NEW_SUPERIO_INTERFACE
     final_superio_fixup();
+#endif
 }

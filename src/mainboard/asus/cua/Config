@@ -1,3 +1,4 @@
+arch i386
 northbridge acer/m1631
 southbridge acer/m1535
 superio acer/m1535

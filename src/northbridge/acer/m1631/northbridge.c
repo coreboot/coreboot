@@ -13,8 +13,8 @@ void refresh_set(int turn_it_on)
 		return;
 
 	pci_read_config_dword(pcidev, 0x7c, &ref);
-	printk(KERN_INFO __FUNCTION__ "refresh was 0x%lx onoff is %d\n", 
-		ref, turn_it_on);
+//	printk(KERN_INFO __FUNCTION__ "refresh was 0x%lx onoff is %d\n", 
+//		ref, turn_it_on);
 	if (turn_it_on)
 		ref |= (1 << 19);
 	else
@@ -22,7 +22,7 @@ void refresh_set(int turn_it_on)
 			
 	pci_write_config_dword(pcidev, 0x7c, ref);
 	pci_read_config_dword(pcidev, 0x7c, &ref);
-	printk(KERN_INFO __FUNCTION__ "refresh is now 0x%lx\n", ref);
+//	printk(KERN_INFO __FUNCTION__ "refresh is now 0x%lx\n", ref);
 }
 // FIX ME!
 unsigned long sizeram()
@@ -31,7 +31,7 @@ unsigned long sizeram()
 	int i;
         struct pci_dev *pcidev;
 	volatile unsigned char *cp; 
-	char c;
+
 	u32 ram;
 	unsigned long size;
 	pcidev = pci_find_slot(0, PCI_DEVFN(0,0));
@@ -47,51 +47,36 @@ unsigned long sizeram()
 		size = (1 << (((ram >> 20) & 0x7))) * (0x400000);
 		printk("0x%x 0x%x, size 0x%x\n", i, ram, size);
 	}
-	printk("so is the first one double-sided? \n");
 	pci_read_config_dword(pcidev, 0x6c, &ram);
 	size = (1 << (((ram >> 20) & 0x7))) * (0x400000);
-	printk("set cp to 0x%x\n", size);
-	cp = (char *) size;
-	printk("cp is now %p\n", cp);
-	cache_disable();
-	refresh_set(0);
-	// you now have about 15 microseconds
-	*cp = 0x55;
-	// how odd. 
-	// what happens is if there is a 2nd row, then it will 
-	// read back REGARDLESS of the settings of the bits in the
-	// register! We verified this with the arium ...
-	// RGM 4/10/01
-	//printk("*cp is 0x%x\n", *cp);
-	c = *cp;
-	refresh_set(1);
-	printk("*cp is 0x%x\n", c);
-	if (*cp == 0x55) {
-		ram |= 0x1800000;		
-		printk("two side: Jam 0x%x into 0x6c\n", ram);
-		pci_write_config_dword(pcidev, 0x6c, ram);
-		printk("@ cp now is 0x%x\n", *cp);
-		// set the base address for the next dram slot 
-		// (if there is any ... )
-		cp += size;
-	} else printk("One sided\n");
-	
-	printk("cp now is 0x%x\n", cp);
-	return 0;
+	if ((ram & 0x1800000) == 0x1800000)
+		size <<= 1;
+	printk("size in 0x6c is 0x%x\n", size);
+	cp = (unsigned char *) size;
 	// now do the other two banks. 
-#define INIT_MCR 0xf663f83c
+#define INIT_MCR 0xf663b83c
 	for(i = 0x70; i < 0x78; i += 4) {
 		u32 temp;
+		u8 c1, c2;
 		unsigned long size, cas, offset;
 		printk("OK, let's try the other two banks\n");
 		pci_read_config_dword(pcidev, i, &temp);
 		pci_write_config_dword(pcidev, i, INIT_MCR);
 		printk("Slot 0x%x: set to 0x%x\n", i, INIT_MCR);
 		// anyone home?
+		cache_disable();
 		printk("Slot 0x%x: set value at %p\n", i, cp);
+		refresh_set(0);
 		*cp = 0x55;
-		printk("Slot 0x%x: value at %p is 0x%x\n", cp, *cp);
-		if (*cp != 0x55) {
+		*(cp + 8) = 0xaa;
+		c1 = *cp;
+		c2 = *(cp + 8);
+		refresh_set(1);
+		cache_enable();
+		printk("Slot 0x%x: value at %p is 0x%x\n", i, cp, c1);
+		printk("Slot 0x%x: value at %p is 0x%x\n", i, cp+8, c2);
+
+		if ((c1 != 0x55) || (c2 != 0xaa)) {
 			printk("Nothing in slot 0x%x\n", i);
 			pci_write_config_dword(pcidev, i, temp);
 			continue;
@@ -148,16 +133,34 @@ unsigned long sizeram()
 		// advance cp for the next area to check
 		cp += size;
 		// is it two-sided
-		temp |= 0x1800000;
+		temp &= 0xe07fffff;
 		pci_write_config_dword(pcidev, i, temp);
+		printk("Disabled it\n");
+		// enable other side. 
+		temp |= 0x11800000;
+		printk("Slot 0x%x: enable second side\n", i);
+		refresh_set(0);
+		// RONNIE: hangs here !
+		pci_write_config_dword(pcidev, i, temp);
+		printk("Slot %d: DONE enable second side\n", i);
+		cache_disable();
+
 		*cp = 0xaa;
-		printk("Slot 0x%x: value at %p is 0x%x\n", i, cp, *cp);
-		if (*cp != 0xaa) { // two side
+		*(cp + 8) = 0x55;
+		c1 = *cp;
+		refresh_set(1);
+		cache_enable();
+		printk("Slot 0x%x: value at %p is 0x%x\n", i, cp, c1);
+		if (c1 == 0xaa) { // two side
 			cp += size;
+			printk("Slot 0x%x: two-sided\n", i);
+		} else { // one side
 			temp &= ~0x1800000;
-			pci_write_config_dword(pcidev, i, temp);
-			printk("Slot %d: one-sided\n", i);
+			printk("Slot 0x%x: one side\n", i);
 		}
+		// turn the first slot back on
+		temp |= 0x6000000;
+		pci_write_config_dword(pcidev, i, temp);
 	}
 	cache_enable();
 	return 0; //64*1024*1024;

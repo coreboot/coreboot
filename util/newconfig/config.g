@@ -4,6 +4,8 @@ import re
 import string
 
 debug = 0
+warnings = 0
+errors = 0
 
 arch = ''
 ldscriptbase = ''
@@ -135,14 +137,12 @@ class option:
 			return self.value
 		if (self.value == '' or self.value[0] != '{'):
 			return self.value
-		# evaluate expression
-		a = re.sub("^{", "", self.value)
-		a = re.sub("}$", "", a)
 		# save curpart so we can evaluate expression
 		# in context of part
 		s = curpart
 		curpart = part
-		v = parse('value', a)
+		v = parse('delexpr', self.value)
+		# TODO: need to check for parse errors!
 		curpart = s
 		return v
 
@@ -298,18 +298,27 @@ class partsstack:
 		return self.stack[-1]
 pstack = partsstack()
 
-def fatal(string):      
-        global loc
+def error(string):      
+        global errors, loc
+	errors = errors + 1
         size = len(loc.stack)
         i = 0
         while(i < size -1): 
                 print loc.stack[i].at()
                 i = i + 1
         print "%s: %s"% (loc.at(), string)
-        sys.exit(1)
+
+def exitiferrors():
+	if (errors != 0):
+		sys.exit(1)
+
+def fatal(string):      
+	error(string)
+        exitiferrors()
 
 def warning(string):
-        global loc
+        global warnings, loc
+	warnings = warnings + 1
         print "===> Warning:"
         size = len(loc.stack)
         i = 0
@@ -369,7 +378,8 @@ def getoption(name, part):
 	else:
 		o = getvalue(options, name)
 	if (o == 0 or not o.defined):
-		fatal( "Error: Option %s Undefined (Missing use command?)." % name)
+		error("Error: Option %s undefined (missing use command?)." % name)
+		return
 	v = o.getvalue(part)
 	if (debug > 2):
 		print "getoption returns %s" % v
@@ -447,7 +457,7 @@ def getformated(name, part):
 	else:
 		o = getvalue(options, name)
 	if (o == 0 or not o.defined):
-		fatal( "Error: Option %s Undefined (Missing use command?)." % name)
+		fatal( "Error: Option %s undefined (missing use command?)." % name)
 	v = o.getvalue(part)
 	f = o.getformat()
 	return (f % v)
@@ -626,13 +636,18 @@ def dodir(path, file):
 	doconfigfile(fullpath, file)
 	curdir = dirstack.pop()
 
-def ternary(expr, yes, no):
+def lookup(name):
+    global curpart
+    v = getoption(name, curpart)
+    exitiferrors()
+    return v
+
+def ternary(val, yes, no):
 	if (debug):
 		print "ternary %s" % expr
-        a = tohex(expr) # expr # eval(expr)
 	if (debug):
 		print "expr %s a %d yes %d no %d"% (expr, a, yes, no)
-        if (a == 0):
+        if (val == 0):
 		if (debug):
 		    print "Ternary returns %d" % yes
 		return yes
@@ -957,31 +972,31 @@ parser Config:
     token STR:			r'"([^\\"]+|\\.)*"'
     token RAWTEXT:		r'.*'
 
-    rule expr<<V>>:	logical<<V>>		{{ l = logical }}
-			( "&&" logical<<V>>	{{ l = l and logical }}
-			| "||"  logical<<V>>	{{ l = l or logical }}
+    rule expr:		logical			{{ l = logical }}
+			( "&&" logical		{{ l = l and logical }}
+			| "||"  logical		{{ l = l or logical }}
 			)*			{{ return l }}
 
-    rule logical<<V>>:	factor<<V>>		{{ n = factor }}
-			( "[+]" factor<<V>>	{{ n = n+factor }}
-			| "-"  factor<<V>>	{{ n = n-factor }}
+    rule logical:	factor			{{ n = factor }}
+			( "[+]" factor		{{ n = n+factor }}
+			| "-"  factor		{{ n = n-factor }}
 			)*			{{ return n }}
 
-    rule factor<<V>>:	term<<V>>		{{ v = term }}
-			( "[*]" term<<V>>	{{ v = v*term }}
-			| "/"  term<<V>>	{{ v = v/term }}
-			| "<<"  term<<V>>	{{ v = v << term }}
-			| ">=" term<<V>>	{{ v = (v < term)}}
+    rule factor:	term			{{ v = term }}
+			( "[*]" term		{{ v = v*term }}
+			| "/"  term		{{ v = v/term }}
+			| "<<"  term		{{ v = v << term }}
+			| ">=" term		{{ v = (v < term)}}
 			)*			{{ return v }}
 
-    rule unop<<V>>:	"!" ID			{{ return ternary(getoption(ID, curpart), 1, 0)}}
-
     # A term is a number, variable, or an expression surrounded by parentheses
-    rule term<<V>>:	NUM			{{ return atoi(NUM) }}
+    rule term:		NUM			{{ return atoi(NUM) }}
 		|	XNUM			{{ return tohex(XNUM) }}
-		|	ID			{{ return tohex(getoption(ID, curpart)) }}
-		|	unop<<V>>		{{ return unop }}
-		|	"\\(" expr<<V>> "\\)"	{{ return expr }}
+		|	ID			{{ return lookup(ID) }}
+		|	unop			{{ return unop }}
+		|	"\\(" expr "\\)"	{{ return expr }}
+
+    rule unop:		"!" expr		{{ return not(expr) }}
 
     rule partend<<C>>:	(stmt<<C>>)* END 	{{ partpop()}}
 
@@ -1024,7 +1039,7 @@ parser Config:
 # if is a bad id ....
 # needs to be C and ID, but nested if's are, we hope, not going to 
 # happen. IF so, possibly ID && C could be used.
-    rule iif<<C>>:	IF ID			{{ c = tohex(getoption(ID, curpart)) }} 
+    rule iif<<C>>:	IF ID			{{ c = lookup(ID) }}
 			(stmt<<c>>)* END
 
     rule depsacts<<ID, C>>:
@@ -1076,18 +1091,26 @@ parser Config:
 
     rule uses<<C>>:	USES (usesid<<C>>)+
 
-    # ENTRY for parsing a value
     rule value:		STR			{{ return dequote(STR) }} 
-		| 	term<<[]>>		{{ return term }}
+		| 	expr			{{ return expr }}
 		|	DELEXPR			{{ return DELEXPR }}
 
-    rule option:	OPTION ID EQ value	{{ setoptionstmt(ID, value) }}
+    rule option<<C>>:	OPTION ID EQ value	{{ if (C): setoptionstmt(ID, value) }}
+
+    rule opif:		IF ID			{{ c = lookup(ID) }}
+			(option<<c>>)* END
+
+    rule opstmt:	option<<1>>
+		|	opif
+
+    # ENTRY for parsing a delayed value
+    rule delexpr:	"{" expr "}"		{{ return expr }}
 
     # ENTRY for parsing root part
     rule board:		LOADOPTIONS		{{ loadoptions() }}
 	    		TARGET DIRPATH		{{ target(DIRPATH) }}
 			(uses<<1>>)*
-			(option)*
+			(opstmt)*
 			mainboard		{{ return 1 }}
 
     rule defstmts<<ID>>:			{{ d = 0 }}
@@ -1144,6 +1167,7 @@ def doconfigfile(path, file):
 	loc.push_file(filename)
 	if (not parse('cfgfile', open(filename, 'r').read())):
 		fatal("Error: Could not parse file")
+	exitiferrors()
 
 if __name__=='__main__':
 	from sys import argv

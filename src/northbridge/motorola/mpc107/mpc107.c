@@ -23,28 +23,273 @@
 #include <printk.h>
 #include <arch/io.h>
 #include <arch/pciconf.h>
+#include <timer.h>
+#include <clock.h>
+#include <mem.h>
 #include "i2c.h"
 #include "mpc107.h"
-#include <timer.h>
 
 #define NUM_DIMMS	1
 #define NUM_BANKS	2
 
+void mpc107_init(void);
+
 void 
 sdram_init(void)
 {
-    sdram_dimm_info sdram_dimms[NUM_DIMMS];
-    sdram_bank_info sdram_banks[NUM_BANKS];
+	struct sdram_dimm_info dimms[NUM_DIMMS];
+	struct sdram_bank_info banks[NUM_BANKS];
 
-    hostbridge_probe_dimms(NUM_DIMMS, sdram_dimms, sdram_banks);
-    (void)hostbridge_config_memory(NUM_BANKS, sdram_banks, 2);
+	mpc107_init();
+	mpc107_probe_dimms(NUM_DIMMS, dimms, banks);
+	(void)mpc107_config_memory(NUM_BANKS, banks, 2);
+}
+
+struct mem_range *
+sizeram(void)
+{
+	int i;
+	struct sdram_dimm_info dimms[NUM_DIMMS];
+	struct sdram_bank_info banks[NUM_BANKS];
+	static struct mem_range meminfo;
+
+	meminfo.basek = 0;
+	meminfo.sizek = 0;
+
+	mpc107_probe_dimms(NUM_DIMMS, dimms, banks);
+
+	for (i = 0; i < NUM_BANKS; i++)
+		meminfo.sizek += banks[i].size;
+
+	meminfo.sizek >>= 10;
+
+	return &meminfo;
+}
+
+void
+mpc107_init(void)
+{
+	uint16_t reg16;
+	uint32_t reg32;
+	
+        /* 
+	 * PCI Cmd 
+	 */
+	pci_ppc_write_config16(0, 0, 0x04, 0x06);
+        
+        /*
+	 * PCI Stat 
+	 */
+	reg16 = pci_ppc_read_config16(0, 0, 0x06);
+	reg16 |= 0xffff;
+	pci_ppc_write_config16(0, 0, 0x06, reg16);
+	
+        /* 
+	 * PICR1 
+	 *      0x00400000	burst read wait states = 1
+	 *      0x00040000	processor type = 603/750
+	 *      0x00002000	enable LocalBusSlave
+	 *      0x00001000	enable Flash write
+	 *      0x00000800	enable MCP* assertion
+	 *      0x00000400	enable TEA* assertion
+	 *      0x00000200	enable data bus parking
+	 *      0x00000040	enable PCI store gathering
+	 *      0x00000010	enable loop-snoop
+	 *      0x00000008	enable address bus parking
+	 *      0x00000004	enable speculative PCI reads
+	 */
+	reg32 = pci_ppc_read_config32(0, 0, 0xa8);
+
+	/*
+	 * Preserve RCS0/Addr Map bits
+	 */
+	reg32 &= 0x11;
+
+	reg32 |= 0xff041a18;
+	pci_ppc_write_config32(0, 0, 0xa8, reg32);
+
+        /* 
+	 * PICR2 
+	 *      0x20000000	no Serialize Config cycles
+	 *      0x08000000	No PCI Snoop cycles
+	 *      0x04000000	FF0 is Local ROM
+	 *      0x02000000	Flash write lockout
+	 *      0x00000000	snoop wt states = 0
+	 *      0x00040000	snoop wt states = 1
+	 *      0x00080000	snoop wt states = 2
+	 *      0x000c0000	snoop wt states = 3
+	 *      0x00000000	addr phase wt states = 0
+	 *      0x00000004	addr phase wt states = 1
+	 *      0x00000008	addr phase wt states = 2
+	 *      0x0000000c	addr phase wt states = 3
+	 */
+
+	pci_ppc_write_config32(0, 0, 0xac, 0x04040004);
+
+        /*
+	 * EUMBBAR 
+	 */
+	pci_ppc_write_config32(0, 0, 0x78, 0xfc000000);
+	
+        /*
+	 * MCCR1 - Set MEMGO bit later!
+	 *      0x75800000	Safe local ROM = 10+3 clocks
+	 *      0x73800000	Fast local ROM = 7+3 clocks
+	 *      0x00100000	Burst ROM/Flash enable
+	 *      0x00040000	Self-refresh enable
+	 *      0x00020000	EDO/FP enable (else SDRAM)
+	 *      0x00010000	Parity check
+	 *      0x0000FFFF	16Mbit/2 bank SDRAM
+	 *      0x00005555	64Mbit/2 bank SDRAM
+	 *      0x00000000	64Mbit/4 bank SDRAM
+	 */
+	reg32 = pci_ppc_read_config32(0, 0, 0xf0);
+	reg32 &= 0x00080000; /* Preserve MEMGO bit in case we're in RAM */
+	reg32 |= 0x75800000;
+	pci_ppc_write_config32(0, 0, 0xf0, reg32);
+
+        /* 
+	 * MCCR2 
+	 *      0x40000000	TS_WAIT_TIMER = 3 clocks
+	 *      0x04000000	ASRISE = 2 clocks
+	 *      0x00400000	ASFALL = 2 clocks
+	 *      0x00100000	SDRAM parity (else ECC)
+	 *      0x00080000	SDRAM inline writes
+	 *      0x00040000	SDRAM inline reads
+	 *      0x00020000	ECC enable
+	 *      0x00010000	EDO (else FP)
+	 *      0x000006b8	Refresh 33MHz bus
+	 *      0x0000035c	Refresh 66MHz bus
+	 *      0x0000023c	Refresh 100MHz bus
+	 *      0x000001ac	Refresh 133MHz bus
+	 *      0x00000002	Reserve a page
+	 *      0x00000001	RWM parity
+	 */
+	pci_ppc_write_config32(0, 0, 0xf4, 0x0440023c);
+
+	/*
+	 * MCCR3
+	 *	0x70000000	BSTOPRE_M = 7
+	 *      0x08000000	REFREC = 8 clocks
+	 *      0x00400000	RDLAT = 4 clocks
+	 *      0x00300000	RDLAT = 3 clocks
+	 */
+	pci_ppc_write_config32(0, 0, 0xf8, 0x78400000);
+
+        /* 
+	 * MCCR4 
+	 *	0x30000000	PRETOACT = 3 clocks
+	 *      0x05000000	ACTOPRE = 5 clocks
+	 *      0x00800000	Enable 8-beat burst (32-bit bus)
+	 *      0x00400000	Enable Inline ECC/Parity
+	 *      0x00200000	Enable Extended ROM (RCS2/RCS3)
+	 *      0x00100000	Registered buffers
+	 *      0x00000000	BSTOPRE_U = 0
+	 *      0x00020000	Change RCS1 to 8-bit mode
+	 *      0x00008000	Registered DIMMs
+	 *      0x00003000	CAS Latencey (CL=3)
+	 *      0x00002000	CAS Latencey (CL=2)
+	 *      0x00000200	Sequential wrap/4-beat burst
+	 *      0x00000030	Reserve a page
+	 *      0x00000009	RWM parity
+	 */
+	pci_ppc_write_config32(0, 0, 0xfc, 0x35323239);
+
+	/*
+	 * MSAR1/MSAR2/MESAR1/MESAR2
+	 */
+	pci_ppc_write_config32(0, 0, 0x80, 0x60402000);
+	pci_ppc_write_config32(0, 0, 0x84, 0xe0c0a080);
+	pci_ppc_write_config32(0, 0, 0x88, 0x00000000);
+	pci_ppc_write_config32(0, 0, 0x8c, 0x00000000);
+
+	/*
+	 * MEAR1/MEAR2/MEEAR1/MEEAR2
+	 */
+	pci_ppc_write_config32(0, 0, 0x90, 0x7f5f3f1f);
+	pci_ppc_write_config32(0, 0, 0x94, 0xffdfbf9f);
+	pci_ppc_write_config32(0, 0, 0x98, 0x00000000);
+	pci_ppc_write_config32(0, 0, 0x9c, 0x00000000);
+
+	/*
+	 * ODCR
+	 *	0x80	PCI I/O 50 ohms 
+	 *	0x40	CPU I/O 50 ohms
+	 *	0x30	Mem I/O 8 ohms
+	 *	0x20	Mem I/O 13 ohms
+	 *	0x10	Mem I/O 20 ohms
+	 *	0x00	Mem I/O 40 ohms
+	 *	0x0c	PCIClk 8 ohms
+	 *	0x08	PCIClk 13 ohms
+	 *	0x04	PCIClk 20 ohms
+	 *	0x00	PCIClk 40 ohms
+	 *	0x03	MemClk 8 ohms
+	 *	0x02	MemClk 13.3 ohms
+	 *	0x01	MemClk 20 ohms
+	 *	0x00	MemClk 40 ohms
+	 */
+	pci_ppc_write_config8(0, 0, 0x73, 0xc0);
+
+        /* 
+	 * CDCR 
+	 *	0x8000	PCI_SYNC_OUT disabled
+	 *      0x7c00	PCI_CLK disabled
+	 *      0x0300	CPU_CLK 8 ohms
+	 *      0x0200	CPU_CLK 13 ohms
+	 *      0x0100	CPU_CLK 20 ohms
+	 *      0x0000	CPU_CLK 40 ohms
+	 *      0x0080	SDRAM_SYNC_OUT disabled
+	 *      0x0078	SDRAM_CLK disabled
+	 *      0x0004	CPU_CLK0 disabled
+	 *      0x0002	CPU_CLK1 disabled
+	 *      0x0001	CPU_CLK2 disabled
+	*/
+	pci_ppc_write_config16(0, 0, 0x74, 0xfc01);
+
+	/*
+	 * MDCR
+	 *      0x80	MCP 1=open-drain, 0=output
+	 *      0x40	SRESET 1=open-drain, 0=output
+	 *      0x20	QACK 1=high-Z, 0=output
+	 */
+	pci_ppc_write_config8(0, 0, 0x76, 0x60);
+
+	/*
+	 * MBEN
+	 *      0x03	Enable banks 0 and 1
+	 */
+	pci_ppc_write_config8(0, 0, 0xa0, 0x03);
+
+        /* 
+	 * PGMAX
+	 *      0x32	33MHz value w/ROMFAL=8
+	 */
+	pci_ppc_write_config8(0, 0, 0xa3, 0x32);
+
+	/*
+	 * Wait 200us
+	 */
+	udelay(200);
+	
+	/*
+	 * Now set memgo bit in MCCR1
+	 */
+	reg32 = pci_ppc_read_config32(0, 0, 0xf0);
+	reg32 |= 0x00080000; /* MEMGO=1 */
+	pci_ppc_write_config32(0, 0, 0xf0, reg32);
+
+	/*
+	 * Wait again
+	 */
+
+	udelay(10000);
 }
 
 /*
  * Configure memory settings.
  */
 unsigned long 
-hostbridge_config_memory(int no_banks, sdram_bank_info * bank, int for_real)
+mpc107_config_memory(int no_banks, sdram_bank_info * bank, int for_real)
 {
     int i, j;
     char ignore[8];
@@ -421,7 +666,7 @@ i2c_fn mpc107_i2c_fn = {
  * Find dimm information.
  */
 void
-hostbridge_probe_dimms(int no_dimms, sdram_dimm_info *dimms, sdram_bank_info * bank)
+mpc107_probe_dimms(int no_dimms, sdram_dimm_info *dimms, sdram_bank_info * bank)
 {
     unsigned char data[256];
     unsigned dimm;

@@ -157,6 +157,9 @@ driver mainboard.o
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
 
+## ATI Rage XL framebuffering graphics driver
+dir /drivers/ati/ragexl
+
 ##
 ## Romcc output
 ##
@@ -270,14 +273,14 @@ northbridge amd/amdk8 "mc0"
                                  io 0x60 = 0x3f0
                                 irq 0x70 = 6
                                 drq 0x74 = 2
-                #        pnp 2e.1 off #  Parallel Port
-                #                 io 0x60 = 0x378
-                #                irq 0x70 = 7
+                        pnp 2e.1 off #  Parallel Port
+                                 io 0x60 = 0x378
+                                irq 0x70 = 7
                         pnp 2e.2 on #  Com1
                                  io 0x60 = 0x3f8
                                 irq 0x70 = 4
                         pnp 2e.3 off #  Com2
-                                 io 0x60 = 0x2f8
+                                io 0x60 = 0x2f8
                                 irq 0x70 = 3
                         pnp 2e.5 on #  Keyboard
                                  io 0x60 = 0x60
@@ -289,8 +292,11 @@ northbridge amd/amdk8 "mc0"
                         pnp 2e.8 off #  GPIO2
                         pnp 2e.9 off #  GPIO3
                         pnp 2e.a off #  ACPI
-                        pnp 2e.b on #  HW Monitor
+                        pnp 2e.b on  #  HW Monitor
  				 io 0x60 = 0x290
+			register "com1" = "{1}"
+		#	register "com1" = "{1, 0, 0x3f8, 4}"
+		#	register "lpt" = "{1}"
                 end
 
 #		superio winbond/w83627hf link 1

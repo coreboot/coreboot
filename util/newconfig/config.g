@@ -347,7 +347,7 @@ class romimage:
 		if (self.useinitincludes):
 			return "crt0.S"
 		else:
-			return "crt0_include.h"
+			return "crt0_includes.h"
 	
 	def newformat(self):
 		return self.useinitincludes

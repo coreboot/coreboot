@@ -1,0 +1,5 @@
+option SIS635
+raminit northsouthbridge/sis/635/raminit.inc
+
+object southbridge.o
+object northbridge.o

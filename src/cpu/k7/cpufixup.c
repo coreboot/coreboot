@@ -1,4 +1,5 @@
 // Needed so the AMD K7 runs correctly. 
+#include <mem.h>
 #include <printk.h>
 #include <cpu/p6/msr.h>
 #include <cpu/cpufixup.h>
@@ -11,11 +12,21 @@
 
 #define MTRRVARDRAMEN (1 << 20)
 
-void
-k7_cpufixup(unsigned long ram_kilobytes)
+void k7_cpufixup(struct mem_range *mem)
 {
 	unsigned long lo = 0, hi = 0, i;
-	unsigned long ram_megabytes = ram_kilobytes * 1024;
+	unsigned long ram_megabytes;
+
+	/* For now no Athlon board has significant holes in it's
+	 * address space so just find the last memory region
+	 * and compute the end of memory from that.
+	 */
+	for(i = 0; mem[i].sizek; i++)
+		;
+	if (i == 0) 
+		return;
+	ram_megabytes = (mem[i-1].basek + mem[i-1].sizek) *1024;
+		
 
 	// 8 MB alignment please
 	ram_megabytes += 0x7fffff;

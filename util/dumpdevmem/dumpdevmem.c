@@ -33,7 +33,7 @@ main(int argc, char *argv[])
       v = mmap(0, length, PROT_READ | PROT_WRITE, MAP_SHARED,fd,nvram);
       fprintf(stderr, "mmap returns %p\n", v);
       
-      if ( (int)v == -1)
+      if ( v == (void *) -1)
 	{
 	  perror("mmap");
 	  exit(1);

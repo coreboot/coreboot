@@ -290,7 +290,8 @@ next_row:
 	testb $2, %al
 	jnz two_rows
 	testb $1, %bl
-	jnz ready_for_next_row
+	/* this used to be jnz but seems it should be jz */
+	jz ready_for_next_row
 
 two_rows:
 	movzx %bl, %dx

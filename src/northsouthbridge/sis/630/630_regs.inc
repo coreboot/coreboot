@@ -42,6 +42,8 @@ northbridge_init_table:
 #ifdef ENABLE_SIS630_CPU_PIPELINE
 	.byte	0x50,	0x9E	#
 #else
+	/* CPU Pipeline should be disable if on Coppermine CPU
+	 * or more than 1 Bus Master LAN */	
 	.byte	0x50,	0x9C	#
 #endif
 	.byte	0x51,	0x00	#

@@ -49,6 +49,7 @@ if HAVE_PIRQ_TABLE object irq_tables.o end
 if HAVE_ACPI_TABLES
 	object fadt.o
 	object dsdt.o
+	object acpi_tables.o
 end
 
 ##

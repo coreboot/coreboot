@@ -1,0 +1,40 @@
+
+This FAQ may be found in the LinuxBIOS source tree, under
+Documentation/flashfaq.txt
+
+Q. What is FLASH?
+A. FLASH is an electrically reprogrammable, read-only memory that saves 
+its contents across power cycles. FLASH currently comes in two general types, 
+asynchronous and synchronous. Currnently only Intel sells FLASH that is 
+synchronously read and written.
+
+Q. How is FLASH used in PCs?
+A. FLASH is used for the BIOS software that boots the PC when it is turned on
+or reset. FLASH contains the first software that the PC runs. 
+
+Q. What are the typical sizes of FLASH in PCs
+A. Strangely enough, the size of FLASH in PCs has been dropping in recent 
+years, after growing for several years. Early FLASH came in DIP-32 parts
+and was 256KB or 512KB in size. BIOSes are now compressed and hence the size
+has dropped to 256KB in recent years. 
+
+Q. How is FLASH written? 
+A. On newer PCs the FLASH can be written entirely from software. No jumper
+manipulation is required. Several programs are available on Linux to do this
+rewriting, one of which is included in the LinuxBIOS source tree. 
+
+Q. What are the obstacles to writing FLASH. 
+A. There are three levels of interlock to updating FLASH. First are interlocks
+in the FLASH chips themselves. These typically require writing specific
+patters to the chips in a specific order to unlock the write locks on
+the chip. Second are interlocks built in to the PC chipset, which require
+bits to be set in the chipset to make the FLASH part of the address space 
+writeable. These two interlocks are fairly easy to work with. 
+The third interlock is the hardest. Many motherboard vendors put additional
+hardware interlocks external to the PC chipset onto the motherboard. These
+interlocks are difficult to figure out (by design). They are occasionally 
+documented on embedded motherboards, but on most PC chipsets they are 
+obscured. These interlocks present the most challenging problems to those
+wishing to use LinuxBIOS on their motherboard. 
+
+

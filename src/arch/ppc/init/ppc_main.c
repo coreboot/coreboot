@@ -10,7 +10,7 @@ extern unsigned _iseg[];
 extern unsigned _liseg[];
 extern unsigned _eliseg[];
 
-void (*hardwaremain)(int) = (void (*)(int))_iseg;
+void (*payload)(void) = (void (*)(void))_iseg;
 
 /*
  * At this point we're running out of flash with our
@@ -40,5 +40,5 @@ void ppc_main(void)
 			*to++ = *from++;
 	}
 
-	hardwaremain(0);
+	payload();
 }

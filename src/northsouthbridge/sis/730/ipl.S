@@ -55,6 +55,10 @@ sis730spd_start:
 
 	movw	$0x5501, %ax			# Mode# enable, this bit
 	CALL_SP(write_pci_register)		# should be set before sizing.
+#ifdef CONFIG_SIS_DISABLE_ETHERNET
+	mowv $0x7c0f, %ax
+	CALL_SP(write_lpc_register)
+#endif
 
 #ifdef SIZE_ALL
 	xorw	%bx, %bx			# clear %fs, %fs is used as "bitmap" of

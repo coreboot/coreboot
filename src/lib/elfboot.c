@@ -66,6 +66,7 @@ int elfboot(void)
 	int header_offset;
 	void *ptr, *entry;
 	int i;
+	byte_offset_t amtread;
 
 	printk_info("\n");
 	printk_info("Welcome to %s, the open sourced starter.\n", BOOTLOADER);
@@ -172,14 +173,19 @@ int elfboot(void)
 
 		/* Compute the boundaries of the section */
 		dest = (unsigned char *)(cur_phdr->p_paddr);
+		printk_debug("dest %p\n", dest);
 		end = dest + cur_phdr->p_memsz;
+		printk_debug("end %p\n", end);
 		len = cur_phdr->p_filesz;
+		printk_debug("len %d\n", len);
 		if (len > cur_phdr->p_memsz) {
 			len = cur_phdr->p_memsz;
 		}
 		middle = dest + len;
+		printk_debug("middle %d\n", middle);
 		start_offset = cur_phdr->p_offset;
 
+		printk_debug("start_offset %d\n", start_offset);
 		/* Skip intial buffer unused bytes */
 		if (offset < (ELF_HEAD_SIZE - header_offset)) {
 			if (start_offset < (ELF_HEAD_SIZE - header_offset)) {
@@ -189,6 +195,7 @@ int elfboot(void)
 			}
 		}
 
+		printk_debug(__FUNCTION__ " skip %d\n", start_offset - offset);
 		/* Skip the unused bytes */
 		if (streams->skip(start_offset - offset) != (start_offset - offset)) {
 			printk_err("skip failed\n");
@@ -210,8 +217,12 @@ int elfboot(void)
 		}
 		
 		/* Read the section into memory */
-		if (streams->read(dest, middle - dest) != (middle - dest)) {
-			printk_err("Read failed...\n");
+		printk_debug(__FUNCTION__ " read to %p size %d\n", 
+				dest, middle-dest);
+		amtread = streams->read(dest, middle - dest);
+		if ( amtread /*!=*/ < (middle - dest)) {
+			printk_err("Read for section failed...\n");
+			printk_err("Wanted %d got %d\n", middle-dest, amtread);
 			goto out;
 		}
 		offset += cur_phdr->p_filesz;

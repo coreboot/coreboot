@@ -632,7 +632,7 @@ def dodir(path, file):
 	dirstack.append(curdir)
 	curdir = fullpath
 	file = os.path.join(fullpath, file)
-	config_file_list.append(path)
+	config_file_list.append(file)
 	doconfigfile(fullpath, file)
 	curdir = dirstack.pop()
 

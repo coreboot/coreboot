@@ -17,15 +17,15 @@ uses ARCH
 ###
 ##object mainboard.o
 config chip.h
-register "fixup_scsi" = "1" 
+register "fixup_scsi" = "1"
 register "fixup_vga" = "1"
 
-
 driver mainboard.o
-driver lsi_scsi.o
-#driver adaptec_scsi.o
-driver promise_sata.o
-#driver intel_nic.o
+driver broadcom_nic.o
+driver ti_firewire.o
+driver adaptec_scsi.o
+driver si_sata.o
+driver intel_nic.o
 object static_devices.o
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
@@ -159,6 +159,8 @@ southbridge amd/amd8111 "amd8111"
 end
 southbridge amd/amd8131 "amd8131"
 end
+southbridge amd/amd8151 "amd8151"
+end
 #mainboardinit archi386/smp/secondary.inc
 #superio NSC/pc87360
 #	register "com1" = "{1}"
@@ -166,10 +168,10 @@ end
 #end
 dir /pc80
 ##dir /src/superio/winbond/w83627hf
-dir /bioscall
 dir /cpu/k8
 cpu k8 "cpu0"
-  register "up" = "{.chip = &amd8131, .ht_width=8, .ht_speed=200}"
+  register "up" = "{.chip = &amd8151, .ht_width=16, .ht_speed=600}"
+  register "down" = "{.chip = &amd8131, .ht_width=16, .ht_speed=600}"
 end
 
 cpu k8 "cpu1"

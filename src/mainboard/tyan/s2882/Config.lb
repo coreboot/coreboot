@@ -22,9 +22,8 @@ register "fixup_vga" = "1"
 
 
 driver mainboard.o
-driver lsi_scsi.o
-#driver adaptec_scsi.o
-driver promise_sata.o
+driver adaptec_scsi.o
+#driver si_sata.o
 #driver intel_nic.o
 object static_devices.o
 if HAVE_MP_TABLE object mptable.o end

@@ -32,7 +32,7 @@ uses MAINBOARD
 uses MAINBOARD_PART_NUMBER
 uses MAINBOARD_VENDOR
 uses MAX_CPUS
-uses MEMORY_HOLE
+#uses MEMORY_HOLE
 uses PAYLOAD_SIZE
 uses _RAMBASE
 uses _ROMBASE
@@ -49,6 +49,27 @@ uses USE_NORMAL_IMAGE
 uses USE_OPTION_TABLE
 uses HAVE_OPTION_TABLE
 uses CONFIG_CHIP_CONFIGURE
+ 
+uses CONFIG_CONSOLE_SERIAL8250
+uses TTYS0_BAUD
+uses DEFAULT_CONSOLE_LOGLEVEL
+uses MAXIMUM_CONSOLE_LOGLEVEL
+uses DEBUG
+uses CONFIG_MAX_CPUS
+uses CONFIG_LOGICAL_CPUS
+uses MAX_PHYSICAL_CPUS
+uses LINUXBIOS_EXTRA_VERSION
+uses XIP_ROM_SIZE
+uses XIP_ROM_BASE
+
+uses CONFIG_VGABIOS
+uses CONFIG_REALMODE_IDT
+uses CONFIG_PCIBIOS
+uses VGABIOS_START
+uses SCSIFW_START
+
+#
+#uses CONFIG_LSI_SCSI_FW_FIXUP
 
 option HAVE_OPTION_TABLE=1
 option HAVE_MP_TABLE=1
@@ -61,9 +82,19 @@ option k7=1
 option k8=1
 option ROM_SIZE=524288
 
+#option CONFIG_VGABIOS=1
+#option CONFIG_REALMODE_IDT=1
+#option CONFIG_PCIBIOS=1
+#option VGABIOS_START=0xfff8c000
+option SCSIFW_START=0xfff80000
+
+
+option HAVE_FALLBACK_BOOT=1
+  
 # use the new chip configure code.
 
 option CONFIG_CHIP_CONFIGURE=1
+#option CONFIG_LSI_SCSI_FW_FIXUP=1
 
 
 ### Customize our winbond superio chip for this motherboard
@@ -82,7 +113,10 @@ option IRQ_SLOT_COUNT=13
 ### Only worry about 2 micro processors
 ###
 option CONFIG_SMP=1
+option CONFIG_MAX_CPUS=2
 option MAX_CPUS=2
+option CONFIG_LOGICAL_CPUS=0
+option MAX_PHYSICAL_CPUS=2
 #
 ###
 ### Build code to setup a generic IOAPIC
@@ -98,7 +132,7 @@ option CONFIG_IOAPIC=1
 ### CPU identification depends on only variable MTRRs
 ### being enabled.
 ###
-option MEMORY_HOLE=0
+#option MEMORY_HOLE=0
 #
 ###
 ### Enable both fixed and variable MTRRS
@@ -112,8 +146,8 @@ option ENABLE_FIXED_AND_VARIABLE_MTRRS=1
 ###
 ### Clean up the motherboard id strings
 ###
-#option MAINBOARD_PART_NUMBER="Solo7"
-#option MAINBOARD_VENDOR="AMD"
+option MAINBOARD_PART_NUMBER="S2880"
+option MAINBOARD_VENDOR="Tyan"
 #
 ###
 ### Call the final_mainboard_fixup function
@@ -125,71 +159,108 @@ option FINAL_MAINBOARD_FIXUP=1
 ### (linuxBIOS plus bootloader) will live in the boot rom chip.
 ###
 #option FALLBACK_SIZE=524288
+option FALLBACK_SIZE=98304
+
+## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
+option ROM_IMAGE_SIZE=65536
+ 
+
 ###
 ### Compute where this copy of linuxBIOS will start in the boot rom
 ###
 #
 ###
-### Compute a range of ROM that can cached to speed up linuxBIOS,
-### execution speed.
-###
-##expr XIP_ROM_SIZE = 65536
-##expr XIP_ROM_BASE = _ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE
-##option XIP_ROM_SIZE=65536
-##option XIP_ROM_BASE=0xffff0000
-#
-## XIP_ROM_SIZE && XIP_ROM_BASE values that work.
-##option XIP_ROM_SIZE=0x8000
-##option XIP_ROM_BASE=0xffff8000
 
-## We don't use compressed image
-option CONFIG_COMPRESS=0
+## We do use compressed image
+option CONFIG_COMPRESS=1
 
 option USE_ELF_BOOT=1
 
-## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
-option ROM_IMAGE_SIZE=65536
+
+option CONFIG_CONSOLE_SERIAL8250=1
+option TTYS0_BAUD=115200
+
+##
+### Select the linuxBIOS loglevel
+##
+## EMERG      1   system is unusable
+## ALERT      2   action must be taken immediately
+## CRIT       3   critical conditions
+## ERR        4   error conditions
+## WARNING    5   warning conditions
+## NOTICE     6   normal but significant condition
+## INFO       7   informational
+## DEBUG      8   debug-level messages
+## SPEW       9   Way too many details
+
+## Request this level of debugging output
+option DEFAULT_CONSOLE_LOGLEVEL=8
+## At a maximum only compile in this level of debugging
+option MAXIMUM_CONSOLE_LOGLEVEL=9
+
+option DEBUG=1
+
+option AMD8111_DEV=0x5
+
+#
 
 ## LinuxBIOS C code runs at this location in RAM
-option _RAMBASE=0x00100000
+option _RAMBASE=0x004000
 
 ##
 ## Use a 64K stack
 ##
-option STACK_SIZE=0x10000
+option STACK_SIZE=0x2000
 
 ##
 ## Use a 64K heap
 ##
-option HEAP_SIZE=0x10000
+option HEAP_SIZE=0x2000
 
 #
 ###
 ### Compute the start location and size size of
 ### The linuxBIOS bootloader.
 ###
-option PAYLOAD_SIZE            = (ROM_SECTION_SIZE - ROM_IMAGE_SIZE)
-option CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
 option CONFIG_ROM_STREAM     = 1
-option _ROMBASE      = (CONFIG_ROM_STREAM_START + PAYLOAD_SIZE)
 
 #
-# Arima hdama
+# 
 romimage "normal"
-	option USE_FALLBACK_IMAGE=0
+#	48K for SCSI FW
+        option ROM_SIZE = 475136
+#	48K for SCSI FW and 48K for ATI ROM
+#	option ROM_SIZE = 425984  
+        option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
 	option ROM_SECTION_SIZE  = (ROM_SIZE - FALLBACK_SIZE)
 	option ROM_SECTION_OFFSET= 0
+
+	option PAYLOAD_SIZE            = (ROM_SECTION_SIZE - ROM_IMAGE_SIZE)
+	option CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+	option _ROMBASE      = (CONFIG_ROM_STREAM_START + PAYLOAD_SIZE)
+
+	option XIP_ROM_SIZE = FALLBACK_SIZE
+	option XIP_ROM_BASE = (_ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE)
+
 	mainboard tyan/s2880
-	payload ../eepro100.ebi 
+	payload ../../tg3--ide_disk.zelf 
 end
 
 romimage "fallback" 
+	option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Fallback"
 	option USE_FALLBACK_IMAGE=1
-	option HAVE_FALLBACK_BOOT=1
 	option ROM_SECTION_SIZE  = FALLBACK_SIZE
 	option ROM_SECTION_OFFSET= (ROM_SIZE - FALLBACK_SIZE)
+
+	option PAYLOAD_SIZE            = (ROM_SECTION_SIZE - ROM_IMAGE_SIZE)
+	option CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+	option _ROMBASE      = (CONFIG_ROM_STREAM_START + PAYLOAD_SIZE)
+
+	option XIP_ROM_SIZE = FALLBACK_SIZE
+	option XIP_ROM_BASE = (_ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE)
+
 	mainboard tyan/s2880
-	payload ../eepro100.ebi 
+	payload ../../tg3.zelf
 end
 
 buildrom ROM_SIZE "normal" "fallback"

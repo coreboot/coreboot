@@ -141,14 +141,14 @@ static void
 enable(struct chip *chip, enum chip_pass pass)
 {
 
-        struct mainboard_tyan_s2880_config *conf = 
-		(struct mainboard_tyan_s2880_config *)chip->chip_info;
+        struct mainboard_tyan_s2882_config *conf = 
+		(struct mainboard_tyan_s2882_config *)chip->chip_info;
 
         switch (pass) {
 		default: break;
 //		case CONF_PASS_PRE_CONSOLE:
 //		case CONF_PASS_PRE_PCI:
-//		case CONF_PASS_POST_PCI:		
+		case CONF_PASS_POST_PCI:		
                 case CONF_PASS_PRE_BOOT:
 			if (conf->fixup_scsi)
         			onboard_scsi_fixup();
@@ -167,8 +167,8 @@ void final_mainboard_fixup(void)
 #endif
 }
 
-struct chip_control mainboard_tyan_s2880_control = {
+struct chip_control mainboard_tyan_s2882_control = {
 	        .enable= enable,
-	        .name=   "Tyan s2880 mainboard "
+	        .name=   "Tyan s2882 mainboard "
 };
 

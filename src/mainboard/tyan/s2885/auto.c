@@ -19,16 +19,16 @@
 static void memreset_setup(void)
 {
 	/* Set the memreset low */
-//	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 28);
+	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16); // BY LYH 28->16  0<<0 --> 1<<0
 	/* Ensure the BIOS has control of the memory lines */
-//	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 29);
+	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17); // BY LYH 29->17
 }
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
 	udelay(800);
 	/* Set memreset_high */
-//	outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 28);
+//	outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 17); // BY LYH 28->17  
 	udelay(90);
 }
 
@@ -84,8 +84,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/cpu_ldtstop.c"
 #include "southbridge/amd/amd8111/amd8111_ldtstop.c"
 
-#include "northbridge/amd/amdk8/raminit.c"
-#include "northbridge/amd/amdk8/coherent_ht.c"
+#include "northbridge/amd/amdk8/raminit.1.c"
+#include "northbridge/amd/amdk8/coherent_ht.1.c"
 #include "sdram/generic_sdram.c"
 
 static void enable_lapic(void)
@@ -166,7 +166,9 @@ static void main(void)
 	console_init();
 	setup_default_resource_map();
 	setup_coherent_ht_domain();
-	enumerate_ht_chain(0);
+        enumerate_ht_chain(0);
+	//setup_resource_map_x();
+	//enumerate_ht_chain(0);
 	distinguish_cpu_resets(0);
 	
 #if 0
@@ -198,13 +200,13 @@ static void main(void)
 /*
 #if  0
 	ram_check(0x00000000, msr.lo+(msr.hi<<32));
-#else
+#else 
 #if TOTAL_CPUS < 2
 	// Check 16MB of memory @ 0
-	ram_check(0x00000000, 0x01000000);
+	ram_check(0x00000000, 0x00100000);
 #else
 	// Check 16MB of memory @ 2GB 
-	ram_check(0x80000000, 0x81000000);
+	ram_check(0x80000000, 0x80100000);
 #endif
 #endif
 */

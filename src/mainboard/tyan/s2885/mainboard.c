@@ -141,8 +141,8 @@ static void
 enable(struct chip *chip, enum chip_pass pass)
 {
 
-        struct mainboard_tyan_s2880_config *conf = 
-		(struct mainboard_tyan_s2880_config *)chip->chip_info;
+        struct mainboard_tyan_s2885_config *conf = 
+		(struct mainboard_tyan_s2885_config *)chip->chip_info;
 
         switch (pass) {
 		default: break;
@@ -167,8 +167,8 @@ void final_mainboard_fixup(void)
 #endif
 }
 
-struct chip_control mainboard_tyan_s2880_control = {
+struct chip_control mainboard_tyan_s2885_control = {
 	        .enable= enable,
-	        .name=   "Tyan s2880 mainboard "
+	        .name=   "Tyan s2885 mainboard "
 };
 

@@ -18,7 +18,7 @@
  * MA 02111-1307 USA
  */
 
-#include <printk.h>
+#include <console/console.h>
 #include "mpc107.h"
 
 void 

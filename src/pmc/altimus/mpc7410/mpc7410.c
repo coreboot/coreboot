@@ -6,8 +6,7 @@
 #include <ppcreg.h>
 #include <types.h>
 #include <string.h>
-#include <pci.h>
-#include <printk.h>
+#include <console/console.h>
 
 #define ONEMEG  0x00100000
 #define HALFMEG 0x00080000

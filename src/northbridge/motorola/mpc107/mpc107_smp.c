@@ -1,4 +1,5 @@
-#include <pci.h>
+#include <types.h>
+#include <device/pci.h>
 #include "mpc107.h"
 
 void
@@ -10,8 +11,12 @@ unsigned long
 this_processors_id(void)
 {
 	u32 pic1;          
+	struct device *dev;
 
-	pcibios_read_config_dword(0, 0, MPC107_PIC1, &pic1);
+	if ((dev = dev_find_slot(0, 0)) == NULL)
+		return 0;
+
+	pic1 = pci_read_config32(dev, MPC107_PIC1);
 	return (pic1 & MPC107_PIC1_CF_MP_ID) >> 14;
 }
 

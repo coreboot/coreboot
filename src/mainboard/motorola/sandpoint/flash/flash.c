@@ -4,7 +4,7 @@
 
 #include <types.h>
 #include <string.h>
-#include <printk.h>
+#include <console/console.h>
 #include <stdlib.h>
 #include "../flash.h"
 

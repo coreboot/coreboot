@@ -19,11 +19,12 @@
  */
 #include <bsp.h>
 #include <ppc.h>
-#include <pci.h>
+#include <types.h>
+#include <device/pci.h>
 #include <mem.h>
 #include <types.h>
 #include <string.h>
-#include <printk.h>
+#include <console/console.h>
 #include <arch/io.h>
 #include "i2c.h"
 #include "mpc107.h"
@@ -32,10 +33,8 @@
 #define NUM_DIMMS	1
 #define NUM_BANKS	2
 
-extern struct pci_ops pci_direct_ppc;
-
 struct mem_range *
-getmeminfo(void)
+sizeram(void)
 {
     int	i;
     sdram_dimm_info dimm[NUM_DIMMS];
@@ -99,6 +98,10 @@ hostbridge_config_memory(int no_banks, sdram_bank_info * bank, int for_real)
     u32 memend1, memend2;
     u32 extmemend1, extmemend2;
     u32 address;
+    struct device *dev;
+
+    if ((dev = dev_find_slot(0, 0)) == NULL )
+	return 0;
 
     /* Set up the ignore mask */
     for(i = 0; i < no_banks; i++)
@@ -146,9 +149,9 @@ hostbridge_config_memory(int no_banks, sdram_bank_info * bank, int for_real)
     }
 
     /* Read in configuration of port X */
-    pci_direct_ppc.read_dword(0, 0, 0xf0, &mccr1);
-    pci_direct_ppc.read_dword(0, 0, 0xf4, &mccr2);
-    pci_direct_ppc.read_dword(0, 0, 0xfc, &mccr4);
+    mccr1 = pci_read_config32(dev, 0xf0);
+    mccr2 = pci_read_config32(dev, 0xf4);
+    mccr4 = pci_read_config32(dev, 0xfc);
     mccr1 &= 0xfff00000;
     mccr2 &= 0xffe00000;
     mccr3 = 0;
@@ -265,20 +268,20 @@ hostbridge_config_memory(int no_banks, sdram_bank_info * bank, int for_real)
 
     if (for_real)
     {
-	pci_direct_ppc.write_byte(0, 0, 0xa0, bank_enable);
-	pci_direct_ppc.write_dword(0, 0, 0x80, memstart1);
-	pci_direct_ppc.write_dword(0, 0, 0x84, memstart2);
-	pci_direct_ppc.write_dword(0, 0, 0x88, extmemstart1);
-	pci_direct_ppc.write_dword(0, 0, 0x8c, extmemstart2);
-	pci_direct_ppc.write_dword(0, 0, 0x90, memend1);
-	pci_direct_ppc.write_dword(0, 0, 0x94, memend2);
-	pci_direct_ppc.write_dword(0, 0, 0x98, extmemend1);
-	pci_direct_ppc.write_dword(0, 0, 0x9c, extmemend2);
+	pci_write_config8(dev, 0xa0, bank_enable);
+	pci_write_config32(dev, 0x80, memstart1);
+	pci_write_config32(dev, 0x84, memstart2);
+	pci_write_config32(dev, 0x88, extmemstart1);
+	pci_write_config32(dev, 0x8c, extmemstart2);
+	pci_write_config32(dev, 0x90, memend1);
+	pci_write_config32(dev, 0x94, memend2);
+	pci_write_config32(dev, 0x98, extmemend1);
+	pci_write_config32(dev, 0x9c, extmemend2);
 
-	pci_direct_ppc.write_dword(0, 0, 0xfc, mccr4);
-	pci_direct_ppc.write_dword(0, 0, 0xf8, mccr3);
-	pci_direct_ppc.write_dword(0, 0, 0xf4, mccr2);
-	pci_direct_ppc.write_dword(0, 0, 0xf0, mccr1);
+	pci_write_config32(dev, 0xfc, mccr4);
+	pci_write_config32(dev, 0xf8, mccr3);
+	pci_write_config32(dev, 0xf4, mccr2);
+	pci_write_config32(dev, 0xf0, mccr1);
     }
     
     return address;

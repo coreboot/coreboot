@@ -3,7 +3,7 @@
 /* This code is distributed without warranty under the GPL v2 (see COPYING) */
 
 #include <types.h>
-#include <printk.h>
+#include <console/console.h>
 #include <stdlib.h>
 #include "../nvram.h"
 

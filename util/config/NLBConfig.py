@@ -425,7 +425,7 @@ def makerule(dir, rule):
 	w = "[" + wspc + "]*"
 	cmd = "([^" + wspc + "]*)"
 	namepat = "(.*)"
-	pat = cmd  + w + ":" + w + cmd + w + ";" + w + rest + w
+	pat = cmd  + w + ":" + w + namepat + w + ";" + w + rest + w
 	print "pat :", pat, ":", rule
 	command_re = re.compile(pat)
 	m = command_re.match(rule)
@@ -443,7 +443,7 @@ def addaction(dir, rule):
         w = "[" + wspc + "]*"
         namepat = "(.*)"
 	cmd = "([^" + wspc + "]*)"
-        pat = cmd  + w + ":" + w + rest + w
+        pat = cmd  + w + rest + w
         print "pat :", pat, ":", rule
         command_re = re.compile(pat)
         m = command_re.match(rule)
@@ -644,8 +644,8 @@ def writemakefile(path):
 		
 	# print out the base rules
 	
-	for i in range(len(baserules)):
-		file.write("%s\n" % baserules[i])
+#	for i in range(len(baserules)):
+#		file.write("%s\n" % baserules[i])
 
 	# print out any user rules
 	for z in makebaserules.keys(): 
@@ -689,18 +689,23 @@ command_vals['TOP'] = sys.argv[2]
 treetop = command_vals['TOP']
 	
 # set the default locations for config files
-makebase = os.path.join(treetop, "config/make.base")
-crt0base = os.path.join(treetop, "config/crt0.base")
-ldscriptbase = os.path.join(treetop, "config/ldscript.base")
+makebase = os.path.join(treetop, "util/config/make.base")
+crt0base = os.path.join(treetop, "util/config/crt0.base")
+ldscriptbase = os.path.join(treetop, "util/config/ldscript.base")
 doconfigfile(treetop, sys.argv[1])
 
 
 # do standard config files that the user need not specify
-# for now, this is just 'lib', but i tmay be more later. 
+# for now, this is just 'lib', but it may be more later. 
 libdir = treetop + "/src/lib"
 libconfigfile = libdir + "/Config"
 print "Process config file: ", libconfigfile
 doconfigfile(libdir, libconfigfile)
+
+# now read in the base files. 
+print "Now Process the base files"
+print "Makebase is :", makebase, ":"
+doconfigfile(treetop, makebase)
 
 # print out command values
 #print "Command Values:"

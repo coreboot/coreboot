@@ -3,7 +3,7 @@ target winfast
 
 mainboard leadtek/winfast6300
 makerule blah : blah.o ; cc -c blah.c
-addaction blah: cc -c blah2.c
+addaction blah cc -c blah2.c
 makedefine THIS=THAT
 option SERIAL_CONSOLE
 keyboard pc80

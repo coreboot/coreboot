@@ -30,7 +30,7 @@ OBJECTS += serial_subr.o
 OBJECTS += mpspec.o
 OBJECTS += microcode.o
 OBJECTS += keyboard.o
-LINUX=/usr/src/linux-2.4.0/lobos
+LINUX=$(TOP)/../linux-2.4.0-test6.linuxbios/
 
 LINK = ld -T ldscript.ld -o $@ $(OBJECTS)
 CC=cc $(CFLAGS)

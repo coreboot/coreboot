@@ -32,6 +32,7 @@
 #include <sys/io.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <pci/pci.h>
 
 #include "flash.h"
 #include "jedec.h"
@@ -68,7 +69,7 @@ struct flashchip flashchips[] = {
     {NULL,}
 };
 
-int enable_flash_sis630 (void)
+int enable_flash_sis630 (struct pci_dev *dev, char *name)
 {
     char b;
 
@@ -120,6 +121,29 @@ int enable_flash_sis630 (void)
     outb(0x02, 0x2f);
 
     return 0;
+}
+
+int
+enable_flash_e7500(struct pci_dev *dev, char *name) {
+  /* register 4e.b gets or'ed with one */
+  unsigned char old, new;
+  int ok;
+  /* if it fails, it fails. There are so many variations of broken mobos
+   * that it is hard to argue that we should quit at this point. 
+   */
+  
+  old = pci_read_byte(dev, 0x4e);
+
+  new = old | 1;
+
+  ok = pci_write_byte(dev, 0x4e, new);
+
+  if (ok != new) {
+    printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n", 
+	   old, new, name);
+    return -1;
+  }
+  return 0;
 }
 
 struct flashchip * probe_flash(struct flashchip * flash)
@@ -220,6 +244,52 @@ myusec_delay(time)
 
 }
 
+typedef struct penable {
+  unsigned short vendor, device; 
+  char *name;
+  int (*doit)(struct pci_dev *dev, char *name);
+} FLASH_ENABLE;
+
+FLASH_ENABLE enables[] = {
+
+  {0x1, 0x1, "sis630 -- what's the ID?", enable_flash_sis630},
+  {0x8086, 0x2480, "E7500", enable_flash_e7500},
+};
+  
+int
+enable_flash_write() {
+  int i;
+  struct pci_access *pacc;
+  struct pci_dev *dev = 0;
+  unsigned int c;
+  FLASH_ENABLE *enable = 0;
+
+  pacc = pci_alloc();           /* Get the pci_access structure */
+  /* Set all options you want -- here we stick with the defaults */
+  pci_init(pacc);               /* Initialize the PCI library */
+  pci_scan_bus(pacc);           /* We want to get the list of devices */
+
+  /* now let's try to find the chipset we have ... */
+  for(i = 0; i < sizeof(enables)/sizeof(enables[0]) && (! dev); i++) {
+    struct pci_filter f;
+    struct pci_dev *z;
+    /* the first param is unused. */
+    pci_filter_init((struct pci_access *) 0, &f);
+    f.vendor = enables[i].vendor;
+    f.device = enables[i].device;
+    for(z=pacc->devices; z; z=z->next)
+      if (pci_filter_match(&f, z)) {
+	enable = &enables[i];
+	dev = z;
+      }
+  }
+
+  /* now do the deed. */
+  enable->doit(dev, enable->name);
+  return 0;
+}
+
+int
 main (int argc, char * argv[])
 {
     char * buf;
@@ -233,6 +303,11 @@ main (int argc, char * argv[])
 	printf(" is that flash info is dumped\n");
     }
 
+    /* try to enable it. Failure IS an option, since not all motherboards
+     * really need this to be done, etc., etc. It sucks.
+     */
+    (void) enable_flash_write();
+    
     if ((flash = probe_flash (flashchips)) == NULL) {
 	printf("EEPROM not found\n");
 	exit(1);
@@ -241,7 +316,7 @@ main (int argc, char * argv[])
     printf("Part is %s\n", flash->name);
     if (argc < 2){
 	printf("OK, only ENABLING flash write, but NOT FLASHING\n");
-        exit(0);
+	return 0;
     }
     size = flash->total_size * 1024;
 

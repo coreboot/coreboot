@@ -4,7 +4,7 @@ OBJS += 82802ab.o
 CC = gcc -O2 -g
 
 all: ${OBJS}
-	${CC} -o flash_rom flash_rom.c ${OBJS}
+	${CC} -o flash_rom flash_rom.c ${OBJS} -lpci
 #	${CC} -o flash_on flash_on.c
 
 clean:

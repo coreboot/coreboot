@@ -139,8 +139,8 @@ __asm__ (
 "	orl	$0x0000001, %eax\n" /* PE = 1 */
 "	movl	%eax, %cr0\n"
 /* Now that we are in protected mode jump to a 32 bit code segment. */
-"	ljmpl	$0x10, $1f\n"
-"1:\n"
+"	ljmpl	$0x10, $vgarestart\n"
+"vgarestart:\n"
 ".code32\n"
 "	movw	$0x18, %ax\n"
 "	movw	%ax, %ds\n"

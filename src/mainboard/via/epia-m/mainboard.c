@@ -86,8 +86,6 @@ static unsigned char vt1211hwmonitorinits[]={
 void
 mainboard_fixup()
 {
- 	struct pci_dev *dev;
- 	int i;
 	printk_info("Mainboard fixup\n");
 
 	northbridge_fixup();
@@ -97,6 +95,9 @@ mainboard_fixup()
 void
 final_southbridge_fixup()
 {
+ 	struct pci_dev *dev;
+ 	int i;
+
 	printk_info("Southbridge fixup\n");
 
 	//	nvram_on();

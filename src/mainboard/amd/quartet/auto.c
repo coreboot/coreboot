@@ -105,8 +105,8 @@ static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
 #define SMBUS_HUB 0x30
 	unsigned device=(ctrl->channel0[0])>>8;
-	smbus_write_byte(SMBUS_HUB | (0x01<<8), device);
-	smbus_write_byte(SMBUS_HUB | (0x03<<8), 0);
+	smbus_write_byte(SMBUS_HUB , 0x01, device);
+	smbus_write_byte(SMBUS_HUB , 0x03, 0);
 }
 
 static inline int spd_read_byte(unsigned device, unsigned address)

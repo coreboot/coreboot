@@ -10,21 +10,11 @@ unsigned long get_hz(void)
 	return get_clock_speed();
 }
 
-#if 0
 unsigned long ticks_since_boot(void)
 {
 	extern unsigned long _get_ticks(void);
 	return _get_ticks();
 }
-
-void sleep_ticks(unsigned long ticks)
-{
-	unsigned long now = ticks_since_boot();
-	unsigned long then = ticks + now;
-	while(now < then)
-		now = ticks_since_boot();
-}
-#endif
 
 void udelay(int usecs)
 {

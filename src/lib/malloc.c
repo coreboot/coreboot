@@ -47,23 +47,6 @@ void *malloc(size_t size)
 	return p;
 }
 
-void *realloc(void *mem, size_t size)
-{
-	void *new_mem;
-
-	if (mem == 0)
-		return malloc(size);
-	if (size == 0) {
-		free(mem);
-		return 0;
-	}
-
-	new_mem = malloc(size);
-	memcpy(new_mem, mem, size);
-	free(mem);
-	return new_mem;
-}
-
 void free(void *where)
 {
 	/* Don't care */

@@ -249,11 +249,10 @@ startup_32:
 	cli
 
 	# Save the arguments safely out of the way
-	movl %eax, %ebp
-	movl %ebx, %esi
+	movl	%eax, boot_type
+	movl	%ebx, boot_data
 
 	movl stack_start, %esp
-
 
 	# Clear eflags
 	pushl $0
@@ -288,9 +287,9 @@ startup_32:
 	movl	%eax, %fs
 	movl	%eax, %gs
 	movl    %eax, %ss
-	
-	pushl %esi	# boot data pointer as second arg
-	pushl %ebp	# boot data type as first argument
+
+	pushl boot_data	# boot data pointer as second arg
+	pushl boot_type	# boot data type as first argument
 	call convert_params
 	
 	movl %eax, %esi # put the real mode pointer in a safe place
@@ -560,6 +559,9 @@ _prot_to_real:
 	data32 ret	/* There is a 32 bit return address on the stack */
 	.code32
 
+boot_type:	.long 0
+boot_data:	.long 0
+
 idt_real:
 	.word	0x400				# idt limit = 256
 	.word	0, 0
@@ -597,3 +599,4 @@ gdt:
 	.word	0xffff,(RELOC&0xffff)
 	.byte	(RELOC>>16),0x93,0x00,(RELOC>>24)
 gdt_end:
+

@@ -1,53 +1,100 @@
-# To run this: 
-# Put the name of a directory in PREFIX where you want to run this stuff.
-# make sure that this name is OUTSIDE THE LINUXBIOS TREE
-# that way it survives across cvs updates. 
-# Then do a 'make install'
-# the result will be a directory tree  that you can run mkelfImage in
-#PREFIX=/usr/local/
-#PREFIX= /users/rminnich/src/bios/mkelf2
-PERLPATH=/usr/bin/perl
-VERSION="1.14"
-DATE="28 June 2002"
+include Makefile.conf
+VERSION:=1.15
+RELEASE_DATE:=23 August 2002
+PACKAGE:=mkelfImage
 
-SHAREDIR=$(PREFIX)/share/mkelfImage
-BINDIR=$(PREFIX)/bin
-MANDIR=$(PREFIX)/man/man1
+# You can specify DESTDIR on the command line to do a add
+# a prefix to the install so it doesn't really happen
+# Useful for building binary packages
+DESTDIR =
 
-DIRS=$(SHAREDIR) $(BINDIR) $(MANDIR)
+pkgdatadir = $(datadir)/$(PACKAGE)
+pkglibdir = $(libdir)/$(PACKAGE)
+pkgincludedir = $(includedir)/$(PACKAGE)
 
 MANS=mkelfImage.1
+SPEC=mkelfImage-$(VERSION).spec
+TARBALL=mkelfImage-$(VERSION).tar.gz
+SRCS:=$(shell find ./AUTHORS ./COPYING ./Makefile ./Makefile.conf.in ./News \
+	./mkelfImage.pl ./elf32-i386 ./kunzip_src \
+	./configure.in ./configure ./config \
+	! -path '*CVS*' ! -name '*~' ! -name '.*' -type f -print )
+SRCS+=$(SPEC)
+PSRCS:=$(patsubst ./%,mkelfImage-$(VERSION)/%,$(SRCS))
 
-FILES=mkelfImage $(MANS) 
+SBIN_TARGETS=mkelfImage 
+MAN1_TARGETS=mkelfImage.1
+PKGDATADIR_TARGETS=\
+	elf32-i386/convert_params.c \
+	elf32-i386/elf_boot.h \
+	elf32-i386/linuxbios_tables.h \
+	elf32-i386/elfImage.lds \
+	elf32-i386/head.S \
+	elf32-i386/uniform_boot.h
 
-all: $(FILES)
+TARGETS:=$(SBIN_TARGETS) $(MAN1_TARGETS) $(PKGDATADIR_TARGETS)
+
+all: $(TARGETS)
 
 clean:
-	rm -f $(FILES)
+	@rm -rf dist
+	@rm -f config.log config.status config.cache 
+	@rm -f $(SBIN_TARGETS) $(MAN1_TARGETS)
+	@rm -f mkelfImage-$(VERSION) $(TARBALL)
 
-distclean: clean
-	find . -type f -name '*~' | xargs rm -f
+dist-clean: clean
+	@find . -type f -name '*~' | xargs rm -f
+	@rm Makefile.conf
+
+maintainer-clean: dist-clean
+	@rm -f $(SPEC) configure
 
 
-install: $(DIRS) $(FILES)
-	mkdir -p $(SHAREDIR) $(BINDIR) $(MANDIR)
-	cp -fr elf32-i386/ $(SHAREDIR)
-	find $(SHAREDIR) -type d | xargs chmod a+x
-	find $(SHAREDIR) -type f | xargs chmod 444
-	cp -f mkelfImage $(BINDIR)
-	cp -f $(MANS) $(MANDIR)
+install: $(TARGETS)
+	mkdir -p $(DESTDIR)/$(pkgdatadir) $(DESTDIR)/$(sbindir) $(DESTDIR)/$(mandir)/man1
+	cp -a $(SBIN_TARGETS) $(DESTDIR)/$(sbindir)/
+	cp -a $(MAN1_TARGETS) $(DESTDIR)/$(mandir)/man1/
+	cp -a $(PKGDATADIR_TARGETS) $(DESTDIR)/$(pkgdatadir)/
 
-$(DIRS):
-	mkdir -p $@
 
 %.1 : %.pl Makefile
-	pod2man --date=$(DATE) --release=$(VERSION) $*.pl > $@
+	mkdir -p $(@D)
+	pod2man --date="$(RELEASE_DATE)" --release="$(VERSION)" $*.pl > $@
 
-mkelfImage:  mkelfImage.pl Makefile
-	echo 's|^$$params{MYDATA}=".";$$|$$params{MYDATA}="$(SHAREDIR)";|' > sedfile
-	echo 's|^#!/usr/bin/perl|#!$(PERLPATH)|' >> sedfile
-	echo 's|^my $$VERSION="";$$|my $$VERSION=$(VERSION);|' >> sedfile
-	sed -f sedfile mkelfImage.pl > $@
+mkelfImage:  mkelfImage.pl Makefile Makefile.conf
+	mkdir -p $(@D)
+	sed \
+		-e 's,^#!/usr/bin/perl,#!$(PERL),' \
+		-e 's,^my $$VERSION="";$$,my $$VERSION="$(VERSION)";,' \
+		-e 's,^$$params{MYDATA}=".";$$,$$params{MYDATA}="$(pkgdatadir)";,' \
+		-e 's,^$$params{OBJCOPY}="objcopy";$$,$$params{OBJCOPY}="$(OBJCOPY)";,' \
+		-e 's,^$$params{LD}="ld";$$,$$params{LD}="$(LD)";,' \
+		-e 's,^$$params{CC}="cc";$$,$$params{CC}="$(CC)";,' \
+		mkelfImage.pl > $@
 	chmod a+x $@
-	rm -f sedfile
+
+tarball: $(TARBALL)
+
+
+$(TARBALL): $(SRCS)
+	rm -f ./mkelfImage-$(VERSION)
+	ln -s . ./mkelfImage-$(VERSION)
+	tar -cf - $(PSRCS) | gzip -9 > $@
+
+Makefile.conf: Makefile.conf.in configure
+	./configure
+
+
+configure: configure.in
+	autoconf
+
+$(SPEC): mkelfImage.spec.in Makefile
+	sed \
+		-e 's,^Version: $$,Version: $(VERSION),' \
+		mkelfImage.spec.in > $@
+
+
+
+.PHONY: echo install realinstall
+
 

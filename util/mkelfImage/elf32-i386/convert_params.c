@@ -5,7 +5,7 @@
 #include "elf_boot.h"
 #define STACK_SIZE (4096)
 
-long user_stack [STACK_SIZE];
+long user_stack [STACK_SIZE] = { 0 };
 
 unsigned long * stack_start = & user_stack[STACK_SIZE];
 

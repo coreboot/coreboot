@@ -12,7 +12,7 @@ my $VERSION="";
 # Hardcoded parameters for now...
 $params{OBJCOPY}="objcopy";
 $params{LD}="ld";
-$params{CC}="gcc";
+$params{CC}="cc";
 $params{CFLAGS}="-O2";
 $params{MYDATA}=".";
 $params{PREFIX}=undef();
@@ -168,16 +168,29 @@ sub compute_ip_checksum
 	$checksum = 0;
 	$size = length($str);
 	$shorts = $size >> 1;
-	for($i = 0; $i < $shorts; $i++) {
-		$checksum += unpack('S', substr($str, $i <<1, 2));
-		$checksum -= 0xFFFF unless ($checksum <= 0xFFFF);
+	# Perl has a fairly large loop overhead so a straight forward
+	# implementation of the ip checksum is intolerably slow.
+	# Instead we use the unpack checksum computation function,
+	# and sum 16bit little endian words into a 32bit number, on at
+	# most 64K of data at a time.  This ensures we do not overflow
+	# the 32bit sum allowing carry wrap around to be implemented by
+	# hand.
+	for($i = 0; $i < $shorts; $i += 32768) {
+		$checksum += unpack("%32v32768", substr($str, $i <<1, 65536));
+		while($checksum > 0xffff) {
+			$checksum = ($checksum & 0xffff) + ($checksum >> 16);
+		}
 	}
 	if ($size & 1) {
-		$checksum -= 0xFFFF unless ($checksum <= 0xFFFF);
 		$checksum += unpack('C', substr($str, -1, 1));
+		while($checksum > 0xffff) {
+			$checksum = ($checksum & 0xffff) + ($checksum >> 16);
+		}
 	}
-	return (~$checksum) & 0xFFFF;
+	$checksum = (~$checksum) & 0xFFFF;
+	return $checksum;
 }
+
 
 sub add_ip_checksums
 {
@@ -353,8 +366,9 @@ B<mkelfImage> is a program that makes a elf boot image for linux kernel
 images.  The image should work with any i386 multiboot compliant boot loader,
 an ELF bootloader that passes no options, a loader compliant with the linuxBIOS
 elf booting spec or with the linux kexec kernel patch.  A key feature
-here is that nothing relies upon BIOS, but they are made when
-necessary useful for systems running linuxbios. 
+here is that nothing relies upon BIOS calls, but they are made when
+necessary.  This is useful for systems running linuxbios.
+
 
 =head1 BUGS
 

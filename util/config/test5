@@ -8,5 +8,5 @@ raminit northsouthbridge/sis/630/raminit.inc
 linux /usr/src/linux
 cpu p5
 cpu p6
-
+keyboard pc80
 

@@ -49,8 +49,8 @@
 
 	/* Check for Device ID */
 
-	SMC_READ($0x0d)
-	cmp %al, 0x28
+	SMC_READ($0x20)
+	cmp %al, $0x4c
 	je 2f
 	mov $0xfe, %al
 	outb %al, $0x80
@@ -59,33 +59,28 @@
 	jmp	1b
 #endif
 2:
-
+	// GLOBAL SETUP
 	/* Pin configuration - need to enable IRQ 4 output */
 	
-	SMC_WRITE($0xf4, $0x03)	;
+	SMC_WRITE($0x39, $0x22);
+	SMC_WRITE($0x84, $0x24);
 
-	/* Set address of parallel port */
-#if 0
-	SMC_WRITE($0xde, $0x23)	;
-#endif
+	// COM1 SETUO
+	/* set the LDN to 4 (serial port 1) */
+	SMC_WRITE($4, $7) ;
+
 	/* Set address of serial port 0 */
 
-	SMC_WRITE($0xfe, $0x24)	;
-
-	/* Set address of serial port 1 */
-
-	SMC_WRITE($0xbe, $0x25)	;
+	SMC_WRITE($0x3, $0x60)	;
+	SMC_WRITE($0xf8, $0x61)	;
 
 	/* Set IRQs of serial ports */
 
-	SMC_WRITE($0x21, $0x28)	;
+	SMC_WRITE($0x4, $0x70)	;
 
 	/* Set valid bit */
 
-	SMC_READ($0x00)
-	or $0x80, %al
-	SMC_WRITE(%al, $0x00)
-	
+	SMC_WRITE($0x1, $0x30)	;
 	/* Exit the configuration state */
 
 	mov $0xAA, %al

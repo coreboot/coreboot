@@ -35,8 +35,10 @@
 	/* initialize the RAM */
 	/* different for each motherboard */
 	
-#include <northbridge/via/vt8601/raminit.inc>
-
+#include <northbridge/via/vt8601/raminitspd.inc>
+#include <sdram/smbus_pcibus.inc>
+#include <sdram/generic_sdram.inc>
+	
 #ifdef RAMTEST
 #include <ram/ramtest.inc>
 

@@ -77,10 +77,10 @@ static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 	};
 
 	static const unsigned int rows_4p[4][4] = {
-		{ 0x00070101, 0x00010404, 0x00050202, 0x00010402 },
-		{ 0x00010808, 0x000b0101, 0x00010802, 0x00090202 },
-		{ 0x00090202, 0x00010802, 0x000b0101, 0x00010808 },
-		{ 0x00010402, 0x00050202, 0x00010404, 0x00070101 }
+		{ 0x00070101, 0x00010202, 0x00030404, 0x00010204 },
+		{ 0x00010202, 0x000b0101, 0x00010208, 0x00030808 },
+		{ 0x00030808, 0x00010208, 0x000b0101, 0x00010202 },
+		{ 0x00010204, 0x00030404, 0x00010202, 0x00070101 }
 	};
 
 	if (!(node>=maxnodes || row>=maxnodes)) {
@@ -107,6 +107,11 @@ static void coherent_ht_mainboard(unsigned cpus)
 #include "southbridge/amd/amd8111/amd8111_ldtstop.c"
 
 #include "northbridge/amd/amdk8/raminit.c"
+
+#define CONNECTION_0_1 UP
+#define CONNECTION_0_2 ACROSS
+#define CONNECTION_1_3 DOWN
+
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
 

@@ -148,10 +148,13 @@ void pci_dump(void)
 	{
 		for(cntb=0;cntb<256;cntb++)
 		{
+			unsigned int bus, devfn;
 			if((cntb%16)==0)
 				printk_info("\n");
 			addr=pci_table[cnta]+cntb;
-			chr=intel_conf_readb(addr);
+			devfn = (addr >> 8) & 0xff;
+			bus = (addr >> 8) & 0xff;
+			pcibios_read_config_byte(0, 0, addr & 0xff, &chr);
 			printk_info("%2.2x ",chr);
 		}
 		printk_info("\n\n");

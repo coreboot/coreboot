@@ -192,7 +192,7 @@ struct mem_range *sizeram(void)
 		mem[1].sizek = 64*1024;
 	}
 	mem[1].sizek -= mem[1].basek;
-	return &mem;
+	return mem;
 }
 
 #ifdef HAVE_FRAMEBUFFER

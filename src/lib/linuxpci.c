@@ -21,11 +21,18 @@
 
 extern void intel_post(unsigned char value);
 #define DEBUG
+#undef DEBUGSCAN
 
 #ifdef DEBUG
 #define DBG(x...) printk(KERN_DEBUG x)
 #else
 #define DBG(x...)
+#endif
+
+#ifdef DEBUGSCAN
+#define DBGSCAN(x...) printk(KERN_DEBUG x)
+#else
+#define DBGSCAN(x...)
 #endif
 
 /**
@@ -215,7 +222,8 @@ unsigned int pci_scan_bus(struct pci_bus *bus)
 		// returns 0 anyway. 
 #if GCC_WORKS_ON_O2
                 if (pcibios_read_config_dword(bus->number, devfn, PCI_VENDOR_ID, &id))	{
-		    DBG("PCI: devfn 0x%x, read_config_dword fails\n", devfn);
+		    DBGSCAN("PCI: devfn 0x%x, read_config_dword fails\n", 
+				devfn);
 		    continue;
 		}
 #endif
@@ -223,7 +231,7 @@ unsigned int pci_scan_bus(struct pci_bus *bus)
 
 		/* some broken boards return 0 if a slot is empty: */
 		if (id == 0xffffffff || id == 0x00000000 || id == 0x0000ffff || id == 0xffff0000) {
-		    DBG("PCI: devfn 0x%x, bad id 0x%x\n", devfn, id);
+		    DBGSCAN("PCI: devfn 0x%x, bad id 0x%x\n", devfn, id);
 			if (PCI_FUNC(devfn) == 0x00) {
 				/* if this is a function 0 device and it is not present,
 				   skip to next device */
@@ -234,12 +242,12 @@ unsigned int pci_scan_bus(struct pci_bus *bus)
 		}
 
                 if (pcibios_read_config_byte(bus->number, devfn, PCI_HEADER_TYPE, &hdr_type)){
-		    DBG("PCI: devfn 0x%x, header type read fails\n", devfn);
+		    DBGSCAN("PCI: devfn 0x%x, header type read fails\n", devfn);
 		    continue;
 		}
 
 		if (pcibios_read_config_dword(bus->number, devfn, PCI_CLASS_REVISION, &class)) {
-		    DBG("PCI: devfn 0x%x, class read fails\n", devfn);
+		    DBGSCAN("PCI: devfn 0x%x, class read fails\n", devfn);
 			continue;
 		}
 

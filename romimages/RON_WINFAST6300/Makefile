@@ -10,8 +10,7 @@ CPUFLAGS += -DINBUF_COPY
 CPUFLAGS += -DUSE_DOC_MIL
 CPUFLAGS += -DCMD_LINE='"root=/dev/hda1 single"'
 
-LINUXPATH=$(TOP)/../linux-2.4.0-test6.sis
-LINUX=$(LINUXPATH)/vmlinux
+LINUX=$(TOP)/../linux-2.4.0-test6.sis
 
 TOP=../..
 INCLUDES=-nostdinc -I $(TOP)/src/include 
@@ -29,7 +28,6 @@ OBJECTS += serial_subr.o
 OBJECTS += mpspec.o
 OBJECTS += microcode.o
 OBJECTS += keyboard.o
-LINUX=$(TOP)/../linux-2.4.0-test6.sis/
 
 LINK = ld -T ldscript.ld -o $@ $(OBJECTS)
 CC=cc $(CFLAGS)

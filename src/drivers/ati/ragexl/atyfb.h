@@ -23,7 +23,6 @@
     /*
      *  Elements of the hardware specific atyfb_par structure
      */
-#if 0
 struct crtc {
     u32 vxres;
     u32 vyres;
@@ -39,7 +38,7 @@ struct crtc {
     u32 dp_pix_width;	/* acceleration */
     u32 dp_chain_mask;	/* acceleration */
 };
-
+#if 0
 struct pll_514 {
     u8 m;
     u8 n;
@@ -83,12 +82,12 @@ union aty_pll {
     /*
      *  The hardware parameters for each card
      */
-#if 0
 struct atyfb_par {
     struct crtc crtc;
     union aty_pll pll;
     u32 accel_flags;
 };
+#if 0
 struct aty_cursor {
     int	enable;
     int on;
@@ -106,23 +105,30 @@ struct aty_cursor {
 };
 #endif
 struct fb_info_aty {
-#if 0
     struct fb_info fb_info;
+#if 0
     struct fb_info_aty *next;
     unsigned long ati_regbase_phys;
 #endif
     unsigned long ati_regbase;
 #if 0
     unsigned long frame_buffer_phys;
+#endif
     unsigned long frame_buffer;
     unsigned long clk_wr_offset;
+#if 0
     struct pci_mmap_map *mmap_map;
     struct aty_cursor *cursor;
+#endif
     struct aty_cmap_regs *aty_cmap_regs;
+#if 0
     struct { u8 red, green, blue, pad; } palette[256];
+#endif
     struct atyfb_par default_par;
+#if 0
     struct atyfb_par current_par;
 #endif
+
     u32 features;
     u32 total_vram;
     u32 ref_clk_per;
@@ -131,14 +137,10 @@ struct fb_info_aty {
     u32 xclk_per;
     u8 bus_type;
     u8 ram_type;
-#if 0
     u8 mem_refresh_rate;
-#endif
 #if 0
     struct aty_dac_ops *dac_ops;
     struct aty_pll_ops *pll_ops;
-#endif
-#if 0
     struct display disp;
     struct display_switch dispsw;
 #endif
@@ -155,7 +157,9 @@ struct fb_info_aty {
 	u32 cfb32[16];
 #endif
     } fbcon_cmap;
+#endif
     u8 blitter_may_be_busy;
+#if 0
 #ifdef __sparc__
     u8 mmaped;
     int open;
@@ -354,7 +358,8 @@ extern const struct aty_pll_ops aty_pll_ch8398;		/* Chrontel 8398 */
 extern const struct aty_pll_ops aty_pll_att20c408;	/* AT&T 20C408 */
 extern const struct aty_pll_ops aty_pll_ibm514;		/* IBM RGB514 */
 extern const struct aty_pll_ops aty_pll_unsupported;	/* unsupported */
-
+#endif
+#if 0
 static struct aty_pll_ops aty_pll_ct;		/* Integrated */
 
 static void aty_set_pll_ct(const struct fb_info_aty *info,
@@ -363,7 +368,6 @@ static void aty_set_pll_ct(const struct fb_info_aty *info,
 static void aty_calc_pll_ct(const struct fb_info_aty *info,
 			    struct pll_ct *pll);
 #endif
-
 #if 0
     /*
      *  Hardware cursor support
@@ -373,7 +377,7 @@ extern void atyfb_cursor(struct display *p, int mode, int x, int y);
 extern void aty_set_cursor_color(struct fb_info_aty *fb);
 extern void aty_set_cursor_shape(struct fb_info_aty *fb);
 extern int atyfb_set_font(struct display *d, int width, int height);
-
+#endif
     /*
      *  Hardware acceleration
      */
@@ -390,7 +394,7 @@ static inline void wait_for_idle(struct fb_info_aty *info)
     while ((aty_ld_le32(GUI_STAT, info) & 1)!= 0);
     info->blitter_may_be_busy = 0;
 }
-
+#if 0
 extern void aty_reset_engine(const struct fb_info_aty *info);
 extern void aty_init_engine(const struct atyfb_par *par,
 			    struct fb_info_aty *info);

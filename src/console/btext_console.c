@@ -28,7 +28,7 @@
 
 #include <arch/byteorder.h>
 
-#include <pc80/btext.h>
+#include <console/btext.h>
 
 //#define NO_SCROLL
 

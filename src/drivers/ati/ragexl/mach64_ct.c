@@ -1,7 +1,7 @@
 #define DEBUG_PLL 0
 
 /* FIXME: remove the FAIL definition */
-#define FAIL(x) do { printk_debug(x); return -EINVAL; } while (0)
+#define FAIL(x) do { printk_spew(x); return -EINVAL; } while (0)
 
 static int aty_valid_pll_ct(const struct fb_info_aty *info, u32 vclk_per,
 			    struct pll_ct *pll);
@@ -270,7 +270,7 @@ static void aty_calc_pll_ct(const struct fb_info_aty *info, struct pll_ct *pll)
     pll->vclk_post_div = vpostdiv;
 }
 
-static int aty_var_to_pll_ct(const struct fb_info_aty *info, u32 vclk_per,
+int aty_var_to_pll_ct(const struct fb_info_aty *info, u32 vclk_per,
 			     u8 bpp, union aty_pll *pll)
 {
     int err;
@@ -282,7 +282,7 @@ static int aty_var_to_pll_ct(const struct fb_info_aty *info, u32 vclk_per,
     return 0;
 }
 #if 0
-static u32 aty_pll_ct_to_var(const struct fb_info_aty *info,
+u32 aty_pll_ct_to_var(const struct fb_info_aty *info,
 			     const union aty_pll *pll)
 {
     u32 ref_clk_per = info->ref_clk_per;
@@ -292,10 +292,10 @@ static u32 aty_pll_ct_to_var(const struct fb_info_aty *info,
 
     return ref_clk_per*pll_ref_div*vclk_post_div/vclk_fb_div/2;
 }
-
+#endif
 void aty_set_pll_ct(const struct fb_info_aty *info, const union aty_pll *pll)
 {
-#ifdef DEBUG
+#if DEBUG_PLL==1
     printk_debug("aty_set_pll_ct: about to program:\n"
 	   "refdiv=%d, extcntl=0x%02x, mfbdiv=%d\n"
 	   "spllcntl2=0x%02x, sfbdiv=%d, gencntl=0x%02x\n"
@@ -345,6 +345,7 @@ void aty_set_pll_ct(const struct fb_info_aty *info, const union aty_pll *pll)
 	aty_st_pll(DLL_CNTL, dll_cntl & ~0x40, info);
     }
 }
+#if 0
 static int dummy(void)
 {
     return 0;

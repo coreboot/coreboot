@@ -1,4 +1,5 @@
-#if 0
+.type raminit_start, @function
+
 /***
  *** sungeun
  ***
@@ -224,7 +225,7 @@ internal_bank_tbl:
  *** END MACROS
  ***/
 
-
+#if 0
 /***
  *** START REAL STUFF
  ***/
@@ -809,6 +810,21 @@ configure_next:
 #define INIT_MCR $0xf6621000
 #define WRITE_MCR0 movl %ecx, %eax ;  outl %eax, %dx
 /*#include <cpu/p5/start32.inc>*/
+raminit_start:
+	mov	$0x81,%ax
+	mov	$0x7f00,%cx	/*** disable SMA mode ***/
+	pci_read_write_byte
+	mov	$0x82,%ax
+	mov	$0xff10,%cx	/*** set 3 DIMMs, no ECC ***/
+	pci_read_write_byte
+	mov	$0x84,%ax
+	mov	$0xfe00,%cx	/*** set 3 DIMMs, no ECC ***/
+	pci_read_write_byte
+
+	/*** initialize, load table, zero %ecx, %ebx ***/
+	movl	$mem_bank_reg_table,%esi
+	xor	%ecx,%ecx
+	xor	%ebx,%ebx
 
 /* make the flash writeable */
 /* select the south bridge, register 44 (base) */

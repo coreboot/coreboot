@@ -4,24 +4,24 @@
 # continuation, if needed, will be via the \ at the end of a line
 # comments are indicated by a '#' as the first character. 
 # the keywords are case-INSENSITIVE
-owner:	Ron Minnich
-email:	rminnich@lanl.gov
+owner:	Steven James
+email:	pyro@linuxlabs.com
 #status: One of unsupported, unstable, stable
 status: unstable
-explanation: 
-flash-types: 
-payload-types: 
+explanation: Too new to claim stable (even though it seems good)
+flash-types: Intel 82802ac8 FWH (8Mbit), 82802ab8 (4Mbit) can be substituted
+payload-types: etherboot, memtest86
 # e.g. linux, plan 9, wince, etc.
-OS-types: 
+OS-types: linux
 # e.g. "Plan 9 interrupts don't work on this chipset"
 OS-issues:
-console-types:
+console-types: serial
 # vga is unsupported, unstable, or stable
-vga:
+vga: unsupported
 # Last-known-good follows the internationl date standard: day/month/year
-last-known-good: 0/0/0000
+last-known-good: 27/10/2002
 Comments: 
 Links:
-Mainboard-revision: 
+Mainboard-revision: 0 (pre-production sample) 1 (production)
 # What other mainboards are like this one? List them here. 
 AKA: 

@@ -146,7 +146,7 @@ option FALLBACK_SIZE=0x100000
 ##option XIP_ROM_BASE=0xffff8000
 
 ## We don't use compressed image
-option CONFIG_COMPRESS=0
+option CONFIG_COMPRESS=1
 
 option USE_ELF_BOOT=1
 

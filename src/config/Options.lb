@@ -238,7 +238,7 @@ define HEAP_SIZE
 	comment "Default heap size"
 end
 define _RAMBASE
-	default 0x00100000
+	default 0x4000
 	format "0x%x"
 	export always
 	comment "Base address of RAM"

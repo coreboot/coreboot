@@ -17,8 +17,31 @@
 #include "arch/romcc_io.h"
 
 /*
- * 
+ * Until we have a completely dynamic setup we want
+ * to be able to map different cpu graphs.
  */
+
+#define UP	0x00
+#define ACROSS	0x20
+#define DOWN	0x40
+
+/* 
+ * set some default values. These are used if they are not
+ * differently defined in the motherboard's auto.c file.
+ * See src/mainboard/amd/quartet/auto.c for an example.
+ */
+
+#ifndef CONNECTION_0_1 
+#define CONNECTION_0_1 ACROSS
+#endif
+
+#ifndef CONNECTION_0_2 
+#define CONNECTION_0_2 UP
+#endif
+
+#ifndef CONNECTION_1_3 
+#define CONNECTION_1_3 UP
+#endif
 
 /* when generating a temporary row configuration we
  * don't want broadcast to be enabled for that node.
@@ -187,10 +210,6 @@ static bool check_connection(u8 src, u8 dest, u8 link)
 	 *    remote node's vendor/device id
 	 */
 
-#define UP	0x00
-#define ACROSS	0x20
-#define DOWN	0x40
-
 	u32 val;
 	
 	/* 1) */
@@ -319,7 +338,7 @@ static u8 setup_smp(void)
 	/* Setup and check a temporary connection to node 1 */
 	setup_temp_row(0,1,cpus);
 	
-	if (!check_connection(0, 7, ACROSS)) {	// Link: ACROSS
+	if (!check_connection(0, 7, CONNECTION_0_1)) {
 		print_debug("No connection to Node 1.\r\n");
 		clear_temp_row(0);	/* delete temp connection */
 		setup_uniprocessor();	/* and get up working     */
@@ -340,7 +359,7 @@ static u8 setup_smp(void)
 	/* Setup and check temporary connection from Node 0 to Node 2 */
 	setup_temp_row(0,2,cpus);
 
-	if (!check_connection(0, 7, UP)) {	// Link: UP
+	if (!check_connection(0, 7, CONNECTION_0_2)) {
 		print_debug("No connection to Node 2.\r\n");
 		clear_temp_row(0);	 /* delete temp connection */
 		return 2;
@@ -353,7 +372,7 @@ static u8 setup_smp(void)
 	setup_temp_row(0,1,cpus); /* temp. link between nodes 0 and 1 */
 	setup_temp_row(1,3,cpus); /* temp. link between nodes 1 and 3 */
 
-	if (!check_connection(1, 7, UP)) {	// Link: UP
+	if (!check_connection(1, 7, CONNECTION_1_3)) {
 		print_debug("No connection to Node 3.\r\n");
 		clear_temp_row(0);	 /* delete temp connection */
 		clear_temp_row(1);	 /* delete temp connection */

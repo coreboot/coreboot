@@ -1967,6 +1967,8 @@ def writeimagemakefile(image):
 	file = safe_open(makefilepath, 'w+')
 	writemakefileheader(file, makefilepath)
 
+	# main rule
+	file.write("\nall: linuxbios.rom\n\n")
 	#file.write("include cpuflags\n")
 	# Putting "include cpuflags" in the Makefile has the problem that the
 	# cpuflags file would be generated _after_ we want to include it.
@@ -1982,8 +1984,6 @@ def writeimagemakefile(image):
 		file.write("%s\n" %i)
 	file.write("\n")
 
-	# main rule
-	file.write("all: linuxbios.rom")
 	# print out all the object dependencies
 	file.write("\n# object dependencies (objectrules:)\n")
 	file.write("INIT-OBJECTS :=\n")
@@ -2120,13 +2120,13 @@ def writemakefile(path):
 	print "Creating", makefilepath
 	file = safe_open(makefilepath, 'w+')
 	writemakefileheader(file, makefilepath)
-	file.write("include Makefile.settings\n\n")
 
 	# main rule
-	file.write("all:")
+	file.write("\nall:")
 	for i in buildroms:
 		file.write(" %s" % i.name)
 	file.write("\n\n")	
+	file.write("include Makefile.settings\n\n")
 	for i, o in romimages.items():
 		file.write("%s/linuxbios.rom:\n" % o.getname())
 		file.write("\tif (cd %s; \\\n" % o.getname())

@@ -19,32 +19,6 @@ object clock.o
 ##
 arch ppc end
 
-if CONFIG_SANDPOINT_ALTIMUS
-	dir /pmc/altimus/mpc7410
-#	dir /pmc/altimus/mpc7400
-#	dir /pmc/altimus/mpc75x
-end
-if CONFIG_SANDPOINT_TALUS
-	dir /pmc/talus/mpc74x
-	dir /pmc/talus/mpc603
-end
-if CONFIG_SANDPOINT_UNITY
-	dir /pmc/unity/mpc824x
-end
-if CONFIG_SANDPOINT_VALIS
-	dir /pmc/valis/mpc745x
-end
-if CONFIG_SANDPOINT_GYRUS
-	dir /pmc/gyrus/mpc744x
-end
-
-##
-## Include the secondary Configuration files 
-##
-dir /southbridge/winbond/w83c553
-
-dir /superio/NSC/pc97307
-
 ##
 ## Build the objects we have code for in this directory.
 ##

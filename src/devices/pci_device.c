@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <bitops.h>
 #include <string.h>
+#include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -678,4 +679,69 @@ unsigned int pci_scan_bridge(struct device *dev, unsigned int max)
 		
 	printk_spew("%s returns max %d\n", __FUNCTION__, max);
 	return max;
+}
+/*
+    Tell the EISA int controller this int must be level triggered
+    THIS IS A KLUDGE -- sorry, this needs to get cleaned up.
+*/
+static void pci_level_irq(unsigned char intNum)
+{
+	unsigned intBits = inb(0x4d0) | (((unsigned) inb(0x4d1)) << 8);
+
+	intBits |= (1 << intNum);
+
+	// Write new values
+	outb((unsigned char) intBits, 0x4d0);
+	outb((unsigned char) (intBits >> 8), 0x4d1);
+}
+
+
+/*
+    This function assigns IRQs for all functions contained within
+    the indicated device address.  If the device does not exist or does
+    not require interrupts then this function has no effect.
+
+    This function should be called for each PCI slot in your system.  
+
+    pIntAtoD is an array of IRQ #s that are assigned to PINTA through PINTD of
+    this slot.  
+    The particular irq #s that are passed in depend on the routing inside
+    your southbridge and on your motherboard.
+
+    -kevinh@ispiri.com
+*/
+void pci_assign_irqs(unsigned bus, unsigned slot,
+	const unsigned char pIntAtoD[4])
+{
+	unsigned functNum;
+	device_t pdev;
+	unsigned char line;
+	unsigned char irq;
+	unsigned char readback;
+
+	/* Each slot may contain up to eight functions */
+	for (functNum = 0; functNum < 8; functNum++) {
+		pdev = dev_find_slot(bus, (slot << 3) + functNum);
+
+		if (pdev) {
+		  line = pci_read_config8(pdev, PCI_INTERRUPT_PIN);
+
+			// PCI spec says all other values are reserved 
+			if ((line >= 1) && (line <= 4)) {
+				irq = pIntAtoD[line - 1];
+
+				printk_debug("Assigning IRQ %d to %d:%x.%d\n", \
+					irq, bus, slot, functNum);
+
+				pci_write_config8(pdev, PCI_INTERRUPT_LINE,\
+					pIntAtoD[line - 1]);
+
+				readback = pci_read_config8(pdev, PCI_INTERRUPT_LINE);
+				printk_debug("  Readback = %d\n", readback);
+
+				// Change to level triggered
+				pci_level_irq(pIntAtoD[line - 1]);
+			}
+		}
+	}
 }

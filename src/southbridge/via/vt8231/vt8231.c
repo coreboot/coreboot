@@ -146,12 +146,64 @@ static void ethernet_fixup()
  * in the C code. 
  */
 static void vt8231_pci_enable(struct southbridge_via_vt8231_config *conf) {
+  /*
 	unsigned long busdevfn = 0x8000;
 	if (conf->enable_ide) {
 		printk_spew("%s: enabling IDE function\n", __FUNCTION__);
 	}
-
+  */
 }
+
+/* PIRQ init
+ */
+void pci_assign_irqs(unsigned bus, unsigned slot, const unsigned char pIntAtoD[4]);
+
+
+static const unsigned char southbridgeIrqs[4] = { 11, 5, 10, 12 };
+static const unsigned char enetIrqs[4] = { 11, 5, 10, 12 };
+static const unsigned char slotIrqs[4] = { 5, 10, 12, 11 };
+
+/*
+	Our IDSEL mappings are as follows
+	PCI slot is AD31          (device 15) (00:14.0)
+	Southbridge is AD28       (device 12) (00:11.0)
+*/
+static void pci_routing_fixup(void)
+{
+  device_t dev;
+
+        dev = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8231, 0);
+	printk_info("%s: dev is %p\n", __FUNCTION__, dev);
+	if (dev) {
+		/* initialize PCI interupts - these assignments depend
+		   on the PCB routing of PINTA-D 
+
+		   PINTA = IRQ11
+		   PINTB = IRQ5
+		   PINTC = IRQ10
+		   PINTD = IRQ12
+		*/
+		pci_write_config8(dev, 0x55, 0xb0);
+		pci_write_config8(dev, 0x56, 0xa5);
+		pci_write_config8(dev, 0x57, 0xc0);
+	}
+
+	// Standard southbridge components
+	printk_info("setting southbridge\n");
+	pci_assign_irqs(0, 0x11, southbridgeIrqs);
+
+	// Ethernet built into southbridge
+	printk_info("setting ethernet\n");
+	pci_assign_irqs(0, 0x12, enetIrqs);
+
+	// PCI slot
+	printk_info("setting pci slot\n");
+	pci_assign_irqs(0, 0x14, slotIrqs);
+	printk_info("%s: DONE\n", __FUNCTION__);
+}
+
+
+
 static void vt8231_init(struct southbridge_via_vt8231_config *conf)
 {
   unsigned char enables;
@@ -377,6 +429,13 @@ southbridge_init(struct chip *chip, enum chip_pass pass)
 
   case CONF_PASS_POST_PCI:
     vt8231_init(conf);
+    printk_err("FUCK! ROUTING FIXUP!\n");
+    pci_routing_fixup();
+
+    break;
+  case CONF_PASS_PRE_BOOT:
+    printk_err("FUCK! ROUTING FIXUP!\n");
+    pci_routing_fixup();
     break;
 
   default:

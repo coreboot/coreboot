@@ -5,11 +5,7 @@
 #include <device/pci_ops.h>
 #include "../../../northbridge/amd/amdk8/northbridge.h"
 #include "chip.h"
-//#include <part/mainboard.h>
-unsigned long initial_apicid[CONFIG_MAX_CPUS] =
-{
-	0,1
-};
+
 #if 0
 static void fixup_lsi_53c1030(struct device *pdev)
 {
@@ -35,7 +31,7 @@ static void fixup_lsi_53c1030(struct device *pdev)
 	
 }
 #endif
-//extern static void lsi_scsi_init(struct device *dev);
+
 #if 0
 static void print_pci_regs(struct device *dev)
 {
@@ -57,17 +53,18 @@ static void print_pci_regs(struct device *dev)
 #if 0
 static void print_mem(void)
 {
-        int i;
-	int low_1MB = 0;
-	for(i=low_1MB;i<low_1MB+1024*4;i++) {
+        unsigned int i;
+	unsigned int low_1MB = 0xf4107000;
+	for(i=low_1MB;i<low_1MB+1024;i++) {
              if((i%16)==0) printk_debug("\n %08x:",i);
              printk_debug(" %02x ",(unsigned char)*((unsigned char *)i));
              }
-
+#if 0
         for(i=low_1MB;i<low_1MB+1024*4;i++) {
              if((i%16)==0) printk_debug("\n %08x:",i);
              printk_debug(" %c ",(unsigned char)*((unsigned char *)i));
              }
+#endif
  }
 #endif
 #if 0
@@ -90,10 +87,10 @@ static void amd8111_enable_rom(void)
 static void onboard_scsi_fixup(void)
 {
         struct device *dev;
-#if 1 
+#if 1
 	unsigned char i,j,k;
 
-	for(i=0;i<=6;i++) {
+	for(i=0;i<=15;i++) {
 		for(j=0;j<=0x1f;j++) {
 			for (k=0;k<=6;k++){
 				dev = dev_find_slot(i, PCI_DEVFN(j, k));
@@ -140,13 +137,13 @@ static void vga_fixup(void) {
 
 #endif
  
-
+#if 0
 static void
 enable(struct chip *chip, enum chip_pass pass)
 {
 
-        struct mainboard_tyan_s2875_config *conf = 
-		(struct mainboard_tyan_s2875_config *)chip->chip_info;
+        struct mainboard_tyan_s2895_config *conf = 
+		(struct mainboard_tyan_s2895_config *)chip->chip_info;
 
         switch (pass) {
 		default: break;
@@ -155,7 +152,7 @@ enable(struct chip *chip, enum chip_pass pass)
 //		case CONF_PASS_POST_PCI:		
                 case CONF_PASS_PRE_BOOT:
 //			if (conf->fixup_scsi)
- //       			onboard_scsi_fixup();
+//        			onboard_scsi_fixup();
 //			if (conf->fixup_vga)
 //				vga_fixup();
 			printk_debug("mainboard fixup pass %d done\r\n",
@@ -164,33 +161,114 @@ enable(struct chip *chip, enum chip_pass pass)
 	}
 
 }
-void final_mainboard_fixup(void)
+#endif
+
+#undef DEBUG
+#define DEBUG 0
+#if DEBUG 
+static void debug_init(device_t dev)
 {
+        unsigned bus;
+        unsigned devfn;
 #if 0
-        enable_ide_devices();
+        for(bus = 0; bus < 256; bus++) {
+                for(devfn = 0; devfn < 256; devfn++) {
+                        int i;
+                        dev = dev_find_slot(bus, devfn);
+                        if (!dev) {
+                                continue;
+                        }
+                        if (!dev->enabled) {
+                                continue;
+                        }
+                        printk_info("%02x:%02x.%0x aka %s\n", 
+                                bus, devfn >> 3, devfn & 7, dev_path(dev));
+                        for(i = 0; i < 256; i++) {
+                                if ((i & 0x0f) == 0) {
+                                        printk_info("%02x:", i);
+                                }
+                                printk_info(" %02x", pci_read_config8(dev, i));
+                                if ((i & 0x0f) == 0xf) {
+                                        printk_info("\n");
+                                }
+                        }
+                        printk_info("\n");
+                }
+        }
+#endif
+#if 0
+        msr_t msr;
+        unsigned index;
+        unsigned eax, ebx, ecx, edx;
+        index = 0x80000007;
+        printk_debug("calling cpuid 0x%08x\n", index);
+        asm volatile(
+                "cpuid"
+                : "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx)
+                : "a" (index)
+                );
+        printk_debug("cpuid[%08x]: %08x %08x %08x %08x\n",
+                index, eax, ebx, ecx, edx);
+        if (edx & (3 << 1)) {
+                index = 0xC0010042;
+                printk_debug("Reading msr: 0x%08x\n", index);
+                msr = rdmsr(index);
+                printk_debug("msr[0x%08x]: 0x%08x%08x\n",
+                        index, msr.hi, msr.hi);
+        }
 #endif
 }
-static struct device_operations mainboard_operations = {
-        .read_resources   = root_dev_read_resources,
-        .set_resources    = root_dev_set_resources,
-        .enable_resources = enable_childrens_resources,
-        .init             = 0,
-        .scan_bus         = amdk8_scan_root_bus,
-        .enable           = 0,
+
+static void debug_noop(device_t dummy)
+{
+}
+
+static struct device_operations debug_operations = {
+        .read_resources   = debug_noop,
+        .set_resources    = debug_noop,
+        .enable_resources = debug_noop,
+        .init             = debug_init,
 };
 
-static void enumerate(struct chip *chip)
+static unsigned int scan_root_bus(device_t root, unsigned int max)
 {
-        struct chip *child;
-        dev_root.ops = &mainboard_operations;
-        chip->dev = &dev_root;
-        chip->bus = 0;
-        for(child = chip->children; child; child = child->next) {
-                child->bus = &dev_root.link[0];
-        }
+        struct device_path path;
+        device_t debug;
+        max = root_dev_scan_bus(root, max);
+        path.type = DEVICE_PATH_PNP;
+        path.u.pnp.port   = 0;
+        path.u.pnp.device = 0;
+        debug = alloc_dev(&root->link[1], &path);
+        debug->ops = &debug_operations;
+        return max;
 }
-struct chip_control mainboard_tyan_s2875_control = {
-	.enable = enable,
-        .enumerate = enumerate,
-        .name      = "Tyan s2875 mainboard ",
+#endif
+
+static void mainboard_init(device_t dev)
+{       
+        root_dev_init(dev);
+        
+//        do_verify_cpu_voltages();
+}
+
+static struct device_operations mainboard_operations = {
+	.read_resources   = root_dev_read_resources,
+	.set_resources    = root_dev_set_resources,
+	.enable_resources = root_dev_enable_resources,
+	.init             = mainboard_init,
+#if !DEBUG
+	.scan_bus         = root_dev_scan_bus,
+#else
+	.scan_bus         = scan_root_bus,
+#endif
+	.enable           = 0,
+};
+
+static void enable_dev(struct device *dev)
+{
+	dev_root.ops = &mainboard_operations;
+}
+struct chip_operations mainboard_tyan_s2875_ops = {
+	.name      = "Tyan s2875 mainboard ",
+	.enable_dev = enable_dev, 
 };

@@ -46,7 +46,6 @@ struct bus {
  * combination:
  */
 
-struct chip;
 struct device {
 	struct bus *	bus;		/* bus this device is on */
 	device_t	sibling;	/* next device on this bus */

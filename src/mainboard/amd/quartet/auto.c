@@ -1,6 +1,6 @@
 #define ASSEMBLY 1
-#define MAXIMUM_CONSOLE_LOGLEVEL 9
-#define DEFAULT_CONSOLE_LOGLEVEL 9
+//#define MAXIMUM_CONSOLE_LOGLEVEL 9
+//#define DEFAULT_CONSOLE_LOGLEVEL 9
 
 #include <stdint.h>
 #include <device/pci_def.h>
@@ -100,11 +100,12 @@ static unsigned int generate_row(uint8_t node, uint8_t row,
 	 */
 
 	uint32_t ret = 0x00010101;	/* default row entry */
-
+/*
 	static const unsigned int rows_2p[2][2] = {
 		{0x00030101, 0x00010202},
 		{0x00010202, 0x00030101}
 	};
+*/
 
 	static const unsigned int rows_4p[4][4] = {
 		{0x00070101, 0x00010202, 0x00030404, 0x00010204},
@@ -114,9 +115,11 @@ static unsigned int generate_row(uint8_t node, uint8_t row,
 	};
 
 	if (!(node >= maxnodes || row >= maxnodes)) {
+/*
 		if (maxnodes == 2)
 			ret = rows_2p[node][row];
 		if (maxnodes == 4)
+*/
 			ret = rows_4p[node][row];
 	}
 
@@ -141,6 +144,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "fakespd.c"
 #endif
 
+#include "northbridge/amd/amdk8/setup_resource_map.c"
 #include "northbridge/amd/amdk8/raminit.c"
 
 #include "northbridge/amd/amdk8/coherent_ht.c"
@@ -199,6 +203,20 @@ static void main(void)
 		 .channel1 = {RC3 | DIMM1, RC3 | DIMM3, 0, 0},
 		 }
 	};
+
+        static const struct ht_chain ht_c[] = {
+                {  /* Link 2 of CPU0 */
+                        .udev = PCI_DEV(0, 0x18, 0),
+                        .upos = 0xc0,
+                        .devreg = 0xe0,  /* Preset bus num in resource map */
+                }, 
+                {  /* Link 1 of CPU1 */
+                        .udev = PCI_DEV(0, 0x19, 0),
+                        .upos = 0xa0,  
+                        .devreg = 0xe4,  /* Preset bus num in resource map */
+                },
+        };  
+
 	int needs_reset;
 
 	enable_lapic();
@@ -219,7 +237,8 @@ static void main(void)
 	console_init();
 	setup_quartet_resource_map();
 	needs_reset = setup_coherent_ht_domain();
-	needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0x80);
+//	needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0x80);
+        needs_reset |= ht_setup_chains(ht_c, sizeof(ht_c)/sizeof(ht_c[0]));
 	if (needs_reset) {
 		print_info("ht reset -\r\n");
 		soft_reset();

@@ -25,8 +25,6 @@ static void ti_firewire_init(struct device *dev)
         word |= ((1 << 2) |(1<<4)); // Command: 3--> 17
         pci_write_config16(dev, 0x4, word);
 
-	printk_debug("TI_FIREWIRE_FIXUP:  done  \n");
-	
 }
 
 static struct device_operations ti_firewire_ops  = {

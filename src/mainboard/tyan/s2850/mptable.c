@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdint.h>
 
-void *smp_write_config_table(void *v, unsigned long * processor_map)
+void *smp_write_config_table(void *v)
 {
         static const char sig[4] = "PCMP";
         static const char oem[8] = "TYAN    ";
@@ -32,19 +32,19 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
         mc->mpe_checksum = 0;
         mc->reserved = 0;
 
-        smp_write_processors(mc, processor_map);
+        smp_write_processors(mc);
         {
                 device_t dev;
 
                 /* 8111 */
-                dev = dev_find_slot(1, PCI_DEVFN(0x03,0));
+                dev = dev_find_slot(1, PCI_DEVFN(0x01,0));
                 if (dev) {
                         bus_8111_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
                         bus_isa    = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
                         bus_isa++;
                 }     
                 else {  
-                        printk_debug("ERROR - could not find PCI 1:03.0, using defaults\n");
+                        printk_debug("ERROR - could not find PCI 1:01.0, using defaults\n");
 
                         bus_8111_1 = 2;
                         bus_isa = 3;
@@ -144,9 +144,9 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 	return smp_next_mpe_entry(mc);
 }
 
-unsigned long write_smp_table(unsigned long addr, unsigned long *processor_map)
+unsigned long write_smp_table(unsigned long addr)
 {
 	void *v;
 	v = smp_write_floating_table(addr);
-	return (unsigned long)smp_write_config_table(v, processor_map);
+	return (unsigned long)smp_write_config_table(v);
 }

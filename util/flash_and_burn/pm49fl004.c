@@ -3,6 +3,7 @@
  *
  *
  * Copyright 2004 Tyan Corporation
+ *	yhlu yhlu@tyan.com add exclude range
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -55,15 +56,21 @@ static __inline__ int erase_block_49fl004(volatile unsigned char *bios,
 	return (0);
 }
 
+
+extern int exclude_start_page, exclude_end_page;
+
 int write_49fl004(struct flashchip *flash, unsigned char *buf)
 {
 	int i;
 	int total_size = flash->total_size * 1024, page_size =
 	    flash->page_size;
 	volatile char *bios = flash->virt_addr;
-
+	
 	printf("Programming Page: ");
 	for (i = 0; i < total_size / page_size; i++) {
+		if( (i>=exclude_start_page) && (i<exclude_end_page)) 	
+			continue;
+		
 		/* erase the page before programming */
 		erase_block_49fl004(bios, i * page_size);
 

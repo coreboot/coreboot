@@ -51,11 +51,12 @@ static void ht_collapse_previous_enumeration(unsigned bus)
 		    (id == 0x0000ffff) || (id == 0xffff0000)) {
 			continue;
 		}
+		
 		pos = ht_lookup_slave_capability(dev);
 		if (!pos) {
 			continue;
 		}
-		
+
 		/* Clear the unitid */
 		flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
 		flags &= ~0x1f;
@@ -215,11 +216,13 @@ static int ht_setup_chain(device_t udev, unsigned upos)
 		    (((id >> 16) & 0xffff) == 0x0000)) {
 			break;
 		}
+
 		pos = ht_lookup_slave_capability(dev);
 		if (!pos) {
 			print_err("HT link capability not found\r\n");
 			break;
 		}
+
 		/* Setup the Hypertransport link */
 		reset_needed |= ht_optimize_link(udev, upos, uoffs, dev, pos, PCI_HT_SLAVE0_OFFS);
 
@@ -247,19 +250,21 @@ struct ht_chain {
 	unsigned upos;
 	unsigned devreg; 
 };
-
-static int ht_setup_chainx(device_t udev, unsigned upos, unsigned next_unitid)
+static int ht_setup_chainx(device_t udev, unsigned upos, unsigned bus)
 {
-	unsigned last_unitid;
+	unsigned next_unitid, last_unitid;
 	unsigned uoffs;
 	int reset_needed=0;
 
 	uoffs = PCI_HT_HOST_OFFS;
+	next_unitid = 1;
+
 	do {
 		uint32_t id;
 		uint8_t pos;
 		unsigned flags, count;
-		device_t dev = PCI_DEV(0, 0, 0);
+		
+		device_t dev = PCI_DEV(bus, 0, 0);
 		last_unitid = next_unitid;
 
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
@@ -269,11 +274,21 @@ static int ht_setup_chainx(device_t udev, unsigned upos, unsigned next_unitid)
 		    (((id >> 16) & 0xffff) == 0x0000)) {
 			break;
 		}
+#if 0
+		print_debug("bus=");
+		print_debug_hex8(bus);
+		print_debug(" id =");
+		print_debug_hex32(id);
+		print_debug("\r\n");
+#endif
+
+		
 		pos = ht_lookup_slave_capability(dev);
 		if (!pos) {
 			print_err("HT link capability not found\r\n");
 			break;
 		}
+
 		/* Setup the Hypertransport link */
 		reset_needed |= ht_optimize_link(udev, upos, uoffs, dev, pos, PCI_HT_SLAVE0_OFFS);
 
@@ -293,8 +308,7 @@ static int ht_setup_chainx(device_t udev, unsigned upos, unsigned next_unitid)
 		next_unitid += count;
 
 	} while((last_unitid != next_unitid) && (next_unitid <= 0x1f));
-	if(reset_needed!=0) next_unitid |= 0xffff0000;
-	return next_unitid;
+	return reset_needed;
 }
 
 static int ht_setup_chains(const struct ht_chain *ht_c, int ht_c_num)
@@ -304,65 +318,49 @@ static int ht_setup_chains(const struct ht_chain *ht_c, int ht_c_num)
 	 * non Coherent links the appropriate bus registers for the
 	 * links needs to be programed to point at bus 0.
 	 */
-	unsigned next_unitid;
 	int reset_needed; 
-	unsigned upos;
-	device_t udev;
+        unsigned upos;
+        device_t udev;
 	int i;
 
-	/* Make certain the HT bus is not enumerated */
-	ht_collapse_previous_enumeration(0);
-
 	reset_needed = 0;
-	next_unitid = 1;
 
 	for (i = 0; i < ht_c_num; i++) {
 		uint32_t reg;
-		uint8_t reg8;
+		unsigned devpos;
+		unsigned regpos;
+		uint32_t dword;
+		unsigned busn;
+		
 		reg = pci_read_config32(PCI_DEV(0,0x18,1), ht_c[i].devreg);
-		reg |= (0xff<<24) | 7;
-		reg &= ~(0xff<<16);
-		pci_write_config32(PCI_DEV(0,0x18,1), ht_c[i].devreg, reg);
 
-#if CONFIG_MAX_CPUS > 1 
-		pci_write_config32(PCI_DEV(0,0x19,1), ht_c[i].devreg, reg);
+		//We need setup 0x94, 0xb4, and 0xd4 according to the reg
+		devpos = ((reg & 0xf0)>>4)+0x18; // nodeid; it will decide 0x18 or 0x19
+		regpos = ((reg & 0xf00)>>8) * 0x20 + 0x94; // link n; it will decide 0x94 or 0xb4, 0x0xd4;
+		busn = (reg & 0xff0000)>>16;
+		
+		dword = pci_read_config32( PCI_DEV(0, devpos, 0), regpos) ;
+		dword &= ~(0xffff<<8);
+		dword |= (reg & 0xffff0000)>>8;
+		pci_write_config32( PCI_DEV(0, devpos,0), regpos , dword);
+#if 0
+		print_debug("PCI_DEV=(0,0x");
+		print_debug_hex8(devpos);
+		print_debug(",0) 0x");
+		print_debug_hex8(regpos);
+		print_debug("=");
+		print_debug_hex32(dword);
+		print_debug("\r\n");
 #endif
-#if CONFIG_MAX_CPUS > 2
-		pci_write_config32(PCI_DEV(0,0x1a,1), ht_c[i].devreg, reg);
-		pci_write_config32(PCI_DEV(0,0x1b,1), ht_c[i].devreg, reg);
-#endif
+		
+	        /* Make certain the HT bus is not enumerated */
+        	ht_collapse_previous_enumeration(busn);
 
-		//Store dev min
-		reg8 = next_unitid & 0xff ;
-		upos = ht_c[i].upos;
-		udev = ht_c[i].udev;
+                upos = ht_c[i].upos;
+                udev = ht_c[i].udev;
+		
+		reset_needed |= ht_setup_chainx(udev,upos,busn );
 
-		next_unitid = ht_setup_chainx(udev,upos,next_unitid);
-		if((next_unitid & 0xffff0000) == 0xffff0000) {
-			reset_needed |= 1;
-			next_unitid &=0x0000ffff;
-		}
-
-		//set dev min
-		pci_write_config8(PCI_DEV(0,0x18,1), ht_c[i].devreg+2, reg8);
-#if CONFIG_MAX_CPUS > 1 
-		pci_write_config8(PCI_DEV(0,0x19,1), ht_c[i].devreg+2, reg8);
-#endif
-#if CONFIG_MAX_CPUS > 2
-		pci_write_config8(PCI_DEV(0,0x1a,1), ht_c[i].devreg+2, reg8);
-		pci_write_config8(PCI_DEV(0,0x1b,1), ht_c[i].devreg+2, reg8);
-#endif
-
-		//Set dev max
-		reg8 = (next_unitid-1) & 0xff ;
-		pci_write_config8(PCI_DEV(0,0x18,1), ht_c[i].devreg+3, reg8);
-#if CONFIG_MAX_CPUS > 1
-		pci_write_config8(PCI_DEV(0,0x19,1), ht_c[i].devreg+3, reg8);
-#endif
-#if CONFIG_MAX_CPUS > 2
-		pci_write_config8(PCI_DEV(0,0x1a,1), ht_c[i].devreg+3, reg8);
-		pci_write_config8(PCI_DEV(0,0x1b,1), ht_c[i].devreg+3, reg8);
-#endif
 	}
 
 	return reset_needed;

@@ -1,256 +1,43 @@
 # Sample config file for 
-# the Tyan s2880 
-# This will make a target directory of ./s2880
-
-loadoptions
+# the Tyan s2881 
+# This will make a target directory of ./s2881
 
 target s2881
+mainboard tyan/s2881
 
-uses ARCH
-uses CONFIG_COMPRESS
-uses CONFIG_IOAPIC
-uses CONFIG_ROM_STREAM
-uses CONFIG_ROM_STREAM_START
-uses CONFIG_SMP
-uses CONFIG_UDELAY_TSC
-uses CPU_FIXUP
-uses FALLBACK_SIZE
-uses HAVE_FALLBACK_BOOT
-uses HAVE_MP_TABLE
-uses HAVE_PIRQ_TABLE
-uses i586
-uses i686
-uses INTEL_PPRO_MTRR
-uses HEAP_SIZE
-uses IRQ_SLOT_COUNT
-uses k7
-uses k8
-uses MAINBOARD
-uses MAINBOARD_PART_NUMBER
-uses MAINBOARD_VENDOR
-#uses MEMORY_HOLE
-uses PAYLOAD_SIZE
-uses _RAMBASE
-uses _ROMBASE
-uses ROM_IMAGE_SIZE
-uses ROM_SECTION_OFFSET
-uses ROM_SECTION_SIZE
-uses ROM_SIZE
-uses STACK_SIZE
-uses USE_FALLBACK_IMAGE
-uses USE_OPTION_TABLE
-uses HAVE_OPTION_TABLE
-uses CONFIG_CHIP_CONFIGURE
-
-uses CONFIG_CONSOLE_BTEXT 
-uses CONFIG_CONSOLE_SERIAL8250
-uses TTYS0_BAUD
-uses DEFAULT_CONSOLE_LOGLEVEL
-uses MAXIMUM_CONSOLE_LOGLEVEL
-uses DEBUG
-uses CONFIG_MAX_CPUS
-uses CONFIG_LOGICAL_CPUS
-uses CONFIG_MAX_PHYSICAL_CPUS
-uses LINUXBIOS_EXTRA_VERSION
-uses XIP_ROM_SIZE
-uses XIP_ROM_BASE
-
-uses HAVE_HARD_RESET
-
-#uses CONFIG_VGABIOS
-#uses CONFIG_REALMODE_IDT
-#uses CONFIG_PCIBIOS
-#uses VGABIOS_START
-#uses SCSIFW_START
-
-#
-#uses CONFIG_LSI_SCSI_FW_FIXUP
-
-option HAVE_HARD_RESET=1
-
-option HAVE_OPTION_TABLE=1
-option HAVE_MP_TABLE=1
-option CPU_FIXUP=1
-option CONFIG_UDELAY_TSC=0
-option i686=1
-option i586=1
-option INTEL_PPRO_MTRR=1
-option k7=1
-option k8=1
-option ROM_SIZE=524288
-
-option CONFIG_CONSOLE_BTEXT=1
-#option CONFIG_VGABIOS=0
-#option CONFIG_REALMODE_IDT=0
-#option CONFIG_PCIBIOS=0
-#option VGABIOS_START=0xfff8c000
-#option SCSIFW_START=0xfff80000
-
-
-option HAVE_FALLBACK_BOOT=1
-  
-# use the new chip configure code.
-
-option CONFIG_CHIP_CONFIGURE=1
-#option CONFIG_LSI_SCSI_FW_FIXUP=1
-
-
-#
-###
-### Build code to export a programmable irq routing table
-###
-option HAVE_PIRQ_TABLE=1
-option IRQ_SLOT_COUNT=9
-#
-###
-### Build code for SMP support
-### Only worry about 2 micro processors
-###
-option CONFIG_SMP=1
-option CONFIG_MAX_CPUS=2
-option CONFIG_LOGICAL_CPUS=0
-option CONFIG_MAX_PHYSICAL_CPUS=2
-#
-###
-### Build code to setup a generic IOAPIC
-###
-option CONFIG_IOAPIC=1
-#
-###
-### MEMORY_HOLE instructs earlymtrr.inc to
-### enable caching from 0-640KB and to disable 
-### caching from 640KB-1MB using fixed MTRRs 
-###
-### Enabling this option breaks SMP because secondary
-### CPU identification depends on only variable MTRRs
-### being enabled.
-###
-#option MEMORY_HOLE=0
-#
-###
-### Clean up the motherboard id strings
-###
-option MAINBOARD_PART_NUMBER="S2881"
-option MAINBOARD_VENDOR="Tyan"
-#
-###
-### Compute the location and size of where this firmware image
-### (linuxBIOS plus bootloader) will live in the boot rom chip.
-###
-#option FALLBACK_SIZE=524288
-#option FALLBACK_SIZE=98304
-option FALLBACK_SIZE=131072
-
-## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
-option ROM_IMAGE_SIZE=65536
- 
-
-###
-### Compute where this copy of linuxBIOS will start in the boot rom
-###
-#
-###
-
-## We do use compressed image
-option CONFIG_COMPRESS=1
-
-option CONFIG_CONSOLE_SERIAL8250=1
-option TTYS0_BAUD=115200
-
-##
-### Select the linuxBIOS loglevel
-##
-## EMERG      1   system is unusable
-## ALERT      2   action must be taken immediately
-## CRIT       3   critical conditions
-## ERR        4   error conditions
-## WARNING    5   warning conditions
-## NOTICE     6   normal but significant condition
-## INFO       7   informational
-## DEBUG      8   debug-level messages
-## SPEW       9   Way too many details
-
-## Request this level of debugging output
-option DEFAULT_CONSOLE_LOGLEVEL=7
-## At a maximum only compile in this level of debugging
-option MAXIMUM_CONSOLE_LOGLEVEL=7
-
-option DEBUG=1
-
-#
-
-## LinuxBIOS C code runs at this location in RAM
-option _RAMBASE=0x004000
-
-##
-## Use a 32K stack 
-##
-option STACK_SIZE=0x8000
-
-##
-## Use a 56K heap 
-##
-option HEAP_SIZE=0xe000
-
-#
-###
-### Compute the start location and size size of
-### The linuxBIOS bootloader.
-###
-option CONFIG_ROM_STREAM     = 1
-
-#
-# 
+# Tyan s2881
 romimage "normal"
-#	48K for SCSI FW
+#       48K for SCSI FW
 #        option ROM_SIZE = 475136
-#	48K for SCSI FW and 48K for ATI ROM
-#	option ROM_SIZE = 425984 
-#	64K for Etherboot
-#	option ROM_SIZE = 458752  
-        option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
+#       48K for SCSI FW and 48K for ATI ROM
+#       option ROM_SIZE = 425984 
+#       64K for Etherboot
+#        option ROM_SIZE = 458752 
 	option USE_FALLBACK_IMAGE=0
-	option ROM_SECTION_SIZE  = (ROM_SIZE - FALLBACK_SIZE)
-	option ROM_SECTION_OFFSET= 0
-
-	option PAYLOAD_SIZE            = (ROM_SECTION_SIZE - ROM_IMAGE_SIZE)
-	option CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
-	option _ROMBASE      = (CONFIG_ROM_STREAM_START + PAYLOAD_SIZE)
-
-#	option XIP_ROM_SIZE = FALLBACK_SIZE
-        option XIP_ROM_SIZE = 65536
-	option XIP_ROM_BASE = (_ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE)
-
-	mainboard tyan/s2881
+	option ROM_IMAGE_SIZE=0x10000
+	option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
 #       payload ../../../payloads/tg3--ide_disk.zelf
 #        payload ../../../payloads/filo.elf
 #        payload ../../../payloads/filo_mem.elf
-#       payload ../../../payloads/filo_mem_btext.elf
-#       payload ../../../payloads/filo_btext.zelf
-        payload ../../../payloads/tg3--filo_btext.zelf
+#       payload ../../../payloads/filo.zelf
+#        payload ../../../payloads/tg3--filo.zelf
+#       payload ../../../payloads/e1000--filo.zelf
+#        payload ../../../payloads/tg3--e1000--filo.zelf
+        payload ../../../payloads/tg3--eepro100--e1000--filo_hda2.zelf
 end
 
 romimage "fallback" 
-	option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Fallback"
 	option USE_FALLBACK_IMAGE=1
-	option ROM_SECTION_SIZE  = FALLBACK_SIZE
-	option ROM_SECTION_OFFSET= (ROM_SIZE - FALLBACK_SIZE)
-
-	option PAYLOAD_SIZE            = (ROM_SECTION_SIZE - ROM_IMAGE_SIZE)
-	option CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
-	option _ROMBASE      = (CONFIG_ROM_STREAM_START + PAYLOAD_SIZE)
-
-#	option XIP_ROM_SIZE = FALLBACK_SIZE
-        option XIP_ROM_SIZE = 65536
-	option XIP_ROM_BASE = (_ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE)
-
-	mainboard tyan/s2881
+	option ROM_IMAGE_SIZE=0x10000
+	option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Fallback"
 #       payload ../../../payloads/tg3--ide_disk.zelf
 #        payload ../../../payloads/filo.elf
 #        payload ../../../payloads/filo_mem.elf
-#       payload ../../../payloads/filo_mem_btext.elf
-#       payload ../../../payloads/filo_btext.zelf
-        payload ../../../payloads/tg3--filo_btext.zelf
+#       payload ../../../payloads/filo.zelf
+#        payload ../../../payloads/tg3--filo.zelf
+#       payload ../../../payloads/e1000--filo.zelf
+#        payload ../../../payloads/tg3--e1000--filo.zelf
+        payload ../../../payloads/tg3--eepro100--e1000--filo_hda2.zelf
 end
 
 buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"

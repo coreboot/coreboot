@@ -3,6 +3,8 @@
  *
  *
  * Copyright 2000 Silicon Integrated System Corporation
+ * Copyright 2004 Tyan Corp
+ *	yhlu yhlu@tyan.com add exclude start and end option
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -49,6 +51,7 @@
 #include "sst_fwhub.h"
 
 struct flashchip flashchips[] = {
+#if 1
 	{"Am29F040B",	AMD_ID, 	AM_29F040B,	NULL, 512, 64 * 1024,
 	 probe_29f040b, erase_29f040b,	write_29f040b,	NULL},
 	{"At29C040A",	ATMEL_ID,	AT_29C040A,	NULL, 512, 256,
@@ -75,8 +78,10 @@ struct flashchip flashchips[] = {
 	 probe_jedec,	erase_chip_jedec, write_49lf040,NULL},
 	{"SST49LF008A", SST_ID,		SST_49LF008A, 	NULL, 1024, 4096,
 	 probe_sst_fwhub, erase_sst_fwhub, write_sst_fwhub, NULL},
+#endif
 	{"Pm49FL004",	PMC_ID,		PMC_49FL004,	NULL, 512, 64 * 1024,
 	 probe_jedec,	erase_chip_jedec, write_49fl004,NULL},
+#if 1
 	{"W29C011",	WINBOND_ID,	W_29C011,	NULL, 128, 128,
 	 probe_jedec,	erase_chip_jedec, write_jedec,	NULL},
 	{"W29C020C", 	WINBOND_ID, 	W_29C020C,	NULL, 256, 128,
@@ -93,6 +98,7 @@ struct flashchip flashchips[] = {
 	 MSYSTEMS_ID, MSYSTEMS_MD2802,
 	 NULL, 8, 8 * 1024,
 	 probe_md2802, erase_md2802, write_md2802, read_md2802},
+#endif
 	{NULL,}
 };
 
@@ -171,15 +177,19 @@ int verify_flash(struct flashchip *flash, char *buf, int verbose)
 
 void usage(const char *name)
 {
-	printf("usage: %s [-rwv] [-c chipname][file]\n", name);
+	printf("usage: %s [-rwv] [-c chipname] [-s exclude_start] [-e exclude_end] [file]\n", name);
 	printf("-r: read flash and save into file\n"
 	       "-w: write file into flash (default when file is specified)\n"
 	       "-v: verify flash against file\n"
 	       "-c: probe only for specified flash chip\n"
+	       "-s: exclude start position\n"
+	       "-e: exclude end postion\n"
 	       " If no file is specified, then all that happens\n"
 	       " is that flash info is dumped\n");
 	exit(1);
 }
+
+int exclude_start_page, exclude_end_page;
 
 int main(int argc, char *argv[])
 {
@@ -191,9 +201,34 @@ int main(int argc, char *argv[])
 	int read_it = 0, write_it = 0, verify_it = 0, verbose = 0;
 	char *filename = NULL;
 
+
+        unsigned int exclude_start_position=0, exclude_end_position=0; // [x,y)
+	char *tempstr=NULL;
+#if 0
+
+#if 1
+	/* Keep fallback image */
+	exclude_start_position = 0x60000;
+	exclude_end_position = 0x80000;
+#else 
+	/* Keep DMI etc. */
+        exclude_start_position = 0x60000;
+        exclude_end_position = 0x70000;
+#endif
+
+#endif
+
+	if (argc > 1) {
+		/* Yes, print them. */
+		int i;
+		printf ("The arguments are:\n");
+		for (i = 1; i < argc; ++i)
+			printf ("%s\n", argv[i]);
+	}
+
 	setbuf(stdout, NULL);
 
-	while ((opt = getopt(argc, argv, "rwvVc:")) != EOF) {
+	while ((opt = getopt(argc, argv, "rwvVc:s:e:")) != EOF) {
 		switch (opt) {
 		case 'r':
 			read_it = 1;
@@ -210,11 +245,22 @@ int main(int argc, char *argv[])
 		case 'V':
 			verbose = 1;
 			break;
+		case 's':
+			tempstr = strdup(optarg);
+			sscanf(tempstr,"%x",&exclude_start_position);
+			break;
+		case 'e':
+                        tempstr = strdup(optarg);
+                        sscanf(tempstr,"%x",&exclude_end_position);
+                        break;
+
 		default:
 			usage(argv[0]);
 			break;
 		}
 	}
+
+
 	if (read_it && write_it) {
 		printf("-r and -w are mutually exclusive\n");
 		usage(argv[0]);
@@ -239,7 +285,8 @@ int main(int argc, char *argv[])
 
 	printf("Part is %s\n", flash->name);
 	if (!filename) {
-		printf("OK, only ENABLING flash write, but NOT FLASHING\n");
+		printf
+		    ("OK, only ENABLING flash write, but NOT FLASHING\n");
 		return 0;
 	}
 	size = flash->total_size * 1024;
@@ -255,6 +302,10 @@ int main(int argc, char *argv[])
 			memcpy(buf, (const char *) flash->virt_addr, size);
 		else
 			flash->read(flash, buf);
+
+	        if(exclude_end_position - exclude_start_position > 0)  
+	                memset(buf+exclude_start_position, 0, exclude_end_position-exclude_start_position);
+
 		fwrite(buf, sizeof(char), size, image);
 		fclose(image);
 		printf("done\n");
@@ -267,8 +318,19 @@ int main(int argc, char *argv[])
 		fclose(image);
 	}
 
-	if (write_it || (!read_it && !verify_it))
+	if(exclude_end_position - exclude_start_position > 0) 
+        	memcpy(buf+exclude_start_position, (const char *) flash->virt_addr+exclude_start_position, 
+			exclude_end_position-exclude_start_position);
+        
+        exclude_start_page = exclude_start_position/flash->page_size;
+        if((exclude_start_position%flash->page_size) != 0) { 
+                exclude_start_page++;
+        }       
+        exclude_end_page = exclude_end_position/flash->page_size;
+
+	if (write_it || (!read_it && !verify_it)) {
 		flash->write(flash, buf);
+	}	
 	if (verify_it)
 		verify_flash(flash, buf, verbose);
 	return 0;

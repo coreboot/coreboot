@@ -1,10 +1,12 @@
 #define ASSEMBLY 1
+
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
-#include <arch/smp/lapic.h>
+#include <cpu/x86/lapic.h>
+#include <arch/cpu.h>
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
@@ -13,13 +15,15 @@
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/amd/amd8111/amd8111_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
-#include "cpu/k8/apic_timer.c"
+#include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
-#include "cpu/p6/boot_cpu.c"
+#include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
 #include "northbridge/amd/amdk8/cpu_rev.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
+#include "cpu/amd/mtrr/amd_earlymtrr.c"
+#include "cpu/x86/bist.h"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
@@ -39,6 +43,11 @@ static void soft_reset(void)
         pci_write_config8(PCI_DEV(0, 0x04, 0), 0x47, 1);
 }
 
+static void soft2_reset(void)
+{  
+        set_bios_reset();
+        pci_write_config8(PCI_DEV(3, 0x04, 0), 0x47, 1);
+}
 
 static void memreset_setup(void)
 {
@@ -85,6 +94,23 @@ static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 	 */
         uint32_t ret=0x00010101; /* default row entry */
 
+/*
+	    (L2)       (L1)	
+	CPU3-------------CPU1
+     (L0)| 		  |(L0)
+	 |		  |
+	 |		  |
+	 |		  |
+	 |		  |
+     (L0)|		  |(L0)
+	CPU2-------------CPU0---------8131----------8111
+	    (L1)       (L2)  (L1)   	
+*/
+
+	/* Link0 of CPU0 to Link0 of CPU1 */
+	/* Link2 of CPU0 to Link1 of CPU2 */
+	/* Link1 of CPU1 to Link2 of CPU3 */
+	/* Link0 of CPU2 to Link0 of CPU3 */
 
         static const unsigned int rows_4p[4][4] = {
                 { 0x000b0101, 0x00010202, 0x00030808, 0x00010208 },
@@ -121,6 +147,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
+#include "northbridge/amd/amdk8/setup_resource_map.c"
 #include "northbridge/amd/amdk8/raminit.c"
 
 #include "northbridge/amd/amdk8/coherent_ht.c"
@@ -146,7 +173,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #define DIMM2 0x52
 #define DIMM3 0x53
         
-static void main(void)
+static void main(unsigned long bist)
 {
 	static const struct mem_controller cpu[] = {
 #if FIRST_CPU
@@ -200,18 +227,35 @@ static void main(void)
 	};
 	int i;
         int needs_reset;
-        enable_lapic();
-        init_timer();
-        if (cpu_init_detected()) {
-                asm("jmp __cpu_reset");
-        }
-        distinguish_cpu_resets();
-        if (!boot_cpu()) {
-                stop_this_cpu();
-        }
+        if (bist == 0) {
+                /* Skip this if there was a built in self test failure */
+                amd_early_mtrr_init();
+                enable_lapic();
+                init_timer();
+
+                if (cpu_init_detected()) {
+#if 0
+                        asm volatile ("jmp __cpu_reset");
+#else                   
+                /* cpu reset also reset the memtroller ????
+                        need soft_reset to reset all except keep HT link freq and width */
+                        distinguish_cpu_resets();
+                        soft2_reset();
+#endif          
+                }
+                distinguish_cpu_resets();
+                if (!boot_cpu()) {
+                        stop_this_cpu();
+                }       
+        }               
+                        
         w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
-        uart_init();
-        console_init();
+        uart_init();    
+        console_init(); 
+                
+        /* Halt if there was a built in self test failure */
+        report_bist_failure(bist);
+
         setup_s4882_resource_map();
         needs_reset = setup_coherent_ht_domain();
         needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0xa0);

@@ -4,22 +4,15 @@
 #include <device/pci_ids.h>
 #include <arch/io.h>
 #include <arch/romcc_io.h>
-#include <arch/smp/lapic.h>
+#include <cpu/x86/lapic.h>
 #include "pc80/mc146818rtc_early.c"
 #include "southbridge/amd/amd8111/amd8111_enable_rom.c"
 #include "northbridge/amd/amdk8/early_ht.c"
-#include "cpu/p6/boot_cpu.c"
+#include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 
-#define HAVE_REGPARM_SUPPORT 0
-#if HAVE_REGPARM_SUPPORT
 static unsigned long main(unsigned long bist)
 {
-#else
-static void main(void)
-{
-	unsigned long bist = 0;
-#endif
 	/* Make cerain my local apic is useable */
 	enable_lapic();
 
@@ -61,20 +54,18 @@ static void main(void)
 	}
  normal_image:
 	asm volatile ("jmp __normal_image" 
-		      : /* outputs */ 
-		      : "a" (bist) /* inputs */
-		      : /* clobbers */
-		      );
+		: /* outputs */ 
+		: "a" (bist) /* inputs */
+		: /* clobbers */
+		);
  cpu_reset:
+#if 0
 	asm volatile ("jmp __cpu_reset"
-		      : /* outputs */ 
-		      : "a"(bist) /* inputs */
-		      : /* clobbers */
-		      );
- fallback_image:
-#if HAVE_REGPARM_SUPPORT
-	return bist;
-#else
-	return;
+		: /* outputs */ 
+		: "a"(bist) /* inputs */
+		: /* clobbers */
+		);
 #endif
+ fallback_image:
+	return bist;
 }

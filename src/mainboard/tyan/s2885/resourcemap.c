@@ -252,8 +252,8 @@ static void setup_s2885_resource_map(void)
 		 * [31:24] Bus Number Limit i
 		 *	   This field defines the highest bus number in configuration regin i
 		 */
-		PCI_ADDR(0, 0x18, 1, 0xE0), 0x0000FC88, 0x06010207,
-		PCI_ADDR(0, 0x18, 1, 0xE4), 0x0000FC88, 0x00000007,
+		PCI_ADDR(0, 0x18, 1, 0xE0), 0x0000FC88, 0x06000203, // AMD 8111 on link2 of CPU 0
+		PCI_ADDR(0, 0x18, 1, 0xE4), 0x0000FC88, 0x08070003, // AMD 8151 on link0 of CPU 0
 		PCI_ADDR(0, 0x18, 1, 0xE8), 0x0000FC88, 0x00000000,
 		PCI_ADDR(0, 0x18, 1, 0xEC), 0x0000FC88, 0x00000000,
 	};

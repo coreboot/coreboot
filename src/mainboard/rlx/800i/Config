@@ -1,0 +1,38 @@
+
+arch i386
+mainboardinit cpu/i386/entry16.inc
+mainboardinit cpu/i386/entry32.inc
+ldscript cpu/i386/entry16.lds
+ldscript cpu/i386/entry32.lds
+mainboardinit cpu/i386/reset16.inc
+ldscript cpu/i386/reset16.lds
+
+mainboardinit northbridge/micron/21PAD/reset_test.inc
+
+#
+# Inspired by the cache as ram testing...
+#
+
+biosbase 0xffff0000
+rambase 0x00000800
+option XIP_ROM_BASE=0xffff0000
+option XIP_ROM_SIZE=0x10000
+option STACK_SIZE=0x2000
+
+
+northbridge micron/21PAD
+southbridge acer/m1535
+mainboardinit cpu/p6/earlymtrr.inc
+
+option ENABLE_FIXED_AND_VARIABLE_MTRRS
+option NO_KEYBOARD
+option ZKERNEL_START=0xfff40000
+option ZKERNEL_MASK=0x3ed 
+option HAVE_PIRQ_TABLE=1
+
+object mainboard.o
+object irq_tables.o HAVE_PIRQ_TABLE
+
+cpu p6
+cpu p5
+

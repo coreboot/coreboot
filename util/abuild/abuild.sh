@@ -178,6 +178,15 @@ function built_successfully
 	fi
 	[ "$buildall" != "true" -a "$status" == "ok" ]
 }
+
+function build_broken
+{
+	CURR=`pwd`
+	status="yes"
+	[ -r "$LBROOT/src/mainboard/${VENDOR}/${MAINBOARD}/BROKEN" ] && status="no"
+	[ "$buildbroken" == "true" -o "$status" == "yes" ]
+}
+
 function build_target
 {
 	VENDOR=$1
@@ -220,29 +229,50 @@ function build_target
 		# Check result:
 		if [ $found_crosscompiler == "false" ]; then
 			echo " ($TARCH: skipped, we're $ARCH)"
+			echo
 			return 0
 		else
 			echo " ($TARCH: ok)"
 		fi
 	fi
 	
-	if ! built_successfully $VENDOR $MAINBOARD  ; then
-		create_buildenv $VENDOR $MAINBOARD
-		if [ $? -eq 0 ]; then
-			compile_target $VENDOR $MAINBOARD
-		fi
-	else
+	built_successfully $VENDOR $MAINBOARD && \
+	{
 		echo " ( mainboard/$VENDOR/$MAINBOARD previously ok )"
+		echo
+		return 0
+	}
+	
+	build_broken $VENDOR $MAINBOARD || \
+	{
+		echo " ( broken mainboard/$VENDOR/$MAINBOARD skipped )"
+		echo
+		return 0
+	}
+	
+	create_buildenv $VENDOR $MAINBOARD
+	if [ $? -eq 0 ]; then
+		compile_target $VENDOR $MAINBOARD
 	fi
-	echo
 }
+	echo
 
 function myhelp
 {
-	echo "Usage: $0 [-v|--verbose] [-a|--all] [-t|--target vendor/board] [lbroot]"
+	echo "Usage: $0 [-v] [-a] [-b] [-t <vendor/board>] [lbroot]"
 	echo "       $0 [-V|--version]"
 	echo "       $0 [-h|--help]"
-	exit 0
+	echo
+	echo "Options:"
+	echo "    [-v|--verbose]		  print more messages"
+	echo "    [-a|--all]			  build previously succeeded ports as well"
+	echo "    [-b|--broken]		  attempt to build ports that are known broken"
+	echo "    [-t|--target <vendor/board>]  attempt to build target vendor/board only"
+	echo "    [-V|--version]		  print version number and exit"
+	echo "    [-h|--help]			  print this help and exit"
+	echo "    [lbroot]			  absolute path to LinuxBIOS sources"
+	echo "				  (defaults to $LBROOT)"
+	echo
 }
 
 function myversion 
@@ -258,15 +288,15 @@ warranty.
 
 EOF
 	myhelp
-	exit 0
 }
 
 # default options
 target=""
 buildall=false
+LBROOT=$( cd ../..; pwd )
 
 # parse parameters
-args=`getopt -l version,verbose,help,all,target: Vvhat: -- "$@"`
+args=`getopt -l version,verbose,help,all,target:,broken Vvhat:b -- "$@"`
 
 if [ $? != 0 ]; then
 	myhelp
@@ -278,20 +308,18 @@ while true ; do
 	case "$1" in
 		-t|--target)	shift; target=$1; shift;;
 		-a|--all)	shift; buildall=true;;
+		-b|--broken)    shift; buildbroken=true;;
 		-v|--verbose)	shift; verbose=true;;
-		-V|--version)	shift; myversion;;
-		-h|--help)	shift; myhelp;;
+		-V|--version)	shift; myversion; exit 0;;
+		-h|--help)	shift; myhelp; exit 0;;
 		--)		shift; break;;
+		-*)		echo -e "Invalid option\n"; myhelp; exit 1;;
 		*)		break;;
 	esac
 done
 
-LBROOT=$1
+test -z "$1" || LBROOT=$1
 
-# /path/to/freebios2/
-if [ -z "$LBROOT" ] ; then
-	LBROOT=$( cd ../..; pwd )
-fi
 echo "LBROOT=$LBROOT"
 
 if [ "$target" != "" ]; then

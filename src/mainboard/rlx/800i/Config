@@ -7,14 +7,13 @@ ldscript cpu/i386/entry32.lds
 mainboardinit cpu/i386/reset16.inc
 ldscript cpu/i386/reset16.lds
 
-mainboardinit northbridge/micron/21PAD/chipset_init.inc
+mainboardinit mainboard/rlx/800i/chipset_init.inc
 mainboardinit superio/acer/m1535/setup_serial.inc
 mainboardinit pc80/serial.inc
 mainboardinit arch/i386/lib/console.inc
 
 #SUPERIO
 option SERIAL_SUPERIO_BASEADDRESS=0x3f0
-#option HAVE_PIRQ_TABLE=1
 northbridge micron/21PAD
 southbridge acer/m1535
 superio acer/m1535

@@ -3,6 +3,7 @@
 #include <device/device.h>
 #include <device/path.h>
 #include <device/pci.h>
+#include <device/hypertransport.h>
 #include <part/hard_reset.h>
 #include <part/fallback_boot.h>
 

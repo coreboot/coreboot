@@ -106,4 +106,4 @@ romimage "fallback"
 	payload /suse/stepan/tg3--ide_disk.zelf
 end
 
-buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
+buildrom ./quartet.rom ROM_SIZE "normal" "fallback"

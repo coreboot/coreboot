@@ -1,0 +1,12 @@
+#!/bin/bash
+#
+# script to generate rom image with builtin vga option rom.
+# call from freebios2/targets
+#
+rm -rf island/aruma/island_aruma
+./buildtarget island/aruma/
+cd island/aruma/island_aruma
+make
+mv island_aruma.rom island_aruma_novga.rom
+cat ~/atiragexl.rom island_aruma_novga.rom > island_aruma.rom
+cd ../../..

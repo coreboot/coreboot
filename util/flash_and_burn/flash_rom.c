@@ -116,7 +116,7 @@ struct flashchip * probe_flash(struct flashchip * flash)
 		}
 		bios = mmap (0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
 			     //fd_mem, (off_t) (0x100000000-size));
-			     fd_mem, (off_t) (0x0-size));
+			     fd_mem, (off_t) (0xffffffff-size+1));
 		if (bios == MAP_FAILED) {
 			perror("Error MMAP /dev/mem");
 			exit(1);

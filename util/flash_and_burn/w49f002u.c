@@ -22,7 +22,7 @@
  * Reference:
  *	W49F002U data sheet
  *
- * $Id
+ * $Id$
  */
 
 #include <stdio.h>
@@ -35,14 +35,16 @@ int probe_49f002 (struct flashchip * flash)
 	volatile char * bios = flash->virt_addr;
 	unsigned char id1, id2;
 
-	*(bios + 0x5555) = 0xAA;
-	*(bios + 0x2AAA) = 0x55;
-	*(bios + 0x5555) = 0x90;
+	*(volatile char *) (bios + 0x5555) = 0xAA;
+	*(volatile char *) (bios + 0x2AAA) = 0x55;
+	*(volatile char *) (bios + 0x5555) = 0x90;
     
 	id1 = *(volatile unsigned char *) bios;
 	id2 = *(volatile unsigned char *) (bios + 0x01);
- 
-	*bios = 0xF0;
+
+	*(volatile char *) (bios + 0x5555) = 0xAA;
+        *(volatile char *) (bios + 0x2AAA) = 0x55;
+	*(volatile char *) (bios + 0x5555) = 0xF0;
 
 	myusec_delay(10);
 
@@ -68,52 +70,36 @@ int erase_49f002 (struct flashchip * flash)
 	myusec_delay(100);
 	toggle_ready_jedec(bios);
 
-	//   while ((*bios & 0x40) != 0x40)
-	//;
-
-#if 0
-	toggle_ready_jedec(bios);
-	*(bios + 0x0ffff) = 0x30;
-	*(bios + 0x1ffff) = 0x30;
-	*(bios + 0x2ffff) = 0x30;
-	*(bios + 0x37fff) = 0x30;
-	*(bios + 0x39fff) = 0x30;
-	*(bios + 0x3bfff) = 0x30;
-#endif
-
 	return(0);
 }
 
 int write_49f002 (struct flashchip * flash, unsigned char * buf)
 {
-    int i;
-    int total_size = flash->total_size * 1024;
-    volatile char * bios = flash->virt_addr;
-    volatile char * dst = bios;
+	int i;
+	int total_size = flash->total_size * 1024;
+	volatile char * bios = flash->virt_addr;
+	volatile char * dst = bios;
 
-    *bios = 0xF0;
-    myusec_delay(10);
-    erase_49f002(flash);
-    //*bios = 0xF0;
-#if 1
-   printf ("Programming Page: ");
-    for (i = 0; i < total_size; i++) {
-	/* write to the sector */
-	if ((i & 0xfff) == 0)
-	    printf ("address: 0x%08lx", (unsigned long)i);
-	*(bios + 0x5555) = 0xAA;
-	*(bios + 0x2AAA) = 0x55;
-	*(bios + 0x5555) = 0xA0;
-	*dst++ = *buf++;
+	myusec_delay(10);
+	erase_49f002(flash);
 
-	/* wait for Toggle bit ready */
-	toggle_ready_jedec(dst);
+	printf ("Programming Page: ");
+	for (i = 0; i < total_size; i++) {
+		/* write to the sector */
+		if ((i & 0xfff) == 0)
+			printf ("address: 0x%08lx", (unsigned long)i);
+		*(bios + 0x5555) = 0xAA;
+		*(bios + 0x2AAA) = 0x55;
+		*(bios + 0x5555) = 0xA0;
+		*dst++ = *buf++;
 
-	if ((i & 0xfff) == 0)
-	    printf ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
-    }
-#endif
-    printf("\n");
+		/* wait for Toggle bit ready */
+		toggle_ready_jedec(dst);
 
-    return(0);
+		if ((i & 0xfff) == 0)
+			printf ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+	}
+	printf("\n");
+
+	return(0);
 }

@@ -7,7 +7,7 @@ unsigned long micro = 1;
 void myusec_delay(int time)
 {
 	volatile unsigned long i;
-	for(i = 0; i < time * micro; i++)
+	for (i = 0; i < time * micro; i++)
 		;
 }
 
@@ -38,6 +38,4 @@ void myusec_calibrate_delay()
 	micro = count / timeusec;
 
 	fprintf(stderr, "%ldM loops per second\n", (unsigned long)micro);
-
-
 }

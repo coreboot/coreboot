@@ -23,8 +23,6 @@
  *
  * $Id$
  */
-			 
-
 #include <stdio.h>
 #include "flash.h"
 #include "jedec.h"
@@ -37,35 +35,7 @@
 #define RESET			0xFF
 #define READ_ID			0x90
 
-static __inline__ void protect_49lf040 (volatile char * bios)
-{
-	/* ask compiler not to optimize this */
-	volatile unsigned char tmp;
-
-	tmp = *(volatile unsigned char *) (bios + 0x1823);
-	tmp = *(volatile unsigned char *) (bios + 0x1820);
-	tmp = *(volatile unsigned char *) (bios + 0x1822);
-	tmp = *(volatile unsigned char *) (bios + 0x0418);
-	tmp = *(volatile unsigned char *) (bios + 0x041B);
-	tmp = *(volatile unsigned char *) (bios + 0x0419);
-	tmp = *(volatile unsigned char *) (bios + 0x040A);
-}
-
-static __inline__ void unprotect_49lf040 (volatile char * bios)
-{
-	/* ask compiler not to optimize this */
-	volatile unsigned char tmp;
-
-	tmp = *(volatile unsigned char *) (bios + 0x1823);
-	tmp = *(volatile unsigned char *) (bios + 0x1820);
-	tmp = *(volatile unsigned char *) (bios + 0x1822);
-	tmp = *(volatile unsigned char *) (bios + 0x0418);
-	tmp = *(volatile unsigned char *) (bios + 0x041B);
-	tmp = *(volatile unsigned char *) (bios + 0x0419);
-	tmp = *(volatile unsigned char *) (bios + 0x041A);
-}
-
-int erase_sector_49lf040 (volatile char * bios, unsigned int page)
+static int erase_sector_49lf040 (volatile char * bios, unsigned int page)
 {
 	/* Chip erase function does not exist for LPC mode on 49lf040.
 	 * Erase sector-by-sector instead. */
@@ -99,9 +69,9 @@ int erase_sector_49lf040 (volatile char * bios, unsigned int page)
 }
 
 static __inline__ int write_sector_49lf040(volatile char * bios, 
-				       unsigned char * src,
-				       volatile unsigned char * dst, 
-				       unsigned int page_size)
+					   unsigned char * src,
+					   volatile unsigned char * dst, 
+					   unsigned int page_size)
 {
 	int i;
 	volatile char *Temp;
@@ -146,7 +116,6 @@ int probe_49lf040 (struct flashchip * flash)
         *(volatile char *) (bios + 0x2AAA) = 0x55;
         myusec_delay(10);
         *(volatile char *) (bios + 0x5555) = 0x90;
-
         myusec_delay(10);
 
         id1 = *(volatile unsigned char *) bios;
@@ -165,6 +134,7 @@ int probe_49lf040 (struct flashchip * flash)
 
         return 0;
 }
+
 /* Chip erase only works in parallel programming mode for the 49lf040.
  * Use sector-erase instead */
 int erase_49lf040 (struct flashchip * flash)
@@ -190,7 +160,6 @@ int erase_49lf040 (struct flashchip * flash)
 	myusec_delay(10);
         Temp  = bios + 0x5555; /* set up address to be C000:5555h      */
         *Temp = 0x10;       /* write data 0x55 to the address       */
-	
 	myusec_delay(50000);
 
 	return(0);
@@ -202,8 +171,6 @@ int write_49lf040 (struct flashchip * flash, unsigned char * buf)
 	int total_size = flash->total_size * 1024, page_size = flash->page_size;
 	volatile char * bios = flash->virt_addr;
 
-//	unprotect_49lf040 (bios);
-//	erase_49lf040(flash); /* Must be done sector-by-sector in LPC mode */
 	printf ("Programming Page: ");
 	for (i = 0; i < total_size/page_size; i++) {
 		/* erase the page before programming */
@@ -217,8 +184,6 @@ int write_49lf040 (struct flashchip * flash, unsigned char * buf)
                 fflush(stdout);
 	}
 	printf("\n");
-
-//	protect_49lf040 (bios);
 
 	return(0);
 }

@@ -35,8 +35,7 @@ jmp intel_430_out
 	movl $(0x60 + ((n) -1)), %eax	; \
 	PCI_READ_CONFIG_BYTE		; \
 	andl $0xFF, %eax		; \
-/* 4 MB granularity for the 430TX */
-	shll $22, %eax			; \
+	shll $22, %eax			; /* 4 MB granularity for the 430TX */
 
 #define DIMM_READ \
 	addl %ebx, %eax			; \

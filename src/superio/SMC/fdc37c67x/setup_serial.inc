@@ -45,12 +45,10 @@
 #define SMC_WRITE(device, data, index) \
 	mov $0x07, %al		; \
 	mov $SMC_INDEX, %dx  	; \
-	outb %al, %dx		;
-
+	outb %al, %dx		; \
 	mov device, %al		; \
 	mov $SMC_DATA, %dx	; \
-	outb %al, %dx		;
-
+	outb %al, %dx		; \
 	mov data, %ah		; \
 	mov index, %al		; \
 	mov $SMC_INDEX, %dx	; \
@@ -69,7 +67,7 @@
 	/* Check for Device ID */
 
 	SMC_READ($0x20)
-	cmp %al, $0x40
+	cmp $0x40, %al 
 	je 2f
 	mov $0xfe, %al
 	outb %al, $0x80

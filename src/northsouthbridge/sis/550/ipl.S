@@ -225,9 +225,9 @@ sis630ipl_start:
 #ifdef STD_FLASH
 #include "rom/std_flash.inc"
 #else /* !STD_FLASH */
-#if defined(USE_DOC_MIL) || defined(USE_DOC_2000_TSOP)
+#if (USE_DOC_MIL == 1) || (USE_DOC_2000_TSOP == 1)
 #	include "rom/doc_mil.inc"
-#else defined(USE_DOC_MIL_PLUS)
+#else (USE_DOC_MIL_PLUS == 1)
 #	include "rom/doc_mil_plus.inc"
 #endif
 #endif /* STD_FLASH */
@@ -353,9 +353,9 @@ reset_vector:
 	.byte	0xea				# jmp to f000:fe00, where IPL
 	.word	0xfe00, 0xf000			# starts in Standard Flash
 #else /* !STD_FLASH i.e. DoC Mil */
-#if defined(USE_DOC_MIL)
+#if (USE_DOC_MIL == 1)
 	.org 0x1f0
-#elif defined(USE_DOC_2000_TSOP) || defined(USE_DOC_MIL_PLUS)
+#elif (USE_DOC_2000_TSOP == 1) || (USE_DOC_MIL_PLUS == 1)
 	.org 0x3f0
 #endif
 reset_vector:
@@ -367,9 +367,9 @@ spl_vector:
 	.byte	0xea				# jmp to 8000:0000, where SPL
 	.word	0x0000, SPL_RAM_SEG		# (LinuxBIOS) starts in RAM
 
-#if defined(USE_DOC_MIL)
+#if (USE_DOC_MIL == 1)
 	.org 0x1ff
-#elif defined(USE_DOC_2000_TSOP) || defined(USE_DOC_MIL_PLUS)
+#elif (USE_DOC_2000_TSOP == 1) || (USE_DOC_MIL_PLUS == 1)
 	.org 0x3ff
 #endif
 

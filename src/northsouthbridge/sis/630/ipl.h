@@ -10,7 +10,7 @@
 #define DOC_STACK_SEG		0x0400
 #define SPL_RAM_SEG		0x8000
 
-#if defined(USE_DOC_2000_TSOP)
+#if (USE_DOC_2000_TSOP == 1)
 #define DOC_SPL_START_PAGE	4	/* 0-3 for IPL (each of 1KB size) */
 #else /* defined (USE_DOC_MIL) */
 #define DOC_SPL_START_PAGE	2	/* 0,1 for IPL (each of 512B size) */

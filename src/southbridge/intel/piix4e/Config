@@ -1,2 +1,5 @@
+option CONFIG_ENABLE_MOUSE_IRQ12=1
+option CONFIG_ENABLE_KBCCS=0
+option CONFIG_SETUP_RTC=1
 object southbridge.o
 object smbus.o USE_PIIX4E_SMBUS

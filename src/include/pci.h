@@ -488,6 +488,7 @@ struct superio {
 	unsigned int keyboard, cir, game;
 	unsigned int gpio1, gpio2, gpio3;
 	unsigned int acpi,hwmonitor;
+	unsigned int mouse;
 };
 
 struct southbridge;

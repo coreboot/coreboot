@@ -1,0 +1,44 @@
+arch i386
+mainboardinit cpu/i386/entry16.inc
+mainboardinit cpu/i386/entry32.inc
+ldscript cpu/i386/entry16.lds
+ldscript cpu/i386/entry32.lds
+mainboardinit cpu/i386/reset16.inc
+ldscript cpu/i386/reset16.lds
+
+mainboardinit superio/NSC/pc87351/setup_serial.inc
+mainboardinit pc80/serial.inc
+mainboardinit arch/i386/lib/console.inc
+
+northbridge intel/440bx
+southbridge intel/piix4e
+
+mainboardinit cpu/p6/earlymtrr.inc
+
+#mainboardinit ram/dump_northbridge.inc
+#mainboardinit ram/ramtest.inc
+#mainboardinit mainboard/bitworks/ims/do_ramtest.inc
+
+# These are for the dump SPD
+option SMBUS_MEM_DEVICE_START=(0xa << 3)
+option SMBUS_MEM_DEVICE_END=(SMBUS_MEM_DEVICE_START + 0x1)
+option SMBUS_MEM_DEVICE_INC=1
+#mainboardinit sdram/generic_dump_spd.inc
+
+nsuperio NSC/pc87351 keyboard=1 com1={1} com2={1} floppy=0 lpt=0 mouse=1
+
+option ENABLE_FIXED_AND_VARIABLE_MTRRS=1
+
+option PIIX4_DEVFN=0x38
+option CONFIG_UDELAY_TSC=1
+
+# These options control if the IDE controller is enabled in the
+# southbridge fixup code.
+option CONFIG_LINUXBIOS_ENABLE_IDE=1
+option CONFIG_LINUXBIOS_LEGACY_IDE=1
+
+object mainboard.o
+object irq_tables.o
+
+cpu	    p6
+cpu	    p5

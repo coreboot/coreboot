@@ -4,10 +4,11 @@
 #include <stream/read_bytes.h>
 #include <delay.h>
 #include <string.h>
+#include <pc80/ide.h>
 
-/* read a sector or a partial sector */
-extern int ide_read(int drive, unsigned long block, void * buffer);
-extern int ide_init(void);
+#ifndef IDE_BOOT_DRIVE
+#define IDE_BOOT_DRIVE 0
+#endif
 
 static unsigned long offset;
 int stream_init(void)
@@ -30,7 +31,7 @@ int stream_init(void)
 #else
 	offset = 0x7e00;
 #endif
-	res = ide_init();
+	res = ide_probe(IDE_BOOT_DRIVE);
 	delay(1);
 	return res;
 }
@@ -40,27 +41,9 @@ void stream_fini(void)
 	return;
 }
 
-#ifdef IDE_SWAB
-/* from string/swab.c */
-void
-swab (const char *from, char *to, int n)
-{
-	n &= ~1;
-	while (n > 1)
-	{
-		const char b0 = from[--n], b1 = from[--n];
-		to[n] = b0;
-		to[n + 1] = b1;
-	}
-}
-#endif
-
 static unsigned char buffer[512];
 static unsigned int block_num = 0;
 static unsigned int first_fill = 1;
-#ifndef IDE_BOOT_DRIVE
-#define IDE_BOOT_DRIVE 0
-#endif
 static byte_offset_t stream_ide_read(void *vdest, byte_offset_t offset, byte_offset_t count)
 {
 	byte_offset_t bytes = 0;
@@ -84,11 +67,7 @@ static byte_offset_t stream_ide_read(void *vdest, byte_offset_t offset, byte_off
 			len = (count - bytes);
 		}
 
-#ifdef IDE_SWAB
-		swab(buffer + byte_offset, dest, len);
-#else
 		memcpy(dest, buffer + byte_offset, len);
-#endif
 
 		offset += len;
 		bytes += len;

@@ -62,6 +62,9 @@ option i686=1
 option i586=1
 option INTEL_PPRO_MTRR=1
 
+option ROM_SIZE=524288
+
+
 option HAVE_OPTION_TABLE=1
 option CONFIG_ROM_STREAM=1
 option HAVE_FALLBACK_BOOT=1

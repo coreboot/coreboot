@@ -15,7 +15,7 @@ else
 fi
 
 target_dir=$lbpath/targets
-config_lb=$1/Config.lb
+config_lb=$1
 config_dir=$lbpath/util/newconfig
 config_py=$config_dir/config.py
 
@@ -27,7 +27,12 @@ fi
 cd $target_dir
 
 if [ ! -f $config_lb ]; then
+	config_lb=$1/Config.lb
+fi
+
+if [ ! -f $config_lb ]; then
 	echo "No target config file found"
+	echo "Tried both $1 and $config_lb"
 	exit 1
 fi
 

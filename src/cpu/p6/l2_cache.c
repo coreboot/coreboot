@@ -70,7 +70,8 @@ static void cache_disable(void)
 		      "orl  $0x40000000, %0\n\t"
 		      "wbinvd\n\t"
 		      "movl  %0, %%cr0\n\t"
-		      "wbinvd\n\t":"=r" (tmp)::"memory");
+		      "wbinvd\n\t"
+		      : "=r" (tmp) : : "memory");
 }
 
 static void cache_enable(void)
@@ -79,7 +80,8 @@ static void cache_enable(void)
 
 	asm volatile ("movl  %%cr0, %0\n\t"
 		      "andl  $0x9fffffff, %0\n\t"
-		      "movl  %0, %%cr0\n\t":"=r" (tmp)::"memory");
+		      "movl  %0, %%cr0\n\t"
+		      :"=r" (tmp) : : "memory");
 }
 
 int intel_l2_configure()
@@ -107,8 +109,7 @@ int intel_l2_configure()
 	}
 
 	if (signature < 0x630 || signature >= 0x680) {
-		DBG
-		    ("CPU signature of %x so no need for L2 cache configuration\n",
+		DBG("CPU signature of %x so no L2 cache configuration\n",
 		     signature);
 		return 0;
 	}
@@ -404,7 +405,7 @@ static int write_l2_2(unsigned int address,
 	data2 &= 0x1800;
 	data1 |= data2;
 
-	data2 = data2 >> 6;
+	data2 = data2 << 6;
 	data2 &= 0x20000;
 	data1 |= data2;
 

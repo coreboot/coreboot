@@ -893,7 +893,7 @@ def addldscript(path):
 def payload(path):
 	global curimage
 	curimage.setpayload(path)
-#	adduserdefine("PAYLOAD:=%s"%path)
+	adduserdefine("PAYLOAD:=%s"%path)
 #	addrule('payload')
 #	adddep('payload', path)
 #	addaction('payload', 'cp $< $@')

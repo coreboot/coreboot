@@ -77,10 +77,12 @@ static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 	return ret;
 }
 
+#include "northbridge/amd/amdk8/cpu_ldtstop.c"
+#include "southbridge/amd/amd8111/amd8111_ldtstop.c"
+
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
-
 
 static void enable_lapic(void)
 {

@@ -4,9 +4,8 @@
 
 #include <stdint.h>
 #include <device/pci_def.h>
-#include <cpu/p6/apic.h>
 #include <arch/io.h>
-#include <device/pnp.h>
+#include <device/pnp_def.h>
 #include <arch/romcc_io.h>
 #include <arch/smp/lapic.h>
 #include "option_table.h"
@@ -98,13 +97,13 @@ static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 		{ 0x00010404, 0x00050101 }
 	};
 
-	if(maxnodes>2) {
+	if(maxnodes > 2) {
 		print_debug("this mainboard is only designed for 2 cpus\r\n");
 		maxnodes=2;
 	}
 
 
-	if (!(node>=maxnodes || row>=maxnodes)) {
+	if (!(node >= maxnodes || row >= maxnodes)) {
 		ret=rows_2p[node][row];
 	}
 
@@ -176,7 +175,6 @@ static void main(void)
 		print_info("ht reset -");
 		soft_reset();
 	}
-	
 #if 0
 	print_pci_devices();
 #endif
@@ -194,7 +192,6 @@ static void main(void)
 	dump_pci_device(PCI_DEV(0, 0x18, 2));
 #endif
 
-	/* Check all of memory */
 #if 0
 	/* Check the first 1M */
 	ram_check(0x00000000, 0x000100000);

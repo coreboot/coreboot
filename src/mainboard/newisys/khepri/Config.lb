@@ -1,28 +1,34 @@
 uses HAVE_MP_TABLE
 uses HAVE_PIRQ_TABLE
 uses USE_FALLBACK_IMAGE
-uses USE_OPTION_TABLE
 uses HAVE_FALLBACK_BOOT
 uses HAVE_HARD_RESET
+uses IRQ_SLOT_COUNT
 uses HAVE_OPTION_TABLE
+uses CONFIG_MAX_CPUS
+uses CONFIG_IOAPIC
+uses CONFIG_SMP
 uses FALLBACK_SIZE
 uses ROM_SIZE
 uses ROM_SECTION_SIZE
 uses ROM_IMAGE_SIZE
 uses ROM_SECTION_SIZE
 uses ROM_SECTION_OFFSET
-uses CONFIG_SMP
-uses CONFIG_MAX_CPUS
-uses CONFIG_IOAPIC
 uses CONFIG_ROM_STREAM
 uses CONFIG_ROM_STREAM_START
 uses PAYLOAD_SIZE
 uses _ROMBASE
 uses XIP_ROM_SIZE
 uses XIP_ROM_BASE
-uses IRQ_SLOT_COUNT
 uses STACK_SIZE
 uses HEAP_SIZE
+uses USE_OPTION_TABLE
+uses LB_CKS_RANGE_START
+uses LB_CKS_RANGE_END
+uses LB_CKS_LOC
+uses MAINBOARD_PART_NUMBER
+uses MAINBOARD_VENDOR
+
 
 ## ROM_SIZE is the size of boot ROM that this board will use.
 default ROM_SIZE=524288
@@ -45,7 +51,7 @@ default HAVE_HARD_RESET=1
 ## Build code to export a programmable irq routing table
 ##
 default HAVE_PIRQ_TABLE=1
-default IRQ_SLOT_COUNT=7
+default IRQ_SLOT_COUNT=9
 
 ##
 ## Build code to export an x86 MP table
@@ -59,6 +65,13 @@ default HAVE_MP_TABLE=1
 default HAVE_OPTION_TABLE=1
 
 ##
+## Move the default LinuxBIOS cmos range off of AMD RTC registers
+##
+default LB_CKS_RANGE_START=49
+default LB_CKS_RANGE_END=122
+default LB_CKS_LOC=123
+
+##
 ## Build code for SMP support
 ## Only worry about 2 micro processors
 ##
@@ -69,6 +82,12 @@ default CONFIG_MAX_CPUS=2
 ## Build code to setup a generic IOAPIC
 ##
 default CONFIG_IOAPIC=1
+
+##
+## Clean up the motherboard id strings
+##
+default MAINBOARD_PART_NUMBER="Khepri 2100"
+default MAINBOARD_VENDOR="Newisys"
 
 ###
 ### LinuxBIOS layout values
@@ -154,12 +173,12 @@ end
 
 makerule ./failover.inc
 	depends "./failover.E ./romcc"
-	action "./romcc -O2 -o failover.inc --label-prefix=failover ./failover.E"
+	action "./romcc -O -o failover.inc --label-prefix=failover ./failover.E"
 end
 
 makerule ./auto.E 
-	depends	"$(MAINBOARD)/auto.c" 
-	action	"$(CPP) -I$(TOP)/src $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
+	depends	"$(MAINBOARD)/auto.c option_table.h"
+	action	"$(CPP) -I$(TOP)/src -I. $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
 end
 makerule ./auto.inc 
 	depends "./auto.E ./romcc"
@@ -171,6 +190,7 @@ end
 ##
 mainboardinit cpu/i386/entry16.inc
 mainboardinit cpu/i386/entry32.inc
+mainboardinit cpu/i386/bist32.inc
 ldscript /cpu/i386/entry16.lds
 ldscript /cpu/i386/entry32.lds
 
@@ -300,4 +320,5 @@ end
 ##
 mainboardinit pc80/serial.inc
 mainboardinit arch/i386/lib/console.inc
+mainboardinit cpu/i386/bist32_fail.inc
 

@@ -2,7 +2,7 @@
 #include <string.h>
 #include <printk.h>
 
-void smp_write_config_table(void *v)
+void smp_write_config_table(void *v, unsigned long * processor_map)
 {
 	int ioapicid = 0;
 	static const char sig[4] = "PCMP";
@@ -28,7 +28,7 @@ void smp_write_config_table(void *v)
 	mc->reserved = 0;
 
 
-	smp_write_processors(mc);
+	smp_write_processors(mc, processor_map);
 	ioapicid = 2;
 
 	smp_write_bus(mc, 0, "PCI   ");
@@ -122,10 +122,10 @@ void smp_write_config_table(void *v)
 		mc, smp_next_mpe_entry(mc));
 }
 
-void write_smp_table(void *v)
+void write_smp_table(void *v, unsigned long *processor_map)
 {
 	smp_write_floating_table(v);
-	smp_write_config_table(v);
+	smp_write_config_table(v, processor_map);
 }
 
 

@@ -109,10 +109,12 @@ void secondary_cpu_init(void)
 	unsigned long totalram;
 	int processor_id;
 
+	printk_spew(__FUNCTION__ "\n");
 	atomic_inc(&active_cpus);
 	totalram = get_ramsize();
 	processor_id = cpu_initialize(totalram);
 	atomic_dec(&active_cpus);
+	printk_spew(__FUNCTION__ " id is %d\n", processor_id);
 	stop_cpu(processor_id);
 }
 
@@ -135,6 +137,18 @@ static void wait_for_other_cpus(void)
 
 void hardwaremain(int boot_complete)
 {
+	// The processor map. 
+	// Now that SMP is in linuxbios, and Linux counts on us
+	// giving accurate information about processors, we need a map
+	// of what processors are out there. This could be a bit mask, 
+	// but we will be optimistic and hope we someday run on 
+	// REALLY BIG SMPs. Also we may need more than one bit of 
+	// info per processor at some point. I hope we don't need 
+	// anything more complex than an int.
+	unsigned long processor_map[MAX_CPUS];
+	// Processor ID of the BOOT cpu (i.e. the one running this code
+	int boot_cpu;
+
 	// Comment: the NEW_SUPERIO architecture is actually pretty good.
 	// I think we need to move to the same sort of architecture for
 	// everything: A config file generated sequence of calls 
@@ -189,12 +203,14 @@ void hardwaremain(int boot_complete)
 	printk_info("totalram: %ldM\n", totalram/1024);
 
 	/* Fully initialize the cpu before configuring the bus */
-	cpu_initialize(totalram);
+	boot_cpu = cpu_initialize(totalram);
+	printk_spew("BOOT CPU is %d\n", boot_cpu);
+	processor_map[boot_cpu] = CPU_BOOTPROCESSOR|CPU_ENABLED;
 
 	/* Now start the other cpus initializing 
 	 * The sooner they start the sooner they stop.
 	 */
-	startup_other_cpus();
+	startup_other_cpus(processor_map);
 
 	// Now do the real bus
 	// we round the total ram up a lot for thing like the SISFB, which 
@@ -233,7 +249,7 @@ void hardwaremain(int boot_complete)
 	pci_zero_irq_settings();
 
 	/* copy the smp block to address 0 */
-	write_smp_table((void *)16);
+	write_smp_table((void *)16, processor_map);
 	post_code(0x96);
 
 	check_pirq_routing_table();

@@ -238,7 +238,8 @@ void smp_write_processor(struct mp_config_table *mc,
 	unsigned char apicid, unsigned char apicver,
 	unsigned char cpuflag, unsigned int cpufeature,
 	unsigned int featureflag);
-void smp_write_processors(struct mp_config_table *mc);
+void smp_write_processors(struct mp_config_table *mc, 
+	unsigned long *processor_map);
 void smp_write_bus(struct mp_config_table *mc,
 	unsigned char id, unsigned char *bustype);
 void smp_write_ioapic(struct mp_config_table *mc,
@@ -264,7 +265,7 @@ void smp_write_compatibility_address_space(struct mp_config_table *mc,
 	unsigned int range_list);
 unsigned char smp_compute_checksum(void *v, int len);
 void smp_write_floating_table(void *v);
-void write_smp_table(void *v);
+void write_smp_table(void *v, unsigned long *processor_map);
 
 
 #else /* HAVE_MP_TABLE */

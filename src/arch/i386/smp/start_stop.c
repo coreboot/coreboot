@@ -1,4 +1,5 @@
 #include <smp/start_stop.h>
+#include <arch/smp/mpspec.h>
 #include <cpu/p6/apic.h>
 #include <delay.h>
 
@@ -57,7 +58,10 @@ void stop_cpu(int apicid)
 
 }
 
-void start_cpu(int apicid)
+// This is a lot more paranoid now, since Linux can NOT handle
+// being told there is a CPU when none exists. So any errors 
+// will return 0, meaning no CPU. 
+int start_cpu(int apicid)
 {
 	int timeout;
 	unsigned long send_status, accept_status, start_eip;
@@ -87,7 +91,10 @@ void start_cpu(int apicid)
 		send_status = apic_read(APIC_ICR) & APIC_ICR_BUSY;
 	} while (send_status && (timeout++ < 1000));
 	if (timeout >= 1000) {
-		printk_spew("timed out\n");
+		printk_err("CPU %d: First apic write timed out. Disabling\n",
+			 apicid);
+		// too bad. 
+		return 0;
 	}
 
 	mdelay(10);
@@ -108,7 +115,10 @@ void start_cpu(int apicid)
 		send_status = apic_read(APIC_ICR) & APIC_ICR_BUSY;
 	} while (send_status && (timeout++ < 1000));
 	if (timeout >= 1000) {
-		printk_spew("timed out\n");
+		printk_err("CPU %d: Second apic write timed out. Disabling\n",
+			 apicid);
+		// too bad. 
+		return 0;
 	}
 
 	/* FIXME start_eip should be more flexible! */
@@ -178,9 +188,12 @@ void start_cpu(int apicid)
 		printk_warning("APIC never delivered???\n");
 	if (accept_status)
 		printk_warning("APIC delivery error (%lx).\n", accept_status);
+	if (send_status || accept_status)
+		return 0;
+	return 1;
 }
 
-void startup_other_cpus(void)
+void startup_other_cpus(unsigned long *processor_map)
 {
 	int apicid = this_processors_id();
 	int i;
@@ -189,6 +202,8 @@ void startup_other_cpus(void)
 		if (i == apicid ) {
 			continue;
 		}
-		start_cpu(i);
+		if (start_cpu(i))
+			processor_map[i] = CPU_ENABLED;
+
 	}
 }

@@ -129,8 +129,26 @@ void pci_get_size(struct pci_dev *dev, unsigned long reg, unsigned long addr)
 	// restore addr
 	pci_write_config_dword(dev, PCI_BASE_ADDRESS_0 + (reg << 2), addr);
 
+	// some broken hardware has read-only registers that do not 
+	// really size correctly. You can tell this if addr == size
+	// Example: the acer m7229 has BARs 1-4 normally read-only. 
+	// so BAR1 at offset 0x10 reads 0x1f1. If you size that register
+	// by writing 0xffffffff to it, it will read back as 0x1f1 -- a 
+	// violation of the spec. 
+	// We catch this case and ignore it by settting size and type to 0.
+	// This incidentally catches the common case where registers 
+	// read back as 0 for both address and size. 
+	if (addr == size) {
+               printk_err(__FUNCTION__
+                          "dev_fn 0x%x, register %d, read-only"
+                          " SO, ignoring it\n",
+                           dev->devfn, reg);
+                 printk_err("addr was 0x%x, size was 0x%x\n",addr,size); 
+         	type = 0;
+         	size = 0;
+         }
 	// Now compute the actual size, See PCI Spec 6.2.5.1 ... 
-	if (size & PCI_BASE_ADDRESS_SPACE_IO) {
+         else if (size & PCI_BASE_ADDRESS_SPACE_IO) {
 		type = size & (~PCI_BASE_ADDRESS_IO_MASK);
 		size &= (PCI_BASE_ADDRESS_IO_MASK);
 		// BUG! Top 16 bits can be zero (or not) 

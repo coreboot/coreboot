@@ -5,8 +5,8 @@
 #include <smp/atomic.h>
 int this_processors_id(void);
 void stop_cpu(int processor_id);
-void start_cpu(int processor_id);
-void startup_other_cpus(void);
+int start_cpu(int processor_id);
+void startup_other_cpus(unsigned long *processor_map);
 #else
 #define this_processors_id()	0
 #define startup_other_cpus()	do {} while(0)

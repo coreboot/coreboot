@@ -14,7 +14,7 @@
 #endif
 
 # debugging SMJ
-#define NO_HLT
+//#define NO_HLT
 
 spot_test:	.string " Spot checking: "
 spot_error:	.string "Blatant memory errors found.\r\n"

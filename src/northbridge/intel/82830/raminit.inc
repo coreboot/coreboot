@@ -63,13 +63,21 @@ jmp intel_830_out
 #define SET_RAM_COMMAND(command) \
 	movl	$REG_DRAMC, %eax	; \
 	PCI_READ_CONFIG_DWORD		; \
-	andl	$0xffffff80, %eax		; \
+	andl	$0xffffff8f, %eax		; \
 	orl	$((command)), %eax ; \
 	movl	%eax, %edx		; \
 	movl	$REG_DRAMC, %eax	; \
 	PCI_WRITE_CONFIG_DWORD
 
-#define ENABLE_REFRESH()
+// current thinkpads set this to 15.6 uS.
+#define ENABLE_REFRESH() \
+	movl	$REG_DRAMC, %eax	; \
+	PCI_READ_CONFIG_DWORD		; \
+	andl	$0xfffff88f, %eax		; \
+	orl	$((RAM_COMMAND_NORMAL_0)), %eax ; \
+	movl	%eax, %edx		; \
+	movl	$REG_DRAMC, %eax	; \
+	PCI_WRITE_CONFIG_DWORD
 
 #define REG_PCICMD0	0x04
 #define REG_PCICMD1	0x05
@@ -84,38 +92,15 @@ jmp intel_830_out
 #define REG_SID1	0x2f
 
 				
-// FROM HERE ON DOWN IT NEEDS TO BE FIXED -- RGM
-#define REG_MCHCFG	0x50
-#define MCHCFG_CLT  	0x40	// CLT (Cpu Latency Timer) 
-#define MCHCFG_LMFS_MASK 0x10	// local memory frequency mask
-#define MCHCFG_LMFS_133	0x10	// 133Mhz 
-#define MCHCFG_LMFS_100	0x00	// 100Mhz 
+#define REG_RRBAR 	0x48	// IGNORED. LEAVE AT DEFAULT
+#define REG_GCC0	0x50	// sixteen bits
+#define REG_GCC0_VAL	0xa222
+#define REG_GCC1	0x52	// 16 bits
+#define REG_GCC1_VAL	0x800a
+#define REG_FDHC	0x58 	// 8 bits
+#define REG_FDHC_VAL	0
 
-#define MCHCFG_DPCP_MASK 0x08	// dram paging policy mask
-#define MCHCFG_DPCP_0 	0x00	// precharge bank at page miss
-#define MCHCFG_DPCP_1 	0x08	// precharge all 
-
-#define MCHCFG_SMFS_MASK 0x04	// memory frequency mask
-#define MCHCFG_SMFS_133	0x04	// 133Mhz 
-#define MCHCFG_SMFS_100	0x00	// 100Mhz 
-
-#define REG_APCONT	0x51 	
-#define REG_DRP		0x52
-
-#define REG_DRAMC	0x7c
-#define REG_DRAMT	0x53
-#define DRAMT_DCT	0x10 
-#define DRAMT_HACQS	0x08 	// host aperture cycle queue slot 
-#define DRAMT_CL_MASK	0x04	// CAS# latency mask
-#define DRAMT_CL_2	0x04	// 2 SCLK 
-#define DRAMT_CL_3	0x00	// 3 SCLK 
-#define DRAMT_SRCD	0x02	// RAS# latency. 0 = 3 SCLK, 1 = 2 SCLK 
-#define DRAMT_SRP	0x01	// RAS# precharge. 0 = 3 SCLK, 1 = 2 SCLK 
-
-#define REG_DRP2	0x54
-
-#define	REG_FDHC	0x58
-#define FDHC_HEN	0x80	// 0 = no hole, 1 = 15-16MB hole enable. 
+// thinkpad pam values. 10 11 11 00 30 11 11
 
 #define REG_PAM0	0x59
 #define REG_PAM1	0x5A
@@ -126,36 +111,49 @@ jmp intel_830_out
 #define REG_PAM6	0x5F
 #define REG_SMRAM	0x70
 
-#define REG_MISCC	0x72
-#define MISCC_BYPASS	0x2000
-#define MISCC_CPCME	0x0800
-#define MISCC_WPTC_MASK 0x0030
-#define MISCC_WPTC_100	0x0010
-#define MISCC_WPTC_133	0x0020
+// on current thinkpad, one slot full, 0x2 0x4 0x4 0x4
+#define REG_DRB0	0x60
+#define REG_DRB1	0x61
+#define REG_DRB2	0x62
+#define REG_DRB3	0x63
 
-#define REG_BUFF_SC	0x92
-#define REG_BUFF_SC2	0x94	
+#define REG_DRA		0x70	// 16 bits, 0xff11 on my one-ram thinkpad right now (4kb page on pop, top row EMPTY)
+#define REG_DRA_VAL	0xff11
+// default DRT 10 00 02 00  (0x00020010)
+// Idle timer is 8 clocks, CL is 3
+// Ras to cas is 3, ras precharge is 3
+// i.e. as slow as it gets
+#define REG_DRT		0x78	// 32 bits
+#define REG_DRT_VAL	0x00020010
 
-#define REG_SM_RCOMP	0x98
+// on thinkpad it is 70 41 00 30 (30004170)
+// rev 0, init complete, power mgmt on, all rows allowed active, 
+// page close enable, refresh enabled at 15.6, normal operation
 
-#define REG_SM0		0x9c
-#define REG_SM1		0x9d
-#define REG_SM2		0x9e
-#define REG_SM3		0x9f			
-				
+#define REG_DRAMC	0x7c
+#define REG_DRAMC_VAL	0 // initially, none of these should be set initially.
+
+#define REG_DTC		0x8c	// dram throttling
+#define REG_DTC_VAL	0 	// thinkpad ignores it
+
+// SMM sucks. Leave it off. 
+#define REG_SMRAM	0x90
+#define REG_SMRAM_VAL	0x2
+// ignore this one. 
+//#define REG_ESMRAMC	0x91
+//#define REG_ESMRAMC_VAL	0x
+
+// the buffer stuff is 1c 01 22 fc (0xfc22011c) on thinkpad
+
+#define REG_BUFF_SC	0xec  // 32 bits
+#define REG_BUFF_SC_VAL	0xfc22011c
+
 /* default values for config registers */
 ram_set_registers:
-	CS_WRITE_BYTE(REG_PCISTS1, 0x20) // new.
-	CS_WRITE_BYTE(REG_SVID0, 0x86)
-	CS_WRITE_BYTE(REG_SVID1, 0x80) // new 
+	CS_WRITE_WORD(REG_GCC0, REG_GCC0_VAL)
+	CS_WRITE_WORD(REG_GCC1, REG_GCC1_VAL)
+	CS_WRITE_BYTE(REG_FDHC, REG_FDHC_VAL)
 
-	CS_WRITE_BYTE(REG_SID0, 0x30)
-	CS_WRITE_BYTE(REG_SID1, 0x11) // new 
-		
-	CS_WRITE_BYTE(REG_PCICMD1, 0x00)	// disable SERR#
-	CS_WRITE_BYTE(REG_APCONT, 0x00)
-	CS_WRITE_BYTE(REG_DRP2, 0x00)
-	CS_WRITE_BYTE(REG_FDHC, 0x00)
 	CS_WRITE_BYTE(REG_PAM0, 0x00)
 	CS_WRITE_BYTE(REG_PAM1, 0x00)
 	CS_WRITE_BYTE(REG_PAM2, 0x00)
@@ -163,51 +161,35 @@ ram_set_registers:
 	CS_WRITE_BYTE(REG_PAM4, 0x00)
 	CS_WRITE_BYTE(REG_PAM5, 0x00)
 	CS_WRITE_BYTE(REG_PAM6, 0x00)
-	CS_WRITE_BYTE(REG_SMRAM, 0x00)
 
-	CS_WRITE_BYTE(REG_SM0, 0x46)	
-	CS_WRITE_BYTE(REG_SM1, 0x83)	
-	CS_WRITE_BYTE(REG_SM2, 0xc4)	
-	CS_WRITE_BYTE(REG_SM3, 0x00)	
-			
+	CS_WRITE_BYTE(REG_DRB0, 0x2)
+	CS_WRITE_BYTE(REG_DRB1, 0x4)
+	CS_WRITE_BYTE(REG_DRB2, 0x4)
+	CS_WRITE_BYTE(REG_DRB3, 0x4)
+	CS_WRITE_BYTE(REG_DRA, REG_DRA_VAL)
+	CS_WRITE_BYTE(REG_DRT, REG_DRT_VAL)
+	CS_WRITE_BYTE(REG_DTC, REG_DTC_VAL)
+	CS_WRITE_BYTE(REG_DRAMC, REG_DRAMC_VAL)
+	CS_WRITE_BYTE(REG_BUFF_SC, REG_BUFF_SC_VAL)
+
+#if 0	
+	CS_WRITE_BYTE(REG_SVID0, 0x86)
+	CS_WRITE_BYTE(REG_SVID1, 0x80) // new 
+
+	CS_WRITE_BYTE(REG_SID0, 0x30)
+	CS_WRITE_BYTE(REG_SID1, 0x11) // new 
+#endif
+		
+	CS_WRITE_BYTE(REG_PCICMD1, 0x00)	// disable SERR#
+//	CS_WRITE_BYTE(REG_APCONT, 0x00)
+	CS_WRITE_BYTE(REG_SMRAM, REG_SMRAM_VAL)
+
 	RET_LABEL(ram_set_registers)
 
 ram_set_spd_registers:
 	// TODO: SPD
-
-	CS_WRITE_BYTE(REG_MCHCFG, 0x44)
-
-	CS_WRITE_BYTE(0x72, 0x28)
-	CS_WRITE_BYTE(0x73, 0x20)
-	
-	// CS_WRITE_WORD(REG_MISCC, MISCC_BYPASS | MISCC_CPCME | MISCC_WPTC_133)
-						// bypass for 133Mhz.
-						// write power throttle
-						// 400MB/sec - 133Mhz
-
-	// drp
-	CS_WRITE_BYTE(REG_DRP, 0x0E)		// 256M, SS, DIMM0
-
-
-	// dramt 
-	CS_WRITE_BYTE(REG_DRAMT, 0x18)
-
-
-	// buff_sc 
-	// CS_WRITE_WORD(REG_BUFF_SC, 0xffdf)	// rows 0/1 - 1.7x8 load
-	CS_WRITE_BYTE(0x92, 0xae)
-	CS_WRITE_BYTE(0x93, 0x3e)
-
-	// CS_WRITE_WORD(REG_BUFF_SC2, 0xfffe)	// row  0   - 2.7x8 load 
-	CS_WRITE_BYTE(0x94, 0xfe)
-	CS_WRITE_BYTE(0x95, 0xff)
-
-	// SM_RCOMP 
-	CS_WRITE_BYTE(0x98, 0x43)
-	CS_WRITE_BYTE(0x99, 0x80)
-	CS_WRITE_BYTE(0x9a, 0x43)
-	CS_WRITE_BYTE(0x9b, 0x80)
-
+	// There is no explicit power-on on this chp ...
+	// all the other non-spd setup is done at this point, so I guess this is a no-op.
 	RET_LABEL(ram_set_spd_registers)
 
 ram_enable_1:	.string "Ram Enable 1\r\n"
@@ -286,20 +268,24 @@ enable_sdram:
 	// Get CAS latency
 	// CAS# =2 clk -> 0x2a -> read 0x150
 	// CAS# =3 clk -> 0x3a -> read 0x1D0
-	movl $REG_DRAMT, %eax
-	PCI_READ_CONFIG_BYTE
-	andl $0x4, %eax		// bit 2 ( 0 = 3clk, 1 = 2ckl ) 
+	// already set, leave this here as a comment.
+	// everything runs slow on the thinkpad, it's all cas3
+	//	movl $REG_DRAMT, %eax
+	// PCI_READ_CONFIG_BYTE
+	xorl	%eax, %eax	// puts all zeros into eax, meaning slow
+	andl $0x4, %eax		// bit 2 ( 0 = 3clk, 1 = 2clk ) 
 	xorl $0x4, %eax		// Inverting bit 2
 	shll $2, %eax		// MA4 = inv(bit 2) 
 	orl  $0x2a, %eax
 	shll $3, %eax		
 		
 	movl (%eax), %ebx	// MRS comand to sdram
+
 	// CONSOLE_DEBUG_TX_HEX32(%eax)
 
 	// Normal operation mode
 	CONSOLE_DEBUG_TX_STRING($ram_enable_5)
-	SET_RAM_COMMAND(RAM_COMMAND_NORMAL_0)	// SPD: 12 (refresh rate)
+	ENABLE_REFRESH()			// also sets normal mode.
 
 	DO_READ($0x0)
 /* 		

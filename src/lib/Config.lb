@@ -1,4 +1,5 @@
 uses HAVE_FALLBACK_BOOT
+uses CONFIG_USE_INIT
 
 object clog2.o
 object uart8250.o
@@ -14,3 +15,10 @@ object compute_ip_checksum.o
 object version.o
 # Force version.o to recompile every time
 makedefine .PHONY : version.o
+
+if CONFIG_USE_INIT
+	initobject uart8250.c
+	initobject memset.o
+	initobject memcpy.o
+	initobject memcmp.o
+end

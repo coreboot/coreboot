@@ -3,7 +3,6 @@ void *memmove(void *vdest, const void *vsrc, size_t count)
 {
 	const char *src = vsrc;
 	char *dest = vdest;
-	int i;
 
 	if (dest <= src) {
 		while (count--) {

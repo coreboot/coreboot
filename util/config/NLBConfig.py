@@ -8,7 +8,7 @@ import string
 debug = 0;
 
 makeoptions = {};
-# rule format. Key is the rule name. value is a list. The first
+# rule format. Key is the rule name. value is a list of lists. The first
 # element of the list is the dependencies, the rest are actions. 
 makebaserules = {};
 treetop = '';
@@ -417,25 +417,43 @@ def object(dir, obj_name):
 	addobject_defaultrule(obj_name, dir)
 
 # for eventual user-defined rules. 
-def nmakerule(dir, rule): 
+# pattern is name : deps ; rule
+# we'll look at adding rules later
+def makerule(dir, rule): 
 	wspc = string.whitespace
-	cmd = "([^" + wspc + "]+)"
-	sep = "([" + wspc + "]+)"
 	rest = "(.*)"
-	headtail = "([" + wspc + "]*)"
-	pat = cmd + sep + cmd + sep + rest + headtail
+	w = "[" + wspc + "]*"
+	cmd = "([^" + wspc + "]*)"
+	namepat = "(.*)"
+	pat = cmd  + w + ":" + w + cmd + w + ";" + w + rest + w
 	print "pat :", pat, ":", rule
 	command_re = re.compile(pat)
 	m = command_re.match(rule)
-	print m
 	rulename = m.group(1)
-	dependencies = m.group(3)
-	actions = m.group(5)
+	dependencies = m.group(2)
+	actions = m.group(3)
 	print "rulename :", rulename, ": deps:", dependencies,":"
 	print "    actions ", actions
-	userrules.append(rule)
+	makebaserules[rulename] = [dependencies]
+	makebaserules[rulename].append(actions)
 
-def makerule(dir, rule): 
+def addaction(dir, rule):
+        wspc = string.whitespace
+        rest = "(.*)"
+        w = "[" + wspc + "]*"
+        namepat = "(.*)"
+	cmd = "([^" + wspc + "]*)"
+        pat = cmd  + w + ":" + w + rest + w
+        print "pat :", pat, ":", rule
+        command_re = re.compile(pat)
+        m = command_re.match(rule)
+        rulename = m.group(1)
+        actions = m.group(2)
+        print "rulename :", rulename
+        print "    actions ", actions
+        makebaserules[rulename].append(actions)
+	
+def makedefine(dir, rule): 
 	userrules.append(rule)
 def option(dir, option):
 	makeoptions[option] = 1;
@@ -445,7 +463,7 @@ def nooption(dir, option):
 
 def commandline(dir, command):
 	rule = "CMD_LINE=\'\"" + command + "\"\'"
-	makerule(dir, rule)
+	makedefine(dir, rule)
 
 # we do all these rules by hand because docipl will always be special
 # it's more or less a stand-alone bootstrap
@@ -465,7 +483,7 @@ def docipl(dir, ipl_name):
 
 def linux(dir, linux_name):
 	linuxrule = 'LINUX=' + linux_name
-	makerule(dir, linuxrule)
+	makedefine(dir, linuxrule)
 
 list_vals = {
 #	'option': []
@@ -502,8 +520,9 @@ command_actions = {
 	'raminit'     : raminit,
 	'keyboard'    : keyboard, 
 	'docipl'      : docipl,
+	'makedefine'    : makedefine,
 	'makerule'    : makerule,
-	'nmakerule'    : nmakerule,
+	'addaction'    : addaction,
 	'option'    : option,
 	'nooption'    : nooption,
 	'commandline' : commandline
@@ -629,6 +648,10 @@ def writemakefile(path):
 		file.write("%s\n" % baserules[i])
 
 	# print out any user rules
+	for z in makebaserules.keys(): 
+		file.write("%s: %s\n" % (z, makebaserules[z][0]))
+		for i in range(len(makebaserules[z]) - 1):
+			file.write("\t%s\n" % makebaserules[z][i+1])
 	for i in range(len(userrules)):
 		file.write("%s\n" % userrules[i])
 		
@@ -665,6 +688,10 @@ config_path, config_file = os.path.split(sys.argv[1])
 command_vals['TOP'] = sys.argv[2]
 treetop = command_vals['TOP']
 	
+# set the default locations for config files
+makebase = os.path.join(treetop, "config/make.base")
+crt0base = os.path.join(treetop, "config/crt0.base")
+ldscriptbase = os.path.join(treetop, "config/ldscript.base")
 doconfigfile(treetop, sys.argv[1])
 
 

@@ -43,7 +43,7 @@ def addobject(object, sourcepath, rule):
 # make won't apply the .c.o rule. Toy!
 
 def addobject_defaultrule(object, sourcepath):
-	defaultrule = "\t cc -c $(CFLAGS) $(CPUFLAGS) $<"
+	defaultrule = "\t $(CC) -c $(CFLAGS) $<"
 	objectrules.append([object, sourcepath, defaultrule])
 
 # for all these functions, you need:
@@ -67,10 +67,7 @@ def target(dir, targ_name):
 		print ' then run this program again'
 		sys.exit(1)
 
-def handleconfig(dir, type, name):
-	# seems weird, eh? but config file are always done from
-	# treetop
-	dir = os.path.join(treetop, type, name)
+def handleconfig(dir):
 	file = os.path.join(dir, 'Config')
 	print "Process config file: ", file
 	if os.path.isfile(file):
@@ -86,8 +83,24 @@ def buildfullpath(type, name):
 
 def common_command_action(dir, type, name):
 	fullpath = buildfullpath(type, name)
-	handleconfig(dir, 'src', fullpath)
+	realpath = os.path.join('src', fullpath)
+	# seems weird, eh? but config file are always done from
+	# treetop
+	realpath = os.path.join(treetop, realpath)
+	handleconfig(realpath)
 	return fullpath
+
+def dir(base_dir, name):
+	regexp = re.compile(r"^/(.*)")
+	m = regexp.match(name)
+	if m and m.group(1):
+		# /dir
+		fullpath = os.path.join("src", m.group(1))
+		fullpath = os.path.join(treetop, fullpath)
+	else:
+		# dir
+		fullpath = os.path.join(base_dir, name)
+	handleconfig(fullpath)
 
 def mainboard(dir, mainboard_name):
 	common_command_action(dir, 'mainboard', mainboard_name)
@@ -145,11 +158,14 @@ def makerule(dir, rule):
 	rest = "(.*)"
 	w = "[" + wspc + "]*"
 	cmd = "([^" + wspc + "]*)"
-	namepat = "(.*)"
+	namepat = "([^;]*)"
 	pat = cmd  + w + ":" + w + namepat + w + ";" + w + rest + w
 	#	print "pat :", pat, ":", rule
 	command_re = re.compile(pat)
 	m = command_re.match(rule)
+	if (not m):
+		print "\nBadly formed rule: ", rule, "\n"
+		sys.exit()
 	rulename = m.group(1)
 	dependencies = m.group(2)
 	actions = m.group(3)
@@ -171,7 +187,8 @@ def addaction(dir, rule):
         rulename = m.group(1)
         actions = m.group(2)
         # print "rulename :", rulename
-        # print "    actions ", actions
+        # print "    actions ", actions, "\n"
+	# print "rules[rulename]=", makebaserules[rulename], "\n"
         makebaserules[rulename].append(actions)
 	
 # add a dependency
@@ -254,7 +271,7 @@ command_vals = {
 	'pcibridge'   : [],   # vendor, bridgename
 	'superio'     : [],   # vendor, superio name
 	'object'      : {},   # path/filename.[cS]
-	'raminit'     : []    # set of files to include for ram init
+	'raminit'     : [],   # set of files to include for ram init
 	}
 
 command_actions = {
@@ -270,6 +287,7 @@ command_actions = {
 	'object'      : object,
 	'linux'       : linux,
 	'raminit'     : raminit,
+	'dir'         : dir,
 	'keyboard'    : keyboard, 
 	'docipl'      : docipl,
 	'makedefine'    : makedefine,
@@ -473,20 +491,14 @@ treetop = command_vals['TOP']
 makebase = os.path.join(treetop, "util/config/make.base")
 crt0base = os.path.join(treetop, "util/config/p5crt0.base")
 ldscriptbase = os.path.join(treetop, "util/config/ldscript.base")
-doconfigfile(treetop, sys.argv[1])
-
-
-# do standard config files that the user need not specify
-# for now, this is just 'lib', but it may be more later. 
-libdir = treetop + "/src/lib"
-libconfigfile = libdir + "/Config"
-print "Process config file: ", libconfigfile
-doconfigfile(libdir, libconfigfile)
 
 # now read in the base files. 
 print "Now Process the base files"
 print "Makebase is :", makebase, ":"
 doconfigfile(treetop, makebase)
+
+# now read in the customizing script
+doconfigfile(treetop, sys.argv[1])
 
 # print out command values
 #print "Command Values:"

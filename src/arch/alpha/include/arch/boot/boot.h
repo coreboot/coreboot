@@ -1,0 +1,9 @@
+#ifndef ASM_ALPHA_BOOT_H
+#define ASM_ALPHA_BOOT_H
+
+#define UBE64
+#define ELF_CLASS	ELFCLASS64
+#define ELF_DATA	ELFDATA2LSB
+#define ELF_ARCH	EM_ALPHA
+
+#endif /* ASM_ALPHA_BOOT_H */

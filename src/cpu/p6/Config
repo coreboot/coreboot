@@ -4,3 +4,4 @@ object microcode.o
 object mpspec.o
 object mtrr.o
 object l2_cache.o
+object ioapic.o

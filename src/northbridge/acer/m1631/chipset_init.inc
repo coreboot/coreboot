@@ -75,6 +75,12 @@ register_table:
 	.byte 0x60,~0x20, 0x00
 	.byte 0xfb, 0x00, 0x31
 	.byte 0x0 /* end of table */
+
+m1535_table:
+	.byte 0x44, 0x00, 0x5d	// set edge mode, primary channel IRQ 14
+	.byte 0x75, 0x00, 0x0f	// secondary channel 15
+	.byte 0x58, 0x00, 0x4c	// enable IDE controller
+	.byte 0x0 // end of m1535_table 
 chipsetinit_start:
 
 	mov	$0x3f0, %edx
@@ -116,3 +122,23 @@ chipsetinit_start:
 	jmp 1b
 
 done_chipset_init:
+m1535_init:
+	movl	$m1535_table, %esi
+1: 
+	xorl	%edx, %edx
+	movl	$0x00003800, %eax	// southbridge is dev 7 << 3 = 0x38
+	movb	(%esi), %cl /* save the address in %cl */
+	movb	%cl, 	%al
+	testb 	%al, %al
+	jz	done_m1535_init
+	PCI_READ_CONFIG_BYTE
+	movb	%al, %dl
+	inc	%esi
+	andb	(%esi), %dl
+	inc %esi
+	orb	(%esi), %dl
+	mov	%cl, %al
+	PCI_WRITE_CONFIG_BYTE
+	inc %esi
+	jmp 1b
+done_m1535_init:

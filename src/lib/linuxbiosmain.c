@@ -20,8 +20,7 @@
 #include "definitions.h"
 #include "printk.h"
 #include <params.h>
-
-extern void intel_post(char value);
+#include <subr.h>
 
 #define ERRCHK
 #undef TRACEV
@@ -46,7 +45,11 @@ typedef unsigned long ulg;
 #define WSIZE 0x8000		/* Window size must be at least 32k, and a power of two */
 
 uch *inbuf;			/* input buffer */
+#if 0
 static uch window[WSIZE];	/* Sliding window buffer */
+#else
+static uch *window;		/* Sliding window buffer */
+#endif
 
 unsigned insize;		/* valid bytes in inbuf */
 unsigned inptr;			/* index of next byte to be processed in inbuf */
@@ -69,7 +72,7 @@ typedef void (*kernel) ();
 kernel v;
 
 void malloc_init(unsigned long start, unsigned long end);
-void *malloc(int size);
+void *malloc(size_t size);
 
 static void flush_window(void);
 static void free(void *where);
@@ -1331,7 +1334,7 @@ void malloc_init(unsigned long start, unsigned long end)
 	free_mem_end_ptr = end;
 }
 
-void *malloc(int size)
+void *malloc(size_t size)
 {
 	void *p;
 
@@ -1392,6 +1395,7 @@ void *memcpy(void *__dest, __const void *__src, size_t __n)
 	return __dest;
 }
 
+
 /* ===========================================================================
  * Write the output window window[0..outcnt-1] and update crc and bytes_out.
  * (Used for the decompressed data only.)
@@ -1422,69 +1426,149 @@ void setup_output_buffer()
 	DBG("output data is 0x%08x\n", (unsigned long) output_data);
 }
 
-/* TODO: this must move to chip/intel */
-/* we have to do more than we thought. I assumed Linux would do all the
- * interesting parts, and I was wrong. 
- */
-struct ioapicreg {
-	unsigned int reg;
-	unsigned int value;
-};
+#if USE_ELF_BOOT
+#include <boot/elf.h>
+#include <boot/uniform_boot.h>
 
-struct ioapicreg ioapicregvalues[] = {
-	{0x10, 0x10000}, {0x11, 0x0},
-	{0x12, 0x959}, {0x13, 0xff000000},
-	{0x14, 0x951}, {0x15, 0xff000000},
-	{0x16, 0x961}, {0x17, 0x0},
-	{0x18, 0x969}, {0x19, 0xff000000},
-	{0x1a, 0x971}, {0x1b, 0x0},
-	{0x1c, 0x979}, {0x1d, 0x0},
-	{0x1e, 0x981}, {0x1f, 0x0},
-	{0x20, 0x989}, {0x21, 0xff000000},
-	{0x22, 0x10000}, {0x23, 0x0},
-	{0x24, 0x10000}, {0x25, 0x0},
-	{0x26, 0x10000}, {0x27, 0x0},
-	{0x28, 0x991}, {0x29, 0xff000000},
-	{0x2a, 0x10000}, {0x2b, 0x0},
-	{0x2c, 0x999}, {0x2d, 0x0},
-	{0x2e, 0x9a1}, {0x2f, 0x0},
-	{0x30, 0x10000}, {0x31, 0x0},
-	{0x32, 0x10000}, {0x33, 0x0},
-	{0x34, 0x10000}, {0x35, 0x0},
-	{0x36, 0xa9a9}, {0x37, 0xff000000},
-	{0x38, 0x10000}, {0x39, 0x0},
-	{0x3a, 0xa9b1}, {0x3b, 0xff000000},
-	{0x3c, 0x10000}, {0x3d, 0x0},
-	{0x3e, 0x10000}, {0x3f, 0x0}
-};
-
-void setup_apic()
+static int elfboot(unsigned long totalram)
 {
+	static unsigned char header[ELF_HEAD_SIZE];
+	unsigned long offset;
+	Elf_ehdr *ehdr;
+	Elf_phdr *phdr;
+	void *ptr, *entry;
 	int i;
-	unsigned long l1;
-	unsigned long nvram = 0xfec00000;
-	volatile unsigned long *l;
-	struct ioapicreg *a = ioapicregvalues;
 
-	l = (unsigned long *) nvram;
-	for (i = 0; i < sizeof(ioapicregvalues) / sizeof(ioapicregvalues[0]);
-	     i++, a++) {
-		*l = a->reg;
-		l[4] = a->value;
-		l1 = l[4];
-		if ((i==0) && (l1 == 0xffffffff)) {
-			DBG("IO APIC not responding.\n");
-			return;
-		}
-		DBG("for IRQ, reg 0x%08x value 0x%08x\n", a->reg, l1);
+	printk("\n");
+	printk("Welcome to elfboot, the open sourced starter.\n");
+	printk("Febuary 2001, Eric Biederman.\n");
+	printk("Version 0.99\n");
+	printk("\n");
+	ptr = get_ube_pointer(totalram);
+
+	intel_post(0xf8);
+	/* Read in the initial 512 bytes */
+	for(offset = 0; offset < 512; offset++) {
+		header[offset] = get_byte();
 	}
+	ehdr = (Elf_ehdr *)(&header[0]);
+	entry = (void *)(ehdr->e_entry);
+	
+	/* Sanity check the elf header */
+	if ((memcmp(ehdr->e_ident, ELFMAG, 4) != 0) ||
+		(ehdr->e_type != ET_EXEC) ||
+		(!elf_check_arch(ehdr)) ||
+		(ehdr->e_ident[EI_VERSION] != EV_CURRENT) ||
+		(ehdr->e_version != EV_CURRENT) ||
+		(ehdr->e_phoff > ELF_HEAD_SIZE) ||
+		(ehdr->e_phentsize != sizeof(Elf_phdr)) ||
+		((ehdr->e_phoff + (ehdr->e_phentsize * ehdr->e_phnum)) > 
+			ELF_HEAD_SIZE)) {
+		goto out;
+	}
+
+	phdr = (Elf_phdr *)&header[ehdr->e_phoff];
+	offset = 0;
+	while(1) {
+		Elf_phdr *cur_phdr = 0;
+		int i,len;
+		unsigned long start_offset;
+		unsigned char *dest, *middle, *end;
+		/* Find the program header that descibes the current piece
+		 * of the file.
+		 */
+		for(i = 0; i < ehdr->e_phnum; i++) {
+			if (phdr[i].p_type != PT_LOAD) {
+				continue;
+			}
+			if (phdr[i].p_filesz > phdr[i].p_memsz) {
+				continue;
+			}
+			if (phdr[i].p_offset >= offset) {
+				if (!cur_phdr ||
+					(cur_phdr->p_offset > phdr[i].p_offset)) {
+					cur_phdr = &phdr[i];
+				}
+			}
+		}
+		/* If we are out of sections we are done */
+		if (!cur_phdr) {
+			break;
+		}
+		printk("Loading Section: addr: 0x%08x memsz: 0x%08x filesz: 0x%08x\n",
+			cur_phdr->p_paddr, cur_phdr->p_memsz, cur_phdr->p_filesz);
+
+		/* Compute the boundaries of the section */
+		dest = (unsigned char *)(cur_phdr->p_paddr);
+		end = dest + cur_phdr->p_memsz;
+		len = cur_phdr->p_filesz;
+		if (len > cur_phdr->p_memsz) {
+			len = cur_phdr->p_memsz;
+		}
+		middle = dest + len;
+		start_offset = cur_phdr->p_offset;
+
+		/* Skip intial buffer unused bytes */
+		if (offset < ELF_HEAD_SIZE) {
+			if (start_offset < ELF_HEAD_SIZE) {
+				offset = start_offset;
+			} else {
+				offset = ELF_HEAD_SIZE;
+			}
+		}
+
+		/* Skip the unused bytes */
+		while(offset < start_offset) {
+			offset++;
+			get_byte();
+		}
+
+		/* Copy data from the initial buffer */
+		if (offset < ELF_HEAD_SIZE) {
+			size_t len;
+			if ((cur_phdr->p_filesz + start_offset) > ELF_HEAD_SIZE) {
+				len = ELF_HEAD_SIZE - start_offset;
+			}
+			else {
+				len = cur_phdr->p_filesz;
+			}
+			memcpy(dest, &header[start_offset], len);
+			dest += len;
+		}
+		
+		/* Read the section into memory */
+		while(dest < middle) {
+			*(dest++) = get_byte();
+		}
+		offset += cur_phdr->p_filesz;
+		/* Zero the extra bytes */
+		while(dest < end) {
+			*(dest++) = 0;
+		}
+	}
+
+	DBG("Jumping to boot code\n");
+	intel_post(0xfe);
+
+	/* Jump to kernel */
+	jmp_to_elf_entry(entry, ptr);
+
+ out:
+	printk("Bad ELF Image\n");
+	for(i = 0; i < sizeof(*ehdr); i++) {
+		if ((i & 0xf) == 0) {
+			printk("\n");
+		}
+		printk("%02x ", header[i]);
+	}
+	printk("\n");
+
+	return 0;
 }
+#endif
 
-unsigned char *zkernel_start;
-unsigned long zkernel_mask;
 
-int
-linuxbiosmain(unsigned long base, unsigned long totalram)
+int linuxbiosmain(unsigned long base, unsigned long totalram)
 {
 	unsigned char *empty_zero_page;
 	extern int firstfill;
@@ -1499,6 +1583,11 @@ linuxbiosmain(unsigned long base, unsigned long totalram)
 	outcnt = 0;
 	bytes_out = 0;
 	output_ptr = 0;
+
+
+#if USE_ELF_BOOT
+	return elfboot(totalram);
+#else
 
 	printk("\n");
 	printk("Welcome to start32, the open sourced starter.\n");
@@ -1516,18 +1605,6 @@ linuxbiosmain(unsigned long base, unsigned long totalram)
 	cmd_line = "root=/dev/hda1 single";
 #endif
 
-#ifdef ZKERNEL_START
-	zkernel_start = (unsigned char *)ZKERNEL_START;
-#else
-	zkernel_start = (unsigned char *)0xfff80000;
-#endif
-
-#ifdef ZKERNEL_MASK
-	zkernel_mask = ZKERNEL_MASK;
-#else
-	zkernel_mask = 0x0000ffff;
-#endif
-
 #ifdef LOADER_SETUP
 	loader_setup(base,
 		     totalram,
@@ -1538,6 +1615,7 @@ linuxbiosmain(unsigned long base, unsigned long totalram)
 		     &zkernel_mask);
 #endif
 
+	window = malloc(WSIZE);
 	setup_output_buffer();
 
 	DBG("Making CRC\n");
@@ -1576,10 +1654,6 @@ linuxbiosmain(unsigned long base, unsigned long totalram)
 	set_display(empty_zero_page, 25, 80);
 	set_initrd(empty_zero_page, initrd_start, initrd_size);
 
-	/* set up the IO-APIC for the clock interrupt. */
-	/* this needs to move to intel_main.c at some point. */
-	setup_apic();
-	intel_post(0xfc);
 
 	DBG("Jumping to boot code\n");
 	intel_post(0xfe);
@@ -1603,4 +1677,5 @@ linuxbiosmain(unsigned long base, unsigned long totalram)
 			     :: "i" (0x100000));
 
 	return 0;		/* It should not ever return */
+#endif
 }

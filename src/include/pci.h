@@ -14,27 +14,6 @@
  *	PCI System Design Guide
  */
 
-#ifdef EMULATE
-
-// you would not BELIEVE the errors you get if you include stdio.h here
-// since we can build without including it, just SKIP IT
-#if 0
-#undef __NFDBITS
-#undef __FDMASK
-
-#define off_t
-#define ssize_t
-
-#include <stdio.h>
-#include <unistd.h> /* for libc5 */
-
-#endif
-extern void printf(char *format, ...);
-#define printk printf
-#define display(x) printk(x)
-#define printint(x) printf("0x%x", x)
-
-#endif /* EMULATE */
 #ifndef PCI_H
 #define PCI_H
 
@@ -59,7 +38,7 @@ extern void printf(char *format, ...);
 #define PCI_STATUS		0x06	/* 16 bits */
 #define  PCI_STATUS_CAP_LIST	0x10	/* Support Capability List */
 #define  PCI_STATUS_66MHZ	0x20	/* Support 66 Mhz PCI 2.1 bus */
-#define  PCI_STATUS_UDF		0x40	/* Support User Definable Features */
+#define  PCI_STATUS_UDF		0x40	/* Support User Definable Features [obsolete] */
 #define  PCI_STATUS_FAST_BACK	0x80	/* Accept fast-back to back */
 #define  PCI_STATUS_PARITY	0x100	/* Detected parity error */
 #define  PCI_STATUS_DEVSEL_MASK	0x600	/* DEVSEL timing */
@@ -107,7 +86,7 @@ extern void printf(char *format, ...);
 #define  PCI_BASE_ADDRESS_SPACE_MEMORY 0x00
 #define  PCI_BASE_ADDRESS_MEM_TYPE_MASK 0x06
 #define  PCI_BASE_ADDRESS_MEM_TYPE_32	0x00	/* 32 bit address */
-#define  PCI_BASE_ADDRESS_MEM_TYPE_1M	0x02	/* Below 1M */
+#define  PCI_BASE_ADDRESS_MEM_TYPE_1M	0x02	/* Below 1M [obsolete] */
 #define  PCI_BASE_ADDRESS_MEM_TYPE_64	0x04	/* 64 bit address */
 #define  PCI_BASE_ADDRESS_MEM_PREFETCH	0x08	/* prefetchable? */
 #define  PCI_BASE_ADDRESS_MEM_MASK	(~0x0fUL)
@@ -156,7 +135,8 @@ extern void printf(char *format, ...);
 #define PCI_PREF_LIMIT_UPPER32	0x2c
 #define PCI_IO_BASE_UPPER16	0x30	/* Upper half of I/O addresses */
 #define PCI_IO_LIMIT_UPPER16	0x32
-/* 0x34-0x3b is reserved */
+/* 0x34 same as for htype 0 */
+/* 0x35-0x3b is reserved */
 #define PCI_ROM_ADDRESS1	0x38	/* Same as PCI_ROM_ADDRESS, but for htype 1 */
 /* 0x3c-0x3d are same as for htype 0 */
 #define PCI_BRIDGE_CONTROL	0x3e
@@ -169,7 +149,8 @@ extern void printf(char *format, ...);
 #define  PCI_BRIDGE_CTL_FAST_BACK 0x80	/* Fast Back2Back enabled on secondary interface */
 
 /* Header type 2 (CardBus bridges) */
-/* 0x14-0x15 reserved */
+#define PCI_CB_CAPABILITY_LIST	0x14
+/* 0x15 reserved */
 #define PCI_CB_SEC_STATUS	0x16	/* Secondary status */
 #define PCI_CB_PRIMARY_BUS	0x18	/* PCI bus number */
 #define PCI_CB_CARD_BUS		0x19	/* CardBus bus number */
@@ -206,10 +187,81 @@ extern void printf(char *format, ...);
 /* 0x48-0x7f reserved */
 
 /* Capability lists */
+
 #define PCI_CAP_LIST_ID		0	/* Capability ID */
 #define  PCI_CAP_ID_PM		0x01	/* Power Management */
 #define  PCI_CAP_ID_AGP		0x02	/* Accelerated Graphics Port */
+#define  PCI_CAP_ID_VPD		0x03	/* Vital Product Data */
+#define  PCI_CAP_ID_SLOTID	0x04	/* Slot Identification */
+#define  PCI_CAP_ID_MSI		0x05	/* Message Signalled Interrupts */
+#define  PCI_CAP_ID_CHSWP	0x06	/* CompactPCI HotSwap */
 #define PCI_CAP_LIST_NEXT	1	/* Next capability in the list */
+#define PCI_CAP_FLAGS		2	/* Capability defined flags (16 bits) */
+#define PCI_CAP_SIZEOF		4
+
+/* Power Management Registers */
+
+#define  PCI_PM_CAP_VER_MASK	0x0007	/* Version */
+#define  PCI_PM_CAP_PME_CLOCK	0x0008	/* PME clock required */
+#define  PCI_PM_CAP_AUX_POWER	0x0010	/* Auxilliary power support */
+#define  PCI_PM_CAP_DSI		0x0020	/* Device specific initialization */
+#define  PCI_PM_CAP_D1		0x0200	/* D1 power state support */
+#define  PCI_PM_CAP_D2		0x0400	/* D2 power state support */
+#define  PCI_PM_CAP_PME		0x0800	/* PME pin supported */
+#define PCI_PM_CTRL		4	/* PM control and status register */
+#define  PCI_PM_CTRL_STATE_MASK	0x0003	/* Current power state (D0 to D3) */
+#define  PCI_PM_CTRL_PME_ENABLE	0x0100	/* PME pin enable */
+#define  PCI_PM_CTRL_DATA_SEL_MASK	0x1e00	/* Data select (??) */
+#define  PCI_PM_CTRL_DATA_SCALE_MASK	0x6000	/* Data scale (??) */
+#define  PCI_PM_CTRL_PME_STATUS	0x8000	/* PME pin status */
+#define PCI_PM_PPB_EXTENSIONS	6	/* PPB support extensions (??) */
+#define  PCI_PM_PPB_B2_B3	0x40	/* Stop clock when in D3hot (??) */
+#define  PCI_PM_BPCC_ENABLE	0x80	/* Bus power/clock control enable (??) */
+#define PCI_PM_DATA_REGISTER	7	/* (??) */
+#define PCI_PM_SIZEOF		8
+
+/* AGP registers */
+
+#define PCI_AGP_VERSION		2	/* BCD version number */
+#define PCI_AGP_RFU		3	/* Rest of capability flags */
+#define PCI_AGP_STATUS		4	/* Status register */
+#define  PCI_AGP_STATUS_RQ_MASK	0xff000000	/* Maximum number of requests - 1 */
+#define  PCI_AGP_STATUS_SBA	0x0200	/* Sideband addressing supported */
+#define  PCI_AGP_STATUS_64BIT	0x0020	/* 64-bit addressing supported */
+#define  PCI_AGP_STATUS_FW	0x0010	/* FW transfers supported */
+#define  PCI_AGP_STATUS_RATE4	0x0004	/* 4x transfer rate supported */
+#define  PCI_AGP_STATUS_RATE2	0x0002	/* 2x transfer rate supported */
+#define  PCI_AGP_STATUS_RATE1	0x0001	/* 1x transfer rate supported */
+#define PCI_AGP_COMMAND		8	/* Control register */
+#define  PCI_AGP_COMMAND_RQ_MASK 0xff000000  /* Master: Maximum number of requests */
+#define  PCI_AGP_COMMAND_SBA	0x0200	/* Sideband addressing enabled */
+#define  PCI_AGP_COMMAND_AGP	0x0100	/* Allow processing of AGP transactions */
+#define  PCI_AGP_COMMAND_64BIT	0x0020 	/* Allow processing of 64-bit addresses */
+#define  PCI_AGP_COMMAND_FW	0x0010 	/* Force FW transfers */
+#define  PCI_AGP_COMMAND_RATE4	0x0004	/* Use 4x rate */
+#define  PCI_AGP_COMMAND_RATE2	0x0002	/* Use 4x rate */
+#define  PCI_AGP_COMMAND_RATE1	0x0001	/* Use 4x rate */
+#define PCI_AGP_SIZEOF		12
+
+/* Slot Identification */
+
+#define PCI_SID_ESR		2	/* Expansion Slot Register */
+#define  PCI_SID_ESR_NSLOTS	0x1f	/* Number of expansion slots available */
+#define  PCI_SID_ESR_FIC	0x20	/* First In Chassis Flag */
+#define PCI_SID_CHASSIS_NR	3	/* Chassis Number */
+
+/* Message Signalled Interrupts registers */
+
+#define PCI_MSI_FLAGS		2	/* Various flags */
+#define  PCI_MSI_FLAGS_64BIT	0x80	/* 64-bit addresses allowed */
+#define  PCI_MSI_FLAGS_QSIZE	0x70	/* Message queue size configured */
+#define  PCI_MSI_FLAGS_QMASK	0x0e	/* Maximum queue size available */
+#define  PCI_MSI_FLAGS_ENABLE	0x01	/* MSI feature enabled */
+#define PCI_MSI_RFU		3	/* Rest of capability flags */
+#define PCI_MSI_ADDRESS_LO	4	/* Lower 32 bits */
+#define PCI_MSI_ADDRESS_HI	8	/* Upper 32 bits (if PCI_MSI_FLAGS_64BIT set) */
+#define PCI_MSI_DATA_32		8	/* 16 bits of data for 32-bit devices */
+#define PCI_MSI_DATA_64		12	/* 16 bits of data for 64-bit devices */
 
 /*
  * The PCI interface treats multi-function devices as independent
@@ -377,8 +429,7 @@ void intel_conf_writeb(unsigned long port, unsigned char value);
 unsigned char intel_conf_readb(unsigned long port);
 
 
-#define kmalloc(x, y) malloc(x)
-void *malloc(unsigned int);
+#include <kmalloc.h>
 
 // Rounding for boundaries. 
 // Due to some chip bugs, go ahead and roung IO to 16

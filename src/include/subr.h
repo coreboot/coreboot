@@ -28,12 +28,13 @@ void intel_interrupts_on(void);
 void pc_keyboard_init(void);
 void intel_mainboard_fixup(void);
 unsigned long sizeram(void);
-
+ 
 #ifdef INTEL_PPRO_MTRR
 void intel_set_mtrr(unsigned long rambase, unsigned long ramsizeK);
 #endif
 
 #include <pci.h>
+/* FIXME: how should we handle other architectures for pci access here ?? */
 #include <pci-i386.h>
 
 #define PIRQ_SIGNATURE	(('$' << 0) + ('P' << 8) + ('I' << 16) + ('R' << 24))

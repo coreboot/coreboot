@@ -19,7 +19,7 @@ console-types: serial
 # vga is unsupported, unstable, or stable
 vga: unsupported
 # Last-known-good follows the internationl date standard: day/month/year
-last-known-good: 07/11/2002
+last-known-good: 28/02/2003
 Comments: 
 Links:
 Mainboard-revision: 0 (pre-production sample) 1 (production)

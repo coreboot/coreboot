@@ -95,20 +95,20 @@ unsigned long sizeram()
 #ifdef HAVE_FRAMEBUFFER
 void framebuffer_on()
 {
-	unsigned long devfn;
+	struct pci_dev *pcidev;
 	u16 command;
 
-	devfn = PCI_DEVFN(2, 0);
+	if ((pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_5591_AGP, NULL)) == NULL)
+		return 0;
 
-	/* Enable VGA Palette Snoop */
-	pcibios_read_config_word(0, devfn, 0x04, &command);
+	pci_read_config_word(pcidev, 0x04, &command);
 	command |= 0x20;
-	pcibios_write_config_word(0, devfn, 0x04, command);
+	pci_write_config_word(pcidev, 0x04, command);
 
 	/* enable legacy VGA IO (0x3B0 - 0x3BB, 0x3C0 - 0x3DF) and MEM (0xA0000 - 0xBFFFF),
 	   needed for XFree86 3.3.6 */
-	pcibios_read_config_word(0, devfn, 0x3e, &command);
+	pci_read_config_word(pcidev, 0x3e, &command);
 	command |= 0x08;
-	pcibios_write_config_word(0, devfn, 0x3e, command);
+	pci_write_config_word(pcidev, 0x3e, command);
 }
 #endif	/* HAVE_FRAMEBUFFER */

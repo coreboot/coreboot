@@ -1,5 +1,0 @@
-uses k7
-uses CPU_FIXUP
-default k7=1
-dir /cpu/p6
-#object cpufixup.o

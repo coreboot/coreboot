@@ -1,5 +1,0 @@
-uses  CONFIG_UDELAY_TSC
-
-object cpuid.o
-if CONFIG_UDELAY_TSC object delay_tsc.o  end
-

@@ -63,11 +63,36 @@ static void intel_enable_var_mtrr(void)
 	wrmsr(MTRRdefType_MSR, low, high);
 }
 
+static inline void disable_cache(void)
+{
+	unsigned int tmp;
+	/* Disable cache */
+	/* Write back the cache and flush TLB */
+	asm volatile (
+		"movl  %%cr0, %0\n\t"
+		"orl  $0x40000000, %0\n\t"
+		"wbinvd\n\t"
+		"movl  %0, %%cr0\n\t"
+		"wbinvd\n\t"
+		:"=r" (tmp)
+		::"memory");
+}
+
+static inline void enable_cache(void)
+{
+	unsigned int tmp;
+	// turn cache back on. 
+	asm volatile (
+		"movl  %%cr0, %0\n\t"
+		"andl  $0x9fffffff, %0\n\t"
+		"movl  %0, %%cr0\n\t"
+		:"=r" (tmp)
+		::"memory");
+}
 
 /* setting variable mtrr, comes from linux kernel source */
 static void intel_set_var_mtrr(unsigned int reg, unsigned long basek, unsigned long sizek, unsigned char type)
 {
-	unsigned int tmp;
 	unsigned long base_high, base_low;
 	unsigned long  mask_high, mask_low;
 
@@ -88,14 +113,7 @@ static void intel_set_var_mtrr(unsigned int reg, unsigned long basek, unsigned l
 
 	// it is recommended that we disable and enable cache when we 
 	// do this. 
-	/* Disable cache */
-	/* Write back the cache and flush TLB */
-	asm volatile ("movl  %%cr0, %0\n\t"
-		      "orl  $0x40000000, %0\n\t"
-		      "wbinvd\n\t"
-		      "movl  %0, %%cr0\n\t"
-		      "wbinvd\n\t":"=r" (tmp)::"memory");
-
+	disable_cache();
 	if (sizek == 0) {
 		/* The invalid bit is kept in the mask, so we simply clear the
 		   relevant mask register to disable a range. */
@@ -105,12 +123,7 @@ static void intel_set_var_mtrr(unsigned int reg, unsigned long basek, unsigned l
 		wrmsr (MTRRphysBase_MSR(reg), base_low | type, base_high);
 		wrmsr (MTRRphysMask_MSR(reg), mask_low | 0x800, mask_high);
 	}
-
-	// turn cache back on. 
-	asm volatile ("movl  %%cr0, %0\n\t"
-		      "andl  $0x9fffffff, %0\n\t"
-		      "movl  %0, %%cr0\n\t":"=r" (tmp)::"memory");
-
+	enable_cache();
 }
 
 /* setting variable mtrr, comes from linux kernel source */
@@ -123,15 +136,7 @@ void set_var_mtrr(unsigned int reg, unsigned long base, unsigned long size, unsi
 
 	// it is recommended that we disable and enable cache when we 
 	// do this. 
-	/* Disable cache */
-	/* Write back the cache and flush TLB */
-	asm volatile (
-		"movl  %%cr0, %0\n\t"
-		"orl  $0x40000000, %0\n\t"
-		"movl  %0, %%cr0\n\t"
-		:"=r" (tmp)
-		::"memory");
-
+	disable_cache();
 	if (size == 0) {
 		/* The invalid bit is kept in the mask, so we simply clear the
 		   relevant mask register to disable a range. */
@@ -143,10 +148,7 @@ void set_var_mtrr(unsigned int reg, unsigned long base, unsigned long size, unsi
 	}
 
 	// turn cache back on. 
-	asm volatile ("movl  %%cr0, %0\n\t"
-		      "andl  $0x9fffffff, %0\n\t"
-		      "movl  %0, %%cr0\n\t":"=r" (tmp)::"memory");
-
+	enable_cache();
 }
 
 /* fms: find most sigificant bit set, stolen from Linux Kernel Source. */
@@ -211,7 +213,9 @@ static void set_fixed_mtrrs(unsigned int first, unsigned int last, unsigned char
 		if (fixed_msr != i >> 3) {
 			/* But first write out the old msr */
 			if (fixed_msr < (NUM_FIXED_RANGES >> 3)) {
+				disable_cache();
 				wrmsr(mtrr_msr[fixed_msr], low, high);
+				enable_cache();
 			}
 			fixed_msr = i>>3;
 			rdmsr(mtrr_msr[fixed_msr], low, high);
@@ -226,7 +230,9 @@ static void set_fixed_mtrrs(unsigned int first, unsigned int last, unsigned char
 	}
 	/* Write out the final msr */
 	if (fixed_msr < (NUM_FIXED_RANGES >> 3)) {
+		disable_cache();
 		wrmsr(mtrr_msr[fixed_msr], low, high);
+		enable_cache();
 	}
 }
 
@@ -247,7 +253,8 @@ static unsigned fixed_mtrr_index(unsigned long addrk)
 }
 
 static unsigned int range_to_mtrr(unsigned int reg, 
-	unsigned long range_startk, unsigned long range_sizek)
+	unsigned long range_startk, unsigned long range_sizek,
+	unsigned long next_range_startk)
 {
 	if (!range_sizek || (reg >= BIOS_MTRRS)) {
 		return reg;
@@ -323,7 +330,7 @@ void setup_mtrrs(struct mem_range *mem)
 		}
 		/* Write the range mtrrs */
 		if (range_sizek != 0) {
-			reg = range_to_mtrr(reg, range_startk, range_sizek);
+			reg = range_to_mtrr(reg, range_startk, range_sizek, memp->basek);
 			range_startk = 0;
 			range_sizek = 0;
 			if (reg >= BIOS_MTRRS)
@@ -334,7 +341,7 @@ void setup_mtrrs(struct mem_range *mem)
 		range_sizek = memp->sizek;
 	}
 	/* Write the last range */
-	reg = range_to_mtrr(reg, range_startk, range_sizek);
+	reg = range_to_mtrr(reg, range_startk, range_sizek, 0);
 	printk_debug("DONE variable MTRRs\n");
 	printk_debug("Clear out the extra MTRR's\n");
 	/* Clear out the extra MTRR's */

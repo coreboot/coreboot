@@ -2,18 +2,17 @@
 
 option LINUXBIOS_VERSION=1.0.0
 
-option CROSS_COMPILE=
+option CC=$(CROSS_COMPILE)gcc
+option HOSTCC=$(CROSS_COMPILE)gcc
+option OBJCOPY=objcopy
 
-makedefine CC:=$(CROSS_COMPILE)gcc 
-makedefine CPP:= $(CROSS_COMPILE)gcc -x assembler-with-cpp -DASSEMBLY -E
-makedefine OBJCOPY:=$(CROSS_COMPILE)objcopy
+makedefine CPP:= $(CC) -x assembler-with-cpp -DASSEMBLY -E
 makedefine LIBGCC_FILE_NAME := $(shell $(CC) -print-libgcc-file-name)
 makedefine GCC_INC_DIR := $(shell $(CC) -print-search-dirs | sed -ne "s/install: \(.*\)/\1include/gp")
 
 makedefine CPPFLAGS := -I$(TOP)/src/include -I$(TOP)/src/arch/$(ARCH)/include -I$(GCC_INC_DIR) $(CPUFLAGS)
 makedefine CFLAGS := $(CPU_OPT) $(CPPFLAGS) -Os -nostdinc -nostdlib -fno-builtin  -Wall
 
-makedefine HOSTCC:=gcc
 makedefine HOSTCFLAGS:= -Os -Wall
 
 option LINUXBIOS_BUILD          = $(shell date)	
@@ -60,7 +59,7 @@ makerule documentation: $(SOURCES) ; doxygen LinuxBIOSDoc.config
 
 makerule build_opt_tbl: $(TOP)/util/options/build_opt_tbl.c ; $(HOSTCC) $(HOSTCFLAGS) $< -o $@
 
-makerule /$(TARGET_DIR)/option_table.c : build_opt_tbl $(MAINBOARD)/cmos.conf ; ./build_opt_tbl -b  --config $(MAINBOARD)/cmos.conf 
+makerule /$(TARGET_DIR)/option_table.c : build_opt_tbl $(MAINBOARD)/cmos.layout ; ./build_opt_tbl -b  --config $(MAINBOARD)/cmos.layout 
 
 object /$(TARGET_DIR)/option_table.o HAVE_OPTION_TABLE
 

@@ -42,7 +42,8 @@ console_test:
 
 	/* uses:	 byte, ax, dx */
 #define __CONSOLE_INLINE_TX_HEX8(byte)	\
-	mov	byte, %al	; \
+	movb	byte, %dl	; \
+	shll	$16, %edx	; \
 	shr	$4, %al		; \
 	add	$'0', %al	; \
 	cmp	$'9', %al	; \
@@ -50,7 +51,8 @@ console_test:
 	add	$39, %al	; \
 9:				; \
 	__CONSOLE_INLINE_TX_AL	; \
-	mov	byte, %al	; \
+	shrl	$16, %edx	; \
+	movb	%dl, %al	; \
 	and	$0x0f, %al	; \
 	add	$'0', %al	; \
 	cmp	$'9', %al	; \
@@ -423,24 +425,7 @@ console_tx_al:
 
 	/* uses:	 esp, ax, edx */
 console_tx_hex8:
-	movb	%al, %dl
-	shll	$16, %edx
-	shr	$4, %al
-	add	$'0', %al
-	cmp	$'9', %al
-	jle	9f
-	add	$39, %al
-9:
-	__CONSOLE_INLINE_TX_AL
-	shrl	$16, %edx
-	movb	%dl, %al
-	and	$0x0f, %al
-	add	$'0', %al
-	cmp	$'9', %al
-	jle	9f
-	add	$39, %al
-9:
-	__CONSOLE_INLINE_TX_AL
+	__CONSOLE_INLINE_TX_HEX8(%al)
 	RETSP
 
 

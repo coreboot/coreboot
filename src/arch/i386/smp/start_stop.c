@@ -88,8 +88,6 @@ int start_cpu(unsigned long apicid)
 	int timeout;
 	unsigned long send_status, accept_status, start_eip;
 	int j, num_starts, maxlvt;
-	//extern char _start[], _estart[];
-	//extern char reboot_halt[];
 	extern char _secondary_start[];
 	
 	/*

@@ -153,8 +153,7 @@ static void wait_for_other_cpus(void)
 	old_active_count = 1;
 
 	active_count = atomic_read(&active_cpus);
-
-	while (active_count > 1) {
+	while(active_count > 1) {
 		if (active_count != old_active_count) {
 			printk_info("Waiting for %d CPUS to stop\n", active_count);
 			old_active_count = active_count;
@@ -180,15 +179,16 @@ static void remove_logical_cpus(void)
 	/* To turn off hyperthreading just remove the logical
 	 * cpus from the processor map.
 	 */
-	int cnt;
-	cnt=0;
-	if (get_option(&cnt,"logical_cpus")==0) {
-		if (cnt) {
+	int disable_logical_cpus = !CONFIG_LOGICAL_CPUS;
+	if (get_option(&disable_logical_cpus,"hyper_threading")) {
+		disable_logical_cpus = !CONFIG_LOGICAL_CPUS;
+	}
+	if (disable_logical_cpus) {
 		/* disable logical cpus */
-			for(cnt=MAX_PHYSICAL_CPUS;cnt<MAX_CPUS;cnt++)
-				processor_map[cnt]=0;
-			printk_debug("logical cpus disabled\n");
-		}
+		int cnt;
+		for(cnt=MAX_PHYSICAL_CPUS;cnt<MAX_CPUS;cnt++)
+			processor_map[cnt]=0;
+		printk_debug("logical cpus disabled\n");
 	}
 }
 #else
@@ -296,6 +296,16 @@ void hardwaremain(int boot_complete)
 	// So you really need to run this before you size ram. 
 	framebuffer_on();
 
+	// Now do the real bus
+	// we round the total ram up a lot for thing like the SISFB, which 
+	// shares high memory with the CPU. 
+	pci_configure();
+	post_code(0x88);
+
+	pci_enable();
+	pci_initialize();
+	post_code(0x89);
+
 	mem = get_ramsize();
 	post_code(0x70);
 	totalmem = 0;
@@ -318,16 +328,6 @@ void hardwaremain(int boot_complete)
 	startup_other_cpus(processor_map);
 	post_code(0x77);
 
-	// Now do the real bus
-	// we round the total ram up a lot for thing like the SISFB, which 
-	// shares high memory with the CPU. 
-	pci_configure();
-	post_code(0x88);
-
-	pci_enable();
-	pci_initialize();
-	post_code(0x89);
-
 	// generic mainboard fixup
 	mainboard_fixup();
 
@@ -342,7 +342,7 @@ void hardwaremain(int boot_complete)
 
 	nvram_on();
 
-	//keyboard_on();
+	keyboard_on();
 
 #ifndef USE_NEW_SUPERIO_INTERFACE
 	enable_floppy();

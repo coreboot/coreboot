@@ -1,3 +1,5 @@
 object mpspec.o HAVE_MP_TABLE
 object ioapic.o IOAPIC
 object start_stop.o SMP
+object secondary.S SMP
+

@@ -206,7 +206,7 @@ function build_target
 			echo " ($TARCH: subset of $ARCH)"
 		fi
 		if [ "$found_crosscompiler" == "false" -a "$TARCH" == ppc ] ;then
-			for prefix in powerpc-linux- ; do
+			for prefix in powerpc-eabi- powerpc-linux- ; do
 				if ${prefix}gcc --version > /dev/null 2> /dev/null ; then
 					found_crosscompiler=true
 					CROSS_COMPILE=$prefix

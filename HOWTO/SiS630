@@ -160,6 +160,10 @@ o	You now need to figure out where you want to put your build images.
 	# Kernel command line parameters
 	commandline root=/dev/hda1 
 
+	# We're using disk on chip. Tell it where to find the docipl code
+	docipl northsouthbridge/sis/630
+
+
 	
 	The target command names the build directory. The mainboard command
 	names the mainboard. We have set options for a serial console which

@@ -146,14 +146,14 @@ def makerule(dir, rule):
 	cmd = "([^" + wspc + "]*)"
 	namepat = "(.*)"
 	pat = cmd  + w + ":" + w + namepat + w + ";" + w + rest + w
-	print "pat :", pat, ":", rule
+	#	print "pat :", pat, ":", rule
 	command_re = re.compile(pat)
 	m = command_re.match(rule)
 	rulename = m.group(1)
 	dependencies = m.group(2)
 	actions = m.group(3)
-	print "rulename :", rulename, ": deps:", dependencies,":"
-	print "    actions ", actions
+	# print "rulename :", rulename, ": deps:", dependencies,":"
+	# print "    actions ", actions
 	makebaserules[rulename] = [dependencies]
 	makebaserules[rulename].append(actions)
 
@@ -164,13 +164,13 @@ def addaction(dir, rule):
         namepat = "(.*)"
 	cmd = "([^" + wspc + "]*)"
         pat = cmd  + w + rest + w
-        print "pat :", pat, ":", rule
+        # print "pat :", pat, ":", rule
         command_re = re.compile(pat)
         m = command_re.match(rule)
         rulename = m.group(1)
         actions = m.group(2)
-        print "rulename :", rulename
-        print "    actions ", actions
+        # print "rulename :", rulename
+        # print "    actions ", actions
         makebaserules[rulename].append(actions)
 	
 # add a dependency
@@ -181,13 +181,13 @@ def adddepend(dir, rule):
         namepat = "(.*)"
         cmd = "([^" + wspc + "]*)"
         pat = cmd  + w + rest + w
-        print "pat :", pat, ":", rule
+        # print "pat :", pat, ":", rule
         command_re = re.compile(pat)
         m = command_re.match(rule)
         rulename = m.group(1)
         depend = m.group(2)
-        print "rulename :", rulename
-        print "    depend ", depend
+        # print "rulename :", rulename
+        # print "    depend ", depend
         makebaserules[rulename][0] = makebaserules[rulename][0] + " " + depend
 
 def makedefine(dir, rule): 
@@ -205,6 +205,7 @@ def commandline(dir, command):
 # we do all these rules by hand because docipl will always be special
 # it's more or less a stand-alone bootstrap
 def docipl(dir, ipl_name):
+	global data, bss, stack, linuxbiosbase
 	mainboard = command_vals['mainboard']
 	mainboard_dir = os.path.join(treetop, 'src', mainboard)
 	# add the docipl rule
@@ -216,6 +217,11 @@ def docipl(dir, ipl_name):
 	userrules.append("ipl.o: " + iplpath)
 	# Now we need a mainboard-specific include path
 	userrules.append("\tcc $(CPUFLAGS) -I%s -c $<" % mainboard_dir)
+	# now set new values for the ldscript.ld.  Should be a script? 
+	data = 0x4000
+	bss = 0x5000
+	stack = 0x90000
+	linuxbiosbase = 0x80000
 
 def linux(dir, linux_name):
 	linuxrule = 'LINUX=' + linux_name

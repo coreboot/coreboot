@@ -21,7 +21,8 @@ ldscript cpu/i386/reset16.lds
 
 ########################################################################
 
-mainboardinit superio/SMC/fdc37b72x/sio_setup.inc
+mainboardinit superio/SMC/fdc37b72x/setup_serial.inc
+option SMC_BASE=0x3f0
 mainboardinit pc80/serial.inc
 mainboardinit arch/i386/lib/console.inc
 

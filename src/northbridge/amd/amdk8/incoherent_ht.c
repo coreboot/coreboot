@@ -302,7 +302,7 @@ static int ht_setup_chainx(device_t udev, unsigned upos, unsigned bus)
 		pci_write_config16(dev, pos + PCI_CAP_FLAGS, flags);
 
 		/* Remeber the location of the last device */
-		udev = PCI_DEV(0, next_unitid, 0);
+		udev = PCI_DEV(bus, next_unitid, 0);
 		upos = pos;
 		uoffs = PCI_HT_SLAVE1_OFFS;
 

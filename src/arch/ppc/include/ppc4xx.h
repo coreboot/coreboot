@@ -387,7 +387,7 @@
 #define GPIO0_ISR2H            (GPIO_BASE+0x38)
 #define GPIO0_ISR2L            (GPIO_BASE+0x3C)
 
-
+#ifndef ASM
 /*
  * Macro for accessing the indirect EBC register
  */
@@ -410,6 +410,6 @@ struct ppc4xx_sys_info
   unsigned long pciIntArbEn;            /* Internal PCI arbiter is enabled */
   unsigned long pciClkSync;             /* PCI clock is synchronous        */
 };
-
+#endif /* !ASM */
 #endif	/* __PPC4XX_H__ */
 

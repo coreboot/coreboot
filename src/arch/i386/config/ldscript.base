@@ -41,6 +41,7 @@ SECTIONS
 	.text (.) : {
 		_text = .;
 		*(.text);
+		*(.text.*);
 		_etext = .;
 	}
 	.rodata (.) :  {
@@ -92,8 +93,8 @@ SECTIONS
 		_estack = .;
 	}
 
-
 	/DISCARD/ : {
-		*(*)
+		*(.comment)
+		*(.note)
 	}
 }

@@ -2,5 +2,6 @@ mainboardinit northbridge/intel/440gx/raminit.inc
 mainboardinit sdram/generic_sdram_enable.inc
 mainboardinit sdram/generic_sdram.inc
 mainboardinit sdram/generic_zero_ecc_sdram.inc
+mainboardinit arch/i386/lib/cpu_reset.inc
 
 object northbridge.o

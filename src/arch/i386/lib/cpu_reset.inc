@@ -1,4 +1,5 @@
 jmp cpu_reset_out
+#include <cpu/p6/mtrr.h>
 
 #ifdef DEBUG
 cpu_reset_str:		.string "cpu_reset\r\n";

@@ -27,7 +27,7 @@ addaction linuxbios.rom export size=`ls -l linuxbios.strip | (read p c u g size 
 addaction linuxbios.rom echo $$size ; \
 addaction linuxbios.rom dd if=linuxbios.strip of=linuxbios.rom bs=1 seek=`expr $(ROM_IMAGE_SIZE) - $$size`
 
-makerule linuxbios.strip: linuxbios ; objcopy -O binary -R .note -R .comment -S linuxbios linuxbios.strip
+makerule linuxbios.strip: linuxbios ; objcopy -O binary linuxbios linuxbios.strip
 
 makerule linuxbios.o : crt0.o linuxbios.a $(LIBGCC_FILE_NAME)  ; $(CC) -nostdlib -r -o $@ crt0.o linuxbios.a $(LIBGCC_FILE_NAME)
 

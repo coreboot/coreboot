@@ -1,4 +1,4 @@
-	.section ".text.reset_vector"
+	.section ".reset"
 	.code16
 .globl	EXT(reset_vector)
 EXT(reset_vector):
@@ -20,5 +20,5 @@ EXT(reset_vector):
 #error	_ROMBASE is an unsupported value
 #endif
 
-	.text
-	.code32	
+	.code32
+	.previous

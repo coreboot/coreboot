@@ -2,6 +2,7 @@
 #include <fs/fs.h>
 #include <arch/io.h>
 #include <string.h>
+#include <delay.h>
 #include <pc80/ide.h>
 #include <arch/byteorder.h>
 
@@ -229,7 +230,7 @@ static int parse_device_name(const char *name, int *type, int *drive,
 
 int devopen(const char *name, int *reopen)
 {
-    int type, drive, part;
+    int type, drive, part, i;
     uint64_t offset, length;
     uint32_t disk_size = 0;
 
@@ -258,6 +259,15 @@ int devopen(const char *name, int *reopen)
 
     switch (type) {
     case DISK_IDE:
+	printk_debug ("Trying polled ide\n");
+	printk_debug ("Waiting for ide disks to spin up\n");
+	printk_notice ("This is a hard coded delay and longer than necessary.\n");
+	for (i = 0; i < 2; i++) {
+		printk_notice (".");
+		delay(1);
+	}
+	printk_info ("\n");
+
 	if (ide_probe(drive) != 0) {
 	    printk_debug("failed to open ide\n");
 	    return 0;

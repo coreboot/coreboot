@@ -1,0 +1,5 @@
+##
+## CPU initialization
+##
+initinclude "EARLY_INIT" ppc/mpc74xx/mpc74xx.inc
+

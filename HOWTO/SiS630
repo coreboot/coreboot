@@ -133,8 +133,11 @@ o	You now need to figure out where you want to put your build images.
 	name of a config file, and the second is the (absolute) pathname
 	of the freebios source tree. 
 
+	The config tool is NLBConfig.py. Make sure you use that and not
+	LBConfig.py, the older version. 
+
 	Here's what it looks like when you run it. 
- 	python LBConfig.py winfast.config ~/src/bios/freebios
+ 	python NLBConfig.py winfast.config ~/src/bios/freebios
 	winfast is not a directory. 
  	I know I should make this, but I'm too paranoid
  	To fix this, type

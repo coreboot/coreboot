@@ -66,6 +66,10 @@ static char rcsid[] = "$Id$";
 #include <boot/linuxbios_table.h>
 #include <pc80/mc146818rtc.h>
 
+#if USE_ELF_BOOT
+#include <rom/read_bytes.h>
+#include <boot/elf.h>
+#endif
 
 /* The processor map. 
  * Now that SMP is in linuxbios, and Linux counts on us
@@ -121,7 +125,7 @@ static struct mem_range *get_ramsize(void)
 	return mem;
 }
 
-#ifdef SMP
+#if SMP == 1
 /* Number of cpus that are currently running in linuxbios */
 static atomic_t active_cpus = ATOMIC_INIT(1);
 

@@ -385,10 +385,10 @@ static struct setup_smp_result setup_smp(void)
   	
 	clear_temp_row(0);	/* delete temporary connection */
 	
-	result.needs_reset = optimize_connection(
-		NODE_HT(0), 0x80 + link_to_register(link_connection(0,1)),
-		NODE_HT(1), 0x80 + link_to_register(link_connection(1,0)) );
-	
+	result.needs_reset =
+		optimize_connection(NODE_HT(0), 0x80 + link_to_register(link_connection(0,1)),
+				    NODE_HT(1), 0x80 + link_to_register(link_connection(1,0)) );
+
 #if CONFIG_MAX_CPUS > 2
 	result.cpus=4;
 	
@@ -451,7 +451,8 @@ static struct setup_smp_result setup_smp(void)
 		NODE_HT(2), 0x80 + link_to_register(link_connection(2,3)),
 		NODE_HT(3), 0x80 + link_to_register(link_connection(3,2)) );
 
-#endif
+#endif /* CONFIG_MAX_CPUS > 2 */
+
 	print_debug_hex8(result.cpus);
 	print_debug(" nodes initialized.\r\n");
 	return result;
@@ -644,8 +645,10 @@ static int setup_coherent_ht_domain(void)
 	result = setup_smp();
 	result.cpus = verify_mp_capabilities(result.cpus);
 #endif
+
 	coherent_ht_finalize(result.cpus);
 	result.needs_reset = apply_cpu_errata_fixes(result.cpus, result.needs_reset);
+
 #if CONFIG_MAX_CPUS > 1 /* Why doesn't this work on the solo? */
 	result.needs_reset = optimize_link_read_pointers(result.cpus, result.needs_reset);
 #endif

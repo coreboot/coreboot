@@ -158,7 +158,7 @@ northbridge amd/amdk8 "mc0"
         pci 0:18.2
         pci 0:18.3
         southbridge amd/amd8131 "amd8131" link 2
-                pci 0:0.0
+                pci 0:0.0 
                 pci 0:0.1
                 pci 0:1.0
                 pci 0:1.1
@@ -221,8 +221,8 @@ dir /pc80
 #dir /bioscall
 
 cpu k8 "cpu0"
-  register "up" = "{.chip = &amd8151, .ht_width=16, .ht_speed=600}"
-  register "down" = "{.chip = &amd8131, .ht_width=16, .ht_speed=600}"
+	register "up"   = "{.chip = &amd8151, .ht_width=16, .ht_speed=600}"
+	register "down" = "{.chip = &amd8131, .ht_width=16, .ht_speed=600}"
 end
 
 cpu k8 "cpu1"

@@ -316,8 +316,7 @@ static int ht_setup_chains(const struct ht_chain *ht_c, int ht_c_num)
 	reset_needed = 0;
 	next_unitid = 1;
 
-
-	for(i=0;i<ht_c_num;i++) {
+	for (i = 0; i < ht_c_num; i++) {
 		uint32_t reg;
 		uint8_t reg8;
 		reg = pci_read_config32(PCI_DEV(0,0x18,1), ht_c[i].devreg);

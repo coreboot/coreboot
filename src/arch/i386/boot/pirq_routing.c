@@ -15,9 +15,9 @@ void check_pirq_routing_table(void)
 #if defined(IRQ_SLOT_COUNT)
 	if (sizeof(intel_irq_routing_table) != intel_irq_routing_table.size) {
 		printk_warning("Inconsistent IRQ routing table size (0x%x/0x%x)\n",
-				sizeof(intel_irq_routing_table),
-				intel_irq_routing_table.size
-				);
+			       sizeof(intel_irq_routing_table),
+			       intel_irq_routing_table.size
+			);
 		intel_irq_routing_table.size=sizeof(intel_irq_routing_table);
 	}
 #endif
@@ -30,23 +30,23 @@ void check_pirq_routing_table(void)
 		sum += addr[i];
 
 	printk_debug("%s:%6d:%s() - irq_routing_table located at: 0x%p\n",
-	    __FILE__, __LINE__, __FUNCTION__, addr);
+		     __FILE__, __LINE__, __FUNCTION__, addr);
 
 	
 	sum = rt->checksum - sum;
 
 	if (sum != rt->checksum) {
 		printk_warning("%s:%6d:%s() - "
-		       "checksum is: 0x%02x but should be: 0x%02x\n",
-		       __FILE__, __LINE__, __FUNCTION__, rt->checksum, sum);
+			       "checksum is: 0x%02x but should be: 0x%02x\n",
+			       __FILE__, __LINE__, __FUNCTION__, rt->checksum, sum);
 		rt->checksum = sum;
 	}
 
 	if (rt->signature != PIRQ_SIGNATURE || rt->version != PIRQ_VERSION ||
 	    rt->size % 16 || rt->size < sizeof(struct irq_routing_table)) {
 		printk_warning("%s:%6d:%s() - "
-		       "Interrupt Routing Table not valid\n",
-		       __FILE__, __LINE__, __FUNCTION__);
+			       "Interrupt Routing Table not valid\n",
+			       __FILE__, __LINE__, __FUNCTION__);
 		return;
 	}
 
@@ -56,8 +56,8 @@ void check_pirq_routing_table(void)
 
 	if (sum) {
 		printk_warning("%s:%6d:%s() - "
-		       "checksum error in irq routing table\n",
-		       __FILE__, __LINE__, __FUNCTION__);
+			       "checksum error in irq routing table\n",
+			       __FILE__, __LINE__, __FUNCTION__);
 	}
 
 	printk_info("done.\n");

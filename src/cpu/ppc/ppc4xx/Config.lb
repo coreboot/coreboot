@@ -1,0 +1,9 @@
+##
+## CPU initialization
+##
+initinclude "EARLY_INIT" cpu/ppc/ppc4xx/ppc4xx.inc
+
+object mem.o
+object pci.S
+object clock.o
+

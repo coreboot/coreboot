@@ -1,4 +1,3 @@
-/* Copyright 2000  AG Electronics Ltd. */
 /* This code is distributed without warranty under the GPL v2 (see COPYING) */
 
 #include <arch/io.h>

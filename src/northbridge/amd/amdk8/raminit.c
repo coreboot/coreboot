@@ -2304,6 +2304,7 @@ static void spd_set_dram_timing(const struct mem_controller *ctrl, const struct 
 static void sdram_set_spd_registers(const struct mem_controller *ctrl) 
 {
 	const struct mem_param *param;
+	activate_spd_rom(ctrl);
 	spd_enable_2channels(ctrl);
 	spd_set_ram_size(ctrl);
 	spd_handle_unbuffered_dimms(ctrl);

@@ -9,6 +9,12 @@ ldscript cpu/i386/reset16.lds
 mainboardinit superio/via/vt8231/setup_serial.inc
 mainboardinit pc80/serial.inc
 mainboardinit arch/i386/lib/console.inc
+mainboardinit northbridge/via/vt8601/raminit.inc
+# mainboardinit ram/dump_northbridge.inc
+# mainboardinit ram/ramtest.inc
+# mainboardinit mainboard/via/epia/do_ramtest.inc
+# option RAM_TEST=1
+
 northbridge via/vt8601 
 southbridge via/vt8231 
 superio via/vt8231
@@ -19,3 +25,4 @@ option SUPERIO_DEVFN=0x88
 object mainboard.o
 keyboard pc80
 cpu p5
+

@@ -15,7 +15,7 @@
  *   write_acpi_tables()
  *   acpi_dump_apics()
  *   
- * See Solo or Epia port on more details.
+ * See AMD Solo, Island Aruma or Via Epia-M port for more details.
  */
 
 #include <console/console.h>

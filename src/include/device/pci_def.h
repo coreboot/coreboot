@@ -182,7 +182,18 @@
 #define  PCI_CAP_ID_HT          0x08
 #define PCI_CAP_LIST_NEXT	1	/* Next capability in the list */
 #define PCI_CAP_FLAGS		2	/* Capability defined flags (16 bits) */
-#define PCI_CAP_SIZEOF		4
+
+/* Hypertransport Registers */
+#define PCI_HT_CAP_SIZEOF	   4
+#define PCI_HT_CAP_HOST_WIDTH	   6	/* width value & capability  */
+#define PCI_HT_CAP_HOST_FREQ	   0x09	/* Host frequency */
+#define PCI_HT_CAP_HOST_FREQ_CAP   0x0a	/* Host Frequency capability  */
+#define PCI_HT_CAP_SLAVE_WIDTH0	   6	/* width value & capability  */
+#define PCI_HT_CAP_SLAVE_WIDTH1	   0x0a	/* width value & capability  to */
+#define PCI_HT_CAP_SLAVE_FREQ0	   0x0d	/* Slave frequency from */
+#define PCI_HT_CAP_SLAVE_FREQ1	   0x011	/* Slave frequency to */
+#define PCI_HT_CAP_SLAVE_FREQ_CAP0 0x0e	/* Frequency capability from */
+#define PCI_HT_CAP_SLAVE_FREQ_CAP1 0x12	/* Frequency capability to */
 
 /* Power Management Registers */
 

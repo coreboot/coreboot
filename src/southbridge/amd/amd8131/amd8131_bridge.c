@@ -9,6 +9,28 @@
 
 static void pcix_init(device_t dev)
 {
+	uint16_t word;
+	uint8_t byte;
+
+	
+	/* Enable memory write and invalidate ??? */
+	byte = pci_read_config8(dev, 0x04);
+        byte |= 0x10;
+        pci_write_config8(dev, 0x04, byte);
+	
+	/* Set drive strength */
+	word = pci_read_config16(dev, 0xe0);
+        word = 0x0404;
+        pci_write_config16(dev, 0xe0, word);
+	word = pci_read_config16(dev, 0xe4);
+        word = 0x0404;
+        pci_write_config16(dev, 0xe4, word);
+	
+	/* Set impedance */
+	word = pci_read_config16(dev, 0xe8);
+        word = 0x0404;
+        pci_write_config16(dev, 0xe8, word);
+
 	return;
 }
 

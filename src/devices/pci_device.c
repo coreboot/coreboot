@@ -473,7 +473,8 @@ unsigned int pci_scan_bus(struct device *bus, unsigned int max)
 	struct device *old_devices;
 	struct device *child;
 #if HYPERTRANSPORT_SUPPORT
-	unsigned next_unitid, last_unitid;
+	unsigned next_unitid, last_unitid, previous_unitid;
+	int reset_needed;
 #endif
 
 	printk_debug("PCI: pci_scan_bus for bus %d\n", bus->secondary);
@@ -486,20 +487,19 @@ unsigned int pci_scan_bus(struct device *bus, unsigned int max)
 	
 
 #if HYPERTRANSPORT_SUPPORT
-	/* If present assign unitid to a hypertransport chain */
-	next_unitid = 1;
-	do {
+	/* Spin through the devices and collapse any early
+	 * hypertransport enumeration.
+	 */
+	for(devfn = 0; devfn <= 0xff; devfn += 8) {
 		struct device dummy;
 		uint32_t id;
 		uint8_t hdr_type, pos;
-		last_unitid = next_unitid;
-
-		dummy.bus   = bus;
-		dummy.devfn = 0;
+		dummy.bus = bus;
+		dummy.devfn = devfn;
 		id = pci_read_config32(&dummy, PCI_VENDOR_ID);
-		if (id == 0xffffffff || id == 0x00000000 ||
+		if (id == 0xffffffff || id == 0x00000000 || 
 			id == 0x0000ffff || id == 0xffff0000) {
-			break;
+			continue;
 		}
 		hdr_type = pci_read_config8(&dummy, PCI_HEADER_TYPE);
 		pos = 0;
@@ -521,19 +521,151 @@ unsigned int pci_scan_bus(struct device *bus, unsigned int max)
 				flags = pci_read_config16(&dummy, pos + PCI_CAP_FLAGS);
 				printk_debug("flags: 0x%04x\n", (unsigned)flags);
 				if ((flags >> 13) == 0) {
-					unsigned count;
+					/* Clear the unitid */
 					flags &= ~0x1f;
-					flags |= next_unitid & 0x1f;
-					count = (flags >> 5) & 0x1f;
-					printk_debug("unitid: 0x%02x, count: 0x%02x\n",
-						next_unitid, count);
 					pci_write_config16(&dummy, pos + PCI_CAP_FLAGS, flags);
-					next_unitid += count;
 					break;
 				}
 			}
 			pos = pci_read_config8(&dummy, pos + PCI_CAP_LIST_NEXT);
 		}
+	}
+	/* If present assign unitid to a hypertransport chain */
+	last_unitid = 0;
+	next_unitid = 1;
+	do {
+		struct device dummy;
+		uint32_t id;
+		uint8_t hdr_type, pos, previous_pos;
+
+		previous_unitid = last_unitid;
+		last_unitid = next_unitid;
+
+		/* Read the next unassigned device off the stack */
+		dummy.bus   = bus;
+		dummy.devfn = 0;
+		id = pci_read_config32(&dummy, PCI_VENDOR_ID);
+		/* If the chain is enumerated quit */
+		if (id == 0xffffffff || id == 0x00000000 ||
+			id == 0x0000ffff || id == 0xffff0000) {
+			break;
+		}
+		hdr_type = pci_read_config8(&dummy, PCI_HEADER_TYPE);
+		pos = 0;
+		switch(hdr_type & 0x7f) {
+		case PCI_HEADER_TYPE_NORMAL:
+		case PCI_HEADER_TYPE_BRIDGE:
+			pos = PCI_CAPABILITY_LIST;
+			break;
+		}
+		if (pos > PCI_CAP_LIST_NEXT) {
+			pos = pci_read_config8(&dummy, pos);
+		}
+		while(pos != 0) {   /* loop through the linked list */
+			uint8_t cap;
+			cap = pci_read_config8(&dummy, pos + PCI_CAP_LIST_ID);
+			printk_debug("Capability: 0x%02x @ 0x%02x\n", cap, pos);
+			if (cap == PCI_CAP_ID_HT) {
+				uint16_t flags;
+				uint16_t links;
+				flags = pci_read_config16(&dummy, pos + PCI_CAP_FLAGS);
+				printk_debug("flags: 0x%04x\n", (unsigned)flags);
+				if ((flags >> 13) == 0) {  /* Entry is a Slave secondary */
+					struct device last, previous;
+					unsigned count;
+					unsigned width;
+					flags &= ~0x1f; /* mask out base unit ID */
+					flags |= next_unitid & 0x1f; /* assign ID */
+					count = (flags >> 5) & 0x1f; /* get unit count */
+					printk_debug("unitid: 0x%02x, count: 0x%02x\n",
+						next_unitid, count);
+					pci_write_config16(&dummy, pos + PCI_CAP_FLAGS, flags);
+					next_unitid += count;
+
+					if (previous_unitid == 0) { /* the link is back to the host */
+						/* calculate the previous pos for the host */
+						previous_pos = 0x80;
+						previous.bus = 0;
+						previous.devfn = 0x18 << 3;
+#warning "FIXME we should not hard code this!"
+					} else {
+						previous.bus = bus;
+						previous.devfn = previous_unitid << 3;
+					}
+					last.bus = bus;
+					last.devfn = last_unitid << 3;
+					/* Set link width and frequency */
+					flags = pci_read_config16(&last, pos + PCI_HT_CAP_SLAVE_FREQ_CAP0);
+					cap = pci_read_config8(&last, pos + PCI_HT_CAP_SLAVE_WIDTH0);
+					if(previous_unitid == 0) { /* the link is back to the host */
+						links = pci_read_config16(&previous, 
+								previous_pos + PCI_HT_CAP_HOST_FREQ_CAP);
+						width = pci_read_config8(&previous, 
+								previous_pos + PCI_HT_CAP_HOST_WIDTH);
+					}
+					else { /* The link is back up the chain */
+						links = pci_read_config16(&previous, 
+								previous_pos + PCI_HT_CAP_SLAVE_FREQ_CAP1);
+						width = pci_read_config8(&previous, 
+								previous_pos + PCI_HT_CAP_SLAVE_WIDTH1);
+					}
+					/* Calculate the highest possible frequency */
+					links &= flags;
+					for(flags = 0x40, count = 6; count; count--, flags >>= 1) {
+						if(flags & links) break;
+					}
+					/* Calculate the highest width */
+					width &= cap;
+					/* set the present device */
+					if(count != pci_read_config8(&last, pos + PCI_HT_CAP_HOST_FREQ)) {
+						pci_write_config8(&last, pos + PCI_HT_CAP_HOST_FREQ, count);
+						reset_needed = 1;
+					}
+					if(width != pci_read_config8(&last, pos + PCI_HT_CAP_SLAVE_WIDTH0 + 1)) {
+                                                pci_write_config8(&last, 
+										pos + PCI_HT_CAP_SLAVE_WIDTH0 + 1, width);
+                                                reset_needed = 1;
+                                        }
+
+					/* set the upstream device */
+                                        if(previous_unitid == 0) { /* the link is back to the host */
+                                                cap = pci_read_config8(&previous, previous_pos + PCI_HT_CAP_HOST_FREQ);
+						cap &= 0x0f;
+						if(count != cap) {
+                                                	pci_write_config8(&previous, 
+									previous_pos + PCI_HT_CAP_HOST_FREQ, count);
+							reset_needed = 1;
+						}
+                                                cap = pci_read_config8(&previous, previous_pos + PCI_HT_CAP_HOST_WIDTH + 1);
+						if(width != cap) {
+                                                	pci_write_config8(&previous, 
+									previous_pos + PCI_HT_CAP_HOST_WIDTH + 1, width);
+							reset_needed = 1;
+						}
+					}
+                                        else { /* The link is back up the chain */
+                                                cap = pci_read_config8(&previous, 
+									previous_pos + PCI_HT_CAP_SLAVE_FREQ1);
+                                                cap &= 0x0f;
+                                                if(count != cap) {
+                                                	pci_write_config8(&previous, 
+								previous_pos + PCI_HT_CAP_SLAVE_FREQ1, count);
+							reset_needed = 1;
+						}
+                                                cap = pci_read_config8(&previous, 
+									previous_pos + PCI_HT_CAP_SLAVE_WIDTH1 + 1);
+                                                if(width != cap) {
+                                                	pci_write_config8(&previous, 
+								previous_pos + PCI_HT_CAP_SLAVE_WIDTH1, width);
+							reset_needed = 1;
+						}
+                                        }
+					break;
+				}
+			}
+			pos = pci_read_config8(&dummy, pos + PCI_CAP_LIST_NEXT);
+		}
+		previous_pos = pos;
 	} while((last_unitid != next_unitid) && (next_unitid <= 0x1f));
 #endif /* HYPERTRANSPORT_SUPPORT */
 

@@ -229,8 +229,9 @@ function build_target
 			CC="gcc -m32"
 			found_crosscompiler=true
 		fi
-		if [ "$found_crosscompiler" == "false" -a "$TARCH" == ppc ] ;then
-			for prefix in powerpc-eabi- powerpc-linux- ppc_74xx- ; do
+		if [ "$found_crosscompiler" == "false" -a "$TARCH" == ppc ];then
+			for prefix in powerpc-eabi- powerpc-linux- ppc_74xx- \
+			    powerpc-7450-linux-gnu-; do
 				if ${prefix}gcc --version > /dev/null 2> /dev/null ; then
 					found_crosscompiler=true
 					CROSS_COMPILE=$prefix

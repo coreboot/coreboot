@@ -161,13 +161,16 @@ static void main(void)
 
 	enable_lapic();
 	init_timer();
+
 	if (cpu_init_detected()) {
 		asm("jmp __cpu_reset");
 	}
+
 	distinguish_cpu_resets();
 	if (!boot_cpu()) {
 		stop_this_cpu();
 	}
+
 	pc87366_enable_serial(SERIAL_DEV, TTYS0_BASE);
 	uart_init();
 	console_init();

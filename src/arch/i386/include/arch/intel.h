@@ -355,19 +355,9 @@ NO FUNCTIONS YET!
 
 /* originally this macro was from STPC BIOS */
 /* kevin/Ispiri - changed to default to serial port POST codes */
-#ifndef SERIAL_POST
 #define	intel_chip_post_macro(value)			 \
 	movb	$value, %al				; \
 	outb	%al, $0x80
-#else
-#define	intel_chip_post_macro(value)		\
-	mov	$'<', %al ; \
-	CALLSP(console_tx_al) ; \
-	mov	$value, %al ; \
-	CALLSP(console_tx_hex8) ; \
-	mov	$'>', %al ; \
-	CALLSP(console_tx_al)
-#endif
 
 #define INTEL_PDATA_MAGIC 0xdeadbeef
 

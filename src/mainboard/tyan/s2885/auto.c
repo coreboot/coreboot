@@ -178,30 +178,20 @@ static void main(unsigned long bist)
         };
 
         int needs_reset;
+	unsigned nodeid;
+
 	if (bist == 0) {
 		/* Skip this if there was a built in self test failure */
 		amd_early_mtrr_init();
 	        enable_lapic();
         	init_timer();
+
+		nodeid = lapicid() & 0xf;
 	
-	        if (cpu_init_detected()) {
-#if 1
+	        if (cpu_init_detected(nodeid)) {
         	        asm volatile ("jmp __cpu_reset");
-#else           
-                /* cpu reset also reset the memtroller ????
-                        need soft_reset to reset all except keep HT link freq and width */
-		/* So we don't need to 
-			1. jmp to __cpu_reset
-			2. jmp to __main to copy ROM to ram (It costs some time) 
-			3. call hardwaremain(), it will according to boot_complete to issue hard_reset in southbridge. 
-				(Actually it is soft2_reset(); --- without call hard_reset, the memory is corrupted.
-		  We will call soft2_reset directly to spare time in 1 and 2 and 3.2
-		*/
-                	distinguish_cpu_resets();
-                	soft2_reset();
-#endif  
         	}
-        	distinguish_cpu_resets();
+        	distinguish_cpu_resets(nodeid);
         	if (!boot_cpu()) {
                 	stop_this_cpu();
         	}

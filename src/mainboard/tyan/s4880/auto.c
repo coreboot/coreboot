@@ -228,6 +228,7 @@ static void main(unsigned long bist)
 	};
 	int i;
         int needs_reset;
+	unsigned nodeid;
 
         if (bist == 0) {
                 /* Skip this if there was a built in self test failure */
@@ -235,17 +236,12 @@ static void main(unsigned long bist)
                 enable_lapic();
                 init_timer();
 
-                if (cpu_init_detected()) {
-#if 1
+		nodeid = lapicid() & 0xf;
+
+                if (cpu_init_detected(nodeid)) {
                         asm volatile ("jmp __cpu_reset");
-#else                   
-                /* cpu reset also reset the memtroller ????
-                        need soft_reset to reset all except keep HT link freq and width */
-                        distinguish_cpu_resets();
-                        soft2_reset();
-#endif          
                 }
-                distinguish_cpu_resets();
+                distinguish_cpu_resets(nodeid);
                 if (!boot_cpu()) {
                         stop_this_cpu();
                 }       

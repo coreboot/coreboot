@@ -1,0 +1,131 @@
+/* -*- asm -*-
+ * $ $
+ *
+ */
+
+#include <arch/asm.h>
+#include <arch/intel.h>
+
+#include <pciconf.h>
+#ifdef SMP
+#include <cpu/p6/apic.h>
+#endif
+/*
+ * This is the entry code the code in .reset section
+ * jumps to this address.
+ *
+ */
+.section ".rom.data", "a", @progbits
+.section ".rom.text", "ax", @progbits
+
+	intel_chip_post_macro(0x01)             /* delay for chipsets */
+
+#include "crt0_includes.h"
+
+	CONSOLE_DEBUG_TX_STRING($str_after_ram)
+
+	/* clear boot_complete flag */
+	xorl	%ebp, %ebp
+__main:
+
+	/*
+	 *	Copy data into RAM and clear the BSS. Since these segments
+	 *	isn\'t really that big we just copy/clear using bytes, not
+	 *	double words.
+	 */
+	intel_chip_post_macro(0x11)		/* post 11 */
+
+	cld				/* clear direction flag */
+
+	/* copy linuxBIOS from it's initial load location to 
+	 * the location it is compiled to run at.
+	 * Normally this is copying from FLASH ROM to RAM.
+	 */
+	leal	EXT(_liseg), %esi
+	leal	EXT(_iseg), %edi
+	cmpl	%esi, %edi
+	jz	.Lnocopy
+	movl	$EXT(_eliseg), %ecx
+	subl	%esi, %ecx
+	jz	.Lnocopy		/* should not happen */
+	rep
+	movsb
+.Lnocopy:
+	intel_chip_post_macro(0x12)		/* post 12 */
+
+	/** clear stack */
+	leal	EXT(_stack), %edi
+	movl	$EXT(_estack), %ecx
+	subl	%edi, %ecx
+	xorl	%eax, %eax
+	rep
+	stosb
+
+	/** clear bss */
+	leal	EXT(_bss), %edi
+	movl	$EXT(_ebss), %ecx
+	subl	%edi, %ecx
+	jz	.Lnobss
+	xorl	%eax, %eax
+	rep
+	stosb
+.Lnobss:
+
+	/* set new stack */
+	movl	$_estack, %esp
+#ifdef SMP
+	/* Get the cpu id */
+	movl	$APIC_DEFAULT_BASE, %edi
+	movl	APIC_ID(%edi), %eax
+	shrl	$24, %eax
+
+	/* Get the cpu index (MAX_CPUS on error) */
+	movl	$-4, %ebx
+1:	addl	$4, %ebx
+	cmpl	$(MAX_CPUS << 2), %ebx
+	je	2
+	cmpl	%eax, EXT(initial_apicid)(%ebx)
+	jne	1b
+2:	shrl	$2, %ebx
+
+	/* Now compute the appropriate stack */
+	movl	%ebx, %eax
+	movl	$STACK_SIZE, %ebx
+	mull	%ebx
+	subl	%eax, %esp
+#endif
+
+	/* push the boot_complete flag */
+	pushl	%ebp
+
+	/* Save the stack location */
+	movl	%esp, %ebp
+
+	/*
+	 *	Now we are finished. Memory is up, data is copied and
+	 *	bss is cleared.   Now we call the main routine and
+	 *	let it do the rest.
+	 */ 
+	intel_chip_post_macro(0xfe)	/* post fe */
+
+	CONSOLE_DEBUG_TX_STRING($str_pre_main)
+
+	/* memory is up. Let\'s do the rest in C -- much easier. */
+
+	intel_chip_post_macro(0xfd)	/* post fe */
+
+	/* Resort the stack location */
+	movl	%ebp, %esp
+	
+	/* The boot_complete flag has already been pushed */
+	call	EXT(hardwaremain)
+	/*NOTREACHED*/
+.Lhlt:	
+	intel_chip_post_macro(0xee)	/* post fe */
+	hlt
+	jmp	.Lhlt
+
+.section ".rom.data"
+str_after_ram:       .string "Copying LinuxBIOS to ram.\r\n"
+str_pre_main:        .string "Jumping to LinuxBIOS.\r\n"
+.previous

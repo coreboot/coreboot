@@ -58,8 +58,7 @@ mainboardinit northbridge/amd/amd76x/mpinit.inc USE_FALLBACK_IMAGE
 ## Failover if we need to 
 ##
 
-#comment out 4 debug SMJ
-#mainboardinit southbridge/amd/amd768/cmos_boot_failover.inc USE_FALLBACK_IMAGE
+mainboardinit southbridge/amd/amd768/cmos_boot_failover.inc USE_FALLBACK_IMAGE
 
 ###
 ### O.k. We aren't just an intermediary anymore!
@@ -218,6 +217,7 @@ option FINAL_MAINBOARD_FIXUP=1
 ## This is useful for optional includes
 ##
 option USE_FALLBACK_IMAGE=0
+
 expr BUILD_NORMAL_IMAGE=!USE_FALLBACK_IMAGE
 
 ###

@@ -35,13 +35,12 @@ SECTIONS
   __bss_start = .;		/* BSS */
   .bss (.): {
 	*(.bss)
+    _ebss = .;
+
+  	_heap = .;
+  	. += HEAPSIZE;
+    _eheap = .;
 	}
-  _ebss = .;
-  _heap = .;
-  .heap (.): {
-	. = HEAPSIZE;
-  }
-  _eheap = .;
   _end = . ;
 
   _ram_seg = _text;

@@ -105,7 +105,12 @@ unsigned char *ptr;
    fprintf(fpir,"\t%#x,         /*  u8 checksum , this hase to set to some value that would give 0 after the sum of all bytes for this structure (including checksum) */\n",rt.checksum);
    fprintf(fpir,"\t{\n");
    for (i=0;i<ts;i++) {
-	fprintf(fpir,"\t\t{%#x,%#x, {{%#x, %#x}, {%#x, %#x}, {%#x, %#x}, {%#x, %#x}}, %#x, %#x},\n",se_arr[i].bus,se_arr[i].devfn,se_arr[i].irq[0].link,se_arr[i].irq[0].bitmap,se_arr[i].irq[1].link,se_arr[i].irq[1].bitmap,se_arr[i].irq[2].link,se_arr[i].irq[2].bitmap,se_arr[i].irq[3].link,se_arr[i].irq[3].bitmap,se_arr[i].slot,se_arr[i].rfu);
+	fprintf(fpir,"\t\t{%#x,(%#x<<3)|%#x, {{%#x, %#x}, {%#x, %#x}, {%#x, %#x}, {%#x, %#x}}, %#x, %#x},\n",
+	se_arr[i].bus, se_arr[i].devfn>>3, se_arr[i].devfn&7,
+	se_arr[i].irq[0].link, se_arr[i].irq[0].bitmap, se_arr[i].irq[1].link,
+	se_arr[i].irq[1].bitmap, se_arr[i].irq[2].link, se_arr[i].irq[2].bitmap,
+	se_arr[i].irq[3].link, se_arr[i].irq[3].bitmap, se_arr[i].slot, 
+	se_arr[i].rfu);
    } 
    fprintf(fpir,"\t}\n");
    fprintf(fpir,"};\n");

@@ -18,6 +18,8 @@
 .section ".rom.data", "a", @progbits
 .section ".rom.text", "ax", @progbits
 
+	intel_chip_post_macro(0x01)             /* delay for chipsets */
+
 #include "crt0_includes.h"
 
 	CONSOLE_DEBUG_TX_STRING($str_after_ram)

@@ -8,8 +8,7 @@
 //static const unsigned char usbIrqs[4] = { 11, 5, 10, 12 };
 static const unsigned char usbIrqs[4] = { 11, 12, 10, 5 };
 static const unsigned char enetIrqs[4] = { 11, 5, 10, 12 };
-//static const unsigned char slotIrqs[4] = { 10, 12, 5, 11 };
-static const unsigned char slotIrqs[4] = { 12, 10, 5, 11 };
+static const unsigned char slotIrqs[4] = { 10, 12, 5, 11 };
 static const unsigned char firewireIrqs[4] = { 12, 10, 5, 11 };
 
 /*

@@ -371,6 +371,8 @@ static void sdram_set_registers(const struct mem_controller *ctrl) {
     0x0000, 0x8088, 0xe0ee,
     0xffff // end mark
   };
+  static cont uint8_t ramregs[] = {0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 
+	  				0x56, 0x57};
 
   device_t north = 0;
   uint8_t c, r;
@@ -514,7 +516,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl) {
    * Find the first bank with DIMM equipped. */
 
   /* Maximum possible memory in bank 0, none in other banks.
-   * Starting from bank 0, we's fill 0 in these registers
+   * Starting from bank 0, we fill 0 in these registers
    * until memory is found. */
   pci_write_config8(north,0x5A, 0xff);
   pci_write_config8(north,0x5B, 0xff);
@@ -526,8 +528,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl) {
   pci_write_config8(north,0x57, 0xff);
   dumpnorth(north);
   print_err("MA\r\n");
-  /* this code is broken ... ignores 56, 57 */
-  for(c = 0x5a; c < 0x60; c++) {
+  for(c = 0; c < 8; c++) {
     /* Write different values to 0 and 8, then read from 0.
      * If values of address 0 match, we have something there. */
     print_err("write to 0\r\n");
@@ -542,11 +543,11 @@ static void sdram_set_registers(const struct mem_controller *ctrl) {
     if (*(volatile unsigned long *) 0 != 0x12345678) {
       print_err("no memory in this bank\r\n");
       /* No memory in this bank. Tell it to the bridge. */
-      pci_write_config8(north,c, 0);
+      pci_write_config8(north,ramregs[c], 0);
     } else {
       uint8_t best = 0;
 
-      /* Detect MA mapping type of the first bank. */
+      /* Detect MA mapping type of the bank. */
 
       for(r = 0; r < 3; r++) {
 	volatile unsigned long esi = 0;
@@ -571,7 +572,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl) {
 	  eax >>= 1;
 	}
 	print_err(" done read to eax\r\n");
-	eax = 0;
+	eax = * (unsigned long *)0;
 	/* oh boy ... what is this. 
 	   movl 0, %eax
 	   cmpl %eax, %esi

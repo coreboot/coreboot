@@ -577,7 +577,7 @@ def target(targ_name):
 	print "Configuring TARGET %s" % targ_name
         target_dir = os.path.join(os.path.dirname(loc.file()), targ_name)
         if not os.path.isdir(target_dir):
-                print "Creating directory" % target_dir
+                print "Creating directory %s" % target_dir
                 os.makedirs(target_dir)
         print "Will place Makefile, crt0.S, etc. in %s" % target_dir
 	root = partobj(target_dir, 0, 'board')

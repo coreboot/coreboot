@@ -27,6 +27,10 @@ static void print_pci_devices(void)
 			continue;
 		}
 		print_debug_pci_dev(dev);
+		print_debug(" ");
+		print_debug_hex16(id & 0xffff);
+		print_debug(" ");
+		print_debug_hex16((id>>16) & 0xffff);
 		print_debug("\r\n");
 	}
 }
@@ -99,7 +103,7 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 			print_debug_hex8(i); 
 			print_debug(".0: ");
 			print_debug_hex8(device);
-			for(j = 0; j < 256; j++) {
+			for(j = 0; j < 128; j++) {
 				int status;
 				unsigned char byte;
 				if ((j & 0xf) == 0) {
@@ -125,7 +129,7 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 			print_debug_hex8(i); 
 			print_debug(".1: ");
 			print_debug_hex8(device);
-			for(j = 0; j < 256; j++) {
+			for(j = 0; j < 128; j++) {
 				int status;
 				unsigned char byte;
 				if ((j & 0xf) == 0) {

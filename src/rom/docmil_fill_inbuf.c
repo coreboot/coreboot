@@ -1,4 +1,4 @@
-#if defined(USE_DOC_MIL) || defined(USE_DOC_MIL_PLUS)
+#if defined(USE_DOC_MIL) || defined(USE_DOC_2000_TSOP)
 
 #include <cpu/p5/io.h>
 #include <printk.h>

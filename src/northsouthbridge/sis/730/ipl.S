@@ -240,7 +240,7 @@ sis730ipl_start:
 	xorw	%dx, %dx			# clear %dx, start of RAM
 	movw	$0x800, %si			# point %si to CDSN Data area
 	movw	$0x1000, %di			# point %di to CDSN Control area
-	movw	$DOC_SPL_START_BLK, %bp		# start page of LinuxBIOS
+	movw	$DOC_SPL_START_PAGE, %bp	# start page of LinuxBIOS
 
 	movb	$0x84, %al			# Reset DOC Millennium
 	call	doc_reset
@@ -293,7 +293,8 @@ doc_delay:
 
 	movw	%di, %dx			# save current destination
 	incw	%bp				# increse current page number
-	cmpw	$128, %bp			# moved 63 KB ??
+	cmpw	$(DOC_SPL_START_PAGE + DOC_SPL_SIZE_IN_PAGE), %bp
+						# moved enough data ??
 	jl	read_next_page			# no, read next page
 #endif /* STD_FLASH */
 

@@ -34,9 +34,6 @@
 
 #define NORTH_BRIDGE_BASE_ADDR	0x80000000
 
-	/* set new stack */
-	movl	$_estack, %esp
-
 register_setting_start:
 	movl	$northbridge_init_table, %esi
 	movl	$(northbridge_init_table_end - northbridge_init_table), %ecx
@@ -45,10 +42,6 @@ register_setting_start:
 init_northbridge:
 	lodsw	(%esi), %ax			# load the register address/value to %ax
 	xchgb	%al, %ah			# exchange address/values for write_common
-	call	write_northbridge_register
-	loopnz	init_northbridge
-
-	jmp	register_setting_end
 
 write_northbridge_register:			
 	/* Input: AH - register number. AL - register value. */
@@ -68,7 +61,10 @@ write_common:
 	addb	%al, %dl
 	movb	%bl, %al
 	outb	%al, %dx
-	ret					# End of write_[lpc|pci]_reg
+
+	loopnz	init_northbridge
+
+	jmp	register_setting_end
 
 #include "550_regs.inc"
 

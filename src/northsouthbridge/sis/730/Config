@@ -1,7 +1,5 @@
 option SIS730
-# option USE_DOC_MIL
 option SMA_SIZE=0xA0
-docipl northsouthbridge/sis/730/ipl.S
 raminit northsouthbridge/sis/730/raminit.inc
 
 object southbridge.o

@@ -2,8 +2,9 @@
 # arg1 is the linuxbios.strip to use. default is linuxbios.strip
 # arg2 is the stripped, gzipp'ed kernel. Default is vmlinux.bin.gz
 v=`uname -r`
-rmmod doc2001
 rmmod docprobe
+rmmod doc2001
+rmmod docecc
 
 if [ $1x = "x" ]; then
   linuxbios=linuxbios.strip
@@ -19,6 +20,7 @@ fi
 
 flash_on
 
+insmod /lib/modules/${v}/kernel/drivers/mtd/docecc.o
 insmod /lib/modules/${v}/kernel/drivers/mtd/doc2001.o
 insmod /lib/modules/${v}/kernel/drivers/mtd/docprobe.o
 
@@ -31,5 +33,6 @@ dd conv=notrunc if=docipl of=/dev/mtd0 seek=1
 dd conv=notrunc if=linuxbios.block of=/dev/mtd0 seek=2
 dd conv=notrunc if=vmlinux.bin.gz.block of=/dev/mtd0 seek=128
 
-rmmod doc2001
 rmmod docprobe
+rmmod doc2001
+rmmod docecc

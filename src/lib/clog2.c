@@ -1,4 +1,8 @@
+#undef DEBUG_LOG2
+
+#ifdef DEBUG_LOG2
 #include <console/console.h>
+#endif
 
 unsigned long log2(unsigned long x)
 {
@@ -7,8 +11,10 @@ unsigned long log2(unsigned long x)
         unsigned long pow = sizeof(x) * 8 - 1;
 
         if (! x) {
+#ifdef DEBUG_LOG2
                 printk_warning("%s called with invalid parameter of 0\n",
 			__FUNCTION__);
+#endif
                 return -1;
         }
         for(; i > x; i >>= 1, pow--)

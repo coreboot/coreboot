@@ -162,6 +162,7 @@ static void main(void)
 
 	static const struct mem_controller cpu[] = {
 		{
+			.node_id = 0,
 			.f0 = PCI_DEV(0, 0x18, 0),
 			.f1 = PCI_DEV(0, 0x18, 1),
 			.f2 = PCI_DEV(0, 0x18, 2),
@@ -170,6 +171,7 @@ static void main(void)
 			.channel1 = { (0xa<<3)|1, (0xa<<3)|3, 0, 0 },
 		},
 		{
+			.node_id = 1,
 			.f0 = PCI_DEV(0, 0x19, 0),
 			.f1 = PCI_DEV(0, 0x19, 1),
 			.f2 = PCI_DEV(0, 0x19, 2),
@@ -178,6 +180,7 @@ static void main(void)
 			.channel1 = { (0xa<<3)|5, (0xa<<3)|7, 0, 0 },
 		},
 		{
+			.node_id = 2,
 			.f0 = PCI_DEV(0, 0x1a, 0),
 			.f1 = PCI_DEV(0, 0x1a, 1),
 			.f2 = PCI_DEV(0, 0x1a, 2),
@@ -186,6 +189,7 @@ static void main(void)
 			.channel1 = { (0xa<<3)|9, (0xa<<3)|11, 0, 0 },
 		},
 		{
+			.node_id = 3,
 			.f0 = PCI_DEV(0, 0x1b, 0),
 			.f1 = PCI_DEV(0, 0x1b, 1),
 			.f2 = PCI_DEV(0, 0x1b, 2),
@@ -200,6 +204,7 @@ static void main(void)
 	enable_lapic();
 	init_timer();
 	if (!boot_cpu()) {
+		notify_bsp_ap_is_stopped();
 		stop_this_cpu();
 	}
 	pc87360_enable_serial();

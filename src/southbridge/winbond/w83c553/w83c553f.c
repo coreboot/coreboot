@@ -48,7 +48,7 @@ w83c553_init(struct device *dev)
 
 	printk_info("Configure W83C553F ISA Bridge (Function 0)\n");
 
-#ifdef SANDPOINT
+#if 0
 	/*
 	 * Set ISA memory space NOT SURE ABOUT THIS???
 	 */

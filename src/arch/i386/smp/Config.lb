@@ -7,6 +7,6 @@ end
 #object ioapic.o CONFIG_IOAPIC
 if CONFIG_SMP
   object start_stop.o 
-#  object secondary.S 
+  object secondary.S 
 end
 

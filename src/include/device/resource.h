@@ -7,7 +7,7 @@
 #define IORESOURCE_IO		0x00000100	/* Resource type */
 #define IORESOURCE_MEM		0x00000200
 #define IORESOURCE_IRQ		0x00000400
-#define IORESOURCE_DMA		0x00000800
+#define IORESOURCE_DRQ		0x00000800
 
 #define IORESOURCE_PREFETCH	0x00001000	/* No side effects */
 #define IORESOURCE_READONLY	0x00002000
@@ -15,8 +15,12 @@
 #define IORESOURCE_RANGELENGTH	0x00008000
 #define IORESOURCE_SHADOWABLE	0x00010000
 #define IORESOURCE_BUS_HAS_VGA	0x00020000
+#define IORESOURCE_SUBTRACTIVE  0x00040000	/* This resource filters all of the unclaimed transactions
+						 * to the bus below.
+						 */
 
-#define IORESOURCE_SET		0x80000000
+#define IORESOURCE_SET		0x80000000	/* An IO resource that has been assigned a value */
+#define IORESOURCE_FIXED	0x40000000	/* An IO resource the allocator must not change */
 
 /* PCI specific resource bits */
 #define IORESOURCE_PCI64	(1<<0)	/* 64bit long pci resource */

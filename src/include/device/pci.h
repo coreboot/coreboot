@@ -34,13 +34,15 @@ extern struct pci_driver epci_drivers[];
 
 struct device_operations default_pci_ops_dev;
 struct device_operations default_pci_ops_bus;
-struct device_operations default_pci_ops_root;
 
 
-void pci_dev_read_resources(struct device *dev);
-void pci_bus_read_resources(struct device *dev);
-void pci_dev_set_resources(struct device *dev);
-unsigned int pci_scan_bridge(struct device *bus, unsigned int max);
+void pci_dev_read_resources(device_t dev);
+void pci_bus_read_resources(device_t dev);
+void pci_dev_set_resources(device_t dev);
+void pci_dev_enable_resources(device_t dev);
+void pci_bus_enable_resources(device_t dev);
+unsigned int pci_scan_bridge(device_t bus, unsigned int max);
+unsigned int pci_scan_bus(struct bus *bus, unsigned min_devfn, unsigned max_devfn, unsigned int max);
 
 #define PCI_IO_BRIDGE_ALIGN 4096
 #define PCI_MEM_BRIDGE_ALIGN (1024*1024)

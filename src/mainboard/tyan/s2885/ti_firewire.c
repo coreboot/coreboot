@@ -30,10 +30,11 @@ static void ti_firewire_init(struct device *dev)
 }
 
 static struct device_operations ti_firewire_ops  = {
-	.read_resources = pci_dev_read_resources,
-	.set_resources  = pci_dev_set_resources,
-	.init = ti_firewire_init,
-	.scan_bus = 0,
+	.read_resources   = pci_dev_read_resources,
+	.set_resources    = pci_dev_set_resources,
+	.enable_resources = pci_dev_enable_resources,
+	.init             = ti_firewire_init,
+	.scan_bus         = 0,
 };
 
 static struct pci_driver ti_firewire_driver __pci_driver = {

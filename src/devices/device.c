@@ -1,6 +1,7 @@
 /*
  *      (c) 1999--2000 Martin Mares <mj@suse.cz>
  *      (c) 2003 Eric Biederman <ebiederm@xmission.com>
+ *	(c) 2003 Linux Networx
  */
 /* lots of mods by ron minnich (rminnich@lanl.gov), with 
  * the final architecture guidance from Tom Merritt (tjm@codegen.com)
@@ -18,12 +19,9 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <stdlib.h>
+#include <string.h>
 
-/**
- * This is the root of the device tree. A PCI tree always has 
- * one bus, bus 0. Bus 0 contains devices and bridges. 
- */
-struct device dev_root;
 /* Linked list of ALL devices */
 struct device *all_devices = 0;
 /* pointer to the last device */
@@ -32,16 +30,46 @@ static struct device **last_dev_p = &all_devices;
 #define DEVICE_MEM_HIGH  0xFEC00000UL /* Reserve 20M for the system */
 #define DEVICE_IO_START 0x1000
 
-
-/* Append a new device to the global device chain.
- * The chain is used to find devices once everything is set up.
+/** Allocate a new device structure
  */
-void append_device(struct device *dev)
+device_t alloc_dev(struct bus *parent, struct device_path *path)
 {
+	device_t dev, child;
+	int link;
+	/* Find the last child of our parent */
+	for(child = parent->children; child && child->sibling; ) {
+		child = child->sibling;
+	}
+	dev = malloc(sizeof(*dev));
+	if (dev == 0) {
+		die("DEV: out of memory.\n");
+	}
+	memset(dev, 0, sizeof(*dev));
+	memcpy(&dev->path, path, sizeof(*path));
+
+	/* Append a new device to the global device chain.
+	 * The chain is used to find devices once everything is set up.
+	 */
 	*last_dev_p = dev;
 	last_dev_p = &dev->next;
-}
 
+	/* Initialize the back pointers in the link fields */
+	for(link = 0; link < MAX_LINKS; link++) {
+		dev->link[link].dev  = dev;
+		dev->link[link].link = link;
+	}
+
+	/* Add the new device to the children of the bus. */
+	dev->bus = parent;
+	if (child) {
+		child->sibling = dev;
+	} else {
+		parent->children = dev;
+	}
+	/* If we don't have any other information about a device enable it */
+	dev->enable = 1;
+	return dev;
+}
 
 /** round a number to an alignment. 
  * @param val the starting value
@@ -71,28 +99,79 @@ static unsigned long round_down(unsigned long val, unsigned long round_down)
 /** Read the resources on all devices of a given bus.
  * @param bus bus to read the resources on.
  */
-static void read_resources(struct device *bus)
+static void read_resources(struct bus *bus)
 {
 	struct device *curdev;
 
-	
 	/* Walk through all of the devices and find which resources they need. */
 	for(curdev = bus->children; curdev; curdev = curdev->sibling) {
+		unsigned links;
+		int i;
 		if (curdev->resources > 0) {
 			continue;
 		}
+		if (!curdev->ops || !curdev->ops->read_resources) {
+			printk_err("%s missing read_resources\n",
+				dev_path(curdev));
+			continue;
+		}
 		curdev->ops->read_resources(curdev);
+		/* Read in subtractive resources behind the current device */
+		links = 0;
+		for(i = 0; i < curdev->resources; i++) {
+			struct resource *resource;
+			resource = &curdev->resource[i];
+			if ((resource->flags & IORESOURCE_SUBTRACTIVE) &&
+				(!(links & (1 << resource->index))))
+			{
+				links |= (1 << resource->index);
+				read_resources(&curdev->link[resource->index]);
+				
+			}
+		}
 	}
 }
 
-static struct device *largest_resource(struct device *bus, struct resource **result_res,
-	unsigned long type_mask, unsigned long type)
+struct pick_largest_state {
+	struct resource *last;
+	struct device   *result_dev;
+	struct resource *result;
+	int seen_last;
+};
+
+static void pick_largest_resource(
+	struct pick_largest_state *state, struct device *dev, struct resource *resource)
+{
+	struct resource *last;
+	last = state->last;
+	/* Be certain to pick the successor to last */
+	if (resource == last) {
+		state->seen_last = 1;
+		return;
+	}
+	if (last && (
+		    (last->align < resource->align) ||
+		    ((last->align == resource->align) &&
+			    (last->size < resource->size)) ||
+		    ((last->align == resource->align) &&
+			    (last->size == resource->size) &&
+			    (!state->seen_last)))) {
+		return;
+	}
+	if (!state->result || 
+		(state->result->align < resource->align) ||
+		((state->result->align == resource->align) &&
+			(state->result->size < resource->size))) {
+		state->result_dev = dev;
+		state->result = resource;
+	}
+		    
+}
+
+static void find_largest_resource(struct pick_largest_state *state, 
+	struct bus *bus, unsigned long type_mask, unsigned long type)
 {
 	struct device *curdev;
-	struct device *result_dev = 0;
-	struct resource *last = *result_res;
-	struct resource *result = 0;
-	int seen_last = 0;
 	for(curdev = bus->children; curdev; curdev = curdev->sibling) {
 		int i;
 		for(i = 0; i < curdev->resources; i++) {
@@ -101,31 +180,33 @@ static struct device *largest_resource(struct device *bus, struct resource **res
 			if ((resource->flags & type_mask) != type) {
 				continue;
 			}
-			/* Be certain to pick the successor to last */
-			if (resource == last) {
-				seen_last = 1;
+			/* If it is a subtractive resource recurse */
+			if (resource->flags & IORESOURCE_SUBTRACTIVE) {
+				struct bus *subbus;
+				subbus = &curdev->link[resource->index];
+				find_largest_resource(state, subbus, type_mask, type);
 				continue;
 			}
-			if (last && (
-				(last->align < resource->align) ||
-				((last->align == resource->align) &&
-					(last->size < resource->size)) ||
-				((last->align == resource->align) &&
-					(last->size == resource->size) &&
-					(!seen_last)))) {
-				continue;
-			}
-			if (!result || 
-				(result->align < resource->align) ||
-				((result->align == resource->align) &&
-					(result->size < resource->size))) {
-				result_dev = curdev;
-				result = resource;
-			}
+			/* See if this is the largest resource */
+			pick_largest_resource(state, curdev, resource);
 		}
 	}
-	*result_res = result;
-	return result_dev;
+}
+
+static struct device *largest_resource(struct bus *bus, struct resource **result_res,
+	unsigned long type_mask, unsigned long type)
+{
+	struct pick_largest_state state;
+
+	state.last = *result_res;
+	state.result_dev = 0;
+	state.result = 0;
+	state.seen_last = 0;
+
+	find_largest_resource(&state, bus, type_mask, type);
+
+	*result_res = state.result;
+	return state.result_dev;
 }
 
 /* Compute allocate resources is the guts of the resource allocator.
@@ -158,7 +239,7 @@ static struct device *largest_resource(struct device *bus, struct resource **res
  */
 
 void compute_allocate_resource(
-	struct device *bus,
+	struct bus *bus,
 	struct resource *bridge,
 	unsigned long type_mask,
 	unsigned long type)
@@ -181,9 +262,8 @@ void compute_allocate_resource(
 		min_align = log2(DEVICE_MEM_ALIGN);
 	}
 
-	printk_spew("DEV: %02x:%02x.%01x compute_allocate_%s: base: %08lx size: %08lx align: %d gran: %d\n", 
-		bus->bus->secondary,
-		PCI_SLOT(bus->devfn), PCI_FUNC(bus->devfn),
+	printk_spew("%s compute_allocate_%s: base: %08lx size: %08lx align: %d gran: %d\n", 
+		dev_path(dev),
 		(bridge->flags & IORESOURCE_IO)? "io":
 		(bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",
 		base, bridge->size, bridge->align, bridge->gran);
@@ -214,6 +294,9 @@ void compute_allocate_resource(
 		if (align < min_align) {
 			align = min_align;
 		}
+		if (resource->flags & IORESOURCE_FIXED) {
+			continue;
+		}
 		if (resource->flags & IORESOURCE_IO) {
 			/* Don't allow potential aliases over the
 			 * legacy pci expansion card addresses.
@@ -240,9 +323,8 @@ void compute_allocate_resource(
 			base += size;
 			
 			printk_spew(
-				"DEV: %02x:%02x.%01x %02x *  [0x%08lx - 0x%08lx] %s\n",
-				dev->bus->secondary, 
-				PCI_SLOT(dev->devfn), PCI_FUNC(dev->devfn), 
+				"%s %02x *  [0x%08lx - 0x%08lx] %s\n",
+				dev_path(dev),
 				resource->index, 
 				resource->base, resource->base + resource->size -1,
 				(resource->flags & IORESOURCE_IO)? "io":
@@ -258,9 +340,8 @@ void compute_allocate_resource(
 	 */
 	bridge->size = round(base, 1UL << bridge->gran) - bridge->base;
 
-	printk_spew("DEV: %02x:%02x.%01x compute_allocate_%s: base: %08lx size: %08lx align: %d gran: %d done\n", 
-		bus->bus->secondary,
-		PCI_SLOT(bus->devfn), PCI_FUNC(bus->devfn),
+	printk_spew("%s compute_allocate_%s: base: %08lx size: %08lx align: %d gran: %d done\n", 
+		dev_path(dev),
 		(bridge->flags & IORESOURCE_IO)? "io":
 		(bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",
 		base, bridge->size, bridge->align, bridge->gran);
@@ -270,14 +351,15 @@ void compute_allocate_resource(
 
 static void allocate_vga_resource(void)
 {
+#warning "FIXME modify allocate_vga_resource so it is less pci centric!"
 	/* FIXME handle the VGA pallette snooping */
-	struct device *dev, *vga, *bus;
-	bus = vga = 0;
+	struct device *dev, *vga;
+	struct bus *bus;
+	bus = 0;
+	vga = 0;
 	for(dev = all_devices; dev; dev = dev->next) {
-		uint32_t class_revision;
-		class_revision = pci_read_config32(dev, PCI_CLASS_REVISION);
-		if (((class_revision >> 24) == 0x03) && 
-		    ((class_revision >> 16) != 0x380)) {
+		if (((dev->class >> 16) == 0x03) &&
+			((dev->class >> 8) != 0x380)) {
 			if (!vga) {
 				printk_debug("Allocating VGA resource\n");
 				vga = dev;
@@ -296,11 +378,8 @@ static void allocate_vga_resource(void)
 	}
 	/* Now walk up the bridges setting the VGA enable */
 	while(bus) {
-		uint16_t ctrl;
-		ctrl = pci_read_config16(bus, PCI_BRIDGE_CONTROL);
-		ctrl |= PCI_BRIDGE_CTL_VGA;
-		pci_write_config16(bus, PCI_BRIDGE_CONTROL, ctrl);
-		bus = (bus == bus->bus)? 0 : bus->bus;
+		bus->bridge_ctrl |= PCI_BRIDGE_CONTROL;
+		bus = (bus == bus->dev->bus)? 0 : bus->dev->bus;
 	} 
 }
 
@@ -310,36 +389,35 @@ static void allocate_vga_resource(void)
  * on this bus. 
  * @param bus Pointer to the structure for this bus
  */ 
-void assign_resources(struct device *bus)
+void assign_resources(struct bus *bus)
 {
 	struct device *curdev;
 
 	printk_debug("ASSIGN RESOURCES, bus %d\n", bus->secondary);
 
 	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
+		if (!curdev->ops || !curdev->ops->set_resources) {
+			printk_err("%s missing set_resources\n",
+				dev_path(curdev));
+			continue;
+		}
 		curdev->ops->set_resources(curdev);
 	}
 	printk_debug("ASSIGNED RESOURCES, bus %d\n", bus->secondary);
 }
 
-static void enable_resources(struct device *bus)
+void enable_resources(struct device *dev)
 {
-	struct device *curdev;
-
-	/* Walk through the chain of all pci devices and enable them.
-	 * This is effectively a breadth first traversal so we should
-	 * not have enalbing ordering problems.
+	/* Enable the resources for a specific device.
+	 * The parents resources should be enabled first to avoid
+	 * having enabling ordering problems.
 	 */
-	for (curdev = all_devices; curdev; curdev = curdev->next) {
-		uint16_t command;
-		command = pci_read_config16(curdev, PCI_COMMAND);
-		command |= curdev->command;
-		printk_debug("DEV: %02x:%02x.%01x cmd <- %02x\n",
-			curdev->bus->secondary,
-			PCI_SLOT(curdev->devfn), PCI_FUNC(curdev->devfn),
-			command);
-		pci_write_config16(curdev, PCI_COMMAND, command);
+	if (!dev->ops || !dev->ops->enable_resources) {
+		printk_err("%s missing enable_resources\n",
+			dev_path(dev));
+		return;
 	}
+	dev->ops->enable_resources(dev);
 }
 
 /** Enumerate the resources on the PCI by calling pci_init
@@ -347,12 +425,10 @@ static void enable_resources(struct device *bus)
 void dev_enumerate(void)
 {
 	struct device *root;
+	unsigned subordinate;
 	printk_info("Enumerating buses...");
 	root = &dev_root;
-	if (!root->ops) {
-		root->ops = &default_pci_ops_root;
-	}
-	root->subordinate = root->ops->scan_bus(root, 0);
+	subordinate = root->ops->scan_bus(root, 0);
 	printk_info("done\n");
 }
 
@@ -394,7 +470,7 @@ void dev_configure(void)
  */
 void dev_enable(void)
 {
-	printk_info("Enabling resourcess...");
+	printk_info("Enabling resourcess...\n");
 
 	/* now enable everything. */
 	enable_resources(&dev_root);
@@ -410,14 +486,10 @@ void dev_initialize(void)
 
 	printk_info("Initializing devices...\n");
 	for (dev = all_devices; dev; dev = dev->next) {
-		if (dev->ops->init) {
-			printk_debug("PCI: %02x:%02x.%01x init\n",
-				dev->bus->secondary,
-				PCI_SLOT(dev->devfn), PCI_FUNC(dev->devfn));
+		if (dev->ops && dev->ops->init) {
+			printk_debug("%s init\n", dev_path(dev));
 			dev->ops->init(dev);
 		}
 	}
 	printk_info("Devices initialized\n");
 }
-
-

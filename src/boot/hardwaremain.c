@@ -169,9 +169,7 @@ void hardwaremain(int boot_complete)
 	printk_info("Finding PCI configuration type.\n");
 	pci_set_method();
 	post_code(0x5f);
-#if 0
 	enumerate_static_devices();
-#endif
 	dev_enumerate();
 	post_code(0x66);
 	/* Now do the real bus.

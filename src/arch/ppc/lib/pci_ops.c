@@ -65,34 +65,34 @@ static int pci_sanity_check(const struct pci_ops *o)
 	return 0;
 }
 
-uint8_t pci_read_config8(struct device *dev, unsigned where)
+uint8_t pci_read_config8(device_t dev, unsigned where)
 {
-	return conf->read8(dev->bus->secondary, dev->devfn, where);
+	return conf->read8(dev->bus->secondary, dev->path.u.pci.devfn, where);
 }
 
 uint16_t pci_read_config16(struct device *dev, unsigned where)
 {
-	return conf->read16(dev->bus->secondary, dev->devfn, where);
+	return conf->read16(dev->bus->secondary, dev->path.u.pci.devfn, where);
 }
 
 uint32_t pci_read_config32(struct device *dev, unsigned where)
 {
-	return conf->read32(dev->bus->secondary, dev->devfn, where);
+	return conf->read32(dev->bus->secondary, dev->path.u.pci.devfn, where);
 }
 
 void pci_write_config8(struct device *dev, unsigned where, uint8_t val)
 {
-	conf->write8(dev->bus->secondary, dev->devfn, where, val);
+	conf->write8(dev->bus->secondary, dev->path.u.pci.devfn, where, val);
 }
 
 void pci_write_config16(struct device *dev, unsigned where, uint16_t val)
 {
-	conf->write16(dev->bus->secondary, dev->devfn, where, val);
+	conf->write16(dev->bus->secondary, dev->path.u.pci.devfn, where, val);
 }
 
 void pci_write_config32(struct device *dev, unsigned where, uint32_t val)
 {
-	conf->write32(dev->bus->secondary, dev->devfn, where, val);
+	conf->write32(dev->bus->secondary, dev->path.u.pci.devfn, where, val);
 }
 
 /** Set the method to be used for PCI

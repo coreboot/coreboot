@@ -1,3 +1,7 @@
+#ifndef DEVICE_CHIP_H
+
+#include <device/path.h>
+
 /* chips are arbitrary chips (superio, southbridge, etc.)
  * They have private structures that define chip resources and default 
  * settings. They have four externally visible functions for control. 
@@ -48,23 +52,38 @@ struct chip;
 
 /* there is one of these for each TYPE of chip */
 struct chip_control {
-  void (*enable)(struct chip *, enum chip_pass);
-  char *path;     /* the default path. Can be overridden
-		   * by commands in config
-		   */
-  // This is the print name for debugging
-  char *name;
+	/* This is the print name for debugging */
+	char *name;
+	void (*enable)(struct chip *, enum chip_pass);
+	void (*enumerate)(struct chip *chip);
 };
 
+
+struct chip_device_path {
+	struct device_path path;
+	unsigned channel;
+	int enable;
+};
+
+struct device;
+struct bus;
+
+#ifndef MAX_CHIP_PATHS
+#define MAX_CHIP_PATHS 16
+#endif
 struct chip {
-  struct chip_control *control; /* for this device */
-  char *path; /* can be 0, in which case the default is taken */
-  char *configuration; /* can be 0. */
-  int irq;
-  struct chip *next, *children;
-  /* there is one of these for each INSTANCE of a chip */
-  void *chip_info; /* the dreaded "void *" */
+	struct chip_control *control; /* for this device */
+	struct chip_device_path path[MAX_CHIP_PATHS]; /* can be 0, in which case the default is taken */
+	char *configuration; /* can be 0. */
+	struct chip *next, *children;
+	/* there is one of these for each INSTANCE of a chip */
+	void *chip_info; /* the dreaded "void *" */
+	/* bus and device links into the device tree */
+	struct bus *bus;
+	struct device *dev;
 };
 
 extern struct chip static_root;
 extern void chip_configure(struct chip *, enum chip_pass);
+extern void chip_enumerate(struct chip *chip);
+#endif /* DEVICE_CHIP_H */

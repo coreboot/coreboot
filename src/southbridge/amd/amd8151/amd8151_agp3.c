@@ -21,10 +21,11 @@ static void agp3bridge_init(device_t dev)
 }
 
 static struct device_operations agp3bridge_ops  = {
-        .read_resources = pci_bus_read_resources,
-        .set_resources = pci_dev_set_resources,
-        .init = agp3bridge_init,
-        .scan_bus = pci_scan_bridge,
+        .read_resources   = pci_bus_read_resources,
+        .set_resources    = pci_dev_set_resources,
+	.enable_resources = pci_bus_enable_resources,
+        .init             = agp3bridge_init,
+        .scan_bus         = pci_scan_bridge,
 };
 
 static struct pci_driver agp3bridge_driver __pci_driver = {
@@ -60,8 +61,9 @@ static void agp3dev_enable(device_t dev)
 }
 
 static struct device_operations agp3dev_ops = {
-	.read_resources = pci_dev_read_resources,
-	.set_resources  = pci_dev_set_resources,
+	.read_resources   = pci_dev_read_resources,
+	.set_resources    = pci_dev_set_resources,
+	.enable_resources = pci_dev_enable_resources,
 	.init     = 0,
 	.scan_bus = 0,
 	.enable   = agp3dev_enable,

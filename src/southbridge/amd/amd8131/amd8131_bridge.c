@@ -34,10 +34,11 @@ static void pcix_init(device_t dev)
 }
 
 static struct device_operations pcix_ops  = {
-        .read_resources = pci_bus_read_resources,
-        .set_resources = pci_dev_set_resources,
-        .init = pcix_init,
-        .scan_bus = pci_scan_bridge,
+        .read_resources   = pci_bus_read_resources,
+        .set_resources    = pci_dev_set_resources,
+	.enable_resources = pci_bus_enable_resources,
+        .init             = pcix_init,
+        .scan_bus         = pci_scan_bridge,
 };
 
 static struct pci_driver pcix_driver __pci_driver = {
@@ -68,8 +69,9 @@ static void ioapic_enable(device_t dev)
 }
 
 static struct device_operations ioapic_ops = {
-	.read_resources = pci_dev_read_resources,
-	.set_resources  = pci_dev_set_resources,
+	.read_resources   = pci_dev_read_resources,
+	.set_resources    = pci_dev_set_resources,
+	.enable_resources = pci_dev_enable_resources,
 	.init     = 0,
 	.scan_bus = 0,
 	.enable   = ioapic_enable,

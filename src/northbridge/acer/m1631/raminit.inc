@@ -4,7 +4,7 @@
  ***/
 
 /***
-/*** BEGIN TABLES
+ *** BEGIN TABLES
  ***/
 dram_temp :
 	.byte 0x6c
@@ -136,11 +136,11 @@ internal_bank_tbl:
 
 #define save_dram_type \
 	mov	%sp,%di		; \
-	mov	%si,%ax		; \
-	subw	$dram_temp, %ax ; \
+	mov	%esi,%eax		; \
+	subl	$dram_temp, %eax ; \
 	mov	$2,%dl		; \
 	mul	%dl		; \
-	add	$0x94,%ax	; \
+	addl	$0x94,%eax	; \
 	test	$0x10,%ch	; \
 	jnz 9f ; \
 	add	%ch,%al		; \
@@ -318,10 +318,10 @@ dram_type_detect_end:		; \
 	;; \
 	test	$0x40000,%ebx	; \
 	jnz	vc_sdram_table	; \
-	movw	$ma_table, %si
+	movl	$ma_table, %esi ; \
 	jmp	detect_ma	; \
 vc_sdram_table:			; \
-	movw	$vc_ma_table,%si
+	movl	$vc_ma_table,%esi ; \
 detect_ma:			; \
 	add	%ax,%si		; \
 	mov	(%esi),%edx	; \
@@ -332,9 +332,9 @@ detect_ma:			; \
 	jz	1f	; \
 	jmp    ma_detect_end ; \
 1:		; \
-	movw	$ma_table,%si	; \
+	movl	$ma_table,%esi	; \
 	add	%ax,%si	; \
-	mov	$ma_table+4,%dl ; \
+	mov	4(%esi),%dl ; \
 	test	$0x10000,%ebx	; \
 	jz	1f	; \
 	xor	%ecx,%ecx	; \
@@ -466,7 +466,7 @@ what_memory_ma:			; \
 	mov	$4,%dl		; \
 	mul	%dl		; \
 	mov	%si,%di		; \
-	movw	$internal_bank_tbl, %si ; \
+	movl	$internal_bank_tbl, %esi ; \
 	add	%ax,%si		; \
 	movl	(%esi),%edx	; \
 	mov	%edx,%esi	; \
@@ -494,27 +494,27 @@ configure_internal_bank_end:
 	mov	%cl,%dl		; \
 	and	$0x0f,%dl	; \
 	mul	%dl		; \
-		movw $sizing_table,%si ; \
+	movl $sizing_table,%esi ; \
 	addw	%ax,%si		; \
-	mov	$sizing_table+8,%dl	; \
-	mov	$sizing_table+8,%dh	; \
+	mov	8(%esi),%dl	; \
+	mov	8(%esi),%dh	; \
 	ror	$16,%edx	; \
-	mov	$sizing_table+9,%dl	; \
+	mov	9(%esi),%dl	; \
 	rol	$16,%edx	; \
 	mov	%esi,%eax	; \
 	mov	%eax,%esi	; \
 memory_sizing_loop:		; \
 	cmp	%dl,%dh		; \
 	jz	1f ; \
-	cmpl	$0x0aaaaaaaa,%es:(0) ; \
+	cmpl	$0x0aaaaaaaa,0(%esi) ; \
 	jz	1f		; \
 	memory_error		; \
 	mov	%di,%si		; \
 	jmp	 prepare_next_detect ; \
 1:		; \
-	movl	$0x55555555,%es:(0) ; \
-	movl	$0x0aaaaaaaa,%es:(%esi)	; \
-	cmpl	$0x55555555,%es:(0) ; \
+	movl	$0x55555555,0(%esi) ; \
+	movl	$0x0aaaaaaaa,0(%esi)	; \
+	cmpl	$0x55555555,0(%esi) ; \
 	jz	determine_size	; \
 	cmp	$0,%dl		; \
 	jnz	1f ; \
@@ -546,10 +546,10 @@ find_memory_size_offset:	; \
 	inc	%dx		; \
 	jmp	find_memory_size_offset	; \
 1:		; \
-	movw $memory_size,%si	; \
+	movl    $memory_size,%esi	; \
 	addw	%dx,%si		; \
 	mov	$0,%dx		; \
-	orb	$memory_size,%dl	; \
+	orb	0(%esi),%dl	; \
 	or	%dx,%bx		; \
 	mov	%di,%si		; \
 	test	$0x10000,%ebx	; \
@@ -586,7 +586,7 @@ EDO_T:				; \
 
 
 #define CONFIGURE_MEMORY \
-	movw	$dram_temp,%si ; \
+	movl	$dram_temp,%esi ; \
 	mov     (%esi),%dl	; \
 	mov	$0x094,%bl	; \
 configure_next:			; \
@@ -624,7 +624,7 @@ configure_next:			; \
 
 
 /***
-/*** START REAL STUFF
+ *** START REAL STUFF
  ***/
 	mov	$0x81,%ax
 	mov	(0b01111111 << 8)+0b00000000,%cx
@@ -636,7 +636,7 @@ configure_next:			; \
 	mov	(0b11111110 << 8)+0b00000000,%cx
 	pci_read_write_byte
 
-	movw	$dram_temp,%si
+	movl	$dram_temp,%esi
 	xor	%ecx,%ecx
 	xor	%ebx,%ebx
 detect_block_again:

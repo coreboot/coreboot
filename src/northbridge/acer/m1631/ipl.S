@@ -270,16 +270,12 @@ sizeram:
 	roll	$1, %esi
 	movb	$7, (%esi)
 	cmpb	$0, (%edi)
+	// If @0 is unchanged, then we have four banks.
 	jz	1f /* 4 banks */
-	/* NOTE 03-22-01 RGM
-	 * I THINK THIS SHOULD BE 0x1800000!
-         */
-	orl	$0x1800000, %ecx
-	jmp	2f
+	// If @0 got overwritten, then we only have two banks.
 	/* clear 4 banks */
-1:
 	andb	$0xfe, %cl
-2: 
+1:
 	WRITE_MCR0
 	
 /* Next line ASSUMES that eax contains 8000000xx

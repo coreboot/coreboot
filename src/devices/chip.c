@@ -115,7 +115,7 @@ void chip_enumerate(struct chip *chip)
 			printk_spew(" parent: (%p) %s\n",
 				    dev->bus->dev,  dev_path(dev->bus->dev));
 			dev->chip = chip;
-			dev->enabled = chip->path[i].enable;
+			dev->enabled = chip->path[i].enabled;
 			dev->links = link + 1;
 			for (child = chip->children; child; child = child->next) {
 				if (!child->bus && child->link == i) {

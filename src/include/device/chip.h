@@ -56,7 +56,7 @@ struct chip_resource {
 struct chip_device_path {
 	struct device_path path;
 	unsigned channel;
-	int enable;
+	int enabled;
 	struct chip_resource resource[MAX_RESOURCES];
 };
 

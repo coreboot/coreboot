@@ -755,7 +755,7 @@ class partobj:
 			fatal("Invalid device id")
 		if ((function < 0) or (function > 7)):
 			fatal("Invalid function")
-		self.path = "%s\n\t\t{ .enable = %d, .path = {.type=DEVICE_PATH_PCI,.u={.pci={ .bus = 0x%x, .devfn = PCI_DEVFN(0x%x,%d)}}}" % (self.path, enable, bus, slot, function)
+		self.path = "%s\n\t\t{ .enabled = %d, .path = {.type=DEVICE_PATH_PCI,.u={.pci={ .bus = 0x%x, .devfn = PCI_DEVFN(0x%x,%d)}}}" % (self.path, enable, bus, slot, function)
 
 	def addpnppath(self, enable, port, device):
 		""" Add a relative path to a pnp device hanging off our parent """
@@ -763,13 +763,13 @@ class partobj:
 			fatal("Invalid port")
 		if ((device < 0) or (device > 0xff)):
 			fatal("Invalid device")
-		self.path = "%s\n\t\t{ .enable = %d, .path={.type=DEVICE_PATH_PNP,.u={.pnp={ .port = 0x%x, .device = 0x%x }}}" % (self.path, enable, port, device)
+		self.path = "%s\n\t\t{ .enabled = %d, .path={.type=DEVICE_PATH_PNP,.u={.pnp={ .port = 0x%x, .device = 0x%x }}}" % (self.path, enable, port, device)
 		
-	def addi2cpath(self, enable, device):
+	def addi2cpath(self, enabled, device):
 		""" Add a relative path to a i2c device hanging off our parent """
 		if ((device < 0) or (device > 0x7f)):
 			fatal("Invalid device")
-		self.path = "%s\n\t\t{ .enable = %d, .path = {.type=DEVICE_PATH_I2C,.u={.i2c={ .device = 0x%x }}} " % (self.path, enable, device)
+		self.path = "%s\n\t\t{ .enabled = %d, .path = {.type=DEVICE_PATH_I2C,.u={.i2c={ .device = 0x%x }}} " % (self.path, enable, device)
 
 
 	def usesoption(self, name):

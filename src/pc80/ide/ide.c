@@ -41,7 +41,7 @@ static int await_ide(int (*done)(struct controller *ctrl),
 		if (result) {
 			return 0;
 		}
-		if (timeout-- == 0) {
+		if (timeout-- <= 0) {
 			break;
 		}
 		udelay(1000); /* Added to avoid spinning GRW */

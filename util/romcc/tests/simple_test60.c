@@ -3,7 +3,7 @@ struct mem_param {
 	unsigned char divisor;
 	unsigned char tRC;
 	unsigned char tRFC;
-	unsigned  dch_memclk;
+	unsigned dch_memclk;
 	unsigned short dch_tref4k, dch_tref8k;
 	unsigned char dtl_twr;
 	char name[9];

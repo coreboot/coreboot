@@ -475,6 +475,6 @@ static void enumerate(struct chip *chip)
 }
 
 struct chip_control northbridge_amd_amdk8_control = {
-	.enumerate = enumerate,
 	.name   = "AMD K8 Northbridge",
+	.enumerate = enumerate,
 };

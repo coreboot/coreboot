@@ -3,6 +3,7 @@
 
 enum device_path_type {
 	DEVICE_PATH_NONE = 0,
+	DEVICE_PATH_ROOT,
 	DEVICE_PATH_PCI,
 	DEVICE_PATH_PNP,
 	DEVICE_PATH_I2C,
@@ -10,6 +11,7 @@ enum device_path_type {
 
 struct pci_path
 {
+	unsigned bus;
 	unsigned devfn;
 };
 

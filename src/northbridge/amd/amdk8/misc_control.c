@@ -8,6 +8,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include "./cpu_rev.c"
 
 static void misc_control_init(struct device *dev)
 {
@@ -17,7 +18,48 @@ static void misc_control_init(struct device *dev)
 	cmd = pci_read_config32(dev, 0x44);
 	cmd |= (1<<6) | (1<<25);
 	pci_write_config32(dev, 0x44, cmd );
+	if (is_cpu_pre_c0()) {
+		/* errata 58 */
+		cmd = pci_read_config32(dev, 0x80);
+		cmd &= ~(1<<0);
+		pci_write_config32(dev, 0x80, cmd );
+		cmd = pci_read_config32(dev, 0x84);
+		cmd &= ~(1<<24);
+		cmd &= ~(1<<8);
+		pci_write_config32(dev, 0x84, cmd );
+		/* errata 66 */
+		cmd = pci_read_config32(dev, 0x70);
+		cmd &= ~(1<<0);
+		cmd |= (1<<1);
+		pci_write_config32(dev, 0x70, cmd );
+		cmd = pci_read_config32(dev, 0x7c);
+		cmd &= ~(3<<4);
+		pci_write_config32(dev, 0x7c, cmd );
+	}
+	else {
+		/* errata 98 */
+#if 0		
+		cmd = pci_read_config32(dev, 0xd4);
+		if(cmd != 0x04e20707) {
+			cmd = 0x04e20707;
+			pci_write_config32(dev, 0xd4, cmd );
+			hard_reset();
+		}
+#endif
 
+		cmd = 0x04e20707;
+		pci_write_config32(dev, 0xd4, cmd );
+	}
+#if 1	
+	cmd = pci_read_config32(dev, 0xdc);
+	if((cmd & 0x0000ff00) != 0x02500) {
+		cmd &= 0xffff00ff;
+		cmd |= 0x00002500;
+		pci_write_config32(dev, 0xdc, cmd );
+		printk_debug("resetting cpu\n");
+		hard_reset();
+	}
+#endif	
 	printk_debug("done.\n");
 }
 

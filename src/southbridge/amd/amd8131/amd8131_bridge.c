@@ -29,6 +29,17 @@ static void pcix_init(device_t dev)
 	word = pci_read_config16(dev, 0xe8);
         word = 0x0404;
         pci_write_config16(dev, 0xe8, word);
+
+	/* Set discard unrequested prefetch data */
+	word = pci_read_config16(dev, 0x4c);
+        word |= 1;
+        pci_write_config16(dev, 0x4c, word);
+	
+	/* Set split transaction limits */
+	word = pci_read_config16(dev, 0xa8);
+        pci_write_config16(dev, 0xaa, word);
+	word = pci_read_config16(dev, 0xac);
+        pci_write_config16(dev, 0xae, word);
 	
 	return;
 }
@@ -58,14 +69,6 @@ static void ioapic_enable(device_t dev)
 		value &= ~((1 << 1) | (1 << 0));
 	}
 	pci_write_config32(dev, 0x44, value);
-
-//BY LYH
-        value = pci_read_config32(dev, 0x4);
-        value |= 6;
-        pci_write_config32(dev, 0x4, value);
-//BY LYH END
- 
-
 }
 
 static struct device_operations ioapic_ops = {

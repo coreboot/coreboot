@@ -161,7 +161,7 @@ makerule ./auto.E
 end
 makerule ./auto.inc 
 	depends "./auto.E ./romcc"
-	action	"./romcc -mcpu=k8  -O ./auto.E > auto.inc"
+	action	"./romcc -mcpu=k8 -O2 ./auto.E > auto.inc"
 end
 
 ##
@@ -231,32 +231,36 @@ northbridge amd/amdk8 "mc0"
 	pci 0:18.1
 	pci 0:18.2
 	pci 0:18.3
-	southbridge amd/amd8131 "amd8131"
+	southbridge amd/amd8131 "amd8131" link 0
 		pci 0:0.0
 		pci 0:0.1
 		pci 0:1.0
 		pci 0:1.1
 	end
-	southbridge amd/amd8111 "amd8111"
+	southbridge amd/amd8111 "amd8111" link 0
 		pci 0:0.0
-		pci 0:1.0
-		pci 0:1.1
-		pci 0:1.2
-		pci 0:1.3
-		pci 0:1.5
-		pci 0:1.6
-		superio NSC/pc87360
-			pnp 1:2e.0
-			pnp 1:2e.1
-			pnp 1:2e.2
-			pnp 1:2e.3
-			pnp 1:2e.4
-			pnp 1:2e.5
-			pnp 1:2e.6
-			pnp 1:2e.7
-			pnp 1:2e.8
-			pnp 1:2e.9
-			pnp 1:2e.a
+		pci 0:1.0 on
+		pci 0:1.1 on
+		pci 0:1.2 on
+		pci 0:1.3 on
+		pci 0:1.5 off
+		pci 0:1.6 off
+		pci 1:0.0 on
+		pci 1:0.1 on
+		pci 1:0.2 on
+		pci 1:1.0 off
+		superio NSC/pc87360 link 1
+			pnp 2e.0
+			pnp 2e.1
+			pnp 2e.2
+			pnp 2e.3
+			pnp 2e.4
+			pnp 2e.5
+			pnp 2e.6
+			pnp 2e.7
+			pnp 2e.8
+			pnp 2e.9
+			pnp 2e.a
 			register "com1" = "{1, 0, 0x3f8, 4}"
 			register "lpt" = "{1}"
 		end

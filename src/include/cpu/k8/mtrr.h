@@ -30,5 +30,9 @@
 #define TOP_MEM				0xC001001A
 #define TOP_MEM2			0xC001001D
 #define HWCR_MSR			0xC0010015
+#define NB_CFG_MSR			0xC001001f
+#define IC_CFG_MSR			0xC0011021
+#define DC_CFG_MSR			0xC0011022
+#define BU_CFG_MSR			0xC0011023
 
 #endif /* CPU_K8_MTRR_H */

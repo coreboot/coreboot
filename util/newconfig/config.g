@@ -580,7 +580,7 @@ class option_value:
 
 class partobj:
 	"""A configuration part"""
-	def __init__ (self, image, dir, parent, part, type_name, instance_name):
+	def __init__ (self, image, dir, parent, part, type_name, instance_name, link):
 		debug.info(debug.object, "partobj dir %s parent %s part %s" \
 				% (dir, parent, part))
 
@@ -626,6 +626,11 @@ class partobj:
 
 		# Path to the device
 		self.path = ""
+
+                # Link from parent device
+                if ((link < 0) or (link > 2)):
+        		fatal("Invalid link")
+                self.link = link
 		
 		# If no instance name is supplied then generate
 		# a unique name
@@ -704,6 +709,7 @@ class partobj:
 		else:
 			file.write("struct chip static_root = {\n")
 		file.write("\t/* %s %s */\n" % (self.part, self.dir))
+                file.write("\t.link = %d,\n" % (self.link))
 		if (self.path != ""):
 			file.write("\t.path = { %s\n\t},\n" % (self.path) );
 		if (self.siblings):
@@ -749,33 +755,29 @@ class partobj:
 		value = dequote(value)
         	setdict(self.registercode, field, value)
 
-	def addpcipath(self, enable, channel, slot, function):
+	def addpcipath(self, enable, bus, slot, function):
 		""" Add a relative pci style path from our parent to this device """
-		if (channel < 0):
-			fatal("Invalid channel")
+		if ((bus < 0) or (bus > 255)):
+			fatal("Invalid bus")
 		if ((slot < 0) or (slot > 0x1f)):
 			fatal("Invalid device id")
 		if ((function < 0) or (function > 7)):
 			fatal("Invalid function")
-		self.path = "%s\n\t\t{ .channel = %d, .enable = %d, .path = {.type=DEVICE_PATH_PCI,.u={.pci={ .devfn = PCI_DEVFN(0x%x,%d) }}}}," % (self.path, channel, enable, slot, function)
+		self.path = "%s\n\t\t{ .enable = %d, .path = {.type=DEVICE_PATH_PCI,.u={.pci={ .bus = 0x%x, .devfn = PCI_DEVFN(0x%x,%d) }}}}," % (self.path, enable, bus, slot, function)
 
-	def addpnppath(self, enable, channel, port, device):
+	def addpnppath(self, enable, port, device):
 		""" Add a relative path to a pnp device hanging off our parent """
-		if (channel < 0):
-			fatal("Invalid channel")
 		if ((port < 0) or (port > 65536)):
 			fatal("Invalid port")
 		if ((device < 0) or (device > 0xff)):
 			fatal("Invalid device")
-		self.path = "%s\n\t\t{ .channel = %d, .enable = %d, .path={.type=DEVICE_PATH_PNP,.u={.pnp={ .port = 0x%x, .device = 0x%x }}}}," % (self.path, channel, enable, port, device)
+		self.path = "%s\n\t\t{ .enable = %d, .path={.type=DEVICE_PATH_PNP,.u={.pnp={ .port = 0x%x, .device = 0x%x }}}}," % (self.path, enable, port, device)
 
-	def addi2cpath(self, enable, channel, device):
+	def addi2cpath(self, enable, device):
 		""" Add a relative path to a i2c device hanging off our parent """
-		if (channel < 0):
-			fatal("Invalid channel")
 		if ((device < 0) or (device > 0x7f)):
 			fatal("Invalid device")
-		self.path = "%s\n\t\t{ .channel = %d, .enable = %d, .path = {.type=DEVICE_PATH_I2C,.u={.i2c={ .device = 0x%x }}}}, " % (self.path, channel, enable, device)
+		self.path = "%s\n\t\t{ .enable = %d, .path = {.type=DEVICE_PATH_I2C,.u={.i2c={ .device = 0x%x }}}}, " % (self.path, enable, device)
 
 	def usesoption(self, name):
 		"""Declare option that can be used by this part"""
@@ -1076,7 +1078,7 @@ def mainboard(path):
 	setoption('MAINBOARD_VENDOR', vendor)
 	setoption('MAINBOARD_PART_NUMBER', part_number)
 	dodir('/config', 'Config.lb')
-	part('mainboard', path, 'Config.lb', 0)
+	part('mainboard', path, 'Config.lb', 0, 0)
 	curimage.setroot(partstack.tos())
 	partpop()
 
@@ -1117,14 +1119,14 @@ def cpudir(path):
 	dodir(srcdir, "Config.lb")
 	cpu_type = path
 	
-def part(type, path, file, name):
+def part(type, path, file, name, link):
 	global curimage, dirstack, partstack
 	partdir = os.path.join(type, path)
 	srcdir = os.path.join(treetop, 'src')
 	fulldir = os.path.join(srcdir, partdir)
 	type_name = flatten_name(os.path.join(type, path))
 	newpart = partobj(curimage, fulldir, partstack.tos(), type, \
-			type_name, name)
+			type_name, name, link)
 	print "Configuring PART %s, path %s" % (type, path)
 	partstack.push(newpart)
 	dirstack.push(fulldir)
@@ -1196,7 +1198,7 @@ def setarch(my_arch):
 	global curimage
 	curimage.setarch(my_arch)
 	setoption('ARCH', my_arch)
-	part('arch', my_arch, 'Config.lb', 0)
+	part('arch', my_arch, 'Config.lb', 0, 0)
 
 def doconfigfile(path, confdir, file, rule):
 	rname = os.path.join(confdir, file)
@@ -1328,6 +1330,7 @@ parser Config:
     token PCI:			'pci'
     token PNP:			'pnp'
     token I2C:			'i2c'
+    token LINK:                 'link'
 
 
     rule expr:		logical			{{ l = logical }}
@@ -1371,11 +1374,12 @@ parser Config:
 		|	SOUTHBRIDGE		{{ return 'southbridge' }}
 		|	CPU			{{ return 'cpu' }}
 
-    rule partdef<<C>>:				{{ name = 0 }}
+    rule partdef<<C>>:				{{ name = 0 }} {{ link = 0 }}
 			parttype partid
 			[ STR			{{ name = dequote(STR) }}
-			]			{{ if (C): part(parttype, partid, 'Config.lb', name) }}
-			partend<<C>>
+                        ][ LINK NUM             {{ link = long(NUM, 10) }}
+			]                       {{ if (C): part(parttype, partid, 'Config.lb', name, link) }}
+			partend<<C>> 		
 
     rule arch<<C>>:	ARCH ID			{{ if (C): setarch(ID) }}
 			partend<<C>>
@@ -1430,22 +1434,20 @@ parser Config:
 			| OFF			{{ val = 0 }}
 			) ]			{{ return val }}
     
-    rule pci<<C>>:	PCI HEX_NUM		{{ channel = int(HEX_NUM,16) }}
+    rule pci<<C>>:	PCI HEX_NUM		{{ bus = int(HEX_NUM,16) }}
     			':' HEX_NUM		{{ slot = int(HEX_NUM,16) }}
 			'.' HEX_NUM		{{ function = int(HEX_NUM, 16) }}
 			enable 
-						{{ if (C): partstack.tos().addpcipath(enable, channel, slot, function) }}
+						{{ if (C): partstack.tos().addpcipath(enable, bus, slot, function) }}
 
-    rule pnp<<C>>:	PNP HEX_NUM		{{ channel = int(HEX_NUM,16) }}
-    			':' HEX_NUM		{{ port = int(HEX_NUM,16) }}
+    rule pnp<<C>>:	PNP HEX_NUM		{{ port = int(HEX_NUM,16) }}
 			'.' HEX_NUM		{{ device = int(HEX_NUM, 16) }}
 			enable
-						{{ if (C): partstack.tos().addpnppath(enable, channel, port, device) }}
+						{{ if (C): partstack.tos().addpnppath(enable, port, device) }}
 
-    rule i2c<<C>>:	I2C HEX_NUM		{{ channel = int(HEX_NUM, 16) }}
-    			':' HEX_NUM		{{ device = int(HEX_NUM, 16) }}
+    rule i2c<<C>>:	I2C HEX_NUM		{{ device = int(HEX_NUM, 16) }}
 			enable
-						{{ if (C): partstatck.tos().addi2cpath(enable, channel, device) }}
+						{{ if (C): partstatck.tos().addi2cpath(enable, device) }}
 			
     rule prtval:	expr			{{ return str(expr) }}
 		|	STR			{{ return STR }}

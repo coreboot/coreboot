@@ -4,6 +4,7 @@
 #include <device/path.h>
 #include <device/pci.h>
 #include <device/hypertransport.h>
+#include <device/chip.h>
 #include <part/hard_reset.h>
 #include <part/fallback_boot.h>
 
@@ -243,11 +244,19 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int max)
 			/* Add this device to the pci bus chain */
 			*chain_last = dev;
 			/* Run the magice enable/disable sequence for the device */
-			if (dev->ops && dev->ops->enable) {
-				dev->ops->enable(dev);
+			if (dev->chip && dev->chip->control && dev->chip->control->enable_dev) {
+				dev->chip->control->enable_dev(dev);
 			}
 			/* Now read the vendor and device id */
 			id = pci_read_config32(dev, PCI_VENDOR_ID);
+
+			/* If the chain is fully enumerated quit */
+			if (id == 0xffffffff || id == 0x00000000 ||
+				id == 0x0000ffff || id == 0xffff0000) {
+				printk_err("Missing static device: %s\n",
+					dev_path(dev));
+				break;
+			}
 		}
 		/* Update the device chain tail */
 		for(func = dev; func; func = func->sibling) {
@@ -268,7 +277,8 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int max)
 		/* Find the hypertransport link capability */
 		pos = ht_lookup_slave_capability(dev);
 		if (pos == 0) {
-			printk_err("Hypertransport link capability not found");
+			printk_err("%s Hypertransport link capability not found", 
+				dev_path(dev));
 			break;
 		}
 		

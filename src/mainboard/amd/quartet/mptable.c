@@ -7,8 +7,8 @@
 void *smp_write_config_table(void *v, unsigned long * processor_map)
 {
 	static const char sig[4] = "PCMP";
-	static const char oem[8] = "LNXI    ";
-	static const char productid[12] = "HDAMA       ";
+	static const char oem[8] = "AMD     ";
+	static const char productid[12] = "QUARTET     ";
 	struct mp_config_table *mc;
 	unsigned char bus_num;
 	unsigned char bus_isa;

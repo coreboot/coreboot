@@ -3,6 +3,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include "amd8111.h"
 
 static void usb_init(struct device *dev)
 {
@@ -25,6 +26,7 @@ static struct device_operations usb_ops  = {
 	.enable_resources = pci_dev_enable_resources,
 	.init             = usb_init,
 	.scan_bus         = 0,
+	.enable           = amd8111_enable,
 };
 
 static struct pci_driver usb_driver __pci_driver = {

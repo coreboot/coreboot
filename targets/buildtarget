@@ -1,5 +1,5 @@
 #!/bin/sh
-
+PYTHON=python
 # Target build script
 
 if [ $# -lt 1 ]; then
@@ -17,7 +17,9 @@ fi
 target_dir=$lbpath/targets
 config_lb=$1
 config_dir=$lbpath/util/newconfig
-config_py=$config_dir/config.py
+yapps2_py=$config_dir/yapps2.py
+config_g=$config_dir/config.g
+config_py=$config_lb/config.py
 
 if [ ! -d $target_dir ]; then
 	echo "Target directory not found"
@@ -38,18 +40,12 @@ fi
 
 if [ ! -f $config_py ]; then
 	echo "No linuxbios config script found. Rebuilding it.."
-	( 
-	  cd $config_dir 
-	  make config.py
-	)
-	echo "done."
-	# exit 1
+	$PYTHON $yapps2_py $config_g $config_py
 fi
 
 # make sure config.py is up-to-date
 
-(cd $config_dir && make config.py)
-
-python $config_py $config_lb $lbpath
+export PYTHONPATH=$config_dir
+$PYTHON $config_py $config_lb $lbpath
 
 exit $?

@@ -115,6 +115,9 @@ static void read_resources(struct bus *bus)
 				dev_path(curdev));
 			continue;
 		}
+		if (!curdev->enable) {
+			continue;
+		}
 		curdev->ops->read_resources(curdev);
 		/* Read in subtractive resources behind the current device */
 		links = 0;
@@ -251,16 +254,12 @@ void compute_allocate_resource(
 	min_align = 0;
 	base = bridge->base;
 
-	printk_spew("%s: bus %p, bridge %p, type_mask 0x%x, type 0x%x\n",
-				__FUNCTION__, 
-				bus, bridge, type_mask, type);
-	printk_spew("vendor 0x%x device 0x%x class 0x%x \n", 
-			bus->dev->vendor, bus->dev->device, bus->dev->class);
-		printk_spew("%s compute_allocate_%s: base: %08lx size: %08lx align: %d gran: %d\n", 
-			dev_path(bus->dev),
-			(bridge->flags & IORESOURCE_IO)? "io":
-			(bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",
-			base, bridge->size, bridge->align, bridge->gran);
+	printk_spew("%s compute_allocate_%s: base: %08lx size: %08lx align: %d gran: %d\n", 
+		dev_path(bus->dev),
+		(bridge->flags & IORESOURCE_IO)? "io":
+		(bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",
+		base, bridge->size, bridge->align, bridge->gran);
+
 
 	/* We want different minimum alignments for different kinds of
 	 * resources.  These minimums are not device type specific
@@ -406,6 +405,9 @@ void assign_resources(struct bus *bus)
 				dev_path(curdev));
 			continue;
 		}
+		if (!curdev->enable) {
+			continue;
+		}
 		curdev->ops->set_resources(curdev);
 	}
 	printk_debug("ASSIGNED RESOURCES, bus %d\n", bus->secondary);
@@ -420,6 +422,9 @@ void enable_resources(struct device *dev)
 	if (!dev->ops || !dev->ops->enable_resources) {
 		printk_err("%s missing enable_resources\n",
 			dev_path(dev));
+		return;
+	}
+	if (!dev->enable) {
 		return;
 	}
 	dev->ops->enable_resources(dev);
@@ -444,13 +449,12 @@ void dev_enumerate(void)
 void dev_configure(void)
 {
 	struct device *root = &dev_root;
-	printk_info("%s: Allocating resources...", __FUNCTION__);
+	printk_info("Allocating resources...");
 	printk_debug("\n");
 
 
 	root->ops->read_resources(root);
 
-	printk_spew("%s: done reading resources...\n", __FUNCTION__);
 	/* Make certain the io devices are allocated somewhere
 	 * safe.
 	 */
@@ -465,10 +469,8 @@ void dev_configure(void)
 	root->resource[1].flags |= IORESOURCE_SET;
 	// now just set things into registers ... we hope ...
 	root->ops->set_resources(root);
-	printk_spew("%s: done setting resources...\n", __FUNCTION__);
 
 	allocate_vga_resource();
-	printk_spew("%s: done vga resources...\n", __FUNCTION__);
 
 	printk_info("done.\n");
 }
@@ -494,7 +496,7 @@ void dev_initialize(void)
 
 	printk_info("Initializing devices...\n");
 	for (dev = all_devices; dev; dev = dev->next) {
-		if (dev->ops && dev->ops->init) {
+		if (dev->enable && dev->ops && dev->ops->init) {
 			printk_debug("%s init\n", dev_path(dev));
 			dev->ops->init(dev);
 		}

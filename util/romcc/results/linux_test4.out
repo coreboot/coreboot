@@ -1,0 +1,11 @@
+cpu_socketA
+.up=0002 .down=ffff .across=0001
+.up=0003 .down=ffff .across=0000
+.up=ffff .down=0000 .across=0003
+.up=ffff .down=0001 .across=0002
+
+cpu_socketB
+.up=0002 .down=ffff .across=0001
+.up=0003 .down=ffff .across=0000
+.up=ffff .down=0000 .across=0003
+.up=ffff .down=0001 .across=0002

@@ -23,9 +23,10 @@ static unsigned char clip[9]={0,1,3,7,0x0f,0x1f,0x3f,0x7f,0xff};
 	output  none
 		if there is an overlap, the routine exits, other wise it returns.
 */
-void test_for_entry_overlaps(int entry_start,int entry_end)
+void test_for_entry_overlaps(void *entry_start, void *entry_end)
 {
-	long ptr;
+	int ptr;
+	char *cptr;
 	int buffer_bit_size;
 	int offset;
 	int byte;
@@ -37,11 +38,12 @@ void test_for_entry_overlaps(int entry_start,int entry_end)
 	/* calculate the size of the cmos buffer in bits */
 	buffer_bit_size=(CMOS_IMAGE_BUFFER_SIZE*8);
 	/* clear the temporary test buffer */
-	for(ptr=0;ptr<CMOS_IMAGE_BUFFER_SIZE;ptr++)
+	for(ptr=0; ptr < CMOS_IMAGE_BUFFER_SIZE; ptr++)
 		test[ptr]=0;
+
 	/* loop through each entry in the table testing for errors */
-	for(ptr=entry_start;ptr<entry_end;ptr+=ce->size) {
-		ce=(struct cmos_entries *)ptr;
+	for(cptr = entry_start; cptr < (char *)entry_end; cptr += ce->size) {
+		ce=(struct cmos_entries *)cptr;
 		/* test if entry goes past the end of the buffer */
 		if((ce->bit+ce->length)>buffer_bit_size) {
 			printf("Error - Entry %s start bit + length must be less than %d\n",
@@ -66,16 +68,17 @@ void test_for_entry_overlaps(int entry_start,int entry_end)
 			/* test if any of the bits have been previously used */
 			for(;byte_length;byte_length--,byte++) {
 				if(test[byte]) {
-                                    printf("Error - Entry %s uses same bits previously used\n",
+					printf("Error - Entry %s uses same bits previously used\n",
 						ce->name);
-                                    exit(1);
+					exit(1);
 	                        }
 				test[byte]=clip[8]; /* set the bits defined in test */
 			}
 		} else {
 			/* test if bits overlap byte boundaries */
 			if(ce->length>(8-offset)) {
-                                printf("Error - Entry %s length overlaps a byte boundry\n",                                        ce->name);
+                                printf("Error - Entry %s length overlaps a byte boundry\n",
+					ce->name);
                                 exit(1);
                         }
 			/* test for bits previously used */
@@ -158,8 +161,7 @@ int main(int argc, char **argv)
 	long ptr;
 	int cnt;
 	char *cptr;
-	long offset;
-	int entry_start;
+	void *entry_start, *entry_end;
 	int entries_length;
 	int enum_length;
 	int len;
@@ -268,21 +270,19 @@ int main(int argc, char **argv)
 			len+=(4-(len%4));
 		ce->size=sizeof(struct cmos_entries)-32+len;
 		cptr = (char*)ce;
-		cptr+=ce->size;  /* increment to the next table position */
+		cptr += ce->size;  /* increment to the next table position */
 		ce = (struct cmos_entries*) cptr;
 	}
 
 	/* put the length of the entries into the header section */
-	entries_length=(long)cptr;
-	entries_length-=(long)(cmos_table+ct->header_length);
+	entries_length = (cptr - (char *)&cmos_table) - ct->header_length;
 
 	/* compute the start of the enumerations section */
-	entry_start=(int)cmos_table;
-	entry_start+=ct->header_length;
-	offset=entry_start+entries_length;
-	c_enums_start=c_enums=(struct cmos_enums*)offset;
+	entry_start = ((char*)&cmos_table) + ct->header_length;
+	entry_end   = ((char *)entry_start) + entries_length;
+	c_enums_start = c_enums = (struct cmos_enums*)entry_end;
   	/* test for overlaps in the entry records */
-	test_for_entry_overlaps(entry_start,offset);
+	test_for_entry_overlaps(entry_start, entry_end);
 
 	for(;enum_mode;){ /* loop to build the enumerations section */
 		if(fgets(line,INPUT_LINE_MAX,fp)==NULL) 
@@ -315,14 +315,14 @@ int main(int argc, char **argv)
 		if(cnt%4)
 			cnt+=4-(cnt%4);
 		/* store the record length */
-		c_enums->size=((long)&c_enums->text[cnt])-(long)c_enums;
+		c_enums->size=((char *)&c_enums->text[cnt]) - (char *)c_enums;
 		/* store the record type */
 		c_enums->tag=LB_TAG_OPTION_ENUM;
 		/* increment to the next record */
 		c_enums=(struct cmos_enums*)&c_enums->text[cnt];
 	}
 	/* save the enumerations length */
-	enum_length=(long)c_enums-(long)c_enums_start;
+	enum_length= (char *)c_enums - (char *)c_enums_start;
 	ct->size=ct->header_length+enum_length+entries_length;
 
 	/* Get the checksum records */

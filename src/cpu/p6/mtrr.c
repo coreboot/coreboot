@@ -92,7 +92,7 @@ static void intel_set_var_mtrr(unsigned int reg, unsigned long basek, unsigned l
 	base.lo  = basek << 10;
 
 	if (sizek < 4*1024*1024) {
-		mask.hi = 0x0F;
+		mask.hi = 0x0FF;
 		mask.lo = ~((sizek << 10) -1);
 	}
 	else {

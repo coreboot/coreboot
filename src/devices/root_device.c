@@ -123,6 +123,8 @@ struct device_operations default_dev_ops_root = {
 struct device dev_root = {
 	.ops = &default_dev_ops_root,
 	.bus = &dev_root.link[0],
+	.path = { .type = DEVICE_PATH_ROOT },
+	.enable = 1,
 	.links = 1,
 	.link = {
 		[0] = {

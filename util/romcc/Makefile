@@ -1,5 +1,5 @@
-VERSION:=0.34
-RELEASE_DATE:=4 July 2003
+VERSION:=0.36
+RELEASE_DATE:=10 October 2003
 PACKAGE:=romcc
 
 
@@ -16,6 +16,15 @@ romcc: romcc.c Makefile
 
 romcc_pg: romcc.c Makefile
 	$(CC) $(CFLAGS) $(CPROF_FLAGS) -o $@ $<
+
+LINUX_TESTS=\
+	linux_test1.c \
+	linux_test2.c \
+	linux_test3.c \
+	linux_test4.c \
+	linux_test5.c \
+	linux_test6.c \
+	linux_test7.c \
 
 TESTS=\
 	hello_world.c \
@@ -41,7 +50,6 @@ TESTS=\
 	simple_test19.c \
 	simple_test20.c \
 	simple_test21.c \
-	simple_test22.c \
 	simple_test23.c \
 	simple_test24.c \
 	simple_test25.c \
@@ -49,7 +57,6 @@ TESTS=\
 	simple_test27.c \
 	simple_test28.c \
 	simple_test29.c \
-	simple_test30.c \
 	simple_test31.c \
 	simple_test32.c \
 	simple_test33.c \
@@ -57,8 +64,6 @@ TESTS=\
 	simple_test35.c \
 	simple_test36.c \
 	simple_test37.c \
-	simple_test38.c \
-	simple_test39.c \
 	simple_test40.c \
 	simple_test41.c \
 	simple_test43.c \
@@ -71,43 +76,113 @@ TESTS=\
 	simple_test51.c \
 	simple_test52.c \
 	simple_test53.c \
-	simple_test54.c \
 	simple_test55.c \
 	simple_test56.c \
-	simple_test59.c \
+	simple_test57.c \
+	simple_test58.c \
+	simple_test60.c \
+	simple_test61.c \
+	simple_test62.c \
+	simple_test63.c \
+	simple_test64.c \
+	simple_test65.c \
+	simple_test66.c \
+	simple_test67.c \
+	simple_test68.c \
 	raminit_test.c \
 	raminit_test2.c \
 	raminit_test3.c \
 	raminit_test4.c \
-	raminit_test5.c
+	raminit_test5.c \
+	raminit_test6.c \
+	$(LINUX_TESTS)
 
 FAIL_TESTS = \
 	fail_test1.c \
 	fail_test2.c \
-	fail_test3.c
+	fail_test3.c \
+	fail_test4.c \
+	fail_test5.c \
 
 TEST_SRCS:=$(patsubst %, tests/%, $(TESTS))
 TEST_ASM:=$(patsubst %.c, tests/%.S, $(TESTS))
+TEST_ASM_O:=$(patsubst %.c, tests/%.S-O, $(TESTS))
+TEST_ASM_O2:=$(patsubst %.c, tests/%.S-O2, $(TESTS))
+TEST_ASM_mmmx     :=$(patsubst %.c, tests/%.S-mmmx, $(TESTS))
+TEST_ASM_msse     :=$(patsubst %.c, tests/%.S-msse, $(TESTS))
+TEST_ASM_mmmx_msse:=$(patsubst %.c, tests/%.S-mmmx-msse, $(TESTS))
+TEST_ASM_O_mmmx     :=$(patsubst %.c, tests/%.S-O-mmmx, $(TESTS))
+TEST_ASM_O_msse     :=$(patsubst %.c, tests/%.S-O-msse, $(TESTS))
+TEST_ASM_O_mmmx_msse:=$(patsubst %.c, tests/%.S-O-mmmx-msse, $(TESTS))
+TEST_ASM_O2_mmmx     :=$(patsubst %.c, tests/%.S-O2-mmmx, $(TESTS))
+TEST_ASM_O2_msse     :=$(patsubst %.c, tests/%.S-O2-msse, $(TESTS))
+TEST_ASM_O2_mmmx_msse:=$(patsubst %.c, tests/%.S-O2-mmmx-msse, $(TESTS))
+TEST_ASM_ALL:= $(TEST_ASM) $(TEST_ASM_O) $(TEST_ASM_O2) $(TEST_ASM_mmmx) $(TEST_ASM_msse) $(TEST_ASM_mmmx_msse) $(TEST_ASM_O_mmmx) $(TEST_ASM_O_msse) $(TEST_ASM_O_mmmx_msse) $(TEST_ASM_O2_mmmx) $(TEST_ASM_O2_msse) $(TEST_ASM_O2_mmmx_msse)
+TEST_ASM_MOST:= $(TEST_ASM_O) $(TEST_ASM_O_mmmx) $(TEST_ASM_O_msse) $(TEST_ASM_O_mmmx_msse) $(TEST_ASM_O2) $(TEST_ASM_O2_mmmx) $(TEST_ASM_O2_msse) $(TEST_ASM_O2_mmmx_msse)
 TEST_OBJ:=$(patsubst %.c, tests/%.o, $(TESTS))
 TEST_ELF:=$(patsubst %.c, tests/%.elf, $(TESTS))
+LINUX_ELF:=$(patsubst %.c, tests/%.elf, $(LINUX_TESTS))
+LINUX_OUT:=$(patsubst %.c, tests/%.out, $(LINUX_TESTS))
 
 FAIL_SRCS:=$(patsubst %, tests/%, $(FAIL_TESTS))
 FAIL_OUT:=$(patsubst %.c, tests/%.out, $(FAIL_TESTS))
 
 
 $(TEST_ASM): %.S: %.c romcc
-	export ALLOC_CHECK_=2; ./romcc -O -mcpu=k8 -o $@ $< > $*.debug
+	export ALLOC_CHECK_=2; ./romcc -o $@ $< > $*.debug
+
+$(TEST_ASM_O): %.S-O: %.c romcc
+	export ALLOC_CHECK_=2; ./romcc -O -o $@ $< > $*.debug
+
+$(TEST_ASM_O2): %.S-O2: %.c romcc
+	export ALLOC_CHECK_=2; ./romcc -O2 -o $@ $< > $*.debug
+
+
+$(TEST_ASM_mmmx): %.S-mmmx: %.c romcc
+	export ALLOC_CHECK_=2; ./romcc -mmmx -o $@ $< > $*.debug
+
+$(TEST_ASM_msse): %.S-msse: %.c romcc
+	export ALLOC_CHECK_=2; ./romcc -msse -o $@ $< > $*.debug
+
+$(TEST_ASM_mmmx_msse): %.S-mmmx-msse: %.c romcc
+	export ALLOC_CHECK_=2; ./romcc -mmmx -msse -o $@ $< > $*.debug
+
+
+$(TEST_ASM_O_mmmx): %.S-O-mmmx: %.c romcc
+	export ALLOC_CHECK_=2; ./romcc -O -mmmx -o $@ $< > $*.debug
+
+$(TEST_ASM_O_msse): %.S-O-msse: %.c romcc
+	export ALLOC_CHECK_=2; ./romcc -O -msse -o $@ $< > $*.debug
+
+$(TEST_ASM_O_mmmx_msse): %.S-O-mmmx-msse: %.c romcc
+	export ALLOC_CHECK_=2; ./romcc -O -mmmx -msse -o $@ $< > $*.debug
+
+
+$(TEST_ASM_O2_mmmx): %.S-O2-mmmx: %.c romcc
+	export ALLOC_CHECK_=2; ./romcc -O2 -mmmx -o $@ $< > $*.debug
+
+$(TEST_ASM_O2_msse): %.S-O2-msse: %.c romcc
+	export ALLOC_CHECK_=2; ./romcc -O2 -msse -o $@ $< > $*.debug
+
+$(TEST_ASM_O2_mmmx_msse): %.S-O2-mmmx-msse: %.c romcc
+	export ALLOC_CHECK_=2; ./romcc -O2 -mmmx -msse -o $@ $< > $*.debug
+
 
 $(FAIL_OUT): %.out: %.c romcc
-	export ALLOC_CHECK_=2; if ./romcc -O -o $*.S $< > $*.debug 2> $@ ; then exit 1 ; else exit 0 ; fi
+	export ALLOC_CHECK_=2; if ./romcc -O2 -o $*.S $< > $*.debug 2> $@ ; then exit 1 ; else exit 0 ; fi
 
-$(TEST_OBJ): %.o: %.S
+$(TEST_OBJ): %.o: %.S-O2-mmmx
 	as $< -o $@
 
 $(TEST_ELF): %.elf: %.o tests/ldscript.ld
 	ld -T tests/ldscript.ld $< -o $@
 
-test: $(TEST_ELF) $(FAIL_OUT)
+$(LINUX_OUT): %.out: %.elf
+	./$< > $@
+
+test: $(TEST_ELF) $(FAIL_OUT) $(TEST_ASM_MOST)
+
+run_linux: $(LINUX_OUT)
 
 echo:
 	echo "TEST_SRCS=$(TEST_SRCS)"
@@ -119,5 +194,5 @@ echo:
 	echo "FAIL_ASM=$(FAIL_ASM)"
 
 clean:
-	rm -f romcc romcc_pg core $(TEST_ASM) $(TEST_OBJ) $(TEST_ELF) tests/*.debug tests/*.debug2 tests/*.gmon.out tests/*.out
+	rm -f romcc romcc_pg core $(TEST_ASM_ALL) $(TEST_OBJ) $(TEST_ELF) tests/*.debug tests/*.debug2 tests/*.gmon.out tests/*.out
 

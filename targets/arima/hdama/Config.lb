@@ -93,9 +93,7 @@ romimage "normal"
 	option ROM_IMAGE_SIZE=0x10000
 	option LINUXBIOS_EXTRA_VERSION=".0Normal"
 	mainboard arima/hdama
-	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
-# use this to test a build if you don't have the etherboot
-#	payload /etc/hosts
+	payload /usr/share/etherboot/5.2.1eb1-lnxi-lb/tg3--ide_disk.zelf
 end
 
 romimage "fallback" 
@@ -103,7 +101,7 @@ romimage "fallback"
 	option ROM_IMAGE_SIZE=0x10000
 	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
 	mainboard arima/hdama
-	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
+	payload /usr/share/etherboot/5.2.1eb1-lnxi-lb/tg3--ide_disk.zelf
 # use this to test a build if you don't have the etherboot
 #	payload /etc/hosts
 end

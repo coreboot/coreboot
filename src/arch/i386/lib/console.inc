@@ -526,5 +526,7 @@ console_tx_string:
 	jmp	console_tx_string
 
 console0:
+#if 0
 	CONSOLE_INFO_TX_STRING($console_test)
+#endif
 

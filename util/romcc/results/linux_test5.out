@@ -1,0 +1,34 @@
+min_cycle_time: 75 min_latency: 02
+A
+B
+C
+C
+D
+E
+device: 00 new_cycle_time: 75 new_latency: 02
+G
+C
+D
+E
+G
+H
+device: 00 new_cycle_time: 75 new_latency: 02
+I
+device: 00 min_cycle_time: 75 min_latency: 02
+A
+B
+C
+C
+D
+E
+device: 01 new_cycle_time: 75 new_latency: 02
+G
+C
+D
+E
+G
+H
+device: 01 new_cycle_time: 75 new_latency: 02
+I
+device: 01 min_cycle_time: 75 min_latency: 02
+min_cycle_time: 75 min_latency: 02

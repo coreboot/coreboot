@@ -100,43 +100,6 @@ static void disable_probes(void)
 	print_debug("done.\r\n");
 
 }
-//BY LYH
-#define WAIT_TIMES 1000
-static void wait_ap_stop(u8 node) 
-{
-	unsigned long reg;
-	unsigned long i;
-	for(i=0;i<WAIT_TIMES;i++) {
-		unsigned long regx;
-		regx = pci_read_config32(NODE_HT(node),0x6c);
-		if((regx & (1<<4))==1) break;
-        }
-	reg = pci_read_config32(NODE_HT(node),0x6c);
-        reg &= ~(1<<4);  // clear it
-        pci_write_config32(NODE_HT(node), 0x6c, reg);
-
-}
-static void notify_bsp_ap_is_stopped(void)
-{
-	unsigned long reg;
-	unsigned long apic_id;
-        apic_id = *((volatile unsigned long *)(APIC_DEFAULT_BASE+APIC_ID));
-	apic_id >>= 24;
-#if 0
-	print_debug("applicaton cpu apic_id: ");
-	print_debug_hex32(apic_id);
-	print_debug("\r\n");
-#endif
-	/* AP  apic_id == node_id ? */
-        if(apic_id != 0) {
-		/* set the ColdResetbit to notify BSP that AP is stopped */
-                reg = pci_read_config32(NODE_HT(apic_id), 0x6C);
-                reg |= 1<<4;
-                pci_write_config32(NODE_HT(apic_id), 0x6C, reg);
-        }
- 
-}
-//BY LYH END
 
 static void enable_routing(u8 node)
 {
@@ -169,15 +132,8 @@ static void enable_routing(u8 node)
 	print_debug_hex32(node);
 
 	val=pci_read_config32(NODE_HT(node), 0x6c);
-        val &= ~((1<<6)|(1<<5)|(1<<4)|(1<<1)|(1<<0)); 
- 	pci_write_config32(NODE_HT(node), 0x6c, val);
-//BY LYH
-#if 1
-	if(node!=0) {
-		wait_ap_stop(node);
-	}
-#endif
-//BY LYH END
+	val &= ~((1<<6)|(1<<5)|(1<<4)|(1<<1)|(1<<0));
+	pci_write_config32(NODE_HT(node), 0x6c, val);
 
 	print_debug(" done.\r\n");
 }
@@ -223,6 +179,62 @@ static bool check_connection(u8 src, u8 dest, u8 link)
 		return 0;
 
 	return 1;
+}
+
+static void optimize_connection(u8 node1, u8 link1, u8 node2, u8 link2)
+{
+	static const uint8_t link_width_to_pow2[]= { 3, 4, 0, 5, 1, 2, 0, 0 };
+	static const uint8_t pow2_to_link_width[] = { 0x7, 4, 5, 0, 1, 3 };
+	uint16_t freq_cap1, freq_cap2, freq_cap, freq_mask;
+	uint8_t width_cap1, width_cap2, width_cap, width, ln_width1, ln_width2;
+	uint8_t freq;
+	/* Set link width and frequency */
+
+	/* Get the frequency capabilities */
+	freq_cap1  = pci_read_config16(NODE_HT(node1), 0x80 + link1 + PCI_HT_CAP_HOST_FREQ_CAP);
+	freq_cap2  = pci_read_config16(NODE_HT(node2), 0x80 + link2 + PCI_HT_CAP_HOST_FREQ_CAP);
+
+	/* Calculate the highest possible frequency */
+#if 1
+	/* FIXME!!!!!!! 
+	 * This method of computing the fastes frequency is broken.
+	 * Because the frequencies (i.e. 100Mhz) are not ordered.
+	 */
+	freq = log2(freq_cap1 & freq_cap2 & 0xff);
+#else
+	/* Only allow supported frequencies 800Mhz and below */
+	freq = log2(freq_cap1 & freq_cap2 & 0x3f);
+#endif
+
+	/* Set the Calulcated link frequency */
+	pci_write_config8(NODE_HT(node1), 0x80 + link1 + PCI_HT_CAP_HOST_FREQ, freq);
+	pci_write_config8(NODE_HT(node2), 0x80 + link2 + PCI_HT_CAP_HOST_FREQ, freq);
+
+	/* Get the width capabilities */
+	width_cap1 = pci_read_config8(NODE_HT(node1),  0x80 + link1 + PCI_HT_CAP_HOST_WIDTH);
+	width_cap2 = pci_read_config8(NODE_HT(node2),  0x80 + link2 + PCI_HT_CAP_HOST_WIDTH);
+
+	/* Calculate node1's input width */
+	ln_width1 = link_width_to_pow2[width_cap1 & 7];
+	ln_width2 = link_width_to_pow2[(width_cap2 >> 4) & 7];
+	if (ln_width1 > ln_width2) {
+		ln_width1 = ln_width2;
+	}
+	width = pow2_to_link_width[ln_width1];
+	/* Calculate node1's output width */
+	ln_width1 = link_width_to_pow2[(width_cap1 >> 4) & 7];
+	ln_width2 = link_width_to_pow2[width_cap2 & 7];
+	if (ln_width1 > ln_width2) {
+		ln_width1 = ln_width2;
+	}
+	width |= pow2_to_link_width[ln_width1] << 4;
+	
+	/* Set node1's widths */
+	pci_write_config8(NODE_HT(node1), 0x80 + link1 + PCI_HT_CAP_HOST_WIDTH + 1, width);
+
+	/* Set node2's widths */
+	width = ((width & 0x70) >> 4) | ((width & 0x7) << 4);
+	pci_write_config8(NODE_HT(node2), 0x80 + link2 + PCI_HT_CAP_HOST_WIDTH + 1, width);
 }
 
 static void fill_row(u8 node, u8 row, u32 value)
@@ -346,6 +358,7 @@ static u8 setup_smp(void)
 	}
 
 	/* We found 2 nodes so far */
+	optimize_connection(0, ACROSS, 7, ACROSS);
 	setup_node(0, cpus);	/* Node 1 is there. Setup Node 0 correctly */
 	setup_remote_node(1, cpus);  /* Setup the routes on the remote node */
         rename_temp_node(1);    /* Rename Node 7 to Node 1  */
@@ -444,17 +457,6 @@ static unsigned detect_mp_capabilities(unsigned cpus)
 
 #endif
 
-/* this is a shrunken cpuid. */
-
-static unsigned int cpuid(unsigned int op)
-{
-	unsigned int ret;
-
-	asm volatile ( "cpuid" : "=a" (ret) : "a" (op));
-
-	return ret;
-}
-
 static void coherent_ht_finalize(unsigned cpus)
 {
 	int node;
@@ -469,7 +471,7 @@ static void coherent_ht_finalize(unsigned cpus)
 #if 1
 	print_debug("coherent_ht_finalize\r\n");
 #endif
-	rev_a0=((cpuid(1)&0xffff)==0x0f10);
+	rev_a0= is_cpu_rev_a0();
 
 	for (node=0; node<cpus; node++) {
 		u32 val;
@@ -479,7 +481,11 @@ static void coherent_ht_finalize(unsigned cpus)
 		pci_write_config32(NODE_HT(node),0x60,val);
 
 		val=pci_read_config32(NODE_HT(node), 0x68);
+#if 1
+		val |= 0x00008000;
+#else
 		val |= 0x0f00c800;  // 0x00008000->0f00c800 BY LYH
+#endif
 		pci_write_config32(NODE_HT(node),0x68,val);
 
 		if (rev_a0) {
@@ -508,7 +514,7 @@ static int setup_coherent_ht_domain(void)
 #endif
 	coherent_ht_finalize(cpus);
 
-	/* this should probably go away again. */
+	/* FIXME this should probably go away again. */
 	coherent_ht_mainboard(cpus);
 	return reset_needed;
 }

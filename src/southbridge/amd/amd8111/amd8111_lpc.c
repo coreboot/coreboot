@@ -6,6 +6,8 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <device/chip.h>
+#include "amd8111.h"
 
 
 struct ioapicreg {
@@ -87,7 +89,6 @@ static void setup_ioapic(void)
 static void lpc_init(struct device *dev)
 {
 	uint8_t byte;
-	uint16_t word;
 	int pwr_on=-1;
 
 	printk_debug("lpc_init\n");
@@ -100,14 +101,7 @@ static void lpc_init(struct device *dev)
 
 	/* posted memory write enable */
 	byte = pci_read_config8(dev, 0x46);
-	pci_write_config8(dev, 0x46, byte | (1<<0));
-
-//BY LYH
-        /* Disable AC97 and Ethernet */
-        word = pci_read_config16(dev, 0x48);
-        pci_write_config16(dev, 0x48, word & ~((1<<5)|(1<<6)|(1<<9)));
-//BY LYH END
- 
+	pci_write_config8(dev, 0x46, byte | (1<<0)); 
 
 	/* power after power fail */
 	byte = pci_read_config8(dev, 0x43);
@@ -118,6 +112,10 @@ static void lpc_init(struct device *dev)
 	}
 	pci_write_config8(dev, 0x43, byte);
 
+	/* Enable Port 92 fast reset */
+	byte = pci_read_config8(dev, 0x41);
+	byte |= (1 << 5);
+	pci_write_config8(dev, 0x41, byte);
 
 }
 
@@ -159,6 +157,7 @@ static struct device_operations lpc_ops  = {
 	.enable_resources = pci_dev_enable_resources,
 	.init             = lpc_init,
 	.scan_bus         = walk_static_devices,
+	.enable           = amd8111_enable,
 };
 
 static struct pci_driver lpc_driver __pci_driver = {
@@ -166,3 +165,4 @@ static struct pci_driver lpc_driver __pci_driver = {
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = PCI_DEVICE_ID_AMD_8111_ISA,
 };
+

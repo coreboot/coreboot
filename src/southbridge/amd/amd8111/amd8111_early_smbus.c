@@ -21,6 +21,8 @@ static void enable_smbus(void)
 	pci_write_config32(dev, 0x58, SMBUS_IO_BASE | 1);
 	enable = pci_read_config8(dev, 0x41);
 	pci_write_config8(dev, 0x41, enable | (1 << 7));
+	/* clear any lingering errors, so the transaction will run */
+	outw(inw(SMBUS_IO_BASE + SMBGSTATUS), SMBUS_IO_BASE + SMBGSTATUS);
 }
 
 
@@ -40,8 +42,12 @@ static int smbus_wait_until_ready(void)
 		if ((val & 0x800) == 0) {
 			break;
 		}
+		if(loops == (SMBUS_TIMEOUT / 2)) {
+			outw(inw(SMBUS_IO_BASE + SMBGSTATUS), 
+				SMBUS_IO_BASE + SMBGSTATUS);
+		}
 	} while(--loops);
-	return loops?0:-1;
+	return loops?0:-2;
 }
 
 static int smbus_wait_until_done(void)
@@ -57,7 +63,7 @@ static int smbus_wait_until_done(void)
 			break;
 		}
 	} while(--loops);
-	return loops?0:-1;
+	return loops?0:-3;
 }
 
 static int smbus_read_byte(unsigned device, unsigned address)
@@ -67,7 +73,7 @@ static int smbus_read_byte(unsigned device, unsigned address)
 	unsigned char byte;
 
 	if (smbus_wait_until_ready() < 0) {
-		return -1;
+		return -2;
 	}
 	
 	/* setup transaction */
@@ -93,7 +99,7 @@ static int smbus_read_byte(unsigned device, unsigned address)
 
 	/* poll for transaction completion */
 	if (smbus_wait_until_done() < 0) {
-		return -1;
+		return -3;
 	}
 
 	global_status_register = inw(SMBUS_IO_BASE + SMBGSTATUS);

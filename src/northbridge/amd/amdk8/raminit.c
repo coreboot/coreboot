@@ -124,6 +124,9 @@
 #define	 DCH_MEMCLK_EN3	      (1 << 29) 
 
 /* Function 3 */
+#define MCA_NB_CONFIG      0x44
+#define   MNC_ECC_EN       (1 << 22)
+#define   MNC_CHIPKILL_EN  (1 << 23)
 #define SCRUB_CONTROL	   0x58
 #define	  SCRUB_NONE	    0
 #define	  SCRUB_40ns	    1
@@ -1127,23 +1130,6 @@ static void spd_set_ram_size(const struct mem_controller *ctrl)
 	}
 }
 
-//BY LYH //Fill next base reg with right value
-static void fill_last(unsigned long node_id,unsigned long base)
-{
-        unsigned i;
-        unsigned base_reg;
-        base &=0xffff0000;
-        device_t device;
-        for(device = PCI_DEV(0, 0x18, 1); device <= PCI_DEV(0, 0x1f, 1); device
-+= PCI_DEV(0, 1, 0)) {
-                for(i=node_id+1;i<=7;i++) {
-                        base_reg=0x40+(i<<3);
-                        pci_write_config32(device,base_reg,base);
-                }
-        }
-}
-//BY LYH END
- 
 static void route_dram_accesses(const struct mem_controller *ctrl,
 	unsigned long base_k, unsigned long limit_k)
 {
@@ -1177,7 +1163,12 @@ static void set_top_mem(unsigned tom_k)
 {
 	/* Error if I don't have memory */
 	if (!tom_k) {
-		die("No memory");
+		set_bios_reset();
+		print_debug("No memory - reset");
+		/* enable cf9 */
+		pci_write_config8(PCI_DEV(0, 0x04, 3), 0x41, 0xf1);
+		/* reset */
+		outb(0x0e, 0x0cf9);
 	}
 
 #if 1
@@ -1204,15 +1195,102 @@ static void set_top_mem(unsigned tom_k)
 	wrmsr(TOP_MEM, msr);
 }
 
-static void order_dimms(const struct mem_controller *ctrl)
+static unsigned long interleave_chip_selects(const struct mem_controller *ctrl)
 {
-	unsigned long tom, tom_k, base_k;
-	unsigned node_id;
+	/* 35 - 25 */
+	static const uint32_t csbase_low[] = { 
+	/* 32MB */	(1 << (13 - 4)),
+	/* 64MB */	(1 << (14 - 4)),
+	/* 128MB */	(1 << (14 - 4)), 
+	/* 256MB */	(1 << (15 - 4)),
+	/* 512MB */	(1 << (15 - 4)),
+	/* 1GB */	(1 << (16 - 4)),
+	/* 2GB */	(1 << (16 - 4)), 
+	};
+	uint32_t csbase_inc;
+	int chip_selects, index;
+	int bits;
+	int dual_channel;
+	unsigned common_size;
+	uint32_t csbase, csmask;
 
-	/* Compute the memory base address address */
-	base_k = 0;
+	/* See if all of the memory chip selects are the same size
+	 * and if so count them.
+	 */
+	chip_selects = 0;
+	common_size = 0;
+	for(index = 0; index < 8; index++) {
+		unsigned size;
+		uint32_t value;
+		
+		value = pci_read_config32(ctrl->f2, DRAM_CSBASE + (index << 2));
+		
+		/* Is it enabled? */
+		if (!(value & 1)) {
+			continue;
+		}
+		chip_selects++;
+		size = value >> 21;
+		if (common_size == 0) {
+			common_size = size;
+		}
+		/* The size differed fail */
+		if (common_size != size) {
+			return 0;
+		}
+	}
+	/* Chip selects can only be interleaved when there is
+	 * more than one and their is a power of two of them.
+	 */
+	bits = log2(chip_selects);
+	if (((1 << bits) != chip_selects) || (bits < 1) || (bits > 3)) {
+		return 0;
+		
+	}
+	/* Also we run out of address mask bits if we try and interleave 8 4GB dimms */
+	if ((bits == 3) && (common_size == (1 << (32 - 3)))) {
+		print_debug("8 4GB chip selects cannot be interleaved\r\n");
+		return 0;
+	}
+	/* Find the bits of csbase that we need to interleave on */
+	if (is_dual_channel(ctrl)) {
+		csbase_inc = csbase_low[log2(common_size) - 1] << 1;
+	} else {
+		csbase_inc = csbase_low[log2(common_size)];
+	}
+	/* Compute the initial values for csbase and csbask. 
+	 * In csbase just set the enable bit and the base to zero.
+	 * In csmask set the mask bits for the size and page level interleave.
+	 */
+	csbase = 0 | 1;
+	csmask = (((common_size  << bits) - 1) << 21);
+	csmask |= 0xfe00 & ~((csbase_inc << bits) - csbase_inc);
+	for(index = 0; index < 8; index++) {
+		uint32_t value;
+
+		value = pci_read_config32(ctrl->f2, DRAM_CSBASE + (index << 2));
+		/* Is it enabled? */
+		if (!(value & 1)) {
+			continue;
+		}
+		pci_write_config32(ctrl->f2, DRAM_CSBASE + (index << 2), csbase);
+		pci_write_config32(ctrl->f2, DRAM_CSMASK + (index << 2), csmask);
+		csbase += csbase_inc;
+	}
+	
+#if 1
+	print_debug("Interleaved\r\n");
+#endif	
+	/* Return the memory size in K */
+	return common_size << (15 + bits);
+}
+
+static unsigned long order_chip_selects(const struct mem_controller *ctrl)
+{
+	unsigned long tom;
+	
 	/* Remember which registers we have used in the high 8 bits of tom */
-	tom = base_k >> 15;
+	tom = 0;
 	for(;;) {
 		/* Find the largest remaining canidate */
 		unsigned index, canidate;
@@ -1270,8 +1348,19 @@ static void order_dimms(const struct mem_controller *ctrl)
 		pci_write_config32(ctrl->f2, DRAM_CSMASK + (canidate << 2), csmask);
 		
 	}
-	tom_k = (tom & ~0xff000000) << 15;
+	/* Return the memory size in K */
+	return (tom & ~0xff000000) << 15;
+}
 
+static void order_dimms(const struct mem_controller *ctrl)
+{
+	unsigned long tom, tom_k, base_k;
+	unsigned node_id;
+
+	tom_k = interleave_chip_selects(ctrl);
+	if (!tom_k) {
+		tom_k = order_chip_selects(ctrl);
+	}
 	/* Compute the memory base address */
 	base_k = 0;
 	for(node_id = 0; node_id < ctrl->node_id; node_id++) {
@@ -1287,18 +1376,13 @@ static void order_dimms(const struct mem_controller *ctrl)
 	}
 	tom_k += base_k;
 #if 0
-	print_debug("tom: ");
-	print_debug_hex32(tom);
-	print_debug(" base_k: ");
+	print_debug("base_k: ");
 	print_debug_hex32(base_k);
 	print_debug(" tom_k: ");
 	print_debug_hex32(tom_k);
 	print_debug("\r\n");
 #endif
 	route_dram_accesses(ctrl, base_k, tom_k);
-//BY LYH
-        fill_last(ctrl->node_id, tom_k<<2);
-//BY LYH END
 	set_top_mem(tom_k);
 }
 
@@ -2063,6 +2147,10 @@ static void set_read_preamble(const struct mem_controller *ctrl, const struct me
 			/* 166Mhz, 7.5ns */
 			rdpreamble = ((7 << 1)+1);
 		}
+		else if (divisor == ((5 << 1)+0)) {
+			/* 200Mhz,  7ns */
+			rdpreamble = ((7 << 1)+0);
+		}
 	}
 	else {
 		int slots;
@@ -2175,6 +2263,8 @@ static void spd_set_dram_timing(const struct mem_controller *ctrl, const struct 
 {
 	int dimms;
 	int i;
+	int rc;
+	
 	init_Tref(ctrl, param);
 	for(i = 0; (i < 4) && ctrl->channel0[i]; i++) {
 		int rc;
@@ -2247,13 +2337,16 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		print_debug_hex32(dcl);
 		print_debug("\r\n");
 #endif
-#warning "FIXME set the ECC type to perform"
-#warning "FIXME initialize the scrub registers"
-#if 1
 		if (dcl & DCL_DimmEccEn) {
+			uint32_t mnc;
 			print_debug("ECC enabled\r\n");
+			mnc = pci_read_config32(ctrl[i].f3, MCA_NB_CONFIG);
+			mnc |= MNC_ECC_EN;
+			if (dcl & DCL_128BitEn) {
+				mnc |= MNC_CHIPKILL_EN;
+			}
+			pci_write_config32(ctrl[i].f3, MCA_NB_CONFIG, mnc);
 		}
-#endif
 		dcl |= DCL_DisDqsHys;
 		pci_write_config32(ctrl[i].f2, DRAM_CONFIG_LOW, dcl);
 		dcl &= ~DCL_DisDqsHys;
@@ -2280,29 +2373,148 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		} else {
 			print_debug(" done\r\n");
 		}
-#if 0
 		if (dcl & DCL_DimmEccEn) {
 			print_debug("Clearing memory: ");
-			loops = 0;
-			dcl &= ~DCL_MemClrStatus;
-			pci_write_config32(ctrl[i].f2, DRAM_CONFIG_LOW, dcl);
-			
-			do {
-				dcl = pci_read_config32(ctrl[i].f2, DRAM_CONFIG_LOW);
-				loops += 1;
-				if ((loops & 1023) == 0) {
-					print_debug(" ");
-					print_debug_hex32(loops);
-				}
-			} while(((dcl & DCL_MemClrStatus) == 0) && (loops < TIMEOUT_LOOPS));
-			if (loops >= TIMEOUT_LOOPS) {
-				print_debug("failed\r\n");
-			} else {
-				print_debug("done\r\n");
+			if (!is_cpu_pre_c0()) {
+				/* Wait until the automatic ram scrubber is finished */
+				dcl &= ~(DCL_MemClrStatus | DCL_DramEnable);
+				pci_write_config32(ctrl[i].f2, DRAM_CONFIG_LOW, dcl);
+				do {
+					dcl = pci_read_config32(ctrl[i].f2, DRAM_CONFIG_LOW);
+				} while(((dcl & DCL_MemClrStatus) == 0) || ((dcl & DCL_DramEnable) == 0) );
 			}
-			pci_write_config32(ctrl[i].f3, SCRUB_ADDR_LOW, 0);
-			pci_write_config32(ctrl[i].f3, SCRUB_ADDR_HIGH, 0);
-		}
+			uint32_t base, last_scrub_k, scrub_k;
+			uint32_t cnt,zstart,zend;
+			msr_t msr,msr_201;
+
+			/* First make certain the scrubber is disabled */
+			pci_write_config32(ctrl[i].f3, SCRUB_CONTROL,
+				(SCRUB_NONE << 16) | (SCRUB_NONE << 8) | (SCRUB_NONE << 0));
+
+			/* load the start and end for the memory block to clear */
+			msr_201 = rdmsr(0x201);
+			zstart = pci_read_config32(ctrl[0].f1, 0x40 + (i*8));
+			zend = pci_read_config32(ctrl[0].f1, 0x44 + (i*8));
+			zstart >>= 16;
+			zend >>=16;
+#if 1
+			print_debug("addr ");
+			print_debug_hex32(zstart);
+			print_debug("-");
+			print_debug_hex32(zend);
+			print_debug("\r\n");
 #endif
+			
+			/* Disable fixed mtrrs */
+			msr = rdmsr(MTRRdefType_MSR);
+			msr.lo &= ~(1<<10);
+			wrmsr(MTRRdefType_MSR, msr);
+
+			/* turn on the wrap 32 disable */
+			msr = rdmsr(0xc0010015);
+			msr.lo |= (1<<17);
+			wrmsr(0xc0010015,msr);
+
+			for(;zstart<zend;zstart+=4) {
+
+				/* test for the last 64 meg of 4 gig space */
+				if(zstart == 0x0fc)
+					continue;
+				
+				/* disable cache */
+				__asm__ volatile(
+					"movl  %%cr0, %0\n\t"
+					"orl  $0x40000000, %0\n\t"
+					"movl  %0, %%cr0\n\t"
+					:"=r" (cnt)
+					);
+				
+				/* Set the variable mtrrs to write combine */
+				msr.lo = 1 + ((zstart&0x0ff)<<24);
+				msr.hi = (zstart&0x0ff00)>>8;
+				wrmsr(0x200,msr);
+
+				/* Set the limit to 64 meg of ram */
+				msr.hi = 0x000000ff;
+				msr.lo = 0xfc000800;
+				wrmsr(0x201,msr);
+
+				/* enable cache */
+				__asm__ volatile(
+					"movl  %%cr0, %0\n\t"
+					"andl  $0x9fffffff, %0\n\t"
+					"movl  %0, %%cr0\n\t"	
+					:"=r" (cnt)	
+					);
+				/* Set fs base address */
+				msr.lo = (zstart&0xff) << 24;
+				msr.hi = (zstart&0xff00) >> 8;
+				wrmsr(0xc0000100,msr);
+
+				print_debug_char((zstart > 0x0ff)?'+':'-');	
+					
+				/* clear memory 64meg */
+				__asm__ volatile(
+					"1: \n\t"
+					"movl %0, %%fs:(%1)\n\t"
+					"addl $4,%1\n\t"
+					"subl $1,%2\n\t"
+					"jnz 1b\n\t"
+					:
+					: "a" (0), "D" (0), "c" (0x01000000)
+					);			
+			}
+			
+			/* disable cache */
+			__asm__ volatile(
+				"movl  %%cr0, %0\n\t"
+				"orl  $0x40000000, %0\n\t"
+				"movl  %0, %%cr0\n\t"
+				:"=r" (cnt)	
+				);
+		
+			/* restore msr registers */	
+			msr = rdmsr(MTRRdefType_MSR);
+			msr.lo |= 0x0400;
+			wrmsr(MTRRdefType_MSR, msr);
+
+			/* Restore the variable mtrrs */
+			msr.lo = 6;
+			msr.hi = 0;
+			wrmsr(0x200,msr);
+			wrmsr(0x201,msr_201);
+
+			/* Set fs base to 0 */
+			msr.lo = 0;
+			msr.hi = 0;
+			wrmsr(0xc0000100,msr);
+
+			/* enable cache */
+			__asm__ volatile(
+				"movl  %%cr0, %0\n\t"
+				"andl  $0x9fffffff, %0\n\t"
+				"movl  %0, %%cr0\n\t"	
+				:"=r" (cnt)	
+				);
+			
+			/* turn off the wrap 32 disable */
+			msr = rdmsr(0xc0010015);
+			msr.lo &= ~(1<<17);
+			wrmsr(0xc0010015,msr);
+
+			/* Find the Srub base address for this cpu */
+			base = pci_read_config32(ctrl[i].f1, 0x40 + (ctrl[i].node_id << 3));
+			base &= 0xffff0000;
+
+			/* Set the scrub base address registers */
+			pci_write_config32(ctrl[i].f3, SCRUB_ADDR_LOW, base << 8);
+			pci_write_config32(ctrl[i].f3, SCRUB_ADDR_HIGH, base >> 24);
+
+			/* Enable scrubbing at the lowest possible rate */
+			pci_write_config32(ctrl[i].f3, SCRUB_CONTROL, 
+				(SCRUB_84ms << 16) | (SCRUB_84ms << 8) | (SCRUB_84ms << 0));
+
+			print_debug("done\r\n");
+		}
 	}
 }

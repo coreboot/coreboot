@@ -49,6 +49,7 @@ enum chip_pass {
  */
 
 struct chip;
+struct device;
 
 /* there is one of these for each TYPE of chip */
 struct chip_control {
@@ -56,6 +57,7 @@ struct chip_control {
 	char *name;
 	void (*enable)(struct chip *, enum chip_pass);
 	void (*enumerate)(struct chip *chip);
+	void (*enable_dev)(struct device *dev);
 };
 
 
@@ -72,6 +74,7 @@ struct bus;
 #define MAX_CHIP_PATHS 16
 #endif
 struct chip {
+	unsigned link;
 	struct chip_control *control; /* for this device */
 	struct chip_device_path path[MAX_CHIP_PATHS]; /* can be 0, in which case the default is taken */
 	char *configuration; /* can be 0. */

@@ -35,6 +35,7 @@ struct bus {
  * combination:
  */
 
+struct chip;
 struct device {
 	struct bus *	bus;		/* bus this device is on */
 	device_t	sibling;	/* next device on this bus */
@@ -72,6 +73,7 @@ struct device {
 
 	unsigned long rom_address;
 	struct device_operations *ops;
+	struct chip *chip;
 };
 
 extern struct device	dev_root;	/* root bus */
@@ -94,7 +96,7 @@ extern void enumerate_static_device(void);
 extern const char *dev_path(device_t dev);
 
 /* Helper functions */
-device_t alloc_find_dev(struct bus *bus, struct device_path *path);
+device_t alloc_find_dev(struct bus *parent, struct device_path *path);
 device_t dev_find_device (unsigned int vendor, unsigned int device, device_t from);
 device_t dev_find_class (unsigned int class, device_t from);
 device_t dev_find_slot (unsigned int bus, unsigned int devfn);

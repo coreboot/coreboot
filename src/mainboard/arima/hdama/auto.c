@@ -1,5 +1,4 @@
 #define ASSEMBLY 1
-
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <cpu/p6/apic.h>
@@ -17,25 +16,32 @@
 #include "cpu/p6/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "debug.c"
+#include "northbridge/amd/amdk8/cpu_rev.c"
 
 #define SIO_BASE 0x2e
-#define MAXIMUM_CONSOLE_LOGLEVEL 9
-#define DEFAULT_CONSOLE_LOGLEVEL 9
 
 static void memreset_setup(void)
 {
-	/* Set the memreset low */
-	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 28);
-	/* Ensure the BIOS has control of the memory lines */
-	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 29);
+	if (is_cpu_pre_c0()) {
+		/* Set the memreset low */
+		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 28);
+		/* Ensure the BIOS has control of the memory lines */
+		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 29);
+	}
+	else {
+		/* Ensure the CPU has controll of the memory lines */
+		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 29);
+	}
 }
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
-	udelay(800);
-	/* Set memreset_high */
-	outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 28);
-	udelay(90);
+	if (is_cpu_pre_c0()) {
+		udelay(800);
+		/* Set memreset_high */
+		outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 28);
+		udelay(90);
+	}
 }
 
 static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
@@ -91,9 +97,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 static void coherent_ht_mainboard(unsigned cpus)
 {
 }
-
-#include "northbridge/amd/amdk8/cpu_ldtstop.c"
-#include "southbridge/amd/amd8111/amd8111_ldtstop.c"
 
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
@@ -201,7 +204,7 @@ static void main(void)
 	enumerate_ht_chain(0);
 	distinguish_cpu_resets(0);
 	
-#if 1
+#if 0
 	print_pci_devices();
 #endif
 	enable_smbus();
@@ -211,10 +214,10 @@ static void main(void)
 	memreset_setup();
 	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
 
-#if 1
+#if 0
 	dump_pci_devices();
 #endif
-#if 1
+#if 0
 	dump_pci_device(PCI_DEV(0, 0x18, 2));
 #endif
 

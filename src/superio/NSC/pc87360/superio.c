@@ -305,7 +305,16 @@ static void enumerate(struct chip *chip)
 		resource->base = conf->com1.irq;
 		resource->flags = IORESOURCE_IRQ | IORESOURCE_FIXED | IORESOURCE_SET;
 	}
-		
+
+	/* Process the hard codes for the keyboard controller */
+	path.u.pnp.device = KBC_DEVICE;
+	dev = alloc_find_dev(dev, &path);
+	resource = get_resource(dev, 0x60);
+	resource->base = 0x60;
+	resource->flags = IORESOURCE_IO | IORESOURCE_FIXED | IORESOURCE_SET;
+	resource = get_resource(dev, 0x62);
+	resource->base = 0x64;
+	resource->flags = IORESOURCE_IO | IORESOURCE_FIXED | IORESOURCE_SET;
 }
 
 struct chip_control superio_NSC_pc87360_control = {

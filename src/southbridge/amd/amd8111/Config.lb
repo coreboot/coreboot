@@ -1,5 +1,9 @@
+config amd8111.h
+driver amd8111.o
 driver amd8111_usb.o
 driver amd8111_lpc.o
 driver amd8111_ide.o
 driver amd8111_acpi.o
 driver amd8111_usb2.o
+#driver amd8111_ac97.o
+#driver amd8111_nic.o

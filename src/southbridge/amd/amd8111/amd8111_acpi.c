@@ -3,11 +3,23 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <pc80/mc146818rtc.h>
+#include "amd8111.h"
+
+#define PREVIOUS_POWER_STATE 0x43
+#define MAINBOARD_POWER_OFF 0
+#define MAINBOARD_POWER_ON 1
+
+#ifndef MAINBOARD_POWER_ON_AFTER_POWER_FAIL
+#define MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
+#endif
+
 
 static void acpi_init(struct device *dev)
 {
 	uint8_t byte;
 	uint16_t word;
+	int on;
 
 #if 0
 	printk_debug("ACPI: disabling NMI watchdog.. ");
@@ -35,6 +47,15 @@ static void acpi_init(struct device *dev)
 	pci_write_config_dword(dev, 0x60, 0x06800000);
 	printk_debug("done.\n");
 #endif
+	on = MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+	get_option(&on, "power_on_after_fail");
+	byte = pci_read_config8(dev, PREVIOUS_POWER_STATE);
+	byte &= ~0x40;
+	if (!on) {
+		byte |= 0x40;
+	}
+	pci_write_config8(dev, PREVIOUS_POWER_STATE, byte);
+	printk_info("set power %s after power fail\n", on?"on":"off");
 
 }
 
@@ -42,8 +63,9 @@ static struct device_operations acpi_ops  = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init = acpi_init,
-	.scan_bus = 0,
+	.init             = acpi_init,
+	.scan_bus         = 0,
+	.enable           = amd8111_enable,
 };
 
 static struct pci_driver acpi_driver __pci_driver = {

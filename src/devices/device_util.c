@@ -30,15 +30,17 @@ device_t alloc_find_dev(struct bus *parent, struct device_path *path)
  */
 struct device *dev_find_slot(unsigned int bus, unsigned int devfn)
 {
-	struct device *dev;
+	struct device *dev, *result;
 
+	result = 0;
 	for (dev = all_devices; dev; dev = dev->next) {
 		if ((dev->bus->secondary == bus) && 
 			(dev->path.u.pci.devfn == devfn)) {
+			result = dev;
 			break;
 		}
 	}
-	return dev;
+	return result;
 }
 
 /** Find a device of a given vendor and type
@@ -88,6 +90,9 @@ const char *dev_path(device_t dev)
 	}
 	else {
 		switch(dev->path.type) {
+		case DEVICE_PATH_ROOT:
+			memcpy(buffer, "Root Device", 12);
+			break;
 		case DEVICE_PATH_PCI:
 			sprintf(buffer, "PCI: %02x:%02x.%01x",
 				dev->bus->secondary, 
@@ -116,8 +121,12 @@ int path_eq(struct device_path *path1, struct device_path *path2)
 		switch(path1->type) {
 		case DEVICE_PATH_NONE:
 			break;
+		case DEVICE_PATH_ROOT:
+			equal = 1;
+			break;
 		case DEVICE_PATH_PCI:
-			equal = path1->u.pci.devfn == path2->u.pci.devfn;
+			equal = (path1->u.pci.bus == path2->u.pci.bus) &&
+				(path1->u.pci.devfn == path2->u.pci.devfn);
 			break;
 		case DEVICE_PATH_PNP:
 			equal = (path1->u.pnp.port == path2->u.pnp.port) &&

@@ -14,7 +14,7 @@
 extern struct chip_control superio_NSC_pc87360_control;
 
 struct superio_NSC_pc87360_config {
-    struct com_ports com1;
-    struct lpt_ports lpt;
-    int port;
+	struct com_ports com1;
+	struct lpt_ports lpt;
+	int port;
 };

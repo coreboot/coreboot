@@ -125,7 +125,7 @@ unsigned long cpu_initialize(struct mem_range *mem)
 	 */
 	unsigned long processor_id = this_processors_id();
 	printk_notice("Initializing CPU #%d\n", processor_id);
-	
+
 	/* some cpus need a fixup done. This is the hook for doing that. */
 	cpufixup(mem);
 

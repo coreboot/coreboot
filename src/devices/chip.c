@@ -46,16 +46,33 @@ void chip_enumerate(struct chip *chip)
 		int identical_paths;
 		identical_paths = 
 			(i > 0) &&
-			(path_eq(&chip->path[i - 1].path, &chip->path[i].path)) &&
-			(chip->path[i - 1].channel == chip->path[i].channel);
+			(path_eq(&chip->path[i - 1].path, &chip->path[i].path));
 		if (!identical_paths) {
+			struct bus *parent;
+			int bus;
 			link = 0;
 			dev = 0;
+			parent = chip->bus;
 			switch(chip->path[i].path.type) {
 			case DEVICE_PATH_NONE:
 				break;
+			case DEVICE_PATH_PCI:
+				bus = chip->path[i].path.u.pci.bus;
+				if (bus != 0) {
+					device_t dev;
+					int i = 1;
+					dev = chip->dev;
+					while(dev && (i != bus)) {
+						dev = dev->next;
+						i++;
+					}
+					if ((i == bus) && dev) {
+						parent = &dev->link[0];
+					}
+				}
+				/* Fall through */
 			default:
-				dev = alloc_dev(chip->bus, &chip->path[i].path);
+				dev = alloc_dev(parent, &chip->path[i].path);
 				break;
 			}
 		}
@@ -63,12 +80,13 @@ void chip_enumerate(struct chip *chip)
 			link += 1;
 		}
 		if (dev) {
-			printk_spew("path %s %s\n", dev_path(dev), identical_paths?"identical":"");
+			printk_spew("path (%p) %s %s", dev, dev_path(dev), identical_paths?"identical":"");
+			printk_spew(" parent: (%p) %s\n",dev->bus->dev,  dev_path(dev->bus->dev));
+			dev->chip = chip;
 			dev->enable = chip->path[i].enable;
 			dev->links = link + 1;
 			for(child = chip->children; child; child = child->next) {
-				if (!child->bus &&
-					child->path[0].channel == i) {
+				if (!child->bus && child->link == i) {
 					child->bus = &dev->link[link];
 				}
 			}

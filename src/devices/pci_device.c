@@ -18,6 +18,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <device/chip.h>
 #include <part/hard_reset.h>
 #include <part/fallback_boot.h>
 
@@ -175,7 +176,6 @@ static void pci_bridge_read_bases(struct device *dev)
 
 	/* FIXME handle bridges without some of the optional resources */
 
-	printk_spew("%s: path %s\n", __FUNCTION__, dev_path(dev));
 	/* Initialize the io space constraints on the current bus */
 	dev->resource[reg].base  = 0;
 	dev->resource[reg].size  = 0;
@@ -215,7 +215,6 @@ static void pci_bridge_read_bases(struct device *dev)
 	reg++;
 
 	dev->resources = reg;
-	printk_spew("DONE %s: path %s\n", __FUNCTION__, dev_path(dev));
 }
 
 
@@ -455,11 +454,13 @@ static void set_pci_ops(struct device *dev)
 		break;
 	default:
 	bad:
-		printk_err("%s [%04x/%04x/%06x] has unknown header "
-			"type %02x, ignoring.\n",
-			dev_path(dev),
-			dev->vendor, dev->device, 
-			dev->class >> 8, dev->hdr_type);
+		if (dev->enable) {
+			printk_err("%s [%04x/%04x/%06x] has unknown header "
+				"type %02x, ignoring.\n",
+				dev_path(dev),
+				dev->vendor, dev->device, 
+				dev->class >> 8, dev->hdr_type);
+		}
 	}
 	return;
 }
@@ -556,17 +557,16 @@ unsigned int pci_scan_bus(struct bus *bus,
 		}
 		else {
 			/* Run the magic enable/disable sequence for the device */
-			if (dev->ops && dev->ops->enable) {
-				dev->ops->enable(dev);
+			if (dev->chip && dev->chip->control && dev->chip->control->enable_dev) {
+				dev->chip->control->enable_dev(dev);
 			}
 			/* Now read the vendor and device id */
 			id = pci_read_config32(dev, PCI_VENDOR_ID);
 		}
-
 		/* Read the rest of the pci configuration information */
 		hdr_type = pci_read_config8(dev, PCI_HEADER_TYPE);
 		class = pci_read_config32(dev, PCI_CLASS_REVISION);
-
+		
 		/* Store the interesting information in the device structure */
 		dev->vendor = id & 0xffff;
 		dev->device = (id >> 16) & 0xffff;
@@ -576,20 +576,19 @@ unsigned int pci_scan_bus(struct bus *bus,
 
 		/* Look at the vendor and device id, or at least the 
 		 * header type and class and figure out which set of configuration
-		 * methods to use.
+		 * methods to use.  Unless we already have some pci ops.
 		 */
-		if (!dev->ops) {
-			set_pci_ops(dev);
-			/* Error if we don't have some pci operations for it */
-			if (!dev->ops) {
-				printk_err("%s No device operations\n",
-					dev_path(dev));
-				continue;
-			}
-			/* Now run the magic enable/disable sequence for the device */
-			if (dev->ops && dev->ops->enable) {
-				dev->ops->enable(dev);
-			}
+		set_pci_ops(dev);
+		/* Error if we don't have some pci operations for it */
+		if (dev->enable && !dev->ops) {
+			printk_err("%s No device operations\n",
+				dev_path(dev));
+			continue;
+		}
+
+		/* Now run the magic enable/disable sequence for the device */
+		if (dev->ops && dev->ops->enable) {
+			dev->ops->enable(dev);
 		}
 
 		printk_debug("%s [%04x/%04x] %s\n", 
@@ -632,8 +631,7 @@ unsigned int pci_scan_bridge(struct device *dev, unsigned int max)
 	struct bus *bus;
 	uint32_t buses;
 	uint16_t cr;
-	
-	printk_spew("%s: dev %p, max %d\n", __FUNCTION__, dev, max);
+
 	bus = &dev->link[0];
 	dev->links = 1;
 
@@ -706,7 +704,6 @@ static void pci_level_irq(unsigned char intNum)
 		     __FUNCTION__, (intBits>>8) &0xf, inb(0x4d1));
 	}
 }
-
 
 /*
     This function assigns IRQs for all functions contained within

@@ -36,12 +36,20 @@ void mpc107_init(void);
 void 
 memory_init(void)
 {
+	unsigned dimm;
+	uint32_t mem_size;
+ 
 	struct sdram_dimm_info dimms[NUM_DIMMS];
 	struct sdram_bank_info banks[NUM_BANKS];
 
 	mpc107_init();
 	mpc107_probe_dimms(NUM_DIMMS, dimms, banks);
-	(void)mpc107_config_memory(NUM_BANKS, banks, 2);
+	mem_size = mpc107_config_memory(NUM_BANKS, banks, 2);
+	
+	for (dimm = 0; dimm < NUM_DIMMS; dimm ++)
+		print_sdram_dimm_info(&dimms[dimm]);
+
+	printk_info("Configured %dMB memory\n", mem_size / (1024*1024));
 }
 
 /*
@@ -290,7 +298,7 @@ mpc107_init(void)
  * Configure real memory settings.
  */
 unsigned long 
-mpc107_config_memory(int no_banks, sdram_bank_info * bank, int for_real)
+mpc107_config_memory(int no_banks, sdram_bank_info *bank, int for_real)
 {
 	int i, j;
 	char ignore[8];
@@ -314,7 +322,9 @@ mpc107_config_memory(int no_banks, sdram_bank_info * bank, int for_real)
 	uint32_t extmemstart1, extmemstart2;
 	uint32_t memend1, memend2;
 	uint32_t extmemend1, extmemend2;
-	uint32_t address;
+	uint32_t mem_size;
+
+	printk_debug("Configuring DIMMS...\n");
 
 	/* Set up the ignore mask */
 	for(i = 0; i < no_banks; i++)
@@ -453,7 +463,7 @@ mpc107_config_memory(int no_banks, sdram_bank_info * bank, int for_real)
 	mccr2 |= refint << 2;
 	mccr1 |= 0x00080000;	/* memgo */
 
-	address = 0;
+	mem_size = 0;
 	memstart1 = memstart2 = 0;
 	extmemstart1 = extmemstart2 = 0;
 	memend1 = memend2 = 0;
@@ -461,21 +471,21 @@ mpc107_config_memory(int no_banks, sdram_bank_info * bank, int for_real)
 	bank_enable = 0;
 	for (i = 0; i < no_banks; i++) {
 		if (! ignore[i]) {
-			uint32_t end = address + bank[i].size - 1;
+			uint32_t end = mem_size + bank[i].size - 1;
 			bank_enable |= 1 << i;
 			if (i < 4) {
-				memstart1 |= ((address >> 20) & 0xff) << (8 * i);
-				extmemstart1 |= ((address >> 28) & 0x03) << (8 * i);
+				memstart1 |= ((mem_size >> 20) & 0xff) << (8 * i);
+				extmemstart1 |= ((mem_size >> 28) & 0x03) << (8 * i);
 				memend1 |= ((end >> 20) & 0xff) << (8 * i);
 				extmemend1 |= ((end >> 28) & 0x03) << (8 * i);
 			} else {
 				int k = i - 4;
-				memstart2 |= ((address >> 20) & 0xff) << (8 * k);
-				extmemstart2 |= ((address >> 28) & 0x03) << (8 * k);
+				memstart2 |= ((mem_size >> 20) & 0xff) << (8 * k);
+				extmemstart2 |= ((mem_size >> 28) & 0x03) << (8 * k);
 				memend2 |= ((end >> 20) & 0xff) << (8 * k);
 				extmemend2 |= ((end >> 28) & 0x03) << (8 * k);
 			}
-			address += bank[i].size;
+			mem_size += bank[i].size;
 		}
 	}
 
@@ -484,33 +494,34 @@ mpc107_config_memory(int no_banks, sdram_bank_info * bank, int for_real)
 		/*
 		 * Mask MEMGO bit before setting MCCR1
 		 */
+		printk_debug("Setting memory configuration registers...\n");
 		mccr1 &= ~0x80000;
-		printk_info("MCCR1 = 0x%08x\n", mccr1);
+		printk_debug("  MCCR1 = 0x%08x\n", mccr1);
 		pci_ppc_write_config32(0, 0, 0xf0, mccr1);
 
-		printk_info("MBEN = 0x%02x\n", bank_enable);
+		printk_debug("  MBEN = 0x%02x\n", bank_enable);
 		pci_ppc_write_config8(0, 0, 0xa0, bank_enable);
-		printk_info("MSAR1 = 0x%08x\n", memstart1);
+		printk_debug("  MSAR1 = 0x%08x\n", memstart1);
 		pci_ppc_write_config32(0, 0, 0x80, memstart1);
-		printk_info("MSAR2 = 0x%08x\n", memstart2);
+		printk_debug("  MSAR2 = 0x%08x\n", memstart2);
 		pci_ppc_write_config32(0, 0, 0x84, memstart2);
-		printk_info("MSAR3 = 0x%08x\n", extmemstart1);
+		printk_debug("  MSAR3 = 0x%08x\n", extmemstart1);
 		pci_ppc_write_config32(0, 0, 0x88, extmemstart1);
-		printk_info("MSAR4 = 0x%08x\n", extmemstart2);
+		printk_debug("  MSAR4 = 0x%08x\n", extmemstart2);
 		pci_ppc_write_config32(0, 0, 0x8c, extmemstart2);
-		printk_info("MEAR1 = 0x%08x\n", memend1);
+		printk_debug("  MEAR1 = 0x%08x\n", memend1);
 		pci_ppc_write_config32(0, 0, 0x90, memend1);
-		printk_info("MEAR2 = 0x%08x\n", memend2);
+		printk_debug("  MEAR2 = 0x%08x\n", memend2);
 		pci_ppc_write_config32(0, 0, 0x94, memend2);
-		printk_info("MEAR3 = 0x%08x\n", extmemend1);
+		printk_debug("  MEAR3 = 0x%08x\n", extmemend1);
 		pci_ppc_write_config32(0, 0, 0x98, extmemend1);
-		printk_info("MEAR4 = 0x%08x\n", extmemend2);
+		printk_debug("  MEAR4 = 0x%08x\n", extmemend2);
 		pci_ppc_write_config32(0, 0, 0x9c, extmemend2);
-		printk_info("MCCR2 = 0x%08x\n", mccr2);
+		printk_debug("  MCCR2 = 0x%08x\n", mccr2);
 		pci_ppc_write_config32(0, 0, 0xf4, mccr2);
-		printk_info("MCCR3 = 0x%08x\n", mccr3);
+		printk_debug("  MCCR3 = 0x%08x\n", mccr3);
 		pci_ppc_write_config32(0, 0, 0xf8, mccr3);
-		printk_info("MCCR4 = 0x%08x\n", mccr4);
+		printk_debug("  MCCR4 = 0x%08x\n", mccr4);
 		pci_ppc_write_config32(0, 0, 0xfc, mccr4);
 
 		udelay(200);
@@ -519,13 +530,14 @@ mpc107_config_memory(int no_banks, sdram_bank_info * bank, int for_real)
 		 * Set MEMGO bit
 		 */
 		mccr1 |= 0x80000;
-		printk_info("MCCR1 = 0x%08x\n", mccr1);
+		printk_debug("  MCCR1 = 0x%08x\n", mccr1);
 		pci_ppc_write_config32(0, 0, 0xf0, mccr1);
 
 		udelay(10000);
+		printk_debug("done.\n");
 	}
     
-	return address;
+	return mem_size;
 }
 
 static int
@@ -542,7 +554,7 @@ i2c_wait(unsigned timeout, int writing)
 		return -1;
 	}
 	if (writing && (x & MPC107_I2C_CSR_RXAK)) {
-		printk_info("No RXAK\n");
+		printk_debug("No RXAK\n");
 		/* generate stop */
 		writel(MPC107_I2C_CCR_MEN, MPC107_BASE + MPC107_I2CCR);
 		return -1;
@@ -695,7 +707,7 @@ i2c_fn mpc107_i2c_fn = {
  * Find dimm information.
  */
 void
-mpc107_probe_dimms(int no_dimms, sdram_dimm_info *dimms, sdram_bank_info * bank)
+mpc107_probe_dimms(int no_dimms, sdram_dimm_info *dimms, sdram_bank_info *bank)
 {
 	unsigned char data[256];
 	unsigned dimm;
@@ -721,7 +733,7 @@ mpc107_probe_dimms(int no_dimms, sdram_dimm_info *dimms, sdram_bank_info * bank)
 			data, DIMM_LENGTH);
 		
 		if (limit > 3) {
-			sdram_dimm_to_bank_info(data, dimms + dimm, 1);
+			sdram_dimm_to_bank_info(data, dimms + dimm);
 			memcpy(dimms[dimm].part_number, data + 73, 18);
 			dimms[dimm].part_number[18] = 0;
 			printk_debug("Part Number: %s\n", dimms[dimm].part_number);

@@ -22,7 +22,7 @@
 #include "mpc107.h"
 
 void 
-sdram_dimm_to_bank_info(const char *data,  sdram_dimm_info *dimm, int verbose)
+sdram_dimm_to_bank_info(const char *data,  sdram_dimm_info *dimm)
 {
     sdram_bank_info *bank1 = dimm->bank1;
     sdram_bank_info *bank2 = dimm->bank2;
@@ -38,8 +38,7 @@ sdram_dimm_to_bank_info(const char *data,  sdram_dimm_info *dimm, int verbose)
 
     if (data[0] < 64)
     {
-	if (verbose)
-	    printk_info("SPD data too short\n");
+	printk_info("SPD data too short\n");
 	return;
     }
 
@@ -48,15 +47,13 @@ sdram_dimm_to_bank_info(const char *data,  sdram_dimm_info *dimm, int verbose)
 
     if (csum != data[63])
     {
-	if (verbose)
-	    printk_info("Broken checksum 0x%x, should be 0x%x\n", data[63], csum);
+	printk_info("Broken checksum 0x%x, should be 0x%x\n", data[63], csum);
 	return;
     }
     
     if (data[2] != 0x04)
     {
-	if (verbose)
-	    printk_info("SDRAM Only\n");
+	printk_info("SDRAM Only\n");
 	return;
     }
     
@@ -76,15 +73,13 @@ sdram_dimm_to_bank_info(const char *data,  sdram_dimm_info *dimm, int verbose)
     
     if (data[7] || (data[6] != 80 && data[6] != 72 && data[6] != 64))
     {
-	if (verbose)
-	    printk_info("Data width incorrect\n");
+	printk_info("Data width incorrect\n");
 	return;
     }
     
     if (data[8] != 0x01)
     {
-	if (verbose)
-	    printk_info("3.3V TTL DIMMS only\n");
+	printk_info("3.3V TTL DIMMS only\n");
 	return;
     }
     
@@ -138,11 +133,11 @@ sdram_dimm_to_bank_info(const char *data,  sdram_dimm_info *dimm, int verbose)
 	    bank2->access_time[no_cas_latencies - 3] =
 		100 * (data[26] >> 2) + 25 * (data[26] & 0x3);
     }
-    if (verbose)
-    	for(i = 0; i < no_cas_latencies; i++)
-	    printk_info("CL %d: cycle %dns access %dns\n",
-		bank1->cas_latency[i], bank1->cycle_time[i] / 100,
-		bank1->access_time[i] / 100);
+
+    for(i = 0; i < no_cas_latencies; i++)
+	printk_debug("CL %d: cycle %dns access %dns\n",
+	    bank1->cas_latency[i], bank1->cycle_time[i] / 100,
+	    bank1->access_time[i] / 100);
 
     /* Other timings */
     bank1->min_back_to_back = bank2->min_back_to_back = data[15];
@@ -182,7 +177,8 @@ sdram_dimm_to_bank_info(const char *data,  sdram_dimm_info *dimm, int verbose)
 void 
 print_sdram_bank_info(const sdram_bank_info *bank)
 {
-    printk_info("Bank %d: %dMB\n", bank->number, bank->size / (1024*1024));
+    if (bank->size)
+	printk_debug("  Bank %d: %dMB\n", bank->number, bank->size / (1024*1024));
 }
 
 static const char *error_types[] = {"", "Parity ", "ECC "};
@@ -190,13 +186,15 @@ static const char *error_types[] = {"", "Parity ", "ECC "};
 void 
 print_sdram_dimm_info(const sdram_dimm_info *dimm)
 {
-    printk_info("Dimm %d: ", dimm->number);
-    if (dimm->size)
-    	printk_info("%dMB CL%d (%s): Running at CL%d %s\n", 
+    printk_debug("Dimm %d: ", dimm->number);
+    if (dimm->size) {
+    	printk_debug("%dMB CL%d (%s): Running at CL%d %s\n", 
 	     dimm->size / (1024*1024), dimm->bank1->cas_latency[0],
 	     dimm->part_number,
 	     dimm->bank1->actual_cas,
 	     error_types[dimm->bank1->actual_detect]);
-    else
-	printk_info("(none)\n");
+	print_sdram_bank_info(dimm->bank1);
+	print_sdram_bank_info(dimm->bank2);
+    } else
+	printk_debug("(none)\n");
 }

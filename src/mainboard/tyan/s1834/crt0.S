@@ -29,7 +29,7 @@
 
 #include <pc80/serial.inc>
 
-	TTYS0_TX_STRING($ttyS0_test)
+	CONSOLE_TX_STRING($ttyS0_test)
 	
 	/* initialize the RAM */
 	/* different for each motherboard */
@@ -52,7 +52,7 @@
  *	double words.
  */
 	intel_chip_post_macro(0x11)	/* post 11 */
-	TTYS0_TX_STRING($str_after_ram)
+	CONSOLE_TX_STRING($str_after_ram)
 
 	cld				/* clear direction flag */
 	leal	EXT(_ldata), %esi
@@ -64,7 +64,7 @@
 	movsb
 .Lnodata:
 	intel_chip_post_macro(0x12)	/* post 12 */
-	TTYS0_TX_STRING($str_after_copy)
+	CONSOLE_TX_STRING($str_after_copy)
 	
 	/** clear stack */
 	xorl	%edi, %edi
@@ -88,7 +88,7 @@
  *	let it do the rest.
  */ 
 	intel_chip_post_macro(0xfe)	/* post fe */
-	TTYS0_TX_STRING($str_pre_main)
+	CONSOLE_TX_STRING($str_pre_main)
 
         /* set new stack */
         movl    $_PDATABASE, %esp

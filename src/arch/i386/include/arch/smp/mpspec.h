@@ -267,6 +267,8 @@ unsigned char smp_compute_checksum(void *v, int len);
 void smp_write_floating_table(void *v);
 void write_smp_table(void *v, unsigned long *processor_map);
 
+/* A table (per mainboard) listing the initial apicid of each cpu. */
+extern unsigned long initial_apicid[MAX_CPUS];
 
 #else /* HAVE_MP_TABLE */
 #define CPU_ENABLED		1	/* Processor is available */

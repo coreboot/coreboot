@@ -3,9 +3,10 @@
 
 #ifdef SMP
 #include <smp/atomic.h>
-int this_processors_id(void);
-void stop_cpu(int processor_id);
-int start_cpu(int processor_id);
+unsigned long this_processors_id(void);
+int processor_index(unsigned long processor_id);
+void stop_cpu(unsigned long processor_id);
+int start_cpu(unsigned long processor_id);
 void startup_other_cpus(unsigned long *processor_map);
 #else
 #define this_processors_id()	0

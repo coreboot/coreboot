@@ -8,6 +8,7 @@ option SERIAL_SUPERIO_BASEADDRESS=0x370
 mainboardinit superio/winbond/w83977ef/setup_serial.inc
 
 mainboardinit pc80/serial.inc
+mainboardinit arch/i386/lib/console.inc
 northbridge intel/440bx
 southbridge intel/piix4e
 mainboardinit cpu/p6/earlymtrr.inc

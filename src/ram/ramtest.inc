@@ -20,61 +20,52 @@ ramtest:
 	mov %ebx, %edi
 	mov %esp, %ebp
 
-#ifdef SERIAL_CONSOLE
-	TTYS0_TX_STRING($rt_test)
-	TTYS0_TX_HEX32(%esi)
-	TTYS0_TX_CHAR($'-')
-	TTYS0_TX_HEX32(%edi)
-	TTYS0_TX_CHAR($'\r')
-	TTYS0_TX_CHAR($'\n')
+	CONSOLE_INFO_TX_STRING($rt_test)
+	CONSOLE_INFO_TX_HEX32(%esi)
+	CONSOLE_INFO_TX_CHAR($'-')
+	CONSOLE_INFO_TX_HEX32(%edi)
+	CONSOLE_INFO_TX_CHAR($'\r')
+	CONSOLE_INFO_TX_CHAR($'\n')
 
 	/* ============== Fill ram block ==== */
 
-	TTYS0_TX_STRING($rt_fill)
-#endif
+	CONSOLE_INFO_TX_STRING($rt_fill)
 
 	mov %esi, %ebx
 1:
 	cmp $0, %bx
 	jne 2f
 
-#ifdef SERIAL_CONSOLE
 	/* Display address being filled */
-	/* TTYS0_TX_HEX32(arg) will overwrite %ebx with arg */
+	/* CONSOLE_INFO_TX_HEX32(arg) will overwrite %ebx with arg */
 	
-	TTYS0_TX_HEX32(%ebx)
-	TTYS0_TX_CHAR($'\r')
-#endif
+	CONSOLE_INFO_TX_HEX32(%ebx)
+	CONSOLE_INFO_TX_CHAR($'\r')
 2:
 	mov %ebx, (%ebx)
 	add $4, %ebx
 	cmp %edi, %ebx
 	jl 1b
 
-#ifdef SERIAL_CONSOLE
 	/* Display final address */
 
-	TTYS0_TX_HEX32(%edi)
-	TTYS0_TX_CHAR($'\r')
-	TTYS0_TX_CHAR($'\n')
+	CONSOLE_INFO_TX_HEX32(%edi)
+	CONSOLE_INFO_TX_CHAR($'\r')
+	CONSOLE_INFO_TX_CHAR($'\n')
 
 	/* ========= Verify ram block ========== */
 
-	TTYS0_TX_STRING($rt_verify)
-#endif	
+	CONSOLE_INFO_TX_STRING($rt_verify)
 	mov %esi, %ebx
 
 1:
 	cmp $0, %bx
 	jne 2f
 
-#ifdef SERIAL_CONSOLE
 	/* Display address being tested */
 
-	TTYS0_TX_HEX32(%ebx)
-	TTYS0_TX_CHAR($'\r')
-#endif
-
+	CONSOLE_INFO_TX_HEX32(%ebx)
+	CONSOLE_INFO_TX_CHAR($'\r')
 2:
 	cmp %ebx, (%ebx)
 	jne 4f
@@ -83,48 +74,39 @@ ramtest:
 	cmp %edi, %ebx
 	jl 1b
 
-#ifdef SERIAL_CONSOLE
 	/* Display final address */
-
-	TTYS0_TX_HEX32(%edi)
-	TTYS0_TX_CHAR($'\r')
-	TTYS0_TX_CHAR($'\n')
-#endif
+	CONSOLE_INFO_TX_HEX32(%edi)
+	CONSOLE_INFO_TX_CHAR($'\r')
+	CONSOLE_INFO_TX_CHAR($'\n')
 	jmp 6f
 
 4:
-#ifdef SERIAL_CONSOLE
 	/* Display address with error */
 
-	TTYS0_TX_HEX32(%ebx)
-	TTYS0_TX_CHAR($':')
+	CONSOLE_INFO_TX_HEX32(%ebx)
+	CONSOLE_INFO_TX_CHAR($':')
 
 	/* Display data in address with error */
 
-	/* TTYS0_TX_HEX32(arg) will overwrite %ebx with arg */
+	/* CONSOLE_INFO_TX_HEX32(arg) will overwrite %ebx with arg */
 
 	mov %ebx, %esi
 	mov 0(%ebx), %eax
-	TTYS0_TX_HEX32(%eax)
+	CONSOLE_INFO_TX_HEX32(%eax)
 	mov %esi, %ebx
 
-	TTYS0_TX_CHAR($'\r')
-	TTYS0_TX_CHAR($'\n')
-#endif
+	CONSOLE_INFO_TX_CHAR($'\r')
+	CONSOLE_INFO_TX_CHAR($'\n')
 	sub $1, %ecx
 	jz 5f
 	jmp 3b
 5:	
-#ifdef SERIAL_CONSOLE
-	TTYS0_TX_STRING($rt_toomany)
-#endif
+	CONSOLE_INFO_TX_STRING($rt_toomany)
 	intel_chip_post_macro(0xf1)
 	jmp	.Lhlt
 
 6:
-#ifdef SERIAL_CONSOLE
-	TTYS0_TX_STRING($rt_done)
-#endif
+	CONSOLE_INFO_TX_STRING($rt_done)
 	mov %ebp, %esp
 #endif
 	RETSP

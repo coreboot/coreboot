@@ -28,24 +28,24 @@ jmp intel_815_out
 
 	// trashed : ax, bx, dx, sp 
 #define NEWLINE	\
-	TTYS0_TX_CHAR($'\r')	;\
-	TTYS0_TX_CHAR($'\n')
+	CONSOLE_DEBUG_TX_CHAR($'\r')	;\
+	CONSOLE_DEBUG_TX_CHAR($'\n')
 	
 #define PRINT_REG(reg) \
-	TTYS0_TX_HEX8($reg)	; \
-	TTYS0_TX_CHAR($':')	; \
+	CONSOLE_DEBUG_TX_HEX8($reg)	; \
+	CONSOLE_DEBUG_TX_CHAR($':')	; \
 	mov $reg, %eax		; \
 	PCI_READ_CONFIG_BYTE	; \
-	TTYS0_TX_HEX8(%al)	; \
+	CONSOLE_DEBUG_TX_HEX8(%al)	; \
 	NEWLINE
 
 #define PRINT_REG_WORD(reg) \
-	TTYS0_TX_HEX8($reg)	; \
-	TTYS0_TX_CHAR($':')	; \
+	CONSOLE_DEBUG_TX_HEX8($reg)	; \
+	CONSOLE_DEBUG_TX_CHAR($':')	; \
 	mov $reg, %eax		; \
 	PCI_READ_CONFIG_WORD	; \
 	andl $0xffff, %eax	; \
-	TTYS0_TX_HEX32(%eax)	; \
+	CONSOLE_DEBUG_TX_HEX32(%eax)	; \
 	NEWLINE
 	
 #define FIRST_NORMAL_REFERENCE()
@@ -238,19 +238,19 @@ ram_pass:	.string "--- SDRAM TEST PASSED \r\n"
 enable_sdram:
 	
 	// Enterring NOP command enable mode  
-	TTYS0_TX_STRING($ram_enable_1)
+	CONSOLE_DEBUG_TX_STRING($ram_enable_1)
 	SET_RAM_COMMAND(RAM_COMMAND_NOP)
 	
 	RAMREAD
 	MYDELAY($400)		// wait a while (minimal 200us) 
 		
 	// Precharge all
-	TTYS0_TX_STRING($ram_enable_2)	
+	CONSOLE_DEBUG_TX_STRING($ram_enable_2)	
 	SET_RAM_COMMAND(RAM_COMMAND_PRECHARGE)	
 	RAMREAD
 
 	// 8 auto refresh command "CAS before RAS"
-	TTYS0_TX_STRING($ram_enable_3)
+	CONSOLE_DEBUG_TX_STRING($ram_enable_3)
 	SET_RAM_COMMAND(RAM_COMMAND_CBR)
 
 	RAMREAD
@@ -271,7 +271,7 @@ enable_sdram:
 	MYDELAY($100)	
 			
 	// Mode register set 
-	TTYS0_TX_STRING($ram_enable_4)
+	CONSOLE_DEBUG_TX_STRING($ram_enable_4)
 	SET_RAM_COMMAND(RAM_COMMAND_MRS)
 	
 	/* MAx[14:0] lines,
@@ -293,10 +293,10 @@ enable_sdram:
 	shll $3, %eax		
 		
 	movl (%eax), %ebx	// MRS comand to sdram
-	// TTYS0_TX_HEX32(%eax)
+	// CONSOLE_DEBUG_TX_HEX32(%eax)
 
 	// Normal operation mode
-	TTYS0_TX_STRING($ram_enable_5)
+	CONSOLE_DEBUG_TX_STRING($ram_enable_5)
 	SET_RAM_COMMAND(RAM_COMMAND_NORMAL_0)	// SPD: 12 (refresh rate)
 
 	DO_READ($0x0)
@@ -304,13 +304,13 @@ enable_sdram:
 	DO_WRITE($0x0, $0x0)
 	DO_READ($0x0)
 
-	TTYS0_TX_HEX32(%eax)
+	CONSOLE_DEBUG_TX_HEX32(%eax)
 	NEWLINE
 	
 	DO_WRITE($0xff, $0xff)
 	DO_READ($0xff)
 
-	TTYS0_TX_HEX32(%eax)
+	CONSOLE_DEBUG_TX_HEX32(%eax)
 	NEWLINE
 */
 	
@@ -328,23 +328,23 @@ enable_sdram:
 
 	// verify.. 
 	movl (%esi), %edi
-	TTYS0_TX_HEX32(%edi)
+	CONSOLE_DEBUG_TX_HEX32(%edi)
 
 	movl 8(%esi), %edi
-	TTYS0_TX_HEX32(%edi)
+	CONSOLE_DEBUG_TX_HEX32(%edi)
 
 	movl 16(%esi), %edi
-	TTYS0_TX_HEX32(%edi)
+	CONSOLE_DEBUG_TX_HEX32(%edi)
 	
 	cmpl $0x12345678, %edi
 	je   pass
 fail:
-	TTYS0_TX_HEX32(%edi) 
-	TTYS0_TX_STRING($ram_fail)
+	CONSOLE_DEBUG_TX_HEX32(%edi) 
+	CONSOLE_DEBUG_TX_STRING($ram_fail)
 	jmp  doneDetection
 pass:
-	TTYS0_TX_HEX32(%edi) 	
-	TTYS0_TX_STRING($ram_pass)
+	CONSOLE_DEBUG_TX_HEX32(%edi) 	
+	CONSOLE_DEBUG_TX_STRING($ram_pass)
 doneDetection:
 #endif // 0 
 		

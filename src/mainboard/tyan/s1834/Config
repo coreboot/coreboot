@@ -6,6 +6,7 @@ ldscript cpu/i386/reset16.lds
 
 mainboardinit superio/winbond/w83977ef/setup_serial.inc
 mainboardinit pc80/serial.inc
+mainboardinit arch/i386/lib/console.inc
 mainboardinit northbridge/via/vt8601/raminit.inc
 #mainboardinit ram/ramtest.inc
 #mainboardinit cpu/p6/earlymtrr.inc

@@ -7,6 +7,8 @@
 #ifdef CPU_FIXUP
 #  if defined(k7)
 #    define cpufixup(totalram) k7_cpufixup(totalram)
+#  elif defined(i786)
+#    define cpufixup(totalram) p6_cpufixup(totalram)
 #  elif defined(i686)
 #    define cpufixup(totalram) p6_cpufixup(totalram)
 #  endif

@@ -1,6 +1,8 @@
 #include <pci.h>
 #include <pci_ids.h>
+#include <southbridge/intel/82801.h>
 #include "82801.h"
+
 void ich2_enable_ioapic(void)
 {
 	struct pci_dev *dev;

@@ -13,11 +13,11 @@ option CACHE_RAM_SIZE=0x00010000
 option USE_CACHE_RAM=1
 nooption USE_DEFAULT_LAYOUT
 #rambase 0xfff70000
-rambase 0x00000000
+rambase 0x00000800
 option STACK_SIZE=0x2000
 
 
-#mainboardinit northbridge/amd/amd76x/reset_test.inc
+mainboardinit northbridge/intel/82860/reset_test.inc
 
 #mainboardinit southbridge/intel/82801/definitions.inc
 #mainboardinit southbridge/intel/82801/disable_watchdog.inc
@@ -25,8 +25,9 @@ option STACK_SIZE=0x2000
 mainboardinit cpu/i786/earlymtrr.inc
 mainboardinit superio/winbond/w83627hf/setup_serial.inc
 mainboardinit pc80/serial.inc
+mainboardinit arch/i386/lib/console.inc
 #mainboardinit ram/ramtest.inc
-#mainboardinit mainboard/supermicro/p4dc6/spin.inc
+#mainboardinit northbridge/intel/82860/reset_test.inc
 mainboardinit cpu/i786/cache_ram_init.inc
 #mainboardinit mainboard/supermicro/p4dc6/cache_test.inc
 mainboardinit cpu/i786/cache_ram_start.inc
@@ -46,6 +47,7 @@ option ENABLE_FIXED_AND_VARIABLE_MTRRS
 
 object cacheramtest.o
 object mainboard.o
+object mtrr_values.o
 object mptable.o HAVE_MP_TABLE
 object irq_tables.o HAVE_PIRQ_TABLE
 #keyboard pc80
@@ -56,16 +58,15 @@ option SMBUS_MEM_DEVICE_START=(0xa << 3)
 option SMBUS_MEM_DEVICE_END=(SMBUS_MEM_DEVICE_START +3)
 option SMBUS_MEM_DEVICE_INC=1
 option SIO_BASE=0x2e
-#option SMP=1
+option SIO_SYSTEM_CLK_INPUT=SIO_SYSTEM_CLK_INPUT_48MHZ
+option SMP=1
 option IOAPIC=1
 option HAVE_MP_TABLE=1
 option HAVE_PIRQ_TABLE=1
-#option MAX_CPUS=2
+option MAX_CPUS=2
+option HAVE_MTRR_TABLE=1
 #option FINAL_MAINBOARD_FIXUP=1
-#option HAVE_HARD_RESET=1
-#option STACK_SIZE=0x10000
-#option XIP_ROM_SIZE=0x8000
-#option XIP_ROM_BASE=0xffff8000
+option HAVE_HARD_RESET=1
 nooption MEMORY_HOLE
 
 cpu p5

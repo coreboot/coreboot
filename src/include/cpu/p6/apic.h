@@ -139,7 +139,7 @@ static inline void apic_wait_icr_idle(void)
 
 #ifdef CONFIG_X86_GOOD_APIC
 # define FORCE_READ_AROUND_WRITE 0
-# define apic_read_around(x)
+# define apic_read_around(x) apic_read(x)
 # define apic_write_around(x,y) apic_write((x),(y))
 #else
 # define FORCE_READ_AROUND_WRITE 1
@@ -147,10 +147,11 @@ static inline void apic_wait_icr_idle(void)
 # define apic_write_around(x,y) apic_write_atomic((x),(y))
 #endif
 
-static inline unsigned long apic_remote_read(int apicid, int reg)
+static inline int apic_remote_read(int apicid, int reg, unsigned long *pvalue)
 {
 	int timeout;
-	unsigned long status, result;
+	unsigned long status;
+	int result;
 	apic_wait_icr_idle();
 	apic_write_around(APIC_ICR2, SET_APIC_DEST_FIELD(apicid));
 	apic_write_around(APIC_ICR, APIC_DM_REMRD | (reg >> 4));
@@ -164,10 +165,8 @@ static inline unsigned long apic_remote_read(int apicid, int reg)
 
 	result = -1;
 	if (status == APIC_ICR_RR_VALID) {
-		result = apic_read(APIC_RRR);
-	}
-	else {
-		printk_err("remote apic read failed\n");
+		*pvalue = apic_read(APIC_RRR);
+		result = 0;
 	}
 	return result;
 }

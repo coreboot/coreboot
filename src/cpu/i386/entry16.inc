@@ -25,44 +25,14 @@ it with the version available from LANL.
  * protected mode. 
  */
 
+#include <arch/cache_ram.h>
+
 .text
 .code16
 .globl	EXT(_start)
 .type EXT(_start), @function
 
-/// We have a relative jump here to around the GDT. 
-EXT(_start): jmp _realstart
-/** This gdt has a 4 Gb code segment at 0x10, and a 4 GB data segment
- * at 0x18; these are Linux-compatible. 
- */
-
-#ifndef CACHE_RAM_BASE
-#define CACHE_RAM_BASE 0
-#endif
-
-/** GDT. we have modified this from the original freebios to make it 
- * compatible with linux. This puts text at seg 0x10 and data at 0x18
- */
-.align	4
-.globl EXT(gdtptr)
-EXT(gdtptr):
-	.word	4*8-1
-	.long	gdt		/* we know the offset */
-gdt:
-	.word	0x0000, 0x0000		/* dummy */
-	.byte	0x00, 0x00, 0x00, 0x00
-
-	.word	0xffff, (CACHE_RAM_BASE & 0xffff)		/* flat offset data segment */
-	.byte	((CACHE_RAM_BASE >> 16)& 0xff), 0x93, 0xcf, ((CACHE_RAM_BASE >> 24) & 0xff)
-	
-	.word	0xffff, 0x0000		/* flat code segment */
-	.byte	0x00, 0x9b, 0xcf, 0x00	
-	
-	.word	0xffff, 0x0000		/* flat data segment */
-	.byte	0x00, 0x93, 0xcf, 0x00	
-
-
-_realstart:
+EXT(_start): 
 	cli
 
 /* thanks to kmliu@sis.tw.com for this TBL fix ... */
@@ -115,7 +85,40 @@ _realstart:
 	movl	%eax, %cr0
 
 	/* Now that we are in protected mode jump to a 32 bit code segment. */
-	data32	ljmp	$0x10, $.Lprotected
+	data32	ljmp	$0x10, $_protected_start
+
+
+/** This gdt has a 4 Gb code segment at 0x10, and a 4 GB data segment
+ * at 0x18; these are Linux-compatible. 
+ */
+
+
+/** GDT. we have modified this from the original freebios to make it 
+ * compatible with linux. This puts text at seg 0x10 and data at 0x18
+ */
+.align	4
+.globl EXT(gdtptr)
+EXT(gdtptr):
+	.word	4*8-1
+	.long	gdt		/* we know the offset */
+
+.globl EXT(_estart)
+EXT(_estart):
+
+gdt:
+	.word	0x0000, 0x0000		/* dummy */
+	.byte	0x00, 0x00, 0x00, 0x00
+
+	.word	0xffff, (CACHE_RAM_SEG_BASE & 0xffff)		/* flat offset data segment */
+	.byte	((CACHE_RAM_SEG_BASE >> 16)& 0xff), 0x93, 0xcf
+	.byte	((CACHE_RAM_SEG_BASE >> 24) & 0xff)
+	
+	.word	0xffff, 0x0000		/* flat code segment */
+	.byte	0x00, 0x9b, 0xcf, 0x00	
+	
+	.word	0xffff, 0x0000		/* flat data segment */
+	.byte	0x00, 0x93, 0xcf, 0x00	
+
 
 /*
  *	When we come here we are in protected mode. We expand 
@@ -129,7 +132,7 @@ _realstart:
  *	cache will be reloaded.
  */
 	.align	4
-.Lprotected:
+_protected_start:
 	.code32
 	intel_chip_post_macro(0x10)	/* post 10 */
 

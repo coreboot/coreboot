@@ -8,7 +8,6 @@ unsigned long sizeram(void)
 	unsigned long size;
 	unsigned short word;
 	
-	printk_notice("\nsizeram!!!\n");
 	/* Read TOM */
 	/* How should we handle > 4GB of ram? */
 	pcibios_read_config_word(0, 0, 0xc4, &word);

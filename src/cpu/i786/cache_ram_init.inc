@@ -25,12 +25,17 @@
 	andl	$0x9fffffff, %eax
 	movl	%eax, %cr0
 
-	/* Force cache ram area into cache */
+	/* Force cache ram area into cache 
+	 * Note: Some versions of the P4 don't allocate a cache
+	 *       line on write immediately after a mtrr change, so
+	 *       we make certain we read the address before we write
+	 *       to it.
+	 */
 	movl	$CACHE_RAM_BASE, %esi
 	movl	$(CACHE_RAM_BASE + CACHE_RAM_SIZE), %edi
 1:	movl	(%esi), %eax
 	addl	$4, %esi
-	movl	%eax, (%esi)
+	movl	%eax, -4(%esi)
 	cmpl	%esi, %edi
 	jnz	1b
 

@@ -63,17 +63,16 @@ delaytest:	.string "Delay test...  "
 #ifdef SERIAL_CONSOLE
 #include <pc80/serial.inc>
 #endif
+#include <arch/i386/lib/console.inc>
 
 #include <ram/ramtest.inc>
 
 	intel_chip_post_macro(0x04)
 
-#ifdef SERIAL_CONSOLE
-	TTYS0_TX_STRING($separator)
-	TTYS0_TX_STRING($greeting)
-	TTYS0_TX_STRING($date)
-	TTYS0_TX_CHAR($'\n')
-#endif
+	CONSOLE_DEBUG_TX_STRING($separator)
+	CONSOLE_DEBUG_TX_STRING($greeting)
+	CONSOLE_DEBUG_TX_STRING($date)
+	CONSOLE_DEBUG_TX_CHAR($'\n')
 	intel_chip_post_macro(0x05)
 
 	/* initialize the RAM */
@@ -128,9 +127,7 @@ delaytest:	.string "Delay test...  "
 
 	intel_chip_post_macro(0x30)
 
-#ifdef SERIAL_CONSOLE
-	TTYS0_TX_STRING($initdata)
-#endif
+	CONSOLE_DEBUG_TX_STRING($initdata)
 
 /*
  *	Copy data into RAM and clear the BSS. Since these segments
@@ -165,9 +162,7 @@ delaytest:	.string "Delay test...  "
 	stosb
 .Lnobss:
 	
-#ifdef SERIAL_CONSOLE
-	TTYS0_TX_STRING($done)
-#endif
+	CONSOLE_DEBUG_TX_STRING($done)
 	intel_chip_post_macro(0x3f)
 
 /*
@@ -176,9 +171,7 @@ delaytest:	.string "Delay test...  "
  *	let it do the rest.
  */ 
 
-#ifdef SERIAL_CONSOLE
-	TTYS0_TX_STRING($jumpmain)
-#endif
+	CONSOLE_DEBUG_TX_STRING($jumpmain)
 
 /* memory is up. Let's do the rest in C -- much easier. */
 	/* set new stack */

@@ -6,6 +6,7 @@ ldscript cpu/i386/reset16.lds
 
 mainboardinit superio/ITE/it8712f/setup_serial.inc
 mainboardinit pc80/serial.inc
+mainboardinit arch/i386/lib/console.inc
 northbridge intel/815ep
 southbridge intel/ich2
 mainboardinit cpu/p6/earlymtrr.inc

@@ -11,6 +11,7 @@ mainboardinit northbridge/amd/amd76x/mpinit.inc
 mainboardinit southbridge/amd/amd766/lpc_com1.inc
 mainboardinit superio/winbond/w83627hf/setup_serial.inc
 mainboardinit pc80/serial.inc
+mainboardinit arch/i386/lib/console.inc
 #mainboardinit ram/ramtest.inc
 #mainboardinit mainboard/tyan/guiness/do_ramtest.inc
 mainboardinit southbridge/amd/amd766/smbus.inc

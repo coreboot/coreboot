@@ -9,6 +9,7 @@ mainboardinit northbridge/intel/440gx/reset_test.inc
 
 mainboardinit superio/NSC/pc87309/setup_serial.inc
 mainboardinit pc80/serial.inc
+mainboardinit arch/i386/lib/console.inc
 
 northbridge intel/440gx
 southbridge intel/piix4e

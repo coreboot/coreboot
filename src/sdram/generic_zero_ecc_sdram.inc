@@ -6,7 +6,7 @@ ecc_ram_3:		.string "ecc_ram_3\r\n"
 ecc_ram_4:		.string "ecc_ram_4\r\n"
 
 ecc_ram_initialize:
-	TTYS0_TX_STRING($ecc_ram_1)
+	CONSOLE_DEBUG_TX_STRING($ecc_ram_1)
 	CALL_LABEL(get_ecc_ram_size_bytes_ebx)
 
 	/* If we don't have an ECC SDRAM size skip the zeroing */
@@ -53,7 +53,7 @@ ecc_ram_initialize:
 	movl	%eax, %cr0
 
 	/* Now zero the memory */
-	TTYS0_TX_STRING($ecc_ram_2)
+	CONSOLE_DEBUG_TX_STRING($ecc_ram_2)
 	cld
 
 #if !defined(HAVE_PC80_MEMORY_HOLE)
@@ -79,7 +79,7 @@ ecc_ram_initialize:
 	rep	stosl
 #endif /* HAVE_PC80_MEMORY_HOLE */
 
-	TTYS0_TX_STRING($ecc_ram_3)
+	CONSOLE_DEBUG_TX_STRING($ecc_ram_3)
 
 	/* Change caching on memory from write-combining to write-back. */
 	/* Disable the cache while we set up a new MTRR over memory */
@@ -98,5 +98,5 @@ ecc_ram_initialize:
 	movl	%eax, %cr0
 
 zero_ecc_ram_out:
-	TTYS0_TX_STRING($ecc_ram_4)
+	CONSOLE_DEBUG_TX_STRING($ecc_ram_4)
 

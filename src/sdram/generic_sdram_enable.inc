@@ -21,7 +21,7 @@ enable_sdram:
 	turn on the dram and wait a while (this from the intel book)
 	turn power on and set the nop bit too
  */
-	TTYS0_TX_STRING($ram_enable_1)
+	CONSOLE_DEBUG_TX_STRING($ram_enable_1)
 	/* SDRAMC */
 	SET_RAM_COMMAND(RAM_COMMAND_NOP)
 
@@ -35,7 +35,7 @@ enable_sdram:
 	
 	/* wait until the all banks idle state... */
 
-	TTYS0_TX_STRING($ram_enable_2)
+	CONSOLE_DEBUG_TX_STRING($ram_enable_2)
 
 	/* Now we need 8 AUTO REFRESH / CBR cycles to be performed */
 
@@ -49,7 +49,7 @@ enable_sdram:
 	ASSERT_RAM_COMMAND()
 	ASSERT_RAM_COMMAND()
 
-	TTYS0_TX_STRING($ram_enable_3)
+	CONSOLE_DEBUG_TX_STRING($ram_enable_3)
 
 	/* mode register set */
 	SET_RAM_MODE_REGISTER
@@ -62,12 +62,12 @@ enable_sdram:
 	 * MAx[12:7] ==	0
 	 */
 
-	TTYS0_TX_STRING($ram_enable_4)
+	CONSOLE_DEBUG_TX_STRING($ram_enable_4)
 
 	/* normal operation */
 	SET_RAM_COMMAND(RAM_COMMAND_NONE)
 
-	TTYS0_TX_STRING($ram_enable_5)
+	CONSOLE_DEBUG_TX_STRING($ram_enable_5)
 	RET_LABEL(enable_sdram)
 
 generic_sdram_enable_out:

@@ -5,6 +5,12 @@
 #include <delay.h>
 #include <part/mainboard.h>
 #include <part/hard_reset.h>
+#include <arch/smp/mpspec.h>
+
+unsigned long initial_apicid[MAX_CPUS] =
+{
+	0, 1
+};
 
 static void lpc_routing_fixup(void)
 {

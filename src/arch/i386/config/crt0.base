@@ -26,9 +26,7 @@
 
 CRT0_PARAMETERS
 
-#if defined(SERIAL_CONSOLE) && (DEFAULT_CONSOLE_LOGLEVEL >= 7)
-        TTYS0_TX_STRING($str_after_ram)
-#endif 
+	CONSOLE_DEBUG_TX_STRING($str_after_ram)
 
 	/* clear boot_complete flag */
 	xorl	%ebp, %ebp
@@ -75,9 +73,22 @@ __main:
 	/* set new stack */
 	movl	$_estack, %esp
 #ifdef SMP
+	/* Get the cpu id */
 	movl	$APIC_DEFAULT_BASE, %edi
 	movl	APIC_ID(%edi), %eax
 	shrl	$24, %eax
+
+	/* Get the cpu index (MAX_CPUS on error) */
+	movl	$-4, %ebx
+1:	addl	$4, %ebx
+	cmpl	$(MAX_CPUS << 2), %ebx
+	je	2
+	cmpl	%eax, EXT(initial_apicid)(%ebx)
+	jne	1b
+2:	shrl	$2, %ebx
+
+	/* Now compute the appropriate stack */
+	movl	%ebx, %eax
 	movl	$STACK_SIZE, %ebx
 	mull	%ebx
 	subl	%eax, %esp
@@ -96,9 +107,7 @@ __main:
 	 */ 
 	intel_chip_post_macro(0xfe)	/* post fe */
 
-#if defined(SERIAL_CONSOLE) && (DEFAULT_CONSOLE_LOGLEVEL >= 7)
-        TTYS0_TX_STRING($str_pre_main)
-#endif 
+	CONSOLE_DEBUG_TX_STRING($str_pre_main)
 
 	/* memory is up. Let\'s do the rest in C -- much easier. */
 
@@ -115,8 +124,7 @@ __main:
 	hlt
 	jmp	.Lhlt
 
-ttyS0_test:          .string "\r\n\r\nHello world!!\r\n"
+.section ".rodata"
 str_after_ram:       .string "Ram Initialize?\r\n"
-str_after_copy:      .string "after copy?\r\n"
 str_pre_main:        .string "before main\r\n"
-newline:             .string "\r\n"
+.previous

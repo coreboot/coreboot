@@ -17,15 +17,15 @@ dump_sdram_config:
 dump_sdram_config_byte_header:
 	testb	$0x0f,%bl
 	jnz	dump_sdram_config_byte
-	TTYS0_TX_CHAR($'\r')
-	TTYS0_TX_CHAR($'\n')
+	CONSOLE_DEBUG_TX_CHAR($'\r')
+	CONSOLE_DEBUG_TX_CHAR($'\n')
 	movl	%ebx, %eax
 	CALLSP(ttys0_tx_hex32)
-	TTYS0_TX_CHAR($':')
-	TTYS0_TX_CHAR($' ')
+	CONSOLE_DEBUG_TX_CHAR($':')
+	CONSOLE_DEBUG_TX_CHAR($' ')
 
 dump_sdram_config_byte:
-	TTYS0_TX_CHAR($' ')
+	CONSOLE_DEBUG_TX_CHAR($' ')
 	movl	%ebx, %eax
 	PCI_READ_CONFIG_BYTE
 	CALLSP(ttys0_tx_hex8)
@@ -33,8 +33,8 @@ dump_sdram_next_byte:
 	incl	%ebx
 	cmpl	$0x00000200, %ebx
 	jne	dump_sdram_config_byte_header
-	TTYS0_TX_CHAR($'\r')
-	TTYS0_TX_CHAR($'\n')
+	CONSOLE_DEBUG_TX_CHAR($'\r')
+	CONSOLE_DEBUG_TX_CHAR($'\n')
 	RET_LABEL(dump_sdram_config)
 #endif
 
@@ -483,15 +483,15 @@ ram_set_registers:
 ram_set_one_register:
 #if DEBUG_RAM_CONFIG
 	movl	%ebx, %esi
-	TTYS0_TX_CHAR($'C')
-	TTYS0_TX_CHAR($':')
+	CONSOLE_DEBUG_TX_CHAR($'C')
+	CONSOLE_DEBUG_TX_CHAR($':')
 	movl	0(%esi), %eax
 	CALLSP(ttys0_tx_hex32)
-	TTYS0_TX_CHAR($':')
+	CONSOLE_DEBUG_TX_CHAR($':')
 	movl	4(%esi), %eax
 	CALLSP(ttys0_tx_hex32)
-	TTYS0_TX_CHAR($'\r')
-	TTYS0_TX_CHAR($'\n')
+	CONSOLE_DEBUG_TX_CHAR($'\r')
+	CONSOLE_DEBUG_TX_CHAR($'\n')
 	movl	%esi, %ebx
 #endif /* DEBUG_RAM_CONFIG */
 	movl	0(%ebx), %eax
@@ -507,16 +507,16 @@ ram_set_one_register_start:
 ram_set_one_mainboard_register:
 #if DEBUG_RAM_CONFIG
 	movl	%ebx, %esi
-	TTYS0_TX_CHAR($'M')
-	TTYS0_TX_CHAR($'C')
-	TTYS0_TX_CHAR($':')
+	CONSOLE_DEBUG_TX_CHAR($'M')
+	CONSOLE_DEBUG_TX_CHAR($'C')
+	CONSOLE_DEBUG_TX_CHAR($':')
 	movl	0(%esi), %eax
 	CALLSP(ttys0_tx_hex32)
-	TTYS0_TX_CHAR($':')
+	CONSOLE_DEBUG_TX_CHAR($':')
 	movl	4(%esi), %eax
 	CALLSP(ttys0_tx_hex32)
-	TTYS0_TX_CHAR($'\r')
-	TTYS0_TX_CHAR($'\n')
+	CONSOLE_DEBUG_TX_CHAR($'\r')
+	CONSOLE_DEBUG_TX_CHAR($'\n')
 	movl	%esi, %ebx
 #endif /* DEBUG_RAM_CONFIG */
 	movl	0(%ebx), %eax
@@ -1441,7 +1441,7 @@ get_dimm_row_cycle_setting_low:
 dimm_row_new_cycle_setting_msg:
 	.string "\r\n Newly defined SPD byte 41 populated please update the code to handle this\r\n"
 get_dimm_row_cycle_setting_new:
-	TTYS0_TX_STRING($dimm_row_new_cycle_setting_msg)
+	CONSOLE_DEBUG_TX_STRING($dimm_row_new_cycle_setting_msg)
 	/* fall through */
 
 get_dimm_row_cycle_setting_error:
@@ -2057,7 +2057,7 @@ enable_sdram_wait:
 	testl	$(1 << 23), %eax /* Wait until the mode register is set */
 	jnz enable_sdram_wait	
 
-	TTYS0_TX_STRING($ram_enabled)
+	CONSOLE_DEBUG_TX_STRING($ram_enabled)
 
 	RET_LABEL(enable_sdram)
 

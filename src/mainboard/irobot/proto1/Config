@@ -6,6 +6,7 @@ ldscript cpu/i386/reset16.lds
 
 mainboardinit superio/SMC/fdc37n769/setup_serial.inc
 mainboardinit pc80/serial.inc
+mainboardinit arch/i386/lib/console.inc
 northbridge intel/440bx
 southbridge intel/piix4e
 mainboardinit cpu/p6/earlymtrr.inc

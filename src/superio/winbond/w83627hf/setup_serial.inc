@@ -49,7 +49,7 @@
 
 #if defined(SIO_SYSTEM_CLK_INPUT)
 	/* Setup up the clock input */
-	SIO_WRITE_CONFIG(0x84 | SIO_SYSTEM_CLK_INPUT), 0x24)
+	SIO_WRITE_CONFIG((0x84 | SIO_SYSTEM_CLK_INPUT), 0x24)
 #endif
 	/* enable serial 1 */
 	SIO_SET_LOGICAL_DEVICE(SIO_COM1_DEVICE)

@@ -4,7 +4,7 @@
 #include <cpu/p6/l2_cache.h>
 
 #ifdef CONFIGURE_L2_CACHE
-#  if defined(i686)
+#  if defined(i686) && !defined(i786)
 #    define configure_l2_cache() p6_configure_l2_cache()
 #  endif
 #else

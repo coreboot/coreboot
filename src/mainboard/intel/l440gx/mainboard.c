@@ -1,10 +1,14 @@
 #include <printk.h>
 #include <pci.h>
+#include <arch/io.h>
+#include <arch/smp/mpspec.h>
 
-#include <cpu/p5/io.h>
+unsigned long initial_apicid[MAX_CPUS] =
+{
+	0, 1
+};
 
 // this needs to be moved about a bit to northbridge.c etc.
-
 
 void mainboard_fixup()
 {

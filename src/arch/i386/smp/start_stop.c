@@ -2,6 +2,9 @@
 #include <arch/smp/mpspec.h>
 #include <cpu/p6/apic.h>
 #include <delay.h>
+#include <string.h>
+
+
 
 static inline void hlt(void)
 {
@@ -9,12 +12,23 @@ static inline void hlt(void)
 	return;
 }
 
-int this_processors_id(void)
+unsigned long this_processors_id(void)
 {
 	return apic_read(APIC_ID) >> 24;
 }
 
-void stop_cpu(int apicid)
+int processor_index(unsigned long apicid)
+{
+	int i;
+	for(i = 0; i < MAX_CPUS; i++) {
+		if (initial_apicid[i] == apicid) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+void stop_cpu(unsigned long apicid)
 {
 	int timeout;
 	unsigned long send_status;
@@ -32,7 +46,7 @@ void stop_cpu(int apicid)
 		send_status = apic_read(APIC_ICR) & APIC_ICR_BUSY;
 	} while (send_status && (timeout++ < 1000));
 	if (timeout >= 1000) {
-		printk_spew("timed out\n");
+		printk_err("timed out\n");
 	}
 	mdelay(10);
 
@@ -49,7 +63,7 @@ void stop_cpu(int apicid)
 		send_status = apic_read(APIC_ICR) & APIC_ICR_BUSY;
 	} while (send_status && (timeout++ < 1000));
 	if (timeout >= 1000) {
-		printk_debug("timed out\n");
+		printk_err("timed out\n");
 	}
 
 	while(1) {
@@ -61,11 +75,13 @@ void stop_cpu(int apicid)
 // This is a lot more paranoid now, since Linux can NOT handle
 // being told there is a CPU when none exists. So any errors 
 // will return 0, meaning no CPU. 
-int start_cpu(int apicid)
+int start_cpu(unsigned long apicid)
 {
 	int timeout;
 	unsigned long send_status, accept_status, start_eip;
 	int j, num_starts, maxlvt;
+	extern char _start[], _estart[];
+	
 	/*
 	 * Starting actual IPI sequence...
 	 */
@@ -102,7 +118,6 @@ int start_cpu(int apicid)
 		}
 		return 0;
 	}
-
 	mdelay(10);
 
 	printk_spew("Deasserting INIT.\n");
@@ -127,8 +142,12 @@ int start_cpu(int apicid)
 		return 0;
 	}
 
-	/* FIXME start_eip should be more flexible! */
-	start_eip = 0xf0000;
+	start_eip = 0x90000 + (((unsigned long)_start) & 0xf000);
+	if ((((unsigned long)_start) & 0xfff) != 0) {
+		printk_err("_start is not 4K aligned!\n");
+		return 0;
+	}
+	memcpy((void *)start_eip, _start, _estart - _start);
 	printk_spew("start eip=0x%08lx\n", start_eip);
        
 	num_starts = 2;
@@ -199,17 +218,22 @@ int start_cpu(int apicid)
 	return 1;
 }
 
+
 void startup_other_cpus(unsigned long *processor_map)
 {
-	int apicid = this_processors_id();
+	unsigned long apicid = this_processors_id();
 	int i;
+
 	/* Assume the cpus are densly packed by apicid */
 	for(i = 0; i < MAX_CPUS; i++) {
-		if (i == apicid ) {
+		unsigned long cpu_apicid = initial_apicid[i];
+		if (cpu_apicid == apicid ) {
 			continue;
 		}
-		if (start_cpu(i))
-			processor_map[i] = CPU_ENABLED;
-
+		if (!start_cpu(cpu_apicid)) {
+			/* Put an error in processor_map[i]? */
+			printk_err("CPU %d/%u would not start!\n",
+				i, cpu_apicid);
+		}
 	}
 }

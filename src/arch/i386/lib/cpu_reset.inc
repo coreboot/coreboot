@@ -1,30 +1,54 @@
 jmp cpu_reset_out
 #include <cpu/p6/mtrr.h>
+#include <cpu/p6/apic.h>
+#include <loglevel.h>
 
-#ifdef DEBUG
+
+.section ".rodata"
+
+#if ASM_CONSOLE_LOGLEVEL >= BIOS_DEBUG
 cpu_reset_str:		.string "cpu_reset\r\n";
+cpu_apic_str:		.string "apic: ";
 cpu_size_set_str:	.string	"cpu memory size set\r\n";
 #endif
 
 
+.text
+
 __cpu_reset:
-#ifdef DEBUG
-	TTYS0_TX_STRING($cpu_reset_str);
-#endif /* DEBUG */
+	CONSOLE_DEBUG_TX_STRING($cpu_reset_str)
+
+#ifdef SMP
+	/* Enable the local apic, and map it where we expext it */
+	movl	$APIC_BASE_MSR, %ecx
+	rdmsr
+	orl	$APIC_BASE_MSR_ENABLE, %eax
+	andl	$(~APIC_BASE_MSR_ADDR_MASK), %eax
+	orl	$APIC_DEFAULT_BASE, %eax
+	/* xorl	%edx, %edx */
+	wrmsr
+
+	/* Get the apic_id */
+	movl	(APIC_ID + APIC_DEFAULT_BASE), %edi
+	shrl	$24, %edi
+
+	CONSOLE_DEBUG_TX_STRING($cpu_apic_str)
+	CONSOLE_DEBUG_TX_HEX32(%edi)
+	CONSOLE_DEBUG_TX_CHAR($'\r')
+	CONSOLE_DEBUG_TX_CHAR($'\n')
+#endif
 
 	CALLSP(set_memory_size)
 
-#ifdef DEBUG
-	TTYS0_TX_STRING($cpu_size_set_str);
-#endif /* DEBUG */
+	CONSOLE_DEBUG_TX_STRING($cpu_size_set_str);
 
 #ifdef SMP
 	/* Test to see if we are the boot strap processor.
 	 * If so the boot must be complete.
 	 */
-	movl	$0x1b, %ecx
+	movl	$APIC_BASE_MSR, %ecx
 	rdmsr
-	testl	$0x100, %eax
+	testl	$APIC_BASE_MSR_BOOTSTRAP_PROCESSOR, %eax
 	jnz	__reboot
 
 	/* Fixed mtrrs are enabled by the C code so if they
@@ -35,12 +59,23 @@ __cpu_reset:
 	rdmsr
 	testl	$0x400, %eax
 	jnz	__reboot
+
+	/* Get the apic_id */
+	movl	(APIC_ID + APIC_DEFAULT_BASE), %edi
+	shrl	$24, %edi
+
+	/* Get the cpu index (MAX_CPUS on error) */
+	movl	$-4, %ebx
+1:	addl	$4, %ebx
+	cmpl	$(MAX_CPUS << 2), %ebx
+	je	2
+	cmpl	%edi, EXT(initial_apicid)(%ebx)
+	jne	1b
+2:	shrl	$2, %ebx
 	
 	/* set the stack pointer */
 	movl	$_estack, %esp
-	movl	$APIC_DEFAULT_BASE, %edi
-	movl	APIC_ID(%edi), %eax
-	shrl	$24, %eax
+	movl	%ebx, %eax
 	movl	$STACK_SIZE, %ebx
 	mull	%ebx
 	subl	%eax, %esp
@@ -54,3 +89,5 @@ __reboot:
 	jmp	__main
 
 cpu_reset_out:
+
+

@@ -4,6 +4,7 @@ ldscript cpu/i386/entry16.lds
 
 mainboardinit superio/via/vt82c686/setup_serial.inc
 mainboardinit pc80/serial.inc
+mainboardinit arch/i386/lib/console.inc
 northbridge via/vt694 
 southbridge via/vt82c686 
 superio via/vt82c686

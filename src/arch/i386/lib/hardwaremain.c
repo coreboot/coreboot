@@ -59,14 +59,25 @@ static char rcsid[] = "$Id$";
 #include <arch/smp/mpspec.h>
 
 
-static int cpu_initialize(unsigned long totalram)
+/* The processor map. 
+ * Now that SMP is in linuxbios, and Linux counts on us
+ * giving accurate information about processors, we need a map
+ * of what processors are out there. This could be a bit mask, 
+ * but we will be optimistic and hope we someday run on 
+ * REALLY BIG SMPs. Also we may need more than one bit of 
+ * info per processor at some point. I hope we don't need 
+ * anything more complex than an int.
+ */
+static unsigned long processor_map[MAX_CPUS];
+
+static unsigned long cpu_initialize(unsigned long totalram)
 {
 	/* Because we busy wait at the printk spinlock.
 	 * It is important to keep the number of printed messages
 	 * from secondary cpus to a minimum, when debugging is
 	 * disabled.
 	 */
-	int processor_id = this_processors_id();
+	unsigned long processor_id = this_processors_id();
 	printk_notice("Initializing CPU #%d\n", processor_id);
 	
 	/* some cpus need a fixup done. This is the hook for doing that. */
@@ -107,20 +118,24 @@ static atomic_t active_cpus = ATOMIC_INIT(1);
 void secondary_cpu_init(void)
 {
 	unsigned long totalram;
-	int processor_id;
+	unsigned long id;
+	int index;
 
-	printk_spew(__FUNCTION__ "\n");
 	atomic_inc(&active_cpus);
+	printk_debug(__FUNCTION__ "\n");
 	totalram = get_ramsize();
-	processor_id = cpu_initialize(totalram);
+	id = cpu_initialize(totalram);
+	index = processor_index(id);
+	printk_debug(__FUNCTION__ "  %d/%u\n", index, id);
+	processor_map[index] = CPU_ENABLED;
 	atomic_dec(&active_cpus);
-	printk_spew(__FUNCTION__ " id is %d\n", processor_id);
-	stop_cpu(processor_id);
+	stop_cpu(id);
 }
 
 static void wait_for_other_cpus(void)
 {
 	int old_active_count, active_count;
+	int i;
 	old_active_count = 1;
 	active_count = atomic_read(&active_cpus);
 	while(active_count > 1) {
@@ -130,6 +145,13 @@ static void wait_for_other_cpus(void)
 		}
 		active_count = atomic_read(&active_cpus);
 	}
+	for(i = 0; i < MAX_CPUS; i++) {
+		if (!(processor_map[i] & CPU_ENABLED)) {
+			printk_err("CPU %d/%u did not initialize!\n",
+				i, initial_apicid);
+		}
+	}
+	printk_debug("All AP CPUs stopped\n");
 }
 #else /* SMP */
 #define wait_for_other_cpus() do {} while(0)
@@ -137,23 +159,16 @@ static void wait_for_other_cpus(void)
 
 void hardwaremain(int boot_complete)
 {
-	// The processor map. 
-	// Now that SMP is in linuxbios, and Linux counts on us
-	// giving accurate information about processors, we need a map
-	// of what processors are out there. This could be a bit mask, 
-	// but we will be optimistic and hope we someday run on 
-	// REALLY BIG SMPs. Also we may need more than one bit of 
-	// info per processor at some point. I hope we don't need 
-	// anything more complex than an int.
-	unsigned long processor_map[MAX_CPUS];
-	// Processor ID of the BOOT cpu (i.e. the one running this code
-	int boot_cpu;
+	/* Processor ID of the BOOT cpu (i.e. the one running this code) */
+	unsigned long boot_cpu;
+	int boot_index;
 
-	// Comment: the NEW_SUPERIO architecture is actually pretty good.
-	// I think we need to move to the same sort of architecture for
-	// everything: A config file generated sequence of calls 
-	// for initializing all the chips. We stick with this 
-	// for now -- rgm. 
+	/* Comment: the NEW_SUPERIO architecture is actually pretty good.
+	 * I think we need to move to the same sort of architecture for
+	 * everything: A config file generated sequence of calls 
+	 * for initializing all the chips. We stick with this 
+	 * for now -- rgm. 
+	 */
 #ifdef USE_NEW_SUPERIO_INTERFACE
 	extern struct superio *all_superio;
 	extern int nsuperio;
@@ -204,13 +219,16 @@ void hardwaremain(int boot_complete)
 
 	/* Fully initialize the cpu before configuring the bus */
 	boot_cpu = cpu_initialize(totalram);
+	boot_index = processor_index(boot_cpu);
 	printk_spew("BOOT CPU is %d\n", boot_cpu);
-	processor_map[boot_cpu] = CPU_BOOTPROCESSOR|CPU_ENABLED;
+	processor_map[boot_index] = CPU_BOOTPROCESSOR|CPU_ENABLED;
 
 	/* Now start the other cpus initializing 
 	 * The sooner they start the sooner they stop.
 	 */
+	post_code(0x75);
 	startup_other_cpus(processor_map);
+	post_code(0x77);
 
 	// Now do the real bus
 	// we round the total ram up a lot for thing like the SISFB, which 
@@ -248,10 +266,6 @@ void hardwaremain(int boot_complete)
 
 	pci_zero_irq_settings();
 
-	/* copy the smp block to address 0 */
-	write_smp_table((void *)16, processor_map);
-	post_code(0x96);
-
 	check_pirq_routing_table();
 	copy_pirq_routing_table();
 
@@ -270,6 +284,10 @@ void hardwaremain(int boot_complete)
 #endif
 	/* make certain we are the only cpu running in linuxBIOS */
 	wait_for_other_cpus();
+
+	/* copy the smp block to address 0 */
+	post_code(0x96);
+	write_smp_table((void *)16, processor_map);
 
 #ifdef LINUXBIOS
 	printk_info("Jumping to linuxbiosmain()...\n");

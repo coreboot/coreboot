@@ -4,6 +4,7 @@ ldscript cpu/i386/entry16.lds
 
 mainboardinit superio/sis/950/setup_serial.inc
 mainboardinit pc80/serial.inc
+mainboardinit arch/i386/lib/console.inc
 northsouthbridge sis/630
 # superio sis/950
 nsuperio sis/950 com1={1} floppy=1  lpt=1

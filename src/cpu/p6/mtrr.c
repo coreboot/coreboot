@@ -286,10 +286,12 @@ void setup_mtrrs(unsigned long ramsizeK)
 					   MTRR_TYPE_WRBACK);
 			rambase += ramsizeK;
 
-			printk_debug("Setting variable MTRR %d, base: %4dMB, range: %4dMB, type: UC\n",
-			    reg, rambase >> 10, range_uc >> 10);
-			intel_set_var_mtrr(reg++, rambase * 1024, range_uc * 1024,
-					   MTRR_TYPE_UNCACHABLE);
+			if (range_uc) {
+				printk_debug("Setting variable MTRR %d, base: %4dMB, range: %4dMB, type: UC\n",
+					reg, rambase >> 10, range_uc >> 10);
+				intel_set_var_mtrr(reg++, rambase * 1024, range_uc * 1024,
+					MTRR_TYPE_UNCACHABLE);
+			}
 			ramsizeK = 0; /* effectivly a break */
 		} else {
 			range_wb >>= 1;

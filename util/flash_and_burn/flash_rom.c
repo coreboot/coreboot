@@ -227,6 +227,23 @@ enable_flash_cs5530(struct pci_dev *dev, char *name) {
 }
 
 int
+enable_flash_sc1100(struct pci_dev *dev, char *name) {
+  unsigned char new;
+  int ok;
+  
+  pci_write_byte(dev, 0x52, 0xee);
+
+  new = pci_read_byte(dev, 0x52);
+
+  if (new != 0xee) {
+    printf("tried to set register 0x%x to 0x%x on %s failed (WARNING ONLY)\n", 
+	   0x52, new, name);
+    return -1;
+  }
+  return 0;
+}
+
+int
 enable_flash_sis5595(struct pci_dev *dev, char *name) {
   unsigned char new, newer;
   
@@ -365,6 +382,7 @@ FLASH_ENABLE enables[] = {
   {0x1106, 0x8231, "VT8231", enable_flash_vt8231},
   {0x1106, 0x3177, "VT8235", enable_flash_vt8235},
   {0x1078, 0x0100, "CS5530", enable_flash_cs5530},
+  {0x100b, 0x0510, "SC1100", enable_flash_sc1100},
   {0x1039, 0x8, "SIS5595", enable_flash_sis5595},
 };
   

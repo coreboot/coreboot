@@ -13,35 +13,6 @@
 struct nic nic;
 unsigned char eth_addr[6];
 
-int acpi_base;
-
-void init_HR_TIMER(void)
-{
-	int j;
-
-	outl(0x80000840, 0x0cf8);
-	acpi_base = inb(0x0cfc) | 0x80;
-	outb(acpi_base, 0x0cfc);
-
-	outl(0x80000874, 0x0cf8);
-	acpi_base = inw(0x0cfc);
-
-	printk_info("init_HR_TIMER: acpi_base = %04x\n", acpi_base);
-
-	j = inw(acpi_base + 0x56) | 0x02;	// HR_TMR control
-	outw(j, acpi_base + 0x56);		// activate HR_TMR
-}
-
-inline unsigned long currticks(void)
-{
-	unsigned long int j=0;
-
-	j = inl(acpi_base + 0x4c);
-	j /= 55555;	// HR_TMR runs at 1MHz, etherboot drivers expect 18.2Hz, but this will be close enough.
-
-	return(j);
-}
-
 int test_display_tftp_callback(char *data, int block, int length, int eof)
 {
 	int i;
@@ -49,13 +20,13 @@ int test_display_tftp_callback(char *data, int block, int length, int eof)
 #ifdef DEBUG	
 	printk_info("RECD block %u, length = %u:\n",block, length);
 #endif
-	for(i=0; i<length; i++) 
-		if(!data[i])
+	for (i = 0; i < length; i++)
+		if (!data[i])
 			printk_info("|");
 		else
 			printk_info("%c",data[i]);
 #ifdef DEBUG
-	if(eof) 
+	if (eof)
 		printk_info("\nEND OF FILE\n");
 	
 	printk_info("====================\n");
@@ -69,18 +40,18 @@ void netboot_init()
 {
 	struct pci_dev *pcidev;
 	struct nic *result;
-	unsigned short iobase = 0x0b001;	// address = 0x0b00, I/O port space
-	int rc=512;
+	unsigned short iobase;
+
+#ifdef DEBUG
+	int rc = 512;
 	int i;
+#endif
 
 	nic.node_addr = eth_addr;
+
 	/* first, init the sis900 ethernet! */
-
-	pcidev = pci_find_device(PCI_VENDOR_ID_SI, 0x0900, (void *)NULL);
-	pci_write_config_byte(pcidev, PCI_BASE_ADDRESS_0, iobase);
-
-	printk_info("\ncalling init_HR_TIMER\n");
-	init_HR_TIMER();
+	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_900, (void *)NULL);
+	iobase = pcidev->base_address[0] & PCI_BASE_ADDRESS_IO_MASK;
 
 	result = sis900_probe(&nic, &iobase, pcidev);
 
@@ -91,13 +62,16 @@ void netboot_init()
 	printk_info("doing rarp:\n");
 	rarp();
 
-	printk_info("My IP address is: %04x\n",arptable[ARP_CLIENT].ipaddr.s_addr);
-	printk_info("My server's IP address is: %04x\n",arptable[ARP_SERVER].ipaddr.s_addr);
+	//printk_info("doing DHCP:\n");
+	//bootp();
+
+	printk_info("My IP address is: %04x\n", arptable[ARP_CLIENT].ipaddr.s_addr);
+	printk_info("My server's IP address is: %04x\n", arptable[ARP_SERVER].ipaddr.s_addr);
 
 #ifdef DEBUG
 	printk_info("Now testing tftp, transferring cmdline\n");
 	
-//	tftp("cmdline", test_display_tftp_callback);
+	//tftp("cmdline", test_display_tftp_callback);
 	tftp_init("cmdline");
 	while(rc == 512) {
 		rc = tftp_fetchone(buffer);

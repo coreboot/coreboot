@@ -3,7 +3,7 @@
 #undef RELEASE_DATE
 #undef VERSION
 #define VERSION_MAJOR "0"
-#define VERSION_MINOR "65"
+#define VERSION_MINOR "66"
 #define RELEASE_DATE "8 November 2004"
 #define VERSION VERSION_MAJOR "." VERSION_MINOR
 
@@ -3994,10 +3994,6 @@ static void raw_next_token(struct compile_state *state,
 		if (tok == TOK_UNKNOWN) {
 			error(state, 0, "unterminated comment");
 		}
-		if (state->token_base && (line != file->line)) {
-			error(state, 0, 
-				"multiline comment in preprocessor directive");
-		}
 		file->report_line += line - file->line;
 		file->line = line;
 		file->line_start = line_start;
@@ -4033,12 +4029,7 @@ static void raw_next_token(struct compile_state *state,
 			error(state, 0, "unterminated string constant");
 		}
 		if (line != file->line) {
-			if (state->token_base) {
-				/* Preprocessor directives cannot span lines */
-				error(state, 0, "multiline string constant");
-			} else {
-				warning(state, 0, "multiline string constant");
-			}
+			warning(state, 0, "multiline string constant");
 		}
 		file->report_line += line - file->line;
 		file->line = line;
@@ -4078,12 +4069,7 @@ static void raw_next_token(struct compile_state *state,
 			error(state, 0, "unterminated character constant");
 		}
 		if (line != file->line) {
-			if (state->token_base) {
-				/* Preprocessor directives cannot span lines */
-				error(state, 0, "multiline character constant");
-			} else {
-				warning(state, 0, "multiline character constant");
-			}
+			warning(state, 0, "multiline character constant");
 		}
 		file->report_line += line - file->line;
 		file->line = line;
@@ -4831,12 +4817,12 @@ static void token(struct compile_state *state, struct token *tk)
 				cpp_token(state, tk);
 			}
 		}
-		/* Eat tokens disabled by the preprocessor */
-		else if (if_eat(state)) {
+		/* Eat tokens disabled by the preprocessor (Unless we are parsing a preprocessor directive */
+		else if (if_eat(state) && (state->token_base == 0)) {
 			cpp_token(state, tk);
 			rescan = 1;
 		}
-		/* When not in macro context hide EOL */
+		/* Make certain EOL only shows up in preprocessor directives */
 		else if ((tk->tok == TOK_EOL) && (state->token_base == 0)) {
 			cpp_token(state, tk);
 			rescan = 1;

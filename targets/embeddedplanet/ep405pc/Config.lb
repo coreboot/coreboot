@@ -61,7 +61,7 @@ option IDE_OFFSET=0
 option ROM_SIZE=1048576
 
 ## Board has fixed size RAM
-option EMBEDDED_RAM_SIZE=128*1024*1024
+option EMBEDDED_RAM_SIZE=64*1024*1024
 
 ## LinuxBIOS C code runs at this location in RAM
 option _RAMBASE=0x00100000

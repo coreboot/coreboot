@@ -51,6 +51,5 @@ void i82801er_enable(device_t dev)
 }
 
 struct chip_operations southbridge_intel_i82801er_ops = {
-	.name       = "Intel 82801er Southbridge",
 	.enable_dev = i82801er_enable,
 };

@@ -12,7 +12,7 @@
 
 /* converted to C 6/2004 yhlu */
 
-#define DEBUG_RAM_CONFIG 0
+#define DEBUG_RAM_CONFIG 1
 
 #define dumpnorth() dump_pci_device(PCI_DEV(0, 0, 0)) 
 
@@ -535,27 +535,6 @@ static void ram_set_rcomp_regs(const struct mem_controller *ctrl) {
 	write_8dwords((uint32_t)ddr_rcomp_2, RCOMP_MMIO + 0x1c0);
 	write_8dwords((uint32_t)ddr_rcomp_3, RCOMP_MMIO + 0x180);
 
-#if 0	/* Print the RCOMP registers */
-	movl    $RCOMP_MMIO, %ecx
-1:	movl	%ecx, %eax
-	andb	$0x0f, %al
-	jnz	2f
-	CONSOLE_INFO_TX_CHAR($'\r')
-        CONSOLE_INFO_TX_CHAR($'\n')
-	CONSOLE_INFO_TX_HEX32(%ecx)
-	CONSOLE_INFO_TX_CHAR($' ')
-	CONSOLE_INFO_TX_CHAR($'-')
-	CONSOLE_INFO_TX_CHAR($' ')
-2:	movl    (%ecx), %eax
-	CONSOLE_INFO_TX_HEX32(%eax)
-	CONSOLE_INFO_TX_CHAR($' ')
-	addl	$4, %ecx
-	cmpl	$(RCOMP_MMIO + 0x1e0), %ecx
-	jnz	1b
-        CONSOLE_INFO_TX_CHAR($'\r')
-        CONSOLE_INFO_TX_CHAR($'\n')
-#endif
-
 	dword = read32(RCOMP_MMIO + 0x20);
 	dword &= ~(3);
 	dword |= 1;
@@ -584,7 +563,7 @@ static void ram_set_rcomp_regs(const struct mem_controller *ctrl) {
 }
 
 static void ram_set_d0f0_regs(const struct mem_controller *ctrl) {
-#if DEBUG_RAM_CONFIG
+#if DEBUG_RAM_CONFIG >= 2
 	dumpnorth();
 #endif
 	int i;
@@ -592,7 +571,7 @@ static void ram_set_d0f0_regs(const struct mem_controller *ctrl) {
         max = sizeof(register_values)/sizeof(register_values[0]);
         for(i = 0; i < max; i += 3) {
                 uint32_t reg;
-#if DEBUG_RAM_CONFIG
+#if DEBUG_RAM_CONFIG >= 2
                 print_debug_hex32(register_values[i]);
                 print_debug(" <-");
                 print_debug_hex32(register_values[i+2]);
@@ -605,7 +584,7 @@ static void ram_set_d0f0_regs(const struct mem_controller *ctrl) {
 
 
         }
-#if DEBUG_RAM_CONFIG
+#if DEBUG_RAM_CONFIG >= 2
 	dumpnorth();
 #endif
 }
@@ -896,7 +875,7 @@ static long spd_set_row_attributes(const struct mem_controller *ctrl, long dimm_
                  /* Test to see if I have ecc sdram */
 		struct dimm_page_size sz;
                 sz = sdram_spd_get_page_size(ctrl->channel0[i]);  /* SDRAM type */
-#if DEBUG_RAM_CONFIG
+#if DEBUG_RAM_CONFIG>=2 
 		print_debug("page size =");
 		print_debug_hex32(sz.side1);
 		print_debug(" ");
@@ -975,241 +954,6 @@ static long spd_set_row_attributes(const struct mem_controller *ctrl, long dimm_
 	return dimm_mask;
 
 }
-#if 0
-	/*
-	 * Routine:	sdram_read_paired_byte
-	 * Arguments:	%esp return address
-	 *		%bl device on the smbus to read from
-	 *              %bh address on the smbus to read
-	 * Results:	
-	 *		zf clear
-	 *		byte read in %al
-	 *	On Error:
-	 *		zf set
-	 *		%eax trashed
-	 *
-	 * Preserved:	%ebx, %esi, %edi
-	 *
-	 * Trashed:	%eax, %ecx, %edx, %ebp, %esp, %eflags
-	 * Used:	%eax, %ebx, %ecx, %edx, %esp, %eflags
-	 *
-	 * Effects:	Reads two spd bytes from both ram channesl
-	 *              and errors if they are not equal.
-	 *		It then returns the equal result.
-	 */
-static spd_read_paired_byte () {
-	movl	%esp, %ebp
-	CALLSP(smbus_read_byte)
-	setnz	%cl
-	movb	%al, %ch
-	addb	$(SMBUS_MEM_CHANNEL_OFF), %bl
-	CALLSP(smbus_read_byte)
-	movb	%ch, %ah
-	setnz	%ch
-	subb	$(SMBUS_MEM_CHANNEL_OFF), %bl
-
-	/* See if dimms on both sides are equally present */	
-	cmp	%cl, %ch
-	jne	sdram_presence_mismatch
-
-	/* Leave if I have no data */
-	testb	%cl, %cl
-	jz	spd_verify_byte_out
-
-	/* Verify the data is identical */
-	cmp	%ah, %al
-	jne	sdram_value_mismatch
-
-	/* Clear the zero flag */
-	testb	%cl, %cl
-spd_verify_byte_out:
-	movl	%ebp, %esp
-	RETSP
-}
-
-	/*
-	 * Routine:	spd_verify_dimms
-	 * Arguments:	none
-	 * Results:	none
-	 * Preserved:	none
-	 * Trashed:	%eax, %ebx, %ecx, %edx, %ebp, %esi, %edi, %esp, %eflags
-	 * Used:	%eax, %ebx, %ecx, %edx, %ebp, %esi, %edi, %esp, %eflags
-	 *
-	 * Effects:	
-	 *		- Verify all interesting spd information
-	 *		  matches for both dimm channels.
-	 *		- Additional error checks that can be easily done
-	 *		  here are computed as well, so I don't need to
-	 *		  worry about them later.
-	 */
-static spd_verify_dimms() {
-	movl	$(SMBUS_MEM_DEVICE_START), %ebx
-spd_verify_dimm:
-	/* Verify this is DDR SDRAM */
-	movb	$2, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_verify_next_dimm
-	cmpb	$7, %al
-	jne	invalid_dimm_type
-
-	/* Verify the row addresses */
-	movb	$3, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	testb	$0x0f, %al
-	jz	spd_invalid_data
-	
-	/* Column addresses */
-	movb	$4, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	testb	$0xf, %al
-	jz	spd_invalid_data
-
-	/* Physical Banks */
-	movb	$5, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	cmp	$1, %al
-	jb	spd_invalid_data
-	cmp	$2, %al
-	ja	spd_invalid_data
-
-	/* Module Data Width */
-	movb	$7, %bh
-	CALLSP(spd_read_paired_byte)	
-	jz	spd_missing_data
-	cmpb	$0, %al
-	jne	spd_invalid_data
-
-	movb	$6, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	cmpb	$64, %al
-	je	1f
-	cmpb	$72, %al
-	je	1f
-	jmp	spd_unsupported_data
-1:
-
-	/* Cycle time at highest CAS latency CL=X */
-	movb	$9, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-
-	/* SDRAM type */
-	movb	$11, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-
-	/* Refresh Interval */
-	movb	$12, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	
-	/* SDRAM Width */
-	movb	$13, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	andb	$0x7f, %al
-	cmpb	$4, %al
-	je	1f
-	cmpb	$8, %al
-	je	1f
-	jmp	spd_unsupported_data
-1:
-
-	/* Back-to-Back Random Column Accesses */
-	movb	$15, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	testb	%al, %al
-	jz	spd_invalid_data
-	cmpb	$4, %al
-	ja	spd_unsupported_data
-
-	/* Burst Lengths */
-	movb	$16, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	testb	$(1<<2), %al
-	jz	spd_unsupported_data
-
-	/* Logical Banks */
-	movb	$17, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	testb	%al, %al
-	jz	spd_invalid_data
-	
-	/* Supported CAS Latencies */
-	movb	$18, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	testb	$(1 << 1), %al /* CL 1.5 */
-	jnz	1f
-	testb	$(1 << 2), %al /* CL 2.0 */
-	jnz	1f
-	testb	$(1 << 3), %al /* CL 2.5 */
-	jnz	1f
-	jmp	spd_unsupported_data
-1:
-	
-	/* Cycle time at Cas Latency (CLX - 0.5) */
-	movb	$23, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	
-	/* Cycle time at Cas Latency (CLX - 1.0) */
-	movb	$26, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	
-	/* tRP Row precharge time */
-	movb	$27, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	testb	$0xfc, %al
-	jz	spd_invalid_data
-	
-
-	/* tRCD RAS to CAS */
-	movb	$29, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	testb	$0xfc, %al
-	jz	spd_invalid_data
-	
-	/* tRAS Activate to Precharge */
-	movb	$30, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	testb	%al, %al
-	jz	spd_invalid_data
-
-	/* Module Bank Density */
-	movb	$31, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-	testb	$(1<<2), %al		/* 16MB */
-	jnz	spd_unsupported_data
-	testb	$(1<<3), %al
-	jnz	spd_unsupported_data	/* 32MB */
-	
-	/* Address and Command Hold Time After Clock */
-	movb	$33, %bh
-	CALLSP(spd_read_paired_byte)
-	jz	spd_missing_data
-
-spd_verify_next_dimm:
-	/* go to the next DIMM */
-	addb	$(SMBUS_MEM_DEVICE_INC), %bl /* increment the smbus device */
-	cmpb	$SMBUS_MEM_DEVICE_END, %bl
-	jbe	spd_verify_dimm
-spd_verify_dimms_out:
-	RET_LABEL(spd_verify_dimms)
-}
-#endif
 #define spd_pre_init  "Reading SPD data...\r\n"
 #define spd_pre_set "setting based on SPD data...\r\n"
 #define spd_post_init "done\r\n"
@@ -1248,17 +992,17 @@ static long spd_set_dram_controller_mode (const struct mem_controller *ctrl, lon
         /* Read the inititial state */
         dword = pci_read_config32(ctrl->d0, 0x7c);
 
-#if 0
-        /* Test if ECC cmos option is enabled */
+/*
+        // Test if ECC cmos option is enabled 
         movb    $RTC_BOOT_BYTE, %al
         outb    %al, $0x70
         inb     $0x71, %al
         testb   $(1<<2), %al
         jnz     1f
-        /* Clear the ecc enable */
+        // Clear the ecc enable 
         andl    $~(3 << 20), %esi
 1:
-#endif
+*/
 
 
         /* Walk through all dimms and find the interesection of the support
@@ -1323,11 +1067,11 @@ static long spd_enable_clocks(const struct mem_controller *ctrl, long dimm_mask)
 
         /* Read the inititial state */
         dword = pci_read_config32(ctrl->d0, 0x8c);
-#if 0
+/*
 # Intel clears top bit here, should we?
 # No the default is on and for normal timming it should be on.  Tom Z
         andl    $0x7f, %esi
-#endif
+*/
 
  
         for(i = 0; i < DIMM_SOCKETS; i++) {
@@ -1506,11 +1250,11 @@ static long spd_set_dram_timing(const struct mem_controller *ctrl, long dimm_mas
 
         /* Read the inititial state */
         dword = pci_read_config32(ctrl->d0, 0x78);
-#if 0
+/*
 # Intel clears top bit here, should we?
 # No the default is on and for normal timming it should be on.  Tom Z
         andl    $0x7f, %esi
-#endif
+*/
         
         
         for(i = 0; i < DIMM_SOCKETS; i++) {
@@ -1604,13 +1348,13 @@ static unsigned int spd_detect_dimms(const struct mem_controller *ctrl)
         unsigned dimm_mask;
         int i;  
         dimm_mask = 0;  
-#if DEBUG_RAM_CONFIG
+#if DEBUG_RAM_CONFIG 
 	print_debug("spd_detect_dimms:\r\n");
 #endif
         for(i = 0; i < DIMM_SOCKETS; i++) {
                 int byte;
                 unsigned device;
-#if DEBUG_RAM_CONFIG
+#if DEBUG_RAM_CONFIG 
 		print_debug_hex32(i);
 		print_debug("\r\n");
 #endif
@@ -1795,71 +1539,6 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl) {
 }
 
 
-	/* I have finally seen ram bad enough to cause LinuxBIOS
-	 * to die in mysterious ways, before booting up far
-	 * enough to run a memory tester.  This code attempts
-	 * to catch this blatantly bad ram, with a spot check.
-	 * For most cases you should boot all of the way up 
-	 * and run a memory tester.  
-	 */
-	/* Ensure I read/write each stick of bank of memory &&
-	 * that I do more than 1000 bytes to avoid the northbridge cache.
-	 * Only 64M of each side of each DIMM is currently mapped,
-	 * so we can handle > 4GB of ram here.
-	 */
-#if 0
-#define bank_msg  "Bank "
-#define side_msg " Side "
-static void verify_ram() {
-	xorl	%ecx, %ecx
-	/* Check to see if the RAM is present,
-	 * in the specified bank and side.
-	 */
-1:	movl	%ecx, %ebx
-	shrl	$1, %ebx
-	addl	$((5<<8) | SMBUS_MEM_DEVICE_START), %ebx
-	CALLSP(smbus_read_byte)
-	jz	5f
-	testl	$1, %ecx
-	jz	2f
-	cmpb	$2, %al
-	jne	5f
-
-	/* Display the bank and side we are spot checking.
-	 */
-2:	CONSOLE_INFO_TX_STRING($bank_msg)
-	movl	%ecx, %ebx
-	shrl	$1, %ebx
-	incl	%ebx
-	CONSOLE_INFO_TX_HEX8(%bl)
-	CONSOLE_INFO_TX_STRING($side_msg)
-	movl	%ecx, %ebx
-	andl	$1, %ebx
-	CONSOLE_INFO_TX_HEX8(%bl)
-
-	/* Compute the memory address to spot check. */
-	movl	%ecx, %ebx
-	xorl	%eax, %eax
-3:	testl	%ebx, %ebx
-	jz	4f
-	addl	$0x04000000, %eax
-	decl	%ebx
-	jmp	3b
-4:
-	/* Spot check 512K of RAM */
-	movl	%eax, %ebx
-	addl	$0x0007ffff, %ebx
-	CALLSP(spot_check)
-5:	
-	/* Now find the next bank and side to spot check */
-	incl	%ecx
-	cmpl	$((SMBUS_MEM_DEVICE_END - SMBUS_MEM_DEVICE_START)<<1), %ecx
-	jb	1b
-	RET_LABEL(verify_ram)
-
-}
-#endif	
-
 #if 0
 static void ram_postinit(const struct mem_controller *ctrl) {
 #if DEBUG_RAM_CONFIG 
@@ -1890,7 +1569,7 @@ static void dram_finish(const struct mem_controller *ctrl)
 	dword &=3;
 	if(dword == 2)  {
 		
-#if DEBUG_RAM_CONFIG	
+#if DEBUG_RAM_CONFIG 	
 		print_debug(ecc_pre_init);
 #endif
 		/* Initialize ECC bits , use ECC zero mode (new to 7501)*/
@@ -1902,7 +1581,7 @@ static void dram_finish(const struct mem_controller *ctrl)
 		} while ( (byte & 0x08 ) == 0);
 
 		pci_write_config8(ctrl->d0, 0x52, byte & 0xfc);
-#if DEBUG_RAM_CONFIG		
+#if DEBUG_RAM_CONFIG 	
 		print_debug(ecc_post_init);	
 #endif
 
@@ -1921,48 +1600,12 @@ static void dram_finish(const struct mem_controller *ctrl)
 	pci_write_config32(ctrl->d0, 0x7c, dword);
 
 
-#if DEBUG_RAM_CONFIG 
+#if DEBUG_RAM_CONFIG >= 2
 	dumpnorth();
 #endif
 
 //	verify_ram();
 }
-#if 0
-#define ERRFUNC(x, str) mem_err(x, str)
-
-
-ERRFUNC(invalid_dimm_type,          "Invalid dimm type")
-ERRFUNC(spd_missing_data,           "Missing sdram spd data")
-ERRFUNC(spd_invalid_data,           "Invalid sdram spd data")
-ERRFUNC(spd_unsupported_data,       "Unsupported sdram spd value")
-ERRFUNC(unsupported_page_size,      "Unsupported page size")
-ERRFUNC(sdram_presence_mismatch,    "DIMM presence mismatch")
-ERRFUNC(sdram_value_mismatch,       "spd data does not match")
-ERRFUNC(unsupported_refresh_rate,   "Unsuported spd refresh rate")
-ERRFUNC(inconsistent_cas_latencies, "No cas latency supported by all dimms")
-ERRFUNC(unsupported_rcd,            "Unsupported ras to cas delay")
-#undef ERRFUNC
-
-#define mem_err_err "ERROR: "
-#define mem_err_pair " on dimm pair "
-#define mem_err_byte " spd byte "
-static void mem_err {
-	movl	%ebx, %edi
-	CONSOLE_ERR_TX_STRING($mem_err_err)
-	CONSOLE_ERR_TX_STRING(%esi)
-	CONSOLE_ERR_TX_STRING($mem_err_pair)
-	movl	%edi, %ebx
-	subb	$(SMBUS_MEM_DEVICE_START), %bl
-	CONSOLE_ERR_TX_HEX8(%bl)
-	CONSOLE_ERR_TX_STRING($mem_err_byte)
-	movl	%edi, %ebx
-	CONSOLE_ERR_TX_HEX8(%bh)
-	jmp	mem_stop
-
-}
-
-#endif
-
 
 #if ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG
 #define ram_enable_1    "Ram Enable 1\r\n"

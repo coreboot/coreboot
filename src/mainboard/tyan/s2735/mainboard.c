@@ -144,6 +144,5 @@ static void enable_dev(device_t dev)
 
 struct chip_operations mainboard_tyan_s2735_ops = {
         .enable_dev = enable_dev,
-        .name      = "Tyan s2735 mainboard ",
 };
 

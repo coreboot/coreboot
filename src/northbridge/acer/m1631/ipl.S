@@ -40,8 +40,7 @@ it with the version available from LANL.
  * set the right value. 
  */
 #define INIT_MCR $0xf6621000
-#define WDELAY movw	$0x1000, ax; 1: dec %ax; jnz 1b
-#undef WDELAY
+#define LONGDELAY movw	$0x1000, ax; 1: dec %ax; jnz 1b
 #define WDELAY outb %al, $0x80; jmp 1f; 1: outb %al, $0x80
 #define WRITE_MCR0 movl %ecx, %eax ;  outl %eax, %dx ; WDELAY
 /*#include <cpu/p5/start32.inc>*/
@@ -258,6 +257,7 @@ sizeram:
  * Just set 4-bank mode, and set non-zero numbers into a few places. 
  * if the byte at 0 changes, you have two banks. Trivial.
  */
+	LONGDELAY
 	movl	$0x1000, %esi
 	movb	$0, (%edi)
 	movb	$5, (%esi)

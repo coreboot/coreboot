@@ -11,34 +11,34 @@
  */
 
 #ifdef __ROMCC__
-static void outb(unsigned char value, unsigned short port)
+static inline void outb(uint8_t value, uint16_t port)
 {
 	__builtin_outb(value, port);
 }
 
-static void outw(unsigned short value, unsigned short port)
+static inline void outw(uint16_t value, uint16_t port)
 {
 	__builtin_outw(value, port);
 }
 
-static void outl(unsigned int value, unsigned short port)
+static inline void outl(uint32_t value, uint16_t port)
 {
 	__builtin_outl(value, port);
 }
 
 
-static unsigned char inb(unsigned short port)
+static inline uint8_t inb(uint16_t port)
 {
 	return __builtin_inb(port);
 }
 
 
-static unsigned char inw(unsigned short port)
+static inline uint16_t inw(uint16_t port)
 {
 	return __builtin_inw(port);
 }
 
-static unsigned char inl(unsigned short port)
+static inline uint32_t inl(uint16_t port)
 {
 	return __builtin_inl(port);
 }

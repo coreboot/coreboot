@@ -60,13 +60,13 @@ static void main(void)
 		goto fallback_image;
 	}
  normal_image:
-	asm("jmp __normal_image" 
+	asm volatile ("jmp __normal_image" 
 		: /* outputs */ 
 		: "a" (bist) /* inputs */
 		: /* clobbers */
 		);
  cpu_reset:
-	asm("jmp __cpu_reset"
+	asm volatile ("jmp __cpu_reset"
 		: /* outputs */ 
 		: "a"(bist) /* inputs */
 		: /* clobbers */

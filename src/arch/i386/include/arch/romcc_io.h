@@ -3,34 +3,66 @@
 
 #include <stdint.h>
 
+
+static inline uint8_t read8(unsigned long addr)
+{
+	return *((volatile uint8_t *)(addr));
+}
+
+static inline uint16_t read16(unsigned long addr)
+{
+	return *((volatile uint16_t *)(addr));
+}
+
+static inline uint32_t read32(unsigned long addr)
+{
+	return *((volatile uint32_t *)(addr));
+}
+
+static inline void write8(unsigned long addr, uint8_t value)
+{
+	*((volatile uint8_t *)(addr)) = value;
+}
+
+static inline void write16(unsigned long addr, uint16_t value)
+{
+	*((volatile uint16_t *)(addr)) = value;
+}
+
+static inline void write32(unsigned long addr, uint32_t value)
+{
+	*((volatile uint32_t *)(addr)) = value;
+}
+
+
 typedef __builtin_div_t div_t;
 typedef __builtin_ldiv_t ldiv_t;
 typedef __builtin_udiv_t udiv_t;
 typedef __builtin_uldiv_t uldiv_t;
 
-static div_t div(int numer, int denom)
+static inline div_t div(int numer, int denom)
 {
 	return __builtin_div(numer, denom);
 }
 
-static ldiv_t ldiv(long numer, long denom)
+static inline ldiv_t ldiv(long numer, long denom)
 {
 	return __builtin_ldiv(numer, denom);
 }
 
-static udiv_t udiv(unsigned numer, unsigned denom)
+static inline udiv_t udiv(unsigned numer, unsigned denom)
 {
 	return __builtin_udiv(numer, denom);
 }
 
-static uldiv_t uldiv(unsigned long numer, unsigned long denom)
+static inline uldiv_t uldiv(unsigned long numer, unsigned long denom)
 {
 	return __builtin_uldiv(numer, denom);
 }
 
 
 
-int log2(int value)
+inline int log2(int value)
 {
 	/* __builtin_bsr is a exactly equivalent to the x86 machine
 	 * instruction with the exception that it returns -1  
@@ -60,7 +92,7 @@ int log2(int value)
 
 typedef unsigned device_t;
 
-static unsigned char pci_read_config8(device_t dev, unsigned where)
+static inline uint8_t pci_read_config8(device_t dev, unsigned where)
 {
 	unsigned addr;
 	addr = dev | where;
@@ -68,7 +100,7 @@ static unsigned char pci_read_config8(device_t dev, unsigned where)
 	return inb(0xCFC + (addr & 3));
 }
 
-static unsigned short pci_read_config16(device_t dev, unsigned where)
+static inline uint16_t pci_read_config16(device_t dev, unsigned where)
 {
 	unsigned addr;
 	addr = dev | where;
@@ -76,7 +108,7 @@ static unsigned short pci_read_config16(device_t dev, unsigned where)
 	return inw(0xCFC + (addr & 2));
 }
 
-static unsigned int pci_read_config32(device_t dev, unsigned where)
+static inline uint32_t pci_read_config32(device_t dev, unsigned where)
 {
 	unsigned addr;
 	addr = dev | where;
@@ -84,7 +116,7 @@ static unsigned int pci_read_config32(device_t dev, unsigned where)
 	return inl(0xCFC);
 }
 
-static void pci_write_config8(device_t dev, unsigned where, unsigned char value)
+static inline void pci_write_config8(device_t dev, unsigned where, uint8_t value)
 {
 	unsigned addr;
 	addr = dev | where;
@@ -92,7 +124,7 @@ static void pci_write_config8(device_t dev, unsigned where, unsigned char value)
 	outb(value, 0xCFC + (addr & 3));
 }
 
-static void pci_write_config16(device_t dev, unsigned where, unsigned short value)
+static inline void pci_write_config16(device_t dev, unsigned where, uint16_t value)
 {
 	unsigned addr;
 	addr = dev | where;
@@ -100,7 +132,7 @@ static void pci_write_config16(device_t dev, unsigned where, unsigned short valu
 	outw(value, 0xCFC + (addr & 2));
 }
 
-static void pci_write_config32(device_t dev, unsigned where, unsigned int value)
+static inline void pci_write_config32(device_t dev, unsigned where, uint32_t value)
 {
 	unsigned addr;
 	addr = dev | where;

@@ -159,7 +159,7 @@ static void main(void)
 	init_timer();
 
 	if (cpu_init_detected()) {
-		asm("jmp __cpu_reset");
+		asm volatile ("jmp __cpu_reset");
 	}
 
 	distinguish_cpu_resets();

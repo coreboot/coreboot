@@ -82,9 +82,10 @@ int console_tst_byte(void)
  */
 void post_code(uint8_t value)
 {
+#if !defined(NO_POST)
 #if CONFIG_SERIAL_POST==1
-	printk_info("POST: 0x%02x\n", value);
-#elsif !define(NO_POST)
+	printk_emerg("POST: 0x%02x\n", value);
+#endif
 	outb(value, 0x80);
 #endif
 }

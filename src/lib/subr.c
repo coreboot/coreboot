@@ -89,12 +89,8 @@ void error(char errmsg[])
  */
 void post_code(uint8_t value)
 {
-#if SERIAL_POST
-	unsigned long hi, lo;
-	// DAMMIT! This just broke!
-	//rdtsc(lo, hi);
-	printk_info("POST: 0x%02x, TSC Lo: %d, Hi: %d\n",
-	       value, lo, hi);
+#ifdef SERIAL_POST
+	printk_info("POST: 0x%02x\n", value);
 #endif
 	outb(value, 0x80);
 }

@@ -12,7 +12,7 @@ clear_fixed_var_mtrr:
 	testw	$0x00, %ax
 	jz	set_fixed_mtrr
 
-	movl	%eax, %ecx
+	movzwl	%ax, %ecx
 	xorl	%eax, %eax
 	wrmsr
 

@@ -21,6 +21,8 @@ southbridge_fixup()
     /* ENABLE SERIAL IRQ */
     pci_write_config_byte(pcidev, 0x70, 0x8);
     
+    /* ENABLE IDE CONTROLLER */
+    pci_write_config_byte(pcidev, 0x58, 0x4c);
     
 }
 

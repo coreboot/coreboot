@@ -4,7 +4,7 @@
 // FIX ME!
 unsigned long sizeram()
 {
-	return 64*1024*1024;
+	return 0; //64*1024*1024;
 }
 
 

@@ -1,0 +1,26 @@
+# Sample config file for Gigabit GA-6BXC
+
+# This will make a target directory of ./ga-6bxc
+target ga-6bxc
+
+# Gigabit GA-6BXC mainboard
+mainboard gigabit/ga-6bxc
+
+# Enable Serial Console for debugging
+option SERIAL_CONSOLE
+option NO_KEYBOARD
+
+# Enable MicroCode update and L2 Cache init for PII and PIII
+#option UPDATE_MICROCODE
+#option CONFIGURE_L2_CACHE
+
+option GA6BXC_256M
+option INBUF_COPY
+option DEFAULT_CONSOLE_LOGLEVEL=9
+option DEBUG
+
+# Path to your kernel (vmlinux)
+linux ~/proj/BIOS/freebios/linux
+
+# Kernel command line parameters
+commandline root=/dev/hda1 console=ttyS0,1152000 FS_MODE=ro hda=flash hdb=flash

@@ -183,7 +183,11 @@ int main(int argc, char **argv)
 			0x00000000UL, errno, strerror(errno));
 		exit(-2);
 	}
-	lb_table = find_lb_table(low_1MB + 0xf0000, low_1MB + 1024*1024);
+	lb_table = 0;
+	if (!lb_table)
+		lb_table = find_lb_table(low_1MB + 0x00000, low_1MB + 0x1000);
+	if (!lb_table)
+		lb_table = find_lb_table(low_1MB + 0xf0000, low_1MB + 1024*1024);
 	if (lb_table) {
 		printf("lb_table = 0x%08x\n", 
 			lb_table - (void *)low_1MB);

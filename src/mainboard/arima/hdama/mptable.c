@@ -92,14 +92,14 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 		if (dev) {
 			base = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 			base &= PCI_BASE_ADDRESS_MEM_MASK;
-			smp_write_ioapic(mc, 3, 0x11, base);
+			smp_write_ioapic(mc, 0x03, 0x11, base);
 		}
 		/* 8131 apic 4 */
 		dev = dev_find_slot(0, PCI_DEVFN(0x02,1));
 		if (dev) {
 			base = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 			base &= PCI_BASE_ADDRESS_MEM_MASK;
-			smp_write_ioapic(mc, 4, 0x11, base);
+			smp_write_ioapic(mc, 0x04, 0x11, base);
 		}
 	}
 
@@ -212,9 +212,9 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 
 	/* On board nics */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8131_1, (3<<2)|0, 0x03, 0x3);
+		bus_8131_1, (3<<2)|0, 0x02, 0x13);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8131_1, (4<<2)|0, 0x03, 0x0);
+		bus_8131_1, (4<<2)|0, 0x02, 0x13);
 
 	/* There is no extension information... */
 

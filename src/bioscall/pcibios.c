@@ -76,7 +76,7 @@ pcibios(
 			*peax = 0;
 				// busnum is an unsigned char;
 				// devfn is an int, so we mask it off. 
-			busdevfn = dev->bus->number | (dev->devfn & 0xff);
+			busdevfn = dev->bus->secondary | (dev->devfn & 0xff);
 			printk_debug("0x%x: return 0x%x\n", func, busdevfn);
 			*pebx = busdevfn;
 			retval = 0;

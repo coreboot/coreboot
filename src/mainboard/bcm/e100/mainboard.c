@@ -217,8 +217,6 @@ mainboard_fixup(void)
 
 	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, (void *)NULL);
 	pci_read_config_word(pcidev, 0x74, &acpibase);
-	/* Flash can not be flashed, enable USB device in undocumented Bit 6 */
-	pci_write_config_byte(pcidev, 0x45, 0xA0);
 
 	led_on(10);
 

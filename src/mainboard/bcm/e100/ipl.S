@@ -58,7 +58,7 @@ lpc_init_start:					# inits LPC bridge for accessing
 
 lpc_init_complete:	
 
-
+#if 0
 SET_VGA_SR13:
        movw $0x03c4,%dx           #SR5
        movb $0x05,%al
@@ -373,7 +373,7 @@ Clock_Gen_Exit:
 
 
 
-
+#endif
 	movw	$0x5501, %ax			# MDOE# enable, this bit
 	CALL_SP(write_pci_register)		# should be set before sizing.
 

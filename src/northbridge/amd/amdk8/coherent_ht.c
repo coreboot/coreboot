@@ -499,6 +499,7 @@ static bool check_connection(u8 src, u8 dest, u8 link)
 	return 1;
 }
 
+#if 0
 static unsigned int generate_row(u8 node, u8 row, u8 maxnodes)
 {
 	/* Routing Table Node i 
@@ -551,6 +552,8 @@ static unsigned int generate_row(u8 node, u8 row, u8 maxnodes)
 	
 	return ret;
 }
+#endif
+
 
 static void fill_row(u8 node, u8 row, u32 value)
 {

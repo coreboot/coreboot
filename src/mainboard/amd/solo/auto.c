@@ -17,6 +17,14 @@ static void memreset(const struct mem_controller *ctrl)
 {
 }
 
+static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
+{
+	/* since the AMD Solo is a UP only machine, we can 
+	 * always return the default row entry value
+	 */
+        return 0x00010101; /* default row entry */
+}
+
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"

@@ -40,12 +40,9 @@ register_setting_start:
 	shrl	$0x01, %ecx
 	
 init_northbridge:
-	movw	(%esi), %ax			# load the register address/value to %ax
+	lodsw	(%esi), %ax			# load the register address/value to %ax
 	xchgb	%al, %ah			# exchange address/values for write_common
 	call	write_northbridge_register
-
-	addl	$0x02, %esi
-	decl	%ecx
 	loopnz	init_northbridge
 
 	jmp	register_setting_end

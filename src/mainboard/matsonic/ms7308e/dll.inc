@@ -1,15 +1,15 @@
 /* Table for DLL Clock Control Register (0x8c - 0x8f), these
    register values are very Mainboard specific */
 
-#		Reg.	Value
-	.byte	0x8c,	0x66
-	.byte	0x8d,	0x66
-	.byte	0x8e,	0x03
-	.byte	0x8f,	0x55
+#	High Byte -> Register	Low Byte -> Value
+	.word	0x8c66
+	.word	0x8d66
+	.word	0x8e03
+	.word	0x8f55
 
 #ifdef SIS630S
-        .byte	0x8c,	0x27	# set Clock DLL control register
-        .byte	0x8d,	0x77	# 0x8c ~ 0x8f,
-        .byte	0x8e,	0x01	# these values are very M/B
-        .byte	0x8f,	0x07	# specific
+        .word	0x8c27	# set Clock DLL control register
+        .word	0x8d77	# 0x8c ~ 0x8f,
+        .word	0x8e01	# these values are very M/B
+        .word	0x8f07	# specific
 #endif /* SIS630S */

@@ -112,15 +112,26 @@ check_row_column:
 	jl	no_sdram	
 #endif /* SAFTY_CHECK */
 
-	subb	$0x0b, %ch
+#if 1
+	subb	$0x0b, %ch			# row = row - 11
+	shlb	$0x02, %ch			# row * 4
+
+	addb	%ch, %cl			# column + row * 4
+	movzbw	%cl, %bx			# Get the SDRAM type.
+
+	addw	%bx, %si			# sdram_type_bank[column + row * 4]
+	movb	-8(%si), %cl			# sdram_type_bank[column + row * 4 - 8]
+#else
+	/* This one is DANGEROUS TOO, be careful about OVERFLOW !!! */
 	shlb	$0x02, %ch			# row * 4
 
 	addb	%ch, %cl			# column + row *4
-	movzbw	%cl, %bx			# Get the SDRAM type.
+	xorb	%ch, %ch
 
-	addw	%bx, %si
-	movb	-8(%si), %cl			# sdram_type_bank[column + row *4]
-
+	addw	%cx, %si			# sdram_type_bank[column + row * 4]
+	movb	-52(%si), %cl			# sdram_type_bank[column + row * 4 - 52]	
+#endif
+	
 #ifdef SIZE_ALL
 	movb	%ah, %bh			# Restore DIMM slot number from AH to BH
 #endif /* SIZE_ALL */
@@ -184,15 +195,11 @@ no_sdram:
 
 	movw	$pci_init_table, %si
 init_sdram:
-	movb	(%si), %ah
-	testb	%ah, %ah
+	lodsw	(%si), %ax
+	testw	%ax, %ax
 	jz	init_complete
 
-	incw	%si
-	movb	(%si), %al
 	CALL_SP(write_pci_register)
-
-	incw	%si
 	jmp	init_sdram
 
 init_complete:
@@ -367,17 +374,17 @@ sdram_type_bank_2:
 	.byte	0b0011,	0b0111,	0b1011,	0b1111	# 13
 
 pci_init_table:
-#		Reg.	Value
+#	High Byte -> Register	Low Byte -> Value
 
 #include "dll.inc"
 
-	.byte	0x57,	0x80	# Precharge
-	.byte	0x57,	0x40	# Mode Register Set
-	.byte	0x57,	0x20	# Refresh
-	.byte	0x57,	0x20	# Refresh
-	.byte	0x57,	0x20	# Refresh
-	.byte	0x52,	0x01	# Refresh Cycle Enable
-	.byte	0x00 /* Null, End of table */
+	.word	0x5780	# Precharge
+	.word	0x5740	# Mode Register Set
+	.word	0x5720	# Refresh
+	.word	0x5720	# Refresh
+	.word	0x5720	# Refresh
+	.word	0x5201	# Refresh Cycle Enable
+	.word	0x0000	/* Null, End of table */
 
 	.org 0x01f0
 reset_vector:

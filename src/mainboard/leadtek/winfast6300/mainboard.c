@@ -15,6 +15,6 @@ final_mainboard_fixup(void)
     final_superio_fixup();
 
     printk(KERN_INFO 
-	"Final mainboard fixup done for Winfast 6300 (and similar)\n");
+	   "Final mainboard fixup done for Winfast 6300 (and similar)\n");
 
 }

@@ -43,8 +43,9 @@ void nvram_on()
 	/* turn on sis630 nvram. */
 	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, (void *)NULL);
 	if (pcidev != NULL) {
-		/* Enable FFF80000 to FFFFFFFF decode */
-		pci_write_config_byte(pcidev, 0x40, 0x03);
+		/* Enable FFF80000 to FFFFFFFF decode. You have to also enable
+		   PCI Posted write for devices on sourthbridge */
+		pci_write_config_byte(pcidev, 0x40, 0x33);
 		/* Flash can be flashed */
 		pci_write_config_byte(pcidev, 0x45, 0x40);
 		printk(KERN_INFO "Enabled in SIS 503 regs 0x40 and 0x45\n");
@@ -75,6 +76,7 @@ final_southbridge_fixup()
 {
 	struct pci_dev *pcidev;
 
+#ifdef OLD_KERNEL_HACK
 	// ethernet fixup. This should all work, and doesn't, yet. 
 	// so we hack it for now. 
 	// need a manifest constant for the enet device. 
@@ -168,6 +170,7 @@ final_southbridge_fixup()
 	} else {
 		printk(KERN_EMERG "Can't find south bridge!\n");
 	}
+#endif /* OLD_KERNEL_HACK */
 
 	printk(KERN_INFO "Southbridge fixup done for SIS 503\n");
 }

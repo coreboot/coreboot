@@ -11,7 +11,7 @@
 #define SPL_RAM_SEG		0x8000
 
 #define DOC_SPL_START_BLK	2	/* 0,1 for IPL */
-#define DOC_SPL_SIZE_IN_PAGE	126     /* 1 page = 512 bytes, 256k */
+#define DOC_SPL_SIZE_IN_PAGE	126     /* 1 page = 512 bytes, total 63kB */
 
 #define RET_LABEL(label)	\
 	jmp label##_done

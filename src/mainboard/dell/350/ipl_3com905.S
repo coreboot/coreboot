@@ -41,11 +41,27 @@ dell350_3com905_start:
 	movw	%cs, %ax			# makes data segment ==
 	movw	%ax, %ds			#       code segment
 
-	# move the eip to eax, then mask off the bits, 
-	# so we have an address for the docipl. This address is used
-	# to diddle the docipl so we can read blocks.
-
-	# enable writes on the docipl. 
+	# select bios expansion rom on 3com 905
+	# THIS ASSUMES PCI of 0:e.0
+	movl	$0x80007030, %eax
+	movw	$0xcf8, %dx
+	outl	%eax, %dx
+	# read in expansion rom base
+	movb	$0xfc, %dl
+	# %dx now contains $0xcfc
+	inl	%dx, %eax
+	movl	%eax, %esi
+	# %esi now has BAR of expansion rom
+	# turn on rom: set bit 0
+	orb	$1, %al
+	outl	%dx, %eax
+	# expansion ROM is on. 
+	# Base is in %esi, 
+	# now we need a way to issue writes to a 32-bit
+	# address. How?
+	
+	# should we relocate to low address (can't shadowing is on!)
+	# now what?
 
 init_complete:
 sis630ipl_start:

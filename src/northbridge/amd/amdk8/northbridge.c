@@ -5,6 +5,7 @@
 #include <part/sizeram.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_ids.h>
 #include <device/hypertransport.h>
 #include <device/chip.h>
 #include <stdlib.h>
@@ -233,8 +234,12 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 			((unsigned int)(dev->link[link].subordinate) << 16));
 		pci_write_config32(dev, dev->link[link].cap + 0x14, busses);
 
-		config_busses &= 0x0000ffff;
-		config_busses |= ((dev->link[link].secondary) << 16) |
+		config_busses &= 0x000fc88;
+		config_busses |= 
+			(3 << 0) |  /* rw enable, no device compare */
+			(( nodeid & 7) << 4) | 
+			(( link & 3 ) << 8) |  
+			((dev->link[link].secondary) << 16) |
 			((dev->link[link].subordinate) << 24);
 		f1_write_config32(config_reg, config_busses);
 
@@ -256,13 +261,7 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 			((unsigned int) (dev->link[link].subordinate) << 16);
 		pci_write_config32(dev, dev->link[link].cap + 0x14, busses);
 
-		config_busses &= 0x000fc88;
-		config_busses |= 
-			(3 << 0) |  /* rw enable, no device compare */
-			(( nodeid & 7) << 4) | 
-			(( link & 3 ) << 8) |  
-			((dev->link[link].secondary) << 16) |
-			((dev->link[link].subordinate) << 24);
+		config_busses = (config_busses & 0x00ffffff) | (dev->link[link].subordinate << 24);
 		f1_write_config32(config_reg, config_busses);
 #if 1
 		printk_debug("Hypertransport scan link done\n");
@@ -469,7 +468,7 @@ static void amdk8_set_resources(device_t dev)
 unsigned int amdk8_scan_root_bus(device_t root, unsigned int max)
 {
 	unsigned reg;
-	/* Unmap all of HT chains */
+	/* Unmap all of the HT chains */
 	for(reg = 0xe0; reg <= 0xec; reg += 4) {
 		f1_write_config32(reg, 0);
 	}

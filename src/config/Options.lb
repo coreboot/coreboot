@@ -117,7 +117,7 @@ define OBJCOPY
 	comment "Objcopy command"
 end
 define LINUXBIOS_VERSION
-	default "1.1.5"
+	default "1.1.6"
 	export always
 	comment "LinuxBIOS version"
 end
@@ -318,6 +318,12 @@ define CONFIG_UNCOMPRESSED
 	export always
 	comment "Set for uncompressed image"
 end
+define CONFIG_LB_MEM_TOPK
+	format "%d"
+	default 1024
+	export always
+	comment "Kilobytes of memory to initialized before executing code from RAM"
+end
 define HAVE_OPTION_TABLE
 	default 0
 	export always
@@ -329,6 +335,29 @@ define USE_OPTION_TABLE
 	export always
 	comment "Use option table"
 end
+
+###############################################
+# CMOS variable options
+###############################################
+define LB_CKS_RANGE_START
+	default 49
+	format "%d"
+	export always
+	comment "First CMOS byte to use for LinuxBIOS options"
+end
+define LB_CKS_RANGE_END
+	default 125
+	format "%d"
+	export always
+	comment "Last CMOS byte to use for LinuxBIOS options"
+end
+define LB_CKS_LOC
+	default 126
+	format "%d"
+	export always
+	comment "Pair of bytes to use for CMOS checksum"
+end
+
 
 ###############################################
 # Build targets
@@ -427,15 +456,15 @@ define MAINBOARD_VENDOR
 	export always
 	comment "Vendor of mainboard"
 end
+define MAINBOARD_POWER_ON_AFTER_POWER_FAIL
+	default none
+	export used
+	comment "Default power on after power fail setting"
+end
 define CONFIG_SYS_CLK_FREQ
 	default none
 	export used
 	comment "System clock frequency in MHz"
-end
-define CONFIG_KEYBOARD
-	default 0
-	export used
-	comment "Run PC keyboard enable code"
 end
 define CONFIG_LEGACY_VGABIOS
 	default 0

@@ -10,6 +10,7 @@
 #include <cpu/p6/msr.h>
 #include <cpu/p6/apic.h>
 #include <cpu/p5/cpuid.h>
+#include <arch/smp/lapic.h>
 #if 0
 #include <cpu/l2_cache.h>
 #endif
@@ -97,8 +98,7 @@ static void interrupts_on()
 			APIC_DELIVERY_MODE_NMI)
 		);
 
-	printk_debug(" apic_id: %d ",
-		apic_read(APIC_ID));
+	printk_debug(" apic_id: %d ", lapicid());
 
 #else /* APIC */
 #if i686==1

@@ -3,6 +3,7 @@
 #include <device/device.h>
 #include <device/path.h>
 #include <device/pci.h>
+#include <device/pci_ids.h>
 #include <device/hypertransport.h>
 #include <device/chip.h>
 #include <part/hard_reset.h>
@@ -25,6 +26,30 @@ static device_t ht_scan_get_devs(device_t *old_devices)
 	return first;
 }
 
+static unsigned ht_read_freq_cap(device_t dev, unsigned pos)
+{
+	/* Handle bugs in valid hypertransport frequency reporting */
+	unsigned freq_cap;
+
+	freq_cap = pci_read_config16(dev, pos);
+	freq_cap &= ~(1 << HT_FREQ_VENDOR); /* Ignore Vendor HT frequencies */
+
+	/* AMD 8131 Errata 48 */
+	if ((dev->vendor == PCI_VENDOR_ID_AMD) &&
+		(dev->device == PCI_DEVICE_ID_AMD_8131_PCIX)) {
+		freq_cap &= ~(1 << HT_FREQ_800Mhz);
+	}
+	/* AMD 8151 Errata 23 */
+	if ((dev->vendor == PCI_VENDOR_ID_AMD) &&
+		(dev->device == PCI_DEVICE_ID_AMD_8151_SYSCTRL)) {
+		freq_cap &= ~(1 << HT_FREQ_800Mhz);
+	}
+	/* AMD K8 Unsupported 1Ghz? */
+	if ((dev->vendor == PCI_VENDOR_ID_AMD) && (dev->device == 0x1100)) {
+		freq_cap &= ~(1 << HT_FREQ_1000Mhz);
+	}
+	return freq_cap;
+}
 
 struct prev_link {
 	struct device *dev;
@@ -48,18 +73,13 @@ static int ht_setup_link(struct prev_link *prev, device_t dev, unsigned pos)
 	reset_needed = 0;
 
 	/* Read the capabilities */
-	present_freq_cap   = pci_read_config16(dev, pos + PCI_HT_CAP_SLAVE_FREQ_CAP0);
-	upstream_freq_cap  = pci_read_config16(prev->dev, prev->pos + prev->freq_cap_off);
+	present_freq_cap   = ht_read_freq_cap(dev, pos + PCI_HT_CAP_SLAVE_FREQ_CAP0);
+	upstream_freq_cap  = ht_read_freq_cap(prev->dev, prev->pos + prev->freq_cap_off);
 	present_width_cap  = pci_read_config8(dev, pos + PCI_HT_CAP_SLAVE_WIDTH0);
 	upstream_width_cap = pci_read_config8(prev->dev, prev->pos + prev->config_off);
 	
 	/* Calculate the highest useable frequency */
-#if 0
 	freq = log2(present_freq_cap & upstream_freq_cap);
-#else
-	/* Errata for 8131 - freq 5 has hardware problems don't support it */
-	freq = log2(present_freq_cap & upstream_freq_cap & 0x1f);
-#endif
 
 	/* Calculate the highest width */
 	ln_upstream_width_in = link_width_to_pow2[upstream_width_cap & 7];
@@ -144,9 +164,7 @@ static unsigned ht_lookup_slave_capability(struct device *dev)
 				break;
 			}
 		}
-		if(pos) {
-			pos = pci_read_config8(dev, pos + PCI_CAP_LIST_NEXT);
-		}
+		pos = pci_read_config8(dev, pos + PCI_CAP_LIST_NEXT);
 	}
 	return pos;
 }
@@ -244,9 +262,12 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int max)
 		else {
 			/* Add this device to the pci bus chain */
 			*chain_last = dev;
-			/* Run the magice enable/disable sequence for the device */
+			/* Run the magice enable sequence for the device */
 			if (dev->chip && dev->chip->control && dev->chip->control->enable_dev) {
+				int enable  = dev->enable;
+				dev->enable = 1;
 				dev->chip->control->enable_dev(dev);
+				dev->enable = enable;
 			}
 			/* Now read the vendor and device id */
 			id = pci_read_config32(dev, PCI_VENDOR_ID);
@@ -320,9 +341,11 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int max)
 #if HAVE_HARD_RESET == 1
 	if(reset_needed) {
 		printk_info("HyperT reset needed\n");
-// By LYH		hard_reset();
-	} else 
-	printk_debug("HyperT reset not needed\n");
+		hard_reset();
+	}
+	else {
+		printk_debug("HyperT reset not needed\n");
+	}
 #endif
 	if (next_unitid > 0x1f) {
 		next_unitid = 0x1f;

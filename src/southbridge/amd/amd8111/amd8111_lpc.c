@@ -7,8 +7,10 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <device/chip.h>
+#include <pc80/mc146818rtc.h>
 #include "amd8111.h"
 
+#define NMI_OFF 0
 
 struct ioapicreg {
 	unsigned int reg;
@@ -100,8 +102,7 @@ static void lpc_init(struct device *dev)
 {
 	uint8_t byte;
 	int pwr_on=-1;
-
-	printk_debug("lpc_init\n");
+	int nmi_option;
 
 	/* IO APIC initialization */
 	byte = pci_read_config8(dev, 0x4B);
@@ -127,6 +128,31 @@ static void lpc_init(struct device *dev)
 	byte |= (1 << 5);
 	pci_write_config8(dev, 0x41, byte);
 
+	/* Enable Error reporting */
+	/* Set up sync flood detected */
+	byte = pci_read_config8(dev, 0x47);
+	byte |= (1 << 1);
+	pci_write_config8(dev, 0x47, byte);
+
+	/* Set up NMI on errors */
+	byte = pci_read_config8(dev, 0x40);
+	byte |= (1 << 1); /* clear PW2LPC error */
+	byte |= (1 << 6); /* clear LPCERR */
+	pci_write_config8(dev, 0x40, byte);
+	nmi_option = NMI_OFF;
+	get_option(&nmi_option, "nmi");
+	if(nmi_option) {			
+		byte |= (1 << 7); /* set NMI */
+		pci_write_config8(dev, 0x40, byte);
+	}
+	
+	/* Initialize the real time clock */
+	rtc_init(0);
+
+	/* Initialize isa dma */
+	isa_dma_init();
+
+	/* Initialize the High Precision Event Timers */
 	enable_hpet(dev);
 }
 
@@ -146,7 +172,7 @@ static void amd8111_lpc_read_resources(device_t dev)
 	dev->resource[reg].align = 0;
 	dev->resource[reg].gran  = 0;
 	dev->resource[reg].limit = 0;
-	dev->resource[reg].flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_SET;
+	dev->resource[reg].flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 	dev->resource[reg].index = 0;
 	reg++;
 	
@@ -155,7 +181,7 @@ static void amd8111_lpc_read_resources(device_t dev)
 	dev->resource[reg].align = 0;
 	dev->resource[reg].gran  = 0;
 	dev->resource[reg].limit = 0;
-	dev->resource[reg].flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_SET;
+	dev->resource[reg].flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 	dev->resource[reg].index = 0;
 	reg++;
 	
@@ -176,4 +202,3 @@ static struct pci_driver lpc_driver __pci_driver = {
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = PCI_DEVICE_ID_AMD_8111_ISA,
 };
-

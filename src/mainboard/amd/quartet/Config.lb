@@ -251,19 +251,29 @@ northbridge amd/amdk8 "mc0"
 		pci 1:0.2 on
 		pci 1:1.0 on
 		superio NSC/pc87360 link 1
-			pnp 2e.0
-			pnp 2e.1
-			pnp 2e.2
-			pnp 2e.3
-			pnp 2e.4
-			pnp 2e.5
-			pnp 2e.6
-			pnp 2e.7
-			pnp 2e.8
-			pnp 2e.9
-			pnp 2e.a
-			register "com1" = "{1, 0, 0x3f8, 4}"
-			register "lpt" = "{1}"
+			pnp 2e.0 off  # Floppy 
+				 io 0x60 = 0x3f0
+				irq 0x70 = 6
+				drq 0x74 = 2
+			pnp 2e.1 off  # Parallel Port
+				 io 0x60 = 0x378
+				irq 0x70 = 7
+			pnp 2e.2 off # Com 2
+				 io 0x60 = 0x2f8
+				irq 0x70 = 3
+			pnp 2e.3 on  # Com 1
+				 io 0x60 = 0x3f8
+				irq 0x70 = 4
+			pnp 2e.4 off # SWC
+			pnp 2e.5 off # Mouse
+			pnp 2e.6 on  # Keyboard
+				 io 0x60 = 0x60
+				 io 0x62 = 0x64
+				irq 0x70 = 1
+			pnp 2e.7 off # GPIO
+			pnp 2e.8 off # ACB
+			pnp 2e.9 off # FSCM
+			pnp 2e.a off # WDT  
 		end
 	end
 end

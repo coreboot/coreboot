@@ -1,3 +1,14 @@
+- 1.1.6
+  - pnp/superio devices are now handled cleanly with very little code
+  - Initial support for finding x86 BIST errors
+  - static resource assignments can now be specified in Config.lb
+  - special VGA I/O decode now should work
+  - added generic PCI error reporting enables
+  - build_opt_tbl now generates a header that allows cmos settings to
+    be read from romcc compiled code.
+  - split IORESOURCE_SET into IORESOURCE_ASSIGNED and IORESOURCE_STORED
+  - romcc now gracesfully handles function pointers instead of dying mysteriously
+  - First regression test in amdk8/raminit_test
 - 1.1.5
   - O2, enums, and switch statements work in romcc
   - Support for compiling romcc on non x86 platforms

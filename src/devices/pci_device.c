@@ -27,19 +27,14 @@
  * @param resource  Pointer to the resource structure
  * @param index     Address of the pci configuration register
  */
-static void pci_get_resource(struct device *dev, struct resource *resource, unsigned long index)
+static struct resource *pci_get_resource(struct device *dev, unsigned long index)
 {
+	struct resource *resource;
 	uint32_t addr, size, base;
 	unsigned long type;
 
 	/* Initialize the resources to nothing */
-	resource->base = 0;
-	resource->size = 0;
-	resource->align = 0;
-	resource->gran = 0;
-	resource->limit = 0;
-	resource->flags = 0;
-	resource->index = index;
+	resource = get_resource(dev, index);
 
 	addr = pci_read_config32(dev, index);
 
@@ -87,7 +82,7 @@ static void pci_get_resource(struct device *dev, struct resource *resource, unsi
 		resource->size = (~((size | 0xffff0000) & PCI_BASE_ADDRESS_IO_MASK)) +1;
 		resource->align = log2(resource->size);
 		resource->gran = resource->align;
-		resource->flags = IORESOURCE_IO;
+		resource->flags |= IORESOURCE_IO;
 		resource->limit = 0xffff;
 	} 
 	else {
@@ -96,7 +91,7 @@ static void pci_get_resource(struct device *dev, struct resource *resource, unsi
 		resource->size = (~(size &PCI_BASE_ADDRESS_MEM_MASK)) +1;
 		resource->align = log2(resource->size);
 		resource->gran = resource->align;
-		resource->flags = IORESOURCE_MEM;
+		resource->flags |= IORESOURCE_MEM;
 		if (type & PCI_BASE_ADDRESS_MEM_PREFETCH) {
 			resource->flags |= IORESOURCE_PREFETCH;
 		}
@@ -145,7 +140,7 @@ static void pci_get_resource(struct device *dev, struct resource *resource, unsi
 		}
 	}
 	/* dev->size holds the flags... */
-	return;
+	return resource;
 }
 
 /** Read the base address registers for a given device. 
@@ -154,75 +149,63 @@ static void pci_get_resource(struct device *dev, struct resource *resource, unsi
  */
 static void pci_read_bases(struct device *dev, unsigned int howmany)
 {
-	unsigned int reg;
 	unsigned long index;
 
-	reg = dev->resources;
-	for(index = PCI_BASE_ADDRESS_0; 
-	    (reg < MAX_RESOURCES) && (index < PCI_BASE_ADDRESS_0 + (howmany << 2)); ) {
+	for(index = PCI_BASE_ADDRESS_0; (index < PCI_BASE_ADDRESS_0 + (howmany << 2)); ) {
 		struct resource *resource;
-		resource = &dev->resource[reg];
-		pci_get_resource(dev, resource, index);
-		reg += (resource->flags & (IORESOURCE_IO | IORESOURCE_MEM))? 1:0;
+		resource = pci_get_resource(dev, index);
 		index += (resource->flags & IORESOURCE_PCI64)?8:4;
 	}
-	dev->resources = reg;
+	compact_resources(dev);
 }
 
 
 static void pci_bridge_read_bases(struct device *dev)
 {
-	unsigned int reg = dev->resources;
+	struct resource *resource;
 
 	/* FIXME handle bridges without some of the optional resources */
 
 	/* Initialize the io space constraints on the current bus */
-	dev->resource[reg].base  = 0;
-	dev->resource[reg].size  = 0;
-	dev->resource[reg].align = log2(PCI_IO_BRIDGE_ALIGN);
-	dev->resource[reg].gran  = log2(PCI_IO_BRIDGE_ALIGN);
-	dev->resource[reg].limit = 0xffffUL;
-	dev->resource[reg].flags = IORESOURCE_IO | IORESOURCE_PCI_BRIDGE;
-	dev->resource[reg].index = PCI_IO_BASE;
-	compute_allocate_resource(&dev->link[0], &dev->resource[reg],
+	resource = get_resource(dev, PCI_IO_BASE);
+	resource->size  = 0;
+	resource->align = log2(PCI_IO_BRIDGE_ALIGN);
+	resource->gran  = log2(PCI_IO_BRIDGE_ALIGN);
+	resource->limit = 0xffffUL;
+	resource->flags |= IORESOURCE_IO | IORESOURCE_PCI_BRIDGE;
+	compute_allocate_resource(&dev->link[0], resource,
 		IORESOURCE_IO, IORESOURCE_IO);
-	reg++;
 
 	/* Initiliaze the prefetchable memory constraints on the current bus */
-	dev->resource[reg].base = 0;
-	dev->resource[reg].size = 0;
-	dev->resource[reg].align = log2(PCI_MEM_BRIDGE_ALIGN);
-	dev->resource[reg].gran  = log2(PCI_MEM_BRIDGE_ALIGN);
-	dev->resource[reg].limit = 0xffffffffUL;
-	dev->resource[reg].flags = IORESOURCE_MEM | IORESOURCE_PREFETCH | IORESOURCE_PCI_BRIDGE;
-	dev->resource[reg].index = PCI_PREF_MEMORY_BASE;
-	compute_allocate_resource(&dev->link[0], &dev->resource[reg],
+	resource = get_resource(dev, PCI_PREF_MEMORY_BASE);
+	resource->size = 0;
+	resource->align = log2(PCI_MEM_BRIDGE_ALIGN);
+	resource->gran  = log2(PCI_MEM_BRIDGE_ALIGN);
+	resource->limit = 0xffffffffUL;
+	resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH | IORESOURCE_PCI_BRIDGE;
+	resource->index = PCI_PREF_MEMORY_BASE;
+	compute_allocate_resource(&dev->link[0], resource,
 		IORESOURCE_MEM | IORESOURCE_PREFETCH, 
 		IORESOURCE_MEM | IORESOURCE_PREFETCH);
-	reg++;
 
 	/* Initialize the memory resources on the current bus */
-	dev->resource[reg].base = 0;
-	dev->resource[reg].size = 0;
-	dev->resource[reg].align = log2(PCI_MEM_BRIDGE_ALIGN);
-	dev->resource[reg].gran  = log2(PCI_MEM_BRIDGE_ALIGN);
-	dev->resource[reg].limit = 0xffffffffUL;
-	dev->resource[reg].flags = IORESOURCE_MEM | IORESOURCE_PCI_BRIDGE;
-	dev->resource[reg].index = PCI_MEMORY_BASE;
-	compute_allocate_resource(&dev->link[0], &dev->resource[reg],
-		IORESOURCE_MEM | IORESOURCE_PREFETCH, 
+	resource = get_resource(dev, PCI_MEMORY_BASE);
+	resource->size = 0;
+	resource->align = log2(PCI_MEM_BRIDGE_ALIGN);
+	resource->gran  = log2(PCI_MEM_BRIDGE_ALIGN);
+	resource->limit = 0xffffffffUL;
+	resource->flags = IORESOURCE_MEM | IORESOURCE_PCI_BRIDGE;
+	compute_allocate_resource(&dev->link[0], resource,
+		IORESOURCE_MEM | IORESOURCE_PREFETCH,
 		IORESOURCE_MEM);
-	reg++;
 
-	dev->resources = reg;
+	compact_resources(dev);
 }
 
 
 void pci_dev_read_resources(struct device *dev)
 {
 	uint32_t addr;
-	dev->resources = 0;
-	memset(&dev->resource[0], 0, sizeof(dev->resource));
 	pci_read_bases(dev, 6);
 	addr = pci_read_config32(dev, PCI_ROM_ADDRESS);
 	dev->rom_address = (addr == 0xffffffff)? 0 : addr;
@@ -231,8 +214,6 @@ void pci_dev_read_resources(struct device *dev)
 void pci_bus_read_resources(struct device *dev)
 {
 	uint32_t addr;
-	dev->resources = 0;
-	memset(&dev->resource, 0, sizeof(dev->resource));
 	pci_bridge_read_bases(dev);
 	pci_read_bases(dev, 2);
 	
@@ -246,14 +227,19 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 {
 	unsigned long base, limit;
 	unsigned char buf[10];
-	unsigned long align;
+	unsigned long gran;
 
 	/* Make certain the resource has actually been set */
-	if (!(resource->flags & IORESOURCE_SET)) {
+	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
 #if 1
 		printk_err("ERROR: %s %02x not allocated\n",
 			dev_path(dev), resource->index);
 #endif
+		return;
+	}
+
+	/* If I have already stored this resource don't worry about it */
+	if (resource->flags & IORESOURCE_STORED) {
 		return;
 	}
 
@@ -272,12 +258,20 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 	}
 	/* Get the base address */
 	base = resource->base;
-	/* Get the resource alignment */
-	align = 1UL << resource->align;
+	/* Get the resource granularity */
+	gran = 1UL << resource->gran;
+
+	/* For a non bridge resource granularity and alignment are the same.
+	 * For a bridge resource align is the largest needed alignment below
+	 * the bridge.  While the granularity is simply how many low bits of the
+	 * address cannot be set.
+	 */
 	
 	/* Get the limit (rounded up) */
-	limit = base + ((resource->size + align - 1UL) & ~(align - 1UL)) -1UL;
+	limit = base + ((resource->size + gran - 1UL) & ~(gran - 1UL)) -1UL;
 	
+	/* Now store the resource */
+	resource->flags |= IORESOURCE_STORED;
 	if (!(resource->flags & IORESOURCE_PCI_BRIDGE)) {
 		/*
 		 * some chipsets allow us to set/clear the IO bit. 
@@ -326,6 +320,8 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 		pci_write_config32(dev, PCI_PREF_LIMIT_UPPER32, 0);
 	}
 	else {
+		/* Don't let me think I stored the resource */
+		resource->flags &= ~IORESOURCE_STORED;
 		printk_err("ERROR: invalid resource->index %x\n",
 			resource->index);
 	}
@@ -386,6 +382,7 @@ void pci_dev_enable_resources(struct device *dev)
 	uint16_t command;
 	command = pci_read_config16(dev, PCI_COMMAND);
 	command |= dev->command;
+	command |= (PCI_COMMAND_PARITY + PCI_COMMAND_SERR); /* error check */
 	printk_debug("%s cmd <- %02x\n", dev_path(dev), command);
 	pci_write_config16(dev, PCI_COMMAND, command);
 
@@ -397,6 +394,7 @@ void pci_bus_enable_resources(struct device *dev)
 	uint16_t ctrl;
 	ctrl = pci_read_config16(dev, PCI_BRIDGE_CONTROL);
 	ctrl |= dev->link[0].bridge_ctrl;
+	ctrl |= (PCI_BRIDGE_CTL_PARITY + PCI_BRIDGE_CTL_SERR); /* error check */
 	printk_debug("%s bridge ctrl <- %04x\n", dev_path(dev), ctrl);
 	pci_write_config16(dev, PCI_BRIDGE_CONTROL, ctrl);
 
@@ -560,9 +558,12 @@ unsigned int pci_scan_bus(struct bus *bus,
 			dev = alloc_dev(bus, &dummy.path);
 		}
 		else {
-			/* Run the magic enable/disable sequence for the device */
+			/* Run the magic enable sequence for the device */
 			if (dev->chip && dev->chip->control && dev->chip->control->enable_dev) {
+				int enable  = dev->enable;
+				dev->enable = 1;
 				dev->chip->control->enable_dev(dev);
+				dev->enable = enable;
 			}
 			/* Now read the vendor and device id */
 			id = pci_read_config32(dev, PCI_VENDOR_ID);
@@ -584,7 +585,7 @@ unsigned int pci_scan_bus(struct bus *bus,
 		 */
 		set_pci_ops(dev);
 		/* Error if we don't have some pci operations for it */
-		if (dev->enable && !dev->ops) {
+		if (!dev->ops) {
 			printk_err("%s No device operations\n",
 				dev_path(dev));
 			continue;
@@ -593,6 +594,9 @@ unsigned int pci_scan_bus(struct bus *bus,
 		/* Now run the magic enable/disable sequence for the device */
 		if (dev->ops && dev->ops->enable) {
 			dev->ops->enable(dev);
+		}
+		else if (dev->chip && dev->chip->control && dev->chip->control->enable_dev) {
+			dev->chip->control->enable_dev(dev);
 		}
 
 		printk_debug("%s [%04x/%04x] %s\n", 

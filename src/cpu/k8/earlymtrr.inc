@@ -1,7 +1,11 @@
 #include <cpu/k8/mtrr.h>
 
+
+	/* Save off the BIST value */
+	movl	%eax, %ebp
+
 /* The fixed and variable MTRRs are powered-up with random values, clear them to
- * MTRR_TYPE_UNCACHABLE for safty reason 
+ * MTRR_TYPE_UNCACHEABLE for safty reason 
  */
 
 earlymtrr_start:
@@ -21,20 +25,20 @@ clear_fixed_var_mtrr:
 	jmp	clear_fixed_var_mtrr
 clear_fixed_var_mtrr_out:
 
-/* enable memory access for 0 - 8MB using top_mem */
+/* enable memory access for 0 - 1MB using top_mem */
 	movl	$TOP_MEM, %ecx
 	xorl	%edx, %edx
-	movl	$0x0800000, %eax
+	movl	$(((CONFIG_LB_MEM_TOPK << 10) + TOP_MEM_MASK) & ~TOP_MEM_MASK) , %eax
 	wrmsr
 
 set_var_mtrr:
-	/* enable caching for 0 - 128MB using variable mtrr */
+	/* enable caching for 0 - 1MB using variable mtrr */
 	movl	$0x200, %ecx
 	rdmsr
 	andl	$0xfffffff0, %edx
 	orl	$0x00000000, %edx
 	andl	$0x00000f00, %eax
-	orl	$0x00000006, %eax
+	orl	$(0x00000000 | MTRR_TYPE_WRBACK), %eax
 	wrmsr
 
 	movl	$0x201, %ecx
@@ -42,7 +46,7 @@ set_var_mtrr:
 	andl	$0xfffffff0, %edx
 	orl	$0x0000000f, %edx
 	andl	$0x000007ff, %eax
-	orl	$0xf0000800, %eax
+	orl	$((~((CONFIG_LB_MEM_TOPK << 10) - 1)) | 0x800), %eax
 	wrmsr
 
 #if defined(XIP_ROM_SIZE) && defined(XIP_ROM_BASE)
@@ -51,7 +55,7 @@ set_var_mtrr:
 	 */
 	movl	$0x202, %ecx
 	xorl	%edx, %edx
-	movl	$(XIP_ROM_BASE | 0x006), %eax
+	movl	$(XIP_ROM_BASE | MTRR_TYPE_WRBACK), %eax
 	wrmsr	
 
 	movl	$0x203, %ecx
@@ -62,7 +66,7 @@ set_var_mtrr:
 
 enable_mtrr:	
 	/* Set the default memory type and enable fixed and variable MTRRs */
-	movl	$0x2ff, %ecx
+	movl	$MTRRdefType_MSR, %ecx
 	xorl	%edx, %edx
 	/* Enable Variable MTRRs */
 	movl	$0x00000800, %eax
@@ -97,3 +101,5 @@ mem_top:
 	.long	0xC001001A, 0xC001001D
 	.long	0x000 /* NULL, end of table */
 earlymtrr_end:
+	/* Restore the BIST value */
+	movl	%ebp, %eax

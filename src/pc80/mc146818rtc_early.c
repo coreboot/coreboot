@@ -97,3 +97,14 @@ static int do_normal_boot(void)
 
 	return (byte & (1<<1));
 }
+
+static unsigned read_option(unsigned start, unsigned size, unsigned def)
+{
+#if USE_OPTION_TABLE == 1
+	unsigned byte;
+	byte = cmos_read(start/8);
+	return (byte >> (start & 7U)) & ((1U << size) - 1U);
+#else
+	return def;
+#endif
+}

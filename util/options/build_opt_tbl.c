@@ -3,6 +3,7 @@
 #include <sys/io.h>
 #include <string.h>
 #include <ctype.h>
+#include <errno.h>
 #include "../../src/include/pc80/mc146818rtc.h"
 #include "../../src/include/boot/linuxbios_tables.h"
 
@@ -99,9 +100,11 @@ void display_usage(void)
 {
         printf("Usage build_opt_table [-b] [--option filename]\n");
         printf("                [--config filename]\n");
+        printf("                [--header filename]\n");
         printf("b = build option_table.c\n");
         printf("--option = name of option table output file\n");
         printf("--config = build the definitions table from the given file\n");
+	printf("--header = ouput a header file with the definitions\n");
         exit(1);
 }
 
@@ -131,6 +134,67 @@ static unsigned long get_number(char *line, char **ptr, int base)
 	return value;
 }
 
+static int is_ident_digit(int c)
+{
+	int result;
+	switch(c) {
+	case '0':	case '1':	case '2':	case '3':
+	case '4':	case '5':	case '6':	case '7':
+	case '8':	case '9':
+		result = 1;
+		break;
+	default:
+		result = 0;
+		break;
+	}
+	return result;
+}
+
+static int is_ident_nondigit(int c)
+{
+	int result;
+	switch(c) {
+	case 'A':	case 'B':	case 'C':	case 'D':
+	case 'E':	case 'F':	case 'G':	case 'H':
+	case 'I':	case 'J':	case 'K':	case 'L':
+	case 'M':	case 'N':	case 'O':	case 'P':
+	case 'Q':	case 'R':	case 'S':	case 'T':
+	case 'U':	case 'V':	case 'W':	case 'X':
+	case 'Y':	case 'Z':
+	case 'a':	case 'b':	case 'c':	case 'd':
+	case 'e':	case 'f':	case 'g':	case 'h':
+	case 'i':	case 'j':	case 'k':	case 'l':
+	case 'm':	case 'n':	case 'o':	case 'p':
+	case 'q':	case 'r':	case 's':	case 't':
+	case 'u':	case 'v':	case 'w':	case 'x':
+	case 'y':	case 'z':
+	case '_':
+		result = 1;
+		break;
+	default:
+		result = 0;
+		break;
+	}
+	return result;
+}
+
+static int is_ident(char *str)
+{
+	int result;
+	int ch;
+	ch = *str;
+	result = 0;
+	if (is_ident_nondigit(ch)) {
+		do {
+			str++;
+			ch = *str;
+		} while(ch && (is_ident_nondigit(ch) || (is_ident_digit(ch))));
+		result = (ch == '\0');
+	}
+	return result;
+}
+
+
 /* This routine builds the cmos definition table from the cmos layout file
 	input The input comes from the configuration file which contains two parts
 		entries and enumerations. Each section is started with the key words
@@ -148,6 +212,7 @@ int main(int argc, char **argv)
 	int i;
 	char *config=0;
 	char *option=0;
+	char *header=0;
 	FILE *fp;
 	struct cmos_option_table *ct;
 	struct cmos_entries *ce;
@@ -188,11 +253,18 @@ int main(int argc, char **argv)
                                                 }
                                                 option=argv[++i];
                                                 break;
+					case 'h': /* Output a header file */
+						if (strcmp(&argv[i][2], "header") != 0) {
+							display_usage();
+						}
+						header=argv[++i];
+						break;
                                         default:
                                                 display_usage();
                                                 break;
                                 }
                                 break;
+
                         default:
                                 display_usage();
                                 break;
@@ -203,13 +275,13 @@ int main(int argc, char **argv)
 	/* Has the user specified a configuration file */
 	if(config) {	/* if yes, open it */
 		if((fp=fopen(config,"r"))==NULL){
-			printf("Error - Can not open config file %s\n",config);
+			fprintf(stderr, "Error - Can not open config file %s\n",config);
 			exit(1);  /* exit if it can not be opened */
 		}
 	}
 	else {  /* no configuration file specified, so try the default */
 		if((fp=fopen("cmos.layout","r"))==NULL){
-			printf("Error - Can not open cmos.layout\n");
+			fprintf(stderr, "Error - Can not open cmos.layout\n");
 			exit(1);  /* end of no configuration file is found */
 		}
 	}
@@ -254,11 +326,17 @@ int main(int argc, char **argv)
 		ce->config=(int)uc;
 		/* check bit and length ranges */
 		if(ce->bit>(CMOS_IMAGE_BUFFER_SIZE*8)) {
-                        printf("Error - bit is to big in line \n%s\n",line);
+                        fprintf(stderr, "Error - bit is to big in line \n%s\n",line);
                         exit(1);
                 }
 		if((ce->length>(MAX_VALUE_BYTE_LENGTH*8))&&(uc!='r')) {
-			printf("Error - Length is to long in line \n%s\n",line);
+			fprintf(stderr, "Error - Length is to long in line \n%s\n",line);
+			exit(1);
+		}
+		if (!is_ident(ce->name)) {
+			fprintf(stderr, 
+				"Error - Name %s is an invalid identifier in line\n %s\n", 
+				ce->name, line);
 			exit(1);
 		}
 		/* put in the record type */
@@ -353,43 +431,43 @@ int main(int argc, char **argv)
 		skip_spaces(line, &ptr);
 
 		if ((cs->range_start%8) != 0) {
-			printf("Error - range start is not byte aligned in line\n%s\n", line);
+			fprintf(stderr, "Error - range start is not byte aligned in line\n%s\n", line);
 			exit(1);
 		}
 		if (cs->range_start >= (CMOS_IMAGE_BUFFER_SIZE*8)) {
-			printf("Error - range start is to big in line\n%s\n", line);
+			fprintf(stderr, "Error - range start is to big in line\n%s\n", line);
 			exit(1);
 		}
 		if ((cs->range_end%8) != 7) {
-			printf("Error - range end is not byte aligned in line\n%s\n", line);
+			fprintf(stderr, "Error - range end is not byte aligned in line\n%s\n", line);
 			exit(1);
 		}
 		if ((cs->range_end) >= (CMOS_IMAGE_BUFFER_SIZE*8)) {
-			printf("Error - range end is to long in line\n%s\n", line);
+			fprintf(stderr, "Error - range end is to long in line\n%s\n", line);
 			exit(1);
 		}
 		if ((cs->location%8) != 0) {
-			printf("Error - location is not byte aligned in line\n%s\n", line);
+			fprintf(stderr, "Error - location is not byte aligned in line\n%s\n", line);
 			exit(1);
 		}
 		if ((cs->location >= (CMOS_IMAGE_BUFFER_SIZE*8)) ||
 			((cs->location + 16) > (CMOS_IMAGE_BUFFER_SIZE*8))) 
 		{
-			printf("Error - location is to big in line\n%s\n", line);
+			fprintf(stderr, "Error - location is to big in line\n%s\n", line);
 			exit(1);
 		}
 		/* And since we are not ready to be fully general purpose yet.. */
 		if ((cs->range_start/8) != LB_CKS_RANGE_START) {
-			printf("Error - Range start(%d) does not match define(%d) in line\n%s\n", 
+			fprintf(stderr, "Error - Range start(%d) does not match define(%d) in line\n%s\n", 
 				cs->range_start/8, LB_CKS_RANGE_START, line);
 			exit(1);
 		}
 		if ((cs->range_end/8) != LB_CKS_RANGE_END) {
-			printf("Error - Range end does not match define in line\n%s\n", line);
+			fprintf(stderr, "Error - Range end does not match define in line\n%s\n", line);
 			exit(1);
 		}
 		if ((cs->location/8) != LB_CKS_LOC) {
-			printf("Error - Location does not match define in line\n%s\n", line);
+			fprintf(stderr, "Error - Location does not match define in line\n%s\n", line);
 			exit(1);
 		}
 
@@ -407,19 +485,19 @@ int main(int argc, char **argv)
 	/* test if an alternate file is to be created */
 	if(option) {
 		if((fp=fopen(option,"w"))==NULL){
-                        printf("Error - Can not open %s\n",option);
+                        fprintf(stderr, "Error - Can not open %s\n",option);
                         exit(1);
 		}
 	}
 	else {  /* no, so use the default option_table.c */
                 if((fp=fopen("option_table.c","w"))==NULL){
-                        printf("Error - Can not open option_table.c\n");
+                        fprintf(stderr, "Error - Can not open option_table.c\n");
                         exit(1);
 		}
 	}
 	/* write the header */
         if(!fwrite("unsigned char option_table[] = {",1,32,fp)) {
-                printf("Error - Could not write image file\n");
+                fprintf(stderr, "Error - Could not write image file\n");
                 fclose(fp);
                 exit(1);
         }
@@ -433,12 +511,48 @@ int main(int argc, char **argv)
 	sprintf(buf,"0x%02x",cmos_table[i]);
 	fwrite(buf,1,4,fp);
         if(!fwrite("};\n",1,3,fp)) {
-                printf("Error - Could not write image file\n");
+                fprintf(stderr, "Error - Could not write image file\n");
                 fclose(fp);
                 exit(1);
         }
 
         fclose(fp);
+
+	/* See if we also want to output a C header file */
+	if (header) {
+		struct cmos_option_table *hdr;
+		struct lb_record *ptr, *end;
+		fp = fopen(header, "w");
+		if (!fp) {
+			fprintf(stderr, "Error Can not open %s: %s\n", 
+				header, strerror(errno));
+			exit(1);
+		}
+		/* Get the cmos table header */
+		hdr = (struct cmos_option_table *)cmos_table;
+		/* Walk through the entry records */
+		ptr = (struct lb_record *)(cmos_table + hdr->header_length);
+		end = (struct lb_record *)(cmos_table + hdr->size);
+		for(;ptr < end; ptr = (struct lb_record *)(((char *)ptr) + ptr->size)) {
+			if (ptr->tag != LB_TAG_OPTION) {
+				continue;
+			}
+			ce = (struct cmos_entries *)ptr;
+			if (ce->config == 'r') {
+				continue;
+			}
+			if (!is_ident(ce->name)) {
+				fprintf(stderr, "Invalid identifier: %s\n",
+					ce->name);
+				exit(1);
+			}
+			fprintf(fp, "#define CMOS_VSTART_%s %d\n",
+				ce->name, ce->bit);
+			fprintf(fp, "#define CMOS_VLEN_%s %d\n",
+				ce->name, ce->length);
+		}
+		fclose(fp);
+	}
 	return(0);
 }
 

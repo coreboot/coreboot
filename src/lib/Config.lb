@@ -6,10 +6,11 @@ object uart8250.o
 object memset.o
 object memcpy.o
 object memcmp.o
+object memmove.o
 object malloc.o
 object delay.o
 if HAVE_FALLBACK_BOOT
-  object fallback_boot.o
+	object fallback_boot.o
 end
 object compute_ip_checksum.o
 object version.o

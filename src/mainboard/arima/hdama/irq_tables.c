@@ -17,36 +17,28 @@
 
 const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_SIGNATURE,		/* u32 signature */
-	PIRQ_VERSION,		/* u16 version   */
-	32+16*IRQ_SLOT_COUNT,	/* there can be total IRQ_SLOT_COUNT 
-				 * devices on the bus */
+	PIRQ_VERSION,           /* u16 version   */
+	32+16*IRQ_SLOT_COUNT,	/* there can be total IRQ_SLOT_COUNT table entries */
 	IRQ_ROUTER_BUS,		/* Where the interrupt router lies (bus) */
 	IRQ_ROUTER_DEVFN,	/* Where the interrupt router lies (dev) */
 	0x00,			/* IRQs devoted exclusively to PCI usage */
 	IRQ_ROUTER_VENDOR,	/* Vendor */
 	IRQ_ROUTER_DEVICE,	/* Device */
 	0x00,			/* Crap (miniport) */
-	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },	/* u8 rfu[11] */
-	0x00,			/*  u8 checksum , mod 256 checksum must give
-				 *  zero, will be corrected later 
-				 */
-	{
-
-		/* slot(0=onboard), devfn, irqlinks (line id, 0=not routed) */
-
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, /* u8 rfu[11] */
+	0xb0,           /*  u8 checksum , mod 256 checksum must give zero */
+	{	/* slot(0=onboard), devfn, irqlinks (line id, 0=not routed) */
 		/* PCI Slot 1-6 */
-		IRQ_SLOT (1, 3,1,0, 2,3,4,1 ),
-		IRQ_SLOT (2, 3,2,0, 3,4,1,2 ),
-		IRQ_SLOT (3, 2,1,0, 2,3,4,1 ),
-		IRQ_SLOT (4, 2,2,0, 3,4,1,2 ),
-		IRQ_SLOT (5, 4,5,0, 2,3,4,1 ),
-		IRQ_SLOT (6, 4,4,0, 1,2,3,4 ),
-
+		IRQ_SLOT(1, 3,1,0, 2,3,4,1 ),
+		IRQ_SLOT(2, 3,2,0, 3,4,1,2 ),
+		IRQ_SLOT(3, 2,1,0, 2,3,4,1 ),
+		IRQ_SLOT(4, 2,2,0, 3,4,1,2 ),
+		IRQ_SLOT(5, 4,5,0, 2,3,4,1 ),
+		IRQ_SLOT(6, 4,4,0, 1,2,3,4 ),
 		/* Onboard NICs */
-		IRQ_SLOT (0, 2,3,0, 4,0,0,0 ),
-		IRQ_SLOT (0, 2,4,0, 4,0,0,0 ),
-
+		IRQ_SLOT(0, 2,3,0, 4,0,0,0 ),
+		IRQ_SLOT(0, 2,4,0, 4,0,0,0 ),
 		/* Let Linux know about bus 1 */
-		IRQ_SLOT (0, 1,4,3, 0,0,0,0 ),
+		IRQ_SLOT(0, 1,4,3, 0,0,0,0 ),
 	}
 };

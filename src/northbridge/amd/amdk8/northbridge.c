@@ -38,7 +38,7 @@ struct mem_range *sizeram(void)
 	mmio_basek &= ~((256*1024) - 1);
 #endif
 
-#if 1
+#if 0
 	printk_debug("mmio_base: %dKB\n", mmio_basek);
 #endif
 
@@ -383,8 +383,14 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 {
 	unsigned long rbase, rlimit;
 	unsigned reg, link;
+
 	/* Make certain the resource has actually been set */
-	if (!(resource->flags & IORESOURCE_SET)) {
+	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
+		return;
+	}
+
+	/* If I have already stored this resource don't worry about it */
+	if (resource->flags & IORESOURCE_STORED) {
 		return;
 	}
 	
@@ -401,7 +407,7 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 	/* Get the register and link */
 	reg  = resource->index & ~3;
 	link = resource->index & 3;
-	
+
 	if (resource->flags & IORESOURCE_IO) {
 		uint32_t base, limit;
 		compute_allocate_resource(&dev->link[link], resource,
@@ -415,13 +421,14 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 		limit |= rlimit & 0x01fff000;
 		limit |= (link & 3) << 4;
 		limit |= (nodeid & 7);
-		if (reg == 0xc8){
-			/* hack to set vga for test */
-			/* factory: b0: 03 0a 00 00 00 0b 00 00 */
-			f1_write_config32(0xb0, 0xa03);
-			f1_write_config32(0xb4, 0xb00);
-			base |= 0x30;
+
+		if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
+			base |= PCI_IO_BASE_VGA_EN;
 		}
+		if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_NO_ISA) {
+			base |= PCI_IO_BASE_NO_ISA;
+		}
+		
 		f1_write_config32(reg + 0x4, limit);
 		f1_write_config32(reg, base);
 	}
@@ -441,6 +448,7 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 		f1_write_config32(reg + 0x4, limit);
 		f1_write_config32(reg, base);
 	}
+	resource->flags |= IORESOURCE_STORED;
 	printk_debug(
 		"%s %02x <- [0x%08lx - 0x%08lx] node %d link %d %s\n",
 		dev_path(dev),
@@ -483,48 +491,43 @@ unsigned int amdk8_scan_root_bus(device_t root, unsigned int max)
 	return max;
 }
 
-void amdk8_enable_resources(struct device *dev)
+static void mcf0_control_init(struct device *dev)
 {
-  uint16_t ctrl;
-  unsigned link;
-  unsigned int vgalink = -1;
+	uint32_t cmd;
 
-  ctrl = pci_read_config16(dev, PCI_BRIDGE_CONTROL);
-  ctrl |= dev->link[0].bridge_ctrl;
-  printk_debug("%s bridge ctrl <- %04x\n", dev_path(dev), ctrl);
-  printk_err("%s bridge ctrl <- %04x\n", dev_path(dev), ctrl);
-  pci_write_config16(dev, PCI_BRIDGE_CONTROL, ctrl);
-
-#if 0
-  /* let's see what link VGA is on */
-  for(link = 0; link < dev->links; link++) {
-    device_t child;
-    printk_err("Kid %d of k8: bridge ctrl says: 0x%x\n", link, dev->link[link].bridge_ctrl);
-    if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA)
-	vgalink = link;
-  }
-
-  if (vgalink != =1) {
-  /* now find the IOPAIR that goes to vgalink and set the  vga enable in the base part (0x30) */
-  /* now allocate an MMIOPAIR and point it to the CPU0, LINK=vgalink */
-  /* now set IORR1 so it has a hole for the 0xa0000-0xcffff region */
-  }
+#if 1	
+	printk_debug("NB: Function 0 Misc Control.. ");
+	/* improve latency and bandwith on HT */
+	cmd = pci_read_config32(dev, 0x68);
+	cmd &= 0xffff80ff;
+	cmd |= 0x00004800;
+	pci_write_config32(dev, 0x68, cmd );
 #endif
 
-  pci_dev_enable_resources(dev);
-  //enable_childrens_resources(dev);
+#if 0	
+	/* over drive the ht port to 1000 Mhz */
+	cmd = pci_read_config32(dev, 0xa8);
+	cmd &= 0xfffff0ff;
+	cmd |= 0x00000600;
+	pci_write_config32(dev, 0xdc, cmd );
+#endif	
+	printk_debug("done.\n");
 }
-
-
 
 static struct device_operations northbridge_operations = {
 	.read_resources   = amdk8_read_resources,
 	.set_resources    = amdk8_set_resources,
-//	.enable_resources = pci_dev_enable_resources,
-        .enable_resources = amdk8_enable_resources,
-	.init             = 0,
+	.enable_resources = pci_dev_enable_resources,
+	.init             = mcf0_control_init,
 	.scan_bus         = amdk8_scan_chains,
 	.enable           = 0,
+};
+
+
+static struct pci_driver mcf0_driver __pci_driver = {
+	.ops    = &northbridge_operations,
+	.vendor = PCI_VENDOR_ID_AMD,
+	.device = 0x1100,
 };
 
 
@@ -538,4 +541,3 @@ struct chip_control northbridge_amd_amdk8_control = {
 	.name   = "AMD K8 Northbridge",
 	.enumerate = enumerate,
 };
-

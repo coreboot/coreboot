@@ -51,7 +51,7 @@ static void early_mtrr_init(void)
 	/* Disable Variable MTRRs */
 	msr.hi = 0x00000000;
 	msr.lo = 0x00000000;
-	wrmsr(0x2ff, msr);
+	wrmsr(MTRRdefType_MSR, msr);
 
 	/* Invalidate the cache again */
 	asm volatile ("invd");
@@ -65,19 +65,19 @@ static void early_mtrr_init(void)
 		wrmsr(*msr_addr, msr);
 	}
 
-	/* Enable caching for 0 - 128MB using variable mtrr */
+	/* Enable caching for 0 - 1MB using variable mtrr */
 	msr = rdmsr(0x200);
 	msr.hi &= 0xfffffff0;
 	msr.hi |= 0x00000000;
 	msr.lo &= 0x00000f00;
-	msr.lo |= 0x00000006;
+	msr.lo |= 0x00000000 | MTRR_TYPE_WRBACK;
 	wrmsr(0x200, msr);
 
 	msr = rdmsr(0x201);
 	msr.hi &= 0xfffffff0;
 	msr.hi |= 0x0000000f;
 	msr.lo &= 0x000007ff;
-	msr.lo |= 0xf0000800;
+	msr.lo |= (~((CONFIG_LB_MEM_TOPK << 10) - 1)) | 0x800;
 	wrmsr(0x201, msr);
 
 #if defined(XIP_ROM_SIZE) && defined(XIP_ROM_BASE)
@@ -98,7 +98,7 @@ static void early_mtrr_init(void)
 	/* Enable Variable MTRRs */
 	msr.hi = 0x00000000;
 	msr.lo = 0x00000800;
-	wrmsr(0x2ff, msr);
+	wrmsr(MTRRdefType_MSR, msr);
 
 	/* Enable the cache */
 	cr0 = read_cr0();

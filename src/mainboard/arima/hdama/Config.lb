@@ -23,6 +23,12 @@ uses XIP_ROM_BASE
 uses STACK_SIZE
 uses HEAP_SIZE
 uses USE_OPTION_TABLE
+uses LB_CKS_RANGE_START
+uses LB_CKS_RANGE_END
+uses LB_CKS_LOC
+uses MAINBOARD_PART_NUMBER
+uses MAINBOARD_VENDOR
+
 
 ## ROM_SIZE is the size of boot ROM that this board will use.
 default ROM_SIZE=524288
@@ -59,6 +65,13 @@ default HAVE_MP_TABLE=1
 default HAVE_OPTION_TABLE=1
 
 ##
+## Move the default LinuxBIOS cmos range off of AMD RTC registers
+##
+default LB_CKS_RANGE_START=49
+default LB_CKS_RANGE_END=122
+default LB_CKS_LOC=123
+
+##
 ## Build code for SMP support
 ## Only worry about 2 micro processors
 ##
@@ -73,8 +86,8 @@ default CONFIG_IOAPIC=1
 ##
 ## Clean up the motherboard id strings
 ##
-#default MAINBOARD_PART_NUMBER="HDAMA"
-#default MAINBOARD_VENDOR="ARIMA"
+default MAINBOARD_PART_NUMBER="HDAMA"
+default MAINBOARD_VENDOR="ARIMA"
 
 ###
 ### LinuxBIOS layout values
@@ -144,9 +157,7 @@ arch i386 end
 ## Build the objects we have code for in this directory.
 ##
 
-#object mainboard.o
 driver mainboard.o
-#object static_devices.o
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
 object reset.o
@@ -165,8 +176,8 @@ makerule ./failover.inc
 end
 
 makerule ./auto.E 
-	depends	"$(MAINBOARD)/auto.c" 
-	action	"$(CPP) -I$(TOP)/src $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
+	depends	"$(MAINBOARD)/auto.c option_table.h " 
+	action	"$(CPP) -I$(TOP)/src -I. $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
 end
 makerule ./auto.inc 
 	depends "./auto.E ./romcc"
@@ -178,6 +189,7 @@ end
 ##
 mainboardinit cpu/i386/entry16.inc
 mainboardinit cpu/i386/entry32.inc
+mainboardinit cpu/i386/bist32.inc
 ldscript /cpu/i386/entry16.lds
 ldscript /cpu/i386/entry32.lds
 
@@ -259,19 +271,29 @@ northbridge amd/amdk8 "mc0"
 		pci 1:0.2 on
 		pci 1:1.0 off
 		superio NSC/pc87360 link 1
-			pnp 2e.0
-			pnp 2e.1
-			pnp 2e.2
-			pnp 2e.3
-			pnp 2e.4
-			pnp 2e.5
-			pnp 2e.6
-			pnp 2e.7
-			pnp 2e.8
-			pnp 2e.9
-			pnp 2e.a
-			register "com1" = "{1, 0, 0x3f8, 4}"
-			register "lpt" = "{1}"
+			pnp 2e.0 off  # Floppy 
+				 io 0x60 = 0x3f0
+				irq 0x70 = 6
+				drq 0x74 = 2
+			pnp 2e.1 off  # Parallel Port
+				 io 0x60 = 0x378
+				irq 0x70 = 7
+			pnp 2e.2 off # Com 2
+				 io 0x60 = 0x2f8
+				irq 0x70 = 3
+			pnp 2e.3 on  # Com 1
+				 io 0x60 = 0x3f8
+				irq 0x70 = 4
+			pnp 2e.4 off # SWC
+			pnp 2e.5 off # Mouse
+			pnp 2e.6 on  # Keyboard
+				 io 0x60 = 0x60
+				 io 0x62 = 0x64
+				irq 0x70 = 1
+			pnp 2e.7 off # GPIO
+			pnp 2e.8 off # ACB
+			pnp 2e.9 off # FSCM
+			pnp 2e.a off # WDT  
 		end
 	end
 end
@@ -297,4 +319,5 @@ end
 ##
 mainboardinit pc80/serial.inc
 mainboardinit arch/i386/lib/console.inc
+mainboardinit cpu/i386/bist32_fail.inc
 

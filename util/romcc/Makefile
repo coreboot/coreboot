@@ -1,5 +1,5 @@
-VERSION:=0.37
-RELEASE_DATE:=21 October 2003
+VERSION:=0.38
+RELEASE_DATE:=18 December 2003
 PACKAGE:=romcc
 
 
@@ -108,6 +108,9 @@ FAIL_TESTS = \
 	fail_test3.c \
 	fail_test4.c \
 	fail_test5.c \
+	fail_test6.c \
+	fail_test7.c \
+	fail_test8.c \
 
 TEST_SRCS:=$(patsubst %, tests/%, $(TESTS))
 TEST_ASM:=$(patsubst %.c, tests/%.S, $(TESTS))

@@ -1,11 +1,12 @@
 #include <string.h>
-void *memcpy(void *__dest, __const void *__src, size_t __n)
+void *memcpy(void *vdest, const void *vsrc, size_t bytes)
 {
+	const char *src = vsrc;
+	char *dest = vdest;
 	int i;
-	char *d = (char *) __dest, *s = (char *) __src;
 
-	for (i = 0; i < __n; i++)
-		d[i] = s[i];
+	for (i = 0; i < bytes; i++)
+		dest[i] = src[i];
 
-	return __dest;
+	return vdest;
 }

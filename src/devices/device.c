@@ -23,9 +23,9 @@
 #include <string.h>
 
 /* Linked list of ALL devices */
-struct device *all_devices = 0;
+struct device *all_devices = &dev_root;
 /* pointer to the last device */
-static struct device **last_dev_p = &all_devices;
+static struct device **last_dev_p = &dev_root.next;
 
 #define DEVICE_MEM_HIGH  0xFEC00000UL /* Reserve 20M for the system */
 #define DEVICE_IO_START 0x1000
@@ -323,7 +323,8 @@ void compute_allocate_resource(
 			/* base must be aligned to size */
 			base = round(base, 1UL << align);
 			resource->base = base;
-			resource->flags |= IORESOURCE_SET;
+			resource->flags |= IORESOURCE_ASSIGNED;
+			resource->flags &= ~IORESOURCE_STORED;
 			base += size;
 			
 			printk_spew(
@@ -459,18 +460,23 @@ void dev_configure(void)
 	 * safe.
 	 */
 	root->resource[0].base = DEVICE_IO_START;
-	root->resource[0].flags |= IORESOURCE_SET;
+	root->resource[0].flags |= IORESOURCE_ASSIGNED;
+	root->resource[0].flags &= ~IORESOURCE_STORED;
 	/* Now reallocate the pci resources memory with the
 	 * highest addresses I can manage.
 	 */
 	root->resource[1].base = 
 		round_down(DEVICE_MEM_HIGH - root->resource[1].size,
 			1UL << root->resource[1].align);
-	root->resource[1].flags |= IORESOURCE_SET;
+	root->resource[1].flags |= IORESOURCE_ASSIGNED;
+	root->resource[1].flags &= ~IORESOURCE_STORED;
+
+	/* Allocate the VGA I/O resource..
+	 */
+	allocate_vga_resource(); 
+
 	// now just set things into registers ... we hope ...
 	root->ops->set_resources(root);
-
-	allocate_vga_resource();
 
 	printk_info("done.\n");
 }

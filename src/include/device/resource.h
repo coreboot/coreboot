@@ -18,9 +18,9 @@
 #define IORESOURCE_SUBTRACTIVE  0x00040000	/* This resource filters all of the unclaimed transactions
 						 * to the bus below.
 						 */
-
-#define IORESOURCE_SET		0x80000000	/* An IO resource that has been assigned a value */
-#define IORESOURCE_FIXED	0x40000000	/* An IO resource the allocator must not change */
+#define IORESOURCE_STORED	0x20000000	/* The IO resource assignment has been stored in the device */
+#define IORESOURCE_ASSIGNED	0x40000000	/* An IO resource that has been assigned a value */
+#define IORESOURCE_FIXED	0x80000000	/* An IO resource the allocator must not change */
 
 /* PCI specific resource bits */
 #define IORESOURCE_PCI64	(1<<0)	/* 64bit long pci resource */

@@ -34,7 +34,8 @@ struct device *dev_find_slot(unsigned int bus, unsigned int devfn)
 
 	result = 0;
 	for (dev = all_devices; dev; dev = dev->next) {
-		if ((dev->bus->secondary == bus) && 
+		if ((dev->path.type == DEVICE_PATH_PCI) &&
+			(dev->bus->secondary == bus) && 
 			(dev->path.u.pci.devfn == devfn)) {
 			result = dev;
 			break;
@@ -57,8 +58,9 @@ struct device *dev_find_device(unsigned int vendor, unsigned int device, struct 
 		from = all_devices;
 	else
 		from = from->next;
-	while (from && (from->vendor != vendor || from->device != device))
+	while (from && (from->vendor != vendor || from->device != device)) {
 		from = from->next;
+	}
 	return from;
 }
 
@@ -142,3 +144,70 @@ int path_eq(struct device_path *path1, struct device_path *path2)
 	}
 	return equal;
 }
+
+/**
+ * See if we have unused but allocated resource structures.
+ * If so remove the allocation.
+ * @param dev The device to find the resource on
+ */
+void compact_resources(device_t dev)
+{
+	struct resource *resource;
+	int i;
+	/* Move all of the free resources to the end */
+	for(i = 0; i < dev->resources;) {
+		resource = &dev->resource[i];
+		if (!resource->flags) {
+			memmove(resource, resource + 1, dev->resources - i);
+			dev->resources -= 1;
+			memset(&dev->resource[dev->resources], 0, sizeof(*resource));
+		} else {
+			i++;
+		}
+	}
+}
+
+/**
+ * See if a resource structure already exists for a given index and if
+ * not allocate one.
+ * @param dev The device to find the resource on
+ * @param index  The index of the resource on the device.
+ */
+struct resource *get_resource(device_t dev, unsigned index)
+{
+	struct resource *resource;
+	int i;
+
+	/* First move all of the free resources to the end */
+	compact_resources(dev);
+
+	/* See if there is a resource with the appropriate index */
+	resource = 0;
+	for(i = 0; i < dev->resources; i++) {
+		if (dev->resource[i].index == index) {
+			resource = &dev->resource[i];
+			break;
+		}
+	}
+	if (!resource) {
+		if (dev->resources == MAX_RESOURCES) {
+			die("MAX_RESOURCES exceeded.");
+		}
+		resource = &dev->resource[dev->resources];
+		memset(resource, 0, sizeof(*resource));
+		dev->resources++;
+	}
+	/* Initialize the resource values */
+	if (!(resource->flags & IORESOURCE_FIXED)) {
+		resource->flags = 0;
+		resource->base = 0;
+	}
+	resource->size  = 0;
+	resource->limit = 0;
+	resource->index = index;
+	resource->align = 0;
+	resource->gran  = 0;
+
+	return resource;
+}
+

@@ -1579,7 +1579,7 @@ static unsigned short triple_sizes(struct compile_state *state,
 		rhs = rhs_wanted;
 		lhs = 0;
 		if ((type->type & TYPE_MASK) == TYPE_STRUCT) {
-			lhs = type->left->elements;
+			lhs = type->elements;
 		}
 	}
 	else if (op == OP_VAL_VEC) {
@@ -4822,7 +4822,8 @@ static int is_stable(struct compile_state *state, struct triple *def)
 	if ((def->op == OP_ADECL) || 
 		(def->op == OP_SDECL) || 
 		(def->op == OP_DEREF) ||
-		(def->op == OP_BLOBCONST)) {
+		(def->op == OP_BLOBCONST) ||
+		(def->op == OP_LIST)) {
 		ret = 1;
 	}
 	else if (def->op == OP_DOT) {
@@ -4930,6 +4931,9 @@ static struct triple *do_mk_addr_expr(struct compile_state *state,
 			RHS(expr, 0),
 			int_const(state, &ulong_type, offset));
 	}
+	else if (expr->op == OP_LIST) {
+		error(state, 0, "Function addresses not supported");
+	}
 	if (!result) {
 		internal_error(state, expr, "cannot take address of expression");
 	}
@@ -4951,8 +4955,9 @@ static struct triple *mk_deref_expr(
 	return triple(state, OP_DEREF, base_type, expr, 0);
 }
 
-static struct triple *array_to_pointer(struct compile_state *state, struct triple *def)
+static struct triple *lvalue_conversion(struct compile_state *state, struct triple *def)
 {
+	/* Tranform an array to a pointer to the first element */
 	if ((def->type->type & TYPE_MASK) == TYPE_ARRAY) {
 		struct type *type;
 		type = new_type(
@@ -4970,6 +4975,10 @@ static struct triple *array_to_pointer(struct compile_state *state, struct tripl
 		else {
 			def = triple(state, OP_COPY, type, def, 0);
 		}
+	}
+	/* Transform a function to a pointer to it */
+	else if ((def->type->type & TYPE_MASK) == TYPE_FUNCTION) {
+		def = mk_addr_expr(state, def, 0);
 	}
 	return def;
 }
@@ -5010,14 +5019,11 @@ static struct triple *read_expr(struct compile_state *state, struct triple *def)
 	if  (!def) {
 		return 0;
 	}
+#warning "CHECK_ME is this the only place I need to do lvalue conversions?"
+	/* Transform lvalues into something we can read */
+	def = lvalue_conversion(state, def);
 	if (!is_stable(state, def)) {
 		return def;
-	}
-	/* Tranform an array to a pointer to the first element */
-	
-#warning "CHECK_ME is this the right place to transform arrays to pointers?"
-	if ((def->type->type & TYPE_MASK) == TYPE_ARRAY) {
-		return array_to_pointer(state, def);
 	}
 	if (is_in_reg(state, def)) {
 		op = OP_READ;
@@ -8268,7 +8274,11 @@ static struct triple *expr(struct compile_state *state)
 static void expr_statement(struct compile_state *state, struct triple *first)
 {
 	if (peek(state) != TOK_SEMI) {
-		flatten(state, first, expr(state));
+		/* lvalue conversions always apply except when certaion operators
+		 * are applied so the values so apply them here as I know no more
+		 * operators will be applied.
+		 */
+		flatten(state, first, lvalue_conversion(state, expr(state)));
 	}
 	eat(state, TOK_SEMI);
 }
@@ -9650,7 +9660,7 @@ static struct triple *initializer(
 			((result->type->type & TYPE_MASK) == TYPE_ARRAY) &&
 			(type->type & TYPE_MASK) != TYPE_ARRAY)
 		{
-			result = array_to_pointer(state, result);
+			result = lvalue_conversion(state, result);
 		}
 		if (!is_init_compatible(state, type, result->type)) {
 			error(state, 0, "Incompatible types in initializer");
@@ -18548,6 +18558,7 @@ static void print_const(struct compile_state *state,
 		case TYPE_UINT:
 		case TYPE_LONG:
 		case TYPE_ULONG:
+		case TYPE_POINTER:
 			fprintf(fp, ".int %lu\n", 
 				(unsigned long)(ins->u.cval));
 			break;

@@ -2,5 +2,6 @@ object device.o
 object root_device.o
 object device_util.o
 object pci_device.o
+object pnp_device.o
 object hypertransport.o
 object chip.o

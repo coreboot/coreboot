@@ -44,6 +44,9 @@ protected_start:
 	ljmp	$ROM_CODE_SEG, $__protected_start
 	
 __protected_start:
+	/* Save the BIST value */
+	movl	%eax, %ebp
+
 	intel_chip_post_macro(0x10)	/* post 10 */
 
 	movw	$ROM_DATA_SEG, %ax
@@ -52,4 +55,7 @@ __protected_start:
 	movw	%ax, %ss
 	movw	%ax, %fs
 	movw	%ax, %gs
+
+	/* Restore the BIST value to %eax */
+	movl	%ebp, %eax
 

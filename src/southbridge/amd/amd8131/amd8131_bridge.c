@@ -6,11 +6,16 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <pc80/mc146818rtc.h>
+
+#define NMI_OFF 0
 
 static void pcix_init(device_t dev)
 {
+	uint32_t dword;
 	uint16_t word;
 	uint8_t byte;
+	int nmi_option;
 
 	/* Enable memory write and invalidate ??? */
 	byte = pci_read_config8(dev, 0x04);
@@ -40,6 +45,37 @@ static void pcix_init(device_t dev)
         pci_write_config16(dev, 0xaa, word);
 	word = pci_read_config16(dev, 0xac);
         pci_write_config16(dev, 0xae, word);
+
+	/* Set up error reporting, enable all */
+	/* system error enable */
+	dword = pci_read_config32(dev, 0x04);
+        dword |= (1<<8);
+        pci_write_config32(dev, 0x04, dword);
+ 	
+	/* system and error parity enable */
+	dword = pci_read_config32(dev, 0x3c);
+        dword |= (3<<16);
+        pci_write_config32(dev, 0x3c, dword);
+ 	
+	/* NMI enable */
+	nmi_option = NMI_OFF;
+	get_option(&nmi_option, "nmi");
+	if(nmi_option) {
+		dword = pci_read_config32(dev, 0x44);
+        	dword |= (1<<0);
+        	pci_write_config32(dev, 0x44, dword);
+	}
+ 	
+	/* Set up CRC flood enable */
+	dword = pci_read_config32(dev, 0xc0);
+	if(dword) {  /* do device A only */
+		dword = pci_read_config32(dev, 0xc4);
+		dword |= (1<<1);
+		pci_write_config32(dev, 0xc4, dword);
+		dword = pci_read_config32(dev, 0xc8);
+		dword |= (1<<1);
+		pci_write_config32(dev, 0xc8, dword);
+	}
 	
 	return;
 }
@@ -69,13 +105,6 @@ static void ioapic_enable(device_t dev)
 		value &= ~((1 << 1) | (1 << 0));
 	}
 	pci_write_config32(dev, 0x44, value);
-
-//BY LYH
-        value = pci_read_config32(dev, 0x4);
-        value |= 6;
-        pci_write_config32(dev, 0x4, value);
-//BY LYH END
-
 }
 
 static struct device_operations ioapic_ops = {

@@ -2,7 +2,7 @@
 #define __LINUXBIOS_CPU_P6_MTRR_H
 
 /*  These are the region types  */
-#define MTRR_TYPE_UNCACHABLE 0
+#define MTRR_TYPE_UNCACHEABLE 0
 #define MTRR_TYPE_WRCOMB     1
 /*#define MTRR_TYPE_         2*/
 /*#define MTRR_TYPE_         3*/

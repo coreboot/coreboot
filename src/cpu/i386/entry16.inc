@@ -33,6 +33,8 @@ it with the version available from LANL.
 
 _start: 
 	cli
+	/* Save the BIST result */
+	movl	%eax, %ebp
 
 /* thanks to kmliu@sis.tw.com for this TBL fix ... */
 /**/
@@ -92,6 +94,9 @@ _start:
 	andl	$0x7FFAFFD1, %eax /* PG,AM,WP,NE,TS,EM,MP = 0 */
 	orl	$0x60000001, %eax /* CD, NW, PE = 1 */
 	movl	%eax, %cr0
+
+	/* Restore BIST to %eax */
+	movl	%ebp, %eax
 
 	/* Now that we are in protected mode jump to a 32 bit code segment. */
 	data32	ljmp	$ROM_CODE_SEG, $__protected_start

@@ -7,18 +7,6 @@
 
 #define RTC_PORT(x)	(RTC_BASE_PORT + (x))
 
-/* On PCs, the checksum is built only over bytes 16..45 */
-#define PC_CKS_RANGE_START	16
-#define PC_CKS_RANGE_END	45
-#define PC_CKS_LOC		46
-
-
-/* Linux bios checksum is built only over bytes 49..125 */
-#define LB_CKS_RANGE_START	49
-#define LB_CKS_RANGE_END	125
-#define LB_CKS_LOC		126
-
-
 /* control registers - Moto names
  */
 #define RTC_REG_A		10
@@ -88,22 +76,28 @@
 # define RTC_VRT 0x80		/* valid RAM and time */
 /**********************************************************************/
 
-
 /* On PCs, the checksum is built only over bytes 16..45 */
 #define PC_CKS_RANGE_START	16
 #define PC_CKS_RANGE_END	45
 #define PC_CKS_LOC		46
 
+/* Linux bios checksum is built only over bytes 49..125 */
+#ifndef LB_CKS_RANGE_START
 #define LB_CKS_RANGE_START	49
+#endif
+#ifndef LB_CKS_RANGE_END
 #define LB_CKS_RANGE_END	125
+#endif
+#ifndef LB_CKS_LOC
 #define LB_CKS_LOC		126
+#endif
 
 #if !defined(ASSEMBLY)
 void rtc_init(int invalid);
 #if USE_OPTION_TABLE == 1
 int get_option(void *dest, char *name);
 #else
-#define get_option(dest, name) (-2)
+static inline int get_option(void *dest, char *name) { return -2; }
 #endif
 #endif
 

@@ -67,8 +67,7 @@ div:
 	mov	%ah, %al	; \
 	outb	%al, %dx
 
-
-serial0:
+serial_init:
 	/* Set 115.2Kbps,8n1 */
 	/* Set 8bit, 1 stop bit, no parity, DLAB */
 	mov	$TTYS0_LCR, %dx
@@ -102,5 +101,7 @@ serial0:
 	mov	$TTYS0_LCR, %dx
 	mov	$(TTYS0_LCS & 0x7f), %al
 	out	%al, %dx
+	RETSP
 
-
+serial0:
+	CALLSP(serial_init)

@@ -35,4 +35,7 @@
 #define DC_CFG_MSR			0xC0011022
 #define BU_CFG_MSR			0xC0011023
 
+#define TOP_MEM_MASK			0x007fffff
+#define TOP_MEM_MASK_KB			(TOP_MEM_MASK >> 10)
+
 #endif /* CPU_K8_MTRR_H */

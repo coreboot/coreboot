@@ -17,7 +17,7 @@ static void enable_smbus(void)
 		die("SMBUS controller not found\r\n");
 	}
 	uint8_t enable;
-	print_debug("SMBus controller enabled\r\n");
+	print_spew("SMBus controller enabled\r\n");
 	pci_write_config32(dev, 0x58, SMBUS_IO_BASE | 1);
 	enable = pci_read_config8(dev, 0x41);
 	pci_write_config8(dev, 0x41, enable | (1 << 7));
@@ -134,6 +134,5 @@ static void smbus_write_byte(unsigned device, unsigned address, unsigned char va
 
 	/* poll for transaction completion */
 	smbus_wait_until_done();
-
 	return;
 }

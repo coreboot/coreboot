@@ -1,3 +1,6 @@
+	/* Save the BIST result */
+	movl	%eax, %ebp
+	
 	/*
 	 * Enabling mmx registers is a noop
 	 * Enable the use of the xmm registers
@@ -12,3 +15,6 @@
 	movl	%cr4, %eax
 	orl	$(1<<9), %eax
 	movl	%eax, %cr4
+
+	/* Restore the BIST result */
+	movl	%ebp, %eax

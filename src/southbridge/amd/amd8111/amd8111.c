@@ -26,27 +26,24 @@ void amd8111_enable(device_t dev)
 		lpc_dev = dev_find_slot(dev->bus->secondary, devfn);
 		index = dev->path.u.pci.devfn & 7;
 	}
-	if ((!lpc_dev) || (index >= 16) ||
-		(lpc_dev->vendor != PCI_VENDOR_ID_AMD) ||
-		(lpc_dev->device != PCI_DEVICE_ID_AMD_8111_ISA)) {
+	if ((!lpc_dev) || (index >= 16)) {
 		return;
 	}
-
+	if ((lpc_dev->vendor != PCI_VENDOR_ID_AMD) ||
+		(lpc_dev->device != PCI_DEVICE_ID_AMD_8111_ISA)) {
+		uint32_t id;
+		id = pci_read_config32(lpc_dev, PCI_VENDOR_ID);
+		if (id != (PCI_VENDOR_ID_AMD | (PCI_DEVICE_ID_AMD_8111_ISA << 16))) {
+			return;
+		}
+	}
 	reg = reg_old = pci_read_config16(lpc_dev, 0x48);
 	reg &= ~(1 << index);
 	if (dev->enable) {
 		reg |= (1 << index);
 	}
 	if (reg != reg_old) {
-#if 1
-		printk_warning("amd8111_enable dev: %s", dev_path(dev));
-		printk_warning(" lpc_dev: %s index: %d reg: %04x -> %04x ", 
-			dev_path(lpc_dev), index, reg_old, reg);
-#endif
 		pci_write_config16(lpc_dev, 0x48, reg);
-#if 1
-		printk_warning("done\n");
-#endif
 	}
 }
 

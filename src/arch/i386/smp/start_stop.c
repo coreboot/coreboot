@@ -4,16 +4,13 @@
 #include <delay.h>
 #include <string.h>
 #include <console/console.h>
+#include <arch/smp/lapic.h>
+#include <arch/hlt.h>
 
-static inline void hlt(void)
-{
-	asm("hlt");
-	return;
-}
 
 unsigned long this_processors_id(void)
 {
-	return apic_read(APIC_ID) >> 24;
+	return lapicid();
 }
 
 int processor_index(unsigned long apicid)

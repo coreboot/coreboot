@@ -6,7 +6,7 @@
 
 static void early_mtrr_init(void)
 {
-	static unsigned long mtrr_msrs[] = {
+	static const unsigned long mtrr_msrs[] = {
 		/* fixed mtrr */
 		0x250, 0x258, 0x259,
 		0x268, 0x269, 0x26A
@@ -25,46 +25,46 @@ static void early_mtrr_init(void)
 		0
 	};
 	msr_t msr;
-	unsigned long *msr_addr;
+	const unsigned long *msr_addr;
 
 	/* Inialize all of the relevant msrs to 0 */
 	msr.lo = 0;
 	msr.hi = 0;
-	for(msr_addr = &mtrr_msrs; *msr_addr; msr_addr++) {
+	for(msr_addr = mtrr_msrs; *msr_addr; msr_addr++) {
 		wrmsr(*msr_addr, msr);
 	}
 
-	/* Enable memory access for 0 - 8MB using top_mem */
+	/* Enable memory access for 0 - 1MB using top_mem */
 	msr.hi = 0;
-	msr.lo = 0x08000000;
+	msr.lo = ((CONFIG_LB_MEM_TOPK << 10) + TOP_MEM_MASK) & ~TOP_MEM_MASK;
 	wrmsr(TOP_MEM, msr);
 
-	/* Enable caching for 0 - 128MB using variable mtrr */
+	/* Enable caching for 0 - 1MB using variable mtrr */
 	msr = rdmsr(0x200);
 	msr.hi &= 0xfffffff0;
 	msr.hi |= 0x00000000;
 	msr.lo &= 0x00000f00;
-	msr.lo |= 0x00000006;
+	msr.lo |= 0x00000000 | MTRR_TYPE_WRBACK;
 	wrmsr(0x200, msr);
 
 	msr = rdmsr(0x201);
 	msr.hi &= 0xfffffff0;
 	msr.hi |= 0x0000000f;
 	msr.lo &= 0x000007ff;
-	msr.lo |= 0xf0000800;
+	msr.lo |= (~((CONFIG_LB_MEM_TOPK << 10) - 1)) | 0x800;
 	wrmsr(0x201, msr);
 
 #if defined(XIP_ROM_SIZE) && defined(XIP_ROM_BASE)
-	/* enable write back caching so we can do execute in place
+	/* enable write through caching so we can do execute in place
 	 * on the flash rom.
 	 */
 	msr.hi = 0x00000000;
-	msr.lo = XIP_ROM_BASE | 0x005;
-	wrmsr(0x202);
+	msr.lo = XIP_ROM_BASE | MTRR_TYPE_WRTHROUGH;
+	wrmsr(0x202, msr);
 #error "FIXME verify the type of MTRR I have setup"
 	msr.hi = 0x0000000f;
 	msr.lo = ~(XIP_ROM_SIZE - 1) | 0x800;
-	wrmsr(0x203);
+	wrmsr(0x203, msr);
 #endif
 
 	/* Set the default memory type and enable fixed and variable MTRRs 
@@ -72,7 +72,7 @@ static void early_mtrr_init(void)
 	/* Enable Variable MTRRs */
 	msr.hi = 0x00000000;
 	msr.lo = 0x00000800;
-	wrmsr(0x2ff, msr);
+	wrmsr(MTRRdefType_MSR, msr);
 	
 	/* Enale the MTRRs in SYSCFG */
 	msr = rdmsr(SYSCFG_MSR);

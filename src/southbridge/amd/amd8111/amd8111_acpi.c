@@ -4,11 +4,15 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <pc80/mc146818rtc.h>
+#include <bitops.h>
+#include <arch/io.h>
 #include "amd8111.h"
 
 #define PREVIOUS_POWER_STATE 0x43
 #define MAINBOARD_POWER_OFF 0
 #define MAINBOARD_POWER_ON 1
+#define SLOW_CPU_OFF 0
+#define SLOW_CPU__ON 1
 
 #ifndef MAINBOARD_POWER_ON_AFTER_POWER_FAIL
 #define MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
@@ -19,6 +23,8 @@ static void acpi_init(struct device *dev)
 {
 	uint8_t byte;
 	uint16_t word;
+	uint16_t pm10_bar;
+	uint32_t dword;
 	int on;
 
 #if 0
@@ -57,10 +63,43 @@ static void acpi_init(struct device *dev)
 	pci_write_config8(dev, PREVIOUS_POWER_STATE, byte);
 	printk_info("set power %s after power fail\n", on?"on":"off");
 
+	/* Throttle the CPU speed down for testing */
+	on = SLOW_CPU_OFF;
+	get_option(&on, "slow_cpu");
+	if(on) {
+		pm10_bar = (pci_read_config16(dev, 0x58)&0xff00);
+		outl(((on<<1)+0x10)  ,(pm10_bar + 0x10));
+		dword = inl(pm10_bar + 0x10);
+		on = 8-on;
+		printk_debug("Throttling CPU %2d.%1.1d percent.\n",
+				(on*12)+(on>>1),(on&1)*5);
+	}
+}
+
+static void acpi_read_resources(device_t dev)
+{
+	/* Handle the generic bars */
+	pci_dev_read_resources(dev);
+
+	if ((dev->resources + 1) < MAX_RESOURCES) {
+		struct resource *resource = &dev->resource[dev->resources];
+		dev->resources++;
+		resource->base  = 0;
+		resource->size  = 256;
+		resource->align = log2(256);
+		resource->gran  = log2(256);
+		resource->limit = 65536;
+		resource->flags = IORESOURCE_IO;
+		resource->index = 0x58;
+	}
+	else {
+		printk_err("%s Unexpected resource shortage\n",
+			dev_path(dev));
+	}
 }
 
 static struct device_operations acpi_ops  = {
-	.read_resources   = pci_dev_read_resources,
+	.read_resources   = acpi_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = acpi_init,

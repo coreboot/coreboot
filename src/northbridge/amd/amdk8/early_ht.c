@@ -1,4 +1,4 @@
-static int enumerate_ht_chain(unsigned link)
+static int enumerate_ht_chain(void)
 {
 	/* Assumption the HT chain that is bus 0 has the HT I/O Hub on it.
 	 * On most boards this just happens.  If a cpu has multiple
@@ -49,3 +49,4 @@ static int enumerate_ht_chain(unsigned link)
 	} while((last_unitid != next_unitid) && (next_unitid <= 0x1f));
 	return reset_needed;
 }
+

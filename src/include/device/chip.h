@@ -1,6 +1,8 @@
 #ifndef DEVICE_CHIP_H
+#define DEVICE_CHIP_H
 
 #include <device/path.h>
+#include <device/device.h>
 
 /* chips are arbitrary chips (superio, southbridge, etc.)
  * They have private structures that define chip resources and default 
@@ -15,21 +17,6 @@
 #else
 #define CONFIGURE(pass)
 #endif
-
-struct com_ports {
-  unsigned int enable,baud, base, irq;
-};
-
-/* lpt port description. 
- * Note that for many chips you only really need to define the 
- * enable. 
- */
-struct lpt_ports {
-	unsigned int enable, // 1 if this port is enabled
-		     mode,   // pp mode
-		     base,   // IO base of the parallel port 
-                     irq;    // irq
-};
 
 enum chip_pass {
 	CONF_PASS_PRE_CONSOLE,
@@ -60,11 +47,17 @@ struct chip_control {
 	void (*enable_dev)(struct device *dev);
 };
 
+struct chip_resource {
+	unsigned long flags;
+	unsigned long index;
+	unsigned long base;
+};
 
 struct chip_device_path {
 	struct device_path path;
 	unsigned channel;
 	int enable;
+	struct chip_resource resource[MAX_RESOURCES];
 };
 
 struct device;

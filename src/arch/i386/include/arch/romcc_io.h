@@ -1,11 +1,7 @@
 #ifndef ARCH_ROMCC_IO_H
 #define ARCH_ROMCC_IO_H 1
 
-
-static void hlt(void)
-{
-	__builtin_hlt();
-}
+#include <stdint.h>
 
 typedef __builtin_div_t div_t;
 typedef __builtin_ldiv_t ldiv_t;
@@ -58,6 +54,9 @@ int log2(int value)
 
 #define PCI_ID(VENDOR_ID, DEVICE_ID) \
 	((((DEVICE_ID) & 0xFFFF) << 16) | ((VENDOR_ID) & 0xFFFF))
+
+
+#define PNP_DEV(PORT, FUNC) (((PORT) << 8) | (FUNC))
 
 typedef unsigned device_t;
 
@@ -120,6 +119,54 @@ static device_t pci_locate_device(unsigned pci_id, device_t dev)
 		}
 	}
 	return PCI_DEV_INVALID;
+}
+
+
+/* Generic functions for pnp devices */
+static inline void pnp_write_config(device_t dev, uint8_t reg, uint8_t value)
+{
+	unsigned port = dev >> 8;
+	outb(reg, port );
+	outb(value, port +1);
+}
+
+static inline uint8_t pnp_read_config(device_t dev, uint8_t reg)
+{
+	unsigned port = dev >> 8;
+	outb(reg, port);
+	return inb(port +1);
+}
+
+static inline void pnp_set_logical_device(device_t dev)
+{
+	unsigned device = dev & 0xff;
+	pnp_write_config(dev, 0x07, device);
+}
+
+static inline void pnp_set_enable(device_t dev, int enable)
+{
+	pnp_write_config(dev, 0x30, enable?0x1:0x0);
+}
+
+static inline int pnp_read_enable(device_t dev)
+{
+	return !!pnp_read_config(dev, 0x30);
+}
+
+static inline void pnp_set_iobase(device_t dev, unsigned index, unsigned iobase)
+{
+	pnp_write_config(dev, index + 0, (iobase >> 8) & 0xff);
+	pnp_write_config(dev, index + 1, iobase & 0xff);
+}
+
+static inline void pnp_set_irq(device_t dev, unsigned index, unsigned irq)
+{
+	pnp_write_config(dev, index, irq);
+}
+
+static inline void pnp_set_drq(device_t dev, unsigned index, unsigned drq)
+{
+	pnp_write_config(dev, index, drq & 0xff);
 }
 
 #endif /* ARCH_ROMCC_IO_H */

@@ -2,8 +2,6 @@
 
 int boot_cpu(void)
 {
-	volatile unsigned long *local_apic;
-	unsigned long apic_id;
 	int bsp;
 	msr_t msr;
 	msr = rdmsr(0x1b);

@@ -740,6 +740,18 @@ class partobj:
 		value = dequote(value)
         	setdict(self.registercode, field, value)
 
+	def start_resources(self):
+		self.path = "%s, .resource={" % (self.path)
+
+	def end_resources(self):
+		self.path = "%s}}," % (self.path)
+
+	def add_resource(self, type, index, value):
+		""" Add a resource to a device """
+		self.path = "%s\n\t\t\t{ .flags=%s, .index=0x%x, .base=0x%x}," % (self.path, type, index, value)
+		
+		
+		
 	def addpcipath(self, enable, bus, slot, function):
 		""" Add a relative pci style path from our parent to this device """
 		if ((bus < 0) or (bus > 255)):
@@ -748,7 +760,7 @@ class partobj:
 			fatal("Invalid device id")
 		if ((function < 0) or (function > 7)):
 			fatal("Invalid function")
-		self.path = "%s\n\t\t{ .enable = %d, .path = {.type=DEVICE_PATH_PCI,.u={.pci={ .bus = 0x%x, .devfn = PCI_DEVFN(0x%x,%d) }}}}," % (self.path, enable, bus, slot, function)
+		self.path = "%s\n\t\t{ .enable = %d, .path = {.type=DEVICE_PATH_PCI,.u={.pci={ .bus = 0x%x, .devfn = PCI_DEVFN(0x%x,%d)}}}" % (self.path, enable, bus, slot, function)
 
 	def addpnppath(self, enable, port, device):
 		""" Add a relative path to a pnp device hanging off our parent """
@@ -756,13 +768,14 @@ class partobj:
 			fatal("Invalid port")
 		if ((device < 0) or (device > 0xff)):
 			fatal("Invalid device")
-		self.path = "%s\n\t\t{ .enable = %d, .path={.type=DEVICE_PATH_PNP,.u={.pnp={ .port = 0x%x, .device = 0x%x }}}}," % (self.path, enable, port, device)
-
+		self.path = "%s\n\t\t{ .enable = %d, .path={.type=DEVICE_PATH_PNP,.u={.pnp={ .port = 0x%x, .device = 0x%x }}}" % (self.path, enable, port, device)
+		
 	def addi2cpath(self, enable, device):
 		""" Add a relative path to a i2c device hanging off our parent """
 		if ((device < 0) or (device > 0x7f)):
 			fatal("Invalid device")
-		self.path = "%s\n\t\t{ .enable = %d, .path = {.type=DEVICE_PATH_I2C,.u={.i2c={ .device = 0x%x }}}}, " % (self.path, enable, device)
+		self.path = "%s\n\t\t{ .enable = %d, .path = {.type=DEVICE_PATH_I2C,.u={.i2c={ .device = 0x%x }}} " % (self.path, enable, device)
+
 
 	def usesoption(self, name):
 		"""Declare option that can be used by this part"""
@@ -1111,7 +1124,7 @@ def endromimage():
 
 def mainboard(path):
 	full_path = os.path.join(treetop, 'src', 'mainboard', path)
-        vendor = re.sub("/.*", "", path)
+	vendor = re.sub("/.*", "", path)
         part_number = re.sub("[^/]*/", "", path)
 	setdefault('MAINBOARD', full_path, 1)
 	setdefault('MAINBOARD_VENDOR', vendor, 1)
@@ -1278,7 +1291,7 @@ def dequote(str):
 	return a
 
 def flatten_name(str):
-	a = re.sub("/", "_", str)
+	a = re.sub("[/-]", "_", str)
 	return a
 
 def topify(path):
@@ -1316,6 +1329,7 @@ parser Config:
     token DEPENDS:		'depends'
     token DIR:			'dir'
     token DRIVER:		'driver'
+    token DRQ:			'drq'
     token ELSE:			'else'
     token END:			'end'
     token EOF:			'$'
@@ -1326,12 +1340,15 @@ parser Config:
     token INIT:			'init'
     token INITOBJECT:		'initobject'
     token INITINCLUDE:		'initinclude'
+    token IO:			'io'
+    token IRQ:			'irq'
     token LDSCRIPT:		'ldscript'
     token LOADOPTIONS:		'loadoptions'
     token MAINBOARD:		'mainboard'
     token MAINBOARDINIT:	'mainboardinit'
     token MAKEDEFINE:		'makedefine'
     token MAKERULE:		'makerule'
+    token MEM:			'mem'
     token NEVER:		'never'
     token NONE:			'none'
     token NORTHBRIDGE:		'northbridge'
@@ -1353,7 +1370,7 @@ parser Config:
     token HEX_PREFIX:		'0x'
     # Why is path separate? Because paths to resources have to at least
     # have a slash, we thinks
-    token PATH:			r'[a-zA-Z0-9_.][a-zA-Z0-9/_.]+[a-zA-Z0-9_.]+'
+    token PATH:			r'[-a-zA-Z0-9_.][-a-zA-Z0-9/_.]+[-a-zA-Z0-9_.]+'
     # Dir's on the other hand are abitrary
     # this may all be stupid.
     token DIRPATH:		r'[-a-zA-Z0-9_$()./]+'
@@ -1471,21 +1488,42 @@ parser Config:
 	    		[ ( ON 			{{ val = 1 }}
 			| OFF			{{ val = 0 }}
 			) ]			{{ return val }}
+
+    rule resource<<C>>:				{{ type = "" }}
+	    		(  IO			{{ type = "IORESOURCE_IO" }}
+			|   MEM			{{ type = "IORESOURCE_MEM" }}
+			|   IRQ			{{ type = "IORESOURCE_IRQ" }}
+			|   DRQ			{{ type = "IORESOURCE_DRQ" }}
+			)
+			term '='		{{ index = term }}
+			term			{{ value = term }}
+						{{ if (C): partstack.tos().add_resource(type, index, value) }}
+    
+			     
+    rule resources<<C>>:			{{ if (C): partstack.tos().start_resources() }}
+	    		( resource<<C>> )*
+						{{ if (C): partstack.tos().end_resources() }}
+	    
     
     rule pci<<C>>:	PCI HEX_NUM		{{ bus = int(HEX_NUM,16) }}
     			':' HEX_NUM		{{ slot = int(HEX_NUM,16) }}
 			'.' HEX_NUM		{{ function = int(HEX_NUM, 16) }}
 			enable 
 						{{ if (C): partstack.tos().addpcipath(enable, bus, slot, function) }}
+			resources<<C>>
 
     rule pnp<<C>>:	PNP HEX_NUM		{{ port = int(HEX_NUM,16) }}
 			'.' HEX_NUM		{{ device = int(HEX_NUM, 16) }}
 			enable
 						{{ if (C): partstack.tos().addpnppath(enable, port, device) }}
+			resources<<C>>
+
 
     rule i2c<<C>>:	I2C HEX_NUM		{{ device = int(HEX_NUM, 16) }}
 			enable
 						{{ if (C): partstatck.tos().addi2cpath(enable, device) }}
+			resources<<C>>
+			
 			
     rule prtval:	expr			{{ return str(expr) }}
 		|	STR			{{ return STR }}

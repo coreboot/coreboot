@@ -12,9 +12,6 @@ static void ide_init(struct device *dev)
 	uint16_t word;
 	int enable_a=1, enable_b=1;
 
-
-        printk_debug("ide_init\n");
-
 	word = pci_read_config16(dev, 0x40);
 	/* Ensure prefetch is disabled */
 	word &= ~((1 << 15) | (1 << 13));

@@ -16,10 +16,15 @@ static unsigned int cpuid(unsigned int op)
 
 static int is_cpu_rev_a0(void)
 {
-	return (cpuid(1) & 0xffff) == 0x0f10;
+	return (cpuid(1) & 0xffef) == 0x0f00;
 }
 
 static int is_cpu_pre_c0(void)
 {
 	return (cpuid(1) & 0xffef) < 0x0f48;
+}
+
+static int is_cpu_pre_b3(void)
+{
+	return (cpuid(1) & 0xffef) < 0x0f41;
 }

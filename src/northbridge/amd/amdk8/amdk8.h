@@ -38,6 +38,15 @@
 #define  HTTC_HI_PRI_BYP_CNT_MASK   3
 
 
+/* Function 1 */
+#define PCI_IO_BASE0       0xc0
+#define PCI_IO_BASE1       0xc8
+#define PCI_IO_BASE2       0xd0
+#define PCI_IO_BASE3       0xd8
+#define PCI_IO_BASE_VGA_EN (1 << 4)
+#define PCI_IO_BASE_NO_ISA (1 << 5)
+
+
 /* Function 2 */
 #define DRAM_CSBASE	   0x40
 #define DRAM_CSMASK	   0x60
@@ -124,6 +133,9 @@
 #define	 DCL_UnBufDimm	   (1<<18)
 #define	 DCL_32ByteEn	   (1<<19)
 #define	 DCL_x4DIMM_SHIFT  20
+#define	 DCL_DisInRcvrs    (1<<24)
+#define	 DCL_BypMax_SHIFT  25
+#define	 DCL_En2T          (1<<28)
 #define DRAM_CONFIG_HIGH   0x94
 #define	 DCH_ASYNC_LAT_SHIFT  0
 #define	 DCH_ASYNC_LAT_MASK   0xf

@@ -7,7 +7,7 @@ makedefine LIBGCC_FILE_NAME := $(shell $(CC) -print-libgcc-file-name)
 makedefine GCC_INC_DIR := $(shell $(CC) -print-search-dirs | sed -ne "s/install: \(.*\)/\1include/gp")
 
 makedefine CPPFLAGS := -I$(TOP)/src/include -I$(TOP)/src/arch/$(ARCH)/include -I$(GCC_INC_DIR) $(CPUFLAGS)
-makedefine ROMCCPPFLAGS := -D__ROMCC__=0 -D__ROMCC_MINOR__=37
+makedefine ROMCCPPFLAGS := -D__ROMCC__=0 -D__ROMCC_MINOR__=38
 makedefine CFLAGS := $(CPU_OPT) $(CPPFLAGS) -Os -nostdinc -nostdlib -fno-builtin  -Wall
 
 makedefine HOSTCFLAGS:= -Os -Wall
@@ -116,12 +116,12 @@ end
 
 makerule ./romcc   
 	depends	"$(TOP)/util/romcc/romcc.c" 
-	action	"$(HOSTCC) -g $(HOSTCFLAGS) -DVERSION='\"0.37\"' -DRELEASE_DATE='\"21 October 2003\"' $< -o $@"
+	action	"$(HOSTCC) -g $(HOSTCFLAGS) -DVERSION='\"0.38\"' -DRELEASE_DATE='\"18 December 2003\"' $< -o $@"
 end
 
 makerule build_opt_tbl   
-	depends	"$(TOP)/util/options/build_opt_tbl.c $(TOP)/src/include/pc80/mc146818rtc.h $(TOP)/src/include/boot/linuxbios_tables.h" 
-	action	"$(HOSTCC) $(HOSTCFLAGS) $< -o $@"
+	depends	"$(TOP)/util/options/build_opt_tbl.c $(TOP)/src/include/pc80/mc146818rtc.h $(TOP)/src/include/boot/linuxbios_tables.h Makefile.settings Makefile"
+	action	"$(HOSTCC) $(HOSTCFLAGS) $(CPUFLAGS) $< -o $@" 
 end
 
 #makerule /$(TARGET_DIR)/option_table.c
@@ -131,7 +131,12 @@ end
 
 makerule option_table.c
 	depends	"build_opt_tbl $(MAINBOARD)/cmos.layout" 
-	action	"./build_opt_tbl -b  --config $(MAINBOARD)/cmos.layout"
+	action	"./build_opt_tbl -b  --config $(MAINBOARD)/cmos.layout --header option_table.h"
+end
+
+makerule option_table.h
+	depends	"build_opt_tbl $(MAINBOARD)/cmos.layout" 
+	action	"./build_opt_tbl -b  --config $(MAINBOARD)/cmos.layout --header option_table.h"
 end
 
 if HAVE_OPTION_TABLE

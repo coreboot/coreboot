@@ -14,7 +14,10 @@
  */
 
 #include <device/pci_def.h>
+#include <device/pci_ids.h>
+#include <device/hypertransport_def.h>
 #include "arch/romcc_io.h"
+#include "amdk8.h"
 
 /*
  * Until we have a completely dynamic setup we want
@@ -39,10 +42,6 @@
 #define CONNECTION_0_2 UP
 #endif
 
-#ifndef CONNECTION_1_0 
-#define CONNECTION_1_0 ACROSS
-#endif
-
 #ifndef CONNECTION_1_3 
 #define CONNECTION_1_3 UP
 #endif
@@ -63,7 +62,7 @@
 
 typedef uint8_t u8;
 typedef uint32_t u32;
-typedef int8_t bool;
+typedef int bool;
 
 #define TRUE  (-1)
 #define FALSE (0)
@@ -95,51 +94,15 @@ static void disable_probes(void)
 
 	u32 val;
 
-	print_debug("Disabling read/write/fill probes for UP... ");
+	print_spew("Disabling read/write/fill probes for UP... ");
 
 	val=pci_read_config32(NODE_HT(0), 0x68);
 	val |= (1<<10)|(1<<9)|(1<<8)|(1<<4)|(1<<3)|(1<<2)|(1<<1)|(1 << 0);
 	pci_write_config32(NODE_HT(0), 0x68, val);
 
-	print_debug("done.\r\n");
+	print_spew("done.\r\n");
 
 }
-//BY LYH
-#if 0
-#define WAIT_TIMES 1000
-static void wait_ap_stop(u8 node)
-{
-        unsigned long reg;
-        unsigned long i;
-        for(i=0;i<WAIT_TIMES;i++) {
-                unsigned long regx;
-                regx = pci_read_config32(NODE_HT(node),0x6c);
-                if((regx & (1<<4))==1) break;
-        }
-        reg = pci_read_config32(NODE_HT(node),0x6c);
-        reg &= ~(1<<4);  // clear it
-        pci_write_config32(NODE_HT(node), 0x6c, reg);
-
-}
-static void notify_bsp_ap_is_stopped(void)
-{
-        unsigned long reg;
-        unsigned long apic_id;
-        apic_id = *((volatile unsigned long *)(APIC_DEFAULT_BASE+APIC_ID));
-        apic_id >>= 24;
-/*      print_debug("applicaton cpu apic_id: ");
-        print_debug_hex32(apic_id);
-        }*/
-        if(apic_id!=0) { //AP  apic_id == node_id ??
-//              set the ColdResetbit to notify BSP that AP is stopped
-                reg = pci_read_config32(NODE_HT(apic_id), 0x6C);
-                reg |= 1<<4;
-                pci_write_config32(NODE_HT(apic_id),  0x6C, reg);
-        }
-
-}
-#endif
-//BY LYH END
 
 static void enable_routing(u8 node)
 {
@@ -168,14 +131,14 @@ static void enable_routing(u8 node)
 	 */
 
 	/* Enable routing table */
-	print_debug("Enabling routing table for node ");
-	print_debug_hex32(node);
+	print_spew("Enabling routing table for node ");
+	print_spew_hex32(node);
 
 	val=pci_read_config32(NODE_HT(node), 0x6c);
-	val &= ~((1<<6)|(1<<5)|(1<<4)|(1<<1)|(1<<0));
+	val &= ~((1<<1)|(1<<0));
 	pci_write_config32(NODE_HT(node), 0x6c, val);
 
-	print_debug(" done.\r\n");
+	print_spew(" done.\r\n");
 }
 
 #if CONFIG_MAX_CPUS > 1
@@ -184,84 +147,97 @@ static void rename_temp_node(u8 node)
 {
 	uint32_t val;
 
-	print_debug("Renaming current temp node to ");
-	print_debug_hex32(node);
+	print_spew("Renaming current temp node to ");
+	print_spew_hex32(node);
 
 	val=pci_read_config32(NODE_HT(7), 0x60);
 	val &= (~7);  /* clear low bits. */
         val |= node;   /* new node        */
 	pci_write_config32(NODE_HT(7), 0x60, val);
 
-//BY LYH
-#if 0
-        if(node!=0) {
-                wait_ap_stop(node);
-        }
-#endif
-//BY LYH END
-
-
-	print_debug(" done.\r\n");
-
-
+	print_spew(" done.\r\n");
 }
 
 static bool check_connection(u8 src, u8 dest, u8 link)
 {
-	/* this function does 2 things:
-	 * 1) detect whether the coherent HT link is connected.
-	 * 2) verify that the coherent hypertransport link
-	 *    is established and actually working by reading the
-	 *    remote node's vendor/device id
-	 */
-
+	/* See if we have a valid connection to dest */
 	u32 val;
 	
-	/* 1) */
-	val=pci_read_config32(NODE_HT(src), 0x98+link);
+	/* Detect if the coherent HT link is connected. */
+	val = pci_read_config32(NODE_HT(src), 0x98+link);
 	if ( (val&0x17) != 0x03)
 		return 0;
 
-	/* 2) */
-        val=pci_read_config32(NODE_HT(dest),0);
+	/* Verify that the coherent hypertransport link is
+	 * established and actually working by reading the
+	 * remode node's vendor/device id
+	 */
+        val = pci_read_config32(NODE_HT(dest),0);
 	if(val != 0x11001022)
 		return 0;
 
 	return 1;
 }
 
-static void optimize_connection(u8 node1, u8 link1, u8 node2, u8 link2)
+static unsigned read_freq_cap(device_t dev, unsigned pos)
+{
+	/* Handle bugs in valid hypertransport frequency reporting */
+	unsigned freq_cap;
+	uint32_t id;
+
+	freq_cap = pci_read_config16(dev, pos);
+	freq_cap &= ~(1 << HT_FREQ_VENDOR); /* Ignore Vendor HT frequencies */
+
+	id = pci_read_config32(dev, 0);
+
+	/* AMD 8131 Errata 48 */
+	if (id == (PCI_VENDOR_ID_AMD | (PCI_DEVICE_ID_AMD_8131_PCIX << 16))) {
+		freq_cap &= ~(1 << HT_FREQ_800Mhz);
+	}
+	/* AMD 8151 Errata 23 */
+	if (id == (PCI_VENDOR_ID_AMD | (PCI_DEVICE_ID_AMD_8151_SYSCTRL << 16))) {
+		freq_cap &= ~(1 << HT_FREQ_800Mhz);
+	}
+	/* AMD K8 Unsupported 1Ghz? */
+	if (id == (PCI_VENDOR_ID_AMD | (0x1100 << 16))) {
+		freq_cap &= ~(1 << HT_FREQ_1000Mhz);
+	}
+	return freq_cap;
+}
+
+static int optimize_connection(device_t node1, uint8_t link1, device_t node2, uint8_t link2)
 {
 	static const uint8_t link_width_to_pow2[]= { 3, 4, 0, 5, 1, 2, 0, 0 };
 	static const uint8_t pow2_to_link_width[] = { 0x7, 4, 5, 0, 1, 3 };
 	uint16_t freq_cap1, freq_cap2, freq_cap, freq_mask;
-	uint8_t width_cap1, width_cap2, width_cap, width, ln_width1, ln_width2;
-	uint8_t freq;
+	uint8_t width_cap1, width_cap2, width_cap, width, old_width, ln_width1, ln_width2;
+	uint8_t freq, old_freq;
+	int needs_reset;
 	/* Set link width and frequency */
 
+	/* Initially assume everything is already optimized and I don't need a reset */
+	needs_reset = 0;
+
 	/* Get the frequency capabilities */
-	freq_cap1  = pci_read_config16(NODE_HT(node1), 0x80 + link1 + PCI_HT_CAP_HOST_FREQ_CAP);
-	freq_cap2  = pci_read_config16(NODE_HT(node2), 0x80 + link2 + PCI_HT_CAP_HOST_FREQ_CAP);
+	freq_cap1 = read_freq_cap(node1, link1 + PCI_HT_CAP_HOST_FREQ_CAP);
+	freq_cap2 = read_freq_cap(node2, link2 + PCI_HT_CAP_HOST_FREQ_CAP);
 
 	/* Calculate the highest possible frequency */
-#if 1
-	/* FIXME!!!!!!! 
-	 * This method of computing the fastes frequency is broken.
-	 * Because the frequencies (i.e. 100Mhz) are not ordered.
-	 */
-	freq = log2(freq_cap1 & freq_cap2 & 0xff);
-#else
-	/* Only allow supported frequencies 800Mhz and below */
-	freq = log2(freq_cap1 & freq_cap2 & 0x3f);
-#endif
+	freq = log2(freq_cap1 & freq_cap2);
+
+	/* See if I am changing the link freqency */
+	old_freq = pci_read_config8(node1, link1 + PCI_HT_CAP_HOST_FREQ);
+	needs_reset |= old_freq != freq;
+	old_freq = pci_read_config8(node2, link2 + PCI_HT_CAP_HOST_FREQ);
+	needs_reset |= old_freq != freq;
 
 	/* Set the Calulcated link frequency */
-	pci_write_config8(NODE_HT(node1), 0x80 + link1 + PCI_HT_CAP_HOST_FREQ, freq);
-	pci_write_config8(NODE_HT(node2), 0x80 + link2 + PCI_HT_CAP_HOST_FREQ, freq);
+	pci_write_config8(node1, link1 + PCI_HT_CAP_HOST_FREQ, freq);
+	pci_write_config8(node2, link2 + PCI_HT_CAP_HOST_FREQ, freq);
 
 	/* Get the width capabilities */
-	width_cap1 = pci_read_config8(NODE_HT(node1),  0x80 + link1 + PCI_HT_CAP_HOST_WIDTH);
-	width_cap2 = pci_read_config8(NODE_HT(node2),  0x80 + link2 + PCI_HT_CAP_HOST_WIDTH);
+	width_cap1 = pci_read_config8(node1, link1 + PCI_HT_CAP_HOST_WIDTH);
+	width_cap2 = pci_read_config8(node2, link2 + PCI_HT_CAP_HOST_WIDTH);
 
 	/* Calculate node1's input width */
 	ln_width1 = link_width_to_pow2[width_cap1 & 7];
@@ -278,45 +254,38 @@ static void optimize_connection(u8 node1, u8 link1, u8 node2, u8 link2)
 	}
 	width |= pow2_to_link_width[ln_width1] << 4;
 	
+	/* See if I am changing node1's width */
+	old_width = pci_read_config8(node1, link1 + PCI_HT_CAP_HOST_WIDTH + 1);
+	needs_reset |= old_width != width;
+
 	/* Set node1's widths */
-	pci_write_config8(NODE_HT(node1), 0x80 + link1 + PCI_HT_CAP_HOST_WIDTH + 1, width);
+	pci_write_config8(node1, link1 + PCI_HT_CAP_HOST_WIDTH + 1, width);
+
+	/* Calculate node2's width */
+	width = ((width & 0x70) >> 4) | ((width & 0x7) << 4);
+
+	/* See if I am changing node2's width */
+	old_width = pci_read_config8(node2, link2 + PCI_HT_CAP_HOST_WIDTH + 1);
+	needs_reset |= old_width != width;
 
 	/* Set node2's widths */
-	width = ((width & 0x70) >> 4) | ((width & 0x7) << 4);
-	pci_write_config8(NODE_HT(node2), 0x80 + link2 + PCI_HT_CAP_HOST_WIDTH + 1, width);
+	pci_write_config8(node2, link2 + PCI_HT_CAP_HOST_WIDTH + 1, width);
+
+	return needs_reset;
 }
 
 static void fill_row(u8 node, u8 row, u32 value)
 {
-#if 0
-	print_debug("fill_row: pci_write_config32(");
-	print_debug_hex32(NODE_HT(node));
-	print_debug_char(',');
-	print_debug_hex32(0x40 + (row << 2));
-	print_debug_char(',');
-	print_debug_hex32(value);
-	print_debug(")\r\n");
-#endif	
 	pci_write_config32(NODE_HT(node), 0x40+(row<<2), value);
 }
 
 static void setup_row(u8 source, u8 dest, u8 cpus)
 {
-#if 0
-	printk_spew("setting up link from node %d to %d (%d cpus)\r\n",
-		source, dest, cpus);
-#endif
-
 	fill_row(source,dest,generate_row(source,dest,cpus));
 }
 
 static void setup_temp_row(u8 source, u8 dest, u8 cpus)
 {
-#if 0
-	printk_spew("setting up temp. link from node %d to %d (%d cpus)\r\n",
-		source, dest, cpus);
-#endif
-
 	fill_row(source,7,generate_temp_row(source,dest,cpus));
 }
 
@@ -345,9 +314,8 @@ static void setup_remote_node(u8 node, u8 cpus)
 	};
 	uint8_t row;
 	int i;
-#if 1
-	print_debug("setup_remote_node\r\n");
-#endif
+
+	print_spew("setup_remote_node\r\n");
 	for(row=0; row<cpus; row++)
 		setup_remote_row(node, row, cpus);
 
@@ -356,18 +324,11 @@ static void setup_remote_node(u8 node, u8 cpus)
 		uint32_t value;
 		uint8_t reg;
 		reg = pci_reg[i];
-#if 0
-		print_debug("copying reg: ");
-		print_debug_hex8(reg);
-		print_debug("\r\n");
-#endif
 		value = pci_read_config32(NODE_MP(0), reg);
 		pci_write_config32(NODE_MP(7), reg, value);
 
 	}
-#if 1
-	print_debug("setup_remote_done\r\n");
-#endif
+	print_spew("setup_remote_done\r\n");
 }
 
 #endif
@@ -381,79 +342,91 @@ static void setup_temp_node(u8 node, u8 cpus)
 }
 #endif
 
-static u8 setup_uniprocessor(void)
+static void setup_uniprocessor(void)
 {
-	print_debug("Enabling UP settings\r\n");
+	print_spew("Enabling UP settings\r\n");
 	disable_probes();
-	return 1;
 }
 
+struct setup_smp_result {
+	int cpus;
+	int needs_reset;
+};
+
 #if CONFIG_MAX_CPUS > 1
-static u8 setup_smp(void)
+static struct setup_smp_result setup_smp(void)
 {
-	u8 cpus=2;
+	struct setup_smp_result result;
+	result.cpus = 2;
+	result.needs_reset = 0;
 
-	print_debug("Enabling SMP settings\r\n");
+	print_spew("Enabling SMP settings\r\n");
 
-	setup_row(0,0,cpus);
+	setup_row(0, 0, result.cpus);
 	/* Setup and check a temporary connection to node 1 */
-	setup_temp_row(0,1,cpus);
+	setup_temp_row(0, 1, result.cpus);
 	
 	if (!check_connection(0, 7, CONNECTION_0_1)) {
-		print_debug("No connection to Node 1.\r\n");
+		print_spew("No connection to Node 1.\r\n");
 		clear_temp_row(0);	/* delete temp connection */
 		setup_uniprocessor();	/* and get up working     */
-		return 1;
+		result.cpus = 1;
+		return result;
 	}
 
 	/* We found 2 nodes so far */
-	optimize_connection(0, CONNECTION_0_1, 7, CONNECTION_1_0);
-	setup_node(0, cpus);	/* Node 1 is there. Setup Node 0 correctly */
-	setup_remote_node(1, cpus);  /* Setup the routes on the remote node */
+	result.needs_reset = 
+		optimize_connection(NODE_HT(0), 0x80 + CONNECTION_0_1, NODE_HT(7), 0x80 + CONNECTION_0_1);
+	setup_node(0, result.cpus);	/* Node 1 is there. Setup Node 0 correctly */
+	setup_remote_node(1, result.cpus);  /* Setup the routes on the remote node */
         rename_temp_node(1);    /* Rename Node 7 to Node 1  */
         enable_routing(1);      /* Enable routing on Node 1 */
   	
 	clear_temp_row(0);	/* delete temporary connection */
 	
 #if CONFIG_MAX_CPUS > 2
-	cpus=4;
+	result.cpus=4;
 	
 	/* Setup and check temporary connection from Node 0 to Node 2 */
-	setup_temp_row(0,2,cpus);
+	setup_temp_row(0,2, result.cpus);
 
 	if (!check_connection(0, 7, CONNECTION_0_2)) {
-		print_debug("No connection to Node 2.\r\n");
+		print_spew("No connection to Node 2.\r\n");
 		clear_temp_row(0);	 /* delete temp connection */
-		return 2;
+		result.cpus = 2;
+		return result;
 	}
 
 	/* We found 3 nodes so far. Now setup a temporary
 	 * connection from node 0 to node 3 via node 1
 	 */
 
-	setup_temp_row(0,1,cpus); /* temp. link between nodes 0 and 1 */
-	setup_temp_row(1,3,cpus); /* temp. link between nodes 1 and 3 */
+	setup_temp_row(0,1, result.cpus); /* temp. link between nodes 0 and 1 */
+	setup_temp_row(1,3, result.cpus); /* temp. link between nodes 1 and 3 */
 
 	if (!check_connection(1, 7, CONNECTION_1_3)) {
-		print_debug("No connection to Node 3.\r\n");
+		print_spew("No connection to Node 3.\r\n");
 		clear_temp_row(0);	 /* delete temp connection */
 		clear_temp_row(1);	 /* delete temp connection */
-		return 2;
+		result.cpus = 2;
+		return result;
 	}
+
+#warning "FIXME optimize the physical connections"
 
 	/* We found 4 nodes so far. Now setup all nodes for 4p */
 
-	setup_node(0, cpus);  /* The first 2 nodes are configured    */
-	setup_node(1, cpus);  /* already. Just configure them for 4p */
+	setup_node(0, result.cpus);  /* The first 2 nodes are configured    */
+	setup_node(1, result.cpus);  /* already. Just configure them for 4p */
 	
-	setup_temp_row(0,2,cpus);
-	setup_temp_node(2,cpus);
+	setup_temp_row(0,2, result.cpus);
+	setup_temp_node(2, result.cpus);
         rename_temp_node(2);
         enable_routing(2);
   
-	setup_temp_row(0,1,cpus);
-	setup_temp_row(1,3,cpus);
-	setup_temp_node(3,cpus);
+	setup_temp_row(0,1, result.cpus);
+	setup_temp_row(1,3, result.cpus);
+	setup_temp_node(3, result.cpus);
         rename_temp_node(3);
         enable_routing(3);      /* enable routing on node 3 (temp.) */
 	
@@ -463,52 +436,52 @@ static u8 setup_smp(void)
 	clear_temp_row(3);
 
 #endif
-	print_debug_hex32(cpus);
+	print_debug_hex32(result.cpus);
 	print_debug(" nodes initialized.\r\n");
-	return cpus;
+	return result;
 }
 #endif
 
 #if CONFIG_MAX_CPUS > 1
-static unsigned detect_mp_capabilities(unsigned cpus)
+static unsigned verify_mp_capabilities(unsigned cpus)
 {
 	unsigned node, row, mask;
 	bool mp_cap=TRUE;
 
-#if 1
-	print_debug("detect_mp_capabilities: ");
-	print_debug_hex32(cpus);
-	print_debug("\r\n");
-#endif
-	if (cpus>2)
+	if (cpus > 2) {
 		mask=0x06;	/* BigMPCap */
-	else
+	} else {
 		mask=0x02;	/* MPCap    */
-
-	for (node=0; node<cpus; node++) {
-		if ((pci_read_config32(NODE_MC(node), 0xe8) & mask)!=mask)
-			mp_cap=FALSE;
 	}
 
-	if (mp_cap)
+	for (node=0; node<cpus; node++) {
+		if ((pci_read_config32(NODE_MC(node), 0xe8) & mask) != mask) {
+			mp_cap = FALSE;
+		}
+	}
+
+	if (mp_cap) {
 		return cpus;
+	}
 
 	/* one of our cpus is not mp capable */
 
-	print_debug("One of the CPUs is not MP capable. Going back to UP\r\n");
+	print_err("One of the CPUs is not MP capable. Going back to UP\r\n");
 
-	for (node=cpus; node>0; node--)
-	    for (row=cpus; row>0; row--)
-		fill_row(NODE_HT(node-1), row-1, DEFAULT);
-	
-	return setup_uniprocessor();
+	for (node = cpus; node > 0; node--) {
+		for (row = cpus; row > 0; row--) {
+			fill_row(NODE_HT(node-1), row-1, DEFAULT);
+		}
+	}
+	setup_uniprocessor();
+	return 1;
 }
 
 #endif
 
 static void coherent_ht_finalize(unsigned cpus)
 {
-	int node;
+	unsigned node;
 	bool rev_a0;
 	
 	/* set up cpu count and node count and enable Limit
@@ -517,53 +490,149 @@ static void coherent_ht_finalize(unsigned cpus)
 	 * registers on Hammer A0 revision.
 	 */
 
-#if 1
+#if 0
 	print_debug("coherent_ht_finalize\r\n");
 #endif
-	rev_a0= is_cpu_rev_a0();
+	rev_a0 = is_cpu_rev_a0();
+	for (node = 0; node < cpus; node++) {
+		device_t dev;
+		uint32_t val;
+		dev = NODE_HT(node);
 
-	for (node=0; node<cpus; node++) {
-		u32 val;
-		val=pci_read_config32(NODE_HT(node), 0x60);
+		/* Set the Total CPU and Node count in the system */
+		val = pci_read_config32(dev, 0x60);
 		val &= (~0x000F0070);
 		val |= ((cpus-1)<<16)|((cpus-1)<<4);
-		pci_write_config32(NODE_HT(node),0x60,val);
+		pci_write_config32(dev, 0x60, val);
 
-		val=pci_read_config32(NODE_HT(node), 0x68);
-#if 1
-		val |= 0x00008000;
-#else
-		val |= 0x0f00c800;  // 0x00008000->0f00c800 BY LYH
-#endif
-		pci_write_config32(NODE_HT(node),0x68,val);
+		/* Only respond to real cpu pci configuration cycles
+		 * and optimize the HT settings 
+		 */
+		val=pci_read_config32(dev, 0x68);
+		val &= ~((HTTC_BUF_REL_PRI_MASK << HTTC_BUF_REL_PRI_SHIFT) |
+			(HTTC_MED_PRI_BYP_CNT_MASK << HTTC_MED_PRI_BYP_CNT_SHIFT) |
+			(HTTC_HI_PRI_BYP_CNT_MASK << HTTC_HI_PRI_BYP_CNT_SHIFT));
+		val |= HTTC_LIMIT_CLDT_CFG | 
+			(HTTC_BUF_REL_PRI_8 << HTTC_BUF_REL_PRI_SHIFT) |
+			HTTC_RSP_PASS_PW |
+			(3 << HTTC_MED_PRI_BYP_CNT_SHIFT) |
+			(3 << HTTC_HI_PRI_BYP_CNT_SHIFT);
+		pci_write_config32(dev, 0x68, val);
 
 		if (rev_a0) {
-			pci_write_config32(NODE_HT(node),0x94,0);
-			pci_write_config32(NODE_HT(node),0xb4,0);
-			pci_write_config32(NODE_HT(node),0xd4,0);
+			pci_write_config32(dev, 0x94, 0);
+			pci_write_config32(dev, 0xb4, 0);
+			pci_write_config32(dev, 0xd4, 0);
 		}
+
+
 	}
-#if 1
+
+#if 0
 	print_debug("done\r\n");
 #endif
 }
 
+static int apply_cpu_errata_fixes(unsigned cpus, int needs_reset)
+{
+	unsigned node;
+	for(node = 0; node < cpus; node++) {
+		device_t dev;
+		uint32_t cmd;
+		dev = NODE_MC(node);
+		if (is_cpu_pre_c0()) {
+
+			/* Errata 66
+			 * Limit the number of downstream posted requests to 1 
+			 */
+			cmd = pci_read_config32(dev, 0x70);
+			if ((cmd & (3 << 0)) != 2) {
+				cmd &= ~(3<<0);
+				cmd |= (2<<0);
+				pci_write_config32(dev, 0x70, cmd );
+				needs_reset = 1;
+			}
+			cmd = pci_read_config32(dev, 0x7c);
+			if ((cmd & (3 << 4)) != 0) {
+				cmd &= ~(3<<4);
+				cmd |= (0<<4);
+				pci_write_config32(dev, 0x7c, cmd );
+				needs_reset = 1;
+			}
+			/* Clock Power/Timing Low */
+			cmd = pci_read_config32(dev, 0xd4);
+			if (cmd != 0x000D0001) {
+				cmd = 0x000D0001;
+				pci_write_config32(dev, 0xd4, cmd);
+				needs_reset = 1; /* Needed? */
+			}
+
+		}
+		else {
+			uint32_t cmd_ref;
+			/* Errata 98 
+			 * Set Clk Ramp Hystersis to 7
+			 * Clock Power/Timing Low
+			 */
+			cmd_ref = 0x04e20707; /* Registered */
+			cmd = pci_read_config32(dev, 0xd4);
+			if(cmd != cmd_ref) {
+				pci_write_config32(dev, 0xd4, cmd_ref );
+				needs_reset = 1; /* Needed? */
+			}
+		}
+	}
+	return needs_reset;
+}
+
+static int optimize_link_read_pointers(unsigned cpus, int needs_reset)
+{
+	unsigned node;
+	for(node = 0; node < cpus; node = node + 1) {
+		device_t f0_dev, f3_dev;
+		uint32_t cmd_ref, cmd;
+		int link;
+		f0_dev = NODE_HT(node);
+		f3_dev = NODE_MC(node);
+		cmd_ref = cmd = pci_read_config32(f3_dev, 0xdc);
+		for(link = 0; link < 3; link = link + 1) {
+			uint32_t link_type;
+			unsigned reg;
+			reg = 0x98 + (link * 0x20);
+			link_type = pci_read_config32(f0_dev, reg);
+			if (link_type & LinkConnected) {
+				cmd &= 0xff << (link *8);
+				/* FIXME this assumes the device on the other side is an AMD device */
+				cmd |= 0x25 << (link *8);
+			}
+		}
+		if (cmd != cmd_ref) {
+			pci_write_config32(f3_dev, 0xdc, cmd);
+			needs_reset = 1;
+		}
+	}
+	return needs_reset;
+}
+
 static int setup_coherent_ht_domain(void)
 {
-	unsigned cpus;
-	int reset_needed = 0;
+	struct setup_smp_result result;
+	result.cpus = 1;
+	result.needs_reset = 0;
 
 	enable_bsp_routing();
 
 #if CONFIG_MAX_CPUS == 1
-	cpus=setup_uniprocessor();
+	setup_uniprocessor();
 #else
-	cpus=setup_smp();
-	cpus=detect_mp_capabilities(cpus);
+	result = setup_smp();
+	result.cpus = verify_mp_capabilities(result.cpus);
 #endif
-	coherent_ht_finalize(cpus);
+	coherent_ht_finalize(result.cpus);
+	result.needs_reset = apply_cpu_errata_fixes(result.cpus, result.needs_reset);
+#if CONFIG_MAX_CPUS > 1 /* Why doesn't this work on the solo? */
+	result.needs_reset = optimize_link_read_pointers(result.cpus, result.needs_reset);
+#endif
 
-	/* FIXME this should probably go away again. */
-	coherent_ht_mainboard(cpus);
-	return reset_needed;
+	return result.needs_reset;
 }

@@ -80,6 +80,7 @@ void chip_enumerate(struct chip *chip)
 			link += 1;
 		}
 		if (dev) {
+			struct chip_resource *res, *res_limit;
 			printk_spew("path (%p) %s %s", dev, dev_path(dev), identical_paths?"identical":"");
 			printk_spew(" parent: (%p) %s\n",dev->bus->dev,  dev_path(dev->bus->dev));
 			dev->chip = chip;
@@ -88,6 +89,16 @@ void chip_enumerate(struct chip *chip)
 			for(child = chip->children; child; child = child->next) {
 				if (!child->bus && child->link == i) {
 					child->bus = &dev->link[link];
+				}
+			}
+			res = &chip->path[i].resource[0];
+			res_limit = &chip->path[i].resource[MAX_RESOURCES];
+			for(; res < res_limit; res++) {
+				if (res->flags) {
+					struct resource *resource;
+					resource = get_resource(dev, res->index);
+					resource->flags = res->flags | IORESOURCE_FIXED | IORESOURCE_ASSIGNED;
+					resource->base = res->base;
 				}
 			}
 		}

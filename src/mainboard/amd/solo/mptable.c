@@ -178,7 +178,6 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 		1, (5<<2)|1, 0x02, 0x11);
 	
 
-	
 	/* There is no extension information... */
 
 	/* Compute the checksums */

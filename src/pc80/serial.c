@@ -77,8 +77,7 @@ static void uart_init(void)
 #if USE_OPTION_TABLE == 1
 	static const unsigned char divisor[] = { 1,2,3,6,12,24,48,96 };
 	unsigned ttys0_div, ttys0_index;
-	outb(RTC_BOOT_BYTE + 1, 0x70);
-	ttys0_index = inb(0x71);
+	ttys0_index = read_option(CMOS_VSTART_baud_rate, CMOS_VLEN_baud_rate, 0);
 	ttys0_index &= 7;
 	ttys0_div = divisor[ttys0_index];
 	outb(ttys0_div & 0xff, TTYS0_BASE + UART_DLL);

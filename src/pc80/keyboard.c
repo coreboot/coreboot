@@ -1,8 +1,11 @@
+#include <console/console.h>
+#include <pc80/keyboard.h>
+#include <device/device.h>
 #include <arch/io.h>
 
 /* much better keyboard init courtesy ollie@sis.com.tw 
    TODO: Typematic Setting, the keyboard is too slow for me */
-void pc_keyboard_init()
+static void pc_keyboard_init(struct pc_keyboard *keyboard)
 {
 	volatile unsigned char regval;
 
@@ -49,3 +52,9 @@ void pc_keyboard_init()
 		return;
 }
 
+void init_pc_keyboard(unsigned port0, unsigned port1, struct pc_keyboard *kbd)
+{
+	if ((port0 == 0x60) && (port1 == 0x64)) {
+		pc_keyboard_init(kbd);
+	}
+}

@@ -23,6 +23,12 @@ uses XIP_ROM_BASE
 uses STACK_SIZE
 uses HEAP_SIZE
 uses USE_OPTION_TABLE
+uses LB_CKS_RANGE_START
+uses LB_CKS_RANGE_END
+uses LB_CKS_LOC
+uses MAINBOARD_PART_NUMBER
+uses MAINBOARD_VENDOR
+
 
 ## ROM_SIZE is the size of boot ROM that this board will use.
 default ROM_SIZE=262144
@@ -59,7 +65,14 @@ default HAVE_MP_TABLE=1
 default HAVE_OPTION_TABLE=1
 
 ##
-## AMD Solo is a 1cpu board 
+## Move the default LinuxBIOS cmos range off of AMD RTC registers
+##
+default LB_CKS_RANGE_START=49
+default LB_CKS_RANGE_END=122
+default LB_CKS_LOC=123
+
+##
+## AMD Solo is a 1cpu board
 ##
 default CONFIG_SMP=1
 default CONFIG_MAX_CPUS=1
@@ -152,7 +165,7 @@ object reset.o
 ## Romcc output
 ##
 makerule ./failover.E
-	depends "$(MAINBOARD)/failover.c" 
+	depends "$(MAINBOARD)/failover.c"
 	action "$(CPP) -I$(TOP)/src $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/failover.c > ./failover.E"
 end
 
@@ -161,13 +174,13 @@ makerule ./failover.inc
 	action "./romcc -O -o failover.inc --label-prefix=failover ./failover.E"
 end
 
-makerule ./auto.E 
-	depends	"$(MAINBOARD)/auto.c" 
-	action	"$(CPP) -I$(TOP)/src $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
+makerule ./auto.E
+	depends	"$(MAINBOARD)/auto.c option_table.h "
+	action	"$(CPP) -I$(TOP)/src -I. $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
 end
-makerule ./auto.inc 
+makerule ./auto.inc
 	depends "./auto.E ./romcc"
-	action	"./romcc -mcpu=k8 -O ./auto.E > auto.inc"
+	action	"./romcc -mcpu=k8 -O2 ./auto.E > auto.inc"
 end
 
 ##
@@ -175,18 +188,19 @@ end
 ##
 mainboardinit cpu/i386/entry16.inc
 mainboardinit cpu/i386/entry32.inc
+#mainboardinit cpu/i386/bist32.inc
 ldscript /cpu/i386/entry16.lds
 ldscript /cpu/i386/entry32.lds
 
 ##
 ## Build our reset vector (This is where linuxBIOS is entered)
 ##
-if USE_FALLBACK_IMAGE 
-	mainboardinit cpu/i386/reset16.inc 
-	ldscript /cpu/i386/reset16.lds 
+if USE_FALLBACK_IMAGE
+	mainboardinit cpu/i386/reset16.inc
+	ldscript /cpu/i386/reset16.lds
 else
-	mainboardinit cpu/i386/reset32.inc 
-	ldscript /cpu/i386/reset32.lds 
+	mainboardinit cpu/i386/reset32.inc
+	ldscript /cpu/i386/reset32.lds
 end
 
 ### Should this be in the northbridge code?
@@ -204,12 +218,12 @@ ldscript /arch/i386/lib/id.lds
 mainboardinit cpu/k8/earlymtrr.inc
 
 ###
-### This is the early phase of linuxBIOS startup 
+### This is the early phase of linuxBIOS startup
 ### Things are delicate and we test to see if we should
 ### failover to another image.
 ###
 if USE_FALLBACK_IMAGE
-	ldscript /arch/i386/lib/failover.lds 
+	ldscript /arch/i386/lib/failover.lds
 	mainboardinit ./failover.inc
 end
 
@@ -225,7 +239,7 @@ mainboardinit ./auto.inc
 mainboardinit cpu/k8/disable_mmx_sse.inc
 
 ##
-## Include the secondary Configuration files 
+## Include the secondary Configuration files
 ##
 dir /pc80
 config chip.h
@@ -254,19 +268,29 @@ northbridge amd/amdk8 "mc0"
 		pci 1:0.2 on
 		# pci 1:1.0 off
 		superio NSC/pc87360 link 1
-			pnp 2e.0
-			pnp 2e.1
-			pnp 2e.2
-			pnp 2e.3
-			pnp 2e.4
-			pnp 2e.5
-			pnp 2e.6
-			pnp 2e.7
-			pnp 2e.8
-			pnp 2e.9
-			pnp 2e.a
-			register "com1" = "{1, 0, 0x3f8, 4}"
-			register "lpt" = "{1}"
+			pnp 2e.0 off  # Floppy
+				 io 0x60 = 0x3f0
+				irq 0x70 = 6
+				drq 0x74 = 2
+			pnp 2e.1 off  # Parallel Port
+				 io 0x60 = 0x378
+				irq 0x70 = 7
+			pnp 2e.2 off # Com 2
+				 io 0x60 = 0x2f8
+				irq 0x70 = 3
+			pnp 2e.3 on  # Com 1
+				 io 0x60 = 0x3f8
+				irq 0x70 = 4
+			pnp 2e.4 off # SWC
+			pnp 2e.5 off # Mouse
+			pnp 2e.6 on  # Keyboard
+				 io 0x60 = 0x60
+				 io 0x62 = 0x64
+				irq 0x70 = 1
+			pnp 2e.7 off # GPIO
+			pnp 2e.8 off # ACB
+			pnp 2e.9 off # FSCM
+			pnp 2e.a off # WDT
 		end
 	end
 end
@@ -279,4 +303,5 @@ end
 ##
 mainboardinit pc80/serial.inc
 mainboardinit arch/i386/lib/console.inc
+#mainboardinit cpu/i386/bist32_fail.inc
 

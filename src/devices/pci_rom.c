@@ -4,8 +4,6 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 
-#include "../drivers/pci/onboard/chip.h"
-
 struct rom_header * pci_rom_probe(struct device *dev)
 {
 	unsigned long rom_address;
@@ -14,8 +12,7 @@ struct rom_header * pci_rom_probe(struct device *dev)
 
         if (dev->on_mainboard && (dev->rom_address != 0) ) {
                 rom_address = dev->rom_address;
-        }
-        else {
+        } else {
                 rom_address = pci_read_config32(dev, PCI_ROM_ADDRESS);
         }
 

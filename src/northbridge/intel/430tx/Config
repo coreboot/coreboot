@@ -1,0 +1,5 @@
+raminit northbridge/intel/430tx/raminit.inc
+raminit sdram/generic_sdram.inc
+raminit sdram/generic_sdram_enable.inc
+
+object northbridge.o

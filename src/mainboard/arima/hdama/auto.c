@@ -384,7 +384,6 @@ static void main(void)
 		.f3 = PCI_DEV(0, 0x18, 3),
 		.channel0 = { (0xa<<3)|0, (0xa<<3)|2, 0, 0 },
 		.channel1 = { (0xa<<3)|1, (0xa<<3)|3, 0, 0 },
-		.memreset = 28,
 	};
 	static const struct mem_controller cpu1 = {
 		.f0 = PCI_DEV(0, 0x19, 0),
@@ -393,7 +392,6 @@ static void main(void)
 		.f3 = PCI_DEV(0, 0x19, 3),
 		.channel0 = { (0xa<<3)|4, (0xa<<3)|6, 0, 0 },
 		.channel1 = { (0xa<<3)|5, (0xa<<3)|7, 0, 0 },
-		.memreset = 29,
 	};
 	pc87360_enable_serial();
 	uart_init();

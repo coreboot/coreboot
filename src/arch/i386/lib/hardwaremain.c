@@ -56,9 +56,7 @@ static char rcsid[] = "$Id$";
 #include <arch/pirq_routing.h>
 #include <arch/ioapic.h>
 #include <smp/atomic.h>
-#if defined(SMP)
-#include<arch/smp/mpspec.h>
-#endif
+#include <arch/smp/mpspec.h>
 
 
 static int cpu_initialize(unsigned long totalram)

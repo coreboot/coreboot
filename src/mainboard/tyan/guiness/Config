@@ -27,7 +27,7 @@ option ENABLE_FIXED_AND_VARIABLE_MTRRS
 
 
 object mainboard.o
-object mptable.o
+object mptable.o HAVE_MP_TABLE
 #object irq_tables.o
 #keyboard pc80
 dir ../../../pc80
@@ -40,12 +40,12 @@ option SMBUS_MEM_DEVICE_INC=1
 option SIO_BASE=0x2e
 option SMP=1
 option IOAPIC=1
+option MAX_CPUS=2
+option HAVE_MP_TABLE=1
 option USE_AMD_NDA_CODE=1
 option FINAL_MAINBOARD_FIXUP=1
 option HAVE_HARD_RESET=1
-option HAVE_MP_TABLE=1
 option STACK_SIZE=0x10000
-option MAX_CPUS=2
 option XIP_ROM_SIZE=0x8000
 option XIP_ROM_BASE=0xffff8000
 nooption MEMORY_HOLE

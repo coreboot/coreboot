@@ -45,7 +45,7 @@ typedef struct { int counter; } atomic_t;
  * Atomically decrements @v by 1.  Note that the guaranteed
  * useful range of an atomic_t is only 24 bits.
  */ 
-#define atomic_inc(v)	(((v)->counter)--)
+#define atomic_dec(v)	(((v)->counter)--)
 
 
 #endif /* SMP */

@@ -38,8 +38,8 @@ makerule etags: $(SOURCES) ; etags $(SOURCES)
 makerule tags: $(SOURCES) ; gctags $(SOURCES)
 makerule documentation: $(SOURCES) ; doxygen LinuxBIOSDoc.config 
 
-makerule linuxbios.a : $(OBJECTS) ; rm -f linuxbios.a
-addaction linuxbios.a ar cr linuxbios.a $(OBJECTS)
+makerule linuxbios.a : $(OBJECTS-1) ; rm -f linuxbios.a
+addaction linuxbios.a ar cr linuxbios.a $(OBJECTS-1)
 
 makerule crt0.s: crt0.S $(TOP)/src/cpu/p5/start32.inc ; $(CPP) $(CPPFLAGS) -I$(TOP)/src $< > crt0.s
 

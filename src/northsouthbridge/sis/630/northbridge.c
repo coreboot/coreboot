@@ -16,7 +16,6 @@ static char rcsid[] =
 #include <subr.h>
 #include <pci.h>
 #include <pci_ids.h>
-#include <northsouthbridge/sis/630/param.h>
 
 /* these functions query the hardware to figure out how much ram is in
  * the machine. They then place that information in the parameter block. 

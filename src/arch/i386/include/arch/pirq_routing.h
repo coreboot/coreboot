@@ -1,6 +1,8 @@
 #ifndef ARCH_PIRQ_ROUTING_H
 #define ARCH_PIRQ_ROUTING_H
 
+#include <types.h>
+
 #define PIRQ_SIGNATURE	(('$' << 0) + ('P' << 8) + ('I' << 16) + ('R' << 24))
 #define PIRQ_VERSION 0x0100
 

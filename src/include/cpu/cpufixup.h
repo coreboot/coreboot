@@ -11,7 +11,7 @@
 #    define cpufixup(totalram) p6_cpufixup(totalram)
 #  endif
 #else
-#  define cpu_fixup(totalram) do {} while(0)
+#  define cpufixup(totalram) do {} while(0)
 #endif
 
 #endif /* CPU_CPUFIXUP_H */

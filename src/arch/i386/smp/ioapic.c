@@ -1,4 +1,3 @@
-#if defined(IOAPIC)
 #include <arch/ioapic.h>
 #include <printk.h>
 
@@ -134,4 +133,3 @@ void setup_ioapic(void)
 			a->reg, a->value_low, a->value_high);
 	}
 }
-#endif /* IOAPIC */

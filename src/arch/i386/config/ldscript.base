@@ -96,24 +96,20 @@ SECTIONS
 	.heap (.): {
 		_heap = .;
 		/* Reserve 256K for the heap */
-		. = . + ( HEAP_SIZE );
+		. = HEAP_SIZE ;
 		_eheap = .;
 	}
 	.stack (.) : {
 		_stack = .;
 		/* Reserve 64k stack for each possible cpu */
-		. = . + ((MAX_CPUS) * (STACK_SIZE));
+		. = ((MAX_CPUS) * (STACK_SIZE)); 
 		_estack = .;
 	}
-	_lreset = _eldata;
+	_lreset = _ROMTOP;
 	. = _lreset;
-	_deadspace = (_ROMTOP - _lreset);
 	.reset (.) : AT (_lreset) {
-		. = . + _deadspace;
-		_reset_vector = .;
 		*(.reset_vector)
-		_ereset_vector = . ;
-		. = .  + (16 - (1 + (_ereset_vector - _reset_vector)));
+		. = 15 ;
 		BYTE(0x00);
 	} 
 	_elreset = _lreset + SIZEOF(.reset);

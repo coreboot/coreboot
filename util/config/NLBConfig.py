@@ -40,17 +40,17 @@ def add_main_rule_dependency(new_dependency):
 # this is a tuple, object name, source it depends on, 
 # and an optional rule (can be empty) for actually building
 # the object
-def addobject(object, sourcepath, rule):
-	objectrules.append([object, sourcepath, rule])
+def addobject(object, sourcepath, rule, condition):
+	objectrules.append([object, sourcepath, rule, condition])
 
 # OK, let's face it, make sucks. 
 # if you have a rule like this: 
 # a.o: /some/long/path/a.c
 # make won't apply the .c.o rule. Toy!
 
-def addobject_defaultrule(object, sourcepath):
-	defaultrule = "\t $(CC) -c $(CFLAGS) $<"
-	objectrules.append([object, sourcepath, defaultrule])
+def addobject_defaultrule(object, sourcepath, condition):
+	defaultrule = "\t $(CC) -c $(CFLAGS) -o $@ $<"
+	addobject(object, sourcepath, defaultrule, condition)
 
 # for all these functions, you need:
 # the dir that the Config file is in
@@ -136,7 +136,7 @@ def keyboard(dir, keyboard_name):
 	if (debug):
 		print "KEYBOARD"
 	keyboard_dir = os.path.join(treetop, 'src', keyboard_name)
-	addobject_defaultrule('keyboard.o', keyboard_dir)
+	addobject_defaultrule('keyboard.o', keyboard_dir,'')
 
 def cpu(dir, cpu_name):
 	common_command_action(dir, 'cpu', cpu_name)
@@ -165,7 +165,7 @@ def superio(dir,  superio_name):
 	# note that superio is w.r.t. treetop
 	buildfullpath('superio', superio_name)
 	dir = os.path.join(treetop, 'src', 'superio', superio_name)
-	addobject_defaultrule('superio.o', dir)
+	addobject_defaultrule('superio.o', dir,'')
 
 # commands are of the form: 
 # superio_name [name=val]*
@@ -186,11 +186,10 @@ def nsuperio(dir, superio_commands):
 	superio_decl_name = re.sub("/", "_", superio_name)
 	buildfullpath('superio', superio_name)
 	dir = os.path.join(treetop, 'src', 'superio', superio_name)
-	defaultrule = "\t $(CC) -c $(CFLAGS) -o $@ $<"
 	object="superio_%s.o" % superio_decl_name
 	superio_source = dir + "/superio.c"
-	objectrules.append([object, superio_source, defaultrule])
-	addobject_defaultrule('nsuperio.o', "")
+	addobject_defaultrule(object, superio_source,'')
+	addobject_defaultrule('nsuperio.o', "", '')
 	rest = m.group(2)
 	superio_cmds = '';
 	m = command_re.match(rest)
@@ -230,8 +229,13 @@ def mainboardinit(dir, file):
 	mainboardfilelist.append(file)
 	print "Added mainboard init file: ", file
 
-def object(dir, obj_name):
-	addobject_defaultrule(obj_name, dir)
+def object(dir, command):
+	wspc = string.whitespace
+	command_re = re.compile("([^" + wspc + "]+)([" + wspc + "]([^" + wspc + "]*)|)")
+	m = command_re.match(command)
+	obj_name = m.group(1)
+	condition = m.group(3)
+	addobject_defaultrule(obj_name, dir, condition)
 
 # for eventual user-defined rules. 
 # pattern is name : deps ; rule
@@ -510,8 +514,9 @@ def writeldscript(path):
 	keys = makeoptions.keys()
 	keys.sort()
 	for key in keys:
-		if makeoptions[key] :
-			file.write("%s = %s;\n" % (key, makeoptions[key]))
+		value = makeoptions[key]
+		if re.match("^(0x[0-9a-fA-F]+|0[0-7]+|[0-9]+)$", value):
+			file.write("%s = %s;\n" % (key, value))
 		
 	ldlines = readfile(ldscriptbase)
 	if (debug):
@@ -581,9 +586,14 @@ def writemakefile(path):
 				
 	# print out all the object dependencies
 	# There is ALWAYS a crt0.o
-	file.write("OBJECTS=crt0.o\n")
+	file.write("OBJECTS-1 := crt0.o\n")
 	for i in range(len(objectrules)):
-		file.write("OBJECTS += %s\n" % (objectrules[i][0]))
+		obj_name = objectrules[i][0]
+		obj_cond = objectrules[i][3]
+		if not obj_cond :
+			file.write("OBJECTS-1 += %s\n" % (obj_name))
+		else:
+			file.write("OBJECTS-$(%s) += %s\n" % (obj_cond, obj_name))
 		
 	file.write("SOURCES=\n")
 	

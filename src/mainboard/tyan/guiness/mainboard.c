@@ -427,7 +427,7 @@ static void setup_pci_irq_to_isa_routing(void)
 		 * PIRQC -> 11
 		 * PIRQD -> 3
 		 */
-		pci_write_config_word(dev, 0x56, 0x3ba5);
+		pci_write_config_word(dev, 0x56,(3 << 12)|(0xb << 8)|(0xa <<4)|(5 <<0));
 	}
 }
 

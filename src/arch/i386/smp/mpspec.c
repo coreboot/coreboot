@@ -1,5 +1,3 @@
-#ifdef HAVE_MP_TABLE
-
 #ifndef lint
 static char rcsid[] = "$Id$";
 #endif
@@ -240,4 +238,3 @@ void write_smp_table(void *v)
 }
 #endif /* 0 */
 
-#endif /* HAVE_MP_TABLE */

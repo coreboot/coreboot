@@ -6,13 +6,25 @@ loadoptions
 
 target sandpoint
 
-uses ARCH CROSS_COMPILE HAVE_OPTION_TABLE
-uses CONFIG_COMPRESS NO_POST
-uses CONFIG_IDE_STREAM IDE_BOOT_DRIVE
-uses USE_ELF_BOOT IDE_SWAB IDE_OFFSET 
-uses ROM_SIZE ROM_IMAGE_SIZE ROM_SECTION_SIZE ROM_SECTION_OFFSET _ROMBASE
-uses CACHE_RAM_BASE CACHE_RAM_SIZE STACK_SIZE HEAP_SIZE
-uses MAINBOARD MAINBOARD_PART_NUMBER MAINBOARD_VENDOR
+uses ARCH CROSS_COMPILE 
+uses HAVE_OPTION_TABLE
+uses CONFIG_SANDPOINT_ALTIMUS 
+uses CONFIG_COMPRESS 
+uses NO_POST
+uses CONFIG_IDE_STREAM 
+uses IDE_BOOT_DRIVE
+uses USE_ELF_BOOT 
+uses IDE_SWAB IDE_OFFSET 
+uses ROM_SIZE ROM_IMAGE_SIZE 
+uses ROM_SECTION_SIZE 
+uses ROM_SECTION_OFFSET 
+uses _ROMBASE
+uses CACHE_RAM_BASE 
+uses CACHE_RAM_SIZE 
+uses STACK_SIZE HEAP_SIZE
+uses MAINBOARD 
+uses MAINBOARD_PART_NUMBER 
+uses MAINBOARD_VENDOR
 
 ## use a cross compiler
 option CROSS_COMPILE="powerpc-eabi-"
@@ -31,9 +43,6 @@ option IDE_SWAB=1
 option IDE_OFFSET=0
 
 option ROM_SIZE=1048576
-
-## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
-option ROM_IMAGE_SIZE=49152
 
 ## LinuxBIOS C code runs at this location in RAM
 option _RAMBASE=0x00100000
@@ -65,11 +74,12 @@ option ROM_SECTION_OFFSET=0
 option _ROMBASE=0xfff00000
 
 # Sandpoint Demo Board
-mainboard motorola/sandpoint
-	arch ppc end
-	pmc altimus/mpc7410 end
+romimage "normal"
+	## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
+	option ROM_IMAGE_SIZE=49152
+	option CONFIG_SANDPOINT_ALTIMUS=1
 
-	addaction linuxbios.a "$(CROSS_COMPILE)ranlib linuxbios.a"
-
-	makedefine CFLAGS += -g
+	mainboard motorola/sandpoint
 end
+
+buildrom ROM_SIZE "normal"

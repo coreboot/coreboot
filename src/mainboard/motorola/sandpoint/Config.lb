@@ -2,6 +2,32 @@
 ## Config file for the Motorola Sandpoint III development system.
 ## Note that this has only been tested with the Altimus 7410 PMC.
 ##
+uses CONFIG_SANDPOINT_ALTIMUS
+uses CONFIG_SANDPOINT_TALUS
+uses CONFIG_SANDPOINT_UNITY
+uses CONFIG_SANDPOINT_VALIS
+uses CONFIG_SANDPOINT_GYRUS
+
+arch ppc end
+
+if CONFIG_SANDPOINT_ALTIMUS
+	pmc altimus/mpc7410 end
+#	pmc altimus/mpc7400 end
+#	pmc altimus/mpc75x end
+end
+if CONFIG_SANDPOINT_TALUS
+	pmc talus/mpc74x end
+	pmc talus/mpc603 end
+end
+if CONFIG_SANDPOINT_UNITY
+	pmc unity/mpc824x end
+end
+if CONFIG_SANDPOINT_VALIS
+	pmc valis/mpc745x end
+end
+if CONFIG_SANDPOINT_GYRUS
+	pmc gyrus/mpc744x end
+end
 
 ##
 ## Include the secondary Configuration files 
@@ -19,3 +45,6 @@ object sandpoint.o
 
 dir nvram
 dir flash
+
+addaction linuxbios.a "$(CROSS_COMPILE)ranlib linuxbios.a"
+makedefine CFLAGS += -g

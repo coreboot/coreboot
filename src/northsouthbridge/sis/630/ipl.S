@@ -212,7 +212,7 @@ sis630ipl_start:
 	outb	%al, $0x2f
 
 	xorw	%sp, %sp			# clear %sp
-	xorw	%dx, %dx			# clear $dx, start of RAM
+	xorw	%dx, %dx			# clear %dx, start of RAM
 	movw	$0x800, %si			# point %si to CDSN Data area
 	movw	$0x1000, %di			# point %di to CDSN Control area
 	movw	$DOC_SPL_START_BLK, %bp		# start page of LinuxBIOS

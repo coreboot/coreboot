@@ -70,6 +70,27 @@ void nvram_on()
 #endif
 }
 
+/* serial_irq_fixup: Enable Serial Interrupt. Serial interrupt is the IRQ line from SiS 950
+ *	LPC to Host Controller. Serial IRQ is neceressary for devices on SiS 950
+ *	ie.e floppy, COM, LPT etc
+ */
+static void
+serial_irq_fixedup(void)
+{
+	struct pci_dev *pcidev;
+
+	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, (void *)NULL);
+	if (pcidev != NULL) {
+		/* enable Serial Interrupt (SIRQ) */
+		pci_write_config_byte(pcidev, 0x70, 0x80); 
+		// skip the SMI, inta, etc. stuff. 
+		// enable IRQs 7 to 1
+		pci_write_config_byte(pcidev, 0x72, 0xfd);
+		// enable IRQs 15 to 8
+		pci_write_config_byte(pcidev, 0x73, 0xff);
+	}
+}
+
 static void
 acpi_fixup(void)
 {
@@ -80,17 +101,6 @@ acpi_fixup(void)
 		unsigned char val;
 		unsigned short acpibase = 0xc000, temp;
 		int i;
-		// put symbolic names in here soon ... so much typing, so little time. 
-
-		// now set up legacy serial interrupts
-		// that doesn't mean serial ports -- it's a serial interrupt
-		// line from the superio (LPC)
-		// first, enable them. 
-		pci_write_config_byte(pcidev, 0x70, 0x80); 
-		// skip the SMI, inta, etc. stuff. 
-		// enable IRQs 7 to 1
-		pci_write_config_byte(pcidev, 0x72, 0xfd);
-		pci_write_config_byte(pcidev, 0x73, 0xff);
 
 		// the following is to turn off software watchdogs. 
 		// we co-op the address space from c000-cfff here. Temporarily. 
@@ -115,16 +125,7 @@ acpi_fixup(void)
 		       inw(acpibase+0x56));
 		printk(KERN_INFO "acpi status: byte at 0x4b is 0x%x\n", 
 		       inb(acpibase + 0x4b));
-#if 0
-		// this hangs anyway, so what's the point. 
-		for(i = 0; i < 0x63; i += 16) {
-			int j; 
-			printk(KERN_INFO "0x%x: ", i);
-			for(j = 0; (j < 16) && ((j + i) < 0x63); j++)
-				printk(KERN_INFO "%02x ", inb(acpibase + i + j));
-			printk(KERN_INFO "\n");
-		}
-#endif
+
 		// now that it's on, get in there and call off the dogs. 
 		// that's the recommended thing to do if MD40 iso on. 
 		outw(0, acpibase + 0x56);
@@ -173,6 +174,7 @@ final_southbridge_fixup()
 	}
 #endif /* OLD_KERNEL_HACK */
 
+	serial_irq_fixedup();
 	acpi_fixup();
 
 	printk(KERN_INFO "Southbridge fixup done for SIS 503\n");

@@ -55,7 +55,7 @@ write_northbridge_register:
 	movl	$NORTH_BRIDGE_BASE_ADDR, %edx
 
 write_common:
-	movl	%eax, %ebx			# Save %ax to %cx.
+	movl	%eax, %ebx			# Save %eax to %ebx.
 
 	movzbl	%bh, %eax			# add register address to
 	addl	%edx, %eax			# PCI base address

@@ -36,7 +36,7 @@ northbridge_init_table:
 	.byte	0x07,	0x00	# 	
 	.byte	0x0D,	0x20	# Master Latency Timer = 32 PCI CLCK
 
-	/* SiS 630 specific registers. See SiS 630 Reconnaded Registers Setting */
+	/* SiS 630 specific registers. See SiS 630 Registers Recommended Setting */
 	
 	/* Host Control Interface */
 	.byte	0x50,	0x9C	#

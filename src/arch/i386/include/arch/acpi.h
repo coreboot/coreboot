@@ -39,14 +39,14 @@ typedef unsigned long long u64;
 /* ACPI 2.0 table RSDP */
 
 typedef struct acpi_rsdp {
-	char  signature[8];
-	u8    checksum;
-	char  oem_id[6];
-	u8    revision;
-	u32   rsdt_address;
-	u32   length;
-	u64   xsdt_address;
-	u8    ext_checksum;
+	char  signature[8];	/* RSDP signature "RSD PTR" */
+	u8    checksum;		/* checksum of the first 20 bytes */
+	char  oem_id[6];	/* OEM ID, "LXBIOS" */
+	u8    revision;		/* 0 for APCI 1.0, 2 for ACPI 2.0 */
+	u32   rsdt_address;	/* physical address of RSDT */
+	u32   length;		/* total length of RSDP (including extended part) */
+	u64   xsdt_address;	/* physical address of XSDT */
+	u8    ext_checksum;	/* chechsum of whole table */
 	u8    reserved[3];
 } __attribute__((packed)) acpi_rsdp_t;
 
@@ -77,14 +77,18 @@ typedef struct acpi_table_header         /* ACPI common table header */
 } __attribute__ ((packed)) acpi_header_t;
 
 /* RSDT */
-
 typedef struct acpi_rsdt {
 	struct acpi_table_header header;
 	u32 entry[8];
 } __attribute__ ((packed)) acpi_rsdt_t;
 
-/* HPET TIMERS */
+/* XSDT */
+typedef struct acpi_xsdt {
+	struct acpi_table_header header;
+	u64 entry[8];
+} __attribute__ ((packed)) acpi_xsdt_t;
 
+/* HPET TIMERS */
 typedef struct acpi_hpet {
 	struct acpi_table_header header;
 	u32 id;

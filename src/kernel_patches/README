@@ -5,6 +5,7 @@ For 440BX users:
 irq_route.diff is Tyson Sawyer's patch to properly handle LINUXBIOS kernels.
 It has been tested on 2.4.0-test6 kernels. 
 ---
-For SiS630 users: Use the linux-2.4.0-test11-sis630-fat-sisfb.patch ONLY. This
-will build a kernel that works with LinuxBIOS. 
+For SiS630 users: Use the linux-2.4.0-test12-sis630-sisfb_lite.patch ONLY.
+There is also a sameple kernel configuration file config-2.4.0-test12.sis.
+This will build a kernel that works with LinuxBIOS. 
 

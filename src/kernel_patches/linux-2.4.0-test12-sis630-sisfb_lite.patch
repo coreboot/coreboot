@@ -1,0 +1,2737 @@
+diff -urN linux-2.4.0-test12-official/arch/i386/Linuxbios.in linux-2.4.0-test12-linuxbios/arch/i386/Linuxbios.in
+--- linux-2.4.0-test12-official/arch/i386/Linuxbios.in	Thu Jan  1 08:00:00 1970
++++ linux-2.4.0-test12-linuxbios/arch/i386/Linuxbios.in	Fri Dec 22 15:04:01 2000
+@@ -0,0 +1,7 @@
++mainmenu_option next_comment
++comment 'Linuxbios Options'
++bool 'Force IDE Controllers on?' CONFIG_LINUXBIOS_FORCE_IDE_CONTROLLER_ON
++bool 'Wait for HDA to spin up?'  CONFIG_LINUXBIOS_WAIT_HDA_SPINUP
++bool 'Do not touch debug registers?'  CONFIG_LINUXBIOS_DONT_TOUCH_DR
++bool 'LOBOS (Linux Os Boots OS)?'  CONFIG_LINUXBIOS_LOBOS
++endmenu
+diff -urN linux-2.4.0-test12-official/arch/i386/config.in linux-2.4.0-test12-linuxbios/arch/i386/config.in
+--- linux-2.4.0-test12-official/arch/i386/config.in	Tue Dec 12 05:42:08 2000
++++ linux-2.4.0-test12-linuxbios/arch/i386/config.in	Fri Dec 22 15:04:01 2000
+@@ -377,3 +377,13 @@
+ #bool 'Debug kmalloc/kfree' CONFIG_DEBUG_MALLOC
+ bool 'Magic SysRq key' CONFIG_MAGIC_SYSRQ
+ endmenu
++
++mainmenu_option next_comment
++comment 'LinuxBIOS'
++
++tristate 'LinuxBIOS Support' CONFIG_LINUXBIOS
++if [ "$CONFIG_LINUXBIOS" != "n" ]; then
++   source arch/i386/Linuxbios.in
++fi
++
++endmenu
+diff -urN linux-2.4.0-test12-official/arch/i386/kernel/pci-irq.c linux-2.4.0-test12-linuxbios/arch/i386/kernel/pci-irq.c
+--- linux-2.4.0-test12-official/arch/i386/kernel/pci-irq.c	Tue Dec 12 09:45:09 2000
++++ linux-2.4.0-test12-linuxbios/arch/i386/kernel/pci-irq.c	Sat Dec 23 11:44:37 2000
+@@ -280,20 +280,27 @@
+ static int pirq_sis_get(struct pci_dev *router, struct pci_dev *dev, int pirq)
+ {
+ 	u8 x;
+-	int reg = 0x41 + (pirq - 'A') ;
+ 
+-	pci_read_config_byte(router, reg, &x);
++	/* pirq == 0x61 means internal PCI IDE controller */
++	if (pirq == 0x61)
++		return 0;
++
++	/* pirq == IRQ Pin == Reg in Northbirdge */
++	pci_read_config_byte(router, pirq, &x);
+ 	return (x & 0x80) ? 0 : (x & 0x0f);
+ }
+ 
+ static int pirq_sis_set(struct pci_dev *router, struct pci_dev *dev, int pirq, int irq)
+ {
+ 	u8 x;
+-	int reg = 0x41 + (pirq - 'A') ;
+ 
+-	pci_read_config_byte(router, reg, &x);
+-	x = (pirq & 0x20) ? 0 : (irq & 0x0f);
+-	pci_write_config_byte(router, reg, x);
++	/* pirq == 0x61 means internal PCI IDE controller */
++	if (pirq == 0x61)
++		return 0;
++
++	/* pirq == IRQ Pin == Reg in Northbirdge */
++	x = irq & 0x0f;
++	pci_write_config_byte(router, pirq, x);
+ 
+ 	return 1;
+ }
+@@ -605,7 +612,11 @@
+ 		 * Still no IRQ? Try to lookup one...
+ 		 */
+ 		if (pin && !dev->irq)
+-			pcibios_lookup_irq(dev, 0);
++#ifdef CONFIG_LINUXBIOS
++		        pcibios_lookup_irq(dev, 1);
++#else
++ 			pcibios_lookup_irq(dev, 0);
++#endif
+ 	}
+ }
+ 
+diff -urN linux-2.4.0-test12-official/arch/i386/kernel/process.c linux-2.4.0-test12-linuxbios/arch/i386/kernel/process.c
+--- linux-2.4.0-test12-official/arch/i386/kernel/process.c	Sat Nov 25 10:32:20 2000
++++ linux-2.4.0-test12-linuxbios/arch/i386/kernel/process.c	Fri Dec 22 16:59:53 2000
+@@ -48,6 +48,131 @@
+ 
+ #include <linux/irq.h>
+ 
++#define CONFIG_LINUXBIOS_PM
++#ifdef CONFIG_LINUXBIOS_PM
++#include <linux/pci.h>
++void
++sis503_reset(struct pci_dev *dev)
++{
++	unsigned char b;
++	unsigned short acpi_base;
++
++	printk(KERN_ERR __FUNCTION__ ": starting reset operation. \n");
++
++	/* Enable ACPI by set B7 on Reg 0x40, LPC */
++	pci_read_config_byte(dev, 0x40, &b);
++	pci_write_config_byte(dev, 0x40, b | 0x80);
++	printk(KERN_ERR __FUNCTION__ ": enabled ACPI. \n");
++
++	/* get the ACPI base address for register 0x74,0x75 of LPC */
++	pci_read_config_word(dev, 0x74, &acpi_base);	
++	printk(KERN_ERR __FUNCTION__ ":acpi base: %x\n", acpi_base);
++
++	/* Set software watchdog timer init value */
++	outb(0x03, 0x4a + acpi_base);
++	printk(KERN_ERR __FUNCTION__ ": set the dog. \n");
++
++	printk(KERN_ERR __FUNCTION__ ": enabling dog. \n");
++	/* Software watchdog enable, issue PCIRST# when time expire */
++	outb(0x8f, 0x4b + acpi_base);
++
++	printk(KERN_ERR __FUNCTION__ ": We should reset soon. \n");
++}
++
++void
++sis503_off(struct pci_dev *dev)
++{
++	unsigned char b;
++	unsigned short acpi_base;
++
++	printk(KERN_ERR __FUNCTION__ ": starting reset operation. \n");
++	/* Enable ACPI by set B7 on Reg 0x40, LPC */
++	pci_read_config_byte(dev, 0x40, &b);
++	pci_write_config_byte(dev, 0x40, b | 0x80);
++	printk(KERN_ERR __FUNCTION__ ": enabled ACPI. \n");
++
++        /* get the ACPI base address for register 0x74,0x75 of LPC */
++	pci_read_config_word(dev, 0x74, &acpi_base);
++	printk (KERN_ERR __FUNCTION__ ":acpi base: %x\n", acpi_base);
++
++	/* ACPI Register 5, Bit 10-12, Sleeping Type,
++	   set to 101 -> S5, soft_off */
++	outb(0x14, 0x05 + acpi_base);
++	printk(KERN_ERR __FUNCTION__ ": DONE setting sleep type. \n");
++
++	/* ACPI Register 5, Bit 13, Sleep Enable */
++	outb(0x20 | 0x14, 0x05 + acpi_base);
++	printk(KERN_ERR __FUNCTION__ ": DONE sleep enable. \n");
++}
++
++struct pci_dev * pci_find_device(unsigned int vendor, unsigned int device, 
++				 const struct pci_dev *from);
++
++struct linuxbios_control {
++	u_short vendor, device;
++	void (*poweroff)(struct pci_dev *);
++	void (*reset)(struct pci_dev *);
++};
++
++struct linuxbios_control controls[] = {
++	{PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, sis503_off, sis503_reset}
++};
++
++struct linuxbios_control *findcontrol(struct pci_dev **d)
++{
++	struct linuxbios_control *lb = controls, *retval = 0;
++	int i;
++
++	printk(KERN_ERR __FUNCTION__ ": Find vendor 0x%x device 0x%x\n", 
++	       lb->vendor, lb->device);
++	for(lb = controls, i = 0; 
++	    (i < sizeof(controls)/sizeof(controls[0])) && (! retval); 
++	    i++, lb++)
++	{
++		*d = pci_find_device(lb->vendor, lb->device, 0);
++		if (*d)
++			retval = lb;
++	}
++
++	printk(KERN_ERR __FUNCTION__ ": result of find is %p\n", retval);
++	return retval;
++}
++
++void
++linuxbios_poweroff(void)
++{
++	struct linuxbios_control *lb = 0;
++	struct pci_dev *dev;
++
++	printk(KERN_ERR __FUNCTION__ ": find an lb\n");
++	lb = findcontrol(&dev);
++
++	printk(KERN_ERR __FUNCTION__ ": found lb %p, call %p\n", 
++	       lb, lb ? lb->poweroff : 0);
++	if (lb && (lb->poweroff))
++		lb->poweroff(dev);
++	printk(KERN_ERR __FUNCTION__ ": Returning? Can't happen, I thought?\n");
++}
++
++void
++linuxbios_reset(void)
++{
++	struct linuxbios_control *lb = 0;
++	struct pci_dev *dev;
++
++	printk(KERN_ERR __FUNCTION__ ": find an lb\n");
++	lb = findcontrol(&dev);
++
++	printk(KERN_ERR __FUNCTION__ ": found lb %p, call %p\n", 
++	       lb, lb ? lb->reset : 0);
++	if (lb && (lb->reset))
++		lb->reset(dev);
++	printk(KERN_ERR __FUNCTION__ ": Returning? Can't happen, I thought?\n");
++}
++
++#endif
++
++
+ asmlinkage void ret_from_fork(void) __asm__("ret_from_fork");
+ 
+ int hlt_counter;
+@@ -348,6 +473,9 @@
+ 	smp_send_stop();
+ 	disable_IO_APIC();
+ #endif
++#ifdef CONFIG_LINUXBIOS_PM
++	linuxbios_reset();
++#endif
+ 
+ 	if(!reboot_thru_bios) {
+ 		/* rebooting needs to touch the page at absolute addr 0 */
+@@ -375,6 +503,11 @@
+ 
+ void machine_power_off(void)
+ {
++	printk("MACHINE_POWER_OFF\n");
++#ifdef CONFIG_LINUXBIOS_PM
++	linuxbios_poweroff();
++#endif
++
+ 	if (pm_power_off)
+ 		pm_power_off();
+ }
+diff -urN linux-2.4.0-test12-official/drivers/ide/ide-pci.c linux-2.4.0-test12-linuxbios/drivers/ide/ide-pci.c
+--- linux-2.4.0-test12-official/drivers/ide/ide-pci.c	Wed Nov  8 03:02:24 2000
++++ linux-2.4.0-test12-linuxbios/drivers/ide/ide-pci.c	Fri Dec 22 15:07:23 2000
+@@ -603,8 +603,19 @@
+ 	for (port = 0; port <= 1; ++port) {
+ 		unsigned long base = 0, ctl = 0;
+ 		ide_pci_enablebit_t *e = &(d->enablebits[port]);
++#ifndef CONFIG_LINUXBIOS_FORCE_IDE_CONTROLLER_ON
+ 		if (e->reg && (pci_read_config_byte(dev, e->reg, &tmp) || (tmp & e->mask) != e->val))
+ 			continue;	/* port not enabled */
++#else
++		/* force 'em on! */
++ 		if (e->reg) {
++		  pci_read_config_byte(dev, e->reg, &tmp);
++		  tmp |= e->val;
++		  pci_write_config_byte(dev, e->reg, tmp);
++		  printk("%s: LINUXBIOS, so Jammed the enable on!\n", 
++			 d->name);
++ 		}
++#endif
+ 		if (IDE_PCI_DEVID_EQ(d->devid, DEVID_HPT366) && (port) && (class_rev < 0x03))
+ 			return;
+ 		if ((dev->class >> 8) != PCI_CLASS_STORAGE_IDE || (dev->class & (port ? 4 : 1)) != 0) {
+diff -urN linux-2.4.0-test12-official/drivers/ide/ide-probe.c linux-2.4.0-test12-linuxbios/drivers/ide/ide-probe.c
+--- linux-2.4.0-test12-official/drivers/ide/ide-probe.c	Fri Oct 27 14:35:48 2000
++++ linux-2.4.0-test12-linuxbios/drivers/ide/ide-probe.c	Fri Dec 22 15:07:23 2000
+@@ -308,6 +308,13 @@
+ 		if ((drive->media != ide_disk) && (cmd == WIN_IDENTIFY))
+ 			return 4;
+ 	}
++#ifdef CONFIG_LINUXBIOS_WAIT_HDA_SPINUP
++	if (! strncmp(drive->name, "hda", 3)) {
++	  printk("jamming drive present for %s\n", drive->name);
++	  drive->present = 1;
++	}
++#endif
++
+ #ifdef DEBUG
+ 	printk("probing for %s: present=%d, media=%d, probetype=%s\n",
+ 		drive->name, drive->present, drive->media,
+diff -urN linux-2.4.0-test12-official/drivers/ide/sis5513.c linux-2.4.0-test12-linuxbios/drivers/ide/sis5513.c
+--- linux-2.4.0-test12-official/drivers/ide/sis5513.c	Wed Nov  8 02:59:43 2000
++++ linux-2.4.0-test12-linuxbios/drivers/ide/sis5513.c	Fri Dec 22 15:07:23 2000
+@@ -48,6 +48,7 @@
+ 	{ "SiS540",	PCI_DEVICE_ID_SI_540,	SIS5513_FLAG_ATA_66, },
+ 	{ "SiS620",	PCI_DEVICE_ID_SI_620,	SIS5513_FLAG_ATA_66|SIS5513_FLAG_LATENCY, },
+ 	{ "SiS630",	PCI_DEVICE_ID_SI_630,	SIS5513_FLAG_ATA_66|SIS5513_FLAG_LATENCY, },
++	{ "SiS730",	PCI_DEVICE_ID_SI_730,	SIS5513_FLAG_ATA_66|SIS5513_FLAG_LATENCY, },
+ 	{ "SiS5591",	PCI_DEVICE_ID_SI_5591,	SIS5513_FLAG_ATA_33, },
+ 	{ "SiS5597",	PCI_DEVICE_ID_SI_5597,	SIS5513_FLAG_ATA_33, },
+ 	{ "SiS5600",	PCI_DEVICE_ID_SI_5600,	SIS5513_FLAG_ATA_33, },
+@@ -337,6 +338,7 @@
+ 			case PCI_DEVICE_ID_SI_540:
+ 			case PCI_DEVICE_ID_SI_620:
+ 			case PCI_DEVICE_ID_SI_630:
++			case PCI_DEVICE_ID_SI_730:
+ 				unmask   = 0xF0;
+ 				four_two = 0x01;
+ 				break;
+@@ -370,7 +372,7 @@
+ 
+ 	switch(speed) {
+ #ifdef CONFIG_BLK_DEV_IDEDMA
+-		case XFER_UDMA_5: /* can not do ultra mode 5 yet */
++		case XFER_UDMA_5: mask = 0x80; break;
+ 		case XFER_UDMA_4: mask = 0x90; break;
+ 		case XFER_UDMA_3: mask = 0xA0; break;
+ 		case XFER_UDMA_2: mask = (four_two) ? 0xB0 : 0xA0; break;
+@@ -417,20 +419,26 @@
+ 
+ 	byte unit		= (drive->select.b.unit & 0x01);
+ 	byte udma_66		= eighty_ninty_three(drive);
++	byte ultra_100		= 0;
+ 
+ 	if (host_dev) {
+ 		switch(host_dev->device) {
++			case PCI_DEVICE_ID_SI_730:
++				ultra_100 = 1;
+ 			case PCI_DEVICE_ID_SI_530:
+ 			case PCI_DEVICE_ID_SI_540:
+ 			case PCI_DEVICE_ID_SI_620:
+ 			case PCI_DEVICE_ID_SI_630:
+-				four_two = 0x01; break;
++				four_two = 0x01;
++				break;
+ 			default:
+ 				four_two = 0x00; break;
+ 		}
+ 	}
+ 
+-	if ((id->dma_ultra & 0x0010) && (ultra) && (udma_66) && (four_two))
++	if ((id->dma_ultra & 0x0020) && (ultra) && (udma_66) && (four_two) && (ultra_100))
++		speed = XFER_UDMA_5;
++	else if ((id->dma_ultra & 0x0010) && (ultra) && (udma_66) && (four_two))
+ 		speed = XFER_UDMA_4;
+ 	else if ((id->dma_ultra & 0x0008) && (ultra) && (udma_66) && (four_two))
+ 		speed = XFER_UDMA_3;
+@@ -590,6 +598,7 @@
+ 			case PCI_DEVICE_ID_SI_540:
+ 			case PCI_DEVICE_ID_SI_620:
+ 			case PCI_DEVICE_ID_SI_630:
++			case PCI_DEVICE_ID_SI_730:
+ 				ata66 = (reg48h & mask) ? 0 : 1;
+ 			default:
+ 				break;
+@@ -616,6 +625,7 @@
+ 			case PCI_DEVICE_ID_SI_540:
+ 			case PCI_DEVICE_ID_SI_620:
+ 			case PCI_DEVICE_ID_SI_630:
++			case PCI_DEVICE_ID_SI_730:
+ 			case PCI_DEVICE_ID_SI_5600:
+ 			case PCI_DEVICE_ID_SI_5597:
+ 			case PCI_DEVICE_ID_SI_5591:
+diff -urN linux-2.4.0-test12-official/drivers/pci/pci.ids linux-2.4.0-test12-linuxbios/drivers/pci/pci.ids
+--- linux-2.4.0-test12-official/drivers/pci/pci.ids	Wed Nov  8 03:15:52 2000
++++ linux-2.4.0-test12-linuxbios/drivers/pci/pci.ids	Fri Dec 22 15:07:23 2000
+@@ -734,6 +734,7 @@
+ 	0601  85C601
+ 	0620  620 Host
+ 	0630  630 Host
++	0730  730 Host
+ 	0900  SiS900 10/100 Ethernet
+ 		1039 0900  SiS900 10/100 Ethernet Adapter
+ 	3602  83C602
+diff -urN linux-2.4.0-test12-official/drivers/video/sis/Makefile linux-2.4.0-test12-linuxbios/drivers/video/sis/Makefile
+--- linux-2.4.0-test12-official/drivers/video/sis/Makefile	Thu Nov  9 09:15:04 2000
++++ linux-2.4.0-test12-linuxbios/drivers/video/sis/Makefile	Fri Dec 22 15:07:23 2000
+@@ -3,8 +3,13 @@
+ #
+ 
+ O_TARGET := sisfb.o
++
++ifeq ($(CONFIG_LINUXBIOS),y)
++O_OBJS	:= sisfb_lite.o
++else
+ O_OBJS   := sis_main.o sis_300.o sis_301.o
+-#O_OBJS   := sis_300.o
++endif
++
+ M_OBJS   := $(O_TARGET)
+ 
+ include $(TOPDIR)/Rules.make
+diff -urN linux-2.4.0-test12-official/drivers/video/sis/sisfb_lite.c linux-2.4.0-test12-linuxbios/drivers/video/sis/sisfb_lite.c
+--- linux-2.4.0-test12-official/drivers/video/sis/sisfb_lite.c	Thu Jan  1 08:00:00 1970
++++ linux-2.4.0-test12-linuxbios/drivers/video/sis/sisfb_lite.c	Fri Dec 22 19:09:31 2000
+@@ -0,0 +1,2148 @@
++/*
++ * SiS 300/630/540 frame buffer device For Kernal 2.4.x
++ *
++ * This driver is partly based on the VBE 2.0 compliant graphic 
++ * boards framebuffer driver, which is 
++ * 
++ * (c) 1998 Gerd Knorr <kraxel@goldbach.in-berlin.de>
++ *
++ */
++
++#define EXPORT_SYMTAB
++#undef  SISFBDEBUG
++
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/errno.h>
++#include <linux/string.h>
++#include <linux/mm.h>
++#include <linux/tty.h>
++#include <linux/malloc.h>
++#include <linux/delay.h>
++#include <linux/fb.h>
++#include <linux/console.h>
++#include <linux/selection.h>
++#include <linux/ioport.h>
++#include <linux/init.h>
++#include <linux/pci.h>
++#include <linux/vt_kern.h>
++#include <linux/capability.h>
++
++#include <asm/io.h>
++#include <asm/mtrr.h>
++
++#include <video/fbcon.h>
++#include <video/fbcon-cfb8.h>
++#include <video/fbcon-cfb16.h>
++#include <video/fbcon-cfb24.h>
++#include <video/fbcon-cfb32.h>
++
++#include "sisfb_lite.h"
++
++static struct pci_device_id sisfb_pci_tbl [] __devinitdata = {
++	{PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_630_VGA,
++	 PCI_ANY_ID, PCI_ANY_ID, 0, 0, FB_ACCEL_SIS_GLAMOUR},
++	{0,}
++};
++MODULE_DEVICE_TABLE (pci, sisfb_pci_tbl);
++
++static struct fb_var_screeninfo default_var = {
++	0, 0, 0, 0,
++	0, 0,
++	0,
++	0,
++	{0, 8, 0},
++	{0, 8, 0},
++	{0, 8, 0},
++	{0, 0, 0},
++	0,
++	FB_ACTIVATE_NOW, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0,
++	0,
++	FB_VMODE_NONINTERLACED,
++	{0, 0, 0, 0, 0, 0}
++};
++
++static struct display disp;
++static struct sisfb_info sisfb;
++static struct display_switch sisfb_sw;
++
++static struct {
++	u16 blue, green, red, pad;
++} palette[256];
++
++static union {
++#ifdef FBCON_HAS_CFB16
++	u16 cfb16[16];
++#endif
++#ifdef FBCON_HAS_CFB24
++	u32 cfb24[16];
++#endif
++#ifdef FBCON_HAS_CFB32
++	u32 cfb32[16];
++#endif
++} fbcon_cmap;
++
++static int inverse = 0;
++static int currcon = 0;
++
++static u16 P3c4, P3d4, P3c0, P3ce, P3c2, P3ca, P3c6, P3c7, P3c8, P3c9, P3da;
++static int ModeType;
++static int RAMType;
++
++/* mode */
++static int video_type = FB_TYPE_PACKED_PIXELS;
++static int video_linelength;
++static int video_cmap_len;
++static int sisfb_off = 0;
++
++static int mode_idx = -1;
++static u8 mode_no = 0;
++static u8 rate_idx = 0;
++
++static const struct sisfb_video_mode {
++	char name[15];
++	u8 mode_no;
++	u16 xres;
++	u16 yres;
++	u16 bpp;
++	u16 rate_idx;
++	u16 cols;
++	u16 rows;
++} sisfb_video_mode[] = {
++	{"640x480x8",    0x2E,  640,  480,  8, 1,  80, 30},
++	{"640x480x16",   0x44,  640,  480, 16, 1,  80, 30},
++	{"640x480x32",   0x62,  640,  480, 32, 1,  80, 30},
++	{"800x600x8",    0x30,  800,  600,  8, 2, 100, 37},
++	{"800x600x16",   0x47,  800,  600, 16, 2, 100, 37},
++	{"800x600x32",   0x63,  800,  600, 32, 2, 100, 37}, 
++	{"1024x768x8",   0x38, 1024,  768,  8, 2, 128, 48},
++	{"1024x768x16",  0x4A, 1024,  768, 16, 2, 128, 48},
++	{"1024x768x32",  0x64, 1024,  768, 32, 2, 128, 48},
++	{"1280x1024x8",  0x3A, 1280, 1024,  8, 2, 160, 64},
++	{"1280x1024x16", 0x4D, 1280, 1024, 16, 2, 160, 64},
++	{"1280x1024x32", 0x65, 1280, 1024, 32, 2, 160, 64},
++	{"1600x1200x8",  0x3C, 1600, 1200,  8, 1, 200, 75},
++	{"1600x1200x16", 0x3D, 1600, 1200, 16, 1, 200, 75},
++	{"1600x1200x32", 0x66, 1600, 1200, 32, 1, 200, 75},
++	{"1920x1440x8",  0x68, 1920, 1440,  8, 1, 240, 75},
++	{"1920x1440x16", 0x69, 1920, 1440, 16, 1, 240, 75},
++	{"1920x1440x32", 0x6B, 1920, 1440, 32, 1, 240, 75},
++	{"\0",}
++};
++
++static struct _vrate {
++	u16 idx;
++	u16 xres;
++	u16 yres;
++	u16 refresh;
++} vrate[] = {
++	{1,  640,  480,  60}, {2,  640, 480,  72}, {3,  640, 480,  75}, {4,  640, 480,  85},
++	{5,  640,  480, 100}, {6,  640, 480, 120}, {7,  640, 480, 160}, {8,  640, 480, 200},
++	{1,  800,  600,  56}, {2,  800, 600,  60}, {3,  800, 600,  72}, {4,  800, 600,  75},
++	{5,  800,  600,  85}, {6,  800, 600, 100}, {7,  800, 600, 120}, {8,  800, 600, 160},
++	{1, 1024,  768,  43}, {2, 1024, 768,  60}, {3, 1024, 768,  70}, {4, 1024, 768,  75},
++	{5, 1024,  768,  85}, {6, 1024, 768, 100}, {7, 1024, 768, 120},
++	{1, 1280, 1024,  43}, {2, 1280, 1024, 60}, {3, 1280, 1024, 75}, {4, 1280, 1024, 85},
++	{1, 1600, 1200,  60}, {2, 1600, 1200, 65}, {3, 1600, 1200, 70}, {4, 1600, 1200, 75},
++	{5, 1600, 1200,  85},
++	{1, 1920, 1440,  60},
++	{0, 0, 0, 0}
++};
++
++static u16 VGA_DAC[] = {
++	/* Pale 0-15, **/
++	0x00, 0x10, 0x04, 0x14, 0x01, 0x11, 0x09, 0x15,
++	0x2A, 0x3A, 0x2E, 0x3E, 0x2B, 0x3B, 0x2F, 0x3F,
++
++	0x00, 0x05, 0x08, 0x0B, 0x0E, 0x11, 0x14, 0x18,
++	0x1C, 0x20, 0x24, 0x28, 0x2D, 0x32, 0x38, 0x3F,
++
++	0x00, 0x10, 0x1F, 0x2F, 0x3F, 0x1F, 0x27, 0x2F,
++	0x37, 0x3F, 0x2D, 0x31, 0x36, 0x3A, 0x3F, 0x00,
++	0x07, 0x0E, 0x15, 0x1C, 0x0E, 0x11, 0x15, 0x18,
++	0x1C, 0x14, 0x16, 0x18, 0x1A, 0x1C, 0x00, 0x04,
++	0x08, 0x0C, 0x10, 0x08, 0x0A, 0x0C, 0x0E, 0x10,
++	0x0B, 0x0C, 0x0D, 0x0F, 0x10
++};
++
++/* Default values for DRAM Timming control registers: SR15-SR1C */
++static u8 dram_timming[8][8] = {
++	{0x01, 0x43, 0x1E, 0x2A, 0x06, 0x00, 0x00, 0x00}, // SDRAM
++	{0x09, 0x43, 0x1E, 0x2A, 0x06, 0x00, 0x00, 0x00}, // SGRAM
++	{0xA3, 0x43, 0x1E, 0x2A, 0x06, 0x00, 0x00, 0x00}, // ESDRAM
++	{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
++	{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
++	{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
++	{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
++	{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
++};
++
++struct memory_clock_table {
++	u8 clocks[3];
++	u16 speed; /* DRAM speed in MHZ */
++};
++
++/* Default values for MCLK clock generator register I, II, II: SR28-SR2A 
++ * Used for 2D engine */
++struct memory_clock_table MCLK[8] = {
++	{{0x5A, 0x64, 0x80},  66}, // SDRAM
++	{{0xB3, 0x45, 0x80},  85}, // SGRAM
++	{{0x37, 0x61, 0x80}, 100}, // ESDRAM
++	{{0x37, 0x22, 0x80}, 133},
++	{{0x37, 0x61, 0x80}, 100},
++	{{0x37, 0x61, 0x80}, 100},
++	{{0x37, 0x61, 0x80}, 100},
++	{{0x37, 0x61, 0x80}, 100}
++};
++
++/* Default values for ECLK clock generator register I, II, III: SR2E-Sr30
++ * Used for 3D engine */
++struct memory_clock_table ECLK[8] = {
++	{{0x54, 0x43, 0x80}, 100}, // SDRAM
++	{{0x53, 0x43, 0x80}, 100}, // SGRAM
++	{{0x55, 0x43, 0x80}, 100}, // ESDRAM
++	{{0x52, 0x43, 0x80}, 100},
++	{{0x3f, 0x42, 0x80}, 100},
++	{{0x54, 0x43, 0x80}, 100},
++	{{0x54, 0x43, 0x80}, 100},
++	{{0x54, 0x43, 0x80}, 100}
++};
++
++/* Default values for PCI/AGP Timming control registers: SR21-SR25, SR32 */
++static u8 pci_timming[] = {
++	0x16, 0xB2, 0xF6, 0x0D, 0x00, 0x11
++};
++
++#define Monitor1Sense 0x20
++
++static unsigned char SRegsInit[] = { 
++ 	0x03, 0x00, 0x03, 0x00, 0x02, 0xa1, 0x00, 0x13,
++	0x2f, 0x85, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++ 	0x00, 0x0f, 0x00, 0x00, 0x43, 0x01, 0x00, 0x00,
++	0x00, 0x00, 0x32, 0x00, 0x00, 0x00, 0x00, 0x00,
++ 	0xa1, 0x76, 0xb2, 0xf6, 0x0d, 0x00, 0x00, 0x00,
++	0x37, 0x61, 0x80, 0x1b, 0xe1, 0x01, 0x55, 0x43,
++ 	0x80, 0x00, 0x01, 0xff, 0x00, 0x00, 0x00, 0xff,
++	0x8e, 0x40, 0x00, 0x00, 0x08, 0x00, 0xff, 0xff
++};
++
++static unsigned char SRegs[] = { 
++ 	0x03, 0x01, 0x0F, 0x00, 0x0E, 0xA1, 0x02, 0x13,
++	0x3F, 0x86, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00,
++ 	0x0B, 0x0F, 0x00, 0x00, 0x43, 0x01, 0x00, 0x00,
++	0x00, 0x00, 0x32, 0x00, 0x00, 0x00, 0x40, 0x00,
++ 	0xA1, 0xB6, 0xB2, 0xF6, 0x0D, 0x00, 0xF8, 0xF0,
++	0x37, 0x61, 0x80, 0x1B, 0xE1, 0x80, 0x55, 0x43,
++ 	0x80, 0x00, 0x11, 0xFF, 0x00, 0x00, 0x00, 0xFF,
++	0x8E, 0x40, 0x00, 0x00, 0x08, 0x00, 0xFF, 0xFF
++};
++
++static unsigned char CRegs[] = { 
++	0x5f, 0x4f, 0x50, 0x82, 0x55, 0x81, 0x0b, 0x3e,
++	0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  
++	0xe9, 0x0b, 0xdf, 0x50, 0x40, 0xe7, 0x04, 0xa3,
++	0xff, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff
++};	// clear CR11[7]
++
++static unsigned char GRegs[] = { 
++	0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x05, 0x0f,
++	0xff, 0x00
++};
++
++static unsigned char ARegs[] = { 
++	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  
++	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
++};
++
++/* Miscellaneous Out Registers, VGA 400 lines, internal clock gen,
++   MEM/IO address enabled */
++static unsigned char MReg = 0x6f;
++
++
++/* -------------------- Macro definitions --------------------------- */
++
++#ifdef SISFBDEBUG
++#define DPRINTK(fmt, args...) printk(KERN_DEBUG "%s: " fmt, __FUNCTION__ , ## args)
++#else
++#define DPRINTK(fmt, args...)
++#endif
++
++#define vgawb(reg,data) \
++           (outb(data, sisfb.vga_base+reg))
++#define vgaww(reg,data) \
++           (outw(data, sisfb.vga_base+reg))
++#define vgawl(reg,data) \
++           (outl(data, sisfb.vga_base+reg))
++#define vgarb(reg)      \
++           (inb(sisfb.vga_base+reg))
++
++/* ---------------------- Routine Prototype ------------------------- */
++
++/* Interface used by the world */
++int sisfb_setup(char *options);
++static int sisfb_get_fix(struct fb_fix_screeninfo *fix, int con,
++			 struct fb_info *info);
++static int sisfb_get_var(struct fb_var_screeninfo *var, int con,
++			 struct fb_info *info);
++static int sisfb_set_var(struct fb_var_screeninfo *var, int con,
++			 struct fb_info *info);
++static int sisfb_get_cmap(struct fb_cmap *cmap, int kspc, int con,
++			  struct fb_info *info);
++static int sisfb_set_cmap(struct fb_cmap *cmap, int kspc, int con,
++			  struct fb_info *info);
++static int sisfb_ioctl(struct inode *inode, struct file *file,
++		       unsigned int cmd, unsigned long arg, int con,
++		       struct fb_info *info);
++
++/* Interface to the low level console driver */
++int sisfb_init(void);
++static int sisfb_update_var(int con, struct fb_info * info);
++static int sisfb_switch(int con, struct fb_info * info);
++static void sisfb_blank(int blank, struct fb_info * info);
++
++/* Internal routines */
++static void crtc_to_var(struct fb_var_screeninfo *var);
++static void sisfb_set_disp(int con, struct fb_var_screeninfo *var);
++static int sis_getcolreg(unsigned regno, unsigned *red, unsigned *green,
++			 unsigned *blue, unsigned *transp,
++			 struct fb_info *fb_info);
++static int sis_setcolreg(unsigned regno, unsigned red, unsigned green,
++			 unsigned blue, unsigned transp,
++			 struct fb_info *fb_info);
++static void do_install_cmap(int con, struct fb_info *info);
++static int do_set_var(struct fb_var_screeninfo *var, int isactive,
++		      struct fb_info *info);
++
++/* set-mode routines */
++static void set_reg1(u16 port, u16 index, u16 data);
++static void set_reg3(u16 port, u16 data);
++static u8 get_reg1(u16 port, u16 index);
++static u8 get_reg2(u16 port);
++
++static void write_DAC(u16 dl, u16 ah, u16 al, u16 dh);
++static void load_DAC(struct sisfb_info * sisfb);
++static void display_on(struct sisfb_info * sisfb);
++
++static void pre_setmode(struct sisfb_info * sisfb);
++static void post_setmode(struct sisfb_info * sisfb);
++static void search_mode(const char *name);
++static u8 search_refresh_rate(unsigned int rate);
++
++static void set_seq_regs(struct sisfb_info * sisfb);
++static void set_misc_regs(struct sisfb_info * sisfb);
++static void set_crtc_regs(struct sisfb_info * sisfb);
++static void set_att_regs(struct sisfb_info * sisfb);
++static void set_grc_regs(struct sisfb_info * sisfb);
++
++static void clear_extended_regs(struct sisfb_info * sisfb);
++static void set_crt1_crtc(struct sisfb_info * sisfb);
++static void set_crt1_offset(struct sisfb_info * sisfb);
++static void set_crt1_vclk(struct sisfb_info * sisfb);
++static void set_vclk_state(struct sisfb_info * sisfb);
++static void set_crt1_FIFO(struct sisfb_info * sisfb);
++static void set_crt1_mode_regs(struct sisfb_info * sisfb);
++static void set_interlace(struct sisfb_info * sisfb);
++
++static void set_sync(struct sisfb_info * sisfb);
++
++static int SiSSetMode(struct sisfb_info * sisfb, u16 ModeNo);
++
++static __inline__ void
++sisfb_set_gen_reg(struct sisfb_info * sisfb, u16 port, u8 data)
++{
++	u16 base = sisfb->vga_base;
++
++	outb(data, port + base - 0x3B0);
++}
++
++static __inline__ u8
++sisfb_get_gen_reg(struct sisfb_info * sisfb, u16 port)
++{
++	u16 base = sisfb->vga_base;
++
++	return inb(port + base - 0x3B0);
++}
++
++static __inline__ void
++sisfb_set_seq_reg(struct sisfb_info * sisfb, u8 index, u8 data)
++{
++	u16 port = sisfb->vga_base;
++
++	outb(index, port + SEQ_ADDR);
++	outb(data, port + SEQ_DATA);
++}
++
++static __inline__ u8
++sisfb_get_seq_reg(struct sisfb_info * sisfb, u8 index)
++{
++	u16 port = sisfb->vga_base;
++
++	outb(index, port + SEQ_ADDR);
++	return inb(port + SEQ_DATA);
++}
++
++static __inline__ void
++sisfb_set_crtc_reg(struct sisfb_info * sisfb, u8 index, u8 data)
++{
++	u16 port = sisfb->vga_base;
++
++	outb(index, port + CRTC_ADDR);
++	outb(data, port + CRTC_DATA);
++}
++
++static __inline__ u8
++sisfb_get_crtc_reg(struct sisfb_info * sisfb, u8 index)
++{
++	u16 port = sisfb->vga_base;
++
++	outb(index, port + CRTC_ADDR);
++	return inb(port + CRTC_DATA);
++}
++
++static __inline__ void
++sisfb_set_grc_reg(struct sisfb_info * sisfb, u8 index, u8 data)
++{
++	u16 port = sisfb->vga_base;
++
++	outb(index, port + GRC_ADDR);
++	outb(data, port + GRC_DATA);
++}
++
++static __inline__ u8
++sisfb_get_grc_reg(struct sisfb_info * sisfb, u8 index)
++{
++	u16 port = sisfb->vga_base;
++
++	outb(index, port + GRC_ADDR);
++	return inb(port + GRC_DATA);
++}
++
++static __inline__ void
++sisfb_set_attr_reg(struct sisfb_info * sisfb, u8 index, u8 data)
++{
++	u16 port = sisfb->vga_base;
++	volatile u8 dummy;
++
++	/* Read port 0x3DA, to set the Adderss flip-flop */
++	dummy = sisfb_get_gen_reg(sisfb, 0x3DA);
++	outb(index, port + ATTR_WRITE);
++	outb(data, port + ATTR_WRITE);	
++}
++
++static __inline__ u8
++sisfb_get_attr_reg(struct sisfb_info * sisfb, u8 index)
++{
++	u16 port = sisfb->vga_base;
++	volatile u8 dummy;
++
++	/* Read port 0x3DA, to set the Adderss flip-flop */	
++	dummy = sisfb_get_gen_reg(sisfb, 0x3DA);
++	outb(index, port + ATTR_READ);
++	return inb(port + ATTR_READ);	
++}
++
++static __inline__ void
++sisfb_set_dac_reg(struct sisfb_info * sisfb, u8 index, u8 data)
++{
++	u16 port = sisfb->vga_base;
++
++	outb(index, port + DACW_ADDR);
++	outb(data, port + DAC_DATA);	
++}		
++
++static __inline__ u8
++sisfb_get_dac_reg(struct sisfb_info * sisfb, u8 index)
++{
++	u16 port = sisfb->vga_base;
++
++	outb(index, port + DACR_ADDR);
++	return inb(port + DAC_DATA);	
++}		
++
++static void
++sisfb_lock_regs(struct sisfb_info * sisfb)
++{
++	u8 data;
++
++	/* Set Bit 7 to enable Write Protect for CR0 to CR7 */
++	data = sisfb_get_crtc_reg(sisfb, 0x11);
++	data = data | 0x80;
++	sisfb_set_crtc_reg(sisfb, 0x11, data);
++
++	/* lock the access to Extended Registers SR5-SR3C and/or CR30-CR37 ?? */
++	sisfb_set_seq_reg(sisfb, SIS_PASSWD, SIS_PASSWD_LOCK);
++}
++
++static void
++sisfb_unlock_regs(struct sisfb_info * sisfb)
++{
++	u8 data;
++
++	/* clear Bit 7 to disable Write Protect for CR0 to CR7 */
++	data = sisfb_get_crtc_reg(sisfb, 0x11);
++	data = data & 0x7f;
++	sisfb_set_crtc_reg(sisfb, 0x11, data);
++
++	/* unlock the access to Extended Registers SR5-SR3C and/or CR30-CR37 ?? */
++	sisfb_set_seq_reg(sisfb, SIS_PASSWD, SIS_PASSWD_UNLOCK);
++}
++
++static void set_reg1(u16 port, u16 index, u16 data)
++{
++	outb((u8) (index & 0xff), port);
++	port++;
++	outb((u8) (data & 0xff), port);
++}
++
++static void set_reg3(u16 port, u16 data)
++{
++	outb((u8) (data & 0xff), port);
++}
++
++static u8 get_reg1(u16 port, u16 index)
++{
++	u8 data;
++
++	outb((u8) (index & 0xff), port);
++	port += 1;
++	data = inb(port);
++	return (data);
++}
++
++static u8 get_reg2(u16 port)
++{
++	u8 data;
++
++	data = inb(port);
++
++	return (data);
++}
++
++/* ---------------------- SetMode Routines -------------------------- */
++
++/* set_seq_regs: Set default values for standard VGA Sequencer Registers */
++static void
++set_seq_regs(struct sisfb_info * sisfb)
++{
++	u8 data;
++	int i;
++
++	/* recover from Reset state */
++	sisfb_set_seq_reg(sisfb, 0x00, 0x03);
++
++	/* set SR1 Bit5: Screen Off */
++	data = SRegs[0x01] | 0x20;
++	sisfb_set_seq_reg(sisfb, 0x01, data);
++
++	for (i = 0x02; i <= 0x04; i++) {
++		sisfb_set_seq_reg(sisfb, i, SRegs[i]);
++	}
++}
++
++/* set_mise_regs: Set default values for standard VGA Miscellaneouse Registers */
++static void
++set_misc_regs(struct sisfb_info * sisfb)
++{
++	/* select high page, enable MEM and IO access */
++	sisfb_set_gen_reg(sisfb, 0x3c2, 0x23);
++}
++
++/* set_crtc_regs: Set default values for standard VGA CRT Control Registers */
++static void
++set_crtc_regs(struct sisfb_info * sisfb)
++{
++	int i;
++
++	/* unlock CR0-CR7 */
++	sisfb_unlock_regs(sisfb);
++
++	for (i = 0; i <= 0x18; i++) {
++		sisfb_set_crtc_reg(sisfb, i, CRegs[i]);
++	}
++}
++
++/* set_att_regs: Set defaults for standard VGA Attribute Registers */
++static void
++set_att_regs(struct sisfb_info * sisfb)
++{
++	int i;
++
++	for (i = 0; i <= 0x14; i++) {
++		sisfb_set_attr_reg(sisfb, i, ARegs[i]);
++	}
++
++	/* Set the Palette Address Source to Video Memory */
++	sisfb_get_gen_reg(sisfb, 0x3DA);
++	sisfb_set_gen_reg(sisfb, 0x3C0, 0x20);
++}
++
++/* set_grc_regs: Set default values for standard VGA Graphics Controller Register */
++static void
++set_grc_regs(struct sisfb_info * sisfb)
++{
++	int i;
++
++	for (i = 0; i <= 0x08; i++) {
++		sisfb_set_grc_reg(sisfb, i, CRegs[i]);
++	}
++
++#if 0
++	if (ModeType > ModeVGA) {
++		u8 data;
++		/* FixMe: Disable 256-color mode, why ?? */
++		data = sisfb_get_grc_reg(sisfb, 0x05);
++		data = data & 0xBF;
++		sisfb_set_grc_reg(sisfb, 0x05, data);
++	}
++#endif
++}
++
++static void
++clear_extended_regs(struct sisfb_info * sisfb)
++{
++	u16 i;
++
++	for (i = 0x0A; i <= 0x0E; i++)
++		sisfb_set_seq_reg(sisfb, i, 0x00);
++}
++
++static void
++set_sync(struct sisfb_info * sisfb)
++{
++	sisfb_set_gen_reg(sisfb, 0x3c2, MReg);
++}
++
++static void
++set_crt1_crtc(struct sisfb_info * sisfb)
++{
++	u8 data;
++	int i;
++
++	/* Unlock CR0-CR7 and Extended VGA Registers */
++	sisfb_unlock_regs(sisfb);
++
++	for (i = 0; i <= 0x07; i++)
++		sisfb_set_crtc_reg(sisfb, i, CRegs[i]);
++	for (i = 0x10; i <= 0x12; i++)
++		sisfb_set_crtc_reg(sisfb, i, CRegs[i]);
++	for (i = 0x15; i <= 0x16; i++)
++		sisfb_set_crtc_reg(sisfb, i, CRegs[i]);
++	for (i = 0x0A; i <= 0x0C; i++)
++		sisfb_set_seq_reg(sisfb, i, SRegs[i]);
++
++	data = SRegs[0x0E] & 0xE0;
++	sisfb_set_seq_reg(sisfb, i, data);
++
++	sisfb_set_crtc_reg(sisfb, 0x09, CRegs[0x09]);
++}
++
++static void
++set_crt1_offset(struct sisfb_info * sisfb)
++{
++	sisfb_set_seq_reg(sisfb, 0x0E, SRegs[0x0E]);
++
++	/* FixMe: register CRTC 0x13 is programmed with secret value:
++	   sisfb_set_crtc_reg(sisfb, 0x13, temp); */
++
++	sisfb_set_seq_reg(sisfb, 0x10, SRegs[0x10]); 
++}
++
++static void
++set_crt1_vclk(struct sisfb_info * sisfb)
++{
++	int i;
++
++	/* Select normal DCLk */
++	sisfb_set_seq_reg(sisfb, 0x31, 0x00);
++
++	for (i = 0x2B; i <= 0x2D; i++) {
++		sisfb_set_seq_reg(sisfb, i, SRegs[i]);
++	}
++
++}
++
++static void
++set_vclk_state(struct sisfb_info * sisfb)
++{
++	sisfb_set_seq_reg(sisfb, 0x32, SRegs[0x32]);
++	sisfb_set_seq_reg(sisfb, 0x32, SRegs[0x32]);
++}
++
++static void set_crt1_FIFO(struct sisfb_info * sisfb)
++{
++	sisfb_set_seq_reg(sisfb, 0x15, SRegs[0x15]);
++
++	sisfb_set_seq_reg(sisfb, 0x08, SRegs[0x08]);
++	sisfb_set_seq_reg(sisfb, 0x0F, SRegs[0x0F]);
++	sisfb_set_seq_reg(sisfb, 0x3B, 0x00);
++	sisfb_set_seq_reg(sisfb, 0x09, SRegs[0x09]);
++}
++
++static void set_crt1_mode_regs(struct sisfb_info * sisfb)
++{
++	sisfb_set_seq_reg(sisfb, 0x06, SRegs[0x06]);
++	sisfb_set_seq_reg(sisfb, 0x01, SRegs[0x01]);
++	sisfb_set_seq_reg(sisfb, 0x0F, SRegs[0x0F]);
++	sisfb_set_seq_reg(sisfb, 0x21, SRegs[0x21]);
++}
++
++static void set_interlace(struct sisfb_info * sisfb)
++{
++	/* Undocumented Registers: CRTC reg 0x19, 0x1A */
++	sisfb_set_crtc_reg(sisfb, 0x19, CRegs[0x19]);
++	sisfb_set_crtc_reg(sisfb, 0x1A, SRegs[0x1A]);
++}
++
++static void write_DAC(u16 dl, u16 ah, u16 al, u16 dh)
++{
++	u16 temp;
++	u16 bh, bl;
++
++	bh = ah;
++	bl = al;
++	if (dl != 0) {
++		temp = bh;
++		bh = dh;
++		dh = temp;
++		if (dl == 1) {
++			temp = bl;
++			bl = dh;
++			dh = temp;
++		} else {
++			temp = bl;
++			bl = bh;
++			bh = temp;
++		}
++	}
++	set_reg3(P3c9, (u16) dh);
++	set_reg3(P3c9, (u16) bh);
++	set_reg3(P3c9, (u16) bl);
++}
++
++
++static void load_DAC(struct sisfb_info * sisfb)
++{
++	u16 data, data2;
++	u16 i, k;
++	u16 m, n, o;
++	u16 si, di, bx, dl;
++	u16 al, ah, dh;
++	u16 *table = VGA_DAC;
++
++	sisfb_set_gen_reg(sisfb, 0x3c6, 0xFF);
++	sisfb_set_gen_reg(sisfb, 0x3c9, 0x00);
++
++	for (i = 0; i < 16; i++) {
++		data = table[i];
++		for (k = 0; k < 3; k++) {
++			data2 = 0;
++			if (data & 0x01)
++				data2 = 0x2A;
++			if (data & 0x02)
++				data2 = data2 + 0x15;
++			set_reg3(P3c9, data2);
++			data = data >> 2;
++		}
++	}
++
++	for (i = 16; i < 32; i++) {
++		data = table[i];
++		for (k = 0; k < 3; k++)
++			set_reg3(P3c9, data);
++	}
++
++	si = 32;
++	for (m = 0; m < 9; m++) {
++		di = si;
++		bx = si + 0x04;
++		dl = 0;
++		for (n = 0; n < 3; n++) {
++			for (o = 0; o < 5; o++) {
++				dh = table[si];
++				ah = table[di];
++				al = table[bx];
++				si++;
++				write_DAC(dl, ah, al, dh);
++			}
++			si = si - 2;
++			for (o = 0; o < 3; o++) {
++				dh = table[bx];
++				ah = table[di];
++				al = table[si];
++				si--;
++				write_DAC(dl, ah, al, dh);
++			}
++			dl++;
++		}
++		si = si + 5;
++	}
++}
++
++static void
++display_on(struct sisfb_info * sisfb)
++{
++	u8 data;
++
++	data = sisfb_get_seq_reg(sisfb, 0x01);
++
++	/* clear SR1 Bit 5: Screen Off ==> Screen On */
++	data &= ~0x20;
++	sisfb_set_seq_reg(sisfb, 0x01, data);
++}
++
++static void
++set_memory_clocks(struct sisfb_info * sisfb)
++{
++	int i;
++
++	for (i = 0x28; i <= 0x2A; i++) {	
++		// Set MCLK
++		sisfb_set_seq_reg(sisfb, i, MCLK[RAMType].clocks[i - 0x28]);
++	}
++
++	for (i = 0x2E; i <= 0x30; i++) {
++		// Set ECLK
++		sisfb_set_seq_reg(sisfb, i, ECLK[RAMType].clocks[i - 0x2E]);
++	}
++}
++
++static void
++clear_color_dac(struct sisfb_info * sisfb)
++{
++	int i;
++
++	/* Set DAC index to 0 */
++	sisfb_set_gen_reg(sisfb, 0x3c8, 0x00);
++	for (i = 0; i < (256 * 3); i++)
++		/* total 256 entries, each entry has R,G,B values */
++		sisfb_set_gen_reg(sisfb, 0x3c9, 0x00);
++}
++
++static void
++clear_frame_buffer_mem(struct sisfb_info * sisfb)
++{
++	memset((char *) sisfb->video_vbase, 0, sisfb->video_size);
++}
++
++void LongWait(void)
++{
++	unsigned long temp;
++
++	for (temp = 1; temp > 0;) {
++		temp = get_reg2(P3da);
++		temp = temp & 0x08;
++	}
++	for (; temp == 0;) {
++		temp = get_reg2(P3da);
++		temp = temp & 0x08;
++	}
++}
++
++void WaitDisplay(void)
++{
++	unsigned short temp;
++
++	for (temp = 0; temp == 0;) {
++		temp = get_reg2(P3da);
++		temp = temp & 0x01;
++	}
++	for (; temp == 1;) {
++		temp = get_reg2(P3da);
++		temp = temp & 0x01;
++	}
++}
++
++int TestMonitorType(unsigned short d1, unsigned short d2, unsigned short d3)
++{
++	unsigned short temp;
++
++	set_reg3(P3c6, 0xFF);
++	set_reg3(P3c8, 0x00);
++
++	set_reg3(P3c9, d1);
++	set_reg3(P3c9, d2);
++	set_reg3(P3c9, d3);
++
++	//wait horizontal retrace
++	WaitDisplay();
++
++	/* switch sense */
++	temp = get_reg2(P3c2);
++	if (temp & 0x10)
++		return 1;
++	else
++		return 0;
++}
++
++void SetRegANDOR(unsigned short Port, unsigned short Index,
++		 unsigned short DataAND, unsigned short DataOR)
++{
++	unsigned short temp1;
++	temp1 = get_reg1(Port, Index);	//part1port index 02
++	temp1 = (temp1 & (DataAND)) | DataOR;
++	set_reg1(Port, Index, temp1);
++}
++
++
++int DetectMonitor(void)
++{
++	unsigned short flag1;
++	unsigned short DAC_TEST_PARMS[3] = {0x0F, 0x0F, 0x0F};
++	unsigned short DAC_CLR_PARMS[3]  = {0x00, 0x00, 0x00};
++
++	/* SR38 Bit 5, Video Bridge Enable */
++	flag1 = get_reg1(P3c4, 0x38);	//call BridgeisOn
++	if ((flag1 & 0x20)) {
++		/* Undocumented Register: CRTC Reg 0x30 */
++		set_reg1(P3d4, 0x30, 0x41);
++	}
++
++	//set mode to 0x2E instead of 0x3
++	SiSSetMode(&sisfb, 0x2E);
++
++	clear_color_dac(&sisfb);
++	clear_frame_buffer_mem(&sisfb);
++
++	LongWait();
++	LongWait();
++
++	flag1 = TestMonitorType(DAC_TEST_PARMS[0], DAC_TEST_PARMS[1],
++				DAC_TEST_PARMS[2]);
++	if (flag1 == 0) {
++		flag1 = TestMonitorType(DAC_TEST_PARMS[0], DAC_TEST_PARMS[1],
++					DAC_TEST_PARMS[2]);
++	}
++
++	/* Undocumented Register: CRTC Reg 0x32 */
++	if (flag1 == 1) {
++		SetRegANDOR(P3d4, 0x32, ~Monitor1Sense, Monitor1Sense);
++	} else {
++		SetRegANDOR(P3d4, 0x32, ~Monitor1Sense, 0x0);
++	}
++
++	TestMonitorType(DAC_CLR_PARMS[0], DAC_CLR_PARMS[1],
++			DAC_CLR_PARMS[2]);
++
++	/* Undocumented Register: CRTC Reg 0x34 */
++	set_reg1(P3d4, 0x34, 0x4A);
++
++	return 1;
++}
++
++int SiSInit300(void)
++{
++	u16 BaseAddr = (u16) sisfb.vga_base;
++	unsigned char i, temp, AGP;
++	unsigned long j, k, ulTemp;
++	unsigned char SR11, SR19, SR1A, SR21, SR22;
++	unsigned char SR14;
++	unsigned long Temp;
++
++	P3c4 = BaseAddr + 0x14;
++	P3d4 = BaseAddr + 0x24;
++	P3c0 = BaseAddr + 0x10;
++	P3ce = BaseAddr + 0x1e;
++	P3c2 = BaseAddr + 0x12;
++	P3ca = BaseAddr + 0x1a;
++	P3c6 = BaseAddr + 0x16;
++	P3c7 = BaseAddr + 0x17;
++	P3c8 = BaseAddr + 0x18;
++	P3c9 = BaseAddr + 0x19;
++	P3da = BaseAddr + 0x2A;
++
++	/* Unlock Extended VGA Registers */
++	set_reg1(P3c4, 0x05, 0x86);
++
++	/* Save BIOS only Registers */
++	SR14 = (unsigned char) get_reg1(P3c4, 0x14);
++	SR19 = (unsigned char) get_reg1(P3c4, 0x19);
++	SR1A = (unsigned char) get_reg1(P3c4, 0x1A);
++
++	/* Reset Extended VGA Registers */
++	for (i = 0x06; i < 0x20; i++)
++		set_reg1(P3c4, i, 0);
++	for (i = 0x21; i <= 0x27; i++)
++		set_reg1(P3c4, i, 0);
++	for (i = 0x31; i <= 0x3D; i++)
++		set_reg1(P3c4, i, 0);
++	for (i = 0x30; i <= 0x37; i++)
++		set_reg1(P3d4, i, 0);
++
++	/* Get the DRAM Type (SDRAM, SGRAM or ESDRAM) from SR3A */
++	temp = (unsigned char) get_reg1(P3c4, 0x3A);
++	RAMType = temp & 0x07;
++
++	set_memory_clocks(&sisfb);
++	for (k = 0; k < 5; k++)
++		for (j = 0; j < 0xffff; j++)
++			ulTemp = (unsigned long) get_reg1(P3c4, 0x05);
++
++	Temp = (unsigned long) get_reg1(P3c4, 0x3C);
++	Temp = Temp | 0x01;
++	set_reg1(P3c4, 0x3C, (unsigned short) Temp);
++	for (k = 0; k < 5; k++)
++		for (j = 0; j < 0xffff; j++)
++			Temp = (unsigned long) get_reg1(P3c4, 0x05);
++
++	Temp = (unsigned long) get_reg1(P3c4, 0x3C);
++	Temp = Temp & 0xFE;
++	set_reg1(P3c4, 0x3C, (unsigned short) Temp);
++	for (k = 0; k < 5; k++)
++		for (j = 0; j < 0xffff; j++)
++			Temp = (unsigned long) get_reg1(P3c4, 0x05);
++
++	/* FixMe: The value in SRegsImit[0x07] differs from RomData */
++	set_reg1(P3c4, 0x07, SRegsInit[0x07]);
++
++	/* FixMe: Check to see if I mis-interprete the Rom Image */
++	for (i = 0x15; i <= 0x1C; i++) {
++		temp = dram_timming[RAMType][i - 0x15];
++		set_reg1(P3c4, i, temp);
++	}
++
++	//SR1F=*((unsigned char *)(ROMAddr+0xE5));  
++	set_reg1(P3c4, 0x1F, SRegsInit[0x1F]);
++
++	// Get AGP
++	AGP = 1;
++	temp = (unsigned char) get_reg1(P3c4, 0x3A);
++	temp = temp & 0x30;
++	if (temp == 0x30)
++		// PCI
++		AGP = 0;
++
++	//SR21=*((unsigned char *)(ROMAddr+0xE6));
++	SR21 = SRegsInit[0x21];
++	if (AGP == 0)
++		SR21 = SR21 & 0xEF;	// PCI
++	set_reg1(P3c4, 0x21, SR21);
++
++	//SR22=*((unsigned char *)(ROMAddr+0xE7));
++	SR22 = SRegsInit[0x22];
++	if (AGP == 1)
++		SR22 = SR22 & 0x20;	// AGP
++	set_reg1(P3c4, 0x22, SR22);
++
++	//SR23=*((unsigned char *)(ROMAddr+0xE8));
++	set_reg1(P3c4, 0x23, SRegsInit[0x23]);
++
++	//SR24=*((unsigned char *)(ROMAddr+0xE9));
++	set_reg1(P3c4, 0x24, SRegsInit[0x24]);
++
++	//SR25=*((unsigned char *)(ROMAddr+0xEA));
++	set_reg1(P3c4, 0x25, SRegsInit[0x25]);
++
++	//SR32=*((unsigned char *)(ROMAddr+0xEB));
++	set_reg1(P3c4, 0x32, SRegsInit[0x32]);
++
++	SR11 = 0x0F;
++	set_reg1(P3c4, 0x11, SR11);
++
++	// 301;
++	/* Uncodumented Register: CRTC 0x36 */
++	temp = 0x02;
++	set_reg1(P3d4, 0x37, temp);
++
++	/* FixMe: We have NO BIOS so we have to program these BIOS only registers
++	   rather than "resorte" the garbage */
++	set_reg1(P3c4, 0x14, 0x43);
++	set_reg1(P3c4, 0x19, SR19);
++	set_reg1(P3c4, 0x1A, SR1A);
++
++	set_reg3(P3c6, 0xff);
++	clear_color_dac(&sisfb);
++	DetectMonitor();
++
++	return (TRUE);
++}
++
++static int SiSSetMode(struct sisfb_info * sisfb, u16 ModeNo)
++{
++	u16 cr30flag, cr31flag;
++	u16 BaseAddr = (u16) sisfb->vga_base;
++
++	P3c4 = BaseAddr + 0x14;
++	P3d4 = BaseAddr + 0x24;
++	P3c0 = BaseAddr + 0x10;
++	P3ce = BaseAddr + 0x1e;
++	P3c2 = BaseAddr + 0x12;
++	P3ca = BaseAddr + 0x1a;
++	P3c6 = BaseAddr + 0x16;
++	P3c7 = BaseAddr + 0x17;
++	P3c8 = BaseAddr + 0x18;
++	P3c9 = BaseAddr + 0x19;
++	P3da = BaseAddr + 0x2A;
++
++	cr30flag = sisfb_get_crtc_reg(sisfb, 0x30);
++	if (((cr30flag & 0x01) == 1) || ((cr30flag & 0x02) == 0)) {
++		set_seq_regs(sisfb);
++		set_misc_regs(sisfb);
++		set_crtc_regs(sisfb);
++		set_att_regs(sisfb);
++		set_grc_regs(sisfb);
++
++		clear_extended_regs(sisfb);
++
++		set_sync(sisfb);
++		set_crt1_crtc(sisfb);
++		set_crt1_offset(sisfb);
++		set_crt1_vclk(sisfb);
++		set_vclk_state(sisfb);
++
++		set_crt1_FIFO(sisfb);
++
++		set_crt1_mode_regs(sisfb);
++
++		set_interlace(sisfb);
++
++		load_DAC(sisfb);
++
++		/* clear OnScreen
++		 FixMe: take bpp into consideration */
++		memset((char *) sisfb->video_vbase, 0,
++		       video_linelength * sisfb->video_height);
++	}
++
++	cr31flag = sisfb_get_crtc_reg(sisfb, 0x31);
++
++	display_on(sisfb);
++
++	return (0);
++}
++
++static void pre_setmode(struct sisfb_info * sisfb)
++{
++	sisfb_set_crtc_reg(sisfb, 0x30, 0x00);
++	
++	sisfb_set_crtc_reg(sisfb, 0x31, 0x60);
++
++	DPRINTK("Setting CR33 = 0x%x\n", rate_idx & 0x0f);
++
++	/* set CRT1 refresh rate */
++	sisfb_set_crtc_reg(sisfb, 0x33, rate_idx & 0x0f);	
++}
++
++static void post_setmode(struct sisfb_info * sisfb)
++{
++	u8 tmp;
++
++	/* turn on CRT1 */
++	tmp = sisfb_get_crtc_reg(sisfb, 0x17);
++	sisfb_set_crtc_reg(sisfb, 0x17, tmp | 0x80);
++
++	/* disable 24-bit palette RAM and Gamma correction */
++	tmp = sisfb_get_seq_reg(sisfb, 0x07);
++	sisfb_set_seq_reg(sisfb, 0x07, tmp & ~0x04);
++}
++
++static void search_mode(const char *name)
++{
++	int i = 0;
++
++	if (name == NULL)
++		return;
++
++	while (sisfb_video_mode[i].mode_no != 0) {
++		if (!strcmp(name, sisfb_video_mode[i].name)) {
++			mode_idx = i;
++			break;
++		}
++		i++;
++	}
++	if (mode_idx < 0)
++		DPRINTK("Invalid user mode : %s\n", name);
++}
++
++static u8 search_refresh_rate(unsigned int rate)
++{
++	u16 xres, yres;
++	int i = 0;
++
++	xres = sisfb_video_mode[mode_idx].xres;
++	yres = sisfb_video_mode[mode_idx].yres;
++
++	while ((vrate[i].idx != 0) && (vrate[i].xres <= xres)) {
++		if ((vrate[i].xres == xres) && (vrate[i].yres == yres)
++		    && (vrate[i].refresh == rate)) {
++			rate_idx = vrate[i].idx;
++			return rate_idx;
++		}
++		i++;
++	}
++
++	DPRINTK("sisfb_lite: Unsupported rate %d in %dx%d mode\n", rate, xres,
++		yres);
++
++	return 0;
++}
++
++
++
++/* 
++ *    Get CRTC registers to set var 
++ */
++static void crtc_to_var(struct fb_var_screeninfo *var)
++{
++	u16 VRE, VBE, VRS, VBS, VDE, VT;
++	u16 HRE, HBE, HRS, HBS, HDE, HT;
++	u8 uSRdata, uCRdata, uCRdata2, uCRdata3, uMRdata;
++	int A, B, C, D, E, F, temp;
++	double hrate, drate;
++
++	vgawb(SEQ_ADDR, 0x6);
++	uSRdata = vgarb(SEQ_DATA);
++
++	if (uSRdata & 0x20)
++		var->vmode = FB_VMODE_INTERLACED;
++	else
++		var->vmode = FB_VMODE_NONINTERLACED;
++
++	switch ((uSRdata & 0x1c) >> 2) {
++	case 0:
++		var->bits_per_pixel = 8;
++		break;
++	case 2:
++		var->bits_per_pixel = 16;
++		break;
++	case 4:
++		var->bits_per_pixel = 32;
++		break;
++	}
++
++	switch (var->bits_per_pixel) {
++	case 8:
++		var->red.length = 6;
++		var->green.length = 6;
++		var->blue.length = 6;
++		video_cmap_len = 256;
++		break;
++	case 16:		/* RGB 565 */
++		var->red.offset = 11;
++		var->red.length = 5;
++		var->green.offset = 5;
++		var->green.length = 6;
++		var->blue.offset = 0;
++		var->blue.length = 5;
++		var->transp.offset = 0;
++		var->transp.length = 0;
++		video_cmap_len = 16;
++
++		break;
++	case 24:		/* RGB 888 */
++		var->red.offset = 16;
++		var->red.length = 8;
++		var->green.offset = 8;
++		var->green.length = 8;
++		var->blue.offset = 0;
++		var->blue.length = 8;
++		var->transp.offset = 0;
++		var->transp.length = 0;
++		video_cmap_len = 16;
++		break;
++	case 32:
++		var->red.offset = 16;
++		var->red.length = 8;
++		var->green.offset = 8;
++		var->green.length = 8;
++		var->blue.offset = 0;
++		var->blue.length = 8;
++		var->transp.offset = 24;
++		var->transp.length = 8;
++		video_cmap_len = 16;
++		break;
++	}
++
++	vgawb(SEQ_ADDR, 0xa);
++	uSRdata = vgarb(SEQ_DATA);
++
++	vgawb(CRTC_ADDR, 0x6);
++	uCRdata = vgarb(CRTC_DATA);
++	vgawb(CRTC_ADDR, 0x7);
++	uCRdata2 = vgarb(CRTC_DATA);
++	VT =
++		(uCRdata & 0xff) | ((u16) (uCRdata2 & 0x01) << 8) |
++		((u16) (uCRdata2 & 0x20) << 4) | ((u16) (uSRdata & 0x01) <<
++						  10);
++	A = VT + 2;
++
++	vgawb(CRTC_ADDR, 0x12);
++	uCRdata = vgarb(CRTC_DATA);
++	VDE =
++		(uCRdata & 0xff) | ((u16) (uCRdata2 & 0x02) << 7) |
++		((u16) (uCRdata2 & 0x40) << 3) | ((u16) (uSRdata & 0x02) << 9);
++	E = VDE + 1;
++
++	vgawb(CRTC_ADDR, 0x10);
++	uCRdata = vgarb(CRTC_DATA);
++	VRS =
++		(uCRdata & 0xff) | ((u16) (uCRdata2 & 0x04) << 6) |
++		((u16) (uCRdata2 & 0x80) << 2) | ((u16) (uSRdata & 0x08) << 7);
++	F = VRS + 1 - E;
++
++	vgawb(CRTC_ADDR, 0x15);
++	uCRdata = vgarb(CRTC_DATA);
++	vgawb(CRTC_ADDR, 0x9);
++	uCRdata3 = vgarb(CRTC_DATA);
++	VBS =
++		(uCRdata & 0xff) | ((u16) (uCRdata2 & 0x08) << 5) |
++		((u16) (uCRdata3 & 0x20) << 4) | ((u16) (uSRdata & 0x04) << 8);
++
++	vgawb(CRTC_ADDR, 0x16);
++	uCRdata = vgarb(CRTC_DATA);
++	VBE = (uCRdata & 0xff) | ((u16) (uSRdata & 0x10) << 4);
++	temp = VBE - ((E - 1) & 511);
++	B = (temp > 0) ? temp : (temp + 512);
++
++	vgawb(CRTC_ADDR, 0x11);
++	uCRdata = vgarb(CRTC_DATA);
++	VRE = (uCRdata & 0x0f) | ((uSRdata & 0x20) >> 1);
++	temp = VRE - ((E + F - 1) & 31);
++	C = (temp > 0) ? temp : (temp + 32);
++
++	D = B - F - C;
++
++	var->yres = var->yres_virtual = E;
++	var->upper_margin = D;
++	var->lower_margin = F;
++	var->vsync_len = C;
++
++	vgawb(SEQ_ADDR, 0xb);
++	uSRdata = vgarb(SEQ_DATA);
++
++	vgawb(CRTC_ADDR, 0x0);
++	uCRdata = vgarb(CRTC_DATA);
++	HT = (uCRdata & 0xff) | ((u16) (uSRdata & 0x03) << 8);
++	A = HT + 5;
++
++	vgawb(CRTC_ADDR, 0x1);
++	uCRdata = vgarb(CRTC_DATA);
++	HDE = (uCRdata & 0xff) | ((u16) (uSRdata & 0x0C) << 6);
++	E = HDE + 1;
++
++	vgawb(CRTC_ADDR, 0x4);
++	uCRdata = vgarb(CRTC_DATA);
++	HRS = (uCRdata & 0xff) | ((u16) (uSRdata & 0xC0) << 2);
++	F = HRS - E - 3;
++
++	vgawb(CRTC_ADDR, 0x2);
++	uCRdata = vgarb(CRTC_DATA);
++	HBS = (uCRdata & 0xff) | ((u16) (uSRdata & 0x30) << 4);
++
++	vgawb(SEQ_ADDR, 0xc);
++	uSRdata = vgarb(SEQ_DATA);
++	vgawb(CRTC_ADDR, 0x3);
++	uCRdata = vgarb(CRTC_DATA);
++	vgawb(CRTC_ADDR, 0x5);
++	uCRdata2 = vgarb(CRTC_DATA);
++	HBE =
++		(uCRdata & 0x1f) | ((u16) (uCRdata2 & 0x80) >> 2) |
++		((u16) (uSRdata & 0x03) << 6);
++	HRE = (uCRdata2 & 0x1f) | ((uSRdata & 0x04) << 3);
++
++	temp = HBE - ((E - 1) & 255);
++	B = (temp > 0) ? temp : (temp + 256);
++
++	temp = HRE - ((E + F + 3) & 63);
++	C = (temp > 0) ? temp : (temp + 64);
++
++	D = B - F - C;
++
++	var->xres = var->xres_virtual = E * 8;
++	var->left_margin = D * 8;
++	var->right_margin = F * 8;
++	var->hsync_len = C * 8;
++
++	var->activate = FB_ACTIVATE_NOW;
++
++	var->sync = 0;
++
++	uMRdata = vgarb(0x1C);
++	if (uMRdata & 0x80)
++		var->sync &= ~FB_SYNC_VERT_HIGH_ACT;
++	else
++		var->sync |= FB_SYNC_VERT_HIGH_ACT;
++
++	if (uMRdata & 0x40)
++		var->sync &= ~FB_SYNC_HOR_HIGH_ACT;
++	else
++		var->sync |= FB_SYNC_HOR_HIGH_ACT;
++
++	VT += 2;
++	VT <<= 1;
++	HT = (HT + 5) * 8;
++
++	hrate = (double) sisfb.refresh_rate * (double) VT / 2;
++	drate = hrate * HT;
++	var->pixclock = (u32) (1E12 / drate);
++}
++
++static void sisfb_set_disp(int con, struct fb_var_screeninfo *var)
++{
++	struct fb_fix_screeninfo fix;
++	struct display *display;
++	struct display_switch *sw;
++	u32 flags;
++
++	if (con >= 0)
++		display = &fb_display[con];
++	else
++		display = &disp;	/* used during initialization */
++
++	sisfb_get_fix(&fix, con, 0);
++
++	display->screen_base = (char *) sisfb.video_vbase;
++	display->visual = fix.visual;
++	display->type = fix.type;
++	display->type_aux = fix.type_aux;
++	display->ypanstep = fix.ypanstep;
++	display->ywrapstep = fix.ywrapstep;
++	display->line_length = fix.line_length;
++	display->next_line = fix.line_length;
++	display->can_soft_blank = 1;
++	display->inverse = inverse;
++	display->var = *var;
++
++	save_flags(flags);
++	switch (sisfb.video_bpp) {
++#ifdef FBCON_HAS_CFB8
++	case 8:
++		sw = &fbcon_cfb8;
++		break;
++#endif
++
++#ifdef FBCON_HAS_CFB16
++	case 15:
++	case 16:
++		sw = &fbcon_cfb16;
++		display->dispsw_data = fbcon_cmap.cfb16;
++		break;
++#endif
++
++#ifdef FBCON_HAS_CFB24
++	case 24:
++		sw = &fbcon_cfb24;
++		display->dispsw_data = fbcon_cmap.cfb24;
++		break;
++#endif
++
++#ifdef FBCON_HAS_CFB32
++	case 32:
++		sw = &fbcon_cfb32;
++		display->dispsw_data = fbcon_cmap.cfb32;
++		break;
++#endif
++
++	default:
++		sw = &fbcon_dummy;
++		return;
++	}
++	memcpy(&sisfb_sw, sw, sizeof(*sw));
++	display->dispsw = &sisfb_sw;
++	restore_flags(flags);
++
++	display->scrollmode = SCROLL_YREDRAW;
++	sisfb_sw.bmove = fbcon_redraw_bmove;
++}
++
++/*
++ *    Read a single color register and split it into colors/transparent. 
++ *    Return != 0 for invalid regno.
++ */
++
++static int sis_getcolreg(unsigned regno, unsigned *red, unsigned *green, unsigned *blue,
++			 unsigned *transp, struct fb_info *fb_info)
++{
++	if (regno >= video_cmap_len)
++		return 1;
++
++	*red = palette[regno].red;
++	*green = palette[regno].green;
++	*blue = palette[regno].blue;
++	*transp = 0;
++	return 0;
++}
++
++/*
++ *    Set a single color register. The values supplied are already
++ *    rounded down to the hardware's capabilities (according to the
++ *    entries in the var structure). Return != 0 for invalid regno.
++ */
++
++static int sis_setcolreg(unsigned regno, unsigned red, unsigned green, unsigned blue,
++			 unsigned transp, struct fb_info *fb_info)
++{
++
++	if (regno >= video_cmap_len)
++		return 1;
++
++	palette[regno].red = red;
++	palette[regno].green = green;
++	palette[regno].blue = blue;
++
++	switch (sisfb.video_bpp) {
++#ifdef FBCON_HAS_CFB8
++	case 8:
++		vgawb(DACW_ADDR, regno);
++		vgawb(DAC_DATA, red >> 10);
++		vgawb(DAC_DATA, green >> 10);
++		vgawb(DAC_DATA, blue >> 10);
++		break;
++#endif
++#ifdef FBCON_HAS_CFB16
++	case 15:
++	case 16:
++		fbcon_cmap.cfb16[regno] =
++			((red & 0xf800)) |
++			((green & 0xfc00) >> 5) | ((blue & 0xf800) >> 11);
++		break;
++#endif
++#ifdef FBCON_HAS_CFB24
++	case 24:
++		red >>= 8;
++		green >>= 8;
++		blue >>= 8;
++		fbcon_cmap.cfb24[regno] =
++			(red << 16) | (green << 8) | (blue);
++		break;
++#endif
++#ifdef FBCON_HAS_CFB32
++	case 32:
++		red >>= 8;
++		green >>= 8;
++		blue >>= 8;
++		fbcon_cmap.cfb32[regno] =
++			(red << 16) | (green << 8) | (blue);
++		break;
++#endif
++	}
++	return 0;
++}
++
++static void do_install_cmap(int con, struct fb_info *info)
++{
++	if (con != currcon)
++		return;
++
++	if (fb_display[con].cmap.len)
++		fb_set_cmap(&fb_display[con].cmap, 1, sis_setcolreg, info);
++	else
++		fb_set_cmap(fb_default_cmap(video_cmap_len), 1,
++			    sis_setcolreg, info);
++}
++
++static int do_set_var(struct fb_var_screeninfo *var, int isactive,
++		      struct fb_info *info)
++{
++	unsigned int htotal =
++		var->left_margin + var->xres + var->right_margin +
++		var->hsync_len;
++	unsigned int vtotal =
++		var->upper_margin + var->yres + var->lower_margin +
++		var->vsync_len;
++	double drate = 0, hrate = 0;
++	int found_mode = 0;
++
++	if ((var->vmode & FB_VMODE_MASK) == FB_VMODE_NONINTERLACED)
++		vtotal <<= 1;
++	else if ((var->vmode & FB_VMODE_MASK) == FB_VMODE_DOUBLE)
++		vtotal <<= 2;
++	else if ((var->vmode & FB_VMODE_MASK) == FB_VMODE_INTERLACED)
++		var->yres <<= 1;
++
++
++	if (!htotal || !vtotal) {
++		DPRINTK("Invalid 'var' Information!\n");
++		return 1;
++	}
++
++	drate = 1E12 / var->pixclock;
++	hrate = drate / htotal;
++	sisfb.refresh_rate = (unsigned int) (hrate / vtotal * 2 + 0.5);
++
++	mode_idx = 0;
++	while ((sisfb_video_mode[mode_idx].mode_no != 0)
++	       && (sisfb_video_mode[mode_idx].xres <= var->xres)) {
++		if ((sisfb_video_mode[mode_idx].xres == var->xres)
++		    && (sisfb_video_mode[mode_idx].yres == var->yres)
++		    && (sisfb_video_mode[mode_idx].bpp == var->bits_per_pixel)) {
++			mode_no = sisfb_video_mode[mode_idx].mode_no;
++			found_mode = 1;
++			break;
++		}
++		mode_idx++;
++	}
++
++	if (!found_mode) {
++		printk("sisfb does not support mode %dx%d-%d\n", var->xres,
++		       var->yres, var->bits_per_pixel);
++		return 1;
++	}
++
++	if (search_refresh_rate(sisfb.refresh_rate) == 0) {
++		/* not supported rate */
++		rate_idx = sisfb_video_mode[mode_idx].rate_idx;
++		sisfb.refresh_rate = 60;
++	}
++
++	if (((var->activate & FB_ACTIVATE_MASK) == FB_ACTIVATE_NOW) && isactive) {
++		pre_setmode(&sisfb);
++
++		if (SiSSetMode(&sisfb, mode_no)) {
++			DPRINTK("sisfb_lite: set mode[0x%x]: failed\n",
++				mode_no);
++			return 1;
++		}
++
++		post_setmode(&sisfb);
++
++		sisfb.video_bpp = sisfb_video_mode[mode_idx].bpp;
++		sisfb.video_width = sisfb_video_mode[mode_idx].xres;
++		sisfb.video_height = sisfb_video_mode[mode_idx].yres;
++		video_linelength =
++			sisfb.video_width * (sisfb.video_bpp >> 3);
++
++		DPRINTK("Current Mode: %dx%d-%d line_length=%d\n",
++			sisfb.video_width, sisfb.video_height,
++			sisfb.video_bpp, video_linelength);
++	}
++
++	return 0;
++}
++
++static int sisfb_update_var(int con, struct fb_info *info)
++{
++	return 0;
++}
++
++/*
++ *    Switch Console (called by fbcon.c)
++ */
++static int sisfb_switch(int con, struct fb_info *info)
++{
++	struct sisfb_info * sisfb = (struct sisfb_info *) info;
++	int cols, rows;
++
++	sisfb_unlock_regs(sisfb);
++
++	DPRINTK("sisfb_lite: switch console from [%d] to [%d]\n", currcon, con);
++
++	/* update colormap of current console */
++	if (fb_display[currcon].cmap.len)
++		fb_get_cmap(&fb_display[currcon].cmap, 1, sis_getcolreg, info);
++
++	fb_display[con].var.activate = FB_ACTIVATE_NOW;
++
++	/* same mode, needn't change mode actually */
++
++	if (!memcmp(&fb_display[con].var, &fb_display[currcon].var, sizeof(struct fb_var_screeninfo))) 
++	{
++		currcon = con;
++		return 1;
++	}
++
++	currcon = con;
++
++	do_set_var(&fb_display[con].var, 1, info);
++
++	sisfb_set_disp(con, &fb_display[con].var);
++
++	/* Install new colormap */
++	do_install_cmap(con, info);
++
++	cols = sisfb_video_mode[mode_idx].cols;
++	rows = sisfb_video_mode[mode_idx].rows;
++	vc_resize_con(rows, cols, fb_display[con].conp->vc_num);
++
++	sisfb_update_var(con, info);
++
++	return 1;
++
++}
++
++/* Blanking or Unblanking the CRT, blank -> 0 unblank, 1 blank, 2 no vsync, 3 no hsync, 4 off
++ *
++ * The documents on bit 6..7 of SR11 and SR1F are ambigiuos. They are either marked
++ * "reserved" or conflicts with each other from different sources. It is possible that
++ * all these bits are "wired" altogether in the actual circuit implementation (HW bug ??).
++ * And the VGA guys just choose one to document/program on their own will.
++ *
++ * XFree86 3.3.6 programs SR11 and CRTC17 but not SR1F
++ */
++static void
++sisfb_blank(int blank, struct fb_info * info)
++{
++	u8 display, power, retrace;
++	struct sisfb_info * sisfb = (struct sisfb_info *) info;
++
++	display = sisfb_get_seq_reg(sisfb, 0x01);
++	power   = sisfb_get_seq_reg(sisfb, 0x11);
++	retrace = sisfb_get_crtc_reg(sisfb, 0x17);
++
++	switch (blank) {
++	case 0:
++		/* Turn the display on */
++		display &= ~0x20;
++		/* Disable DPMS mode */
++		power   &= ~0xC0;
++		/* Enable horizontal and vertical retrace signals */
++		retrace |= 0x80;
++		/* FixMe: should we reinstall the color palette ?? */
++		break;
++	case 1:
++		/* Turn the display off */
++		display |= 0x20;
++		break;
++	case 2:
++		/* Turn the display off */
++		display |= 0x20;
++		/* Enter DPMS Suspend Mode -> no vsync */
++		power   |= 0x80;
++		break;
++	case 3:
++		/* Trun the display off */
++		display |= 0x20;
++		/* Enter DPMS standby Mode -> no hsync */
++		power   |= 0x40;
++		break;
++	case 4:
++	default:
++		/* Trun the display off */
++		display |= 0x20;
++		/* Enter DPMS Power Off Mode -> no hsync,vsync */
++		power   |= 0xC0;
++		/* Disable horizontal and vertical retrace signals */
++		retrace &= ~0x80;
++		break;
++	}
++
++	sisfb_set_seq_reg(sisfb, 0x01, display);
++	sisfb_set_seq_reg(sisfb, 0x11, power);
++	sisfb_set_crtc_reg(sisfb, 0x17, retrace);
++}
++
++/*
++ *    Get the Fixed Part of the Display
++ */
++
++static int sisfb_get_fix(struct fb_fix_screeninfo *fix, int con,
++			 struct fb_info *info)
++{
++	DPRINTK("sisfb_lite: sisfb_get_fix:[%d]\n", con);
++
++	memset(fix, 0, sizeof(struct fb_fix_screeninfo));
++	strcpy(fix->id, sisfb.info.modename);
++
++	fix->smem_start = sisfb.video_base;
++	if(sisfb.video_size > 0x800000)
++		fix->smem_len = RESERVED_MEM_SIZE_8M;	/* reserved for Xserver */
++	else
++		fix->smem_len = RESERVED_MEM_SIZE_4M;	/* reserved for Xserver */
++
++	fix->type = video_type;
++	fix->type_aux = 0;
++	if (sisfb.video_bpp == 8)
++		fix->visual = FB_VISUAL_PSEUDOCOLOR;
++	else
++		fix->visual = FB_VISUAL_TRUECOLOR;
++	fix->xpanstep = 0;
++	fix->ypanstep = 0;
++	fix->ywrapstep = 0;
++	fix->line_length = video_linelength;
++	fix->mmio_start = sisfb.mmio_base;
++	fix->mmio_len = MMIO_SIZE;
++	fix->accel = FB_ACCEL_SIS_GLAMOUR;
++	fix->reserved[0] = sisfb.video_size & 0xFFFF;
++	fix->reserved[1] = (sisfb.video_size >> 16) & 0xFFFF;
++	fix->reserved[2] = 0;	/* capabilities */
++
++	return 0;
++}
++
++/*
++ *    Get the User Defined Part of the Display
++ */
++
++static int sisfb_get_var(struct fb_var_screeninfo *var, int con,
++			 struct fb_info *info)
++{
++	DPRINTK("sisfb_lite: sisfb_get_var:[%d]\n", con);
++
++	if (con == -1)
++		memcpy(var, &default_var, sizeof(struct fb_var_screeninfo));
++	else
++		*var = fb_display[con].var;
++	return 0;
++}
++
++/*
++ *    Set the User Defined Part of the Display
++ */
++
++static int sisfb_set_var(struct fb_var_screeninfo *var, int con,
++			 struct fb_info *info)
++{
++	int err;
++	unsigned int cols, rows;
++
++	fb_display[con].var.activate = FB_ACTIVATE_NOW;
++
++	/* Set mode */
++	if (do_set_var(var, con == currcon, info)) {
++		crtc_to_var(var);	/* return current mode to user */
++		return -EINVAL;
++	}
++
++	/* get actual setting value */
++	crtc_to_var(var);
++
++	/* update display of current console */
++	sisfb_set_disp(con, var);
++
++	if (info->changevar)
++		(*info->changevar) (con);
++
++	if ((err = fb_alloc_cmap(&fb_display[con].cmap, 0, 0)))
++		return err;
++
++	do_install_cmap(con, info);
++
++	/* inform console to update struct display */
++	cols = sisfb_video_mode[mode_idx].cols;
++	rows = sisfb_video_mode[mode_idx].rows;
++	vc_resize_con(rows, cols, fb_display[con].conp->vc_num);
++
++	return 0;
++}
++
++
++/*
++ *    Get the Colormap
++ */
++
++static int sisfb_get_cmap(struct fb_cmap *cmap, int kspc, int con,
++			  struct fb_info *info)
++{
++	DPRINTK("sisfb_lite: sisfb_get_cmap:[%d]\n", con);
++
++	if (con == currcon)
++		return fb_get_cmap(cmap, kspc, sis_getcolreg, info);
++	else if (fb_display[con].cmap.len)	/* non default colormap? */
++		fb_copy_cmap(&fb_display[con].cmap, cmap, kspc ? 0 : 2);
++	else
++		fb_copy_cmap(fb_default_cmap(video_cmap_len), cmap, kspc ? 0 : 2);
++
++	return 0;
++}
++
++/*
++ *    Set the Colormap
++ */
++
++static int sisfb_set_cmap(struct fb_cmap *cmap, int kspc, int con,
++			  struct fb_info *info)
++{
++	int err;
++
++	if (!fb_display[con].cmap.len) {	/* no colormap allocated */
++		err = fb_alloc_cmap(&fb_display[con].cmap, video_cmap_len, 0);
++		if (err)
++			return err;
++	}
++	if (con == currcon)	/* current console */
++		return fb_set_cmap(cmap, kspc, sis_setcolreg, info);
++	else
++		fb_copy_cmap(cmap, &fb_display[con].cmap, kspc ? 0 : 1);
++	return 0;
++}
++
++static int sisfb_ioctl(struct inode *inode, struct file *file,
++		       unsigned int cmd, unsigned long arg, int con,
++		       struct fb_info *info)
++{
++	return 0;
++}
++
++static int sisfb_mmap(struct fb_info *info, struct file *file,
++		      struct vm_area_struct *vma)
++{
++	struct fb_var_screeninfo var;
++	unsigned long start;
++	unsigned long off;
++	u32 len;
++
++	if (vma->vm_pgoff > (~0UL >> PAGE_SHIFT))
++		return -EINVAL;
++	off = vma->vm_pgoff << PAGE_SHIFT;
++
++	/* frame buffer memory */
++	start = (unsigned long) sisfb.video_base;
++	len = PAGE_ALIGN((start & ~PAGE_MASK) + sisfb.video_size);
++
++	if (off >= len) {
++		/* memory mapped io */
++		off -= len;
++		sisfb_get_var(&var, currcon, info);
++		if (var.accel_flags)
++			return -EINVAL;
++		start = (unsigned long) sisfb.mmio_base;
++		len = PAGE_ALIGN((start & ~PAGE_MASK) + MMIO_SIZE);
++	}
++
++	start &= PAGE_MASK;
++	if ((vma->vm_end - vma->vm_start + off) > len)
++		return -EINVAL;
++	off += start;
++	vma->vm_pgoff = off >> PAGE_SHIFT;
++
++#if defined(__i386__)
++	if (boot_cpu_data.x86 > 3)
++		pgprot_val(vma->vm_page_prot) |= _PAGE_PCD;
++#endif
++	if (io_remap_page_range(vma->vm_start, off, vma->vm_end - vma->vm_start,
++				vma->vm_page_prot))
++		return -EAGAIN;
++	return 0;
++}
++
++static struct fb_ops sisfb_ops = {
++	owner:		THIS_MODULE,
++	fb_get_fix:	sisfb_get_fix,
++	fb_get_var:	sisfb_get_var,
++	fb_set_var:	sisfb_set_var,
++	fb_get_cmap:	sisfb_get_cmap,
++	fb_set_cmap:	sisfb_set_cmap,
++	fb_ioctl:	sisfb_ioctl,
++	fb_mmap:	sisfb_mmap,
++};
++
++int sisfb_setup(char *options)
++{
++	char *this_opt;
++
++	sisfb.info.fontname[0] = '\0';
++	sisfb.refresh_rate = 0;
++
++	if (!options || !*options)
++		return 0;
++
++	for (this_opt = strtok(options, ","); this_opt; 
++	     this_opt = strtok(NULL, ",")) {
++		if (!*this_opt)
++			continue;
++
++		if (!strcmp(this_opt, "inverse")) {
++			inverse = 1;
++			fb_invert_cmaps();
++		} else if (!strncmp(this_opt, "font:", 5)) {
++			strcpy(sisfb.info.fontname, this_opt + 5);
++		} else if (!strncmp(this_opt, "mode:", 5)) {
++			search_mode(this_opt + 5);
++		} else if (!strncmp(this_opt, "vrate:", 6)) {
++			sisfb.refresh_rate =
++				simple_strtoul(this_opt + 6, NULL, 0);
++		} else if (!strncmp(this_opt, "off", 3)) {
++			sisfb_off = 1;
++		} else
++			DPRINTK("invalid parameter %s\n", this_opt);
++	}
++	return 0;
++}
++
++static int __init sisfb_init_late(struct pci_dev *pci_dev, const struct pci_device_id *pci_id)
++{
++	u8 tmp;
++	u32 cmd;
++
++	if (sisfb_off)
++		return -ENXIO;
++
++	sisfb.pci_dev = pci_dev;
++
++	pci_read_config_dword(pci_dev, PCI_COMMAND, &cmd);
++	cmd |= PCI_COMMAND_IO | PCI_COMMAND_MEMORY;
++	pci_write_config_dword(pci_dev, PCI_COMMAND, cmd); 
++
++	sisfb.video_base = pci_resource_start(pci_dev, 0);
++	if (!request_mem_region(sisfb.video_base, pci_resource_len(pci_dev, 0),
++				"sisfb FB")) {
++		printk(KERN_ERR "sisfb_lite: cannot reserve frame buffer memory\n");
++		return -ENODEV;
++	}
++
++	sisfb.mmio_base = pci_resource_start(pci_dev, 1);
++	if (!request_mem_region(sisfb.mmio_base, pci_resource_len(pci_dev, 1),
++				"sisfb MMIO")) {
++		printk(KERN_ERR "sisfb_lite: cannot reserve MMIO region\n");
++		release_mem_region(pci_resource_start(pci_dev, 1), 
++				   pci_resource_len(pci_dev, 1));
++		return -ENODEV;
++	}
++
++	sisfb.vga_base = pci_resource_start(pci_dev, 2);
++	if (!request_region(sisfb.vga_base, pci_resource_len(pci_dev, 2),
++			    "sisfb IO")) {
++		printk(KERN_ERR "sisfb_lite: cannot reserve I/O ports\n");
++		release_mem_region(pci_resource_start(pci_dev, 1),
++				   pci_resource_len(pci_dev, 1));
++		release_mem_region(pci_resource_start(pci_dev, 0),
++				   pci_resource_len(pci_dev, 0));
++		return -ENODEV;
++	}
++	sisfb.vga_base += 0x30;
++
++	/* set passwd */
++	vgawb(SEQ_ADDR, IND_SIS_PASSWORD);
++	vgawb(SEQ_DATA, SIS_PASSWORD);
++
++	/* Enable MMIO & PCI linear address */
++	vgawb(SEQ_ADDR, IND_SIS_PCI_ADDRESS_SET);
++	tmp = vgarb(SEQ_DATA);
++	tmp |= SIS_PCI_ADDR_ENABLE;
++	tmp |= SIS_MEM_MAP_IO_ENABLE;
++	vgawb(SEQ_DATA, tmp);
++
++	/* get video ram size by SR14 */
++	vgawb(SEQ_ADDR, IND_SIS_DRAM_SIZE);
++	sisfb.video_size = ((unsigned) ((vgarb(SEQ_DATA) & 0x3f) + 1) << 20);
++
++	if (mode_idx < 0)
++		mode_idx = DEFAULT_MODE;	/* 0:640x480x8 */
++
++	mode_idx = DEFAULT_MODE;
++	rate_idx = sisfb_video_mode[mode_idx].rate_idx;
++	/* set to default refresh rate 60MHz */
++	sisfb.refresh_rate = 60;
++
++	mode_no = sisfb_video_mode[mode_idx].mode_no;
++	strcpy(sisfb.info.modename, sisfb_video_mode[mode_idx].name);
++
++	if (sisfb.refresh_rate != 0)
++		search_refresh_rate(sisfb.refresh_rate);
++
++	if (rate_idx == 0) {
++		rate_idx = sisfb_video_mode[mode_idx].rate_idx;
++		/* set to default refresh rate 60MHz */
++		sisfb.refresh_rate = 60;
++	}
++
++	sisfb.video_bpp = sisfb_video_mode[mode_idx].bpp;
++	sisfb.video_width = sisfb_video_mode[mode_idx].xres;
++	sisfb.video_height = sisfb_video_mode[mode_idx].yres;
++	video_linelength = sisfb.video_width * (sisfb.video_bpp >> 3);
++
++	sisfb.video_vbase = (unsigned long) ioremap(sisfb.video_base, sisfb.video_size);
++	sisfb.mmio_vbase = (unsigned long ) ioremap(sisfb.mmio_base, MMIO_SIZE);
++
++	SiSInit300(); 
++
++	printk(KERN_INFO
++	       "sisfb_lite: framebuffer at 0x%lx, mapped to 0x%p, size %lu KB\n",
++	       sisfb.video_base, (char *) sisfb.video_vbase,
++	       sisfb.video_size / 1024);
++	printk(KERN_INFO
++	       "sisfb_lite: mode is %dx%dx%d, linelength=%d\n",
++	       sisfb.video_width, sisfb.video_height, sisfb.video_bpp,
++	       video_linelength);
++
++
++	pre_setmode(&sisfb);
++
++	if (SiSSetMode(&sisfb, mode_no)) {
++		DPRINTK("sisfb_lite: set mode[0x%x]: failed\n", 0x30);
++		return -1;
++	}
++
++	post_setmode(&sisfb);
++
++	crtc_to_var(&default_var);
++
++	sisfb.info.changevar = NULL;
++	sisfb.info.node = -1;
++	sisfb.info.fbops = &sisfb_ops;
++	sisfb.info.disp = &disp;
++	sisfb.info.switch_con = &sisfb_switch;
++	sisfb.info.updatevar = &sisfb_update_var;
++	sisfb.info.blank = &sisfb_blank;
++	sisfb.info.flags = FBINFO_FLAG_DEFAULT;
++
++	sisfb_set_disp(-1, &default_var);
++
++	/* to avoid the inversed bgcolor bug of the initial state */
++	vc_resize_con(1, 1, 0);
++
++	if (register_framebuffer((struct fb_info *) &sisfb) < 0)
++		return -EINVAL;
++
++	printk(KERN_INFO "fb%d: %s frame buffer device\n",
++	       GET_FB_IDX(sisfb.info.node), sisfb.info.modename);
++
++	return 0;
++}
++
++static char *mode = NULL;
++static unsigned int rate = 0;
++
++MODULE_PARM(mode, "s");
++MODULE_PARM(rate, "i");
++
++static int __devinit
++sisfb_probe (struct pci_dev *pci_dev, const struct pci_device_id *pci_id)
++{
++	if (mode)
++		search_mode(mode);
++
++	sisfb.refresh_rate = rate;
++
++	sisfb_init_late(pci_dev, pci_id);
++
++	return 0;
++}
++
++
++static void __devexit
++sisfb_remove(struct pci_dev *pci_dev)
++{
++	struct fb_info * fb_info = pci_dev->driver_data;
++
++	unregister_framebuffer(fb_info);
++
++	release_mem_region(pci_resource_start(pci_dev, 0),
++			   pci_resource_len(pci_dev, 0));
++	release_mem_region(pci_resource_start(pci_dev, 1),
++			   pci_resource_len(pci_dev, 1));
++	release_region(pci_resource_start(pci_dev, 2),
++		       pci_resource_len(pci_dev, 2));
++
++	//kfree(sis_fb_info);
++}
++
++#define SISFB_MODULE_NAME "sisfb_lite"
++
++static struct pci_driver sisfb_pci_driver = {
++	name:		SISFB_MODULE_NAME,
++	id_table:	sisfb_pci_tbl,
++	probe:		sisfb_probe,
++	remove:		sisfb_remove,
++};
++
++static const char * version = "$Id$";
++
++int __init sisfb_init(void)
++{
++	printk(KERN_INFO "sisfb_lite: %s\n", version);
++
++	return pci_module_init(&sisfb_pci_driver);
++}
++
++static void __exit sisfb_cleanup(void)
++{
++	pci_unregister_driver(&sisfb_pci_driver);
++}
++
++#ifdef MODULE
++module_init(sisfb_init);
++#endif /* MODULE */
++
++module_exit(sisfb_cleanup);
+diff -urN linux-2.4.0-test12-official/drivers/video/sis/sisfb_lite.h linux-2.4.0-test12-linuxbios/drivers/video/sis/sisfb_lite.h
+--- linux-2.4.0-test12-official/drivers/video/sis/sisfb_lite.h	Thu Jan  1 08:00:00 1970
++++ linux-2.4.0-test12-linuxbios/drivers/video/sis/sisfb_lite.h	Thu Dec 21 11:07:23 2000
+@@ -0,0 +1,161 @@
++#ifndef _LINUX_SISFB
++#define _LINUX_SISFB
++
++struct sisfb_info {
++	struct fb_info info;
++	struct pci_dev *pci_dev;
++
++	unsigned long video_size;
++	unsigned long video_base;
++
++	unsigned long video_vbase;
++	unsigned long video_vsize;
++
++	unsigned long mmio_base;
++	unsigned long mmio_vbase;
++
++	unsigned vga_base;
++
++	unsigned video_bpp;
++	unsigned video_width;
++	unsigned video_height;
++	unsigned refresh_rate;
++};
++
++struct sis_memreq
++{
++	unsigned long offset;
++	unsigned long size;
++};
++
++/* ------------------- Constant Definitions ------------------------- */
++
++#define FALSE   0
++#define TRUE    1
++
++#define BR(x)   (0x8200 | (x) << 2)
++
++#define BITBLT               0x00000000
++#define COLOREXP             0x00000001
++#define ENCOLOREXP           0x00000002
++#define MULTIPLE_SCANLINE    0x00000003
++#define LINE                 0x00000004
++#define TRAPAZOID_FILL       0x00000005
++#define TRANSPARENT_BITBLT   0x00000006
++
++#define SRCVIDEO             0x00000000
++#define SRCSYSTEM            0x00000010
++#define SRCAGP               0x00000020
++
++#define PATFG                0x00000000
++#define PATPATREG            0x00000040
++#define PATMONO              0x00000080
++
++#define X_INC                0x00010000
++#define X_DEC                0x00000000
++#define Y_INC                0x00020000
++#define Y_DEC                0x00000000
++
++#define NOCLIP               0x00000000
++#define NOMERGECLIP          0x04000000
++#define CLIPENABLE           0x00040000
++#define CLIPWITHOUTMERGE     0x04040000
++
++#define OPAQUE               0x00000000
++#define TRANSPARENT          0x00100000
++
++#define DSTAGP               0x02000000
++#define DSTVIDEO             0x02000000
++
++#define LINE_STYLE           0x00800000
++#define NO_RESET_COUNTER     0x00400000
++#define NO_LAST_PIXEL        0x00200000
++
++/* capabilities */
++#define TURBO_QUEUE_CAP      0x80
++#define HW_CURSOR_CAP        0x40
++
++/* VGA register Offsets */
++#define ATTR_WRITE           0x10
++#define ATTR_READ            0x11
++#define SEQ_ADDR             0x14
++#define SEQ_DATA             0x15
++#define DACR_ADDR            0x17
++#define DACW_ADDR            0x18
++#define DAC_DATA             0x19
++#define GRC_ADDR             0x1E
++#define GRC_DATA             0x1F
++#define CRTC_ADDR            0x24
++#define CRTC_DATA            0x25
++
++#define SIS_PASSWD           0x05
++#define SIS_PASSWD_LOCK      0x21
++#define SIS_PASSWD_UNLOCK    0x86
++
++/* SiS indexed register indexes */
++#define IND_SIS_PASSWORD          (0x05)
++#define IND_SIS_DRAM_SIZE         (0x14)
++#define IND_SIS_MODULE_ENABLE     (0x1E)
++#define IND_SIS_PCI_ADDRESS_SET   (0x20)
++#define IND_SIS_TURBOQUEUE_ADR    (0x26)
++#define IND_SIS_TURBOQUEUE_SET    (0x27)
++
++/* Sis register value */
++#define SIS_PASSWORD              (0x86)
++
++#define SIS_2D_ENABLE             (0x40)
++
++#define SIS_MEM_MAP_IO_ENABLE     (0x01)
++#define SIS_PCI_ADDR_ENABLE       (0x80)
++
++#define MMIO_SIZE                 0x20000	/* 128K MMIO capability */
++#define MAX_ROM_SCAN              0x10000
++
++#define RESERVED_MEM_SIZE_4M      0x400000	/* 4M */
++#define RESERVED_MEM_SIZE_8M      0x800000	/* 8M */
++
++/* Mode set stuff */
++#define DEFAULT_MODE      0
++
++#define ModeInfoFlag      0x07
++#define MemoryInfoFlag    0x1E0
++#define MemorySizeShift   0x05
++#define ModeVGA           0x03
++#define ModeEGA           0x02
++#define CRT1Len           17
++#define DoubleScanMode    0x8000
++#define HalfDCLK          0x1000
++
++#define InterlaceMode     0x80
++#define LineCompareOff    0x400
++#define DACInfoFlag       0x18
++
++#define VCLKStartFreq      25
++
++#define SIS_Glamour       0x0300
++#define SIS_Trojan        0x6300
++#define SIS_Spartan       0x5300
++
++/* heap stuff */
++#define OH_ALLOC_SIZE         4000
++#define SENTINEL              0x7fffffff
++
++#define TURBO_QUEUE_AREA_SIZE 0x80000	/* 512K */
++#define HW_CURSOR_AREA_SIZE   0x1000	/* 4K */
++
++/* video connection status */
++#define VB_COMPOSITE 0x01
++#define VB_SVIDEO    0x02
++#define VB_SCART     0x04
++#define VB_LCD       0x08
++#define VB_CRT2      0x10
++#define CRT1         0x20
++#define VB_HDTV      0x40
++
++#ifdef __KERNEL__
++extern struct video_info ivideo;
++
++extern void sis_malloc(struct sis_memreq *req);
++extern void sis_free(unsigned long base);
++#endif
++#endif
+diff -urN linux-2.4.0-test12-official/include/linux/pc_keyb.h linux-2.4.0-test12-linuxbios/include/linux/pc_keyb.h
+--- linux-2.4.0-test12-official/include/linux/pc_keyb.h	Tue Oct 12 01:15:40 1999
++++ linux-2.4.0-test12-linuxbios/include/linux/pc_keyb.h	Fri Dec 22 15:04:01 2000
+@@ -14,7 +14,7 @@
+ #define KBD_REPORT_UNKN			/* Report unknown scan codes */
+ #define KBD_REPORT_TIMEOUTS		/* Report keyboard timeouts */
+ #undef KBD_IS_FOCUS_9000		/* We have the brain-damaged FOCUS-9000 keyboard */
+-#undef INITIALIZE_MOUSE			/* Define if your PS/2 mouse needs initialization. */
++#define INITIALIZE_MOUSE			/* Define if your PS/2 mouse needs initialization. */
+ 
+ 
+ 
+diff -urN linux-2.4.0-test12-official/include/linux/pci_ids.h linux-2.4.0-test12-linuxbios/include/linux/pci_ids.h
+--- linux-2.4.0-test12-official/include/linux/pci_ids.h	Mon Dec  4 09:45:23 2000
++++ linux-2.4.0-test12-linuxbios/include/linux/pci_ids.h	Fri Dec 22 15:04:01 2000
+@@ -357,6 +357,7 @@
+ #define PCI_DEVICE_ID_SI_601		0x0601
+ #define PCI_DEVICE_ID_SI_620		0x0620
+ #define PCI_DEVICE_ID_SI_630		0x0630
++#define PCI_DEVICE_ID_SI_730		0x0730         
+ #define PCI_DEVICE_ID_SI_630_VGA	0x6300
+ #define PCI_DEVICE_ID_SI_730_VGA	0x7300
+ #define PCI_DEVICE_ID_SI_5107		0x5107
+diff -cr linux-2.4.0-test12.reference/drivers/mtd/docprobe.c linux-2.4.0-test12.sis/drivers/mtd/docprobe.c
+*** linux-2.4.0-test12.reference/drivers/mtd/docprobe.c	Mon Dec 11 15:57:58 2000
+--- linux-2.4.0-test12.sis/drivers/mtd/docprobe.c	Fri Dec 22 09:24:49 2000
+***************
+*** 39,45 ****
+     a Millennium enough that they go through and work out what the 
+     difference is :)
+  */
+! #define DOC_SINGLE_DRIVER
+  
+  #include <linux/kernel.h>
+  #include <linux/module.h>
+--- 39,45 ----
+     a Millennium enough that they go through and work out what the 
+     difference is :)
+  */
+! #undef DOC_SINGLE_DRIVER
+  
+  #include <linux/kernel.h>
+  #include <linux/module.h>

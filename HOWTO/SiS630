@@ -95,7 +95,8 @@ o 	go to www.kernel.org and get linux-2.4.0-test12
 o	Once you have pulled this file down and untar'ed it, 
 	apply the proper patch from the freebios/src/kernel_patches 
 	directory.  The patch is:
-	linux-2.4.0-test12-sis630-linuxbios.patch-1
+
+	linux-2.4.0-test12-sis630-sisfb_lite.patch
 
 o	Now copy config-2.4.0-test12.sis to .config, then
 	make oldconfig

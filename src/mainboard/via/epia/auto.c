@@ -77,7 +77,8 @@ static void enable_mainboard_devices(void)
 	/* we do this here as in V2, we can not yet do raw operations 
 	 * to pci!
 	 */
-	dev++; /* ICKY */
+        dev += 0x100; /* ICKY */
+
 	pci_write_config8(dev, 0x42, 0);
 }
 

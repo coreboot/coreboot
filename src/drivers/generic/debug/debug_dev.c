@@ -13,14 +13,14 @@ static void print_pci_regs(struct device *dev)
       int i;
 
       for(i=0;i<256;i++) {
-	     byte = pci_read_config8(dev, i);
+	      byte = pci_read_config8(dev, i);
    
-             if((i & 0xf)==0) printk_debug("\n%02x:",i);
-             printk_debug(" %02x",byte);
+	      if((i & 0xf)==0) printk_debug("\n%02x:",i);
+	      printk_debug(" %02x",byte);
       }
       printk_debug("\n");
-
 }
+
 static void print_mem(void)
 {
         unsigned int i;
@@ -35,27 +35,29 @@ static void print_mem(void)
 static void print_pci_regs_all(void)
 {
         struct device *dev;
-	unsigned char i,j,k;
+	unsigned char bus, device, function;
 
-	for(i=0;i<=15;i++) {
-		for(j=0;j<=0x1f;j++) {
-			for (k=0;k<=6;k++){
-				dev = dev_find_slot(i, PCI_DEVFN(j, k));
+	for(bus=0; bus<=256; bus++) {
+		for(device=0; device<=0x1f; device++) {
+			for (function=0; function<=7; function++){
+				unsigned devfn;
+				devfn = PCI_DEVFN(device, function);
+				dev = dev_find_slot(bus, devfn);
 				if(!dev) {
 					continue;
 				}
 				if(!dev->enabled) {
 					continue;
 				}
-				printk_debug("\n%02x:%02x:%02x aka %s",i,j,k, dev_path(dev));
+			        printk_debug("\n%02x:%02x:%02x aka %s", 
+					bus, device, function, dev_path(dev));
 				print_pci_regs(dev);
 			}
 		}
 	}
-
 }
 
-static void print_msr()
+static void print_cpuid()
 {
 	msr_t msr;
 	unsigned index;
@@ -126,6 +128,8 @@ static void print_smbus_regs_all(struct device *dev)
 static void debug_init(device_t dev)
 {
 	device_t parent;
+	if (!dev->enabled)
+		return;
 	switch(dev->path.u.pnp.device) {
 #if CONFIG_CHIP_NAME
 	case 0:
@@ -146,7 +150,7 @@ static void debug_init(device_t dev)
 		print_mem();
 		break;
 	case 3:
-		print_msr();
+		print_cpuid();
 		break;
 	case 4: 
 		print_smbus_regs_all(&dev_root);

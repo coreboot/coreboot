@@ -7,6 +7,22 @@
 #include <device/device.h>
 #include <stdlib.h>
 
+static inline uint64_t unpack_lb64(struct lb_uint64 value) 
+{
+	uint64_t result;
+	result = value.hi;
+	result = (result << 32) + value.lo;
+	return result;
+}
+
+static inline struct lb_uint64 pack_lb64(uint64_t value)
+{
+	struct lb_uint64 result;
+	result.lo = (value >> 0) & 0xffffffff;
+	result.hi = (value >> 32) & 0xffffffff;
+	return result;
+}
+
 struct lb_header *lb_table_init(unsigned long addr)
 {
 	struct lb_header *header;
@@ -133,8 +149,8 @@ void lb_memory_range(struct lb_memory *mem,
 {
 	int entries;
 	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
-	mem->map[entries].start = start;
-	mem->map[entries].size = size;
+	mem->map[entries].start = pack_lb64(start);
+	mem->map[entries].size = pack_lb64(size);
 	mem->map[entries].type = type;
 	mem->size += sizeof(mem->map[0]);
 }
@@ -157,16 +173,16 @@ static void lb_reserve_table_memory(struct lb_header *head)
 	 * setup so that is all we need to do.
 	 */
 	for(i = 0; i < entries; i++ ) {
-		uint64_t map_start = mem->map[i].start;
-		uint64_t map_end = map_start + mem->map[i].size;
+		uint64_t map_start = unpack_lb64(mem->map[i].start);
+		uint64_t map_end = map_start + unpack_lb64(mem->map[i].size);
 		/* Does this area need to be expanded? */
 		if (map_end == start) {
-			mem->map[i].size = end - map_start;
+			mem->map[i].size = pack_lb64(end - map_start);
 		}
 		/* Does this area need to be contracted? */
 		else if (map_start == start) {
-			mem->map[i].start = end;
-			mem->map[i].size = map_end - end;
+			mem->map[i].start = pack_lb64(end);
+			mem->map[i].size = pack_lb64(map_end - end);
 		}
 	}
 }
@@ -196,8 +212,10 @@ static void lb_cleanup_memory_ranges(struct lb_memory *mem)
 	
 	/* Sort the lb memory ranges */
 	for(i = 0; i < entries; i++) {
+		uint64_t entry_start = unpack_lb64(mem->map[i].start);
 		for(j = i; j < entries; j++) {
-			if (mem->map[j].start < mem->map[i].start) {
+			uint64_t temp_start = unpack_lb64(mem->map[j].start);
+			if (temp_start < entry_start) {
 				struct lb_memory_range tmp;
 				tmp = mem->map[i];
 				mem->map[i] = mem->map[j];
@@ -212,10 +230,10 @@ static void lb_cleanup_memory_ranges(struct lb_memory *mem)
 		if (mem->map[i].type != mem->map[i + 1].type) {
 			continue;
 		}
-		start  = mem->map[i].start;
-		end    = start + mem->map[i].size;
-		nstart = mem->map[i + 1].start;
-		nend   = nstart + mem->map[i + 1].size;
+		start  = unpack_lb64(mem->map[i].start);
+		end    = start + unpack_lb64(mem->map[i].size);
+		nstart = unpack_lb64(mem->map[i + 1].start);
+		nend   = nstart + unpack_lb64(mem->map[i + 1].size);
 		if ((start <= nstart) && (end > nstart)) {
 			if (start > nstart) {
 				start = nstart;
@@ -224,8 +242,8 @@ static void lb_cleanup_memory_ranges(struct lb_memory *mem)
 				end = nend;
 			}
 			/* Record the new region size */
-			mem->map[i].start = start;
-			mem->map[i].size  = end - start;
+			mem->map[i].start = pack_lb64(start);
+			mem->map[i].size  = pack_lb64(end - start);
 
 			/* Delete the entry I have merged with */
 			memmove(&mem->map[i + 1], &mem->map[i + 2], 
@@ -250,8 +268,8 @@ static void lb_remove_memory_range(struct lb_memory *mem,
 
 	/* Remove a reserved area from the memory map */
 	for(i = 0; i < entries; i++) {
-		uint64_t map_start = mem->map[i].start;
-		uint64_t map_end   = map_start + mem->map[i].size;
+		uint64_t map_start = unpack_lb64(mem->map[i].start);
+		uint64_t map_end   = map_start + unpack_lb64(mem->map[i].size);
 		if ((start <= map_start) && (end >= map_end)) {
 			/* Remove the completely covered range */
 			memmove(&mem->map[i], &mem->map[i + 1], 
@@ -268,21 +286,21 @@ static void lb_remove_memory_range(struct lb_memory *mem,
 			mem->size += sizeof(mem->map[0]);
 			entries += 1;
 			/* Update the first map entry */
-			mem->map[i].size = start - map_start;
+			mem->map[i].size = pack_lb64(start - map_start);
 			/* Update the second map entry */
-			mem->map[i + 1].start = end;
-			mem->map[i + 1].size  = map_end - end;
+			mem->map[i + 1].start = pack_lb64(end);
+			mem->map[i + 1].size  = pack_lb64(map_end - end);
 			/* Don't bother with this map entry again */
 			i += 1;
 		}
 		else if ((start <= map_start) && (end > map_start)) {
 			/* Shrink the start of the memory range */
-			mem->map[i].start = end;
-			mem->map[i].size  = map_end - end;
+			mem->map[i].start = pack_lb64(end);
+			mem->map[i].size  = pack_lb64(map_end - end);
 		}
 		else if ((start < map_end) && (start > map_start)) {
 			/* Shrink the end of the memory range */
-			mem->map[i].size = start - map_start;
+			mem->map[i].size = pack_lb64(start - map_start);
 		}
 	}
 }

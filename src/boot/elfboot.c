@@ -9,6 +9,22 @@
 #include <stdlib.h>
 #include <string.h>
 
+static inline uint64_t unpack_lb64(struct lb_uint64 value) 
+{
+	uint64_t result;
+	result = value.hi;
+	result = (result << 32) + value.lo;
+	return result;
+}
+
+static inline struct lb_uint64 pack_lb64(uint64_t value)
+{
+	struct lb_uint64 result;
+	result.lo = (value >> 0) & 0xffffffff;
+	result.hi = (value >> 32) & 0xffffffff;
+	return result;
+}
+
 /* Maximum physical address we can use for the linuxBIOS bounce buffer.
  */
 #ifndef MAX_ADDR
@@ -120,14 +136,14 @@ static unsigned long get_bounce_buffer(struct lb_memory *mem)
 		unsigned long tbuffer;
 		if (mem->map[i].type != LB_MEM_RAM)
 			continue;
-		if (mem->map[i].start > MAX_ADDR)
+		if (unpack_lb64(mem->map[i].start) > MAX_ADDR)
 			continue;
-		if (mem->map[i].size < lb_size)
+		if (unpack_lb64(mem->map[i].size) < lb_size)
 			continue;
-		mstart = mem->map[i].start;
+		mstart = unpack_lb64(mem->map[i].start);
 		msize = MAX_ADDR - mstart +1;
-		if (msize > mem->map[i].size)
-			msize = mem->map[i].size;
+		if (msize > unpack_lb64(mem->map[i].size))
+			msize = unpack_lb64(mem->map[i].size);
 		mend = mstart + msize;
 		tbuffer = mend - lb_size;
 		if (tbuffer < buffer) 
@@ -222,8 +238,8 @@ static int valid_area(struct lb_memory *mem, unsigned long buffer,
 		uint64_t mstart, mend;
 		uint32_t mtype;
 		mtype = mem->map[i].type;
-		mstart = mem->map[i].start;
-		mend = mstart + mem->map[i].size;
+		mstart = unpack_lb64(mem->map[i].start);
+		mend = mstart + unpack_lb64(mem->map[i].size);
 		if ((mtype == LB_MEM_RAM) && (start < mend) && (end > mstart)) {
 			break;
 		}
@@ -236,8 +252,8 @@ static int valid_area(struct lb_memory *mem, unsigned long buffer,
 			uint64_t mstart, mend;
 			uint32_t mtype;
 			mtype = mem->map[i].type;
-			mstart = mem->map[i].start;
-			mend = mstart + mem->map[i].size;
+			mstart = unpack_lb64(mem->map[i].start);
+			mend = mstart + unpack_lb64(mem->map[i].size);
 			printk_err("  [0x%016lx, 0x%016lx) %s\n",
 				(unsigned long)mstart, 
 				(unsigned long)mend, 

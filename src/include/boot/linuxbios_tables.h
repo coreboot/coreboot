@@ -57,14 +57,17 @@ struct lb_record {
 
 #define LB_TAG_MEMORY	0x0001
 
+struct lb_uint64 {
+	uint32_t lo;
+	uint32_t hi;
+};
 struct lb_memory_range {
-	uint64_t start;
-	uint64_t size;
+	struct lb_uint64 start;
+	struct lb_uint64 size;
 	uint32_t type;
 #define LB_MEM_RAM       1	/* Memory anyone can use */
 #define LB_MEM_RESERVED  2	/* Don't use this memory region */
 #define LB_MEM_TABLE     16	/* Ram configuration tables are kept in */
-	
 };
 
 struct lb_memory {

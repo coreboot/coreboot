@@ -34,6 +34,7 @@ ldscript /cpu/i386/entry32.lds
 ### Build our reset vector (This is where linuxBIOS is entered)
 ###
 if USE_FALLBACK_IMAGE 
+  print "Use fallback!"
   mainboardinit cpu/i386/reset16.inc 
   ldscript /cpu/i386/reset16.lds 
 end

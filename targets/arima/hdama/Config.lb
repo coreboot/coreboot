@@ -42,6 +42,7 @@ uses SIO_SYSTEM_CLK_INPUT
 uses STACK_SIZE
 uses USE_ELF_BOOT
 uses USE_FALLBACK_IMAGE
+uses USE_NORMAL_IMAGE
 uses USE_OPTION_TABLE
 uses HAVE_OPTION_TABLE
 
@@ -64,7 +65,9 @@ option SIO_SYSTEM_CLK_INPUT=0
 ###
 ### Build code for the fallback boot
 ###
+# at some point it will be possible to set both of these to 1.
 option HAVE_FALLBACK_BOOT=1
+option USE_NORMAL_IMAGE=0
 #
 ###
 ### Build code to export a programmable irq routing table
@@ -125,14 +128,14 @@ option USE_OPTION_TABLE=!USE_FALLBACK_IMAGE
 ### Compute the location and size of where this firmware image
 ### (linuxBIOS plus bootloader) will live in the boot rom chip.
 ###
-#if USE_FALLBACK_IMAGE 
-#  option ROM_SECTION_SIZE  = FALLBACK_SIZE
-#  option ROM_SECTION_OFFSET= (ROM_SIZE - FALLBACK_SIZE)
-#end
-#if USE_NORMAL_IMAGE
-#  option ROM_SECTION_SIZE  = (ROM_SIZE - FALLBACK_SIZE)
-#  option ROM_SECTION_OFFSET= 0
-#end
+if USE_FALLBACK_IMAGE 
+  option ROM_SECTION_SIZE  = FALLBACK_SIZE
+  option ROM_SECTION_OFFSET= (ROM_SIZE - FALLBACK_SIZE)
+end
+if USE_NORMAL_IMAGE
+  option ROM_SECTION_SIZE  = (ROM_SIZE - FALLBACK_SIZE)
+  option ROM_SECTION_OFFSET= 0
+end
 ###
 ### Compute where this copy of linuxBIOS will start in the boot rom
 ###

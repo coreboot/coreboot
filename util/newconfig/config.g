@@ -955,6 +955,7 @@ parser Config:
     token OPTION:		'option'
     token PAYLOAD:		'payload'
     token PMC:			'pmc'
+    token PRINT:		'print'
     token REGISTER:		'register'
     token SOUTHBRIDGE:		'southbridge'
     token SUPERIO:		'superio'
@@ -1084,6 +1085,7 @@ parser Config:
 		|	dir<<C>>		{{ return dir}}
 		|	ldscript<<C>>		{{ return ldscript}}
 		|	payload<<C>>		{{ return payload}}
+		| 	pprint<<C>>		{{ return pprint}}
 
     # ENTRY for parsing Config.lb file
     rule cfgfile:	(uses<<1>>)* (stmt<<1>>)*
@@ -1104,6 +1106,8 @@ parser Config:
 
     rule opstmt:	option<<1>>
 		|	opif
+    # print clashes with a python keyword
+    rule pprint<<C>>:   PRINT STR		{{ if (C): print "%s\n"%STR}}
 
     # ENTRY for parsing a delayed value
     rule delexpr:	"{" expr "}"		{{ return expr }}

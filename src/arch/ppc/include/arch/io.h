@@ -64,16 +64,6 @@
 #define inl_p(port)		inl((port))
 #define outl_p(val, port)	outl((val), (port))
 
-extern void _insb(volatile uint8_t *port, void *buf, int ns);
-extern void _outsb(volatile uint8_t *port, const void *buf, int ns);
-extern void _insw(volatile uint16_t *port, void *buf, int ns);
-extern void _outsw(volatile uint16_t *port, const void *buf, int ns);
-extern void _insl(volatile uint32_t *port, void *buf, int nl);
-extern void _outsl(volatile uint32_t *port, const void *buf, int nl);
-extern void _outsw_ns(volatile uint16_t *port, const void *buf, int ns);
-extern void _insl_ns(volatile uint32_t *port, void *buf, int nl);
-extern void _outsl_ns(volatile uint32_t *port, const void *buf, int nl);
-
 /*
  * The *_ns versions below don't do byte-swapping.
  * Neither do the standard versions now, these are just here
@@ -186,6 +176,16 @@ static inline void _insw_ns(volatile uint16_t *port, void *buf, int ns)
 
 	while (ns > 0) {    
 		*b++ = readw(port);
+		ns--;
+	}
+}
+
+static inline void _outsw_ns(volatile uint16_t *port, const void *buf, int ns)
+{
+	uint16_t *   b = (uint16_t *)buf;    
+
+	while (ns > 0) {    
+		out_le16(port, *b++);
 		ns--;
 	}
 }

@@ -1,0 +1,9 @@
+object c_start.S
+object setup.o
+object pci_ops.o
+object timer.o
+object cpuid.o
+object cpu.o
+object timebase.S
+object floats.S
+

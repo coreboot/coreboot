@@ -1980,7 +1980,15 @@ static void mem_err {
 static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 {
 	int i;
+	uint32_t mchtst;
 	/* 1 & 2 Power up and start clocks */
+	/* arg! the parts are memory mapped! For now, just grab address 0xc0000000 as the base, since I want to use
+	 * constants, not variables, for this. 
+	 */
+	mchtst = pci_read_config32(ctrl->d0, 0xf4);
+	mchtst |= (1 << 22);
+	pci_write_config32(ctrl->d0, 0xf4, mchtst);
+
 #if DEBUG_RAM_CONFIG 
 	print_debug(ram_enable_1);
 	print_debug(ram_enable_2);

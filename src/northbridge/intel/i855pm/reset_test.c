@@ -1,4 +1,5 @@
 /* Convert to C by yhlu */
+/* converted to 855 by RGM */
 #define MCH_DRC 0x70
 #define DRC_DONE (1 << 29)
 	/* If I have already booted once skip a bunch of initialization */

@@ -1,108 +1,125 @@
 #define ASSEMBLY 1
-
 #include <stdint.h>
 #include <device/pci_def.h>
-#include <cpu/p6/apic.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
-#include <arch/hlt.h>
+#include <arch/smp/lapic.h>
+#include "option_table.h"
+#include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
-#include "northbridge/via/vt8601/raminit.h"
+#include "southbridge/intel/i82801dbm/i82801dbm_early_smbus.c"
+#include "northbridge/intel/i855pm/raminit.h"
+
+#if 1
+#include "cpu/p6/apic_timer.c"
+#include "lib/delay.c"
+#endif
+
+#include "cpu/p6/boot_cpu.c"
+#include "northbridge/intel/i855pm/debug.c"
+#include "superio/winbond/w83627hf/w83627hf_early_serial.c" 
+
 #include "cpu/p6/earlymtrr.c"
 
-#include "southbridge/intel/i82801dbm/i82801dbm_early_smbus.c"
+#define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
-/*
- */
-void udelay(int usecs) 
+static void hard_reset(void)
 {
-	int i;
-	for(i = 0; i < usecs; i++)
-		outb(i&0xff, 0x80);
+        outb(0x0e, 0x0cf9);
 }
 
-#include "lib/delay.c"
-#include "cpu/p6/boot_cpu.c"
-#include "debug.c"
-
-#include "southbridge/via/vt8231/vt8231_early_serial.c"
-
-static void enable_mainboard_devices(void) 
+static void memreset_setup(void)
 {
-	device_t dev;
-	/* dev 0 for southbridge */
-  
-	dev = pci_locate_device(PCI_ID(0x1106,0x8231), 0);
-  
-	if (dev == PCI_DEV_INVALID) {
-		die("Southbridge not found!!!\n");
-	}
-	pci_write_config8(dev, 0x50, 7);
-	pci_write_config8(dev, 0x51, 0xff);
-#if 0
-	// This early setup switches IDE into compatibility mode before PCI gets 
-	// // a chance to assign I/Os
-	//         movl    $CONFIG_ADDR(0, 0x89, 0x42), %eax
-	//         //      movb    $0x09, %dl
-	//                 movb    $0x00, %dl
-	//                         PCI_WRITE_CONFIG_BYTE
-	//
-#endif
-	/* we do this here as in V2, we can not yet do raw operations 
-	 * to pci!
-	 */
-        dev += 0x100; /* ICKY */
-
-	pci_write_config8(dev, 0x42, 0);
 }
 
-static void enable_shadow_ram(void) 
+static void memreset(int controllers, const struct mem_controller *ctrl)
 {
-	device_t dev = 0; /* no need to look up 0:0.0 */
-	unsigned char shadowreg;
-	/* dev 0 for southbridge */
-	shadowreg = pci_read_config8(dev, 0x63);
-	/* 0xf0000-0xfffff */
-	shadowreg |= 0x30;
-	pci_write_config8(dev, 0x63, shadowreg);
 }
+
+
+
+static inline void activate_spd_rom(const struct mem_controller *ctrl)
+{
+        /* nothing to do */
+}
+ 
+static inline int spd_read_byte(unsigned device, unsigned address)
+{
+	return smbus_read_byte(device, address);
+}
+
+#include "northbridge/intel/i855pm/raminit.c"
+#include "northbridge/intel/i855pm/reset_test.c"
+#include "sdram/generic_sdram.c"
 
 static void main(void)
 {
-	unsigned long x;
-	/*	init_timer();*/
-	outb(5, 0x80);
-	
-	enable_vt8231_serial();
-
-	uart_init();
-	console_init();
-	
-	enable_mainboard_devices();
-	enable_smbus();
-	enable_shadow_ram();
-	/* Check all of memory */
-#if 0
-	ram_check(0x00000000, msr.lo);
-#endif
-#if 0
-	static const struct {
-		unsigned long lo, hi;
-	} check_addrs[] = {
-		/* Check 16MB of memory @ 0*/
-		{ 0x00000000, 0x01000000 },
-#if TOTAL_CPUS > 1
-		/* Check 16MB of memory @ 2GB */
-		{ 0x80000000, 0x81000000 },
-#endif
+	static const struct mem_controller memctrl[] = {
+		{
+			.d0 = PCI_DEV(0, 0, 0),
+			.channel0 = { (0xa<<3)|0, (0xa<<3)|1, (0xa<<3)|2, 0 },
+		},
 	};
-	int i;
-	for(i = 0; i < sizeof(check_addrs)/sizeof(check_addrs[0]); i++) {
-		ram_check(check_addrs[i].lo, check_addrs[i].hi);
+
+#if 1
+        enable_lapic();
+        init_timer();
+#endif
+        
+        w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
+        uart_init();
+        console_init();
+
+#if 1
+	print_pci_devices();
+#endif
+	if(!bios_reset_detected()) {
+        	enable_smbus();
+#if 1
+//      	dump_spd_registers(&memctrl[0]);
+        	dump_smbus_registers();
+#endif
+
+		memreset_setup();
+		sdram_initialize(sizeof(memctrl)/sizeof(memctrl[0]), memctrl);
+	} 
+#if 0
+	else {
+		        /* clear memory 1meg */
+        __asm__ volatile(
+                "1: \n\t"
+                "movl %0, %%fs:(%1)\n\t"
+                "addl $4,%1\n\t"
+                "subl $4,%2\n\t"
+                "jnz 1b\n\t"
+                :
+                : "a" (0), "D" (0), "c" (1024*1024)
+                ); 
+	
 	}
 #endif
-	early_mtrr_init();
+
+#if 1
+	dump_pci_devices();
+#endif
+#if 1
+	dump_pci_device(PCI_DEV(0, 0, 0));
+#endif
+
+/*
+#if  0
+	ram_check(0x00000000, msr.lo+(msr.hi<<32));
+#else
+#if 0
+	// Check 16MB of memory @ 0
+	ram_check(0x00000000, 0x01000000);
+#else
+	// Check 16MB of memory @ 2GB 
+	ram_check(0x80000000, 0x81000000);
+#endif
+#endif
+*/
 }

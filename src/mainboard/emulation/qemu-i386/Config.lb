@@ -111,7 +111,7 @@ end
 ## Setup RAM
 ##
 mainboardinit cpu/x86/fpu/enable_fpu.inc
-#mainboardinit cpu/x86/mmx/enable_mmx.inc
+#mainboardinit cpu/x86/mmx/enable_mmx.inc # emulators dont do mmx+sse
 #mainboardinit cpu/x86/sse/enable_sse.inc
 mainboardinit ./auto.inc
 #mainboardinit cpu/x86/sse/disable_sse.inc
@@ -123,14 +123,8 @@ mainboardinit ./auto.inc
 dir /pc80
 config chip.h
 
-# config for arima/hdama
 chip northbridge/emulation/qemu-i386
 	device pci_domain 0 on
 	end 
-#	device apic_cluster 0 on
-#		chip cpu/amd/socket_940
-#			device apic 0 on end
-#		end
-#	end
 end
 

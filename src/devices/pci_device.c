@@ -174,6 +174,7 @@ static void pci_bridge_read_bases(struct device *dev)
 
 	/* FIXME handle bridges without some of the optional resources */
 
+	printk_spew("%s: path %s\n", __FUNCTION__, dev_path(dev));
 	/* Initialize the io space constraints on the current bus */
 	dev->resource[reg].base  = 0;
 	dev->resource[reg].size  = 0;
@@ -213,6 +214,7 @@ static void pci_bridge_read_bases(struct device *dev)
 	reg++;
 
 	dev->resources = reg;
+	printk_spew("DONE %s: path %s\n", __FUNCTION__, dev_path(dev));
 }
 
 
@@ -630,6 +632,7 @@ unsigned int pci_scan_bridge(struct device *dev, unsigned int max)
 	uint32_t buses;
 	uint16_t cr;
 	
+	printk_spew("%s: dev %p, max %d\n", __FUNCTION__, dev, max);
 	bus = &dev->link[0];
 	dev->links = 1;
 
@@ -673,5 +676,6 @@ unsigned int pci_scan_bridge(struct device *dev, unsigned int max)
 	pci_write_config32(dev, PCI_PRIMARY_BUS, buses);
 	pci_write_config16(dev, PCI_COMMAND, cr);
 		
+	printk_spew("%s returns max %d\n", __FUNCTION__, max);
 	return max;
 }

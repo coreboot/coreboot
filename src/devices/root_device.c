@@ -11,6 +11,7 @@ void root_dev_read_resources(device_t root)
 {
 	int res = 0;
 
+	printk_spew("%s . Root is %p\n", __FUNCTION__, root);
 	/* Initialize the system wide io space constraints */
 	root->resource[res].base  = 0x400;
 	root->resource[res].size  = 0;
@@ -19,6 +20,8 @@ void root_dev_read_resources(device_t root)
 	root->resource[res].limit = 0xffffUL;
 	root->resource[res].flags = IORESOURCE_IO;
 	root->resource[res].index = 0;
+	printk_spew("%s . link %p, resource %p\n", __FUNCTION__, 
+					&root->link[0], &root->resource[res]);
 	compute_allocate_resource(&root->link[0], &root->resource[res], 
 		IORESOURCE_IO, IORESOURCE_IO);
 	res++;
@@ -31,11 +34,14 @@ void root_dev_read_resources(device_t root)
 	root->resource[res].limit = 0xffffffffUL;
 	root->resource[res].flags = IORESOURCE_MEM;
 	root->resource[res].index = 1;
+	printk_spew("%s . link %p, resource %p\n", __FUNCTION__, 
+				&root->link[0], &root->resource[res]);
 	compute_allocate_resource(&root->link[0], &root->resource[res], 
 		IORESOURCE_MEM, IORESOURCE_MEM);
 	res++;
 
 	root->resources = res;
+	printk_spew("%s DONE\n", __FUNCTION__);
 }
 
 /**

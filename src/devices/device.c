@@ -251,6 +251,17 @@ void compute_allocate_resource(
 	min_align = 0;
 	base = bridge->base;
 
+	printk_spew("%s: bus %p, bridge %p, type_mask 0x%x, type 0x%x\n",
+				__FUNCTION__, 
+				bus, bridge, type_mask, type);
+	printk_spew("vendor 0x%x device 0x%x class 0x%x \n", 
+			bus->dev->vendor, bus->dev->device, bus->dev->class);
+		printk_spew("%s compute_allocate_%s: base: %08lx size: %08lx align: %d gran: %d\n", 
+			dev_path(bus->dev),
+			(bridge->flags & IORESOURCE_IO)? "io":
+			(bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",
+			base, bridge->size, bridge->align, bridge->gran);
+
 	/* We want different minimum alignments for different kinds of
 	 * resources.  These minimums are not device type specific
 	 * but resource type specific.
@@ -261,12 +272,6 @@ void compute_allocate_resource(
 	if (bridge->flags & IORESOURCE_MEM) {
 		min_align = log2(DEVICE_MEM_ALIGN);
 	}
-
-	printk_spew("%s compute_allocate_%s: base: %08lx size: %08lx align: %d gran: %d\n", 
-		dev_path(dev),
-		(bridge->flags & IORESOURCE_IO)? "io":
-		(bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",
-		base, bridge->size, bridge->align, bridge->gran);
 
 	/* Make certain I have read in all of the resources */
 	read_resources(bus);
@@ -439,12 +444,13 @@ void dev_enumerate(void)
 void dev_configure(void)
 {
 	struct device *root = &dev_root;
-	printk_info("Allocating resources...");
+	printk_info("%s: Allocating resources...", __FUNCTION__);
 	printk_debug("\n");
 
 
 	root->ops->read_resources(root);
 
+	printk_spew("%s: done reading resources...\n", __FUNCTION__);
 	/* Make certain the io devices are allocated somewhere
 	 * safe.
 	 */
@@ -459,8 +465,10 @@ void dev_configure(void)
 	root->resource[1].flags |= IORESOURCE_SET;
 	// now just set things into registers ... we hope ...
 	root->ops->set_resources(root);
+	printk_spew("%s: done setting resources...\n", __FUNCTION__);
 
 	allocate_vga_resource();
+	printk_spew("%s: done vga resources...\n", __FUNCTION__);
 
 	printk_info("done.\n");
 }

@@ -741,6 +741,7 @@ static int init_controller(struct controller *ctrl, int drive, unsigned char *bu
 	if (!info->drive_exists)
 		init_drive(info, ctrl, 0, drive, buffer,
 				IDE_CMD_IDENTIFY_PACKET_DEVICE);
+#ifdef CHECK_FOR_SLAVES
 	if (info->drive_exists && !info->slave_absent) {
 		drive++;
 		info++;
@@ -750,6 +751,7 @@ static int init_controller(struct controller *ctrl, int drive, unsigned char *bu
 			init_drive(info, ctrl, 1, drive, buffer,
 					IDE_CMD_IDENTIFY_PACKET_DEVICE);
 	}
+#endif
 
 	return 0;
 }

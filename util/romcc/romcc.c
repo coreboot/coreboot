@@ -648,9 +648,9 @@ struct triple_set {
 };
 
 #define MAX_LHS  15
-#define MAX_RHS  15
-#define MAX_MISC 15
-#define MAX_TARG 15
+#define MAX_RHS  250
+#define MAX_MISC 3
+#define MAX_TARG 3
 
 struct occurance {
 	int count;
@@ -668,19 +668,19 @@ struct triple {
 	unsigned char template_id;
 	unsigned short sizes;
 #define TRIPLE_LHS(SIZES)  (((SIZES) >>  0) & 0x0f)
-#define TRIPLE_RHS(SIZES)  (((SIZES) >>  4) & 0x0f)
-#define TRIPLE_MISC(SIZES) (((SIZES) >>  8) & 0x0f)
-#define TRIPLE_TARG(SIZES) (((SIZES) >> 12) & 0x0f)
+#define TRIPLE_RHS(SIZES)  (((SIZES) >>  4) & 0xff)
+#define TRIPLE_MISC(SIZES) (((SIZES) >> 12) & 0x03)
+#define TRIPLE_TARG(SIZES) (((SIZES) >> 14) & 0x03)
 #define TRIPLE_SIZE(SIZES) \
-	((((SIZES) >> 0) & 0x0f) + \
-	(((SIZES) >>  4) & 0x0f) + \
-	(((SIZES) >>  8) & 0x0f) + \
-	(((SIZES) >> 12) & 0x0f))
+	(TRIPLE_LHS(SIZES)  + \
+	 TRIPLE_RHS(SIZES)  + \
+	 TRIPLE_MISC(SIZES) + \
+	 TRIPLE_TARG(SIZES))
 #define TRIPLE_SIZES(LHS, RHS, MISC, TARG) \
 	((((LHS) & 0x0f) <<  0) | \
-	(((RHS) & 0x0f)  <<  4) | \
-	(((MISC) & 0x0f) <<  8) | \
-	(((TARG) & 0x0f) << 12))
+	(((RHS)  & 0xff) <<  4) | \
+	(((MISC) & 0x03) << 12) | \
+	(((TARG) & 0x03) << 14))
 #define TRIPLE_LHS_OFF(SIZES)  (0)
 #define TRIPLE_RHS_OFF(SIZES)  (TRIPLE_LHS_OFF(SIZES) + TRIPLE_LHS(SIZES))
 #define TRIPLE_MISC_OFF(SIZES) (TRIPLE_RHS_OFF(SIZES) + TRIPLE_RHS(SIZES))
@@ -1336,9 +1336,13 @@ static struct triple zero_triple = {
 
 
 static unsigned short triple_sizes(struct compile_state *state,
-	int op, struct type *type, int lhs_wanted, int rhs_wanted)
+	int op, struct type *type, int lhs_wanted, int rhs_wanted,
+	struct occurance *occurance)
 {
 	int lhs, rhs, misc, targ;
+	struct triple dummy;
+	dummy.op = op;
+	dummy.occurance = occurance;
 	valid_op(state, op);
 	lhs = table_ops[op].lhs;
 	rhs = table_ops[op].rhs;
@@ -1373,16 +1377,16 @@ static unsigned short triple_sizes(struct compile_state *state,
 		lhs = lhs_wanted;
 	}
 	if ((rhs < 0) || (rhs > MAX_RHS)) {
-		internal_error(state, 0, "bad rhs");
+		internal_error(state, &dummy, "bad rhs %d", rhs);
 	}
 	if ((lhs < 0) || (lhs > MAX_LHS)) {
-		internal_error(state, 0, "bad lhs");
+		internal_error(state, &dummy, "bad lhs");
 	}
 	if ((misc < 0) || (misc > MAX_MISC)) {
-		internal_error(state, 0, "bad misc");
+		internal_error(state, &dummy, "bad misc");
 	}
 	if ((targ < 0) || (targ > MAX_TARG)) {
-		internal_error(state, 0, "bad targs");
+		internal_error(state, &dummy, "bad targs");
 	}
 	return TRIPLE_SIZES(lhs, rhs, misc, targ);
 }
@@ -1393,7 +1397,7 @@ static struct triple *alloc_triple(struct compile_state *state,
 {
 	size_t size, sizes, extra_count, min_count;
 	struct triple *ret;
-	sizes = triple_sizes(state, op, type, lhs, rhs);
+	sizes = triple_sizes(state, op, type, lhs, rhs, occurance);
 
 	min_count = sizeof(ret->param)/sizeof(ret->param[0]);
 	extra_count = TRIPLE_SIZE(sizes);
@@ -10588,7 +10592,7 @@ static void rename_block_variables(
 			var = RHS(ptr, 0);
 			tval = val = RHS(ptr, 1);
 			if ((val->op == OP_WRITE) || (val->op == OP_READ)) {
-				internal_error(state, val, "bad value in write");
+				internal_error(state, ptr, "bad value in write");
 			}
 			/* Insert a copy if the types differ */
 			if (!equiv_types(ptr->type, val->type)) {
@@ -17111,7 +17115,7 @@ static void print_op_move(struct compile_state *state,
 			(dst_regcm & (REGCM_MMX | REGCM_XMM))) {
 			const char *op;
 			int mid_reg;
-			op = is_signed(src->type)? "movsx":"movxz";
+			op = is_signed(src->type)? "movsx":"movzx";
 			mid_reg = (src_reg - REGC_GPR16_FIRST) + REGC_GPR32_FIRST;
 			fprintf(fp, "\t%s %s, %s\n\tmovd %s, %s\n",
 				op,

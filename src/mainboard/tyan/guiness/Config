@@ -250,7 +250,6 @@ expr ROM_SECTION_OFFSET=(USE_FALLBACK_IMAGE*(ROM_SIZE-65536))+(USE_NORMAL_IMAGE*
 ##
 #expr ZKERNEL_START =(0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
 
-ldscript arch/i386/lib/failover.lds USE_FALLBACK_IMAGE
 expr ZKERNEL_START = 0xfff80000
 expr PAYLOAD_SIZE  =ROM_SECTION_SIZE - ROM_IMAGE_SIZE
 
@@ -258,7 +257,8 @@ expr PAYLOAD_SIZE  =ROM_SECTION_SIZE - ROM_IMAGE_SIZE
 ## Compute where this copy of linuxBIOS will start in the boot rom
 ##
 #expr _ROMBASE      =ZKERNEL_START + PAYLOAD_SIZE
-expr _ROMBASE = 0xffff0000
+expr _ROMBASE = 0xffff0000 - ( 0x10000 * USE_NORMAL_IMAGE)
+
 
 ##
 ## Compute a range of ROM that can cached to speed up linuxBIOS,

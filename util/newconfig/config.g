@@ -197,6 +197,7 @@ class romimage:
 		self.ldscripts = []
 		self.userdefines = []
 		self.initincludes = {}
+		self.initincludesorder = [] # need to preserve order
 		self.useinitincludes = 0 # transitional
 		self.partinstance = 0
 		self.root = 0
@@ -333,9 +334,10 @@ class romimage:
 			print "Warning, init include for %s previously defined" % path
 		o = initinclude(str, path)
 		setdict(self.initincludes, path, o)
+		self.initincludesorder.append(path)
 
 	def getinitincludes(self):
-		return self.initincludes
+		return self.initincludesorder
 
 	def getinitinclude(self, path):
 		o = getdict(self.initincludes, path)
@@ -1474,7 +1476,7 @@ def writeimagemakefile(image):
 	# Print out the dependencies for crt0_includes.h
 	file.write("\n# Dependencies for crt0_includes.h\n")
 	file.write("CRT0_INCLUDES:=\n")
-	for inc in image.getinitincludes().keys():
+	for inc in image.getinitincludes():
 		if (local_path.match(inc)):
 			file.write("CRT0_INCLUDES += %s\n" % inc)
 		else:
@@ -1587,7 +1589,8 @@ def writeinitincludes(image):
 		while (line):
 			p = include_pattern.match(line)
 			if (p):
-				for i, inc in image.getinitincludes().items():
+				for i in image.getinitincludes():
+					inc = image.getinitinclude(i)
 					if (inc.getstring() == p.group(1)):
 						outfile.write("#include \"%s\"\n" % inc.getpath())
 			else:
@@ -1596,7 +1599,7 @@ def writeinitincludes(image):
 
 		infile.close()
 	else:
-		for i in image.getinitincludes().keys():
+		for i in image.getinitincludes():
 			outfile.write("#include <%s>\n" % i)
 	outfile.close()
 
@@ -1713,7 +1716,7 @@ if __name__=='__main__':
 
 		# crt0 includes
 		if (debug.level(debug.dump)):
-			for i in image.getinitincludes().keys():
+			for i in image.getinitincludes():
 				debug.info(debug.dump, "crt0include file %s" % i)
 			for i in image.getdriverrules().keys():
 				debug.info(debug.dump, "driver file %s" % i)

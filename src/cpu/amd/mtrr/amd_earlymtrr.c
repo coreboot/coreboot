@@ -4,6 +4,79 @@
 #include <cpu/amd/mtrr.h>
 #include "cpu/x86/mtrr/earlymtrr.c"
 
+/* the fixed and variable MTTRs are power-up with random values,
+ * clear them to MTRR_TYPE_UNCACHEABLE for safty.
+ */             
+static void do_amd_early_mtrr_init(const unsigned long *mtrr_msrs)
+{               
+        /* Precondition:
+         *   The cache is not enabled in cr0 nor in MTRRdefType_MSR
+         *   entry32.inc ensures the cache is not enabled in cr0
+         */
+        msr_t msr;
+        const unsigned long *msr_addr;
+        unsigned long cr0;
+
+        /* Enable the access to AMD RdDram and WrDram extension bits */
+        msr = rdmsr(SYSCFG_MSR);
+        msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
+        wrmsr(SYSCFG_MSR, msr);
+
+        /* Inialize all of the relevant msrs to 0 */
+        msr.lo = 0;
+        msr.hi = 0;
+        unsigned long msr_nr;
+        for(msr_addr = mtrr_msrs; (msr_nr = *msr_addr); msr_addr++) {
+                wrmsr(msr_nr, msr);
+        }
+
+        /* Disable the access to AMD RdDram and WrDram extension bits */
+        msr = rdmsr(SYSCFG_MSR);
+        msr.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
+        wrmsr(SYSCFG_MSR, msr);
+
+        /* Enable memory access for 0 - 1MB using top_mem */
+        msr.hi = 0;
+        msr.lo = (((CONFIG_LB_MEM_TOPK << 10) + TOP_MEM_MASK) & ~TOP_MEM_MASK);
+        wrmsr(TOP_MEM, msr);
+
+	/* Enable caching for 0 - 1MB using variable mtrr */
+#if 0
+	set_var_mtrr(0, 0x00000000, (CONFIG_LB_MEM_TOPK << 10), MTRR_TYPE_WRBACK);
+#else
+        msr = rdmsr(0x200);
+        msr.hi = 0x00000000;
+        msr.lo &= 0x00000f00;
+        msr.lo |= 0x00000000 | MTRR_TYPE_WRBACK;
+        wrmsr(0x200, msr);
+
+        msr = rdmsr(0x201);
+        msr.hi = 0x0000000f;
+        msr.lo &= 0x000007ff;
+        msr.lo |= (~((CONFIG_LB_MEM_TOPK << 10) - 1)) | 0x800;
+        wrmsr(0x201, msr);
+#endif
+
+#if defined(XIP_ROM_SIZE)
+        /* enable write through caching so we can do execute in place
+         * on the flash rom.
+         */
+        set_var_mtrr(1, XIP_ROM_BASE, XIP_ROM_SIZE, MTRR_TYPE_WRBACK);
+#endif
+
+        /* Set the default memory type and enable fixed and variable MTRRs 
+         */
+        /* Enable Variable MTRRs */
+        msr.hi = 0x00000000;
+        msr.lo = 0x00000800;
+        wrmsr(MTRRdefType_MSR, msr);
+
+        /* Enable the MTRRs in SYSCFG */
+        msr = rdmsr(SYSCFG_MSR);
+        msr.lo |= SYSCFG_MSR_MtrrVarDramEn;
+        wrmsr(SYSCFG_MSR, msr);
+        
+}
 
 static void amd_early_mtrr_init(void)
 {
@@ -25,7 +98,6 @@ static void amd_early_mtrr_init(void)
 		/* NULL end of table */
 		0
 	};
-	msr_t msr;
 
 	/* wbinvd which is called in disable_cache() causes hangs on Opterons
 	 * if there is no data in the cache.
@@ -33,17 +105,7 @@ static void amd_early_mtrr_init(void)
 	 * disabling it.
 	 */
 	/* disable_cache(); */
-	do_early_mtrr_init(mtrr_msrs);
-
-	/* Enable memory access for 0 - 1MB using top_mem */
-	msr.hi = 0;
-	msr.lo = (((CONFIG_LB_MEM_TOPK << 10) + TOP_MEM_MASK) & ~TOP_MEM_MASK);
-	wrmsr(TOP_MEM, msr);
-
-	/* Enable the MTRRs in SYSCFG */
-	msr = rdmsr(SYSCFG_MSR);
-	msr.lo |= SYSCFG_MSR_MtrrVarDramEn;
-	wrmsr(SYSCFG_MSR, msr);
+	do_amd_early_mtrr_init(mtrr_msrs);
 
 	enable_cache();
 }

@@ -57,7 +57,7 @@ makerule ./failover.inc
 end
 
 makerule ./auto.E 
-	depends	"$(MAINBOARD)/auto.c option_table.h " 
+	depends	"$(MAINBOARD)/auto.c option_table.h"
 	action	"$(CPP) -I$(TOP)/src -I. $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
 end
 makerule ./auto.inc 

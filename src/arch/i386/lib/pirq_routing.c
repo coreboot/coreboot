@@ -60,7 +60,7 @@ unsigned long copy_pirq_routing_table(unsigned long addr)
 	addr &= ~15;
 
 	/* This table must be betweeen 0xf0000 & 0x100000 */
-	printk_info("Copying IRQ routing tables...");
+	printk_info("Copying IRQ routing tables to 0x%x...", addr);
 	memcpy((void *)addr, &intel_irq_routing_table, intel_irq_routing_table.size);
 	printk_info("done.\n");
 

@@ -1,0 +1,7 @@
+northsouthbridge sis/630
+
+option ENABLE_FIXED_AND_VARIABLE_MTRRS
+object mainboard.o
+keyboard pc80
+cpu p5
+cpu p6

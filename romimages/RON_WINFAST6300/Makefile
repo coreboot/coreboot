@@ -44,10 +44,12 @@ floppy: all
 # we need the vmlinux.bin.gz padded out and then cat the linuxbios.rom
 # at then end. We always copy it to /tmp so that a waiting root shell 
 # can put it on the floppy (see ROOTDOIT)
-romimage: linuxbios.rom vmlinux.bin.gz.block
+romimage: linuxbios.rom vmlinux.bin.gz.block docipl
 	cat vmlinux.bin.gz.block linuxbios.rom > romimage
 	cp romimage /tmp
 
+docipl: ipl.o
+	objcopy -O binary -R .note -R .comment -S ipl.o docipl
 linuxbios.rom: linuxbios.strip mkrom 
 	./mkrom -s 64 -f -o linuxbios.rom linuxbios.strip
 
@@ -133,6 +135,9 @@ newpci.o: $(TOP)/lib/newpci.c
 
 linuxpci.o: $(TOP)/lib/linuxpci.c
 	cc $(CFLAGS) -c $<
+
+ipl.o: $(TOP)/src/northsouthbridge/sis/630/ipl.S
+	gcc -c -I$(TOP)/northsouthbridge/sis/630 $<
 
 vmlinux.bin.gz.block: vmlinux.bin.gz
 	dd conv=sync bs=448k if=vmlinux.bin.gz of=vmlinux.bin.gz.block

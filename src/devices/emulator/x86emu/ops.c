@@ -2227,7 +2227,7 @@ void x86emuOp_xchg_word_AX_register(u8 X86EMU_UNUSED(op1))
         DECODE_PRINTF("\n");
         TRACE_AND_STEP();
         tmp = M.x86.R_AX;
-        M.x86.R_EAX = *reg16;
+        M.x86.R_AX = *reg16;
         *reg16 = (u16)tmp;
     }
     DECODE_CLEAR_SEGOVR();

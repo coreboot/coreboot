@@ -95,7 +95,6 @@ cpu_initialize(struct mem_range *mem)
 	return processor_id;
 }
 
-#if 0
 void
 write_tables(struct mem_range *mem)
 {
@@ -110,6 +109,7 @@ write_tables(struct mem_range *mem)
 	low_table_start = 0;
 	low_table_end = 16;
 
+#if 0
 	post_code(0x9a);
 	check_pirq_routing_table();
 	/* This table must be betweeen 0xf0000 & 0x100000 */
@@ -126,12 +126,12 @@ write_tables(struct mem_range *mem)
 	if (low_table_end < 0x500) {
 	low_table_end = 0x500;
 	}
+#endif
 	/* The linuxbios table must be in 0-4K or 960K-1M */
 	write_linuxbios_table(processor_map, mem,
 				low_table_start, low_table_end,
 				rom_table_start >> 10, rom_table_end >> 10);
 }
-#endif
 
 void
 hardwaremain(int boot_complete)
@@ -239,15 +239,13 @@ hardwaremain(int boot_complete)
 	/*
 	 * Initialise interrupt router
 	 */
-	epicInit(EPIC_SERIAL_IRQ, 1);
+	//epicInit(EPIC_SERIAL_IRQ, 1);
 #endif /* PPC */
 
-#if 0
 	/* Now that we have collected all of our information
 	 * write our configuration tables.
 	 */
 	write_tables(mem);
-#endif
 
 	elfboot(streams, get_lb_mem());
 

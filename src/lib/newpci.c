@@ -244,6 +244,8 @@ static const struct pci_ops *pci_check_direct(void)
 		}
 	}
 
+	printk_debug("pci_check_direct failed\n");
+    
 	return 0;
 }
 
@@ -542,7 +544,7 @@ void compute_allocate_resource(
 	resource = 0;
 
 	/* Walk through all the devices on the current bus and compute the addresses */
-	while(dev = largest_resource(bus, &resource, type_mask, type)) {
+	while((dev = largest_resource(bus, &resource, type_mask, type))) {
 		unsigned long size;
 		/* Do NOT I repeat do not ignore resources which have zero size.
 		 * If they need to be ignored dev->read_resources should not even
@@ -971,4 +973,71 @@ handle_southbridge(int pass, struct southbridge *s, int nsouthbridge)
 		}
 	}
 }
+
+/*
+    Tell the EISA int controller this int must be level triggered
+*/
+static void pci_level_irq(unsigned char intNum)
+{
+	unsigned intBits = inb(0x4d0) | (((unsigned) inb(0x4d1)) << 8);
+
+	intBits |= (1 << intNum);
+
+	// Write new values
+	outb((unsigned char) intBits, 0x4d0);
+	outb((unsigned char) (intBits >> 8), 0x4d1);
+}
+
+/*
+    This function assigns IRQs for all functions contained within
+    the indicated device address.  If the device does not exist or does
+    not require interrupts then this function has no effect.
+
+    This function should be called for each PCI slot in your system.  
+
+    pIntAtoD is an array of IRQ #s that are assigned to PINTA through PINTD of
+    this slot.  
+    The particular irq #s that are passed in depend on the routing inside
+    your southbridge and on your motherboard.
+
+    -kevinh@ispiri.com
+*/
+void pci_assign_irqs(unsigned bus, unsigned slot,
+	const unsigned char pIntAtoD[4])
+{
+	unsigned functNum;
+	struct pci_dev *pdev;
+	unsigned char line;
+	unsigned char irq;
+	unsigned char readback;
+
+	/* Each slot may contain up to eight functions */
+	for (functNum = 0; functNum < 8; functNum++) {
+		pdev = pci_find_slot(bus, (slot << 3) + functNum);
+
+		if (pdev) {
+			pci_read_config_byte(pdev, PCI_INTERRUPT_PIN, &line);
+
+			// PCI spec says all other values are reserved 
+			if ((line >= 1) && (line <= 4)) {
+				irq = pIntAtoD[line - 1];
+
+				printk_debug("Assigning IRQ %d to %d:%x.%d\n", \
+					irq, bus, slot, functNum);
+
+				pci_write_config_byte(pdev, PCI_INTERRUPT_LINE,\
+					pIntAtoD[line - 1]);
+
+				pci_read_config_byte(pdev, PCI_INTERRUPT_LINE, \
+						&readback);
+				printk_debug("  Readback = %d\n", readback);
+
+				// Change to level triggered
+				pci_level_irq(pIntAtoD[line - 1]);
+			}
+		}
+	}
+}
+
+
 

@@ -741,8 +741,22 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 		device_t dev, cpu;
 		struct device_path cpu_path;
 
-		/* Find the cpu's memory controller */
-		dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 0));
+                /* Find the cpu's memory controller */
+                dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 3));
+                if(!dev) { 
+			// in case in mb Config.lb we move apic cluster before pci_domain and not set that for second CPU
+                        struct device dummy;
+                        uint32_t id;
+                        dummy.bus              = dev_mc->bus;
+                        dummy.path.type        = DEVICE_PATH_PCI;
+                        dummy.path.u.pci.devfn = PCI_DEVFN(0x18 + i, 3);
+                        id = pci_read_config32(&dummy, PCI_VENDOR_ID);
+                        if (id != 0xffffffff && id != 0x00000000 && 
+                                id != 0x0000ffff && id != 0xffff0000) {
+                                //create that for it
+                                dev = alloc_dev(dev_mc->bus, &dummy.path);
+                        }
+                }  
 
 		/* Build the cpu device path */
 		cpu_path.type = DEVICE_PATH_APIC;

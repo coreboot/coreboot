@@ -13,69 +13,6 @@ makeoptions = {};
 makebaserules = {};
 treetop = '';
 outputdir = '';
-baserules = [
-# wouldn't it be nice, but oh well. 
-#	'TOP= %s'%(treetop), 
-	'# GENERATED MAKEFILE. EDIT AT YOUR OWN RISK!',
-	'LINK = ld -T ldscript.ld -o $@ $(OBJECTS)',
-# You MUST have -O2, or lots of things (like outb) fail
-	'CFLAGS= -I$(TOP)/src/include -O2',
-	'CC=cc $(CFLAGS)',
-	'',
-	'all: romimage',
-	'floppy: all ',
-	'	mcopy -o romimage a:',
-	'# heres the problem: we should not assume we come up with more than ',
-	'# 64K of FLASH up.',
-	'# SO we need a working linuxbios at the tail, and it will',
-	'# enable all flash and then gunzip the linuxbios. As a result, ',
-	'# we need the vmlinux.bin.gz padded out and then cat the linuxbios.rom',
-	'# at then end. We always copy it to /tmp so that a waiting root shell ',
-	'# can put it on the floppy (see ROOTDOIT)',
-	'romimage:: linuxbios.rom vmlinux.bin.gz.block ',
-	'	cat vmlinux.bin.gz.block linuxbios.rom > romimage',
-	'	cp romimage /tmp',
-	'linuxbios.rom: linuxbios.strip mkrom ',
-	'\t./mkrom -s 64 -f -o linuxbios.rom linuxbios.strip',
-	'linuxbios.strip: linuxbios',
-	'\tobjcopy -O binary -R .note -R .comment -S linuxbios linuxbios.strip',
-	'linuxbios: $(OBJECTS) vmlinux.bin.gz',
-	'\t@rm -f biosobject',
-	'\t$(LINK) ',
-	'\tnm -n linuxbios > linuxbios.map',
-	'# crt0 actually includes .inc files. ',
-	'# For self-documenting purposes, we put the FULL PATH of the ',
-	'# .inc files (relative to $TOP/src) in crt0.S. ',
-	'# So, for example, earlymtrr.inc is included as cpu/p6/earlymtrr.inc',
-	'# To make this work, add the extra -I $(TOP)/src here. ',
-	'crt0.s: crt0.S ',
-	'\t$(CC) -I $(TOP)/src $(CPUFLAGS) -E $< > crt0.s',
-	'',
-	'crt0.o : crt0.s',
-        '\t$(CC) -c crt0.s',
-	'',
-	'mkrom: $(TOP)/mkrom/mkrom.c',
-        '\tcc -o mkrom $<',
-	'',
-	'clean:: ',
-	'\trm -f linuxbios.* vmlinux.* *.o mkrom xa? *~',
-	'\trm -f linuxbios romimage crt0.s',
-	'\trm -f a.out *.s *.l',
-	'\trm -f TAGS tags',
-	'\trm -f docipl',
-	''
-	]
-
-linuxrules = [
-	'vmlinux.bin.gz.block: vmlinux.bin.gz',
-	'\tdd conv=sync bs=448k if=vmlinux.bin.gz of=vmlinux.bin.gz.block',
-	'vmlinux.bin.gz: vmlinux.bin',
-	'\tgzip -f -3 vmlinux.bin '
-	'',
-	'vmlinux.bin: $(LINUX)/vmlinux',
-	'\tobjcopy -O binary -R .note -R .comment -S $< vmlinux.bin'
-	]
-
 # we're trying to generate the ldscript and see how it works out. 
 # I think this is a good idea; we'll see. 
 ldscript = [

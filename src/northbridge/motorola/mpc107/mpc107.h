@@ -111,12 +111,11 @@ typedef struct sdram_bank_info
     unsigned char actual_cas;
 } sdram_bank_info;
 
-void sdram_dimm_to_bank_info(const char *dimm_data,  sdram_dimm_info *dimm, int verbose);
-void print_sdram_dimm_info(const sdram_dimm_info *dimm);
-void print_sdram_bank_info(const sdram_bank_info *bank);
+extern void sdram_dimm_to_bank_info(const char *,  sdram_dimm_info *, int);
+extern void print_sdram_dimm_info(const sdram_dimm_info *);
+extern void print_sdram_bank_info(const sdram_bank_info *);
 
-unsigned long hostbridge_config_memory(int no_banks, sdram_bank_info *bank, int for_real);
-void hostbridge_probe_dimms(int no_dimms, sdram_dimm_info *dimm, sdram_bank_info * bank);
-unsigned mpc107_config_memory(void);
+extern unsigned long mpc107_config_memory(int, sdram_bank_info *, int);
+extern void mpc107_probe_dimms(int, sdram_dimm_info *, sdram_bank_info *);
 #endif
 #endif

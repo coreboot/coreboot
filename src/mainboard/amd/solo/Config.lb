@@ -1,186 +1,179 @@
-#
+uses HAVE_MP_TABLE
+uses HAVE_PIRQ_TABLE
+uses USE_FALLBACK_IMAGE
+uses MAINBOARD
+uses ARCH
+uses FALLBACK_SIZE
+uses ROM_SIZE
+uses ROM_SECTION_SIZE
+uses ROM_IMAGE_SIZE
+uses ROM_SECTION_SIZE
+uses ROM_SECTION_OFFSET
+uses CONFIG_ROM_STREAM_START
+uses PAYLOAD_SIZE
+uses _ROMBASE
+uses XIP_ROM_SIZE
+uses XIP_ROM_BASE
+
 ###
-### Build code to export a CMOS option table
+### Build options
 ###
-default HAVE_OPTION_TABLE=1
-option HAVE_MP_TABLE=0
-####
-#### Build options
-####
-#
-###
-### Location of the DIMM EEPROMS on the SMBUS
-### This is fixed into a narrow range by the DIMM package standard.
-###
-option SMBUS_MEM_DEVICE_START=(0xa << 3)
-option SMBUS_MEM_DEVICE_END=(SMBUS_MEM_DEVICE_START +1)
-option SMBUS_MEM_DEVICE_INC=1
-default CONFIG_CONSOLE_VGA=0
-default CONFIG_CONSOLE_LOGBUF=0
-default CONFIG_CONSOLE_SROM=0
-default CONFIG_SMP=0
-default CONFIG_UDELAY_TSC=0
-#
-###
-### Customize our winbond superio chip for this motherboard
-###
-option CONFIG_CONSOLE_SERIAL8250=0
-#
-###
-### Build code for the fallback boot
-###
+
+##
+## Build code for the fallback boot
+##
 option HAVE_FALLBACK_BOOT=1
-#
-###
-### Build code to reset the motherboard from linuxBIOS
-###
-## option HAVE_HARD_RESET=1
-#
-###
-### Build code to export a programmable irq routing table
-###
+
+##
+## Build code to reset the motherboard from linuxBIOS
+##
+option HAVE_HARD_RESET=1
+
+##
+## Build code to export a programmable irq routing table
+##
 option HAVE_PIRQ_TABLE=1
 option IRQ_SLOT_COUNT=7
-#
-###
-### Build code to export an x86 MP table
-### Useful for specifying IRQ routing values
-###
-##option HAVE_MP_TABLE=1
-#
-###
-### Build code for SMP support
-### Only worry about 2 micro processors
-###
-##option CONFIG_SMP=1
+
+##
+## Build code to export an x86 MP table
+## Useful for specifying IRQ routing values
+##
+option HAVE_MP_TABLE=1
+
+##
+## Build code to export a CMOS option table
+##
+option HAVE_OPTION_TABLE=1
+
+##
+## AMD Solo is a 1cpu board 
+##
+option CONFIG_SMP=0
 option CONFIG_MAX_CPUS=1
-#
-###
-### Build code to setup a generic IOAPIC
-###
+
+##
+## Build code to setup a generic IOAPIC
+##
 option CONFIG_IOAPIC=1
-#
-###
-### MEMORY_HOLE instructs earlymtrr.inc to
-### enable caching from 0-640KB and to disable 
-### caching from 640KB-1MB using fixed MTRRs 
-###
-### Enabling this option breaks SMP because secondary
-### CPU identification depends on only variable MTRRs
-### being enabled.
-###
-option MEMORY_HOLE=0
-#
-###
-### Clean up the motherboard id strings
-###
-option MAINBOARD_PART_NUMBER="Solo7"
+
+##
+## Clean up the motherboard id strings
+##
+option MAINBOARD_PART_NUMBER="SOLO7"
 option MAINBOARD_VENDOR="AMD"
-#
+
 ###
-### Figure out which type of linuxBIOS image to build
-### If we aren't a fallback image we must be a normal image
-### This is useful for optional includes
+### LinuxBIOS layout values
 ###
-default USE_FALLBACK_IMAGE=0
-#
-####
-#### LinuxBIOS layout values
-####
-#
-### ROM_SIZE is the size of boot ROM that this board will use.
-option ROM_SIZE=262144
-#
-### ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
-option ROM_IMAGE_SIZE=65535
-#
-###
-### Use a small 8K stack
-###
+
+## ROM_SIZE is the size of boot ROM that this board will use.
+option ROM_SIZE = 262144
+
+## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
+option ROM_IMAGE_SIZE = 65536
+
+##
+## Use a small 8K stack
+##
 option STACK_SIZE=0x2000
-#
-###
-### Use a small 8K heap
-###
-option HEAP_SIZE=0x2000
-#
-###
-### Only use the option table in a normal image
-###
-option USE_OPTION_TABLE=!USE_FALLBACK_IMAGE
-#
-###
-### Compute the location and size of where this firmware image
-### (linuxBIOS plus bootloader) will live in the boot rom chip.
-###
-default FALLBACK_SIZE=65536
-if USE_FALLBACK_IMAGE 
-  option ROM_SECTION_SIZE  = FALLBACK_SIZE
-  option ROM_SECTION_OFFSET= (ROM_SIZE - FALLBACK_SIZE)
+
+##
+## Use a small 16K heap
+##
+option HEAP_SIZE=0x4000
+
+##
+## Only use the option table in a normal image
+##
+option USE_OPTION_TABLE = !USE_FALLBACK_IMAGE
+
+##
+## Compute the location and size of where this firmware image
+## (linuxBIOS plus bootloader) will live in the boot rom chip.
+##
+if USE_FALLBACK_IMAGE
+	option ROM_SECTION_SIZE   = FALLBACK_SIZE
+	option ROM_SECTION_OFFSET = ( ROM_SIZE - FALLBACK_SIZE )
 else
-  option ROM_SECTION_SIZE  = (ROM_SIZE - FALLBACK_SIZE)
-  option ROM_SECTION_OFFSET= 0
+	option ROM_SECTION_SIZE   = ( ROM_SIZE - FALLBACK_SIZE )
+	option ROM_SECTION_OFFSET = 0
 end
-#
-###
-### Compute the start location and size size of
-### The linuxBIOS bootloader.
-###
-option PAYLOAD_SIZE            = (ROM_SECTION_SIZE - ROM_IMAGE_SIZE)
+
+##
+## Compute the start location and size size of
+## The linuxBIOS bootloader.
+##
+option PAYLOAD_SIZE            = ( ROM_SECTION_SIZE - ROM_IMAGE_SIZE )
 option CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
 option CONFIG_ROM_STREAM     = 1
-#
-###
-### Compute where this copy of linuxBIOS will start in the boot rom
-###
-option _ROMBASE      = (CONFIG_ROM_STREAM_START + PAYLOAD_SIZE)
-#
-###
-### Compute a range of ROM that can cached to speed up linuxBIOS,
-### execution speed.
-###
-##expr XIP_ROM_SIZE = 65536
-##expr XIP_ROM_BASE = _ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE
-##option XIP_ROM_SIZE=65536
-##option XIP_ROM_BASE=0xffff0000
-#
-## XIP_ROM_SIZE && XIP_ROM_BASE values that work.
-##option XIP_ROM_SIZE=0x8000
-##option XIP_ROM_BASE=0xffff8000
-#
-###
-### Set all of the defaults for an x86 architecture
-###
-#
-#
-###
-### Build the objects we have code for in this directory.
-###
-##object mainboard.o
+
+##
+## Compute where this copy of linuxBIOS will start in the boot rom
+##
+option _ROMBASE      = ( CONFIG_ROM_STREAM_START + PAYLOAD_SIZE )
+
+##
+## Compute a range of ROM that can cached to speed up linuxBIOS,
+## execution speed.
+##
+## XIP_ROM_SIZE must be a power of 2.
+## XIP_ROM_BASE must be a multiple of XIP_ROM_SIZE
+##
+option XIP_ROM_SIZE=65536
+option XIP_ROM_BASE = ( _ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE )
+
+##
+## Set all of the defaults for an x86 architecture
+##
+
+arch i386 end
+#cpu k8 end
+
+##
+## Build the objects we have code for in this directory.
+##
+
+#object mainboard.o
 driver mainboard.o
-object static_devices.o
+#object static_devices.o
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
-#
-arch i386 end
-cpu k8 end
-#
-option DEBUG=1
-default USE_FALLBACK_IMAGE=1
-option A=(1+2)
-option B=0xa
-#
-###
-### Build our 16 bit and 32 bit linuxBIOS entry code
-###
+object reset.o
+
+##
+## Romcc output
+##
+makerule ./failover.E
+	depends "$(MAINBOARD)/failover.c" 
+	action "$(CPP) -I$(TOP)/src $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/failover.c > ./failover.E"
+end
+
+makerule ./failover.inc
+	depends "./failover.E ./romcc"
+	action "./romcc -O -o failover.inc --label-prefix=failover ./failover.E"
+end
+
+makerule ./auto.E 
+	depends	"$(MAINBOARD)/auto.c" 
+	action	"$(CPP) -I$(TOP)/src $(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
+end
+makerule ./auto.inc 
+	depends "./auto.E ./romcc"
+	action	"./romcc -mcpu=k8  -O ./auto.E > auto.inc"
+end
+
+##
+## Build our 16 bit and 32 bit linuxBIOS entry code
+##
 mainboardinit cpu/i386/entry16.inc
 mainboardinit cpu/i386/entry32.inc
 ldscript /cpu/i386/entry16.lds
 ldscript /cpu/i386/entry32.lds
-#
-###
-### Build our reset vector (This is where linuxBIOS is entered)
-###
+
+##
+## Build our reset vector (This is where linuxBIOS is entered)
+##
 if USE_FALLBACK_IMAGE 
 	mainboardinit cpu/i386/reset16.inc 
 	ldscript /cpu/i386/reset16.lds 
@@ -188,74 +181,92 @@ else
 	mainboardinit cpu/i386/reset32.inc 
 	ldscript /cpu/i386/reset32.lds 
 end
-#
-#### Should this be in the northbridge code?
-#mainboardinit archi386/lib/cpu_reset.inc
-#
-###
-### Include an id string (For safe flashing)
-###
+
+### Should this be in the northbridge code?
+mainboardinit arch/i386/lib/cpu_reset.inc
+
+##
+## Include an id string (For safe flashing)
+##
 mainboardinit arch/i386/lib/id.inc
 ldscript /arch/i386/lib/id.lds
-#
-####
-#### This is the early phase of linuxBIOS startup 
-#### Things are delicate and we test to see if we should
-#### failover to another image.
-####
-option MAX_REBOOT_CNT=2
-if USE_FALLBACK_IMAGE
-  ldscript /arch/i386/lib/failover.lds 
-end
-#
-###
-### Setup our mtrrs
-###
+
+##
+## Setup our mtrrs
+##
 mainboardinit cpu/k8/earlymtrr.inc
-#
-#
-####
-#### O.k. We aren't just an intermediary anymore!
-####
-#
+
 ###
-### When debugging disable the watchdog timer
+### This is the early phase of linuxBIOS startup 
+### Things are delicate and we test to see if we should
+### failover to another image.
 ###
-##option MAXIMUM_CONSOLE_LOGLEVEL=7
-#default MAXIMUM_CONSOLE_LOGLEVEL=7
-#
+if USE_FALLBACK_IMAGE
+	ldscript /arch/i386/lib/failover.lds 
+	mainboardinit ./failover.inc
+end
+
 ###
-### Setup the serial port
+### O.k. We aren't just an intermediary anymore!
 ###
-#mainboardinit superiowinbond/w83627hf/setup_serial.inc
+
+##
+## Setup RAM
+##
+mainboardinit cpu/k8/enable_mmx_sse.inc
+mainboardinit ./auto.inc
+mainboardinit cpu/k8/disable_mmx_sse.inc
+
+##
+## Include the secondary Configuration files 
+##
+dir /pc80
+config chip.h
+
+northbridge amd/amdk8 "mc0"
+	pci 0:18.0
+	pci 0:18.0
+	pci 0:18.0
+	pci 0:18.1
+	pci 0:18.2
+	pci 0:18.3
+	southbridge amd/amd8111 "amd8111"
+		pci 0:0.0
+		pci 0:1.0
+		pci 0:1.1
+		pci 0:1.2
+		pci 0:1.3
+		pci 0:1.5
+		pci 0:1.6
+		superio NSC/pc87360
+			pnp 1:2e.0
+			pnp 1:2e.1
+			pnp 1:2e.2
+			pnp 1:2e.3
+			pnp 1:2e.4
+			pnp 1:2e.5
+			pnp 1:2e.6
+			pnp 1:2e.7
+			pnp 1:2e.8
+			pnp 1:2e.9
+			pnp 1:2e.a
+			register "com1" = "{1, 0, 0x3f8, 4}"
+			register "lpt" = "{1}"
+		end
+	end
+	southbridge amd/amd8151 "amd8151"
+		pci 0:0.0
+		pci 0:1.0
+	end
+end
+
+cpu k8 "cpu0"
+	register "up" = "{ .chip = &amd8111, .ht_width=16, .ht_speed=600 }"
+end
+
+##
+## Include the old serial code for those few places that still need it.
+##
 mainboardinit pc80/serial.inc
 mainboardinit arch/i386/lib/console.inc
-if USE_FALLBACK_IMAGE mainboardinit archi386/lib/noop_failover.inc  end
-#
-###
-### Romcc output
-###
-#makerule ./failover.E dep "$(MAINBOARD)/failover.c" act "$(CPP) -I$(TOP)/src $(CPPFLAGS) $(MAINBOARD)/failover.c > ./failever.E"
-#makerule ./failover.inc dep "./romcc ./failover.E" act "./romcc -O ./failover.E > failover.inc"
-#mainboardinit .failover.inc
-makerule ./auto.E dep "$(MAINBOARD)/auto.c" act "$(CPP) -I$(TOP)/src -$(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
-makerule ./auto.inc dep "./romcc ./auto.E" act "./romcc -O ./auto.E > auto.inc"
-mainboardinit ./auto.inc
-#
-###
-### Include the secondary Configuration files 
-###
-northbridge amd/amdk8
-end
-southbridge amd/amd8111
-end
-#mainboardinit archi386/smp/secondary.inc
-superio NSC/pc87360
-	register "com1={1} com2={0} floppy=1 lpt=1 keyboard=1"
-end
-dir /pc80
-##dir /src/superio/winbond/w83627hf
-cpu p5 end
-cpu p6 end
-cpu k7 end
-cpu k8 end
+

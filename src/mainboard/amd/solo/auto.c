@@ -1,6 +1,4 @@
 #define ASSEMBLY 1
-#define MAXIMUM_CONSOLE_LOGLEVEL 9
-#define DEFAULT_CONSOLE_LOGLEVEL 9
 
 #include <stdint.h>
 #include <device/pci_def.h>
@@ -20,12 +18,21 @@
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "debug.c"
 
+#define SIO_BASE 0x2e
+
 static void memreset_setup(void)
 {
+	/* Set the memreset low */
+	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 28);
+	/* Ensure the BIOS has control of the memory lines */
 }
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
+	udelay(800);
+	/* Set memreset_high */
+	outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 28);
+	udelay(90);
 }
 
 static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
@@ -87,6 +94,26 @@ static void stop_this_cpu(void)
 	}
 }
 
+#define PC87360_FDC  0x00
+#define PC87360_PP   0x01
+#define PC87360_SP2  0x02
+#define PC87360_SP1  0x03
+#define PC87360_SWC  0x04
+#define PC87360_KBCM 0x05
+#define PC87360_KBCK 0x06
+#define PC87360_GPIO 0x07
+#define PC87360_ACB  0x08
+#define PC87360_FSCM 0x09
+#define PC87360_WDT  0x0A
+
+/* FIXME: Do we really need this on Solo boards? */
+static void pc87360_enable_serial(void)
+{
+	pnp_set_logical_device(SIO_BASE, PC87360_SP1);
+	pnp_set_enable(SIO_BASE, 1);
+	pnp_set_iobase0(SIO_BASE, 0x3f8);
+}
+
 static void main(void)
 {
 	/*
@@ -111,10 +138,13 @@ static void main(void)
 	enable_lapic();
 	init_timer();
 
+	/* Solo boards only have 1 CPU, this check is not needed!? */
 	if (!boot_cpu()) {
 		notify_bsp_ap_is_stopped();
 		stop_this_cpu();
 	}
+
+	pc87360_enable_serial();
 
 	uart_init();
 	console_init();

@@ -10,7 +10,7 @@ CPUFLAGS += -DSERIAL_CONSOLE
 # you have to only enable variable. 
 #CPUFLAGS += -DENABLE_FIXED_AND_VARIABLE_MTRRS
 # mainboard-dependent. 
-CPUFLAGS += -DPM_DEVFN=0x3c
+CPUFLAGS += -DPM_DEVICE=0x3c
 CPUFLAGS += -DSUPERIO_DEVFN=0x38
 CPUFLAGS += -DRAMTEST
 # This makes it fail sooner ...

@@ -7,7 +7,7 @@ CPUFLAGS += -DPM133_NVRAM -DPM133_KEYBOARD
 CPUFLAGS += -DNEWPCI
 CPUFLAGS += -DSERIAL_CONSOLE
 # mainboard-dependent. 
-CPUFLAGS += -DPM_DEVFN=0x3c
+CPUFLAGS += -DPM_DEVICE=0x3c
 CPUFLAGS += -DSUPERIO_DEVFN=0x38
 # If you enable FIXED_AND_VARIABLE it never makes it to the kernel!
 # you have to only enable variable. 

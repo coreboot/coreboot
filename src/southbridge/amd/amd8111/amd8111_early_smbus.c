@@ -115,11 +115,10 @@ static int smbus_read_byte(unsigned device, unsigned address)
 
 static void smbus_write_byte(unsigned device, unsigned address, unsigned char val)
 {
-#if 1
 	if (smbus_wait_until_ready() < 0) {
 		return;
 	}
-
+#if 0
 	/* setup transaction */
 	/* disable interrupts */
 	outw(inw(SMBUS_IO_BASE + SMBGCTL) & ~((1<<10)|(1<<9)|(1<<8)|(1<<4)),
@@ -138,9 +137,23 @@ static void smbus_write_byte(unsigned device, unsigned address, unsigned char va
 
 	/* start the command */
 	outw((inw(SMBUS_IO_BASE + SMBGCTL) | (1 << 3)), SMBUS_IO_BASE + SMBGCTL);
+#else
+	/* by LYH */
+	outb(0x37,SMBUS_IO_BASE + SMBGSTATUS);
+	/* set the device I'm talking too */
+	outw(((device & 0x7f) << 1) | 0, SMBUS_IO_BASE + SMBHSTADDR);
+
+	/* data to send */
+	outb(val, SMBUS_IO_BASE + SMBHSTDAT);
+
+	outb(address & 0xFF, SMBUS_IO_BASE + SMBHSTCMD);
+
+	/* start the command */
+	outb(0xa, SMBUS_IO_BASE + SMBGCTL);
+#endif
 
 	/* poll for transaction completion */
 	smbus_wait_until_done();
-#endif
+
 	return;
 }

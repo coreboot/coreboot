@@ -17,6 +17,14 @@ mem_stop:
 		hlt /* stick here.. */
 		jmp 1b
 
+no_memory_smbus_str:	.string "ERROR: No memory - smbus went bad!"
+
+no_memory_bad_smbus:	CONSOLE_ERR_TX_STRING($no_memory_smbus_str)
+		CONSOLE_ERR_TX_STRING($crlf)
+1:
+		hlt /* stick here.. */
+		jmp 1b
+
 ram_initialize:
 	/* this sets up the dram. */
 

@@ -175,11 +175,11 @@ constant_register_values:
 	 * At 0x01 CAS latency 2.0 works.
 	 */
 #if CAS_LATENCY == CAS_2_5
-	.long 0x80, 0xfffffe00, 0x6
+	.long 0x80, 0xfffffe00, 0x06 /* Intel E7500 recommended */
 #elif CAS_LATENCY == CAS_2_0
-	.long 0x80, 0xfffffe00, 0x1 /* Stock BIOS has 0x0d? */
+	.long 0x80, 0xfffffe00, 0x0d /* values for register 0x80 */
 #elif CAS_LATENCY == CAS_1_5
-	.long 0x80, 0xfffffe00, 0x0
+	.long 0x80, 0xfffffe00, 0x05
 #endif
 
 	/* Enable periodic memory recalibration */
@@ -1338,7 +1338,11 @@ spd_enable_clocks_next_dimm:
 	RET_LABEL(spd_enable_clocks)
 
 cas_latency_80:
-	.byte 0x0, 0x1, 0x6
+	/* For cas latency 2.0 0x01 works and until I see a large test sample
+	 * I am not prepared to change this value, to the intel recommended value
+	 * of 0x0d.  Eric Biederman
+ 	 */
+	.byte 0x05, 0x01, 0x06 
 cas_latency_78:
 	.byte DRT_CAS_1_5, DRT_CAS_2_0, DRT_CAS_2_5
 
@@ -1436,9 +1440,27 @@ spd_set_cas_latency_next_dimm:
 	movl	$0x78, %eax
 	PCI_WRITE_CONFIG_BYTE
 
+	movl	$0x88, %eax	/* set master DLL reset */
+	PCI_READ_CONFIG_DWORD
+	orl	$(1<<26), %eax
+	movl	%ecx, %ebx
+	movl	%eax, %ecx
+	movl	$0x88, %eax
+	PCI_WRITE_CONFIG_DWORD
+	andl	$0xfc00ffff, %ecx	/* set DQS delays to 2.2ns */
+	orl	$0x02310000, %ecx
+	movl	$0x88, %eax
+	PCI_WRITE_CONFIG_DWORD
+	movl	%ebx, %ecx
 	movl	$0x80, %eax
 	movb	cas_latency_80(%ecx), %dl
 	PCI_WRITE_CONFIG_BYTE	
+	movl	$0x88, %eax	/* reset master DLL reset */
+	PCI_READ_CONFIG_DWORD
+	andl	$~(1<<26), %eax
+	movl	%eax, %ecx
+	movl	$0x88, %eax
+	PCI_WRITE_CONFIG_DWORD
 	
 	RET_LABEL(spd_set_cas_latency)
 
@@ -1639,6 +1661,8 @@ spd_get_dimm_size:
 spd_set_ram_size_computed:
 	/* For now hardset everything at 128MB boundaries */
 	/* %ebp has the ram size in multiples of 64MB */
+	cmpl	$0, %ebp	/* test if there is no mem - smbus went bad */
+	jz	no_memory_bad_smbus
 	cmpl	$0x30, %ebp
 	jae	spd_set_large_ram_size
 spd_set_small_ram_size:
@@ -1772,14 +1796,18 @@ dram_finish:
 	CONSOLE_INFO_TX_STRING($ecc_pre_init)
 	/* Initialize ECC bits */
 	movl	$0x52, %eax
+	movl	$0x00, %edx
+	PCI_WRITE_CONFIG_BYTE
+	movl	$0x52, %eax
 	movl	$0x01, %edx
 	PCI_WRITE_CONFIG_BYTE
 1:	movl	$0x52, %eax
 	PCI_READ_CONFIG_BYTE
 	andl	$0x08, %eax
 	jz	1b
+	andl	$0xfffffffe, %eax
+	movl	%eax, %edx
 	movl	$0x52, %eax
-	movl	$0x0d, %edx
 	PCI_WRITE_CONFIG_BYTE
 
 	CONSOLE_INFO_TX_STRING($ecc_post_init)
@@ -1790,6 +1818,17 @@ dram_finish:
 	PCI_WRITE_CONFIG_BYTE
 	movl    $0x0182, %eax  /* dev 0, function 1, offset 82 */
 	movl    $0x03, %edx
+	PCI_WRITE_CONFIG_BYTE
+
+	movl    $0x0140, %eax  /* clear dev 0, function 1, offset 40 */
+	movl    $(1<<18), %edx /* bit 18 by writing a 1 to it */
+	PCI_WRITE_CONFIG_DWORD
+	movl    $0x0144, %eax  /* clear dev 0, function 1, offset 44 */
+	movl    $(1<<18), %edx /* bit 18 by writing a 1 to it */
+	PCI_WRITE_CONFIG_DWORD
+
+	movl	$0x52, %eax
+	movl	$0x0d, %edx
 	PCI_WRITE_CONFIG_BYTE
 
 noecc_init:

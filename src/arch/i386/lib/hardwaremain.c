@@ -342,7 +342,7 @@ void hardwaremain(int boot_complete)
 
 	nvram_on();
 
-	keyboard_on();
+	//keyboard_on();
 
 #ifndef USE_NEW_SUPERIO_INTERFACE
 	enable_floppy();

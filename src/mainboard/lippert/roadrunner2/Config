@@ -30,7 +30,7 @@ mainboardinit arch/i386/lib/console.inc
 
 northbridge nsc/gx1
 southbridge nsc/cs5530
-nsuperio SMC/fdc37b72x com1={1} port=0x370
+nsuperio SMC/fdc37b72x com1={1,.baud=38400} port=0x370 keyboard={1}
 
 ########################################################################
 # Lots of constans, you probably don't need to change anything here.
@@ -58,6 +58,7 @@ object mainboard.o
 option ZKERNEL_START=0xfffc0000
 object irq_tables.o
 option HAVE_PIRQ_TABLE=1
+dir /src/pc80/ide
 
 # Local variables:
 #   compile-command: "make -C /export/bios/voyager2"

@@ -1,0 +1,20 @@
+# Sample config file for Intel 430TX chipset on the Smartcore P5
+
+# This will make a target directory of ./smartcore-p5
+target smartcore-p3
+
+mainboard digitallogic/smartcore-p3
+
+# Enable Serial Console for debugging
+option SERIAL_CONSOLE=1
+option NO_KEYBOARD=1 
+option INBUF_COPY=1
+option DEFAULT_CONSOLE_LOGLEVEL=9
+option MAXIMUM_CONSOLE_LOGLEVEL=9
+option DEBUG=1
+option USE_GENERIC_ROM=1
+
+# MEMORY TESTING USING MEMTEST
+option USE_ELF_BOOT=1
+option RAMTEST=1
+payload ../82559er.ebi

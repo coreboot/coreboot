@@ -1,0 +1,27 @@
+# Sample config file for Intel 430TX chipset on the Smartcore P5
+
+# This will make a target directory of ./smartcore-p5
+target smartcore-p5
+
+# ASUS CUA  main board
+mainboard digitallogic/smartcore-p5
+
+# option HAVE_PIRQ_TABLE=1
+# Enable Serial Console for debugging
+option SERIAL_CONSOLE=1
+option NO_KEYBOARD=1
+#nooption NO_KEYBOARD
+#keyboard pc80
+option INBUF_COPY
+option DEFAULT_CONSOLE_LOGLEVEL=7
+#option MAXIMUM_CONSOLE_LOGLEVEL=10
+#option DEBUG=1
+option USE_GENERIC_ROM=1
+option ROM_SIZE=262144
+
+
+# MEMORY TESTING USING MEMTEST
+option USE_ELF_BOOT=1
+
+payload ../eepro100.ebi
+nooption RAMTEST

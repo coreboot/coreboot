@@ -623,6 +623,7 @@ int elfboot(struct stream *stream, struct lb_memory *mem)
 	for(i = 0; i < ELF_HEAD_SIZE - (sizeof(Elf_ehdr) + sizeof(Elf_phdr)); i+=16) {
 		ehdr = (Elf_ehdr *)(&header[i]);
 		if (memcmp(ehdr->e_ident, ELFMAG, 4) != 0) {
+			printk_debug("NO header at %d\n", i);
 			continue;
 		}
 		printk_debug("Found ELF candiate at offset %d\n", i);
@@ -641,10 +642,12 @@ int elfboot(struct stream *stream, struct lb_memory *mem)
 		}
 		ehdr = 0;
 	}
+	printk_debug("header_offset is %d\n", header_offset);
 	if (header_offset == -1) {
 		goto out;
 	}
 
+	printk_debug("Try to load at offset 0x%x\n", header_offset);
 	result = elfload(stream, mem, 
 		header + header_offset , ELF_HEAD_SIZE - header_offset);
  out:

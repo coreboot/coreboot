@@ -80,3 +80,30 @@ void enable_floppy()
 }
 #endif /* MUST_ENABLE_FLOPPY */
 
+// simple fixup (which we hope can leave soon) for the sis southbridge part
+void
+southbridge_fixup()
+{
+    struct pci_dev *pcidev;
+    
+    // ethernet fixup. This should all work, and doesn't, yet. 
+    // so we hack it for now. 
+    pcidev = pci_find_device(PCI_VENDOR_ID_SI, 	PCI_DEVICE_ID_SI_503, 
+	(void *)NULL);
+	if (pcidev != NULL) {
+	    u32 bar0 = 0xb001;
+	    // set the BAR 0 to 0xb000. Safe, high value, known good. 
+	    // pci config set doesn't work for reasons we don't understand. 
+	    pci_write_config_dword(pcidev, PCI_BASE_ADDRESS_0, bar0);
+
+	    // Make sure bus mastering is on. The tried-and-true probe in linuxpci.c 
+	    // doesn't set this for some reason. 
+	    pci_write_config_byte(pcidev, PCI_COMMAND, 
+		PCI_COMMAND_IO | PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
+
+	    // set the interrupt to 'b'
+	    pci_write_config_byte(pcidev, PCI_INTERRUPT_LINE, 0xb);
+	}
+
+	printk(KERN_INFO "Southbridge fixup done for SIS 503\n");
+}

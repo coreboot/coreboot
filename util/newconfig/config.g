@@ -265,6 +265,7 @@ class romimage:
 		if (suffix == '.o'):
 			suffix = '.c'
 		base = object_name[:-2]
+		type = object_name[-1:]
 		if (object_name[0] == '.'):
 			source = base + suffix
 		else:
@@ -274,7 +275,7 @@ class romimage:
 		l = getdict(dict, base)
 		if (l):
 			print "Warning, object/driver %s previously defined" % base
-		setdict(dict, base, [object, source])
+		setdict(dict, base, [object, source, type, base])
 
 	def addinitobjectrule(self, name):
 		self.addobjectdriver(self.initobjectrules, name)
@@ -1502,8 +1503,21 @@ def writeimagemakefile(image):
 	file.write("\n# objectrules:\n")
 	for objrule, obj in image.getobjectrules().items():
 		source = topify(obj[1])
-		file.write("%s: %s\n" % (obj[0], source))
-		file.write("\t$(CC) -c $(CFLAGS) -o $@ $<\n")
+		type = obj[2]
+		if (type  == 'S'):
+			# for .S, .o depends on .s
+			file.write("%s: %s.s\n" % (obj[0], obj[3]))
+        		file.write("\t@echo $(CC) ... -o $@ $<\n")
+        		file.write("\t$(CC) -c $(CPU_OPT) -o $@ $<\n")
+			# and .s depends on .S
+			file.write("%s.s: %s\n" % (obj[3], source))
+			file.write("\t@echo $(CPP) ... $< > $@\n")
+			# Note: next 2 lines are ONE output line!
+        		file.write("\t$(CPP) $(CPPFLAGS) $< ")
+			file.write(">$@.new && mv $@.new $@\n")
+		else:
+			file.write("%s: %s\n" % (obj[0], source))
+			file.write("\t$(CC) -c $(CFLAGS) -o $@ $<\n")
 		#file.write("%s\n" % objrule[2])
 
 	for driverrule, driver in image.getdriverrules().items():

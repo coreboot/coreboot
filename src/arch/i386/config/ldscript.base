@@ -100,27 +100,27 @@ SECTIONS
 	 * initialized on startup. (typically uninitialized global variables)
 	 * crt0.S fills between _bss and _ebss with zeroes.
 	 */
+	_bss = .;
 	.bss . : {
-		_bss = .;
 		*(.bss)
 		*(.sbss)
 		*(COMMON)
-		_ebss = .;
 	}
+	_ebss = .;
 	_end = .;
+	_stack = .;
 	.stack . : {
-		_stack = .;
 		/* Reserve a stack for each possible cpu, +1 extra */
 		. = ((MAX_CPUS * STACK_SIZE) + STACK_SIZE) ; 
-		_estack = .;
 	}
+	_estack = .;
+	_heap = .;
 	.heap . : {
-		_heap = .;
 		/* Reserve 256K for the heap */
 		. = HEAP_SIZE ;
 		. = ALIGN(4);
-		_eheap = .;
 	}
+	_eheap = .;
 	/* The ram segment
  	 * This is all address of the memory resident copy of linuxBIOS.
 	 */

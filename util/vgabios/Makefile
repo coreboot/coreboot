@@ -1,12 +1,15 @@
-CFLAGS=-Ix86emu/include -O2 -g
-all: testme testbios
+CFLAGS   =  -Ix86emu/include -O2 -g
 
-testbios: testbios.o helper_exec.o x86emu/src/x86emu/libx86emu.a 
-	cc -o testbios testbios.o helper_exec.o  x86emu/src/x86emu/libx86emu.a 
-testme: test.o helper_exec.o x86emu/src/x86emu/libx86emu.a 
-	cc -o testme test.o helper_exec.o  x86emu/src/x86emu/libx86emu.a 
-test.o: test.c test.h
+OBJECTS  =  testbios.o helper_exec.o inthandler.o pci-userspace.o
+LIBS     =  x86emu/src/x86emu/libx86emu.a
+LIBS    +=  /usr/lib/libpci.a
+
+all: testbios
+
+testbios: $(OBJECTS) $(LIBS)
+	cc -o testbios $(OBJECTS) $(LIBS)
+ 
 helper_exec.o: helper_exec.c test.h
 
 clean:
-	rm -f *.o testme *~ testbios
+	rm -f *.o *~ testbios

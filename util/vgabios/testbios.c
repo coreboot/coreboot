@@ -11,23 +11,19 @@
 _ptr p;
 ptr current = 0;
 extern int teststart, testend;
+#if 0
 void
 test()
 {
   __asm__ __volatile__(".code16\nteststart:movb $4, %al\n outb %al, $0x80\n.code32\nhlt\ntestend:");
 }
+#endif
 
-static void
-do_int(int num) 
-{
-	setup_int(current);
-	//	if(int_handler(current))
-	  ; //X86EMU_Exec();
-	finish_int(current);
-}
+void do_int(int num);
+void setup_int(void);
+void exit_int(void);
 
 unsigned char biosmem[1024*1024];
-
 
 unsigned char *mapitin(char *file, size_t size)
 {
@@ -91,11 +87,12 @@ main(int argc, char **argv)
 	if (iopl(3) < 0) 
 		die("iopl");
 
+	setup_int();
 	sync();
 	sync();
-	//	for (i=0;i<256;i++)
-	//	intFuncs[i] = do_int;
-	//	X86EMU_setupIntrFuncs(intFuncs);
+	for (i=0;i<256;i++)
+		intFuncs[i] = do_int;
+		X86EMU_setupIntrFuncs(intFuncs);
 	cp = mapitin(filename, size);
 
 	current->ax = 0xff;
@@ -107,15 +104,11 @@ main(int argc, char **argv)
 	X86_CS = initialcs;
 	//	M.x86.saved_cs = 0;
 	//	M.x86.saved_ip = 0;
-	X86EMU_trace_on();
-//	x86emu_single_step ();
-	X86EMU_exec();
-//	x86emu_single_step ();
-	//x86emu_single_step ();
-	//x86emu_single_step ();
-	//x86emu_single_step ();
-	
+//	X86EMU_trace_on();
 
+	X86EMU_exec();
+	
+	exit_int();
 
 	return 0;
 }

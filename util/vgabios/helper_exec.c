@@ -29,50 +29,6 @@ void x_outw(u16 port, u16 val);
 u32 x_inl(u16 port);
 void x_outl(u16 port, u32 val);
 
-int
-setup_int(ptr pInt)
-{
-/*
-    if (pInt != current) {
-	if (!MapCurrentInt10(pInt))
-	    return -1;
-	current = pInt;
-    }
- */
-    X86_EAX = (u32) pInt->ax;
-    X86_EBX = (u32) pInt->bx;
-    X86_ECX = (u32) pInt->cx;
-    X86_EDX = (u32) pInt->dx;
-    X86_ESI = (u32) pInt->si;
-    X86_EDI = (u32) pInt->di;
-    X86_EBP = (u32) pInt->bp;
-    X86_ESP = 0x1000; X86_SS = pInt->stackseg >> 4;
-    X86_EIP = 0x0600; X86_CS = 0x0;	/* address of 'hlt' */
-    X86_DS = 0x40;			/* standard pc ds */
-    X86_ES = pInt->es;
-    X86_FS = 0;
-    X86_GS = 0;
-    printf("FIX ME FIX ME FIXME NO IOPL\n");
-    //X86_EFLAGS = X86_IF_MASK | X86_IOPL_MASK;
-
-	/* blocks sigio here */
-    return 0;
-}
-
-void
-finish_int(ptr pInt, int sig)
-{
-    pInt->ax = (u16) X86_EAX;
-    pInt->bx = (u16) X86_EBX;
-    pInt->cx = (u16) X86_ECX;
-    pInt->dx = (u16) X86_EDX;
-    pInt->si = (u16) X86_ESI;
-    pInt->di = (u16) X86_EDI;
-    pInt->es = (u16) X86_ES;
-    pInt->bp = (u16) X86_EBP;
-    pInt->flags = (u16) X86_FLAGS;
-}
-
 /* general software interrupt handler */
 u32
 getIntVect(ptr pInt,int num)

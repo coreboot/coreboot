@@ -369,7 +369,7 @@ def getoption(name, part):
 	else:
 		o = getvalue(options, name)
 	if (o == 0 or not o.defined):
-		fatal( "Error: Option %s Undefined." % name)
+		fatal( "Error: Option %s Undefined (Missing use command?)." % name)
 	v = o.getvalue(part)
 	if (debug > 2):
 		print "getoption returns %s" % v
@@ -447,7 +447,7 @@ def getformated(name, part):
 	else:
 		o = getvalue(options, name)
 	if (o == 0 or not o.defined):
-		fatal( "Error: Option %s Undefined." % name)
+		fatal( "Error: Option %s Undefined (Missing use command?)." % name)
 	v = o.getvalue(part)
 	f = o.getformat()
 	return (f % v)

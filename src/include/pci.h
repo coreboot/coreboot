@@ -390,8 +390,7 @@ int pcibios_find_device (unsigned short vendor, unsigned short dev_id,
 			 unsigned char *dev_fn);
 
 /* Generic PCI interface functions */
-
-void pci_initiailize(void);
+void pci_initialize(void);
 unsigned int pci_scan_bus(struct pci_dev *bus, unsigned int max);
 unsigned int pci_scan_bridge(struct pci_dev *bus, unsigned int max);
 

@@ -67,7 +67,7 @@ int elf_check_arch(Elf_ehdr *ehdr)
 	
 }
 
-void jmp_to_elf_entry(void *entry, void *buffer)
+void jmp_to_elf_entry(void *entry, unsigned long buffer)
 {
 	extern unsigned char _ram_seg, _eram_seg;
 	unsigned long lb_start, lb_size;

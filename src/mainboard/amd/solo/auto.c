@@ -43,13 +43,15 @@ static void memreset_setup(void)
 {
 	if (is_cpu_pre_c0()) {
 		/* Set the memreset low */
-		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 28);
+		outb((0 << 7) | (0 << 6) | (0 << 5) | (0 << 4) | (1 << 2) |
+		     (0 << 0), SMBUS_IO_BASE + 0xc0 + 28);
 		/* Ensure the BIOS has control of the memory lines */
-		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 29);
-	}
-	else {
+		outb((0 << 7) | (0 << 6) | (0 << 5) | (0 << 4) | (1 << 2) |
+		     (0 << 0), SMBUS_IO_BASE + 0xc0 + 29);
+	} else {
 		/* Ensure the CPU has controll of the memory lines */
-		outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 29);
+		outb((0 << 7) | (0 << 6) | (0 << 5) | (0 << 4) | (1 << 2) |
+		     (1 << 0), SMBUS_IO_BASE + 0xc0 + 29);
 	}
 }
 
@@ -58,17 +60,19 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
 	if (is_cpu_pre_c0()) {
 		udelay(800);
 		/* Set memreset_high */
-		outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 28);
+		outb((0 << 7) | (0 << 6) | (0 << 5) | (0 << 4) | (1 << 2) |
+		     (1 << 0), SMBUS_IO_BASE + 0xc0 + 28);
 		udelay(90);
 	}
 }
 
-static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
+static unsigned int generate_row(uint8_t node, uint8_t row,
+				 uint8_t maxnodes)
 {
 	/* since the AMD Solo is a UP only machine, we can 
 	 * always return the default row entry value
 	 */
-	return 0x00010101; /* default row entry */
+	return 0x00010101;	/* default row entry */
 }
 
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
@@ -89,14 +93,14 @@ static void main(void)
 {
 	static const struct mem_controller cpu[] = {
 		{
-			.node_id = 0,
-			.f0 = PCI_DEV(0, 0x18, 0),
-			.f1 = PCI_DEV(0, 0x18, 1),
-			.f2 = PCI_DEV(0, 0x18, 2),
-			.f3 = PCI_DEV(0, 0x18, 3),
-			.channel0 = { (0xa<<3)|0, (0xa<<3)|1, 0, 0 },
-			.channel1 = { 0, 0, 0, 0 },
-		}
+		 .node_id = 0,
+		 .f0 = PCI_DEV(0, 0x18, 0),
+		 .f1 = PCI_DEV(0, 0x18, 1),
+		 .f2 = PCI_DEV(0, 0x18, 2),
+		 .f3 = PCI_DEV(0, 0x18, 3),
+		 .channel0 = {(0xa << 3) | 0, (0xa << 3) | 1, 0, 0},
+		 .channel1 = {0, 0, 0, 0},
+		 }
 	};
 	int needs_reset;
 	enable_lapic();
@@ -127,7 +131,7 @@ static void main(void)
 	dump_spd_registers(&cpu[0]);
 #endif
 	memreset_setup();
-	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
+	sdram_initialize(sizeof(cpu) / sizeof(cpu[0]), cpu);
 
 #if 0
 	dump_pci_devices();

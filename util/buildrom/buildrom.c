@@ -20,7 +20,7 @@
 void
 usage(){
 	fprintf(stderr, "Usage: buildrom <input> <output> <payload> ");
-	fprintf(stderr, " <linuxbios-size> <total-size\n");
+	fprintf(stderr, " <linuxbios-size> <total-size>\n");
 	exit(1);
 }
 

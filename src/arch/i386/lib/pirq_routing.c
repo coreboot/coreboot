@@ -13,7 +13,7 @@ void check_pirq_routing_table(void)
 
 	printk_info("Checking IRQ routing tables...\n");
 
-#ifdef(IRQ_SLOT_COUNT)
+#ifdef IRQ_SLOT_COUNT
 	if (sizeof(intel_irq_routing_table) != intel_irq_routing_table.size) {
 		printk_warning("Inconsistent IRQ routing table size\n");
 	}

@@ -4838,7 +4838,7 @@ static void token(struct compile_state *state, struct token *tk)
 		}
 		/* When not in macro context hide EOL */
 		else if ((tk->tok == TOK_EOL) && (state->token_base == 0)) {
-			next_token(state, tk);
+			cpp_token(state, tk);
 			rescan = 1;
 		}
 	} while(rescan);

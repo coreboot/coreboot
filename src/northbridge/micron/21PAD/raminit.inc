@@ -1,1068 +1,854 @@
-jmp intel_440_out
+/************************************************** 
+ * FILE: src/northbridge/micron/21PAD/raminit.inc
+ * NAME: Suravee Suthikulpanit
+ * 5/2002
+ *
+ *This is the DDR RAM initialization for the 
+ * RLX Blade.  
+ *	- NorthBridge: Micron 21PAD 
+ *	- SouthBridge: Acer M1535D (SMB is on M7101)
+ * STEPS:
+ *	1. Use SPD to determine the memory
+ * 	2. Configure Memory Clock
+ * 	3. Initialize DDR SDRAM
+ * 	4. Adjust Read Data Strobes
+ * 	5. Set timeing parameter
+ * 	6. Memory Sizing
+***************************************************/
 
-#define USE_SPD 1
+jmp start_raminit
 
-#define CS_WRITE_BYTE(addr, byte) \
-	movl $addr, %eax	; \
-	movl $byte, %edx	; \
-	PCI_WRITE_CONFIG_BYTE
-
-#define CS_WRITE_WORD(addr, word) \
-	movl $addr, %eax	; \
-	movl $word, %ecx	; \
-	PCI_WRITE_CONFIG_WORD
-
-#define CS_WRITE_LONG(addr, dword) \
-	movl $addr, %eax	; \
-	movl $dword, %ecx	; \
-	PCI_WRITE_CONFIG_DWORD
-	
-#if 0
-#define DRB0 0x08
-#define DRB1 0x10
-#define DRB2 0x18
-#define DRB3 0x20
-#define DRB4 0x20
-#define DRB5 0x20
-#define DRB6 0x20
-#define DRB7 0x20
-#else
-/* Conservative setting 8MB of ram on first DIMM... */
-#define DRB0 0x01
-#define DRB1 0x01
-#define DRB2 0x01
-#define DRB3 0x01
-#define DRB4 0x01
-#define DRB5 0x01
-#define DRB6 0x01
-#define DRB7 0x01
-#endif
-
-#define CAS_LATENCY 3
-
-	/* CAS latency 2 */
-#if (CAS_LATENCY == 2)
-#define CAS_NB 0x17
-	/* 
-	 * 7 == 0111
-	 * 1 == 0001
-	 */
-#define CAS_MODE 0x2a
-	/*
-	 * a == 1010
-	 * 2 == 0010
-	 */
-#endif
-
-	/* CAS latency 3 */
-#if (CAS_LATENCY == 3) 
-#define CAS_NB 0x13
-	/*
-	 * 3 == 0011
-	 * 1 == 0001
-	 */
-#define CAS_MODE 0x3a
-	/*
-	 * a == 1010
-	 * 3 == 0011
-	 */
-#endif
-
-#ifndef CAS_NB
-#error "Nothing defined" 
-#endif
-
-
-#define RAM_READ 0x0400
-
-#define DIMM0_BASE \
-	xorl %eax, %eax
-
-#define DIMM_BASE(n) \
-	movl $(0x60 + ((n) -1)), %eax	; \
-	PCI_READ_CONFIG_BYTE		; \
-	andl $0xFF, %eax		; \
-	shll $23, %eax			; \
-
-#define DIMM_READ \
-	addl %ebx, %eax			; \
-	movl (%eax), %edx		; \
-	xorl $0xdff8, %eax		; \
-	movl (%eax), %edx
-
-#define DIMM0_READ DIMM0_BASE   ; DIMM_READ
-#define DIMM1_READ DIMM_BASE(1) ; DIMM_READ
-#define DIMM2_READ DIMM_BASE(2) ; DIMM_READ
-#define DIMM3_READ DIMM_BASE(3) ; DIMM_READ
-#define DIMM4_READ DIMM_BASE(4) ; DIMM_READ
-#define DIMM5_READ DIMM_BASE(5) ; DIMM_READ
-#define DIMM6_READ DIMM_BASE(6) ; DIMM_READ
-#define DIMM7_READ DIMM_BASE(7) ; DIMM_READ
-
-#define DIMMS_READ_EBX_OFFSET \
-	DIMM0_READ	; \
-	DIMM1_READ	; \
-	DIMM2_READ	; \
-	DIMM3_READ	; \
-	DIMM4_READ	; \
-	DIMM5_READ	; \
-	DIMM6_READ	; \
-	DIMM7_READ
-
-#define DIMMS_READ(offset) \
-	movl $offset, %ebx	; \
-	DIMMS_READ_EBX_OFFSET
-
-#define RAM_COMMAND_NONE	0x0
-#define RAM_COMMAND_NOP		0x1
-#define RAM_COMMAND_PRECHARGE	0x2
-#define RAM_COMMAND_MRS		0x3
-#define RAM_COMMAND_CBR		0x4
-
-#define SET_RAM_COMMAND(command) \
-	movl $0x76, %eax		; \
-	PCI_READ_CONFIG_BYTE		; \
-	andl $0x1F, %eax		; \
-	orl  $((command) << 5), %eax	; \
-	movl %eax, %edx			; \
-	movl $0x76, %eax		; \
-	PCI_WRITE_CONFIG_BYTE
-
-#define COMPUTE_CAS_MODE \
-	movl $0x76, %eax	; \
-	PCI_READ_CONFIG_BYTE	; \
-	andl $0x4,  %eax	; \
-	xorl $0x4,  %eax	; \
-	shll $2,    %eax	; \
-	orl  $0x2a, %eax	; \
-
-#define SET_RAM_MODE_REGISTER \
-	SET_RAM_COMMAND(RAM_COMMAND_MRS)	; \
-	COMPUTE_CAS_MODE	; \
-	shll $3,    %eax	; \
-	movl %eax,  %ebx	; \
-	DIMMS_READ_EBX_OFFSET
-
-#define ASSERT_RAM_COMMAND()		DIMMS_READ(RAM_READ)
-#define ASSERT_MRS_RAM_COMMAND(mode)	DIMMS_READ(mode)
-#if ! USE_SPD
-#define ENABLE_REFRESH()	\
-	movl $(0x57), %eax	; \
-	PCI_READ_CONFIG_BYTE	; \
-	orb 0x1, %al		; \
-	mov %al, %dl		; \
-	movl $(0x57), %eax	; \
-	PCI_WRITE_CONFIG_BYTE
-	
-#else /* USE_SPD */
-#define ENABLE_REFRESH()		CALL_LABEL(spd_enable_refresh)
-#endif
-
-
-/* Default values for config registers */
-	
-	/* NBXCFG 0x50 - 0x53 */
-	/* f == 1111
-	 * 0 == 0000
-	 * 0 == 0000
-	 * 0 == 0000
-	 * 0 == 0000
-	 * 1 == 0001
-	 * 8 == 1000
-	 * c == 1100
-	 * SDRAM Row without ECC:
-	 * row 0 == 1 No ECC
-	 * row 1 == 1 No ECC
-	 * row 2 == 1 No ECC
-	 * row 3 == 1 No ECC
-	 * row 4 == 1 No ECC
-	 * row 5 == 1 No ECC
-	 * row 6 == 1 No ECC
-	 * row 7 == 1 No ECC
-	 * Host Bus Fast Data Ready Enable == 0 Disabled
-	 * IDSEL_REDIRECT == 0 (430TX compatibility disable?)
-	 * WSC# Hanshake Disable == 0 enable (Use External IOAPIC)
-	 * Host/DRAM Frequence == 00 100Mhz
-	 * AGP to PCI Access Enable == 0 Disable
-	 * PCI Agent to Aperture Access Disable == 0 Enable (Ignored)
-	 * Aperture Access Global Enable == 0 Disable
-	 * DRAM Data Integrity Mode == 11 (Error Checking/Correction)
-	 * ECC Diagnostic Mode Enable == 0 Not Enabled
-	 * MDA present == 0 Not Present
-	 * USWC Write Post During During I/O Bridge Access Enable == 1 Enabled
-	 * In Order Queue Depth (IQD) (RO) == ?? 
-	 */
-#if 0
-#define SET_NBXCFG \
-	CS_WRITE_LONG(0x50, 0xff00018c)
-#else
-#define SET_NBXCFG \
-	CS_WRITE_LONG(0x50, 0xff00000c)
-#endif
-
-#define SET_DRAMC						\
-	/* DRAMC */						\
-	CS_WRITE_BYTE(0x57, 0x8)				\
-	/* 0 == 0000						\
-	 * 8 == 1000						\
-	 * Not registered SDRAM					\
-	 * refresh disabled					\
-	 */
-
-	/* PAM - Programmable Attribute Map Registers */
-	/* Ideally we want to enable all of these as DRAM and teach
-	 * linux it is o.k. to use them...
-	 */
-#define SET_PAM \
-	CS_WRITE_BYTE(0x59, 0x00)				; \
-	CS_WRITE_BYTE(0x5a, 0x00)				; \
-	CS_WRITE_BYTE(0x5b, 0x00)				; \
-	CS_WRITE_BYTE(0x5c, 0x00)				; \
-	CS_WRITE_BYTE(0x5d, 0x00)				; \
-	CS_WRITE_BYTE(0x5e, 0x00)				; \
-	CS_WRITE_BYTE(0x5f, 0x00)
-
-#define SET_DRB \
-	/* DRB - DRAM Row Boundary Registers */			\
-	CS_WRITE_BYTE(0x60,  DRB0)				; \
-	CS_WRITE_BYTE(0x61,  DRB1)				; \
-	CS_WRITE_BYTE(0x62,  DRB2)				; \
-	CS_WRITE_BYTE(0x63,  DRB3)				; \
-	CS_WRITE_BYTE(0x64,  DRB4)				; \
-	CS_WRITE_BYTE(0x65,  DRB5)				; \
-	CS_WRITE_BYTE(0x66,  DRB6)				; \
-	CS_WRITE_BYTE(0x67,  DRB7)
-
-	/* FDHC */
-#define SET_FDHC \
-	CS_WRITE_BYTE(0x68,  0x00)
-
-
-#if 0
-	/* MBSC - Memory Buffer Strength Control */
-	/* 00c00003e820
-	 * [47:44] 0 == 0000
-	 * [43:40] 0 == 0000
-	 * [39:36] c == 1100
-	 * [35:32] 0 == 0000
-	 * [31:28] 0 == 0000
-	 * [27:24] 0 == 0000
-	 * [23:20] 0 == 0000
-	 * [19:16] 3 == 0011
-	 * [15:12] e == 1110
-	 * [11: 8] 8 == 1000
-	 * [ 7: 4] 2 == 0010
-	 * [ 3: 0] 0 == 0000
-	 * MAA[14:0]#, WEA#, SRASA#, SCASA# Buffer Strengths  ==  3x
-	 * MAB[14,13,10,12:11,9:0]#, WEB#, SRASB#, SCASB# Buffer Strengths == 1x
-	 * MD[63:0]# Buffer Strength Control 2 == 1x
-	 * MD[63:0]# Buffer Strength Control 1 == 1x
-	 * MECC[7:0] Buffer Strength Control 2 == 1x
-	 * MECC[7:0] Buffer Strength Control 1 == 1x
-	 * CSB7# Buffer Strength == 1x	
-	 * CSA7# Buffer Strength == 1x
-	 * CSB6# Buffer Strength == 1x
-	 * CSA6# Buffer Strength == 1x
-	 * CSA5#/CSB5# Buffer Strength == 1x
-	 * CSA4#/CSB4# Buffer Strength == 1x
-	 * CSA3#/CSB3# Buffer Strength == 2x
-	 * CSA2#/CSB2# Buffer Strength == 2x
-	 * CSA1#/CSB1# Buffer Strength == 2x
-	 * CSA0#/CSB0# Buffer Strength == 2x
-	 * DQMA5 Buffer Strength == 2x
-	 * DQMA1 Buffer Strength == 2x
-	 * DQMB5 Buffer Strength == 1x
-	 * DQMB1 Buffer Strength == 1x
-	 * DQMA[7:6,4:2,0] Buffer Strength == 2x
-	 * GCKE Buffer Strength == 1x
-	 * FENA Buffer Strength == 1x
-	 */
-
-#define SET_MBSC \
-	CS_WRITE_BYTE(0x69, 0x20)	; \
-	CS_WRITE_BYTE(0x6a, 0xe8)	; \
-	CS_WRITE_BYTE(0x6b, 0x03)	; \
-	CS_WRITE_BYTE(0x6c, 0x00)	; \
-	CS_WRITE_BYTE(0x6d, 0xc0)	; \
-	CS_WRITE_BYTE(0x6e, 0x00)
-#else
-	/* MBSC - Memory Buffer Strength Control */
-	/* 00c00003e820
-	 * [47:44] 0 == 0000
-	 * [43:40] 0 == 0000
-	 * [39:36] c == 1100
-	 * [35:32] 0 == 0000
-	 * [31:28] 0 == 0000
-	 * [27:24] 0 == 0000
-	 * [23:20] 0 == 0000
-	 * [19:16] 3 == 0011
-	 * [15:12] e == 1110
-	 * [11: 8] 8 == 1000
-	 * [ 7: 4] 2 == 0010
-	 * [ 3: 0] 0 == 0000
-	 * MAA[14:0]#, WEA#, SRASA#, SCASA# Buffer Strengths  ==  3x
-	 * MAB[14,13,10,12:11,9:0]#, WEB#, SRASB#, SCASB# Buffer Strengths == 3x
-	 * MD[63:0]# Buffer Strength Control 2 == 3x
-	 * MD[63:0]# Buffer Strength Control 1 == 3x
-	 * MECC[7:0] Buffer Strength Control 2 == 3x
-	 * MECC[7:0] Buffer Strength Control 1 == 3x
-	 * CSB7# Buffer Strength == 3x	
-	 * CSA7# Buffer Strength == 3x
-	 * CSB6# Buffer Strength == 3x
-	 * CSA6# Buffer Strength == 3x
-	 * CSA5#/CSB5# Buffer Strength == 2x
-	 * CSA4#/CSB4# Buffer Strength == 2x
-	 * CSA3#/CSB3# Buffer Strength == 2x
-	 * CSA2#/CSB2# Buffer Strength == 2x
-	 * CSA1#/CSB1# Buffer Strength == 2x
-	 * CSA0#/CSB0# Buffer Strength == 2x
-	 * DQMA5 Buffer Strength == 2x
-	 * DQMA1 Buffer Strength == 3x
-	 * DQMB5 Buffer Strength == 2x
-	 * DQMB1 Buffer Strength == 2x
-	 * DQMA[7:6,4:2,0] Buffer Strength == 3x
-	 * GCKE Buffer Strength == 1x
-	 * FENA Buffer Strength == 3x
-	 */
-#define SET_MBSC \
-	CS_WRITE_BYTE(0x69, 0xB3)	; \
-	CS_WRITE_BYTE(0x6a, 0xee)	; \
-	CS_WRITE_BYTE(0x6b, 0xff)	; \
-	CS_WRITE_BYTE(0x6c, 0xff)	; \
-	CS_WRITE_BYTE(0x6d, 0xff)	; \
-	CS_WRITE_BYTE(0x6e, 0x03)
-#endif
-
-
-	/* 0x72 SMRAM */
-	/* 1 == 0001
-	 * a == 1010
-	 * SMM Compatible base segment == 010 (Hardcoded value)
-	 */
-#define SET_SMRAM
-	/* 0x73 ESMRAMC */
-#define SET_ESRAMC
-
-	/* RPS - Row Page Size Register */
-	/* 0x0055
-	 * [15:12] 0 == 0000
-	 * [11: 8] 0 == 0000
-	 * [ 7: 4] 5 == 0101
-	 * [ 3: 0] 5 == 0101
-	 * DRB[0] == 4KB
-	 * DRB[1] == 4KB
-	 * DRB[2] == 4KB
-	 * DRB[3] == 4KB
-	 * DRB[4] == 2KB
-	 * DRB[5] == 2KB
-	 * DRB[6] == 2KB
-	 * DRB[7] == 2KB
-	 */
-#define SET_RPS \
-	CS_WRITE_WORD(0x74, 0x5555)
-
-	/* SDRAMC */
-#define SET_SDRAMC \
-	CS_WRITE_BYTE(0x76, CAS_NB)
-
-
-	/* PGPOL - Paging Policy Register */
-	/* 0xff07
-	 * [15:12] f == 1111
-	 * [11: 8] f == 1111
-	 * [ 7: 4] 0 == 0000
-	 * [ 3: 0] 7 == 0111
-	 * row0 == 4banks
-	 * row1 == 4banks
-	 * row2 == 4banks
-	 * row3 == 4banks
-	 * row4 == 4banks
-	 * row5 == 4banks
-	 * row6 == 4banks
-	 * row7 == 4banks
-	 * Dram Idle Timer (DIT) == 32 clocks
-	 */
-#define SET_PGPOL \
-	CS_WRITE_WORD(0x78, 0xff07)
-
-	/* MBFS - Memory Buffer Frequencey Select Register */
-	/* 0xffff7f					     
-	 * [23:20] f == 1111				     
-	 * [19:16] f == 1111				     
-	 * [15:12] f == 1111				     
-	 * [11: 8] f == 1111				     
-	 * [ 7: 4] 7 == 0111				     
-	 * [ 3: 0] f == 1111				     
-	 * MAA[14:0], WEA#, SRASA#, SCASA# == 100Mhz Buffers Enabled
-	 * MAB[14,13,10,12:11,9:0], WEB#, SRASB#, SCASB# == 100Mhz Buffers Enabled
-	 * MD[63:0] Control 2 == 100 Mhz Buffer Enable
-	 * MD[63:0] Control 1 == 100 Mhz B
-	 * MECC[7:0] Control 2 == 100 Mhz B
-	 *
-	 */
-#define SET_MBFS \
-	CS_WRITE_BYTE(0xca, 0xff)	; \
-	CS_WRITE_BYTE(0xcb, 0xff)	; \
-	CS_WRITE_BYTE(0xcc, 0x7f)
-
-	/* DWTC - DRAM Write Thermal Throttle Control */
-#define SET_DWTC \
-	CS_WRITE_BYTE(0xe0, 0xb4)	; \
-	CS_WRITE_BYTE(0xe1, 0xbe)	; \
-	CS_WRITE_BYTE(0xe2, 0xff)	; \
-	CS_WRITE_BYTE(0xe3, 0xd7)	; \
-	CS_WRITE_BYTE(0xe4, 0x97)	; \
-	CS_WRITE_BYTE(0xe5, 0x3e)	; \
-	CS_WRITE_BYTE(0xe6, 0x00)	; \
-	CS_WRITE_BYTE(0xe7, 0x80)
-
-	/* DRTC - DRAM Read Thermal Throttle Control */
-#define SET_DRTC \
-	CS_WRITE_BYTE(0xe8, 0x2c)	; \
-	CS_WRITE_BYTE(0xe9, 0xd3)	; \
-	CS_WRITE_BYTE(0xea, 0xf7)	; \
-	CS_WRITE_BYTE(0xeb, 0xcf)	; \
-	CS_WRITE_BYTE(0xec, 0x9d)	; \
-	CS_WRITE_BYTE(0xed, 0x3e)	; \
-	CS_WRITE_BYTE(0xee, 0x00)	; \
-	CS_WRITE_BYTE(0xef, 0x00)
-
-/* PMCR -- BIOS sets 0x90 into it. 
- * 0x10 is REQUIRED.
- * we have never used it. So why did this ever work?
- */
-#define SET_PMCR \
-	CS_WRITE_BYTE(0x7a, 0x90);
-
-ram_set_registers:
-	SET_NBXCFG
-	SET_DRAMC
-	SET_PAM
-	SET_DRB
-	SET_FDHC
-	SET_MBSC
-	SET_SMRAM
-	SET_ESRAMC
-	SET_RPS
-	SET_SDRAMC
-	SET_PGPOL
-	SET_MBFS
-	SET_DWTC
-	SET_DRTC
-	SET_PMCR	
-	RET_LABEL(ram_set_registers)
-
+// This is for the dumpnorth sub-routine.
+//#define NORTHBRIDGE_DEVFN 0xc000
+#define DEBUG_MEM_INIT
+//#define HARD_CODED
+#define SMBUS_IO_BASE 0x5000
+#define SMBHSTSTAT 0x0
+#define SMBHSTTYPE 0x1
+#define SMBHSTPORT 0x2
+#define SMBHSTADDR 0x3
+#define SMBHSTDAT0 0x4
+#define SMBHSTDAT1 0x5
+#define SMBHSTBLK  0x6
+#define SMBHSTCMD  0x7
 
 #define DEVFN(device, function) (((device) << 3) + (function))
 #define CONFIG_ADDR(bus,devfn,where) (((bus) << 16) | ((devfn) << 8) | (where))
-#define PM_FUNCTION  CONFIG_ADDR(0, PIIX4_DEVFN+3, 0)
 
-#if USE_SPD
+#define M7101_DEVFN (DEVFN(0x11,0))
+#define M7101_REG(reg) (CONFIG_ADDR(0,M7101_DEVFN,reg))
+
+#define _21PAD0_DEVFN (DEVFN(0x18,0))
+#define _21PAD0_REG(reg) (CONFIG_ADDR(0,_21PAD0_DEVFN,reg))
+
+#define _21PAD1_DEVFN (DEVFN(0x018,1))
+#define _21PAD1_REG(reg) (CONFIG_ADDR(0,_21PAD1_DEVFN,reg))
+
+#define loop200 $0x5000
+#define loop100 $0x2500
+
+#define PATTERN 0x55
+
+Mem_Typing:			.string "Mem Typing\r\n"
+Config_Mem_Clock:		.string "Config Mem Clock\r\n"
+Init_DDR_SDRAM:			.string "Init DDR SDRAM\r\n"
+Adjust_Read_Data_Strobes:	.string "Adjust Read Data Strobes\r\n"
+Memory_Refresh:			.string "Memory Refresh\r\n"
+Memory_Sizing:			.string "Memory Sizing\r\n"
+RAM_not_found:			.string "RAM not found\r\n"
+DEBUG1:				.string "DEBUG1\r\n"
+DEBUG2:				.string "DEBUG2\r\n"
+SMB_BASE:			.string "SMB Base address = "
+SMB_REGISTER:			.string "SMB Register "
+PRINT_SMB:			.string "Print SMB\r\n"
+RAM_FOUND:			.string "RAM_FOUND\r\n"
+DONE_CHECK_BUFFERED:		.string "DONE_CHECK_BUFFERED\r\n"
+DONE_CHECK_WIDTH:		.string "DONE_CHECK_WIDTH\r\n"
+DONE_SIDE1:			.string "DONE_SIDE1\r\n"
+DONE_SIDE2:			.string "DONE_SIDE2\r\n"
+DONE_FOR_NOW:			.string "DONE FOR NOW\r\n"
+fail_write_read_verify:		.string "FAIL WRITE/READ/VERIFY\r\n"
+pass_write_read_verify:		.string "PASS WRITE/READ/VERIFY\r\n"
+
+/**************************************
+ * Macro: 	CS_READ/WRITE_BYTE
+ * Trashed: 	eax,edx
+ * Result:	edx for read
+ * Description:	
+ *		- These macros acces the PCI device
+ *              register.
+ **************************************/ 
+
+#define CS_WRITE_BYTE(addr, byte) \
+        movl $addr, %eax        ; \
+        movl $byte, %edx        ; \
+        PCI_WRITE_CONFIG_BYTE
+
+#define CS_READ_BYTE(addr) \
+        movl $addr, %eax        ; \
+        PCI_READ_CONFIG_BYTE
+
+/***************************************
+ * Macro:	SET_SMBUS
+ * Trashed:	al, dx
+ * Description: 
+ * 		- This set the corresponding SMB IO Registers. 
+***************************************/ 
+
+#define SET_SMBUS(reg,value) \
+	movw 	$SMBUS_IO_BASE, %dx	;\
+	orb 	$reg, %dl		;\
+	movb 	value, %al		;\
+	outb 	%al, %dx
 	
-#define SMBUS_IO_BASE 0x1000
-#define SMBHSTSTAT 0
-#define SMBHSTCTL  2
-#define SMBHSTCMD  3
-#define SMBHSTADD  4
-#define SMBHSTDAT0 5
-#define SMBHSTDAT1 6
-#define SMBBLKDAT  7
+/***************************************
+ * Macro:	GET_SMBUS
+ * Trashed:	al,dx
+ * result:	al
+ * Description: 
+ *		- This get the corresponding 
+ * 		SMB IO Registers,and put it into %al. 
+***************************************/
+ 
+#define GET_SMBUS(reg)	\
+	movw	$SMBUS_IO_BASE, %dx	;\
+	orb 	$reg, %dl		;\
+	xorb	%al, %al		;\
+	inb	%dx, %al
+		
+#ifdef DEBUG_MEM_INIT
 
-enable_smbus:	
-	CS_WRITE_LONG(PM_FUNCTION + 0x90, SMBUS_IO_BASE | 1)   /* iobase addr */
-	CS_WRITE_BYTE(PM_FUNCTION + 0xd2, (0x4 << 1) | 1)      /* smbus enable */
-	CS_WRITE_WORD(PM_FUNCTION + 0x4, 1)                    /* iospace enable */
-	RET_LABEL(enable_smbus)
+/***************************************
+ * Sub-Routine:	PRINT_SMBUS_REG
+ * Trashed:	eax,ecx,edx,esp
+ * result:	none	
+ * Description:	
+ *		- This routine print all the register value
+ *		of the SMBUS. This Sub-Routine is for debuging
+ * 		only.  The code will stop at this routine.
+ *		because it modifies the esp register.  
+***************************************/
+ 
+print_smbus_reg:
+	CONSOLE_INFO_TX_STRING($PRINT_SMB)	
+	xorl 	%ecx, %ecx
+	xorl 	%eax, %eax
+	xorl 	%edx, %edx
+	//GET_SMBUS(SMBUS_IO_BASE)
+	movw	$SMBUS_IO_BASE, %cx
 
-	/*
-	 * Routine:	setup_smbus
-	 * Arguments:	none
-	 * Results:	none
-	 * Trashed:	eax, edx
-	 * Effects:	The smbus is enabled
-	 */
-setup_smbus:	
-	xor %eax,%eax
-	movw $(SMBUS_IO_BASE + SMBHSTSTAT), %dx
-	outb %al, %dx
-	RET_LABEL(setup_smbus)
+	CONSOLE_INFO_TX_STRING($SMB_BASE)	
+	CONSOLE_INFO_TX_HEX32(%ecx)
+	CONSOLE_INFO_TX_CHAR($'\r')
+	CONSOLE_INFO_TX_CHAR($'\n')
+print_next:
+	CONSOLE_INFO_TX_STRING($SMB_REGISTER)	
+	CONSOLE_INFO_TX_HEX32(%ecx)
+	CONSOLE_INFO_TX_CHAR($'-')	
+	
+	movw	%cx,  %dx
+	inb	%dx,  %al
+	
+	CONSOLE_INFO_TX_HEX8(%al)	
+	CONSOLE_INFO_TX_CHAR($'\r')
+	CONSOLE_INFO_TX_CHAR($'\n')	
+	 
+	incb	%cl
+	cmp	$0x08, %cl
+	jne	print_next
+	
+	RETSP
+#endif
 
-#define SMBUS_MEM_DEVICE_0 (0xa << 3)
-#define SMBUS_MEM_DEVICE_1 (SMBUS_MEM_DEVICE_0 +1)
-#define SMBUS_MEM_DEVICE_2 (SMBUS_MEM_DEVICE_0 +2)
-#define SMBUS_MEM_DEVICE_3 (SMBUS_MEM_DEVICE_0 +3)
+/***************************************
+ * Sub-Routine:	read_spd
+ * arguements:	bl = the spd offset
+ * results: 	al = the read value from SPD
+ * Trashed:	eax,edx
+ * Description: - This setup the read command and read the spd data
+ *		from SMB
+***************************************/ 
 
+read_spd:
+	// Reset statemachine of SMB
+	//SET_SMBUS(SMBHSTTYPE, $0x4)
+	
+wait_busy_bus1:
+	GET_SMBUS(SMBHSTSTAT)
+	testb	$0x04, %al
+	jz	wait_busy_bus1
+ 
+	SET_SMBUS(SMBHSTSTAT, $0xFF)	// Reset status reg
+	SET_SMBUS(SMBHSTADDR, $0xA1)	// Device Address for DRAM SPD/READ
+	SET_SMBUS(SMBHSTTYPE, $0x20)	// Read/write byte type
+	SET_SMBUS(SMBHSTCMD, %bl)	// Offset
+	SET_SMBUS(SMBHSTPORT, $0xFF)	// Start Cycle
+	
+wait_busy_host:
+	GET_SMBUS(SMBHSTSTAT)
+	testb	$0x8, %al
+	jnz	wait_busy_host
+	
+wait_busy_bus2:
+	GET_SMBUS(SMBHSTSTAT)
+	testb	$0x04, %al
+	jz	wait_busy_bus2
 
-	/*
-	 * Routine:	smbus_wait_until_ready
-	 * Arguments:	none
-	 * Results:	none
-	 * Trashed:	eax, edx
-	 * Effects:	Upon return the smbus is ready to accept commands
-	 */
-smbus_wait_until_ready:	
-	movl $(SMBUS_IO_BASE + SMBHSTSTAT), %edx
-1:	inb %dx, %al
-	testb $1, %al
-	jnz 1b
-	RET_LABEL(smbus_wait_until_ready)
-
-	/*
-	 * Routine:	smbus_wait_until_done
-	 * Arguments:	none
-	 * Results:	none
-	 * Trashed:	eax, edx
-	 * Effects:	Upon return the smbus has completed it's most recent transation
-	 */
-smbus_wait_until_done:	
-	movl $(SMBUS_IO_BASE + SMBHSTSTAT), %edx
-1:	inb %dx, %al
-	testb $1, %al
-	jnz 1b
-2:	testb $0xFE, %al
-	jnz 3f
-	inb %dx, %al
-	testb $0xFE, %al
-	jz 2b
-3:	RET_LABEL(smbus_wait_until_done)
-
-	/*
-	 * Routine:	smbus_read_byte
-	 * Arguments:	%esp return address
-	 *              %bl device on the smbus to read from 
-	 *              %bh address on the smbus to read
-	 *
-	 * Results:	zf clear
-	 *              byte read %eax
-	 * 	On Error:	
-	 *              zf set
-	 *              %eax trashed
-	 *
-	 * Trashed:	%edx, %eax
-	 * Effects:	reads a byte off of the smbus
-	 */
-
-#define SMBUS_READ_BYTE(device, address) \
-	movl $( (device) | ((address) << 8)), %ebx ; \
-	CALLSP(smbus_read_byte)
-
-smbus_read_byte:
-	/* poll until the smbus is ready for commands */
-	CALL_LABEL(smbus_wait_until_ready)
-
-	/* clear any lingering errors, so that the transaction will run */
-	movl $(SMBUS_IO_BASE + SMBHSTSTAT), %edx
-	inb %dx, %al
-	outb %al, %dx
-
-	/* set the device I'm talking to */
-	movl $(SMBUS_IO_BASE + SMBHSTADD), %edx
-	movb %bl /* device */, %al
-	shlb $1, %al
-	orb  $1, %al
-	outb %al, %dx
-
-	/* set the command address... */
-	movl $(SMBUS_IO_BASE + SMBHSTCMD), %edx
-	movb %bh /* address */, %al
-	outb %al, %dx
-
-	/* clear the data byte */
-	movl $(SMBUS_IO_BASE + SMBHSTDAT0), %edx
-	xorl %eax, %eax
-	outb %al, %dx
-
-	/* start a byte read, with interrupts disabled */
-	movl $(SMBUS_IO_BASE + SMBHSTCTL), %edx
-	movl $((0x2 << 2) | (1 << 6)), %eax
-	outb %al, %dx
-
-	/* poll for transaction completion */
-	CALL_LABEL(smbus_wait_until_done)
-
-	/* read the results and see if we succeded */
-	movl $(SMBUS_IO_BASE + SMBHSTSTAT), %edx
-	inb %dx, %al
-	testb $0x02, %al
-	jz 1f
-	movl $(SMBUS_IO_BASE + SMBHSTDAT0), %edx
-	inb %dx, %al
-1:
+check_complete:
+	GET_SMBUS(SMBHSTSTAT)
+	testb	$0x10, %al
+	jz	read_spd	// Repeat the routine
+	
+complete:
+	GET_SMBUS(SMBHSTDAT0)	// The read value should be in %al
 	RETSP
 
-
-	/*
-	 * Routine:	spd_set_drb
-	 * Arguments:	None
-	 *
-	 * Trashed:	%eax, %ebx, %ecx, %edx, %esi, %edi, %ebp, %esp, %eflags
-	 * Effects:	Uses serial presence detect to set the
-	 *              DRB registers which holds the ending memory address assigned
-	 *              to each DIMM.
-	 * Notes:	%ebp holds the currently detected end of memory.
-	 *              %ebx holds the configuration port & SMBUS_MEM_DEVICE for
-	 *                   the current iteration through the loop.
-	 *              %edi holds the memory size for the first side of the DIMM.
-	 *		%esi holds the memory size for the second side of the DIMM.
-	 *		     memory size is represent as a power of 2.
-	 *                   An unset memory size is represented as -1 ie. 0xFFFFFFFF
-	 */
-
-spd_set_drb:
-	xorl %ebp, %ebp /* clear the memory address */
-	movl $((0x60 << 16) |SMBUS_MEM_DEVICE_0), %ebx
-spd_set_drb_loop_top:	
-	xorl %edi, %edi
-	subl $1,   %edi
-	xorl %esi, %esi
-	subl $1,   %esi
-
-	movb $3,   %bh			/* rows */
-	CALLSP(smbus_read_byte)	
-	jz 20f
-	andl $0xf, %eax
-	addl %eax, %edi
+/***************************************
+ * Sub-Routine: center_strobe_in_data_eye	
+ * results: al = 0xff -> fail verify
+ *	    al = 0x00 -> pass veryfy  	
+ * Trashed: eax, edx, ecx
+ * Description: ecx= init value 1-127
+ *		ebx= keep track the address for loop 
+ *		
+***************************************/ 
+center_strobe_in_data_eye:
+	xorl	%eax, %eax
+	xorl	%ecx, %ecx
+	xorl	%edx, %edx
+start_init:
+	// Since most of the blades usually set this 
+	// value to 0x1d or 0x1e  
+	//incw	%cx
+	movb	$0x1e, %cl
 	
-	movb $4,   %bh			/* columns */
-	CALLSP(smbus_read_byte)
-	andl $0xf, %eax
-	addl %eax, %edi
-
-	movb $17,  %bh			/* banks */
-	CALLSP(smbus_read_byte)
-	andl $0xff, %eax
-	bsrl %eax, %ecx
-	addl %ecx, %edi
-	
-	/* Get the module data width and convert it to a power of two */
-	movb $7,   %bh			/* (high byte) */
-	CALLSP(smbus_read_byte)
-	andl $0xff, %eax
-	movl %eax, %ecx
-	shll $8, %ecx
-
-	movb $6,   %bh			/* (low byte) */
-	CALLSP(smbus_read_byte)
-	andl $0xff, %eax
-	orl  %eax,  %ecx
-	bsrl %ecx,  %eax
-	addl %eax,  %edi
-	
-	/* now I have the ram size in bits as a power of two (less 1) */
-	subl $25, %edi /* Make it multiples of 8MB */
-
-	/* side two */
-	movb $5,    %bh			/* number of physical banks */
-	CALLSP(smbus_read_byte)
-	cmp $1, %al
-	jbe 20f
-
-	/* for now only handle the symmetrical case */
-	movl %edi, %esi
-20:	
-	/* Compute the end address for the DRB register */
-	cmpl $8, %edi  /* Ignore the dimm if it is over 2GB */
-	jae 21f
-	movl $1, %eax
-	movl %edi, %ecx
-	shll %cl, %eax
-	addl %eax, %ebp
-21:
-	/* Write the computed value for the first half of the DIMM */
-	movl %ebp, %edx /* value to write into %edx */
-	movl %ebx, %eax
-	shrl $16,  %eax /* port address into %eax */
+	//Clear bit 7 of ( Fn1 Offset 0xb7) 
+	//DQS Delay Line Enable Reg
+	CS_READ_BYTE(_21PAD1_REG(0xb7))	
+	andb	$0x7f, %dl
+	movw 	$0xc1b7, %ax
 	PCI_WRITE_CONFIG_BYTE
 	
-	/* Compute the end address for the DRB register */
-	cmpl $8, %esi /* Ignore the dimm if it is over 2GB */
-	jae 30f
-	mov $1, %eax
-	movl %esi, %ecx
-	shll %cl,  %eax
-	addl %eax, %ebp
-30:	
-	/* Write the comuputed value for the second half of the DIMM */
-	movl %ebp, %edx /* value to write into %edx */
-	movl %ebx, %eax
-	shrl $16,  %eax /* port address into %eax */
-	addl $1,   %eax /* The second half uses one port high */
+	// writing 1 to DQS Delay Line Adjust Reg 0-8
+	xorl 	%eax, %eax
+	xorl 	%ebx, %ebx
+	xorl	%edx, %edx
+	movw 	$0xc1d8, %bx
+init_loop:
+	movw	%bx, %ax
+	movb 	%cl, %dl
 	PCI_WRITE_CONFIG_BYTE
+	incw	%bx
+	cmpw	$0xc1df, %bx
+	jle	init_loop
 
-	addl $0x00020001, %ebx /* increment the smbus device & the config port */
-	cmpb $SMBUS_MEM_DEVICE_3, %bl /* see if I have reached the end */
-	jbe spd_set_drb_loop_top
-
-	/* o.k. I'm done return now */
-	RET_LABEL(spd_set_drb)
-
-
-	/*
-	 * Routine:	spd_set_dramc
-	 * Arguments:	None
-	 *
-	 * Trashed:	%eax, %ebx, %edx, %esp, %eflags
-	 * Effects:	Uses serial presence detect to set the
-	 *              DRAMC register, which records if ram is registerd or not,
-	 *              and controls the refresh rate.
-	 *              The refresh rate is not set here, as memory refresh
-	 *              cannot be enbaled until after memory is initialized.
-	 *		see spd_enable_refresh.
-	 * Notes:	
-	 * FIXME:	Check for illegal/unsupported ram configurations and abort
-	 */
-
-spd_set_dramc:
-	/* auto detect if ram is registered or not. */
-	/* The DRAMC register also contorls the refresh rate but we can't
-         * set that here because we must leave refresh disabled.
-	 * see:	spd_enable_refresh
-	 */
-	/* Find the first dimm and assume the rest are the same */
-	/* Load the smbus device and port int %ebx */
-	movl $((21 << 8) | SMBUS_MEM_DEVICE_0), %ebx
-1:	CALLSP(smbus_read_byte)
-	jz 2f
-	andl $0x12, %eax
-	jmp spd_set_dramc_out
-
-2:	addl $1, %ebx	/* increment the device */
-	cmpb $SMBUS_MEM_DEVICE_3, %bl
-	jbe 1b
-	/* We couldn't find anything we must have no memory */
-	jmp no_memory	
+	//CS_WRITE_BYTE(_21PAD1_REG(0xe3),0x01)
+	movw	$0xc1e3, %ax
+	movb	%cl, %dl
+	PCI_WRITE_CONFIG_BYTE
 	
-spd_set_dramc_out:
-	testb $0x12, %al
-	/* $8 is bit value for non-registered DRAM */
-	movl $8, %eax
-	jz 1f
-	/* this is a registered part. 
-	 * observation: for register parts, BIOS zeros (!) 
-         * registers CA-CC. This has an undocumented meaning.
-         */
-	xorl %edx, %edx
-	movl $0xca, %eax
-	PCI_WRITE_CONFIG_BYTE
-	xorl %edx, %edx
-	movl $0xcb, %eax
-	PCI_WRITE_CONFIG_BYTE
-	xorl %edx, %edx
-	movl $0xcc, %eax
+	// Set bit 7 of DQS Delay Line Enable Reg
+	CS_READ_BYTE(_21PAD1_REG(0xb7))	
+	orb	$0x80, %dl
+	movw 	$0xc1b7, %ax
 	PCI_WRITE_CONFIG_BYTE
 
-	/* now set the bit value for registered sdram into %eax */
-	movl $0x10, %eax
-1:	movl %eax, %edx
-	movl $0x57, %eax
-	PCI_WRITE_CONFIG_BYTE
-	RET_LABEL(spd_set_dramc)
-
-#endif /* USE_SPD */
-
-	/*
-	 * Routine:	spd_enable_refresh
-	 * Arguments:	None
-	 *
-	 * Trashed:	%eax, %ebx, %ecx, %edx, %esp, %eflags
-	 * Effects:	Uses serial presence detect to set the
-	 *              refresh rate in the DRAMC register.
-	 *		see spd_set_dramc for the other values.
-	 * FIXME:	Check for illegal/unsupported ram configurations and abort
-	 */
-
-
-refresh_rates:	
-	.byte 0x01 /* Normal        15.625 us -> 15.6 us */
-	.byte 0x05 /* Reduced(.25X) 3.9 us    -> 7.8 us */
-	.byte 0x05 /* Reduced(.5X)  7.8 us    -> 7.8 us */
-	.byte 0x02 /* Extended(2x)  31.3 us   -> 31.2 us */
-	.byte 0x03 /* Extended(4x)  62.5 us   -> 62.4 us */
-	.byte 0x04 /* Extended(8x)  125 us    -> 124.8 us */
-
-#if USE_SPD
-spd_enable_refresh:
-	/* Find the first dimm and assume the rest are the same */
-	/* Load the smbus device and port into %ebx */
-	movl $((12 << 8) | SMBUS_MEM_DEVICE_0), %ebx
-1:	CALLSP(smbus_read_byte)
-	jz 2f
-	andl $0x7f, %eax
-	jmp spd_enable_refresh_out
-
-2:	addl $1, %ebx	/* increment the device */
-	cmpb $SMBUS_MEM_DEVICE_3, %bl
-	jbe 1b
-	/* We couldn't find anything we must have no memory */
-	jmp no_memory	
-
-spd_enable_refresh_out:
-	cmpb $0x06, %al		/* see if the ram refresh is a supported one */
-	jae	1f
-	addl $refresh_rates, %eax /* convert SPD refresh rates to 440GX refresh rates */
-	movb (%eax), %cl
-	jmp 2f
-1:	movb $0x05, %cl	/* unknown ram refresh hard code it to something conservative */
-2:	movl $0x57, %eax
-	PCI_READ_CONFIG_BYTE
-	andb $0xf8, %al
-	orb %cl, %al
-	movb %al, %dl
-	movl $0x57, %eax
-	PCI_WRITE_CONFIG_BYTE
-	RET_LABEL(spd_enable_refresh)
-
-	/*
-	 * Routine:	spd_set_rps
-	 * Arguments:	None
-	 *
-	 * Trashed:	%eax, %ebx, %ecx, %edx, %esi, %edi, %esp, %eflags
-	 * Effects:	Uses serial presence detect to set the row size 
-	 *		on a given DIMM
-	 * Notes:	%esi accumulates the row sizes of all of the DIMMs
-	 *		%ecx holds the current bit into into %esi
-	 *		%bl  holds the current SMBUS device
-	 * FIXME:	Check for illegal/unsupported ram configurations and abort
-	 */
-
-spd_set_rps:
-	/* The RPS register holds the size of a ``page'' of DRAM on each DIMM */
-	/* default all page sizes to 2KB */
-	xorl %esi, %esi
-	/* Index into %esi of bit to set */
-	movl $0	  , %ecx
-	/* Load the smbus device into %ebx */
-	movl $SMBUS_MEM_DEVICE_0, %ebx
+	// PERFORM MEM WRITE/READ/VERIFY Test	
+	// write pattern 0x55 to the start
+	// of memory at 0000:0000 for 32 bytes.
+	xorl 	%edx, %edx
+write_pattern:
+	movb	$PATTERN, (%edx)
+	incb	%dl			
+	cmpb	$0x20, %dl
+	jle	write_pattern
 	
-1:	movb $3, %bh
-	CALLSP(smbus_read_byte)		/* row address bits */
-	jz 2f
-	andl $0xf, %eax
-	movl %eax, %edi
-	/* I now have the row page size as a power of 2 */
-	subl $11, %edi /* Now make it in multiples of 2Kb */
-	jbe 2f
-	/* FIXME: do something with page sizes greather than 8KB!! */
-	shll %cl, %edi
-	orl %edi, %esi
-	/* side two */
-	movb $5, %bh
-	CALLSP(smbus_read_byte)		/* number of physical banks */
-	cmp $1, %al
-	jbe 2f
-	/* for now only handle the symmtrical case */
-	shll $2,  %edi
-	/* one too many shifts here. */
-	/*	shll %cl, %edi*/
-	orl %edi, %esi
+	// read pattern
+	xorl	%eax, %eax
+	xorl	%edx, %edx
+read_pattern:
+	movb	(%edx),%al
+	cmpb	$PATTERN, %al
+	jne	fault_read
+	incb	%dl
+	cmpb	$0x20, %dl
+	jle	read_pattern
 
-2:	addl $1, %ebx	/* increment the device */
-	addl $4, %ecx   /* increment the shift count */
-	cmpb $SMBUS_MEM_DEVICE_3, %bl
-	jbe 1b
-/* next block is for Ron's attempt to get registered to work. */
-/* we have just verified that we have to have this code. It appears that
- * the registered SDRAMs do indeed set the RPS wrong. sheesh.
- */
-	/* at this point, %esi holds the RPS for all ram. 
-	 * we have verified that for registered DRAM the values are 
-	 * 1/2 the size they should be. So we test for registered
-	 * and then double the sizes if needed. 
-	 */
-	movl $0x57, %eax
-	PCI_READ_CONFIG_BYTE
-
-	/* is it registered? */
-	testb $0x10, %eax
-	jz	1f
-
-	/* BIOS makes weird page size for registered! */
-	/* what we have found is you need to set the EVEN banks to 
-	 * twice the size. Fortunately there is a very easy way to 
-	 * do this. First, read the WORD value of register 0x74. 
-	 */
-
-	/* now to double the size of the EVEN banks we only need to add 1 */
-        /* because the size is log2
-         */
-	addl $0x1111, %esi
-	/* now write that final value of %esi into register 0x74 */
-1:
-	movl	%esi, %ecx
-	movl $0x74, %eax
-	PCI_WRITE_CONFIG_WORD
-
-	RET_LABEL(spd_set_rps)
-
-	/*
-	 * Routine:	spd_set_pgpol
-	 * Arguments:	None
-	 *
-	 * Trashed:	%eax, %ebx, %ecx, %edx, %esi, %esp, %eflags
-	 * Effects:	Uses serial presence detect to set the number of banks
-	 *		on a given DIMM
-	 * Notes:	%esi accumulates the banks sizes of all of the DIMMs
-	 *		%ecx holds the current bit into into %esi
-	 *		%bl  holds the current SMBUS device
-	 * FIXME:	Check for illegal/unsupported ram configurations and abort
-	 */
-
-spd_set_pgpol:
-	/* The PGPOL register stores the number of logical banks per DIMM,
-	 * and number of clocks the DRAM controller waits in the idle
-	 * state.
-	 */
-	/* default all bank counts 2 */
-	xorl %esi, %esi
-	/* Index into %esi of bit to set */
-	movl $0	  , %ecx
-	/* Load the smbus device into %ebx */
-	movl $SMBUS_MEM_DEVICE_0, %ebx
-
-1:	movb $17, %bh
-	CALLSP(smbus_read_byte)		/* logical banks */
-	jz 2f
-	cmp $0x4, %eax
-	jl 2f
-	movl $0x1, %eax
-	shll %cl,  %eax
-	orl  %eax, %esi
-	/* side two */
-	movb $5, %bh
-	CALLSP(smbus_read_byte)		/* number of physical banks */
-	cmp $1, %al
-	jbe 2f
-	/* for now only handle the symmtrical case */
-	movl $0x2, %eax
-	shll %cl,  %eax
-	orl  %eax, %esi
-
-2:	addl $1, %ebx	/* increment the device */
-	addl $2, %ecx   /* increment the shift count */
-	cmpb $SMBUS_MEM_DEVICE_3, %bl
-	jbe 1b
-
-	shll $8, %esi
-	orl $0x7, %esi /* 32 clocks idle time */
-	movl %esi, %ecx
-	movl $0x78, %eax
-	PCI_WRITE_CONFIG_WORD
-	RET_LABEL(spd_set_pgpol)
-
-	/*
-	 * Routine:	spd_enable_nbxcfg
-	 * Arguments:	None
-	 *
-	 * Trashed:	%eax, %ebx, %ecx, %edx, %esi, %esp, %eflags
-	 * Effects:	Uses serial presence detect to set the
-	 *              ECC support flags in the NBXCFG register
-	 * Notes:	%esi accumulates the ECC support of the individual DIMMs.
-	 *              %ecx holds the bit that should be flipped for the current DIMM.
-	 *		%bl holds the smbus device that corresponds to the current DIMM.
-	 * FIXME:	Check for illegal/unsupported ram configurations and abort
-	 */
-
-spd_set_nbxcfg:
-	/* say all dimms have no ECC support */
-	movl $0xFF, %esi
-	/* Index into %esi of bit to set */
-	movl $0	  , %ecx
-	/* Load the smbus device into %ebx */
-	movl $SMBUS_MEM_DEVICE_0, %ebx
+pass_read:	
+	// If pass, return 00
+	movb	$0x00, %al
+	RETSP
 	
-1:	movb $11, %bh
-	CALLSP(smbus_read_byte)		/* module error correction type */
-	jz 2f
-	cmp $0x2, %eax			/* 0 == None, 1 == Parity, 2 == ECC */
-	jne 2f
-	movl $0x1, %eax
-	shll %cl,  %eax
-	xorl %eax, %esi
+	// If fail verify, repeat with incremented
+	// value	
+fault_read:
+	cmpw	$0x7f, %cx
+	jl	start_init	
+	// Return the value of %cl when fail	
+	movb	%cl, %al
+	RETSP
+
+//============================================================================
+/*****************************************	
+* MAIN ROUTINE: start_raminit
+******************************************/
+start_raminit:
 	
-	/* side two */
-	movb $5, %bh
-	CALLSP(smbus_read_byte)		/* number of physical banks */
-	cmp $1, %al
-	jbe 2f
-	/* The only is the symmtrical case */
-	movl $0x2, %eax
-	shll %cl,  %eax
-	xorl %eax, %esi
-
-2:	addl $1, %ebx	/* increment the device */
-	addl $2, %ecx   /* increment the shift count */
-	cmpb $SMBUS_MEM_DEVICE_3, %bl
-	jbe 1b
-
-	movl %esi, %edx
-	movl $0x53, %eax
+	// Clearing registers before detecting RAM
+	// Fn 0 offset 74h-7bh	config addr = 0xc000 | offset
+	// Fn 1 offset 80h-87h	config addr = 0xc100 | offset
+	// Fn 1 offset F0h-FFh
+	xorl %eax, %eax
+	movw $0xc000, %ax
+	orb  $0x73, %al
+loop1:
+	incb %al
+	// CS_WRITE_BYTE(_21PAD0_REG( %al ),0)
+	// We have to do this manualy
+	movl $0x0000, %edx
 	PCI_WRITE_CONFIG_BYTE
-	/* Now see if esi is 0xff. If it is we are done. If not, 
-	 * we need to set 0x18 into register 0x50.l
-	 * we will do this in two steps, first or in 0x80 to 0x50.b, 
-	 * then or in 0x1 to 0x51.b
-         */
-	mov	%esi, %eax 
-	cmpb	$0xff, %al
-	je	1f
-	movl	$0x50, %eax
-	PCI_READ_CONFIG_BYTE
-	orb	$0x80, %al
-	movb	%al, %dl
-	movl	$0x50, %eax
+	testb $0x7b, %al
+	jnz loop1
+
+	xorl %eax, %eax
+	movw $0xc100, %ax
+	orb $0x7f, %al
+loop2:	
+	incb %al
+	//CS_WRITE_BYTE(_21PAD1_REG( %al ),0)
+	movl $0x0000, %edx
 	PCI_WRITE_CONFIG_BYTE
-	movl	$0x51, %eax
-	PCI_READ_CONFIG_BYTE
-	orb	$0x1, %al
-	movb	%al, %dl
-	movl	$0x51, %eax
-	PCI_WRITE_CONFIG_BYTE
-	// try this. 
-	// we should be setting bit 2 in register 76 and we're not
-	// technically we should see if CL=2 for the ram, 
-	// but registered is so screwed up that it's kind of a lost
-	// cause. 
-	movl	$0x76, %eax
-	PCI_READ_CONFIG_BYTE
-	orb	$0x4, %al
-	movb	%al, %dl
-	movl	$0x76, %eax
-	PCI_WRITE_CONFIG_BYTE
-1:	
-	RET_LABEL(spd_set_nbxcfg)
-
-
-spd_set_sdramc:
-	RET_LABEL(spd_set_sdramc)
-
-#endif /* USE_SPD */
-
+	testb $0x87, %al
+	jnz loop2
 	
+	xorl %eax, %eax
+	movw $0xc100, %ax	
+	orb $0xef, %al
+loop3:	
+	incb %al
+	//CS_WRITE_BYTE(_21PAD1_REG( %al ),0)
+	movl $0x0000, %edx
+	PCI_WRITE_CONFIG_BYTE
+	testb $0xff, %al
+	jnz loop3
+	
+	//-----------------------------------------------------------
+	/* MEMORY TYPING 
+	* Using SPD to detect DDR RAM by reading 
+	* byte 2 of the EEPROM. Other necessary
+	* bytes are:
+	* byte  3	Number of row
+	* 	4	Number of columns
+	*	5	Number of sides
+	* 	13	Data width
+	*	17	Module Banks per row
+	*   21 bit 1	Buffered/Unbuffered
+	*/
+	CONSOLE_INFO_TX_STRING($Mem_Typing)
 
-	/* PAM FDHC MBSC SMRAM ESRAMC MBFS DWTC DRTC */
-ram_set_spd_registers:
-#if USE_SPD
-	CALL_LABEL(enable_smbus)
-	CALL_LABEL(setup_smbus)
-	CALL_LABEL(spd_set_drb)
-	CALL_LABEL(spd_set_dramc)
-	CALL_LABEL(spd_set_rps)
-	CALL_LABEL(spd_set_sdramc)
-	CALL_LABEL(spd_set_pgpol)
-	CALL_LABEL(spd_set_nbxcfg)
+	// ??? This must be done to probe the flashrom
+	// using smbus.c program.  So, I just tried putting
+	// it here. 
+	CS_WRITE_BYTE(M7101_REG(0xb7),0x4)
+
+	xorb	%al, %al
+	xorb 	%bl, %bl
+	movb	$0x02, %bl
+	CALLSP(read_spd)	// result is in %al
+	cmp	$0x07, %al	
+	jne	ram_not_found
+
+	// DDR RAM is found
+	CONSOLE_INFO_TX_STRING($RAM_FOUND)
+set_rank_type:
+	// side 1
+	xorl	%ecx, %ecx
+	orb	$0x1, %cl	// DIMM is present
+	
+check_width:
+	movb	$13, %bl		
+	CALLSP(read_spd)	// read SPD 13
+	testb	$0x4, %al
+	jnz	_4bit
+	testb	$0x8, %al
+	jnz 	_8bit
+	testb	$0x16, %al
+	orb	$0x08, %cl	// 16 bit wide
+	jmp 	done_check_width
+_4bit:
+	//orb	$0x08, %ch	// 4 bit part present
+	orb	$0x13, %ch	// try this instead
+	jmp	done_check_width  // 4 bit wide
+_8bit:
+	orb	$0x04, %cl	// 8 bit wide
+done_check_width:
+	CONSOLE_INFO_TX_STRING($DONE_CHECK_WIDTH)
+	
+check_buffered:
+	movb	$21, %bl
+	CALLSP(read_spd)	// read SPD 21 bit 1
+	testb	$0x02, %al
+	jz	done_check_buffered
+	
+	orb	$0x2, %cl
+done_check_buffered:
+	CONSOLE_INFO_TX_STRING($DONE_CHECK_BUFFERED)
+	
+check_addressing_type:
+#if HARD_CODED
+	// HARD-CODED THIS PART!!!!!
+	// for now to 0x20 = 256Mb
+	orb	$0x20, %cl
+#else
+	// Figure out the addressing type using
+	// 	- 2^ (NumofROws+NumofByte+Numofbankperrow)
+	// %dl keeps track of # of bit to shift
+	// NOT SURE!!!!
+	xorl	%edx, %edx
+	movb	$3, %bl
+	CALLSP(read_spd)
+	movb 	%al, %dl
+	
+	movb	$4, %bl
+	CALLSP(read_spd)
+	addb 	%al, %dl
+	
+	movb	$17, %bl
+	CALLSP(read_spd)
+	addb 	%al, %dl
+	
+	movl	$0x1, %eax
+	shll	$16, %ecx
+	movb	%dl, %cl
+	shll	%cl, %eax
+	shrl	$16, %ecx
+	
+	cmpl	$64, %eax
+	je	done_check_addressing_type
+	cmpl	$128, %eax
+	je 	_128Mbit
+	cmpl	$256, %eax
+	je 	_256Mbit
+	cmpl	$512, %eax
+	
+	orb	$0x30, %cl
+	jmp	done_check_addressing_type
+_128Mbit:
+	orb	$0x10, %cl
+	jmp	done_check_addressing_type
+_256Mbit:
+	orb	$0x20, %cl
 #endif
-	RET_LABEL(ram_set_spd_registers)
 
-get_ecc_ram_size_bytes_ebx:
-	/* FIXME handle the no ram case. */
-	movl	$0x67, %eax		/* Read the RAM SIZE */
-	PCI_READ_CONFIG_BYTE
-	andl	$0x000000ff, %eax	/* Convert it to bytes */
-	movl	%eax, %ebx
-	shll	$23, %ebx
-	RET_LABEL(get_ecc_ram_size_bytes_ebx)
+done_check_addressing_type:
+
+done_side1:
+	//CS_WRITE_BYTE(_21PAD1_REG(0x80),%cl)
+	//CS_WRITE_BYTE(_21PAD1_REG(0x44),%ch)
+	// Manually do this
+	xorl %eax, %eax
+	xorl %edx, %edx
+	movw $0xc180, %ax
+	movb %cl, %dl
+	PCI_WRITE_CONFIG_BYTE
+
+	xorl %eax, %eax
+	xorl %edx, %edx
+	movw $0xc144, %ax
+	movb %ch, %dl
+	PCI_WRITE_CONFIG_BYTE
+	CONSOLE_INFO_TX_STRING($DONE_SIDE1)
 	
-/* things that are not used */
-#define FIRST_NORMAL_REFERENCE()
-#define SPECIAL_FINISHUP()
-intel_440_out:
+	movb	$0x05, %bl
+	CALLSP(read_spd)
+	testb	$0x02, %al
+	jz	prog_mem_timing_control	
+
+	// side 2
+	//CS_WRITE_BYTE(_21PAD1_REG(0x81),%cl)
+	//CS_WRITE_BYTE(_21PAD1_REG(0x44),%ch)
+	// Manually do this
+	xorl %eax, %eax
+	xorl %edx, %edx
+	movw $0xc181, %ax
+	movb %cl, %dl
+	PCI_WRITE_CONFIG_BYTE
+
+	xorl %eax, %eax
+	xorl %edx, %edx
+	movw $0xc144, %ax
+	movb %ch, %dl
+	PCI_WRITE_CONFIG_BYTE
+	CONSOLE_INFO_TX_STRING($DONE_SIDE2)
+
+prog_mem_timing_control:
+	// CAS Latency = 2.5, Buffered
+	CS_WRITE_BYTE(_21PAD1_REG(0xc8),0x94)
+	
+	xorl %eax,%eax
+	xorl %edx,%edx
+	//CS_READ_BYTE(_21PAD1_REG(0xc9))
+	//andb $0xf8, %dl
+	//orb $0x01, %dl
+	//movw $0xc1c9, %ax
+	//PCI_WRITE_CONFIG_BYTE
+	CS_WRITE_BYTE(_21PAD1_REG(0xc9),0x49)
+	
+	//-----------------------------------------------------------
+	/* MEMORY CLOCK CONTROL
+	 * Fn 1 offset 40h-43h 
+	 * bit 0 = 1
+	 * bit 17:16 = 10b
+	 * bit 20 = 1
+	*/
+	
+	CONSOLE_INFO_TX_STRING($Config_Mem_Clock)
+	xorl %eax,%eax
+	xorl %edx,%edx
+	// writing 10b into bits 17:16 of Mem Interface
+	// timing reg ( Fn1 offset 0x40-43)
+	//CS_READ_BYTE(_21PAD1_REG(0x42))
+	//andb $0xfc, %dl
+	//orb $0x02, %dl
+	//movw $0xc142, %ax
+	//PCI_WRITE_CONFIG_BYTE
+	CS_WRITE_BYTE(_21PAD1_REG(0x42),0x02)
+	
+	// Enable Mem clock by setting bit 0 of Mem Timing 
+	// Interface Reg
+	//CS_READ_BYTE(_21PAD1_REG(0x40))
+	//orb $0x01, %dl
+	//movw $0xc140, %ax
+	//PCI_WRITE_CONFIG_BYTE
+	CS_WRITE_BYTE(_21PAD1_REG(0x40),0x01)
+ 
+	// wait 200 us
+	DELAY(loop200)
+	DELAY(loop200)
+
+	// Enable Mem Clock Enable signals
+	// Setting bit 20 of the Mem Timeing Interface Reg
+	//CS_READ_BYTE(_21PAD1_REG(0x42))
+	//orb $0x10, %dl
+	//movw $0xc142, %ax
+	//PCI_WRITE_CONFIG_BYTE
+	CS_WRITE_BYTE(_21PAD1_REG(0x42),0x12)
+	
+	//-----------------------------------------------------------
+	/* DDR SDRAM INITIALIZATION SEQUENCE
+	 * Fn 1 offset 88h-8bh
+	 */
+	CONSOLE_INFO_TX_STRING($Init_DDR_SDRAM)
+	// wait 200us
+	DELAY(loop200)
+
+	// After each write to DDR Mode and Init Reg,
+	// Wait fo rthe Mem Request Active bit to clear
+
+	// Issue Precharge All bank
+	CS_WRITE_BYTE(_21PAD1_REG(0x8b),0x00)	
+	CS_WRITE_BYTE(_21PAD1_REG(0x8a),0x00)	
+	CS_WRITE_BYTE(_21PAD1_REG(0x89),0x00)	
+	CS_WRITE_BYTE(_21PAD1_REG(0x88),0x1b)	
+1:	
+	CS_READ_BYTE(_21PAD1_REG(0x88))	// result is in %dl
+	testb 	$0x8, %al
+	jnz	1b		
+	
+	// Issue Load Extended Mode Register
+	CS_WRITE_BYTE(_21PAD1_REG(0x8b),0x00)	
+	CS_WRITE_BYTE(_21PAD1_REG(0x8a),0x00)	
+	CS_WRITE_BYTE(_21PAD1_REG(0x89),0x00)	
+	CS_WRITE_BYTE(_21PAD1_REG(0x88),0x19)	
+2:	
+	CS_READ_BYTE(_21PAD1_REG(0x88));	// result is in %dl
+	testb 	$0x8, %al
+	jnz	2b		
+	
+	// Issue Load Mode Register for CAS 2.5????
+	CS_WRITE_BYTE(_21PAD1_REG(0x8b),0x16)	
+	CS_WRITE_BYTE(_21PAD1_REG(0x8a),0xa0)	
+	CS_WRITE_BYTE(_21PAD1_REG(0x89),0x00)	
+	CS_WRITE_BYTE(_21PAD1_REG(0x88),0x1a)	
+
+	// wait 200us
+	DELAY(loop200)
+3:	
+	CS_READ_BYTE(_21PAD1_REG(0x88))	// result is in %dl
+	testb 	$0x8, %al
+	jnz	3b		
+	
+	// Issue Precharge All bank
+	CS_WRITE_BYTE(_21PAD1_REG(0x8b),0x16)	
+	CS_WRITE_BYTE(_21PAD1_REG(0x8a),0x00)	
+	CS_WRITE_BYTE(_21PAD1_REG(0x89),0x00)	
+	CS_WRITE_BYTE(_21PAD1_REG(0x88),0x1b)	
+4:	
+	CS_READ_BYTE(_21PAD1_REG(0x88))	// result is in %dl
+	testb 	$0x8, %al
+	jnz	4b		
+	
+	// Issue Two Auto Refresh TWICE!!!
+	CS_WRITE_BYTE(_21PAD1_REG(0x8b),0x16)	
+	CS_WRITE_BYTE(_21PAD1_REG(0x8a),0x00)	
+	CS_WRITE_BYTE(_21PAD1_REG(0x89),0x00)	
+	CS_WRITE_BYTE(_21PAD1_REG(0x88),0x1c)	
+
+5:
+	CS_READ_BYTE(_21PAD1_REG(0x88))	// result is in %dl
+	testb 	$0x8, %al
+	jnz	5b		
+	
+	CS_WRITE_BYTE(_21PAD1_REG(0x8b),0x16)	
+	CS_WRITE_BYTE(_21PAD1_REG(0x8a),0x00)	
+	CS_WRITE_BYTE(_21PAD1_REG(0x89),0x00)	
+	CS_WRITE_BYTE(_21PAD1_REG(0x88),0x1c)	
+6:	
+	CS_READ_BYTE(_21PAD1_REG(0x88))	// result is in %dl
+	testb 	$0x8, %al
+	jnz	6b		
+	
+	// Clear Initial active bit 4
+	CS_WRITE_BYTE(_21PAD1_REG(0x88),0x08)
+
+7:	
+	CS_READ_BYTE(_21PAD1_REG(0x88))	// result is in %dl
+	testb 	$0x8, %al
+	jnz	7b		
+	
+	//-----------------------------------------------------------
+	/* READ DATA STROBE TIMING ADJUST
+	 * There are couple things to do here to adjust the 
+	 * data strobe signal
+	 * 	- Temporary initializing address space
+	 * 	- Centering the strobe in the data eye
+   	 * 	- Mem write/read/verify test
+	 * 	- Main Strobe adjust procedure
+	 * 
+	 * Fn 1 offset 0xb7		DQS Delay Line Enable
+	 *	       0xd8-0xdf,0xe3  	DQS Delay Line Adjust 0-8
+	 *	       0xe1		CAS to Read Preamble Delay
+	 * 	       0xe2,0xe4-0xeb	Read preamble Fine Adjust		
+	 * 	- NOTE: Some data are hardcoded in order to 
+	 *	 shortcut the steps and save some space.
+	 */
+	CONSOLE_INFO_TX_STRING($Adjust_Read_Data_Strobes)
+
+initializing_address_space:
+	// initialize Rank Select Reg 0 to 0x4
+	CS_WRITE_BYTE(_21PAD1_REG(0xf1),0x00)
+	CS_WRITE_BYTE(_21PAD1_REG(0xf0),0x04)
+	// initialize Rank Select Reg 1 to 0x8
+	CS_WRITE_BYTE(_21PAD0_REG(0xf3),0x00)
+	CS_WRITE_BYTE(_21PAD0_REG(0xf2),0x08)
+	// Set mem controller's Local Lower to 0
+	CS_WRITE_BYTE(_21PAD0_REG(0x75),0x00)
+	CS_WRITE_BYTE(_21PAD0_REG(0x74),0x00)
+	// Set mem controller's Local Upper to 0
+	CS_WRITE_BYTE(_21PAD0_REG(0x77),0x00)
+	CS_WRITE_BYTE(_21PAD0_REG(0x76),0x08)
+	// Set mem controller's Global Upper-32 to 0
+	CS_WRITE_BYTE(_21PAD0_REG(0x79),0x00)
+	CS_WRITE_BYTE(_21PAD0_REG(0x78),0x08)
+	// Set mem controller's Global Upper to 0
+	CS_WRITE_BYTE(_21PAD0_REG(0x7b),0x00)
+	CS_WRITE_BYTE(_21PAD0_REG(0x7a),0x08)
+	
+main_strobe_adjust:
+	// CAS to Read Preamble Delay -> 2
+	// Read Preamble Fine Adjust 0-8 ->dd
+	CS_WRITE_BYTE(_21PAD1_REG(0xe1),0x02)
+	CS_WRITE_BYTE(_21PAD1_REG(0xe2),0xdd)
+	CS_WRITE_BYTE(_21PAD1_REG(0xe4),0xdd)
+	CS_WRITE_BYTE(_21PAD1_REG(0xe5),0xdd)
+	CS_WRITE_BYTE(_21PAD1_REG(0xe6),0xdd)
+	CS_WRITE_BYTE(_21PAD1_REG(0xe7),0xdd)
+	CS_WRITE_BYTE(_21PAD1_REG(0xe8),0xdd)
+	CS_WRITE_BYTE(_21PAD1_REG(0xe9),0xdd)
+	CS_WRITE_BYTE(_21PAD1_REG(0xea),0xdd)
+	CS_WRITE_BYTE(_21PAD1_REG(0xeb),0xdd)
+	
+	//Center the strobes in the data eye.
+	CALLSP(center_strobe_in_data_eye)
+	//Verify
+	cmpb	$0x0, %al
+	jne	fail_verify
+	CONSOLE_INFO_TX_STRING($pass_write_read_verify)
+
+	//-----------------------------------------------------------
+	/* MEMORY REFRESH
+	 * Fn1 offset 0x8e = 0x10
+	 *            0x8f = 0x04
+	 *            0xe0 = 0x22
+	 */
+	CONSOLE_INFO_TX_STRING($Memory_Refresh)
+	// Just try putting this right here.
+	CS_WRITE_BYTE(_21PAD1_REG(0x8c),0x08)	// ECC Control
+	CS_WRITE_BYTE(_21PAD1_REG(0x8d),0x89)	// Symmetric Select and Config
+	CS_WRITE_BYTE(_21PAD1_REG(0x8f),0x04)
+	CS_WRITE_BYTE(_21PAD1_REG(0x8e),0x10)
+	CS_WRITE_BYTE(_21PAD1_REG(0xe0),0x22)
+	
+	//-----------------------------------------------------------
+	/* MEMORY SIZING
+	 * Program
+	 * Fn 1 offset  0xf0-0xf7 Rank Select Addressing Reg
+	 * 		0x74-0x75 Local Lower Memory Range
+	 * 		0x76-0x77 Local Upper Memory Range
+	 * 		0x78-0x79 Global Upper Memory-32 Range
+	 * 		0x7a-0x7b Global Upper Memory Range
+	 * - This part is HARD CODED to 1GB for now
+	 */
+	CONSOLE_INFO_TX_STRING($Memory_Sizing)
+#if HARD_CODED	
+	// Program the Local Lower Mem range to 0
+	CS_WRITE_BYTE(_21PAD0_REG(0x75),0x0)
+	CS_WRITE_BYTE(_21PAD0_REG(0x74),0x0)
+	// Program the Local Upper Mem range to 64=0x40
+	CS_WRITE_BYTE(_21PAD0_REG(0x77),0x0)
+	CS_WRITE_BYTE(_21PAD0_REG(0x76),0x40)
+	// Program the Global-32 Upper Mem range to 64=0x40
+	CS_WRITE_BYTE(_21PAD0_REG(0x79),0x0)
+	CS_WRITE_BYTE(_21PAD0_REG(0x78),0x40)
+	// Program the Global Upper Mem range to 64=0x40
+	CS_WRITE_BYTE(_21PAD0_REG(0x7b),0x0)
+	CS_WRITE_BYTE(_21PAD0_REG(0x7a),0x40)
+
+	// Program Rank Select 0 Addressing Reg to 32=0x20
+	CS_WRITE_BYTE(_21PAD1_REG(0xf1),0x0)
+	CS_WRITE_BYTE(_21PAD1_REG(0xf0),0x20)
+	// Program Rank Select 1 Addressing Reg to 64=0x40
+	CS_WRITE_BYTE(_21PAD1_REG(0xf3),0x0)
+	CS_WRITE_BYTE(_21PAD1_REG(0xf2),0x40)
+	// Program Rank Select 2 Addressing Reg to 64=0x40
+	CS_WRITE_BYTE(_21PAD1_REG(0xf5),0x0)
+	CS_WRITE_BYTE(_21PAD1_REG(0xf4),0x40)
+	// Program Rank Select 3 Addressing Reg to 64=0x40
+	CS_WRITE_BYTE(_21PAD1_REG(0xf7),0x0)
+	CS_WRITE_BYTE(_21PAD1_REG(0xf6),0x40)
+	// Program Rank Select 4 Addressing Reg to 64=0x40
+	CS_WRITE_BYTE(_21PAD1_REG(0xf9),0x0)
+	CS_WRITE_BYTE(_21PAD1_REG(0xf8),0x40)
+	// Program Rank Select 5 Addressing Reg to 64=0x40
+	CS_WRITE_BYTE(_21PAD1_REG(0xfb),0x0)
+	CS_WRITE_BYTE(_21PAD1_REG(0xfa),0x40)
+	// Program Rank Select 6 Addressing Reg to 64=0x40
+	CS_WRITE_BYTE(_21PAD1_REG(0xfd),0x0)
+	CS_WRITE_BYTE(_21PAD1_REG(0xfc),0x40)
+	// Program Rank Select 7 Addressing Reg to 64=0x40
+	CS_WRITE_BYTE(_21PAD1_REG(0xff),0x0)
+	CS_WRITE_BYTE(_21PAD1_REG(0xfe),0x40)
+	jmp done_for_now
+#else
+	// bl = value to assign to register
+	// cx = target address
+	xorl 	%ebx, %ebx
+	xorl 	%ecx, %ecx
+	
+	// Sizing memory from register 0x80-87
+	// sizeInMB = (2^(#ofRowAddr + #ofColumnAddr + Datawidth + 
+	// 	  #BanksperROw))/ 8
+	// (bl should be 0x40 for 1GB DDR)
+check_size:	
+	xorl	%ecx, %ecx
+	movb	$3, %bl
+	CALLSP(read_spd)
+	movb 	%al, %cl
+	movb	$4, %bl
+	CALLSP(read_spd)
+	addb 	%al, %cl
+	movb	$17, %bl
+	CALLSP(read_spd)
+	addb 	%al, %cl
+	movb	$13, %bl
+	CALLSP(read_spd)
+	addb 	%al, %cl
+	
+	// 16MB Granularity 
+	subb	$24, %cl
+
+	// 2^(%cl)	
+	movl	$0x1, %ebx
+	shll	%cl, %ebx	// size if bit
+	shrl	$0x3, %ebx	// size if Byte
+	
+	movl 	%ebx, %ecx	
+	// Check double-sided
+	movb	$5, %bl
+	CALLSP(read_spd)
+	testb	$0x2, %al
+	jz	done_check_size			
+	 
+	// Multiply by 2
+	shll	$0x1, %ecx
+	
+done_check_size:
+	
+	movl	%ecx, %ebx
+	// Program the Local Lower Mem range to 0
+	CS_WRITE_BYTE(_21PAD0_REG(0x75),0x0)
+	CS_WRITE_BYTE(_21PAD0_REG(0x74),0x0)
+
+	// Program the Local/Global-32/Global Upper Mem range to 64=0x40
+	xorl 	%eax, %eax
+	xorl 	%edx, %edx
+	movl	$0xc075, %ecx
+sizing_loop1:
+	incl	%ecx
+	movw 	%cx, %ax
+	movb 	%bl, %dl
+	PCI_WRITE_CONFIG_BYTE
+	
+	incl	%ecx
+	movw 	%cx, %ax
+	movb 	$0x0, %dl
+	PCI_WRITE_CONFIG_BYTE
+	
+	cmpw	$0xc07b, %cx
+	jl	sizing_loop1
+
+	// NOTE: For rlx 800i, there is only 1 DIMM
+	// 	 which use reg 0x80 and 0x81 for the 2-sided
+
+	// Program Rank Select Register 0-7
+	// Function 1 offset 0xf0-0xff
+	
+	// Program Rank Sel register 0 with 1/2 the RAM
+	movw	$0xc1f0, %ax
+	movb	%bl, %dl
+	shrl	$0x1, %edx
+	PCI_WRITE_CONFIG_BYTE
+	movw	$0xc1f1, %ax
+	movb	$0x0, %dl
+	PCI_WRITE_CONFIG_BYTE
+	
+	// Program Rank Sel register 1 with the full size of RAM
+	movw	$0xc1f1, %cx
+sizing_loop2:
+	incl	%ecx
+	movw 	%cx, %ax
+	movb 	%bl, %dl
+	PCI_WRITE_CONFIG_BYTE
+	
+	incl	%ecx
+	movw 	%cx, %ax
+	movb 	$0x0, %dl
+	PCI_WRITE_CONFIG_BYTE
+
+	cmpw	$0xc1ff, %cx
+	jl	sizing_loop2
+
+#endif
+	
+ram_not_found:
+	CONSOLE_INFO_TX_STRING($RAM_not_found)
+	jmp done_for_now
+
+fail_verify:
+	CONSOLE_INFO_TX_HEX8(%al)
+	CONSOLE_INFO_TX_STRING($fail_write_read_verify)
+	jmp done_for_now
+
+done_for_now:
+	CONSOLE_INFO_TX_STRING($DONE_FOR_NOW)
+	CALLSP(dumpnorth)

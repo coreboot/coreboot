@@ -2,28 +2,71 @@
 #include <cpu/p5/io.h>
 #include <printk.h>
 
-void
-dumpramregs(struct pci_dev *pcidev)
-{
-
-}
 unsigned long sizeram()
 {
-	unsigned long totalmem;
-	unsigned char banks;
+	//unsigned long totalmemKB = 1024*1024;
+	struct pci_dev *pcidev;
+	unsigned long totalmemKB = 0 ,memfound = 0;
+	unsigned int datawidth;
+	unsigned int value,addressingtype;
+	unsigned int bit4_5, bit2_3,i;
+	
+	if((pcidev = pci_find_device(0x1344,0x3321,NULL)) == NULL)
+		return 0;
+	
+	
+	// Read the Rank Type Registers 0-7
+	// Fn 1 Offset 0x80-0x87
+	pci_read_config_byte(pcidev,0x80,&value);
+	
+	for(i=0;(i<=7) && (value != 0);){	
+		// Check addressing type
+		bit4_5 = value & 0x30;
+		switch(bit4_5){
+		case 0 :
+			addressingtype = 64*1024;	//Kb
+			break;
+		case 0x10 :
+			addressingtype = 128*1024;	
+			break;
+		case 0x20 :
+			addressingtype = 256*1024;
+			break;
+		case 0x30 :
+			addressingtype = 512*1024;
+			break;
+		default:
+			addressingtype = 0;
+		}
+			
+		// Check data bit width
+		bit2_3 = value & 0xc;
+		switch(bit2_3){
+		case 0 :
+			datawidth = 4;
+			break;
+		case 0x4 :
+			datawidth = 8;
+			break;
+		case 0x8 :
+			datawidth = 16;
+			break;
+		default:
+			datawidth = 0;
+		}	
 
-        struct pci_dev *pcidev;
-
-	/* pci_find_device is way overkill for the host bridge! 
-	 * Plus the BX & GX have different device numbers so it
-	 * prevents code sharing.
-	 */
-	pcidev = pci_find_slot(0, PCI_DEVFN(0,0));
-        //pci_read_config_byte(pcidev, 0x67, &banks);
-
-	dumpramregs(pcidev);
-
-	return totalmem;
+		memfound = (addressingtype << datawidth); // in Kb
+		memfound = memfound >> 3; 	// in KB
+		totalmemKB += memfound;
+		i++;
+		if(i<=7){
+			value = 0;
+			pci_read_config_byte(pcidev,(0x80+i),&value);
+		}
+	}
+		
+	return totalmemKB;
+	//return 1024*1024;
 }
 
 

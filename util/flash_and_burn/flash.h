@@ -32,6 +32,9 @@ struct flashchip {
 #define WINBOND_ID        0xDA	/* Winbond Manufacture ID code	*/
 #define W_29C020C         0x45	/* Winbond w29c020c device code*/
 
+#define ST_ID       	  0x20	
+#define ST_M29F400BT      0xD5
+
 extern int probe_28sf040 (struct flashchip * flash);
 extern int erase_28sf040 (struct flashchip * flash);
 extern int write_28sf040 (struct flashchip * flash, char * buf);

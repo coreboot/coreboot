@@ -35,6 +35,7 @@
 
 #include "flash.h"
 #include "jedec.h"
+#include "m29f400bt.h"
 
 struct flashchip flashchips[] = {
     {"Am29F040B",   AMD_ID,     AM_29F040B,   NULL, 512, 64*1024,
@@ -51,6 +52,8 @@ struct flashchip flashchips[] = {
      probe_39sf020, erase_39sf020, write_39sf020},
     {"W29C020C",    WINBOND_ID, W_29C020C,    NULL, 256, 128,
      probe_jedec,   erase_jedec,   write_jedec},
+    {"M29F400BT",   ST_ID, ST_M29F400BT ,    NULL, 512, 64*1024,
+     probe_m29f400bt,   erase_m29f400bt,   write_linuxbios_m29f400bt},
     {NULL,}
 };
 

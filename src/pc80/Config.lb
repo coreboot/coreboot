@@ -6,17 +6,9 @@ object isa-dma.o
 object i8259.o 
 #object udelay_timer2.o CONFIG_UDELAY_TIMER2
 #object beep.o CONFIG_BEEP
-#object vga_load_regs.o VIDEO_CONSOLE
-#object font_8x16.o VIDEO_CONSOLE
-#object vga_set_mode.o VIDEO_CONSOLE
-#object vga_load_pcx.o VIDEO_CONSOLE
 
 if CONFIG_IDE
 	dir ide
 end
 
 object keyboard.o
-
-if CONFIG_LEGACY_VGABIOS
-	object vgabios.o
-end

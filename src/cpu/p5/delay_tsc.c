@@ -125,21 +125,16 @@ static unsigned long long calibrate_tsc(void)
     delta >>= 20;
     // save this for microsecond timing.
     clocks_per_usec = delta;
+#define DEBUG
 #ifdef DEBUG
-    printf("end %x:%x, start %x:%x\n",
+    printk_notice("end %x:%x, start %x:%x\n",
 	endhigh, endlow, starthigh, startlow);
-    printf("32-bit delta %d\n", (unsigned long) delta);
+    printk_notice("32-bit delta %d\n", (unsigned long) delta);
 #endif
 
-    // ok now we don't have divide for unsigned long long.
-    // so what we do is set an unsigned long to all 1's, which is just 1 less than
-    // 1 << 32. then we divide by an unsigned long version of delta (we now that delta fits
-    // easily in 32 bits). that way we avoid assembly code.
-    // avoid gcc complaints.
-    result = allones / (unsigned long) delta;
-    retval = result;
+    retval = clocks_per_usec;
 #ifdef DEBUG
-    printf(__FUNCTION__ " 32-bit result is %d\n", result);
+    printk_notice(__FUNCTION__ " 32-bit result is %d\n", result);
 #endif
     return retval;
 }
@@ -154,7 +149,7 @@ void udelay(unsigned long us)
         unsigned long long clocks;
 
 	if (!clocks_per_usec) {
-		clocks_per_usec = calibrate_tsc();
+		calibrate_tsc();
 		printk_info("clocks_per_usec: %u\n", clocks_per_usec);
 	}
 	clocks = us;

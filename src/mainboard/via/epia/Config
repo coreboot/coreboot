@@ -21,8 +21,11 @@ superio via/vt8231
 mainboardinit cpu/p6/earlymtrr.inc
 
 option ENABLE_FIXED_AND_VARIABLE_MTRRS=1
+option FINAL_MAINBOARD_FIXUP=1
+option HAVE_PIRQ_TABLE=1
 option SUPERIO_DEVFN=0x88
 object mainboard.o
+object irq_tables.o
 keyboard pc80
 cpu p5
-
+cpu p6

@@ -172,6 +172,11 @@ define CONFIG_CHIP_CONFIGURE
 	export used
 	comment "Use new chip_configure method for configuring (non-pci) devices"
 end
+define CONFIG_USE_INIT
+	default 0
+	export never
+	comment "Use stage 1 initialization code"
+end
 
 ###############################################
 # ROM image options
@@ -531,6 +536,18 @@ define PCIC0_CFGDATA
 	format "0x%x"
 	export used
 	comment "PCI Configuration Data Register"
+end
+define PNP_CFGADDR
+	default none
+	format "0x%x"
+	export used
+	comment "PNP Configuration Address Register"
+end
+define PNP_CFGDATA
+	default none
+	format "0x%x"
+	export used
+	comment "PNP Configuration Data Register"
 end
 define UART0_IO_BASE
 	default none

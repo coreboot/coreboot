@@ -1,4 +1,4 @@
-#include <subr.h>
+#include <i386_subr.h>
 
 #ifndef SIS630S
 #define CHECKSUM 0xe6

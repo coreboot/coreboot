@@ -1,4 +1,5 @@
-#include <subr.h>
+#include <i386_subr.h>
+
 #define CHECKSUM 0xe6
 const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_SIGNATURE,	/* u32 signature */

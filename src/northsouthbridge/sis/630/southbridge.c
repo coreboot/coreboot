@@ -91,6 +91,52 @@ serial_irq_fixedup(void)
 	}
 }
 
+/* apc_fixup: Fix up the Mux-ed GPIO Lines controlled by APC registers 
+ *
+ * For SiS630A/B Mainboards, the MAC address of the internal SiS900 is stored in EEPROM
+ * on the board. The EEPROM interface lines are muxed with GPIO pins and are selected by
+ * some APC registers.
+ */
+static void
+apc_fixup(void)
+{
+	u8 regval, revision;
+	struct pci_dev *host_bridge, *isa_bridge;
+
+	host_bridge = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_630,
+				      (void *) NULL);
+	if (host_bridge == NULL)
+		return;
+	pci_read_config_byte(host_bridge, PCI_CLASS_REVISION, &revision);
+
+	isa_bridge = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503,
+				     (void *)NULL);
+	if (isa_bridge != NULL) {
+		/* Register 0x48, select APC control registers */
+		pci_read_config_byte(isa_bridge, 0x48, &regval);
+		pci_write_config_byte(isa_bridge, 0x48, regval | 0x40);
+
+		/* Enable MAC Serial ROM Autoload */
+		outb(0x01, 0x70);
+		regval = inb(0x71);
+		outb(regval | 0x80, 0x71);
+
+		/* Select Programmable LED0 and EEPROM Data Out for GPIO8 and GPIO3 */
+		outb(0x02, 0x70);
+		regval = inb(0x71);
+		outb(regval | 0x19, 0x71);
+
+		/* select Keyboard/Mouse function for GPIO Pin [14:10] */
+		outb(0x02, 0x70);
+		regval = inb(0x71);
+		outb(regval | 0x40, 0x71);
+
+		/* Register 0x48, select RTC registers */
+		pci_read_config_byte(isa_bridge, 0x48, &regval);
+		pci_write_config_byte(isa_bridge, 0x48, regval & ~0x40);
+	}
+}
+
 static void
 acpi_fixup(void)
 {
@@ -100,7 +146,6 @@ acpi_fixup(void)
 	if (pcidev != NULL) {
 		unsigned char val;
 		unsigned short acpibase = 0xc000, temp;
-		int i;
 
 		// the following is to turn off software watchdogs. 
 		// we co-op the address space from c000-cfff here. Temporarily. 
@@ -149,9 +194,9 @@ acpi_fixup(void)
 void
 final_southbridge_fixup()
 {
+#ifdef OLD_KERNEL_HACK
 	struct pci_dev *pcidev;
 
-#ifdef OLD_KERNEL_HACK
 	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, (void *)NULL);
 	if (pcidev != NULL) {
 		printk("Remapping IRQ on southbridge for OLD_KERNEL_HACK\n");
@@ -182,6 +227,7 @@ final_southbridge_fixup()
 	}
 #endif /* OLD_KERNEL_HACK */
 
+	apc_fixup();
 	serial_irq_fixedup();
 	acpi_fixup();
 

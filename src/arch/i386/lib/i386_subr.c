@@ -6,6 +6,7 @@
 #include <pci.h>
 #include <subr.h>
 #include <string.h>
+#include <i386_subr.h>
 
 void intel_cache_on(unsigned long base, unsigned long totalram)
 {

@@ -107,13 +107,3 @@ void framebuffer_on()
 }
 #endif	/* HAVE_FRAMEBUFFER */
 
-#define RTABLE_DEST 0xf0000
-
-void copy_irq_routing_table(void)
-{
-#ifdef USE_DOC_MIL
-	/* copy the PCI IRQ table to segment F, not neceressary for 512KB flash case */
-	memcpy((char *) RTABLE_DEST, &intel_irq_routing_table, intel_irq_routing_table.size);
-#endif /* USE_DOC_MIL */
-}
-

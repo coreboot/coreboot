@@ -125,13 +125,13 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 	/* PCI Slot 1 */
 #warning "FIXME get the irqs right, it's just hacked to work for now"
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8111_1, (4<<2)|0, 0x02, 0x11);
+		bus_8111_1, (4<<2)|0, 0x02, 0x10);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8111_1, (4<<2)|1, 0x02, 0x12);
+		bus_8111_1, (4<<2)|1, 0x02, 0x11);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8111_1, (4<<2)|2, 0x02, 0x13);
+		bus_8111_1, (4<<2)|2, 0x02, 0x12);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8111_1, (4<<2)|3, 0x02, 0x10);
+		bus_8111_1, (4<<2)|3, 0x02, 0x13);
 
 
 	/* PCI Slot 2 */
@@ -149,24 +149,24 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 	/* PCI Slot 3 */
 #warning "FIXME get the irqs right, it's just hacked to work for now"
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8111_1, (6<<2)|0, 0x02, 0x11);
+		bus_8111_1, (6<<2)|0, 0x02, 0x12);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8111_1, (6<<2)|1, 0x02, 0x12);
+		bus_8111_1, (6<<2)|1, 0x02, 0x13);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8111_1, (6<<2)|2, 0x02, 0x13);
+		bus_8111_1, (6<<2)|2, 0x02, 0x10);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8111_1, (6<<2)|3, 0x02, 0x10);
+		bus_8111_1, (6<<2)|3, 0x02, 0x11);
 
 	/* PCI Slot 4 */
 #warning "FIXME get the irqs right, it's just hacked to work for now"
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8111_1, (7<<2)|0, 0x02, 0x10);
+		bus_8111_1, (7<<2)|0, 0x02, 0x13);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8111_1, (7<<2)|1, 0x02, 0x11);
+		bus_8111_1, (7<<2)|1, 0x02, 0x10);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8111_1, (7<<2)|2, 0x02, 0x12);
+		bus_8111_1, (7<<2)|2, 0x02, 0x11);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_8111_1, (7<<2)|3, 0x02, 0x13);
+		bus_8111_1, (7<<2)|3, 0x02, 0x12);
 
 	/* Local devices */
 

@@ -12,7 +12,9 @@ static void write_phys(unsigned long addr, unsigned long value)
 		"movnti %1, (%0)"
 		: /* outputs */
 		: "r" (addr), "r" (value) /* inputs */
+#ifndef __GNUC__
 		: /* clobbers */
+#endif
 		);
 #else
 	volatile unsigned long *ptr;

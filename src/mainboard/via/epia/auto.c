@@ -52,7 +52,9 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 static void main(void)
 {
+  unsigned long x;
   /*	init_timer();*/
+  outb(5, 0x80);
 
 	enable_vt8231_serial();
 	uart_init();

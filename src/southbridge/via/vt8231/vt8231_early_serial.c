@@ -31,19 +31,24 @@ vt8231_writesioword(uint16_t reg, uint16_t val) {
 
 static void
 enable_vt8231_serial(void) {
+  unsigned long x;
+  uint8_t c;
   device_t dev;
-
-  dev = pci_locate_device(PCI_ID(0x1106,0x3065), 0);
+  outb(6, 0x80);
+  dev = pci_locate_device(PCI_ID(0x1106,0x8231), 0);
   
   if (dev == PCI_DEV_INVALID) {
+    outb(7, 0x80);
     die("Serial controller not found\r\n");
   }
-  
 
   /* first, you have to enable the superio and superio config. 
-     put a 3 in devfn 38 reg 85
+     put a 6 reg 80
   */
-  pci_write_config8(dev, 0x85, 3);
+  c = pci_read_config8(dev, 0x50);
+  c |= 6;
+  pci_write_config8(dev, 0x50, c);
+  outb(2, 0x80);
   // now go ahead and set up com1. 
   // set address
   vt8231_writesuper(0xf4, 0xfe);

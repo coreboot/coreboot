@@ -91,7 +91,8 @@ romimage "normal"
 	option ROM_IMAGE_SIZE=0x10000
 	option LINUXBIOS_EXTRA_VERSION=".0Normal"
 	mainboard via/epia
-	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
+#	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
+	payload /etc/hosts
 end
 
 romimage "fallback" 
@@ -99,7 +100,8 @@ romimage "fallback"
 	option ROM_IMAGE_SIZE=0x10000
 	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
 	mainboard via/epia
-	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
+#	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
+	payload /etc/hosts
 end
 
 buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"

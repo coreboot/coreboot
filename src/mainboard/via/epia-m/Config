@@ -6,6 +6,7 @@ ldscript cpu/i386/entry32.lds
 mainboardinit cpu/i386/reset16.inc
 ldscript cpu/i386/reset16.lds
 
+mainboardinit mainboard/via/epia-m/smbusenable.inc
 mainboardinit superio/via/vt1211/setup_serial.inc
 mainboardinit pc80/serial.inc
 mainboardinit arch/i386/lib/console.inc

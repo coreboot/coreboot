@@ -89,7 +89,7 @@ void
 dumpnorth(device_t north) 
 {
 	uint8_t r, c;
-	for(r = 0; r < 256; r += 16) {
+	for(r = 0; ; r += 16) {
 		print_debug_hex8(r);
 		print_debug(":");
 		for(c = 0; c < 16; c++) {
@@ -97,6 +97,8 @@ dumpnorth(device_t north)
 			print_debug(" ");
 		}
 		print_debug("\r\n");
+		if (r >= 240)
+			break;
   }
 }
 

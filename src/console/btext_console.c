@@ -56,7 +56,7 @@ static u32 g_max_loc_Y;
 #define cmapsz        (16*96)
 #endif
 
-static unsigned char vga_font[cmapsz];
+extern unsigned char vga_font[cmapsz];
 
 u32 boot_text_mapped;
 

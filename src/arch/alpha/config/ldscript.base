@@ -1,0 +1,100 @@
+OUTPUT_FORMAT("elf64-alpha")
+ENTRY(__start_offset)
+PHDRS { kernel PT_LOAD AT(0x310000); }
+__start_offset = start + 0x310000;
+SECTIONS
+{
+	. = _ROMBASE;
+	/*
+	 * First we place the code and read only data (typically const declared).
+	 * This get placed in rom.
+	 */
+	.text : {
+		_text = .;
+		*(.text)
+		_etext = .;
+	} : kernel
+	.rodata  : {
+		_rodata = .;
+		*(.rodata);
+		_erodata = .;
+	} : kernel
+
+	. = _RAMBASE;
+	/* Global data */
+	.data : {
+		_data = .;
+		*(.data.cacheline_aligned)
+		*(.data) CONSTRUCTORS
+		*(.got)
+		*(.sdata)
+		_edata = .;
+	}
+	_ldata	= LOADADDR(.data);
+	_eldata	= LOADADDR(.data) + SIZEOF(.data);
+
+	
+	/* Important align _bss so bss may be zeroed with quadword access */
+	. = ALIGN(8);
+	.bss : {
+		_bss = .;
+		*(.sbss) 
+		*(.scommon)
+		*(.bss)
+		*(COMMON)
+		/* Important align _ebss so bss may be zeroed with quadword access */
+		. = ALIGN(8);
+		_ebss = .;
+	}
+	_end = .;
+	
+	/* Align the heap to a quadword boundary */
+	. = ALIGN(8);
+	.heap : {
+		_heap = .;			
+		/* Reserve a meg for the heap */
+		. = . + 1024*1024;
+		. = ALIGN(8);
+		_eheap = .;
+	}
+	. = ALIGN(8);
+	.stack : {
+		_stack = .;
+		/* Allocate an 8k stack that grows backwards into the heap */
+		. = . + 8192;
+		. = ALIGN(8);
+		_estack = .;
+	}
+	
+	/DISCARD/ : {
+		/* Comment sections */
+		*(.mdebug) 
+		*(.note) 
+		*(.comment) 
+		/* DWARF 1 */
+		*(.debug) 
+		*(.line) 
+		/* GNU DWARF 1 extensions */
+		*(.debug_srcinfo)
+		*(.debug_sfnames) 
+		/* DWARF 1.1 and DWARF 2 */
+		*(.debug_aranges)
+		*(.debug_pubnames) 
+		/* DWARF 2 */
+		*(.debug_info)
+		*(.debug_abbrev)
+		*(.debug_line)
+		*(.debug_frame)
+		*(.debug_str) 
+		*(.debug_loc) 
+		*(.debug_macinfo)
+		/* SGI/MIPS DWARF 2 extensions */
+		*(.debug_weaknames)
+		*(.debug_funcnames)
+		*(.debug_typenames)
+		*(.debug_varnames)
+		/* Kernel module cleanup sections */
+		*(.text.exit)
+		*(.data.exit)
+	}
+}

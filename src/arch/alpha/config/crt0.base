@@ -1,0 +1,146 @@
+/*
+ * $ $
+ *
+ */
+
+.set noat
+.set noreorder
+.text
+
+#include <arch/cpu.h>
+		
+#if USE_CPU_EV4
+#include <cpu/ev4/start.inc>
+#elif USE_CPU_EV5
+#include <cpu/ev5/start.inc>
+#elif USE_CPU_EV6
+#include <cpu/ev6/start.inc>
+#else
+#error Uknown alpha cpu type
+#endif
+
+	/* __fatal_error_pal Called with:
+	 * a0 - Exception handler address that caught the exception
+	 * a1 - Address where the exception occured.
+	 * a2 - Potentially valid return address from the code
+	 *      that took the exception.
+	 */
+	FETCH_BLOCK_ALIGN
+__fatal_error_non_pal:
+	/* Resetup the global pointers */
+	ldgp	gp, 0(pv)
+	lda	sp, _estack
+	/* Display an error message */
+	jsr	ra, fatal_error
+	br	zero, .-4
+	
+	/* On entry to kernel_mode_start.
+	 * a0 - Signature (0xDEC?????) likely (0xDECB001)
+	 * a1 - Memory size in bytes
+	 * a2 - Cpu speed in picoseconds
+	 *
+	 * These parameters should be available on the 164 & the 264.
+	 */
+	FETCH_BLOCK_ALIGN
+kernel_mode_start:
+	/* Setup the global pointers */
+	ldgp	gp, 0(pv)
+	lda	sp, _estack
+
+	/* Zero the Bss */
+	lda	t1, _bss
+	lda	t2, _ebss
+	subq	t2, t1, t2
+	br	Zstart
+Zero:	subq	t2, 8, t2
+	stq	zero, 0(t1)
+Zstart:	bne	t2, Zero
+
+
+	/* Test for the srom valid signature */
+	lda	t1, 0xDEC(zero)
+	srl	a0, 20, t2
+	cmpeq	t1, t2, t3
+	beq	t3, 1f
+	
+	/* Compute the number of cpu clocks per bit out to the srom
+	 * debug port.
+	 */ 
+	bis	a2, a2, t11
+	ldq	t10, picosecs_per_srom_clock
+	jsr	t9, __divq
+	lda	t11, srom_wait_reps
+	stq	t12, 0(t11)
+
+1:
+	/* Jump to main */
+	jsr	ra, hardwaremain
+	br	zero, .-4	/* spin in place */	
+
+	
+	.p2align 3
+picosecs_per_srom_clock:
+	.quad 104166666		/* Pico seconds per tick of a 9600Hz clock */
+srom_wait_reps:
+	.quad 0			/* 48562 on a 466Mhz EV6 */
+
+	/* Wait bit time is private and should not be called from C */
+	FETCH_BLOCK_ALIGN
+wait_bit_time:
+#if USE_CPU_EV6
+	lda	t8, 0x1(zero)
+	sll	t8, 32, t8		/* t8 = 1.0000.0000 */
+	hw_mtpr	t8, EV6__CC_CTL		/* clear cycle count */
+	bis	zero,zero,zero		/* nop */
+	bis	zero,zero,zero		/* nop */
+	bis	zero,zero,zero		/* nop */
+	hw_mtpr	zero, (EV6__EXC_ADDR+32)	/* dummy IPR write - sets SCBD bit 5 (to stall untill cc_ctl gets written) */
+#else
+	hw_mtpr	t8, ccCtl		/* clear cycle count	*/
+	STALL				/* wait 3 cycles to avoid palcode */
+	STALL				/* violation 		*/
+	STALL
+	STALL
+#endif
+wait:				/* REPEAT */
+	rpcc	t8		/* : read the cycle count */
+	zapnot	t8, 0x0f, t8	/* : clear the high longword */
+	cmplt	t12, t8, t8	/* : */
+	beq	t8, wait	/* UNTIL we have waited time specified */
+	ret	zero, (t10)
+
+GLOBL(srom_tx_byte)
+	/* Initialze routine variables */
+	ldgp	gp, 0(pv)
+	ldq	t12, (srom_wait_reps - srom_tx_byte)(pv)
+	lda	t11, 16(zero)	/* 1 high + 1 start + 8 data +  */ 
+				/* 6 stop (5 extra for delay).  */
+	lda	a0, 0x3F00(a0)	/* add stop bits at the end and */
+	s4addq	a0, 1, a0	/* then add start and high bit	 */ 
+
+#if USE_CPU_EV6
+	FETCH_BLOCK_ALIGN		/* align with nop instructions */
+data_bit:				/* REPEAT */
+	hw_mfpr	t9, EV6__I_CTL		/* get current I_CTL value   */ 
+	lda	t8, 0x1(zero)		/* t8 - mask for sl_xmit bit */
+	sll	t8, EV6__I_CTL__SL_XMIT__S, t8 /* move to the correct position */
+	bic	t9, t8, t9		/* clear sl_xmit bit in old I_CTL value */
+	blbc	a0, send_bit		/* check the new sl_xmit bit */
+	bis	t9, t8, t9		/* set sl_xmit bit in old I_CTL value */
+send_bit:				/* continue */
+	hw_mtpr	t9, EV6__I_CTL		/* EV6 Send the data bit */
+#else
+	sll	a0, (SLXMIT_V_TMT), a0	/* Put bits into position */
+data_bit:				/*  REPEAT */
+	hw_mtpr a0, slXmit		/* EV5 Send the first bit */
+#endif
+	srl	a0, 1, a0	/* Shift right, to the next bit. */
+	subq	t11, 1, t11	/* Decrement the bit count. */
+
+	bsr	t10, wait_bit_time /* Wait for a bit time */
+	bne	t11, data_bit	/* UNTIL all data sent */
+	ret	zero, (ra)
+	
+
+
+

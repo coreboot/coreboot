@@ -1,0 +1,35 @@
+biosbase 0
+rambase 0x10000
+makedefine LINK = ld -T ldscript.ld -o $@ crt0.o linuxbios.a
+makedefine CPPFLAGS= -I$(TOP)/src/include -I$(TOP)/src/arch/$(ARCH)/include $(CPUFLAGS)
+makedefine CFLAGS= $(CPU_OPT) $(CPPFLAGS) -O2 -nostdinc -nostdlib -fno-builtin -Wall
+makedefine CC=cc 
+makerule all : linuxbios.rom ;
+makerule linuxbios.rom: linuxbios.strip makerom ; ./makerom -l0x310000 -i7 -v linuxbios.strip -o linuxbios.rom
+makerule linuxbios.strip: linuxbios ; objcopy -O binary -R .note -R .comment -S linuxbios linuxbios.strip
+makerule linuxbios: linuxbios.a ; @rm -f biosobject
+addaction linuxbios $(LINK) 
+addaction linuxbios nm -n linuxbios > linuxbios.map
+
+makerule linuxbios.a : $(OBJECTS) ; rm -f linuxbios.a
+addaction linuxbios.a ar cr linuxbios.a $(OBJECTS)
+
+makerule crt0.s: crt0.S ; $(CC) $(CPPFLAGS) -I$(TOP)/src -E $< > crt0.s
+
+makerule crt0.o : crt0.s; $(CC) $(CPU_OPT) -c crt0.s
+#makerule makerom: $(TOP)/util/makerom/makerom.c $(TOP)/util/makerom/compress.c ; $(CC) -o makerom $(TOP)/util/makerom/makerom.c $(TOP)/util/makerom/compress.c
+
+makerule clean : ; rm -f  linuxbios.* *.o mkrom xa? *~
+addaction clean rm -f linuxbios crt0.s
+addaction clean rm -f a.out *.s *.l
+addaction clean rm -f TAGS tags
+addaction clean rm -f docipl
+
+
+# do standard config files that the user need not specify
+# for now, this is just 'lib', but it may be more later. 
+dir /src/arch/alpha
+dir /src/lib
+dir /src/boot
+dir /src/rom
+dir /util/makerom

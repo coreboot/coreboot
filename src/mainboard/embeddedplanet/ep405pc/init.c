@@ -52,6 +52,11 @@ board_init(void)
 	mtebc(pb4ap, 0x04050000);
 	
 	/*
+	 * Enable PCI
+	 */
+	outb(0x80, 0xF4000001);
+
+	/*
 	 * Enable UART0
 	 */
 	outb(0x20, 0xF4000003);

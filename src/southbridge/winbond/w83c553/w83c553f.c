@@ -56,10 +56,7 @@ extern struct pci_ops pci_direct_ppc;
 
 void southbridge_early_init(void)
 {
-	struct pci_dev  *devbusfn;
 	unsigned char reg8;
-	unsigned short reg16;
-	unsigned int reg32;
 
 	/*
 	 * Set ISA memory space
@@ -68,7 +65,7 @@ void southbridge_early_init(void)
 	/* 16 MB ISA memory space */
 	reg8 |= (IPADCR_IPATOM4 | IPADCR_IPATOM5 | IPADCR_IPATOM6 | IPADCR_IPATOM7);
 	reg8 &= ~IPADCR_MBE512;
-	pci_direct_ppc.read_byte(0, 0x58, WINBOND_IPADCR, reg8);
+	pci_direct_ppc.write_byte(0, 0x58, WINBOND_IPADCR, &reg8);
 }
 
 void southbridge_init(void)
@@ -113,14 +110,14 @@ void southbridge_init(void)
 
 	/*
 	 * Interrupt routing:
-	 *  - IDE  -> INTC/INTD
-	 *  - INTA -> IRQ 5
-	 *  - INTB -> IRQ 6
-	 *  - INTC -> IRQ 7
-	 *  - INTD -> IRQ 8
+	 *  - IDE  -> 9/0
+	 *  - INTA -> IRQ 10
+	 *  - INTB -> IRQ 11
+	 *  - INTC -> IRQ 14
+	 *  - INTD -> IRQ 15
 	 */
-	pci_write_config_byte(devbusfn, WINBOND_IDEIRCR, 0x0);
-	pci_write_config_word(devbusfn, WINBOND_PCIIRCR, 0x5678);
+	pci_write_config_byte(devbusfn, WINBOND_IDEIRCR, 0x90);
+	pci_write_config_word(devbusfn, WINBOND_PCIIRCR, 0xABEF);
 
 	/*
 	 * Read IDE bus offsets from function 1 device.
@@ -144,8 +141,7 @@ void southbridge_init(void)
 	 * Secondary port Mode 0 ~P1F16
 	 */
 	pci_read_config_dword(devbusfn, WINDOND_IDECSR, &reg32);
-	reg32 |= IDECSR_LEGIRQ;
-	reg32 &= ~(IDECSR_P1EN | IDECSR_P1F16);
+	reg32 &= ~(IDECSR_LEGIRQ | IDECSR_P1EN | IDECSR_P1F16);
 	pci_write_config_dword(devbusfn, WINDOND_IDECSR, reg32);
 
 	pci_read_config_dword(devbusfn, PCI_BASE_ADDRESS_0, &ide_bus_offset[0]);

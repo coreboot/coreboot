@@ -109,11 +109,11 @@ jmp intel_440_out
 #define SET_DRAMC						\
 	CS_WRITE_BYTE(0x57, 0x8)				\
 
-#define SET_PAM \
-	/* PAM - Programmable Attribute Map Registers */	\
+	/* PAM - Programmable Attribute Map Registers */	
 	/* Ideally we want to enable all of these as DRAM and teach
 	 * linux it is o.k. to use them...
 	 */
+#define SET_PAM \
 	CS_WRITE_BYTE(0x59, 0x00)				; \
 	CS_WRITE_BYTE(0x5a, 0x00)				; \
 	CS_WRITE_BYTE(0x5b, 0x00)				; \

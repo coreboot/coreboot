@@ -8,4 +8,7 @@ It has been tested on 2.4.0-test6 kernels.
 For SiS630 users: Use the linux-2.4.0-test12-sis630-sisfb_lite.patch ONLY.
 There is also a sameple kernel configuration file config-2.4.0-test12.sis.
 This will build a kernel that works with LinuxBIOS. 
+---
+For IDE spinup patch you can use the ide-spinup.patch. This will ONLY add 
+a patch to force IDE controllers on, and wait for hda to spin up
 

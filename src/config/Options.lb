@@ -522,6 +522,32 @@ define CONFIG_ROM_STREAM_START
 	export always
 	comment "ROM stream start location"
 end
+define CONFIG_FS_STREAM
+	default 0
+	export always
+	comment "Boot from a filesystem"
+end
+define CONFIG_FS_EXT2
+	default 0
+	export always
+	comment "Enable ext2 filesystem support"
+end
+define CONFIG_FS_ISO9660
+	default 0
+	export always
+	comment "Enable ISO9660 filesystem support"
+end
+define AUTOBOOT_DELAY
+	default 2
+	export always
+	comment "Delay (in seconds) before autobooting"
+end
+define AUTOBOOT_CMDLINE
+	default "hdc1:/vmlinuz root=/dev/hdc3 console=tty0 console=ttyS0,115200"
+	export always
+	format "\"%s\""
+	comment "Default command line when autobooting"
+end
 
 ###############################################
 # IRQ options

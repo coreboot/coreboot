@@ -1,0 +1,104 @@
+$Id$
+
+--- linux-2.4.13-base/drivers/ide/ide-pci.c	Sun Sep 30 13:26:05 2001
++++ linux-2.4.13-l440gx/drivers/ide/ide-pci.c	Mon Nov 26 21:50:02 2001
+@@ -695,9 +695,20 @@
+ 			goto controller_ok;
+ 		if ((IDE_PCI_DEVID_EQ(d->devid, DEVID_PDC20262)) && (secondpdc++==1) && (port==1)  ) 
+ 			goto controller_ok;
+-			
++#ifndef CONFIG_LINUXBIOS_FORCE_IDE_CONTROLLER_ON
+ 		if (e->reg && (pci_read_config_byte(dev, e->reg, &tmp) || (tmp & e->mask) != e->val))
+ 			continue;	/* port not enabled */
++#else
++		/* force 'em on! */
++ 		if (e->reg) {
++		    pci_read_config_byte(dev, e->reg, &tmp);
++		    tmp |= e->val;
++		    pci_write_config_byte(dev, e->reg, tmp);
++		    printk("%s: LINUXBIOS, so Jammed the enable on!\n", 
++			d->name);
++  		}
++		
++#endif
+ controller_ok:			
+ 		if (IDE_PCI_DEVID_EQ(d->devid, DEVID_HPT366) && (port) && (class_rev < 0x03))
+ 			return;
+--- linux-2.4.13-base/drivers/ide/ide-probe.c	Thu Oct 11 10:14:32 2001
++++ linux-2.4.13-l440gx/drivers/ide/ide-probe.c	Mon Nov 26 21:47:41 2001
+@@ -310,6 +310,13 @@
+ 		if ((drive->media != ide_disk) && (cmd == WIN_IDENTIFY))
+ 			return 4;
+ 	}
++#ifdef CONFIG_LINUXBIOS_WAIT_HDA_SPINUP
++	if (! strncmp(drive->name, "hda", 3)) {
++	  printk("jamming drive present for %s\n", drive->name);
++	  drive->present = 1;
++	}
++#endif
++
+ #ifdef DEBUG
+ 	printk("probing for %s: present=%d, media=%d, probetype=%s\n",
+ 		drive->name, drive->present, drive->media,
+--- linux-2.4.13-base/arch/i386/config.in	Sat Oct 20 20:17:19 2001
++++ linux-2.4.13-l440gx/arch/i386/config.in	Mon Nov 26 21:47:41 2001
+@@ -407,3 +407,13 @@
+ fi
+ 
+ endmenu
++
++mainmenu_option next_comment
++comment 'LinuxBIOS'
++
++tristate 'LinuxBIOS Support' CONFIG_LINUXBIOS
++if [ "$CONFIG_LINUXBIOS" != "n" ]; then
++   source arch/i386/Linuxbios.in
++fi
++
++endmenu
+--- linux-2.4.13-base/arch/i386/kernel/setup.c	Mon Oct 15 14:43:24 2001
++++ linux-2.4.13-l440gx/arch/i386/kernel/setup.c	Fri Dec  7 12:51:50 2001
+@@ -411,7 +411,8 @@
+ 	    printk(KERN_ERR "Ooops! Too many entries in the memory map!\n");
+ 	    return;
+ 	}
+-
++	printk(__FUNCTION__ " #%d, start 0x%x size 0x%x type 0x%x\n", 
++				start, size, type);
+ 	e820.map[x].addr = start;
+ 	e820.map[x].size = size;
+ 	e820.map[x].type = type;
+@@ -778,7 +779,15 @@
+ #ifdef CONFIG_VISWS
+ 	visws_get_board_type_and_rev();
+ #endif
+-
++	{ int r, c; // row, column
++	  unsigned char *p = PARAM;
++	  for(r = 0; r < 2048; r += 32) {
++		printk("\n%d:", r);
++		for(c = 0; c < 32; c++)
++			printk("%x ", PARAM[r+c]);
++	  }
++	}
++		  
+  	ROOT_DEV = to_kdev_t(ORIG_ROOT_DEV);
+  	drive_info = DRIVE_INFO;
+  	screen_info = SCREEN_INFO;
+@@ -956,6 +965,8 @@
+ 			initrd_start =
+ 				INITRD_START ? INITRD_START + PAGE_OFFSET : 0;
+ 			initrd_end = initrd_start+INITRD_SIZE;
++			printk("initrd_start 0x%x initrd_end 0x%x\n"< 
++				initrd_start, initrd_end);
+ 		}
+ 		else {
+ 			printk(KERN_ERR "initrd extends beyond end of memory "
+--- linux-2.4.13-base/arch/i386/Linuxbios.in	Wed Jan  9 10:42:03 2002
++++ linux-2.4.13-l440gx/arch/i386/Linuxbios.in	Mon Nov 26 21:47:41 2001
+@@ -0,0 +1,5 @@
++mainmenu_option next_comment
++comment 'Linuxbios Options'
++bool 'Force IDE Controllers on?' CONFIG_LINUXBIOS_FORCE_IDE_CONTROLLER_ON
++bool 'Wait for HDA to spin up?'  CONFIG_LINUXBIOS_WAIT_HDA_SPINUP
++endmenu

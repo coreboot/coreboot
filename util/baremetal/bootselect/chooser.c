@@ -50,7 +50,7 @@ int choose_stream(struct stream *stream)
 		current += current->block_count+1;
 	}
 
-	j=1;
+	j=2;
 	if(iskey()) {
 		j = ttys0_rx_char();
 		j=-1;

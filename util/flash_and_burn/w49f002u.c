@@ -97,7 +97,8 @@ int write_49f002 (struct flashchip * flash, char * buf)
    printf ("Programming Page: ");
     for (i = 0; i < total_size; i++) {
 	/* write to the sector */
-	printf ("address: 0x%08lx", i);
+	if ((i & 0xfff) == 0)
+	    printf ("address: 0x%08lx", i);
 	*(bios + 0x5555) = 0xAA;
 	*(bios + 0x2AAA) = 0x55;
 	*(bios + 0x5555) = 0xA0;
@@ -106,7 +107,8 @@ int write_49f002 (struct flashchip * flash, char * buf)
 	/* wait for Toggle bit ready */
 	toggle_ready_jedec(dst);
 
-	printf ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+	if ((i & 0xfff) == 0)
+	    printf ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
     }
 #endif
     printf("\n");

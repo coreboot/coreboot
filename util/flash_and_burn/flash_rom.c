@@ -33,6 +33,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <pci/pci.h>
+#include <string.h>
 
 #include "flash.h"
 #include "jedec.h"
@@ -68,6 +69,8 @@ struct flashchip flashchips[] = {
      probe_82802ab,   erase_82802ab,   write_82802ab},
     {NULL,}
 };
+
+char *chip_to_probe = NULL;
 
 int enable_flash_sis630 (struct pci_dev *dev, char *name)
 {
@@ -127,7 +130,6 @@ int
 enable_flash_e7500(struct pci_dev *dev, char *name) {
   /* register 4e.b gets or'ed with one */
   unsigned char old, new;
-  int ok;
   /* if it fails, it fails. There are so many variations of broken mobos
    * that it is hard to argue that we should quit at this point. 
    */
@@ -139,11 +141,11 @@ enable_flash_e7500(struct pci_dev *dev, char *name) {
   if (new == old)
       return 0;
 
-  ok = pci_write_byte(dev, 0x4e, new);
+  pci_write_byte(dev, 0x4e, new);
 
-  if (ok != new) {
+  if (pci_read_byte(dev, 0x4e) != new) {
     printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n", 
-	   old, new, name);
+	   0x4e, new, name);
     return -1;
   }
   return 0;
@@ -189,21 +191,15 @@ enable_flash_vt8235(struct pci_dev *dev, char *name) {
 
 int
 enable_flash_vt8231(struct pci_dev *dev, char *name) {
-  unsigned char old, new;
-  int ok;
+  unsigned char val;
   
-  old = pci_read_byte(dev, 0x40);
+  val = pci_read_byte(dev, 0x40);
+  val |= 0x10;
+  pci_write_byte(dev, 0x40, val);
 
-  new = old | 0x10;
-
-  if (new == old)
-      return 0;
-
-  ok = pci_write_byte(dev, 0x40, new);
-
-  if (ok != 0) {
+  if (pci_read_byte(dev, 0x40) != val) {
     printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n", 
-	   old, new, name);
+	   0x40, val, name);
     return -1;
   }
   return 0;
@@ -278,6 +274,10 @@ struct flashchip * probe_flash(struct flashchip * flash)
     }
 
     while (flash->name != NULL) {
+	if (chip_to_probe && strcmp(flash->name, chip_to_probe) != 0) {
+	    flash++;
+	    continue;
+	}
 	printf("Trying %s, %d KB\n", flash->name, flash->total_size);
 	size = flash->total_size * 1024;
 	bios = mmap (0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
@@ -425,10 +425,11 @@ enable_flash_write() {
 
 void usage(const char *name)
 {
-    printf("usage: %s [-rwv] [file]\n", name);
+    printf("usage: %s [-rwv] [-c chipname][file]\n", name);
     printf("-r: read flash and save into file\n"
         "-w: write file into flash (default when file is specified)\n"
         "-v: verify flash against file\n"
+        "-c: probe only for specified flash chip\n"
         " If no file is specified, then all that happens\n"
         " is that flash info is dumped\n");
     exit(1);
@@ -444,7 +445,10 @@ main (int argc, char * argv[])
     int opt;
     int read_it = 0, write_it = 0, verify_it = 0;
     char *filename = NULL;
-    while ((opt = getopt(argc, argv, "rwv")) != EOF) {
+
+    setbuf(stdout, NULL);
+
+    while ((opt = getopt(argc, argv, "rwvc:")) != EOF) {
         switch (opt) {
         case 'r':
             read_it = 1;
@@ -454,6 +458,9 @@ main (int argc, char * argv[])
             break;
         case 'v':
             verify_it = 1;
+            break;
+        case 'c':
+            chip_to_probe = strdup(optarg);
             break;
         default:
             usage(argv[0]);
@@ -509,7 +516,7 @@ main (int argc, char * argv[])
         fclose(image);
     }
 
-    if (write_it)
+    if (write_it || (!read_it && !verify_it))
         flash->write (flash, buf);
     if (verify_it)
         verify_flash (flash, buf, /* verbose = */ 0);

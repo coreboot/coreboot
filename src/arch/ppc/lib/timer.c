@@ -7,13 +7,13 @@
 
 unsigned get_hz(void)
 {
-	return bsp_clock_speed() >> 16;
+	return bsp_clock_speed();
 }
 
 unsigned ticks_since_boot(void)
 {
 	extern unsigned long long _timebase(void);
-	return (unsigned) (_timebase() >> 16);
+	return (unsigned) (_timebase());
 }
 
 void sleep_ticks(unsigned ticks)

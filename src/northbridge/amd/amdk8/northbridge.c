@@ -12,6 +12,7 @@
 #include <bitops.h>
 #include "chip.h"
 #include "northbridge.h"
+#include "amdk8.h"
 
 struct mem_range *sizeram(void)
 {
@@ -60,6 +61,16 @@ struct mem_range *sizeram(void)
 			mem[idx].sizek = sizek;
 			idx++;
 		}
+	
+		/* see if we need a hole from 0xa0000 to 0xbffff */
+		if((mem[idx-1].basek < ((8*64)+(8*16))) && 
+		   (mem[idx-1].sizek > ((8*64)+(16*16)))) {
+			mem[idx].basek = (8*64)+(16*16);
+			mem[idx].sizek = mem[idx-1].sizek - ((8*64)+(16*16));
+			mem[idx-1].sizek = ((8*64)+(8*16)) - mem[idx-1].basek;
+			idx++;
+		}	
+		
 		/* See if I need to split the region to accomodate pci memory space */
 		if ((mem[idx - 1].basek <= mmio_basek) &&
 			((mem[idx - 1].basek + mem[idx - 1].sizek) >  mmio_basek)) {
@@ -151,10 +162,6 @@ static unsigned int amdk8_nodeid(device_t dev)
 }
 
 
-#define LinkConnected     (1 << 0)
-#define InitComplete      (1 << 1)
-#define NonCoherent       (1 << 2)
-#define ConnectionPending (1 << 4)
 static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 {
 	unsigned nodeid;
@@ -166,7 +173,7 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 	for(link = 0; link < dev->links; link++) {
 		uint32_t link_type;
 		uint32_t busses, config_busses;
-		unsigned free_reg, config_reg, other_reg;
+		unsigned free_reg, config_reg;
 		dev->link[link].cap = 0x80 + (link *0x20);
 		do {
 			link_type = pci_read_config32(dev, dev->link[link].cap + 0x18);
@@ -249,7 +256,13 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 			((unsigned int) (dev->link[link].subordinate) << 16);
 		pci_write_config32(dev, dev->link[link].cap + 0x14, busses);
 
-		config_busses = (config_busses & 0x00ffffff) | (dev->link[link].subordinate << 24);
+		config_busses &= 0x000fc88;
+		config_busses |= 
+			(3 << 0) |  /* rw enable, no device compare */
+			(( nodeid & 7) << 4) | 
+			(( link & 3 ) << 8) |  
+			((dev->link[link].secondary) << 16) |
+			((dev->link[link].subordinate) << 24);
 		f1_write_config32(config_reg, config_busses);
 #if 1
 		printk_debug("Hypertransport scan link done\n");
@@ -456,11 +469,11 @@ static void amdk8_set_resources(device_t dev)
 unsigned int amdk8_scan_root_bus(device_t root, unsigned int max)
 {
 	unsigned reg;
-	max = pci_scan_bus(&root->link[0], PCI_DEVFN(0x18, 0), 0xff, max);
-	/* Unmap all of the other pci busses */
+	/* Unmap all of HT chains */
 	for(reg = 0xe0; reg <= 0xec; reg += 4) {
 		f1_write_config32(reg, 0);
 	}
+	max = pci_scan_bus(&root->link[0], PCI_DEVFN(0x18, 0), 0xff, max);
 	return max;
 }
 

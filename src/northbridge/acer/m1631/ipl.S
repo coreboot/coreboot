@@ -17,13 +17,7 @@
  * ror it 16 bits, and as we grow the CAS, we just inc cs, and that will
  * set the right value. 
  */
-	/*	SDRAM (28:27 == 10), 1st row present (26:25=11),
-	 * no 2nd row yet (24:23=00), 256 MB (22:20 = 110),
-	 * 10 bits CA (minimum for SDRAM 19:16=2), CAS3 (12:11 = 10)
-	 */
-	/* 0xf in high order due to other settings */
 #define INIT_MCR $0xf6621000
-
 #define WRITE_MCR0 movl %ecx, %eax ;  outl %eax, %dx
 /*#include <cpu/p5/start32.inc>*/
 .org 0xfe000
@@ -50,7 +44,7 @@ _realstart:
 	movw	%cs, %ax
 	movw	%ax, %es
 
-		.byte 0x66 /* prefix */
+	.byte 0x66 /* prefix */
 	.byte 0x26
 	.byte 0x0f, 0x01, 0x16 /* lgdt [es:offset]*/
 	.word  gdtptr -  EXT(_start) /* offset in segment */
@@ -92,8 +86,81 @@ code16
 /* 0xff selects register 0x47 */
 	movb	$0xff, %dl
 	outb	%al,%dx
-
 	xorl	%edi, %edi
+
+
+/*	Must set regs on North Bridge	*/
+
+	movl	$0x800000f8,%eax	/* f9h */
+	movw	$0xcf8,%dx
+	outl	%eax,%dx
+	movb	$0xfd,%dl
+	movb	$0x08,%al
+	outb	%al,%dx
+
+	movb	$0x8c,%al	/* 8eh */
+	movb	$0xf8,%dl
+	outl	%eax,%dx
+	movb	$0xfe,%dl
+	inb	%dx,%al
+	orb	$0x08,%al
+	outb	%al,%dx
+
+	movb	$0x48,%al	/* 49h */
+	movb	$0xf8,%dl
+	outl	%eax,%dx
+	movb	$0xfd,%dl
+	movb	$0x60,%al
+	outb	%al,%dx
+
+	movb	$0x80,%al	/* 82h */
+	movb	$0xf8,%dl
+	outl	%eax,%dx
+	movb	$0xfe,%dl
+	movb	$0x10,%al
+	outb	%al,%dx
+
+	movb	$0x90,%al	/* 93h */
+	movb	$0xf8,%dl
+	outl	%eax,%dx
+	movb	$0xff,%dl
+	inb	%dx,%al
+	orb	$0x06,%al
+	outb	%al,%dx
+
+	movb	$0x80,%al	/* 83h */
+	movb	$0xf8,%dl
+	outl	%eax,%dx
+	movb	$0xff,%dl
+	movb	$0x00,%al
+	outb	%al,%dx
+
+	movb	$0x6c,%al	/* 6eh, 6fh */
+	movb	$0xf8,%dl
+	outl	%eax,%dx
+	movb	$0xfc, %dl
+	inl	%dx, %eax
+	andl	$0x0000fffc, %eax
+	orl	$0xf6410001, %eax	
+	outl	%eax, %dx
+
+	movb	$0x55, 0
+	movb	$0xaa, 0x2000
+	cmpb	$0x55, 0
+	je	bank_4
+	andb	$0xfc, %al	/* 2 bank */
+bank_4:
+	outl	%eax, %dx
+
+	movl	$0x8000007c,%eax	/* Enable Refresh 7eh */
+	movw	$0xcf8,%dx
+	outl	%eax,%dx
+	movb	$0xfe,%dl
+	inb	%dx,%al
+	orb	$0x08,%al
+	outb	%al,%dx
+
+#if 0
 	movl	$0x8000006c, %eax
 	mov	$0x0cf8,%dx
 	outl	%eax,%dx
@@ -112,10 +179,6 @@ code16
 	rorl	$16, %ecx
 	/* clear out the CAS, since we assume start at zero
 	 * and increment 
-	 */
-	/* NOTE: we set 10-bit above. If it only uses 8 bits it will
-	 * wrap. So it is OK that we clear out the CAS to 0
-	 * (WE THINK ...)
 	 */
 	andb	$0xf0, %cl
 	/* test 8 bit CAS */
@@ -211,6 +274,14 @@ sizeram:
 	/* NOTE: MUST NOT DESTROY %ecx! */
 	/* INPUT: %al, the register. %ecx, the write data */
 	/* Following code courtesy Ollie Lho:	*/
+	
+#endif	
+	
+	
+	
+	
+	
+	
 /*
  * ipl.S:	 Initial Program Loader (IPL) for SiS 630 and M-System DoC Millennium
  *

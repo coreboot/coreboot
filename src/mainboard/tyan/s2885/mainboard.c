@@ -6,11 +6,12 @@
 #include <device/pci_ops.h>
 #include "../../../northbridge/amd/amdk8/northbridge.h"
 #include "chip.h"
-//#include <part/mainboard.h>
+
 unsigned long initial_apicid[CONFIG_MAX_CPUS] =
 {
 	0,1
 };
+
 #if 0
 static void fixup_lsi_53c1030(struct device *pdev)
 {
@@ -36,7 +37,7 @@ static void fixup_lsi_53c1030(struct device *pdev)
 	
 }
 #endif
-//extern static void lsi_scsi_init(struct device *dev);
+
 #if 0
 static void print_pci_regs(struct device *dev)
 {
@@ -165,12 +166,7 @@ enable(struct chip *chip, enum chip_pass pass)
 	}
 
 }
-void final_mainboard_fixup(void)
-{
-#if 0
-        enable_ide_devices();
-#endif
-}
+
 static struct device_operations mainboard_operations = {
         .read_resources   = root_dev_read_resources,
         .set_resources    = root_dev_set_resources,
@@ -183,15 +179,17 @@ static struct device_operations mainboard_operations = {
 static void enumerate(struct chip *chip)
 {
         struct chip *child;
+
+	/* update device operation for dynamic root */
         dev_root.ops = &mainboard_operations;
         chip->dev = &dev_root;
         chip->bus = 0;
-        for(child = chip->children; child; child = child->next) {
-                child->bus = &dev_root.link[0];
+        for (child = chip->children; child; child = child->next) {
+		child->bus = &dev_root.link[0];
         }
 }
 struct chip_control mainboard_tyan_s2885_control = {
-	.enable = enable,
+	.enable    = enable,
         .enumerate = enumerate,
         .name      = "Tyan s2885 mainboard ",
 };

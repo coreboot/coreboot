@@ -1,0 +1,28 @@
+arch i386
+mainboardinit cpu/i386/entry16.inc
+mainboardinit cpu/i386/entry32.inc
+ldscript cpu/i386/entry16.lds
+ldscript cpu/i386/entry32.lds
+
+mainboardinit superio/via/vt8231/setup_serial.inc
+mainboardinit pc80/serial.inc
+mainboardinit arch/i386/lib/console.inc
+
+mainboardinit cpu/k7/earlymtrr.inc
+mainboardinit southbridge/via/vt8231/ideconfig.inc
+
+northbridge amd/amd76x
+southbridge via/vt8231
+
+keyboard pc80
+
+cpu k7
+
+object mainboard.o
+object irq_tables.o
+
+option HAVE_PIRQ_TABLE=1
+option ENABLE_FIXED_AND_VARIABLE_MTRRS=1
+option SUPERIO_DEVFN=0X88
+option ENABLE_IDE_NATIVE_MODE=0
+#option FINAL_MAINBOARD_FIXUP=1

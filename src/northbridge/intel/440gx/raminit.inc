@@ -359,7 +359,7 @@ jmp intel_440_out
 	 * DRB[7] == 2KB
 	 */
 #define SET_RPS \
-	CS_WRITE_WORD(0x74, 0x0055)
+	CS_WRITE_WORD(0x74, 0x5555)
 
 	/* SDRAMC */
 #define SET_SDRAMC \
@@ -750,28 +750,7 @@ spd_set_dramc_out:
 	xorl %edx, %edx
 	movl $0xcc, %eax
 	PCI_WRITE_CONFIG_BYTE
-/* next block is for Ron's attempt to get registered to work. */
-#ifdef INTEL_RAM_TEST_REGISTERED
-	/* BIOS makes weird page size for registered! */
-	/* what we have found is you need to set the EVEN banks to 
-	 * twice the size. Fortunately there is a very easy way to 
-	 * do this. First, read the WORD value of register 0x74. 
-	 */
-	movl	$0x74, %eax
-	PCI_READ_CONFIG_WORD
-	/* mask out the sizes for the ODD banks. 
-	 * we do this because we only handle symmetric DRAM
-         * so the sizes in odd and even banks are the same. 
-	 */
-	andw $0x3333, %ax
-	/* now to double the size of the EVEN banks we only need to add 1 */
-        /* because the size is log2
-         */
-	addw $0x1111, %ax
-	movw %ax, %cx
-	movl $0x74, %eax
-	PCI_WRITE_CONFIG_WORD
-#endif
+
 	/* now set the bit value for registered sdram into %eax */
 	movl $0x10, %eax
 1:	movl %eax, %edx
@@ -873,16 +852,46 @@ spd_set_rps:
 	jbe 2f
 	/* for now only handle the symmtrical case */
 	shll $2,  %edi
-	shll %cl, %edi
+	/* one too many shifts here. */
+	/*	shll %cl, %edi*/
 	orl %edi, %esi
 
 2:	addl $1, %ebx	/* increment the device */
 	addl $4, %ecx   /* increment the shift count */
 	cmpb $SMBUS_MEM_DEVICE_3, %bl
 	jbe 1b
+/* next block is for Ron's attempt to get registered to work. */
+/* we have just verified that we have to have this code. It appears that
+ * the registered SDRAMs do indeed set the RPS wrong. sheesh.
+ */
+	/* at this point, %esi holds the RPS for all ram. 
+	 * we have verified that for registered DRAM the values are 
+	 * 1/2 the size they should be. So we test for registered
+	 * and then double the sizes if needed. 
+	 */
+	movl $0x57, %eax
+	PCI_READ_CONFIG_BYTE
 
-	movl $0x7f, %eax
+	/* is it registered? */
+	testb $0x10, %eax
+	jz	1f
+
+	/* BIOS makes weird page size for registered! */
+	/* what we have found is you need to set the EVEN banks to 
+	 * twice the size. Fortunately there is a very easy way to 
+	 * do this. First, read the WORD value of register 0x74. 
+	 */
+
+	/* now to double the size of the EVEN banks we only need to add 1 */
+        /* because the size is log2
+         */
+	addl $0x1111, %esi
+	/* now write that final value of %esi into register 0x74 */
+1:
+	movl	%esi, %ecx
+	movl $0x74, %eax
 	PCI_WRITE_CONFIG_WORD
+
 	RET_LABEL(spd_set_rps)
 
 	/*

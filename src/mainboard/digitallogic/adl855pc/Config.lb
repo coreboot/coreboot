@@ -140,7 +140,7 @@ end
 
 makerule ./failover.inc
 	depends "./failover.E ./romcc"
-	action "./romcc -O -mcpu=c3 -o failover.inc --label-prefix=failover ./failover.E"
+	action "./romcc -O -mcpu=p4 -o failover.inc --label-prefix=failover ./failover.E"
 end
 
 makerule ./auto.E 
@@ -149,7 +149,7 @@ makerule ./auto.E
 end
 makerule ./auto.inc 
 	depends "./auto.E ./romcc"
-	action	"./romcc   -O -mcpu=c3 ./auto.E "
+	action	"./romcc   -O -mcpu=p4 ./auto.E "
 end
 
 ##

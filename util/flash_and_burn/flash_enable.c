@@ -82,6 +82,31 @@ static int enable_flash_e7500(struct pci_dev *dev, char *name)
 	return 0;
 }
 
+static int enable_flash_ich4(struct pci_dev *dev, char *name)
+{
+	/* register 4e.b gets or'ed with one */
+	unsigned char old, new;
+	/* if it fails, it fails. There are so many variations of broken mobos
+	 * that it is hard to argue that we should quit at this point. 
+	 */
+
+	old = pci_read_byte(dev, 0x4e);
+
+	new = old | 1;
+
+	if (new == old)
+		return 0;
+
+	pci_write_byte(dev, 0x4e, new);
+
+	if (pci_read_byte(dev, 0x4e) != new) {
+		printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
+		       0x4e, new, name);
+		return -1;
+	}
+	return 0;
+}
+
 static int enable_flash_vt8235(struct pci_dev *dev, char *name)
 {
 	unsigned char old, new, val;
@@ -234,6 +259,7 @@ typedef struct penable {
 static FLASH_ENABLE enables[] = {
 	{0x1039, 0x0630, "sis630", enable_flash_sis630},
 	{0x8086, 0x2480, "E7500", enable_flash_e7500},
+	{0x8086, 0x24c0, "ICH4", enable_flash_ich4},
 	{0x1106, 0x8231, "VT8231", enable_flash_vt8231},
 	{0x1106, 0x3177, "VT8235", enable_flash_vt8235},
 	{0x1078, 0x0100, "CS5530", enable_flash_cs5530},

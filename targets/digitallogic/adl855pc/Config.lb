@@ -90,7 +90,8 @@ romimage "normal"
 	mainboard digitallogic/adl855pc
 #	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
 #	payload ../../../../tg3--ide_disk.zelf	
-	payload ../../../../../lnxieepro100.ebi
+#	payload ../../../../../lnxieepro100.ebi
+	payload /etc/hosts
 end
 
 romimage "fallback" 
@@ -100,7 +101,8 @@ romimage "fallback"
 	mainboard digitallogic/adl855pc
 #	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
 #	payload ../../../../tg3--ide_disk.zelf	
-	payload ../../../../../lnxieepro100.ebi
+#	payload ../../../../../lnxieepro100.ebi
+	payload /etc/hosts
 end
 
 buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"

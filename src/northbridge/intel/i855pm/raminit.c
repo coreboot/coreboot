@@ -5,7 +5,7 @@
 /* converted to C 6/2004 yhlu */
 
 #define DEBUG_RAM_CONFIG 1
-
+#define ASM_CONSOLE_LOGLEVEL 10
 #define dumpnorth() dump_pci_device(PCI_DEV(0, 0, 0)) 
 
 /* DDR DIMM Mode register Definitions */
@@ -1512,7 +1512,7 @@ static unsigned int spd_detect_dimms(const struct mem_controller *ctrl)
                                 dimm_mask |= (1 << i);
                         }
                 }
-#if 1
+#if 0
                 device = ctrl->channel1[i];
                 if (device) {
                         byte = spd_read_byte(ctrl->channel1[i], 2);
@@ -1798,12 +1798,13 @@ static void dram_finish(const struct mem_controller *ctrl)
 #endif
 
 		/* Clear the ECC error bits */
+#if 0
 		pci_write_config8(ctrl->d0f1, 0x80, 0x03); /* dev 0, function 1, offset 80 */
 		pci_write_config8(ctrl->d0f1, 0x82, 0x03); /* dev 0, function 1, offset 82 */
 
 		pci_write_config32(ctrl->d0f1, 0x40, 1<<18); /* clear dev 0, function 1, offset 40; bit 18 by writing a 1 to it */
   	        pci_write_config32(ctrl->d0f1, 0x44, 1<<18); /* clear dev 0, function 1, offset 44; bit 18 by writing a 1 to it */
-
+#endif
 		pci_write_config8(ctrl->d0, 0x52, 0x0d);
 	}
 	

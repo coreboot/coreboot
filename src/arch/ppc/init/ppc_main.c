@@ -33,6 +33,11 @@ void ppc_main(void)
 	sdram_init();
 
 	/*
+	 * Flush cache now that memory is enabled.
+	 */
+	flush_dcache();
+
+	/*
 	 * Relocate payload (text & data) if necessary
 	 */
 	if (_liseg != _iseg) {	
@@ -41,12 +46,6 @@ void ppc_main(void)
 		while (from < _eliseg)
 			*to++ = *from++;
 	}
-
-	/*
-	 * Flush cache to memory because linux will try and
-	 * invalidate it.
-	 */
-	flush_dcache();
 
 	payload();
 

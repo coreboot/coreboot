@@ -72,6 +72,13 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer)
 	void (*kernel_entry)(void);       
 	kernel_entry = entry;
 
+	/*
+	 * Kernel will invalidate and disable dcache immediately on
+	 * entry. This is bad if we've been using it, which we
+	 * have. Make sure it is flushed to memory.
+	 */
+	flush_dcache();
+
 	/* On ppc we don't currently support loading over LinuxBIOS.
 	 * So ignore the buffer.
 	 */
@@ -79,5 +86,3 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer)
 	/* Jump to kernel */
 	kernel_entry();
 }
-
-

@@ -2,18 +2,29 @@
 ## Config file for the Total Impact briQ
 ##
 
-uses PCIC0_CFGADDR 
-uses PCIC0_CFGDATA 
+uses TTYS0_DIV
 uses TTYS0_BASE
 uses CONFIG_BRIQ_750FX
 uses CONFIG_BRIQ_7400
+uses ISA_IO_BASE
+uses ISA_MEM_BASE
+uses PCIC0_CFGADDR
+uses PCIC0_CFGDATA
+uses _IO_BASE
 
 ##
-## Set PCI registers
+## Set memory map
 ##
-default PCIC0_CFGADDR=0xff508000
-default PCIC0_CFGDATA=0xff508010
+default ISA_IO_BASE=0x80000000
+default ISA_MEM_BASE=0xc0000000
+default PCIC0_CFGADDR=0xff5f8000
+default PCIC0_CFGDATA=0xff5f8010
+default _IO_BASE=ISA_IO_BASE
 
+##
+## The briQ uses weird clocking, 4 = 115200
+##
+default TTYS0_DIV=4
 ##
 ## Set UART base address
 ##

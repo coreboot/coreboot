@@ -26,8 +26,16 @@
 
 #include <ppc_asm.tmpl>
 #include <ppc.h>
+#include <arch/io.h>
+#include <console/console.h>
 
 void
 board_init(void)
 {
+        /*
+         * Enable UART
+         */
+        uart8250_init(TTYS0_BASE, TTYS0_DIV, TTYS0_LCS);
+        printk_info("briQ board initialized...\n");
+
 }

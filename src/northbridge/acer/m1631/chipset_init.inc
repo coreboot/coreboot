@@ -1,6 +1,6 @@
 /* SPD ram init */
 #define PM_DEVFN  CONFIG_ADDR(0, 0, 0)
-jmp chipsetinit_start
+jmpl chipsetinit_start
 /* table of settings for initial registers */
 /* format is register #, and value, OR value */
 register_table: 

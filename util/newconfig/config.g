@@ -952,15 +952,23 @@ class partobj:
 		self.set_path(".type=DEVICE_PATH_PCI_DOMAIN,.u={.pci_domain={ .domain = 0x%x }}" % (pci_domain))
     
 	def addapic_clusterpath(self, cluster):
-		""" Add a pci_domain number to a chip """
+		""" Add an apic cluster to a chip """
 		if ((cluster < 0) or (cluster > 15)):
 			fatal("Invalid apic cluster: %d is out of the range 0 to ff" % cluster)
 		self.set_path(".type=DEVICE_PATH_APIC_CLUSTER,.u={.apic_cluster={ .cluster = 0x%x }}" % (cluster))
     
-	def addcpu_buspath(self, bus):
-		if ((bus < 0) or (bus > 15)):
-			fatal("Invalid cpu bus: %d is out of the range 0 to ff" % bus)
-		self.set_path(".type=DEVICE_PATH_CPU_BUS,.u={.cpu_bus={ .id = 0x%x }}" % (bus))
+	def addcpupath(self, id):
+		""" Add a relative path to a cpu device hanging off our parent """
+		if ((id < 0) or (id > 255)):
+			fatal("Invalid device")
+		self.set_path(".type=DEVICE_PATH_CPU,.u={.cpu={ .id = 0x%x }}" % (id))
+    
+
+	def addcpu_buspath(self, id):
+		""" Add a cpu_bus to a chip """
+		if ((id < 0) or (id > 255)):
+			fatal("Invalid device")
+		self.set_path(".type=DEVICE_PATH_CPU_BUS,.u={.cpu_bus={ .id = 0x%x }}" % (id))
     
 	def usesoption(self, name):
 		"""Declare option that can be used by this part"""
@@ -1044,7 +1052,7 @@ def getoption(name, image):
 	elif (curpart):
 		o = getdict(curpart.uses_options, name)
 		if (o == 0):
-			print "curpart.uses_optins is %s\n" % curpart.uses_options
+			print "curpart.uses_options is %s\n" % curpart.uses_options
 	else:
 		o = getdict(global_uses_options, name)
 	v = getoptionvalue(name, o, image)
@@ -1552,6 +1560,7 @@ parser Config:
     token COMMENT:		'comment'
     token CONFIG:		'config'
     token CPU:			'cpu'
+    token CPU_BUS:		'cpu_bus'
     token CHIP:			'chip'
     token DEFAULT:		'default'
     token DEFINE:		'define'
@@ -1768,15 +1777,15 @@ parser Config:
 			HEX_NUM			{{ cluster = int(HEX_NUM, 16) }}
 						{{ if (C): partstack.tos().addapic_clusterpath(cluster) }}
 
-    rule cpu<<C>>: CPU 				{{ if (C): devicepart('cpu') }}
-			HEX_NUM			{{ id = int(HEX_NUM, 16) }}
+    rule cpu<<C>>:	CPU			{{ if (C): devicepart('cpu') }}
+    			HEX_NUM			{{ id = int(HEX_NUM, 16) }}
 						{{ if (C): partstack.tos().addcpupath(id) }}
 
-    rule cpu_bus<<C>>: CPU_BUS 			{{ if (C): devicepart('cpu_bus') }}
-			HEX_NUM			{{ bus = int(HEX_NUM, 16) }}
-						{{ if (C): partstack.tos().addcpu_buspath(bus) }}
+    rule cpu_bus<<C>>:	CPU_BUS			{{ if (C): devicepart('cpu_bus') }}
+    			HEX_NUM			{{ id = int(HEX_NUM, 16) }}
+						{{ if (C): partstack.tos().addcpu_buspath(id) }}
 
-    rule dev_path<<C>>:				
+    rule dev_path<<C>>:
 	    		pci<<C>>		{{ return pci }}
 		|	pci_domain<<C>>		{{ return pci_domain }}
 	    	|	pnp<<C>>		{{ return pnp }}

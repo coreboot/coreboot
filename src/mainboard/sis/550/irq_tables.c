@@ -7,7 +7,7 @@ const struct irq_routing_table intel_irq_routing_table = {
 	32+16*6,	/* there can be total 6 devices on the bus */
 	0x00,		/* Bus 0 */
 	0x08,		/* Device 1, Function 0 */
-	0x0C20,		/* reserve IRQ 11, 9, 5, for PCI */
+	0x0C20,		/* reserve IRQ 11, 10, 5, for PCI */
 	0x1039,		/* Silicon Integrated System */
 	0x0008,		/* SiS 85C503/5513 ISA Bridge */
 	0x00,		/*  u8 miniport_data  - "crap" */

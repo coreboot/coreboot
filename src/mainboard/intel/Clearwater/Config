@@ -237,7 +237,7 @@ expr USE_NORMAL_IMAGE=!USE_FALLBACK_IMAGE
 option ROM_SIZE=1048576
 
 ## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
-option ROM_IMAGE_SIZE=35328
+option ROM_IMAGE_SIZE=40000
 
 ## LinuxBIOS C code runs at this location in RAM
 option _RAMBASE=0x00008000

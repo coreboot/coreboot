@@ -30,15 +30,7 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
         mc->mpe_checksum = 0;
         mc->reserved = 0;
 
-#if 0
-	smp_write_processor(mc, 0x00, 0x14, CPU_BOOTPROCESSOR | CPU_ENABLED, 
-		0x00000f24, 0x3febfbff);
-	smp_write_processor(mc, 0x06, 0x14, CPU_ENABLED, 0x00000f24, 0x3febfbff);
-	smp_write_processor(mc, 0x01, 0x14, CPU_ENABLED, 0x00000f24, 0x3febfbff);
-	smp_write_processor(mc, 0x07, 0x14, CPU_ENABLED, 0x00000f24, 0x3febfbff);
-#else
         smp_write_processors(mc, processor_map);
-#endif
 
 
 /*Bus:		Bus ID	Type*/
@@ -91,18 +83,20 @@ void *smp_write_config_table(void *v, unsigned long * processor_map)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, 0x5, 0x9, 0x2, 0x9);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x0, 0x74, 0x2, 0x10);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x0, 0x7d, 0x2, 0x11);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, 0x5, 0xc, 0x2, 0xc);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x4, 0x10, 0x2, 0x14);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, 0x5, 0xd, 0x2, 0xd);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, 0x5, 0xe, 0x2, 0xe);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, 0x5, 0xf, 0x2, 0xf);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x3, 0x4, 0x3, 0x0);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x4, 0xc, 0x2, 0x15);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x4, 0x10, 0x2, 0x14);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x4, 0x14, 0x2, 0x17);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x4, 0x18, 0x2, 0x16);
 /*Local Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#*/
 	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, 0x5, 0x0, MP_APIC_ALL, 0x0);
 	smp_write_intsrc(mc, mp_NMI, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, 0x5, 0x0, MP_APIC_ALL, 0x1);
-/* MP Config Extended Table Entries:
+
+/*
+MP Config Extended Table Entries:
 
 --
 System Address Space
@@ -112,8 +106,18 @@ System Address Space
 --
 System Address Space
  bus ID: 0 address type: memory address
- address base: 0x40000000
- address range: 0xbee00000
+ address base: 0x80000000
+ address range: 0x7d000000
+--
+System Address Space
+ bus ID: 0 address type: prefetch address
+ address base: 0xfd000000
+ address range: 0x1000000
+--
+System Address Space
+ bus ID: 0 address type: memory address
+ address base: 0xfe000000
+ address range: 0xe00000
 --
 System Address Space
  bus ID: 0 address type: memory address
@@ -128,12 +132,12 @@ System Address Space
 System Address Space
  bus ID: 4 address type: memory address
  address base: 0xcc000
- address range: 0x10000
+ address range: 0x18000
 --
 System Address Space
- bus ID: 4 address type: memory address
- address base: 0xe0000
- address range: 0x4000
+ bus ID: 0 address type: memory address
+ address base: 0x7ff80000
+ address range: 0x80000
 --
 Bus Heirarchy
  bus ID: 5 bus info: 0x01 parent bus ID: 0--
@@ -147,8 +151,7 @@ Compatibility Bus Address
 	/* Compute the checksums */
 	mc->mpe_checksum = smp_compute_checksum(smp_next_mpc_entry(mc), mc->mpe_length);
 	mc->mpc_checksum = smp_compute_checksum(mc, mc->mpc_length);
-	printk_debug("Wrote the mp table end at: %p - %p
-",
+	printk_debug("Wrote the mp table end at: %p - %p\n",
 		mc, smp_next_mpe_entry(mc));
 	return smp_next_mpe_entry(mc);
 }

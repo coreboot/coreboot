@@ -672,7 +672,6 @@ static void pci_domain_set_resources(device_t dev)
 			sizek = limitk - ((8*64)+(16*16));
 			
 		}
-
 		
 		/* See if I need to split the region to accomodate pci memory space */
 		if ((basek < mmio_basek) && (limitk > mmio_basek)) {
@@ -728,9 +727,10 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
         int apic_id_offset = bsp_apic_id;	
 
         dev_mc = dev_find_slot(0, PCI_DEVFN(0x18, 0));
-        if(pci_read_config32(dev_mc, 0x68) & ( HTTC_APIC_EXT_ID | HTTC_APIC_EXT_BRD_CST)) {
+        if (pci_read_config32(dev_mc, 0x68) & ( HTTC_APIC_EXT_ID | HTTC_APIC_EXT_BRD_CST)) {
                 enable_apic_ext_id = 1;
-                if(apic_id_offset==0) { //bsp apic id is not changed
+                if (apic_id_offset==0) {
+			//bsp apic id is not changed
                         apic_id_offset = APIC_ID_OFFSET;
                 }
         }
@@ -769,7 +769,8 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 		/* Report what I have done */
 		if (cpu) {
                         if(enable_apic_ext_id) {
-                        	if(cpu->path.u.apic.apic_id<apic_id_offset) { //all add offset except bsp cores
+                        	if(cpu->path.u.apic.apic_id<apic_id_offset) {
+					//all add offset except bsp cores
                                 	if( (cpu->path.u.apic.apic_id > 0) || (bsp_apic_id!=0) )
                                         	cpu->path.u.apic.apic_id += apic_id_offset;
                                 }

@@ -12,7 +12,9 @@
 
 //extern void beep(int ms);
 
-static char *vidmem;		/* The video buffer, should be replaced by symbol in ldscript.ld */
+/* The video buffer, should be replaced by symbol in ldscript.ld */
+static char *vidmem;
+
 int vga_line, vga_col;
 
 extern int vga_inited; // it will be changed in pci_rom.c

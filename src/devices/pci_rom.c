@@ -13,18 +13,19 @@ struct rom_header * pci_rom_probe(struct device *dev)
 	rom_address = pci_read_config32(dev, PCI_ROM_ADDRESS);
 
 	if (rom_address == 0x00000000 || rom_address == 0xffffffff) {
-		if(dev->on_mainboard && (dev->rom_address!=0) ) { // in case some device PCI_ROM_ADDRESS can not be set 
+		if (dev->on_mainboard && (dev->rom_address!=0) ) {
+			// in case some device PCI_ROM_ADDRESS can not be set 
 			rom_address = dev->rom_address;
-		}
-		else 
+		} else {
 			return NULL;
+		}
 	}
 
-	printk_debug("rom address for %s = %x\n",
-		    dev_path(dev), rom_address);
+	printk_debug("rom address for %s = %x\n", dev_path(dev), rom_address);
 
 	/* enable expansion ROM address decoding */
-	pci_write_config32(dev, PCI_ROM_ADDRESS, rom_address|PCI_ROM_ADDRESS_ENABLE);
+	pci_write_config32(dev, PCI_ROM_ADDRESS,
+			   rom_address|PCI_ROM_ADDRESS_ENABLE);
 
 	rom_header = rom_address;
 	printk_spew("PCI Expansion ROM, signature 0x%04x, \n\t"
@@ -38,10 +39,11 @@ struct rom_header * pci_rom_probe(struct device *dev)
 	}
 
 	rom_data = (unsigned char *) rom_header + le32_to_cpu(rom_header->data);
-	printk_spew("PCI ROM Image,  Vendor %04x, Device %04x,\n",
+	printk_spew("PCI ROM Image, Vendor %04x, Device %04x,\n",
 		    rom_data->vendor, rom_data->device);
 	if (dev->vendor != rom_data->vendor || dev->device != rom_data->device) {
-		printk_err("Device or Vendor ID mismatch Vendor %04x, Device %04x\n", rom_data->vendor, rom_data->device);
+		printk_err("Device or Vendor ID mismatch Vendor %04x, Device %04x\n",
+			   rom_data->vendor, rom_data->device);
 		return NULL;
 	}
 

@@ -218,7 +218,8 @@ static void pci_get_rom_resource(struct device *dev, unsigned long index)
 	unsigned long value;
 	resource_t  moving, limit;
 
-        if ((dev->on_mainboard) && (dev->rom_address == 0)) { //skip it if rom_address is not set in MB Config.lb
+        if ((dev->on_mainboard) && (dev->rom_address == 0)) {
+		//skip it if rom_address is not set in MB Config.lb
                 return;
         }
 

@@ -17,7 +17,6 @@ static unsigned long resk(uint64_t value)
 	return resultk;
 }
 
-#if 1
 static unsigned fixed_mtrr_index(unsigned long addrk)
 {
 	unsigned index;
@@ -33,7 +32,6 @@ static unsigned fixed_mtrr_index(unsigned long addrk)
 	}
 	return index;
 }
-
 
 static unsigned int mtrr_msr[] = {
 	MTRRfix64K_00000_MSR, MTRRfix16K_80000_MSR, MTRRfix16K_A0000_MSR,
@@ -98,13 +96,10 @@ static void set_fixed_mtrr_resource(void *gp, struct device *dev, struct resourc
 		return;
 	}
 	printk_debug("Setting fixed MTRRs(%d-%d) Type: WB\n",
-		start_mtrr, last_mtrr);
+		     start_mtrr, last_mtrr);
 	set_fixed_mtrrs(start_mtrr, last_mtrr, MTRR_TYPE_WRBACK | MTRR_READ_MEM | MTRR_WRITE_MEM);
 	
 }
-
-
-#endif
 
 void amd_setup_mtrrs(void)
 {
@@ -120,7 +115,7 @@ void amd_setup_mtrrs(void)
 	printk_debug("\n");
 	/* Initialized the fixed_mtrrs to uncached */
 	printk_debug("Setting fixed MTRRs(%d-%d) type: UC\n", 
-		0, NUM_FIXED_RANGES);
+		     0, NUM_FIXED_RANGES);
 	set_fixed_mtrrs(0, NUM_FIXED_RANGES, MTRR_TYPE_UNCACHEABLE);
 
 	/* Except for the PCI MMIO hole just before 4GB there are no

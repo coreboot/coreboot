@@ -46,9 +46,6 @@ int run_bios_int(int num)
 	X86_CS = MEM_RW((num << 2) + 2);
 	X86_IP = MEM_RW(num << 2);
 
-	//printk_debug("%s: INT %x CS:IP = %x:%x\n", __FUNCTION__,
-	//	     num, MEM_RW((num << 2) + 2), MEM_RW(num << 2));
-
 	return 1;
 }
 
@@ -116,7 +113,7 @@ void do_int(int num)
 {
 	int ret = 0;
 
-	//printk_debug("int%x vector at %x\n", num, getIntVect(num));
+	printk_debug("int%x vector at %x\n", num, getIntVect(num));
 
 	switch (num) {
 #ifndef _PC
@@ -156,10 +153,6 @@ void do_int(int num)
 	if (!ret)
 		ret = run_bios_int(num);
 
-	if (!ret) {
-		printk_debug("\nint%x: not implemented\n", num);
-		x86emu_dump_xregs();
-	}
 }
 #define SYS_BIOS 0xf0000
 /*

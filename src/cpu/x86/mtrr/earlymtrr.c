@@ -37,8 +37,8 @@ static void disable_var_mtrr(unsigned reg)
 	wrmsr(MTRRphysMask_MSR(reg), zero);
 }
 
-static void set_var_mtrr(
-	unsigned reg, unsigned base, unsigned size, unsigned type)
+static void set_var_mtrr(unsigned reg, unsigned base, unsigned size,
+			 unsigned type)
 
 {
 	/* Bit Bit 32-35 of MTRRphysMask should be set to 1 */
@@ -59,7 +59,6 @@ static void cache_lbmem(int type)
 	enable_cache();
 }
 
-
 /* the fixed and variable MTTRs are power-up with random values,
  * clear them to MTRR_TYPE_UNCACHEABLE for safty.
  */
@@ -77,7 +76,7 @@ static void do_early_mtrr_init(const unsigned long *mtrr_msrs)
 	msr.lo = 0;
 	msr.hi = 0;
 	unsigned long msr_nr;
-	for(msr_addr = mtrr_msrs; (msr_nr = *msr_addr); msr_addr++) {
+	for (msr_addr = mtrr_msrs; (msr_nr = *msr_addr); msr_addr++) {
 		wrmsr(msr_nr, msr);
 	}
 

@@ -15,11 +15,12 @@ mainboardinit cpu/p6/earlymtrr.inc
 
 superio ITE/it8671f
 
-option ENABLE_FIXED_AND_VARIABLE_MTRRS
-option HAVE_PIRQ_TABLE
-option HAVE_MTRR_TABLE
+option ENABLE_FIXED_AND_VARIABLE_MTRRS=1
+option HAVE_PIRQ_TABLE=1
+option HAVE_MTRR_TABLE=1
 option PIIX4_DEVFN=0x38
-option MAINBOARD_FIXUP_IN_CHARGE
+# this was only for Tyson Sawyer and I think it a bad idea -- rgm
+# option MAINBOARD_FIXUP_IN_CHARGE
 
 object mainboard.o
 object irq_tables.o

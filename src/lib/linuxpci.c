@@ -14,7 +14,8 @@
  * RGM
  */
 #include <lbpci.h>
-#include <asm/io.h>
+#include <pci_ids.h>
+#include <cpu/p5/io.h>
 
 extern void intel_post(unsigned char value);
 #define DEBUG
@@ -205,14 +206,22 @@ unsigned int pci_scan_bus(struct pci_bus *bus)
 	/* probe all devices on this bus with some optimization for non-existance and 
 	   single funcion devices */
 	for (devfn = 0; devfn < 0xff; devfn++) {
-		u32 id, class, addr;
+	    u32 id, class, addr;
 		u8 cmd, tmp, hdr_type;
 
-                if (pcibios_read_config_dword(bus->number, devfn, PCI_VENDOR_ID, &id))
-			continue;
+		// gcc just went to hell. Don't test -- this always
+		// returns 0 anyway. 
+#if GCC_WORKS_ON_O2
+                if (pcibios_read_config_dword(bus->number, devfn, PCI_VENDOR_ID, &id))	{
+		    DBG("PCI: devfn 0x%x, read_config_dword fails\n", devfn);
+		    continue;
+		}
+#endif
+                pcibios_read_config_dword(bus->number, devfn, PCI_VENDOR_ID, &id);
 
 		/* some broken boards return 0 if a slot is empty: */
 		if (id == 0xffffffff || id == 0x00000000 || id == 0x0000ffff || id == 0xffff0000) {
+		    DBG("PCI: devfn 0x%x, bad id 0x%x\n", devfn, id);
 			if (PCI_FUNC(devfn) == 0x00) {
 				/* if this is a function 0 device and it is not present,
 				   skip to next device */
@@ -222,11 +231,15 @@ unsigned int pci_scan_bus(struct pci_bus *bus)
 			continue;
 		}
 
-                if (pcibios_read_config_byte(bus->number, devfn, PCI_HEADER_TYPE, &hdr_type))
-                        continue;
+                if (pcibios_read_config_byte(bus->number, devfn, PCI_HEADER_TYPE, &hdr_type)){
+		    DBG("PCI: devfn 0x%x, header type read fails\n", devfn);
+		    continue;
+		}
 
-		if (pcibios_read_config_dword(bus->number, devfn, PCI_CLASS_REVISION, &class))
+		if (pcibios_read_config_dword(bus->number, devfn, PCI_CLASS_REVISION, &class)) {
+		    DBG("PCI: devfn 0x%x, class read fails\n", devfn);
 			continue;
+		}
 
 		if ((dev = kmalloc(sizeof(*dev), GFP_ATOMIC)) == NULL) {
 			printk("PCI: out of memory.\n");
@@ -332,9 +345,9 @@ unsigned int pci_scan_bus(struct pci_bus *bus)
 			 * this bus number as a peer bus, don't also scan it
 			 * as a child bus
 			 */
-			if (((dev->vendor == PCI_VENDOR_ID_RCC) &&
-			     ((dev->device == PCI_DEVICE_ID_RCC_HE) ||
-			      (dev->device == PCI_DEVICE_ID_RCC_LE))) ||
+			if (((dev->vendor == PCI_VENDOR_ID_SERVERWORKS) &&
+			     ((dev->device == PCI_DEVICE_ID_SERVERWORKS_HE) ||
+			      (dev->device == PCI_DEVICE_ID_SERVERWORKS_LE))) ||
 			    ((dev->vendor == PCI_VENDOR_ID_COMPAQ) &&
 			     (dev->device == PCI_DEVICE_ID_COMPAQ_6010)) ||
 			    ((dev->vendor == PCI_VENDOR_ID_INTEL) &&
@@ -449,6 +462,7 @@ unsigned int pci_scan_bus(struct pci_bus *bus)
  * scan it. 
  * @param bus The bus number supported by the peer bridge
  * @return Pointer to the bus struct for this bus number. 
+ */
 struct pci_bus *pci_scan_peer_bridge(int bus)
 {
 	struct pci_bus *b;

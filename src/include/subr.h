@@ -35,7 +35,7 @@ void intel_set_mtrr(unsigned long rambase, unsigned long ramsizeK);
 
 #ifdef NEWPCI  /* IRQ routing stuff */
 
-#include <pci.h>
+#include <lbpci.h>
 #include <pci-i386.h>
 
 #define PIRQ_SIGNATURE	(('$' << 0) + ('P' << 8) + ('I' << 16) + ('R' << 24))

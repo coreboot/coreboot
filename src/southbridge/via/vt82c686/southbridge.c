@@ -1,4 +1,4 @@
-#include <pci.h>
+#include <lbpci.h>
 #include <pc80/keyboard.h>
 #include <printk.h>
 

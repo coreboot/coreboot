@@ -12,7 +12,7 @@ static char rcsid[] = "$Id$";
 
 #include <cpu/p5/macros.h>
 #include <printk.h>
-#include <pci.h>
+#include <lbpci.h>
 #include <subr.h>
 
 #ifdef SERIAL_CONSOLE
@@ -117,28 +117,6 @@ void error(char errmsg[])
 void intel_post(char value)
 {
 	outb(value, 0x80);
-}
-
-/*
- *    Write the special configuration registers on the INTEL
- */
-void intel_conf_writeb(unsigned long port, unsigned char value)
-{
-	unsigned char whichbyte = port & 3;
-	port &= (~3);
-	outl(port, PCI_CONF_REG_INDEX);
-	outb(value, PCI_CONF_REG_DATA + whichbyte);
-}
-
-/*
- *    Read the special configuration registers on the INTEL
- */
-unsigned char intel_conf_readb(unsigned long port)
-{
-	unsigned char whichbyte = port & 3;
-	port &= (~3);
-	outl(port, PCI_CONF_REG_INDEX);
-	return inb(PCI_CONF_REG_DATA + whichbyte);
 }
 
 void intel_cache_on(unsigned long base, unsigned long totalram)

@@ -15,8 +15,9 @@ CPUFLAGS += -DRAMTEST
 CPUFLAGS += -DCMD_LINE='"ro root=/dev/hda1 console=ttyS0,115200 single "'
 
 TOP=../..
-INCLUDES=-I $(TOP)/src/include 
-CFLAGS=$(INCLUDES) -O2 $(CPUFLAGS) -Ilinux/include -Wall
+INCLUDES=-nostdinc -I $(TOP)/src/include 
+NOOPT_CFLAGS=$(INCLUDES) $(CPUFLAGS) -Wall
+CFLAGS=$(NOOPT_CFLAGS) -O2
 
 OBJECTS=crt0.o hardwaremain.o linuxbiosmain.o 
 OBJECTS += mainboard.o mtrr.o subr.o fill_inbuf.o params.o
@@ -123,16 +124,16 @@ microcode.o: $(TOP)/src/cpu/p6/microcode.c
 serial_subr.o: $(TOP)/chip/intel/serial_subr.c
 	cc $(CFLAGS) -c $<
 
-printk.o: $(TOP)/lib/printk.c
+printk.o: $(TOP)/src/lib/printk.c
 	cc $(CFLAGS) -c $<
 
-vsprintf.o: $(TOP)/lib/vsprintf.c
+vsprintf.o: $(TOP)/src/lib/vsprintf.c
 	cc $(CFLAGS) -c $<
 
-newpci.o: $(TOP)/lib/newpci.c
+newpci.o: $(TOP)/src/lib/newpci.c
 	cc $(CFLAGS) -c $<
 
-linuxpci.o: $(TOP)/lib/linuxpci.c
+linuxpci.o: $(TOP)/src/lib/linuxpci.c
 	cc $(CFLAGS) -c $<
 
 vmlinux.bin.gz.block: vmlinux.bin.gz

@@ -197,7 +197,7 @@ class option:
 		return (self.used)
 
 class partobj:
-	def __init__ (self, dir, parent, type):
+	def __init__ (self, dir, parent, type, name):
 		global partinstance
 		if (debug):
 			print "partobj dir %s parent %s type %s" %(dir,parent,type)
@@ -211,12 +211,20 @@ class partobj:
 		self.dir = dir
 		self.irq = 0
 		self.instance = partinstance + 1
+		self.flatten_name = flatten_name(type + "/" + name)
 		if (debug):
 			print "INSTANCE %d" % self.instance
 		partinstance = partinstance + 1
 		self.devfn = 0	
 		self.private = 0	
 		self.options = {}
+		# chip initialization. If there is a chip.h in the 
+		# directory, generate the structs etc. to 
+		# initialize the code
+		self.chipconfig = 0
+		if (os.path.exists(dir + "/" + "chip.h")): 
+			self.chipconfig = 1
+		
 		if (parent):
 			if (debug):
 				print "add to parent"
@@ -235,6 +243,7 @@ class partobj:
 		print "%d: type %s" % (lvl, self.type)
 		print "%d: instance %d" % (lvl, self.instance)
 		print "%d: dir %s" % (lvl,self.dir)
+		print "%d: flatten_name %s" % (lvl,self.flatten_name)
 		print "%d: parent %s" % (lvl,self.parent.type)
 		print "%d: parent dir %s" % (lvl,self.parent.dir)
 		if (self.children):
@@ -250,17 +259,40 @@ class partobj:
 		print "\n"
 
 	def gencode(self, file):
-		file.write("struct cdev dev%d = {\n" % self.instance)
+		if (self.chipconfig):
+			file.write("struct %s_config %s_config_%d" % (\
+					self.flatten_name ,\
+					self.flatten_name , \
+					self.instance))
+			if (self.registercode):
+				file.write("\t= {\n")
+				for i in self.registercode:
+					file.write( "\t  %s" % i)
+				file.write("\t}\n")
+			else:
+				file.write(";")
+			file.write("\n");
+		file.write("struct chip dev%d = {\n" % self.instance)
 		file.write("/* %s %s */\n" % (self.type, self.dir))
-		file.write("  .devfn = %d\n" % self.devfn)
+		#file.write("  .devfn = %d,\n" % self.devfn)
 		if (self.siblings):
-			file.write("  .next = &dev%d\n" % self.siblings.instance)
+			file.write("  .next = &dev%d,\n" % self.siblings.instance)
 		if (self.children):
-			file.write("  .children = &dev%d\n" % \
+			file.write("  .children = &dev%d,\n" % \
 					self.children.instance)
 		if (self.private):
-			file.write("  .private = private%d\n" % self.instance)
+			file.write("  .private = private%d,\n" % self.instance)
+		if (self.chipconfig):
+			# set the pointer to the structure for all this
+			# type of part
+			file.write("  .control= &%s_control,\n" % \
+					self.flatten_name )
+			# generate the pointer to the isntance
+			# of the chip struct
+			file.write("  .chip_config = (void *) &%s_config_%d,\n" %\
+					(self.flatten_name, self.instance ))
 		file.write("};\n")
+					
 
 		
 	def irq(self, irq):
@@ -270,6 +302,7 @@ class partobj:
         	self.initcode.append(code)
 		
     	def addregister(self, code):
+		code = dequote(code)
         	self.registercode.append(code)
 
 	def usesoption(self, name):
@@ -587,14 +620,14 @@ def target(targ_name):
                 print "Creating directory %s" % target_dir
                 os.makedirs(target_dir)
         print "Will place Makefile, crt0.S, etc. in %s" % target_dir
-	root = partobj(target_dir, 0, 'board')
+	root = partobj(target_dir, 0, 'board', targ_name)
 	curpart = root
 
 def part(name, path, file):
 	global curpart,curdir,treetop
 	dirstack.append(curdir)
 	curdir = os.path.join(treetop, 'src', name, path)
-	newpart = partobj(curdir, curpart, name)
+	newpart = partobj(curdir, curpart, name, path)
 	print "Configuring PART %s, path %s\n" % (name,path)
 	if (debug):
 		print "PUSH part %s %s" % (name, curpart.dir)
@@ -677,6 +710,10 @@ def dequote(str):
 	a = re.sub("\"$", "", a)
 	# highly un-intuitive, need four \!
 	a = re.sub("\\\\\"", "\"", a)
+	return a
+
+def flatten_name(str):
+	a = re.sub("/", "_", str)
 	return a
 
 def addaction(id, str):
@@ -1177,9 +1214,9 @@ def gencode(part, file):
 	# dump the siblings -- actually are there any? not sure
 	# dump the kids
 	if (debug):
-		print "GENCODE KID is"
-	kid = part
-	while (kid.siblings):
+		print "GENCODE SIBLINGS are"
+	kid = part.siblings
+	while (kid):
 		kid.gencode(file)
 		kid = kid.siblings
 	if (debug):
@@ -1220,7 +1257,16 @@ if __name__=='__main__':
 	filename = os.path.join(target_dir, "chips.c")
 	print "Creating", filename
 	file = open(filename, 'w+')
+	# gen all the forward references
+
+	i = 0
+	file.write("struct chip ")
+	while (i <= partinstance):
+		file.write("cdev%d "% i)
+		i = i + 1
+	file.write(";\n")
 	gencode(root, file)
+	file.close()
 
 	# crt0 includes
 	if (debug):

@@ -4,7 +4,7 @@
 
 loadoptions
 
-target ./hdama
+target hdama
 
 uses AMD8111_DEV
 uses CONFIG_COMPRESS

@@ -20,7 +20,7 @@ if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
 #
 arch i386 end
-cpu k8 end
+#cpu k8 end
 #
 ###
 ### Build our 16 bit and 32 bit linuxBIOS entry code
@@ -34,7 +34,6 @@ ldscript /cpu/i386/entry32.lds
 ### Build our reset vector (This is where linuxBIOS is entered)
 ###
 if USE_FALLBACK_IMAGE 
-  print "Use fallback!"
   mainboardinit cpu/i386/reset16.inc 
   ldscript /cpu/i386/reset16.lds 
 else
@@ -128,7 +127,7 @@ southbridge amd/amd8111
 end
 #mainboardinit archi386/smp/secondary.inc
 superio NSC/pc87360
-	register "com1={1} com2={0} floppy=1 lpt=1 keyboard=1"
+	register ".com1={1}, .com2={0}, .floppy=1, .lpt=1, .keyboard=1"
 end
 dir /pc80
 ##dir /src/superio/winbond/w83627hf

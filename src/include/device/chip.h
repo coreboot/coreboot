@@ -1,7 +1,8 @@
 /* chips are arbitrary chips (superio, southbridge, etc.)
  * They have private structures that define chip resources and default 
  * settings. They have four externally visible functions for control. 
- * new settings are provided as ascii strings. 
+ * They have a generic component which applies to all chips for 
+ * path, etc. 
  */
 
 /* some of the types of resources chips can control */
@@ -30,6 +31,7 @@ struct lpt_ports {
 
 struct chip;
 
+/* there is one of these for each TYPE of chip */
 struct chip_control {
   void (*alloc)(struct chip *s);
   void (*pre_pci_init)(struct chip *s);
@@ -46,5 +48,9 @@ struct chip {
   struct chip_control *control; /* for this device */
   char *path; /* can be 0, in which case the default is taken */
   char *configuration; /* can be 0. */
+  int irq;
+  struct chip *next, *children;
+  /* there is one of these for each INSTANCE of a chip */
+  void *chip_info; /* the dreaded "void *" */
 };
 

@@ -21,9 +21,13 @@ void nvram_on()
 
         struct pci_dev *pcidev;
 
+	printk(KERN_INFO "Enabling extended BIOS access...");
+
         pcidev = pci_find_device(0x8086, 0x7110, (void *)NULL);
         if (pcidev) pci_write_config_word(pcidev, 0x4e, 0x03c3);
 
+	printk(KERN_INFO "done.\n");
+	intel_post(0x91);
 }
 
 // Have to talk to Eric Beiderman about this ...
@@ -33,6 +37,7 @@ void nvram_on()
 #ifdef NO_KEYBOARD
 void keyboard_on()
 {
+	intel_post(0x94);
 }
 #else
 void keyboard_on()
@@ -75,5 +80,6 @@ void keyboard_on()
 
         /* now keyboard should work, ha ha. */
         pc_keyboard_init();
+	intel_post(0x94);
 }
 #endif

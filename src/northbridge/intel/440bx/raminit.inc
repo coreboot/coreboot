@@ -1,4 +1,6 @@
-// TODO: take out GA-6BXC references 
+
+#define RAM_256M
+
 #if 0
 /* CAS latency 2 */
 #define CAS_NB 0x17
@@ -11,7 +13,7 @@
 
 /* 1 or 2 dimms */
 
-#ifdef GA6BXC_256M
+#ifdef RAM_256M
 
 #define DRB 0x20
 #define DIMM2_READ2 mov 0x08002000, %eax
@@ -150,7 +152,7 @@
 	CS_WRITE($0x57, $0x09)  /* DRAMC */
 
 
-#ifdef GA6BXC_256M
+#ifdef RAM_256M
 	mov $0x40, %ecx
 	mov $0x8000000, %ebx
 1:

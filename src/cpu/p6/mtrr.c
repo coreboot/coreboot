@@ -41,6 +41,8 @@ static unsigned int mtrr_msr[] = {
 	MTRRfix4K_E0000_MSR, MTRRfix4K_E8000_MSR, MTRRfix4K_F0000_MSR, MTRRfix4K_F8000_MSR,
 };
 
+#ifndef HAVE_MTRR_TABLE
+
 static unsigned char fixed_mtrr_values[][4] = {
 	/* MTRRfix64K_00000_MSR, defines memory range from 0KB to 512 KB, each byte cover 64KB area */
 	{MTRR_TYPE_WRBACK, MTRR_TYPE_WRBACK, MTRR_TYPE_WRBACK, MTRR_TYPE_WRBACK},
@@ -86,6 +88,10 @@ static unsigned char fixed_mtrr_values[][4] = {
 	{MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH},
 	{MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH, MTRR_TYPE_WRTHROUGH},
 };
+
+#else
+extern unsigned char fixed_mtrr_values[][4];
+#endif
 
 void
 intel_enable_fixed_mtrr()
@@ -238,6 +244,7 @@ void intel_set_mtrr(unsigned long rambase, unsigned long ramsizeK)
 #else /* ENABLE_FIXED_AND_VARIABLE_MTRRS */
 void intel_set_mtrr(unsigned long rambase, unsigned long ramsizeK)
 {
+	DBG("\n");
 	intel_set_var_mtrr(0, 0, ramsizeK * 1024, MTRR_TYPE_WRBACK);
 	intel_enable_var_mtrr();
 }

@@ -35,6 +35,7 @@ int intel_mtrr_check(void)
 
 	DBG("\n");
 
+	intel_post(0x93);
 	return ((int) low);
 }
 #endif
@@ -216,4 +217,5 @@ void intel_display_cpuid(void)
 	}
 
 	DBG("\n");
+	intel_post(0x92);
 }

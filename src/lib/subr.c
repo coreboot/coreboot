@@ -161,6 +161,9 @@ void intel_interrupts_on()
 #define LVT1 0xfee00350
 #define LVT2 0xfee00360
 #define APIC_ENABLED 0x100
+
+	printk(KERN_INFO "Enabling interrupts...");
+
 	regp = (unsigned long *) SVR;
 	reg = *regp;
 	reg &= (~0xf0);
@@ -180,11 +183,16 @@ void intel_interrupts_on()
 	*regp = reg;
 #else
 	unsigned long low, high;
+
+	printk(KERN_INFO "Enabling interrupts...");
+
 	rdmsr(0x1b, low, high);
 	low &= ~0x800;
 	wrmsr(0x1b, low, high);
 #endif
 
+	printk(KERN_INFO "done.\n");
+	intel_post(0x9b);
 }
 
 
@@ -194,6 +202,8 @@ void intel_zero_irq_settings(void)
 	struct pci_dev *pcidev;
 	unsigned char line;
   
+	printk(KERN_INFO "Zeroing IRQ settings...");
+
 	pcidev = pci_devices;
   
 	while (pcidev) {
@@ -203,6 +213,7 @@ void intel_zero_irq_settings(void)
 		}
 		pcidev = pcidev->next;
 	}
+	printk(KERN_INFO "done.\n");
 }
 
 void intel_check_irq_routing_table(void)
@@ -212,6 +223,8 @@ void intel_check_irq_routing_table(void)
 	const struct irq_routing_table *rt;
 	int i;
 	u8 sum;
+
+	printk(KERN_INFO "Checking IRQ routing tables...");
 
 	rt = &intel_irq_routing_table;
 	addr = (u8 *)rt;
@@ -248,6 +261,8 @@ void intel_check_irq_routing_table(void)
 		       "checksum error in irq routing table\n",
 		       __FILE__, __LINE__, __FUNCTION__);
 	}
+
+	printk(KERN_INFO "done.\n");
 #endif /* #ifdef HAVE_PIRQ_TABLE */
 }
 
@@ -256,7 +271,9 @@ void intel_check_irq_routing_table(void)
 void intel_copy_irq_routing_table(void)
 {
 #ifdef HAVE_PIRQ_TABLE
+	printk(KERN_INFO "Copying IRQ routing tables...");
 	memcpy((char *) RTABLE_DEST, &intel_irq_routing_table, intel_irq_routing_table.size);
+	printk(KERN_INFO "done.\n");
 #endif
 }
 

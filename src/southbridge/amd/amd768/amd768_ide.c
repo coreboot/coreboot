@@ -3,6 +3,7 @@
 #include <arch/io.h>
 #include <southbridge/amd/amd768.h>
 #include <ide.h>
+#include <printk.h>
 
 void amd768_enable_ide(int enable_a, int enable_b)
 {
@@ -44,6 +45,6 @@ void amd768_enable_ide(int enable_a, int enable_b)
 		pci_write_config_word(dev, 0x4c, word);
 
 	} else
-		printk_alert("Could not locate IDE controller\n");
+		printk_err("Could not locate IDE controller\n");
 
 }

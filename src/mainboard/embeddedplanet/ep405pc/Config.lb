@@ -1,0 +1,19 @@
+##
+## Config file for the Motorola Sandpoint III development system.
+## Note that this has only been tested with the Altimus 7410 PMC.
+##
+
+arch ppc end
+cpu ppc4xx end
+
+##
+## Include the secondary Configuration files 
+##
+southbridge winbond/w83c553 end
+
+##
+## Build the objects we have code for in this directory.
+##
+
+addaction linuxbios.a "$(CROSS_COMPILE)ranlib linuxbios.a"
+makedefine CFLAGS += -g

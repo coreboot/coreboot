@@ -1,0 +1,3 @@
+Here you will find several extensions to LinuxBIOS that are implemented
+as ELF payloads. They can be used either with the LinuxBIOS ELF loader
+or by etherboot.

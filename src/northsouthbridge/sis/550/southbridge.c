@@ -54,8 +54,8 @@ static const initreg_t ide_init[] = {
 	{ WORD, 0x2C, 0x00,	0x1039 },  /* Subsystem vendor ID. */
 	{ WORD, 0x2E, 0x00,	0x5513 },  /* Subsystem ID. */
 	{ BYTE, 0x3c, 0x00,	0x0e   },  /* reserved don't do this, sets irq 14 */
-	{ BYTE, 0x40, 0x00,	0x04   },  /* Primary master data recovery time. 4 PCICLK */
-	{ BYTE, 0x41, 0x00,	0xb4   },  /* Primary master data active time. UDMA Mode 2 */
+	{ BYTE, 0x40, 0x00,	0x00   },  /* Primary master data recovery time. 4 PCICLK */
+	{ BYTE, 0x41, 0x00,	0xb0   },  /* Primary master data active time. UDMA Mode 2 */
 	{ BYTE, 0x42, 0x00,	0x00   },  /* Primary slave data recovery time. */
 	{ BYTE, 0x43, 0x00,	0x00   },  /* Primary slave data active time. */   
 	{ BYTE, 0x44, 0x00,	0x00   },  /* Secondary master data recovery time. */
@@ -136,14 +136,14 @@ void nvram_on()
 	/* turn on sis550 nvram. */
 	pcidev = pci_find_device(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503, (void *)NULL);
 	if (pcidev != NULL) {
+		u8 data;
 		/* Enable FFF80000 to FFFFFFFF decode. You have to also enable
 		   PCI Posted write for devices on sourthbridge */
 		pci_write_config_byte(pcidev, 0x40, 0x33);
-		/* Flash can be flashed, enable USB device in undocumented Bit 6 */
-		pci_write_config_byte(pcidev, 0x45, 0x60);
+		/* Enable USB device in undocumented Bit 5 */
+		pci_write_config_byte(pcidev, 0x45, 0x20);
 	}
 
-//#if !defined(STD_FLASH)
 	/* turn off nvram shadow in 0xc0000 ~ 0xfffff, i.e. accessing segment C - F
 	   is actually to the DRAM not NVRAM. For 512KB NVRAM case, this one should be
 	   disabled */
@@ -156,7 +156,6 @@ void nvram_on()
 		printk_debug("Shadow memory disabled in SiS 550\n");
 
 	}
-//#endif
 }
 
 /* serial_irq_fixup: Enable Serial Interrupt. Serial interrupt is the IRQ line from SiS 950

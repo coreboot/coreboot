@@ -65,11 +65,13 @@ void
 winbond_83697_init(void)
 {
 	printk_info("Setting 2E ports.......\n");
+
         outb(0x87, BASE);
         outb(0x87, BASE);
-	outb(0x2c,BASE);
-	outb(0x55,BASE+1);
-/* URA */
+	outb(0x2c, BASE);
+	outb(0x55, BASE+1);
+
+	/* URA */
 	outb(0x07, BASE);
 	outb(0x02, BASE+1);
 	outb(0x30, BASE);

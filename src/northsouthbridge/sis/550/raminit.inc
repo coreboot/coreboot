@@ -66,7 +66,7 @@ write_common:
 	loopnz	init_northbridge
 
 #ifdef DISABLE_INTERNAL_DEVICES
-	movw	$0x7c07, %ax			# Writting undocumented LPC register
+	movw	$0x7c02, %ax			# Writting undocumented LPC register
 write_lpc_register:
 	/* Input: AH - register number. AL - register value. */
 	movl	$LPC_BRIDGE_BASE_ADDR, %edx

@@ -58,6 +58,322 @@ lpc_init_start:					# inits LPC bridge for accessing
 
 lpc_init_complete:	
 
+
+SET_VGA_SR13:
+       movw $0x03c4,%dx           #SR5
+       movb $0x05,%al
+       outb %al,%dx
+       movw $0x03c5,%dx           #Enable
+       movb $0x86,%al
+       outb %al,%dx
+
+       movw $0x0070,%dx
+       movb $0x51,%al             #SR13
+       outb %al,%dx
+       movw $0x0071,%dx
+       inb  %dx,%al
+       movb %al,%bl
+       andb $0xc0,%al
+       cmpb $0x80,%al
+       jne SET_VGA_SR14
+
+       movw $0x03c4,%dx
+       movb $0x13,%al
+       outb %al,%dx
+       movw $0x03c5,%dx
+       movb %bl,%al
+       andb $0x3f,%al
+       outb %al,%dx
+
+SET_VGA_SR14:
+       movw $0x0070,%dx
+       movb $0x71,%al             #SR14
+       outb %al,%dx
+       movw $0x0071,%dx
+       inb  %dx,%al
+       movb %al,%bl
+       andb $0x3f,%al
+       cmpb $0x0f,%al
+       jg   SET_VGA_SR16
+
+       movw $0x03c4,%dx
+       movb $0x14,%al
+       outb %al,%dx
+       movw $0x03c5,%dx
+       movb %bl,%al
+       outb %al,%dx
+
+SET_VGA_SR16:
+       movw $0x0070,%dx
+       movb $0x61,%al             #SR16
+       outb %al,%dx
+       movw $0x0071,%dx
+       inb  %dx,%al
+       movb %al,%bl
+
+       movw $0x03c4,%dx
+       movb $0x16,%al
+       outb %al,%dx
+       movw $0x03c5,%dx
+       movb %bl,%al
+       outb %al,%dx
+
+SET_VGA_COMPLETE:
+
+
+
+
+        movw $0x0080,%dx
+        movb $1,%al
+        outb %al,%dx
+
+        //Get Base Address
+        movw $0xcf8,%dx
+        movl $0x80000874,%eax
+        outl %eax,%dx
+        movw $0xcfc,%dx
+        inl  %dx,%eax
+        movw %ax,%dx
+
+        //Disable Watch Dog Timer
+        addw $0x4b,%dx              #set 0x4b=0x00
+        movb $0x00,%al
+        outb %al,%dx
+        movw $0x0080,%dx
+        movb $2,%al
+        outb %al,%dx
+
+        //Increse The Retry Counter
+        movw $0x0070,%dx
+        movb $0x60,%al
+        outb %al,%dx
+        movw $0x0071,%dx
+        inb  %dx,%al
+        addb $1,%al
+        outb %al,%dx
+
+
+Clock_Gen:
+        //Get Complete Flag & Parameter
+        movw $0x0070,%dx
+        movb $0x50,%al
+        outb %al,%dx
+        movw $0x0071,%dx
+        inb  %dx,%al
+        movb %al,%bl
+
+        andb $0x01,%al
+        cmpb $1,%al
+        jne  Clock_Gen_Backup
+        movb %bl,%al
+        andb $0x08,%al
+        cmpb $0x08,%al
+        jne  Clock_Gen_Backup
+        movb $0,%al
+        movb %al,%bl
+
+Clock_Gen_Backup:
+        movw $0x0080,%dx
+        movb $3,%al
+        outb %al,%dx
+
+        //backup the parameter
+        movb %bl,%al
+        andb $0x02,%al
+        cmpb $0x02,%al
+        je   Clock_Gen_Exit
+
+
+
+Clock_Gen_Adjust:
+        //Get The Retry Counter
+        movw $0x0070,%dx
+        movb $0x60,%al
+        outb %al,%dx
+        movw $0x0071,%dx
+        inb  %dx,%al
+        cmpb $3,%al               //It can try 2 times
+        jl   Clock_Gen_Start
+        //Clear The Retry Counter
+        movw $0x0070,%dx
+        movb $0x60,%al
+        outb %al,%dx
+        movb $0,%al
+        movw $0x0071,%dx
+        outb %al,%dx
+
+
+        movb $0,%al                     #degrade to default
+        //Backup The New Parameter
+        movb %al,%bl
+
+
+
+Clock_Gen_Start:
+        movw $0x0080,%dx
+        movb $4,%al
+        outb %al,%dx
+
+        //Restor The Parameter
+        movw $0x0070,%dx
+        movb $0x50,%al
+        outb %al,%dx
+        movb %bl,%al
+        movw $0x0071,%dx
+        outb %al,%dx
+
+
+        //Get Base Address
+        movw $0xcf8,%dx
+        movl $0x80000874,%eax
+        outl %eax,%dx
+        movw $0xcfc,%dx
+        inl  %dx,%eax
+        movw %ax,%dx
+
+        //Set Clock
+        addw $0x83,%dx           #set 0x83=0x20 KILL Operation
+        movb $0x20,%al
+        outb %al,%dx
+        addw $1,%dx              #set 0x84=0xd2,Salve=0xd2 Write operation
+        movb $0xd2,%al
+        outb %al,%dx
+        addw $3,%dx              #set 0x87=1 , ByteCount=1
+        movb $1,%al
+        outb %al,%dx
+        addw $1,%dx              #set 0x88=clock
+        movb %bl,%al
+        andb $0xf4,%al
+        orb  $0x08,%al           #Clock Set by Software
+        outb %al,%dx
+        subw $5,%dx              #set 0x83=0x05, Block write
+        movb $5,%al
+        outb %al,%dx
+        movb $0x15,%al           #set 0x83=0x15, Start Block Write
+
+        outb %al,%dx
+
+        movw $0x0080,%dx
+        movb $5,%al
+        outb %al,%dx
+
+        //Get Base Address
+        movw $0xcf8,%dx
+        movl $0x80000874,%eax
+        outl %eax,%dx
+        movw $0xcfc,%dx
+        inl  %dx,%eax
+        movw %ax,%dx
+
+        addw $0x80,%dx
+        movw $0xffff,%cx
+
+Clock_Gen_Wait:
+        inb %dx,%al
+        andb $0x08,%al
+        cmpb $0x08,%al
+        je Clock_Gen_Complete
+        loop Clock_Gen_Wait
+
+Clock_Gen_Fail:
+
+        movw $0x0080,%dx
+        movb $6,%al
+        outb %al,%dx
+        //Get Base Address
+        movw $0xcf8,%dx
+        movl $0x80000874,%eax
+        outl %eax,%dx
+        movw $0xcfc,%dx
+        inl  %dx,%eax
+        movw %ax,%dx
+
+
+        //Set Watch Dog Timer(200 ms)
+        addw $0x4a,%dx           #set 0x4a=50
+        movb $50,%al
+        outb %al,%dx
+        addw $1,%dx              #set 0x4b=0x83
+        movb $0x83,%al
+        outb %al,%dx
+
+        movw $0x0080,%dx
+        movb $7,%al
+        outb %al,%dx
+
+
+Clock_Gen_Delay1:
+        nop
+        jmp Clock_Gen_Delay1
+
+Clock_Gen_Complete:
+       //Set the Complete Flag
+        movw $0x0070,%dx
+
+        movb $0x50,%al
+        outb %al,%dx
+        movw $0x0071,%dx
+        inb  %dx,%al
+        orb  $0x02,%al
+        outb %al,%dx
+
+        movw $0x0080,%dx
+        movb $8,%al
+        outb %al,%dx
+
+
+        //Get Base Address
+        movw $0xcf8,%dx
+        movl $0x80000874,%eax
+        outl %eax,%dx
+        movw $0xcfc,%dx
+        inl  %dx,%eax
+        movw %ax,%dx
+
+        //Set Watch Dog Timer(200 ms)
+        addw $0x4a,%dx           #set 0x4a=50
+        movb $50,%al
+        outb %al,%dx
+        addw $1,%dx              #set 0x4b=0x83
+        movb $0x83,%al
+        outb %al,%dx
+
+
+        movw $0x0080,%dx
+        movb $9,%al
+        outb %al,%dx
+
+Clock_Gen_Delay2:
+        nop
+        jmp Clock_Gen_Delay2
+
+
+Clock_Gen_Exit:
+        //Clear the Complete Flag
+        movw $0x0070,%dx
+        movb $0x50,%al
+        outb %al,%dx
+        movw $0x0071,%dx
+        inb  %dx,%al
+        andb $0xfd,%al
+        outb %al,%dx
+
+        //Clear The Retry Counter
+        movw $0x0070,%dx
+        movb $0x60,%al
+        outb %al,%dx
+        movb $0,%al
+        movw $0x0071,%dx
+        outb %al,%dx
+
+        movw $0x0080,%dx
+        movb $0x10,%al
+        outb %al,%dx
+
+
+
+
+
 	movw	$0x5501, %ax			# MDOE# enable, this bit
 	CALL_SP(write_pci_register)		# should be set before sizing.
 
@@ -75,17 +391,40 @@ eb_100:
 	movw	$0x6006, %ax			# GPIO7 == 1 ==> EB-100
 	CALL_SP(write_pci_register)		# 2x12x9 (64MB)
 
-	movw	$0x63a1, %ax			# enable DIMM 0, SMA 8MB 
-	CALL_SP(write_pci_register)		# write register 0x63
+//	movw	$0x63a1, %ax			# enable DIMM 0, SMA 8MB 
+//	CALL_SP(write_pci_register)		# write register 0x63
 	
-	jmp	gpio_trap_end
+	jmp	set_sma
 
 eb_200:	
 	movw	$0x6002, %ax			# GPIO7 == 0 ==> EB-200
 	CALL_SP(write_pci_register)		# 2x12x8 (32MB)
-	movw	$0x6391, %ax			# enable DIMM 0, SMA 4MB 
-	CALL_SP(write_pci_register)		# write register 0x63
 
+//	movw	$0x6391, %ax			# enable DIMM 0, SMA 4MB 
+//	CALL_SP(write_pci_register)		# write register 0x63
+
+set_sma:	
+
+//set share memory
+        movb    $0x63, %ah                      # enable DIMM 0 and
+        movw    $0x0070,%dx
+        movb    $0x70,%al
+        outb    %al,%dx
+        movw    $0x0071,%dx
+        inb     %dx,%al
+        andb    $0x70,%al
+        cmpb    $0x70,%al                       #Not supported yet
+        jne     CHECK_NEXT
+        movb    $0x20,%al                       #8MB
+        jmp     CHECK_OK
+CHECK_NEXT:
+        cmpb    $0x60,%al                       #Not supported yet
+        jne     CHECK_OK
+        movb    $0x20,%al                       #8MB
+CHECK_OK:
+        orb     $0x81,%al
+
+        CALL_SP(write_pci_register)             # write register 0x63
 gpio_trap_end:
 
 /* -----------------------------------------------------------------------------------------*/

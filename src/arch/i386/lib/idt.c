@@ -9,6 +9,8 @@ struct realidt {
 	unsigned short offset, cs;
 }; 
 
+// from a handy writeup that andrey found.
+
 // handler. 
 // There are some assumptions we can make here. 
 // First, the Top Of Stack (TOS) is located on the top of page zero. 
@@ -26,27 +28,38 @@ void handler(void) {
  __asm__ __volatile__ ( 
 	".code16\n"
 	"idthandle:\n"
-	"	movb $0x55, %al\n"
-	"	outb %al, $0x80\n"
+	" 	pushal\n"
+	"	movl $0xff, %eax\n"
+	"	jmp 1f\n"
+	"idthandle10:\n"
+	" 	pushal\n"
+	"	movl $0x10, %eax\n"
+	"	jmp 1f\n"
+	"idthandle1a: \n"
+	" 	pushal\n"
+	"	movl $0x1a, %eax\n"
+	"1:	outb %al, $0x80\n"
 	"	ljmp $0, $callbiosint16\n"
 	"end_idthandle:\n"
 	".code32\n"
 	);
 }
 
+// Calling conventions. The first C function is called with this stuff
+// on the stack. They look like value parameters, but note that if you
+// modify them they will go back to the INTx function modified. 
+// the C function will call the biosint function with these as
+// REFERENCE parameters. In this way, we can easily get 
+// returns back to the INTx caller (i.e. vgabios)
 void callbiosint(void) {
 __asm__ __volatile__ (
 	".code16\n"
 	"callbiosint16:\n"
-	"	pushl	%eax\n"
-	"	pushl	%ebx\n"
-	"	pushl	%ecx\n"
-	"	pushl	%edx\n"
-	"	pushl	%edi\n"
-	"	pushl	%esi\n"
+	"pushl	%eax\n"
  	"movl    %cr0, %eax\n"
-       "andl    $0x7FFAFFD1, %eax\n" /* PG,AM,WP,NE,TS,EM,MP = 0 */
-        "orl    $0x60000001, %eax\n" /* CD, NW, PE = 1 */
+       //"andl    $0x7FFAFFD1, %eax\n" /* PG,AM,WP,NE,TS,EM,MP = 0 */
+        //"orl    $0x60000001, %eax\n" /* CD, NW, PE = 1 */
+        "orl    $0x00000001, %eax\n" /* PE = 1 */
        "movl    %eax, %cr0\n"
         /* Now that we are in protected mode jump to a 32 bit code segment. */
        "data32  ljmp    $0x10, $biosprotect\n"
@@ -94,32 +107,78 @@ __asm__ __volatile__ (
        "    mov  %ax, %es          \n"
        "    mov  %ax, %fs          \n"
        "    mov  %ax, %gs          \n"
-	"	popl	%eax\n"
-	"	popl	%ebx\n"
-	"	popl	%ecx\n"
-	"	popl	%edx\n"
-	"	popl	%edi\n"
-	"	popl	%esi\n"
+	// pop the INT # that you pushed earlier
+	"   popl	%eax\n"
+	" 	popal\n"
 	"	iret\n"
 	".code32\n"
 	);
 }
 
+
+enum {
+	PCIBIOS = 0x1a
+	};
+#ifdef CONFIG_PCIBIOS
 int
-biosint(unsigned long eax, 
-	unsigned long ebx, 
-	unsigned long ecx, 
-	unsigned long edx, 
+pcibios(
+        unsigned long *pedi,
+        unsigned long *pesi,
+        unsigned long *pebp,
+        unsigned long *pesp,
+        unsigned long *pebx,
+        unsigned long *pedx,
+        unsigned long *pecx,
+        unsigned long *peax,
+        unsigned long *pflags
+        );
+#endif
+int
+biosint(
+	unsigned long intnumber,
 	unsigned long edi, 
-	unsigned long esi) {
-	printk_debug("biosint: eax 0x%lx ebx 0x%lx ecx 0x%lx edx 0x%lx\n", 
-		eax, ebx, ecx, edx);
-	printk_debug("biosint: edi 0x%lx esi 0x%lx\n", edi, esi);
-	return 0;
+	unsigned long esi,
+	unsigned long ebp, 
+	unsigned long esp, 
+	unsigned long ebx, 
+	unsigned long edx, 
+	unsigned long ecx, 
+	unsigned long eax, 
+	// these came in from 16-bit land
+	// but gcc does something weird we have to undo.
+	unsigned short stackip,
+	unsigned short stackflags,
+	unsigned short stackcs
+	) {
+	unsigned long ip; 
+	unsigned long cs; 
+	unsigned long flags;
+	int ret = -1;
+
+	ip = stackip;
+	cs = stackcs;
+	flags = stackflags;
+
+	printk_debug("biosint: # 0x%lx, eax 0x%lx ebx 0x%lx ecx 0x%lx edx 0x%lx\n", 
+		intnumber, eax, ebx, ecx, edx);
+	printk_debug("biosint: ebp 0x%lx esp 0x%lx edi 0x%lx esi 0x%lx\n", ebp, esp, edi, esi);
+	printk_debug("biosint: ip 0x%x cs 0x%x flags 0x%x\n", ip, cs, flags);
+#ifdef CONFIG_PCIBIOS
+	if (intnumber == PCIBIOS)
+		ret = pcibios( &edi, &esi, &ebp, &esp, &ebx, &edx, &ecx, &eax, &flags);
+	if (ret)
+		flags |= 1; // carry flags
+	else
+		flags &= ~1;
+#endif
+	stackflags = flags;
+	return ret;
 } 
+
 void
 setup_realmode_idt(void) {
 	extern unsigned char idthandle, end_idthandle;
+	extern unsigned char idthandle10, idthandle1a; 
 	int i;
 	struct realidt *idts = (struct realidt *) 0;
 
@@ -128,6 +187,15 @@ setup_realmode_idt(void) {
 		idts[i].offset = 1024;
 	}
 
+	// now adjust for int 0x10 and int 0x1a
+
+	idts[0x10].offset += &idthandle10 - &idthandle;
+	printk_debug("idts[0x10].offset is now 0x%x\n", 
+			idts[0x10].offset);
+	idts[0x1a].offset += &idthandle1a - &idthandle;
+	printk_debug("idts[0x1a].offset is now 0x%x\n", 
+			idts[0x1a].offset);
+	
 	memcpy((void *) 1024, &idthandle, &end_idthandle - &idthandle);
 
 }

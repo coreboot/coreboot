@@ -108,8 +108,8 @@ static void real_mode_switch_call_vga(void)
        /* Setup a stack */
        "    mov  $0x0, %ax       \n"
        "    mov  %ax, %ss          \n"
-       "    mov  $0x1000, %ax       \n"
-       "    mov  %ax, %sp          \n"
+       "    movl  $0x1000, %eax       \n"
+       "    movl  %eax, %esp          \n"
  	/* ebugging for RGM */
        "    mov $0x11, %al	\n"
 	" outb	%al, $0x80\n"
@@ -125,8 +125,9 @@ static void real_mode_switch_call_vga(void)
        /* if we got here, just about done. 
 	* Need to get back to protected mode */
        "movl	%cr0, %eax\n"
-       "andl	$0x7FFAFFD1, %eax\n" /* PG,AM,WP,NE,TS,EM,MP = 0 */
-	"orl	$0x60000001, %eax\n" /* CD, NW, PE = 1 */
+//       "andl	$0x7FFAFFD1, %eax\n" /* PG,AM,WP,NE,TS,EM,MP = 0 */
+//	"orl	$0x60000001, %eax\n" /* CD, NW, PE = 1 */
+	"orl	$0x0000001, %eax\n" /* PE = 1 */
        "movl	%eax, %cr0\n"
 	/* Now that we are in protected mode jump to a 32 bit code segment. */
        "data32	ljmp	$0x10, $vgarestart\n"

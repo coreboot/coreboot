@@ -68,7 +68,7 @@ int enable_flash_sis630 (void)
     outb(b, 0xcfc);
     /* Flash write enable on SiS 540/630 */
     outl(0x80000845, 0x0cf8);
-    b = inb(0x0cfd) & 0x40;
+    b = inb(0x0cfd) | 0x40;
     outb(b, 0xcfd);
 
     /* The same thing on SiS 950 SuperIO side */
@@ -95,6 +95,7 @@ int enable_flash_sis630 (void)
     }
 
     outb(0x24, 0x2e);
+    printf("2f is %#x\n", inb(0x2f));
     b = inb(0x2f) | 0xfc;
     outb(0x24, 0x2e);
     outb(b, 0x2f);
@@ -171,13 +172,14 @@ main (int argc, char * argv[])
 
     enable_flash_sis630 ();
 
-    if (argc < 2){
-	printf("OK, only ENABLING flash write, but NOT FLASHING\n");
-        exit(0);
-    }
     if ((flash = probe_flash (flashchips)) == NULL) {
 	printf("EEPROM not found\n");
 	exit(1);
+    }
+
+    if (argc < 2){
+	printf("OK, only ENABLING flash write, but NOT FLASHING\n");
+        exit(0);
     }
     size = flash->total_size * 1024;
 

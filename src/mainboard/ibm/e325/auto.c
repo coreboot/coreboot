@@ -30,7 +30,7 @@ static void hard_reset(void)
 	set_bios_reset();
 
 	/* enable cf9 */
-	pci_write_config8(PCI_DEV(1, 0x04, 3), 0x41, 0xf1);
+	pci_write_config8(PCI_DEV(0, 0x04, 3), 0x41, 0xf1);
 	/* reset */
 	outb(0x0e, 0x0cf9);
 }
@@ -38,7 +38,7 @@ static void hard_reset(void)
 static void soft_reset(void)
 {
 	set_bios_reset();
-	pci_write_config8(PCI_DEV(1, 0x04, 0), 0x47, 1);
+	pci_write_config8(PCI_DEV(0, 0x04, 0), 0x47, 1);
 }
 
 static void memreset_setup(void)
@@ -171,18 +171,37 @@ static void main(void)
 	pc87366_enable_serial(SERIAL_DEV, TTYS0_BASE);
 	uart_init();
 	console_init();
+
+#if 0
+	print_pci_devices();
+#endif
+
 	setup_ibm_e325_resource_map();
+
+#if 0
+	print_debug("after setting resource\n");
+	print_pci_devices();
+#endif
+
 	needs_reset = setup_coherent_ht_domain();
 	needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0xA0);
+
+#if 0
+	print_debug("after ht stuff\n");
+	print_pci_devices();
+#endif
+
 	if (needs_reset) {
 		print_info("ht reset -\r\n");
 		soft_reset();
 	}
 
-#if 1
+#if 0
 	print_pci_devices();
 #endif
+
 	enable_smbus();
+
 #if 0
 	dump_spd_registers(&cpu[0]);
 #endif
@@ -193,6 +212,7 @@ static void main(void)
 #if 0
 	dump_pci_devices();
 #endif
+
 #if 0
 	dump_pci_device(PCI_DEV(0, 0x18, 2));
 #endif

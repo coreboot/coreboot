@@ -279,7 +279,7 @@ static void enumerate(struct chip *chip)
 		child->bus = &dev_root.link[0];
 	}
 }
-struct chip_control mainboard_arima_hdama_control = {
+struct chip_control mainboard_ibm_e325_control = {
 	.enumerate = enumerate, 
 	.name      = "IBM E325 mainboard ",
 };

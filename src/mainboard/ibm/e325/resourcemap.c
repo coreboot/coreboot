@@ -260,10 +260,10 @@ static void setup_ibm_e325_resource_map(void)
 	 * [31:24] Bus Number Limit i
 	 *	   This field defines the highest bus number in configuration regin i
 	 */
-	PCI_ADDR(0, 0x18, 1, 0xec), 0x0000FC88, 0xff000103, 
-	PCI_ADDR(0, 0x18, 1, 0xe8), 0x0000FC88, 0, 
+	PCI_ADDR(0, 0x18, 1, 0xe0), 0x0000FC88, 0xff040103, 
 	PCI_ADDR(0, 0x18, 1, 0xe4), 0x0000FC88, 0, 
-	PCI_ADDR(0, 0x18, 1, 0xe0), 0x0000FC88, 0, 
+	PCI_ADDR(0, 0x18, 1, 0xe8), 0x0000FC88, 0, 
+	PCI_ADDR(0, 0x18, 1, 0xec), 0x0000FC88, 0, 
         };
         int max;
         max = sizeof(register_values)/sizeof(register_values[0]);

@@ -488,11 +488,19 @@ static void amdk8_set_resources(device_t dev)
 unsigned int amdk8_scan_root_bus(device_t root, unsigned int max)
 {
 	unsigned reg;
+
+	printk_debug("amdk8_scan_root_bus\n");
+
 	/* Unmap all of the HT chains */
 	for (reg = 0xe0; reg <= 0xec; reg += 4) {
+		printk_debug("amdk8_scan_root: clearing register %x\n", reg);
 		f1_write_config32(reg, 0);
 	}
+
+	printk_debug("amdk8_scan_root_bus: start scan pci bus\n");
 	max = pci_scan_bus(&root->link[0], PCI_DEVFN(0x18, 0), 0xff, max);
+
+	printk_debug("amdk8_scan_root_bus: done\n");
 	return max;
 }
 
@@ -529,12 +537,11 @@ static void amdk8_enable_resources(struct device *dev)
 	ctrl = pci_read_config16(dev, PCI_BRIDGE_CONTROL);
 	ctrl |= dev->link[0].bridge_ctrl;
 	printk_debug("%s bridge ctrl <- %04x\n", dev_path(dev), ctrl);
-	printk_err("%s bridge ctrl <- %04x\n", dev_path(dev), ctrl);
 	pci_write_config16(dev, PCI_BRIDGE_CONTROL, ctrl);
 
 #if 0
 	/* let's see what link VGA is on */
-	for(link = 0; link < dev->links; link++) {
+	for (link = 0; link < dev->links; link++) {
 		device_t child;
 		printk_err("Kid %d of k8: bridge ctrl says: 0x%x\n",
 			   link, dev->link[link].bridge_ctrl);

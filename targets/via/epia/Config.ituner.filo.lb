@@ -4,6 +4,8 @@
 target epia-ituner-filo
 mainboard via/epia
 
+option MAXIMUM_CONSOLE_LOGLEVEL=9
+option DEFAULT_CONSOLE_LOGLEVEL=9
 #
 # Via Epia
 romimage "normal"
@@ -13,7 +15,7 @@ romimage "normal"
 #	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
 #	payload ../../../../tg3--ide_disk.zelf	
 #	payload ../../../../../lnxieepro100.ebi
-	payload ../../../../../../filo.19200.elf
+	payload /tmp/filo.elf
 end
 
 romimage "fallback" 
@@ -23,7 +25,7 @@ romimage "fallback"
 #	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
 #	payload ../../../../tg3--ide_disk.zelf	
 #	payload ../../../../../lnxieepro100.ebi
-	payload ../../../../../../filo.19200.elf
+	payload /tmp/filo.elf
 end
 
 buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"

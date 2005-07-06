@@ -13,7 +13,7 @@ romimage "normal"
 #	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
 #	payload ../../../../tg3--ide_disk.zelf	
 #	payload ../../../../../lnxieepro100.ebi
-	payload ../../../../../../filo.elf
+	payload /tmp/filo.elf
 end
 
 romimage "fallback" 
@@ -23,7 +23,7 @@ romimage "fallback"
 #	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
 #	payload ../../../../tg3--ide_disk.zelf	
 #	payload ../../../../../lnxieepro100.ebi
-	payload ../../../../../../filo.elf
+	payload /tmp/filo.elf
 end
 
 buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"

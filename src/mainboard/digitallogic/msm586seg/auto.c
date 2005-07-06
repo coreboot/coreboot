@@ -12,6 +12,7 @@
 #include "ram/ramtest.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
+//#include "lib/delay.c"
 #include "cpu/amd/sc520/raminit.c"
 
 struct mem_controller {
@@ -60,7 +61,7 @@ static void main(unsigned long bist)
 		early_mtrr_init();
 	}
  */
-        
+        setupsc520();
         uart_init();
         console_init();
 

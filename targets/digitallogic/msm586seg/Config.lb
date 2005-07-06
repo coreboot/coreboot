@@ -1,14 +1,16 @@
 target msm586seg
 mainboard digitallogic/msm586seg
 
+option ROM_SIZE=64*1024
+
 option DEFAULT_CONSOLE_LOGLEVEL=10
 option MAXIMUM_CONSOLE_LOGLEVEL=10
-romimage "normal"
-	option USE_FALLBACK_IMAGE=0
-	option ROM_IMAGE_SIZE=0x10000
-	option LINUXBIOS_EXTRA_VERSION=".0Normal"
-	payload /etc/hosts
-end
+#romimage "normal"
+#	option USE_FALLBACK_IMAGE=0
+#	option ROM_IMAGE_SIZE=0x10000
+#	option LINUXBIOS_EXTRA_VERSION=".0Normal"
+#	payload /etc/hosts
+#end
 
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
@@ -17,4 +19,4 @@ romimage "fallback"
 	payload /etc/hosts
 end
 
-buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
+buildrom ./linuxbios.rom ROM_SIZE  "fallback"

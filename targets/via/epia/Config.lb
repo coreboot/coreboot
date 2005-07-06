@@ -3,6 +3,8 @@
 
 target epia
 mainboard via/epia
+option MAXIMUM_CONSOLE_LOGLEVEL=9
+option DEFAULT_CONSOLE_LOGLEVEL=9
 #
 # Via Epia
 romimage "normal"

@@ -13,7 +13,6 @@
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
 
-
 #include "northbridge/amd/amdk8/cpu_rev.c"
 #define K8_HT_FREQ_1G_SUPPORT 0
 #include "northbridge/amd/amdk8/incoherent_ht.c"
@@ -38,20 +37,52 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
+/* Look up a which bus a given node/link combination is on.
+ * return 0 when we can't find the answer.
+ */
+static unsigned node_link_to_bus(unsigned node, unsigned link)
+{
+        unsigned reg;
+        
+        for(reg = 0xE0; reg < 0xF0; reg += 0x04) {
+                unsigned config_map;
+                config_map = pci_read_config32(PCI_DEV(0, 0x18, 1), reg);
+                if ((config_map & 3) != 3) {
+                        continue; 
+                }       
+                if ((((config_map >> 4) & 7) == node) &&
+                        (((config_map >> 8) & 3) == link))
+                {       
+                        return (config_map >> 16) & 0xff;
+                }       
+        }       
+        return 0;
+}       
+
 static void hard_reset(void)
 {
+        device_t dev;
+
+        /* Find the device */
+        dev = PCI_DEV(node_link_to_bus(0, 2), 0x04, 3);
+
         set_bios_reset();
 
         /* enable cf9 */
-        pci_write_config8(PCI_DEV(0, 0x04, 3), 0x41, 0xf1);
+        pci_write_config8(dev, 0x41, 0xf1);
         /* reset */
         outb(0x0e, 0x0cf9);
 }
 
 static void soft_reset(void)
 {
+        device_t dev;
+
+        /* Find the device */
+        dev = PCI_DEV(node_link_to_bus(0, 2), 0x04, 0);
+
         set_bios_reset();
-        pci_write_config8(PCI_DEV(0, 0x04, 0), 0x47, 1);
+        pci_write_config8(dev, 0x47, 1);
 }
 
 static void memreset_setup(void)
@@ -73,10 +104,13 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
         udelay(90);
    }
 }
-
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
-	/* nothing to do */
+#define SMBUS_HUB 0x18
+        int ret;
+        unsigned device=(ctrl->channel0[0])>>8;
+        smbus_write_byte(SMBUS_HUB, 0x01, device);
+        smbus_write_byte(SMBUS_HUB, 0x03, 0);
 }
 
 static inline int spd_read_byte(unsigned device, unsigned address)
@@ -103,11 +137,26 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #if CONFIG_LOGICAL_CPUS==1
 #define SET_NB_CFG_54 1
 #include "cpu/amd/dualcore/dualcore.c"
+#else
+#include "cpu/amd/model_fxx/node_id.c"
 #endif
-
 #define FIRST_CPU  1
 #define SECOND_CPU 1
-#define TOTAL_CPUS (FIRST_CPU + SECOND_CPU)
+
+#define THIRD_CPU  1 
+#define FOURTH_CPU 1 
+
+#define TOTAL_CPUS (FIRST_CPU + SECOND_CPU + THIRD_CPU + FOURTH_CPU)
+
+#define RC0 ((1<<2)<<8)
+#define RC1 ((1<<1)<<8)
+#define RC2 ((1<<4)<<8)
+#define RC3 ((1<<3)<<8)
+
+#define DIMM0 0x50
+#define DIMM1 0x51
+#define DIMM2 0x52
+#define DIMM3 0x53
 
 #include "cpu/amd/car/copy_and_run.c"
 
@@ -159,6 +208,7 @@ void amd64_main(unsigned long bist)
 
         enumerate_ht_chain();
 
+        /* Setup the ck804 */
         amd8111_enable_rom();
 
         /* Is this a deliberate reset by the bios */
@@ -196,26 +246,52 @@ void amd64_main(unsigned long bist)
 {
 	static const struct mem_controller cpu[] = {
 #if FIRST_CPU
-		{
-			.node_id = 0,
-			.f0 = PCI_DEV(0, 0x18, 0),
-			.f1 = PCI_DEV(0, 0x18, 1),
-			.f2 = PCI_DEV(0, 0x18, 2),
-			.f3 = PCI_DEV(0, 0x18, 3),
-			.channel0 = { (0xa<<3)|0, (0xa<<3)|2, 0, 0 },
-			.channel1 = { (0xa<<3)|1, (0xa<<3)|3, 0, 0 },
-		},
+                {
+                        .node_id = 0,
+                        .f0 = PCI_DEV(0, 0x18, 0),
+                        .f1 = PCI_DEV(0, 0x18, 1),
+                        .f2 = PCI_DEV(0, 0x18, 2),
+                        .f3 = PCI_DEV(0, 0x18, 3),
+                        .channel0 = { RC0|DIMM0, RC0|DIMM2, 0, 0 },
+                        .channel1 = { RC0|DIMM1, RC0|DIMM3, 0, 0 },
+                },
 #endif
 #if SECOND_CPU
-		{
-			.node_id = 1,
-			.f0 = PCI_DEV(0, 0x19, 0),
-			.f1 = PCI_DEV(0, 0x19, 1),
-			.f2 = PCI_DEV(0, 0x19, 2),
-			.f3 = PCI_DEV(0, 0x19, 3),
-			.channel0 = { (0xa<<3)|4, (0xa<<3)|6, 0, 0 },
-			.channel1 = { (0xa<<3)|5, (0xa<<3)|7, 0, 0 },
-		},
+                {
+                        .node_id = 1,
+                        .f0 = PCI_DEV(0, 0x19, 0),
+                        .f1 = PCI_DEV(0, 0x19, 1),
+                        .f2 = PCI_DEV(0, 0x19, 2),
+                        .f3 = PCI_DEV(0, 0x19, 3),
+                        .channel0 = { RC1|DIMM0, RC1|DIMM2 , 0, 0 },
+                        .channel1 = { RC1|DIMM1, RC1|DIMM3 , 0, 0 },
+
+                },
+#endif
+
+#if THIRD_CPU
+                {
+                        .node_id = 2,
+                        .f0 = PCI_DEV(0, 0x1a, 0),
+                        .f1 = PCI_DEV(0, 0x1a, 1),
+                        .f2 = PCI_DEV(0, 0x1a, 2),
+                        .f3 = PCI_DEV(0, 0x1a, 3),
+                        .channel0 = { RC2|DIMM0, RC2|DIMM2, 0, 0 },
+                        .channel1 = { RC2|DIMM1, RC2|DIMM3, 0, 0 },
+
+                },
+#endif
+#if FOURTH_CPU
+                {
+                        .node_id = 3,
+                        .f0 = PCI_DEV(0, 0x1b, 0),
+                        .f1 = PCI_DEV(0, 0x1b, 1),
+                        .f2 = PCI_DEV(0, 0x1b, 2),
+                        .f3 = PCI_DEV(0, 0x1b, 3),
+                        .channel0 = { RC3|DIMM0, RC3|DIMM2, 0, 0 },
+                        .channel1 = { RC3|DIMM1, RC3|DIMM3, 0, 0 },
+
+                },
 #endif
 	};
 
@@ -296,21 +372,17 @@ void amd64_main(unsigned long bist)
         uart_init();
         console_init();
 
-	
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-        setup_s2885_resource_map();
-#if 0
-        dump_pci_device(PCI_DEV(0, 0x18, 0));
-	dump_pci_device(PCI_DEV(0, 0x19, 0));
-#endif
+        setup_s4880_resource_map();
 
 	needs_reset = setup_coherent_ht_domain();
 	
 #if CONFIG_LOGICAL_CPUS==1
         start_other_cores();
 #endif
+
         needs_reset |= ht_setup_chains_x();
 
        	if (needs_reset) {
@@ -319,12 +391,6 @@ void amd64_main(unsigned long bist)
        	}
 
 	enable_smbus();
-#if 0
-	dump_spd_registers(&cpu[0]);
-#endif
-#if 0
-	dump_smbus_registers();
-#endif
 
 	memreset_setup();
 	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);

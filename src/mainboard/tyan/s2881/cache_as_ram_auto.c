@@ -355,9 +355,9 @@ cpu_reset_x:
 
 	__asm__ volatile (
                 /* set new esp */ /* before _RAMBASE */
-                "movl   %0, %%ebp\n\t"
-                "movl   %0, %%esp\n\t"
-                ::"a"( _RAMBASE - 4 )
+                "subl   %0, %%ebp\n\t"
+                "subl   %0, %%esp\n\t"
+                ::"a"( (DCACHE_RAM_BASE + DCACHE_RAM_SIZE)- _RAMBASE )
 	);
 
 	{

@@ -1,3 +1,5 @@
+- 1.1.8
+  - Store everything in arch
 - 1.1.7
   - The configuration language has been cleaned up.  No more link keyword.
   - Everything is now in the device tree.

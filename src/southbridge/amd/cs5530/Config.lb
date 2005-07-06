@@ -1,0 +1,4 @@
+#config chip.h
+driver cs5530.o
+#driver cs5530_pci.o
+driver cs5530_ide.o

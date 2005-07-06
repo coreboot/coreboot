@@ -82,10 +82,17 @@ static void nic_init(struct device *dev)
 		mac_l = readl(mac_pos) + nic_index;
 		mac_h = readl(mac_pos + 4);
 	}
-
+#if 1   
+//      set that into NIC MMIO
+#define NvRegMacAddrA  0xA8
+#define NvRegMacAddrB  0xAC
+        writel(mac_l, base + NvRegMacAddrA);
+        writel(mac_h, base + NvRegMacAddrB);
+#else
 //	set that into NIC
 	pci_write_config32(dev, 0xa8, mac_l);
 	pci_write_config32(dev, 0xac, mac_h);
+#endif
 
 	nic_index++;
 

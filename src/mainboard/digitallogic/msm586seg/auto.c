@@ -47,17 +47,26 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 static void main(unsigned long bist)
 {
+    volatile int i;
+    for(i = 0; i < 100; i++)
+      ;
+
 
         setupsc520();
         uart_init();
         console_init();
-	//	while(1)
+		for(i = 0; i < 100; i++)
+	  print_err("fill usart\r\n");
+		//		while(1)
 		print_err("HI THERE!\r\n");
-			sizemem();
-//	staticmem();
+		//			sizemem();
+	staticmem();
 			
-			while(1)
+	//			while(1)
 	print_err("STATIC MEM DONE\r\n");
+	outb(0xee, 0x80);
+	print_err("loop forever ...\n");
+
 
 #if 0
 	else {
@@ -82,9 +91,14 @@ static void main(unsigned long bist)
 	dump_pci_device(PCI_DEV(0, 0, 0));
 #endif
 
-#if 1
+#if 0
 	print_err("RAM CHECK!\r\n");
 	// Check 16MB of memory @ 0
 	ram_check(0x00000000, 0x01000000);
+#endif
+#if 1
+	print_err("RAM CHECK!\r\n");
+	// Check 1MB of memory @ 0
+	ram_check(0x00000000, 0x0100000);
 #endif
 }

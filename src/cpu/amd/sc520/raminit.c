@@ -48,6 +48,90 @@
 
 #define OUTC(addr, val) *(unsigned char *)(addr) = (val)
 
+void p4(unsigned char c){
+  //print_err("TRY A TX NIBLE\r\n");
+  __console_tx_nibble(c);
+  return;
+  print_err("now do the other\r\n");
+
+  //  c = c + '0'; 
+  //  if (c > '9')
+  //    c = c + 39;
+  //  __console_tx_byte(c);
+  //print_err("NO!\r\n");
+  //  return;
+  switch(c) {
+  case 0:
+    print_err("0");
+    break;
+  case 1:
+    print_err("1");
+    break;
+  case 2:
+    print_err("2");
+    break;
+  case 3:
+    print_err("3");
+    break;
+  case 4:
+    print_err("4");
+    break;
+  case 5:
+    print_err("5");
+    break;
+  case 6:
+    print_err("6");
+    break;
+  case 7:
+    print_err("7");
+    break;
+  case 8:
+    print_err("8");
+    break;
+  case 9:
+    print_err("9");
+    break;
+  case 0xa:
+    print_err("a");
+    break;
+  case 0xb:
+    print_err("b");
+    break;
+  case 0xc:
+    print_err("c");
+    break;
+  case 0xd:
+    print_err("d");
+    break;
+  case 0xe:
+    print_err("e");
+    break;
+  case 0xf:
+    print_err("f");
+    break;
+  }
+
+}
+
+void p8(unsigned char c) {
+  /*
+  __console_tx_nibble(c>>4);
+  __console_tx_nibble(c&0xf);
+  */
+  p4(c>>4);
+  p4(c&0xf);
+}
+
+void p16(unsigned short s) {
+  p8(s>>16);
+  p8(s);
+}
+
+void p32(unsigned long l) {
+  p16(l>>16);
+  p16(l);
+}
+
 
 /* sadly, romcc can't quite handle what we want, so we do this ugly thing */
 #define drcctl   (( volatile unsigned char *)0xfffef010)
@@ -143,6 +227,7 @@ setupsc520(void){
 	*cp = 4;					/* uart 1 clock source */
 	cp = (unsigned char *)0xfffefcc4;
 	*cp = 4;					/* uart 2 clock source */
+#if 0
 /*; set the interrupt mapping registers.*/
 	cp = (unsigned char *)0x0fffefd20;
 	*cp = 0x01;
@@ -172,7 +257,9 @@ setupsc520(void){
 	outl(0x0cf8,0x080000004);	/*index the status command register on device 0*/
 	outl(0xcfc, 0x2);			/*set the memory access enable bit*/
 	OUTC(0x0fffef072, 1);		/* enable req bits in SYSARBMENB */
+#endif
 
+#if 0
 
 
 	/* set up the PAR registers as they are on the MSM586SEG */
@@ -194,7 +281,7 @@ setupsc520(void){
 	*par++ = 0x545c00c8; /*PAR14: GP BUS MEM:CS5:Base 0xc8, size 0x5c:*/
 //	*par++ = 0x8a020200; /*PAR15: BOOTCS:code:nocache:write:Base 0x2000000, size 0x80000:*/
 
-
+#endif
 }
 	
 
@@ -285,6 +372,8 @@ int sizemem(void)
 
 	/* setup loop to do 4 external banks starting with bank 3 */
 	*drcbendadr=0x0ff000000;
+	*drcbendadr=0x0ff;
+
 	/* issue a NOP to all DRAMs */
 	/* Setup DRAM control register with Disable refresh,
  	 * disable write buffer Test Mode and NOP command select
@@ -341,10 +430,15 @@ int sizemem(void)
 	    print_err("\r\n"); 
 	    //	    continue;
 	  }
+	  *drcctl = 2;
+	  dummy_write();
+	  *drccfg = *drccfg >> 4;
 	  l = *drcbendadr;
 	  l >>= 8; 
 	  *drcbendadr = l;
 	  print_err("loop around\r\n");
+	  *drcctl = 0;
+	  dummy_write();
 	}
 #if 0
 	/* enable last bank and setup ending address 
@@ -588,7 +682,7 @@ bad_ram:
 /* this does now work worth shit. */
 int
 staticmem(void){
-	volatile unsigned char *zero = (unsigned char *) 0;
+  volatile unsigned long *zero = (unsigned long *) CACHELINESZ;
 	/* set up 0x18 .. **/
 	*drcbendadr = 0x88;
 	*drcmctl = 0x1e;
@@ -615,9 +709,18 @@ staticmem(void){
 	print_err("DONE the load mode reg\r\n");
 	
 	/* normal mode */
+	*drcctl = 0x0;
+	*zero = 0;
+	print_err("DONE one last write and then turn on refresh etc\n");
 	*drcctl = 0x18;
 	*zero = 0;
 	print_err("DONE the normal\r\n");
 	*zero = 0xdeadbeef;
-	print_err(" zero is now "); print_err_hex32(*zero); print_err("\r\n");
+	if (*zero != 0xdeadbeef) 
+	  print_err("NO LUCK\r\n");
+	else
+	  print_err("did a stor and load ...\r\n");
+	//	p32(*zero);
+	print_err_hex32(*zero);
+	//	print_err(" zero is now "); print_err_hex32(*zero); print_err("\r\n");
 }

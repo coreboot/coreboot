@@ -1,6 +1,7 @@
 ## This is Architecture independant part of the makefile
 
 uses HAVE_OPTION_TABLE
+uses CONFIG_USE_INIT
 
 makedefine CPP:= $(CC) -x assembler-with-cpp -DASSEMBLY -E
 makedefine LIBGCC_FILE_NAME := $(shell $(CC) -print-libgcc-file-name)

@@ -116,13 +116,14 @@ static void main(unsigned long bist)
 		.channel1 = { (0xaa>>1)|CHAN0, (0xae>>1)|CHAN0, 0, 0 }
 	},
 	{	NODE_RAM(2),
-		.channel0 = { (0xa0>>1)|CHAN1, (0xa4>>1)|CHAN1, 0, 0 },
-		.channel1 = { (0xa2>>1)|CHAN1, (0xa6>>1)|CHAN1, 0, 0 }
-	},
-	{	NODE_RAM(3),
 		.channel0 = { (0xa8>>1)|CHAN1, (0xac>>1)|CHAN1, 0, 0 },
 		.channel1 = { (0xaa>>1)|CHAN1, (0xae>>1)|CHAN1, 0, 0 }
-	} };
+	},
+	{	NODE_RAM(3),
+		.channel0 = { (0xa0>>1)|CHAN1, (0xa4>>1)|CHAN1, 0, 0 },
+		.channel1 = { (0xa2>>1)|CHAN1, (0xa6>>1)|CHAN1, 0, 0 }
+	}
+	};
 
 	int needs_reset;
 

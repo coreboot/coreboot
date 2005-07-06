@@ -70,7 +70,7 @@
 *
 ****************************************************************************/
 
-#include "x86emu/x86emui.h"
+#include "x86emui.h"
 
 /*----------------------------- Implementation ----------------------------*/
 
@@ -219,8 +219,7 @@ void x86emuOp_genop_byte_RM_R(u8 op1)
         DECODE_PRINTF("\n");
         TRACE_AND_STEP();
         destval = genop_byte_operation[op1](destval, *srcreg);
-        if (op1 != 7)
-            store_data_byte(destoffset, destval);
+        store_data_byte(destoffset, destval);
         }
     else
         {                       /* register to register */
@@ -263,8 +262,7 @@ void x86emuOp_genop_word_RM_R(u8 op1)
             DECODE_PRINTF("\n");
             TRACE_AND_STEP();
             destval = genop_long_operation[op1](destval, *srcreg);
-            if (op1 != 7)
-                store_data_long(destoffset, destval);
+            store_data_long(destoffset, destval);
         } else {
             u16 destval;
             u16 *srcreg;
@@ -275,12 +273,11 @@ void x86emuOp_genop_word_RM_R(u8 op1)
             DECODE_PRINTF("\n");
             TRACE_AND_STEP();
             destval = genop_word_operation[op1](destval, *srcreg);
-            if (op1 != 7)
-                store_data_word(destoffset, destval);
+            store_data_word(destoffset, destval);
         }
     } else {                    /* register to register */
         if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 *destreg, *srcreg;
+            u32 *destreg,*srcreg;
 
             destreg = DECODE_RM_LONG_REGISTER(rl);
             DECODE_PRINTF(",");
@@ -289,7 +286,7 @@ void x86emuOp_genop_word_RM_R(u8 op1)
             TRACE_AND_STEP();
             *destreg = genop_long_operation[op1](*destreg, *srcreg);
         } else {
-            u16 *destreg, *srcreg;
+            u16 *destreg,*srcreg;
 
             destreg = DECODE_RM_WORD_REGISTER(rl);
             DECODE_PRINTF(",");
@@ -1335,7 +1332,9 @@ void x86emuOp_opc80_byte_RM_IMM(u8 X86EMU_UNUSED(op1))
         imm = fetch_byte_imm();
         DECODE_PRINTF2("%x\n", imm);
         TRACE_AND_STEP();
-        *destreg = (*genop_byte_operation[rh]) (*destreg, imm);
+        destval = (*genop_byte_operation[rh]) (*destreg, imm);
+        if (rh != 7)
+            *destreg = destval;
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -1424,23 +1423,29 @@ void x86emuOp_opc81_word_RM_IMM(u8 X86EMU_UNUSED(op1))
         }
     } else {                     /* register to register */
         if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 *destreg, imm;
+            u32 *destreg;
+            u32 destval,imm;
 
             destreg = DECODE_RM_LONG_REGISTER(rl);
             DECODE_PRINTF(",");
             imm = fetch_long_imm();
             DECODE_PRINTF2("%x\n", imm);
             TRACE_AND_STEP();
-            *destreg = (*genop_long_operation[rh]) (*destreg, imm);
+            destval = (*genop_long_operation[rh]) (*destreg, imm);
+            if (rh != 7)
+                *destreg = destval;
         } else {
-            u16 *destreg, imm;
+            u16 *destreg;
+            u16 destval,imm;
 
             destreg = DECODE_RM_WORD_REGISTER(rl);
             DECODE_PRINTF(",");
             imm = fetch_word_imm();
             DECODE_PRINTF2("%x\n", imm);
             TRACE_AND_STEP();
-            *destreg = (*genop_word_operation[rh]) (*destreg, imm);
+            destval = (*genop_word_operation[rh]) (*destreg, imm);
+            if (rh != 7)
+                *destreg = destval;
         }
     }
     DECODE_CLEAR_SEGOVR();
@@ -1518,7 +1523,9 @@ void x86emuOp_opc82_byte_RM_IMM(u8 X86EMU_UNUSED(op1))
         imm = fetch_byte_imm();
         DECODE_PRINTF2(",%x\n", imm);
         TRACE_AND_STEP();
-        *destreg = (*genop_byte_operation[rh]) (*destreg, imm);
+        destval = (*genop_byte_operation[rh]) (*destreg, imm);
+        if (rh != 7)
+            *destreg = destval;
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -1604,21 +1611,27 @@ void x86emuOp_opc83_word_RM_IMM(u8 X86EMU_UNUSED(op1))
         }
     } else {                     /* register to register */
         if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 *destreg, imm;
+            u32 *destreg;
+            u32 destval,imm;
 
             destreg = DECODE_RM_LONG_REGISTER(rl);
             imm = (s8) fetch_byte_imm();
             DECODE_PRINTF2(",%x\n", imm);
             TRACE_AND_STEP();
-            *destreg = (*genop_long_operation[rh]) (*destreg, imm);
+            destval = (*genop_long_operation[rh]) (*destreg, imm);
+            if (rh != 7)
+                *destreg = destval;
         } else {
-            u16 *destreg, imm;
+            u16 *destreg;
+            u16 destval,imm;
 
             destreg = DECODE_RM_WORD_REGISTER(rl);
             imm = (s8) fetch_byte_imm();
             DECODE_PRINTF2(",%x\n", imm);
             TRACE_AND_STEP();
-            *destreg = (*genop_word_operation[rh]) (*destreg, imm);
+            destval = (*genop_word_operation[rh]) (*destreg, imm);
+            if (rh != 7)
+                *destreg = destval;
         }
     }
     DECODE_CLEAR_SEGOVR();

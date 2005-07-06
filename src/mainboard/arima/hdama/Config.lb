@@ -129,61 +129,48 @@ config chip.h
 
 # config for arima/hdama
 chip northbridge/amd/amdk8/root_complex
-	device apic_cluster 0 on
-		chip cpu/amd/socket_940
-			device apic 0 on end
-		end
-		chip cpu/amd/socket_940
-			device apic 1 on end
-		end
-	end
 	device pci_domain 0 on
 		chip northbridge/amd/amdk8
 			device pci 18.0 on #  northbridge 
 				#  devices on link 0, link 0 == LDT 0 
 				chip southbridge/amd/amd8131
 					# the on/off keyword is mandatory
-					device pci 0.0 on end	# PCIX bridge
-					device pci 0.1 on end	# IOAPIC
-					device pci 1.0 on end	# PCIX bridge
-					device pci 1.1 on end	# IOAPIC 
+					device pci 0.0 on end
+					device pci 0.1 on end
+					device pci 1.0 on end
+					device pci 1.1 on end
 				end
 				chip southbridge/amd/amd8111
-					# this "device pci 0.0" is the parent of the next one
+					# this "device pci 0.0" is the parent the next one
 					# PCI bridge
 					device pci 0.0 on
-						device pci 0.0 on  end # USB0
-						device pci 0.1 on  end # USB1
-						device pci 0.2 off end # USB 2.0
-						device pci 1.0 off end # LAN
-						chip drivers/pci/onboard
-							device pci 6.0 on end # ATI Rage XL
-							register "rom_address" = "0xfff80000"
-						end
+						device pci 0.0 on end
+						device pci 0.1 on end
+						device pci 0.2 off end
+						device pci 1.0 off end
 					end
-					# LPC bridge
 					device pci 1.0 on
 						chip superio/NSC/pc87360
-							device	pnp 2e.0 off	# Floppy 
+							device	pnp 2e.0 off  # Floppy 
 								 io 0x60 = 0x3f0
 								irq 0x70 = 6
 								drq 0x74 = 2
 							end
-							device pnp 2e.1 off	# Parallel Port
+							device pnp 2e.1 off  # Parallel Port
 								 io 0x60 = 0x378
 								irq 0x70 = 7
 							end
-							device pnp 2e.2 off	# Com 2
+							device pnp 2e.2 off # Com 2
 								 io 0x60 = 0x2f8
 								irq 0x70 = 3
 							end
-							device pnp 2e.3 on	# Com 1
+							device pnp 2e.3 on  # Com 1
 								 io 0x60 = 0x3f8
 								irq 0x70 = 4
 							end
 							device pnp 2e.4 off end # SWC
 							device pnp 2e.5 off end # Mouse
-							device pnp 2e.6 on	# Keyboard
+							device pnp 2e.6 on  # Keyboard
 								 io 0x60 = 0x60
 								 io 0x62 = 0x64
 								irq 0x70 = 1
@@ -194,9 +181,9 @@ chip northbridge/amd/amdk8/root_complex
 							device pnp 2e.a off end # WDT  
 						end
 					end
-					device pci 1.1 on end	# IDE
-					device pci 1.2 on end	# SMBus 2.0
-					device pci 1.3 on 	# System Management
+					device pci 1.1 on end
+					device pci 1.2 on end
+					device pci 1.3 on 
 						chip drivers/generic/generic
 							#phillips pca9545 smbus mux
 							device i2c 70 on 
@@ -234,19 +221,19 @@ chip northbridge/amd/amdk8/root_complex
 							device i2c 57 on end
 						end 
 					end
-					device pci 1.5 off end	# AC97 Audio
-					device pci 1.6 on  end	# AC97 Modem
+					device pci 1.5 off end
+					device pci 1.6 on end
 					register "ide0_enable" = "1"
 					register "ide1_enable" = "1"
 				end
-			end # device pci 18.0 
+			end #  device pci 18.0 
 			
 			device pci 18.0 on end # LDT1
 			device pci 18.0 on end # LDT2
 			device pci 18.1 on end
 			device pci 18.2 on end
 			device pci 18.3 on end
-		end  # chip northbridge/amd/amdk8
+		end
 		chip northbridge/amd/amdk8
 			device pci 19.0 on end
 			device pci 19.0 on end
@@ -254,6 +241,14 @@ chip northbridge/amd/amdk8/root_complex
 			device pci 19.1 on end
 			device pci 19.2 on end
 			device pci 19.3 on end
+		end
+	end 
+	device apic_cluster 0 on
+		chip cpu/amd/socket_940
+			device apic 0 on end
+		end
+		chip cpu/amd/socket_940
+			device apic 1 on end
 		end
 	end
 end

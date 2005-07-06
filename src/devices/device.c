@@ -363,7 +363,6 @@ void compute_allocate_resource(
 
 
 }
-
 #if CONFIG_CONSOLE_VGA == 1
 device_t vga_pri = 0;
 static void allocate_vga_resource(void)
@@ -378,13 +377,14 @@ static void allocate_vga_resource(void)
 	vga = 0;
 	vga_onboard = 0;
 	for (dev = all_devices; dev; dev = dev->next) {
-		if (!dev->enabled) continue;
+		if ( !dev->enabled ) continue;
 		if (((dev->class >> 16) == PCI_BASE_CLASS_DISPLAY) &&
 		    ((dev->class >> 8) != PCI_CLASS_DISPLAY_OTHER)) {
 			if (!vga) {
 				if (dev->on_mainboard) {
 					vga_onboard = dev;
-				} else {
+				} 
+				else {
 					vga = dev;
 				}
 			}
@@ -397,8 +397,7 @@ static void allocate_vga_resource(void)
 		vga = vga_onboard;
 	}
 	
-	if (vga) {
-		// vga is first add on card or the only onboard vga
+	if (vga) { // vga is first add on card or the only onboard vga
 		printk_debug("Allocating VGA resource %s\n", dev_path(vga));
 		vga->command |= (PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
 		vga_pri = vga;
@@ -412,6 +411,7 @@ static void allocate_vga_resource(void)
 		bus = (bus == bus->dev->bus)? 0 : bus->dev->bus;
 	} 
 }
+
 #endif
 
 

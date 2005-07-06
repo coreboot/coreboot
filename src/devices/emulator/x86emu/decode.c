@@ -77,8 +77,6 @@ next instruction.
 void x86emu_intr_raise(
     u8 intrnum)
 {
-    printk("%s, rasing execption %x\n", __func__, intrnum);
-    x86emu_dump_regs();
     M.x86.intno = intrnum;
     M.x86.intr |= INTR_SYNCH;
 }

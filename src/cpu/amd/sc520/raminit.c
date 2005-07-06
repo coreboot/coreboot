@@ -256,7 +256,11 @@ void udelay(int microseconds) {
 
 int nextbank(int bank)
 {
-	int rows,banks, i, ending_adr;
+	int rows,banks, cols, i, ending_adr;
+
+	/* this is really ugly, it is right from assembly code. 
+	 * we need to clean it up later
+	 */
 	
 start:
 	/* write col 11 wrap adr */
@@ -264,45 +268,54 @@ start:
 	if(COL11_ADR!=COL11_DATA)
 		goto bad_ram;
 
+print_err("11\n");
 	/* write col 10 wrap adr */
 	COL10_ADR=COL10_DATA;
 	if(COL10_ADR!=COL10_DATA)
 		goto bad_ram;
+print_err("10\n");
 
 	/* write col 9 wrap adr */
 	COL09_ADR=COL09_DATA;
 	if(COL09_ADR!=COL09_DATA)
 		goto bad_ram;
+print_err("9\n");
 
 	/* write col 8 wrap adr */
 	COL08_ADR=COL08_DATA;
 	if(COL08_ADR!=COL08_DATA)
 		goto bad_ram;
+print_err("8\n");
 
 	/* write row 14 wrap adr */
 	ROW14_ADR=ROW14_DATA;
 	if(ROW14_ADR!=ROW14_DATA)
 		goto bad_ram;
+print_err("14\n");
 
 	/* write row 13 wrap adr */
 	ROW13_ADR=ROW13_DATA;
 	if(ROW13_ADR!=ROW13_DATA)
 		goto bad_ram;
+print_err("13\n");
 
 	/* write row 12 wrap adr */
 	ROW12_ADR=ROW12_DATA;
 	if(ROW12_ADR!=ROW12_DATA)
 		goto bad_ram;
+print_err("12\n");
 
 	/* write row 11 wrap adr */
 	ROW11_ADR=ROW11_DATA;
 	if(ROW11_ADR!=ROW11_DATA)
 		goto bad_ram;
+print_err("11\n");
 
 	/* write row 10 wrap adr */
 	ROW10_ADR=ROW10_DATA;
 	if(ROW10_ADR!=ROW10_DATA)
 		goto bad_ram;
+print_err("10\n");
 
 /*
  * read data @ row 12 wrap adr to determine # banks,
@@ -315,6 +328,7 @@ start:
 	banks=2;
 	if (ROW12_ADR != ROW10_DATA) {
 		banks=4;
+print_err("4b\n");
 		if(ROW12_ADR != ROW11_DATA) {
 			if(ROW12_ADR != ROW12_DATA)
 				goto bad_ram;
@@ -322,35 +336,47 @@ start:
 	}
 
 	/* validate row mask */
-	i=ROW14_ADR;
-	if (i<ROW11_DATA)
+	rows=ROW14_ADR;
+	if (rows<ROW11_DATA)
 		goto bad_ram;
-	if (i>ROW14_DATA)
+	if (rows>ROW14_DATA)
 		goto bad_ram;
 	/* verify all 4 bytes of dword same */
-	if(i&0xffff!=(i>>16)&0xffff)
+	if(rows&0xffff!=(rows>>16)&0xffff)
 		goto bad_ram;
-	if(i&0xff!=(i>>8)&0xff)
+	if(rows&0xff!=(rows>>8)&0xff)
 		goto bad_ram;
 	
-	
+	print_err("rows"); print_err_hex32(rows); print_err("\n");
 	/* validate column data */
-	i=COL11_ADR;
-	if(i<COL08_DATA)
+	cols=COL11_ADR;
+	if(cols<COL08_DATA)
 		goto bad_ram;
-	if (i>COL11_DATA)
+	if (cols>COL11_DATA)
 		goto bad_ram;
 	/* verify all 4 bytes of dword same */
-	if(i&0xffff!=(i>>16)&0xffff)
+	if(cols&0xffff!=(cols>>16)&0xffff)
 		goto bad_ram;
-	if(i&0xff!=(i>>8)&0xff)
+	if(cols&0xff!=(cols>>8)&0xff)
 		goto bad_ram;
+	print_err("cols"); print_err_hex32(cols); print_err("\n");
+	cols -= COL08_DATA;
+
+	i = cols + rows;
+
+	/* wacky end addr calculation */
+/*
+	al = 3;
+	al -= (i & 0xff);k
+ */
+
 	
 	if(banks==4)
 		i+=8; /* <-- i holds merged value */
 	
 	/* fix ending addr mask*/
 	/*FIXME*/
+	/* let's just go with this to start ... see if we can get ANYWHERE */
 	ending_adr=0xff;
 
 bad_reint:
@@ -359,10 +385,12 @@ bad_reint:
 	dummy_write();
 
 	/* update ending address register */
-#warning FIX ME NOW I AM BUSTED
-//	*(DRCBENDADR+0)=ending_adr;
+	DRCBENDADR=ending_adr;
 	
 	/* update config register */
+	DRCCFG = (banks = 4 ? 8 : 0) | cols & 3;
+	/* skip the rest for now */
+	bank = 0;
 //	DRCCFG=DRCCFG&YYY|ZZZZ;
 
 	if(bank!=0) {
@@ -391,7 +419,7 @@ int sizemem(void)
 	DRCTMCTL=0x1e; /* Set SDRAM timing for slowest speed. */
 
 	/* setup loop to do 4 external banks starting with bank 3 */
-
+	print_err("sizemem\n");
 	/* enable last bank and setup ending address 
 	 * register for max ram in last bank
 	 */
@@ -411,28 +439,35 @@ int sizemem(void)
 	/* dummy write for NOP to take effect */
 	dummy_write();
 
+	print_err("NOP\n");
 	/* 100? 200? */
 	udelay(100);
 
 	/* issue all banks precharge */
 	DRCCTL=0x02;
 	dummy_write();
+	print_err("PRE\n");
 
 	/* issue 2 auto refreshes to all banks */
 	DRCCTL=0x04;
 	dummy_write();
+	print_err("AUTO1\n");
 	dummy_write();
+	print_err("AUTO2\n");
 
 	/* issue LOAD MODE REGISTER command */
 	DRCCTL=0x03;
 	dummy_write();
+	print_err("LOAD MODE REG\n");
 
 	DRCCTL=0x04;
 	for (i=0; i<8; i++) /* refresh 8 times */
 		dummy_write();
+	print_err("8 dummy writes\n");
 
 	/* set control register to NORMAL mode */
 	DRCCTL=0x00;
+	print_err("normal\n");
 
 	nextbank(3);
 

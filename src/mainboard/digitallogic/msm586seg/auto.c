@@ -64,10 +64,14 @@ static void main(unsigned long bist)
         setupsc520();
         uart_init();
         console_init();
+//	while(1)
+		print_err("HI THERE!\r\n");
+	sizemem();
+
 
 
 	/* Halt if there was a built in self test failure */
-	report_bist_failure(bist);
+//	report_bist_failure(bist);
 	
 
 #if 0

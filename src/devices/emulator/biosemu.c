@@ -161,6 +161,7 @@ void do_int(int num)
  * BIOS. Most of this information was pulled from
  * dosemu.
  */
+#if 0
 void setup_int_vect(void)
 {
 	int i;
@@ -222,6 +223,7 @@ int setup_system_bios(void *base_addr)
 
 	return 1;
 }
+#endif
 
 void reset_int_vect(void)
 {
@@ -324,6 +326,8 @@ void run_bios(struct device * dev, unsigned long addr)
 	pushw(X86_SP + 2);
 
 //	X86EMU_trace_on();
+
+	printk_info("entering emulator\n");
 
 	X86EMU_exec();
 #endif

@@ -10,14 +10,16 @@
 #include <pc80/vga.h>
 #include <console/console.h>
 
-//extern void beep(int ms);
-
 /* The video buffer, should be replaced by symbol in ldscript.ld */
 static char *vidmem;
 
 int vga_line, vga_col;
 
+#if CONFIG_CONSOLE_VGA == 1
 extern int vga_inited; // it will be changed in pci_rom.c
+#else
+int vga_inited = 0;
+#endif
 
 static int vga_console_inited = 0;
 

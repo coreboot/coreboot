@@ -53,7 +53,7 @@ struct rom_header * pci_rom_probe(struct device *dev)
 	if (dev->class != ((rom_data->class_hi << 8) | rom_data->class_lo)) {
 		printk_err("Class Code mismatch ROM %08x, dev %08x\n", 
 			    (rom_data->class_hi << 8) | rom_data->class_lo, dev->class);
-//		return NULL;
+		//return NULL;
 	}
 
 	return rom_header;
@@ -62,8 +62,8 @@ struct rom_header * pci_rom_probe(struct device *dev)
 static void *pci_ram_image_start = PCI_RAM_IMAGE_START;
 
 #if CONFIG_CONSOLE_VGA == 1
-int vga_inited = 0; // it will be used by vga_console 
-extern device_t vga_pri; // The only VGA
+int vga_inited = 0;		// used by vga_console.c 
+extern device_t vga_pri;	// the primary vga device, defined in device.c
 #endif
 
 struct rom_header *pci_rom_load(struct device *dev, struct rom_header *rom_header)

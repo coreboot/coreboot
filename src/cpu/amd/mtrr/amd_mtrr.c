@@ -95,7 +95,7 @@ static void set_fixed_mtrr_resource(void *gp, struct device *dev, struct resourc
 	if (start_mtrr >= NUM_FIXED_RANGES) {
 		return;
 	}
-	printk_debug("Setting fixed MTRRs(%d-%d) Type: WB\n",
+	printk_debug("Setting fixed MTRRs(%d-%d) Type: WB, RdMEM, WrMEM\n",
 		     start_mtrr, last_mtrr);
 	set_fixed_mtrrs(start_mtrr, last_mtrr, MTRR_TYPE_WRBACK | MTRR_READ_MEM | MTRR_WRITE_MEM);
 	

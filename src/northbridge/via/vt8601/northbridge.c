@@ -29,8 +29,6 @@ static void northbridge_init(device_t dev)
 	pci_write_config8(dev, 0x76, 0x52);
 }
 
-
-
 static struct device_operations northbridge_operations = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
@@ -45,8 +43,6 @@ static struct pci_driver northbridge_driver __pci_driver = {
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = 0x0601, /* 0x8601 is the AGP bridge? */
 };
-
-
 
 #define BRIDGE_IO_MASK (IORESOURCE_IO | IORESOURCE_MEM)
 

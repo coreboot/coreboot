@@ -89,6 +89,7 @@ typedef struct acpi_xsdt {
 } __attribute__ ((packed)) acpi_xsdt_t;
 
 
+
 /* HPET TIMERS */
 typedef struct acpi_hpet {
 	struct acpi_table_header header;

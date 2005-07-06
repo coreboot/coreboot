@@ -3,6 +3,12 @@
 
 target epia
 mainboard via/epia
+
+## Request this level of debugging output
+option DEFAULT_CONSOLE_LOGLEVEL=9
+## At a maximum only compile in this level of debugging
+option MAXIMUM_CONSOLE_LOGLEVEL=9
+
 #
 # Via Epia
 romimage "normal"
@@ -11,7 +17,9 @@ romimage "normal"
 	option LINUXBIOS_EXTRA_VERSION=".0Normal"
 #	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
 #	payload ../../../../tg3--ide_disk.zelf	
-	payload ../../../../../lnxieepro100.ebi
+#	payload ../../../../../lnxieepro100.ebi
+        payload /home/ollie/work/filo-0.4.1/filo.elf
+
 end
 
 romimage "fallback" 
@@ -20,7 +28,8 @@ romimage "fallback"
 	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
 #	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
 #	payload ../../../../tg3--ide_disk.zelf	
-	payload ../../../../../lnxieepro100.ebi
+#	payload ../../../../../lnxieepro100.ebi
+        payload /home/ollie/work/filo-0.4.1/filo.elf
 end
 
 buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"

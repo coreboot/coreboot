@@ -225,6 +225,7 @@ void X86EMU_dump_memory (u16 seg, u16 off, u32 amt)
 
 void x86emu_single_step (void)
 {
+#if 0
     char s[1024];
     int ps[10];
     int ntok;
@@ -313,6 +314,7 @@ void x86emu_single_step (void)
             break;
         }
     }
+#endif
 }
 
 int X86EMU_trace_on(void)
@@ -327,6 +329,7 @@ int X86EMU_trace_off(void)
 
 static int parse_line (char *s, int *ps, int *n)
 {
+#if 0
     int cmd;
 
     *n = 0;
@@ -352,6 +355,7 @@ static int parse_line (char *s, int *ps, int *n)
         sscanf(s,"%x",&ps[*n]);
         *n += 1;
     }
+#endif
 }
 
 #endif /* DEBUG */

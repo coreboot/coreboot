@@ -53,8 +53,10 @@ static void main(unsigned long bist)
         console_init();
 	//	while(1)
 		print_err("HI THERE!\r\n");
-//			sizemem();
+			sizemem();
 //	staticmem();
+			
+			while(1)
 	print_err("STATIC MEM DONE\r\n");
 
 #if 0

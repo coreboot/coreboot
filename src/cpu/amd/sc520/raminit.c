@@ -54,7 +54,7 @@
 #define drcmctl   (( volatile unsigned char *)0xfffef012)
 #define drccfg   (( volatile unsigned char *)0xfffef014)
 
-#define drcbendadr   (( volatile unsigned char *)0xfffef018)
+#define drcbendadr   (( volatile unsigned long *)0xfffef018)
 #define eccctl   (( volatile unsigned char *)0xfffef020)
 #define dbctl   (( volatile unsigned char *)0xfffef040)
 void
@@ -71,11 +71,20 @@ setupsc520(void){
   /* no, that did not help. I wonder what will? 
    * outl(0x800df0cb, 0xfffc);
    */
+  /* well, this is special! You have to do SHORT writes to the locations, 
+   * even though they are CHAR in size and CHAR aligned and technically, a 
+   * SHORT write will result in -- yoo ha! -- over writing the next location!
+   * Thanks to the u-boot guys for a reference code I can use. 
+   * with these short pointers, it now reliably comes up after power cycle
+   * with printk. Ah yi yi.
+   */
 
 
 	/* turn off the write buffer*/
-	cp = (unsigned char *)0xfffef040;
-	*cp = 0;
+        /* per the note above, make this a short? Let's try it. 
+	 */
+  sp = (unsigned short *)0xfffef040;
+	*sp = 0;
 
 	/* byte writes in AMD assembly */
 	/* we do short anyway, since u-boot does ... */
@@ -243,7 +252,18 @@ static void dumpram(void){
   print_err("bendadr2 "); print_err_hex8(*drcbendadr); print_err("\r\n");
   print_err("bendadr3"); print_err_hex8(*drcbendadr); print_err("\r\n");
 }
-#ifdef FUCK
+
+/* there is a lot of silliness in the amd code, and it is 
+ * causing romcc real headaches, so we're going to be be a little 
+ * less silly.
+ * so, the order of ops is: 
+ * for in 3 to 0
+ * see if bank is there. 
+ * if we can write a word, and read it back, to hell with paranoia
+ * the bank is there. So write the magic byte, read it back, and 
+ * use that to get size, etc. Try to keep things very simple, 
+ * so people can actually follow the damned code. 
+ */
 
 /* cache is assumed to be disabled */
 int sizemem(void)
@@ -251,25 +271,87 @@ int sizemem(void)
 
 	int rows,banks, cols, i, bank;
 	unsigned char al;
-
+	volatile unsigned long *lp = (volatile unsigned long *) CACHELINESZ;
+	unsigned long l;
 	/* initialize dram controller registers */
 
 	*dbctl = 0; /* disable write buffer/read-ahead buffer */
 	*eccctl = 0;
 	*drcmctl = 0x1e; /* Set SDRAM timing for slowest speed. */
+	/* setup dram register for all banks
+	 * with max cols and max banks
+	 */
+	*drccfg=0xbbbb;
 
 	/* setup loop to do 4 external banks starting with bank 3 */
-	print_err("sizemem\n");
+	*drcbendadr=0x0ff000000;
+	/* issue a NOP to all DRAMs */
+	/* Setup DRAM control register with Disable refresh,
+ 	 * disable write buffer Test Mode and NOP command select
+ 	 */
+	*drcctl=0x01;
 
+	/* dummy write for NOP to take effect */
+	dummy_write();
+	print_err("NOP\n");
+	/* 100? 200? */
+	//sc520_udelay(100);
+	print_err("after sc520_udelay\r\n");
+
+	/* issue all banks precharge */
+	*drcctl=0x02;
+	print_err("set *drcctl to 2 \r\n");
+	dummy_write();
+	print_err("PRE\n");
+
+	/* issue 2 auto refreshes to all banks */
+	*drcctl=0x04;
+	dummy_write();
+	print_err("AUTO1\n");
+	dummy_write();
+	print_err("AUTO2\n");
+
+	/* issue LOAD MODE REGISTER command */
+	*drcctl=0x03;
+	dummy_write();
+	print_err("LOAD MODE REG\n");
+
+	*drcctl=0x04;
+	for (i=0; i<8; i++) /* refresh 8 times */{
+		dummy_write();
+		print_err("dummy write\r\n");
+	}
+	print_err("8 dummy writes\n");
+
+	/* set control register to NORMAL mode */
+	*drcctl=0x00;
+	print_err("normal\n");
+
+	print_err("HI done normal\r\n");
+
+	print_err("sizemem\n");
+	for(bank = 3; bank >= 0; bank--) {
+	  print_err("Try to assign to l\r\n");
+	  *lp = 0xdeadbeef;
+	  print_err("assigned l ... \r\n");
+	  if (*lp != 0xdeadbeef) {
+	    print_err(" no memory at bank "); 
+	    // print_err_hex8(bank); 
+	    //   print_err(" value "); print_err_hex32(*lp);
+	    print_err("\r\n"); 
+	    //	    continue;
+	  }
+	  l = *drcbendadr;
+	  l >>= 8; 
+	  *drcbendadr = l;
+	  print_err("loop around\r\n");
+	}
+#if 0
 	/* enable last bank and setup ending address 
 	 * register for max ram in last bank
 	 */
 	*drcbendadr=0x0ff000000;
 
-	/* setup dram register for all banks
-	 * with max cols and max banks
-	 */
-	*drccfg=0xbbbb;
 
 //	dumpram();
 
@@ -499,10 +581,11 @@ bad_ram:
 	goto bad_reinit;
 	while(1)
 	print_err("DONE NEXTBANK\r\n");
-}	
 #endif
-/* note: based on AMD code, but AMD code is BROKEN AFAIK */
+}	
 
+/* note: based on AMD code, but AMD code is BROKEN AFAIK */
+/* this does now work worth shit. */
 int
 staticmem(void){
 	volatile unsigned char *zero = (unsigned char *) 0;

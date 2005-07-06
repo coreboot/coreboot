@@ -121,13 +121,17 @@ mainboardinit cpu/x86/mmx/disable_mmx.inc
 ##
 ## Include the secondary Configuration files 
 ##
-dir /pc80
 if CONFIG_CHIP_NAME
         config chip.h
 end
 
 # sample config for tyan/s2875
 chip northbridge/amd/amdk8/root_complex
+        device apic_cluster 0 on
+                chip cpu/amd/socket_940
+                        device apic 0 on end
+                end
+        end
 	device pci_domain 0 on
 		chip northbridge/amd/amdk8
 			device pci 18.0 on #  northbridge 
@@ -145,6 +149,10 @@ chip northbridge/amd/amdk8/root_complex
 						device pci 0.1 on end
 						device pci 0.2 off end
 						device pci 1.0 off end
+                                                chip drivers/pci/onboard
+                                                        device pci 5.0 on end
+                                                        register "rom_address" = "0xfff80000"
+                                                end
 					end
 					device pci 1.0 on
 						chip superio/winbond/w83627hf
@@ -175,8 +183,8 @@ chip northbridge/amd/amdk8/root_complex
 								io 0x60 = 0x100
 							end
 							device pnp 2e.7 off #  GAME_MIDI_GIPO1
-								io 0x60 = 0x201
-								io 0x62 = 0x330
+								io 0x60 = 0x220
+								io 0x62 = 0x300
 								irq 0x70 = 9
 							end  
 							device pnp 2e.8 off end #  GPIO2
@@ -193,6 +201,8 @@ chip northbridge/amd/amdk8/root_complex
 					device pci 1.3 on end
 					device pci 1.5 on end
 					device pci 1.6 off end
+                                        register "ide0_enable" = "1"
+                                        register "ide1_enable" = "1"
 				end
 			end #  device pci 18.0 
 			
@@ -203,22 +213,6 @@ chip northbridge/amd/amdk8/root_complex
 			device pci 18.2 on end
 			device pci 18.3 on end
 		end
-		chip northbridge/amd/amdk8
-			device pci 19.0 on end
-			device pci 19.0 on end
-			device pci 19.0 on end
-			device pci 19.1 on end
-			device pci 19.2 on end
-			device pci 19.3 on end
-		end
 	end 
-	device apic_cluster 0 on
-		chip cpu/amd/socket_940
-			device apic 0 on end
-		end
-		chip cpu/amd/socket_940
-			device apic 1 on end
-		end
-	end
 end
 

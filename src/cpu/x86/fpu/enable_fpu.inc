@@ -1,4 +1,5 @@
 	/* preserve BIST in %eax */
+__fpu_start:
 	movl %eax, %ebp
 
 	/* Disable floating point emulation */

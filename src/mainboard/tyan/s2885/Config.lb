@@ -40,8 +40,12 @@ arch i386 end
 
 driver mainboard.o
 
+#dir /drivers/si/3114
+
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
+#object reset.o
+
 
 ##
 ## Romcc output
@@ -120,21 +124,17 @@ mainboardinit cpu/x86/mmx/disable_mmx.inc
 ##
 ## Include the secondary Configuration files 
 ##
-
 if CONFIG_CHIP_NAME
 	config chip.h
 end
 
 # sample config for tyan/s2885
 chip northbridge/amd/amdk8/root_complex
-        device apic_cluster 0 on                
-                chip cpu/amd/socket_940                 
-                        device apic 0 on end    
-                end                             
-#               chip cpu/amd/socket_940                 
-#                       device apic 1 on end    
-#               end                             
-        end 
+        device apic_cluster 0 on
+                chip cpu/amd/socket_940
+                        device apic 0 on end
+                end
+        end
 	device pci_domain 0 on
 		chip northbridge/amd/amdk8
 			device pci 18.0 on # LDT0
@@ -149,7 +149,11 @@ chip northbridge/amd/amdk8/root_complex
 				#  devices on link 2, link 2 == LDT 2
 				chip southbridge/amd/amd8131
 					# the on/off keyword is mandatory
-					device pci 0.0 on end
+					device pci 0.0 on 
+                                                chip drivers/pci/onboard
+                                                        device pci 9.0 on end # broadcom 5703
+                                                end
+					end
 					device pci 0.1 on end
 					device pci 1.0 on end
 					device pci 1.1 on end
@@ -162,6 +166,9 @@ chip northbridge/amd/amdk8/root_complex
 						device pci 0.1 on end
 						device pci 0.2 off end
 						device pci 1.0 off end
+                                                chip drivers/pci/onboard
+                                                        device pci b.0 on end # SiI 3114
+                                                end
 					end
 					device pci 1.0 on
 						chip superio/winbond/w83627hf
@@ -195,7 +202,7 @@ chip northbridge/amd/amdk8/root_complex
 								io 0x60 = 0x220
 								io 0x62 = 0x300
 								irq 0x70 = 9
-							end
+							end						
                 	        			device pnp 2e.8 off end #  GPIO2
                 	        			device pnp 2e.9 off end #  GPIO3
                 	        			device pnp 2e.a off end #  ACPI
@@ -245,21 +252,15 @@ chip northbridge/amd/amdk8/root_complex
 			device pci 18.3 on end
 		end
 
-#		chip northbridge/amd/amdk8
-#			device pci 19.0 on end
-#			device pci 19.0 on end
-#			device pci 19.0 on end
-#			device pci 19.1 on end
-#			device pci 19.2 on end
-#			device pci 19.3 on end
-#		end
-	end 
+	end #pci_domain
 
 #        chip drivers/generic/debug 
-#                device pnp 0.0 on end
+#                device pnp 0.0 off end
 #                device pnp 0.1 off end 
 #                device pnp 0.2 off end
-#                device pnp 0.3 on end
+#                device pnp 0.3 off end
+#		device pnp 0.4 off end
+#		device pnp 0.5 on end
 #        end
 end
 

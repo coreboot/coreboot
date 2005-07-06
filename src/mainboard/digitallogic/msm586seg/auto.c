@@ -14,6 +14,9 @@
 #include "cpu/x86/bist.h"
 #include "cpu/amd/sc520/raminit.c"
 
+struct mem_controller {
+	int i;
+};
 
 static void hard_reset(void)
 {
@@ -36,19 +39,21 @@ static inline void activate_spd_rom(const struct mem_controller *ctrl)
  
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
-	return smbus_read_byte(device, address);
+//	return smbus_read_byte(device, address);
 }
 
-#include "sdram/generic_sdram.c"
+//#include "sdram/generic_sdram.c"
 
 static void main(unsigned long bist)
 {
+/*
 	static const struct mem_controller memctrl[] = {
 		{
 			.d0 = PCI_DEV(0, 0, 0),
 			.channel0 = { (0xa<<3)|0, 0 },
 		},
 	};
+*/
 
 	if (bist == 0) {
 		early_mtrr_init();
@@ -65,7 +70,7 @@ static void main(unsigned long bist)
 #if 0
 	print_pci_devices();
 #endif
-
+#if 0
 	if(!bios_reset_detected()) {
         	enable_smbus();
 #if 0
@@ -73,12 +78,13 @@ static void main(unsigned long bist)
 	//        	dump_smbus_registers();
 #endif
 
-
 		memreset_setup();
 
 		sdram_initialize(sizeof(memctrl)/sizeof(memctrl[0]), memctrl);
 
+
 	} 
+#endif
 #if 0
 	else {
 		        /* clear memory 1meg */

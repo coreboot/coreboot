@@ -1,0 +1,5 @@
+uses CONFIG_LOGICAL_CPUS
+
+if CONFIG_LOGICAL_CPUS
+	object amd_sibling.o
+end

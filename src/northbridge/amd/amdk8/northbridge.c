@@ -1,3 +1,9 @@
+/* This should be done by Eric
+	2004.12 yhlu add dual core support
+	2005.01 yhlu add support move apic before pci_domain in MB Config.lb
+	2005.02 yhlu add e0 memory hole support
+*/
+
 #include <console/console.h>
 #include <arch/io.h>
 #include <stdint.h>
@@ -9,11 +15,22 @@
 #include <string.h>
 #include <bitops.h>
 #include <cpu/cpu.h>
+
+#include <cpu/x86/lapic.h>
+
+#if CONFIG_LOGICAL_CPUS==1
+#include <cpu/amd/dualcore.h>
+#include <pc80/mc146818rtc.h>
+#endif
+
 #include "chip.h"
 #include "root_complex/chip.h"
 #include "northbridge.h"
 #include "amdk8.h"
-#include <cpu/x86/lapic.h>
+
+#if K8_E0_MEM_HOLE_SIZEK != 0
+#include "./cpu_rev.c"
+#endif
 
 #define FX_DEVS 8
 static device_t __f0_dev[FX_DEVS];
@@ -387,8 +404,8 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 		limit |= (nodeid & 7);
 
 		if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-			printk_spew("%s, enabling legacy VGA IO forwarding for %s link %s\n",
-				    __func__, dev_path(dev), link);
+                        printk_spew("%s, enabling legacy VGA IO forwarding for %s link %s\n",
+                                    __func__, dev_path(dev), link);		
 			base |= PCI_IO_BASE_VGA_EN;
 		}
 		if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_NO_ISA) {
@@ -440,7 +457,7 @@ static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 			break;
 		}
 	}
-
+	
 	printk_spew("%s: link %d has VGA device\n", __func__, link);
 
 	/* no VGA card installed */
@@ -468,6 +485,7 @@ static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 
 	/* release the temp resource */
 	resource->flags = 0;
+
 }
 
 static void amdk8_set_resources(device_t dev)
@@ -652,6 +670,26 @@ static void pci_domain_set_resources(device_t dev)
 	mmio_basek &= ~((64*1024) - 1);
 #endif
 
+#if K8_E0_MEM_HOLE_SIZEK != 0
+	if (!is_cpu_pre_e0())
+        for (i = 0; i < 8; i++) {
+                uint32_t base;
+                base  = f1_read_config32(0x40 + (i << 3));
+                if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
+                        continue;
+                }
+		
+		base = pci_read_config32(__f1_dev[i], 0xf0);
+		if((base & 1)==0) continue;
+		base &= 0xff<<24;
+		base >>= 10;
+	        if (mmio_basek > base) {
+        	        mmio_basek = base;
+        	}
+		break; // only one hole	
+	}
+#endif
+
 	idx = 10;
 	for (i = 0; i < 8; i++) {
 		uint32_t base, limit;
@@ -672,6 +710,7 @@ static void pci_domain_set_resources(device_t dev)
 			sizek = limitk - ((8*64)+(16*16));
 			
 		}
+
 		
 		/* See if I need to split the region to accomodate pci memory space */
 		if ((basek < mmio_basek) && (limitk > mmio_basek)) {
@@ -716,24 +755,36 @@ static struct device_operations pci_domain_ops = {
 };
 
 #define APIC_ID_OFFSET 0x10
-
 static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 {
 	struct bus *cpu_bus;
 	device_t dev_mc;
-	int i, j;
-        int enable_apic_ext_id = 0;
-        int bsp_apic_id = lapicid(); // bsp apicid
-        int apic_id_offset = bsp_apic_id;	
+	int i,j;
+	unsigned nb_cfg_54 = 0;
+	unsigned siblings = 0;
+	int enable_apic_ext_id = 0;
+	int bsp_apic_id = lapicid(); // bsp apicid
+	int apic_id_offset = bsp_apic_id;
 
-        dev_mc = dev_find_slot(0, PCI_DEVFN(0x18, 0));
-        if (pci_read_config32(dev_mc, 0x68) & ( HTTC_APIC_EXT_ID | HTTC_APIC_EXT_BRD_CST)) {
-                enable_apic_ext_id = 1;
-                if (apic_id_offset==0) {
-			//bsp apic id is not changed
-                        apic_id_offset = APIC_ID_OFFSET;
-                }
-        }
+#if CONFIG_LOGICAL_CPUS==1
+	int e0_later_single_core;
+	int disable_siblings = !CONFIG_LOGICAL_CPUS;
+	get_option(&disable_siblings, "dual_core");
+
+	// for pre_e0, nb_cfg_54 can not be set, ( even set, when you read it still be 0)
+	// How can I get the nb_cfg_54 of every node' nb_cfg_54 in bsp??? and differ d0 and e0 single core
+ 
+	nb_cfg_54 = read_nb_cfg_54();
+#endif
+
+	dev_mc = dev_find_slot(0, PCI_DEVFN(0x18, 0));
+	if(pci_read_config32(dev_mc, 0x68) & ( HTTC_APIC_EXT_ID | HTTC_APIC_EXT_BRD_CST)) {
+		enable_apic_ext_id = 1;
+		if(apic_id_offset==0) { //bsp apic id is not changed
+			apic_id_offset = APIC_ID_OFFSET;
+		}
+	}
+
 
 	/* Find which cpus are present */
 	cpu_bus = &dev->link[0];
@@ -741,60 +792,102 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 		device_t dev, cpu;
 		struct device_path cpu_path;
 
-                /* Find the cpu's memory controller */
-                dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 3));
-                if(!dev) { 
-			// in case in mb Config.lb we move apic cluster before pci_domain and not set that for second CPU
+		/* Find the cpu's memory controller */
+		dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 3));
+		if(!dev) { // in case we move apic cluser before pci_domain and not set that for second CPU
 			for(j=0; j<4; j++) {
 	                        struct device dummy;
-        	                uint32_t id;
-                	        dummy.bus              = dev_mc->bus;
-                        	dummy.path.type        = DEVICE_PATH_PCI;
+				uint32_t id;
+	                        dummy.bus              = dev_mc->bus;
+	                        dummy.path.type        = DEVICE_PATH_PCI;
 	                        dummy.path.u.pci.devfn = PCI_DEVFN(0x18 + i, j);
-        	                id = pci_read_config32(&dummy, PCI_VENDOR_ID);
-                	        if (id != 0xffffffff && id != 0x00000000 && 
-                        	        id != 0x0000ffff && id != 0xffff0000) {
-                                	//create that for it
-	                                dev = alloc_dev(dev_mc->bus, &dummy.path);
+	                        id = pci_read_config32(&dummy, PCI_VENDOR_ID);
+	                        if (id != 0xffffffff && id != 0x00000000 &&
+        	                        id != 0x0000ffff && id != 0xffff0000) {
+                	        	//create that for it
+	                	        dev = alloc_dev(dev_mc->bus, &dummy.path);
 				}
-                        }
-                }  
-
-		/* Build the cpu device path */
-		cpu_path.type = DEVICE_PATH_APIC;
-		cpu_path.u.apic.apic_id = i;
-
-		/* See if I can find the cpu */
-		cpu = find_dev_path(cpu_bus, &cpu_path);
-
-		/* Enable the cpu if I have the processor */
-		if (dev && dev->enabled) {
-			if (!cpu) {
-				cpu = alloc_dev(cpu_bus, &cpu_path);
-			}
-			if (cpu) {
-				cpu->enabled = 1;
 			}
 		}
-		
-		/* Disable the cpu if I don't have the processor */
-		if (cpu && (!dev || !dev->enabled)) {
-			cpu->enabled = 0;
+
+#if CONFIG_LOGICAL_CPUS==1
+		e0_later_single_core = 0;
+		if((!disable_siblings) && dev && dev->enabled) {
+			j = (pci_read_config32(dev, 0xe8) >> 12) & 3;  //dev is func 3
+
+			printk_debug("  %s siblings=%d\r\n", dev_path(dev), j);
+
+			if(nb_cfg_54) {
+				// For e0 single core if nb_cfg_54 is set, apicid will be 0, 2, 4.... 
+				//  ----> you can mixed single core e0 and dual core e0 at any sequence
+				// That is the typical case
+
+		                if(j == 0 ){
+                 		       e0_later_single_core = is_e0_later_in_bsp(i);  // single core 
+		                } else {
+		                       e0_later_single_core = 0;
+               			}
+				if(e0_later_single_core) { 
+					printk_debug("\tFound e0 single core\r\n");
+					j=1; 
+				}
+	
+				if(siblings > j ) {
+					//actually we can't be here, because d0 nb_cfg_54 can not be set
+					//even worse is_e0_later_in_bsp() can not find out if it is d0 or e0
+
+					die("When NB_CFG_54 is set, if you want to mix e0 (single core and dual core) and single core(pre e0) CPUs, you need to put all the single core (pre e0) CPUs before all the (e0 single or dual core) CPUs\r\n");
+				}
+				else {
+					siblings = j;
+				}
+			} else {
+				siblings = j;
+			}
 		}
-		
-		/* Report what I have done */
-		if (cpu) {
-                        if(enable_apic_ext_id) {
-                        	if(cpu->path.u.apic.apic_id<apic_id_offset) {
-					//all add offset except bsp cores
-                                	if( (cpu->path.u.apic.apic_id > 0) || (bsp_apic_id!=0) )
-                                        	cpu->path.u.apic.apic_id += apic_id_offset;
+#endif
+
+#if CONFIG_LOGICAL_CPUS==1
+                for (j = 0; j <= (e0_later_single_core?0:siblings); j++ ) {
+#else 
+		for (j = 0; j <= siblings; j++ ) {
+#endif
+                        /* Build the cpu device path */
+                        cpu_path.type = DEVICE_PATH_APIC;
+                        cpu_path.u.apic.apic_id = i * (nb_cfg_54?(siblings+1):1) + j * (nb_cfg_54?1:8);
+  
+                        /* See if I can find the cpu */
+                        cpu = find_dev_path(cpu_bus, &cpu_path);
+  
+                        /* Enable the cpu if I have the processor */
+                        if (dev && dev->enabled) {
+                                if (!cpu) {
+                                        cpu = alloc_dev(cpu_bus, &cpu_path);
                                 }
-                        }  
-			printk_debug("CPU: %s %s\n", dev_path(cpu),
-				     cpu->enabled?"enabled":"disabled");
-		}
+                                if (cpu) {
+                                        cpu->enabled = 1; 
+                                }
+                        }
+
+                        /* Disable the cpu if I don't have the processor */
+                        if (cpu && (!dev || !dev->enabled)) {
+                                cpu->enabled = 0;
+                        }
+
+                        /* Report what I have done */
+                        if (cpu) {
+				if(enable_apic_ext_id) {
+			                if(cpu->path.u.apic.apic_id<apic_id_offset) { //all add offset except bsp core0
+						if( (cpu->path.u.apic.apic_id > siblings) || (bsp_apic_id!=0) )
+	        		                        cpu->path.u.apic.apic_id += apic_id_offset;
+                			}
+				}
+                                printk_debug("CPU: %s %s\n",
+                                        dev_path(cpu), cpu->enabled?"enabled":"disabled");
+                        }
+                } //j
 	}
+
 	return max;
 }
 

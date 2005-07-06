@@ -27,10 +27,6 @@ static void print_pci_devices(void)
 			continue;
 		}
 		print_debug_pci_dev(dev);
-		print_debug(" ");
-		print_debug_hex16(id & 0xffff);
-		print_debug(" ");
-		print_debug_hex16((id>>16) & 0xffff);
 		print_debug("\r\n");
 	}
 }
@@ -113,7 +109,6 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 				}
 				status = smbus_read_byte(device, j);
 				if (status < 0) {
-					print_debug("bad device\r\n");
 					break;
 				}
 				byte = status & 0xff;
@@ -139,7 +134,6 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 				}
 				status = smbus_read_byte(device, j);
 				if (status < 0) {
-					print_debug("bad device\r\n");
 					break;
 				}
 				byte = status & 0xff;
@@ -152,28 +146,24 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 }
 static void dump_smbus_registers(void)
 {
-        int i;
+	unsigned device;
         print_debug("\r\n");
-        for(i = 1; i < 0x80; i++) {
-                unsigned device;
-                device = i;
+        for(device = 1; device < 0x80; device++) {
                 int j;
+		if( smbus_read_byte(device, 0) < 0 ) continue;
                 print_debug("smbus: ");
                 print_debug_hex8(device);
                 for(j = 0; j < 256; j++) {
                 	int status; 
                         unsigned char byte;
+                        status = smbus_read_byte(device, j);
+                        if (status < 0) {
+				break;
+                        }
                         if ((j & 0xf) == 0) {
                 	        print_debug("\r\n");
                                 print_debug_hex8(j);
                                 print_debug(": ");
-                        }
-                        status = smbus_read_byte(device, j);
-                        if (status < 0) {
-                                print_debug("bad device status=");
-				print_debug_hex32(status);
-				print_debug("\r\n");
-                                break;
                         }
                         byte = status & 0xff;
                         print_debug_hex8(byte);

@@ -7,4 +7,14 @@
 #define DC_CFG_MSR			0xC0011022
 #define BU_CFG_MSR			0xC0011023
 
+
+#define CPU_ID_FEATURES_MSR		0xc0011004
+
+/* D0 only */
+#define CPU_ID_HYPER_EXT_FEATURES	0xc001100d
+/* E0 only */
+#define LOGICAL_CPUS_NUM_MSR		0xc001100d
+
+#define CPU_ID_EXT_FEATURES_MSR		0xc0011005
+
 #endif /* CPU_AMD_MODEL_FXX_MSR_H */

@@ -123,6 +123,9 @@ static uint16_t ht_read_freq_cap(device_t dev, uint8_t pos)
 	
 	/* AMD K8 Unsupported 1Ghz? */
 	if (id == (PCI_VENDOR_ID_AMD | (0x1100 << 16))) {
+	#if K8_HT_FREQ_1G_SUPPORT == 1  
+	        if (is_cpu_pre_e0())  // CK804 support 1G?
+	#endif	
                         freq_cap &= ~(1 << HT_FREQ_1000Mhz);
 	}
 

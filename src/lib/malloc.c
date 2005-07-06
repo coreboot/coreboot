@@ -39,7 +39,7 @@ void *malloc(size_t size)
 	free_mem_ptr += size;
 
 	if (free_mem_ptr >= free_mem_end_ptr)
-		die("Error! malloc: Free_mem_ptr >= free_mem_end_ptr");
+		die("Error! malloc: free_mem_ptr >= free_mem_end_ptr");
 
 	MALLOCDBG(("malloc 0x%08lx\n", (unsigned long)p));
 

@@ -18,7 +18,7 @@ const struct irq_routing_table intel_irq_routing_table = {
 	0x7400,         /* Device */
 	0,         /* Crap (miniport) */
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, /* u8 rfu[11] */
-	0x9a,         /*  u8 checksum , this hase to set to some value that would give 0 after the sum of all bytes for this structure (including checksum) */
+	0x5b,         /*  u8 checksum , this hase to set to some value that would give 0 after the sum of all bytes for this structure (including checksum) */
 	{
 		{0,0xc0, {{0, 0xdef8}, {0, 0xdef8}, {0, 0xdef8}, {0, 0xdef8}}, 0, 0},
 		{1,(3<<3)|0, {{0, 0xdef8}, {0, 0xdef8}, {0, 0xdef8}, {0, 0xdef8}}, 0, 0},

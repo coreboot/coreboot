@@ -158,7 +158,7 @@ static void misc_control_init(struct device *dev)
 			needs_reset = 1; /* Needed? */
 		}
 	}
-	else {
+	else if(is_cpu_pre_d0()) {
 		uint32_t dcl;
 		f2_dev = dev_find_slot(0, dev->path.u.pci.devfn - 3 + 2);
 		/* Errata 98 
@@ -187,7 +187,7 @@ static void misc_control_init(struct device *dev)
 			/* This works on an Athlon64 because unimplemented links return 0 */
 			reg = 0x98 + (link * 0x20);
 			link_type = pci_read_config32(f0_dev, reg);
-			if ((link_type & 7) == 3) { /* only handle coherent link here please */
+			if ((link_type & 7) == 3) { /* Only handle coherent link here */
 				cmd &= ~(0xff << (link *8));
 				/* FIXME this assumes the device on the other side is an AMD device */
 				cmd |= 0x25 << (link *8);

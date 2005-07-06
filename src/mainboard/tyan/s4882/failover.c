@@ -11,18 +11,33 @@
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 
+#if CONFIG_LOGICAL_CPUS==1
+#include "cpu/amd/dualcore/dualcore_id.c"
+#else
+#include "cpu/amd/model_fxx/node_id.c"
+#endif  
+        
+                
 static unsigned long main(unsigned long bist)
-{
-
-	unsigned nodeid;
-
-	/* Make cerain my local apic is useable */
-	enable_lapic();
-
-	nodeid = lapicid() & 0xf;
-
-	/* Is this a cpu only reset? */
-	if (cpu_init_detected(nodeid)) {
+{       
+#if CONFIG_LOGICAL_CPUS==1
+        struct node_core_id id;
+#else   
+        unsigned nodeid;
+#endif          
+        /* Make cerain my local apic is useable */
+//        enable_lapic();
+        
+#if CONFIG_LOGICAL_CPUS==1
+        id = get_node_core_id_x();
+        /* Is this a cpu only reset? */
+        if (cpu_init_detected(id.nodeid)) {
+#else
+//        nodeid = lapicid() & 0xf;
+	nodeid = get_node_id();
+        /* Is this a cpu only reset? */
+        if (cpu_init_detected(nodeid)) {
+#endif
 		if (last_boot_normal()) {
 			goto normal_image;
 		} else {
@@ -37,7 +52,6 @@ static unsigned long main(unsigned long bist)
 			goto fallback_image;
 		}
 	}
-	
 
 	/* Nothing special needs to be done to find bus 0 */
 	/* Allow the HT devices to be found */

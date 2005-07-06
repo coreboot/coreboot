@@ -10,6 +10,10 @@
 
 #define OPT_HT_LINK 0
 
+#if OPT_HT_LINK == 1
+#include "../northbridge/amd/amdk8/cpu_rev.c"
+#endif
+
 static device_t ht_scan_get_devs(device_t *old_devices)
 {
 	device_t first, last;
@@ -47,6 +51,7 @@ static unsigned ht_read_freq_cap(device_t dev, unsigned pos)
 	} else
 	/* AMD K8 Unsupported 1Ghz? */
 	if ((dev->vendor == PCI_VENDOR_ID_AMD) && (dev->device == 0x1100)) {
+		if (is_cpu_pre_e0()) 
 			freq_cap &= ~(1 << HT_FREQ_1000Mhz);
 	}
 	return freq_cap;

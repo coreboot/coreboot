@@ -5,7 +5,7 @@
 
 SECTIONS {
 	/* Trigger an error if I have an unuseable start address */
-	_ROMTOP = (_start >= 0xffff0000) ? 0xfffffff0 : 0xffffffff8;
+	_ROMTOP = (_start >= 0xffff0000) ? 0xfffffff0 : 0xfffffff8;
 	. = _ROMTOP;
 	.reset . : {
 		*(.reset)

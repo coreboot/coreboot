@@ -11,6 +11,7 @@
 
 
 #if CONFIG_SMP == 1
+
 /* This is a lot more paranoid now, since Linux can NOT handle
  * being told there is a CPU when none exists. So any errors 
  * will return 0, meaning no CPU. 
@@ -229,12 +230,16 @@ int start_cpu(device_t cpu)
 void secondary_cpu_init(void)
 {
 	atomic_inc(&active_cpus);
-#if CONFIG_MAX_CPUS>2
+#if SERIAL_CPU_INIT == 1
+  #if CONFIG_MAX_CPUS>2
 	spin_lock(&start_cpu_lock);
+  #endif
 #endif
 	cpu_initialize();
-#if CONFIG_MAX_CPUS>2
+#if SERIAL_CPU_INIT == 1
+  #if CONFIG_MAX_CPUS>2
 	spin_unlock(&start_cpu_lock);
+  #endif
 #endif
 	atomic_dec(&active_cpus);
 	stop_this_cpu();
@@ -260,8 +265,10 @@ static void initialize_other_cpus(struct bus *cpu_bus)
 			printk_err("CPU  %u would not start!\n",
 				cpu->path.u.apic.apic_id);
 		}
-#if CONFIG_MAX_CPUS>2
+#if SERIAL_CPU_INIT == 1
+  #if CONFIG_MAX_CPUS>2
 		udelay(10);
+  #endif
 #endif
 	}
 

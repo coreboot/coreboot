@@ -1,4 +1,9 @@
 /* Needed so the AMD K8 runs correctly.  */
+/* this should be done by Eric
+ * 2004.11 yhlu add d0 e0 support
+ * 2004.12 yhlu add dual core support
+ * 2005.02 yhlu add e0 memory hole support
+*/
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
@@ -16,6 +21,11 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/mem.h>
+
+#if CONFIG_LOGICAL_CPUS==1
+#include <cpu/amd/dualcore.h>
+#endif
+
 #include "model_fxx_msr.h"
 
 #define MCI_STATUS 0x401
@@ -139,16 +149,18 @@ static void set_init_ecc_mtrrs(void)
 	enable_cache();
 }
 
-
 static void init_ecc_memory(unsigned node_id)
 {
 	unsigned long startk, begink, endk;
+#if K8_E0_MEM_HOLE_SIZEK != 0
+	unsigned long hole_startk = 0, hole_endk = 0;
+#endif
 	unsigned long basek;
 	struct mtrr_state mtrr_state;
 	device_t f1_dev, f2_dev, f3_dev;
 	int enable_scrubbing;
 	uint32_t dcl;
-	
+
 	f1_dev = dev_find_slot(0, PCI_DEVFN(0x18 + node_id, 1));
 	if (!f1_dev) {
 		die("Cannot find cpu function 1\n");
@@ -186,6 +198,19 @@ static void init_ecc_memory(unsigned node_id)
 	startk = (pci_read_config32(f1_dev, 0x40 + (node_id*8)) & 0xffff0000) >> 2;
 	endk   = ((pci_read_config32(f1_dev, 0x44 + (node_id*8)) & 0xffff0000) >> 2) + 0x4000;
 
+#if K8_E0_MEM_HOLE_SIZEK != 0
+        if (!is_cpu_pre_e0()) {
+                uint32_t val;
+                val = pci_read_config32(f1_dev, 0xf0);
+                if((val & 1)==1) {
+        	        hole_startk = ((val & (0xff<<24)) >> 10);
+			hole_endk = ((val & (0xff<<8))<<(16-10)) - startk;
+			hole_endk += hole_startk;
+                }
+        }
+#endif
+	
+
 	/* Don't start too early */
 	begink = startk;
 	if (begink < CONFIG_LB_MEM_TOPK) {
@@ -206,6 +231,9 @@ static void init_ecc_memory(unsigned node_id)
 		unsigned long size;
 		void *addr;
 
+#if K8_E0_MEM_HOLE_SIZEK != 0
+		if ((basek >= hole_startk) && (basek < hole_endk)) continue;
+#endif
 		/* Report every 64M */
 		if ((basek % (64*1024)) == 0) {
 			/* Restore the normal state */
@@ -220,6 +248,7 @@ static void init_ecc_memory(unsigned node_id)
 			set_init_ecc_mtrrs();
 			disable_lapic();
 		}
+
 		limitk = (basek + ZERO_CHUNK_KB) & ~(ZERO_CHUNK_KB - 1);
 		if (limitk > endk) {
 			limitk = endk;
@@ -280,7 +309,8 @@ static inline void k8_errata(void)
 		msr = rdmsr(NB_CFG_MSR);
 		msr.lo |= 1 << 3;
 		
-		if (!is_cpu_pre_c0()) {
+		if (!is_cpu_pre_c0() && is_cpu_pre_d0()) {
+			/* D0 later don't need it */
 			/* Erratum 86 Disable data masking on C0 and 
 			 * later processor revs.
 			 * FIXME this is only needed if ECC is enabled.
@@ -289,31 +319,57 @@ static inline void k8_errata(void)
 		}	
 		wrmsr(NB_CFG_MSR, msr);
 	}
-	
-	/* Erratum 97 ... */
-	if (!is_cpu_pre_c0()) {
+// AMD_D0_SUPPORT	
+	if (!is_cpu_pre_c0() && is_cpu_pre_d0()) {
+		/* D0 later don't need it */
+		/* Erratum 97 ... */
 		msr = rdmsr_amd(DC_CFG_MSR);
 		msr.lo |= 1 << 3;
 		wrmsr_amd(DC_CFG_MSR, msr);
-	}	
-	
-	/* Erratum 94 ... */
-	msr = rdmsr_amd(IC_CFG_MSR);
-	msr.lo |= 1 << 11;
-	wrmsr_amd(IC_CFG_MSR, msr);
+	}
+		
+//AMD_D0_SUPPORT
+	if(is_cpu_pre_d0()) {
+		/*D0 later don't need it */
+		/* Erratum 94 ... */
+		msr = rdmsr_amd(IC_CFG_MSR);
+		msr.lo |= 1 << 11;
+		wrmsr_amd(IC_CFG_MSR, msr);
+	}
 
 	/* Erratum 91 prefetch miss is handled in the kernel */
+
+//AMD_D0_SUPPORT
+	if(is_cpu_d0()) {
+		/* Erratum 110 ...*/
+		msr = rdmsr_amd(CPU_ID_HYPER_EXT_FEATURES);
+		msr.hi |=1;
+		wrmsr_amd(CPU_ID_HYPER_EXT_FEATURES, msr);
+	}
+
+//AMD_E0_SUPPORT
+	if(!is_cpu_pre_e0()) {
+                /* Erratum 110 ...*/
+                msr = rdmsr_amd(CPU_ID_EXT_FEATURES_MSR);
+                msr.hi |=1;
+                wrmsr_amd(CPU_ID_EXT_FEATURES_MSR, msr);
+	}
 }
 
 void model_fxx_init(device_t dev)
 {
-	unsigned long mmio_basek, tomk;
 	unsigned long i;
 	msr_t msr;
+#if CONFIG_LOGICAL_CPUS==1
+	struct node_core_id id;
+        unsigned siblings;
+	id.coreid=0;
+#else
 	unsigned nodeid;
+#endif
 
 	/* Turn on caching if we haven't already */
-	x86_enable_cache();
+	x86_enable_cache(); 
 	amd_setup_mtrrs();
 	x86_mtrr_check();
 
@@ -330,14 +386,45 @@ void model_fxx_init(device_t dev)
 	
 	enable_cache();
 
+#if CONFIG_LOGICAL_CPUS==1
+//AMD_DUAL_CORE_SUPPORT
+        siblings = cpuid_ecx(0x80000008) & 0xff;
+
+//	id = get_node_core_id((!is_cpu_pre_e0())? read_nb_cfg_54():0);
+	id = get_node_core_id(read_nb_cfg_54()); // pre e0 nb_cfg_54 can not be set
+
+       	if(siblings>0) {
+                msr = rdmsr_amd(CPU_ID_FEATURES_MSR);
+                msr.lo |= 1 << 28; 
+                wrmsr_amd(CPU_ID_FEATURES_MSR, msr);
+
+       	        msr = rdmsr_amd(LOGICAL_CPUS_NUM_MSR);
+                msr.lo = (siblings+1)<<16; 
+       	        wrmsr_amd(LOGICAL_CPUS_NUM_MSR, msr);
+
+                msr = rdmsr_amd(CPU_ID_EXT_FEATURES_MSR);
+       	        msr.hi |= 1<<(33-32); 
+               	wrmsr_amd(CPU_ID_EXT_FEATURES_MSR, msr);
+	} 
+        
 	/* Is this a bad location?  In particular can another node prefecth
 	 * data from this node before we have initialized it?
 	 */
-	nodeid = lapicid() & 0xf;
+	if(id.coreid == 0) init_ecc_memory(id.nodeid); // only do it for core0
+#else
+	/* For now there is a 1-1 mapping between node_id and cpu_id */
+	nodeid = lapicid() & 0x7;
 	init_ecc_memory(nodeid);
-
+#endif
+	
 	/* Enable the local cpu apics */
 	setup_lapic();
+
+#if CONFIG_LOGICAL_CPUS==1
+//AMD_DUAL_CORE_SUPPORT
+        /* Start up my cpu siblings */
+//	if(id.coreid==0)  amd_sibling_init(dev); // Don't need core1 is already be put in the CPU BUS in bus_cpu_scan
+#endif
 }
 
 static struct device_operations cpu_dev_ops = {
@@ -357,7 +444,31 @@ static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_AMD, 0xff0 },
 	{ X86_VENDOR_AMD, 0xf82 }, /* CH7-CG */
 	{ X86_VENDOR_AMD, 0xfb2 },
+//AMD_D0_SUPPORT
+	{ X86_VENDOR_AMD, 0x10f50 }, /* SH7-D0 */
+	{ X86_VENDOR_AMD, 0x10f40 },
+	{ X86_VENDOR_AMD, 0x10f70 },
+        { X86_VENDOR_AMD, 0x10fc0 }, /* DH7-D0 */
+        { X86_VENDOR_AMD, 0x10ff0 },
+        { X86_VENDOR_AMD, 0x10f80 }, /* CH7-D0 */
+        { X86_VENDOR_AMD, 0x10fb0 },
+//AMD_E0_SUPPORT
+        { X86_VENDOR_AMD, 0x20f50 }, /* SH7-E0*/
+        { X86_VENDOR_AMD, 0x20f40 },
+        { X86_VENDOR_AMD, 0x20f70 },
+        { X86_VENDOR_AMD, 0x20fc0 }, /* DH7-E0 */ /* DH-E3 */
+        { X86_VENDOR_AMD, 0x20ff0 },
+        { X86_VENDOR_AMD, 0x20f10 }, /* JH7-E0 */
+        { X86_VENDOR_AMD, 0x20f30 },
+        { X86_VENDOR_AMD, 0x20f51 }, /* SH-E4 */
+        { X86_VENDOR_AMD, 0x20f71 },
+        { X86_VENDOR_AMD, 0x20f42 }, /* SH-E5 */
+        { X86_VENDOR_AMD, 0x20ff2 }, /* DH-E6 */
+        { X86_VENDOR_AMD, 0x20fc2 },
+        { X86_VENDOR_AMD, 0x20f12 }, /* JH-E6 */
+        { X86_VENDOR_AMD, 0x20f32 },
 #endif
+
 	{ 0, 0 },
 };
 static struct cpu_driver model_fxx __cpu_driver = {

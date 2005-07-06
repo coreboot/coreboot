@@ -6,13 +6,11 @@
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
 #include <cpu/x86/lapic.h>
-#include <arch/cpu.h>
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
-#include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/amd/amd8111/amd8111_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
@@ -20,6 +18,7 @@
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
+#include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/cpu_rev.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 #include "cpu/amd/mtrr/amd_earlymtrr.c"
@@ -69,99 +68,46 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
    }
 }
 
-static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
-{
-	/* Routing Table Node i 
-	 *
-	 * F0: 0x40, 0x44, 0x48, 0x4c, 0x50, 0x54, 0x58, 0x5c 
-	 *  i:    0,    1,    2,    3,    4,    5,    6,    7
-	 *
-	 * [ 0: 3] Request Route
-	 *     [0] Route to this node
-	 *     [1] Route to Link 0
-	 *     [2] Route to Link 1
-	 *     [3] Route to Link 2
-	 * [11: 8] Response Route
-	 *     [0] Route to this node
-	 *     [1] Route to Link 0
-	 *     [2] Route to Link 1
-	 *     [3] Route to Link 2
-	 * [19:16] Broadcast route
-	 *     [0] Route to this node
-	 *     [1] Route to Link 0
-	 *     [2] Route to Link 1
-	 *     [3] Route to Link 2
-	 */
-        uint32_t ret=0x00010101; /* default row entry */
-
-/*
-	    (L2)       (L1)	
-	CPU3-------------CPU1
-     (L0)| 		  |(L0)
-	 |		  |
-	 |		  |
-	 |		  |
-	 |		  |
-     (L0)|		  |(L0)
-	CPU2-------------CPU0---------8131----------8111
-	    (L1)       (L2)  (L1)   	
-*/
-
-	/* Link0 of CPU0 to Link0 of CPU1 */
-	/* Link2 of CPU0 to Link1 of CPU2 */
-	/* Link1 of CPU1 to Link2 of CPU3 */
-	/* Link0 of CPU2 to Link0 of CPU3 */
-
-        static const unsigned int rows_4p[4][4] = {
-                { 0x000b0101, 0x00010202, 0x00030808, 0x00010208 },
-                { 0x00010202, 0x00070101, 0x00010204, 0x00030404 },
-                { 0x00030404, 0x00010204, 0x00070101, 0x00010202 },
-                { 0x00010208, 0x00030808, 0x00010202, 0x000b0101 }
-        };
-        
-        if (!(node>=maxnodes || row>=maxnodes)) {
-		ret=rows_4p[node][row];
-        }
-
-        return ret;
-}
-
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
 #define SMBUS_HUB 0x18
+	int ret,i;
         unsigned device=(ctrl->channel0[0])>>8;
-        smbus_write_byte(SMBUS_HUB , 0x01, device);
-        smbus_write_byte(SMBUS_HUB , 0x03, 0);
+	i=2;
+	do {
+	        ret = smbus_write_byte(SMBUS_HUB, 0x01, device);
+	} while ((ret!=0) && (i-->0));
+
+        smbus_write_byte(SMBUS_HUB, 0x03, 0);
 }
-#if 0
-static inline void change_i2c_mux(unsigned device)
-{
-#define SMBUS_HUB 0x18
-        smbus_write_byte(SMBUS_HUB , 0x01, device);
-        smbus_write_byte(SMBUS_HUB , 0x03, 0);
-}
-#endif
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);
 }
 
-//#include "northbridge/amd/amdk8/setup_resource_map.c"
+#include "northbridge/amd/amdk8/setup_resource_map.c"
+#define K8_4RANK_DIMM_SUPPORT 1
 #include "northbridge/amd/amdk8/raminit.c"
-
-#if 1
+#if 0           
         #define ENABLE_APIC_EXT_ID 1
         #define APIC_ID_OFFSET 0x10
-#else
+        #define LIFT_BSP_APIC_ID 0
+#else                   
         #define ENABLE_APIC_EXT_ID 0
 #endif
-
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
 
  /* tyan does not want the default */
 #include "resourcemap.c"
+
+#if CONFIG_LOGICAL_CPUS==1
+#define SET_NB_CFG_54 1
+#include "cpu/amd/dualcore/dualcore.c"
+#else
+#include "cpu/amd/model_fxx/node_id.c"
+#endif
 
 #define FIRST_CPU  1
 #define SECOND_CPU 1
@@ -171,10 +117,10 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #define TOTAL_CPUS (FIRST_CPU + SECOND_CPU + THIRD_CPU + FOURTH_CPU)
 
-#define RC0 ((1<<1)<<8)
-#define RC1 ((1<<2)<<8)
-#define RC2 ((1<<3)<<8)
-#define RC3 ((1<<4)<<8)
+#define RC0 ((1<<2)<<8)
+#define RC1 ((1<<1)<<8)
+#define RC2 ((1<<4)<<8)
+#define RC3 ((1<<3)<<8)
 
 #define DIMM0 0x50
 #define DIMM1 0x51
@@ -235,28 +181,69 @@ static void main(unsigned long bist)
 	};
 	int i;
         int needs_reset;
-	unsigned nodeid;
+#if CONFIG_LOGICAL_CPUS==1
+        struct node_core_id id;
+#else   
+        unsigned nodeid;
+#endif
+        
         if (bist == 0) {
                 /* Skip this if there was a built in self test failure */
                 amd_early_mtrr_init();
-                enable_lapic();
-                init_timer();
-                nodeid = lapicid() & 0xf;
+
+#if CONFIG_LOGICAL_CPUS==1
+                set_apicid_cpuid_lo();
+
+                id = get_node_core_id_x(); 
+        #if ENABLE_APIC_EXT_ID == 1
+                if(id.coreid == 0) {
+                        enable_apic_ext_id(id.nodeid);
+                }
+        #endif
+#else
+                nodeid = get_node_id();
         #if ENABLE_APIC_EXT_ID == 1
                 enable_apic_ext_id(nodeid);
-		if(nodeid != 0) {
-	                lapic_write(LAPIC_ID, ( lapic_read(LAPIC_ID) | (APIC_ID_OFFSET<<24) ) ); // CPU apicid is from 0x10
-		}
+        #endif
+#endif
+                
+                enable_lapic();
+                init_timer();
+
+#if CONFIG_LOGICAL_CPUS==1
+        #if ENABLE_APIC_EXT_ID == 1
+            #if LIFT_BSP_APIC_ID == 0
+                if( id.nodeid != 0 ) 
+            #endif
+                        lapic_write(LAPIC_ID, ( lapic_read(LAPIC_ID) | (APIC_ID_OFFSET<<24) ) );
+        #endif
+                if(id.coreid == 0) {
+                        if (cpu_init_detected(id.nodeid)) {
+                                asm volatile ("jmp __cpu_reset");
+                        }
+                        distinguish_cpu_resets(id.nodeid);
+                }
+#else           
+        #if ENABLE_APIC_EXT_ID == 1
+            #if LIFT_BSP_APIC_ID == 0
+                if(nodeid != 0)
+            #endif
+                        lapic_write(LAPIC_ID, ( lapic_read(LAPIC_ID) | (APIC_ID_OFFSET<<24) ) ); // CPU apicid is from 0x10
         #endif
                 if (cpu_init_detected(nodeid)) {
                         asm volatile ("jmp __cpu_reset");
                 }
                 distinguish_cpu_resets(nodeid);
-
-                if (!boot_cpu()) {
-                        stop_this_cpu();
-                }       
-        }               
+#endif
+                
+                if (!boot_cpu()
+#if CONFIG_LOGICAL_CPUS==1 
+                        || (id.coreid != 0)
+#endif          
+                ) {     
+                        stop_this_cpu(); 
+                }
+        }
                         
         w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
         uart_init();    
@@ -264,69 +251,25 @@ static void main(unsigned long bist)
                 
         /* Halt if there was a built in self test failure */
         report_bist_failure(bist);
-
+	
         setup_s4882_resource_map();
+
         needs_reset = setup_coherent_ht_domain();
-#if 0
-        needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0xa0);
-#else
+
+#if CONFIG_LOGICAL_CPUS==1
+        start_other_cores();
+#endif
+
         // automatically set that for you, but you might meet tight space
         needs_reset |= ht_setup_chains_x();
-#endif
         if (needs_reset) {
                 print_info("ht reset -\r\n");
                 soft_reset();
         }
 	
-#if 0
-	dump_pci_devices();
-#endif
 	enable_smbus();
-#if 0
 
-//	activate_spd_rom(&cpu[0]); 
-//	dump_spd_registers(&cpu[0]);
-
-//	for(i=0;i<4;i++) {
-//		activate_spd_rom(&cpu[i]); 
-//        	dump_smbus_registers();
-//	}
-        for(i=1;i<256;i=i*2) {
-                change_i2c_mux(i);
-                dump_smbus_registers();
-        }
-
-#endif
 	memreset_setup();
 	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
-
-#if 0
-	dump_pci_devices();
-#endif
-#if 0
-	dump_pci_device(PCI_DEV(0, 0x18, 1));
-#endif
-
-	/* Check all of memory */
-#if 0
-	msr_t msr;
-	msr = rdmsr(TOP_MEM2);
-	print_debug("TOP_MEM2: ");
-	print_debug_hex32(msr.hi);
-	print_debug_hex32(msr.lo);
-	print_debug("\r\n");
-#endif
-/*
-#if  0
-	ram_check(0x00000000, msr.lo+(msr.hi<<32));
-#else
-#if TOTAL_CPUS < 2
-	// Check 16MB of memory @ 0
-	ram_check(0x00000000, 0x01000000);
-#else
-	// Check 16MB of memory @ 2GB 
-	ram_check(0x80000000, 0x81000000);
-#endif
-#endif
-*/
+	
 }

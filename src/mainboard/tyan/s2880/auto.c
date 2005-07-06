@@ -42,11 +42,6 @@ static void soft_reset(void)
         set_bios_reset();
         pci_write_config8(PCI_DEV(0, 0x04, 0), 0x47, 1);
 }
-static void soft2_reset(void)
-{  
-        set_bios_reset();
-        pci_write_config8(PCI_DEV(3, 0x04, 0), 0x47, 1);
-}
 
 static void memreset_setup(void)
 {
@@ -68,50 +63,6 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
    }
 }
 
-static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
-{
-	/* Routing Table Node i 
-	 *
-	 * F0: 0x40, 0x44, 0x48, 0x4c, 0x50, 0x54, 0x58, 0x5c 
-	 *  i:    0,    1,    2,    3,    4,    5,    6,    7
-	 *
-	 * [ 0: 3] Request Route
-	 *     [0] Route to this node
-	 *     [1] Route to Link 0
-	 *     [2] Route to Link 1
-	 *     [3] Route to Link 2
-	 * [11: 8] Response Route
-	 *     [0] Route to this node
-	 *     [1] Route to Link 0
-	 *     [2] Route to Link 1
-	 *     [3] Route to Link 2
-	 * [19:16] Broadcast route
-	 *     [0] Route to this node
-	 *     [1] Route to Link 0
-	 *     [2] Route to Link 1
-	 *     [3] Route to Link 2
-	 */
-
-	uint32_t ret=0x00010101; /* default row entry */
-	/* Link1 of CPU0 to Link1 of CPU1 */
-	static const unsigned int rows_2p[2][2] = {
-		{ 0x00050101, 0x00010404 },
-		{ 0x00010404, 0x00050101 }
-	};
-
-	if(maxnodes>2) {
-		print_debug("this mainboard is only designed for 2 cpus\r\n");
-		maxnodes=2;
-	}
-
-
-	if (!(node>=maxnodes || row>=maxnodes)) {
-		ret=rows_2p[node][row];
-	}
-
-	return ret;
-}
-
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
 	/* nothing to do */
@@ -123,12 +74,17 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 }
 
 
-//#include "northbridge/amd/amdk8/setup_resource_map.c"
+#include "northbridge/amd/amdk8/setup_resource_map.c"
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
 
 #include "northbridge/amd/amdk8/resourcemap.c" 
+
+#if CONFIG_LOGICAL_CPUS==1
+#define SET_NB_CFG_54 1
+#include "cpu/amd/dualcore/dualcore.c"
+#endif
 
 #define FIRST_CPU  1
 #define SECOND_CPU 1
@@ -160,77 +116,71 @@ static void main(unsigned long bist)
 #endif
 	};
         int needs_reset;
-	unsigned nodeid;
+
+#if CONFIG_LOGICAL_CPUS==1
+        struct node_core_id id;
+#else
+        unsigned nodeid;
+#endif
 
         if (bist == 0) {
                 /* Skip this if there was a built in self test failure */
                 amd_early_mtrr_init();
+
+#if CONFIG_LOGICAL_CPUS==1
+                set_apicid_cpuid_lo();
+#endif
+
                 enable_lapic();
                 init_timer();
-		
-		nodeid = lapicid() & 0xf;
 
+#if CONFIG_LOGICAL_CPUS==1
+                id = get_node_core_id_x();
+                if(id.coreid == 0) {
+                        if (cpu_init_detected(id.nodeid)) {
+                                asm volatile ("jmp __cpu_reset");
+                        }
+                        distinguish_cpu_resets(id.nodeid);
+                }
+#else
+                nodeid = lapicid();
                 if (cpu_init_detected(nodeid)) {
                         asm volatile ("jmp __cpu_reset");
                 }
                 distinguish_cpu_resets(nodeid);
-                if (!boot_cpu()) {
-                        stop_this_cpu();
-                }       
-        }               
+#endif
+
+                if (!boot_cpu()
+#if CONFIG_LOGICAL_CPUS==1 
+                        || (id.coreid != 0)
+#endif
+                ) {
+                        stop_this_cpu(); 
+                }
+        }
                         
         w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
         uart_init();    
         console_init(); 
                 
         /* Halt if there was a built in self test failure */
-//      report_bist_failure(bist);
+	report_bist_failure(bist);
 
         setup_default_resource_map();
         needs_reset = setup_coherent_ht_domain();
+
+#if CONFIG_LOGICAL_CPUS==1
+        start_other_cores();
+#endif
+
         needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0x80);
         if (needs_reset) {
                 print_info("ht reset -\r\n");
                 soft_reset();
         }
 	
-#if 0
-	print_pci_devices();
-#endif
 	enable_smbus();
-#if 0
-	dump_spd_registers(&cpu[0]);
-#endif
 	memreset_setup();
 	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
 
-#if 0
-	dump_pci_devices();
-#endif
-#if 0
-	dump_pci_device(PCI_DEV(0, 0x18, 1));
-#endif
-
-	/* Check all of memory */
-#if 0
-	msr_t msr;
-	msr = rdmsr(TOP_MEM2);
-	print_debug("TOP_MEM2: ");
-	print_debug_hex32(msr.hi);
-	print_debug_hex32(msr.lo);
-	print_debug("\r\n");
-#endif
-/*
-#if  0
-	ram_check(0x00000000, msr.lo+(msr.hi<<32));
-#else
-#if TOTAL_CPUS < 2
-	// Check 16MB of memory @ 0
-	ram_check(0x00000000, 0x01000000);
-#else
-	// Check 16MB of memory @ 2GB 
-	ram_check(0x80000000, 0x81000000);
-#endif
-#endif
-*/
 }

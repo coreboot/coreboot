@@ -3,6 +3,9 @@
 #include <device/pci.h>
 #include <string.h>
 #include <stdint.h>
+#if CONFIG_LOGICAL_CPUS==1
+#include <cpu/amd/dualcore.h>
+#endif
 
 void *smp_write_config_table(void *v)
 {
@@ -128,7 +131,11 @@ void *smp_write_config_table(void *v)
         smp_write_bus(mc, bus_isa, "ISA   ");
 
 /*I/O APICs:	APIC ID	Version	State		Address*/
-        apicid_base = CONFIG_MAX_CPUS; 
+#if CONFIG_LOGICAL_CPUS==1
+	apicid_base = get_apicid_base(3);
+#else
+        apicid_base = CONFIG_MAX_PHYSICAL_CPUS; 
+#endif
         apicid_ck804 = apicid_base;
         apicid_8131_1 = apicid_base+1;
         apicid_8131_2 = apicid_base+2;
@@ -149,12 +156,12 @@ void *smp_write_config_table(void *v)
 			dword = 0x0000d218;
 	        	pci_write_config32(dev, 0x7c, dword);
 
-		        dword = 0x8d001a00;
+		        dword = 0x12008a00;
 
 
 		        pci_write_config32(dev, 0x80, dword);
 
-	        	dword = 0x00000072;
+	        	dword = 0x0000007d;
 
 		        pci_write_config32(dev, 0x84, dword);
 
@@ -193,13 +200,13 @@ void *smp_write_config_table(void *v)
 
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_0, ((CK804_DEVN_BASE+1)<<2)|1, apicid_ck804, 0xa);
 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_0, ((CK804_DEVN_BASE+2)<<2)|0, apicid_ck804, 0x16); 
+        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_0, ((CK804_DEVN_BASE+2)<<2)|0, apicid_ck804, 0x15); 
 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_0, ((CK804_DEVN_BASE+2)<<2)|1, apicid_ck804, 0x17); 
+        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_0, ((CK804_DEVN_BASE+2)<<2)|1, apicid_ck804, 0x14); 
 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_0, ((CK804_DEVN_BASE +7)<<2)|0, apicid_ck804, 0x14); 
+        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_0, ((CK804_DEVN_BASE +7)<<2)|0, apicid_ck804, 0x17); 
 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_0, ((CK804_DEVN_BASE +8)<<2)|0, apicid_ck804, 0x15); 
+        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_0, ((CK804_DEVN_BASE +8)<<2)|0, apicid_ck804, 0x16); 
 
 #if 1
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_5, (0x00<<2)|0, apicid_ck804, 0x12); // 

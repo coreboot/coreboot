@@ -27,7 +27,7 @@ romimage "normal"
 #        payload ../../../payloads/filo_mem.elf
 #       payload ../../../payloads/filo.zelf
 #	payload ../../../payloads/tg3.zelf
-	payload ../../../payloads/tg3--filo_hda2_vga.zelf
+	payload ../../../payloads/forcedeth--filo_hda2_vga.zelf
 #	 payload ../../../payloads/tg3_vga.zelf
 #	payload ../../../payloads/tg3--filo_hda2_vgax.zelf
 #        payload ../../../payloads/tg3--filo_hda2_com2.zelf
@@ -49,7 +49,7 @@ romimage "fallback"
 #        payload ../../../payloads/filo_mem.elf
 #       payload ../../../payloads/filo.zelf
 #	payload ../../../payloads/tg3.zelf
-	payload ../../../payloads/tg3--filo_hda2_vga.zelf
+	payload ../../../payloads/forcedeth--filo_hda2_vga.zelf
 #	payload ../../../payloads/tg3_vga.zelf
 #	payload ../../../payloads/tg3--filo_hda2_vgax.zelf
 #        payload ../../../payloads/tg3--filo_hda2_com2.zelf

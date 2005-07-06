@@ -503,6 +503,11 @@ define CONFIG_MAX_CPUS
         export always
         comment "Maximum CPU count for this machine"
 end
+define CONFIG_MAX_PHYSICAL_CPUS
+        default 1
+        export always
+        comment "Maximum physical CPU count for this machine"
+end
 define CONFIG_LOGICAL_CPUS
 	default 0
 	export always
@@ -512,6 +517,11 @@ define HAVE_MP_TABLE
 	default none
 	export used
 	comment "Define to build an MP table"
+end
+define SERIAL_CPU_INIT
+        default 1
+        export always
+        comment "Serialize CPU init"
 end
 
 ###############################################
@@ -767,6 +777,12 @@ define CK804_DEVN_BASE
 	default 1
 	export always
 	comment "CK804 device count from 0 or 1"
+end
+
+define K8_E0_MEM_HOLE_SIZEK
+        default 0
+        export always
+        comment "Opteron E0 later memory hole size in K"
 end
 
 define CONFIG_PCI_ROM_RUN

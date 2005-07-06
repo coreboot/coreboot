@@ -115,9 +115,9 @@ default HOSTCC="gcc"
 default CONFIG_CONSOLE_SERIAL8250=1
 
 ## Select the serial console baud rate
-#default TTYS0_BAUD=115200
+default TTYS0_BAUD=115200
 #default TTYS0_BAUD=57600
-default TTYS0_BAUD=38400
+#default TTYS0_BAUD=38400
 #default TTYS0_BAUD=19200
 #default TTYS0_BAUD=9600
 #default TTYS0_BAUD=4800

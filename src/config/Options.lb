@@ -92,7 +92,7 @@ define CPU_OPT
 	comment "Additional per-cpu CFLAGS"
 end
 define OBJCOPY
-	default "$(CROSS_COMPILE)objcopy"
+	default "$(CROSS_COMPILE)objcopy --gap-fill 0xff"
 	export always
 	comment "Objcopy command"
 end

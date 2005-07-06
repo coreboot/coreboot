@@ -8,7 +8,7 @@
 
 /* USES: esi, ecx, eax */
 
-#include "gx1def.h"
+#include <cpu/amd/gx1def.h>
 
 	movl %eax, %ebp /* preserve bist */
 

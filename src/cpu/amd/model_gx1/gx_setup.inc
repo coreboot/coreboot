@@ -6,7 +6,7 @@
     Setup the GX_BASE registers on a National Semiconductor Geode CPU
 */
 
-#include "gx1def.h"
+#include <cpu/amd/gx1def.h>
 
 	movl %eax, %ebp /* Preserve bist */
 

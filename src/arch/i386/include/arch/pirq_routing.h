@@ -41,8 +41,10 @@ extern const struct irq_routing_table intel_irq_routing_table;
 
 #if HAVE_PIRQ_TABLE==1
 unsigned long copy_pirq_routing_table(unsigned long start);
+unsigned long write_pirq_routing_table(unsigned long start);
 #else
 #define copy_pirq_routing_table(start) (start)
+#define write_pirq_routing_table(start) (start)
 #endif
 
 #endif /* ARCH_PIRQ_ROUTING_H */

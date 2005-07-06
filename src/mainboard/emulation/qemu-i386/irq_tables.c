@@ -30,3 +30,7 @@ const struct irq_routing_table intel_irq_routing_table = {
 		{0,0x98, {{0x4, 0xdeb8}, {0x3, 0xdeb8}, {0x2, 0xdeb8}, {0x1, 0xdeb8}}, 0x4, 0},
 	}
 };
+unsigned long write_pirq_routing_table(unsigned long addr)
+{
+        return copy_pirq_routing_table(addr);
+}

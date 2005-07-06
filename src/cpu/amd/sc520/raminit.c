@@ -214,13 +214,13 @@ setupsc520(void){
 
 	/* the 0x80 led should now be working*/
 	outb(0xaa, 0x80);
-
+#if 0
 	/* wtf are 680 leds ... */
 	par = (unsigned long *) 0xfffef0c4;
 	*par = 0x28000680;
 	/* well? */
 	outb(0x55, 0x80);
-
+#endif
 
 /*; set the uart baud rate clocks to the normal 1.8432 MHz.*/
 	cp = (unsigned char *)0xfffefcc0;
@@ -232,7 +232,7 @@ setupsc520(void){
 	cp = (unsigned char *)0x0fffefd20;
 	*cp = 0x01;
 	
-	cp = (unsigned char *)0x0fffefd28;
+x	cp = (unsigned char *)0x0fffefd28;
 	*cp = 0x0c;
 	
 	cp = (unsigned char *)0x0fffefd29;
@@ -258,12 +258,12 @@ setupsc520(void){
 	outl(0xcfc, 0x2);			/*set the memory access enable bit*/
 	OUTC(0x0fffef072, 1);		/* enable req bits in SYSARBMENB */
 #endif
+	/* set up the PAR registers as they are on the MSM586SEG */
+	par = (unsigned long *) 0xfffef088;
 
 #if 0
 
 
-	/* set up the PAR registers as they are on the MSM586SEG */
-	par = (unsigned long *) 0xfffef088;
 	*par++ = 0x607c00a0; /*PAR0: PCI:Base 0xa0000; size 0x1f000:*/
 	*par++ = 0x480400d8; /*PAR1: GP BUS MEM:CS2:Base 0xd8, size 0x4:*/
 	*par++ = 0x340100ea; /*PAR2: GP BUS IO:CS5:Base 0xea, size 0x1:*/
@@ -279,9 +279,12 @@ setupsc520(void){
 	*par++ = 0x341f03e0; /*PAR12: GP BUS IO:CS5:Base 0x3e0, size 0x1f:*/
 	*par++ = 0xe41c00c0; /*PAR13: SDRAM:code:cache:nowrite:Base 0xc0000, size 0x7000:*/
 	*par++ = 0x545c00c8; /*PAR14: GP BUS MEM:CS5:Base 0xc8, size 0x5c:*/
-//	*par++ = 0x8a020200; /*PAR15: BOOTCS:code:nocache:write:Base 0x2000000, size 0x80000:*/
-
+#else
+	par += 15;
 #endif
+	*par++ = 0x8a020200; /*PAR15: BOOTCS:code:nocache:write:Base 0x2000000, size 0x80000:*/
+
+
 }
 	
 

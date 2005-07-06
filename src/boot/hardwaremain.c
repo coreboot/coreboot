@@ -56,6 +56,7 @@ void hardwaremain(int boot_complete)
 	console_init();
 	
 	post_code(0x39);
+
 	printk_notice("LinuxBIOS-%s%s %s %s...\n", 
 		      linuxbios_version, linuxbios_extra_version, linuxbios_build,
 		      (boot_complete)?"rebooting":"booting");

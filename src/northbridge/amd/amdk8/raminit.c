@@ -2308,7 +2308,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		5. for node interleaving we need to set mem hole to every node ( need recalcute hole offset in f0 for every node)
 	*/
 
-#if CONFIG_DCACHE_RAM == 0
+#if USE_DCACHE_RAM == 0
 	/* Make certain the first 1M of memory is intialized */
 	print_debug("Clearing initial memory region: ");
 

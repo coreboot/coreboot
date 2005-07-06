@@ -21,6 +21,17 @@ static void nic_init(struct device *dev)
 
 	static uint32_t nic_index = 0;
 
+        uint8_t *base;
+        struct resource *res;
+
+        res = find_resource(dev, 0x10);
+
+        base = res->base;
+
+#define NvRegPhyInterface  0xC0
+#define PHY_RGMII          0x10000000
+
+        writel(PHY_RGMII, base + NvRegPhyInterface);
 
         old = dword = pci_read_config32(dev, 0x30);
         dword &= ~(0xf);

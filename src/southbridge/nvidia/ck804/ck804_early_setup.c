@@ -164,14 +164,14 @@ static void ck804_early_setup(void)
 
 
 
-        RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE+1 , 2, 0x8c), 0xffff0000, 0x00009880,
+        RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE+1 , 2, 0x8c), 0xffff0000, 0x00009000,
         RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE+1 , 2, 0x90), 0xffff000f, 0x000074a0,
         RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE+1 , 2, 0xa0), 0xfffff0ff, 0x00000a00,
         RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE+1 , 2, 0xac), 0xffffff00, 0x00000000,
 
 
 #if CK804_NUM > 1
-        RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804_DEVN_BASE+1 , 2, 0x8c), 0xffff0000, 0x00009880,
+        RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804_DEVN_BASE+1 , 2, 0x8c), 0xffff0000, 0x00009000,
         RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804_DEVN_BASE+1 , 2, 0x90), 0xffff000f, 0x000074a0,
         RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804_DEVN_BASE+1 , 2, 0xa0), 0xfffff0ff, 0x00000a00,
 #endif
@@ -286,6 +286,7 @@ static void ck804_early_setup(void)
                 RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+19, ~(0xff),  ((0<<4)|(1<<2)|(0<<0)),  
                 RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 3, ~(0xff),  ((0<<4)|(1<<2)|(0<<0)),  
                 RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 3, ~(0xff),  ((0<<4)|(1<<2)|(1<<0)),  
+		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE+1 , 0, 0xe4), ~(1<<23), (1<<23),
 #endif
 
 #if CK804_USE_ACI == 1
@@ -304,6 +305,7 @@ static void ck804_early_setup(void)
                 RES_PORT_IO_8, CK804B_SYSCTRL_IO_BASE + 0xc0+19, ~(0xff), ((0<<4)|(1<<2)|(0<<0)),  
                 RES_PORT_IO_8, CK804B_SYSCTRL_IO_BASE + 0xc0+ 3, ~(0xff), ((0<<4)|(1<<2)|(0<<0)),  
                 RES_PORT_IO_8, CK804B_SYSCTRL_IO_BASE + 0xc0+ 3, ~(0xff), ((0<<4)|(1<<2)|(1<<0)),  
+		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804_DEVN_BASE+1 , 0, 0xe4), ~(1<<23), (1<<23),
 	#endif
 #endif  
 

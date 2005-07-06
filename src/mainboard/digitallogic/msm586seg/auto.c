@@ -47,26 +47,13 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 static void main(unsigned long bist)
 {
-/*
-	static const struct mem_controller memctrl[] = {
-		{
-			.d0 = PCI_DEV(0, 0, 0),
-			.channel0 = { (0xa<<3)|0, 0 },
-		},
-	};
-*/
 
-/*
-	if (bist == 0) {
-		early_mtrr_init();
-	}
- */
         setupsc520();
         uart_init();
         console_init();
-//	while(1)
+	//	while(1)
 		print_err("HI THERE!\r\n");
-	sizemem();
+//			sizemem();
 //	staticmem();
 	print_err("STATIC MEM DONE\r\n");
 

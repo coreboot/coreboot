@@ -49,38 +49,61 @@
 #define OUTC(addr, val) *(unsigned char *)(addr) = (val)
 
 
+/* sadly, romcc can't quite handle what we want, so we do this ugly thing */
+#define drcctl   (( volatile unsigned char *)0xfffef010)
+#define drcmctl   (( volatile unsigned char *)0xfffef012)
+#define drccfg   (( volatile unsigned char *)0xfffef014)
+
+#define drcbendadr   (( volatile unsigned char *)0xfffef018)
+#define eccctl   (( volatile unsigned char *)0xfffef020)
+#define dbctl   (( volatile unsigned char *)0xfffef040)
 void
 setupsc520(void){
-	unsigned char *cp;
-	unsigned short *sp;
-	unsigned long *edi;
-	unsigned long *par;
+  volatile unsigned char *cp;
+  volatile unsigned short *sp;
+  volatile unsigned long *edi;
+  volatile unsigned long *par;
+
+  /* do this to see if MMCR will start acting right. 
+   * we suspect you have to do SOMETHING to get things going. 
+   * I'm really starting to hate this processor. 
+   */
+  /* no, that did not help. I wonder what will? 
+   * outl(0x800df0cb, 0xfffc);
+   */
+
 
 	/* turn off the write buffer*/
 	cp = (unsigned char *)0xfffef040;
 	*cp = 0;
 
+	/* byte writes in AMD assembly */
+	/* we do short anyway, since u-boot does ... */
 	/*set the GP CS offset*/
-	cp =  (unsigned char *)0xfffefc08;
-	*cp = 0x00001;
+	sp =  (unsigned short *)0xfffefc08;
+	*sp = 0x00001;
 	/*set the GP CS width*/
-	cp =  (unsigned char *)0xfffefc09;
-	*cp = 0x00003;
+	sp =  (unsigned short *)0xfffefc09;
+	*sp = 0x00003;
+
+	/* short writes in AMD assembly */
 	/*set the GP CS width*/
-	cp =  (unsigned char *)0xfffefc0a;
-	*cp = 0x00001;
+	sp =  (unsigned short *)0xfffefc0a;
+	*sp = 0x00001;
 	/*set the RD pulse width*/
-	cp =  (unsigned char *)0xfffefc0b;
-	*cp = 0x00003;
+	sp =  (unsigned short *)0xfffefc0b;
+	*sp = 0x00003;
 	/*set the GP RD offset */
-	cp =  (unsigned char *)0xfffefc0c;
-	*cp = 0x00001;
-	/*set the GP WR pulse width*/
-	cp =  (unsigned char *)0xfffefc0d;
-	*cp = 0x00003;
+	sp =  (unsigned short *)0xfffefc0c;
+	*sp = 0x00001;
+	/*set the GP WR pulse width*/ 
+	sp =  (unsigned short *)0xfffefc0d;
+	*sp = 0x00003;
 	/*set the GP WR offset*/
-	cp =  (unsigned char *)0xfffefc0e;
-	*cp = 0x00001;
+	sp =  (unsigned short *)0xfffefc0e;
+	*sp = 0x00001;
+
+
 	/* set up the GP IO pins*/
 	/*set the GPIO directionreg*/
 	sp =  (unsigned short *)0xfffefc2c;
@@ -95,55 +118,17 @@ setupsc520(void){
 	sp =  (unsigned short *)0xfffefc20;
 	*sp = 0x0FFFF;
 
-#ifdef NETSC520
-if NetSC520
-; set the PIO regs correctly.
-	/*set the GPIO16-31 direction reg*/
-	sp =  (unsigned short *)0xfffefc2c;
-	*sp = 0x000ff;
-	/*set the PIODIR15_0 direction reg*/
-	sp =  (unsigned short *)0xfffefc2a;
-	*sp = 0x00440;
-	/*set the PIOPFS31_16 direction reg*/
-	sp =  (unsigned short *)0xfffefc22;
-	*sp = 0x00600;
-	/*set the PIOPFS15_0 direction reg*/
-	sp =  (unsigned short *)0xfffefc20;
-	*sp = 0x0FBBF;
-	/*set the PIODATA15_0 reg*/
-	sp =  (unsigned short *)0x0xfffefc30;
-	*sp = 0x0f000;
-	/*set the CSPFS reg*/
-	sp =  (unsigned short *)0xfffefc24;
-	*sp = 0x0000;
 
-; The NetSC520 uses PIOs 16-23 for LEDs instead of port 80
-; output a 1 to the leds
-	/*set the GPIO16-31 direction reg*/
-	sp =  (unsigned short *)0xfffefc32;
-	mov	al, not 1
-else
-#endif
-
-	/* setup for the CDP*/
-	/*set the GPIO directionreg*/
-	sp =  (unsigned short *)0xfffefc2c;
-	*sp = 0x00000;
-	/*set the GPIO directionreg*/
-	sp =  (unsigned short *)0xfffefc2a;
-	*sp = 0x00000;
-	/*set the GPIO pin function 31-16 reg*/
-	sp =  (unsigned short *)0xfffefc22;
-	*sp = 0x0FFFF;
-	/*set the GPIO pin function 15-0 reg*/
-	sp =  (unsigned short *)0xfffefc20;
-	*sp = 0x0FFFF;
 	/* the 0x80 led should now be working*/
 	outb(0xaa, 0x80);
-/*
-; set up a PAR to allow access to the 680 leds
-;	WriteMMCR( 0xc4,0x28000680);		// PAR15
- */
+
+	/* wtf are 680 leds ... */
+	par = (unsigned long *) 0xfffef0c4;
+	*par = 0x28000680;
+	/* well? */
+	outb(0x55, 0x80);
+
+
 /*; set the uart baud rate clocks to the normal 1.8432 MHz.*/
 	cp = (unsigned char *)0xfffefcc0;
 	*cp = 4;					/* uart 1 clock source */
@@ -182,7 +167,7 @@ else
 
 
 	/* set up the PAR registers as they are on the MSM586SEG */
-	par = (unsigned long *) 0xfffef080;
+	par = (unsigned long *) 0xfffef088;
 	*par++ = 0x607c00a0; /*PAR0: PCI:Base 0xa0000; size 0x1f000:*/
 	*par++ = 0x480400d8; /*PAR1: GP BUS MEM:CS2:Base 0xd8, size 0x4:*/
 	*par++ = 0x340100ea; /*PAR2: GP BUS IO:CS5:Base 0xea, size 0x1:*/
@@ -247,218 +232,31 @@ void sc520_udelay(int microseconds) {
 		;
 }
 
-struct ramctl {
-	unsigned char drcctl;
-	unsigned char pad1;
-	unsigned char drcmctl;
-	unsigned char pad2;
-	unsigned char drccfg;
-	unsigned char pad[3];
-  unsigned char drcbendadr[4];
-};
-
-#define RAMCTL (struct ramctl *) 0xfffef010
 
 static void dumpram(void){
-  struct ramctl *ram = RAMCTL;
-  print_err("ctl "); print_err_hex8(ram->drcctl); print_err("\r\n");
-  print_err("mctl "); print_err_hex8(ram->drcmctl); print_err("\r\n");
-  print_err("cfg "); print_err_hex8(ram->drccfg); print_err("\r\n");
+  print_err("ctl "); print_err_hex8(*drcctl); print_err("\r\n");
+  print_err("mctl "); print_err_hex8(*drcmctl); print_err("\r\n");
+  print_err("cfg "); print_err_hex8(*drccfg); print_err("\r\n");
 
-  print_err("bendadr0 "); print_err_hex8(ram->drcbendadr[0]); print_err("\r\n");
-  print_err("bendadr1 "); print_err_hex8(ram->drcbendadr[1]); print_err("\r\n");
-  print_err("bendadr2 "); print_err_hex8(ram->drcbendadr[2]); print_err("\r\n");
-  print_err("bendadr3"); print_err_hex8(ram->drcbendadr[3]); print_err("\r\n");
+  print_err("bendadr0 "); print_err_hex8(*drcbendadr); print_err("\r\n");
+  print_err("bendadr1 "); print_err_hex8(*drcbendadr); print_err("\r\n");
+  print_err("bendadr2 "); print_err_hex8(*drcbendadr); print_err("\r\n");
+  print_err("bendadr3"); print_err_hex8(*drcbendadr); print_err("\r\n");
 }
+#ifdef FUCK
 
-struct eccctl {
-	unsigned char eccctl;
-	unsigned char eccsta;
-	unsigned char eccckbpos;
-	unsigned char ecccktest;
-	unsigned char eccsbadd;
-	unsigned char pad[3];
-	unsigned char eccmbad;
-};
-
-#define ECCCTL (struct eccctl *) 0xfffef020
-
-#define DBCTL (unsigned char *) 0xfffef040
-
-#if 0
-int nextbank(int bank)
-{
-	struct ramctl *ram = RAMCTL;
-	struct eccctl *ecc = ECCCTL;
-	unsigned char *dbctl = DBCTL;
-
-	int rows,banks, cols, i;
-	unsigned char ending_adr;
-
-	/* this is really ugly, it is right from assembly code. 
-	 * we need to clean it up later
-	 */
-	
-start:
-	/* write col 11 wrap adr */
-	COL11_ADR=COL11_DATA;
-	if(COL11_ADR!=COL11_DATA)
-		goto bad_ram;
-//while(1)
-print_err("11\n");
-	/* write col 10 wrap adr */
-	COL10_ADR=COL10_DATA;
-	if(COL10_ADR!=COL10_DATA)
-		goto bad_ram;
-print_err("10\n");
-
-	/* write col 9 wrap adr */
-	COL09_ADR=COL09_DATA;
-	if(COL09_ADR!=COL09_DATA)
-		goto bad_ram;
-print_err("9\n");
-
-	/* write col 8 wrap adr */
-	COL08_ADR=COL08_DATA;
-	if(COL08_ADR!=COL08_DATA)
-		goto bad_ram;
-print_err("8\n");
-
-	/* write row 14 wrap adr */
-	ROW14_ADR=ROW14_DATA;
-	if(ROW14_ADR!=ROW14_DATA)
-		goto bad_ram;
-print_err("14\n");
-
-	/* write row 13 wrap adr */
-	ROW13_ADR=ROW13_DATA;
-	if(ROW13_ADR!=ROW13_DATA)
-		goto bad_ram;
-print_err("13\n");
-
-	/* write row 12 wrap adr */
-	ROW12_ADR=ROW12_DATA;
-	if(ROW12_ADR!=ROW12_DATA)
-		goto bad_ram;
-print_err("12\n");
-
-	/* write row 11 wrap adr */
-	ROW11_ADR=ROW11_DATA;
-	if(ROW11_ADR!=ROW11_DATA)
-		goto bad_ram;
-print_err("11\n");
-
-	/* write row 10 wrap adr */
-	ROW10_ADR=ROW10_DATA;
-	if(ROW10_ADR!=ROW10_DATA)
-		goto bad_ram;
-print_err("10\n");
-
-/*
- * read data @ row 12 wrap adr to determine # banks,
- *  and read data @ row 14 wrap adr to determine # rows.
- *  if data @ row 12 wrap adr is not AA, 11 or 12 we have bad RAM.
- * if data @ row 12 wrap == AA, we only have 2 banks, NOT 4
- * if data @ row 12 wrap == 11 or 12, we have 4 banks
- */
-
-	banks=2;
-	if (ROW12_ADR != ROW10_DATA) {
-		banks=4;
-print_err("4b\n");
-		if(ROW12_ADR != ROW11_DATA) {
-			if(ROW12_ADR != ROW12_DATA)
-				goto bad_ram;
-		}
-	}
-
-	/* validate row mask */
-	rows=ROW14_ADR;
-	if (rows<ROW11_DATA)
-		goto bad_ram;
-	if (rows>ROW14_DATA)
-		goto bad_ram;
-	/* verify all 4 bytes of dword same */
-	if(rows&0xffff!=(rows>>16)&0xffff)
-		goto bad_ram;
-	if(rows&0xff!=(rows>>8)&0xff)
-		goto bad_ram;
-	
-	print_err("rows"); print_err_hex32(rows); print_err("\n");
-	/* validate column data */
-	cols=COL11_ADR;
-	if(cols<COL08_DATA)
-		goto bad_ram;
-	if (cols>COL11_DATA)
-		goto bad_ram;
-	/* verify all 4 bytes of dword same */
-	if(cols&0xffff!=(cols>>16)&0xffff)
-		goto bad_ram;
-	if(cols&0xff!=(cols>>8)&0xff)
-		goto bad_ram;
-	print_err("cols"); print_err_hex32(cols); print_err("\n");
-	cols -= COL08_DATA;
-
-	i = cols + rows;
-
-	/* wacky end addr calculation */
-/*
-	al = 3;
-	al -= (i & 0xff);k
- */
-
-	
-	if(banks==4)
-		i+=8; /* <-- i holds merged value */
-	
-	/* fix ending addr mask*/
-	/*FIXME*/
-	/* let's just go with this to start ... see if we can get ANYWHERE */
-	ending_adr=0xff;
-
-bad_reint:
-	/* issue all banks recharge */
-	ram->drcctl=0x02;
-	dummy_write();
-
-	/* update ending address register */
-	ram->drcbendadr[bank] = ending_adr;
-	
-	/* update config register */
-	ram->drccfg = (banks = 4 ? 8 : 0) | cols & 3;
-	/* skip the rest for now */
-	bank = 0;
-//	*drccfg=*drccfg&YYY|ZZZZ;
-
-	if(bank!=0) {
-		bank--;
-		//*(&*drcbendadr+XXYYXX)=0xff;
-		goto start;
-	}
-
-	/* set control register to NORMAL mode */
-	ram->drcctl=0x00;
-	dummy_write();
-	return bank;
-	
-bad_ram:
-	print_info("bad ram!\r\n");
-}
-#endif
 /* cache is assumed to be disabled */
 int sizemem(void)
 {
-	struct ramctl *ram = RAMCTL;
-	struct eccctl *ecc = ECCCTL;
-	unsigned char *dbctl = DBCTL;
+
 	int rows,banks, cols, i, bank;
-	unsigned char ending_adr, al;
+	unsigned char al;
 
 	/* initialize dram controller registers */
 
 	*dbctl = 0; /* disable write buffer/read-ahead buffer */
-	ecc->eccctl = 0;
-	ram->drcmctl = 0x1e; /* Set SDRAM timing for slowest speed. */
+	*eccctl = 0;
+	*drcmctl = 0x1e; /* Set SDRAM timing for slowest speed. */
 
 	/* setup loop to do 4 external banks starting with bank 3 */
 	print_err("sizemem\n");
@@ -466,20 +264,20 @@ int sizemem(void)
 	/* enable last bank and setup ending address 
 	 * register for max ram in last bank
 	 */
-	ram->drcbendadr[3]=0x0ff000000;
+	*drcbendadr=0x0ff000000;
 
 	/* setup dram register for all banks
 	 * with max cols and max banks
 	 */
-	ram->drccfg=0xbbbb;
+	*drccfg=0xbbbb;
 
-	dumpram();
+//	dumpram();
 
 	/* issue a NOP to all DRAMs */
 	/* Setup DRAM control register with Disable refresh,
  	 * disable write buffer Test Mode and NOP command select
  	 */
-	ram->drcctl=0x01;
+	*drcctl=0x01;
 
 	/* dummy write for NOP to take effect */
 	dummy_write();
@@ -489,24 +287,24 @@ int sizemem(void)
 	print_err("after sc520_udelay\r\n");
 
 	/* issue all banks precharge */
-	ram->drcctl=0x02;
+	*drcctl=0x02;
 	print_err("set *drcctl to 2 \r\n");
 	dummy_write();
 	print_err("PRE\n");
 
 	/* issue 2 auto refreshes to all banks */
-	ram->drcctl=0x04;
+	*drcctl=0x04;
 	dummy_write();
 	print_err("AUTO1\n");
 	dummy_write();
 	print_err("AUTO2\n");
 
 	/* issue LOAD MODE REGISTER command */
-	ram->drcctl=0x03;
+	*drcctl=0x03;
 	dummy_write();
 	print_err("LOAD MODE REG\n");
 
-	ram->drcctl=0x04;
+	*drcctl=0x04;
 	for (i=0; i<8; i++) /* refresh 8 times */{
 		dummy_write();
 		print_err("dummy write\r\n");
@@ -514,7 +312,7 @@ int sizemem(void)
 	print_err("8 dummy writes\n");
 
 	/* set control register to NORMAL mode */
-	ram->drcctl=0x00;
+	*drcctl=0x00;
 	print_err("normal\n");
 
 	print_err("HI done normal\r\n");
@@ -605,11 +403,12 @@ print_err("4b\n");
 	if (rows>ROW14_DATA)
 		goto bad_ram;
 	/* verify all 4 bytes of dword same */
+/*
 	if(rows&0xffff!=(rows>>16)&0xffff)
 		goto bad_ram;
 	if(rows&0xff!=(rows>>8)&0xff)
 		goto bad_ram;
-
+*/
 	/* now just get one of them */
 	rows &= 0xff;
 	print_err("rows"); print_err_hex32(rows); print_err("\n");
@@ -620,10 +419,12 @@ print_err("4b\n");
 	if (cols>COL11_DATA)
 		goto bad_ram;
 	/* verify all 4 bytes of dword same */
+/*
 	if(cols&0xffff!=(cols>>16)&0xffff)
 		goto bad_ram;
 	if(cols&0xff!=(cols>>8)&0xff)
 		goto bad_ram;
+*/
 	print_err("cols"); print_err_hex32(cols); print_err("\n");
 	cols -= COL08_DATA;
 
@@ -650,38 +451,41 @@ print_err("4b\n");
 	/*FIXME*/
 	/* let's just go with this to start ... see if we can get ANYWHERE */
 	/* need to get end addr. Need to do it with the bank in mind. */
+/*
 	al = 3; 
 	al -= i&3;
-	ending_adr = rows >> al;
+	*drcbendaddr = rows >> al;
 	print_err("computed ending_adr = "); print_err_hex8(ending_adr); 
 	print_err("\r\n");
 	
+*/
 bad_reinit:
 	/* issue all banks recharge */
-	ram->drcctl=0x02;
+	*drcctl=0x02;
 	dummy_write();
 
 	/* update ending address register */
-	ram->drcbendadr[bank] = ending_adr;
+//	*drcbendadr = ending_adr;
 	
 	/* update config register */
-	ram->drccfg &= ~(0xff << bank*4);
+	*drccfg &= ~(0xff << bank*4);
 	if (ending_adr)
-	  ram->drccfg = ((banks = 4 ? 8 : 0) | cols & 3)<< (bank*4);
-	dumpram();
+	  *drccfg = ((banks == 4 ? 8 : 0) | cols & 3)<< (bank*4);
+//	dumpram();
 	/* skip the rest for now */
 	//	bank = 0;
 	//	*drccfg=*drccfg&YYY|ZZZZ;
 
 	if(bank!=0) {
 		bank--;
-		ram->drcbendaddr[bank] = 0xff000000;
+//		drcbendaddr--;
+		*drcbendaddr = 0xff000000;
 		//*(&*drcbendadr+XXYYXX)=0xff;
 		goto start;
 	}
 
 	/* set control register to NORMAL mode */
-	ram->drcctl=0x18;
+	*drcctl=0x18;
 	dummy_write();
 	return bank;
 	
@@ -693,12 +497,10 @@ bad_ram:
 	 */
 	ending_adr = 0;
 	goto bad_reinit;
-	nextbank(3);
 	while(1)
 	print_err("DONE NEXTBANK\r\n");
-
 }	
-
+#endif
 /* note: based on AMD code, but AMD code is BROKEN AFAIK */
 
 int
@@ -706,7 +508,7 @@ staticmem(void){
 	volatile unsigned char *zero = (unsigned char *) 0;
 	/* set up 0x18 .. **/
 	*drcbendadr = 0x88;
-	*drctmctl = 0x1e;
+	*drcmctl = 0x1e;
 	*drccfg = 0x9;
 	/* nop mode */
 	*drcctl = 0x1;
@@ -733,4 +535,6 @@ staticmem(void){
 	*drcctl = 0x18;
 	*zero = 0;
 	print_err("DONE the normal\r\n");
+	*zero = 0xdeadbeef;
+	print_err(" zero is now "); print_err_hex32(*zero); print_err("\r\n");
 }

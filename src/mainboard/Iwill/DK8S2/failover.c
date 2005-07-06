@@ -13,11 +13,13 @@
 
 static unsigned long main(unsigned long bist)
 {
+        unsigned nodeid;
+
 	/* Make cerain my local apic is useable */
 	enable_lapic();
 
 	/* Is this a cpu only reset? */
-	if (cpu_init_detected()) {
+	if (cpu_init_detected(nodeid)) {
 		if (last_boot_normal()) {
 			goto normal_image;
 		} else {

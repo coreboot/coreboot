@@ -90,46 +90,6 @@ void real_main(unsigned long bist);
 
 void amd64_main(unsigned long bist)
 {
-#if 1
-#if 0
-	unsigned cmos_result;
-	int i;
-	for(i=0;i<2;i++) {
-		cmos_result = cmos_read(0x10);
-		outb(cmos_result, 0x80);
-	}
-#endif
-__asm__ volatile (
-        "movl  $(DCACHE_RAM_BASE+DCACHE_RAM_SIZE-4), %esi\n\t"
-//        "movl    $(DCACHE_RAM_SIZE>>2), %ecx\n\t"
-        "movl $8, %ecx\n\t"
-".yin1x:\n\t"
-        "movl  %esi, %eax\n\t"
-
-        "movl    $0x2000, %edx\n\t"
-        "movb    %ah, %al\n\t"
-".testy1:\n\t"
-        "outb %al, $0x80\n\t"
-        "decl    %edx\n\t"
-        "jnz .testy1\n\t"
-
-        "movl  (%esi), %eax\n\t"
-        "cmpb 0xff, %al\n\t"
-        "je .yin2\n\t"
-
-        "movl    $0x2000, %edx\n\t"
-".testy2:\n\t"
-        "outb %al, $0x80\n\t"
-        "decl    %edx\n\t"
-        "jnz .testy2\n\t"
-
-".yin2:  decl     %ecx\n\t"
-        "je      .yout1x\n\t"
-        "sub     $4, %esi\n\t"
-        "jmp     .yin1x\n\t"
-".yout1x:\n\t"
-);
-#endif
         /* Is this a deliberate reset by the bios */
 //        post_code(0x22);
         if (bios_reset_detected() && last_boot_normal()) {
@@ -180,38 +140,6 @@ void amd64_main(unsigned long bist)
 	};
 	
 	unsigned cpu_reset = 0;
-#if 1
-__asm__ volatile (
-        "movl  $(DCACHE_RAM_BASE+DCACHE_RAM_SIZE-4), %esi\n\t"
-//        "movl    $(DCACHE_RAM_SIZE>>2), %ecx\n\t"
-        "movl $8, %ecx\n\t"
-".zin1x:\n\t"
-        "movl  %esi, %eax\n\t"
-
-        "movl    $0x2000, %edx\n\t"
-        "movb    %ah, %al\n\t"
-".testz1:\n\t"
-        "outb %al, $0x80\n\t"
-        "decl    %edx\n\t"
-        "jnz .testz1\n\t"
-
-        "movl  (%esi), %eax\n\t"
-        "cmpb 0xff, %al\n\t"
-        "je .zin2\n\t"
-
-        "movl    $0x2000, %edx\n\t"
-".testz2:\n\t"
-        "outb %al, $0x80\n\t"
-        "decl    %edx\n\t"
-        "jnz .testz2\n\t"
-
-".zin2:  decl     %ecx\n\t"
-        "je      .zout1x\n\t"
-        "sub     $4, %esi\n\t"
-        "jmp     .zin1x\n\t"
-".zout1x:\n\t"
-);
-#endif
 
        if (bist == 0) 
 	{

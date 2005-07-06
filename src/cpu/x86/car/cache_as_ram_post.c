@@ -12,17 +12,21 @@
         "movl    %eax, %cr0\n\t"
 
         /* clear sth */
-        "movl    $0x200, %ecx\n\t"  
+        "movl    $0x269, %ecx\n\t"  /* fix4k_c8000*/
         "xorl    %edx, %edx\n\t"
         "xorl    %eax, %eax\n\t"
 	"wrmsr\n\t"
-	"movl    $0x201, %ecx\n\t"  
+#if DCACHE_RAM_SIZE > 0x8000
+	"movl    $0x268, %ecx\n\t"  /* fix4k_c0000*/
         "wrmsr\n\t"
+#endif
 
-        /* enable fast string operation   */
-        "movl    $0x1a0, %ecx\n\t"
-        "rdmsr\n\t"
-        "orl    $1, %eax\n\t"
+        /* Set the default memory type and disable fixed and enable variable MTRRs */
+        "movl    $0x2ff, %ecx\n\t"
+//        "movl    $MTRRdefType_MSR, %ecx\n\t"
+        "xorl    %edx, %edx\n\t"
+        /* Enable Variable and Disable Fixed MTRRs */
+        "movl    $0x00000800, %eax\n\t"
         "wrmsr\n\t"
 
 #if defined(CLEAR_FIRST_1M_RAM)

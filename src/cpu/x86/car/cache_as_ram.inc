@@ -1,6 +1,9 @@
 /* We will use 4K bytes only */
+/* disable HyperThreading is done by eswar*/
+/* other's is the same as AMD except remove amd specific msr */
+
 #define CacheSize DCACHE_RAM_SIZE
-#define CacheBase DCACHE_RAM_BASE
+#define CacheBase (0xd0000 - CacheSize) 
 
 #include <cpu/x86/mtrr.h>
 
@@ -10,6 +13,82 @@
 CacheAsRam:
 	/* hope we can skip the double set for normal part */
 #if USE_FALLBACK_IMAGE == 1
+
+        // Check whether the processor has HT capability
+        movl    $01, %eax
+        cpuid
+        btl     $28, %edx
+        jnc     NotHtProcessor
+        bswapl  %ebx
+        cmpb    $01, %bh
+        jbe     NotHtProcessor
+
+        // It is a HT processor; Send SIPI to the other logical processor
+        // within this processor so that the CAR related common system registers
+        // are programmed accordingly
+
+        // Use some register that is common to both logical processors
+        // as semaphore. Refer Appendix B, Vol.3
+        xorl    %eax, %eax
+        xorl    %edx, %edx
+        movl    $0x250, %ecx
+        wrmsr
+
+        // Figure out the logical AP's APIC ID; the following logic will work
+        // only for processors with 2 threads
+        // Refer to Vol 3. Table 7-1 for details about this logic
+        movl    $0xFEE00020, %esi
+        movl    (%esi), %ebx
+        andl    $0xFF000000, %ebx
+        bswapl  %ebx
+        btl     $0, %ebx
+        jnc     LogicalAP0
+        andb    $0xFE, %bl
+        jmp     Send_SIPI
+LogicalAP0:
+        orb     $0x01, %bl
+Send_SIPI:
+        bswapl  %ebx  // ebx - logical AP's APIC ID
+
+        // Fill up the IPI command registers in the Local APIC mapped to default address
+        // and issue SIPI to the other logical processor within this processor die.
+Retry_SIPI:
+        movl    %ebx, %eax
+        movl    $0xFEE00310, %esi
+        movl    %eax, (%esi)
+
+        // SIPI vector - F900:0000
+        movl    $0x000006F9, %eax
+        movl    $0xFEE00300, %esi
+        movl    %eax, (%esi)
+
+        movl    $0x30, %ecx
+SIPI_Delay:
+        pause
+        decl    %ecx
+        jnz     SIPI_Delay
+
+        movl    (%esi), %eax
+        andl    $0x00001000, %eax
+        jnz     Retry_SIPI
+
+        // Wait for the Logical AP to complete initialization
+LogicalAP_SIPINotdone:
+        movl    $0x250, %ecx
+        rdmsr
+        orl     %eax, %eax
+        jz      LogicalAP_SIPINotdone
+
+NotHtProcessor:
+
+#if 1
+        /* Set the default memory type and enable fixed and variable MTRRs */
+        movl    $MTRRdefType_MSR, %ecx
+        xorl    %edx, %edx
+        /* Enable Variable and Fixed MTRRs */
+        movl    $0x00000c00, %eax
+        wrmsr
+#endif
 
 	/*Clear all MTRRs */
 
@@ -27,29 +106,39 @@ clear_fixed_var_mtrr:
         jmp     clear_fixed_var_mtrr
 clear_fixed_var_mtrr_out:
 
-        /* enable caching for 64K using variable mtrr */
-        movl    $0x200, %ecx
-        xorl    %edx, %edx
-        movl     $(CacheBase | MTRR_TYPE_WRBACK), %eax
+#if CacheSize == 0x10000 
+        /* enable caching for 64K using fixed mtrr */
+        movl    $0x268, %ecx  /* fix4k_c0000*/
+        movl    $0x06060606, %eax /* WB IO type */
+	movl    %eax, %edx
         wrmsr
-
-        movl    $0x201, %ecx
-        movl    $0x0000000f, %edx 
-        movl    $((~((CacheBase + CacheSize) - 1)) | 0x800), %eax
-        wrmsr  
-	
-        /* Set the default memory type and enable variable MTRRs */
-        movl    $MTRRdefType_MSR, %ecx
-        xorl    %edx, %edx
-        /* Enable Variable MTRRs */
-        movl    $0x00000800, %eax
-        wrmsr
-
-        /* Disable fast string operation   */
-	movl    $0x1a0, %ecx        
-	rdmsr        
-	andl    $(~0x1), %eax        
+	movl	$0x269, %ecx
 	wrmsr
+#endif
+
+#if CacheSize == 0x8000
+        /* enable caching for 32K using fixed mtrr */
+        movl    $0x269, %ecx  /* fix4k_c8000*/
+        movl    $0x06060606, %eax /* WB IO type */
+	movl    %eax, %edx
+	wrmsr
+#endif
+
+        /* enable caching for 16K/8K/4K using fixed mtrr */
+        movl    $0x269, %ecx  /* fix4k_cc000*/
+#if CacheSize == 0x4000
+        movl    $0x06060606, %edx /* WB IO type */
+#endif
+#if CacheSize == 0x2000
+        movl    $0x06060000, %edx /* WB IO type */
+#endif
+#if CacheSize == 0x1000
+        movl    $0x06000000, %edx /* WB IO type */
+#endif
+	xorl    %eax, %eax
+	wrmsr
+
+
 #else
         /* disable cache */
         movl    %cr0, %eax
@@ -58,7 +147,6 @@ clear_fixed_var_mtrr_out:
 
 #endif /*  USE_FALLBACK_IMAGE == 1*/
 
-#if 0
 #if defined(XIP_ROM_SIZE) && defined(XIP_ROM_BASE)
         /* enable write base caching so we can do execute in place
          * on the flash rom.
@@ -73,7 +161,6 @@ clear_fixed_var_mtrr_out:
         movl    $(~(XIP_ROM_SIZE - 1) | 0x800), %eax
         wrmsr
 #endif /* XIP_ROM_SIZE && XIP_ROM_BASE */
-#endif
 
         /* enable cache */
         movl    %cr0, %eax
@@ -82,34 +169,21 @@ clear_fixed_var_mtrr_out:
 
 #if USE_FALLBACK_IMAGE == 1
 
-//	intel_chip_post_macro(0x11)     /* post 11 */
-
 	/* Read the range with lodsl*/
         movl    $CacheBase, %esi
 	cld
         movl    $(CacheSize>>2), %ecx
         rep     lodsl
 
-        // Disable the cache. This is the trick. Processors
-        // Pentium Pro and above are designed to respond to cache
-        // hits with CD=1 and NW=1. That is read hits access the
-        // cache; write hits update the cache. With the tags
-        // established above and no snoop hit, the cache will
-        // behave as RAM.        
-	movl    %cr0, %eax        
-	orl     $0x60000000, %eax        
-	movl    %eax, %cr0
-
 	/* Clear the range */
         movl    $CacheBase, %edi
-	cld
         movl    $(CacheSize>>2), %ecx
         xorl    %eax, %eax
         rep     stosl
 
 
-#if 1
-        /* check the cache as ram */
+#if 0
+	/* check the cache as ram */
         movl  $CacheBase, %esi
         movl    $(CacheSize>>2), %ecx
 .xin1:  
@@ -123,10 +197,10 @@ clear_fixed_var_mtrr_out:
 
         movl  $CacheBase, %esi
 //        movl    $(CacheSize>>2), %ecx
-        movl $4, %ecx
-.xin1x: 
+	movl $4, %ecx
+.xin1x:
         movl  %esi, %eax
-        
+
         movl    $0x4000, %edx
         movb    %ah, %al 
 .testx1:  
@@ -137,13 +211,13 @@ clear_fixed_var_mtrr_out:
         movl  (%esi), %eax
         cmpb 0xff, %al
         je .xin2  /* dont show */
-        
+
         movl    $0x4000, %edx
 .testx2:
         outb %al, $0x80
         decl    %edx
         jnz .testx2
-
+        
 .xin2:  decl     %ecx
         je      .xout1x
         add     $4, %esi
@@ -153,7 +227,6 @@ clear_fixed_var_mtrr_out:
 #endif
 #endif /*USE_FALLBACK_IMAGE == 1*/
 
-//	intel_chip_post_macro(0x12)     /* post 12 */
 
 	movl	$(CacheBase+CacheSize-4), %eax
 	movl    %eax, %esp
@@ -167,13 +240,12 @@ clear_fixed_var_mtrr_out:
 #endif
 
 lout:
-//	intel_chip_post_macro(0x13)     /* post 13 */
 
 	/* Restore the BIST result */
-	movl    %ebp, %eax
+	movl	%ebp, %eax
 	/* We need to set ebp ? No need */
 	movl	%esp, %ebp
-	pushl %eax  /* bist */
+	pushl 	%eax  /* bist */
 	call    amd64_main
 	/* We will not go back */
 
@@ -189,4 +261,36 @@ var_mtrr_msr:
         .long   0x208, 0x209, 0x20A, 0x20B
         .long   0x20C, 0x20D, 0x20E, 0x20F
         .long   0x000 /* NULL, end of table */
+
+#if USE_FALLBACK_IMAGE == 1
+        .align 0x1000
+        .code16
+.global LogicalAP_SIPI
+LogicalAP_SIPI:
+        // cr0 register is shared among the logical processors; 
+        // so clear CD & NW bits so that the BSP's cr0 register 
+        // controls the cache behavior
+        // Note: The cache behavior is determined by "OR" result 
+        // of the cr0 registers of the logical processors
+
+        movl    %cr0, %eax
+        andl    $0x9FFFFFFF, %eax
+        movl    %eax, %cr0
+
+        finit
+
+        // Set the semaphore to indicate the Logical AP is done
+        // with CAR specific initialization
+        movl    $0x250, %ecx
+        movl    $0x06, %eax
+        xorl    %edx, %edx
+        wrmsr
+
+        // Halt this AP
+        cli
+Halt_LogicalAP:
+        hlt
+        jmp     Halt_LogicalAP
+        .code32
+#endif /*USE_FALLBACK_IMAGE == 1*/
 .CacheAsRam_out:

@@ -62,6 +62,8 @@ static void copy_and_run(unsigned cpu_reset)
         print_debug("src="); print_debug_hex32(src); print_debug("\r\n");
         print_debug("dst="); print_debug_hex32(dst); print_debug("\r\n");
 #endif
+	
+//	dump_mem(src, src+0x100);
 
         for(;;) {
                 unsigned int m_off, m_len;

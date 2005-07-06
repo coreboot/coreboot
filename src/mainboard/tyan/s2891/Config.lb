@@ -47,26 +47,51 @@ driver mainboard.o
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
 #object reset.o
-##
-## Romcc output
-##
-makerule ./failover.E
-        depends "$(MAINBOARD)/failover.c ./romcc"
-        action "./romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
-end
 
-makerule ./failover.inc
-        depends "$(MAINBOARD)/failover.c ./romcc"
-        action "./romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
-end
+if USE_DCACHE_RAM
 
-makerule ./auto.E
-        depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
-        action  "./romcc -E -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
-end
-makerule ./auto.inc
-        depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
-        action  "./romcc    -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+	if CONFIG_USE_INIT
+
+		makerule ./auto.o
+        		depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
+		        action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -o auto.o"
+		end
+
+	else
+
+		makerule ./auto.inc
+		        depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
+		        action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -S -o $@"
+			action "perl -e 's/.rodata/.rom.data/g' -pi $@"
+			action "perl -e 's/.text/.section .rom.text/g' -pi $@"
+		end
+
+	end
+else
+
+	##
+	## Romcc output
+	##
+	makerule ./failover.E
+        	depends "$(MAINBOARD)/failover.c ./romcc"
+	        action "./romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
+	end
+
+	makerule ./failover.inc
+        	depends "$(MAINBOARD)/failover.c ./romcc"
+	        action "./romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
+	end
+
+	makerule ./auto.E
+        	depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
+	        action  "./romcc -E -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+	end
+
+	makerule ./auto.inc
+        	depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
+	        action  "./romcc    -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+	end
+
 end
 
 ##
@@ -75,7 +100,16 @@ end
 mainboardinit cpu/x86/16bit/entry16.inc
 mainboardinit cpu/x86/32bit/entry32.inc
 ldscript /cpu/x86/16bit/entry16.lds
-ldscript /cpu/x86/32bit/entry32.lds
+
+if USE_DCACHE_RAM
+	if CONFIG_USE_INIT
+		ldscript /cpu/x86/32bit/entry32.lds
+	end
+
+	if CONFIG_USE_INIT
+		ldscript /cpu/amd/car/cache_as_ram.lds
+	end
+end
 
 ##
 ## Build our reset vector (This is where linuxBIOS is entered)
@@ -88,8 +122,11 @@ else
 	ldscript /cpu/x86/32bit/reset32.lds 
 end
 
-### Should this be in the northbridge code?
-mainboardinit arch/i386/lib/cpu_reset.inc
+if USE_DCACHE_RAM
+else
+	### Should this be in the northbridge code?
+	mainboardinit arch/i386/lib/cpu_reset.inc
+end
 
 ##
 ## Include an id string (For safe flashing)
@@ -105,14 +142,24 @@ if USE_FALLBACK_IMAGE
 	ldscript /southbridge/nvidia/ck804/romstrap.lds
 end
 
+if USE_DCACHE_RAM
+	##
+	## Setup Cache-As-Ram
+	##
+	mainboardinit cpu/amd/car/cache_as_ram.inc
+end
+
 ###
 ### This is the early phase of linuxBIOS startup 
 ### Things are delicate and we test to see if we should
 ### failover to another image.
 ###
 if USE_FALLBACK_IMAGE
-	ldscript /arch/i386/lib/failover.lds 
-	mainboardinit ./failover.inc
+	ldscript /arch/i386/lib/failover.lds
+	if USE_DCACHE_RAM
+	else
+		mainboardinit ./failover.inc
+	end
 end
 
 ###
@@ -122,12 +169,25 @@ end
 ##
 ## Setup RAM
 ##
-mainboardinit cpu/x86/fpu/enable_fpu.inc
-mainboardinit cpu/x86/mmx/enable_mmx.inc
-mainboardinit cpu/x86/sse/enable_sse.inc
-mainboardinit ./auto.inc
-mainboardinit cpu/x86/sse/disable_sse.inc
-mainboardinit cpu/x86/mmx/disable_mmx.inc
+if USE_DCACHE_RAM
+
+	if CONFIG_USE_INIT
+		initobject auto.o
+	else
+		mainboardinit ./auto.inc
+	end
+
+else
+	# ROMCC
+	mainboardinit cpu/x86/fpu/enable_fpu.inc
+	mainboardinit cpu/x86/mmx/enable_mmx.inc
+	mainboardinit cpu/x86/sse/enable_sse.inc
+	mainboardinit ./auto.inc
+	mainboardinit cpu/x86/sse/disable_sse.inc
+	mainboardinit cpu/x86/mmx/disable_mmx.inc
+
+end
+
 
 ##
 ## Include the secondary Configuration files 
@@ -247,7 +307,8 @@ chip northbridge/amd/amdk8/root_complex
 					#	chip drivers/ati/ragexl
                                                 chip drivers/pci/onboard
                                                         device pci 7.0 on end
-                                                        register "rom_address" = "0xfff80000"
+                                                        register "rom_address" = "0xfff80000" #for 512K
+							#register "rom_address" = "0xfff00000" #for 1M
                                                 end
 					end
                 			device pci a.0 off end # NIC
@@ -283,13 +344,14 @@ chip northbridge/amd/amdk8/root_complex
 		end #mc0
 		
 	end # pci_domain
-	
-#        chip drivers/generic/debug 
-#                device pnp 0.0 off end
-#                device pnp 0.1 off end
-#                device pnp 0.2 off end
-#                device pnp 0.3 off end
-#                device pnp 0.4 off end
-#		device pnp 0.5 on end
-#        end  
+#       chip drivers/generic/debug                      
+#                device pnp 0.0 off end # chip name      
+#                device pnp 0.1 on end # pci_regs_all
+#                device pnp 0.2 off end # mem
+#                device pnp 0.3 off end # cpuid
+#                device pnp 0.4 on end # smbus_regs_all
+#                device pnp 0.5 off end # dual core msr
+#                device pnp 0.6 off end # cache size
+#                device pnp 0.7 off end # tsc
+#       end 
 end # root_complex

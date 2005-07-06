@@ -47,6 +47,8 @@ uses CC
 uses HOSTCC
 uses OBJCOPY
 
+uses CONFIG_USE_INIT
+
 
 ###
 ### Build options

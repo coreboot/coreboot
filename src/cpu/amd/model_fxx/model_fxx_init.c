@@ -453,12 +453,12 @@ static struct cpu_device_id cpu_table[] = {
         { X86_VENDOR_AMD, 0x10f80 }, /* CH7-D0 */
         { X86_VENDOR_AMD, 0x10fb0 },
 //AMD_E0_SUPPORT
-        { X86_VENDOR_AMD, 0x20f50 }, /* SH7-E0*/
+        { X86_VENDOR_AMD, 0x20f50 }, /* SH8-E0*/
         { X86_VENDOR_AMD, 0x20f40 },
         { X86_VENDOR_AMD, 0x20f70 },
-        { X86_VENDOR_AMD, 0x20fc0 }, /* DH7-E0 */ /* DH-E3 */
+        { X86_VENDOR_AMD, 0x20fc0 }, /* DH8-E0 */ /* DH-E3 */
         { X86_VENDOR_AMD, 0x20ff0 },
-        { X86_VENDOR_AMD, 0x20f10 }, /* JH7-E0 */
+        { X86_VENDOR_AMD, 0x20f10 }, /* JH8-E1 */
         { X86_VENDOR_AMD, 0x20f30 },
         { X86_VENDOR_AMD, 0x20f51 }, /* SH-E4 */
         { X86_VENDOR_AMD, 0x20f71 },

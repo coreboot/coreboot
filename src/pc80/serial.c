@@ -23,6 +23,9 @@
 
 #define UART_LCS	TTYS0_LCS
 
+
+#if CONFIG_USE_INIT == 0
+
 /* Data */
 #define UART_RBR 0x00
 #define UART_TBR 0x00
@@ -48,14 +51,14 @@ static int uart_can_tx_byte(void)
 
 static void uart_wait_to_tx_byte(void)
 {
-	while(!uart_can_tx_byte())
-		;
+	while(!uart_can_tx_byte()) 
+	;
 }
 
 static void uart_wait_until_sent(void)
 {
-	while(!(inb(TTYS0_BASE + UART_LSR) & 0x40)) 
-		;
+	while(!(inb(TTYS0_BASE + UART_LSR) & 0x40))
+	; 
 }
 
 static void uart_tx_byte(unsigned char data)
@@ -88,3 +91,19 @@ static void uart_init(void)
 #endif
 	outb(UART_LCS, TTYS0_BASE + UART_LCR);
 }
+#else
+extern void uart8250_init(unsigned base_port, unsigned divisor, unsigned lcs);
+static void uart_init(void)
+{
+#if USE_OPTION_TABLE == 1
+        static const unsigned char divisor[] = { 1,2,3,6,12,24,48,96 };
+        unsigned ttys0_div, ttys0_index;
+        ttys0_index = read_option(CMOS_VSTART_baud_rate, CMOS_VLEN_baud_rate, 0);
+        ttys0_index &= 7;
+        ttys0_div = divisor[ttys0_index];
+	uart8250_init(TTYS0_BASE, ttys0_div, UART_LCS);
+#else
+	uart8250_init(TTYS0_BASE, TTYS0_DIV, UART_LCS);
+#endif	
+}
+#endif

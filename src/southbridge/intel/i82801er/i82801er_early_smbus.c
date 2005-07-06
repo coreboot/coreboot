@@ -46,6 +46,21 @@ static inline void smbus_delay(void)
 	outb(0x80, 0x80);
 }
 
+static int smbus_wait_until_active(void)
+{                       
+        unsigned long loops;
+        loops = SMBUS_TIMEOUT;
+        do {
+                unsigned char val;
+                smbus_delay();
+                val = inb(SMBUS_IO_BASE + SMBHSTSTAT);
+                if ((val & 1)) {
+                        break;
+                }
+        } while(--loops);
+        return loops?0:-4;
+}
+
 static int smbus_wait_until_ready(void)
 {
 	unsigned long loops;
@@ -113,6 +128,10 @@ static int smbus_read_byte(unsigned device, unsigned address)
 	/* start a byte read, with interrupts disabled */
 	outb((inb(SMBUS_IO_BASE + SMBHSTCTL) | 0x40), SMBUS_IO_BASE + SMBHSTCTL);
 
+        /* poll for it to start */
+        if (smbus_wait_until_active() < 0) {
+                return -4;
+        }
 
 	/* poll for transaction completion */
 	if (smbus_wait_until_done() < 0) {

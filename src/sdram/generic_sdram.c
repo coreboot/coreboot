@@ -12,17 +12,25 @@ void sdram_initialize(int controllers, const struct mem_controller *ctrl)
 	int i;
 	/* Set the registers we can set once to reasonable values */
 	for(i = 0; i < controllers; i++) {
+#if CONFIG_USE_INIT
+		printk_debug("Ram1.%02x\r\n",i);
+#else
 		print_debug("Ram1.");
 		print_debug_hex8(i);
 		print_debug("\r\n");
+#endif
 		sdram_set_registers(ctrl + i);
 	}
 
 	/* Now setup those things we can auto detect */
 	for(i = 0; i < controllers; i++) {
+#if CONFIG_USE_INIT
+                printk_debug("Ram2.%02x\r\n",i);
+#else
 		print_debug("Ram2.");
 		print_debug_hex8(i);
 		print_debug("\r\n");
+#endif
 		sdram_set_spd_registers(ctrl + i);
 	}
 

@@ -107,8 +107,12 @@ typedef uint32_t u32;
 
 static inline void print_linkn (const char *strval, uint8_t byteval) 
 {
-#if 0
+#if 1
+#if CONFIG_USE_INIT
+	printk_debug("%s%02x\r\n", strval, byteval); 
+#else
 	print_debug(strval); print_debug_hex8(byteval); print_debug("\r\n");
+#endif
 #endif
 }
 
@@ -1556,8 +1560,12 @@ static struct setup_smp_result setup_smp(void)
 		result = setup_smp8(result.needs_reset);
 #endif
 
+#if CONFIG_USE_INIT
+	printk_debug("%02x nodes initialized.\r\n", result.nodes);
+#else
 	print_debug_hex8(result.nodes);
 	print_debug(" nodes initialized.\r\n");
+#endif
 	
 	return result;
 

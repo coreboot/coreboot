@@ -10,7 +10,9 @@
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
+
 #include "arch/i386/lib/console.c"
+
 #include "ram/ramtest.c"
 #include "southbridge/intel/i82801er/i82801er_early_smbus.c"
 #include "northbridge/intel/e7501/raminit.h"
@@ -51,6 +53,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
+
 #include "northbridge/intel/e7501/raminit.c"
 #include "northbridge/intel/e7501/reset_test.c"
 #include "sdram/generic_sdram.c"
@@ -87,7 +90,7 @@ static void main(unsigned long bist)
 #endif
 	if(!bios_reset_detected()) {
         	enable_smbus();
-#if 1
+#if 0
     		dump_spd_registers(&memctrl[0]);
 //        	dump_smbus_registers();
 #endif
@@ -126,17 +129,16 @@ static void main(unsigned long bist)
 	print_debug_hex32(msr.lo);
 	print_debug("\r\n");
 #endif
-/*
-#if  0
+
+#if 0
 	ram_check(0x00000000, msr.lo+(msr.hi<<32));
-#else
-#if 1
+#endif
+
+#if 0
 	// Check 16MB of memory @ 0
 	ram_check(0x00000000, 0x01000000);
-#else
 	// Check 16MB of memory @ 2GB 
-	ram_check(0x80000000, 0x81000000);
+//	ram_check(0x80000000, 0x81000000);
 #endif
-#endif
-*/
+
 }

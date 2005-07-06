@@ -9,7 +9,9 @@ uses HARD_RESET_FUNCTION
 uses IRQ_SLOT_COUNT
 uses HAVE_OPTION_TABLE
 uses CONFIG_MAX_CPUS
+uses CONFIG_MAX_PHYSICAL_CPUS
 uses CONFIG_LOGICAL_CPUS
+uses SERIAL_CPU_INIT
 uses CONFIG_IOAPIC
 uses CONFIG_SMP
 uses FALLBACK_SIZE
@@ -33,8 +35,15 @@ uses LB_CKS_LOC
 uses MAINBOARD_PART_NUMBER
 uses MAINBOARD_VENDOR
 uses MAINBOARD
+uses MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+uses MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 uses LINUXBIOS_EXTRA_VERSION
 uses _RAMBASE
+uses CONFIG_GDB_STUB
+uses CROSS_COMPILE
+uses CC
+uses HOSTCC
+uses OBJCOPY
 uses TTYS0_BAUD
 uses TTYS0_BASE
 uses TTYS0_LCS
@@ -44,30 +53,34 @@ uses MAINBOARD_POWER_ON_AFTER_POWER_FAIL
 uses CONFIG_CONSOLE_SERIAL8250
 uses CONFIG_UDELAY_TSC
 uses CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
+uses CONFIG_CONSOLE_BTEXT
 uses HAVE_INIT_TIMER
 uses CONFIG_GDB_STUB
-uses CROSS_COMPILE
-uses CC
-uses HOSTCC
-uses OBJCOPY
 uses CONFIG_CHIP_NAME
+uses CONFIG_CONSOLE_VGA
+uses CONFIG_PCI_ROM_RUN
 
-###
-### Build options
-###
+uses USE_DCACHE_RAM
+uses DCACHE_RAM_BASE
+uses DCACHE_RAM_SIZE
+uses CONFIG_USE_INIT
 
-##
 ## ROM_SIZE is the size of boot ROM that this board will use.
-#512K bytes
-#default ROM_SIZE=524288
+#512K bytes 
+default ROM_SIZE=524288
 
 #1M bytes
-default ROM_SIZE=1048576
+#default ROM_SIZE=1048576
+
 
 ##
 ## FALLBACK_SIZE is the amount of the ROM the complete fallback image will use
 ##
 default FALLBACK_SIZE=131072
+
+###
+### Build options
+###
 
 ##
 ## Build code for the fallback boot
@@ -79,23 +92,21 @@ default HAVE_FALLBACK_BOOT=1
 ##
 default HAVE_HARD_RESET=1
 
-##
-## Funky hard reset implementation
-## 
-#default HARD_RESET_BUS=3
-#default HARD_RESET_DEVICE=4
-#default HARD_RESET_FUNCTION=0
+default HARD_RESET_BUS=1
+default HARD_RESET_DEVICE=4
+default HARD_RESET_FUNCTION=0
 
 ## Delay timer options
 ##
 default CONFIG_UDELAY_TSC=1
 default CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2=1
 
+
 ##
 ## Build code to export a programmable irq routing table
 ##
 default HAVE_PIRQ_TABLE=1
-default IRQ_SLOT_COUNT=15
+default IRQ_SLOT_COUNT=11
 
 ##
 ## Build code to export an x86 MP table
@@ -121,7 +132,27 @@ default LB_CKS_LOC=123
 ##
 default CONFIG_SMP=1
 default CONFIG_MAX_CPUS=4
+default CONFIG_MAX_PHYSICAL_CPUS=2
 default CONFIG_LOGICAL_CPUS=1
+
+default SERIAL_CPU_INIT=0
+
+#BTEXT Console
+#default CONFIG_CONSOLE_BTEXT=1
+
+#VGA Console
+#default CONFIG_CONSOLE_VGA=1
+#default CONFIG_PCI_ROM_RUN=1
+
+##
+## enable CACHE_AS_RAM specifics
+##
+default USE_DCACHE_RAM=1
+default DCACHE_RAM_BASE=0xF2000000
+#default DCACHE_RAM_BASE=0xcf000
+default DCACHE_RAM_SIZE=0x1000
+#default CONFIG_USE_INIT=1
+
 
 ##
 ## Build code to setup a generic IOAPIC
@@ -131,8 +162,10 @@ default CONFIG_IOAPIC=1
 ##
 ## Clean up the motherboard id strings
 ##
-default MAINBOARD_PART_NUMBER="Tyan"
-default MAINBOARD_VENDOR="s2735"
+default MAINBOARD_PART_NUMBER="s2735"
+default MAINBOARD_VENDOR="Tyan"
+default MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID=0x10f1
+default MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID=0x2735
 
 ###
 ### LinuxBIOS layout values

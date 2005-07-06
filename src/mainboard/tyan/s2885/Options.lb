@@ -57,6 +57,11 @@ uses CONFIG_CONSOLE_VGA
 uses CONFIG_PCI_ROM_RUN
 uses K8_E0_MEM_HOLE_SIZEK
 
+uses USE_DCACHE_RAM
+uses DCACHE_RAM_BASE
+uses DCACHE_RAM_SIZE
+uses CONFIG_USE_INIT
+
 ###
 ### Build options
 ###
@@ -131,6 +136,15 @@ default K8_E0_MEM_HOLE_SIZEK=0x100000
 default CONFIG_CONSOLE_VGA=1
 default CONFIG_PCI_ROM_RUN=1
 
+
+##
+## enable CACHE_AS_RAM specifics
+##
+default USE_DCACHE_RAM=1
+default DCACHE_RAM_BASE=0xcf000
+default DCACHE_RAM_SIZE=0x1000
+default CONFIG_USE_INIT=1
+
 ##
 ## Build code to setup a generic IOAPIC
 ##
@@ -139,8 +153,8 @@ default CONFIG_IOAPIC=1
 ##
 ## Clean up the motherboard id strings
 ##
-default MAINBOARD_PART_NUMBER="Tyan"
-default MAINBOARD_VENDOR="s2885"
+default MAINBOARD_PART_NUMBER="s2885"
+default MAINBOARD_VENDOR="Tyan"
 default MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID=0x10f1
 default MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID=0x2885
 

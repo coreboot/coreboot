@@ -19,6 +19,10 @@ static void setup_resource_map_x(const unsigned int *register_values, int max)
 #endif
 	for(i = 0; i < max; i += 4) {
 #if RES_DEBUG
+	#if CONFIG_USE_INIT
+                printk_debug("%04x: %02x %08x <- & %08x | %08x\r\n", 
+			i/4, register_values[i],register_values[i+1], register_values[i+2], register_values[i+3]);
+	#else		
                 print_debug_hex16(i/4);
                 print_debug(": ");
                 print_debug_hex8(register_values[i]);
@@ -29,6 +33,7 @@ static void setup_resource_map_x(const unsigned int *register_values, int max)
                 print_debug(" | ");
                 print_debug_hex32(register_values[i+3]);
                 print_debug("\r\n");
+	#endif
 #endif
 		switch (register_values[i]) {
 		case RES_PCI_IO: //PCI 

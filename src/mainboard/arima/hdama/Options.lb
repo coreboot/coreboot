@@ -53,6 +53,8 @@ uses OBJCOPY
 uses CONFIG_CONSOLE_VGA
 uses CONFIG_PCI_ROM_RUN
 
+uses CONFIG_USE_INIT
+
 ###
 ### Build options
 ###

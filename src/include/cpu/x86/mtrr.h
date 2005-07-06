@@ -32,7 +32,7 @@
 #define MTRRfix4K_F8000_MSR 0x26f
 
 
-#if !defined(__ROMCC__) && !defined(ASSEMBLY)
+#if !defined(__ROMCC__) && !defined (ASSEMBLY)
 
 void x86_setup_mtrrs(void);
 int x86_mtrr_check(void);

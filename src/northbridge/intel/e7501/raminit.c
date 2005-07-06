@@ -12,7 +12,7 @@
 
 /* converted to C 6/2004 yhlu */
 
-#define DEBUG_RAM_CONFIG 1
+#define DEBUG_RAM_CONFIG 0
 
 #define dumpnorth() dump_pci_device(PCI_DEV(0, 0, 0)) 
 
@@ -161,7 +161,7 @@ static const long register_values[] = {
 	 * 0x2e - 0x2f
 	 * [15:00] Subsystem ID
 	 */
-	 0x2c, 0, (0x15d9 << 0) | (0x3580 << 16),
+//	 0x2c, 0, (0x15d9 << 0) | (0x3580 << 16),
 
 	/* Undocumented
 	 * 0x80 - 0x80
@@ -185,6 +185,12 @@ static const long register_values[] = {
 #elif CAS_LATENCY == CAS_2_0
 //	0x80, 0xfffffe00, 0x0d /* values for register 0x80 */
 	0x80, 0xfffff000, 0x0bb1, /* values for register 0x80 */
+/*
+000 = HI_A Stop Grant generated after 1 Stop Grant
+001 = HI_A Stop Grant generated after 2 Stop Grant
+010 = HI_A Stop Grant generated after 3 Stop Grant
+011 = HI_A Stop Grant generated after 4 Stop Grant*/
+	0x50, 0xffff1fff, 0x00006000, 
 #endif
 
 	/* Enable periodic memory recalibration */
@@ -443,7 +449,7 @@ static const long register_values[] = {
 	0xe0, 0xffffffe2, (1<<4)|(1<<3)|(1<<2)|(0<<0),
 	0xd8, 0xffff9fff, 0x00000000,
 	0xf4, 0x3f8ffffd, 0x40300002,
-	0x1050, 0xffffffcf, 0x00000030,
+	0x1050, 0xffffffcf, 0x00000030, // d2f0
 };
 
 
@@ -497,6 +503,23 @@ static void write_8dwords(uint32_t src_addr, uint32_t dst_addr) {
 #else
 #define SLOW_DOWN_IO udelay(40);
 #endif
+
+        /* Estimate that SLOW_DOWN_IO takes about 50&76us*/
+        /* delay for 200us */
+
+#if 1
+static void do_delay(void)
+{
+        int i;
+        for(i = 0; i < 16; i++) { SLOW_DOWN_IO }
+}
+#define DO_DELAY do_delay();
+#else
+#define DO_DELAY \
+        udelay(200);
+#endif
+
+#define EXTRA_DELAY DO_DELAY
 
 static void ram_set_rcomp_regs(const struct mem_controller *ctrl) {
 	uint32_t dword;
@@ -563,7 +586,7 @@ static void ram_set_rcomp_regs(const struct mem_controller *ctrl) {
 }
 
 static void ram_set_d0f0_regs(const struct mem_controller *ctrl) {
-#if DEBUG_RAM_CONFIG >= 2
+#if DEBUG_RAM_CONFIG
 	dumpnorth();
 #endif
 	int i;
@@ -571,7 +594,7 @@ static void ram_set_d0f0_regs(const struct mem_controller *ctrl) {
         max = sizeof(register_values)/sizeof(register_values[0]);
         for(i = 0; i < max; i += 3) {
                 uint32_t reg;
-#if DEBUG_RAM_CONFIG >= 2
+#if DEBUG_RAM_CONFIG
                 print_debug_hex32(register_values[i]);
                 print_debug(" <-");
                 print_debug_hex32(register_values[i+2]);
@@ -584,7 +607,7 @@ static void ram_set_d0f0_regs(const struct mem_controller *ctrl) {
 
 
         }
-#if DEBUG_RAM_CONFIG >= 2
+#if DEBUG_RAM_CONFIG
 	dumpnorth();
 #endif
 }
@@ -875,7 +898,7 @@ static long spd_set_row_attributes(const struct mem_controller *ctrl, long dimm_
                  /* Test to see if I have ecc sdram */
 		struct dimm_page_size sz;
                 sz = sdram_spd_get_page_size(ctrl->channel0[i]);  /* SDRAM type */
-#if DEBUG_RAM_CONFIG>=2 
+#if DEBUG_RAM_CONFIG
 		print_debug("page size =");
 		print_debug_hex32(sz.side1);
 		print_debug(" ");
@@ -954,6 +977,7 @@ static long spd_set_row_attributes(const struct mem_controller *ctrl, long dimm_
 	return dimm_mask;
 
 }
+
 #define spd_pre_init  "Reading SPD data...\r\n"
 #define spd_pre_set "setting based on SPD data...\r\n"
 #define spd_post_init "done\r\n"
@@ -992,17 +1016,17 @@ static long spd_set_dram_controller_mode (const struct mem_controller *ctrl, lon
         /* Read the inititial state */
         dword = pci_read_config32(ctrl->d0, 0x7c);
 
-/*
-        // Test if ECC cmos option is enabled 
+#if 0
+        /* Test if ECC cmos option is enabled */
         movb    $RTC_BOOT_BYTE, %al
         outb    %al, $0x70
         inb     $0x71, %al
         testb   $(1<<2), %al
         jnz     1f
-        // Clear the ecc enable 
+        /* Clear the ecc enable */
         andl    $~(3 << 20), %esi
 1:
-*/
+#endif
 
 
         /* Walk through all dimms and find the interesection of the support
@@ -1184,7 +1208,7 @@ static long spd_set_cas_latency(const struct mem_controller *ctrl, long dimm_mas
 	/* After all of the arduous calculation setup with the fastest
 	 * cas latency I can use.
 	 */
-	value = __builtin_bsf(dword);  // bsrl = log2 how about bsfl?
+	value = log2f(dword);  // bsrl = log2 how about bsfl?
 	if(value ==0 ) return -1;
 	ecx = value -1;
 
@@ -1348,13 +1372,13 @@ static unsigned int spd_detect_dimms(const struct mem_controller *ctrl)
         unsigned dimm_mask;
         int i;  
         dimm_mask = 0;  
-#if DEBUG_RAM_CONFIG 
+#if DEBUG_RAM_CONFIG
 	print_debug("spd_detect_dimms:\r\n");
 #endif
         for(i = 0; i < DIMM_SOCKETS; i++) {
                 int byte;
                 unsigned device;
-#if DEBUG_RAM_CONFIG 
+#if DEBUG_RAM_CONFIG
 		print_debug_hex32(i);
 		print_debug("\r\n");
 #endif
@@ -1528,7 +1552,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl) {
 #if DEBUG_RAM_CONFIG
 	print_debug(spd_post_init);
 #endif
-	//moved from dram_post_init
+	DO_DELAY	
 	spd_set_ram_size(ctrl, dimm_mask);
 	        return;
  hw_spd_err:
@@ -1538,24 +1562,6 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl) {
         return;
 }
 
-
-#if 0
-static void ram_postinit(const struct mem_controller *ctrl) {
-#if DEBUG_RAM_CONFIG 
-	dumpnorth();
-#endif
-	/* Include a test to verify that memory is more or less working o.k. 
-  	 * This test is to catch programming errors and hardware that is out of
-	 * spec, not a test to see if the memory dimms are working 100%
-	 */
-//#	CALL_LABEL(verify_ram)
-	spd_set_ram_size(ctrl);
-}
-#define FIRST_NORMAL_REFERENCE() CALL_LABEL(ram_postinit)
-
-#define SPECIAL_FINISHUP()   CALL_LABEL(dram_finish)
-
-#endif
 
 #define ecc_pre_init	"Initializing ECC state...\r\n"
 #define ecc_post_init	"ECC state initialized.\r\n"
@@ -1569,7 +1575,7 @@ static void dram_finish(const struct mem_controller *ctrl)
 	dword &=3;
 	if(dword == 2)  {
 		
-#if DEBUG_RAM_CONFIG 	
+#if DEBUG_RAM_CONFIG	
 		print_debug(ecc_pre_init);
 #endif
 		/* Initialize ECC bits , use ECC zero mode (new to 7501)*/
@@ -1581,7 +1587,7 @@ static void dram_finish(const struct mem_controller *ctrl)
 		} while ( (byte & 0x08 ) == 0);
 
 		pci_write_config8(ctrl->d0, 0x52, byte & 0xfc);
-#if DEBUG_RAM_CONFIG 	
+#if DEBUG_RAM_CONFIG		
 		print_debug(ecc_post_init);	
 #endif
 
@@ -1600,7 +1606,7 @@ static void dram_finish(const struct mem_controller *ctrl)
 	pci_write_config32(ctrl->d0, 0x7c, dword);
 
 
-#if DEBUG_RAM_CONFIG >= 2
+#if DEBUG_RAM_CONFIG 
 	dumpnorth();
 #endif
 
@@ -1620,23 +1626,6 @@ static void dram_finish(const struct mem_controller *ctrl)
 #define ram_enable_10 	"Ram Enable 10\r\n"
 #define ram_enable_11 	"Ram Enable 11\r\n"
 #endif
-
-	/* Estimate that SLOW_DOWN_IO takes about 50&76us*/
-	/* delay for 200us */
-
-#if 1
-static void do_delay(void)
-{
-	int i;
-	for(i = 0; i < 16; i++) { SLOW_DOWN_IO }
-}
-#define DO_DELAY do_delay();
-#else
-#define DO_DELAY \
-	udelay(200);
-#endif		
-
-#define EXTRA_DELAY DO_DELAY
 
 static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 {
@@ -1737,15 +1726,12 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 #endif
 	RAM_NORMAL(ctrl);
 
-
-	// special from v1
-        //FIRST_NORMAL_REFERENCE();
-	//spd_set_ram_size(ctrl, 0x03);
-
+	EXTRA_DELAY
         /* Finally enable refresh */
         ENABLE_REFRESH(ctrl);
 
 	//SPECIAL_FINISHUP();
+	EXTRA_DELAY
 	dram_finish(ctrl);
 
 }

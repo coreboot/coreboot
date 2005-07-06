@@ -33,8 +33,7 @@ static inline void write32(unsigned long addr, uint32_t value)
 {
 	*((volatile uint32_t *)(addr)) = value;
 }
-
-
+#if 0
 typedef __builtin_div_t div_t;
 typedef __builtin_ldiv_t ldiv_t;
 typedef __builtin_udiv_t udiv_t;
@@ -71,6 +70,32 @@ inline int log2(int value)
 	 * the highest bit set.
 	 */
 	return __builtin_bsr(value);
+}
+#endif
+
+static inline int log2(int value)
+{
+        unsigned int r = 0;
+        __asm__ volatile (
+                "bsrl %1, %0\n\t"
+                "jnz 1f\n\t"
+                "movl $-1, %0\n\t"
+                "1:\n\t"
+                : "=r" (r) : "r" (value));
+        return r;
+
+}
+static inline int log2f(int value)
+{
+        unsigned int r = 0;
+        __asm__ volatile (
+                "bsfl %1, %0\n\t"
+                "jnz 1f\n\t"
+                "movl $-1, %0\n\t"
+                "1:\n\t"
+                : "=r" (r) : "r" (value));
+        return r;
+
 }
 
 #define PCI_ADDR(BUS, DEV, FN, WHERE) ( \

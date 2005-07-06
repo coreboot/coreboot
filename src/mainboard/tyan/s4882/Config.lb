@@ -16,6 +16,7 @@ end
 ##
 default PAYLOAD_SIZE            = ( ROM_SECTION_SIZE - ROM_IMAGE_SIZE )
 default CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+default CONFIG_ROM_STREAM     = 1
 
 ##
 ## Compute where this copy of linuxBIOS will start in the boot rom
@@ -34,6 +35,7 @@ default XIP_ROM_BASE = ( _ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE )
 
 arch i386 end 
 
+
 ##
 ## Build the objects we have code for in this directory.
 ##
@@ -42,39 +44,61 @@ driver mainboard.o
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
 #object reset.o
+if USE_DCACHE_RAM
 
-##
-## Romcc output
-##
-makerule ./failover.E
-        depends "$(MAINBOARD)/failover.c ./romcc"
-        action "./romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
-end
+	if CONFIG_USE_INIT
 
-makerule ./failover.inc
-        depends "$(MAINBOARD)/failover.c ./romcc"
-        action "./romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
-end
+		makerule ./auto.o
+        		depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
+	        	action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -o auto.o"
+		end
 
-makerule ./auto.E
-        depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
-        action  "./romcc -E -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
-end
-makerule ./auto.inc
-        depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
-        action  "./romcc    -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
-end
+	else
 
-##
-## Setup RAM
-##
-mainboardinit cpu/x86/fpu/enable_fpu.inc
-mainboardinit cpu/x86/mmx/enable_mmx.inc
-mainboardinit cpu/x86/sse/enable_sse.inc
-mainboardinit ./auto.inc
-mainboardinit cpu/x86/sse/disable_sse.inc
-mainboardinit cpu/x86/mmx/disable_mmx.inc
-mainboardinit arch/i386/lib/jmp_auto_out.inc
+		makerule ./auto.inc
+        		depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
+		        action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -S -o $@"
+        		action "perl -e 's/.rodata/.rom.data/g' -pi $@"
+		        action "perl -e 's/.text/.section .rom.text/g' -pi $@"
+			end
+	end
+else
+
+	##
+	## Romcc output
+	##
+	makerule ./failover.E
+        	depends "$(MAINBOARD)/failover.c ./romcc"
+	        action "./romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
+	end
+
+	makerule ./failover.inc
+	        depends "$(MAINBOARD)/failover.c ./romcc"
+        	action "./romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
+	end
+
+	makerule ./auto.E
+        	depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
+	        action  "./romcc -E -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+	end
+
+	makerule ./auto.inc
+        	depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
+	        action  "./romcc    -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+	end
+
+	##
+	## Setup RAM
+	##
+	mainboardinit cpu/x86/fpu/enable_fpu.inc
+	mainboardinit cpu/x86/mmx/enable_mmx.inc
+	mainboardinit cpu/x86/sse/enable_sse.inc
+	mainboardinit ./auto.inc
+	mainboardinit cpu/x86/sse/disable_sse.inc
+	mainboardinit cpu/x86/mmx/disable_mmx.inc
+	mainboardinit arch/i386/lib/jmp_auto_out.inc
+
+end
 
 ##
 ## Build our 16 bit and 32 bit linuxBIOS entry code
@@ -82,7 +106,16 @@ mainboardinit arch/i386/lib/jmp_auto_out.inc
 mainboardinit cpu/x86/16bit/entry16.inc
 mainboardinit cpu/x86/32bit/entry32.inc
 ldscript /cpu/x86/16bit/entry16.lds
-ldscript /cpu/x86/32bit/entry32.lds
+if USE_DCACHE_RAM
+        if CONFIG_USE_INIT
+                ldscript /cpu/x86/32bit/entry32.lds
+        end
+
+        if CONFIG_USE_INIT
+                ldscript /cpu/amd/car/cache_as_ram.lds
+        end
+end
+
 
 ##
 ## Build our reset vector (This is where linuxBIOS is entered)
@@ -95,8 +128,11 @@ else
 	ldscript /cpu/x86/32bit/reset32.lds 
 end
 
-### Should this be in the northbridge code?
-mainboardinit arch/i386/lib/cpu_reset.inc
+if USE_DCACHE_RAM
+else
+	### Should this be in the northbridge code?
+	mainboardinit arch/i386/lib/cpu_reset.inc
+end
 
 ##
 ## Include an id string (For safe flashing)
@@ -104,27 +140,51 @@ mainboardinit arch/i386/lib/cpu_reset.inc
 mainboardinit arch/i386/lib/id.inc
 ldscript /arch/i386/lib/id.lds
 
+
+if USE_DCACHE_RAM
+	##
+	## Setup Cache-As-Ram
+	##
+	mainboardinit cpu/amd/car/cache_as_ram.inc
+end
+
 ###
 ### This is the early phase of linuxBIOS startup 
 ### Things are delicate and we test to see if we should
 ### failover to another image.
 ###
 if USE_FALLBACK_IMAGE
-	ldscript /arch/i386/lib/failover.lds 
-	mainboardinit ./failover.inc
+	if USE_DCACHE_RAM
+		ldscript /arch/i386/lib/failover.lds
+	else
+       		ldscript /arch/i386/lib/failover.lds
+	        mainboardinit ./failover.inc
+	end
 end
 
-###
-### O.k. We aren't just an intermediary anymore!
-###
+##
+## Setup RAM
+##
+if USE_DCACHE_RAM
 
-mainboardinit arch/i386/lib/jmp_auto.inc
+	if CONFIG_USE_INIT
+		initobject auto.o
+	else
+		mainboardinit ./auto.inc
+	end
+
+else
+
+	# ROMCC
+	mainboardinit arch/i386/lib/jmp_auto.inc
+
+end
 
 ##
 ## Include the secondary Configuration files 
 ##
 if CONFIG_CHIP_NAME
-        config chip.h
+	config chip.h
 end
 
 # sample config for tyan/s4882

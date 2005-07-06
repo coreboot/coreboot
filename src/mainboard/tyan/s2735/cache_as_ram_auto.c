@@ -1,0 +1,343 @@
+#define ASSEMBLY 1
+#define __ROMCC__
+ 
+#include <stdint.h>
+#include <device/pci_def.h>
+#include <arch/io.h>
+#include <device/pnp_def.h>
+#include <arch/romcc_io.h>
+#include <cpu/x86/lapic.h>
+#include "option_table.h"
+#include "pc80/mc146818rtc_early.c"
+#include "pc80/serial.c"
+#include "arch/i386/lib/console.c"
+#include "ram/ramtest.c"
+
+#if 0
+static void post_code(uint8_t value) {
+#if 1
+        int i;
+        for(i=0;i<0x80000;i++) {
+                outb(value, 0x80);
+        }
+#endif
+}
+#endif
+
+#include "southbridge/intel/i82801er/i82801er_early_smbus.c"
+#include "northbridge/intel/e7501/raminit.h"
+
+#if CONFIG_USE_INIT == 0
+#include "lib/memcpy.c"
+#endif
+
+#include "cpu/x86/lapic/boot_cpu.c"
+#include "northbridge/intel/e7501/debug.c"
+#include "superio/winbond/w83627hf/w83627hf_early_serial.c"
+
+#include "cpu/x86/mtrr/earlymtrr.c"
+#include "cpu/x86/bist.h"
+
+#define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
+
+static void hard_reset(void)
+{
+        /* full reset */
+	outb(0x0a, 0x0cf9);
+        outb(0x0e, 0x0cf9);
+}
+
+static void soft_reset(void)
+{
+#if 1
+        /* link reset */
+	outb(0x02, 0x0cf9);
+        outb(0x06, 0x0cf9);
+#endif
+}
+
+static void memreset_setup(void)
+{
+}
+
+static void memreset(int controllers, const struct mem_controller *ctrl)
+{
+}
+
+static inline void activate_spd_rom(const struct mem_controller *ctrl)
+{
+	/* nothing to do */
+}
+
+static inline int spd_read_byte(unsigned device, unsigned address)
+{
+	return smbus_read_byte(device, address);
+}
+
+
+#include "northbridge/intel/e7501/raminit.c"
+#include "northbridge/intel/e7501/reset_test.c"
+#include "sdram/generic_sdram.c"
+
+
+#include "cpu/intel/car/copy_and_run.c"
+
+#if USE_FALLBACK_IMAGE == 1
+
+#include "southbridge/intel/i82801er/cmos_failover.c"
+
+void real_main(unsigned long bist);
+
+void amd64_main(unsigned long bist)
+{
+#if 1
+#if 0
+	unsigned cmos_result;
+	int i;
+	for(i=0;i<2;i++) {
+		cmos_result = cmos_read(0x10);
+		outb(cmos_result, 0x80);
+	}
+#endif
+__asm__ volatile (
+        "movl  $(DCACHE_RAM_BASE+DCACHE_RAM_SIZE-4), %esi\n\t"
+//        "movl    $(DCACHE_RAM_SIZE>>2), %ecx\n\t"
+        "movl $8, %ecx\n\t"
+".yin1x:\n\t"
+        "movl  %esi, %eax\n\t"
+
+        "movl    $0x2000, %edx\n\t"
+        "movb    %ah, %al\n\t"
+".testy1:\n\t"
+        "outb %al, $0x80\n\t"
+        "decl    %edx\n\t"
+        "jnz .testy1\n\t"
+
+        "movl  (%esi), %eax\n\t"
+        "cmpb 0xff, %al\n\t"
+        "je .yin2\n\t"
+
+        "movl    $0x2000, %edx\n\t"
+".testy2:\n\t"
+        "outb %al, $0x80\n\t"
+        "decl    %edx\n\t"
+        "jnz .testy2\n\t"
+
+".yin2:  decl     %ecx\n\t"
+        "je      .yout1x\n\t"
+        "sub     $4, %esi\n\t"
+        "jmp     .yin1x\n\t"
+".yout1x:\n\t"
+);
+#endif
+        /* Is this a deliberate reset by the bios */
+//        post_code(0x22);
+        if (bios_reset_detected() && last_boot_normal()) {
+                goto normal_image;
+        }
+        /* This is the primary cpu how should I boot? */
+        else {
+		check_cmos_failed();
+		if (do_normal_boot()) {
+        	        goto normal_image;
+	        }
+        	else {
+	                goto fallback_image;
+        	}
+	}
+ normal_image:
+//        post_code(0x23);
+        __asm__ volatile ("jmp __normal_image"
+                : /* outputs */
+                : "a" (bist) /* inputs */
+                );
+ cpu_reset:
+//        post_code(0x24);
+#if 0
+        //CPU reset will reset memtroller ???
+        asm volatile ("jmp __cpu_reset" 
+                : /* outputs */ 
+                : "a"(bist) /* inputs */
+                );
+#endif
+
+ fallback_image:
+//        post_code(0x25);
+        real_main(bist);
+}
+void real_main(unsigned long bist)
+#else
+void amd64_main(unsigned long bist)
+#endif
+{
+	static const struct mem_controller memctrl[] = {
+                {
+                        .d0 = PCI_DEV(0, 0, 0),
+                        .d0f1 = PCI_DEV(0, 0, 1),
+                        .channel0 = { (0xa<<3)|0, (0xa<<3)|1, (0xa<<3)|2, 0 },
+                        .channel1 = { (0xa<<3)|4, (0xa<<3)|5, (0xa<<3)|6, 0 },
+                },
+	};
+	
+	unsigned cpu_reset = 0;
+#if 1
+__asm__ volatile (
+        "movl  $(DCACHE_RAM_BASE+DCACHE_RAM_SIZE-4), %esi\n\t"
+//        "movl    $(DCACHE_RAM_SIZE>>2), %ecx\n\t"
+        "movl $8, %ecx\n\t"
+".zin1x:\n\t"
+        "movl  %esi, %eax\n\t"
+
+        "movl    $0x2000, %edx\n\t"
+        "movb    %ah, %al\n\t"
+".testz1:\n\t"
+        "outb %al, $0x80\n\t"
+        "decl    %edx\n\t"
+        "jnz .testz1\n\t"
+
+        "movl  (%esi), %eax\n\t"
+        "cmpb 0xff, %al\n\t"
+        "je .zin2\n\t"
+
+        "movl    $0x2000, %edx\n\t"
+".testz2:\n\t"
+        "outb %al, $0x80\n\t"
+        "decl    %edx\n\t"
+        "jnz .testz2\n\t"
+
+".zin2:  decl     %ecx\n\t"
+        "je      .zout1x\n\t"
+        "sub     $4, %esi\n\t"
+        "jmp     .zin1x\n\t"
+".zout1x:\n\t"
+);
+#endif
+
+       if (bist == 0) 
+	{
+//		early_mtrr_init();
+                enable_lapic();
+
+        }
+
+//	post_code(0x32);
+	
+ 	w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
+        uart_init();
+        console_init();
+
+	/* Halt if there was a built in self test failure */
+	report_bist_failure(bist);
+
+//        setup_s2735_resource_map();
+
+	if(bios_reset_detected()) {
+		cpu_reset = 1;
+		goto cpu_reset_x;
+	}
+
+	enable_smbus();
+#if 0
+	dump_spd_registers(&memctrl[0]);
+#endif
+#if 0
+	dump_smbus_registers();
+#endif
+
+	memreset_setup();
+	sdram_initialize(1, memctrl);
+
+#if 0
+	dump_pci_devices();
+#endif
+
+#if 1
+        dump_pci_device(PCI_DEV(0, 0, 0));
+#endif
+
+
+#if 1
+        {
+        	/* Check value of esp to verify if we have enough rom for stack in Cache as RAM */
+	        unsigned v_esp;
+	        __asm__ volatile (
+        	        "movl   %%esp, %0\n\t"
+	                : "=a" (v_esp)
+	        );
+#if CONFIG_USE_INIT
+	        printk_debug("v_esp=%08x\r\n", v_esp);
+#else
+	        print_debug("v_esp="); print_debug_hex32(v_esp); print_debug("\r\n");
+#endif
+        }
+
+#endif
+#if 1
+
+cpu_reset_x:
+
+#if CONFIG_USE_INIT
+        printk_debug("cpu_reset = %08x\r\n",cpu_reset);
+#else
+        print_debug("cpu_reset = "); print_debug_hex32(cpu_reset); print_debug("\r\n");
+#endif
+
+	if(cpu_reset == 0) {
+	        print_debug("Clearing initial memory region: ");
+	}
+	print_debug("No cache as ram now - ");
+
+	/* store cpu_reset to ebx */
+        __asm__ volatile (
+                "movl %0, %%ebx\n\t"
+                ::"a" (cpu_reset)
+        );
+
+	if(cpu_reset==0) {
+#define CLEAR_FIRST_1M_RAM 1
+#include "cpu/intel/car/cache_as_ram_post.c"
+	}
+	else {
+#undef CLEAR_FIRST_1M_RAM 
+#include "cpu/intel/car/cache_as_ram_post.c"
+	}
+
+	__asm__ volatile (
+                /* set new esp */ /* before _RAMBASE */
+                "movl   %0, %%ebp\n\t"
+                "movl   %0, %%esp\n\t"
+                ::"a"( _RAMBASE - 4 )
+	);
+
+	{
+		unsigned new_cpu_reset;
+
+		/* get back cpu_reset from ebx */
+		__asm__ volatile (
+			"movl %%ebx, %0\n\t"
+			:"=a" (new_cpu_reset)
+		);
+
+                /* We can not go back any more, we lost old stack data in cache as ram*/
+                if(new_cpu_reset==0) {
+                        print_debug("Use Ram as Stack now - done\r\n");
+                } else
+                {  
+                        print_debug("Use Ram as Stack now - \r\n");
+                }
+#if CONFIG_USE_INIT
+                printk_debug("new_cpu_reset = %08x\r\n", new_cpu_reset);
+#else
+                print_debug("new_cpu_reset = "); print_debug_hex32(new_cpu_reset); print_debug("\r\n");
+#endif
+	
+		/*copy and execute linuxbios_ram */
+		copy_and_run(new_cpu_reset);
+		/* We will not return */
+	}
+#endif
+
+
+	print_debug("should not be here -\r\n");
+
+}

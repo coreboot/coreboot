@@ -164,7 +164,7 @@ define CONFIG_CHIP_CONFIGURE
 end
 define CONFIG_USE_INIT
 	default 0
-	export used
+	export always
 	comment "Use stage 1 initialization code"
 end
 
@@ -270,7 +270,7 @@ define _RAMSTART
 end
 define USE_DCACHE_RAM
 	default 0
-	export used
+	export always
 	comment "Use data cache as temporary RAM if possible"
 end
 define DCACHE_RAM_BASE

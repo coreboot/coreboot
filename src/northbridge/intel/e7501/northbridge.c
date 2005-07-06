@@ -15,6 +15,7 @@ static void pci_domain_read_resources(device_t dev)
 
         /* Initialize the system wide io space constraints */
         resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
+	resource->base = 0x400; //yhlu
         resource->limit = 0xffffUL;
         resource->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 
@@ -187,4 +188,5 @@ static void enable_dev(struct device *dev)
 
 struct chip_operations northbridge_intel_e7501_ops = {
 	CHIP_NAME("Intel E7501 northbridge")
+	.enable_dev = enable_dev,
 };

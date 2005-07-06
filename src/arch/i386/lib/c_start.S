@@ -15,9 +15,10 @@ _start:
 	movl	%eax, %fs
 	movl	%eax, %gs
 
-	intel_chip_post_macro(0x13)		/* post 12 */
+	intel_chip_post_macro(0x13)		/* post 13 */
 
 	/** clear stack */
+	cld
 	leal	_stack, %edi
 	movl	$_estack, %ecx
 	subl	%edi, %ecx
@@ -80,7 +81,7 @@ _start:
 	call	hardwaremain
 	/*NOTREACHED*/
 .Lhlt:
-	intel_chip_post_macro(0xee)	/* post fe */
+	intel_chip_post_macro(0xee)	/* post ee */
 	hlt
 	jmp	.Lhlt
 	

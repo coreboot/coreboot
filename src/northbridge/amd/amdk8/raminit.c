@@ -31,10 +31,14 @@ static void setup_resource_map(const unsigned int *register_values, int max)
 		unsigned where;
 		unsigned long reg;
 #if 0
+	#if CONFIG_USE_INIT
+		prink_debug("%08x <- %08x\r\n", register_values[i], register_values[i+2]);
+	#else
 		print_debug_hex32(register_values[i]);
 		print_debug(" <-");
 		print_debug_hex32(register_values[i+2]);
 		print_debug("\r\n");
+	#endif
 #endif
 		dev = register_values[i] & ~0xff;
 		where = register_values[i] & 0xff;
@@ -538,10 +542,14 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 		unsigned where;
 		unsigned long reg;
 #if 0
+        #if CONFIG_USE_INIT
+                prink_debug("%08x <- %08x\r\n", register_values[i], register_values[i+2]);
+        #else
 		print_spew_hex32(register_values[i]);
 		print_spew(" <-");
 		print_spew_hex32(register_values[i+2]);
 		print_spew("\r\n");
+	#endif
 #endif
 		dev = (register_values[i] & ~0xff) - PCI_DEV(0, 0x18, 0) + ctrl->f0;
 		where = register_values[i] & 0xff;
@@ -1553,7 +1561,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 	/* Update DRAM Config High with our selected memory speed */
 	value = pci_read_config32(ctrl->f2, DRAM_CONFIG_HIGH);
 	value &= ~(DCH_MEMCLK_MASK << DCH_MEMCLK_SHIFT);
-#if 1
+#if 0
 	/* Improves DQS centering by correcting for case when core speed multiplier and MEMCLK speed result in odd clock divisor, by selecting the next lowest memory speed, required only at DDR400 and higher speeds with certain DIMM loadings ---- cheating???*/
 	if(!is_cpu_pre_e0()) {
 		if(min_cycle_time==0x50) {
@@ -2291,7 +2299,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		print_debug(" done\r\n");
 	}
 
-	//FIXME add enable node interleaving here --yhlu
+	//FIXME add enable node interleaving here -- yhlu
 	/*needed?
 		1. check how many nodes we have , if not all has ram installed get out
 		2. check cs_base lo is 0, node 0 f2 0x40,,,,, if any one is not using lo is CS_BASE, get out
@@ -2300,7 +2308,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		5. for node interleaving we need to set mem hole to every node ( need recalcute hole offset in f0 for every node)
 	*/
 
-
+#if CONFIG_DCACHE_RAM == 0
 	/* Make certain the first 1M of memory is intialized */
 	print_debug("Clearing initial memory region: ");
 
@@ -2314,4 +2322,5 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	cache_lbmem(MTRR_TYPE_WRBACK);
 	
 	print_debug(" done\r\n");
+#endif
 }

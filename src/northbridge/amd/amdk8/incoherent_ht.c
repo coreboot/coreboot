@@ -12,8 +12,12 @@
 
 static inline void print_linkn_in (const char *strval, uint8_t byteval)
 {
-#if 0
+#if 1
+#if CONFIG_USE_INIT
+        printk_debug("%s%02x\r\n", strval, byteval); 
+#else
         print_debug(strval); print_debug_hex8(byteval); print_debug("\r\n");
+#endif
 #endif
 }
 

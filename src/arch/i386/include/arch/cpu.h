@@ -104,7 +104,7 @@ static inline unsigned int cpuid_edx(unsigned int op)
 #define X86_VENDOR_SIS       10 
 #define X86_VENDOR_UNKNOWN 0xff
 
-#ifndef __ROMCC__
+#if !defined( __ROMCC__ ) && defined( __GNUC__)
 #include <device/device.h>
 
 

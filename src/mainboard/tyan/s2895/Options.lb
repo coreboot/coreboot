@@ -59,6 +59,11 @@ uses K8_E0_MEM_HOLE_SIZEK
 
 uses CK804_DEVN_BASE
 
+uses USE_DCACHE_RAM
+uses DCACHE_RAM_BASE
+uses DCACHE_RAM_SIZE
+uses CONFIG_USE_INIT
+
 ## ROM_SIZE is the size of boot ROM that this board will use.
 #512K bytes 
 default ROM_SIZE=524288
@@ -85,9 +90,9 @@ default HAVE_FALLBACK_BOOT=1
 ##
 default HAVE_HARD_RESET=1
 
-default HARD_RESET_BUS=1
-default HARD_RESET_DEVICE=4
-default HARD_RESET_FUNCTION=0
+#default HARD_RESET_BUS=1
+#default HARD_RESET_DEVICE=4
+#default HARD_RESET_FUNCTION=0
 
 ##
 ## Build code to export a programmable irq routing table
@@ -136,6 +141,14 @@ default CONFIG_CONSOLE_VGA=1
 default CONFIG_PCI_ROM_RUN=1
 
 ##
+## enable CACHE_AS_RAM specifics
+##
+default USE_DCACHE_RAM=1
+default DCACHE_RAM_BASE=0xcf000
+default DCACHE_RAM_SIZE=0x1000
+default CONFIG_USE_INIT=1
+
+##
 ## Build code to setup a generic IOAPIC
 ##
 default CONFIG_IOAPIC=1
@@ -143,8 +156,8 @@ default CONFIG_IOAPIC=1
 ##
 ## Clean up the motherboard id strings
 ##
-default MAINBOARD_PART_NUMBER="Tyan"
-default MAINBOARD_VENDOR="s2895"
+default MAINBOARD_PART_NUMBER="s2895"
+default MAINBOARD_VENDOR="Tyan"
 default MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID=0x10f1
 default MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID=0x2895
 
@@ -233,7 +246,7 @@ default TTYS0_LCS=0x3
 ## SPEW       9   Way too many details             
 
 ## Request this level of debugging output
-default  DEFAULT_CONSOLE_LOGLEVEL=7
+default  DEFAULT_CONSOLE_LOGLEVEL=8
 ## At a maximum only compile in this level of debugging
 default  MAXIMUM_CONSOLE_LOGLEVEL=8
 

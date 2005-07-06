@@ -56,6 +56,8 @@ uses CONFIG_CONSOLE_VGA
 uses CONFIG_PCI_ROM_RUN
 uses K8_E0_MEM_HOLE_SIZEK
 
+uses CONFIG_USE_INIT
+
 ###
 ### Build options
 ###
@@ -135,8 +137,8 @@ default CONFIG_IOAPIC=1
 ##
 ## Clean up the motherboard id strings
 ##
-default MAINBOARD_PART_NUMBER="Tyan"
-default MAINBOARD_VENDOR="s2880"
+default MAINBOARD_PART_NUMBER="s2880"
+default MAINBOARD_VENDOR="Tyan"
 default MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID=0x10f1
 default MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID=0x2880
 

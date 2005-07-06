@@ -14,7 +14,8 @@ romimage "normal"
 #       64K for Etherboot
 #        option ROM_SIZE = 458752 
 	option USE_FALLBACK_IMAGE=0
-	option ROM_IMAGE_SIZE=0x10000
+        option ROM_IMAGE_SIZE=0x11800
+        option XIP_ROM_SIZE=0x20000
 	option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
 #       payload ../../../payloads/tg3--ide_disk.zelf
 #        payload ../../../payloads/filo.elf
@@ -28,7 +29,8 @@ end
 
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
-	option ROM_IMAGE_SIZE=0x10000
+        option ROM_IMAGE_SIZE=0x11800
+        option XIP_ROM_SIZE=0x20000
 	option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Fallback"
 #       payload ../../../payloads/tg3--ide_disk.zelf
 #        payload ../../../payloads/filo.elf

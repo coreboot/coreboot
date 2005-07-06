@@ -1,6 +1,6 @@
 #include <cpu/x86/msr.h>
 
-int boot_cpu(void)
+static int boot_cpu(void)
 {
 	int bsp;
 	msr_t msr;

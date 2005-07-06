@@ -2,9 +2,6 @@
 
 #include <stdint.h>
 #include <device/pci_def.h>
-#if 0
-#include <cpu/x86/lapic.h>
-#endif
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
@@ -21,7 +18,7 @@
 void udelay(int usecs) 
 {
 	int i;
-	for(i = 0; i < usecs; i++)
+	for (i = 0; i < usecs; i++)
 		outb(i&0xff, 0x80);
 }
 
@@ -30,26 +27,14 @@ void udelay(int usecs)
 #include "debug.c"
 
 #include "southbridge/via/vt8231/vt8231_early_smbus.c"
-
-
 #include "southbridge/via/vt8231/vt8231_early_serial.c"
-static void memreset_setup(void)
-{
-}
 
-/*
-  static void memreset(int controllers, const struct mem_controller *ctrl)
-  {
-  }
-*/
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
 	unsigned char c;
 	c = smbus_read_byte(device, address);
 	return c;
 }
-
-
 
 #include "northbridge/via/vt8601/raminit.c"
 /*
@@ -66,6 +51,7 @@ static void enable_mainboard_devices(void)
 	if (dev == PCI_DEV_INVALID) {
 		die("Southbridge not found!!!\n");
 	}
+
 	pci_write_config8(dev, 0x50, 7);
 	pci_write_config8(dev, 0x51, 0xff);
 #if 0
@@ -87,9 +73,9 @@ static void enable_mainboard_devices(void)
 
 static void enable_shadow_ram(void) 
 {
-	device_t dev = 0; /* no need to look up 0:0.0 */
+	device_t dev = 0;
 	unsigned char shadowreg;
-	/* dev 0 for southbridge */
+
 	shadowreg = pci_read_config8(dev, 0x63);
 	/* 0xf0000-0xfffff */
 	shadowreg |= 0x30;
@@ -113,8 +99,8 @@ static void main(unsigned long bist)
 	enable_mainboard_devices();
 	enable_smbus();
 	enable_shadow_ram();
+
 	/*
-	  memreset_setup();
 	  this is way more generic than we need.
 	  sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
 	*/

@@ -35,9 +35,9 @@ static void print_mem(void)
 static void print_pci_regs_all(void)
 {
         struct device *dev;
-	unsigned char bus, device, function;
+	unsigned bus, device, function;
 
-	for(bus=0; bus<=256; bus++) {
+	for(bus=0; bus<256; bus++) {
 		for(device=0; device<=0x1f; device++) {
 			for (function=0; function<=7; function++){
 				unsigned devfn;

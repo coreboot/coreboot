@@ -36,4 +36,6 @@ struct  pci_data {
 extern struct rom_header * pci_rom_probe(struct device *dev);
 extern struct rom_header *pci_rom_load(struct device *dev, struct rom_header *rom_header);
 
+extern void pci_dev_init(struct device *dev);
+
 #endif

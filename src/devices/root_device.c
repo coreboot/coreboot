@@ -89,6 +89,8 @@ unsigned int scan_static_bus(device_t root, unsigned int max)
 			if (child->ops && child->ops->enable) {
 				child->ops->enable(child);
 			}
+			if (child->path.type == DEVICE_PATH_I2C)	
+				printk_debug("smbus: %s[%d]->",  dev_path(child->bus->dev), child->bus->link );
 			printk_debug("%s %s\n", dev_path(child),
 				     child->enabled?"enabled": "disabled");
 		}

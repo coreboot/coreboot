@@ -10,15 +10,15 @@ struct rom_header * pci_rom_probe(struct device *dev)
 	struct rom_header *rom_header;
 	struct pci_data *rom_data;
 
-	rom_address = pci_read_config32(dev, PCI_ROM_ADDRESS);
+        if (dev->on_mainboard) {
+                // in case some device PCI_ROM_ADDRESS can not be set or readonly 
+		rom_address = dev->rom_address;
+        } else {
+		rom_address = pci_read_config32(dev, PCI_ROM_ADDRESS);
+	}
 
 	if (rom_address == 0x00000000 || rom_address == 0xffffffff) {
-		if (dev->on_mainboard && (dev->rom_address!=0) ) {
-			// in case some device PCI_ROM_ADDRESS can not be set 
-			rom_address = dev->rom_address;
-		} else {
-			return NULL;
-		}
+		return NULL;
 	}
 
 	printk_debug("rom address for %s = %x\n", dev_path(dev), rom_address);
@@ -71,16 +71,25 @@ struct rom_header *pci_rom_load(struct device *dev, struct rom_header *rom_heade
 	struct pci_data * rom_data;
 	unsigned long rom_address;
 	unsigned int rom_size;
+	unsigned int image_size=0;
 
 	rom_address = pci_read_config32(dev, PCI_ROM_ADDRESS);
-	rom_data = (unsigned char *) rom_header + le32_to_cpu(rom_header->data);
-	rom_size = rom_header->size*512;
+
+	do {
+		rom_header = (unsigned char *) rom_header + image_size; // get next image
+	        rom_data = (unsigned char *) rom_header + le32_to_cpu(rom_header->data);
+        	image_size = le32_to_cpu(rom_data->ilen) * 512;
+	} while ((rom_data->type!=0) && (rom_data->indicator!=0));  // make sure we got x86 version
+
+	if(rom_data->type!=0) return NULL;
+
+	rom_size = rom_header->size * 512;
 
 	if (PCI_CLASS_DISPLAY_VGA == rom_data->class_hi) {
 #if CONFIG_CONSOLE_VGA == 1
 		if (dev != vga_pri) return NULL; // only one VGA supported
-		printk_spew("%s, copying VGA ROM Image from %x to %x, %x bytes\n",
-			    __func__, rom_header, PCI_VGA_RAM_IMAGE_START, rom_size);
+		printk_debug("copying VGA ROM Image from %x to %x, %x bytes\n",
+			    rom_header, PCI_VGA_RAM_IMAGE_START, rom_size);
 		memcpy(PCI_VGA_RAM_IMAGE_START, rom_header, rom_size);
 		vga_inited = 1;
 		return (struct rom_header *) (PCI_VGA_RAM_IMAGE_START);

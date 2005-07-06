@@ -16,7 +16,7 @@ int pcibios_handler()
 	case PCI_BIOS_PRESENT:
 		X86_AH	= 0x00;		/* no config space/special cycle support */
 		X86_AL	= 0x01;		/* config mechanism 1 */
-		X86_EDX = 'P' | 'C' << 8 | 'I' | ' ' << 24;
+		X86_EDX = 'P' | 'C' << 8 | 'I' << 16 | ' ' << 24;
 		X86_EBX = 0x0210;	/* Version 2.10 */
 		X86_ECX = 0xFF00;	/* FixME: Max bus number */
 		X86_EFLAGS &= ~FB_CF;	/* clear carry flag */

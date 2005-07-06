@@ -613,10 +613,13 @@ void dev_initialize(void)
 	struct device *dev;
 
 	printk_info("Initializing devices...\n");
+
         for (dev = all_devices; dev; dev = dev->next) {
                 if (dev->enabled && !dev->initialized &&
                         dev->ops && dev->ops->init)
                 {
+			if(dev->path.type == DEVICE_PATH_I2C)
+				printk_debug("smbus: %s[%d]->",  dev_path(dev->bus->dev), dev->bus->link );
                         printk_debug("%s init\n", dev_path(dev));
                         dev->initialized = 1;
                         dev->ops->init(dev);

@@ -199,6 +199,8 @@ chip northbridge/amd/amdk8/root_complex
 					end
 					device pci 1.5 off end
 					device pci 1.6 on end
+                                        register "ide0_enable" = "1"
+                                        register "ide1_enable" = "1"
 				end
 			end #  device pci 18.0 
 			

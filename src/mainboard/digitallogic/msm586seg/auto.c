@@ -55,9 +55,11 @@ static void main(unsigned long bist)
 	};
 */
 
+/*
 	if (bist == 0) {
 		early_mtrr_init();
 	}
+ */
         
         uart_init();
         console_init();

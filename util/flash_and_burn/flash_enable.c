@@ -249,6 +249,41 @@ static int enable_flash_amd8111(struct pci_dev *dev, char *name)
 	return 0;
 }
 
+//By yhlu
+static int enable_flash_ck804(struct pci_dev *dev, char *name)
+{
+        /* register 4e.b gets or'ed with one */
+        unsigned char old, new;
+        /* if it fails, it fails. There are so many variations of broken mobos
+         * that it is hard to argue that we should quit at this point. 
+         */
+
+        //dump_pci_device(dev); 
+        
+        old = pci_read_byte(dev, 0x88);
+        new = old | 0xc0;
+        if (new != old) {
+                pci_write_byte(dev, 0x88, new);
+                if (pci_read_byte(dev, 0x88) != new) {
+                        printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
+                               0x88, new, name);
+                }
+        }
+
+        old = pci_read_byte(dev, 0x6d);
+        new = old | 0x01;
+        if (new == old)
+                return 0;
+        pci_write_byte(dev, 0x6d, new);
+
+        if (pci_read_byte(dev, 0x6d) != new) {
+                printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
+                       0x6d, new, name);
+                return -1;
+        }
+        return 0;
+}
+
 typedef struct penable {
 	unsigned short vendor, device;
 	char *name;
@@ -265,6 +300,9 @@ static FLASH_ENABLE enables[] = {
 	{0x100b, 0x0510, "SC1100", enable_flash_sc1100},
 	{0x1039, 0x0008, "SIS5595", enable_flash_sis5595},
 	{0x1022, 0x7468, "AMD8111", enable_flash_amd8111},
+        {0x10de, 0x0050, "NVIDIA CK804", enable_flash_ck804}, // LPC
+        {0x10de, 0x0051, "NVIDIA CK804", enable_flash_ck804}, // Pro
+        {0x10de, 0x00d3, "NVIDIA CK804", enable_flash_ck804}, // Slave, should not be here, to fix known bug for A01.
 };
 
 int enable_flash_write()

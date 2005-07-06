@@ -832,6 +832,7 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned min_devfn, unsigned max_devf
 						dev_path(dev));
 					dev->enabled = 0;
 				}
+				continue;
 			}
 		}
 		/* Read the rest of the pci configuration information */

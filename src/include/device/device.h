@@ -117,6 +117,8 @@ device_t alloc_find_dev(struct bus *parent, struct device_path *path);
 device_t dev_find_device (unsigned int vendor, unsigned int device, device_t from);
 device_t dev_find_class (unsigned int class, device_t from);
 device_t dev_find_slot (unsigned int bus, unsigned int devfn);
+device_t dev_find_slot_on_smbus (unsigned int bus, unsigned int addr);
+
 
 /* Rounding for boundaries. 
  * Due to some chip bugs, go ahead and roung IO to 16

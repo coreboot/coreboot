@@ -6,9 +6,15 @@
 #include <device/pci_ids.h>
 #include <device/hypertransport_def.h>
 
+#ifndef K8_HT_FREQ_1G_SUPPORT
+        #define K8_HT_FREQ_1G_SUPPORT 0
+#endif
+
 static inline void print_linkn_in (const char *strval, uint8_t byteval)
 {
+#if 0
         print_debug(strval); print_debug_hex8(byteval); print_debug("\r\n");
+#endif
 }
 
 static uint8_t ht_lookup_slave_capability(device_t dev)
@@ -70,6 +76,15 @@ static void ht_collapse_previous_enumeration(uint8_t bus)
 		    (id == 0x0000ffff) || (id == 0xffff0000)) {
 			continue;
 		}
+#if 0
+#if CK804_DEVN_BASE==0 
+                //CK804 workaround: 
+                // CK804 UnitID changes not use
+                if(id == 0x005e10de) {
+                        break;
+                }
+#endif
+#endif
 		
 		pos = ht_lookup_slave_capability(dev);
 		if (!pos) {
@@ -97,15 +112,20 @@ static uint16_t ht_read_freq_cap(device_t dev, uint8_t pos)
 	/* AMD 8131 Errata 48 */
 	if (id == (PCI_VENDOR_ID_AMD | (PCI_DEVICE_ID_AMD_8131_PCIX << 16))) {
 		freq_cap &= ~(1 << HT_FREQ_800Mhz);
-	}
+		return freq_cap;
+	} 
+
 	/* AMD 8151 Errata 23 */
 	if (id == (PCI_VENDOR_ID_AMD | (PCI_DEVICE_ID_AMD_8151_SYSCTRL << 16))) {
 		freq_cap &= ~(1 << HT_FREQ_800Mhz);
-	}
+		return freq_cap;
+	} 
+	
 	/* AMD K8 Unsupported 1Ghz? */
 	if (id == (PCI_VENDOR_ID_AMD | (0x1100 << 16))) {
-		freq_cap &= ~(1 << HT_FREQ_1000Mhz);
+                        freq_cap &= ~(1 << HT_FREQ_1000Mhz);
 	}
+
 	return freq_cap;
 }
 
@@ -208,7 +228,7 @@ static int ht_setup_chain(device_t udev, uint8_t upos)
 	 * non Coherent links the appropriate bus registers for the
 	 * links needs to be programed to point at bus 0.
 	 */
-	unsigned next_unitid, last_unitid;
+	uint8_t next_unitid, last_unitid;
 	int reset_needed;
 	unsigned uoffs;
 
@@ -221,7 +241,8 @@ static int ht_setup_chain(device_t udev, uint8_t upos)
 	do {
 		uint32_t id;
 		uint8_t pos;
-		uint16_t flags, count;
+		uint16_t flags;
+		uint8_t count;
 		unsigned offs;
 
 		device_t dev = PCI_DEV(0, 0, 0);
@@ -240,6 +261,12 @@ static int ht_setup_chain(device_t udev, uint8_t upos)
 			print_err("HT link capability not found\r\n");
 			break;
 		}
+#if CK804_DEVN_BASE==0 
+                //CK804 workaround: 
+                // CK804 UnitID changes not use
+                id = pci_read_config32(dev, PCI_VENDOR_ID);
+                if(id != 0x005e10de) {
+#endif
 
                 /* Update the Unitid of the current device */
                 flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
@@ -248,24 +275,35 @@ static int ht_setup_chain(device_t udev, uint8_t upos)
                 pci_write_config16(dev, pos + PCI_CAP_FLAGS, flags);
 
                 dev = PCI_DEV(0, next_unitid, 0);
+#if CK804_DEVN_BASE==0  
+                }
+                else {
+                        dev = PCI_DEV(0, 0, 0);
+                }
+#endif
 
                 /* Compute the number of unitids consumed */
                 count = (flags >> 5) & 0x1f;
                 next_unitid += count;
-        
+
                 /* get ht direction */
                 flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS); // double read ??
-                
+
                 offs = ((flags>>10) & 1) ? PCI_HT_SLAVE1_OFFS : PCI_HT_SLAVE0_OFFS;
 
                 /* Setup the Hypertransport link */
                 reset_needed |= ht_optimize_link(udev, upos, uoffs, dev, pos, offs);
 
-                /* Remeber the location of the last device */
-                udev = dev;
-                upos = pos;
-                uoffs = (offs != PCI_HT_SLAVE0_OFFS) ? PCI_HT_SLAVE0_OFFS : PCI_HT_SLAVE1_OFFS;
+#if CK804_DEVN_BASE==0
+                if(id == 0x005e10de) {
+                        break;
+                }
+#endif
 
+		/* Remeber the location of the last device */
+		udev = dev;
+		upos = pos;
+		uoffs = (offs != PCI_HT_SLAVE0_OFFS) ? PCI_HT_SLAVE0_OFFS : PCI_HT_SLAVE1_OFFS;
 
 	} while((last_unitid != next_unitid) && (next_unitid <= 0x1f));
 	return reset_needed;
@@ -273,7 +311,7 @@ static int ht_setup_chain(device_t udev, uint8_t upos)
 
 static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus)
 {
-	unsigned next_unitid, last_unitid;
+	uint8_t next_unitid, last_unitid;
 	unsigned uoffs;
 	int reset_needed=0;
 
@@ -283,13 +321,15 @@ static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus)
 	do {
 		uint32_t id;
 		uint8_t pos;
-		uint16_t flags, count;
+		uint16_t flags;
+		uint8_t count;
 		unsigned offs;
 		
 		device_t dev = PCI_DEV(bus, 0, 0);
 		last_unitid = next_unitid;
 
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
+
 		/* If the chain is enumerated quit */
 		if (((id & 0xffff) == 0x0000) || ((id & 0xffff) == 0xffff) ||
 		    (((id >> 16) & 0xffff) == 0xffff) ||
@@ -299,34 +339,53 @@ static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus)
 
 		pos = ht_lookup_slave_capability(dev);
 		if (!pos) {
-			print_err("HT link capability not found\r\n");
+			print_err(" HT link capability not found\r\n");
 			break;
 		}
 
-                /* Update the Unitid of the current device */
-                flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
-                flags &= ~0x1f; /* mask out the bse Unit ID */
-                flags |= next_unitid & 0x1f;
-                pci_write_config16(dev, pos + PCI_CAP_FLAGS, flags);
+#if CK804_DEVN_BASE==0 
+                //CK804 workaround: 
+                // CK804 UnitID changes not use
+		id = pci_read_config32(dev, PCI_VENDOR_ID);
+                if(id != 0x005e10de) {
+#endif
 
-                dev = PCI_DEV(bus, next_unitid, 0);
+		/* Update the Unitid of the current device */
+		flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
+		flags &= ~0x1f; /* mask out the bse Unit ID */
+		flags |= next_unitid & 0x1f;
+		pci_write_config16(dev, pos + PCI_CAP_FLAGS, flags);
+
+		dev = PCI_DEV(bus, next_unitid, 0);
+#if CK804_DEVN_BASE==0	
+		} 
+		else {
+			dev = PCI_DEV(bus, 0, 0);
+		}
+#endif
 
                 /* Compute the number of unitids consumed */
                 count = (flags >> 5) & 0x1f;
                 next_unitid += count;
 
                 /* get ht direction */
-                flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS); // double read ??
+		flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS); // double read ??
 
                 offs = ((flags>>10) & 1) ? PCI_HT_SLAVE1_OFFS : PCI_HT_SLAVE0_OFFS;
-
+                
                 /* Setup the Hypertransport link */
                 reset_needed |= ht_optimize_link(udev, upos, uoffs, dev, pos, offs);
 
-                /* Remeber the location of the last device */
-                udev = dev;
-                upos = pos;
-                uoffs = ( offs != PCI_HT_SLAVE0_OFFS ) ? PCI_HT_SLAVE0_OFFS : PCI_HT_SLAVE1_OFFS;
+#if CK804_DEVN_BASE==0
+		if(id == 0x005e10de) {
+			break;
+		}
+#endif
+
+		/* Remeber the location of the last device */
+		udev = dev;
+		upos = pos;
+		uoffs = ( offs != PCI_HT_SLAVE0_OFFS ) ? PCI_HT_SLAVE0_OFFS : PCI_HT_SLAVE1_OFFS;
 
 	} while((last_unitid != next_unitid) && (next_unitid <= 0x1f));
 	return reset_needed;

@@ -200,6 +200,16 @@ static void ht_collapse_early_enumeration(struct bus *bus)
 			continue;
 		}
 
+#if 0
+#if CK804_DEVN_BASE==0		
+                //CK804 workaround: 
+                // CK804 UnitID changes not use
+                if(id == 0x005e10de) {
+                        break;
+                }
+#endif
+#endif
+
 		dummy.vendor = id & 0xffff;
 		dummy.device = (id >> 16) & 0xffff;
 		dummy.hdr_type = pci_read_config8(&dummy, PCI_HEADER_TYPE);
@@ -312,8 +322,17 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int max)
 		/* Update the Unitid of the current device */
 		flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
 		flags &= ~0x1f; /* mask out base Unit ID */
-		flags |= next_unitid & 0x1f;
-		pci_write_config16(dev, pos + PCI_CAP_FLAGS, flags);
+#if CK804_DEVN_BASE==0  
+	        if(id == 0x005e10de) {
+			next_unitid = 0;
+		} 
+		else {
+#endif
+			flags |= next_unitid & 0x1f;
+			pci_write_config16(dev, pos + PCI_CAP_FLAGS, flags);
+#if CK804_DEVN_BASE==0 
+		}
+#endif
 
 		/* Update the Unitd id in the device structure */
 		static_count = 1;
@@ -354,6 +373,11 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int max)
 			dev_path(dev),
 			dev->vendor, dev->device, 
 			(dev->enabled? "enabled": "disabled"), next_unitid);
+#if CK804_DEVN_BASE==0 
+	 	if(id == 0x005e10de) {
+			break; // CK804 can not change unitid, so it only can be alone in the link
+		}
+#endif
 
 	} while((last_unitid != next_unitid) && (next_unitid <= 0x1f));
 

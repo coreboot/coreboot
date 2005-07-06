@@ -113,7 +113,7 @@ void do_int(int num)
 {
 	int ret = 0;
 
-	printk_debug("int%x vector at %x\n", num, getIntVect(num));
+//	printk_debug("int%x vector at %x\n", num, getIntVect(num));
 
 	switch (num) {
 #ifndef _PC
@@ -154,6 +154,7 @@ void do_int(int num)
 		ret = run_bios_int(num);
 
 }
+#if 0
 #define SYS_BIOS 0xf0000
 /*
  * here we are really paranoid about faking a "real"
@@ -270,7 +271,7 @@ void reset_int_vect(void)
 	MEM_WW(0x6D << 2, 0xf065);
 	MEM_WW((0x6D << 2) + 2, SYS_BIOS >> 4);
 }
-
+#endif
 void run_bios(struct device * dev, unsigned long addr)
 {
 #if 1
@@ -322,7 +323,7 @@ void run_bios(struct device * dev, unsigned long addr)
 	pushw(X86_SS);
 	pushw(X86_SP + 2);
 
-	//X86EMU_trace_on();
+//	X86EMU_trace_on();
 
 	X86EMU_exec();
 #endif

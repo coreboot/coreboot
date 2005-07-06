@@ -64,6 +64,29 @@ struct device *dev_find_slot(unsigned int bus, unsigned int devfn)
 	return result;
 }
 
+/**
+ * @brief Given a smbus bus and a device number, find the device structure
+ *
+ * @param bus The bus number
+ * @param addr a device number 
+ * @return pointer to the device structure
+ */
+struct device *dev_find_slot_on_smbus(unsigned int bus, unsigned int addr)
+{
+        struct device *dev, *result;
+        
+        result = 0;
+        for (dev = all_devices; dev; dev = dev->next) {
+                if ((dev->path.type == DEVICE_PATH_I2C) &&
+                        (dev->bus->secondary == bus) && 
+                        (dev->path.u.i2c.device == addr)) {
+                        result = dev;
+                        break; 
+                }       
+        }       
+        return result;
+}    
+
 /** Find a device of a given vendor and type
  * @param vendor Vendor ID (e.g. 0x8086 for Intel)
  * @param device Device ID
@@ -125,7 +148,8 @@ const char *dev_path(device_t dev)
 				dev->path.u.pnp.port, dev->path.u.pnp.device);
 			break;
 		case DEVICE_PATH_I2C:
-			sprintf(buffer, "I2C: %02x",
+			sprintf(buffer, "I2C: %02x:%02x",
+				dev->bus->secondary,
 				dev->path.u.i2c.device);
 			break;
 		case DEVICE_PATH_APIC:

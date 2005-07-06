@@ -763,11 +763,18 @@ define AGP_APERTURE_SIZE
 	comment "AGP graphics virtual memory aperture size"
 end
 
-define CONFIG_PCI_ROM_RUN
-        default 0
-        export always
-        comment "Init PCI device option rom"
+define CK804_DEVN_BASE
+	default 1
+	export always
+	comment "CK804 device count from 0 or 1"
 end
+
+define CONFIG_PCI_ROM_RUN
+	default 0
+	export always
+	comment "Init PCI device option rom"
+end
+
 
 ###############################################
 # Board specific options

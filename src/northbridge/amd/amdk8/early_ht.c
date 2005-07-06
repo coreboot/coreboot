@@ -7,6 +7,7 @@ static int enumerate_ht_chain(void)
 	 */
 	unsigned next_unitid, last_unitid;
 	int reset_needed = 0;
+
 	next_unitid = 1;
 	do {
 		uint32_t id;
@@ -16,18 +17,25 @@ static int enumerate_ht_chain(void)
 		id = pci_read_config32(PCI_DEV(0,0,0), PCI_VENDOR_ID);
 		/* If the chain is enumerated quit */
 		if (((id & 0xffff) == 0x0000) || ((id & 0xffff) == 0xffff) ||
-			(((id >> 16) & 0xffff) == 0xffff) ||
-			(((id >> 16) & 0xffff) == 0x0000)) 
-		{
+		    (((id >> 16) & 0xffff) == 0xffff) ||
+		    (((id >> 16) & 0xffff) == 0x0000)) {
 			break;
 		}
+
+#if CK804_DEVN_BASE==0 
+                //CK804 workaround: 
+                // CK804 UnitID changes not use
+                if(id == 0x005e10de) {
+                        break;
+                }
+#endif
+
 		hdr_type = pci_read_config8(PCI_DEV(0,0,0), PCI_HEADER_TYPE);
 		pos = 0;
 		hdr_type &= 0x7f;
 
 		if ((hdr_type == PCI_HEADER_TYPE_NORMAL) ||
-			(hdr_type == PCI_HEADER_TYPE_BRIDGE)) 
-		{
+		    (hdr_type == PCI_HEADER_TYPE_BRIDGE)) {
 			pos = pci_read_config8(PCI_DEV(0,0,0), PCI_CAPABILITY_LIST);
 		}
 		while(pos != 0) {
@@ -38,17 +46,22 @@ static int enumerate_ht_chain(void)
 				flags = pci_read_config16(PCI_DEV(0,0,0), pos + PCI_CAP_FLAGS);
 				if ((flags >> 13) == 0) {
 					unsigned count;
+
 					flags &= ~0x1f;
 					flags |= next_unitid & 0x1f;
 					count = (flags >> 5) & 0x1f;
+					
 					pci_write_config16(PCI_DEV(0, 0, 0), pos + PCI_CAP_FLAGS, flags);
+
 					next_unitid += count;
 					break;
 				}
 			}
 			pos = pci_read_config8(PCI_DEV(0, 0, 0), pos + PCI_CAP_LIST_NEXT);
 		}
-	} while((last_unitid != next_unitid) && (next_unitid <= 0x1f));
+	} while((last_unitid != next_unitid) && (next_unitid <= 0x1f));  
+	
+
 	return reset_needed;
 }
 

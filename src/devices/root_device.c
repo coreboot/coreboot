@@ -74,6 +74,7 @@ void root_dev_set_resources(device_t root)
  * @param max  Maximum bus number currently used before scanning.
  * @return Largest bus number used after scanning.
  */
+static int smbus_max = 0;
 unsigned int scan_static_bus(device_t root, unsigned int max)
 {
 	device_t child;
@@ -82,6 +83,11 @@ unsigned int scan_static_bus(device_t root, unsigned int max)
 	printk_spew("%s for %s\n", __func__, dev_path(root));
 
 	for (link = 0; link < root->links; link++) {
+                /* for smbus bus enumerate */
+                child = root->link[link].children;
+                if(child && child->path.type == DEVICE_PATH_I2C) {
+                        root->link[link].secondary = ++smbus_max;
+                }
 		for (child = root->link[link].children; child; child = child->sibling) {
 			if (child->chip_ops && child->chip_ops->enable_dev) {
 				child->chip_ops->enable_dev(child);

@@ -80,7 +80,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "sdram/generic_sdram.c"
 
 
-#include "cpu/intel/car/copy_and_run.c"
+#include "cpu/x86/car/copy_and_run.c"
 
 #if USE_FALLBACK_IMAGE == 1
 
@@ -295,11 +295,11 @@ cpu_reset_x:
 
 	if(cpu_reset==0) {
 #define CLEAR_FIRST_1M_RAM 1
-#include "cpu/intel/car/cache_as_ram_post.c"
+#include "cpu/x86/car/cache_as_ram_post.c"
 	}
 	else {
 #undef CLEAR_FIRST_1M_RAM 
-#include "cpu/intel/car/cache_as_ram_post.c"
+#include "cpu/x86/car/cache_as_ram_post.c"
 	}
 
 	__asm__ volatile (

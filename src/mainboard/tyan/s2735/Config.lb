@@ -101,7 +101,7 @@ if USE_DCACHE_RAM
         end
 
         if CONFIG_USE_INIT
-                ldscript      /cpu/intel/car/cache_as_ram.lds
+                ldscript      /cpu/x86/car/cache_as_ram.lds
         end
 end
 
@@ -133,7 +133,7 @@ if USE_DCACHE_RAM
 ##
 ## Setup Cache-As-Ram
 ##
-mainboardinit cpu/intel/car/cache_as_ram.inc
+mainboardinit cpu/x86/car/cache_as_ram.inc
 end
 
 ###

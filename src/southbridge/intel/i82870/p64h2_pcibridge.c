@@ -29,6 +29,7 @@ static struct device_operations pcix_ops  = {
         .enable_resources = pci_bus_enable_resources,
         .init             = p64h2_pcix_init,
         .scan_bus         = pci_scan_bridge,
+	.reset_bus        = pci_bus_reset,
 };
 
 static struct pci_driver pcix_driver __pci_driver = {

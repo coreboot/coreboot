@@ -576,6 +576,42 @@ define AUTOBOOT_CMDLINE
 	comment "Default command line when autobooting"
 end
 
+define USE_WATCHDOG_ON_BOOT
+	default 0
+	export always
+	comment "Use the watchdog on booting"
+end
+
+###############################################
+# Plugin Device support options
+###############################################
+
+define CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT
+	default 1
+	export always
+	comment "Enable support for plugin Hypertransport busses"
+end
+define CONFIG_AGP_PLUGIN_SUPPORT
+	default 1
+	export always
+	comment "Enable support for plugin AGP busses"
+end
+define CONFIG_CARDBUS_PLUGIN_SUPPORT
+	default 1
+	export always
+	comment "Enable support cardbus plugin cards"
+end
+define CONFIG_PCIX_PLUGIN_SUPPORT
+	default 1
+	export always
+	comment "Enable support for plugin PCI-X busses"
+end
+define CONFIG_PCIEXP_PLUGIN_SUPPORT
+	default 1
+	export always
+	comment "Enable support for plugin PCI-E busses"
+end
+
 ###############################################
 # IRQ options
 ###############################################
@@ -708,21 +744,6 @@ define HAVE_HARD_RESET
 	default none
 	export used
 	comment "Have hard reset"
-end
-define HARD_RESET_BUS
-	default 1
-	export always
-	comment "Bus number of southbridge device doing reset"
-end
-define HARD_RESET_DEVICE
-	default 5
-	export always
-	comment "Device number of southbridge device doing reset"
-end
-define HARD_RESET_FUNCTION
-	default 0
-	export always
-	comment "Function number of southbridge device doing reset"
 end
 define MEMORY_HOLE
 	default none

@@ -3,9 +3,6 @@ uses HAVE_PIRQ_TABLE
 uses USE_FALLBACK_IMAGE
 uses HAVE_FALLBACK_BOOT
 uses HAVE_HARD_RESET
-uses HARD_RESET_BUS
-uses HARD_RESET_DEVICE
-uses HARD_RESET_FUNCTION
 uses IRQ_SLOT_COUNT
 uses HAVE_OPTION_TABLE
 uses CONFIG_MAX_CPUS
@@ -31,9 +28,9 @@ uses USE_OPTION_TABLE
 uses LB_CKS_RANGE_START
 uses LB_CKS_RANGE_END
 uses LB_CKS_LOC
+uses MAINBOARD
 uses MAINBOARD_PART_NUMBER
 uses MAINBOARD_VENDOR
-uses MAINBOARD
 uses MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 uses MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 uses LINUXBIOS_EXTRA_VERSION
@@ -85,13 +82,6 @@ default HAVE_FALLBACK_BOOT=1
 ## Build code to reset the motherboard from linuxBIOS
 ##
 default HAVE_HARD_RESET=1
-
-##
-## Funky hard reset implementation
-## 
-default HARD_RESET_BUS=3
-default HARD_RESET_DEVICE=4
-default HARD_RESET_FUNCTION=0
 
 ##
 ## Build code to export a programmable irq routing table
@@ -153,8 +143,8 @@ default CONFIG_IOAPIC=1
 ##
 ## Clean up the motherboard id strings
 ##
-default MAINBOARD_PART_NUMBER="s4882"
 default MAINBOARD_VENDOR="Tyan"
+default MAINBOARD_PART_NUMBER="s4882"
 default MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID=0x10f1
 default MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID=0x4882
 

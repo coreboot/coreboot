@@ -9,7 +9,7 @@
 #include <part/fallback_boot.h>
 
 #define OPT_HT_LINK 0
-
+        
 #if OPT_HT_LINK == 1
 #include "../northbridge/amd/amdk8/cpu_rev.c"
 #endif
@@ -19,17 +19,37 @@ static device_t ht_scan_get_devs(device_t *old_devices)
 	device_t first, last;
 	first = *old_devices;
 	last = first;
+	/* Extract the chain of devices to (first through last)
+	 * for the next hypertransport device.
+	 */
 	while(last && last->sibling && 
 		(last->sibling->path.type == DEVICE_PATH_PCI) &&
-		(last->sibling->path.u.pci.devfn > last->path.u.pci.devfn)) {
+		(last->sibling->path.u.pci.devfn > last->path.u.pci.devfn)) 
+	{
 		last = last->sibling;
 	}
 	if (first) {
+		device_t child;
+		/* Unlink the chain from the list of old devices */
 		*old_devices = last->sibling;
 		last->sibling = 0;
+
+		/* Now add the device to the list of devices on the bus.
+		 */
+		/* Find the last child of our parent */
+		for(child = first->bus->children; child && child->sibling; ) {
+			child = child->sibling;
+		}
+		/* Place the chain on the list of children of their parent. */
+		if (child) {
+			child->sibling = first;
+		} else {
+			first->bus->children = first;
+		}
 	}
 	return first;
 }
+
 #if OPT_HT_LINK == 1
 static unsigned ht_read_freq_cap(device_t dev, unsigned pos)
 {
@@ -43,30 +63,37 @@ static unsigned ht_read_freq_cap(device_t dev, unsigned pos)
 	if ((dev->vendor == PCI_VENDOR_ID_AMD) &&
 		(dev->device == PCI_DEVICE_ID_AMD_8131_PCIX)) {
 		freq_cap &= ~(1 << HT_FREQ_800Mhz);
-	} else
+	}
 	/* AMD 8151 Errata 23 */
 	if ((dev->vendor == PCI_VENDOR_ID_AMD) &&
 		(dev->device == PCI_DEVICE_ID_AMD_8151_SYSCTRL)) {
 		freq_cap &= ~(1 << HT_FREQ_800Mhz);
-	} else
+	}
 	/* AMD K8 Unsupported 1Ghz? */
 	if ((dev->vendor == PCI_VENDOR_ID_AMD) && (dev->device == 0x1100)) {
+#if K8_HT_FREQ_1G_SUPPORT == 1  
 		if (is_cpu_pre_e0()) 
+#endif
+		{
 			freq_cap &= ~(1 << HT_FREQ_1000Mhz);
+		}
+
 	}
 	return freq_cap;
 }
+#endif
 
-struct prev_link {
+struct ht_link {
 	struct device *dev;
 	unsigned pos;
-	unsigned char config_off, freq_off, freq_cap_off;
+	unsigned char ctrl_off, config_off, freq_off, freq_cap_off;
 };
 
-static int ht_setup_link(struct prev_link *prev, device_t dev, unsigned pos)
+static int ht_setup_link(struct ht_link *prev, device_t dev, unsigned pos)
 {
 	static const uint8_t link_width_to_pow2[]= { 3, 4, 0, 5, 1, 2, 0, 0 };
 	static const uint8_t pow2_to_link_width[] = { 0x7, 4, 5, 0, 1, 3 };
+	struct ht_link cur[1];
 	unsigned present_width_cap,    upstream_width_cap;
 	unsigned present_freq_cap,     upstream_freq_cap;
 	unsigned ln_present_width_in,  ln_upstream_width_in; 
@@ -78,13 +105,30 @@ static int ht_setup_link(struct prev_link *prev, device_t dev, unsigned pos)
 
 	/* Set the hypertransport link width and frequency */
 	reset_needed = 0;
-	linkb_to_host = (pci_read_config16(dev, pos + PCI_CAP_FLAGS) >> 10) & 1;
-
+	/* See which side of the device our previous write to 
+	 * set the unitid came from.
+	 */
+	cur->dev = dev;
+	cur->pos = pos;
+	linkb_to_host = (pci_read_config16(cur->dev, cur->pos + PCI_CAP_FLAGS) >> 10) & 1;
+	if (!linkb_to_host) {
+		cur->ctrl_off     = PCI_HT_CAP_SLAVE_CTRL0;
+		cur->config_off   = PCI_HT_CAP_SLAVE_WIDTH0;
+		cur->freq_off     = PCI_HT_CAP_SLAVE_FREQ0;
+		cur->freq_cap_off = PCI_HT_CAP_SLAVE_FREQ_CAP0;
+	}
+	else {
+		cur->ctrl_off     = PCI_HT_CAP_SLAVE_CTRL1;
+		cur->config_off   = PCI_HT_CAP_SLAVE_WIDTH1;
+		cur->freq_off     = PCI_HT_CAP_SLAVE_FREQ1;
+		cur->freq_cap_off = PCI_HT_CAP_SLAVE_FREQ_CAP1;
+	}
+#if OPT_HT_LINK == 1
 	/* Read the capabilities */
-	present_freq_cap   = ht_read_freq_cap(dev, pos + (linkb_to_host ? PCI_HT_CAP_SLAVE_FREQ_CAP1: PCI_HT_CAP_SLAVE_FREQ_CAP0));
+	present_freq_cap   = ht_read_freq_cap(cur->dev, cur->pos + cur->freq_cap_off);
 	upstream_freq_cap  = ht_read_freq_cap(prev->dev, prev->pos + prev->freq_cap_off);
-	present_width_cap  = pci_read_config8(dev, pos + (linkb_to_host ? PCI_HT_CAP_SLAVE_WIDTH1: PCI_HT_CAP_SLAVE_WIDTH0));
-        upstream_width_cap = pci_read_config8(prev->dev, prev->pos + prev->config_off);
+	present_width_cap  = pci_read_config8(cur->dev, cur->pos + cur->config_off);
+	upstream_width_cap = pci_read_config8(prev->dev, prev->pos + prev->config_off);
 	
 	/* Calculate the highest useable frequency */
 	freq = log2(present_freq_cap & upstream_freq_cap);
@@ -107,87 +151,130 @@ static int ht_setup_link(struct prev_link *prev, device_t dev, unsigned pos)
 	present_width  |= pow2_to_link_width[ln_upstream_width_out];
 
 	/* Set the current device */
-	old_freq = pci_read_config8(dev, pos + (linkb_to_host ? PCI_HT_CAP_SLAVE_FREQ1:PCI_HT_CAP_SLAVE_FREQ0));
+	old_freq = pci_read_config8(cur->dev, cur->pos + cur->freq_off);
+	old_freq &= 0x0f;
 	if (freq != old_freq) {
-		pci_write_config8(dev, pos + (linkb_to_host ? PCI_HT_CAP_SLAVE_FREQ1:PCI_HT_CAP_SLAVE_FREQ0), freq);
+		unsigned new_freq;
+		pci_write_config8(cur->dev, cur->pos + cur->freq_off, freq);
 		reset_needed = 1;
 		printk_spew("HyperT FreqP old %x new %x\n",old_freq,freq);
+		new_freq = pci_read_config8(cur->dev, cur->pos + cur->freq_off);
+		new_freq &= 0x0f;
+		if (new_freq != freq) {
+			printk_err("%s Hypertransport frequency would not set wanted: %x got: %x\n",
+				dev_path(dev), freq, new_freq);
+		}
 	}
-	old_width = pci_read_config8(dev, pos + (linkb_to_host ? PCI_HT_CAP_SLAVE_WIDTH1: PCI_HT_CAP_SLAVE_WIDTH0) + 1);
+	old_width = pci_read_config8(cur->dev, cur->pos + cur->config_off + 1);
 	if (present_width != old_width) {
-		pci_write_config8(dev, pos + (linkb_to_host ? PCI_HT_CAP_SLAVE_WIDTH1: PCI_HT_CAP_SLAVE_WIDTH0) + 1, present_width);
+		unsigned new_width;
+		pci_write_config8(cur->dev, cur->pos + cur->config_off + 1,
+			present_width);
 		reset_needed = 1;
 		printk_spew("HyperT widthP old %x new %x\n",old_width, present_width);
+		new_width = pci_read_config8(cur->dev, cur->pos + cur->config_off + 1);
+		if (new_width != present_width) {
+			printk_err("%s Hypertransport width would not set wanted: %x got: %x\n",
+				dev_path(dev), present_width, new_width);
+		}
 	}
 
 	/* Set the upstream device */
 	old_freq = pci_read_config8(prev->dev, prev->pos + prev->freq_off);
 	old_freq &= 0x0f;
 	if (freq != old_freq) {
+		unsigned new_freq;
 		pci_write_config8(prev->dev, prev->pos + prev->freq_off, freq);
 		reset_needed = 1;
 		printk_spew("HyperT freqU old %x new %x\n", old_freq, freq);
+		new_freq = pci_read_config8(prev->dev, prev->pos + prev->freq_off);
+		new_freq &= 0x0f;
+		if (new_freq != freq) {
+			printk_err("%s Hypertransport frequency would not set wanted: %x got: %x\n",
+				dev_path(prev->dev), freq, new_freq);
+		}
 	}
 	old_width = pci_read_config8(prev->dev, prev->pos + prev->config_off + 1);
 	if (upstream_width != old_width) {
+		unsigned new_width;
 		pci_write_config8(prev->dev, prev->pos + prev->config_off + 1, upstream_width);
 		reset_needed = 1;
 		printk_spew("HyperT widthU old %x new %x\n", old_width, upstream_width);
+		new_width = pci_read_config8(prev->dev, prev->pos + prev->config_off + 1);
+		if (new_width != upstream_width) {
+			printk_err("%s Hypertransport width would not set wanted: %x got: %x\n",
+				dev_path(prev->dev), upstream_width, new_width);
+		}
 	}
+#endif
 	
-	/* Remember the current link as the previous link */
-	prev->dev = dev;
-	prev->pos = pos;
-        if(linkb_to_host) {
-	        prev->config_off   = PCI_HT_CAP_SLAVE_WIDTH0;
-	        prev->freq_off     = PCI_HT_CAP_SLAVE_FREQ0;
-	        prev->freq_cap_off = PCI_HT_CAP_SLAVE_FREQ_CAP0;
-        }
-        else {
-	        prev->config_off   = PCI_HT_CAP_SLAVE_WIDTH1;
-	        prev->freq_off     = PCI_HT_CAP_SLAVE_FREQ1;
-        	prev->freq_cap_off = PCI_HT_CAP_SLAVE_FREQ_CAP1;
-        }
+	/* Remember the current link as the previous link,
+	 * But look at the other offsets.
+	 */
+	prev->dev = cur->dev;
+	prev->pos = cur->pos;
+	if (cur->ctrl_off == PCI_HT_CAP_SLAVE_CTRL0) {
+		prev->ctrl_off     = PCI_HT_CAP_SLAVE_CTRL1;
+		prev->config_off   = PCI_HT_CAP_SLAVE_WIDTH1;
+		prev->freq_off     = PCI_HT_CAP_SLAVE_FREQ1;
+		prev->freq_cap_off = PCI_HT_CAP_SLAVE_FREQ_CAP1;
+	} else {
+		prev->ctrl_off     = PCI_HT_CAP_SLAVE_CTRL0;
+		prev->config_off   = PCI_HT_CAP_SLAVE_WIDTH0;
+		prev->freq_off     = PCI_HT_CAP_SLAVE_FREQ0;
+		prev->freq_cap_off = PCI_HT_CAP_SLAVE_FREQ_CAP0;
+	}
 
 	return reset_needed;
 		
 }
-#endif
 
 static unsigned ht_lookup_slave_capability(struct device *dev)
 {
 	unsigned pos;
 	pos = 0;
-	switch(dev->hdr_type & 0x7f) {
-	case PCI_HEADER_TYPE_NORMAL:
-	case PCI_HEADER_TYPE_BRIDGE:
-		pos = PCI_CAPABILITY_LIST;
-		break;
-	}
-	if (pos > PCI_CAP_LIST_NEXT) {
-		pos = pci_read_config8(dev, pos);
-	}
-	while(pos != 0) {   /* loop through the linked list */
-		uint8_t cap;
-		cap = pci_read_config8(dev, pos + PCI_CAP_LIST_ID);
-		printk_spew("Capability: 0x%02x @ 0x%02x\n", cap, pos);
-		if (cap == PCI_CAP_ID_HT) {
+	do {
+		pos = pci_find_next_capability(dev, PCI_CAP_ID_HT, pos);
+		if (pos) {
 			unsigned flags;
 			flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
-			printk_spew("flags: 0x%04x\n", (unsigned)flags);
+			printk_spew("flags: 0x%04x\n", flags);
 			if ((flags >> 13) == 0) {
-				/* Entry is a Slave secondary, success...*/
+				/* Entry is a Slave secondary, success... */
 				break;
 			}
 		}
-		pos = pci_read_config8(dev, pos + PCI_CAP_LIST_NEXT);
-	}
+	} while(pos);
 	return pos;
 }
 
 static void ht_collapse_early_enumeration(struct bus *bus)
 {
 	unsigned int devfn;
+	struct ht_link prev;
+	unsigned ctrl;
+
+	/* Initialize the hypertransport enumeration state */
+	prev.dev = bus->dev;
+	prev.pos = bus->cap;
+	prev.ctrl_off     = PCI_HT_CAP_HOST_CTRL;
+	prev.config_off   = PCI_HT_CAP_HOST_WIDTH;
+	prev.freq_off     = PCI_HT_CAP_HOST_FREQ;
+	prev.freq_cap_off = PCI_HT_CAP_HOST_FREQ_CAP;
+
+	/* Wait until the link initialization is complete */
+	do {
+		ctrl = pci_read_config16(prev.dev, prev.pos + prev.ctrl_off);
+		/* Is this the end of the hypertransport chain */
+		if (ctrl & (1 << 6)) {
+			return;
+		}
+		/* Has the link failed? */
+		if (ctrl & (1 << 4)) {
+			return;
+		}
+	} while((ctrl & (1 << 5)) == 0);
+
 
 	/* Spin through the devices and collapse any early
 	 * hypertransport enumeration.
@@ -200,21 +287,10 @@ static void ht_collapse_early_enumeration(struct bus *bus)
 		dummy.path.type        = DEVICE_PATH_PCI;
 		dummy.path.u.pci.devfn = devfn;
 		id = pci_read_config32(&dummy, PCI_VENDOR_ID);
-		if (id == 0xffffffff || id == 0x00000000 || 
-			id == 0x0000ffff || id == 0xffff0000) {
+		if (	(id == 0xffffffff) || (id == 0x00000000) || 
+			(id == 0x0000ffff) || (id == 0xffff0000)) {
 			continue;
 		}
-
-#if 0
-#if CK804_DEVN_BASE==0		
-                //CK804 workaround: 
-                // CK804 UnitID changes not use
-                if(id == 0x005e10de) {
-                        break;
-                }
-#endif
-#endif
-
 		dummy.vendor = id & 0xffff;
 		dummy.device = (id >> 16) & 0xffff;
 		dummy.hdr_type = pci_read_config8(&dummy, PCI_HEADER_TYPE);
@@ -232,15 +308,13 @@ static void ht_collapse_early_enumeration(struct bus *bus)
 	}
 }
 
-unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int max)
+unsigned int hypertransport_scan_chain(struct bus *bus, 
+	unsigned min_devfn, unsigned max_devfn, unsigned int max)
 {
-	unsigned next_unitid, last_unitid, previous_unitid;
-	device_t old_devices, dev, func, *chain_last;
+	unsigned next_unitid, last_unitid;
+	device_t old_devices, dev, func;
 	unsigned min_unitid = 1;
-#if OPT_HT_LINK == 1
-	int reset_needed;
-	struct prev_link prev;
-#endif
+	struct ht_link prev;
 
 	/* Restore the hypertransport chain to it's unitialized state */
 	ht_collapse_early_enumeration(bus);
@@ -248,71 +322,48 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int max)
 	/* See which static device nodes I have */
 	old_devices = bus->children;
 	bus->children = 0;
-	chain_last = &bus->children;
 
 	/* Initialize the hypertransport enumeration state */
-#if OPT_HT_LINK == 1
-	reset_needed = 0;
 	prev.dev = bus->dev;
 	prev.pos = bus->cap;
+	prev.ctrl_off     = PCI_HT_CAP_HOST_CTRL;
 	prev.config_off   = PCI_HT_CAP_HOST_WIDTH;
 	prev.freq_off     = PCI_HT_CAP_HOST_FREQ;
 	prev.freq_cap_off = PCI_HT_CAP_HOST_FREQ_CAP;
-#endif
 	
 	/* If present assign unitid to a hypertransport chain */
 	last_unitid = min_unitid -1;
 	next_unitid = min_unitid;
 	do {
-		uint32_t id, class;
-		uint8_t hdr_type;
-		unsigned pos;
+		uint8_t pos;
 		uint16_t flags;
 		unsigned count, static_count;
+		unsigned ctrl;
 
-		previous_unitid = last_unitid;
 		last_unitid = next_unitid;
 
-		/* Get setup the device_structure */
+		/* Wait until the link initialization is complete */
+		do {
+			ctrl = pci_read_config16(prev.dev, prev.pos + prev.ctrl_off);
+			/* Is this the end of the hypertransport chain?
+			 * Has the link failed?
+			 * If so further scanning is pointless.
+			 */
+			if (ctrl & ((1 << 6) | (1 << 4))) {
+				goto end_of_chain;
+			}
+		} while((ctrl & (1 << 5)) == 0);
+		
+
+		/* Get and setup the device_structure */
 		dev = ht_scan_get_devs(&old_devices);
 
-		if (!dev) {
-			struct device dummy;
-			dummy.bus              = bus;
-			dummy.path.type        = DEVICE_PATH_PCI;
-			dummy.path.u.pci.devfn = 0;
-			id = pci_read_config32(&dummy, PCI_VENDOR_ID);
-			/* If the chain is fully enumerated quit */
-			if (id == 0xffffffff || id == 0x00000000 ||
-				id == 0x0000ffff || id == 0xffff0000) {
-				break;
-			}
-			dev = alloc_dev(bus, &dummy.path);
-		}
-		else {
-			/* Add this device to the pci bus chain */
-			*chain_last = dev;
-			/* Run the magice enable sequence for the device */
-			if (dev->chip_ops && dev->chip_ops->enable_dev) {
-				dev->chip_ops->enable_dev(dev);
-			}
-			/* Now read the vendor and device id */
-			id = pci_read_config32(dev, PCI_VENDOR_ID);
-
-			/* If the chain is fully enumerated quit */
-			if (id == 0xffffffff || id == 0x00000000 ||
-				id == 0x0000ffff || id == 0xffff0000) {
-	                               if (dev->enabled) {
-        	                               printk_info("Disabling static device: %s\n",
-                	                               dev_path(dev));
-                        	               dev->enabled = 0;
-                               	}
-				break;
-			}
-		}
-		/* Update the device chain tail */
-		for(func = dev; func; func = func->sibling) {
-			chain_last = &func->sibling;
+		/* See if a device is present and setup the
+		 * device structure.
+		 */
+		dev = pci_probe_dev(dev, bus, 0);
+		if (!dev || !dev->enabled) {
+			break;
 		}
 
 		/* Find the hypertransport link capability */
@@ -323,20 +374,29 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int max)
 			break;
 		}
 		
-
 		/* Update the Unitid of the current device */
 		flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
+        
+		/* If the devices has a unitid set and is at devfn 0 we are done. 
+		 * This can happen with shadow hypertransport devices,
+		 * or if we have reached the bottom of a
+		 * hypertransport device chain.
+		 */
+		if (flags & 0x1f) {
+			break;
+		}
+
 		flags &= ~0x1f; /* mask out base Unit ID */
 #if CK804_DEVN_BASE==0  
-	        if(id == 0x005e10de) {
-			next_unitid = 0;
-		} 
-		else {
+               if((dev->vendor == 0x10de) && (dev->device == 0x005e)) {
+                       next_unitid = 0;
+               } 
+               else {
 #endif
-			flags |= next_unitid & 0x1f;
-			pci_write_config16(dev, pos + PCI_CAP_FLAGS, flags);
+                       flags |= next_unitid & 0x1f;
+                       pci_write_config16(dev, pos + PCI_CAP_FLAGS, flags);
 #if CK804_DEVN_BASE==0 
-		}
+               }
 #endif
 
 		/* Update the Unitd id in the device structure */
@@ -346,17 +406,6 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int max)
 			static_count = (func->path.u.pci.devfn >> 3) 
 				- (dev->path.u.pci.devfn >> 3) + 1;
 		}
-
-                /* Read the rest of the pci configuration information */
-                hdr_type = pci_read_config8(dev, PCI_HEADER_TYPE);
-                class = pci_read_config32(dev, PCI_CLASS_REVISION);
-
-                /* Store the interesting information in the device structure */
-                dev->vendor = id & 0xffff;
-                dev->device = (id >> 16) & 0xffff;
-                dev->hdr_type = hdr_type;
-                /* class code, the upper 3 bytes of PCI_CLASS_REVISION */
-                dev->class = class >> 8;
 
 		/* Compute the number of unitids consumed */
 		count = (flags >> 5) & 0x1f; /* get unit count */
@@ -369,36 +418,83 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int max)
 		/* Update the Unitid of the next device */
 		next_unitid += count;
 
-#if OPT_HT_LINK == 1
 		/* Setup the hypetransport link */
-		reset_needed |= ht_setup_link(&prev, dev, pos);
-#endif
+		bus->reset_needed |= ht_setup_link(&prev, dev, pos);
 
 		printk_debug("%s [%04x/%04x] %s next_unitid: %04x\n",
 			dev_path(dev),
 			dev->vendor, dev->device, 
 			(dev->enabled? "enabled": "disabled"), next_unitid);
+
 #if CK804_DEVN_BASE==0 
-	 	if(id == 0x005e10de) {
-			break; // CK804 can not change unitid, so it only can be alone in the link
-		}
+		if ((dev->vendor == 0x10de) && (dev->device == 0x005e)) {
+                      break; // CK804 can not change unitid, so it only can be alone in the link
+                }
 #endif
 
-	} while((last_unitid != next_unitid) && (next_unitid <= 0x1f));
-
+	} while((last_unitid != next_unitid) && (next_unitid <= (max_devfn >> 3)));
+ end_of_chain:
 #if OPT_HT_LINK == 1
-#if HAVE_HARD_RESET == 1
-	if(reset_needed) {
+	if(bus->reset_needed) {
 		printk_info("HyperT reset needed\n");
-		hard_reset();
 	}
 	else {
 		printk_debug("HyperT reset not needed\n");
 	}
 #endif
-#endif
 	if (next_unitid > 0x1f) {
 		next_unitid = 0x1f;
 	}
-	return pci_scan_bus(bus, 0x00, (next_unitid << 3)|7, max);
+
+	/* Die if any leftover Static devices are are found.  
+	 * There's probably a problem in the Config.lb.
+	 */
+	if(old_devices) {
+		device_t left;
+		for(left = old_devices; left; left = left->sibling) {
+			printk_debug("%s\n", dev_path(left));
+		}
+		die("Left over static devices.  Check your Config.lb\n");
+	}
+	
+	/* Now that nothing is overlapping it is safe to scan the
+	 * children. 
+	 */
+	max = pci_scan_bus(bus, 0x00, (next_unitid << 3)|7, max);
+	return max; 
 }
+
+/**
+ * @brief Scan a PCI bridge and the buses behind the bridge.
+ *
+ * Determine the existence of buses behind the bridge. Set up the bridge
+ * according to the result of the scan.
+ *
+ * This function is the default scan_bus() method for PCI bridge devices.
+ *
+ * @param dev pointer to the bridge device
+ * @param max the highest bus number assgined up to now
+ *
+ * @return The maximum bus number found, after scanning all subordinate busses
+ */
+unsigned int ht_scan_bridge(struct device *dev, unsigned int max)
+{
+	return do_pci_scan_bridge(dev, max, hypertransport_scan_chain);
+}
+
+
+/** Default device operations for hypertransport bridges */
+static struct pci_operations ht_bus_ops_pci = {
+	.set_subsystem = 0,
+};
+
+struct device_operations default_ht_ops_bus = {
+	.read_resources   = pci_bus_read_resources,
+	.set_resources    = pci_dev_set_resources,
+	.enable_resources = pci_bus_enable_resources,
+	.init		  = 0,
+	.scan_bus	  = ht_scan_bridge,
+	.enable           = 0,
+	.reset_bus        = pci_bus_reset,
+	.ops_pci          = &ht_bus_ops_pci,
+};

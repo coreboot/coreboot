@@ -15,6 +15,7 @@
 
 #include "northbridge/amd/amdk8/cpu_rev.c"
 //#define K8_HT_FREQ_1G_SUPPORT 1
+//#define K8_SCAN_PCI_BUS 1
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/nvidia/ck804/ck804_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
@@ -84,6 +85,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #if CONFIG_LOGICAL_CPUS==1
 #define SET_NB_CFG_54 1
 #include "cpu/amd/dualcore/dualcore.c"
+#else
+#include "cpu/amd/model_fxx/node_id.c"
 #endif
 
 #define FIRST_CPU  1
@@ -259,6 +262,7 @@ void amd64_main(unsigned long bist)
                                 goto cpu_reset_x;
                         }
                         distinguish_cpu_resets(id.nodeid);
+//                        start_other_core(id.nodeid);
                 }
 #else
                 if (cpu_init_detected(nodeid)) {
@@ -292,16 +296,14 @@ void amd64_main(unsigned long bist)
 	report_bist_failure(bist);
 
         setup_s2891_resource_map();
-#if 0
-        dump_pci_device(PCI_DEV(0, 0x18, 0));
-	dump_pci_device(PCI_DEV(0, 0x19, 0));
-#endif
 
 	needs_reset = setup_coherent_ht_domain();
 	
 #if CONFIG_LOGICAL_CPUS==1
+        // It is said that we should start core1 after all core0 launched
         start_other_cores();
 #endif
+	// automatically set that for you, but you might meet tight space
         needs_reset |= ht_setup_chains_x();
 
         needs_reset |= ck804_early_setup_x();
@@ -312,19 +314,9 @@ void amd64_main(unsigned long bist)
        	}
 
 	enable_smbus();
-#if 0
-	dump_spd_registers(&cpu[0]);
-#endif
-#if 0
-	dump_smbus_registers();
-#endif
 
 	memreset_setup();
 	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
-
-#if 0
-	dump_pci_devices();
-#endif
 
 #if 1
         {
@@ -342,6 +334,7 @@ void amd64_main(unsigned long bist)
         }
 
 #endif
+#if 1
 
 cpu_reset_x:
 
@@ -386,7 +379,7 @@ cpu_reset_x:
 			"movl %%ebx, %0\n\t"
 			:"=a" (new_cpu_reset)
 		);
-
+		
                 /* We can not go back any more, we lost old stack data in cache as ram*/
                 if(new_cpu_reset==0) {
                         print_debug("Use Ram as Stack now - done\r\n");
@@ -404,6 +397,7 @@ cpu_reset_x:
 		copy_and_run(new_cpu_reset);
 		/* We will not return */
 	}
+#endif
 
 
 	print_debug("should not be here -\r\n");

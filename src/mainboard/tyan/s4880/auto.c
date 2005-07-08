@@ -95,65 +95,6 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
    }
 }
 
-#if 0
-static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
-{
-	/* Routing Table Node i 
-	 *
-	 * F0: 0x40, 0x44, 0x48, 0x4c, 0x50, 0x54, 0x58, 0x5c 
-	 *  i:    0,    1,    2,    3,    4,    5,    6,    7
-	 *
-	 * [ 0: 3] Request Route
-	 *     [0] Route to this node
-	 *     [1] Route to Link 0
-	 *     [2] Route to Link 1
-	 *     [3] Route to Link 2
-	 * [11: 8] Response Route
-	 *     [0] Route to this node
-	 *     [1] Route to Link 0
-	 *     [2] Route to Link 1
-	 *     [3] Route to Link 2
-	 * [19:16] Broadcast route
-	 *     [0] Route to this node
-	 *     [1] Route to Link 0
-	 *     [2] Route to Link 1
-	 *     [3] Route to Link 2
-	 */
-        uint32_t ret=0x00010101; /* default row entry */
-
-/*
-            (L1)       (L2)     
-        CPU3-------------CPU1
-     (L0)|                |(L0)
-         |                |
-         |                |
-         |                |
-         |                |
-     (L0)|                |(L0)
-        CPU2-------------CPU0---------8131----------8111
-            (L2)       (L1)  (L2)       
-*/
-
-        /* Link0 of CPU0 to Link0 of CPU1 */
-        /* Link1 of CPU0 to Link2 of CPU2 */
-        /* Link2 of CPU1 to Link1 of CPU3 */
-        /* Link0 of CPU2 to Link0 of CPU3 */
-
-        static const unsigned int rows_4p[4][4] = {
-                { 0x00070101, 0x00010202, 0x00030404, 0x00010204 },
-                { 0x00010202, 0x000b0101, 0x00010208, 0x00030808 },
-                { 0x00030808, 0x00010208, 0x000b0101, 0x00010202 },
-                { 0x00010204, 0x00030404, 0x00010202, 0x00070101 }
-        };
-        
-        if (!(node>=maxnodes || row>=maxnodes)) {
-		ret=rows_4p[node][row];
-        }
-
-        return ret;
-}
-#endif
-
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
 #define SMBUS_HUB 0x18
@@ -161,6 +102,14 @@ static inline void activate_spd_rom(const struct mem_controller *ctrl)
         smbus_write_byte(SMBUS_HUB , 0x01, device);
         smbus_write_byte(SMBUS_HUB , 0x03, 0);
 }
+#if 0
+static inline void change_i2c_mux(unsigned device)
+{
+#define SMBUS_HUB 0x18
+        smbus_write_byte(SMBUS_HUB , 0x01, device);
+        smbus_write_byte(SMBUS_HUB , 0x03, 0);
+}
+#endif
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
@@ -308,22 +257,19 @@ static void main(unsigned long bist)
         needs_reset = setup_coherent_ht_domain();
 
 #if CONFIG_LOGICAL_CPUS==1
-        // It is said that we should start core1 after all core0 launched
         start_other_cores();
 #endif
 
-#if 0
-        needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0xc0);
-#else
-        // automatically set that for you, but you might meet tight space
         needs_reset |= ht_setup_chains_x();
-#endif
 	
         if (needs_reset) {
                 print_info("ht reset -\r\n");
                 soft_reset();
         }
 	
+#if 0
+	dump_pci_devices();
+#endif
 	enable_smbus();
 
 	memreset_setup();

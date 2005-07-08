@@ -45,33 +45,6 @@ static void enable_hwm_smbus(device_t dev) {
         value |= 0x01;
         pnp_write_config(dev, reg, value);
 } 
-#if 0
-static void dump_pnp_device(device_t dev)
-{
-        int i;
-        print_debug("\r\n");
-
-        for(i = 0; i <= 255; i++) {
-                uint8_t reg, val;
-                if ((i & 0x0f) == 0) {
-                        print_debug_hex8(i);
-                        print_debug_char(':');
-                }
-		reg = i;
-		if(i!=0xaa) {
-                	val = pnp_read_config(dev, reg);
-		}
-		else {
-			val = 0xaa;
-		}
-                print_debug_char(' ');
-                print_debug_hex8(val);
-                if ((i & 0x0f) == 0x0f) {
-                        print_debug("\r\n");
-                }
-        }
-}
-#endif
 
 
 static void lpc47b397_init(device_t dev)

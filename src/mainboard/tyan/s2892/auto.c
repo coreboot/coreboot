@@ -142,7 +142,6 @@ static void main(unsigned long bist)
                 enable_lapic();
                 init_timer();
 
-
 #if CONFIG_LOGICAL_CPUS==1
                 id = get_node_core_id_x();
                 if(id.coreid == 0) {
@@ -150,6 +149,7 @@ static void main(unsigned long bist)
                                 asm volatile ("jmp __cpu_reset");
                         }
                         distinguish_cpu_resets(id.nodeid);
+//                        start_other_core(id.nodeid);
                 }
 #else
                 nodeid = lapicid();
@@ -164,7 +164,7 @@ static void main(unsigned long bist)
                         || (id.coreid != 0)
 #endif
                 ) {
-                        stop_this_cpu(); 
+                        stop_this_cpu(); // it will stop all cores except core0 of cpu0
                 }
         }
 
@@ -174,13 +174,14 @@ static void main(unsigned long bist)
         console_init();
 	
 	/* Halt if there was a built in self test failure */
-	report_bist_failure(bist);
+//	report_bist_failure(bist);
 
         setup_s2892_resource_map();
 
 	needs_reset = setup_coherent_ht_domain();
 
 #if CONFIG_LOGICAL_CPUS==1
+        // It is said that we should start core1 after all core0 launched
         start_other_cores();
 #endif
         needs_reset |= ht_setup_chains_x();

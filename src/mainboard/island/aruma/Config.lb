@@ -46,6 +46,7 @@ if HAVE_ACPI_TABLES
  object fadt.o
  object dsdt.o
 end
+object reset.o
 
 
 ##

@@ -13,6 +13,7 @@
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
 
+
 #include "northbridge/amd/amdk8/cpu_rev.c"
 #define K8_HT_FREQ_1G_SUPPORT 0
 #include "northbridge/amd/amdk8/incoherent_ht.c"
@@ -37,20 +38,52 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
+/* Look up a which bus a given node/link combination is on.
+ * return 0 when we can't find the answer.
+ */
+static unsigned node_link_to_bus(unsigned node, unsigned link)
+{
+        unsigned reg;
+        
+        for(reg = 0xE0; reg < 0xF0; reg += 0x04) {
+                unsigned config_map;
+                config_map = pci_read_config32(PCI_DEV(0, 0x18, 1), reg);
+                if ((config_map & 3) != 3) {
+                        continue; 
+                }       
+                if ((((config_map >> 4) & 7) == node) &&
+                        (((config_map >> 8) & 3) == link))
+                {       
+                        return (config_map >> 16) & 0xff;
+                }       
+        }       
+        return 0;
+}       
+
 static void hard_reset(void)
 {
+        device_t dev;
+
+        /* Find the device */
+        dev = PCI_DEV(node_link_to_bus(0, 2), 0x04, 3);
+
         set_bios_reset();
 
         /* enable cf9 */
-        pci_write_config8(PCI_DEV(0, 0x04, 3), 0x41, 0xf1);
+        pci_write_config8(dev, 0x41, 0xf1);
         /* reset */
         outb(0x0e, 0x0cf9);
 }
 
 static void soft_reset(void)
 {
+        device_t dev;
+
+        /* Find the device */
+        dev = PCI_DEV(node_link_to_bus(0, 2), 0x04, 0);
+
         set_bios_reset();
-        pci_write_config8(PCI_DEV(0, 0x04, 0), 0x47, 1);
+        pci_write_config8(dev, 0x47, 1);
 }
 
 static void memreset_setup(void)
@@ -93,6 +126,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #if CONFIG_LOGICAL_CPUS==1
 #define SET_NB_CFG_54 1
 #include "cpu/amd/dualcore/dualcore.c"
+#else
+#include "cpu/amd/model_fxx/node_id.c"
 #endif
 
 #define FIRST_CPU  1
@@ -136,7 +171,6 @@ void amd64_main(unsigned long bist)
         }
 
         /* Is this a secondary cpu? */
-//        post_code(0x21);
         if (!boot_cpu()) {
                 if (last_boot_normal()) {
                         goto normal_image;
@@ -154,7 +188,6 @@ void amd64_main(unsigned long bist)
         amd8111_enable_rom();
 
         /* Is this a deliberate reset by the bios */
-//        post_code(0x22);
         if (bios_reset_detected() && last_boot_normal()) {
                 goto normal_image;
         }
@@ -166,13 +199,11 @@ void amd64_main(unsigned long bist)
                 goto fallback_image;
         }
  normal_image:
-//        post_code(0x23);
         __asm__ volatile ("jmp __normal_image"
                 : /* outputs */
                 : "a" (bist) /* inputs */
                 );
  cpu_reset:
-//        post_code(0x24);
 #if 0
         //CPU reset will reset memtroller ???
         asm volatile ("jmp __cpu_reset" 
@@ -182,7 +213,6 @@ void amd64_main(unsigned long bist)
 #endif
 
  fallback_image:
-//        post_code(0x25);
         real_main(bist);
 }
 void real_main(unsigned long bist)
@@ -275,17 +305,13 @@ void amd64_main(unsigned long bist)
 	report_bist_failure(bist);
 
         setup_s2881_resource_map();
-#if 0
-        dump_pci_device(PCI_DEV(0, 0x18, 0));
-	dump_pci_device(PCI_DEV(0, 0x19, 0));
-#endif
 
 	needs_reset = setup_coherent_ht_domain();
 	
 #if CONFIG_LOGICAL_CPUS==1
+        // It is said that we should start core1 after all core0 launched
         start_other_cores();
 #endif
-
         needs_reset |= ht_setup_chains_x();
 
        	if (needs_reset) {
@@ -294,19 +320,9 @@ void amd64_main(unsigned long bist)
        	}
 
 	enable_smbus();
-#if 0
-	dump_spd_registers(&cpu[0]);
-#endif
-#if 0
-	dump_smbus_registers();
-#endif
 
 	memreset_setup();
 	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
-
-#if 0
-	dump_pci_devices();
-#endif
 
 #if 1
         {
@@ -323,6 +339,8 @@ void amd64_main(unsigned long bist)
 #endif    
         }
 #endif
+
+#if 1
 
 
 cpu_reset_x:
@@ -386,6 +404,7 @@ cpu_reset_x:
 		copy_and_run(new_cpu_reset);
 		/* We will not return */
 	}
+#endif
 
 
 	print_debug("should not be here -\r\n");

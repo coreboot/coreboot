@@ -1,9 +1,12 @@
 #include <console/console.h>
 #include <part/fallback_boot.h>
+#include <part/watchdog.h>
 #include <pc80/mc146818rtc.h>
 #include <arch/io.h>
 
-void boot_successful(void)
+
+#if HAVE_FALLBACK_BOOT == 1
+void set_boot_successful(void)
 {
 	/* Remember I succesfully booted by setting
 	 * the initial boot direction
@@ -22,4 +25,14 @@ void boot_successful(void)
 	if(byte & 1)
 		byte &= 0x0f;
 	outb(byte, RTC_PORT(1));
+}
+#endif
+
+void boot_successful(void)
+{
+	/* Remember this was a successful boot */
+	set_boot_successful();
+
+	/* turn off the boot watchdog */
+	watchdog_off();
 }

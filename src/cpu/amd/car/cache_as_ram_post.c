@@ -1,4 +1,5 @@
 /* by yhlu 6.2005 */
+/* be warned, this file will be used other cores and core0/node0 */
         __asm__ volatile (
 	/* 
 	FIXME : backup stack in CACHE_AS_RAM into mmx and sse and after we get STACK up, we restore that.

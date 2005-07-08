@@ -145,14 +145,15 @@ static void disable_probes(void)
 
 	print_spew("Disabling read/write/fill probes for UP... ");
 
-	val=pci_read_config32(NODE_HT(0), 0x68);
-	val |= (1<<10)|(1<<9)|(1<<8)|(1<<4)|(1<<3)|(1<<2)|(1<<1)|(1 << 0);
-	pci_write_config32(NODE_HT(0), 0x68, val);
+	val=pci_read_config32(NODE_HT(0), HT_TRANSACTION_CONTROL);
+	val |= HTTC_DIS_FILL_P | HTTC_DIS_RMT_MEM_C | HTTC_DIS_P_MEM_C |
+		HTTC_DIS_MTS | HTTC_DIS_WR_DW_P | HTTC_DIS_WR_B_P | 
+		HTTC_DIS_RD_DW_P | HTTC_DIS_RD_B_P;
+	pci_write_config32(NODE_HT(0), HT_TRANSACTION_CONTROL, val);
 
 	print_spew("done.\r\n");
 
 }
-
 
 #ifndef ENABLE_APIC_EXT_ID
 #define ENABLE_APIC_EXT_ID 0 
@@ -163,15 +164,13 @@ static void enable_apic_ext_id(u8 node)
 #if ENABLE_APIC_EXT_ID==1
 #warning "FIXME Is the right place to enable apic ext id here?"
 
-	u32 val;
+      u32 val;
 
         val = pci_read_config32(NODE_HT(node), 0x68);
         val |= (HTTC_APIC_EXT_SPUR | HTTC_APIC_EXT_ID | HTTC_APIC_EXT_BRD_CST);
         pci_write_config32(NODE_HT(node), 0x68, val);
 #endif
 }
-
-
 
 static void enable_routing(u8 node)
 {
@@ -277,11 +276,11 @@ static void wait_ht_stable(uint8_t node)
 }
 #endif
 
-static int check_connection(u8 dest)
+static int verify_connection(u8 dest)
 {
 	/* See if we have a valid connection to dest */
 	u32 val;
-
+	
 	/* Verify that the coherent hypertransport link is
 	 * established and actually working by reading the
 	 * remode node's vendor/device id
@@ -289,10 +288,6 @@ static int check_connection(u8 dest)
         val = pci_read_config32(NODE_HT(dest),0);
 	if(val != 0x11001022)
 		return 0;
-// needed?
-#if K8_HT_CHECK_PENDING_LINK == 1
-	wait_ht_stable(dest);
-#endif
 
 	return 1;
 }
@@ -306,11 +301,11 @@ static uint16_t read_freq_cap(device_t dev, uint8_t pos)
 	freq_cap = pci_read_config16(dev, pos);
 	freq_cap &= ~(1 << HT_FREQ_VENDOR); /* Ignore Vendor HT frequencies */
 
-
-        #if K8_HT_FREQ_1G_SUPPORT == 1
-         if (!is_cpu_pre_e0()) 
+#if K8_HT_FREQ_1G_SUPPORT == 1
+	if (!is_cpu_pre_e0()) {
 		return freq_cap;
-        #endif
+	}
+#endif
 
 	id = pci_read_config32(dev, 0);
 
@@ -726,8 +721,8 @@ static struct setup_smp_result setup_smp2(void)
 	print_linkn("(0,1) link=", byte);
 	setup_row_direct(0,1, byte);
 	setup_temp_row(0, 1);
-
-	check_connection(7);
+	
+	verify_connection(7);
 
 	/* We found 2 nodes so far */
 	val = pci_read_config32(NODE_HT(7), 0x6c);
@@ -751,8 +746,8 @@ static struct setup_smp_result setup_smp2(void)
 		print_linkn("\t-->(0,1) link=", byte);
 		setup_row_direct(0,1, byte);
 		setup_temp_row(0, 1);
-
-		check_connection(7);
+	
+		verify_connection(7);
 			
 		/* We found 2 nodes so far */
 		val = pci_read_config32(NODE_HT(7), 0x6c);
@@ -832,7 +827,7 @@ static struct setup_smp_result setup_smp4(int needs_reset)
 	setup_row_indirect_group(conn4_1, sizeof(conn4_1)/sizeof(conn4_1[0]));
 
 	setup_temp_row(0,2);
-	check_connection(7);
+	verify_connection(7);
 	val = pci_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 0*/
 	print_linkn("(2,0) link=", byte); 
@@ -846,7 +841,7 @@ static struct setup_smp_result setup_smp4(int needs_reset)
 
 	setup_temp_row(0,1);
 	setup_temp_row(1,3);
-	check_connection(7);
+	verify_connection(7);
 
 	val = pci_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 1*/
@@ -865,7 +860,7 @@ static struct setup_smp_result setup_smp4(int needs_reset)
 	setup_row_direct(2,3, byte & 0x3);
 	setup_temp_row(0,2);
 	setup_temp_row(2,3);
-	check_connection(7); /* to 3*/
+	verify_connection(7); /* to 3*/
 
 #if (CONFIG_MAX_PHYSICAL_CPUS > 4) || (CONFIG_MAX_PHYSICAL_CPUS_4_BUT_MORE_INSTALLED == 1)
 	/* We need to find out which link is to node3 */
@@ -878,7 +873,7 @@ static struct setup_smp_result setup_smp4(int needs_reset)
 			print_linkn("\t-->(2,3) link=", byte); 
 			setup_row_direct(2,3,byte);
 			setup_temp_row(2,3);
-			check_connection(7); /* to 3*/
+			verify_connection(7); /* to 3*/
 		}
 	} 
 #endif
@@ -1016,7 +1011,7 @@ static struct setup_smp_result setup_smp6(int needs_reset)
 	for(byte=0; byte<4; byte+=2) {
 		setup_temp_row(byte,byte+2);
 	}
-	check_connection(7);
+	verify_connection(7);
 	val = pci_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /*get default link on 7 to 2*/
 	print_linkn("(4,2) link=", byte); 
@@ -1044,7 +1039,7 @@ static struct setup_smp_result setup_smp6(int needs_reset)
 	for(byte=0; byte<4; byte+=2) {
 		setup_temp_row(byte+1,byte+3);
 	}
-	check_connection(7);
+	verify_connection(7);
 
 	val = pci_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 3*/
@@ -1064,7 +1059,7 @@ static struct setup_smp_result setup_smp6(int needs_reset)
 	setup_temp_row(0,2);
 	setup_temp_row(2,4);
 	setup_temp_row(4,5);
-	check_connection(7); /* to 5*/
+	verify_connection(7); /* to 5*/
 
 #if CONFIG_MAX_PHYSICAL_CPUS > 6
 	/* We need to find out which link is to node5 */
@@ -1078,7 +1073,7 @@ static struct setup_smp_result setup_smp6(int needs_reset)
 			print_linkn("\t-->(4,5) link=", byte);
 			setup_row_direct(4,5,byte);
 			setup_temp_row(4,5);
-			check_connection(7); /* to 5*/
+			verify_connection(7); /* to 5*/
 		}
 	} 
 #endif
@@ -1254,7 +1249,7 @@ static struct setup_smp_result setup_smp8(int needs_reset)
 	for(byte=0; byte<6; byte+=2) {
 		setup_temp_row(byte,byte+2);
 	}
-	check_connection(7);
+	verify_connection(7);
 	val = pci_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 4*/
 	print_linkn("(6,4) link=", byte);
@@ -1294,7 +1289,7 @@ static struct setup_smp_result setup_smp8(int needs_reset)
         }
 	setup_temp_row(5,6);
 
-        check_connection(7);
+        verify_connection(7);
 
 	val = get_row(7,6); // to chect it if it is node6 before renaming
 	if( (val>>16) == 1) { // it is real node 7 so swap it
@@ -1316,7 +1311,7 @@ static struct setup_smp_result setup_smp8(int needs_reset)
 #endif
 		setup_temp_row(5,6);
 
-       	        check_connection(7);
+       	        verify_connection(7);
 	}
         val = pci_read_config32(NODE_HT(7), 0x6c);
         byte = (val>>2) & 0x3; /* get default link on 7 to 5*/
@@ -1334,7 +1329,7 @@ static struct setup_smp_result setup_smp8(int needs_reset)
 		setup_temp_row(byte+1,byte+3);
 	}
 
-	check_connection(7);
+	verify_connection(7);
 
 	val = pci_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 5*/
@@ -1354,7 +1349,7 @@ static struct setup_smp_result setup_smp8(int needs_reset)
 		setup_temp_row(byte,byte+2);
 	}
 
-        check_connection(7);
+        verify_connection(7);
 
 	val = pci_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 4*/
@@ -1379,7 +1374,7 @@ static struct setup_smp_result setup_smp8(int needs_reset)
 		setup_temp_row(byte+1,byte+3); 
 	}
 
-	check_connection(7);
+	verify_connection(7);
 
 	val = pci_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 5*/
@@ -1568,7 +1563,6 @@ static struct setup_smp_result setup_smp(void)
 #endif
 	
 	return result;
-
 }
 
 static unsigned verify_mp_capabilities(unsigned nodes)
@@ -1663,10 +1657,10 @@ static void coherent_ht_finalize(unsigned nodes)
 #endif
 	
 	/* set up cpu count and node count and enable Limit
-	* Config Space Range for all available CPUs.
-	* Also clear non coherent hypertransport bus range
-	* registers on Hammer A0 revision.
-	*/
+	 * Config Space Range for all available CPUs.
+	 * Also clear non coherent hypertransport bus range
+	 * registers on Hammer A0 revision.
+	 */
 
 	print_spew("coherent_ht_finalize\r\n");
 	rev_a0 = is_cpu_rev_a0();
@@ -1686,21 +1680,19 @@ static void coherent_ht_finalize(unsigned nodes)
 		pci_write_config32(dev, 0x60, val);
 
 		/* Only respond to real cpu pci configuration cycles
-		* and optimize the HT settings 
-		*/
-		val=pci_read_config32(dev, 0x68);
+		 * and optimize the HT settings 
+		 */
+		val=pci_read_config32(dev, HT_TRANSACTION_CONTROL);
 		val &= ~((HTTC_BUF_REL_PRI_MASK << HTTC_BUF_REL_PRI_SHIFT) |
 			(HTTC_MED_PRI_BYP_CNT_MASK << HTTC_MED_PRI_BYP_CNT_SHIFT) |
 			(HTTC_HI_PRI_BYP_CNT_MASK << HTTC_HI_PRI_BYP_CNT_SHIFT));
 		val |= HTTC_LIMIT_CLDT_CFG | 
 			(HTTC_BUF_REL_PRI_8 << HTTC_BUF_REL_PRI_SHIFT) |
-			HTTC_RSP_PASS_PW |
 			(3 << HTTC_MED_PRI_BYP_CNT_SHIFT) |
 			(3 << HTTC_HI_PRI_BYP_CNT_SHIFT);
-		pci_write_config32(dev, 0x68, val);
+		pci_write_config32(dev, HT_TRANSACTION_CONTROL, val);
 
 		if (rev_a0) {
-			print_spew("shit it is an old cup\n");
 			pci_write_config32(dev, 0x94, 0);
 			pci_write_config32(dev, 0xb4, 0);
 			pci_write_config32(dev, 0xd4, 0);
@@ -1720,8 +1712,8 @@ static int apply_cpu_errata_fixes(unsigned nodes, int needs_reset)
 		if (is_cpu_pre_c0()) {
 
 			/* Errata 66
-			* Limit the number of downstream posted requests to 1 
-			*/
+			 * Limit the number of downstream posted requests to 1 
+			 */
 			cmd = pci_read_config32(dev, 0x70);
 			if ((cmd & (3 << 0)) != 2) {
 				cmd &= ~(3<<0);
@@ -1745,12 +1737,12 @@ static int apply_cpu_errata_fixes(unsigned nodes, int needs_reset)
 			}
 
 		}
-		else if(is_cpu_pre_d0()) { // d0 later don't need it 
+		else if (is_cpu_pre_d0()) { // d0 later don't need it
 			uint32_t cmd_ref;
 			/* Errata 98 
-			* Set Clk Ramp Hystersis to 7
-			* Clock Power/Timing Low
-			*/
+			 * Set Clk Ramp Hystersis to 7
+			 * Clock Power/Timing Low
+			 */
 			cmd_ref = 0x04e20707; /* Registered */
 			cmd = pci_read_config32(dev, 0xd4);
 			if(cmd != cmd_ref) {
@@ -1778,7 +1770,10 @@ static int optimize_link_read_pointers(unsigned nodes, int needs_reset)
 			/* This works on an Athlon64 because unimplemented links return 0 */
 			reg = 0x98 + (link * 0x20);
 			link_type = pci_read_config32(f0_dev, reg);
-			if ((link_type & 7) == 3) { /* only handle coherent link here*/
+			/* Only handle coherent links */
+			if ((link_type & (LinkConnected | InitComplete|NonCoherent)) == 
+				(LinkConnected|InitComplete)) 
+			{
 				cmd &= ~(0xff << (link *8));
 				cmd |= 0x25 << (link *8);
 			}
@@ -1794,6 +1789,8 @@ static int optimize_link_read_pointers(unsigned nodes, int needs_reset)
 static int setup_coherent_ht_domain(void)
 {
 	struct setup_smp_result result;
+	result.nodes = 1;
+	result.needs_reset = 0;
 
 #if K8_HT_CHECK_PENDING_LINK == 1 
 	//needed?
@@ -1802,17 +1799,14 @@ static int setup_coherent_ht_domain(void)
 	enable_bsp_routing();
 
 #if CONFIG_MAX_PHYSICAL_CPUS > 1
-	result = setup_smp();
-	result.nodes = verify_mp_capabilities(result.nodes);
-	clear_dead_routes(result.nodes);
-#else
-	result.nodes = 1;
-	result.needs_reset = 0;
+        result = setup_smp();
+        result.nodes = verify_mp_capabilities(result.nodes);
+        clear_dead_routes(result.nodes);
 #endif
 
 	if (result.nodes == 1) {
 		setup_uniprocessor();
-	} 
+	}
 	coherent_ht_finalize(result.nodes);
 	result.needs_reset = apply_cpu_errata_fixes(result.nodes, result.needs_reset);
 	result.needs_reset = optimize_link_read_pointers(result.nodes, result.needs_reset);

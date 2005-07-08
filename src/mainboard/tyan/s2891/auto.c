@@ -87,7 +87,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #define TOTAL_CPUS (FIRST_CPU + SECOND_CPU)
 
 #define CK804_NUM 1
-#include "southbridge/nvidia/ck804/ck804_early_setup.h"
 #include "southbridge/nvidia/ck804/ck804_early_setup_ss.h"
 #include "southbridge/nvidia/ck804/ck804_early_setup.c"
 
@@ -136,6 +135,7 @@ static void main(unsigned long bist)
                 enable_lapic();
                 init_timer();
 
+
 #if CONFIG_LOGICAL_CPUS==1
                 id = get_node_core_id_x();
                 if(id.coreid == 0) {
@@ -152,16 +152,19 @@ static void main(unsigned long bist)
                 distinguish_cpu_resets(nodeid);
 #endif
 
+                post_code(0x31);
 
                 if (!boot_cpu()
 #if CONFIG_LOGICAL_CPUS==1 
                         || (id.coreid != 0)
 #endif
                 ) {
-                        stop_this_cpu(); 
+                        stop_this_cpu(); // it will stop all cores except core0 of cpu0
                 }
         }
 
+	post_code(0x32);
+	
  	w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
         uart_init();
         console_init();
@@ -174,6 +177,7 @@ static void main(unsigned long bist)
 	needs_reset = setup_coherent_ht_domain();
 
 #if CONFIG_LOGICAL_CPUS==1
+        // It is said that we should start core1 after all core0 launched
         start_other_cores();
 #endif
         needs_reset |= ht_setup_chains_x();
@@ -189,6 +193,5 @@ static void main(unsigned long bist)
 
 	memreset_setup();
 	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
-
 
 }

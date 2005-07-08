@@ -68,8 +68,10 @@ void pnp_read_resources(device_t dev)
 static void pnp_set_resource(device_t dev, struct resource *resource)
 {
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
-		printk_err("ERROR: %s %02x not allocated\n",
-			dev_path(dev), resource->index);
+		printk_err("ERROR: %s %02x %s size: 0x%010Lx not assigned\n",
+			dev_path(dev), resource->index,
+			resource_type(resource),
+			resource->size);
 		return;
 	}
 

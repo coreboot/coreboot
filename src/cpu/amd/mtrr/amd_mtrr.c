@@ -96,26 +96,32 @@ static void set_fixed_mtrr_resource(void *gp, struct device *dev, struct resourc
 		return;
 	}
 	printk_debug("Setting fixed MTRRs(%d-%d) Type: WB, RdMEM, WrMEM\n",
-		     start_mtrr, last_mtrr);
+		start_mtrr, last_mtrr);
 	set_fixed_mtrrs(start_mtrr, last_mtrr, MTRR_TYPE_WRBACK | MTRR_READ_MEM | MTRR_WRITE_MEM);
 	
 }
 
+extern void enable_fixed_mtrr(void);
+
 void amd_setup_mtrrs(void)
 {
+	unsigned long address_bits;
 	struct mem_state state;
 	unsigned long i;
 	msr_t msr;
 
+
 	/* Enable the access to AMD RdDram and WrDram extension bits */
+	disable_cache();
 	msr = rdmsr(SYSCFG_MSR);
 	msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
 	wrmsr(SYSCFG_MSR, msr);
+	enable_cache();
 
 	printk_debug("\n");
 	/* Initialized the fixed_mtrrs to uncached */
 	printk_debug("Setting fixed MTRRs(%d-%d) type: UC\n", 
-		     0, NUM_FIXED_RANGES);
+		0, NUM_FIXED_RANGES);
 	set_fixed_mtrrs(0, NUM_FIXED_RANGES, MTRR_TYPE_UNCACHEABLE);
 
 	/* Except for the PCI MMIO hole just before 4GB there are no
@@ -127,6 +133,7 @@ void amd_setup_mtrrs(void)
 		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
 		set_fixed_mtrr_resource, &state);
 	printk_debug("DONE fixed MTRRs\n");
+
 	if (state.mmio_basek > state.tomk) {
 		state.mmio_basek = state.tomk;
 	}
@@ -164,10 +171,17 @@ void amd_setup_mtrrs(void)
 	msr.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
 	wrmsr(SYSCFG_MSR, msr);
 
+	enable_fixed_mtrr();
+
 	enable_cache();
+
+	/* FIXME we should probably query the cpu for this
+	 * but so far this is all any recent AMD cpu has supported.
+	 */
+	address_bits = 40;
 
 	/* Now that I have mapped what is memory and what is not
 	 * Setup the mtrrs so we can cache the memory.
 	 */
-	x86_setup_mtrrs();
+	x86_setup_var_mtrrs(address_bits);
 }

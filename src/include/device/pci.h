@@ -50,16 +50,26 @@ extern struct pci_driver pci_drivers[];
 extern struct pci_driver epci_drivers[];
 
 
-struct device_operations default_pci_ops_dev;
-struct device_operations default_pci_ops_bus;
+extern struct device_operations default_pci_ops_dev;
+extern struct device_operations default_pci_ops_bus;
 
 void pci_dev_read_resources(device_t dev);
 void pci_bus_read_resources(device_t dev);
 void pci_dev_set_resources(device_t dev);
 void pci_dev_enable_resources(device_t dev);
 void pci_bus_enable_resources(device_t dev);
+void pci_bus_reset(struct bus *bus);
+device_t pci_probe_dev(device_t dev, struct bus *bus, unsigned devfn);
+unsigned int do_pci_scan_bridge(device_t bus, unsigned int max,
+	unsigned int (*do_scan_bus)(struct bus *bus, 
+		unsigned min_devfn, unsigned max_devfn, unsigned int max));
 unsigned int pci_scan_bridge(device_t bus, unsigned int max);
 unsigned int pci_scan_bus(struct bus *bus, unsigned min_devfn, unsigned max_devfn, unsigned int max);
+uint8_t pci_moving_config8(struct device *dev, unsigned reg);
+uint16_t pci_moving_config16(struct device *dev, unsigned reg);
+uint32_t pci_moving_config32(struct device *dev, unsigned reg);
+unsigned pci_find_next_capability(device_t dev, unsigned cap, unsigned last);
+unsigned pci_find_capability(device_t dev, unsigned cap);
 struct resource *pci_get_resource(struct device *dev, unsigned long index);
 void pci_dev_set_subsystem(device_t dev, unsigned vendor, unsigned device);
 

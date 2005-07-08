@@ -40,7 +40,7 @@ static device_t __f1_dev[FX_DEVS];
 static void debug_fx_devs(void)
 {
 	int i;
-	for (i = 0; i < FX_DEVS; i++) {
+	for(i = 0; i < FX_DEVS; i++) {
 		device_t dev;
 		dev = __f0_dev[i];
 		if (dev) {
@@ -62,7 +62,7 @@ static void get_fx_devs(void)
 	if (__f1_dev[0]) {
 		return;
 	}
-	for (i = 0; i < FX_DEVS; i++) {
+	for(i = 0; i < FX_DEVS; i++) {
 		__f0_dev[i] = dev_find_slot(0, PCI_DEVFN(0x18 + i, 0));
 		__f1_dev[i] = dev_find_slot(0, PCI_DEVFN(0x18 + i, 1));
 	}
@@ -81,7 +81,7 @@ static void f1_write_config32(unsigned reg, uint32_t value)
 {
 	int i;
 	get_fx_devs();
-	for (i = 0; i < FX_DEVS; i++) {
+	for(i = 0; i < FX_DEVS; i++) {
 		device_t dev;
 		dev = __f1_dev[i];
 		if (dev && dev->enabled) {
@@ -102,9 +102,9 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 	nodeid = amdk8_nodeid(dev);
 #if 0
 	printk_debug("%s amdk8_scan_chains max: %d starting...\n", 
-		     dev_path(dev), max);
+		dev_path(dev), max);
 #endif
-	for (link = 0; link < dev->links; link++) {
+	for(link = 0; link < dev->links; link++) {
 		uint32_t link_type;
 		uint32_t busses, config_busses;
 		unsigned free_reg, config_reg;
@@ -122,9 +122,10 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 			continue;
 		}
 		/* See if there is an available configuration space mapping
-		 * register in function 1. */
+		 * register in function 1. 
+		 */
 		free_reg = 0;
-		for (config_reg = 0xe0; config_reg <= 0xec; config_reg += 4) {
+		for(config_reg = 0xe0; config_reg <= 0xec; config_reg += 4) {
 			uint32_t config;
 			config = f1_read_config32(config_reg);
 			if (!free_reg && ((config & 3) == 0)) {
@@ -132,8 +133,8 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 				continue;
 			}
 			if (((config & 3) == 3) && 
-			    (((config >> 4) & 7) == nodeid) &&
-			    (((config >> 8) & 3) == link)) {
+				(((config >> 4) & 7) == nodeid) &&
+				(((config >> 8) & 3) == link)) {
 				break;
 			}
 		}
@@ -141,7 +142,8 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 			config_reg = free_reg;
 		}
 		/* If we can't find an available configuration space mapping
-		 * register skip this bus */
+		 * register skip this bus 
+		 */
 		if (config_reg > 0xec) {
 			continue;
 		}
@@ -158,15 +160,15 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 		 */
 		busses = pci_read_config32(dev, dev->link[link].cap + 0x14);
 		config_busses = f1_read_config32(config_reg);
-
+		
 		/* Configure the bus numbers for this bridge: the configuration
 		 * transactions will not be propagates by the bridge if it is
 		 * not correctly configured
 		 */
 		busses &= 0xff000000;
 		busses |= (((unsigned int)(dev->bus->secondary) << 0) |
-			   ((unsigned int)(dev->link[link].secondary) << 8) |
-			   ((unsigned int)(dev->link[link].subordinate) << 16));
+			((unsigned int)(dev->link[link].secondary) << 8) |
+			((unsigned int)(dev->link[link].subordinate) << 16));
 		pci_write_config32(dev, dev->link[link].cap + 0x14, busses);
 
 		config_busses &= 0x000fc88;
@@ -183,13 +185,14 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 			dev_path(dev), link, max);
 #endif
 		/* Now we can scan all of the subordinate busses i.e. the
-		 * chain on the hypertranport link */
-		max = hypertransport_scan_chain(&dev->link[link], max);
+		 * chain on the hypertranport link 
+		 */
+		max = hypertransport_scan_chain(&dev->link[link], 0, 0xbf, max);
 
 #if 0
 		printk_debug("%s Hyper transport scan link: %d new max: %d\n",
 			dev_path(dev), link, max);
-#endif
+#endif		
 
 		/* We know the number of busses behind this bridge.  Set the
 		 * subordinate bus number to it's real value
@@ -202,6 +205,7 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 		config_busses = (config_busses & 0x00ffffff) |
 			(dev->link[link].subordinate << 24);
 		f1_write_config32(config_reg, config_busses);
+
 #if 0
 		printk_debug("%s Hypertransport scan link: %d done\n",
 			dev_path(dev), link);
@@ -214,32 +218,34 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 	return max;
 }
 
-static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
-		       unsigned goal_link)
+static int reg_useable(unsigned reg, 
+	device_t goal_dev, unsigned goal_nodeid, unsigned goal_link)
 {
 	struct resource *res;
 	unsigned nodeid, link;
 	int result;
 	res = 0;
-	for (nodeid = 0; !res && (nodeid < 8); nodeid++) {
+	for(nodeid = 0; !res && (nodeid < 8); nodeid++) {
 		device_t dev;
 		dev = __f0_dev[nodeid];
-		for (link = 0; !res && (link < 3); link++) {
+		for(link = 0; !res && (link < 3); link++) {
 			res = probe_resource(dev, 0x100 + (reg | link));
 		}
 	}
 	result = 2;
 	if (res) {
 		result = 0;
-		if ((goal_link == (link - 1)) && 
-		    (goal_nodeid == (nodeid - 1)) &&
-		    (res->flags <= 1)) {
+		if (	(goal_link == (link - 1)) && 
+			(goal_nodeid == (nodeid - 1)) &&
+			(res->flags <= 1)) {
 			result = 1;
 		}
 	}
 #if 0
 	printk_debug("reg: %02x result: %d gnodeid: %u glink: %u nodeid: %u link: %u\n",
-		     reg, result, goal_nodeid, goal_link, nodeid, link);
+		reg, result, 
+		goal_nodeid, goal_link, 
+		nodeid, link);
 #endif
 	return result;
 }
@@ -250,7 +256,7 @@ static struct resource *amdk8_find_iopair(device_t dev, unsigned nodeid, unsigne
 	unsigned free_reg, reg;
 	resource = 0;
 	free_reg = 0;
-	for (reg = 0xc0; reg <= 0xd8; reg += 0x8) {
+	for(reg = 0xc0; reg <= 0xd8; reg += 0x8) {
 		int result;
 		result = reg_useable(reg, dev, nodeid, link);
 		if (result == 1) {
@@ -277,7 +283,7 @@ static struct resource *amdk8_find_mempair(device_t dev, unsigned nodeid, unsign
 	unsigned free_reg, reg;
 	resource = 0;
 	free_reg = 0;
-	for (reg = 0x80; reg <= 0xb8; reg += 0x8) {
+	for(reg = 0x80; reg <= 0xb8; reg += 0x8) {
 		int result;
 		result = reg_useable(reg, dev, nodeid, link);
 		if (result == 1) {
@@ -348,7 +354,7 @@ static void amdk8_read_resources(device_t dev)
 {
 	unsigned nodeid, link;
 	nodeid = amdk8_nodeid(dev);
-	for (link = 0; link < dev->links; link++) {
+	for(link = 0; link < dev->links; link++) {
 		if (dev->link[link].children) {
 			amdk8_link_read_bases(dev, nodeid, link);
 		}
@@ -499,11 +505,11 @@ static void amdk8_set_resources(device_t dev)
 	amdk8_create_vga_resource(dev, nodeid);
 	
 	/* Set each resource we have found */
-	for (i = 0; i < dev->resources; i++) {
+	for(i = 0; i < dev->resources; i++) {
 		amdk8_set_resource(dev, &dev->resource[i], nodeid);
 	}
 
-	for (link = 0; link < dev->links; link++) {
+	for(link = 0; link < dev->links; link++) {
 		struct bus *bus;
 		bus = &dev->link[link];
 		if (bus->children) {
@@ -520,26 +526,9 @@ static void amdk8_enable_resources(device_t dev)
 
 static void mcf0_control_init(struct device *dev)
 {
-	uint32_t cmd;
-
 #if 0	
 	printk_debug("NB: Function 0 Misc Control.. ");
 #endif
-#if 1
-	/* improve latency and bandwith on HT */
-	cmd = pci_read_config32(dev, 0x68);
-	cmd &= 0xffff80ff;
-	cmd |= 0x00004800;
-	pci_write_config32(dev, 0x68, cmd );
-#endif
-
-#if 0	
-	/* over drive the ht port to 1000 Mhz */
-	cmd = pci_read_config32(dev, 0xa8);
-	cmd &= 0xfffff0ff;
-	cmd |= 0x00000600;
-	pci_write_config32(dev, 0xdc, cmd );
-#endif	
 #if 0
 	printk_debug("done.\n");
 #endif
@@ -578,7 +567,7 @@ static void pci_domain_read_resources(device_t dev)
 
 	/* Find the already assigned resource pairs */
 	get_fx_devs();
-	for (reg = 0x80; reg <= 0xd8; reg+= 0x08) {
+	for(reg = 0x80; reg <= 0xd8; reg+= 0x08) {
 		uint32_t base, limit;
 		base  = f1_read_config32(reg);
 		limit = f1_read_config32(reg + 0x04);
@@ -612,8 +601,8 @@ static void pci_domain_read_resources(device_t dev)
 	resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 }
 
-static void ram_resource(device_t dev, unsigned long index,
-			 unsigned long basek, unsigned long sizek)
+static void ram_resource(device_t dev, unsigned long index, 
+	unsigned long basek, unsigned long sizek)
 {
 	struct resource *resource;
 
@@ -691,7 +680,7 @@ static void pci_domain_set_resources(device_t dev)
 #endif
 
 	idx = 10;
-	for (i = 0; i < 8; i++) {
+	for(i = 0; i < 8; i++) {
 		uint32_t base, limit;
 		unsigned basek, limitk, sizek;
 		base  = f1_read_config32(0x40 + (i << 3));
@@ -737,11 +726,35 @@ static void pci_domain_set_resources(device_t dev)
 static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
 {
 	unsigned reg;
+	int i;
 	/* Unmap all of the HT chains */
-	for (reg = 0xe0; reg <= 0xec; reg += 4) {
+	for(reg = 0xe0; reg <= 0xec; reg += 4) {
 		f1_write_config32(reg, 0);
 	}
 	max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0x18, 0), 0xff, max);
+	
+	/* Tune the hypertransport transaction for best performance.
+	 * Including enabling relaxed ordering if it is safe.
+	 */
+	get_fx_devs();
+	for(i = 0; i < FX_DEVS; i++) {
+		device_t f0_dev;
+		f0_dev = __f0_dev[i];
+		if (f0_dev && f0_dev->enabled) {
+			uint32_t httc;
+			int j;
+			httc = pci_read_config32(f0_dev, HT_TRANSACTION_CONTROL);
+			httc &= ~HTTC_RSP_PASS_PW;
+			if (!dev->link[0].disable_relaxed_ordering) {
+				httc |= HTTC_RSP_PASS_PW;
+			}
+			printk_spew("%s passpw: %s\n",
+				dev_path(dev),
+				(!dev->link[0].disable_relaxed_ordering)?
+				"enabled":"disabled");
+			pci_write_config32(f0_dev, HT_TRANSACTION_CONTROL, httc);
+		}
+	}
 	return max;
 }
 
@@ -755,20 +768,34 @@ static struct device_operations pci_domain_ops = {
 };
 
 #define APIC_ID_OFFSET 0x10
+
 static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 {
 	struct bus *cpu_bus;
 	device_t dev_mc;
+	int bsp_apic_id;
+	int apic_id_offset;
 	int i,j;
-	unsigned nb_cfg_54 = 0;
-	unsigned siblings = 0;
-	int enable_apic_ext_id = 0;
-	int bsp_apic_id = lapicid(); // bsp apicid
-	int apic_id_offset = bsp_apic_id;
+	unsigned nb_cfg_54;
+	int enable_apic_ext_id;
+	unsigned siblings;
+#if CONFIG_LOGICAL_CPUS == 1
+	int e0_later_single_core; 
+	int disable_siblings;
+#endif
 
-#if CONFIG_LOGICAL_CPUS==1
-	int e0_later_single_core;
-	int disable_siblings = !CONFIG_LOGICAL_CPUS;
+	nb_cfg_54 = 0;
+	enable_apic_ext_id = 0;
+	siblings = 0;
+
+	/* Find the bootstrap processors apicid */
+	bsp_apic_id = lapicid();
+
+	/* See if I will enable extended ids' */
+	apic_id_offset = bsp_apic_id;
+
+#if CONFIG_LOGICAL_CPUS == 1
+	disable_siblings = !CONFIG_LOGICAL_CPUS;
 	get_option(&disable_siblings, "dual_core");
 
 	// for pre_e0, nb_cfg_54 can not be set, ( even set, when you read it still be 0)
@@ -776,45 +803,42 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
  
 	nb_cfg_54 = read_nb_cfg_54();
 #endif
-
 	dev_mc = dev_find_slot(0, PCI_DEVFN(0x18, 0));
-	if(pci_read_config32(dev_mc, 0x68) & ( HTTC_APIC_EXT_ID | HTTC_APIC_EXT_BRD_CST)) {
+	if (!dev_mc) {
+		die("0:18.0 not found?");
+	}
+	if (pci_read_config32(dev_mc, 0x68) & (HTTC_APIC_EXT_ID|HTTC_APIC_EXT_BRD_CST))
+	{
 		enable_apic_ext_id = 1;
-		if(apic_id_offset==0) { //bsp apic id is not changed
+		if (apic_id_offset == 0) {
+			/* bsp apic id is not changed */
 			apic_id_offset = APIC_ID_OFFSET;
 		}
 	}
 
-
 	/* Find which cpus are present */
 	cpu_bus = &dev->link[0];
-	for (i = 0; i < 8; i++) {
+	for(i = 0; i < 8; i++) {
 		device_t dev, cpu;
 		struct device_path cpu_path;
 
-		/* Find the cpu's memory controller */
+		/* Find the cpu's pci device */
 		dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 3));
-		if(!dev) { // in case we move apic cluser before pci_domain and not set that for second CPU
-			for(j=0; j<4; j++) {
-	                        struct device dummy;
-				uint32_t id;
-	                        dummy.bus              = dev_mc->bus;
-	                        dummy.path.type        = DEVICE_PATH_PCI;
-	                        dummy.path.u.pci.devfn = PCI_DEVFN(0x18 + i, j);
-	                        id = pci_read_config32(&dummy, PCI_VENDOR_ID);
-	                        if (id != 0xffffffff && id != 0x00000000 &&
-        	                        id != 0x0000ffff && id != 0xffff0000) {
-                	        	//create that for it
-	                	        dev = alloc_dev(dev_mc->bus, &dummy.path);
-				}
+		if (!dev) {
+			/* If I am probing things in a weird order
+			 * ensure all of the cpu's pci devices are found.
+			 */
+			int j;
+			for(j = 0; j <= 3; j++) {
+				dev = pci_probe_dev(NULL, dev_mc->bus,
+					PCI_DEVFN(0x18 + i, j));
 			}
 		}
 
-#if CONFIG_LOGICAL_CPUS==1
+#if CONFIG_LOGICAL_CPUS == 1
 		e0_later_single_core = 0;
-		if((!disable_siblings) && dev && dev->enabled) {
-			j = (pci_read_config32(dev, 0xe8) >> 12) & 3;  //dev is func 3
-
+		if ((!disable_siblings) && dev && dev->enabled) {
+			j = (pci_read_config32(dev, 0xe8) >> 12) & 3; // dev is func 3
 			printk_debug("  %s siblings=%d\r\n", dev_path(dev), j);
 
 			if(nb_cfg_54) {
@@ -843,51 +867,49 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 				}
 			} else {
 				siblings = j;
-			}
+  			}
 		}
 #endif
-
 #if CONFIG_LOGICAL_CPUS==1
                 for (j = 0; j <= (e0_later_single_core?0:siblings); j++ ) {
 #else 
-		for (j = 0; j <= siblings; j++ ) {
+              	for (j = 0; j <= siblings; j++ ) {
 #endif
-                        /* Build the cpu device path */
-                        cpu_path.type = DEVICE_PATH_APIC;
-                        cpu_path.u.apic.apic_id = i * (nb_cfg_54?(siblings+1):1) + j * (nb_cfg_54?1:8);
-  
-                        /* See if I can find the cpu */
-                        cpu = find_dev_path(cpu_bus, &cpu_path);
-  
-                        /* Enable the cpu if I have the processor */
-                        if (dev && dev->enabled) {
-                                if (!cpu) {
-                                        cpu = alloc_dev(cpu_bus, &cpu_path);
-                                }
-                                if (cpu) {
-                                        cpu->enabled = 1; 
-                                }
-                        }
-
-                        /* Disable the cpu if I don't have the processor */
-                        if (cpu && (!dev || !dev->enabled)) {
-                                cpu->enabled = 0;
-                        }
-
-                        /* Report what I have done */
-                        if (cpu) {
-				if(enable_apic_ext_id) {
-			                if(cpu->path.u.apic.apic_id<apic_id_offset) { //all add offset except bsp core0
-						if( (cpu->path.u.apic.apic_id > siblings) || (bsp_apic_id!=0) )
-	        		                        cpu->path.u.apic.apic_id += apic_id_offset;
-                			}
+			/* Build the cpu device path */
+			cpu_path.type = DEVICE_PATH_APIC;
+			cpu_path.u.apic.apic_id = i * (nb_cfg_54?(siblings+1):1) + j * (nb_cfg_54?1:8);
+			
+			/* See if I can find the cpu */
+			cpu = find_dev_path(cpu_bus, &cpu_path);
+			
+			/* Enable the cpu if I have the processor */
+			if (dev && dev->enabled) {
+				if (!cpu) {
+					cpu = alloc_dev(cpu_bus, &cpu_path);
 				}
-                                printk_debug("CPU: %s %s\n",
-                                        dev_path(cpu), cpu->enabled?"enabled":"disabled");
-                        }
-                } //j
+				if (cpu) {
+					cpu->enabled = 1;
+				}
+			}
+			
+			/* Disable the cpu if I don't have the processor */
+			if (cpu && (!dev || !dev->enabled)) {
+				cpu->enabled = 0;
+			}
+			
+			/* Report what I have done */
+			if (cpu) {
+                                if(enable_apic_ext_id) {
+                                       if(cpu->path.u.apic.apic_id<apic_id_offset) { //all add offset except bsp core0
+                                               if( (cpu->path.u.apic.apic_id > siblings) || (bsp_apic_id!=0) )
+                                                       cpu->path.u.apic.apic_id += apic_id_offset;
+                                       }
+				}
+				printk_debug("CPU: %s %s\n",
+					dev_path(cpu), cpu->enabled?"enabled":"disabled");
+			}
+		} //j
 	}
-
 	return max;
 }
 

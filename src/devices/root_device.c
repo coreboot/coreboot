@@ -1,6 +1,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <part/hard_reset.h>
 
 /** 
  * Read the resources for the root device,
@@ -35,8 +36,9 @@ void root_dev_read_resources(device_t root)
 }
 
 /**
- * @brief Write the resources for the root device
+ * @brief Write the resources for every device
  *
+ * Write the resources for the root device,
  * and every device under it which are all of the devices.
  * @param root Pointer to the device structure for the system root device
  */
@@ -45,10 +47,10 @@ void root_dev_set_resources(device_t root)
 	struct bus *bus;
 
 	bus = &root->link[0];
-	compute_allocate_resource(bus, &root->resource[0],
-				  IORESOURCE_IO, IORESOURCE_IO);
-	compute_allocate_resource(bus, &root->resource[1],
-				  IORESOURCE_MEM, IORESOURCE_MEM);
+	compute_allocate_resource(bus,
+		&root->resource[0], IORESOURCE_IO, IORESOURCE_IO);
+	compute_allocate_resource(bus, 
+		&root->resource[1], IORESOURCE_MEM, IORESOURCE_MEM);
 	assign_resources(bus);
 }
 
@@ -57,9 +59,9 @@ void root_dev_set_resources(device_t root)
  *
  * The enumeration of certain buses is purely static. The existence of
  * devices on those buses can be completely determined at compile time
- * and is specified in the config file. Typical exapmles are the 'PNP'
- * devices on a legacy ISA/LPC bus. There is no need of probing of any
- * kind, the only thing we have to do is to walk through the bus and
+ * and is specified in the config file. Typical examples are the 'PNP' 
+ * devices on a legacy ISA/LPC bus. There is no need of probing of any kind, 
+ * the only thing we have to do is to walk through the bus and 
  * enable or disable devices as indicated in the config file.
  *
  * On the other hand, some devices are virtual and their existence is
@@ -70,47 +72,50 @@ void root_dev_set_resources(device_t root)
  * This function is the default scan_bus() method for the root device and
  * LPC bridges.
  *
- * @param root Pointer to the root device which the static buses are attached
+ * @param bus Pointer to the device structure which the static buses are attached
  * @param max  Maximum bus number currently used before scanning.
- * @return Largest bus number used after scanning.
+ * @return Largest bus number used.
  */
 static int smbus_max = 0;
-unsigned int scan_static_bus(device_t root, unsigned int max)
+unsigned int scan_static_bus(device_t bus, unsigned int max)
 {
 	device_t child;
 	unsigned link;
 
-	printk_spew("%s for %s\n", __func__, dev_path(root));
+	printk_spew("%s for %s\n", __func__, dev_path(bus));
 
-	for (link = 0; link < root->links; link++) {
-                /* for smbus bus enumerate */
-                child = root->link[link].children;
-                if(child && child->path.type == DEVICE_PATH_I2C) {
-                        root->link[link].secondary = ++smbus_max;
-                }
-		for (child = root->link[link].children; child; child = child->sibling) {
+	for(link = 0; link < bus->links; link++) {
+		/* for smbus bus enumerate */
+		child = bus->link[link].children;
+		if(child && child->path.type == DEVICE_PATH_I2C) {
+			bus->link[link].secondary = ++smbus_max;
+		}
+		for(child = bus->link[link].children; child; child = child->sibling) {
 			if (child->chip_ops && child->chip_ops->enable_dev) {
 				child->chip_ops->enable_dev(child);
 			}
 			if (child->ops && child->ops->enable) {
 				child->ops->enable(child);
 			}
-			if (child->path.type == DEVICE_PATH_I2C)	
-				printk_debug("smbus: %s[%d]->",  dev_path(child->bus->dev), child->bus->link );
-			printk_debug("%s %s\n", dev_path(child),
-				     child->enabled?"enabled": "disabled");
+ 			if (child->path.type == DEVICE_PATH_I2C) {
+ 				printk_debug("smbus: %s[%d]->",  
+					dev_path(child->bus->dev), child->bus->link );
+			}
+			printk_debug("%s %s\n",
+				dev_path(child),
+				child->enabled?"enabled": "disabled");
 		}
 	}
-	for (link = 0; link < root->links; link++) {
-		for (child = root->link[link].children; child; child = child->sibling) {
+	for(link = 0; link < bus->links; link++) {
+		for(child = bus->link[link].children; child; child = child->sibling) {
 			if (!child->ops || !child->ops->scan_bus)
 				continue;
 			printk_spew("%s scanning...\n", dev_path(child));
-			max = child->ops->scan_bus(child, max);
+			max = scan_bus(child, max);
 		}
 	}
 
-	printk_spew("%s for  %s done\n", __func__, dev_path(root));
+	printk_spew("%s for %s done\n", __func__, dev_path(bus));
 
 	return max;
 }
@@ -120,7 +125,7 @@ unsigned int scan_static_bus(device_t root, unsigned int max)
  *
  * @param dev the device whos children's resources are to be enabled
  *
- * This function is call by the global enable_resources() indirectly via the
+ * This function is called by the global enable_resource() indirectly via the
  * device_operation::enable_resources() method of devices.
  *
  * Indirect mutual recursion:
@@ -131,9 +136,9 @@ unsigned int scan_static_bus(device_t root, unsigned int max)
 void enable_childrens_resources(device_t dev)
 {
 	unsigned link;
-	for (link = 0; link < dev->links; link++) {
+	for(link = 0; link < dev->links; link++) {
 		device_t child;
-		for (child = dev->link[link].children; child; child = child->sibling) {
+		for(child = dev->link[link].children; child; child = child->sibling) {
 			enable_resources(child);
 		}
 	}
@@ -161,6 +166,12 @@ void root_dev_init(device_t root)
 {
 }
 
+void root_dev_reset(struct bus *bus)
+{
+	printk_info("Reseting board...\n");
+	hard_reset();
+}
+
 /**
  * @brief Default device operation for root device
  *
@@ -174,6 +185,7 @@ struct device_operations default_dev_ops_root = {
 	.enable_resources = root_dev_enable_resources,
 	.init             = root_dev_init,
 	.scan_bus         = root_dev_scan_bus,
+	.reset_bus        = root_dev_reset,
 };
 
 /**

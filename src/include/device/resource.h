@@ -98,4 +98,7 @@ extern void search_global_resources(
 	unsigned long type_mask, unsigned long type,
 	resource_search_t search, void *gp);
 
+#define RESOURCE_TYPE_MAX 20
+extern const char *resource_type(struct resource *resource);
+
 #endif /* RESOURCE_H */

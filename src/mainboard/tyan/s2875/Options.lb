@@ -3,9 +3,6 @@ uses HAVE_PIRQ_TABLE
 uses USE_FALLBACK_IMAGE
 uses HAVE_FALLBACK_BOOT
 uses HAVE_HARD_RESET
-uses HARD_RESET_BUS
-uses HARD_RESET_DEVICE
-uses HARD_RESET_FUNCTION
 uses IRQ_SLOT_COUNT
 uses HAVE_OPTION_TABLE
 uses CONFIG_MAX_CPUS
@@ -47,6 +44,7 @@ uses MAINBOARD_POWER_ON_AFTER_POWER_FAIL
 uses CONFIG_CONSOLE_SERIAL8250
 uses HAVE_INIT_TIMER
 uses CONFIG_GDB_STUB
+uses CONFIG_GDB_STUB
 uses CROSS_COMPILE
 uses CC
 uses HOSTCC
@@ -56,6 +54,9 @@ uses CONFIG_CONSOLE_VGA
 uses CONFIG_PCI_ROM_RUN
 uses K8_E0_MEM_HOLE_SIZEK
 
+uses USE_DCACHE_RAM
+uses DCACHE_RAM_BASE
+uses DCACHE_RAM_SIZE
 uses CONFIG_USE_INIT
 
 ###
@@ -81,13 +82,6 @@ default HAVE_FALLBACK_BOOT=1
 ## Build code to reset the motherboard from linuxBIOS
 ##
 default HAVE_HARD_RESET=1
-
-##
-## Funky hard reset implementation
-## 
-default HARD_RESET_BUS=1
-default HARD_RESET_DEVICE=5
-default HARD_RESET_FUNCTION=0
 
 ##
 ## Build code to export a programmable irq routing table
@@ -118,16 +112,28 @@ default LB_CKS_LOC=123
 ## Only worry about 2 micro processors
 ##
 default CONFIG_SMP=1
-default CONFIG_MAX_CPUS=2
+default CONFIG_MAX_CPUS=4
 default CONFIG_MAX_PHYSICAL_CPUS=2
-default CONFIG_LOGICAL_CPUS=0
+default CONFIG_LOGICAL_CPUS=1
+
+#CHIP_NAME ?
+default CONFIG_CHIP_NAME=1
 
 #1G memory hole
 default K8_E0_MEM_HOLE_SIZEK=0x100000
 
 #VGA Console
-#default CONFIG_CONSOLE_VGA=1
-#default CONFIG_PCI_ROM_RUN=1
+default CONFIG_CONSOLE_VGA=1
+default CONFIG_PCI_ROM_RUN=1
+
+
+##
+## enable CACHE_AS_RAM specifics
+##
+default USE_DCACHE_RAM=1
+default DCACHE_RAM_BASE=0xcf000
+default DCACHE_RAM_SIZE=0x1000
+default CONFIG_USE_INIT=1
 
 ##
 ## Build code to setup a generic IOAPIC

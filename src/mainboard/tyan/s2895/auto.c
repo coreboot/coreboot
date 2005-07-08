@@ -14,7 +14,7 @@
 #include "ram/ramtest.c"
 
 #include "northbridge/amd/amdk8/cpu_rev.c"
-#define K8_HT_FREQ_1G_SUPPORT 1
+//#define K8_HT_FREQ_1G_SUPPORT 1
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/nvidia/ck804/ck804_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
@@ -70,8 +70,9 @@ static void sio_gpio_setup(void){
 
 	unsigned value;
 
+//	lpc47b397_enable_serial(SUPERIO_GPIO_DEV, SUPERIO_GPIO_IO_BASE); // Already enable in failover.c
+
 #if 1
-	/*Enable onboard scsi*/
 	lpc47b397_gpio_offset_out(SUPERIO_GPIO_IO_BASE, 0x2c, (1<<7)|(0<<2)|(0<<1)|(0<<0)); // GP21, offset 0x2c, DISABLE_SCSI_L 
 	value = lpc47b397_gpio_offset_in(SUPERIO_GPIO_IO_BASE, 0x4c);
 	lpc47b397_gpio_offset_out(SUPERIO_GPIO_IO_BASE, 0x4c, (value|(1<<1)));
@@ -117,10 +118,9 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #define TOTAL_CPUS (FIRST_CPU + SECOND_CPU)
 
 #define CK804_NUM 2
-#define CK804B_BUSN 0xc
+#define CK804B_BUSN 0x80
 #define CK804_USE_NIC 1
 #define CK804_USE_ACI 1
-#include "southbridge/nvidia/ck804/ck804_early_setup.h"
 #include "southbridge/nvidia/ck804/ck804_early_setup_ss.h"
 
 //set GPIO to input mode
@@ -192,11 +192,12 @@ static void main(unsigned long bist)
                 enable_lapic();
                 init_timer();
 
+                post_code(0x30);
 
 #if CONFIG_LOGICAL_CPUS==1
         #if ENABLE_APIC_EXT_ID == 1
             #if LIFT_BSP_APIC_ID == 0
-                if( id.nodeid != 0 ) 
+                if( id.nodeid != 0 ) //all except cores in node0
             #endif
                         lapic_write(LAPIC_ID, ( lapic_read(LAPIC_ID) | (APIC_ID_OFFSET<<24) ) );
         #endif
@@ -213,7 +214,7 @@ static void main(unsigned long bist)
             #if LIFT_BSP_APIC_ID == 0
                 if(nodeid != 0)
             #endif
-                        lapic_write(LAPIC_ID, ( lapic_read(LAPIC_ID) | (APIC_ID_OFFSET<<24) ) ); 
+                        lapic_write(LAPIC_ID, ( lapic_read(LAPIC_ID) | (APIC_ID_OFFSET<<24) ) ); // CPU apicid is from 0x10
 
         #endif
 
@@ -223,16 +224,18 @@ static void main(unsigned long bist)
                 distinguish_cpu_resets(nodeid);
 #endif
 
+                post_code(0x31);
 
                 if (!boot_cpu()
 #if CONFIG_LOGICAL_CPUS==1 
                         || (id.coreid != 0)
 #endif
                 ) {
-                        stop_this_cpu(); 
+                        stop_this_cpu(); // it will stop all cores except core0 of cpu0
                 }
         }
 
+	post_code(0x32);
 
         lpc47b397_enable_serial(SERIAL_DEV, TTYS0_BASE);
         uart_init();
@@ -247,6 +250,7 @@ static void main(unsigned long bist)
 
 	needs_reset = setup_coherent_ht_domain();
 #if CONFIG_LOGICAL_CPUS==1
+        // It is said that we should start core1 after all core0 launched
         start_other_cores();
 #endif
 

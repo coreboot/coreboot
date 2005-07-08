@@ -403,6 +403,8 @@ unsigned long write_pirq_routing_table(unsigned long addr)
                 pirq->checksum = sum;
         }
 
+	printk_info("done.\n");
+
 	return	(unsigned long) pirq_info;
 
 }

@@ -3,9 +3,6 @@ uses HAVE_PIRQ_TABLE
 uses USE_FALLBACK_IMAGE
 uses HAVE_FALLBACK_BOOT
 uses HAVE_HARD_RESET
-uses HARD_RESET_BUS
-uses HARD_RESET_DEVICE
-uses HARD_RESET_FUNCTION
 uses IRQ_SLOT_COUNT
 uses HAVE_OPTION_TABLE
 uses CONFIG_MAX_CPUS
@@ -90,10 +87,6 @@ default HAVE_FALLBACK_BOOT=1
 ##
 default HAVE_HARD_RESET=1
 
-#default HARD_RESET_BUS=1
-#default HARD_RESET_DEVICE=4
-#default HARD_RESET_FUNCTION=0
-
 ##
 ## Build code to export a programmable irq routing table
 ##
@@ -134,7 +127,7 @@ default CONFIG_LOGICAL_CPUS=1
 default K8_E0_MEM_HOLE_SIZEK=0x100000
 
 #CK804 setting
-default CK804_DEVN_BASE=0
+#default CK804_DEVN_BASE=0
 
 #VGA
 default CONFIG_CONSOLE_VGA=1

@@ -86,6 +86,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #if CONFIG_LOGICAL_CPUS==1
 #define SET_NB_CFG_54 1
 #include "cpu/amd/dualcore/dualcore.c"
+#else
+#include "cpu/amd/model_fxx/node_id.c"
 #endif
 
 #define FIRST_CPU  1
@@ -295,15 +297,10 @@ void amd64_main(unsigned long bist)
 	report_bist_failure(bist);
 
         setup_s2892_resource_map();
-#if 0
-        dump_pci_device(PCI_DEV(0, 0x18, 0));
-	dump_pci_device(PCI_DEV(0, 0x19, 0));
-#endif
 
 	needs_reset = setup_coherent_ht_domain();
 	
 #if CONFIG_LOGICAL_CPUS==1
-        // It is said that we should start core1 after all core0 launched
         start_other_cores();
 #endif
         needs_reset |= ht_setup_chains_x();
@@ -316,19 +313,10 @@ void amd64_main(unsigned long bist)
        	}
 
 	enable_smbus();
-#if 0
-	dump_spd_registers(&cpu[0]);
-#endif
-#if 0
-	dump_smbus_registers();
-#endif
 
 	memreset_setup();
 	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
 
-#if 0
-	dump_pci_devices();
-#endif
 
 #if 1
         {
@@ -346,6 +334,7 @@ void amd64_main(unsigned long bist)
         }
 
 #endif
+#if 1
 
 cpu_reset_x:
 
@@ -408,6 +397,7 @@ cpu_reset_x:
 		copy_and_run(new_cpu_reset);
 		/* We will not return */
 	}
+#endif
 
 
 	print_debug("should not be here -\r\n");

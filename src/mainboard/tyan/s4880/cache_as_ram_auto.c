@@ -325,6 +325,7 @@ void amd64_main(unsigned long bist)
                 enable_lapic();
                 init_timer();
 
+//                post_code(0x30);
 
 #if CONFIG_LOGICAL_CPUS==1
         #if ENABLE_APIC_EXT_ID == 1
@@ -355,7 +356,6 @@ void amd64_main(unsigned long bist)
                 distinguish_cpu_resets(nodeid);
 #endif
 
-
                 if (!boot_cpu()
 #if CONFIG_LOGICAL_CPUS==1 
                         || (id.coreid != 0)
@@ -380,9 +380,9 @@ void amd64_main(unsigned long bist)
 	needs_reset = setup_coherent_ht_domain();
 	
 #if CONFIG_LOGICAL_CPUS==1
+        // It is said that we should start core1 after all core0 launched
         start_other_cores();
 #endif
-
         needs_reset |= ht_setup_chains_x();
 
        	if (needs_reset) {

@@ -4,10 +4,12 @@
 #ifndef ASSEMBLY
 
 #if HAVE_FALLBACK_BOOT == 1
-void boot_successful(void);
+void set_boot_successful(void);
 #else
-#define boot_successful()
+#define set_boot_successful()
 #endif
+
+void boot_successful(void);
 
 #endif /* ASSEMBLY */
 

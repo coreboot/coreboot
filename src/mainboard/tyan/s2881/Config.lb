@@ -44,8 +44,7 @@ driver mainboard.o
 
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
-#object reset.o
-
+object reset.o
 if USE_DCACHE_RAM
 
 if CONFIG_USE_INIT
@@ -66,6 +65,7 @@ end
 
 end
 else
+
 
 ##
 ## Romcc output

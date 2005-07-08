@@ -18,7 +18,11 @@ const struct irq_routing_table intel_irq_routing_table = {
 	0x005c,         /* Device */
 	0,         /* Crap (miniport) */
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, /* u8 rfu[11] */
+#if CK804_DEVN_BASE==0
 	0x5a,         /*  u8 checksum , this hase to set to some value that would give 0 after the sum of all bytes for this structure (including checksum) */
+#else
+	0x4a,
+#endif
 	{
 		{1,((CK804_DEVN_BASE+9)<<3)|0, {{0x1, 0xdef8}, {0x2, 0xdef8}, {0x3, 0xdef8}, {0x4, 0xdef8}}, 0, 0},
 		{0x5,(1<<3)|0, {{0x1, 0xdef8}, {0x2, 0xdef8}, {0x3, 0xdef8}, {0x4, 0xdef8}}, 0, 0},

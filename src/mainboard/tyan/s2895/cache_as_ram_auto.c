@@ -13,9 +13,10 @@
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
 
-
 #include "northbridge/amd/amdk8/cpu_rev.c"
-#define K8_HT_FREQ_1G_SUPPORT 0
+#define K8_HT_FREQ_1G_SUPPORT 1
+#define K8_ALLOCATE_IO_RANGE 1
+//#define K8_SCAN_PCI_BUS 1
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/nvidia/ck804/ck804_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
@@ -75,13 +76,11 @@ static void sio_gpio_setup(void){
 
         unsigned value;
 
+//      lpc47b397_enable_serial(SUPERIO_GPIO_DEV, SUPERIO_GPIO_IO_BASE); // Already enable in failover.c
 
-#if 1
-        /*Enable onboard scsi*/
         lpc47b397_gpio_offset_out(SUPERIO_GPIO_IO_BASE, 0x2c, (1<<7)|(0<<2)|(0<<1)|(0<<0)); // GP21, offset 0x2c, DISABLE_SCSI_L 
         value = lpc47b397_gpio_offset_in(SUPERIO_GPIO_IO_BASE, 0x4c);
         lpc47b397_gpio_offset_out(SUPERIO_GPIO_IO_BASE, 0x4c, (value|(1<<1)));
-#endif
 
 }
 
@@ -114,6 +113,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #if CONFIG_LOGICAL_CPUS==1
 #define SET_NB_CFG_54 1
 #include "cpu/amd/dualcore/dualcore.c"
+#else
+#include "cpu/amd/model_fxx/node_id.c"
 #endif
 
 #define FIRST_CPU  1
@@ -121,8 +122,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #define TOTAL_CPUS (FIRST_CPU + SECOND_CPU)
 
 #define CK804_NUM 2
-//#define CK804B_BUSN 0x80
-#define CK804B_BUSN 0xc
+#define CK804B_BUSN 0x80
 #define CK804_USE_NIC 1
 #define CK804_USE_ACI 1
 
@@ -155,13 +155,18 @@ static void sio_setup(void)
         uint8_t byte;
 
         
+        /* LPC Variable Range Decode 1 0x400-0x47f */
+        /* to make sure lpc47b397 gpio on device work */
         pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE+1, 0), 0xac, 0x047f0400);
         
+        /* subject decoding*/
         byte = pci_read_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0x7b);
         byte |= 0x20; 
         pci_write_config8(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0x7b, byte);
         
+        /* LPC Positive Decode 0 */
         dword = pci_read_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa0);
+        /*decode VAR1, serial 0 */
         dword |= (1<<29)|(1<<0);
         pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa0, dword);
         
@@ -311,7 +316,7 @@ void amd64_main(unsigned long bist)
 
 		enable_lapic();
 
-                init_timer();
+//                init_timer();
 
 
 #if CONFIG_LOGICAL_CPUS==1
@@ -323,10 +328,12 @@ void amd64_main(unsigned long bist)
         #endif
                 if(id.coreid == 0) {
                         if (cpu_init_detected(id.nodeid)) {
+//                                __asm__ volatile ("jmp __cpu_reset");
                                 cpu_reset = 1;
                                 goto cpu_reset_x;
                         }
                         distinguish_cpu_resets(id.nodeid);
+//                        start_other_core(id.nodeid);
                 }
 #else
         #if ENABLE_APIC_EXT_ID == 1
@@ -337,6 +344,7 @@ void amd64_main(unsigned long bist)
 
         #endif
                 if (cpu_init_detected(nodeid)) {
+//                                __asm__ volatile ("jmp __cpu_reset");
                                 cpu_reset = 1;
                                 goto cpu_reset_x;
                 }
@@ -355,6 +363,8 @@ void amd64_main(unsigned long bist)
                 }
         }
 
+	init_timer(); // only do it it first CPU
+
 
 	lpc47b397_enable_serial(SERIAL_DEV, TTYS0_BASE);
         uart_init();
@@ -364,10 +374,6 @@ void amd64_main(unsigned long bist)
 	report_bist_failure(bist);
 
         setup_s2895_resource_map();
-#if 0
-        dump_pci_device(PCI_DEV(0, 0x18, 0));
-	dump_pci_device(PCI_DEV(0, 0x19, 0));
-#endif
 
 	needs_reset = setup_coherent_ht_domain();
 
@@ -376,15 +382,7 @@ void amd64_main(unsigned long bist)
         start_other_cores();
 #endif
 
-#if CK804B_BUSN == 0x80 
-        // You need to preset bus num in PCI_DEV(0, 0x18,1) 0xe0, 0xe4, 0xe8, 0xec
-        needs_reset |= ht_setup_chains(3);
-#else
-        // automatically set that for you, but you might meet tight space
-        // Bcause it has two Ck804, we need to set CK804B_BUSN to 0xc (ht_setup_chains_x will let second CK804 use that bus num.    
-    // otherwise ck804_eary_setup can not work rightly.
         needs_reset |= ht_setup_chains_x();
-#endif
 
         needs_reset |= ck804_early_setup_x();
 
@@ -394,19 +392,9 @@ void amd64_main(unsigned long bist)
        	}
 
 	enable_smbus();
-#if 0
-	dump_spd_registers(&cpu[0]);
-#endif
-#if 0
-	dump_smbus_registers();
-#endif
 
 	memreset_setup();
 	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
-
-#if 0
-	dump_pci_devices();
-#endif
 
 #if 1
 	{	
@@ -424,6 +412,7 @@ void amd64_main(unsigned long bist)
 	}
 
 #endif
+#if 1
 
 cpu_reset_x:    
 
@@ -486,6 +475,7 @@ cpu_reset_x:
                 copy_and_run(new_cpu_reset);
                 /* We will not return */
         }
+#endif
 
 
         print_err("should not be here -\r\n");

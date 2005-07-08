@@ -1,0 +1,12 @@
+config chip.h
+driver northbridge.o
+driver pciexp_porta.o
+driver pciexp_porta1.o
+driver pciexp_portb.o
+driver pciexp_portc.o
+
+makerule raminit_test
+	depends "$(TOP)/src/northbridge/intel/e7520/raminit_test.c"
+	depends "$(TOP)/src/northbridge/intel/e7520/raminit.c"
+	action "$(HOSTCC) $(HOSTCFLAGS) $(CPUFLAGS) -Wno-unused-function -I$(TOP)/src/include -g  $< -o $@"
+end

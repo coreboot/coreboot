@@ -187,7 +187,10 @@ static void misc_control_init(struct device *dev)
 			/* This works on an Athlon64 because unimplemented links return 0 */
 			reg = 0x98 + (link * 0x20);
 			link_type = pci_read_config32(f0_dev, reg);
-			if ((link_type & 7) == 3) { /* Only handle coherent link here */
+			/* Only handle coherent link here please */
+			if ((link_type & (LinkConnected|InitComplete|NonCoherent)) 
+				== (LinkConnected|InitComplete))
+			{
 				cmd &= ~(0xff << (link *8));
 				/* FIXME this assumes the device on the other side is an AMD device */
 				cmd |= 0x25 << (link *8);

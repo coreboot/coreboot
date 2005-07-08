@@ -17,8 +17,9 @@ static int enumerate_ht_chain(void)
 		id = pci_read_config32(PCI_DEV(0,0,0), PCI_VENDOR_ID);
 		/* If the chain is enumerated quit */
 		if (((id & 0xffff) == 0x0000) || ((id & 0xffff) == 0xffff) ||
-		    (((id >> 16) & 0xffff) == 0xffff) ||
-		    (((id >> 16) & 0xffff) == 0x0000)) {
+			(((id >> 16) & 0xffff) == 0xffff) ||
+			(((id >> 16) & 0xffff) == 0x0000))
+		{
 			break;
 		}
 
@@ -35,7 +36,8 @@ static int enumerate_ht_chain(void)
 		hdr_type &= 0x7f;
 
 		if ((hdr_type == PCI_HEADER_TYPE_NORMAL) ||
-		    (hdr_type == PCI_HEADER_TYPE_BRIDGE)) {
+			(hdr_type == PCI_HEADER_TYPE_BRIDGE)) 
+		{
 			pos = pci_read_config8(PCI_DEV(0,0,0), PCI_CAPABILITY_LIST);
 		}
 		while(pos != 0) {
@@ -43,24 +45,39 @@ static int enumerate_ht_chain(void)
 			cap = pci_read_config8(PCI_DEV(0,0,0), pos + PCI_CAP_LIST_ID);
 			if (cap == PCI_CAP_ID_HT) {
 				uint16_t flags;
+				/* Read and write and reread flags so the link
+				 * direction bit is valid.
+				 */
+				flags = pci_read_config16(PCI_DEV(0,0,0), pos + PCI_CAP_FLAGS);
+				pci_write_config16(PCI_DEV(0,0,0), pos + PCI_CAP_FLAGS, flags);
 				flags = pci_read_config16(PCI_DEV(0,0,0), pos + PCI_CAP_FLAGS);
 				if ((flags >> 13) == 0) {
 					unsigned count;
+					unsigned ctrl, ctrl_off;
 
 					flags &= ~0x1f;
 					flags |= next_unitid & 0x1f;
 					count = (flags >> 5) & 0x1f;
+					next_unitid += count;
+
+					/* Test for end of chain */
+					ctrl_off = ((flags >> 10) & 1)?
+						PCI_HT_CAP_SLAVE_CTRL1 : PCI_HT_CAP_SLAVE_CTRL0;
+					ctrl = pci_read_config16(PCI_DEV(0,0,0), pos + ctrl_off);
+					/* Is this the end of the hypertransport chain.
+					 * or has the link failed?
+					 */
+					if (ctrl & ((1 << 6)|(1 << 4))) {
+						next_unitid = 0x20;
+					}
 					
 					pci_write_config16(PCI_DEV(0, 0, 0), pos + PCI_CAP_FLAGS, flags);
-
-					next_unitid += count;
 					break;
 				}
 			}
 			pos = pci_read_config8(PCI_DEV(0, 0, 0), pos + PCI_CAP_LIST_NEXT);
 		}
-	} while((last_unitid != next_unitid) && (next_unitid <= 0x1f));  
-	
+	} while((last_unitid != next_unitid) && (next_unitid <= 0x1f));
 
 	return reset_needed;
 }

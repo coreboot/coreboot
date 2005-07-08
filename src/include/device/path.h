@@ -72,6 +72,7 @@ struct device_path {
 
 
 #define DEVICE_PATH_MAX 30
+#define BUS_PATH_MAX (DEVICE_PATH_MAX+10)
 
 extern int path_eq(struct device_path *path1, struct device_path *path2);
 

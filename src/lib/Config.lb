@@ -9,9 +9,7 @@ object memcmp.o
 object memmove.o
 object malloc.o
 object delay.o
-if HAVE_FALLBACK_BOOT
-	object fallback_boot.o
-end
+object fallback_boot.o
 object compute_ip_checksum.o
 object version.o
 # Force version.o to recompile every time

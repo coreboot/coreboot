@@ -36,21 +36,52 @@
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
+/* Look up a which bus a given node/link combination is on.
+ * return 0 when we can't find the answer.
+ */
+static unsigned node_link_to_bus(unsigned node, unsigned link)
+{
+        unsigned reg;
+        
+        for(reg = 0xE0; reg < 0xF0; reg += 0x04) {
+                unsigned config_map;
+                config_map = pci_read_config32(PCI_DEV(0, 0x18, 1), reg);
+                if ((config_map & 3) != 3) {
+                        continue; 
+                }       
+                if ((((config_map >> 4) & 7) == node) &&
+                        (((config_map >> 8) & 3) == link))
+                {       
+                        return (config_map >> 16) & 0xff;
+                }       
+        }       
+        return 0;
+}       
 
 static void hard_reset(void)
 {
+        device_t dev;
+
+        /* Find the device */
+        dev = PCI_DEV(node_link_to_bus(0, 0), 0x04, 3);
+
         set_bios_reset();
 
         /* enable cf9 */
-        pci_write_config8(PCI_DEV(0, 0x04, 3), 0x41, 0xf1);
+        pci_write_config8(dev, 0x41, 0xf1);
         /* reset */
         outb(0x0e, 0x0cf9);
 }
 
 static void soft_reset(void)
 {
+        device_t dev;
+
+        /* Find the device */
+        dev = PCI_DEV(node_link_to_bus(0, 0), 0x04, 0);
+
         set_bios_reset();
-        pci_write_config8(PCI_DEV(0, 0x04, 0), 0x47, 1);
+        pci_write_config8(dev, 0x47, 1);
 }
 
 static void memreset_setup(void)
@@ -93,6 +124,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #if CONFIG_LOGICAL_CPUS==1
 #define SET_NB_CFG_54 1
 #include "cpu/amd/dualcore/dualcore.c"
+#else
+#include "cpu/amd/model_fxx/node_id.c"
 #endif
 
 #define FIRST_CPU  1
@@ -236,6 +269,7 @@ void amd64_main(unsigned long bist)
 #if CONFIG_LOGICAL_CPUS==1
                 if(id.coreid == 0) {
                         if (cpu_init_detected(id.nodeid)) {
+//                                __asm__ volatile ("jmp __cpu_reset");
 				cpu_reset = 1;
 				goto cpu_reset_x;
                         }
@@ -249,7 +283,6 @@ void amd64_main(unsigned long bist)
                 distinguish_cpu_resets(nodeid);
 #endif
 
-
                 if (!boot_cpu()
 #if CONFIG_LOGICAL_CPUS==1 
                         || (id.coreid != 0)
@@ -261,7 +294,6 @@ void amd64_main(unsigned long bist)
                 }
         }
 
-	
  	w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
         uart_init();
         console_init();
@@ -270,14 +302,11 @@ void amd64_main(unsigned long bist)
 	report_bist_failure(bist);
 
         setup_default_resource_map();
-#if 0
-        dump_pci_device(PCI_DEV(0, 0x18, 0));
-	dump_pci_device(PCI_DEV(0, 0x19, 0));
-#endif
 
 	needs_reset = setup_coherent_ht_domain();
 	
 #if CONFIG_LOGICAL_CPUS==1
+        // It is said that we should start core1 after all core0 launched
         start_other_cores();
 #endif
         needs_reset |= ht_setup_chains_x();
@@ -288,20 +317,9 @@ void amd64_main(unsigned long bist)
        	}
 
 	enable_smbus();
-#if 0
-	dump_spd_registers(&cpu[0]);
-#endif
-#if 0
-	dump_smbus_registers();
-#endif
 
 	memreset_setup();
 	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
-
-#if 0
-	dump_pci_devices();
-#endif
-
 
 #if 1
         {
@@ -319,6 +337,7 @@ void amd64_main(unsigned long bist)
         }
 #endif
 
+#if 1
 
 
 cpu_reset_x:
@@ -382,6 +401,7 @@ cpu_reset_x:
 		copy_and_run(new_cpu_reset);
 		/* We will not return */
 	}
+#endif
 
 
 	print_debug("should not be here -\r\n");

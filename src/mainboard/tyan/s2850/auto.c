@@ -25,21 +25,52 @@
 #include "cpu/x86/bist.h"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
+/* Look up a which bus a given node/link combination is on.
+ * return 0 when we can't find the answer.
+ */
+static unsigned node_link_to_bus(unsigned node, unsigned link)
+{
+        unsigned reg;
+        
+        for(reg = 0xE0; reg < 0xF0; reg += 0x04) {
+                unsigned config_map;
+                config_map = pci_read_config32(PCI_DEV(0, 0x18, 1), reg);
+                if ((config_map & 3) != 3) {
+                        continue; 
+                }       
+                if ((((config_map >> 4) & 7) == node) &&
+                        (((config_map >> 8) & 3) == link))
+                {       
+                        return (config_map >> 16) & 0xff;
+                }       
+        }       
+        return 0;
+}       
 
 static void hard_reset(void)
 {
-	set_bios_reset();
+        device_t dev;
 
-	/* enable cf9 */
-	pci_write_config8(PCI_DEV(0, 0x02, 3), 0x41, 0xf1);
-	/* reset */
-	outb(0x0e, 0x0cf9);
+        /* Find the device */
+        dev = PCI_DEV(node_link_to_bus(0, 0), 0x04, 3);
+
+        set_bios_reset();
+
+        /* enable cf9 */
+        pci_write_config8(dev, 0x41, 0xf1);
+        /* reset */
+        outb(0x0e, 0x0cf9);
 }
 
 static void soft_reset(void)
 {
-	set_bios_reset();
-	pci_write_config8(PCI_DEV(0, 0x02, 0), 0x47, 1);
+        device_t dev;
+
+        /* Find the device */
+        dev = PCI_DEV(node_link_to_bus(0, 0), 0x04, 0);
+
+        set_bios_reset();
+        pci_write_config8(dev, 0x47, 1);
 }
 
 #define REV_B_RESET 0

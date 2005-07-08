@@ -34,7 +34,9 @@
 
 #if !defined(__ROMCC__) && !defined (ASSEMBLY)
 
-void x86_setup_mtrrs(void);
+
+void x86_setup_var_mtrrs(unsigned address_bits);
+void x86_setup_mtrrs(unsigned address_bits);
 int x86_mtrr_check(void);
 
 #endif /* __ROMCC__ */

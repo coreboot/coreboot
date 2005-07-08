@@ -37,20 +37,52 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
+/* Look up a which bus a given node/link combination is on.
+ * return 0 when we can't find the answer.
+ */
+static unsigned node_link_to_bus(unsigned node, unsigned link)
+{
+        unsigned reg;
+        
+        for(reg = 0xE0; reg < 0xF0; reg += 0x04) {
+                unsigned config_map;
+                config_map = pci_read_config32(PCI_DEV(0, 0x18, 1), reg);
+                if ((config_map & 3) != 3) {
+                        continue; 
+                }       
+                if ((((config_map >> 4) & 7) == node) &&
+                        (((config_map >> 8) & 3) == link))
+                {       
+                        return (config_map >> 16) & 0xff;
+                }       
+        }       
+        return 0;
+}       
+
 static void hard_reset(void)
 {
+        device_t dev;
+
+        /* Find the device */
+        dev = PCI_DEV(node_link_to_bus(0, 1), 0x04, 3);
+
         set_bios_reset();
 
         /* enable cf9 */
-        pci_write_config8(PCI_DEV(0, 0x04, 3), 0x41, 0xf1);
+        pci_write_config8(dev, 0x41, 0xf1);
         /* reset */
         outb(0x0e, 0x0cf9);
 }
 
 static void soft_reset(void)
 {
+        device_t dev;
+
+        /* Find the device */
+        dev = PCI_DEV(node_link_to_bus(0, 1), 0x04, 0);
+
         set_bios_reset();
-        pci_write_config8(PCI_DEV(0, 0x04, 0), 0x47, 1);
+        pci_write_config8(dev, 0x47, 1);
 }
 
 static void memreset_setup(void)
@@ -77,6 +109,7 @@ static inline void activate_spd_rom(const struct mem_controller *ctrl)
 #define SMBUS_HUB 0x18
         int ret,i;
         unsigned device=(ctrl->channel0[0])>>8;
+        /* the very first write always get COL_STS=1 and ABRT_STS=1, so try another time*/
         i=2;
         do {
                 ret = smbus_write_byte(SMBUS_HUB, 0x01, device);
@@ -109,6 +142,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #if CONFIG_LOGICAL_CPUS==1
 #define SET_NB_CFG_54 1
 #include "cpu/amd/dualcore/dualcore.c"
+#else
+#include "cpu/amd/model_fxx/node_id.c"
 #endif
 #define FIRST_CPU  1
 #define SECOND_CPU 1
@@ -325,7 +360,6 @@ void amd64_main(unsigned long bist)
                 distinguish_cpu_resets(nodeid);
 #endif
 
-
                 if (!boot_cpu()
 #if CONFIG_LOGICAL_CPUS==1 
                         || (id.coreid != 0)
@@ -337,22 +371,15 @@ void amd64_main(unsigned long bist)
                 }
         }
 
-	
  	w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
         uart_init();
         console_init();
 
-	dump_mem(DCACHE_RAM_BASE+DCACHE_RAM_SIZE-0x200, DCACHE_RAM_BASE+DCACHE_RAM_SIZE);
-	
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
         setup_s4882_resource_map();
-#if 0
-        dump_pci_device(PCI_DEV(0, 0x18, 0));
-	dump_pci_device(PCI_DEV(0, 0x19, 0));
-#endif
-
+	
 	needs_reset = setup_coherent_ht_domain();
 	
 #if CONFIG_LOGICAL_CPUS==1
@@ -387,6 +414,7 @@ void amd64_main(unsigned long bist)
         }
 #endif
 
+#if 1
 
 
 cpu_reset_x:
@@ -450,6 +478,7 @@ cpu_reset_x:
 		copy_and_run(new_cpu_reset);
 		/* We will not return */
 	}
+#endif
 
 
 	print_debug("should not be here -\r\n");

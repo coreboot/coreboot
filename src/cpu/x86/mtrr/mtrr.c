@@ -22,28 +22,20 @@
  *
  * Reference: Intel Architecture Software Developer's Manual, Volume 3: System Programming
  */
+
 /*
-	2005.1 yhlu add NC support to spare mtrrs for 64G memory stored
+        2005.1 yhlu add NC support to spare mtrrs for 64G memory above installed
+	2005.6 Eric add address bit in x86_setup_mtrrs
+	2005.6 yhlu split x86_setup_var_mtrrs and x86_setup_fixed_mtrrs,
+		for AMD, it will not use x86_setup_fixed_mtrrs
 */
+
 #include <stddef.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
-
-#warning "FIXME I do not properly handle address more than 36 physical address bits"
-
-//#define k8 0
-#define k8 1
-
-#if k8
-# define ADDRESS_BITS 40
-#else
-# define ADDRESS_BITS 36
-#endif
-#define ADDRESS_BITS_HIGH (ADDRESS_BITS - 32)
-#define ADDRESS_MASK_HIGH ((1u << ADDRESS_BITS_HIGH) - 1)
 
 static unsigned int mtrr_msr[] = {
 	MTRRfix64K_00000_MSR, MTRRfix16K_80000_MSR, MTRRfix16K_A0000_MSR,
@@ -52,7 +44,7 @@ static unsigned int mtrr_msr[] = {
 };
 
 
-static void enable_fixed_mtrr(void)
+void enable_fixed_mtrr(void)
 {
 	msr_t msr;
 
@@ -71,21 +63,26 @@ static void enable_var_mtrr(void)
 }
 
 /* setting variable mtrr, comes from linux kernel source */
-static void set_var_mtrr(unsigned int reg, unsigned long basek, unsigned long sizek, unsigned char type)
+static void set_var_mtrr(
+	unsigned int reg, unsigned long basek, unsigned long sizek, 
+	unsigned char type, unsigned address_bits)
 {
 	msr_t base, mask;
+	unsigned address_mask_high;
+
+	address_mask_high = ((1u << (address_bits - 32u)) - 1u);
 
 	base.hi = basek >> 22;
 	base.lo  = basek << 10;
 
-       //printk_debug("ADDRESS_MASK_HIGH=%#x\n", ADDRESS_MASK_HIGH);
+	printk_spew("ADDRESS_MASK_HIGH=%#x\n", address_mask_high);
 
 	if (sizek < 4*1024*1024) {
-		mask.hi = ADDRESS_MASK_HIGH;
+		mask.hi = address_mask_high;
 		mask.lo = ~((sizek << 10) -1);
 	}
 	else {
-		mask.hi = ADDRESS_MASK_HIGH & (~((sizek >> 22) -1));
+		mask.hi = address_mask_high & (~((sizek >> 22) -1));
 		mask.lo = 0;
 	}
 
@@ -219,7 +216,7 @@ static unsigned fixed_mtrr_index(unsigned long addrk)
 
 static unsigned int range_to_mtrr(unsigned int reg, 
 	unsigned long range_startk, unsigned long range_sizek,
-	unsigned long next_range_startk, unsigned char type)
+	unsigned long next_range_startk, unsigned char type, unsigned address_bits)
 {
 	if (!range_sizek || (reg >= BIOS_MTRRS)) {
 		return reg;
@@ -235,11 +232,11 @@ static unsigned int range_to_mtrr(unsigned int reg,
 		}
 		sizek = 1 << align;
 		printk_debug("Setting variable MTRR %d, base: %4dMB, range: %4dMB, type %s\n",
-			reg, range_startk >>10, sizek >> 10, 
-			(type==MTRR_TYPE_UNCACHEABLE) ? "NC" :
-			    ((type==MTRR_TYPE_WRBACK) ? "WB" : "Other")
+			reg, range_startk >>10, sizek >> 10,
+			(type==MTRR_TYPE_UNCACHEABLE)?"UC":
+			    ((type==MTRR_TYPE_WRBACK)?"WB":"Other")
 			);
-		set_var_mtrr(reg++, range_startk, sizek, type);
+		set_var_mtrr(reg++, range_startk, sizek, type, address_bits);
 		range_startk += sizek;
 		range_sizek -= sizek;
 		if (reg >= BIOS_MTRRS)
@@ -279,6 +276,7 @@ struct var_mtrr_state {
 	unsigned long range_startk, range_sizek;
 	unsigned int reg;
 	unsigned long hole_startk, hole_sizek;
+	unsigned address_bits;
 };
 
 void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res)
@@ -300,47 +298,68 @@ void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res)
 	}
 	/* Write the range mtrrs */
 	if (state->range_sizek != 0) {
-		if(state->hole_sizek == 0) {
-			// we need to put that on to hole.
-	                unsigned long endk = basek + sizek;
+		if (state->hole_sizek == 0) {
+			/* We need to put that on to hole */
+			unsigned long endk = basek + sizek;
 			state->hole_startk = state->range_startk + state->range_sizek;
-			state->hole_sizek = basek - state->hole_startk;
-	                state->range_sizek = endk - state->range_startk;
+			state->hole_sizek  = basek - state->hole_startk;
+			state->range_sizek = endk - state->range_startk;
 			return;
 		}
-		state->reg = range_to_mtrr(state->reg, state->range_startk, state->range_sizek, basek, MTRR_TYPE_WRBACK);
-		state->reg = range_to_mtrr(state->reg, state->hole_startk, state->hole_sizek, basek, MTRR_TYPE_UNCACHEABLE);
+		state->reg = range_to_mtrr(state->reg, state->range_startk, 
+			state->range_sizek, basek, MTRR_TYPE_WRBACK, state->address_bits);
+		state->reg = range_to_mtrr(state->reg, state->hole_startk, 
+			state->hole_sizek, basek,  MTRR_TYPE_UNCACHEABLE, state->address_bits);
 		state->range_startk = 0;
 		state->range_sizek = 0;
                 state->hole_startk = 0;
                 state->hole_sizek = 0;
 	}
-	/* Allocate an msr */
+	/* Allocate an msr */  
+	printk_spew(" Allocate an msr - basek = %d, sizek = %d,\n", basek, sizek);
 	state->range_startk = basek;
 	state->range_sizek  = sizek;
 }
 
-void x86_setup_mtrrs(void)
+void x86_setup_fixed_mtrrs(void)
+{
+        /* Try this the simple way of incrementally adding together
+         * mtrrs.  If this doesn't work out we can get smart again 
+         * and clear out the mtrrs.
+         */
+        struct var_mtrr_state var_state;
+
+        printk_debug("\n");
+        /* Initialized the fixed_mtrrs to uncached */
+        printk_debug("Setting fixed MTRRs(%d-%d) type: UC\n",
+	        0, NUM_FIXED_RANGES);
+        set_fixed_mtrrs(0, NUM_FIXED_RANGES, MTRR_TYPE_UNCACHEABLE);
+
+        /* Now see which of the fixed mtrrs cover ram.
+                 */
+        search_global_resources(
+		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
+		set_fixed_mtrr_resource, NULL);
+        printk_debug("DONE fixed MTRRs\n");
+
+        /* enable fixed MTRR */
+        printk_spew("call enable_fixed_mtrr()\n");
+        enable_fixed_mtrr();
+
+}
+void x86_setup_var_mtrrs(unsigned address_bits)
+/* this routine needs to know how many address bits a given processor
+ * supports.  CPUs get grumpy when you set too many bits in 
+ * their mtrr registers :(  I would generically call cpuid here
+ * and find out how many physically supported but some cpus are
+ * buggy, and report more bits then they actually support.
+ */
 {
 	/* Try this the simple way of incrementally adding together
 	 * mtrrs.  If this doesn't work out we can get smart again 
 	 * and clear out the mtrrs.
 	 */
 	struct var_mtrr_state var_state;
-#if !k8
-	printk_debug("\n");
-	/* Initialized the fixed_mtrrs to uncached */
-	printk_debug("Setting fixed MTRRs(%d-%d) type: UC\n", 
-		0, NUM_FIXED_RANGES);
-	set_fixed_mtrrs(0, NUM_FIXED_RANGES, MTRR_TYPE_UNCACHEABLE);
-
-	/* Now see which of the fixed mtrrs cover ram.
-	 */
-	search_global_resources(
-		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
-		set_fixed_mtrr_resource, NULL);
-	printk_debug("DONE fixed MTRRs\n");
-#endif
 
 	/* Cache as many memory areas as possible */
 	/* FIXME is there an algorithm for computing the optimal set of mtrrs? 
@@ -351,27 +370,34 @@ void x86_setup_mtrrs(void)
 	var_state.hole_startk = 0;
 	var_state.hole_sizek = 0;
 	var_state.reg = 0;
+	var_state.address_bits = address_bits;
 	search_global_resources(
 		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
 		set_var_mtrr_resource, &var_state);
 
 	/* Write the last range */
-	var_state.reg = range_to_mtrr(var_state.reg, var_state.range_startk, var_state.range_sizek, 0, MTRR_TYPE_WRBACK);
-	var_state.reg = range_to_mtrr(var_state.reg, var_state.hole_startk, var_state.hole_sizek, 0, MTRR_TYPE_UNCACHEABLE);
+	var_state.reg = range_to_mtrr(var_state.reg, var_state.range_startk, 
+		var_state.range_sizek, 0, MTRR_TYPE_WRBACK, var_state.address_bits);
+	var_state.reg = range_to_mtrr(var_state.reg, var_state.hole_startk,
+		var_state.hole_sizek,  0, MTRR_TYPE_UNCACHEABLE, var_state.address_bits);
 	printk_debug("DONE variable MTRRs\n");
 	printk_debug("Clear out the extra MTRR's\n");
 	/* Clear out the extra MTRR's */
 	while(var_state.reg < MTRRS) {
-		set_var_mtrr(var_state.reg++, 0, 0, 0);
+		set_var_mtrr(var_state.reg++, 0, 0, 0, var_state.address_bits);
 	}
-	/* enable fixed MTRR */
-	printk_spew("call enable_fixed_mtrr()\n");
-	enable_fixed_mtrr();
 	printk_spew("call enable_var_mtrr()\n");
 	enable_var_mtrr();
 	printk_spew("Leave %s\n", __FUNCTION__);
 	post_code(0x6A);
 }
+
+void x86_setup_mtrrs(unsigned address_bits)
+{
+	x86_setup_fixed_mtrrs();
+	x86_setup_var_mtrrs(address_bits);
+}
+
 
 int x86_mtrr_check(void)
 {

@@ -45,6 +45,7 @@ arch i386 end
 driver mainboard.o
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
+object reset.o
 
 ## ATI Rage XL framebuffering graphics driver
 dir /drivers/ati/ragexl
@@ -129,7 +130,7 @@ mainboardinit cpu/x86/mmx/disable_mmx.inc
 dir /pc80
 config chip.h
 
-# config for arima/hdama
+# config for Iwill/DK8S2
 chip northbridge/amd/amdk8/root_complex
 	device pci_domain 0 on
 		chip northbridge/amd/amdk8
@@ -189,7 +190,7 @@ chip northbridge/amd/amdk8/root_complex
 					end
 					device pci 1.1 on end
 					device pci 1.2 on end
-					device pci 1.3 on end 
+					device pci 1.3 on end
 					device pci 1.5 off end
 					device pci 1.6 off end
 				end
@@ -208,7 +209,7 @@ chip northbridge/amd/amdk8/root_complex
 			device pci 19.2 on end
 			device pci 19.3 on end
 		end
-	end 
+	end
 	device apic_cluster 0 on
 		chip cpu/amd/socket_940
 			device apic 0 on end

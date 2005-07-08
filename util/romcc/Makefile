@@ -1,5 +1,3 @@
-
-
 # Move the configuration defines to makefile.conf
 CC=gcc
 CPPFLAGS=
@@ -110,6 +108,10 @@ TESTS=\
 	simple_test84.c \
 	simple_test85.c \
 	simple_test86.c \
+	simple_test87.c \
+	simple_test88.c \
+	simple_test89.c \
+	simple_test90.c \
 	raminit_test1.c \
 	raminit_test2.c \
 	raminit_test3.c \

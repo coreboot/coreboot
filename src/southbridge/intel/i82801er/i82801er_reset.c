@@ -1,6 +1,6 @@
 #include <arch/io.h>
 
-void hard_reset(void)
+void i82801er_hard_reset(void)
 {
         /* Try rebooting through port 0xcf9 */
         outb((0 <<3)|(1<<2)|(1<<1), 0xcf9);

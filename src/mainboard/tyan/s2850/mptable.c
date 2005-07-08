@@ -7,6 +7,42 @@
 #include <cpu/amd/dualcore.h>
 #endif
 
+
+static unsigned node_link_to_bus(unsigned node, unsigned link)
+{
+        device_t dev;
+        unsigned reg;
+
+        dev = dev_find_slot(0, PCI_DEVFN(0x18, 1));
+        if (!dev) {
+                return 0;
+        }
+        for(reg = 0xE0; reg < 0xF0; reg += 0x04) {
+                uint32_t config_map;
+                unsigned dst_node;
+                unsigned dst_link;
+                unsigned bus_base;
+                config_map = pci_read_config32(dev, reg);
+                if ((config_map & 3) != 3) {
+                        continue;
+                }
+                dst_node = (config_map >> 4) & 7;
+                dst_link = (config_map >> 8) & 3;
+                bus_base = (config_map >> 16) & 0xff;
+#if 0                           
+                printk_debug("node.link=bus: %d.%d=%d 0x%2x->0x%08x\n",
+                        dst_node, dst_link, bus_base,
+                        reg, config_map);
+#endif
+                if ((dst_node == node) && (dst_link == link))
+                {
+                        return bus_base;
+                }
+        }
+        return 0;
+}
+
+
 void *smp_write_config_table(void *v)
 {
         static const char sig[4] = "PCMP";
@@ -16,6 +52,7 @@ void *smp_write_config_table(void *v)
 
         unsigned char bus_num;
         unsigned char bus_isa;
+	unsigned char bus_chain_0;
         unsigned char bus_8111_1;
         unsigned apicid_base;
         unsigned apicid_8111;
@@ -41,8 +78,14 @@ void *smp_write_config_table(void *v)
         {
                 device_t dev;
 
+                /* HT chain 0 */
+                bus_chain_0 = node_link_to_bus(0, 0);
+                if (bus_chain_0 == 0) {
+                        printk_debug("ERROR - cound not find bus for node 0 chain 0, using defaults\n");
+                        bus_chain_0 = 1;
+                }
                 /* 8111 */
-                dev = dev_find_slot(1, PCI_DEVFN(0x01,0));
+                dev = dev_find_slot(bus_chain_0, PCI_DEVFN(0x01,0));
                 if (dev) {
                         bus_8111_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
                         bus_isa    = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
@@ -89,7 +132,7 @@ void *smp_write_config_table(void *v)
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0xf, apicid_8111, 0xf);
 
 
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x1, (2<<2)|3, apicid_8111, 0x13);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_chain_0, (2<<2)|3, apicid_8111, 0x13);
 	
 //On Board AMD USB
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_1, (0<<2)|3, apicid_8111, 0x13);

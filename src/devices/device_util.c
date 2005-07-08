@@ -16,7 +16,7 @@
 device_t find_dev_path(struct bus *parent, struct device_path *path)
 {
 	device_t child;
-	for (child = parent->children; child; child = child->sibling) {
+	for(child = parent->children; child; child = child->sibling) {
 		if (path_eq(path, &child->path)) {
 			break;
 		}
@@ -175,6 +175,14 @@ const char *dev_path(device_t dev)
 			break;
 		}
 	}
+	return buffer;
+}
+
+const char *bus_path(struct bus *bus)
+{
+	static char buffer[BUS_PATH_MAX];
+	sprintf(buffer, "%s,%d",
+		dev_path(bus->dev), bus->link);
 	return buffer;
 }
 
@@ -390,12 +398,30 @@ resource_t resource_max(struct resource *resource)
 }
 
 /**
+ * @brief return the resource type of a resource
+ * @param resource the resource type to decode.
+ */
+const char *resource_type(struct resource *resource)
+{
+	static char buffer[RESOURCE_TYPE_MAX];
+	sprintf(buffer, "%s%s%s%s",
+		((resource->flags & IORESOURCE_READONLY)? "ro": ""),
+		((resource->flags & IORESOURCE_PREFETCH)? "pref":""),
+		((resource->flags == 0)? "unused":
+	 	(resource->flags & IORESOURCE_IO)? "io":
+		(resource->flags & IORESOURCE_DRQ)? "drq":
+		(resource->flags & IORESOURCE_IRQ)? "irq":
+		(resource->flags & IORESOURCE_MEM)? "mem":"??????"),
+		((resource->flags & IORESOURCE_PCI64)?"64":""));
+	return buffer;
+}
+
+/**
  * @brief print the resource that was just stored.
  * @param dev the device the stored resorce lives on
  * @param resource the resource that was just stored.
  */
-void report_resource_stored(device_t dev, struct resource *resource,
-			    const char *comment)
+void report_resource_stored(device_t dev, struct resource *resource, const char *comment)
 {
 	if (resource->flags & IORESOURCE_STORED) {
 		unsigned char buf[10];
@@ -407,18 +433,12 @@ void report_resource_stored(device_t dev, struct resource *resource,
 			sprintf(buf, "bus %d ", dev->link[0].secondary);
 		}
 		printk_debug(
-			"%s %02x <- [0x%010Lx - 0x%010Lx] %s%s%s%s\n",
+			"%s %02x <- [0x%010Lx - 0x%010Lx] %s%s%s\n",
 			dev_path(dev),
 			resource->index,
 			base, end,
 			buf,
-			(resource->flags & IORESOURCE_PREFETCH) ? "pref" : "",
-			(resource->flags & IORESOURCE_IO)? "io":
-			(resource->flags & IORESOURCE_DRQ)? "drq":
-			(resource->flags & IORESOURCE_IRQ)? "irq":
-			(resource->flags & IORESOURCE_READONLY)? "rom":
-			(resource->flags & IORESOURCE_MEM)? "mem":
-			"????",
+			resource_type(resource),
 			comment);
 	}
 }
@@ -471,5 +491,31 @@ void search_global_resources(
 			}
 			search(gp, curdev, resource);
 		}
+	}
+}
+
+void dev_set_enabled(device_t dev, int enable)
+{
+	if (dev->enabled == enable) {
+		return;
+	}
+	dev->enabled = enable;
+	if (dev->ops && dev->ops->enable) {
+		dev->ops->enable(dev);
+	}
+	else if (dev->chip_ops && dev->chip_ops->enable_dev) {
+		dev->chip_ops->enable_dev(dev);
+	}
+}
+
+void disable_children(struct bus *bus)
+{
+	device_t child;
+	for(child = bus->children; child; child = child->sibling) {
+		int link;
+		for(link = 0; link < child->links; link++) {
+			disable_children(&child->link[link]);
+		}
+		dev_set_enabled(child, 0);
 	}
 }

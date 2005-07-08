@@ -1,0 +1,2 @@
+config chip.h
+driver pxhd_bridge.o

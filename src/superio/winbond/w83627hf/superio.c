@@ -12,6 +12,7 @@
 #include <bitops.h>
 #include <uart8250.h>
 #include <pc80/keyboard.h>
+#include <pc80/mc146818rtc.h>
 #include "chip.h"
 #include "w83627hf.h"
 
@@ -47,33 +48,22 @@ static void enable_hwm_smbus(device_t dev) {
 	pnp_write_config(dev, reg, value);
 }
 
-#if 0
-static void dump_pnp_device(device_t dev)
+static void init_acpi(device_t dev)
 {
-        int i;
-        print_debug("\r\n");
+	uint8_t  value = 0x20;
+	int power_on = 1;
 
-        for(i = 0; i <= 255; i++) {
-                uint8_t reg, val;
-                if ((i & 0x0f) == 0) {
-                        print_debug_hex8(i);
-                        print_debug_char(':');
-                }
-		reg = i;
-		if(i!=0xaa) {
-                	val = pnp_read_config(dev, reg);
-		}
-		else {
-			val = 0xaa;
-		}
-                print_debug_char(' ');
-                print_debug_hex8(val);
-                if ((i & 0x0f) == 0x0f) {
-                        print_debug("\r\n");
-                }
-        }
+	get_option(&power_on, "power_on_after_fail");
+	pnp_enter_ext_func_mode(dev);
+	pnp_write_index(dev->path.u.pnp.port,7,0x0a); 
+	value = pnp_read_config(dev, 0xE4);
+	value &= ~(3<<5);
+	if(power_on) {
+		value |= (1<<5);
+	}
+	pnp_write_config(dev, 0xE4, value);
+        pnp_exit_ext_func_mode(dev);  
 }
-#endif
 
 static void init_hwm(unsigned long base)
 {
@@ -105,7 +95,6 @@ static void init_hwm(unsigned long base)
 	}
 }
 
-
 static void w83627hf_init(device_t dev)
 {
 	struct superio_winbond_w83627hf_config *conf;
@@ -133,21 +122,16 @@ static void w83627hf_init(device_t dev)
 #define HWM_INDEX_PORT 5
                 init_hwm(res0->base + HWM_INDEX_PORT);
                 break;
+        case W83627HF_ACPI:
+                init_acpi(dev);
+                break;
 	}
-	
 }
 
 void w83627hf_pnp_set_resources(device_t dev)
 {
-
 	pnp_enter_ext_func_mode(dev);  
-
 	pnp_set_resources(dev);
-
-#if 0
-        dump_pnp_device(dev);
-#endif
-                
         pnp_exit_ext_func_mode(dev);  
         
 }       
@@ -155,20 +139,13 @@ void w83627hf_pnp_set_resources(device_t dev)
 void w83627hf_pnp_enable_resources(device_t dev)
 {       
         pnp_enter_ext_func_mode(dev);  
-	
 	pnp_enable_resources(dev);               
-
         switch(dev->path.u.pnp.device) {
 	case W83627HF_HWM:
 		printk_debug("w83627hf hwm smbus enabled\n");
 		enable_hwm_smbus(dev);
 		break;
 	}
-
-#if 0  
-        dump_pnp_device(dev);
-#endif
-
         pnp_exit_ext_func_mode(dev);  
 
 }
@@ -219,4 +196,3 @@ struct chip_operations superio_winbond_w83627hf_ops = {
 	CHIP_NAME("Winbond w83627hf")
 	.enable_dev = enable_dev,
 };
-

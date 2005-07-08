@@ -192,6 +192,7 @@ static void init_ecc_memory(unsigned node_id)
 	/* If ecc support is not enabled don't touch memory */
 	dcl = pci_read_config32(f2_dev, DRAM_CONFIG_LOW);
 	if (!(dcl & DCL_DimmEccEn)) {
+		printk_debug("ECC Disabled\n");
 		return;
 	}
 
@@ -226,7 +227,9 @@ static void init_ecc_memory(unsigned node_id)
 	disable_lapic();
 
 	/* Walk through 2M chunks and zero them */
-	for(basek = begink; basek < endk; basek = ((basek + ZERO_CHUNK_KB) & ~(ZERO_CHUNK_KB - 1))) {
+	for(basek = begink; basek < endk; 
+		basek = ((basek + ZERO_CHUNK_KB) & ~(ZERO_CHUNK_KB - 1))) 
+	{
 		unsigned long limitk;
 		unsigned long size;
 		void *addr;
@@ -255,12 +258,13 @@ static void init_ecc_memory(unsigned node_id)
 		}
 		size = (limitk - basek) << 10;
 		addr = map_2M_page(basek >> 11);
-		addr = (void *)(((uint32_t)addr) | ((basek & 0x7ff) << 10));
 		if (addr == MAPPING_ERROR) {
+			printk_err("Cannot map page: %x\n", basek >> 11);
 			continue;
 		}
 
 		/* clear memory 2M (limitk - basek) */
+		addr = (void *)(((uint32_t)addr) | ((basek & 0x7ff) << 10));
 		clear_memory(addr, size);
 	}
 	/* Restore the normal state */
@@ -319,19 +323,16 @@ static inline void k8_errata(void)
 		}	
 		wrmsr(NB_CFG_MSR, msr);
 	}
-// AMD_D0_SUPPORT	
+	
+	/* Erratum 97 ... */
 	if (!is_cpu_pre_c0() && is_cpu_pre_d0()) {
-		/* D0 later don't need it */
-		/* Erratum 97 ... */
 		msr = rdmsr_amd(DC_CFG_MSR);
 		msr.lo |= 1 << 3;
 		wrmsr_amd(DC_CFG_MSR, msr);
-	}
-		
-//AMD_D0_SUPPORT
-	if(is_cpu_pre_d0()) {
-		/*D0 later don't need it */
-		/* Erratum 94 ... */
+	}	
+	
+	/* Erratum 94 ... */
+	if (is_cpu_pre_d0()) {
 		msr = rdmsr_amd(IC_CFG_MSR);
 		msr.lo |= 1 << 11;
 		wrmsr_amd(IC_CFG_MSR, msr);
@@ -339,37 +340,51 @@ static inline void k8_errata(void)
 
 	/* Erratum 91 prefetch miss is handled in the kernel */
 
-//AMD_D0_SUPPORT
+	/* Erratum 106 ... */
+	msr = rdmsr_amd(LS_CFG_MSR);
+	msr.lo |= 1 << 25;
+	wrmsr_amd(LS_CFG_MSR, msr);
+
+	/* Erratum 107 ... */
+	msr = rdmsr_amd(BU_CFG_MSR);
+	msr.hi |= 1 << (43 - 32);
+	wrmsr_amd(BU_CFG_MSR, msr);
+
 	if(is_cpu_d0()) {
 		/* Erratum 110 ...*/
 		msr = rdmsr_amd(CPU_ID_HYPER_EXT_FEATURES);
 		msr.hi |=1;
 		wrmsr_amd(CPU_ID_HYPER_EXT_FEATURES, msr);
-	}
+ 	}
 
-//AMD_E0_SUPPORT
-	if(!is_cpu_pre_e0()) {
-                /* Erratum 110 ...*/
+	if (!is_cpu_pre_e0()) {
+		/* Erratum 110 ... */
                 msr = rdmsr_amd(CPU_ID_EXT_FEATURES_MSR);
                 msr.hi |=1;
                 wrmsr_amd(CPU_ID_EXT_FEATURES_MSR, msr);
 	}
+
+	/* Erratum 122 */
+	msr = rdmsr(HWCR_MSR);
+	msr.lo |= 1 << 6;
+	wrmsr(HWCR_MSR, msr);
+	
 }
 
 void model_fxx_init(device_t dev)
 {
 	unsigned long i;
 	msr_t msr;
-#if CONFIG_LOGICAL_CPUS==1
+#if CONFIG_LOGICAL_CPUS
 	struct node_core_id id;
-        unsigned siblings;
+	unsigned siblings;
 	id.coreid=0;
 #else
 	unsigned nodeid;
 #endif
 
 	/* Turn on caching if we haven't already */
-	x86_enable_cache(); 
+	x86_enable_cache();
 	amd_setup_mtrrs();
 	x86_mtrr_check();
 
@@ -386,11 +401,12 @@ void model_fxx_init(device_t dev)
 	
 	enable_cache();
 
-#if CONFIG_LOGICAL_CPUS==1
-//AMD_DUAL_CORE_SUPPORT
+	/* Enable the local cpu apics */
+	setup_lapic();
+
+#if CONFIG_LOGICAL_CPUS == 1
         siblings = cpuid_ecx(0x80000008) & 0xff;
 
-//	id = get_node_core_id((!is_cpu_pre_e0())? read_nb_cfg_54():0);
 	id = get_node_core_id(read_nb_cfg_54()); // pre e0 nb_cfg_54 can not be set
 
        	if(siblings>0) {
@@ -407,24 +423,24 @@ void model_fxx_init(device_t dev)
                	wrmsr_amd(CPU_ID_EXT_FEATURES_MSR, msr);
 	} 
         
+
 	/* Is this a bad location?  In particular can another node prefecth
 	 * data from this node before we have initialized it?
 	 */
-	if(id.coreid == 0) init_ecc_memory(id.nodeid); // only do it for core0
+	if (id.coreid == 0) init_ecc_memory(id.nodeid); // only do it for core 0
 #else
-	/* For now there is a 1-1 mapping between node_id and cpu_id */
-	nodeid = lapicid() & 0x7;
+	/* Is this a bad location?  In particular can another node prefecth
+	 * data from this node before we have initialized it?
+	 */
+	nodeid = lapicid() & 0xf;
 	init_ecc_memory(nodeid);
 #endif
-	
-	/* Enable the local cpu apics */
-	setup_lapic();
 
 #if CONFIG_LOGICAL_CPUS==1
-//AMD_DUAL_CORE_SUPPORT
         /* Start up my cpu siblings */
 //	if(id.coreid==0)  amd_sibling_init(dev); // Don't need core1 is already be put in the CPU BUS in bus_cpu_scan
 #endif
+
 }
 
 static struct device_operations cpu_dev_ops = {

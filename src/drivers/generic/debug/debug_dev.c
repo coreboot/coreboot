@@ -268,6 +268,9 @@ static void debug_init(device_t dev)
 	case 7:
 		print_tsc();
 		break;
+	case 8: 
+		hard_reset();
+		break;
 	}
 }
 

@@ -26,26 +26,52 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
+/* Look up a which bus a given node/link combination is on.
+ * return 0 when we can't find the answer.
+ */
+static unsigned node_link_to_bus(unsigned node, unsigned link)
+{
+        unsigned reg;
+        
+        for(reg = 0xE0; reg < 0xF0; reg += 0x04) {
+                unsigned config_map;
+                config_map = pci_read_config32(PCI_DEV(0, 0x18, 1), reg);
+                if ((config_map & 3) != 3) {
+                        continue; 
+                }       
+                if ((((config_map >> 4) & 7) == node) &&
+                        (((config_map >> 8) & 3) == link))
+                {       
+                        return (config_map >> 16) & 0xff;
+                }       
+        }       
+        return 0;
+}       
+
 static void hard_reset(void)
 {
+        device_t dev;
+
+        /* Find the device */
+        dev = PCI_DEV(node_link_to_bus(0, 1), 0x04, 3);
+
         set_bios_reset();
 
         /* enable cf9 */
-        pci_write_config8(PCI_DEV(0, 0x04, 3), 0x41, 0xf1);
+        pci_write_config8(dev, 0x41, 0xf1);
         /* reset */
         outb(0x0e, 0x0cf9);
 }
 
 static void soft_reset(void)
 {
-        set_bios_reset();
-        pci_write_config8(PCI_DEV(0, 0x04, 0), 0x47, 1);
-}
+        device_t dev;
 
-static void soft2_reset(void)
-{  
+        /* Find the device */
+        dev = PCI_DEV(node_link_to_bus(0, 1), 0x04, 0);
+
         set_bios_reset();
-        pci_write_config8(PCI_DEV(3, 0x04, 0), 0x47, 1);
+        pci_write_config8(dev, 0x47, 1);
 }
 
 static void memreset_setup(void)
@@ -73,6 +99,7 @@ static inline void activate_spd_rom(const struct mem_controller *ctrl)
 #define SMBUS_HUB 0x18
 	int ret,i;
         unsigned device=(ctrl->channel0[0])>>8;
+	/* the very first write always get COL_STS=1 and ABRT_STS=1, so try another time*/
 	i=2;
 	do {
 	        ret = smbus_write_byte(SMBUS_HUB, 0x01, device);
@@ -194,7 +221,7 @@ static void main(unsigned long bist)
 #if CONFIG_LOGICAL_CPUS==1
                 set_apicid_cpuid_lo();
 
-                id = get_node_core_id_x(); 
+                id = get_node_core_id_x(); // that is initid
         #if ENABLE_APIC_EXT_ID == 1
                 if(id.coreid == 0) {
                         enable_apic_ext_id(id.nodeid);
@@ -213,7 +240,7 @@ static void main(unsigned long bist)
 #if CONFIG_LOGICAL_CPUS==1
         #if ENABLE_APIC_EXT_ID == 1
             #if LIFT_BSP_APIC_ID == 0
-                if( id.nodeid != 0 ) 
+                if( id.nodeid != 0 ) //all except cores in node0
             #endif
                         lapic_write(LAPIC_ID, ( lapic_read(LAPIC_ID) | (APIC_ID_OFFSET<<24) ) );
         #endif
@@ -241,7 +268,7 @@ static void main(unsigned long bist)
                         || (id.coreid != 0)
 #endif          
                 ) {     
-                        stop_this_cpu(); 
+                        stop_this_cpu(); // it will stop all cores except core0 of cpu0
                 }
         }
                         
@@ -257,10 +284,10 @@ static void main(unsigned long bist)
         needs_reset = setup_coherent_ht_domain();
 
 #if CONFIG_LOGICAL_CPUS==1
+        // It is said that we should start core1 after all core0 launched
         start_other_cores();
 #endif
 
-        // automatically set that for you, but you might meet tight space
         needs_reset |= ht_setup_chains_x();
         if (needs_reset) {
                 print_info("ht reset -\r\n");

@@ -20,8 +20,10 @@ initobject cache.S
 initobject sdram.c
 initobject clock.c
 
-object mem.o
+config chip.h
 object clock.o
 object cache.S
+object pci_domain.o
+driver pci_bridge.o
 
 dir /cpu/simple_init

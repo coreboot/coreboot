@@ -69,8 +69,8 @@ default _IO_BASE=ISA_IO_BASE
 default TTYS0_BASE=0xef600300-ISA_IO_BASE
 
 ## Enable PPC405 instructions
-default CPU_OPT="-Wa,-m405"
-default CPU_OPT=""
+default CPU_OPT="-mcpu=405"
+#default CPU_OPT=""
 
 ## Use stage 1 initialization code
 default CONFIG_USE_INIT=1

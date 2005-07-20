@@ -17,7 +17,7 @@ makedefine .PHONY : version.o
 
 if CONFIG_USE_INIT
 	initobject uart8250.c
-#	initobject memset.o
+	initobject memset.o
 	initobject memcpy.o
-#	initobject memcmp.o
+	initobject memcmp.o
 end

@@ -8,7 +8,7 @@
 #include <console/console.h>
 
 static void 
-pci_bridge_init(struct device *dev)
+pci_bridge_enable(struct device *dev)
 {
 	printk_info("Configure PCI Bridge\n");
 
@@ -22,7 +22,7 @@ struct device_operations pci_bridge_ops  = {
         .read_resources   = pci_dev_read_resources,
         .set_resources    = pci_dev_set_resources,
         .enable_resources = pci_dev_enable_resources,
-        .init             = pci_bridge_init,
+        .enable           = pci_bridge_enable,
         .scan_bus         = 0,
 };
 

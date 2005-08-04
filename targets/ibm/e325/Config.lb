@@ -18,7 +18,7 @@ romimage "normal"
 	option ROM_IMAGE_SIZE=0x12000
 	option LINUXBIOS_EXTRA_VERSION=".0Normal"
 #	payload ../../filo.elf
-        payload /home/ollie/work/filo-0.4.1/filo.elf
+	payload ../../../payloads/filo.elf
 end
 
 romimage "fallback" 
@@ -26,7 +26,7 @@ romimage "fallback"
 	option ROM_IMAGE_SIZE=0x12000
 	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
 #	payload ../../filo.elf
-        payload /home/ollie/work/filo-0.4.1/filo.elf
+	payload ../../../payloads/filo.elf
 # use this to test a build if you don't have the etherboot
 #	payload /etc/hosts
 end

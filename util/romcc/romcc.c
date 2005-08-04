@@ -1301,7 +1301,10 @@ static struct triple *transform_to_arch_instruction(
 	struct compile_state *state, struct triple *ins);
 static struct triple *flatten(
 	struct compile_state *state, struct triple *first, struct triple *ptr);
-
+static void print_dominators(struct compile_state *state,
+	FILE *fp, struct basic_blocks *bb);
+static void print_dominance_frontiers(struct compile_state *state,
+	FILE *fp, struct basic_blocks *bb);
 
 
 
@@ -15293,8 +15296,6 @@ static void romcc_print_blocks(struct compile_state *state, FILE *fp)
 }
 static void print_blocks(struct compile_state *state, const char *func, FILE *fp)
 {
-	static void print_dominators(struct compile_state *state, FILE *fp, struct basic_blocks *bb);
-	static void print_dominance_frontiers(struct compile_state *state, FILE *fp, struct basic_blocks *bb);
 	if (state->compiler->debug & DEBUG_BASIC_BLOCKS) {
 		fprintf(fp, "After %s\n", func);
 		romcc_print_blocks(state, fp);

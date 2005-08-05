@@ -11,7 +11,6 @@
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
-#include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/amd/amd8111/amd8111_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
@@ -19,6 +18,7 @@
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
+#include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/cpu_rev.c"
 #include "superio/NSC/pc87360/pc87360_early_serial.c"
 #include "cpu/amd/mtrr/amd_earlymtrr.c"
@@ -66,50 +66,6 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
 	}
 }
 
-static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
-{
-	/* Routing Table Node i 
-	 *
-	 * F0: 0x40, 0x44, 0x48, 0x4c, 0x50, 0x54, 0x58, 0x5c 
-	 *  i:    0,    1,    2,    3,    4,    5,    6,    7
-	 *
-	 * [ 0: 3] Request Route
-	 *     [0] Route to this node
-	 *     [1] Route to Link 0
-	 *     [2] Route to Link 1
-	 *     [3] Route to Link 2
-	 * [11: 8] Response Route
-	 *     [0] Route to this node
-	 *     [1] Route to Link 0
-	 *     [2] Route to Link 1
-	 *     [3] Route to Link 2
-	 * [19:16] Broadcast route
-	 *     [0] Route to this node
-	 *     [1] Route to Link 0
-	 *     [2] Route to Link 1
-	 *     [3] Route to Link 2
-	 */
-
-	uint32_t ret=0x00010101; /* default row entry */
-
-	static const unsigned int rows_2p[2][2] = {
-		{ 0x00090101, 0x00010808 },
-		{ 0x00010404, 0x00050101 }
-	};
-
-	if(maxnodes > 2) {
-		print_debug("this mainboard is only designed for 2 cpus\r\n");
-		maxnodes=2;
-	}
-
-
-	if (!(node >= maxnodes || row >= maxnodes)) {
-		ret=rows_2p[node][row];
-	}
-
-	return ret;
-}
-
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
 	/* nothing to do */
@@ -129,24 +85,23 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 /* newisys khepri does not want the default */
 #include "resourcemap.c"
 
+#define NODE_RAM(x)                     \
+	.node_id = 0+x,                 \
+	.f0 = PCI_DEV(0, 0x18+x, 0),    \
+	.f1 = PCI_DEV(0, 0x18+x, 1),    \
+	.f2 = PCI_DEV(0, 0x18+x, 2),    \
+	.f3 = PCI_DEV(0, 0x18+x, 3)
+
 static void main(unsigned long bist)
 {
 	static const struct mem_controller cpu[] = {
 		{
-			.node_id = 0,
-			.f0 = PCI_DEV(0, 0x18, 0),
-			.f1 = PCI_DEV(0, 0x18, 1),
-			.f2 = PCI_DEV(0, 0x18, 2),
-			.f3 = PCI_DEV(0, 0x18, 3),
+			NODE_RAM(0),
 			.channel0 = { (0xa<<3)|0, (0xa<<3)|2, 0, 0 },
 			.channel1 = { (0xa<<3)|1, (0xa<<3)|3, 0, 0 },
 		},
 		{
-			.node_id = 1,
-			.f0 = PCI_DEV(0, 0x19, 0),
-			.f1 = PCI_DEV(0, 0x19, 1),
-			.f2 = PCI_DEV(0, 0x19, 2),
-			.f3 = PCI_DEV(0, 0x19, 3),
+			NODE_RAM(1),
 			.channel0 = { (0xa<<3)|4, (0xa<<3)|6, 0, 0 },
 			.channel1 = { (0xa<<3)|5, (0xa<<3)|7, 0, 0 },
 		},
@@ -182,7 +137,8 @@ static void main(unsigned long bist)
 
 	setup_khepri_resource_map();
 	needs_reset = setup_coherent_ht_domain();
-	needs_reset |= ht_setup_chain(PCI_DEV(0, 0x18, 0), 0x80);
+	needs_reset=ht_setup_chains_x();
+
 	if (needs_reset) {
 		print_info("ht reset -\r\n");
 		soft_reset();

@@ -5,7 +5,7 @@
 #include <device/pci_ops.h>
 #include "chip.h"
 
-struct chip_operations mainboard_technologic_ts5300_control = {
+struct chip_operations mainboard_technologic_ts5300_ops = {
 	CHIP_NAME("Technologic Systems TS5300 mainboard ")
 };
 

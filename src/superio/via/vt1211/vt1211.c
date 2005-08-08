@@ -22,11 +22,11 @@
 
 
 #include <arch/io.h>
-#include <device/device.h>
-#include <device/pci.h>
-#include <device/pci_ops.h>
-#include <device/pci_ids.h>
 #include <console/console.h>
+#include <device/device.h>
+#include <device/pnp.h>
+#include <uart8250.h>
+
 #include "vt1211.h"
 #include "chip.h"
 
@@ -47,102 +47,120 @@ static unsigned char vt1211hwmonitorinits[]={
  0x4c,0x0, 0x4d,0x0, 0x4e,0xf, 0x5d,0x77,
  0x5c,0x0, 0x5f,0x33, 0x40,0x1};
 
-static void start_conf_pnp(int dev)
+static void pnp_enter_ext_func_mode(device_t dev) 
 {
-	outb(0x87,0x2e);
-	outb(0x87,0x2e);
-	outb(7,0x2e);
-	outb(dev,0x2f);
-}
-static void write_pnp(int reg, int val)
-{
-	outb(reg,0x2e);
-	outb(val,0x2f);
-}
-static void end_conf_pnp()
-{
-	outb(0xaa,0x2e);
+	outb(0x87, dev->path.u.pnp.port);
+	outb(0x87, dev->path.u.pnp.port);
 }
 
-static void vt1211_init(struct superio_via_vt1211_config *conf)
+static void pnp_exit_ext_func_mode(device_t dev) 
 {
+	outb(0xaa, dev->path.u.pnp.port);
+}
 
+static void init_hwm(unsigned long base)
+{
 	int i;
- 	// Activate the vt1211 hardware monitor
-	if(conf->enable_hwmon){
-		start_conf_pnp(0x0b);
-		write_pnp(0x60,0xec); 
-		write_pnp(0x30,1);
-		end_conf_pnp();
 
-	 	// initialize vt1211 hardware monitor registers, which are at 0xECXX
- 		for(i=0;i<sizeof(vt1211hwmonitorinits);i+=2)
- 			outb(vt1211hwmonitorinits[i+1],0xec00+vt1211hwmonitorinits[i]);
+ 	// initialize vt1211 hardware monitor registers, which are at 0xECXX
+	for(i = 0; i < sizeof(vt1211hwmonitorinits); i += 2) {
+ 			outb(vt1211hwmonitorinits[i + 1],
+					base + vt1211hwmonitorinits[i]);
 	}
-	if( conf->enable_fdc){
-		// activate FDC
-		start_conf_pnp(0); // fdc is device 0
-		write_pnp(0x60,0xfc); // io address
-		write_pnp(0x70,0x06); // interupt
-		write_pnp(0x74,0x02); // dma
-		write_pnp(0x30,0x01); // activate it
-		end_conf_pnp();
-	}	
-
-	if( conf->enable_com_ports ){
-		// activate com2
-		start_conf_pnp(3);
-		write_pnp(0x60,0xbe);
-		write_pnp(0x70,0x3);
-		write_pnp(0xf0,0x02);
-		write_pnp(0x30,0x01);
-		end_conf_pnp();
-	}
-
-	if( conf->enable_lpt ){
-		// activate lpt
-		start_conf_pnp(1);
-		write_pnp(0x60,0xde);
-		write_pnp(0x70,0x07);
-		write_pnp(0x74,0x3);
-		write_pnp(0x30,0x01);
-		end_conf_pnp();
-	}
-
 }
 
-static void superio_init(struct chip *chip, enum chip_pass pass)
+static void vt1211_init(struct device *dev)
 {
+	struct superio_via_vt1211_config *conf = dev->chip_info;
+	struct resource *res0;
 
-	struct superio_via_vt1211_config *conf = 
-		(struct superio_via_vt1211_config *)chip->chip_info;
+	if (!dev->enabled) {
+		return;
+	}
 
-	switch (pass) {
-	case CONF_PASS_PRE_PCI:
+	switch (dev->path.u.pnp.device) {
+	case VT1211_SP1:
+		res0 = find_resource(dev, PNP_IDX_IO0);
+		init_uart8250(res0->base, &conf->com1);
 		break;
-		
-	case CONF_PASS_POST_PCI:
-		vt1211_init(conf);
+	case VT1211_SP2:
+		res0 = find_resource(dev, PNP_IDX_IO0);
+		init_uart8250(res0->base, &conf->com2);
 		break;
-
-	case CONF_PASS_PRE_BOOT:
+	case VT1211_HWM:
+		res0 = find_resource(dev, PNP_IDX_IO0);
+		init_hwm(res0->base);
 		break;
-		
 	default:
-		/* nothing yet */
-		break;
+		printk_info("vt1211 asked to initialise unknown device!\n");
+	}
+	
+	/* activate com2
+	start_conf_pnp(3);
+	write_pnp(0x60,0xbe);
+	write_pnp(0x70,0x3);
+	write_pnp(0xf0,0x02);
+	write_pnp(0x30,0x01);
+	end_conf_pnp();
+
+ 	// Activate the vt1211 hardware monitor
+	start_conf_pnp(0x0b);
+	write_pnp(0x60,0xec); 
+	write_pnp(0x30,1);
+	end_conf_pnp(); */
+
+}
+
+void vt1211_pnp_enable_resources(device_t dev)
+{
+	pnp_enter_ext_func_mode(dev);
+	pnp_enable_resources(dev);
+	pnp_exit_ext_func_mode(dev);
+}
+
+void vt1211_pnp_set_resources(struct device *dev)
+{
+	pnp_enter_ext_func_mode(dev);
+	pnp_set_resources(dev);
+	pnp_exit_ext_func_mode(dev);
+}
+
+void vt1211_pnp_enable(device_t dev)
+{
+	if (!dev->enabled) {
+		pnp_enter_ext_func_mode(dev);
+		pnp_set_logical_device(dev);
+		pnp_set_enable(dev, 0);
+		pnp_exit_ext_func_mode(dev);
 	}
 }
 
-static void enumerate(struct chip *chip)
+struct device_operations ops = {
+	.read_resources   = pnp_read_resources,
+	.set_resources    = vt1211_pnp_set_resources,
+	.enable_resources = vt1211_pnp_enable_resources,
+	.enable           = vt1211_pnp_enable,
+	.init             = vt1211_init,
+};
+
+static struct pnp_info pnp_dev_info[] = {
+	{ &ops, VT1211_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
+	{ &ops, VT1211_PP,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
+	{ &ops, VT1211_SP1, PNP_IO0 | PNP_IRQ0,            { 0x07f8, 0}, },
+	{ &ops, VT1211_SP2, PNP_IO0 | PNP_IRQ0,            { 0x07f8, 0}, },
+	{ &ops, VT1211_HWM, PNP_IO0 , { 0xfff8, 0 }, },
+};
+
+static void enable_dev(struct device *dev)
 {
-	extern struct device_operations default_pci_ops_bus;
-	chip_enumerate(chip);
-	chip->dev->ops = &default_pci_ops_bus;
+	printk_debug("vt1211 enabling PNP devices.\n");
+	pnp_enable_devices(dev,
+			&ops,
+			sizeof(pnp_dev_info) / sizeof(pnp_dev_info[0]),
+			pnp_dev_info);
 }
 
-struct chip_operations superio_via_vt1211_control = {
+struct chip_operations superio_via_vt1211_ops = {
 	CHIP_NAME("VIA vt1211")
-	.enumerate = enumerate,
-	.enable    = superio_init,
+	.enable_dev = enable_dev,
 };

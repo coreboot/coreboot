@@ -18,5 +18,17 @@
  * MA 02111-1307 USA
  */
 
- /* vt1211 routines and defines*/
+/* vt1211 PNP devices */
 
+#define VT1211_FDC		0	/* Floppy */
+#define VT1211_PP		1	/* Parallel Port */
+#define VT1211_SP1		2	/* COM1 */
+#define VT1211_SP2		3	/* COM2 */
+#define VT1211_MIDI		6	/* MIDI */
+#define VT1211_GAME		7	/* Game port */
+#define VT1211_GPIO		8	/* GPIO pins */
+#define VT1211_WATCHDOG		9	/* Watchdog timer */
+#define VT1211_WAKEUP		10	/* Wakeup control */
+#define VT1211_HWM		11	/* Hardware monitor */
+#define VT1211_FIR		12	/* Irda */
+#define VT1211_ROM		13	/* ROM control */

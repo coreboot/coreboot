@@ -8,7 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <bitops.h>
-#include <cpu/p6/mtrr.h>
+#include <cpu/cpu.h>
+#include <cpu/x86/mtrr.h>
 #include "chip.h"
 #include "northbridge.h"
 
@@ -18,7 +19,7 @@
  * slower than normal, ethernet drops packets).
  * Apparently these registers govern some sort of bus master behavior.
  */
-static void norhbrige_init(device_t dev) 
+static void northbridge_init(device_t dev) 
 {
 	device_t fb_dev;
 	unsigned long fb;
@@ -60,15 +61,13 @@ static struct device_operations northbridge_operations = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = northbridge_init,
-	.scan_bus         = pci_scan_bridge,
-	.ops_pci          = 0,
+	.init             = northbridge_init
 };
 
 static struct pci_driver northbridge_driver __pci_driver = {
-	.ops = &northbridge_ops,
+	.ops = &northbridge_operations,
 	.vendor = PCI_VENDOR_ID_VIA,
-	.device = 0x3123,
+	.device = PCI_DEVICE_ID_VIA_8623,
 };
 
 static void agp_init(device_t dev)
@@ -93,23 +92,25 @@ static struct device_operations agp_operations = {
 };
 
 static struct pci_driver agp_driver __pci_driver = {
-	.ops = &agp_ops,
+	.ops = &agp_operations,
 	.vendor = PCI_VENDOR_ID_VIA,
-	.device = 0xb091,
+	.device = PCI_DEVICE_ID_VIA_8633_1,
 };
 
 static void vga_init(device_t dev)
 {
-	unsigned long fb;
+//	unsigned long fb;
 
 	printk_debug("VGA random fixup ...\n");
 	pci_write_config8(dev, 0x04, 0x07);
 	pci_write_config8(dev, 0x0d, 0x20);
 	
-	/* Set the vga mtrrs */
+	/* Set the vga mtrrs - disable for the moment */
+#if 0
 	add_var_mtrr( 0xd0000000 >> 10, 0x08000000>>10, MTRR_TYPE_WRCOMB);
 	fb = pci_read_config32(dev,0x10); // get the fb address
 	add_var_mtrr( fb>>10, 8192, MTRR_TYPE_WRCOMB);
+#endif
 }
 
 static struct device_operations vga_operations = {
@@ -121,7 +122,7 @@ static struct device_operations vga_operations = {
 };
 
 static struct pci_driver vga_driver __pci_driver = {
-	.ops = &vga_ops,
+	.ops = &vga_operations,
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = 0x3122,
 };
@@ -132,17 +133,22 @@ static struct pci_driver vga_driver __pci_driver = {
 static void pci_domain_read_resources(device_t dev)
 {
         struct resource *resource;
-        unsigned reg;
+
+	printk_spew("Entering vt8623 pci_domain_read_resources.\n");
 
         /* Initialize the system wide io space constraints */
         resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0,0));
         resource->limit = 0xffffUL;
-        resource->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+        resource->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
+		IORESOURCE_ASSIGNED;
 
         /* Initialize the system wide memory resources constraints */
         resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1,0));
         resource->limit = 0xffffffffULL;
-        resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+        resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
+		IORESOURCE_ASSIGNED;
+
+	printk_spew("Leaving vt8623 pci_domain_read_resources.\n");
 }
 
 static void ram_resource(device_t dev, unsigned long index,
@@ -187,9 +193,10 @@ static uint32_t find_pci_tolm(struct bus *bus)
 static void pci_domain_set_resources(device_t dev)
 {
 	static const uint8_t ramregs[] = {0x5a, 0x5b, 0x5c, 0x5d };
-        struct resource *resource, *last;
 	device_t mc_dev;
         uint32_t pci_tolm;
+
+	printk_spew("Entering vt8623 pci_domain_set_resources.\n");
 
         pci_tolm = find_pci_tolm(&dev->link[0]);
 	mc_dev = dev->link[0].children;
@@ -214,7 +221,7 @@ static void pci_domain_set_resources(device_t dev)
 					ramregs[i]);
 		}
 		printk_debug("I would set ram size to 0x%x Kbytes\n", (rambits)*16*1024);
-		tomk = ramreg*16*1024 - 32768;
+		tomk = rambits*16*1024 - 32768;
 		/* Compute the top of Low memory */
 		tolmk = pci_tolm >> 10;
 		if (tolmk >= tomk) {
@@ -232,6 +239,8 @@ static void pci_domain_set_resources(device_t dev)
 
 static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
 {
+	printk_spew("Entering vt8623 pci_domain_scan_bus.\n");
+
         max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0, 0), 0xff, max);
         return max;
 }
@@ -263,7 +272,7 @@ static struct device_operations cpu_bus_ops = {
 
 static void enable_dev(struct device *dev)
 {
-        struct device_path path;
+	printk_spew("In vt8623 enable_dev for device %s.\n", dev_path(dev));
 
         /* Set the operations if it is a special bus type */
         if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
@@ -275,7 +284,7 @@ static void enable_dev(struct device *dev)
         }
 }
 
-struct chip_operations northbridge_via_vt8623_control = {
+struct chip_operations northbridge_via_vt8623_ops = {
 	CHIP_NAME("VIA vt8623 Northbridge")
 	.enable_dev = enable_dev,
 };

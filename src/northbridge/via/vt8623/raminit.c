@@ -110,7 +110,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	north = pci_locate_device(PCI_ID(0x1106, 0x3123), 0);
 	north = 0;
 	print_debug_hex32(north);
-	print_debug(" is the north\n");
+	print_debug(" is the north\r\n");
 	print_debug_hex16(pci_read_config16(north, 0));
 	print_debug(" ");
 	print_debug_hex16(pci_read_config16(north, 2));
@@ -250,7 +250,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	
 	val = (Trp << 7) | (Tras << 6) | (casl << 4) | 4;
 	
-	print_debug_hex8(val); print_debug(" is the computed timing\n");
+	print_debug_hex8(val); print_debug(" is the computed timing\r\n");
 	/* don't set it. Experience shows that this screwy chipset should just
 	 * be run with the most conservative timing.
 	 * pci_write_config8(0, 0x64, val);

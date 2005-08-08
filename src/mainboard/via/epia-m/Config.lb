@@ -138,8 +138,20 @@ chip northbridge/via/vt8623
 			register "enable_com_ports" = "1"
 			register "enable_keyboard" = "0"
 			register "enable_nvram" = "1"
-		end
-		chip southbridge/ricoh/rl5c476
+
+			device pci 10.0 on end # USB 1.1
+			device pci 10.1 on end # USB 1.1
+			device pci 10.2 on end # USB 1.1
+			device pci 10.3 on end # USB 2
+
+			device pci 11.0 on      # Southbridge
+			end
+			
+			device pci 11.1 on  end # IDE
+			# 2-4 non existant?
+			device pci 11.5 on  end # AC97 Audio
+			device pci 11.6 off end # AC97 Modem
+			device pci 12.0 on end  # Ethernet
 		end
 		chip superio/via/vt1211 
 			register "enable_com_ports" = "1"
@@ -147,7 +159,11 @@ chip northbridge/via/vt8623
 			register "enable_lpt" = "1"
 			register "enable_fdc" = "1"
 		end
-		chip cpu/via/model_centaur 
-		end
+#		This is on the EPIA MII, not the M.
+#		chip southbridge/ricoh/rl5c476
+#		end
+	end
+
+	chip cpu/via/model_centaur 
 	end
 end

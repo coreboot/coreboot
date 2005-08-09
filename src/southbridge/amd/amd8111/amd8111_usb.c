@@ -26,7 +26,7 @@ static struct device_operations usb_ops = {
 	.enable_resources = pci_dev_enable_resources,
 	.init             = 0,
 	.scan_bus         = scan_static_bus,
-//	.enable           = amd8111_enable,
+	.enable           = amd8111_enable,
 	.ops_pci          = &lops_pci,
 };
 

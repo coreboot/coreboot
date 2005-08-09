@@ -97,6 +97,7 @@ static void acpi_init(struct device *dev)
 
 	
 #endif
+	/* power after power fail */
 	on = MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 	get_option(&on, "power_on_after_fail");
 	byte = pci_read_config8(dev, PREVIOUS_POWER_STATE);
@@ -106,7 +107,7 @@ static void acpi_init(struct device *dev)
 	}
 	pci_write_config8(dev, PREVIOUS_POWER_STATE, byte);
 	printk_info("set power %s after power fail\n", on?"on":"off");
-
+        
 	/* Throttle the CPU speed down for testing */
 	on = SLOW_CPU_OFF;
 	get_option(&on, "slow_cpu");
@@ -177,7 +178,7 @@ static struct device_operations acpi_ops  = {
 	.enable_resources = acpi_enable_resources,
 	.init             = acpi_init,
 	.scan_bus         = scan_static_bus,
-//	.enable           = amd8111_enable,
+	.enable           = amd8111_enable,
 	.ops_pci          = &lops_pci,
 	.ops_smbus_bus    = &lops_smbus_bus,
 };

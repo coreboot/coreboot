@@ -22,6 +22,7 @@
 #include "superio/NSC/pc87360/pc87360_early_serial.c"
 #include "cpu/amd/mtrr/amd_earlymtrr.c"
 #include "cpu/x86/bist.h"
+#include "cpu/amd/dualcore/dualcore.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, PC87360_SP1)
 
@@ -135,7 +136,7 @@ static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
 	};
 
 	if (maxnodes > 2) {
-		print_debug("this mainboard is only designed for 2 cpus\r\n");
+		print_spew("this mainboard is only designed for 2 cpus\r\n");
 		maxnodes = 2;
 	}
 
@@ -165,6 +166,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #define FIRST_CPU  1
 #define SECOND_CPU 1
 #define TOTAL_CPUS (FIRST_CPU + SECOND_CPU)
+
+
 static void main(unsigned long bist)
 {
 	static const struct mem_controller cpu[] = {
@@ -194,21 +197,7 @@ static void main(unsigned long bist)
 
 	int needs_reset;
 	if (bist == 0) {
-		unsigned nodeid;
-		/* Skip this if there was a built in self test failure */
-		amd_early_mtrr_init();
-		enable_lapic();
-		init_timer();
-		nodeid = lapicid() & 0xf;
-
-		/* Has this cpu already booted? */
-		if (cpu_init_detected(nodeid)) {
-			asm volatile ("jmp __cpu_reset");
-		}
-		distinguish_cpu_resets(nodeid);
-		if (!boot_cpu()) {
-			stop_this_cpu();
-		}
+		k8_init_and_stop_secondaries();
 	}
 	/* Setup the console */
 	pc87360_enable_serial(SERIAL_DEV, TTYS0_BASE);
@@ -235,12 +224,13 @@ static void main(unsigned long bist)
 
 	memreset_setup();
 	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
-
+	
 #if 0
 	dump_pci_devices();
 #endif
 #if 0
 	dump_pci_device(PCI_DEV(0, 0x18, 2));
+	dump_pci_device(PCI_DEV(0, 0x18, 3));
 #endif
 
 #if 0

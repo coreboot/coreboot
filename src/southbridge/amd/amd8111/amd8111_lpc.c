@@ -84,7 +84,7 @@ static void setup_ioapic(void)
 			return;
 		}
 		printk_spew("for IRQ, reg 0x%08x value 0x%08x 0x%08x\n", 
-			    a->reg, a->value_low, a->value_high);
+			a->reg, a->value_low, a->value_high);
 	}
 }
 
@@ -113,13 +113,9 @@ static void lpc_init(struct device *dev)
 	byte = pci_read_config8(dev, 0x46);
 	pci_write_config8(dev, 0x46, byte | (1<<0)); 
 
-	/* power after power fail */
+	/* Enable 5Mib Rom window */
 	byte = pci_read_config8(dev, 0x43);
-	if (pwr_on) { 
-		byte &= ~(1<<6);
-	} else {
-		byte |= (1<<6);
-	}
+	byte |= 0xC0;
 	pci_write_config8(dev, 0x43, byte);
 
 	/* Enable Port 92 fast reset */
@@ -179,7 +175,7 @@ static void amd8111_lpc_enable_resources(device_t dev)
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
 	pci_write_config32(dev, 0x70, 
-			   ((device & 0xffff) << 16) | (vendor & 0xffff));
+		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 
 static struct pci_operations lops_pci = {

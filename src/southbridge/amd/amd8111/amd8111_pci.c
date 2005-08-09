@@ -55,6 +55,7 @@ static struct device_operations pci_ops  = {
 	.enable_resources = pci_bus_enable_resources,
 	.init             = pci_init,
 	.scan_bus         = pci_scan_bridge,
+	/* PCI Subordinate bus reset is not implemented */
 	.ops_pci          = &lops_pci,
 };
 

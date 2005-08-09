@@ -5,16 +5,12 @@
 #if 1
 static void print_debug_pci_dev(unsigned dev)
 {
-#if CONFIG_USE_INIT
-	printk_debug("PCI: %02x:%02x.%02x", (dev>>16) & 0xff, (dev>>11) & 0x1f, (dev>>8) & 0x7);
-#else
 	print_debug("PCI: ");
 	print_debug_hex8((dev >> 16) & 0xff);
 	print_debug_char(':');
 	print_debug_hex8((dev >> 11) & 0x1f);
 	print_debug_char('.');
 	print_debug_hex8((dev >> 8) & 7);
-#endif
 }
 
 static void print_pci_devices(void)
@@ -31,19 +27,7 @@ static void print_pci_devices(void)
 			continue;
 		}
 		print_debug_pci_dev(dev);
-#if CONFIG_USE_INIT
-		printk_debug(" %04x:%04x\r\n", (id & 0xffff), (id>>16));
-#else
-		print_debug_hex32(id);
 		print_debug("\r\n");
-#endif
-		if(((dev>>8) & 0x07) == 0) {
-			uint8_t hdr_type;
-			hdr_type = pci_read_config8(dev, PCI_HEADER_TYPE);
-			if((hdr_type & 0x80) != 0x80) {
-				dev += PCI_DEV(0,0,7);
-			}
-		}
 	}
 }
 
@@ -88,14 +72,6 @@ static void dump_pci_devices(void)
 			continue;
 		}
 		dump_pci_device(dev);
-
-                if(((dev>>8) & 0x07) == 0) {
-                        uint8_t hdr_type;
-                        hdr_type = pci_read_config8(dev, PCI_HEADER_TYPE);
-                        if((hdr_type & 0x80) != 0x80) {
-                                dev += PCI_DEV(0,0,7);
-                        }
-                }
 	}
 }
 
@@ -113,14 +89,6 @@ static void dump_pci_devices_on_bus(unsigned busn)
                         continue;
                 }
                 dump_pci_device(dev);
-
-                if(((dev>>8) & 0x07) == 0) {
-                        uint8_t hdr_type;
-                        hdr_type = pci_read_config8(dev, PCI_HEADER_TYPE);
-                        if((hdr_type & 0x80) != 0x80) {
-                                dev += PCI_DEV(0,0,7);
-                        }
-                }
         }
 }
 

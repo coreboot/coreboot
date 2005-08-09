@@ -49,12 +49,18 @@ uses HOSTCC
 uses OBJCOPY
 uses CONFIG_CONSOLE_VGA
 uses CONFIG_PCI_ROM_RUN
+uses CONFIG_LOGICAL_CPUS
 
 uses CONFIG_USE_INIT
 
 ###
 ### Build options
 ###
+
+##
+## CONFIG_LOGICAL_CPUS enables dual core support
+##
+default CONFIG_LOGICAL_CPUS=1
 
 ##
 ## ROM_SIZE is the size of boot ROM that this board will use.
@@ -105,7 +111,7 @@ default LB_CKS_LOC=123
 ## Only worry about 2 micro processors
 ##
 default CONFIG_SMP=1
-default CONFIG_MAX_CPUS=2
+default CONFIG_MAX_CPUS=4
 default CONFIG_MAX_PHYSICAL_CPUS=2
 
 ##

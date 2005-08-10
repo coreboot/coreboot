@@ -479,16 +479,7 @@ define CONFIG_SYS_CLK_FREQ
 	export used
 	comment "System clock frequency in MHz"
 end
-define CONFIG_LEGACY_VGABIOS
-	default 0
-	export used
-	comment "Support for legacy VGA BIOS"
-end
-define VGABIOS_START
-	default 0
-	export used
-	comment "Base of Legacy VGA in Rom"
-end
+
 ###############################################
 # SMP options
 ###############################################

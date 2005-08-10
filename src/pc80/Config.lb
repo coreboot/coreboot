@@ -7,10 +7,6 @@ object isa-dma.o
 object i8259.o 
 #object udelay_timer2.o CONFIG_UDELAY_TIMER2
 
-#if CONFIG_CONSOLE_VGA
-#	object beep.o
-#end
-
 if CONFIG_IDE
 	dir ide
 end

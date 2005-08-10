@@ -1,5 +1,4 @@
 uses CONFIG_IDE
-uses CONFIG_LEGACY_VGABIOS
 uses CONFIG_CONSOLE_VGA
 
 object mc146818rtc.o

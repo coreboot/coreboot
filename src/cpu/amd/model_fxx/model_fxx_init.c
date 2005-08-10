@@ -21,7 +21,10 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/mem.h>
+
+#if CONFIG_LOGICAL_CPUS==1
 #include <cpu/amd/dualcore.h>
+#endif
 
 #include "model_fxx_msr.h"
 
@@ -149,6 +152,9 @@ static void set_init_ecc_mtrrs(void)
 static void init_ecc_memory(unsigned node_id)
 {
 	unsigned long startk, begink, endk;
+#if K8_E0_MEM_HOLE_SIZEK != 0
+	unsigned long hole_startk = 0, hole_endk = 0;
+#endif
 	unsigned long basek;
 	struct mtrr_state mtrr_state;
 	device_t f1_dev, f2_dev, f3_dev;
@@ -193,13 +199,25 @@ static void init_ecc_memory(unsigned node_id)
 	startk = (pci_read_config32(f1_dev, 0x40 + (node_id*8)) & 0xffff0000) >> 2;
 	endk   = ((pci_read_config32(f1_dev, 0x44 + (node_id*8)) & 0xffff0000) >> 2) + 0x4000;
 
+#if K8_E0_MEM_HOLE_SIZEK != 0
+        if (!is_cpu_pre_e0()) {
+                uint32_t val;
+                val = pci_read_config32(f1_dev, 0xf0);
+                if((val & 1)==1) {
+        	        hole_startk = ((val & (0xff<<24)) >> 10);
+			hole_endk = ((val & (0xff<<8))<<(16-10)) - startk;
+			hole_endk += hole_startk;
+                }
+        }
+#endif
+	
 
 	/* Don't start too early */
 	begink = startk;
 	if (begink < CONFIG_LB_MEM_TOPK) {
 		begink = CONFIG_LB_MEM_TOPK;
 	}
-	printk_debug("Clearing memory %uK - %uK: ", begink, endk);
+	printk_debug("Clearing memory %uK - %uK: ", startk, endk);
 
 	/* Save the normal state */
 	save_mtrr_state(&mtrr_state);
@@ -216,6 +234,9 @@ static void init_ecc_memory(unsigned node_id)
 		unsigned long size;
 		void *addr;
 
+#if K8_E0_MEM_HOLE_SIZEK != 0
+		if ((basek >= hole_startk) && (basek < hole_endk)) continue;
+#endif
 		/* Report every 64M */
 		if ((basek % (64*1024)) == 0) {
 			/* Restore the normal state */
@@ -319,7 +340,6 @@ static inline void k8_errata(void)
 
 	/* Erratum 91 prefetch miss is handled in the kernel */
 
- 
 	/* Erratum 106 ... */
 	msr = rdmsr_amd(LS_CFG_MSR);
 	msr.lo |= 1 << 25;
@@ -330,7 +350,7 @@ static inline void k8_errata(void)
 	msr.hi |= 1 << (43 - 32);
 	wrmsr_amd(BU_CFG_MSR, msr);
 
-	if (is_cpu_pre_e0() && !is_cpu_pre_d0()) {
+	if(is_cpu_d0()) {
 		/* Erratum 110 ...*/
 		msr = rdmsr_amd(CPU_ID_HYPER_EXT_FEATURES);
 		msr.hi |=1;
@@ -342,34 +362,26 @@ static inline void k8_errata(void)
                 msr = rdmsr_amd(CPU_ID_EXT_FEATURES_MSR);
                 msr.hi |=1;
                 wrmsr_amd(CPU_ID_EXT_FEATURES_MSR, msr);
-
-		/* Erratum 113 ... */
-               msr = rdmsr_amd(BU_CFG_MSR);
-               msr.hi |= (1 << 16);
-               wrmsr_amd(BU_CFG_MSR, msr);
 	}
 
 	/* Erratum 122 */
-	if (!is_cpu_pre_c0()) {
-		msr = rdmsr(HWCR_MSR);
-		msr.lo |= 1 << 6;
-		wrmsr(HWCR_MSR, msr);
-	}
-
-	/* Erratum 123? dual core deadlock? */
-	
-	/* Erratum 131 */
-	msr = rdmsr(NB_CFG_MSR);
-	msr.lo |= 1 << 20;
-	wrmsr(NB_CFG_MSR, msr);
+	msr = rdmsr(HWCR_MSR);
+	msr.lo |= 1 << 6;
+	wrmsr(HWCR_MSR, msr);
 	
 }
 
-void model_fxx_init(device_t cpu)
+void model_fxx_init(device_t dev)
 {
 	unsigned long i;
 	msr_t msr;
+#if CONFIG_LOGICAL_CPUS
 	struct node_core_id id;
+	unsigned siblings;
+	id.coreid=0;
+#else
+	unsigned nodeid;
+#endif
 
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
@@ -392,18 +404,43 @@ void model_fxx_init(device_t cpu)
 	/* Enable the local cpu apics */
 	setup_lapic();
 
-	/* Find our node and core */
-	id = get_node_core_id();
+#if CONFIG_LOGICAL_CPUS == 1
+        siblings = cpuid_ecx(0x80000008) & 0xff;
 
-	/* Is this a bad location?  In particular can another node prefetch
+	id = get_node_core_id(read_nb_cfg_54()); // pre e0 nb_cfg_54 can not be set
+
+       	if(siblings>0) {
+                msr = rdmsr_amd(CPU_ID_FEATURES_MSR);
+                msr.lo |= 1 << 28; 
+                wrmsr_amd(CPU_ID_FEATURES_MSR, msr);
+
+       	        msr = rdmsr_amd(LOGICAL_CPUS_NUM_MSR);
+                msr.lo = (siblings+1)<<16; 
+       	        wrmsr_amd(LOGICAL_CPUS_NUM_MSR, msr);
+
+                msr = rdmsr_amd(CPU_ID_EXT_FEATURES_MSR);
+       	        msr.hi |= 1<<(33-32); 
+               	wrmsr_amd(CPU_ID_EXT_FEATURES_MSR, msr);
+	} 
+        
+
+	/* Is this a bad location?  In particular can another node prefecth
 	 * data from this node before we have initialized it?
 	 */
-	if (id.coreid == 0) {
-		init_ecc_memory(id.nodeid); // only do it for core 0
-	}
+	if (id.coreid == 0) init_ecc_memory(id.nodeid); // only do it for core 0
+#else
+	/* Is this a bad location?  In particular can another node prefecth
+	 * data from this node before we have initialized it?
+	 */
+	nodeid = lapicid() & 0xf;
+	init_ecc_memory(nodeid);
+#endif
 
-	/* Deal with sibling cpus */
-	amd_sibling_init(cpu, id);
+#if CONFIG_LOGICAL_CPUS==1
+        /* Start up my cpu siblings */
+//	if(id.coreid==0)  amd_sibling_init(dev); // Don't need core1 is already be put in the CPU BUS in bus_cpu_scan
+#endif
+
 }
 
 static struct device_operations cpu_dev_ops = {
@@ -414,7 +451,7 @@ static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_AMD, 0xf51 }, /* SH7-B3 */
 	{ X86_VENDOR_AMD, 0xf58 }, /* SH7-C0 */
 	{ X86_VENDOR_AMD, 0xf48 },
-
+#if 1
 	{ X86_VENDOR_AMD, 0xf5A }, /* SH7-CG */
 	{ X86_VENDOR_AMD, 0xf4A },
 	{ X86_VENDOR_AMD, 0xf7A },
@@ -446,6 +483,7 @@ static struct cpu_device_id cpu_table[] = {
         { X86_VENDOR_AMD, 0x20fc2 },
         { X86_VENDOR_AMD, 0x20f12 }, /* JH-E6 */
         { X86_VENDOR_AMD, 0x20f32 },
+#endif
 
 	{ 0, 0 },
 };

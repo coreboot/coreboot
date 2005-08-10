@@ -11,8 +11,8 @@ static inline unsigned int read_nb_cfg_54(void)
 }
 
 struct node_core_id {
-	unsigned nodeid:8;
-	unsigned coreid:8;
+	unsigned nodeid;
+	unsigned coreid;
 };
 
 static inline struct node_core_id get_node_core_id(unsigned nb_cfg_54) {

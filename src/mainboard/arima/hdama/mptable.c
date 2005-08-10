@@ -3,61 +3,7 @@
 #include <device/pci.h>
 #include <string.h>
 #include <stdint.h>
-#include <cpu/x86/lapic.h>
-#include <arch/cpu.h>                                                                      
-#include <arch/io.h>
 
-#define HT_INIT_CONTROL 0x6c
-#define HTIC_BIOSR_Detect  (1<<5)
-
-/* If we assume a symmetric processor configuration we can
- * get all of the information we need to write the processor
- * entry from the bootstrap processor.
- * Plus I don't think linux really even cares.
- * Having the proper apicid's in the table so the non-bootstrap
- *  processors can be woken up should be enough.
- */
-void smp_write_processors_inorder(struct mp_config_table *mc)
-{
-        int boot_apic_id;
-	int order_id;
-        unsigned apic_version;
-        unsigned cpu_features;
-        unsigned cpu_feature_flags;
-        struct cpuid_result result;
-        device_t cpu;
-                                                                                
-        boot_apic_id = lapicid();
-        apic_version = lapic_read(LAPIC_LVR) & 0xff;
-        result = cpuid(1);
-        cpu_features = result.eax;
-        cpu_feature_flags = result.edx;
-	/* order the output of the cpus to fix a bug in kernel 6 11 */
-	for(order_id = 0;order_id <256; order_id++) {
-            for(cpu = all_devices; cpu; cpu = cpu->next) {
-                unsigned long cpu_flag;
-                if ((cpu->path.type != DEVICE_PATH_APIC) ||
-                        (cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER))
-                {
-                        continue;
-                }
-                if (!cpu->enabled) {
-                        continue;
-                }
-                cpu_flag = MPC_CPU_ENABLED;
-                if (boot_apic_id == cpu->path.u.apic.apic_id) {
-                        cpu_flag = MPC_CPU_ENABLED | MPC_CPU_BOOTPROCESSOR;
-                }
-		if(cpu->path.u.apic.apic_id == order_id) {
-                    smp_write_processor(mc,
-                        cpu->path.u.apic.apic_id, apic_version,
-                        cpu_flag, cpu_features, cpu_feature_flags);
-		    break;
-		}
-            }
-	}
-}
-                                                                                
 static unsigned node_link_to_bus(unsigned node, unsigned link)
 {
 	device_t dev;
@@ -92,21 +38,6 @@ static unsigned node_link_to_bus(unsigned node, unsigned link)
 	return 0;
 }
 
-unsigned max_apicid(void)
-{
-	unsigned max_apicid;
-	device_t dev;
-	max_apicid = 0;
-	for(dev = all_devices; dev; dev = dev->next) {
-		if (dev->path.type != DEVICE_PATH_APIC)
-			continue;
-		if (dev->path.u.apic.apic_id > max_apicid) {
-			max_apicid = dev->path.u.apic.apic_id;
-		}
-	}
-	return max_apicid;
-}
-
 void *smp_write_config_table(void *v)
 {
 	static const char sig[4] = "PCMP";
@@ -119,10 +50,6 @@ void *smp_write_config_table(void *v)
 	unsigned char bus_8131_1;
 	unsigned char bus_8131_2;
 	unsigned char bus_8111_1;
-	unsigned apicid_base;
-	unsigned apicid_8111;
-	unsigned apicid_8131_1;
-	unsigned apicid_8131_2;
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 	memset(mc, 0, sizeof(*mc));
@@ -141,12 +68,8 @@ void *smp_write_config_table(void *v)
 	mc->mpe_checksum = 0;
 	mc->reserved = 0;
 
-	smp_write_processors_inorder(mc);
+	smp_write_processors(mc);
 
-	apicid_base = max_apicid() + 1;
-	apicid_8111 = apicid_base;
-	apicid_8131_1 = apicid_base + 1;
-	apicid_8131_2 = apicid_base + 2;
 	{
 		device_t dev;
 
@@ -201,7 +124,7 @@ void *smp_write_config_table(void *v)
 	smp_write_bus(mc, bus_isa, "ISA	  ");
 
 	/* IOAPIC handling */
-	smp_write_ioapic(mc, apicid_8111, 0x11, 0xfec00000);
+	smp_write_ioapic(mc, 2, 0x11, 0xfec00000);
 	{
 		device_t dev;
 		struct resource *res;
@@ -210,7 +133,7 @@ void *smp_write_config_table(void *v)
 		if (dev) {
 			res = find_resource(dev, PCI_BASE_ADDRESS_0);
 			if (res) {
-				smp_write_ioapic(mc, apicid_8131_1, 0x11, res->base);
+				smp_write_ioapic(mc, 0x03, 0x11, res->base);
 			}
 		}
 		/* 8131 apic 4 */
@@ -218,44 +141,44 @@ void *smp_write_config_table(void *v)
 		if (dev) {
 			res = find_resource(dev, PCI_BASE_ADDRESS_0);
 			if (res) {
-				smp_write_ioapic(mc, apicid_8131_2, 0x11, res->base);
+				smp_write_ioapic(mc, 0x04, 0x11, res->base);
 			}
 		}
 	}
 
 	/* ISA backward compatibility interrupts  */
 	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_isa, 0x00, apicid_8111, 0x00);
+		bus_isa, 0x00, 0x02, 0x00);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_isa, 0x01, apicid_8111, 0x01);
+		bus_isa, 0x01, 0x02, 0x01);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_isa, 0x00, apicid_8111, 0x02);
+		bus_isa, 0x00, 0x02, 0x02);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_isa, 0x03, apicid_8111, 0x03);
+		bus_isa, 0x03, 0x02, 0x03);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_isa, 0x04, apicid_8111, 0x04);
+		bus_isa, 0x04, 0x02, 0x04);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_isa, 0x05, apicid_8111, 0x05);
+		bus_isa, 0x05, 0x02, 0x05);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_isa, 0x06, apicid_8111, 0x06);
+		bus_isa, 0x06, 0x02, 0x06);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_isa, 0x07, apicid_8111, 0x07);
+		bus_isa, 0x07, 0x02, 0x07);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_isa, 0x08, apicid_8111, 0x08);
+		bus_isa, 0x08, 0x02, 0x08);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_isa, 0x09, apicid_8111, 0x09);
+		bus_isa, 0x09, 0x02, 0x09);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_isa, 0x0a, apicid_8111, 0x0a);
+		bus_isa, 0x0a, 0x02, 0x0a);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_isa, 0x0b, apicid_8111, 0x0b);
+		bus_isa, 0x0b, 0x02, 0x0b);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_isa, 0x0c, apicid_8111, 0x0c);
+		bus_isa, 0x0c, 0x02, 0x0c);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_isa, 0x0d, apicid_8111, 0x0d);
+		bus_isa, 0x0d, 0x02, 0x0d);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_isa, 0x0e, apicid_8111, 0x0e);
+		bus_isa, 0x0e, 0x02, 0x0e);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-		bus_isa, 0x0f, apicid_8111, 0x0f);
+		bus_isa, 0x0f, 0x02, 0x0f);
 
 	/* Standard local interrupt assignments */
 	smp_write_lintsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
@@ -265,48 +188,46 @@ void *smp_write_config_table(void *v)
 
 	/* PCI Ints:	     Type    Trigger                Polarity                 Bus ID      PCIDEVNUM|IRQ  APIC ID PIN# */
 	/* On board nics */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x03<<2)|0, apicid_8111, 0x13);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x04<<2)|0, apicid_8111, 0x13);
-	/* On board SATA */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x05<<2)|0, apicid_8111, 0x11);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x03<<2)|0, 0x02, 0x13);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x04<<2)|0, 0x02, 0x13);
 
 	/* PCI Slot 1 */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x01<<2)|0, apicid_8111, 0x11);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x01<<2)|1, apicid_8111, 0x12);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x01<<2)|2, apicid_8111, 0x13);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x01<<2)|3, apicid_8111, 0x10);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x01<<2)|0, 0x02, 0x11);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x01<<2)|1, 0x02, 0x12);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x01<<2)|2, 0x02, 0x13);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x01<<2)|3, 0x02, 0x10);
 
 	/* PCI Slot 2 */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x02<<2)|0, apicid_8111, 0x12);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x02<<2)|1, apicid_8111, 0x13);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x02<<2)|2, apicid_8111, 0x10);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x02<<2)|3, apicid_8111, 0x11);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x02<<2)|0, 0x02, 0x12);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x02<<2)|1, 0x02, 0x13);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x02<<2)|2, 0x02, 0x10);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x02<<2)|3, 0x02, 0x11);
 
 	/* PCI Slot 3 */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x01<<2)|0, apicid_8111, 0x11);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x01<<2)|1, apicid_8111, 0x12);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x01<<2)|2, apicid_8111, 0x13);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x01<<2)|3, apicid_8111, 0x10);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x01<<2)|0, 0x02, 0x11);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x01<<2)|1, 0x02, 0x12);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x01<<2)|2, 0x02, 0x13);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x01<<2)|3, 0x02, 0x10);
 
 	/* PCI Slot 4 */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x02<<2)|0, apicid_8111, 0x12);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x02<<2)|1, apicid_8111, 0x13);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x02<<2)|2, apicid_8111, 0x10);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x02<<2)|3, apicid_8111, 0x11);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x02<<2)|0, 0x02, 0x12);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x02<<2)|1, 0x02, 0x13);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x02<<2)|2, 0x02, 0x10);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x02<<2)|3, 0x02, 0x11);
 
 	/* PCI Slot 5 */
 #warning "FIXME get the irqs right, it's just hacked to work for now"
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8111_1, (0x05<<2)|0, apicid_8111, 0x11);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8111_1, (0x05<<2)|1, apicid_8111, 0x12);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8111_1, (0x05<<2)|2, apicid_8111, 0x13);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8111_1, (0x05<<2)|3, apicid_8111, 0x10);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8111_1, (0x05<<2)|0, 0x02, 0x11);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8111_1, (0x05<<2)|1, 0x02, 0x12);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8111_1, (0x05<<2)|2, 0x02, 0x13);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8111_1, (0x05<<2)|3, 0x02, 0x10);
 
 	/* PCI Slot 6 */
 #warning "FIXME get the irqs right, it's just hacked to work for now"
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8111_1, (0x04<<2)|0, apicid_8111, 0x10);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8111_1, (0x04<<2)|1, apicid_8111, 0x11);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8111_1, (0x04<<2)|2, apicid_8111, 0x12);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8111_1, (0x04<<2)|3, apicid_8111, 0x13);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8111_1, (0x04<<2)|0, 0x02, 0x10);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8111_1, (0x04<<2)|1, 0x02, 0x11);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8111_1, (0x04<<2)|2, 0x02, 0x12);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8111_1, (0x04<<2)|3, 0x02, 0x13);
 
 	/* There is no extension information... */
 
@@ -321,91 +242,6 @@ void *smp_write_config_table(void *v)
 unsigned long write_smp_table(unsigned long addr)
 {
 	void *v;
-
-#if 0  /* The whole patch on the 33 Mhz problem */
-#if 1
-#define debug1 0
-        /* Hack patch work around for hot swap enable 33mhz problem */
-        {
-                device_t dev;
-                uint32_t data;
-        	unsigned long htic;
-		int reset;
-		int i;
-
-     		reset = 0;
-		printk_debug("Looking for bad PCIX MHz input\n");
-                dev = dev_find_slot(1, PCI_DEVFN(0x02,0));
-                data = pci_read_config32(dev, 0xa0);
-		if(!(((data>>16)&0x0ff)==0xc3)) {
-			reset=1;
-                        printk_debug("Bad PCIX MHz - Reset\n");
-		}
-		printk_debug("Looking for bad Hot Swap Enable\n");
-                dev = dev_find_slot(1, PCI_DEVFN(0x01,0));
-                data = pci_read_config32(dev, 0x48);
-#if debug1
-                if(!(data & 0x0c)) {
-			reset=1;
-                        printk_debug("Good Hot Swap start - Reset\n");
-		}
-#else
-                if(data & 0x0c) {
-			reset=1;
-                        printk_debug("Bad Hot Swap start - Reset\n");
-		}
-#endif
-		if(reset) {
-#if 0
-			/* dump pci registers */
-			printk_debug("PCI Registers for 1:1.0\n");
-			for(i = 0; i <= 255; i++) {
-		                unsigned char val;
-		                if ((i & 0x0f) == 0) {
-		                        printk_debug("%2.2X:",i);
-		                }
-		                val = pci_read_config8(dev, i);
-		                printk_debug(" %2.2X",val);
-		                if ((i & 0x0f) == 0x0f) {
-		                        printk_debug("\n");
-		                }
-		        }
-		
-			dev = dev_find_slot(1, PCI_DEVFN(0x02,0));
-			printk_debug("PCI Registers for 1:2.0\n");
-			for(i = 0; i <= 255; i++) {
-		                unsigned char val;
-		                if ((i & 0x0f) == 0) {
-		                        printk_debug("%2.2X:",i);
-		                }
-		                val = pci_read_config8(dev, i);
-		                printk_debug(" %2.2X",val);
-		                if ((i & 0x0f) == 0x0f) {
-		                        printk_debug("\n");
-		                }
-		        }
-#endif
-			/* enable cf9 */
-		        dev = dev_find_slot(node_link_to_bus(0, 0), PCI_DEVFN(0x04,3));
-		        pci_write_config8(dev, 0x41, 0xf1);
-		        /* reset */
-			dev = dev_find_slot(0, PCI_DEVFN(0x18,0));
-		        htic = pci_read_config32(dev, HT_INIT_CONTROL);
-		        htic &= ~HTIC_BIOSR_Detect;
-		        pci_write_config32(dev, HT_INIT_CONTROL, htic);
-		        outb(0x0e, 0x0cf9);
-                }
-                else {
-#if debug1
-                        printk_debug("Hot Swap is on\n");
-#else
-                        printk_debug("OK 133MHz & Hot Swap is off\n");
-#endif
-                }
-        }
-#endif
-#endif  /* end of the patch on the whole 33 Mhz problem */
-
 	v = smp_write_floating_table(addr);
 	return (unsigned long)smp_write_config_table(v);
 }

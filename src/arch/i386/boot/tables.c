@@ -23,7 +23,7 @@ struct lb_memory *write_tables(void)
 	post_code(0x9a);
 
 	/* This table must be betweeen 0xf0000 & 0x100000 */
-	rom_table_end = copy_pirq_routing_table(rom_table_end);
+	rom_table_end = write_pirq_routing_table(rom_table_end);
 	rom_table_end = (rom_table_end + 1023) & ~1023;
 
 	/* copy the smp block to address 0 */

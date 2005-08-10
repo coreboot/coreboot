@@ -155,6 +155,23 @@ static void disable_probes(void)
 
 }
 
+#ifndef ENABLE_APIC_EXT_ID
+#define ENABLE_APIC_EXT_ID 0 
+#endif
+
+static void enable_apic_ext_id(u8 node) 
+{
+#if ENABLE_APIC_EXT_ID==1
+#warning "FIXME Is the right place to enable apic ext id here?"
+
+      u32 val;
+
+        val = pci_read_config32(NODE_HT(node), 0x68);
+        val |= (HTTC_APIC_EXT_SPUR | HTTC_APIC_EXT_ID | HTTC_APIC_EXT_BRD_CST);
+        pci_write_config32(NODE_HT(node), 0x68, val);
+#endif
+}
+
 static void enable_routing(u8 node)
 {
 	u32 val;
@@ -275,26 +292,26 @@ static int verify_connection(u8 dest)
 	return 1;
 }
 
-static unsigned read_freq_cap(device_t dev, unsigned pos)
+static uint16_t read_freq_cap(device_t dev, uint8_t pos)
 {
 	/* Handle bugs in valid hypertransport frequency reporting */
-	unsigned freq_cap;
+	uint16_t freq_cap;
 	uint32_t id;
 
 	freq_cap = pci_read_config16(dev, pos);
 	freq_cap &= ~(1 << HT_FREQ_VENDOR); /* Ignore Vendor HT frequencies */
 
+#if K8_HT_FREQ_1G_SUPPORT == 1
 	if (!is_cpu_pre_e0()) {
 		return freq_cap;
 	}
+#endif
 
 	id = pci_read_config32(dev, 0);
 
 	/* AMD K8 Unsupported 1Ghz? */
 	if (id == (PCI_VENDOR_ID_AMD | (0x1100 << 16))) {
-		if (is_cpu_pre_e0()) {
-			freq_cap &= ~(1 << HT_FREQ_1000Mhz);
-		}
+		freq_cap &= ~(1 << HT_FREQ_1000Mhz);
 	}
 	
 	return freq_cap;
@@ -322,10 +339,8 @@ static int optimize_connection(device_t node1, uint8_t link1, device_t node2, ui
 
 	/* See if I am changing the link freqency */
 	old_freq = pci_read_config8(node1, link1 + PCI_HT_CAP_HOST_FREQ);
-	old_freq &= 0x0f;
 	needs_reset |= old_freq != freq;
 	old_freq = pci_read_config8(node2, link2 + PCI_HT_CAP_HOST_FREQ);
-	old_freq &= 0x0f;
 	needs_reset |= old_freq != freq;
 
 	/* Set the Calulcated link frequency */
@@ -367,6 +382,7 @@ static int optimize_connection(device_t node1, uint8_t link1, device_t node2, ui
 
 	/* Set node2's widths */
 	pci_write_config8(node2, link2 + PCI_HT_CAP_HOST_WIDTH + 1, width);
+
 	return needs_reset;
 }
 
@@ -1609,9 +1625,9 @@ static void clear_dead_routes(unsigned nodes)
 }
 #endif /* CONFIG_MAX_PHYSICAL_CPUS > 1 */
 
-static unsigned count_cpus(unsigned nodes)
-{
 #if CONFIG_LOGICAL_CPUS==1
+static unsigned verify_dualcore(unsigned nodes)
+{
 	unsigned node, totalcpus, tmp;
 
 	totalcpus = 0;
@@ -1621,21 +1637,25 @@ static unsigned count_cpus(unsigned nodes)
 	}
 
 	return totalcpus;
-#else
-	return nodes;
-#endif
 		
 }
+#endif
 
 static void coherent_ht_finalize(unsigned nodes)
 {
-	unsigned total_cpus;
-	unsigned cpu_node_count;
 	unsigned node;
 	int rev_a0;
-	total_cpus = count_cpus(nodes);
-	cpu_node_count = ((total_cpus -1)<<16)|((nodes - 1) << 4);
+#if CONFIG_LOGICAL_CPUS==1
+	unsigned total_cpus;
 
+	if(read_option(CMOS_VSTART_dual_core, CMOS_VLEN_dual_core, 0) == 0) { /* dual_core */
+		total_cpus = verify_dualcore(nodes);
+	}
+	else {
+		total_cpus = nodes;
+	}
+#endif
+	
 	/* set up cpu count and node count and enable Limit
 	 * Config Space Range for all available CPUs.
 	 * Also clear non coherent hypertransport bus range
@@ -1652,7 +1672,11 @@ static void coherent_ht_finalize(unsigned nodes)
 		/* Set the Total CPU and Node count in the system */
 		val = pci_read_config32(dev, 0x60);
 		val &= (~0x000F0070);
-		val |= cpu_node_count;
+#if CONFIG_LOGICAL_CPUS==1
+		val |= ((total_cpus-1)<<16)|((nodes-1)<<4);
+#else
+		val |= ((nodes-1)<<16)|((nodes-1)<<4);
+#endif
 		pci_write_config32(dev, 0x60, val);
 
 		/* Only respond to real cpu pci configuration cycles
@@ -1762,33 +1786,6 @@ static int optimize_link_read_pointers(unsigned nodes, int needs_reset)
 	return needs_reset;
 }
 
-static void startup_other_cores(unsigned nodes)
-{
-	unsigned node;
-	for(node = 0; node < nodes; node++) {
-		device_t dev;
-		unsigned siblings;
-		dev = NODE_MC(node);
-		siblings = (pci_read_config32(dev, 0xe8) >> 12) & 0x3;
-
-		if (siblings) {
-			device_t dev_f0;
-			unsigned val;
-			/* Redirect all MC4 accesses and error logging to core0 */
-			val = pci_read_config32(dev, 0x44);
-			val |= (1 << 27); //NbMcaToMstCpuEn bit
-			pci_write_config32(dev, 0x44, val);
-
-			dev_f0 = NODE_HT(node);
-			/* Enable extended apic id's and second core */
-			val = pci_read_config32(dev_f0, 0x68);
-			val |= (1 << 18) | (1 << 17) | ( 1 << 5);
-			pci_write_config32(dev_f0, 0x68, val);
-		}
-	}
-}
-
-
 static int setup_coherent_ht_domain(void)
 {
 	struct setup_smp_result result;
@@ -1802,15 +1799,15 @@ static int setup_coherent_ht_domain(void)
 	enable_bsp_routing();
 
 #if CONFIG_MAX_PHYSICAL_CPUS > 1
-	result = setup_smp();
+        result = setup_smp();
+        result.nodes = verify_mp_capabilities(result.nodes);
+        clear_dead_routes(result.nodes);
 #endif
-	result.nodes = verify_mp_capabilities(result.nodes);
-	clear_dead_routes(result.nodes);
+
 	if (result.nodes == 1) {
 		setup_uniprocessor();
 	}
 	coherent_ht_finalize(result.nodes);
-	startup_other_cores(result.nodes);
 	result.needs_reset = apply_cpu_errata_fixes(result.nodes, result.needs_reset);
 	result.needs_reset = optimize_link_read_pointers(result.nodes, result.needs_reset);
 	return result.needs_reset;

@@ -1301,7 +1301,10 @@ static struct triple *transform_to_arch_instruction(
 	struct compile_state *state, struct triple *ins);
 static struct triple *flatten(
 	struct compile_state *state, struct triple *first, struct triple *ptr);
-
+static void print_dominators(struct compile_state *state,
+	FILE *fp, struct basic_blocks *bb);
+static void print_dominance_frontiers(struct compile_state *state,
+	FILE *fp, struct basic_blocks *bb);
 
 
 
@@ -3031,103 +3034,103 @@ static void release_triple(struct compile_state *state, struct triple *ptr)
 static void print_triples(struct compile_state *state);
 static void print_blocks(struct compile_state *state, const char *func, FILE *fp);
 
-#define TOK_UNKNOWN     0
-#define TOK_SPACE       1
-#define TOK_SEMI        2
-#define TOK_LBRACE      3
-#define TOK_RBRACE      4
-#define TOK_COMMA       5
-#define TOK_EQ          6
-#define TOK_COLON       7
-#define TOK_LBRACKET    8
-#define TOK_RBRACKET    9
-#define TOK_LPAREN      10
-#define TOK_RPAREN      11
-#define TOK_STAR        12
-#define TOK_DOTS        13
-#define TOK_MORE        14
-#define TOK_LESS        15
-#define TOK_TIMESEQ     16
-#define TOK_DIVEQ       17
-#define TOK_MODEQ       18
-#define TOK_PLUSEQ      19
-#define TOK_MINUSEQ     20
-#define TOK_SLEQ        21
-#define TOK_SREQ        22
-#define TOK_ANDEQ       23
-#define TOK_XOREQ       24
-#define TOK_OREQ        25
-#define TOK_EQEQ        26
-#define TOK_NOTEQ       27
-#define TOK_QUEST       28
-#define TOK_LOGOR       29
-#define TOK_LOGAND      30
-#define TOK_OR          31
-#define TOK_AND         32
-#define TOK_XOR         33
-#define TOK_LESSEQ      34
-#define TOK_MOREEQ      35
-#define TOK_SL          36
-#define TOK_SR          37
-#define TOK_PLUS        38
-#define TOK_MINUS       39
-#define TOK_DIV         40
-#define TOK_MOD         41
-#define TOK_PLUSPLUS    42
-#define TOK_MINUSMINUS  43
-#define TOK_BANG        44
-#define TOK_ARROW       45
-#define TOK_DOT         46
-#define TOK_TILDE       47
-#define TOK_LIT_STRING  48
-#define TOK_LIT_CHAR    49
-#define TOK_LIT_INT     50
-#define TOK_LIT_FLOAT   51
-#define TOK_MACRO       52
-#define TOK_CONCATENATE 53
+#define TOK_UNKNOWN       0
+#define TOK_SPACE         1
+#define TOK_SEMI          2
+#define TOK_LBRACE        3
+#define TOK_RBRACE        4
+#define TOK_COMMA         5
+#define TOK_EQ            6
+#define TOK_COLON         7
+#define TOK_LBRACKET      8
+#define TOK_RBRACKET      9
+#define TOK_LPAREN        10
+#define TOK_RPAREN        11
+#define TOK_STAR          12
+#define TOK_DOTS          13
+#define TOK_MORE          14
+#define TOK_LESS          15
+#define TOK_TIMESEQ       16
+#define TOK_DIVEQ         17
+#define TOK_MODEQ         18
+#define TOK_PLUSEQ        19
+#define TOK_MINUSEQ       20
+#define TOK_SLEQ          21
+#define TOK_SREQ          22
+#define TOK_ANDEQ         23
+#define TOK_XOREQ         24
+#define TOK_OREQ          25
+#define TOK_EQEQ          26
+#define TOK_NOTEQ         27
+#define TOK_QUEST         28
+#define TOK_LOGOR         29
+#define TOK_LOGAND        30
+#define TOK_OR            31
+#define TOK_AND           32
+#define TOK_XOR           33
+#define TOK_LESSEQ        34
+#define TOK_MOREEQ        35
+#define TOK_SL            36
+#define TOK_SR            37
+#define TOK_PLUS          38
+#define TOK_MINUS         39
+#define TOK_DIV           40
+#define TOK_MOD           41
+#define TOK_PLUSPLUS      42
+#define TOK_MINUSMINUS    43
+#define TOK_BANG          44
+#define TOK_ARROW         45
+#define TOK_DOT           46
+#define TOK_TILDE         47
+#define TOK_LIT_STRING    48
+#define TOK_LIT_CHAR      49
+#define TOK_LIT_INT       50
+#define TOK_LIT_FLOAT     51
+#define TOK_MACRO         52
+#define TOK_CONCATENATE   53
 
-#define TOK_IDENT       54
-#define TOK_STRUCT_NAME 55
-#define TOK_ENUM_CONST  56
-#define TOK_TYPE_NAME   57
+#define TOK_IDENT         54
+#define TOK_STRUCT_NAME   55
+#define TOK_ENUM_CONST    56
+#define TOK_TYPE_NAME     57
 
-#define TOK_AUTO        58
-#define TOK_BREAK       59
-#define TOK_CASE        60
-#define TOK_CHAR        61
-#define TOK_CONST       62
-#define TOK_CONTINUE    63
-#define TOK_DEFAULT     64
-#define TOK_DO          65
-#define TOK_DOUBLE      66
-#define TOK_ELSE        67
-#define TOK_ENUM        68
-#define TOK_EXTERN      69
-#define TOK_FLOAT       70
-#define TOK_FOR         71
-#define TOK_GOTO        72
-#define TOK_IF          73
-#define TOK_INLINE      74
-#define TOK_INT         75
-#define TOK_LONG        76
-#define TOK_REGISTER    77
-#define TOK_RESTRICT    78
-#define TOK_RETURN      79
-#define TOK_SHORT       80
-#define TOK_SIGNED      81
-#define TOK_SIZEOF      82
-#define TOK_STATIC      83
-#define TOK_STRUCT      84
-#define TOK_SWITCH      85
-#define TOK_TYPEDEF     86
-#define TOK_UNION       87
-#define TOK_UNSIGNED    88
-#define TOK_VOID        89
-#define TOK_VOLATILE    90
-#define TOK_WHILE       91
-#define TOK_ASM         92
-#define TOK_ATTRIBUTE   93
-#define TOK_ALIGNOF     94
+#define TOK_AUTO          58
+#define TOK_BREAK         59
+#define TOK_CASE          60
+#define TOK_CHAR          61
+#define TOK_CONST         62
+#define TOK_CONTINUE      63
+#define TOK_DEFAULT       64
+#define TOK_DO            65
+#define TOK_DOUBLE        66
+#define TOK_ELSE          67
+#define TOK_ENUM          68
+#define TOK_EXTERN        69
+#define TOK_FLOAT         70
+#define TOK_FOR           71
+#define TOK_GOTO          72
+#define TOK_IF            73
+#define TOK_INLINE        74
+#define TOK_INT           75
+#define TOK_LONG          76
+#define TOK_REGISTER      77
+#define TOK_RESTRICT      78
+#define TOK_RETURN        79
+#define TOK_SHORT         80
+#define TOK_SIGNED        81
+#define TOK_SIZEOF        82
+#define TOK_STATIC        83
+#define TOK_STRUCT        84
+#define TOK_SWITCH        85
+#define TOK_TYPEDEF       86
+#define TOK_UNION         87
+#define TOK_UNSIGNED      88
+#define TOK_VOID          89
+#define TOK_VOLATILE      90
+#define TOK_WHILE         91
+#define TOK_ASM           92
+#define TOK_ATTRIBUTE     93
+#define TOK_ALIGNOF       94
 #define TOK_FIRST_KEYWORD TOK_AUTO
 #define TOK_LAST_KEYWORD  TOK_ALIGNOF
 
@@ -9870,15 +9873,7 @@ static void simplify_load(struct compile_state *state, struct triple *ins)
 		src += addr->u.cval;
 
 		if (src > end) {
-			/*
-			 * The constant puts the load address out of bounds for
-			 * the array.  However the load may be only conditionally
-			 * called and it may never be called with this argument.
-			 * So we can't error here because we don't know 
-			 * if the load will actually be executed.  So instead
-			 * simply avoid performing the the optimization.
-			 */
-			return;
+			error(state, ins, "Load address out of bounds");
 		}
 
 		memset(buffer, 0, sizeof(buffer));
@@ -15301,8 +15296,6 @@ static void romcc_print_blocks(struct compile_state *state, FILE *fp)
 }
 static void print_blocks(struct compile_state *state, const char *func, FILE *fp)
 {
-	static void print_dominators(struct compile_state *state, FILE *fp, struct basic_blocks *bb);
-	static void print_dominance_frontiers(struct compile_state *state, FILE *fp, struct basic_blocks *bb);
 	if (state->compiler->debug & DEBUG_BASIC_BLOCKS) {
 		fprintf(fp, "After %s\n", func);
 		romcc_print_blocks(state, fp);

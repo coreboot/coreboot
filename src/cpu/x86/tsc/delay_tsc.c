@@ -159,7 +159,11 @@ void udelay(unsigned us)
         count = rdtscll();
         stop = clocks + count;
         while(stop > count) {
+#ifdef CONFIG_SMP
+#if CONFIG_SMP == 1
 		cpu_relax();
+#endif
+#endif
 		count = rdtscll();
         }
 }

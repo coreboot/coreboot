@@ -37,6 +37,8 @@ uses CONFIG_CONSOLE_SERIAL8250
 uses TTYS0_BAUD
 uses TTYS0_BASE
 uses TTYS0_LCS
+uses CONFIG_UDELAY_TSC
+uses CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
 
 ## ROM_SIZE is the size of boot ROM that this board will use.
 default ROM_SIZE  = 256*1024
@@ -59,6 +61,11 @@ default HAVE_MP_TABLE=0
 ## Build code to reset the motherboard from linuxBIOS
 ##
 default HAVE_HARD_RESET=0
+
+## Delay timer options
+##
+default CONFIG_UDELAY_TSC=1
+default CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2=1
 
 ##
 ## Build code to export a programmable irq routing table

@@ -1,35 +1,9 @@
 # Config file for the Total Impact briQ
 # This will make a target directory of ./briq
 
-loadoptions
-
 target briq
-
-uses CROSS_COMPILE 
-uses HAVE_OPTION_TABLE
-uses CONFIG_COMPRESS 
-uses DEFAULT_CONSOLE_LOGLEVEL 
-uses CONFIG_USE_INIT
-uses NO_POST
-uses CONFIG_CONSOLE_SERIAL8250 
-uses CONFIG_IDE_STREAM 
-uses IDE_BOOT_DRIVE
-uses IDE_SWAB IDE_OFFSET 
-uses ROM_SIZE
-uses _RESET
-uses _EXCEPTION_VECTORS
-uses _ROMBASE
-uses _ROMSTART
-uses _RAMBASE
-uses _RAMSTART
-uses STACK_SIZE
-uses HEAP_SIZE
-uses CONFIG_BRIQ_750FX 
-uses CONFIG_BRIQ_7400
-
-## use a cross compiler
-#option CROSS_COMPILE="powerpc-eabi-"
-#option CROSS_COMPILE="ppc_74xx-"
+	
+mainboard totalimpact/briq
 
 ## Use stage 1 initialization code
 option CONFIG_USE_INIT=1
@@ -79,7 +53,6 @@ romimage "normal"
 	option CONFIG_BRIQ_750FX=1
 	#option CONFIG_BRIQ_7400=1
 
-	mainboard totalimpact/briq
 end
 
 buildrom ./linuxbios.rom ROM_SIZE "normal"

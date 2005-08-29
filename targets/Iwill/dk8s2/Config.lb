@@ -2,86 +2,18 @@
 # the Iwill DK8S2
 # This will make a target directory of ./dk8s2
 
-loadoptions
-
 target dk8s2
 
-uses ARCH
-uses CONFIG_COMPRESS
-uses CONFIG_IOAPIC
-uses CONFIG_ROM_STREAM
-uses CONFIG_ROM_STREAM_START
-uses CONFIG_SMP
-uses CONFIG_UDELAY_TSC
-uses CPU_FIXUP
-uses FALLBACK_SIZE
-uses HAVE_FALLBACK_BOOT
-uses HAVE_MP_TABLE
-uses HAVE_PIRQ_TABLE
-uses i586
-uses i686
-uses INTEL_PPRO_MTRR
-uses HEAP_SIZE
-uses IRQ_SLOT_COUNT
-uses k7
-uses k8
-uses MAINBOARD
-uses MAINBOARD_PART_NUMBER
-uses MAINBOARD_VENDOR
-#uses MEMORY_HOLE
-uses PAYLOAD_SIZE
-uses _RAMBASE
-uses _ROMBASE
-uses ROM_IMAGE_SIZE
-uses ROM_SECTION_OFFSET
-uses ROM_SECTION_SIZE
-uses ROM_SIZE
-uses STACK_SIZE
-uses USE_FALLBACK_IMAGE
-uses USE_OPTION_TABLE
-uses HAVE_OPTION_TABLE
-uses CONFIG_CHIP_CONFIGURE
- 
-uses CONFIG_CONSOLE_BTEXT
-uses CONFIG_CONSOLE_SERIAL8250
-uses TTYS0_BAUD
-uses DEFAULT_CONSOLE_LOGLEVEL
-uses MAXIMUM_CONSOLE_LOGLEVEL
-uses DEBUG
-uses CONFIG_MAX_CPUS
-uses CONFIG_LOGICAL_CPUS
-uses CONFIG_MAX_PHYSICAL_CPUS
-uses LINUXBIOS_EXTRA_VERSION
-uses XIP_ROM_SIZE
-uses XIP_ROM_BASE
-
-uses HAVE_HARD_RESET
-
-
-#
-#uses CONFIG_LSI_SCSI_FW_FIXUP
-
+mainboard Iwill/DK8S2
 
 option HAVE_HARD_RESET=1
 
 option HAVE_OPTION_TABLE=1
 option HAVE_MP_TABLE=1
-option CPU_FIXUP=1
-option CONFIG_UDELAY_TSC=0
-option i686=1
-option i586=1
-option INTEL_PPRO_MTRR=1
-option k7=1
-option k8=1
 option ROM_SIZE=1048576
-
-option CONFIG_CONSOLE_BTEXT=1
 
 option HAVE_FALLBACK_BOOT=1
   
-# use the new chip configure code.
-
-option CONFIG_CHIP_CONFIGURE=1
 #option CONFIG_LSI_SCSI_FW_FIXUP=1
 
 
@@ -98,7 +30,7 @@ option IRQ_SLOT_COUNT=12
 ###
 option CONFIG_SMP=1
 option CONFIG_MAX_CPUS=2
-option CONFIG_LOGICAL_CPUS=2
+#option CONFIG_LOGICAL_CPUS=2
 option CONFIG_MAX_PHYSICAL_CPUS=2
 #
 ###
@@ -142,7 +74,7 @@ option ROM_IMAGE_SIZE=65536
 ###
 
 ## We do use compressed image
-option CONFIG_COMPRESS=1
+#option CONFIG_COMPRESS=1
 
 option CONFIG_CONSOLE_SERIAL8250=1
 option TTYS0_BAUD=115200
@@ -165,7 +97,7 @@ option DEFAULT_CONSOLE_LOGLEVEL=7
 ## At a maximum only compile in this level of debugging
 option MAXIMUM_CONSOLE_LOGLEVEL=7
 
-option DEBUG=1
+#option DEBUG=1
 
 #
 
@@ -210,7 +142,6 @@ romimage "normal"
 
 	option XIP_ROM_BASE = (_ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE)
 
-	mainboard Iwill/DK8S2
 	payload /usr/src/filo-0.4.1_btext/filo.elf
 #	payload /usr/src/filo-0.4.2/filo.elf
 end
@@ -229,8 +160,7 @@ romimage "fallback"
 	option XIP_ROM_SIZE = 65536
 	option XIP_ROM_BASE = (_ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE)
 
-	mainboard Iwill/DK8S2
-	payload /usr/src/filo-0.4.1_btext/filo.elf
+	payload ../../../payloads/filo.elf
 #	payload /usr/src/filo-0.4.2/filo.elf
 end
 

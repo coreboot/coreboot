@@ -119,7 +119,16 @@ static void enable_dev(struct device *dev)
 	}
 }
 
-struct chip_operations northbridge_emulation_qemu_i386_ops = {
+struct chip_operations cpu_emulation_qemu_i386_ops = {
 	CHIP_NAME("QEMU Northbridge")
 	.enable_dev = enable_dev,
 };
+
+void udelay(int usecs)
+{
+	int i;
+	for(i = 0; i < usecs; i++)
+		outb(i&0xff, 0x80);
+}
+
+

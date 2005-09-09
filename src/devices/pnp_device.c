@@ -52,7 +52,7 @@ void pnp_set_irq(device_t dev, unsigned index, unsigned irq)
 	pnp_write_config(dev, index, irq);
 }
 
-void pnp_set_drq(device_t dev, unsigned drq, unsigned index)
+void pnp_set_drq(device_t dev, unsigned index, unsigned drq)
 {
 	/* Index == 0x74 */
 	pnp_write_config(dev, index, drq & 0xff);

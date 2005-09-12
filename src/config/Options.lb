@@ -188,37 +188,37 @@ define FALLBACK_SIZE
 	default 65536
 	format "0x%x"
 	export used
-	comment "Default fallback image size"
+	comment "ROM_SECTION_SIZE to use for the fallback build."
 end
 define ROM_SIZE
 	default none
 	format "0x%x"
 	export used
-	comment "Size of your ROM"
+	comment "Total number of bytes allocated for normal and fallback LinuxBIOS images and payloads. Note that the fallback image goes at the end of the ROM, and the normal image at the beginning."
 end
 define ROM_IMAGE_SIZE
 	default 65535
 	format "0x%x"
 	export always
-	comment "Default image size"
+	comment "Maximum number of bytes allowed for a LinuxBIOS image. Does not include the payload."
 end
 define ROM_SECTION_SIZE
 	default {FALLBACK_SIZE}
 	format "0x%x"
 	export used
-	comment "Default rom section size"
+	comment "Default rom section size. Normally, this is calculated in mainboard Config.lb and varies between the normal and fallback builds."
 end
 define ROM_SECTION_OFFSET
 	default {ROM_SIZE - FALLBACK_SIZE}
 	format "0x%x"
 	export used
-	comment "Default rom section offset"
+	comment "Number of bytes from the beginning of the ROM to the start of the section containing this build (normal or fallback). Normally, this is calculated in mainboard Config.lb."
 end
 define PAYLOAD_SIZE
 	default {ROM_SECTION_SIZE - ROM_IMAGE_SIZE}
 	format "0x%x"
 	export always
-	comment "Default payload size"
+	comment "Maximum number of bytes allowed for a payload. Normally, this is calculated as above."
 end
 define _ROMBASE
 	default {PAYLOAD_SIZE}
@@ -533,7 +533,7 @@ define CONFIG_ROM_STREAM_START
 	default {0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1}
 	format "0x%x"
 	export always
-	comment "ROM stream start location"
+	comment "Memory address of this (normal or fallback) build's payload in ROM. Normally, this is calculated as above."
 end
 define CONFIG_FS_STREAM
 	default 0

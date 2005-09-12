@@ -345,6 +345,12 @@ void sc520_udelay(int microseconds) {
 		;
 }
 
+/* looks like we define this now */
+void
+udelay(int microseconds) {
+	sc520_udelay(microseconds);
+}
+
 
 static void dumpram(void){
   print_err("ctl "); print_err_hex8(*drcctl); print_err("\r\n");

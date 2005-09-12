@@ -127,6 +127,8 @@ void rtc_init(int invalid)
 	int cmos_invalid, checksum_invalid;
 
 	printk_debug("RTC Init\n");
+
+#if HAVE_OPTION_TABLE
 	/* See if there has been a CMOS power problem. */
 	x = CMOS_READ(RTC_VALID);
 	cmos_invalid = !(x & RTC_VRT);
@@ -160,19 +162,25 @@ void rtc_init(int invalid)
 		}
 #endif
 	}
+#endif
+
+	/* Setup the real time clock */
+	CMOS_WRITE(RTC_CONTROL_DEFAULT, RTC_CONTROL);
+	/* Setup the frequency it operates at */
+	CMOS_WRITE(RTC_FREQ_SELECT_DEFAULT, RTC_FREQ_SELECT);
+
+#if HAVE_OPTION_TABLE
 	/* See if there is a LB CMOS checksum error */
 	checksum_invalid = !rtc_checksum_valid(LB_CKS_RANGE_START,
 			LB_CKS_RANGE_END,LB_CKS_LOC);
 	if(checksum_invalid)
 		printk_debug("Invalid CMOS LB checksum\n");
 
-	/* Setup the real time clock */
-	CMOS_WRITE(RTC_CONTROL_DEFAULT, RTC_CONTROL);
-	/* Setup the frequency it operates at */
-	CMOS_WRITE(RTC_FREQ_SELECT_DEFAULT, RTC_FREQ_SELECT);
 	/* Make certain we have a valid checksum */
 	rtc_set_checksum(PC_CKS_RANGE_START,
                         PC_CKS_RANGE_END,PC_CKS_LOC);
+#endif
+
 	/* Clear any pending interrupts */
 	(void) CMOS_READ(RTC_INTR_FLAGS);
 }

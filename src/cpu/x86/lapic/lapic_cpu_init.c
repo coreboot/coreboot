@@ -227,20 +227,26 @@ int start_cpu(device_t cpu)
 }
 
 /* C entry point of secondary cpus */
+
+// secondary_cpu_lock is used to serialize initialization of secondary CPUs
+// This can be used to avoid interleaved debugging messages.
+
+static spinlock_t secondary_cpu_lock = SPIN_LOCK_UNLOCKED;
+
 void secondary_cpu_init(void)
 {
 	atomic_inc(&active_cpus);
+
 #if SERIAL_CPU_INIT == 1
-  #if CONFIG_MAX_CPUS>2
-	spin_lock(&start_cpu_lock);
-  #endif
+	spin_lock(&secondary_cpu_lock);
 #endif
+
 	cpu_initialize();
+
 #if SERIAL_CPU_INIT == 1
-  #if CONFIG_MAX_CPUS>2
-	spin_unlock(&start_cpu_lock);
-  #endif
+	spin_unlock(&secondary_cpu_lock);
 #endif
+
 	atomic_dec(&active_cpus);
 	stop_this_cpu();
 }

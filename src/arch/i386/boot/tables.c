@@ -7,6 +7,32 @@
 #include <arch/acpi.h>
 #include "linuxbios_table.h"
 
+// Global Descriptor Table, defined in c_start.S
+extern uint8_t gdt;
+extern uint8_t gdt_end;
+
+/* i386 lgdt argument */
+struct gdtarg {
+    unsigned short limit;
+    unsigned int base;
+} __attribute__((packed));
+
+// Copy GDT to new location and reload it
+// 2003-07 by SONE Takeshi
+// Ported from Etherboot to LinuxBIOS 2005-08 by Steve Magnani
+void move_gdt(unsigned long newgdt)
+{
+	uint16_t num_gdt_bytes = &gdt_end - &gdt;
+    struct gdtarg gdtarg;
+
+    printk_debug("Moving GDT to %#lx...", newgdt);
+    memcpy((void*)newgdt, &gdt, num_gdt_bytes);
+    gdtarg.base = newgdt;
+    gdtarg.limit = num_gdt_bytes - 1;
+    __asm__ __volatile__ ("lgdt %0\n\t" : : "m" (gdtarg));
+    printk_debug("ok\n");
+}
+
 struct lb_memory *write_tables(void)
 {
 	unsigned long low_table_start, low_table_end;
@@ -44,6 +70,10 @@ struct lb_memory *write_tables(void)
 	if (low_table_end < 0x500) {
 		low_table_end = 0x500;
 	}
+
+	// Relocate the GDT to reserved memory, so it won't get clobbered
+	move_gdt(low_table_end);
+	low_table_end += &gdt_end - &gdt;
 
 	/* The linuxbios table must be in 0-4K or 960K-1M */
 	write_linuxbios_table(

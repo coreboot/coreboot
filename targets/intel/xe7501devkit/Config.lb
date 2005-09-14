@@ -1,0 +1,37 @@
+target xe7501devkit
+mainboard intel/xe7501devkit
+
+## ROM_SIZE is the total number of bytes allocated for LinuxBIOS use
+## (normal AND fallback images and payloads).
+option ROM_SIZE = 0x30000
+
+## ROM_IMAGE_SIZE is the maximum number of bytes allowed for a LinuxBIOS image,
+## not including any payload.
+option ROM_IMAGE_SIZE = 0x1B000
+
+## FALLBACK_SIZE is the amount of the ROM the complete fallback image 
+## (including payload) will use
+option FALLBACK_SIZE = 0
+
+
+
+romimage "normal"
+	option USE_FALLBACK_IMAGE=0
+#	option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
+#       payload ../../../../../../../memtest86/memtest
+#       payload ../../../../../../../etherboot/src/bin/e1000.zelf
+        payload ../../../../../../../etherboot/src/bin/e1000--filo.zelf
+#       payload ../../../../../../../QNX/BSP/images/qnxbasesmp.elf
+end
+
+#NOTE: CMOS currently not supported due to conflicts with factory BIOS
+#      Thus no support for fallback boot.
+#romimage "fallback" 
+#	option USE_FALLBACK_IMAGE=1
+#	option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Fallback"
+#       payload ../../../../../../../memtest86/memtest
+#       payload ../../../../../../../etherboot/src/bin/e1000.zelf
+#       payload ../../../../../../../etherboot/src/bin/e1000--filo.zelf
+#end
+
+buildrom ./linuxbios.rom ROM_SIZE "normal"

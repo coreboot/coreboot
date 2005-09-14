@@ -4,72 +4,81 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <pc80/mc146818rtc.h>
+#include <assert.h>
 #include "82870.h"
 
-static int ioapic_no = 0;
+static int num_p64h2_ioapics = 0;
 
 static void p64h2_ioapic_enable(device_t dev)
 {
-	uint32_t dword;
-	uint16_t word;
-
-	        /* We have to enable MEM and Bus Master for IOAPIC */
-		word = 0x0146;
-		pci_write_config16(dev, PCICMD, word);
-		dword = 0x358015d9;
-		pci_write_config32(dev, SUBSYS, dword);
+    /* We have to enable MEM and Bus Master for IOAPIC */
+    uint16_t command = PCI_COMMAND_SERR | PCI_COMMAND_PARITY | PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
 
 
+    pci_write_config16(dev, PCI_COMMAND, command);
 }
 
+//----------------------------------------------------------------------------------
+// Function:        p64h2_ioapic_init
+// Parameters:      dev - PCI bus/device/function of P64H2 IOAPIC
+//                  NOTE: There are two IOAPICs per P64H2, at D28:F0 and D30:F0
+// Return Value:    None
+// Description:     Configure one of the IOAPICs in a P64H2.
+//                  Note that a PCI bus scan will detect both IOAPICs, so this function
+//                  will be called twice for each P64H2 in the system.
+//
 static void p64h2_ioapic_init(device_t dev)
 {
-        uint32_t dword;
-        uint16_t word;
-        int i, addr;
+    uint32_t memoryBase;
+    int apic_index, apic_id;
 
-        volatile uint32_t *ioapic_a;    /* io apic io memory space command address */
-        volatile uint32_t *ioapic_d;    /* io apic io memory space data address */
+    volatile uint32_t* pIndexRegister;    /* io apic io memory space command address */
+    volatile uint32_t* pWindowRegister;    /* io apic io memory space data address */
 
-        i = ioapic_no++;
+    apic_index = num_p64h2_ioapics;
+    num_p64h2_ioapics++;
 
-                if(i<3)                 /* io apic address numbers are 3,4,5,&8 */
-                        addr=i+3;
-                else
-                        addr=i+5;
-                /* Read the MBAR address for setting up the io apic in io memory space */
-                dword = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
-                ioapic_a = (uint32_t *) dword;
-                ioapic_d = ioapic_a +0x04;
-                printk_debug("IOAPIC %d at %02x:%02x.%01x  MBAR = %x DataAddr = %x\n",
-                        addr, dev->bus->secondary,
-                        PCI_SLOT(dev->path.u.pci.devfn), PCI_FUNC(dev->path.u.pci.devfn),
-                        ioapic_a, ioapic_d);
+    // A note on IOAPIC addresses:
+    //  0 and 1 are used for the local APICs of the dual virtual 
+	//	(hyper-threaded) CPUs of physical CPU 0 (mainboard/Config.lb).
+    //  6 and 7 are used for the local APICs of the dual virtual 
+	//	(hyper-threaded) CPUs of physical CPU 1 (mainboard/Config.lb).
+    //  2 is used for the IOAPIC in the 82801 Southbridge (hard-coded in i82801xx_lpc.c)
 
-#if 0
-                dword = (u32)ioapic_a;
-                word = 0x8000 + ((dword >>8)&0x0fff);
-                pci_write_config_word(dev, ABAR, word);
-#endif
-                /* Set up the io apic for the p64h2 - 1461 */
-                *ioapic_a=0;
-                *ioapic_d=(addr<<24); /* Set the address number */
-                *ioapic_a=3;
-                *ioapic_d=1;    /* Enable the io apic */
+    // Map APIC index into APIC ID
+    // IDs 3, 4, 5, and 8+ are available (see above note)
 
-                /* This code test the setup to see if we really found the io apic */
-                *ioapic_a=0;
-                dword=*ioapic_d;
-                printk_debug("PCI %d apic id = %x\n",addr,dword);
-                if(dword!=(addr<<24))
-                        for(;;);
-                *ioapic_a=3;
-                dword=*ioapic_d;
-                printk_debug("PCI %d apic DT = %x\n",addr,dword);
-                if(dword!=1)
-                        for(;;);
+    if (apic_index < 3)
+        apic_id = apic_index + 3;
+    else
+        apic_id = apic_index + 5;
 
+    ASSERT(apic_id < 16);       // ID is only 4 bits
 
+    // Read the MBAR address for setting up the IOAPIC in memory space
+    // NOTE: this address was assigned during enumeration of the bus
+
+    memoryBase = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
+    pIndexRegister  = (volatile uint32_t*) memoryBase;
+    pWindowRegister = (volatile uint32_t*)(memoryBase + 0x10);
+
+    printk_debug("IOAPIC %d at %02x:%02x.%01x  MBAR = %x DataAddr = %x\n",
+                 apic_id, dev->bus->secondary, PCI_SLOT(dev->path.u.pci.devfn), 
+                 PCI_FUNC(dev->path.u.pci.devfn), pIndexRegister, pWindowRegister);
+
+    apic_id <<= 24;             // Convert ID to bitmask
+
+    *pIndexRegister = 0;        // Select APIC ID register
+    *pWindowRegister = (*pWindowRegister & ~(0xF<<24)) | apic_id;   // Set the ID
+
+    if ((*pWindowRegister & (0xF<<24)) != apic_id)
+        die("p64h2_ioapic_init failed"); 
+
+    *pIndexRegister  = 3;   // Select Boot Configuration register
+    *pWindowRegister |= 1;  // Use Processor System Bus to deliver interrupts
+
+    if (!(*pWindowRegister & 1))
+        die("p64h2_ioapic_init failed"); 
 }
 
 static struct device_operations ioapic_ops = {

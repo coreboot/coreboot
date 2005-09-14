@@ -231,22 +231,32 @@ void cpu_initialize(void)
 		die("CPU: missing cpu device structure");
 	}
 
-	/* Find what type of cpu we are dealing with */
-	identify_cpu(cpu);
-	printk_debug("CPU: vendor %s device %x\n",
-		cpu_vendor_name(cpu->vendor), cpu->device);
-		
-	/* Lookup the cpu's operations */
-	set_cpu_ops(cpu);
+	// Check that we haven't been passed bad information as the result of a race 
+	// (i.e. BSP timed out while waiting for us to load secondary_stack)
 
-	/* Initialize the cpu */
-	if (cpu->ops && cpu->ops->init) {
-		cpu->enabled = 1;
-		cpu->initialized = 1;
-		cpu->ops->init(cpu);
+	if (cpu->path.u.apic.apic_id != lapicid()) {
+		printk_err("CPU #%d Initialization FAILED: APIC ID mismatch (%u != %u)\n",
+				   info->index, cpu->path.u.apic.apic_id, lapicid());
+		// return without setting initialized flag
+	} else {
+		/* Find what type of cpu we are dealing with */
+		identify_cpu(cpu);
+		printk_debug("CPU: vendor %s device %x\n",
+			cpu_vendor_name(cpu->vendor), cpu->device);
+			
+		/* Lookup the cpu's operations */
+		set_cpu_ops(cpu);
+
+		/* Initialize the cpu */
+		if (cpu->ops && cpu->ops->init) {
+			cpu->enabled = 1;
+			cpu->initialized = 1;
+			cpu->ops->init(cpu);
+		}
+
+		printk_info("CPU #%d Initialized\n", info->index);
 	}
 
-	printk_info("CPU #%d Initialized\n", info->index);
 	return;
 }
 

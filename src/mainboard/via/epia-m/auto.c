@@ -60,16 +60,15 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 static void enable_mainboard_devices(void) 
 {
 	device_t dev;
-	/* dev 0 for southbridge */
   
-	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8235), 0);
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
+				PCI_DEVICE_ID_VIA_8235), 0);
   
 	if (dev == PCI_DEV_INVALID) {
 		die("Southbridge not found!!!\n");
 	}
-	pci_write_config8(dev, 0x50, 0);
-	pci_write_config8(dev, 0x51, 0xfd);
-	pci_write_config8(dev, 0x94, 0xb2);
+	pci_write_config8(dev, 0x50, 0x80);
+	pci_write_config8(dev, 0x51, 0x1F);
 #if 0
 	// This early setup switches IDE into compatibility mode before PCI gets 
 	// // a chance to assign I/Os
@@ -84,7 +83,11 @@ static void enable_mainboard_devices(void)
 	 */
         dev += 0x100; /* ICKY */
 
+	pci_write_config8(dev, 0x04, 7);
+	pci_write_config8(dev, 0x40, 3);
 	pci_write_config8(dev, 0x42, 0);
+	pci_write_config8(dev, 0x3c, 0xe);
+	pci_write_config8(dev, 0x3d, 0);
 }
 
 static void enable_shadow_ram(void) 
@@ -103,29 +106,40 @@ static void main(unsigned long bist)
 	unsigned long x;
 	device_t dev;
 
-	if (bist == 0) {
-		early_mtrr_init();
+	/*
+	 * Enable VGA; 32MB buffer.
+	 */
+	pci_write_config8(0, 0xe1, 0xdd);
+
+	/*
+	 * Disable the firewire stuff, which apparently steps on IO 0+ on
+	 * reset. Doh!
+	 */
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
+				PCI_DEVICE_ID_VIA_6305), 0);
+	if (dev != PCI_DEV_INVALID) {
+		pci_write_config8(dev, 0x15, 0x1c);
 	}
+
+	enable_smbus();
+	
 	enable_vt8235_serial();
 	uart_init();
 	console_init();
 
+	print_spew("In auto.c:main()\r\n");
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
 	/*	init_timer();*/
-	outb(5, 0x80);
 
-	
-	pci_write_config8( 0xd*8,0x15,0x1c);
-	pci_write_config8( 0 , 0xe1, 0xdd);
- 
 	outb(5, 0x80);	
-	enable_smbus();
 
-	
+	print_debug(" Enabling mainboard devices\r\n");
 	enable_mainboard_devices();
+
+	print_debug(" Enabling shadow ram\r\n");
 	enable_shadow_ram();
 	/*
 	  memreset_setup();
@@ -156,4 +170,11 @@ static void main(unsigned long bist)
 		ram_check(check_addrs[i].lo, check_addrs[i].hi);
 	}
 #endif
+
+	if (bist == 0) {
+		print_debug(" Doing MTRR init.\r\n");
+		early_mtrr_init();
+	}
+
+	print_spew("Leaving auto.c:main()\r\n");
 }

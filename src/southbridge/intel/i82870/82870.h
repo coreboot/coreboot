@@ -1,6 +1,4 @@
 /* for io apic 1461 */
-#define PCICMD  	0x04
-#define SUBSYS		0x2c
 #define MBAR		0x10
 #define ABAR		0x40
 
@@ -8,3 +6,10 @@
 #define MTT	  	0x042
 #define HCCR	  	0x0f0
 #define ACNF	  	0x0e0
+#define STRP		0x44		// Strap status register
+
+#define STRP_EN133	0x0001		// 133 MHz-capable (Px_133EN)
+#define STRP_HPCAP	0x0002		// Hot-plug capable (Hx_SLOT zero/nonzero)
+
+#define ACNF_SYNCPH	0x0010		// PCI(-X) input clock is synchronous to hub input clock
+

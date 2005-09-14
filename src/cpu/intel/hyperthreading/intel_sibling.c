@@ -67,7 +67,11 @@ void intel_sibling_init(device_t cpu)
 			new->path.u.apic.apic_id);
 #endif
 		/* Start the new cpu */
-		start_cpu(new);
+		if (!start_cpu(new)) {
+			/* Record the error in cpu? */
+			printk_err("CPU %u would not start!\n",
+				new->path.u.apic.apic_id);
+		}
 	}
 	
 }

@@ -128,11 +128,12 @@ static unsigned long long calibrate_tsc(void)
 	delta >>= 20;
 	// save this for microsecond timing.
 	result = delta;
-	printk_spew("end %x:%x, start %x:%x\n",
-		endhigh, endlow, starthigh, startlow);
+	printk_spew("end %x, start %x\n", end, start);
 	printk_spew("32-bit delta %d\n", (unsigned long) delta);
 	
-	printk_spew(__FUNCTION__ " 32-bit result is %d\n", result);
+	printk_spew("%s 32-bit result is %d\n",
+			__FUNCTION__,
+			result);
 	return delta;
 }
 

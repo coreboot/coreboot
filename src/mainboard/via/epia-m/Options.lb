@@ -35,6 +35,7 @@ uses OBJCOPY
 uses DEFAULT_CONSOLE_LOGLEVEL
 uses MAXIMUM_CONSOLE_LOGLEVEL
 uses CONFIG_CONSOLE_SERIAL8250
+uses CONFIG_UDELAY_TSC
 
 ## ROM_SIZE is the size of boot ROM that this board will use.
 default ROM_SIZE  = 256*1024
@@ -52,6 +53,11 @@ default HAVE_FALLBACK_BOOT=1
 ## no MP table
 ##
 default HAVE_MP_TABLE=0
+
+##
+## Use TSC for udelay.
+##
+default CONFIG_UDELAY_TSC=1
 
 ##
 ## Build code to reset the motherboard from linuxBIOS

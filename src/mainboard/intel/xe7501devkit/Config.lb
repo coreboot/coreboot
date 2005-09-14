@@ -1,0 +1,224 @@
+##################################################################
+## BEGIN BOILERPLATE - DO NOT EDIT
+##
+## Compute the location and size of where this firmware image
+## (linuxBIOS plus payload) will live in the boot rom chip.
+##
+if USE_FALLBACK_IMAGE
+# The fallback image uses FALLBACK_SIZE bytes at the end of the ROM
+
+	default ROM_SECTION_SIZE   = FALLBACK_SIZE
+	default ROM_SECTION_OFFSET = ( ROM_SIZE - FALLBACK_SIZE )
+
+else
+# The normal image goes at the beginning of the LinuxBIOS ROM region
+# and uses all the remaining space
+
+	default ROM_SECTION_SIZE   = ( ROM_SIZE - FALLBACK_SIZE )
+	default ROM_SECTION_OFFSET = 0
+end
+
+##
+## Compute where this copy of linuxBIOS will start in the boot rom
+##
+default _ROMBASE      = ( CONFIG_ROM_STREAM_START + PAYLOAD_SIZE )
+
+##
+## Compute a range of ROM that can cached to speed up linuxBIOS,
+## execution speed.
+##
+## XIP_ROM_SIZE must be a power of 2.
+## XIP_ROM_BASE must be a multiple of XIP_ROM_SIZE
+default XIP_ROM_SIZE = 65536
+default XIP_ROM_BASE = ((( _ROMBASE + ROM_IMAGE_SIZE ) / XIP_ROM_SIZE ) * XIP_ROM_SIZE - XIP_ROM_SIZE )
+
+## END BOILERPLATE
+##################################################################
+
+arch i386 end 
+
+##
+## Build the objects we have code for in this directory.
+##
+
+driver mainboard.o
+if HAVE_MP_TABLE 		object mptable.o 	 end
+if HAVE_PIRQ_TABLE 		object irq_tables.o	 end
+if HAVE_ACPI_TABLES 	object acpi_tables.o end
+object reset.o
+
+# Include the VGA option ROM, but only if we're compiled to use it
+if CONFIG_PCI_ROM_RUN
+	if CONFIG_CONSOLE_VGA	
+		object vgarom.S
+	else
+		object no_vgarom.S
+	end
+else
+	object no_vgarom.S
+end
+
+##
+## Romcc output
+##
+makerule ./failover.E
+        depends "$(MAINBOARD)/failover.c ./romcc"
+        action "./romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
+end
+
+makerule ./failover.inc
+        depends "$(MAINBOARD)/failover.c ./romcc"
+        action "./romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
+end
+
+makerule ./auto.E
+        depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
+        action  "./romcc -E -mcpu=p4 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+end
+makerule ./auto.inc
+        depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
+        action  "./romcc    -mcpu=p4 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+end
+
+##
+## Build our 16 bit and 32 bit linuxBIOS entry code
+##
+mainboardinit cpu/x86/16bit/entry16.inc
+mainboardinit cpu/x86/32bit/entry32.inc
+ldscript /cpu/x86/16bit/entry16.lds
+ldscript /cpu/x86/32bit/entry32.lds
+
+##
+## Build our reset vector (This is where linuxBIOS is entered)
+##
+if HAVE_FALLBACK_BOOT
+    if USE_FALLBACK_IMAGE 
+	    mainboardinit cpu/x86/16bit/reset16.inc 
+	    ldscript /cpu/x86/16bit/reset16.lds
+    else
+	    mainboardinit cpu/x86/32bit/reset32.inc 
+	    ldscript /cpu/x86/32bit/reset32.lds 
+    end
+else
+	mainboardinit cpu/x86/16bit/reset16.inc 
+	ldscript /cpu/x86/16bit/reset16.lds
+end
+
+### Should this be in the northbridge code?
+mainboardinit arch/i386/lib/cpu_reset.inc
+
+##
+## Include an id string (For safe flashing)
+##
+mainboardinit arch/i386/lib/id.inc
+ldscript /arch/i386/lib/id.lds
+
+###
+### This is the early phase of linuxBIOS startup 
+### Things are delicate and we test to see if we should
+### failover to another image.
+###
+if USE_FALLBACK_IMAGE
+	ldscript /arch/i386/lib/failover.lds 
+	mainboardinit ./failover.inc
+end
+
+###
+### O.k. We aren't just an intermediary anymore!
+###
+
+##
+## Setup RAM
+##
+mainboardinit cpu/x86/fpu/enable_fpu.inc
+mainboardinit cpu/x86/mmx/enable_mmx.inc
+mainboardinit cpu/x86/sse/enable_sse.inc
+mainboardinit ./auto.inc
+mainboardinit cpu/x86/sse/disable_sse.inc
+mainboardinit cpu/x86/mmx/disable_mmx.inc
+
+##
+## Include the secondary Configuration files 
+##
+dir /pc80
+
+if CONFIG_CHIP_NAME
+	config chip.h
+end
+
+# based on sample config for tyan/s2735
+chip northbridge/intel/e7501
+	device pci_domain 0 on
+		device pci 0.0 on end				# Chipset host controller
+        device pci 0.1 on end				# Host RASUM controller
+        device pci 2.0 on					# Hub interface B
+        	chip southbridge/intel/i82870			# P64H2
+        		device pci 1c.0 on end					# IOAPIC - bus B
+		        device pci 1d.0 on end					# Hub to PCI-B bridge	
+        	    device pci 1e.0 on end					# IOAPIC - bus A			
+        	    device pci 1f.0 on end					# Hub to PCI-A bridge
+        	end
+		end
+		device pci 3.0 off end				# Hub interface C (82808AA connector - disable for now)
+        device pci 4.0 on					# Hub interface D
+        	chip southbridge/intel/i82870			# P64H2
+        		device pci 1c.0 on end					# IOAPIC - bus B
+		        device pci 1d.0 on end					# Hub to PCI-B bridge
+        	    device pci 1e.0 on end					# IOAPIC - bus A
+        	    device pci 1f.0 on end					# Hub to PCI-A bridge
+        	end
+		end
+        device pci 6.0 on end				# E7501 Power management registers? (undocumented)
+        chip southbridge/intel/i82801ca
+			device pci 1d.0 off end					# USB (might not work, Southbridge code needs looking at)
+		    device pci 1d.1 off end					# USB (not populated)
+		    device pci 1d.2 off end					# USB (not populated)
+		    device pci 1e.0 on 						# Hub to PCI bridge
+    			chip drivers/pci/onboard			# VGA ROM
+            		device pci 0.0 on end
+                	register "rom_address" = "_vgarom_start"
+            	end
+            end
+		    device pci 1f.0 on						# LPC bridge
+				chip superio/smsc/lpc47b272
+					device pnp 2e.0 off    			# Floppy
+        		    	io 0x60 = 0x3f0
+        	        	irq 0x70 = 6
+        	            drq 0x74 = 2
+		            end
+					device pnp 2e.3 off 			# Parallel Port
+                		io 0x60 = 0x378
+                        irq 0x70 = 7
+                    end
+                    device pnp 2e.4 on 				# Com1
+                    	io 0x60 = 0x3f8
+	                    irq 0x70 = 4
+        	        end
+                	device pnp 2e.5 off 			# Com2
+                    	io 0x60 = 0x2f8
+                        irq 0x70 = 3
+                    end
+					device pnp 2e.7 on      		# Keyboard
+		            	io 0x60 = 0x60
+        	            io 0x62 = 0x64
+        	            irq 0x70 = 1					# Keyboard interrupt
+        		        irq 0x72 = 12					# Mouse interrupt
+        	        end
+        	        device pnp 2e.a off end 		# ACPI
+        		end
+		    end
+		    device pci 1f.1 on end					# IDE
+        	device pci 1f.3 on end					# SMBus
+        	device pci 1f.5 off end					# AC97 Audio
+		    device pci 1f.6 off end					# AC97 Modem
+		end # SB
+	end # PCI_DOMAIN
+    device apic_cluster 0 on
+    	chip cpu/intel/socket_mPGA604_533Mhz
+        	device apic 0 on end
+        end
+        chip cpu/intel/socket_mPGA604_533Mhz
+        	device apic 6 on end
+        end
+    end
+end

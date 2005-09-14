@@ -30,31 +30,24 @@ static void enable_smbus(void)
 	device_t dev;
 	unsigned char c;
 	int i;
+
 	/* Power management controller */
-		dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8235), 0);
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
+				PCI_DEVICE_ID_VIA_8235), 0);
 	
 	if (dev == PCI_DEV_INVALID) {
 		die("SMBUS controller not found\r\n");
 	}		
-	pci_write_config8(dev, 0xd2, (0x4 << 1 ));
 
 	// set IO base address to SMBUS_IO_BASE
-	pci_write_config16(dev, 0xd0, SMBUS_IO_BASE);
+	pci_write_config16(dev, 0xd0, SMBUS_IO_BASE | 1);
 	
 	// Enable SMBus 
-	pci_write_config8(dev, 0xd2, (0x4 << 1)|1);
+	pci_write_config8(dev, 0xd2, (0x4 << 1) | 1);
 	
-	// Enable RTC
-	pci_write_config8(dev,0x51,0x04);
-
 	/* make it work for I/O ...
 	 */
 	pci_write_config16(dev, 4, 1);
-	
-
-	/* tell the world we're alive - make power led flash during bios execution */
-	pci_write_config8(dev,0x94,0xb2);
-
 
 	/* FIX for half baud rate problem */
 	/* let clocks and the like settle */
@@ -62,28 +55,17 @@ static void enable_smbus(void)
 	for(i = 0 ; i < 5000 ; i++)
 		outb(0x80,0x80);
 
-	/* southbridge doesn't seem to like to do much untill after this delay, so set up 
-         * the flashing power LED again */
-	pci_write_config8(dev,0x94,0xb2);
-
-/* The VT1211 serial port needs 48 mhz clock, on power up it is getting
-   only 24 mhz, there is some mysterious device on the smbus that can
-   fix this...this code below does it. */
+	/* 
+	 * The VT1211 serial port needs 48 mhz clock, on power up it is getting
+	 *  only 24 mhz, there is some mysterious device on the smbus that can
+	 *  fix this...this code below does it.
+	 *  */
 	outb(0xff, SMBUS_IO_BASE+SMBHSTSTAT); 
-	outb(0xff, SMBUS_IO_BASE+SMBHSTSTAT);
-	outb(0xff, SMBUS_IO_BASE+SMBHSTSTAT);
-	outb(0xff, SMBUS_IO_BASE+SMBHSTSTAT);
-	for( ;;) {
-		c = inb(SMBUS_IO_BASE+SMBHSTSTAT);
-		if ((c & 1) == 0)
-			break;
-	}
 	outb(0x7f, SMBUS_IO_BASE+SMBHSTDAT0); 
 	outb(0x83, SMBUS_IO_BASE+SMBHSTCMD);
-        outb(CLOCK_SLAVE_ADDRESS<<1 , SMBUS_IO_BASE+SMBXMITADD);
-        outb(8 | I2C_TRANS_CMD, SMBUS_IO_BASE+SMBHSTCTL);
+	outb(CLOCK_SLAVE_ADDRESS<<1 , SMBUS_IO_BASE+SMBXMITADD);
+	outb(8 | I2C_TRANS_CMD, SMBUS_IO_BASE+SMBHSTCTL);
 
-        	
 	for (;;) {
 		c = inb(SMBUS_IO_BASE+SMBHSTSTAT);
 		if ((c & 1) == 0)

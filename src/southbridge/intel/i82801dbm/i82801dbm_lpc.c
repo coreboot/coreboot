@@ -8,9 +8,11 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <pc80/mc146818rtc.h>
+#include <pc80/isa-dma.h>
+#include <arch/io.h>
 #include "i82801dbm.h"
 
-void isa_dma_init(void); /* from /pc80/isa-dma.c */
+
 
 #define NMI_OFF 0
 
@@ -52,7 +54,7 @@ void i82801dbm_lpc_route_dma( struct device *dev, uint8_t mask)
 {
         uint16_t word;
         int i;
-        word = pci_read_config8(dev, PCI_DMA_CFG);
+        word = pci_read_config16(dev, PCI_DMA_CFG);
         word &= ((1 << 10) - (1 << 8));
         for(i = 0; i < 8; i++) {
                 if (i == 4)
@@ -123,10 +125,16 @@ static void lpc_init(struct device *dev)
 	i82801dbm_enable_ioapic(dev);
 
 	i82801dbm_enable_serial_irqs(dev);
-	
+
+#ifdef SUSPICIOUS_LOOKING_CODE	
+	// The ICH-4 datasheet does not mention this configuration register. 
+	// This code may have been inherited (incorrectly) from code for the AMD 766 southbridge,
+	// which *does* support this functionality.
+
 	/* posted memory write enable */
 	byte = pci_read_config8(dev, 0x46);
 	pci_write_config8(dev, 0x46, byte | (1<<0)); 
+#endif
 
 	/* power after power fail */
 	        /* FIXME this doesn't work! */
@@ -145,16 +153,16 @@ static void lpc_init(struct device *dev)
 #endif
 
 	/* Set up NMI on errors */
-	byte = pci_read_config8(dev, 0x61);
-	byte |= (1 << 3); /* IOCHK# NMI Enable */
-	byte |= (1 << 6); /* PCI SERR# Enable */
-	pci_write_config8(dev, 0x61, byte);
-	byte = pci_read_config8(dev, 0x70);
+    byte = inb(0x61);
+    byte &= ~(1 << 3); /* IOCHK# NMI Enable */
+    byte &= ~(1 << 2); /* PCI SERR# Enable */
+    outb(byte, 0x61);
+    byte = inb(0x70);
 	nmi_option = NMI_OFF;
 	get_option(&nmi_option, "nmi");
 	if (nmi_option) {			
-		byte |= (1 << 7); /* set NMI */
-		pci_write_config8(dev, 0x70, byte);
+        byte &= ~(1 << 7); /* set NMI */
+        outb(byte, 0x70);
 	}
 	
 	/* Initialize the real time clock */

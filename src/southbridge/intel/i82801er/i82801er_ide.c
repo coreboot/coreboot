@@ -26,7 +26,7 @@ static void ide_init(struct device *dev)
 
         word = pci_read_config16(dev, 0x42);
         word &= ~((1 << 15));
-        if (enable_a) {
+        if (enable_b) {
                 /* Enable secondary ide interface */
                 word |= (1<<15);
                 printk_debug("IDE1 ");

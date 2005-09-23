@@ -37,11 +37,31 @@ static void cpu_init(device_t dev)
 }
 
 
+/* Ollie says: make a northbridge/amd/sc520. Ron sez: 
+ * there is no real northbridge, keep it here in cpu. 
+ * Ron wins, he's writing the code. 
+ */
+void sc520_enable_resources(struct device *dev) {
+	unsigned char command;
+
+	printk_spew("%s\n", __FUNCTION__);
+        command = pci_read_config8(dev, PCI_COMMAND);
+        printk_spew("========>%s, command 0x%x\n", __FUNCTION__, command);
+        command |= PCI_COMMAND_MEMORY | PCI_COMMAND_PARITY | PCI_COMMAND_SERR;
+        printk_spew("========>%s, command 0x%x\n", __FUNCTION__, command);
+        pci_write_config8(dev, PCI_COMMAND, command);
+        command = pci_read_config8(dev, PCI_COMMAND);
+        printk_spew("========>%s, command 0x%x\n", __FUNCTION__, command);
+/*
+ */
+
+}
+
 
 static struct device_operations cpu_operations = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
+	.enable_resources = sc520_enable_resources,
 	.init             = cpu_init,
 	.enable           = 0,
 	.ops_pci          = 0,
@@ -166,10 +186,29 @@ static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
         return max;
 }
 
+
+static void enable_resources(device_t dev) {
+
+	printk_spew("%s\n", __FUNCTION__);
+	printk_spew("THIS IS FOR THE SC520 =============================\n");
+
+/*
+	command = pci_read_config8(dev, PCI_COMMAND);
+	printk_spew("%s, command 0x%x\n", __FUNCTION__, command);
+	command |= PCI_COMMAND_MEMORY;
+	printk_spew("%s, command 0x%x\n", __FUNCTION__, command);
+	pci_write_config8(dev, PCI_COMMAND, command);
+	command = pci_read_config8(dev, PCI_COMMAND);
+	printk_spew("%s, command 0x%x\n", __FUNCTION__, command);
+ */
+	enable_childrens_resources(dev);
+	printk_spew("%s\n", __FUNCTION__);
+}
+
 static struct device_operations pci_domain_ops = {
         .read_resources   = pci_domain_read_resources,
         .set_resources    = pci_domain_set_resources,
-        .enable_resources = enable_childrens_resources,
+        .enable_resources = enable_resources,
         .init             = 0,
         .scan_bus         = pci_domain_scan_bus,
 };  

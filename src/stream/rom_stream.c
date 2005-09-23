@@ -9,8 +9,18 @@
 #define CONFIG_ROM_STREAM_START 0xffff0000UL
 #endif
 
-static const unsigned char *rom_start = (void *)CONFIG_ROM_STREAM_START;
-static const unsigned char *rom_end   = (void *)(CONFIG_ROM_STREAM_START + PAYLOAD_SIZE - 1);
+/* well, this is a mess, and it will get fixed, but not right away. 
+ * until we stop using 'ld' for building the rom image, that is. 
+ * problem is, that on the sc520, ROM_STREAM_START has to be at 0x2000000. 
+ * but if you set CONFIG_ROM_STREAM_START to that, then ld will try to 
+ * build a giant image: 0x0-0x2000000, i.e. almost 4 GB. 
+ * so make this non-static, non-const for now. 
+ */
+
+/*XXXXXXXXXXXXXX */
+/*static const */unsigned char *rom_start = (void *)CONFIG_ROM_STREAM_START;
+/*static const */unsigned char *rom_end   = (void *)(CONFIG_ROM_STREAM_START + PAYLOAD_SIZE - 1);
+/*XXXXXXXXXXXXXX */
 static const unsigned char *rom;
 
 int stream_init(void)

@@ -367,7 +367,7 @@ static void dumpram(void){
  * causing romcc real headaches, so we're going to be be a little 
  * less silly.
  * so, the order of ops is: 
- * for in 3 to 0
+ * for i in 3 to 0
  * see if bank is there. 
  * if we can write a word, and read it back, to hell with paranoia
  * the bank is there. So write the magic byte, read it back, and 
@@ -701,8 +701,8 @@ bad_ram:
 #endif
 }	
 
-/* note: based on AMD code, but AMD code is BROKEN AFAIK */
-/* this does now work worth shit. */
+/* note: based on AMD code*/
+/* This code is known to work on the digital logic board.  */
 int
 staticmem(void){
   volatile unsigned long *zero = (unsigned long *) CACHELINESZ;

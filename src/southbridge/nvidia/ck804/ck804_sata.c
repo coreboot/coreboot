@@ -95,11 +95,13 @@ static void sata_init(struct device *dev)
                 dword |= (1<<1);
                 printk_debug("SATA P \n");
         }
+#if 0
 //	write back
         dword |= (1<<12);
         dword |= (1<<14);
+#endif
 
-#if 1
+#if 0
 //	ADMA
 	dword |= (1<<16);
 	dword |= (1<<17);
@@ -112,7 +114,7 @@ static void sata_init(struct device *dev)
 #endif
         pci_write_config32(dev, 0x50, dword);
 
-#if 1
+#if 0
 //SLUMBER_DURING_D3.
         dword = pci_read_config32(dev, 0x7c);
         dword &=  ~(1<<4);

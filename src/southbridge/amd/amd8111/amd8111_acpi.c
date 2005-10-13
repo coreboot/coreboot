@@ -97,6 +97,7 @@ static void acpi_init(struct device *dev)
 
 	
 #endif
+	/* power on after power fail */
 	on = MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 	get_option(&on, "power_on_after_fail");
 	byte = pci_read_config8(dev, PREVIOUS_POWER_STATE);
@@ -177,6 +178,10 @@ static struct device_operations acpi_ops  = {
 	.enable_resources = acpi_enable_resources,
 	.init             = acpi_init,
 	.scan_bus         = scan_static_bus,
+	/*  We don't need amd8111_enable, chip ops takes care of it.
+	 *  It could be useful if these devices were not 
+	 *  enabled by default.
+	 */
 //	.enable           = amd8111_enable,
 	.ops_pci          = &lops_pci,
 	.ops_smbus_bus    = &lops_smbus_bus,

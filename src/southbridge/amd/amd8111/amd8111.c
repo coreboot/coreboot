@@ -66,5 +66,8 @@ void amd8111_enable(device_t dev)
 
 struct chip_operations southbridge_amd_amd8111_ops = {
 	CHIP_NAME("AMD 8111")
+	/* This only called when this device is listed in the 
+	* static device tree.
+	*/
 	.enable_dev = amd8111_enable,
 };

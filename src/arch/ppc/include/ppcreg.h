@@ -2,77 +2,24 @@
 /* This code is distributed without warranty under the GPL v2 (see COPYING) */
 
 /* In the MSR, not all bits are interesting to us
-   13 - POW - Power management
-   14 - TGPR - temporary registers for page table routines
-   15 - ILE - Exception little endian
    16 - EE  - External interrupts
    17 - PR  - Privilege level
    18 - FP  - Floating Point available
    19 - ME  - Machine check exception enable
    20 - FE0 - Floating exception mode 0
-   21 - SE  - Single step trace mode
-   22 - BE  - Branch trace enable
    23 - FE1 - Floating exception mode 1
-   25 - IP  - Exception prefix
-   26 - IR  - Instruction address translation
-   27 - DR  - Data address translation
-   30 - RI  - Recoverable exception
-   31 - LE  - Little endian mode
    MSR_MASK is the bits we do not change.
    */
 
 #define MSR_MASK 0xfff8008c
-#define MSR_POW  0x00040000
-#define MSR_TGPR 0x00020000
-#define MSR_ILE  0x00010000
 #define MSR_EE   0x00008000
 #define MSR_PR   0x00004000
 #define MSR_FP   0x00002000
 #define MSR_ME   0x00001000
 #define MSR_FE0  0x00000800
-#define MSR_SE   0x00000400
-#define MSR_BE   0x00000200
 #define MSR_FE1  0x00000100
-#define MSR_IP   0x00000040
-#define MSR_IR   0x00000020
-#define MSR_DR   0x00000010
-#define MSR_RI   0x00000002
-#define MSR_LE   0x00000001
 
 #define MSR_DEFAULT (MSR_FP | MSR_IR | MSR_DR)
-
-/* We are interested in the following hid0 bits:
-   6  - ECLK  - Enable external test clock (603 only)
-   11 - DPM   - Turn on dynamic power management (603 only)
-   15 - NHR   - Not hard reset
-   16 - ICE   - Instruction cache enable
-   17 - DCE   - Data cache enable
-   18 - ILOCK - Instruction cache lock
-   19 - DLOCK - Data cache lock
-   20 - ICFI  - Instruction cache invalidate
-   21 - DCFI  - Data cache invalidate
-   24 - NOSER - Serial execution disable (604 only - turbo mode)
-   24 - SGE   - Store gathering enable (7410 only)
-   29 - BHT   - Branch history table (604 only)
-   
-   I made up the tags for the 604 specific bits, as they aren't
-   named in the 604 book.  The 603 book calls the invalidate bits
-   ICFI and DCI, and I have no idea why it isn't DCFI. Maybe IBM named
-   one, and Motorola named the other. */
-
-#define HID0_ECLK   0x02000000
-#define HID0_DPM    0x00100000
-#define HID0_NHR    0x00010000
-#define HID0_ICE    0x00008000
-#define HID0_DCE    0x00004000
-#define HID0_ILOCK  0x00002000
-#define HID0_DLOCK  0x00001000
-#define HID0_ICFI   0x00000800
-#define HID0_DCFI   0x00000400
-#define HID0_NOSER  0x00000080
-#define HID0_SGE    0x00000080
-#define HID0_BTIC   0x00000020
-#define HID0_BHT    0x00000004
 
 /*
  * BAT defines
@@ -180,6 +127,39 @@
 #define	PVR_7400       	0x000C0000
 #define	PVR_8240	0x00810100
 #define	PVR_8260	PVR_8240
+
+/*----------------------------------------------------------------------------+
+| Processor Version Register (PVR) values
++----------------------------------------------------------------------------*/
+#define PVR_970                         0x0039          /* 970   any revision*/
+#define PVR_970DD_1_0                   0x00391100      /* 970   DD1.0       */
+#define PVR_970FX                       0x003C          /* 970FX any revision*/
+#define PVR_970FX_DD_2_0                0x003C0200      /* 970FX DD2.0       */
+#define PVR_970FX_DD_2_1                0x003C0201      /* 970FX DD2.1       */
+#define PVR_970FX_DD_3_0                0x003C0300      /* 970FX DD3.0       */
+#define PVR_RESERVED                    0x000000F0      /* reserved nibble   */
+
+#define SPR_SRR0                        0x01a
+#define SPR_SRR1                        0x01b
+#define SPR_SPRG0                       0x110
+#define SPR_SPRG1                       0x111
+#define SPR_SPRG2                       0x112
+#define SPR_SPRG3                       0x113
+#define SPR_PVR                         0x11f
+#define SPR_TBLR                        0x10c
+#define SPR_TBUR                        0x10d
+
+#ifdef __PPC64__
+#define LOAD_64BIT_VAL(ra,value)        addis    ra,r0,value@highest;         \
+                                        ori      ra,ra,value@higher;          \
+                                        sldi     ra,ra,32;                    \
+                                        oris     ra,ra,value@h;               \
+                                        ori      ra,ra,value@l
+#define TLBIEL(rb)                      .long 0x7C000000|\
+                                        (rb<<11)|(274<<1)
+#define HRFID()                         .long 0x4C000000|\
+                                        (274<<1)
+#endif
 
 #ifndef ASM
 unsigned __getmsr(void);

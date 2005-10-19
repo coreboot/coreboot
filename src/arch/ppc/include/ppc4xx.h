@@ -68,6 +68,17 @@
 	#define  sprg6w 0x116     /* Special purpose general 6 - write only */
 	#define  sprg7w 0x117     /* Special purpose general 7 - write only */
 
+/*----------------------------------------------------------------------------+
+| Machine State Register.  MSR_EE, MSR_PR, MSR_FP, MSR_ME, MSR_FE0, MSR_FE1,
++----------------------------------------------------------------------------*/
+#define MSR_APE         0x00080000      /* wait state enable                 */
+#define MSR_WE          0x00040000      /* wait state enable                 */
+#define MSR_CE          0x00020000      /* critical interrupt enable         */
+#define MSR_DWE         0x00000400      /* debug wait enable                 */
+#define MSR_DE          0x00000200      /* debug interrupt enable            */
+#define MSR_IR          0x00000020      /* instruction relocale              */
+#define MSR_DR          0x00000010      /* data relocale                     */
+
 /******************************************************************************
  * Special for PPC405GP
  ******************************************************************************/

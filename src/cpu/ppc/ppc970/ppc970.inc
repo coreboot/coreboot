@@ -94,16 +94,16 @@
 	LOAD_64BIT_VAL(r6,INITIAL_SLB_VSID_VAL)
 	LOAD_64BIT_VAL(r7,INITIAL_SLB_ESID_VAL)
 	addis	r8,r0,0x1000
-..slbl: slbmte	r6,r7
+0:	slbmte	r6,r7
 	addi	r6,r6,0x1000
 	add  	r7,r7,r8
 	addi	r7,r7,0x0001
-	bdnz	..slbl
+	bdnz	0b
 	mtctr	r5
 	LOAD_64BIT_VAL(r6,INITIAL_SLB_INVA_VAL)
-..slbi: slbie	r6
+1:	slbie	r6
 	add  	r6,r6,r8
-	bdnz	..slbi
+	bdnz	1b
         /*--------------------------------------------------------------------+
         | Load SLB.  Following is the initial memory map.
 	| Entry(6) ESID(36)    VSID
@@ -126,11 +126,11 @@
         | Invalidate all 1024 instruction and data TLBs (4 way)
         +--------------------------------------------------------------------*/
         addi    r8,r0,0x0100
-        mtspr   ctr,r8
+        mtspr   CTR,r8
         addi    r8,r0,0x0000
-..ivt:  TLBIEL(r8)
+2:	TLBIEL(r8)
         addi    r8,r8,0x1000
-        bdnz    ..ivt
+        bdnz   2b
         ptesync
         /*--------------------------------------------------------------------+
         | Dcbz the page table space.   Calculate SDR1 address.  Store SDR1
@@ -138,13 +138,13 @@
         +--------------------------------------------------------------------*/
 	mfspr	r3,SPR_PIR
 	cmpi	cr0,1,r3,0x0000
-	bne	..cpu1
+	bne	3f
         addis   r3,r0,INITIAL_PAGE_TABLE_ADDR_CPU0@h
         ori     r3,r3,INITIAL_PAGE_TABLE_ADDR_CPU0@l
-	b	..skcpu
-..cpu1: addis   r3,r0,INITIAL_PAGE_TABLE_ADDR_CPU1@h
+	b	4f
+3:	addis   r3,r0,INITIAL_PAGE_TABLE_ADDR_CPU1@h
         ori     r3,r3,INITIAL_PAGE_TABLE_ADDR_CPU1@l
-..skcpu:addis   r4,r0,INITIAL_PAGE_TABLE_SIZE@h
+4:	addis   r4,r0,INITIAL_PAGE_TABLE_SIZE@h
         ori     r4,r4,INITIAL_PAGE_TABLE_SIZE@l
 	rlwinm	r5,r4,14,14,31 
 	cntlzw	r5,r5
@@ -203,26 +203,26 @@
 	mtctr	r3
 	addis	r31,r0,0xF400
 	and	r31,r31,r29
-..aF4:	addi	r3,r0,0x0000
+5:	addi	r3,r0,0x0000
 	ori	r4,r31,0x0000
 	ori	r5,r30,0x0000
 	addi	r6,r0,0x000F
 	bl	.p_ptegg
 	addi	r6,r3,0x0080
-..aF4a:	lwz	r4,0x0004(r3)
+6:	lwz	r4,0x0004(r3)
 	cmpli	cr0,1,r4,0x0000
-	beq	..aF4s
+	beq	8f
 	addi	r3,r3,0x0010
 	cmp	cr0,1,r3,r6
-	blt	..aF4a
-..aF4h:	b	..aF4h
-..aF4s: rlwinm  r4,r31,16,4,24
+	blt	6b
+7:	b	7b
+8:	rlwinm  r4,r31,16,4,24
 	ori	r4,r4,0x0001
 	stw	r4,0x0004(r3)
 	ori	r4,r31,0x01AC
 	stw	r4,0x000C(r3)
 	addi	r31,r31,0x1000
-	bdnz	..aF4
+	bdnz	5b
         /*--------------------------------------------------------------------+
         | Setup 16MB of addresses in NB register space (0xF8000000).
         +--------------------------------------------------------------------*/
@@ -230,61 +230,61 @@
 	mtctr	r3
 	addis	r31,r0,0xF800
 	and	r31,r31,r29
-..aF8:	addi	r3,r0,0x0000
+9:	addi	r3,r0,0x0000
 	ori	r4,r31,0x0000
 	ori	r5,r30,0x0000
 	addi	r6,r0,0x000F
 	bl	.p_ptegg
 	addi	r6,r3,0x0080
-..aF8a:	lwz	r4,0x0004(r3)
+10:	lwz	r4,0x0004(r3)
 	cmpli	cr0,1,r4,0x0000
-	beq	..aF8s
+	beq	12f
 	addi	r3,r3,0x0010
 	cmp	cr0,1,r3,r6
-	blt	..aF8a
-..aF8h:	b	..aF8h
-..aF8s: rlwinm	r4,r31,16,4,24
+	blt	10b
+11:	b	11b
+12:	rlwinm	r4,r31,16,4,24
 	ori	r4,r4,0x0001
 	stw	r4,0x0004(r3)
 	ori	r4,r31,0x01AC
 	stw	r4,0x000C(r3)
 	addi	r31,r31,0x1000
-	bdnz	..aF8
+	bdnz	9b
         /*--------------------------------------------------------------------+
         | Setup 16MB or 1MB of addresses in ROM (at 0xFF000000 or 0xFFF00000).
         +--------------------------------------------------------------------*/
 	mfspr	r3,SPR_HIOR
 	LOAD_64BIT_VAL(r4,BOOT_BASE_AS)
 	cmpd	cr0,r3,r4
-	beq	..big
+	beq	13f
 	addi	r3,r0,0x0100
 	mtctr	r3
 	addis	r31,r0,0xFFF0
-	b	..done
-..big:  addi	r3,r0,0x1000
+	b	14f
+13:	addi	r3,r0,0x1000
 	mtctr	r3
 	addis	r31,r0,0xFF00
-..done:	and	r31,r31,r29
-..aFF:	addi	r3,r0,0x0000
+14:	and	r31,r31,r29
+15:	addi	r3,r0,0x0000
 	ori	r4,r31,0x0000
 	ori	r5,r30,0x0000
 	addi	r6,r0,0x000F
 	bl	.p_ptegg
 	addi	r6,r3,0x0080
-..aFFa:	lwz	r4,0x0004(r3)
+16:	lwz	r4,0x0004(r3)
 	cmpli	cr0,1,r4,0x0000
-	beq	..aFFs
+	beq	18f
 	addi	r3,r3,0x0010
 	cmp	cr0,1,r3,r6
-	blt	..aFFa
-..aFFh:	b	..aFFh
-..aFFs: rlwinm	r4,r31,16,4,24
+	blt	16b
+17:	b	17b
+18:	rlwinm	r4,r31,16,4,24
 	ori	r4,r4,0x0001
 	stw	r4,0x0004(r3)
 	ori	r4,r31,0x01A3
 	stw	r4,0x000C(r3)
 	addi	r31,r31,0x1000
-	bdnz	..aFF
+	bdnz	15b
         /*--------------------------------------------------------------------+
         | Synchronize after setting up page table.
         +--------------------------------------------------------------------*/
@@ -321,16 +321,16 @@
 	LOAD_64BIT_VAL(r7,FLASH_BASE_INTEL_AS)
 	mfspr	r5,SPR_HIOR
 	cmpdi	cr0,r5,0x0000
-	beq	..hior0
+	beq	19f
 	cmpd	cr0,r5,r7
-	beq	..hiorl
+	beq	20f
 	addi	r8,r0,0x0000	
-	b	..hiors
-..hiorl:ori	r8,r6,0x0000
-	b	..hiors
-..hior0:mfspr	r5,SPR_HID0
+	b	21f
+20: 	ori	r8,r6,0x0000
+	b	21f
+19:	mfspr	r5,SPR_HID0
 	and 	r8,r5,r6
-..hiors:LOAD_64BIT_VAL(r4,HID0_PREFEAR)
+21:	LOAD_64BIT_VAL(r4,HID0_PREFEAR)
        	andc	r4,r4,r6
 	or	r4,r4,r8 
 	sync

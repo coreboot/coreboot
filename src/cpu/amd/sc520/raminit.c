@@ -48,91 +48,6 @@
 
 #define OUTC(addr, val) *(unsigned char *)(addr) = (val)
 
-void p4(unsigned char c){
-  //print_err("TRY A TX NIBLE\r\n");
-  __console_tx_nibble(c);
-  return;
-  print_err("now do the other\r\n");
-
-  //  c = c + '0'; 
-  //  if (c > '9')
-  //    c = c + 39;
-  //  __console_tx_byte(c);
-  //print_err("NO!\r\n");
-  //  return;
-  switch(c) {
-  case 0:
-    print_err("0");
-    break;
-  case 1:
-    print_err("1");
-    break;
-  case 2:
-    print_err("2");
-    break;
-  case 3:
-    print_err("3");
-    break;
-  case 4:
-    print_err("4");
-    break;
-  case 5:
-    print_err("5");
-    break;
-  case 6:
-    print_err("6");
-    break;
-  case 7:
-    print_err("7");
-    break;
-  case 8:
-    print_err("8");
-    break;
-  case 9:
-    print_err("9");
-    break;
-  case 0xa:
-    print_err("a");
-    break;
-  case 0xb:
-    print_err("b");
-    break;
-  case 0xc:
-    print_err("c");
-    break;
-  case 0xd:
-    print_err("d");
-    break;
-  case 0xe:
-    print_err("e");
-    break;
-  case 0xf:
-    print_err("f");
-    break;
-  }
-
-}
-
-void p8(unsigned char c) {
-  /*
-  __console_tx_nibble(c>>4);
-  __console_tx_nibble(c&0xf);
-  */
-  p4(c>>4);
-  p4(c&0xf);
-}
-
-void p16(unsigned short s) {
-  p8(s>>16);
-  p8(s);
-}
-
-void p32(unsigned long l) {
-  p16(l>>16);
-  p16(l);
-}
-
-
 /* sadly, romcc can't quite handle what we want, so we do this ugly thing */
 #define drcctl   (( volatile unsigned char *)0xfffef010)
 #define drcmctl   (( volatile unsigned char *)0xfffef012)
@@ -384,17 +299,25 @@ int sizemem(void)
 	volatile unsigned long *lp = (volatile unsigned long *) CACHELINESZ;
 	unsigned long l;
 	/* initialize dram controller registers */
-
-	*dbctl = 0; /* disable write buffer/read-ahead buffer */
+	/* disable write buffer/read-ahead buffer */
+	*dbctl = 0;
+	/* no ecc interrupts of any kind. */
 	*eccctl = 0;
-	*drcmctl = 0x1e; /* Set SDRAM timing for slowest speed. */
+	/* Set SDRAM timing for slowest speed. */
+	*drcmctl = 0x1e; 
+
 	/* setup dram register for all banks
 	 * with max cols and max banks
+	 * this is the oldest trick in the book. You are going to set up for max rows
+	 * and cols, then do a write, then see if the data is wrapped to low memory. 
+	 * you can actually tell by which data gets to which low memory, 
+	 * exactly how many rows and cols you have. 
 	 */
 	*drccfg=0xbbbb;
 
 	/* setup loop to do 4 external banks starting with bank 3 */
 	*drcbendadr=0x0ff000000;
+	/* for now, set it up for one loop of bank 0. Just to get it to go at all. */
 	*drcbendadr=0x0ff;
 
 	/* issue a NOP to all DRAMs */
@@ -407,7 +330,7 @@ int sizemem(void)
 	dummy_write();
 	print_err("NOP\n");
 	/* 100? 200? */
-	//sc520_udelay(100);
+	udelay(100);
 	print_err("after sc520_udelay\r\n");
 
 	/* issue all banks precharge */
@@ -743,7 +666,6 @@ staticmem(void){
 	  print_err("NO LUCK\r\n");
 	else
 	  print_err("did a stor and load ...\r\n");
-	//	p32(*zero);
 	print_err_hex32(*zero);
 	//	print_err(" zero is now "); print_err_hex32(*zero); print_err("\r\n");
 }

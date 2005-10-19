@@ -29,9 +29,7 @@
 | 10-Feb-04     Port to PPC970FX					    MPT
 +----------------------------------------------------------------------------*/
 
-#include <sys/as_archppc.h>
-#include <sys/as_archppc970.h>
-#include <ppc970fx_board.h>
+#include <ppc970.h>
 
 /*----------------------------------------------------------------------------+
 | Local defines.
@@ -44,7 +42,6 @@
 | Init_core.  Assumption: hypervisor on, 64-bit on, HID1[10]=0, HID4[23]=0.
 | Data cahability must be turned on.  Instruction cahability must be off.
 +----------------------------------------------------------------------------*/
-function_prolog(init_core)
         /*--------------------------------------------------------------------+
         | Set time base to 0.
         +--------------------------------------------------------------------*/
@@ -366,4 +363,3 @@ function_prolog(init_core)
         eieio
         mtspr   SPR_SRR0,r0
         rfid
-        function_epilog(init_core)

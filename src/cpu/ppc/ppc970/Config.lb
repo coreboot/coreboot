@@ -3,17 +3,13 @@
 ##
 uses _RAMBASE
 uses USE_DCACHE_RAM
-uses DCACHE_RAM_BASE
-uses DCACHE_RAM_SIZE
 
 ##
-## Use cache ram for initial setup
+## Assumes RAM already initialiazed
+## This is true for the Apache board, but may
+## not be for other 970 systems.
 ##
-default USE_DCACHE_RAM=1
-## Set dcache ram above linuxbios image
-default DCACHE_RAM_BASE=_RAMBASE+0x100000
-## Dcache size is 32Kb
-default DCACHE_RAM_SIZE=0x8000
+default USE_DCACHE_RAM=0
 
 initinclude "FAMILY_INIT" cpu/ppc/ppc970/ppc970.inc
 

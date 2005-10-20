@@ -6,4 +6,5 @@
  * happens prior to entry into hardwaremain().
  */
 extern void board_init(void);
+extern void board_init2(void);
 #endif /* _BOARD_H */

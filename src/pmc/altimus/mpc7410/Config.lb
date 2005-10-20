@@ -12,3 +12,4 @@ dir /northbridge/motrola/mpc107
 ## Build the objects we have code for in this directory.
 ##
 object mpc7410.o
+object setup.o

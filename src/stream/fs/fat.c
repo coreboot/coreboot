@@ -54,7 +54,7 @@ struct fat_superblock
 
 #define FAT_CACHE_SIZE 2048
 
-#ifndef PPC
+#if ARCH == 'i386'
 static __inline__ unsigned long
 log2 (unsigned long word)
 {

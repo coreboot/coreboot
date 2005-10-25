@@ -19,6 +19,7 @@ typedef struct { int gcc_is_buggy; } spinlock_t;
 #define spin_unlock_wait(lock)	do {} while(0)
 #define spin_lock(lock)		do {} while(0)
 #define spin_unlock(lock)	do {} while(0)
+#define cpu_relax()		do {} while(0)
 #endif
 
 #endif /* SMP_SPINLOCK_H */

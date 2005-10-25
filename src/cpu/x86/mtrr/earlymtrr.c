@@ -117,4 +117,17 @@ static void early_mtrr_init(void)
 	enable_cache();
 }
 
+static int early_mtrr_init_detected(void)
+{
+	msr_t msr;
+	/* See if MTRR's are enabled.
+	 * a #RESET disables them while an #INIT
+	 * preserves their state.  This works
+	 * on both Intel and AMD cpus, at least
+	 * according to the documentation.
+	 */
+	msr = rdmsr(MTRRdefType_MSR);
+	return msr.lo & 0x00000800;
+}
+
 #endif /* EARLYMTRR_C */

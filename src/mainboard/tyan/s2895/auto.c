@@ -28,6 +28,7 @@
 
 #include "cpu/amd/mtrr/amd_earlymtrr.c"
 #include "cpu/x86/bist.h"
+#include "cpu/amd/dualcore/dualcore.c"
 
 #include "superio/smsc/lpc47b397/lpc47b397_early_gpio.c"
 
@@ -106,12 +107,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 /* tyan does not want the default */
 #include "resourcemap.c"
 
-#if CONFIG_LOGICAL_CPUS==1
-#define SET_NB_CFG_54 1
-#include "cpu/amd/dualcore/dualcore.c"
-#else
-#include "cpu/amd/model_fxx/node_id.c"
-#endif
 
 #define FIRST_CPU  1
 #define SECOND_CPU 1
@@ -163,79 +158,12 @@ static void main(unsigned long bist)
 	};
 
         int needs_reset;
-#if CONFIG_LOGICAL_CPUS==1
-        struct node_core_id id;
-#else
-        unsigned nodeid;
-#endif
 
         if (bist == 0) {
-                /* Skip this if there was a built in self test failure */
-                amd_early_mtrr_init();
-
-#if CONFIG_LOGICAL_CPUS==1
-                set_apicid_cpuid_lo();
-                
-                id = get_node_core_id_x(); // that is initid
-        #if ENABLE_APIC_EXT_ID == 1
-                if(id.coreid == 0) {
-                        enable_apic_ext_id(id.nodeid);
-                }
-        #endif
-#else           
-                nodeid = get_node_id();
-        #if ENABLE_APIC_EXT_ID == 1
-                enable_apic_ext_id(nodeid);
-        #endif
-#endif
-
-                enable_lapic();
-                init_timer();
-
-                post_code(0x30);
-
-#if CONFIG_LOGICAL_CPUS==1
-        #if ENABLE_APIC_EXT_ID == 1
-            #if LIFT_BSP_APIC_ID == 0
-                if( id.nodeid != 0 ) //all except cores in node0
-            #endif
-                        lapic_write(LAPIC_ID, ( lapic_read(LAPIC_ID) | (APIC_ID_OFFSET<<24) ) );
-        #endif
-
-                if(id.coreid == 0) {
-                        if (cpu_init_detected(id.nodeid)) {
-                                asm volatile ("jmp __cpu_reset");
-                        }
-                        distinguish_cpu_resets(id.nodeid);
-                }
-
-#else
-        #if ENABLE_APIC_EXT_ID == 1
-            #if LIFT_BSP_APIC_ID == 0
-                if(nodeid != 0)
-            #endif
-                        lapic_write(LAPIC_ID, ( lapic_read(LAPIC_ID) | (APIC_ID_OFFSET<<24) ) ); // CPU apicid is from 0x10
-
-        #endif
-
-                if (cpu_init_detected(nodeid)) {
-                        asm volatile ("jmp __cpu_reset");
-                }
-                distinguish_cpu_resets(nodeid);
-#endif
-
-                post_code(0x31);
-
-                if (!boot_cpu()
-#if CONFIG_LOGICAL_CPUS==1 
-                        || (id.coreid != 0)
-#endif
-                ) {
-                        stop_this_cpu(); // it will stop all cores except core0 of cpu0
-                }
+	    	k8_init_and_stop_secondaries();
         }
 
-	post_code(0x32);
+	// post_code(0x32);
 
         lpc47b397_enable_serial(SERIAL_DEV, TTYS0_BASE);
         uart_init();
@@ -249,10 +177,6 @@ static void main(unsigned long bist)
         setup_s2895_resource_map();
 
 	needs_reset = setup_coherent_ht_domain();
-#if CONFIG_LOGICAL_CPUS==1
-        // It is said that we should start core1 after all core0 launched
-        start_other_cores();
-#endif
 
         needs_reset |= ht_setup_chains_x();
 

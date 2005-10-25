@@ -25,6 +25,7 @@
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 #include "cpu/amd/mtrr/amd_earlymtrr.c"
 #include "cpu/x86/bist.h"
+#include "cpu/amd/dualcore/dualcore.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
@@ -128,31 +129,7 @@ static void main(unsigned long bist)
 	int needs_reset;
 
 	if (bist == 0) {
-		unsigned nodeid;
-		
-		/* Skip this if there was a built in self test failure */
-		amd_early_mtrr_init();
-		enable_lapic();
-		init_timer();
-
-		nodeid=lapicid() & 0xf;
-
-		
-#if ENABLE_APIC_EXT_ID == 1
-                enable_apic_ext_id(nodeid);
-                if(nodeid != 0) {
-			/* CPU apicid is from 0x10 */
-                        lapic_write(LAPIC_ID, ( lapic_read(LAPIC_ID)
-						| (APIC_ID_OFFSET<<24) ) ); 
-                }
-#endif
-		if (cpu_init_detected(nodeid)) {
-			asm volatile ("jmp __cpu_reset");
-		}
-		distinguish_cpu_resets(nodeid);
-		if (!boot_cpu()) {
-			stop_this_cpu();
-		}
+	    	k8_init_and_stop_secondaries();
 	}
 	/* Setup the console */
 	w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
@@ -173,20 +150,20 @@ static void main(unsigned long bist)
         print_pci_devices();
 #endif
 	
-#if (ALLOW_HT_OVERCLOCKING==1) && (USE_FALLBACK_IMAGE==0)
-	if(read_option(CMOS_VSTART_amdk8_1GHz, CMOS_VLEN_amdk8_1GHz, 0)) 
-	{
-		print_debug("AMDK8 allowed at 1GHz\r\n");
-	} else {
-		print_debug("AMDK8 allowed at 800Hz only\r\n");
-	}
-	if(read_option(CMOS_VSTART_amd8131_800MHz, CMOS_VLEN_amd8131_800MHz, 0))
-	{
-		print_debug("AMD8131 allowed at 800MHz\r\n");
-	} else {
-		print_debug("AMD8131 allowed at 600Hz only\r\n");
-	}
-#endif
+//#if (ALLOW_HT_OVERCLOCKING==1) && (USE_FALLBACK_IMAGE==0)
+//	if(read_option(CMOS_VSTART_amdk8_1GHz, CMOS_VLEN_amdk8_1GHz, 0)) 
+//	{
+//		print_debug("AMDK8 allowed at 1GHz\r\n");
+//	} else {
+//		print_debug("AMDK8 allowed at 800Hz only\r\n");
+//	}
+//	if(read_option(CMOS_VSTART_amd8131_800MHz, CMOS_VLEN_amd8131_800MHz, 0))
+//	{
+//		print_debug("AMD8131 allowed at 800MHz\r\n");
+//	} else {
+//		print_debug("AMD8131 allowed at 600Hz only\r\n");
+//	}
+//#endif
 	if (needs_reset) {
 		print_info("HyperT reset -\r\n");
 		soft_reset();

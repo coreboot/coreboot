@@ -23,6 +23,8 @@
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 #include "cpu/amd/mtrr/amd_earlymtrr.c"
 #include "cpu/x86/bist.h"
+#include "cpu/amd/dualcore/dualcore.c"
+
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
@@ -161,19 +163,7 @@ static void main(unsigned long bist)
         unsigned nodeid;
 
 	if (bist == 0) {
-		/* Skip this if there was a built in self test failure */
-		amd_early_mtrr_init();
-		enable_lapic();
-		init_timer();
-
-		/* Has this cpu already booted? */
-		if (cpu_init_detected(nodeid)) {
-			asm volatile ("jmp __cpu_reset");
-		}
-		distinguish_cpu_resets(nodeid);
-		if (!boot_cpu()) {
-			stop_this_cpu();
-		}
+		k8_init_and_stop_secondaries();
 	}
 	/* Setup the console */	
 	w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);

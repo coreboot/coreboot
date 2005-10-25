@@ -24,6 +24,7 @@
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 #include "cpu/amd/mtrr/amd_earlymtrr.c"
 #include "cpu/x86/bist.h"
+#include "cpu/amd/dualcore/dualcore.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
@@ -125,11 +126,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
  /* tyan does not want the default */
 #include "resourcemap.c"
 
-#if CONFIG_LOGICAL_CPUS==1
-#define SET_NB_CFG_54 1
-#include "cpu/amd/dualcore/dualcore.c"
-#endif
-
 #define FIRST_CPU  1
 #define SECOND_CPU 1
 
@@ -202,47 +198,9 @@ static void main(unsigned long bist)
 	};
 	int i;
         int needs_reset;
-#if CONFIG_LOGICAL_CPUS==1
-        struct node_core_id id;
-#else
-        unsigned nodeid;
-#endif
 
         if (bist == 0) {
-                /* Skip this if there was a built in self test failure */
-                amd_early_mtrr_init();
-
-#if CONFIG_LOGICAL_CPUS==1
-                set_apicid_cpuid_lo();
-#endif
-
-                enable_lapic();
-                init_timer();
-
-#if CONFIG_LOGICAL_CPUS==1
-                id = get_node_core_id_x();
-                if(id.coreid == 0) {
-                        if (cpu_init_detected(id.nodeid)) {
-                                asm volatile ("jmp __cpu_reset");
-                        }
-                        distinguish_cpu_resets(id.nodeid);
-//                        start_other_core(id.nodeid);
-                }
-#else
-                nodeid = lapicid();
-                if (cpu_init_detected(nodeid)) {
-                        asm volatile ("jmp __cpu_reset");
-                }
-                distinguish_cpu_resets(nodeid);
-#endif
-
-                if (!boot_cpu()
-#if CONFIG_LOGICAL_CPUS==1 
-                        || (id.coreid != 0)
-#endif
-                ) {
-                        stop_this_cpu(); // it will stop all cores except core0 of cpu0
-                }
+	    	k8_init_and_stop_secondaries();
         }
 
         w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
@@ -255,10 +213,6 @@ static void main(unsigned long bist)
         setup_s4880_resource_map();
 
         needs_reset = setup_coherent_ht_domain();
-
-#if CONFIG_LOGICAL_CPUS==1
-        start_other_cores();
-#endif
 
         needs_reset |= ht_setup_chains_x();
 	

@@ -7,21 +7,7 @@
 #include <device/pci_ops.h>
 #include "amd8111.h"
 
-static void usb2_init(struct device *dev)
-{
-	uint32_t cmd;
-
 #if 0
-	printk_debug("USB: Setting up controller.. ");
-	cmd = pci_read_config32(dev, PCI_COMMAND);
-	pci_write_config32(dev, PCI_COMMAND, 
-		cmd | PCI_COMMAND_IO | PCI_COMMAND_MEMORY | 
-		PCI_COMMAND_MASTER | PCI_COMMAND_INVALIDATE);
-
-
-	printk_debug("done.\n");
-#endif
-}
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
@@ -33,14 +19,23 @@ static struct pci_operations lops_pci = {
 	.set_subsystem = lpci_set_subsystem,
 };
 
+#endif
+
+static void amd8111_usb2_enable(device_t dev)
+{
+	// Due to buggy USB2 we force it to disable. 
+	dev->enable = 0;
+	amd8111_enable(dev);
+	printk_debug("USB2 disabled.\n");
+}
+
 static struct device_operations usb2_ops  = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = usb2_init,
 	.scan_bus         = 0,
-	.enable           = amd8111_enable,
-	.ops_pci          = &lops_pci,
+	.enable           = amd8111_usb2_enable,
+	// .ops_pci          = &lops_pci,
 };
 
 static struct pci_driver usb2_driver __pci_driver = {

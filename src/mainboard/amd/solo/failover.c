@@ -9,6 +9,7 @@
 #include "southbridge/amd/amd8111/amd8111_enable_rom.c"
 #include "northbridge/amd/amdk8/early_ht.c"
 #include "cpu/x86/lapic/boot_cpu.c"
+#include "cpu/x86/mtrr/earlymtrr.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 
 static unsigned long main(unsigned long bist)
@@ -21,11 +22,11 @@ static unsigned long main(unsigned long bist)
 	nodeid = lapicid() & 0xf;
 
 	/* Is this a cpu only reset? */
-	if (cpu_init_detected(nodeid)) {
+	if (early_mtrr_init_detected()) {
 		if (last_boot_normal()) {
 			goto normal_image;
 		} else {
-			goto cpu_reset;
+			goto fallback_image;
 		}
 	}
 	/* Is this a secondary cpu? */
@@ -60,12 +61,6 @@ static unsigned long main(unsigned long bist)
 	asm volatile ("jmp __normal_image" 
 		: /* outputs */ 
 		: "a" (bist) /* inputs */
-		: /* clobbers */
-		);
- cpu_reset:
-	asm volatile ("jmp __cpu_reset"
-		: /* outputs */ 
-		: "a"(bist) /* inputs */
 		: /* clobbers */
 		);
  fallback_image:

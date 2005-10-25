@@ -13,6 +13,7 @@
 #include "southbridge/nvidia/ck804/ck804_enable_rom.c"
 #include "northbridge/amd/amdk8/early_ht.c"
 #include "cpu/x86/lapic/boot_cpu.c"
+#include "cpu/x86/mtrr/earlymtrr.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 
 #include "superio/smsc/lpc47b397/lpc47b397_early_serial.c"
@@ -59,27 +60,12 @@ static void sio_setup(void)
 
 static unsigned long main(unsigned long bist)
 {
-#if CONFIG_LOGICAL_CPUS==1
-        struct node_core_id id;
-#else
-        unsigned nodeid;
-#endif
-        /* Make cerain my local apic is useable */
-//        enable_lapic();
-
-#if CONFIG_LOGICAL_CPUS==1
-        id = get_node_core_id_x();
         /* Is this a cpu only reset? */
-        if (cpu_init_detected(id.nodeid)) {
-#else
-	nodeid = get_node_id();
-        /* Is this a cpu only reset? */
-        if (cpu_init_detected(nodeid)) {
-#endif
+        if (early_mtrr_init_detected()) {
 		if (last_boot_normal()) {
 			goto normal_image;
 		} else {
-			goto cpu_reset;
+			goto fallback_image;
 		}
 	}
 	
@@ -119,16 +105,6 @@ static unsigned long main(unsigned long bist)
 		: "a" (bist) /* inputs */
 		: /* clobbers */
 		);
- cpu_reset:
-#if 0
-	//CPU reset will reset memtroller ???
-	asm volatile ("jmp __cpu_reset" 
-		: /* outputs */ 
-		: "a"(bist) /* inputs */
-		: /* clobbers */
-		);
-#endif
-
  fallback_image:
 	return bist;
 }

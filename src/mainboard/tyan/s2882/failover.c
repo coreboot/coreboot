@@ -9,6 +9,7 @@
 #include "southbridge/amd/amd8111/amd8111_enable_rom.c"
 #include "northbridge/amd/amdk8/early_ht.c"
 #include "cpu/x86/lapic/boot_cpu.c"
+#include "cpu/x86/mtrr/earlymtrr.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 
 #if CONFIG_LOGICAL_CPUS==1
@@ -18,27 +19,15 @@
                 
 static unsigned long main(unsigned long bist)
 {       
-#if CONFIG_LOGICAL_CPUS==1
-        struct node_core_id id;
-#else   
-        unsigned nodeid;
-#endif          
         /* Make cerain my local apic is useable */
         enable_lapic();
         
-#if CONFIG_LOGICAL_CPUS==1
-        id = get_node_core_id_x();
         /* Is this a cpu only reset? */
-        if (cpu_init_detected(id.nodeid)) {
-#else
-        nodeid = lapicid();
-        /* Is this a cpu only reset? */
-        if (cpu_init_detected(nodeid)) {
-#endif
+        if (early_mtrr_init_detected()) {
 		if (last_boot_normal()) {
 			goto normal_image;
 		} else {
-			goto cpu_reset;
+			goto fallback_image;
 		}
 	}
 	/* Is this a secondary cpu? */
@@ -74,14 +63,6 @@ static unsigned long main(unsigned long bist)
 		: "a" (bist) /* inputs */
 		: /* clobbers */
 		);
- cpu_reset:
-#if 0
-	asm volatile ("jmp __cpu_reset"
-		: /* outputs */ 
-		: "a"(bist) /* inputs */
-		: /* clobbers */
-		);
-#endif
  fallback_image:
 	return bist;
 }

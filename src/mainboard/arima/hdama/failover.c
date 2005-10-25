@@ -25,7 +25,7 @@ static unsigned long main(unsigned long bist)
 		if (last_boot_normal()) {
 			goto normal_image;
 		} else {
-			goto cpu_reset;
+			goto fallback_image;
 		}
 	}
 	/* Is this a secondary cpu? */
@@ -60,12 +60,6 @@ static unsigned long main(unsigned long bist)
 	asm volatile ("jmp __normal_image" 
 		: /* outputs */ 
 		: "a" (bist) /* inputs */
-		: /* clobbers */
-		);
- cpu_reset:
-	asm volatile ("jmp __cpu_reset"
-		: /* outputs */ 
-		: "a"(bist) /* inputs */
 		: /* clobbers */
 		);
  fallback_image:

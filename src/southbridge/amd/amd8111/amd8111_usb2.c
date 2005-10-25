@@ -24,7 +24,7 @@ static struct pci_operations lops_pci = {
 static void amd8111_usb2_enable(device_t dev)
 {
 	// Due to buggy USB2 we force it to disable. 
-	dev->enable = 0;
+	dev->enabled = 0;
 	amd8111_enable(dev);
 	printk_debug("USB2 disabled.\n");
 }

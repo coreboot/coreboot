@@ -136,6 +136,7 @@
 #define	 DCL_DisInRcvrs    (1<<24)
 #define	 DCL_BypMax_SHIFT  25
 #define	 DCL_En2T          (1<<28)
+#define	 DCL_UpperCSMap    (1<<29)
 #define DRAM_CONFIG_HIGH   0x94
 #define	 DCH_ASYNC_LAT_SHIFT  0
 #define	 DCH_ASYNC_LAT_MASK   0xf

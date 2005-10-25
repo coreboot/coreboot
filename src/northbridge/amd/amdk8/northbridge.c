@@ -17,9 +17,9 @@
 #include <cpu/cpu.h>
 
 #include <cpu/x86/lapic.h>
+#include <cpu/amd/dualcore.h>
 
 #if CONFIG_LOGICAL_CPUS==1
-#include <cpu/amd/dualcore.h>
 #include <pc80/mc146818rtc.h>
 #endif
 
@@ -27,10 +27,7 @@
 #include "root_complex/chip.h"
 #include "northbridge.h"
 #include "amdk8.h"
-
-#if K8_E0_MEM_HOLE_SIZEK != 0
-#include "./cpu_rev.c"
-#endif
+#include "cpu_rev.c"
 
 #define FX_DEVS 8
 static device_t __f0_dev[FX_DEVS];
@@ -640,6 +637,41 @@ static uint32_t find_pci_tolm(struct bus *bus)
 	return tolm;
 }
 
+static uint32_t hoist_memory(unsigned long mmio_basek, int i) 
+{
+	int ii;
+	uint32_t carry_over;
+	device_t dev;
+	uint32_t base, limit;
+	uint32_t basek;
+	uint32_t hoist;
+
+	carry_over = (4*1024*1024) - mmio_basek;
+	for(ii=7;ii>i;ii--) {
+
+		base  = f1_read_config32(0x40 + (ii << 3));
+		limit = f1_read_config32(0x44 + (ii << 3));
+		if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
+			continue;
+		}
+		f1_write_config32(0x44 + (ii << 3),limit + (carry_over << 2));
+		f1_write_config32(0x40 + (ii << 3),base + (carry_over << 2));
+	}
+	limit = f1_read_config32(0x44 + (i << 3));
+	f1_write_config32(0x44 + (i << 3),limit + (carry_over << 2));
+	dev = __f1_dev[i];
+	base  = pci_read_config32(dev, 0x40 + (i << 3));
+	basek  = (pci_read_config32(dev, 0x40 + (i << 3)) & 0xffff0000) >> 2;
+	hoist = /* hole start address */
+		((mmio_basek << 10) & 0xff000000) +  
+		/* hole address to memory controller address */	
+		(((basek + carry_over) >> 6) & 0x0000ff00) + 
+		/* enable */
+		1;
+	pci_write_config32(dev, 0xf0, hoist);
+	return carry_over;
+}
+
 static void pci_domain_set_resources(device_t dev)
 {
 	unsigned long mmio_basek;
@@ -648,41 +680,23 @@ static void pci_domain_set_resources(device_t dev)
 
 	pci_tolm = find_pci_tolm(&dev->link[0]);
 
+	/* Work around for NUMA bug in all kernels before 2.6.13.
+	   If pci memory hole is too small, the kernel memory to NUMA 
+	   node mapping will fail to initialize and system will run in
+	   non-NUMA mode.
+	*/
+	if(pci_tolm > 0xf8000000) pci_tolm = 0xf8000000;
+
 #warning "FIXME handle interleaved nodes"
 	mmio_basek = pci_tolm >> 10;
 	/* Round mmio_basek to something the processor can support */
 	mmio_basek &= ~((1 << 6) -1);
 
-#if 1
-#warning "FIXME improve mtrr.c so we don't use up all of the mtrrs with a 64M MMIO hole"
-	/* Round the mmio hold to 64M */
-	mmio_basek &= ~((64*1024) - 1);
-#endif
-
-#if K8_E0_MEM_HOLE_SIZEK != 0
-	if (!is_cpu_pre_e0())
-        for (i = 0; i < 8; i++) {
-                uint32_t base;
-                base  = f1_read_config32(0x40 + (i << 3));
-                if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
-                        continue;
-                }
-		
-		base = pci_read_config32(__f1_dev[i], 0xf0);
-		if((base & 1)==0) continue;
-		base &= 0xff<<24;
-		base >>= 10;
-	        if (mmio_basek > base) {
-        	        mmio_basek = base;
-        	}
-		break; // only one hole	
-	}
-#endif
-
 	idx = 10;
 	for(i = 0; i < 8; i++) {
 		uint32_t base, limit;
 		unsigned basek, limitk, sizek;
+
 		base  = f1_read_config32(0x40 + (i << 3));
 		limit = f1_read_config32(0x44 + (i << 3));
 		if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
@@ -708,6 +722,9 @@ static void pci_domain_set_resources(device_t dev)
 				pre_sizek = mmio_basek - basek;
 				ram_resource(dev, idx++, basek, pre_sizek);
 				sizek -= pre_sizek;
+				if(! is_cpu_pre_e0() ) { 
+				    	sizek += hoist_memory(mmio_basek,i);
+                                }
 				basek = mmio_basek;
 			}
 			if ((basek + sizek) <= 4*1024*1024) {
@@ -767,53 +784,15 @@ static struct device_operations pci_domain_ops = {
 	.ops_pci_bus      = &pci_cf8_conf1,
 };
 
-#define APIC_ID_OFFSET 0x10
-
 static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 {
 	struct bus *cpu_bus;
 	device_t dev_mc;
-	int bsp_apic_id;
-	int apic_id_offset;
 	int i,j;
-	unsigned nb_cfg_54;
-	int enable_apic_ext_id;
-	unsigned siblings;
-#if CONFIG_LOGICAL_CPUS == 1
-	int e0_later_single_core; 
-	int disable_siblings;
-#endif
 
-	nb_cfg_54 = 0;
-	enable_apic_ext_id = 0;
-	siblings = 0;
-
-	/* Find the bootstrap processors apicid */
-	bsp_apic_id = lapicid();
-
-	/* See if I will enable extended ids' */
-	apic_id_offset = bsp_apic_id;
-
-#if CONFIG_LOGICAL_CPUS == 1
-	disable_siblings = !CONFIG_LOGICAL_CPUS;
-	get_option(&disable_siblings, "dual_core");
-
-	// for pre_e0, nb_cfg_54 can not be set, ( even set, when you read it still be 0)
-	// How can I get the nb_cfg_54 of every node' nb_cfg_54 in bsp??? and differ d0 and e0 single core
- 
-	nb_cfg_54 = read_nb_cfg_54();
-#endif
 	dev_mc = dev_find_slot(0, PCI_DEVFN(0x18, 0));
 	if (!dev_mc) {
 		die("0:18.0 not found?");
-	}
-	if (pci_read_config32(dev_mc, 0x68) & (HTTC_APIC_EXT_ID|HTTC_APIC_EXT_BRD_CST))
-	{
-		enable_apic_ext_id = 1;
-		if (apic_id_offset == 0) {
-			/* bsp apic id is not changed */
-			apic_id_offset = APIC_ID_OFFSET;
-		}
 	}
 
 	/* Find which cpus are present */
@@ -834,82 +813,36 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 					PCI_DEVFN(0x18 + i, j));
 			}
 		}
+		
+		/* Build the cpu device path */
+		cpu_path.type = DEVICE_PATH_APIC;
+		cpu_path.u.apic.apic_id = 0x10 + i;
 
-#if CONFIG_LOGICAL_CPUS == 1
-		e0_later_single_core = 0;
-		if ((!disable_siblings) && dev && dev->enabled) {
-			j = (pci_read_config32(dev, 0xe8) >> 12) & 3; // dev is func 3
-			printk_debug("  %s siblings=%d\r\n", dev_path(dev), j);
+		/* See if I can find the cpu */
+		cpu = find_dev_path(cpu_bus, &cpu_path);
 
-			if(nb_cfg_54) {
-				// For e0 single core if nb_cfg_54 is set, apicid will be 0, 2, 4.... 
-				//  ----> you can mixed single core e0 and dual core e0 at any sequence
-				// That is the typical case
-
-		                if(j == 0 ){
-                 		       e0_later_single_core = is_e0_later_in_bsp(i);  // single core 
-		                } else {
-		                       e0_later_single_core = 0;
-               			}
-				if(e0_later_single_core) { 
-					printk_debug("\tFound e0 single core\r\n");
-					j=1; 
-				}
-	
-				if(siblings > j ) {
-					//actually we can't be here, because d0 nb_cfg_54 can not be set
-					//even worse is_e0_later_in_bsp() can not find out if it is d0 or e0
-
-					die("When NB_CFG_54 is set, if you want to mix e0 (single core and dual core) and single core(pre e0) CPUs, you need to put all the single core (pre e0) CPUs before all the (e0 single or dual core) CPUs\r\n");
-				}
-				else {
-					siblings = j;
-				}
-			} else {
-				siblings = j;
-  			}
-		}
-#endif
-#if CONFIG_LOGICAL_CPUS==1
-                for (j = 0; j <= (e0_later_single_core?0:siblings); j++ ) {
-#else 
-              	for (j = 0; j <= siblings; j++ ) {
-#endif
-			/* Build the cpu device path */
-			cpu_path.type = DEVICE_PATH_APIC;
-			cpu_path.u.apic.apic_id = i * (nb_cfg_54?(siblings+1):1) + j * (nb_cfg_54?1:8);
-			
-			/* See if I can find the cpu */
-			cpu = find_dev_path(cpu_bus, &cpu_path);
-			
-			/* Enable the cpu if I have the processor */
-			if (dev && dev->enabled) {
-				if (!cpu) {
-					cpu = alloc_dev(cpu_bus, &cpu_path);
-				}
-				if (cpu) {
-					cpu->enabled = 1;
-				}
+		/* Enable the cpu if I have the processor */
+		if (dev && dev->enabled) {
+			if (!cpu) {
+				cpu = alloc_dev(cpu_bus, &cpu_path);
 			}
-			
-			/* Disable the cpu if I don't have the processor */
-			if (cpu && (!dev || !dev->enabled)) {
-				cpu->enabled = 0;
-			}
-			
-			/* Report what I have done */
 			if (cpu) {
-                                if(enable_apic_ext_id) {
-                                       if(cpu->path.u.apic.apic_id<apic_id_offset) { //all add offset except bsp core0
-                                               if( (cpu->path.u.apic.apic_id > siblings) || (bsp_apic_id!=0) )
-                                                       cpu->path.u.apic.apic_id += apic_id_offset;
-                                       }
-				}
-				printk_debug("CPU: %s %s\n",
-					dev_path(cpu), cpu->enabled?"enabled":"disabled");
+				cpu->enabled = 1;
 			}
-		} //j
+		}
+			
+		/* Disable the cpu if I don't have the processor */
+		if (cpu && (!dev || !dev->enabled)) {
+			cpu->enabled = 0;
+		}
+			
+		/* Report what I have done */
+		if (cpu) {
+			printk_debug("CPU: %s %s\n",
+			dev_path(cpu), cpu->enabled?"enabled":"disabled");
+		}
 	}
+
 	return max;
 }
 

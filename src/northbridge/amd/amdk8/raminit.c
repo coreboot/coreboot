@@ -585,6 +585,16 @@ static void hw_enable_ecc(const struct mem_controller *ctrl)
 	
 }
 
+static void e_step_cpu(const struct mem_controller *ctrl)
+{
+	uint32_t dcl,data32;
+
+	/* set bit 29 (upper cs map) of function 2 offset 0x90 */
+	dcl = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
+	dcl |= DCL_UpperCSMap;
+	pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW, dcl);
+}
+
 static int is_dual_channel(const struct mem_controller *ctrl)
 {
 	uint32_t dcl;
@@ -714,28 +724,14 @@ hw_err:
 	return sz;
 }
 
-static const unsigned cs_map_aa[15] = {
-	/* (row=12, col=8)(14, 12) ---> (0, 0) (2, 4) */
-	0, 1, 3, 6, 0,
-	0, 2, 4, 7, 9,
-	0, 0, 5, 8,10,
-};
-
 static void set_dimm_size(const struct mem_controller *ctrl, struct dimm_size sz, unsigned index)
 {
-	uint32_t base0, base1, map;
+	uint32_t base0, base1;
 	uint32_t dch;
 
 	if (sz.side1 != sz.side2) {
 		sz.side2 = 0;
 	}
-	map = pci_read_config32(ctrl->f2, DRAM_BANK_ADDR_MAP);
-	map &= ~(0xf << (index * 4));
-#if K8_4RANK_DIMM_SUPPORT == 1
-        if(sz.rank == 4) {
-                map &= ~(0xf << ( (index + 2) * 4));
-        }
-#endif
 
 	/* For each base register.
 	 * Place the dimm size in 32 MB quantities in the bits 31 - 21.
@@ -747,22 +743,6 @@ static void set_dimm_size(const struct mem_controller *ctrl, struct dimm_size sz
 
 	/* Make certain side1 of the dimm is at least 32MB */
 	if (sz.side1 >= (25 +3)) {
-		if(is_cpu_pre_d0()) {
-			map |= (sz.side1 - (25 + 3)) << (index *4);
-#if K8_4RANK_DIMM_SUPPORT == 1
-	                if(sz.rank == 4) {
-         	              map |= (sz.side1 - (25 + 3)) << ( (index + 2) * 4);
-               		}
-#endif
-		}
-		else {
-			map |= cs_map_aa[(sz.rows - 12) * 5 + (sz.col - 8) ] << (index*4);
-#if K8_4RANK_DIMM_SUPPORT == 1
-		        if(sz.rank == 4) {
-                	       map |=  cs_map_aa[(sz.rows - 12) * 5 + (sz.col - 8) ] << ( (index + 2) * 4);
-               		}
-#endif
-		}
 		base0 = (1 << ((sz.side1 - (25 + 3)) + 21)) | 1;
 	}
 	
@@ -791,8 +771,6 @@ static void set_dimm_size(const struct mem_controller *ctrl, struct dimm_size sz
 	}
 #endif
 
-	pci_write_config32(ctrl->f2, DRAM_BANK_ADDR_MAP, map);
-	
 	/* Enable the memory clocks for this DIMM */
 	if (base0) {
 		dch = pci_read_config32(ctrl->f2, DRAM_CONFIG_HIGH);
@@ -805,6 +783,52 @@ static void set_dimm_size(const struct mem_controller *ctrl, struct dimm_size sz
 		pci_write_config32(ctrl->f2, DRAM_CONFIG_HIGH, dch);
 	}
 }
+
+
+static void set_dimm_map(const struct mem_controller *ctrl,
+	struct dimm_size sz, unsigned index)
+{
+	static const unsigned cs_map_aa[15] = {
+		/* (row=12, col=8)(14, 12) ---> (0, 0) (2, 4) */
+		0, 1, 3, 6, 0,
+		0, 2, 4, 7, 9,
+		0, 0, 5, 8,10,
+	};
+	uint32_t map;
+	int row,col;
+
+	map = pci_read_config32(ctrl->f2, DRAM_BANK_ADDR_MAP);
+	map &= ~(0xf << (index * 4));
+
+#if K8_4RANK_DIMM_SUPPORT == 1
+        if(sz.rank == 4) {
+                map &= ~(0xf << ( (index + 2) * 4));
+        }
+#endif
+
+	if (is_cpu_pre_d0()) {
+		map |= (sz.side1 - (25 + 3)) << (index *4);
+#if K8_4RANK_DIMM_SUPPORT == 1
+	                if(sz.rank == 4) {
+         	              map |= (sz.side1 - (25 + 3)) << ( (index + 2) * 4);
+               		}
+#endif
+	} else {
+	    	unsigned val;
+		val = cs_map_aa[(sz.rows - 12) * 5 + (sz.col - 8) ]; 
+		if(val == 0) {
+			print_err("Invalid Column or Row count\r\n");
+			val = 7;
+		}
+		map |= val << (index*4);
+#if K8_4RANK_DIMM_SUPPORT == 1
+		if(sz.rank == 4) {
+			map |= val << ( (index + 2) * 4);
+		}
+#endif
+	}
+	pci_write_config32(ctrl->f2, DRAM_BANK_ADDR_MAP, map);
+} 
 
 static long spd_set_ram_size(const struct mem_controller *ctrl, long dimm_mask)
 {
@@ -820,6 +844,7 @@ static long spd_set_ram_size(const struct mem_controller *ctrl, long dimm_mask)
 			return -1; /* Report SPD error */
 		}
 		set_dimm_size(ctrl, sz, i);
+		set_dimm_map(ctrl, sz, i);
 	}
 	return dimm_mask;
 }
@@ -971,7 +996,7 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl)
 		if(is_dual_channel(ctrl)) {
                 /* Also we run out of address mask bits if we try and interleave 8 4GB dimms */
 	                if ((bits == 3) && (common_size == (1 << (32 - 3)))) {
-//     		                print_debug("8 4GB chip selects cannot be interleaved\r\n");
+     		                print_spew("8 4GB chip selects cannot be interleaved\r\n");
 	                        return 0;
                 	}  
 			csbase_inc <<=1;
@@ -981,7 +1006,7 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl)
 		csbase_inc = csbase_low_d0[common_cs_mode];
 		if(is_dual_channel(ctrl)) {
 	                if( (bits==3) && (common_cs_mode > 8)) {
-//        	                print_debug("8 cs_mode>8 chip selects cannot be interleaved\r\n");
+        	                print_spew("8 cs_mode>8 chip selects cannot be interleaved\r\n");
         	                return 0;
 			}
 			csbase_inc <<=1;
@@ -1100,25 +1125,6 @@ unsigned long memory_end_k(const struct mem_controller *ctrl, int max_node_id)
 	return end_k;
 }
 
-#if K8_E0_MEM_HOLE_SIZEK != 0
-#define K8_E0_MEM_HOLE_LIMITK 4*1024*1024
-#define K8_E0_MEM_HOLE_BASEK (K8_E0_MEM_HOLE_LIMITK - K8_E0_MEM_HOLE_SIZEK )
-
-static void set_e0_mem_hole(const struct mem_controller *ctrl, unsigned base_k)
-{
-        /* Route the addresses to the controller node */
-        unsigned val;
-
-	val = pci_read_config32(ctrl->f1,0xf0);
-
-	val &= 0x00ff00fe;
-        val = (K8_E0_MEM_HOLE_BASEK << 10) | ((K8_E0_MEM_HOLE_SIZEK+base_k)>>(16-10)) | 1;
-
-	pci_write_config32(ctrl->f1, 0xf0, val);
-}
-	
-#endif
-
 static void order_dimms(const struct mem_controller *ctrl)
 {
 	unsigned long tom_k, base_k;
@@ -1135,14 +1141,6 @@ static void order_dimms(const struct mem_controller *ctrl)
 	/* Compute the memory base address */
 	base_k = memory_end_k(ctrl, ctrl->node_id);
 	tom_k += base_k;
-#if K8_E0_MEM_HOLE_SIZEK != 0
-	if(!is_cpu_pre_e0()) {
-                /* See if I need to check the range cover hole */
-                if ((base_k <= K8_E0_MEM_HOLE_BASEK) && (tom_k > K8_E0_MEM_HOLE_BASEK)) {
-			tom_k += K8_E0_MEM_HOLE_SIZEK;
-                }
-	}
-#endif
 	route_dram_accesses(ctrl, base_k, tom_k);
 	set_top_mem(tom_k);
 }
@@ -2145,12 +2143,11 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	struct spd_set_memclk_result result;
 	const struct mem_param *param;
 	long dimm_mask;
-#if 1
+
 	if (!controller_present(ctrl)) {
-//		print_debug("No memory controller present\r\n");
+		print_debug("No memory controller present\r\n");
 		return;
 	}
-#endif
 	hw_enable_ecc(ctrl);
 	activate_spd_rom(ctrl);
 	dimm_mask = spd_detect_dimms(ctrl);
@@ -2176,6 +2173,10 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	if (dimm_mask < 0)
 		goto hw_spd_err;
 	order_dimms(ctrl);
+	if( !is_cpu_pre_e0() ) {
+		print_debug("E step CPU\r\n");
+		// e_step_cpu(ctrl);  // Socket 939 only.
+	}
 	return;
  hw_spd_err:
 	/* Unrecoverable error reading SPD data */
@@ -2279,22 +2280,6 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 				dcl = pci_read_config32(ctrl[i].f2, DRAM_CONFIG_LOW);
 			} while(((dcl & DCL_MemClrStatus) == 0) || ((dcl & DCL_DramEnable) == 0) );
 		}
-
-		        // init e0 mem hole here
-#if K8_E0_MEM_HOLE_SIZEK != 0
-        	if (!is_cpu_pre_e0()) {
-                        uint32_t base, limit;
-                        unsigned base_k, limit_k;
-                        base  = pci_read_config32(ctrl->f1, 0x40 + (i << 3));
-                        limit = pci_read_config32(ctrl->f1, 0x44 + (i << 3));
-                        base_k = (base & 0xffff0000) >> 2;
-                        limit_k = ((limit + 0x00010000) & 0xffff0000) >> 2;
-                        if ((base_k <= K8_E0_MEM_HOLE_BASEK) && (limit_k > K8_E0_MEM_HOLE_BASEK)) {
-                                set_e0_mem_hole(ctrl+i, base_k);
-                        }
-                }
-        
-#endif  
 
 		print_debug(" done\r\n");
 	}

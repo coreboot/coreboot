@@ -137,5 +137,6 @@ default _ROMSTART=0xfff03000
 ## linuxBIOS C code runs at this location in RAM
 default _RAMBASE=0x00100000
 
+default CROSS_COMPILE="powerpc-405-linux-gnu-"
 ### End Options.lb
 end

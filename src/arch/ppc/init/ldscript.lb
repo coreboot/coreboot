@@ -1,94 +1,372 @@
-/*
- *	Memory map:
- *
- *	_ROMBASE		: start of ROM
- *	_RESET			: reset vector (may be at top of ROM)
- *	_EXCEPTIONS_VECTORS	: exception table
- *
- *	_ROMSTART 		: linuxbios text 
- *				: payload text
- *
- *	_RAMBASE		: address to copy payload
- */
+/*----------------------------------------------------------------------------+
+| Memory layout.  RAM length is referenced again in __heap_size variable
+| definition.
++----------------------------------------------------------------------------*/
+MEMORY
+{
+  RAM_VECT  (rwx) : ORIGIN = 0x00000000,  LENGTH = 0x00010000
+  RAM       (rwx) : ORIGIN = 0x00010000,  LENGTH = 0x003F0000
+  ROM_INIT  (r x) : ORIGIN = 0xFFF00000,  LENGTH = 0x00002000
+  ROM       (r x) : ORIGIN = 0xFFF02000,  LENGTH = 0x000FE000
+}
 
-/*
- *	Written by Johan Rydberg, based on work by Daniel Kahlin.
- *      Rewritten by Eric Biederman
- *	Re-rewritten by Greg Watson for PPC
- */
-
-/*
- *	We use ELF as output format. So that we can
- *	debug the code in some form. 
- */
-
-OUTPUT_FORMAT("elf32-powerpc")
-ENTRY(_start)
-
-TARGET(binary)
-INPUT(linuxbios_ram.rom)
+/*----------------------------------------------------------------------------+
+| Sections originally taken from default GNU LD script.
++----------------------------------------------------------------------------*/
 SECTIONS
 {
-	/* 
-	 * Absolute location of base of ROM 
-	 */
-	. = _ROMBASE;
 
-	/*
-	 * Absolute location of reset vector. This may actually be at the
-	 * the top of ROM.
-	 */
-	. = _RESET;
-	.reset . : {
-		*(.rom.reset);
-		. = ALIGN(16);
-	}
+   /*-------------------------------------------------------------------------+
+   | Create dummy section.  We need to do this so that the __stext symbol is
+   | set correctly.
+   +-------------------------------------------------------------------------*/
+   .dummyt			:
+   {
+      LONG(0x00000000)
+   } > RAM
 
-	/*
-	 * Absolute location of exception vector table.
-	 */
-	. = _EXCEPTION_VECTORS;
-	.exception_vectors . : {
-		*(.rom.exception_vectors);
-		. = ALIGN(16);
-	}
+   /*-------------------------------------------------------------------------+
+   | Create variable holding the value of the start of the text.
+   +-------------------------------------------------------------------------*/
+   __stext = . - SIZEOF(.dummyt);
 
-	/*
-	 * Absolute location of LinuxBIOS initialization code in ROM.
-	 */
-	. = _ROMSTART;
-	.rom . : {
-		_rom = .;
-		*(.rom.text);
-		*(.text);
-		*(.rom.data);
-		*(.rodata);
-		*(EXCLUDE_FILE(linuxbios_ram.rom) .data);
-		. = ALIGN(16);
-		_erom = .;
-	}
-	_lrom = LOADADDR(.rom);
-	_elrom = LOADADDR(.rom) + SIZEOF(.rom);
-	
-	/*
-	 * Ram is the LinuxBIOS code that runs from RAM.
-	 */
-	.ram . : {
-		_ram = . ;
-		linuxbios_ram.rom(*)
-		_eram = . ;
-	}
+   .hash          		: 
+   {
+      *(.hash)         
+   } > RAM
 
-	/*
-	 * Absolute location of where LinuxBIOS will be relocated in RAM.
-	 */
-	_iseg = _RAMBASE;
-	_eiseg = _iseg + SIZEOF(.ram);
-	_liseg = _ram;
-	_eliseg = _eram;
+   .dynsym        		: 
+   {
+      *(.dynsym)        
+   } > RAM
 
-	/DISCARD/ : {
-		*(.comment)
-		*(.note)
-	}
+   .dynstr        		: 
+   {
+      *(.dynstr)        
+   } > RAM
+
+   .rel.init      		: 
+   {
+      *(.rel.init)      
+   } > RAM
+
+   .rela.init     		: 
+   {
+      *(.rela.init)     
+   } > RAM
+
+   .rel.text      		:
+   {
+      *(.rel.text)
+      *(.rel.text.*)
+      *(.rel.gnu.linkonce.t.*)
+   } > RAM
+
+   .rela.text     		:
+   {
+      *(.rela.text)
+      *(.rela.text.*)
+      *(.rela.gnu.linkonce.t.*)
+   } > RAM
+
+   .rel.rodata    		:
+   {
+      *(.rel.rodata)
+      *(.rel.rodata.*)
+      *(.rel.gnu.linkonce.r.*)
+   } > RAM
+
+   .rela.rodata   		:
+   {
+      *(.rela.rodata)
+      *(.rela.rodata.*)
+      *(.rela.gnu.linkonce.r.*)
+   } > RAM
+
+   .rel.data      		:
+   {
+      *(.rel.data)
+      *(.rel.data.*)
+      *(.rel.gnu.linkonce.d.*)
+   } > RAM
+
+   .rela.data     		:
+   {
+      *(.rela.data)
+      *(.rela.data.*)
+      *(.rela.gnu.linkonce.d.*)
+   } > RAM
+
+   .rel.sdata     		:
+   {
+      *(.rel.sdata)
+      *(.rel.sdata.*)
+      *(.rel.gnu.linkonce.s.*)
+   } > RAM
+
+   .rela.sdata     		:
+   {
+      *(.rela.sdata)
+      *(.rela.sdata.*)
+      *(.rela.gnu.linkonce.s.*)
+   } > RAM
+
+   .rel.sbss      		:
+   {
+      *(.rel.sbss)
+      *(.rel.sbss.*)
+      *(.rel.gnu.linkonce.sb.*)
+   } > RAM
+
+   .rela.sbss     		:
+   {
+      *(.rela.sbss)
+      *(.rela.sbss.*)
+      *(.rel.gnu.linkonce.sb.*)
+   } > RAM
+
+   .rel.sdata2    		:
+   {
+      *(.rel.sdata2)
+      *(.rel.sdata2.*)
+      *(.rel.gnu.linkonce.s2.*)
+   } > RAM
+
+   .rela.sdata2   		:
+   {
+      *(.rela.sdata2)
+      *(.rela.sdata2.*)
+      *(.rela.gnu.linkonce.s2.*)
+   } > RAM
+
+   .rel.sbss2     		:
+   {
+      *(.rel.sbss2)
+      *(.rel.sbss2.*)
+      *(.rel.gnu.linkonce.sb2.*)
+   } > RAM
+
+   .rela.sbss2    		:
+   {
+      *(.rela.sbss2)
+      *(.rela.sbss2.*)
+      *(.rela.gnu.linkonce.sb2.*)
+   } > RAM
+
+   .rel.bss       		:
+   {
+      *(.rel.bss)
+      *(.rel.bss.*)
+      *(.rel.gnu.linkonce.b.*)
+   } > RAM
+
+   .rela.bss      		:
+   {
+      *(.rela.bss)
+      *(.rela.bss.*)
+      *(.rela.gnu.linkonce.b.*)
+   } > RAM
+
+   .rel.plt       		:
+   {
+      *(.rel.plt)               
+   } > RAM
+
+   .rela.plt      		: 
+   {
+      *(.rela.plt)              
+   } > RAM
+
+   /*-------------------------------------------------------------------------+
+   | Keep the .init sections even if they are not referenced.  Fill in the 
+   | space (if any) in the .init serctions with 0.
+   +-------------------------------------------------------------------------*/
+   .text      			:
+   {
+      *(.text)
+      *(.text.*)
+      *(.stub)
+      *(.gnu.warning)
+      *(.gnu.linkonce.t.*)
+   } > RAM = 0
+
+   /*-------------------------------------------------------------------------+
+   | Create variable holding the value of the end of the text.
+   +-------------------------------------------------------------------------*/
+   __etext = .;
+
+   /*-------------------------------------------------------------------------+
+   | Create variable holding the value of the start of the data.
+   +-------------------------------------------------------------------------*/
+   __sdata = .;
+
+   .rodata   			:
+   {
+      *(.rodata)
+      *(.rodata.*)
+      *(.gnu.linkonce.r.*)
+   } > RAM
+
+   .rodata1   			:
+   { 
+      *(.rodata1)
+   } > RAM
+
+   .sdata2   			:
+   {
+      *(.sdata2) 
+      *(.sdata2.*) 
+      *(.gnu.linkonce.s2.*)
+   } > RAM
+   
+   .sbss2   			:
+   {
+      *(.sbss2)
+      *(.sbss2.*)
+      *(.gnu.linkonce.sb2.*)
+   } > RAM
+
+   /*-------------------------------------------------------------------------+
+   | Align data to word boundary.
+   +-------------------------------------------------------------------------*/
+   . = ALIGN(4);
+
+   .data    			:
+   {
+      *(.data)
+      *(.data.*)
+      *(.gnu.linkonce.d.*)
+   } > RAM
+
+   .toc				:
+   {
+      *(.toc)
+      *(.toc.*)
+   } > RAM
+
+   .opd				:
+   {
+      *(.opd)
+      *(.opd.*)
+   } > RAM
+
+   .data1   			:
+   {
+      *(.data1)
+   } > RAM
+
+   .eh_frame 			:
+   {
+      KEEP(*(.eh_frame))
+   } > RAM
+
+   .fixup        		:
+   {
+      *(.fixup)
+   } > RAM
+
+   .dynamic       		:
+   {
+      *(.dynamic)
+   } > RAM
+
+   /*-------------------------------------------------------------------------+
+   | We want the small data sections together, so single-instruction offsets
+   | can access them all, and initialized data all before uninitialized, so
+   | we can shorten the on-disk segment size. 
+   +-------------------------------------------------------------------------*/
+   .sdata     			:
+   {
+      *(.sdata)
+      *(.sdata.*)
+      *(.gnu.linkonce.s.*)
+   } > RAM
+
+   /*-------------------------------------------------------------------------+
+   | Create variable holding the value of the end of the data.
+   +-------------------------------------------------------------------------*/
+   __edata = .;
+ 
+   /*-------------------------------------------------------------------------+
+   | Create variable holding the value of the start of the bss.
+   +-------------------------------------------------------------------------*/
+   __sbss = .;
+
+   .sbss      			:
+   {
+      *(.dynsbss)
+      *(.sbss)
+      *(.sbss.*)
+      *(.gnu.linkonce.sb.*)
+      *(.scommon)
+   } > RAM
+
+   .plt      			:
+   {
+      *(.plt)
+   } > RAM
+
+   /*-------------------------------------------------------------------------+
+   | Common symbols are placed in the BSS section.
+   +-------------------------------------------------------------------------*/
+   .bss       			:
+   {
+      *(.dynbss)
+      *(.bss)
+      *(.bss.*)
+      *(.gnu.linkonce.b.*)
+      *(COMMON)
+   } > RAM
+
+   /*-------------------------------------------------------------------------+
+   | Align so that the bss size and __ebss are word aligned.
+   +-------------------------------------------------------------------------*/
+   . = ALIGN(4);
+
+   /*-------------------------------------------------------------------------+
+   | Create variable holding the value of the end of the bss.
+   +-------------------------------------------------------------------------*/
+   __ebss = .;
+
+   /*-------------------------------------------------------------------------+
+   | Create variables describing the heap.  The value "0x3F0000" must be
+   | equal to RAM length.
+   +-------------------------------------------------------------------------*/
+   __heap_start = .;
+   __heap_size = 0x3F0000 + ADDR(.dummyt) - .;
+
+   /*-------------------------------------------------------------------------+
+   | Stabs.  Symbols in the following sections are relative to the beginning
+   | of the section so we begin them at 0.
+   +-------------------------------------------------------------------------*/
+   .stab 0 			:
+   {
+      *(.stab)
+   }
+
+   .stabstr 0 			: 
+   {
+      *(.stabstr)
+   }
+
+   .stab.excl 0 		: 
+   {
+      *(.stab.excl)
+   }
+
+   .stab.exclstr 0 		: 
+   { 
+      *(.stab.exclstr)
+   }
+
+   .stab.index 0 		: 
+   { 
+      *(.stab.index)
+   }
+
+   .stab.indexstr 0 		: 
+   { 
+      *(.stab.indexstr)
+   }
+
 }

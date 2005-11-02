@@ -1,36 +1,7 @@
-/*bsp_970fx/bootlib/init_core.s, pibs_970, pibs_970_1.0 1/14/05 14:58:41*/
-/*----------------------------------------------------------------------------+
-|       COPYRIGHT   I B M   CORPORATION 2002, 2004
-|       LICENSED MATERIAL  -  PROGRAM PROPERTY OF I B M
-|	US Government Users Restricted Rights - Use, duplication or
-|       disclosure restricted by GSA ADP Schedule Contract with
-|	IBM Corp.
-+----------------------------------------------------------------------------*/
-/*----------------------------------------------------------------------------+
-| PPC970FX BSP for EPOS
-| Author: Maciej P. Tyrlik
-| Component: Boot library.
-| File: init_core.s
-| Purpose: Basic PPC405 core initialization.
-| Changes:
-| Date:         Comment:
-| -----         --------
-| 29-Jan-02     Created                                                     MPT
-| 30-Jan-02     Completed                                                   MPT
-| 19-Apr-02     Changed some instructions to macros so that new GCC AS worksMPT
-| 23-Apr-02     Removed critical interrupt enabling after rfi               MPT
-| 31-Jul-02     Fixed data cache invalidate code                            MPT
-| 01-Feb-03     Ported to Argan 7XXFX                                       CRB
-| 07-Aug-03     Ported to PPC7XXGX                                          CRB
-| 12-Sep-03     Removed PVR definitions, now in board include file          MCG
-| 16-Sep-03     Do not enable HID0[MUM] or L2CR[L2CE] if 7XXGX DD1.0        MCG
-| 31-Oct-03     Enable cache for MV64460 integrated SRAM                    MCG
-| 07-Jan-04     Initialize FPRs to avoid errata.                            MCG
-| 10-Feb-04     Port to PPC970FX					    MPT
-+----------------------------------------------------------------------------*/
 
 #include <ppc970.h>
 
+/******** init_core.s ***************/
 /*----------------------------------------------------------------------------+
 | Local defines.
 +----------------------------------------------------------------------------*/
@@ -42,6 +13,7 @@
 | Init_core.  Assumption: hypervisor on, 64-bit on, HID1[10]=0, HID4[23]=0.
 | Data cahability must be turned on.  Instruction cahability must be off.
 +----------------------------------------------------------------------------*/
+function_prolog(init_core)
         /*--------------------------------------------------------------------+
         | Set time base to 0.
         +--------------------------------------------------------------------*/
@@ -94,22 +66,22 @@
 	LOAD_64BIT_VAL(r6,INITIAL_SLB_VSID_VAL)
 	LOAD_64BIT_VAL(r7,INITIAL_SLB_ESID_VAL)
 	addis	r8,r0,0x1000
-0:	slbmte	r6,r7
+..slbl: slbmte	r6,r7
 	addi	r6,r6,0x1000
 	add  	r7,r7,r8
 	addi	r7,r7,0x0001
-	bdnz	0b
+	bdnz	..slbl
 	mtctr	r5
 	LOAD_64BIT_VAL(r6,INITIAL_SLB_INVA_VAL)
-1:	slbie	r6
+..slbi: slbie	r6
 	add  	r6,r6,r8
-	bdnz	1b
+	bdnz	..slbi
         /*--------------------------------------------------------------------+
         | Load SLB.  Following is the initial memory map.
 	| Entry(6) ESID(36)    VSID
 	| 0x0	   0x000000000 0x0000000000000 (large page cachable)
 	| 0x1      0x00000000F 0x000000000000F (small non-cachable, G)
-	| at 0x00000000 there will be 48MB mapped (SDRAM)
+	| at 0x00000000 there will be 32MB mapped (SDRAM)
 	| at 0xF8000000 there will be 16MB mapped (NB)
 	| at 0xF4000000 there will be 64KB mapped (I/O space)
         | at 0xFF000000 there will be 16MB or 1MB mapped (FLASH)
@@ -126,11 +98,11 @@
         | Invalidate all 1024 instruction and data TLBs (4 way)
         +--------------------------------------------------------------------*/
         addi    r8,r0,0x0100
-        mtspr   CTR,r8
+        mtspr   ctr,r8
         addi    r8,r0,0x0000
-2:	TLBIEL(r8)
+..ivt:  TLBIEL(r8)
         addi    r8,r8,0x1000
-        bdnz   2b
+        bdnz    ..ivt
         ptesync
         /*--------------------------------------------------------------------+
         | Dcbz the page table space.   Calculate SDR1 address.  Store SDR1
@@ -138,13 +110,13 @@
         +--------------------------------------------------------------------*/
 	mfspr	r3,SPR_PIR
 	cmpi	cr0,1,r3,0x0000
-	bne	3f
+	bne	..cpu1_init_core
         addis   r3,r0,INITIAL_PAGE_TABLE_ADDR_CPU0@h
         ori     r3,r3,INITIAL_PAGE_TABLE_ADDR_CPU0@l
-	b	4f
-3:	addis   r3,r0,INITIAL_PAGE_TABLE_ADDR_CPU1@h
+	b	..skcpu
+..cpu1_init_core: addis   r3,r0,INITIAL_PAGE_TABLE_ADDR_CPU1@h
         ori     r3,r3,INITIAL_PAGE_TABLE_ADDR_CPU1@l
-4:	addis   r4,r0,INITIAL_PAGE_TABLE_SIZE@h
+..skcpu:addis   r4,r0,INITIAL_PAGE_TABLE_SIZE@h
         ori     r4,r4,INITIAL_PAGE_TABLE_SIZE@l
 	rlwinm	r5,r4,14,14,31 
 	cntlzw	r5,r5
@@ -158,7 +130,7 @@
 	rldicl	r29,r29,32,31
 	addi	r29,r29,-1
         /*--------------------------------------------------------------------+
-        | Setup 48MB of addresses in DRAM in page table (3 large PTE).  The 
+        | Setup 32MB of addresses in DRAM in page table (2 large PTE).  The 
         | parameters to p_ptegg are: r3 = lp, r4 = ea, r5 = sdr1, r6 = vsid.
         +--------------------------------------------------------------------*/
 	addi	r3,r0,0x0001
@@ -171,7 +143,7 @@
 	addi	r4,r0,0x0180
 	stw	r4,0x000C(r3)
         /*--------------------------------------------------------------------+
-        | Second 16MB is mapped here.
+        | Second 32MB is mapped here.
         +--------------------------------------------------------------------*/
 	addi	r3,r0,0x0001
 	addis	r4,r0,0x0100
@@ -184,45 +156,32 @@
 	ori     r4,r4,0x0180
 	stw	r4,0x000C(r3)
         /*--------------------------------------------------------------------+
-        | Third 16MB is mapped here.
-        +--------------------------------------------------------------------*/
-	addi	r3,r0,0x0001
-	addis	r4,r0,0x0200
-        ori     r5,r30,0x0000
-	addi	r6,r0,0x0000
-	bl	.p_ptegg
-	addi	r4,r0,0x0201
-	stw	r4,0x0004(r3)
-	addis	r4,r0,0x0200
-	ori     r4,r4,0x0180
-	stw	r4,0x000C(r3)
-        /*--------------------------------------------------------------------+
         | Setup 64KB of addresses in I/O space (0xF4000000).
         +--------------------------------------------------------------------*/
 	addi	r3,r0,0x0010
 	mtctr	r3
 	addis	r31,r0,0xF400
 	and	r31,r31,r29
-5:	addi	r3,r0,0x0000
+..aF4:	addi	r3,r0,0x0000
 	ori	r4,r31,0x0000
 	ori	r5,r30,0x0000
 	addi	r6,r0,0x000F
 	bl	.p_ptegg
 	addi	r6,r3,0x0080
-6:	lwz	r4,0x0004(r3)
+..aF4a:	lwz	r4,0x0004(r3)
 	cmpli	cr0,1,r4,0x0000
-	beq	8f
+	beq	..aF4s
 	addi	r3,r3,0x0010
 	cmp	cr0,1,r3,r6
-	blt	6b
-7:	b	7b
-8:	rlwinm  r4,r31,16,4,24
+	blt	..aF4a
+..aF4h:	b	..aF4h
+..aF4s: rlwinm  r4,r31,16,4,24
 	ori	r4,r4,0x0001
 	stw	r4,0x0004(r3)
 	ori	r4,r31,0x01AC
 	stw	r4,0x000C(r3)
 	addi	r31,r31,0x1000
-	bdnz	5b
+	bdnz	..aF4
         /*--------------------------------------------------------------------+
         | Setup 16MB of addresses in NB register space (0xF8000000).
         +--------------------------------------------------------------------*/
@@ -230,61 +189,61 @@
 	mtctr	r3
 	addis	r31,r0,0xF800
 	and	r31,r31,r29
-9:	addi	r3,r0,0x0000
+..aF8:	addi	r3,r0,0x0000
 	ori	r4,r31,0x0000
 	ori	r5,r30,0x0000
 	addi	r6,r0,0x000F
 	bl	.p_ptegg
 	addi	r6,r3,0x0080
-10:	lwz	r4,0x0004(r3)
+..aF8a:	lwz	r4,0x0004(r3)
 	cmpli	cr0,1,r4,0x0000
-	beq	12f
+	beq	..aF8s
 	addi	r3,r3,0x0010
 	cmp	cr0,1,r3,r6
-	blt	10b
-11:	b	11b
-12:	rlwinm	r4,r31,16,4,24
+	blt	..aF8a
+..aF8h:	b	..aF8h
+..aF8s: rlwinm	r4,r31,16,4,24
 	ori	r4,r4,0x0001
 	stw	r4,0x0004(r3)
 	ori	r4,r31,0x01AC
 	stw	r4,0x000C(r3)
 	addi	r31,r31,0x1000
-	bdnz	9b
+	bdnz	..aF8
         /*--------------------------------------------------------------------+
         | Setup 16MB or 1MB of addresses in ROM (at 0xFF000000 or 0xFFF00000).
         +--------------------------------------------------------------------*/
 	mfspr	r3,SPR_HIOR
 	LOAD_64BIT_VAL(r4,BOOT_BASE_AS)
 	cmpd	cr0,r3,r4
-	beq	13f
+	beq	..big
 	addi	r3,r0,0x0100
 	mtctr	r3
 	addis	r31,r0,0xFFF0
-	b	14f
-13:	addi	r3,r0,0x1000
+	b	..done
+..big:  addi	r3,r0,0x1000
 	mtctr	r3
 	addis	r31,r0,0xFF00
-14:	and	r31,r31,r29
-15:	addi	r3,r0,0x0000
+..done:	and	r31,r31,r29
+..aFF:	addi	r3,r0,0x0000
 	ori	r4,r31,0x0000
 	ori	r5,r30,0x0000
 	addi	r6,r0,0x000F
 	bl	.p_ptegg
 	addi	r6,r3,0x0080
-16:	lwz	r4,0x0004(r3)
+..aFFa:	lwz	r4,0x0004(r3)
 	cmpli	cr0,1,r4,0x0000
-	beq	18f
+	beq	..aFFs
 	addi	r3,r3,0x0010
 	cmp	cr0,1,r3,r6
-	blt	16b
-17:	b	17b
-18:	rlwinm	r4,r31,16,4,24
+	blt	..aFFa
+..aFFh:	b	..aFFh
+..aFFs: rlwinm	r4,r31,16,4,24
 	ori	r4,r4,0x0001
 	stw	r4,0x0004(r3)
 	ori	r4,r31,0x01A3
 	stw	r4,0x000C(r3)
 	addi	r31,r31,0x1000
-	bdnz	15b
+	bdnz	..aFF
         /*--------------------------------------------------------------------+
         | Synchronize after setting up page table.
         +--------------------------------------------------------------------*/
@@ -321,16 +280,16 @@
 	LOAD_64BIT_VAL(r7,FLASH_BASE_INTEL_AS)
 	mfspr	r5,SPR_HIOR
 	cmpdi	cr0,r5,0x0000
-	beq	19f
+	beq	..hior0
 	cmpd	cr0,r5,r7
-	beq	20f
+	beq	..hiorl
 	addi	r8,r0,0x0000	
-	b	21f
-20: 	ori	r8,r6,0x0000
-	b	21f
-19:	mfspr	r5,SPR_HID0
+	b	..hiors
+..hiorl:ori	r8,r6,0x0000
+	b	..hiors
+..hior0:mfspr	r5,SPR_HID0
 	and 	r8,r5,r6
-21:	LOAD_64BIT_VAL(r4,HID0_PREFEAR)
+..hiors:LOAD_64BIT_VAL(r4,HID0_PREFEAR)
        	andc	r4,r4,r6
 	or	r4,r4,r8 
 	sync
@@ -363,3 +322,234 @@
         eieio
         mtspr   SPR_SRR0,r0
         rfid
+        function_epilog(init_core)
+
+
+/******** init_chip.s ***************/
+/*----------------------------------------------------------------------------+
+| Local defines.
++----------------------------------------------------------------------------*/
+#define CPU1_DELAY			0x00010000
+
+/*----------------------------------------------------------------------------+
+| Init_chip.
++----------------------------------------------------------------------------*/
+        function_prolog(init_chip)
+        /*--------------------------------------------------------------------+
+	| Skip if CPU1.
+        +--------------------------------------------------------------------*/
+	mfspr	r3,SPR_PIR
+	cmpi	cr0,1,r3,0x0000
+	bne	..cpu1
+        /*--------------------------------------------------------------------+
+        | Initialize the stack in the data cache for the "C" code that gets
+        | called.
+        +--------------------------------------------------------------------*/
+        addis   r3,r0,BOOT_STACK_ADDR@h
+        ori     r3,r3,BOOT_STACK_ADDR@l
+        addis   r4,r0,BOOT_STACK_SIZE@h
+        ori     r4,r4,BOOT_STACK_SIZE@l
+        add     r1,r3,r4
+        bl      .ppcDcbz_area
+        addi    r1,r1,-stack_frame_min
+        addi    r5,r0,0x0000
+        std     r5,stack_frame_bc(r1)
+        /*--------------------------------------------------------------------+
+        | Load TOC.  Can't use ld since the TOC value might not be aligned on
+	| double word boundary.
+        +--------------------------------------------------------------------*/
+	bl	..ot_init_chip
+	.quad 	.TOC.@tocbase
+..ot_init_chip:	mflr	r3
+	lwz	r2,0x0000(r3)
+	lwz	r3,0x0004(r3)
+	rldicr	r2,r2,32,31
+	or	r2,r2,r3
+	mfspr	r3,SPR_HIOR
+	or	r2,r2,r3
+        /*--------------------------------------------------------------------+
+        | Code for chip initialization code goes here.  Subtractive decoding
+        | allows access to specified registers.
+        +--------------------------------------------------------------------*/
+	bl	.super_io_setup
+        /*--------------------------------------------------------------------+
+        | Setup default serial port using default baud rate.
+        +--------------------------------------------------------------------*/
+//	bl	.sinit_default_no_global
+        /*--------------------------------------------------------------------+
+        | Enable SDRAM only if running from FLASH.
+        +--------------------------------------------------------------------*/
+       	mflr	r3
+	LOAD_64BIT_VAL(r4,BOOT_BASE_AS)
+	cmpld	cr0,r3,r4
+	blt	..skip
+	bl	memory_init
+        /*--------------------------------------------------------------------+
+        | Check the memory where PIBS data section will be placed.
+        +--------------------------------------------------------------------*/
+..skip: bl      ..skip_data
+        .string "\nMemory check failed at 0x%x, expected 0x%x, actual 0x%x"
+	.align	2
+..skip_data:
+        addis   r3,r0,MEM_CHK_START_ADDR@h
+        ori     r3,r3,MEM_CHK_START_ADDR@l
+        addis   r4,r0,MEM_CHK_SIZE@h
+        ori     r4,r4,MEM_CHK_SIZE@l
+        mflr    r5
+//        bl      mem_check
+        /*--------------------------------------------------------------------+
+        | Initialize RAM area that holds boot information for CPU1.
+        +--------------------------------------------------------------------*/
+	LOAD_64BIT_VAL(r31,CPU1_DATA_STRUCT_ADDR)
+	addi	r3,r0,0x0000
+	std	r3,CPU1_DATA_STRUCT_VALID_OFF(r31)
+        /*--------------------------------------------------------------------+
+        | DCBZ area stack is left in the cache since there is no way to 
+        | invalidate data cache.  This area will be written to memory at some
+ 	| point.  Main memory should be functional at this point.
+        +--------------------------------------------------------------------*/
+        b       .init_data
+        /*--------------------------------------------------------------------+
+	| CPU1 will spin waiting for the CPU0 to initialize the system.  CPU1
+        | then will check if the image for CPU1 has been loaded.  If the image
+        | for CPU1 has been loaded CPU1 will jump to that image.  If the image
+        | for CPU1 has not been loaded CPU1 will spin waiting for the image to
+        | be loaded.
+        +--------------------------------------------------------------------*/
+..cpu1:	LOAD_64BIT_VAL(r31,NB_HW_INIT_STATE_ASM)
+	lwz	r30,0x0000(r31)			
+	cmpi	cr0,1,r30,0x0000
+	beq	..cpu1
+        /*--------------------------------------------------------------------+
+        | Jump to SDRAM (cachable storage) and wait there.
+        +--------------------------------------------------------------------*/
+	sync
+	ba	..loada
+        /*--------------------------------------------------------------------+
+        | Wait for image valid indicator.
+        +--------------------------------------------------------------------*/
+..loada:LOAD_64BIT_VAL(r31,CPU1_DATA_STRUCT_ADDR)
+        ld 	r3,CPU1_DATA_STRUCT_VALID_OFF(r31)
+	cmpi	cr0,1,r3,0x0000
+	beq	..spin2
+	ld 	r3,CPU1_DATA_STRUCT_SRR0_OFF(r31)
+	mtspr	SPR_SRR0,r3
+	ld 	r4,CPU1_DATA_STRUCT_SRR1_OFF(r31)
+	mtspr	SPR_SRR1,r4
+	ld 	r3,CPU1_DATA_STRUCT_R3_OFF(r31)
+	isync
+	rfid
+..spin2:mfspr	r29,tblr
+	LOAD_64BIT_VAL(r31,CPU1_DELAY)
+..spin3:mfspr	r30,tblr
+       	subf	r30,r29,r30
+	cmp 	cr0,1,r30,r31
+	blt	..spin3
+	b	..loada
+        function_epilog(init_chip)
+
+
+/******** init_data.s ***************/
+/*----------------------------------------------------------------------------+
+| Init_data.
++----------------------------------------------------------------------------*/
+        function_prolog(init_data)
+	/*--------------------------------------------------------------------+
+        | Check if we are running from FLASH.  If running from FLASH copy 1M
+        | of FLASH to SDRAM.
+        +--------------------------------------------------------------------*/
+	bl	..next
+..next:	mflr	r3
+	LOAD_64BIT_VAL(r4,BOOT_BASE_AS)
+	cmpld	cr0,r3,r4
+	blt	..sk_c
+        /*--------------------------------------------------------------------+
+        | Perform the copy operation.  This copies data starting from SPR_HIOR
+	| for number of bytes queal to __edata -  __stext.
+        +--------------------------------------------------------------------*/
+	LOAD_64BIT_VAL(r6,__stext)
+	addi	r3,r6,-8
+	mfspr	r4,SPR_HIOR
+	addi 	r4,r4,-8
+	LOAD_64BIT_VAL(r5,__edata);
+	sub	r5,r5,r6
+	rlwinm	r5,r5,29,3,31
+	addi	r5,r5,0x0001
+	mtctr	r5
+..again1:ldu	r6,0x0008(r4)
+	stdu	r6,0x0008(r3)
+	bdnz	..again1
+        /*--------------------------------------------------------------------+
+        | Get the size of BSS into r6.
+        +--------------------------------------------------------------------*/ 
+..sk_c:	LOAD_64BIT_VAL(r4,__sbss)
+        LOAD_64BIT_VAL(r5,__ebss)
+        sub     r6,r5,r4
+        /*--------------------------------------------------------------------+
+        | Clear BSS.
+        +--------------------------------------------------------------------*/
+        addi    r8,r4,-1
+        mtspr   ctr,r6
+        addi    r9,r0,0x0000
+..bag:  stbu    r9,0x0001(r8)
+        bdnz    ..bag
+        /*--------------------------------------------------------------------+
+        | Synchronize.
+        +--------------------------------------------------------------------*/
+	sync
+        ba      .init_cenv
+        function_epilog(init_data)
+
+
+/******** init_cenv.s ***************/
+/*----------------------------------------------------------------------------+
+| TOC entry for __initial_stack.
++----------------------------------------------------------------------------*/
+TOC_ENTRY(.LC0,__initial_stack)
+
+/*----------------------------------------------------------------------------+
+| Initial stack.
++----------------------------------------------------------------------------*/
+        data_prolog(__initial_stack)
+        .space  MY_MAIN_STACK_SIZE
+        data_epilog(__initial_stack)
+
+/*----------------------------------------------------------------------------+
+| Init_cenv.
++----------------------------------------------------------------------------*/
+        function_prolog(init_cenv)
+        /*--------------------------------------------------------------------+
+        | Load TOC.  Can't use ld since the TOC value might not be aligned on
+	| double word boundary.  R2 is loaded for the first time here when 
+        | loaded by PIBS (second time when originally running from FLASH). 
+        +--------------------------------------------------------------------*/
+	bl	..ot
+	.quad 	.TOC.@tocbase
+..ot:	mflr	r3
+	lwz	r2,0x0000(r3)
+	lwz	r3,0x0004(r3)
+	rldicr	r2,r2,32,31
+	or	r2,r2,r3
+        /*--------------------------------------------------------------------+
+        | Get the address and size of the stack.
+        +--------------------------------------------------------------------*/
+	GETSYMADDR(r3,__initial_stack,.LC0)
+        addis   r4,r0,MY_MAIN_STACK_SIZE@h
+        ori     r4,r4,MY_MAIN_STACK_SIZE@l
+        /*--------------------------------------------------------------------+
+        | Setup the stack, stack bust be quadword (128-bit) aligned.
+        +--------------------------------------------------------------------*/
+        add     r1,r3,r4
+        addi    r1,r1,-stack_frame_min
+	rldicr	r1,r1,0,59
+        addi    r5,r0,0x0000
+        std     r5,stack_frame_bc(r1)
+        std     r5,stack_frame_lr(r1)
+        /*--------------------------------------------------------------------+
+        | Call the "C" function.
+        +--------------------------------------------------------------------*/
+//        b       .my_main
+        b       .ppc_main
+..spin: b       ..spin
+        function_epilog(init_cenv)
+

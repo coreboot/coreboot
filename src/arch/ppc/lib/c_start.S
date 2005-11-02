@@ -7,6 +7,7 @@
  * configuring the machine.
  */
 
+#ifndef __PPC64__
 #define ASM
 #include "ppcreg.h"
 #include <ppc_asm.tmpl>
@@ -109,3 +110,5 @@ __DTOR_LIST__:
 .globl __DTOR_END__
 __DTOR_END__:
         blr
+
+#endif

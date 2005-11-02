@@ -5,60 +5,61 @@
 ##
 ## Early board initialization, called from ppc_main()
 ##
-#initobject init.c
+initobject init.c
+initobject mainboard.c
+initobject boardutil.c
+initobject timerspeed.S
 
 arch ppc end
 
 chip northbridge/ibm/cpc925
 	device pci_domain 0 on 
-		device pci 00.0 on end
-		device pci 00.1 on end
-		device pci 01.0 on end
-		device pci 02.0 on 
-			chip southbridge/intel/pxhd # pxhd1
-				device pci 00.0 on end
-				device pci 00.1 on end
-				device pci 00.2 on
-					chip drivers/generic/generic
-						device pci 04.0 on end
-						device pci 04.1 on end
-					end
+		chip southbridge/amd/amd8131
+			device pci 01.0 on #PCI-X Bridge
+				chip drivers/pci/onboard #intel GD31244 chip
+					device pci 01.0 on end #SATA controller
 				end
-				device pci 00.3 on end
 			end
-		end
-		device pci 06.0 on end
-		chip southbridge/intel/ich5r # ich5r
-			device pci 1d.0 on end
-			device pci 1d.1 on end
-			device pci 1d.2 on end
-			device pci 1d.3 off end
-			device pci 1d.7 on end
-			device pci 1e.0 on
+			device pci 01.1 on end #APIC controller
+			device pci 02.0 on end #PCI-X Bridge
+			device pci 02.1 on end #APIC controller
+			device pci 03.0 on #PCI-X Bridge
+				chip drivers/pci/onboard #intel i82546EB chip
+					device pci 01.0 on end #GB Ethernet 0
+					device pci 01.1 on end #GB Ethernet 1
+				end
+			end
+			device pci 03.1 on end #APIC controller
+			device pci 04.0 on end #PCI-X Bridge
+			device pci 04.1 on end #APIC controller
+		end #amd8131
+
+		chip southbridge/amd/amd8111
+			device pci 5.0 on #PCI Bridge
+				device pci 0.0 on end #USB Controller 0
+				device pci 0.1 on end #USB Controller 1
+				device pci 0.2 on end #USB Controller 2
+				device pci 1.0 on end #10/100 Ethernet Controller
 				chip drivers/ati/ragexl
-					device pci 0c.0 on end
+					device pci 3.0 on end # ATI Rage Video Controller
 				end
 			end
-			device pci 1f.0 on 
-				chip superio/NSC/pc87427
+			device pci 6.0 on #ISA Bridge/LPC Controller
+				chip superio/NSC/pc87427 #NSC Super IO chip
 					device pnp 2e.0 off end
 					device pnp 2e.2 on
-#						 io 0x60 = 0x2f8
-#						irq 0x70 = 3
-						 io 0x60 = 0x3f8
+						io 0x60 = 0x3f8
 						irq 0x70 = 4
 					end
 					device pnp 2e.3 on
-#						 io 0x60 = 0x3f8
-#						irq 0x70 = 4
-						 io 0x60 = 0x2f8
+						io 0x60 = 0x2f8
 						irq 0x70 = 3
 					end
 					device pnp 2e.4 off end
 					device pnp 2e.5 off end
 					device pnp 2e.6 on
-						 io 0x60 = 0x60
-						 io 0x62 = 0x64
+						io 0x60 = 0x60
+						io 0x62 = 0x64
 						irq 0x70 = 1
 					end
 					device pnp 2e.7 off end
@@ -67,36 +68,18 @@ chip northbridge/ibm/cpc925
 					device pnp 2e.f on end
 					device pnp 2e.10 off end
 					device pnp 2e.14 off end
-				end
-			end
-			device pci 1f.1 on end
-			device pci 1f.2 off end
-			device pci 1f.3 on end 
-			device pci 1f.5 off end
-			device pci 1f.6 off end
-			register "gpio[40]" = "ICH5R_GPIO_USE_AS_GPIO"
-			register "gpio[48]" = "ICH5R_GPIO_USE_AS_GPIO | ICH5R_GPIO_SEL_OUTPUT | ICH5R_GPIO_LVL_LOW"
-			register "gpio[41]" = "ICH5R_GPIO_USE_AS_GPIO | ICH5R_GPIO_SEL_INPUT"
-		end
-	end
-	device apic_cluster 0 on
-		chip cpu/ppc/ppc970 # cpu 0
-		end
-		chip cpu/ppc/ppc970 # cpu 1
-		end
-	end
-end
+				end #NSC Super IO chip
+			end #ISA Bridge/LPC
+			device pci 6.1 on end #IDE Controller
+			device pci 6.2 on end #SMBus Controller
+			device pci 6.3 on end #ACPI
+			device pci 6.5 off end #AC97 Audio
+			device pci 6.6 off end #MC97 Modem
+		end #amd8111
+	end #pci domain 0
+end #cpc925
 
-
-chip cpu/ppc/ppc4xx 
-	device pci_domain 0 on
-		device pci 0.0 on end
-		chip southbridge/winbond/w83c553 
-			device pci 9.0 on end # ISA bridge
-			device pci 9.1 on end # IDE contoller
-		end
-		device pci e.0 on end
-	end
+chip cpu/ppc/ppc970 
 end
 	
 ##

@@ -28,13 +28,8 @@
 /*
  * unsigned long long _get_ticks(void);
  */
-#ifndef __PPC64__
 	.globl	_get_ticks
 _get_ticks:
-#else
-	.globl	._get_ticks
-._get_ticks:
-#endif
 1:	mftbu	r3
 	mftb    r4
 	mftbu	r5
@@ -45,30 +40,17 @@ _get_ticks:
 /*
  * Delay for a number of ticks
  */
-#ifndef __PPC64__
         .globl  _wait_ticks
 _wait_ticks:
-#else
-        .globl  ._wait_ticks
-._wait_ticks:
-#endif
         mflr    r8              /* save link register */
         mr      r7, r3          /* save tick count */
-#ifndef __PPC64__
         bl      _get_ticks       /* Get start time */
-#else
-        bl      ._get_ticks       /* Get start time */
-#endif
 
         /* Calculate end time */
         addc    r7, r4, r7      /* Compute end time lower */
         addze   r6, r3          /*     and end time upper */
 
-#ifndef __PPC64__
 1:      bl      _get_ticks       /* Get current time */
-#else
-1:      bl      ._get_ticks       /* Get current time */
-#endif
         subfc   r4, r4, r7      /* Subtract current time from end time */
         subfe.  r3, r3, r6
         bge     1b              /* Loop until time expired */

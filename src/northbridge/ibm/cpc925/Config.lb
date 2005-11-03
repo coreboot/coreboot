@@ -6,9 +6,7 @@ config chip.h
 
 initobject cpc925.o
 initobject cpc925_pci.o
-initobject cpc925_sdram.o
 
 object cpc925.o
 object cpc925_pci.o
-object cpc925_sdram.o
 driver cpc925_northbridge.o

@@ -11,12 +11,5 @@ uses USE_DCACHE_RAM
 ##
 default USE_DCACHE_RAM=0
 
-initinclude "EXCEPTION_VECTOR_TABLE" cpu/ppc/ppc970/ppc970excp.S
-initinclude "PROCESSOR_INIT" cpu/ppc/ppc970/ppc970.inc
-
-object clock.o
-initobject clock.o
-initobject ppc970lib.S
-
-dir /cpu/simple_init
+initinclude "FAMILY_INIT" cpu/ppc/ppc970/ppc970.inc
 

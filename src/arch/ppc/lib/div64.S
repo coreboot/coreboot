@@ -15,13 +15,8 @@
  */
 #include <ppc_asm.tmpl>	
 	
-#ifndef __PPC64__
 	.globl __div64_32
 __div64_32:
-#else
-	.globl .__div64_32
-.__div64_32:
-#endif
 	lwz	r5,0(r3)	# get the dividend into r5/r6
 	lwz	r6,4(r3)
 	cmplw	r5,r4

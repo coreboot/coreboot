@@ -6,13 +6,11 @@
 #include <board.h>
 #include <sdram.h>
 
-#ifndef __PPC64__
 extern unsigned _iseg[];
 extern unsigned _liseg[];
 extern unsigned _eliseg[];
 
 void (*payload)(void) = (void (*)(void))_iseg;
-#endif
 
 /*
  * At this point we're running out of flash with our
@@ -23,9 +21,7 @@ void (*payload)(void) = (void (*)(void))_iseg;
  * - start hardwaremain() which does remainder of setup
  */
 
-#ifndef __PPC64__
 extern void flush_dcache(void);
-#endif
 
 void ppc_main(void)
 {
@@ -47,7 +43,6 @@ void ppc_main(void)
 	 */
 	board_init2();
 
-#ifndef __PPC64__
 	/*
 	 * Flush cache now that memory is enabled.
 	 */
@@ -64,7 +59,6 @@ void ppc_main(void)
 	}
 
 	payload();
-#endif
 
 	/* NOT REACHED */
 }

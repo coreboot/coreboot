@@ -7,22 +7,6 @@
 #include <device/device.h>
 #include <stdlib.h>
 
-static inline uint64_t unpack_lb64(struct lb_uint64 value) 
-{
-	uint64_t result;
-	result = value.hi;
-	result = (result << 32) + value.lo;
-	return result;
-}
-
-static inline struct lb_uint64 pack_lb64(uint64_t value)
-{
-	struct lb_uint64 result;
-	result.lo = (value >> 0) & 0xffffffff;
-	result.hi = (value >> 32) & 0xffffffff;
-	return result;
-}
-
 struct lb_header *lb_table_init(unsigned long addr)
 {
 	struct lb_header *header;

@@ -9,14 +9,6 @@
 #include <sys/mman.h>
 #include "../../src/include/boot/linuxbios_tables.h"
 
-static inline uint64_t unpack_lb64(struct lb_uint64 value)
-{
-	uint64_t result;
-	result = value.hi;
-	result = (result << 32) + value.lo;
-	return result;
-}
-
 void print_lb_records(struct lb_record *rec, struct lb_record *last, unsigned long addr);
 
 unsigned long compute_checksum(void *addr, unsigned long length)

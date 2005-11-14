@@ -31,6 +31,40 @@
  * table entries and be backwards compatible, but it is not required.
  */
 
+/* Since LinuxBIOS is usually compiled 32bit, gcc will align 64bit 
+ * types to 32bit boundaries. If the LinuxBIOS table is dumped on a 
+ * 64bit system, a uint64_t would be aligned to 64bit boundaries, 
+ * breaking the table format.
+ *
+ * lb_uint64 will keep 64bit LinuxBIOS table values aligned to 32bit
+ * to ensure compatibility. They can be accessed with the two functions
+ * below: unpack_lb64() and pack_lb64()
+ *
+ * See also: util/lbtdump/lbtdump.c
+ */
+
+struct lb_uint64 {
+	uint32_t lo;
+	uint32_t hi;
+};
+
+static inline uint64_t unpack_lb64(struct lb_uint64 value)
+{
+        uint64_t result;
+        result = value.hi;
+        result = (result << 32) + value.lo;
+        return result;
+}
+
+static inline struct lb_uint64 pack_lb64(uint64_t value)
+{
+        struct lb_uint64 result;
+        result.lo = (value >> 0) & 0xffffffff;
+        result.hi = (value >> 32) & 0xffffffff;
+        return result;
+}
+
+
 
 struct lb_header
 {
@@ -57,10 +91,6 @@ struct lb_record {
 
 #define LB_TAG_MEMORY	0x0001
 
-struct lb_uint64 {
-	uint32_t lo;
-	uint32_t hi;
-};
 struct lb_memory_range {
 	struct lb_uint64 start;
 	struct lb_uint64 size;

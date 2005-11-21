@@ -122,7 +122,6 @@ void do_int(int num)
 	case 0x6D:
 		if (getIntVect(num) == 0x0000) {
 			printk_debug("un-inited int vector\n");
-			return 1;
 		}
 		if (getIntVect(num) == 0xFF065) {
 			//ret = int42_handler();

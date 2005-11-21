@@ -187,7 +187,8 @@ static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
 }
 
 
-static void enable_resources(device_t dev) {
+#if 0
+void sc520_enable_resources(device_t dev) {
 
 	printk_spew("%s\n", __FUNCTION__);
 	printk_spew("THIS IS FOR THE SC520 =============================\n");
@@ -204,6 +205,7 @@ static void enable_resources(device_t dev) {
 	enable_childrens_resources(dev);
 	printk_spew("%s\n", __FUNCTION__);
 }
+#endif
 
 static struct device_operations pci_domain_ops = {
         .read_resources   = pci_domain_read_resources,

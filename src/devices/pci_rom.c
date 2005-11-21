@@ -27,7 +27,7 @@ struct rom_header * pci_rom_probe(struct device *dev)
 	pci_write_config32(dev, PCI_ROM_ADDRESS,
 			   rom_address|PCI_ROM_ADDRESS_ENABLE);
 
-	rom_header = rom_address;
+	rom_header = (struct rom_header *) rom_address;
 	printk_spew("PCI Expansion ROM, signature 0x%04x, \n\t"
 		    "INIT size 0x%04x, data ptr 0x%04x\n",
 		    le32_to_cpu(rom_header->signature),
@@ -38,7 +38,7 @@ struct rom_header * pci_rom_probe(struct device *dev)
 		return NULL;
 	}
 
-	rom_data = (unsigned char *) rom_header + le32_to_cpu(rom_header->data);
+	rom_data = (struct pci_data *) ((unsigned char *) rom_header + le32_to_cpu(rom_header->data));
 	printk_spew("PCI ROM Image, Vendor %04x, Device %04x,\n",
 		    rom_data->vendor, rom_data->device);
 	if (dev->vendor != rom_data->vendor || dev->device != rom_data->device) {
@@ -76,8 +76,8 @@ struct rom_header *pci_rom_load(struct device *dev, struct rom_header *rom_heade
 	rom_address = pci_read_config32(dev, PCI_ROM_ADDRESS);
 
 	do {
-		rom_header = (unsigned char *) rom_header + image_size; // get next image
-	        rom_data = (unsigned char *) rom_header + le32_to_cpu(rom_header->data);
+		rom_header = (struct rom_header *) ((unsigned char *) rom_header + image_size); // get next image
+	        rom_data = (struct pci_data *) ((unsigned char *) rom_header + le32_to_cpu(rom_header->data));
         	image_size = le32_to_cpu(rom_data->ilen) * 512;
 	} while ((rom_data->type!=0) && (rom_data->indicator!=0));  // make sure we got x86 version
 

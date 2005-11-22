@@ -13,7 +13,7 @@ static void ide_init(struct device *dev)
 
 	printk_info("Enabling VIA IDE.\n");
 
-	if (!conf->enable_native_ide) {
+	/*if (!conf->enable_native_ide) { */
 		/*
 		 * Run the IDE controller in 'compatiblity mode - i.e. don't
 		 * use PCI interrupts.  Using PCI ints confuses linux for some
@@ -28,7 +28,7 @@ static void ide_init(struct device *dev)
 		enables = pci_read_config8(dev, 0x42);
 		printk_debug("enables in reg 0x42 read back as 0x%x\n",
 				enables);
-	}
+	/* } */
 	
 	enables = pci_read_config8(dev, 0x40);
 	printk_debug("enables in reg 0x40 0x%x\n", enables);

@@ -74,7 +74,14 @@ void cardbus_read_resources(device_t dev)
 	resource_t moving_base, moving_limit, moving;
 	unsigned long type;
 	uint16_t ctl;
-	
+	unsigned long index;	
+
+	/* See if needs a card control registers base address */
+
+	pci_get_resource(dev, PCI_BASE_ADDRESS_0);
+
+	compact_resources(dev);
+
 	/* See which bridge I/O resources are implemented */
 	moving_base  = pci_moving_config32(dev, PCI_CB_IO_BASE_0);
 	moving_limit = pci_moving_config32(dev, PCI_CB_IO_LIMIT_0);

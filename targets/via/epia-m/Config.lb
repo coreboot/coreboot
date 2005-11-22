@@ -18,7 +18,7 @@ option HAVE_FALLBACK_BOOT=1
 ### Compute the location and size of where this firmware image
 ### (linuxBIOS plus bootloader) will live in the boot rom chip.
 ###
-option FALLBACK_SIZE=131072
+option FALLBACK_SIZE=0x30000
 
 ## LinuxBIOS C code runs at this location in RAM
 option _RAMBASE=0x00004000
@@ -30,26 +30,32 @@ option _RAMBASE=0x00004000
 ###
 
 #
-# Via EPIA-M
+# EPIA-M
 #
-romimage "normal"
-	option USE_FALLBACK_IMAGE=0
-	option ROM_IMAGE_SIZE=0x10000
-	option LINUXBIOS_EXTRA_VERSION=".0Normal"
+#romimage "normal"
+#	option USE_FALLBACK_IMAGE=0
+#	option ROM_IMAGE_SIZE=0xc000
+#	option ROM_SECTION_OFFSET=0x10000
+#	option ROM_SECTION_SIZE=0x18000
+#	option XIP_ROM_BASE=0xfffd0000
+#	option LINUXBIOS_EXTRA_VERSION=".0Normal"
 #	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
 #	payload ../../../../tg3--ide_disk.zelf	
 #	payload ../../../../../lnxieepro100.ebi
-	payload ../../../payloads/filo.elf
-end
+#	payload /filo.elf
+#end
 
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
 	option ROM_IMAGE_SIZE=0x10000
+	option ROM_SECTION_OFFSET=0x10000
+	option ROM_SECTION_SIZE=0x30000
+#	option XIP_ROM_BASE=0xfffe0000
 	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
 #	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
 #	payload ../../../../tg3--ide_disk.zelf	
 #	payload ../../../../../lnxieepro100.ebi
-	payload ../../../payloads/filo.elf
+	payload /filo.elf
 end
 
-buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
+buildrom ./linuxbios.rom ROM_SIZE  "fallback"

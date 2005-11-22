@@ -8,6 +8,7 @@
 
 static unsigned long main(unsigned long bist)
 {
+#if 0
 	/* This is the primary cpu how should I boot? */
 	if (do_normal_boot()) {
 		goto normal_image;
@@ -28,5 +29,6 @@ static unsigned long main(unsigned long bist)
 		: /* clobbers */
 		);
  fallback_image:
+#endif
 	return bist;
 }

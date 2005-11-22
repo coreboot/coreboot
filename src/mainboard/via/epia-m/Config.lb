@@ -45,6 +45,7 @@ arch i386 end
 driver mainboard.o
 if HAVE_PIRQ_TABLE object irq_tables.o end
 #object reset.o
+object vgabios.o
 
 if HAVE_ACPI_TABLES
 	object fadt.o
@@ -133,11 +134,6 @@ config chip.h
 chip northbridge/via/vt8623
 	device pci_domain 0 on
 		chip southbridge/via/vt8235
-			register "enable_usb" = "0"
-			register "enable_native_ide" = "0"
-			register "enable_com_ports" = "1"
-			register "enable_keyboard" = "0"
-			register "enable_nvram" = "1"
 
 			device pci 10.0 on end # USB 1.1
 			device pci 10.1 on end # USB 1.1
@@ -151,7 +147,7 @@ chip northbridge/via/vt8623
 						irq 0x70 = 6
 						drq 0x74 = 2
 					end
-					device pnp 2e.1 off	# Parallel Port
+					device pnp 2e.1 on	# Parallel Port
 						io 0x60 = 0x378
 						irq 0x70 = 7
 						drq 0x74 = 3
@@ -178,10 +174,16 @@ chip northbridge/via/vt8623
 			device pci 12.0 on end  # Ethernet
 		end
 #		This is on the EPIA MII, not the M.
-#		chip southbridge/ricoh/rl5c476
-#		end
+		chip southbridge/ricoh/rl5c476
+			register "enable_cf" = "1"
+			device pci 0a.0 on end
+			device pci 0a.1 on end	
+		end
 	end
 
-	chip cpu/via/model_centaur 
+	device apic_cluster 0 on
+		chip cpu/via/model_centaur
+			device apic 0 on  end 
+		end
 	end
 end

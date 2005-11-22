@@ -1,0 +1,593 @@
+
+This HOWTO contains instructions for using LinuxBIOSv2 on the VIA EPIA-M and MII 
+mini-itx based motherboards.
+
+Version 1.0 initial write for LinuxBIOSv2 by Nick Barker
+
+Using materials and inspiration from
+- EPIA HOWTO for freebios/linuxbios by Mark Wilkinson
+- Based on the K7SEM HOWTO by Brenden Bixler,
+- which is based on the Sis 630 HOWTO by Ron Minnich.
+- Getting Started with freebios2 - a mail posting by Jay Miller
+
+Unfortunately, there is a step in this HOWTO that could be hazardous. The 
+hazards include (but are not limited to)
+	1) destroying your motherboard
+	2) hurting yourself
+	3) killing yourself
+
+Because of these hazards, you must take full responsibility if you
+decide to install LinuxBIOSv2 following these procedures. Neither the
+author of this HOWTO or any organisation or individual associated with
+the LinuxBIOSv2 project can be held responsible for any adverse consequences
+of your attempt to follow these procedures.
+
+WARNING: We assume you've built kernels, know how to open up your PC,
+and how to yank the flash part out while power is on and put in a
+different part. There is NO WARRANTY, express or implied, with this
+software. In fact, if you don't know what you're doing, and you get
+careless, you're going to end up with a nice paperweight instead of a
+motherboard, an emergency room bill, or a funeral service.
+
+			YOU HAVE BEEN WARNED.
+
+Additional information available at: http://www.linuxbios.org/
+
+Linux distribution: Most modern distributions are supported. 
+                    
+Other software notes: You MUST have 'as' version 2.9.5 or later.
+                      You MUST have 'gcc' version other than 2.96.
+                      
+			  
+Pre-requisites
+--------------
+
+Before you start there are a few things which you need to arrange:
+
+Since you are going to be re-programming the flash rom on the mainboard, and
+it is likely that you first few attempts / images will not be right, then
+you need a way of restoring a known working bios onto a board which is otherwise
+dead.
+
+Recommended: you might want to get a Bios Saviour (RD1-PL) - this is
+a handy little piggy-back flash chip that saves you destroying the original
+flash image. This howto assumes that you have this device, though other methods
+and devices exist for programming flash roms.
+
+LinuxBIOSv2 sends debugging output through the first serial port. You might want
+to arrange a null modem serial cable for connecting this serial port to a
+second computer running a terminal emulation program. I use 'microcom' which
+is simple and allows all output to be captured into a file for later analysis.
+The port is set up to use 115200 baud, 8bit, No parity, 1 stop bit.
+
+Under LinuxBIOSv2 you have a choice of 'payloads'. The payload is the program
+which LinuxBIOSv2 hands over to once it has finished initialising everything
+on the mainboard at boot time. The payload is included in the flash rom along
+with LinuxBIOSv2, and usually its function is to locate and load the operating
+system. The 2 most common payloads are FILO, for booting Linux off an IDE
+disk, and Etherboot for booting a diskless workstation accross a network.
+This howto assumes the use of FILO.  
+
+A vga bios image. LinuxBIOS2v2 uses the vga bios of the original Via BIOS to 
+initialise the vga. It is not directly downloadable, but you can capture it from
+a system running with the original bios, so you might as well capture it now:
+		dd if=/dev/mem of=/video.bios.bin \
+                   bs=1 count=65536 skip=790528
+
+
+Getting Going
+-------------
+
+The steps for loading LinuxBIOSv2 are simple:
+1) Get Linux installed on your machine.
+2) Download and install LinuxBIOSv2 sources.
+3) Understand how to flash your rom.
+4) Download, Configure and build the FILO payload
+5) Configure and build LinuxBIOSv2.
+6) Burn the LinuxBIOSv2 image to the flash.
+7) Reset the machine -- did it work?
+
+Options Once it has booted
+  i) Speeding up the boot
+ ii) Enhancing ACPI support
+iii) On EPIA-MII, booting the computer from on-board compact flash 
+
+
+Step 1) 
+	Get Linux installed on your LinuxBIOSv2 machine.
+              Don't forget to note which partition is / (/dev/hda3 etc.)
+
+
+Step 2)
+	Grab the LinuxBIOSv2 source.
+	cd to the directory you want the source tree to be.
+
+	Note: this will create a sub directory called LinuxBIOSv2 which contains
+              the LinuxBIOSv2 source code
+
+	Download the latest code for LinuxBIOSv2 from the downloads page at
+		http://www.linuxbios.org
+
+
+	having expanded the tarball, cd into the LinuxBIOSv2 directory and browse around.
+	The top level directory includes:
+
+	'src' - where all of the source files for LinuxBIOSv2 are located.
+	'targets' - where all of the platform specific configuration files
+		for each platform supported by LinuxBIOSv2 are kept, and 
+                where the build files and build process occur.
+	'util' - where various utilities required for the build process 
+		and debugging are kept.
+
+
+	Hereafter, this howto refers to directory locations relative to these directories,
+	unless an absolute pathlist is given.
+
+Step 3)
+	Whilst getting LinuxBIOSv2 going on your EPIA-M, you are almost 
+	certainly going to be re-programming the flash rom several times, and
+	there is a very high probability that at one of these stages you will
+	get a flash rom that fails to boot your mainboard into Linux.
+ 
+	Before we proceed any further, it is absolutley vital that you have
+	worked out how to program the flash chip, and how you are going to
+	get back to your original bios when things go wrong. Otherwise you 
+	will end up with a very expensive paper weight as described earlier.
+
+        You can use a professional Data I/O burner, or you can be foolhardy
+	and simply re-program the flash part of a running machine. However
+	whilst getting going a BIOS SAVIOUR RD1-PL is a very inexpensive
+	but effective device for ensuring that you always have a working
+	BIOS to hand.
+
+	The bios saviour is a little device which plugs into the flash rom
+	socket of the motherboard, and the original flash rom then plugs into
+	the bios saviour. The bios saviour includes a second flash rom chip,
+	and either of these chips can be selected as the active chip by a 
+	simple supplied electrical switch mounted on flying leads. Make
+	sure that this switch is clearly visible, so that you know which
+	chip you are booting from, and which chip you are about to re-program.
+
+	Decide which chip you are going to use for LinuxBIOSv2, and which chip
+	you are going to keep the original working bios in, and mark them 
+	clearly on this switch.
+
+        In the 'util/flash_and_burn' directory is the source for the 'flash_rom'
+	utility, which is great for re-programming the flash chips on the 
+	EPIA-M / MII. Once you have built this utility:
+
+	Make sure that it can detect both flash chips on the bios saviour:
+		with switch set to chip 1 run 'flash_rom'
+		flash rom should search through a list of known flash rom
+		device types until it finds the type of the original chip
+		from your EPIA-M, and report what it has found.
+
+		with the switch set to chip 2, run 'flash_rom' again and confirm
+		that it can 'see' the second flash chip.
+
+		If your are lucky, the actual part number of the 2 chips may
+		be different, which you can use just prior to re-programming
+		a chip to make sure you are programming the right chip.
+
+	Make sure that you can read / write and verify a flash chip:
+		with switch set to 1 (original BIOS) run
+		'flash_rom -r original.rom'
+		this should read the contents of the original bios into the
+		file original.rom
+
+		confirm that the newly read file matches the original bios
+		'flash_rom -v original.rom'
+
+ 		set the switch to 2 
+		confirm if you can that flash_rom 'sees' the second chip
+		'flash_rom' - and look for the detected device type
+
+		write the known good bios to the second chip with
+		'flash_rom -w original.bios'
+
+		verify that it has written correctly
+		'flash_rom -v original.rom'
+
+		with switch left at position 2, reboot the machine and make
+		sure that it comes up corectly. If it does then you now have
+		a working flash programming environment. If it does not, then
+		set the switch back to 1, reboot the machine, and investigate
+		further. 
+
+Step 4)
+	Download FILO from http://felixx.tsn.or.jp/~ts1/filo, and expand
+
+	In the FILO source directory, type 'make'
+
+	The first invocation of make builds the default Config file, which
+	should be edited to meet your needs. In particular look at the line:
+
+	"AUTOBOOT_FILE ...."
+
+	and make sure that it looks sensible for your setup. The line
+	AUTOBOOT_FILE "hda1:/vmlinuz root=/dev/hda2 console=ttyS0,115200" 
+	reads as:
+		- find a linux os image on device hda partion 1 called vmlinuz,
+		- load this image
+		- execute the image passing kernel command line parameters of:
+		      "root=/dev/hda2 console=ttyS0,115200" 
+
+	after editing Config, type 'make' again, and this will build the file
+	'filo.elf' which is the payload we will be using.
+
+	Copy this file to somewhere which the LinuxBIOSv2 makefile can easily 
+	find it. I just tend to keep it in the root directory though I'm sure
+	others will condem me for that practise:
+	'cp filo.elf /'
+
+	Make sure that you have compiled a kernel bzImage, and copied it to
+	the file location you identified in the FILO Config file.
+
+
+Step 5)
+	The next step is to create the build environment for the epia-m. This
+	step creates the appropriate makefiles and build directories for the
+	epia-m.
+
+	'cd targets'
+	'./buildtarget via/epia-m'
+
+	This step will create a subdirectory in the targets/via/epia-m
+	directory called epia-m, which is the build directory for LinuxBIOSv2.
+
+	The main configuration file for the epia-m is in 
+	'targets/via/epia-m/Config.lb'
+
+	If you need to make any changes to the configuration, for example you wish to
+	locate filo.elf in a place other than '/filo.elf', or during the more advanced
+	steps of this HOWTO, then these changes are made to this file.
+
+	You need to re-run the './buildtartegt via/epia-m' after any such change.
+
+	The directory 'targets/via/epia-m' contains other sample Config.lb files, any
+        of which can be copied through to Config.lb in order to become the current 
+	configuration.
+
+	Once you have your Config.lb set up to your needs, and the build environment
+	created with './buildtarget', it is time to build a rom image.
+
+	Change directory into the build directory 'targets/via/epia-m/epia-m'
+
+	The configuration as set up by the buildtarget process will create a LinuxBIOS
+        which is exactly 196608 bytes long, which is exactly 64K bytes short of what
+        needs to go into the 256K flash rom. The other 64K is for your vga bios
+	which is simply merged with the linuxbios image. The easiest way to make this 
+	happen is to edit the Makefile and change the line
+
+	     cat fallback/linuxbios.rom > linuxbios.rom
+
+        to
+
+             cat /video.bios.bin fallback/linuxbios.rom >linuxbios.rom
+
+	Note: the above order of merging the files together is critical 
+ 
+	You will need to remember to make this change every time after you have run
+        the buildtarget program.
+	
+	Type 'make', and wait for the build process to complete.
+
+	If all went well, then you should find a file 'linuxbios.rom' in your
+	current directory. Check that it is 262144 bytes long - i.e. exactly the right 
+	size for the flash rom chip in your EPIA-M / MII.
+
+
+ 
+Step 6)
+	NOTE: BE ADVISED THAT THIS STEP CAN KILL YOUR MOTHERBOARD !
+	IF YOU DO NOT HAVE A MEANS OF RECOVERING FROM FLASHING YOUR BIOS,
+	YOU MAY/WILL BE LEFT WITH A DEAD MACHINE.
+
+
+	Assuming that you are using a Bios Saviour, make sure that the switch is set
+	to the position for your LinuxBIOSv2 image.
+
+	Type 'flash_rom' to make sure it can see the flash chip, and verify its type if
+	possible.
+
+	Only once you are happy that you are about to re-programme the desired chip, type
+	'flash_rom -w linuxbios.rom', and wait the few seconds it takes to program it.
+
+	Once it has finished, verify that the chip was re-rogrammed correctly - type
+	'flash_rom -v linuxbios.rom'
+
+ 
+
+Step 7) 
+	Power cycle the machine. LinuxBIOSv2 should come up in a few seconds.
+
+	With a connection to the serial port set at 115200, you should see LinuxBIOSv2
+	come up, launch FILO, and if you have a timeout set in FILO, then it may be
+	waiting for you to confirm its boot command line.
+
+	As long as you have this command line set up correctly, and an os image in the
+	right place, then FILO should proceed to boot into your Linux os.
+
+	If you do, CONGRATULATIONS ! It WORKED ! Pat yourself on the back,
+	why not try the optional steps now ?
+
+	If you don't, time to start capturing the output of the serial port
+	and talking to the linuxbios mailing list.
+
+
+Optional steps - for use only if step 7 was successfull.
+
+OK so now we have a BIOS which boots your computer fully into the operating system, and
+depending upon your needs that may be all that you want. However LinuxBIOSv2 has a few more
+tricks up its sleeve should you find yourself hungry for more.
+
+Speeding up the boot
+--------------------
+
+Linuxbios sends its debugging output to the first serial port and, depending upon the amount of debug
+output selected, can be the limiting factor in the speed with which it boots your computer - regardless 
+of whether you have anything attached to the serial port.
+
+Linuxbios uses the notion of debug levels to control what is sent to the serial port. These levels
+range from 0 to 9 with 0 being the least verbose and 9 being the most verbose.
+
+These levels are defined in the Config.lb file described earlier. To reduce the output set:
+    option  MAXIMUM_CONSOLE_LOGLEVEL=8 
+    option  DEFAULT_CONSOLE_LOGLEVEL=8
+to lower values.
+
+Next you will have to run 'buildtarget' again to propagate the effects of the config change.
+Then edit your Makefile again to include your video bios in the final merging.
+
+Then run 'make clean' followed by 'make'.
+ 
+
+Advanced ACPI
+-------------
+
+	LinuxBIOSv2 now supports ACPI on the epia-m and epia-m II. In particular the interrupt
+	processing in Linux can be done through ACPI, and crude power management support
+	is provided. This includes software power off, and power management events from the
+	power button.
+
+	It is possible to enhance this behaviour to provide the full capabilities of the 
+	original BIOS, which includes different sleep levels and wake from these levels
+	upon certain events. This is achieved by using a 'grabbed' copy of the ACPI 
+	Differentiated System Descriptor Table or DSDT from the original BIOS.
+
+	For copyright reasons this table cannot be included with the source distribution
+	of LinuxBIOSv2.
+
+
+	You MUST have 'iasl' - Intel's ACPI Asl compiler for Unix/Linux - 
+		http://developer.intel.com/technology/iapc/acpi/downloads.htm.
+
+
+	To replace the LinuxBIOSv2 DSDT with the grabbed one from the original BIOS:
+
+		- Start the computer using the original BIOS, and make sure that you
+			have ACPI set up in the kernel that you are running
+
+		- Grab the DSDT table - 'cat /proc/acpi/dsdt >dsdt.aml'
+		- Convert to asl code - 'iasl -d dsdt.aml'          (creates dsdt.dsl)
+		- Convert it to a C hex table - 'iasl -tc dsdt.dsl' (creates dsdt.hex)
+		- Replace the file 'src/mainboard/via/epia-m/dsdt.c with dsdt.hex
+
+	Now re-build LinuxBIOSv2, re-program the flash and power cycle.
+
+	If you wish to return to the LinuxBIOSv2 DSDT, then the original file dsdt.asl can be converted
+	into a C hex file using 'iasl -tc dsdt.asl'
+
+
+
+Boot from Onboard Compact Flash (MII only)
+------------------------------------------
+
+	LinuxBIOSv2 now supports the onboard compact flash on the MII as an IDE drive,
+        and it is possible to boot directly from this drive using the following steps.
+
+	The first step is to get Filo or whatever payload you are using to recognise
+        and use this device.
+
+	In order that the pcmcia subsystem of the Linux kernel can correctly configure
+        the device later on in the boot process the CF is set up with its I/O
+	registers in a contiguous block of 16 bytes at 0x1e0 through 0x1ef. Unfortunately
+        this is not a standard IDE address which is why we need to 'fix' filo to use it.
+        (Actually it is half of the address range used by IDE4, and so we need to
+        be careful to tell the kernel not to probe that address - more on that later).
+
+	The first step is to change the filo Config file.
+	1) Comment out SUPPORT_PCI=1. This line instructs filo to search for PCI based IDE 
+           adapters only, and the CF is not attached to a PCI based IDE controller.
+	2) Add the following two lines somewhere in the Config file:
+		IDE2_CMD = 0x1e0
+		IDE2_CNTRL =0x1ec
+
+
+	The second step is to modify the file drivers/ide.c in the filo source directory.
+	Find the function 'find_ide_controller_compat' and change it to look like
+
+	static int find_ide_controller_compat(struct controller *ctrl, int index)
+	{
+		if (index >= IDE_MAX_CONTROLLERS)
+			return -1;
+	#ifdef IDE2_CMD
+		if(index == 2){
+			ctrl->cmd_base = IDE2_CMD;
+			ctrl->ctrl_base = IDE2_CNTRL;
+			return 0;
+		}
+	#endif
+		ctrl->cmd_base  = ide_base[index];
+		ctrl->ctrl_base = ide_base[index] + IDE_REG_EXTENDED_OFFSET;
+		return 0;
+	}
+	Filo will now recognise the CF as the first device on the third IDE controller 
+        (i.e. ide2), and can be referred to as 'hde'
+
+
+	The next step is to create an initrd file for your Linux kernel. What? Why?
+        The CF socket on your MII is hardwired to the PCMCIA controller and for all intents
+        and purposes it is a PCMCIA device. This means that once Linux boots it will be under
+        the control of the pcmcia manager. Now according to the pcmcia-utils documentation,
+        the pcmcia manager is intended to control and configure devices on an already
+        running system. Yet if we need the CF to be the root device, it needs to be mounted
+        very early on in the boot sequence, before the stage where pcmcia devices would normally
+        be configured. The answer is to use an initrd file to get the pcmcia manager running early
+        for the CF. If you are unfamiliar with initrd then 'man initrd' will give you more background.
+
+
+	The easiest way to create an initrd is to use the script 'mkcfinitrd' which is at the bottom
+        of this howto. This is a tailored version of the 'pcinitrd' script from the pcmcia-utils package.
+        Make sure that 'ash' is available on your system as this is the tiny shell programme used during
+        the initrd phase of booting.
+
+        It is worth mounting the initrd generated, and looking over it to make sure that
+        it contains all of the modules necessary to load and initialise the CF. It does not
+        need drivers for whatever you use in the pcmcia socket, as that can be initialised
+        later on in the boot process as before.
+
+        Finally gzip the file created, and move it alongside your kernel.
+
+	Next adjust your FILO command line to pick things up from the CF. My linux command
+	line in filo looks like:
+
+	AUTOBOOT_FILE = "hde:/vmlinuz initrd=hde:/initrd.gz root=/dev/hde console=tty0 ide4=noprobe"
+
+	The ide4=noprobe option is required to stop the kernel from probing the address used
+        by the CF. As this address is half that used as the standard address for a fifth (i.e. ide4)
+        controller, the kernel hangs whilst trying to initialise this device if this option
+        is not given.
+
+	Finally make sure that you have copied the necessary files onto your CF, and re-boot
+	your computer.
+
+
+
+******************* mkcfinitrd script **************************************
+#!/bin/sh
+#
+# Utility for constructing CF initrd for Epia-MII CF Boot
+#
+# Copyright (C) 2005 Nick Barker -- nick.barker9@btinternet.com
+#
+# Based on pcinitrd
+# Copyright (C) 1999 David A. Hinds -- dahinds@users.sourceforge.net
+
+SIZE=2400
+MODULES="pcmcia/pcmcia_core.o pcmcia/ds.o pcmcia/yenta_socket.o"
+BLK="kernel/drivers/ide/legacy/ide-cs.o"
+KERNEL=`uname -r`
+MODDIR=/lib/modules/$KERNEL
+BIN="bin/mount bin/umount sbin/insmod sbin/cardmgr"
+LIB=`ls /lib/libc.so.? | sort | tail -1`
+ETC="/etc/ld.so.cache /etc/pcmcia/config /etc/pcmcia/config.opts"
+DEV="/dev/console /dev/null /dev/ram /dev/tty1 /dev/tty2 /dev/tty3 /dev/tty4"
+MNT=/tmp/initrd.mnt
+
+# name of the initrd file to make
+TARGET=/tmp/initrd
+
+fail()
+{
+    umount $MNT
+    rmdir $MNT
+    exit 1
+}
+trap fail SIGTERM SIGINT
+
+strip_cp()
+{
+    if [ -d $3 ] ; then
+	DEST=$3/`basename $2`
+    else
+	DEST=$3
+    fi
+    strip $1 --verbose -o $DEST $2 | sed -e 's/([^ ]*)//g' || fail
+}
+
+mkdir --verbose $MNT || exit 1
+
+echo "Creating filesystem on $TARGET"
+if [ -b $TARGET ] ; then
+    rm $TARGET || fail
+fi
+
+dd if=$ROOT/dev/zero of=$TARGET bs=1k count=$SIZE
+echo "y" | mke2fs $TARGET $SIZE >/dev/null || fail
+mount --verbose -t ext2 -o loop $TARGET $MNT || fail
+
+
+rm -rf $MNT/lost+found
+echo "Creating Directories on $TARGET"
+for DIR in bin dev etc lib proc tmp mnt ; do
+    mkdir --verbose $MNT/$DIR || fail
+done
+for DIR in block misc fs net pcmcia ; do
+    mkdir --verbose $MNT/lib/$DIR || fail
+done
+
+echo "Copying Files to $TARGET"
+for F in $DEV ; do
+    cp -a --verbose /$F $MNT/dev || fail
+done
+if [ -e /dev/systty ] ; then
+    cp -a --verbose /dev/systty $MNT/dev || fail
+fi
+
+for F in $BIN ; do
+    strip_cp --strip-all /$F $MNT/bin
+done
+strip_cp --strip-all /bin/ash $MNT/bin/sh
+
+for F in $LIB ; do
+    strip_cp --strip-debug /$F $MNT/lib
+done
+cp --verbose /lib/ld-linux.so.? $MNT/lib || fail
+
+for F in $ETC ; do
+    cp --verbose /$F $MNT/etc || fail
+done
+for F in scsi network ftl ide memory serial ; do
+    touch $MNT/etc/$F ; chmod +x $MNT/etc/$F
+done
+
+for MOD in $MODULES ; do
+    strip_cp --strip-debug $MODDIR/$MOD $MNT/lib/$MOD
+done
+
+strip_cp --strip-debug $MODDIR/$BLK $MNT/lib/block/ide-cs.o
+
+echo "Creating linuxrc startup script"
+cat > $MNT/linuxrc <<- 'EOF'
+	#!/bin/sh
+	
+	mount -t proc /proc /proc
+
+	echo ""
+	echo "==== initrd: starting PCMCIA services ===="
+	echo ""
+	PC=/lib/pcmcia
+	insmod $PC/pcmcia_core.o 
+	insmod $PC/yenta_socket.o
+	insmod $PC/ds.o
+	insmod /lib/block/ide-cs.o
+	if [ "$DEBUG" != "" ] ; then V=-v ; fi
+	cardmgr $V -q -o -c /etc -m /lib -s /tmp/stab -p /tmp/pid
+	umount /proc
+	echo ""
+	
+	if [ "$DEBUG" != "" ] ; then
+	    /bin/sh < /dev/console
+	fi
+EOF
+chmod +x $MNT/linuxrc 
+
+df -P $MNT | awk '/tmp/ { printf "%dK/%dK used\n",$3,$2 }'
+umount $VERBOSE $MNT
+rmdir $MNT
+echo "Finished $TARGET"
+echo "Now gzip $TARGET to create final initrd.gz"
+exit 0
+
+*************************** end mkcfinitrd ***********************************

@@ -1,90 +1,49 @@
+/*
+ * (C) Copyright 2005 Nick Barker <nick.barker9@btinternet.com>
+ *
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+ * MA 02110-1301 USA
+ */
+
+/* 
+  Automatically detect and set up ddr dram on the CLE266 chipset.
+  Assumes DDR memory, though chipset also supports SDRAM
+  Assumes at least 266Mhz memory as no attempt is made to clock
+  the chipset down if slower memory is installed.
+  So far tested on:
+	256 Mb 266Mhz 1 Bank (i.e. single sided)
+	256 Mb 266Mhz 2 Bank (i.e. double sided)
+	512 Mb 266Mhz 2 Bank (i.e. double sided)
+*/
+/* ported and enhanced from assembler level code in Linuxbios v1 */
+
 #include <cpu/x86/mtrr.h>
 #include "raminit.h"
 
-/*
-This software and ancillary information (herein called SOFTWARE )
-called LinuxBIOS          is made available under the terms described
-here.  The SOFTWARE has been approved for release with associated
-LA-CC Number 00-34   .  Unless otherwise indicated, this SOFTWARE has
-been authored by an employee or employees of the University of
-California, operator of the Los Alamos National Laboratory under
-Contract No. W-7405-ENG-36 with the U.S. Department of Energy.  The
-U.S. Government has rights to use, reproduce, and distribute this
-SOFTWARE.  The public may copy, distribute, prepare derivative works
-and publicly display this SOFTWARE without charge, provided that this
-Notice and any statement of authorship are reproduced on all copies.
-Neither the Government nor the University makes any warranty, express 
-or implied, or assumes any liability or responsibility for the use of
-this SOFTWARE.  If SOFTWARE is modified to produce derivative works,
-such modified SOFTWARE should be clearly marked, so as not to confuse
-it with the version available from LANL.
- */
-/* Copyright 2000, Ron Minnich, Advanced Computing Lab, LANL
- * rminnich@lanl.gov
- */
-/*
- * 11/26/02 - kevinh@ispiri.com - The existing comments implied that
- * this didn't work yet.  Therefore, I've updated it so that it works
- * correctly - at least on my VIA epia motherboard.  64MB DIMM in slot 0.
- */
-
-/* Added automatic detection of first equipped bank and its MA mapping type.
- * (Rest of configuration is done in C)
- * 5/19/03 by SONE Takeshi <ts1@tsn.or.jp>
- */
-/* converted to C 9/2003 Ron Minnich */
-
-/* Set to 1 if your DIMMs are PC133 Note that I'm assuming CPU's FSB
- * frequency is 133MHz. If your CPU runs at another bus speed, you
- * might need to change some of register values.
- */
-#ifndef DIMM_PC133
-#define DIMM_PC133 0
-#endif
-
-// Set to 1 if your DIMMs are CL=2
-#ifndef DIMM_CL2
-#define DIMM_CL2 0
-#endif
 
 
-
-
-
-void dimm_read(unsigned long x) 
+void dimm_read(unsigned long bank,unsigned long x) 
 {
-	unsigned long eax; 
+	//unsigned long eax; 
 	volatile unsigned long y;
-	eax =  x;
-	y = * (volatile unsigned long *) eax;
+	//eax =  x;
+	y = * (volatile unsigned long *) (x+ bank) ;
 
 }
 
-void dimms_write(int x) 
-{
-	uint8_t c;
-	unsigned long eax = x;
-	for(c = 0; c < 6; c++) {
-		*(volatile unsigned long *) eax = 0;
-		eax += 0x10000000;
-	}
-}
-
-
-
-#ifdef DEBUG_SETNORTHB
-void setnorthb(device_t north, uint8_t reg, uint8_t val) 
-{
-	print_debug("setnorth: reg ");
-	print_debug_hex8(reg);
-	print_debug(" to ");
-	print_debug_hex8(val);
-	print_debug("\r\n");
-	pci_write_config8(north, reg, val);
-}
-#else
-#define setnorthb pci_write_config8
-#endif
 
 void
 dumpnorth(device_t north) 
@@ -100,47 +59,242 @@ dumpnorth(device_t north)
 		print_debug("\r\n");
   }
 }
+void print_val(char *str, int val)
+{
+	print_debug(str);
+	print_debug_hex8(val);
+}
 
-static void sdram_set_registers(const struct mem_controller *ctrl) 
+static void ddr_ram_setup(const struct mem_controller *ctrl) 
 {
 	device_t north = (device_t) 0;
-	uint8_t c, r;
+	uint8_t b, c, bank;
+	uint16_t i,j;
+	unsigned long bank_address;
 
 	print_err("vt8623 init starting\r\n");
 	north = pci_locate_device(PCI_ID(0x1106, 0x3123), 0);
 	north = 0;
-	print_debug_hex32(north);
-	print_debug(" is the north\r\n");
-	print_debug_hex16(pci_read_config16(north, 0));
-	print_debug(" ");
-	print_debug_hex16(pci_read_config16(north, 2));
-	print_debug("\r\n");
 	
-	/* All we are doing now is setting initial known-good values that will
-	 * be revised later as we read SPD
-	 */	
 
 	pci_write_config8(north,0x75,0x08);
 
-	/* since we only support epia-m at the moment, only ddr is supported */
 	/* setup cpu */
 	pci_write_config8(north,0x50,0xc8);
 	pci_write_config8(north,0x51,0xde);
 	pci_write_config8(north,0x52,0xcf);
 	pci_write_config8(north,0x53,0x88);
-	pci_write_config8(north,0x55,0x07);
+	pci_write_config8(north,0x55,0x04);
 
-	/* DRAM MA Map Type */
-	pci_write_config8(north,0x58,0xe0);
+/*
+    DRAM MA Map Type  Device 0  Offset 58
 
-	/* DRAM bank 0 - 3 size = 512M */
-	pci_write_config8(north,0x5a,0x10);
-	pci_write_config8(north,0x5b,0x10);
-	pci_write_config8(north,0x5c,0x10);
-	pci_write_config8(north,0x5d,0x10);
+    Determine memory addressing based on the module's memory technology and
+    arrangement.  See Table 4-9 of Intel's 82443GX datasheet for details.
+
+    Bank 1/0 MA map type   58[7-5]
+    Bank 1/0 command rate  58[4]
+    Bank 3/2 MA map type   58[3-1]
+    Bank 3/2 command rate  58[0]
+
+
+    Read SPD byte 17, Number of banks on SDRAM device.
+*/
+	c = 0;
+	b = smbus_read_byte(0xa0,17);
+	print_val("Detecting Memory\r\nNumber of Banks ",b);
+
+	if( b != 2 ){            // not 16 Mb type
+	
+/*
+    Read SPD byte 3, Number of row addresses.
+*/
+		b = smbus_read_byte(0xa0,3);
+		print_val("\r\nNumber of Rows ",b);
+		if( b >= 0x0d ){	// not 64/128Mb (rows <=12)
+
+/*
+    Read SPD byte 13, Primary DRAM width.
+*/
+			b = smbus_read_byte(0xa0,13);
+			print_val("\r\nPriamry DRAM width",b);
+			if( b != 4 )   // mot 64/128Mb (x4)
+				c = 0x80;  // 256Mb
+		}
+
+/*
+    64/128Mb chip
+
+    Read SPD byte 4, Number of column addresses.
+*/		
+		b = smbus_read_byte(0xa0,4);
+		print_val("\r\nNo Columns ",b);
+		if( b == 10 || b == 11 ) c |= 0x60;   // 10/11 bit col addr
+		if( b == 9 ) c |= 0x40;           // 9 bit col addr
+		if( b == 8 ) c |= 0x20;           // 8 bit col addr
+
+	}
+	print_val("\r\nMA type ",c);
+	pci_write_config8(north,0x58,c);
+
+/*
+    DRAM bank size.  See 4.3.1 pg 35
+
+    5a->5d  set to end address for each bank.  1 bit == 16MB
+    5a = bank 0
+    5b = bank 0 + b1
+    5c = bank 0 + b1 + b2
+    5d = bank 0 + b1 + b2 + b3
+*/
+
+// Read SPD byte 31 Module bank density
+	c = 0;
+	b = smbus_read_byte(0xa0,31);
+	if( b & 0x02 ) c = 0x80;         // 2GB
+	else if( b & 0x01) c = 0x40;     // 1GB
+	else if( b & 0x80) c = 0x20;     // 512Mb
+	else if( b & 0x40) c = 0x10;     // 256Mb 
+	else if( b & 0x20) c = 0x08;     // 128Mb
+	else if( b & 0x10) c = 0x04;     // 64Mb
+	else if( b & 0x08) c = 0x02;     // 32Mb
+	else if( b & 0x04) c = 0x01;     // 16Mb / 4Gb
+	else c = 0x01;                   // Error, use default
+
+
+	print_val("\r\nBank 0 (*16 Mb) ",c);
+
+	// set bank zero size
+	pci_write_config8(north,0x5a,c);
+	// SPD byte 5  # of physical banks
+	b = smbus_read_byte(0xa0,5);
+
+	print_val("\r\nNo Physical Banks ",b);
+	if( b == 2)
+		c <<=1;
+
+	print_val("\r\nTotal Memory (*16 Mb) ",c);
+	// set banks 1,2,3
+	pci_write_config8(north,0x5b,c);
+	pci_write_config8(north,0x5c,c);
+	pci_write_config8(north,0x5d,c);
+
+
+	/* Read SPD byte 18 CAS Latency */
+	b = smbus_read_byte(0xa0,18);
+	print_debug("\r\nCAS Supported ");
+	if(b & 0x04)
+		print_debug("2 ");
+	if(b & 0x08)
+		print_debug("2.5 ");
+	if(b & 0x10)
+		print_debug("3");
+	print_val("\r\nCycle time at CL X     (nS)",smbus_read_byte(0xa0,9));
+	print_val("\r\nCycle time at CL X-0.5 (nS)",smbus_read_byte(0xa0,23));
+	print_val("\r\nCycle time at CL X-1   (nS)",smbus_read_byte(0xa0,25));
+	
+
+	if( b & 0x10 ){             // DDR offering optional CAS 3
+		print_debug("\r\nStarting at CAS 3");
+		c = 0x30;
+		/* see if we can better it */
+		if( b & 0x08 ){     // DDR mandatory CAS 2.5
+			if( smbus_read_byte(0xa0,23) <= 0x75 ){ // we can manage 133Mhz at CAS 2.5
+				print_debug("\r\nWe can do CAS 2.5");
+				c = 0x20;
+			}
+		}
+		if( b & 0x04 ){     // DDR mandatory CAS 2
+			if( smbus_read_byte(0xa0,25) <= 0x75 ){ // we can manage 133Mhz at CAS 2
+				print_debug("\r\nWe can do CAS 2");
+				c = 0x10;
+			}
+		}
+	}else{                     // no optional CAS values just 2 & 2.5
+		print_debug("\r\nStarting at CAS 2.5");
+		c = 0x20;          // assume CAS 2.5
+		if( b & 0x04){      // Should always happen
+			if( smbus_read_byte(0xa0,23) <= 0x75){ // we can manage 133Mhz at CAS 2
+				print_debug("\r\nWe can do CAS 2");
+				c = 0x10;
+			}
+		}
+	}
+
+
+
+/*
+    DRAM Timing  Device 0  Offset 64
+
+    Row pre-charge  64[7]
+    RAS Pulse width 64[6]
+    CAS Latency     64[5,4]
+
+         SDR  DDR
+      00  1T   -
+      01  2T   2T
+      10  3T   2.5T
+      11  -    3T
+
+    RAS/CAS delay   64[2]
+    Bank Interleave 64[1,0]
+
+
+    Determine row pre-charge time (tRP)
+
+    T    nS    SPD*4   SPD
+    1T   7.5   0x1e
+    2T   15    0x3c
+    3T   22.5  0x5a
+    4T   30            0x1e
+    5T   37.5          0x25 .5?
+    6T   45            0x2d
+
+
+    Read SPD byte 27, min row pre-charge time.
+*/
+
+	b = smbus_read_byte(0xa0,27);
+	print_val("\r\ntRP ",b);
+	if( b > 0x3c )           // set tRP = 3T
+		c |= 0x80;
+
+
+/*
+    Determine RAS to CAS delay (tRCD)
+
+    Read SPD byte 29, min row pre-charge time.
+*/
+
+	b = smbus_read_byte(0xa0,29);
+	print_val("\r\ntRCD ",b);
+	if( b > 0x3c )           // set tRCD = 3T
+		c |= 0x04;
+
+/*
+    Determine RAS pulse width (tRAS)
+
+
+    Read SPD byte 30, device min active to pre-charge time.
+*/
+
+	b = smbus_read_byte(0xa0,30);
+	print_val("\r\ntRAS ",b);
+	if( b > 0x25 )           // set tRAS = 6T
+		c |= 0x40;
+
+
+/*
+    Determine bank interleave
+
+    Read SPD byte 17, Number of banks on SDRAM device.
+*/
+	b = smbus_read_byte(0xa0,17);
+	if( b == 4) c |= 0x02;
+	else if (b == 2) c |= 0x01;
+
 
 	/* set DRAM timing for all banks */
-	pci_write_config8(north,0x64,0xe6);
+	pci_write_config8(north,0x64,c);
 
 	/* set DRAM type to DDR */
 	pci_write_config8(north,0x60,0x02);
@@ -148,198 +302,284 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 
 	/* DRAM arbitration timer */
 	pci_write_config8(north,0x65,0x32);
-	pci_write_config8(north,0x66,0x01);
-	pci_write_config8(north,0x68,0x59);
 
 
-	/* DRAM Frequency */
+/*
+    CPU Frequency  Device 0 Offset 54
+
+    CPU Frequency          54[7,6]  bootstraps at 0xc0 (133Mhz)
+    DRAM burst length = 8  54[5]
+*/
 	pci_write_config8(north,0x54,0xe0);
+
+
+/*
+    DRAM Clock  Device 0 Offset 69
+
+    DRAM/CPU speed      69[7,6]  (leave at default 00 == CPU)
+    Controller que > 2  69[5]
+    Controller que != 4 69[4]
+    DRAM 8k page size   69[3]
+    DRAM 4k page size   69[2]
+    Multiple page mode  69[0]
+*/
+
 	pci_write_config8(north,0x69,0x2d);
+
+	/* Delay >= 100ns after DRAM Frequency adjust, See 4.1.1.3 pg 15 */
+	udelay(200);
+
 
 	/* Enable CKE */
 	pci_write_config8(north,0x6b,0x10);
-	
+	udelay(200);
+
 	/* Disable DRAM refresh */
 	pci_write_config8(north,0x6a,0x0);
 
-	/* set heavy drive */
-	pci_write_config8(north,0x6d,0x44);
 
+	/* Set drive for 1 bank DDR  (Table 4.4.2, pg 40) */
+	pci_write_config8(north,0x6d,0x044);
+	pci_write_config8(north,0x67,0x3a);
+
+	b = smbus_read_byte(0xa0,5); // SPD byte 5  # of physical banks
+	if( b > 1) {
+                // Increase drive control when there is more than 1 physical bank
+		pci_write_config8(north,0x6c,0x84);   // Drive control: MA, DQS, MD/CKE
+		pci_write_config8(north,0x6d,0x55);   // DC: Early clock select, DQM, CS#, MD
+	}
+	/* place frame buffer on last bank */
+	if( !b) b++;     // make sure at least 1 bank reported
+	pci_write_config8(north,0xe3,b-1);
+
+	for( bank = 0 , bank_address=0; bank < b ; bank++){
+/*
+    DDR init described in Via BIOS Porting Guide.  Pg 28 (4.2.3.1)
+*/
+
+
+		/* NOP command enable */
+		pci_write_config8(north,0x6b,0x11);
+
+		/* read a double word from any address of the dimm */
+		dimm_read(bank_address,0x1f000);
+		//udelay(200);
+
+		/* All bank precharge Command Enable */
+		pci_write_config8(north,0x6b,0x12);
+		dimm_read(bank_address,0x1f000);
+
+
+		/* MSR Enable */
+		pci_write_config8(north,0x6b,0x13);
+		dimm_read(bank_address,0x2000);
+		udelay(1);
+		dimm_read(bank_address,0x800);
+		udelay(1);
+
+		/* All banks precharge Command Enable */
+		pci_write_config8(north,0x6b,0x12);
+		dimm_read(bank_address,0x1f200);
+
+		/* CBR Cycle Enable */
+		pci_write_config8(north,0x6b,0x14);
+
+		/* Read 8 times */
+		dimm_read(bank_address,0x1f300);
+		udelay(100);
+		dimm_read(bank_address,0x1f400);
+		udelay(100);
+		dimm_read(bank_address,0x1f500);
+		udelay(100);
+		dimm_read(bank_address,0x1f600);
+		udelay(100);
+		dimm_read(bank_address,0x1f700);
+		udelay(100);
+		dimm_read(bank_address,0x1f800);
+		udelay(100);
+		dimm_read(bank_address,0x1f900);
+		udelay(100);
+		dimm_read(bank_address,0x1fa00);
+		udelay(100);
+
+		/* MSR Enable */
+		pci_write_config8(north,0x6b,0x13);
+
+/* 
+    Mode Register Definition
+    with adjustement so that address calculation is correct - 64 bit technology, therefore
+    a0-a2 refer to byte within a 64 bit long word, and a3 is the first address line presented
+    to DIMM as a row or column address.
+
+    MR[9-7]   CAS Latency
+    MR[6]     Burst Type 0 = sequential, 1 = interleaved
+    MR[5-3]   burst length 001 = 2, 010 = 4, 011 = 8, others reserved
+    MR[0-2]   dont care 
+
+    CAS Latency 
+    000       reserved
+    001       reserved
+    010       2
+    011       3
+    100       reserved
+    101       1.5
+    110       2.5
+    111       reserved
+
+    CAS 2     0101011000 = 0x158
+    CAS 2.5   1101011000 = 0x358
+    CAS 3     0111011000 = 0x1d8
+
+*/
+		c = pci_read_config8(north,0x64);
+		if( (c & 0x30) == 0x10 )
+			dimm_read(bank_address,0x150);
+		else if((c & 0x30) == 0x20 )
+			dimm_read(bank_address,0x350);
+		else
+			dimm_read(bank_address,0x1d0);
+
+		//dimm_read(bank_address,0x350);
+
+		/* Normal SDRAM Mode */
+		pci_write_config8(north,0x6b,0x58 );
+
+
+		bank_address = pci_read_config8(north,0x5a+bank) * 0x1000000;
+	} // end of for each bank
+
+	/* Adjust DQS (data strobe output delay). See 4.2.3.2 pg 29 */
+	pci_write_config8(north,0x66,0x41);
+
+	/* determine low bond */
+	if( b == 2)
+		bank_address = pci_read_config8(north,0x5a) * 0x1000000;
+	else
+		bank_address = 0;
+
+	for(i = 0 ; i < 0x0ff; i++){
+		c = i ^ (i>>1);			// convert to gray code
+		pci_write_config8(north,0x68,c);
+		// clear
+		*(volatile unsigned long*)(0x4000) = 0;
+		*(volatile unsigned long*)(0x4100+bank_address) = 0;
+		*(volatile unsigned long*)(0x4200) = 0;
+		*(volatile unsigned long*)(0x4300+bank_address) = 0;
+		*(volatile unsigned long*)(0x4400) = 0;
+		*(volatile unsigned long*)(0x4500+bank_address) = 0;
+
+
+		// fill
+		*(volatile unsigned long*)(0x4000) = 0x12345678;
+		*(volatile unsigned long*)(0x4100+bank_address) = 0x81234567;
+		*(volatile unsigned long*)(0x4200) = 0x78123456;
+		*(volatile unsigned long*)(0x4300+bank_address) = 0x67812345;
+		*(volatile unsigned long*)(0x4400) = 0x56781234;
+		*(volatile unsigned long*)(0x4500+bank_address) = 0x45678123;
+
+			// verify
+		if( *(volatile unsigned long*)(0x4000) != 0x12345678)
+			continue;
+
+		if( *(volatile unsigned long*)(0x4100+bank_address) != 0x81234567)
+			continue;
+
+		if( *(volatile unsigned long*)(0x4200) != 0x78123456)
+			continue;
+
+		if( *(volatile unsigned long*)(0x4300+bank_address) != 0x67812345)
+			continue;
+
+		if( *(volatile unsigned long*)(0x4400) != 0x56781234)
+			continue;
+
+		if( *(volatile unsigned long*)(0x4500+bank_address) != 0x45678123)
+			continue;
+
+		// if everything verified then found low bond
+		break;
+		
+	}
+	print_val("\r\nLow Bond ",i);	
+	if( i < 0xff ){ 
+		c = i++;
+		for(  ; i <0xff ; i++){
+ 			pci_write_config8(north,0x68,i ^ (i>>1) );
+
+			// clear
+			*(volatile unsigned long*)(0x8000) = 0;
+			*(volatile unsigned long*)(0x8100+bank_address) = 0;
+			*(volatile unsigned long*)(0x8200) = 0x0;
+			*(volatile unsigned long*)(0x8300+bank_address) = 0;
+			*(volatile unsigned long*)(0x8400) = 0x0;
+			*(volatile unsigned long*)(0x8500+bank_address) = 0;
+
+			// fill
+			*(volatile unsigned long*)(0x8000) = 0x12345678;
+			*(volatile unsigned long*)(0x8100+bank_address) = 0x81234567;
+			*(volatile unsigned long*)(0x8200) = 0x78123456;
+			*(volatile unsigned long*)(0x8300+bank_address) = 0x67812345;
+			*(volatile unsigned long*)(0x8400) = 0x56781234;
+			*(volatile unsigned long*)(0x8500+bank_address) = 0x45678123;
+
+			// verify
+			if( *(volatile unsigned long*)(0x8000) != 0x12345678)
+				break;
+
+			if( *(volatile unsigned long*)(0x8100+bank_address) != 0x81234567)
+				break;
+
+			if( *(volatile unsigned long*)(0x8200) != 0x78123456)
+				break;
+
+			if( *(volatile unsigned long*)(0x8300+bank_address) != 0x67812345)
+				break;
+
+			if( *(volatile unsigned long*)(0x8400) != 0x56781234)
+				break;
+
+			if( *(volatile unsigned long*)(0x8500+bank_address) != 0x45678123)
+				break;
+
+		}
+		print_val("  High Bond",i);
+		c = ((i - c)<<1)/3 +c;
+		print_val("  Setting DQS delay",c);
+		c = c ^ (c>>1);		// convert to gray code
+		pci_write_config8(north,0x68,c);
+		pci_write_config8(north,0x68,0x42);
+	}else{
+		print_debug("Unable to determine low bond - Setting default\r\n");
+		pci_write_config8(north,0x68,0x59);
+	}
+
+
+	pci_write_config8(north,0x66,0x01);
+	pci_write_config8(north,0x55,0x07);
+
+
+
+/*
+    DRAM refresh rate  Device 0 Offset 6a
+
+    Units of 16 DRAM clock cycles.  (See 4.4.1 pg 39)
+
+    Rx69 (DRAM freq)  Rx58 (chip tech)  Rx6a
+
+    133Mhz            64/128Mb          0x86
+    133Mhz            256/512Mb         0x43
+    100Mhz            64/128Mb          0x65
+    100Mhz            256/512Mb         0x32
+*/
+
+	b = pci_read_config8(north,0x58);
+	if( b < 0x80 )   // 256 tech
+		pci_write_config8(north,0x6a,0x86);
+	else
+		pci_write_config8(north,0x6a,0x43);
 
 	pci_write_config8(north,0x61,0xff);
-
-
-
-}
-
-/* slot is the dram slot. Return size of side0 in lower 16-bit,
- * side1 in upper 16-bit, in units of 8MB */
-static unsigned long 
-spd_module_size(unsigned char slot) 
-{ 
-	/* for all the DRAMS, see if they are there and get the size of each
-	 * module. This is just a very early first cut at sizing.
-	 */
-	/* we may run out of registers ... */
-	unsigned int banks, rows, cols, reg;
-	unsigned int value = 0;
-	unsigned int module = ((0x50 + slot) << 1) + 1;
-	/* is the module there? if byte 2 is not 4, then we'll assume it 
-	 * is useless. 
-	 */
-	print_info("Slot "); 
-	print_info_hex8(slot); 
-	if (smbus_read_byte(module, 2) != 4) {
-		print_info(" is empty\r\n");
-		return 0;
-	}
-	print_info(" is SDRAM ");
-	
-	banks = smbus_read_byte(module, 17);
-	/* we're going to assume symmetric banks. Sorry. */
-	cols = smbus_read_byte(module, 4)  & 0xf;
-	rows = smbus_read_byte(module, 3)  & 0xf;
-	/* grand total. You have rows+cols addressing, * times of banks, times
-	 * width of data in bytes */
-	/* Width is assumed to be 64 bits == 8 bytes */
-	value = (1 << (cols + rows)) * banks * 8;
-	print_info_hex32(value);
-	print_info(" bytes ");
-	/* Return in 8MB units */
-	value >>= 23;
-
-	/* We should have single or double side */
-	if (smbus_read_byte(module, 5) == 2) {
-		print_info("x2");
-		value = (value << 16) | value;
-	}
-	print_info("\r\n");
-	return value;
-
-}
-
-static int
-spd_num_chips(unsigned char slot) 
-{ 
-	unsigned int module = ((0x50 + slot) << 1) + 1;
-	unsigned int width;
-
-	width = smbus_read_byte(module, 13);
-	if (width == 0)
-		width = 8;
-	return 64 / width;
-}
-
-static void sdram_set_spd_registers(const struct mem_controller *ctrl)
-{
-#define T133 7
-	unsigned char Trp = 1, Tras = 1, casl = 2, val;
-	unsigned char timing = 0xe4;
-	/* read Trp */
-	val = smbus_read_byte(0xa0, 27);
-	if (val < 2*T133)
-		Trp = 1;
-	val = smbus_read_byte(0xa0, 30);
-	if (val < 5*T133)
-		Tras = 0;
-	val = smbus_read_byte(0xa0, 18);
-	if (val < 8)
-		casl = 1;
-	if (val < 4)
-		casl = 0;
-	
-	val = (Trp << 7) | (Tras << 6) | (casl << 4) | 4;
-	
-	print_debug_hex8(val); print_debug(" is the computed timing\r\n");
-	/* don't set it. Experience shows that this screwy chipset should just
-	 * be run with the most conservative timing.
-	 * pci_write_config8(0, 0x64, val);
-	 */
-}
-
-static void set_ma_mapping(device_t north, int slot, int type)
-{
-    unsigned char reg, val;
-    int shift;
-
-    reg = 0x58 + slot/2;
-    if (slot%2 >= 1)
-        shift = 0;
-    else
-        shift = 4;
-
-    val = pci_read_config8(north, reg);
-    val &= ~(0xf << shift);
-    val |= type << shift;
-    pci_write_config8(north, reg, val);
-}
-
-
-static void sdram_enable(int controllers, const struct mem_controller *ctrl) 
-{
-	unsigned char i;
-	static const uint8_t ramregs[] = {
-		0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 0x56, 0x57
-	};
-	device_t north = 0;
-	uint32_t size, base, slot, ma;
-	
-
-	/* NOP command enable */
-	pci_write_config8(north,0x6b,0x01);
-
-	/* read a double word from any addree of the dimm */
-	dimm_read(0x1f000);
-	udelay(200);
-
-	/* All bank precharge Command Enable */
-	pci_write_config8(north,0x6b,0x02);
-	dimm_read(0x1f000);
-
-	/* MSR Enable */
-	pci_write_config8(north,0x6b,0x03);
-	dimm_read(0x2000);
-
-	dimm_read(0x800);
-
-	/* All banks precharge Command Enable */
-	pci_write_config8(north,0x6b,0x02);
-	dimm_read(0x1f200);
-
-	/* CBR Cycle Enable */
-	pci_write_config8(north,0x6b,0x04);
-
-	/* Read 8 times */
-	dimm_read(0x1f300);
-	udelay(100);
-	dimm_read(0x1f400);
-	udelay(100);
-	dimm_read(0x1f500);
-	udelay(100);
-	dimm_read(0x1f600);
-	udelay(100);
-	dimm_read(0x1f700);
-	udelay(100);
-	dimm_read(0x1f800);
-	udelay(100);
-	dimm_read(0x1f900);
-	udelay(100);
-	dimm_read(0x1fa00);
-	udelay(100);
-
-	/* MSR Enable */
-	pci_write_config8(north,0x6b,0x03);
-
-	/* 0x150 if CAS Latency 2 or 0x350 CAS Latency 2.5 */
-	dimm_read(0x350);
-
-	/* Normal SDRAM Mode */
-	pci_write_config8(north,0x6b,0x58 );
-
-
-	/* Set the refresh rate */
-	pci_write_config8(north,0x6a,0x43);
-	pci_write_config8(north,0x67,0x22);
+	//pci_write_config8(north,0x67,0x22);
 
 	/* pci */
 	pci_write_config8(north,0x70,0x82);
@@ -351,14 +591,18 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	
 
 	/* graphics aperture base */
+
 	pci_write_config8(north,0x13,0xd0);
 
-	//pci_write_config8(north,0x56,0x10);
-	//pci_write_config8(north,0x57,0x10);
+	//pci_write_config8(north,0xe1,0xdf);
+	//pci_write_config8(north,0xe2,0x42);
+	pci_write_config8(north,0xe0,0x00);
 
-	pci_write_config8(north,0xe0,0x80);
-	pci_write_config8(north,0xe1,0xdf);
-	pci_write_config8(north,0xe2,0x42);
+	pci_write_config8(north,0x84,0x80);
+	pci_write_config16(north,0x80,0x610f);
+	pci_write_config32(north,0x88,0x00000002);
+
+
 
 	pci_write_config8(north,0xa8,0x04);
 	pci_write_config8(north,0xac,0x2f);
@@ -366,4 +610,18 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
         print_err("vt8623 done\r\n");
 	dumpnorth(north);
+
+	print_err("AGP\r\n");
+	north = pci_locate_device(PCI_ID(0x1106, 0xb091), 0);
+	pci_write_config32(north,0x20,0xddf0dc00);
+	pci_write_config32(north,0x24,0xdbf0d800);
+	pci_write_config8(north,0x3e,0x0c);
+	//dumpnorth(north);
+
+	//print_err("VGA\n");
+	//north = pci_locate_device(PCI_ID(0x1106, 0x3122), 0);
+	//pci_write_config32(north,0x10,0xd8000008);
+	//pci_write_config32(north,0x14,0xdc000000);
+	//dumpnorth(north);
+
 }

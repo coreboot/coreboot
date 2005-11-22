@@ -68,7 +68,7 @@ static void enable_mainboard_devices(void)
 		die("Southbridge not found!!!\n");
 	}
 	pci_write_config8(dev, 0x50, 0x80);
-	pci_write_config8(dev, 0x51, 0x1F);
+	pci_write_config8(dev, 0x51, 0x1f);
 #if 0
 	// This early setup switches IDE into compatibility mode before PCI gets 
 	// // a chance to assign I/Os
@@ -141,14 +141,8 @@ static void main(unsigned long bist)
 
 	print_debug(" Enabling shadow ram\r\n");
 	enable_shadow_ram();
-	/*
-	  memreset_setup();
-	  this is way more generic than we need.
-	  sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
-	*/
-	sdram_set_registers((const struct mem_controller *) 0);
-	sdram_set_spd_registers((const struct mem_controller *) 0);
-	sdram_enable(0, (const struct mem_controller *) 0);
+
+	ddr_ram_setup((const struct mem_controller *)0);
 	
 	/* Check all of memory */
 #if 0

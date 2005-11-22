@@ -234,11 +234,13 @@ void cpu_initialize(void)
 	// Check that we haven't been passed bad information as the result of a race 
 	// (i.e. BSP timed out while waiting for us to load secondary_stack)
 
+#if CONFIG_SMP  || CONFIG_IOPIC 
 	if (cpu->path.u.apic.apic_id != lapicid()) {
 		printk_err("CPU #%d Initialization FAILED: APIC ID mismatch (%u != %u)\n",
 				   info->index, cpu->path.u.apic.apic_id, lapicid());
 		// return without setting initialized flag
 	} else {
+#endif
 		/* Find what type of cpu we are dealing with */
 		identify_cpu(cpu);
 		printk_debug("CPU: vendor %s device %x\n",
@@ -255,8 +257,10 @@ void cpu_initialize(void)
 		}
 
 		printk_info("CPU #%d Initialized\n", info->index);
-	}
+#if CONFIG_SMP  || CONFIG_IOPIC 
 
+	}
+#endif
 	return;
 }
 

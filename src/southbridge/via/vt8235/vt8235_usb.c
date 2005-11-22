@@ -5,11 +5,14 @@
 #include <device/pci_ids.h>
 #include "vt8235.h"
 
+/* really nothing to do here, both usb 1.1 & 2.0 are normal PCI devices and so get resources allocated
+   properly. They are part of the southbridge and are enabled in the chip enable function for the southbridge */
+
 static void usb_init(struct device *dev)
 {
 	printk_debug("Configuring VIA USB 1.1\n");
 
-	pci_write_config8(dev, 0x04, 0x07);
+	/* pci_write_config8(dev, 0x04, 0x07); */
 
 	/*
 	 * To disable; though do we need to do this?
@@ -25,6 +28,7 @@ static void usb_init(struct device *dev)
 	 */
 }
 
+/*
 static struct device_operations usb_ops = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
@@ -39,3 +43,4 @@ static struct pci_driver northbridge_driver __pci_driver = {
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = PCI_DEVICE_ID_VIA_82C586_2,
 };
+*/

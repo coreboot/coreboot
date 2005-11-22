@@ -10,21 +10,30 @@
 #include "vt8235.h"
 #include "chip.h"
 
-/*
- * Taken some liberties - changed irq structures to pins numbers so that it is
- * easier to change PCI irq assignments without having to change each PCI
- * function individually
- * 
- * pciIrqs contains the irqs assigned for PCI pins A-D
- * 
- * Setting will depend on motherboard as irqs can be quite scarce e.g on
- * EPIA-MII, 16 bit CF card wants a dedicated IRQ. A 16 bit card in pcmcia
- * socket may want another - for now only claim 3 interupts for PCI, leaving at
- * least one spare for CF.  On EPIA-M one could allocated all four irqs to
- * different numbers since there are no cardbus devices
- */
+/* The epia-m is really short on interrupts available, so PCI interupts A & D are ganged togther and so are B & C.
+   This is how the Award bios sets it up too.
+   epia can be more generous as it does not need to reserve interrupts for cardbus devices, but if changed then
+   make sure that ACPI dsdt is changed to suit.
 
-static const unsigned char pciIrqs[4] = { 11 , 5, 10 , 12 };
+	IRQ 0 = timer
+	IRQ 1 = keyboard
+	IRQ 2 = cascade
+	IRQ 3 = COM 2
+	IRQ 4 = COM 1
+	IRQ 5 = available for PCI interrupts
+	IRQ 6 = floppy or availbale for PCI if floppy controller disabled
+        IRQ 7 = LPT or available if LPT port disabled
+	IRQ 8 = rtc
+	IRQ 9 = available for PCI interrupts
+	IRQ 10 = cardbus slot or available for PCI if no cardbus (ie epia)
+	IRQ 11 = cardbus slot or available for PCI if no cardbus (ie epia)
+	IRQ 12 = PS2 mouse (hardwired to 12)
+	IRQ 13 = legacy FPU interrupt
+	IRQ 14 = IDE controller 1
+	IRQ 15 = IDE controller 2
+
+*/
+static const unsigned char pciIrqs[4] = { 5 , 9 , 9, 5 };
 
 static const unsigned char usbPins[4] =      { 'A','B','C','D'};
 static const unsigned char enetPins[4] =     { 'A','B','C','D'};
@@ -32,14 +41,9 @@ static const unsigned char slotPins[4] =     { 'B','C','D','A'};
 static const unsigned char firewirePins[4] = { 'B','C','D','A'};
 static const unsigned char vt8235Pins[4] =   { 'A','B','C','D'};
 static const unsigned char vgaPins[4] =      { 'A','B','C','D'};
-static const unsigned char cbPins[4] =       { 'A','B','C','D'};
+static const unsigned char cbPins[4] =       { 'D','A','B','C'};
 static const unsigned char riserPins[4] =    { 'A','B','C','D'};
 
-/*
-	Our IDSEL mappings are as follows
-	PCI slot is AD31          (device 15) (00:14.0)
-	Southbridge is AD28       (device 12) (00:11.0)
-*/
 
 static unsigned char *pin_to_irq(const unsigned char *pin)
 {
@@ -54,19 +58,12 @@ static unsigned char *pin_to_irq(const unsigned char *pin)
 static void pci_routing_fixup(struct device *dev)
 {
 	printk_info("%s: dev is %p\n", __FUNCTION__, dev);
-	if (dev) {
-		/* initialize PCI interupts - these assignments depend
-		   on the PCB routing of PINTA-D 
 
-		   PINTA = IRQ11
-		   PINTB = IRQ5
-		   PINTC = IRQ10
-		   PINTD = IRQ12
-		*/
-		pci_write_config8(dev, 0x55, pciIrqs[0] << 4);
-		pci_write_config8(dev, 0x56, pciIrqs[1] | (pciIrqs[2] << 4) );
-		pci_write_config8(dev, 0x57, pciIrqs[3] << 4);
-	}
+	/* set up PCI IRQ routing */
+	pci_write_config8(dev, 0x55, pciIrqs[0] << 4);
+	pci_write_config8(dev, 0x56, pciIrqs[1] | (pciIrqs[2] << 4) );
+	pci_write_config8(dev, 0x57, pciIrqs[3] << 4);
+
 
 	// firewire built into southbridge
 	printk_info("setting firewire\n");
@@ -201,12 +198,6 @@ static void vt8235_init(struct device *dev)
 	// Set 0x58 to 0x03 to match Award
 	pci_write_config8(dev, 0x58, 0x03);
 	
-	// enable the ethernet/RTC
-	if (dev) {
-		enables = pci_read_config8(dev, 0x51);
-		enables |= 0x18; 
-		pci_write_config8(dev, 0x51, enables);
-	}
 	
 	/* enable serial irq */
 	pci_write_config8(dev, 0x52, 0x9);
@@ -224,6 +215,36 @@ static void vt8235_init(struct device *dev)
 	rtc_init(0);
 }
 
+/* total kludge to get lxb to call our childrens set/enable functions - these are not called unless this
+   device has a resource to set - so set a dummy one */
+void vt8235_read_resources(device_t dev)
+{
+
+	struct resource *resource;
+	pci_dev_read_resources(dev);
+	resource = new_resource(dev, 1);
+	resource->flags |= IORESOURCE_FIXED | IORESOURCE_ASSIGNED | IORESOURCE_IO | IORESOURCE_STORED;
+	resource->size = 2;
+	resource->base = 0x2e;
+
+}
+void vt8235_set_resources(device_t dev)
+{
+	struct resource *resource;
+	//resource = find_resource(dev,1);
+	//resource->flags |= IORESOURCE_STORED;
+	pci_dev_set_resources(dev);
+}
+
+void vt8235_enable_resources(device_t dev)
+{
+	/* vt8235 is not a pci bridge and has no resources of its own (other than standard PC i/o addresses)
+           however it does control the isa bus and so we need to manually call enable childrens resources on that bus */
+	pci_dev_enable_resources(dev);
+	enable_childrens_resources(dev);
+
+}
+	
 static void southbridge_init(struct device *dev)
 {
 	vt8235_init(dev);
@@ -231,9 +252,9 @@ static void southbridge_init(struct device *dev)
 }
 
 static struct device_operations vt8235_lpc_ops = {
-	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
+	.read_resources   = vt8235_read_resources,
+	.set_resources    = vt8235_set_resources,
+	.enable_resources = vt8235_enable_resources,
 	.init             = &southbridge_init,
 	.scan_bus         = scan_static_bus,
 };

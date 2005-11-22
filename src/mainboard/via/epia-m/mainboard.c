@@ -25,7 +25,7 @@ static void vga_fixup(void) {
 
 }
  
-static void write_protect_vgabios(void)
+void write_protect_vgabios(void)
 {
  	device_t dev;
  

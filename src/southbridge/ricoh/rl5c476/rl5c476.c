@@ -14,10 +14,11 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
- * MA 02110-1301 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307 USA
  */
-
+/* (C) Copyright 2005 Nick Barker <nick.barker@btinternet.com
+   brought into line with the current architecture of LinuxBios */ 
 
 
 #include <arch/io.h>
@@ -26,8 +27,12 @@
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
 #include <console/console.h>
+#include <device/cardbus.h>
 #include "rl5c476.h"
 #include "chip.h"
+
+static int enable_cf_boot = 0;
+static unsigned int cf_base;
 
 static void udelay(int i){
 	for(; i > 0 ; i--)
@@ -35,185 +40,161 @@ static void udelay(int i){
 
 }
 
-static void
-dump_south(void)
-{
-	device_t dev0;
-	dev0 = dev_find_device(PCI_VENDOR_ID_RICOH, PCI_DEVICE_ID_RICOH_RL5C476, 0);
-	dev0 = dev_find_device(PCI_VENDOR_ID_RICOH, PCI_DEVICE_ID_RICOH_RL5C476, dev0);
-	int i,j;
-	
-	for(i = 0; i < 256; i += 16) {
-		printk_debug("0x%x: ", i);
-		for(j = 0; j < 16; j++) {
-			printk_debug("%02x ", pci_read_config8(dev0, i+j));
-		}
-		printk_debug("\n");
-	}
-	printk_debug("Card32\n");
-	for(i = 0 ; i < 256 ; i+=16){
-		printk_debug("0x%x: ",i);
-		for(j = 0 ; j < 16 ; j++){
-			printk_debug(" %02x",*(unsigned char *)(0x80000000+i+j));
-		}
-		printk_debug("\n");
-	}
-	printk_debug("Card16\n");
-	for(i = 0; i < 256; i += 16) {
-		printk_debug("0x%x: ", i);
-		for(j = 0; j < 16; j++) {
-			printk_debug("%02x ", *(unsigned char *)(0x80000800+ i+j));
-		}
-		printk_debug("\n");
-	}
-	printk_debug("CF Config\n");
-	for(i = 0 ; i < 256 ; i+=16){
-		printk_debug("0x%x: ",i);
-		for(j=0 ; j < 16 ; j++){
-			printk_debug("%02x ",*(unsigned char *)(0x81000200 + i + j));
-		}
-		printk_debug("\n");
-	}
-}
-
-
 static void rl5c476_init(device_t dev)
 {
 	//unsigned char enables;
 	pc16reg_t *pc16;
-	int i;
 
-#error "FIXME implement carbus bridge support"
-#error "FIXME this code is close to a but the conversion needs more work"
+	unsigned char *base;
+
 	/* cardbus controller function 1 for CF Socket */
 	printk_debug("rl5c476 init\n");
 
-	/* setup pci header manually because 'pci_device.c' doesn't know how to handle
-         * pci to cardbus bridges - (header type 2 I think)
-	 */
+	printk_debug("CF Base = %0x\n",cf_base);
 
-
-	/* initialize function zero - pcmcia socket so it behaves itself */
-	/* FIXME - statically put control memory at 0xe0000000 for now
-	 * one day the pci_device allocator might do this */
-	pci_write_config32(dev,0x10,0xe0000000);
-	pci_write_config8(dev,0x0d,0x20);
-	pci_write_config8(dev,0x19,0x02);
-	pci_write_config8(dev,0x1a,0x02);
-	pci_write_config8(dev,0x1b,0x20);
-	//pci_write_config8(dev,0x3c,0);
-	pci_write_config8(dev,0x82,0x00a0);
-	pci_write_config16(dev,0x04,0x07);
-
-	
-	/* get second function - i.e. compact flash socket */
-	dev = dev_find_device(PCI_VENDOR_ID_RICOH, PCI_DEVICE_ID_RICOH_RL5C476, dev);
-
-
-	/* FIXME - control structure statically declared at 0xe0008000 for now */
-	pci_write_config32(dev,0x10,0xe0008000);
-	pci_write_config8(dev,0x0d,0x20);
-	pci_write_config8(dev,0x19,0x03);
-	pci_write_config8(dev,0x1a,0x03);
-	pci_write_config8(dev,0x1b,0x20);
-
-	//pci_write_config8(dev,0x3c,0x0);
-	pci_write_config16(dev,0x3e,0x0780);
+	/* misc control register */
 	pci_write_config16(dev,0x82,0x00a0);
 
-	pci_write_config16(dev,0x04,0x07);
+	/* set up second slot as compact flash port if asked to do so */
+	if( enable_cf_boot && (PCI_FUNC(dev->path.u.pci.devfn) == 1)){ 
+
+		/* make sure isa interrupts are enabled */
+		pci_write_config16(dev,0x3e,0x0780);
+
+		/* pick up where 16 bit card control structure is (0x800 bytes into config structure) */
+		base = (unsigned char *)pci_read_config32(dev,0x10);
+		pc16 = (pc16reg_t *)(base + 0x800);
+
+		/* disable memory and io windows and turn off socket power */
+		pc16->pwctrl = 0;
+
+		/* disable irq lines */
+		pc16->igctrl = 0;
+
+		/* disable memory and I/O windows */
+		pc16->awinen = 0;
+
+		/* reset card, configure for I/O and set IRQ line */
+		pc16->igctrl = 0x69;
+
+		// set io window 0 for 1e0 - 1ef
+ 		/* note this now sets CF up on a contiguous I/O window of 16 bytes, 0x1e0 to 0x1ef
+                   Be warned that this is not a standard IDE address as automatically detected by the likes
+                   of Filo, and would need patching to recognise these addresses as an IDE drive */
+		/* an earlier version of this driver set up 2 io windows to emulate the expected addresses
+                   for IDE2, however the pcmcia package within Linux then could not re-initiailse the
+                   device as it tried to take control of it. So I belive it is easier to patch Filo or the like
+                   to pick up this drive rather than playing silly games as the kernel tries to boot.
+		*/
+		pc16->iostl0 = 0xe0;
+		pc16->iosth0 = 1;
+
+		pc16->iospl0 = 0xef;
+		pc16->iosph0 = 1;
+
+		pc16->ioffl0 = 0;
+		pc16->ioffh0 = 0;
+
+		// clear window 1
+		pc16->iostl1 = 0;
+		pc16->iosth1 = 0;
+
+		pc16->iospl1 = 0;
+		pc16->iosph1 = 0;
+
+		pc16->ioffl1 = 0x0;
+		pc16->ioffh1 = 0;
 
 
-	/* pick up where 16 bit card control structure is */
-	pc16 = (pc16reg_t *)(0xe0008800);
 
-	/* disable memory and io windows and turn off socket power */
-	pc16->pwctrl = 0;
-
-	/* disable irq lines */
-	pc16->igctrl = 0;
-
-	/* disable memory and I/O windows */
-	pc16->awinen = 0;
-
-	/* reset card, configure for I/O and set IRQ line */
-	pc16->igctrl = 0x69;
+		// set up CF config window
+		pc16->smpga0 = cf_base>>24;
+		pc16->smsth0 = (cf_base>>20)&0x0f;
+		pc16->smstl0 = (cf_base>>12)&0xff;
+		pc16->smsph0 = ((cf_base>>20)&0x0f) | 0x80;
+		pc16->smspl0 = (cf_base>>12)&0xff;
+		pc16->moffl0 = 0;
+		pc16->moffh0 = 0x40;
 
 
-	// set io window 0 for 1e8 - 1ef
-	pc16->iostl0 = 0xe8;
-	pc16->iosth0 = 1;
-
-	pc16->iospl0 = 0xef;
-	pc16->iosph0 = 1;
-
-	// add io offset of 8 so that CF card will decode 0x1e8 as 0x1f0 i.e. the first byte of
-	// a 16 byte aligned, 16 byte window etc
-	pc16->ioffl0 = 0x8;
-	pc16->ioffh0 = 0;
-
-	// set io window 1 for 3ed - 3ee
-	pc16->iostl1 = 0xed;
-	pc16->iosth1 = 3;
-
-	pc16->iospl1 = 0xee;
-	pc16->iosph1 = 3;
-
-	pc16->ioffl1 = 0x0;
-	pc16->ioffh1 = 0;
+		// set I/O width for Auto Data width
+		pc16->ioctrl = 0x22;
 
 
-	// FIXME statically declare CF config window at 0xe1000000
-	pc16->smstl0 = 0;
-	pc16->smsth0 = 0;
-	pc16->smspl0 = 0;
-	pc16->smsph0 = 0x80;
-	pc16->moffl0 = 0;
-	pc16->moffh0 = 0x40;
-	pc16->smpga0 = 0xe1;
-
-	// set I/O width for Auto Data width
-	pc16->ioctrl = 0x22;
+		// enable I/O window 0 and 1
+		pc16->awinen = 0xc1;
 
 
-	// enable I/O window 0 and 1
-	pc16->awinen = 0xc1;
+		pc16->miscc1 = 1;
 
-
-	pc16->miscc1 = 1;
-
-	// apply power and enable outputs
-	pc16->pwctrl = 0xb0;
+		// apply power and enable outputs
+		pc16->pwctrl = 0xb0;
 	
 
-	// delay could be optimised, but this works
-	udelay(100000);
+		// delay could be optimised, but this works
+		udelay(100000);
 	
-	pc16->igctrl = 0x69;
-
-	unsigned char *cptr;
-	cptr = (unsigned char *)(0xe1000200);
-	printk_debug("CF Config = %x\n",*cptr);
-
-	// FIX Me 16 bit CF always have first config byte at 0x200 into Config structure,
-        // but CF+ May Not according to spec - should locate through reading tuple data,
-        // but this will do for now !!!
+		pc16->igctrl = 0x69;
 
 
-	// set CF to decode 16 IO bytes on any 16 byte boundary - rely on the io
-	// windows of the bridge set up above to map those bytes into the 
-	// addresses for ide controller 3 (0x1e8 - 0x1ef and 0x3ed - 0x3ee)
-	*cptr = 0x41;
+		// 16 bit CF always have first config byte at 0x200 into Config structure,
+        	// but CF+ May Not according to spec - should locate through reading tuple data,
+        	// but this will do for now !!!
+		unsigned char *cptr;
+		cptr = (unsigned char *)(cf_base + 0x200);
+		printk_debug("CF Config = %x\n",*cptr);
 
+		// set CF to decode 16 IO bytes on any 16 byte boundary - rely on the io
+		// windows of the bridge set up above to map those bytes into the 
+		// addresses for ide controller 3 (0x1e8 - 0x1ef and 0x3ed - 0x3ee)
+		*cptr = 0x41;
+	}
+
+}
+
+void rl5c476_read_resources(device_t dev)
+{
+
+	struct resource *resource;
+
+   	 /* for cf socket we need an extra memory window for the control structure of the cf itself */
+	if( enable_cf_boot && (PCI_FUNC(dev->path.u.pci.devfn) == 1)){ 
+		resource = new_resource(dev,1);    /* fake index as it isn't in pci config space */
+		resource->flags |= IORESOURCE_MEM ;
+		resource->size = 0x1000;
+		resource->align = resource->gran = 12;
+		resource->limit= 0xffff0000;
+		//compute_allocate_resource(&dev->link[0],resource,resource->flags,resource->flags);
+	}
+	cardbus_read_resources(dev);
+
+}
+
+void rl5c476_set_resources(device_t dev)
+{
+
+	struct resource *resource;
+	printk_debug("%s In set resources \n",dev_path(dev));
+	if( enable_cf_boot && (PCI_FUNC(dev->path.u.pci.devfn) == 1)){
+		resource = find_resource(dev,1);
+		if( !(resource->flags & IORESOURCE_STORED) ){
+			resource->flags |= IORESOURCE_STORED ;
+			compute_allocate_resource(&dev->link[0],resource,resource->flags,resource->flags);
+			printk_debug("%s 1 ==> %x\n",dev_path(dev),resource->base); 
+			cf_base = resource->base;
+		}
+	}
+
+	pci_dev_set_resources(dev);
 
 }
 
 static struct device_operations ricoh_rl5c476_ops = {
-	.read_resources   = pci_bus_read_resources,
-	.set_resources    = pci_dev_set_resources,
-	.enable_resources = pci_bus_enable_resources,
-	.inti             = rl5c476_init,
-	.scan_bus         = pci_scan_bridge,
+	.read_resources   = rl5c476_read_resources,
+	.set_resources    = rl5c476_set_resources,
+	.enable_resources = cardbus_enable_resources,
+	.init             = rl5c476_init,
+	.scan_bus         = cardbus_scan_bridge,
 };
 
 static struct pci_driver ricoh_rl5c476_driver __pci_driver = {
@@ -222,7 +203,15 @@ static struct pci_driver ricoh_rl5c476_driver __pci_driver = {
 	.device = PCI_DEVICE_ID_RICOH_RL5C476,
 };
 
-struct chip_operations southbridge_ricoh_rl5c476_control = {
+void southbridge_init(device_t dev)
+{
+
+	struct southbridge_ricoh_rl5c476_config *conf = dev->chip_info;
+	enable_cf_boot = conf->enable_cf;
+
+}
+
+struct chip_operations southbridge_ricoh_rl5c476_ops = {
 	CHIP_NAME("RICOH RL5C476")
-	.enable    = southbridge_init,
+	.enable_dev    = southbridge_init,
 };

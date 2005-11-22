@@ -14,8 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
- * MA 02110-1301 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307 USA
  */
 
  /* vt1211 routines and defines*/
@@ -58,6 +58,25 @@ static void pnp_exit_ext_func_mode(device_t dev)
 	outb(0xaa, dev->path.u.pnp.port);
 }
 
+static void vt1211_set_iobase(device_t dev, unsigned index, unsigned iobase)
+{
+
+	switch (dev->path.u.pnp.device) {
+		case VT1211_FDC:
+		case VT1211_PP:
+		case VT1211_SP1:
+		case VT1211_SP2:
+			pnp_write_config(dev, index + 0, (iobase >> 2) & 0xff);
+			break;
+		case VT1211_HWM:
+		default:
+			pnp_write_config(dev, index + 0, (iobase >> 8) & 0xff);
+			pnp_write_config(dev, index + 1, iobase & 0xff);
+			break;
+	}
+	
+}
+
 static void init_hwm(unsigned long base)
 {
 	int i;
@@ -79,6 +98,9 @@ static void vt1211_init(struct device *dev)
 	}
 
 	switch (dev->path.u.pnp.device) {
+	case VT1211_FDC:
+	case VT1211_PP:
+		break;
 	case VT1211_SP1:
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		init_uart8250(res0->base, &conf->com1);
@@ -95,24 +117,12 @@ static void vt1211_init(struct device *dev)
 		printk_info("vt1211 asked to initialise unknown device!\n");
 	}
 	
-	/* activate com2
-	start_conf_pnp(3);
-	write_pnp(0x60,0xbe);
-	write_pnp(0x70,0x3);
-	write_pnp(0xf0,0x02);
-	write_pnp(0x30,0x01);
-	end_conf_pnp();
-
- 	// Activate the vt1211 hardware monitor
-	start_conf_pnp(0x0b);
-	write_pnp(0x60,0xec); 
-	write_pnp(0x30,1);
-	end_conf_pnp(); */
 
 }
 
 void vt1211_pnp_enable_resources(device_t dev)
 {
+	printk_debug("%s - enabling\n",dev_path(dev));
 	pnp_enter_ext_func_mode(dev);
 	pnp_enable_resources(dev);
 	pnp_exit_ext_func_mode(dev);
@@ -120,8 +130,54 @@ void vt1211_pnp_enable_resources(device_t dev)
 
 void vt1211_pnp_set_resources(struct device *dev)
 {
+	int i;
+	struct resource *resource;
+
+#if CONFIG_CONSOLE_SERIAL8250 == 1
+	if( dev->path.u.pnp.device == 2 ){
+		for( i = 0 ; i < dev->resources; i++){
+			resource = &dev->resource[i];
+			resource->flags |= IORESOURCE_STORED;
+			report_resource_stored(dev, resource, "");	
+		}
+		return;
+	}
+#endif
 	pnp_enter_ext_func_mode(dev);
-	pnp_set_resources(dev);
+	/* Select the device */
+	pnp_set_logical_device(dev);
+
+	/* Paranoia says I should disable the device here... */
+	for(i = 0; i < dev->resources; i++) {
+		resource = &dev->resource[i];
+		if (!(resource->flags & IORESOURCE_ASSIGNED)) {
+			printk_err("ERROR: %s %02x %s size: 0x%010Lx not assigned\n",
+				dev_path(dev), dev->resource->index,
+				resource_type(resource),
+				resource->size);
+			continue;
+		}
+
+		/* Now store the resource */
+		if (resource->flags & IORESOURCE_IO) {
+			vt1211_set_iobase(dev, resource->index, resource->base);
+		}
+		else if (resource->flags & IORESOURCE_DRQ) {
+			pnp_set_drq(dev, resource->index, resource->base);
+		}
+		else if (resource->flags  & IORESOURCE_IRQ) {
+			pnp_set_irq(dev, resource->index, resource->base);
+		}
+		else {
+			printk_err("ERROR: %s %02x unknown resource type\n",
+				dev_path(dev), resource->index);
+			return;
+		}
+		resource->flags |= IORESOURCE_STORED;
+
+		report_resource_stored(dev, resource, "");	
+	}
+
 	pnp_exit_ext_func_mode(dev);
 }
 
@@ -148,7 +204,7 @@ static struct pnp_info pnp_dev_info[] = {
 	{ &ops, VT1211_PP,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
 	{ &ops, VT1211_SP1, PNP_IO0 | PNP_IRQ0,            { 0x07f8, 0}, },
 	{ &ops, VT1211_SP2, PNP_IO0 | PNP_IRQ0,            { 0x07f8, 0}, },
-	{ &ops, VT1211_HWM, PNP_IO0 , { 0xfff8, 0 }, },
+	{ &ops, VT1211_HWM, PNP_IO0 , { 0xff00, 0 }, },
 };
 
 static void enable_dev(struct device *dev)

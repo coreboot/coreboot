@@ -10,6 +10,7 @@
 #include <bitops.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/x86/msr.h>
 #include "chip.h"
 #include "northbridge.h"
 
@@ -19,6 +20,18 @@
  * slower than normal, ethernet drops packets).
  * Apparently these registers govern some sort of bus master behavior.
  */
+static void dump_dev(device_t dev)
+{
+	int i,j;
+	
+	for(i = 0; i < 256; i += 16) {
+		printk_debug("0x%x: ", i);
+		for(j = 0; j < 16; j++) {
+			printk_debug("%02x ", pci_read_config8(dev, i+j));
+		}
+		printk_debug("\n");
+	}
+}
 static void northbridge_init(device_t dev) 
 {
 	device_t fb_dev;
@@ -44,21 +57,25 @@ static void northbridge_init(device_t dev)
 		/* Fixup GART and framebuffer addresses properly.
 		 * First setup frame buffer properly.
 		 */
-		fb = pci_read_config32(dev, 0x10);       /* Base addres of framebuffer */
+		//fb = pci_read_config32(dev, 0x10);       /* Base addres of framebuffer */
+		fb = 0xd0000000;
 		printk_debug("Frame buffer at %8x\n",fb);
 
 		c = pci_read_config8(dev, 0xe1) & 0xf0;  /* size of vga */
 		c |= fb>>28;  /* upper nibble of frame buffer address */
+		c = 0xdd;
 		pci_write_config8(dev, 0xe1, c);
-		c = (fb>>20) | 1;                        /* enable framebuffer */
+		c = 0x81;                                /* enable framebuffer */
 		pci_write_config8(dev, 0xe0, c);
 		pci_write_config8(dev, 0xe2, 0x42);      /* 'cos award does */
 	}
+	//dump_dev(dev);
 }
 
+static void nullfunc(){}
 
 static struct device_operations northbridge_operations = {
-	.read_resources   = pci_dev_read_resources,
+	.read_resources   = nullfunc,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = northbridge_init
@@ -80,10 +97,11 @@ static void agp_init(device_t dev)
 	pci_write_config8(dev, 0x43, 0x44);
 	pci_write_config8(dev, 0x44, 0x34);
 	pci_write_config8(dev, 0x83, 0x02);
+	//dump_dev(dev);
 }
 
 static struct device_operations agp_operations = {
-	.read_resources   = pci_bus_read_resources,
+	.read_resources   = nullfunc,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_bus_enable_resources,
 	.init             = agp_init,
@@ -100,12 +118,64 @@ static struct pci_driver agp_driver __pci_driver = {
 static void vga_init(device_t dev)
 {
 //	unsigned long fb;
+	msr_t clocks1,clocks2,instructions,setup;
 
 	printk_debug("VGA random fixup ...\n");
 	pci_write_config8(dev, 0x04, 0x07);
 	pci_write_config8(dev, 0x0d, 0x20);
+	pci_write_config32(dev,0x10,0xd8000008);
+	pci_write_config32(dev,0x14,0xdc000000);
+
+	//dump_dev(dev);
 	
-	/* Set the vga mtrrs - disable for the moment */
+	// set up performnce counters for debugging vga init sequence
+	//setup.lo = 0x1c0; // count instructions
+	//wrmsr(0x187,setup);
+	//instructions.hi = 0;
+	//instructions.lo = 0;
+	//wrmsr(0xc2,instructions);
+	//clocks1 = rdmsr(0x10);
+
+	
+#if 0
+	/* code to make vga init go through the emulator - as of yet this does not workfor the epia-m */
+	dev->on_mainboard=1;
+	dev->rom_address = (void *)0xfffc0000;
+
+	pci_dev_init(dev);
+	
+	call_bios_interrupt(0x10,0x4f1f,0x8003,1,0);
+	
+	//clocks2 = rdmsr(0x10);
+	//instructions = rdmsr(0xc2);
+	
+	printk_debug("Clocks 1 = %08x:%08x\n",clocks1.hi,clocks1.lo);
+	printk_debug("Clocks 2 = %08x:%08x\n",clocks2.hi,clocks2.lo);
+	printk_debug("Instructions = %08x:%08x\n",instructions.hi,instructions.lo);
+
+#else
+
+	/* code to make vga init run in real mode - does work but against the current Linuxbios philosophy */
+	printk_debug("INSTALL REAL-MODE IDT\n");
+        setup_realmode_idt();
+        printk_debug("DO THE VGA BIOS\n");
+        do_vgabios();
+
+	//clocks2 = rdmsr(0x10);
+	//instructions = rdmsr(0xc2);
+	
+	//printk_debug("Clocks 1 = %08x:%08x\n",clocks1.hi,clocks1.lo);
+	//printk_debug("Clocks 2 = %08x:%08x\n",clocks2.hi,clocks2.lo);
+	//printk_debug("Instructions = %08x:%08x\n",instructions.hi,instructions.lo);
+
+        vga_enable_console();
+	
+#endif
+
+
+	pci_write_config32(dev,0x30,0);
+
+	/* Set the vga mtrrs - disable for the moment as the add_var_mtrr function has vapourised */
 #if 0
 	add_var_mtrr( 0xd0000000 >> 10, 0x08000000>>10, MTRR_TYPE_WRCOMB);
 	fb = pci_read_config32(dev,0x10); // get the fb address
@@ -113,8 +183,17 @@ static void vga_init(device_t dev)
 #endif
 }
 
+static void vga_read_resources(device_t dev)
+{
+
+	dev->rom_address = (void *)0xfffc0000;
+	dev->on_mainboard=1;
+	pci_dev_read_resources(dev);
+
+}
+
 static struct device_operations vga_operations = {
-	.read_resources   = pci_dev_read_resources,
+	.read_resources   = vga_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = vga_init,

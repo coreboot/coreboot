@@ -3,7 +3,49 @@
  * 2004.11 yhlu add d0 e0 support
  * 2004.12 yhlu add dual core support
  * 2005.02 yhlu add e0 memory hole support
+
 */
+/*============================================================================
+Copyright 2005 ADVANCED MICRO DEVICES, INC. All Rights Reserved.
+This software and any related documentation (the "Materials") are the
+confidential proprietary information of AMD. Unless otherwise provided in a
+software agreement specifically licensing the Materials, the Materials are
+provided in confidence and may not be distributed, modified, or reproduced in
+whole or in part by any means.
+LIMITATION OF LIABILITY: THE MATERIALS ARE PROVIDED "AS IS" WITHOUT ANY
+EXPRESS OR IMPLIED WARRANTY OF ANY KIND, INCLUDING BUT NOT LIMITED TO
+WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT, TITLE, FITNESS FOR ANY
+PARTICULAR PURPOSE, OR WARRANTIES ARISING FROM CONDUCT, COURSE OF DEALING, OR
+USAGE OF TRADE. IN NO EVENT SHALL AMD OR ITS LICENSORS BE LIABLE FOR ANY
+DAMAGES WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR LOSS OF PROFITS,
+BUSINESS INTERRUPTION, OR LOSS OF INFORMATION) ARISING OUT OF THE USE OF OR
+INABILITY TO USE THE MATERIALS, EVEN IF AMD HAS BEEN ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGES. BECAUSE SOME JURISDICTIONS PROHIBIT THE EXCLUSION
+OR LIMITATION OF LIABILITY FOR CONSEQUENTIAL OR INCIDENTAL DAMAGES, THE ABOVE
+LIMITATION MAY NOT APPLY TO YOU.
+AMD does not assume any responsibility for any errors which may appear in the
+Materials nor any responsibility to support or update the Materials. AMD
+retains the right to modify the Materials at any time, without notice, and is
+not obligated to provide such modified Materials to you.
+NO SUPPORT OBLIGATION: AMD is not obligated to furnish, support, or make any
+further information, software, technical information, know-how, or show-how
+available to you.
+U.S. GOVERNMENT RESTRICTED RIGHTS: The Materials are provided with "RESTRICTED
+RIGHTS." Use, duplication, or disclosure by the Government is subject to the
+restrictions as set forth in FAR 52.227-14 and DFAR 252.227-7013, et seq., or
+its successor. Use of the Materials by the Government constitutes
+acknowledgement of AMD's proprietary rights in them.
+============================================================================*/
+//@DOC
+// in model_fxx_init.c
+/*
+$1.0$
+*/
+// Description: microcode patch support for k8
+// by yhlu
+//
+//============================================================================
+
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
@@ -18,10 +60,23 @@
 #include "../../../northbridge/amd/amdk8/amdk8.h"
 #include "../../../northbridge/amd/amdk8/cpu_rev.c"
 #include <cpu/cpu.h>
+#include <cpu/amd/microcode.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/mem.h>
 #include <cpu/amd/dualcore.h>
+
+static uint8_t microcode_updates[] __attribute__ ((aligned(16))) = {
+
+#include "microcode_rev_c.h"
+#include "microcode_rev_d.h"
+#include "microcode_rev_e.h"
+        /*  Dummy terminator  */
+        0x0, 0x0, 0x0, 0x0,
+        0x0, 0x0, 0x0, 0x0,
+        0x0, 0x0, 0x0, 0x0,
+        0x0, 0x0, 0x0, 0x0,
+};
 
 #include "model_fxx_msr.h"
 
@@ -365,17 +420,64 @@ static inline void k8_errata(void)
 	
 }
 
+static unsigned id_mapping_table[] = {
+	0x0f48, 0x0048,
+	0x0f58, 0x0048,
+
+	0x0f4a, 0x004a,
+	0x0f5a, 0x004a,
+	0x0f7a, 0x004a,
+	0x0f82, 0x004a,
+	0x0fc0, 0x004a,
+	0x0ff0, 0x004a,
+
+	0x10f50, 0x0150,
+	0x10f70, 0x0150,
+	0x10f80, 0x0150,
+	0x10fc0, 0x0150,
+	0x10ff0, 0x0150,
+
+	0x20f10, 0x0210,
+	0x20f12, 0x0210,
+	0x20f32, 0x0210,
+	0x20fb1, 0x0210,	
+
+}; 
+
+static unsigned get_equivalent_processor_rev_id(unsigned orig_id) {
+	unsigned new_id;
+	int i;
+	
+	new_id = 0;
+
+	for(i=0; i<sizeof(id_mapping_table); i+=2 ) {
+		if(id_mapping_table[i]==orig_id) {
+			new_id = id_mapping_table[i+1];
+			break;
+		}
+	}
+
+	return new_id;	
+
+}
+
 void model_fxx_init(device_t cpu)
 {
 	unsigned long i;
 	msr_t msr;
 	struct node_core_id id;
+	unsigned equivalent_processor_rev_id;
 
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
 	amd_setup_mtrrs();
 	x86_mtrr_check();
 
+        /* Update the microcode */
+	equivalent_processor_rev_id = get_equivalent_processor_rev_id(cpu->device );
+	if(equivalent_processor_rev_id != 0)
+	        amd_update_microcode(microcode_updates, equivalent_processor_rev_id);
+	
 	disable_cache();
 	
 	/* zero the machine check error status registers */

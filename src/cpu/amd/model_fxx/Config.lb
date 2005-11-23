@@ -11,5 +11,6 @@ dir /cpu/x86/cache
 dir /cpu/x86/pae
 dir /cpu/amd/mtrr
 dir /cpu/amd/dualcore
+dir /cpu/amd/microcode
 driver model_fxx_init.o
 object apic_timer.o

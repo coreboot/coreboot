@@ -65,6 +65,13 @@ function create_config
 	VENDOR=$1
 	MAINBOARD=$2
 	TARCH=$( architecture $VENDOR $MAINBOARD )
+	TARGCONFIG=$LBROOT/targets/$VENDOR/$MAINBOARD/Config-abuild.lb
+        if [ -f $TARGCONFIG ]; then
+        	cp $TARGCONFIG $TARGET/Config-${VENDOR}_${MAINBOARD}.lb
+		echo "Used existing test target $TARGCONFIG"
+		return 
+	fi
+
 	echo -n "  Creating config file..."
 	mkdir -p $TARGET
 	( cat << EOF

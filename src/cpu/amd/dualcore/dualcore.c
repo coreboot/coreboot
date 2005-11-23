@@ -2,6 +2,31 @@
 
 #include "cpu/amd/dualcore/dualcore_id.c"
 
+static inline unsigned get_core_num_in_bsp(unsigned nodeid)
+{
+        return ((pci_read_config32(PCI_DEV(0, 0x18+nodeid, 3), 0xe8)>>12) & 3);
+}
+
+static inline uint8_t set_apicid_cpuid_lo(void) 
+{
+        if(is_cpu_pre_e0()) return 0; // pre_e0 can not be set
+
+
+        if(read_option(CMOS_VSTART_dual_core, CMOS_VLEN_dual_core, 0) != 0)  { // disable dual_core
+                return 0;
+        }
+
+                // set the NB_CFG[54]=1; why the OS will be happy with that ???
+        msr_t msr;
+        msr = rdmsr(NB_CFG_MSR);
+        msr.hi |= (1<<(54-32)); // InitApicIdCpuIdLo
+        wrmsr(NB_CFG_MSR, msr);
+
+        return 1;
+
+}
+
+#if USE_DCACHE_RAM == 0
 static void do_k8_init_and_stop_secondaries(void)
 {
 	struct node_core_id id;
@@ -72,3 +97,5 @@ static void k8_init_and_stop_secondaries(void)
 
 	do_k8_init_and_stop_secondaries();
 }
+
+#endif

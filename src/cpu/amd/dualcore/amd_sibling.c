@@ -15,6 +15,7 @@
 
 static int first_time = 1;
 static int disable_siblings = !CONFIG_LOGICAL_CPUS;
+
 void amd_sibling_init(device_t cpu, struct node_core_id id)
 {
 	unsigned long i;
@@ -93,9 +94,13 @@ struct node_core_id get_node_core_id(void)
 	return id;
 }
 
+unsigned int read_nb_cfg_54(void)
+{
+        msr_t msr;
+        msr = rdmsr(NB_CFG_MSR);
+        return ( ( msr.hi >> (54-32)) & 1);
+}
 
-
-#if 0
 static int get_max_siblings(int nodes)
 {
 	device_t dev;
@@ -160,20 +165,6 @@ unsigned get_apicid_base(unsigned ioapic_num)
 
 	nb_cfg_54 = read_nb_cfg_54();
 
-#if 0
-	//it is for all e0 single core and nc_cfg_54 low is set, but in the auto.c stage we do not set that bit for it.
-	if(nb_cfg_54 && (!disable_siblings) && (siblings == 0)) {
-		//we need to check if e0 single core is there
-		int i;
-		for(i=0; i<nodes; i++) {
-			if(is_e0_later_in_bsp(i)) {
-				siblings = 1;
-				break;
-			}
-		}
-	}
-#endif
-
 	//contruct apicid_base
 
 	if((!disable_siblings) && (siblings>0) ) {
@@ -199,4 +190,3 @@ unsigned get_apicid_base(unsigned ioapic_num)
 	return apicid_base;
 }
 
-#endif

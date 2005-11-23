@@ -192,6 +192,17 @@ static void enable_routing(u8 node)
 	print_spew(" done.\r\n");
 }
 
+static void enable_apic_ext_id(u8 node)
+{
+
+	u32 val;
+
+        val = pci_read_config32(NODE_HT(node), 0x68);
+        val |= (HTTC_APIC_EXT_SPUR | HTTC_APIC_EXT_ID | HTTC_APIC_EXT_BRD_CST);
+        pci_write_config32(NODE_HT(node), 0x68, val);
+}
+
+
 static void fill_row(u8 node, u8 row, u32 value)
 {
 	pci_write_config32(NODE_HT(node), 0x40+(row<<2), value);

@@ -15,6 +15,11 @@ struct node_core_id {
 	unsigned coreid:8;
 };
 
+static inline unsigned get_initial_apicid(void)
+{
+	return ((cpuid_ebx(1) >> 24) & 0xf);
+}
+
 static inline struct node_core_id get_node_core_id(unsigned nb_cfg_54) {
 	struct node_core_id id;
 	//    get the apicid via cpuid(1) ebx[27:24]

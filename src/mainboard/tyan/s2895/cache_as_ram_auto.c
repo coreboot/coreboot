@@ -110,12 +110,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
  /* tyan does not want the default */
 #include "resourcemap.c" 
 
-#if CONFIG_LOGICAL_CPUS==1
-#define SET_NB_CFG_54 1
 #include "cpu/amd/dualcore/dualcore.c"
-#else
-#include "cpu/amd/model_fxx/node_id.c"
-#endif
 
 #define FIRST_CPU  1
 #define SECOND_CPU 1
@@ -140,6 +135,10 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "southbridge/nvidia/ck804/ck804_early_setup.c"
 
 #include "cpu/amd/car/copy_and_run.c"
+
+#include "cpu/amd/car/post_cache_as_ram.c"
+
+#include "cpu/amd/model_fxx/init_cpus.c"
 
 #if USE_FALLBACK_IMAGE == 1
 
@@ -180,28 +179,12 @@ static void sio_setup(void)
 
 }
 
-void real_main(unsigned long bist);
+void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
 
-void amd64_main(unsigned long bist)
+void amd64_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-#if CONFIG_LOGICAL_CPUS==1
-        struct node_core_id id;
-#else
-        unsigned nodeid;
-#endif
-        /* Make cerain my local apic is useable */
-//        enable_lapic();
-        
-#if CONFIG_LOGICAL_CPUS==1
-        id = get_node_core_id_x();
         /* Is this a cpu only reset? */
-        if (cpu_init_detected(id.nodeid)) {
-#else   
-//        nodeid = lapicid() & 0xf;
-        nodeid = get_node_id();
-        /* Is this a cpu only reset? */
-        if (cpu_init_detected(nodeid)) {
-#endif
+        if (cpu_init_detectedx) {
                 if (last_boot_normal()) {
                         goto normal_image;
                 } else {
@@ -242,7 +225,7 @@ void amd64_main(unsigned long bist)
  normal_image:
         __asm__ volatile ("jmp __normal_image"
                 : /* outputs */
-                : "a" (bist) /* inputs */
+                : "a" (bist), "b" (cpu_init_detectedx) /* inputs */
                 );
  cpu_reset:
 #if 0
@@ -254,11 +237,11 @@ void amd64_main(unsigned long bist)
 #endif
 
  fallback_image:
-        real_main(bist);
+        real_main(bist, cpu_init_detectedx);
 }
-void real_main(unsigned long bist)
+void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #else
-void amd64_main(unsigned long bist)
+void amd64_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #endif
 {
 	static const struct mem_controller cpu[] = {
@@ -291,80 +274,8 @@ void amd64_main(unsigned long bist)
 	unsigned cpu_reset = 0;
 
         if (bist == 0) {
-#if CONFIG_LOGICAL_CPUS==1
-        	struct node_core_id id;
-#else
-	        unsigned nodeid;
-#endif
-                /* Skip this if there was a built in self test failure */
-//                amd_early_mtrr_init(); # don't need, already done in cache_as_ram
-
-#if CONFIG_LOGICAL_CPUS==1
-                set_apicid_cpuid_lo();
-                id = get_node_core_id_x(); // that is initid
-        #if ENABLE_APIC_EXT_ID == 1
-                if(id.coreid == 0) {
-                        enable_apic_ext_id(id.nodeid);
-                }
-        #endif
-#else
-                nodeid = get_node_id();
-        #if ENABLE_APIC_EXT_ID == 1
-                enable_apic_ext_id(nodeid);
-        #endif
-#endif
-
-		enable_lapic();
-
-//                init_timer();
-
-
-#if CONFIG_LOGICAL_CPUS==1
-        #if ENABLE_APIC_EXT_ID == 1
-            #if LIFT_BSP_APIC_ID == 0
-                if( id.nodeid != 0 ) //all except cores in node0
-            #endif
-                        lapic_write(LAPIC_ID, ( lapic_read(LAPIC_ID) | (APIC_ID_OFFSET<<24) ) );
-        #endif
-                if(id.coreid == 0) {
-                        if (cpu_init_detected(id.nodeid)) {
-//                                __asm__ volatile ("jmp __cpu_reset");
-                                cpu_reset = 1;
-                                goto cpu_reset_x;
-                        }
-                        distinguish_cpu_resets(id.nodeid);
-//                        start_other_core(id.nodeid);
-                }
-#else
-        #if ENABLE_APIC_EXT_ID == 1
-            #if LIFT_BSP_APIC_ID == 0
-                if(nodeid != 0)
-            #endif
-                        lapic_write(LAPIC_ID, ( lapic_read(LAPIC_ID) | (APIC_ID_OFFSET<<24) ) ); // CPU apicid is from 0x10
-
-        #endif
-                if (cpu_init_detected(nodeid)) {
-//                                __asm__ volatile ("jmp __cpu_reset");
-                                cpu_reset = 1;
-                                goto cpu_reset_x;
-                }
-                distinguish_cpu_resets(nodeid);
-#endif
-
-
-                if (!boot_cpu()
-#if CONFIG_LOGICAL_CPUS==1 
-                        || (id.coreid != 0)
-#endif
-                ) {
-			// We need stop the CACHE as RAM for this CPU too
-			#include "cpu/amd/car/cache_as_ram_post.c"
-                        stop_this_cpu(); // it will stop all cores except core0 of cpu0
-                }
+		init_cpus(cpu_init_detectedx, sizeof(cpu)/sizeof(cpu[0]), cpu);
         }
-
-	init_timer(); // only do it it first CPU
-
 
 	lpc47b397_enable_serial(SERIAL_DEV, TTYS0_BASE);
         uart_init();
@@ -376,11 +287,6 @@ void amd64_main(unsigned long bist)
         setup_s2895_resource_map();
 
 	needs_reset = setup_coherent_ht_domain();
-
-#if CONFIG_LOGICAL_CPUS==1
-        // It is said that we should start core1 after all core0 launched
-        start_other_cores();
-#endif
 
         needs_reset |= ht_setup_chains_x();
 
@@ -395,88 +301,7 @@ void amd64_main(unsigned long bist)
 
 	memreset_setup();
 	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
+	
+	post_cache_as_ram(cpu_reset);
 
-#if 1
-	{	
-	/* Check value of esp to verify if we have enough rom for stack in Cache as RAM */
-	unsigned v_esp;
-        __asm__ volatile (
-	        "movl	%%esp, %0\n\t"
-                : "=a" (v_esp)
-        );
-#if CONFIG_USE_INIT
-	printk_debug("v_esp=%08x\r\n", v_esp); 
-#else
-	print_debug("v_esp="); print_debug_hex32(v_esp); print_debug("\r\n");
-#endif
-	}
-
-#endif
-#if 1
-
-cpu_reset_x:    
-
-#if CONFIG_USE_INIT
-	printk_debug("cpu_reset = %08x\r\n",cpu_reset);
-#else
-	print_debug("cpu_reset = "); print_debug_hex32(cpu_reset); print_debug("\r\n");
-#endif
-
-        if(cpu_reset == 0) {
-                print_debug("Clearing initial memory region: ");
-        }       
-        print_debug("No cache as ram now - ");
-        
-        /* store cpu_reset to ebx */
-        __asm__ volatile (
-                "movl %0, %%ebx\n\t"
-                ::"a" (cpu_reset)
-        );      
-
-        if(cpu_reset==0) {
-#define CLEAR_FIRST_1M_RAM 1
-#include "cpu/amd/car/cache_as_ram_post.c"
-        }
-        else {
-#undef CLEAR_FIRST_1M_RAM 
-#include "cpu/amd/car/cache_as_ram_post.c"
-        }
-
-        __asm__ volatile (
-                /* set new esp */ /* before _RAMBASE */
-                "subl   %0, %%ebp\n\t"
-                "subl   %0, %%esp\n\t"
-                ::"a"( (DCACHE_RAM_BASE + DCACHE_RAM_SIZE)- _RAMBASE )
-        );
-
-        {
-                unsigned new_cpu_reset;
-
-                /* get back cpu_reset from ebx */
-                __asm__ volatile (
-                        "movl %%ebx, %0\n\t"
-                        :"=a" (new_cpu_reset)
-                );
-
-                /* We can not go back any more, we lost old stack data in cache as ram*/
-                if(new_cpu_reset==0) {
-                        print_debug("Use Ram as Stack now - done\r\n");
-                } else
-                {  
-                        print_debug("Use Ram as Stack now - \r\n");
-                }
-#if CONFIG_USE_INIT
-		printk_debug("new_cpu_reset = %08x\r\n", new_cpu_reset);
-#else
-                print_debug("new_cpu_reset = "); print_debug_hex32(new_cpu_reset); print_debug("\r\n");
-#endif
-
-                /*copy and execute linuxbios_ram */
-                copy_and_run(new_cpu_reset);
-                /* We will not return */
-        }
-#endif
-
-
-        print_err("should not be here -\r\n");
 }

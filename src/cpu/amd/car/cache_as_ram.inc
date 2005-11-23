@@ -8,10 +8,17 @@
 
 	/* Save the BIST result */
 	movl    %eax, %ebp
+	
+	// for normal part %ebx already contain cpu_init_detected from fallback call
 
 CacheAsRam:
 	/* hope we can skip the double set for normal part */
 #if USE_FALLBACK_IMAGE == 1
+
+	movl	$MTRRdefType_MSR, %ecx
+	rdmsr
+	andl $0x00000800, %eax
+	movl %eax, %ebx ;  // We store the status about if cpu_init_detected
 	
 	/* Set MtrrFixDramModEn for clear fixed mtrr */
 	xorl	%eax, %eax			# clear %eax and %edx
@@ -53,7 +60,6 @@ clear_fixed_var_mtrr_out:
         orl     $(SYSCFG_MSR_MtrrVarDramEn | SYSCFG_MSR_MtrrFixDramEn), %eax
         wrmsr
 
-#if 1
 #if CacheSize == 0x10000 
         /* enable caching for 64K using fixed mtrr */
         movl    $0x268, %ecx  /* fix4k_c0000*/
@@ -85,30 +91,6 @@ clear_fixed_var_mtrr_out:
 #endif
 	xorl    %eax, %eax
 	wrmsr
-
-#else
-        /* enable caching for 64K using variable mtrr */
-        movl    $0x200, %ecx
-        xorl    %edx, %edx
-        movl     $(CacheBase | MTRR_TYPE_WRBACK), %eax
-        wrmsr
-
-        movl    $0x201, %ecx
-        movl    $0x0000000f, %edx /* AMD 40 bit 0xff*/
-        movl    $((~((CacheBase + CacheSize) - 1)) | 0x800), %eax
-        wrmsr  
-	
-	/* make it to be IO by clearing RD Dram and WR Dram */
-	movl    $IORR0_BASE, %ecx
-        xorl    %edx, %edx
-        movl    $CacheBase, %eax             /* bit 3, and bit 4 = 0 mean clear RD ram and WR ram */
-        wrmsr
-
-        movl    $IORR0_MASK, %ecx
-        movl    $0x000000ff, %edx
-        movl    $(~((CacheBase + CacheSize) - 1) | 0x800), %eax
-        wrmsr 
-#endif
 
         /* enable memory access for 0 - 1MB using top_mem */
         movl    $TOP_MEM, %ecx
@@ -145,7 +127,6 @@ clear_fixed_var_mtrr_out:
 
 #if USE_FALLBACK_IMAGE == 1
 
-
         /* Read the range with lodsl*/
         movl    $(CacheBase+CacheSize-4), %esi
         std
@@ -157,36 +138,6 @@ clear_fixed_var_mtrr_out:
         xorl    %eax, %eax
         rep     stosl
 
-#if 0
-	/* check the cache as ram */
-	movl  $CacheBase, %esi
-	movl    $(CacheSize>>2), %ecx
-.xin1:
-	movl  %esi, %eax
-	movl  %eax, (%esi)
-        movl    $0x1000, %edx
-	movb	%ah, %al
-.testx1:  
-        outb %al, $0x80
-        decl    %edx
-	jnz .testx1
-
-	movl  (%esi), %eax
-	cmpb 0xff, %al
-	je .xin2  /* dont show */
-        movl    $0x1000, %edx
-.testx2:
-        outb %al, $0x80
-        decl    %edx
-        jnz .testx2
-
-.xin2:	decl     %ecx
-        je      .xout1
-        add     $4, %esi
-        jmp     .xin1
-.xout1:
-
-#endif
 #endif /*USE_FALLBACK_IMAGE == 1*/
 
 
@@ -198,6 +149,7 @@ clear_fixed_var_mtrr_out:
 	movl    %ebp, %eax
 	/* We need to set ebp ? No need */
 	movl	%esp, %ebp
+	pushl %ebx  /* init detected */
 	pushl %eax  /* bist */
 	call    amd64_main
 	/* We will not go back */

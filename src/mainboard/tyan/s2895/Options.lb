@@ -136,10 +136,10 @@ default CONFIG_PCI_ROM_RUN=1
 ##
 ## enable CACHE_AS_RAM specifics
 ##
-default USE_DCACHE_RAM=0
+default USE_DCACHE_RAM=1
 default DCACHE_RAM_BASE=0xcf000
 default DCACHE_RAM_SIZE=0x1000
-default CONFIG_USE_INIT=0
+default CONFIG_USE_INIT=1
 
 ##
 ## Build code to setup a generic IOAPIC

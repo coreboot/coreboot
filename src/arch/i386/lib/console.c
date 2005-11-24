@@ -191,7 +191,7 @@ extern int do_printk(int msg_level, const char *fmt, ...);
 #endif
 #if MAXIMUM_CONSOLE_LOGLEVEL <= BIOS_ALERT
 #undef  printk_alert
-#define printk_alart(fmt, arg...)   do {} while(0)
+#define printk_alert(fmt, arg...)   do {} while(0)
 #endif
 #if MAXIMUM_CONSOLE_LOGLEVEL <= BIOS_CRIT
 #undef  printk_crit

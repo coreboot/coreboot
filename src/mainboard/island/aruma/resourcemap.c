@@ -1,5 +1,5 @@
 /*
- * Island Aruma needs a different resource map
+ * Agami Aruma needs a different resource map
  *
  */
 

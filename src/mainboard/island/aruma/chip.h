@@ -1,5 +1,5 @@
-extern struct chip_operations mainboard_island_aruma_ops;
+extern struct chip_operations mainboard_agami_aruma_ops;
 
-struct mainboard_island_aruma_config {
+struct mainboard_agami_aruma_config {
 	int nothing;
 };

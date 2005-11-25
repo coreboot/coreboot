@@ -333,7 +333,7 @@ static void enable_dev(struct device *dev)
 {
 	dev->ops = &mainboard_operations;
 }
-struct chip_operations mainboard_island_aruma_ops = {
+struct chip_operations mainboard_agami_aruma_ops = {
 	.enable_dev = enable_dev, 
 };
 

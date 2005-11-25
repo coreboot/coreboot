@@ -129,7 +129,7 @@ mainboardinit cpu/x86/mmx/disable_mmx.inc
 dir /pc80
 config chip.h
 
-# config for arima/hdama
+# config for agami/aruma
 chip northbridge/amd/amdk8/root_complex
         device apic_cluster 0 on
                 chip cpu/amd/socket_940

@@ -38,6 +38,8 @@ struct i2c_path
 struct apic_path
 {
 	unsigned apic_id;
+	unsigned node_id;
+	unsigned core_id;
 };
 
 struct apic_cluster_path

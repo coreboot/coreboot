@@ -692,7 +692,7 @@ static void pci_domain_set_resources(device_t dev)
 	/* Round mmio_basek to something the processor can support */
 	mmio_basek &= ~((1 << 6) -1);
 
-	idx = 10;
+	idx = 0x10;
 	for(i = 0; i < 8; i++) {
 		uint32_t base, limit;
 		unsigned basek, limitk, sizek;
@@ -708,7 +708,8 @@ static void pci_domain_set_resources(device_t dev)
 
 		/* see if we need a hole from 0xa0000 to 0xbffff */
 		if ((basek < ((8*64)+(8*16))) && (sizek > ((8*64)+(16*16)))) {
-			ram_resource(dev, idx++, basek, ((8*64)+(8*16)) - basek);
+			ram_resource(dev, (idx | i), basek, ((8*64)+(8*16)) - basek);
+			idx += 0x10;
 			basek = (8*64)+(16*16);
 			sizek = limitk - ((8*64)+(16*16));
 			
@@ -720,7 +721,8 @@ static void pci_domain_set_resources(device_t dev)
 			if (basek < mmio_basek) {
 				unsigned pre_sizek;
 				pre_sizek = mmio_basek - basek;
-				ram_resource(dev, idx++, basek, pre_sizek);
+				ram_resource(dev, (idx | i), basek, pre_sizek);
+				idx += 0x10;
 				sizek -= pre_sizek;
 				if(! is_cpu_pre_e0() ) { 
 				    	sizek += hoist_memory(mmio_basek,i);
@@ -735,7 +737,8 @@ static void pci_domain_set_resources(device_t dev)
 				sizek -= (4*1024*1024 - mmio_basek);
 			}
 		}
-		ram_resource(dev, idx++, basek, sizek);
+		ram_resource(dev, (idx | i), basek, sizek);
+		idx += 0x10;
 	}
 	assign_resources(&dev->link[0]);
 }
@@ -838,6 +841,8 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 			
 		/* Report what I have done */
 		if (cpu) {
+                        cpu->path.u.apic.node_id = i;
+                        cpu->path.u.apic.core_id = 0;
 			printk_debug("CPU: %s %s\n",
 			dev_path(cpu), cpu->enabled?"enabled":"disabled");
 		}

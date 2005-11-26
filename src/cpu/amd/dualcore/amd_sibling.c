@@ -49,10 +49,14 @@ void amd_sibling_init(device_t cpu, struct node_core_id id)
 			cpu_path.type = DEVICE_PATH_APIC;
 			cpu_path.u.apic.apic_id = 
 				(0x10 + i*0x10 + id.nodeid);
+
 			new = alloc_dev(cpu->bus, &cpu_path);
 			if (!new) {
 				continue;
 			}
+
+                        new->path.u.apic.node_id = cpu->path.u.apic.node_id;
+                        new->path.u.apic.core_id = i;
 			/* Report what I have done */
 			printk_debug("CPU: %s %s\n",
 				dev_path(new), new->enabled?"enabled":"disabled");

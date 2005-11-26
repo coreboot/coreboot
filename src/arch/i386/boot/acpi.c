@@ -7,6 +7,9 @@
  * ACPI FADT, FACS, and DSDT table support added by 
  * Nick Barker <nick.barker9@btinternet.com>, and those portions
  *  (C) Copyright 2004 Nick Barker
+ *
+ * Copyright 2005 ADVANCED MICRO DEVICES, INC. All Rights Reserved.
+ * 2005.9 yhlu add SRAT relate
  */
 
 /* 
@@ -40,8 +43,10 @@ u8 acpi_checksum(u8 *table, u32 length)
 void acpi_add_table(acpi_rsdt_t *rsdt, void *table)
 {
 	int i;
-
-	for (i=0; i<8; i++) {
+	
+	int entries_num = sizeof(rsdt->entry)/sizeof(rsdt->entry[0]);
+	
+	for (i=0; i<entries_num; i++) {
 		if(rsdt->entry[i]==0) {
 			rsdt->entry[i]=(u32)table;
 			/* fix length to stop kernel winging about invalid entries */
@@ -52,7 +57,7 @@ void acpi_add_table(acpi_rsdt_t *rsdt, void *table)
 			rsdt->header.checksum=acpi_checksum((u8 *)rsdt,
 					rsdt->header.length);
 			
-			printk_debug("ACPI: added table %d/8 Length now %d\n",i+1,rsdt->header.length);
+			printk_debug("ACPI: added table %d/%d Length now %d\n",i+1, entries_num, rsdt->header.length);
 			return;
 		}
 	}
@@ -133,12 +138,69 @@ void acpi_create_madt(acpi_madt_t *madt)
 	madt->lapic_addr= LOCAL_APIC_ADDR;
 	madt->flags	= 0x1; /* PCAT_COMPAT */
 
-	current = acpi_dump_apics(current);
+	current = acpi_fill_madt(current);
 	
 	/* recalculate length */
 	header->length= current - (unsigned long)madt;
 	
 	header->checksum	= acpi_checksum((void *)madt, header->length);
+}
+
+int acpi_create_srat_lapic(acpi_srat_lapic_t *lapic, u8 node, u8 apic)
+{
+        lapic->type=0;
+        lapic->length=sizeof(acpi_srat_lapic_t);
+        lapic->flags=1;
+
+        lapic->proximity_domain_7_0 = node;
+        lapic->apic_id=apic;
+
+        return(lapic->length);
+}
+
+int acpi_create_srat_mem(acpi_srat_mem_t *mem, u8 node, u32 basek,u32 sizek, u32 flags)
+{
+        mem->type=1;
+        mem->length=sizeof(acpi_srat_mem_t);
+
+        mem->base_address_low = (basek<<10);
+	mem->base_address_high = (basek>>(32-10));
+
+        mem->length_low = (sizek<<10);
+        mem->length_high = (sizek>>(32-10));
+
+        mem->proximity_domain = node;
+
+	mem->flags = flags; 
+
+        return(mem->length);
+}
+
+void acpi_create_srat(acpi_srat_t *srat)
+{
+
+        acpi_header_t *header=&(srat->header);
+        unsigned long current=(unsigned long)srat+sizeof(acpi_srat_t);
+
+        memset((void *)srat, 0, sizeof(acpi_srat_t));
+
+        /* fill out header fields */
+        memcpy(header->signature, SRAT_NAME, 4);
+        memcpy(header->oem_id, OEM_ID, 6);
+        memcpy(header->oem_table_id, SRAT_TABLE, 8);
+        memcpy(header->asl_compiler_id, ASLC, 4);
+
+        header->length = sizeof(acpi_srat_t);
+        header->revision = 1;
+
+        srat->resv     = 0x1; /* BACK COMP */
+
+        current = acpi_fill_srat(current);
+
+        /* recalculate length */
+        header->length= current - (unsigned long)srat;
+
+        header->checksum        = acpi_checksum((void *)srat, header->length);
 }
 
 void acpi_create_hpet(acpi_hpet_t *hpet)

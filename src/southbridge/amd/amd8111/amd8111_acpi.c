@@ -66,6 +66,10 @@ static int lsmbus_write_byte(device_t dev, uint8_t address, uint8_t val)
 	return do_smbus_write_byte(res->base, device, address, val);
 }
 
+#if HAVE_ACPI_TABLES == 1
+unsigned pm_base;
+#endif
+
 static void acpi_init(struct device *dev)
 {
 	uint8_t byte;
@@ -129,6 +133,12 @@ static void acpi_init(struct device *dev)
 		printk_debug("Throttling CPU %2d.%1.1d percent.\n",
 				(on*12)+(on>>1),(on&1)*5);
 	}
+
+#if HAVE_ACPI_TABLES == 1
+	pm_base = pci_read_config16(dev, 0x58) & 0xff00;
+	printk_debug("pm_base: 0x%04x\n",pm_base);
+#endif
+
 }
 
 static void acpi_read_resources(device_t dev)

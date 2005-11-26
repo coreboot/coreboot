@@ -1,5 +1,7 @@
 uses CONFIG_CHIP_NAME
 uses AGP_APERTURE_SIZE
+uses HAVE_ACPI_TABLES
+
 default AGP_APERTURE_SIZE=0x4000000
 
 if CONFIG_CHIP_NAME
@@ -14,3 +16,9 @@ makerule raminit_test
 	depends "$(TOP)/src/northbridge/amd/amdk8/raminit.c"
 	action "$(HOSTCC) $(HOSTCFLAGS) $(CPUFLAGS) -Wno-unused-function -I$(TOP)/src/include -g  $< -o $@"
 end
+
+if HAVE_ACPI_TABLES
+	object amdk8_acpi.o
+end
+
+object get_sblk_pci1234.o

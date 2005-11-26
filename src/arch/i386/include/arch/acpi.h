@@ -6,9 +6,12 @@
  *
  * The ACPI table structs are based on the Linux kernel sources.
  * 
- */
-/* ACPI FADT & FACS added by Nick Barker <nick.barker9@btinternet.com>
+ * ACPI FADT & FACS added by Nick Barker <nick.barker9@btinternet.com>
  * those parts (C) 2004 Nick Barker
+ * 
+ * ACPI SRAT support 2005.9 yhlu add SRAT relate
+ * Copyright 2005 ADVANCED MICRO DEVICES, INC. All Rights Reserved.
+ *
  */
 
 
@@ -28,10 +31,12 @@ typedef unsigned long long u64;
 #define RSDT_NAME             "RSDT"
 #define HPET_NAME             "HPET"
 #define MADT_NAME             "APIC"
+#define SRAT_NAME             "SRAT"
 
 #define RSDT_TABLE            "RSDT    "
 #define HPET_TABLE            "AMD64   "
 #define MADT_TABLE            "MADT    "
+#define SRAT_TABLE	      "SRAT    "
 
 #define OEM_ID                "LXBIOS"
 #define ASLC                  "NONE"
@@ -79,13 +84,13 @@ typedef struct acpi_table_header         /* ACPI common table header */
 /* RSDT */
 typedef struct acpi_rsdt {
 	struct acpi_table_header header;
-	u32 entry[8];
+	u32 entry[5+ACPI_SSDTX_NUM]; /* HPET, FADT, SRAT, MADT(APIC), SSDT, SSDTX */
 } __attribute__ ((packed)) acpi_rsdt_t;
 
 /* XSDT */
 typedef struct acpi_xsdt {
 	struct acpi_table_header header;
-	u64 entry[8];
+	u64 entry[5+ACPI_SSDTX_NUM];
 } __attribute__ ((packed)) acpi_xsdt_t;
 
 
@@ -99,6 +104,43 @@ typedef struct acpi_hpet {
 	u8 attributes;
 } __attribute__ ((packed)) acpi_hpet_t;
 
+/* SRAT */
+typedef struct acpi_srat {
+        struct acpi_table_header header;
+        u32 resv;
+	u64 resv1;
+	/* followed by static resource allocation structure[n]*/
+} __attribute__ ((packed)) acpi_srat_t;
+
+
+typedef struct acpi_srat_lapic {
+        u8 type;
+        u8 length;
+        u8 proximity_domain_7_0;
+        u8 apic_id;
+        u32 flags; /* enable bit 0  = 1, other bits reserved to 0 */
+	u8 local_sapic_eid;
+	u8 proximity_domain_31_8[3];
+	u32 resv;
+} __attribute__ ((packed)) acpi_srat_lapic_t;
+
+typedef struct acpi_srat_mem {
+        u8 type;
+        u8 length;
+        u32 proximity_domain;
+        u16 resv;
+	u32 base_address_low;
+	u32 base_address_high;
+	u32 length_low;
+	u32 length_high;
+	u32 resv1;
+        u32 flags; /* enable bit 0,  hot pluggable bit 1; Non Volatile bit 2, other bits reserved */
+        u32 resv2[2];
+} __attribute__ ((packed)) acpi_srat_mem_t;
+
+
+
+/* MADT */
 typedef struct acpi_madt {
 	struct acpi_table_header header;
 	u32 lapic_addr;
@@ -152,6 +194,7 @@ typedef struct acpi_madt_irqoverride {
 	u16 flags;
 } __attribute__ ((packed)) acpi_madt_irqoverride_t;
 
+/* FADT */
 
 typedef struct acpi_fadt {
 	struct acpi_table_header header;
@@ -212,6 +255,7 @@ typedef struct acpi_fadt {
 	struct acpi_gen_regaddr x_gpe1_blk;
 } __attribute__ ((packed)) acpi_fadt_t;
 
+/* FACS */
 typedef struct acpi_facs {
 	char signature[4];
 	u32 length;
@@ -227,17 +271,35 @@ typedef struct acpi_facs {
 
 /* These are implemented by the target port */
 unsigned long write_acpi_tables(unsigned long addr);
-unsigned long acpi_dump_apics(unsigned long current);
-
+unsigned long acpi_fill_madt(unsigned long current);
+unsigned long acpi_fill_srat(unsigned long current); 
+void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt);
 
 /* These can be used by the target port */
 u8 acpi_checksum(u8 *table, u32 length);
+
 void acpi_add_table(acpi_rsdt_t *rsdt, void *table);
+
 int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic);
 int acpi_create_madt_ioapic(acpi_madt_ioapic_t *ioapic, u8 id, u32 addr,u32 gsi_base);
+int acpi_create_madt_irqoverride(acpi_madt_irqoverride_t *irqoverride,
+                u8 bus, u8 source, u32 gsirq, u16 flags);
+int acpi_create_madt_lapic_nmi(acpi_madt_lapic_nmi_t *lapic_nmi, u8 cpu,
+                u16 flags, u8 lint);
 void acpi_create_madt(acpi_madt_t *madt);
+unsigned long acpi_create_madt_lapics(unsigned long current);
+unsigned long acpi_create_madt_lapic_nmis(unsigned long current, u16 flags, u8 lint);
+
+
+int acpi_create_srat_lapic(acpi_srat_lapic_t *lapic, u8 node, u8 apic);
+int acpi_create_srat_mem(acpi_srat_mem_t *mem, u8 node, u32 basek,u32 sizek, u32 flags);
+unsigned long acpi_create_srat_lapics(unsigned long current);
+void acpi_create_srat(acpi_srat_t *srat);
+
 void acpi_create_hpet(acpi_hpet_t *hpet);
+
 void acpi_create_facs(acpi_facs_t *facs);
+
 void acpi_write_rsdt(acpi_rsdt_t *rsdt);
 void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt);
 

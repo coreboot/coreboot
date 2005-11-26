@@ -3,12 +3,12 @@
 
 extern int probe_82802ab(struct flashchip *flash);
 extern int erase_82802ab(struct flashchip *flash);
-extern int write_82802ab(struct flashchip *flash, unsigned char *buf);
+extern int write_82802ab(struct flashchip *flash, uint8_t *buf);
 
-extern __inline__ void toggle_ready_82802ab(volatile char *dst)
+extern __inline__ void toggle_ready_82802ab(volatile uint8_t *dst)
 {
 	unsigned int i = 0;
-	char tmp1, tmp2;
+	uint8_t tmp1, tmp2;
 
 	tmp1 = *dst & 0x40;
 
@@ -21,10 +21,10 @@ extern __inline__ void toggle_ready_82802ab(volatile char *dst)
 	}
 }
 
-extern __inline__ void data_polling_82802ab(volatile char *dst, char data)
+extern __inline__ void data_polling_82802ab(volatile uint8_t *dst, uint8_t data)
 {
 	unsigned int i = 0;
-	char tmp;
+	uint8_t tmp;
 
 	data &= 0x80;
 
@@ -36,11 +36,11 @@ extern __inline__ void data_polling_82802ab(volatile char *dst, char data)
 	}
 }
 
-extern __inline__ void protect_82802ab(volatile char *bios)
+extern __inline__ void protect_82802ab(volatile uint8_t *bios)
 {
-	*(volatile char *) (bios + 0x5555) = 0xAA;
-	*(volatile char *) (bios + 0x2AAA) = 0x55;
-	*(volatile char *) (bios + 0x5555) = 0xA0;
+	*(volatile uint8_t *) (bios + 0x5555) = 0xAA;
+	*(volatile uint8_t *) (bios + 0x2AAA) = 0x55;
+	*(volatile uint8_t *) (bios + 0x5555) = 0xA0;
 
 	usleep(200);
 }

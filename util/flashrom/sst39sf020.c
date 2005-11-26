@@ -28,6 +28,7 @@
  */
 
 #include <stdio.h>
+#include <stdint.h>
 #include "flash.h"
 #include "jedec.h"
 #include "sst39sf020.h"
@@ -35,7 +36,7 @@
 #define AUTO_PG_ERASE1		0x20
 #define AUTO_PG_ERASE2		0xD0
 
-static __inline__ int erase_sector_39sf020(volatile char *bios,
+static __inline__ int erase_sector_39sf020(volatile uint8_t *bios,
 					   unsigned long address)
 {
 	*bios = AUTO_PG_ERASE1;
@@ -47,12 +48,12 @@ static __inline__ int erase_sector_39sf020(volatile char *bios,
 	return (0);
 }
 
-int write_39sf020(struct flashchip *flash, unsigned char *buf)
+int write_39sf020(struct flashchip *flash, uint8_t *buf)
 {
 	int i;
 	int total_size = flash->total_size * 1024, page_size =
 		flash->page_size;
-	volatile char *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virt_addr;
 
 	erase_chip_jedec(flash);
 

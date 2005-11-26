@@ -18,17 +18,17 @@
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- *
  * Reference:
  *	AMD Am29F040B data sheet
- * $Id$
  */
 
 #include <stdio.h>
+#include <stdint.h>
 #include "flash.h"
 #include "jedec.h"
+#include "debug.h"
 
-static __inline__ int erase_sector_29f040b(volatile char *bios,
+static __inline__ int erase_sector_29f040b(volatile uint8_t *bios,
 					   unsigned long address)
 {
 	*(bios + 0x555) = 0xAA;
@@ -46,9 +46,9 @@ static __inline__ int erase_sector_29f040b(volatile char *bios,
 	return (0);
 }
 
-static __inline__ int write_sector_29f040b(volatile char *bios,
-					   unsigned char *src,
-					   volatile unsigned char *dst,
+static __inline__ int write_sector_29f040b(volatile uint8_t *bios,
+					   uint8_t *src,
+					   volatile uint8_t *dst,
 					   unsigned int page_size)
 {
 	int i;
@@ -73,8 +73,8 @@ static __inline__ int write_sector_29f040b(volatile char *bios,
 
 int probe_29f040b(struct flashchip *flash)
 {
-	volatile unsigned char *bios = flash->virt_addr;
-	unsigned char id1, id2;
+	volatile uint8_t *bios = flash->virt_addr;
+	uint8_t id1, id2;
 
 	*(bios + 0x555) = 0xAA;
 	*(bios + 0x2AA) = 0x55;
@@ -87,7 +87,7 @@ int probe_29f040b(struct flashchip *flash)
 
 	myusec_delay(10);
 
-	printf("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, id1, id2);
+	printf_debug("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, id1, id2);
 	if (id1 == flash->manufacture_id && id2 == flash->model_id)
 		return 1;
 
@@ -96,7 +96,7 @@ int probe_29f040b(struct flashchip *flash)
 
 int erase_29f040b(struct flashchip *flash)
 {
-	volatile unsigned char *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virt_addr;
 
 	*(bios + 0x555) = 0xAA;
 	*(bios + 0x2AA) = 0x55;
@@ -111,12 +111,12 @@ int erase_29f040b(struct flashchip *flash)
 	return (0);
 }
 
-int write_29f040b(struct flashchip *flash, unsigned char *buf)
+int write_29f040b(struct flashchip *flash, uint8_t *buf)
 {
 	int i;
 	int total_size = flash->total_size * 1024, page_size =
 	    flash->page_size;
-	volatile char *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virt_addr;
 
 	printf("Programming Page: ");
 	for (i = 0; i < total_size / page_size; i++) {

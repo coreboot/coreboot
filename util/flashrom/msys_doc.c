@@ -25,16 +25,16 @@
 #include <unistd.h>
 #include "flash.h"
 #include "msys_doc.h"
+#include "debug.h"
 
 
 
 
-
-static int doc_wait(volatile char *bios, int timeout);
-static unsigned char doc_read_chipid(volatile char *bios);
-static unsigned char doc_read_docstatus(volatile char *bios);
-static unsigned char doc_read_cdsncontrol(volatile char *bios);
-static void doc_write_cdsncontrol(volatile char *bios, unsigned char data);
+static int doc_wait(volatile uint8_t *bios, int timeout);
+static uint8_t doc_read_chipid(volatile uint8_t *bios);
+static uint8_t doc_read_docstatus(volatile uint8_t *bios);
+static uint8_t doc_read_cdsncontrol(volatile uint8_t *bios);
+static void doc_write_cdsncontrol(volatile uint8_t *bios, uint8_t data);
 
 
 
@@ -42,26 +42,26 @@ static void doc_write_cdsncontrol(volatile char *bios, unsigned char data);
 
 int probe_md2802(struct flashchip *flash)
 {
-	volatile char *bios = flash->virt_addr;
-	unsigned char chipid;
+	volatile uint8_t *bios = flash->virt_addr;
+	uint8_t chipid;
 #ifndef MSYSTEMS_DOC_NO_55AA_CHECKING
-	unsigned char id_0x55, id_0xAA;
+	uint8_t id_0x55, id_0xAA;
 #endif				/* !MSYSTEMS_DOC_NO_55AA_CHECKING */
 	int i, toggle_a, toggle_b;
 
-	printf("%s:\n", __FUNCTION__);
-	printf("%s: *******************************\n", __FUNCTION__);
-	printf("%s: * THIS IS A PRE ALPHA VERSION *\n", __FUNCTION__);
-	printf("%s: * IN THE DEVELOPEMENT *********\n", __FUNCTION__);
-	printf("%s: * PROCESS RIGHT NOW. **********\n", __FUNCTION__);
-	printf("%s: *******************************\n", __FUNCTION__);
-	printf("%s: * IF YOU ARE NOT A DEVELOPER **\n", __FUNCTION__);
-	printf("%s: * THEN DO NOT TRY TO READ OR **\n", __FUNCTION__);
-	printf("%s: * WRITE TO THIS DEVICE ********\n", __FUNCTION__);
-	printf("%s: *******************************\n", __FUNCTION__);
-	printf("%s:\n", __FUNCTION__);
+	printf_debug("%s:\n", __FUNCTION__);
+	printf_debug("%s: *******************************\n", __FUNCTION__);
+	printf_debug("%s: * THIS IS A PRE ALPHA VERSION *\n", __FUNCTION__);
+	printf_debug("%s: * IN THE DEVELOPEMENT *********\n", __FUNCTION__);
+	printf_debug("%s: * PROCESS RIGHT NOW. **********\n", __FUNCTION__);
+	printf_debug("%s: *******************************\n", __FUNCTION__);
+	printf_debug("%s: * IF YOU ARE NOT A DEVELOPER **\n", __FUNCTION__);
+	printf_debug("%s: * THEN DO NOT TRY TO READ OR **\n", __FUNCTION__);
+	printf_debug("%s: * WRITE TO THIS DEVICE ********\n", __FUNCTION__);
+	printf_debug("%s: *******************************\n", __FUNCTION__);
+	printf_debug("%s:\n", __FUNCTION__);
 
-	printf("%s: switching off reset mode ...\n", __FUNCTION__);
+	printf_debug("%s: switching off reset mode ...\n", __FUNCTION__);
 	doc_write(0x85, bios, DOCControl);
 	doc_write(0x85, bios, DOCControl);
 	doc_read_4nop(bios);
@@ -128,7 +128,7 @@ int probe_md2802(struct flashchip *flash)
 	printf("%s:", __FUNCTION__);
 	toggle_a = toggle_b = 0;
 	for (i = 0; i < 10; i++) {
-		unsigned char toggle = doc_toggle(bios);
+		uint8_t toggle = doc_toggle(bios);
 
 		printf(" 0x%02x", toggle);
 
@@ -155,40 +155,40 @@ int probe_md2802(struct flashchip *flash)
 
 
 
-int read_md2802(struct flashchip *flash, unsigned char *buf)
+int read_md2802(struct flashchip *flash, uint8_t *buf)
 {
 
 	return (0);
-}				/* int read_md2802(struct flashchip *flash, unsigned char *buf) */
+}				/* int read_md2802(struct flashchip *flash, uint8_t *buf) */
 
 
 
 int erase_md2802(struct flashchip *flash)
 {
-	volatile char *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virt_addr;
 
 	return (1);
-	*(volatile char *) (bios + 0x5555) = 0xAA;
-	*(volatile char *) (bios + 0x2AAA) = 0x55;
-	*(volatile char *) (bios + 0x5555) = 0x80;
+	*(volatile uint8_t *) (bios + 0x5555) = 0xAA;
+	*(volatile uint8_t *) (bios + 0x2AAA) = 0x55;
+	*(volatile uint8_t *) (bios + 0x5555) = 0x80;
 
-	*(volatile char *) (bios + 0x5555) = 0xAA;
-	*(volatile char *) (bios + 0x2AAA) = 0x55;
-	*(volatile char *) (bios + 0x5555) = 0x10;
+	*(volatile uint8_t *) (bios + 0x5555) = 0xAA;
+	*(volatile uint8_t *) (bios + 0x2AAA) = 0x55;
+	*(volatile uint8_t *) (bios + 0x5555) = 0x10;
 }				/* int erase_md2802(struct flashchip *flash) */
 
 
 
-int write_md2802(struct flashchip *flash, unsigned char *buf)
+int write_md2802(struct flashchip *flash, uint8_t *buf)
 {
 	int i;
 	int total_size = flash->total_size * 1024, page_size =
 	    flash->page_size;
-	volatile unsigned char *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virt_addr;
 
 	return (1);
 	erase_md2802(flash);
-	if (*bios != (unsigned char) 0xff) {
+	if (*bios != (uint8_t) 0xff) {
 		printf("ERASE FAILED\n");
 		return -1;
 	}
@@ -203,7 +203,7 @@ int write_md2802(struct flashchip *flash, unsigned char *buf)
 	//protect_md2802(bios);
 
 	return 0;
-}				/* int write_md2802(struct flashchip *flash, char *buf) */
+}				/* int write_md2802(struct flashchip *flash, uint8_t *buf) */
 
 
 
@@ -216,7 +216,7 @@ int write_md2802(struct flashchip *flash, unsigned char *buf)
 		0: ready
 		-1: timeout expired
 */
-static int doc_wait(volatile char *bios, int timeout)
+static int doc_wait(volatile uint8_t *bios, int timeout)
 {
 	int i = 20;
 
@@ -235,33 +235,33 @@ static int doc_wait(volatile char *bios, int timeout)
 	}
 
 	return (0);
-}				/* static int doc_wait(volatile char *bios, int timeout) */
+}				/* static int doc_wait(volatile uint8_t *bios, int timeout) */
 
 
 
-static unsigned char doc_read_docstatus(volatile char *bios)
+static uint8_t doc_read_docstatus(volatile uint8_t *bios)
 {
 	doc_read(bios, CDSNSlowIO);
 	doc_read_2nop(bios);
 
 	return (doc_read(bios, _DOCStatus));
-}				/* static unsigned char doc_read_docstatus(volatile char *bios) */
+}				/* static uint8_t doc_read_docstatus(volatile uint8_t *bios) */
 
 
 
-static unsigned char doc_read_chipid(volatile char *bios)
+static uint8_t doc_read_chipid(volatile uint8_t *bios)
 {
 	doc_read(bios, CDSNSlowIO);
 	doc_read_2nop(bios);
 
 	return (doc_read(bios, _ChipID));
-}				/* static unsigned char doc_read_chipid(volatile char *bios) */
+}				/* static uint8_t doc_read_chipid(volatile uint8_t *bios) */
 
 
 
-static unsigned char doc_read_cdsncontrol(volatile char *bios)
+static uint8_t doc_read_cdsncontrol(volatile uint8_t *bios)
 {
-	unsigned char value;
+	uint8_t value;
 
 	/* the delays might be necessary when reading the busy bit,
 	   but because a read to this reg reads the busy bit
@@ -271,12 +271,12 @@ static unsigned char doc_read_cdsncontrol(volatile char *bios)
 	doc_read_2nop(bios);
 
 	return (value);
-}				/* static unsigned char doc_read_chipid(volatile char *bios) */
+}				/* static uint8_t doc_read_chipid(volatile char *bios) */
 
 
 
-static void doc_write_cdsncontrol(volatile char *bios, unsigned char data)
+static void doc_write_cdsncontrol(volatile uint8_t *bios, uint8_t data)
 {
 	doc_write(data, bios, _CDSNControl);
 	doc_read_4nop(bios);
-}				/* static void doc_write_chipid(volatile char *bios, unsigned char data) */
+}				/* static void doc_write_chipid(volatile char *bios, uint8_t data) */

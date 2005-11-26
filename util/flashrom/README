@@ -1,20 +1,69 @@
-on the cs5530 southbridge, 
+This is the universal LinuxBIOS flash utility.
 
-setpci -s 0:12.0 52.b=ee
-setpci -x 0:12.0 5b.b= 0x20 (| with whatever is there)
+usage: ./flashrom [-rwvE] [-V] [-c chipname] 
+                           [-s exclude_start] [-e exclude_end] [file]
 
-I am making this a general-purpose userland flash burner -- RGM
+   -r | --read:   read flash and save into file
+   -w | --write:  write file into flash (default when file is specified)
+   -v | --verify: verify flash against file
+   -E | --erase: Erase flash device
+   -V | --verbose: more verbose output
 
-Earlier notes from Ollie:
+   -c | --chip <chipname>: probe only for specified flash chip
+   -s | --estart <addr>: exclude start position
+   -e | --eend <addr>: exclude end postion
+   -m | --mainboard <vendor:part>: override mainboard settings
+   -l | --layout <file.layout>: read rom layout from file
+   -i | --image <name>: only flash image name from flash layout
 
-Here is some utilities for using/programming flash ROM on SiS 630/950 M/Bs
+ If no file is specified, then all that happens
+ is that flash info is dumped and the flash chip is set to writable.
 
-	1. flash_on, turnning on the flash writer enable for 630/950 M/Bs,
- 	   you have to run this before load DoC drivers.
 
-	2. flash_rom, use your 630/950 M/Bs as a flash programmer for some
-	   flash parts. This utility is made as modular as possible. If
-	   you find your flash part is not supported, you can add a driver
-	   your own. Or sending me the data sheet.
+LinuxBIOS table and Mainboard identification
+--------------------------------------------
 
-Ollie
+flashrom reads the LinuxBIOS table to determine the current mainboard.
+(Parse DMI as well in future?) If no LinuxBIOS table could be read
+or if you want to override these values, you can to specify -m ie.:
+
+     flashrom -w --mainboard ISLAND:ARUMA island_aruma.rom
+
+
+rom layout support
+------------------
+
+flashrom supports rom layouts. This allows to flash certain parts of
+the flash chip only. A rom layout file looks like follows:
+
+  00000000:00008fff gfxrom
+  00009000:0003ffff normal
+  00040000:0007ffff fallback
+
+  i.e.:
+  startaddr:endaddr name
+
+  all addresses are offsets within the file, not absolute addresses!
+  
+If you only want to update the normal image in a rom you can say:
+
+     flashrom -w --layout rom.layout --image normal island_aruma.rom
+     
+To update normal and fallback but leave the vga bios alone, say:
+
+     flashrom -w -l rom.layout -i normal -i fallback island_aruma.rom
+ 
+Currently overlapping sections are not spported.
+
+rom layouts should replace the -s and -e option since they are more 
+flexible and they should lead to a rom update file format with the 
+rom layout and the rom image in one file (cpio, zip or something?)
+
+
+DOC support
+-----------
+
+DISK on Chip support is currently disabled since it is considered unstable. 
+Change CFLAGS in the Makefile to enable it.
+
+

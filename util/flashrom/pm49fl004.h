@@ -3,6 +3,6 @@
 
 extern int probe_49fl004(struct flashchip *flash);
 extern int erase_49fl004(struct flashchip *flash);
-extern int write_49fl004(struct flashchip *flash, unsigned char *buf);
+extern int write_49fl004(struct flashchip *flash, uint8_t *buf);
 
 #endif

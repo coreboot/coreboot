@@ -3,6 +3,7 @@
  *
  *
  * Copyright 2000 Silicon Integrated System Corporation
+ * Copyright 2005 coresystems GmbH <stepan@openbios.org>
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -22,12 +23,13 @@
  * Reference:
  *	4 MEgabit (512K x 8) SuperFlash EEPROM, SST28SF040 data sheet
  *
- * $Id$
  */
 
 #include <stdio.h>
+#include <stdint.h>
 #include "flash.h"
 #include "jedec.h"
+#include "debug.h"
 
 #define AUTO_PG_ERASE1		0x20
 #define AUTO_PG_ERASE2		0xD0
@@ -36,35 +38,35 @@
 #define RESET			0xFF
 #define READ_ID			0x90
 
-static __inline__ void protect_28sf040(volatile char *bios)
+static __inline__ void protect_28sf040(volatile uint8_t *bios)
 {
 	/* ask compiler not to optimize this */
-	volatile unsigned char tmp;
+	volatile uint8_t tmp;
 
-	tmp = *(volatile unsigned char *) (bios + 0x1823);
-	tmp = *(volatile unsigned char *) (bios + 0x1820);
-	tmp = *(volatile unsigned char *) (bios + 0x1822);
-	tmp = *(volatile unsigned char *) (bios + 0x0418);
-	tmp = *(volatile unsigned char *) (bios + 0x041B);
-	tmp = *(volatile unsigned char *) (bios + 0x0419);
-	tmp = *(volatile unsigned char *) (bios + 0x040A);
+	tmp = *(volatile uint8_t *) (bios + 0x1823);
+	tmp = *(volatile uint8_t *) (bios + 0x1820);
+	tmp = *(volatile uint8_t *) (bios + 0x1822);
+	tmp = *(volatile uint8_t *) (bios + 0x0418);
+	tmp = *(volatile uint8_t *) (bios + 0x041B);
+	tmp = *(volatile uint8_t *) (bios + 0x0419);
+	tmp = *(volatile uint8_t *) (bios + 0x040A);
 }
 
-static __inline__ void unprotect_28sf040(volatile char *bios)
+static __inline__ void unprotect_28sf040(volatile uint8_t *bios)
 {
 	/* ask compiler not to optimize this */
-	volatile unsigned char tmp;
+	volatile uint8_t tmp;
 
-	tmp = *(volatile unsigned char *) (bios + 0x1823);
-	tmp = *(volatile unsigned char *) (bios + 0x1820);
-	tmp = *(volatile unsigned char *) (bios + 0x1822);
-	tmp = *(volatile unsigned char *) (bios + 0x0418);
-	tmp = *(volatile unsigned char *) (bios + 0x041B);
-	tmp = *(volatile unsigned char *) (bios + 0x0419);
-	tmp = *(volatile unsigned char *) (bios + 0x041A);
+	tmp = *(volatile uint8_t *) (bios + 0x1823);
+	tmp = *(volatile uint8_t *) (bios + 0x1820);
+	tmp = *(volatile uint8_t *) (bios + 0x1822);
+	tmp = *(volatile uint8_t *) (bios + 0x0418);
+	tmp = *(volatile uint8_t *) (bios + 0x041B);
+	tmp = *(volatile uint8_t *) (bios + 0x0419);
+	tmp = *(volatile uint8_t *) (bios + 0x041A);
 }
 
-static __inline__ int erase_sector_28sf040(volatile char *bios,
+static __inline__ int erase_sector_28sf040(volatile uint8_t *bios,
 					   unsigned long address)
 {
 	*bios = AUTO_PG_ERASE1;
@@ -76,9 +78,9 @@ static __inline__ int erase_sector_28sf040(volatile char *bios,
 	return (0);
 }
 
-static __inline__ int write_sector_28sf040(volatile char *bios,
-					   unsigned char *src,
-					   volatile unsigned char *dst,
+static __inline__ int write_sector_28sf040(volatile uint8_t *bios,
+					   uint8_t *src,
+					   volatile uint8_t *dst,
 					   unsigned int page_size)
 {
 	int i;
@@ -103,8 +105,8 @@ static __inline__ int write_sector_28sf040(volatile char *bios,
 
 int probe_28sf040(struct flashchip *flash)
 {
-	volatile char *bios = flash->virt_addr;
-	unsigned char id1, id2, tmp;
+	volatile uint8_t *bios = flash->virt_addr;
+	uint8_t id1, id2, tmp;
 
 	/* save the value at the beginning of the Flash */
 	tmp = *bios;
@@ -114,14 +116,14 @@ int probe_28sf040(struct flashchip *flash)
 
 	*bios = READ_ID;
 	myusec_delay(10);
-	id1 = *(volatile unsigned char *) bios;
+	id1 = *(volatile uint8_t *) bios;
 	myusec_delay(10);
-	id2 = *(volatile unsigned char *) (bios + 0x01);
+	id2 = *(volatile uint8_t *) (bios + 0x01);
 
 	*bios = RESET;
 	myusec_delay(10);
 
-	printf("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, id1, id2);
+	printf_debug("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, id1, id2);
 	if (id1 == flash->manufacture_id && id2 == flash->model_id)
 		return 1;
 
@@ -132,7 +134,7 @@ int probe_28sf040(struct flashchip *flash)
 
 int erase_28sf040(struct flashchip *flash)
 {
-	volatile char *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virt_addr;
 
 	unprotect_28sf040(bios);
 	*bios = CHIP_ERASE;
@@ -145,12 +147,12 @@ int erase_28sf040(struct flashchip *flash)
 	return (0);
 }
 
-int write_28sf040(struct flashchip *flash, unsigned char *buf)
+int write_28sf040(struct flashchip *flash, uint8_t *buf)
 {
 	int i;
 	int total_size = flash->total_size * 1024, page_size =
 	    flash->page_size;
-	volatile char *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virt_addr;
 
 	unprotect_28sf040(bios);
 

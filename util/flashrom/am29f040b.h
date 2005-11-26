@@ -3,6 +3,6 @@
 
 extern int probe_29f040b(struct flashchip *flash);
 extern int erase_29f040b(struct flashchip *flash);
-extern int write_29f040b(struct flashchip *flash, unsigned char *buf);
+extern int write_29f040b(struct flashchip *flash, uint8_t *buf);
 
 #endif				/* !__AM29F040B_H__ */

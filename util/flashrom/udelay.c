@@ -1,5 +1,6 @@
 #include <sys/time.h>
 #include <stdio.h>
+#include "debug.h"
 
 // count to a billion. Time it. If it's < 1 sec, count to 10B, etc.
 unsigned long micro = 1;
@@ -17,7 +18,7 @@ void myusec_calibrate_delay()
 	struct timeval start, end;
 	int ok = 0;
 
-	printf("Setting up microsecond timing loop\n");
+	printf_debug("Setting up microsecond timing loop\n");
 	while (!ok) {
 		gettimeofday(&start, 0);
 		myusec_delay(count);
@@ -33,5 +34,5 @@ void myusec_calibrate_delay()
 	// compute one microsecond. That will be count / time
 	micro = count / timeusec;
 
-	fprintf(stderr, "%ldM loops per second\n", (unsigned long) micro);
+	printf_debug("%ldM loops per second\n", (unsigned long) micro);
 }

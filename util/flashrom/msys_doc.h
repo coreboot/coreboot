@@ -69,7 +69,7 @@
 
 
 #define doc_read(base,reg) \
-	(*(volatile unsigned char *)(base + MSYSTEMS_DOC_R_##reg))
+	(*(volatile uint8_t *)(base + MSYSTEMS_DOC_R_##reg))
 
 #define doc_read_nop(base) \
 	doc_read(base, NOP)
@@ -81,7 +81,7 @@
 	{ doc_read_2nop(base); doc_read_2nop(base); }
 
 #define doc_write(data,base,reg) \
-	(*(volatile unsigned char *)(base + MSYSTEMS_DOC_W_##reg)) = data
+	(*(volatile uint8_t *)(base + MSYSTEMS_DOC_W_##reg)) = data
 
 #define doc_write_nop(base) \
 	doc_write(0, base, NOP)
@@ -101,9 +101,9 @@
 
 
 extern int probe_md2802(struct flashchip *flash);
-extern int read_md2802(struct flashchip *flash, unsigned char *buf);
+extern int read_md2802(struct flashchip *flash, uint8_t *buf);
 extern int erase_md2802(struct flashchip *flash);
-extern int write_md2802(struct flashchip *flash, unsigned char *buf);
+extern int write_md2802(struct flashchip *flash, uint8_t *buf);
 
 
 

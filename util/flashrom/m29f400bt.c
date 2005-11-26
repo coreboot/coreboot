@@ -26,28 +26,29 @@
 
 #include "flash.h"
 #include "m29f400bt.h"
+#include "debug.h"
 
 int probe_m29f400bt(struct flashchip *flash)
 {
-	volatile char *bios = flash->virt_addr;
-	unsigned char id1, id2;
+	volatile uint8_t *bios = flash->virt_addr;
+	uint8_t id1, id2;
 
-	*(volatile char *) (bios + 0xAAA) = 0xAA;
-	*(volatile char *) (bios + 0x555) = 0x55;
-	*(volatile char *) (bios + 0xAAA) = 0x90;
-
-	myusec_delay(10);
-
-	id1 = *(volatile unsigned char *) bios;
-	id2 = *(volatile unsigned char *) (bios + 0x02);
-
-	*(volatile char *) (bios + 0xAAA) = 0xAA;
-	*(volatile char *) (bios + 0x555) = 0x55;
-	*(volatile char *) (bios + 0xAAA) = 0xF0;
+	*(volatile uint8_t *) (bios + 0xAAA) = 0xAA;
+	*(volatile uint8_t *) (bios + 0x555) = 0x55;
+	*(volatile uint8_t *) (bios + 0xAAA) = 0x90;
 
 	myusec_delay(10);
 
-	printf("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, id1, id2);
+	id1 = *(volatile uint8_t *) bios;
+	id2 = *(volatile uint8_t *) (bios + 0x02);
+
+	*(volatile uint8_t *) (bios + 0xAAA) = 0xAA;
+	*(volatile uint8_t *) (bios + 0x555) = 0x55;
+	*(volatile uint8_t *) (bios + 0xAAA) = 0xF0;
+
+	myusec_delay(10);
+
+	printf_debug("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, id1, id2);
 
 
 	if (id1 == flash->manufacture_id && id2 == flash->model_id)
@@ -58,15 +59,15 @@ int probe_m29f400bt(struct flashchip *flash)
 
 int erase_m29f400bt(struct flashchip *flash)
 {
-	volatile char *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virt_addr;
 
-	*(volatile char *) (bios + 0xAAA) = 0xAA;
-	*(volatile char *) (bios + 0x555) = 0x55;
-	*(volatile char *) (bios + 0xAAA) = 0x80;
+	*(volatile uint8_t *) (bios + 0xAAA) = 0xAA;
+	*(volatile uint8_t *) (bios + 0x555) = 0x55;
+	*(volatile uint8_t *) (bios + 0xAAA) = 0x80;
 
-	*(volatile char *) (bios + 0xAAA) = 0xAA;
-	*(volatile char *) (bios + 0x555) = 0x55;
-	*(volatile char *) (bios + 0xAAA) = 0x10;
+	*(volatile uint8_t *) (bios + 0xAAA) = 0xAA;
+	*(volatile uint8_t *) (bios + 0x555) = 0x55;
+	*(volatile uint8_t *) (bios + 0xAAA) = 0x10;
 
 	myusec_delay(10);
 	toggle_ready_m29f400bt(bios);
@@ -74,16 +75,16 @@ int erase_m29f400bt(struct flashchip *flash)
 	return (0);
 }
 
-int block_erase_m29f400bt(volatile char *bios, volatile char *dst)
+int block_erase_m29f400bt(volatile uint8_t *bios, volatile uint8_t *dst)
 {
 
-	*(volatile char *) (bios + 0xAAA) = 0xAA;
-	*(volatile char *) (bios + 0x555) = 0x55;
-	*(volatile char *) (bios + 0xAAA) = 0x80;
+	*(volatile uint8_t *) (bios + 0xAAA) = 0xAA;
+	*(volatile uint8_t *) (bios + 0x555) = 0x55;
+	*(volatile uint8_t *) (bios + 0xAAA) = 0x80;
 
-	*(volatile char *) (bios + 0xAAA) = 0xAA;
-	*(volatile char *) (bios + 0x555) = 0x55;
-	//*(volatile char *) (bios + 0xAAA) = 0x10;
+	*(volatile uint8_t *) (bios + 0xAAA) = 0xAA;
+	*(volatile uint8_t *) (bios + 0x555) = 0x55;
+	//*(volatile uint8_t *) (bios + 0xAAA) = 0x10;
 	*dst = 0x30;
 
 	myusec_delay(10);
@@ -92,12 +93,12 @@ int block_erase_m29f400bt(volatile char *bios, volatile char *dst)
 	return (0);
 }
 
-int write_m29f400bt(struct flashchip *flash, unsigned char *buf)
+int write_m29f400bt(struct flashchip *flash, uint8_t *buf)
 {
 	int i;
 	int total_size = flash->total_size * 1024, page_size =
 	    flash->page_size;
-	volatile char *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virt_addr;
 
 	//erase_m29f400bt (flash);
 	printf("Programming Page:\n ");
@@ -152,9 +153,9 @@ int write_m29f400bt(struct flashchip *flash, unsigned char *buf)
 	return (0);
 }
 
-int write_linuxbios_m29f400bt(struct flashchip *flash, unsigned char *buf)
+int write_linuxbios_m29f400bt(struct flashchip *flash, uint8_t *buf)
 {
-	volatile char *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virt_addr;
 
 	printf("Programming Page:\n ");
 	/*********************************

@@ -1,0 +1,3 @@
+00000000:00008fff gfxrom
+00009000:0003ffff normal
+00040000:0007ffff fallback

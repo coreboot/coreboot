@@ -26,27 +26,29 @@
  */
 
 #include <stdio.h>
+#include <stdint.h>
 #include "flash.h"
 #include "jedec.h"
 #include "mx29f002.h"
+#include "debug.h"
 
 int probe_29f002(struct flashchip *flash)
 {
-	volatile char *bios = flash->virt_addr;
-	unsigned char id1, id2;
+	volatile uint8_t *bios = flash->virt_addr;
+	uint8_t id1, id2;
 
 	*(bios + 0x5555) = 0xAA;
 	*(bios + 0x2AAA) = 0x55;
 	*(bios + 0x5555) = 0x90;
 
-	id1 = *(volatile unsigned char *) bios;
-	id2 = *(volatile unsigned char *) (bios + 0x01);
+	id1 = *(volatile uint8_t *) bios;
+	id2 = *(volatile uint8_t *) (bios + 0x01);
 
 	*bios = 0xF0;
 
 	myusec_delay(10);
 
-	printf("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, id1, id2);
+	printf_debug("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, id1, id2);
 	if (id1 == flash->manufacture_id && id2 == flash->model_id)
 		return 1;
 
@@ -55,7 +57,7 @@ int probe_29f002(struct flashchip *flash)
 
 int erase_29f002(struct flashchip *flash)
 {
-	volatile char *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virt_addr;
 
 	*(bios + 0x555) = 0xF0;
 	*(bios + 0x555) = 0xAA;
@@ -84,12 +86,12 @@ int erase_29f002(struct flashchip *flash)
 	return (0);
 }
 
-int write_29f002(struct flashchip *flash, unsigned char *buf)
+int write_29f002(struct flashchip *flash, uint8_t *buf)
 {
 	int i;
 	int total_size = flash->total_size * 1024;
-	volatile char *bios = flash->virt_addr;
-	volatile char *dst = bios;
+	volatile uint8_t *bios = flash->virt_addr;
+	volatile uint8_t *dst = bios;
 
 	*bios = 0xF0;
 	myusec_delay(10);

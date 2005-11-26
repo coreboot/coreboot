@@ -18,8 +18,6 @@
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- *
- * $Id$
  */
 
 #include <errno.h>
@@ -35,7 +33,7 @@
 #include "sst_fwhub.h"
 
 // I need that Berkeley bit-map printer
-void print_sst_fwhub_status(unsigned char status)
+void print_sst_fwhub_status(uint8_t status)
 {
 	printf("%s", status & 0x80 ? "Ready:" : "Busy:");
 	printf("%s", status & 0x40 ? "BE SUSPEND:" : "BE RUN/FINISH:");
@@ -49,7 +47,7 @@ void print_sst_fwhub_status(unsigned char status)
 /* probe_jedec works fine for probing */
 int probe_sst_fwhub(struct flashchip *flash)
 {
-	volatile unsigned char *bios;
+	volatile uint8_t *bios;
 	size_t size = flash->total_size * 1024;
 
 	if (probe_jedec(flash) == 0)
@@ -69,7 +67,7 @@ int probe_sst_fwhub(struct flashchip *flash)
 
 int erase_sst_fwhub_block(struct flashchip *flash, int offset)
 {
-	volatile unsigned char *wrprotect = flash->virt_addr_2 + offset + 2;
+	volatile uint8_t *wrprotect = flash->virt_addr_2 + offset + 2;
 
 	// clear write protect
 	*(wrprotect) = 0;
@@ -90,14 +88,17 @@ int erase_sst_fwhub(struct flashchip *flash)
 	return (0);
 }
 
-int write_sst_fwhub(struct flashchip *flash, unsigned char *buf)
+int write_sst_fwhub(struct flashchip *flash, uint8_t *buf)
 {
 	int i;
 	int total_size = flash->total_size * 1024, page_size =
 	    flash->page_size;
-	volatile unsigned char *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virt_addr;
 
+	// Do we want block wide erase?
 	erase_sst_fwhub(flash);
+	
+	// FIXME: This test is not sufficient!
 	if (*bios != 0xff) {
 		printf("ERASE FAILED\n");
 		return -1;

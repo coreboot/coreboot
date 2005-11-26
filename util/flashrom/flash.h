@@ -3,24 +3,27 @@
 
 #include <sys/io.h>
 #include <unistd.h>
+#include <stdint.h>
 
 struct flashchip {
 	char *name;
 	int manufacture_id;
 	int model_id;
 
-	volatile char *virt_addr;
+	volatile uint8_t *virt_addr;
 	int total_size;
 	int page_size;
 
 	int (*probe) (struct flashchip * flash);
 	int (*erase) (struct flashchip * flash);
-	int (*write) (struct flashchip * flash, unsigned char *buf);
-	int (*read) (struct flashchip * flash, unsigned char *buf);
+	int (*write) (struct flashchip * flash, uint8_t *buf);
+	int (*read) (struct flashchip * flash, uint8_t *buf);
 
 	int fd_mem;
-	volatile char *virt_addr_2;
+	volatile uint8_t *virt_addr_2;
 };
+
+extern struct flashchip flashchips[];
 
 #define AMD_ID            0x01
 #define AM_29F040B        0xA4

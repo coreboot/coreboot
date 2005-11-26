@@ -1,11 +1,13 @@
 /*
- * flash_rom.c: Flash programming utility for SiS 630/950 M/Bs
- *
+ * flash_rom.c: Flash programming utility
  *
  * Copyright 2000 Silicon Integrated System Corporation
  * Copyright 2004 Tyan Corp
  *	yhlu yhlu@tyan.com add exclude start and end option
- *
+ * Copyright 2005 coresystems GmbH 
+ *      Stefan Reinauer <stepan@core-systems.de> added rom layout
+ *      support, and checking for suitable rom image 
+ * 
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
  *	the Free Software Foundation; either version 2 of the License, or
@@ -20,12 +22,6 @@
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- *
- * Reference:
- *	1. SiS 630 Specification
- *	2. SiS 950 Specification
- *
- * $Id$
  */
 
 #include <errno.h>
@@ -35,75 +31,19 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <getopt.h>
 
 #include "flash.h"
-#include "jedec.h"
-#include "m29f400bt.h"
-#include "82802ab.h"
-#include "msys_doc.h"
-#include "am29f040b.h"
-#include "sst28sf040.h"
-#include "w49f002u.h"
-#include "sst39sf020.h"
-#include "sst49lf040.h"
-#include "pm49fl004.h"
-#include "mx29f002.h"
-#include "sst_fwhub.h"
-
-struct flashchip flashchips[] = {
-	{"Am29F040B",	AMD_ID, 	AM_29F040B,	NULL, 512, 64 * 1024,
-	 probe_29f040b, erase_29f040b,	write_29f040b,	NULL},
-	{"At29C040A",	ATMEL_ID,	AT_29C040A,	NULL, 512, 256,
-	 probe_jedec,	erase_chip_jedec, write_jedec,	NULL},
-	{"Mx29f002",	MX_ID,		MX_29F002,	NULL, 256, 64 * 1024,
-	 probe_29f002,	erase_29f002, 	write_29f002,	NULL},
-	{"SST29EE020A", SST_ID,		SST_29EE020A,	NULL, 256, 128,
-	 probe_jedec,	erase_chip_jedec, write_jedec,	NULL},
-	{"SST28SF040A", SST_ID,		SST_28SF040,	NULL, 512, 256,
-	 probe_28sf040, erase_28sf040, write_28sf040,	NULL},
-	{"SST39SF020A", SST_ID,		SST_39SF020,	NULL, 256, 4096,
-	 probe_jedec,	erase_chip_jedec, write_39sf020,NULL},
-	{"SST39VF020",	SST_ID,		SST_39VF020,	NULL, 256, 4096,
-	 probe_jedec,	erase_chip_jedec, write_39sf020,NULL},
-	{"SST49LF040",	SST_ID,		SST_49LF040, 	NULL, 512, 4096,
-	 probe_jedec, 	erase_49lf040, write_49lf040,NULL},
-	{"SST49LF080A",	SST_ID,		SST_49LF080A,	NULL, 1024, 4096,
-	 probe_jedec,	erase_chip_jedec, write_49lf040,NULL},
-	{"SST49LF002A/B", SST_ID,	SST_49LF002A,	NULL, 256, 16 * 1024,
-	 probe_sst_fwhub, erase_sst_fwhub, write_sst_fwhub, NULL},
-	{"SST49LF003A/B", SST_ID,	SST_49LF003A,	NULL, 384, 64 * 1024,
-	 probe_sst_fwhub, erase_sst_fwhub, write_sst_fwhub,NULL},
-	{"SST49LF004A/B", SST_ID,	SST_49LF004A,	NULL, 512, 64 * 1024,
-	 probe_sst_fwhub, erase_sst_fwhub, write_sst_fwhub,NULL},
-	{"SST49LF008A", SST_ID,		SST_49LF008A, 	NULL, 1024, 64 * 1024 ,
-	 probe_sst_fwhub, erase_sst_fwhub, write_sst_fwhub, NULL},
-	{"Pm49FL004",	PMC_ID,		PMC_49FL004,	NULL, 512, 64 * 1024,
-	 probe_jedec,	erase_chip_jedec, write_49fl004,NULL},
-	{"W29C011",	WINBOND_ID,	W_29C011,	NULL, 128, 128,
-	 probe_jedec,	erase_chip_jedec, write_jedec,	NULL},
-	{"W29C020C", 	WINBOND_ID, 	W_29C020C,	NULL, 256, 128,
-	 probe_jedec, 	erase_chip_jedec, write_jedec,	NULL},
-	{"W49F002U", 	WINBOND_ID, 	W_49F002U,	NULL, 256, 128,
-	 probe_jedec,	erase_chip_jedec, write_49f002, NULL},
-	{"M29F400BT",	ST_ID,		ST_M29F400BT,	NULL, 512, 64 * 1024,
-	 probe_m29f400bt, erase_m29f400bt, write_linuxbios_m29f400bt, NULL},
-	{"82802ab",	137,		173,		NULL, 512, 64 * 1024,
-	 probe_82802ab, erase_82802ab,	write_82802ab,	NULL},
-	{"82802ac",	137,		172,		NULL, 1024, 64 * 1024,
-	 probe_82802ab, erase_82802ab,	write_82802ab,	NULL},
-	{"MD-2802 (M-Systems DiskOnChip Millennium Module)",
-	 MSYSTEMS_ID, MSYSTEMS_MD2802,
-	 NULL, 8, 8 * 1024,
-	 probe_md2802, erase_md2802, write_md2802, read_md2802},
-	{NULL,}
-};
+#include "lbtable.h"
+#include "layout.h"
+#include "debug.h"
 
 char *chip_to_probe = NULL;
 
 struct flashchip *probe_flash(struct flashchip *flash)
 {
 	int fd_mem;
-	volatile char *bios;
+	volatile uint8_t *bios;
 	unsigned long size;
 
 	if ((fd_mem = open("/dev/mem", O_RDWR)) < 0) {
@@ -116,7 +56,7 @@ struct flashchip *probe_flash(struct flashchip *flash)
 			flash++;
 			continue;
 		}
-		printf("Trying %s, %d KB\n", flash->name, flash->total_size);
+		printf_debug("Trying %s, %d KB\n", flash->name, flash->total_size);
 		size = flash->total_size * 1024;
 		/* BUG? what happens if getpagesize() > size!?
 		   -> ``Error MMAP /dev/mem: Invalid argument'' NIKI */
@@ -146,11 +86,11 @@ struct flashchip *probe_flash(struct flashchip *flash)
 	return NULL;
 }
 
-int verify_flash(struct flashchip *flash, char *buf, int verbose)
+int verify_flash(struct flashchip *flash, uint8_t *buf, int verbose)
 {
 	int i;
 	int total_size = flash->total_size * 1024;
-	volatile char *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virt_addr;
 
 	printf("Verifying address: ");
 	for (i = 0; i < total_size; i++) {
@@ -173,46 +113,76 @@ int verify_flash(struct flashchip *flash, char *buf, int verbose)
 
 void usage(const char *name)
 {
-	printf("usage: %s [-rwv] [-c chipname] [-s exclude_start] [-e exclude_end] [file]\n", name);
-	printf("-r: read flash and save into file\n"
-	       "-w: write file into flash (default when file is specified)\n"
-	       "-v: verify flash against file\n"
-	       "-c: probe only for specified flash chip\n"
-	       "-s: exclude start position\n"
-	       "-e: exclude end postion\n"
+	printf("usage: %s [-rwvE] [-V] [-c chipname] [-s exclude_start] [-e exclude_end] [file]\n", name);
+	printf("   -r | --read:   read flash and save into file\n"
+	       "   -w | --write:  write file into flash (default when file is specified)\n"
+	       "   -v | --verify: verify flash against file\n"
+	       "   -E | --erase: Erase flash device\n"
+	       "   -V | --verbose: more verbose output\n\n"
+	       "   -c | --chip <chipname>: probe only for specified flash chip\n"
+	       "   -s | --estart <addr>: exclude start position\n"
+	       "   -e | --eend <addr>: exclude end postion\n"
+	       "   -m | --mainboard <vendor:part>: override mainboard settings\n"
+	       "   -f | --force: force write without checking image\n"
+	       "   -l | --layout <file.layout>: read rom layout from file\n"
+	       "   -i | --image <name>: only flash image name from flash layout\n"
+	       "\n"
 	       " If no file is specified, then all that happens\n"
-	       " is that flash info is dumped\n");
+	       " is that flash info is dumped\n\n");
 	exit(1);
 }
 
 int exclude_start_page, exclude_end_page;
+int force=0;
 
 int main(int argc, char *argv[])
 {
-	char *buf;
+	uint8_t *buf;
 	unsigned long size;
 	FILE *image;
 	struct flashchip *flash;
 	int opt;
-	int read_it = 0, write_it = 0, erase_it = 0, verify_it = 0,
-		verbose = 0;
+	int option_index = 0;
+	int read_it = 0, 
+	    write_it = 0, 
+	    erase_it = 0, 
+	    verify_it = 0;
+	int verbose = 0;
+
+	static struct option long_options[]= {
+		{ "read", 0, 0, 'r' },
+		{ "write", 0, 0, 'w' },
+		{ "erase", 0, 0, 'E' },
+		{ "verify", 0, 0, 'v' },
+		{ "chip", 1, 0, 'c' },
+		{ "estart", 1, 0, 's' },
+		{ "eend", 1, 0, 'e' },
+		{ "mainboard", 1, 0, 'm' },
+		{ "verbose", 0, 0, 'V' },
+		{ "force", 0, 0, 'f' },
+		{ "layout", 1, 0, 'l' },
+		{ "image", 1, 0, 'i' },
+		{ "help", 0, 0, 'h' },
+		{ 0, 0, 0, 0 }
+	};
+	
 	char *filename = NULL;
 
 
         unsigned int exclude_start_position=0, exclude_end_position=0; // [x,y)
-	char *tempstr=NULL;
+	char *tempstr=NULL, *tempstr2=NULL;
 
 	if (argc > 1) {
 		/* Yes, print them. */
 		int i;
-		printf ("The arguments are:\n");
+		printf_debug ("The arguments are:\n");
 		for (i = 1; i < argc; ++i)
-			printf ("%s\n", argv[i]);
+			printf_debug ("%s\n", argv[i]);
 	}
 
 	setbuf(stdout, NULL);
-
-	while ((opt = getopt(argc, argv, "rwvVEc:s:e:")) != EOF) {
+	while ((opt = getopt_long(argc, argv, "rwvVEfc:s:e:m:l:i:h", long_options,
+					&option_index)) != EOF) {
 		switch (opt) {
 		case 'r':
 			read_it = 1;
@@ -240,7 +210,30 @@ int main(int argc, char *argv[])
 			tempstr = strdup(optarg);
 			sscanf(tempstr,"%x",&exclude_end_position);
 			break;
-
+		case 'm':
+			tempstr = strdup(optarg);
+			strtok(tempstr, ":");
+			tempstr2=strtok(NULL, ":");
+			if (tempstr2) {
+				lb_vendor=tempstr;
+				lb_part=tempstr2;
+			} else {
+				printf("warning: ignored wrong format of"
+						" mainboard: %s\n", tempstr);
+			}
+			break;
+		case 'f':
+			force=1;
+			break;
+		case 'l':
+			tempstr=strdup(optarg);
+			read_romlayout(tempstr);
+			break;
+		case 'i':
+			tempstr=strdup(optarg);
+			find_romentry(tempstr);
+			break;
+		case 'h':
 		default:
 			usage(argv[0]);
 			break;
@@ -255,28 +248,36 @@ int main(int argc, char *argv[])
 	if (optind < argc)
 		filename = argv[optind++];
 
-	printf("Calibrating timer since microsleep sucks ... takes a second\n");
+	printf("Calibrating delay loop... ");
 	myusec_calibrate_delay();
-	printf("OK, calibrated, now do the deed\n");
+	printf("ok\n");
+
+	/* We look at the lbtable first to see if we need a
+	 * mainboard specific flash enable sequence.
+	 */
+	linuxbios_init();
 
 	/* try to enable it. Failure IS an option, since not all motherboards
-	 * really need this to be done, etc., etc. It sucks.
+	 * really need this to be done, etc., etc.
 	 */
 	(void) enable_flash_write();
 
 	if ((flash = probe_flash(flashchips)) == NULL) {
-		printf("EEPROM not found\n");
+		printf("No EEPROM/flash device found.\n");
 		exit(1);
 	}
 
-	printf("Part is %s\n", flash->name);
+	printf("Flash part is %s\n", flash->name);
+
 	if (!filename && !erase_it) {
-		printf("OK, only ENABLING flash write, but NOT FLASHING\n");
+		// FIXME: Do we really want this feature implicitly?
+		printf("OK, only ENABLING flash write, but NOT FLASHING.\n");
 		return 0;
 	}
-	size = flash->total_size * 1024;
-	buf = (char *) calloc(size, sizeof(char));
 
+	size = flash->total_size * 1024;
+	buf = (uint8_t *) calloc(size, sizeof(char));
+	
 	if (erase_it) {
 		printf("Erasing flash chip\n");
 		flash->erase(flash);
@@ -305,9 +306,18 @@ int main(int argc, char *argv[])
 			exit(1);
 		}
 		fread(buf, sizeof(char), size, image);
+		show_id(buf, size);
 		fclose(image);
 	}
 
+	/* exclude range stuff. Nice idea, but at the moment it is only
+	 * supported in hardware by the pm49fl004 chips. 
+	 * Instead of implementing this for all chips I suggest advancing
+	 * it to the rom layout feature below and drop exclude range
+	 * completely once all flash chips can do rom layouts. stepan
+	 */
+	
+	// ////////////////////////////////////////////////////////////
 	if (exclude_end_position - exclude_start_position > 0)
 		memcpy(buf+exclude_start_position,
 		       (const char *) flash->virt_addr+exclude_start_position, 
@@ -318,11 +328,19 @@ int main(int argc, char *argv[])
 		exclude_start_page++;
 	}
 	exclude_end_page = exclude_end_position/flash->page_size;
+	// ////////////////////////////////////////////////////////////
 
-	if (write_it || (!read_it && !verify_it)) {
+	// This should be moved into each flash part's code to do it 
+	// cleanly. This does the job.
+	handle_romentries(buf, (uint8_t *)flash->virt_addr);
+	 
+	// ////////////////////////////////////////////////////////////
+	
+	if (write_it)
 		flash->write(flash, buf);
-	}	
+
 	if (verify_it)
 		verify_flash(flash, buf, verbose);
+
 	return 0;
 }

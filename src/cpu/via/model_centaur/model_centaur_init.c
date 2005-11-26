@@ -38,6 +38,7 @@ static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_CENTAUR, 0x0677 },		// VIA C3 Samual 2
 	{ X86_VENDOR_CENTAUR, 0x0678 },		// VIA C3 Ezra
 	{ X86_VENDOR_CENTAUR, 0x0680 },		// VIA C3 Ezra-T
+	{ X86_VENDOR_CENTAUR, 0x0691 },		// VIA C3 Nehemiah
 	{ X86_VENDOR_CENTAUR, 0x0698 },		// VIA C3 Nehemiah
 	{ X86_VENDOR_CENTAUR, 0x0693 }, 	// VIA C3 Nehemiah  
 	{ X86_VENDOR_CENTAUR, 0x0695 }, 	// VIA C3 Nehemiah  

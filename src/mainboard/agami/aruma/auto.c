@@ -32,8 +32,9 @@
 static void hard_reset(void)
 {
 	set_bios_reset();
-	pci_write_config8(PCI_DEV(0, 0x04, 3), 0x41, 0xf1);
-	outb(0x0e, 0x0cf9);
+	// pci_write_config8(PCI_DEV(0, 0x04, 3), 0x41, 0xf1);
+	// outb(0x0e, 0x0cf9);
+	outb(0x06, 0x0cf9); /* this value will assert RESET_L and LDTRST_L */
 }
 
 static void soft_reset(void)

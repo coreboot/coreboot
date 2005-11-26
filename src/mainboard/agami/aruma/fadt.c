@@ -71,7 +71,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){
 	fadt->reset_reg.addrl = 0xcf9;
 	fadt->reset_reg.addrh = 0x0;
 
-	fadt->reset_value = 6;
+	fadt->reset_value = 0x06;
 	fadt->x_firmware_ctl_l = facs;
 	fadt->x_firmware_ctl_h = 0;
 	fadt->x_dsdt_l = dsdt;

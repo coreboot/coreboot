@@ -16,7 +16,7 @@ extern unsigned char AmlCode[];
 
 unsigned long acpi_dump_apics(unsigned long current)
 {
-	unsigned int gsi_base=0x18, ioapic_nr=2;
+	unsigned int gsi_base=0x18, ioapic_nr=2, i;
 	device_t dev=0;
  
 	/* create all subtables for 4p */
@@ -29,6 +29,30 @@ unsigned long acpi_dump_apics(unsigned long current)
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, 1,
 			IO_APIC_ADDR, 0);
 
+	/* Write the two onboard 8131 IOAPICs */
+	for(i = 0; i < 2; i++) {
+		if (dev = dev_find_device(PCI_VENDOR_ID_AMD, 0x7451, dev)){
+			ACPI_WRITE_MADT_IOAPIC(dev, ioapic_nr);
+			ioapic_nr++;
+		}
+	}
+
+	/* The doughter card may contain either 8131 or 8132 */
+	
+	/* Write the 8132 IOAPICs if they exist */
+	for(i = 0; i < 4; i++) {
+		if (dev = dev_find_device(PCI_VENDOR_ID_AMD, 0x7459, dev)){
+			ACPI_WRITE_MADT_IOAPIC(dev, ioapic_nr);
+			ioapic_nr++;
+		}
+	}
+
+	/* In the event there were no 8132s look for the 8131s 
+	 * but skip the two onboard 8131
+	 */
+	dev=dev_find_device(PCI_VENDOR_ID_AMD, 0x7451, 0);
+	dev=dev_find_device(PCI_VENDOR_ID_AMD, 0x7451, dev);
+	
         /* Write all 8131 IOAPICs */
 	while((dev = dev_find_device(PCI_VENDOR_ID_AMD, 0x7451, dev))) {
         	ACPI_WRITE_MADT_IOAPIC(dev, ioapic_nr);
@@ -83,6 +107,7 @@ void acpi_create_lnxb(acpi_lnxb_t *lnxb)
 	/* first skip the onboard 8131 */
 	dev=dev_find_device(PCI_VENDOR_ID_AMD, 0x7450, 0);
 	dev=dev_find_device(PCI_VENDOR_ID_AMD, 0x7450, dev);
+	
 	/* now look at the last 8131 in each chain, 
 	 * as it contains the valid bus ranges
 	 */

@@ -97,6 +97,16 @@ static void acpi_init(struct device *dev)
 
 	
 #endif
+	/* To enable the register 0xcf9 in the IO space
+	 * bit [D5] is set in the amd8111 configuration register.
+	 * The config. reg. is devBx41.  Register 0xcf9 allows
+	 * hard reset capability to the system.  For the ACPI
+	 * reset.reg values in fadt.c to work this register
+	 * must be enabled.
+	 */
+	byte = pci_read_config8(dev, 0x41);
+	pci_write_config8(dev, 0x41, byte | (1<<6)|(1<<5));
+	
 	/* power on after power fail */
 	on = MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 	get_option(&on, "power_on_after_fail");

@@ -17,7 +17,7 @@ OBJS  = flash_enable.o udelay.o jedec.o sst28sf040.o am29f040b.o mx29f002.o  \
 	sst39sf020.o m29f400bt.o w49f002u.o 82802ab.o msys_doc.o pm49fl004.o \
 	sst49lf040.o sst_fwhub.o layout.o lbtable.o flashchips.o flash_rom.o
 
-all: dep $(PROGRAM)
+all: pciutils dep $(PROGRAM)
 
 $(PROGRAM): $(OBJS)
 	$(CC) -o $(PROGRAM) $(OBJS) $(LDFLAGS)
@@ -32,7 +32,20 @@ distclean: clean
 dep:
 	@$(CC) -MM *.c > .dependencies
 
-.PHONY: all clean distclean dep 
+pciutils:
+	@echo; echo -n "Checking for pciutils... "
+	@$(shell ( echo "#include <pci/pci.h>";		   \
+		   echo "struct pci_access *pacc;";	   \
+		   echo "int main(int argc, char **argv)"; \
+		   echo "{ pacc = pci_alloc(); return 0; }"; ) > .test.c )
+	@$(CC) $(CFLAGS) .test.c -o .test $(LDFLAGS) &>/dev/null &&	\
+		echo "found." || ( echo "not found."; echo;		\
+		echo "Please install pciutils and pciutils-devel.";	\
+		echo "See README for more information."; echo;		\
+		rm -f .test.c .test; exit 1)
+	@rm -f .test.c .test
+
+.PHONY: all clean distclean dep pciutils
 
 -include .dependencies
 

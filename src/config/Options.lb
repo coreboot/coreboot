@@ -188,37 +188,37 @@ define FALLBACK_SIZE
 	default 65536
 	format "0x%x"
 	export used
-	comment "ROM_SECTION_SIZE to use for the fallback build."
+	comment "Default fallback image size"
 end
 define ROM_SIZE
 	default none
 	format "0x%x"
 	export used
-	comment "Total number of bytes allocated for normal and fallback LinuxBIOS images and payloads. Note that the fallback image goes at the end of the ROM, and the normal image at the beginning."
+	comment "Size of your ROM"
 end
 define ROM_IMAGE_SIZE
 	default 65535
 	format "0x%x"
 	export always
-	comment "Maximum number of bytes allowed for a LinuxBIOS image. Does not include the payload."
+	comment "Default image size"
 end
 define ROM_SECTION_SIZE
 	default {FALLBACK_SIZE}
 	format "0x%x"
 	export used
-	comment "Default rom section size. Normally, this is calculated in mainboard Config.lb and varies between the normal and fallback builds."
+	comment "Default rom section size"
 end
 define ROM_SECTION_OFFSET
 	default {ROM_SIZE - FALLBACK_SIZE}
 	format "0x%x"
 	export used
-	comment "Number of bytes from the beginning of the ROM to the start of the section containing this build (normal or fallback). Normally, this is calculated in mainboard Config.lb."
+	comment "Default rom section offset"
 end
 define PAYLOAD_SIZE
 	default {ROM_SECTION_SIZE - ROM_IMAGE_SIZE}
 	format "0x%x"
 	export always
-	comment "Maximum number of bytes allowed for a payload. Normally, this is calculated as above."
+	comment "Default payload size"
 end
 define _ROMBASE
 	default {PAYLOAD_SIZE}
@@ -373,6 +373,11 @@ define CONFIG_CONSOLE_VGA
 	export always
 	comment "Log messages to VGA"
 end
+define CONFIG_CONSOLE_VGA_MULTI
+        default 0
+        export always
+        comment "Multi VGA console"
+end
 define CONFIG_CONSOLE_BTEXT
         default 0
         export always
@@ -479,7 +484,6 @@ define CONFIG_SYS_CLK_FREQ
 	export used
 	comment "System clock frequency in MHz"
 end
-
 ###############################################
 # SMP options
 ###############################################
@@ -514,7 +518,21 @@ define SERIAL_CPU_INIT
         export always
         comment "Serialize CPU init"
 end
-
+define APIC_ID_OFFSET
+	default 0
+	export always
+	comment "We need to share this value between cache_as_ram_auto.c and northbridge.c"
+end
+define ENABLE_APIC_EXT_ID
+	default 0
+	export always
+	comment "Enable APIC ext id mode 8 bit"
+end
+define LIFT_BSP_APIC_ID
+	default 0
+	export always
+	comment "decide if we lift bsp apic id while ap apic id"
+end
 ###############################################
 # Boot options
 ###############################################
@@ -533,7 +551,7 @@ define CONFIG_ROM_STREAM_START
 	default {0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1}
 	format "0x%x"
 	export always
-	comment "Memory address of this (normal or fallback) build's payload in ROM. Normally, this is calculated as above."
+	comment "ROM stream start location"
 end
 define CONFIG_FS_STREAM
 	default 0
@@ -797,16 +815,34 @@ define CK804_DEVN_BASE
 	comment "CK804 device count from 0 or 1"
 end
 
-define K8_E0_MEM_HOLE_SIZEK
+define K8_HW_MEM_HOLE_SIZEK
         default 0
         export always
-        comment "Opteron E0 later memory hole size in K"
+        comment "Opteron E0 later memory hole size in K, 0 mean disable"
+end
+
+define K8_HW_MEM_HOLE_SIZE_AUTO_INC
+        default 0
+        export always
+        comment "Opteron E0 later memory hole size auto increase to avoid hole startk equal to basek"
+end
+
+define K8_HT_FREQ_1G_SUPPORT
+	default 0
+	export always
+	comment "Optern E0 later could support 1G HT, but still depends MB design"
 end
 
 define CONFIG_PCI_ROM_RUN
 	default 0
 	export always
 	comment "Init PCI device option rom"
+end
+
+define CONFIG_PCI_64BIT_PREF_MEM
+        default 0
+        export always
+        comment "allow PCI device get 4G above Region as pref mem"
 end
 
 

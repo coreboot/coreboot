@@ -1,7 +1,7 @@
 /* 2004.12 yhlu add dual core support */
 
 #include <arch/cpu.h>
-#include "cpu/amd/model_fxx/model_fxx_msr.h"
+#include <cpu/amd/model_fxx_msr.h>
 
 static inline unsigned int read_nb_cfg_54(void)
 {

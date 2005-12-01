@@ -17,17 +17,21 @@
 #include <cpu/cpu.h>
 
 #include <cpu/x86/lapic.h>
-#include <cpu/amd/dualcore.h>
 
 #if CONFIG_LOGICAL_CPUS==1
+#include <cpu/amd/dualcore.h>
 #include <pc80/mc146818rtc.h>
 #endif
 
 #include "chip.h"
 #include "root_complex/chip.h"
 #include "northbridge.h"
+
 #include "amdk8.h"
-#include "cpu_rev.c"
+
+#if K8_HW_MEM_HOLE_SIZEK != 0
+#include <cpu/amd/model_fxx_rev.h>
+#endif
 
 #define FX_DEVS 8
 static device_t __f0_dev[FX_DEVS];
@@ -446,6 +450,10 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
  * I tried to reuse the resource allocation code in amdk8_set_resource()
  * but it is too diffcult to deal with the resource allocation magic.
  */
+#if CONFIG_CONSOLE_VGA_MULTI == 1
+extern device_t vga_pri;        // the primary vga device, defined in device.c
+#endif
+
 static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 {
 	struct resource *resource;
@@ -457,18 +465,30 @@ static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 	 * we only deal with the 'first' vga card */
 	for (link = 0; link < dev->links; link++) {
 		if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
+#if CONFIG_CONSOLE_VGA_MULTI == 1
+			printk_debug("VGA: vga_pri bus num = %d dev->link[link] bus range [%d,%d]\n", vga_pri->bus->secondary, 
+				dev->link[link].secondary,dev->link[link].subordinate);
+			/* We need to make sure the vga_pri is under the link */
+			if((vga_pri->bus->secondary >= dev->link[link].secondary ) &&
+				(vga_pri->bus->secondary <= dev->link[link].subordinate )
+			)
+#endif
 			break;
 		}
 	}
 	
-	printk_spew("%s: link %d has VGA device\n", __func__, link);
-
 	/* no VGA card installed */
 	if (link == dev->links)
 		return;
 
+	printk_debug("VGA: %s (aka node %d) link %d has VGA device\n", dev_path(dev), nodeid, link);
+
 	/* allocate a temp resrouce for legacy VGA buffer */
 	resource = amdk8_find_mempair(dev, nodeid, link);
+	if(!resource){
+		printk_debug("VGA: Can not find free mmio reg for legacy VGA buffer\n");
+		return;
+	}
 	resource->base = 0xa0000;
 	resource->size = 0x20000;
 
@@ -585,17 +605,42 @@ static void pci_domain_read_resources(device_t dev)
 			}
 		}
 	}
-
+#if CONFIG_PCI_64BIT_PREF_MEM == 0
 	/* Initialize the system wide io space constraints */
 	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
 	resource->base  = 0x400;
 	resource->limit = 0xffffUL;
 	resource->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 
-	/* Initialize the system wide memory resources constraints */
-	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
-	resource->limit = 0xfcffffffffULL;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+        /* Initialize the system wide memory resources constraints */
+        resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
+        resource->limit = 0xfcffffffffULL;
+        resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+#else
+        /* Initialize the system wide io space constraints */
+        resource = new_resource(dev, 0);
+        resource->base  = 0x400;
+        resource->limit = 0xffffUL;
+        resource->flags = IORESOURCE_IO;
+        compute_allocate_resource(&dev->link[0], resource,
+                IORESOURCE_IO, IORESOURCE_IO);
+
+        /* Initialize the system wide prefetchable memory resources constraints */
+        resource = new_resource(dev, 1);
+        resource->limit = 0xfcffffffffULL;
+        resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
+        compute_allocate_resource(&dev->link[0], resource,
+                IORESOURCE_MEM | IORESOURCE_PREFETCH,
+                IORESOURCE_MEM | IORESOURCE_PREFETCH);
+
+        /* Initialize the system wide memory resources constraints */
+        resource = new_resource(dev, 2);
+        resource->limit = 0xfcffffffffULL;
+        resource->flags = IORESOURCE_MEM;
+        compute_allocate_resource(&dev->link[0], resource,
+                IORESOURCE_MEM | IORESOURCE_PREFETCH,
+                IORESOURCE_MEM);
+#endif
 }
 
 static void ram_resource(device_t dev, unsigned long index, 
@@ -637,66 +682,304 @@ static uint32_t find_pci_tolm(struct bus *bus)
 	return tolm;
 }
 
-static uint32_t hoist_memory(unsigned long mmio_basek, int i) 
+#if CONFIG_PCI_64BIT_PREF_MEM == 1
+#define BRIDGE_IO_MASK (IORESOURCE_IO | IORESOURCE_MEM | IORESOURCE_PREFETCH)
+#endif
+
+#if K8_HW_MEM_HOLE_SIZEK != 0
+
+struct hw_mem_hole_info {
+	unsigned hole_startk;
+	int node_id;
+};
+
+static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 {
-	int ii;
-	uint32_t carry_over;
-	device_t dev;
-	uint32_t base, limit;
-	uint32_t basek;
-	uint32_t hoist;
+		struct hw_mem_hole_info mem_hole;
+		int i;
 
-	carry_over = (4*1024*1024) - mmio_basek;
-	for(ii=7;ii>i;ii--) {
+                mem_hole.hole_startk = K8_HW_MEM_HOLE_SIZEK;
+		mem_hole.node_id = -1;
 
-		base  = f1_read_config32(0x40 + (ii << 3));
-		limit = f1_read_config32(0x44 + (ii << 3));
-		if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
-			continue;
-		}
-		f1_write_config32(0x44 + (ii << 3),limit + (carry_over << 2));
-		f1_write_config32(0x40 + (ii << 3),base + (carry_over << 2));
-	}
-	limit = f1_read_config32(0x44 + (i << 3));
-	f1_write_config32(0x44 + (i << 3),limit + (carry_over << 2));
-	dev = __f1_dev[i];
-	base  = pci_read_config32(dev, 0x40 + (i << 3));
-	basek  = (pci_read_config32(dev, 0x40 + (i << 3)) & 0xffff0000) >> 2;
-	hoist = /* hole start address */
-		((mmio_basek << 10) & 0xff000000) +  
-		/* hole address to memory controller address */	
-		(((basek + carry_over) >> 6) & 0x0000ff00) + 
-		/* enable */
-		1;
-	pci_write_config32(dev, 0xf0, hoist);
-	return carry_over;
+                for (i = 0; i < 8; i++) {
+                        uint32_t base;
+                        uint32_t hole;
+                        base  = f1_read_config32(0x40 + (i << 3));
+                        if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
+                                continue;
+                        }
+
+                        hole = pci_read_config32(__f1_dev[i], 0xf0);
+                        if(hole & 1) { // we find the hole 
+	                        mem_hole.hole_startk = (hole & (0xff<<24)) >> 10;
+        	                mem_hole.node_id = i; // record the node No with hole
+                	        break; // only one hole
+			}
+                }
+
+                //We need to double check if there is speical set on base reg and limit reg are not continous instead of hole, it will find out it's hole_startk
+                if(mem_hole.node_id!=-1) {
+                        uint32_t limitk_pri = 0;
+                        for(i=0; i<8; i++) {
+                                uint32_t base, limit;
+                                unsigned base_k, limit_k;
+                                base  = f1_read_config32(0x40 + (i << 3));
+                                if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
+                                        continue;
+                                }
+
+                                base_k = (base & 0xffff0000) >> 2;
+                                if(limitk_pri != base_k) { // we find the hole 
+	                                mem_hole.hole_startk = limitk_pri;
+        	                        mem_hole.node_id = i;
+                	                break; //only one hole
+				}
+
+	                        limit = f1_read_config32(0x44 + (i << 3));
+                	        limit_k = ((limit + 0x00010000) & 0xffff0000) >> 2;
+                                limitk_pri = limit_k;
+                        }
+                }
+		
+		return mem_hole;
+		
 }
+static void disable_hoist_memory(unsigned long hole_startk, int i)
+{
+        int ii;
+        device_t dev;
+        uint32_t base, limit;
+        uint32_t hoist;
+	uint32_t hole_sizek;
+
+
+        //1. find which node has hole
+        //2. change limit in that node.
+        //3. change base and limit in later node
+        //4. clear that node f0
+
+	//if there is not mem hole enabled, we need to change it's base instead
+
+	hole_sizek = (4*1024*1024) - hole_startk;
+
+        for(ii=7;ii>i;ii--) {
+
+                base  = f1_read_config32(0x40 + (ii << 3));
+                if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
+                        continue;
+                }
+		limit = f1_read_config32(0x44 + (ii << 3));
+                f1_write_config32(0x44 + (ii << 3),limit - (hole_sizek << 2));
+                f1_write_config32(0x40 + (ii << 3),base - (hole_sizek << 2));
+        }
+        limit = f1_read_config32(0x44 + (i << 3));
+        f1_write_config32(0x44 + (i << 3),limit - (hole_sizek << 2));
+        dev = __f1_dev[i];
+	hoist = pci_read_config32(dev, 0xf0);
+	if(hoist & 1) {
+		pci_write_config32(dev, 0xf0, 0);
+	}
+	else {
+		base = pci_read_config32(dev, 0x40 + (i << 3));
+		f1_write_config32(0x40 + (i << 3),base - (hole_sizek << 2));
+	}
+		
+}
+
+static uint32_t hoist_memory(unsigned long hole_startk, int i)
+{
+        int ii;
+        uint32_t carry_over;
+        device_t dev;
+        uint32_t base, limit;
+        uint32_t basek;
+        uint32_t hoist;
+
+        carry_over = (4*1024*1024) - hole_startk;
+
+        for(ii=7;ii>i;ii--) {
+
+                base  = f1_read_config32(0x40 + (ii << 3));
+                if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
+                        continue;
+                }
+		limit = f1_read_config32(0x44 + (ii << 3));
+                f1_write_config32(0x44 + (ii << 3),limit + (carry_over << 2));
+                f1_write_config32(0x40 + (ii << 3),base + (carry_over << 2));
+        }
+        limit = f1_read_config32(0x44 + (i << 3));
+        f1_write_config32(0x44 + (i << 3),limit + (carry_over << 2));
+        dev = __f1_dev[i];
+        base  = pci_read_config32(dev, 0x40 + (i << 3));
+        basek  = (base & 0xffff0000) >> 2;
+	if(basek == hole_startk) {
+		//don't need set memhole here, because hole off set will be 0, overflow
+		//so need to change base reg instead, new basek will be 4*1024*1024
+		base &= 0x0000ffff;
+		base |= (4*1024*1024)<<2;
+		f1_write_config32(0x40 + (i<<3), base);
+	}
+	else 
+	{
+	        hoist = /* hole start address */
+        	        ((hole_startk << 10) & 0xff000000) +
+                	/* hole address to memory controller address */
+	                (((basek + carry_over) >> 6) & 0x0000ff00) +
+        	        /* enable */
+	                1;
+	
+        	pci_write_config32(dev, 0xf0, hoist);
+	}
+
+        return carry_over;
+}
+#endif
 
 static void pci_domain_set_resources(device_t dev)
 {
+#if CONFIG_PCI_64BIT_PREF_MEM == 1
+	struct resource *io, *mem1, *mem2;
+	struct resource *resource, *last;
+#endif
 	unsigned long mmio_basek;
 	uint32_t pci_tolm;
 	int i, idx;
+#if K8_HW_MEM_HOLE_SIZEK != 0
+	struct hw_mem_hole_info mem_hole;
+	unsigned reset_memhole = 1;
+#endif
+
+#if 0
+        /* Place the IO devices somewhere safe */
+        io = find_resource(dev, 0);
+        io->base = DEVICE_IO_START;
+#endif
+#if CONFIG_PCI_64BIT_PREF_MEM == 1
+        /* Now reallocate the pci resources memory with the
+         * highest addresses I can manage.
+         */
+        mem1 = find_resource(dev, 1);
+        mem2 = find_resource(dev, 2);
+
+#if 1
+                printk_debug("base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
+                        mem1->base, mem1->limit, mem1->size, mem1->align);
+                printk_debug("base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
+                        mem2->base, mem2->limit, mem2->size, mem2->align);
+#endif
+
+        /* See if both resources have roughly the same limits */
+        if (((mem1->limit <= 0xffffffff) && (mem2->limit <= 0xffffffff)) ||
+                ((mem1->limit > 0xffffffff) && (mem2->limit > 0xffffffff)))
+        {
+                /* If so place the one with the most stringent alignment first
+                 */
+                if (mem2->align > mem1->align) {
+                        struct resource *tmp;
+                        tmp = mem1;
+                        mem1 = mem2;
+                        mem2 = tmp;
+                }
+                /* Now place the memory as high up as it will go */
+                mem2->base = resource_max(mem2);
+                mem1->limit = mem2->base - 1;
+                mem1->base = resource_max(mem1);
+        }
+        else {
+                /* Place the resources as high up as they will go */
+                mem2->base = resource_max(mem2);
+                mem1->base = resource_max(mem1);
+        }
+
+#if 1
+                printk_debug("base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
+                        mem1->base, mem1->limit, mem1->size, mem1->align);
+                printk_debug("base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
+                        mem2->base, mem2->limit, mem2->size, mem2->align);
+#endif
+
+        last = &dev->resource[dev->resources];
+        for(resource = &dev->resource[0]; resource < last; resource++)
+        {
+#if 1
+                resource->flags |= IORESOURCE_ASSIGNED;
+                resource->flags &= ~IORESOURCE_STORED;
+#endif
+                compute_allocate_resource(&dev->link[0], resource,
+                        BRIDGE_IO_MASK, resource->flags & BRIDGE_IO_MASK);
+
+                resource->flags |= IORESOURCE_STORED;
+                report_resource_stored(dev, resource, "");
+
+        }
+#endif
+
 
 	pci_tolm = find_pci_tolm(&dev->link[0]);
-
-	/* Work around for NUMA bug in all kernels before 2.6.13.
-	   If pci memory hole is too small, the kernel memory to NUMA 
-	   node mapping will fail to initialize and system will run in
-	   non-NUMA mode.
-	*/
-	if(pci_tolm > 0xf8000000) pci_tolm = 0xf8000000;
 
 #warning "FIXME handle interleaved nodes"
 	mmio_basek = pci_tolm >> 10;
 	/* Round mmio_basek to something the processor can support */
 	mmio_basek &= ~((1 << 6) -1);
 
+#if 1
+#warning "FIXME improve mtrr.c so we don't use up all of the mtrrs with a 64M MMIO hole"
+	/* Round the mmio hold to 64M */
+	mmio_basek &= ~((64*1024) - 1);
+#endif
+
+#if K8_HW_MEM_HOLE_SIZEK != 0
+    /* if the hw mem hole is already set in raminit stage, here we will compare mmio_basek and hole_basek
+     * if mmio_basek is bigger that hole_basek and will use hole_basek as mmio_basek and we don't need to reset hole.
+     * otherwise We reset the hole to the mmio_basek
+     */
+        if (!is_cpu_pre_e0()) {
+
+		mem_hole = get_hw_mem_hole_info();
+
+                if ((mem_hole.node_id !=  -1) && (mmio_basek > mem_hole.hole_startk)) { //We will use hole_basek as mmio_basek, and we don't need to reset hole anymore
+                        mmio_basek = mem_hole.hole_startk;
+			reset_memhole = 0;
+                }
+		
+		//mmio_basek = 3*1024*1024; // for debug to meet boundary
+
+		if(reset_memhole) {
+			if(mem_hole.node_id!=-1) { // We need to select K8_HW_MEM_HOLE_SIZEK for raminit, it can not make hole_startk to some basek too....!
+		               // We need to reset our Mem Hole, because We want more big HOLE than we already set
+        		       //Before that We need to disable mem hole at first, becase memhole could already be set on i+1 instead
+	        		disable_hoist_memory(mem_hole.hole_startk, mem_hole.node_id);
+			}
+
+		#if K8_HW_MEM_HOLE_SIZE_AUTO_INC == 1
+			//We need to double check if the mmio_basek is valid for hole setting, if it is equal to basek, we need to decrease it some
+			uint32_t basek_pri; 
+	        	for (i = 0; i < 8; i++) {
+        	        	uint32_t base;
+				uint32_t basek;
+        	        	base  = f1_read_config32(0x40 + (i << 3));
+	        	        if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
+        	        	        continue;
+	                	}
+
+				basek = (base & 0xffff0000) >> 2;
+				if(mmio_basek == basek) {
+					mmio_basek -= (basek - basek_pri)>>1; // increase mem hole size to make sure it is on middle of pri node 
+					break; 
+				}
+				basek_pri = basek;
+			}	
+		#endif	
+        	}
+
+	} // is_cpu_pre_e0
+
+#endif
+
 	idx = 0x10;
 	for(i = 0; i < 8; i++) {
 		uint32_t base, limit;
 		unsigned basek, limitk, sizek;
-
 		base  = f1_read_config32(0x40 + (i << 3));
 		limit = f1_read_config32(0x44 + (i << 3));
 		if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
@@ -715,18 +998,25 @@ static void pci_domain_set_resources(device_t dev)
 			
 		}
 
-		
+	
+//		printk_debug("node %d : mmio_basek=%08x, basek=%08x, limitk=%08x\n", i, mmio_basek, basek, limitk); //yhlu 
+			
 		/* See if I need to split the region to accomodate pci memory space */
-		if ((basek < mmio_basek) && (limitk > mmio_basek)) {
-			if (basek < mmio_basek) {
+		if ( (basek < 4*1024*1024 ) && (limitk > mmio_basek) ) {
+			if (basek <= mmio_basek) {
 				unsigned pre_sizek;
 				pre_sizek = mmio_basek - basek;
-				ram_resource(dev, (idx | i), basek, pre_sizek);
-				idx += 0x10;
-				sizek -= pre_sizek;
-				if(! is_cpu_pre_e0() ) { 
-				    	sizek += hoist_memory(mmio_basek,i);
-                                }
+				if(pre_sizek>0) {
+					ram_resource(dev, (idx | i), basek, pre_sizek);
+					idx += 0x10;
+					sizek -= pre_sizek;
+				}
+				#if K8_HW_MEM_HOLE_SIZEK != 0
+				if(reset_memhole) 
+                	                if(!is_cpu_pre_e0() ) 
+                       		                 sizek += hoist_memory(mmio_basek,i);
+				#endif
+				
 				basek = mmio_basek;
 			}
 			if ((basek + sizek) <= 4*1024*1024) {
@@ -791,16 +1081,59 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 {
 	struct bus *cpu_bus;
 	device_t dev_mc;
+	int bsp_apicid;
+	int apicid_offset;
 	int i,j;
+	int nodes;
+	unsigned nb_cfg_54;
+	int enable_apic_ext_id;
+	unsigned siblings;
+	int e0_later_single_core; 
+	int disable_siblings;
+	unsigned lift_bsp_apicid;
+
+	nb_cfg_54 = 0;
+	enable_apic_ext_id = 0;
+	lift_bsp_apicid = 0;
+	siblings = 0;
+
+	/* Find the bootstrap processors apicid */
+	bsp_apicid = lapicid();
+	apicid_offset = bsp_apicid;
+
+	disable_siblings = !CONFIG_LOGICAL_CPUS;
+#if CONFIG_LOGICAL_CPUS == 1
+	get_option(&disable_siblings, "dual_core");
+#endif
+
+	// for pre_e0, nb_cfg_54 can not be set, ( even set, when you read it still be 0)
+	// How can I get the nb_cfg_54 of every node' nb_cfg_54 in bsp??? and differ d0 and e0 single core
+
+	nb_cfg_54 = read_nb_cfg_54();
 
 	dev_mc = dev_find_slot(0, PCI_DEVFN(0x18, 0));
 	if (!dev_mc) {
 		die("0:18.0 not found?");
 	}
 
+	nodes = ((pci_read_config32(dev_mc, 0x60)>>4) & 7) + 1;
+
+	if (pci_read_config32(dev_mc, 0x68) & (HTTC_APIC_EXT_ID|HTTC_APIC_EXT_BRD_CST))
+	{
+		enable_apic_ext_id = 1;
+		if(bsp_apicid == 0) {
+			/* bsp apic id is not changed */
+			apicid_offset = APIC_ID_OFFSET;
+		} else 
+		{
+			lift_bsp_apicid = 1;
+		}	
+		
+	}
+
 	/* Find which cpus are present */
 	cpu_bus = &dev->link[0];
-	for(i = 0; i < 8; i++) {
+	for(i = 0; i < nodes; i++) {
 		device_t dev, cpu;
 		struct device_path cpu_path;
 
@@ -811,43 +1144,111 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 			 * ensure all of the cpu's pci devices are found.
 			 */
 			int j;
+			device_t dev_f0;
 			for(j = 0; j <= 3; j++) {
 				dev = pci_probe_dev(NULL, dev_mc->bus,
 					PCI_DEVFN(0x18 + i, j));
 			}
+			/* Ok, We need to set the links for that device.
+			 * otherwise the device under it will not be scanned
+			 */
+			dev_f0 = dev_find_slot(0, PCI_DEVFN(0x18+i,0));
+			if(dev_f0) {
+				dev_f0->links = 3;
+				for(j=0;j<3;j++) {
+					dev_f0->link[j].link = j;
+					dev_f0->link[j].dev = dev_f0;
+				}
+			}
+
+		}
+
+		e0_later_single_core = 0;
+		if (dev && dev->enabled) {
+			j = pci_read_config32(dev, 0xe8);
+			j = (j >> 12) & 3; // dev is func 3
+			printk_debug("  %s siblings=%d\r\n", dev_path(dev), j);
+
+			if(nb_cfg_54) {
+				// For e0 single core if nb_cfg_54 is set, apicid will be 0, 2, 4.... 
+				//  ----> you can mixed single core e0 and dual core e0 at any sequence
+				// That is the typical case
+
+		                if(j == 0 ){
+                 		       	e0_later_single_core = is_e0_later_in_bsp(i);  // single core 
+		                } else {
+		                       e0_later_single_core = 0;
+               			}
+				if(e0_later_single_core) { 
+					printk_debug("\tFound Rev E or Rev F later single core\r\n");
+
+					j=1; 
+				}
+	
+				if(siblings > j ) {
+				}
+				else {
+					siblings = j;
+				}
+			} else {
+				siblings = j;
+  			}
 		}
 		
-		/* Build the cpu device path */
-		cpu_path.type = DEVICE_PATH_APIC;
-		cpu_path.u.apic.apic_id = 0x10 + i;
-
-		/* See if I can find the cpu */
-		cpu = find_dev_path(cpu_bus, &cpu_path);
-
-		/* Enable the cpu if I have the processor */
-		if (dev && dev->enabled) {
-			if (!cpu) {
-				cpu = alloc_dev(cpu_bus, &cpu_path);
+		unsigned jj;
+		if(e0_later_single_core || disable_siblings) {
+			jj = 0;
+		} else 
+		{
+			jj = siblings;
+		}
+#if 0	
+		jj = 0; // if create cpu core1 path in amd_siblings by core0
+#endif
+	
+                for (j = 0; j <=jj; j++ ) {
+		
+			/* Build the cpu device path */
+			cpu_path.type = DEVICE_PATH_APIC;
+			cpu_path.u.apic.apic_id = i * (nb_cfg_54?(siblings+1):1) + j * (nb_cfg_54?1:8);
+			
+			/* See if I can find the cpu */
+			cpu = find_dev_path(cpu_bus, &cpu_path);
+			
+			/* Enable the cpu if I have the processor */
+			if (dev && dev->enabled) {
+				if (!cpu) {
+					cpu = alloc_dev(cpu_bus, &cpu_path);
+				}
+				if (cpu) {
+					cpu->enabled = 1;
+				}
 			}
+		
+			/* Disable the cpu if I don't have the processor */
+			if (cpu && (!dev || !dev->enabled)) {
+				cpu->enabled = 0;
+			}
+
+			/* Report what I have done */
 			if (cpu) {
-				cpu->enabled = 1;
+				cpu->path.u.apic.node_id = i;
+				cpu->path.u.apic.core_id = j;
+                                if(enable_apic_ext_id) {
+                                	if(lift_bsp_apicid) { 
+						cpu->path.u.apic.apic_id += apicid_offset;
+					} else 
+					{
+                                               if (cpu->path.u.apic.apic_id != 0) 
+                                                       cpu->path.u.apic.apic_id += apicid_offset;
+                                        }
+				}
+				printk_debug("CPU: %s %s\n",
+					dev_path(cpu), cpu->enabled?"enabled":"disabled");
 			}
-		}
-			
-		/* Disable the cpu if I don't have the processor */
-		if (cpu && (!dev || !dev->enabled)) {
-			cpu->enabled = 0;
-		}
-			
-		/* Report what I have done */
-		if (cpu) {
-                        cpu->path.u.apic.node_id = i;
-                        cpu->path.u.apic.core_id = 0;
-			printk_debug("CPU: %s %s\n",
-			dev_path(cpu), cpu->enabled?"enabled":"disabled");
-		}
-	}
 
+		} //j
+	}
 	return max;
 }
 

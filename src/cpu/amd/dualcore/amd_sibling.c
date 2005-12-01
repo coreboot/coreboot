@@ -1,5 +1,4 @@
 /* 2004.12 yhlu add dual core support */
-/* 24 June 2005 Cleaned up dual core support Eric Biederman */
 
 #include <console/console.h>
 #include <cpu/cpu.h>
@@ -10,100 +9,13 @@
 #include <pc80/mc146818rtc.h>
 #include <smp/spinlock.h>
 #include <cpu/x86/mtrr.h>
-#include "../model_fxx/model_fxx_msr.h"
-#include "../../../northbridge/amd/amdk8/cpu_rev.c"
+#include <cpu/amd/model_fxx_msr.h>
+#include <cpu/amd/model_fxx_rev.h>
 
 static int first_time = 1;
 static int disable_siblings = !CONFIG_LOGICAL_CPUS;
 
-void amd_sibling_init(device_t cpu, struct node_core_id id)
-{
-	unsigned long i;
-	unsigned siblings, max_siblings;
-
-	/* On the bootstrap processor see if I want sibling cpus enabled */
-	if (first_time) {
-		first_time = 0;
-		get_option(&disable_siblings, "dual_core");
-	}
-
-        siblings = cpuid_ecx(0x80000008) & 0xff;
-	printk_debug("%d Sibling Cores found\n", siblings);
-
-	/* For now assume all cpus have the same number of siblings */
-	max_siblings = siblings + 1;
-
-	/* Wishlist? make dual cores look like hyperthreading */
-
-	/* See if I am a sibling cpu */
-	if (disable_siblings && (id.coreid != 0)) {
-		cpu->enabled = 0;
-	}
-
-	if (id.coreid == 0) {
-		/* On the primary cpu find the siblings */
-		for (i = 1; i <= siblings; i++) {
-			struct device_path cpu_path;
-			device_t new;
-			/* Build the cpu device path */
-			cpu_path.type = DEVICE_PATH_APIC;
-			cpu_path.u.apic.apic_id = 
-				(0x10 + i*0x10 + id.nodeid);
-
-			new = alloc_dev(cpu->bus, &cpu_path);
-			if (!new) {
-				continue;
-			}
-
-                        new->path.u.apic.node_id = cpu->path.u.apic.node_id;
-                        new->path.u.apic.core_id = i;
-			/* Report what I have done */
-			printk_debug("CPU: %s %s\n",
-				dev_path(new), new->enabled?"enabled":"disabled");
-		}
-	}
-}
-
-struct node_core_id get_node_core_id(void)
-{
-        struct node_core_id id;
-	unsigned siblings;
-	/* Get the apicid at reset */
-	id.nodeid = (cpuid_ebx(1) >> 24) & 0xff;
-	id.coreid = 0;	
-	/* Find out how many siblings we have */
-	siblings = cpuid_ecx(0x80000008) & 0xff;
-	if (siblings) {
-		unsigned bits;
-		msr_t msr;
-		bits = 0;
-		while ((1 << bits) <= siblings)
-			bits++;
-
-		msr = rdmsr(NB_CFG_MSR);
-		if ((msr.hi >> (54-32)) & 1) {
-		// when NB_CFG[54] is set, nodeid = ebx[27:25], coreid = ebx[24]
-			id.coreid = id.nodeid & ((1 << bits) - 1);
-			id.nodeid >>= bits;
-		} else {
-                // when NB_CFG[54] is clear, nodeid = ebx[26:24], coreid = ebx[27]
-			id.coreid = id.nodeid >> 3;
-			id.nodeid &= 7;
-		}
-	} else {
-		if (!is_cpu_pre_e0()) {
-			id.nodeid >>= 1;
-		}
-	}
-	return id;
-}
-
-unsigned int read_nb_cfg_54(void)
-{
-        msr_t msr;
-        msr = rdmsr(NB_CFG_MSR);
-        return ( ( msr.hi >> (54-32)) & 1);
-}
+#include "dualcore_id.c"
 
 static int get_max_siblings(int nodes)
 {
@@ -161,13 +73,26 @@ unsigned get_apicid_base(unsigned ioapic_num)
 	siblings = get_max_siblings(nodes);
 
 	if(bsp_apic_id > 0) { // io apic could start from 0
-		return 0;
+		return 0;  
 	} else if(pci_read_config32(dev, 0x68) & ( (1<<17) | (1<<18)) )  { // enabled ext id but bsp = 0
-		if(!disable_siblings) { return siblings + 1; }
-		else { return 1; }
+		return 1; 
 	}
 
 	nb_cfg_54 = read_nb_cfg_54();
+
+#if 0
+	//it is for all e0 single core and nc_cfg_54 low is set, but in the auto.c stage we do not set that bit for it.
+	if(nb_cfg_54 && (!disable_siblings) && (siblings == 0)) {
+		//we need to check if e0 single core is there
+		int i;
+		for(i=0; i<nodes; i++) {
+			if(is_e0_later_in_bsp(i)) {
+				siblings = 1;
+				break;
+			}
+		}
+	}
+#endif
 
 	//contruct apicid_base
 
@@ -193,4 +118,78 @@ unsigned get_apicid_base(unsigned ioapic_num)
 	
 	return apicid_base;
 }
+#if 0
+void amd_sibling_init(device_t cpu)
+{
+	unsigned i, siblings;
+	struct cpuid_result result;
+	unsigned nb_cfg_54;
+	struct node_core_id id;
+
+	/* On the bootstrap processor see if I want sibling cpus enabled */
+	if (first_time) {
+		first_time = 0;
+		get_option(&disable_siblings, "dual_core");
+	}
+	result = cpuid(0x80000008);
+	/* See how many sibling cpus we have */
+	/* Is dualcore supported */
+	siblings = (result.ecx & 0xff);
+	if ( siblings < 1) {
+		return;
+	}
+
+#if 1
+	printk_debug("CPU: %u %d siblings\n",
+		cpu->path.u.apic.apic_id,
+		siblings);
+#endif
+
+	nb_cfg_54 = read_nb_cfg_54(); 
+#if 1
+	id = get_node_core_id(nb_cfg_54); // pre e0 nb_cfg_54 can not be set
+
+	/* See if I am a sibling cpu */
+	//if ((cpu->path.u.apic.apic_id>>(nb_cfg_54?0:3)) & siblings ) { // siblings = 1, 3, 7, 15,....
+	//if ( ( (cpu->path.u.apic.apic_id>>(nb_cfg_54?0:3)) % (siblings+1) ) != 0 ) {
+	if(id.coreid != 0) {
+	        if (disable_siblings) {
+                        cpu->enabled = 0;
+                }
+                return;
+	}
+#endif
+		
+	/* I am the primary cpu start up my siblings */
+
+	for(i = 1; i <= siblings; i++) {
+		struct device_path cpu_path;
+		device_t new;
+		/* Build the cpu device path */
+		cpu_path.type = DEVICE_PATH_APIC;
+		cpu_path.u.apic.apic_id = cpu->path.u.apic.apic_id + i * (nb_cfg_54?1:8);
+
+                /* See if I can find the cpu */
+                new = find_dev_path(cpu->bus, &cpu_path);
+		/* Allocate the new cpu device structure */
+		if(!new) {
+			new = alloc_dev(cpu->bus, &cpu_path);
+			new->enabled = 1;
+			new->initialized = 0;
+		}
+
+                new->path.u.apic.node_id = cpu->path.u.apic.node_id;
+                new->path.u.apic.core_id = i;
+
+#if 1
+		printk_debug("CPU: %u has sibling %u\n", 
+			cpu->path.u.apic.apic_id,
+			new->path.u.apic.apic_id);
+#endif
+
+		if(new->enabled && !new->initialized)
+			start_cpu(new);
+	}
+}
+#endif
 

@@ -5,13 +5,11 @@
  * 2005.02 yhlu add e0 memory hole support
 
  * Copyright 2005 AMD
- * 2005.08 yhlu add microcode support
-
+ * 2005.08 yhlu add microcode support 
 */
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
-#include <device/device.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <string.h>
@@ -19,16 +17,43 @@
 #include <cpu/x86/pae.h>
 #include <pc80/mc146818rtc.h>
 #include <cpu/x86/lapic.h>
+
 #include "../../../northbridge/amd/amdk8/amdk8.h"
-#include "../../../northbridge/amd/amdk8/cpu_rev.c"
+
+#include <cpu/amd/model_fxx_rev.h>
 #include <cpu/cpu.h>
-#include <cpu/amd/microcode.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/mem.h>
+
 #include <cpu/amd/dualcore.h>
 
-#include "model_fxx_msr.h"
+#include <cpu/amd/model_fxx_msr.h>
+
+int is_e0_later_in_bsp(int nodeid)
+{
+        uint32_t val;
+        uint32_t val_old;
+        int e0_later;
+        if(nodeid==0) { // we don't need to do that for node 0 in core0/node0
+                return !is_cpu_pre_e0();
+        }
+        // d0 will be treated as e0 with this methods, but the d0 nb_cfg_54 always 0
+        device_t dev;
+        dev = dev_find_slot(0, PCI_DEVFN(0x18+nodeid,2));
+        if(!dev) return 0;
+        val_old = pci_read_config32(dev, 0x80);
+        val = val_old;
+        val |= (1<<3);
+        pci_write_config32(dev, 0x80, val);
+        val = pci_read_config32(dev, 0x80);
+        e0_later = !!(val & (1<<3));
+        if(e0_later) { // pre_e0 bit 3 always be 0 and can not be changed
+                pci_write_config32(dev, 0x80, val_old); // restore it
+        }
+
+        return e0_later;
+}
 
 #define MCI_STATUS 0x401
 
@@ -51,7 +76,6 @@ static inline void wrmsr_amd(unsigned index, msr_t msr)
                 : "c" (index), "a" (msr.lo), "d" (msr.hi), "D" (0x9c5a203a)
                 );
 }
-
 
 
 #define MTRR_COUNT 8
@@ -151,9 +175,11 @@ static void set_init_ecc_mtrrs(void)
 	enable_cache();
 }
 
+
 static void init_ecc_memory(unsigned node_id)
 {
 	unsigned long startk, begink, endk;
+	unsigned long hole_startk = 0;
 	unsigned long basek;
 	struct mtrr_state mtrr_state;
 	device_t f1_dev, f2_dev, f3_dev;
@@ -198,6 +224,18 @@ static void init_ecc_memory(unsigned node_id)
 	startk = (pci_read_config32(f1_dev, 0x40 + (node_id*8)) & 0xffff0000) >> 2;
 	endk   = ((pci_read_config32(f1_dev, 0x44 + (node_id*8)) & 0xffff0000) >> 2) + 0x4000;
 
+#if K8_HW_MEM_HOLE_SIZEK != 0
+        if (!is_cpu_pre_e0()) 
+	{
+
+                uint32_t val;
+                val = pci_read_config32(f1_dev, 0xf0);
+                if(val & 1) {
+        	        hole_startk = ((val & (0xff<<24)) >> 10);
+                }
+        }
+#endif
+	
 
 	/* Don't start too early */
 	begink = startk;
@@ -221,8 +259,15 @@ static void init_ecc_memory(unsigned node_id)
 		unsigned long size;
 		void *addr;
 
+#if K8_HW_MEM_HOLE_SIZEK != 0
+		if ( hole_startk != 0 ) {
+			if ((basek >= hole_startk) && (basek < 4*1024*1024)) continue;
+		}
+#endif
+
 		/* Report every 64M */
 		if ((basek % (64*1024)) == 0) {
+
 			/* Restore the normal state */
 			map_2M_page(0);
 			restore_mtrr_state(&mtrr_state);
@@ -234,6 +279,7 @@ static void init_ecc_memory(unsigned node_id)
 			/* Return to the initialization state */
 			set_init_ecc_mtrrs();
 			disable_lapic();
+
 		}
 
 		limitk = (basek + ZERO_CHUNK_KB) & ~(ZERO_CHUNK_KB - 1);
@@ -304,7 +350,7 @@ static inline void k8_errata(void)
 			 * FIXME this is only needed if ECC is enabled.
 			 */
 			msr.hi |= 1 << (36 - 32);
-		}	
+		}
 		wrmsr(NB_CFG_MSR, msr);
 	}
 	
@@ -324,7 +370,6 @@ static inline void k8_errata(void)
 
 	/* Erratum 91 prefetch miss is handled in the kernel */
 
- 
 	/* Erratum 106 ... */
 	msr = rdmsr_amd(LS_CFG_MSR);
 	msr.lo |= 1 << 25;
@@ -335,49 +380,39 @@ static inline void k8_errata(void)
 	msr.hi |= 1 << (43 - 32);
 	wrmsr_amd(BU_CFG_MSR, msr);
 
-	if (is_cpu_pre_e0() && !is_cpu_pre_d0()) {
+	if(is_cpu_d0()) {
 		/* Erratum 110 ...*/
 		msr = rdmsr_amd(CPU_ID_HYPER_EXT_FEATURES);
 		msr.hi |=1;
 		wrmsr_amd(CPU_ID_HYPER_EXT_FEATURES, msr);
  	}
 
-	if (!is_cpu_pre_e0()) {
+	if (!is_cpu_pre_e0()) 
+	{
 		/* Erratum 110 ... */
                 msr = rdmsr_amd(CPU_ID_EXT_FEATURES_MSR);
                 msr.hi |=1;
                 wrmsr_amd(CPU_ID_EXT_FEATURES_MSR, msr);
-
-		/* Erratum 113 ... */
-               msr = rdmsr_amd(BU_CFG_MSR);
-               msr.hi |= (1 << 16);
-               wrmsr_amd(BU_CFG_MSR, msr);
 	}
 
 	/* Erratum 122 */
-	if (!is_cpu_pre_c0()) {
-		msr = rdmsr(HWCR_MSR);
-		msr.lo |= 1 << 6;
-		wrmsr(HWCR_MSR, msr);
-	}
+	msr = rdmsr(HWCR_MSR);
+	msr.lo |= 1 << 6;
+	wrmsr(HWCR_MSR, msr);
 
-	/* Erratum 123? dual core deadlock? */
-	
-	/* Erratum 131 */
-	msr = rdmsr(NB_CFG_MSR);
-	msr.lo |= 1 << 20;
-	wrmsr(NB_CFG_MSR, msr);
-	
 }
+
 
 extern void model_fxx_update_microcode(unsigned cpu_deviceid);
 
-void model_fxx_init(device_t cpu)
+void model_fxx_init(device_t dev)
 {
 	unsigned long i;
 	msr_t msr;
 	struct node_core_id id;
-	unsigned equivalent_processor_rev_id;
+#if CONFIG_LOGICAL_CPUS == 1
+	unsigned siblings;
+#endif
 
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
@@ -385,8 +420,8 @@ void model_fxx_init(device_t cpu)
 	x86_mtrr_check();
 
         /* Update the microcode */
-	model_fxx_update_microcode(cpu->device);
-	
+	model_fxx_update_microcode(dev->device);
+
 	disable_cache();
 	
 	/* zero the machine check error status registers */
@@ -403,18 +438,37 @@ void model_fxx_init(device_t cpu)
 	/* Enable the local cpu apics */
 	setup_lapic();
 
-	/* Find our node and core */
-	id = get_node_core_id();
+#if CONFIG_LOGICAL_CPUS == 1
+        siblings = cpuid_ecx(0x80000008) & 0xff;
 
-	/* Is this a bad location?  In particular can another node prefetch
+       	if(siblings>0) {
+                msr = rdmsr_amd(CPU_ID_FEATURES_MSR);
+                msr.lo |= 1 << 28; 
+                wrmsr_amd(CPU_ID_FEATURES_MSR, msr);
+
+       	        msr = rdmsr_amd(LOGICAL_CPUS_NUM_MSR);
+                msr.lo = (siblings+1)<<16; 
+       	        wrmsr_amd(LOGICAL_CPUS_NUM_MSR, msr);
+
+                msr = rdmsr_amd(CPU_ID_EXT_FEATURES_MSR);
+       	        msr.hi |= 1<<(33-32); 
+               	wrmsr_amd(CPU_ID_EXT_FEATURES_MSR, msr);
+	} 
+
+#endif
+
+	id = get_node_core_id(read_nb_cfg_54()); // pre e0 nb_cfg_54 can not be set
+
+	/* Is this a bad location?  In particular can another node prefecth
 	 * data from this node before we have initialized it?
 	 */
-	if (id.coreid == 0) {
-		init_ecc_memory(id.nodeid); // only do it for core 0
-	}
+	if (id.coreid == 0) init_ecc_memory(id.nodeid); // only do it for core 0
 
-	/* Deal with sibling cpus */
-	amd_sibling_init(cpu, id);
+#if CONFIG_LOGICAL_CPUS==1
+        /* Start up my cpu siblings */
+//	if(id.coreid==0)  amd_sibling_init(dev); // Don't need core1 is already be put in the CPU BUS in bus_cpu_scan
+#endif
+
 }
 
 static struct device_operations cpu_dev_ops = {

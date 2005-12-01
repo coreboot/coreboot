@@ -1,5 +1,18 @@
 This is the universal LinuxBIOS flash utility.
 
+build requirements
+------------------
+
+To build the flashrom utility you need to have the following packages
+installed on your linux system:
+
+* pciutils
+* pciutils-devel
+
+
+usage
+-----
+
 usage: ./flashrom [-rwvE] [-V] [-c chipname] 
                            [-s exclude_start] [-e exclude_end] [file]
 

@@ -97,9 +97,13 @@ end
 ##
 ## Build our 16 bit and 32 bit linuxBIOS entry code
 ##
-mainboardinit cpu/x86/16bit/entry16.inc
+if USE_FALLBACK_IMAGE
+        mainboardinit cpu/x86/16bit/entry16.inc
+        ldscript /cpu/x86/16bit/entry16.lds
+end
+
 mainboardinit cpu/x86/32bit/entry32.inc
-ldscript /cpu/x86/16bit/entry16.lds
+
 
 if USE_DCACHE_RAM
 	if CONFIG_USE_INIT
@@ -213,7 +217,7 @@ chip northbridge/amd/amdk8/root_complex
 					device pci 0.0 on end   # HT
                 			device pci 1.0 on # LPC
                                         	chip superio/winbond/w83627hf
-                                                	device pnp 2e.0 on #  Floppy
+                                                	device pnp 2e.0 off #  Floppy
                                                         	io 0x60 = 0x3f0
 	                                                        irq 0x70 = 6
         	                                                drq 0x74 = 2
@@ -226,11 +230,11 @@ chip northbridge/amd/amdk8/root_complex
         	                                                io 0x60 = 0x3f8
                 	                                        irq 0x70 = 4
                         	                        end
-                                	                device pnp 2e.3 on #  Com2
+                                	                device pnp 2e.3 off #  Com2
                                         	                io 0x60 = 0x2f8
                                                 	        irq 0x70 = 3
 	                                                end
-        	                                        device pnp 2e.5 on #  Keyboard
+        	                                        device pnp 2e.5 off #  Keyboard
                 	                                        io 0x60 = 0x60
                         	                                io 0x62 = 0x64
                                 	                        irq 0x70 = 1
@@ -247,55 +251,55 @@ chip northbridge/amd/amdk8/root_complex
         	                                        device pnp 2e.8 off end #  GPIO2
                 	                                device pnp 2e.9 off end #  GPIO3
                         	                        device pnp 2e.a off end #  ACPI
-                                	                device pnp 2e.b on #  HW Monitor
+                                	                device pnp 2e.b off #  HW Monitor
                                         	                io 0x60 = 0x290
                                                 	        irq 0x70 = 5
 	                                                end
         	                                end
 					end
                                         device pci 1.1 on # SM 0
-                                                chip drivers/generic/generic #dimm 0-0-0
-                                                        device i2c 50 on end
-                                                end
-                                                chip drivers/generic/generic #dimm 0-0-1
-                                                        device i2c 51 on end
-                                                end
-                                                chip drivers/generic/generic #dimm 0-1-0
-                                                        device i2c 52 on end
-                                                end
-                                                chip drivers/generic/generic #dimm 0-1-1
-                                                        device i2c 53 on end
-                                                end
-                                                chip drivers/generic/generic #dimm 1-0-0
-                                                        device i2c 54 on end
-                                                end
-                                                chip drivers/generic/generic #dimm 1-0-1
-                                                        device i2c 55 on end
-                                                end
-                                                chip drivers/generic/generic #dimm 1-1-0
-                                                        device i2c 56 on end
-                                                end
-                                                chip drivers/generic/generic #dimm 1-1-1
-                                                        device i2c 57 on end
-                                                end
+#                                                chip drivers/generic/generic #dimm 0-0-0
+#                                                        device i2c 50 on end
+#                                                end
+#                                                chip drivers/generic/generic #dimm 0-0-1
+#                                                        device i2c 51 on end
+#                                                end
+#                                                chip drivers/generic/generic #dimm 0-1-0
+#                                                        device i2c 52 on end
+#                                                end
+#                                                chip drivers/generic/generic #dimm 0-1-1
+#                                                        device i2c 53 on end
+#                                                end
+#                                                chip drivers/generic/generic #dimm 1-0-0
+#                                                        device i2c 54 on end
+#                                                end
+#                                                chip drivers/generic/generic #dimm 1-0-1
+#                                                        device i2c 55 on end
+#                                                end
+#                                                chip drivers/generic/generic #dimm 1-1-0
+#                                                        device i2c 56 on end
+#                                                end
+#                                                chip drivers/generic/generic #dimm 1-1-1
+#                                                        device i2c 57 on end
+#                                                end
                                         end # SM
-		        	        device pci 1.1 on # SM 1
-						chip drivers/i2c/adm1027 # ADT7463A CPU0 temp, SYS FAN 2/3/4
-                                                	device i2c 2d on end
-                                                end
-                                                chip drivers/i2c/adm1027 # ADT7463A CPU1 temp, CPU0/1 FAN , SYS FAN 1/5 
-		                                        device i2c 2e on end
-                                                end
-                                                chip drivers/generic/generic # Winbond HWM 0x54 CPU0/1 VRM temp, SYSFAN 6/7, SB FAN
-                                                        device i2c 2a on end
-                                                end
-                                                chip drivers/generic/generic # Winbond HWM 0x92
-                                                        device i2c 49 on end
-                                                end
-                                                chip drivers/generic/generic # Winbond HWM 0x94
-                                                        device i2c 4a on end
-                                                end
-					end #SM
+#		        	        device pci 1.1 on # SM 1
+#						chip drivers/i2c/adm1027 # ADT7463A CPU0 temp, SYS FAN 2/3/4
+#                                                	device i2c 2d on end
+#                                                end
+#                                                chip drivers/i2c/adm1027 # ADT7463A CPU1 temp, CPU0/1 FAN , SYS FAN 1/5 
+#		                                        device i2c 2e on end
+#                                                end
+#                                                chip drivers/generic/generic # Winbond HWM 0x54 CPU0/1 VRM temp, SYSFAN 6/7, SB FAN
+#                                                        device i2c 2a on end
+#                                                end
+#                                                chip drivers/generic/generic # Winbond HWM 0x92
+#                                                        device i2c 49 on end
+#                                                end
+#                                                chip drivers/generic/generic # Winbond HWM 0x94
+#                                                        device i2c 4a on end
+#                                                end
+#					end #SM
                 			device pci 2.0 on end # USB 1.1
 	                		device pci 2.1 on end # USB 2
         	        		device pci 4.0 off end # ACI
@@ -307,8 +311,8 @@ chip northbridge/amd/amdk8/root_complex
 					#	chip drivers/ati/ragexl
                                                 chip drivers/pci/onboard
                                                         device pci 7.0 on end
-                                                        register "rom_address" = "0xfff80000" #for 512K
-							#register "rom_address" = "0xfff00000" #for 1M
+                                        #                register "rom_address" = "0xfff80000" #for 512K
+							register "rom_address" = "0xfff00000" #for 1M
                                                 end
 					end
                 			device pci a.0 off end # NIC

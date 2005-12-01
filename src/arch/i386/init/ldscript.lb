@@ -27,7 +27,9 @@
 OUTPUT_FORMAT("elf32-i386", "elf32-i386", "elf32-i386")
 OUTPUT_ARCH(i386)
 
+/*
 ENTRY(_start)
+*/
 
 TARGET(binary)
 INPUT(linuxbios_ram.rom)
@@ -40,6 +42,8 @@ SECTIONS
 		linuxbios_ram.rom(*)
 		_eram = . ;
 	}
+
+	. = _ROMBASE + ROM_IMAGE_SIZE - 0x10000;
 
 	/* This section might be better named .setup */
 	.rom . : {

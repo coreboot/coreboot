@@ -1,5 +1,17 @@
 #define ASSEMBLY 1
 #define __ROMCC__
+
+
+#define K8_ALLOCATE_IO_RANGE 1
+//#define K8_SCAN_PCI_BUS 1
+
+
+#define K8_4RANK_DIMM_SUPPORT 1
+
+#if CONFIG_LOGICAL_CPUS==1
+#define SET_NB_CFG_54 1
+#endif
+
  
 #include <stdint.h>
 #include <device/pci_def.h>
@@ -14,9 +26,6 @@
 #include "ram/ramtest.c"
 
 #include "northbridge/amd/amdk8/cpu_rev.c"
-#define K8_HT_FREQ_1G_SUPPORT 1
-#define K8_ALLOCATE_IO_RANGE 1
-//#define K8_SCAN_PCI_BUS 1
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/nvidia/ck804/ck804_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
@@ -76,8 +85,7 @@ static void sio_gpio_setup(void){
 
         unsigned value;
 
-//      lpc47b397_enable_serial(SUPERIO_GPIO_DEV, SUPERIO_GPIO_IO_BASE); // Already enable in failover.c
-
+        /*Enable onboard scsi*/
         lpc47b397_gpio_offset_out(SUPERIO_GPIO_IO_BASE, 0x2c, (1<<7)|(0<<2)|(0<<1)|(0<<0)); // GP21, offset 0x2c, DISABLE_SCSI_L 
         value = lpc47b397_gpio_offset_in(SUPERIO_GPIO_IO_BASE, 0x4c);
         lpc47b397_gpio_offset_out(SUPERIO_GPIO_IO_BASE, 0x4c, (value|(1<<1)));
@@ -94,16 +102,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-#define K8_4RANK_DIMM_SUPPORT 1
 
 #include "northbridge/amd/amdk8/raminit.c"
-#if 0
-        #define ENABLE_APIC_EXT_ID 1
-        #define APIC_ID_OFFSET 0x10
-        #define LIFT_BSP_APIC_ID 0
-#else
-        #define ENABLE_APIC_EXT_ID 0
-#endif
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
 
@@ -111,10 +111,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "resourcemap.c" 
 
 #include "cpu/amd/dualcore/dualcore.c"
-
-#define FIRST_CPU  1
-#define SECOND_CPU 1
-#define TOTAL_CPUS (FIRST_CPU + SECOND_CPU)
 
 #define CK804_NUM 2
 #define CK804B_BUSN 0x80
@@ -140,6 +136,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "cpu/amd/model_fxx/init_cpus.c"
 
+
 #if USE_FALLBACK_IMAGE == 1
 
 #include "southbridge/nvidia/ck804/ck804_enable_rom.c"
@@ -154,18 +151,13 @@ static void sio_setup(void)
         uint8_t byte;
 
         
-        /* LPC Variable Range Decode 1 0x400-0x47f */
-        /* to make sure lpc47b397 gpio on device work */
         pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE+1, 0), 0xac, 0x047f0400);
         
-        /* subject decoding*/
         byte = pci_read_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0x7b);
         byte |= 0x20; 
         pci_write_config8(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0x7b, byte);
         
-        /* LPC Positive Decode 0 */
         dword = pci_read_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa0);
-        /*decode VAR1, serial 0 */
         dword |= (1<<29)|(1<<0);
         pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa0, dword);
         
@@ -179,22 +171,13 @@ static void sio_setup(void)
 
 }
 
-void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
-
-void amd64_main(unsigned long bist, unsigned long cpu_init_detectedx)
+void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-        /* Is this a cpu only reset? */
-        if (cpu_init_detectedx) {
-                if (last_boot_normal()) {
-                        goto normal_image;
-                } else {
-                        goto cpu_reset;
-                }
-        }
+        unsigned last_boot_normal_x = last_boot_normal();
 
-        /* Is this a secondary cpu? */
-        if (!boot_cpu()) {
-                if (last_boot_normal()) {
+        /* Is this a cpu only reset? or Is this a secondary cpu? */
+        if ((cpu_init_detectedx) || (!boot_cpu())) {
+                if (last_boot_normal_x) {
                         goto normal_image;
                 } else {
                         goto fallback_image;
@@ -212,7 +195,7 @@ void amd64_main(unsigned long bist, unsigned long cpu_init_detectedx)
         ck804_enable_rom();
 
         /* Is this a deliberate reset by the bios */
-        if (bios_reset_detected() && last_boot_normal()) {
+        if (bios_reset_detected() && last_boot_normal_x) {
                 goto normal_image;
         }
         /* This is the primary cpu how should I boot? */
@@ -227,54 +210,44 @@ void amd64_main(unsigned long bist, unsigned long cpu_init_detectedx)
                 : /* outputs */
                 : "a" (bist), "b" (cpu_init_detectedx) /* inputs */
                 );
- cpu_reset:
-#if 0
-        //CPU reset will reset memtroller ???
-        asm volatile ("jmp __cpu_reset" 
-                : /* outputs */ 
-                : "a"(bist) /* inputs */
-                );
-#endif
 
  fallback_image:
-        real_main(bist, cpu_init_detectedx);
+	;
 }
-void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
-#else
-void amd64_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #endif
+
+void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
+
+void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-	static const struct mem_controller cpu[] = {
-#if FIRST_CPU
-		{
-			.node_id = 0,
-			.f0 = PCI_DEV(0, 0x18, 0),
-			.f1 = PCI_DEV(0, 0x18, 1),
-			.f2 = PCI_DEV(0, 0x18, 2),
-			.f3 = PCI_DEV(0, 0x18, 3),
-			.channel0 = { (0xa<<3)|0, (0xa<<3)|2, 0, 0 },
-			.channel1 = { (0xa<<3)|1, (0xa<<3)|3, 0, 0 },
-		},
+
+#if USE_FALLBACK_IMAGE == 1
+        failover_process(bist, cpu_init_detectedx);
 #endif
-#if SECOND_CPU
-		{
-			.node_id = 1,
-			.f0 = PCI_DEV(0, 0x19, 0),
-			.f1 = PCI_DEV(0, 0x19, 1),
-			.f2 = PCI_DEV(0, 0x19, 2),
-			.f3 = PCI_DEV(0, 0x19, 3),
-			.channel0 = { (0xa<<3)|4, (0xa<<3)|6, 0, 0 },
-			.channel1 = { (0xa<<3)|5, (0xa<<3)|7, 0, 0 },
-		},
+        real_main(bist, cpu_init_detectedx);
+
+}
+
+void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
+{
+	static const uint16_t spd_addr [] = {
+			(0xa<<3)|0, (0xa<<3)|2, 0, 0,
+			(0xa<<3)|1, (0xa<<3)|3, 0, 0,
+#if CONFIG_MAX_PHYSICAL_CPUS > 1
+			(0xa<<3)|4, (0xa<<3)|6, 0, 0,
+			(0xa<<3)|5, (0xa<<3)|7, 0, 0,
 #endif
 	};
 
         int needs_reset;
-
 	unsigned cpu_reset = 0;
+        unsigned bsp_apicid = 0;
+
+        struct mem_controller ctrl[8];
+        unsigned nodes;
 
         if (bist == 0) {
-		init_cpus(cpu_init_detectedx, sizeof(cpu)/sizeof(cpu[0]), cpu);
+                bsp_apicid = init_cpus(cpu_init_detectedx);
         }
 
 	lpc47b397_enable_serial(SERIAL_DEV, TTYS0_BASE);
@@ -288,6 +261,14 @@ void amd64_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	needs_reset = setup_coherent_ht_domain();
 
+#if CONFIG_LOGICAL_CPUS==1
+        // It is said that we should start core1 after all core0 launched
+	wait_all_core0_started();
+        start_other_cores();
+#endif
+
+        wait_all_aps_started(bsp_apicid);
+
         needs_reset |= ht_setup_chains_x();
 
         needs_reset |= ck804_early_setup_x();
@@ -297,11 +278,16 @@ void amd64_main(unsigned long bist, unsigned long cpu_init_detectedx)
                	soft_reset();
        	}
 
+        allow_all_aps_stop(bsp_apicid);
+
+        nodes = get_nodes();
+        //It's the time to set ctrl now;
+        fill_mem_ctrl(nodes, ctrl, spd_addr);
+
 	enable_smbus();
 
 	memreset_setup();
-	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
-	
-	post_cache_as_ram(cpu_reset);
+	sdram_initialize(nodes, ctrl);
 
+	post_cache_as_ram(cpu_reset);
 }

@@ -52,7 +52,8 @@ uses CONFIG_GDB_STUB
 uses CONFIG_CHIP_NAME
 uses CONFIG_CONSOLE_VGA
 uses CONFIG_PCI_ROM_RUN
-uses K8_E0_MEM_HOLE_SIZEK
+uses K8_HW_MEM_HOLE_SIZEK
+uses K8_HT_FREQ_1G_SUPPORT
 
 uses CK804_DEVN_BASE
 
@@ -60,6 +61,10 @@ uses USE_DCACHE_RAM
 uses DCACHE_RAM_BASE
 uses DCACHE_RAM_SIZE
 uses CONFIG_USE_INIT
+
+uses ENABLE_APIC_EXT_ID
+uses APIC_ID_OFFSET
+uses LIFT_BSP_APIC_ID
 
 ## ROM_SIZE is the size of boot ROM that this board will use.
 #512K bytes 
@@ -71,7 +76,9 @@ default ROM_SIZE=524288
 ##
 ## FALLBACK_SIZE is the amount of the ROM the complete fallback image will use
 ##
-default FALLBACK_SIZE=131072
+#default FALLBACK_SIZE=131072
+#256K
+default FALLBACK_SIZE=0x40000
 
 ###
 ### Build options
@@ -124,7 +131,10 @@ default CONFIG_LOGICAL_CPUS=1
 #default CONFIG_CHIP_NAME=1
 
 #1G memory hole
-default K8_E0_MEM_HOLE_SIZEK=0x100000
+default K8_HW_MEM_HOLE_SIZEK=0x100000
+
+#Opteron K8 1G HT Support
+default K8_HT_FREQ_1G_SUPPORT=1
 
 #CK804 setting
 #default CK804_DEVN_BASE=0
@@ -140,6 +150,11 @@ default USE_DCACHE_RAM=1
 default DCACHE_RAM_BASE=0xcf000
 default DCACHE_RAM_SIZE=0x1000
 default CONFIG_USE_INIT=1
+
+default ENABLE_APIC_EXT_ID=1
+default APIC_ID_OFFSET=0x10
+default LIFT_BSP_APIC_ID=0
+
 
 ##
 ## Build code to setup a generic IOAPIC

@@ -103,9 +103,13 @@ end
 ##
 ## Build our 16 bit and 32 bit linuxBIOS entry code
 ##
-mainboardinit cpu/x86/16bit/entry16.inc
+if USE_FALLBACK_IMAGE
+        mainboardinit cpu/x86/16bit/entry16.inc
+        ldscript /cpu/x86/16bit/entry16.lds
+end
+
 mainboardinit cpu/x86/32bit/entry32.inc
-ldscript /cpu/x86/16bit/entry16.lds
+
 if USE_DCACHE_RAM
         if CONFIG_USE_INIT
                 ldscript /cpu/x86/32bit/entry32.lds

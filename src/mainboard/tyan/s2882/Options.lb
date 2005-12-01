@@ -52,7 +52,7 @@ uses OBJCOPY
 uses CONFIG_CHIP_NAME
 uses CONFIG_CONSOLE_VGA
 uses CONFIG_PCI_ROM_RUN
-uses K8_E0_MEM_HOLE_SIZEK
+uses K8_HW_MEM_HOLE_SIZEK
 
 uses USE_DCACHE_RAM
 uses DCACHE_RAM_BASE
@@ -71,7 +71,9 @@ default ROM_SIZE=524288
 ##
 ## FALLBACK_SIZE is the amount of the ROM the complete fallback image will use
 ##
-default FALLBACK_SIZE=131072
+#default FALLBACK_SIZE=131072
+#256K
+default FALLBACK_SIZE=0x40000
 
 ##
 ## Build code for the fallback boot
@@ -120,7 +122,7 @@ default CONFIG_LOGICAL_CPUS=1
 default CONFIG_CHIP_NAME=1
 
 #1G memory hole
-default K8_E0_MEM_HOLE_SIZEK=0x100000
+default K8_HW_MEM_HOLE_SIZEK=0x100000
 
 #VGA Console
 default CONFIG_CONSOLE_VGA=1
@@ -130,10 +132,10 @@ default CONFIG_PCI_ROM_RUN=1
 ##
 ## enable CACHE_AS_RAM specifics
 ##
-default USE_DCACHE_RAM=0
+default USE_DCACHE_RAM=1
 default DCACHE_RAM_BASE=0xcf000
 default DCACHE_RAM_SIZE=0x1000
-default CONFIG_USE_INIT=0
+default CONFIG_USE_INIT=1
 
 ##
 ## Build code to setup a generic IOAPIC

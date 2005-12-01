@@ -53,7 +53,7 @@ uses CONFIG_GDB_STUB
 uses CONFIG_CHIP_NAME
 uses CONFIG_CONSOLE_VGA
 uses CONFIG_PCI_ROM_RUN
-uses K8_E0_MEM_HOLE_SIZEK
+uses K8_HW_MEM_HOLE_SIZEK
 
 uses CK804_DEVN_BASE
 
@@ -73,7 +73,9 @@ default ROM_SIZE=524288
 ##
 ## FALLBACK_SIZE is the amount of the ROM the complete fallback image will use
 ##
-default FALLBACK_SIZE=131072
+#default FALLBACK_SIZE=131072
+#256K
+default FALLBACK_SIZE=0x40000
 
 ###
 ### Build options
@@ -123,7 +125,7 @@ default CONFIG_MAX_PHYSICAL_CPUS=2
 default CONFIG_LOGICAL_CPUS=1
 
 #1G memory hole
-default K8_E0_MEM_HOLE_SIZEK=0x100000
+default K8_HW_MEM_HOLE_SIZEK=0x100000
 
 #CK804 setting
 
@@ -139,10 +141,10 @@ default CONFIG_PCI_ROM_RUN=1
 ##
 ## enable CACHE_AS_RAM specifics
 ##
-default USE_DCACHE_RAM=0
+default USE_DCACHE_RAM=1
 default DCACHE_RAM_BASE=0xcf000
 default DCACHE_RAM_SIZE=0x1000
-default CONFIG_USE_INIT=0
+default CONFIG_USE_INIT=1
 
 
 ##

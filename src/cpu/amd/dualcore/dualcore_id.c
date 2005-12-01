@@ -24,7 +24,7 @@ static inline struct node_core_id get_node_core_id(unsigned nb_cfg_54) {
 	struct node_core_id id;
 	//    get the apicid via cpuid(1) ebx[27:24]
 	if( nb_cfg_54) {
-                //   when NB_CFG[54] is set, nodid = ebx[27:25], coreid = ebx[24]
+                //   when NB_CFG[54] is set, nodeid = ebx[27:25], coreid = ebx[24]
                 id.coreid = (cpuid_ebx(1) >> 24) & 0xf;
                 id.nodeid = (id.coreid>>1);
                 id.coreid &= 1;

@@ -9,19 +9,20 @@
 	/* Save the BIST result */
 	movl    %eax, %ebp
 	
-	// for normal part %ebx already contain cpu_init_detected from fallback call
+	/*for normal part %ebx already contain cpu_init_detected from fallback call */
 
-CacheAsRam:
+cache_as_ram_setup:
 	/* hope we can skip the double set for normal part */
 #if USE_FALLBACK_IMAGE == 1
 
+	/* check if cpu_init_detected */
 	movl	$MTRRdefType_MSR, %ecx
 	rdmsr
 	andl $0x00000800, %eax
-	movl %eax, %ebx ;  // We store the status about if cpu_init_detected
+	movl %eax, %ebx  /* We store the status */
 	
 	/* Set MtrrFixDramModEn for clear fixed mtrr */
-	xorl	%eax, %eax			# clear %eax and %edx
+	xorl	%eax, %eax			
 	xorl	%edx, %edx			
 
 enable_fixed_mtrr_dram_modify:
@@ -97,13 +98,16 @@ clear_fixed_var_mtrr_out:
         xorl    %edx, %edx
         movl    $(((CONFIG_LB_MEM_TOPK << 10) + TOP_MEM_MASK) & ~TOP_MEM_MASK) , %eax
         wrmsr
-#else
+#endif /*  USE_FALLBACK_IMAGE == 1*/
+
+#if USE_FALLBACK_IMAGE == 0
+
         /* disable cache */
         movl    %cr0, %eax
         orl    $(0x1<<30),%eax
         movl    %eax, %cr0
 
-#endif /*  USE_FALLBACK_IMAGE == 1*/
+#endif 
 
 #if defined(XIP_ROM_SIZE) && defined(XIP_ROM_BASE)
         /* enable write base caching so we can do execute in place
@@ -151,7 +155,7 @@ clear_fixed_var_mtrr_out:
 	movl	%esp, %ebp
 	pushl %ebx  /* init detected */
 	pushl %eax  /* bist */
-	call    amd64_main
+	call    cache_as_ram_main
 	/* We will not go back */
 
 fixed_mtrr_msr: 
@@ -169,4 +173,4 @@ var_iorr_msr:
 mem_top:
         .long   0xC001001A, 0xC001001D
         .long   0x000 /* NULL, end of table */
-.CacheAsRam_out:
+cache_as_ram_setup_out:

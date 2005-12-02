@@ -16,7 +16,8 @@ romimage "normal"
 	option USE_FALLBACK_IMAGE=0
 #	option ROM_IMAGE_SIZE=0x11800
 #	option ROM_IMAGE_SIZE=0x13800
-	option ROM_IMAGE_SIZE=0x16380
+#	option ROM_IMAGE_SIZE=0x16380
+	option ROM_IMAGE_SIZE=0x20000
 #	option ROM_IMAGE_SIZE=0x17800
 	option XIP_ROM_SIZE=0x20000
 	option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
@@ -26,7 +27,7 @@ romimage "normal"
 #       payload ../../../payloads/filo.zelf
 #	payload ../../../payloads/tg3.zelf
 #	payload ../../../payloads/tg3_vga.zelf
-	payload ../../../payloads/tg3--filo_hda2_vga.zelf
+	payload ../../../../payloads/tg3--filo_hda2_vga.zelf
 #        payload ../../../payloads/tg3--filo_hda2_com2.zelf
 #       payload ../../../payloads/e1000--filo.zelf
 #        payload ../../../payloads/tg3--e1000--filo.zelf
@@ -37,7 +38,8 @@ romimage "fallback"
 	option USE_FALLBACK_IMAGE=1
 #	option ROM_IMAGE_SIZE=0x11800
 #	option ROM_IMAGE_SIZE=0x13800
-	option ROM_IMAGE_SIZE=0x16380
+#	option ROM_IMAGE_SIZE=0x16380
+	option ROM_IMAGE_SIZE=0x20000
 #	option ROM_IMAGE_SIZE=0x17800
 	option XIP_ROM_SIZE=0x20000
 	option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Fallback"
@@ -47,7 +49,7 @@ romimage "fallback"
 #       payload ../../../payloads/filo.zelf
 #	payload ../../../payloads/tg3.zelf
 #	payload ../../../payloads/tg3_vga.zelf
-	payload ../../../payloads/tg3--filo_hda2_vga.zelf
+	payload ../../../../payloads/tg3--filo_hda2_vga.zelf
 #        payload ../../../payloads/tg3--filo_hda2_com2.zelf
 #       payload ../../../payloads/e1000--filo.zelf
 #        payload ../../../payloads/tg3--e1000--filo.zelf

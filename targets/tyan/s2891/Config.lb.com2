@@ -1,11 +1,11 @@
 # Sample config file for 
-# the Tyan s2850 
-# This will make a target directory of ./s2850
+# the Tyan s2891 
+# This will make a target directory of ./s2891
 
-target s2850
-mainboard tyan/s2850
+target s2891
+mainboard tyan/s2891
 
-# Tyan s2850
+# Tyan s2891
 romimage "normal"
 #       48K for SCSI FW or ATI ROM
         option ROM_SIZE = 475136
@@ -14,22 +14,20 @@ romimage "normal"
 #       64K for Etherboot
 #        option ROM_SIZE = 458752 
 	option USE_FALLBACK_IMAGE=0
-#	option ROM_IMAGE_SIZE=0x11800
-#	option ROM_IMAGE_SIZE=0x16000
-#	option ROM_IMAGE_SIZE=0x17800
-#	option ROM_IMAGE_SIZE=0x13c00
-	option ROM_IMAGE_SIZE=0x20000
-	option XIP_ROM_SIZE=0x20000
+#        option ROM_IMAGE_SIZE=0x11800
+#	option ROM_IMAGE_SIZE=0x13000
+	option ROM_IMAGE_SIZE=0x15800
+        option XIP_ROM_SIZE=0x20000
 	option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
 #       payload ../../../payloads/tg3--ide_disk.zelf
 #        payload ../../../payloads/filo.elf
 #        payload ../../../payloads/filo_mem.elf
 #       payload ../../../payloads/filo.zelf
-#	payload ../../../payloads/tg3.zelf
-#	payload ../../../payloads/tg3_vga.zelf
-	payload ../../../../payloads/tg3--filo_hda2_vga.zelf
-#	payload ../../../payloads/tg3--filo_u_hda2_vga.zelf
-#        payload ../../../payloads/tg3--filo_hda2_com2.zelf
+#        payload ../../../payloads/tg3--filo.zelf
+#	payload ../../../payloads/tg3--filo_hda2_vga.zelf
+	payload ../../../payloads/tg3--filo_hda2_vga_com2.zelf
+#	payload ../../../payloads/tg3--filo_hda2_vga_5_3.zelf
+#	payload ../../../payloads/tg3--filo_btext_hda2.zelf
 #       payload ../../../payloads/e1000--filo.zelf
 #        payload ../../../payloads/tg3--e1000--filo.zelf
 #        payload ../../../payloads/tg3--eepro100--e1000--filo_hda2.zelf
@@ -37,23 +35,21 @@ end
 
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
-#	option ROM_IMAGE_SIZE=0x11800
-#	option ROM_IMAGE_SIZE=0x16000
-#	option ROM_IMAGE_SIZE=0x17800
-#	option ROM_IMAGE_SIZE=0x13c00
-	option ROM_IMAGE_SIZE=0x20000
-	option XIP_ROM_SIZE=0x20000
+#        option ROM_IMAGE_SIZE=0x11800
+#	option ROM_IMAGE_SIZE=0x13000
+	option ROM_IMAGE_SIZE=0x15800
+        option XIP_ROM_SIZE=0x20000
 	option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Fallback"
 #       payload ../../../payloads/tg3--ide_disk.zelf
 #        payload ../../../payloads/filo.elf
 #        payload ../../../payloads/filo_mem.elf
 #       payload ../../../payloads/filo.zelf
-#	payload ../../../payloads/tg3.zelf
-#	payload ../../../payloads/tg3_vga.zelf
-	payload ../../../../payloads/tg3--filo_hda2_vga.zelf
-#	payload ../../../payloads/tg3--filo_u_hda2_vga.zelf
-#        payload ../../../payloads/tg3--filo_hda2_com2.zelf
+#        payload ../../../payloads/tg3--filo.zelf
+#	payload ../../../payloads/tg3--filo_hda2_vga.zelf
+	payload ../../../payloads/tg3--filo_hda2_vga_com2.zelf
+#	payload ../../../payloads/tg3--filo_hda2_vga_5_3.zelf
 #       payload ../../../payloads/e1000--filo.zelf
+#	payload ../../../payloads/tg3--filo_btext_hda2.zelf
 #        payload ../../../payloads/tg3--e1000--filo.zelf
 #        payload ../../../payloads/tg3--eepro100--e1000--filo_hda2.zelf
 end

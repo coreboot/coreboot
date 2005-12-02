@@ -8,14 +8,15 @@ mainboard tyan/s4880
 # Tyan s4880
 romimage "normal"
 #       48K for SCSI FW or ATI ROM
-#        option ROM_SIZE = 475136
+        option ROM_SIZE = 475136
 #       48K for SCSI FW and 48K for ATI ROM
-       option ROM_SIZE = 425984 
+#       option ROM_SIZE = 425984 
 #       64K for Etherboot
 #        option ROM_SIZE = 458752 
 	option USE_FALLBACK_IMAGE=0
 #	option ROM_IMAGE_SIZE=0x19000
-	option ROM_IMAGE_SIZE=0x19c00
+#	option ROM_IMAGE_SIZE=0x19c00
+	option ROM_IMAGE_SIZE=0x20000
 	option XIP_ROM_SIZE=0x20000
 	option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
 #       payload ../../../payloads/tg3--ide_disk.zelf
@@ -23,7 +24,7 @@ romimage "normal"
 #        payload ../../../payloads/filo_mem.elf
 #       payload ../../../payloads/filo.zelf
 #	payload ../../../payloads/tg3.zelf
-	payload ../../../payloads/tg3_vga.zelf
+	payload ../../../../payloads/tg3_vga.zelf
 #        payload ../../../payloads/tg3--filo_hda2.zelf
 #       payload ../../../payloads/e1000--filo.zelf
 #        payload ../../../payloads/tg3--e1000--filo.zelf
@@ -33,7 +34,8 @@ end
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
 #	option ROM_IMAGE_SIZE=0x19000
-	option ROM_IMAGE_SIZE=0x19c00
+#	option ROM_IMAGE_SIZE=0x19c00
+	option ROM_IMAGE_SIZE=0x20000
 	option XIP_ROM_SIZE=0x20000
 	option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Fallback"
 #       payload ../../../payloads/tg3--ide_disk.zelf
@@ -41,7 +43,7 @@ romimage "fallback"
 #        payload ../../../payloads/filo_mem.elf
 #       payload ../../../payloads/filo.zelf
 #	payload ../../../payloads/tg3.zelf
-	payload ../../../payloads/tg3_vga.zelf
+	payload ../../../../payloads/tg3_vga.zelf
 #        payload ../../../payloads/tg3--filo_hda2.zelf
 #       payload ../../../payloads/e1000--filo.zelf
 #        payload ../../../payloads/tg3--e1000--filo.zelf

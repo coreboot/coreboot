@@ -7,14 +7,14 @@ mainboard amd/solo
 
 romimage "normal"
 	option USE_FALLBACK_IMAGE=0
-	option ROM_IMAGE_SIZE=0x14000
+	option ROM_IMAGE_SIZE=0x20000
 	option LINUXBIOS_EXTRA_VERSION=".0-Normal"
 	payload ../../../payloads/tg3--ide_disk.zelf
 end
 
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
-	option ROM_IMAGE_SIZE=0x14000
+	option ROM_IMAGE_SIZE=0x20000
 	option LINUXBIOS_EXTRA_VERSION=".0-Fallback"
 	payload ../../../payloads/tg3--ide_disk.zelf
 end

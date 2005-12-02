@@ -25,7 +25,7 @@ int default_console_loglevel = DEFAULT_CONSOLE_LOGLEVEL;
 void display(char*);
 extern int vtxprintf(void (*)(unsigned char), const char *, va_list);
 
-spinlock_t console_lock = SPIN_LOCK_UNLOCKED;
+static spinlock_t console_lock = SPIN_LOCK_UNLOCKED;
 
 int do_printk(int msg_level, const char *fmt, ...)
 {

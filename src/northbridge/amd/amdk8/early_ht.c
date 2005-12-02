@@ -1,14 +1,26 @@
-static int enumerate_ht_chain(void)
+/*  
+	2005.11 yhlu add let the real sb to use small unitid
+*/
+// only for sb ht chain
+static void enumerate_ht_chain(void)
 {
+#if HT_CHAIN_UNITID_BASE != 0 
+/* HT_CHAIN_UNITID_BASE could be 0 (only one ht device in the ht chain), if so, don't need to go through the chain  */ 
+
 	/* Assumption the HT chain that is bus 0 has the HT I/O Hub on it.
 	 * On most boards this just happens.  If a cpu has multiple
 	 * non Coherent links the appropriate bus registers for the
 	 * links needs to be programed to point at bus 0.
 	 */
 	unsigned next_unitid, last_unitid;
-	int reset_needed = 0;
+#if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
+	//let't record the device of last ht device, So we can set the Unitid to HT_CHAIN_END_UNITID_BASE
+	unsigned real_last_unitid;
+	uint8_t real_last_pos;
+	int ht_dev_num = 0; // except host_bridge
+#endif
 
-	next_unitid = 1;
+	next_unitid = HT_CHAIN_UNITID_BASE;
 	do {
 		uint32_t id;
 		uint8_t hdr_type, pos;
@@ -58,6 +70,11 @@ static int enumerate_ht_chain(void)
 					flags &= ~0x1f;
 					flags |= next_unitid & 0x1f;
 					count = (flags >> 5) & 0x1f;
+#if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
+					real_last_unitid = next_unitid;
+					real_last_pos = pos;
+					ht_dev_num++ ;
+#endif
 					next_unitid += count;
 
 					/* Test for end of chain */
@@ -78,7 +95,17 @@ static int enumerate_ht_chain(void)
 			pos = pci_read_config8(PCI_DEV(0, 0, 0), pos + PCI_CAP_LIST_NEXT);
 		}
 	} while((last_unitid != next_unitid) && (next_unitid <= 0x1f));
+#if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
+	if(ht_dev_num>0) {
+		uint16_t flags;
+		flags = pci_read_config16(PCI_DEV(0,real_last_unitid,0), real_last_pos + PCI_CAP_FLAGS); 
+                flags &= ~0x1f;
+                flags |= HT_CHAIN_END_UNITID_BASE & 0x1f;
+		pci_write_config16(PCI_DEV(0, real_last_unitid, 0), real_last_pos + PCI_CAP_FLAGS, flags);
+	}
+#endif
 
-	return reset_needed;
+#endif
+
 }
 

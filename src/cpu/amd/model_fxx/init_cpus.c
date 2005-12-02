@@ -1,4 +1,13 @@
 //it takes the ENABLE_APIC_EXT_ID and APIC_ID_OFFSET and LIFT_BSP_APIC_ID
+#ifndef K8_SET_FIDVID
+	#define K8_SET_FIDVID 0
+	
+#endif
+
+#ifndef K8_SET_FIDVID_CORE0_ONLY
+	/* MSR FIDVID_CTL and FIDVID_STATUS are shared by cores, so may don't need to do twice*/
+       	#define K8_SET_FIDVID_CORE0_ONLY 1
+#endif
 
 typedef void (*process_ap_t)(unsigned apicid, void *gp);
 
@@ -100,6 +109,10 @@ static inline int lapic_remote_read(int apicid, int reg, unsigned *pvalue)
 #define LAPIC_MSG_REG 0x380
 
 
+#if K8_SET_FIDVID == 1
+static void init_fidvid_ap(unsigned bsp_apicid, unsigned apicid);
+#endif
+
 static inline __attribute__((always_inline)) void print_apicid_nodeid_coreid(unsigned apicid, struct node_core_id id, const char *str)
 {
 	#if CONFIG_USE_INIT == 0
@@ -139,7 +152,11 @@ static void allow_all_aps_stop(unsigned bsp_apicid)
 }
 
 
+#if RAMINIT_SYSINFO == 1
+static unsigned init_cpus(unsigned cpu_init_detectedx ,struct sys_info *sysinfo)
+#else
 static unsigned init_cpus(unsigned cpu_init_detectedx)
+#endif
 {
 		unsigned bsp_apicid = 0;
 		unsigned apicid;
@@ -193,7 +210,7 @@ static unsigned init_cpus(unsigned cpu_init_detectedx)
 			if (id.nodeid!=0) //all core0 except bsp
 				print_apicid_nodeid_coreid(apicid, id, " core0: ");
 		}
-	#if 1 
+	#if 0 
                 else { //all core1
 			print_apicid_nodeid_coreid(apicid, id, " core1: ");
                 }
@@ -202,11 +219,20 @@ static unsigned init_cpus(unsigned cpu_init_detectedx)
 #endif
 
                 if (cpu_init_detectedx) {
+		#if RAMINIT_SYSINFO == 1
+			//We need to init sblnk and sbbusn, because it is called before ht_setup_chains_x
+		        sysinfo->sblnk = get_sblnk();
+			sysinfo->sbbusn = node_link_to_bus(0, sysinfo->sblnk);
+		#endif
 			print_apicid_nodeid_coreid(apicid, id, "\r\n\r\n\r\nINIT detect from ");
 
 			print_debug("\r\nIssuing SOFT_RESET...\r\n");
 
+			#if RAMINIT_SYSINFO == 1
+                        soft_reset(sysinfo);
+			#else
 			soft_reset();
+			#endif
 
                 }
 
@@ -219,6 +245,13 @@ static unsigned init_cpus(unsigned cpu_init_detectedx)
 		lapic_write(LAPIC_MSG_REG, (apicid<<24) | 0x33); // mark the cpu is started
 
 		if(apicid != bsp_apicid) {
+	#if K8_SET_FIDVID == 1
+		#if (CONFIG_LOGICAL_CPUS == 1) && (K8_SET_FIDVID_CORE0_ONLY == 1)
+			if(id.coreid == 0 ) // only need set fid for core0
+		#endif 
+       		                init_fidvid_ap(bsp_apicid, apicid);
+	#endif
+
                         // We need to stop the CACHE as RAM for this CPU, really?
 			wait_cpu_state(bsp_apicid, 0x44);
 			lapic_write(LAPIC_MSG_REG, (apicid<<24) | 0x44); // bsp can not check it before stop_this_cpu

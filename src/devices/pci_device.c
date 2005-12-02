@@ -1043,7 +1043,7 @@ unsigned int pci_scan_bus(struct bus *bus,
 		for(left = old_devices; left; left = left->sibling) {
 			printk_debug("%s\n", dev_path(left));
 		}
-		die("Left over static devices.  Check your Config.lb\n");
+		die("PCI: Left over static devices.  Check your Config.lb\n");
 	}
 
 	/* For all children that implement scan_bus (i.e. bridges)

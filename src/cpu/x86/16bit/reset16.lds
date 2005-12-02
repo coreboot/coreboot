@@ -5,7 +5,8 @@
 
 SECTIONS {
 	/* Trigger an error if I have an unuseable start address */
-	_ROMTOP = (_start >= 0xffff0000) ? 0xfffffff0 : 0xfffffff8;
+	_bogus = ASSERT(_start >= 0xffff0000, "_start to low please decrease ROM_IMAGE_SIZE");
+	_ROMTOP = 0xfffffff0;
 	. = _ROMTOP;
 	.reset . : {
 		*(.reset)

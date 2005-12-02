@@ -22,18 +22,20 @@ _start:
 	leal	_stack, %edi
 	movl	$_estack, %ecx
 	subl	%edi, %ecx
+	shrl	$2, %ecx   /* it is 32 bit align, right? */
 	xorl	%eax, %eax
 	rep
-	stosb
+	stosl
 
 	/** clear bss */
 	leal	_bss, %edi
 	movl	$_ebss, %ecx
 	subl	%edi, %ecx
 	jz	.Lnobss
+	shrl	$2, %ecx  /* it is 32 bit align, right? */
 	xorl	%eax, %eax
 	rep
-	stosb
+	stosl
 .Lnobss:
 
 	/* set new stack */

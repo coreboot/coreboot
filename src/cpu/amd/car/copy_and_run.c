@@ -28,10 +28,18 @@
 #define GETBIT(bb, src, ilen) GETBIT_LE32(bb, src, ilen)
 #endif
 
+static inline void print_debug_cp_run(const char *strval, uint32_t val)
+{
+#if CONFIG_USE_INIT
+        printk_debug("%s%08x\r\n", strval, val);
+#else
+        print_debug(strval); print_debug_hex32(val); print_debug("\r\n");
+#endif
+}
+
 static void copy_and_run(unsigned cpu_reset)
 {
 	uint8_t *src, *dst; 
-	unsigned long dst_len;
         unsigned long ilen = 0, olen = 0, last_m_off =  1;
         uint32_t bb = 0;
         unsigned bc = 0;
@@ -44,9 +52,9 @@ static void copy_and_run(unsigned cpu_reset)
 		"leal _iseg, %1\n\t"
 		"leal _eiseg, %2\n\t"
 		"subl %1, %2\n\t"
-		: "=a" (src), "=b" (dst), "=c" (dst_len)
+		: "=a" (src), "=b" (dst), "=c" (olen)
 	);
-	memcpy(src, dst, dst_len);
+	memcpy(src, dst, olen);
 #else 
 
         __asm__ volatile (
@@ -55,13 +63,10 @@ static void copy_and_run(unsigned cpu_reset)
                 : "=a" (src) , "=b" (dst)
         );
 
-#if CONFIG_USE_INIT		
-	printk_debug("src=%08x\r\n",src); 
-	printk_debug("dst=%08x\r\n",dst);
-#else
-        print_debug("src="); print_debug_hex32(src); print_debug("\r\n");
-        print_debug("dst="); print_debug_hex32(dst); print_debug("\r\n");
-#endif
+	print_debug_cp_run("src=",(uint32_t)src); 
+	print_debug_cp_run("dst=",(uint32_t)dst);
+	
+//	dump_mem(src, src+0x100);
 
         for(;;) {
                 unsigned int m_off, m_len;
@@ -105,11 +110,9 @@ static void copy_and_run(unsigned cpu_reset)
         }
 #endif
 //	dump_mem(dst, dst+0x100);
-#if CONFIG_USE_INIT
-	printk_debug("linxbios_ram.bin length = %08x\r\n", olen);
-#else
-	print_debug("linxbios_ram.bin length = "); print_debug_hex32(olen); print_debug("\r\n");
-#endif
+
+	print_debug_cp_run("linxbios_ram.bin length = ", olen);
+
 	print_debug("Jumping to LinuxBIOS.\r\n");
 
 	if(cpu_reset == 1 ) {

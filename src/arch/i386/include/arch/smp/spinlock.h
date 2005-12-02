@@ -40,14 +40,14 @@ typedef struct {
 #define spin_unlock_string \
 	"movb $1,%0"
 
-static inline void spin_lock(spinlock_t *lock)
+static inline __attribute__((always_inline)) void spin_lock(spinlock_t *lock)
 {
 	__asm__ __volatile__(
 		spin_lock_string
 		:"=m" (lock->lock) : : "memory");
 }
 
-static inline void spin_unlock(spinlock_t *lock)
+static inline __attribute__((always_inline)) void spin_unlock(spinlock_t *lock)
 {
 	__asm__ __volatile__(
 		spin_unlock_string
@@ -55,7 +55,7 @@ static inline void spin_unlock(spinlock_t *lock)
 }
 
 /* REP NOP (PAUSE) is a good thing to insert into busy-wait loops. */
-static inline void cpu_relax(void)
+static inline __attribute__((always_inline)) void cpu_relax(void)
 {
 	__asm__ __volatile__("rep;nop": : :"memory");
 }

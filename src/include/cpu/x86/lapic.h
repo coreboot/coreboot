@@ -10,17 +10,17 @@
 #  define NEED_LAPIC 1
 #endif
 
-static inline unsigned long lapic_read(unsigned long reg)
+static inline __attribute__((always_inline)) unsigned long lapic_read(unsigned long reg)
 {
 	return *((volatile unsigned long *)(LAPIC_DEFAULT_BASE+reg));
 }
 
-static inline void lapic_write(unsigned long reg, unsigned long v)
+static inline __attribute__((always_inline)) void lapic_write(unsigned long reg, unsigned long v)
 {
 	*((volatile unsigned long *)(LAPIC_DEFAULT_BASE+reg)) = v;
 }
 
-static inline void lapic_wait_icr_idle(void)
+static inline __attribute__((always_inline)) void lapic_wait_icr_idle(void)
 {
 	do { } while ( lapic_read( LAPIC_ICR ) & LAPIC_ICR_BUSY );
 }
@@ -46,13 +46,14 @@ static inline void disable_lapic(void)
 	wrmsr(LAPIC_BASE_MSR, msr);
 }
 
-static inline unsigned long lapicid(void)
+static inline __attribute__((always_inline)) unsigned long lapicid(void)
 {
 	return lapic_read(LAPIC_ID) >> 24;
 }
 
-static inline void stop_this_cpu(void)
+static inline __attribute__((always_inline)) void stop_this_cpu(void)
 {
+
 	unsigned apicid;
 	apicid = lapicid();
 

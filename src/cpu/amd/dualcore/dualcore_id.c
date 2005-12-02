@@ -1,26 +1,27 @@
 /* 2004.12 yhlu add dual core support */
 
 #include <arch/cpu.h>
+#include <cpu/amd/dualcore.h>
+#ifdef __ROMCC__
 #include <cpu/amd/model_fxx_msr.h>
+#endif
 
-static inline unsigned int read_nb_cfg_54(void)
+//called by bus_cpu_scan too
+unsigned int read_nb_cfg_54(void)
 {
         msr_t msr;
         msr = rdmsr(NB_CFG_MSR);
         return ( ( msr.hi >> (54-32)) & 1);
 }
 
-struct node_core_id {
-	unsigned nodeid:8;
-	unsigned coreid:8;
-};
-
-static inline unsigned get_initial_apicid(void)
+static inline unsigned get_initial_apicid(void) 
 {
 	return ((cpuid_ebx(1) >> 24) & 0xf);
 }
 
-static inline struct node_core_id get_node_core_id(unsigned nb_cfg_54) {
+//called by amd_siblings too
+struct node_core_id get_node_core_id(unsigned nb_cfg_54) 
+{
 	struct node_core_id id;
 	//    get the apicid via cpuid(1) ebx[27:24]
 	if( nb_cfg_54) {
@@ -45,6 +46,7 @@ static inline unsigned get_core_num(void)
 }
 
 static inline struct node_core_id get_node_core_id_x(void) {
-	return get_node_core_id( read_nb_cfg_54() ); 
+
+	return get_node_core_id( read_nb_cfg_54() ); // for pre_e0() nb_cfg_54 always be 0
 }
 

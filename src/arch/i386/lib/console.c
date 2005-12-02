@@ -120,58 +120,8 @@ static void print_spew_hex16(unsigned short value){ __console_tx_hex16(BIOS_SPEW
 static void print_spew_hex32(unsigned int value) { __console_tx_hex32(BIOS_SPEW, value); }
 static void print_spew(const char *str) { __console_tx_string(BIOS_SPEW, str); }
 
-/* Non inline versions.... */
-#if 0
-static void print_alert_char_(unsigned char value) NOINLINE   { print_alert_char(value); }
-static void print_alert_hex8_(unsigned char value) NOINLINE   { print_alert_hex8(value); }
-static void print_alert_hex16_(unsigned short value) NOINLINE { print_alert_hex16(value); }
-static void print_alert_hex32_(unsigned int value) NOINLINE   { print_alert_hex32(value); }
-static void print_alert_(const char *str) NOINLINE            { print_alert(str); }
-
-static void print_crit_char_(unsigned char value) NOINLINE   { print_crit_char(value); }
-static void print_crit_hex8_(unsigned char value) NOINLINE   { print_crit_hex8(value); }
-static void print_crit_hex16_(unsigned short value) NOINLINE { print_crit_hex16(value); }
-static void print_crit_hex32_(unsigned int value) NOINLINE   { print_crit_hex32(value); }
-static void print_crit_(const char *str) NOINLINE            { print_crit(str); }
-
-static void print_err_char_(unsigned char value) NOINLINE   { print_err_char(value); }
-static void print_err_hex8_(unsigned char value) NOINLINE   { print_err_hex8(value); }
-static void print_err_hex16_(unsigned short value) NOINLINE { print_err_hex16(value); }
-static void print_err_hex32_(unsigned int value) NOINLINE   { print_err_hex32(value); }
-static void print_err_(const char *str) NOINLINE            { print_err(str); }
-
-static void print_warning_char_(unsigned char value) NOINLINE   { print_warning_char(value); }
-static void print_warning_hex8_(unsigned char value) NOINLINE   { print_warning_hex8(value); }
-static void print_warning_hex16_(unsigned short value) NOINLINE { print_warning_hex16(value); }
-static void print_warning_hex32_(unsigned int value) NOINLINE   { print_warning_hex32(value); }
-static void print_warning_(const char *str) NOINLINE            { print_warning(str); }
-
-static void print_notice_char_(unsigned char value) NOINLINE   { print_notice_char(value); }
-static void print_notice_hex8_(unsigned char value) NOINLINE   { print_notice_hex8(value); }
-static void print_notice_hex16_(unsigned short value) NOINLINE { print_notice_hex16(value); }
-static void print_notice_hex32_(unsigned int value) NOINLINE   { print_notice_hex32(value); }
-static void print_notice_(const char *str) NOINLINE            { print_notice(str); }
-
-static void print_info_char_(unsigned char value) NOINLINE   { print_info_char(value); }
-static void print_info_hex8_(unsigned char value) NOINLINE   { print_info_hex8(value); }
-static void print_info_hex16_(unsigned short value) NOINLINE { print_info_hex16(value); }
-static void print_info_hex32_(unsigned int value) NOINLINE   { print_info_hex32(value); }
-static void print_info_(const char *str) NOINLINE            { print_info(str); }
-
-static void print_debug_char_(unsigned char value) NOINLINE   { print_debug_char(value); }
-static void print_debug_hex8_(unsigned char value) NOINLINE   { print_debug_hex8(value); }
-static void print_debug_hex16_(unsigned short value) NOINLINE { print_debug_hex16(value); }
-static void print_debug_hex32_(unsigned int value) NOINLINE   { print_debug_hex32(value); }
-static void print_debug_(const char *str) NOINLINE            { print_debug(str); }
-
-static void print_spew_char_(unsigned char value) NOINLINE   { print_spew_char(value); }
-static void print_spew_hex8_(unsigned char value) NOINLINE   { print_spew_hex8(value); }
-static void print_spew_hex16_(unsigned short value) NOINLINE { print_spew_hex16(value); }
-static void print_spew_hex32_(unsigned int value) NOINLINE   { print_spew_hex32(value); }
-static void print_spew_(const char *str) NOINLINE            { print_spew(str); }
-#endif
-
-#else
+#else  
+/* CONFIG_USE_INIT == 1 */
 
 extern int do_printk(int msg_level, const char *fmt, ...);
 
@@ -273,11 +223,12 @@ extern int do_printk(int msg_level, const char *fmt, ...);
 #define print_spew_hex32(HEX)    printk_spew   ("%08x", (HEX))
 
 
-#endif /* CONFIG_USE_INIT == 0 */
+#endif /* CONFIG_USE_INIT */
 
 #ifndef LINUXBIOS_EXTRA_VERSION
 #define LINUXBIOS_EXTRA_VERSION ""
 #endif
+
 
 static void console_init(void)
 {

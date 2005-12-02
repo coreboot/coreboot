@@ -31,17 +31,17 @@ end
 addaction clean "rm -f romimage payload.*"
 
 if CONFIG_USE_INIT
-makerule init.o
-        depends "$(INIT-OBJECTS)"
-        action  "$(LD) -melf_i386 -r -o init.pre.o $(INIT-OBJECTS)"
-        action  "$(OBJCOPY) --rename-section .text=.init.text --rename-section .data=.init.data --rename-section .rodata=.init.rodata --rename-section .rodata.str1.1=.init.rodata.str1.1 init.pre.o init.o"
-end
+	makerule init.o
+        	depends "$(INIT-OBJECTS)"
+	        action  "$(LD) -melf_i386 -r -o init.pre.o $(INIT-OBJECTS)"
+	        action  "$(OBJCOPY) --rename-section .text=.init.text --rename-section .data=.init.data --rename-section .rodata=.init.rodata --rename-section .rodata.str1.1=.init.rodata.str1.1 init.pre.o init.o"
+	end
 
-makerule linuxbios   
-	depends	"crt0.o init.o linuxbios_ram.rom ldscript.ld"
-	action	"$(CC) -nostdlib -nostartfiles -static -o $@ -T ldscript.ld crt0.o init.o"
-	action	"$(CROSS_COMPILE)nm -n linuxbios | sort > linuxbios.map"
-end
+	makerule linuxbios   
+		depends	"crt0.o init.o linuxbios_ram.rom ldscript.ld"
+		action	"$(CC) -nostdlib -nostartfiles -static -o $@ -T ldscript.ld crt0.o init.o"
+		action	"$(CROSS_COMPILE)nm -n linuxbios | sort > linuxbios.map"
+	end
 
 end
 

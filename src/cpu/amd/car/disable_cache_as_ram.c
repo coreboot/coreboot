@@ -1,11 +1,12 @@
 /* by yhlu 6.2005 */
 /* be warned, this file will be used other cores and core 0 / node 0 */
+static inline __attribute__((always_inline)) void disable_cache_as_ram(void)
+{
         __asm__ volatile (
 	/* 
 	FIXME : backup stack in CACHE_AS_RAM into mmx and sse and after we get STACK up, we restore that.
 		It is only needed if we want to go back
 	*/
-	
         /* We don't need cache as ram for now on */
         /* disable cache */
         "movl    %cr0, %eax\n\t"
@@ -42,5 +43,5 @@
         "movl    %cr0, %eax\n\t"
         "andl    $0x9fffffff,%eax\n\t"
         "movl    %eax, %cr0\n\t"
-
         );
+}

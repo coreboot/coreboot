@@ -15,11 +15,7 @@ static char *vidmem;
 
 int vga_line, vga_col;
 
-#if CONFIG_CONSOLE_VGA == 1
-extern int vga_inited; // it will be changed in pci_rom.c
-#else
-int vga_inited = 0;
-#endif
+int vga_inited = 0; // it will be changed in pci_rom.c
 
 static int vga_console_inited = 0;
 

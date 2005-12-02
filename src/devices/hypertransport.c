@@ -1,3 +1,9 @@
+/*
+	2005.11 yhlu add let the real sb to use small uintid
+
+*/
+
+
 #include <bitops.h>
 #include <console/console.h>
 #include <device/device.h>
@@ -11,7 +17,7 @@
 #define OPT_HT_LINK 0
         
 #if OPT_HT_LINK == 1
-#include "../northbridge/amd/amdk8/cpu_rev.c"
+#include <cpu/amd/model_fxx_rev.h>
 #endif
 
 static device_t ht_scan_get_devs(device_t *old_devices)
@@ -71,12 +77,13 @@ static unsigned ht_read_freq_cap(device_t dev, unsigned pos)
 	}
 	/* AMD K8 Unsupported 1Ghz? */
 	if ((dev->vendor == PCI_VENDOR_ID_AMD) && (dev->device == 0x1100)) {
-#if K8_HT_FREQ_1G_SUPPORT == 1  
-		if (is_cpu_pre_e0()) 
-#endif
-		{
+#if K8_HT_FREQ_1G_SUPPORT == 1 
+		if (is_cpu_pre_e0()) { // only e0 later suupport 1GHz HT
 			freq_cap &= ~(1 << HT_FREQ_1000Mhz);
-		}
+		} 
+#else
+		freq_cap &= ~(1 << HT_FREQ_1000Mhz);
+#endif
 
 	}
 	return freq_cap;
@@ -248,7 +255,7 @@ static unsigned ht_lookup_slave_capability(struct device *dev)
 	return pos;
 }
 
-static void ht_collapse_early_enumeration(struct bus *bus)
+static void ht_collapse_early_enumeration(struct bus *bus, unsigned offset_unitid)
 {
 	unsigned int devfn;
 	struct ht_link prev;
@@ -275,6 +282,26 @@ static void ht_collapse_early_enumeration(struct bus *bus)
 		}
 	} while((ctrl & (1 << 5)) == 0);
 
+	        //actually, only for one HT device HT chain, and unitid is 0
+#if HT_CHAIN_UNITID_BASE == 0
+        if(offset_unitid) {
+                return;
+        }
+#endif
+
+        /* Check if is already collapsed */
+        if((!offset_unitid)|| (offset_unitid && (!((HT_CHAIN_END_UNITID_BASE == 0) && (HT_CHAIN_END_UNITID_BASE <HT_CHAIN_UNITID_BASE))))) {
+                struct device dummy;
+                uint32_t id;
+                dummy.bus              = bus;
+                dummy.path.type        = DEVICE_PATH_PCI;
+                dummy.path.u.pci.devfn = PCI_DEVFN(0, 0);
+                id = pci_read_config32(&dummy, PCI_VENDOR_ID);
+                if ( ! ( (id == 0xffffffff) || (id == 0x00000000) ||
+                    (id == 0x0000ffff) || (id == 0xffff0000) ) ) {
+                             return;
+                }
+        }
 
 	/* Spin through the devices and collapse any early
 	 * hypertransport enumeration.
@@ -309,15 +336,25 @@ static void ht_collapse_early_enumeration(struct bus *bus)
 }
 
 unsigned int hypertransport_scan_chain(struct bus *bus, 
-	unsigned min_devfn, unsigned max_devfn, unsigned int max)
+	unsigned min_devfn, unsigned max_devfn, unsigned int max, unsigned offset_unitid)
 {
+	//even HT_CHAIN_UNITID_BASE == 0, we still can go through this function, because of end_of_chain check, also We need it to optimize link
 	unsigned next_unitid, last_unitid;
 	device_t old_devices, dev, func;
-	unsigned min_unitid = 1;
+	unsigned min_unitid = (offset_unitid) ? HT_CHAIN_UNITID_BASE:1;
 	struct ht_link prev;
+	device_t last_func = 0;
+
+#if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
+        //let't record the device of last ht device, So we can set the Unitid to HT_CHAIN_END_UNITID_BASE
+        unsigned real_last_unitid; 
+        uint8_t real_last_pos;
+	device_t real_last_dev;
+	int ht_dev_num = 0;
+#endif
 
 	/* Restore the hypertransport chain to it's unitialized state */
-	ht_collapse_early_enumeration(bus);
+	ht_collapse_early_enumeration(bus, offset_unitid);
 
 	/* See which static device nodes I have */
 	old_devices = bus->children;
@@ -405,6 +442,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 			func->path.u.pci.devfn += (next_unitid << 3);
 			static_count = (func->path.u.pci.devfn >> 3) 
 				- (dev->path.u.pci.devfn >> 3) + 1;
+			last_func = func;
 		}
 
 		/* Compute the number of unitids consumed */
@@ -416,6 +454,14 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 		}
 
 		/* Update the Unitid of the next device */
+#if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
+		if(offset_unitid) {
+	                real_last_unitid = next_unitid;
+        	        real_last_pos = pos;
+			real_last_dev = dev;
+			ht_dev_num++;
+		}
+#endif
 		next_unitid += count;
 
 		/* Setup the hypetransport link */
@@ -442,6 +488,26 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 		printk_debug("HyperT reset not needed\n");
 	}
 #endif
+
+#if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
+        if(offset_unitid && (ht_dev_num>0)) {
+                uint16_t flags;
+                int i;
+		device_t last_func = 0;
+                flags = pci_read_config16(real_last_dev, real_last_pos + PCI_CAP_FLAGS);
+                flags &= ~0x1f;
+                flags |= HT_CHAIN_END_UNITID_BASE & 0x1f;
+                pci_write_config16(real_last_dev, real_last_pos + PCI_CAP_FLAGS, flags);
+
+                for(func = real_last_dev; func; func = func->sibling) {
+                        func->path.u.pci.devfn -= ((real_last_unitid - HT_CHAIN_END_UNITID_BASE) << 3);
+			last_func = func;
+                }
+
+                next_unitid = real_last_unitid;
+        }
+#endif
+
 	if (next_unitid > 0x1f) {
 		next_unitid = 0x1f;
 	}
@@ -454,13 +520,15 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 		for(left = old_devices; left; left = left->sibling) {
 			printk_debug("%s\n", dev_path(left));
 		}
-		die("Left over static devices.  Check your Config.lb\n");
+		printk_err("HT: Left over static devices.  Check your Config.lb\n");
+		if(last_func  && !last_func->sibling) // put back the left over static device, and let pci_scan_bus disable it
+			last_func->sibling = old_devices; 
 	}
-	
+
 	/* Now that nothing is overlapping it is safe to scan the
 	 * children. 
 	 */
-	max = pci_scan_bus(bus, 0x00, (next_unitid << 3)|7, max);
+	max = pci_scan_bus(bus, 0x00, (next_unitid << 3)|7, max); 
 	return max; 
 }
 

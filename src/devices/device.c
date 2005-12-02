@@ -369,7 +369,6 @@ void compute_allocate_resource(
 }
 
 #if CONFIG_CONSOLE_VGA == 1
-
 device_t vga_pri = 0;
 static void allocate_vga_resource(void)
 {
@@ -377,31 +376,52 @@ static void allocate_vga_resource(void)
 #warning "This function knows to much about PCI stuff, it should be just a ietrator/visitor."
 
 	/* FIXME handle the VGA pallette snooping */
-	struct device *dev, *vga, *vga_onboard;
+	struct device *dev, *vga, *vga_onboard, *vga_first, *vga_last;
 	struct bus *bus;
 	bus = 0;
 	vga = 0;
 	vga_onboard = 0;
+	vga_first = 0;
+	vga_last = 0;
 	for(dev = all_devices; dev; dev = dev->next) {
 		if (!dev->enabled) continue;
 		if (((dev->class >> 16) == PCI_BASE_CLASS_DISPLAY) &&
 			((dev->class >> 8) != PCI_CLASS_DISPLAY_OTHER)) 
 		{
-			if (!vga) {
-				if (dev->on_mainboard) {
-					vga_onboard = dev;
-				} else {
-					vga = dev;
-				}
-			}
+                        if (!vga_first) {
+                                if (dev->on_mainboard) {
+                                        vga_onboard = dev;
+                                } else {
+                                        vga_first = dev;
+                                }
+                        } else {
+                                if (dev->on_mainboard) {
+                                        vga_onboard = dev;
+                                } else {
+                                        vga_last = dev;
+                                }
+                        }
+
 			/* It isn't safe to enable other VGA cards */
 			dev->command &= ~(PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
 		}
 	}
 	
-	if (!vga) {
-		vga = vga_onboard;
-	}
+        vga = vga_last;
+
+        if(!vga) {
+                vga = vga_first;
+        }
+
+#if 1
+        if (vga_onboard) // will use on board vga as pri
+#else
+        if (!vga) // will use last add on adapter as pri
+#endif
+        {
+                vga = vga_onboard;
+        }
+
 	
 	if (vga) {
 		/* vga is first add on card or the only onboard vga */
@@ -419,6 +439,7 @@ static void allocate_vga_resource(void)
 		bus = (bus == bus->dev->bus)? 0 : bus->dev->bus;
 	} 
 }
+
 #endif
 
 
@@ -499,7 +520,6 @@ void enable_resources(struct device *dev)
  */
 int reset_bus(struct bus *bus)
 {
-	device_t dev;
 	if (bus && bus->dev && bus->dev->ops && bus->dev->ops->reset_bus)
 	{
 		bus->dev->ops->reset_bus(bus);

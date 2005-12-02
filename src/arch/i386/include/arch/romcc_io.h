@@ -117,7 +117,7 @@ static inline int log2f(int value)
 
 typedef unsigned device_t;
 
-static inline uint8_t pci_read_config8(device_t dev, unsigned where)
+static inline __attribute__((always_inline)) uint8_t pci_read_config8(device_t dev, unsigned where)
 {
 	unsigned addr;
 	addr = dev | where;
@@ -125,7 +125,7 @@ static inline uint8_t pci_read_config8(device_t dev, unsigned where)
 	return inb(0xCFC + (addr & 3));
 }
 
-static inline uint16_t pci_read_config16(device_t dev, unsigned where)
+static inline __attribute__((always_inline)) uint16_t pci_read_config16(device_t dev, unsigned where)
 {
 	unsigned addr;
 	addr = dev | where;
@@ -133,7 +133,7 @@ static inline uint16_t pci_read_config16(device_t dev, unsigned where)
 	return inw(0xCFC + (addr & 2));
 }
 
-static inline uint32_t pci_read_config32(device_t dev, unsigned where)
+static inline __attribute__((always_inline)) uint32_t pci_read_config32(device_t dev, unsigned where)
 {
 	unsigned addr;
 	addr = dev | where;
@@ -141,7 +141,7 @@ static inline uint32_t pci_read_config32(device_t dev, unsigned where)
 	return inl(0xCFC);
 }
 
-static inline void pci_write_config8(device_t dev, unsigned where, uint8_t value)
+static inline __attribute__((always_inline)) void pci_write_config8(device_t dev, unsigned where, uint8_t value)
 {
 	unsigned addr;
 	addr = dev | where;
@@ -149,7 +149,7 @@ static inline void pci_write_config8(device_t dev, unsigned where, uint8_t value
 	outb(value, 0xCFC + (addr & 3));
 }
 
-static inline void pci_write_config16(device_t dev, unsigned where, uint16_t value)
+static inline __attribute__((always_inline)) void pci_write_config16(device_t dev, unsigned where, uint16_t value)
 {
 	unsigned addr;
 	addr = dev | where;
@@ -157,7 +157,7 @@ static inline void pci_write_config16(device_t dev, unsigned where, uint16_t val
 	outw(value, 0xCFC + (addr & 2));
 }
 
-static inline void pci_write_config32(device_t dev, unsigned where, uint32_t value)
+static inline __attribute__((always_inline)) void pci_write_config32(device_t dev, unsigned where, uint32_t value)
 {
 	unsigned addr;
 	addr = dev | where;
@@ -180,53 +180,53 @@ static device_t pci_locate_device(unsigned pci_id, device_t dev)
 
 
 /* Generic functions for pnp devices */
-static inline void pnp_write_config(device_t dev, uint8_t reg, uint8_t value)
+static inline __attribute__((always_inline)) void pnp_write_config(device_t dev, uint8_t reg, uint8_t value)
 {
 	unsigned port = dev >> 8;
 	outb(reg, port );
 	outb(value, port +1);
 }
 
-static inline uint8_t pnp_read_config(device_t dev, uint8_t reg)
+static inline __attribute__((always_inline)) uint8_t pnp_read_config(device_t dev, uint8_t reg)
 {
 	unsigned port = dev >> 8;
 	outb(reg, port);
 	return inb(port +1);
 }
 
-static inline void pnp_set_logical_device(device_t dev)
+static inline __attribute__((always_inline)) void pnp_set_logical_device(device_t dev)
 {
 	unsigned device = dev & 0xff;
 	pnp_write_config(dev, 0x07, device);
 }
 
-static inline void pnp_set_enable(device_t dev, int enable)
+static inline __attribute__((always_inline)) void pnp_set_enable(device_t dev, int enable)
 {
 	pnp_write_config(dev, 0x30, enable?0x1:0x0);
 }
 
-static inline int pnp_read_enable(device_t dev)
+static inline __attribute__((always_inline)) int pnp_read_enable(device_t dev)
 {
 	return !!pnp_read_config(dev, 0x30);
 }
 
-static inline void pnp_set_iobase(device_t dev, unsigned index, unsigned iobase)
+static inline __attribute__((always_inline)) void pnp_set_iobase(device_t dev, unsigned index, unsigned iobase)
 {
 	pnp_write_config(dev, index + 0, (iobase >> 8) & 0xff);
 	pnp_write_config(dev, index + 1, iobase & 0xff);
 }
 
-static inline uint16_t pnp_read_iobase(device_t dev, unsigned index)
+static inline __attribute__((always_inline)) uint16_t pnp_read_iobase(device_t dev, unsigned index)
 {
-	return (uint16_t)((pnp_read_config(dev, index) << 8) | pnp_read_config(dev, index + 1));
+	return ((uint16_t)(pnp_read_config(dev, index)) << 8) | pnp_read_config(dev, index + 1);
 }
 
-static inline void pnp_set_irq(device_t dev, unsigned index, unsigned irq)
+static inline __attribute__((always_inline)) void pnp_set_irq(device_t dev, unsigned index, unsigned irq)
 {
 	pnp_write_config(dev, index, irq);
 }
 
-static inline void pnp_set_drq(device_t dev, unsigned index, unsigned drq)
+static inline __attribute__((always_inline)) void pnp_set_drq(device_t dev, unsigned index, unsigned drq)
 {
 	pnp_write_config(dev, index, drq & 0xff);
 }

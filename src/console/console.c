@@ -16,7 +16,7 @@ void console_init(void)
 	struct console_driver *driver;
 	if(get_option(&console_loglevel, "debug_level"))
 		console_loglevel=DEFAULT_CONSOLE_LOGLEVEL;
-
+	
 	for(driver = console_drivers; driver < econsole_drivers; driver++) {
 		if (!driver->init)
 			continue;
@@ -57,9 +57,10 @@ unsigned char console_rx_byte(void)
 	struct console_driver *driver;
 	if (!initialized)
 		return 0;
-	for(driver = console_drivers; driver < econsole_drivers; driver++)
+	for(driver = console_drivers; driver < econsole_drivers; driver++) {
 		if (driver->tst_byte)
 			break;
+	}
 	if (driver == econsole_drivers)
 		return 0;
 	while (!driver->tst_byte());

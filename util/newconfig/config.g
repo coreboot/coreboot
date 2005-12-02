@@ -916,7 +916,7 @@ class partobj:
 		if ((slot < 0) or (slot > 0x1f)):
 			fatal("Invalid device id")
 		if ((function < 0) or (function > 7)):
-			fatal("Invalid function")
+			fatal("Invalid pci function %s" % function )
 		self.set_path(".type=DEVICE_PATH_PCI,.u={.pci={ .devfn = PCI_DEVFN(0x%x,%d)}}" % (slot, function))
 
 	def addpnppath(self, port, device):
@@ -939,12 +939,6 @@ class partobj:
 			fatal("Invalid device")
 		self.set_path(".type=DEVICE_PATH_APIC,.u={.apic={ .apic_id = 0x%x }}" % (apic_id))
     
-	def addcpupath(self, cpu_id):
-		""" Add a relative path to a cpu device hanging off our parent """
-		if ((cpu_id < 0) or (cpu_id > 255)):
-			fatal("Invalid device")
-		self.set_path(".type=DEVICE_PATH_CPU,.u={.cpu={ .id = 0x%x }}" % (cpu_id))
-    
 	def addpci_domainpath(self, pci_domain):
 		""" Add a pci_domain number to a chip """
 		if ((pci_domain < 0) or (pci_domain > 0xffff)):
@@ -957,11 +951,11 @@ class partobj:
 			fatal("Invalid apic cluster: %d is out of the range 0 to ff" % cluster)
 		self.set_path(".type=DEVICE_PATH_APIC_CLUSTER,.u={.apic_cluster={ .cluster = 0x%x }}" % (cluster))
     
-	def addcpupath(self, id):
+	def addcpupath(self, cpu_id):
 		""" Add a relative path to a cpu device hanging off our parent """
-		if ((id < 0) or (id > 255)):
+		if ((cpu_id < 0) or (cpu_id > 255)):
 			fatal("Invalid device")
-		self.set_path(".type=DEVICE_PATH_CPU,.u={.cpu={ .id = 0x%x }}" % (id))
+		self.set_path(".type=DEVICE_PATH_CPU,.u={.cpu={ .id = 0x%x }}" % (cpu_id))
     
 
 	def addcpu_buspath(self, id):
@@ -2001,6 +1995,7 @@ def writeimagemakefile(image):
 
 	# main rule
 	file.write("\nall: linuxbios.rom\n\n")
+	file.write(".PHONY: all\n\n")
 	#file.write("include cpuflags\n")
 	# Putting "include cpuflags" in the Makefile has the problem that the
 	# cpuflags file would be generated _after_ we want to include it.
@@ -2186,6 +2181,8 @@ def writemakefile(path):
 	file.write(".PHONY: all clean")
 	for i in romimages.keys():
 		file.write(" %s-clean" % i)
+	for i, o in romimages.items():
+		file.write(" %s/linuxbios.rom" % o.getname())
 	file.write("\n\n")
 
 	writemakefilefooter(file, makefilepath)

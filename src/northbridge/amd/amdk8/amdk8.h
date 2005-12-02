@@ -1,3 +1,7 @@
+#ifndef AMDK8_H
+
+#define AMDK8_H
+
 /* Definitions of various K8 registers */
 /* Function 0 */
 #define HT_TRANSACTION_CONTROL 0x68
@@ -226,3 +230,5 @@
 #define InitComplete      (1 << 1)
 #define NonCoherent       (1 << 2)
 #define ConnectionPending (1 << 4)
+
+#endif

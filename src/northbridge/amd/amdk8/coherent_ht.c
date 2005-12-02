@@ -1812,9 +1812,9 @@ static int setup_coherent_ht_domain(void)
 
 #if CONFIG_MAX_PHYSICAL_CPUS > 1
 	result = setup_smp();
-#endif
 	result.nodes = verify_mp_capabilities(result.nodes);
 	clear_dead_routes(result.nodes);
+#endif
 	if (result.nodes == 1) {
 		setup_uniprocessor();
 	}

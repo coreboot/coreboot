@@ -815,6 +815,30 @@ define CK804_DEVN_BASE
 	comment "CK804 device count from 0 or 1"
 end
 
+define HT_CHAIN_UNITID_BASE
+	default 1
+	export always
+	comment "this will be first hypertransport device's unitid base, if sb ht chain only has one ht device, it could be 0"
+end
+
+define HT_CHAIN_END_UNITID_BASE
+        default 0x20
+        export always
+        comment "this will be unit id of the end of hypertransport chain (usually the real SB) if it is small than HT_CHAIN_UNITID_BASE, it could be 0"
+end
+
+define SB_HT_CHAIN_UNITID_OFFSET_ONLY
+        default 1
+        export always
+        comment "this will decided if only offset SB hypertransport chain"
+end
+
+define K8_SB_HT_CHAIN_ON_BUS0
+        default 0 
+        export always
+        comment "this will make SB hypertransport chain sit on bus 0"
+end
+
 define K8_HW_MEM_HOLE_SIZEK
         default 0
         export always

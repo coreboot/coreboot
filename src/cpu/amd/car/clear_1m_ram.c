@@ -1,5 +1,7 @@
 /* by yhlu 6.2005 */
 /* be warned, this file will be used core 0/node 0 only */
+static inline __attribute__((always_inline)) void clear_1m_ram(void)
+{
         __asm__ volatile (
 
         /* disable cache */
@@ -51,3 +53,4 @@
 	"invd\n\t"
 
         );
+}

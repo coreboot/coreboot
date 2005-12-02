@@ -2,6 +2,18 @@
  * generic K8 debug code, used by mainboard specific auto.c
  *
  */
+
+static inline void print_debug_addr(const char *str, void *val)
+{
+#if CACHE_AS_RAM_ADDRESS_DEBUG == 1
+        #if CONFIG_USE_INIT==1
+                printk_debug("------Address debug: %s%x------\r\n", str, val);
+        #else
+		print_debug ("------Address debug: "); print_debug(str); print_debug_hex32(val); print_debug("------\r\n");
+        #endif
+#endif
+}
+
 #if 1
 static void print_debug_pci_dev(unsigned dev)
 {
@@ -34,6 +46,7 @@ static void print_pci_devices(void)
 #if CONFIG_USE_INIT
 		printk_debug(" %04x:%04x\r\n", (id & 0xffff), (id>>16));
 #else
+		print_debug(" ");
 		print_debug_hex32(id);
 		print_debug("\r\n");
 #endif

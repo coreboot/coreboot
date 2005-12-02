@@ -17,7 +17,8 @@
 #include <part/hard_reset.h>
 #include <pc80/mc146818rtc.h>
 #include <bitops.h>
-#include "./cpu_rev.c"
+#include <cpu/amd/model_fxx_rev.h>
+
 #include "amdk8.h"
 
 /**

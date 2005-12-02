@@ -7,10 +7,13 @@ void init_timer(void)
 {
 	/* Set the apic timer to no interrupts and periodic mode */
 	lapic_write(LAPIC_LVTT, (1 << 17)|(1<< 16)|(0 << 12)|(0 << 0));
+
 	/* Set the divider to 1, no divider */
 	lapic_write(LAPIC_TDCR, LAPIC_TDR_DIV_1);
+
 	/* Set the initial counter to 0xffffffff */
 	lapic_write(LAPIC_TMICT, 0xffffffff);
+
 }
 
 void udelay(unsigned usecs)

@@ -2,6 +2,7 @@
 	2004.12 yhlu add dual core support
 	2005.01 yhlu add support move apic before pci_domain in MB Config.lb
 	2005.02 yhlu add e0 memory hole support
+	2005.11 yhlu add put sb ht chain on bus 0
 */
 
 #include <console/console.h>
@@ -96,16 +97,15 @@ static unsigned int amdk8_nodeid(device_t dev)
 	return (dev->path.u.pci.devfn >> 3) - 0x18;
 }
 
-static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
+static unsigned int amdk8_scan_chain(device_t dev, unsigned nodeid, unsigned link, unsigned sblink, unsigned int max, unsigned offset_unitid)
 {
-	unsigned nodeid;
-	unsigned link;
-	nodeid = amdk8_nodeid(dev);
 #if 0
 	printk_debug("%s amdk8_scan_chains max: %d starting...\n", 
 		dev_path(dev), max);
 #endif
-	for(link = 0; link < dev->links; link++) {
+//	I want to put sb chain in bus 0 can I?
+
+	 
 		uint32_t link_type;
 		uint32_t busses, config_busses;
 		unsigned free_reg, config_reg;
@@ -114,13 +114,13 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 			link_type = pci_read_config32(dev, dev->link[link].cap + 0x18);
 		} while(link_type & ConnectionPending);
 		if (!(link_type & LinkConnected)) {
-			continue;
+			return max;
 		}
 		do {
 			link_type = pci_read_config32(dev, dev->link[link].cap + 0x18);
 		} while(!(link_type & InitComplete));
 		if (!(link_type & NonCoherent)) {
-			continue;
+			return max;
 		}
 		/* See if there is an available configuration space mapping
 		 * register in function 1. 
@@ -146,14 +146,21 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 		 * register skip this bus 
 		 */
 		if (config_reg > 0xec) {
-			continue;
+			return max;
 		}
 
 		/* Set up the primary, secondary and subordinate bus numbers.
 		 * We have no idea how many busses are behind this bridge yet,
 		 * so we set the subordinate bus number to 0xff for the moment.
 		 */
-		dev->link[link].secondary = ++max;
+#if K8_SB_HT_CHAIN_ON_BUS0 == 1
+		if((nodeid == 0) && (sblink==link)) { // actually max is 0 here
+			dev->link[link].secondary = max;
+		}
+		else 
+#endif
+			dev->link[link].secondary = ++max;
+		
 		dev->link[link].subordinate = 0xff;
 
 		/* Read the existing primary/secondary/subordinate bus
@@ -188,7 +195,7 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 		/* Now we can scan all of the subordinate busses i.e. the
 		 * chain on the hypertranport link 
 		 */
-		max = hypertransport_scan_chain(&dev->link[link], 0, 0xbf, max);
+		max = hypertransport_scan_chain(&dev->link[link], 0, 0xbf, max, offset_unitid);
 
 #if 0
 		printk_debug("%s Hyper transport scan link: %d new max: %d\n",
@@ -211,13 +218,56 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 		printk_debug("%s Hypertransport scan link: %d done\n",
 			dev_path(dev), link);
 #endif
-	}
-#if 0
-	printk_debug("%s amdk8_scan_chains max: %d done\n", 
-		dev_path(dev), max);
-#endif
+
 	return max;
 }
+
+static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
+{
+        unsigned nodeid;
+        unsigned link;
+        unsigned sblink = 0;
+	unsigned offset_unitid = 0;
+        nodeid = amdk8_nodeid(dev);
+	
+
+#if 0
+        printk_debug("%s amdk8_scan_chains max: %d starting...\n",
+                dev_path(dev), max);
+#endif
+//      I want to put sb chain in bus 0 
+
+        if(nodeid==0) {
+                sblink = (pci_read_config32(dev, 0x64)>>8) & 3;
+#if K8_SB_HT_CHAIN_ON_BUS0 == 1
+	#if HT_CHAIN_UNITID_BASE != 1
+                offset_unitid = 1;
+        #endif
+		max = amdk8_scan_chain(dev, nodeid, sblink, sblink, max, offset_unitid ); // do sb ht chain at first, in case s2885 put sb chain (8131/8111) on link2, but put 8151 on link0
+#endif
+        }
+
+        for(link = 0; link < dev->links; link++) {
+#if K8_SB_HT_CHAIN_ON_BUS0 == 1
+		if( (nodeid == 0) && (sblink == link) ) continue; //already done
+#endif
+		offset_unitid = 0;
+	        #if HT_CHAIN_UNITID_BASE != 1
+	                #if SB_HT_CHAIN_UNITID_OFFSET_ONLY == 1
+			if((nodeid == 0) && (sblink == link))
+			#endif
+				offset_unitid = 1;
+		#endif
+
+		max = amdk8_scan_chain(dev, nodeid, link, sblink, max, offset_unitid);
+        }
+#if 0
+        printk_debug("%s amdk8_scan_chains max: %d done\n",
+                dev_path(dev), max);
+#endif
+        return max;
+}
+
 
 static int reg_useable(unsigned reg, 
 	device_t goal_dev, unsigned goal_nodeid, unsigned goal_link)
@@ -508,7 +558,6 @@ static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 
 	/* release the temp resource */
 	resource->flags = 0;
-
 }
 
 static void amdk8_set_resources(device_t dev)
@@ -1041,7 +1090,7 @@ static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
 	for(reg = 0xe0; reg <= 0xec; reg += 4) {
 		f1_write_config32(reg, 0);
 	}
-	max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0x18, 0), 0xff, max);
+	max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0x18, 0), 0xff, max);  
 	
 	/* Tune the hypertransport transaction for best performance.
 	 * Including enabling relaxed ordering if it is safe.

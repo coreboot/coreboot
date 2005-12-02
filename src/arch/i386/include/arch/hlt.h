@@ -7,7 +7,7 @@ static void hlt(void)
 	__builtin_hlt();
 }
 #else
-static inline void hlt(void)
+static inline __attribute__((always_inline)) void hlt(void)
 {
 	asm("hlt");
 }

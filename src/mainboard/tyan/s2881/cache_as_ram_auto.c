@@ -19,7 +19,7 @@
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
 
-#include "northbridge/amd/amdk8/cpu_rev.c"
+#include <cpu/amd/model_fxx_rev.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/amd/amd8111/amd8111_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"

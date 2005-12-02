@@ -45,17 +45,25 @@ driver mainboard.o
 #needed by irq_tables and mptable and acpi_tables
 object get_bus_conf.o
 
-if HAVE_MP_TABLE object mptable.o end
+if HAVE_MP_TABLE 
+	object mptable.o 
+end
+
 if HAVE_PIRQ_TABLE 
 	object irq_tables.o 
 end
 
 if HAVE_ACPI_TABLES
- object acpi_tables.o
- object fadt.o
- object dsdt.o
- object ssdt.o
-	if ACPI_SSDTX_NUM 
+ 	object acpi_tables.o
+	object fadt.o
+	if K8_SB_HT_CHAIN_ON_BUS0
+		object dsdt_bus0.o
+	else
+		object dsdt.o
+	end
+	object ssdt.o
+	if ACPI_SSDTX_NUM
+		if K8_SB_HT_CHAIN_ON_BUS0
 		 object ssdt2.o
 		# object ssdt3.o
 		# object ssdt4.o
@@ -63,6 +71,15 @@ if HAVE_ACPI_TABLES
                 # object ssdt6.o
                 # object ssdt7.o
                 # object ssdt8.o
+		else
+                 object ssdt2_bus0.o
+                # object ssdt3_bus0.o
+                # object ssdt4_bus0.o
+                # object ssdt5_bus0.o
+                # object ssdt6_bus0.o
+                # object ssdt7_bus0.o
+                # object ssdt8_bus0.o
+		end
 	end
 end
 
@@ -70,61 +87,65 @@ object reset.o
 
 if USE_DCACHE_RAM
 
-if CONFIG_USE_INIT
+	if CONFIG_USE_INIT
+		# compile cache_as_ram.c to auto.o
+		makerule ./cache_as_ram_auto.o
+		        depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
+		        action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -o cache_as_ram_auto.o" 
+		end
 
-makerule ./auto.o
-        depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
-        action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -o auto.o" 
-end
+	else   
+		#compile cache_as_ram.c to auto.inc 
+		makerule ./cache_as_ram_auto.inc
+		        depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
+		        action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -S -o $@"         
+		        action "perl -e 's/.rodata/.rom.data/g' -pi $@"
+		        action "perl -e 's/.text/.section .rom.text/g' -pi $@"
+		end
 
-else    
-                
-makerule ./auto.inc
-        depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
-        action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -S -o $@"         
-        action "perl -e 's/.rodata/.rom.data/g' -pi $@"
-        action "perl -e 's/.text/.section .rom.text/g' -pi $@"
-end
-
-end
+	end
 else
   
-##
-## Romcc output
-##
-makerule ./failover.E
-        depends "$(MAINBOARD)/failover.c ./romcc"
-        action "./romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
-end
+	##
+	## Romcc output
+	##
+	makerule ./failover.E
+        	depends "$(MAINBOARD)/failover.c ./romcc"
+	        action "./romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
+	end
 
-makerule ./failover.inc
-        depends "$(MAINBOARD)/failover.c ./romcc"
-        action "./romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
-end
+	makerule ./failover.inc
+        	depends "$(MAINBOARD)/failover.c ./romcc"
+	        action "./romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
+	end
 
-makerule ./auto.E
-        depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
-        action  "./romcc -E -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
-end
-makerule ./auto.inc
-        depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
-        action  "./romcc    -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
-end
+	makerule ./auto.E
+        	depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
+	        action  "./romcc -E -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+	end
+	makerule ./auto.inc
+        	depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
+	        action  "./romcc    -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+	end
 
 end
 ##
 ## Build our 16 bit and 32 bit linuxBIOS entry code
 ##
-mainboardinit cpu/x86/16bit/entry16.inc
+
+if USE_FALLBACK_IMAGE
+	mainboardinit cpu/x86/16bit/entry16.inc
+	ldscript /cpu/x86/16bit/entry16.lds
+end
+
 mainboardinit cpu/x86/32bit/entry32.inc
-ldscript /cpu/x86/16bit/entry16.lds
 if USE_DCACHE_RAM
         if CONFIG_USE_INIT
                 ldscript /cpu/x86/32bit/entry32.lds
         end
 
         if CONFIG_USE_INIT
-                ldscript      /cpu/amd/car/cache_as_ram.lds
+                ldscript /cpu/amd/car/cache_as_ram.lds
         end
 end
 
@@ -141,8 +162,8 @@ end
 
 if USE_DCACHE_RAM
 else
-### Should this be in the northbridge code?
-mainboardinit arch/i386/lib/cpu_reset.inc
+	### Should this be in the northbridge code?
+	mainboardinit arch/i386/lib/cpu_reset.inc
 end
 
 ##
@@ -152,10 +173,10 @@ mainboardinit arch/i386/lib/id.inc
 ldscript /arch/i386/lib/id.lds
 
 if USE_DCACHE_RAM
-##
-## Setup Cache-As-Ram
-##
-mainboardinit cpu/amd/car/cache_as_ram.inc
+	##
+	## Setup Cache-As-Ram
+	##
+	mainboardinit cpu/amd/car/cache_as_ram.inc
 end
 
 ###
@@ -164,12 +185,12 @@ end
 ### failover to another image.
 ###
 if USE_FALLBACK_IMAGE
-if USE_DCACHE_RAM
-       ldscript /arch/i386/lib/failover.lds
-else
-       ldscript /arch/i386/lib/failover.lds
-        mainboardinit ./failover.inc
-end
+	if USE_DCACHE_RAM
+		ldscript /arch/i386/lib/failover.lds
+	else
+       		ldscript /arch/i386/lib/failover.lds
+	        mainboardinit ./failover.inc
+	end
 end
 
 ###
@@ -181,23 +202,23 @@ end
 ##
 if USE_DCACHE_RAM
 
-if CONFIG_USE_INIT
-initobject auto.o
-else
-mainboardinit ./auto.inc
-end
+	if CONFIG_USE_INIT
+		initobject cache_as_ram_auto.o
+	else
+		mainboardinit ./cache_as_ram_auto.inc
+	end
 
 else
 
-##
-## Setup RAM
-##
-mainboardinit cpu/x86/fpu/enable_fpu.inc
-mainboardinit cpu/x86/mmx/enable_mmx.inc
-mainboardinit cpu/x86/sse/enable_sse.inc
-mainboardinit ./auto.inc
-mainboardinit cpu/x86/sse/disable_sse.inc
-mainboardinit cpu/x86/mmx/disable_mmx.inc
+	##
+	## Setup RAM
+	##
+	mainboardinit cpu/x86/fpu/enable_fpu.inc
+	mainboardinit cpu/x86/mmx/enable_mmx.inc
+	mainboardinit cpu/x86/sse/enable_sse.inc
+	mainboardinit ./auto.inc
+	mainboardinit cpu/x86/sse/disable_sse.inc
+	mainboardinit cpu/x86/mmx/disable_mmx.inc
 
 end
 
@@ -208,7 +229,7 @@ if CONFIG_CHIP_NAME
 	config chip.h
 end
 
-# sample config for amd/serengeti_leopard 
+# sample config for amd/serengeti_cheetah 
 chip northbridge/amd/amdk8/root_complex
         device apic_cluster 0 on
                 chip cpu/amd/socket_940
@@ -237,7 +258,7 @@ chip northbridge/amd/amdk8/root_complex
 					end
 					device pci 1.0 on
 						chip superio/winbond/w83627hf
-							device pnp 2e.0 on #  Floppy
+							device pnp 2e.0 off #  Floppy
                 	                 			io 0x60 = 0x3f0
                 	                			irq 0x70 = 6
                 	                			drq 0x74 = 2
@@ -250,7 +271,7 @@ chip northbridge/amd/amdk8/root_complex
                 	                 			io 0x60 = 0x3f8
                 	                			irq 0x70 = 4
 							end
-                	        			device pnp 2e.3 on #  Com2
+                	        			device pnp 2e.3 off #  Com2
                 	                 			io 0x60 = 0x2f8
                 	                			irq 0x70 = 3
 							end
@@ -282,19 +303,31 @@ chip northbridge/amd/amdk8/root_complex
 					device pci 1.3 on
                                                 chip drivers/i2c/i2cmux # pca9556 smbus mux
                                                         device i2c 18 on #0 pca9516 1
+                                                                chip drivers/generic/generic #dimm 0-0-0
+                                                                        device i2c 50 on end
+                                                                end
+                                                                chip drivers/generic/generic #dimm 0-0-1
+                                                                        device i2c 51 on end
+                                                                end
+                                                                chip drivers/generic/generic #dimm 0-1-0
+                                                                        device i2c 52 on end
+                                                                end
+                                                                chip drivers/generic/generic #dimm 0-1-1
+                                                                        device i2c 53 on end
+                                                                end
+                                                        end
+                                                        device i2c 18 on #1 pca9516 2
                                                                 chip drivers/generic/generic #dimm 1-0-0
                                                                         device i2c 50 on end
                                                                 end
                                                                 chip drivers/generic/generic #dimm 1-0-1
                                                                         device i2c 51 on end
                                                                 end
-                                                        end
-                                                        device i2c 18 on #1 pca9516 2
-                                                                chip drivers/generic/generic #dimm 0-0-0
-                                                                        device i2c 50 on end
+                                                                chip drivers/generic/generic #dimm 1-1-0
+                                                                        device i2c 52 on end
                                                                 end
-                                                                chip drivers/generic/generic #dimm 0-0-1
-                                                                        device i2c 51 on end
+                                                                chip drivers/generic/generic #dimm 1-1-1
+                                                                        device i2c 53 on end
                                                                 end
                                                         end
 						end
@@ -330,7 +363,7 @@ chip northbridge/amd/amdk8/root_complex
 
 
 	end #pci_domain
-#       chip drivers/generic/debug
+#        chip drivers/generic/debug
 #               device pnp 0.0 off end # chip name
 #                device pnp 0.1 on end # pci_regs_all
 #                device pnp 0.2 off end # mem
@@ -342,4 +375,5 @@ chip northbridge/amd/amdk8/root_complex
 #       end
 
 end
+
 

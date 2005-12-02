@@ -1,36 +1,7 @@
-/*============================================================================
-Copyright 2005 ADVANCED MICRO DEVICES, INC. All Rights Reserved.
-This software and any related documentation (the "Materials") are the
-confidential proprietary information of AMD. Unless otherwise provided in a
-software agreement specifically licensing the Materials, the Materials are
-provided in confidence and may not be distributed, modified, or reproduced in
-whole or in part by any means.
-LIMITATION OF LIABILITY: THE MATERIALS ARE PROVIDED "AS IS" WITHOUT ANY
-EXPRESS OR IMPLIED WARRANTY OF ANY KIND, INCLUDING BUT NOT LIMITED TO
-WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT, TITLE, FITNESS FOR ANY
-PARTICULAR PURPOSE, OR WARRANTIES ARISING FROM CONDUCT, COURSE OF DEALING, OR
-USAGE OF TRADE. IN NO EVENT SHALL AMD OR ITS LICENSORS BE LIABLE FOR ANY
-DAMAGES WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR LOSS OF PROFITS,
-BUSINESS INTERRUPTION, OR LOSS OF INFORMATION) ARISING OUT OF THE USE OF OR
-INABILITY TO USE THE MATERIALS, EVEN IF AMD HAS BEEN ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGES. BECAUSE SOME JURISDICTIONS PROHIBIT THE EXCLUSION
-OR LIMITATION OF LIABILITY FOR CONSEQUENTIAL OR INCIDENTAL DAMAGES, THE ABOVE
-LIMITATION MAY NOT APPLY TO YOU.
-AMD does not assume any responsibility for any errors which may appear in the
-Materials nor any responsibility to support or update the Materials. AMD
-retains the right to modify the Materials at any time, without notice, and is
-not obligated to provide such modified Materials to you.
-NO SUPPORT OBLIGATION: AMD is not obligated to furnish, support, or make any
-further information, software, technical information, know-how, or show-how
-available to you.
-U.S. GOVERNMENT RESTRICTED RIGHTS: The Materials are provided with "RESTRICTED
-RIGHTS." Use, duplication, or disclosure by the Government is subject to the
-restrictions as set forth in FAR 52.227-14 and DFAR 252.227-7013, et seq., or
-its successor. Use of the Materials by the Government constitutes
-acknowledgement of AMD's proprietary rights in them.
-============================================================================*/
 /*
- *  2005.9 yhlu modify that to more dynamic for AMD Opteron Based MB
+ *
+ *  Copyright 2005 AMD
+ *  2005.9 yhlu make it more dynamic for AMD Opteron Based MB
  */
 
 #include <console/console.h>
@@ -41,7 +12,7 @@ acknowledgement of AMD's proprietary rights in them.
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 
-#define DUMP_ACPI_TABLES 1
+#define DUMP_ACPI_TABLES 0
 
 #if DUMP_ACPI_TABLES == 1
 static void dump_mem(unsigned start, unsigned end)
@@ -107,7 +78,7 @@ unsigned long acpi_fill_madt(unsigned long current)
         {
                 device_t dev;
                 struct resource *res;
-                dev = dev_find_slot(bus_8132_0, PCI_DEVFN(0x1,1));
+                dev = dev_find_slot(bus_8132_0, PCI_DEVFN(0x1 + HT_CHAIN_UNITID_BASE - 1, 1));
                 if (dev) {
                         res = find_resource(dev, PCI_BASE_ADDRESS_0);
                         if (res) {
@@ -117,7 +88,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 
                         }
                 }
-                dev = dev_find_slot(bus_8132_0, PCI_DEVFN(0x2,1));
+                dev = dev_find_slot(bus_8132_0, PCI_DEVFN(0x2 + HT_CHAIN_UNITID_BASE - 1, 1));
                 if (dev) {
                         res = find_resource(dev, PCI_BASE_ADDRESS_0);
                         if (res) {
@@ -248,7 +219,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	
 	acpi_write_rsdp(rsdp, rsdt);
 	acpi_write_rsdt(rsdt);
-	
+
 	/*
 	 * We explicitly add these tables later on:
 	 */
@@ -264,6 +235,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_create_madt(madt);
 	current+=madt->header.length;
 	acpi_add_table(rsdt,madt);
+
 
 	/* SRAT */
         printk_debug("ACPI:    * SRAT\n");

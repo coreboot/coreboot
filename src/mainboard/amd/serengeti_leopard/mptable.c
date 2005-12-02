@@ -1,39 +1,3 @@
-/*============================================================================
-Copyright 2005 ADVANCED MICRO DEVICES, INC. All Rights Reserved.
-This software and any related documentation (the "Materials") are the
-confidential proprietary information of AMD. Unless otherwise provided in a
-software agreement specifically licensing the Materials, the Materials are
-provided in confidence and may not be distributed, modified, or reproduced in
-whole or in part by any means.
-LIMITATION OF LIABILITY: THE MATERIALS ARE PROVIDED "AS IS" WITHOUT ANY
-EXPRESS OR IMPLIED WARRANTY OF ANY KIND, INCLUDING BUT NOT LIMITED TO
-WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT, TITLE, FITNESS FOR ANY
-PARTICULAR PURPOSE, OR WARRANTIES ARISING FROM CONDUCT, COURSE OF DEALING, OR
-USAGE OF TRADE. IN NO EVENT SHALL AMD OR ITS LICENSORS BE LIABLE FOR ANY
-DAMAGES WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR LOSS OF PROFITS,
-BUSINESS INTERRUPTION, OR LOSS OF INFORMATION) ARISING OUT OF THE USE OF OR
-INABILITY TO USE THE MATERIALS, EVEN IF AMD HAS BEEN ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGES. BECAUSE SOME JURISDICTIONS PROHIBIT THE EXCLUSION
-OR LIMITATION OF LIABILITY FOR CONSEQUENTIAL OR INCIDENTAL DAMAGES, THE ABOVE
-LIMITATION MAY NOT APPLY TO YOU.
-AMD does not assume any responsibility for any errors which may appear in the
-Materials nor any responsibility to support or update the Materials. AMD
-retains the right to modify the Materials at any time, without notice, and is
-not obligated to provide such modified Materials to you.
-NO SUPPORT OBLIGATION: AMD is not obligated to furnish, support, or make any
-further information, software, technical information, know-how, or show-how
-available to you.
-U.S. GOVERNMENT RESTRICTED RIGHTS: The Materials are provided with "RESTRICTED
-RIGHTS." Use, duplication, or disclosure by the Government is subject to the
-restrictions as set forth in FAR 52.227-14 and DFAR 252.227-7013, et seq., or
-its successor. Use of the Materials by the Government constitutes
-acknowledgement of AMD's proprietary rights in them.
-============================================================================*/
-// 2005.9 serengeti support
-// by yhlu
-//
-//=
-
 #include <console/console.h>
 #include <arch/smp/mpspec.h>
 #include <device/pci.h>
@@ -99,14 +63,14 @@ void *smp_write_config_table(void *v)
         {
                 device_t dev;
 		struct resource *res;
-                dev = dev_find_slot(bus_8132_0, PCI_DEVFN(0x1,1));
+                dev = dev_find_slot(bus_8132_0, PCI_DEVFN(0x1 + HT_CHAIN_UNITID_BASE - 1, 1));
                 if (dev) {
 			res = find_resource(dev, PCI_BASE_ADDRESS_0);
 			if (res) {
 				smp_write_ioapic(mc, apicid_8132_1, 0x11, res->base);
 			}
                 }
-                dev = dev_find_slot(bus_8132_0, PCI_DEVFN(0x2,1));
+                dev = dev_find_slot(bus_8132_0, PCI_DEVFN(0x2 + HT_CHAIN_UNITID_BASE - 1, 1));
                 if (dev) {
 			res = find_resource(dev, PCI_BASE_ADDRESS_0);
 			if (res) {
@@ -131,7 +95,11 @@ void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0xe, apicid_8111, 0xe);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0xf, apicid_8111, 0xf);
 //??? What
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_0, (4<<2)|3, apicid_8111, 0x13);
+#if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
+        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_0, ((2+HT_CHAIN_END_UNITID_BASE-1)<<2)|3, apicid_8111, 0x13);
+#else
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_0, ((4+HT_CHAIN_UNITID_BASE-1)<<2)|3, apicid_8111, 0x13);
+#endif
 // Onboard AMD USB
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_1, (0<<2)|3, apicid_8111, 0x13);
 

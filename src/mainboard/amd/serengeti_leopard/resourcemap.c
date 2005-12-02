@@ -119,7 +119,7 @@ static void setup_serengeti_leopard_resource_map(void)
 		PCI_ADDR(0, 0x18, 1, 0xA4), 0x00000048, 0x00000000,
 		PCI_ADDR(0, 0x18, 1, 0xAC), 0x00000048, 0x00000000,
 		PCI_ADDR(0, 0x18, 1, 0xB4), 0x00000048, 0x00000000,
-//		PCI_ADDR(0, 0x18, 1, 0xBC), 0x00000048, 0x00ffff20,
+		PCI_ADDR(0, 0x18, 1, 0xBC), 0x00000048, 0x00ffff00,
 
 		/* Memory-Mapped I/O Base i Registers
 		 * F1:0x80 i = 0
@@ -154,7 +154,7 @@ static void setup_serengeti_leopard_resource_map(void)
 		PCI_ADDR(0, 0x18, 1, 0xA0), 0x000000f0, 0x00000000,
 		PCI_ADDR(0, 0x18, 1, 0xA8), 0x000000f0, 0x00000000,
 		PCI_ADDR(0, 0x18, 1, 0xB0), 0x000000f0, 0x00000000,
-//		PCI_ADDR(0, 0x18, 1, 0xB8), 0x000000f0, 0x00fc0003,
+		PCI_ADDR(0, 0x18, 1, 0xB8), 0x000000f0, 0x00fc0003,
 
 		/* PCI I/O Limit i Registers
 		 * F1:0xC4 i = 0
@@ -181,7 +181,7 @@ static void setup_serengeti_leopard_resource_map(void)
 		 *	   This field defines the end of PCI I/O region n
 		 * [31:25] Reserved
 		 */
-//		PCI_ADDR(0, 0x18, 1, 0xC4), 0xFE000FC8, 0x01fff020,
+		PCI_ADDR(0, 0x18, 1, 0xC4), 0xFE000FC8, 0x01fff000,
 		PCI_ADDR(0, 0x18, 1, 0xCC), 0xFE000FC8, 0x00000000,
 		PCI_ADDR(0, 0x18, 1, 0xD4), 0xFE000FC8, 0x00000000,
 		PCI_ADDR(0, 0x18, 1, 0xDC), 0xFE000FC8, 0x00000000,
@@ -211,7 +211,7 @@ static void setup_serengeti_leopard_resource_map(void)
 		 *	   This field defines the start of PCI I/O region n 
 		 * [31:25] Reserved
 		 */
-//		PCI_ADDR(0, 0x18, 1, 0xC0), 0xFE000FCC, 0x00000003,
+		PCI_ADDR(0, 0x18, 1, 0xC0), 0xFE000FCC, 0x00000003,
 		PCI_ADDR(0, 0x18, 1, 0xC8), 0xFE000FCC, 0x00000000,
 		PCI_ADDR(0, 0x18, 1, 0xD0), 0xFE000FCC, 0x00000000,
 		PCI_ADDR(0, 0x18, 1, 0xD8), 0xFE000FCC, 0x00000000,
@@ -252,8 +252,8 @@ static void setup_serengeti_leopard_resource_map(void)
 		 * [31:24] Bus Number Limit i
 		 *	   This field defines the highest bus number in configuration regin i
 		 */
-//		PCI_ADDR(0, 0x18, 1, 0xE0), 0x0000FC88, 0x06000003, // AMD 8111 on link0 of CPU 0
-//		PCI_ADDR(0, 0x18, 1, 0xE4), 0x0000FC88, 0x08070013, // AMD 8151 on link0 of CPU 1
+		PCI_ADDR(0, 0x18, 1, 0xE0), 0x0000FC88, 0x06000003, // AMD 8111 on link0 of CPU 0
+		PCI_ADDR(0, 0x18, 1, 0xE4), 0x0000FC88, 0x08070013, // AMD 8151 on link0 of CPU 1
 		PCI_ADDR(0, 0x18, 1, 0xE8), 0x0000FC88, 0x00000000,
 		PCI_ADDR(0, 0x18, 1, 0xEC), 0x0000FC88, 0x00000000,
 	};

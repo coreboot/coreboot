@@ -1,6 +1,4 @@
 #define ASSEMBLY 1
-#define ENABLE_APIC_EXT_ID 1
-#define APIC_ID_OFFSET 0x10
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
@@ -20,12 +18,10 @@
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
-#include "northbridge/amd/amdk8/incoherent_ht.c"
-#include "northbridge/amd/amdk8/cpu_rev.c"
+#include <cpu/amd/model_fxx_rev.h>
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 #include "cpu/amd/mtrr/amd_earlymtrr.c"
 #include "cpu/x86/bist.h"
-#include "cpu/amd/dualcore/dualcore.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
@@ -93,6 +89,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
+#include "northbridge/amd/amdk8/incoherent_ht.c"
+#include "cpu/amd/dualcore/dualcore.c"
 #include "sdram/generic_sdram.c"
 #include "resourcemap.c"
 

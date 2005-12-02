@@ -52,6 +52,11 @@ uses CONFIG_PCI_ROM_RUN
 
 uses CONFIG_USE_INIT
 
+uses ENABLE_APIC_EXT_ID
+uses APIC_ID_OFFSET
+uses LIFT_BSP_APIC_ID
+
+
 ###
 ### Build options
 ###
@@ -111,6 +116,10 @@ default CONFIG_SMP=1
 default CONFIG_MAX_CPUS=4
 default CONFIG_MAX_PHYSICAL_CPUS=4
 #default ALLOW_HT_OVERCLOCKING=1
+
+default ENABLE_APIC_EXT_ID=0
+default APIC_ID_OFFSET=0x10
+default LIFT_BSP_APIC_ID=0
 
 ##
 ## Build code to setup a generic IOAPIC

@@ -21,7 +21,7 @@
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
-#include "northbridge/amd/amdk8/cpu_rev.c"
+#include <cpu/amd/model_fxx_rev.h>
 #include "superio/NSC/pc87366/pc87366_early_serial.c"
 #include "cpu/amd/mtrr/amd_earlymtrr.c"
 #include "cpu/x86/bist.h"

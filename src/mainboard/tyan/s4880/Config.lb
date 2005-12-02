@@ -208,11 +208,11 @@ chip northbridge/amd/amdk8/root_complex
 				chip southbridge/amd/amd8131
 					# the on/off keyword is mandatory
                                         device pci 0.0 on
-                                                chip drivers/lsi/53c1030
-                                                        device pci 4.0 on end
-                                                        device pci 4.1 on end
-                                                        register "fw_address" = "0xfff8c000"
-                                                end
+#                                                chip drivers/lsi/53c1030
+#                                                        device pci 4.0 on end
+#                                                        device pci 4.1 on end
+#                                                        register "fw_address" = "0xfff8c000"
+#                                                end
                                                 chip drivers/pci/onboard
                                                         device pci 9.0 on end
                                                         device pci 9.1 on end

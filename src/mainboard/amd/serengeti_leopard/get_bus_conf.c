@@ -1,39 +1,3 @@
-/*============================================================================
-Copyright 2005 ADVANCED MICRO DEVICES, INC. All Rights Reserved.
-This software and any related documentation (the "Materials") are the
-confidential proprietary information of AMD. Unless otherwise provided in a
-software agreement specifically licensing the Materials, the Materials are
-provided in confidence and may not be distributed, modified, or reproduced in
-whole or in part by any means.
-LIMITATION OF LIABILITY: THE MATERIALS ARE PROVIDED "AS IS" WITHOUT ANY
-EXPRESS OR IMPLIED WARRANTY OF ANY KIND, INCLUDING BUT NOT LIMITED TO
-WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT, TITLE, FITNESS FOR ANY
-PARTICULAR PURPOSE, OR WARRANTIES ARISING FROM CONDUCT, COURSE OF DEALING, OR
-USAGE OF TRADE. IN NO EVENT SHALL AMD OR ITS LICENSORS BE LIABLE FOR ANY
-DAMAGES WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR LOSS OF PROFITS,
-BUSINESS INTERRUPTION, OR LOSS OF INFORMATION) ARISING OUT OF THE USE OF OR
-INABILITY TO USE THE MATERIALS, EVEN IF AMD HAS BEEN ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGES. BECAUSE SOME JURISDICTIONS PROHIBIT THE EXCLUSION
-OR LIMITATION OF LIABILITY FOR CONSEQUENTIAL OR INCIDENTAL DAMAGES, THE ABOVE
-LIMITATION MAY NOT APPLY TO YOU.
-AMD does not assume any responsibility for any errors which may appear in the
-Materials nor any responsibility to support or update the Materials. AMD
-retains the right to modify the Materials at any time, without notice, and is
-not obligated to provide such modified Materials to you.
-NO SUPPORT OBLIGATION: AMD is not obligated to furnish, support, or make any
-further information, software, technical information, know-how, or show-how
-available to you.
-U.S. GOVERNMENT RESTRICTED RIGHTS: The Materials are provided with "RESTRICTED
-RIGHTS." Use, duplication, or disclosure by the Government is subject to the
-restrictions as set forth in FAR 52.227-14 and DFAR 252.227-7013, et seq., or
-its successor. Use of the Materials by the Government constitutes
-acknowledgement of AMD's proprietary rights in them.
-============================================================================*/
-// 2005.9 serengeti support
-// by yhlu
-//
-//=
-
 #include <console/console.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -77,7 +41,11 @@ unsigned sbdn;
 static unsigned get_sbdn(void)
 {
         device_t dev;
-        unsigned sbdn = 3;// 8111 unit id base is 3 if 8131 before it
+#if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
+        unsigned sbdn = 1 + HT_CHAIN_END_UNITID_BASE -1;
+#else
+        unsigned sbdn = 3 + HT_CHAIN_UNITID_BASE - 1; // 8111 unit id base is 3 if 8131 before it
+#endif
         dev = dev_find_device(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_8111_PCI , 0); //FIXME: if 8111 PCI is disabled?
         if(dev)  {
                 sbdn = (dev->path.u.pci.devfn >> 3) & 0x1f;
@@ -115,25 +83,32 @@ void get_bus_conf(void)
         dev = dev_find_slot(bus_8111_0, PCI_DEVFN(sbdn,0));
         if (dev) {
                 bus_8111_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
+#if HT_CHAIN_END_UNITID_BASE >= HT_CHAIN_UNITID_BASE
                 bus_isa    = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
                 bus_isa++;
 //		printk_debug("bus_isa=%d\n",bus_isa);
+#endif
         }
 	else {
                 printk_debug("ERROR - could not find PCI %02x:03.0, using defaults\n", bus_8111_0);
         }
 
         /* 8132-1 */
-        dev = dev_find_slot(bus_8132_0, PCI_DEVFN(0x01,0));
+        dev = dev_find_slot(bus_8132_0, PCI_DEVFN(0x01 + HT_CHAIN_UNITID_BASE - 1,0));
         if (dev) {
                 bus_8132_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
+#if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
+                bus_isa    = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
+                bus_isa++;
+//              printk_debug("bus_isa=%d\n",bus_isa);
+#endif
         }
         else {
                 printk_debug("ERROR - could not find PCI %02x:01.0, using defaults\n", bus_8132_0);
         }
 
         /* 8132-2 */
-        dev = dev_find_slot(bus_8132_0, PCI_DEVFN(0x02,0));
+        dev = dev_find_slot(bus_8132_0, PCI_DEVFN(0x02 + HT_CHAIN_UNITID_BASE - 1,0));
         if (dev) {
                 bus_8132_2 = pci_read_config8(dev, PCI_SECONDARY_BUS);
         }
@@ -146,7 +121,12 @@ void get_bus_conf(void)
 //                bus_8151_0 = node_link_to_bus( (pci1234[1]>>4) & 0xf, (pci1234[1]>>8) & 0xf);
 		bus_8151_0 = (pci1234[1] >> 16) & 0xff;
                 /* 8151 */
-        	dev = dev_find_slot(bus_8151_0, PCI_DEVFN(0x02,0));
+#if SB_HT_CHAIN_UNITID_OFFSET_ONLY == 1
+		dev = dev_find_slot(bus_8151_0, PCI_DEVFN(0x02, 0)); // FIXME : still use 1 for one device ? or do that for SB chain?
+#else
+        	dev = dev_find_slot(bus_8151_0, PCI_DEVFN(0x02 + HT_CHAIN_UNITID_BASE - 1,0)); // FIXME : still use 1 for one device ? or do that for SB chain?
+#endif
+
               	if (dev) {
                        	bus_8151_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 //                        printk_debug("bus_8151_1=%d\n",bus_8151_1);

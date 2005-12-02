@@ -4,7 +4,10 @@
 
    Documentation at : http://www.microsoft.com/hwdev/busbios/PCIIRQ.HTM
 */
-
+#include <console/console.h>
+#include <device/pci.h>
+#include <string.h>
+#include <stdint.h>
 #include <arch/pirq_routing.h>
 
 const struct irq_routing_table intel_irq_routing_table = {
@@ -19,15 +22,15 @@ const struct irq_routing_table intel_irq_routing_table = {
 	0,         /* Crap (miniport) */
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, /* u8 rfu[11] */
 #if CK804_DEVN_BASE==0
-	0x5a,         /*  u8 checksum , this hase to set to some value that would give 0 after the sum of all bytes for this structure (including checksum) */
+	0x31,         /*  u8 checksum , this hase to set to some value that would give 0 after the sum of all bytes for this structure (including checksum) */
 #else
-	0x4a,
+	0x19,
 #endif
 	{
 		{1,((CK804_DEVN_BASE+9)<<3)|0, {{0x1, 0xdef8}, {0x2, 0xdef8}, {0x3, 0xdef8}, {0x4, 0xdef8}}, 0, 0},
-		{0x5,(1<<3)|0, {{0x1, 0xdef8}, {0x2, 0xdef8}, {0x3, 0xdef8}, {0x4, 0xdef8}}, 0, 0},
-		{0x5,(4<<3)|0, {{0x1, 0xdef8}, {0x2, 0xdef8}, {0x3, 0xdef8}, {0x4, 0xdef8}}, 0x0, 0},
-		{0x5,(3<<3)|0, {{0x1, 0xdef8}, {0x2, 0xdef8}, {0x3, 0xdef8}, {0x4, 0xdef8}}, 0x1, 0},
+		{0x4,(1<<3)|0, {{0x1, 0xdef8}, {0x2, 0xdef8}, {0x3, 0xdef8}, {0x4, 0xdef8}}, 0, 0},
+		{0x7,((CK804_DEVN_BASE+9)<<3)|0, {{0x1, 0xdef8}, {0x2, 0xdef8}, {0x3, 0xdef8}, {0x4, 0xdef8}}, 0x0, 0},
+		{0x8,((CK804_DEVN_BASE+9)<<3)|0, {{0x1, 0xdef8}, {0x2, 0xdef8}, {0x3, 0xdef8}, {0x4, 0xdef8}}, 0x1, 0},
 		{0x5,(6<<3)|0, {{0x2, 0xdef8}, {0x3, 0xdef8}, {0x4, 0xdef8}, {0x1, 0xdef8}}, 0x2, 0},
 		{0x4,(8<<3)|0, {{0x4, 0xdef8}, {0x1, 0xdef8}, {0x2, 0xdef8}, {0x3, 0xdef8}}, 0x3, 0},
 		{0x4,(7<<3)|0, {{0x3, 0xdef8}, {0x4, 0xdef8}, {0x1, 0xdef8}, {0x2, 0xdef8}}, 0x4, 0},
@@ -37,7 +40,295 @@ const struct irq_routing_table intel_irq_routing_table = {
 		{0x6,(0x0c<<3)|0, {{0x4, 0xdef8}, {0, 0}, {0, 0}, {0, 0}}, 0, 0},
 	}
 };
+
+static unsigned node_link_to_bus(unsigned node, unsigned link)
+{
+        device_t dev;
+        unsigned reg;
+
+        dev = dev_find_slot(0, PCI_DEVFN(0x18, 1));
+        if (!dev) {
+                return 0;
+        }
+        for(reg = 0xE0; reg < 0xF0; reg += 0x04) {
+                uint32_t config_map;
+                unsigned dst_node;
+                unsigned dst_link;
+                unsigned bus_base;
+                config_map = pci_read_config32(dev, reg);
+                if ((config_map & 3) != 3) {
+                        continue;
+                }
+                dst_node = (config_map >> 4) & 7;
+                dst_link = (config_map >> 8) & 3;
+                bus_base = (config_map >> 16) & 0xff;
+#if 0                           
+                printk_debug("node.link=bus: %d.%d=%d 0x%2x->0x%08x\n",
+                        dst_node, dst_link, bus_base,
+                        reg, config_map);
+#endif
+                if ((dst_node == node) && (dst_link == link))
+                {
+                        return bus_base;
+                }
+        }
+        return 0;
+}
+
+static void write_pirq_info(struct irq_info *pirq_info, uint8_t bus, uint8_t devfn, uint8_t link0, uint16_t bitmap0, 
+		uint8_t link1, uint16_t bitmap1, uint8_t link2, uint16_t bitmap2,uint8_t link3, uint16_t bitmap3,
+		uint8_t slot, uint8_t rfu)
+{
+        pirq_info->bus = bus; 
+        pirq_info->devfn = devfn;
+                pirq_info->irq[0].link = link0;
+                pirq_info->irq[0].bitmap = bitmap0;
+                pirq_info->irq[1].link = link1;
+                pirq_info->irq[1].bitmap = bitmap1;
+                pirq_info->irq[2].link = link2;
+                pirq_info->irq[2].bitmap = bitmap2;
+                pirq_info->irq[3].link = link3;
+                pirq_info->irq[3].bitmap = bitmap3;
+        pirq_info->slot = slot;
+        pirq_info->rfu = rfu;
+}
+
 unsigned long write_pirq_routing_table(unsigned long addr)
 {
-        return copy_pirq_routing_table(addr);
+
+	struct irq_routing_table *pirq;
+	struct irq_info *pirq_info;
+	unsigned slot_num;
+	uint8_t *v;
+
+        uint8_t sum=0;
+        int i;
+
+        unsigned char bus_ck804_0; //1
+        unsigned char bus_ck804_1; //2
+        unsigned char bus_ck804_2; //3
+        unsigned char bus_ck804_3; //4
+        unsigned char bus_ck804_4; //5
+        unsigned char bus_ck804_5; //6
+        unsigned char bus_8131_0;  //7
+        unsigned char bus_8131_1;  //8
+        unsigned char bus_8131_2;  //9 
+
+      {
+                device_t dev;
+                
+
+                bus_ck804_0 = node_link_to_bus(0, 0);
+                if (bus_ck804_0 == 0) {
+                        printk_debug("ERROR - cound not find bus for node 0 chain 0, using defaults\n");
+                        bus_ck804_0 = 1;
+                }       
+                /* CK804 */
+                dev = dev_find_slot(bus_ck804_0, PCI_DEVFN(CK804_DEVN_BASE + 0x09,0));
+                if (dev) {
+                        bus_ck804_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
+#if 0                   
+                        bus_ck804_2 = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
+                        bus_ck804_2++;
+#else 
+                        bus_ck804_4 = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
+                        bus_ck804_4++;
+#endif                  
+                }
+                else {
+                        printk_debug("ERROR - could not find PCI 1:%02x.0, using defaults\n", CK804_DEVN_BASE + 0x09);
+
+                        bus_ck804_1 = 2;
+#if 0
+                        bus_ck804_2 = 3;
+#else
+                        bus_ck804_4 = 3;
+#endif
+
+                }
+#if 0                
+                dev = dev_find_slot(bus_ck804_0, PCI_DEVFN(CK804_DEVN_BASE + 0x0b,0));
+                if (dev) {
+                        bus_ck804_2 = pci_read_config8(dev, PCI_SECONDARY_BUS);
+                        bus_ck804_3 = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
+                        bus_ck804_3++;
+                }
+                else {
+                        printk_debug("ERROR - could not find PCI 1:%02x.0, using defaults\n", CK804_DEVN_BASE + 0x0b);
+
+                        bus_ck804_3 = bus_ck804_2+1;
+                }
+
+                dev = dev_find_slot(bus_ck804_0, PCI_DEVFN(CK804_DEVN_BASE + 0x0c,0));
+                if (dev) {
+                        bus_ck804_3 = pci_read_config8(dev, PCI_SECONDARY_BUS);
+                        bus_ck804_4 = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
+                        bus_ck804_4++;
+                }
+                else {
+                        printk_debug("ERROR - could not find PCI 1:%02x.0, using defaults\n", CK804_DEVN_BASE + 0x0c);
+
+                        bus_ck804_4 = bus_ck804_3+1;
+                }
+#endif
+
+                dev = dev_find_slot(bus_ck804_0, PCI_DEVFN(CK804_DEVN_BASE + 0x0d,0));
+                if (dev) {
+                        bus_ck804_4 = pci_read_config8(dev, PCI_SECONDARY_BUS);
+                        bus_ck804_5 = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
+                        bus_ck804_5++;
+                }
+                else {
+                        printk_debug("ERROR - could not find PCI 1:%02x.0, using defaults\n",CK804_DEVN_BASE + 0x0d);
+
+                        bus_ck804_5 = bus_ck804_4+1;
+                }
+
+                dev = dev_find_slot(bus_ck804_0, PCI_DEVFN(CK804_DEVN_BASE + 0x0e,0));
+                if (dev) {
+                        bus_ck804_5 = pci_read_config8(dev, PCI_SECONDARY_BUS);
+                        bus_8131_0 = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
+                        bus_8131_0++;
+                }
+                else {
+                        printk_debug("ERROR - could not find PCI 1:%02x.0, using defaults\n",CK804_DEVN_BASE + 0x0e);
+
+                        bus_8131_0 = bus_ck804_5+1;
+                }
+
+		bus_8131_0 = node_link_to_bus(0, 2);
+
+                /* 8131-1 */
+                dev = dev_find_slot(bus_8131_0, PCI_DEVFN(0x01,0));
+                if (dev) {
+                        bus_8131_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
+                        bus_8131_2 = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
+                        bus_8131_2++;
+                }
+                else {
+                        printk_debug("ERROR - could not find PCI %02x:01.0, using defaults\n", bus_8131_0);
+
+                        bus_8131_1 = bus_8131_0+1;
+                        bus_8131_2 = bus_8131_0+2;
+                }
+                /* 8131-2 */
+                dev = dev_find_slot(bus_8131_0, PCI_DEVFN(0x02,0));
+                if (dev) {
+                        bus_8131_2 = pci_read_config8(dev, PCI_SECONDARY_BUS);
+                }
+                else {
+                        printk_debug("ERROR - could not find PCI %02x:02.0, using defaults\n", bus_8131_0);
+
+                        bus_8131_2 = bus_8131_1+1;
+                }
+
+
+        }
+
+        /* Align the table to be 16 byte aligned. */
+        addr += 15;
+        addr &= ~15;
+
+        /* This table must be betweeen 0xf0000 & 0x100000 */
+        printk_info("Writing IRQ routing tables to 0x%x...", addr);
+
+	pirq = (void *)(addr);
+	v = (uint8_t *)(addr);
+	
+	pirq->signature = PIRQ_SIGNATURE;
+	pirq->version  = PIRQ_VERSION;
+	
+	pirq->rtr_bus = bus_ck804_0;
+	pirq->rtr_devfn = ((CK804_DEVN_BASE+9)<<3)|0;
+
+	pirq->exclusive_irqs = 0;
+	
+	pirq->rtr_vendor = 0x10de;
+	pirq->rtr_device = 0x005c;
+
+	pirq->miniport_data = 0;
+
+	memset(pirq->rfu, 0, sizeof(pirq->rfu));
+
+	pirq_info = (void *) ( &pirq->checksum + 1);
+	slot_num = 0;
+//pci bridge
+	write_pirq_info(pirq_info, bus_ck804_0, ((CK804_DEVN_BASE+9)<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
+	pirq_info++; slot_num++;
+//pcix bridge
+        write_pirq_info(pirq_info, bus_8131_0, (1<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
+        pirq_info++; slot_num++;
+             
+#if 0
+//smbus
+	write_pirq_info(pirq_info, bus_ck804_0, ((CK804_DEVN_BASE+1)<<3)|0, 0x2, 0xdef8, 0, 0, 0, 0, 0, 0, 0, 0);
+        pirq_info++; slot_num++;
+
+//usb
+	write_pirq_info(pirq_info, bus_ck804_0, ((CK804_DEVN_BASE+2)<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0, 0, 0, 0, 0, 0);
+        pirq_info++; slot_num++;
+
+//audio
+	write_pirq_info(pirq_info, bus_ck804_0, ((CK804_DEVN_BASE+4)<<3)|0, 0x1, 0xdef8, 0, 0, 0, 0, 0, 0, 0, 0);
+        pirq_info++; slot_num++;
+//sata
+	write_pirq_info(pirq_info, bus_ck804_0, ((CK804_DEVN_BASE+7)<<3)|0, 0x1, 0xdef8, 0, 0, 0, 0, 0, 0, 0, 0);
+        pirq_info++; slot_num++;
+//sata
+        write_pirq_info(pirq_info, bus_ck804_0, ((CK804_DEVN_BASE+8)<<3)|0, 0x1, 0xdef8, 0, 0, 0, 0, 0, 0, 0, 0);
+        pirq_info++; slot_num++;
+//nic
+        write_pirq_info(pirq_info, bus_ck804_0, ((CK804_DEVN_BASE+0xa)<<3)|0, 0x1, 0xdef8, 0, 0, 0, 0, 0, 0, 0, 0);
+        pirq_info++; slot_num++;
+
+//Slot1 PCIE x16
+        write_pirq_info(pirq_info, bus_ck804_5, (0<<3)|0, 0x3, 0xdef8, 0x4, 0xdef8, 0x1, 0xdef8, 0x2, 0xdef8, 1, 0);
+        pirq_info++; slot_num++;
+
+//firewire
+        write_pirq_info(pirq_info, bus_ck804_1, (0x5<<3)|0, 0x3, 0xdef8, 0, 0, 0, 0, 0, 0, 0, 0);
+        pirq_info++; slot_num++;
+
+//Slot2 pci
+        write_pirq_info(pirq_info, bus_ck804_1, (0x4<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 2, 0);
+        pirq_info++; slot_num++;
+//nic   
+        write_pirq_info(pirq_info, bus_ck804b_0, ((CK804_DEVN_BASE+0xa)<<3)|0, 0x1, 0xdef8, 0, 0, 0, 0, 0, 0, 0, 0);
+        pirq_info++; slot_num++;
+//Slot3 PCIE x16 
+        write_pirq_info(pirq_info, bus_ck804b_5, (0<<3)|0, 0x3, 0xdef8, 0x4, 0xdef8, 0x1, 0xdef8, 0x2, 0xdef8, 3, 0);
+        pirq_info++; slot_num++;
+
+//Slot4 PCIX
+        write_pirq_info(pirq_info, bus_8131_2, (4<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 4, 0);
+        pirq_info++; slot_num++;
+
+//Slot5 PCIX
+        write_pirq_info(pirq_info, bus_8131_2, (9<<3)|0, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0x1, 0xdef8, 5, 0);
+        pirq_info++; slot_num++;
+
+//onboard scsi
+        write_pirq_info(pirq_info, bus_8131_2, (6<<3)|0, 0x2, 0xdef8, 0x3, 0xdef8, 0, 0, 0, 0, 0, 0);
+        pirq_info++; slot_num++;
+
+//Slot6 PCIX
+        write_pirq_info(pirq_info, bus_8131_1, (4<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 6, 0);
+        pirq_info++; slot_num++;
+#endif
+                
+	pirq->size = 32 + 16 * slot_num; 
+
+        for (i = 0; i < pirq->size; i++)
+                sum += v[i];	
+
+	sum = pirq->checksum - sum;
+
+        if (sum != pirq->checksum) {
+                pirq->checksum = sum;
+        }
+
+	printk_info("done.\n");
+
+	return	(unsigned long) pirq_info;
+
 }

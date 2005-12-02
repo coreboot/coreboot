@@ -54,12 +54,28 @@ uses OBJCOPY
 uses CONFIG_CHIP_NAME
 uses CONFIG_CONSOLE_VGA
 uses CONFIG_PCI_ROM_RUN
-uses K8_E0_MEM_HOLE_SIZEK
+uses K8_HW_MEM_HOLE_SIZEK
+uses K8_HW_MEM_HOLE_SIZE_AUTO_INC
+uses K8_HT_FREQ_1G_SUPPORT
+
+uses HT_CHAIN_UNITID_BASE
+uses HT_CHAIN_END_UNITID_BASE
+uses K8_SB_HT_CHAIN_ON_BUS0
+uses SB_HT_CHAIN_UNITID_OFFSET_ONLY
 
 uses USE_DCACHE_RAM
 uses DCACHE_RAM_BASE
 uses DCACHE_RAM_SIZE
 uses CONFIG_USE_INIT
+
+uses SERIAL_CPU_INIT
+
+uses ENABLE_APIC_EXT_ID
+uses APIC_ID_OFFSET
+uses LIFT_BSP_APIC_ID
+
+uses CONFIG_PCI_64BIT_PREF_MEM
+
 
 ###
 ### Build options
@@ -73,7 +89,9 @@ default ROM_SIZE=524288
 ##
 ## FALLBACK_SIZE is the amount of the ROM the complete fallback image will use
 ##
-default FALLBACK_SIZE=131072
+#default FALLBACK_SIZE=131072
+#256K
+default FALLBACK_SIZE=0x40000
 
 ##
 ## Build code for the fallback boot
@@ -123,23 +141,51 @@ default CONFIG_MAX_CPUS=4
 default CONFIG_MAX_PHYSICAL_CPUS=2
 default CONFIG_LOGICAL_CPUS=1
 
+#default SERIAL_CPU_INIT=0
+
+default ENABLE_APIC_EXT_ID=0
+default APIC_ID_OFFSET=0x8
+default LIFT_BSP_APIC_ID=0
+
 #CHIP_NAME ?
 default CONFIG_CHIP_NAME=1
 
-#1G memory hole
-default K8_E0_MEM_HOLE_SIZEK=0x100000
+#memory hole size, 0 mean disable, others will enable the hole, at that case if it is small than mmio_basek, it will use mmio_basek instead. 
+#2G
+default K8_HW_MEM_HOLE_SIZEK=0x200000
+#1G
+#default K8_HW_MEM_HOLE_SIZEK=0x100000
+#512M
+#default K8_HW_MEM_HOLE_SIZEK=0x80000
+
+#make auto increase hole size to avoid hole_startk equal to basek so as to make some kernel happy
+#default K8_HW_MEM_HOLE_SIZE_AUTO_INC=1
+
+#Opteron K8 1G HT Support
+default K8_HT_FREQ_1G_SUPPORT=1
 
 #VGA Console
 default CONFIG_CONSOLE_VGA=1
 default CONFIG_PCI_ROM_RUN=1
 
+#HT Unit ID offset
+default HT_CHAIN_UNITID_BASE=0x4
+
+#real SB Unit ID
+default HT_CHAIN_END_UNITID_BASE=0x1
+
+#make the SB HT chain on bus 0
+default K8_SB_HT_CHAIN_ON_BUS0=1
+
+#allow capable device use that above 4G
+#default CONFIG_PCI_64BIT_PREF_MEM=1
 
 ##
 ## enable CACHE_AS_RAM specifics
 ##
 default USE_DCACHE_RAM=1
-default DCACHE_RAM_BASE=0xcf000
-default DCACHE_RAM_SIZE=0x1000
+default DCACHE_RAM_BASE=0xcc000
+default DCACHE_RAM_SIZE=0x4000
 default CONFIG_USE_INIT=1
 
 ##

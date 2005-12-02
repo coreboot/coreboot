@@ -12,7 +12,7 @@
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
 
-#include "northbridge/amd/amdk8/cpu_rev.c"
+#include <cpu/amd/model_fxx_rev.h>
 #define K8_HT_FREQ_1G_SUPPORT 0
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/nvidia/ck804/ck804_early_smbus.c"

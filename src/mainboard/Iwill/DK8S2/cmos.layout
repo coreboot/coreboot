@@ -29,9 +29,10 @@ entries
 386          1       e       1        ECC_memory
 388          4       r       0        reboot_bits
 392          3       e       5        baud_rate
+395          1       e       1        hw_scrubber
 396          1       e       1        interleave_chip_selects
 397          2       e       8        max_mem_clock
-
+399	     1	     e	     2	      dual_core
 400          1       e       1        power_on_after_fail
 412          4       e       6        debug_level
 416          4       e       7        boot_first
@@ -39,8 +40,15 @@ entries
 424          4       e       7        boot_third
 428          4       h       0        boot_index
 432	     8       h       0        boot_countdown
+440          4       e       9        slow_cpu
 444          1       e       1        nmi
-1008         16      h       0        check_sum
+445          1       e       1        iommu
+728        256       h       0        user_data
+984         16       h       0        check_sum
+# Reserve the extended AMD configuration registers
+1000        24       r       0        reserved_memory
+
+
 
 enumerations
 
@@ -70,7 +78,21 @@ enumerations
 7     9     Fallback_HDD
 7     10    Fallback_Floppy
 #7     3     ROM
+8     0     400Mhz
+8     1     333Mhz
+8     2     266Mhz
+8     3     200Mhz
+9     0     off
+9     1     87.5%
+9     2     75.0%
+9     3     62.5%
+9     4     50.0%
+9     5     37.5%
+9     6     25.0%
+9     7     12.5%
 
 checksums
 
 checksum 392 983 984
+
+

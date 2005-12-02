@@ -10,7 +10,7 @@
 
 #include <arch/io.h>
 #include "../../../northbridge/amd/amdk8/northbridge.h"
-#include "../../../northbridge/amd/amdk8/cpu_rev.c"
+#include <cpu/amd/model_fxx_rev.h>
 #include "chip.h"
 
 #include "pc80/mc146818rtc.h"

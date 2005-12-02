@@ -11,7 +11,7 @@
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
-#include "northbridge/amd/amdk8/cpu_rev.c"
+#include <cpu/amd/model_fxx_rev.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/amd/amd8111/amd8111_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
@@ -29,24 +29,6 @@
 /* Look up a which bus a given node/link combination is on.
  * return 0 when we can't find the answer.
  */
-static unsigned node_link_to_bus(unsigned node, unsigned link)
-{
-	unsigned reg;
-
-	for(reg = 0xE0; reg < 0xF0; reg += 0x04) {
-		unsigned config_map;
-		config_map = pci_read_config32(PCI_DEV(0, 0x18, 1), reg);
-		if ((config_map & 3) != 3) {
-			continue;
-		}
-		if ((((config_map >> 4) & 7) == node) &&
-			(((config_map >> 8) & 3) == link)) 
-		{
-			return (config_map >> 16) & 0xff;
-		}
-	}
-	return 0;
-}
 
 static void hard_reset(void)
 {

@@ -67,6 +67,11 @@ uses XIP_ROM_BASE
 ###
 
 ##
+## ROM_SIZE is the size of boot ROM that this board will use.
+##
+default ROM_SIZE=2097152
+
+##
 ## Build code for the fallback boot?
 ##
 default HAVE_FALLBACK_BOOT=0

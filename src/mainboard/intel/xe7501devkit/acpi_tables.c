@@ -1,5 +1,5 @@
 /*
- * Ported to Intel XE7501DEVKIT from Island Aruma
+ * Ported to Intel XE7501DEVKIT from Agami Aruma
  * written by Stefan Reinauer <stepan@openbios.org>
  *  (C) 2005 Stefan Reinauer
  *  (C) 2005 Digital Design Corporation
@@ -14,7 +14,13 @@
 #include "bus.h"
 #include "ioapic.h"
 
-unsigned long acpi_dump_apics(unsigned long current)
+unsigned long acpi_fill_srat(unsigned long current)
+{
+	// Not implemented
+	return 0;
+}
+
+unsigned long acpi_fill_madt(unsigned long current)
 {
 	unsigned int irq_start = 0;
 	device_t dev = 0;

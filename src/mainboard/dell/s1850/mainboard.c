@@ -6,7 +6,7 @@
 #include <cpu/x86/msr.h>
 #include "chip.h"
 
-struct chip_operations mainboard_dell_s2850_ops = {
-	CHIP_NAME("Dell S2850")
+struct chip_operations mainboard_dell_s1850_ops = {
+	CHIP_NAME("Dell S1850")
 };
 

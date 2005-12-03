@@ -43,7 +43,8 @@ SECTIONS
 		_eram = . ;
 	}
 
-	. = _ROMBASE + ROM_IMAGE_SIZE - 0x10000;
+	_x = .;
+	. = (_x < (_ROMBASE - 0x10000 +  ROM_IMAGE_SIZE)) ? (_ROMBASE - 0x10000 +  ROM_IMAGE_SIZE) : _x;
 
 	/* This section might be better named .setup */
 	.rom . : {

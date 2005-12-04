@@ -5,7 +5,7 @@
 default ROM_SIZE = 512 * 1024 
 default FALLBACK_SIZE = 0x10000
 if USE_FALLBACK_IMAGE
-	default ROM_SECTION_SIZE   = 64 * 1024 # FALLBACK_SIZE
+	default ROM_SECTION_SIZE   = FALLBACK_SIZE
 	default ROM_SECTION_OFFSET = ( ROM_SIZE - FALLBACK_SIZE )
 else
 	default ROM_SECTION_SIZE   = ( ROM_SIZE - FALLBACK_SIZE )
@@ -108,6 +108,11 @@ if USE_FALLBACK_IMAGE
 	mainboardinit ./failover.inc
 end
 
+
+# VGA console
+if CONFIG_CONSOLE_VGA
+	default CONFIG_PCI_ROM_RUN=1
+end
 ###
 ### O.k. We aren't just an intermediary anymore!
 ###
@@ -122,13 +127,22 @@ mainboardinit ./auto.inc
 ## Include the secondary Configuration files 
 ##
 dir /pc80
+dir /devices
 config chip.h
 
 chip cpu/amd/sc520
 	device pci_domain 0 on 
 		device pci 0.0 on end
-		device pci 1.0 on end
+	
+		chip drivers/pci/onboard
+			device pci 12.0 on end # enet
+		end
+		chip drivers/pci/onboard
+			device pci 14.0 on end # 69000
+			register "rom_address" = "0x2000000"
+		end
 #		register "com1" = "{1}"
 #		register "com1" = "{1, 0, 0x3f8, 4}"
 	end
+
 end

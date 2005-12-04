@@ -207,7 +207,5 @@ struct ide_pio_command
 /* Maximum block_size that may be set. */
 #define DISK_BUFFER_SIZE (18 * SECTOR_SIZE)
 
-extern struct harddisk_info harddisk_info[];
-
 extern int ide_probe(int drive);
 extern int ide_read(int drive, sector_t sector, void *buffer);

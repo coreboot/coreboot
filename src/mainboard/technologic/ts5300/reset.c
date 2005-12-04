@@ -32,12 +32,10 @@ static unsigned pci_read_config32(device_t dev, unsigned where)
         outl(0x80000000 | (addr & ~3), 0xCF8);
         return inl(0xCFC);
 }
-
-#include "../../../northbridge/amd/amdk8/reset_test.c"
-
+#endif
 void hard_reset(void)
 {
-	set_bios_reset();
-	pci_write_config8(PCI_DEV(1, 0x04, 0), 0x47, 1);
+	//set_bios_reset();
+	//pci_write_config8(PCI_DEV(1, 0x04, 0), 0x47, 1);
 }
-#endif
+

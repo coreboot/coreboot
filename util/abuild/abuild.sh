@@ -87,7 +87,7 @@ option CROSS_COMPILE="CROSS_PREFIX"
 option HOSTCC="CROSS_HOSTCC"
 
 EOF
-	if [ $TARCH == i386 ] ; then
+	if [ "$TARCH" == i386 ] ; then
 		cat <<EOF
 romimage "normal"
 	option USE_FALLBACK_IMAGE=0
@@ -225,6 +225,9 @@ function build_target
 	CROSS_COMPILE=''
 
 	echo -n "Processing mainboard/$VENDOR/$MAINBOARD"
+	
+	[ -r "$LBROOT/src/mainboard/${VENDOR}/${MAINBOARD}/abuild.info" ] && \
+		source $LBROOT/src/mainboard/${VENDOR}/${MAINBOARD}/abuild.info
 	
 	if [ "$ARCH" == "$TARCH" ]; then
 		echo " ($TARCH: ok)"

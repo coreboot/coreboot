@@ -78,8 +78,11 @@ unsigned node_link_to_bus(unsigned node, unsigned link)
 
 
 extern unsigned pci1234[];
+extern  unsigned hcdn[];
 extern unsigned hc_possible_num;
 extern unsigned sblk;
+
+unsigned hcdn_reg[4]; // defined in northbridge.c
 
 /* why we need pci1234 array
         final result for pci1234 will be
@@ -176,6 +179,10 @@ void get_sblk_pci1234(void)
                 set the node_id and link_id that could have ht chain in the one array,
                 then check if is enabled.... then update final value 
         */
+        //here we need to set hcdn
+        //1. hypertransport.c need to record hcdn_reg together with 0xe0, 0xe4, 0xe8, 0xec when are set
+        //2. so at the same time we need update hsdn with hcdn_reg here
+
         dev = dev_find_slot(0, PCI_DEVFN(0x18, 1));
         for(j=0;j<4;j++) {
                 uint32_t dwordx;
@@ -183,6 +190,7 @@ void get_sblk_pci1234(void)
                 dwordx &=0xffff0ff1; //keep bus num, node_id, link_num, enable bits
                 if((dwordx & 0xff1) == dword) { //SBLINK
                         pci1234[0] = dwordx;
+			hcdn[0] = hcdn_reg[j];
                         continue;
                 }
                 if((dwordx & 1) == 1) {
@@ -191,6 +199,7 @@ void get_sblk_pci1234(void)
                         for(i=1;i<hc_possible_num;i++) {
                                 if((dwordx & 0xff0) == (pci1234[i] & 0xff0)) {
                                         pci1234[i] = dwordx;
+					hcdn[i] = hcdn_reg[j];
                                         break;
                                 }
                         }
@@ -198,6 +207,7 @@ void get_sblk_pci1234(void)
                         for(i=1;i<hc_possible_num;i++) {
                                 if((dwordx & 0xff0) == (dwordx & pci1234[i] & 0xff0)) {
                                         pci1234[i] = dwordx;
+					hcdn[i] = hcdn_reg[j];
                                         break;
                                 }
                         }
@@ -207,6 +217,7 @@ void get_sblk_pci1234(void)
         for(i=1;i<hc_possible_num;i++) {
                 if((pci1234[i] & 1) != 1) {
                         pci1234[i] = 0;
+			hcdn[i] = 0x20202020;
                 }
         }
 

@@ -57,29 +57,48 @@ if HAVE_ACPI_TABLES
  	object acpi_tables.o
 	object fadt.o
 	if K8_SB_HT_CHAIN_ON_BUS0
-		object dsdt_bus0.o
-	else
-		object dsdt.o
-	end
-	object ssdt.o
-	if ACPI_SSDTX_NUM
-		if K8_SB_HT_CHAIN_ON_BUS0
-		 object ssdt2.o
-		# object ssdt3.o
-		# object ssdt4.o
-                # object ssdt5.o
-                # object ssdt6.o
-                # object ssdt7.o
-                # object ssdt8.o
-		else
-                 object ssdt2_bus0.o
-                # object ssdt3_bus0.o
-                # object ssdt4_bus0.o
-                # object ssdt5_bus0.o
-                # object ssdt6_bus0.o
-                # object ssdt7_bus0.o
-                # object ssdt8_bus0.o
+		makerule dsdt.c
+			depends "$(MAINBOARD)/dx_bus0/dsdt_lb.dsl"
+			action  "/usr/sbin/iasl -tc $(MAINBOARD)/dx_bus0/dsdt_lb.dsl"
+			action  "mv dsdt_lb.hex dsdt.c"
 		end
+		object ./dsdt.o
+	else
+		makerule dsdt.c
+			depends "$(MAINBOARD)/dx/dsdt_lb.dsl"
+			action  "/usr/sbin/iasl -tc $(MAINBOARD)/dx/dsdt_lb.dsl"
+			action  "mv dsdt_lb.hex dsdt.c"
+		end
+		object ./dsdt.o
+	end
+
+	makerule ssdt.c
+		depends "$(MAINBOARD)/ssdt_lb_x.dsl"
+		action  "/usr/sbin/iasl -tc $(MAINBOARD)/ssdt_lb_x.dsl"
+		action  "perl -pi -e 's/AmlCode/AmlCode_ssdt/g' ssdt_lb_x.hex"
+		action  "mv ssdt_lb_x.hex ssdt.c"
+	end
+	object ./ssdt.o
+	
+	if ACPI_SSDTX_NUM
+	    if K8_SB_HT_CHAIN_ON_BUS0
+		makerule ssdt2.c
+			depends "$(MAINBOARD)/dx/pci2.asl"
+			action  "/usr/sbin/iasl -tc $(MAINBOARD)/dx/pci2.asl"
+			action  "perl -pi -e 's/AmlCode/AmlCode_ssdt2/g' pci2.hex"
+			action  "mv pci2.hex ssdt2.c"
+		end
+		object ./ssdt2.o
+	    else
+		makerule ssdt2.c
+			depends "$(MAINBOARD)/dx_bus0/pci2.asl"
+			action  "/usr/sbin/iasl -tc $(MAINBOARD)/dx_bus0/pci2.asl"
+			action  "perl -pi -e 's/AmlCode/AmlCode_ssdt2/g' pci2.hex"
+			action  "mv pci2.hex ssdt2.c"
+	    	end
+
+		object ./ssdt2.o
+	    end
 	end
 end
 

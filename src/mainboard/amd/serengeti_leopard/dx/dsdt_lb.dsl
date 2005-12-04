@@ -51,6 +51,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "AMD-K8", "AMDACPI", 100925440)
 	    External (TOM1)
 	    External (HCLK)
 	    External (SBDN)
+	    External (HCDN)
 
             Name (_HID, EisaId ("PNP0A03"))
             Name (_ADR, 0x00180000)
@@ -71,6 +72,8 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "AMD-K8", "AMDACPI", 100925440)
 	
 	Device (PCI1)
 	{
+
+	    Name (HCIN, 0x00)  // HC1
 	    // BUS 1 first HT Chain
             Name (_HID, EisaId ("PNP0A03"))
             Name (_ADR, 0x00180000)  // Fake 

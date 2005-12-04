@@ -37,19 +37,53 @@ unsigned pci1234[] =
 };
 unsigned hc_possible_num;
 unsigned sbdn;
+unsigned hcdn[] = 
+{ //HT Chain device num, actually it is unit id base of every ht device in chain, assume every chain only have 4 ht device at most
+	0x20202020,
+	0x20202020,
+//        0x20202020,
+//        0x20202020,
+//        0x20202020,
+//        0x20202020,
+//        0x20202020,
+//        0x20202020,
+};
+
 
 static unsigned get_sbdn(void)
 {
         device_t dev;
+#if 0
 #if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
         unsigned sbdn = 1 + HT_CHAIN_END_UNITID_BASE -1;
 #else
         unsigned sbdn = 3 + HT_CHAIN_UNITID_BASE - 1; // 8111 unit id base is 3 if 8131 before it
 #endif
+	
+	sbd3 = 1 + HT_CHAIN_UNITID_BASE - 1;	
+
+#if SB_HT_CHAIN_UNITID_OFFSET_ONLY == 1
+	sbd5 = 1;
+#else
+	sbd5 = 1 + HT_CHAIN_UNITID_BASE - 1;
+#endif
+
         dev = dev_find_device(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_8111_PCI , 0); //FIXME: if 8111 PCI is disabled?
         if(dev)  {
                 sbdn = (dev->path.u.pci.devfn >> 3) & 0x1f;
         }
+
+        dev = dev_find_device(PCI_VENDOR_ID_AMD, 0x7458 , 0); //FIXME: if 8131 PCI is disabled?
+        if(dev)  {
+                sbd3 = (dev->path.u.pci.devfn >> 3) & 0x1f;
+        }
+
+        dev = dev_find_device(PCI_VENDOR_ID_AMD, 0x7454 , 0); //FIXME: if 8151 PCI is disabled?
+        if(dev)  {
+                sbd5 = (dev->path.u.pci.devfn >> 3) & 0x1f;
+        }
+#endif
+	sbdn = (hcdn[0] >> 8) & 0xff; // second byte
 
         return sbdn;
 }
@@ -94,7 +128,7 @@ void get_bus_conf(void)
         }
 
         /* 8132-1 */
-        dev = dev_find_slot(bus_8132_0, PCI_DEVFN(0x01 + HT_CHAIN_UNITID_BASE - 1,0));
+        dev = dev_find_slot(bus_8132_0, PCI_DEVFN((hcdn[0]&0xff),0));
         if (dev) {
                 bus_8132_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 #if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
@@ -108,7 +142,7 @@ void get_bus_conf(void)
         }
 
         /* 8132-2 */
-        dev = dev_find_slot(bus_8132_0, PCI_DEVFN(0x02 + HT_CHAIN_UNITID_BASE - 1,0));
+        dev = dev_find_slot(bus_8132_0, PCI_DEVFN((hcdn[0] & 0xff)+1,0));
         if (dev) {
                 bus_8132_2 = pci_read_config8(dev, PCI_SECONDARY_BUS);
         }
@@ -121,11 +155,7 @@ void get_bus_conf(void)
 //                bus_8151_0 = node_link_to_bus( (pci1234[1]>>4) & 0xf, (pci1234[1]>>8) & 0xf);
 		bus_8151_0 = (pci1234[1] >> 16) & 0xff;
                 /* 8151 */
-#if SB_HT_CHAIN_UNITID_OFFSET_ONLY == 1
-		dev = dev_find_slot(bus_8151_0, PCI_DEVFN(0x02, 0)); // FIXME : still use 1 for one device ? or do that for SB chain?
-#else
-        	dev = dev_find_slot(bus_8151_0, PCI_DEVFN(0x02 + HT_CHAIN_UNITID_BASE - 1,0)); // FIXME : still use 1 for one device ? or do that for SB chain?
-#endif
+		dev = dev_find_slot(bus_8151_0, PCI_DEVFN((hcdn[1] & 0xff)+1, 0));
 
               	if (dev) {
                        	bus_8151_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);

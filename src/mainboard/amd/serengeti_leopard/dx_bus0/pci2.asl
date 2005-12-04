@@ -9,6 +9,7 @@ DefinitionBlock ("SSDT2.aml", "SSDT", 1, "AMD-K8", "AMDACPI", 100925440)
 	External (GHCE, MethodObj)
 	External (GHCN, MethodObj)
 	External (GHCL, MethodObj)
+	External (GHCD, MethodObj)
 	External (GNUS, MethodObj)
 	External (GIOR, MethodObj)
 	External (GMEM, MethodObj)
@@ -21,7 +22,6 @@ DefinitionBlock ("SSDT2.aml", "SSDT", 1, "AMD-K8", "AMDACPI", 100925440)
 	External (\_SB.PCI0.LNKB, DeviceObj)
 	External (\_SB.PCI0.LNKC, DeviceObj)
 	External (\_SB.PCI0.LNKD, DeviceObj)
-	
 
         Device (PCI2)
         {

@@ -51,14 +51,14 @@
         }
 
 
-	Method (GHCE, 1, NotSerialized)
+	Method (GHCE, 1, NotSerialized) // check if the HC enabled
 	{
                 Store (DerefOf (Index (\_SB.PCI0.HCLK, Arg0)), Local1)
                 if(LEqual ( And(Local1, 0x01), 0x01)) { Return (0x0F) }
                 Else { Return (0x00) }
 	}
 
-        Method (GHCN, 1, NotSerialized)
+        Method (GHCN, 1, NotSerialized) // get the node num for the HC
         {
                 Store (0x00, Local0)
                 Store (DerefOf (Index (\_SB.PCI0.HCLK, Arg0)), Local1)
@@ -66,11 +66,21 @@
 		Return (Local0)
         }
 
-        Method (GHCL, 1, NotSerialized)
+        Method (GHCL, 1, NotSerialized) // get the link num on node for the HC
         {
                 Store (0x00, Local0)
                 Store (DerefOf (Index (\_SB.PCI0.HCLK, Arg0)), Local1)
                 Store (ShiftRight( And (Local1, 0xf00), 0x08), Local0)
+                Return (Local0)
+        }
+
+        Method (GHCD, 2, NotSerialized) // get the unit id base for the HT device in HC
+        {
+                Store (0x00, Local0)
+                Store (DerefOf (Index (\_SB.PCI0.HCDN, Arg0)), Local1)
+		Store (Arg1, Local2) // Arg1 could be 3, 2, 1, 0
+		Multiply (Local2, 0x08, Local2) // change to 24, 16, 8, 0
+                Store (And (ShiftRight( Local1, Local2), 0xff), Local0)
                 Return (Local0)
         }
 

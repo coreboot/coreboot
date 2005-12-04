@@ -63,6 +63,9 @@ extern  unsigned char bus_8111_1;
 extern  unsigned char bus_8151_0;
 extern  unsigned char bus_8151_1;
 
+extern  unsigned sbdn;
+extern  unsigned hcdn[];
+
 extern void get_bus_conf(void);
 
 unsigned long write_pirq_routing_table(unsigned long addr)
@@ -75,6 +78,8 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 
         uint8_t sum=0;
         int i;
+
+	get_bus_conf(); // it will find out all bus num and apic that share with mptable.c and mptable.c and acpi_tables.c
 
         /* Align the table to be 16 byte aligned. */
         addr += 15;
@@ -90,11 +95,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	pirq->version  = PIRQ_VERSION;
 	
 	pirq->rtr_bus = bus_8111_0;
-#if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
-	pirq->rtr_devfn = ((2+HT_CHAIN_END_UNITID_BASE-1)<<3)|0;
-#else
-	pirq->rtr_devfn = ((4+HT_CHAIN_UNITID_BASE-1)<<3)|0;
-#endif
+	pirq->rtr_devfn = ((sbdn+1)<<3)|0;
 
 	pirq->exclusive_irqs = 0;
 	
@@ -105,26 +106,17 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 
 	memset(pirq->rfu, 0, sizeof(pirq->rfu));
 	
-	get_bus_conf(); // it will find out all bus num and apic that share with mptable.c and mptable.c and acpi_tables.c
-
 	pirq_info = (void *) ( &pirq->checksum + 1);
 	slot_num = 0;
 //pci bridge
-#if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
-	write_pirq_info(pirq_info, bus_8111_0, ((2+HT_CHAIN_END_UNITID_BASE-1)<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
-#else
-	write_pirq_info(pirq_info, bus_8111_0, ((4+HT_CHAIN_UNITID_BASE-1)<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
-#endif
+	write_pirq_info(pirq_info, bus_8111_0, ((sbdn+1)<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
 	pirq_info++; slot_num++;
 //pcix bridge
-//        write_pirq_info(pirq_info, bus_8132_0, (1<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
+//        write_pirq_info(pirq_info, bus_8132_0, (sbd3<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
 //        pirq_info++; slot_num++;
 //agp bridge
-#if SB_HT_CHAIN_UNITID_OFFSET_ONLY == 1
-        write_pirq_info(pirq_info, bus_8151_0, (1<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0); // FIXE: Only do that on SB chain?
-#else
-	write_pirq_info(pirq_info, bus_8151_0, ((1+HT_CHAIN_UNITID_BASE-1)<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0); // FIXE: Only do that on SB chain
-#endif
+        write_pirq_info(pirq_info, bus_8151_0, ((hcdn[1] & 0xff)<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0); 
+
         pirq_info++; slot_num++;
              
 	pirq->size = 32 + 16 * slot_num; 

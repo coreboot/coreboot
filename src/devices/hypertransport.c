@@ -336,7 +336,7 @@ static void ht_collapse_early_enumeration(struct bus *bus, unsigned offset_uniti
 }
 
 unsigned int hypertransport_scan_chain(struct bus *bus, 
-	unsigned min_devfn, unsigned max_devfn, unsigned int max, unsigned offset_unitid)
+	unsigned min_devfn, unsigned max_devfn, unsigned int max, unsigned *ht_unitid_base, unsigned offset_unitid)
 {
 	//even HT_CHAIN_UNITID_BASE == 0, we still can go through this function, because of end_of_chain check, also We need it to optimize link
 	unsigned next_unitid, last_unitid;
@@ -344,13 +344,13 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 	unsigned min_unitid = (offset_unitid) ? HT_CHAIN_UNITID_BASE:1;
 	struct ht_link prev;
 	device_t last_func = 0;
+	int ht_dev_num = 0;
 
 #if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
         //let't record the device of last ht device, So we can set the Unitid to HT_CHAIN_END_UNITID_BASE
         unsigned real_last_unitid; 
         uint8_t real_last_pos;
 	device_t real_last_dev;
-	int ht_dev_num = 0;
 #endif
 
 	/* Restore the hypertransport chain to it's unitialized state */
@@ -454,12 +454,13 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 		}
 
 		/* Update the Unitid of the next device */
+		ht_unitid_base[ht_dev_num] = next_unitid;
+		ht_dev_num++;
 #if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
 		if(offset_unitid) {
 	                real_last_unitid = next_unitid;
         	        real_last_pos = pos;
 			real_last_dev = dev;
-			ht_dev_num++;
 		}
 #endif
 		next_unitid += count;
@@ -503,7 +504,9 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
                         func->path.u.pci.devfn -= ((real_last_unitid - HT_CHAIN_END_UNITID_BASE) << 3);
 			last_func = func;
                 }
-
+		
+		ht_unitid_base[ht_dev_num-1] = HT_CHAIN_END_UNITID_BASE; // update last one
+		
                 next_unitid = real_last_unitid;
         }
 #endif

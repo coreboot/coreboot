@@ -1,7 +1,11 @@
 // AMD8151 
             Device (AGPB)
             {
-                Name (_ADR, 0x00020000)
+                Method (_ADR, 0, NotSerialized)
+                {
+                        Return (DADD(GHCD(HCIN, 0), 0x00010000))
+                }
+
                 Name (APIC, Package (0x04)
                 {
                     Package (0x04) { 0x0000FFFF, 0x00, 0x00, 0x10 }, 

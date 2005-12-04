@@ -97,6 +97,8 @@ static unsigned int amdk8_nodeid(device_t dev)
 	return (dev->path.u.pci.devfn >> 3) - 0x18;
 }
 
+unsigned hcdn_reg[4]; // it will be used by get_sblk_pci1234
+
 static unsigned int amdk8_scan_chain(device_t dev, unsigned nodeid, unsigned link, unsigned sblink, unsigned int max, unsigned offset_unitid)
 {
 #if 0
@@ -107,8 +109,11 @@ static unsigned int amdk8_scan_chain(device_t dev, unsigned nodeid, unsigned lin
 
 	 
 		uint32_t link_type;
+		int i;
 		uint32_t busses, config_busses;
 		unsigned free_reg, config_reg;
+		unsigned ht_unitid_base[4]; // here assume only 4 HT device on chain
+
 		dev->link[link].cap = 0x80 + (link *0x20);
 		do {
 			link_type = pci_read_config32(dev, dev->link[link].cap + 0x18);
@@ -195,7 +200,10 @@ static unsigned int amdk8_scan_chain(device_t dev, unsigned nodeid, unsigned lin
 		/* Now we can scan all of the subordinate busses i.e. the
 		 * chain on the hypertranport link 
 		 */
-		max = hypertransport_scan_chain(&dev->link[link], 0, 0xbf, max, offset_unitid);
+		for(i=0;i<4;i++) {
+			ht_unitid_base[i] = 0x20;
+		}
+		max = hypertransport_scan_chain(&dev->link[link], 0, 0xbf, max, ht_unitid_base, offset_unitid);
 
 #if 0
 		printk_debug("%s Hyper transport scan link: %d new max: %d\n",
@@ -213,6 +221,19 @@ static unsigned int amdk8_scan_chain(device_t dev, unsigned nodeid, unsigned lin
 		config_busses = (config_busses & 0x00ffffff) |
 			(dev->link[link].subordinate << 24);
 		f1_write_config32(config_reg, config_busses);
+
+		{
+			// config config_reg, and ht_unitid_base to update hcdn_reg;
+			int index;
+			unsigned temp = 0;
+			index = (config_reg-0xe0) >> 2;
+			for(i=0;i<4;i++) {
+				temp |= (ht_unitid_base[i] & 0xff) << (i*8);
+			}
+
+			hcdn_reg[index] = temp;
+
+		}
 
 #if 0
 		printk_debug("%s Hypertransport scan link: %d done\n",

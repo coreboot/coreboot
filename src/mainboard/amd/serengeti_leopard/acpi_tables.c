@@ -1,7 +1,11 @@
 /*
+ * Island Aruma ACPI support
+ * written by Stefan Reinauer <stepan@openbios.org>
+ *  (C) 2005 Stefan Reinauer
+ *
  *
  *  Copyright 2005 AMD
- *  2005.9 yhlu make it more dynamic for AMD Opteron Based MB
+ *  2005.9 yhlu modify that to more dynamic for AMD Opteron Based MB
  */
 
 #include <console/console.h>
@@ -12,7 +16,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 
-#define DUMP_ACPI_TABLES 0
+#define DUMP_ACPI_TABLES 1
 
 #if DUMP_ACPI_TABLES == 1
 static void dump_mem(unsigned start, unsigned end)
@@ -62,6 +66,7 @@ extern  unsigned pci1234[];
 extern  unsigned hc_possible_num;
 extern  unsigned sblk;
 extern  unsigned sbdn;
+extern  unsigned hcdn[];
 
 unsigned long acpi_fill_madt(unsigned long current)
 {
@@ -78,7 +83,7 @@ unsigned long acpi_fill_madt(unsigned long current)
         {
                 device_t dev;
                 struct resource *res;
-                dev = dev_find_slot(bus_8132_0, PCI_DEVFN(0x1 + HT_CHAIN_UNITID_BASE - 1, 1));
+                dev = dev_find_slot(bus_8132_0, PCI_DEVFN((hcdn[0]&0xff), 1));
                 if (dev) {
                         res = find_resource(dev, PCI_BASE_ADDRESS_0);
                         if (res) {
@@ -88,7 +93,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 
                         }
                 }
-                dev = dev_find_slot(bus_8132_0, PCI_DEVFN(0x2 + HT_CHAIN_UNITID_BASE - 1, 1));
+                dev = dev_find_slot(bus_8132_0, PCI_DEVFN((hcdn[0] & 0xff)+1, 1));
                 if (dev) {
                         res = find_resource(dev, PCI_BASE_ADDRESS_0);
                         if (res) {
@@ -133,8 +138,10 @@ static void update_ssdt(void *ssdt)
 	uint8_t *PCIO;
 	uint8_t *SBLK;
 	uint8_t *TOM1;
-	uint8_t *HCLK;
 	uint8_t *SBDN;
+	uint8_t *HCLK;
+	uint8_t *HCDN;
+
 	int i;
 	device_t dev;
 	uint32_t dword;
@@ -145,8 +152,10 @@ static void update_ssdt(void *ssdt)
 	PCIO = ssdt+0xaf; //+5 will be next PCIO
 	SBLK = ssdt+0xdc; // one byte
 	TOM1 = ssdt+0xe3; //
-	HCLK = ssdt+0xfa; //+5 will be next HCLK
 	SBDN = ssdt+0xed;//
+	HCLK = ssdt+0xfa; //+5 will be next HCLK
+	HCDN = ssdt+0x12a; //+5 will be next HCDN
+	
 
         dev = dev_find_slot(0, PCI_DEVFN(0x18, 1));
 
@@ -165,8 +174,6 @@ static void update_ssdt(void *ssdt)
                 int_to_stream(dword, PCIO+i*5);
         }
 	
-	get_bus_conf(); //it will get sblk, pci1234, and sbdn
-	
 	*SBLK = (uint8_t)(sblk);
 
 	msr = rdmsr(TOP_MEM);
@@ -174,9 +181,11 @@ static void update_ssdt(void *ssdt)
 
 	for(i=0;i<hc_possible_num;i++) {
 		int_to_stream(pci1234[i], HCLK + i*5);
+		int_to_stream(hcdn[i],    HCDN + i*5);
 	}
 	for(i=hc_possible_num; i<HC_POSSIBLE_NUM; i++) { // in case we set array size to other than 8
 		int_to_stream(0x00000000, HCLK + i*5);
+		int_to_stream(0x20202020, HCDN + i*5);
 	}
 
 	int_to_stream(sbdn, SBDN);
@@ -201,6 +210,8 @@ unsigned long write_acpi_tables(unsigned long start)
 	unsigned char *AmlCode_ssdtx[HC_POSSIBLE_NUM];
 
 	int i;
+
+	get_bus_conf(); //it will get sblk, pci1234, hcdn, and sbdn
 
 	/* Align ACPI tables to 16byte */
 	start   = ( start + 0x0f ) & -0x10;

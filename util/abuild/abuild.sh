@@ -179,9 +179,10 @@ function compile_target
 	cd $TARGET/${VENDOR}_${MAINBOARD}
 	stime=`date +%s`
 	eval $MAKE &> make.log
+	ret=$?
 	etime=`date +%s`
 	duration=$(( $etime - $stime ))
-	if [ $? -eq 0 ]; then
+	if [ $ret -eq 0 ]; then
 		echo "ok" > compile.status
 		echo "ok. (took ${duration}s)"
 		cd $CURR

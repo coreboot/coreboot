@@ -6,6 +6,7 @@ uses HAVE_HARD_RESET
 uses HAVE_OPTION_TABLE
 uses USE_OPTION_TABLE
 uses CONFIG_ROM_STREAM
+uses CONFIG_UDELAY_IO
 uses IRQ_SLOT_COUNT
 uses MAINBOARD
 uses MAINBOARD_VENDOR
@@ -57,6 +58,11 @@ default HAVE_MP_TABLE=0
 ## Build code to reset the motherboard from linuxBIOS
 ##
 default HAVE_HARD_RESET=1
+
+##
+## use io based udelay function
+##
+default CONFIG_UDELAY_IO=1
 
 ##
 ## Build code to export a programmable irq routing table

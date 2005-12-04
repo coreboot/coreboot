@@ -10,6 +10,7 @@ uses HAVE_PIRQ_TABLE
 uses USE_FALLBACK_IMAGE
 uses HAVE_FALLBACK_BOOT
 uses HAVE_HARD_RESET
+uses CONFIG_UDELAY_IO
 uses HAVE_OPTION_TABLE
 uses USE_OPTION_TABLE
 uses CONFIG_ROM_STREAM
@@ -80,6 +81,11 @@ default HAVE_MP_TABLE=0
 ## Build code to reset the motherboard from linuxBIOS
 ##
 default HAVE_HARD_RESET=1
+
+##
+## use io based udelay function
+##
+default CONFIG_UDELAY_IO=1
 
 ##
 ## Build code to export a programmable irq routing table

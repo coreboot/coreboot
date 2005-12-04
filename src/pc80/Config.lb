@@ -1,10 +1,15 @@
 uses CONFIG_IDE
 uses CONFIG_CONSOLE_VGA
+uses CONFIG_UDELAY_IO
 
 object mc146818rtc.o
 object isa-dma.o
 object i8259.o 
 #object udelay_timer2.o CONFIG_UDELAY_TIMER2
+
+if CONFIG_UDELAY_IO
+	object udelay_io.o
+end
 
 if CONFIG_IDE
 	dir ide

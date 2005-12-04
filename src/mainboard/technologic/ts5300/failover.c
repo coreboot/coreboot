@@ -5,25 +5,28 @@
 #include <arch/io.h>
 #include "arch/romcc_io.h"
 #include "pc80/mc146818rtc_early.c"
-#include "cpu/p6/boot_cpu.c"
 
-static void main(void)
+static unsigned long main(unsigned long bist)
 {
-  /* for now, just always assume failure */
-
-#if 0
-	/* Is this a cpu reset? */
-	if (cpu_init_detected()) {
-		if (last_boot_normal()) {
-			asm("jmp __normal_image");
-		} else {
-			asm("jmp __cpu_reset");
-		}
-	}
-
 	/* This is the primary cpu how should I boot? */
-	else if (do_normal_boot()) {
-		asm("jmp __normal_image");
+	if (do_normal_boot()) {
+		goto normal_image;
 	}
-#endif
+	else {
+		goto fallback_image;
+	}
+ normal_image:
+	asm volatile ("jmp __normal_image" 
+		: /* outputs */ 
+		: "a" (bist) /* inputs */
+		: /* clobbers */
+		);
+ cpu_reset:
+	asm volatile ("jmp __cpu_reset"
+		: /* outputs */ 
+		: "a"(bist) /* inputs */
+		: /* clobbers */
+		);
+ fallback_image:
+	return bist;
 }

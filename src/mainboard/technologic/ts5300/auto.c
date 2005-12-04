@@ -30,6 +30,8 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
 {
 }
 
+
+
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
         /* nothing to do */
@@ -59,6 +61,102 @@ static inline void dumpmem(void){
   }
 }
 
+
+static inline void irqinit(void){
+	volatile unsigned char *cp;
+#if 0
+/* these values taken from the msm board itself.
+ * and they cause the board to not even come out of calibrating_delay_loop
+ * if you can believe it. Our problem right now is no IDE or serial interrupts
+ * So we'll try to put interrupts in, one at a time. IDE first. 
+ */
+	cp = (volatile unsigned char *) 0xfffefd00;
+	*cp =  0x11;
+	cp = (volatile unsigned char *) 0xfffefd02;
+	*cp =  0x02;
+	cp = (volatile unsigned char *) 0xfffefd03;
+	*cp =  0x00;
+	cp = (volatile unsigned char *) 0xfffefd04;
+	*cp =  0xf7;
+	cp = (volatile unsigned char *) 0xfffefd08;
+	*cp =  0xf7;
+	cp = (volatile unsigned char *) 0xfffefd0a;
+	*cp =  0x8b;
+	cp = (volatile unsigned char *) 0xfffefd10;
+	*cp =  0x18;
+	cp = (volatile unsigned char *) 0xfffefd14;
+	*cp =  0x09;
+	cp = (volatile unsigned char *) 0xfffefd18;
+	*cp =  0x88;
+	cp = (volatile unsigned char *) 0xfffefd1a;
+	*cp =  0x00;
+	cp = (volatile unsigned char *) 0xfffefd1b;
+	*cp =  0x00;
+	cp = (volatile unsigned char *) 0xfffefd1c;
+	*cp =  0x00;
+	cp = (volatile unsigned char *) 0xfffefd20;
+	*cp =  0x00;
+	cp = (volatile unsigned char *) 0xfffefd21;
+	*cp =  0x00;
+	cp = (volatile unsigned char *) 0xfffefd22;
+	*cp =  0x00;
+	cp = (volatile unsigned char *) 0xfffefd28;
+	*cp =  0x00;
+	cp = (volatile unsigned char *) 0xfffefd29;
+	*cp =  0x00;
+	cp = (volatile unsigned char *) 0xfffefd30;
+	*cp =  0x00;
+	cp = (volatile unsigned char *) 0xfffefd31;
+	*cp =  0x00;
+	cp = (volatile unsigned char *) 0xfffefd32;
+	*cp =  0x00;
+	cp = (volatile unsigned char *) 0xfffefd33;
+	*cp =  0x00;
+	cp = (volatile unsigned char *) 0xfffefd40;
+	*cp =  0x10;
+	cp = (volatile unsigned char *) 0xfffefd41;
+	*cp =  0x00;
+	cp = (volatile unsigned char *) 0xfffefd42;
+	*cp =  0x00;
+	cp = (volatile unsigned char *) 0xfffefd43;
+	*cp =  0x00;
+	cp = (volatile unsigned char *) 0xfffefd44;
+	*cp =  0x00;
+	cp = (volatile unsigned char *) 0xfffefd45;
+	*cp =  0x00;
+	cp = (volatile unsigned char *) 0xfffefd46;
+	*cp =  0x00;
+	cp = (volatile unsigned char *) 0xfffefd50;
+	*cp =  0x37;
+	cp = (volatile unsigned char *) 0xfffefd51;
+	*cp =  0x00;
+	cp = (volatile unsigned char *) 0xfffefd52;
+	*cp =  0x00;
+	cp = (volatile unsigned char *) 0xfffefd53;
+	*cp =  0x00;
+	cp = (volatile unsigned char *) 0xfffefd54;
+	*cp =  0x37;
+	cp = (volatile unsigned char *) 0xfffefd55;
+	*cp =  0x00;
+	cp = (volatile unsigned char *) 0xfffefd56;
+	*cp =  0x37;
+	cp = (volatile unsigned char *) 0xfffefd57;
+	*cp =  0x00;
+	cp = (volatile unsigned char *) 0xfffefd58;
+	*cp =  0xff;
+	cp = (volatile unsigned char *) 0xfffefd59;
+	*cp =  0xff;
+	cp = (volatile unsigned char *) 0xfffefd5a;
+	*cp =  0xff;
+#endif
+#if 0
+	/* this fails too */
+	/* IDE only ... */
+	cp = (volatile unsigned char *) 0xfffefd56;
+	*cp =  0xe;
+#endif
+}
+
 static void main(unsigned long bist)
 {
     volatile int i;
@@ -67,6 +165,7 @@ static void main(unsigned long bist)
 
 
         setupsc520();
+	irqinit();
         uart_init();
         console_init();
 		for(i = 0; i < 100; i++)
@@ -117,11 +216,11 @@ static void main(unsigned long bist)
 	// Check 32MB of memory @ 0
 	ram_check(0x00000000, 0x02000000);
 #endif
-#if 0
+#if 1
 	{
-	  volatile unsigned char *src = (unsigned char *) 0x2000000 + 0x70000;
+	  volatile unsigned char *src = (unsigned char *) 0x2000000 + 0x60000;
 	  volatile unsigned char *dst = (unsigned char *) 0x4000; 
-	  for(i = 0; i < 0x10000; i++) {
+	  for(i = 0; i < 0x20000; i++) {
 	    /*
 	      print_err("Set dst "); print_err_hex32((unsigned long) dst); 
 	      print_err(" to "); print_err_hex32(*src); print_err("\r\n");

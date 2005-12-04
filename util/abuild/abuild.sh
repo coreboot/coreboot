@@ -177,14 +177,17 @@ function compile_target
 	echo -n "  Compiling image .."
 	CURR=$( pwd )
 	cd $TARGET/${VENDOR}_${MAINBOARD}
+	stime=`date +%s`
 	eval $MAKE &> make.log
+	etime=`date +%s`
+	duration=$(( $etime - $stime ))
 	if [ $? -eq 0 ]; then
 		echo "ok" > compile.status
-		echo "ok."
+		echo "ok. (took ${duration}s)"
 		cd $CURR
 		return 0
 	else
-		echo "FAILED! Log excerpt:"
+		echo "FAILED after ${duration}s! Log excerpt:"
 		tail -n $CONTEXT make.log
 		cd $CURR
 		return 1

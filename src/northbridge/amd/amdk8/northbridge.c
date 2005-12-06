@@ -113,6 +113,8 @@ static unsigned int amdk8_scan_chain(device_t dev, unsigned nodeid, unsigned lin
 		uint32_t busses, config_busses;
 		unsigned free_reg, config_reg;
 		unsigned ht_unitid_base[4]; // here assume only 4 HT device on chain
+                unsigned max_bus;
+                unsigned min_bus;
 
 		dev->link[link].cap = 0x80 + (link *0x20);
 		do {
@@ -158,15 +160,40 @@ static unsigned int amdk8_scan_chain(device_t dev, unsigned nodeid, unsigned lin
 		 * We have no idea how many busses are behind this bridge yet,
 		 * so we set the subordinate bus number to 0xff for the moment.
 		 */
-#if K8_SB_HT_CHAIN_ON_BUS0 == 1
-		if((nodeid == 0) && (sblink==link)) { // actually max is 0 here
-			dev->link[link].secondary = max;
-		}
-		else 
+#if K8_SB_HT_CHAIN_ON_BUS0 > 0
+	# if K8_SB_HT_CHAIN_ON_BUS0 > 1
+                // first chain will on bus 0, second chain will be on 0x40, third 0x80, forth 0xc0
+		if(max == 0) {
+                        min_bus = 0;
+                        max_bus = 0x3f;
+                } else if (max<0x40) {
+                        min_bus = 0x40;
+                        max_bus = 0x7f;
+                } else if (max<0x80) {
+                        min_bus = 0x80;
+                        max_bus = 0xbf;
+                } else {
+                        min_bus = 0xc0;
+                        max_bus = 0xff;
+                }
+                max = min_bus;
+        #else
+                // only sb ht chain will on bus 0, other ...
+                if((nodeid == 0) && (sblink==link)) { // actually max is 0 here
+                        min_bus = max;
+                }
+                else  {
+                        min_bus = ++max;
+                }
+                max_bus = 0xff;
+        #endif
+#else
+                min_bus = ++max;
+                max_bus = 0xff;
 #endif
-			dev->link[link].secondary = ++max;
-		
-		dev->link[link].subordinate = 0xff;
+
+                dev->link[link].secondary = min_bus;
+                dev->link[link].subordinate = max_bus;
 
 		/* Read the existing primary/secondary/subordinate bus
 		 * number configuration.

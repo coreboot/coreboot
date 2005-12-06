@@ -3,44 +3,25 @@
 #include <device/pci.h>
 #include <string.h>
 #include <stdint.h>
-#if CONFIG_LOGICAL_CPUS==1
-#include <cpu/amd/dualcore.h>
-#endif
 
+extern  unsigned char bus_isa;
+extern  unsigned char bus_ck804_0; //1
+extern  unsigned char bus_ck804_1; //2
+extern  unsigned char bus_ck804_2; //3
+extern  unsigned char bus_ck804_3; //4
+extern  unsigned char bus_ck804_4; //5
+extern  unsigned char bus_ck804_5; //6
+extern  unsigned char bus_8131_0;//7
+extern  unsigned char bus_8131_1;//8
+extern  unsigned char bus_8131_2;//9
+extern  unsigned apicid_ck804;
+extern  unsigned apicid_8131_1;
+extern  unsigned apicid_8131_2;
 
-static unsigned node_link_to_bus(unsigned node, unsigned link)
-{
-        device_t dev;
-        unsigned reg;
+extern  unsigned sbdn;
+extern  unsigned hcdn[];
+extern  unsigned sbdn3;
 
-        dev = dev_find_slot(0, PCI_DEVFN(0x18, 1));
-        if (!dev) {
-                return 0;
-        }
-        for(reg = 0xE0; reg < 0xF0; reg += 0x04) {
-                uint32_t config_map;
-                unsigned dst_node;
-                unsigned dst_link;
-                unsigned bus_base;
-                config_map = pci_read_config32(dev, reg);
-                if ((config_map & 3) != 3) {
-                        continue;
-                }
-                dst_node = (config_map >> 4) & 7;
-                dst_link = (config_map >> 8) & 3;
-                bus_base = (config_map >> 16) & 0xff;
-#if 0                           
-                printk_debug("node.link=bus: %d.%d=%d 0x%2x->0x%08x\n",
-                        dst_node, dst_link, bus_base,
-                        reg, config_map);
-#endif
-                if ((dst_node == node) && (dst_link == link))
-                {
-                        return bus_base;
-                }
-        }
-        return 0;
-}
 
 void *smp_write_config_table(void *v)
 {
@@ -50,20 +31,7 @@ void *smp_write_config_table(void *v)
         struct mp_config_table *mc;
 
         unsigned char bus_num;
-        unsigned char bus_isa;
-	unsigned char bus_ck804_0; //1
-        unsigned char bus_ck804_1; //2
-	unsigned char bus_ck804_2; //3
-	unsigned char bus_ck804_3; //4
-	unsigned char bus_ck804_4; //5
-	unsigned char bus_ck804_5; //6
-        unsigned char bus_8131_0;  //7
-        unsigned char bus_8131_1;  //8
-        unsigned char bus_8131_2;  //9 
-        unsigned apicid_base;
-        unsigned apicid_ck804;
-        unsigned apicid_8131_1;
-        unsigned apicid_8131_2;
+	int i;
 
         mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
         memset(mc, 0, sizeof(*mc));
@@ -84,117 +52,7 @@ void *smp_write_config_table(void *v)
 
         smp_write_processors(mc);
 
-       {
-                device_t dev;
-
-                bus_ck804_0 = node_link_to_bus(0, 0);
-                if (bus_ck804_0 == 0) {
-                        printk_debug("ERROR - cound not find bus for node 0 chain 0, using defaults\n");
-                        bus_ck804_0 = 1;
-                }
-
-                /* CK804 */
-                dev = dev_find_slot(bus_ck804_0, PCI_DEVFN(CK804_DEVN_BASE + 0x09,0));
-                if (dev) {
-                        bus_ck804_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-#if 0
-                        bus_ck804_2 = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-                        bus_ck804_2++;
-#else 
-                        bus_ck804_4 = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-                        bus_ck804_4++;
-#endif
-                }
-                else {
-                        printk_debug("ERROR - could not find PCI 1:%02x.0, using defaults\n", CK804_DEVN_BASE + 0x09);
-
-                        bus_ck804_1 = 2;
-#if 0
-                        bus_ck804_2 = 3;
-#else
-                        bus_ck804_4 = 3;
-#endif
-
-                }
-#if 0
-                dev = dev_find_slot(bus_ck804_0, PCI_DEVFN(CK804_DEVN_BASE + 0x0b,0));
-                if (dev) {
-                        bus_ck804_2 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-                        bus_ck804_3 = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-                        bus_ck804_3++;
-                }
-                else {
-                        printk_debug("ERROR - could not find PCI 1:%02x.0, using defaults\n", CK804_DEVN_BASE + 0x0b);
-
-                        bus_ck804_3 = bus_ck804_2+1;
-                }
-
-                dev = dev_find_slot(bus_ck804_0, PCI_DEVFN(CK804_DEVN_BASE + 0x0c,0));
-                if (dev) {
-                        bus_ck804_3 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-                        bus_ck804_4 = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-                        bus_ck804_4++;
-                }
-                else {
-                        printk_debug("ERROR - could not find PCI 1:%02x.0, using defaults\n", CK804_DEVN_BASE + 0x0c);
-
-                        bus_ck804_4 = bus_ck804_3+1;
-                }
-#endif
-                dev = dev_find_slot(bus_ck804_0, PCI_DEVFN(CK804_DEVN_BASE + 0x0d,0));
-                if (dev) {
-                        bus_ck804_4 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-                        bus_ck804_5 = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-                        bus_ck804_5++;
-                }
-                else {
-                        printk_debug("ERROR - could not find PCI 1:%02x.0, using defaults\n",CK804_DEVN_BASE + 0x0d);
-
-                        bus_ck804_5 = bus_ck804_4+1;
-                }
-
-                dev = dev_find_slot(bus_ck804_0, PCI_DEVFN(CK804_DEVN_BASE + 0x0e,0));
-                if (dev) {
-                        bus_ck804_5 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-                        bus_8131_0 = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-                        bus_8131_0++;
-                }
-                else {
-                        printk_debug("ERROR - could not find PCI 1:%02x.0, using defaults\n",CK804_DEVN_BASE + 0x0e);
-
-                        bus_8131_0 = bus_ck804_5+1;
-                }
-
-                /* 8131-1 */
-                dev = dev_find_slot(bus_8131_0, PCI_DEVFN(0x01,0));
-                if (dev) {
-                        bus_8131_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-			bus_8131_2 = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-			bus_8131_2++;
-                }
-                else {
-                        printk_debug("ERROR - could not find PCI %02x:01.0, using defaults\n", bus_8131_0);
-
-                        bus_8131_1 = bus_8131_0+1;
-			bus_8131_2 = bus_8131_0+2;
-                }
-                /* 8131-2 */
-                dev = dev_find_slot(bus_8131_0, PCI_DEVFN(0x02,0));
-                if (dev) {
-                        bus_8131_2 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-			bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-			bus_isa++;
-                }
-                else {
-                        printk_debug("ERROR - could not find PCI %02x:02.0, using defaults\n", bus_8131_0);
-
-                        bus_8131_2 = bus_8131_1+1;
-			bus_isa = bus_8131_1+2;
-                }
-   
-        }
-
-
+	get_bus_conf();
 
 /*Bus:		Bus ID	Type*/
        /* define bus and isa numbers */
@@ -204,33 +62,23 @@ void *smp_write_config_table(void *v)
         smp_write_bus(mc, bus_isa, "ISA   ");
 
 /*I/O APICs:	APIC ID	Version	State		Address*/
-#if CONFIG_LOGICAL_CPUS==1
-	apicid_base = get_apicid_base(3);
-#else
-        apicid_base = CONFIG_MAX_PHYSICAL_CPUS; 
-#endif
-        apicid_ck804 = apicid_base;
-        apicid_8131_1 = apicid_base+1;
-        apicid_8131_2 = apicid_base+2;
-//	smp_write_ioapic(mc, 2, 0x11, 0xfec00000);
         {
                 device_t dev;
 		struct resource *res;
 		uint32_t dword;
 
-                dev = dev_find_slot(bus_ck804_0, PCI_DEVFN(CK804_DEVN_BASE+ 0x1,0));
+                dev = dev_find_slot(bus_ck804_0, PCI_DEVFN(sbdn+ 0x1,0));
                 if (dev) {
 			res = find_resource(dev, PCI_BASE_ADDRESS_1);
 			if (res) {
 				smp_write_ioapic(mc, apicid_ck804, 0x11, res->base);
 			}
         
-	/* Initialize interrupt mapping*/
-
 			dword = 0x0000d218;
 	        	pci_write_config32(dev, 0x7c, dword);
 
 		        dword = 0x12008a00;
+
 		        pci_write_config32(dev, 0x80, dword);
 
 	        	dword = 0x0000007d;
@@ -238,14 +86,14 @@ void *smp_write_config_table(void *v)
 
                 }
 
-                dev = dev_find_slot(bus_8131_0, PCI_DEVFN(0x1,1));
+                dev = dev_find_slot(bus_8131_0, PCI_DEVFN(sbdn3,1));
                 if (dev) {
 			res = find_resource(dev, PCI_BASE_ADDRESS_0);
 			if (res) {
 				smp_write_ioapic(mc, apicid_8131_1, 0x11, res->base);
 			}
                 }
-                dev = dev_find_slot(bus_8131_0, PCI_DEVFN(0x2,1));
+                dev = dev_find_slot(bus_8131_0, PCI_DEVFN(sbdn3+1,1));
                 if (dev) {
 			res = find_resource(dev, PCI_BASE_ADDRESS_0);
 			if (res) {
@@ -269,79 +117,76 @@ void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0xe, apicid_ck804, 0xe);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0xf, apicid_ck804, 0xf);
 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_0, ((CK804_DEVN_BASE+1)<<2)|1, apicid_ck804, 0xa);
+// Onboard ck804 smbus
+        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_0, ((sbdn+1)<<2)|1, apicid_ck804, 0xa);
 // 10
 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_0, ((CK804_DEVN_BASE+2)<<2)|0, apicid_ck804, 0x15); // 21
+// Onboard ck804 USB 1.1
+        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_0, ((sbdn+2)<<2)|0, apicid_ck804, 0x15); // 21
 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_0, ((CK804_DEVN_BASE+2)<<2)|1, apicid_ck804, 0x14); // 20
+// Onboard ck804 USB 2
+        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_0, ((sbdn+2)<<2)|1, apicid_ck804, 0x14); // 20
 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_0, ((CK804_DEVN_BASE +7)<<2)|0, apicid_ck804, 0x17); // 23
+// Onboard ck804 SATA 0
+        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_0, ((sbdn +7)<<2)|0, apicid_ck804, 0x17); // 23
 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_0, ((CK804_DEVN_BASE +8)<<2)|0, apicid_ck804, 0x16); // 22
+// Onboard ck804 SATA 1
+        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_0, ((sbdn +8)<<2)|0, apicid_ck804, 0x16); // 22
 
-#if CK804_DEVN_BASE == 0
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_5, (0x00<<2)|0, apicid_ck804, 0x12); // 18
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_5, (0x00<<2)|1, apicid_ck804, 0x13); // 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_5, (0x00<<2)|2, apicid_ck804, 0x10); // 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_5, (0x00<<2)|3, apicid_ck804, 0x11); // 
-#else
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_5, (0x00<<2)|0, apicid_ck804, 0x11); // 17
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_5, (0x00<<2)|1, apicid_ck804, 0x12); // 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_5, (0x00<<2)|2, apicid_ck804, 0x13); // 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_5, (0x00<<2)|3, apicid_ck804, 0x10); // 
-#endif
+//Slot  PCIE x16
+        for(i=0;i<4;i++) {
+                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_5, (0x00<<2)|i, apicid_ck804, 0x10 + (2+i+4-sbdn%4)%4);
+        }
 
-#if CK804_DEVN_BASE == 0
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_4, (0x00<<2)|0, apicid_ck804, 0x11); // 17
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_4, (0x00<<2)|1, apicid_ck804, 0x12); // 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_4, (0x00<<2)|2, apicid_ck804, 0x13); // 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_4, (0x00<<2)|3, apicid_ck804, 0x10); // 
-#else
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_4, (0x00<<2)|0, apicid_ck804, 0x10); // 16
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_4, (0x00<<2)|1, apicid_ck804, 0x11); // 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_4, (0x00<<2)|2, apicid_ck804, 0x12); // 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_4, (0x00<<2)|3, apicid_ck804, 0x13); // 
-#endif
+//Slot  PCIE x4
+        for(i=0;i<4;i++) {
+                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_4, (0x00<<2)|i, apicid_ck804, 0x10 + (1+i+4-sbdn%4)%4);
+        }
 
 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_1, (0x04<<2)|0, apicid_ck804, 0x10); // 16
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_1, (0x04<<2)|1, apicid_ck804, 0x11); // 17
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_1, (0x04<<2)|2, apicid_ck804, 0x12); // 18
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_1, (0x04<<2)|3, apicid_ck804, 0x13); // 19
+//Slot 2 PCI 32
+        for(i=0;i<4;i++) {
+                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_1, (4<<2)|i, apicid_ck804, 0x10+(0+i)%4); //16
+        }
 
+
+//Onboard ati
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_1, (6<<2)|0, apicid_ck804, 0x12); // 18
-
+//Onboard intel 10/100
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_1, (8<<2)|0, apicid_ck804, 0x12); // 18
 
 //Channel B of 8131
 
 
 //Onboard Broadcom NIC
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_2, (9<<2)|0, apicid_8131_2, 0x0);//24+4= 28
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_2, (9<<2)|1, apicid_8131_2, 0x1);
+        for(i=0;i<2;i++) {
+                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_2, (9<<2)|i, apicid_8131_2, (0+i)%4); //28
+        }
+
 //SO DIMM PCI-X
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_2, (7<<2)|0, apicid_8131_2, 0x0);//28 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_2, (7<<2)|1, apicid_8131_2, 0x1); 
+        for(i=0;i<2;i++) {
+                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_2, (7<<2)|i, apicid_8131_2, (0+i)%4); //28
+        }
+
 //Slot 4 PCIX 133/100/66
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_2, (3<<2)|0, apicid_8131_2, 0x2); // 30
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_2, (3<<2)|1, apicid_8131_2, 0x3);//
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_2, (3<<2)|2, apicid_8131_2, 0x0);// 28
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_2, (3<<2)|3, apicid_8131_2, 0x1);//
+        for(i=0;i<4;i++) {
+                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_2, (3<<2)|i, apicid_8131_2, (2+i)%4); //30
+        }
+
 
 //Channel A of 8131
 
 //Slot 5 PCIX 133/100/66        
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, (3<<2)|0, apicid_8131_1, 0x3); //28 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, (3<<2)|1, apicid_8131_1, 0x0);//24
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, (3<<2)|2, apicid_8131_1, 0x1);//
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, (3<<2)|3, apicid_8131_1, 0x2);//
+        for(i=0;i<4;i++) {
+                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, (3<<2)|i, apicid_8131_1, (3+i)%4); //27
+        }
+
 
 //Slot 6 PCIX 133/100/66 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, (2<<2)|0, apicid_8131_1, 0x2); // 27
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, (2<<2)|1, apicid_8131_1, 0x3);//
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, (2<<2)|2, apicid_8131_1, 0x0);// 24
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, (2<<2)|3, apicid_8131_1, 0x1);//
+        for(i=0;i<4;i++) {
+                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, (2<<2)|i, apicid_8131_1, (2+i)%4); //26
+        }
+
 
 
 /*Local Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#*/

@@ -111,15 +111,6 @@ static void ht_collapse_previous_enumeration(uint8_t bus, unsigned offset_unitid
 		    (id == 0x0000ffff) || (id == 0xffff0000)) {
 			continue;
 		}
-#if 0
-#if CK804_DEVN_BASE==0 
-                //CK804 workaround: 
-                // CK804 UnitID changes not use
-                if(id == 0x005e10de) {
-                        break;
-                }
-#endif
-#endif
 		
 		pos = ht_lookup_slave_capability(dev);
 		if (!pos) {
@@ -478,13 +469,6 @@ static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned of
 			break;
 		}
 
-#if CK804_DEVN_BASE==0 
-                //CK804 workaround: 
-                // CK804 UnitID changes not use
-		id = pci_read_config32(dev, PCI_VENDOR_ID);
-                if(id != 0x005e10de) {
-#endif
-
 		/* Update the Unitid of the current device */
 		flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
 		flags &= ~0x1f; /* mask out the bse Unit ID */
@@ -493,12 +477,6 @@ static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned of
 
 		/* Note the change in device number */
 		dev = PCI_DEV(bus, next_unitid, 0);
-#if CK804_DEVN_BASE==0	
-		} 
-		else {
-			dev = PCI_DEV(bus, 0, 0);
-		}
-#endif
 
                 /* Compute the number of unitids consumed */
                 count = (flags >> 5) & 0x1f;
@@ -534,12 +512,6 @@ static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned of
 		#else
 		reset_needed |= ht_optimize_link(udev, upos, uoffs, dev, pos, offs);
 		#endif
-
-#if CK804_DEVN_BASE==0
-		if(id == 0x005e10de) {
-			break;
-		}
-#endif
 
 		/* Remeber the location of the last device */
 		udev = dev;

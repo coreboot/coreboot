@@ -41,6 +41,9 @@ arch i386 end
 ##
 
 driver mainboard.o
+#needed by irq_tables and mptable and acpi_tables
+object get_bus_conf.o
+
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
 #object reset.o

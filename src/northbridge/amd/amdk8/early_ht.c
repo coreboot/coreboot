@@ -35,14 +35,6 @@ static void enumerate_ht_chain(void)
 			break;
 		}
 
-#if CK804_DEVN_BASE==0 
-                //CK804 workaround: 
-                // CK804 UnitID changes not use
-                if(id == 0x005e10de) {
-                        break;
-                }
-#endif
-
 		hdr_type = pci_read_config8(PCI_DEV(0,0,0), PCI_HEADER_TYPE);
 		pos = 0;
 		hdr_type &= 0x7f;

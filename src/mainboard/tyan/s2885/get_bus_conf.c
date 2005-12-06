@@ -11,16 +11,16 @@
 // Global variables for MB layouts and these will be shared by irqtable mptable and acpi_tables
 //busnum is default
 unsigned char bus_isa = 7 ;
-unsigned char bus_8132_0 = 1;
-unsigned char bus_8132_1 = 2;
-unsigned char bus_8132_2 = 3;
+unsigned char bus_8131_0 = 1;
+unsigned char bus_8131_1 = 2;
+unsigned char bus_8131_2 = 3;
 unsigned char bus_8111_0 = 1;
 unsigned char bus_8111_1 = 4;
 unsigned char bus_8151_0 = 5;
 unsigned char bus_8151_1 = 6;
 unsigned apicid_8111 ;
-unsigned apicid_8132_1;
-unsigned apicid_8132_2;
+unsigned apicid_8131_1;
+unsigned apicid_8131_2;
 
 unsigned sblk;
 unsigned pci1234[] = 
@@ -74,9 +74,8 @@ void get_bus_conf(void)
 	sbdn3 = hcdn[0] & 0xff;
 	sbdn5 = hcdn[1] & 0xff;
 
-//	bus_8132_0 = node_link_to_bus(0, sblk);
-	bus_8132_0 = (pci1234[0] >> 16) & 0xff;
-	bus_8111_0 = bus_8132_0;
+	bus_8131_0 = (pci1234[0] >> 16) & 0xff;
+	bus_8111_0 = bus_8131_0;
 
                 /* 8111 */
         dev = dev_find_slot(bus_8111_0, PCI_DEVFN(sbdn,0));
@@ -92,10 +91,10 @@ void get_bus_conf(void)
                 printk_debug("ERROR - could not find PCI %02x:03.0, using defaults\n", bus_8111_0);
         }
 
-        /* 8132-1 */
-        dev = dev_find_slot(bus_8132_0, PCI_DEVFN(sbdn3,0));
+        /* 8131-1 */
+        dev = dev_find_slot(bus_8131_0, PCI_DEVFN(sbdn3,0));
         if (dev) {
-                bus_8132_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
+                bus_8131_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 #if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
                 bus_isa    = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
                 bus_isa++;
@@ -103,31 +102,30 @@ void get_bus_conf(void)
 #endif
         }
         else {
-                printk_debug("ERROR - could not find PCI %02x:01.0, using defaults\n", bus_8132_0);
+                printk_debug("ERROR - could not find PCI %02x:01.0, using defaults\n", bus_8131_0);
         }
 
         /* 8132-2 */
-        dev = dev_find_slot(bus_8132_0, PCI_DEVFN(sbdn3+1,0));
+        dev = dev_find_slot(bus_8131_0, PCI_DEVFN(sbdn3+1,0));
         if (dev) {
-                bus_8132_2 = pci_read_config8(dev, PCI_SECONDARY_BUS);
+                bus_8131_2 = pci_read_config8(dev, PCI_SECONDARY_BUS);
         }
         else {
-                printk_debug("ERROR - could not find PCI %02x:02.0, using defaults\n", bus_8132_0);
+                printk_debug("ERROR - could not find PCI %02x:02.0, using defaults\n", bus_8131_0);
         }
 
         /* HT chain 1 */
-	if((pci1234[1] & 0x1) == 1) {
-		bus_8151_0 = (pci1234[1] >> 16) & 0xff;
-                /* 8151 */
-		dev = dev_find_slot(bus_8151_0, PCI_DEVFN(sbdn5+1, 0));
+	// it is on node0, so it must be there
+	bus_8151_0 = (pci1234[1] >> 16) & 0xff;
+        /* 8151 */
+	dev = dev_find_slot(bus_8151_0, PCI_DEVFN(sbdn5+1, 0));
 
-              	if (dev) {
-                       	bus_8151_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-//                        printk_debug("bus_8151_1=%d\n",bus_8151_1);
-       	                bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-              	        bus_isa++;
-              	}
-        }
+        if (dev) {
+           	bus_8151_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
+//              printk_debug("bus_8151_1=%d\n",bus_8151_1);
+                bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
+       	        bus_isa++;
+       	}
 
 /*I/O APICs:	APIC ID	Version	State		Address*/
 #if CONFIG_LOGICAL_CPUS==1
@@ -136,6 +134,6 @@ void get_bus_conf(void)
 	apicid_base = CONFIG_MAX_PHYSICAL_CPUS; 
 #endif
 	apicid_8111 = apicid_base+0;
-	apicid_8132_1 = apicid_base+1;
-	apicid_8132_2 = apicid_base+2;
+	apicid_8131_1 = apicid_base+1;
+	apicid_8131_2 = apicid_base+2;
 }

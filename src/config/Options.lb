@@ -814,12 +814,6 @@ define AGP_APERTURE_SIZE
 	comment "AGP graphics virtual memory aperture size"
 end
 
-define CK804_DEVN_BASE
-	default 1
-	export always
-	comment "CK804 device count from 0 or 1"
-end
-
 define HT_CHAIN_UNITID_BASE
 	default 1
 	export always
@@ -841,7 +835,7 @@ end
 define K8_SB_HT_CHAIN_ON_BUS0
         default 0 
         export always
-        comment "this will make SB hypertransport chain sit on bus 0"
+        comment "this will make SB hypertransport chain sit on bus 0, if it is 2 will put other chain on 0x40, 0x80, 0xc0"
 end
 
 define K8_HW_MEM_HOLE_SIZEK

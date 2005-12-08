@@ -161,36 +161,30 @@ static unsigned int amdk8_scan_chain(device_t dev, unsigned nodeid, unsigned lin
 		 * so we set the subordinate bus number to 0xff for the moment.
 		 */
 #if K8_SB_HT_CHAIN_ON_BUS0 > 0
-	# if K8_SB_HT_CHAIN_ON_BUS0 > 1
-                // first chain will on bus 0, second chain will be on 0x40, third 0x80, forth 0xc0
-		if(max == 0) {
-                        min_bus = 0;
-                        max_bus = 0x3f;
-                } else if (max<0x40) {
+                // first chain will on bus 0
+		if((nodeid == 0) && (sblink==link)) { // actually max is 0 here
+                        min_bus = max;
+                } 
+	#if K8_SB_HT_CHAIN_ON_BUS0 > 1
+		// second chain will be on 0x40, third 0x80, forth 0xc0
+		else if (max<0x40) {
                         min_bus = 0x40;
-                        max_bus = 0x7f;
                 } else if (max<0x80) {
                         min_bus = 0x80;
-                        max_bus = 0xbf;
                 } else {
                         min_bus = 0xc0;
-                        max_bus = 0xff;
                 }
                 max = min_bus;
         #else
-                // only sb ht chain will on bus 0, other ...
-                if((nodeid == 0) && (sblink==link)) { // actually max is 0 here
-                        min_bus = max;
-                }
+                //other ...
                 else  {
                         min_bus = ++max;
                 }
-                max_bus = 0xff;
         #endif
 #else
                 min_bus = ++max;
-                max_bus = 0xff;
 #endif
+                max_bus = 0xff;
 
                 dev->link[link].secondary = min_bus;
                 dev->link[link].subordinate = max_bus;
@@ -287,7 +281,7 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 
         if(nodeid==0) {
                 sblink = (pci_read_config32(dev, 0x64)>>8) & 3;
-#if K8_SB_HT_CHAIN_ON_BUS0 == 1
+#if K8_SB_HT_CHAIN_ON_BUS0 > 0
 	#if HT_CHAIN_UNITID_BASE != 1
                 offset_unitid = 1;
         #endif
@@ -296,7 +290,7 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
         }
 
         for(link = 0; link < dev->links; link++) {
-#if K8_SB_HT_CHAIN_ON_BUS0 == 1
+#if K8_SB_HT_CHAIN_ON_BUS0 > 0
 		if( (nodeid == 0) && (sblink == link) ) continue; //already done
 #endif
 		offset_unitid = 0;

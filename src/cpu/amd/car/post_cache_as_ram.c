@@ -48,13 +48,9 @@ static void post_cache_as_ram(unsigned cpu_reset)
         if(cpu_reset==0) { // cpu_reset don't need to clear it 
 		clear_1m_ram();
         }
-
-#if 0
-	int i;
-	for(i=0;i<0x800000;i++) {
-		outb(0x66, 0x80);
+	else {
+		set_1m_ram();
 	}
-#endif
 
         __asm__ volatile (
                 /* set new esp */ /* before _RAMBASE */
@@ -63,7 +59,7 @@ static void post_cache_as_ram(unsigned cpu_reset)
                 ::"a"( (DCACHE_RAM_BASE + DCACHE_RAM_SIZE)- _RAMBASE )
         );
 
-       {
+        {
                 unsigned new_cpu_reset;
 
                 /* get back cpu_reset from ebx */

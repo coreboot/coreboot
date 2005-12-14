@@ -257,6 +257,7 @@ static unsigned init_cpus(unsigned cpu_init_detectedx)
 			lapic_write(LAPIC_MSG_REG, (apicid<<24) | 0x44); // bsp can not check it before stop_this_cpu
 
 			disable_cache_as_ram(); // inline
+			set_1m_ram(); // inline
                         stop_this_cpu(); // inline, it will stop all cores except node0/core0 the bsp .... 
                 }
 

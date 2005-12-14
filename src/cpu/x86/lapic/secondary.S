@@ -3,7 +3,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/lapic_def.h>
 	.text
-	.globl _secondary_start
+	.globl _secondary_start, _secondary_start_end
 	.balign 4096
 _secondary_start:
 	.code16
@@ -48,9 +48,9 @@ _secondary_start:
 1:	hlt
 	jmp	1b
 
-gdtaddr:
-	.word	gdt_limit	/* the table limit */
-	.long	gdt		/* we know the offset */
+	gdtaddr:
+	.word   gdt_limit	/* the table limit */
+	.long   gdt             /* we know the offset */
 
-
+_secondary_start_end:
 .code32

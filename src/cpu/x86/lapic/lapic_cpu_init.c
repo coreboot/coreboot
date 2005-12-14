@@ -1,3 +1,8 @@
+/*
+	2005.12 yhlu add linuxbios_ram cross the vga font buffer handling
+	2005.12 yhlu add _RAMBASE above 1M support for SMP
+*/
+
 #include <cpu/x86/lapic.h>
 #include <delay.h>
 #include <string.h>
@@ -9,7 +14,6 @@
 #include <smp/spinlock.h>
 #include <cpu/cpu.h>
 
-
 #if CONFIG_SMP == 1
 
 /* This is a lot more paranoid now, since Linux can NOT handle
@@ -19,6 +23,32 @@
  * We actually handling that case by noting which cpus startup
  * and not telling anyone about the ones that dont.
  */ 
+static unsigned long get_valid_start_eip(unsigned long orig_start_eip)
+{
+	return (unsigned long)orig_start_eip & 0xfffff; // 20 bit 
+}
+
+static void copy_secondary_start_to_1m_below(void) 
+{
+#if _RAMBASE > 0x100000
+        extern char _secondary_start[];
+        extern char _secondary_start_end[];
+        unsigned long code_size;
+        unsigned long start_eip;
+
+        /* _secondary_start need to be masked 20 above bit, because 16 bit code in secondary.S
+                Also We need to copy the _secondary_start to the below 1M region
+        */
+        start_eip = get_valid_start_eip((unsigned long)_secondary_start);
+        code_size = (unsigned long)_secondary_start_end - (unsigned long)_secondary_start;
+
+        /* copy the _secondary_start to the ram below 1M*/
+        memcpy(start_eip, (unsigned long)_secondary_start, code_size);
+
+        printk_debug("start_eip=0x%08lx, offset=0x%08lx, code_size=0x%08lx\n", start_eip, ((unsigned long)_secondary_start - start_eip), code_size);
+#endif
+}
+
 static int lapic_start_cpu(unsigned long apicid)
 {
 	int timeout;
@@ -87,8 +117,8 @@ static int lapic_start_cpu(unsigned long apicid)
 		return 0;
 	}
 
-	start_eip = (unsigned long)_secondary_start;
-	printk_spew("start_eip=0x%08lx\n", start_eip);
+	start_eip = get_valid_start_eip((unsigned long)_secondary_start);
+	printk_debug("start_eip=0x%08lx\n", start_eip);
        
 	num_starts = 2;
 
@@ -193,7 +223,25 @@ int start_cpu(device_t cpu)
 	index = ++last_cpu_index;
 	
 	/* Find end of the new processors stack */
+#if (CONFIG_LB_MEM_TOPK>1024) && (_RAMBASE < 0x100000) && ((CONFIG_CONSOLE_VGA==1) || (CONFIG_PCI_ROM_RUN == 1))
+	if(index<1) { // only keep bsp on low 
+		stack_end = ((unsigned long)_estack) - (STACK_SIZE*index) - sizeof(struct cpu_info);
+	} else {
+		// for all APs, let use stack after pgtbl, 20480 is the pgtbl size for every cpu
+		stack_end = 0x100000+(20480 + STACK_SIZE)*CONFIG_MAX_CPUS - (STACK_SIZE*index);
+#if (0x100000+(20480 + STACK_SIZE)*CONFIG_MAX_CPU) > (CONFIG_LB_MEM_TOPK<<10)
+		#warning "We may need to increase CONFIG_LB_MEM_TOPK, it need to be more than (0x100000+(20480 + STACK_SIZE)*CONFIG_MAX_CPU)\n"
+#endif
+		if(stack_end > (CONFIG_LB_MEM_TOPK<<10)) {
+			printk_debug("start_cpu: Please increase the CONFIG_LB_MEM_TOPK more than %dK\n", stack_end>>10);
+			die("Can not go on\n");
+		}
+		stack_end -= sizeof(struct cpu_info);
+	}
+#else
 	stack_end = ((unsigned long)_estack) - (STACK_SIZE*index) - sizeof(struct cpu_info);
+#endif
+
 	
 	/* Record the index and which cpu structure we are using */
 	info = (struct cpu_info *)stack_end;
@@ -251,6 +299,7 @@ static void initialize_other_cpus(struct bus *cpu_bus)
 	int old_active_count, active_count;
 	device_t cpu;
 	/* Loop through the cpus once getting them started */
+
 	for(cpu = cpu_bus->children; cpu ; cpu = cpu->sibling) {
 		if (cpu->path.type != DEVICE_PATH_APIC) {
 			continue;
@@ -327,6 +376,8 @@ void initialize_cpus(struct bus *cpu_bus)
 	
 	/* Find the device structure for the boot cpu */
 	info->cpu = alloc_find_dev(cpu_bus, &cpu_path);
+
+	copy_secondary_start_to_1m_below(); // why here? In case some day we can start core1 in amd_sibling_init
 	
 	/* Initialize the bootstrap processor */
 	cpu_initialize();

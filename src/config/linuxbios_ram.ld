@@ -15,6 +15,7 @@
 /*
  *	Written by Johan Rydberg, based on work by Daniel Kahlin.
  *      Rewritten by Eric Biederman
+ *  2005.12 yhlu add linuxbios_ram cross the vga font buffer handling
  */
 /*
  *	We use ELF as output format. So that we can
@@ -91,21 +92,25 @@ SECTIONS
 	_stack = .;
 	.stack . : {
 		/* Reserve a stack for each possible cpu */
-		. = (CONFIG_MAX_CPUS * STACK_SIZE) ;
+		/* the stack for ap will be put after pgtbl in 1M to CONFIG_LB_MEM_TOPK range when VGA and ROM_RUN and CONFIG_LB_MEM_TOPK>1024*/
+		. = ((CONFIG_CONSOLE_VGA || CONFIG_PCI_ROM_RUN)&&(_RAMBASE<0x100000)&&((CONFIG_LB_MEM_TOPK<<10)>0x100000) ) ? STACK_SIZE : (CONFIG_MAX_CPUS*STACK_SIZE);
 	}
 	_estack = .;
-	_heap = .;
-	.heap . : {
-		/* Reserve 256K for the heap */
-		. = HEAP_SIZE ;
-		. = ALIGN(4);
-	}
-	_eheap = .;
+        _heap = .;
+        .heap . : {
+                /* Reserve 256K for the heap */
+                . = HEAP_SIZE ;
+                . = ALIGN(4);
+        }
+        _eheap = .;
 	/* The ram segment
  	 * This is all address of the memory resident copy of linuxBIOS.
 	 */
-	_ram_seg = _text;
+	_ram_seg = _text; 
 	_eram_seg = _eheap;
+
+        _bogus = ASSERT( !((CONFIG_CONSOLE_VGA || CONFIG_PCI_ROM_RUN) && ((_ram_seg<0xa0000) && (_eram_seg>0xa0000))) , "please increase CONFIG_LB_MEM_TOPK and if still fail, try to set _RAMBASE more than 1M");
+	
 	/DISCARD/ : {
 		*(.comment)
 		*(.note)

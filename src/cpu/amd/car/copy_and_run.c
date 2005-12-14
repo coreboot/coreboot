@@ -129,7 +129,7 @@ static void copy_and_run(unsigned cpu_reset)
 	__asm__ volatile (
 		"cli\n\t"
 		"leal    _iseg, %edi\n\t"
-		"jmp     %edi\n\t"
+		"jmp     *%edi\n\t"
 	);
 
 }

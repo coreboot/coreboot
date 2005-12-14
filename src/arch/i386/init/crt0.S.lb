@@ -163,7 +163,7 @@ decompr_end_n2b:
 
 	CONSOLE_DEBUG_TX_STRING($str_pre_main)
 	leal	_iseg, %edi
-	jmp	%edi
+	jmp	*%edi
 
 .Lhlt:	
 	intel_chip_post_macro(0xee)	/* post fe */

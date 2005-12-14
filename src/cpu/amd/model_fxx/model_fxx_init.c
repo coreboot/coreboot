@@ -175,6 +175,47 @@ static void set_init_ecc_mtrrs(void)
 	enable_cache();
 }
 
+static inline void clear_2M_ram(unsigned long basek, struct mtrr_state *mtrr_state) 
+{
+                unsigned long limitk;
+                unsigned long size;
+                void *addr;
+
+                /* Report every 64M */
+                if ((basek % (64*1024)) == 0) {
+
+                        /* Restore the normal state */
+                        map_2M_page(0);
+                        restore_mtrr_state(mtrr_state);
+                        enable_lapic();
+
+                        /* Print a status message */
+                        printk_debug("%c", (basek >= TOLM_KB)?'+':'-');
+
+                        /* Return to the initialization state */
+                        set_init_ecc_mtrrs();
+                        disable_lapic();
+
+                }
+
+                limitk = (basek + ZERO_CHUNK_KB) & ~(ZERO_CHUNK_KB - 1);
+#if 0
+		/* couldn't happen, memory must on 2M boundary */
+		if(limitk>endk) {
+			limitk = enk; 
+		}
+#endif
+                size = (limitk - basek) << 10;
+                addr = map_2M_page(basek >> 11);
+                if (addr == MAPPING_ERROR) {
+                        printk_err("Cannot map page: %x\n", basek >> 11);
+                        return;
+                }
+
+                /* clear memory 2M (limitk - basek) */
+                addr = (void *)(((uint32_t)addr) | ((basek & 0x7ff) << 10));
+                clear_memory(addr, size);
+}
 
 static void init_ecc_memory(unsigned node_id)
 {
@@ -182,6 +223,7 @@ static void init_ecc_memory(unsigned node_id)
 	unsigned long hole_startk = 0;
 	unsigned long basek;
 	struct mtrr_state mtrr_state;
+
 	device_t f1_dev, f2_dev, f3_dev;
 	int enable_scrubbing;
 	uint32_t dcl;
@@ -239,9 +281,10 @@ static void init_ecc_memory(unsigned node_id)
 
 	/* Don't start too early */
 	begink = startk;
-	if (begink < CONFIG_LB_MEM_TOPK) {
+	if (begink < CONFIG_LB_MEM_TOPK) { 
 		begink = CONFIG_LB_MEM_TOPK;
 	}
+
 	printk_debug("Clearing memory %uK - %uK: ", begink, endk);
 
 	/* Save the normal state */
@@ -252,51 +295,29 @@ static void init_ecc_memory(unsigned node_id)
 	disable_lapic();
 
 	/* Walk through 2M chunks and zero them */
-	for(basek = begink; basek < endk; 
-		basek = ((basek + ZERO_CHUNK_KB) & ~(ZERO_CHUNK_KB - 1))) 
-	{
-		unsigned long limitk;
-		unsigned long size;
-		void *addr;
-
 #if K8_HW_MEM_HOLE_SIZEK != 0
-		if ( hole_startk != 0 ) {
-			if ((basek >= hole_startk) && (basek < 4*1024*1024)) continue;
-		}
+	/* here hole_startk can not be equal to begink, never. Also hole_startk is in 2M boundary, 64M? */
+        if ( (hole_startk != 0) && ((begink < hole_startk) && (endk>(4*1024*1024)))) {
+		        for(basek = begink; basek < hole_startk;
+        		        basek = ((basek + ZERO_CHUNK_KB) & ~(ZERO_CHUNK_KB - 1)))
+		        {
+				clear_2M_ram(basek, &mtrr_state);
+                	}
+			for(basek = 4*1024*1024; basek < endk;
+                                basek = ((basek + ZERO_CHUNK_KB) & ~(ZERO_CHUNK_KB - 1)))
+                        {
+                                clear_2M_ram(basek, &mtrr_state);
+                        }
+        }
+	else 
 #endif
-
-		/* Report every 64M */
-		if ((basek % (64*1024)) == 0) {
-
-			/* Restore the normal state */
-			map_2M_page(0);
-			restore_mtrr_state(&mtrr_state);
-			enable_lapic();
-
-			/* Print a status message */
-			printk_debug("%c", (basek >= TOLM_KB)?'+':'-');
-
-			/* Return to the initialization state */
-			set_init_ecc_mtrrs();
-			disable_lapic();
-
-		}
-
-		limitk = (basek + ZERO_CHUNK_KB) & ~(ZERO_CHUNK_KB - 1);
-		if (limitk > endk) {
-			limitk = endk;
-		}
-		size = (limitk - basek) << 10;
-		addr = map_2M_page(basek >> 11);
-		if (addr == MAPPING_ERROR) {
-			printk_err("Cannot map page: %x\n", basek >> 11);
-			continue;
-		}
-
-		/* clear memory 2M (limitk - basek) */
-		addr = (void *)(((uint32_t)addr) | ((basek & 0x7ff) << 10));
-		clear_memory(addr, size);
+        for(basek = begink; basek < endk;
+                basek = ((basek + ZERO_CHUNK_KB) & ~(ZERO_CHUNK_KB - 1))) 
+	{
+		clear_2M_ram(basek, &mtrr_state);
 	}
+
+
 	/* Restore the normal state */
 	map_2M_page(0);
 	restore_mtrr_state(&mtrr_state);

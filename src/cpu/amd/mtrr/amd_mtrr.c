@@ -149,10 +149,12 @@ void amd_setup_mtrrs(void)
 	msr.lo = state.mmio_basek << 10;
 	wrmsr(TOP_MEM, msr);
 
-	/* Setup TOP_MEM2 */
-	msr.hi = state.tomk >> 22;
-	msr.lo = state.tomk << 10;
-	wrmsr(TOP_MEM2, msr);
+	if(state.tomk>(4*1024*1024)) {
+		/* Setup TOP_MEM2 */
+		msr.hi = state.tomk >> 22;
+		msr.lo = state.tomk << 10;
+		wrmsr(TOP_MEM2, msr);
+	}
 
 	/* zero the IORR's before we enable to prevent
 	 * undefined side effects.

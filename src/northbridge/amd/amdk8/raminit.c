@@ -882,9 +882,11 @@ static void set_top_mem(unsigned tom_k, unsigned hole_startk)
 
 	/* Now set top of memory */
 	msr_t msr;
-	msr.lo = (tom_k & 0x003fffff) << 10;
-	msr.hi = (tom_k & 0xffc00000) >> 22;
-	wrmsr(TOP_MEM2, msr);
+	if(tom_k>(4*1024*1024)) {
+		msr.lo = (tom_k & 0x003fffff) << 10;
+		msr.hi = (tom_k & 0xffc00000) >> 22;
+		wrmsr(TOP_MEM2, msr);
+	}
 
 	/* Leave a 64M hole between TOP_MEM and TOP_MEM2
 	 * so I can see my rom chip and other I/O devices.

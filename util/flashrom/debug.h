@@ -2,6 +2,9 @@
 #define __DEBUG_H__ 1
 
 //#define printf_debug(x...) printf(x)
-#define printf_debug(x...) { }
+
+extern int verbose;
+
+#define printf_debug(x...) { if(verbose) printf(x); }
 
 #endif

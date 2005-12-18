@@ -50,14 +50,18 @@ int show_id(uint8_t *bios, int size)
 		return 0;
 	}
 	
-	printf("LinuxBIOS image size=%d\n", *walk);
+	printf("LinuxBIOS last image size (not rom size) is %d bytes.\n", *walk);
 	
 	walk--; mainboard_part=strdup((const char *)(bios+size-*walk));
 	walk--; mainboard_vendor=strdup((const char *)(bios+size-*walk));
 	printf("MANUFACTURER: %s\n", mainboard_vendor);
 	printf("MAINBOARD ID: %s\n", mainboard_part);
-	if(lb_vendor && !strcmp(mainboard_vendor, lb_vendor) && 
-	   lb_part && !strcmp(mainboard_part, lb_part)) {
+	
+	/* These comparisons are case insensitive to make things
+	 * a little less user^Werror prone. 
+	 */
+	if(lb_vendor && !strcasecmp(mainboard_vendor, lb_vendor) && 
+	   lb_part && !strcasecmp(mainboard_part, lb_part)) {
 		printf ("This firmware image matches "
 		        "this motherboard.\n");
 	} else {

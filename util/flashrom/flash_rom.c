@@ -40,6 +40,9 @@
 
 char *chip_to_probe = NULL;
 
+int exclude_start_page, exclude_end_page;
+int force=0, verbose=0;
+
 struct flashchip *probe_flash(struct flashchip *flash)
 {
 	int fd_mem;
@@ -86,7 +89,7 @@ struct flashchip *probe_flash(struct flashchip *flash)
 	return NULL;
 }
 
-int verify_flash(struct flashchip *flash, uint8_t *buf, int verbose)
+int verify_flash(struct flashchip *flash, uint8_t *buf)
 {
 	int i;
 	int total_size = flash->total_size * 1024;
@@ -132,9 +135,6 @@ void usage(const char *name)
 	exit(1);
 }
 
-int exclude_start_page, exclude_end_page;
-int force=0;
-
 int main(int argc, char *argv[])
 {
 	uint8_t *buf;
@@ -147,7 +147,6 @@ int main(int argc, char *argv[])
 	    write_it = 0, 
 	    erase_it = 0, 
 	    verify_it = 0;
-	int verbose = 0;
 
 	static struct option long_options[]= {
 		{ "read", 0, 0, 'r' },
@@ -340,7 +339,7 @@ int main(int argc, char *argv[])
 		flash->write(flash, buf);
 
 	if (verify_it)
-		verify_flash(flash, buf, verbose);
+		verify_flash(flash, buf);
 
 	return 0;
 }

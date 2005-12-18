@@ -50,28 +50,46 @@ int show_id(uint8_t *bios, int size)
 		return 0;
 	}
 	
-	printf("LinuxBIOS last image size (not rom size) is %d bytes.\n", *walk);
+	printf_debug("LinuxBIOS last image size "
+		     "(not rom size) is %d bytes.\n", *walk);
 	
 	walk--; mainboard_part=strdup((const char *)(bios+size-*walk));
 	walk--; mainboard_vendor=strdup((const char *)(bios+size-*walk));
-	printf("MANUFACTURER: %s\n", mainboard_vendor);
-	printf("MAINBOARD ID: %s\n", mainboard_part);
+	printf_debug("MANUFACTURER: %s\n", mainboard_vendor);
+	printf_debug("MAINBOARD ID: %s\n", mainboard_part);
+	
+
+	/*
+	 * If lb_vendor is not set, the linuxbios table was
+	 * not found. Nor was -mVENDOR:PART specified
+	 */
+
+	if(!lb_vendor || !lb_part) {
+		printf("Note: If the following flash access fails, "
+		"you might need to specify -m <vendor>:<mainboard>\n");
+		return 0;
+	}
 	
 	/* These comparisons are case insensitive to make things
 	 * a little less user^Werror prone. 
 	 */
-	if(lb_vendor && !strcasecmp(mainboard_vendor, lb_vendor) && 
-	   lb_part && !strcasecmp(mainboard_part, lb_part)) {
-		printf ("This firmware image matches "
-		        "this motherboard.\n");
+
+	if(!strcasecmp(mainboard_vendor, lb_vendor) && 
+	   !strcasecmp(mainboard_part, lb_part)) {
+		printf_debug("This firmware image matches "
+			     "this motherboard.\n");
 	} else {
 		if(force) {
 			printf("WARNING: This firmware image does not "
-			"fit to this machine - forcing it.\n");
+			"seem to fit to this machine - forcing it.\n");
 		} else {
-			printf("ERROR: This firmware image does not "
-			"fit to this machine\nOverride with -m if"
-			"you know exactly what you are doing.\n");
+			printf("ERROR: Your firmware image (%s:%s) does not "
+			"appear to\n       be correct for the detected "
+			"mainboard (%s:%s)\n\nOverride with --force if you "
+			"are absolutely sure that you\nare using a correct "
+			"image for this mainboard or override\nthe detected "
+			"values with --mainboard <vendor>:<mainboard>.\n\n",
+			mainboard_vendor, mainboard_part, lb_vendor, lb_part);
 			exit(1);
 		}
 	}
@@ -88,7 +106,7 @@ int read_romlayout(char *name)
 	romlayout=fopen (name, "r");
 	
 	if(!romlayout) {
-		printf("Error while opening rom layout.\n");
+		printf("Error while opening rom layout (%s).\n", name);
 		return -1;
 	}
 	
@@ -110,7 +128,7 @@ int read_romlayout(char *name)
 	}
 	
 	for(i=0; i<romimages; i++) {
-		printf("romlayout %08x - %08x named %s\n", 
+		printf_debug("romlayout %08x - %08x named %s\n", 
 			rom_entries[i].start,
 			rom_entries[i].end,
 			rom_entries[i].name);

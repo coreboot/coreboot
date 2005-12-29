@@ -32,7 +32,7 @@ void fatal(char *s)
 
 int main(int argc, char *argv[])
 {
-	int infd, payloadfd, outfd, size, insize, readlen, writelen, i;
+	int infd, payloadfd, outfd, size, readlen, writelen, i;
 	int romsize;
 	unsigned char *cp;
 	struct stat inbuf, payloadbuf;
@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 		fatal("stat of infile");
 	if (inbuf.st_size > size) {
 		fprintf(stderr, "linuxbios image is %d bytes; only %d allowed\n",
-			inbuf.st_size, size);
+			(int)inbuf.st_size, size);
 		fatal("Linuxbios input file larger than allowed size!\n");
 	}
 
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 	/* read the input file in at the END of the array */
 	readlen = read(infd, &cp[romsize - inbuf.st_size], inbuf.st_size);
 	if (readlen < inbuf.st_size) {
-		fprintf(stderr, "Wanted %d, got %d\n", inbuf.st_size, readlen);
+		fprintf(stderr, "Wanted %d, got %d\n", (int)inbuf.st_size, readlen);
 		fatal("Read input file");
 	}
 
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 	readlen = read(payloadfd, cp, payloadbuf.st_size);
 	if (readlen < payloadbuf.st_size) {
 		fprintf(stderr, "Wanted %d, got %d\n",
-			payloadbuf.st_size, readlen);
+			(int)payloadbuf.st_size, readlen);
 		fatal("Read payload file");
 	}
 	writelen = write(outfd, cp, romsize);

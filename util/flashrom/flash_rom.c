@@ -147,6 +147,7 @@ int main(int argc, char *argv[])
 	    write_it = 0, 
 	    erase_it = 0, 
 	    verify_it = 0;
+	int ret = 0;
 
 	static struct option long_options[]= {
 		{ "read", 0, 0, 'r' },
@@ -336,10 +337,10 @@ int main(int argc, char *argv[])
 	// ////////////////////////////////////////////////////////////
 	
 	if (write_it)
-		flash->write(flash, buf);
+		ret |= flash->write(flash, buf);
 
 	if (verify_it)
-		verify_flash(flash, buf);
+		ret |= verify_flash(flash, buf);
 
-	return 0;
+	return ret;
 }

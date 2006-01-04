@@ -170,6 +170,7 @@ static unsigned int amdk8_scan_chain(device_t dev, unsigned nodeid, unsigned lin
                 else {
                         min_bus = ((max>>6) + 1) * 0x40;
                 }
+		max = min_bus;
         #else
                 //other ...
                 else  {

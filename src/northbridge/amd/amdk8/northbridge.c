@@ -167,14 +167,9 @@ static unsigned int amdk8_scan_chain(device_t dev, unsigned nodeid, unsigned lin
                 } 
 	#if K8_SB_HT_CHAIN_ON_BUS0 > 1
 		// second chain will be on 0x40, third 0x80, forth 0xc0
-		else if (max<0x40) {
-                        min_bus = 0x40;
-                } else if (max<0x80) {
-                        min_bus = 0x80;
-                } else {
-                        min_bus = 0xc0;
+                else {
+                        min_bus = ((max>>6) + 1) * 0x40;
                 }
-                max = min_bus;
         #else
                 //other ...
                 else  {
@@ -809,7 +804,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
                 }
 
                 //We need to double check if there is speical set on base reg and limit reg are not continous instead of hole, it will find out it's hole_startk
-                if(mem_hole.node_id!=-1) {
+                if(mem_hole.node_id==-1) {
                         uint32_t limitk_pri = 0;
                         for(i=0; i<8; i++) {
                                 uint32_t base, limit;

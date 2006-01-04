@@ -30,7 +30,7 @@ static unsigned long get_valid_start_eip(unsigned long orig_start_eip)
 
 static void copy_secondary_start_to_1m_below(void) 
 {
-#if _RAMBASE > 0x100000
+#if _RAMBASE >= 0x100000
         extern char _secondary_start[];
         extern char _secondary_start_end[];
         unsigned long code_size;

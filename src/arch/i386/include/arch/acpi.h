@@ -9,7 +9,7 @@
  * ACPI FADT & FACS added by Nick Barker <nick.barker9@btinternet.com>
  * those parts (C) 2004 Nick Barker
  * 
- * ACPI SRAT support 2005.9 yhlu add SRAT relate
+ * ACPI SRAT support added in 2005.9 by yhlu
  * Copyright 2005 ADVANCED MICRO DEVICES, INC. All Rights Reserved.
  *
  */
@@ -44,14 +44,14 @@ typedef unsigned long long u64;
 /* ACPI 2.0 table RSDP */
 
 typedef struct acpi_rsdp {
-	char  signature[8];
-	u8    checksum;
-	char  oem_id[6];
-	u8    revision;
-	u32   rsdt_address;
-	u32   length;
-	u64   xsdt_address;
-	u8    ext_checksum;
+	char  signature[8];	/* RSDP signature "RSD PTR" */
+	u8    checksum;		/* checksum of the first 20 bytes */
+	char  oem_id[6];	/* OEM ID, "LXBIOS" */
+	u8    revision;		/* 0 for APCI 1.0, 2 for ACPI 2.0 */
+	u32   rsdt_address;	/* physical address of RSDT */
+	u32   length;		/* total length of RSDP (incl. extended part) */
+	u64   xsdt_address;	/* physical address of XSDT */
+	u8    ext_checksum;	/* chechsum of whole table */
 	u8    reserved[3];
 } __attribute__((packed)) acpi_rsdp_t;
 

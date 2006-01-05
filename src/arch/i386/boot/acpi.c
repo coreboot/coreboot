@@ -9,7 +9,7 @@
  *  (C) Copyright 2004 Nick Barker
  *
  * Copyright 2005 ADVANCED MICRO DEVICES, INC. All Rights Reserved.
- * 2005.9 yhlu add SRAT relate
+ * 2005.9 yhlu add SRAT table generation
  */
 
 /* 

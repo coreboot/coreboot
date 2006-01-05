@@ -41,43 +41,121 @@ arch i386 end
 driver mainboard.o
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
+
+#needed by irq_tables and mptable and acpi_tables
+object get_bus_conf.o
+
 if HAVE_ACPI_TABLES
- object acpi_tables.o 
- object fadt.o
- object dsdt.o
+ 	object acpi_tables.o
+	object fadt.o
+	
+	makerule dsdt.c
+		depends "$(MAINBOARD)/dx/dsdt_lb.dsl"
+		action  "/usr/sbin/iasl -tc $(MAINBOARD)/dx/dsdt_lb.dsl"
+		action  "mv dsdt_lb.hex dsdt.c"
+	end
+	object ./dsdt.o
+
+	makerule ssdt.c
+		depends "$(MAINBOARD)/ssdt_lb_x.dsl"
+		action  "/usr/sbin/iasl -tc $(MAINBOARD)/ssdt_lb_x.dsl"
+		action  "perl -pi -e 's/AmlCode/AmlCode_ssdt/g' ssdt_lb_x.hex"
+		action  "mv ssdt_lb_x.hex ssdt.c"
+	end
+	object ./ssdt.o
+	
+	if ACPI_SSDTX_NUM
+		makerule ssdt2.c
+			depends "$(MAINBOARD)/dx/pci2.asl"
+			action  "/usr/sbin/iasl -tc $(MAINBOARD)/dx/pci2.asl"
+			action  "perl -pi -e 's/AmlCode/AmlCode_ssdt2/g' pci2.hex"
+			action  "mv pci2.hex ssdt2.c"
+		end
+		object ./ssdt2.o
+		makerule ssdt3.c
+			depends "$(MAINBOARD)/dx/pci3.asl"
+			action  "/usr/sbin/iasl -tc $(MAINBOARD)/dx/pci3.asl"
+			action  "perl -pi -e 's/AmlCode/AmlCode_ssdt3/g' pci3.hex"
+			action  "mv pci3.hex ssdt3.c"
+		end
+		object ./ssdt3.o
+		makerule ssdt4.c
+			depends "$(MAINBOARD)/dx/pci4.asl"
+			action  "/usr/sbin/iasl -tc $(MAINBOARD)/dx/pci4.asl"
+			action  "perl -pi -e 's/AmlCode/AmlCode_ssdt4/g' pci4.hex"
+			action  "mv pci4.hex ssdt4.c"
+		end
+		object ./ssdt4.o
+
+	end
 end
+
+
+
 object reset.o
 
 
-##
-## Romcc output
-##
-makerule ./failover.E
-	depends "$(MAINBOARD)/failover.c ./romcc" 
-	action "./romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
-end
+if USE_DCACHE_RAM
 
-makerule ./failover.inc
-	depends "$(MAINBOARD)/failover.c ./romcc"
-	action "./romcc -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
-end
+	if CONFIG_USE_INIT
+		# compile cache_as_ram.c to auto.o
+		makerule ./cache_as_ram_auto.o
+		        depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
+		        action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -o cache_as_ram_auto.o" 
+		end
 
-makerule ./auto.E 
-	depends	"$(MAINBOARD)/auto.c option_table.h ./romcc" 
-	action	"./romcc -E -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
-end
-makerule ./auto.inc 
-	depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
-	action	"./romcc -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
-end
+	else   
+		#compile cache_as_ram.c to auto.inc 
+		makerule ./cache_as_ram_auto.inc
+		        depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
+		        action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -S -o $@"         
+		        action "perl -e 's/.rodata/.rom.data/g' -pi $@"
+		        action "perl -e 's/.text/.section .rom.text/g' -pi $@"
+		end
 
+	end
+else
+  
+	##
+	## Romcc output
+	##
+	makerule ./failover.E
+        	depends "$(MAINBOARD)/failover.c ./romcc"
+	        action "./romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
+	end
+
+	makerule ./failover.inc
+        	depends "$(MAINBOARD)/failover.c ./romcc"
+	        action "./romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
+	end
+
+	makerule ./auto.E
+        	depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
+	        action  "./romcc -E -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+	end
+	makerule ./auto.inc
+        	depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
+	        action  "./romcc    -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+	end
+
+end
 ##
 ## Build our 16 bit and 32 bit linuxBIOS entry code
 ##
+
 mainboardinit cpu/x86/16bit/entry16.inc
-mainboardinit cpu/x86/32bit/entry32.inc
 ldscript /cpu/x86/16bit/entry16.lds
-ldscript /cpu/x86/32bit/entry32.lds
+
+mainboardinit cpu/x86/32bit/entry32.inc
+if USE_DCACHE_RAM
+	if CONFIG_USE_INIT
+		ldscript /cpu/x86/32bit/entry32.lds
+	end
+
+	if CONFIG_USE_INIT
+		ldscript /cpu/amd/car/cache_as_ram.lds
+	end
+end
 
 ##
 ## Build our reset vector (This is where linuxBIOS is entered)
@@ -90,8 +168,11 @@ else
 	ldscript /cpu/x86/32bit/reset32.lds 
 end
 
-### Should this be in the northbridge code?
-mainboardinit arch/i386/lib/cpu_reset.inc
+if USE_DCACHE_RAM
+else
+	### Should this be in the northbridge code?
+	mainboardinit arch/i386/lib/cpu_reset.inc
+end
 
 ##
 ## Include an id string (For safe flashing)
@@ -99,14 +180,25 @@ mainboardinit arch/i386/lib/cpu_reset.inc
 mainboardinit arch/i386/lib/id.inc
 ldscript /arch/i386/lib/id.lds
 
+if USE_DCACHE_RAM
+	##
+	## Setup Cache-As-Ram
+	##
+	mainboardinit cpu/amd/car/cache_as_ram.inc
+end
+
 ###
 ### This is the early phase of linuxBIOS startup 
 ### Things are delicate and we test to see if we should
 ### failover to another image.
 ###
 if USE_FALLBACK_IMAGE
-	ldscript /arch/i386/lib/failover.lds 
-	mainboardinit ./failover.inc
+	if USE_DCACHE_RAM
+		ldscript /arch/i386/lib/failover.lds
+	else
+		ldscript /arch/i386/lib/failover.lds
+		mainboardinit ./failover.inc
+	end
 end
 
 ###
@@ -116,18 +208,37 @@ end
 ##
 ## Setup RAM
 ##
-mainboardinit cpu/x86/fpu/enable_fpu.inc
-mainboardinit cpu/x86/mmx/enable_mmx.inc
-mainboardinit cpu/x86/sse/enable_sse.inc
-mainboardinit ./auto.inc
-mainboardinit cpu/x86/sse/disable_sse.inc
-mainboardinit cpu/x86/mmx/disable_mmx.inc
+if USE_DCACHE_RAM
+
+	if CONFIG_USE_INIT
+		initobject cache_as_ram_auto.o
+	else
+		mainboardinit ./cache_as_ram_auto.inc
+	end
+
+else
+
+	##
+	## Setup RAM
+	##
+	mainboardinit cpu/x86/fpu/enable_fpu.inc
+	mainboardinit cpu/x86/mmx/enable_mmx.inc
+	mainboardinit cpu/x86/sse/enable_sse.inc
+	mainboardinit ./auto.inc
+	mainboardinit cpu/x86/sse/disable_sse.inc
+	mainboardinit cpu/x86/mmx/disable_mmx.inc
+
+end
 
 ##
 ## Include the secondary Configuration files 
 ##
+
 dir /pc80
-config chip.h
+
+if CONFIG_CHIP_NAME
+	config chip.h
+end
 
 # config for agami/aruma
 chip northbridge/amd/amdk8/root_complex

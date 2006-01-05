@@ -67,6 +67,11 @@ enumerations
 5     5     4800
 5     6     2400
 5     7     1200
+6     1     Emergency
+6     2     Alert
+6     3     Critical
+6     4     Error
+6     5     Warning
 6     6     Notice
 6     7     Info
 6     8     Debug
@@ -77,7 +82,7 @@ enumerations
 7     8     Fallback_Network
 7     9     Fallback_HDD
 7     10    Fallback_Floppy
-#7     3     ROM
+#7     3    ROM
 8     0     200Mhz
 8     1     166Mhz
 8     2     133Mhz

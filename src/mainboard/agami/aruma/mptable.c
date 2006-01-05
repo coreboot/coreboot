@@ -16,17 +16,7 @@ do {							\
 	smp_write_ioapic(mc, id, version, res->base);	\
 } while(0);
 
-unsigned get_apicid_base(unsigned ioapic_num)
-{
-        device_t dev;
-        unsigned apicid_base;
-
-        dev = dev_find_slot(0, PCI_DEVFN(0x18,0));
-        apicid_base = ((pci_read_config32(dev, 0x60)>>4) & 7) + 1;
-
-        return apicid_base;
-}
-
+unsigned get_apicid_base(unsigned ioapic_num);
 
 void *smp_write_config_table(void *v)
 {

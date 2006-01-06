@@ -2,6 +2,7 @@
  * (C) 2003 Linux Networx, SuSE Linux AG
  * Copyright 2004 Tyan Computer
  *  by yhlu@tyan.com
+ *  2006.1 yhlu add dest apicid for IRQ0
  */
 #include <console/console.h>
 #include <device/device.h>
@@ -13,6 +14,7 @@
 #include <pc80/isa-dma.h>
 #include <bitops.h>
 #include <arch/io.h>
+#include <cpu/x86/lapic.h>
 #include "ck804.h"
 
 #define CK804_CHIP_REV 2
@@ -75,6 +77,8 @@ static void setup_ioapic(unsigned long ioapic_base)
 //	unsigned long ioapic_base = 0xfec00000;
 	volatile unsigned long *l;
 	struct ioapicreg *a = ioapicregvalues;
+
+	ioapicregvalues[0].value_high = lapicid()<<(56-32);
 
 	l = (unsigned long *) ioapic_base;
 

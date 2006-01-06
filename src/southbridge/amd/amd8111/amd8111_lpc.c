@@ -1,5 +1,6 @@
 /*
  * (C) 2003 Linux Networx, SuSE Linux AG
+ *  2006.1 yhlu add dest apicid for IRQ0
  */
 #include <console/console.h>
 #include <device/device.h>
@@ -8,6 +9,7 @@
 #include <device/pci_ops.h>
 #include <pc80/mc146818rtc.h>
 #include <pc80/isa-dma.h>
+#include <cpu/x86/lapic.h>
 #include "amd8111.h"
 
 #define NMI_OFF 0
@@ -71,6 +73,8 @@ static void setup_ioapic(void)
 
 	l = (unsigned long *) ioapic_base;
 
+	ioapicregvalues[0].value_high = lapicid()<<(56-32); 
+	
 	for (i = 0; i < sizeof(ioapicregvalues) / sizeof(ioapicregvalues[0]);
 	     i++, a++) {
 		l[0] = (a->reg * 2) + 0x10;
@@ -93,14 +97,14 @@ static void enable_hpet(struct device *dev)
 	unsigned long hpet_address;
 	
 	pci_write_config32(dev,0xa0, 0xfed00001);
-	hpet_address=pci_read_config32(dev,0xa0)& 0xfffffffe;
+	hpet_address = pci_read_config32(dev,0xa0)& 0xfffffffe;
 	printk_debug("enabling HPET @0x%x\n", hpet_address);
+	
 }
 
 static void lpc_init(struct device *dev)
 {
 	uint8_t byte;
-	int pwr_on=-1;
 	int nmi_option;
 
 	/* IO APIC initialization */
@@ -115,7 +119,7 @@ static void lpc_init(struct device *dev)
 
 	/* Enable 5Mib Rom window */
 	byte = pci_read_config8(dev, 0x43);
-	byte |= 0xC0;
+	byte |= 0xc0;
 	pci_write_config8(dev, 0x43, byte);
 
 	/* Enable Port 92 fast reset */

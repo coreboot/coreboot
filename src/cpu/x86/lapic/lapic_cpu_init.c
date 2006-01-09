@@ -377,7 +377,9 @@ void initialize_cpus(struct bus *cpu_bus)
 	/* Find the device structure for the boot cpu */
 	info->cpu = alloc_find_dev(cpu_bus, &cpu_path);
 
+#if CONFIG_SMP == 1
 	copy_secondary_start_to_1m_below(); // why here? In case some day we can start core1 in amd_sibling_init
+#endif
 	
 	/* Initialize the bootstrap processor */
 	cpu_initialize();

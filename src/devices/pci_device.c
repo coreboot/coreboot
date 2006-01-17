@@ -1041,7 +1041,7 @@ unsigned int pci_scan_bus(struct bus *bus,
 	if(old_devices) {
 		device_t left;
 		for(left = old_devices; left; left = left->sibling) {
-			printk_debug("%s\n", dev_path(left));
+			printk_error("%s\n", dev_path(left));
 		}
 		die("PCI: Left over static devices.  Check your Config.lb\n");
 	}

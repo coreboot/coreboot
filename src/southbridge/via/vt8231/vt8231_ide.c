@@ -8,7 +8,7 @@
 
 static void ide_init(struct device *dev)
 {
-	struct southbridge_via_vt8231_config *conf;
+	struct southbridge_via_vt8231_config *conf = (struct southbridge_via_vt8231_config *)dev->chip_info;
 	unsigned char enables;
 
 	if (!conf->enable_native_ide) {

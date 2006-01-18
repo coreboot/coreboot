@@ -127,12 +127,12 @@ config chip.h
 chip northbridge/via/vt8601
 	device pci_domain 0 on
     		device pci 0.0 on end			# Northbridge
-		device pci 0.1 on			# AGP bridge
+#		device pci 0.1 on			# AGP bridge
 		#	chip drivers/pci/onboard	# Integrated VGA
 		#		device pci 0.0 on end
 		#		register "rom_adress" = "0xfff80000"
 		#	end
-		end
+#		end
 		chip southbridge/via/vt8231
 			register "enable_native_ide" = "0"
 			register "enable_com_ports" = "1"
@@ -162,7 +162,7 @@ chip northbridge/via/vt8601
 					  irq 0x70 = 1
 					  irq 0x72 = 12
 	      				end
-				register "com1" = "{1}"
+				register "com1" = "{TTYS0_BAUD}"
 				end
 				device pnp 2e.6 off end 	#  CIR
 				device pnp 2e.7 off end 	#  GAME_MIDI_GIPO1

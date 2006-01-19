@@ -1,0 +1,21 @@
+# Sample config file for EPIA
+# This will make a target directory of ./epia.512kflash
+
+target epia.512kflash.linuxtiny
+mainboard via/epia
+
+option ROM_SIZE=524288
+option FALLBACK_SIZE=ROM_SIZE
+option MAXIMUM_CONSOLE_LOGLEVEL=10
+option DEFAULT_CONSOLE_LOGLEVEL=10
+
+romimage "fallback" 
+	option USE_FALLBACK_IMAGE=1
+	option ROM_IMAGE_SIZE=64*1024
+	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
+#	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
+#	payload ../../../../tg3--ide_disk.zelf	
+	payload /tmp/linux.elf
+end
+
+buildrom ./linuxbios.rom ROM_SIZE  "fallback"

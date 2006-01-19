@@ -183,6 +183,9 @@ chip northbridge/via/vt8601
         	end
 	end
 
-	chip cpu/via/model_centaur 
-  	end
+        device apic_cluster 0 on
+                chip cpu/via/model_centaur 
+                        device apic 0 on end
+                end
+        end
 end

@@ -1,0 +1,4 @@
+#config chip.h
+driver cs5535.o
+#driver cs5535_pci.o
+driver cs5535_ide.o

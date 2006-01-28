@@ -13,7 +13,7 @@ makedefine HOSTCFLAGS:= -Os -Wall
 
 makerule ldscript.ld   
 	depends	"ldoptions $(LDSUBSCRIPTS-1)" 
-	action	"echo \"INCLUDE ldoptions\" > $@ ; for file in $(LDSUBSCRIPTS-1) ; do echo \"INCLUDE $$file\" >> $@ ; done"
+	action	"echo '/*ldoptions*/' > $@; cat ldoptions >> $@ ; for file in $(LDSUBSCRIPTS-1) ; do echo /\* $$file \*/ >> $@; cat $$file >> $@ ; done"
 end
 
 #makerule cpuflags   

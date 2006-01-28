@@ -14,7 +14,8 @@ romimage "normal"
 #	payload ../../../../tg3--ide_disk.zelf	
 #	payload ../../../../../lnxieepro100.ebi
 #	payload /etc/hosts
-	payload /home/hamish/work/etherboot/eb-5.2.6-lne100.elf
+#	payload /home/hamish/work/etherboot/eb-5.2.6-lne100.elf
+	payload /tmp/filo.elf
 end
 
 romimage "fallback" 
@@ -25,7 +26,8 @@ romimage "fallback"
 #	payload ../../../../tg3--ide_disk.zelf	
 #	payload ../../../../../lnxieepro100.ebia
 #	payload /etc/hosts
-	payload /home/hamish/work/etherboot/eb-5.2.6-lne100.elf
+#	payload /home/hamish/work/etherboot/eb-5.2.6-lne100.elf
+	payload /tmp/filo.elf
 end
 
 buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"

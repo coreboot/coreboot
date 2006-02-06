@@ -108,8 +108,13 @@ makerule tags
 	depends	"$(SOURCES)" 
 	action	"ctags $(SOURCES)"
 end
+makerule LinuxBIOSDoc.config
+	depends	"$(TOP)/src/config/LinuxBIOSDoc.config" 
+	action "cat $(TOP)/src/config/LinuxBIOSDoc.config > LinuxBIOSDoc.config"
+        action "echo 'INPUT=$(SOURCES)' >> LinuxBIOSDoc.config"
+end
 makerule documentation   
-	depends	"$(SOURCES)" 
+	depends	"LinuxBIOSDoc.config"
 	action	"doxygen LinuxBIOSDoc.config"
 end
 

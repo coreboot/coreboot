@@ -1,8 +1,8 @@
 # Config file for the AMD rumba motherboard
 # This will make a target directory of rumba
 
-target rumba
-mainboard amd/rumba
+target frontrunner
+mainboard lippert/frontrunner
 
 option ROM_SIZE=1024*256
 

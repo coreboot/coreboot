@@ -6,7 +6,7 @@
 #include <arch/io.h>
 #include "chip.h"
 
-struct chip_operations mainboard_lippert_coolrunner_ops = {
+struct chip_operations mainboard_lippert_frontrunner_ops = {
 	CHIP_NAME("Lippert frontrunner mainboard ")
 };
 

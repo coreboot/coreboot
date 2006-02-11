@@ -26,11 +26,11 @@ static void main(unsigned long bist)
 //	pc97317_enable_serial(SERIAL_DEV, TTYS0_BASE);
 	unsigned char i;
 	while(1)
-		post_code(i);
+	  outb(0x80, i);
 	uart_init();
 	console_init();
 	while (1)
-	  print_err("hi\n");
+	  outb(0x80, i);
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 	

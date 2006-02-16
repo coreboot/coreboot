@@ -1,0 +1,300 @@
+##
+## Compute the location and size of where this firmware image
+## (linuxBIOS plus bootloader) will live in the boot rom chip.
+##
+if USE_FALLBACK_IMAGE
+	default ROM_SECTION_SIZE   = FALLBACK_SIZE
+	default ROM_SECTION_OFFSET = ( ROM_SIZE - FALLBACK_SIZE )
+else
+	default ROM_SECTION_SIZE   = ( ROM_SIZE - FALLBACK_SIZE )
+	default ROM_SECTION_OFFSET = 0
+end
+
+##
+## Compute the start location and size size of
+## The linuxBIOS bootloader.
+##
+default PAYLOAD_SIZE            = ( ROM_SECTION_SIZE - ROM_IMAGE_SIZE )
+default CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+
+##
+## Compute where this copy of linuxBIOS will start in the boot rom
+##
+default _ROMBASE      = ( CONFIG_ROM_STREAM_START + PAYLOAD_SIZE )
+
+##
+## Compute a range of ROM that can cached to speed up linuxBIOS,
+## execution speed.
+##
+## XIP_ROM_SIZE must be a power of 2.
+## XIP_ROM_BASE must be a multiple of XIP_ROM_SIZE
+##
+default XIP_ROM_SIZE=65536
+default XIP_ROM_BASE = ( _ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE )
+
+arch i386 end 
+
+##
+## Build the objects we have code for in this directory.
+##
+
+driver mainboard.o
+
+#dir /drivers/si/3114
+
+if HAVE_MP_TABLE object mptable.o end
+if HAVE_PIRQ_TABLE 
+	object get_bus_conf.o
+	object irq_tables.o 
+end
+
+#object reset.o
+
+if USE_DCACHE_RAM
+
+	if CONFIG_USE_INIT
+
+		makerule ./cache_as_ram_auto.o
+			depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
+			action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -o $@" 
+		end
+
+	else    
+                
+		makerule ./cache_as_ram_auto.inc
+			depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
+			action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -S -o $@"         
+			action "perl -e 's/.rodata/.rom.data/g' -pi $@"
+			action "perl -e 's/.text/.section .rom.text/g' -pi $@"
+		end
+
+	end
+
+end
+##
+## Build our 16 bit and 32 bit linuxBIOS entry code
+##
+mainboardinit cpu/x86/16bit/entry16.inc
+mainboardinit cpu/x86/32bit/entry32.inc
+ldscript /cpu/x86/16bit/entry16.lds
+if USE_DCACHE_RAM
+        if CONFIG_USE_INIT
+                ldscript /cpu/x86/32bit/entry32.lds
+        end
+
+        if CONFIG_USE_INIT
+                ldscript      /cpu/amd/car/cache_as_ram.lds
+        end
+end
+
+##
+## Build our reset vector (This is where linuxBIOS is entered)
+##
+if USE_FALLBACK_IMAGE 
+	mainboardinit cpu/x86/16bit/reset16.inc 
+	ldscript /cpu/x86/16bit/reset16.lds 
+else
+	mainboardinit cpu/x86/32bit/reset32.inc 
+	ldscript /cpu/x86/32bit/reset32.lds 
+end
+
+##
+## Include an id string (For safe flashing)
+##
+mainboardinit arch/i386/lib/id.inc
+ldscript /arch/i386/lib/id.lds
+
+if USE_DCACHE_RAM
+	##
+	## Setup Cache-As-Ram
+	##
+	mainboardinit cpu/amd/car/cache_as_ram.inc
+end
+
+###
+### This is the early phase of linuxBIOS startup 
+### Things are delicate and we test to see if we should
+### failover to another image.
+###
+if USE_FALLBACK_IMAGE
+	if USE_DCACHE_RAM
+	       ldscript /arch/i386/lib/failover.lds
+	else
+	       ldscript /arch/i386/lib/failover.lds
+		mainboardinit ./failover.inc
+	end
+end
+
+###
+### O.k. We aren't just an intermediary anymore!
+###
+
+##
+## Setup RAM
+##
+if USE_DCACHE_RAM
+
+	if CONFIG_USE_INIT
+		initobject cache_as_ram_auto.o
+	else
+		mainboardinit ./cache_as_ram_auto.inc
+	end
+
+end
+
+##
+## Include the secondary Configuration files 
+##
+if CONFIG_CHIP_NAME
+	config chip.h
+end
+
+# sample config for broadcom/blast 
+chip northbridge/amd/amdk8/root_complex
+        device apic_cluster 0 on
+                chip cpu/amd/socket_940
+                        device apic 0 on end
+                end
+        end
+	device pci_domain 0 on
+		chip northbridge/amd/amdk8
+			device pci 18.0 on #  northbridge 
+                              #  devices on link 0
+                                chip southbridge/broadcom/bcm5780 # HT2000
+                                        device pci 0.0 on end   # PXB 1 0x0130
+                                        device pci 1.0 on       # PXB 2 0x0130
+                                                device pci 4.0 on end # GB E 0x1668 vid = 0x14e4
+                                                device pci 4.1 on end # GB E 0x1669 vid = 0x14e4
+                                        end
+                                        device pci 2.0 on end # PCI E 1  #0x0132
+                                        device pci 3.0 on end # PCI E 2
+                                        device pci 4.0 on end # PCI E 3
+                                        device pci 5.0 on end # PCI E 4
+                                end
+                                chip southbridge/broadcom/bcm5785 # HT1000
+                                        device pci 0.0 on  # HT PXB  0x0036
+                                                device pci d.0 on end # PPBX 0x0104
+                                                device pci e.0 on end # SATA 0x024a
+                                        end
+                                        device pci 1.0 on # Legacy  pci main  0x0205
+                                                chip drivers/i2c/i2cmux2 # pca9554 smbus mux
+                                                        device i2c 71 on end #0 pca9554 0
+							device i2c 71 on end #0 pca9554 1
+							device i2c 71 on end #0 pca9554 2
+							device i2c 71 on end #0 pca9554 3
+							device i2c 71 on end #0 pca9554 4
+							device i2c 71 on end #0 pca9554 5
+                                                        device i2c 71 on #0 pca9554 6
+                                                                chip drivers/generic/generic #dimm 0-0-0
+                                                                        device i2c 50 on end
+                                                                end
+                                                                chip drivers/generic/generic #dimm 0-0-1
+                                                                        device i2c 51 on end
+                                                                end
+                                                                chip drivers/generic/generic #dimm 0-1-0
+                                                                        device i2c 52 on end
+                                                                end
+                                                                chip drivers/generic/generic #dimm 0-1-1
+                                                                        device i2c 53 on end
+                                                                end
+                                                        end
+                                                        device i2c 71 on #1 pca9554 7
+                                                                chip drivers/generic/generic #dimm 1-0-0
+                                                                        device i2c 50 on end
+                                                                end
+                                                                chip drivers/generic/generic #dimm 1-0-1
+                                                                        device i2c 51 on end
+                                                                end
+                                                                chip drivers/generic/generic #dimm 1-1-0
+                                                                        device i2c 52 on end
+                                                                end
+                                                                chip drivers/generic/generic #dimm 1-1-1
+                                                                        device i2c 53 on end
+                                                                end
+                                                        end
+                                                end
+
+					end
+                                        device pci 1.1 on end # IDE        0x0214
+                                        device pci 1.2 on     # LPC        0x0234
+                                                chip superio/NSC/pc87417
+                                                        device  pnp 2e.0 off  # Floppy
+                                                                 io 0x60 = 0x3f0
+                                                                irq 0x70 = 6
+                                                                drq 0x74 = 2
+                                                        end
+                                                        device pnp 2e.1 off  # Parallel Port
+                                                                 io 0x60 = 0x378
+                                                                irq 0x70 = 7
+                                                        end
+                                                        device pnp 2e.2 off # Com 2
+                                                                 io 0x60 = 0x2f8
+                                                                irq 0x70 = 3
+                                                        end
+                                                        device pnp 2e.3 on  # Com 1
+                                                                 io 0x60 = 0x3f8
+                                                                irq 0x70 = 4
+                                                        end
+                                                        device pnp 2e.4 off end # SWC
+                                                        device pnp 2e.5 off end # Mouse
+                                                        device pnp 2e.6 on  # Keyboard
+                                                                 io 0x60 = 0x60
+                                                                 io 0x62 = 0x64
+                                                                irq 0x70 = 1
+                                                        end
+                                                        device pnp 2e.7 off end # GPIO
+                                                        device pnp 2e.f off end # XBUS
+                                                        device pnp 2e.10 on #RTC
+								 io 0x60 = 0x70
+								 io 0x62 = 0x72
+							end 
+                                                end
+                                        end
+                                        device pci 1.3 on end # WDTimer    0x0238
+                                        device pci 1.4 on end # XIOAPIC0   0x0235
+                                        device pci 1.5 on end # XIOAPIC1
+                                        device pci 1.6 on end # XIOAPIC2
+                                        device pci 2.0 on end # USB        0x0223
+                                        device pci 2.1 on end # USB
+                                        device pci 2.2 on end # USB
+                                        #when HT_CHAIN_END_UNITID_BASE (0,1) < HT_CHAIN_UNITID_BASE (6,,,,),
+                                        chip drivers/pci/onboard
+                                              device pci 4.0 on end # it is in bcm5785_0 bus, but the device id can not be changed even unitid is changed, fake one to get the rom_address
+                                                                    # if HT_CHAIN_END_UNITID_BASE=0, it is 5, if HT_CHAIN_END_UNITID_BASE=1, it is 4
+                                              register "rom_address" = "0xfff80000"
+                                        end
+                                end
+                                        #when HT_CHAIN_END_UNITID_BASE > HT_CHAIN_UNITID_BASE (6, ,,,,)
+#                                        chip drivers/pci/onboard
+#                                              device pci 0.0 on end # fake, will be disabled
+#                                        end
+#                                        chip drivers/pci/onboard
+#                                              device pci 5.0 on end # it is in bcm5785_0 bus, but the device id can not be changed even unitid is changed
+#                                              register "rom_address" = "0xfff80000"
+#                                        end
+
+
+			end #  device pci 18.0
+
+                        device pci 18.0 on end
+                        device pci 18.0 on end  
+			device pci 18.1 on end
+			device pci 18.2 on end
+			device pci 18.3 on end
+		end
+
+
+	end #pci_domain
+#        chip drivers/generic/debug
+#                device pnp 0.0 off end # chip name
+#                device pnp 0.1 on end # pci_regs_all
+#                device pnp 0.2 off end # mem
+#                device pnp 0.3 off end # cpuid
+#                device pnp 0.4 off end # smbus_regs_all
+#                device pnp 0.5 off end # dual core msr
+#                device pnp 0.6 off end # cache size
+#                device pnp 0.7 off end # tsc
+#       end
+
+end
+

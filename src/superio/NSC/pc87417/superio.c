@@ -1,5 +1,7 @@
 /* Copyright 2000  AG Electronics Ltd. */
 /* Copyright 2003-2004 Linux Networx */
+/* Copyright 2005 Tyan */
+/* By yhlu */
 /* This code is distributed without warranty under the GPL v2 (see COPYING) */
 
 #include <arch/io.h>
@@ -8,9 +10,10 @@
 #include <console/console.h>
 #include <string.h>
 #include <bitops.h>
+#include <uart8250.h>
+#include <pc80/keyboard.h>
 #include "chip.h"
 #include "pc87417.h"
-
 
 static void init(device_t dev)
 {
@@ -49,29 +52,26 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
- { &ops,  PC87417_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07fa, 0}, },
- { &ops,  PC87417_SP2,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
- { &ops,  PC87417_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
- { &ops,  PC87417_SWC,  PNP_IO0 | PNP_IO1 | PNP_IO2 | PNP_IO3 | PNP_IRQ0, 
-   { 0xfff0, 0 }, { 0xfffc, 0 }, { 0xfffc, 0 }, { 0xfff8, 0 } },
- { &ops,  PC87417_KBCM, PNP_IRQ0 },
- { &ops,  PC87417_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x7f8, 0 }, { 0x7f8, 0x4}, },
- { &ops,  PC87417_GPIO, PNP_IO0 | PNP_IRQ0, { 0xffe0, 0 } },
- { &ops,  PC87417_WDT,  PNP_IO0 | PNP_IRQ0, { 0xfff0, 0 } },
- { &ops,  PC87417_FMC,  PNP_IO0 | PNP_IRQ0, { 0xffe0, 0 } },
- { &ops,  PC87417_XBUS, PNP_IO0 | PNP_IRQ0, { 0xffe0, 0 } },
- { &ops,  PC87417_RTC,  PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0xfffe, 0 }, { 0xfffe, 0 } },
- { &ops,  PC87417_MHC,  PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0xffe0, 0 }, { 0xffe0, 0 } },
+ { &ops, PC87417_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07fa, 0}, },
+ { &ops, PC87417_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x04f8, 0}, },
+ { &ops, PC87417_SP2,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1, { 0x7f8, 0 }, },
+ { &ops, PC87417_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
+ { &ops, PC87417_SWC,  PNP_IO0 | PNP_IRQ0, { 0xfff0, 0 }, },
+ { &ops, PC87417_KBCM, PNP_IRQ0 },
+ { &ops, PC87417_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x7f8, 0 }, { 0x7f8, 0x4}, },
+ { &ops, PC87417_GPIO, PNP_IO0 | PNP_IRQ0, { 0xfff8, 0 } },
+ { &ops, PC87417_XBUS, PNP_IO0 | PNP_IRQ0, { 0xffe0, 0 } },
+ { &ops, PC87417_RTC,  PNP_IO0 | PNP_IO1, { 0xfffe, 0 }, {0xfffe, 0x4} },
 };
 
 
 static void enable_dev(struct device *dev)
 {
-	pnp_enable_devices(dev, &ops,
-		sizeof(pnp_dev_info)/sizeof(pnp_dev_info[0]), pnp_dev_info); 
+	pnp_enable_devices(dev, &pnp_ops,
+		sizeof(pnp_dev_info)/sizeof(pnp_dev_info[0]), pnp_dev_info);
 }
 
 struct chip_operations superio_NSC_pc87417_ops = {
-	CHIP_NAME("NSC 87417")
+	CHIP_NAME("NSC pc87417")
 	.enable_dev = enable_dev,
 };

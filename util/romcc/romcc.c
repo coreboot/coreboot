@@ -7627,7 +7627,7 @@ static struct triple *mkland_expr(
 	val = read_expr(state, var);
 
 	/* Generate the prog for a logical and */
-	def = mkprog(state, var, lstore, jmp, mid, rstore, end, val, 0);
+	def = mkprog(state, var, lstore, jmp, mid, rstore, end, val, 0UL);
 	
 	return def;
 }
@@ -7656,7 +7656,7 @@ static struct triple *mklor_expr(
 	val = read_expr(state, var);
 
 	/* Generate the prog for a logical or */
-	def = mkprog(state, var, left, jmp, mid, right, end, val, 0);
+	def = mkprog(state, var, left, jmp, mid, right, end, val, 0UL);
 
 	return def;
 }
@@ -7722,7 +7722,7 @@ static struct triple *mkcond_expr(
 	val = read_expr(state, var);
 
 	/* Generate the prog for a conditional expression */
-	def = mkprog(state, var, jmp1, top, left, jmp2, mid, right, end, val, 0);
+	def = mkprog(state, var, jmp1, top, left, jmp2, mid, right, end, val, 0UL);
 
 	return def;
 }
@@ -11588,7 +11588,7 @@ static struct triple *expr(struct compile_state *state)
 	def = assignment_expr(state);
 	while(peek(state) == TOK_COMMA) {
 		eat(state, TOK_COMMA);
-		def = mkprog(state, def, assignment_expr(state), 0);
+		def = mkprog(state, def, assignment_expr(state), 0UL);
 	}
 	return def;
 }

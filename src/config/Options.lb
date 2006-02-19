@@ -146,7 +146,7 @@ define LINUXBIOS_COMPILER
 	comment "Build compiler"
 end
 define LINUXBIOS_LINKER
-	default "$(shell  $(CC) -Wl,-v 2>&1 | grep version | tail -n 1)"
+	default "$(shell  $(CC) -Wl,--version 2>&1 | grep version | tail -n 1)"
 	export always
 	format "\"%s\""
 	comment "Build linker"

@@ -36,6 +36,7 @@
 #include "sst49lf040.h"
 #include "pm49fl004.h"
 #include "mx29f002.h"
+#include "sharplhf00l04.h"
 #include "sst_fwhub.h"
 
 struct flashchip flashchips[] = {
@@ -85,6 +86,8 @@ struct flashchip flashchips[] = {
 	 NULL, 8, 8 * 1024,
 	 probe_md2802, erase_md2802, write_md2802, read_md2802},
 #endif
+	{"LHF00L04",	SHARP_ID,		SHARP_LHF00L04,		NULL, 1024, 64 * 1024,
+	 probe_lhf00l04, erase_lhf00l04,	write_lhf00l04,	NULL},
 	{NULL,}
 };
 

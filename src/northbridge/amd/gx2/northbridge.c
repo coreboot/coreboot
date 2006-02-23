@@ -14,7 +14,6 @@
 #define NORTHBRIDGE_FILE "northbridge.c"
 /*
 */
-
 static void optimize_xbus(device_t dev)
 {
 	/* Optimise X-Bus performance */
@@ -119,7 +118,7 @@ static void pci_domain_set_resources(device_t dev)
 {
 	device_t mc_dev;
         uint32_t pci_tolm;
-
+#if 0
         pci_tolm = find_pci_tolm(&dev->link[0]);
 	mc_dev = dev->link[0].children;
 	if (mc_dev) {
@@ -162,6 +161,7 @@ static void pci_domain_set_resources(device_t dev)
 		ram_resource(dev, idx++, 0, tolmk);
 	}
 	assign_resources(&dev->link[0]);
+#endif
 }
 
 static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)

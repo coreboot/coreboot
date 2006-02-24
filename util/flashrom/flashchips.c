@@ -74,6 +74,8 @@ struct flashchip flashchips[] = {
 	 probe_jedec, 	erase_chip_jedec, write_jedec,	NULL},
 	{"W49F002U", 	WINBOND_ID, 	W_49F002U,	NULL, 256, 128,
 	 probe_jedec,	erase_chip_jedec, write_49f002, NULL},
+	{"M29F040B",	ST_ID, 		ST_M29F040B,	NULL, 512, 64 * 1024,
+	 probe_29f040b, erase_29f040b,	write_29f040b,	NULL},
 	{"M29F400BT",	ST_ID,		ST_M29F400BT,	NULL, 512, 64 * 1024,
 	 probe_m29f400bt, erase_m29f400bt, write_linuxbios_m29f400bt, NULL},
 	{"82802ab",	137,		173,		NULL, 512, 64 * 1024,

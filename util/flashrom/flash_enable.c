@@ -315,6 +315,7 @@ static FLASH_ENABLE enables[] = {
 	{0x1039, 0x0630, "sis630", enable_flash_sis630},
 	{0x8086, 0x2480, "E7500", enable_flash_e7500},
 	{0x8086, 0x24c0, "ICH4", enable_flash_ich4},
+	{0x8086, 0x24d0, "ICH5", enable_flash_ich4},
 	{0x1106, 0x8231, "VT8231", enable_flash_vt8231},
 	{0x1106, 0x3177, "VT8235", enable_flash_vt8235},
 	{0x1078, 0x0100, "CS5530", enable_flash_cs5530},

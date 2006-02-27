@@ -9,7 +9,7 @@
 /* copied for gx2 for ron minnich, as a placeholder */
 
 /* USES: esi, ecx, eax */
-
+#if 0
 #include <cpu/amd/gx2def.h>
 
 	movl %eax, %ebp /* preserve bist */
@@ -68,3 +68,4 @@ cpu_setup_end:
 	nop
 
 	movl %ebp, %eax	/* Restore bist */
+#endif

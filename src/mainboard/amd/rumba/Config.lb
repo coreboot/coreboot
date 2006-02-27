@@ -115,8 +115,8 @@ end
 ## Setup RAM
 ##
 mainboardinit cpu/x86/fpu/enable_fpu.inc
-mainboardinit cpu/amd/model_gx1/cpu_setup.inc
-mainboardinit cpu/amd/model_gx1/gx_setup.inc
+mainboardinit cpu/amd/model_gx2/cpu_setup.inc
+mainboardinit cpu/amd/model_gx2/gx_setup.inc
 mainboardinit ./auto.inc
 
 ##

@@ -8,6 +8,7 @@
 
 #include <cpu/amd/gx2def.h>
 
+#if 0
 	movl %eax, %ebp /* Preserve bist */
 
 gx_setup_start:
@@ -45,3 +46,4 @@ gx_setup_end:
 	nop
 
 	movl %ebp, %eax	/* Restore bist */
+#endif

@@ -48,15 +48,6 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	wrmsr(0x2000201d, msr);
 	print_debug("sdram_enable step 3\r\n");
 
-	/* 4. set and clear REF_TST 16 times, more shouldn't hurt */
-	for (i = 0; i < 19; i++) {
-		msr = rdmsr(0x20000018);
-		msr.lo |=  (0x01 << 3);
-		wrmsr(0x20000018, msr);
-		msr.lo &= !(0x01 << 3);
-		wrmsr(0x20000018, msr);
-	}
-	print_debug("sdram_enable step 4\r\n");
 
 	/* 5. set refresh interval */
 	msr = rdmsr(0x20000018);
@@ -67,7 +58,6 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	msr = rdmsr(0x20000018);
 	msr.lo &= !(0x03 << 6);
 	wrmsr(0x20000018, msr);
-
 
 	/* 6. enable RLL, load Extended Mode Register by set and clear PROG_DRAM */
 	msr = rdmsr(0x20000018);
@@ -96,14 +86,24 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	wrmsr(0x20000018, msr);
 	print_debug("sdram_enable step 10\r\n");
 
+	/* 4. set and clear REF_TST 16 times, more shouldn't hurt */
+	for (i = 0; i < 19; i++) {
+		msr = rdmsr(0x20000018);
+		msr.lo |=  (0x01 << 3);
+		wrmsr(0x20000018, msr);
+		msr.lo &= !(0x01 << 3);
+		wrmsr(0x20000018, msr);
+	}
+	print_debug("sdram_enable step 4\r\n");
+
 	/* wait 200 SDCLKs */
 	for (i = 0; i < 200; i++)
 		outb(0xaa, 0x80);
 
 	/* load RDSYNC */
-	msr = rdmsr(0x2000001a);
+	msr = rdmsr(0x2000001f);
 	msr.hi = 0x000ff310;
-	wrmsr(0x20000018, msr);
+	wrmsr(0x2000001f, msr);
 	print_debug("sdram_enable step 10\r\n");
 
 	/* DRAM working now?? */

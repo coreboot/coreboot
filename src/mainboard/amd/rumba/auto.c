@@ -60,8 +60,36 @@ static void msr_init(void)
 
 }
 
-static pll_reset(void)
+static void pll_reset(void)
 {
+	msr_t msr;
+
+	msr = rdmsr(0x4c000014);
+	print_debug("CGLP_SYS_RSTPLL ");
+	print_debug_hex32(msr.hi);
+	print_debug(":");
+	print_debug_hex32(msr.lo);
+	print_debug("\n\r");
+
+	if ((msr.lo >> 26) & 0x3F) {
+		print_debug("reboot from BIOS reset\n\r");
+		return;
+	}
+	print_debug("prgramming PLL\n\r");
+	
+	msr.hi = 0x00000019;
+	msr.lo = 0x06de0378;
+	wrmsr(0x4c000014, msr);
+	msr.lo |= ((0xde << 16) | (1 << 26));
+	wrmsr(0x4c000014, msr);
+
+	print_debug("Reset PLL\n\r");
+
+	msr.lo |= ((1<<14) |(1<<13) | (1<<0));
+	wrmsr(0x4c000014,msr);
+
+	print_debug("should not be here\n\r");
+
 
 }
 static void main(unsigned long bist)
@@ -76,7 +104,9 @@ static void main(unsigned long bist)
 	uart_init();
 	console_init();
 
-	print_err("hi\n");
+	print_err("hi\n\r");
+
+	pll_reset();
 
 	/* Halt if there was a built in self test failure */
 	//report_bist_failure(bist);

@@ -24,7 +24,7 @@
 static void msr_init(void)
 {
 
-	__builtin_wrmsr(0x1808, 0x22fffc02, 0x10f3bf00);
+	__builtin_wrmsr(0x1808,  0x10f3bf00, 0x22fffc02);
 	
 	__builtin_wrmsr(0x10000020, 0xfff80, 0x20000000);
         __builtin_wrmsr(0x10000021, 0x80fffe0, 0x20000000);
@@ -48,16 +48,6 @@ static void msr_init(void)
         __builtin_wrmsr(0xa0002001, 0x86002, 0x0);
         __builtin_wrmsr(0x50002001, 0x27, 0x0);
         __builtin_wrmsr(0x4c002001, 0x1, 0x0);
-
-        __builtin_wrmsr(0x20000018, 0x3400, 0x10076013);
-        __builtin_wrmsr(0x20000019, 0x696332a3, 0x18000008);
-        __builtin_wrmsr(0x2000001a, 0x101, 0x0);
-
-        __builtin_wrmsr(0x2000001c, 0xff00ff, 0x0);
-        __builtin_wrmsr(0x2000001d, 0x0, 0x0);
-        __builtin_wrmsr(0x2000001f, 0x0, 0x0);
-        __builtin_wrmsr(0x20000020, 0x6, 0x0);
-
 }
 
 static void pll_reset(void)
@@ -107,6 +97,7 @@ static void main(unsigned long bist)
 	print_err("hi\n\r");
 
 	pll_reset();
+	msr_init();
 
 	/* Halt if there was a built in self test failure */
 	//report_bist_failure(bist);

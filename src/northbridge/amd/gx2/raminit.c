@@ -32,7 +32,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	/* 2. release from PMode */
 	msr = rdmsr(0x20002004);
 	msr.lo &= !0x04;
-	msr.lo |= 0x01;
+	msr.lo |= 0x03;
 	wrmsr(0x20002004, msr);
 	/* undocmented bits in GX, in LX there are
 	 * 8 bits in PM1_UP_DLY */
@@ -48,6 +48,15 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	wrmsr(0x2000201d, msr);
 	print_debug("sdram_enable step 3\r\n");
 
+	/* 4. set and clear REF_TST 16 times, more shouldn't hurt */
+	for (i = 0; i < 19; i++) {
+		msr = rdmsr(0x20000018);
+		msr.lo |=  (0x01 << 3);
+		wrmsr(0x20000018, msr);
+		msr.lo &= !(0x01 << 3);
+		wrmsr(0x20000018, msr);
+	}
+	print_debug("sdram_enable step 4\r\n");
 
 	/* 5. set refresh interval */
 	msr = rdmsr(0x20000018);
@@ -86,15 +95,6 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	wrmsr(0x20000018, msr);
 	print_debug("sdram_enable step 10\r\n");
 
-	/* 4. set and clear REF_TST 16 times, more shouldn't hurt */
-	for (i = 0; i < 19; i++) {
-		msr = rdmsr(0x20000018);
-		msr.lo |=  (0x01 << 3);
-		wrmsr(0x20000018, msr);
-		msr.lo &= !(0x01 << 3);
-		wrmsr(0x20000018, msr);
-	}
-	print_debug("sdram_enable step 4\r\n");
 
 	/* wait 200 SDCLKs */
 	for (i = 0; i < 200; i++)
@@ -103,8 +103,15 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	/* load RDSYNC */
 	msr = rdmsr(0x2000001f);
 	msr.hi = 0x000ff310;
+	msr.lo = 0x00000000;
 	wrmsr(0x2000001f, msr);
 	print_debug("sdram_enable step 10\r\n");
+
+	/* set delay control */
+	msr = rdmsr(0x4c00000f);
+	msr.hi = 0x830d415f;
+	msr.lo = 0x8ea0ad6f;
+	wrmsr(0x4c00000f, msr);
 
 	/* DRAM working now?? */
 

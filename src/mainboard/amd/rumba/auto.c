@@ -25,7 +25,16 @@ static void msr_init(void)
 {
 
 	__builtin_wrmsr(0x1808,  0x10f3bf00, 0x22fffc02);
-	
+/* Ollie: here are some registers I think you should also set. */
+#if 0
+	/* FIX THIS FOR RUMBA -- this is LIPPERT SETTING */
+	__builtin_wrmsr(0x10000018, 0, 0x10076013);
+	__builtin_wrmsr(0x10000019, 0x696332a3, 0x18000008);
+	__builtin_wrmsr(0x1000001a, 0x101, 0);
+	__builtin_wrmsr(0x1000001c, 0xff00ff, 0);
+	__builtin_wrmsr(0x1000001d, 0x300, 0);
+	__builtin_wrmsr(0x1000001f, 0, 0);
+#endif	
 	__builtin_wrmsr(0x10000020, 0xfff80, 0x20000000);
         __builtin_wrmsr(0x10000021, 0x80fffe0, 0x20000000);
         __builtin_wrmsr(0x10000026, 0x400fffc0, 0x2cfbc040);

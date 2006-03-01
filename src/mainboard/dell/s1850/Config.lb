@@ -147,7 +147,7 @@ chip northbridge/intel/E7520 # mch
 		
 			# -> ISA
 			device pci 1f.0 on 
-				chip superio/NSC/pc8734
+				chip superio/NSC/pc8374
 					device pnp 2e.0 off end
 					device pnp 2e.1 off end
 					device pnp 2e.2 off end

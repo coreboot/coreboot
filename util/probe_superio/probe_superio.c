@@ -20,6 +20,7 @@ dump_ns8374(unsigned short port) {
 	printf("Enables: 21=%02x, 22=%02x, 23=%02x, 24=%02x, 26=%02x\n", 
 			regval(port,0x21), regval(port,0x22), 
 			regval(port,0x23), regval(port,0x24), regval(port,0x26));
+	printf("SMBUS at %02x\n", regval(port, 0x2a));
 	/* check COM1. This is all we care about at present. */
 	printf("COM 1 is Globally %s\n", regval(port,0x26)&8 ? "disabled" : "enabled");
 	/* select com1 */
@@ -27,6 +28,13 @@ dump_ns8374(unsigned short port) {
 	outb(3, port+1);
 	printf("COM 1 is locally %s\n", regval(port, 0x30) & 1 ? "enabled" : "disabled");
 	printf("COM1 60=%02x, 61=%02x, 70=%02x, 71=%02x, 74=%02x, 75=%02x, f0=%02x\n", 
+		regval(port, 0x60), regval(port, 0x61), regval(port, 0x70), regval(port, 0x71),
+		regval(port, 0x74), regval(port, 0x75), regval(port, 0xf0));
+	/* select gpio */
+	outb(0x7, port);
+	outb(7, port+1);
+	printf("GPIO is %s\n", regval(port, 0x30) & 1 ? "enabled" : "disabled");
+	printf("GPIO 60=%02x, 61=%02x, 70=%02x, 71=%02x, 74=%02x, 75=%02x, f0=%02x\n", 
 		regval(port, 0x60), regval(port, 0x61), regval(port, 0x70), regval(port, 0x71),
 		regval(port, 0x74), regval(port, 0x75), regval(port, 0xf0));
 

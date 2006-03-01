@@ -89,7 +89,7 @@ struct flashchip flashchips[] = {
 	 probe_md2802, erase_md2802, write_md2802, read_md2802},
 #endif
 	{"LHF00L04",	SHARP_ID,		SHARP_LHF00L04,		NULL, 1024, 64 * 1024,
-	 probe_lhf00l04, erase_lhf00l04,	write_lhf00l04,	NULL},
+	 probe_82802ab, erase_82802ab,	write_82802ab,	NULL},
 	{NULL,}
 };
 

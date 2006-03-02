@@ -15,26 +15,36 @@
 #include "cpu/x86/msr.h"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
+static void dump_msr(void)
+{
+	int i = 0;
+	msr_t msr;
+
+	static const unsigned int msrs[] = { 0x20000018, 0x20000019, 0x0};
+
+	while (msrs[i] != 0) {
+		msr = rdmsr(msrs[i]);
+		print_debug("MSR ");
+		print_debug_hex32(msrs[i]);
+		print_debug("=> ");
+		print_debug_hex32(msr.hi);
+		print_debug(":");
+		print_debug_hex32(msr.lo);
+		print_debug("\n\r");
+		i++;
+	}
+}
 
 //#include "lib/delay.c"
 #include "northbridge/amd/gx2/raminit.h"
 #include "northbridge/amd/gx2/raminit.c"
 #include "sdram/generic_sdram.c"
 
+
 static void msr_init(void)
 {
 
 	__builtin_wrmsr(0x1808,  0x10f3bf00, 0x22fffc02);
-/* Ollie: here are some registers I think you should also set. */
-#if 0
-	/* FIX THIS FOR RUMBA -- this is LIPPERT SETTING */
-	__builtin_wrmsr(0x10000018, 0, 0x10076013);
-	__builtin_wrmsr(0x10000019, 0x696332a3, 0x18000008);
-	__builtin_wrmsr(0x1000001a, 0x101, 0);
-	__builtin_wrmsr(0x1000001c, 0xff00ff, 0);
-	__builtin_wrmsr(0x1000001d, 0x300, 0);
-	__builtin_wrmsr(0x1000001f, 0, 0);
-#endif	
 	__builtin_wrmsr(0x10000020, 0xfff80, 0x20000000);
         __builtin_wrmsr(0x10000021, 0x80fffe0, 0x20000000);
         __builtin_wrmsr(0x10000026, 0x400fffc0, 0x2cfbc040);
@@ -79,7 +89,7 @@ static void pll_reset(void)
 	msr.hi = 0x00000019;
 	msr.lo = 0x06de0378;
 	wrmsr(0x4c000014, msr);
-	msr.lo |= ((0xde << 16) | (1 << 26));
+	msr.lo |= ((0xde << 16) | (1 << 26) | (1 << 24));
 	wrmsr(0x4c000014, msr);
 
 	print_debug("Reset PLL\n\r");
@@ -98,40 +108,23 @@ static void main(unsigned long bist)
 	};
 
 	msr_init();
-
+	
 	w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
 	uart_init();
 	console_init();
 
-	print_err("hi\n\r");
-
 	pll_reset();
+
 	msr_init();
+
 
 	/* Halt if there was a built in self test failure */
 	//report_bist_failure(bist);
 	
 	sdram_initialize(1, memctrl);
+
 	
 	/* Check all of memory */
-	ram_check(0x00000000, 1024*1024);
+	ram_check(0x00000000, 640*1024);
 
-#if 0
-	ram_check(0x00000000, msr.lo);
-
-	static const struct {
-		unsigned long lo, hi;
-	} check_addrs[] = {
-		/* Check 16MB of memory @ 0*/
-		{ 0x00000000, 0x01000000 },
-#if TOTAL_CPUS > 1
-		/* Check 16MB of memory @ 2GB */
-		{ 0x80000000, 0x81000000 },
-#endif
-	};
-	int i;
-	for(i = 0; i < sizeof(check_addrs)/sizeof(check_addrs[0]); i++) {
-		ram_check(check_addrs[i].lo, check_addrs[i].hi);
-	}
-#endif
 }

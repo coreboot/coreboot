@@ -17,7 +17,7 @@ static tsc_t rdtsc(void)
 	return res;
 }
 
-#ifndef ROMCC
+#ifndef __ROMCC__
 static inline unsigned long long rdtscll(void)
 {
 	unsigned long long val;

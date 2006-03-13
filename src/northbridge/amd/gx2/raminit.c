@@ -18,7 +18,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	/* 1. Initialize GLMC registers base on SPD values,
 	 * Hard coded as XpressROM for now */
-	print_debug("sdram_enable step 1\r\n");
+	//print_debug("sdram_enable step 1\r\n");
 	msr = rdmsr(0x20000018);
 	msr.hi = 0x10076013;
 	msr.lo = 0x00003000;
@@ -39,13 +39,13 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	msr = rdmsr(0x2000001a);
 	msr.lo = 0x0101;
 	wrmsr(0x2000001a, msr);
-	print_debug("sdram_enable step 2\r\n");
+	//print_debug("sdram_enable step 2\r\n");
 
 	/* 3. release CKE mask to enable CKE */
 	msr = rdmsr(0x2000001d);
 	msr.lo &= ~(0x03 << 8);
 	wrmsr(0x2000201d, msr);
-	print_debug("sdram_enable step 3\r\n");
+	//print_debug("sdram_enable step 3\r\n");
 
 	/* 4. set and clear REF_TST 16 times, more shouldn't hurt
 	 * why this is before EMRS and MRS ? */
@@ -56,7 +56,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		msr.lo &= ~(0x01 << 3);
 		wrmsr(0x20000018, msr);
 	}
-	print_debug("sdram_enable step 4\r\n");
+	//print_debug("sdram_enable step 4\r\n");
 
 	/* 5. set refresh interval */
 	msr = rdmsr(0x20000018);
@@ -68,7 +68,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	msr.lo &= ~(0x03 << 6);
 	msr.lo |=  (0x00 << 6);
 	wrmsr(0x20000018, msr);
-	print_debug("sdram_enable step 5\r\n");
+	//print_debug("sdram_enable step 5\r\n");
 
 	/* 6. enable DLL, load Extended Mode Register by set and clear PROG_DRAM */
 	msr = rdmsr(0x20000018);
@@ -76,7 +76,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	wrmsr(0x20000018, msr);
 	msr.lo &= ~((0x01 << 28) | 0x01);
 	wrmsr(0x20000018, msr);
-	print_debug("sdram_enable step 6\r\n");
+	//print_debug("sdram_enable step 6\r\n");
 
 	/* 7. Reset DLL, Bit 27 is undocumented in GX datasheet,
 	 * it is documented in LX datasheet  */	
@@ -86,7 +86,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	wrmsr(0x20000018, msr);
 	msr.lo &= ~((0x01 << 27) | 0x01);
 	wrmsr(0x20000018, msr);
-	print_debug("sdram_enable step 7\r\n");
+	//print_debug("sdram_enable step 7\r\n");
 
 	/* 8. load Mode Register by set and clear PROG_DRAM */
 	msr = rdmsr(0x20000018);
@@ -94,7 +94,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	wrmsr(0x20000018, msr);
 	msr.lo &= ~0x01;
 	wrmsr(0x20000018, msr);
-	print_debug("sdram_enable step 8\r\n");
+	//print_debug("sdram_enable step 8\r\n");
 
 	/* wait 200 SDCLKs */
 	for (i = 0; i < 200; i++)

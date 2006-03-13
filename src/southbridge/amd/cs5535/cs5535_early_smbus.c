@@ -11,7 +11,7 @@ static int cs5535_enable_smbus(void)
 
 	/* Set SCL freq and enable SMB controller */
 	val = inb(SMBUS_IO_BASE + SMB_CTRL2);
-	val |= ((0x7F << 1) | SMB_CTRL2_ENABLE);
+	val |= ((0x20 << 1) | SMB_CTRL2_ENABLE);
 	outb(val, SMBUS_IO_BASE + SMB_CTRL2);
 
 	/* Setup SMBus host controller address to 0xEF */

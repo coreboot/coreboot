@@ -102,7 +102,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	/* load RDSYNC */
 	msr = rdmsr(0x2000001f);
-	msr.hi = 0x000ff300;
+	msr.hi = 0x000ff310;
 	msr.lo = 0x00000000;
 	wrmsr(0x2000001f, msr);
 

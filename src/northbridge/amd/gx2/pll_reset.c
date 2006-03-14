@@ -136,7 +136,7 @@ static void pll_reset(void)
 		msr.hi = PLLMSRhi;
 		msr.lo = PLLMSRlo;
 		wrmsr(GLCP_SYS_RSTPLL, msr);
-		msr.lo |= PLLMSRhi2;
+		msr.lo |= PLLMSRlo1;
 		wrmsr(GLCP_SYS_RSTPLL, msr);
 
 		print_debug("Reset PLL\n\r");

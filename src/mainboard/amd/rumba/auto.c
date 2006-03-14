@@ -40,6 +40,10 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl) {
 #include "northbridge/amd/gx2/raminit.c"
 #include "sdram/generic_sdram.c"
 
+#define PLLMSRhi 0x00001490
+#define PLLMSRlo 0x02000030
+#define PLLMSRhi2 ((0xde << 16) | (1 << 26) | (1 << 24))
+#define PLLMSRlo2 ((1<<14) |(1<<13) | (1<<0))
 #include "northbridge/amd/gx2/pll_reset.c"
 
 static void msr_init(void)

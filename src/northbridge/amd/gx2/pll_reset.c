@@ -133,15 +133,15 @@ static void pll_reset(void)
 	if (msr.lo & (1 << GLCP_SYS_RSTPLL_BYPASS)) {
 		print_debug("disable PLL bypass\n\r");
 
-		msr.hi = 0x00001490;
-		msr.lo = 0x02000030;
+		msr.hi = PLLMSRhi;
+		msr.lo = PLLMSRlo;
 		wrmsr(GLCP_SYS_RSTPLL, msr);
-		msr.lo |= ((0xde << 16) | (1 << 26) | (1 << 24));
+		msr.lo |= PLLMSRhi2;
 		wrmsr(GLCP_SYS_RSTPLL, msr);
 
 		print_debug("Reset PLL\n\r");
 
-		msr.lo |= ((1<<14) |(1<<13) | (1<<0));
+		msr.lo |= PLLMSRlo2;
 		wrmsr(GLCP_SYS_RSTPLL,msr);
 		print_debug("should not be here\n\r");
 	}

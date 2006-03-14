@@ -30,6 +30,11 @@ void write_protect_vgabios(void)
  	device_t dev;
  
  	printk_info("write_protect_vgabios\n");
+	/* there are two possible devices. Just do both. */
+ 	dev = dev_find_device(PCI_VENDOR_ID_VIA, 0x3122, 0);
+ 	if(dev)
+ 		pci_write_config8(dev, 0x61, 0xaa);
+
  	dev = dev_find_device(PCI_VENDOR_ID_VIA, 0x3123, 0);
  	if(dev)
  		pci_write_config8(dev, 0x61, 0xaa);

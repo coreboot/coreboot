@@ -4,10 +4,6 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 {
 }
 
-static void sdram_set_spd_registers(const struct mem_controller *ctrl) 
-{
-	
-}
 
 /* Section 6.1.3, LX processor databooks, BIOS Initialization Sequence
  * Section 4.1.4, GX/CS5535 GeodeROM Porting guide */
@@ -15,19 +11,6 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 {
 	int i;
 	msr_t msr;
-
-	/* 1. Initialize GLMC registers base on SPD values,
-	 * Hard coded as XpressROM for now */
-	//print_debug("sdram_enable step 1\r\n");
-	msr = rdmsr(0x20000018);
-	msr.hi = 0x10076013;
-	msr.lo = 0x00003000;
-	wrmsr(0x20000018, msr);
-
-	msr = rdmsr(0x20000019);
-	msr.hi = 0x18000108;
-	msr.lo = 0x696332a3;
-	wrmsr(0x20000019, msr);
 
 	/* 2. clock gating for PMode */
 	msr = rdmsr(0x20002004);

@@ -19,10 +19,31 @@
 #include "southbridge/amd/cs5535/cs5535_early_smbus.c"
 #include "southbridge/amd/cs5535/cs5535_early_setup.c"
 #include "northbridge/amd/gx2/raminit.h"
+
+/* this has to be done on a per-mainboard basis, esp. if you don't have smbus */
+static void sdram_set_spd_registers(const struct mem_controller *ctrl) 
+{
+	msr_t msr;
+	/* 1. Initialize GLMC registers base on SPD values,
+	 * Hard coded as XpressROM for now */
+	//print_debug("sdram_enable step 1\r\n");
+	msr = rdmsr(0x20000018);
+	msr.hi = 0x10076013;
+	msr.lo = 0x3400;
+	wrmsr(0x20000018, msr);
+
+	msr = rdmsr(0x20000019);
+	msr.hi = 0x18000008;
+	msr.lo = 0x696332a3;
+	wrmsr(0x20000019, msr);
+
+}
+
 #include "northbridge/amd/gx2/raminit.c"
 #include "sdram/generic_sdram.c"
 
 #include "northbridge/amd/gx2/pll_reset.c"
+
 
 static void msr_init(void)
 {
@@ -63,15 +84,15 @@ static void main(unsigned long bist)
 	console_init();
 
 	cs5535_early_setup();
-
+	print_err("done cs5535 early\n");
 	pll_reset();
-
+	print_err("done pll_reset\n");
 	/* Halt if there was a built in self test failure */
 	//report_bist_failure(bist);
 	
 	sdram_initialize(1, memctrl);
 
-	
+	print_err("Done sdram_initialize\n");
 	/* Check all of memory */
 	ram_check(0x00000000, 640*1024);
 

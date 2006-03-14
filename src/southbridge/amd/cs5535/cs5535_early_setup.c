@@ -103,10 +103,15 @@ static int cs5535_early_setup(void)
 		print_debug("reboot from BIOS reset\n\r");
 		return;
 	}
+	print_debug("Setup idsel\r\n");
 	cs5535_setup_idsel();
+	print_debug("Setup iobase\r\n");
 	cs5535_setup_iobase();
+	print_debug("Setup gpio\r\n");
 	cs5535_setup_gpio();
+	print_debug("Setup cis_mode\r\n");
 	cs5535_setup_cis_mode();
+	print_debug("Setup smbus\r\n");
 	cs5535_enable_smbus();
 	//get_memory_speed();
 	dummy();

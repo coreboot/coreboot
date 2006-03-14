@@ -1,9 +1,8 @@
 /*
- * sst28sf040.c: driver for SST28SF040C flash models.
+ * lhf00l04.c: driver for programming JEDEC standard flash parts
  *
  *
  * Copyright 2000 Silicon Integrated System Corporation
- * Copyright 2005 coresystems GmbH <stepan@openbios.org>
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -20,111 +19,164 @@
  *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  *
- * Reference:
- *	8 MEgabit (1024K x 8) SHARP LHF00L04, data sheet
+ * Reference: http://www.intel.com/design/chipsets/datashts/290658.htm
  *
+ * $Id: lhf00l04.c 2111 2005-11-26 21:55:36Z ollie $
  */
 
+#include <errno.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <sys/io.h>
+#include <unistd.h>
 #include <stdio.h>
-#include <stdint.h>
+#include <stdlib.h>
+
 #include "flash.h"
+#include "sharplhf00l04.h"
 #include "debug.h"
 
-
-#define AUTO_PG_ERASE1		0x20
-#define AUTO_PG_ERASE2		0xD0
-#define AUTO_PGRM		0x10
-#define CHIP_ERASE		0x30
-#define RESET			0xFF
-#define READ_ID			0x90
-
-static __inline__ void protect_lhf00l04(volatile uint8_t *bios)
+// I need that Berkeley bit-map printer
+void print_lhf00l04_status(uint8_t status)
 {
-	/* ask compiler not to optimize this */
-//	volatile uint8_t tmp;
-
-}
-
-static __inline__ void unprotect_lhf00l04(volatile uint8_t *bios)
-{
-	/* ask compiler not to optimize this */
-//	volatile uint8_t tmp;
-}
-
-static __inline__ int erase_sector_lhf00l04(volatile uint8_t *bios,
-					   unsigned long address)
-{
-
-	return (0);
-}
-
-static __inline__ int write_sector_lhf00l04(volatile uint8_t *bios,
-					   uint8_t *src,
-					   volatile uint8_t *dst,
-					   unsigned int page_size)
-{
-	int i;
-
-	for (i = 0; i < page_size; i++) {
-		/* transfer data from source to destination */
-		if (*src == 0xFF) {
-			dst++, src++;
-			/* If the data is 0xFF, don't program it */
-			continue;
-		}
-		/*issue AUTO PROGRAM command */
-		*dst = AUTO_PGRM;
-		*dst++ = *src++;
-
-		/* wait for Toggle bit ready */
-//		toggle_ready_jedec(bios);
-	}
-
-	return (0);
+	printf("%s", status & 0x80 ? "Ready:" : "Busy:");
+	printf("%s", status & 0x40 ? "BE SUSPEND:" : "BE RUN/FINISH:");
+	printf("%s", status & 0x20 ? "BE ERROR:" : "BE OK:");
+	printf("%s", status & 0x10 ? "PROG ERR:" : "PROG OK:");
+	printf("%s", status & 0x8 ? "VP ERR:" : "VPP OK:");
+	printf("%s", status & 0x4 ? "PROG SUSPEND:" : "PROG RUN/FINISH:");
+	printf("%s", status & 0x2 ? "WP|TBL#|WP#,ABORT:" : "UNLOCK:");
 }
 
 int probe_lhf00l04(struct flashchip *flash)
 {
 	volatile uint8_t *bios = flash->virt_addr;
-	uint8_t id1, id2, tmp;
+	uint8_t id1, id2;
 
-	/* save the value at the beginning of the Flash */
-	tmp = *bios;
+#if 0
+	*(volatile uint8_t *) (bios + 0x5555) = 0xAA;
+	*(volatile uint8_t *) (bios + 0x2AAA) = 0x55;
+	*(volatile uint8_t *) (bios + 0x5555) = 0x90;
+#endif
 
-	*bios = RESET;
+	*bios = 0xff;
+	myusec_delay(10);
+	*bios = 0x90;
 	myusec_delay(10);
 
-	*bios = READ_ID;
-	myusec_delay(10);
 	id1 = *(volatile uint8_t *) bios;
-	myusec_delay(10);
 	id2 = *(volatile uint8_t *) (bios + 0x01);
 
-	*bios = RESET;
+#if 1
+	*(volatile uint8_t *) (bios + 0x5555) = 0xAA;
+	*(volatile uint8_t *) (bios + 0x2AAA) = 0x55;
+	*(volatile uint8_t *) (bios + 0x5555) = 0xF0;
+
+#endif
 	myusec_delay(10);
 
 	printf_debug("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, id1, id2);
-	if (id1 == flash->manufacture_id && id2 == flash->model_id)
-		return 1;
 
-	/* if there is no lhf00l04, restore the original value */
-	*bios = tmp;
+	if (id1 == flash->manufacture_id && id2 == flash->model_id) {
+		size_t size = flash->total_size * 1024;
+		// we need to mmap the write-protect space. 
+		bios = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
+			    flash->fd_mem, (off_t) (0 - 0x400000 - size));
+		if (bios == MAP_FAILED) {
+			// it's this part but we can't map it ...
+			perror("Error MMAP /dev/mem");
+			exit(1);
+		}
+
+		flash->virt_addr_2 = bios;
+		printf("bios %p, *bios 0x%x, bios[1] 0x%x\n", bios, *bios, bios[1]);
+		return 1;
+	}
+
 	return 0;
 }
 
+uint8_t wait_lhf00l04(volatile uint8_t *bios)
+{
+
+	uint8_t status;
+	uint8_t id1, id2;
+
+	*bios = 0x70;
+	if ((*bios & 0x80) == 0) {	// it's busy
+		while ((*bios & 0x80) == 0);
+	}
+
+	status = *bios;
+
+	// put another command to get out of status register mode
+
+	*bios = 0x90;
+	myusec_delay(10);
+
+	id1 = *(volatile uint8_t *) bios;
+	id2 = *(volatile uint8_t *) (bios + 0x01);
+
+	// this is needed to jam it out of "read id" mode
+	*(volatile uint8_t *) (bios + 0x5555) = 0xAA;
+	*(volatile uint8_t *) (bios + 0x2AAA) = 0x55;
+	*(volatile uint8_t *) (bios + 0x5555) = 0xF0;
+	return status;
+
+}
+int erase_lhf00l04_block(struct flashchip *flash, int offset)
+{
+	volatile uint8_t *bios = flash->virt_addr + offset;
+	volatile uint8_t *wrprotect =
+	    flash->virt_addr_2 + offset + 2;
+	uint8_t status;
+
+	// clear status register
+	*bios = 0x50;
+	printf("Erase at %p\n", bios);
+	status = wait_lhf00l04(flash->virt_addr);
+	print_lhf00l04_status(status);
+	// clear write protect
+	printf("write protect is at %p\n", (wrprotect));
+	printf("write protect is 0x%x\n", *(wrprotect));
+	*(wrprotect) = 0;
+	printf("write protect is 0x%x\n", *(wrprotect));
+
+	// now start it
+	*(volatile uint8_t *) (bios) = 0x20;
+	*(volatile uint8_t *) (bios) = 0xd0;
+	myusec_delay(10);
+	// now let's see what the register is
+	status = wait_lhf00l04(flash->virt_addr);
+	print_lhf00l04_status(status);
+	printf("DONE BLOCK 0x%x\n", offset);
+	return (0);
+}
 int erase_lhf00l04(struct flashchip *flash)
 {
-	volatile uint8_t *bios = flash->virt_addr;
+	int i;
+	unsigned int total_size = flash->total_size * 1024;
 
-	unprotect_lhf00l04(bios);
-	*bios = CHIP_ERASE;
-	*bios = CHIP_ERASE;
-	protect_lhf00l04(bios);
-
-	myusec_delay(10);
-//	toggle_ready_jedec(bios);
-
+	printf("total_size is %d; flash->page_size is %d\n",
+	       total_size, flash->page_size);
+	for (i = 0; i < total_size; i += flash->page_size)
+		erase_lhf00l04_block(flash, i);
+	printf("DONE ERASE\n");
 	return (0);
+}
+
+void write_page_lhf00l04(volatile uint8_t *bios, uint8_t *src, volatile uint8_t *dst,
+			int page_size)
+{
+	int i;
+
+	for (i = 0; i < page_size; i++) {
+		/* transfer data from source to destination */
+		*dst = 0x40;
+		*dst++ = *src++;
+		wait_lhf00l04(bios);
+	}
+
 }
 
 int write_lhf00l04(struct flashchip *flash, uint8_t *buf)
@@ -134,22 +186,20 @@ int write_lhf00l04(struct flashchip *flash, uint8_t *buf)
 	    flash->page_size;
 	volatile uint8_t *bios = flash->virt_addr;
 
-	unprotect_lhf00l04(bios);
-
+	erase_lhf00l04(flash);
+	if (*bios != 0xff) {
+		printf("ERASE FAILED\n");
+		return -1;
+	}
 	printf("Programming Page: ");
 	for (i = 0; i < total_size / page_size; i++) {
-		/* erase the page before programming */
-		erase_sector_lhf00l04(bios, i * page_size);
-
-		/* write to the sector */
 		printf("%04d at address: 0x%08x", i, i * page_size);
-		write_sector_lhf00l04(bios, buf + i * page_size,
-				     bios + i * page_size, page_size);
-		printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		write_page_lhf00l04(bios, buf + i * page_size,
+				   bios + i * page_size, page_size);
+		printf
+		    ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 	}
 	printf("\n");
-
 	protect_lhf00l04(bios);
-
 	return (0);
 }

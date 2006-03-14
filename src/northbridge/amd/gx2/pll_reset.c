@@ -122,9 +122,14 @@ static void pll_reset(void)
 
 	/* get CPU core clock in MHZ */
 	cpu_core = calibrate_tsc();
-	get_memory_speed();
+	print_debug("Cpu core is ");
+	print_debug_hex32(cpu_core);
+	print_debug("\n");
+	//get_memory_speed();
 	//msr = rdmsr(GLCP_SYS_RSTPLL);
 	msr = rdmsr(0x4c000014);
+	print_debug("4c000014 is ");
+	print_debug_hex32(msr.hi); print_debug(":"); print_debug_hex32(msr.lo); print_debug("\n");
 	if (msr.lo & (1 << GLCP_SYS_RSTPLL_BYPASS)) {
 		print_debug("disable PLL bypass\n\r");
 
@@ -162,7 +167,7 @@ static void pll_reset(void)
 	print_debug("\n\r");
 
 	//gliu = get_memory_speed();
-	get_memory_speed();
+	//get_memory_speed();
 	//print_debug("Target Memory Clock ");
 	//print_debug_hex32(gliu);
 	//print_debug("\n\r");

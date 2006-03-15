@@ -43,7 +43,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 #include "sdram/generic_sdram.c"
 
 #define PLLMSRhi 0x00000226
-#define PLLMSRlo 0x81000048
+#define PLLMSRlo 0x00000008
 #define PLLMSRlo1 ((0xde << 16) | (1 << 26) | (1 << 24))
 #define PLLMSRlo2 ((1<<14) |(1<<13) | (1<<0))
 #include "northbridge/amd/gx2/pll_reset.c"
@@ -80,6 +80,7 @@ static void main(unsigned long bist)
 	static const struct mem_controller memctrl [] = {
 		{.channel0 = {(0xa<<3)|0, (0xa<<3)|1}}
 	};
+	unsigned char temp;
 
 	msr_init();
 
@@ -97,7 +98,38 @@ static void main(unsigned long bist)
 	sdram_initialize(1, memctrl);
 
 	print_err("Done sdram_initialize\n");
+	print_err("Disable watchdog\n");
+	outb( 0x87, 0x4E);                            //enter SuperIO configuration mode
+	outb( 0x87, 0x4E);
+
+
+   	outb(0x20, 0x4e);
+	temp = inb(0x4f);
+	print_debug_hex8(temp);
+	if (temp != 0x52){
+		print_err("CAN NOT READ SUPERIO VID\n");
+	}
+
+	outb(0x29, 0x4e);
+	outb(0x7c, 0x4f);
+
+	outb( 0x07, 0x4E);                            //enable logical device 9
+	outb( 0x09, 0x4F);
+	outb(0x30, 0x4e);
+	outb(1, 0x4f);
+	outb( 0xF0, 0x4E);                            //set GP33 as outbut in configuration register F0h     Bit4 = \u20180\u2019
+	outb( 0xC7, 0x4F);
+	outb( 0xF1, 0x4E);                            //clr GP33 (Bit4) value in cofiguration register F1h to \u20181\u2019 disables
+	temp = inb(0x4F);                            //watchdog function. Make sure to let the other Bits unchanged!
+	print_debug_hex8(temp);print_debug(":");
+	temp = temp & ~8;
+	outb( temp, 0x4F);
+	temp = inb(0x4F);                            //watchdog function. Make sure to let the other Bits unchanged!
+	print_debug_hex8(temp);print_debug("\n");
 	/* Check all of memory */
+//	ram_check(0, 16384);
+	ram_check(0x20000, 0x24000);
+	print_err("Let's go loopy\n");
 	ram_check(0x00000000, 640*1024);
 
 }

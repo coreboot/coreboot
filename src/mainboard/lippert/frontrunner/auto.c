@@ -129,7 +129,6 @@ static void main(unsigned long bist)
 	/* Check all of memory */
 //	ram_check(0, 16384);
 	ram_check(0x20000, 0x24000);
-	print_err("Let's go loopy\n");
-	ram_check(0x00000000, 640*1024);
+//	ram_check(0x00000000, 640*1024);
 
 }

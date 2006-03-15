@@ -10,10 +10,97 @@
 #include "chip.h"
 #include "northbridge.h"
 #include <cpu/amd/gx2def.h>
+#include <cpu/x86/msr.h>
+#include <cpu/x86/cache.h>
 
 #define NORTHBRIDGE_FILE "northbridge.c"
 /*
 */
+
+/* todo: add a resource record. We don't do this here because this may be called when 
+  * very little of the platform is actually working.
+  */
+int
+sizeram(void)
+{
+	msr_t msr;
+	int sizem;
+	unsigned short dimm;
+
+	msr = rdmsr(0x20000018);
+	printk_debug("sizeram: %08x:%08x\n", msr.hi, msr.lo);
+
+	/* dimm 0 */
+	dimm = msr.hi;
+	/* installed? */
+	if ((dimm & 7) != 7)
+		sizem = (1 << ((dimm >> 12)-1)) * 8;
+
+
+	/* dimm 1*/
+	dimm = msr.hi >> 16;
+	/* installed? */
+	if ((dimm & 7) != 7)
+		sizem += (1 << ((dimm >> 12)-1)) * 8;
+
+	printk_debug("sizeram: sizem 0x%x\n", sizem);
+	return sizem;
+}
+
+#define CACHE_DISABLE (1<<0)
+#define WRITE_ALLOCATE (1<<1)
+#define WRITE_PROTECT (1<<2)
+#define WRITE_THROUGH (1<<3)
+#define WRITE_COMBINE (1<<4)
+#define WRITE_SERIALIZE (1<<5)
+
+/* ram has none of this stuff */
+#define RAM_PROPERTIES (0)
+#define DEVICE_PROPERTIES (WRITE_SERIALIZE|CACHE_DISABLE)
+#define ROM_PROPERTIES (WRITE_SERIALIZE|WRITE_THROUGH|CACHE_DISABLE)
+
+static void
+setup_gx2_cache(int sizem)
+{
+	msr_t msr;
+	unsigned long long val;
+	printk_debug("enable_cache: enable for %dm bytes\n", sizem);
+	/* build up the rconf word. */
+	/* the SYSTOP bits 27:8 are actually the top bits from 31:12. Book fails to say that */
+	/* set romrp */
+	val = ((unsigned long long) ROM_PROPERTIES) << 56;
+	/* make rom base useful for 1M roms */
+	/* fuctory sets this to a weird value, just go with it. */
+	val |= ((unsigned long long) 0xff800)<<36;
+	/* set the devrp properties */
+	val |= ((unsigned long long) DEVICE_PROPERTIES) << 28;
+	/* sigh. Take our TOM, RIGHT shift 12, since it page-aligned, then LEFT-shift 8 for reg. */
+	/* yank off 8M for frame buffer and 1M for VSA */
+	sizem -= 9;
+	sizem *= 0x100000;
+	sizem >>= 12;
+	sizem <<= 8;
+	val |= sizem;
+	val |= RAM_PROPERTIES;
+	msr.lo = val;
+	msr.hi = (val >> 32);
+	printk_debug("msr will be set to %x:%x\n", msr.hi, msr.lo);
+	wrmsr(0x1808, msr);
+	
+	enable_cache();
+	wbinvd();
+}
+/* we have to do this here. We have not found a nicer way to do it */
+void
+setup_gx2(void)
+{
+	int sizem;
+	sizem = sizeram();
+	
+	setup_gx2_cache(sizem);
+}
+
+
 static void optimize_xbus(device_t dev)
 {
 	/* Optimise X-Bus performance */
@@ -197,12 +284,16 @@ static struct device_operations cpu_bus_ops = {
 
 static void enable_dev(struct device *dev)
 {
+	printk_debug("gx2 north: enable_dev\n");
         /* Set the operations if it is a special bus type */
         if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
-                dev->ops = &pci_domain_ops;
+		printk_debug("DEVICE_PATH_PCI_DOMAIN\n");
+		setup_gx2();
+		dev->ops = &pci_domain_ops;
 		pci_set_method(dev);
         }
         else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
+		printk_debug("DEVICE_PATH_APIC_CLUSTER\n");
                 dev->ops = &cpu_bus_ops;
         }
 }

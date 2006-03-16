@@ -4,9 +4,10 @@
  * Copyright 2000 Silicon Integrated System Corporation
  * Copyright 2004 Tyan Corp
  *	yhlu yhlu@tyan.com add exclude start and end option
- * Copyright 2005 coresystems GmbH 
- *      Stefan Reinauer <stepan@core-systems.de> added rom layout
- *      support, and checking for suitable rom image 
+ * Copyright 2005-2006 coresystems GmbH 
+ *      Stefan Reinauer <stepan@coresystems.de> added rom layout
+ *      support, and checking for suitable rom image, various fixes
+ *      support for flashing the Technologic Systems 5300.
  * 
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -84,6 +85,26 @@ struct flashchip *probe_flash(struct flashchip *flash)
 			return flash;
 		}
 		munmap((void *) bios, size);
+#ifdef TS5300
+		/* TS-5300 */
+		bios = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
+			    fd_mem, (off_t) (0x9400000));
+		if (bios == MAP_FAILED) {
+			perror("Error MMAP /dev/mem");
+			exit(1);
+		}
+		flash->virt_addr = bios;
+		flash->fd_mem = fd_mem;
+
+		if (flash->probe(flash) == 1) {
+			printf("TS-5300 %s found at physical address: 0x%lx\n",
+			       flash->name, 0x9400000UL);
+			return flash;
+		}
+		munmap((void *) bios, size);
+		/* TS-5300 */
+#endif
+		
 		flash++;
 	}
 	return NULL;
@@ -91,26 +112,34 @@ struct flashchip *probe_flash(struct flashchip *flash)
 
 int verify_flash(struct flashchip *flash, uint8_t *buf)
 {
-	int i;
+	int idx;
 	int total_size = flash->total_size * 1024;
 	volatile uint8_t *bios = flash->virt_addr;
 
-	printf("Verifying address: ");
-	for (i = 0; i < total_size; i++) {
-		if (verbose)
-			printf("0x%08x", i);
-		if (*(bios + i) != *(buf + i)) {
-			printf("FAILED\n");
-			return 0;
+	printf("Verifying flash ");
+	
+	if(verbose) printf("address: 0x00000000\b\b\b\b\b\b\b\b\b\b");
+	
+	for (idx = 0; idx < total_size; idx++) {
+		if (verbose && ( (idx & 0xfff) == 0xfff ))
+			printf("0x%08x", idx);
+
+		if (*(bios + idx) != *(buf + idx)) {
+			if (verbose) {
+				printf("0x%08x ", idx);
+			}
+			printf("- FAILED\n");
+			return 1;
 		}
-		if (verbose)
+		
+		if (verbose && ( (idx & 0xfff) == 0xfff ))
 			printf("\b\b\b\b\b\b\b\b\b\b");
 	}
-	if (verbose)
-		printf("\n");
-	else
-		printf("VERIFIED\n");
-	return 1;
+	if (verbose) 
+		printf("\b\b\b\b\b\b\b\b\b\b ");
+	
+	printf("- VERIFIED         \n");
+	return 0;
 }
 
 

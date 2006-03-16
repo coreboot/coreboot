@@ -42,6 +42,8 @@
 struct flashchip flashchips[] = {
 	{"Am29F040B",	AMD_ID, 	AM_29F040B,	NULL, 512, 64 * 1024,
 	 probe_29f040b, erase_29f040b,	write_29f040b,	NULL},
+	{"Am29F016D",	AMD_ID, 	AM_29F016D,	NULL, 2048, 64 * 1024,
+	 probe_29f040b, erase_29f040b,	write_29f040b,	NULL},
 	{"At29C040A",	ATMEL_ID,	AT_29C040A,	NULL, 512, 256,
 	 probe_jedec,	erase_chip_jedec, write_jedec,	NULL},
 	{"Mx29f002",	MX_ID,		MX_29F002,	NULL, 256, 64 * 1024,

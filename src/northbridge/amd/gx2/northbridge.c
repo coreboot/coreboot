@@ -47,6 +47,14 @@ sizeram(void)
 	return sizem;
 }
 
+
+/* here is programming for the various MSRs.*/
+#define IM_QWAIT 0x100000
+
+#define DMCF_WRITE_SERIALIZE_REQUEST (2<<12) /* 2 outstanding */ /* in high */
+#define DMCF_SERIAL_LOAD_MISSES  (2) /* enabled */
+
+/* these are the 8-bit attributes for controlling RCONF registers */
 #define CACHE_DISABLE (1<<0)
 #define WRITE_ALLOCATE (1<<1)
 #define WRITE_PROTECT (1<<2)
@@ -58,10 +66,43 @@ sizeram(void)
 #define RAM_PROPERTIES (0)
 #define DEVICE_PROPERTIES (WRITE_SERIALIZE|CACHE_DISABLE)
 #define ROM_PROPERTIES (WRITE_SERIALIZE|WRITE_THROUGH|CACHE_DISABLE)
+#define MSR_WS_CD_DEFAULT (0x21212121)
+
+/* 1810-1817 give you 8 registers with which to program protection regions */
+/* the are region configuration range registers, or RRCF */
+/* in msr terms, the are a straight base, top address assign, since they are 4k aligned. */
+/* so no left-shift needed for top or base */
+#define RRCF_LOW(base,properties) (base|(1<<8)|properties)
+#define RRCF_LOW_CD(base)	RRCF_LOW(base, CACHE_DISABLE)
+
+
+struct msr_defaults {
+	int msr_no;
+	msr_t msr;
+} msr_defaults [] = {
+	{0x1700, {.hi = 0, .lo = IM_QWAIT}},
+	{0x1800, {.hi = DMCF_WRITE_SERIALIZE_REQUEST, .lo = DMCF_SERIAL_LOAD_MISSES}},
+	/* 1808 will be done down below, so we have to do 180a->1817 (well, 1813 really) */
+	/* for 180a, for now, we assume VSM will configure it */
+	/* 180b is left at reset value,a0000-bffff is non-cacheable */
+	/* 180c, c0000-dffff is set to write serialize and non-cachable */
+	{0x180c, {.hi = MSR_WS_CD_DEFAULT, .lo = MSR_WS_CD_DEFAULT}},
+	/* 180d is left at default, e0000-fffff is non-cached */
+
+	/* we will assume 180e, the ssm region configuration, is left at default or set by VSM */
+	/* we will not set 0x180f, the DMM,yet */
+	{0x1810, {.hi=0xee7ff000, .lo=RRCF_LOW(0xee000000, WRITE_COMBINE|CACHE_DISABLE)}},
+	{0x1811, {.hi = 0xefffb000, .lo = RRCF_LOW_CD(0xefff8000)}},
+	{0x1812, {.hi = 0xefff7000, .lo = RRCF_LOW_CD(0xefff4000)}},
+	{0x1813, {.hi = 0xefff3000, .lo = RRCF_LOW_CD(0xefff0000)}},
+	{0}
+};
+
 
 static void
 setup_gx2_cache(int sizem)
 {
+	int i;
 	msr_t msr;
 	unsigned long long val;
 	printk_debug("enable_cache: enable for %dm bytes\n", sizem);
@@ -86,7 +127,15 @@ setup_gx2_cache(int sizem)
 	msr.hi = (val >> 32);
 	printk_debug("msr will be set to %x:%x\n", msr.hi, msr.lo);
 	wrmsr(0x1808, msr);
-	
+
+	/* now do the default MSR values */
+	for(i = 0; msr_defaults[i].msr_no; i++) {
+		msr_t msr;
+		wrmsr(msr_defaults[i].msr_no, msr_defaults[i].msr);
+		msr = rdmsr(msr_defaults[i].msr_no);
+		printk_debug("MSR 0x%x is now 0x%x:0x%x\n", msr_defaults[i].msr_no, msr.hi,msr.lo);
+	}
+
 	enable_cache();
 	wbinvd();
 }

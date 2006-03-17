@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "mmcr.h"
+#include "../../../include/cpu/amd/sc520.h"
 
 #define offsetof(s,m) (size_t)(unsigned long)&(((s *)0)->m)
 #define val(s,m) (size_t)(unsigned long)&(((s))->m)
@@ -45,19 +45,19 @@ printf("val of romcs1 is 0x%x\n", val(mmcr, romregs.romcs1));
 printf("val of romcs2 is 0x%x\n", val(mmcr, romregs.romcs2));
 
 printf("\n");
-printf("val of hbctl is 0x%x\n",  val(mmcr, hostbridge.hbctl));
-printf("val of hbtgtirqctl is 0x%x\n",  val(mmcr, hostbridge.hbtgtirqctl));
-printf("val of hbtgtirqsta is 0x%x\n",  val(mmcr, hostbridge.hbtgtirqsta));
-printf("val of hbmstirqctl is 0x%x\n",  val(mmcr, hostbridge.hbmstirqctl));
-printf("val of hbmstirqsta is 0x%x\n",  val(mmcr, hostbridge.hbmstirqsta));
+printf("val of hbctl is 0x%x\n",  val(mmcr, hostbridge.ctl));
+printf("val of hbtgtirqctl is 0x%x\n",  val(mmcr, hostbridge.tgtirqctl));
+printf("val of hbtgtirqsta is 0x%x\n",  val(mmcr, hostbridge.tgtirqsta));
+printf("val of hbmstirqctl is 0x%x\n",  val(mmcr, hostbridge.mstirqctl));
+printf("val of hbmstirqsta is 0x%x\n",  val(mmcr, hostbridge.mstirqsta));
 printf("val of mstintadd is 0x%x\n",  val(mmcr, hostbridge.mstintadd));
 
 
 printf("\n");
-printf("val of sysarbctl is 0x%x\n", val(mmcr, sysarb.sysarbctl));
-printf("val of pciarbsta is 0x%x\n", val(mmcr, sysarb.pciarbsta));
-printf("val of sysarbmenb is 0x%x\n", val(mmcr, sysarb.sysarbmenb));
-printf("val of arbprictl is 0x%x\n", val(mmcr, sysarb.arbprictl));
+printf("val of sysarbctl is 0x%x\n", val(mmcr, sysarb.ctl));
+printf("val of pciarbsta is 0x%x\n", val(mmcr, sysarb.sta));
+printf("val of sysarbmenb is 0x%x\n", val(mmcr, sysarb.menb));
+printf("val of arbprictl is 0x%x\n", val(mmcr, sysarb.prictl));
 
 printf("\n");
 printf("val of adddecctl is 0x%x\n", val(mmcr, sysmap.adddecctl));
@@ -80,19 +80,19 @@ printf("val of gpaleoff is 0x%x\n", val(mmcr, gpctl.gpaleoff));
 
 printf("\n");
 
-printf("val of piopfs15_0 is 0x%x\n",  val(mmcr, pio.piopfs15_0));
-printf("val of piopfs31_16 is 0x%x\n",  val(mmcr, pio.piopfs31_16));
+printf("val of piopfs15_0 is 0x%x\n",  val(mmcr, pio.pfs15_0));
+printf("val of piopfs31_16 is 0x%x\n",  val(mmcr, pio.pfs31_16));
 printf("val of cspfs is 0x%x\n",  val(mmcr, pio.cspfs));
 printf("val of clksel is 0x%x\n",  val(mmcr, pio.clksel));
 printf("val of dsctl is 0x%x\n",  val(mmcr, pio.dsctl));
-printf("val of piodir15_0 is 0x%x\n",  val(mmcr, pio.piodir15_0));
-printf("val of piodir31_16 is 0x%x\n",  val(mmcr, pio.piodir31_16));
-printf("val of piodata15_0 is 0x%x\n",  val(mmcr, pio.piodata15_0));
-printf("val of piodata31_16 is 0x%x\n",  val(mmcr, pio.piodata31_16));
-printf("val of pioset15_0 is 0x%x\n",  val(mmcr, pio.pioset15_0));
-printf("val of pioset31_16 is 0x%x\n",  val(mmcr, pio.pioset31_16));
-printf("val of pioclr15_0 is 0x%x\n",  val(mmcr, pio.pioclr15_0));
-printf("val of pioclr31_16 is 0x%x\n",  val(mmcr, pio.pioclr31_16));
+printf("val of piodir15_0 is 0x%x\n",  val(mmcr, pio.dir15_0));
+printf("val of piodir31_16 is 0x%x\n",  val(mmcr, pio.dir31_16));
+printf("val of piodata15_0 is 0x%x\n",  val(mmcr, pio.data15_0));
+printf("val of piodata31_16 is 0x%x\n",  val(mmcr, pio.data31_16));
+printf("val of pioset15_0 is 0x%x\n",  val(mmcr, pio.set15_0));
+printf("val of pioset31_16 is 0x%x\n",  val(mmcr, pio.set31_16));
+printf("val of pioclr15_0 is 0x%x\n",  val(mmcr, pio.clr15_0));
+printf("val of pioclr31_16 is 0x%x\n",  val(mmcr, pio.clr31_16));
 
 printf("val of swtmrmilli is 0x%x\n", val(mmcr, swtmr.swtmrmilli));
 printf("val of swtmrmicro is 0x%x\n", val(mmcr, swtmr.swtmrmicro));

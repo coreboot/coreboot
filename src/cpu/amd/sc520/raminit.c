@@ -625,7 +625,9 @@ bad_ram:
 }	
 
 /* note: based on AMD code*/
-/* This code is known to work on the digital logic board.  */
+/* This code is known to work on the digital logic board and on the technologic
+ * systems ts5300
+ */
 int
 staticmem(void){
   volatile unsigned long *zero = (unsigned long *) CACHELINESZ;
@@ -657,7 +659,7 @@ staticmem(void){
 	/* normal mode */
 	*drcctl = 0x0;
 	*zero = 0;
-	print_err("DONE one last write and then turn on refresh etc\n");
+	print_err("DONE one last write and then turn on refresh etc\r\n");
 	*drcctl = 0x18;
 	*zero = 0;
 	print_err("DONE the normal\r\n");
@@ -665,7 +667,7 @@ staticmem(void){
 	if (*zero != 0xdeadbeef) 
 	  print_err("NO LUCK\r\n");
 	else
-	  print_err("did a stor and load ...\r\n");
-	print_err_hex32(*zero);
+	  print_err("did a store and load ...\r\n");
+	//print_err_hex32(*zero);
 	//	print_err(" zero is now "); print_err_hex32(*zero); print_err("\r\n");
 }

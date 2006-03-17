@@ -113,6 +113,5 @@ static int cs5535_early_setup(void)
 	cs5535_setup_cis_mode();
 	print_debug("Setup smbus\r\n");
 	cs5535_enable_smbus();
-	//get_memory_speed();
 	dummy();
 }

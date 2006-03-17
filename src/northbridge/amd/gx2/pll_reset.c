@@ -86,33 +86,38 @@ static const unsigned char fbdiv2plldiv[] = {
 	49, 40, 19, 59, 32, 54, 35,  0, 41, 60, 55,  0, 61,  0,  0,  0
 };
 
-#if 1
-static void get_memory_speed(void)
+static const unsigned char pci33_sdr_crt [] = {
+	/* FbDIV, VDIV, MDIV		   CPU/GeodeLink */
+	      12,    2,    4,		// 200/100
+	      16,    2,    4,		// 266/133
+              18,    2,    5,		// 300/120
+              20,    2,    5,		// 333/133
+              22,    2,    6,		// 366/122
+              24,    2,    6,		// 400/133
+              26,    2,    6            // 433/144
+};
+
+static const unsigned char pci33_ddr_crt [] = {
+	/* FbDIV, VDIV, MDIV		   CPU/GeodeLink */
+	     12,    2,    3,		// 200/133
+	     16,    2,    3,		// 266/177
+             18,    2,    3,		// 300/200
+             20,    2,    3,		// 333/222
+             22,    2,    3,		// 366/244
+             24,    2,    3,		// 400/266
+             26,    2,    3             // 433/289
+};
+
+static unsigned int get_memory_speed(void)
 {
-	unsigned char val;
+	unsigned char val, hi, lo;
 
-	val = do_smbus_read_byte(0x6000, 0xA0, 0);
-	print_debug("SPD byte ");
-	print_debug_hex8(0);
-	print_debug(" = ");
-	print_debug_hex8(val);
-	print_debug("\r\n");
+	val = spd_read_byte(0xA0, 9);
+	hi = (val >> 4) & 0x0f;
+	lo = val & 0x0f;
 
-	val = do_smbus_read_byte(0x6000, 0xA0, 1);
-	print_debug("SPD byte ");
-	print_debug_hex8(1);
-	print_debug(" = ");
-	print_debug_hex8(val);
-	print_debug("\r\n");
-
-	val = do_smbus_read_byte(0x6000, 0xA0, 2);
-	print_debug("SPD byte ");
-	print_debug_hex8(2);
-	print_debug(" = ");
-	print_debug_hex8(val);
-	print_debug("\r\n");
+	return 20000/(hi*10 + lo);
 }
-#endif
 
 static void pll_reset(void)
 {
@@ -125,14 +130,10 @@ static void pll_reset(void)
 	print_debug("Cpu core is ");
 	print_debug_hex32(cpu_core);
 	print_debug("\n");
-	//get_memory_speed();
-	//msr = rdmsr(GLCP_SYS_RSTPLL);
-	msr = rdmsr(0x4c000014);
-	print_debug("4c000014 is ");
-	print_debug_hex32(msr.hi); print_debug(":"); print_debug_hex32(msr.lo); print_debug("\n");
-	if (msr.lo & (1 << GLCP_SYS_RSTPLL_BYPASS)) {
-		print_debug("disable PLL bypass\n\r");
 
+	msr = rdmsr(GLCP_SYS_RSTPLL);
+	if (msr.lo & (1 << GLCP_SYS_RSTPLL_BYPASS)) {
+#if 0
 		msr.hi = PLLMSRhi;
 		msr.lo = PLLMSRlo;
 		wrmsr(GLCP_SYS_RSTPLL, msr);
@@ -144,6 +145,10 @@ static void pll_reset(void)
 		msr.lo |= PLLMSRlo2;
 		wrmsr(GLCP_SYS_RSTPLL,msr);
 		print_debug("should not be here\n\r");
+#endif
+		print_err("shit");
+		while (1)
+			;
 	}
 
 	if (msr.lo & GLCP_SYS_RSTPLL_SWFLAGS_MASK) {
@@ -152,25 +157,16 @@ static void pll_reset(void)
 		return;
 	}
 
-	print_debug("prgramming PLL\n\r");
-
+	/* get the sysref clock rate */
 	vdiv  = (msr.hi >> GLCP_SYS_RSTPLL_VDIV_SHIFT) & 0x07;
 	vdiv += 2;
 	fbdiv = (msr.hi >> GLCP_SYS_RSTPLL_FBDIV_SHIFT) & 0x3f;
 	fbdiv = fbdiv2plldiv[fbdiv];
-
 	spll_raw = cpu_core * vdiv;
 	sysref   = spll_raw / fbdiv;
 
-	print_debug("SYSREF/PCI Clock ");
-	print_debug_hex32(sysref);
-	print_debug("\n\r");
-
+	/* get target memory rate by SPD */
 	//gliu = get_memory_speed();
-	//get_memory_speed();
-	//print_debug("Target Memory Clock ");
-	//print_debug_hex32(gliu);
-	//print_debug("\n\r");
 
 	msr.hi = 0x00000019;
 	msr.lo = 0x06de0378;

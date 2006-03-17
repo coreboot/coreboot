@@ -4,7 +4,19 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 {
 }
 
+#if 0
+static void sdram_set_spd_registers(const struct mem_controller *ctrl) 
+{
+	msr_t mst;
+	unsigned char val;
 
+	/* get module banks per dimm, SPD byte 5 */
+	val = spd_read_byte(0xA0, 5);
+	if (val < 1 || val > 2)
+		print_err("Module banks per dimm");
+
+}
+#endif
 /* Section 6.1.3, LX processor databooks, BIOS Initialization Sequence
  * Section 4.1.4, GX/CS5535 GeodeROM Porting guide */
 static void sdram_enable(int controllers, const struct mem_controller *ctrl)

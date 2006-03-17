@@ -7,6 +7,7 @@ static int cs5535_enable_smbus(void)
 {
 	unsigned char val;
 
+	/* reset SMBUS controller */
 	outb(0, SMBUS_IO_BASE + SMB_CTRL2);
 
 	/* Set SCL freq and enable SMB controller */
@@ -18,24 +19,11 @@ static int cs5535_enable_smbus(void)
 	val = inb(SMBUS_IO_BASE + SMB_ADD);
 	val |= (0xEF | SMB_ADD_SAEN);
 	outb(val, SMBUS_IO_BASE + SMB_ADD); 
+}
 
-#if 0
-	print_debug("SMBUS registers ");
-	print_debug_hex8(inb(SMBUS_IO_BASE));
-	print_debug(" ");
-	print_debug_hex8(inb(SMBUS_IO_BASE + 1));
-	print_debug(" ");
-	print_debug_hex8(inb(SMBUS_IO_BASE + 2));
-	print_debug(" ");
-	print_debug_hex8(inb(SMBUS_IO_BASE + 3));
-	print_debug(" ");
-	print_debug_hex8(inb(SMBUS_IO_BASE + 4));
-	print_debug(" ");
-	print_debug_hex8(inb(SMBUS_IO_BASE + 5));
-	print_debug(" ");
-	print_debug_hex8(inb(SMBUS_IO_BASE + 6));
-	print_debug("\n\r");
-#endif
+static int smbus_read_byte(unsigned device, unsigned address)
+{
+        return do_smbus_read_byte(SMBUS_IO_BASE, device, address-1);
 }
 
 #if 0
@@ -49,10 +37,6 @@ static int smbus_send_byte(unsigned device, unsigned char val)
         return do_smbus_send_byte(SMBUS_IO_BASE, device, val);
 }
 
-static int smbus_read_byte(unsigned device, unsigned address)
-{
-        return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
-}
 
 static int smbus_write_byte(unsigned device, unsigned address, unsigned char val)
 {

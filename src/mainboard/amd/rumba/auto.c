@@ -18,6 +18,12 @@
 
 #include "southbridge/amd/cs5535/cs5535_early_smbus.c"
 #include "southbridge/amd/cs5535/cs5535_early_setup.c"
+
+static inline int spd_read_byte(unsigned device, unsigned address)
+{
+        return smbus_read_byte(device, address);
+}
+
 #include "northbridge/amd/gx2/raminit.h"
 
 static void sdram_set_spd_registers(const struct mem_controller *ctrl) {
@@ -33,10 +39,9 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl) {
 	msr = rdmsr(0x20000019);
 	msr.hi = 0x18000108;
 	msr.lo = 0x696332a3;
-	wrmsr(0x20000019, msr);
-
-	
+	wrmsr(0x20000019, msr);	
 }
+
 #include "northbridge/amd/gx2/raminit.c"
 #include "sdram/generic_sdram.c"
 

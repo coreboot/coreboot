@@ -43,6 +43,8 @@
 #define SMBUS_TIMEOUT (100*1000*10)
 #define SMBUS_STATUS_MASK 0xfbff
 
+#define SMBUS_IO_BASE 0x6000
+
 static void smbus_delay(void)
 {
     	outb(0x80, 0x80);
@@ -75,6 +77,29 @@ static int smbus_start_condition(unsigned smbus_io_base)
 	return loops?0:SMBUS_WAIT_UNTIL_READY_TIMEOUT;
 }
 
+static int smbus_check_stop_condition(unsigned smbus_io_base)
+{
+	unsigned char val;
+	unsigned long loops;
+	loops = SMBUS_TIMEOUT;
+	/* check for SDA status */
+	do {
+		smbus_delay();
+		val = inw(smbus_io_base + SMB_CTRL1);
+		if ((val & SMB_CTRL1_STOP) == 0) {
+			break;
+		}
+	} while(--loops);
+	return loops?0:SMBUS_WAIT_UNTIL_READY_TIMEOUT;
+}
+
+static int smbus_stop_condition(unsigned smbus_io_base)
+{
+	unsigned char val;
+	val = inb(smbus_io_base + SMB_CTRL1);
+	outb(SMB_CTRL1_STOP, smbus_io_base + SMB_CTRL1);
+}
+
 static int smbus_send_slave_address(unsigned smbus_io_base, unsigned char device)
 {
 	unsigned char val;
@@ -86,8 +111,8 @@ static int smbus_send_slave_address(unsigned smbus_io_base, unsigned char device
 
 	/* check for bus conflict and NACK */
 	val = inb(smbus_io_base + SMB_STS);
-	if ( ((val & SMB_STS_BER)    != 0) ||
-	     ((val & SMB_STS_NEGACK) != 0))
+	if (((val & SMB_STS_BER)    != 0) ||
+	    ((val & SMB_STS_NEGACK) != 0))
 		return SMBUS_ERROR;
 
 	/* check for SDA status */
@@ -112,8 +137,8 @@ static int smbus_send_command(unsigned smbus_io_base, unsigned char command)
 
 	/* check for bus conflict and NACK */
 	val = inb(smbus_io_base + SMB_STS);
-	if ( ((val & SMB_STS_BER)    != 0) ||
-	     ((val & SMB_STS_NEGACK) != 0))
+	if (((val & SMB_STS_BER)    != 0) ||
+	    ((val & SMB_STS_NEGACK) != 0))
 		return SMBUS_ERROR;
 
 	/* check for SDA status */
@@ -129,25 +154,27 @@ static int smbus_send_command(unsigned smbus_io_base, unsigned char command)
 
 static unsigned char do_smbus_read_byte(unsigned smbus_io_base, unsigned char device, unsigned char address)
 {
-	unsigned char val;
+	unsigned char val, val1;
 
-	if (smbus_start_condition(smbus_io_base) < 0)
-	    print_debug("smbus error 1");
+	smbus_check_stop_condition(smbus_io_base);
 
-	if (smbus_send_slave_address(smbus_io_base, device) < 0)
-	    print_debug("smbus error 2");
+	smbus_start_condition(smbus_io_base);
 
-	if (smbus_send_command(smbus_io_base, address) < 0)
-	    print_debug("smbus error 3");
+	smbus_send_slave_address(smbus_io_base, device);
 
-	if (smbus_start_condition(smbus_io_base) < 0)
-	    print_debug("smbus error 4");
+	smbus_send_command(smbus_io_base, address);
 
-	if (smbus_send_slave_address(smbus_io_base, device | 0x01))
-	    print_debug("smbus error 5");
+	smbus_start_condition(smbus_io_base);
 
+	smbus_send_slave_address(smbus_io_base, device | 0x01);
+
+	/* send NACK to slave */
 	val = inb(smbus_io_base + SMB_CTRL1);
 	outb(val | SMB_CTRL1_ACK, smbus_io_base + SMB_CTRL1);
 
-	return inb(smbus_io_base + SMB_SDA);
+	val = inb(smbus_io_base + SMB_SDA);
+
+	//smbus_stop_condition(smbus_io_base);
+
+	return val;
 }

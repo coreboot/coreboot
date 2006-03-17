@@ -62,11 +62,11 @@ end
 
 makerule ./auto.E 
 	depends	"$(MAINBOARD)/auto.c option_table.h ./romcc" 
-	action	"./romcc -E -mcpu=i386 -O -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+	action	"./romcc -E -mcpu=p2 -O -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
 end
 makerule ./auto.inc 
 	depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
-	action	"./romcc    -mcpu=i386 -O -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+	action	"./romcc    -mcpu=p2 -O -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
 end
 
 ##

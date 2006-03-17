@@ -75,6 +75,16 @@ sizeram(void)
 #define RRCF_LOW(base,properties) (base|(1<<8)|properties)
 #define RRCF_LOW_CD(base)	RRCF_LOW(base, CACHE_DISABLE)
 
+/* build initializer for P2D MSR */
+#define P2D_BM(msr, pdid1, bizarro, pbase, pmask) {msr, {.hi=(pdid1<<29)|(bizarro<<28)|(pbase>>24), .lo=(pbase<<8)|pmask}}
+#define P2D_BMO(msr, pdid1, bizarro, poffset, pbase, pmask) {msr, {.hi=(pdid1<<29)|(bizarro<<28)|(poffset<<8)|(pbase>>24), .lo=(pbase<<8)|pmask}}
+#define P2D_R(msr, pdid1, bizarro, pmax, pmin) {msr, {.hi=(pdid1<<29)|(bizarro<<28)|(pmax>>12), .lo=(pmax<<20)|pmin}}
+#define P2D_RO(msr, pdid1, bizarro, poffset, pmax, pmin) {msr, {.hi=(pdid1<<29)|(bizarro<<28)|(poffset<<8)|(pmax>>12), .lo=(pmax<<20)|pmin}}
+#define P2D_SC(msr, pdid1, bizarro, wen, ren,pscbase) {msr, {.hi=(pdid1<<29)|(bizarro<<28)|(wen), .lo=(ren<<16)|(pscbase>>18)}}
+#define IOD_BM(msr, pdid1, bizarro, ibase, imask) {msr, {.hi=(pdid1<<29)|(bizarro<<28)|(ibase>>12), .lo=(ibase<<20)|imask}}
+#define IOD_SC(msr, pdid1, bizarro, en, wen, ren, ibase) {msr, {.hi=(pdid1<<29)|(bizarro<<28), .lo=(en<<24)|(wen<<21)|(ren<<20)|(ibase<<3)}}
+
+
 
 struct msr_defaults {
 	int msr_no;
@@ -95,6 +105,15 @@ struct msr_defaults {
 	{0x1811, {.hi = 0xefffb000, .lo = RRCF_LOW_CD(0xefff8000)}},
 	{0x1812, {.hi = 0xefff7000, .lo = RRCF_LOW_CD(0xefff4000)}},
 	{0x1813, {.hi = 0xefff3000, .lo = RRCF_LOW_CD(0xefff0000)}},
+	/* now for GLPCI routing */
+	/* GLIU0 */
+	P2D_BM(0x10000020, 0x1, 0x0, 0x0, 0xfff80),
+	P2D_BM(0x10000021, 0x1, 0x0, 0x80000, 0xfffe0),
+	P2D_SC(0x1000002c, 0x1, 0x0, 0x0,  0xff03, 0x3),
+	/* GLIU1 */
+	P2D_BM(0x40000020, 0x1, 0x0, 0x0, 0xfff80),
+	P2D_BM(0x40000021, 0x1, 0x0, 0x80000, 0xfffe0),
+	P2D_SC(0x4000002d, 0x1, 0x0, 0x0,  0xff03, 0x3),
 	{0}
 };
 
@@ -102,7 +121,6 @@ struct msr_defaults {
 static void
 setup_gx2_cache(int sizem)
 {
-	int i;
 	msr_t msr;
 	unsigned long long val;
 	printk_debug("enable_cache: enable for %dm bytes\n", sizem);
@@ -128,14 +146,6 @@ setup_gx2_cache(int sizem)
 	printk_debug("msr will be set to %x:%x\n", msr.hi, msr.lo);
 	wrmsr(0x1808, msr);
 
-	/* now do the default MSR values */
-	for(i = 0; msr_defaults[i].msr_no; i++) {
-		msr_t msr;
-		wrmsr(msr_defaults[i].msr_no, msr_defaults[i].msr);
-		msr = rdmsr(msr_defaults[i].msr_no);
-		printk_debug("MSR 0x%x is now 0x%x:0x%x\n", msr_defaults[i].msr_no, msr.hi,msr.lo);
-	}
-
 	enable_cache();
 	wbinvd();
 }
@@ -143,10 +153,34 @@ setup_gx2_cache(int sizem)
 void
 setup_gx2(void)
 {
-	int sizem;
+	int i;
+	msr_t msr;
+
+	unsigned long sizem, membytes;
 	sizem = sizeram();
 	
 	setup_gx2_cache(sizem);
+
+
+	membytes = sizem * 1048576;
+	/* we need to set 0x10000029 and 0x40000029 */
+	msr.hi = 0x20000000 | membytes >>20;
+	msr.lo = 0x100 | ( ((membytes >>12) & 0xfff) << 20);
+	wrmsr(0x10000029, msr);
+	wrmsr(0x40000029, msr);
+	msr = rdmsr(0x10000029);
+	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x10000029, msr.hi,msr.lo);
+	msr = rdmsr(0x40000029);
+	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x40000029, msr.hi,msr.lo);
+
+	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x40000029, msr.hi,msr.lo);
+	/* now do the default MSR values */
+	for(i = 0; msr_defaults[i].msr_no; i++) {
+		msr_t msr;
+		wrmsr(msr_defaults[i].msr_no, msr_defaults[i].msr);
+		msr = rdmsr(msr_defaults[i].msr_no);
+		printk_debug("MSR 0x%x is now 0x%x:0x%x\n", msr_defaults[i].msr_no, msr.hi,msr.lo);
+	}
 }
 
 

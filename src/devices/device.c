@@ -684,7 +684,7 @@ void dev_configure(void)
  */
 void dev_enable(void)
 {
-	printk_info("Enabling resourcess...\n");
+	printk_info("Enabling resources...\n");
 
 	/* now enable everything. */
 	enable_resources(&dev_root);

@@ -39,108 +39,115 @@ static void enable_dev(struct device *dev) {
 	volatile struct mmcrpic *pic = MMCRPIC;
 	volatile struct mmcr *mmcr = MMCRDEFAULT;
 
-	/* ts5300 has this register set to a weird value. 
-	 * follow the board, not the manual!
-	 */
-
 	/* currently, nothing in the device to use, so ignore it. */
 	printk_err("Technologic Systems 5300 ENTER %s\n", __FUNCTION__);
-
 
 	/* from fuctory bios */
 	/* NOTE: the following interrupt settings made interrupts work
 	 * for hard drive, and serial, but not for ethernet 
 	 */
+
+	printk_err("Setting up PIC\n");
 	/* just do what they say and nobody gets hurt. */
-	mmcr->pic.pcicr = 0 ; // M_GINT_MODE | M_S1_MODE | M_S2_MODE;
+	mmcr->pic.pcicr = 0 ;
 	/* all ints to level */
 	mmcr->pic.mpicmode = 0;
 	mmcr->pic.sl1picmode = 0;
-	mmcr->pic.sl2picmode = 0x80;
+	mmcr->pic.sl2picmode = 0;
 
-	mmcr->pic.intpinpol = 0;
+	mmcr->pic.intpinpol = 0x100;
 
 	mmcr->pic.pit0map = 1;
-	mmcr->pic.uart1map = 0xc;
-	mmcr->pic.uart2map = 0xb;
-	mmcr->pic.rtcmap = 3;
-	mmcr->pic.ferrmap = 8;
-	mmcr->pic.gp0imap = 6;
-	mmcr->pic.gp1imap = 2;
-	mmcr->pic.gp2imap = 7;
+	mmcr->pic.uart1map = 0x0c;
+	mmcr->pic.uart2map = 0x0b;
+	mmcr->pic.rtcmap  = 0x03;
+	mmcr->pic.ferrmap = 0x00;
+	mmcr->pic.intpinpol = 0x100;
+	
+	mmcr->pic.gp0imap = 0x00;
+	mmcr->pic.gp1imap = 0x02;
+	mmcr->pic.gp2imap = 0x07;
+	mmcr->pic.gp3imap = 0x05;
+	mmcr->pic.gp4imap = 0x06;
+	mmcr->pic.gp5imap = 0x0d;
 	mmcr->pic.gp6imap = 0x15;
 	mmcr->pic.gp7imap = 0x16;
-	mmcr->pic.gp10imap = 0x9;
+	mmcr->pic.gp8imap = 0x3;
 	mmcr->pic.gp9imap = 0x4;
+	mmcr->pic.gp10imap = 0x9;
 
+	// irqdump();
 
-
-
-
-	irqdump();
-	printk_err("uart 1 ctl is 0x%x\n", *(unsigned char *) 0xfffefcc0);
-
-	printk_err("0xc20 ctl is 0x%x\n", *(unsigned short *) 0xfffefc20);
-	printk_err("0xc22 0x%x\n", *(unsigned short *) 0xfffefc22b);
-
-	/* The following block has NOT proven sufficient to get
-	 * the VGA hardware to talk to us 
-	 */
-	/* let's set some mmcr stuff per the BIOS settings */
-	mmcr->dbctl.dbctl = 0x10;
-	mmcr->sysarb.ctl = 6;
-	mmcr->sysarb.menb = 0xf;
-	mmcr->sysarb.prictl = 0xc0000f0f;
+	printk_err("Setting up sysarb\n");
+	mmcr->dbctl.dbctl = 0x01;
+	mmcr->sysarb.ctl = 0x00;
+	mmcr->sysarb.menb = 0x1f;
+	mmcr->sysarb.prictl = 0x40000f0f;
+	
 	/* this is bios setting, depends on sysarb above */
-	mmcr->hostbridge.ctl = 0x108;
-	printk_err("TS5300 EXIT %s\n", __FUNCTION__);
+	mmcr->hostbridge.ctl = 0x0;
+	mmcr->hostbridge.tgtirqctl = 0x0;
+	mmcr->hostbridge.tgtirqsta = 0xf00;
+	mmcr->hostbridge.mstirqctl = 0x0;
+	mmcr->hostbridge.mstirqsta = 0x708;
 
+	printk_err("Setting up pio\n");
 	/* pio */
-	mmcr->pio.data31_16 = 0xffbf;
+	mmcr->pio.pfs15_0 = 0xffff;
+	mmcr->pio.pfs31_16 = 0xffff;
+	mmcr->pio.cspfs = 0xfe;
+	mmcr->pio.clksel = 0x13;
+	mmcr->pio.dsctl = 0x200;
+	mmcr->pio.data15_0 = 0xde04;
+	mmcr->pio.data31_16 = 0xef9f;
 
-	/* pci stuff */
-	mmcr->pic.pciintamap = 0xa;
+	printk_err("Setting up sysmap\n");
+	/* system memory map */
+	mmcr->sysmap.adddecctl = 0x04;
+	mmcr->sysmap.wpvsta = 0x8006;
+	mmcr->sysmap.par[1] = 0x340f0070;
+	mmcr->sysmap.par[2] = 0x380701f0;
+	mmcr->sysmap.par[3] = 0x3c0103f6;
+	mmcr->sysmap.par[4] = 0x2c0f0300;
+	mmcr->sysmap.par[5] = 0x447c00a0;
+	mmcr->sysmap.par[6] = 0xe600000c;
+	mmcr->sysmap.par[7] = 0x300046e8;
+	mmcr->sysmap.par[8] = 0x500400d0;
+	mmcr->sysmap.par[9] = 0x281f0140;
+	mmcr->sysmap.par[13] = 0x8a07c940;
+	mmcr->sysmap.par[15] = 0xee00400e;
 
-	/* END block where vga hardware still will not talk to us */
-	/* all we get from VGA I/O addresses are ffff etc.
-	 */
-	mmcr->sysmap.adddecctl = 0x10;
-
-	/* VGA now talks to us, so this adddecctl was the trick. 
-	 * still no interrupts from enet. 
-	 * Let's try fixing the piodata stuff, as there may be 
-	 * some wire there not documented.
-	 */
-	mmcr->pio.data31_16 = 0xffbf;
-	/* also, our sl?picmode needs to match fuctory bios */
-	mmcr->pic.sl1picmode = 0x80;
-	mmcr->pic.sl2picmode = 0x0;
-	/* and, finally, they do set gp5imap and we don't. 
-	 */
-	mmcr->pic.gp5imap = 0xd;
-	/* remaining problem: almost certainly, the irq table is bogus
-	 * NO SHOCK as it came from fuctory bios. 
-	 * but let's try these 4 changes for now and see what shakes.
-	 */
-	/* still not interrupts. */
+	printk_err("Setting up gpctl\n");
+	mmcr->gpctl.gpcsrt = 0x01;
+	mmcr->gpctl.gpcspw = 0x09;
+	mmcr->gpctl.gpcsoff = 0x01;
+	mmcr->gpctl.gprdw = 0x07;
+	mmcr->gpctl.gprdoff = 0x02;
+	mmcr->gpctl.gpwrw = 0x07;
+	mmcr->gpctl.gpwroff = 0x02;
+	
+	//mmcr->reset.sysinfo = 0xdf;
+	//mmcr->reset.rescfg = 0x5;
 	/* their IRQ table is wrong. Just hardwire it */
-	{
-	  char pciints[4] = {15, 15, 15, 15};
-	  pci_assign_irqs(0, 12, pciints);
-	}
+	//{
+	//  char pciints[4] = {15, 15, 15, 15};
+	//  pci_assign_irqs(0, 12, pciints);
+	//}
 	/* the assigned failed but we just noticed -- there is no
 	 * dma mapping, and selftest on e100 requires that dma work
 	 */
-	/* follow fuctory here */
-	mmcr->dmacontrol.extchanmapa = 0x3210;
+	mmcr->dmacontrol.extchanmapa = 0xf210;
+	mmcr->dmacontrol.extchanmapb = 0xffff;
 
 	/* hack for IDIOTIC need to fix rom_start */
 	printk_err("Patching rom_start due to sc520 limits\n");
-	rom_start = 0x2000000 + 0x40000;
+	rom_start = 0x09400000 + 0xe0000;
 	rom_end = rom_start + PAYLOAD_SIZE - 1;
 
+	printk_err("TS5300 EXIT %s\n", __FUNCTION__);
 	
 }
+
 struct chip_operations mainboard_technologic_ts5300_ops = {
 	CHIP_NAME("Technologic Systems TS5300 mainboard ")
 	.enable_dev = enable_dev

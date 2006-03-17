@@ -83,11 +83,15 @@ setupsc520(void){
   sp = (unsigned short *)0xfffef040;
   *sp = 0;
 
+  // moved to auto.c by stepan
+  setup_pars();
+#if 0
   /* as per the book: */
   /* PAR register setup */
 	/* set up the PAR registers as they are on the MSM586SEG */
 	par = (unsigned long *) 0xfffef088;
 
+	
 	/* NOTE: move this to mainboard.c ASAP */
 #if 1
 
@@ -111,7 +115,7 @@ setupsc520(void){
 	par += 15;
 #endif
 	*par++ = 0x8a020200; /*PAR15: BOOTCS:code:nocache:write:Base 0x2000000, size 0x80000:*/
-
+#endif
 
 	/* CPCSF register */
 

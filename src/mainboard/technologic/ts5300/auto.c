@@ -12,39 +12,46 @@
 #include "ram/ramtest.c"
 #include "cpu/x86/bist.h"
 //#include "lib/delay.c"
+
+void setup_pars(void)
+{
+        volatile unsigned long *par;
+        /* as per the book: */
+        /* PAR register setup */
+        /* set up the PAR registers as they are on the MSM586SEG */
+        par = (unsigned long *) 0xfffef088;
+
+        /* NOTE: move this to mainboard.c ASAP */
+	*par++ = 0x00000000;
+	*par++ = 0x340f0070;
+	*par++ = 0x380701f0;
+	*par++ = 0x3c0103f6;
+	*par++ = 0x2c0f0300;
+	*par++ = 0x447c00a0;
+	*par++ = 0xe600000c;
+	*par++ = 0x300046e8;
+	*par++ = 0x500400d0;
+	*par++ = 0x281f0140;
+	*par++ = 0x00000000;
+	*par++ = 0x00000000;
+	*par++ = 0x00000000;
+	*par++ = 0x8a07c940;
+	*par++ = 0x00000000;
+	*par++ = 0xee00400e;
+}
+
 #include "cpu/amd/sc520/raminit.c"
 
-struct mem_controller {
-	int i;
-};
+#include "debug.c"
 
 static void hard_reset(void)
 {
+	print_err("Hard reset called.\n");
+	while (1) ;
 }
 
-static void memreset_setup(void)
+static inline void dumpmem(void)
 {
-}
-
-static void memreset(int controllers, const struct mem_controller *ctrl)
-{
-}
-
-
-
-static inline void activate_spd_rom(const struct mem_controller *ctrl)
-{
-        /* nothing to do */
-}
- 
-static inline int spd_read_byte(unsigned device, unsigned address)
-{
-//	return smbus_read_byte(device, address);
-}
-
-//#include "sdram/generic_sdram.c"
-
-static inline void dumpmem(void){
   int i, j;
   unsigned char *l;
   unsigned char c;
@@ -159,31 +166,30 @@ static inline void irqinit(void){
 
 static void main(unsigned long bist)
 {
-    volatile int i;
-    for(i = 0; i < 100; i++)
-      ;
-
+	volatile int i;
+	for(i = 0; i < 100; i++)
+		;
 
         setupsc520();
 	irqinit();
         uart_init();
         console_init();
-		for(i = 0; i < 100; i++)
-	  print_err("fill usart\r\n");
-		//		while(1)
-		print_err("HI THERE!\r\n");
-		//			sizemem();
+	
+	//for(i = 0; i < 100; i++)
+	//	print_err("fill usart\r\n");
+	
+	print_err("Technologic Systems TS5300 - http://www.embeddedx86.com/\r\n");
+	
 	staticmem();
-	print_err("c60 is "); print_err_hex16(*(unsigned short *)0xfffefc60); 
-	print_err("\n");
+
+	// sw ctimer millisecond count
+	//print_err("\r\nc60 is "); print_err_hex16(*(unsigned short *)0xfffefc60); 
+	//print_err("\r\n");
 			
-	//			while(1)
-	print_err("STATIC MEM DONE\r\n");
-	outb(0xee, 0x80);
-	print_err("loop forever ...\n");
+	print_err("Memory initialized: 32MB\r\n");
 
 
-#if 0
+#if 1
 
 	/* clear memory 1meg */
         __asm__ volatile(
@@ -216,7 +222,12 @@ static void main(unsigned long bist)
 	// Check 32MB of memory @ 0
 	ram_check(0x00000000, 0x02000000);
 #endif
-#if 1
+
+	/* Don't think this is needed for the ts5300. 
+	 * The MMCRs are at fffef000 and the image is only 64k (without
+	 * payload) so it fits exactly between MMCR and 4G
+	 */
+#if 0
 	{
 	  volatile unsigned char *src = (unsigned char *) 0x2000000 + 0x60000;
 	  volatile unsigned char *dst = (unsigned char *) 0x4000; 

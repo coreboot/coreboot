@@ -33,6 +33,10 @@ uses CROSS_COMPILE
 uses CC
 uses HOSTCC
 uses OBJCOPY
+uses TTYS0_BAUD
+uses TTYS0_BASE
+uses TTYS0_LCS
+
 
 uses CONFIG_CONSOLE_SERIAL8250
 
@@ -48,6 +52,24 @@ uses CONFIG_PCI_ROM_RUN
 
 
 default CONFIG_CONSOLE_SERIAL8250=1
+## Select the serial console baud rate
+#default TTYS0_BAUD=115200
+#default TTYS0_BAUD=57600
+#default TTYS0_BAUD=38400
+#default TTYS0_BAUD=19200
+default TTYS0_BAUD=9600
+#default TTYS0_BAUD=4800
+#default TTYS0_BAUD=2400
+#default TTYS0_BAUD=1200
+
+# Select the serial console base port
+default TTYS0_BASE=0x2f8
+
+# Select the serial protocol
+# This defaults to 8 data bits, 1 stop bit, and no parity
+default TTYS0_LCS=0x3
+
+
 default DEFAULT_CONSOLE_LOGLEVEL=9
 default MAXIMUM_CONSOLE_LOGLEVEL=9
 ## ROM_SIZE is the size of boot ROM that this board will use.

@@ -43,10 +43,10 @@ int print_mmcr(struct mmcr *mmcr)
 	printf("drctmctl is 0x%x\n", val(mmcr, memregs.drctmctl));
 	printf("drccfg is 0x%x\n", val(mmcr, memregs.drccfg));
 	printf("bendaddr is 0x%02x%02x%02x%02x\n", 
-			val(mmcr, memregs.drcbendadr[0]),
-			val(mmcr, memregs.drcbendadr[1]),
+			val(mmcr, memregs.drcbendadr[3]),
 			val(mmcr, memregs.drcbendadr[2]),
-			val(mmcr, memregs.drcbendadr[3]));
+			val(mmcr, memregs.drcbendadr[1]),
+			val(mmcr, memregs.drcbendadr[0]));
 	printf("eccctl is 0x%x\n", val(mmcr, memregs.eccctl));
 	printf("eccsta is 0x%x\n", val(mmcr, memregs.eccsta));
 	printf("ckbpos is 0x%x\n", val(mmcr, memregs.eccckbpos));

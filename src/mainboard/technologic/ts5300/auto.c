@@ -189,7 +189,7 @@ static void main(unsigned long bist)
 	print_err("Memory initialized: 32MB\r\n");
 
 
-#if 1
+#if 0
 
 	/* clear memory 1meg */
         __asm__ volatile(

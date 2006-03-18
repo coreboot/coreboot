@@ -21,7 +21,7 @@ romimage "normal"
 	option ROM_IMAGE_SIZE=0x20000
 	option XIP_ROM_SIZE=0x20000
 	option LINUXBIOS_EXTRA_VERSION=".0-normal"
-	payload ../../../payloads/filo.elf
+	payload ../../../../../../filo.elf
 end
 
 romimage "fallback" 
@@ -29,7 +29,7 @@ romimage "fallback"
 	option ROM_IMAGE_SIZE=0x20000
 	option XIP_ROM_SIZE=0x20000
 	option LINUXBIOS_EXTRA_VERSION=".0-fallback"
-	payload ../../../payloads/filo.elf
+	payload ../../../../../../filo.elf
 end
 
 buildrom ./agami_aruma.rom ROM_SIZE "normal" "fallback"

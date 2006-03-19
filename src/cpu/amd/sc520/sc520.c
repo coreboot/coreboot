@@ -1,3 +1,7 @@
+/*
+ * This file needs a major cleanup. Too much #if 0 code
+ */
+
 #include <console/console.h>
 #include <arch/io.h>
 #include <stdint.h>
@@ -24,7 +28,8 @@ udelay(int microseconds) {
         sc520_udelay(microseconds); 
 }
 /*
- * set up basic things ... PAR should NOT go here, as it might change with the mainboard. 
+ * set up basic things ... 
+ * PAR should NOT go here, as it might change with the mainboard. 
  */
 static void cpu_init(device_t dev) 
 {
@@ -210,11 +215,18 @@ void sc520_enable_resources(device_t dev) {
 static struct device_operations pci_domain_ops = {
         .read_resources   = pci_domain_read_resources,
         .set_resources    = pci_domain_set_resources,
-        .enable_resources = enable_resources,
+	/*
+	 * If enable_resources is set to the generic enable_resources
+	 * function the whole thing will hang in an endless loop on
+	 * the ts5300. If this is really needed on another platform,
+	 * something is conceptionally wrong.
+	 */
+        .enable_resources = 0, //enable_resources,
         .init             = 0,
         .scan_bus         = pci_domain_scan_bus,
-};  
+};
 
+#if 0
 static void cpu_bus_init(device_t dev)
 {
   printk_spew("cpu_bus_init\n");
@@ -231,6 +243,7 @@ static struct device_operations cpu_bus_ops = {
         .init             = cpu_bus_init,
         .scan_bus         = 0,
 };
+#endif
 
 static void enable_dev(struct device *dev)
 {
@@ -240,9 +253,14 @@ static void enable_dev(struct device *dev)
                 dev->ops = &pci_domain_ops;
 		pci_set_method(dev);
         }
+#if 0
+	/* This is never hit as none of the sc520 boards have
+	 * an APIC cluster defined
+	 */
         else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
                 dev->ops = &cpu_bus_ops;
         }
+#endif
 }
 
 

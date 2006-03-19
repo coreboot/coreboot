@@ -4,11 +4,9 @@
 target technologic_ts5300
 mainboard technologic/ts5300
 
-option DEFAULT_CONSOLE_LOGLEVEL=10
-option MAXIMUM_CONSOLE_LOGLEVEL=10
+option DEFAULT_CONSOLE_LOGLEVEL=3
+option MAXIMUM_CONSOLE_LOGLEVEL=3
 option CONFIG_COMPRESS=1
-#option CONFIG_COMPRESS=0
-
 option CONFIG_CONSOLE_VGA=0
 
 #romimage "normal"
@@ -27,7 +25,8 @@ romimage "fallback"
 #	option ROM_IMAGE_SIZE=48 * 1024 # 0x8000
 #	option ROM_IMAGE_SIZE=64 * 1024 # 0x10000
 #	option ROM_IMAGE_SIZE=512 * 1024 # 0x10000
-	option LINUXBIOS_EXTRA_VERSION=".0-Fallback"
+#	option LINUXBIOS_EXTRA_VERSION=".0-Fallback"
+	option LINUXBIOS_EXTRA_VERSION=".0"
 	payload /home/stepan/filo-ts5300.elf
 end
 

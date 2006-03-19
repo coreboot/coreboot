@@ -817,7 +817,7 @@ end
 define HT_CHAIN_UNITID_BASE
 	default 1
 	export always
-	comment "this will be first hypertransport device's unitid base, if sb ht chain only has one ht device, it could be 0"
+	comment "first hypertransport device's unitid base. if southbridge ht chain only has one ht device, it could be 0"
 end
 
 define HT_CHAIN_END_UNITID_BASE

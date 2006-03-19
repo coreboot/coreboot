@@ -56,69 +56,44 @@
 #define drcbendadr   (( volatile unsigned long *)0xfffef018)
 #define eccctl   (( volatile unsigned char *)0xfffef020)
 #define dbctl   (( volatile unsigned char *)0xfffef040)
-void
-setupsc520(void){
-  volatile unsigned char *cp;
-  volatile unsigned short *sp;
-  volatile unsigned long *edi;
-  volatile unsigned long *par;
 
-  /* do this to see if MMCR will start acting right. 
-   * we suspect you have to do SOMETHING to get things going. 
-   * I'm really starting to hate this processor. 
-   */
-  /* no, that did not help. I wonder what will? 
-   * outl(0x800df0cb, 0xfffc);
-   */
-  /* well, this is special! You have to do SHORT writes to the locations, 
-   * even though they are CHAR in size and CHAR aligned and technically, a 
-   * SHORT write will result in -- yoo ha! -- over writing the next location!
-   * Thanks to the u-boot guys for a reference code I can use. 
-   * with these short pointers, it now reliably comes up after power cycle
-   * with printk. Ah yi yi.
-   */
-  /* turn off the write buffer*/
-  /* per the note above, make this a short? Let's try it. 
-   */
-  sp = (unsigned short *)0xfffef040;
-  *sp = 0;
+void setupsc520(void)
+{
+	volatile unsigned char *cp;
+	volatile unsigned short *sp;
+	volatile unsigned long *edi;
 
-  // moved to auto.c by stepan
-  setup_pars();
-#if 0
-  /* as per the book: */
-  /* PAR register setup */
-	/* set up the PAR registers as they are on the MSM586SEG */
-	par = (unsigned long *) 0xfffef088;
-
+	/* do this to see if MMCR will start acting right. we suspect
+	 * you have to do SOMETHING to get things going. I'm really
+	 * starting to hate this processor. 
+	 */
 	
+	/* no, that did not help. I wonder what will?  
+	 * outl(0x800df0cb, 0xfffc);
+	 */
+	
+	/* well, this is special! You have to do SHORT writes to the
+	 * locations, even though they are CHAR in size and CHAR aligned
+	 * and technically, a SHORT write will result in -- yoo ha! --
+	 * over writing the next location! Thanks to the u-boot guys
+	 * for a reference code I can use. with these short pointers,
+	 * it now reliably comes up after power cycle with printk. Ah yi
+	 * yi.
+   	 */
+	
+	/* turn off the write buffer*/
+	/* per the note above, make this a short? Let's try it. */
+	sp = (unsigned short *)0xfffef040;
+	*sp = 0;
+
+	/* as per the book: */
+	/* PAR register setup */
+	/* set up the PAR registers as they are on the MSM586SEG */
+	/*    moved to auto.c by Stepan, Ron says: */
 	/* NOTE: move this to mainboard.c ASAP */
-#if 1
-
-
-	*par++ = 0x607c00a0; /*PAR0: PCI:Base 0xa0000; size 0x1f000:*/
-	*par++ = 0x480400d8; /*PAR1: GP BUS MEM:CS2:Base 0xd8, size 0x4:*/
-	*par++ = 0x340100ea; /*PAR2: GP BUS IO:CS5:Base 0xea, size 0x1:*/
-	*par++ = 0x380701f0; /*PAR3: GP BUS IO:CS6:Base 0x1f0, size 0x7:*/
-	*par++ = 0x3c0003f6; /*PAR4: GP BUS IO:CS7:Base 0x3f6, size 0x0:*/
-	*par++ = 0x35ff0400; /*PAR5: GP BUS IO:CS5:Base 0x400, size 0xff:*/
-	*par++ = 0x35ff0600; /*PAR6: GP BUS IO:CS5:Base 0x600, size 0xff:*/
-	*par++ = 0x35ff0800; /*PAR7: GP BUS IO:CS5:Base 0x800, size 0xff:*/
-	*par++ = 0x35ff0a00; /*PAR8: GP BUS IO:CS5:Base 0xa00, size 0xff:*/
-	*par++ = 0x35ff0e00; /*PAR9: GP BUS IO:CS5:Base 0xe00, size 0xff:*/
-	*par++ = 0x34fb0104; /*PAR10: GP BUS IO:CS5:Base 0x104, size 0xfb:*/
-	*par++ = 0x35af0200; /*PAR11: GP BUS IO:CS5:Base 0x200, size 0xaf:*/
-	*par++ = 0x341f03e0; /*PAR12: GP BUS IO:CS5:Base 0x3e0, size 0x1f:*/
-	*par++ = 0xe41c00c0; /*PAR13: SDRAM:code:cache:nowrite:Base 0xc0000, size 0x7000:*/
-	*par++ = 0x545c00c8; /*PAR14: GP BUS MEM:CS5:Base 0xc8, size 0x5c:*/
-#else
-	par += 15;
-#endif
-	*par++ = 0x8a020200; /*PAR15: BOOTCS:code:nocache:write:Base 0x2000000, size 0x80000:*/
-#endif
-
+	setup_pars();
+  
 	/* CPCSF register */
-
 	sp =  (unsigned short *)0xfffefc24;
 	*sp = 0xfe;
 
@@ -178,12 +153,12 @@ setupsc520(void){
 	outb(0x55, 0x80);
 #endif
 
-/*; set the uart baud rate clocks to the normal 1.8432 MHz.*/
-/* enable interrupts here? Why not? */
+	/* set the uart baud rate clocks to the normal 1.8432 MHz.*/
+	/* enable interrupts here? Why not? */
 	cp = (unsigned char *)0xfffefcc0;
-	*cp = 4 | 3;					/* uart 1 clock source */
+	*cp = 4 | 3;			/* uart 1 clock source */
 	cp = (unsigned char *)0xfffefcc4;
-	*cp = 4;					/* uart 2 clock source */
+	*cp = 4;			/* uart 2 clock source */
 
 #if 0
 /*; set the interrupt mapping registers.*/
@@ -204,20 +179,21 @@ setupsc520(void){
 	
 	cp = (unsigned char *)0x0fffefd51;
 	*cp = 0x02;
-#endif	
-/*; "enumerate" the PCI. Mainly set the interrupt bits on the PCnetFast. */
+#endif
+
+/* Stepan says: This needs to go to the msm586seg code */
+/* "enumerate" the PCI. Mainly set the interrupt bits on the PCnetFast. */
 	outl(0xcf8, 0x08000683c);
 	outl(0xcfc, 0xc); /* set the interrupt line */
 
-/*; Set the SC520 PCI host bridge to target mode to allow external*/
-/*; bus mastering events*/
-
-	outl(0x0cf8,0x080000004);	/*index the status command register on device 0*/
-	outl(0xcfc, 0x2);			/*set the memory access enable bit*/
+	
+	/* Set the SC520 PCI host bridge to target mode to 
+	 * allow external bus mastering events
+	 */
+	/* index the status command register on device 0*/
+	outl(0x0cf8,0x080000004);
+	outl(0xcfc, 0x2);		/*set the memory access enable bit*/
 	OUTC(0x0fffef072, 1);		/* enable req bits in SYSARBMENB */
-
-
-
 }
 	
 
@@ -632,9 +608,10 @@ bad_ram:
 /* This code is known to work on the digital logic board and on the technologic
  * systems ts5300
  */
-int
-staticmem(void){
-  volatile unsigned long *zero = (unsigned long *) CACHELINESZ;
+int staticmem(void)
+{
+	volatile unsigned long *zero = (unsigned long *) CACHELINESZ;
+	
 	/* set up 0x18 .. **/
 	*drcbendadr = 0x88;
 	*drcmctl = 0x1e;
@@ -651,27 +628,27 @@ staticmem(void){
 	/* two autorefreshes */
 	*drcctl = 4;
 	*zero = 0;
-	print_err("one zero out on refresh\r\n");
+	print_debug("one zero out on refresh\r\n");
 	*zero = 0;
-	print_err("two zero out on refresh\r\n");
+	print_debug("two zero out on refresh\r\n");
 
 	/* load mode register */
 	*drcctl = 3;
 	*zero = 0;
-	print_err("DONE the load mode reg\r\n");
+	print_debug("DONE the load mode reg\r\n");
 	
 	/* normal mode */
 	*drcctl = 0x0;
 	*zero = 0;
-	print_err("DONE one last write and then turn on refresh etc\r\n");
+	print_debug("DONE one last write and then turn on refresh etc\r\n");
 	*drcctl = 0x18;
 	*zero = 0;
-	print_err("DONE the normal\r\n");
+	print_debug("DONE the normal\r\n");
 	*zero = 0xdeadbeef;
 	if (*zero != 0xdeadbeef) 
-	  print_err("NO LUCK\r\n");
+	  print_debug("NO LUCK\r\n");
 	else
-	  print_err("did a store and load ...\r\n");
+	  print_debug("did a store and load ...\r\n");
 	//print_err_hex32(*zero);
 	//	print_err(" zero is now "); print_err_hex32(*zero); print_err("\r\n");
 }

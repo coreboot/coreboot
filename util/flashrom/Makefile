@@ -9,7 +9,7 @@ PROGRAM = flashrom
 CC      = gcc
 STRIP	= strip
 #CFLAGS  = -O2 -g -Wall -Werror
-CFLAGS  = -Os -Wall -Werror -DDISABLE_DOC
+CFLAGS  = -Os -Wall -Werror -DDISABLE_DOC # -DTS5300
 LDFLAGS = -lpci -static
 
 

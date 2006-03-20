@@ -7,6 +7,7 @@
 #define	GLCP_DELAY_CONTROLS	0x4c00000f
 #define	GLCP_SYS_RSTPLL 	0x4c000014
 #define	GLCP_DOTPLL		0x4c000015
+#define	GLCP_CHIP_REVID	0x4c000017
 
 
 	/* Upper 32 bits */

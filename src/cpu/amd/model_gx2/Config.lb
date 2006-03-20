@@ -4,3 +4,4 @@ dir /cpu/x86/mmx
 dir /cpu/x86/lapic
 dir /cpu/x86/cache
 driver model_gx2_init.o
+object cpubug.o

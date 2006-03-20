@@ -96,7 +96,8 @@ struct msr_defaults {
 	/* for 180a, for now, we assume VSM will configure it */
 	/* 180b is left at reset value,a0000-bffff is non-cacheable */
 	/* 180c, c0000-dffff is set to write serialize and non-cachable */
-	{0x180c, {.hi = MSR_WS_CD_DEFAULT, .lo = MSR_WS_CD_DEFAULT}},
+	/* oops, 180c will be set by cpu bug handling in cpubug.c */
+	//{0x180c, {.hi = MSR_WS_CD_DEFAULT, .lo = MSR_WS_CD_DEFAULT}},
 	/* 180d is left at default, e0000-fffff is non-cached */
 
 	/* we will assume 180e, the ssm region configuration, is left at default or set by VSM */

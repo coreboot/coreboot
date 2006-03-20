@@ -96,6 +96,10 @@ static void identify_system(void)
 	val=inb(0x74);
 	switch(val) {
 	case 0x50: print_err("TS-5300\r\n"); break;
+	case 0x40: print_err("TS-5400\r\n"); break;
+	case 0x60: print_err("TS-5500\r\n"); break;
+	case 0x20: print_err("TS-5600\r\n"); break;
+	case 0x70: print_err("TS-5700\r\n"); break;
 	default:   print_err("unknown\r\n"); break;
 	}
 
@@ -107,7 +111,14 @@ static void identify_system(void)
 	print_err("  RS-485 option: ");
 	if((val&2)==0) print_err("not ");
 	print_err("installed\r\n");
+
+	val=inb(0x76);
+	print_err("  Temp. range:   ");
+	if((val&2)==0) print_err("commercial\r\n"); 
+	else print_err("industrial\r\n");
+	
 	print_err("\r\n");
+	
 	val=inb(0x77);
 	for (i=1; i<8; i++) {
 		print_err("  JP");

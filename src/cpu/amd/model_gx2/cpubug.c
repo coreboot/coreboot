@@ -1,42 +1,16 @@
-#include <cpu/amd/model_gx2/gx2def.h>
+#include <console/console.h>
+#include <arch/io.h>
+#include <stdint.h>
+#include <device/device.h>
+#include <device/pci.h>
+#include <device/pci_ids.h>
+#include <stdlib.h>
+#include <string.h>
+#include <bitops.h>
+#include <cpu/amd/gx2def.h>
+#include <cpu/x86/msr.h>
+#include <cpu/x86/cache.h>
 
-void
-cpubug(void){
-	msr_t msr;
-	int rev;
-
-	msr = rdmsr(GLCP_CHIP_REVID);
-
-	rev = msr.lo & 0xff;
-	if (rev < 0x20) {
-		printk_error("%s: rev < 0x20! bailing!\n");
-		return;
-	}
-	
-	switch(rev)
-	{
-		case 0x20:
-			pcideadlock();
-			eng1398();
-			bug752();
-			break;
-		case 0x22:
-			pcideadlock();
-			eng1398();
-			eng2900();
-			bug 118339();
-			break;
-		case 0x22:
-		case 0x30: 
-			break;
-		default:
-			printk_error("unknown rev %x, bailing\n", rev);
-			return;
-	}
-	bug784();
-	bug118253();
-	disablememoryreadorder();
-}
 
 #if 0
 void
@@ -55,6 +29,7 @@ bug573(void){
 	msr.eax &= 0xfff3;
 	wrmsr(MC_GLD_MSR_PM);
 }
+#endif
 
 static void
 pcideadlock(void){
@@ -77,28 +52,29 @@ pcideadlock(void){
 	/* write serialize memory hole to PCI. Need to to unWS when something is shadowed regardless of cachablility.*/
 
 	msr.lo = 0x021212121;
-	msr.hi = 0x021212121
+	msr.hi = 0x021212121;
 	wrmsr( CPU_RCONF_A0_BF, msr);
 	wrmsr( CPU_RCONF_C0_DF, msr);
 	wrmsr( CPU_RCONF_E0_FF, msr);
 }
 
-;**************************************************************************
-;*
-;*	CPUbug784
-;*
-;*	Bugtool #784 + #792
-;*
-;*	Fix CPUID instructions for < 3.0 CPUs
-;*
-;*	Entry:
-;*	Exit:
-;*	Modified:
-;*
-;**************************************************************************
+/****************************************************************************/
+/***/
+/**	CPUbug784*/
+/***/
+/**	Bugtool #784 + #792*/
+/***/
+/**	Fix CPUID instructions for < 3.0 CPUs*/
+/***/
+/**	Entry:*/
+/**	Exit:*/
+/**	Modified:*/
+/***/
+/****************************************************************************/
 
-void cpubug784(void){
-	static char *name = "Geode by NSC";
+void bug784(void){
+	msr_t msr;
+//	static char *name = "Geode by NSC";
 
 	/* we'll do this the stupid way, for now, but that's the string they want. NO ONE KNOWS why you
 	  * would do this -- the OS can figure this type of stuff out!
@@ -113,9 +89,9 @@ void cpubug784(void){
 	wrmsr(0x3007, msr);
 
 	msr = rdmsr(0x3002);
-	wrmsr(*0x3008, msr);
+	wrmsr(0x3008, msr);
 
-; More CPUID to match AMD better. #792
+/* More CPUID to match AMD better. #792*/
 	msr = rdmsr(0x3009);
 	msr.hi = 0x0C0C0A13D;
 	msr.lo = 0x00000000;
@@ -130,7 +106,7 @@ eng1398(void){
 	msr = rdmsr(MSR_GLCP+0x17);
 	if ((msr.lo & 0xff) < CPU_REV_2_0) {
 		msr = rdmsr(GLCP_SYS_RSTPLL);
-	i	if (msr.lo & (1<<RSTPPL_LOWER_SDRMODE_SHIFT))
+		if (msr.lo & (1<<RSTPPL_LOWER_SDRMODE_SHIFT))
 			return;
 	}
 
@@ -141,7 +117,7 @@ eng1398(void){
 }
 
 void
-eng2900{void){
+eng2900(void){
 	printk_err(" NOT DOING eng2900: only shown to be a windows problem\n");
 #if 0
 
@@ -253,13 +229,14 @@ CPUbugIAENG2900	ENDP
 #endif
 }
 
-void eng118253(void){
+void bug118253(void){
 	msr_t msr;
 
 	msr = rdmsr(GLPCI_SPARE);
 	msr.lo &= ~GLPCI_SPARE_LOWER_PPC_SET;
 	wrmsr(GLPCI_SPARE, msr);
 }
+
 void
 bug118339(void) {
 	printk_err("This is OPTIONAL BIOS-ENABLED ... ignore for now\n");
@@ -355,10 +332,50 @@ CPUbug118339	ENDP
 /***/
 /****************************************************************************/
 void
-DisableMemoryReorder(void) {	
+disablememoryreadorder(void) {	
 	msr_t msr;
 	msr = rdmsr(MC_CF8F_DATA);
 
-	msr.hi |=  CF8F_UPPER_REORDER_DIS_SET);
+	msr.hi |=  CF8F_UPPER_REORDER_DIS_SET;
 	wrmsr(MC_CF8F_DATA, msr);
+}
+void
+cpubug(void){
+	msr_t msr;
+	int rev;
+
+	msr = rdmsr(GLCP_CHIP_REVID);
+
+	rev = msr.lo & 0xff;
+	if (rev < 0x20) {
+		printk_err("%s: rev < 0x20! bailing!\n");
+		return;
+	}
+	printk_debug("Doing cpubug fixes for rev 0x%x\n", rev);
+	switch(rev)
+	{
+		case 0x20:
+			pcideadlock();
+			eng1398();
+			/* cs 5530 bug; ignore 
+			bug752();
+			*/
+			break;
+		case 0x21:
+			pcideadlock();
+			eng1398();
+			eng2900();
+			bug118339();
+			break;
+		case 0x22:
+		case 0x30: 
+			break;
+		default:
+			printk_err("unknown rev %x, bailing\n", rev);
+			return;
+	}
+	bug784();
+	bug118253();
+	disablememoryreadorder();
+	printk_debug("Done cpubug fixes \n");
 }

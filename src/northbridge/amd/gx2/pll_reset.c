@@ -108,6 +108,7 @@ static const unsigned char pci33_ddr_crt [] = {
              26,    2,    3             // 433/289
 };
 
+#if 0
 static unsigned int get_memory_speed(void)
 {
 	unsigned char val, hi, lo;
@@ -118,6 +119,7 @@ static unsigned int get_memory_speed(void)
 
 	return 20000/(hi*10 + lo);
 }
+#endif
 
 static void pll_reset(void)
 {

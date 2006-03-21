@@ -145,7 +145,7 @@ setup_gx2_cache(int sizem)
 	msr.lo = val;
 	msr.hi = (val >> 32);
 	printk_debug("msr will be set to %x:%x\n", msr.hi, msr.lo);
-	wrmsr(0x1808, msr);
+	wrmsr(CPU_RCONF_DEFAULT, msr);
 
 	enable_cache();
 	wbinvd();
@@ -164,6 +164,7 @@ setup_gx2(void)
 
 
 	membytes = sizem * 1048576;
+
 	/* we need to set 0x10000029 and 0x40000029 */
 	msr.hi = 0x20000000 | membytes >>20;
 	msr.lo = 0x100 | ( ((membytes >>12) & 0xfff) << 20);
@@ -174,7 +175,13 @@ setup_gx2(void)
 	msr = rdmsr(0x40000029);
 	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x40000029, msr.hi,msr.lo);
 
-	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x40000029, msr.hi,msr.lo);
+	/* need to write 10000028 for vsm */
+	/* it is a P2D_R, but the two we just wrote have same offset; use same value */
+	wrmsr(0x10000028, msr);
+	msr = rdmsr(0x10000028);
+	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x10000028, msr.hi,msr.lo);
+
+
 	/* now do the default MSR values */
 	for(i = 0; msr_defaults[i].msr_no; i++) {
 		msr_t msr;
@@ -371,12 +378,16 @@ static void enable_dev(struct device *dev)
 	printk_debug("gx2 north: enable_dev\n");
         /* Set the operations if it is a special bus type */
         if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
+		extern void cpubug(void);
 		printk_debug("DEVICE_PATH_PCI_DOMAIN\n");
+		/* cpubug MUST be called before setup_gx2(), so we force the issue here */
+		cpubug();	
 		setup_gx2();
 		dev->ops = &pci_domain_ops;
 		pci_set_method(dev);
         }
         else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
+
 		printk_debug("DEVICE_PATH_APIC_CLUSTER\n");
                 dev->ops = &cpu_bus_ops;
         }

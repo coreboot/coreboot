@@ -75,15 +75,20 @@ unsigned long addr;
 
 static void model_gx2_init(device_t dev)
 {
+	void do_vsmbios(void);
 #if 0
 	gx2_cpu_setup();
 	gx2_gx_setup();
 #endif
+	printk_debug("model_gx2_init\n");
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
 
 	/* Enable the local cpu apics */
 	setup_lapic();
+
+	do_vsmbios();
+	printk_debug("model_gx2_init DONE\n");
 };
 
 static struct device_operations cpu_dev_ops = {

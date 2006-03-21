@@ -24,7 +24,7 @@ int
 sizeram(void)
 {
 	msr_t msr;
-	int sizem;
+	int sizem = 0;
 	unsigned short dimm;
 
 	msr = rdmsr(0x20000018);
@@ -131,7 +131,7 @@ setup_gx2_cache(int sizem)
 	val = ((unsigned long long) ROM_PROPERTIES) << 56;
 	/* make rom base useful for 1M roms */
 	/* fuctory sets this to a weird value, just go with it. */
-	val |= ((unsigned long long) 0xff800)<<36;
+	val |= ((unsigned long long) 0xfff800)<<36;
 	/* set the devrp properties */
 	val |= ((unsigned long long) DEVICE_PROPERTIES) << 28;
 	/* sigh. Take our TOM, RIGHT shift 12, since it page-aligned, then LEFT-shift 8 for reg. */
@@ -383,6 +383,8 @@ static void enable_dev(struct device *dev)
 		/* cpubug MUST be called before setup_gx2(), so we force the issue here */
 		cpubug();	
 		setup_gx2();
+		/* do this here for now -- this chip really breaks our device model */
+		do_vsmbios();
 		dev->ops = &pci_domain_ops;
 		pci_set_method(dev);
         }

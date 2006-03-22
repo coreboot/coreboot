@@ -119,28 +119,32 @@ struct msr_defaults {
 };
 
 
-static void
-setup_gx2_cache(int sizem)
+static int
+setup_gx2_cache(void)
 {
 	msr_t msr;
 	unsigned long long val;
-	printk_debug("enable_cache: enable for %dm bytes\n", sizem);
+	int sizembytes, sizereg;
+
+	sizembytes = sizeram();
+	printk_debug("enable_cache: enable for %dm bytes\n", sizembytes);
 	/* build up the rconf word. */
 	/* the SYSTOP bits 27:8 are actually the top bits from 31:12. Book fails to say that */
 	/* set romrp */
 	val = ((unsigned long long) ROM_PROPERTIES) << 56;
 	/* make rom base useful for 1M roms */
-	/* fuctory sets this to a weird value, just go with it. */
+	/* Flash base address -- sized for 1/2M for now*/
 	val |= ((unsigned long long) 0xfff800)<<36;
 	/* set the devrp properties */
 	val |= ((unsigned long long) DEVICE_PROPERTIES) << 28;
 	/* sigh. Take our TOM, RIGHT shift 12, since it page-aligned, then LEFT-shift 8 for reg. */
 	/* yank off 8M for frame buffer and 1M for VSA */
-	sizem -= 9;
-	sizem *= 0x100000;
-	sizem >>= 12;
-	sizem <<= 8;
-	val |= sizem;
+	sizembytes -= 9;
+	sizereg = sizembytes;
+	sizereg *= 0x100000;
+	sizereg >>= 12;
+	sizereg <<= 8;
+	val |= sizereg;
 	val |= RAM_PROPERTIES;
 	msr.lo = val;
 	msr.hi = (val >> 32);
@@ -149,6 +153,7 @@ setup_gx2_cache(int sizem)
 
 	enable_cache();
 	wbinvd();
+	return sizembytes;
 }
 /* we have to do this here. We have not found a nicer way to do it */
 void
@@ -156,30 +161,24 @@ setup_gx2(void)
 {
 	int i;
 	msr_t msr;
-
 	unsigned long sizem, membytes;
-	sizem = sizeram();
-	
-	setup_gx2_cache(sizem);
 
+	sizem = setup_gx2_cache();
 
 	membytes = sizem * 1048576;
 
-	/* we need to set 0x10000029 and 0x40000029 */
-	msr.hi = 0x20000000 | membytes >>20;
+	/* we need to set 0x10000028 and 0x40000029 */
+	printk_debug("sizem 0x%x, membytes 0x%x\n", sizem, membytes);
+	msr.hi = 0x20000000 | membytes >>24;
 	msr.lo = 0x100 | ( ((membytes >>12) & 0xfff) << 20);
-	wrmsr(0x10000029, msr);
-	wrmsr(0x40000029, msr);
-	msr = rdmsr(0x10000029);
-	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x10000029, msr.hi,msr.lo);
-	msr = rdmsr(0x40000029);
-	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x40000029, msr.hi,msr.lo);
-
-	/* need to write 10000028 for vsm */
-	/* it is a P2D_R, but the two we just wrote have same offset; use same value */
 	wrmsr(0x10000028, msr);
+	msr.hi = 0x20000000 | membytes >>24;
+	msr.lo = 0x100 | ( ((membytes >>12) & 0xfff) << 20);
+	wrmsr(0x40000029, msr);
 	msr = rdmsr(0x10000028);
 	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x10000028, msr.hi,msr.lo);
+	msr = rdmsr(0x40000029);
+	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x40000029, msr.hi,msr.lo);
 
 
 	/* now do the default MSR values */

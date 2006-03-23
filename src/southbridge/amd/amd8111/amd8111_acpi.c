@@ -122,6 +122,12 @@ static void acpi_init(struct device *dev)
 	pci_write_config8(dev, PREVIOUS_POWER_STATE, byte);
 	printk_info("set power %s after power fail\n", on?"on":"off");
 
+	/* switch serial irq logic from quiet mode to continuous
+	 * mode for Winbond W83627HF Rev. 17
+	 */
+	byte = pci_read_config8(dev, 0x4a);
+	pci_write_config8(dev, 0x4a, byte | (1<<6));
+	
 	/* Throttle the CPU speed down for testing */
 	on = SLOW_CPU_OFF;
 	get_option(&on, "slow_cpu");

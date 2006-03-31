@@ -43,6 +43,7 @@ extern struct flashchip flashchips[];
 #define SST_28SF040       0x04	/* SST 29EE040 device code    */
 #define SST_39SF020       0xB6	/* SST 39SF020  device        */
 #define SST_39VF020       0xD6	/* SST 39VF020  device        */
+#define SST_49LF040B	  0x50	/* SST 49LF040B device */
 #define SST_49LF040	  0x51	/* SST 49LF040 device */
 #define SST_49LF080A	  0x5B	/* SST 48LF080A device */
 #define SST_49LF002A	  0x57	/* SST 49LF002A device */

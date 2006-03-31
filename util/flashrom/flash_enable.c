@@ -19,6 +19,9 @@
 #include "lbtable.h"
 #include "debug.h"
 
+// We keep this for the others.
+static struct pci_access *pacc;
+
 static int enable_flash_sis630(struct pci_dev *dev, char *name)
 {
 	char b;
@@ -98,7 +101,13 @@ static int enable_flash_e7500(struct pci_dev *dev, char *name)
 	return 0;
 }
 
-static int enable_flash_ich4(struct pci_dev *dev, char *name)
+enum {
+	ICH4_BIOS_CNTL = 0x4e,
+	/* see page 375 of "Intel ICH7 External Design Specification"
+	 * http://download.intel.com/design/chipsets/datashts/30701302.pdf */
+	ICH7_BIOS_CNTL = 0xdc,
+};
+static int enable_flash_ich(struct pci_dev *dev, char *name, int bios_cntl)
 {
 	/* register 4e.b gets or'ed with one */
 	uint8_t old, new;
@@ -106,21 +115,31 @@ static int enable_flash_ich4(struct pci_dev *dev, char *name)
 	 * that it is hard to argue that we should quit at this point. 
 	 */
 
-	old = pci_read_byte(dev, 0x4e);
+	old = pci_read_byte(dev, bios_cntl);
 
 	new = old | 1;
 
 	if (new == old)
 		return 0;
 
-	pci_write_byte(dev, 0x4e, new);
+	pci_write_byte(dev, bios_cntl, new);
 
-	if (pci_read_byte(dev, 0x4e) != new) {
+	if (pci_read_byte(dev, bios_cntl) != new) {
 		printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
-		       0x4e, new, name);
+		       bios_cntl, new, name);
 		return -1;
 	}
 	return 0;
+}
+
+static int enable_flash_ich4(struct pci_dev *dev, char *name)
+{
+	return enable_flash_ich(dev, name, ICH4_BIOS_CNTL);
+}
+
+static int enable_flash_ich7(struct pci_dev *dev, char *name)
+{
+	return enable_flash_ich(dev, name, ICH7_BIOS_CNTL);
 }
 
 static int enable_flash_vt8235(struct pci_dev *dev, char *name)
@@ -305,6 +324,57 @@ static int enable_flash_ck804(struct pci_dev *dev, char *name)
         return 0;
 }
 
+static int enable_flash_sb400(struct pci_dev *dev, char *name)
+{
+        uint8_t tmp;
+
+	struct pci_filter f;
+	struct pci_dev *smbusdev;
+
+	/* get io privilege access */
+	if (iopl(3) != 0) {
+		perror("Can not set io priviliage");
+		exit(1);
+	}
+
+	/* then look for the smbus device */
+	pci_filter_init((struct pci_access *) 0, &f);
+	f.vendor = 0x1002;
+	f.device = 0x4372;
+	
+	for (smbusdev = pacc->devices; smbusdev; smbusdev = smbusdev->next) {
+		if (pci_filter_match(&f, smbusdev)) {
+			break;
+		}
+	}
+	
+	if(!smbusdev) {
+		perror("smbus device not found. aborting\n");
+		exit(1);
+	}
+	
+	// enable some smbus stuff
+	tmp=pci_read_byte(smbusdev, 0x79);
+	tmp|=0x01;
+	pci_write_byte(smbusdev, 0x79, tmp);
+
+	// change southbridge
+	tmp=pci_read_byte(dev, 0x48);
+	tmp|=0x21;
+	pci_write_byte(dev, 0x48, tmp);
+
+	// now become a bit silly. 
+	tmp=inb(0xc6f);
+	outb(tmp,0xeb);
+	outb(tmp, 0xeb);
+	tmp|=0x40;
+	outb(tmp, 0xc6f);
+	outb(tmp, 0xeb);
+	outb(tmp, 0xeb);
+
+	return 0;
+}
+
 typedef struct penable {
 	unsigned short vendor, device;
 	char *name;
@@ -316,24 +386,29 @@ static FLASH_ENABLE enables[] = {
 	{0x8086, 0x2480, "E7500", enable_flash_e7500},
 	{0x8086, 0x24c0, "ICH4", enable_flash_ich4},
 	{0x8086, 0x24d0, "ICH5", enable_flash_ich4},
+	{0x8086, 0x27b8, "ICH7", enable_flash_ich7},
 	{0x1106, 0x8231, "VT8231", enable_flash_vt8231},
 	{0x1106, 0x3177, "VT8235", enable_flash_vt8235},
 	{0x1078, 0x0100, "CS5530", enable_flash_cs5530},
 	{0x100b, 0x0510, "SC1100", enable_flash_sc1100},
 	{0x1039, 0x0008, "SIS5595", enable_flash_sis5595},
 	{0x1022, 0x7468, "AMD8111", enable_flash_amd8111},
+	// this fallthrough looks broken.
         {0x10de, 0x0050, "NVIDIA CK804", enable_flash_ck804}, // LPC
         {0x10de, 0x0051, "NVIDIA CK804", enable_flash_ck804}, // Pro
         {0x10de, 0x00d3, "NVIDIA CK804", enable_flash_ck804}, // Slave, should not be here, to fix known bug for A01.
+	{0x1002, 0x4377, "ATI SB400", enable_flash_sb400}, // ATI Technologies Inc IXP SB400 PCI-ISA Bridge (rev 80)
 };
 
 static int mbenable_island_aruma(void)
 {
-#define EFIR 0x2e  // Exteneded function index register, either 0x2e or 0x4e
-#define EFDR EFIR + 1  // Extended function data register, one plus the index reg.
+#define EFIR 0x2e      /* Extended function index register, either 0x2e or 0x4e    */
+#define EFDR EFIR + 1  /* Extended function data register, one plus the index reg. */
 	char b;
-//  Disable the flash write protect.  The flash write protect is 
-//  connected to the WinBond w83627hf GPIO 24.
+
+/*  Disable the flash write protect.  The flash write protect is 
+ *  connected to the WinBond w83627hf GPIO 24.
+ */
 
 	/* get io privilege access winbond config space */
 	if (iopl(3) != 0) {
@@ -393,7 +468,6 @@ static MAINBOARD_ENABLE mbenables[] = {
 int enable_flash_write()
 {
 	int i;
-	struct pci_access *pacc;
 	struct pci_dev *dev = 0;
 	FLASH_ENABLE *enable = 0;
 

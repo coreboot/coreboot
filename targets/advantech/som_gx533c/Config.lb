@@ -1,0 +1,37 @@
+# Config file for the Advantech eval kit with a SOM-DB2301 baseboard 
+# and a SOM 2354 Cpu module. (gx533)
+# This will make a target directory of som_gx533c
+
+target som_gx533c
+mainboard advantech/som_gx533c
+
+option ROM_SIZE=1024*512
+
+option MAXIMUM_CONSOLE_LOGLEVEL=9
+option DEFAULT_CONSOLE_LOGLEVEL=9
+
+romimage "normal"
+	option USE_FALLBACK_IMAGE=0
+	option ROM_IMAGE_SIZE=0x10000
+	option LINUXBIOS_EXTRA_VERSION=".0Normal"
+#	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
+#	payload ../../../../tg3--ide_disk.zelf	
+#	payload ../../../../../lnxieepro100.ebi
+	payload /etc/hosts
+#	payload /home/hamish/work/etherboot/eb-5.2.6-lne100.elf
+#	payload /tmp/filo.elf
+end
+
+romimage "fallback" 
+	option USE_FALLBACK_IMAGE=1
+	option ROM_IMAGE_SIZE=0x10000
+	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
+#	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
+#	payload ../../../../tg3--ide_disk.zelf	
+#	payload ../../../../../lnxieepro100.ebia
+	payload /etc/hosts
+#	payload /home/hamish/work/etherboot/eb-5.2.6-lne100.elf
+#	payload /tmp/filo.elf
+end
+
+buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"

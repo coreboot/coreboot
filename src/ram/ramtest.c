@@ -69,17 +69,26 @@ static void ram_verify(unsigned long start, unsigned long stop)
 		value = read_phys(addr);
 		if (value != addr) {
 			/* Display address with error */
+			print_err("Fail: @0x");
 			print_err_hex32(addr);
-			print_err_char(':');
+			print_err(" Read value=0x");
 			print_err_hex32(value);
 			print_err("\r\n");
 			i++;
-			if(i>256) break;
+			if(i>256) {
+				print_debug("Aborting.\n\r");
+				break;
+			}
 		}
 	}
 	/* Display final address */
 	print_debug_hex32(addr);
-	print_debug("\r\nDRAM verified\r\n");
+	if (i) {
+		print_debug("\r\nDRAM did _NOT_ verify!\r\n");
+	}
+	else {
+		print_debug("\r\nDRAM range verified.\r\n");
+	}
 }
 
 

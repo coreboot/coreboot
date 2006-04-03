@@ -1,8 +1,10 @@
 /* by yhlu 6.2005 */
 /* yhlu 2005.12 make it support HDT Memory Debuggers with Disassmbly, please select the PCI Bus mem for Phys Type*/
-/* We may need 4K bytes only */
+/* yhlu 2006.3 copy data from cache to ram and reserve 0x1000 for global variables */
 #define CacheSize DCACHE_RAM_SIZE
 #define CacheBase (0xd0000 - CacheSize)
+/* leave some space for global variable to pass to RAM stage */
+#define GlobalVarSize DCACHE_RAM_GLOBAL_VAR_SIZE
 
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
@@ -147,7 +149,7 @@ clear_fixed_var_mtrr_out:
 #endif /*USE_FALLBACK_IMAGE == 1*/
 
 	/* set up the stack pointer */
-	movl	$(CacheBase+CacheSize-4), %eax
+	movl	$(CacheBase+CacheSize - 4 - GlobalVarSize), %eax 
 	movl    %eax, %esp
 
 	/* Restore the BIST result */

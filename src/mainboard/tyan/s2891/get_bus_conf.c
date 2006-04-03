@@ -152,8 +152,9 @@ void get_bus_conf(void)
                 else {
                         printk_debug("ERROR - could not find PCI 1:%02x.0, using defaults\n", sbdn+ 0x0e);
 
-                        bus_8131_0 = bus_ck804_5+1;
                 }
+
+		bus_8131_0 = (pci1234[1] >> 16) & 0xff;
 
                 /* 8131-1 */
                 dev = dev_find_slot(bus_8131_0, PCI_DEVFN(sbdn3,0));

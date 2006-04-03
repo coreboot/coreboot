@@ -280,10 +280,16 @@ define DCACHE_RAM_BASE
 	comment "Base address of data cache when using it for temporary RAM"
 end
 define DCACHE_RAM_SIZE
-	default none
+	default 0x1000
 	format "0x%x"
-	export used
+	export always
 	comment "Size of data cache when using it for temporary RAM"
+end
+define DCACHE_RAM_GLOBAL_VAR_SIZE
+	default 0
+	format "0x%x"
+	export always
+	comment "Size of region that for global variable of cache as ram stage"
 end
 define XIP_ROM_BASE
 	default 0
@@ -310,7 +316,7 @@ define CONFIG_UNCOMPRESSED
 end
 define CONFIG_LB_MEM_TOPK
 	format "%d"
-	default 1024
+	default 2048
 	export always
 	comment "Kilobytes of memory to initialized before executing code from RAM"
 end

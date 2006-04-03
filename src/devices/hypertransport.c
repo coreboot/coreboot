@@ -424,17 +424,8 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 		}
 
 		flags &= ~0x1f; /* mask out base Unit ID */
-#if CK804_DEVN_BASE==0  
-               if((dev->vendor == 0x10de) && (dev->device == 0x005e)) {
-                       next_unitid = 0;
-               } 
-               else {
-#endif
                        flags |= next_unitid & 0x1f;
                        pci_write_config16(dev, pos + PCI_CAP_FLAGS, flags);
-#if CK804_DEVN_BASE==0 
-               }
-#endif
 
 		/* Update the Unitd id in the device structure */
 		static_count = 1;
@@ -473,11 +464,6 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 			dev->vendor, dev->device, 
 			(dev->enabled? "enabled": "disabled"), next_unitid);
 
-#if CK804_DEVN_BASE==0 
-		if ((dev->vendor == 0x10de) && (dev->device == 0x005e)) {
-                      break; // CK804 can not change unitid, so it only can be alone in the link
-                }
-#endif
 
 	} while((last_unitid != next_unitid) && (next_unitid <= (max_devfn >> 3)));
  end_of_chain:

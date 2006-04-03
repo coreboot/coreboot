@@ -70,10 +70,12 @@ static void setup_ioapic(void)
 	unsigned long ioapic_base = 0xfec00000;
 	volatile unsigned long *l;
 	struct ioapicreg *a = ioapicregvalues;
+	unsigned long bsp_apicid = lapicid();
 
 	l = (unsigned long *) ioapic_base;
 
-	ioapicregvalues[0].value_high = lapicid()<<(56-32); 
+	ioapicregvalues[0].value_high = bsp_apicid<<(56-32);
+	printk_debug("amd8111: ioapic bsp_apicid = %02x\n", bsp_apicid); 
 	
 	for (i = 0; i < sizeof(ioapicregvalues) / sizeof(ioapicregvalues[0]);
 	     i++, a++) {
@@ -88,7 +90,7 @@ static void setup_ioapic(void)
 			return;
 		}
 		printk_spew("for IRQ, reg 0x%08x value 0x%08x 0x%08x\n", 
-			a->reg, a->value_low, a->value_high);
+			    a->reg, a->value_low, a->value_high);
 	}
 }
 
@@ -179,7 +181,7 @@ static void amd8111_lpc_enable_resources(device_t dev)
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
 	pci_write_config32(dev, 0x70, 
-		((device & 0xffff) << 16) | (vendor & 0xffff));
+			   ((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 
 static struct pci_operations lops_pci = {

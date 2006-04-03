@@ -36,25 +36,6 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
-static void hard_reset(void)
-{
-        set_bios_reset();
-
-        /* full reset */
-	outb(0x0a, 0x0cf9);
-        outb(0x0e, 0x0cf9);
-}
-
-static void soft_reset(void)
-{
-        set_bios_reset();
-#if 1
-        /* link reset */
-	outb(0x02, 0x0cf9);
-        outb(0x06, 0x0cf9);
-#endif
-}
-
 static void memreset_setup(void)
 {
 }
@@ -210,7 +191,6 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	};
 
         int needs_reset;
-	unsigned cpu_reset = 0;
 
         if (bist == 0) {
 		init_cpus(cpu_init_detectedx);
@@ -246,5 +226,5 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	memreset_setup();
 	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
 
-	post_cache_as_ram(cpu_reset);
+	post_cache_as_ram();
 }

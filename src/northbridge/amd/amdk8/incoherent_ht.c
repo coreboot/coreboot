@@ -968,34 +968,4 @@ static int optimize_link_incoherent_ht(struct sys_info *sysinfo)
 #endif
 
 
-static unsigned get_sblnk(void)
-{
-        uint32_t reg;
-        /* read PCI_DEV(0,0x18,0) 0x64 bit [8:9] to find out SbLink m */
-        reg = pci_read_config32(PCI_DEV(0, 0x18, 0), 0x64);
-        return ((reg>>8) & 3) ;
-}
-
-/* Look up a which bus a given node/link combination is on.
- * return 0 when we can't find the answer.
- */
-
-static unsigned node_link_to_bus(unsigned node, unsigned link)
-{
-        unsigned reg;
-
-        for(reg = 0xE0; reg < 0xF0; reg += 0x04) {
-                unsigned config_map;
-                config_map = pci_read_config32(PCI_DEV(0, 0x18, 1), reg);
-                if ((config_map & 3) != 3) {
-                        continue;
-                }
-                if ((((config_map >> 4) & 7) == node) &&
-                        (((config_map >> 8) & 3) == link))
-                {
-                        return (config_map >> 16) & 0xff;
-                }
-        }
-        return 0;
-}
 

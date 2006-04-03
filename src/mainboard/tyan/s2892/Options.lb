@@ -54,18 +54,24 @@ uses CONFIG_CHIP_NAME
 uses CONFIG_CONSOLE_VGA
 uses CONFIG_PCI_ROM_RUN
 uses K8_HW_MEM_HOLE_SIZEK
+uses K8_HT_FREQ_1G_SUPPORT
 
 uses USE_DCACHE_RAM
 uses DCACHE_RAM_BASE
 uses DCACHE_RAM_SIZE
 uses CONFIG_USE_INIT
 
+uses HT_CHAIN_UNITID_BASE
+uses HT_CHAIN_END_UNITID_BASE
+uses K8_SB_HT_CHAIN_ON_BUS0
+uses SB_HT_CHAIN_UNITID_OFFSET_ONLY
+
 ## ROM_SIZE is the size of boot ROM that this board will use.
 #512K bytes 
-default ROM_SIZE=524288
+#default ROM_SIZE=524288
 
 #1M bytes
-#default ROM_SIZE=1048576
+default ROM_SIZE=1048576
 
 
 ##
@@ -125,6 +131,21 @@ default CONFIG_LOGICAL_CPUS=1
 #1G memory hole
 default K8_HW_MEM_HOLE_SIZEK=0x100000
 
+#Opteron K8 1G HT Support
+default K8_HT_FREQ_1G_SUPPORT=1
+
+##HT Unit ID offset, default is 1, the typical one
+default HT_CHAIN_UNITID_BASE=0x0
+
+##real SB Unit ID, default is 0x20, mean dont touch it at last
+#default HT_CHAIN_END_UNITID_BASE=0x0
+
+#make the SB HT chain on bus 0, default is not (0)
+default K8_SB_HT_CHAIN_ON_BUS0=2
+
+##only offset for SB chain?, default is yes(1)
+default SB_HT_CHAIN_UNITID_OFFSET_ONLY=0
+
 #BTEXT Console
 #default CONFIG_CONSOLE_BTEXT=1
 
@@ -138,8 +159,7 @@ default CONFIG_PCI_ROM_RUN=1
 default USE_DCACHE_RAM=1
 default DCACHE_RAM_BASE=0xcf000
 default DCACHE_RAM_SIZE=0x1000
-default CONFIG_USE_INIT=1
-
+default CONFIG_USE_INIT=0
 
 ##
 ## Build code to setup a generic IOAPIC

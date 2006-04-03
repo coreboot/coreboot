@@ -1,7 +1,9 @@
-
+/* 2005.6 by yhlu 
+ * 2006.3 yhlu add copy data from CAR to ram
+ */
 #include "cpu/amd/car/disable_cache_as_ram.c"
 
-#include "cpu/amd/car/clear_1m_ram.c"
+#include "cpu/amd/car/clear_init_ram.c"
 
 static inline void print_debug_pcar(const char *strval, uint32_t val)
 {
@@ -12,11 +14,18 @@ static inline void print_debug_pcar(const char *strval, uint32_t val)
 #endif
 }
 
-
-
-static void post_cache_as_ram(unsigned cpu_reset)
+static void inline __attribute__((always_inline))  memcopy(void *dest, const void *src, unsigned long bytes)
 {
+        __asm__ volatile(
+                "cld\n\t"
+                "rep movsl\n\t"
+                : /* No outputs */
+                : "S" (src), "D" (dest), "c" ((bytes)>>2)
+                );
+}
 
+static void post_cache_as_ram(void)
+{
 
 #if 1
         {
@@ -30,60 +39,50 @@ static void post_cache_as_ram(unsigned cpu_reset)
         }
 #endif
 
-        print_debug_pcar("cpu_reset = ",cpu_reset);
+	unsigned testx = 0x5a5a5a5a;
+	print_debug_pcar("testx = ", testx);
 
-        if(cpu_reset == 0) {
-                print_debug("Clearing initial memory region: ");
-        }
-        print_debug("No cache as ram now - ");
+	/* copy data from cache as ram to 
+		ram need to set CONFIG_LB_MEM_TOPK to 2048 and use var mtrr instead.
+	 */
+#if CONFIG_LB_MEM_TOPK <= 1024
+        #error "You need to set CONFIG_LB_MEM_TOPK greater than 1024"
+#endif
+	
+	set_init_ram_access();
 
-        /* store cpu_reset to ebx */
+	print_debug("Copying data from cache to ram -- switching to use ram as stack... ");
+
+	/* from here don't store more data in CAR */
         __asm__ volatile (
-                "movl %0, %%ebx\n\t"
-                ::"a" (cpu_reset)
+        	"pushl  %eax\n\t"
         );
-
-	disable_cache_as_ram();
-
-        if(cpu_reset==0) { // cpu_reset don't need to clear it 
-		clear_1m_ram();
-        }
-	else {
-		set_1m_ram();
-	}
-
+        memcopy((CONFIG_LB_MEM_TOPK<<10)-DCACHE_RAM_SIZE, DCACHE_RAM_BASE, DCACHE_RAM_SIZE); //inline
         __asm__ volatile (
                 /* set new esp */ /* before _RAMBASE */
                 "subl   %0, %%ebp\n\t"
                 "subl   %0, %%esp\n\t"
-                ::"a"( (DCACHE_RAM_BASE + DCACHE_RAM_SIZE)- _RAMBASE )
+                ::"a"( (DCACHE_RAM_BASE + DCACHE_RAM_SIZE)- (CONFIG_LB_MEM_TOPK<<10) )
+        ); // We need to push %eax to the stack (CAR) before copy stack and pop it later after copy stack and change esp
+        __asm__ volatile (
+	        "popl   %eax\n\t"
         );
+	/* We can put data to stack again */
 
-        {
-                unsigned new_cpu_reset;
+        /* only global variable sysinfo in cache need to be offset */
+        print_debug("Done\r\n");
+        print_debug_pcar("testx = ", testx);
 
-                /* get back cpu_reset from ebx */
-                __asm__ volatile (
-                        "movl %%ebx, %0\n\t"
-                        :"=a" (new_cpu_reset)
-                );
+	print_debug("Disabling cache as ram now \r\n");
+	disable_cache_as_ram_bsp();  
 
-                print_debug("Use Ram as Stack now - "); /* but We can not go back any more, we lost old stack data in cache as ram*/
+        print_debug("Clearing initial memory region: ");
+        clear_init_ram(); //except the range from [(CONFIG_LB_MEM_TOPK<<10) - DCACHE_RAM_SIZE, (CONFIG_LB_MEM_TOPK<<10)), that is used as stack in ram
+        print_debug("Done\r\n");
 
-                if(new_cpu_reset==0) {
-                        print_debug("done\r\n");
-                } else
-                {
-                        print_debug("\r\n");
-                }
-
-                print_debug_pcar("new_cpu_reset = ", new_cpu_reset);
-
-
-                /*copy and execute linuxbios_ram */
-                copy_and_run(new_cpu_reset);
-                /* We will not return */
-        }
+        /*copy and execute linuxbios_ram */
+        copy_and_run();
+        /* We will not return */
 
 	print_debug("should not be here -\r\n");
 

@@ -1,7 +1,6 @@
 //it takes the ENABLE_APIC_EXT_ID and APIC_ID_OFFSET and LIFT_BSP_APIC_ID
 #ifndef K8_SET_FIDVID
 	#define K8_SET_FIDVID 0
-	
 #endif
 
 #ifndef K8_SET_FIDVID_CORE0_ONLY
@@ -42,7 +41,7 @@ static void for_each_ap(unsigned bsp_apicid, unsigned core0_only, process_ap_t p
                 j = ((pci_read_config32(PCI_DEV(0, 0x18+i, 3), 0xe8) >> 12) & 3);
                 if(nb_cfg_54) {
  	               if(j == 0 ){ // if it is single core, we need to increase siblings for apic calculation 
-        	               e0_later_single_core = is_e0_later_in_bsp(i);  // single core
+       	               e0_later_single_core = is_e0_later_in_bsp(i);  // single core
                        } 
                        if(e0_later_single_core) {
                                 j=1;
@@ -204,7 +203,7 @@ static unsigned init_cpus(unsigned cpu_init_detectedx)
 		/* get the apicid, it may be lifted already */
 		apicid = lapicid();
 
-#if 1 
+#if 0 
 		// show our apicid, nodeid, and coreid
 		if( id.coreid==0 ) {
 			if (id.nodeid!=0) //all core0 except bsp
@@ -219,21 +218,9 @@ static unsigned init_cpus(unsigned cpu_init_detectedx)
 #endif
 
                 if (cpu_init_detectedx) {
-		#if RAMINIT_SYSINFO == 1
-			//We need to init sblnk and sbbusn, because it is called before ht_setup_chains_x
-		        sysinfo->sblnk = get_sblnk();
-			sysinfo->sbbusn = node_link_to_bus(0, sysinfo->sblnk);
-		#endif
-			print_apicid_nodeid_coreid(apicid, id, "\r\n\r\n\r\nINIT detect from ");
-
-			print_debug("\r\nIssuing SOFT_RESET...\r\n");
-
-			#if RAMINIT_SYSINFO == 1
-                        soft_reset(sysinfo);
-			#else
-			soft_reset();
-			#endif
-
+                        print_apicid_nodeid_coreid(apicid, id, "\r\n\r\n\r\nINIT detected from ");
+                        print_debug("\r\nIssuing SOFT_RESET...\r\n");
+                        soft_reset();
                 }
 
 		if(id.coreid==0) {
@@ -256,8 +243,8 @@ static unsigned init_cpus(unsigned cpu_init_detectedx)
 			wait_cpu_state(bsp_apicid, 0x44);
 			lapic_write(LAPIC_MSG_REG, (apicid<<24) | 0x44); // bsp can not check it before stop_this_cpu
 
+			set_init_ram_access(); //inline
 			disable_cache_as_ram(); // inline
-			set_1m_ram(); // inline
                         stop_this_cpu(); // inline, it will stop all cores except node0/core0 the bsp .... 
                 }
 

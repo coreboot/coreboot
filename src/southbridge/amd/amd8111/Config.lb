@@ -9,3 +9,4 @@ driver amd8111_ac97.o
 driver amd8111_nic.o
 driver amd8111_pci.o
 driver amd8111_smbus.o
+object amd8111_reset.o

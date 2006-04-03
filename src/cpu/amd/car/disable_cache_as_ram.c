@@ -3,10 +3,7 @@
 static inline __attribute__((always_inline)) void disable_cache_as_ram(void)
 {
         __asm__ volatile (
-	/* 
-	FIXME : backup stack in CACHE_AS_RAM into mmx and sse and after we get STACK up, we restore that.
-		It is only needed if we want to go back
-	*/
+
         /* We don't need cache as ram for now on */
         /* disable cache */
         "movl    %cr0, %eax\n\t"
@@ -43,5 +40,30 @@ static inline __attribute__((always_inline)) void disable_cache_as_ram(void)
         "movl    %cr0, %eax\n\t"
         "andl    $0x9fffffff,%eax\n\t"
         "movl    %eax, %cr0\n\t"
+
         );
 }
+/* be warned, this file will be used core 0 / node 0 and ram stack is ready*/
+
+static void disable_cache_as_ram_bsp(void)
+{
+        __asm__ volatile (
+
+        "pushl	%ecx\n\t"
+        "pushl 	%edx\n\t"
+        "pushl 	%eax\n\t"
+
+	);
+
+	disable_cache_as_ram();
+
+	__asm__ volatile (
+
+        "popl   %eax\n\t"
+        "popl   %edx\n\t"
+        "popl   %ecx\n\t"
+
+        );
+}
+
+

@@ -7,8 +7,10 @@ mainboard tyan/s2892
 
 # Tyan s2892
 romimage "normal"
+#       48K for ATI ROM in 1M
+        option ROM_SIZE = 999424
 #       48K for SCSI FW or ATI ROM
-        option ROM_SIZE = 475136
+#        option ROM_SIZE = 475136
 #       48K for SCSI FW and 48K for ATI ROM
 #       option ROM_SIZE = 425984 
 #       64K for Etherboot

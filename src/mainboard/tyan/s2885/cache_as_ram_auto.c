@@ -36,31 +36,7 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
-static void hard_reset(void)
-{
-        device_t dev;
-
-        /* Find the device */
-        dev = PCI_DEV(node_link_to_bus(0, 2), 0x04, 3);
-
-        set_bios_reset();
-
-        /* enable cf9 */
-        pci_write_config8(dev, 0x41, 0xf1);
-        /* reset */
-        outb(0x0e, 0x0cf9);
-}
-
-static void soft_reset(void)
-{
-        device_t dev;
-
-        /* Find the device */
-        dev = PCI_DEV(node_link_to_bus(0, 2), 0x04, 0);
-
-        set_bios_reset();
-        pci_write_config8(dev, 0x47, 1);
-}
+#include "southbridge/amd/amd8111/amd8111_early_ctrl.c"
 
 static void memreset_setup(void)
 {
@@ -185,7 +161,6 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	};
 
         int needs_reset;
-	unsigned cpu_reset = 0;
         unsigned bsp_apicid = 0;
 
         struct mem_controller ctrl[8];
@@ -234,6 +209,6 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
         memreset_setup();
         sdram_initialize(nodes, ctrl);
 
-	post_cache_as_ram(cpu_reset);
+	post_cache_as_ram();
 
 }

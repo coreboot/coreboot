@@ -1,5 +1,3 @@
-/* Include this file in the mainboards reset.c
- */
 #include <arch/io.h>
 #include <device/pci_ids.h>
 
@@ -38,7 +36,7 @@ static unsigned pci_read_config32(device_t dev, unsigned where)
 }
 
 #define PCI_DEV_INVALID (0xffffffffU)
-static device_t pci_locate_device(unsigned pci_id, unsigned bus)
+static device_t pci_locate_device_on_bus(unsigned pci_id, unsigned bus)
 {
 	device_t dev, last;
 	dev = PCI_DEV(bus, 0, 0);
@@ -55,35 +53,19 @@ static device_t pci_locate_device(unsigned pci_id, unsigned bus)
 
 #include "../../../northbridge/amd/amdk8/reset_test.c"
 
-static unsigned node_link_to_bus(unsigned node, unsigned link)
-{
-	unsigned reg;
 
-	for(reg = 0xE0; reg < 0xF0; reg += 0x04) {
-		unsigned config_map;
-		config_map = pci_read_config32(PCI_DEV(0, 0x18, 1), reg);
-		if ((config_map & 3) != 3) {
-			continue;
-		}
-		if ((((config_map >> 4) & 7) == node) &&
-			(((config_map >> 8) & 3) == link)) 
-		{
-			return (config_map >> 16) & 0xff;
-		}
-	}
-	return 0;
-}
-
-static void amd8111_hard_reset(unsigned node, unsigned link)
+void hard_reset(void)
 {
 	device_t dev;
 	unsigned bus;
+        unsigned node = 0;
+        unsigned link = get_sblk();
 
 	/* Find the device.
 	 * There can only be one 8111 on a hypertransport chain/bus.
 	 */
 	bus = node_link_to_bus(node, link);
-	dev = pci_locate_device(
+	dev = pci_locate_device_on_bus(
 		PCI_ID(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_8111_ISA), 
 		bus);
 

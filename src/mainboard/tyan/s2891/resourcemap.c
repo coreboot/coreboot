@@ -186,7 +186,7 @@ static void setup_s2891_resource_map(void)
 		 *	   This field defines the end of PCI I/O region n
 		 * [31:25] Reserved
 		 */
-		PCI_ADDR(0, 0x18, 1, 0xC4), 0xFE000FC8, 0x01fff000,
+//		PCI_ADDR(0, 0x18, 1, 0xC4), 0xFE000FC8, 0x01fff000,
 		PCI_ADDR(0, 0x18, 1, 0xCC), 0xFE000FC8, 0x00000000, 
 		PCI_ADDR(0, 0x18, 1, 0xD4), 0xFE000FC8, 0x00000000,
 		PCI_ADDR(0, 0x18, 1, 0xDC), 0xFE000FC8, 0x00000000,
@@ -216,7 +216,7 @@ static void setup_s2891_resource_map(void)
 		 *	   This field defines the start of PCI I/O region n 
 		 * [31:25] Reserved
 		 */
-		PCI_ADDR(0, 0x18, 1, 0xC0), 0xFE000FCC, 0x00000033,
+//		PCI_ADDR(0, 0x18, 1, 0xC0), 0xFE000FCC, 0x00000033,
 		PCI_ADDR(0, 0x18, 1, 0xC8), 0xFE000FCC, 0x00000000,
 		PCI_ADDR(0, 0x18, 1, 0xD0), 0xFE000FCC, 0x00000000,
 		PCI_ADDR(0, 0x18, 1, 0xD8), 0xFE000FCC, 0x00000000,

@@ -117,8 +117,6 @@ if HAVE_ACPI_TABLES
         end
 end
 
-object reset.o
-
 if USE_DCACHE_RAM
 
 	if CONFIG_USE_INIT

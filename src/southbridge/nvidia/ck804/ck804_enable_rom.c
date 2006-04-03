@@ -3,6 +3,7 @@
  *  by yhlu@tyan.com
  */
 
+
 static void ck804_enable_rom(void)
 {
 	unsigned char byte;

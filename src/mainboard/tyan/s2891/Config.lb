@@ -237,7 +237,7 @@ chip northbridge/amd/amdk8/root_complex
                                         	                io 0x60 = 0x2f8
                                                 	        irq 0x70 = 3
 	                                                end
-        	                                        device pnp 2e.5 off #  Keyboard
+        	                                        device pnp 2e.5 on #  Keyboard
                 	                                        io 0x60 = 0x60
                         	                                io 0x62 = 0x64
                                 	                        irq 0x70 = 1
@@ -314,7 +314,7 @@ chip northbridge/amd/amdk8/root_complex
 					#	chip drivers/ati/ragexl
                                                 chip drivers/pci/onboard
                                                         device pci 7.0 on end
-                                        #                register "rom_address" = "0xfff80000" #for 512K
+                                               #         register "rom_address" = "0xfff80000" #for 512K
 							register "rom_address" = "0xfff00000" #for 1M
                                                 end
 					end

@@ -10,21 +10,13 @@
 //use by raminit
 #define K8_4RANK_DIMM_SUPPORT 1
 
-//use bu init_cpus
-#if 0
-        #define ENABLE_APIC_EXT_ID 1
-        #define APIC_ID_OFFSET 0x10
-        #define LIFT_BSP_APIC_ID 0
-#else
-        #define ENABLE_APIC_EXT_ID 0
-#endif
-
 //used by incoherent_ht
 //#define K8_SCAN_PCI_BUS 1
 //#define K8_ALLOCATE_IO_RANGE 1
 
 #include <stdint.h>
 #include <device/pci_def.h>
+#include <device/pci_ids.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
@@ -33,7 +25,6 @@
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
-#include "ram/ramtest.c"
 
 #if 0
 static void post_code(uint8_t value) {
@@ -47,7 +38,6 @@ static void post_code(uint8_t value) {
 #endif
 
 #include <cpu/amd/model_fxx_rev.h> 
-#include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/amd/amd8111/amd8111_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
@@ -66,43 +56,11 @@ static void post_code(uint8_t value) {
 #include "cpu/x86/bist.h"
 
 #include "northbridge/amd/amdk8/setup_resource_map.c"
+#include "northbridge/amd/amdk8/incoherent_ht.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
-static void hard_reset(void)
-{
-        device_t dev;
-	unsigned sblnk = get_sblnk();
-
-        /* Find the device */
-#if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
-	dev = PCI_DEV(node_link_to_bus(0, sblnk), 2 + HT_CHAIN_END_UNITID_BASE - 1, 3);
-#else
-	dev = PCI_DEV(node_link_to_bus(0, sblnk), 4 + HT_CHAIN_UNITID_BASE - 1, 3);
-#endif
-
-        set_bios_reset();
-
-        /* enable cf9 */
-        pci_write_config8(dev, 0x41, 0xf1);
-        /* reset */
-        outb(0x0e, 0x0cf9);
-}
-static void soft_reset(void)
-{
-        device_t dev;
-	unsigned sblnk = get_sblnk();
-
-        /* Find the device */
-#if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
-        dev = PCI_DEV(node_link_to_bus(0, sblnk), 2 + HT_CHAIN_END_UNITID_BASE - 1, 0);
-#else
-        dev = PCI_DEV(node_link_to_bus(0, sblnk), 4 + HT_CHAIN_UNITID_BASE - 1, 0);
-#endif
-
-        set_bios_reset();
-        pci_write_config8(dev, 0x47, 1);
-}
+#include "southbridge/amd/amd8111/amd8111_early_ctrl.c"
 
 static void memreset_setup(void)
 {
@@ -254,7 +212,6 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	};
 
         int needs_reset;
-	unsigned cpu_reset = 0;
 	unsigned bsp_apicid = 0;
 
         struct mem_controller ctrl[8];
@@ -296,7 +253,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
        	if (needs_reset) {
                	print_info("ht reset -\r\n");
-               	soft_reset();
+		soft_reset();
        	}
 
 	allow_all_aps_stop(bsp_apicid);
@@ -327,6 +284,6 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	dump_pci_devices();
 #endif
 
-	post_cache_as_ram(cpu_reset);
+	post_cache_as_ram();
 
 }

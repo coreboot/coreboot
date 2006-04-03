@@ -18,6 +18,10 @@
 #define K8_4RANK_DIMM_SUPPORT 0
 #endif
 
+#if USE_DCACHE_RAM == 1
+static void hard_reset(void);
+#endif
+
 #if 1
 static void setup_resource_map(const unsigned int *register_values, int max)
 {

@@ -25,7 +25,7 @@
  */ 
 static unsigned long get_valid_start_eip(unsigned long orig_start_eip)
 {
-	return (unsigned long)orig_start_eip & 0xfffff; // 20 bit 
+	return (unsigned long)orig_start_eip & 0xffff; // 16 bit to avoid 0xa0000 
 }
 
 static void copy_secondary_start_to_1m_below(void) 
@@ -43,7 +43,7 @@ static void copy_secondary_start_to_1m_below(void)
         code_size = (unsigned long)_secondary_start_end - (unsigned long)_secondary_start;
 
         /* copy the _secondary_start to the ram below 1M*/
-        memcpy(start_eip, (unsigned long)_secondary_start, code_size);
+        memcpy((unsigned char *)start_eip, (unsigned char *)_secondary_start, code_size);
 
         printk_debug("start_eip=0x%08lx, offset=0x%08lx, code_size=0x%08lx\n", start_eip, ((unsigned long)_secondary_start - start_eip), code_size);
 #endif
@@ -117,7 +117,12 @@ static int lapic_start_cpu(unsigned long apicid)
 		return 0;
 	}
 
+#if _RAMBASE >= 0x100000
 	start_eip = get_valid_start_eip((unsigned long)_secondary_start);
+#else
+	start_eip = (unsigned long)_secondary_start;
+#endif
+
 	printk_debug("start_eip=0x%08lx\n", start_eip);
        
 	num_starts = 2;

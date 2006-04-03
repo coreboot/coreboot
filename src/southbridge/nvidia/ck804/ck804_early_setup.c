@@ -383,3 +383,23 @@ static int ck804_early_setup_x(void)
 	ck804_early_clear_port();
 	return set_ht_link_ck804(4);
 }
+
+static void hard_reset(void)
+{
+        set_bios_reset();
+
+        /* full reset */
+        outb(0x0a, 0x0cf9);
+        outb(0x0e, 0x0cf9);
+}
+
+static void soft_reset(void)
+{
+        set_bios_reset();
+#if 1
+        /* link reset */
+        outb(0x02, 0x0cf9);
+        outb(0x06, 0x0cf9);
+#endif
+}
+

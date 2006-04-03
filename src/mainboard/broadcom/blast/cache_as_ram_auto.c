@@ -190,7 +190,6 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	};
 
         int needs_reset;
-	unsigned cpu_reset = 0;
 	unsigned bsp_apicid = 0;
 
         struct mem_controller ctrl[8];
@@ -269,6 +268,6 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	dump_pci_devices();
 #endif
 
-	post_cache_as_ram(cpu_reset);
+	post_cache_as_ram();
 
 }

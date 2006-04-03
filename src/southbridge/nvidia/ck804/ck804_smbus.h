@@ -29,14 +29,13 @@ static int smbus_wait_until_ready(unsigned smbus_io_base)
 		unsigned char val;
 		smbus_delay();
 		val = inb(smbus_io_base + SMBHSTSTAT);
-		if ((val & 0x1f) == 0) {
-			break;
+		val &= 0x1f;
+		if (val == 0) {
+			return 0;
 		}
-		if(loops == (SMBUS_TIMEOUT / 2)) {
-			outb((val & 0x1f),smbus_io_base + SMBHSTSTAT);
-		}
+		outb(val,smbus_io_base + SMBHSTSTAT);
 	} while(--loops);
-	return loops?0:-2;
+	return -2;
 }
 
 static int smbus_wait_until_done(unsigned smbus_io_base)
@@ -49,10 +48,10 @@ static int smbus_wait_until_done(unsigned smbus_io_base)
 		
 		val = inb(smbus_io_base + SMBHSTSTAT);
 		if ( (val & 0xff) != 0) {
-			break;
+			return 0;
 		}
 	} while(--loops);
-	return loops?0:-3;
+	return -3;
 }
 static int do_smbus_recv_byte(unsigned smbus_io_base, unsigned device)
 {
@@ -200,3 +199,4 @@ static int do_smbus_write_byte(unsigned smbus_io_base, unsigned device, unsigned
         }
         return 0;
 }
+

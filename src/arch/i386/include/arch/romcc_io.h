@@ -178,6 +178,24 @@ static device_t pci_locate_device(unsigned pci_id, device_t dev)
 	return PCI_DEV_INVALID;
 }
 
+static device_t pci_locate_device_on_bus(unsigned pci_id, unsigned bus)
+{
+        device_t dev, last;
+
+        dev = PCI_DEV(bus, 0, 0);
+        last = PCI_DEV(bus, 31, 7);
+
+        for(; dev <=last; dev += PCI_DEV(0,0,1)) {
+                unsigned int id;
+                id = pci_read_config32(dev, 0);
+                if (id == pci_id) {
+                        return dev;
+                }
+        }
+        return PCI_DEV_INVALID;
+}
+
+
 
 /* Generic functions for pnp devices */
 static inline __attribute__((always_inline)) void pnp_write_config(device_t dev, uint8_t reg, uint8_t value)

@@ -37,7 +37,7 @@ static inline void print_debug_cp_run(const char *strval, uint32_t val)
 #endif
 }
 
-static void copy_and_run(unsigned cpu_reset)
+static void copy_and_run(void)
 {
 	uint8_t *src, *dst; 
         unsigned long ilen = 0, olen = 0, last_m_off =  1;
@@ -54,7 +54,7 @@ static void copy_and_run(unsigned cpu_reset)
 		"subl %1, %2\n\t"
 		: "=a" (src), "=b" (dst), "=c" (olen)
 	);
-	memcpy(src, dst, olen);
+	memcpy(dst, src, olen);
 #else 
 
         __asm__ volatile (
@@ -65,14 +65,13 @@ static void copy_and_run(unsigned cpu_reset)
 
 	print_debug_cp_run("src=",(uint32_t)src); 
 	print_debug_cp_run("dst=",(uint32_t)dst);
-	
-//	dump_mem(src, src+0x100);
 
         for(;;) {
                 unsigned int m_off, m_len;
                 while(GETBIT(bb, src, ilen)) {
                         dst[olen++] = src[ilen++];
                 }
+
                 m_off = 1;
                 do {
                         m_off = m_off*2 + GETBIT(bb, src, ilen);
@@ -109,24 +108,13 @@ static void copy_and_run(unsigned cpu_reset)
                 }
         }
 #endif
-//	dump_mem(dst, dst+0x100);
 
 	print_debug_cp_run("linxbios_ram.bin length = ", olen);
 
 	print_debug("Jumping to LinuxBIOS.\r\n");
 
-	if(cpu_reset == 1 ) {
-		__asm__ volatile (
-			"movl $0xffffffff, %ebp\n\t"
-		);
-	}
-	else {
-                __asm__ volatile (
-                        "xorl %ebp, %ebp\n\t"
-                );
-	}
-	
-	__asm__ volatile (
+        __asm__ volatile (
+                "xorl %ebp, %ebp\n\t" /* cpu_reset for hardwaremain dummy */
 		"cli\n\t"
 		"leal    _iseg, %edi\n\t"
 		"jmp     *%edi\n\t"

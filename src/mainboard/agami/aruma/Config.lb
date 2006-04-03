@@ -92,7 +92,7 @@ end
 
 
 
-object reset.o
+#object reset.o
 
 
 if USE_DCACHE_RAM

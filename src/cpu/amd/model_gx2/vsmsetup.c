@@ -194,8 +194,9 @@ static void real_mode_switch_call_vsm(unsigned long smm, unsigned long sysm)
 
 		/* Dump zeros in the other segregs */
 		"	mov	%ax, %es       	\n"
-		"	mov	%ax, %fs       	\n"
-		"	mov	%ax, %gs       	\n"
+		/* FixMe: Big real mode for gs, fs? */
+		//"	mov	%ax, %fs       	\n"
+		//"	mov	%ax, %gs       	\n"
 		"	mov	$0x40, %ax	\n"
 		"	mov	%ax, %ds	\n"
 		"	mov	%cx, %ax	\n"
@@ -256,13 +257,18 @@ void do_vsmbios(void)
 	/* this is the base of rom on the GX2 at present. At some point, this has to be 
 	  * much better parameterized 
 	  */
-	rom = 0xfff80000;
+	//rom = 0xfff80000;
+	rom = 0xfffc0000;
 
 	buf = (unsigned char *) rom;
-	printk_debug("buf %p *buf %d buf[256k] %d\n", buf, buf[0], buf[256*1024]);
-	printk_debug("buf[0x20] signature is %x:%x:%x:%x\n", buf[0x20] ,buf[0x21] ,buf[0x22],buf[0x23]);
-	/* check for post code at start of vsainit.bin. If you don't see it, don't bother. */
-	if ((buf[0x20] != 0xb0) || (buf[0x21] != 0x10) || (buf[0x22] != 0xe6) || (buf[0x23] != 0x80)) {
+	printk_debug("buf %p *buf %d buf[256k] %d\n",
+		     buf, buf[0], buf[256*1024]);
+	printk_debug("buf[0x20] signature is %x:%x:%x:%x\n",
+		     buf[0x20] ,buf[0x21] ,buf[0x22],buf[0x23]);
+	/* check for post code at start of vsainit.bin. If you don't see it,
+	   don't bother. */
+	if ((buf[0x20] != 0xb0) || (buf[0x21] != 0x10) ||
+	    (buf[0x22] != 0xe6) || (buf[0x23] != 0x80)) {
 		printk_err("do_vsmbios: no vsainit.bin signature, skipping!\n");
 		return;
 	}
@@ -272,7 +278,6 @@ void do_vsmbios(void)
 	/* ecx gets smm, edx gets sysm */
 	printk_err("Call real_mode_switch_call_vsm\n");
 	real_mode_switch_call_vsm(0x10000026, 0x10000028);
-
 }
 
 
@@ -351,7 +356,7 @@ void callbiosint(void)
 		// - provides us with a temp for the %cr0 mods.
 		"	pushl	%eax	\n"
 		"	movb	$0xbb, %al\n"
-		"	outb		%al, $0x80\n"
+		"	outb	%al, $0x80\n"
 		"	movl    %cr0, %eax\n"
 		"	orl	$0x00000001, %eax\n" /* PE = 1 */
 		"	movl	%eax, %cr0\n"
@@ -365,8 +370,8 @@ void callbiosint(void)
 		"	mov	%ax, %fs          \n"
 		"	mov	%ax, %gs          \n"
 		"	mov	%ax, %ss          \n"
-		"	lidt	idtarg         \n"
-		"	call	biosint	\n"
+		"	lidt	idtarg         	\n"
+		"	call	biosint		\n"
 		// back to real mode ...
 		"	ljmp	$0x28, $__rms_16bit2\n"
 		"__rms_16bit2:			\n"
@@ -454,7 +459,7 @@ int biosint(unsigned long intnumber,
 	unsigned long cs; 
 	unsigned long flags;
 	int ret = -1;
-	
+
 	ip = cs_ip & 0xffff;
 	cs = cs_ip >> 16;
 	flags = stackflags;
@@ -466,6 +471,8 @@ int biosint(unsigned long intnumber,
 		     ebp, esp, edi, esi);
 	printk_debug("biosint:  ip 0x%x   cs 0x%x  flags 0x%x\n",
 		     ip, cs, flags);
+	printk_debug("biosint: gs 0x%x fs 0x%x ds 0x%x es 0x%x\n",
+		     gsfs >> 16, gsfs & 0xffff, dses >> 16, dses & 0xffff);
 
 	// cases in a good compiler are just as good as your own tables. 
 	switch (intnumber) {

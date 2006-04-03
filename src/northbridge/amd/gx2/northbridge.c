@@ -155,11 +155,16 @@ setup_gx2_cache(void)
 	wbinvd();
 	return sizembytes;
 }
+
+#define SMM_OFFSET 0x40400000
+#define SMM_SIZE   256
+
 /* we have to do this here. We have not found a nicer way to do it */
 void
 setup_gx2(void)
 {
 	int i;
+	unsigned long tmp, tmp2, tmp3;
 	msr_t msr;
 	unsigned long sizem, membytes;
 
@@ -169,10 +174,10 @@ setup_gx2(void)
 
 	/* we need to set 0x10000028 and 0x40000029 */
 	printk_debug("sizem 0x%x, membytes 0x%x\n", sizem, membytes);
-	msr.hi = 0x20000000 | membytes >>24;
+	msr.hi = 0x20000000 | membytes>>24;
 	msr.lo = 0x100 | ( ((membytes >>12) & 0xfff) << 20);
 	wrmsr(0x10000028, msr);
-	msr.hi = 0x20000000 | membytes >>24;
+	msr.hi = 0x20000000 | membytes>>24;
 	msr.lo = 0x100 | ( ((membytes >>12) & 0xfff) << 20);
 	wrmsr(0x40000029, msr);
 	msr = rdmsr(0x10000028);
@@ -180,6 +185,22 @@ setup_gx2(void)
 	msr = rdmsr(0x40000029);
 	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x40000029, msr.hi,msr.lo);
 
+
+	/* fixme: SMM MSR 0x10000026 and 0x400000023 */
+	/* calculate the OFFSET field */
+	tmp = membytes - SMM_OFFSET;
+	tmp >>= 12;
+	tmp <<= 8;
+	tmp |= 0x20000000;
+	tmp |= (SMM_OFFSET >> 24);
+
+	/* calculate the PBASE and PMASK fields */
+	tmp2 = (SMM_OFFSET << 8) & 0xFFF00000; /* shift right 12 then left 20  == left 8 */
+	tmp2 |= (((~(SMM_SIZE * 1024) + 1) >> 12) & 0xfffff);
+	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x10000026, tmp, tmp2);
+	msr.hi = tmp;
+	msr.lo = tmp2;
+	wrmsr(0x10000026, msr);
 
 	/* now do the default MSR values */
 	for(i = 0; msr_defaults[i].msr_no; i++) {
@@ -383,11 +404,11 @@ static void enable_dev(struct device *dev)
 		cpubug();	
 		setup_gx2();
 		/* do this here for now -- this chip really breaks our device model */
+		setup_realmode_idt();
 		do_vsmbios();
 		dev->ops = &pci_domain_ops;
 		pci_set_method(dev);
-        }
-        else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
+        } else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
 
 		printk_debug("DEVICE_PATH_APIC_CLUSTER\n");
                 dev->ops = &cpu_bus_ops;

@@ -97,7 +97,7 @@ static int cs5535_early_setup(void)
 
 	cs5535_setup_extmsr();
 
-	msr = rdmsr(0x4c000014);
+	msr = rdmsr(GLCP_SYS_RSTPLL);
 	if (msr.lo & (0x3f << 26)) {
 		/* PLL is already set and we are reboot from PLL reset */
 		print_debug("reboot from BIOS reset\n\r");

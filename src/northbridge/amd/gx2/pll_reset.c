@@ -86,17 +86,6 @@ static const unsigned char fbdiv2plldiv[] = {
 	49, 40, 19, 59, 32, 54, 35,  0, 41, 60, 55,  0, 61,  0,  0,  0
 };
 
-static const unsigned char pci33_sdr_crt [] = {
-	/* FbDIV, VDIV, MDIV		   CPU/GeodeLink */
-	      12,    2,    4,		// 200/100
-	      16,    2,    4,		// 266/133
-              18,    2,    5,		// 300/120
-              20,    2,    5,		// 333/133
-              22,    2,    6,		// 366/122
-              24,    2,    6,		// 400/133
-              26,    2,    6            // 433/144
-};
-
 static const unsigned char pci33_ddr_crt [] = {
 	/* FbDIV, VDIV, MDIV		   CPU/GeodeLink */
 	     12,    2,    3,		// 200/133

@@ -239,78 +239,64 @@ void bug118253(void){
 
 void bug118339(void)
 {
-	printk_err("This is OPTIONAL BIOS-ENABLED ... ignore for now\n");
-#if 0
-	PROC NEAR PUBLIC
-	pushad
+	/* per AMD, do this always */
+	msr_t msr = {0,0};
+	int msrnum;
 
-	mov	cx, TOKEN_VGTEAR_118339_SWAPSIF_ENABLE
-	NOSTACK	bx, GetNVRAMValueBX
-	cmp	ax, TVALUE_ENABLE
-	jne	bug118339exit
+	/* Disable enable_actions in DIAGCTL while setting up GLCP */
+	wrmsr(MSR_GLCP + 0x005f, msr);
 
-;Disable enable_actions in DIAGCTL while setting up GLCP
-	mov	ecx, MSR_GLCP + 005fh
-	xor	edx, edx
-	xor	eax, eax
-	WRMSR
+	/*  SET2M fires if VG pri is odd (3, not 2) and Ystate=0 */
+	msrnum =  MSR_GLCP + 0x042;
+	/* 	msr.hi =  2d6b8000h */;
+	msr.hi =  0x596b8000;
+	msr.lo =  0x00000a00;
+	wrmsr(msrnum, msr);
 
-; SET2M fires if VG pri is odd (3, not 2) and Ystate=0
-	mov	ecx, MSR_GLCP + 042h
-;	mov	edx, 2d6b8000h
-	mov	edx, 596b8000h
-	mov	eax, 00000a00h
-	WRMSR
+	/*  SET3M fires if MBUS changed and VG pri is odd */
+	msrnum =  MSR_GLCP + 0x043;
+	msr.hi =  0x596b8040;
+	msr.lo = 0;
+	wrmsr(msrnum, msr);
 
-; SET3M fires if MBUS changed and VG pri is odd
-	mov	ecx, MSR_GLCP + 043h
-	mov	edx, 596b8040h
-	xor	eax, eax
-	WRMSR
+	/*  Put VG request data on lower diag bus */
+	msrnum =  MSR_GLIU0 + 0x2005;
+	msr.hi = 0;
+	msr.lo =  0x80338041;
+	wrmsr(msrnum, msr);
 
-; Put VG request data on lower diag bus
-	mov	ecx, MSR_GLIU0 + 2005h
-	xor	edx, edx
-	mov	eax, 80338041h
-	WRMSR
+	/*  Increment Y state if SET3M if true */
+	msrnum =  MSR_GLCP + 0x074;
+	msr.hi = 0;
+	msr.lo =  0x0000c000;
+	wrmsr(msrnum, msr);
 
-; Increment Y state if SET3M if true
-	mov	ecx, MSR_GLCP + 074h
-	xor	edx, edx
-	mov	eax, 0000c000h
-	WRMSR
+	/*  Set up MBUS action to PRI=3 read of MBIU */
+	msrnum =  MSR_GLCP + 0x020;
+	msr.hi =  0x0000d863;
+	msr.lo =  0x20002000;
+	wrmsr(msrnum, msr);
 
-; Set up MBUS action to PRI=3 read of MBIU
-	mov	ecx, MSR_GLCP + 020h
-	mov	edx, 0000d863h
-	mov	eax, 20002000h
-	WRMSR
+	/*  Trigger MBUS action if VG=pri3 and Y=0, this blocks most PCI */
+	msrnum =  MSR_GLCP + 0x071;
+	msr.hi = 0;
+	msr.lo =  0x00000c00;
+	wrmsr(msrnum, msr);
 
-; Trigger MBUS action if VG=pri3 and Y=0, this blocks most PCI
-	mov	ecx, MSR_GLCP + 071h
-	xor	edx, edx
-	mov	eax, 00000c00h
-	WRMSR
+	/* Writing DIAGCTL */
+	msrnum =  MSR_GLCP + 0x005f;
+	msr.hi = 0;
+	msr.lo =  0x80004000;
+	wrmsr(msrnum, msr);
 
-;Writing DIAGCTL
-	mov	ecx, MSR_GLCP + 005fh
-	xor	edx, edx
-	mov	eax, 80004000h
-	WRMSR
-
-	; Code to enable FS2 even when BTB and VGTEAR SWAPSiFs are enabled
-	; As per Todd Roberts in PBz1094 and PBz1095
-	; Moved from CPUREG to CPUBUG per Tom Sylla
-	mov	ecx, 04C000042h	; GLCP SETMCTL Register
-	rdmsr
-	or	edx, 8			; Bit 35 = MCP_IN
-	wrmsr
+		/*  Code to enable FS2 even when BTB and VGTEAR SWAPSiFs are enabled */
+		/*  As per Todd Roberts in PBz1094 and PBz1095 */
+		/*  Moved from CPUREG to CPUBUG per Tom Sylla */
+	msrnum =  0x04C000042;		/*  GLCP SETMCTL Register */;
+	msr = rdmsr(msrnum);
+	msr.hi |= 8;					/*  Bit 35 = MCP_IN */
+	wrmsr(msrnum, msr);
 	
-bug118339exit:
-	popad
-	ret
-CPUbug118339	ENDP
-#endif
 }
 
 

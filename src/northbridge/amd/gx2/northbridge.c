@@ -171,7 +171,7 @@ setup_gx2(void)
 	sizem = setup_gx2_cache();
 
 	membytes = sizem * 1048576;
-
+#if 0
 	/* we need to set 0x10000028 and 0x40000029 */
 	printk_debug("sizem 0x%x, membytes 0x%x\n", sizem, membytes);
 	msr.hi = 0x20000000 | membytes>>24;
@@ -201,7 +201,28 @@ setup_gx2(void)
 	msr.hi = tmp;
 	msr.lo = tmp2;
 	wrmsr(0x10000026, msr);
+#else
+	msr.hi = 0x2000000f;
+	msr.lo = 0xfbf00100;
+	wrmsr(0x10000028, msr);
+	msr = rdmsr(0x10000028);
+	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x10000028, msr.hi, msr.lo);
+	wrmsr(0x40000029, msr);
+	msr = rdmsr(0x40000029);
+	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x40000029, msr.hi, msr.lo);
 
+	msr.hi = 0x2cfbc040;
+	msr.lo = 0x400fffc0;
+	wrmsr(0x10000026, msr);
+	msr = rdmsr(0x10000026);
+	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x10000026, msr.hi, msr.lo);
+
+	msr.hi = 0x22fffc02;
+	msr.lo = 0x10ffbf00;
+	wrmsr(0x1808, msr);
+	msr = rdmsr(0x1808);
+	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x1808, msr.hi, msr.lo);
+#endif
 	/* now do the default MSR values */
 	for(i = 0; msr_defaults[i].msr_no; i++) {
 		msr_t msr;

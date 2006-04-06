@@ -32,7 +32,8 @@ bug573(void){
 #endif
 
 static void
-pcideadlock(void){
+pcideadlock(void)
+{
 	msr_t msr;
 
 	msr = rdmsr(CPU_DM_CONFIG0);
@@ -41,13 +42,11 @@ pcideadlock(void){
 	msr.lo |= DM_CONFIG0_LOWER_MISSER_SET;
 	wrmsr(CPU_DM_CONFIG0, msr);
 
-
-
 	msr = rdmsr(CPU_IM_CONFIG);
 	msr.lo |= IM_CONFIG_LOWER_QWT_SET;	/* interlock instruction fetches to WS regions with data accesses.
-									  * This prevents in instruction fetch from going out to PCI if the 
-									  * data side is about to make a request.
-									  */
+						 * This prevents in instruction fetch from going out to PCI if the 
+						 * data side is about to make a request.
+						 */
 	wrmsr(CPU_IM_CONFIG, msr);
 	/* write serialize memory hole to PCI. Need to to unWS when something is shadowed regardless of cachablility.*/
 
@@ -72,13 +71,14 @@ pcideadlock(void){
 /***/
 /****************************************************************************/
 
-void bug784(void){
+void bug784(void)
+{
 	msr_t msr;
-//	static char *name = "Geode by NSC";
+	//static char *name = "Geode by NSC";
 
 	/* we'll do this the stupid way, for now, but that's the string they want. NO ONE KNOWS why you
-	  * would do this -- the OS can figure this type of stuff out!
-	  */
+	 * would do this -- the OS can figure this type of stuff out!
+	 */
 	msr = rdmsr(0x3006);
 	msr.hi = 0x646f6547;
 	wrmsr(0x3006, msr);
@@ -91,7 +91,7 @@ void bug784(void){
 	msr = rdmsr(0x3002);
 	wrmsr(0x3008, msr);
 
-/* More CPUID to match AMD better. #792*/
+	/* More CPUID to match AMD better. #792*/
 	msr = rdmsr(0x3009);
 	msr.hi = 0x0C0C0A13D;
 	msr.lo = 0x00000000;
@@ -99,8 +99,8 @@ void bug784(void){
 }
 
 /* cpubug 1398: enable MC if we KNOW we have DDR*/
-void
-eng1398(void){
+void eng1398(void)
+{
 	msr_t msr;
 
 	msr = rdmsr(MSR_GLCP+0x17);

@@ -199,7 +199,9 @@ static void real_mode_switch_call_vsm(unsigned long smm, unsigned long sysm)
 		//"	mov	%ax, %gs       	\n"
 		"	mov	$0x40, %ax	\n"
 		"	mov	%ax, %ds	\n"
-		"	mov	%cx, %ax	\n"
+		//"	mov	%cx, %ax	\n"
+		"	movl    $0x10000026, %ecx	\n"
+		"	movl    $0x10000028, %edx	\n"
 
 		/* run VGA BIOS at 0x6000:0020 */
 		"	lcall	$0x6000, $0x0020\n"
@@ -274,6 +276,9 @@ void do_vsmbios(void)
 	}
 
 	memcpy((void *) 0x60000, buf, size);
+
+	for (i = 0; i < 0x800000; i++)
+		outb(0xaa, 0x80);
 
 	/* ecx gets smm, edx gets sysm */
 	printk_err("Call real_mode_switch_call_vsm\n");

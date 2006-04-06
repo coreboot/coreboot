@@ -72,7 +72,8 @@
 #define	GL1_GLCP				3
 #define	GL1_PCI				4
 #define	GL1_FG				5
-
+#define GL1_VIP			5
+#define GL1_AES			6
 
 #define	MSR_GLIU0			(GL0_GLIU0 << 29) + (1 << 28) /* To get on GeodeLink one bit has to be set */
 #define	MSR_MC				(GL0_MC		<< 29)
@@ -85,7 +86,8 @@
 #define	MSR_GLCP			(GL1_GLCP << 26) + MSR_GLIU1
 #define	MSR_PCI				(GL1_PCI << 26) + MSR_GLIU1
 #define	MSR_FG				(GL1_FG << 26) + MSR_GLIU1
-
+#define 	MSR_VIP				((GL1_VIP << 26) + MSR_GLIU1)
+#define 	MSR_AES				((GL1_AES << 26) + MSR_GLIU1)
 /* South Bridge*/
 #define	MSR_SB				(SB_PORT << 23) + MSR_PCI	/* address to the SouthBridge*/
 #define	SB_SHIFT			20							/* 29 -> 26 -> 23 -> 20...... When making a SB address uses this shift.*/
@@ -428,5 +430,257 @@
 /**/
 #define	FG_GLD_MSR_CAP			MSR_FG + 0x2000
 #define	FG_GLD_MSR_PM			MSR_FG + 0x2004
+
+/*  VIP GLIU1 port 5*/
+/* */
+#define VIP_GLD_MSR_CAP		(MSR_VIP + 0x2000)
+#define VIP_GLD_MSR_CONFIG	(MSR_VIP + 0x2001)
+#define VIP_GLD_MSR_PM		(MSR_VIP + 0x2004)
+#define VIP_BIST			(MSR_VIP + 0x2005)
+/* */
+/*  AES GLIU1 port 6*/
+/* */
+#define AES_GLD_MSR_CAP		(MSR_AES + 0x2000)
+#define AES_GLD_MSR_CONFIG	(MSR_AES + 0x2001)
+#define AES_GLD_MSR_PM		(MSR_AES + 0x2004)
+#define AES_CONTROL			(MSR_AES + 0x2006)
+/* more fun stuff */
+#define BM			1	/*  Base Mask - map power of 2 size aligned region*/
+#define BMO			2	/*  BM with an offset*/
+#define R			3	/*  Range - 4k range minimum*/
+#define RO			4	/*  R with offset*/
+#define SC			5	/*  Swiss 0xCeese - maps a 256K region in to 16K 0xcunks. Set W/R*/
+#define BMIO		6	/*  Base Mask IO*/
+#define SCIO		7	/*  Swiss 0xCeese IO*/
+#define SC_SHADOW		8	/*  Special marker for Shadow SC descriptors so setShadow proc is independant of CPU*/
+#define R_SYSMEM		9	/*  Special marker for SYSMEM R descriptors so GLIUInit proc is independant of CPU*/
+#define BMO_SMM			10	/*  Specail marker for SMM*/
+#define BM_SMM			11	/*  Specail marker for SMM*/
+#define BMO_DMM			12	/*  Specail marker for DMM*/
+#define BM_DMM			13	/*  Specail marker for DMM*/
+#define RO_FB			14	/*  special for Frame buffer.*/
+#define R_FB			15	/*  special for FB.*/
+#define OTHER			0x0FE /*  Special marker for other*/
+#define GL_END			 0x0FF	/*  end*/
+
+#define MSR_GL0	(GL1_GLIU0 << 29)
+
+/*  Set up desc addresses from 20 - 3f*/
+/*  This is chip specific!*/
+#define MSR_GLIU0_BASE1			(MSR_GLIU0 + 0x20)		/*  BM*/
+#define MSR_GLIU0_BASE2			(MSR_GLIU0 + 0x21)		/*  BM*/
+#define MSR_GLIU0_SHADOW		(MSR_GLIU0 + 0x2C)		/*  SCO should only be SC*/
+#define MSR_GLIU0_SYSMEM		(MSR_GLIU0 + 0x28)		/*  RO should only be R*/
+#define MSR_GLIU0_SMM			(MSR_GLIU0 + 0x26)		/*  BMO*/
+#define MSR_GLIU0_DMM			(MSR_GLIU0 + 0x27)		/*  BMO*/
+
+#define MSR_GLIU1_BASE1			(MSR_GLIU1 + 0x20)		/*  BM*/
+#define MSR_GLIU1_BASE2			(MSR_GLIU1 + 0x21)		/*  BM*/
+#define MSR_GLIU1_SHADOW		(MSR_GLIU1 + 0x2D)		/*  SCO should only be SC*/
+#define MSR_GLIU1_SYSMEM		(MSR_GLIU1 + 0x29)		/*  RO should only be R*/
+#define MSR_GLIU1_SMM			(MSR_GLIU1 + 0x23)		/*  BM*/
+#define MSR_GLIU1_DMM			(MSR_GLIU1 + 0x24)		/*  BM*/
+#define MSR_GLIU1_FPU_TRAP		(MSR_GLIU1 + 0x0E3)	/*  FooGlue F0 for FPU*/
+
+/* definitions that are "once you are mostly up, start VSA" type things */
+#define SMM_OFFSET	0x40400000
+#define SMM_SIZE	256
+#define DMM_OFFSET	0x0C0000000
+#define DMM_SIZE	128
+#define FB_OFFSET	0x41000000
+#define PCI_MEM_TOP	0x0EFFFFFFF	 // Top of PCI mem allocation region
+#define PCI_IO_TOP	0x0EFFF		 // Top of PCI I/O allocation region
+#define END_OPTIONROM_SPACE	0x0DFFF		 // E0000 is reserved for SystemROMs.
+
+#define MDD_SMBUS	0x06000		 // SMBUS IO location
+#define MDD_GPIO	0x06100		 // GPIO & ICF IO location
+#define MDD_MFGPT	0x06200		 // General Purpose Timers IO location
+#define MDD_IRQ_MAPPER	0x06300		 // IRQ Mapper
+#define ACPI_BASE	0x09C00		 // ACPI Base
+#define MDD_PM	0x09D00		 // Power Management Logic - placed at the end of ACPI
+
+#define CS5535_IDSEL	0x02000000	 // IDSEL = AD25, device #15
+#define CHIPSET_DEV_NUM	15
+#define IDSEL_BASE	11			 // bit 11 = device 1
+#define SB_PORT	2			 // port of the SouthBridge
+
+/* standard AMD post definitions -- might as well use them. */
+#define POST_Output_Port				(0x080)	/*  port to write post codes to*/
+
+#define POST_preSioInit					(0x000)	/* geode.asm*/
+#define POST_clockInit					(0x001)	/* geode.asm*/
+#define POST_CPURegInit					(0x002)	/* geode.asm*/
+#define POST_UNREAL						(0x003)	/* geode.asm*/
+#define POST_CPUMemRegInit				(0x004)	/* geode.asm*/
+#define POST_CPUTest					(0x005)	/* geode.asm*/
+#define POST_memSetup					(0x006)	/* geode.asm*/
+#define POST_memSetUpStack				(0x007)	/* geode.asm*/
+#define POST_memTest					(0x008)	/* geode.asm*/
+#define POST_shadowRom					(0x009)	/* geode.asm*/
+#define POST_memRAMoptimize				(0x00A)	/* geode.asm*/
+#define POST_cacheInit					(0x00B)	/* geode.asm*/
+#define POST_northBridgeInit			(0x00C)	/* geode.asm*/
+#define POST_chipsetInit				(0x00D)	/* geode.asm*/
+#define POST_sioTest					(0x00E)	/* geode.asm*/
+#define POST_pcATjunk					(0x00F)	/* geode.asm*/
+
+
+#define POST_intTable					(0x010)	/* geode.asm*/
+#define POST_memInfo					(0x011)	/* geode.asm*/
+#define POST_romCopy					(0x012)	/* geode.asm*/
+#define POST_PLLCheck					(0x013)	/* geode.asm*/
+#define POST_keyboardInit				(0x014)	/* geode.asm*/
+#define POST_cpuCacheOff				(0x015)	/* geode.asm*/
+#define POST_BDAInit					(0x016)	/* geode.asm*/
+#define POST_pciScan					(0x017)	/* geode.asm*/
+#define POST_optionRomInit				(0x018)	/* geode.asm*/
+#define POST_ResetLimits				(0x019)	/* geode.asm*/
+#define POST_summary_screen				(0x01A)	/* geode.asm*/
+#define POST_Boot						(0x01B)	/* geode.asm*/
+#define POST_SystemPreInit				(0x01C)	/* geode.asm*/
+#define POST_ClearRebootFlag			(0x01D)	/* geode.asm*/
+#define POST_GLIUInit					(0x01E)	/* geode.asm*/
+#define POST_BootFailed					(0x01F)	/* geode.asm*/
+
+
+#define POST_CPU_ID						(0x020)	/* cpucpuid.asm*/
+#define POST_COUNTERBROKEN				(0x021)	/* pllinit.asm*/
+#define POST_DIFF_DIMMS					(0x022)	/* pllinit.asm*/
+#define POST_WIGGLE_MEM_LINES			(0x023)	/* pllinit.asm*/
+#define POST_NO_GLIU_DESC				(0x024)	/* pllinit.asm*/
+#define POST_CPU_LCD_CHECK				(0x025)	/* pllinit.asm*/
+#define POST_CPU_LCD_PASS				(0x026)	/* pllinit.asm*/
+#define POST_CPU_LCD_FAIL				(0x027)	/* pllinit.asm*/
+#define POST_CPU_STEPPING				(0x028)	/* cpucpuid.asm*/
+#define POST_CPU_DM_BIST_FAILURE		(0x029)	/* gx2reg.asm*/
+#define POST_CPU_FLAGS					(0x02A)	/* cpucpuid.asm*/
+#define POST_CHIPSET_ID					(0x02b)	/* chipset.asm*/
+#define POST_CHIPSET_ID_PASS			(0x02c)	/* chipset.asm*/
+#define POST_CHIPSET_ID_FAIL			(0x02d)	/* chipset.asm*/
+#define POST_CPU_ID_GOOD				(0x02E)	/* cpucpuid.asm*/
+#define POST_CPU_ID_FAIL				(0x02F)	/* cpucpuid.asm*/
+
+
+
+/*  PCI config*/
+#define P80_PCICFG						(0x030)	/*  pcispace.asm*/
+
+
+/*  PCI io*/
+#define P80_PCIIO						(0x040)	/*  pcispace.asm*/
+
+
+/*  PCI memory*/
+#define P80_PCIMEM						(0x050)	/*  pcispace.asm*/
+
+
+/*  SIO*/
+#define P80_SIO							(0x060)		/*  *sio.asm*/
+
+/*  Memory Setp*/
+#define P80_MEM_SETUP					(0x070)	/* docboot meminit*/
+#define POST_MEM_SETUP					(0x070)	/* memsize.asm*/
+#define ERROR_32BIT_DIMMS				(0x071)	/* memsize.asm*/
+#define POST_MEM_SETUP2					(0x072)	/* memsize.asm*/
+#define POST_MEM_SETUP3					(0x073)	/* memsize.asm*/
+#define POST_MEM_SETUP4					(0x074)	/* memsize.asm*/
+#define POST_MEM_SETUP5					(0x075)	/* memsize.asm*/
+#define POST_MEM_ENABLE					(0x076)	/* memsize.asm*/
+#define ERROR_NO_DIMMS					(0x077)	/* memsize.asm*/
+#define ERROR_DIFF_DIMMS				(0x078)	/* memsize.asm*/
+#define ERROR_BAD_LATENCY				(0x079)	/* memsize.asm*/
+#define ERROR_SET_PAGE					(0x07a)	/* memsize.asm*/
+#define ERROR_DENSITY_DIMM				(0x07b)	/* memsize.asm*/
+#define ERROR_UNSUPPORTED_DIMM			(0x07c)	/* memsize.asm*/
+#define ERROR_BANK_SET					(0x07d)	/* memsize.asm*/
+#define POST_MEM_SETUP_GOOD				(0x07E)	/* memsize.asm*/
+#define POST_MEM_SETUP_FAIL				(0x07F)	/* memsize.asm*/
+
+
+#define POST_UserPreInit				(0x080)	/* geode.asm*/
+#define POST_UserPostInit				(0x081)	/* geode.asm*/
+#define POST_Equipment_check			(0x082)	/* geode.asm*/
+#define POST_InitNVRAMBX				(0x083)	/* geode.asm*/
+#define POST_NoPIRTable				(0x084)	/* pci.asm*/
+#define POST_ChipsetFingerPrintPass		(0x085)	/*  prechipsetinit*/
+#define POST_ChipsetFingerPrintFail		(0x086)	/*  prechipsetinit*/
+#define POST_CPU_IM_TAG_BIST_FAILURE	(0x087)	/*  gx2reg.asm*/
+#define POST_CPU_IM_DATA_BIST_FAILURE	(0x088)	/*  gx2reg.asm*/
+#define POST_CPU_FPU_BIST_FAILURE		(0x089)	/*  gx2reg.asm*/
+#define POST_CPU_BTB_BIST_FAILURE		(0x08a)	/*  gx2reg.asm*/
+#define POST_CPU_EX_BIST_FAILURE		(0x08b)	/*  gx2reg.asm*/
+#define POST_Chipset_PI_Test_Fail		(0x08c)	/*  prechipsetinit*/
+#define POST_Chipset_SMBus_SDA_Test_Fail	(0x08d)	/*  prechipsetinit*/
+#define POST_BIT_CLK_Fail				(0x08e)	/*  Hawk geode.asm override*/
+
+
+#define POST_STACK_SETUP				(0x090)	/* memstack.asm*/
+#define POST_CPU_PF_BIST_FAILURE		(0x091)	/*  gx2reg.asm*/
+#define POST_CPU_L2_BIST_FAILURE		(0x092)	/*  gx2reg.asm*/
+#define POST_CPU_GLCP_BIST_FAILURE		(0x093)	/*  gx2reg.asm*/
+#define POST_CPU_DF_BIST_FAILURE		(0x094)	/*  gx2reg.asm*/
+#define POST_CPU_VG_BIST_FAILURE		(0x095)	/*  gx2reg.asm*/
+#define POST_CPU_VIP_BIST_FAILURE		(0x096)	/*  gx2reg.asm*/
+#define POST_STACK_SETUP_PASS			(0x09E)	/* memstack.asm*/
+#define POST_STACK_SETUP_FAIL			(0x09F)	/* memstack.asm*/
+
+
+#define POST_PLL_INIT					(0x0A0)	/* pllinit.asm*/
+#define POST_PLL_MANUAL					(0x0A1)	/* pllinit.asm*/
+#define POST_PLL_STRAP					(0x0A2)	/* pllinit.asm*/
+#define POST_PLL_RESET_FAIL				(0x0A3)	/* pllinit.asm*/
+#define POST_PLL_PCI_FAIL				(0x0A4)	/* pllinit.asm*/
+#define POST_PLL_MEM_FAIL				(0x0A5)	/* pllinit.asm*/
+#define POST_PLL_CPU_VER_FAIL			(0x0A6)	/* pllinit.asm*/
+
+
+#define POST_MEM_TESTMEM				(0x0B0)	/* memtest.asm*/
+#define POST_MEM_TESTMEM1				(0x0B1)	/* memtest.asm*/
+#define POST_MEM_TESTMEM2				(0x0B2)	/* memtest.asm*/
+#define POST_MEM_TESTMEM3				(0x0B3)	/* memtest.asm*/
+#define POST_MEM_TESTMEM4				(0x0B4)	/* memtest.asm*/
+#define POST_MEM_TESTMEM_PASS			(0x0BE)	/* memtest.asm*/
+#define POST_MEM_TESTMEM_FAIL			(0x0BF)	/* memtest.asm*/
+
+
+#define POST_SECUROM_SECBOOT_START        (0x0C0)	/* secstart.asm*/
+#define POST_SECUROM_BOOTSRCSETUP         (0x0C1)	/* secstart.asm*/
+#define POST_SECUROM_REMAP_FAIL           (0x0C2)	/* secstart.asm*/
+#define POST_SECUROM_BOOTSRCSETUP_FAIL    (0x0C3)	/* secstart.asm*/
+#define POST_SECUROM_DCACHESETUP          (0x0C4)	/* secstart.asm*/
+#define POST_SECUROM_DCACHESETUP_FAIL     (0x0C5)	/* secstart.asm*/
+#define POST_SECUROM_ICACHESETUP          (0x0C6)	/* secstart.asm*/
+#define POST_SECUROM_DESCRIPTORSETUP      (0x0C7)	/* secstart.asm*/
+#define POST_SECUROM_DCACHESETUPBIOS      (0x0C8)	/* secstart.asm*/
+#define POST_SECUROM_PLATFORMSETUP        (0x0C9)	/* secstart.asm*/
+#define POST_SECUROM_SIGCHECKBIOS         (0x0CA)	/* secstart.asm*/
+#define POST_SECUROM_ICACHESETUPBIOS      (0x0CB)	/* secstart.asm*/
+#define POST_SECUROM_PASS				  (0x0CC)	/* secstart.asm*/
+#define POST_SECUROM_FAIL				  (0x0CD)	/* secstart.asm*/
+
+#define POST_RCONFInitError				(0x0CE)	/* cache.asm*/
+#define POST_CacheInitError				(0x0CF)	/* cache.asm*/
+
+
+#define POST_ROM_PREUNCOMPRESS			(0x0D0)	/* rominit.asm*/
+#define POST_ROM_UNCOMPRESS				(0x0D1)	/* rominit.asm*/
+#define POST_ROM_SMM_INIT				(0x0D2)	/* rominit.asm*/
+#define POST_ROM_VID_BIOS				(0x0D3)	/* rominit.asm*/
+#define POST_ROM_LCDINIT				(0x0D4)	/* rominit.asm*/
+#define POST_ROM_SPLASH					(0x0D5)	/* rominit.asm*/
+#define POST_ROM_HDDINIT				(0x0D6)	/* rominit.asm*/
+#define POST_ROM_SYS_INIT				(0x0D7)	/* rominit.asm*/
+#define POST_ROM_DMM_INIT				(0x0D8)	/* rominit.asm*/
+#define POST_ROM_TVINIT					(0x0D9)	/* rominit.asm*/
+#define POST_ROM_POSTUNCOMPRESS			(0x0DE)
+
+
+#define P80_CHIPSET_INIT				(0x0E0)	/* chipset.asm*/
+#define POST_PreChipsetInit				(0x0E1)	/* geode.asm*/
+#define POST_LateChipsetInit			(0x0E2)	/* geode.asm*/
+#define POST_NORTHB_INIT				(0x0E8)	/* northb.asm*/
+
+
+#define POST_INTR_SEG_JUMP				(0x0F0)	/* vector.asm*/
 
 #endif /* CPU_AMD_GX2DEF_H */

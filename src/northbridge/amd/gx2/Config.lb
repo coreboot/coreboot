@@ -1,2 +1,4 @@
 config chip.h
 object northbridge.o
+object northbridgeinit.o
+

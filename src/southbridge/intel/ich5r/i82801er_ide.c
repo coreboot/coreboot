@@ -3,21 +3,20 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include "ich5r.h"
+#include "i82801er.h"
 
 static void ide_init(struct device *dev)
 {
-
 	/* Enable IDE devices and timmings */
-	pci_write_config16(dev, 0x40, 0x0a307);
-	pci_write_config16(dev, 0x42, 0x0a307);
+	pci_write_config16(dev, 0x40, 0x0a307); // IDE0
+	pci_write_config16(dev, 0x42, 0x0a307); // IDE1
 	pci_write_config8(dev, 0x48, 0x05);
 	pci_write_config16(dev, 0x4a, 0x0101);
 	pci_write_config16(dev, 0x54, 0x5055);
 	printk_debug("IDE Enabled\n");
 }
 
-static void ich5r_ide_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void i82801er_ide_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
 	/* This value is also visible in uchi[0-2] and smbus functions */
 	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID, 
@@ -25,7 +24,7 @@ static void ich5r_ide_set_subsystem(device_t dev, unsigned vendor, unsigned devi
 }
 
 static struct pci_operations lops_pci = {
-	.set_subsystem = ich5r_ide_set_subsystem,
+	.set_subsystem = i82801er_ide_set_subsystem,
 };
 static struct device_operations ide_ops  = {
 	.read_resources   = pci_dev_read_resources,

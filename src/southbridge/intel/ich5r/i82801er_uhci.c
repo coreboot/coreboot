@@ -3,7 +3,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include "ich5r.h"
+#include "i82801er.h"
 
 static void uhci_init(struct device *dev)
 {
@@ -32,7 +32,7 @@ static struct device_operations uhci_ops  = {
 	.enable_resources = pci_dev_enable_resources,
 	.init             = uhci_init,
 	.scan_bus         = 0,
-	.enable           = ich5r_enable,
+	.enable           = i82801er_enable,
 	.ops_pci          = &lops_pci,
 };
 

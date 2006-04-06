@@ -28,7 +28,7 @@ chip northbridge/ibm/cpc925
 			end
 		end
 		device pci 06.0 on end
-		chip southbridge/intel/ich5r # ich5r
+		chip southbridge/intel/i82801er # i82801er
 			device pci 1d.0 on end
 			device pci 1d.1 on end
 			device pci 1d.2 on end

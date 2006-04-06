@@ -1,4 +1,7 @@
-struct southbridge_intel_ich5r_config 
+#ifndef I82801ER_CHIP_H
+#define I82801ER_CHIP_H
+
+struct southbridge_intel_i82801er_config 
 {
 
 #define ICH5R_GPIO_USE_MASK      0x03
@@ -27,4 +30,7 @@ struct southbridge_intel_ich5r_config
 	unsigned int  pirq_a_d;
 	unsigned int  pirq_e_h;
 };
-extern struct chip_operations southbridge_intel_ich5r_ops;
+extern struct chip_operations southbridge_intel_i82801er_ops;
+
+#endif /* I82801ER_CHIP_H */
+

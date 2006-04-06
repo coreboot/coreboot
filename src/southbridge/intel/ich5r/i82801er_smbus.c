@@ -5,8 +5,8 @@
 #include <device/pci_ops.h>
 #include <device/smbus.h>
 #include <arch/io.h>
-#include "ich5r.h"
-#include "ich5r_smbus.h"
+#include "i82801er.h"
+#include "i82801er_smbus.h"
 
 static int lsmbus_read_byte(struct bus *bus, device_t dev, uint8_t address)
 {
@@ -32,7 +32,7 @@ static struct device_operations smbus_ops = {
 	.enable_resources = pci_dev_enable_resources,
 	.init             = 0,
 	.scan_bus         = scan_static_bus,
-	.enable           = ich5r_enable,
+	.enable           = i82801er_enable,
 	.ops_pci          = &lops_pci,
 	.ops_smbus_bus    = &lops_smbus_bus,
 };

@@ -2,15 +2,15 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include "ich5r.h"
+#include "i82801er.h"
 
-void ich5r_enable(device_t dev)
+void i82801er_enable(device_t dev)
 {
 	device_t lpc_dev;
 	unsigned index = 0;
 	uint16_t reg_old, reg;
 
-	/* See if we are on the behind the ich5r pci bridge */
+	/* See if we are behind the i82801er pci bridge */
 	lpc_dev = dev_find_slot(dev->bus->secondary, PCI_DEVFN(0x1f, 0));
 	if((dev->path.u.pci.devfn &0xf8)== 0xf8) {
 		index = dev->path.u.pci.devfn & 7;
@@ -42,7 +42,7 @@ void ich5r_enable(device_t dev)
 	
 }
 
-struct chip_operations southbridge_intel_ich5r_ops = {
-	CHIP_NAME("INTEL 82801ER")
-	.enable_dev = ich5r_enable,
+struct chip_operations southbridge_intel_i82801er_ops = {
+	CHIP_NAME("Intel 82801ER Southbridge")
+	.enable_dev = i82801er_enable,
 };

@@ -10,7 +10,7 @@
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
-#include "southbridge/intel/ich5r/ich5r_early_smbus.c"
+#include "southbridge/intel/i82801er/i82801er_early_smbus.c"
 #include "northbridge/intel/E7520/raminit.h"
 #include "superio/winbond/w83627hf/w83627hf.h"
 #include "cpu/x86/lapic/boot_cpu.c"

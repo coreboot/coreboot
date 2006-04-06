@@ -134,7 +134,7 @@ config chip.h
 
 chip northbridge/intel/E7520 # mch
 	device pci_domain 0 on 
-		chip southbridge/intel/ich5r # ich5r
+		chip southbridge/intel/i82801er # i82801er
 			# USB ports
 			device pci 1d.0 on end
 			device pci 1d.1 on end

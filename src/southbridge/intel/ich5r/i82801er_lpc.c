@@ -9,7 +9,7 @@
 #include <pc80/mc146818rtc.h>
 #include <pc80/isa-dma.h>
 #include <arch/io.h>
-#include "ich5r.h"
+#include "i82801er.h"
 
 #define ACPI_BAR 0x40
 #define GPIO_BAR 0x58
@@ -68,7 +68,7 @@ static void setup_ioapic(void)
 }
 
 #define SERIRQ_CNTL 0x64
-static void ich5r_enable_serial_irqs(device_t dev)
+static void i82801er_enable_serial_irqs(device_t dev)
 {
 	/* set packet length and toggle silent mode bit */
 	pci_write_config8(dev, SERIRQ_CNTL, (1 << 7)|(1 << 6)|((21 - 17) << 2)|(0 << 0));
@@ -76,22 +76,22 @@ static void ich5r_enable_serial_irqs(device_t dev)
 }
 
 #define PCI_DMA_CFG 0x90
-static void ich5r_pci_dma_cfg(device_t dev)
+static void i82801er_pci_dma_cfg(device_t dev)
 {
 	/* Set PCI DMA CFG to lpc I/F DMA */
 	pci_write_config16(dev, PCI_DMA_CFG, 0xfcff);
 }
 
 #define LPC_EN 0xe6
-static void ich5r_enable_lpc(device_t dev)
+static void i82801er_enable_lpc(device_t dev)
 {
         /* lpc i/f enable */
         pci_write_config8(dev, LPC_EN, 0x0d);
 }
 
-typedef struct southbridge_intel_ich5r_config config_t;
+typedef struct southbridge_intel_i82801er_config config_t;
 
-static void set_ich5r_gpio_use_sel(
+static void set_i82801er_gpio_use_sel(
 	device_t dev, struct resource *res, config_t *config)
 {
 	uint32_t gpio_use_sel, gpio_use_sel2;
@@ -120,7 +120,7 @@ static void set_ich5r_gpio_use_sel(
 	outl(gpio_use_sel2, res->base + 0x30);
 }
 
-static void set_ich5r_gpio_direction(
+static void set_i82801er_gpio_direction(
 	device_t dev, struct resource *res, config_t *config)
 {
 	uint32_t gpio_io_sel, gpio_io_sel2;
@@ -149,7 +149,7 @@ static void set_ich5r_gpio_direction(
 	outl(gpio_io_sel2, res->base + 0x34);
 }
 
-static void set_ich5r_gpio_level(
+static void set_i82801er_gpio_level(
 	device_t dev, struct resource *res, config_t *config)
 {
 	uint32_t gpio_lvl, gpio_lvl2;
@@ -184,7 +184,7 @@ static void set_ich5r_gpio_level(
 	outl(gpio_lvl2,  res->base + 0x38);
 }
 
-static void set_ich5r_gpio_inv(
+static void set_i82801er_gpio_inv(
 	device_t dev, struct resource *res, config_t *config)
 {
 	uint32_t gpio_inv;
@@ -205,7 +205,7 @@ static void set_ich5r_gpio_inv(
 	outl(gpio_inv,   res->base + 0x2c);
 }
 
-static void ich5r_pirq_init(device_t dev)
+static void i82801er_pirq_init(device_t dev)
 {
 	config_t *config;
 
@@ -221,7 +221,7 @@ static void ich5r_pirq_init(device_t dev)
 }
 
 
-static void ich5r_gpio_init(device_t dev)
+static void i82801er_gpio_init(device_t dev)
 {
 	struct resource *res;
 	config_t *config;
@@ -243,19 +243,41 @@ static void ich5r_gpio_init(device_t dev)
 	}
 
 	/* Set the use selects */
-	set_ich5r_gpio_use_sel(dev, res, config);
+	set_i82801er_gpio_use_sel(dev, res, config);
 
 	/* Set the IO direction */
-	set_ich5r_gpio_direction(dev, res, config);
+	set_i82801er_gpio_direction(dev, res, config);
 
 	/* Setup the input inverters */
-	set_ich5r_gpio_inv(dev, res, config);
+	set_i82801er_gpio_inv(dev, res, config);
 
 	/* Set the value on the GPIO output pins */
-	set_ich5r_gpio_level(dev, res, config);
+	set_i82801er_gpio_level(dev, res, config);
 
 }
 
+static void enable_hpet(struct device *dev)
+{
+const unsigned long hpet_address = 0xfed0000;
+
+	uint32_t dword;
+	uint32_t code = (0 & 0x3);
+
+	dword = pci_read_config32(dev, GEN_CNTL);
+	dword |= (1 << 17); /* enable hpet */
+
+	/* Bits [16:15]  Memory Address Range
+	 *	    00   FED0_0000h - FED0_03FFh
+	 *	    01   FED0_1000h - FED0_13FFh
+	 *	    10   FED0_2000h - FED0_23FFh
+	 *	    11   FED0_3000h - FED0_33FFh
+	 */
+
+	dword &= ~(3 << 15); /* clear it */
+	dword |= (code<<15);
+
+	printk_debug("enabling HPET @0x%x\n", hpet_address | (code <<12) );
+}
 
 static void lpc_init(struct device *dev)
 {
@@ -272,11 +294,11 @@ static void lpc_init(struct device *dev)
 	pci_write_config32(dev, 0xd4, value);
 	setup_ioapic();
 
-	ich5r_enable_serial_irqs(dev);
+	i82801er_enable_serial_irqs(dev);
 
-	ich5r_pci_dma_cfg(dev);
+	i82801er_pci_dma_cfg(dev);
 
-	ich5r_enable_lpc(dev);
+	i82801er_enable_lpc(dev);
 
 	/* Clear SATA to non raid */
 	pci_write_config8(dev, 0xae, 0x00);
@@ -291,10 +313,10 @@ static void lpc_init(struct device *dev)
 	printk_info("set power %s after power fail\n", pwr_on?"on":"off");
 
 	/* Set up the PIRQ */
-	ich5r_pirq_init(dev);
+	i82801er_pirq_init(dev);
 	
 	/* Set the state of the gpio lines */
-	ich5r_gpio_init(dev);
+	i82801er_gpio_init(dev);
 
 	/* Initialize the real time clock */
 	rtc_init(0);
@@ -305,9 +327,10 @@ static void lpc_init(struct device *dev)
 	/* Disable IDE (needed when sata is enabled) */
 	pci_write_config8(dev, 0xf2, 0x60);
 	
+	enable_hpet(dev);
 }
 
-static void ich5r_lpc_read_resources(device_t dev)
+static void i82801er_lpc_read_resources(device_t dev)
 {
 	struct resource *res;
 
@@ -328,7 +351,7 @@ static void ich5r_lpc_read_resources(device_t dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 }
 
-static void ich5r_lpc_enable_resources(device_t dev)
+static void i82801er_lpc_enable_resources(device_t dev)
 {
 	uint8_t acpi_cntl, gpio_cntl;
 
@@ -353,12 +376,12 @@ static struct pci_operations lops_pci = {
 };
 
 static struct device_operations lpc_ops  = {
-	.read_resources   = ich5r_lpc_read_resources,
+	.read_resources   = i82801er_lpc_read_resources,
 	.set_resources    = pci_dev_set_resources,
-	.enable_resources = ich5r_lpc_enable_resources,
+	.enable_resources = i82801er_lpc_enable_resources,
 	.init             = lpc_init,
 	.scan_bus         = scan_static_bus,
-	.enable           = ich5r_enable,
+	.enable           = i82801er_enable,
 	.ops_pci          = &lops_pci,
 };
 

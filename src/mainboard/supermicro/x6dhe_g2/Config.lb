@@ -140,7 +140,7 @@ chip northbridge/intel/E7520  # MCH
 		device pnp 00.3 off end
 	end
 	device pci_domain 0 on
-		chip southbridge/intel/ich5r	# ICH5R 
+		chip southbridge/intel/i82801er	# ICH5R 
 			register "pirq_a_d" = "0x0b070a05"
 			register "pirq_e_h" = "0x0a808080"
 

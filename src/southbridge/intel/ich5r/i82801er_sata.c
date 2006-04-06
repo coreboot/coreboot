@@ -3,7 +3,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include "ich5r.h"
+#include "i82801er.h"
 
 static void sata_init(struct device *dev)
 {

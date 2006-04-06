@@ -3,7 +3,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include "ich5r.h"
+#include "i82801er.h"
 
 static void ac97_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
@@ -21,7 +21,7 @@ static struct device_operations ac97_ops  = {
 	.enable_resources = pci_dev_enable_resources,
 	.init             = 0,
 	.scan_bus         = 0,
-	.enable           = ich5r_enable,
+	.enable           = i82801er_enable,
 	.ops_pci          = &lops_pci,
 };
 

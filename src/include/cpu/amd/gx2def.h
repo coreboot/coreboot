@@ -146,12 +146,12 @@
 #define		CF8F_UPPER_32BIT_SET				1 << 5
 #define		CF8F_UPPER_HOI_LOI_SET				1 << 1
 
-#define	MC_CF1017_DATA			MSR_MC + 1Ah
+#define	MC_CF1017_DATA			MSR_MC + 0x1A
 
 #define		CF1017_LOWER_PM1_UP_DLY_SET					1 << 8
 #define		CF1017_LOWER_WR2DAT_SHIFT					0
 
-#define	MC_CFCLK_DBUG			MSR_MC + 1Dh
+#define	MC_CFCLK_DBUG			MSR_MC + 0x1D
 
 #define		CFCLK_UPPER_MTST_B2B_DIS_SET			1 << 2
 #define		CFCLK_UPPER_MTST_DQS_EN_SET			1 << 1
@@ -159,45 +159,45 @@
 
 #define		CFCLK_LOWER_MASK_CKE_SET1			1 << 9
 #define		CFCLK_LOWER_MASK_CKE_SET0			1 << 8
-#define		CFCLK_LOWER_SDCLK_SET				0Fh << 0
+#define		CFCLK_LOWER_SDCLK_SET				0x0F << 0
 
-#define	MC_CF_RDSYNC		 MSR_MC	+ 1Fh
+#define	MC_CF_RDSYNC		 MSR_MC	+ 0x1F
 
 
 /**/
 /* GLIU1 GLIU0 port2*/
 /**/
-#define	GLIU1_GLD_MSR_CAP			MSR_GLIU1 + 2000h
-#define	GLIU1_GLD_MSR_PM			MSR_GLIU1 + 2004h
+#define	GLIU1_GLD_MSR_CAP			MSR_GLIU1 + 0x2000
+#define	GLIU1_GLD_MSR_PM			MSR_GLIU1 + 0x2004
 
-#define	GLIU1_GLD_MSR_COH			MSR_GLIU1 + 80h
+#define	GLIU1_GLD_MSR_COH			MSR_GLIU1 + 0x80
 
 
 /**/
 /* CPU	; does not need routing instructions since we are executing there.*/
 /**/
-#define	CPU_GLD_MSR_CAP						2000h
-#define	CPU_GLD_MSR_CONFIG					2001h
-#define	CPU_GLD_MSR_PM						2004h
+#define	CPU_GLD_MSR_CAP						0x2000
+#define	CPU_GLD_MSR_CONFIG					0x2001
+#define	CPU_GLD_MSR_PM						0x2004
 
-#define	CPU_GLD_MSR_DIAG					2005h
+#define	CPU_GLD_MSR_DIAG					0x2005
 #define		DIAG_SEL1_MODE_SHIFT				16
 #define		DIAG_SEL1_SET						1 << 31
 #define		DIAG_SEL0__MODE_SHIFT				0
 #define		DIAG_SET0_SET						1 << 15
 
-#define	CPU_PF_BTB_CONF						1100h
+#define	CPU_PF_BTB_CONF						0x1100
 #define		BTB_ENABLE_SET						1 << 0
 #define		RETURN_STACK_ENABLE_SET				1 << 4
-#define	CPU_PF_BTBRMA_BIST					110Ch
+#define	CPU_PF_BTBRMA_BIST					0x110C
 
-#define	CPU_XC_CONFIG						1210h
+#define	CPU_XC_CONFIG						0x1210
 #define		XC_CONFIG_SUSP_ON_HLT				1 << 0
-#define	CPU_ID_CONFIG						1250h
+#define	CPU_ID_CONFIG						0x1250
 #define		ID_CONFIG_SERIAL_SET				1 << 0
 
-#define	CPU_AC_MSR							1301h
-#define	CPU_EX_BIST							1428h
+#define	CPU_AC_MSR							0x1301
+#define	CPU_EX_BIST							0x1428
 
 /*IM*/
 #define	CPU_IM_CONFIG							0x1700

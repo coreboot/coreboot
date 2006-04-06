@@ -41,7 +41,7 @@ uses CONFIG_CHIP_NAME
 uses CONFIG_CONSOLE_VGA
 uses CONFIG_PCI_ROM_RUN
 uses DEBUG
-uses CPU_OPT
+#uses CPU_OPT
 uses CONFIG_IDE
 
 ## The default definitions are used for these
@@ -70,11 +70,13 @@ uses XIP_ROM_BASE
 ## ROM_SIZE is the size of boot ROM that this board will use.
 ##
 default ROM_SIZE=2097152
+default ROM_IMAGE_SIZE = 65536
 
 ##
 ## Build code for the fallback boot?
 ##
-default HAVE_FALLBACK_BOOT=0
+default HAVE_FALLBACK_BOOT=1
+default FALLBACK_SIZE=131072
 
 
 ## Delay timer options
@@ -232,7 +234,7 @@ default MAINBOARD_POWER_ON_AFTER_POWER_FAIL="MAINBOARD_POWER_ON"
 default CONFIG_IDE=1
 
 default DEBUG=1
-default CPU_OPT="-g"
+# default CPU_OPT="-g"
 default CONFIG_CHIP_NAME=1
 
 ### End Options.lb

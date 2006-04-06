@@ -237,8 +237,8 @@ void bug118253(void){
 	wrmsr(GLPCI_SPARE, msr);
 }
 
-void
-bug118339(void) {
+void bug118339(void)
+{
 	printk_err("This is OPTIONAL BIOS-ENABLED ... ignore for now\n");
 #if 0
 	PROC NEAR PUBLIC
@@ -331,16 +331,18 @@ CPUbug118339	ENDP
 /**	Modified:*/
 /***/
 /****************************************************************************/
-void
-disablememoryreadorder(void) {	
+void disablememoryreadorder(void)
+{	
 	msr_t msr;
 	msr = rdmsr(MC_CF8F_DATA);
 
 	msr.hi |=  CF8F_UPPER_REORDER_DIS_SET;
 	wrmsr(MC_CF8F_DATA, msr);
 }
+
 void
-cpubug(void){
+cpubug(void)
+{
 	msr_t msr;
 	int rev;
 

@@ -10,7 +10,7 @@ static unsigned get_sbdn(unsigned bus)
                 PCI_ID(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_8111_PCI),
                 bus);
 
-        return (dev>>15) & 0x1f;
+        return (dev>>11) & 0x1f;
 
 }
 

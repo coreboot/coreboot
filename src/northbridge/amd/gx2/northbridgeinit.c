@@ -45,6 +45,14 @@ struct gliutable gliu1table[] = {
 	{.desc_name=GL_END,.desc_type= GL_END,.hi= 0x0,.lo= 0x0},
 };
 
+
+
+
+
+
+
+struct gliutable *gliutables[]  = {gliu0table, gliu1table, 0};
+
  struct msrinit {
 	unsigned long msrnum;
 	msr_t msr;};
@@ -99,34 +107,200 @@ struct msrinit GeodeLinkPriorityTable [] = {
 	{0x0FFFFFFFF, 				{0x0FFFFFFFF, 0x0FFFFFFFF}},		/*  END*/
 };
 
+/* do we have dmi or not? assume yes */
+int havedmi = 1;
 
-	/* ***************************************************************************/
-	/* **/
-	/* *	northBridgeInit*/
-	/* **/
-	/* *	Core Logic initialization:  Host bridge*/
-	/* **/
-	/* *	Entry:*/
-	/* *	Exit:*/
-	/* *	Modified:*/
-	/* **/
-	/* ***************************************************************************/
+static void
+writeglmsr(struct gliutable *gl){
+	msr_t msr;
 
-static void  ClockGatingInit (void);
-static void GLPCIInit(void);
-void
-northbridgeinit(void){
-	printk_debug("Enter %s\n", __FUNCTION__);
-//	post(POST_NORTHB_INIT);
-	GLPCIInit();
-	ClockGatingInit();
-	__asm__("FINIT\n");
-	/* CPUBugsFix -- called elsewhere */
-	printk_debug("Exit %s\n", __FUNCTION__);
+	msr.lo = gl->lo;
+	msr.hi = gl->hi;
+	wrmsr(gl->desc_name, msr);
+	printk_debug("%s: write msr 0x%x, val 0x%x:0x%x\n", __FUNCTION__, gl->desc_name, msr.hi, msr.lo);
+	/* they do this, so we do this */
+	msr = rdmsr(gl->desc_name);
+	printk_debug("%s: AFTER write msr 0x%x, val 0x%x:0x%x\n", __FUNCTION__, gl->desc_name, msr.hi, msr.lo);
 }
 
+static void
+ShadowInit(struct gliutable *gl) {
+	msr_t msr;
+
+	msr = rdmsr(gl->desc_name);
+
+	if (msr.lo == 0) {
+		writeglmsr(gl); 
+	}
+}
+
+/* NOTE: transcribed from assembly code. There is the usual redundant assembly nonsense in here. 
+  * CLEAN ME UP
+   */
+/* yes, this duplicates later code, but it seems that is how they want it done. 
+  */
+extern int sizeram(void);
+static void
+SysmemInit(struct gliutable *gl) {
 
 
+	msr_t msr;
+	int sizembytes, sizebytes;
+
+	sizembytes = sizeram();
+	printk_debug("%s: enable for %dm bytes\n", __FUNCTION__, sizembytes);
+	sizebytes = sizembytes << 20;
+
+	sizebytes -= SMM_SIZE*1024 +1;
+
+	if (havedmi)
+		sizebytes -= DMM_SIZE * 1024 + 1;
+
+	sizebytes -= 1;
+	msr.hi = gl->hi | (sizebytes >> 24);
+	/* set up sizebytes to fit into msr.lo */
+	sizebytes <<= 8; /* what? well, we want bits 23:12 in bytes 31:20. */
+	sizebytes &= 0xfff00000;
+	sizebytes |= 0x100;
+	msr.lo = sizebytes;
+	wrmsr(gl->desc_name, msr);
+	msr = rdmsr(gl->desc_name);
+	printk_debug("%s: AFTER write msr 0x%x, val 0x%x:0x%x\n", __FUNCTION__, 
+				gl->desc_name, msr.hi, msr.lo);
+	
+}
+static void
+DMMGL0Init(struct gliutable *gl) {
+	msr_t msr;
+	int sizebytes = sizeram()<<20;
+	long offset;
+
+	if (! havedmi)
+		return;
+
+	printk_debug("%s: %d bytes\n", __FUNCTION__, sizebytes);
+
+	sizebytes -= DMM_SIZE*1024;
+	offset = sizebytes - DMM_OFFSET;
+	printk_debug("%s: offset is 0x%x\n", __FUNCTION__, offset);
+	offset >>= 12;
+	msr.hi = (gl->hi) | (offset << 8);
+	/* I don't think this is needed */
+	msr.hi &= 0xffffff00;
+	msr.hi |= (DMM_OFFSET >> 24);
+	msr.lo = DMM_OFFSET << 8;
+	msr.lo |= ((~(DMM_SIZE*1024)+1)>>12)&0xfffff;
+	
+	wrmsr(gl->desc_name, msr);
+	msr = rdmsr(gl->desc_name);
+	printk_debug("%s: AFTER write msr 0x%x, val 0x%x:0x%x\n", __FUNCTION__, gl->desc_name, msr.hi, msr.lo);
+	
+}
+static void
+DMMGL1Init(struct gliutable *gl) {
+	msr_t msr;
+
+	if (! havedmi)
+		return;
+
+	printk_debug("%s:\n", __FUNCTION__ );
+
+	msr.hi = gl->hi;
+	/* I don't think this is needed */
+	msr.hi &= 0xffffff00;
+	msr.hi |= (DMM_OFFSET >> 24);
+	msr.lo = DMM_OFFSET << 8;
+	/* hmm. AMD source has SMM here ... SMM, not DMM? We think DMM */
+	printk_err("%s: warning, using DMM_SIZE even though AMD used SMM_SIZE\n", __FUNCTION__);
+	msr.lo |= ((~(DMM_SIZE*1024)+1)>>12)&0xfffff;
+	
+	wrmsr(gl->desc_name, msr);
+	msr = rdmsr(gl->desc_name);
+	printk_debug("%s: AFTER write msr 0x%x, val 0x%x:0x%x\n", __FUNCTION__, gl->desc_name, msr.hi, msr.lo);
+}
+static void
+SMMGL0Init(struct gliutable *gl) {
+	msr_t msr;
+	int sizebytes = sizeram()<<20;
+	long offset;
+
+	sizebytes -= SMM_SIZE*1024;
+
+	if (havedmi)
+		sizebytes -= DMM_SIZE * 1024;
+
+	printk_debug("%s: %d bytes\n", __FUNCTION__, sizebytes);
+
+	offset = sizebytes - SMM_OFFSET;
+	printk_debug("%s: offset is 0x%x\n", __FUNCTION__, offset);
+	offset >>= 12;
+
+	msr.hi = offset << 8;
+	msr.hi |= SMM_OFFSET>>24;
+
+	msr.lo = SMM_OFFSET << 8;
+	msr.lo |= ((~(SMM_SIZE*1024)+1)>>12)&0xfffff;
+	
+	wrmsr(gl->desc_name, msr);
+	msr = rdmsr(gl->desc_name);
+	printk_debug("%s: AFTER write msr 0x%x, val 0x%x:0x%x\n", __FUNCTION__, gl->desc_name, msr.hi, msr.lo);
+}
+static void
+SMMGL1Init(struct gliutable *gl) {
+	msr_t msr;
+	printk_debug("%s:\n", __FUNCTION__ );
+
+	msr.hi = gl->hi;
+	/* I don't think this is needed */
+	msr.hi &= 0xffffff00;
+	msr.hi |= (SMM_OFFSET >> 24);
+	msr.lo = SMM_OFFSET << 8;
+	msr.lo |= ((~(SMM_SIZE*1024)+1)>>12)&0xfffff;
+	
+	wrmsr(gl->desc_name, msr);
+	msr = rdmsr(gl->desc_name);
+	printk_debug("%s: AFTER write msr 0x%x, val 0x%x:0x%x\n", __FUNCTION__, gl->desc_name, msr.hi, msr.lo);
+}
+
+static void
+GLIUInit(struct gliutable *gl){
+
+	while (gl->desc_type != GL_END){
+		switch(gl->desc_type){
+		default: 
+				printk_err("%s: name %x, type %x, hi %x, lo %x: unsupported  type: ", __FUNCTION__, 
+							gl->desc_name, gl->desc_type, gl->hi, gl->hi);
+				printk_err("Must be %x, %x, %x, %x, %x, or %x\n", SC_SHADOW,R_SYSMEM,BMO_DMM,
+											BM_DMM, BMO_SMM,BM_SMM);
+	
+		case SC_SHADOW: /*  Check for a Shadow entry*/
+			ShadowInit(gl);
+			break;
+	
+		case R_SYSMEM: /*  check for a SYSMEM entry*/
+			SysmemInit(gl);
+			break;
+	
+		case 	BMO_DMM: /*  check for a DMM entry*/
+			DMMGL0Init(gl);
+			break;
+	
+		case BM_DMM	: /*  check for a DMM entry*/
+			DMMGL1Init(gl);
+			break;
+	
+		case BMO_SMM	: /*  check for a SMM entry*/
+			SMMGL0Init(gl);
+			break;
+	
+		case BM_SMM	: /*  check for a SMM entry*/
+			SMMGL1Init(gl);	
+			break;
+		}
+		gl++;
+	}
+
+}
 	/* ***************************************************************************/
 	/* **/
 	/* *	GLPCIInit*/
@@ -344,3 +518,56 @@ performance:
 	}
 
 }
+
+static void 
+GeodeLinkPriority(void){
+	msr_t msr;
+	struct msrinit *prio = GeodeLinkPriorityTable;
+	int i;
+
+	for(i = 0; prio->msrnum != 0xffffffff; i++) {
+		msr = rdmsr(prio->msrnum);
+		printk_debug("%s: MSR 0x%x is 0x%x:0x%x\n", __FUNCTION__, prio->msrnum, msr.hi, msr.lo);
+		msr.hi |= prio->msr.hi;
+		msr.lo &= ~0xfff;
+		msr.lo |= prio->msr.lo;
+		printk_debug("%s: MSR 0x%x will be set to  0x%x:0x%x\n", __FUNCTION__, 
+			prio->msrnum, msr.hi, msr.lo);
+		wrmsr(prio->msrnum, msr);
+	}
+}
+	
+	/* ***************************************************************************/
+	/* **/
+	/* *	northBridgeInit*/
+	/* **/
+	/* *	Core Logic initialization:  Host bridge*/
+	/* **/
+	/* *	Entry:*/
+	/* *	Exit:*/
+	/* *	Modified:*/
+	/* **/
+	/* ***************************************************************************/
+
+void
+northbridgeinit(void){
+	int i;
+	printk_debug("Enter %s\n", __FUNCTION__);
+//	post(POST_NORTHB_INIT);
+	for(i = 0; gliutables[i]; i++)
+		GLIUInit(gliutables[i]);
+
+	GeodeLinkPriority();
+
+
+	/*  Now that the descriptor to memory is set up.*/
+	/*  The memory controller needs one read to synch it's lines before it can be used.*/
+	i = *(int *) 0;
+
+	GLPCIInit();
+	ClockGatingInit();
+	__asm__("FINIT\n");
+	/* CPUBugsFix -- called elsewhere */
+	printk_debug("Exit %s\n", __FUNCTION__);
+}
+

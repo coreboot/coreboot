@@ -69,11 +69,11 @@
 #define	GL0_DF				6
 
 #define	GL1_GLIU0			1
-#define	GL1_GLCP				3
+#define	GL1_GLCP			3
 #define	GL1_PCI				4
 #define	GL1_FG				5
-#define GL1_VIP			5
-#define GL1_AES			6
+#define GL1_VIP				5
+#define GL1_AES				6
 
 #define	MSR_GLIU0			(GL0_GLIU0 << 29) + (1 << 28) /* To get on GeodeLink one bit has to be set */
 #define	MSR_MC				(GL0_MC		<< 29)

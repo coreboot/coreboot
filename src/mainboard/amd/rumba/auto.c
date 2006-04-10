@@ -100,6 +100,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 #define PLLMSRlo1 ((0xde << 16) | (1 << 26) | (1 << 24))
 #define PLLMSRlo2 ((1<<14) |(1<<13) | (1<<0))
 #include "northbridge/amd/gx2/pll_reset.c"
+#include "cpu/amd/model_gx2/cpureginit.c"
 
 static void msr_init(void)
 {
@@ -153,8 +154,8 @@ static void main(unsigned long bist)
 
 	pll_reset();
 
-	/* Halt if there was a built in self test failure */
-	//report_bist_failure(bist);
+	cpuRegInit();
+	print_err("done cpuRegInit\n");
 	
 	sdram_initialize(1, memctrl);
 

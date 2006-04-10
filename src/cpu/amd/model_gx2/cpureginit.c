@@ -1,15 +1,4 @@
-#include <console/console.h>
-#include <arch/io.h>
-#include <stdint.h>
-#include <device/device.h>
-#include <device/pci.h>
-#include <device/pci_ids.h>
-#include <stdlib.h>
-#include <string.h>
-#include <bitops.h>
-#include <cpu/amd/gx2def.h>
-#include <cpu/x86/msr.h>
-#include <cpu/x86/cache.h>
+
 
 /* ***************************************************************************/
 /* **/
@@ -79,14 +68,14 @@ BIST(void){
 	return;
 
 BISTFail:
-	printk_err("BIST failed!\n");
+	print_err("BIST failed!\n");
 	while(1);
 }
 /* ***************************************************************************/
 /* *	cpuRegInit*/
 /* ***************************************************************************/
 void
-cpuRegInit (int diagmode){
+cpuRegInit (void){
 	int msrnum;
 	msr_t msr;
 	/*  Turn on BTM for early debug based on setup. */
@@ -197,11 +186,6 @@ cpuRegInit (int diagmode){
 	wrmsr(msrnum, msr);
 
 /* */
-/*  Set the Delay Control in GLCP*/
-/* */
-/*	SetDelayControl();*/
-
-/* */
 /*  Enable RSDC*/
 /* */
 	msrnum = 0x1301 ;
@@ -215,7 +199,7 @@ cpuRegInit (int diagmode){
 /* */
 	/*if (getnvram( TOKEN_BIST_ENABLE) & == TVALUE_DISABLE) {*/
 	{
-		BIST();
+//		BIST();
 	}
 
 
@@ -303,6 +287,6 @@ MTestPinCheckBX (void){
 	}
 
 	/*  Lock the cache down here.*/
-	wbinvd();
+	__asm__("wbinvd\n");
 
 }

@@ -97,21 +97,21 @@
 /*GeodeLink Interface Unit 0 (GLIU0) port0*/
 /**/
 
-#define	GLIU0_GLD_MSR_CAP			MSR_GLIU0 + 0x2000
-#define	GLIU0_GLD_MSR_PM			MSR_GLIU0 + 0x2004
+#define	GLIU0_GLD_MSR_CAP			(MSR_GLIU0 + 0x2000)
+#define	GLIU0_GLD_MSR_PM			(MSR_GLIU0 + 0x2004)
 
-#define	GLIU0_DESC_BASE				MSR_GLIU0 + 0x20
-#define	GLIU0_CAP					MSR_GLIU0 + 0x86
-#define	GLIU0_GLD_MSR_COH			MSR_GLIU0 + 0x80
+#define	GLIU0_DESC_BASE				(MSR_GLIU0 + 0x20)
+#define	GLIU0_CAP					(MSR_GLIU0 + 0x86)
+#define	GLIU0_GLD_MSR_COH			(MSR_GLIU0 + 0x80)
 
 
 /**/
 /* Memory Controller GLIU0 port 1*/
 /**/
-#define	MC_GLD_MSR_CAP			MSR_MC + 0x2000
-#define	MC_GLD_MSR_PM			MSR_MC + 0x2004
+#define	MC_GLD_MSR_CAP			(MSR_MC + 0x2000)
+#define	MC_GLD_MSR_PM			(MSR_MC + 0x2004)
 
-#define	MC_CF07_DATA			MSR_MC + 0x18
+#define	MC_CF07_DATA			(MSR_MC + 0x18)
 
 #define		CF07_UPPER_D1_SZ_SHIFT				28
 #define		CF07_UPPER_D1_MB_SHIFT				24
@@ -122,22 +122,22 @@
 #define		CF07_UPPER_D0_CB_SHIFT				4
 #define		CF07_UPPER_D0_PSZ_SHIFT				0
 
-#define		CF07_LOWER_REF_INT_SHIFT			8
-#define		CF07_LOWER_LOAD_MODE_DDR_SET			(1 << 28)
-#define		CF07_LOWER_LOAD_MODE_DLL_RESET			(1 << 27)
+#define		CF07_LOWER_REF_INT_SHIFT				8
+#define		CF07_LOWER_LOAD_MODE_DDR_SET		(1 << 28)
+#define		CF07_LOWER_LOAD_MODE_DLL_RESET		(1 << 27)
 #define		CF07_LOWER_EMR_QFC_SET				(1 << 26)
 #define		CF07_LOWER_EMR_DRV_SET				(1 << 25)
 #define		CF07_LOWER_REF_TEST_SET				(1 << 3)
 #define		CF07_LOWER_PROG_DRAM_SET			(1 << 0)
 
 
-#define	MC_CF8F_DATA			MSR_MC + 0x19
+#define	MC_CF8F_DATA			(MSR_MC + 0x19)
 
 #define		CF8F_UPPER_XOR_BS_SHIFT				19
 #define		CF8F_UPPER_XOR_MB0_SHIFT			18
 #define		CF8F_UPPER_XOR_BA1_SHIFT			17
 #define		CF8F_UPPER_XOR_BA0_SHIFT			16
-#define		CF8F_UPPER_REORDER_DIS_SET			1 << 8
+#define		CF8F_UPPER_REORDER_DIS_SET		(1 << 8)
 #define		CF8F_UPPER_REG_DIMM_SHIFT			4
 #define		CF8F_LOWER_CAS_LAT_SHIFT			28
 #define		CF8F_LOWER_REF2ACT_SHIFT			24
@@ -145,34 +145,34 @@
 #define		CF8F_LOWER_PRE2ACT_SHIFT			16
 #define		CF8F_LOWER_ACT2CMD_SHIFT			12
 #define		CF8F_LOWER_ACT2ACT_SHIFT			8
-#define		CF8F_UPPER_32BIT_SET				1 << 5
-#define		CF8F_UPPER_HOI_LOI_SET				1 << 1
+#define		CF8F_UPPER_32BIT_SET				(1 << 5)
+#define		CF8F_UPPER_HOI_LOI_SET			(1 << 1)
 
-#define	MC_CF1017_DATA			MSR_MC + 0x1A
+#define	MC_CF1017_DATA			(MSR_MC + 0x1A)
 
-#define		CF1017_LOWER_PM1_UP_DLY_SET					1 << 8
-#define		CF1017_LOWER_WR2DAT_SHIFT					0
+#define		CF1017_LOWER_PM1_UP_DLY_SET			(1 << 8)
+#define		CF1017_LOWER_WR2DAT_SHIFT			0
 
-#define	MC_CFCLK_DBUG			MSR_MC + 0x1D
+#define	MC_CFCLK_DBUG			(MSR_MC + 0x1D)
 
-#define		CFCLK_UPPER_MTST_B2B_DIS_SET			1 << 2
-#define		CFCLK_UPPER_MTST_DQS_EN_SET			1 << 1
-#define		CFCLK_UPPER_MTEST_EN_SET			1 << 0
+#define		CFCLK_UPPER_MTST_B2B_DIS_SET			(1 << 2)
+#define		CFCLK_UPPER_MTST_DQS_EN_SET			(1 << 1)
+#define		CFCLK_UPPER_MTEST_EN_SET				(1 << 0)
 
-#define		CFCLK_LOWER_MASK_CKE_SET1			1 << 9
-#define		CFCLK_LOWER_MASK_CKE_SET0			1 << 8
-#define		CFCLK_LOWER_SDCLK_SET				0x0F << 0
+#define		CFCLK_LOWER_MASK_CKE_SET1			(1 << 9)
+#define		CFCLK_LOWER_MASK_CKE_SET0			(1 << 8)
+#define		CFCLK_LOWER_SDCLK_SET				(0x0F << 0)
 
-#define	MC_CF_RDSYNC		 MSR_MC	+ 0x1F
+#define	MC_CF_RDSYNC			(MSR_MC	+ 0x1F)
 
 
 /**/
 /* GLIU1 GLIU0 port2*/
 /**/
-#define	GLIU1_GLD_MSR_CAP			MSR_GLIU1 + 0x2000
-#define	GLIU1_GLD_MSR_PM			MSR_GLIU1 + 0x2004
+#define	GLIU1_GLD_MSR_CAP			(MSR_GLIU1 + 0x2000)
+#define	GLIU1_GLD_MSR_PM			(MSR_GLIU1 + 0x2004)
 
-#define	GLIU1_GLD_MSR_COH			MSR_GLIU1 + 0x80
+#define	GLIU1_GLD_MSR_COH			(MSR_GLIU1 + 0x80)
 
 
 /**/
@@ -184,27 +184,27 @@
 
 #define	CPU_GLD_MSR_DIAG					0x2005
 #define		DIAG_SEL1_MODE_SHIFT				16
-#define		DIAG_SEL1_SET						1 << 31
+#define		DIAG_SEL1_SET						(1 << 31)
 #define		DIAG_SEL0__MODE_SHIFT				0
-#define		DIAG_SET0_SET						1 << 15
+#define		DIAG_SET0_SET						(1 << 15)
 
 #define	CPU_PF_BTB_CONF						0x1100
-#define		BTB_ENABLE_SET						1 << 0
-#define		RETURN_STACK_ENABLE_SET				1 << 4
+#define		BTB_ENABLE_SET						(1 << 0)
+#define		RETURN_STACK_ENABLE_SET				(1 << 4)
 #define	CPU_PF_BTBRMA_BIST					0x110C
 
 #define	CPU_XC_CONFIG						0x1210
-#define		XC_CONFIG_SUSP_ON_HLT				1 << 0
+#define		XC_CONFIG_SUSP_ON_HLT				(1 << 0)
 #define	CPU_ID_CONFIG						0x1250
-#define		ID_CONFIG_SERIAL_SET				1 << 0
+#define		ID_CONFIG_SERIAL_SET				(1 << 0)
 
 #define	CPU_AC_MSR							0x1301
 #define	CPU_EX_BIST							0x1428
 
 /*IM*/
 #define	CPU_IM_CONFIG							0x1700
-#define		IM_CONFIG_LOWER_ICD_SET					1 << 8
-#define		IM_CONFIG_LOWER_QWT_SET					1 << 20
+#define		IM_CONFIG_LOWER_ICD_SET					(1 << 8)
+#define		IM_CONFIG_LOWER_QWT_SET					(1 << 20)
 #define	CPU_IC_INDEX							0x1710
 #define	CPU_IC_DATA								0x1711
 #define	CPU_IC_TAG								0x1712
@@ -293,19 +293,19 @@
 	
 #define	CPU_BC_CONF_0						0x1900
 #define		TSC_SUSP_SET				 (1<<5)
-#define		SUSP_EN_SET				 (1<<1)2
+#define		SUSP_EN_SET				 (1<<12)
 	
 	/**/
 	/*	VG GLIU0 port4*/
 	/**/
 	
-#define	VG_GLD_MSR_CAP			MSR_VG + 0x2000
-#define	VG_GLD_MSR_CONFIG		MSR_VG + 0x2001
-#define	VG_GLD_MSR_PM			MSR_VG + 0x2004
+#define	VG_GLD_MSR_CAP				(MSR_VG + 0x2000)
+#define	VG_GLD_MSR_CONFIG			(MSR_VG + 0x2001)
+#define	VG_GLD_MSR_PM				(MSR_VG + 0x2004)
 
-#define	GP_GLD_MSR_CAP				MSR_GP + 0x2000
-#define	GP_GLD_MSR_CONFIG			MSR_GP + 0x2001
-#define	GP_GLD_MSR_PM				MSR_GP + 0x2004
+#define	GP_GLD_MSR_CAP				(MSR_GP + 0x2000)
+#define	GP_GLD_MSR_CONFIG			(MSR_GP + 0x2001)
+#define	GP_GLD_MSR_PM				(MSR_GP + 0x2004)
 
 
 
@@ -313,29 +313,29 @@
 /*	DF GLIU0 port6*/
 /**/
 
-#define	DF_GLD_MSR_CAP			MSR_DF + 0x2000
-#define	DF_GLD_MSR_MASTER_CONF			MSR_DF + 0x2001
+#define	DF_GLD_MSR_CAP					(MSR_DF + 0x2000)
+#define	DF_GLD_MSR_MASTER_CONF			(MSR_DF + 0x2001)
 #define		DF_LOWER_LCD_SHIFT				6
-#define	DF_GLD_MSR_PM			MSR_DF + 0x2004
+#define	DF_GLD_MSR_PM					(MSR_DF + 0x2004)
 
 
 
 /**/
 /* GeodeLink Control Processor GLIU1 port3*/
 /**/
-#define	GLCP_GLD_MSR_CAP				MSR_GLCP + 0x2000
-#define	GLCP_GLD_MSR_CONF			MSR_GLCP + 0x2001
-#define	GLCP_GLD_MSR_PM				MSR_GLCP + 0x2004
+#define	GLCP_GLD_MSR_CAP			(MSR_GLCP + 0x2000)
+#define	GLCP_GLD_MSR_CONF			(MSR_GLCP + 0x2001)
+#define	GLCP_GLD_MSR_PM				(MSR_GLCP + 0x2004)
 
-#define	GLCP_DELAY_CONTROLS			MSR_GLCP + 0x0F
+#define	GLCP_DELAY_CONTROLS			(MSR_GLCP + 0x0F)
 
-#define	GLCP_SYS_RSTPLL				MSR_GLCP +0x14	/* R/W*/
+#define	GLCP_SYS_RSTPLL				(MSR_GLCP +0x14	/* R/W*/)
 #define		RSTPLL_UPPER_MDIV_SHIFT				9
 #define		RSTPLL_UPPER_VDIV_SHIFT				6
 #define		RSTPLL_UPPER_FBDIV_SHIFT			0
 	
 #define		RSTPLL_LOWER_SWFLAGS_SHIFT			26
-#define		RSTPLL_LOWER_SWFLAGS_MASK			(0x3F<<RSTPLL_LOWER_SWFLAGS_SHIFT))
+#define		RSTPLL_LOWER_SWFLAGS_MASK			(0x3F<<RSTPLL_LOWER_SWFLAGS_SHIFT)
 
 #define		RSTPPL_LOWER_HOLD_COUNT_SHIFT			16
 #define		RSTPPL_LOWER_BYPASS_SHIFT			15
@@ -353,18 +353,18 @@
 #define		RSTPPL_LOWER_PCI_SEMI_SYNC_SET		 (1<<8)
 #define		RSTPPL_LOWER_CHIP_RESET_SET		 (1<<0)
 
-#define	GLCP_DOTPLL				MSR_GLCP + 0x15	/* R/W*/
+#define	GLCP_DOTPLL				(MSR_GLCP + 0x15	/* R/W*/)
 #define		DOTPPL_LOWER_PD_SET				 (1<<14)
 
 
 /**/
 /*  GLIU1 port 4*/
 /**/
-#define	GLPCI_GLD_MSR_CAP			MSR_PCI + 0x2000
-#define	GLPCI_GLD_MSR_CONFIG			MSR_PCI + 0x2001
-#define	GLPCI_GLD_MSR_PM				MSR_PCI + 0x2004
+#define	GLPCI_GLD_MSR_CAP			(MSR_PCI + 0x2000)
+#define	GLPCI_GLD_MSR_CONFIG			(MSR_PCI + 0x2001)
+#define	GLPCI_GLD_MSR_PM				(MSR_PCI + 0x2004)
 
-#define	GLPCI_CTRL			MSR_PCI + 0x2010
+#define	GLPCI_CTRL			(MSR_PCI + 0x2010)
 #define	GLPCI_CTRL_UPPER_FTH_SHIFT				28
 #define	GLPCI_CTRL_UPPER_RTH_SHIFT				24
 #define	GLPCI_CTRL_UPPER_SBRTH_SHIFT				20
@@ -381,7 +381,7 @@
 #define	GLPCI_CTRL_LOWER_PCD_SET					(1<<2)
 #define	GLPCI_CTRL_LOWER_ME_SET					(1<<0)
 
-#define	GLPCI_ARB			MSR_PCI + 0x2011
+#define	GLPCI_ARB			(MSR_PCI + 0x2011)
 #define	GLPCI_ARB_UPPER_BM1_SET					(1<<17)
 #define	GLPCI_ARB_UPPER_BM0_SET					(1<<16)
 #define	GLPCI_ARB_UPPER_CPRE_SET					(1<<15)
@@ -398,15 +398,15 @@
 #define	GLPCI_ARB_LOWER_IIE_SET					(1<<8)
 #define	GLPCI_ARB_LOWER_PARK_SET					(1<<0)
 
-#define	GLPCI_REN			MSR_PCI + 0x2014
-#define	GLPCI_A0_BF			MSR_PCI + 0x2015
-#define	GLPCI_C0_DF			MSR_PCI + 0x2016
-#define	GLPCI_E0_FF			MSR_PCI + 0x2017
-#define	GLPCI_RC0			MSR_PCI + 0x2018
-#define	GLPCI_RC1			MSR_PCI + 0x2019
-#define	GLPCI_RC2			MSR_PCI + 0x201A
-#define	GLPCI_RC3			MSR_PCI + 0x201B
-#define	GLPCI_RC4			MSR_PCI + 0x201C
+#define	GLPCI_REN			(MSR_PCI + 0x2014)
+#define	GLPCI_A0_BF			(MSR_PCI + 0x2015)
+#define	GLPCI_C0_DF			(MSR_PCI + 0x2016)
+#define	GLPCI_E0_FF			(MSR_PCI + 0x2017)
+#define	GLPCI_RC0			(MSR_PCI + 0x2018)
+#define	GLPCI_RC1			(MSR_PCI + 0x2019)
+#define	GLPCI_RC2			(MSR_PCI + 0x201A)
+#define	GLPCI_RC3			(MSR_PCI + 0x201B)
+#define	GLPCI_RC4			(MSR_PCI + 0x201C)
 #define		GLPCI_RC_UPPER_TOP_SHIFT				12
 #define		GLPCI_RC_LOWER_BASE_SHIFT			12
 #define		GLPCI_RC_LOWER_EN_SET				(1<<8)
@@ -414,8 +414,8 @@
 #define		GLPCI_RC_LOWER_WC_SET				(1<<4)
 #define		GLPCI_RC_LOWER_WP_SET				(1<<2)
 #define		GLPCI_RC_LOWER_CD_SET				(1<<0)
-#define	GLPCI_ExtMSR			MSR_PCI + 0x201E
-#define	GLPCI_SPARE			MSR_PCI + 0x201F
+#define	GLPCI_ExtMSR			(MSR_PCI + 0x201E)
+#define	GLPCI_SPARE			(MSR_PCI + 0x201F)
 #define		GLPCI_SPARE_LOWER_AILTO_SET					(1<<6)
 #define		GLPCI_SPARE_LOWER_PPD_SET					(1<<5)
 #define		GLPCI_SPARE_LOWER_PPC_SET					(1<<4)
@@ -428,8 +428,8 @@
 /**/
 /* FooGlue GLIU1 port 5*/
 /**/
-#define	FG_GLD_MSR_CAP			MSR_FG + 0x2000
-#define	FG_GLD_MSR_PM			MSR_FG + 0x2004
+#define	FG_GLD_MSR_CAP			(MSR_FG + 0x2000)
+#define	FG_GLD_MSR_PM			(MSR_FG + 0x2004)
 
 /*  VIP GLIU1 port 5*/
 /* */
@@ -447,21 +447,21 @@
 /* more fun stuff */
 #define BM			1	/*  Base Mask - map power of 2 size aligned region*/
 #define BMO			2	/*  BM with an offset*/
-#define R			3	/*  Range - 4k range minimum*/
+#define R				3	/*  Range - 4k range minimum*/
 #define RO			4	/*  R with offset*/
 #define SC			5	/*  Swiss 0xCeese - maps a 256K region in to 16K 0xcunks. Set W/R*/
-#define BMIO		6	/*  Base Mask IO*/
-#define SCIO		7	/*  Swiss 0xCeese IO*/
-#define SC_SHADOW		8	/*  Special marker for Shadow SC descriptors so setShadow proc is independant of CPU*/
+#define BMIO			6	/*  Base Mask IO*/
+#define SCIO			7	/*  Swiss 0xCeese IO*/
+#define SC_SHADOW	8	/*  Special marker for Shadow SC descriptors so setShadow proc is independant of CPU*/
 #define R_SYSMEM		9	/*  Special marker for SYSMEM R descriptors so GLIUInit proc is independant of CPU*/
-#define BMO_SMM			10	/*  Specail marker for SMM*/
-#define BM_SMM			11	/*  Specail marker for SMM*/
-#define BMO_DMM			12	/*  Specail marker for DMM*/
-#define BM_DMM			13	/*  Specail marker for DMM*/
+#define BMO_SMM		10	/*  Specail marker for SMM*/
+#define BM_SMM		11	/*  Specail marker for SMM*/
+#define BMO_DMM		12	/*  Specail marker for DMM*/
+#define BM_DMM		13	/*  Specail marker for DMM*/
 #define RO_FB			14	/*  special for Frame buffer.*/
 #define R_FB			15	/*  special for FB.*/
 #define OTHER			0x0FE /*  Special marker for other*/
-#define GL_END			 0x0FF	/*  end*/
+#define GL_END		 0x0FF	/*  end*/
 
 #define MSR_GL0	(GL1_GLIU0 << 29)
 
@@ -469,35 +469,35 @@
 /*  This is chip specific!*/
 #define MSR_GLIU0_BASE1			(MSR_GLIU0 + 0x20)		/*  BM*/
 #define MSR_GLIU0_BASE2			(MSR_GLIU0 + 0x21)		/*  BM*/
-#define MSR_GLIU0_SHADOW		(MSR_GLIU0 + 0x2C)		/*  SCO should only be SC*/
-#define MSR_GLIU0_SYSMEM		(MSR_GLIU0 + 0x28)		/*  RO should only be R*/
+#define MSR_GLIU0_SHADOW			(MSR_GLIU0 + 0x2C)		/*  SCO should only be SC*/
+#define MSR_GLIU0_SYSMEM			(MSR_GLIU0 + 0x28)		/*  RO should only be R*/
 #define MSR_GLIU0_SMM			(MSR_GLIU0 + 0x26)		/*  BMO*/
 #define MSR_GLIU0_DMM			(MSR_GLIU0 + 0x27)		/*  BMO*/
 
 #define MSR_GLIU1_BASE1			(MSR_GLIU1 + 0x20)		/*  BM*/
 #define MSR_GLIU1_BASE2			(MSR_GLIU1 + 0x21)		/*  BM*/
-#define MSR_GLIU1_SHADOW		(MSR_GLIU1 + 0x2D)		/*  SCO should only be SC*/
-#define MSR_GLIU1_SYSMEM		(MSR_GLIU1 + 0x29)		/*  RO should only be R*/
+#define MSR_GLIU1_SHADOW			(MSR_GLIU1 + 0x2D)		/*  SCO should only be SC*/
+#define MSR_GLIU1_SYSMEM			(MSR_GLIU1 + 0x29)		/*  RO should only be R*/
 #define MSR_GLIU1_SMM			(MSR_GLIU1 + 0x23)		/*  BM*/
 #define MSR_GLIU1_DMM			(MSR_GLIU1 + 0x24)		/*  BM*/
 #define MSR_GLIU1_FPU_TRAP		(MSR_GLIU1 + 0x0E3)	/*  FooGlue F0 for FPU*/
 
 /* definitions that are "once you are mostly up, start VSA" type things */
 #define SMM_OFFSET	0x40400000
-#define SMM_SIZE	256
+#define SMM_SIZE		256
 #define DMM_OFFSET	0x0C0000000
-#define DMM_SIZE	128
-#define FB_OFFSET	0x41000000
+#define DMM_SIZE		128
+#define FB_OFFSET		0x41000000
 #define PCI_MEM_TOP	0x0EFFFFFFF	 // Top of PCI mem allocation region
-#define PCI_IO_TOP	0x0EFFF		 // Top of PCI I/O allocation region
+#define PCI_IO_TOP		0x0EFFF		 // Top of PCI I/O allocation region
 #define END_OPTIONROM_SPACE	0x0DFFF		 // E0000 is reserved for SystemROMs.
 
 #define MDD_SMBUS	0x06000		 // SMBUS IO location
-#define MDD_GPIO	0x06100		 // GPIO & ICF IO location
+#define MDD_GPIO		0x06100		 // GPIO & ICF IO location
 #define MDD_MFGPT	0x06200		 // General Purpose Timers IO location
 #define MDD_IRQ_MAPPER	0x06300		 // IRQ Mapper
-#define ACPI_BASE	0x09C00		 // ACPI Base
-#define MDD_PM	0x09D00		 // Power Management Logic - placed at the end of ACPI
+#define ACPI_BASE		0x09C00		 // ACPI Base
+#define MDD_PM		0x09D00		 // Power Management Logic - placed at the end of ACPI
 
 #define CS5535_IDSEL	0x02000000	 // IDSEL = AD25, device #15
 #define CHIPSET_DEV_NUM	15
@@ -510,17 +510,17 @@
 #define POST_preSioInit					(0x000)	/* geode.asm*/
 #define POST_clockInit					(0x001)	/* geode.asm*/
 #define POST_CPURegInit					(0x002)	/* geode.asm*/
-#define POST_UNREAL						(0x003)	/* geode.asm*/
+#define POST_UNREAL					(0x003)	/* geode.asm*/
 #define POST_CPUMemRegInit				(0x004)	/* geode.asm*/
 #define POST_CPUTest					(0x005)	/* geode.asm*/
 #define POST_memSetup					(0x006)	/* geode.asm*/
 #define POST_memSetUpStack				(0x007)	/* geode.asm*/
 #define POST_memTest					(0x008)	/* geode.asm*/
-#define POST_shadowRom					(0x009)	/* geode.asm*/
-#define POST_memRAMoptimize				(0x00A)	/* geode.asm*/
+#define POST_shadowRom				(0x009)	/* geode.asm*/
+#define POST_memRAMoptimize			(0x00A)	/* geode.asm*/
 #define POST_cacheInit					(0x00B)	/* geode.asm*/
-#define POST_northBridgeInit			(0x00C)	/* geode.asm*/
-#define POST_chipsetInit				(0x00D)	/* geode.asm*/
+#define POST_northBridgeInit				(0x00C)	/* geode.asm*/
+#define POST_chipsetInit					(0x00D)	/* geode.asm*/
 #define POST_sioTest					(0x00E)	/* geode.asm*/
 #define POST_pcATjunk					(0x00F)	/* geode.asm*/
 
@@ -535,26 +535,26 @@
 #define POST_pciScan					(0x017)	/* geode.asm*/
 #define POST_optionRomInit				(0x018)	/* geode.asm*/
 #define POST_ResetLimits				(0x019)	/* geode.asm*/
-#define POST_summary_screen				(0x01A)	/* geode.asm*/
+#define POST_summary_screen			(0x01A)	/* geode.asm*/
 #define POST_Boot						(0x01B)	/* geode.asm*/
 #define POST_SystemPreInit				(0x01C)	/* geode.asm*/
-#define POST_ClearRebootFlag			(0x01D)	/* geode.asm*/
+#define POST_ClearRebootFlag				(0x01D)	/* geode.asm*/
 #define POST_GLIUInit					(0x01E)	/* geode.asm*/
 #define POST_BootFailed					(0x01F)	/* geode.asm*/
 
 
-#define POST_CPU_ID						(0x020)	/* cpucpuid.asm*/
-#define POST_COUNTERBROKEN				(0x021)	/* pllinit.asm*/
-#define POST_DIFF_DIMMS					(0x022)	/* pllinit.asm*/
+#define POST_CPU_ID					(0x020)	/* cpucpuid.asm*/
+#define POST_COUNTERBROKEN			(0x021)	/* pllinit.asm*/
+#define POST_DIFF_DIMMS				(0x022)	/* pllinit.asm*/
 #define POST_WIGGLE_MEM_LINES			(0x023)	/* pllinit.asm*/
 #define POST_NO_GLIU_DESC				(0x024)	/* pllinit.asm*/
-#define POST_CPU_LCD_CHECK				(0x025)	/* pllinit.asm*/
+#define POST_CPU_LCD_CHECK			(0x025)	/* pllinit.asm*/
 #define POST_CPU_LCD_PASS				(0x026)	/* pllinit.asm*/
 #define POST_CPU_LCD_FAIL				(0x027)	/* pllinit.asm*/
 #define POST_CPU_STEPPING				(0x028)	/* cpucpuid.asm*/
 #define POST_CPU_DM_BIST_FAILURE		(0x029)	/* gx2reg.asm*/
-#define POST_CPU_FLAGS					(0x02A)	/* cpucpuid.asm*/
-#define POST_CHIPSET_ID					(0x02b)	/* chipset.asm*/
+#define POST_CPU_FLAGS				(0x02A)	/* cpucpuid.asm*/
+#define POST_CHIPSET_ID				(0x02b)	/* chipset.asm*/
 #define POST_CHIPSET_ID_PASS			(0x02c)	/* chipset.asm*/
 #define POST_CHIPSET_ID_FAIL			(0x02d)	/* chipset.asm*/
 #define POST_CPU_ID_GOOD				(0x02E)	/* cpucpuid.asm*/
@@ -571,33 +571,33 @@
 
 
 /*  PCI memory*/
-#define P80_PCIMEM						(0x050)	/*  pcispace.asm*/
+#define P80_PCIMEM					(0x050)	/*  pcispace.asm*/
 
 
 /*  SIO*/
-#define P80_SIO							(0x060)		/*  *sio.asm*/
+#define P80_SIO						(0x060)		/*  *sio.asm*/
 
 /*  Memory Setp*/
 #define P80_MEM_SETUP					(0x070)	/* docboot meminit*/
-#define POST_MEM_SETUP					(0x070)	/* memsize.asm*/
+#define POST_MEM_SETUP				(0x070)	/* memsize.asm*/
 #define ERROR_32BIT_DIMMS				(0x071)	/* memsize.asm*/
-#define POST_MEM_SETUP2					(0x072)	/* memsize.asm*/
-#define POST_MEM_SETUP3					(0x073)	/* memsize.asm*/
-#define POST_MEM_SETUP4					(0x074)	/* memsize.asm*/
-#define POST_MEM_SETUP5					(0x075)	/* memsize.asm*/
-#define POST_MEM_ENABLE					(0x076)	/* memsize.asm*/
-#define ERROR_NO_DIMMS					(0x077)	/* memsize.asm*/
+#define POST_MEM_SETUP2				(0x072)	/* memsize.asm*/
+#define POST_MEM_SETUP3				(0x073)	/* memsize.asm*/
+#define POST_MEM_SETUP4				(0x074)	/* memsize.asm*/
+#define POST_MEM_SETUP5				(0x075)	/* memsize.asm*/
+#define POST_MEM_ENABLE				(0x076)	/* memsize.asm*/
+#define ERROR_NO_DIMMS				(0x077)	/* memsize.asm*/
 #define ERROR_DIFF_DIMMS				(0x078)	/* memsize.asm*/
 #define ERROR_BAD_LATENCY				(0x079)	/* memsize.asm*/
-#define ERROR_SET_PAGE					(0x07a)	/* memsize.asm*/
-#define ERROR_DENSITY_DIMM				(0x07b)	/* memsize.asm*/
-#define ERROR_UNSUPPORTED_DIMM			(0x07c)	/* memsize.asm*/
-#define ERROR_BANK_SET					(0x07d)	/* memsize.asm*/
-#define POST_MEM_SETUP_GOOD				(0x07E)	/* memsize.asm*/
-#define POST_MEM_SETUP_FAIL				(0x07F)	/* memsize.asm*/
+#define ERROR_SET_PAGE				(0x07a)	/* memsize.asm*/
+#define ERROR_DENSITY_DIMM			(0x07b)	/* memsize.asm*/
+#define ERROR_UNSUPPORTED_DIMM		(0x07c)	/* memsize.asm*/
+#define ERROR_BANK_SET				(0x07d)	/* memsize.asm*/
+#define POST_MEM_SETUP_GOOD			(0x07E)	/* memsize.asm*/
+#define POST_MEM_SETUP_FAIL			(0x07F)	/* memsize.asm*/
 
 
-#define POST_UserPreInit				(0x080)	/* geode.asm*/
+#define POST_UserPreInit					(0x080)	/* geode.asm*/
 #define POST_UserPostInit				(0x081)	/* geode.asm*/
 #define POST_Equipment_check			(0x082)	/* geode.asm*/
 #define POST_InitNVRAMBX				(0x083)	/* geode.asm*/
@@ -609,7 +609,7 @@
 #define POST_CPU_FPU_BIST_FAILURE		(0x089)	/*  gx2reg.asm*/
 #define POST_CPU_BTB_BIST_FAILURE		(0x08a)	/*  gx2reg.asm*/
 #define POST_CPU_EX_BIST_FAILURE		(0x08b)	/*  gx2reg.asm*/
-#define POST_Chipset_PI_Test_Fail		(0x08c)	/*  prechipsetinit*/
+#define POST_Chipset_PI_Test_Fail			(0x08c)	/*  prechipsetinit*/
 #define POST_Chipset_SMBus_SDA_Test_Fail	(0x08d)	/*  prechipsetinit*/
 #define POST_BIT_CLK_Fail				(0x08e)	/*  Hawk geode.asm override*/
 
@@ -626,26 +626,26 @@
 
 
 #define POST_PLL_INIT					(0x0A0)	/* pllinit.asm*/
-#define POST_PLL_MANUAL					(0x0A1)	/* pllinit.asm*/
+#define POST_PLL_MANUAL				(0x0A1)	/* pllinit.asm*/
 #define POST_PLL_STRAP					(0x0A2)	/* pllinit.asm*/
-#define POST_PLL_RESET_FAIL				(0x0A3)	/* pllinit.asm*/
+#define POST_PLL_RESET_FAIL			(0x0A3)	/* pllinit.asm*/
 #define POST_PLL_PCI_FAIL				(0x0A4)	/* pllinit.asm*/
 #define POST_PLL_MEM_FAIL				(0x0A5)	/* pllinit.asm*/
 #define POST_PLL_CPU_VER_FAIL			(0x0A6)	/* pllinit.asm*/
 
 
 #define POST_MEM_TESTMEM				(0x0B0)	/* memtest.asm*/
-#define POST_MEM_TESTMEM1				(0x0B1)	/* memtest.asm*/
-#define POST_MEM_TESTMEM2				(0x0B2)	/* memtest.asm*/
-#define POST_MEM_TESTMEM3				(0x0B3)	/* memtest.asm*/
-#define POST_MEM_TESTMEM4				(0x0B4)	/* memtest.asm*/
-#define POST_MEM_TESTMEM_PASS			(0x0BE)	/* memtest.asm*/
-#define POST_MEM_TESTMEM_FAIL			(0x0BF)	/* memtest.asm*/
+#define POST_MEM_TESTMEM1			(0x0B1)	/* memtest.asm*/
+#define POST_MEM_TESTMEM2			(0x0B2)	/* memtest.asm*/
+#define POST_MEM_TESTMEM3			(0x0B3)	/* memtest.asm*/
+#define POST_MEM_TESTMEM4			(0x0B4)	/* memtest.asm*/
+#define POST_MEM_TESTMEM_PASS		(0x0BE)	/* memtest.asm*/
+#define POST_MEM_TESTMEM_FAIL		(0x0BF)	/* memtest.asm*/
 
 
 #define POST_SECUROM_SECBOOT_START        (0x0C0)	/* secstart.asm*/
 #define POST_SECUROM_BOOTSRCSETUP         (0x0C1)	/* secstart.asm*/
-#define POST_SECUROM_REMAP_FAIL           (0x0C2)	/* secstart.asm*/
+#define POST_SECUROM_REMAP_FAIL          	 (0x0C2)	/* secstart.asm*/
 #define POST_SECUROM_BOOTSRCSETUP_FAIL    (0x0C3)	/* secstart.asm*/
 #define POST_SECUROM_DCACHESETUP          (0x0C4)	/* secstart.asm*/
 #define POST_SECUROM_DCACHESETUP_FAIL     (0x0C5)	/* secstart.asm*/

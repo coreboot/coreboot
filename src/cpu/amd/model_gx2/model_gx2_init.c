@@ -73,6 +73,8 @@ unsigned long addr;
 }
 #endif
 
+#include "cpureginit.c"
+
 static void model_gx2_init(device_t dev)
 {
 	void do_vsmbios(void);

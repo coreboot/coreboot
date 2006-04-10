@@ -414,6 +414,8 @@ static struct device_operations cpu_bus_ops = {
         .scan_bus         = 0,
 };
 
+void chipsetInit (void);
+
 static void enable_dev(struct device *dev)
 {
 	printk_debug("gx2 north: enable_dev\n");
@@ -423,6 +425,7 @@ static void enable_dev(struct device *dev)
 		printk_debug("DEVICE_PATH_PCI_DOMAIN\n");
 		/* cpubug MUST be called before setup_gx2(), so we force the issue here */
 		cpubug();	
+		chipsetinit();
 		setup_gx2();
 		/* do this here for now -- this chip really breaks our device model */
 		setup_realmode_idt();

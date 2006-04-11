@@ -275,12 +275,12 @@ static int ht_optimize_link(
 static void ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, 
 		unsigned offset_unitid, struct sys_info *sysinfo);
 
-static int scan_pci_bus( unsigned bus , struct sys_info *sysinfo) 
+static int scan_pci_bus(unsigned bus, struct sys_info *sysinfo) 
 #else
 static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, 
 		unsigned offset_unitid);
 
-static int scan_pci_bus( unsigned bus)
+static int scan_pci_bus(unsigned bus)
 #endif
 {
         /* Here we already can access PCI_DEV(bus, 0, 0) to 
@@ -467,7 +467,7 @@ static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned of
                                 * retrain, so lets knock it down and see
                                 * if its transient
                                 */
-				ctrl |= ((1 << 6) | (1 <<8)); // Link fail + Crc
+				ctrl |= ((1 << 4) | (1 <<8)); // Link fail + Crc
                                 pci_write_config16(udev, upos + LINK_CTRL(uoffs), ctrl);
                                 ctrl = pci_read_config16(udev, upos + LINK_CTRL(uoffs));
                                 if (ctrl & ((1 << 4) | (1 << 8))) {

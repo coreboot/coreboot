@@ -23,7 +23,8 @@ static void pci_init(struct device *dev)
 	dword |= (1<<17); /* System */
 	dword |= (1<<21); /* Master abort */
 //	dword &= ~(1<<21); /* Master abort */
-	dword |= (1<<27); /* Discard timer */
+//	dword |= (1<<27); /* Discard timer */
+	dword &= ~(1<<27); /* Discard timer */
 	dword |= (1<<26); /* DTSTAT error clear  */
 	pci_write_config32(dev, 0x3c, dword);
 

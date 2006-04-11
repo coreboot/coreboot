@@ -278,7 +278,20 @@ static void ht_collapse_early_enumeration(struct bus *bus, unsigned offset_uniti
 		}
 		/* Has the link failed? */
 		if (ctrl & (1 << 4)) {
-			return;
+			/*
+			 * Either the link has failed, or we have
+			 * a CRC error.
+			 * Sometimes this can happen due to link
+			 * retrain, so lets knock it down and see
+			 * if its transient
+			 */
+			ctrl |= ((1 << 4) | (1 <<8)); // Link fail + Crc
+			pci_write_config16(prev.dev, prev.pos + prev.ctrl_off, ctrl);
+			ctrl = pci_read_config16(prev.dev, prev.pos + prev.ctrl_off);
+			if (ctrl & ((1 << 4) | (1 << 8))) {
+				printk_alert("Detected error on Hypertransport Link\n");
+				return;
+			}
 		}
 	} while((ctrl & (1 << 5)) == 0);
 
@@ -382,12 +395,25 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 		/* Wait until the link initialization is complete */
 		do {
 			ctrl = pci_read_config16(prev.dev, prev.pos + prev.ctrl_off);
-			/* Is this the end of the hypertransport chain?
-			 * Has the link failed?
-			 * If so further scanning is pointless.
-			 */
-			if (ctrl & ((1 << 6) | (1 << 4))) {
-				goto end_of_chain;
+
+			if (ctrl & (1 << 6))
+				goto end_of_chain;	// End of chain
+
+			if (ctrl & ((1 << 4) | (1 << 8))) {
+				/*
+				 * Either the link has failed, or we have
+				 * a CRC error.
+				 * Sometimes this can happen due to link
+				 * retrain, so lets knock it down and see
+				 * if its transient
+				 */
+				ctrl |= ((1 << 4) | (1 <<8)); // Link fail + Crc
+				pci_write_config16(prev.dev, prev.pos + prev.ctrl_off, ctrl);
+				ctrl = pci_read_config16(prev.dev, prev.pos + prev.ctrl_off);
+				if (ctrl & ((1 << 4) | (1 << 8))) {
+					printk_alert("Detected error on Hypertransport Link\n");
+					goto end_of_chain;
+				}
 			}
 		} while((ctrl & (1 << 5)) == 0);
 		

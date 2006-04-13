@@ -48,7 +48,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 #define PLLMSRlo2 ((1<<14) |(1<<13) | (1<<0))
 #include "northbridge/amd/gx2/pll_reset.c"
 #include "cpu/amd/model_gx2/cpureginit.c"
-
+#include "cpu/amd/model_gx2/syspreinit.c"
 static void msr_init(void)
 {
 	__builtin_wrmsr(0x1808,  0x10f3bf00, 0x22fffc02);
@@ -81,7 +81,7 @@ static void main(unsigned long bist)
 		{.channel0 = {(0xa<<3)|0, (0xa<<3)|1}}
 	};
 	unsigned char temp;
-
+	SystemPreInit();
 	msr_init();
 
 	w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);

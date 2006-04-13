@@ -229,7 +229,9 @@ CPUbugIAENG2900	ENDP
 #endif
 }
 
-void bug118253(void){
+void bug118253(void)
+{
+	/* GLPCI PIO Post Control shouldn't be enabled */
 	msr_t msr;
 
 	msr = rdmsr(GLPCI_SPARE);
@@ -289,14 +291,13 @@ void bug118339(void)
 	msr.lo =  0x80004000;
 	wrmsr(msrnum, msr);
 
-		/*  Code to enable FS2 even when BTB and VGTEAR SWAPSiFs are enabled */
-		/*  As per Todd Roberts in PBz1094 and PBz1095 */
-		/*  Moved from CPUREG to CPUBUG per Tom Sylla */
+	/*  Code to enable FS2 even when BTB and VGTEAR SWAPSiFs are enabled */
+	/*  As per Todd Roberts in PBz1094 and PBz1095 */
+	/*  Moved from CPUREG to CPUBUG per Tom Sylla */
 	msrnum =  0x04C000042;		/*  GLCP SETMCTL Register */;
 	msr = rdmsr(msrnum);
-	msr.hi |= 8;					/*  Bit 35 = MCP_IN */
+	msr.hi |= 8;			/*  Bit 35 = MCP_IN */
 	wrmsr(msrnum, msr);
-	
 }
 
 

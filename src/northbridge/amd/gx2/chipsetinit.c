@@ -211,6 +211,7 @@ chipsetinit (void){
 	outb( P80_CHIPSET_INIT, 0x80);
 	ChipsetGeodeLinkInit();
 
+#if 0
 	/* we hope NEVER to be in linuxbios when S3 resumes 
 	if (! IsS3Resume()) */
 	{
@@ -227,6 +228,7 @@ chipsetinit (void){
 
 		pmChipsetInit();
 	}
+#endif
 
 	/* for later ... if 5536 set_usb_20(); */
 
@@ -250,7 +252,7 @@ chipsetinit (void){
 	msr.lo &= ~0x100;
 	wrmsr(msrnum, msr);
 
-/*  Enable Post Primary IDE.*/
+	/*  Enable Post Primary IDE.*/
 	msrnum = GLPCI_SB_CTRL;
 	msr = rdmsr(msrnum);
 	msr.lo |=  GLPCI_CRTL_PPIDE_SET;

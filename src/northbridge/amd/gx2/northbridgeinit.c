@@ -22,14 +22,14 @@ struct gliutable {
 };
 
 struct gliutable gliu0table[] = {
-	{.desc_name=MSR_GLIU0_BASE1,.desc_type=  BM,.hi=  MSR_MC + 0x0,.lo=  0x0FFF80},		/*  0-7FFFF to MC*/
-	{.desc_name=MSR_GLIU0_BASE2,.desc_type= BM,.hi= MSR_MC + 0x0,.lo=(0x80 << 20) + 0x0FFFE0},		/*  80000-9ffff to Mc*/
-	{.desc_name=MSR_GLIU0_SHADOW,.desc_type=  SC_SHADOW,.hi=  MSR_MC + 0x0,.lo=  0x03},	/*  C0000-Fffff split to MC and PCI (sub decode) A0000-Bffff handled by SoftVideo*/
-	{.desc_name=MSR_GLIU0_SYSMEM,.desc_type=  R_SYSMEM,.hi=  MSR_MC,.lo=  0x0},		/*  Catch and fix dynamicly.*/
-	{.desc_name=MSR_GLIU0_DMM,.desc_type=  BMO_DMM,.hi=  MSR_MC,.lo=  0x0},		/*  Catch and fix dynamicly.*/
-	{.desc_name=MSR_GLIU0_SMM,.desc_type=  BMO_SMM,.hi=  MSR_MC,.lo=  0x0},		/*  Catch and fix dynamicly.*/
+	{.desc_name=MSR_GLIU0_BASE1, .desc_type= BM,.hi= MSR_MC + 0x0,.lo=  0x0FFF80},		/*  0-7FFFF to MC*/
+	{.desc_name=MSR_GLIU0_BASE2, .desc_type= BM,.hi= MSR_MC + 0x0,.lo=(0x80 << 20) + 0x0FFFE0},		/*  80000-9ffff to Mc*/
+	{.desc_name=MSR_GLIU0_SHADOW,.desc_type= SC_SHADOW,.hi=  MSR_MC + 0x0,.lo=  0x03},	/*  C0000-Fffff split to MC and PCI (sub decode) A0000-Bffff handled by SoftVideo*/
+	{.desc_name=MSR_GLIU0_SYSMEM,.desc_type= R_SYSMEM,.hi=  MSR_MC,.lo=  0x0},		/*  Catch and fix dynamicly.*/
+	{.desc_name=MSR_GLIU0_DMM,   .desc_type= BMO_DMM,.hi=  MSR_MC,.lo=  0x0},		/*  Catch and fix dynamicly.*/
+	{.desc_name=MSR_GLIU0_SMM,   .desc_type= BMO_SMM,.hi=  MSR_MC,.lo=  0x0},		/*  Catch and fix dynamicly.*/
 	{.desc_name=GLIU0_GLD_MSR_COH,.desc_type= OTHER,.hi= 0x0,.lo= GL0_CPU},
-	{.desc_name=GL_END,.desc_type= GL_END,.hi= 0x0,.lo= 0x0},
+	{.desc_name=GL_END,          .desc_type= GL_END,.hi= 0x0,.lo= 0x0},
 };
 
 
@@ -45,17 +45,12 @@ struct gliutable gliu1table[] = {
 	{.desc_name=GL_END,.desc_type= GL_END,.hi= 0x0,.lo= 0x0},
 };
 
-
-
-
-
-
-
 struct gliutable *gliutables[]  = {gliu0table, gliu1table, 0};
 
- struct msrinit {
+struct msrinit {
 	unsigned long msrnum;
-	msr_t msr;};
+	msr_t msr;
+};
 
 struct msrinit ClockGatingDefault [] = {
 	{GLIU0_GLD_MSR_PM,	{.hi=0x00,.lo=0x0005}},
@@ -100,11 +95,11 @@ struct msrinit GeodeLinkPriorityTable [] = {
 	{DF_GLD_MSR_MASTER_CONF,	{.hi=0x00,.lo=0x0000}},		/*  DF Priority.*/
 	{VG_GLD_MSR_CONFIG,		{.hi=0x00,.lo=0x0720}},		/*  VG Primary and Secondary Priority.*/
 	{GP_GLD_MSR_CONFIG,		{.hi=0x00,.lo=0x0010}},		/*  Graphics Priority.*/
-	{GLPCI_GLD_MSR_CONFIG,	{.hi=0x00,.lo=0x0017}},		/*  GLPCI Priority + PID*/
+	{GLPCI_GLD_MSR_CONFIG,		{.hi=0x00,.lo=0x0017}},		/*  GLPCI Priority + PID*/
 	{GLCP_GLD_MSR_CONF,		{.hi=0x00,.lo=0x0001}},		/*  GLCP Priority + PID*/
 	{VIP_GLD_MSR_CONFIG,		{.hi=0x00,.lo=0x0622}},		/*  VIP PID*/
 	{AES_GLD_MSR_CONFIG,		{.hi=0x00,.lo=0x0013}},		/*  AES PID*/
-	{0x0FFFFFFFF, 				{0x0FFFFFFFF, 0x0FFFFFFFF}},		/*  END*/
+	{0x0FFFFFFFF, 			{0x0FFFFFFFF, 0x0FFFFFFFF}},	/*  END*/
 };
 
 /* do we have dmi or not? assume yes */
@@ -124,7 +119,8 @@ writeglmsr(struct gliutable *gl){
 }
 
 static void
-ShadowInit(struct gliutable *gl) {
+ShadowInit(struct gliutable *gl)
+{
 	msr_t msr;
 
 	msr = rdmsr(gl->desc_name);
@@ -141,9 +137,8 @@ ShadowInit(struct gliutable *gl) {
   */
 extern int sizeram(void);
 static void
-SysmemInit(struct gliutable *gl) {
-
-
+SysmemInit(struct gliutable *gl)
+{
 	msr_t msr;
 	int sizembytes, sizebytes;
 
@@ -515,6 +510,7 @@ performance:
 		printk_debug("%s: MSR 0x%x will be set to  0x%x:0x%x\n", __FUNCTION__, 
 			gating->msrnum, msr.hi, msr.lo);
 		wrmsr(gating->msrnum, msr);
+		gating +=1;
 	}
 
 }
@@ -534,6 +530,7 @@ GeodeLinkPriority(void){
 		printk_debug("%s: MSR 0x%x will be set to  0x%x:0x%x\n", __FUNCTION__, 
 			prio->msrnum, msr.hi, msr.lo);
 		wrmsr(prio->msrnum, msr);
+		prio +=1;
 	}
 }
 	
@@ -550,10 +547,11 @@ GeodeLinkPriority(void){
 	/* ***************************************************************************/
 
 void
-northbridgeinit(void){
+northbridgeinit(void)
+{
 	int i;
 	printk_debug("Enter %s\n", __FUNCTION__);
-//	post(POST_NORTHB_INIT);
+
 	for(i = 0; gliutables[i]; i++)
 		GLIUInit(gliutables[i]);
 

@@ -37,6 +37,20 @@ static void cs5535_setup_idsel(void)
 	outl(0x1 << (CS5535_DEV_NUM + 10), 0);
 }
 
+static void cs5535_usb_swapsif(void)
+{
+	msr_t msr;
+
+	msr = rdmsr(0x51600005);
+	//USB Serial short detect bit.
+	if (msr.hi & 0x10) {
+		/* We need to preserve bits 32,33,35 and not clear any BIST error, but clear the
+		 * SERSHRT error bit */
+		msr.hi &= 0xFFFFFFFB;
+		wrmsr(0x51600005, msr);
+	}
+}
+
 static int cs5535_setup_iobase(void)
 {
 	msr_t msr;
@@ -49,8 +63,34 @@ static int cs5535_setup_iobase(void)
 	__builtin_wrmsr(0x5140000d, 0x00006200, 0x0000f001);
 	/* setup LBAR for ACPI */
 	__builtin_wrmsr(0x5140000e, 0x00009c00, 0x0000f001);
-	/* setup LBAR for MFGPT */
+	/* setup LBAR for PM Support */
 	__builtin_wrmsr(0x5140000f, 0x00009d00, 0x0000f001);
+}
+
+static void cs5535_setup_power_bottun(void)
+{
+	/* not implemented yet */
+#if 0
+	pwrBtn_setup:
+	;
+	;	Power Button Setup
+	;
+	;mov	eax, 0C0020000h				; 4 seconds + lock
+	mov	eax, 040020000h				; 4 seconds no lock
+	mov	dx, PMLogic_BASE + 40h
+	out	dx, eax
+
+	; setup GPIO24, it is the external signal for 5535 vsb_work_aux
+	; which controls all voltage rails except Vstandby & Vmem.
+	; We need to enable, OUT_AUX1 and OUTPUT_ENABLE in this order.
+	; If GPIO24 is not enabled then soft-off will not work.
+	mov	dx, GPIOH_OUT_AUX1_SELECT
+	mov	eax, GPIOH_24_SET
+	out	dx, eax
+	mov	dx, GPIOH_OUTPUT_ENABLE
+	out	dx, eax
+
+#endif
 }
 
 static void cs5535_setup_gpio(void)
@@ -75,6 +115,29 @@ static void cs5535_setup_gpio(void)
 	//outl(val, 0x6100 + 0x34);
 }
 
+static void cs5535_disable_internal_uart(void)
+{
+	/* not implemented yet */
+#if 0
+	; The UARTs default to enabled.
+	; Disable and reset them and configure them later. (SIO init)
+	mov	ecx, MDD_UART1_CONF
+	RDMSR
+	mov	eax, 1h					; reset
+	WRMSR
+	mov	eax, 0h					; disabled
+	WRMSR
+
+	mov	ecx, MDD_UART2_CONF
+	RDMSR
+	mov	eax, 1h					; reset
+	WRMSR
+	mov	eax, 0h					; disabled
+	WRMSR
+
+#endif
+}
+
 static void cs5535_setup_cis_mode(void)
 {
 	msr_t msr;
@@ -84,7 +147,8 @@ static void cs5535_setup_cis_mode(void)
 	msr.lo &= ~0x18;
 	msr.lo |= 0x10;
 	__builtin_wrmsr(0x51000010, msr.lo, msr.hi);
-	__builtin_wrmsr(0x54002010, 0x00000002, 0x00000000);
+	//Only do this if we are building for 5535
+	//__builtin_wrmsr(0x54002010, 0x00000002, 0x00000000);
 }
 
 static void dummy(void)
@@ -106,6 +170,7 @@ static int cs5535_early_setup(void)
 	print_debug("Setup idsel\r\n");
 	cs5535_setup_idsel();
 	print_debug("Setup iobase\r\n");
+	cs5535_usb_swapsif();
 	cs5535_setup_iobase();
 	print_debug("Setup gpio\r\n");
 	cs5535_setup_gpio();

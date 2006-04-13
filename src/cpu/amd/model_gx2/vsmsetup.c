@@ -195,8 +195,8 @@ static void real_mode_switch_call_vsm(unsigned long smm, unsigned long sysm)
 		/* Dump zeros in the other segregs */
 		"	mov	%ax, %es       	\n"
 		/* FixMe: Big real mode for gs, fs? */
-		//"	mov	%ax, %fs       	\n"
-		//"	mov	%ax, %gs       	\n"
+		"	mov	%ax, %fs       	\n"
+		"	mov	%ax, %gs       	\n"
 		"	mov	$0x40, %ax	\n"
 		"	mov	%ax, %ds	\n"
 		//"	mov	%cx, %ax	\n"
@@ -277,8 +277,8 @@ void do_vsmbios(void)
 
 	memcpy((void *) 0x60000, buf, size);
 
-	for (i = 0; i < 0x800000; i++)
-		outb(0xaa, 0x80);
+	//for (i = 0; i < 0x800000; i++)
+	//	outb(0xaa, 0x80);
 
 	/* ecx gets smm, edx gets sysm */
 	printk_err("Call real_mode_switch_call_vsm\n");
@@ -568,8 +568,6 @@ void setup_realmode_idt(void)
 	idts[1].cs = 0;
 	idts[1].offset = 16384;
 	memcpy(16384, &debughandle, &end_debughandle - &debughandle);
-
-	
 }
 
 
@@ -744,6 +742,12 @@ int handleint21(unsigned long *edi, unsigned long *esi, unsigned long *ebp,
 		break;
 	case 0x5f0f:
 		*eax=0x860f;
+		break;
+	case 0xBEA7:
+		*eax=33;
+		break;
+	case 0xBEA4:
+		*eax=333;
 		break;
 	}
 	return res;

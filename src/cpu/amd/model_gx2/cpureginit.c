@@ -169,13 +169,14 @@ cpuRegInit (void){
 /* */
 /*  FooGlue Setup*/
 /* */
+#if 0
 	/*  Enable CIS mode B in FooGlue*/
 	msrnum = MSR_FG + 0x10;
 	msr = rdmsr(msrnum);
 	msr.lo &= ~3;
 	msr.lo |= 2;			/*  ModeB*/
 	wrmsr(msrnum, msr);
-
+#endif
 
 /* */
 /*  Disable DOT PLL. Graphics init will enable it if needed.*/
@@ -209,7 +210,7 @@ cpuRegInit (void){
 	/*  I hate to put this check here but it doesn't really work in cpubug.asm*/
 	msrnum = MSR_GLCP+0x17;
 	msr = rdmsr(msrnum);
-	if (msr.lo < CPU_REV_2_1){
+	if (msr.lo >= CPU_REV_2_1){
 		msrnum = CPU_PF_BTB_CONF;
 		msr = rdmsr(msrnum);
 		msr.lo |= BTB_ENABLE_SET | RETURN_STACK_ENABLE_SET;

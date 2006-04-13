@@ -102,10 +102,10 @@ struct msr_defaults {
 
 	/* we will assume 180e, the ssm region configuration, is left at default or set by VSM */
 	/* we will not set 0x180f, the DMM,yet */
-	{0x1810, {.hi=0xee7ff000, .lo=RRCF_LOW(0xee000000, WRITE_COMBINE|CACHE_DISABLE)}},
-	{0x1811, {.hi = 0xefffb000, .lo = RRCF_LOW_CD(0xefff8000)}},
-	{0x1812, {.hi = 0xefff7000, .lo = RRCF_LOW_CD(0xefff4000)}},
-	{0x1813, {.hi = 0xefff3000, .lo = RRCF_LOW_CD(0xefff0000)}},
+	//{0x1810, {.hi=0xee7ff000, .lo=RRCF_LOW(0xee000000, WRITE_COMBINE|CACHE_DISABLE)}},
+	//{0x1811, {.hi = 0xefffb000, .lo = RRCF_LOW_CD(0xefff8000)}},
+	//{0x1812, {.hi = 0xefff7000, .lo = RRCF_LOW_CD(0xefff4000)}},
+	//{0x1813, {.hi = 0xefff3000, .lo = RRCF_LOW_CD(0xefff0000)}},
 	/* now for GLPCI routing */
 	/* GLIU0 */
 	P2D_BM(0x10000020, 0x1, 0x0, 0x0, 0xfff80),
@@ -424,6 +424,7 @@ static void enable_dev(struct device *dev)
 		extern void cpubug(void);
 		printk_debug("DEVICE_PATH_PCI_DOMAIN\n");
 		/* cpubug MUST be called before setup_gx2(), so we force the issue here */
+		northbridgeinit();
 		cpubug();	
 		chipsetinit();
 		setup_gx2();

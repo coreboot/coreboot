@@ -37,6 +37,24 @@ static inline unsigned int fls(unsigned int x)
         return r;
 }
 
+
+
+
+/* sdram parameters for OLPC:
+	row address = 13
+	col address = 9
+	banks = 4
+	dimm0size=128MB
+	d0_MB=1 (module banks)
+	d0_cb=4 (component banks)
+	do_psz=4KB	(page size)
+	Trc=10 (clocks)
+	Tras=7
+	Trcd=3
+	Trp=3
+	Trrd=2
+	Tref=17.8ms
+  */
 static void sdram_set_spd_registers(const struct mem_controller *ctrl) 
 {
 	/* Total size of DIMM = 2^row address (byte 3) * 2^col address (byte 4) *
@@ -50,21 +68,17 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	msr = rdmsr(MC_CF07_DATA);
 
 	/* get module banks (sides) per dimm, SPD byte 5 */
-	module_banks = spd_read_byte(0xA0, 5);
-	if (module_banks < 1 || module_banks > 2)
-		print_err("Module banks per dimm\r\n");
+	module_banks = 1;
 	module_banks >>= 1;
 	msr.hi &= ~(1 << CF07_UPPER_D0_MB_SHIFT);
 	msr.hi |= (module_banks << CF07_UPPER_D0_MB_SHIFT);
 
 	/* get component banks per module bank, SPD byte 17 */
-	val = spd_read_byte(0xA0, 17);
-	if (val < 2 || val > 4)
-		print_err("Component banks per module bank\r\n");
+	val = 4;
 	val >>= 2;
 	msr.hi &= ~(0x1 << CF07_UPPER_D0_CB_SHIFT);
 	msr.hi |=  (val << CF07_UPPER_D0_CB_SHIFT);
-
+HERE
 	/* get the module bank density, SPD byte 31  */
 	val = spd_read_byte(0xA0, 31);
 	val = fls(val);
@@ -137,7 +151,7 @@ static void msr_init(void)
 #endif
 }
 
-
+	
 static void main(unsigned long bist)
 {
 	static const struct mem_controller memctrl [] = {

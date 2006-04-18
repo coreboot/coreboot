@@ -236,10 +236,11 @@ setup_gx2(void)
 static void optimize_xbus(device_t dev)
 {
 	/* Optimise X-Bus performance */
-	pci_write_config8(dev, 0x40, 0x1e);
+/*	pci_write_config8(dev, 0x40, 0x1e);
 	pci_write_config8(dev, 0x41, 0x52);
 	pci_write_config8(dev, 0x43, 0xc1);
 	pci_write_config8(dev, 0x44, 0x00);
+*/
 }
 
 static void enable_shadow(device_t dev)
@@ -433,6 +434,7 @@ static void enable_dev(struct device *dev)
 		do_vsmbios();
 		dev->ops = &pci_domain_ops;
 		pci_set_method(dev);
+		ram_resource(dev, 0, 0, sizeram()*1024);
         } else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
 
 		printk_debug("DEVICE_PATH_APIC_CLUSTER\n");

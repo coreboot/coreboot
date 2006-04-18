@@ -94,6 +94,9 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	print_debug_hex32(msr.hi);
 	print_debug("\r\n");
 
+
+	/* this is a standard value, DOES NOT PROBABLY MATCH FROM ABOVE */
+	/* well, it may be close. It's about 200,000 ticks */
 	msr.lo = 0x00003000;
 	wrmsr(MC_CF07_DATA, msr);
 
@@ -103,16 +106,17 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	
 	/* per standard bios settings */	
 
+	msr.hi = 0x18000108;
 	msr.lo = 
-			(6<<28) |			// cas_lat
-			(10<<24)|			// ref2act
-			(7<<20)|			// act2pre
-			(3<<16)|			// pre2act
-			(3<<12)|			// act2cmd
+			(6<<28) |		// cas_lat
+			(10<<24)|		// ref2act
+			(7<<20)|		// act2pre
+			(3<<16)|		// pre2act
+			(3<<12)|		// act2cmd
 			(2<<8)|			// act2act
 			(2<<6)|			// dplwr
 			(2<<4)|			// dplrd
-			(3);				// dal
+			(3);			// dal
 
 	wrmsr(0x20000019, msr);		
 

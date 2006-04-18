@@ -48,11 +48,11 @@ static inline unsigned int fls(unsigned int x)
 	d0_MB=1 (module banks)
 	d0_cb=4 (component banks)
 	do_psz=4KB	(page size)
-	Trc=10 (clocks)
-	Tras=7
-	Trcd=3
-	Trp=3
-	Trrd=2
+	Trc=10 (clocks) (ref2act)
+	Tras=7 (act2pre)
+	Trcd=3 (act2cmd)
+	Trp=3   (pre2act)
+	Trrd=2 (act2act)
 	Tref=17.8ms
   */
 static void sdram_set_spd_registers(const struct mem_controller *ctrl) 
@@ -78,17 +78,15 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	val >>= 2;
 	msr.hi &= ~(0x1 << CF07_UPPER_D0_CB_SHIFT);
 	msr.hi |=  (val << CF07_UPPER_D0_CB_SHIFT);
-HERE
+
 	/* get the module bank density, SPD byte 31  */
-	val = spd_read_byte(0xA0, 31);
-	val = fls(val);
-	val <<= module_banks;
+	/* this is multiples of 8 MB */
+	val = 128 / 8;
 	msr.hi &= ~(0xf << CF07_UPPER_D0_SZ_SHIFT);
 	msr.hi |=  (val << CF07_UPPER_D0_SZ_SHIFT);
 
 	/* page size = 2^col address */
-	val = spd_read_byte(0xA0, 4);
-	val -= 7;
+	val = 2; /* 4096 bytes */
 	msr.hi &= ~(0x7 << CF07_UPPER_D0_PSZ_SHIFT);
 	msr.hi |=  (val << CF07_UPPER_D0_PSZ_SHIFT);
 
@@ -99,9 +97,23 @@ HERE
 	msr.lo = 0x00003000;
 	wrmsr(MC_CF07_DATA, msr);
 
+	/* timing and mode ... */
+
 	msr = rdmsr(0x20000019);
-	msr.hi = 0x18000108;
-	msr.lo = 0x696332a3;
+	
+	/* per standard bios settings */	
+
+	msr.lo = 
+			(6<<28) |			// cas_lat
+			(10<<24)|			// ref2act
+			(7<<20)|			// act2pre
+			(3<<16)|			// pre2act
+			(3<<12)|			// act2cmd
+			(2<<8)|			// act2act
+			(2<<6)|			// dplwr
+			(2<<4)|			// dplrd
+			(3);				// dal
+
 	wrmsr(0x20000019, msr);		
 
 }

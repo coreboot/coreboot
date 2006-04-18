@@ -14,6 +14,11 @@
 #include <cpu/x86/cache.h>
 
 #define NORTHBRIDGE_FILE "northbridge.c"
+
+/* number of MB to take off the top of ram for VSM and display memory. 
+ * FIXME -- make this configurable
+ */
+#define RAMADJUSTMB	9
 /*
 */
 
@@ -139,7 +144,7 @@ setup_gx2_cache(void)
 	val |= ((unsigned long long) DEVICE_PROPERTIES) << 28;
 	/* sigh. Take our TOM, RIGHT shift 12, since it page-aligned, then LEFT-shift 8 for reg. */
 	/* yank off 8M for frame buffer and 1M for VSA */
-	sizembytes -= 9;
+	sizembytes -= RAMADJUSTMB;
 	sizereg = sizembytes;
 	sizereg *= 0x100000;
 	sizereg >>= 12;
@@ -434,7 +439,7 @@ static void enable_dev(struct device *dev)
 		do_vsmbios();
 		dev->ops = &pci_domain_ops;
 		pci_set_method(dev);
-		ram_resource(dev, 0, 0, sizeram()*1024);
+		ram_resource(dev, 0, 0, (sizeram() - RAMADJUSTMB)*1024);
         } else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
 
 		printk_debug("DEVICE_PATH_APIC_CLUSTER\n");

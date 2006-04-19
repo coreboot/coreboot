@@ -125,6 +125,13 @@ static void pll_reset(void)
 	msr = rdmsr(GLCP_SYS_RSTPLL);
 	if (msr.lo & (1 << GLCP_SYS_RSTPLL_BYPASS)) {
 #if 0
+		print_debug("MSR ");
+		print_debug_hex32(GLCP_SYS_RSTPLL);
+		print_debug("is ");
+		print_debug_hex32(msr.hi);
+		print_debug(":");
+		print_debug_hex32(msr.lo);
+
 		msr.hi = PLLMSRhi;
 		msr.lo = PLLMSRlo;
 		wrmsr(GLCP_SYS_RSTPLL, msr);

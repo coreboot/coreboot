@@ -16,8 +16,8 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
-#include "southbridge/amd/cs5535/cs5535_early_smbus.c"
-#include "southbridge/amd/cs5535/cs5535_early_setup.c"
+#include "southbridge/amd/cs5536/cs5536_early_smbus.c"
+#include "southbridge/amd/cs5536/cs5536_early_setup.c"
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {

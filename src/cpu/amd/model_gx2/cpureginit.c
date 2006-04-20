@@ -169,7 +169,7 @@ cpuRegInit (void){
 /* */
 /*  FooGlue Setup*/
 /* */
-#if 0
+#if 1
 	/*  Enable CIS mode B in FooGlue*/
 	msrnum = MSR_FG + 0x10;
 	msr = rdmsr(msrnum);

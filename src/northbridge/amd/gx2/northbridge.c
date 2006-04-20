@@ -237,17 +237,6 @@ setup_gx2(void)
 	}
 }
 
-
-static void optimize_xbus(device_t dev)
-{
-	/* Optimise X-Bus performance */
-/*	pci_write_config8(dev, 0x40, 0x1e);
-	pci_write_config8(dev, 0x41, 0x52);
-	pci_write_config8(dev, 0x43, 0xc1);
-	pci_write_config8(dev, 0x44, 0x00);
-*/
-}
-
 static void enable_shadow(device_t dev)
 {
 	
@@ -257,10 +246,8 @@ static void northbridge_init(device_t dev)
 {
 	printk_debug("northbridge: %s()\n", __FUNCTION__);
 	
-	optimize_xbus(dev);
 	enable_shadow(dev);
 }
-
 
 static struct device_operations northbridge_operations = {
 	.read_resources   = pci_dev_read_resources,
@@ -273,11 +260,9 @@ static struct device_operations northbridge_operations = {
 
 static struct pci_driver northbridge_driver __pci_driver = {
 	.ops = &northbridge_operations,
-	.vendor = PCI_VENDOR_ID_CYRIX,
-	.device = PCI_DEVICE_ID_CYRIX_PCI_MASTER, 
+	.vendor = PCI_VENDOR_ID_NS,
+	.device = PCI_DEVICE_ID_NS_GX2,
 };
-
-
 
 #define BRIDGE_IO_MASK (IORESOURCE_IO | IORESOURCE_MEM)
 
@@ -441,7 +426,6 @@ static void enable_dev(struct device *dev)
 		pci_set_method(dev);
 		ram_resource(dev, 0, 0, (sizeram() - RAMADJUSTMB)*1024);
         } else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
-
 		printk_debug("DEVICE_PATH_APIC_CLUSTER\n");
                 dev->ops = &cpu_bus_ops;
         }

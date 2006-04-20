@@ -283,6 +283,10 @@ void do_vsmbios(void)
 	/* ecx gets smm, edx gets sysm */
 	printk_err("Call real_mode_switch_call_vsm\n");
 	real_mode_switch_call_vsm(0x10000026, 0x10000028);
+
+	/* restart timer 1 */
+	outb(0x56, 0x43);
+	outb(0x12, 0x41);
 }
 
 

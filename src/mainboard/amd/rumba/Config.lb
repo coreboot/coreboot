@@ -124,20 +124,22 @@ dir /pc80
 config chip.h
 
 chip northbridge/amd/gx2
-  device pci_domain 0 on 
-    device pci 0.0 on end
-      chip southbridge/amd/cs5535
-        device pci 12.0 on
-        device pci 12.1 off end		# SMI
-        device pci 12.2 on  end		# IDE
-        device pci 12.3 off end 	# Audio
-        device pci 12.4 off end		# VGA
-      end
-    end
-  end
-
-  chip cpu/amd/model_gx2
-  end
-
+	device apic_cluster 0 on
+		chip cpu/amd/model_gx2
+			device apic 0 on end
+		end
+	end
+  	device pci_domain 0 on 
+    		device pci 1.0 on end
+		device pci 1.1 on end
+      		chip southbridge/amd/cs5536
+        		device pci d.0 on end	# Realtek 8139 LAN
+        		device pci f.0 on end	# ISA Bridge
+        		device pci f.2 on end	# IDE Controller
+        		device pci f.3 on end 	# Audio
+        		device pci f.4 on end	# OHCI
+			device pci f.4 on end	# UHCI
+      		end
+    	end
 end
 

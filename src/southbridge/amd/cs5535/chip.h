@@ -1,12 +1,10 @@
-#ifndef _SOUTHBRIDGE_AMD_CS5535
-#define _SOUTHBRIDGE_AMD_CS5535
+#ifndef _SOUTHBRIDGE_AMD_CS5536
+#define _SOUTHBRIDGE_AMD_CS5536
 
-extern struct chip_operations southbridge_amd_cs5535_ops;
+extern struct chip_operations southbridge_amd_cs5536_ops;
 
-struct southbridge_amd_cs5535_config {
-	/* PCI function enables so the pci scan bus finds the devices */
-	int enable_ide;
-	int enable_nvram;
+struct southbridge_amd_cs5536_config {
+	int none;
 };
 
-#endif	/* _SOUTHBRIDGE_AMD_CS5535 */
+#endif	/* _SOUTHBRIDGE_AMD_CS5536 */

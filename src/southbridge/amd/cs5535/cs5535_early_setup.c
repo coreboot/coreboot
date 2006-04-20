@@ -148,7 +148,7 @@ static void cs5535_setup_cis_mode(void)
 	msr.lo |= 0x10;
 	__builtin_wrmsr(0x51000010, msr.lo, msr.hi);
 	//Only do this if we are building for 5535
-	//__builtin_wrmsr(0x54002010, 0x00000002, 0x00000000);
+	__builtin_wrmsr(0x54002010, 0x00000002, 0x00000000);
 }
 
 static void dummy(void)

@@ -72,7 +72,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 	uint16_t i,j;
 	unsigned long bank_address;
 
-	print_err("vt8623 init starting\r\n");
+	print_debug("vt8623 init starting\r\n");
 	north = pci_locate_device(PCI_ID(0x1106, 0x3123), 0);
 	north = 0;
 	
@@ -608,10 +608,10 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 	pci_write_config8(north,0xac,0x2f);
 	pci_write_config8(north,0xae,0x04);
 
-        print_err("vt8623 done\r\n");
+        print_debug("vt8623 done\r\n");
 	dumpnorth(north);
 
-	print_err("AGP\r\n");
+	print_debug("AGP\r\n");
 	north = pci_locate_device(PCI_ID(0x1106, 0xb091), 0);
 	pci_write_config32(north,0x20,0xddf0dc00);
 	pci_write_config32(north,0x24,0xdbf0d800);

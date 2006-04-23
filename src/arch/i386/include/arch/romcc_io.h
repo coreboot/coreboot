@@ -168,7 +168,7 @@ static inline __attribute__((always_inline)) void pci_write_config32(device_t de
 #define PCI_DEV_INVALID (0xffffffffU)
 static device_t pci_locate_device(unsigned pci_id, device_t dev)
 {
-	for(; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0,0,1)) {
+	for(; dev <= PCI_DEV(CONFIG_MAX_PCI_BUSES, 31, 7); dev += PCI_DEV(0,0,1)) {
 		unsigned int id;
 		id = pci_read_config32(dev, 0);
 		if (id == pci_id) {

@@ -490,6 +490,11 @@ define CONFIG_SYS_CLK_FREQ
 	export used
 	comment "System clock frequency in MHz"
 end
+define CONFIG_MAX_PCI_BUSES
+	default 255
+	export always
+	comment "Maximum number of PCI buses to search for devices"
+end
 ###############################################
 # SMP options
 ###############################################

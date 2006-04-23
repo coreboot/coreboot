@@ -155,6 +155,15 @@ static void dummy(void)
 {
 }
 
+/* see page 412 of the cs5536 companion book */
+static int cs5536_setup_onchipuart(void) {
+	msr_t msr;
+	msr.lo = 2;
+	msr.hi = 0;
+	wrmsr(0x5160003a, msr);
+	wrmsr(0x5160003e, msr);
+}
+
 static int cs5536_early_setup(void)
 {
 	msr_t msr;

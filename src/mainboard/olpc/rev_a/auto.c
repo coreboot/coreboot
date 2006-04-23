@@ -153,7 +153,7 @@ static void main(unsigned long bist)
 	SystemPreInit();
 	msr_init();
 
-	w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
+	cs5536_setup_onchipuart();
 	uart_init();
 	console_init();
 

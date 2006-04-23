@@ -5,6 +5,7 @@
 #include <sys/mman.h>
 #include <fcntl.h>
 #include <getopt.h>
+#include <string.h>
 
 #define die(x) { perror(x); exit(1); }
 #define warn(x) { perror(x);  }
@@ -23,6 +24,8 @@ int int42_handler(void);
 int intE6_handler(void);
 
 void pushw(u16 val);
+
+unsigned short get_device(char *arg_val);
 
 extern int teststart, testend;
 
@@ -128,6 +131,7 @@ int main(int argc, char **argv)
 	size_t size = 0;
 	int base = 0;
 	int have_size = 0, have_base = 0, have_ip = 0, have_cs = 0;
+	int have_devfn = 0;
 	int parse_rom = 0;
 	char *fsegname = 0;
 	unsigned char *fsegptr;
@@ -198,7 +202,8 @@ int main(int argc, char **argv)
 			absegname = optarg;
 			break;
 		case 'd':
-			devfn = strtol(optarg, 0, 0);
+			devfn = get_device(optarg);
+			have_devfn = 1;
 			break;
 		case 'D':
 			debugflag = strtol(optarg, 0, 0);
@@ -247,6 +252,22 @@ int main(int argc, char **argv)
 
 	//printf("Point 1 int%x vector at %x\n", 0x42, getIntVect(0x42));
 
+	if (initialip == 0x0003) {
+		if ((devfn == 0) || (have_devfn == 0)) {
+			printf("WARNING! It appears you are trying to run an option ROM.\n");
+			printf("  (initial ip = 0x0003)\n");
+			if (have_devfn) {
+				printf("  However, the device you have specified is 0x00\n");
+				printf("  It is very unlikely that your device is at this address\n");
+				printf("  Please check your -d option\n");
+			}
+			else {
+				printf("  Please specify a device with -d\n");
+				printf("  The default is not likely to work\n");
+			}
+		}
+	}
+	
 	if (absegname) {
 		abseg = mapitin(absegname, (off_t) 0xa0000, 0x20000);
 		if (!abseg)
@@ -278,6 +299,10 @@ int main(int argc, char **argv)
 	X86EMU_setupIntrFuncs(intFuncs);
 	cp = mapitin(filename, (off_t) 0, size);
 
+	if (devfn) {
+		printf("Loading ax with BusDevFn = %x\n",devfn);
+	}
+	
 	current->ax = devfn   ? devfn : 0xff;
 	current->dx = 0x80;
 	//      current->ip = 0;
@@ -328,3 +353,42 @@ int main(int argc, char **argv)
 
 	return 0;
 }
+
+unsigned short get_device(char *arg_val)
+{
+	unsigned short devfn=0;
+	long bus=0,dev=0,fn=0,need_pack=0;
+	char *tok;
+	
+	tok = strsep(&arg_val,":");
+	if (arg_val != NULL) {
+		bus = strtol(tok,0,16);
+		need_pack = 1;
+	}
+	else {
+		arg_val = tok;
+	}
+
+	tok = strsep(&arg_val,".");
+	if (arg_val != NULL) {
+		dev = strtol(tok,0,16);
+		fn  = strtol(arg_val,0,16);
+		need_pack = 1;
+	}
+	else {
+		if (need_pack ==1 && (strlen(tok))) {
+			dev = strtol(tok,0,16);			
+		}
+	}
+	
+	if ( need_pack == 1) {
+		devfn = bus<<8 | (dev<<3) | fn;
+	}
+	else {
+		devfn = strtol(tok, 0, 0);
+	}
+
+
+	return devfn;
+}
+

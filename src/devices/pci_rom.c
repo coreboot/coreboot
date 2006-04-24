@@ -93,14 +93,14 @@ struct rom_header *pci_rom_load(struct device *dev, struct rom_header *rom_heade
 	#if CONFIG_CONSOLE_VGA_MULTI == 0
 		if (dev != vga_pri) return NULL; // only one VGA supported
 	#endif
-		printk_debug("copying VGA ROM Image from %x to %x, %x bytes\n",
+		printk_debug("copying VGA ROM Image from 0x%x to 0x%x, 0x%x bytes\n",
 			    rom_header, PCI_VGA_RAM_IMAGE_START, rom_size);
 		memcpy(PCI_VGA_RAM_IMAGE_START, rom_header, rom_size);
 		vga_inited = 1;
 		return (struct rom_header *) (PCI_VGA_RAM_IMAGE_START);
 #endif
 	} else {
-		printk_debug("copying non-VGA ROM Image from %x to %x, %x bytes\n",
+		printk_debug("copying non-VGA ROM Image from 0x%x to 0x%x, 0x%x bytes\n",
 			    rom_header, pci_ram_image_start, rom_size);
 		memcpy(pci_ram_image_start, rom_header, rom_size);
 		pci_ram_image_start += rom_size;

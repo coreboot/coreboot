@@ -133,6 +133,9 @@ chip northbridge/amd/gx2
     		device pci 1.0 on end
 		device pci 1.1 on end
       		chip southbridge/amd/cs5536
+			register "lpc_serirq_enable" = "0x80"  # enabled with default timing
+        		register "lpc_irq" = "((1<<3)|(1<<4))" # IRQ 3 & 4
+        		register "enable_gpio0_inta" = "1"
         		device pci d.0 on end	# Realtek 8139 LAN
         		device pci f.0 on end	# ISA Bridge
         		device pci f.2 on end	# IDE Controller

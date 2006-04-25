@@ -117,6 +117,10 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 			(2<<6)|			// dplwr
 			(2<<4)|			// dplrd
 			(3);			// dal
+	/* the msr value reported by quanta is very, very different. 
+	 * we will go with that value for now. 
+	 */
+	msr.lo = 0x286332a3;
 
 	wrmsr(0x20000019, msr);		
 

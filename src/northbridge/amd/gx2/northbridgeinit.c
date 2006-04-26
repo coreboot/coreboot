@@ -330,16 +330,13 @@ static void GLPCIInit(void){
 	/* */
 	/*  R1 - GLPCI settings for SysMem space.*/
 	/* */
-	
 	/*  Get systop from GLIU0 SYSTOP Descriptor*/
-
 	for(i = 0; gliu0table[i].desc_name != GL_END; i++) {
 		if (gliu0table[i].desc_type == R_SYSMEM) {
 			gl = &gliu0table[i];
 			break;
 		}
 	}
-
 	if (gl) {
 		msrnum = gl->desc_name;
 		msr = rdmsr(msrnum);
@@ -373,15 +370,11 @@ static void GLPCIInit(void){
 	msrnum = CPU_RCONF_A0_BF;
 	wrmsr(msrnum, msr);
 
-
 	msrnum = CPU_RCONF_C0_DF;
 	wrmsr(msrnum, msr);
 
-
 	msrnum = CPU_RCONF_E0_FF;
 	wrmsr(msrnum, msr);
-
-
 
 	/*  Set Non-Cacheable Read Only for NorthBound Transactions to Memory. The Enable bit is handled in the Shadow setup.*/
 	msrnum = GLPCI_A0_BF;
@@ -400,7 +393,6 @@ static void GLPCIInit(void){
 	wrmsr(msrnum, msr);
 
 	/*  Set WSREQ*/
-
 	msrnum = CPU_DM_CONFIG0;
 	msr = rdmsr(msrnum);
 	msr.hi &= ~ (7 << DM_CONFIG0_UPPER_WSREQ_SHIFT);

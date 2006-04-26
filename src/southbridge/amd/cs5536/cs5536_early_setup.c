@@ -156,12 +156,23 @@ static void dummy(void)
 }
 
 /* see page 412 of the cs5536 companion book */
-static int cs5536_setup_onchipuart(void) {
+static int cs5536_setup_onchipuart(void)
+{
+	/* ToDo:
+	 * 1. Eanble GPIO 8 to OUT_AUX1, 9 to IN_AUX1
+	 *    GPIO LBAR + 0x04, LBAR + 0x10, LBAR + 0x20, LBAR + 34
+	 * 2. Enable UART IO space in MDD
+	 *    MSR 0x51400014 bit 18:16
+	 * 3. Enable UART controller
+	 *    MSR 0x5140003A bit 0, 1
+	 * 4. IRQ routing on IRQ Mapper
+	 *    MSR 0x51400021 bit [27:24]
+	 */
 	msr_t msr;
 	msr.lo = 2;
 	msr.hi = 0;
-	wrmsr(0x5160003a, msr);
-	wrmsr(0x5160003e, msr);
+	wrmsr(0x5140003a, msr);
+	wrmsr(0x5140003e, msr);
 }
 
 static int cs5536_early_setup(void)

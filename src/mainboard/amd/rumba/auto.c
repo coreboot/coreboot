@@ -104,13 +104,17 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 #include "cpu/amd/model_gx2/syspreinit.c"
 static void msr_init(void)
 {
+	/* total physical memory */
 	__builtin_wrmsr(0x1808,  0x10f3bf00, 0x22fffc02);
 
+	/* traditional memory 0kB-512kB, 512kB-1MB */
 	__builtin_wrmsr(0x10000020, 0xfff80, 0x20000000);
         __builtin_wrmsr(0x10000021, 0x80fffe0, 0x20000000);
 
         __builtin_wrmsr(0x40000020, 0xfff80, 0x20000000);
         __builtin_wrmsr(0x40000021, 0x80fffe0, 0x20000000);
+
+	/* put code in northbridge[init].c here */
 }
 
 
@@ -121,7 +125,7 @@ static void main(unsigned long bist)
 	};
 
 	SystemPreInit();
-	msr_init();
+	
 
 	w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
 	uart_init();
@@ -135,6 +139,8 @@ static void main(unsigned long bist)
 	print_err("done cpuRegInit\n");
 	
 	sdram_initialize(1, memctrl);
+
+	msr_init();
 
 	/* Check all of memory */
 	//ram_check(0x00000000, 640*1024);

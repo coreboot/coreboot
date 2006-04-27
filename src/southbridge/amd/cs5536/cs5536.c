@@ -29,11 +29,13 @@ static void southbridge_enable(struct device *dev)
 		msr.lo = sb->lpc_serirq_enable;
 		msr.hi  = 0;
 		wrmsr(MDD_LPC_SIRQ, msr);
+		printk_debug("Enabled LPC SERIRQ 0x%x\n", msr.lo);
 	}
 	if (sb->lpc_irq) {
 		msr.lo = sb->lpc_irq;
 		msr.hi = 0;
 		wrmsr(MDD_IRQM_LPC, msr);
+		printk_debug("Enabled  lpc irq values 0x%x\n", msr.lo);
 	}
 
 	if (sb->enable_gpio0_inta){
@@ -47,6 +49,7 @@ static void southbridge_enable(struct device *dev)
 		/* magic stuff */
 		outl(0x3081, GPIOL_INPUT_INVERT_ENABLE);
 		outl(GPIOL_0_SET, GPIO_MAPPER_X);
+		printk_debug("Enabled GPIO0 INTa\n");
 	}
 		
 	

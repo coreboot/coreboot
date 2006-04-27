@@ -239,8 +239,7 @@ setup_gx2(void)
 }
 
 static void enable_shadow(device_t dev)
-{
-	
+{	
 }
 
 static void northbridge_init(device_t dev) 

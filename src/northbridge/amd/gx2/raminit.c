@@ -51,6 +51,8 @@ struct msr_defaults {
 	int msr_no;
 	unsigned long hi, lo;
 };
+
+
 const struct msr_defaults  msr_defaults [] = {
 	{0x1700, .hi = 0, .lo = IM_QWAIT},
 	{0x1800, .hi = DMCF_WRITE_SERIALIZE_REQUEST, .lo = DMCF_SERIAL_LOAD_MISSES},
@@ -95,10 +97,7 @@ const struct msr_defaults  msr_defaults [] = {
 #define SMM_OFFSET 0x40400000
 #define SMM_SIZE   256
 
-/*
- * FixME: MSR 0x10000028, 0x40000029 are reprogrammed by SysmemInit()
- * 0x10000026 and 0x400000023 are reprogrammed by SMMGL0Init() and SMMGL1Init()
- */
+
 void
 setup_gx2(void)
 {
@@ -165,12 +164,12 @@ setup_gx2(void)
 
 	wrmsr(msr_defaults[0].msr_no, msr);
 	for(i = 0; msr_defaults[i].msr_no; i++) {
-		//		msr_t msr;
+		//msr_t msr;
 		msr.lo = msr_defaults[i].lo;
 		msr.hi = msr_defaults[i].hi;
 		wrmsr(msr_defaults[i].msr_no, msr);
 		//msr = rdmsr(msr_defaults[i].msr_no);
-		//		print_debug("MSR 0x%x is now 0x%x:0x%x\n", msr_defaults[i].msr_no, msr.hi,msr.lo);
+		//print_debug("MSR 0x%x is now 0x%x:0x%x\n", msr_defaults[i].msr_no, msr.hi,msr.lo);
 	}
 }
 

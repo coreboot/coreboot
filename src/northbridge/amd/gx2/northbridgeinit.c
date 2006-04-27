@@ -22,27 +22,39 @@ struct gliutable {
 };
 
 struct gliutable gliu0table[] = {
-	{.desc_name=MSR_GLIU0_BASE1, .desc_type= BM,.hi= MSR_MC + 0x0,.lo=  0x0FFF80},		/*  0-7FFFF to MC*/
-	{.desc_name=MSR_GLIU0_BASE2, .desc_type= BM,.hi= MSR_MC + 0x0,.lo=(0x80 << 20) + 0x0FFFE0},		/*  80000-9ffff to Mc*/
-	{.desc_name=MSR_GLIU0_SHADOW,.desc_type= SC_SHADOW,.hi=  MSR_MC + 0x0,.lo=  0x03},	/*  C0000-Fffff split to MC and PCI (sub decode) A0000-Bffff handled by SoftVideo*/
-	{.desc_name=MSR_GLIU0_SYSMEM,.desc_type= R_SYSMEM,.hi=  MSR_MC,.lo=  0x0},		/*  Catch and fix dynamicly.*/
-	{.desc_name=MSR_GLIU0_DMM,   .desc_type= BMO_DMM,.hi=  MSR_MC,.lo=  0x0},		/*  Catch and fix dynamicly.*/
-	{.desc_name=MSR_GLIU0_SMM,   .desc_type= BMO_SMM,.hi=  MSR_MC,.lo=  0x0},		/*  Catch and fix dynamicly.*/
-	{.desc_name=GLIU0_GLD_MSR_COH,.desc_type= OTHER,.hi= 0x0,.lo= GL0_CPU},
-	{.desc_name=GL_END,          .desc_type= GL_END,.hi= 0x0,.lo= 0x0},
+	/* 0x00000-0x7FFFF to MC */
+	{.desc_name = MSR_GLIU0_BASE1,  .desc_type = BM, .hi = MSR_MC + 0x0,.lo = 0xFFF80},
+	/* 0x80000-0x9ffff to Mc */
+	{.desc_name = MSR_GLIU0_BASE2,  .desc_type = BM, .hi = MSR_MC + 0x0,.lo = (0x80 << 20) + 0xFFFE0},
+	/* 0xc0000-0xfffff split to MC and PCI (sub decode) A0000-Bffff handled by SoftVideo */
+	{.desc_name = MSR_GLIU0_SHADOW, .desc_type = SC_SHADOW,.hi =  MSR_MC + 0x0,.lo=  0x03},
+	/*  Catch and fix dynamicly.*/
+	{.desc_name = MSR_GLIU0_SYSMEM, .desc_type = R_SYSMEM, .hi =  MSR_MC,      .lo=  0x0},
+	/*  Catch and fix dynamicly.*/
+	{.desc_name = MSR_GLIU0_DMM,    .desc_type = BMO_DMM,  .hi =  MSR_MC,.lo = 0x0},
+	/*  Catch and fix dynamicly.*/
+	{.desc_name = MSR_GLIU0_SMM,    .desc_type = BMO_SMM,  .hi =  MSR_MC,.lo = 0x0},
+	{.desc_name = GLIU0_GLD_MSR_COH,.desc_type = OTHER,    .hi =  0x0,   .lo = GL0_CPU},
+	{.desc_name = GL_END,           .desc_type = GL_END,   .hi =  0x0,   .lo = 0x0},
 };
 
-
 struct gliutable gliu1table[] = {
-	{.desc_name=MSR_GLIU1_BASE1,.desc_type=  BM,.hi=  MSR_GL0 + 0x0,.lo=  0x0FFF80},	/*  0-7FFFF to MC*/
-	{.desc_name=MSR_GLIU1_BASE2,.desc_type=  BM,.hi=  MSR_GL0 + 0x0,.lo= (0x80 << 20) +0x0FFFE0},	/*  80000-9ffff to Mc*/
-	{.desc_name=MSR_GLIU1_SHADOW,.desc_type=  SC_SHADOW,.hi=  MSR_GL0 + 0x0,.lo=  0x03},/*  C0000-Fffff split to MC and PCI (sub decode)*/
-	{.desc_name=MSR_GLIU1_SYSMEM,.desc_type=  R_SYSMEM,.hi=  MSR_GL0,.lo=  0x0},		/*  Cat0xc and fix dynamicly.*/
-	{.desc_name=MSR_GLIU1_DMM,.desc_type=  BM_DMM,.hi=  MSR_GL0,.lo=  0x0},			/*  Cat0xc and fix dynamicly.*/
-	{.desc_name=MSR_GLIU1_SMM,.desc_type=  BM_SMM,.hi=  MSR_GL0,.lo=  0x0},			/*  Cat0xc and fix dynamicly.*/
-	{.desc_name=GLIU1_GLD_MSR_COH,.desc_type= OTHER,.hi= 0x0,.lo= GL1_GLIU0},
-	{.desc_name=MSR_GLIU1_FPU_TRAP,.desc_type=  SCIO,.hi=  (GL1_GLCP << 29) + 0x0,.lo=  0x033000F0},	/*  FooGlue FPU 0xF0*/
-	{.desc_name=GL_END,.desc_type= GL_END,.hi= 0x0,.lo= 0x0},
+	/* 0x00000-0x7FFFF to GLIU0 */
+	{.desc_name = MSR_GLIU1_BASE1,  .desc_type = BM,  .hi = MSR_GL0 + 0x0,.lo=  0x0FFF80},
+	/* 0x80000-0x9ffff to GLIU0 */
+	{.desc_name = MSR_GLIU1_BASE2,  .desc_type = BM,  .hi = MSR_GL0 + 0x0,.lo= (0x80 << 20) +0x0FFFE0},
+	/* 0xc0000-0xfffff split to MC and PCI (sub decode) A0000-Bffff handled by SoftVideo */
+	{.desc_name = MSR_GLIU1_SHADOW,.desc_type=  SC_SHADOW,.hi=  MSR_GL0 + 0x0,.lo=  0x03},
+	/*  Cat0xc and fix dynamicly.*/
+	{.desc_name = MSR_GLIU1_SYSMEM,.  desc_type  =  R_SYSMEM,.hi=  MSR_GL0,.lo=  0x0},
+	/*  Cat0xc and fix dynamicly.*/
+	{.desc_name = MSR_GLIU1_DMM,.desc_type=  BM_DMM,.hi=  MSR_GL0,.lo=  0x0},
+	/*  Cat0xc and fix dynamicly.*/
+	{.desc_name = MSR_GLIU1_SMM,.desc_type=  BM_SMM,.hi=  MSR_GL0,.lo=  0x0},
+	{.desc_name = GLIU1_GLD_MSR_COH,.desc_type= OTHER,.hi= 0x0,.lo= GL1_GLIU0},
+	/*  FooGlue FPU 0xF0*/
+	{.desc_name = MSR_GLIU1_FPU_TRAP,.desc_type=  SCIO,.hi=  (GL1_GLCP << 29) + 0x0,.lo=  0x033000F0},
+	{.desc_name = GL_END,.desc_type= GL_END,.hi= 0x0,.lo= 0x0},
 };
 
 struct gliutable *gliutables[]  = {gliu0table, gliu1table, 0};
@@ -258,8 +270,8 @@ SMMGL1Init(struct gliutable *gl) {
 }
 
 static void
-GLIUInit(struct gliutable *gl){
-
+GLIUInit(struct gliutable *gl)
+{
 	while (gl->desc_type != GL_END){
 		switch(gl->desc_type){
 		default: 

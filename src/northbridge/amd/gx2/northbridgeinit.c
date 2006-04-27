@@ -544,18 +544,22 @@ northbridgeinit(void)
 	int i;
 	printk_debug("Enter %s\n", __FUNCTION__);
 
+/*
 	for(i = 0; gliutables[i]; i++)
 		GLIUInit(gliutables[i]);
 
 	GeodeLinkPriority();
 
 
+ */
 	/*  Now that the descriptor to memory is set up.*/
 	/*  The memory controller needs one read to synch it's lines before it can be used.*/
 	i = *(int *) 0;
 
 	GLPCIInit();
+/*
 	ClockGatingInit();
+ */
 	__asm__("FINIT\n");
 	/* CPUBugsFix -- called elsewhere */
 	printk_debug("Exit %s\n", __FUNCTION__);

@@ -418,7 +418,7 @@ static void enable_dev(struct device *dev)
 		northbridgeinit();
 		cpubug();	
 		chipsetinit();
-		setup_gx2();
+		//setup_gx2();
 		/* do this here for now -- this chip really breaks our device model */
 		setup_realmode_idt();
 		do_vsmbios();

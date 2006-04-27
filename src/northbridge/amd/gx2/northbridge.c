@@ -132,6 +132,7 @@ setup_gx2_cache(void)
 	int sizembytes, sizereg;
 
 	sizembytes = sizeram();
+#ifdef NO
 	printk_debug("enable_cache: enable for %dm bytes\n", sizembytes);
 	/* build up the rconf word. */
 	/* the SYSTOP bits 27:8 are actually the top bits from 31:12. Book fails to say that */
@@ -155,7 +156,7 @@ setup_gx2_cache(void)
 	msr.hi = (val >> 32);
 	printk_debug("msr will be set to %x:%x\n", msr.hi, msr.lo);
 	wrmsr(CPU_RCONF_DEFAULT, msr);
-
+#endif
 	enable_cache();
 	wbinvd();
 	return sizembytes;
@@ -419,6 +420,7 @@ static void enable_dev(struct device *dev)
 		cpubug();	
 		chipsetinit();
 		//setup_gx2();
+		setup_gx2_cache();
 		/* do this here for now -- this chip really breaks our device model */
 		setup_realmode_idt();
 		do_vsmbios();

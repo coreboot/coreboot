@@ -464,7 +464,7 @@ static int load_elf_segments(
 		skip_bytes = start_offset - offset;
 		if (skip_bytes && 
 			((result = stream_skip(skip_bytes)) != skip_bytes)) {
-			printk_err("ERROR: Skip of %ld bytes skiped %ld bytes\n",
+			printk_err("ERROR: Skip of %ld bytes skipped %ld bytes\n",
 				skip_bytes, result);
 			goto out;
 		}

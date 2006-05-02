@@ -110,9 +110,9 @@ end
 
 
 # VGA console
-if CONFIG_CONSOLE_VGA
-	default CONFIG_PCI_ROM_RUN=1
-end
+#if CONFIG_CONSOLE_VGA
+#	default CONFIG_PCI_ROM_RUN=1
+#end
 ###
 ### O.k. We aren't just an intermediary anymore!
 ###

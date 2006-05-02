@@ -469,18 +469,18 @@
 /*  This is chip specific!*/
 #define MSR_GLIU0_BASE1			(MSR_GLIU0 + 0x20)		/*  BM*/
 #define MSR_GLIU0_BASE2			(MSR_GLIU0 + 0x21)		/*  BM*/
-#define MSR_GLIU0_SHADOW		(MSR_GLIU0 + 0x2C)		/*  SCO should only be SC*/
-#define MSR_GLIU0_SYSMEM		(MSR_GLIU0 + 0x28)		/*  RO should only be R*/
+#define MSR_GLIU0_SHADOW			(MSR_GLIU0 + 0x2C)		/*  SCO should only be SC*/
+#define MSR_GLIU0_SYSMEM			(MSR_GLIU0 + 0x28)		/*  RO should only be R*/
 #define MSR_GLIU0_SMM			(MSR_GLIU0 + 0x26)		/*  BMO*/
 #define MSR_GLIU0_DMM			(MSR_GLIU0 + 0x27)		/*  BMO*/
 
 #define MSR_GLIU1_BASE1			(MSR_GLIU1 + 0x20)		/*  BM*/
 #define MSR_GLIU1_BASE2			(MSR_GLIU1 + 0x21)		/*  BM*/
-#define MSR_GLIU1_SHADOW		(MSR_GLIU1 + 0x2D)		/*  SCO should only be SC*/
-#define MSR_GLIU1_SYSMEM		(MSR_GLIU1 + 0x29)		/*  RO should only be R*/
+#define MSR_GLIU1_SHADOW			(MSR_GLIU1 + 0x2D)		/*  SCO should only be SC*/
+#define MSR_GLIU1_SYSMEM			(MSR_GLIU1 + 0x29)		/*  RO should only be R*/
 #define MSR_GLIU1_SMM			(MSR_GLIU1 + 0x23)		/*  BM*/
 #define MSR_GLIU1_DMM			(MSR_GLIU1 + 0x24)		/*  BM*/
-#define MSR_GLIU1_FPU_TRAP		(MSR_GLIU1 + 0x0E3)		/*  FooGlue F0 for FPU*/
+#define MSR_GLIU1_FPU_TRAP		(MSR_GLIU1 + 0x0E3)	/*  FooGlue F0 for FPU*/
 
 /* definitions that are "once you are mostly up, start VSA" type things */
 #define SMM_OFFSET	0x40400000

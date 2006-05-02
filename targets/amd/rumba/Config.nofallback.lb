@@ -34,3 +34,4 @@ end
 
 #buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
 buildrom ./linuxbios.rom ROM_SIZE "fallback"
+

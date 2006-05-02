@@ -12,7 +12,6 @@ static void vsm_end_post_smi(void)
 	__asm__ volatile (
 			  "push %ax\n"
 			  "mov $0x5000, %ax\n"
-			  /* smint */
 			  ".byte 0x0f, 0x38\n"
 			  "pop %ax\n"
 			  );
@@ -25,7 +24,9 @@ static void model_gx2_init(device_t dev)
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
 
-	/* send SYS_END_OF_POST to VSM */
+	/* Enable the local cpu apics */
+	//setup_lapic();
+
 	vsm_end_post_smi();
 
 	printk_debug("model_gx2_init DONE\n");

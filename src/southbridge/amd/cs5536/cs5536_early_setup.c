@@ -165,7 +165,7 @@ static int cs5536_setup_onchipuart(void)
 	 *    MSR 0x51400014 bit 18:16
 	 * 3. Enable UART controller
 	 *    MSR 0x5140003A bit 0, 1
-	 * 4. IRQ routing on IRQ Mapper (before loading OS)
+	 * 4. IRQ routing on IRQ Mapper
 	 *    MSR 0x51400021 bit [27:24]
 	 */
 	msr_t msr;

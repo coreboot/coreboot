@@ -1,0 +1,61 @@
+#include <stdlib.h>
+#include <stddef.h>
+
+// This GETBIT is supposed to work on little endian 
+// 32bit systems. The algorithm will definitely need
+// some fixing on other systems, but it might not be
+// a problem since the nrv2b binary behaves the same..
+
+#define GETBIT(bb, src, ilen) \
+    (bc > 0 ? ((bb>>--bc)&1) : (bc=31,\
+    bb=*(const uint32_t *)((src)+ilen),ilen+=4,(bb>>31)&1))
+
+static void unrv2b(uint8_t * src, uint8_t * dst)
+{
+	unsigned long ilen = 0, olen = 0, last_m_off = 1;
+	uint32_t bb = 0;
+	unsigned bc = 0;
+	const uint8_t *m_pos;
+
+	// skip length
+	src += 4;
+
+	for (;;) {
+		unsigned int m_off, m_len;
+		while (GETBIT(bb, src, ilen)) {
+			dst[olen++] = src[ilen++];
+		}
+
+		m_off = 1;
+		do {
+			m_off = m_off * 2 + GETBIT(bb, src, ilen);
+		} while (!GETBIT(bb, src, ilen));
+		if (m_off == 2) {
+			m_off = last_m_off;
+		} else {
+			m_off = (m_off - 3) * 256 + src[ilen++];
+			if (m_off == 0xffffffffU)
+				break;
+			last_m_off = ++m_off;
+		}
+
+		m_len = GETBIT(bb, src, ilen);
+		m_len = m_len * 2 + GETBIT(bb, src, ilen);
+		if (m_len == 0) {
+			m_len++;
+			do {
+				m_len = m_len * 2 + GETBIT(bb, src, ilen);
+			} while (!GETBIT(bb, src, ilen));
+			m_len += 2;
+		}
+		m_len += (m_off > 0xd00);
+
+		m_pos = dst + olen - m_off;
+		dst[olen++] = *m_pos++;
+		do {
+			dst[olen++] = *m_pos++;
+		} while (--m_len > 0);
+	}
+
+}
+

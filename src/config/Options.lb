@@ -564,6 +564,11 @@ define CONFIG_ROM_STREAM_START
 	export always
 	comment "ROM stream start location"
 end
+define CONFIG_COMPRESSED_ROM_STREAM
+	default 0
+	export always
+	comment "compressed boot image is located in ROM" 
+end
 define CONFIG_FS_STREAM
 	default 0
 	export always

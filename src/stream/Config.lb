@@ -1,3 +1,4 @@
+uses CONFIG_COMPRESSED_ROM_STREAM
 uses CONFIG_ROM_STREAM
 uses CONFIG_IDE_STREAM
 uses CONFIG_FS_STREAM
@@ -5,6 +6,10 @@ uses CONFIG_IDE
 
 if CONFIG_ROM_STREAM
   object rom_stream.o
+end
+
+if CONFIG_COMPRESSED_ROM_STREAM
+  object zrom_stream.o
 end
 
 if CONFIG_IDE_STREAM

@@ -182,7 +182,7 @@ def warning(string):
 
 def notice(string):
 	"""Print notice message"""
-        print "===> NOTE: %s" % string
+	#print "===> NOTE: %s" % string
 
 def exitiferrors():
 	"""Exit parser if an error has been encountered"""
@@ -1024,7 +1024,8 @@ def getoptionvalue(name, op, image):
 	global global_option_values
 	#print "getoptionvalue name %s op %s image %s\n" % (name, op,image)
 	if (op == 0):
-		print_stack()
+		# we want to debug config files, not the config tool, so no:
+		# print_stack() 
 		fatal("Option %s undefined (missing use command?)" % name)
 	if (image):
 		v = getdict(image.getvalues(), name)

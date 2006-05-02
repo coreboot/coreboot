@@ -18,8 +18,8 @@
  */
 
 /*XXXXXXXXXXXXXX */
-/*static const */unsigned char *rom_start = (void *)CONFIG_ROM_STREAM_START;
-/*static const */unsigned char *rom_end   = (void *)(CONFIG_ROM_STREAM_START + PAYLOAD_SIZE - 1);
+/*static const */unsigned char *rom_start = (unsigned char *)CONFIG_ROM_STREAM_START;
+/*static const */unsigned char *rom_end   = (unsigned char *)(CONFIG_ROM_STREAM_START + PAYLOAD_SIZE - 1);
 /*XXXXXXXXXXXXXX */
 static const unsigned char *rom;
 

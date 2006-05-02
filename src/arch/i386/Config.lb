@@ -18,9 +18,22 @@ makerule nrv2b
 	action	"$(HOSTCC) -O2 -DENCODE -DDECODE -DMAIN -DVERBOSE -DNDEBUG -DBITSIZE=32 -DENDIAN=0 $< -o $@"
 end
 
+makerule payload
+	depends "$(PAYLOAD)"
+	action  "cp $< $@"
+end
+
+makerule payload.nrv2b
+	depends "$(PAYLOAD) nrv2b"
+	action  "./nrv2b e $(PAYLOAD) $@"
+end
+
+makedefine PAYLOAD-1:=payload
+makedefine PAYLOAD-$(CONFIG_COMPRESSED_ROM_STREAM):=payload.nrv2b
+
 makerule linuxbios.rom 
-	depends	"linuxbios.strip buildrom" 
-	action "./buildrom $< $@ $(PAYLOAD) $(ROM_IMAGE_SIZE) $(ROM_SECTION_SIZE)"
+	depends	"linuxbios.strip buildrom $(PAYLOAD-1)" 
+	action "./buildrom $< $@ $(PAYLOAD-1) $(ROM_IMAGE_SIZE) $(ROM_SECTION_SIZE)"
 end
 
 makerule crt0.S

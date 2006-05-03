@@ -29,8 +29,8 @@ static void copy_and_run(unsigned cpu_reset)
 #else 
 
         __asm__ volatile (
-	        "leal  4+_liseg, %0\n\t"
-	        "leal    _iseg,  %1\n\t"
+	        "leal _liseg, %0\n\t"
+	        "leal _iseg,  %1\n\t"
                 : "=a" (src) , "=b" (dst)
         );
 

@@ -338,17 +338,27 @@ static void GLPCIInit(void){
 		}
 	}
 	if (gl) {
+		unsigned long pah, pal;
 		msrnum = gl->desc_name;
 		msr = rdmsr(msrnum);
+		/* example R_SYSMEM value: 20:00:00:0f:fb:f0:01:00
+                 * translates to a base of 0x00100000 and top of 0xffbf0000
+                 * base of 1M and top of around 256M
+		 */
+		/* we have to create a page-aligned (4KB page) address for base and top */
+		/* So we need a high page aligned addresss (pah) and low page aligned address (pal)
+		 * pah is from msr.hi << 12 | msr.low >> 20. pal is msr.lo << 12
+		 */
+		printk_debug("GLPCI r1: system msr.lo 0x%x msr.hi 0x%x\n", msr.lo, msr.hi);
+		pah = ((msr.hi &0xff) << 12) | ((msr.lo >> 20) & 0xfff);
+		/* we have the page address. Now make it a page-aligned address */
+		pah <<= 12;
 
-		/*  20 bit address The bottom 12 bits go into bits 20-31 in eax. The top 8 bits go into 0-7 of edx.*/
-		val = msr.hi & 0xff;		/*  EAX[31:20] = low 12 bits and EAX[7:0] upper 8 bits*/
-		val <<= 12;			/*  EAX[31:20] = junk EAX[19:0] = 20 bit address*/
-		val &= 0xfffff;
-		val <<=  GLPCI_RC_UPPER_TOP_SHIFT;
-		msr.hi =  val				/*  Top Set*/;
-		msr.lo =  (0x100000 >> 12) << GLPCI_RC_LOWER_BASE_SHIFT 	/* 1MB >> =20bit address then shift into register*/;
-		msr.lo |= GLPCI_RC_LOWER_EN_SET + GLPCI_RC_LOWER_PF_SET + GLPCI_RC_LOWER_WC_SET;
+		pal = msr.lo << 12;
+		msr.hi =  pah;
+		msr.lo =  pal;
+		msr.lo |= GLPCI_RC_LOWER_EN_SET | GLPCI_RC_LOWER_PF_SET | GLPCI_RC_LOWER_WC_SET;
+		printk_debug("GLPCI r1: system msr.lo 0x%x msr.hi 0x%x\n", msr.lo, msr.hi);
 		msrnum = GLPCI_RC1;
 		wrmsr(msrnum, msr);
 	}

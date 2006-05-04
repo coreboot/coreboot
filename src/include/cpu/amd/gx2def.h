@@ -89,7 +89,8 @@
 #define 	MSR_VIP				((GL1_VIP << 26) + MSR_GLIU1)
 #define 	MSR_AES				((GL1_AES << 26) + MSR_GLIU1)
 /* South Bridge*/
-#define	MSR_SB				(SB_PORT << 23) + MSR_PCI	/* address to the SouthBridge*/
+#define SB_PORT	2			/* port of the SouthBridge */
+#define	MSR_SB				((SB_PORT << 23) + MSR_PCI)	/* address to the SouthBridge*/
 #define	SB_SHIFT			20							/* 29 -> 26 -> 23 -> 20...... When making a SB address uses this shift.*/
 
 
@@ -502,7 +503,7 @@
 #define CS5535_IDSEL	0x02000000	 // IDSEL = AD25, device #15
 #define CHIPSET_DEV_NUM	15
 #define IDSEL_BASE	11			 // bit 11 = device 1
-#define SB_PORT	2			 // port of the SouthBridge
+
 
 /* standard AMD post definitions -- might as well use them. */
 #define POST_Output_Port				(0x080)	/*  port to write post codes to*/

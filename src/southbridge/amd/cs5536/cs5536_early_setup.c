@@ -113,6 +113,24 @@ static void cs5536_setup_gpio(void)
 	//outl(0x3ffbc004, 0x6100 + 0x34);
 	outl(0x3fffc000, 0x6100 + 0x34);
 	//outl(val, 0x6100 + 0x34);
+
+#if 0
+	/* changes proposed by Ollie; we will test this later. */
+	/* setup GPIO pins 14/15 for SDA/SCL */
+	val = GPIOL_15_SET | GPIOL_14_SET;
+	/* Output Enable */
+	//outl(0x3fffc000, 0x6100 + 0x04);
+	outl(val, 0x6100 + 0x04);
+	/* Output AUX1 */
+	//outl(0x3fffc000, 0x6100 + 0x10);
+	outl(val, 0x6100 + 0x10);
+	/* Input Enable */
+	//outl(0x3fffc000, 0x6100 + 0x20);
+	outl(val, 0x6100 + 0x20);
+	/* Input AUX1 */
+	//outl(0x3fffc000, 0x6100 + 0x34);
+	outl(val, 0x6100 + 0x34);
+#endif
 }
 
 static void cs5536_disable_internal_uart(void)
@@ -158,7 +176,8 @@ static void dummy(void)
 /* see page 412 of the cs5536 companion book */
 static int cs5536_setup_onchipuart(void)
 {
-	/* ToDo:
+	unsigned long m;
+	/* 
 	 * 1. Eanble GPIO 8 to OUT_AUX1, 9 to IN_AUX1
 	 *    GPIO LBAR + 0x04, LBAR + 0x10, LBAR + 0x20, LBAR + 34
 	 * 2. Enable UART IO space in MDD
@@ -171,8 +190,46 @@ static int cs5536_setup_onchipuart(void)
 	msr_t msr;
 	msr.lo = 2;
 	msr.hi = 0;
+	/* not sure what this is for, so comment it out ...
 	wrmsr(0x5140003a, msr);
 	wrmsr(0x5140003e, msr);
+	 */
+
+
+	/* GPIO8 - UART1_TX */
+	/* Set: Output Enable  (0x4) */
+	m = inl(GPIOL_OUTPUT_ENABLE);
+	m |= GPIOL_8_SET;
+	m &= ~GPIOL_8_CLEAR;
+	outl(m,GPIOL_OUTPUT_ENABLE);
+	/* Set: OUTAUX1 Select (0x10) */
+	m = inl(GPIOL_OUT_AUX1_SELECT);
+	m |= GPIOL_8_SET;
+	m &= ~GPIOL_8_CLEAR;
+	outl(m,GPIOL_OUT_AUX1_SELECT);
+	/* Set: Pull Up        (0x18) */
+	m = inl(GPIOL_PULLUP_ENABLE);
+	m |= GPIOL_8_SET;
+	m &= ~GPIOL_8_CLEAR;
+	/* GPIO9 - UART1_RX */
+	/* Set: Pull Up        (0x18) */
+	m |= GPIOL_9_SET;
+	m &= ~GPIOL_9_CLEAR;
+	outl(m,GPIOL_PULLUP_ENABLE);
+	/* Set: Input Enable   (0x20) */
+	m = inl(GPIOL_INPUT_ENABLE);
+	m |= GPIOL_9_SET;
+	m &= ~GPIOL_9_CLEAR;
+	outl(m,GPIOL_INPUT_ENABLE);
+	/* Set: INAUX1 Select  (0x34) */
+	m = inl(GPIOL_IN_AUX1_SELECT);
+	m |= GPIOL_9_SET;
+	m &= ~GPIOL_9_CLEAR;
+	outl(m,GPIOL_IN_AUX1_SELECT);
+
+	msr = rdmsr(MDD_LEG_IO);
+	msr.lo |= 0x7 << 16;
+	wrmsr(MDD_LEG_IO,msr);
 }
 
 static int cs5536_early_setup(void)

@@ -3,10 +3,6 @@
    2006/05/02 - stepan: move nrv2b to an extra file.
 */
 
-#if CONFIG_COMPRESS 
-#include "lib/nrv2b.c"
-#endif
-
 static inline void print_debug_cp_run(const char *strval, uint32_t val)
 {
 #if CONFIG_USE_INIT
@@ -16,12 +12,17 @@ static inline void print_debug_cp_run(const char *strval, uint32_t val)
 #endif
 }
 
+#if CONFIG_COMPRESS
+#define ENDIAN   0
+#define BITSIZE 32
+#include "lib/nrv2b.c"
+#endif
+
+
 static void copy_and_run(void)
 {
 	uint8_t *src, *dst; 
-        unsigned long ilen = 0, olen = 0, last_m_off =  1;
-        uint32_t bb = 0;
-        unsigned bc = 0;
+        unsigned long ilen, olen;
 
 	print_debug("Copying LinuxBIOS to ram.\r\n");
 
@@ -37,18 +38,20 @@ static void copy_and_run(void)
 #else 
 
         __asm__ volatile (
-	        "leal _liseg, %0\n\t"
-	        "leal _iseg,  %1\n\t"
+	        "leal  _liseg, %0\n\t"
+	        "leal  _iseg,  %1\n\t"
                 : "=a" (src) , "=b" (dst)
         );
 
 	print_debug_cp_run("src=",(uint32_t)src); 
 	print_debug_cp_run("dst=",(uint32_t)dst);
 
-	unrv2b(src, dst);
+	olen = unrv2b(src, dst, &ilen);
+	print_debug_cp_run("linxbios_ram.nrv2b length = ", ilen);
+
 #endif
 
-	print_debug_cp_run("linxbios_ram.bin length = ", olen);
+	print_debug_cp_run("linxbios_ram.bin   length = ", olen);
 
 	print_debug("Jumping to LinuxBIOS.\r\n");
 

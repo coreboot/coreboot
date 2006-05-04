@@ -1,16 +1,35 @@
-#include <stdlib.h>
-#include <stddef.h>
-
 // This GETBIT is supposed to work on little endian 
 // 32bit systems. The algorithm will definitely need
 // some fixing on other systems, but it might not be
 // a problem since the nrv2b binary behaves the same..
 
-#define GETBIT(bb, src, ilen) \
+#ifndef ENDIAN
+#define ENDIAN   0
+#endif
+#ifndef BITSIZE
+#define BITSIZE 32
+#endif
+
+#define GETBIT_8(bb, src, ilen) \
+    (((bb = bb & 0x7f ? bb*2 : ((unsigned)src[ilen++]*2+1)) >> 8) & 1)
+
+#define GETBIT_LE16(bb, src, ilen) \
+    (bb*=2,bb&0xffff ? (bb>>16)&1 : (ilen+=2,((bb=(src[ilen-2]+src[ilen-1]*256u)*2+1)>>16)&1))
+#define GETBIT_LE32(bb, src, ilen) \
     (bc > 0 ? ((bb>>--bc)&1) : (bc=31,\
     bb=*(const uint32_t *)((src)+ilen),ilen+=4,(bb>>31)&1))
 
-static void unrv2b(uint8_t * src, uint8_t * dst)
+#if ENDIAN == 0 && BITSIZE == 8
+#define GETBIT(bb, src, ilen) GETBIT_8(bb, src, ilen)
+#endif
+#if ENDIAN == 0 && BITSIZE == 16
+#define GETBIT(bb, src, ilen) GETBIT_LE16(bb, src, ilen)
+#endif
+#if ENDIAN == 0 && BITSIZE == 32
+#define GETBIT(bb, src, ilen) GETBIT_LE32(bb, src, ilen)
+#endif
+
+static unsigned long unrv2b(uint8_t * src, uint8_t * dst, unsigned long *ilen_p)
 {
 	unsigned long ilen = 0, olen = 0, last_m_off = 1;
 	uint32_t bb = 0;
@@ -20,6 +39,7 @@ static void unrv2b(uint8_t * src, uint8_t * dst)
 	// skip length
 	src += 4;
 
+	/* FIXME: check olen with len on first 4 bytes */	
 	for (;;) {
 		unsigned int m_off, m_len;
 		while (GETBIT(bb, src, ilen)) {
@@ -56,6 +76,10 @@ static void unrv2b(uint8_t * src, uint8_t * dst)
 			dst[olen++] = *m_pos++;
 		} while (--m_len > 0);
 	}
+
+	*ilen_p = ilen;
+
+	return olen;
 
 }
 

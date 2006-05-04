@@ -29,7 +29,7 @@
 #define GETBIT(bb, src, ilen) GETBIT_LE32(bb, src, ilen)
 #endif
 
-static unsigned long unrv2b(uint8_t * src, uint8_t * dst, unsigned long *ilen_p)
+static unsigned long unrv2b(uint8_t * src, uint8_t * dst)
 {
 	unsigned long ilen = 0, olen = 0, last_m_off = 1;
 	uint32_t bb = 0;
@@ -38,8 +38,8 @@ static unsigned long unrv2b(uint8_t * src, uint8_t * dst, unsigned long *ilen_p)
 
 	// skip length
 	src += 4;
+	/* FIXME: check olen with the length stored in first 4 bytes */	
 
-	/* FIXME: check olen with len on first 4 bytes */	
 	for (;;) {
 		unsigned int m_off, m_len;
 		while (GETBIT(bb, src, ilen)) {
@@ -76,8 +76,6 @@ static unsigned long unrv2b(uint8_t * src, uint8_t * dst, unsigned long *ilen_p)
 			dst[olen++] = *m_pos++;
 		} while (--m_len > 0);
 	}
-
-	*ilen_p = ilen;
 
 	return olen;
 

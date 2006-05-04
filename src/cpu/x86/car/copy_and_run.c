@@ -4,6 +4,8 @@
 */
 
 #if CONFIG_COMPRESS
+#define ENDIAN   0
+#define BITSIZE 32
 #include "lib/nrv2b.c"
 #endif
 
@@ -11,9 +13,7 @@ static void copy_and_run(unsigned cpu_reset)
 {
 	uint8_t *src, *dst; 
 	unsigned long dst_len;
-        unsigned long ilen = 0, olen = 0, last_m_off =  1;
-        uint32_t bb = 0;
-        unsigned bc = 0;
+        unsigned long ilen, olen;
 
 	print_debug("Copying LinuxBIOS to ram.\r\n");
 
@@ -44,7 +44,7 @@ static void copy_and_run(unsigned cpu_reset)
 	
 //	dump_mem(src, src+0x100);
 
-	unrv2b(src, dst);
+	olen=unrv2b(src, dst);
 
 #endif
 //	dump_mem(dst, dst+0x100);

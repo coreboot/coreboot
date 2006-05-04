@@ -27,15 +27,12 @@ extern unsigned char _heap, _eheap;
 /*static const */unsigned char *rom_end   = (unsigned char *)(CONFIG_ROM_STREAM_START + PAYLOAD_SIZE - 1);
 /*XXXXXXXXXXXXXX */
 
-unsigned char *rom_start = (void *)CONFIG_ROM_STREAM_START;
-unsigned char *rom_end   = (void *)(CONFIG_ROM_STREAM_START + PAYLOAD_SIZE - 1);
 static const unsigned char *rom;
 
 int stream_init(void)
 {
 #if CONFIG_COMPRESSED_ROM_STREAM
         unsigned long dest;
-	unsigned long ilen;
         unsigned long olen;
 #endif
 
@@ -60,7 +57,7 @@ int stream_init(void)
 #endif
 
         printk_debug("Uncompressing to RAM 0x%08lx ", dest);
-        olen = unrv2b((uint8_t *) rom_start, (uint8_t *)dest, &ilen );
+        olen = unrv2b((uint8_t *) rom_start, (uint8_t *)dest );
 	printk_debug(" ilen = 0x%08lx olen = 0x%08lx done.\n", ilen, olen);
 	rom_end = dest + olen - 1;
 	rom = dest;

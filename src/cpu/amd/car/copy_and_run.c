@@ -38,17 +38,15 @@ static void copy_and_run(void)
 #else 
 
         __asm__ volatile (
-	        "leal  _liseg, %0\n\t"
-	        "leal  _iseg,  %1\n\t"
+	        "leal _liseg, %0\n\t"
+	        "leal _iseg,  %1\n\t"
                 : "=a" (src) , "=b" (dst)
         );
 
 	print_debug_cp_run("src=",(uint32_t)src); 
 	print_debug_cp_run("dst=",(uint32_t)dst);
 
-	olen = unrv2b(src, dst, &ilen);
-	print_debug_cp_run("linxbios_ram.nrv2b length = ", ilen);
-
+	olen = unrv2b(src, dst);
 #endif
 
 	print_debug_cp_run("linxbios_ram.bin   length = ", olen);

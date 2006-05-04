@@ -10,7 +10,10 @@
 
 typedef void (*process_ap_t)(unsigned apicid, void *gp);
 
-static void for_each_ap(unsigned bsp_apicid, unsigned core0_only, process_ap_t process_ap, void *gp)
+//core_range = 0 : all cores
+//core range = 1 : core 0 only
+//core range = 2 : cores other than core0
+static void for_each_ap(unsigned bsp_apicid, unsigned core_range, process_ap_t process_ap, void *gp)
 {
 	// here assume the OS don't change our apicid
 	unsigned ap_apicid;
@@ -49,16 +52,20 @@ static void for_each_ap(unsigned bsp_apicid, unsigned core0_only, process_ap_t p
                 }
                 siblings = j;
 
-		unsigned jj;
+                unsigned jstart, jend;
 
-		if(e0_later_single_core || disable_siblings || core0_only) {
-			jj = 0;
-		} else {
-			jj = siblings;
-		}	
-		
-	
-                for(j=0; j<=jj; j++) {
+                if(core_range == 2) {
+                        jstart = 1;
+                }
+
+                if(e0_later_single_core || disable_siblings || (core_range==1)) {
+                        jend = 0;
+                } else {
+                        jend = siblings;
+                }
+
+
+                for(j=jstart; j<=jend; j++) {
 
                         ap_apicid = i * (nb_cfg_54?(siblings+1):1) + j * (nb_cfg_54?1:8);
 
@@ -143,6 +150,11 @@ static void wait_ap_started(unsigned ap_apicid, void *gp )
 static void wait_all_aps_started(unsigned bsp_apicid)
 {
         for_each_ap(bsp_apicid, 0 , wait_ap_started, (void *)0);
+}
+
+static void wait_all_other_cores_started(unsigned bsp_apicid)
+{
+        for_each_ap(bsp_apicid, 2 , wait_ap_started, (void *)0);
 }
 
 static void allow_all_aps_stop(unsigned bsp_apicid)
@@ -243,7 +255,7 @@ static unsigned init_cpus(unsigned cpu_init_detectedx)
 			wait_cpu_state(bsp_apicid, 0x44);
 			lapic_write(LAPIC_MSG_REG, (apicid<<24) | 0x44); // bsp can not check it before stop_this_cpu
 
-			set_init_ram_access(); //inline
+			set_init_ram_access();
 			disable_cache_as_ram(); // inline
                         stop_this_cpu(); // inline, it will stop all cores except node0/core0 the bsp .... 
                 }

@@ -219,14 +219,13 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
         setup_s4882_resource_map();
 
 	needs_reset = setup_coherent_ht_domain();
-	
+
+        wait_all_core0_started();
 #if CONFIG_LOGICAL_CPUS==1
         // It is said that we should start core1 after all core0 launched
-	wait_all_core0_started();
         start_other_cores();
+        wait_all_other_cores_started(bsp_apicid);
 #endif
-
-        wait_all_aps_started(bsp_apicid);
 
 	// automatically set that for you, but you might meet tight space
         needs_reset |= ht_setup_chains_x();

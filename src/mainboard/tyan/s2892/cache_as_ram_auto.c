@@ -206,10 +206,12 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
         setup_s2892_resource_map();
 
 	needs_reset = setup_coherent_ht_domain();
-	
+
+        wait_all_core0_started();
 #if CONFIG_LOGICAL_CPUS==1
         // It is said that we should start core1 after all core0 launched
         start_other_cores();
+        wait_all_other_cores_started(bsp_apicid);
 #endif
 
         needs_reset |= ht_setup_chains_x();

@@ -157,11 +157,15 @@ static void main(unsigned long bist)
 	SystemPreInit();
 	msr_init();
 
+	cs5536_early_setup();
+
+	/* NOTE: must do this AFTER the early_setup!
+	 * it is counting on some early MSR setup
+	 * for cs5536
+	 */
 	cs5536_setup_onchipuart();
 	uart_init();
 	console_init();
-
-	cs5536_early_setup();
 
 	pll_reset();
 

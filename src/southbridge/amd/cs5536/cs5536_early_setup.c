@@ -232,6 +232,10 @@ static int cs5536_setup_onchipuart(void)
 	wrmsr(MDD_LEG_IO,msr);
 }
 
+/* note: you can't do prints in here in most cases, 
+ * and we don't want to hang on serial, so they are 
+ * commented out 
+ */
 static int cs5536_early_setup(void)
 {
 	msr_t msr;
@@ -241,19 +245,19 @@ static int cs5536_early_setup(void)
 	msr = rdmsr(GLCP_SYS_RSTPLL);
 	if (msr.lo & (0x3f << 26)) {
 		/* PLL is already set and we are reboot from PLL reset */
-		print_debug("reboot from BIOS reset\n\r");
+		//print_debug("reboot from BIOS reset\n\r");
 		return;
 	}
-	print_debug("Setup idsel\r\n");
+	//print_debug("Setup idsel\r\n");
 	cs5536_setup_idsel();
-	print_debug("Setup iobase\r\n");
+	//print_debug("Setup iobase\r\n");
 	cs5536_usb_swapsif();
 	cs5536_setup_iobase();
-	print_debug("Setup gpio\r\n");
+	//print_debug("Setup gpio\r\n");
 	cs5536_setup_gpio();
-	print_debug("Setup cis_mode\r\n");
+	//print_debug("Setup cis_mode\r\n");
 	cs5536_setup_cis_mode();
-	print_debug("Setup smbus\r\n");
+	//print_debug("Setup smbus\r\n");
 	cs5536_enable_smbus();
 	dummy();
 }

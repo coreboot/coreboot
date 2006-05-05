@@ -190,12 +190,13 @@ static int cs5536_setup_onchipuart(void)
 	msr_t msr;
 	msr.lo = 2;
 	msr.hi = 0;
-	/* not sure what this is for, so comment it out ...
-	wrmsr(0x5140003a, msr);
+	/*  This enables COM2, but that should be done elsewhere
 	wrmsr(0x5140003e, msr);
 	 */
 
 
+	/* enable COM1 */
+	wrmsr(0x5140003a, msr);
 	/* GPIO8 - UART1_TX */
 	/* Set: Output Enable  (0x4) */
 	m = inl(GPIOL_OUTPUT_ENABLE);

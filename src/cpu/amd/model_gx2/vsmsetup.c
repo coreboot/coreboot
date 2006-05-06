@@ -260,7 +260,9 @@ void do_vsmbios(void)
 	  * much better parameterized 
 	  */
 	//rom = 0xfff80000;
-	rom = 0xfffc0000;
+	//rom = 0xfffc0000;
+	/* the VSA starts at the base of rom - 128k */
+	rom = ((unsigned long) 0) - (ROM_SIZE  + 128*1024);
 
 	buf = (unsigned char *) rom;
 	printk_debug("buf %p *buf %d buf[256k] %d\n",

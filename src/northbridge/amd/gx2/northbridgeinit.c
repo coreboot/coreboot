@@ -102,8 +102,8 @@ struct msrinit GeodeLinkPriorityTable [] = {
 	{0x0FFFFFFFF, 			{0x0FFFFFFFF, 0x0FFFFFFFF}},	/*  END*/
 };
 
-/* do we have dmi or not? assume yes */
-int havedmi = 1;
+/* do we have dmi or not? assume NO per AMD */
+int havedmi = 0;
 
 static void
 writeglmsr(struct gliutable *gl){

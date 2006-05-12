@@ -94,6 +94,10 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	print_debug_hex32(msr.hi);
 	print_debug("\r\n");
 
+	/* for OLPC, set default size */
+	/* dimm size - hardcoded 128Mb */
+//	msr.hi &= ~(0xf << CF07_UPPER_D0_SZ_SHIFT);
+//	msr.hi |=  (5 << CF07_UPPER_D0_SZ_SHIFT);
 
 	/* this is a standard value, DOES NOT PROBABLY MATCH FROM ABOVE */
 	/* well, it may be close. It's about 200,000 ticks */

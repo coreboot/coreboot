@@ -70,7 +70,7 @@ sizeram(void)
 /* ram has none of this stuff */
 #define RAM_PROPERTIES (0)
 #define DEVICE_PROPERTIES (WRITE_SERIALIZE|CACHE_DISABLE)
-#define ROM_PROPERTIES (WRITE_SERIALIZE|WRITE_THROUGH|CACHE_DISABLE)
+#define ROM_PROPERTIES (WRITE_SERIALIZE|WRITE_THROUGH)
 #define MSR_WS_CD_DEFAULT (0x21212121)
 
 /* 1810-1817 give you 8 registers with which to program protection regions */
@@ -138,8 +138,8 @@ setup_gx2_cache(void)
 	/* set romrp */
 	val = ((unsigned long long) ROM_PROPERTIES) << 56;
 	/* make rom base useful for 1M roms */
-	/* Flash base address -- sized for 1/2M for now*/
-	val |= ((unsigned long long) 0xfff800)<<36;
+	/* Flash base address -- sized for 1M for now*/
+	val |= ((unsigned long long) 0xfff00)<<36;
 	/* set the devrp properties */
 	val |= ((unsigned long long) DEVICE_PROPERTIES) << 28;
 	/* sigh. Take our TOM, RIGHT shift 12, since it page-aligned, then LEFT-shift 8 for reg. */
@@ -176,7 +176,12 @@ setup_gx2(void)
 	sizem = setup_gx2_cache();
 
 	membytes = sizem * 1048576;
-#if 0
+	/* NOTE! setup_gx2_cache returns the SIZE OF RAM - RAMADJUST!
+	  * so it is safe to use. You should NOT at this point call 	
+	  * sizeram() directly. 
+	  */
+
+
 	/* we need to set 0x10000028 and 0x40000029 */
 	printk_debug("sizem 0x%x, membytes 0x%x\n", sizem, membytes);
 	msr.hi = 0x20000000 | membytes>>24;
@@ -190,7 +195,7 @@ setup_gx2(void)
 	msr = rdmsr(0x40000029);
 	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x40000029, msr.hi,msr.lo);
 
-
+#if 1
 	/* fixme: SMM MSR 0x10000026 and 0x400000023 */
 	/* calculate the OFFSET field */
 	tmp = membytes - SMM_OFFSET;
@@ -206,22 +211,16 @@ setup_gx2(void)
 	msr.hi = tmp;
 	msr.lo = tmp2;
 	wrmsr(0x10000026, msr);
-#else
-	msr.hi = 0x2000000f;
-	msr.lo = 0xfbf00100;
-	wrmsr(0x10000028, msr);
-	msr = rdmsr(0x10000028);
-	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x10000028, msr.hi, msr.lo);
-	wrmsr(0x40000029, msr);
-	msr = rdmsr(0x40000029);
-	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x40000029, msr.hi, msr.lo);
+#endif
+#if 0
 
 	msr.hi = 0x2cfbc040;
 	msr.lo = 0x400fffc0;
 	wrmsr(0x10000026, msr);
 	msr = rdmsr(0x10000026);
 	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x10000026, msr.hi, msr.lo);
-
+#endif
+#if 0
 	msr.hi = 0x22fffc02;
 	msr.lo = 0x10ffbf00;
 	wrmsr(0x1808, msr);

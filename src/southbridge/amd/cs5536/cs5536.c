@@ -15,6 +15,55 @@ static void southbridge_init(struct device *dev)
 	setup_i8259(); 
 }
 
+
+#define PIN_OPT_IDE		(1ULL<<0)	/* 0 for flash, 1 for IDE */
+
+/* Intended value for LBAR_FLSH0: 4KiB, enabled, MMIO, NAND, @0x20000000 */
+msr_t flsh0 = { .hi=0xFFFFF007, .lo=0x20000000};
+
+static void
+enable_ide_nand_flash(){
+	msr_t msr;
+	printk_err("cs5536: %s\n", __FUNCTION__);
+	msr = rdmsr(MDD_LBAR_FLSH0);
+
+	if ( ((msr.hi) & 7) != 7) {
+		printk_err("MDD_LBAR_FLSH0 was 0x%08x%08x\n", msr.hi,msr.lo);
+		wrmsr(MDD_LBAR_FLSH0, flsh0);
+	}
+	msr = rdmsr(MDD_LBAR_FLSH0);
+	printk_err("MDD_LBAR_FLSH0 is 0x%08x%08x\n", msr.hi,msr.lo);
+
+	msr = rdmsr(MDD_PIN_OPT);
+	if (msr.lo & PIN_OPT_IDE) {
+		printk_err("MDD_PIN_OPT was 0x%08x%08x\n", msr.hi,msr.lo);
+		msr.lo &= ~PIN_OPT_IDE;
+		wrmsr(MDD_PIN_OPT, msr);
+	}
+	msr = rdmsr(MDD_PIN_OPT);
+	printk_err("MDD_LBAR_FLSH0 is 0x%08x%08x\n", msr.hi,msr.lo);
+
+	msr = rdmsr(MDD_NANDF_DATA);
+	if (msr.lo != 0x01110111) {
+		printk_err("MDD_NANDF_DATA was 0x%08x%08x\n", msr.hi,msr.lo);
+		msr.lo = 0x01110111;
+		wrmsr(MDD_NANDF_DATA, msr);
+	}
+	msr = rdmsr(MDD_NANDF_DATA);
+	printk_err("MDD_NANDF_DATA is 0x%08x%08x\n", msr.hi,msr.lo);
+
+	msr = rdmsr(MDD_NADF_CNTL);
+	if (msr.lo != 0x0111) {
+		printk_err("MDD_NADF_CNTL was 0x%08x%08x\n", msr.hi,msr.lo);
+		msr.lo = 0x0111;
+		wrmsr(MDD_NADF_CNTL, msr);
+	}
+	msr = rdmsr(MDD_NADF_CNTL);
+	printk_err("MDD_NADF_CNTL is 0x%08x%08x\n", msr.hi,msr.lo);
+	printk_err("cs5536: EXIT %s\n", __FUNCTION__);
+}
+
+
 static void southbridge_enable(struct device *dev)
 {
 	struct southbridge_amd_cs5536_config  *sb = (struct southbridge_amd_cs5536_config *)dev->chip_info;
@@ -48,7 +97,10 @@ static void southbridge_enable(struct device *dev)
 		outl(0x3081, GPIOL_INPUT_INVERT_ENABLE);
 		outl(GPIOL_0_SET, GPIO_MAPPER_X);
 	}
-		
+	printk_err("%s: enable_ide_nand_flash is %d\n", __FUNCTION__, sb->enable_ide_nand_flash);
+	if (sb->enable_ide_nand_flash) {
+		enable_ide_nand_flash();
+	}		
 	
 }
 

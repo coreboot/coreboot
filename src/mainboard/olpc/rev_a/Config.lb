@@ -134,6 +134,7 @@ chip northbridge/amd/gx2
 		device pci 1.1 on end
       		chip southbridge/amd/cs5536
                         register "enable_gpio0_inta" = "1"
+		      register "enable_ide_nand_flash" = "1"
         		device pci d.0 on end	# Realtek 8139 LAN
         		device pci f.0 on end	# ISA Bridge
         		device pci f.2 on end	# IDE Controller

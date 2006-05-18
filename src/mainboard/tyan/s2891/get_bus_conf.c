@@ -20,6 +20,7 @@
         unsigned char bus_8131_0;  //7
         unsigned char bus_8131_1;  //8
         unsigned char bus_8131_2;  //9
+	unsigned char bus_coproc_0;
         unsigned apicid_ck804;
         unsigned apicid_8131_1;
         unsigned apicid_8131_2;
@@ -28,9 +29,9 @@ unsigned sblk;
 unsigned pci1234[] = 
 {        //Here you only need to set value in pci1234 for HT-IO that could be installed or not
 	 //You may need to preset pci1234 for HTIO board, please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
-        0x0000ff0,
-        0x0000ff0,
-//        0x0000ff0,
+        0x0000000,
+        0x0000200,
+        0x0000100,
 //        0x0000ff0,
 //        0x0000ff0,
 //        0x0000ff0,
@@ -43,7 +44,7 @@ unsigned hcdn[] =
 { //HT Chain device num, actually it is unit id base of every ht device in chain, assume every chain only have 4 ht device at most
 	0x20202020,
 	0x20202020,
-//        0x20202020,
+        0x20202020,
 //        0x20202020,
 //        0x20202020,
 //        0x20202020,
@@ -52,6 +53,7 @@ unsigned hcdn[] =
 };
 
 unsigned sbdn3;
+unsigned coprocdn;
 
 extern void get_sblk_pci1234(void);
 
@@ -78,6 +80,12 @@ void get_bus_conf(void)
 
 //	bus_ck804_0 = node_link_to_bus(0, sblk);
 	bus_ck804_0 = (pci1234[0] >> 16) & 0xff;
+
+        if(pci1234[2] & 1) {
+		bus_coproc_0 = (pci1234[2] >> 16) & 0xff;
+		coprocdn =  (hcdn[2] & 0xff);
+        }
+
 
 
                 /* CK804 */

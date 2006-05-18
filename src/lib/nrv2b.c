@@ -35,7 +35,9 @@ static unsigned long unrv2b(uint8_t * src, uint8_t * dst)
 	uint32_t bb = 0;
 	unsigned bc = 0;
 	const uint8_t *m_pos;
+	unsigned long file_len = *(unsigned long *) src;
 
+	printk_debug("compressed file len is supposed to be %d bytes\n", file_len);
 	// skip length
 	src += 4;
 	/* FIXME: check olen with the length stored in first 4 bytes */	
@@ -77,6 +79,7 @@ static unsigned long unrv2b(uint8_t * src, uint8_t * dst)
 		} while (--m_len > 0);
 	}
 
+	printk_debug("computed len is %d, file len is %d\n", olen, file_len);
 	return olen;
 
 }

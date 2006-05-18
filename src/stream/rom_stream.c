@@ -32,7 +32,7 @@ static const unsigned char *rom;
 int stream_init(void)
 {
 #if CONFIG_COMPRESSED_ROM_STREAM
-        unsigned long dest;
+        unsigned char *dest;
         unsigned long olen;
 #endif
 
@@ -51,14 +51,14 @@ int stream_init(void)
 		dest = (CONFIG_LB_MEM_TOPK<<10);
 	}
 #endif
-        if((dest < 0xf0000) && ((dest+olen)>0xf0000)) { //linuxbios tables etc
-                dest = (CONFIG_LB_MEM_TOPK<<10);
+        if((dest < (unsigned char *) 0xf0000) && ((dest+olen)> (unsigned char *)0xf0000)) { //linuxbios tables etc
+	  dest = (unsigned char *) (CONFIG_LB_MEM_TOPK<<10);
         }
 #endif
 
         printk_debug("Uncompressing to RAM 0x%08lx ", dest);
         olen = unrv2b((uint8_t *) rom_start, (uint8_t *)dest );
-	printk_debug(" ilen = 0x%08lx olen = 0x%08lx done.\n", ilen, olen);
+	printk_debug(" olen = 0x%08lx done.\n", olen);
 	rom_end = dest + olen - 1;
 	rom = dest;
 #else

@@ -384,6 +384,11 @@ define CONFIG_CONSOLE_VGA_MULTI
         export always
         comment "Multi VGA console"
 end
+define CONFIG_CONSOLE_VGA_ONBOARD_AT_FIRST
+        default 0
+        export always
+        comment "Use onboard VGA instead of add on VGA card"
+end
 define CONFIG_CONSOLE_BTEXT
         default 0
         export always

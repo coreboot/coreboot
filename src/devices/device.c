@@ -413,7 +413,7 @@ static void allocate_vga_resource(void)
                 vga = vga_first;
         }
 
-#if 1
+#if CONFIG_CONSOLE_VGA_ONBOARD_AT_FIRST == 1
         if (vga_onboard) // will use on board vga as pri
 #else
         if (!vga) // will use last add on adapter as pri

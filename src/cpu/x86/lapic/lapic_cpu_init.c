@@ -123,8 +123,6 @@ static int lapic_start_cpu(unsigned long apicid)
 	start_eip = (unsigned long)_secondary_start;
 #endif
 
-	printk_debug("start_eip=0x%08lx\n", start_eip);
-       
 	num_starts = 2;
 
 	/*
@@ -299,9 +297,8 @@ void secondary_cpu_init(void)
 	stop_this_cpu();
 }
 
-static void initialize_other_cpus(struct bus *cpu_bus)
+static void start_other_cpus(struct bus *cpu_bus, device_t bsp_cpu)
 {
-	int old_active_count, active_count;
 	device_t cpu;
 	/* Loop through the cpus once getting them started */
 
@@ -309,6 +306,11 @@ static void initialize_other_cpus(struct bus *cpu_bus)
 		if (cpu->path.type != DEVICE_PATH_APIC) {
 			continue;
 		}
+	#if SERIAL_CPU_INIT == 0
+		if(cpu==bsp_cpu) {
+			continue; 
+		}
+	#endif
 
 		if (!cpu->enabled) {
 			continue;
@@ -330,6 +332,12 @@ static void initialize_other_cpus(struct bus *cpu_bus)
 #endif
 	}
 
+}
+
+static void wait_other_cpus_stop(struct bus *cpu_bus)
+{
+	device_t cpu;
+	int old_active_count, active_count;
 	/* Now loop until the other cpus have finished initializing */
 	old_active_count = 1;
 	active_count = atomic_read(&active_cpus);
@@ -386,10 +394,26 @@ void initialize_cpus(struct bus *cpu_bus)
 	copy_secondary_start_to_1m_below(); // why here? In case some day we can start core1 in amd_sibling_init
 #endif
 	
-	/* Initialize the bootstrap processor */
-	cpu_initialize();
+#if CONFIG_SMP == 1
+	#if SERIAL_CPU_INIT == 0
+	/* start all aps at first, so we can init ECC all together */
+        start_other_cpus(cpu_bus, info->cpu);
+	#endif
+#endif
 
-	/* Now initialize the rest of the cpus */
-	initialize_other_cpus(cpu_bus);
+        /* Initialize the bootstrap processor */
+        cpu_initialize();
+
+
+#if CONFIG_SMP == 1
+        #if SERIAL_CPU_INIT == 1
+        /* start all aps */
+        start_other_cpus(cpu_bus, info->cpu);
+        #endif
+
+	/* Now wait the rest of the cpus stop*/
+	wait_other_cpus_stop(cpu_bus);
+#endif
+
 }
 

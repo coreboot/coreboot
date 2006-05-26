@@ -1,5 +1,5 @@
 /*
- * generic K8 debug code, used by mainboard specific auto.c
+ * generic debug code, used by mainboard specific auto.c
  *
  */
 #if 1

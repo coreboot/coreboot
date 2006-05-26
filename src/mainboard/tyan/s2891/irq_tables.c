@@ -43,6 +43,7 @@ extern  unsigned char bus_coproc_0;
 extern  unsigned sbdn;
 extern  unsigned hcdn[];
 extern  unsigned sbdn3;
+extern  unsigned pci1234[];
 extern unsigned coprocdn;
 
 extern void get_bus_conf(void);

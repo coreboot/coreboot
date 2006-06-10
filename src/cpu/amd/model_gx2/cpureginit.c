@@ -24,8 +24,8 @@ BIST(void){
 	msrnum = CPU_DM_BIST;
 	wrmsr(msrnum, msr);
 
-	outb(POST_CPU_DM_BIST_FAILURE	, 0x80);				/* 0x29*/
-	msr = rdmsr(msrnum);							/* read back for pass fail*/
+	outb(POST_CPU_DM_BIST_FAILURE, 0x80);				/* 0x29*/
+	msr = rdmsr(msrnum);						/* read back for pass fail*/
 	msr.lo &= 0x0F3FF0000;
 	if (msr.lo != 0xfeff0000)
 		goto BISTFail;
@@ -80,7 +80,10 @@ cpuRegInit (void){
 	msr_t msr;
 	/*  Turn on BTM for early debug based on setup. */
 	/*if (getnvram( TOKEN_BTM_DIAG_MODE) & 3) {*/
-	{
+	/*
+	 * The following is only for diagnostics mode; do not use for OLPC
+	 */
+	if (0) {
 		/*  Set Diagnostic Mode */
 		msrnum = CPU_GLD_MSR_DIAG;
 		msr.hi =  0;
@@ -91,7 +94,7 @@ cpuRegInit (void){
 		msrnum = 0x04C00000C;		/*  GLCP_DBGOUT MSR*/
 		msr.hi =  0x0;
 		msr.lo =  0x08;			/*  reset value (SCOPE_SEL = 0) causes FIFO toshift out,*/
-		wrmsr(msrnum, msr);					/*  exchange it to anything else to prevent this*/
+		wrmsr(msrnum, msr);		/*  exchange it to anything else to prevent this*/
 	
 		/* ;Turn off debug clock*/
 		msrnum = 0x04C000016;		/* DBG_CLK_CTL*/
@@ -108,8 +111,8 @@ cpuRegInit (void){
 		/* ;Set fifo ctl to BTM bits wide*/
 		msrnum = 0x04C00005E;		/*  FIFO_CTL*/
 		msr.lo =  0x003880000;		/*  Bit [25:24] are size (11=BTM, 10 = 64 bit, 01= 32 bit, 00 = 16bit)*/
-		wrmsr(msrnum, msr);		/*  Bit [23:21] are position (100 = CPU downto0)*/
-								/*  Bit [19] sets it up in slow data mode.*/
+		wrmsr(msrnum, msr);	/*  Bit [23:21] are position (100 = CPU downto0)*/
+							/*  Bit [19] sets it up in slow data mode.*/
 	
 		/* ;enable fifo loading - BTM sizing will constrain*/
 		/* ; only valid BTM packets to load - this action should always be on*/

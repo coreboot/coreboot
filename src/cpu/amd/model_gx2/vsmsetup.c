@@ -5,6 +5,7 @@
 #undef __KERNEL__
 #include <arch/io.h>
 #include <string.h>
+#include <cpu/amd/gx2def.h>
 
 /* what a mess this uncompress thing is. I am not at all happy about how this 
  * was done, but can't fix it yet. RGM
@@ -335,7 +336,7 @@ void do_vsmbios(void)
 	unsigned long busdevfn;
 	unsigned int rom = 0;
 	unsigned char *buf;
-	unsigned int size = 256*1024;
+	unsigned int size = SMM_SIZE*1024;
 	int i;
 	
 	printk_err("do_vsmbios\n");
@@ -353,12 +354,12 @@ void do_vsmbios(void)
 	//rom = 0xfff80000;
 	//rom = 0xfffc0000;
 	/* the VSA starts at the base of rom - 64 */
-	rom = ((unsigned long) 0) - (ROM_SIZE  + 35*1024);
+	rom = ((unsigned long) 0) - (ROM_SIZE  + 64*1024);
 
 	buf = (unsigned char *) 0x60000;
 	unrv2b((uint8_t *)rom, buf);
 	printk_debug("buf %p *buf %d buf[256k] %d\n",
-		     buf, buf[0], buf[256*1024]);
+		     buf, buf[0], buf[SMM_SIZE*1024]);
 	printk_debug("buf[0x20] signature is %x:%x:%x:%x\n",
 		     buf[0x20] ,buf[0x21] ,buf[0x22],buf[0x23]);
 	/* check for post code at start of vsainit.bin. If you don't see it,

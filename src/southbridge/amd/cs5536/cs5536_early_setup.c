@@ -1,3 +1,5 @@
+#include <cpu/amd/gx2def.h>
+
 /*
  *
  * cs5536_early_setup.c:	Early chipset initialization for CS5536 companion device

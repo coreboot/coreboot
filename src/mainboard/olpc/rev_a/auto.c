@@ -124,7 +124,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	 */
 	msr.lo = 0x286332a3;
 
-	wrmsr(0x20000019, msr);		
+	wrmsr(0x20000019, msr);
 
 }
 

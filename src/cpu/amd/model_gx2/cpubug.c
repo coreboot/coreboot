@@ -31,25 +31,46 @@ bug573(void){
 }
 #endif
 
+/**************************************************************************
+ *
+ *	pcideadlock
+ *
+ *	Bugtool #465 and #609
+ *	PCI cache deadlock
+ *	There is also fix code in cache and PCI functions. This bug is very is pervasive.
+ *
+ *	Entry:
+ *	Exit:
+ *	Modified:
+ *
+ **************************************************************************/
 static void
 pcideadlock(void)
 {
 	msr_t msr;
 
+	/*
+	 * forces serialization of all load misses. Setting this bit prevents the 
+	 * DM pipe from backing up if a read request has to be held up waiting 
+	 * for PCI writes to complete.
+	*/
 	msr = rdmsr(CPU_DM_CONFIG0);
 	msr.hi &= ~(7<<DM_CONFIG0_UPPER_WSREQ_SHIFT);
 	msr.hi |= (2<<DM_CONFIG0_UPPER_WSREQ_SHIFT);
 	msr.lo |= DM_CONFIG0_LOWER_MISSER_SET;
 	wrmsr(CPU_DM_CONFIG0, msr);
 
+	/* interlock instruction fetches to WS regions with data accesses.
+	 * This prevents an instruction fetch from going out to PCI if the 
+	 * data side is about to make a request.
+	 */
 	msr = rdmsr(CPU_IM_CONFIG);
-	msr.lo |= IM_CONFIG_LOWER_QWT_SET;	/* interlock instruction fetches to WS regions with data accesses.
-						 * This prevents in instruction fetch from going out to PCI if the 
-						 * data side is about to make a request.
-						 */
+	msr.lo |= IM_CONFIG_LOWER_QWT_SET;
 	wrmsr(CPU_IM_CONFIG, msr);
-	/* write serialize memory hole to PCI. Need to to unWS when something is shadowed regardless of cachablility.*/
-
+	
+	/* write serialize memory hole to PCI. Need to unWS when something is 
+	 * shadowed regardless of cachablility.
+	 */
 	msr.lo = 0x021212121;
 	msr.hi = 0x021212121;
 	wrmsr( CPU_RCONF_A0_BF, msr);
@@ -57,18 +78,18 @@ pcideadlock(void)
 	wrmsr( CPU_RCONF_E0_FF, msr);
 }
 
-/****************************************************************************/
-/***/
-/**	CPUbug784*/
-/***/
-/**	Bugtool #784 + #792*/
-/***/
-/**	Fix CPUID instructions for < 3.0 CPUs*/
-/***/
-/**	Entry:*/
-/**	Exit:*/
-/**	Modified:*/
-/***/
+/**************************************************************************** 
+ *
+ *	CPUbug784
+ *
+ *	Bugtool #784 + #792
+ *
+ *	Fix CPUID instructions for < 3.0 CPUs
+ *
+ *	Entry:
+ *	Exit:
+ *	Modified:
+ *
 /****************************************************************************/
 
 void bug784(void)
@@ -99,18 +120,31 @@ void bug784(void)
 }
 
 /* cpubug 1398: enable MC if we KNOW we have DDR*/
+/**************************************************************************
+ *
+ *	CPUbugIAENG1398
+ *
+ *	ClearQuest #IAENG1398
+ *	The MC can not be enabled with SDR memory but can for DDR. Enable for
+ *	DDR here if the setup token is "Default"
+ *	Add this back to core by default once 2.0 CPUs are not supported.
+ *	Entry:
+ *	Exit:
+ *	Modified:
+ *
+ **************************************************************************/
 void eng1398(void)
 {
 	msr_t msr;
 
 	msr = rdmsr(MSR_GLCP+0x17);
-	if ((msr.lo & 0xff) < CPU_REV_2_0) {
+	if ((msr.lo & 0xff) <= CPU_REV_2_0) {
 		msr = rdmsr(GLCP_SYS_RSTPLL);
 		if (msr.lo & (1<<RSTPPL_LOWER_SDRMODE_SHIFT))
 			return;
 	}
 
-	/* no bios to check, we just go for it? */
+	/* no CMOS/NVRAM to check, so enable MC Clock Gating */
 	msr = rdmsr(MC_GLD_MSR_PM);
 	msr.lo |= 3; /* enable MC clock gating.*/
 	wrmsr(MC_GLD_MSR_PM, msr);

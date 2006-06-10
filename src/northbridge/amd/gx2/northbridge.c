@@ -13,14 +13,11 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/cache.h>
 
-#define NORTHBRIDGE_FILE "northbridge.c"
+#define VIDEO_MB 8
 
-/* number of MB to take off the top of ram for VSM and display memory. 
- * FIXME -- make this configurable
- */
-#define RAMADJUSTMB	9
-/*
-*/
+extern void graphics_init(void);
+
+#define NORTHBRIDGE_FILE "northbridge.c"
 
 /* todo: add a resource record. We don't do this here because this may be called when 
   * very little of the platform is actually working.
@@ -115,24 +112,31 @@ struct msr_defaults {
 	/* GLIU0 */
 	P2D_BM(0x10000020, 0x1, 0x0, 0x0, 0xfff80),
 	P2D_BM(0x10000021, 0x1, 0x0, 0x80000, 0xfffe0),
-	P2D_SC(0x1000002c, 0x1, 0x0, 0x0,  0xff03, 0x3),
+	P2D_SC(0x1000002c, 0x1, 0x0, 0x0,  0xff03, 0xC0000),
 	/* GLIU1 */
 	P2D_BM(0x40000020, 0x1, 0x0, 0x0, 0xfff80),
 	P2D_BM(0x40000021, 0x1, 0x0, 0x80000, 0xfffe0),
-	P2D_SC(0x4000002d, 0x1, 0x0, 0x0,  0xff03, 0x3),
+	P2D_SC(0x4000002d, 0x1, 0x0, 0x0,  0xff03, 0xC0000),
 	{0}
 };
 
 
+/*
+ * setup_gx2_cache
+ *
+ * Returns the amount of memory (in KB) available to the system.  This is the 
+ * total amount of memory less the amount of memory reserved for SMM use.
+ *
+ */ 
 static int
 setup_gx2_cache(void)
 {
 	msr_t msr;
 	unsigned long long val;
-	int sizembytes, sizereg;
+	int sizekbytes, sizereg;
 
-	sizembytes = sizeram();
-	printk_debug("enable_cache: enable for %dm bytes\n", sizembytes);
+	sizekbytes = sizeram() * 1024;
+	printk_debug("setup_gx2_cache: enable for %d KB\n", sizekbytes);
 	/* build up the rconf word. */
 	/* the SYSTOP bits 27:8 are actually the top bits from 31:12. Book fails to say that */
 	/* set romrp */
@@ -142,54 +146,58 @@ setup_gx2_cache(void)
 	val |= ((unsigned long long) 0xfff00)<<36;
 	/* set the devrp properties */
 	val |= ((unsigned long long) DEVICE_PROPERTIES) << 28;
-	/* sigh. Take our TOM, RIGHT shift 12, since it page-aligned, then LEFT-shift 8 for reg. */
-	/* yank off 8M for frame buffer and 1M for VSA */
-	sizembytes -= RAMADJUSTMB;
-	sizereg = sizembytes;
-	sizereg *= 0x100000;
+	/* Take our TOM, RIGHT shift 12, since it page-aligned, then LEFT-shift 8 for reg. */
+	/* yank off memory for the SMM handler */
+	sizekbytes -= SMM_SIZE;
+	sizereg = sizekbytes;
+	sizereg *= 1024;	// convert to bytes
 	sizereg >>= 12;
 	sizereg <<= 8;
 	val |= sizereg;
 	val |= RAM_PROPERTIES;
 	msr.lo = val;
 	msr.hi = (val >> 32);
-	printk_debug("msr will be set to %x:%x\n", msr.hi, msr.lo);
+	printk_debug("msr 0x%08X will be set to %08x:%08x\n", CPU_RCONF_DEFAULT, msr.hi, msr.lo);
 	wrmsr(CPU_RCONF_DEFAULT, msr);
 
 	enable_cache();
 	wbinvd();
-	return sizembytes;
+	return sizekbytes;
 }
-
-#define SMM_OFFSET 0x40400000
-#define SMM_SIZE   256
 
 /* we have to do this here. We have not found a nicer way to do it */
 void
 setup_gx2(void)
 {
 	int i;
-	unsigned long tmp, tmp2, tmp3;
+	unsigned long tmp, tmp2;
 	msr_t msr;
-	unsigned long sizem, membytes;
+	unsigned long size_kb, membytes;
 
-	sizem = setup_gx2_cache();
+	size_kb = setup_gx2_cache();
 
-	membytes = sizem * 1048576;
+	membytes = size_kb * 1024;
 	/* NOTE! setup_gx2_cache returns the SIZE OF RAM - RAMADJUST!
 	  * so it is safe to use. You should NOT at this point call 	
 	  * sizeram() directly. 
 	  */
 
-
 	/* we need to set 0x10000028 and 0x40000029 */
-	printk_debug("sizem 0x%x, membytes 0x%x\n", sizem, membytes);
+	/*
+	 * These two descriptors cover the range from 1 MB (0x100000) to 
+	 * SYSTOP (a.k.a. TOM, or Top of Memory)
+	 */
+
+#if 0
+	/* This has already been done elsewhere */
+	printk_debug("size_kb 0x%x, membytes 0x%x\n", size_kb, membytes);
 	msr.hi = 0x20000000 | membytes>>24;
 	msr.lo = 0x100 | ( ((membytes >>12) & 0xfff) << 20);
 	wrmsr(0x10000028, msr);
 	msr.hi = 0x20000000 | membytes>>24;
 	msr.lo = 0x100 | ( ((membytes >>12) & 0xfff) << 20);
 	wrmsr(0x40000029, msr);
+#endif
 	msr = rdmsr(0x10000028);
 	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x10000028, msr.hi,msr.lo);
 	msr = rdmsr(0x40000029);
@@ -227,13 +235,15 @@ setup_gx2(void)
 	msr = rdmsr(0x1808);
 	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x1808, msr.hi, msr.lo);
 #endif
+#if 0	// SDG - don't do this
 	/* now do the default MSR values */
 	for(i = 0; msr_defaults[i].msr_no; i++) {
 		msr_t msr;
-		wrmsr(msr_defaults[i].msr_no, msr_defaults[i].msr);
+		wrmsr(msr_defaults[i].msr_no, msr_defaults[i].msr);	// MSR - see table above
 		msr = rdmsr(msr_defaults[i].msr_no);
-		printk_debug("MSR 0x%x is now 0x%x:0x%x\n", msr_defaults[i].msr_no, msr.hi,msr.lo);
+		printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", msr_defaults[i].msr_no, msr.hi,msr.lo);
 	}
+#endif
 }
 
 static void enable_shadow(device_t dev)
@@ -325,9 +335,10 @@ static uint32_t find_pci_tolm(struct bus *bus)
 
 static void pci_domain_set_resources(device_t dev)
 {
+#if 0
 	device_t mc_dev;
         uint32_t pci_tolm;
-#if 0
+
         pci_tolm = find_pci_tolm(&dev->link[0]);
 	mc_dev = dev->link[0].children;
 	if (mc_dev) {
@@ -421,13 +432,15 @@ static void enable_dev(struct device *dev)
 		/* do this here for now -- this chip really breaks our device model */
 		setup_realmode_idt();
 		do_vsmbios();
+		graphics_init();
 		dev->ops = &pci_domain_ops;
 		pci_set_method(dev);
-		ram_resource(dev, 0, 0, (sizeram() - RAMADJUSTMB)*1024);
+		ram_resource(dev, 0, 0, ((sizeram() - VIDEO_MB) * 1024) - SMM_SIZE);
         } else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
 		printk_debug("DEVICE_PATH_APIC_CLUSTER\n");
                 dev->ops = &cpu_bus_ops;
         }
+	printk_debug("gx2 north: end enable_dev\n");
 }
 
 struct chip_operations northbridge_amd_gx2_ops = {

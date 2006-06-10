@@ -53,7 +53,7 @@ struct msrinit CS5536_CLOCK_GATING_TABLE[] = {
 	{      GLIU_SB_GLD_MSR_PM,	{.hi=0,.lo=0x000000004}},
 	{      GLPCI_SB_GLD_MSR_PM,	{.hi=0,.lo=0x000000005}},
 	{      GLCP_SB_GLD_MSR_PM,	{.hi=0,.lo=0x000000004}},
-	{      MDD_SB_GLD_MSR_PM,	{.hi=0,.lo=0x050554111}},	/*  SMBus clock gating errata (PBZ 2226 & SiBZ 3977)*/
+	{      MDD_SB_GLD_MSR_PM,	{.hi=0,.lo=0x050554111}}, /*  SMBus clock gating errata (PBZ 2226 & SiBZ 3977)*/
 	{      ATA_SB_GLD_MSR_PM,	{.hi=0,.lo=0x000000005}},
 	{      AC97_SB_GLD_MSR_PM,	{.hi=0,.lo=0x000000005}},
 	{0,{0,0}}
@@ -210,7 +210,6 @@ chipsetinit (void){
 
 	outb( P80_CHIPSET_INIT, 0x80);
 	ChipsetGeodeLinkInit();
-
 #if 0
 	/* we hope NEVER to be in linuxbios when S3 resumes 
 	if (! IsS3Resume()) */
@@ -230,16 +229,17 @@ chipsetinit (void){
 	}
 #endif
 
-	/* for later ... if 5536 set_usb_20(); */
 
-	/*  Setup USB. Need more details. #118.18*/
-	msrnum = MSR_SB_USB1 + 8;
-	msr.lo =  0x00012090;
-	msr.hi = 0;
-	wrmsr(msrnum, msr);
-	msrnum = MSR_SB_USB2 + 8;
-	wrmsr(msrnum, msr);
-
+	if (!is_5536()) {
+		/*  Setup USB. Need more details. #118.18*/
+		msrnum = MSR_SB_USB1 + 8;
+		msr.lo =  0x00012090;
+		msr.hi = 0;
+		wrmsr(msrnum, msr);
+		msrnum = MSR_SB_USB2 + 8;
+		wrmsr(msrnum, msr);
+	}
+	
 	/* set hd IRQ */
 	outl	(GPIOL_2_SET, GPIOL_INPUT_ENABLE);
 	outl	(GPIOL_2_SET, GPIOL_IN_AUX1_SELECT);
@@ -270,7 +270,7 @@ chipsetinit (void){
 	for(; csi->msrnum; csi++){
 		msr.lo = csi->msr.lo;
 		msr.hi = csi->msr.hi;
-		wrmsr(csi->msrnum, msr);
+		wrmsr(csi->msrnum, msr); // MSR - see table above
 	}
 
 
@@ -288,12 +288,12 @@ chipsetinit (void){
 		if (is_5536())
 			csi = CS5536_CLOCK_GATING_TABLE;
 		else
-			csi =  CS5535_CLOCK_GATING_TABLE;
+			csi = CS5535_CLOCK_GATING_TABLE;
 
 		for(; csi->msrnum; csi++){
 			msr.lo = csi->msr.lo;
 			msr.hi = csi->msr.hi;
-			wrmsr(csi->msrnum, msr);
+			wrmsr(csi->msrnum, msr);	// MSR - see table above
 		}
 	}
 

@@ -75,22 +75,22 @@
 #define GL1_VIP				5
 #define GL1_AES				6
 
-#define	MSR_GLIU0			(GL0_GLIU0 << 29) + (1 << 28) /* To get on GeodeLink one bit has to be set */
-#define	MSR_MC				(GL0_MC		<< 29)
-#define	MSR_GLIU1			(GL0_GLIU1	<< 29)
-#define	MSR_CPU				(GL0_CPU	<< 29) /* this is not used for BIOS since code executing on CPU doesn't need to be routed*/
-#define	MSR_VG				(GL0_VG		<< 29)
-#define	MSR_GP				(GL0_GP		<< 29)
-#define	MSR_DF				(GL0_DF		<< 29)
+#define	MSR_GLIU0			(GL0_GLIU0 << 29) + (1 << 28)	/* 1000xxxx - To get on GeodeLink one bit has to be set */
+#define	MSR_MC				(GL0_MC		<< 29)	/* 2000xxxx */
+#define	MSR_GLIU1			(GL0_GLIU1	<< 29)	/* 4000xxxx */
+#define	MSR_CPU				(GL0_CPU	<< 29)	/* 6000xxxx - this is not used for BIOS since code executing on CPU doesn't need to be routed*/
+#define	MSR_VG				(GL0_VG		<< 29)	/* 8000xxxx */
+#define	MSR_GP				(GL0_GP		<< 29)	/* A000xxxx */
+#define	MSR_DF				(GL0_DF		<< 29)	/* C000xxxx */
 
-#define	MSR_GLCP			(GL1_GLCP << 26) + MSR_GLIU1
-#define	MSR_PCI				(GL1_PCI << 26) + MSR_GLIU1
-#define	MSR_FG				(GL1_FG << 26) + MSR_GLIU1
-#define 	MSR_VIP				((GL1_VIP << 26) + MSR_GLIU1)
-#define 	MSR_AES				((GL1_AES << 26) + MSR_GLIU1)
+#define	MSR_GLCP			(GL1_GLCP << 26) + MSR_GLIU1	/* 4C00xxxx */
+#define	MSR_PCI				(GL1_PCI << 26) + MSR_GLIU1	/* 5000xxxx */
+#define	MSR_FG				(GL1_FG << 26) + MSR_GLIU1	/* 5400xxxx */
+#define MSR_VIP				((GL1_VIP << 26) + MSR_GLIU1)	/* 5400xxxx */
+#define MSR_AES				((GL1_AES << 26) + MSR_GLIU1)	/* 5800xxxx */
 /* South Bridge*/
 #define SB_PORT	2			/* port of the SouthBridge */
-#define	MSR_SB				((SB_PORT << 23) + MSR_PCI)	/* address to the SouthBridge*/
+#define	MSR_SB				((SB_PORT << 23) + MSR_PCI)	/* 5100xxxx - address to the SouthBridge*/
 #define	SB_SHIFT			20							/* 29 -> 26 -> 23 -> 20...... When making a SB address uses this shift.*/
 
 
@@ -485,7 +485,7 @@
 
 /* definitions that are "once you are mostly up, start VSA" type things */
 #define SMM_OFFSET	0x40400000
-#define SMM_SIZE		256
+#define SMM_SIZE		128			/* changed SMM_SIZE from 256 KB to 128 KB */
 #define DMM_OFFSET	0x0C0000000
 #define DMM_SIZE		128
 #define FB_OFFSET		0x41000000
@@ -706,14 +706,14 @@
 
 /*  SouthBridge Equates*/
 /*  MSR_SB and SB_SHIFT are located in CPU.inc*/
-#define MSR_SB_GLIU		 (		(9 << 14) + MSR_SB			/*  fake out just like GL0 on CPU.*/)
-#define MSR_SB_GLPCI	 (		MSR_SB							/*  don't go to the GLIU*/)
-#define MSR_SB_USB2		 (		(2 << SB_SHIFT) + MSR_SB)
-#define MSR_SB_ATA		 (		(3 << SB_SHIFT) + MSR_SB)
-#define MSR_SB_MDD		 (		(4 << SB_SHIFT) + MSR_SB)
-#define MSR_SB_AC97		 (		(5 << SB_SHIFT) + MSR_SB)
-#define MSR_SB_USB1		 (		(6 << SB_SHIFT) + MSR_SB)
-#define MSR_SB_GLCP		 (		(7 << SB_SHIFT) + MSR_SB)
+#define MSR_SB_GLIU	 ((9 << 14) + MSR_SB)		/* 51024xxx or 510*xxxx	- fake out just like GL0 on CPU. */
+#define MSR_SB_GLPCI	 (MSR_SB)			/* 5100xxxx - don't go to the GLIU */
+#define MSR_SB_USB2	 ((2 << SB_SHIFT) + MSR_SB)	/* 5120xxxx */
+#define MSR_SB_ATA	 ((3 << SB_SHIFT) + MSR_SB)	/* 5130xxxx */
+#define MSR_SB_MDD	 ((4 << SB_SHIFT) + MSR_SB)	/* 5140xxxx, a.k.a. DIVIL = Diverse Integrated Logic device */
+#define MSR_SB_AC97	 ((5 << SB_SHIFT) + MSR_SB)	/* 5150xxxx */
+#define MSR_SB_USB1	 ((6 << SB_SHIFT) + MSR_SB)	/* 5160xxxx */
+#define MSR_SB_GLCP	 ((7 << SB_SHIFT) + MSR_SB)	/* 5170xxxx */
 
 /* */
 /* GLIU*/

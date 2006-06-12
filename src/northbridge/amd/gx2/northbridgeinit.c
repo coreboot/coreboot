@@ -267,15 +267,8 @@ GLIUInit(struct gliutable *gl){
 	while (gl->desc_type != GL_END){
 		switch(gl->desc_type){
 		default: 
-#if 01
 			/* For Unknown types: Write then read MSR */
 			writeglmsr(gl);
-#else
-				printk_err("%s: name %x, type %x, hi %x, lo %x: unsupported  type: ", __FUNCTION__, 
-							gl->desc_name, gl->desc_type, gl->hi, gl->hi);
-				printk_err("Must be %x, %x, %x, %x, %x, or %x\n", SC_SHADOW,R_SYSMEM,BMO_DMM,
-											BM_DMM, BMO_SMM,BM_SMM);
-#endif	
 		case SC_SHADOW: /*  Check for a Shadow entry*/
 			ShadowInit(gl);
 			break;

@@ -59,6 +59,7 @@ extern struct flashchip flashchips[];
 #define W_29C020C         0x45	/* Winbond w29c020c device code */
 #define W_39V040A         0x3D	/* Winbond w39v040a device code */
 #define W_49F002U         0x0B	/* Winbond w49F002u device code */
+#define W_49V002A         0xB0  /* Winbond W49V002A device code */
 
 #define ST_ID       	  0x20
 #define ST_M29F040B       0xE2

@@ -425,6 +425,7 @@ static inline void k8_errata(void)
 
 
 extern void model_fxx_update_microcode(unsigned cpu_deviceid);
+int init_processor_name(void);
 
 void model_fxx_init(device_t dev)
 {
@@ -453,6 +454,8 @@ void model_fxx_init(device_t dev)
 	}
 
 	k8_errata();
+	
+	init_processor_name();
 	
 	enable_cache();
 

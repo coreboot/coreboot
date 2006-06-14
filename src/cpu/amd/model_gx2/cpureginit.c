@@ -231,9 +231,13 @@ cpuRegInit (void){
 		wrmsr(msrnum, msr);
 	}
 
-/* */
-/*  Cache Overides*/
-/* */
+#if 0
+	/* */
+	/*  Cache Overides*/
+	/* */
+	/* This code disables the data cache.  Don't execute this
+	 * unless you're testing something.
+	 */ 
 	/*  Allow NVRam to override DM Setup*/
 	/*if (getnvram( TOKEN_CACHE_DM_MODE) != 1) {*/
 	{
@@ -243,6 +247,9 @@ cpuRegInit (void){
 		msr.lo |=  DM_CONFIG0_LOWER_DCDIS_SET;
 		wrmsr(msrnum, msr);
 	}
+	/* This code disables the instruction cache.  Don't execute
+	 * this unless you're testing something.
+	*/ 
 	/*  Allow NVRam to override IM Setup*/
 	/*if (getnvram( TOKEN_CACHE_IM_MODE) ==1) {*/
 	{
@@ -251,6 +258,7 @@ cpuRegInit (void){
 		msr.lo |=  IM_CONFIG_LOWER_ICD_SET;
 		wrmsr(msrnum, msr);
 	}
+#endif
 }
 
 

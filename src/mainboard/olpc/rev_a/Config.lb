@@ -124,6 +124,7 @@ dir /pc80
 config chip.h
 
 chip northbridge/amd/gx2
+	register "irq_map" = "0xaa5b";
 	device apic_cluster 0 on
 		chip cpu/amd/model_gx2
 			device apic 0 on end

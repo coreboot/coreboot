@@ -169,7 +169,7 @@ setup_gx2_cache(void)
 void
 setup_gx2(void)
 {
-	int i;
+
 	unsigned long tmp, tmp2;
 	msr_t msr;
 	unsigned long size_kb, membytes;
@@ -417,11 +417,36 @@ static struct device_operations cpu_bus_ops = {
 
 void chipsetInit (void);
 
+/* note that dev is NOT used -- yet */
+static void irq_init(struct device *dev, uint16_t irq_map) {
+
+	/* Set up IRQ steering */
+	uint32_t pciAddr = 0x80000000 | (CHIPSET_DEV_NUM << 11) | 0x5C;
+
+	printk_debug("OLPC REVA ENTER %s\n", __FUNCTION__);
+
+	/* The IRQ steering values (in hex) are effectively dcba, where:
+	 *    <a> represents the IRQ for INTA, 
+	 *    <b> represents the IRQ for INTB,
+	 *    <c> represents the IRQ for INTC, and
+	 *    <d> represents the IRQ for INTD.
+	 * Thus, a value of irq_map = 0xAA5B translates to:
+	 *    INTA = IRQB (IRQ 11)
+	 *    INTB = IRQ5 (IRQ 5)
+	 *    INTC = IRQA (IRQ 10)
+	 *    INTD = IRQA (IRQ 10)
+	 */
+	outl(pciAddr & ~3, 0xCF8);
+	outl(irq_map,      0xCFC);
+}
+
+
 static void enable_dev(struct device *dev)
 {
 	printk_debug("gx2 north: enable_dev\n");
         /* Set the operations if it is a special bus type */
         if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
+		struct northbridge_amd_gx2_config *nb = (struct northbridge_amd_gx2_config *)dev->chip_info;
 		extern void cpubug(void);
 		printk_debug("DEVICE_PATH_PCI_DOMAIN\n");
 		/* cpubug MUST be called before setup_gx2(), so we force the issue here */
@@ -432,6 +457,7 @@ static void enable_dev(struct device *dev)
 		/* do this here for now -- this chip really breaks our device model */
 		setup_realmode_idt();
 		do_vsmbios();
+		irq_init(dev, nb->irqmap);
 		graphics_init();
 		dev->ops = &pci_domain_ops;
 		pci_set_method(dev);

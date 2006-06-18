@@ -51,8 +51,6 @@ void setup_pars(void)
 
 #include "cpu/amd/sc520/raminit.c"
 
-#include "debug.c"
-
 static void identify_ts9500(void)
 {
 	unsigned i, val;
@@ -151,6 +149,7 @@ static void main(unsigned long bist)
 	
 	TS5300_LED_ON;
 	
+	// Let the hardware settle a bit.
 	for(i = 0; i < 100; i++)
 		;
 	
@@ -167,10 +166,6 @@ static void main(unsigned long bist)
 	identify_system();
 #endif
 
-#if 0
-	dump_pci_device(PCI_DEV(0, 0, 0));
-#endif
-	
 #if 0
 	// Check 32MB of memory @ 0 (very slow!)
 	print_err("Checking memory:\r\n");

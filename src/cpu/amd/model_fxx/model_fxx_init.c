@@ -13,7 +13,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <string.h>
-#include <cpu/x86/msr.h>
 #include <cpu/x86/pae.h>
 #include <pc80/mc146818rtc.h>
 #include <cpu/x86/lapic.h>
@@ -455,6 +454,12 @@ void model_fxx_init(device_t dev)
 
 	k8_errata();
 	
+	/* Set SMMLOCK to avoid exploits messing with SMM */
+	msr = rdmsr(HWCR_MSR);
+	msr.lo |= (1 << 0);
+	wrmsr(HWCR_MSR, msr);
+	
+	/* Set the processor name string */
 	init_processor_name();
 	
 	enable_cache();

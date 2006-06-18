@@ -97,6 +97,15 @@ static void southbridge_enable(struct device *dev)
 		outl(0x3081, GPIOL_INPUT_INVERT_ENABLE);
 		outl(GPIOL_0_SET, GPIO_MAPPER_X);
 	}
+
+	if (sb->enable_uarta){
+		printk_err("%s: enable uarta, msr MDD_IRQM_YHIGH(%x) \n",
+				 __FUNCTION__, MDD_IRQM_YHIGH);
+		msr = rdmsr(MDD_IRQM_YHIGH);
+		msr.lo |= 0x04000000;
+		wrmsr(MDD_IRQM_YHIGH, msr);
+	}
+
 	printk_err("%s: enable_ide_nand_flash is %d\n", __FUNCTION__, sb->enable_ide_nand_flash);
 	if (sb->enable_ide_nand_flash) {
 		enable_ide_nand_flash();

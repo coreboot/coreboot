@@ -124,7 +124,7 @@ dir /pc80
 config chip.h
 
 chip northbridge/amd/gx2
-	register "irq_map" = "0xaa5b";
+	register "irqmap" = "0xaa5b"
 	device apic_cluster 0 on
 		chip cpu/amd/model_gx2
 			device apic 0 on end
@@ -136,6 +136,7 @@ chip northbridge/amd/gx2
       		chip southbridge/amd/cs5536
                         register "enable_gpio0_inta" = "1"
 		      register "enable_ide_nand_flash" = "1"
+		      register "enable_uarta" = "1"
         		device pci d.0 on end	# Realtek 8139 LAN
         		device pci f.0 on end	# ISA Bridge
         		device pci f.2 on end	# IDE Controller

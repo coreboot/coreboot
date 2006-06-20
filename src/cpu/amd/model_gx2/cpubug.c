@@ -90,7 +90,7 @@ pcideadlock(void)
  *	Exit:
  *	Modified:
  *
-/****************************************************************************/
+ ****************************************************************************/
 
 void bug784(void)
 {
@@ -150,117 +150,102 @@ void eng1398(void)
 	wrmsr(MC_GLD_MSR_PM, msr);
 }
 
+/***************************************************************************
+ *
+ *	CPUbugIAENG2900
+ *
+ *	Clear Quest IAENG00002900, VSS 118.150
+ *
+ *	BTB issue causes blue screen in windows, but the fix is required
+ *	for all operating systems.
+ *
+ *	Entry:
+ *	Exit:
+ *	Modified:
+ *
+ **************************************************************************/
 void
-eng2900(void){
-	printk_err(" NOT DOING eng2900: only shown to be a windows problem\n");
-#if 0
+eng2900(void)
+{
+	msr_t msr;
 
-;**************************************************************************
-;*
-;*	CPUbugIAENG2900
-;*
-;*	Clear Quest IAENG00002900, VSS 118.150
-;*
-;*	BTB issue causes blue screen in windows.
-;*
-;*	Entry:
-;*	Exit:
-;*	Modified:
-;*
-;**************************************************************************
-CPUbugIAENG2900	PROC NEAR PUBLIC
-	pushad
+	printk_debug("CPU_BUG:%s\n", __FUNCTION__);
+	/* Clear bit 43, disables the sysenter/sysexit in CPUID3 */
+	msr = rdmsr(0x3003);
+	msr.hi &= 0xFFFFF7FF;
+	wrmsr(0x3003, msr);
 
-; Clear bit 43, disables the sysenter/sysexit in CPUID3
-	mov	ecx, 3003h
-	RDMSR
-	and	edx, 0FFFFF7FFh
-	WRMSR
+	/* change this value to zero if you need to disable this BTB SWAPSiF. */
+	if (1) { 
 
-	mov	cx, TOKEN_BTB_2900_SWAPSIF_ENABLE
-	NOSTACK	bx, GetNVRAMValueBX
-	cmp	ax, TVALUE_ENABLE
-	jne	bug2900exit
+		/* Disable enable_actions in DIAGCTL while setting up GLCP */
+		msr.hi = 0;
+		msr.lo = 0;
+		wrmsr(MSR_GLCP + 0x005f, msr);
 
+		/* Changing DBGCLKCTL register to GeodeLink */
+		msr.hi = 0;
+		msr.lo = 0;
+		wrmsr(MSR_GLCP + 0x0016, msr);
 
-;Disable enable_actions in DIAGCTL while setting up GLCP
-	mov	ecx, MSR_GLCP + 005fh
-	xor	edx, edx
-	xor	eax, eax
-	WRMSR
+		msr.hi = 0;
+		msr.lo = 2;
+		wrmsr(MSR_GLCP + 0x0016, msr);
 
-;Changing DBGCLKCTL register to GeodeLink
-	mov	ecx, MSR_GLCP + 0016h
-	xor	edx, edx
-	xor	eax, eax
-	WRMSR
+		/* The code below sets up the CPU to stall for 4 GeodeLink 
+		 * clocks when CPU is snooped.  Because setting XSTATE to 0 
+		 * overrides any other XSTATE action, the code will always 
+		 * stall for 4 GeodeLink clocks after a snoop request goes 
+		 * away even if it occured a clock or two later than a 
+		 * different snoop; the stall signal will never 'glitch high' 
+		 * for only one or two CPU clocks with this code.
+		 */
 
-	mov	ecx, MSR_GLCP + 0016h
-	xor	edx, edx
-	mov	eax, 02h
-	WRMSR
+		/* Send mb0 port 3 requests to upper GeodeLink diag bits 
+		   [63:32] */
+		msr.hi = 0;
+		msr.lo = 0x80338041;
+		wrmsr(MSR_GLIU0 + 0x2005, msr);
 
-;The code below sets up the RedCloud to stall for 4 GeodeLink clocks when CPU is snooped.
-;Because setting XSTATE to 0 overrides any other XSTATE action, the code will always
-;stall for 4 GeodeLink clocks after a snoop request goes away even if it occured a clock or two 
-;later than a different snoop; the stall signal will never 'glitch high' for 
-;only one or two CPU clocks with this code.
+		/* set5m watches request ready from mb0 to CPU (snoop) */
+		msr.hi = 0x5ad68000;
+		msr.lo = 0;
+		wrmsr(MSR_GLCP + 0x0045, msr);
 
-;Send mb0 port 3 requests to upper GeodeLink diag bits [63:32]
-	mov	ecx, MSR_GLIU0 + 2005h
-	xor	edx, edx
-	mov	eax, 80338041h
-	WRMSR
+		/* SET4M will be high when state is idle (XSTATE=11) */
+		msr.hi = 0;
+		msr.lo = 0x0140;
+		wrmsr(MSR_GLCP + 0x0044, msr);
 
-;set5m watches request ready from mb0 to CPU (snoop)
-	mov	ecx, MSR_GLCP + 0045h
-	mov	edx, 5ad68000h
-	xor	eax, eax
-	WRMSR
+		/* SET5n to watch for processor stalled state */
+		msr.hi = 0x2000;
+		msr.lo = 0;
+		wrmsr(MSR_GLCP + 0x004D, msr);
 
-;SET4M will be high when state is idle (XSTATE=11)
-	mov	ecx, MSR_GLCP + 0044h
-	xor	edx, edx
-	mov	eax, 0140h
-	WRMSR
+		/* Writing action number 13: XSTATE=0 to occur when CPU is 
+		   snooped unless we're stalled */
+		msr.hi = 0;
+		msr.lo = 0x00400000;
+		wrmsr(MSR_GLCP + 0x0075, msr);
 
-;SET5n to watch for processor stalled state
-	mov	ecx, MSR_GLCP + 004Dh
-	mov	edx, 2000h
-	xor	eax, eax
-	WRMSR
+		/* Writing action number 11: inc XSTATE every GeodeLink clock 
+		   unless we're idle */
+		msr.hi = 0;
+		msr.lo = 0x30000;
+		wrmsr(MSR_GLCP + 0x0073, msr);
 
-;Writing action number 13: XSTATE=0 to occur when CPU is snooped unless we're stalled
-	mov	ecx, MSR_GLCP + 0075h
-	xor	edx, edx
-	mov	eax, 00400000h
-	WRMSR
+		/* Writing action number 5: STALL_CPU_PIPE when exitting idle 
+		   state or not in idle state */
+		msr.hi = 0;
+		msr.lo = 0x00430000;
+		wrmsr(MSR_GLCP + 0x006D, msr);
 
-;Writing action number 11: inc XSTATE every GeodeLink clock unless we're idle
-	mov	ecx, MSR_GLCP + 0073h
-	xor	edx, edx
-	mov	eax, 30000h
-	WRMSR
-
-
-;Writing action number 5: STALL_CPU_PIPE when exitting idle state or not in idle state
-	mov	ecx, MSR_GLCP + 006Dh
-	xor	edx, edx
-	mov	eax, 00430000h
-	WRMSR
-
-;Writing DIAGCTL Register to enable the stall action and to let set5m watch the upper GeodeLink diag bits.
-	mov	ecx, MSR_GLCP + 005fh
-	xor	edx, edx
-	mov	eax, 80004000h
-	WRMSR
-
-
-bug2900exit:
-	popad
-	ret
-CPUbugIAENG2900	ENDP
-#endif
+		/* Writing DIAGCTL Register to enable the stall action and to 
+		   let set5m watch the upper GeodeLink diag bits. */
+		msr.hi = 0;
+		msr.lo = 0x80004000;
+		wrmsr(MSR_GLCP + 0x005f, msr);
+	}
 }
 
 void bug118253(void)

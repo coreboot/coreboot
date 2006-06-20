@@ -95,7 +95,7 @@ struct msrinit GeodeLinkPriorityTable [] = {
 	{DF_GLD_MSR_MASTER_CONF,	{.hi=0x00,.lo=0x0000}},	/*  DF Priority.*/
 	{VG_GLD_MSR_CONFIG,		{.hi=0x00,.lo=0x0720}},	/*  VG Primary and Secondary Priority.*/
 	{GP_GLD_MSR_CONFIG,		{.hi=0x00,.lo=0x0010}},	/*  Graphics Priority.*/
-	{GLPCI_GLD_MSR_CONFIG,		{.hi=0x00,.lo=0x0017}},	/*  GLPCI Priority + PID*/
+	{GLPCI_GLD_MSR_CONFIG,		{.hi=0x00,.lo=0x0027}},	/*  GLPCI Priority + PID*/
 	{GLCP_GLD_MSR_CONF,		{.hi=0x00,.lo=0x0001}},	/*  GLCP Priority + PID*/
 	{VIP_GLD_MSR_CONFIG,		{.hi=0x00,.lo=0x0622}},	/*  VIP PID*/
 	{AES_GLD_MSR_CONFIG,		{.hi=0x00,.lo=0x0013}},	/*  AES PID*/

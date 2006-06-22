@@ -63,6 +63,21 @@ enable_ide_nand_flash(){
 	printk_err("cs5536: EXIT %s\n", __FUNCTION__);
 }
 
+/* note: this is a candidate for inclusion in src/devices/pci_device.c */
+void
+setup_irq(unsigned irq, char *name, unsigned level, unsigned bus, unsigned device, unsigned fn){
+	if (irq)  {
+		unsigned devfn = PCI_DEVFN(device,fn);
+		device_t dev  = dev_find_slot(bus, devfn);
+		if (dev) {
+			pci_write_config8(dev, PCI_INTERRUPT_LINE, irq);
+			if (level)
+				pci_level_irq(irq);
+		}
+		else
+			printk_err("%s: Can't find %s at 0x%x\n", __FUNCTION__, name, devfn);
+	}
+}
 
 static void southbridge_enable(struct device *dev)
 {
@@ -109,7 +124,14 @@ static void southbridge_enable(struct device *dev)
 	printk_err("%s: enable_ide_nand_flash is %d\n", __FUNCTION__, sb->enable_ide_nand_flash);
 	if (sb->enable_ide_nand_flash) {
 		enable_ide_nand_flash();
-	}		
+	}
+
+	/* irq handling */
+	setup_irq(sb->audio_irq, "audio", 1, 0, 0xf, 2);
+	setup_irq(sb->usbf4_irq, "usb f4", 1, 0, 0xf, 4);
+	setup_irq(sb->usbf5_irq, "usb f5", 1, 0, 0xf, 5);
+	setup_irq(sb->usbf6_irq, "usb f6", 1, 0, 0xf, 6);
+	setup_irq(sb->usbf7_irq, "usb f7", 1, 0, 0xf, 7);
 	
 }
 

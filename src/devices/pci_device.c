@@ -1161,7 +1161,7 @@ unsigned int pci_scan_bridge(struct device *dev, unsigned int max)
     Tell the EISA int controller this int must be level triggered
     THIS IS A KLUDGE -- sorry, this needs to get cleaned up.
 */
-static void pci_level_irq(unsigned char intNum)
+void pci_level_irq(unsigned char intNum)
 {
 	unsigned short intBits = inb(0x4d0) | (((unsigned) inb(0x4d1)) << 8);
 

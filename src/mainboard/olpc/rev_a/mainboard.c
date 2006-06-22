@@ -9,13 +9,16 @@
 
 
 static void init(struct device *dev) {
+/*
 	unsigned bus = 0;
 	unsigned devfn = PCI_DEVFN(0xf, 4);
 	device_t usb = NULL;
 	unsigned char usbirq = 0xa;
+*/
 
 	printk_debug("OLPC REVA ENTER %s\n", __FUNCTION__);
 
+#if 0
 	/* I can't think of any reason NOT to just set this. If it turns out we want this to be
 	  * conditional we can make it a config variable later.
 	  */
@@ -28,6 +31,7 @@ static void init(struct device *dev) {
 	} else {
 		pci_write_config8(usb, PCI_INTERRUPT_LINE, usbirq);
 	}
+#endif
 	printk_debug("OLPC REVA EXIT %s\n", __FUNCTION__);
 }
 

@@ -67,7 +67,7 @@ sizeram(void)
 /* ram has none of this stuff */
 #define RAM_PROPERTIES (0)
 #define DEVICE_PROPERTIES (WRITE_SERIALIZE|CACHE_DISABLE)
-#define ROM_PROPERTIES (WRITE_SERIALIZE|WRITE_THROUGH)
+#define ROM_PROPERTIES (WRITE_SERIALIZE|WRITE_PROTECT|CACHE_DISABLE)
 #define MSR_WS_CD_DEFAULT (0x21212121)
 
 /* 1810-1817 give you 8 registers with which to program protection regions */

@@ -190,6 +190,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #endif
 	};
 
+	unsigned bsp_apicid = 0;
         int needs_reset;
 
         if (bist == 0) {

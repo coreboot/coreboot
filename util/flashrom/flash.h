@@ -52,6 +52,7 @@ extern struct flashchip flashchips[];
 #define SST_49LF008A	  0x5A	/* SST 49LF008A device */
 
 #define PMC_ID            0x9D	/* PMC Manufacturer ID[B code   */
+#define PMC_49FL002       0x6D	/* PMC 49FL002 device code      */
 #define PMC_49FL004       0x6E	/* PMC 49FL004 device code      */
 
 #define WINBOND_ID        0xDA	/* Winbond Manufacture ID code  */

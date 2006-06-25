@@ -72,6 +72,8 @@ struct flashchip flashchips[] = {
 	 probe_sst_fwhub, erase_sst_fwhub, write_sst_fwhub,NULL},
 	{"SST49LF008A", SST_ID,		SST_49LF008A, 	NULL, 1024, 64 * 1024 ,
 	 probe_sst_fwhub, erase_sst_fwhub, write_sst_fwhub, NULL},
+	{"Pm49FL002",	PMC_ID,		PMC_49FL002,	NULL, 256, 16 * 1024,
+	 probe_jedec,	erase_chip_jedec, write_49fl004,NULL},
 	{"Pm49FL004",	PMC_ID,		PMC_49FL004,	NULL, 512, 64 * 1024,
 	 probe_jedec,	erase_chip_jedec, write_49fl004,NULL},
 	{"W29C011",	WINBOND_ID,	W_29C011,	NULL, 128, 128,

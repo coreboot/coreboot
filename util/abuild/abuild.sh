@@ -298,12 +298,7 @@ function build_target
 			done
 		fi
 
-		xml "  <compiler>"
-		xml "    <path>`which ${CROSS_COMPILE}gcc`</path>"
-		xml "    <version>`${CROSS_COMPILE}gcc --version | head -1`</version>"
-		xml "  </compiler>"
-		xml ""
-		
+	
 		# TBD: look for suitable cross compiler suite
 		# cross-$TARCH-gcc and cross-$TARCH-ld
 		
@@ -311,9 +306,18 @@ function build_target
 		if [ $found_crosscompiler == "false" ]; then
 			echo " ($TARCH: skipped, we're $ARCH)"
 			echo
+			xml "  <status>notbuilt</status>"
+			xml ""
+			xml "</mainboard>"
+		
 			return 0
 		else
 			echo " ($TARCH: ok, we're $ARCH)"
+			xml "  <compiler>"
+			xml "    <path>`which ${CROSS_COMPILE}gcc`</path>"
+			xml "    <version>`${CROSS_COMPILE}gcc --version | head -1`</version>"
+			xml "  </compiler>"
+			xml ""
 		fi
 	fi
 

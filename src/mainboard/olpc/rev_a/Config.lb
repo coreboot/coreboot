@@ -139,7 +139,7 @@ chip northbridge/amd/gx2
 			register "enable_uarta" = "1"
 			register "audio_irq" = "5"
 			register "usbf4_irq" = "10"
-			register "usbf5_irq" = "0"
+			register "usbf5_irq" = "10"
 			register "usbf6_irq" = "0"
 			register "usbf7_irq" = "0"
         		device pci d.0 on end	# Realtek 8139 LAN

@@ -44,18 +44,18 @@ enable_ide_nand_flash(){
 	printk_err("MDD_LBAR_FLSH0 is 0x%08x%08x\n", msr.hi,msr.lo);
 
 	msr = rdmsr(MDD_NANDF_DATA);
-	if (msr.lo != 0x01110111) {
+	if (msr.lo != 0x00100010) {
 		printk_err("MDD_NANDF_DATA was 0x%08x%08x\n", msr.hi,msr.lo);
-		msr.lo = 0x01110111;
+		msr.lo = 0x00100010;
 		wrmsr(MDD_NANDF_DATA, msr);
 	}
 	msr = rdmsr(MDD_NANDF_DATA);
 	printk_err("MDD_NANDF_DATA is 0x%08x%08x\n", msr.hi,msr.lo);
 
 	msr = rdmsr(MDD_NADF_CNTL);
-	if (msr.lo != 0x0111) {
+	if (msr.lo != 0x0010) {
 		printk_err("MDD_NADF_CNTL was 0x%08x%08x\n", msr.hi,msr.lo);
-		msr.lo = 0x0111;
+		msr.lo = 0x0010;
 		wrmsr(MDD_NADF_CNTL, msr);
 	}
 	msr = rdmsr(MDD_NADF_CNTL);

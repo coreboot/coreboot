@@ -94,6 +94,8 @@ struct flashchip flashchips[] = {
 	 probe_82802ab, erase_82802ab,	write_82802ab,	NULL},
 	{"82802ac",	137,		172,		NULL, 1024, 64 * 1024,
 	 probe_82802ab, erase_82802ab,	write_82802ab,	NULL},
+	{"F49B002UA",   EMST_ID,        EMST_F49B002UA, NULL, 256, 4096,
+         probe_jedec,   erase_chip_jedec, write_49f002, NULL},
 #ifndef DISABLE_DOC
 	{"MD-2802 (M-Systems DiskOnChip Millennium Module)",
 	 MSYSTEMS_ID, MSYSTEMS_MD2802,

@@ -66,6 +66,9 @@ extern struct flashchip flashchips[];
 #define ST_M29F040B       0xE2
 #define ST_M29F400BT      0xD5
 
+#define EMST_ID           0x8c /* EMST - Elite Flash Storage Inc. Manufacturer ID code */
+#define EMST_F49B002UA    0x00 /* EMST F49B002UA device code */
+
 #define MSYSTEMS_ID       0x156f
 #define MSYSTEMS_MD2200   0xdb	/* ? */
 #define MSYSTEMS_MD2800   0x30	/* hmm -- both 0x30 */

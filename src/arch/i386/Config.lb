@@ -20,7 +20,7 @@ end
 
 makerule payload
 	depends "$(PAYLOAD)"
-	action  "cp $< $@"
+	action  "cp -f $< $@"
 end
 
 makerule payload.nrv2b

@@ -247,8 +247,6 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
         //It's the time to set ctrl now;
         fill_mem_ctrl(nodes, ctrl, spd_addr);
 
-	i_am_a_bad_boy();
-	
 	enable_smbus();
 
 	memreset_setup();

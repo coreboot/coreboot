@@ -76,18 +76,6 @@ enumerations
 7     9     Fallback_HDD
 7     10    Fallback_Floppy
 #7     3     ROM
-#8     0     200Mhz
-#8     1     166Mhz
-#8     2     133Mhz
-#8     3     100Mhz
-#9     0     off
-#9     1     87.5%
-#9     2     75.0%
-#9     3     62.5%
-#9     4     50.0%
-#9     5     37.5%
-#9     6     25.0%
-#9     7     12.5%
 
 checksums
 

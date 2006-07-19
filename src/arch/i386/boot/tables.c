@@ -69,6 +69,7 @@ struct lb_memory *write_tables(void)
 	/* The smp table must be in 0-1K, 639K-640K, or 960K-1M */
 	new_low_table_end = write_smp_table(low_table_end);
 
+#if HAVE_MP_TABLE==1
         /* Don't write anything in the traditional x86 BIOS data segment,
          * for example the linux kernel smp need to use 0x467 to pass reset vector
          */
@@ -93,6 +94,7 @@ struct lb_memory *write_tables(void)
                         low_table_end = 0x500 + mptable_size;
                 }
         }
+#endif 
 
 	/* Don't write anything in the traditional x86 BIOS data segment */
 	if (low_table_end < 0x500) {

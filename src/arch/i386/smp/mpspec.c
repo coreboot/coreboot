@@ -48,6 +48,30 @@ void *smp_write_floating_table(unsigned long addr)
 	return v;
 }
 
+void *smp_write_floating_table_physaddr(unsigned long addr, unsigned long mpf_physptr)
+{
+        struct intel_mp_floating *mf;
+        void *v;
+
+        v = (void *)addr;
+        mf = v;
+        mf->mpf_signature[0] = '_';
+        mf->mpf_signature[1] = 'M';
+        mf->mpf_signature[2] = 'P';
+        mf->mpf_signature[3] = '_';
+        mf->mpf_physptr = mpf_physptr;
+        mf->mpf_length = 1;
+        mf->mpf_specification = 4;
+        mf->mpf_checksum = 0;
+        mf->mpf_feature1 = 0;
+        mf->mpf_feature2 = 0;
+        mf->mpf_feature3 = 0;
+        mf->mpf_feature4 = 0;
+        mf->mpf_feature5 = 0;
+        mf->mpf_checksum = smp_compute_checksum(mf, mf->mpf_length*16);
+        return v;
+}
+
 void *smp_next_mpc_entry(struct mp_config_table *mc)
 {
 	void *v;

@@ -21,7 +21,7 @@ write_tables(void)
 	/* The linuxbios table must be in 0-4K or 960K-1M */
 	write_linuxbios_table(
 		low_table_start, low_table_end,
-		rom_table_start >> 10, rom_table_end >> 10);
+		rom_table_start, rom_table_end);
 
 	return get_lb_mem();
 }

@@ -332,7 +332,7 @@ static struct lb_memory *build_lb_mem(struct lb_header *head)
 
 unsigned long write_linuxbios_table( 
 	unsigned long low_table_start, unsigned long low_table_end,
-	unsigned long rom_table_startk, unsigned long rom_table_endk)
+	unsigned long rom_table_start, unsigned long rom_table_end)
 {
 	unsigned long table_size;
 	struct lb_header *head;
@@ -359,7 +359,7 @@ unsigned long write_linuxbios_table(
 
 	/* Record the pirq table */
 	lb_add_memory_range(mem, LB_MEM_TABLE, 
-		rom_table_startk << 10, (rom_table_endk - rom_table_startk) << 10);
+		rom_table_start, (rom_table_end - rom_table_start));
 
 	/* Note:
 	 * I assume that there is always memory at immediately after

@@ -349,15 +349,22 @@ static struct lb_memory *build_lb_mem(struct lb_header *head)
 }
 
 unsigned long write_linuxbios_table( 
-	unsigned long low_table_start, unsigned long low_table_end,
-	unsigned long rom_table_startk, unsigned long rom_table_endk)
+	unsigned long low_table_start, unsigned long low_table_end, 
+	unsigned long rom_table_start, unsigned long rom_table_end)
 {
 	unsigned long table_size;
 	struct lb_header *head;
 	struct lb_memory *mem;
 
-	head = lb_table_init(low_table_end);
-	low_table_end = (unsigned long)head;
+	if(low_table_end > (0x1000 - sizeof(struct lb_header))) { /* after 4K */
+		/* We need to put lbtable on  to [0xf0000,0x100000) */
+		head = lb_table_init(rom_table_end);
+		rom_table_end = (unsigned long)head;
+	} else {
+		head = lb_table_init(low_table_end);
+		low_table_end = (unsigned long)head;
+	}
+
 	if (HAVE_OPTION_TABLE == 1) {
 		struct lb_record *rec_dest, *rec_src;
 		/* Write the option config table... */
@@ -370,16 +377,13 @@ unsigned long write_linuxbios_table(
 	/* Record where RAM is located */
 	mem = build_lb_mem(head);
 	
-	/* Find the current mptable size */
-	table_size = (low_table_end - low_table_start);
-
 	/* Record the mptable and the the lb_table (This will be adjusted later) */
 	lb_add_memory_range(mem, LB_MEM_TABLE, 
-		low_table_start, table_size);
+		low_table_start, low_table_end - low_table_start);
 
-	/* Record the pirq table */
+	/* Record the pirq table, acpi tables, and maybe the mptable */
 	lb_add_memory_range(mem, LB_MEM_TABLE, 
-		rom_table_startk << 10, (rom_table_endk - rom_table_startk) << 10);
+		rom_table_start, rom_table_end - rom_table_start);
 
 	/* Note:
 	 * I assume that there is always memory at immediately after
@@ -393,8 +397,7 @@ unsigned long write_linuxbios_table(
 	/* Record our various random string information */
 	lb_strings(head);
 
-	low_table_end = lb_table_fini(head);
-
 	/* Remember where my valid memory ranges are */
-	return low_table_end;
+	return lb_table_fini(head);
+	
 }

@@ -125,6 +125,7 @@ config chip.h
 
 chip northbridge/amd/gx2
 	register "irqmap" = "0xaa5b"
+	register "setupflash" = "0"
 	device apic_cluster 0 on
 		chip cpu/amd/model_gx2
 			device apic 0 on end
@@ -147,7 +148,10 @@ chip northbridge/amd/gx2
         		device pci f.2 on end	# IDE Controller
         		device pci f.3 on end 	# Audio
         		device pci f.4 on end	# OHCI
-			device pci f.5 on end	# UHCI
+			device pci f.5 on end	# EHCI
+			register "unwanted_vpci[0]" = "0x80007E00"	# USB/UDC
+			register "unwanted_vpci[1]" = "0x80007F00"	# USB/OTG
+			register "unwanted_vpci[2]" = "0"	# End of list has a zero
       		end
     	end
 end

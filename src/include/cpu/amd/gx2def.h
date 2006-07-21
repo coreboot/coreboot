@@ -1097,4 +1097,34 @@
 #define PM_AWKD		 (	PMLogic_BASE + 0x50)
 #define PM_SSC		 (	PMLogic_BASE + 0x54)
 
+
+/* FLASH device macros */
+#define FLASH_TYPE_NONE	0	/* No flash device installed */
+#define FLASH_TYPE_NAND 1	/* NAND device */
+#define FLASH_TYPE_NOR	2	/* NOR device */
+
+#define FLASH_IF_MEM	1	/* Memory or memory-mapped I/O interface for Flash device */
+#define FLASH_IF_IO	2	/* I/O interface for Flash device */
+
+/* Flash Memory Mask values */
+#define FLASH_MEM_DEFAULT	0x00000000
+#define FLASH_MEM_4K		0xFFFFF000
+#define FLASH_MEM_8K		0xFFFFE000
+#define FLASH_MEM_16K		0xFFFFC000
+#define FLASH_MEM_128K		0xFFFE0000
+#define FLASH_MEM_512K		0xFFFC0000
+#define FLASH_MEM_4M		0xFFC00000
+#define FLASH_MEM_8M		0xFF800000
+#define FLASH_MEM_16M		0xFF000000
+
+/* Flash IO Mask values */
+#define FLASH_IO_DEFAULT	0x00000000
+#define FLASH_IO_16B		0x0000FFF0
+#define FLASH_IO_32B		0x0000FFE0
+#define FLASH_IO_64B		0x0000FFC0
+#define FLASH_IO_128B		0x0000FF80
+#define FLASH_IO_256B		0x0000FF00
+
+
+
 #endif /* CPU_AMD_GX2DEF_H */

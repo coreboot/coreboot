@@ -12,7 +12,7 @@
 #include <cpu/amd/gx2def.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/cache.h>
-
+#include <cpu/amd/vr.h>
 #define VIDEO_MB 8
 
 extern void graphics_init(void);
@@ -120,6 +120,28 @@ struct msr_defaults {
 	{0}
 };
 
+/* note that dev is NOT used -- yet */
+static void irq_init_steering(struct device *dev, uint16_t irq_map) {
+	/* Set up IRQ steering */
+	uint32_t pciAddr = 0x80000000 | (CHIPSET_DEV_NUM << 11) | 0x5C;
+
+	printk_debug("%s(%08X [%08X], %04X)\n", __FUNCTION__, dev, pciAddr, irq_map);
+
+	/* The IRQ steering values (in hex) are effectively dcba, where:
+	 *    <a> represents the IRQ for INTA, 
+	 *    <b> represents the IRQ for INTB,
+	 *    <c> represents the IRQ for INTC, and
+	 *    <d> represents the IRQ for INTD.
+	 * Thus, a value of irq_map = 0xAA5B translates to:
+	 *    INTA = IRQB (IRQ 11)
+	 *    INTB = IRQ5 (IRQ 5)
+	 *    INTC = IRQA (IRQ 10)
+	 *    INTD = IRQA (IRQ 10)
+	 */
+	outl(pciAddr & ~3, 0xCF8);
+	outl(irq_map,      0xCFC);
+}
+
 
 /*
  * setup_gx2_cache
@@ -198,11 +220,12 @@ setup_gx2(void)
 	msr.lo = 0x100 | ( ((membytes >>12) & 0xfff) << 20);
 	wrmsr(0x40000029, msr);
 #endif
+#if 0
 	msr = rdmsr(0x10000028);
 	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x10000028, msr.hi,msr.lo);
 	msr = rdmsr(0x40000029);
 	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x40000029, msr.hi,msr.lo);
-
+#endif
 #if 1
 	/* fixme: SMM MSR 0x10000026 and 0x400000023 */
 	/* calculate the OFFSET field */
@@ -253,9 +276,11 @@ static void enable_shadow(device_t dev)
 
 static void northbridge_init(device_t dev) 
 {
+	struct northbridge_amd_gx2_config *nb = (struct northbridge_amd_gx2_config *)dev->chip_info;
 	printk_debug("northbridge: %s()\n", __FUNCTION__);
 	
 	enable_shadow(dev);
+	irq_init_steering(dev, nb->irqmap);
 }
 
 static struct device_operations northbridge_operations = {
@@ -318,6 +343,7 @@ static void tolm_test(void *gp, struct device *dev, struct resource *new)
 	*best_p = best;
 }
 
+#if 0
 static uint32_t find_pci_tolm(struct bus *bus)
 {
 	struct resource *min;
@@ -330,7 +356,7 @@ static uint32_t find_pci_tolm(struct bus *bus)
 	}
 	return tolm;
 }
-
+#endif
 #define FRAMEBUFFERK 4096
 
 static void pci_domain_set_resources(device_t dev)
@@ -380,8 +406,8 @@ static void pci_domain_set_resources(device_t dev)
 		idx = 10;
 		ram_resource(dev, idx++, 0, tolmk);
 	}
-	assign_resources(&dev->link[0]);
 #endif
+	assign_resources(&dev->link[0]);
 }
 
 static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
@@ -417,33 +443,13 @@ static struct device_operations cpu_bus_ops = {
 
 void chipsetInit (void);
 
-/* note that dev is NOT used -- yet */
-static void irq_init(struct device *dev, uint16_t irq_map) {
-
-	/* Set up IRQ steering */
-	uint32_t pciAddr = 0x80000000 | (CHIPSET_DEV_NUM << 11) | 0x5C;
-
-	printk_debug("OLPC REVA ENTER %s\n", __FUNCTION__);
-
-	/* The IRQ steering values (in hex) are effectively dcba, where:
-	 *    <a> represents the IRQ for INTA, 
-	 *    <b> represents the IRQ for INTB,
-	 *    <c> represents the IRQ for INTC, and
-	 *    <d> represents the IRQ for INTD.
-	 * Thus, a value of irq_map = 0xAA5B translates to:
-	 *    INTA = IRQB (IRQ 11)
-	 *    INTB = IRQ5 (IRQ 5)
-	 *    INTC = IRQA (IRQ 10)
-	 *    INTD = IRQA (IRQ 10)
-	 */
-	outl(pciAddr & ~3, 0xCF8);
-	outl(irq_map,      0xCFC);
-}
-
-
 static void enable_dev(struct device *dev)
 {
 	printk_debug("gx2 north: enable_dev\n");
+	void northbridgeinit(void);
+	void chipsetinit(struct northbridge_amd_gx2_config *nb);
+	void setup_realmode_idt(void);
+	void do_vsmbios(void);
         /* Set the operations if it is a special bus type */
         if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
 		struct northbridge_amd_gx2_config *nb = (struct northbridge_amd_gx2_config *)dev->chip_info;
@@ -452,12 +458,11 @@ static void enable_dev(struct device *dev)
 		/* cpubug MUST be called before setup_gx2(), so we force the issue here */
 		northbridgeinit();
 		cpubug();	
-		chipsetinit();
+		chipsetinit(nb);
 		setup_gx2();
 		/* do this here for now -- this chip really breaks our device model */
 		setup_realmode_idt();
 		do_vsmbios();
-		irq_init(dev, nb->irqmap);
 		graphics_init();
 		dev->ops = &pci_domain_ops;
 		pci_set_method(dev);

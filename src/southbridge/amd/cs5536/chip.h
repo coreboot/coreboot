@@ -1,6 +1,8 @@
 #ifndef _SOUTHBRIDGE_AMD_CS5536
 #define _SOUTHBRIDGE_AMD_CS5536
 
+#define MAX_UNWANTED_VPCI 10	/* increase if needed */
+
 extern struct chip_operations southbridge_amd_cs5536_ops;
 
 struct southbridge_amd_cs5536_config {
@@ -18,6 +20,8 @@ struct southbridge_amd_cs5536_config {
 	int usbf5_irq;		/* f.5 */
 	int usbf6_irq;		/* f.6 */
 	int usbf7_irq; 		/* f.7 */
+	/* the following allow you to disable unwanted virtualized PCI devices */
+	unsigned long unwanted_vpci[MAX_UNWANTED_VPCI];
 };
 
 #endif	/* _SOUTHBRIDGE_AMD_CS5536 */

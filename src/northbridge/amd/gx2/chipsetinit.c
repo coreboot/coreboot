@@ -163,7 +163,90 @@ pmChipsetInit(void) {
 
 }
 
+struct FLASH_DEVICE {
+	unsigned char fType;		/* Flash type: NOR or NAND */
+	unsigned char fInterface;	/* Flash interface: I/O or Memory */
+	unsigned long fMask;		/* Flash size/mask */
+};
 
+struct FLASH_DEVICE FlashInitTable[] = {
+	{ FLASH_TYPE_NAND, FLASH_IF_MEM, FLASH_MEM_4K },	/* CS0, or Flash Device 0 */
+	{ FLASH_TYPE_NONE, 0, 0 },	/* CS1, or Flash Device 1 */
+	{ FLASH_TYPE_NONE, 0, 0 },	/* CS2, or Flash Device 2 */
+	{ FLASH_TYPE_NONE, 0, 0 },	/* CS3, or Flash Device 3 */
+};
+
+#define FlashInitTableLen (sizeof(FlashInitTable)/sizeof(FlashInitTable[0]))
+
+uint32_t FlashPort[] = {
+	MDD_LBAR_FLSH0,
+	MDD_LBAR_FLSH1,
+	MDD_LBAR_FLSH2,
+	MDD_LBAR_FLSH3
+	};
+
+/***************************************************************************
+ *
+ *	ChipsetFlashSetup
+ *
+ *	Flash LBARs need to be setup before VSA init so the PCI BARs have
+ *	correct size info.  Call this routine only if flash needs to be 
+ *	configured (don't call it if you want IDE).
+ *
+ *	Entry:
+ *	Exit:
+ *	Destroys:
+ *
+ **************************************************************************/
+static void ChipsetFlashSetup(void)
+{
+	msr_t msr;
+	int i;
+	int numEnabled = 0;
+
+	printk_debug("ChipsetFlashSetup++\n");
+	for (i = 0; i < FlashInitTableLen; i++) {
+		if (FlashInitTable[i].fType != FLASH_TYPE_NONE) {
+			printk_debug("Enable CS%d\n", i);
+			/* we need to configure the memory/IO mask */
+			msr = rdmsr(FlashPort[i]);
+			msr.hi = 0;	/* start with the "enabled" bit clear */
+			if (FlashInitTable[i].fType == FLASH_TYPE_NAND)
+				msr.hi |= 0x00000002;
+			else
+				msr.hi &= ~0x00000002;
+			if (FlashInitTable[i].fInterface == FLASH_IF_MEM)
+				msr.hi |= 0x00000004;
+			else
+				msr.hi &= ~0x00000004;
+			msr.hi |= FlashInitTable[i].fMask;
+			printk_debug("WRMSR(0x%08X, %08X_%08X)\n", FlashPort[i], msr.hi, msr.lo);
+			wrmsr(FlashPort[i], msr);
+
+			/* now write-enable the device */
+			msr = rdmsr(MDD_NORF_CNTRL);
+			msr.lo |= (1 << i);
+			printk_debug("WRMSR(0x%08X, %08X_%08X)\n", MDD_NORF_CNTRL, msr.hi, msr.lo);
+			wrmsr(MDD_NORF_CNTRL, msr);
+
+			/* update the number enabled */
+			numEnabled++;
+		}
+	}
+
+	/* enable the flash */
+	if (0 != numEnabled) {
+		msr = rdmsr(MDD_PIN_OPT);
+		msr.lo &= ~1; /* PIN_OPT_IDE */
+		printk_debug("WRMSR(0x%08X, %08X_%08X)\n", MDD_PIN_OPT, msr.hi, msr.lo);
+		wrmsr(MDD_PIN_OPT, msr);
+	}
+	printk_debug("ChipsetFlashSetup--\n");
+
+}
+
+
+ 
 /* ***************************************************************************/
 /* **/
 /* *	ChipsetGeodeLinkInit*/
@@ -202,7 +285,7 @@ ChipsetGeodeLinkInit(void){
 }
 
 void
-chipsetinit (void){
+chipsetinit (struct northbridge_amd_gx2_config *nb){
 	msr_t msr;
 	struct msrinit *csi;
 	int i;
@@ -275,8 +358,9 @@ chipsetinit (void){
 
 
 	/*  Flash Setup*/
-	printk_err("NOT DOING ChipsetFlashSetup()!!!!!!!!!!!!!!!!!!\n");
-//	ChipsetFlashSetup();
+	printk_err("%sDOING ChipsetFlashSetup()!!!!!!!!!!!!!!!!!!\n", nb->setupflash? "NOT " : "");
+	if (nb->setupflash)
+		ChipsetFlashSetup();
 
 
 

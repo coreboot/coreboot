@@ -1,26 +1,32 @@
 #include <arch/io.h>
 #include <stdint.h>
-
+#include <cpu/amd/vr.h>
+ 
 #define VIDEO_MB	8					// MB of video memory
-
-#define VRC_INDEX				0xAC1C	// Index register
-#define VRC_DATA				0xAC1E	// Data register
-#define VR_UNLOCK				0xFC53	// Virtual register unlock code
-#define	VRC_VG					0x02	// SoftVG Class
-#define	VG_MEM_SIZE				0x00	// bits 7:0 - 512K unit size, bit 8 controller priority
-
 
 /*
  * Write to a Virtual Register
  * AX = Class/Index
  * CX = data to write
  */
-static void vrWrite(uint16_t wClassIndex, uint16_t wData)
+void vrWrite(uint16_t wClassIndex, uint16_t wData)
 {
 	outl(((uint32_t) VR_UNLOCK << 16) | wClassIndex, VRC_INDEX);
 	outw(wData, VRC_DATA);
 }
 
+ /*
+ * Read from a Virtual Register
+ * AX = Class/Index
+ * Returns a 16-bit word of data
+ */
+uint16_t vrRead(uint16_t wClassIndex)
+{
+	uint16_t wData;
+	outl(((uint32_t) VR_UNLOCK << 16) | wClassIndex, VRC_INDEX);
+	wData = inw(VRC_DATA);
+	return wData;
+}
 
 /*
  * This function mirrors the Graphics_Init routine in GeodeROM.

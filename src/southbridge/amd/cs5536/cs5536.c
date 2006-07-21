@@ -14,13 +14,15 @@
 
 /* Intended value for LBAR_FLSH0: 4KiB, enabled, MMIO, NAND, @0x20000000 */
 /* NOTE: no longer used, prune at some point */
+/* OOPS: steve's changes don't work, so we have to keep this */
 msr_t flsh0 = { .hi=0xFFFFF007, .lo=0x20000000};
 
 static void
 enable_ide_nand_flash(){
 	msr_t msr;
 	printk_err("cs5536: %s\n", __FUNCTION__);
-#if 0
+#if 1
+	printk_err("WARNING: using deprecated flash enable mechanism\n");
 	/* steve took this one out ... not sure if needed or not */
 	msr = rdmsr(MDD_LBAR_FLSH0);
 

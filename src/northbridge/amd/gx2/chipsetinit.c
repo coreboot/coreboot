@@ -358,7 +358,7 @@ chipsetinit (struct northbridge_amd_gx2_config *nb){
 
 
 	/*  Flash Setup*/
-	printk_err("%sDOING ChipsetFlashSetup()!!!!!!!!!!!!!!!!!!\n", nb->setupflash? "NOT " : "");
+	printk_err("%sDOING ChipsetFlashSetup()!!!!!!!!!!!!!!!!!!\n", nb->setupflash? " " : "NOT");
 	if (nb->setupflash)
 		ChipsetFlashSetup();
 

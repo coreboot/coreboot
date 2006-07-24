@@ -1,0 +1,3 @@
+config chip.h
+object socket_PGA370.o
+dir /cpu/intel/model_6xx

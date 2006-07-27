@@ -190,7 +190,12 @@ static int cs5536_setup_onchipuart(void)
 	 *    MSR 0x51400021 bit [27:24]
 	 */
 	msr_t msr;
-	msr.lo = 2;
+ 
+        /*  Bit 1 = DEVEN (device enable)
+         *  Bit 4 = EN_BANKS (allow access to the upper banks)
+         */
+ 
+        msr.lo = (1 << 4) | (1 << 1);
 	msr.hi = 0;
 	/*  This enables COM2, but that should be done elsewhere
 	wrmsr(0x5140003e, msr);

@@ -90,8 +90,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 
 #include "northbridge/intel/i440bx/raminit.c"
+#include "northbridge/intel/i440bx/debug.c"
 #include "sdram/generic_sdram.c"
-//#include "sdram/generic_dump_spd.c"
 
 static void main(unsigned long bist)
 {
@@ -117,7 +117,7 @@ static void main(unsigned long bist)
 	report_bist_failure(bist);
 	
 	enable_smbus();
-//	dump_spd_registers(&cpu[0]);
+	dump_spd_registers(&cpu[0]);
 
 #if 0
 	enable_shadow_ram();

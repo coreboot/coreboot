@@ -83,7 +83,7 @@ static void enable_shadow_ram(void)
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
-	unsigned char c;
+	int c;
 	c = smbus_read_byte(device, address);
 	return c;
 }
@@ -100,11 +100,13 @@ static void main(unsigned long bist)
 		 .channel0 = {
 			 (0xa << 3) | 0,
 			 (0xa << 3) | 1,
-			 (0xa << 3) | 2, (0xa << 3) | 3,
+			 (0xa << 3) | 2, 
+			 (0xa << 3) | 3,
 		 	},
 		 }
 	};
 	unsigned long x;
+	int result;
 	
 	if (bist == 0) {
 		early_mtrr_init();
@@ -117,6 +119,12 @@ static void main(unsigned long bist)
 	report_bist_failure(bist);
 	
 	enable_smbus();
+/*
+	result = spd_read_byte(cpu[0].channel0[0],0x03);
+	print_debug("Result: ");
+	print_debug_hex16(result);
+	print_debug("\r\n");
+*/
 	dump_spd_registers(&cpu[0]);
 
 #if 0

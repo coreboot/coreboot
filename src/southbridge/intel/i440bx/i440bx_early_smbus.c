@@ -11,7 +11,7 @@ static void enable_smbus(void)
 	}
 	uint8_t enable;
 	print_spew("SMBus controller enabled\r\n");
-	pci_write_config32(dev, 0x90, SMBUS_IO_BASE );
+	pci_write_config32(dev, 0x90, SMBUS_IO_BASE | 1 );
 	// Enable and set SMBBus 
 	// 0x01 Interrupt to SMI# 
 	// (0x4<<1)|1 set interrupt to IRQ9
@@ -21,7 +21,24 @@ static void enable_smbus(void)
 	pci_write_config16(dev, 0x04, 1);
 	
 	/* clear any lingering errors, so the transaction will run */
-	outb(0x1e, SMBUS_IO_BASE + SMBGSTATUS);
+	outb(0x1e, SMBUS_IO_BASE + SMBHST_STATUS);
+}
+
+
+
+static int smbus_read_byte(unsigned device, unsigned address)
+{
+	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
+}
+
+
+// The following functions are broken.  Do no use until you
+// have fixed the low level code to do the right thing.
+//
+#if 0
+static int smbus_write_byte(unsigned device, unsigned address, unsigned char val)
+{
+	return do_smbus_write_byte(SMBUS_IO_BASE, device, address, val);
 }
 
 static int smbus_recv_byte(unsigned device)
@@ -33,13 +50,4 @@ static int smbus_send_byte(unsigned device, unsigned char val)
 {
 	return do_smbus_send_byte(SMBUS_IO_BASE, device, val);
 }
-
-static int smbus_read_byte(unsigned device, unsigned address)
-{
-	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
-}
-
-static int smbus_write_byte(unsigned device, unsigned address, unsigned char val)
-{
-	return do_smbus_write_byte(SMBUS_IO_BASE, device, address, val);
-}
+#endif

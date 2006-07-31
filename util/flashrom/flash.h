@@ -38,11 +38,13 @@ extern struct flashchip flashchips[];
 #define SHARP_ID            0xB0
 #define SHARP_LHF00L04      0xCF
 
-#define SST_ID            0xBF	/* SST Manufacturer ID code   */
-#define SST_29EE020A      0x10	/* SST 29EE020 device code      */
-#define SST_28SF040       0x04	/* SST 29EE040 device code    */
-#define SST_39SF020       0xB6	/* SST 39SF020  device        */
-#define SST_39VF020       0xD6	/* SST 39VF020  device        */
+#define SST_ID            0xBF	/* SST Manufacturer ID code */
+#define SST_29EE020A      0x10	/* SST 29EE020 device */
+#define SST_28SF040       0x04	/* SST 29EE040 device */
+#define SST_39SF010       0xB5	/* SST 39SF010A device */
+#define SST_39SF020       0xB6	/* SST 39SF020A device */
+#define SST_39SF040       0xB7	/* SST 39SF040 device */
+#define SST_39VF020       0xD6	/* SST 39VF020 device */
 #define SST_49LF040B	  0x50	/* SST 49LF040B device */
 #define SST_49LF040	  0x51	/* SST 49LF040 device */
 #define SST_49LF080A	  0x5B	/* SST 48LF080A device */
@@ -51,7 +53,7 @@ extern struct flashchip flashchips[];
 #define SST_49LF004A	  0x60	/* SST 49LF004A device */
 #define SST_49LF008A	  0x5A	/* SST 49LF008A device */
 
-#define PMC_ID            0x9D	/* PMC Manufacturer ID[B code   */
+#define PMC_ID            0x9D	/* PMC Manufacturer ID code   */
 #define PMC_49FL002       0x6D	/* PMC 49FL002 device code      */
 #define PMC_49FL004       0x6E	/* PMC 49FL004 device code      */
 
@@ -59,6 +61,7 @@ extern struct flashchip flashchips[];
 #define W_29C011          0xC1	/* Winbond w29c011 device code */
 #define W_29C020C         0x45	/* Winbond w29c020c device code */
 #define W_39V040A         0x3D	/* Winbond w39v040a device code */
+#define W_39V040B         0x54	/* Winbond w39v040b device code */
 #define W_49F002U         0x0B	/* Winbond w49F002u device code */
 #define W_49V002A         0xB0  /* Winbond W49V002A device code */
 #define W_49V002FA        0x32  /* Winbond W49V002FA device code */

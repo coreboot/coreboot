@@ -398,6 +398,7 @@ static FLASH_ENABLE enables[] = {
         {0x10de, 0x0050, "NVIDIA CK804", enable_flash_ck804}, // LPC
         {0x10de, 0x0051, "NVIDIA CK804", enable_flash_ck804}, // Pro
         {0x10de, 0x00d3, "NVIDIA CK804", enable_flash_ck804}, // Slave, should not be here, to fix known bug for A01.
+	{0x10de, 0x0261, "NVIDIA C51",   enable_flash_ck804},
 	{0x1002, 0x4377, "ATI SB400", enable_flash_sb400}, // ATI Technologies Inc IXP SB400 PCI-ISA Bridge (rev 80)
 };
 

@@ -236,10 +236,16 @@
 #define		RCONF_DEFAULT_LOWER_SYSTOP_SHIFT			8
 #define		RCONF_DEFAULT_LOWER_SYSRC_SHIFT				0
 
+/*  ----- GX3 OK  ----  */
+
 #define	CPU_RCONF_BYPASS						0x180A
 #define	CPU_RCONF_A0_BF							0x180B
 #define	CPU_RCONF_C0_DF							0x180C
 #define	CPU_RCONF_E0_FF							0x180D
+
+/* ------------------------ */
+
+/*  ----- GX3 OK  ----  */
 
 #define	CPU_RCONF_SMM							0x180E
 #define		RCONF_SMM_UPPER_SMMTOP_SHIFT			12
@@ -247,6 +253,9 @@
 #define		RCONF_SMM_LOWER_SMMBASE_SHIFT			12
 #define		RCONF_SMM_LOWER_RCNORM_SHIFT			0
 #define		RCONF_SMM_LOWER_EN_SET					(1<<8)
+
+/* ------------------------ */
+
 
 #define	CPU_RCONF_DMM							0x180F
 #define		RCONF_DMM_UPPER_DMMTOP_SHIFT			12
@@ -298,6 +307,15 @@
 #define	CPU_BC_CONF_0						0x1900
 #define		TSC_SUSP_SET				 (1<<5)
 #define		SUSP_EN_SET				 (1<<12)
+	
+/* L2 cache*/
+
+#define	L2_CONFIG_MSR						0x1920
+#define	L2_STATUS_MSR						0x1921
+#define	L2_BIST_MSR						0x1926
+
+
+
 	
 	/**/
 	/*	VG GLIU0 port4*/
@@ -481,8 +499,8 @@
 
 #define MSR_GLIU1_BASE1			(MSR_GLIU1 + 0x20)		/*  BM*/
 #define MSR_GLIU1_BASE2			(MSR_GLIU1 + 0x21)		/*  BM*/
-#define MSR_GLIU1_SHADOW			(MSR_GLIU1 + 0x2D)		/*  SCO should only be SC*/
-#define MSR_GLIU1_SYSMEM			(MSR_GLIU1 + 0x29)		/*  RO should only be R*/
+#define MSR_GLIU1_SHADOW			(MSR_GLIU1 + 0x2E)		/*  SCO should only be SC*/ // GX3 0x2D -> 0x2E
+#define MSR_GLIU1_SYSMEM			(MSR_GLIU1 + 0x2A)		/*  RO should only be R*/  // GX3 0x29 -> 0x2A
 #define MSR_GLIU1_SMM			(MSR_GLIU1 + 0x23)		/*  BM*/
 #define MSR_GLIU1_DMM			(MSR_GLIU1 + 0x24)		/*  BM*/
 #define MSR_GLIU1_FPU_TRAP		(MSR_GLIU1 + 0x0E3)	/*  FooGlue F0 for FPU*/

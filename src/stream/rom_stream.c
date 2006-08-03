@@ -4,7 +4,7 @@
 #include <stream/read_bytes.h>
 #include <string.h>
 
-#if CONFIG_COMPRESSED_ROM_STREAM
+#if CONFIG_COMPRESSED_ROM_STREAM || CONFIG_PRECOMPRESSED_ROM_STREAM
 // include generic nrv2b
 #include "../lib/nrv2b.c"
 extern unsigned char _heap, _eheap;
@@ -31,7 +31,7 @@ static const unsigned char *rom;
 
 int stream_init(void)
 {
-#if CONFIG_COMPRESSED_ROM_STREAM
+#if CONFIG_COMPRESSED_ROM_STREAM || CONFIG_PRECOMPRESSED_ROM_STREAM
         unsigned char *dest;
         unsigned long olen;
 #endif
@@ -40,7 +40,7 @@ int stream_init(void)
 		(unsigned long)rom_start,
 		(unsigned long)rom_end);
 
-#if CONFIG_COMPRESSED_ROM_STREAM
+#if CONFIG_COMPRESSED_ROM_STREAM || CONFIG_PRECOMPRESSED_ROM_STREAM
 
         dest = &_eheap; /* need a good address on RAM */
 

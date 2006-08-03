@@ -1,10 +1,11 @@
+.\" Copyright (C) 2006 Uwe Hermann <uwe@hermann-uwe.de>.
+.\" This manpage is licensed under the terms of the GNU GPL.
 .TH FLASHROM 1 "July 26, 2006"
 .SH NAME
 flashrom \- the universal LinuxBIOS flash utility
 .SH SYNOPSIS
-.B flashrom \fR[\fB\-rwvEVflih\fR] [\fB\-c\fR chipname]
-         [\fB\-s\fR exclude_start] [\fB\-e\fR exclude_end]
-         [\fB-m\fR vendor:part] [file]
+.B flashrom \fR[\fB\-rwvEVfh\fR] [\fB\-c\fR chipname] [\fB\-s\fR exclude_start] [\fB\-e\fR exclude_end]
+         [\fB-m\fR vendor:part] [\fB-l\fR file.layout] [\fB-i\fR image_name] [file]
 .SH DESCRIPTION
 .B flashrom
 is the universal LinuxBIOS flash utility.
@@ -31,10 +32,10 @@ More verbose output.
 Probe only for specified flash chip.
 .PP
 .B "\-s, \-\-estart" <addr>
-Exclude start position.
+Exclude start position. (obsolete)
 .PP
-.B "\-e, \-\-eend" <addr>
-Exclude end postion.
+.B "\-e, \-\-eend" <addr> 
+Exclude end postion. (obsolete)
 .PP
 .B "\-m, \-\-mainboard" <vendor:part>
 Override mainboard settings.
@@ -42,7 +43,7 @@ Override mainboard settings.
 .B "\-f, \-\-force"
 Force write without checking image.
 .PP
-.B "\-l, \-\-layout"
+.B "\-l, \-\-layout" <layout.file>
 Read ROM layout from file.
 .PP
 .B "\-i, \-\-image" <name>
@@ -54,7 +55,7 @@ Show a help text and exit.
 .\".B "\-\-version"
 .\"Show version information and exit.
 .SH BUGS
-Please report any bugs at http://bugzilla.openbios.org/
+Please report any bugs at http://bugzilla.openbios.org/.
 .SH LICENCE
 .B flashrom
 is covered by the GNU General Public License (GPL).
@@ -63,17 +64,19 @@ is covered by the GNU General Public License (GPL).
 .SH COPYRIGHT
 2000 Silicon Integrated System Corporation
 .br
+2003 Niki W. Waibel
+.br
 2004 Tyan Corp
 .br
 2005-2006 coresystems GmbH
-.br
-2003 Niki W. Waibel
 .SH AUTHORS
-Yhlu <yinghai.lu@amd.com>
+Yinghai Lu <yinghai.lu@amd.com>
 .br
 Stefan Reinauer <stepan@coresystems.de>
 .br
 Niki W. Waibel <niki.waibel@gmx.net>
+.br
+some others 
 .PP
 This manual page was written by Uwe Hermann <uwe@hermann-uwe.de>,
 for the Debian GNU/Linux system (but may be used by others).

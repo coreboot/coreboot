@@ -51,7 +51,7 @@ struct flashchip *probe_flash(struct flashchip *flash)
 	unsigned long size;
 
 	if ((fd_mem = open("/dev/mem", O_RDWR)) < 0) {
-		perror("Can not open /dev/mem");
+		perror("Error: Can not open /dev/mem. You need to be root.");
 		exit(1);
 	}
 
@@ -73,7 +73,7 @@ struct flashchip *probe_flash(struct flashchip *flash)
 		bios = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
 			    fd_mem, (off_t) (0xffffffff - size + 1));
 		if (bios == MAP_FAILED) {
-			perror("Error MMAP /dev/mem");
+			perror("Error: Can't mmap /dev/mem.");
 			exit(1);
 		}
 		flash->virt_addr = bios;
@@ -90,7 +90,7 @@ struct flashchip *probe_flash(struct flashchip *flash)
 		bios = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
 			    fd_mem, (off_t) (0x9400000));
 		if (bios == MAP_FAILED) {
-			perror("Error MMAP /dev/mem");
+			perror("Error: Can't mmap /dev/mem.");
 			exit(1);
 		}
 		flash->virt_addr = bios;
@@ -145,22 +145,24 @@ int verify_flash(struct flashchip *flash, uint8_t *buf)
 
 void usage(const char *name)
 {
-	printf("usage: %s [-rwvE] [-V] [-c chipname] [-s exclude_start] [-e exclude_end] [file]\n", name);
-	printf("   -r | --read:   read flash and save into file\n"
-	       "   -w | --write:  write file into flash (default when file is specified)\n"
-	       "   -v | --verify: verify flash against file\n"
-	       "   -E | --erase: Erase flash device\n"
-	       "   -V | --verbose: more verbose output\n\n"
-	       "   -c | --chip <chipname>: probe only for specified flash chip\n"
-	       "   -s | --estart <addr>: exclude start position\n"
-	       "   -e | --eend <addr>: exclude end postion\n"
+	printf("usage: %s [-rwvEVfh] [-c chipname] [-s exclude_start]\n", name);
+	printf("       [-e exclude_end] [-m vendor:part] [-l file.layout] [-i imagename] [file]\n");
+	printf("   -r | --read:                    read flash and save into file\n"
+	       "   -w | --write:                   write file into flash (default when\n"
+	       "                                   file is specified)\n"
+	       "   -v | --verify:                  verify flash against file\n"
+	       "   -E | --erase:                   erase flash device\n"
+	       "   -V | --verbose:                 more verbose output\n"
+	       "   -c | --chip <chipname>:         probe only for specified flash chip\n"
+	       "   -s | --estart <addr>:           exclude start position\n"
+	       "   -e | --eend <addr>:             exclude end postion\n"
 	       "   -m | --mainboard <vendor:part>: override mainboard settings\n"
-	       "   -f | --force: force write without checking image\n"
-	       "   -l | --layout <file.layout>: read rom layout from file\n"
-	       "   -i | --image <name>: only flash image name from flash layout\n"
+	       "   -f | --force:                   force write without checking image\n"
+	       "   -l | --layout <file.layout>:    read rom layout from file\n"
+	       "   -i | --image <name>:            only flash image name from flash layout\n"
 	       "\n"
 	       " If no file is specified, then all that happens\n"
-	       " is that flash info is dumped\n\n");
+	       " is that flash info is dumped.\n\n");
 	exit(1);
 }
 

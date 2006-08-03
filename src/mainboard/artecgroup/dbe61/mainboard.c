@@ -7,31 +7,33 @@
 #include "chip.h"
 
 
-
-static void init(struct device *dev) {
-/*
+static void init(struct device *dev)
+{
 	unsigned bus = 0;
-	unsigned devfn = PCI_DEVFN(0xf, 4);
-	device_t usb = NULL;
-	unsigned char usbirq = 0xa;
-*/
+	unsigned devNic = PCI_DEVFN(0xd, 0);	
+	unsigned devUsb = PCI_DEVFN(0xf, 4);
+	device_t usb = NULL, nic = NULL;
+	unsigned char irqUsb = 0xa, irqNic = 0xb;
 
 	printk_debug("ARTECGROUP DBE61 ENTER %s\n", __FUNCTION__);
 
-#if 0
-	/* I can't think of any reason NOT to just set this. If it turns out we want this to be
-	  * conditional we can make it a config variable later.
-	  */
+	// FIXME: do we need to initialize USB OHCI this way?
+	printk_debug("%s (%x,%x) set USB PCI interrupt line to %d\n", 
+		__FUNCTION__, bus, devUsb, irqUsb);
 
-	printk_debug("%s (%x,%x)SET USB PCI interrupt line to %d\n", 
-		__FUNCTION__, bus, devfn, usbirq);
-	usb = dev_find_slot(bus, devfn);
-	if (! usb){
-		printk_err("Could not find USB\n");
-	} else {
-		pci_write_config8(usb, PCI_INTERRUPT_LINE, usbirq);
-	}
-#endif
+	// initialize the USB controller
+	usb = dev_find_slot(bus, devUsb);
+	if (!usb) printk_err("Could not find USB\n");
+	else pci_write_config8(usb, PCI_INTERRUPT_LINE, irqUsb);
+
+	printk_debug("%s (%x,%x) set NIC PCI interrupt line to %d\n", 
+		__FUNCTION__, bus, devNic, irqNic);
+
+	// initialize the Realtek NIC
+	nic = dev_find_slot(bus, devNic);
+	if (!nic) printk_err("Could not find USB\n");
+	else pci_write_config8(nic, PCI_INTERRUPT_LINE, irqNic);
+
 	printk_debug("ARTECGROUP DBE61 EXIT %s\n", __FUNCTION__);
 }
 

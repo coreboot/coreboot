@@ -71,8 +71,9 @@ default CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2=1
 ##
 ## Build code to export a programmable irq routing table
 ##
-default HAVE_PIRQ_TABLE=1
-default IRQ_SLOT_COUNT=2
+default HAVE_PIRQ_TABLE=0
+default IRQ_SLOT_COUNT=6
+
 #object irq_tables.o
 
 ##
@@ -112,8 +113,8 @@ default CONFIG_ROM_STREAM     = 1
 ## The default compiler
 ##
 default CROSS_COMPILE=""
-default CC="$(CROSS_COMPILE)gcc-3.4 -m32"
-default HOSTCC="gcc-3.4"
+default CC="$(CROSS_COMPILE)gcc -m32"
+default HOSTCC="gcc"
 
 ##
 ## The Serial Console

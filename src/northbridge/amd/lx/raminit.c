@@ -1,12 +1,9 @@
 #include <cpu/amd/lxdef.h>
 
-#if 0
+
 static void sdram_set_registers(const struct mem_controller *ctrl)
 {
 }
-
-#endif
-
 
 /* Section 6.1.3, LX processor databooks, BIOS Initialization Sequence
  * Section 4.1.4, GX/CS5535 GeodeROM Porting guide */

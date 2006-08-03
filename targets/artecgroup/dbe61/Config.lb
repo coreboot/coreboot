@@ -1,11 +1,11 @@
-# Config file for the olpc rev_a
+# Config file for the ThinCan dbe61
 
 target dbe61
 mainboard artecgroup/dbe61
 
-# leave 128k for vsa
+# leave 64k for vsa
 option CONFIG_COMPRESSED_ROM_STREAM=0
-option ROM_SIZE=1024*256-128*1024
+option ROM_SIZE=1024*256-64*1024
 option FALLBACK_SIZE=ROM_SIZE
 
 option DEFAULT_CONSOLE_LOGLEVEL = 11

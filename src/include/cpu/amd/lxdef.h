@@ -264,6 +264,10 @@
 #define		RCONF_DMM_LOWER_RCNORM_SHIFT			0
 #define		RCONF_DMM_LOWER_EN_SET					(1<<8)
 
+
+
+/*  ----- GX3 OK  ----  */
+
 #define	CPU_RCONF0							0x1810
 #define	CPU_RCONF1							0x1811
 #define	CPU_RCONF2							0x1812
@@ -272,10 +276,20 @@
 #define	CPU_RCONF5							0x1815
 #define	CPU_RCONF6							0x1816
 #define	CPU_RCONF7							0x1817
+
+/* ------------------------ */
+
+/*  ----- GX3 OK  ----  */
+
 #define	CPU_CR1_MSR							0x1881
 #define	CPU_CR2_MSR							0x1882
 #define	CPU_CR3_MSR							0x1883
 #define	CPU_CR4_MSR							0x1884
+
+/* ------------------------ */
+
+/*  ----- GX3 OK  ----  */
+
 #define	CPU_DC_INDEX						0x1890
 #define	CPU_DC_DATA							0x1891
 #define	CPU_DC_TAG							0x1892
@@ -285,6 +299,9 @@
 #define	CPU_DTB_LRU							0x1899
 #define	CPU_DTB_ENTRY						0x189A
 #define	CPU_DTB_ENTRY_I						0x189B
+
+/* ------------------------ */
+
 #define	CPU_L2TB_INDEX						0x189C
 #define	CPU_L2TB_LRU						0x189D
 #define	CPU_L2TB_ENTRY						0x189E

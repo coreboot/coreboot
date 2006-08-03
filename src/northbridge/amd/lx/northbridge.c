@@ -9,6 +9,7 @@
 #include <bitops.h>
 #include "chip.h"
 #include "northbridge.h"
+#include <cpu/cpu.h>
 #include <cpu/amd/lxdef.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/cache.h>
@@ -274,6 +275,38 @@ static void enable_shadow(device_t dev)
 	
 }
 
+
+static void enable_L2_cache(void) {
+	msr_t msr;
+
+	/* Instruction Memory Configuration register
+	 * set EBE bit, required when L2 cache is enabled
+	 */ 
+	msr = rdmsr(CPU_IM_CONFIG);
+	msr.lo |= 0x400;
+	wrmsr(CPU_IM_CONFIG, msr);
+	
+	/* Data Memory Subsystem Configuration register
+	 * set EVCTONRPL bit, required when L2 cache is enabled in victim mode
+	 */
+	msr = rdmsr(CPU_DM_CONFIG0);
+	msr.lo |= 0x4000;
+	wrmsr(CPU_DM_CONFIG0, msr);
+
+	/* invalidate L2 cache */
+	msr.hi = 0x00;
+	msr.lo = 0x10;
+	wrmsr(L2_CONFIG_MSR, msr);
+
+	/* Enable L2 cache */	
+	msr.hi = 0x00;
+	msr.lo = 0x0f;	
+	wrmsr(L2_CONFIG_MSR, msr);
+	
+	printk_debug("L2 cache enabled\n");
+}
+
+
 static void northbridge_init(device_t dev) 
 {
 	struct northbridge_amd_lx_config *nb = (struct northbridge_amd_lx_config *)dev->chip_info;
@@ -456,8 +489,9 @@ static void enable_dev(struct device *dev)
 		extern void cpubug(void);
 		printk_debug("DEVICE_PATH_PCI_DOMAIN\n");
 		/* cpubug MUST be called before setup_lx(), so we force the issue here */
+			enable_L2_cache();
 		northbridgeinit();
-		cpubug();	
+			/* cpubug();	GX3*/
 		chipsetinit(nb);
 		setup_lx();
 		/* do this here for now -- this chip really breaks our device model */

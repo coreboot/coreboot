@@ -1,4 +1,4 @@
-#include "i440bx_smbus.h"
+#include "i8371eb_smbus.h"
 
 #define SMBUS_IO_BASE 0x0f00
 

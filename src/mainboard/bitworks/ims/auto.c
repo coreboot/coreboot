@@ -9,7 +9,7 @@
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
-#include "southbridge/intel/i8371eb/i8371eb_early_smbus.c"
+#include "southbridge/intel/i82371eb/i82371eb_early_smbus.c"
 #include "superio/NSC/pc87351/pc87351_early_serial.c"
 #include "northbridge/intel/i440bx/raminit.h"
 #include "cpu/x86/mtrr/earlymtrr.c"

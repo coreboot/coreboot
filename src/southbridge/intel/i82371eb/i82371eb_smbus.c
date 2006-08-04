@@ -10,7 +10,7 @@
 #include <device/pci_ops.h>
 #include <device/smbus.h>
 #include <arch/io.h>
-#include "i8371eb.h"
+#include "i82371eb.h"
 
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
@@ -31,7 +31,7 @@ static struct device_operations smbus_ops = {
 	.enable_resources = pci_dev_enable_resources,
 	.init             = 0,
 	.scan_bus         = scan_static_bus,
-	.enable           = i8371eb_enable,
+	.enable           = i82371eb_enable,
 	.ops_pci          = &lops_pci,
 	.ops_smbus_bus    = &lops_smbus_bus,
 };

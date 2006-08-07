@@ -1,0 +1,72 @@
+# Sample config file for 
+# the sunw ultra40
+# This will make a target directory of ./ultra40
+
+target ultra40
+mainboard sunw/ultra40
+
+# sunw ultra40
+romimage "normal"
+#       48K for SCSI FW
+#        option ROM_SIZE = 475136
+#       48K for SCSI FW and 48K for ATI ROM
+#       option ROM_SIZE = 425984 
+#       64K for Etherboot
+#        option ROM_SIZE = 458752 
+#	64K for NIC option 48K for Raid option rom
+#	option ROM_SIZE = 409600
+	option USE_FALLBACK_IMAGE=0
+#	option ROM_IMAGE_SIZE=0x11800
+#	option ROM_IMAGE_SIZE=0x13800
+#	option ROM_IMAGE_SIZE=0x15000
+	option ROM_IMAGE_SIZE=0x20000
+#	option ROM_IMAGE_SIZE=0x17800
+	option XIP_ROM_SIZE=0x20000
+	option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
+#       payload ../../../payloads/tg3--ide_disk.zelf
+#        payload ../../../payloads/filo.elf
+#        payload ../../../payloads/filo_mem.elf
+#       payload ../../../payloads/filo.zelf
+#	payload ../../../payloads/tg3.zelf
+#	payload ../../../payloads/tg3--filo_hda2_vga.zelf
+	payload ../../../../payloads/forcedeth--filo_hda2_vga.zelf
+#	payload ../../../payloads/forcedeth_vga.zelf
+#	payload ../../../payloads/forcedeth--filo_hda2_vga_5_4.zelf
+#	payload ../../../../../../elf/ram0_2.5_2.6.11.tiny.elf
+#	payload ../../../../../../elf/ram0_2.5_2.6.12.tiny.elf
+#	payload ../../../payloads/tg3--filo_hda2_vga_5_4.zelf
+#	 payload ../../../payloads/tg3_vga.zelf
+#	payload ../../../payloads/tg3--filo_hda2_vgax.zelf
+#        payload ../../../payloads/tg3--filo_hda2_com2.zelf
+#       payload ../../../payloads/e1000--filo.zelf
+#        payload ../../../payloads/tg3--e1000--filo.zelf
+#        payload ../../../payloads/tg3--eepro100--e1000--filo_hda2.zelf
+end
+
+romimage "fallback" 
+	option USE_FALLBACK_IMAGE=1
+#	option ROM_IMAGE_SIZE=0x11800
+#	option ROM_IMAGE_SIZE=0x13800
+#	option ROM_IMAGE_SIZE=0x15000
+	option ROM_IMAGE_SIZE=0x20000
+#	option ROM_IMAGE_SIZE=0x17800
+	option XIP_ROM_SIZE=0x20000
+	option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Fallback"
+#       payload ../../../payloads/tg3--ide_disk.zelf
+#        payload ../../../payloads/filo.elf
+#        payload ../../../payloads/filo_mem.elf
+#       payload ../../../payloads/filo.zelf
+#	payload ../../../payloads/tg3.zelf
+#	payload ../../../payloads/tg3--filo_hda2_vga.zelf
+	payload ../../../../payloads/forcedeth--filo_hda2_vga.zelf
+#	payload ../../../payloads/forcedeth_vga.zelf
+#	payload ../../../payloads/tg3--filo_hda2_vga_5_4.zelf
+#	payload ../../../payloads/tg3_vga.zelf
+#	payload ../../../payloads/tg3--filo_hda2_vgax.zelf
+#        payload ../../../payloads/tg3--filo_hda2_com2.zelf
+#       payload ../../../payloads/e1000--filo.zelf
+#        payload ../../../payloads/tg3--e1000--filo.zelf
+#        payload ../../../payloads/tg3--eepro100--e1000--filo_hda2.zelf
+end
+
+buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"

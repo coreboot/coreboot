@@ -201,7 +201,8 @@ chip northbridge/amd/amdk8/root_complex
         end
 	device pci_domain 0 on
 		chip northbridge/amd/amdk8 #mc0
-			device pci 18.0 on 
+			device pci 18.0 on end # link 0
+			device pci 18.0 on # link1 
 				#  devices on link 0, link 0 == LDT 0 
 			        chip southbridge/nvidia/ck804 
 					device pci 0.0 on end   # HT
@@ -318,30 +319,16 @@ chip northbridge/amd/amdk8/root_complex
 					register "mac_eeprom_addr" = "0x51"
 				end
 			end #  device pci 18.0 
-			device pci 18.0 on end # Link 1
-			device pci 18.0 on
-                        #  devices on link 2, link 2 == LDT 2
-	                        chip southbridge/amd/amd8131
-        	                        # the on/off keyword is mandatory
-                	                device pci 0.0 on end
-                        	        device pci 0.1 on end
-					device pci 1.0 on 
-                                                chip drivers/pci/onboard
-                                                        device pci 6.0 on end # lsi scsi
-                                                        device pci 6.1 on end
-                                                end
-					end
-					device pci 1.1 on end
-                	        end
-			end # device pci 18.0
+			device pci 18.0 on end # link 2
 			device pci 18.1 on end
 			device pci 18.2 on end
 			device pci 18.3 on end
 		end # mc0
 		
 		chip northbridge/amd/amdk8
-                	device pci 19.0 on #  northbridge 
-                        	#  devices on link 0, link 0 == LDT 0 
+                	device pci 19.0 on end # link 0
+		device pci 19.0 on   
+                        	#  devices on link 1, link 1 == LDT 1
                         	chip southbridge/nvidia/ck804 
                                 	device pci 0.0 on end   # HT
                                 	device pci 1.0 on end   # LPC
@@ -366,21 +353,10 @@ chip northbridge/amd/amdk8/root_complex
                 	end #  device pci 19.0 
 			
 			device pci 19.0 on end
-			device pci 19.0 on end
 			device pci 19.1 on end
 			device pci 19.2 on end
 			device pci 19.3 on end
 		end
 	end # PCI domain
 	
-#       chip drivers/generic/debug 
-#               device pnp 0.0 off end # chip name
-#                device pnp 0.1 off end # pci_regs_all
-#                device pnp 0.2 off end # mem
-#                device pnp 0.3 off end # cpuid
-#                device pnp 0.4 on end # smbus_regs_all
-#                device pnp 0.5 off end # dual core msr
-#                device pnp 0.6 off end # cache size
-#                device pnp 0.7 off end # tsc
-#       end  
 end #root_complex

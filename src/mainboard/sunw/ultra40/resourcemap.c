@@ -3,7 +3,7 @@
  *
  */
 
-static void setup_s2895_resource_map(void)
+static void setup_ultra40_resource_map(void)
 {
 	static const unsigned int register_values[] = {
 		/* Careful set limit registers before base registers which contain the enables */
@@ -253,11 +253,10 @@ static void setup_s2895_resource_map(void)
 		 * [31:24] Bus Number Limit i
 		 *	   This field defines the highest bus number in configuration region i
 		 */
-		PCI_ADDR(0, 0x18, 1, 0xE0), 0x0000FC88, 0x07000003, 
-		PCI_ADDR(0, 0x18, 1, 0xE4), 0x0000FC88, 0x7f080203, 
-		PCI_ADDR(0, 0x18, 1, 0xE8), 0x0000FC88, 0xff800013, 
-		PCI_ADDR(0, 0x18, 1, 0xEC), 0x0000FC88, 0x00000000, 
-
+		PCI_ADDR(0, 0x18, 1, 0xe0), 0x0000, 0x7f000103,
+		PCI_ADDR(0, 0x18, 1, 0xe4), 0x0000, 0xff800113,
+		PCI_ADDR(0, 0x18, 1, 0xe8), 0x0000, 0x00000000,
+		PCI_ADDR(0, 0x18, 1, 0xec), 0x0000, 0x00000000,
 	};
 
 	int max;

@@ -29,7 +29,7 @@ romimage "normal"
 #       payload ../../../payloads/filo.zelf
 #	payload ../../../payloads/tg3.zelf
 #	payload ../../../payloads/tg3--filo_hda2_vga.zelf
-	payload ../../../../payloads/forcedeth--filo_hda2_vga.zelf
+	payload /etc/hosts
 #	payload ../../../payloads/forcedeth_vga.zelf
 #	payload ../../../payloads/forcedeth--filo_hda2_vga_5_4.zelf
 #	payload ../../../../../../elf/ram0_2.5_2.6.11.tiny.elf
@@ -58,7 +58,7 @@ romimage "fallback"
 #       payload ../../../payloads/filo.zelf
 #	payload ../../../payloads/tg3.zelf
 #	payload ../../../payloads/tg3--filo_hda2_vga.zelf
-	payload ../../../../payloads/forcedeth--filo_hda2_vga.zelf
+	payload /etc/hosts
 #	payload ../../../payloads/forcedeth_vga.zelf
 #	payload ../../../payloads/tg3--filo_hda2_vga_5_4.zelf
 #	payload ../../../payloads/tg3_vga.zelf

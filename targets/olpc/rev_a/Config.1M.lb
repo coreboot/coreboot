@@ -5,7 +5,7 @@ mainboard olpc/rev_a
 
 # Don't let LinuxBIOS compress the payload
 # option CONFIG_COMPRESSED_ROM_STREAM=0
-option CONFIG_PRECOMPRESSED_ROM_STREAM=1
+#option CONFIG_PRECOMPRESSED_ROM_STREAM=1
 
 # leave 64k for vsa
 option ROM_SIZE=1024*1024-64*1024

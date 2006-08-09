@@ -174,7 +174,7 @@ static void main(unsigned long bist)
 
 	sio_gpio_setup();
 
-        setup_s2895_resource_map();
+        setup_ultra40_resource_map();
 
 	needs_reset = setup_coherent_ht_domain();
 

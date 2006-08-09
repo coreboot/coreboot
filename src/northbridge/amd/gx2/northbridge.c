@@ -283,9 +283,56 @@ static void northbridge_init(device_t dev)
 	irq_init_steering(dev, nb->irqmap);
 }
 
+/* due to vsa interactions, we need not not touch the nb settings ... */
+/* this is a test -- we are not sure it will work -- but it ought to */
+static void set_resources(struct device *dev)
+{
+        struct resource *resource, *last;
+        unsigned link;
+        uint8_t line;
+
+#if 0
+        last = &dev->resource[dev->resources];
+
+        for(resource = &dev->resource[0]; resource < last; resource++) {
+                pci_set_resource(dev, resource);
+        }
+#endif
+        for(link = 0; link < dev->links; link++) {
+                struct bus *bus;
+                bus = &dev->link[link];
+                if (bus->children) {
+                        assign_resources(bus);
+                }
+        }
+
+#if 0
+        /* set a default latency timer */
+        pci_write_config8(dev, PCI_LATENCY_TIMER, 0x40);
+
+        /* set a default secondary latency timer */
+        if ((dev->hdr_type & 0x7f) == PCI_HEADER_TYPE_BRIDGE) {
+                pci_write_config8(dev, PCI_SEC_LATENCY_TIMER, 0x40);
+        }
+
+        /* zero the irq settings */
+        line = pci_read_config8(dev, PCI_INTERRUPT_PIN);
+        if (line) {
+                pci_write_config8(dev, PCI_INTERRUPT_LINE, 0);
+        }
+        /* set the cache line size, so far 64 bytes is good for everyone */
+        pci_write_config8(dev, PCI_CACHE_LINE_SIZE, 64 >> 2);
+#endif
+}
+
+
+
 static struct device_operations northbridge_operations = {
 	.read_resources   = pci_dev_read_resources,
+#if 0
 	.set_resources    = pci_dev_set_resources,
+#endif
+	.set_resources    = set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = northbridge_init,
 	.enable           = 0,

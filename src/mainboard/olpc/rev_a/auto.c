@@ -149,7 +149,18 @@ static void msr_init(void)
         __builtin_wrmsr(0x40000021, 0x80fffe0, 0x20000000);
 }
 
-	
+static void gpio_init(void)
+{
+	unsigned long m;
+
+	/* Make sure events enable for gpio 12 is off */
+
+	m = inl(GPIOL_EVENTS_ENABLE);
+	m &= ~GPIOL_12_SET;
+	m |= GPIOL_12_CLEAR;
+	outl(m, GPIOL_EVENTS_ENABLE);
+}
+
 static void main(unsigned long bist)
 {
 	static const struct mem_controller memctrl [] = {
@@ -166,6 +177,7 @@ static void main(unsigned long bist)
 	 * for cs5536
 	 */
 	cs5536_setup_onchipuart();
+	gpio_init();
 	uart_init();
 	console_init();
 

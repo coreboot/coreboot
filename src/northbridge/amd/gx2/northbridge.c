@@ -276,11 +276,20 @@ static void enable_shadow(device_t dev)
 
 static void northbridge_init(device_t dev) 
 {
+	unsigned long m;
+
 	struct northbridge_amd_gx2_config *nb = (struct northbridge_amd_gx2_config *)dev->chip_info;
 	printk_debug("northbridge: %s()\n", __FUNCTION__);
 	
 	enable_shadow(dev);
 	irq_init_steering(dev, nb->irqmap);
+
+	/* HACK HACK HACK HACK */
+	/* 0x1000 is where GPIO is being assigned */
+	m = inl(0x1038);
+	m &= ~GPIOL_12_SET;
+	m |= GPIOL_12_CLEAR;
+	outl(m, 0x1038);
 }
 
 /* due to vsa interactions, we need not not touch the nb settings ... */

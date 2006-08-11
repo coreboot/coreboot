@@ -1933,8 +1933,8 @@ def writemakefileheader(file, fname):
 def writemakefilefooter(file, fname):
 	file.write("\n\n%s: %s %s\n"
 		% (os.path.basename(fname), os.path.abspath(sys.argv[0]), top_config_file))
-	file.write("\t(cd %s ; %s %s %s)\n\n"
-		% (os.getcwd(), sys.argv[0], sys.argv[1], sys.argv[2]))
+	file.write("\t(cd %s ; export PYTHONPATH=%s/util/newconfig ; python %s %s %s)\n\n"
+		% (os.getcwd(), treetop, sys.argv[0], sys.argv[1], sys.argv[2]))
 
 def writemakefilesettings(path):
 	""" Write Makefile.settings to seperate the settings

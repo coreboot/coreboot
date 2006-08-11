@@ -8,7 +8,7 @@ mainboard olpc/rev_a
 #option CONFIG_PRECOMPRESSED_ROM_STREAM=1
 
 # leave 64k for vsa
-option ROM_SIZE=1024*1024-64*1024
+option ROM_SIZE=1024*1024-64*1024-64*1024
 option FALLBACK_SIZE=ROM_SIZE
 
 option DEFAULT_CONSOLE_LOGLEVEL = 11

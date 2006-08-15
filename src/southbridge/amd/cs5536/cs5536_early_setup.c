@@ -1,4 +1,3 @@
-#include <cpu/amd/gx2def.h>
 
 /*
  *

@@ -10,6 +10,7 @@
 #include "chip.h"
 #include "northbridge.h"
 #include <cpu/amd/gx1def.h>
+#include <cpu/x86/cache.h>
 
 #define NORTHBRIDGE_FILE "northbridge.c"
 /*
@@ -24,9 +25,18 @@ static void optimize_xbus(device_t dev)
 	pci_write_config8(dev, 0x44, 0x00);
 }
 
+/**
+ * Enables memory from 0xC0000 up to 0xFFFFF.
+ * So this region is read/write and cache able
+ *
+ * FIXME: What about PCI master access into
+ *        this region?
+ **/
+
 static void enable_shadow(device_t dev)
 {
-	
+       writel(0x77777777,GX_BASE+BC_XMAP_2);
+       writel(0x77777777,GX_BASE+BC_XMAP_3);
 }
 
 static void northbridge_init(device_t dev) 
@@ -35,6 +45,8 @@ static void northbridge_init(device_t dev)
 	
 	optimize_xbus(dev);
 	enable_shadow(dev);
+	printk_spew("Calling enable_cache()\n");
+	enable_cache();
 }
 
 
@@ -180,7 +192,8 @@ static struct device_operations pci_domain_ops = {
 
 static void cpu_bus_init(device_t dev)
 {
-        initialize_cpus(&dev->link[0]);
+	printk_spew("%s:%s()\n", NORTHBRIDGE_FILE, __FUNCTION__);
+	initialize_cpus(&dev->link[0]);
 }
 
 static void cpu_bus_noop(device_t dev)
@@ -197,14 +210,19 @@ static struct device_operations cpu_bus_ops = {
 
 static void enable_dev(struct device *dev)
 {
+        printk_spew("%s:%s()\n", NORTHBRIDGE_FILE, __FUNCTION__);
         /* Set the operations if it is a special bus type */
         if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
+        	printk_spew("DEVICE_PATH_PCI_DOMAIN\n");
                 dev->ops = &pci_domain_ops;
 		pci_set_method(dev);
         }
         else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
+        	printk_spew("DEVICE_PATH_APIC_CLUSTER\n");
                 dev->ops = &cpu_bus_ops;
-        }
+        } else {
+        	printk_spew("device path type %d\n",dev->path.type);
+	}
 }
 
 struct chip_operations northbridge_amd_gx1_ops = {

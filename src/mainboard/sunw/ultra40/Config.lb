@@ -207,8 +207,8 @@ chip northbridge/amd/amdk8/root_complex
 			        chip southbridge/nvidia/ck804 
 					device pci 0.0 on end   # HT
                 			device pci 1.0 on # LPC
-                	                        chip superio/smsc/lpc47b397
-                        	                        device pnp 2e.0 on #  Floppy
+                	                        chip superio/smsc/lpc47m10x
+                        	                        device pnp 2e.0 off #  Floppy
                                 	                         io 0x60 = 0x3f0
                                         	                irq 0x70 = 6
                                                 	        drq 0x74 = 2
@@ -225,24 +225,12 @@ chip northbridge/amd/amdk8/root_complex
                         	                                io 0x60 = 0x2f8
                                 	                        irq 0x70 = 3
                                         	        end
-	                                                device pnp 2e.7 on #  Keyboard
+	                                                device pnp 2e.7 off #  Keyboard
         	                                                io 0x60 = 0x60
                 	                                        io 0x62 = 0x64
                         	                                irq 0x70 = 1
                                 	                        irq 0x72 = 12
                                         	        end
-	                                                device pnp 2e.8 on # HW Monitor
-        	                                                io 0x60 = 0x290
-                                                                chip drivers/generic/generic # LM95221 CPU temp
-                                                                        device i2c 2b on end
-                                                                end
-                                                                chip drivers/generic/generic # EMCT03
-                                                                        device i2c 54 on end
-                                                                end
-							end
-	                                                device	pnp 2e.a on #  RT
-        	                                                io 0x60 = 0x400
-							end
                         	                end
 					end
 			                device pci 1.1 on # SM 0

@@ -5,6 +5,7 @@
 target ultra40
 mainboard sunw/ultra40
 
+option ROM_SIZE=512*1024
 # sunw ultra40
 romimage "normal"
 #       48K for SCSI FW

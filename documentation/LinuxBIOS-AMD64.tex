@@ -148,7 +148,7 @@ Once the source tree is checked out, it can be updated with:
 
 { \small
 \begin{verbatim}
-% cvs update ­Pd
+% cvs update -Pd
 \end{verbatim}
 }
 
@@ -330,7 +330,7 @@ If an option contains a string, this string has to be protected with
 quotation marks: 
 
 \begin{verbatim}
-        default CC="gcc ­m32"
+        default CC="gcc -m32"
 \end{verbatim}
 
 \item \begin{verbatim}option\end{verbatim}
@@ -407,7 +407,7 @@ option on how to set them.
 \item \begin{verbatim}CC\end{verbatim}
 
 Target C Compiler. Default is \texttt{\$(CROSS\_COMPILE)gcc}. Set to
-\texttt{gcc ­m32} for compiling AMD64 LinuxBIOS images on an AMD64 
+\texttt{gcc -m32} for compiling AMD64 LinuxBIOS images on an AMD64 
 machine.
 
 \item \begin{verbatim}CONFIG_CHIP_CONFIGURE \end{verbatim}
@@ -552,12 +552,12 @@ do:
 \begin{verbatim}
 makerule ./auto.E
         depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
-        action "./romcc -E -mcpu=k8 -O2 ­I$(TOP)/src -I. $(CPPFLAGS) \
+        action "./romcc -E -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) \
 		$(MAINBOARD)/auto.c -o $@"
 end
 makerule ./auto.inc
         depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
-        action "./romcc    -mcpu=k8 -O2 ­I$(TOP)/src -I. $(CPPFLAGS) \
+        action "./romcc    -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) \
                 $(MAINBOARD)/auto.c -o $@"
 end
 \end{verbatim}

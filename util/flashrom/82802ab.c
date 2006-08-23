@@ -21,7 +21,6 @@
  *
  * Reference: http://www.intel.com/design/chipsets/datashts/290658.htm
  *
- * $Id$
  */
 
 #include <errno.h>

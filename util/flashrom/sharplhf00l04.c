@@ -20,8 +20,6 @@
  *
  *
  * Reference: http://www.intel.com/design/chipsets/datashts/290658.htm
- *
- * $Id: lhf00l04.c 2111 2005-11-26 21:55:36Z ollie $
  */
 
 #include <errno.h>

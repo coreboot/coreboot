@@ -22,7 +22,6 @@
  * Reference:
  *	MX29F002/002N data sheet
  *
- * $Id$
  */
 
 #include <stdio.h>

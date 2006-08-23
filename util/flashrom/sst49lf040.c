@@ -23,7 +23,6 @@
  *
  * ToDo: Consilidated to standard JEDEC code.
  *
- * $Id$
  */
 #include <stdio.h>
 #include "flash.h"

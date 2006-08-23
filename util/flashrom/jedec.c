@@ -21,7 +21,6 @@
  *
  * Reference:
  *
- * $Id$
  */
 
 #include <stdio.h>

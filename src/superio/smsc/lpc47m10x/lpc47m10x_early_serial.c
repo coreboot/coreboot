@@ -1,6 +1,4 @@
 /*
- * $Header$
- *
  * lpc47m10x_early_serial.c: Pre-RAM driver for SMSC LPC47M10X2 Super I/O chip
  * derived from lpc47n217
  *
@@ -19,9 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- * $Log$
- *
  */
 
 #include <arch/romcc_io.h>

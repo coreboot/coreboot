@@ -1,8 +1,5 @@
 /*
- * $Header: /home/cvs/BIR/ca-cpu/freebios/src/include/sdram_mode.h,v 1.1 2005/07/11 16:03:54 smagnani Exp $
- *
  * sdram_mode.h: Definitions for SDRAM Mode Register and Extended Mode Register
- *				 
  *
  * Copyright (C) 2005 Digital Design Corporation
  *
@@ -19,12 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- * $Log: sdram_mode.h,v $
- * Revision 1.1  2005/07/11 16:03:54  smagnani
- * Initial revision.
- *
- *
  */
 
 #ifndef __SDRAMMODE_H_DEFINED

@@ -1,6 +1,4 @@
 /*
- * $Header: /home/cvs/BIR/ca-cpu/freebios/src/superio/smsc/lpc47n217/lpc47n217_early_serial.c,v 1.1.1.1 2005/07/11 15:28:51 smagnani Exp $
- *
  * lpc47n217_early_serial.c: Pre-RAM driver for SMSC LPC47N217 Super I/O chip
  *
  * Copyright (C) 2005 Digital Design Corporation
@@ -18,12 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- * $Log: lpc47n217_early_serial.c,v $
- * Revision 1.1.1.1  2005/07/11 15:28:51  smagnani
- * Initial revision.
- *
- *
  */
 
 #include <arch/romcc_io.h>

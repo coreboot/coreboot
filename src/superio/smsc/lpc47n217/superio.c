@@ -1,6 +1,4 @@
 /*
- * $Header: /home/cvs/BIR/ca-cpu/freebios/src/superio/smsc/lpc47n217/superio.c,v 1.1.1.1 2005/07/11 15:28:51 smagnani Exp $
- *
  * superio.c: RAM-based driver for SMSC LPC47N217 Super I/O chip
  *
  * Based on LinuxBIOS code for SMSC 47B397:
@@ -23,12 +21,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- * $Log: superio.c,v $
- * Revision 1.1.1.1  2005/07/11 15:28:51  smagnani
- * Initial revision.
- *
- *
  */
 
 #include <arch/io.h>

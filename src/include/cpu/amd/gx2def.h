@@ -706,6 +706,8 @@
 
 /*  SouthBridge Equates*/
 /*  MSR_SB and SB_SHIFT are located in CPU.inc*/
+#define MSR_SB_USB2_MEM_DES ((1<<16) + MSR_SB + 0x25) /* Hack to make USB P4 work */  
+
 #define MSR_SB_GLIU	 ((9 << 14) + MSR_SB)		/* 51024xxx or 510*xxxx	- fake out just like GL0 on CPU. */
 #define MSR_SB_GLPCI	 (MSR_SB)			/* 5100xxxx - don't go to the GLIU */
 #define MSR_SB_USB2	 ((2 << SB_SHIFT) + MSR_SB)	/* 5120xxxx */

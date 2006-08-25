@@ -157,19 +157,19 @@ static void southbridge_init(struct device *dev)
 		volatile unsigned long* uocmux;
 		unsigned long val;
 
-		printk_err("Base 0x%08x\n",USB2_SB_GLD_MSR_CAP);
+
+		printk_err("DES 0x%08x\n",MSR_SB_USB2_MEM_DES);
 		
-		msr = rdmsr(USB2_SB_GLD_MSR_CAP);
-		printk_err("CAP 0x%08x%08x\n", msr.hi,msr.lo);
+		msr = rdmsr(MSR_SB_USB2_MEM_DES);
+		printk_err("DES 0x%08x%08x\n", msr.hi,msr.lo);
 
-		msr = rdmsr(USB2_SB_GLD_MSR_OHCI_BASE);
-		printk_err("OHCI base 0x%08x%08x\n", msr.hi,msr.lo);
+		msr.hi = 0x400000fe;
+		msr.lo = 0x010fffff;
 
-		msr = rdmsr(USB2_SB_GLD_MSR_EHCI_BASE);
-		printk_err("EHCI base 0x%08x%08x\n", msr.hi,msr.lo);
+		wrmsr(MSR_SB_USB2_MEM_DES, msr);
 
-		msr = rdmsr(USB2_SB_GLD_MSR_DEVCTL_BASE);
-		printk_err("DevCtl base 0x%08x%08x\n", msr.hi,msr.lo);
+		msr = rdmsr(MSR_SB_USB2_MEM_DES);
+		printk_err("New DES 0x%08x%08x\n", msr.hi,msr.lo);
 
 		msr = rdmsr(USB2_SB_GLD_MSR_UOC_BASE);
 		printk_err("Old UOC Base 0x%08x%08x\n", msr.hi,msr.lo);
@@ -185,12 +185,14 @@ static void southbridge_init(struct device *dev)
 		val = *uocmux;
 
 		printk_err("UOCMUX is 0x%lx\n",val);
-#if 0	
-		val &= ~(0xc0);
+
+		val &= ~(0x3);
 		val |= 0x2;
 
 		*uocmux = val;
-#endif
+
+		val = *uocmux;
+		printk_err("New UOCMUX is 0x%lx\n",val);
 
 	}
 

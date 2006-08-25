@@ -77,6 +77,6 @@ DOC support
 -----------
 
 DISK on Chip support is currently disabled since it is considered unstable. 
-Change CFLAGS in the Makefile to enable it.
+Change CFLAGS in the Makefile to enable it: Remove -DDISABLE_DOC from CFLAGS.
 
 

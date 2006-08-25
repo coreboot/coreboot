@@ -506,11 +506,15 @@ int enable_flash_write()
 			}
 	}
 
-	/* now do the deed. */
-	if (enable) {
-		printf("Enabling flash write on %s...", enable->name);
-		if (enable->doit(dev, enable->name) == 0)
-			printf("OK\n");
+	if (!enable) {
+		printf("Warning: Unknown system. Flash detection "
+			"will most likely fail.\n");
+		return 1;
 	}
+	
+	/* now do the deed. */
+	printf("Enabling flash write on %s...", enable->name);
+	if (enable->doit(dev, enable->name) == 0)
+		printf("OK\n");
 	return 0;
 }

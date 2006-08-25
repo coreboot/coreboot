@@ -176,16 +176,16 @@ static void southbridge_init(struct device *dev)
 		msr.hi |= 0xa;
 		msr.lo |= 0xfe010000;
 	
-#if 0	
 		wrmsr(USB2_SB_GLD_MSR_UOC_BASE, msr);
 
 		msr = rdmsr(USB2_SB_GLD_MSR_UOC_BASE);
 		printk_err("New UOC Base 0x%08x%08x\n", msr.hi,msr.lo);
 
-		uocmux = (unsigned long *)msr.lo+4;
+		uocmux = (unsigned long *)(msr.lo+4);
 		val = *uocmux;
 
-		printk_err("UOCMUX is 0x%lx\n",*val);
+		printk_err("UOCMUX is 0x%lx\n",val);
+#if 0	
 		val &= ~(0xc0);
 		val |= 0x2;
 

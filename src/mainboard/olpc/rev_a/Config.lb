@@ -138,6 +138,7 @@ chip northbridge/amd/gx2
                         register "enable_gpio0_inta" = "1"
 			register "enable_ide_nand_flash" = "1"
 			register "enable_uarta" = "1"
+			register "enable_USBP4_host" = "1"
 			register "audio_irq" = "5"
 			register "usbf4_irq" = "10"
 			register "usbf5_irq" = "10"

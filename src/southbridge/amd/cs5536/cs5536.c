@@ -152,6 +152,48 @@ static void southbridge_init(struct device *dev)
 		outl(sb->unwanted_vpci[i] + 0x7C, 0xCF8);
 		outl(0xDEADBEEF,                  0xCFC);
 	}
+
+	if (sb->enable_USBP4_host) {
+		volatile unsigned long* uocmux;
+		unsigned long val;
+
+		printk_err("Base 0x%08x\n",USB2_SB_GLD_MSR_CAP);
+		
+		msr = rdmsr(USB2_SB_GLD_MSR_CAP);
+		printk_err("CAP 0x%08x%08x\n", msr.hi,msr.lo);
+
+		msr = rdmsr(USB2_SB_GLD_MSR_OHCI_BASE);
+		printk_err("OHCI base 0x%08x%08x\n", msr.hi,msr.lo);
+
+		msr = rdmsr(USB2_SB_GLD_MSR_EHCI_BASE);
+		printk_err("EHCI base 0x%08x%08x\n", msr.hi,msr.lo);
+
+		msr = rdmsr(USB2_SB_GLD_MSR_DEVCTL_BASE);
+		printk_err("DevCtl base 0x%08x%08x\n", msr.hi,msr.lo);
+
+		msr = rdmsr(USB2_SB_GLD_MSR_UOC_BASE);
+		printk_err("Old UOC Base 0x%08x%08x\n", msr.hi,msr.lo);
+		msr.hi |= 0xa;
+		msr.lo |= 0xfe010000;
+	
+#if 0	
+		wrmsr(USB2_SB_GLD_MSR_UOC_BASE, msr);
+
+		msr = rdmsr(USB2_SB_GLD_MSR_UOC_BASE);
+		printk_err("New UOC Base 0x%08x%08x\n", msr.hi,msr.lo);
+
+		uocmux = (unsigned long *)msr.lo+4;
+		val = *uocmux;
+
+		printk_err("UOCMUX is 0x%lx\n",*val);
+		val &= ~(0xc0);
+		val |= 0x2;
+
+		*uocmux = val;
+#endif
+
+	}
+
 }
 
 

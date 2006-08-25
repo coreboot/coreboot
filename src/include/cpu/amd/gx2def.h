@@ -731,10 +731,14 @@
 /* */
 /*  USB2*/
 /* */
-#define USB2_SB_GLD_MSR_CAP		 (	MSR_SB_USB2 + 0x00)
-#define USB2_SB_GLD_MSR_CONF	 (	MSR_SB_USB2 + 0x01)
-#define USB2_SB_GLD_MSR_PM		 (	MSR_SB_USB2 + 0x04)
 
+#define USB2_SB_GLD_MSR_CAP		 	(	MSR_SB_USB2 + 0x00)
+#define USB2_SB_GLD_MSR_CONF	 	(	MSR_SB_USB2 + 0x01)
+#define USB2_SB_GLD_MSR_PM		 	(	MSR_SB_USB2 + 0x04)
+#define USB2_SB_GLD_MSR_OHCI_BASE	(	MSR_SB_USB2 + 0x08)
+#define USB2_SB_GLD_MSR_EHCI_BASE	(	MSR_SB_USB2 + 0x09)
+#define USB2_SB_GLD_MSR_DEVCTL_BASE	(	MSR_SB_USB2 + 0x0A)
+#define USB2_SB_GLD_MSR_UOC_BASE	(	MSR_SB_USB2 + 0x0B) /* Option controller base */
 
 /* */
 /*  ATA*/

@@ -12,6 +12,7 @@ struct southbridge_amd_cs5536_config {
  	int enable_gpio0_inta; 	/* almost always will be true */
 	int enable_ide_nand_flash; /* if you are using nand flash instead of IDE drive */
 	int enable_uarta; 		/* internal uarta interrupt enable */
+	int enable_USBP4_host;	/* Enable USB Port 4 as a host */
 	/* following are IRQ numbers for various southbridge resources. */
 	/* I have guessed at some things, as I still don't have an lspci from anyone */
 	int ide_irq;		/* f.2 */

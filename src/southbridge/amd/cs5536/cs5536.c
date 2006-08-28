@@ -146,56 +146,27 @@ static void southbridge_init(struct device *dev)
 	/* Southbridge (80007800 = 00.0F.00) */
 	pci_assign_irqs(0, 0x0F, slots_sb);	/* bus=0, device=0x0F, slots={11,5,10,10} */
 #endif
+
+	if (sb->enable_USBP4_host) {
+		unsigned long val;
+		unsigned long uocmux;
+
+		outl(0x80007F10, 0xCF8);
+		outl(0x0EFC00000, 0xCFC);
+
+		uocmux = *((unsigned long *) 0x0EFC00004);
+		uocmux &= ~3;
+		uocmux |= 2;
+
+		*((unsigned long *) 0x0EFC00004) = uocmux;
+	}
+
 	/* disable unwanted virtual PCI devices */
 	for (i = 0; (i < MAX_UNWANTED_VPCI) && (0 != sb->unwanted_vpci[i]); i++) {
 		printk_debug("Disabling VPCI device: 0x%08X\n", sb->unwanted_vpci[i]);
 		outl(sb->unwanted_vpci[i] + 0x7C, 0xCF8);
 		outl(0xDEADBEEF,                  0xCFC);
 	}
-
-	if (sb->enable_USBP4_host) {
-		volatile unsigned long* uocmux;
-		unsigned long val;
-
-
-		printk_err("DES 0x%08x\n",MSR_SB_USB2_MEM_DES);
-		
-		msr = rdmsr(MSR_SB_USB2_MEM_DES);
-		printk_err("DES 0x%08x%08x\n", msr.hi,msr.lo);
-
-		msr.hi = 0x400000fe;
-		msr.lo = 0x010fffff;
-
-		wrmsr(MSR_SB_USB2_MEM_DES, msr);
-
-		msr = rdmsr(MSR_SB_USB2_MEM_DES);
-		printk_err("New DES 0x%08x%08x\n", msr.hi,msr.lo);
-
-		msr = rdmsr(USB2_SB_GLD_MSR_UOC_BASE);
-		printk_err("Old UOC Base 0x%08x%08x\n", msr.hi,msr.lo);
-		msr.hi |= 0xa;
-		msr.lo |= 0xfe010000;
-	
-		wrmsr(USB2_SB_GLD_MSR_UOC_BASE, msr);
-
-		msr = rdmsr(USB2_SB_GLD_MSR_UOC_BASE);
-		printk_err("New UOC Base 0x%08x%08x\n", msr.hi,msr.lo);
-
-		uocmux = (unsigned long *)(msr.lo+4);
-		val = *uocmux;
-
-		printk_err("UOCMUX is 0x%lx\n",val);
-
-		val &= ~(0x3);
-		val |= 0x2;
-
-		*uocmux = val;
-
-		val = *uocmux;
-		printk_err("New UOCMUX is 0x%lx\n",val);
-
-	}
-
 }
 
 

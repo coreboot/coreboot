@@ -20,18 +20,18 @@
 #include "it8671f.h"
 
 /* The base address is 0x3f0, 0x3bd, or 0x370, depending on config bytes. */
-#define SIO_BASE  0x3f0
-#define SIO_INDEX SIO_BASE
-#define SIO_DATA  SIO_BASE+1
+#define SIO_BASE                    0x3f0
+#define SIO_INDEX                   SIO_BASE
+#define SIO_DATA                    SIO_BASE+1
 
-/* TODO: These values are actually from the IT8673F datasheet; check if
-   they're also valid for the IT8671F. */
-#define IT8671F_CONFIG_REG_CC       0x02 /* Configure Control. */
-#define IT8671F_CONFIG_REG_LDN      0x07 /* Logical Device Number. */
-#define IT8671F_CONFIG_REG_CLOCKSEL 0x23 /* Clock Selection. */
-#define IT8671F_CONFIG_REG_SWSUSP   0x24 /* Software Suspend. */
+/* Global Configuration Registers. */
+#define IT8671F_CONFIG_REG_CC      0x02   /* Configure Control (write-only). */
+#define IT8671F_CONFIG_REG_LDN     0x07   /* Logical Device Number. */
+#define IT8671F_CONFIG_REG_LDE     0x23   /* PnP Logical Device Enable. */
+#define IT8671F_CONFIG_REG_SWSUSP  0x24   /* Software Suspend. */
 
-#define IT8671F_ADDRESS_PORT        0x279
+#define IT8671F_CONFIGURATION_PORT 0x0279 /* Write-only. */
+#define IT8671F_WRITE_DATA_PORT    0x0A79 /* Write-only. */
 
 /* Special values used for entering MB PnP mode. The first four bytes of
  * each line determine the address port, the last four are data. */
@@ -42,7 +42,7 @@ static const uint8_t init_values[] = {
 	0xe8, 0x74, 0x3a, 0x9d, /**/ 0xce, 0xe7, 0x73, 0x39,
 };
 
-/* The content of IT8671F_CONFIG_REG_LDN (index 07h) must be set to the
+/* The content of IT8671F_CONFIG_REG_LDN (index 0x07) must be set to the
  * LDN the register belongs to, before you can access the register. */
 static void it8671f_sio_write(uint8_t ldn, uint8_t index, uint8_t value)
 {
@@ -63,10 +63,10 @@ static void it8671f_enable_serial(device_t dev, unsigned iobase)
 	/* Base address 0x3f0: 0x86 0x80 0x55 0x55. */
 	/* Base address 0x3bd: 0x86 0x80 0x55 0xaa. */
 	/* Base address 0x370: 0x86 0x80 0xaa 0x55. */
-	outb(0x86, IT8671F_ADDRESS_PORT);
-	outb(0x80, IT8671F_ADDRESS_PORT);
-	outb(0x55, IT8671F_ADDRESS_PORT);
-	outb(0x55, IT8671F_ADDRESS_PORT);
+	outb(0x86, IT8671F_CONFIGURATION_PORT);
+	outb(0x80, IT8671F_CONFIGURATION_PORT);
+	outb(0x55, IT8671F_CONFIGURATION_PORT);
+	outb(0x55, IT8671F_CONFIGURATION_PORT);
 
 	/* Sequentially write the 32 special values. */
 	for (i = 0; i < 32; i++) {
@@ -75,14 +75,20 @@ static void it8671f_enable_serial(device_t dev, unsigned iobase)
 
 	/* (2) Modify the data of configuration registers. */
 
-	/* Enable parallel port, serial port 1, serial port 2, floppy. */
-	it8671f_sio_write(0x00, 0x23, 0x0f);
+	/* Allow all devices to be enabled. Bits: FDC (0), Com1 (1), Com2 (2),
+           PP (3), Reserved (4), KBCK (5), KBCM (6), Reserved (7). */
+	it8671f_sio_write(0x00, IT8671F_CONFIG_REG_LDE, 0x6f);
 
-	/* Activate serial port 1 and 2. */
-	it8671f_sio_write(0x01, 0x30, 0x1);
-	it8671f_sio_write(0x02, 0x30, 0x1);
+	/* Activate all devices. */  
+	it8671f_sio_write(IT8671F_FDC,  0x30, 0x01); /* Floppy */
+	it8671f_sio_write(IT8671F_SP1,  0x30, 0x01); /* Serial port 1 */
+	it8671f_sio_write(IT8671F_SP2,  0x30, 0x01); /* Serial port 2 */
+	it8671f_sio_write(IT8671F_PP,   0x30, 0x01); /* Parallel port */
+	it8671f_sio_write(IT8671F_KBCK, 0x30, 0x01); /* Keyboard */
+	it8671f_sio_write(IT8671F_KBCM, 0x30, 0x01); /* Mouse */
 
-	/* Select 24MHz CLKIN and clear software suspend mode. */
+	/* Select 24MHz CLKIN (clear bit 6) and clear software suspend
+	   mode (clear bit 0). */
 	it8671f_sio_write(0x00, IT8671F_CONFIG_REG_SWSUSP, 0x00);
 
 	/* (3) Exit the configuration state (MB PnP mode). */

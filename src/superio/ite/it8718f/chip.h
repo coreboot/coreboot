@@ -16,10 +16,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define IT8671F_FDC  0x00 /* Floppy */
-#define IT8671F_SP1  0x01 /* Com1 */
-#define IT8671F_SP2  0x02 /* Com2 */
-#define IT8671F_PP   0x03 /* Parallel port */
-#define IT8671F_KBCK 0x05 /* Keyboard */
-#define IT8671F_KBCM 0x06 /* Mouse */
+#ifndef _SUPERIO_ITE_IT8718F
+#define _SUPERIO_ITE_IT8718F
+
+#include <pc80/keyboard.h>
+#include <uart8250.h>
+
+extern struct chip_operations superio_ITE_it8718f_ops;
+
+struct superio_ITE_it8718f_config {
+	struct uart8250 com1, com2;
+	struct pc_keyboard keyboard;
+};
+
+#endif /* _SUPERIO_ITE_IT8718F */
 

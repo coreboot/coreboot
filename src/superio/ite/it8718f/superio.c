@@ -19,11 +19,11 @@
 #include <uart8250.h>
 #include <pc80/keyboard.h>
 #include "chip.h"
-#include "it8671f.h"
+#include "it8718f.h"
 
 static void init(device_t dev)
 {
-	struct superio_ITE_it8671f_config *conf;
+	struct superio_ITE_it8718f_config *conf;
 	struct resource *res0, *res1;
 
 	if (!dev->enabled) {
@@ -33,24 +33,28 @@ static void init(device_t dev)
 	conf = dev->chip_info;
 
 	switch (dev->path.u.pnp.device) {
-	case IT8671F_FDC: /* TODO. */
+	case IT8718F_FDC: /* TODO. */
 		break;
-	case IT8671F_SP1:
+	case IT8718F_SP1:
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		init_uart8250(res0->base, &conf->com1);
 		break;
-	case IT8671F_SP2:
+	case IT8718F_SP2:
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		init_uart8250(res0->base, &conf->com2);
 		break;
-	case IT8671F_PP: /* TODO. */
+	case IT8718F_PP: /* TODO. */
 		break;
-	case IT8671F_KBCK:
+	case IT8718F_EC: /* TODO. */
+		break;
+	case IT8718F_KBCK:
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		res1 = find_resource(dev, PNP_IDX_IO1);
 		init_pc_keyboard(res0->base, res1->base, &conf->keyboard);
 		break;
-	case IT8671F_KBCM: /* TODO. */
+	case IT8718F_KBCM: /* TODO. */
+		break;
+	case IT8718F_IR: /* TODO. */
 		break;
 	}
 }
@@ -63,11 +67,11 @@ static struct device_operations ops = {
 	.init             = init,
 };
 
-/* TODO: FDC, PP, KBCM. */
+/* TODO: FDC, PP, EC, KBCM, IR. */
 static struct pnp_info pnp_dev_info[] = {
- { &ops, IT8671F_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
- { &ops, IT8671F_SP2,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1, { 0x7f8, 0 }, },
- { &ops, IT8671F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x7f8, 0 }, { 0x7f8, 0x4}, },
+ { &ops, IT8718F_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
+ { &ops, IT8718F_SP2,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1, { 0x7f8, 0 }, },
+ { &ops, IT8718F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x7f8, 0 }, { 0x7f8, 0x4}, },
 };
 
 static void enable_dev(struct device *dev)
@@ -76,8 +80,8 @@ static void enable_dev(struct device *dev)
 		sizeof(pnp_dev_info)/sizeof(pnp_dev_info[0]), pnp_dev_info);
 }
 
-struct chip_operations superio_ITE_it8671f_ops = {
-	CHIP_NAME("ITE it8671f")
+struct chip_operations superio_ITE_it8718f_ops = {
+	CHIP_NAME("ITE it8718f")
 	.enable_dev = enable_dev,
 };
 

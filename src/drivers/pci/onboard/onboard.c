@@ -20,7 +20,7 @@
 	in your MB mainboard Config.lb
 	2. add 
 		#       48K for SCSI FW or ATI ROM
-		        option ROM_SIZE = 475136
+		        option ROM_SIZE = 512*1024-48*1024
 	in your MB targets Config.lb, afer romimage "normal"
 	3. create you vgabios.bin under normal bios and put that in dir that targets Config residues.
 		# dd if=/dev/mem of=atix.rom skip=1536 count=96

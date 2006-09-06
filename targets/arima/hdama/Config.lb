@@ -6,7 +6,7 @@
 target hdama
 mainboard arima/hdama
 
-option ROM_SIZE=487424
+option ROM_SIZE=512*1024-36*1024
 
 # Arima hdama
 romimage "normal"

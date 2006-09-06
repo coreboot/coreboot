@@ -125,9 +125,9 @@ option CONFIG_ROM_STREAM     = 1
 # 
 romimage "normal"
 #	48K for SCSI FW
-#        option ROM_SIZE = 475136
+#        option ROM_SIZE = 512*1024-48*1024
 #	48K for SCSI FW and 48K for ATI ROM
-#	option ROM_SIZE = 425984  
+#        option ROM_SIZE = 512*1024-48*1024-48*1024
         option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
 	option USE_FALLBACK_IMAGE=0
 	option ROM_SECTION_SIZE  = (ROM_SIZE - FALLBACK_SIZE)

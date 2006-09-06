@@ -15,8 +15,7 @@ option CONFIG_MAX_CPUS=4
 option HAVE_ACPI_TABLES=1
 
 romimage "normal"
-	# 512-36 k
-        option ROM_SIZE = 487424 
+        option ROM_SIZE = 512*1024-36*1024
 	option USE_FALLBACK_IMAGE=0
 	option ROM_IMAGE_SIZE=0x20000
 	option XIP_ROM_SIZE=0x20000

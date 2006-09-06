@@ -5,7 +5,7 @@
 target solo-8mbit
 mainboard amd/solo
 
-option ROM_SIZE=0x100000
+option ROM_SIZE=1024*1024
 
 romimage "only" 
 	option USE_FALLBACK_IMAGE=1

@@ -4,7 +4,7 @@
 target epia.512kflash
 mainboard via/epia
 
-option ROM_SIZE=524288
+option ROM_SIZE=512*1024
 
 #
 # Via Epia

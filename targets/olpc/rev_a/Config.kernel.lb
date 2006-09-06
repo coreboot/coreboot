@@ -3,7 +3,7 @@
 target rev_a
 mainboard olpc/rev_a
 
-option ROM_SIZE=1024*128*7
+option ROM_SIZE=7*128*1024
 option FALLBACK_SIZE=ROM_SIZE
 
 #romimage "normal"

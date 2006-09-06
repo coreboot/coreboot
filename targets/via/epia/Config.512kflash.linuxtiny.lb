@@ -4,7 +4,7 @@
 target epia.512kflash.linuxtiny
 mainboard via/epia
 
-option ROM_SIZE=524288
+option ROM_SIZE=512*1024
 option FALLBACK_SIZE=ROM_SIZE
 option MAXIMUM_CONSOLE_LOGLEVEL=10
 option DEFAULT_CONSOLE_LOGLEVEL=10

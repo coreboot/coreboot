@@ -64,7 +64,7 @@ option INTEL_PPRO_MTRR=1
 option k7=1
 option k8=1
 
-option ROM_SIZE=0x100000
+option ROM_SIZE=1024*1024
 
 
 option HAVE_OPTION_TABLE=1

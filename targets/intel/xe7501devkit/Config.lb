@@ -3,7 +3,7 @@ mainboard intel/xe7501devkit
 
 ## ROM_SIZE is the total number of bytes allocated for LinuxBIOS use
 ## (normal AND fallback images and payloads).
-option ROM_SIZE = 0x30000
+option ROM_SIZE = 192*1024
 
 ## ROM_IMAGE_SIZE is the maximum number of bytes allowed for a LinuxBIOS image,
 ## not including any payload.

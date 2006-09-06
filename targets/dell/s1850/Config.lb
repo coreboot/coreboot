@@ -1,7 +1,7 @@
 target s1850
 mainboard dell/s1850
 
-option ROM_SIZE=0x100000
+option ROM_SIZE=1024*1024
 option MAXIMUM_CONSOLE_LOGLEVEL=10
 option DEFAULT_CONSOLE_LOGLEVEL=10
 

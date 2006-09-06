@@ -5,7 +5,7 @@
 target som_gx533c
 mainboard advantech/som_gx533c
 
-option ROM_SIZE=1024*512
+option ROM_SIZE=512*1024
 
 option MAXIMUM_CONSOLE_LOGLEVEL=9
 option DEFAULT_CONSOLE_LOGLEVEL=9

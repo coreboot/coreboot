@@ -38,7 +38,7 @@ romimage "normal"
         option CONFIG_FS_FAT=1
         option AUTOBOOT_CMDLINE="hda1:/vmlinuz"
 
-        option ROM_SIZE=1048576
+        option ROM_SIZE=1024*1024
 
         ## Board has fixed size RAM
         option EMBEDDED_RAM_SIZE=64*1024*1024

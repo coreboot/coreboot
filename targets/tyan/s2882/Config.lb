@@ -8,11 +8,11 @@ mainboard tyan/s2882
 # Tyan s2882
 romimage "normal"
 #       48K for SCSI FW or ATI ROM
-        option ROM_SIZE = 475136
+        option ROM_SIZE = 512*1024-48*1024
 #       48K for SCSI FW and 48K for ATI ROM
-#       option ROM_SIZE = 425984 
+#        option ROM_SIZE = 512*1024-48*1024-48*1024
 #       64K for Etherboot
-#        option ROM_SIZE = 458752 
+#        option ROM_SIZE = 512*1024-64*1024
 	option USE_FALLBACK_IMAGE=0
 #        option ROM_IMAGE_SIZE=0x11800
 #	option ROM_IMAGE_SIZE=0x16000

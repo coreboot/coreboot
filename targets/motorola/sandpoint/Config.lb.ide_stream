@@ -57,7 +57,7 @@ option IDE_SWAB=1
 option IDE_OFFSET=0
 
 # ROM is 1Mb
-option ROM_SIZE=1048576
+option ROM_SIZE=1024*1024
 
 # Set stack and heap sizes (stage 2)
 option STACK_SIZE=0x10000

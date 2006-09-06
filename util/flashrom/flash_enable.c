@@ -3,6 +3,7 @@
  *
  *   Copyright (C) 2000-2004 ???
  *   Copyright (C) 2005 coresystems GmbH <stepan@openbios.org>
+ *   Copyright (C) 2006 Uwe Hermann <uwe@hermann-uwe.de>
  *
  *   This program is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU General Public License
@@ -76,43 +77,21 @@ static int enable_flash_sis630(struct pci_dev *dev, char *name)
 	return 0;
 }
 
-static int enable_flash_e7500(struct pci_dev *dev, char *name)
-{
-	/* register 4e.b gets or'ed with one */
-	uint8_t old, new;
-	/* if it fails, it fails. There are so many variations of broken mobos
-	 * that it is hard to argue that we should quit at this point. 
-	 */
-
-	old = pci_read_byte(dev, 0x4e);
-
-	new = old | 1;
-
-	if (new == old)
-		return 0;
-
-	pci_write_byte(dev, 0x4e, new);
-
-	if (pci_read_byte(dev, 0x4e) != new) {
-		printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
-		       0x4e, new, name);
-		return -1;
-	}
-	return 0;
-}
-
-enum {
-	ICH4_BIOS_CNTL = 0x4e,
-	/* see page 375 of "Intel ICH7 External Design Specification"
-	 * http://download.intel.com/design/chipsets/datashts/30701302.pdf */
-	ICH7_BIOS_CNTL = 0xdc,
-};
 static int enable_flash_ich(struct pci_dev *dev, char *name, int bios_cntl)
 {
 	/* register 4e.b gets or'ed with one */
 	uint8_t old, new;
+
 	/* if it fails, it fails. There are so many variations of broken mobos
 	 * that it is hard to argue that we should quit at this point. 
+	 */
+
+	/* Note: the ICH0-ICH5 BIOS_CNTL register is actually 16 bit wide, but
+         * just treating it as 8 bit wide seems to work fine in practice. 
+	 */
+
+	/* see ie. page 375 of "Intel ICH7 External Design Specification"
+	 * http://download.intel.com/design/chipsets/datashts/30701302.pdf 
 	 */
 
 	old = pci_read_byte(dev, bios_cntl);
@@ -132,14 +111,14 @@ static int enable_flash_ich(struct pci_dev *dev, char *name, int bios_cntl)
 	return 0;
 }
 
-static int enable_flash_ich4(struct pci_dev *dev, char *name)
+static int enable_flash_ich_4e(struct pci_dev *dev, char *name)
 {
-	return enable_flash_ich(dev, name, ICH4_BIOS_CNTL);
+	return enable_flash_ich(dev, name, 0x4e);
 }
 
-static int enable_flash_ich7(struct pci_dev *dev, char *name)
+static int enable_flash_ich_dc(struct pci_dev *dev, char *name)
 {
-	return enable_flash_ich(dev, name, ICH7_BIOS_CNTL);
+	return enable_flash_ich(dev, name, 0xdc);
 }
 
 static int enable_flash_vt8235(struct pci_dev *dev, char *name)
@@ -382,12 +361,24 @@ typedef struct penable {
 } FLASH_ENABLE;
 
 static FLASH_ENABLE enables[] = {
-	{0x1039, 0x0630, "sis630", enable_flash_sis630},
-	{0x8086, 0x2480, "E7500", enable_flash_e7500},
-	{0x8086, 0x24c0, "ICH4", enable_flash_ich4},
-	{0x8086, 0x24cc, "ICH4-M", enable_flash_ich4},
-	{0x8086, 0x24d0, "ICH5", enable_flash_ich4},
-	{0x8086, 0x27b8, "ICH7", enable_flash_ich7},
+	{0x1039, 0x0630, "SIS630", enable_flash_sis630},
+	{0x8086, 0x2410, "ICH", enable_flash_ich_4e},
+	{0x8086, 0x2420, "ICH0", enable_flash_ich_4e},
+	{0x8086, 0x2440, "ICH2", enable_flash_ich_4e},
+	{0x8086, 0x244c, "ICH2-M", enable_flash_ich_4e},
+	{0x8086, 0x2480, "ICH3-S", enable_flash_ich_4e},
+	{0x8086, 0x248c, "ICH3-M", enable_flash_ich_4e},
+	{0x8086, 0x24c0, "ICH4/ICH4-L", enable_flash_ich_4e},
+	{0x8086, 0x24cc, "ICH4-M", enable_flash_ich_4e},
+	{0x8086, 0x24d0, "ICH5/ICH5R", enable_flash_ich_4e},
+	{0x8086, 0x2640, "ICH6/ICH6R", enable_flash_ich_dc},
+	{0x8086, 0x2641, "ICH6-M", enable_flash_ich_dc},
+	{0x8086, 0x27b8, "ICH7/ICH7R", enable_flash_ich_dc},
+	{0x8086, 0x27b9, "ICH7M", enable_flash_ich_dc},
+	{0x8086, 0x27bd, "ICH7MDH", enable_flash_ich_dc},
+	{0x8086, 0x2810, "ICH8/ICH8R", enable_flash_ich_dc},
+	{0x8086, 0x2812, "ICH8DH", enable_flash_ich_dc},
+	{0x8086, 0x2814, "ICH8DO", enable_flash_ich_dc},
 	{0x1106, 0x8231, "VT8231", enable_flash_vt8231},
 	{0x1106, 0x3177, "VT8235", enable_flash_vt8235},
 	{0x1078, 0x0100, "CS5530", enable_flash_cs5530},

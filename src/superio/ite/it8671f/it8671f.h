@@ -16,6 +16,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+/* Datasheet: Not available online, got it from ITE per request. */
+/* Status: Com1 is tested and works. */
+
 #define IT8671F_FDC  0x00 /* Floppy */
 #define IT8671F_SP1  0x01 /* Com1 */
 #define IT8671F_SP2  0x02 /* Com2 */

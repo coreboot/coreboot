@@ -1,3 +1,6 @@
+- 2.0.0
+  - this NEWS file is neglected in favor of the svn commit logs.
+    See http://snapshots.linuxbios.org/
 - 1.1.8
   - Store everything in arch
 - 1.1.7

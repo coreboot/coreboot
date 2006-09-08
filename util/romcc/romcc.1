@@ -1,0 +1,243 @@
+.\" Copyright (C) 2006 Uwe Hermann <uwe@hermann-uwe.de>.
+.\" This manpage is licensed under the terms of the GNU GPL.
+.TH ROMCC 1 "September 7, 2006"
+.SH NAME
+romcc \- compile C programs into binaries that don't use any RAM
+.SH SYNOPSIS
+.B romcc
+.BR [ OPTIONS ]
+.IR "<source>" ".c"
+.SH DESCRIPTION
+.B romcc
+is a C compiler which produces binaries which do not rely on RAM, but
+instead only use CPU registers.
+.br
+It is prominently used in the LinuxBIOS project to compile C code which
+needs to run before the (Linux)BIOS has initialized the RAM, but can be
+used for other purposes, too.
+.SH OPTIONS
+.B "\-o" <filename>
+Output file name.
+.PP
+.B "\-f<option>"
+Specify a generic compiler option.
+.PP
+.B "\-m<option>"
+Specify an architecture-dependent compiler option.
+.PP
+.B "\-\-"
+Specify that this is the last option.
+.PP
+.SH "GENERIC COMPILER OPTIONS"
+.B "\-O"
+.PP
+.B "\-O2"
+.PP
+.B "\-E"
+.PP
+.B "\-ftrigraphs"
+.PP
+.B "\-fno-trigraphs"
+.PP
+.B "\-fpp-only"
+.PP
+.B "\-fno-pp-only"
+.PP
+.B "\-feliminate-inefectual-code"
+.PP
+.B "\-fno-eliminate-inefectual-code"
+.PP
+.B "\-fsimplify"
+.PP
+.B "\-fno-simplify"
+.PP
+.B "\-fscc-transform"
+.PP
+.B "\-fno-scc-transform"
+.PP
+.B "\-fsimplify-op"
+.PP
+.B "\-fno-simplify-op"
+.PP
+.B "\-fsimplify-phi"
+.PP
+.B "\-fno-simplify-phi"
+.PP
+.B "\-fsimplify-label"
+.PP
+.B "\-fno-simplify-label"
+.PP
+.B "\-fsimplify-branch"
+.PP
+.B "\-fno-simplify-branch"
+.PP
+.B "\-fsimplify-copy"
+.PP
+.B "\-fno-simplify-copy"
+.PP
+.B "\-fsimplify-arith"
+.PP
+.B "\-fno-simplify-arith"
+.PP
+.B "\-fsimplify-shift"
+.PP
+.B "\-fno-simplify-shift"
+.PP
+.B "\-fsimplify-bitwise"
+.PP
+.B "\-fno-simplify-bitwise"
+.PP
+.B "\-fsimplify-logical"
+.PP
+.B "\-fno-simplify-logical"
+.PP
+.B "\-fsimplify-bitfield"
+.PP
+.B "\-fno-simplify-bitfield"
+.PP
+.B "\-finline-policy=always"
+.PP
+.B "\-finline-policy=never"
+.PP
+.B "\-finline-policy=defaulton"
+.PP
+.B "\-finline-policy=defaultoff"
+.PP
+.B "\-finline-policy=nopenalty"
+.PP
+.B "\-fdebug-all"
+.PP
+.B "\-fno-debug-all"
+.PP
+.B "\-fdebug-abort-on-error"
+.PP
+.B "\-fno-debug-abort-on-error"
+.PP
+.B "\-fdebug-basic-blocks"
+.PP
+.B "\-fno-debug-basic-blocks"
+.PP
+.B "\-fdebug-fdominators"
+.PP
+.B "\-fno-debug-fdominators"
+.PP
+.B "\-fdebug-rdominators"
+.PP
+.B "\-fno-debug-rdominators"
+.PP
+.B "\-fdebug-triples"
+.PP
+.B "\-fno-debug-triples"
+.PP
+.B "\-fdebug-interference"
+.PP
+.B "\-fno-debug-interference"
+.PP
+.B "\-fdebug-scc-transform"
+.PP
+.B "\-fno-debug-scc-transform"
+.PP
+.B "\-fdebug-scc-transform2"
+.PP
+.B "\-fno-debug-scc-transform2"
+.PP
+.B "\-fdebug-rebuild-ssa-form"
+.PP
+.B "\-fno-debug-rebuild-ssa-form"
+.PP
+.B "\-fdebug-inline"
+.PP
+.B "\-fno-debug-inline"
+.PP
+.B "\-fdebug-live-range-conflicts"
+.PP
+.B "\-fno-debug-live-range-conflicts"
+.PP
+.B "\-fdebug-live-range-conflicts2"
+.PP
+.B "\-fno-debug-live-range-conflicts2"
+.PP
+.B "\-fdebug-color-graph"
+.PP
+.B "\-fno-debug-color-graph"
+.PP
+.B "\-fdebug-color-graph2"
+.PP
+.B "\-fno-debug-color-graph2"
+.PP
+.B "\-fdebug-coalescing"
+.PP
+.B "\-fno-debug-coalescing"
+.PP
+.B "\-fdebug-coalescing2"
+.PP
+.B "\-fno-debug-coalescing2"
+.PP
+.B "\-fdebug-verification"
+.PP
+.B "\-fno-debug-verification"
+.PP
+.B "\-fdebug-calls"
+.PP
+.B "\-fno-debug-calls"
+.PP
+.B "\-fdebug-calls2"
+.PP
+.B "\-fno-debug-calls2"
+.PP
+.B "\-fdebug-tokens"
+.PP
+.B "\-fno-debug-tokens"
+.PP
+.B "\-flabel-prefix=<prefix for assembly language labels>"
+.PP
+.B "\-\-label-prefix=<prefix for assembly language labels>"
+.PP
+.B "\-I<include path>"
+.PP
+.B "\-D<macro>[=defn]"
+.PP
+.B "\-U<macro>"
+.SH "ARCHITECTURE-SPECIFIC COMPILER OPTIONS"
+.B "\-mmmx"
+.PP
+.B "\-mno-mmx"
+.PP
+.B "\-msse"
+.PP
+.B "\-mno-sse"
+.PP
+.B "\-mnoop-copy"
+.PP
+.B "\-mno-noop-copy"
+.PP
+.B "\-mcpu=i386"
+.PP
+.B "\-mcpu=p2"
+.PP
+.B "\-mcpu=p3"
+.PP
+.B "\-mcpu=p4"
+.PP
+.B "\-mcpu=k7"
+.PP
+.B "\-mcpu=k8"
+.PP
+.B "\-mcpu=c3"
+.PP
+.B "\-mcpu=c3-2"
+.SH BUGS
+Please report any bugs to Eric W. Biederman <ebiederman@lnxi.com>.
+.SH LICENCE
+.B romcc
+is covered by the GNU General Public License (GPL), version 2.
+.SH SEE ALSO
+.BR flashrom (1).
+.SH COPYRIGHT
+2003-2006 Eric W. Biederman
+.SH AUTHORS
+Eric W. Biederman <ebiederman@lnxi.com>
+.br
+Some contributions by others.
+.PP
+This manual page was written by Uwe Hermann <uwe@hermann-uwe.de>.

@@ -41,7 +41,7 @@ static const unsigned char slotPins[4] =     { 'B','C','D','A'};
 static const unsigned char firewirePins[4] = { 'B','C','D','A'};
 static const unsigned char vt8235Pins[4] =   { 'A','B','C','D'};
 static const unsigned char vgaPins[4] =      { 'A','B','C','D'};
-static const unsigned char cbPins[4] =       { 'D','A','B','C'};
+static const unsigned char cbPins[4] =       { 'A','B','C','D'};
 static const unsigned char riserPins[4] =    { 'A','B','C','D'};
 
 

@@ -94,6 +94,17 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	msr.lo = 0x8ea0ad6a;
 	wrmsr(0x4c00000f, msr);
 
-	/* DRAM working now?? */
+	/* Fixes from Jordan Crouse of AMD. */
+
+	/* make sure there is nothing stale in the cache */
+	__asm__("wbinvd\n");
+
+	print_debug("RAM DLL lock\r\n");
+	/* The RAM dll needs a write to lock on so generate a few dummy writes */
+	volatile unsigned long *ptr;
+	for (i=0;i<5;i++) {
+		ptr = (void *)i;
+		*ptr = (unsigned long)i;
+	}
 
 }

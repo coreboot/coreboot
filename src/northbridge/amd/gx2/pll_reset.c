@@ -126,7 +126,7 @@ static unsigned int get_memory_speed(void)
 
 #define DEFAULT_MDIV	3
 #define DEFAULT_VDIV	2
-#define DEFAULT_FBDIV	24  // 400/266 018 ;300/200 
+#define DEFAULT_FBDIV	22	// 366/244 ; 24 400/266 018 ;300/200 
 
 static void pll_reset(void)
 {

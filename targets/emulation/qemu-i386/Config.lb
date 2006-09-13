@@ -8,7 +8,6 @@ option ROM_SIZE=256*1024
 option CC="gcc -m32"
 
 romimage "image" 
-	option USE_FALLBACK_IMAGE=1
 	option ROM_IMAGE_SIZE=0x10000
 	option LINUXBIOS_EXTRA_VERSION="-OpenBIOS"
 	payload /home/stepan/openbios.elf

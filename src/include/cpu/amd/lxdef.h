@@ -221,12 +221,19 @@
 #define	CPU_IM_BIST_DATA						0x1731
 
 
+/*  ----- GX3 OK  ----  */
+
 /* various CPU MSRs */
 #define CPU_DM_CONFIG0 0x1800
 #define	DM_CONFIG0_UPPER_WSREQ_SHIFT  12
 #define	DM_CONFIG0_LOWER_DCDIS_SET		(1<<8)
 #define	DM_CONFIG0_LOWER_WBINVD_SET	(1<<5)
 #define	DM_CONFIG0_LOWER_MISSER_SET		(1<<1)
+
+#define CPU_DM_CONFIG1							0x1801
+
+#define CPU_DM_PFLOCK							0x1804
+
 /* configuration MSRs */
 #define	CPU_RCONF_DEFAULT						0x1808
 #define		RCONF_DEFAULT_UPPER_ROMRC_SHIFT				24
@@ -236,7 +243,6 @@
 #define		RCONF_DEFAULT_LOWER_SYSTOP_SHIFT			8
 #define		RCONF_DEFAULT_LOWER_SYSRC_SHIFT				0
 
-/*  ----- GX3 OK  ----  */
 
 #define	CPU_RCONF_BYPASS						0x180A
 #define	CPU_RCONF_A0_BF							0x180B
@@ -421,20 +427,24 @@
 #define	GLPCI_CTRL_LOWER_ME_SET					(1<<0)
 
 #define	GLPCI_ARB			(MSR_PCI + 0x2011)
-#define	GLPCI_ARB_UPPER_BM1_SET					(1<<17)
-#define	GLPCI_ARB_UPPER_BM0_SET					(1<<16)
-#define	GLPCI_ARB_UPPER_CPRE_SET					(1<<15)
-#define	GLPCI_ARB_UPPER_PRE2_SET					(1<<10)
-#define	GLPCI_ARB_UPPER_PRE1_SET					(1<<9)
-#define	GLPCI_ARB_UPPER_PRE0_SET					(1<<8)
-#define	GLPCI_ARB_UPPER_CRME_SET					(1<<7)
-#define	GLPCI_ARB_UPPER_RME2_SET					(1<<2)
-#define	GLPCI_ARB_UPPER_RME1_SET					(1<<1)
-#define	GLPCI_ARB_UPPER_RME0_SET					(1<<0)
-#define	GLPCI_ARB_LOWER_PRCM_SHIFT				24
-#define	GLPCI_ARB_LOWER_FPVEC_SHIFT				16
-#define	GLPCI_ARB_LOWER_RMT_SHIFT				6
-#define	GLPCI_ARB_LOWER_IIE_SET					(1<<8)
+#define	GLPCI_ARB_UPPER_CR_SHIFT				 	(28)
+#define	GLPCI_ARB_UPPER_R2_SHIFT				 	(24)
+#define	GLPCI_ARB_UPPER_R1_SHIFT				 	(20)
+#define	GLPCI_ARB_UPPER_R0_SHIFT				 	(16)
+#define	GLPCI_ARB_UPPER_CH_SHIFT				 	(12)
+#define	GLPCI_ARB_UPPER_H2_SHIFT				 	(8)
+#define	GLPCI_ARB_UPPER_H1_SHIFT				 	(4)
+#define	GLPCI_ARB_UPPER_H0_SHIFT				 	(0)
+#define	GLPCI_ARB_LOWER_COV_SET						(1<<23)
+#define	GLPCI_ARB_LOWER_MSK2_SET				 	(1<<18)
+#define	GLPCI_ARB_LOWER_MSK1_SET				 	(1<<17)
+#define	GLPCI_ARB_LOWER_MSK0_SET				 	(1<<16)
+#define	GLPCI_ARB_LOWER_CPRE_SET					(1<<11)
+#define	GLPCI_ARB_LOWER_PRE2_SET					(1<<10)
+#define	GLPCI_ARB_LOWER_PRE1_SET					(1<<9)
+#define	GLPCI_ARB_LOWER_PRE0_SET					(1<<8)
+#define	GLPCI_ARB_LOWER_BM1_SET						(1<<7)
+#define	GLPCI_ARB_LOWER_BM0_SET						(1<<6)
 #define	GLPCI_ARB_LOWER_PARK_SET					(1<<0)
 
 #define	GLPCI_REN			(MSR_PCI + 0x2014)
@@ -507,24 +517,83 @@
 
 /*  Set up desc addresses from 20 - 3f*/
 /*  This is chip specific!*/
+
+/* ----------   GX3 OK   --------------  */
 #define MSR_GLIU0_BASE1			(MSR_GLIU0 + 0x20)		/*  BM*/
 #define MSR_GLIU0_BASE2			(MSR_GLIU0 + 0x21)		/*  BM*/
+#define MSR_GLIU0_BASE3			(MSR_GLIU0 + 0x22)		/*  BM*/
+#define MSR_GLIU0_BASE4			(MSR_GLIU0 + 0x23)		/*  BM*/
+#define MSR_GLIU0_BASE5			(MSR_GLIU0 + 0x24)		/*  BM*/
+#define MSR_GLIU0_BASE6			(MSR_GLIU0 + 0x25)		/*  BM*/
+
+#define GLIU0_P2D_BMO_0			(MSR_GLIU0 + 0x26)
+#define GLIU0_P2D_BMO_1			(MSR_GLIU0 + 0x27)
+
+#define MSR_GLIU0_SMM			(GLIU0_P2D_BMO_0)
+#define MSR_GLIU0_DMM			(GLIU0_P2D_BMO_1)
+
+#define GLIU0_P2D_R				(MSR_GLIU0 + 0x28)
+#define MSR_GLIU0_SYSMEM		(GLIU0_P2D_R)
+
+#define GLIU0_P2D_RO_0			(MSR_GLIU0 + 0x29)
+#define GLIU0_P2D_RO_1			(MSR_GLIU0 + 0x2A)
+#define GLIU0_P2D_RO_2			(MSR_GLIU0 + 0x2B)
+
 #define MSR_GLIU0_SHADOW			(MSR_GLIU0 + 0x2C)		/*  SCO should only be SC*/
-#define MSR_GLIU0_SYSMEM			(MSR_GLIU0 + 0x28)		/*  RO should only be R*/
-#define MSR_GLIU0_SMM			(MSR_GLIU0 + 0x26)		/*  BMO*/
-#define MSR_GLIU0_DMM			(MSR_GLIU0 + 0x27)		/*  BMO*/
+
+#define GLIU0_IOD_BM_0			(MSR_GLIU0 + 0xE0)
+#define GLIU0_IOD_BM_1			(MSR_GLIU0 + 0xE1)
+#define GLIU0_IOD_BM_2			(MSR_GLIU0 + 0xE2)
+
+#define GLIU0_IOD_SC_0			(MSR_GLIU0 + 0xE3)
+#define GLIU0_IOD_SC_1			(MSR_GLIU0 + 0xE4)
+#define GLIU0_IOD_SC_2			(MSR_GLIU0 + 0xE5)
+#define GLIU0_IOD_SC_3			(MSR_GLIU0 + 0xE6)
+#define GLIU0_IOD_SC_4			(MSR_GLIU0 + 0xE7)
+#define GLIU0_IOD_SC_5			(MSR_GLIU0 + 0xE8)
+
 
 #define MSR_GLIU1_BASE1			(MSR_GLIU1 + 0x20)		/*  BM*/
 #define MSR_GLIU1_BASE2			(MSR_GLIU1 + 0x21)		/*  BM*/
-#define MSR_GLIU1_SHADOW			(MSR_GLIU1 + 0x2E)		/*  SCO should only be SC*/ // GX3 0x2D -> 0x2E
-#define MSR_GLIU1_SYSMEM			(MSR_GLIU1 + 0x2A)		/*  RO should only be R*/  // GX3 0x29 -> 0x2A
-#define MSR_GLIU1_SMM			(MSR_GLIU1 + 0x23)		/*  BM*/
-#define MSR_GLIU1_DMM			(MSR_GLIU1 + 0x24)		/*  BM*/
-#define MSR_GLIU1_FPU_TRAP		(MSR_GLIU1 + 0x0E3)	/*  FooGlue F0 for FPU*/
+#define MSR_GLIU1_BASE3			(MSR_GLIU1 + 0x22)		/*  BM*/
+#define MSR_GLIU1_BASE4			(MSR_GLIU1 + 0x23)		/*  BM*/
+#define MSR_GLIU1_BASE5			(MSR_GLIU1 + 0x24)		/*  BM*/
+#define MSR_GLIU1_BASE6			(MSR_GLIU1 + 0x25)		/*  BM*/
+#define MSR_GLIU1_BASE7			(MSR_GLIU1 + 0x26)		/*  BM*/
+#define MSR_GLIU1_BASE8			(MSR_GLIU1 + 0x27)		/*  BM*/
+#define MSR_GLIU1_BASE9			(MSR_GLIU1 + 0x28)		/*  BM*/
+#define MSR_GLIU1_BASE10		(MSR_GLIU1 + 0x29)		/*  BM*/
+
+#define GLIU1_P2D_R_0			(MSR_GLIU1 + 0x2A)
+#define GLIU1_P2D_R_1			(MSR_GLIU1 + 0x2B)
+#define GLIU1_P2D_R_2			(MSR_GLIU1 + 0x2C)
+#define GLIU1_P2D_R_3			(MSR_GLIU1 + 0x2D)
+
+
+#define MSR_GLIU1_SHADOW		(MSR_GLIU1 + 0x2E)
+
+#define MSR_GLIU1_SYSMEM		(GLIU1_P2D_R_0)
+
+#define MSR_GLIU1_SMM			(MSR_GLIU1_BASE4)		/*  BM*/
+#define MSR_GLIU1_DMM			(MSR_GLIU1_BASE5)		/*  BM*/
+
+#define GLIU1_IOD_BM_0			(MSR_GLIU1 + 0xE0)
+#define GLIU1_IOD_BM_1			(MSR_GLIU1 + 0xE1)
+#define GLIU1_IOD_BM_2			(MSR_GLIU1 + 0xE2)
+
+#define GLIU1_IOD_SC_0			(MSR_GLIU1 + 0xE3)
+#define GLIU1_IOD_SC_1			(MSR_GLIU1 + 0xE4)
+#define GLIU1_IOD_SC_2			(MSR_GLIU1 + 0xE5)
+#define GLIU1_IOD_SC_3			(MSR_GLIU1 + 0xE6)
+
+/* ------------------------  */
+
+#define MSR_GLIU1_FPU_TRAP		(GLIU1_IOD_SC_0)	/*  FooGlue F0 for FPU*/
+
 
 /* definitions that are "once you are mostly up, start VSA" type things */
 #define SMM_OFFSET	(0x40400000)
-#define SMM_SIZE		(128)			/* changed SMM_SIZE from 256 KB to 128 KB */
+#define SMM_SIZE		(256)
 #define DMM_OFFSET	(0x0C0000000)
 #define DMM_SIZE		(128)
 #define FB_OFFSET		(0x41000000)

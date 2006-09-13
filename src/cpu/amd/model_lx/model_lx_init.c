@@ -5,6 +5,7 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/cache.h>
+#include <arch/io.h>
 
 static void vsm_end_post_smi(void)
 {
@@ -27,7 +28,13 @@ static void model_lx_init(device_t dev)
 	/* Enable the local cpu apics */
 	//setup_lapic();
 
+	// do VSA late init
 	vsm_end_post_smi();
+
+	// Set gate A20 (legacy vsm disables it in late init)
+	printk_debug("A20 (0x92): %d\n",inb(0x92));
+	outb(0x02,0x92);
+	printk_debug("A20 (0x92): %d\n",inb(0x92));
 
 	printk_debug("model_lx_init DONE\n");
 };

@@ -6,7 +6,7 @@ static void pll_reset(void)
 
         msrGlcpSysRstpll = rdmsr(GLCP_SYS_RSTPLL);
 	
-        print_debug("MSR GLCP_SYS_RSTPLL (");
+	print_debug("_MSR GLCP_SYS_RSTPLL (");
 		print_debug_hex32(GLCP_SYS_RSTPLL);
 		print_debug(") value is: ");
 		print_debug_hex32(msrGlcpSysRstpll.hi);
@@ -19,60 +19,18 @@ static void pll_reset(void)
 	// If the "we've already been here" flag is set, don't reconfigure the pll
         if ( !(msrGlcpSysRstpll.lo) )
 	{ // we haven't configured the PLL; do it now
+	    print_debug("CONFIGURING PLL");
+	
                 POST_CODE(0x77);
 	
-               /*
-                *    64 - 32 	    |  31-0 
-                * 
-                *      (03FB)
-                * 0000 0011 1111 1011 | 1000 0000 1101 1110 0000 0000 1000 0001
-                * 
-                *      (039C)
-                * 0000 0011 1001 1100 | 1000 0000 1101 1110 0000 0000 1000 0001
-                * 
-                *       (029C)
-                * 0000 0010 1001 1100 | 1000 0000 1101 1110 0000 0000 1000 0001
-                * 
-                *       (02CB)
-                * 0000 0010 1100 1011 | 1000 0000 1101 1110 0000 0000 1000 0001
-                * 
-                * 00101		1			00101 		1 		| 100000	0		0		11011110 	0000 0000 1000 0001
-                * GLIUMULT	GLIUDIV		COREMULT	COREDIV	| SWFLAGS	(RO)	(RO)	HOLD_COUNT	
-                */
-
-                /* ### 02CB  ###
-                 * GLIUMULT = 6
-                 * GLIUDIV = 2
-                 * COREMULT = 6
-                 * COREDIV = 2
-                 * 
-                 * ### 03FB  ###
-                 * GLIUMULT = 8
-                 * GLIUDIV = 2
-                 * COREMULT = 30
-                 * COREDIV = 2
-                 * 
-                 * ### 039C  ###  bad... why?
-                 * GLIUMULT = 8
-                 * GLIUDIV = 0
-                 * COREMULT = 15
-                 * COREDIV = 0
-                 * 
-                 * ### 029C  ###  good...
-                 * GLIUMULT = 6
-                 * GLIUDIV = 0
-                 * COREMULT = 15
-                 * COREDIV = 0
-                 * 
-                 *  CLOCK = 33 MHz
-                 *
-                 */
+		// HARDCODED VALUES MOVED BACK TO auto.c AS THEY HAVE TO BE BOARD-SPECIFIC
+		// (this file is included from there)
 
 			/* CPU and GLIU mult/div (GLMC_CLK = GLIU_CLK / 2)  */
-			msrGlcpSysRstpll.hi = 0x0000029C;
+		msrGlcpSysRstpll.hi = PLLMSRhi;
 
 			/* Hold Count - how long we will sit in reset */
-			msrGlcpSysRstpll.lo = 0x00DE0000;
+		msrGlcpSysRstpll.lo = PLLMSRlo;
 
 			/* Use SWFLAGS to remember: "we've already been here"  */
 			msrGlcpSysRstpll.lo |= 0x80000000;

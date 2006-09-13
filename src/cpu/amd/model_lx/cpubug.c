@@ -349,9 +349,10 @@ void disablememoryreadorder(void)
 void
 cpubug(void)
 {
+#if 0 //GX3: any CPU bugs to fix here? :)
 	msr_t msr;
 	int rev;
-#if 0 //GX3
+
 	msr = rdmsr(GLCP_CHIP_REVID);
 
 	rev = msr.lo & 0xff;

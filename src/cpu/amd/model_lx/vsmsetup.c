@@ -6,12 +6,13 @@
 #include <arch/io.h>
 #include <string.h>
 #include <cpu/amd/lxdef.h>
+#include <cpu/amd/vr.h>
 
-/* what a mess this uncompress thing is. I am not at all happy about how this 
- * was done, but can't fix it yet. RGM
- */
-#warning "Fix the uncompress once linuxbios knows how to do it"
+// andrei: use the /lib copy of nrv2b
 #include "../lib/nrv2b.c"
+
+#define VSA2_BUFFER			0x60000
+#define VSA2_ENTRY_POINT	0x60020
 
 /* vsmsetup.c derived from vgabios.c. Derived from: */
 
@@ -67,7 +68,7 @@
  *  negligence or otherwise) arising in any way out of the use of this
  *  software, even if advised of the possibility of such damage.
  *
- *  $Id: Exp $
+ *  $Id: vsmsetup.c,v 1.8 2006/09/08 12:47:57 andrei Exp $
  *--------------------------------------------------------------------*/
 
 /* Modified to be a self sufficient plug in so that it can be used 
@@ -137,29 +138,32 @@ __asm__ ("__myidt:		\n"
 /* The address arguments to this function are PHYSICAL ADDRESSES */ 
 static void real_mode_switch_call_vsm(unsigned long smm, unsigned long sysm)
 {
+	uint16_t entryHi = (VSA2_ENTRY_POINT & 0xffff0000) >> 4;
+	uint16_t entryLo = (VSA2_ENTRY_POINT & 0xffff);
+
 	__asm__ __volatile__ (
 		// paranoia -- does ecx get saved? not sure. This is 
 		// the easiest safe thing to do.
 		"	pushal			\n"
 		/* save the stack */
-		"	mov 	%esp, __stack	\n"
+		"	mov 	%%esp, __stack	\n"
 		"	jmp 	1f		\n"
 		"__stack: .long 0		\n"
 		"1:\n"
-		/* get devfn into %ecx */
-		"	movl    %esp, %ebp	\n"
+		/* get devfn into %%ecx */
+		"	movl    %%esp, %%ebp	\n"
 #if 0
 		/* I'm not happy about that pushal followed by esp-relative references. 
 		  * just do hard-codes for now
 		  */
-		"	movl    8(%ebp), %ecx	\n"
-		"	movl    12(%ebp), %edx	\n"
+		"	movl    8(%%ebp), %%ecx	\n"
+		"	movl    12(%%ebp), %%edx	\n"
 #endif
-		"	movl    $0x10000026, %ecx	\n"
-		"	movl    $0x10000028, %edx	\n"
+		"	movl    %0, %%ecx	\n"
+		"	movl    %1, %%edx	\n"
 
 		/* load 'our' gdt */
-		"	lgdt	%cs:__mygdtaddr	\n"
+		"	lgdt	%%cs:__mygdtaddr	\n"
 
 		/*  This configures CS properly for real mode. */
 		"	ljmp	$0x28, $__rms_16bit\n"
@@ -170,17 +174,17 @@ static void real_mode_switch_call_vsm(unsigned long smm, unsigned long sysm)
 		/* Load the segment registers w/ properly configured segment
 		 * descriptors.  They will retain these configurations (limits,
 		 * writability, etc.) once protected mode is turned off. */
-		"	mov	$0x30, %ax	\n"
-		"	mov	%ax, %ds       	\n"
-		"	mov	%ax, %es       	\n"
-		"	mov	%ax, %fs       	\n"
-		"	mov	%ax, %gs       	\n"
-		"	mov	%ax, %ss       	\n"
+		"	mov	$0x30, %%ax	\n"
+		"	mov	%%ax, %%ds       	\n"
+		"	mov	%%ax, %%es       	\n"
+		"	mov	%%ax, %%fs       	\n"
+		"	mov	%%ax, %%gs       	\n"
+		"	mov	%%ax, %%ss       	\n"
 
 		/* Turn off protection (bit 0 in CR0) */
-		"	movl	%cr0, %eax	\n"
-		"	andl	$0xFFFFFFFE, %eax \n"
-		"	movl	%eax, %cr0	\n"
+		"	movl	%%cr0, %%eax	\n"
+		"	andl	$0xFFFFFFFE, %%eax \n"
+		"	movl	%%eax, %%cr0	\n"
 
 		/* Now really going into real mode */
 		"	ljmp	$0,  $__rms_real\n"
@@ -190,61 +194,98 @@ static void real_mode_switch_call_vsm(unsigned long smm, unsigned long sysm)
 		 * that way we can easily share it between real and protected, 
 		 * since the 16-bit ESP at segment 0 will work for any case. */
 		/* Setup a stack */
-		"	mov	$0x0, %ax	\n"
-		"	mov	%ax, %ss	\n"
-		"	movl	$0x1000, %eax	\n"
-		"	movl	%eax, %esp	\n"
+		"	mov	$0x0, %%ax	\n"
+		"	mov	%%ax, %%ss	\n"
+		"	movl	$0x1000, %%eax	\n"
+		"	movl	%%eax, %%esp	\n"
 
 		/* Load our 16 it idt */
-		"	xor	%ax, %ax	\n"
-		"	mov	%ax, %ds	\n"
+		"	xor	%%ax, %%ax	\n"
+		"	mov	%%ax, %%ds	\n"
 		"	lidt	__myidt		\n"
 
 		/* Dump zeros in the other segregs */
-		"	mov	%ax, %es       	\n"
+		"	mov	%%ax, %%es       	\n"
 		/* FixMe: Big real mode for gs, fs? */
-		"	mov	%ax, %fs       	\n"
-		"	mov	%ax, %gs       	\n"
-		"	mov	$0x40, %ax	\n"
-		"	mov	%ax, %ds	\n"
-		//"	mov	%cx, %ax	\n"
-		"	movl    $0x10000026, %ecx	\n"
-		"	movl    $0x10000028, %edx	\n"
+		"	mov	%%ax, %%fs       	\n"
+		"	mov	%%ax, %%gs       	\n"
+		"	mov	$0x40, %%ax	\n"
+		"	mov	%%ax, %%ds	\n"
+		//"	mov	%%cx, %%ax	\n"
+		"	movl    %0, %%ecx	\n"
+		"	movl    %1, %%edx	\n"
 
-		/* run VGA BIOS at 0x6000:0020 */
-		"	lcall	$0x6000, $0x0020\n"
+		/* call the VSA2 entry point address */
+		"	lcall	%2, %3\n"
 
 		/* if we got here, just about done. 
 		 * Need to get back to protected mode */
-		"	movl	%cr0, %eax	\n"
-		"	orl	$0x0000001, %eax\n" /* PE = 1 */
-		"	movl	%eax, %cr0	\n"
+		"	movl	%%cr0, %%eax	\n"
+		"	orl	$0x0000001, %%eax\n" /* PE = 1 */
+		"	movl	%%eax, %%cr0	\n"
 
 		/* Now that we are in protected mode jump to a 32 bit code segment. */
 		"	data32	ljmp	$0x10, $vsmrestart\n"
 		"vsmrestart:\n"
 		"	.code32\n"
-		"	movw	$0x18, %ax     	\n"
-		"	mov	%ax, %ds       	\n"
-		"	mov	%ax, %es	\n"
-		"	mov	%ax, %fs	\n"
-		"	mov	%ax, %gs	\n"
-		"	mov	%ax, %ss	\n"
+		"	movw	$0x18, %%ax     	\n"
+		"	mov	%%ax, %%ds       	\n"
+		"	mov	%%ax, %%es	\n"
+		"	mov	%%ax, %%fs	\n"
+		"	mov	%%ax, %%gs	\n"
+		"	mov	%%ax, %%ss	\n"
 
 		/* restore proper gdt and idt */
-		"	lgdt	%cs:gdtarg	\n"
+		"	lgdt	%%cs:gdtarg	\n"
 		"	lidt	idtarg		\n"
 
 		".globl vsm_exit		\n"
 		"vsm_exit:			\n"
-		"	mov	__stack, %esp	\n"
+		"	mov	__stack, %%esp	\n"
 		"	popal			\n"
-		);
+		:: "g" (smm), "g" (sysm), "g" (entryHi), "g" (entryLo));
 }
 
 __asm__ (".text\n""real_mode_switch_end:\n");
 extern char real_mode_switch_end[];
 
+// andrei: some VSA virtual register helpers: raw read and MSR read
+
+uint32_t VSA_vrRead(uint16_t classIndex)
+{
+	unsigned eax, ebx, ecx, edx;
+	asm volatile(
+
+		"movw	$0x0AC1C, %%dx			\n"
+		"orl	$0x0FC530000, %%eax		\n"
+		"outl	%%eax, %%dx				\n"
+		"addb	$2, %%dl				\n"
+		"inw	%%dx, %%ax				\n"
+
+		: "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx)
+		: "a" (classIndex)
+		);
+
+	return eax;
+}
+
+uint32_t VSA_msrRead(uint32_t msrAddr)
+{
+	unsigned eax, ebx, ecx, edx;
+	asm volatile(
+
+		"movw	$0x0AC1C, %%dx			\n"
+		"movl	$0x0FC530007, %%eax		\n"
+		"outl	%%eax, %%dx				\n"
+		"addb	$2, %%dl				\n"
+		"inw	%%dx, %%ax				\n"
+
+		: "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx)
+		: "c" (msrAddr)
+		);
+
+	return eax;
+}
 
 void do_vsmbios(void)
 {
@@ -272,9 +313,9 @@ void do_vsmbios(void)
 	/* the VSA starts at the base of rom - 64 */
 	//rom = ((unsigned long) 0) - (ROM_SIZE  + 64*1024);
 	
-	rom = 0xfffc0000;
+	rom = 0xfffc8000;
 
-	buf = (unsigned char *) 0x60000;
+	buf = (unsigned char *) VSA2_BUFFER;
 	unrv2b((uint8_t *)rom, buf);
 	printk_debug("buf %p *buf %d buf[256k] %d\n",
 		     buf, buf[0], buf[SMM_SIZE*1024]);
@@ -288,18 +329,23 @@ void do_vsmbios(void)
 		return;
 	}
 
-	//memcpy((void *) 0x60000, buf, size);
+	//memcpy((void *) VSA2_BUFFER, buf, size);
 
 	//for (i = 0; i < 0x800000; i++)
 	//	outb(0xaa, 0x80);
 
 	/* ecx gets smm, edx gets sysm */
 	printk_err("Call real_mode_switch_call_vsm\n");
-	real_mode_switch_call_vsm(0x10000026, 0x10000028);
+	real_mode_switch_call_vsm(MSR_GLIU0_SMM, MSR_GLIU0_SYSMEM);
 
 	/* restart timer 1 */
 	outb(0x56, 0x43);
 	outb(0x12, 0x41);
+
+	// check that VSA is running OK
+	if(VSA_vrRead(SIGNATURE) == VSA2_SIGNATURE)
+		printk_debug("do_vsmbios: VSA2 VR signature verified\n");
+	else printk_err("do_vsmbios: VSA2 VR signature not valid, install failed!\n");
 }
 
 
@@ -520,7 +566,7 @@ int biosint(unsigned long intnumber,
 		break;
 	case MEMSIZE: 
 		// who cares. 
-		eax = 64 * 1024;
+		eax = 128 * 1024;
 		ret = 0;
 		break;
 	case 0x15:
@@ -562,7 +608,7 @@ void setup_realmode_idt(void)
 	// and get it that way. But that's really disgusting.
 	for (i = 0; i < 256; i++) {
 		idts[i].cs = 0;
-		codeptr = (char*) 4096 + i * codesize;
+		codeptr = (unsigned char*) 4096 + i * codesize;
 		idts[i].offset = (unsigned) codeptr;
 		memcpy(codeptr, &idthandle, codesize);
 		intbyte = codeptr + 3;
@@ -575,7 +621,7 @@ void setup_realmode_idt(void)
 	// int10. 
 	// calling convention here is the same as INTs, we can reuse
 	// the int entry code.
-	codeptr = (char*) 0xff065;
+	codeptr = (unsigned char*) 0xff065;
 	memcpy(codeptr, &idthandle, codesize);
 	intbyte = codeptr + 3;
 	*intbyte = 0x42; /* int42 is the relocated int10 */
@@ -584,7 +630,7 @@ void setup_realmode_idt(void)
 	   TF bit is set upon call to real mode */
 	idts[1].cs = 0;
 	idts[1].offset = 16384;
-	memcpy(16384, &debughandle, &end_debughandle - &debughandle);
+	memcpy((void*)16384, &debughandle, &end_debughandle - &debughandle);
 }
 
 
@@ -761,10 +807,10 @@ int handleint21(unsigned long *edi, unsigned long *esi, unsigned long *ebp,
 		*eax=0x860f;
 		break;
 	case 0xBEA7:
-		*eax=33;
+		*eax=66;
 		break;
 	case 0xBEA4:
-		*eax=333;
+		*eax=500;
 		break;
 	}
 	return res;

@@ -26,7 +26,6 @@ struct gliutable gliu0table[] = {
 	{.desc_name=MSR_GLIU0_BASE2,  .desc_type= BM,.hi= MSR_MC + 0x0,.lo=(0x80 << 20) + 0x0FFFE0},		/*  80000-9ffff to Mc*/
 	{.desc_name=MSR_GLIU0_SHADOW, .desc_type= SC_SHADOW,.hi=  MSR_MC + 0x0,.lo=  0x03},	/*  C0000-Fffff split to MC and PCI (sub decode) A0000-Bffff handled by SoftVideo*/
 	{.desc_name=MSR_GLIU0_SYSMEM, .desc_type= R_SYSMEM,.hi=  MSR_MC,.lo=  0x0},		/*  Catch and fix dynamicly.*/
-	{.desc_name=MSR_GLIU0_DMM,    .desc_type= BMO_DMM,.hi=  MSR_MC,.lo=  0x0},		/*  Catch and fix dynamicly.*/
 	{.desc_name=MSR_GLIU0_SMM,    .desc_type= BMO_SMM,.hi=  MSR_MC,.lo=  0x0},		/*  Catch and fix dynamicly.*/
 	{.desc_name=GLIU0_GLD_MSR_COH,.desc_type= OTHER,.hi= 0x0,.lo= GL0_CPU},
 	{.desc_name=GL_END,           .desc_type= GL_END,.hi= 0x0,.lo= 0x0},
@@ -38,10 +37,8 @@ struct gliutable gliu1table[] = {
 	{.desc_name=MSR_GLIU1_BASE2,.desc_type=  BM,.hi=  MSR_GL0 + 0x0,.lo= (0x80 << 20) +0x0FFFE0},	/*  80000-9ffff to Mc*/
 	{.desc_name=MSR_GLIU1_SHADOW,.desc_type=  SC_SHADOW,.hi=  MSR_GL0 + 0x0,.lo=  0x03}, /*  C0000-Fffff split to MC and PCI (sub decode)*/
 	{.desc_name=MSR_GLIU1_SYSMEM,.desc_type=  R_SYSMEM,.hi=  MSR_GL0,.lo=  0x0},		/*  Cat0xc and fix dynamicly.*/
-	{.desc_name=MSR_GLIU1_DMM,.desc_type=  BM_DMM,.hi=  MSR_GL0,.lo=  0x0},			/*  Cat0xc and fix dynamicly.*/
 	{.desc_name=MSR_GLIU1_SMM,.desc_type=  BM_SMM,.hi=  MSR_GL0,.lo=  0x0},			/*  Cat0xc and fix dynamicly.*/
 	{.desc_name=GLIU1_GLD_MSR_COH,.desc_type= OTHER,.hi= 0x0,.lo= GL1_GLIU0},
-	{.desc_name=MSR_GLIU1_FPU_TRAP,.desc_type=  SCIO,.hi=  (GL1_GLCP << 29) + 0x0,.lo=  0x033000F0},	/*  FooGlue FPU 0xF0*/
 	{.desc_name=GL_END,.desc_type= GL_END,.hi= 0x0,.lo= 0x0},
 };
 
@@ -102,9 +99,6 @@ struct msrinit GeodeLinkPriorityTable [] = {
 	{0x0FFFFFFFF, 			{0x0FFFFFFFF, 0x0FFFFFFFF}},	/*  END*/
 };
 
-/* do we have dmi or not? assume NO per AMD */
-int havedmi = 0;
-
 static void
 writeglmsr(struct gliutable *gl){
 	msr_t msr;
@@ -112,10 +106,10 @@ writeglmsr(struct gliutable *gl){
 	msr.lo = gl->lo;
 	msr.hi = gl->hi;
 	wrmsr(gl->desc_name, msr);	// MSR - see table above
-	printk_debug("%s: write msr 0x%08x, val 0x%08x:0x%08x\n", __FUNCTION__, gl->desc_name, msr.hi, msr.lo);
+	// printk_debug("%s: write msr 0x%08x, val 0x%08x:0x%08x\n", __FUNCTION__, gl->desc_name, msr.hi, msr.lo); //GX3
 	/* they do this, so we do this */
 	msr = rdmsr(gl->desc_name);
-	printk_debug("%s: AFTER write msr 0x%08x, val 0x%08x:0x%08x\n", __FUNCTION__, gl->desc_name, msr.hi, msr.lo);
+	// printk_debug("%s: AFTER write msr 0x%08x, val 0x%08x:0x%08x\n", __FUNCTION__, gl->desc_name, msr.hi, msr.lo); // GX3
 }
 
 static void
@@ -144,97 +138,43 @@ SysmemInit(struct gliutable *gl)
 
 	/* 
 	 * Figure out how much RAM is in the machine and alocate all to the 
-	 * system. We will adjust for SMM and DMM now and Frame Buffer later.
+	 * system. We will adjust for SMM now and Frame Buffer later.
 	 */
 	sizembytes = sizeram();
 	printk_debug("%s: enable for %dm bytes\n", __FUNCTION__, sizembytes);
 	sizebytes = sizembytes << 20;
 
-	sizebytes -= SMM_SIZE*1024 +1;
+	sizebytes -= ((SMM_SIZE)<<10);
+	printk_debug("usable RAM: %d bytes\n", sizebytes);
 
-	if (havedmi)
-		sizebytes -= DMM_SIZE * 1024 + 1;
-
-	sizebytes -= 1;
 	msr.hi = (gl->hi & 0xFFFFFF00) | (sizebytes >> 24);
 	/* set up sizebytes to fit into msr.lo */
 	sizebytes <<= 8; /* what? well, we want bits 23:12 in bits 31:20. */
 	sizebytes &= 0xfff00000;
 	sizebytes |= 0x100;
 	msr.lo = sizebytes;
+
 	wrmsr(gl->desc_name, msr);	// MSR - see table above
 	msr = rdmsr(gl->desc_name);
-	printk_debug("%s: AFTER write msr 0x%08x, val 0x%08x:0x%08x\n", __FUNCTION__, 
-				gl->desc_name, msr.hi, msr.lo);
-	
+	/* printk_debug("%s: AFTER write msr 0x%08x, val 0x%08x:0x%08x\n", __FUNCTION__, 
+				gl->desc_name, msr.hi, msr.lo); */ // GX3	
 }
-static void
-DMMGL0Init(struct gliutable *gl) {
-	msr_t msr;
-	int sizebytes = sizeram()<<20;
-	long offset;
 
-	if (! havedmi)
-		return;
-
-	printk_debug("%s: %d bytes\n", __FUNCTION__, sizebytes);
-
-	sizebytes -= DMM_SIZE*1024;
-	offset = sizebytes - DMM_OFFSET;
-	printk_debug("%s: offset is 0x%08x\n", __FUNCTION__, offset);
-	offset >>= 12;
-	msr.hi = (gl->hi) | (offset << 8);
-	/* I don't think this is needed */
-	msr.hi &= 0xffffff00;
-	msr.hi |= (DMM_OFFSET >> 24);
-	msr.lo = DMM_OFFSET << 8;
-	msr.lo |= ((~(DMM_SIZE*1024)+1)>>12)&0xfffff;
-	
-	wrmsr(gl->desc_name, msr);	// MSR - See table above
-	msr = rdmsr(gl->desc_name);
-	printk_debug("%s: AFTER write msr 0x%08x, val 0x%08x:0x%08x\n", __FUNCTION__, gl->desc_name, msr.hi, msr.lo);
-	
-}
-static void
-DMMGL1Init(struct gliutable *gl) {
-	msr_t msr;
-
-	if (! havedmi)
-		return;
-
-	printk_debug("%s:\n", __FUNCTION__ );
-
-	msr.hi = gl->hi;
-	/* I don't think this is needed */
-	msr.hi &= 0xffffff00;
-	msr.hi |= (DMM_OFFSET >> 24);
-	msr.lo = DMM_OFFSET << 8;
-	/* hmm. AMD source has SMM here ... SMM, not DMM? We think DMM */
-	printk_err("%s: warning, using DMM_SIZE even though AMD used SMM_SIZE\n", __FUNCTION__);
-	msr.lo |= ((~(DMM_SIZE*1024)+1)>>12)&0xfffff;
-	
-	wrmsr(gl->desc_name, msr);	// MSR - See table above
-	msr = rdmsr(gl->desc_name);
-	printk_debug("%s: AFTER write msr 0x%08x, val 0x%08x:0x%08x\n", __FUNCTION__, gl->desc_name, msr.hi, msr.lo);
-}
 static void
 SMMGL0Init(struct gliutable *gl) {
 	msr_t msr;
 	int sizebytes = sizeram()<<20;
 	long offset;
 
-	sizebytes -= SMM_SIZE*1024;
-
-	if (havedmi)
-		sizebytes -= DMM_SIZE * 1024;
+	sizebytes -= ((SMM_SIZE)<<10);
 
 	printk_debug("%s: %d bytes\n", __FUNCTION__, sizebytes);
 
 	offset = sizebytes - SMM_OFFSET;
+	offset = (offset >> 12) & 0x000fffff;
 	printk_debug("%s: offset is 0x%08x\n", __FUNCTION__, offset);
-	offset >>= 12;
 
-	msr.hi = offset << 8;
+	msr.hi = offset << 8 | MSR_MC;
 	msr.hi |= SMM_OFFSET>>24;
 
 	msr.lo = SMM_OFFSET << 8;
@@ -277,14 +217,6 @@ GLIUInit(struct gliutable *gl){
 			SysmemInit(gl);
 			break;
 	
-		case BMO_DMM: /*  check for a DMM entry*/
-			DMMGL0Init(gl);
-			break;
-	
-		case BM_DMM	: /*  check for a DMM entry*/
-			DMMGL1Init(gl);
-			break;
-	
 		case BMO_SMM	: /*  check for a SMM entry*/
 			SMMGL0Init(gl);
 			break;
@@ -317,7 +249,8 @@ static void GLPCIInit(void){
 	struct gliutable *gl = 0;
 	int i;
 	msr_t msr;
-	int msrnum;
+	int msrnum, enable_preempt, enable_cpu_override;
+	int nic_grants_control, enable_bus_parking;
 
 	/* */
 	/*  R0 - GLPCI settings for Conventional Memory space.*/
@@ -415,12 +348,20 @@ static void GLPCIInit(void){
 	/* */
 	/* 5535 NB Init*/
 	/* */	
+
+	/* Arbiter setup */
+
+	enable_preempt = GLPCI_ARB_LOWER_PRE0_SET | GLPCI_ARB_LOWER_PRE1_SET | GLPCI_ARB_LOWER_PRE2_SET | GLPCI_ARB_LOWER_CPRE_SET; 
+	enable_cpu_override = GLPCI_ARB_LOWER_COV_SET;
+	enable_bus_parking = GLPCI_ARB_LOWER_PARK_SET;
+	nic_grants_control = (0x4 << GLPCI_ARB_UPPER_R2_SHIFT) | (0x3 << GLPCI_ARB_UPPER_H2_SHIFT );
+
 	msrnum = GLPCI_ARB;
 	msr = rdmsr(msrnum);
-	msr.hi |=  GLPCI_ARB_UPPER_PRE0_SET | GLPCI_ARB_UPPER_PRE1_SET;
-	msr.lo |=  GLPCI_ARB_LOWER_IIE_SET;
-	wrmsr(msrnum, msr);
 
+	msr.hi |=  nic_grants_control;
+	msr.lo |=  enable_cpu_override  | enable_preempt | enable_bus_parking;
+	wrmsr(msrnum, msr);
 
 	msrnum = GLPCI_CTRL;
 	msr = rdmsr(msrnum);
@@ -507,11 +448,11 @@ performance:
 
 	for(i = 0; gating->msrnum != 0xffffffff; i++) {
 		msr = rdmsr(gating->msrnum);
-		printk_debug("%s: MSR 0x%08x is 0x%08x:0x%08x\n", __FUNCTION__, gating->msrnum, msr.hi, msr.lo);
+		//printk_debug("%s: MSR 0x%08x is 0x%08x:0x%08x\n", __FUNCTION__, gating->msrnum, msr.hi, msr.lo); //GX3 
 		msr.hi |= gating->msr.hi;
 		msr.lo |= gating->msr.lo;
-		printk_debug("%s: MSR 0x%08x will be set to  0x%08x:0x%08x\n", __FUNCTION__, 
-			gating->msrnum, msr.hi, msr.lo);
+		/* printk_debug("%s: MSR 0x%08x will be set to  0x%08x:0x%08x\n", __FUNCTION__, 
+			gating->msrnum, msr.hi, msr.lo); */ // GX3
 		wrmsr(gating->msrnum, msr);	// MSR - See the table above
 		gating +=1;
 	}
@@ -526,12 +467,12 @@ GeodeLinkPriority(void){
 
 	for(i = 0; prio->msrnum != 0xffffffff; i++) {
 		msr = rdmsr(prio->msrnum);
-		printk_debug("%s: MSR 0x%08x is 0x%08x:0x%08x\n", __FUNCTION__, prio->msrnum, msr.hi, msr.lo);
+		// printk_debug("%s: MSR 0x%08x is 0x%08x:0x%08x\n", __FUNCTION__, prio->msrnum, msr.hi, msr.lo); // GX3
 		msr.hi |= prio->msr.hi;
 		msr.lo &= ~0xfff;
 		msr.lo |= prio->msr.lo;
-		printk_debug("%s: MSR 0x%08x will be set to 0x%08x:0x%08x\n", __FUNCTION__, 
-			prio->msrnum, msr.hi, msr.lo);
+		/* printk_debug("%s: MSR 0x%08x will be set to 0x%08x:0x%08x\n", __FUNCTION__, 
+			prio->msrnum, msr.hi, msr.lo);  */ // GX3
 		wrmsr(prio->msrnum, msr);	// MSR - See the table above
 		prio +=1;
 	}
@@ -563,7 +504,7 @@ static void setShadowRCONF(uint32_t shadowHi, uint32_t shadowLo)
 	// ok this is whacky bit translation time.
 	int bit;
 	uint8_t shadowByte;
-	msr_t msr;
+	msr_t msr = {0, 0};
 	shadowByte = (uint8_t) (shadowLo >> 16);
 
 	// load up D000 settings in edx.
@@ -674,6 +615,7 @@ shadowRom(void)
 	uint64_t shadowSettings = getShadow();
 	shadowSettings &= (uint64_t) 0xFFFF00000000FFFFULL;	// Disable read & writes
 	shadowSettings |= (uint64_t) 0x00000000F0000000ULL;	// Enable reads for F0000-FFFFF
+	shadowSettings |= (uint64_t) 0x0000FFFFFFFF0000ULL;	// Enable rw for C0000-CFFFF
 	setShadow(shadowSettings);
 }
 
@@ -704,7 +646,7 @@ RCONFInit(void)
 	int i;
 	msr_t msr;
 	uint8_t SysMemCacheProp;
-	uint8_t RegionProp;
+	//uint8_t RegionProp;
 
 	/* Locate SYSMEM entry in GLIU0table */
 	for(i = 0; gliu0table[i].desc_name != GL_END; i++) {
@@ -722,12 +664,16 @@ RCONFInit(void)
 	/* found the descriptor... get its contents */
 	msr = rdmsr(gl->desc_name);
 
+	printk_debug("SYSDESC: 0x%08X:0x%08X\n",msr.hi,msr.lo);
+
 	/* 20 bit address -  The bottom 12 bits go into bits 20-31 in eax, the 
 	 * top 8 bits go into 0-7 of edx. 
 	 */
 	msr.lo = (msr.lo & 0xFFFFFF00) | (msr.hi & 0xFF);
 	msr.lo = ((msr.lo << 12) | (msr.lo >> 20)) & 0x000FFFFF;
 	msr.lo <<= RCONF_DEFAULT_LOWER_SYSTOP_SHIFT;	// 8
+	
+	printk_debug("RCONF LO: 0x%08X\n",msr.lo);
 	
 	// Set Default SYSMEM region properties
 	msr.lo &= ~SYSMEM_RCONF_WRITETHROUGH;	// 8 (or ~8)
@@ -752,12 +698,13 @@ RCONFInit(void)
 	msr = rdmsr(CPU_RCONF_BYPASS);
 	msr.lo = (msr.lo & 0xFFFF0000) | (SysMemCacheProp << 8) | SysMemCacheProp;
 	wrmsr(CPU_RCONF_BYPASS, msr);
+	
+	printk_debug("CPU_RCONF_SMM (180E)  0x%08x : 0x%08x\n", msr.hi, msr.lo);
 }
 
 
-/* ***************************************************************************/
-/* **/
-/* *	northBridgeInit*/
+/****************************************************************************/
+/* *	northbridge_init_early */
 /* **/
 /* *	Core Logic initialization:  Host bridge*/
 /* **/
@@ -767,8 +714,7 @@ RCONFInit(void)
 /* **/
 /* ***************************************************************************/
 
-void
-northbridgeinit(void)
+void northbridge_init_early(void)
 {
 	msr_t msr;
 	int i;
@@ -791,6 +737,8 @@ northbridgeinit(void)
 	// makes sure all INVD instructions are treated as WBINVD.  We do this
 	// because we've found some programs which require this behavior.
 	// That subset of cacheInit() is implemented here:
+	
+	/* GX3 OK */
 	msr = rdmsr(CPU_DM_CONFIG0);
 	msr.lo |= DM_CONFIG0_LOWER_WBINVD_SET;
 	wrmsr(CPU_DM_CONFIG0, msr);

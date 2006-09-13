@@ -67,16 +67,40 @@ static uint32_t find_pci_tolm(struct bus *bus)
 
 static void pci_domain_set_resources(device_t dev)
 {
+	static const uint8_t ramregs[] = {
+		0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 0x56, 0x57
+	};
 	device_t mc_dev;
 	uint32_t pci_tolm;
-	uint32_t idx;
 
 	pci_tolm = find_pci_tolm(&dev->link[0]);
 	mc_dev = dev->link[0].children;
 	if (mc_dev) {
 		unsigned long tomk, tolmk;
-		/* Hard code the Top of memory for now */
-		tomk = 65536;
+		unsigned char rambits;
+		int i, idx;
+
+		for(rambits = 0, i = 0; i < sizeof(ramregs)/sizeof(ramregs[0]); i++) {
+			unsigned char reg;
+			reg = pci_read_config8(mc_dev, ramregs[i]);
+			/* these are ENDING addresses, not sizes. 
+			 * if there is memory in this slot, then reg will be > rambits.
+			 * So we just take the max, that gives us total. 
+			 * We take the highest one to cover for once and future linuxbios
+			 * bugs. We warn about bugs.
+			 */
+			if (reg > rambits)
+				rambits = reg;
+			if (reg < rambits)
+				printk_err("ERROR! register 0x%x is not set!\n", 
+					ramregs[i]);
+		}
+		if (rambits == 0) {
+			printk_err("RAM size config registers are empty; defaulting to 64 MBytes\n");
+			rambits = 8;
+		}
+		printk_debug("I would set ram size to 0x%x Kbytes\n", (rambits)*8*1024);
+		tomk = rambits*8*1024;
 		/* Compute the top of Low memory */
 		tolmk = pci_tolm >> 10;
 		if (tolmk >= tomk) {
@@ -84,14 +108,9 @@ static void pci_domain_set_resources(device_t dev)
 			 */
 			tolmk = tomk;
 		}
-		
 		/* Report the memory regions */
 		idx = 10;
-		ram_resource(dev, idx++, 0, 640);
-		ram_resource(dev, idx++, 768, tolmk - 768);
-		if (tomk > 4*1024*1024) {
-			ram_resource(dev, idx++, 4096*1024, tomk - 4*1024*1024);
-		}
+		ram_resource(dev, idx++, 0, tolmk);
 	}
 	assign_resources(&dev->link[0]);
 }

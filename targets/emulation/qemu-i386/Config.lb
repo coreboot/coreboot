@@ -7,6 +7,9 @@ option ROM_SIZE=256*1024
 
 option CC="gcc -m32"
 
+option HAVE_PIRQ_TABLE=1
+option IRQ_SLOT_COUNT=6
+
 romimage "image" 
 	option ROM_IMAGE_SIZE=0x10000
 	option LINUXBIOS_EXTRA_VERSION="-OpenBIOS"

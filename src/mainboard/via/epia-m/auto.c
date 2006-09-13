@@ -32,17 +32,11 @@ void udelay(int usecs)
 
 #include "southbridge/via/vt8235/vt8235_early_smbus.c"
 
-
 #include "southbridge/via/vt8235/vt8235_early_serial.c"
 static void memreset_setup(void)
 {
 }
 
-/*
-  static void memreset(int controllers, const struct mem_controller *ctrl)
-  {
-  }
-*/
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
 	unsigned char c;
@@ -50,12 +44,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return c;
 }
 
-
-
 #include "northbridge/via/vt8623/raminit.c"
-/*
-  #include "sdram/generic_sdram.c"
-*/
 
 static void enable_mainboard_devices(void) 
 {
@@ -71,12 +60,11 @@ static void enable_mainboard_devices(void)
 	pci_write_config8(dev, 0x51, 0x1f);
 #if 0
 	// This early setup switches IDE into compatibility mode before PCI gets 
-	// // a chance to assign I/Os
-	//         movl    $CONFIG_ADDR(0, 0x89, 0x42), %eax
-	//         //      movb    $0x09, %dl
-	//                 movb    $0x00, %dl
-	//                         PCI_WRITE_CONFIG_BYTE
-	//
+	// a chance to assign I/Os
+	// movl    $CONFIG_ADDR(0, 0x89, 0x42), %eax
+	// //      movb    $0x09, %dl
+	// movb    $0x00, %dl
+	// PCI_WRITE_CONFIG_BYTE
 #endif
 	/* we do this here as in V2, we can not yet do raw operations 
 	 * to pci!
@@ -132,7 +120,7 @@ static void main(unsigned long bist)
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-	/*	init_timer();*/
+	// init_timer();
 
 	outb(5, 0x80);	
 
@@ -170,5 +158,7 @@ static void main(unsigned long bist)
 		early_mtrr_init();
 	}
 
+	//dump_pci_devices();
+	
 	print_spew("Leaving auto.c:main()\r\n");
 }

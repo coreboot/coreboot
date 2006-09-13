@@ -205,10 +205,11 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 
 			/* PCI Routing Table */
 			Name (_PRT, Package () {
-				Package () {0x000AFFFF, 0x00, LNKD, 0x00}, // Cardbus Link D
-				Package () {0x000AFFFF, 0x01, LNKA, 0x00}, // Cardbus Link A 
-				Package () {0x000AFFFF, 0x02, LNKB, 0x00}, // Cardbus Link B
-				Package () {0x000AFFFF, 0x03, LNKC, 0x00}, // Cardbus Link C
+				/* Epia-MII 6000e cardbus: */
+				Package () {0x000AFFFF, 0x00, LNKA, 0x00}, // Cardbus Link A
+				Package () {0x000AFFFF, 0x01, LNKB, 0x00}, // Cardbus Link B
+				Package () {0x000AFFFF, 0x02, LNKC, 0x00}, // Cardbus Link C
+				Package () {0x000AFFFF, 0x03, LNKD, 0x00}, // Cardbus Link D
 
 				Package () {0x000DFFFF, 0x00, LNKB, 0x00}, // Firewire Link B
 				Package () {0x000DFFFF, 0x01, LNKC, 0x00}, // Firewire Link C

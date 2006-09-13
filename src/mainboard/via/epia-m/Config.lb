@@ -132,6 +132,13 @@ dir /pc80
 config chip.h
 
 chip northbridge/via/vt8623
+
+	device apic_cluster 0 on
+		chip cpu/via/model_centaur
+			device apic 0 on  end 
+		end
+	end
+
 	device pci_domain 0 on
 		chip southbridge/via/vt8235
 
@@ -178,12 +185,6 @@ chip northbridge/via/vt8623
 			register "enable_cf" = "1"
 			device pci 0a.0 on end
 			device pci 0a.1 on end	
-		end
-	end
-
-	device apic_cluster 0 on
-		chip cpu/via/model_centaur
-			device apic 0 on  end 
 		end
 	end
 end

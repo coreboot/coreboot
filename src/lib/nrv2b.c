@@ -35,7 +35,7 @@ static unsigned long unrv2b(uint8_t * src, uint8_t * dst)
 	uint32_t bb = 0;
 	unsigned bc = 0;
 	const uint8_t *m_pos;
-	unsigned long file_len = *(unsigned long *) src;
+//	unsigned long file_len = *(unsigned long *) src;
 
 	// we only have printk_debug in copy_and_run.c if CONFIG_USE_INIT is
 	// not set, so comment it out.

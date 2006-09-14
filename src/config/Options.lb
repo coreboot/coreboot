@@ -572,7 +572,17 @@ end
 define CONFIG_COMPRESSED_ROM_STREAM
 	default 0
 	export always
-	comment "compressed boot image is located in ROM" 
+	comment "compressed boot image is located in ROM and is assumed to be NRV2B (deprecated)" 
+end
+define CONFIG_COMPRESSED_ROM_STREAM_NRV2B
+	default 0
+	export always
+	comment "NRV2B compressed boot image is located in ROM" 
+end
+define CONFIG_COMPRESSED_ROM_STREAM_LZMA
+	default 0
+	export always
+	comment "LZMA compressed boot image is located in ROM" 
 end
 define CONFIG_PRECOMPRESSED_ROM_STREAM
 	default 0

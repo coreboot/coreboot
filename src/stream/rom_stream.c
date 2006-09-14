@@ -4,10 +4,30 @@
 #include <stream/read_bytes.h>
 #include <string.h>
 
-#if CONFIG_COMPRESSED_ROM_STREAM || CONFIG_PRECOMPRESSED_ROM_STREAM
+/* if they set the precompressed rom stream, they better have set a type */
+#if CONFIG_PRECOMPRESSED_ROM_STREAM && ((!CONFIG_COMPRESSED_ROM_STREAM) && (!CONFIG_COMPRESSED_ROM_STREAM_NRV2B) && (!CONFIG_COMPRESSED_ROM_STREAM_LZMA))
+#error "You set CONFIG_PRECOMPRESSED_ROM_STREAM but need to set CONFIG_COMPRESSED_ROM_STREAM (implies NRV2B, deprecated) or CONFIG_COMPRESSED_ROM_STREAM_NRV2B or CONFIG_COMPRESSED_ROM_STREAM_LZMA
+#endif
+
+/* If they set ANY of these, then we're compressed */
+#if ((CONFIG_COMPRESSED_ROM_STREAM) || (CONFIG_COMPRESSED_ROM_STREAM_NRV2B) || (CONFIG_COMPRESSED_ROM_STREAM_LZMA))
+#define UNCOMPRESSER 1
+extern unsigned char _heap, _eheap;
+#endif
+
+#if (CONFIG_COMPRESSED_ROM_STREAM) || (CONFIG_COMPRESSED_ROM_STREAM_NRV2B) 
+#define HAVE_UNCOMPRESSER 1
 // include generic nrv2b
 #include "../lib/nrv2b.c"
-extern unsigned char _heap, _eheap;
+#endif
+
+#if (CONFIG_COMPRESSED_ROM_STREAM_LZMA)
+#if HAVE_UNCOMPRESSER
+#error "You're defining more than one compression type, which is not allowed (of course)"
+#endif
+#define HAVE_UNCOMPRESSER 1
+// include generic nrv2b
+#include "../lib/lzma.c"
 #endif
 
 #ifndef CONFIG_ROM_STREAM_START
@@ -29,9 +49,21 @@ extern unsigned char _heap, _eheap;
 
 static const unsigned char *rom;
 
+#if UNCOMPRESSER
+unsigned long 
+uncompress(uint8_t * rom_start, uint8_t *dest )
+{
+#if (CONFIG_COMPRESSED_ROM_STREAM) || (CONFIG_COMPRESSED_ROM_STREAM_NRV2B) 
+	return unrv2b(rom_start, dest);
+#endif
+#if (CONFIG_COMPRESSED_ROM_STREAM_LZMA)
+	return ulzma(rom_start, dest);
+#endif
+}
+#endif
 int stream_init(void)
 {
-#if CONFIG_COMPRESSED_ROM_STREAM || CONFIG_PRECOMPRESSED_ROM_STREAM
+#if (UNCOMPRESSER)
         unsigned char *dest;
         unsigned long olen;
 #endif
@@ -40,7 +72,7 @@ int stream_init(void)
 		(unsigned long)rom_start,
 		(unsigned long)rom_end);
 
-#if CONFIG_COMPRESSED_ROM_STREAM || CONFIG_PRECOMPRESSED_ROM_STREAM
+#if (UNCOMPRESSER) 
 
         dest = &_eheap; /* need a good address on RAM */
 
@@ -56,8 +88,13 @@ int stream_init(void)
         }
 #endif
 
+	/* ALL of those settings are too smart and also unsafe. Set the dest to 16 MB: 
+	 * known to be safe for LB for now, and mostly safe for all elf images we have tried. 
+	 * long term, this has got to be fixed. 
+	 */
+	dest  = (unsigned char *) (16 * 1024 * 1024);
         printk_debug("Uncompressing to RAM 0x%08lx ", dest);
-        olen = unrv2b((uint8_t *) rom_start, (uint8_t *)dest );
+        olen = uncompress((uint8_t *) rom_start, (uint8_t *)dest );
 	printk_debug(" olen = 0x%08lx done.\n", olen);
 	rom_end = dest + olen - 1;
 	rom = dest;

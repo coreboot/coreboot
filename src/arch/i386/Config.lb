@@ -28,8 +28,15 @@ makerule payload.nrv2b
 	action  "./nrv2b e $(PAYLOAD) $@"
 end
 
+# unlike nrv2b, lzma is a huge build mess. If they want lzma, they have to have built it
+makerule payload.lzma
+	depends "$(PAYLOAD) "
+	action  "lzma e $(PAYLOAD) $@"
+end
+
 makedefine PAYLOAD-1:=payload
-makedefine PAYLOAD-$(CONFIG_COMPRESSED_ROM_STREAM):=payload.nrv2b
+makedefine PAYLOAD-$(CONFIG_COMPRESSED_ROM_STREAM_NRV2B):=payload.nrv2b
+makedefine PAYLOAD-$(CONFIG_COMPRESSED_ROM_STREAM_LZMA):=payload.lzma
 
 makerule linuxbios.rom 
 	depends	"linuxbios.strip buildrom $(PAYLOAD-1)" 

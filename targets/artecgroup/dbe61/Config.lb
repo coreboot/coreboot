@@ -3,7 +3,7 @@
 target dbe61
 mainboard artecgroup/dbe61
 
-option CONFIG_COMPRESSED_ROM_STREAM=0
+option CONFIG_COMPRESSED_ROM_STREAM_NRV2B=0
 
 ## ROM_SIZE is the total number of bytes allocated for LinuxBIOS use
 ## (normal AND fallback images and payloads).

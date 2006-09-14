@@ -1,4 +1,5 @@
 uses CONFIG_SMP
+uses CONFIG_PRECOMPRESSED_ROM_STREAM
 uses CONFIG_USE_INIT
 
 init init/crt0.S.lb
@@ -34,9 +35,23 @@ makerule payload.lzma
 	action  "lzma e $(PAYLOAD) $@"
 end
 
+
+# this one example shows the mess that has occurred. People are now mixing
+# conditional if in the make style with if in the config language style. 
+# The -1 is linux standard. 
+# I don't much like it but it is the mode nowadays. So linuxbios will change
+# what a mess. -- RGM
+# catch the case where there is no compression
 makedefine PAYLOAD-1:=payload
+
+# match the case where a compression type is specified.
 makedefine PAYLOAD-$(CONFIG_COMPRESSED_ROM_STREAM_NRV2B):=payload.nrv2b
 makedefine PAYLOAD-$(CONFIG_COMPRESSED_ROM_STREAM_LZMA):=payload.lzma
+
+# catch the case where there is precompression. Yes, this bites. 
+if CONFIG_PRECOMPRESSED_ROM_STREAM 
+	makedefine PAYLOAD-1:=payload
+end
 
 makerule linuxbios.rom 
 	depends	"linuxbios.strip buildrom $(PAYLOAD-1)" 

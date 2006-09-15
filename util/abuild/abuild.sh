@@ -84,6 +84,11 @@ function create_config
 	TARCH=$( architecture $VENDOR $MAINBOARD )
 	TARGCONFIG=$LBROOT/targets/$VENDOR/$MAINBOARD/Config-abuild.lb
 
+        # get a working payload for the board if we have one.
+	if [ -x $payloads/payload.sh ]; then
+		PAYLOAD=`$payloads/payload.sh $VENDOR $MAINBOARD`
+	fi
+	
 	mkdir -p $TARGET
 
         if [ -f $TARGCONFIG ]; then
@@ -356,7 +361,7 @@ function build_target
 
 function myhelp
 {
-	echo "Usage: $0 [-v] [-a] [-b] [-t <vendor/board>] [lbroot]"
+	echo "Usage: $0 [-v] [-a] [-b] [-t <vendor/board>] [-p <dir>] [lbroot]"
 	echo "       $0 [-V|--version]"
 	echo "       $0 [-h|--help]"
 	echo
@@ -365,9 +370,11 @@ function myhelp
 	echo "    [-a|--all]			  build previously succeeded ports as well"
 	echo "    [-b|--broken]		  attempt to build ports that are known broken"
 	echo "    [-t|--target <vendor/board>]  attempt to build target vendor/board only"
+	echo "    [-p|--payloads <dir>]         use payloads in <dir> to build images"
 	echo "    [-V|--version]		  print version number and exit"
 	echo "    [-h|--help]			  print this help and exit"
-	echo "    [-x|--xml]			  write xml log file $XMLFILE"
+	echo "    [-x|--xml]			  write xml log file "
+	echo "                                  (defaults to $XMLFILE)"
 	echo "    [lbroot]			  absolute path to LinuxBIOS sources"
 	echo "				  (defaults to $LBROOT)"
 	echo
@@ -377,7 +384,7 @@ function myversion
 {
 	cat << EOF
 
-LinuxBIOS autobuild: V0.2.
+LinuxBIOS autobuild: V0.3.
 
 Copyright (C) 2004 by Stefan Reinauer <stepan@openbios.org>
 Copyright (C) 2006 by coresystems GmbH <info@coresystems.de>
@@ -396,7 +403,7 @@ LBROOT=$( cd ../..; pwd )
 verbose=false
 
 # parse parameters
-args=`getopt -l version,verbose,help,all,target:,broken Vvhat:b -- "$@"`
+args=`getopt -l version,verbose,help,all,target:,broken,payloads: Vvhat:bp: -- "$@"`
 
 if [ $? != 0 ]; then
 	myhelp
@@ -413,6 +420,7 @@ while true ; do
 		-v|--verbose)	shift; verbose=true;;
 		-V|--version)	shift; myversion; exit 0;;
 		-h|--help)	shift; myhelp; exit 0;;
+		-p|--payloads)  shift; payloads="$1"; shift;;
 		--)		shift; break;;
 		-*)		echo -e "Invalid option\n"; myhelp; exit 1;;
 		*)		break;;

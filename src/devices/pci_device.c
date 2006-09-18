@@ -761,7 +761,9 @@ static void set_pci_ops(struct device *dev)
 		return;
 	}
 
-	/* Look through the list of setup drivers and find one for
+	printk_debug("%s: seeking driver for %x:%x class %x\n", 
+		__FUNCTION__, dev->vendor, dev->device, dev->class);
+ 	/* Look through the list of setup drivers and find one for
 	 * this pci device 
 	 */
 	for(driver = &pci_drivers[0]; driver != &epci_drivers[0]; driver++) {
@@ -1176,13 +1178,13 @@ void pci_level_irq(unsigned char intNum)
 
 	/* this seems like an error but is not ... */
 #if 1
-	if (inb(0x4d0) != (intBits & 0xf)) {
+	if (inb(0x4d0) != (intBits & 0xff)) {
 	  printk_err("%s: lower order bits are wrong: want 0x%x, got 0x%x\n",
-		     __func__, intBits &0xf, inb(0x4d0));
+		     __func__, intBits &0xff, inb(0x4d0));
 	}
-	if (inb(0x4d1) != ((intBits >> 8) & 0xf)) {
+	if (inb(0x4d1) != ((intBits >> 8) & 0xff)) {
 	  printk_err("%s: lower order bits are wrong: want 0x%x, got 0x%x\n",
-		     __func__, (intBits>>8) &0xf, inb(0x4d1));
+		     __func__, (intBits>>8) &0xff, inb(0x4d1));
 	}
 #endif
 }

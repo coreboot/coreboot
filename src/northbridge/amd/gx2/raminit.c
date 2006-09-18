@@ -85,6 +85,14 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	/* load RDSYNC */
 	msr = rdmsr(0x2000001f);
 	msr.hi = 0x000ff310;
+	/* the above setting is supposed to be good for "slow" ram. We have found that for 
+	 * some dram, at some clock rates, e.g. hynix at 366/244, this will actually 
+	 * cause errors. The fix is to just set it to 0x310. Tested on 3 boards
+	 * with 3 different type of dram -- Hynix, PSC, infineon. 
+	 * I am leaving this comment here so that at some future time nobody is tempted
+	 * to mess with this setting -- RGM, 9/2006
+	 */
+	msr.hi = 0x00000310;
 	msr.lo = 0x00000000;
 	wrmsr(0x2000001f, msr);
 

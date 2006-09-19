@@ -3,7 +3,7 @@
 target qemu-i386-OLPC
 mainboard emulation/qemu-i386
 
-option ROM_SIZE=1024*1024
+option ROM_SIZE=1024*1024 - (128 * 1024)
 option CONFIG_COMPRESSED_ROM_STREAM_LZMA=1
 option CONFIG_PRECOMPRESSED_ROM_STREAM=0
 

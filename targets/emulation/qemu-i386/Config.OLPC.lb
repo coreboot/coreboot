@@ -18,5 +18,5 @@ romimage "image"
 	payload /tmp/olpcpayload.elf
 end
 
-buildrom ./qemu-bios-OLPC.rom ROM_SIZE "image"
+buildrom ./linuxbios.rom ROM_SIZE "image"
 

@@ -1,0 +1,22 @@
+# This will make a target directory of ./emulation_qemu-i386
+
+target qemu-i386-OLPC
+mainboard emulation/qemu-i386
+
+option ROM_SIZE=1024*1024
+option CONFIG_COMPRESSED_ROM_STREAM_LZMA=1
+option CONFIG_PRECOMPRESSED_ROM_STREAM=0
+
+option CC="gcc -m32"
+
+option HAVE_PIRQ_TABLE=1
+option IRQ_SLOT_COUNT=6
+
+romimage "image" 
+	option ROM_IMAGE_SIZE=0x10000
+	option LINUXBIOS_EXTRA_VERSION="-OpenBIOS"
+	payload /tmp/olpcpayload.elf
+end
+
+buildrom ./qemu-bios-OLPC.rom ROM_SIZE "image"
+

@@ -40,6 +40,9 @@ uses TTYS0_BASE
 uses TTYS0_LCS
 uses CONFIG_UDELAY_TSC
 uses CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
+uses CONFIG_CONSOLE_VGA
+uses CONFIG_PCI_ROM_RUN
+uses VIDEO_MB
 
 ## ROM_SIZE is the size of boot ROM that this board will use.
 default ROM_SIZE  = 256*1024
@@ -47,6 +50,9 @@ default ROM_SIZE  = 256*1024
 ###
 ### Build options
 ###
+default CONFIG_CONSOLE_VGA=1
+default CONFIG_PCI_ROM_RUN=0
+default VIDEO_MB=8
 
 ##
 ## Build code for the fallback boot

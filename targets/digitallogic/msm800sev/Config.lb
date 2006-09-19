@@ -1,0 +1,27 @@
+# Config file for the digitallogic msm800sev
+
+target msm800sev
+mainboard digitallogic/msm800sev
+
+option CONFIG_COMPRESSED_ROM_STREAM_NRV2B=0
+
+## ROM_SIZE is the total number of bytes allocated for LinuxBIOS use
+## (normal AND fallback images and payloads).
+## leave 64k for vsa and 32K for video ROM
+option ROM_SIZE = 1024*256 - 64*1024 - 32 * 1024
+
+## ROM_IMAGE_SIZE is the maximum number of bytes allowed for a LinuxBIOS image,
+## not including any payload.
+option ROM_IMAGE_SIZE=64*1024
+
+option FALLBACK_SIZE = ROM_SIZE
+
+option DEFAULT_CONSOLE_LOGLEVEL = 11
+option MAXIMUM_CONSOLE_LOGLEVEL = 11
+romimage "fallback" 
+	option USE_FALLBACK_IMAGE=1
+	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
+	payload /tmp/filo.elf
+end
+
+buildrom ./linuxbios.rom ROM_SIZE  "fallback"

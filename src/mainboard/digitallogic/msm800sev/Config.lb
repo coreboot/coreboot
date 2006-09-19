@@ -1,0 +1,157 @@
+##
+## Compute the location and size of where this firmware image
+## (linuxBIOS plus bootloader) will live in the boot rom chip.
+##
+if USE_FALLBACK_IMAGE
+	default ROM_SECTION_SIZE   = FALLBACK_SIZE
+	default ROM_SECTION_OFFSET = ( ROM_SIZE - FALLBACK_SIZE )
+else
+	default ROM_SECTION_SIZE   = ( ROM_SIZE - FALLBACK_SIZE )
+	default ROM_SECTION_OFFSET = 0
+end
+
+##
+## Compute the start location and size size of
+## The linuxBIOS bootloader.
+##
+default CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+default PAYLOAD_SIZE            = ( ROM_SECTION_SIZE - ROM_IMAGE_SIZE )
+
+##
+## Compute where this copy of linuxBIOS will start in the boot rom
+##
+default _ROMBASE      = ( CONFIG_ROM_STREAM_START + PAYLOAD_SIZE )
+
+##
+## Compute a range of ROM that can cached to speed up linuxBIOS,
+## execution speed.
+##
+## XIP_ROM_SIZE must be a power of 2.
+## XIP_ROM_BASE must be a multiple of XIP_ROM_SIZE
+##
+default XIP_ROM_SIZE=65536
+default XIP_ROM_BASE = ( _ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE )
+
+##
+## Set all of the defaults for an x86 architecture
+##
+
+arch i386 end
+
+##
+## Build the objects we have code for in this directory.
+##
+
+driver mainboard.o
+
+if HAVE_PIRQ_TABLE object irq_tables.o end
+#object reset.o
+
+##
+## Romcc output
+##
+makerule ./failover.E
+	depends "$(MAINBOARD)/failover.c ./romcc" 
+	action "./romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
+end
+
+makerule ./failover.inc
+	depends "$(MAINBOARD)/failover.c ./romcc"
+	action "./romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
+end
+
+makerule ./auto.E 
+	depends	"$(MAINBOARD)/auto.c option_table.h ./romcc" 
+	action	"./romcc -E -mcpu=p2 -O -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+end
+makerule ./auto.inc 
+	depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
+	action	"./romcc    -mcpu=p2 -O -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+end
+
+##
+## Build our 16 bit and 32 bit linuxBIOS entry code
+##
+mainboardinit cpu/x86/16bit/entry16.inc
+mainboardinit cpu/x86/32bit/entry32.inc
+ldscript /cpu/x86/16bit/entry16.lds
+ldscript /cpu/x86/32bit/entry32.lds
+
+##
+## Build our reset vector (This is where linuxBIOS is entered)
+##
+if USE_FALLBACK_IMAGE 
+	mainboardinit cpu/x86/16bit/reset16.inc 
+	ldscript /cpu/x86/16bit/reset16.lds 
+else
+	mainboardinit cpu/x86/32bit/reset32.inc 
+	ldscript /cpu/x86/32bit/reset32.lds 
+end
+
+### Should this be in the northbridge code?
+mainboardinit arch/i386/lib/cpu_reset.inc
+
+##
+## Include an id string (For safe flashing)
+##
+mainboardinit arch/i386/lib/id.inc
+ldscript /arch/i386/lib/id.lds
+
+###
+### This is the early phase of linuxBIOS startup 
+### Things are delicate and we test to see if we should
+### failover to another image.
+###
+if USE_FALLBACK_IMAGE
+	ldscript /arch/i386/lib/failover.lds 
+	mainboardinit ./failover.inc
+end
+
+###
+### O.k. We aren't just an intermediary anymore!
+###
+
+##
+## Setup RAM
+##
+mainboardinit cpu/x86/fpu/enable_fpu.inc
+mainboardinit ./auto.inc
+
+##
+## Include the secondary Configuration files 
+##
+dir /pc80
+config chip.h
+
+chip northbridge/amd/lx
+	# they keep changing this. 0:f.0 5c.w to see where it is
+	register "irqmap" = "0xbaba"
+	register "setupflash" = "1"
+	device apic_cluster 0 on
+		chip cpu/amd/model_lx
+			device apic 0 on end
+		end
+	end
+  	device pci_domain 0 on 
+    		device pci 1.0 on end
+		device pci 1.1 on end
+      		chip southbridge/amd/cs5536_lx
+                        register "enable_gpio0_inta" = "1"
+			register "enable_ide_nand_flash" = "0"
+			register "enable_uarta" = "1"
+			register "audio_irq" = "11"
+			register "usbf4_irq" = "11"
+			register "usbf11_irq" = "11"
+			register "usbf6_irq" = "11"
+			register "usbf7_irq" = "11"
+        		device pci d.0 on end	# EEPRO 1000
+        		device pci f.0 on end	# ISA Bridge
+        		device pci f.2 on end	# IDE Controller
+        		device pci f.3 on end 	# Audio
+        		device pci f.4 on end	# OHCI
+			device pci f.5 on end	# EHCI
+			register "unwanted_vpci[0]" = "0"	# End of list has a zero
+      		end
+    	end
+end
+

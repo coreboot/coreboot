@@ -126,7 +126,7 @@ config chip.h
 chip northbridge/amd/lx
 	# they keep changing this. 0:f.0 5c.w to see where it is
 	register "irqmap" = "0xbaba"
-	register "setupflash" = "1"
+	register "setupflash" = "0"
 	device apic_cluster 0 on
 		chip cpu/amd/model_lx
 			device apic 0 on end
@@ -136,21 +136,44 @@ chip northbridge/amd/lx
     		device pci 1.0 on end
 		device pci 1.1 on end
       		chip southbridge/amd/cs5536_lx
-                        register "enable_gpio0_inta" = "1"
-			register "enable_ide_nand_flash" = "0"
-			register "enable_uarta" = "1"
-			register "audio_irq" = "11"
-			register "usbf4_irq" = "11"
-			register "usbf11_irq" = "11"
-			register "usbf6_irq" = "11"
-			register "usbf7_irq" = "11"
-        		device pci d.0 on end	# EEPRO 1000
+			register "isa_irq" = "0"
+			#register "flash_irq" = "14"
+
+			## IDE IRQ
+			register "enable_ide_irq" = "0"
+
+			register "audio_irq" = "5"
+			register "usb_irq" = "7"
+			
+			register "uart0_irq" = "0"
+			register "uart1_irq" = "4"
+
+			## PCI INTA ... INTD and their GPIO pins
+			##   int==0: disable 
+			register "pci_int[0]" = "0"
+			register "pci_int[1]" = "10"
+			register "pci_int[2]" = "0"
+			register "pci_int[3]" = "0"
+			register "pci_int_pin[0]" = "0"
+			register "pci_int_pin[1]" = "7"
+			register "pci_int_pin[2]" = "0"
+			register "pci_int_pin[3]" = "0"			
+
+
+			# Keyboard Emulation Logic IRQs
+			# Enable keyboard IRQ2
+			register "enable_kel_keyb_irq" = "0"
+			# Enable mouse IRQ12
+			register "enable_kel_mouse_irq" = "0"
+			# Configure KEL Emulation IRQ, 0 to disable
+			register "kel_emul_irq" = "0"
+
         		device pci f.0 on end	# ISA Bridge
-        		device pci f.2 on end	# IDE Controller
+			device pci f.1 on end	# Flash controller
+			device pci f.2 off end	# IDE controller
         		device pci f.3 on end 	# Audio
         		device pci f.4 on end	# OHCI
 			device pci f.5 on end	# EHCI
-			register "unwanted_vpci[0]" = "0"	# End of list has a zero
       		end
     	end
 end

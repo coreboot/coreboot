@@ -39,22 +39,6 @@ static inline unsigned int fls(unsigned int x)
 
 
 
-
-/* sdram parameters for OLPC:
-	row address = 13
-	col address = 9
-	banks = 4
-	dimm0size=128MB
-	d0_MB=1 (module banks)
-	d0_cb=4 (component banks)
-	do_psz=4KB	(page size)
-	Trc=10 (clocks) (ref2act)
-	Tras=7 (act2pre)
-	Trcd=3 (act2cmd)
-	Trp=3   (pre2act)
-	Trrd=2 (act2act)
-	Tref=17.8ms
-  */
 static void sdram_set_spd_registers(const struct mem_controller *ctrl) 
 {
 	/* Total size of DIMM = 2^row address (byte 3) * 2^col address (byte 4) *
@@ -66,48 +50,8 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	unsigned char module_banks, val;
 
 	
-#if 0	//GX3
-	msr = rdmsr(MC_CF07_DATA);
-
-	/* get module banks (sides) per dimm, SPD byte 5 */
-	module_banks = 1;
-	module_banks >>= 1;
-	msr.hi &= ~(1 << CF07_UPPER_D0_MB_SHIFT);
-	msr.hi |= (module_banks << CF07_UPPER_D0_MB_SHIFT);
-
-	/* get component banks per module bank, SPD byte 17 */
-	val = 4;
-	val >>= 2;
-	msr.hi &= ~(0x1 << CF07_UPPER_D0_CB_SHIFT);
-	msr.hi |=  (val << CF07_UPPER_D0_CB_SHIFT);
-
-	/* get the module bank density, SPD byte 31  */
-	/* this is multiples of 8 MB */
-	/* actually it is 2^x*4, where x is the value you put in */
-	/* for OLPC, set default size */
-	/* dimm size - hardcoded 128Mb */
-	val = 5;
-	msr.hi &= ~(0xf << CF07_UPPER_D0_SZ_SHIFT);
-	msr.hi |=  (val << CF07_UPPER_D0_SZ_SHIFT);
-
-	/* page size = 2^col address */
-	val = 2; /* 4096 bytes */
-	msr.hi &= ~(0x7 << CF07_UPPER_D0_PSZ_SHIFT);
-	msr.hi |=  (val << CF07_UPPER_D0_PSZ_SHIFT);
-
-	print_debug("computed msr.hi ");
-	print_debug_hex32(msr.hi);
-	print_debug("\r\n");
-
-	/* this is a standard value, DOES NOT PROBABLY MATCH FROM ABOVE */
-	/* well, it may be close. It's about 200,000 ticks */
-	msr.lo = 0x00003000;
-	wrmsr(MC_CF07_DATA, msr);
-
-#endif
-	
-	msr.hi = 0x00005012;
-	msr.lo = 0x05000040;
+	msr.hi = 0x10075012;
+	msr.lo = 0x00000040;
 	
 	wrmsr(MC_CF07_DATA, msr);		//GX3
 
@@ -140,16 +84,16 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 #include "northbridge/amd/lx/raminit.c"
 #include "sdram/generic_sdram.c"
 
-#define PLLMSRhi 0x00001490
-#define PLLMSRlo 0x02000030
-#define PLLMSRlo1 ((0xde << 16) | (1 << 26) | (1 << 24))
-#define PLLMSRlo2 ((1<<14) |(1<<13) | (1<<0))
+/* CPU and GLIU mult/div */
+#define PLLMSRhi 0x0000039C
+/* Hold Count - how long we will sit in reset */
+#define PLLMSRlo 0x00DE0000
+
 #include "northbridge/amd/lx/pll_reset.c"
 #include "cpu/amd/model_lx/cpureginit.c"
 #include "cpu/amd/model_lx/syspreinit.c"
 static void msr_init(void)
 {
-	__builtin_wrmsr(0x1808,  0x10f3bf00, 0x22fffc02);
 
 	__builtin_wrmsr(0x10000020, 0xfff80, 0x20000000);
         __builtin_wrmsr(0x10000021, 0x80fffe0, 0x20000000);

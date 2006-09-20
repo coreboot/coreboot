@@ -134,10 +134,10 @@ chip northbridge/amd/lx
 
  		device pci 1.0 on end	# Host Bridge
  
- 		chip drivers/pci/realmode
- 			device pci 1.1 on end  					# VGA
- 			register "rom_address" = "0xfffc0000"	# at the beginning of 256k
- 		end
+# 		chip drivers/pci/realmode
+# 			device pci 1.1 on end  					# VGA
+# 			register "rom_address" = "0xfffc0000"	# at the beginning of 256k
+# 		end
  		
  		device pci 1.2 off end	# AES
      		chip southbridge/amd/cs5536_lx
@@ -184,10 +184,10 @@ chip northbridge/amd/lx
  			device pci f.6 off end	# UDC controller
  			device pci f.7 off end	# OTG controller
  		end
- 		chip drivers/pci/rtl8139
- 			device pci d.0 on end	# Realtek LAN
- 			register "nic_irq" = "10"
-        		end
+# 		chip drivers/pci/rtl8139
+## 			device pci d.0 on end	# Realtek LAN
+# 			register "nic_irq" = "10"
+#        		end
    	end
 end
 

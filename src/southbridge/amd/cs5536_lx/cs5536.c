@@ -158,7 +158,7 @@ void map_gpio_irq(unsigned int pin, unsigned int gpioirq, unsigned int irq, unsi
 
 static void southbridge_init(struct device *dev)
 {
-	struct southbridge_amd_cs5536_config  *sb = (struct southbridge_amd_cs5536_config *)dev->chip_info;
+	struct southbridge_amd_cs5536_lx_config  *sb = (struct southbridge_amd_cs5536_lx_config *)dev->chip_info;
  	msr_t msr;
 	int i;
 
@@ -316,14 +316,14 @@ static struct device_operations southbridge_ops = {
 	.scan_bus         = scan_static_bus,
 };
 
-static struct pci_driver cs5536_pci_driver __pci_driver = {
+static struct pci_driver cs5536_lx_pci_driver __pci_driver = {
 	.ops 	= &southbridge_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = PCI_DEVICE_ID_AMD_CS5536_ISA
 };
 
-struct chip_operations southbridge_amd_cs5536_ops = {
-	CHIP_NAME("AMD cs5536")
+struct chip_operations southbridge_amd_cs5536_lx_ops = {
+	CHIP_NAME("AMD cs5536 (LX)")
 	/* This only called when this device is listed in the 
 	* static device tree.
 	*/

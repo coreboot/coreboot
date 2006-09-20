@@ -904,6 +904,13 @@ define CONFIG_PCI_64BIT_PREF_MEM
         comment "allow PCI device get 4G above Region as pref mem"
 end
 
+define CONFIG_VIDEO_MB
+        default none
+        export used
+        comment "Integrated graphics with UMA has dynamic setup"
+end
+
+
 
 ###############################################
 # Board specific options

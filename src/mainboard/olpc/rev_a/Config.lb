@@ -135,7 +135,18 @@ chip northbridge/amd/gx2
     		device pci 1.0 on end
 		device pci 1.1 on end
       		chip southbridge/amd/cs5536
-                        register "enable_gpio0_inta" = "1"
+		# 0x51400025 (IRQ Mapper LPC Mask)= 0x00001002
+		# IRQ 12 and 1 unmasked,  Keyboard and Mouse IRQs. OK
+		# 0x5140004E (LPC Serial IRQ Control) = 0xEFFD0080.
+		# Frame Pulse Width = 4clocks
+		# IRQ Data Frames = 17Frames
+		# SIRQ Mode = continous , It would be better if the EC could operate in
+		# Active(Quiet) mode. Save power....
+		# SIRQ Enable = Enabled
+		# Invert mask = IRQ 12 and 1 are active high. Keyboard and Mouse IRQs. OK 
+			register "lpc_irq" = "0x00001002"
+			register "lpc_serirq_enable" = "0xEFFD0080"
+ 			register "enable_gpio0_inta" = "1"
 			register "enable_ide_nand_flash" = "1"
 			register "enable_uarta" = "1"
 			register "enable_USBP4_host" = "1"

@@ -1,230 +1,228 @@
-.\" Copyright (C) 2006 Uwe Hermann <uwe@hermann-uwe.de>.
-.\" This manpage is licensed under the terms of the GNU GPL.
-.TH ROMCC 1 "September 7, 2006"
+.TH ROMCC 1 "September 19, 2006"
 .SH NAME
 romcc \- compile C programs into binaries that don't use any RAM
 .SH SYNOPSIS
 .B romcc
-.BR [ OPTIONS ]
-.IR "<source>" ".c"
+[OPTIONS]
+<source>.c
 .SH DESCRIPTION
 .B romcc
 is a C compiler which produces binaries which do not rely on RAM, but
 instead only use CPU registers.
-.br
+.PP
 It is prominently used in the LinuxBIOS project to compile C code which
 needs to run before the (Linux)BIOS has initialized the RAM, but can be
 used for other purposes, too.
 .SH OPTIONS
+.TP
 .B "\-o" <filename>
 Output file name.
-.PP
+.TP
 .B "\-f<option>"
 Specify a generic compiler option.
-.PP
+.TP
 .B "\-m<option>"
 Specify an architecture-dependent compiler option.
-.PP
+.TP
 .B "\-\-"
 Specify that this is the last option.
-.PP
 .SH "GENERIC COMPILER OPTIONS"
 .B "\-O"
-.PP
+.TP
 .B "\-O2"
-.PP
+.TP
 .B "\-E"
-.PP
+.TP
 .B "\-ftrigraphs"
-.PP
+.TP
 .B "\-fno-trigraphs"
-.PP
+.TP
 .B "\-fpp-only"
-.PP
+.TP
 .B "\-fno-pp-only"
-.PP
+.TP
 .B "\-feliminate-inefectual-code"
-.PP
+.TP
 .B "\-fno-eliminate-inefectual-code"
-.PP
+.TP
 .B "\-fsimplify"
-.PP
+.TP
 .B "\-fno-simplify"
-.PP
+.TP
 .B "\-fscc-transform"
-.PP
+.TP
 .B "\-fno-scc-transform"
-.PP
+.TP
 .B "\-fsimplify-op"
-.PP
+.TP
 .B "\-fno-simplify-op"
-.PP
+.TP
 .B "\-fsimplify-phi"
-.PP
+.TP
 .B "\-fno-simplify-phi"
-.PP
+.TP
 .B "\-fsimplify-label"
-.PP
+.TP
 .B "\-fno-simplify-label"
-.PP
+.TP
 .B "\-fsimplify-branch"
-.PP
+.TP
 .B "\-fno-simplify-branch"
-.PP
+.TP
 .B "\-fsimplify-copy"
-.PP
+.TP
 .B "\-fno-simplify-copy"
-.PP
+.TP
 .B "\-fsimplify-arith"
-.PP
+.TP
 .B "\-fno-simplify-arith"
-.PP
+.TP
 .B "\-fsimplify-shift"
-.PP
+.TP
 .B "\-fno-simplify-shift"
-.PP
+.TP
 .B "\-fsimplify-bitwise"
-.PP
+.TP
 .B "\-fno-simplify-bitwise"
-.PP
+.TP
 .B "\-fsimplify-logical"
-.PP
+.TP
 .B "\-fno-simplify-logical"
-.PP
+.TP
 .B "\-fsimplify-bitfield"
-.PP
+.TP
 .B "\-fno-simplify-bitfield"
-.PP
+.TP
 .B "\-finline-policy=always"
-.PP
+.TP
 .B "\-finline-policy=never"
-.PP
+.TP
 .B "\-finline-policy=defaulton"
-.PP
+.TP
 .B "\-finline-policy=defaultoff"
-.PP
+.TP
 .B "\-finline-policy=nopenalty"
-.PP
+.TP
 .B "\-fdebug-all"
-.PP
+.TP
 .B "\-fno-debug-all"
-.PP
+.TP
 .B "\-fdebug-abort-on-error"
-.PP
+.TP
 .B "\-fno-debug-abort-on-error"
-.PP
+.TP
 .B "\-fdebug-basic-blocks"
-.PP
+.TP
 .B "\-fno-debug-basic-blocks"
-.PP
+.TP
 .B "\-fdebug-fdominators"
-.PP
+.TP
 .B "\-fno-debug-fdominators"
-.PP
+.TP
 .B "\-fdebug-rdominators"
-.PP
+.TP
 .B "\-fno-debug-rdominators"
-.PP
+.TP
 .B "\-fdebug-triples"
-.PP
+.TP
 .B "\-fno-debug-triples"
-.PP
+.TP
 .B "\-fdebug-interference"
-.PP
+.TP
 .B "\-fno-debug-interference"
-.PP
+.TP
 .B "\-fdebug-scc-transform"
-.PP
+.TP
 .B "\-fno-debug-scc-transform"
-.PP
+.TP
 .B "\-fdebug-scc-transform2"
-.PP
+.TP
 .B "\-fno-debug-scc-transform2"
-.PP
+.TP
 .B "\-fdebug-rebuild-ssa-form"
-.PP
+.TP
 .B "\-fno-debug-rebuild-ssa-form"
-.PP
+.TP
 .B "\-fdebug-inline"
-.PP
+.TP
 .B "\-fno-debug-inline"
-.PP
+.TP
 .B "\-fdebug-live-range-conflicts"
-.PP
+.TP
 .B "\-fno-debug-live-range-conflicts"
-.PP
+.TP
 .B "\-fdebug-live-range-conflicts2"
-.PP
+.TP
 .B "\-fno-debug-live-range-conflicts2"
-.PP
+.TP
 .B "\-fdebug-color-graph"
-.PP
+.TP
 .B "\-fno-debug-color-graph"
-.PP
+.TP
 .B "\-fdebug-color-graph2"
-.PP
+.TP
 .B "\-fno-debug-color-graph2"
-.PP
+.TP
 .B "\-fdebug-coalescing"
-.PP
+.TP
 .B "\-fno-debug-coalescing"
-.PP
+.TP
 .B "\-fdebug-coalescing2"
-.PP
+.TP
 .B "\-fno-debug-coalescing2"
-.PP
+.TP
 .B "\-fdebug-verification"
-.PP
+.TP
 .B "\-fno-debug-verification"
-.PP
+.TP
 .B "\-fdebug-calls"
-.PP
+.TP
 .B "\-fno-debug-calls"
-.PP
+.TP
 .B "\-fdebug-calls2"
-.PP
+.TP
 .B "\-fno-debug-calls2"
-.PP
+.TP
 .B "\-fdebug-tokens"
-.PP
+.TP
 .B "\-fno-debug-tokens"
-.PP
+.TP
 .B "\-flabel-prefix=<prefix for assembly language labels>"
-.PP
+.TP
 .B "\-\-label-prefix=<prefix for assembly language labels>"
-.PP
+.TP
 .B "\-I<include path>"
-.PP
+.TP
 .B "\-D<macro>[=defn]"
-.PP
+.TP
 .B "\-U<macro>"
 .SH "ARCHITECTURE-SPECIFIC COMPILER OPTIONS"
 .B "\-mmmx"
-.PP
+.TP
 .B "\-mno-mmx"
-.PP
+.TP
 .B "\-msse"
-.PP
+.TP
 .B "\-mno-sse"
-.PP
+.TP
 .B "\-mnoop-copy"
-.PP
+.TP
 .B "\-mno-noop-copy"
-.PP
+.TP
 .B "\-mcpu=i386"
-.PP
+.TP
 .B "\-mcpu=p2"
-.PP
+.TP
 .B "\-mcpu=p3"
-.PP
+.TP
 .B "\-mcpu=p4"
-.PP
+.TP
 .B "\-mcpu=k7"
-.PP
+.TP
 .B "\-mcpu=k8"
-.PP
+.TP
 .B "\-mcpu=c3"
-.PP
+.TP
 .B "\-mcpu=c3-2"
 .SH BUGS
 Please report any bugs to Eric W. Biederman <ebiederman@lnxi.com>.
@@ -232,7 +230,8 @@ Please report any bugs to Eric W. Biederman <ebiederman@lnxi.com>.
 .B romcc
 is covered by the GNU General Public License (GPL), version 2.
 .SH SEE ALSO
-.BR flashrom (1).
+.BR flashrom (1),
+.BR abuild (1).
 .SH COPYRIGHT
 2003-2006 Eric W. Biederman
 .SH AUTHORS
@@ -241,3 +240,4 @@ Eric W. Biederman <ebiederman@lnxi.com>
 Some contributions by others.
 .PP
 This manual page was written by Uwe Hermann <uwe@hermann-uwe.de>.
+It is licensed under the terms of the GNU GPL (v2 or later).

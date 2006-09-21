@@ -1,0 +1,68 @@
+.TH ABUILD 1 "September 19, 2006"
+.SH NAME
+abuild \- build LinuxBIOS images for all available targets
+.SH SYNOPSIS
+.B abuild
+\fR[\fB\-abxVh\fR] [\fB\-t\fR vendor/board] [\fB\-p\fR dir]
+[LBROOT]
+.SH DESCRIPTION
+.B abuild
+is a utility used to easily build LinuxBIOS images for all available targets.
+.SH OPTIONS
+The
+.B "[LBROOT]"
+parameter tells
+.B abuild
+where the root directory of the LinuxBIOS build tree resides. Per default
+this is
+.B "../.."
+as the
+.B abuild
+script resides in
+.BR "[LBROOT]/utils/abuild" .
+.TP
+.B "\-a, \-\-all"
+Build previously succeeded ports as well.
+.TP
+.B "\-b, \-\-broken"
+Attempt to build ports that are known to be broken.
+.TP
+.B "\-p, \-\-payloads <dir>"
+Use payloads in
+.B "<dir>"
+to build images.
+.TP
+.B "\-t, \-\-target <vendor/board>"
+Attempt to build target vendor/board only.
+.TP
+.B "\-x, \-\-xml"
+Write an XML log file instead of a plain-text one.
+The file will be called
+.B abuild.xml
+and will be created in the current directory.
+.TP
+.B "\-v, \-\-verbose"
+More verbose output.
+.TP
+.B "\-h, \-\-help"
+Show a help text and exit.
+.TP
+.B "\-V, \-\-version"
+Show version information and exit.
+.SH BUGS
+Please report any bugs at http://bugzilla.openbios.org/.
+.SH LICENCE
+.B abuild
+is covered by the GNU General Public License (GPL), version 2 or later.
+.SH SEE ALSO
+.BR romcc (1),
+.BR flashrom (1).
+.SH COPYRIGHT
+2004 Stefan Reinauer
+.br
+2006 coresystems GmbH
+.SH AUTHORS
+Stefan Reinauer <stepan@openbios.org>
+.PP
+This manual page was written by Uwe Hermann <uwe@hermann-uwe.de>.
+It is licensed under the terms of the GNU GPL (v2 or later).

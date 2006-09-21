@@ -1,6 +1,4 @@
-.\" Copyright (C) 2006 Uwe Hermann <uwe@hermann-uwe.de>.
-.\" This manpage is licensed under the terms of the GNU GPL.
-.TH FLASHROM 1 "July 26, 2006"
+.TH FLASHROM 1 "September 19, 2006"
 .SH NAME
 flashrom \- the universal LinuxBIOS flash utility
 .SH SYNOPSIS
@@ -12,55 +10,56 @@ is the universal LinuxBIOS flash utility.
 .SH OPTIONS
 If no file is specified, then all that happens
 is that flash info is dumped and the flash chip is set to writable.
-
+.TP
 .B "\-r, \-\-read"
 Read flash and save contents into file.
-.PP
+.TP
 .B "\-w, \-\-write"
 Write file into flash (default when file is specified).
-.PP
+.TP
 .B "\-v, \-\-verify"
 Verify flash against file.
-.PP
+.TP
 .B "\-E, \-\-erase"
 Erase flash device.
-.PP
+.TP
 .B "\-V, \-\-verbose"
 More verbose output.
-.PP
+.TP
 .B "\-c, \-\-chip" <chipname>
 Probe only for specified flash chip.
-.PP
+.TP
 .B "\-s, \-\-estart" <addr>
 Exclude start position. (obsolete)
-.PP
+.TP
 .B "\-e, \-\-eend" <addr> 
 Exclude end postion. (obsolete)
-.PP
+.TP
 .B "\-m, \-\-mainboard" <vendor:part>
 Override mainboard settings.
-.PP
+.TP
 .B "\-f, \-\-force"
 Force write without checking image.
-.PP
+.TP
 .B "\-l, \-\-layout" <layout.file>
 Read ROM layout from file.
-.PP
+.TP
 .B "\-i, \-\-image" <name>
 Only flash image name from flash layout.
-.PP
+.TP
 .B "\-h, \-\-help"
 Show a help text and exit.
-.\".PP
+.\".TP
 .\".B "\-\-version"
 .\"Show version information and exit.
 .SH BUGS
 Please report any bugs at http://bugzilla.openbios.org/.
 .SH LICENCE
 .B flashrom
-is covered by the GNU General Public License (GPL).
+is covered by the GNU General Public License (GPL), version 2 or later.
 .SH SEE ALSO
-.BR romcc (1).
+.BR romcc (1),
+.BR abuild (1).
 .SH COPYRIGHT
 2000 Silicon Integrated System Corporation
 .br
@@ -78,5 +77,5 @@ Niki W. Waibel <niki.waibel@gmx.net>
 .br
 some others 
 .PP
-This manual page was written by Uwe Hermann <uwe@hermann-uwe.de>,
-for the Debian GNU/Linux system (but may be used by others).
+This manual page was written by Uwe Hermann <uwe@hermann-uwe.de>.
+It is licensed under the terms of the GNU GPL (v2 or later).

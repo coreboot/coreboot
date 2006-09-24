@@ -23,7 +23,6 @@ option FALLBACK_SIZE=0x18000
 ## LinuxBIOS C code runs at this location in RAM
 option _RAMBASE=0x00004000
 
-#
 ###
 ### Compute the start location and size size of
 ### The linuxBIOS bootloader.
@@ -37,21 +36,15 @@ romimage "normal"
 	option ROM_IMAGE_SIZE=0xc000
 	option ROM_SECTION_OFFSET=0x10000
 	option ROM_SECTION_SIZE=0x18000
-	option LINUXBIOS_EXTRA_VERSION=".0Normal"
-#	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
-#	payload ../../../../tg3--ide_disk.zelf	
-#	payload ../../../../../lnxieepro100.ebi
-	payload /filo.elf
+	option LINUXBIOS_EXTRA_VERSION=".0-Normal"
+	payload $(HOME)/svn/filo.elf
 end
 
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
 	option ROM_IMAGE_SIZE=0xc000
-	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
-#	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
-#	payload ../../../../tg3--ide_disk.zelf	
-#	payload ../../../../../lnxieepro100.ebi
-	payload /filo.elf
+	option LINUXBIOS_EXTRA_VERSION=".0-Fallback"
+	payload $(HOME)/svn/filo.elf
 end
 
 buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"

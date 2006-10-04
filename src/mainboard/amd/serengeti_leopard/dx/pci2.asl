@@ -18,10 +18,10 @@ DefinitionBlock ("SSDT2.aml", "SSDT", 1, "AMD-K8", "AMDACPI", 100925440)
 
 	External (PICF)
 
-	External (\_SB.PCI1.LNKA, DeviceObj)
-	External (\_SB.PCI1.LNKB, DeviceObj)
-	External (\_SB.PCI1.LNKC, DeviceObj)
-	External (\_SB.PCI1.LNKD, DeviceObj)
+	External (\_SB.PCI0.LNKA, DeviceObj)
+	External (\_SB.PCI0.LNKB, DeviceObj)
+	External (\_SB.PCI0.LNKC, DeviceObj)
+	External (\_SB.PCI0.LNKD, DeviceObj)
 
         Device (PCI2)
         {

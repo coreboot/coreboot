@@ -192,7 +192,7 @@ print_err("D\n");
 print_err("E\n");
 	enable_smbus();
 
-#if 1
+#if 0
 	dump_spd_registers(&cpu[0]);
 #endif
 print_err("F\n");

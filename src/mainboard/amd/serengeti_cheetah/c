@@ -1,5 +1,0 @@
-rm dsdt.c
-rm ssdt2.c
-rm dsdt_bus0.c
-rm ssdt2_bus0.c
-rm ssdt.c

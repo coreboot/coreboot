@@ -21,6 +21,16 @@
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
+
+#if CONFIG_USE_INIT == 0
+	#include "lib/memcpy.c"
+ #if CONFIG_USE_PRINTK_IN_CAR == 1
+	#include "lib/uart8250.c"
+	#include "console/vtxprintf.c"
+	#include "arch/i386/lib/printk_init.c"
+ #endif
+#endif
+
 #include "arch/i386/lib/console.c"
 
 #if 0 
@@ -39,10 +49,6 @@ static void post_code(uint8_t value) {
 #include "cpu/amd/model_fxx/apic_timer.c"
 
 #include "lib/delay.c"
-
-#if CONFIG_USE_INIT == 0
-	#include "lib/memcpy.c"
-#endif
 
 
 //#include "cpu/x86/lapic/boot_cpu.c"
@@ -72,7 +78,11 @@ void hardwaremain(int ret_addr)
 
 	id = get_node_core_id_x();
 
+#if CONFIG_USE_PRINTK_IN_CAR
+        printk_debug("CODE IN CACHE ON NODE: %02x\n");
+#else
         print_debug("CODE IN CACHE ON NODE:"); print_debug_hex8(id.nodeid); print_debug("\r\n");
+#endif
 
 	train_ram(id.nodeid, sysinfo, sysinfox);
 

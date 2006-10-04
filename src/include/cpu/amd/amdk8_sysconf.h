@@ -10,6 +10,7 @@ struct amdk8_sysconf_t {
 	unsigned hc_possible_num;
 	unsigned pci1234[HC_POSSIBLE_NUM];
 	unsigned hcdn[HC_POSSIBLE_NUM];
+	unsigned hcid[HC_POSSIBLE_NUM]; //record ht chain type
 	unsigned sbdn;
 	unsigned sblk;
 

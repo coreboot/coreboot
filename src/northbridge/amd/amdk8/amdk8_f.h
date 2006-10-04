@@ -499,7 +499,7 @@ struct sys_info {
         uint8_t ctrl_present[NODE_NUMS];
         struct mem_info meminfo[NODE_NUMS];
 	struct mem_controller ctrl[NODE_NUMS];
-        uint8_t mem_trained[NODE_NUMS];
+	uint8_t mem_trained[NODE_NUMS]; //0: no dimm, 1: trained, 0x80: not started, 0x81: recv1 fail, 0x82: Pos Fail, 0x83:recv2 fail
         uint32_t tom_k;
         uint32_t tom2_k;
 
@@ -518,21 +518,23 @@ struct sys_info {
 	uint32_t sbbusn;
 } __attribute__((packed));
 
-#if MEM_TRAIN_SEQ == 1
+#ifdef __ROMCC__
+static void soft_reset(void);
+#endif
 
 static void wait_all_core0_mem_trained(struct sys_info *sysinfo)
 {
+
         int i;
         uint32_t mask = 0;
+	unsigned needs_reset = 0;
+
 
 	if(sysinfo->nodes == 1) return; // in case only one cpu installed	
 
         for(i=1; i<sysinfo->nodes; i++) {
-                if (!sysinfo->ctrl_present[ i ])
-                        continue;
-
                 /* Skip everything if I don't have any memory on this controller */
-                if(sysinfo->meminfo[i].dimm_mask==0x00) continue;
+                if(sysinfo->mem_trained[i]==0x00) continue;
 
                 mask |= (1<<i);
 
@@ -541,21 +543,49 @@ static void wait_all_core0_mem_trained(struct sys_info *sysinfo)
         i = 1;
         while(1) {
 		if(mask & (1<<i)) {
-			if((sysinfo->mem_trained[i])) {
+			if((sysinfo->mem_trained[i])!=0x80) {
 				mask &= ~(1<<i);
 			}
 		}
 
                 if(!mask) break;
 
+#if 0
 		/* cpu_relax */
 		__asm__ __volatile__("rep;nop": : :"memory");
+#endif
 
                 i++;
                 i%=sysinfo->nodes;
 	}
 
-}
+	for(i=0; i<sysinfo->nodes; i++) {
+#ifdef __ROMCC__
+		print_debug("mem_trained["); print_debug_hex8(i); print_debug("]="); print_debug_hex8(sysinfo->mem_trained[i]); print_debug("\r\n");
+#else
+		printk_debug("mem_trained[%02x]=%02x\n", i, sysinfo->mem_trained[i]); 
 #endif
+                switch(sysinfo->mem_trained[i]) {
+		case 0: //don't need train
+		case 1: //trained
+			break;
+		case 0x81: //recv1: fail
+		case 0x82: //Pos :fail
+		case 0x83: //recv2: fail
+			needs_reset = 1;
+			break;
+		}
+	}
+	if(needs_reset) {
+#ifdef __ROMCC__
+		print_debug("mem trained failed\r\n");
+		soft_reset();
+#else
+		printk_debug("mem trained failed\n"); 
+		hard_reset();
+#endif
+	}
+
+}
 
 #endif /* AMDK8_F_H */

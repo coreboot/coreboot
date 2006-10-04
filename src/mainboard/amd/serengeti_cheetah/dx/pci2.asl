@@ -23,21 +23,21 @@ DefinitionBlock ("SSDT2.aml", "SSDT", 1, "AMD-K8", "AMDACPI", 100925440)
 	External (\_SB.PCI0.LNKC, DeviceObj)
 	External (\_SB.PCI0.LNKD, DeviceObj)
 
-        Device (PCI2)
+        Device (PCIX)
         {
 
 	    // BUS ? Second HT Chain
-	    Name (HCIN, 0x01)  // HC2
+	    Name (HCIN, 0xcc)  // HC2 0x01
+            
+	    Name (_UID,  0xdd)  // HC 0x03
 
 	    Name (_HID, "PNP0A03") 
 
             Method (_ADR, 0, NotSerialized) //Fake bus should be 0
 	    {
-		Return (DADD(GHCN(HCIN), 0x00180000))
+		Return (DADD(GHCN(HCIN), 0x00000000))
 	    }
 	
-            Name (_UID,  0x03) 
-
             Method (_BBN, 0, NotSerialized)
             {
                 Return (GBUS (GHCN(HCIN), GHCL(HCIN)))

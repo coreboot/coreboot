@@ -9,7 +9,7 @@
                 Name (_UID, 0x01)
                 Method (_STA, 0, NotSerialized)
                 {
-                    And (\_SB.PCI1.SBC3.PIBA, 0x0F, Local0)
+                    And (\_SB.PCI0.SBC3.PIBA, 0x0F, Local0)
                     If (LEqual (Local0, 0x00)) { Return (0x09) } //Disabled
                     Else { Return (0x0B) } //Enabled
                 }
@@ -26,7 +26,7 @@
                 Method (_DIS, 0, NotSerialized)
                 {
                     Store (0x01, Local3)
-                    And (\_SB.PCI1.SBC3.PIBA, 0x0F, Local1)
+                    And (\_SB.PCI0.SBC3.PIBA, 0x0F, Local1)
                     Store (Local1, Local2)
                     If (LGreater (Local1, 0x07))
                     {
@@ -35,7 +35,7 @@
 
                     ShiftLeft (Local3, Local1, Local3)
                     Not (Local3, Local3)
-                    And (\_SB.PCI1.SBC3.PIBA, 0xF0, \_SB.PCI1.SBC3.PIBA)
+                    And (\_SB.PCI0.SBC3.PIBA, 0xF0, \_SB.PCI0.SBC3.PIBA)
                 }
 
                 Method (_CRS, 0, NotSerialized)
@@ -48,7 +48,7 @@
                     CreateByteField (BUFA, 0x02, IRA2)
                     Store (0x00, Local3)
                     Store (0x00, Local4)
-                    And (\_SB.PCI1.SBC3.PIBA, 0x0F, Local1)
+                    And (\_SB.PCI0.SBC3.PIBA, 0x0F, Local1)
                     If (LNot (LEqual (Local1, 0x00)))
                     {  // Routing enable
                         If (LGreater (Local1, 0x07))
@@ -85,8 +85,8 @@
                         ShiftRight (Local0, 0x01, Local0)
                     }
 
-                    And (\_SB.PCI1.SBC3.PIBA, 0xF0, \_SB.PCI1.SBC3.PIBA)
-                    Or (\_SB.PCI1.SBC3.PIBA, Local1, \_SB.PCI1.SBC3.PIBA)
+                    And (\_SB.PCI0.SBC3.PIBA, 0xF0, \_SB.PCI0.SBC3.PIBA)
+                    Or (\_SB.PCI0.SBC3.PIBA, Local1, \_SB.PCI0.SBC3.PIBA)
                 }
             }
 
@@ -96,7 +96,7 @@
                 Name (_UID, 0x02)
                 Method (_STA, 0, NotSerialized)
                 {
-                    And (\_SB.PCI1.SBC3.PIBA, 0xF0, Local0)
+                    And (\_SB.PCI0.SBC3.PIBA, 0xF0, Local0)
                     If (LEqual (Local0, 0x00)) { Return (0x09) }
                     Else { Return (0x0B) }
                 }
@@ -113,7 +113,7 @@
                 Method (_DIS, 0, NotSerialized)
                 {
                     Store (0x01, Local3)
-                    And (\_SB.PCI1.SBC3.PIBA, 0xF0, Local1)
+                    And (\_SB.PCI0.SBC3.PIBA, 0xF0, Local1)
                     ShiftRight (Local1, 0x04, Local1)
                     Store (Local1, Local2)
                     If (LGreater (Local1, 0x07))
@@ -123,7 +123,7 @@
 
                     ShiftLeft (Local3, Local1, Local3)
                     Not (Local3, Local3)
-                    And (\_SB.PCI1.SBC3.PIBA, 0x0F, \_SB.PCI1.SBC3.PIBA)
+                    And (\_SB.PCI0.SBC3.PIBA, 0x0F, \_SB.PCI0.SBC3.PIBA)
                 }
 
                 Method (_CRS, 0, NotSerialized)
@@ -136,7 +136,7 @@
                     CreateByteField (BUFB, 0x02, IRB2)
                     Store (0x00, Local3)
                     Store (0x00, Local4)
-                    And (\_SB.PCI1.SBC3.PIBA, 0xF0, Local1)
+                    And (\_SB.PCI0.SBC3.PIBA, 0xF0, Local1)
                     ShiftRight (Local1, 0x04, Local1)
                     If (LNot (LEqual (Local1, 0x00)))
                     {
@@ -174,9 +174,9 @@
                         ShiftRight (Local0, 0x01, Local0)
                     }
 
-                    And (\_SB.PCI1.SBC3.PIBA, 0x0F, \_SB.PCI1.SBC3.PIBA)
+                    And (\_SB.PCI0.SBC3.PIBA, 0x0F, \_SB.PCI0.SBC3.PIBA)
                     ShiftLeft (Local1, 0x04, Local1)
-                    Or (\_SB.PCI1.SBC3.PIBA, Local1, \_SB.PCI1.SBC3.PIBA)
+                    Or (\_SB.PCI0.SBC3.PIBA, Local1, \_SB.PCI0.SBC3.PIBA)
                 }
             }
 
@@ -186,7 +186,7 @@
                 Name (_UID, 0x03)
                 Method (_STA, 0, NotSerialized)
                 {
-                    And (\_SB.PCI1.SBC3.PIDC, 0x0F, Local0)
+                    And (\_SB.PCI0.SBC3.PIDC, 0x0F, Local0)
                     If (LEqual (Local0, 0x00)) { Return (0x09) }
                     Else { Return (0x0B) }
                 }
@@ -203,7 +203,7 @@
                 Method (_DIS, 0, NotSerialized)
                 {
                     Store (0x01, Local3)
-                    And (\_SB.PCI1.SBC3.PIDC, 0x0F, Local1)
+                    And (\_SB.PCI0.SBC3.PIDC, 0x0F, Local1)
                     Store (Local1, Local2)
                     If (LGreater (Local1, 0x07))
                     {
@@ -212,7 +212,7 @@
 
                     ShiftLeft (Local3, Local1, Local3)
                     Not (Local3, Local3)
-                    And (\_SB.PCI1.SBC3.PIDC, 0xF0, \_SB.PCI1.SBC3.PIDC)
+                    And (\_SB.PCI0.SBC3.PIDC, 0xF0, \_SB.PCI0.SBC3.PIDC)
                 }
 
                 Method (_CRS, 0, NotSerialized)
@@ -225,7 +225,7 @@
                     CreateByteField (BUFA, 0x02, IRA2)
                     Store (0x00, Local3)
                     Store (0x00, Local4)
-                    And (\_SB.PCI1.SBC3.PIDC, 0x0F, Local1)
+                    And (\_SB.PCI0.SBC3.PIDC, 0x0F, Local1)
                     If (LNot (LEqual (Local1, 0x00)))
                     {
                         If (LGreater (Local1, 0x07))
@@ -262,8 +262,8 @@
                         ShiftRight (Local0, 0x01, Local0)
                     }
 
-                    And (\_SB.PCI1.SBC3.PIDC, 0xF0, \_SB.PCI1.SBC3.PIDC)
-                    Or (\_SB.PCI1.SBC3.PIDC, Local1, \_SB.PCI1.SBC3.PIDC)
+                    And (\_SB.PCI0.SBC3.PIDC, 0xF0, \_SB.PCI0.SBC3.PIDC)
+                    Or (\_SB.PCI0.SBC3.PIDC, Local1, \_SB.PCI0.SBC3.PIDC)
                 }
             }
 
@@ -273,7 +273,7 @@
                 Name (_UID, 0x04)
                 Method (_STA, 0, NotSerialized)
                 {
-                    And (\_SB.PCI1.SBC3.PIDC, 0xF0, Local0)
+                    And (\_SB.PCI0.SBC3.PIDC, 0xF0, Local0)
                     If (LEqual (Local0, 0x00)) { Return (0x09) }
                     Else { Return (0x0B) }
                 }
@@ -290,7 +290,7 @@
                 Method (_DIS, 0, NotSerialized)
                 {
                     Store (0x01, Local3)
-                    And (\_SB.PCI1.SBC3.PIDC, 0xF0, Local1)
+                    And (\_SB.PCI0.SBC3.PIDC, 0xF0, Local1)
                     ShiftRight (Local1, 0x04, Local1)
                     Store (Local1, Local2)
                     If (LGreater (Local1, 0x07))
@@ -300,7 +300,7 @@
 
                     ShiftLeft (Local3, Local1, Local3)
                     Not (Local3, Local3)
-                    And (\_SB.PCI1.SBC3.PIDC, 0x0F, \_SB.PCI1.SBC3.PIDC)
+                    And (\_SB.PCI0.SBC3.PIDC, 0x0F, \_SB.PCI0.SBC3.PIDC)
                 }
 
                 Method (_CRS, 0, NotSerialized)
@@ -313,7 +313,7 @@
                     CreateByteField (BUFB, 0x02, IRB2)
                     Store (0x00, Local3)
                     Store (0x00, Local4)
-                    And (\_SB.PCI1.SBC3.PIDC, 0xF0, Local1)
+                    And (\_SB.PCI0.SBC3.PIDC, 0xF0, Local1)
                     ShiftRight (Local1, 0x04, Local1)
                     If (LNot (LEqual (Local1, 0x00)))
                     {
@@ -351,9 +351,9 @@
                         ShiftRight (Local0, 0x01, Local0)
                     }
 
-                    And (\_SB.PCI1.SBC3.PIDC, 0x0F, \_SB.PCI1.SBC3.PIDC)
+                    And (\_SB.PCI0.SBC3.PIDC, 0x0F, \_SB.PCI0.SBC3.PIDC)
                     ShiftLeft (Local1, 0x04, Local1)
-                    Or (\_SB.PCI1.SBC3.PIDC, Local1, \_SB.PCI1.SBC3.PIDC)
+                    Or (\_SB.PCI0.SBC3.PIDC, Local1, \_SB.PCI0.SBC3.PIDC)
                 }
             }
 

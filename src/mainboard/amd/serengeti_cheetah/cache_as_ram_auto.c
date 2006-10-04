@@ -15,16 +15,13 @@
 
 
 //used by init_cpus and fidvid
-#define K8_SET_FIDVID 1
+#define K8_SET_FIDVID 0
 //if we want to wait for core1 done before DQS training, set it to 0
 #define K8_SET_FIDVID_CORE0_ONLY 1
 
-//0: three for in bsp, only this one support F0_F1 workaround
-//1: on every core0
-//2: one for on bsp
-//#define MEM_TRAIN_SEQ 1
-
+#if K8_REV_F_SUPPORT == 1
 #define K8_REV_F_SUPPORT_F0_F1_WORKAROUND 0
+#endif
 
 #include <stdint.h>
 #include <device/pci_def.h>
@@ -59,14 +56,19 @@ static void post_code(uint8_t value) {
 
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
-#include "cpu/x86/bist.h"
 
 #if USE_FAILOVER_IMAGE==0
+#include "cpu/x86/bist.h"
 
 #include "lib/delay.c"
 
 #if CONFIG_USE_INIT == 0
 	#include "lib/memcpy.c"
+ #if CONFIG_USE_PRINTK_IN_CAR == 1
+	#include "lib/uart8250.c"
+	#include "console/vtxprintf.c"
+	#include "arch/i386/lib/printk_init.c"
+ #endif
 #endif
 #include "northbridge/amd/amdk8/debug.c"
 #include "cpu/amd/mtrr/amd_earlymtrr.c"
@@ -123,12 +125,12 @@ static inline int spd_read_byte(unsigned device, unsigned address)
         return smbus_read_byte(device, address);
 }
 
-#include "northbridge/amd/amdk8/amdk8_f.h"
+#include "northbridge/amd/amdk8/amdk8.h"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 
-#include "northbridge/amd/amdk8/raminit_f.c"
+#include "northbridge/amd/amdk8/raminit.c"
 
 #include "sdram/generic_sdram.c"
 
@@ -263,8 +265,6 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
         unsigned bsp_apicid = 0;
 
         if (bist == 0) {
-	        //It's the time to set ctrl in sysinfo now;
-	        fill_mem_ctrl(CONFIG_MAX_PHYSICAL_CPUS, sysinfo->ctrl, spd_addr);
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
         }
 
@@ -281,7 +281,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
         print_debug("*sysinfo range: ["); print_debug_hex32(sysinfo); print_debug(",");  print_debug_hex32((unsigned long)sysinfo+sizeof(struct sys_info)); print_debug(")\r\n");
 
-        setup_serengeti_cheetah_resource_map();
+        setup_mb_resource_map();
 #if 0
         dump_pci_device(PCI_DEV(0, 0x18, 0));
 	dump_pci_device(PCI_DEV(0, 0x19, 0));
@@ -350,10 +350,8 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #endif
 	allow_all_aps_stop(bsp_apicid);
 
-#if 0
         //It's the time to set ctrl in sysinfo now;
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
-#endif
 
 	enable_smbus();
 

@@ -1,13 +1,17 @@
 uses CONFIG_USE_INIT
+uses CONFIG_USE_PRINTK_IN_CAR
 
 object c_start.S
 object cpu.c
 object pci_ops_conf1.c
 object pci_ops_conf2.c
+object pci_ops_mmconf.c
 object pci_ops_auto.c
 object exception.c
 
 if CONFIG_USE_INIT
-	initobject printk_init.o
+	if CONFIG_USE_PRINTK_IN_CAR
+		initobject printk_init.o
+	end
 end
 

@@ -4,7 +4,7 @@
 */
 static inline void print_debug_cp_run(const char *strval, uint32_t val)
 {
-#if CONFIG_USE_INIT
+#if CONFIG_USE_PRINTK_IN_CAR
         printk_debug("%s%08x\r\n", strval, val);
 #else
         print_debug(strval); print_debug_hex32(val); print_debug("\r\n");

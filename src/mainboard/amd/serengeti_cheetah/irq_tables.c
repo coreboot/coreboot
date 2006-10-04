@@ -113,14 +113,20 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 //pcix bridge
 //        write_pirq_info(pirq_info, m->bus_8132_0, (sbdn3<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
 //        pirq_info++; slot_num++;
-	
-	if(sysconf.pci1234[1] & 0xf) {
-	//agp bridge
-        	write_pirq_info(pirq_info, m->bus_8151_0, (m->sbdn5<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0); 
-	}	
 
-        pirq_info++; slot_num++;
-             
+	int j = 0;
+
+        for(i=1; i< sysconf.hc_possible_num; i++) {
+                if(!(sysconf.pci1234[i] & 0x1) ) continue;
+                unsigned busn = (sysconf.pci1234[i] >> 16) & 0xff;
+                unsigned devn = sysconf.hcdn[i] & 0xff;
+
+                write_pirq_info(pirq_info, busn, (devn<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
+                pirq_info++; slot_num++;
+                j++;
+
+        }
+	
 	pirq->size = 32 + 16 * slot_num; 
 
         for (i = 0; i < pirq->size; i++)

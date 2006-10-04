@@ -238,6 +238,35 @@
 #define NonCoherent       (1 << 2)
 #define ConnectionPending (1 << 4)
 
+#include "raminit.h"
+//struct definitions
+
+#if RAMINIT_SYSINFO==1
+struct link_pair_st {
+        device_t udev;
+        uint32_t upos;
+        uint32_t uoffs;
+        device_t dev;
+        uint32_t pos;
+        uint32_t offs;
+
+} __attribute__((packed));
+
+struct sys_info {
+        uint8_t ctrl_present[NODE_NUMS];
+        struct mem_controller ctrl[NODE_NUMS];
+
+        uint32_t nodes;
+        struct link_pair_st link_pair[16];// enough? only in_conherent
+        uint32_t link_pair_num;
+        uint32_t ht_c_num;
+        uint32_t sbdn;
+        uint32_t sblk;
+        uint32_t sbbusn;
+} __attribute__((packed));
+#endif
+
+
 #endif
 
 #endif /* AMDK8_H */

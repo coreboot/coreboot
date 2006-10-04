@@ -3,6 +3,9 @@
 	2004.12 yhlu add D0 support
 	2005.02 yhlu add E0 memory hole support
 */
+#if K8_REV_F_SUPPORT == 1
+        #include "raminit_f.c"
+#else
 
 #include <cpu/x86/mem.h>
 #include <cpu/x86/cache.h>
@@ -35,7 +38,7 @@ static void setup_resource_map(const unsigned int *register_values, int max)
 		unsigned where;
 		unsigned long reg;
 #if 0
-	#if CONFIG_USE_INIT
+	#if CONFIG_USE_PRINTK_IN_CAR
 		prink_debug("%08x <- %08x\r\n", register_values[i], register_values[i+2]);
 	#else
 		print_debug_hex32(register_values[i]);
@@ -66,7 +69,11 @@ static int controller_present(const struct mem_controller *ctrl)
         return pci_read_config32(ctrl->f0, 0) == 0x11001022;
 }
 
+#if RAMINIT_SYSINFO==1
+static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_info *sysinfo)
+#else
 static void sdram_set_registers(const struct mem_controller *ctrl)
+#endif
 {
 	static const unsigned int register_values[] = {
 
@@ -546,7 +553,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 		unsigned where;
 		unsigned long reg;
 #if 0
-        #if CONFIG_USE_INIT
+	#if CONFIG_USE_PRINTK_IN_CAR
                 prink_debug("%08x <- %08x\r\n", register_values[i], register_values[i+2]);
         #else
 		print_spew_hex32(register_values[i]);
@@ -2139,7 +2146,11 @@ static long spd_set_dram_timing(const struct mem_controller *ctrl, const struct 
 	return dimm_mask;
 }
 
+#if RAMINIT_SYSINFO==1
+static void sdram_set_spd_registers(const struct mem_controller *ctrl, struct sys_info *sysinfo) 
+#else
 static void sdram_set_spd_registers(const struct mem_controller *ctrl) 
+#endif
 {
 	struct spd_set_memclk_result result;
 	const struct mem_param *param;
@@ -2288,7 +2299,11 @@ static void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
 #endif
 
 #define TIMEOUT_LOOPS 300000
+#if RAMINIT_SYSINFO == 1
+static void sdram_enable(int controllers, const struct mem_controller *ctrl, struct sys_info *sysinfo)
+#else
 static void sdram_enable(int controllers, const struct mem_controller *ctrl)
+#endif
 {
 	int i;
 
@@ -2475,4 +2490,6 @@ static void fill_mem_ctrl(int controllers, struct mem_controller *ctrl_a, const 
                 }
         }
 }
+#endif
+
 #endif

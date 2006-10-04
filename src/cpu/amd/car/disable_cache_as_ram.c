@@ -2,6 +2,7 @@
 /* be warned, this file will be used other cores and core 0 / node 0 */
 static inline __attribute__((always_inline)) void disable_cache_as_ram(void)
 {
+
         __asm__ volatile (
 
         /* We don't need cache as ram for now on */
@@ -43,27 +44,20 @@ static inline __attribute__((always_inline)) void disable_cache_as_ram(void)
 
         );
 }
-/* be warned, this file will be used core 0 / node 0 and ram stack is ready*/
 
 static void disable_cache_as_ram_bsp(void)
 {
-        __asm__ volatile (
-
-        "pushl	%ecx\n\t"
-        "pushl 	%edx\n\t"
-        "pushl 	%eax\n\t"
-
+	__asm__ volatile (
+//		"pushl %eax\n\t"
+ 		"pushl %edx\n\t"
+ 		"pushl %ecx\n\t"
 	);
 
 	disable_cache_as_ram();
-
-	__asm__ volatile (
-
-        "popl   %eax\n\t"
-        "popl   %edx\n\t"
-        "popl   %ecx\n\t"
-
+        __asm__ volatile (
+                "popl %ecx\n\t"
+                "popl %edx\n\t"
+//                "popl %eax\n\t"
         );
 }
-
 

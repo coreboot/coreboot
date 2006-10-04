@@ -15,10 +15,10 @@
                 })
                 Name (PICM, Package (0x04)
                 {
-                    Package (0x04) { 0x0000FFFF, 0x00, \_SB.PCI1.LNKA, 0x00 }, 
-                    Package (0x04) { 0x0000FFFF, 0x01, \_SB.PCI1.LNKB, 0x00 }, 
-                    Package (0x04) { 0x0000FFFF, 0x02, \_SB.PCI1.LNKC, 0x00 }, 
-                    Package (0x04) { 0x0000FFFF, 0x03, \_SB.PCI1.LNKD, 0x00 }
+                    Package (0x04) { 0x0000FFFF, 0x00, \_SB.PCI0.LNKA, 0x00 }, 
+                    Package (0x04) { 0x0000FFFF, 0x01, \_SB.PCI0.LNKB, 0x00 }, 
+                    Package (0x04) { 0x0000FFFF, 0x02, \_SB.PCI0.LNKC, 0x00 }, 
+                    Package (0x04) { 0x0000FFFF, 0x03, \_SB.PCI0.LNKD, 0x00 }
                 })
                 Method (_PRT, 0, NotSerialized)
                 {

@@ -15,8 +15,9 @@
 #include <device/pci_ids.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
+#include <cpu/amd/amdk8_sysconf.h>
 
-#define DUMP_ACPI_TABLES 1
+#define DUMP_ACPI_TABLES 0
 
 #if DUMP_ACPI_TABLES == 1
 static void dump_mem(unsigned start, unsigned end)
@@ -34,7 +35,6 @@ static void dump_mem(unsigned start, unsigned end)
  }
 #endif
 
-#define HC_POSSIBLE_NUM 8
 extern unsigned char AmlCode[];
 extern unsigned char AmlCode_ssdt[];
 
@@ -62,12 +62,6 @@ extern  unsigned apicid_8111;
 extern  unsigned apicid_8132_1;
 extern  unsigned apicid_8132_2;
 
-extern  unsigned pci1234[];
-extern  unsigned hc_possible_num;
-extern  unsigned sblk;
-extern  unsigned sbdn;
-extern  unsigned hcdn[];
-
 unsigned long acpi_fill_madt(unsigned long current)
 {
 	unsigned int gsi_base=0x18;
@@ -83,7 +77,7 @@ unsigned long acpi_fill_madt(unsigned long current)
         {
                 device_t dev;
                 struct resource *res;
-                dev = dev_find_slot(bus_8132_0, PCI_DEVFN((hcdn[0]&0xff), 1));
+                dev = dev_find_slot(bus_8132_0, PCI_DEVFN((sysconf.hcdn[0]&0xff), 1));
                 if (dev) {
                         res = find_resource(dev, PCI_BASE_ADDRESS_0);
                         if (res) {
@@ -93,7 +87,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 
                         }
                 }
-                dev = dev_find_slot(bus_8132_0, PCI_DEVFN((hcdn[0] & 0xff)+1, 1));
+                dev = dev_find_slot(bus_8132_0, PCI_DEVFN((sysconf.hcdn[0] & 0xff)+1, 1));
                 if (dev) {
                         res = find_resource(dev, PCI_BASE_ADDRESS_0);
                         if (res) {
@@ -120,78 +114,9 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return current;
 }
 
-//FIXME: next could be moved to northbridge/amd/amdk8/amdk8_acpi.c or cpu/amd/k8/k8_acpi.c begin
-static void int_to_stream(uint32_t val, uint8_t *dest)
-{
-	int i;
-	for(i=0;i<4;i++) {
-		*(dest+i) = (val >> (8*i)) & 0xff;
-	}
-}
-
 extern void get_bus_conf(void);
 
-static void update_ssdt(void *ssdt)
-{
-	uint8_t *BUSN;
-	uint8_t *MMIO;
-	uint8_t *PCIO;
-	uint8_t *SBLK;
-	uint8_t *TOM1;
-	uint8_t *SBDN;
-	uint8_t *HCLK;
-	uint8_t *HCDN;
-
-	int i;
-	device_t dev;
-	uint32_t dword;
-	msr_t msr;
-	
-	BUSN = ssdt+0x3a; //+5 will be next BUSN
-	MMIO = ssdt+0x57; //+5 will be next MMIO
-	PCIO = ssdt+0xaf; //+5 will be next PCIO
-	SBLK = ssdt+0xdc; // one byte
-	TOM1 = ssdt+0xe3; //
-	SBDN = ssdt+0xed;//
-	HCLK = ssdt+0xfa; //+5 will be next HCLK
-	HCDN = ssdt+0x12a; //+5 will be next HCDN
-	
-
-        dev = dev_find_slot(0, PCI_DEVFN(0x18, 1));
-
-	for(i=0;i<4;i++) {
-		dword = pci_read_config32(dev, 0xe0+i*4);
-		int_to_stream(dword, BUSN+i*5); 
-	}	
-
-        for(i=0;i<0x10;i++) {
-                dword = pci_read_config32(dev, 0x80+i*4);
-                int_to_stream(dword, MMIO+i*5);
-        }
-
-        for(i=0;i<0x08;i++) {
-                dword = pci_read_config32(dev, 0xc0+i*4);
-                int_to_stream(dword, PCIO+i*5);
-        }
-	
-	*SBLK = (uint8_t)(sblk);
-
-	msr = rdmsr(TOP_MEM);
-	int_to_stream(msr.lo, TOM1);
-
-	for(i=0;i<hc_possible_num;i++) {
-		int_to_stream(pci1234[i], HCLK + i*5);
-		int_to_stream(hcdn[i],    HCDN + i*5);
-	}
-	for(i=hc_possible_num; i<HC_POSSIBLE_NUM; i++) { // in case we set array size to other than 8
-		int_to_stream(0x00000000, HCLK + i*5);
-		int_to_stream(0x20202020, HCDN + i*5);
-	}
-
-	int_to_stream(sbdn, SBDN);
-		
-}
-//end
+extern void update_ssdt(void *ssdt);
 
 unsigned long write_acpi_tables(unsigned long start)
 {
@@ -279,8 +204,8 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	//same htio, but different possition? We may have to copy, change HCIN, and recalculate the checknum and add_table
 	
-	for(i=1;i<hc_possible_num;i++) {  // 0: is hc sblink
-		if((pci1234[i] & 1) != 1 ) continue;
+	for(i=1;i<sysconf.hc_possible_num;i++) {  // 0: is hc sblink
+		if((sysconf.pci1234[i] & 1) != 1 ) continue;
 	        printk_debug("ACPI:    * SSDT for PCI%d\n", i+1); //pci0 and pci1 are in dsdt
         	ssdtx = (acpi_header_t *)current;
 	        current += ((acpi_header_t *)AmlCode_ssdtx[i])->length;

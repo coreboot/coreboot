@@ -139,9 +139,15 @@ const char *dev_path(device_t dev)
 			memcpy(buffer, "Root Device", 12);
 			break;
 		case DEVICE_PATH_PCI:
+#if PCI_BUS_SEGN_BITS
+			sprintf(buffer, "PCI: %04x:%02x:%02x.%01x",
+				dev->bus->secondary>>8, dev->bus->secondary & 0xff, 
+				PCI_SLOT(dev->path.u.pci.devfn), PCI_FUNC(dev->path.u.pci.devfn));
+#else
 			sprintf(buffer, "PCI: %02x:%02x.%01x",
 				dev->bus->secondary, 
 				PCI_SLOT(dev->path.u.pci.devfn), PCI_FUNC(dev->path.u.pci.devfn));
+#endif
 			break;
 		case DEVICE_PATH_PNP:
 			sprintf(buffer, "PNP: %04x.%01x",
@@ -430,7 +436,11 @@ void report_resource_stored(device_t dev, struct resource *resource, const char 
 		end = resource_end(resource);
 		buf[0] = '\0';
 		if (resource->flags & IORESOURCE_PCI_BRIDGE) {
+#if PCI_BUS_SEGN_BITS
+			sprintf(buf, "bus %04x:%02x ", dev->bus->secondary>>8, dev->link[0].secondary & 0xff);
+#else
 			sprintf(buf, "bus %02x ", dev->link[0].secondary);
+#endif
 		}
 		printk_debug(
 			"%s %02x <- [0x%010Lx - 0x%010Lx] %s%s%s\n",

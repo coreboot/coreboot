@@ -34,6 +34,12 @@ static inline __attribute__((always_inline)) void write32(unsigned long addr, ui
 	*((volatile uint32_t *)(addr)) = value;
 }
 
+#if MMCONF_SUPPORT
+
+#include <arch/mmio_conf.h>
+
+#endif
+
 static inline int log2(int value)
 {
         unsigned int r = 0;
@@ -76,87 +82,193 @@ static inline int log2f(int value)
 
 #define PNP_DEV(PORT, FUNC) (((PORT) << 8) | (FUNC))
 
-typedef unsigned device_t;
+typedef unsigned device_t; /* pci and pci_mmio need to have different ways to have dev */
+
+/* FIXME: We need to make the LinuxBIOS to run at 64bit mode, So when read/write memory above 4G, 
+ * We don't need to set %fs, and %gs anymore
+ * Before that We need to use %gs, and leave %fs to other RAM access
+ */
 
 static inline __attribute__((always_inline)) uint8_t pci_io_read_config8(device_t dev, unsigned where)
 {
 	unsigned addr;
+#if PCI_IO_CFG_EXT == 0
 	addr = (dev>>4) | where;
+#else
+	addr = (dev>>4) | (where & 0xff) | ((where & 0xf00)<<16); //seg == 0
+#endif
 	outl(0x80000000 | (addr & ~3), 0xCF8);
 	return inb(0xCFC + (addr & 3));
 }
 
+#if MMCONF_SUPPORT
+static inline __attribute__((always_inline)) uint8_t pci_mmio_read_config8(device_t dev, unsigned where)
+{
+        unsigned addr;
+        addr = dev | where;
+        return read8x(addr);
+}
+#endif
 static inline __attribute__((always_inline)) uint8_t pci_read_config8(device_t dev, unsigned where)
 {
+#if MMCONF_SUPPORT
+	return pci_mmio_read_config8(dev, where);
+#else
 	return pci_io_read_config8(dev, where);
+#endif
 }
 
 static inline __attribute__((always_inline)) uint16_t pci_io_read_config16(device_t dev, unsigned where)
 {
 	unsigned addr;
+#if PCI_IO_CFG_EXT == 0
         addr = (dev>>4) | where;
+#else
+        addr = (dev>>4) | (where & 0xff) | ((where & 0xf00)<<16);
+#endif
 	outl(0x80000000 | (addr & ~3), 0xCF8);
 	return inw(0xCFC + (addr & 2));
 }
 
+#if MMCONF_SUPPORT
+static inline __attribute__((always_inline)) uint16_t pci_mmio_read_config16(device_t dev, unsigned where)
+{
+        unsigned addr;
+        addr = dev | where;
+        return read16x(addr);
+}
+#endif
+
 static inline __attribute__((always_inline)) uint16_t pci_read_config16(device_t dev, unsigned where)
 {
+#if MMCONF_SUPPORT
+	return pci_mmio_read_config16(dev, where);
+#else
         return pci_io_read_config16(dev, where);
+#endif
 }
 
 
 static inline __attribute__((always_inline)) uint32_t pci_io_read_config32(device_t dev, unsigned where)
 {
 	unsigned addr;
+#if PCI_IO_CFG_EXT == 0
         addr = (dev>>4) | where;
+#else
+        addr = (dev>>4) | (where & 0xff) | ((where & 0xf00)<<16);
+#endif
 	outl(0x80000000 | (addr & ~3), 0xCF8);
 	return inl(0xCFC);
 }
 
+#if MMCONF_SUPPORT
+static inline __attribute__((always_inline)) uint32_t pci_mmio_read_config32(device_t dev, unsigned where)
+{
+        unsigned addr;
+        addr = dev | where;
+        return read32x(addr);
+}
+#endif
+
 static inline __attribute__((always_inline)) uint32_t pci_read_config32(device_t dev, unsigned where)
 {
+#if MMCONF_SUPPORT
+	return pci_mmio_read_config32(dev, where);
+#else
         return pci_io_read_config32(dev, where);
+#endif
 }
 
 static inline __attribute__((always_inline)) void pci_io_write_config8(device_t dev, unsigned where, uint8_t value)
 {
 	unsigned addr;
+#if PCI_IO_CFG_EXT == 0
         addr = (dev>>4) | where;
+#else
+        addr = (dev>>4) | (where & 0xff) | ((where & 0xf00)<<16);
+#endif
 	outl(0x80000000 | (addr & ~3), 0xCF8);
 	outb(value, 0xCFC + (addr & 3));
 }
 
+#if MMCONF_SUPPORT
+static inline __attribute__((always_inline)) void pci_mmio_write_config8(device_t dev, unsigned where, uint8_t value)
+{
+        unsigned addr;
+        addr = dev | where;
+        write8x(addr, value);
+}
+#endif
+
 static inline __attribute__((always_inline)) void pci_write_config8(device_t dev, unsigned where, uint8_t value)
 {
+#if MMCONF_SUPPORT
+	pci_mmio_write_config8(dev, where, value);
+#else
         pci_io_write_config8(dev, where, value);
+#endif
 }
 
 
 static inline __attribute__((always_inline)) void pci_io_write_config16(device_t dev, unsigned where, uint16_t value)
 {
         unsigned addr;
+#if PCI_IO_CFG_EXT == 0
         addr = (dev>>4) | where;
+#else
+        addr = (dev>>4) | (where & 0xff) | ((where & 0xf00)<<16);
+#endif
         outl(0x80000000 | (addr & ~3), 0xCF8);
         outw(value, 0xCFC + (addr & 2));
 }
 
+#if MMCONF_SUPPORT
+static inline __attribute__((always_inline)) void pci_mmio_write_config16(device_t dev, unsigned where, uint16_t value)
+{
+        unsigned addr;
+        addr = dev | where;
+        write16x(addr, value);
+}
+#endif
+
 static inline __attribute__((always_inline)) void pci_write_config16(device_t dev, unsigned where, uint16_t value)
 {
+#if MMCONF_SUPPORT
+	pci_mmio_write_config16(dev, where, value);
+#else
 	pci_io_write_config16(dev, where, value);
+#endif
 }
 
 
 static inline __attribute__((always_inline)) void pci_io_write_config32(device_t dev, unsigned where, uint32_t value)
 {
 	unsigned addr;
+#if PCI_IO_CFG_EXT == 0
         addr = (dev>>4) | where;
+#else
+        addr = (dev>>4) | (where & 0xff) | ((where & 0xf00)<<16);
+#endif
 	outl(0x80000000 | (addr & ~3), 0xCF8);
 	outl(value, 0xCFC);
 }
 
+#if MMCONF_SUPPORT
+static inline __attribute__((always_inline)) void pci_mmio_write_config32(device_t dev, unsigned where, uint32_t value)
+{
+        unsigned addr;
+        addr = dev | where;
+        write32x(addr, value);
+}
+#endif
+
 static inline __attribute__((always_inline)) void pci_write_config32(device_t dev, unsigned where, uint32_t value)
 {
+#if MMCONF_SUPPORT
+	pci_mmio_write_config32(dev, where, value);
+#else
         pci_io_write_config32(dev, where, value);
+#endif
 }
 
 #define PCI_DEV_INVALID (0xffffffffU)
@@ -174,7 +286,7 @@ static device_t pci_io_locate_device(unsigned pci_id, device_t dev)
 
 static device_t pci_locate_device(unsigned pci_id, device_t dev)
 {
-	for(; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0,0,1)) {
+	for(; dev <= PCI_DEV(255|(((1<<PCI_BUS_SEGN_BITS)-1)<<8), 31, 7); dev += PCI_DEV(0,0,1)) {
 		unsigned int id;
 		id = pci_read_config32(dev, 0);
 		if (id == pci_id) {

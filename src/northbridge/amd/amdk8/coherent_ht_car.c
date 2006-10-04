@@ -113,7 +113,7 @@ typedef uint32_t u32;
 static inline void print_linkn (const char *strval, uint8_t byteval) 
 {
 #if 1
-#if CONFIG_USE_INIT
+#if CONFIG_USE_PRINTK_IN_CAR
 	printk_debug("%s%02x\r\n", strval, byteval); 
 #else
 	print_debug(strval); print_debug_hex8(byteval); print_debug("\r\n");
@@ -285,13 +285,13 @@ static uint16_t read_freq_cap(device_t dev, uint8_t pos)
 	freq_cap = pci_read_config16(dev, pos);
 	freq_cap &= ~(1 << HT_FREQ_VENDOR); /* Ignore Vendor HT frequencies */
 
-#if K8_REV_F_SUPPORT == 0
 #if K8_HT_FREQ_1G_SUPPORT == 1
+    #if K8_REV_F_SUPPORT == 0
 	if (!is_cpu_pre_e0())
+    #endif 
 	{
 		return freq_cap;
 	}
-#endif
 #endif
 
 	id = pci_read_config32(dev, 0);
@@ -1503,7 +1503,7 @@ static unsigned setup_smp(void)
 		nodes = setup_smp8();
 #endif
 
-#if CONFIG_USE_INIT
+#if CONFIG_USE_PRINTK_IN_CAR
 	printk_debug("%02x nodes initialized.\r\n", nodes);
 #else
 	print_debug_hex8(nodes);
@@ -1613,11 +1613,9 @@ static void coherent_ht_finalize(unsigned nodes)
 	 */
 
 	print_spew("coherent_ht_finalize\r\n");
-
 #if K8_REV_F_SUPPORT == 0
 	rev_a0 = is_cpu_rev_a0();
 #endif
-
 	for (node = 0; node < nodes; node++) {
 		device_t dev;
 		uint32_t val;

@@ -26,7 +26,7 @@
 
 static inline void print_linkn_in (const char *strval, uint8_t byteval)
 {
-#if CONFIG_USE_INIT
+#if CONFIG_USE_PRINTK_IN_CAR
         printk_debug("%s%02x\r\n", strval, byteval); 
 #else
         print_debug(strval); print_debug_hex8(byteval); print_debug("\r\n");
@@ -297,7 +297,7 @@ static int scan_pci_bus( unsigned bus)
 	new_bus = bus;
 
 #if 0
-#if CONFIG_USE_INIT == 1
+#if CONFIG_USE_PRINTK_IN_CAR
 	printk_debug("bus_num=%02x\r\n", bus);
 #endif
 #endif
@@ -313,7 +313,7 @@ static int scan_pci_bus( unsigned bus)
                 class = pci_read_config16(dev, PCI_CLASS_DEVICE);
 
 #if 0
-#if CONFIG_USE_INIT == 1
+#if CONFIG_USE_PRINTK_IN_CAR
 		if(hdr_type !=0xff ) {
 			printk_debug("dev=%02x fn=%02x hdr_type=%02x class=%04x\r\n", 
 				(devfn>>3)& 0x1f, (devfn & 0x7), hdr_type, class);

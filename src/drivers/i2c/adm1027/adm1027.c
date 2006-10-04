@@ -36,6 +36,7 @@ static void adm1027_enable_monitoring(device_t dev)
         if (!(result & CFG1_STRT)) {
                 printk_debug("ADM1027: monitoring would not enable\r\n");
         }
+	printk_debug("ADM1027: monitoring enabled\r\n");
 }
 
 static void adm1027_init(device_t dev)

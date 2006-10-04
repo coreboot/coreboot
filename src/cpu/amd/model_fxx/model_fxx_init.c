@@ -686,9 +686,12 @@ static struct cpu_device_id cpu_table[] = {
         { X86_VENDOR_AMD, 0x40fb2 }, /* BH-F2      Socket AM2:Athlon64 x2/ Mobile Athlon64 x2 */
 	{ X86_VENDOR_AMD, 0x40f82 }, 		/* 	  S1g1:Turion64 x2 */
         { X86_VENDOR_AMD, 0x40ff2 }, /* DH-F2      Socket AM2: Athlon64 */
+        { X86_VENDOR_AMD, 0x50ff2 }, /* DH-F2      Socket AM2: Athlon64 */
         { X86_VENDOR_AMD, 0x40fc2 },            /*        S1g1:Turion64 */
         { X86_VENDOR_AMD, 0x40f13 }, /* JH-F3      Socket F (1207): Opteron Dual Core */
         { X86_VENDOR_AMD, 0x40f33 },            /*        AM2 : Opteron Dual Core/Athlon64 x2/ Athlon64 FX Dual Core */
+        { X86_VENDOR_AMD, 0xc0f13 },            /*        AM2 : Athlon64 FX*/
+        { X86_VENDOR_AMD, 0x50ff3 }, /* DH-F3      Socket AM2: Athlon64 */
 #endif
 
 	{ 0, 0 },

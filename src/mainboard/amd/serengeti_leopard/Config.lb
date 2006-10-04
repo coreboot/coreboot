@@ -2,12 +2,17 @@
 ## Compute the location and size of where this firmware image
 ## (linuxBIOS plus bootloader) will live in the boot rom chip.
 ##
-if USE_FALLBACK_IMAGE
-	default ROM_SECTION_SIZE   = FALLBACK_SIZE
-	default ROM_SECTION_OFFSET = ( ROM_SIZE - FALLBACK_SIZE )
+if USE_FAILOVER_IMAGE
+	default ROM_SECTION_SIZE   = FAILOVER_SIZE
+	default ROM_SECTION_OFFSET = ( ROM_SIZE - FAILOVER_SIZE )
 else
-	default ROM_SECTION_SIZE   = ( ROM_SIZE - FALLBACK_SIZE )
+    if USE_FALLBACK_IMAGE
+	default ROM_SECTION_SIZE   = FALLBACK_SIZE
+	default ROM_SECTION_OFFSET = ( ROM_SIZE - FALLBACK_SIZE - FAILOVER_SIZE )
+    else
+	default ROM_SECTION_SIZE   = ( ROM_SIZE - FALLBACK_SIZE - FAILOVER_SIZE )
 	default ROM_SECTION_OFFSET = 0
+    end
 end
 
 ##
@@ -30,7 +35,16 @@ default _ROMBASE      = ( CONFIG_ROM_STREAM_START + PAYLOAD_SIZE )
 ## XIP_ROM_BASE must be a multiple of XIP_ROM_SIZE
 ##
 default XIP_ROM_SIZE=65536
-default XIP_ROM_BASE = ( _ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE )
+
+if USE_FAILOVER_IMAGE
+	default XIP_ROM_BASE = ( _ROMBASE - XIP_ROM_SIZE + ROM_IMAGE_SIZE)
+else
+    if USE_FALLBACK_IMAGE
+	default XIP_ROM_BASE = ( _ROMBASE - XIP_ROM_SIZE + ROM_IMAGE_SIZE + FAILOVER_SIZE)
+    else
+	default XIP_ROM_BASE = ( _ROMBASE - XIP_ROM_SIZE + ROM_IMAGE_SIZE)
+    end
+end
 
 arch i386 end 
 
@@ -74,45 +88,22 @@ end
 if HAVE_ACPI_TABLES
         object acpi_tables.o
         object fadt.o
-        if SB_HT_CHAIN_ON_BUS0
-                makerule dsdt.c
-                        depends "$(MAINBOARD)/dx_bus0/dsdt_lb.dsl"
-                        action  "/usr/sbin/iasl -tc $(MAINBOARD)/dx_bus0/dsdt_lb.dsl"
-                        action  "mv dsdt_lb.hex dsdt.c"
-                end
-        else
-                makerule dsdt.c
-                        depends "$(MAINBOARD)/dx/dsdt_lb.dsl"
-                        action  "/usr/sbin/iasl -tc $(MAINBOARD)/dx/dsdt_lb.dsl"
-                        action  "mv dsdt_lb.hex dsdt.c"
-                end
+	makerule dsdt.c
+		depends "$(MAINBOARD)/dx/dsdt_lb.dsl"
+		action  "/usr/sbin/iasl -tc $(MAINBOARD)/dx/dsdt_lb.dsl"
+		action  "mv dsdt_lb.hex dsdt.c"
 	end
         object ./dsdt.o
 
-        makerule ssdt.c
-                depends "$(MAINBOARD)/ssdt_lb_x.dsl"
-                action  "/usr/sbin/iasl -tc $(MAINBOARD)/ssdt_lb_x.dsl"
-                action  "perl -pi -e 's/AmlCode/AmlCode_ssdt/g' ssdt_lb_x.hex"
-                action  "mv ssdt_lb_x.hex ssdt.c"
-        end
-        object ./ssdt.o
+	#./ssdt.o is moved to northbridge/amd/amdk8/Config.lb
 
         if ACPI_SSDTX_NUM
-            if SB_HT_CHAIN_ON_BUS0
-                makerule ssdt2.c
+            makerule ssdt2.c
                         depends "$(MAINBOARD)/dx/pci2.asl"
                         action  "/usr/sbin/iasl -tc $(MAINBOARD)/dx/pci2.asl"
                         action  "perl -pi -e 's/AmlCode/AmlCode_ssdt2/g' pci2.hex"
                         action  "mv pci2.hex ssdt2.c"
-                end
-            else
-                makerule ssdt2.c
-                        depends "$(MAINBOARD)/dx_bus0/pci2.asl"
-                        action  "/usr/sbin/iasl -tc $(MAINBOARD)/dx_bus0/pci2.asl"
-                        action  "perl -pi -e 's/AmlCode/AmlCode_ssdt2/g' pci2.hex"
-                        action  "mv pci2.hex ssdt2.c"
-                end
-	    end
+            end
             object ./ssdt2.o
         end
 end
@@ -123,7 +114,7 @@ if USE_DCACHE_RAM
 		# compile cache_as_ram.c to auto.o
 		makerule ./cache_as_ram_auto.o
 		        depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
-		        action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -o cache_as_ram_auto.o" 
+		        action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -o $@" 
 		end
 
 	else   
@@ -164,10 +155,16 @@ end
 ##
 ## Build our 16 bit and 32 bit linuxBIOS entry code
 ##
-
-if USE_FALLBACK_IMAGE
+if HAVE_FAILOVER_BOOT
+    if USE_FAILOVER_IMAGE
 	mainboardinit cpu/x86/16bit/entry16.inc
 	ldscript /cpu/x86/16bit/entry16.lds
+    end
+else
+    if USE_FALLBACK_IMAGE
+	mainboardinit cpu/x86/16bit/entry16.inc
+	ldscript /cpu/x86/16bit/entry16.lds
+    end
 end
 
 mainboardinit cpu/x86/32bit/entry32.inc
@@ -184,12 +181,22 @@ end
 ##
 ## Build our reset vector (This is where linuxBIOS is entered)
 ##
-if USE_FALLBACK_IMAGE 
+if HAVE_FAILOVER_BOOT
+    if USE_FAILOVER_IMAGE 
 	mainboardinit cpu/x86/16bit/reset16.inc 
 	ldscript /cpu/x86/16bit/reset16.lds 
-else
+    else
 	mainboardinit cpu/x86/32bit/reset32.inc 
 	ldscript /cpu/x86/32bit/reset32.lds 
+    end
+else
+    if USE_FALLBACK_IMAGE 
+	mainboardinit cpu/x86/16bit/reset16.inc 
+	ldscript /cpu/x86/16bit/reset16.lds 
+    else
+	mainboardinit cpu/x86/32bit/reset32.inc 
+	ldscript /cpu/x86/32bit/reset32.lds 
+    end
 end
 
 if USE_DCACHE_RAM
@@ -216,13 +223,21 @@ end
 ### Things are delicate and we test to see if we should
 ### failover to another image.
 ###
-if USE_FALLBACK_IMAGE
+if HAVE_FAILOVER_BOOT
+    if USE_FAILOVER_IMAGE
+	if USE_DCACHE_RAM
+		ldscript /arch/i386/lib/failover_failover.lds
+	end
+    end
+else
+    if USE_FALLBACK_IMAGE
 	if USE_DCACHE_RAM
 		ldscript /arch/i386/lib/failover.lds
 	else
        		ldscript /arch/i386/lib/failover.lds
 	        mainboardinit ./failover.inc
 	end
+    end
 end
 
 ###

@@ -1,6 +1,6 @@
 #include <console/loglevel.h>
 
-#if CONFIG_USE_INIT == 0
+#if CONFIG_USE_PRINTK_IN_CAR == 0
 static void __console_tx_byte(unsigned char byte)
 {
 	uart_tx_byte(byte);

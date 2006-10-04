@@ -6,16 +6,16 @@
 #include <arch/io.h>
 
 #define PCI_DEV(BUS, DEV, FN) ( \
-        (((BUS) & 0xFF) << 16) | \
-        (((DEV) & 0x1f) << 11) | \
-        (((FN)  & 0x7) << 8))
+        (((BUS) & 0xFFF) << 20) | \
+        (((DEV) & 0x1F) << 15) | \
+        (((FN)  & 0x7) << 12))
 
 typedef unsigned device_t;
 
 static void pci_write_config32(device_t dev, unsigned where, unsigned value)
 {
         unsigned addr;
-        addr = dev | where;
+        addr = (dev>>4) | where;
         outl(0x80000000 | (addr & ~3), 0xCF8);
         outl(value, 0xCFC);
 }
@@ -23,7 +23,7 @@ static void pci_write_config32(device_t dev, unsigned where, unsigned value)
 static unsigned pci_read_config32(device_t dev, unsigned where)
 {
         unsigned addr;
-        addr = dev | where;
+        addr = (dev>>4) | where;
         outl(0x80000000 | (addr & ~3), 0xCF8);
         return inl(0xCFC);
 }

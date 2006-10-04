@@ -16,7 +16,7 @@
 
 static inline void print_initcpu8 (const char *strval, unsigned val)
 {
-#if CONFIG_USE_INIT
+#if CONFIG_USE_PRINTK_IN_CAR
         printk_debug("%s%02x\r\n", strval, val);
 #else
         print_debug(strval); print_debug_hex8(val); print_debug("\r\n");
@@ -25,7 +25,7 @@ static inline void print_initcpu8 (const char *strval, unsigned val)
 
 static inline void print_initcpu8_nocr (const char *strval, unsigned val)
 {
-#if CONFIG_USE_INIT
+#if CONFIG_USE_PRINTK_IN_CAR
         printk_debug("%s%02x", strval, val);
 #else
         print_debug(strval); print_debug_hex8(val);
@@ -35,7 +35,7 @@ static inline void print_initcpu8_nocr (const char *strval, unsigned val)
 
 static inline void print_initcpu16 (const char *strval, unsigned val)
 {
-#if CONFIG_USE_INIT
+#if CONFIG_USE_PRINTK_IN_CAR
         printk_debug("%s%04x\r\n", strval, val);
 #else
         print_debug(strval); print_debug_hex16(val); print_debug("\r\n");
@@ -44,7 +44,7 @@ static inline void print_initcpu16 (const char *strval, unsigned val)
 
 static inline void print_initcpu(const char *strval, unsigned val)
 {
-#if CONFIG_USE_INIT
+#if CONFIG_USE_PRINTK_IN_CAR
         printk_debug("%s%08x\r\n", strval, val);
 #else
         print_debug(strval); print_debug_hex32(val); print_debug("\r\n");
@@ -171,30 +171,48 @@ static void init_fidvid_ap(unsigned bsp_apicid, unsigned apicid);
 
 static inline __attribute__((always_inline)) void print_apicid_nodeid_coreid(unsigned apicid, struct node_core_id id, const char *str)
 {
-	#if CONFIG_USE_INIT == 0
+	#if CONFIG_USE_PRINTK_IN_CAR
+                printk_debug("%s --- {  APICID = %02x NODEID = %02x COREID = %02x} ---\r\n", str, apicid, id.nodeid, id.coreid);
+	#else
 		print_debug(str);
         	print_debug(" ---- {APICID = "); print_debug_hex8(apicid);
 		print_debug(" NODEID = "), print_debug_hex8(id.nodeid); print_debug(" COREID = "), print_debug_hex8(id.coreid);
 	        print_debug("} --- \r\n");
-        #else
-                printk_debug("%s --- {  APICID = %02x NODEID = %02x COREID = %02x} ---\r\n", str, apicid, id.nodeid, id.coreid);
         #endif
 }
 
 
-static void wait_cpu_state(unsigned apicid, unsigned state)
+static unsigned wait_cpu_state(unsigned apicid, unsigned state)
 {
-        unsigned readback;
-	int loop =100000;
+        unsigned readback = 0;
+	unsigned timeout = 1;
+	int loop = 2000000;
         while(--loop>0) {
                 if(lapic_remote_read(apicid, LAPIC_MSG_REG, &readback)!=0) continue;
-                if((readback & 0xff) == state) break; //target cpu is in stage started
+                if((readback & 0xff) == state) {
+			timeout = 0;
+			break; //target cpu is in stage started
+		}
         }
+	if(timeout) {
+		if(readback) {
+			timeout = readback;
+		}
+	}
+
+	return timeout;
 }
 static void wait_ap_started(unsigned ap_apicid, void *gp )
 {
-        wait_cpu_state(ap_apicid, 0x33); // started
-        print_initcpu8_nocr(" ", ap_apicid);
+	unsigned timeout;
+        timeout = wait_cpu_state(ap_apicid, 0x33); // started
+	if(timeout) {
+	        print_initcpu8_nocr("*", ap_apicid);
+	        print_initcpu("*", timeout);
+	}
+	else {
+        	print_initcpu8_nocr(" ", ap_apicid);
+	}
 }
 
 static void wait_all_aps_started(unsigned bsp_apicid)
@@ -219,18 +237,17 @@ static void STOP_CAR_AND_CPU(void)
 	disable_cache_as_ram(); // inline
 	stop_this_cpu(); // inline, it will stop all cores except node0/core0 the bsp ....
 }
-#if RAMINIT_SYSINFO == 1
 
-#if MEM_TRAIN_SEQ != 1
-static inline void train_ram_on_node(unsigned nodeid, unsigned coreid, struct sys_info *sysinfo, unsigned retcall) {}
-#else
+#ifndef MEM_TRAIN_SEQ
+#define MEM_TRAIN_SEQ 0
+#endif
+
+
+#if MEM_TRAIN_SEQ == 1
 static inline void train_ram_on_node(unsigned nodeid, unsigned coreid, struct sys_info *sysinfo, unsigned retcall); 
 #endif
 
-#endif
-
 #if RAMINIT_SYSINFO == 1
-
 static unsigned init_cpus(unsigned cpu_init_detectedx ,struct sys_info *sysinfo)
 #else
 static unsigned init_cpus(unsigned cpu_init_detectedx)
@@ -311,6 +328,8 @@ static unsigned init_cpus(unsigned cpu_init_detectedx)
 		lapic_write(LAPIC_MSG_REG, (apicid<<24) | 0x33); // mark the cpu is started
 
 		if(apicid != bsp_apicid) {
+			unsigned timeout=1;
+			unsigned loop = 100;
 	#if K8_SET_FIDVID == 1
 		#if (CONFIG_LOGICAL_CPUS == 1) && (K8_SET_FIDVID_CORE0_ONLY == 1)
 			if(id.coreid == 0 ) // only need set fid for core0
@@ -319,10 +338,15 @@ static unsigned init_cpus(unsigned cpu_init_detectedx)
 	#endif
 
                        // We need to stop the CACHE as RAM for this CPU, really?
-                        wait_cpu_state(bsp_apicid, 0x44);
+			while(timeout && (loop-->0)) {	
+	                        timeout = wait_cpu_state(bsp_apicid, 0x44);
+			}
+			if(timeout) {
+			        print_initcpu8("while waiting for BSP signal to STOP, timeout in ap ", apicid);
+			}
                         lapic_write(LAPIC_MSG_REG, (apicid<<24) | 0x44); // bsp can not check it before stop_this_cpu
                         set_init_ram_access();
-	#if RAMINIT_SYSINFO == 1
+	#if MEM_TRAIN_SEQ == 1
 			train_ram_on_node(id.nodeid, id.coreid, sysinfo, STOP_CAR_AND_CPU);
 	#endif
 

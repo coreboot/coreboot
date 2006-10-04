@@ -8,7 +8,7 @@
 #endif
 
 //use by raminit
-#define K8_4RANK_DIMM_SUPPORT 1
+#define QRANK_DIMM_SUPPORT 1
 
 //used by incoherent_ht
 //#define K8_SCAN_PCI_BUS 1
@@ -23,6 +23,8 @@
 #include <cpu/x86/lapic.h>
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
+
+#if USE_FAILOVER_IMAGE==0
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 
@@ -43,12 +45,22 @@ static void post_code(uint8_t value) {
 #include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
 
-#if CONFIG_USE_INIT == 0
-#include "lib/memcpy.c"
 #endif
 
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
+
+#if USE_FAILOVER_IMAGE==0
+
+#if CONFIG_USE_INIT == 0
+#include "lib/memcpy.c"
+ #if CONFIG_USE_PRINTK_IN_CAR == 1
+	#include "lib/uart8250.c"
+	#include "console/vtxprintf.c"
+	#include "arch/i386/lib/printk_init.c"
+ #endif
+#endif
+
 #include "northbridge/amd/amdk8/debug.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 
@@ -137,7 +149,9 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "cpu/amd/model_fxx/init_cpus.c"
 
-#if USE_FALLBACK_IMAGE == 1
+#endif
+
+#if ((HAVE_FAILOVER_BOOT==1) && (USE_FAILOVER_IMAGE == 1)) || ((HAVE_FAILOVER_BOOT==0) && (USE_FALLBACK_IMAGE == 1))
 
 #include "southbridge/amd/amd8111/amd8111_enable_rom.c"
 #include "northbridge/amd/amdk8/early_ht.c"
@@ -184,21 +198,34 @@ void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
 
  fallback_image:
 //        post_code(0x25);
+#if HAVE_FAILOVER_BOOT==1
+        __asm__ volatile ("jmp __fallback_image"
+                : /* outputs */
+                : "a" (bist), "b" (cpu_init_detectedx) /* inputs */
+                )
+#endif
 	;
 }
 #endif
-
 void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-
-#if USE_FALLBACK_IMAGE == 1
-        failover_process(bist, cpu_init_detectedx);
+#if HAVE_FAILOVER_BOOT==1 
+    #if USE_FAILOVER_IMAGE==1
+	failover_process(bist, cpu_init_detectedx);	
+    #else
+	real_main(bist, cpu_init_detectedx);
+    #endif
+#else
+    #if USE_FALLBACK_IMAGE == 1
+	failover_process(bist, cpu_init_detectedx);	
+    #endif
+	real_main(bist, cpu_init_detectedx);
 #endif
-        real_main(bist, cpu_init_detectedx);
-
 }
+
+#if USE_FAILOVER_IMAGE==0
 
 void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
@@ -242,13 +269,17 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	needs_reset = setup_coherent_ht_domain();
 
-	wait_all_core0_started();	
+	wait_all_core0_started();
 #if CONFIG_LOGICAL_CPUS==1
         // It is said that we should start core1 after all core0 launched
+	/* becase optimize_link_coherent_ht is moved out from setup_coherent_ht_domain, 
+	 * So here need to make sure last core0 is started, esp for two way system,
+	 * (there may be apic id conflicts in that case) 
+	 */
         start_other_cores();
 	wait_all_other_cores_started(bsp_apicid);
 #endif
-
+	
         needs_reset |= ht_setup_chains_x();
 
        	if (needs_reset) {
@@ -287,3 +318,5 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	post_cache_as_ram();
 
 }
+
+#endif

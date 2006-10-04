@@ -12,7 +12,7 @@ static void setup_resource_map_offset(const unsigned int *register_values, int m
                 unsigned where;
                 unsigned long reg;
 #if 0
-        #if CONFIG_USE_INIT
+	#if CONFIG_USE_PRINTK_IN_CAR
                 prink_debug("%08x <- %08x\r\n", register_values[i] +  offset_pci_dev, register_values[i+2]);
         #else
                 print_debug_hex32(register_values[i] + offset_pci_dev);
@@ -56,7 +56,7 @@ static void setup_resource_map_x_offset(const unsigned int *register_values, int
 #endif
 	for(i = 0; i < max; i += 4) {
 #if RES_DEBUG
-	#if CONFIG_USE_INIT
+	#if CONFIG_USE_PRINTK_IN_CAR
                 printk_debug("%04x: %02x %08x <- & %08x | %08x\r\n", 
 			i>>2, register_values[i], 
 			register_values[i+1] + ( (register_values[i]==RES_PCI_IO) ? offset_pci_dev : 0), 
@@ -151,7 +151,7 @@ static void setup_resource_map_x(const unsigned int *register_values, int max)
 #endif
         for(i = 0; i < max; i += 4) {
 #if RES_DEBUG
-        #if CONFIG_USE_INIT
+	#if CONFIG_USE_PRINTK_IN_CAR
                 printk_debug("%04x: %02x %08x <- & %08x | %08x\r\n",
                         i/4, register_values[i],register_values[i+1], register_values[i+2], register_values[i+3]);
         #else

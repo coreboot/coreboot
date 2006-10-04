@@ -1,9 +1,8 @@
 /*
- * AMD serengeti_cheetah needs a different resource map
  *
  */
 
-static void setup_serengeti_cheetah_resource_map(void)
+static void setup_mb_resource_map(void)
 {
 	static const unsigned int register_values[] = {
 		/* Careful set limit registers before base registers which contain the enables */

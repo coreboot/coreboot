@@ -20,8 +20,8 @@
 
 static inline void print_raminit(const char *strval, uint32_t val)
 {
-#if CONFIG_USE_INIT
-        printk_debug("%s:%08x\r\n", strval, val);
+#if CONFIG_USE_PRINTK_IN_CAR
+        printk_debug("%s%08x\r\n", strval, val);
 #else
         print_debug(strval); print_debug_hex32(val); print_debug("\r\n");
 #endif
@@ -3005,7 +3005,21 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl, str
 
         for(i = 0; i < controllers; i++) {
                 sysinfo->mem_trained[i] = 0;
+
+                if (!sysinfo->ctrl_present[ i ])
+                        continue;
+
+                /* Skip everything if I don't have any memory on this controller */
+                if(sysinfo->meminfo[i].dimm_mask==0x00) 
+			continue;
+
+                sysinfo->mem_trained[i] = 0x80; // mem need to be trained
         }
+
+#if 0
+        dump_pci_devices();
+        dump_pci_device_index_wait(PCI_DEV(0, 0x18, 2), 0x98);
+#endif
 
 #if MEM_TRAIN_SEQ ==  0
    #if K8_REV_F_SUPPORT_F0_F1_WORKAROUND == 1
@@ -3021,13 +3035,11 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl, str
    #endif
 
         for(i = 0; i < controllers; i++) {
-                if (!sysinfo->ctrl_present[ i ])
-                        continue;
-
                 /* Skip everything if I don't have any memory on this controller */
-                if(sysinfo->meminfo[i].dimm_mask==0x00) continue;
+                if(sysinfo->mem_trained[i]!=0x80) 
+			continue;
 
-                dqs_timing(i, ctrl, sysinfo, 1);
+                dqs_timing(i, &ctrl[i], sysinfo, 1);
 
    #if MEM_TRAIN_SEQ == 1
                 break; // only train the first node with ram
@@ -3040,6 +3052,14 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl, str
 
 #endif
 
+#if MEM_TRAIN_SEQ != 1
+	wait_all_core0_mem_trained(sysinfo);
+#endif
+
+#if 0
+        dump_pci_devices();
+        dump_pci_device_index_wait(PCI_DEV(0, 0x18, 2), 0x98);
+#endif
 
 }
 static void fill_mem_ctrl(int controllers, struct mem_controller *ctrl_a, const uint16_t *spd_addr)

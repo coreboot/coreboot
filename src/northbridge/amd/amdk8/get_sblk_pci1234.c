@@ -176,6 +176,7 @@ void get_sblk_pci1234(void)
         dword &=0x0300;
         dword |= 1;
         sysconf.pci1234[0] = dword;
+	sysconf.hcid[0] = 0;
 
         /*about hardcode numbering for HT_IO support
                 set the node_id and link_id that could have ht chain in the one array,
@@ -221,6 +222,7 @@ void get_sblk_pci1234(void)
                         sysconf.pci1234[i] = 0;
 			sysconf.hcdn[i] = 0x20202020;
                 }
+		sysconf.hcid[i] = 0;
         }
 
 }

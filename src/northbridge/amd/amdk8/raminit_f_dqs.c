@@ -8,7 +8,7 @@ static inline void print_debug_dqs(const char *str, unsigned val, unsigned level
 {
 #if DQS_TRAIN_DEBUG > 0
 	if(DQS_TRAIN_DEBUG > level) {
-		#if CONFIG_USE_INIT == 1
+		#if CONFIG_USE_PRINTK_IN_CAR
 		printk_debug("%s%x\r\n", str, val);
 		#else
 	        print_debug(str); print_debug_hex32(val); print_debug("\r\n");
@@ -21,7 +21,7 @@ static inline void print_debug_dqs_pair(const char *str, unsigned val, const cha
 {
 #if DQS_TRAIN_DEBUG > 0
         if(DQS_TRAIN_DEBUG > level) {
-                #if CONFIG_USE_INIT == 1
+		#if CONFIG_USE_PRINTK_IN_CAR
                 printk_debug("%s%08x%s%08x\r\n", str, val, str2, val2);
                 #else
                 print_debug(str); print_debug_hex32(val); print_debug(str2); print_debug_hex32(val2); print_debug("\r\n");
@@ -34,7 +34,7 @@ static inline void print_debug_dqs_tsc(const char *str, unsigned i, unsigned val
 {
 #if DQS_TRAIN_DEBUG > 0
         if(DQS_TRAIN_DEBUG > level) {
-                #if CONFIG_USE_INIT == 1
+		#if CONFIG_USE_PRINTK_IN_CAR
                 printk_debug("%s[%02x]=%08x%08x\r\n", str, i, val, val2);
                 #else
 		print_debug(str); print_debug("["); print_debug_hex8(i); print_debug("]="); print_debug_hex32(val); print_debug_hex32(val2); print_debug("\r\n");
@@ -45,7 +45,7 @@ static inline void print_debug_dqs_tsc(const char *str, unsigned i, unsigned val
 
 static inline void print_debug_dqs_tsc_x(const char *str, unsigned i, unsigned val, unsigned val2)
 {
-	#if CONFIG_USE_INIT == 1
+	#if CONFIG_USE_PRINTK_IN_CAR
         printk_debug("%s[%02x]=%08x%08x\r\n", str, i, val, val2);
         #else
         print_debug(str); print_debug("["); print_debug_hex8(i); print_debug("]="); print_debug_hex32(val); print_debug_hex32(val2); print_debug("\r\n");
@@ -501,7 +501,7 @@ static void InitDQSPos4RcvrEn(const struct mem_controller *ctrl)
 #define K8_REV_F_SUPPORT_F0_F1_WORKAROUND 1
 #endif
 
-static void TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, struct sys_info *sysinfo)
+static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, struct sys_info *sysinfo)
 {
 
 	const static uint32_t TestPattern0[] = {
@@ -876,16 +876,14 @@ static void TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, struct
 
 #if MEM_TRAIN_SEQ != 1  
 	/* We need tidy output for type 1 */
-	#if CONFIG_USE_INIT == 1
+	#if CONFIG_USE_PRINTK_IN_CAR
 	printk_debug(" CTLRMaxDelay=%02x", CTLRMaxDelay);
 	#else
 	print_debug(" CTLRMaxDelay="); print_debug_hex8(CTLRMaxDelay); 
 	#endif
 #endif
 
-	if(CTLRMaxDelay==0xae) {
-		soft_reset(); // try more or downgrade?
-	}
+	return (CTLRMaxDelay==0xae)?1:0;
 
 }
 
@@ -1544,24 +1542,28 @@ static void SetEccDQSRdWrPos(const struct mem_controller *ctrl, struct sys_info 
 	}
 }
 
-static void train_DqsRcvrEn(const struct mem_controller *ctrl, unsigned Pass, struct sys_info *sysinfo)
+static unsigned train_DqsRcvrEn(const struct mem_controller *ctrl, unsigned Pass, struct sys_info *sysinfo)
 {
 	print_debug_dqs("\r\ntrain_DqsRcvrEn: begin ctrl ", ctrl->node_id, 0); 
-	TrainRcvrEn(ctrl, Pass, sysinfo);
+	if(TrainRcvrEn(ctrl, Pass, sysinfo)) {
+		return 1;
+	}
 	print_debug_dqs("\r\ntrain_DqsRcvrEn: end ctrl ", ctrl->node_id, 0); 
+	return 0;
 	
 }
-static  void train_DqsPos(const struct mem_controller *ctrl, struct sys_info *sysinfo)
+static unsigned train_DqsPos(const struct mem_controller *ctrl, struct sys_info *sysinfo)
 {
 	print_debug_dqs("\r\ntrain_DqsPos: begin ctrl ", ctrl->node_id, 0); 
 	if(TrainDQSRdWrPos(ctrl, sysinfo) != 0) {
                 print_err("\r\nDQS Training Rd Wr failed ctrl"); print_err_hex8(ctrl->node_id); print_err("\r\n");
-		soft_reset();
+		return 1;
 	}
 	else {
 		SetEccDQSRdWrPos(ctrl, sysinfo);
 	}
 	print_debug_dqs("\r\ntrain_DqsPos: end ctrl ", ctrl->node_id, 0); 
+	return 0;
 	
 }
 
@@ -1717,7 +1719,7 @@ static unsigned int range_to_mtrr(unsigned int reg,
                 }
                 sizek = 1 << align;
 #if MEM_TRAIN_SEQ != 1
-	#if CONFIG_USE_INIT == 1
+	#if CONFIG_USE_PRINTK_IN_CAR
                 printk_debug("Setting variable MTRR %d, base: %4dMB, range: %4dMB, type %s\r\n",
                         reg, range_startk >>10, sizek >> 10,
                         (type==MTRR_TYPE_UNCACHEABLE)?"UC":
@@ -1880,7 +1882,7 @@ static void dqs_timing(int controllers, const struct mem_controller *ctrl, struc
 
                 print_debug("DQS Training:RcvrEn:Pass1: ");
                 print_debug_hex8(i);
-                train_DqsRcvrEn(ctrl+i, 1, sysinfo);
+                if(train_DqsRcvrEn(ctrl+i, 1, sysinfo)) goto out;
        	        print_debug(" done\r\n");
         }
 
@@ -1899,7 +1901,7 @@ static void dqs_timing(int controllers, const struct mem_controller *ctrl, struc
 
                 print_debug("DQS Training:DQSPos: ");
                 print_debug_hex8(i);
-                train_DqsPos(ctrl+i, sysinfo);
+                if(train_DqsPos(ctrl+i, sysinfo)) goto out;
                 print_debug(" done\r\n");
         }
 
@@ -1913,11 +1915,12 @@ static void dqs_timing(int controllers, const struct mem_controller *ctrl, struc
 
                 print_debug("DQS Training:RcvrEn:Pass2: ");
                 print_debug_hex8(i);
-                train_DqsRcvrEn(ctrl+i, 2, sysinfo);
+                if(train_DqsRcvrEn(ctrl+i, 2, sysinfo)) goto out;
                 print_debug(" done\r\n");
 		sysinfo->mem_trained[i]=1;
         }
 
+out:
 	tsc[4] = rdtsc();
 	clear_mtrr_dqs(sysinfo->tom2_k);
 
@@ -1942,14 +1945,14 @@ static void dqs_timing(int i, const struct mem_controller *ctrl, struct sys_info
 
          tsc_t tsc[4];
 
+	if(sysinfo->mem_trained[i] != 0x80) return;
 
 #if MEM_TRAIN_SEQ == 1
-	if(sysinfo->mem_trained[i]) return;
         //need to enable mtrr, so dqs training could access the test address
         setup_mtrr_dqs(sysinfo->tom_k, sysinfo->tom2_k);
 #endif
 
-	fill_mem_cs_sysinfo(i, ctrl+i, sysinfo);
+	fill_mem_cs_sysinfo(i, ctrl, sysinfo);
 
 	if(v) {
 	        tsc[0] = rdtsc();
@@ -1957,7 +1960,10 @@ static void dqs_timing(int i, const struct mem_controller *ctrl, struct sys_info
 	        print_debug("set DQS timing:RcvrEn:Pass1: ");
 	        print_debug_hex8(i);
 	}
-        train_DqsRcvrEn(ctrl+i, 1,  sysinfo);
+        if(train_DqsRcvrEn(ctrl, 1,  sysinfo)) {
+		sysinfo->mem_trained[i]=0x81; //
+		goto out;
+	}
 
 	if(v) {
 	        print_debug(" done\r\n");
@@ -1966,7 +1972,10 @@ static void dqs_timing(int i, const struct mem_controller *ctrl, struct sys_info
 	        print_debug_hex8(i);
 	}
 
-        train_DqsPos(ctrl+i, sysinfo);
+        if(train_DqsPos(ctrl, sysinfo)) {
+		sysinfo->mem_trained[i]=0x82; //
+		goto out;
+	}
 	
 	if(v) {
 	        print_debug(" done\r\n");
@@ -1975,7 +1984,10 @@ static void dqs_timing(int i, const struct mem_controller *ctrl, struct sys_info
 	        print_debug("set DQS timing:RcvrEn:Pass2: ");
 	        print_debug_hex8(i);
 	}
-        train_DqsRcvrEn(ctrl+i, 2,  sysinfo);
+        if(train_DqsRcvrEn(ctrl, 2,  sysinfo)){
+		sysinfo->mem_trained[i]=0x83; //
+		goto out;
+	}
 
 	if(v) {
 	        print_debug(" done\r\n");
@@ -1983,6 +1995,7 @@ static void dqs_timing(int i, const struct mem_controller *ctrl, struct sys_info
 	        tsc[3] = rdtsc();
 	}
 
+out:
 #if MEM_TRAIN_SEQ == 1
         clear_mtrr_dqs(sysinfo->tom2_k);
 #endif
@@ -1992,8 +2005,10 @@ static void dqs_timing(int i, const struct mem_controller *ctrl, struct sys_info
         	      print_debug_dqs_tsc_x("Total DQS Training : tsc ", ii,  tsc[ii].hi, tsc[ii].lo);
 	        }
 	}
-
-	sysinfo->mem_trained[i]=1;
+	
+	if(sysinfo->mem_trained[i] == 0x80) {
+		sysinfo->mem_trained[i]=1;
+	}
 
 }
 #endif
@@ -2001,7 +2016,7 @@ static void dqs_timing(int i, const struct mem_controller *ctrl, struct sys_info
 #if MEM_TRAIN_SEQ == 1
 static void train_ram(unsigned nodeid, struct sys_info *sysinfo, struct sys_info *sysinfox)
 {
-	dqs_timing(nodeid, sysinfo->ctrl,sysinfo, 0); // keep the output tidy
+	dqs_timing(nodeid, &sysinfo->ctrl[nodeid], sysinfo, 0); // keep the output tidy
 //      memcpy(&sysinfox->dqs_rcvr_dly_a[nodeid * 2 * 8],&sysinfo->dqs_rcvr_dly_a[nodeid * 2 * 8], 2*8);
 //      memcpy(&sysinfox->dqs_delay_a[nodeid * 2 * 2 * 9], &sysinfo->dqs_delay_a[nodeid * 2 * 2 * 9], 2 * 2 * 9);
 	sysinfox->mem_trained[nodeid] = sysinfo->mem_trained[nodeid];
@@ -2014,23 +2029,23 @@ static inline void train_ram_on_node(unsigned nodeid, unsigned coreid, struct sy
 	struct sys_info *sysinfox = ((CONFIG_LB_MEM_TOPK<<10) - DCACHE_RAM_GLOBAL_VAR_SIZE);
 	wait_till_sysinfo_in_ram(); // use pci to get it
 
-	if(sysinfox->mem_trained[nodeid] == 0) {
-		if (sysinfox->ctrl_present[ nodeid ] &&  sysinfox->meminfo[nodeid].dimm_mask) {
-			sysinfo->tom_k = sysinfox->tom_k;
-			sysinfo->tom2_k = sysinfox->tom2_k;
-			sysinfo->meminfo[nodeid].is_Width128 = sysinfox->meminfo[nodeid].is_Width128;
-			set_top_mem_ap(sysinfo->tom_k, sysinfo->tom2_k); // keep the ap's tom consistent with bsp's
-		#if CONFIG_AP_CODE_IN_CAR == 0
-			print_debug("CODE IN ROM AND RUN ON NODE:"); print_debug_hex8(nodeid); print_debug("\r\n");
-			train_ram(nodeid, sysinfo, sysinfox);
-		#else
-			/* Can copy dqs_timing to ap cache and run from cache?
-			* we need linuxbios_ap_car.rom? and treat it as linuxbios_ram.rom for ap ?
-			*/
-			copy_and_run_ap_code_in_car(retcall);
-			// will go back by jump
-		#endif
-		}
+	if(sysinfox->mem_trained[nodeid] == 0x80) {
+		sysinfo->tom_k = sysinfox->tom_k;
+		sysinfo->tom2_k = sysinfox->tom2_k;
+		sysinfo->meminfo[nodeid].is_Width128 = sysinfox->meminfo[nodeid].is_Width128;
+		sysinfo->mem_trained[nodeid] = sysinfox->mem_trained[nodeid];
+		memcpy(&sysinfo->ctrl[nodeid], &sysinfox->ctrl[nodeid], sizeof(struct mem_controller));
+		set_top_mem_ap(sysinfo->tom_k, sysinfo->tom2_k); // keep the ap's tom consistent with bsp's
+	#if CONFIG_AP_CODE_IN_CAR == 0
+		print_debug("CODE IN ROM AND RUN ON NODE:"); print_debug_hex8(nodeid); print_debug("\r\n");
+		train_ram(nodeid, sysinfo, sysinfox);
+	#else
+		/* Can copy dqs_timing to ap cache and run from cache?
+		* we need linuxbios_ap_car.rom? and treat it as linuxbios_ram.rom for ap ?
+		*/
+		copy_and_run_ap_code_in_car(retcall);
+		// will go back by jump
+	#endif
 	}
 }
 #endif

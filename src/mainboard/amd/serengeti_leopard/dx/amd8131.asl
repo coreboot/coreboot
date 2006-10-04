@@ -50,30 +50,30 @@
                 })
                 Name (PICM, Package (0x14)
                 {
-                    Package (0x04) { 0x0001FFFF, 0x00, \_SB.PCI1.LNKB, 0x00 },//Slot 2 
-                    Package (0x04) { 0x0001FFFF, 0x01, \_SB.PCI1.LNKC, 0x00 }, 
-                    Package (0x04) { 0x0001FFFF, 0x02, \_SB.PCI1.LNKD, 0x00 }, 
-                    Package (0x04) { 0x0001FFFF, 0x03, \_SB.PCI1.LNKA, 0x00 }, 
+                    Package (0x04) { 0x0001FFFF, 0x00, \_SB.PCI0.LNKB, 0x00 },//Slot 2 
+                    Package (0x04) { 0x0001FFFF, 0x01, \_SB.PCI0.LNKC, 0x00 }, 
+                    Package (0x04) { 0x0001FFFF, 0x02, \_SB.PCI0.LNKD, 0x00 }, 
+                    Package (0x04) { 0x0001FFFF, 0x03, \_SB.PCI0.LNKA, 0x00 }, 
 
-                    Package (0x04) { 0x0003FFFF, 0x00, \_SB.PCI1.LNKB, 0x00 }, 
-                    Package (0x04) { 0x0003FFFF, 0x01, \_SB.PCI1.LNKC, 0x00 }, 
-                    Package (0x04) { 0x0003FFFF, 0x02, \_SB.PCI1.LNKD, 0x00 }, 
-                    Package (0x04) { 0x0003FFFF, 0x03, \_SB.PCI1.LNKA, 0x00 }, 
+                    Package (0x04) { 0x0003FFFF, 0x00, \_SB.PCI0.LNKB, 0x00 }, 
+                    Package (0x04) { 0x0003FFFF, 0x01, \_SB.PCI0.LNKC, 0x00 }, 
+                    Package (0x04) { 0x0003FFFF, 0x02, \_SB.PCI0.LNKD, 0x00 }, 
+                    Package (0x04) { 0x0003FFFF, 0x03, \_SB.PCI0.LNKA, 0x00 }, 
 
-                    Package (0x04) { 0x0004FFFF, 0x00, \_SB.PCI1.LNKC, 0x00 }, 
-                    Package (0x04) { 0x0004FFFF, 0x01, \_SB.PCI1.LNKD, 0x00 }, 
-                    Package (0x04) { 0x0004FFFF, 0x02, \_SB.PCI1.LNKA, 0x00 }, 
-                    Package (0x04) { 0x0004FFFF, 0x03, \_SB.PCI1.LNKB, 0x00 }, 
+                    Package (0x04) { 0x0004FFFF, 0x00, \_SB.PCI0.LNKC, 0x00 }, 
+                    Package (0x04) { 0x0004FFFF, 0x01, \_SB.PCI0.LNKD, 0x00 }, 
+                    Package (0x04) { 0x0004FFFF, 0x02, \_SB.PCI0.LNKA, 0x00 }, 
+                    Package (0x04) { 0x0004FFFF, 0x03, \_SB.PCI0.LNKB, 0x00 }, 
 
-                    Package (0x04) { 0x0005FFFF, 0x00, \_SB.PCI1.LNKD, 0x00 }, 
-                    Package (0x04) { 0x0005FFFF, 0x01, \_SB.PCI1.LNKA, 0x00 }, 
-                    Package (0x04) { 0x0005FFFF, 0x02, \_SB.PCI1.LNKB, 0x00 }, 
-                    Package (0x04) { 0x0005FFFF, 0x03, \_SB.PCI1.LNKC, 0x00 }, 
+                    Package (0x04) { 0x0005FFFF, 0x00, \_SB.PCI0.LNKD, 0x00 }, 
+                    Package (0x04) { 0x0005FFFF, 0x01, \_SB.PCI0.LNKA, 0x00 }, 
+                    Package (0x04) { 0x0005FFFF, 0x02, \_SB.PCI0.LNKB, 0x00 }, 
+                    Package (0x04) { 0x0005FFFF, 0x03, \_SB.PCI0.LNKC, 0x00 }, 
 
-                    Package (0x04) { 0x0006FFFF, 0x00, \_SB.PCI1.LNKA, 0x00 }, 
-                    Package (0x04) { 0x0006FFFF, 0x01, \_SB.PCI1.LNKB, 0x00 }, 
-                    Package (0x04) { 0x0006FFFF, 0x02, \_SB.PCI1.LNKC, 0x00 }, 
-                    Package (0x04) { 0x0006FFFF, 0x03, \_SB.PCI1.LNKD, 0x00 }
+                    Package (0x04) { 0x0006FFFF, 0x00, \_SB.PCI0.LNKA, 0x00 }, 
+                    Package (0x04) { 0x0006FFFF, 0x01, \_SB.PCI0.LNKB, 0x00 }, 
+                    Package (0x04) { 0x0006FFFF, 0x02, \_SB.PCI0.LNKC, 0x00 }, 
+                    Package (0x04) { 0x0006FFFF, 0x03, \_SB.PCI0.LNKD, 0x00 }
                 })
                 Method (_PRT, 0, NotSerialized)
                 {
@@ -106,10 +106,10 @@
                 })
                 Name (PICM, Package (0x04)
                 {
-                    Package (0x04) { 0x0001FFFF, 0x00, \_SB.PCI1.LNKA, 0x00 },//Slot 1 
-                    Package (0x04) { 0x0001FFFF, 0x01, \_SB.PCI1.LNKB, 0x00 }, 
-                    Package (0x04) { 0x0001FFFF, 0x02, \_SB.PCI1.LNKC, 0x00 }, 
-                    Package (0x04) { 0x0001FFFF, 0x03, \_SB.PCI1.LNKD, 0x00 }
+                    Package (0x04) { 0x0001FFFF, 0x00, \_SB.PCI0.LNKA, 0x00 },//Slot 1 
+                    Package (0x04) { 0x0001FFFF, 0x01, \_SB.PCI0.LNKB, 0x00 }, 
+                    Package (0x04) { 0x0001FFFF, 0x02, \_SB.PCI0.LNKC, 0x00 }, 
+                    Package (0x04) { 0x0001FFFF, 0x03, \_SB.PCI0.LNKD, 0x00 }
                 })
                 Method (_PRT, 0, NotSerialized)
                 {

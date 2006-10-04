@@ -25,25 +25,6 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "AMD-K8", "AMDACPI", 100925440)
         {
 	    /* BUS0 root bus */
 
-/*
-//hardcode begin
-            Name (BUSN, Package (0x04) { 0x04010003, 0x06050013, 0x00000000, 0x00000000 })
-            Name (MMIO, Package (0x10) { 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                                         0x00f43003, 0x00f44f01, 0x0000d003, 0x00efff01, 0x00f40003, 0x00f42f00, 0x00f45003, 0x00f44f00 })
-            Name (PCIO, Package (0x08) { 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00001003, 0x00001000, 0x00002003, 0x00002001 })
-            Name (SBLK, 0x00)
-            Name (TOM1, 0x40000000)
-
-	    // for AMD opteron we could have four chains, so we will have PCI1, PCI2, PCI3, PCI4
-	    // PCI1 must be SBLK Chain
-	    // If you have HT IO card that is connected to PCI2, PCI3, PCI4, then you man put Device in SSDT2, SSDT3, SSDT4,  
-	    //    in acpi_tables.c you can link those SSDT to RSDT according to it's presence.
-	    // Otherwise put the PCI2, PCI3, PCI4 in this dsdt
-    	    Name (HCLK, Package (0x04) { 0x00000001, 0x00000011, 0x00000000, 0x00000000 }) //[0,3]=1 enable [4,7]=node_id, [8,15]=linkn
-
-	    Name (SBDN, 3)  // 8111 UnitID Base
-//hardcode end
-*/
 	    External (BUSN)
 	    External (MMIO)
 	    External (PCIO)
@@ -52,35 +33,18 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "AMD-K8", "AMDACPI", 100925440)
 	    External (HCLK)
 	    External (SBDN)
 	    External (HCDN)
+	    External (CBST)
+
 
             Name (_HID, EisaId ("PNP0A03"))
             Name (_ADR, 0x00180000)
             Name (_UID, 0x01)
-	    Name (_BBN, 0)
 
+            Name (HCIN, 0x00)  // HC1
 
-	    // define L1IC Link1 on node0 init completed, so node1 is installed
-	    // We must make sure our bus is 0 ? 
-            OperationRegion (LDT1, PCI_Config, 0xA4, 0x01)
-            Field (LDT1, ByteAcc, Lock, Preserve)
-            {
-                    ,   5,
-                L1IC,   1
-            }
-
-	}
-	
-	Device (PCI1)
-	{
-
-	    Name (HCIN, 0x00)  // HC1
-	    // BUS 1 first HT Chain
-            Name (_HID, EisaId ("PNP0A03"))
-            Name (_ADR, 0x00180000)  // Fake 
-            Name (_UID, 0x02)
             Method (_BBN, 0, NotSerialized)
             {
-                Return (GBUS (0x00, \_SB.PCI0.SBLK))
+                Return (GBUS (GHCN(HCIN), GHCL(HCIN)))
             }
 
             Method (_CRS, 0, NotSerialized)
@@ -139,49 +103,21 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "AMD-K8", "AMDACPI", 100925440)
                 Return (Local3) 
 	    }
 
-	    Include ("pci1_hc.asl")
+	    Include ("pci0_hc.asl")
 		
         }
-/*
-        Device (PCI2)
+        Device (PCI1)
         {
-
-	    // BUS ? Second HT Chain
-	    Name (HCIN, 0x01)  // HC2
-
-	    Name (_HID, "PNP0A03") 
-
-            Method (_ADR, 0, NotSerialized) //Fake bus should be 0
-	    {
-		Return (DADD(GHCN(HCIN), 0x00180000))
-	    }
-            Name (_UID, 0x03)
-
-            Method (_BBN, 0, NotSerialized)
-            {
-                Return (GBUS (GHCN(HCIN), GHCL(HCIN)))
-            }
-
+            Name (_HID, "PNP0A03")
+            Name (_ADR, 0x00000000)
+            Name (_UID, 0x02)
             Method (_STA, 0, NotSerialized)
             {
-                Return (\_SB.GHCE(HCIN)) 
+                Return (\_SB.PCI0.CBST)
             }
-
-            Method (_CRS, 0, NotSerialized)
-            {
-                Name (BUF0, ResourceTemplate () { })
-		Store( GHCN(HCIN), Local4)
-		Store( GHCL(HCIN), Local5)
-
-                Concatenate (\_SB.GIOR (Local4, Local5), BUF0, Local1)
-                Concatenate (\_SB.GMEM (Local4, Local5), Local1, Local2)
-                Concatenate (\_SB.GWBN (Local4, Local5), Local2, Local3)
-                Return (Local3)
-            }
-
-	    Include ("pci2_hc.asl")
+	    Name (_BBN, 0x00)
         }
-*/
+
 
     }
 
@@ -189,22 +125,22 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "AMD-K8", "AMDACPI", 100925440)
     {
         Method (_L08, 0, NotSerialized)
         {
-            Notify (\_SB.PCI1, 0x02) //PME# Wakeup
+            Notify (\_SB.PCI0, 0x02) //PME# Wakeup
         }
 
         Method (_L0F, 0, NotSerialized)
         {
-            Notify (\_SB.PCI1.TP2P.USB0, 0x02)  //USB Wakeup
+            Notify (\_SB.PCI0.TP2P.USB0, 0x02)  //USB Wakeup
         }
 
         Method (_L22, 0, NotSerialized) // GPIO18 (LID) - Pogo 0 Bridge B
         {
-            Notify (\_SB.PCI1.PG0B, 0x02)
+            Notify (\_SB.PCI0.PG0B, 0x02)
         }
 
         Method (_L29, 0, NotSerialized) // GPIO25 (Suspend) - Pogo 0 Bridge A 
         {
-            Notify (\_SB.PCI1.PG0A, 0x02)
+            Notify (\_SB.PCI0.PG0A, 0x02)
         }
     }
 

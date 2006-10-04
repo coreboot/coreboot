@@ -1,1 +1,1 @@
-	Include ("amd8151.asl")
+	Include ("amd8132_2.asl")

@@ -105,6 +105,20 @@ if HAVE_ACPI_TABLES
                         action  "mv pci2.hex ssdt2.c"
             end
             object ./ssdt2.o
+            makerule ssdt3.c
+                        depends "$(MAINBOARD)/dx/pci3.asl"
+                        action  "/usr/sbin/iasl -tc $(MAINBOARD)/dx/pci3.asl"
+                        action  "perl -pi -e 's/AmlCode/AmlCode_ssdt3/g' pci3.hex"
+                        action  "mv pci3.hex ssdt3.c"
+            end
+            object ./ssdt3.o
+            makerule ssdt4.c
+                        depends "$(MAINBOARD)/dx/pci4.asl"
+                        action  "/usr/sbin/iasl -tc $(MAINBOARD)/dx/pci4.asl"
+                        action  "perl -pi -e 's/AmlCode/AmlCode_ssdt4/g' pci4.hex"
+                        action  "mv pci4.hex ssdt4.c"
+            end
+            object ./ssdt4.o
         end
 end
 

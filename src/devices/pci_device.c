@@ -761,9 +761,7 @@ static void set_pci_ops(struct device *dev)
 		return;
 	}
 
-	printk_debug("%s: seeking driver for %x:%x class %x\n", 
-		__FUNCTION__, dev->vendor, dev->device, dev->class);
- 	/* Look through the list of setup drivers and find one for
+	/* Look through the list of setup drivers and find one for
 	 * this pci device 
 	 */
 	for(driver = &pci_drivers[0]; driver != &epci_drivers[0]; driver++) {
@@ -1004,7 +1002,11 @@ unsigned int pci_scan_bus(struct bus *bus,
 	device_t old_devices;
 	device_t child;
 
-	printk_debug("PCI: pci_scan_bus for bus %d\n", bus->secondary);
+#if PCI_BUS_SEGN_BITS
+	printk_debug("PCI: pci_scan_bus for bus %04x:%02x\n", bus->secondary >> 8, bus->secondary & 0xff);
+#else
+	printk_debug("PCI: pci_scan_bus for bus %02x\n", bus->secondary);
+#endif
 
 	old_devices = bus->children;
 	bus->children = 0;
@@ -1062,7 +1064,7 @@ unsigned int pci_scan_bus(struct bus *bus,
 	 *
 	 * Return how far we've got finding sub-buses.
 	 */
-	printk_debug("PCI: pci_scan_bus returning with max=%02x\n", max);
+	printk_debug("PCI: pci_scan_bus returning with max=%03x\n", max);
 	post_code(0x55);
 	return max;
 }

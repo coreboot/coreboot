@@ -1,6 +1,8 @@
 #if K8_SET_FIDVID == 1
 
-#define K8_SET_FIDVID_DEBUG 0 
+#define K8_SET_FIDVID_DEBUG 0
+
+#define K8_SET_FIDVID_ONE_BY_ONE 1
 
 #define K8_SET_FIDVID_STORE_AP_APICID_AT_FIRST 1
 
@@ -13,7 +15,7 @@
 static inline void print_debug_fv(const char *str, unsigned val)
 {
 #if K8_SET_FIDVID_DEBUG == 1
-        #if CONFIG_USE_INIT==1
+	#if CONFIG_USE_PRINTK_IN_CAR
         	printk_debug("%s%x\r\n", str, val);
         #else
                 print_debug(str); print_debug_hex32(val); print_debug("\r\n");
@@ -24,7 +26,7 @@ static inline void print_debug_fv(const char *str, unsigned val)
 static inline void print_debug_fv_8(const char *str, unsigned val)
 {
 #if K8_SET_FIDVID_DEBUG == 1
-        #if CONFIG_USE_INIT==1
+	#if CONFIG_USE_PRINTK_IN_CAR
                 printk_debug("%s%02x\r\n", str, val);
         #else
                 print_debug(str); print_debug_hex8(val); print_debug("\r\n");
@@ -35,7 +37,7 @@ static inline void print_debug_fv_8(const char *str, unsigned val)
 static inline void print_debug_fv_64(const char *str, unsigned val, unsigned val2)
 {
 #if K8_SET_FIDVID_DEBUG == 1
-        #if CONFIG_USE_INIT==1
+	#if CONFIG_USE_PRINTK_IN_CAR
                 printk_debug("%s%x%x\r\n", str, val, val2);
         #else
                 print_debug(str); print_debug_hex32(val); print_debug_hex32(val2); print_debug("\r\n");
@@ -75,6 +77,25 @@ static void enable_fid_change(void)
 	}
 }
 
+#if K8_SET_FIDVID_ONE_BY_ONE == 0
+static unsigned set_fidvid_without_init(unsigned fidvid)
+{
+
+        msr_t msr;
+        uint32_t vid;
+        uint32_t fid;
+
+        fid = (fidvid >> 8) & 0x3f;
+        vid = (fidvid >> 16) & 0x3f;
+
+        // set new FID/VID
+        msr.hi = 1;
+        msr.lo = (vid<<8) | fid;
+        wrmsr(0xc0010041, msr);
+        return fidvid;
+}
+#endif
+
 static unsigned set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 {
 	//for (cur, new) there is one <1600MHz x8 to find out next_fid 
@@ -109,7 +130,7 @@ static unsigned set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 	apicidx = lapicid();
 
 	if(apicid!=apicidx) {
-#if CONFIG_USE_INIT == 1
+#if CONFIG_USE_PRINTK_IN_CAR	
 		printk_err("wrong apicid, we want change %x, but it is %x\r\n", apicid, apicidx);
 #else
 		print_err("wrong apicid, we want change "); print_err_hex8(apicid); print_err(" but it is "); print_err_hex8(apicidx); print_err("\r\n");
@@ -228,8 +249,11 @@ static unsigned set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 	fidvid = (vid_cur<< 16) | (fid_cur<<8);
 
 	if(showmessage) {
-		if((fid!=fid_cur) || (vid!=vid_cur)) {
-			print_err("set fidvid failed\r\n");
+		if(vid!=vid_cur) {
+			print_err("set vid failed for apicid ="); print_err_hex8(apicidx);  print_err("\r\n");
+		}
+		if(fid!=fid_cur) {
+			print_err("set fid failed for apicid ="); print_err_hex8(apicidx); print_err("\r\n");
 		}
 	}
 
@@ -241,7 +265,8 @@ static void init_fidvid_ap(unsigned bsp_apicid, unsigned apicid)
 {
 
 	uint32_t send;
-        uint32_t readback;
+        uint32_t readback = 0;
+	unsigned timeout = 1;
 	msr_t msr;
         uint32_t vid_cur;
         uint32_t fid_cur;
@@ -263,6 +288,7 @@ static void init_fidvid_ap(unsigned bsp_apicid, unsigned apicid)
         send |= ((msr.hi>>(48-32)) & 0x3f) << 16; //max vid
 	send |= (apicid<<24); // ap apicid
 
+#if K8_SET_FIDVID_ONE_BY_ONE == 1
         vid_cur = msr.hi & 0x3f;
         fid_cur = msr.lo & 0x3f;
 
@@ -270,13 +296,17 @@ static void init_fidvid_ap(unsigned bsp_apicid, unsigned apicid)
         msr.hi = 1;
         msr.lo = (vid_cur<<8) | (fid_cur);
         wrmsr(0xc0010041, msr);
+#endif
 
-	wait_cpu_state(bsp_apicid, 1);
+	timeout = wait_cpu_state(bsp_apicid, 1);
+	if(timeout) {
+	        print_initcpu8("fidvid_ap_stage1: time out while reading from BSP on ", apicid);
+	}
         //send signal to BSP about this AP max fid and vid
         lapic_write(LAPIC_MSG_REG, send | 1); //AP at state 1 that sent our fid and vid
 
 //	wait_cpu_state(bsp_apicid, 2);// don't need we can use apicid directly	
-	loop = 100000;
+	loop = 1000000;
         while(--loop>0) {
 		//remote read BSP signal that include vid and fid that need to set
                 if(lapic_remote_read(bsp_apicid, LAPIC_MSG_REG, &readback)!=0) continue;
@@ -284,14 +314,23 @@ static void init_fidvid_ap(unsigned bsp_apicid, unsigned apicid)
         }
 
 	if(loop>0) {
+	#if K8_SET_FIDVID_ONE_BY_ONE == 1
        		readback = set_fidvid(apicid, readback & 0xffff00, 1); // this AP
+	#else
+		readback = set_fidvid_without_init(readback & 0xffff00); // this AP
+	#endif
        		//send signal to BSP that this AP fid/vid is set // allow to change state2 is together with apicid
 	        send = (apicid<<24) | (readback & 0x00ffff00); // AP at state that We set the requested fid/vid
+	} else {
+	        print_initcpu8("fidvid_ap_stage2: time out while reading from BSP on ", apicid);
 	}
 
        	lapic_write(LAPIC_MSG_REG, send | 2);
 
-	wait_cpu_state(bsp_apicid, 3);
+	timeout = wait_cpu_state(bsp_apicid, 3);
+	if(timeout) {
+	        print_initcpu8("fidvid_ap_stage3: time out while reading from BSP on ", apicid);
+	}
 }
 
 static unsigned calc_common_fidvid(unsigned fidvid, unsigned fidvidx)
@@ -311,18 +350,26 @@ struct fidvid_st {
 
 static void init_fidvid_bsp_stage1(unsigned ap_apicid, void *gp ) 
 {		
-		unsigned readback;
+		unsigned readback = 0;
+		unsigned timeout = 1;
 
 		struct fidvid_st *fvp = gp;
 		int loop;
 		
                 print_debug_fv("state 1: ap_apicid=", ap_apicid);
 
-		loop = 100000;
+		loop = 1000000;
                 while(--loop > 0) {
   	              if(lapic_remote_read(ap_apicid, LAPIC_MSG_REG, &readback)!=0) continue;
-                      if((readback & 0xff) == 1) break; //target ap is in stage 1 
+                      if((readback & 0xff) == 1) {
+				timeout = 0;
+				break; //target ap is in stage 1 
+		      }
                 }
+		if(timeout) {
+		        print_initcpu8("fidvid_bsp_stage1: time out while reading from ap ", ap_apicid);
+			return;
+		}
 
                 print_debug_fv("\treadback=", readback);
 
@@ -333,7 +380,8 @@ static void init_fidvid_bsp_stage1(unsigned ap_apicid, void *gp )
 }
 static void init_fidvid_bsp_stage2(unsigned ap_apicid, void *gp)
 {
-		unsigned readback;
+		unsigned readback = 0;
+		unsigned timeout = 1;
 
 		struct fidvid_st *fvp = gp;
 		int loop;
@@ -342,11 +390,19 @@ static void init_fidvid_bsp_stage2(unsigned ap_apicid, void *gp)
 
                 lapic_write(LAPIC_MSG_REG, fvp->common_fidvid | (ap_apicid<<24) | 2); // all set to state2
 		
-		loop = 100000;	
+		loop = 1000000;	
                 while(--loop > 0) {
                 	if(lapic_remote_read(ap_apicid, LAPIC_MSG_REG, &readback)!=0) continue;
-                        if((readback & 0xff) == 2) break; // target ap is stage 2, and it'd FID has beed set
+                        if((readback & 0xff) == 2) { 
+				timeout = 0;
+				break; // target ap is stage 2, and it'd FID has beed set
+			}
                 }
+
+		if(timeout) {
+		        print_initcpu8("fidvid_bsp_stage2: time out while reading from ap ", ap_apicid);
+			return;
+		}
 
                 print_debug_fv("\treadback=", readback);
 }
@@ -438,11 +494,13 @@ static void init_fidvid_bsp(unsigned bsp_apicid)
 
 #endif
 
+#if K8_SET_FIDVID_ONE_BY_ONE == 1 
         // set BSP fid and vid
 	print_debug_fv("bsp apicid=", bsp_apicid);
 	fv.common_fidvid = set_fidvid(bsp_apicid, fv.common_fidvid, 1);
         print_debug_fv("common_fidvid=", fv.common_fidvid);
 
+#endif
 
         //for all APs ( We know the APIC ID of all AP even the APIC ID is lifted)
         // send signal to the AP it could change it's fid/vid
@@ -457,6 +515,14 @@ static void init_fidvid_bsp(unsigned bsp_apicid)
         }
 #else
 	for_each_ap(bsp_apicid, K8_SET_FIDVID_CORE0_ONLY, init_fidvid_bsp_stage2, &fv);
+#endif
+
+#if K8_SET_FIDVID_ONE_BY_ONE == 0
+        // set BSP fid and vid
+	print_debug_fv("bsp apicid=", bsp_apicid);
+	fv.common_fidvid = set_fidvid(bsp_apicid, fv.common_fidvid, 1);
+	print_debug_fv("common_fidvid=", fv.common_fidvid);
+
 #endif
 
 	lapic_write(LAPIC_MSG_REG, fv.common_fidvid | (bsp_apicid<<24) | 3); // clear the state

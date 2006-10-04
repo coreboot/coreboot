@@ -42,12 +42,8 @@ extern unsigned char AmlCode_ssdt[];
 
 #if ACPI_SSDTX_NUM >= 1
 extern unsigned char AmlCode_ssdt2[];
-//extern unsigned char AmlCode_ssdt3[];
-//extern unsigned char AmlCode_ssdt4[];
-//extern unsigned char AmlCode_ssdt5[];
-//extern unsigned char AmlCode_ssdt6[];
-//extern unsigned char AmlCode_ssdt7[];
-//extern unsigned char AmlCode_ssdt8[];
+extern unsigned char AmlCode_ssdt3[];
+extern unsigned char AmlCode_ssdt4[];
 #endif
 
 #define IO_APIC_ADDR	0xfec00000UL
@@ -90,6 +86,51 @@ unsigned long acpi_fill_madt(unsigned long current)
                                 gsi_base+=7;
                         }
                 }
+
+                int i;
+                int j = 0;
+
+                for(i=1; i< sysconf.hc_possible_num; i++) {
+			unsigned d;
+                        if(!(sysconf.pci1234[i] & 0x1) ) continue;
+                        // 8131 need to use +4
+			
+                        switch (sysconf.hcid[i]) {
+                        case 1:
+				d = 7;
+				break;
+			case 3:
+				d = 4;
+				break;
+			}
+                        switch (sysconf.hcid[i]) {
+                        case 1:
+			case 3:
+                                dev = dev_find_slot(m->bus_8132a[j][0], PCI_DEVFN(m->sbdn3a[j], 1));
+                                if (dev) {
+                                        res = find_resource(dev, PCI_BASE_ADDRESS_0);
+                                        if (res) {
+                                                current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, m->apicid_8132a[j][0],
+                                                        res->base, gsi_base );
+                                                gsi_base+=d;
+                                        }
+                                }
+                                dev = dev_find_slot(m->bus_8132a[j][0], PCI_DEVFN(m->sbdn3a[j]+1, 1));
+                                if (dev) {
+                                        res = find_resource(dev, PCI_BASE_ADDRESS_0);
+                                        if (res) {
+                                                current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, m->apicid_8132a[j][1],
+                                                        res->base, gsi_base );
+                                                gsi_base+=d;
+
+                                        }
+                                }
+                                break;
+                        }
+
+                        j++;
+                }
+
         }
 
 	current += acpi_create_madt_irqoverride( (acpi_madt_irqoverride_t *)
@@ -112,6 +153,29 @@ extern void get_bus_conf(void);
 
 extern void update_ssdt(void *ssdt);
 
+void update_ssdtx(void *ssdtx, int i)
+{
+        uint8_t *PCI;
+        uint8_t *HCIN;
+        uint8_t *UID;
+
+        PCI = ssdtx + 0x32;
+        HCIN = ssdtx + 0x39;
+        UID = ssdtx + 0x40;
+
+        if(i<7) {
+                *PCI  = (uint8_t) ('4' + i - 1);
+        }
+        else {
+                *PCI  = (uint8_t) ('A' + i - 1 - 6);
+        }
+        *HCIN = (uint8_t) i;
+        *UID  = (uint8_t) (i+3);
+
+        /* FIXME: need to update the GSI id in the ssdtx too */
+
+}
+
 unsigned long write_acpi_tables(unsigned long start)
 {
 	unsigned long current;
@@ -126,6 +190,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_header_t *dsdt;
 	acpi_header_t *ssdt;
 	acpi_header_t *ssdtx;
+	unsigned char *p;
 
 	unsigned char *AmlCode_ssdtx[HC_POSSIBLE_NUM];
 
@@ -195,27 +260,42 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_add_table(rsdt,ssdt);
 
 #if ACPI_SSDTX_NUM >= 1
-	// we need to make ssdt2 match to PCI2 in pci2.asl,... pci1234[1] 
-	AmlCode_ssdtx[1] = AmlCode_ssdt2;
-//	AmlCode_ssdtx[2] = AmlCode_ssdt3;
-//	AmlCode_ssdtx[3] = AmlCode_ssdt4;
-//      AmlCode_ssdtx[4] = AmlCode_ssdt5;
-//      AmlCode_ssdtx[5] = AmlCode_ssdt6;
-//      AmlCode_ssdtx[6] = AmlCode_ssdt7;
-//      AmlCode_ssdtx[7] = AmlCode_ssdt8;
 
-	//same htio, but different possition? We may have to copy, change HCIN, and recalculate the checknum and add_table
-	
-	for(i=1;i<sysconf.hc_possible_num;i++) {  // 0: is hc sblink
-		if((sysconf.pci1234[i] & 1) != 1 ) continue;
-	        printk_debug("ACPI:    * SSDT for PCI%d\n", i+1); //pci0 and pci1 are in dsdt
-        	ssdtx = (acpi_header_t *)current;
-	        current += ((acpi_header_t *)AmlCode_ssdtx[i])->length;
-	        memcpy((void *)ssdtx, (void *)AmlCode_ssdtx[i], ((acpi_header_t *)AmlCode_ssdtx[i])->length);
-        	acpi_add_table(rsdt,ssdtx);
-	}
+        //same htio, but different position? We may have to copy, change HCIN, and recalculate the checknum and add_table
+
+        for(i=1;i<sysconf.hc_possible_num;i++) {  // 0: is hc sblink
+                if((sysconf.pci1234[i] & 1) != 1 ) continue;
+                uint8_t c;
+                if(i<7) {
+                        c  = (uint8_t) ('4' + i - 1);
+                }
+                else {
+                        c  = (uint8_t) ('A' + i - 1 - 6);
+                }
+                printk_debug("ACPI:    * SSDT for PCI%c Aka hcid = %d\n", c, sysconf.hcid[i]); //pci0 and pci1 are in dsdt
+                current   = ( current + 0x07) & -0x08;
+                ssdtx = (acpi_header_t *)current;
+                switch(sysconf.hcid[i]) {
+                case 1: //8132
+                        p = AmlCode_ssdt2;
+                        break;
+                case 2: //8151
+                        p = AmlCode_ssdt3;
+                        break;
+		case 3: //8131
+                        p = AmlCode_ssdt4;
+                        break;
+                default:
+                        continue;
+                }
+                current += ((acpi_header_t *)p)->length;
+                memcpy((void *)ssdtx, (void *)p, ((acpi_header_t *)p)->length);
+                update_ssdtx((void *)ssdtx, i);
+                ssdtx->checksum = 0;
+                ssdtx->checksum = acpi_checksum((unsigned char *)ssdtx,ssdtx->length);
+                acpi_add_table(rsdt,ssdtx);
+        }
 #endif
-
 
 	/* FACS */
 	printk_debug("ACPI:    * FACS\n");

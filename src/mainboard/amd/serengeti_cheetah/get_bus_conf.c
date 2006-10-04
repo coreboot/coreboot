@@ -42,13 +42,44 @@ extern void get_sblk_pci1234(void);
 
 static unsigned get_bus_conf_done = 0;
 
+static unsigned get_hcid(unsigned i)
+{
+        unsigned id = 0;
+
+        unsigned busn = (sysconf.pci1234[i] >> 16) & 0xff;
+
+        unsigned devn = sysconf.hcdn[i] & 0xff;
+
+        device_t dev;
+
+        dev = dev_find_slot(busn, PCI_DEVFN(devn,0));
+
+        switch (dev->device) {
+        case 0x7458: //8132
+                id = 1;
+                break;
+        case 0x7454: //8151
+                id = 2;
+		break;
+        case 0x7450: //8131
+                id = 3;
+                break;
+        }
+
+        // we may need more way to find out hcid: subsystem id? GPIO read ?
+
+        // we need use id for 1. bus num, 2. mptable, 3. acpi table
+
+        return id;
+}
+
 void get_bus_conf(void)
 {
 
 	unsigned apicid_base;
 
         device_t dev;
-	int i;
+	int i, j;
 	struct mb_sysconf_t *m;
 
 	if(get_bus_conf_done == 1) return; //do it only once
@@ -69,7 +100,6 @@ void get_bus_conf(void)
 	
 	sysconf.sbdn = (sysconf.hcdn[0] >> 8) & 0xff;
 	m->sbdn3 = sysconf.hcdn[0] & 0xff;
-	m->sbdn5 = sysconf.hcdn[1] & 0xff;
 
 	m->bus_8132_0 = (sysconf.pci1234[0] >> 16) & 0xff;
 	m->bus_8111_0 = m->bus_8132_0;
@@ -112,21 +142,68 @@ void get_bus_conf(void)
         }
 
         /* HT chain 1 */
-	if((sysconf.pci1234[1] & 0x1) == 1) {
-		m->bus_8151_0 = (sysconf.pci1234[1] >> 16) & 0xff;
-                /* 8151 */
-		dev = dev_find_slot(m->bus_8151_0, PCI_DEVFN(m->sbdn5+1, 0));
+        j=0;
+        for(i=1; i< sysconf.hc_possible_num; i++) {
+                if(!(sysconf.pci1234[i] & 0x1) ) continue;
 
-              	if (dev) {
-                       	m->bus_8151_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-//                        printk_debug("bus_8151_1=%d\n",bus_8151_1);
-       	                m->bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-              	        m->bus_isa++;
-              	}
-       		else {
-                	printk_debug("ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_8151_0, m->sbdn5+1);
-        	}
+                // check hcid type here
+                sysconf.hcid[i] = get_hcid(i);
+
+                switch(sysconf.hcid[i]) {
+
+                case 1: //8132
+		case 3: //8131
+
+                        m->bus_8132a[j][0] = (sysconf.pci1234[i] >> 16) & 0xff;
+
+                        m->sbdn3a[j] = sysconf.hcdn[i] & 0xff;
+
+                        /* 8132-1 */
+                        dev = dev_find_slot(m->bus_8132a[j][0], PCI_DEVFN(m->sbdn3a[j],0));
+                        if (dev) {
+                                m->bus_8132a[j][1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
+                        }
+                        else {
+                        printk_debug("ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_8132a[j][0], m->sbdn3a[j]);
+                        }
+
+                        /* 8132-2 */
+                        dev = dev_find_slot(m->bus_8132a[j][0], PCI_DEVFN(m->sbdn3a[j]+1,0));
+                        if (dev) {
+                                m->bus_8132a[j][2] = pci_read_config8(dev, PCI_SECONDARY_BUS);
+                                m->bus_isa    = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
+                                m->bus_isa++;
+                //              printk_debug("bus_isa=%d\n",bus_isa);
+                                }
+                        else {
+                                printk_debug("ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_8132a[j][0], m->sbdn3a[j]+1);
+                        }
+
+                        break;
+
+                case 2: //8151
+
+                        m->bus_8151[j][0] = (sysconf.pci1234[i] >> 16) & 0xff;
+                        m->sbdn5[j] = sysconf.hcdn[i] & 0xff;
+                        /* 8151 */
+                        dev = dev_find_slot(m->bus_8151[j][0], PCI_DEVFN(m->sbdn5[j]+1, 0));
+
+                        if (dev) {
+                                m->bus_8151[j][1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
+        //                        printk_debug("bus_8151_1=%d\n",bus_8151[j][1]);
+                                m->bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
+                                m->bus_isa++;
+                        }
+                        else {
+                                printk_debug("ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_8151[j][0], m->sbdn5[j]+1);
+                        }
+
+                        break;
+                }
+
+                j++;
         }
+
 
 /*I/O APICs:	APIC ID	Version	State		Address*/
 #if CONFIG_LOGICAL_CPUS==1
@@ -137,4 +214,9 @@ void get_bus_conf(void)
 	m->apicid_8111 = apicid_base+0;
 	m->apicid_8132_1 = apicid_base+1;
 	m->apicid_8132_2 = apicid_base+2;
+        for(i=0;i<j;i++) {
+                m->apicid_8132a[i][0] = apicid_base + 3 + i*2;
+                m->apicid_8132a[i][1] = apicid_base + 3 + i*2 + 1;
+        }
+
 }

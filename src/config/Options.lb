@@ -485,6 +485,13 @@ define TTYS0_LCS
 	export always
 	comment "Default flow control settings for the 8250 serial console uart"
 end
+
+define CONFIG_USE_PRINTK_IN_CAR
+	default 0
+	export always
+	comment "use printk instead of print in CAR stage code"
+end
+
 	
 ###############################################
 # Mainboard options
@@ -744,6 +751,12 @@ end
 # Options for memory mapped I/O
 ###############################################
 
+define PCI_IO_CFG_EXT
+	default 0
+	export always
+	comment "allow 4K register space via io CFG port"
+end
+
 define PCIC0_CFGADDR
 	default none
 	format "0x%x"
@@ -905,6 +918,18 @@ define SB_HT_CHAIN_ON_BUS0
         default 0 
         export always
         comment "this will make SB hypertransport chain sit on bus 0, if it is 1, will put sb ht chain on bus 0, if it is 2 will put other chain on 0x40, 0x80, 0xc0"
+end
+
+define PCI_BUS_SEGN_BITS
+        default 0
+        export always
+        comment "It could be 0, 1, 2, 3 and 4 only"
+end
+
+define MMCONF_SUPPORT
+	default 0
+	export always
+	comment "enable mmconfig for pci conf"
 end
 
 define HW_MEM_HOLE_SIZEK

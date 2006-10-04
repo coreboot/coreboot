@@ -89,6 +89,8 @@ uses MEM_TRAIN_SEQ
 
 uses WAIT_BEFORE_CPUS_INIT
 
+uses CONFIG_USE_PRINTK_IN_CAR
+
 ###
 ### Build options
 ###
@@ -212,9 +214,12 @@ default DCACHE_RAM_SIZE=0x08000
 default DCACHE_RAM_GLOBAL_VAR_SIZE=0x01000
 default CONFIG_USE_INIT=0
 
+
+##
+## for rev F training on AP purpose
+##
 default CONFIG_AP_CODE_IN_CAR=1
 default MEM_TRAIN_SEQ=1
-
 default WAIT_BEFORE_CPUS_INIT=1
 
 ##
@@ -271,8 +276,8 @@ default CONFIG_ROM_STREAM = 1
 ##
 ## The default compiler
 ##
-default CC="$(CROSS_COMPILE)gcc-3.4.5 -m32"
-default HOSTCC="gcc-3.4.5"
+default CC="$(CROSS_COMPILE)gcc -m32"
+default HOSTCC="gcc"
 
 ##
 ## Disable the gdb stub by default
@@ -282,6 +287,7 @@ default CONFIG_GDB_STUB=0
 ##
 ## The Serial Console
 ##
+default CONFIG_USE_PRINTK_IN_CAR=0
 
 # To Enable the Serial Console
 default CONFIG_CONSOLE_SERIAL8250=1

@@ -9,6 +9,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <arch/pirq_routing.h>
+#include <cpu/amd/amdk8_sysconf.h>
 
 static void write_pirq_info(struct irq_info *pirq_info, uint8_t bus, uint8_t devfn, uint8_t link0, uint16_t bitmap0, 
 		uint8_t link1, uint16_t bitmap1, uint8_t link2, uint16_t bitmap2,uint8_t link3, uint16_t bitmap3,
@@ -36,10 +37,6 @@ extern  unsigned char bus_8111_1;
 extern  unsigned char bus_8151_0;
 extern  unsigned char bus_8151_1;
 
-extern unsigned pci1234[];
-
-extern  unsigned sbdn;
-extern  unsigned hcdn[];
 extern  unsigned sbdn3;
 extern  unsigned sbdn5;
 
@@ -72,7 +69,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	pirq->version  = PIRQ_VERSION;
 	
 	pirq->rtr_bus = bus_8111_0;
-	pirq->rtr_devfn = ((sbdn+1)<<3)|0;
+	pirq->rtr_devfn = ((sysconf.sbdn+1)<<3)|0;
 
 	pirq->exclusive_irqs = 0;
 	
@@ -86,13 +83,13 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	pirq_info = (void *) ( &pirq->checksum + 1);
 	slot_num = 0;
 //pci bridge
-	write_pirq_info(pirq_info, bus_8111_0, ((sbdn+1)<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
+	write_pirq_info(pirq_info, bus_8111_0, ((sysconf.sbdn+1)<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
 	pirq_info++; slot_num++;
 //pcix bridge
 //        write_pirq_info(pirq_info, bus_8132_0, (sbdn3<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
 //        pirq_info++; slot_num++;
 	
-	if(pci1234[1] & 0xf) {
+	if(sysconf.pci1234[1] & 0xf) {
 	//agp bridge
         	write_pirq_info(pirq_info, bus_8151_0, (sbdn5<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0); 
 	}	

@@ -2,7 +2,7 @@
 #define __ROMCC__
 
 //used by raminit
-#define K8_4RANK_DIMM_SUPPORT 1
+#define QRANK_DIMM_SUPPORT 1
 
 #if CONFIG_LOGICAL_CPUS==1
 #define SET_NB_CFG_54 1
@@ -21,7 +21,19 @@
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
 
+#if 0
+static void post_code(uint8_t value) {
+#if 1
+        int i;
+        for(i=0;i<0x80000;i++) {
+                outb(value, 0x80);
+        }
+#endif
+}
+#endif
+
 #include <cpu/amd/model_fxx_rev.h>
+
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/nvidia/ck804/ck804_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
@@ -41,6 +53,7 @@
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
+
 
 static void memreset_setup(void)
 {
@@ -92,15 +105,21 @@ static void sio_setup(void)
         uint32_t dword;
         uint8_t byte;
 
-        byte = pci_read_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0x7b);
+        /* subject decoding*/
+        byte = pci_read_config8(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0x7b);
         byte |= 0x20;
         pci_write_config8(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0x7b, byte);
 
+        /* LPC Positive Decode 0 */
         dword = pci_read_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa0);
+        /* Serial 0, Serial 1 */
         dword |= (1<<0) | (1<<1);
         pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa0, dword);
 
 #if 1   
+        /* s2891 has onboard LPC port 80 */
+        /*Hope I can enable port 80 here 
+         It will decode port 80 to LPC, If you are using PCI post code you can not do this */
         dword = pci_read_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa4);
         dword |= (1<<16);  
         pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa4, dword);
@@ -133,6 +152,7 @@ void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
         ck804_enable_rom();
 
         /* Is this a deliberate reset by the bios */
+//        post_code(0x22);
         if (bios_reset_detected() && last_boot_normal_x) {
                 goto normal_image;
         }
@@ -144,12 +164,14 @@ void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
                 goto fallback_image;
         }
  normal_image:
+//        post_code(0x23);
         __asm__ volatile ("jmp __normal_image"
                 : /* outputs */
                 : "a" (bist) , "b" (cpu_init_detectedx)/* inputs */
                 );
 
  fallback_image:
+//        post_code(0x25);
 	;
 }
 #endif
@@ -187,6 +209,8 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
                 bsp_apicid = init_cpus(cpu_init_detectedx);
         }
 
+//	post_code(0x32);
+	
  	w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
         uart_init();
         console_init();
@@ -195,6 +219,10 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	report_bist_failure(bist);
 
         setup_s2891_resource_map();
+#if 0
+        dump_pci_device(PCI_DEV(0, 0x18, 0));
+	dump_pci_device(PCI_DEV(0, 0x19, 0));
+#endif
 
 	needs_reset = setup_coherent_ht_domain();
 
@@ -211,7 +239,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
        	if (needs_reset) {
                	print_info("ht reset -\r\n");
-               	soft_reset();
+//               	soft_reset();
        	}
 
         allow_all_aps_stop(bsp_apicid);
@@ -221,9 +249,23 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
         fill_mem_ctrl(nodes, ctrl, spd_addr);
 
 	enable_smbus();
+#if 0
+	dump_spd_registers(&cpu[0]);
+#endif
+#if 0
+	dump_smbus_registers();
+#endif
 
 	memreset_setup();
 	sdram_initialize(nodes, ctrl);
+
+#if 0
+        print_pci_devices();
+#endif
+
+#if 0
+	dump_pci_devices();
+#endif
 
 	post_cache_as_ram();
 }

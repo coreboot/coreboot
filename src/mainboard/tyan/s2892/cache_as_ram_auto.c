@@ -13,6 +13,17 @@
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
 
+#if 0
+static void post_code(uint8_t value) {
+#if 1
+        int i;
+        for(i=0;i<0x80000;i++) {
+                outb(value, 0x80);
+        }
+#endif
+}
+#endif
+
 #include <cpu/amd/model_fxx_rev.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/nvidia/ck804/ck804_early_smbus.c"
@@ -54,7 +65,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-#define K8_4RANK_DIMM_SUPPORT 1
+#define QRANK_DIMM_SUPPORT 1
 
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
@@ -98,14 +109,13 @@ static void sio_setup(void)
         uint32_t dword;
         uint8_t byte;
 
-        byte = pci_read_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0x7b);
+        byte = pci_read_config8(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0x7b);
         byte |= 0x20;
         pci_write_config8(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0x7b, byte);
 
         dword = pci_read_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa0);
         dword |= (1<<0);
         pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa0, dword);
-
 
 }
 void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
@@ -132,6 +142,7 @@ void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
         ck804_enable_rom();
 
         /* Is this a deliberate reset by the bios */
+//        post_code(0x22);
         if (bios_reset_detected() && last_boot_normal_x) {
                 goto normal_image;
         }
@@ -143,12 +154,14 @@ void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
                 goto fallback_image;
         }
  normal_image:
+//        post_code(0x23);
         __asm__ volatile ("jmp __normal_image"
                 : /* outputs */
                 : "a" (bist), "b"(cpu_init_detectedx) /* inputs */
                 );
  
  fallback_image:
+//        post_code(0x25);
 	;
 }
 #endif
@@ -167,46 +180,42 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-	static const struct mem_controller cpu[] = {
-		{
-			.node_id = 0,
-			.f0 = PCI_DEV(0, 0x18, 0),
-			.f1 = PCI_DEV(0, 0x18, 1),
-			.f2 = PCI_DEV(0, 0x18, 2),
-			.f3 = PCI_DEV(0, 0x18, 3),
-			.channel0 = { (0xa<<3)|0, (0xa<<3)|2, 0, 0 },
-			.channel1 = { (0xa<<3)|1, (0xa<<3)|3, 0, 0 },
-		},
-#if CONFIG_MAX_PHYSICAL_CPUS > 1
-		{
-			.node_id = 1,
-			.f0 = PCI_DEV(0, 0x19, 0),
-			.f1 = PCI_DEV(0, 0x19, 1),
-			.f2 = PCI_DEV(0, 0x19, 2),
-			.f3 = PCI_DEV(0, 0x19, 3),
-			.channel0 = { (0xa<<3)|4, (0xa<<3)|6, 0, 0 },
-			.channel1 = { (0xa<<3)|5, (0xa<<3)|7, 0, 0 },
-		},
-#endif
-	};
 
-	unsigned bsp_apicid = 0;
+        static const uint16_t spd_addr [] = {
+                        (0xa<<3)|0, (0xa<<3)|2, 0, 0,
+                        (0xa<<3)|1, (0xa<<3)|3, 0, 0,
+#if CONFIG_MAX_PHYSICAL_CPUS > 1
+                        (0xa<<3)|4, (0xa<<3)|6, 0, 0,
+                        (0xa<<3)|5, (0xa<<3)|7, 0, 0,
+#endif
+        };
+
         int needs_reset;
+        unsigned bsp_apicid = 0;
+
+        struct mem_controller ctrl[8];
+        unsigned nodes;
 
         if (bist == 0) {
 		init_cpus(cpu_init_detectedx);
         }
 
- 	w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
+//	post_code(0x32);
+
+        w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
         uart_init();
         console_init();
-	
-	/* Halt if there was a built in self test failure */
-	report_bist_failure(bist);
+
+        /* Halt if there was a built in self test failure */
+        report_bist_failure(bist);
 
         setup_s2892_resource_map();
+#if 0
+        dump_pci_device(PCI_DEV(0, 0x18, 0));
+        dump_pci_device(PCI_DEV(0, 0x19, 0));
+#endif
 
-	needs_reset = setup_coherent_ht_domain();
+        needs_reset = setup_coherent_ht_domain();
 
         wait_all_core0_started();
 #if CONFIG_LOGICAL_CPUS==1
@@ -219,15 +228,35 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
         needs_reset |= ck804_early_setup_x();
 
-       	if (needs_reset) {
-               	print_info("ht reset -\r\n");
-               	soft_reset();
-       	}
+        if (needs_reset) {
+                print_info("ht reset -\r\n");
+                soft_reset();
+        }
 
-	enable_smbus();
+        allow_all_aps_stop(bsp_apicid);
 
-	memreset_setup();
-	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
+        nodes = get_nodes();
+        //It's the time to set ctrl now;
+        fill_mem_ctrl(nodes, ctrl, spd_addr);
 
-	post_cache_as_ram();
+        enable_smbus();
+#if 0
+        dump_spd_registers(&cpu[0]);
+#endif
+#if 0
+        dump_smbus_registers();
+#endif
+
+        memreset_setup();
+        sdram_initialize(nodes, ctrl);
+
+#if 0
+        print_pci_devices();
+#endif
+
+#if 0
+        dump_pci_devices();
+#endif
+
+        post_cache_as_ram();
 }

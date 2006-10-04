@@ -2,12 +2,17 @@
 ## Compute the location and size of where this firmware image
 ## (linuxBIOS plus bootloader) will live in the boot rom chip.
 ##
-if USE_FALLBACK_IMAGE
-	default ROM_SECTION_SIZE   = FALLBACK_SIZE
-	default ROM_SECTION_OFFSET = ( ROM_SIZE - FALLBACK_SIZE )
+if USE_FAILOVER_IMAGE
+	default ROM_SECTION_SIZE   = FAILOVER_SIZE
+	default ROM_SECTION_OFFSET = ( ROM_SIZE - FAILOVER_SIZE )
 else
-	default ROM_SECTION_SIZE   = ( ROM_SIZE - FALLBACK_SIZE )
+    if USE_FALLBACK_IMAGE
+	default ROM_SECTION_SIZE   = FALLBACK_SIZE
+	default ROM_SECTION_OFFSET = ( ROM_SIZE - FALLBACK_SIZE - FAILOVER_SIZE )
+    else
+	default ROM_SECTION_SIZE   = ( ROM_SIZE - FALLBACK_SIZE - FAILOVER_SIZE )
 	default ROM_SECTION_OFFSET = 0
+    end
 end
 
 ##
@@ -16,7 +21,6 @@ end
 ##
 default PAYLOAD_SIZE            = ( ROM_SECTION_SIZE - ROM_IMAGE_SIZE )
 default CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
-default CONFIG_ROM_STREAM     = 1
 
 ##
 ## Compute where this copy of linuxBIOS will start in the boot rom
@@ -31,10 +35,18 @@ default _ROMBASE      = ( CONFIG_ROM_STREAM_START + PAYLOAD_SIZE )
 ## XIP_ROM_BASE must be a multiple of XIP_ROM_SIZE
 ##
 default XIP_ROM_SIZE=65536
-default XIP_ROM_BASE = ( _ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE )
+
+if USE_FAILOVER_IMAGE
+	default XIP_ROM_BASE = ( _ROMBASE - XIP_ROM_SIZE + ROM_IMAGE_SIZE)
+else
+    if USE_FALLBACK_IMAGE
+	default XIP_ROM_BASE = ( _ROMBASE - XIP_ROM_SIZE + ROM_IMAGE_SIZE + FAILOVER_SIZE)
+    else
+	default XIP_ROM_BASE = ( _ROMBASE - XIP_ROM_SIZE + ROM_IMAGE_SIZE)
+    end
+end
 
 arch i386 end 
-
 
 ##
 ## Build the objects we have code for in this directory.
@@ -92,9 +104,16 @@ end
 ##
 ## Build our 16 bit and 32 bit linuxBIOS entry code
 ##
-if USE_FALLBACK_IMAGE
-        mainboardinit cpu/x86/16bit/entry16.inc
-        ldscript /cpu/x86/16bit/entry16.lds
+if HAVE_FAILOVER_BOOT
+    if USE_FAILOVER_IMAGE
+	mainboardinit cpu/x86/16bit/entry16.inc
+	ldscript /cpu/x86/16bit/entry16.lds
+    end
+else
+    if USE_FALLBACK_IMAGE
+	mainboardinit cpu/x86/16bit/entry16.inc
+	ldscript /cpu/x86/16bit/entry16.lds
+    end
 end
 
 mainboardinit cpu/x86/32bit/entry32.inc
@@ -113,12 +132,22 @@ end
 ##
 ## Build our reset vector (This is where linuxBIOS is entered)
 ##
-if USE_FALLBACK_IMAGE 
+if HAVE_FAILOVER_BOOT
+    if USE_FAILOVER_IMAGE 
 	mainboardinit cpu/x86/16bit/reset16.inc 
 	ldscript /cpu/x86/16bit/reset16.lds 
-else
+    else
 	mainboardinit cpu/x86/32bit/reset32.inc 
 	ldscript /cpu/x86/32bit/reset32.lds 
+    end
+else
+    if USE_FALLBACK_IMAGE 
+	mainboardinit cpu/x86/16bit/reset16.inc 
+	ldscript /cpu/x86/16bit/reset16.lds 
+    else
+	mainboardinit cpu/x86/32bit/reset32.inc 
+	ldscript /cpu/x86/32bit/reset32.lds 
+    end
 end
 
 if USE_DCACHE_RAM
@@ -136,12 +165,17 @@ ldscript /southbridge/nvidia/ck804/id.lds
 ##
 ## ROMSTRAP table for CK804
 ##
-if USE_FALLBACK_IMAGE
+if HAVE_FAILOVER_BOOT
+    if USE_FAILOVER_IMAGE 
 	mainboardinit southbridge/nvidia/ck804/romstrap.inc
 	ldscript /southbridge/nvidia/ck804/romstrap.lds
+    end
+else
+    if USE_FALLBACK_IMAGE 
+	mainboardinit southbridge/nvidia/ck804/romstrap.inc
+	ldscript /southbridge/nvidia/ck804/romstrap.lds
+    end
 end
-
-
 
 if USE_DCACHE_RAM
 	##
@@ -155,12 +189,20 @@ end
 ### Things are delicate and we test to see if we should
 ### failover to another image.
 ###
-if USE_FALLBACK_IMAGE
-	ldscript /arch/i386/lib/failover.lds
+if HAVE_FAILOVER_BOOT
+    if USE_FAILOVER_IMAGE
 	if USE_DCACHE_RAM
-	else
-	        mainboardinit ./failover.inc
+		ldscript /arch/i386/lib/failover_failover.lds
 	end
+    end
+else
+    if USE_FALLBACK_IMAGE
+	if USE_DCACHE_RAM
+		ldscript /arch/i386/lib/failover.lds
+	else
+		mainboardinit ./failover.inc
+	end
+    end
 end
 
 ##

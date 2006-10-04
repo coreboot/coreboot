@@ -4,6 +4,8 @@
 #include <string.h>
 #include <stdint.h>
 
+#include <cpu/amd/amdk8_sysconf.h>
+
 extern  unsigned char bus_isa;
 extern  unsigned char bus_ck804_0; //1
 extern  unsigned char bus_ck804_1; //2
@@ -25,10 +27,6 @@ extern  unsigned apicid_8131_1;
 extern  unsigned apicid_8131_2;
 extern  unsigned apicid_ck804b;
 
-extern unsigned pci1234[];
-
-extern  unsigned sbdn;
-extern  unsigned hcdn[];
 extern  unsigned sbdn3;
 extern  unsigned sbdnb;
 
@@ -38,6 +36,7 @@ void *smp_write_config_table(void *v)
         static const char oem[8] = "TYAN    ";
         static const char productid[12] = "S2895       ";
         struct mp_config_table *mc;
+	unsigned sbdn;
 
         unsigned char bus_num;
 	int i;
@@ -62,6 +61,7 @@ void *smp_write_config_table(void *v)
         smp_write_processors(mc);
 
 	get_bus_conf();
+	sbdn = sysconf.sbdn;
 
 /*Bus:		Bus ID	Type*/
        /* define bus and isa numbers */
@@ -83,6 +83,7 @@ void *smp_write_config_table(void *v)
 				smp_write_ioapic(mc, apicid_ck804, 0x11, res->base);
 			}
 
+        	/* Initialize interrupt mapping*/
 
 			dword = 0x0000d218;
 	        	pci_write_config32(dev, 0x7c, dword);
@@ -110,7 +111,7 @@ void *smp_write_config_table(void *v)
 			}
                 }
 
-	    if(pci1234[2] & 0xf) {
+	    if(sysconf.pci1234[2] & 0xf) {
                 dev = dev_find_slot(bus_ck804b_0, PCI_DEVFN(sbdnb + 0x1,0));
                 if (dev) {
 			res = find_resource(dev, PCI_BASE_ADDRESS_1);
@@ -181,7 +182,7 @@ void *smp_write_config_table(void *v)
                 smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_1, (0x04<<2)|i, apicid_ck804, 0x10 + (0+i)%4);
         }
 
-	if(pci1234[2] & 0xf) {
+	if(sysconf.pci1234[2] & 0xf) {
 //Onboard ck804b NIC
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804b_0, ((sbdnb+0x0a)<<2)|0, apicid_ck804b, 0x15);//24+4+4+21=53
 

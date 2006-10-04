@@ -13,7 +13,7 @@
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
 
-#include <cpu/amd/model_fxx_rev.h>
+#include "northbridge/amd/amdk8/cpu_rev.c"
 //#define K8_HT_FREQ_1G_SUPPORT 1
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/nvidia/ck804/ck804_early_smbus.c"
@@ -23,7 +23,7 @@
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
-#include <cpu/amd/model_fxx_msr.h>
+#include "cpu/amd/model_fxx/model_fxx_msr.h"
 #include "superio/smsc/lpc47b397/lpc47b397_early_serial.c"
 
 #include "cpu/amd/mtrr/amd_earlymtrr.c"

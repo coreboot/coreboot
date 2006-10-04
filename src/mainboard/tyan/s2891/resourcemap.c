@@ -258,8 +258,8 @@ static void setup_s2891_resource_map(void)
 		 *	   This field defines the highest bus number in configuration region i
 		 */
 #if 1
-//		PCI_ADDR(0, 0x18, 1, 0xE0), 0x0000FC88, 0x07000003, 
-//		PCI_ADDR(0, 0x18, 1, 0xE4), 0x0000FC88, 0x7f080203, 
+//		PCI_ADDR(0, 0x18, 1, 0xE0), 0x0000FC88, 0x07000003, /* link 0 of cpu 0 --> Nvidia CK 804 Pro */
+//		PCI_ADDR(0, 0x18, 1, 0xE4), 0x0000FC88, 0x7f080203, /* link 2 of cpu 0 --> AMD8131 	*/
 		PCI_ADDR(0, 0x18, 1, 0xE8), 0x0000FC88, 0x00000000, 
 		PCI_ADDR(0, 0x18, 1, 0xEC), 0x0000FC88, 0x00000000, 
 #endif

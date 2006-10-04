@@ -54,7 +54,6 @@ uses CONFIG_CHIP_NAME
 uses CONFIG_CONSOLE_VGA
 uses CONFIG_PCI_ROM_RUN
 uses HW_MEM_HOLE_SIZEK
-uses K8_HT_FREQ_1G_SUPPORT
 
 uses USE_DCACHE_RAM
 uses DCACHE_RAM_BASE
@@ -74,12 +73,13 @@ uses SB_HT_CHAIN_UNITID_OFFSET_ONLY
 
 uses CONFIG_LB_MEM_TOPK
 
+
 ## ROM_SIZE is the size of boot ROM that this board will use.
 #512K bytes 
-#default ROM_SIZE=524288
+default ROM_SIZE=524288
 
 #1M bytes
-default ROM_SIZE=1048576
+#default ROM_SIZE=1048576
 
 
 ##
@@ -139,9 +139,6 @@ default CONFIG_LOGICAL_CPUS=1
 #1G memory hole
 default HW_MEM_HOLE_SIZEK=0x100000
 
-#Opteron K8 1G HT Support
-default K8_HT_FREQ_1G_SUPPORT=1
-
 ##HT Unit ID offset, default is 1, the typical one
 default HT_CHAIN_UNITID_BASE=0x0
 
@@ -152,8 +149,7 @@ default HT_CHAIN_UNITID_BASE=0x0
 default SB_HT_CHAIN_ON_BUS0=2
 
 ##only offset for SB chain?, default is yes(1)
-default SB_HT_CHAIN_UNITID_OFFSET_ONLY=0
-
+#default SB_HT_CHAIN_UNITID_OFFSET_ONLY=0
 
 #BTEXT Console
 #default CONFIG_CONSOLE_BTEXT=1
@@ -229,8 +225,8 @@ default CONFIG_ROM_STREAM = 1
 ##
 ## The default compiler
 ##
-default CC="$(CROSS_COMPILE)gcc -m32"
-default HOSTCC="gcc"
+default CC="$(CROSS_COMPILE)gcc-3.3.6 -m32"
+default HOSTCC="gcc-3.3.6"
 
 ##
 ## Disable the gdb stub by default

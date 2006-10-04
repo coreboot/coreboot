@@ -13,7 +13,19 @@
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
 
+#if 0
+static void post_code(uint8_t value) {
+#if 1
+        int i;
+        for(i=0;i<0x80000;i++) {
+                outb(value, 0x80);
+        }
+#endif
+}
+#endif
+
 #include <cpu/amd/model_fxx_rev.h>
+
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/amd/amd8111/amd8111_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
@@ -68,7 +80,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-#define K8_4RANK_DIMM_SUPPORT 1
+#define QRANK_DIMM_SUPPORT 1
 
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
@@ -113,9 +125,11 @@ void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
 
         enumerate_ht_chain();
 
+        /* Setup the ck804 */
         amd8111_enable_rom();
 
         /* Is this a deliberate reset by the bios */
+//        post_code(0x22);
         if (bios_reset_detected() && last_boot_normal_x) {
                 goto normal_image;
         }
@@ -127,12 +141,14 @@ void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
                 goto fallback_image;
         }
  normal_image:
+//        post_code(0x23);
         __asm__ volatile ("jmp __normal_image"
                 : /* outputs */
                 : "a" (bist), "b" (cpu_init_detectedx) /* inputs */
                 );
 
  fallback_image:
+//        post_code(0x25);
 	;
 }
 #endif
@@ -170,15 +186,22 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
                 bsp_apicid = init_cpus(cpu_init_detectedx);
         }
 
+//	post_code(0x32);
 	
  	w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
         uart_init();
         console_init();
 
+//	dump_mem(DCACHE_RAM_BASE+DCACHE_RAM_SIZE-0x200, DCACHE_RAM_BASE+DCACHE_RAM_SIZE);
+	
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
         setup_s2885_resource_map();
+#if 0
+        dump_pci_device(PCI_DEV(0, 0x18, 0));
+	dump_pci_device(PCI_DEV(0, 0x19, 0));
+#endif
 
 	needs_reset = setup_coherent_ht_domain();
 
@@ -188,7 +211,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
         start_other_cores();
         wait_all_other_cores_started(bsp_apicid);
 #endif
-	
+
         needs_reset |= ht_setup_chains_x();
 
        	if (needs_reset) {
@@ -207,6 +230,10 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
         memreset_setup();
         sdram_initialize(nodes, ctrl);
+
+#if 0
+	dump_pci_devices();
+#endif
 
 	post_cache_as_ram();
 

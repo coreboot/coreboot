@@ -6,7 +6,7 @@
 //#define K8_SCAN_PCI_BUS 1
 
 
-#define K8_4RANK_DIMM_SUPPORT 1
+#define QRANK_DIMM_SUPPORT 1
 
 #if CONFIG_LOGICAL_CPUS==1
 #define SET_NB_CFG_54 1
@@ -21,30 +21,53 @@
 #include <cpu/x86/lapic.h>
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
+
+#if USE_FAILOVER_IMAGE==0
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
 
+#if 0
+static void post_code(uint8_t value) {
+#if 1
+        int i;
+        for(i=0;i<0x8000;i++) {
+                outb(value, 0x80);
+        }
+#endif
+}
+#endif
+
 #include <cpu/amd/model_fxx_rev.h>
+
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/nvidia/ck804/ck804_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
 
-#if CONFIG_USE_INIT == 0
-#include "lib/memcpy.c"
 #endif
 
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
-#include "northbridge/amd/amdk8/debug.c"
 #include "superio/smsc/lpc47b397/lpc47b397_early_serial.c"
+#include "superio/smsc/lpc47b397/lpc47b397_early_gpio.c"
+#define SUPERIO_GPIO_DEV PNP_DEV(0x2e, LPC47B397_RT)
 
-#include "cpu/amd/mtrr/amd_earlymtrr.c"
+#define SUPERIO_GPIO_IO_BASE 0x400
+
+#if USE_FAILOVER_IMAGE==0
+
 #include "cpu/x86/bist.h"
 
-#include "superio/smsc/lpc47b397/lpc47b397_early_gpio.c"
+#if CONFIG_USE_INIT == 0
+#include "lib/memcpy.c"
+#endif
+
+#include "northbridge/amd/amdk8/debug.c"
+
+#include "cpu/amd/mtrr/amd_earlymtrr.c"
+
 
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 
@@ -58,9 +81,6 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
 {
 }
 
-#define SUPERIO_GPIO_DEV PNP_DEV(0x2e, LPC47B397_RT)
-
-#define SUPERIO_GPIO_IO_BASE 0x400
 
 static void sio_gpio_setup(void){
 
@@ -94,6 +114,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/dualcore/dualcore.c"
 
 #define CK804_NUM 2
+#define CK804B_BUSN 0x80
 #define CK804_USE_NIC 1
 #define CK804_USE_ACI 1
 
@@ -116,8 +137,9 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "cpu/amd/model_fxx/init_cpus.c"
 
+#endif
 
-#if USE_FALLBACK_IMAGE == 1
+#if ((HAVE_FAILOVER_BOOT==1) && (USE_FAILOVER_IMAGE == 1)) || ((HAVE_FAILOVER_BOOT==0) && (USE_FALLBACK_IMAGE == 1))
 
 #include "southbridge/nvidia/ck804/ck804_enable_rom.c"
 #include "northbridge/amd/amdk8/early_ht.c"
@@ -133,7 +155,7 @@ static void sio_setup(void)
         
         pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE+1, 0), 0xac, 0x047f0400);
         
-        byte = pci_read_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0x7b);
+        byte = pci_read_config8(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0x7b);
         byte |= 0x20; 
         pci_write_config8(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0x7b, byte);
         
@@ -141,13 +163,14 @@ static void sio_setup(void)
         dword |= (1<<29)|(1<<0);
         pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa0, dword);
         
-#if  1  
+        dword = pci_read_config32(PCI_DEV(0, CK804_DEVN_BASE+1, 0), 0xa4);
+        dword |= (1<<16);
+        pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa4, dword);
+
         lpc47b397_enable_serial(SUPERIO_GPIO_DEV, SUPERIO_GPIO_IO_BASE);
-                
         value =  lpc47b397_gpio_offset_in(SUPERIO_GPIO_IO_BASE, 0x77);
         value &= 0xbf; 
         lpc47b397_gpio_offset_out(SUPERIO_GPIO_IO_BASE, 0x77, value);
-#endif
 
 }
 
@@ -175,6 +198,7 @@ void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
         ck804_enable_rom();
 
         /* Is this a deliberate reset by the bios */
+//        post_code(0x22);
         if (bios_reset_detected() && last_boot_normal_x) {
                 goto normal_image;
         }
@@ -186,27 +210,42 @@ void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
                 goto fallback_image;
         }
  normal_image:
+//        post_code(0x23);
         __asm__ volatile ("jmp __normal_image"
                 : /* outputs */
                 : "a" (bist), "b" (cpu_init_detectedx) /* inputs */
                 );
 
  fallback_image:
+//        post_code(0x25);
+#if HAVE_FAILOVER_BOOT==1
+        __asm__ volatile ("jmp __fallback_image"
+                : /* outputs */
+                : "a" (bist), "b" (cpu_init_detectedx) /* inputs */
+                )
+#endif
 	;
 }
 #endif
-
 void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-
-#if USE_FALLBACK_IMAGE == 1
-        failover_process(bist, cpu_init_detectedx);
+#if HAVE_FAILOVER_BOOT==1 
+    #if USE_FAILOVER_IMAGE==1
+	failover_process(bist, cpu_init_detectedx);	
+    #else
+	real_main(bist, cpu_init_detectedx);
+    #endif
+#else
+    #if USE_FALLBACK_IMAGE == 1
+	failover_process(bist, cpu_init_detectedx);	
+    #endif
+	real_main(bist, cpu_init_detectedx);
 #endif
-        real_main(bist, cpu_init_detectedx);
-
 }
+
+#if USE_FAILOVER_IMAGE==0
 
 void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
@@ -229,6 +268,8 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
                 bsp_apicid = init_cpus(cpu_init_detectedx);
         }
 
+//	post_code(0x32);
+
 	lpc47b397_enable_serial(SERIAL_DEV, TTYS0_BASE);
         uart_init();
         console_init();
@@ -236,15 +277,21 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-        setup_s2895_resource_map();
+	sio_gpio_setup();
+
+        setup_mb_resource_map();
+#if 0
+        dump_pci_device(PCI_DEV(0, 0x18, 0));
+	dump_pci_device(PCI_DEV(0, 0x19, 0));
+#endif
 
 	needs_reset = setup_coherent_ht_domain();
 
-        wait_all_core0_started();
+	wait_all_core0_started();
 #if CONFIG_LOGICAL_CPUS==1
         // It is said that we should start core1 after all core0 launched
         start_other_cores();
-        wait_all_other_cores_started(bsp_apicid);
+	wait_all_other_cores_started(bsp_apicid);
 #endif
 
         needs_reset |= ht_setup_chains_x();
@@ -253,7 +300,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
        	if (needs_reset) {
                	print_info("ht reset -\r\n");
-               	soft_reset();
+        //       	soft_reset();
        	}
 
         allow_all_aps_stop(bsp_apicid);
@@ -263,9 +310,24 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
         fill_mem_ctrl(nodes, ctrl, spd_addr);
 
 	enable_smbus();
+#if 0
+	dump_spd_registers(&cpu[0]);
+#endif
+#if 0
+	dump_smbus_registers();
+#endif
 
 	memreset_setup();
 	sdram_initialize(nodes, ctrl);
 
+#if 0
+	print_pci_devices();
+#endif
+
+#if 0
+	dump_pci_devices();
+#endif
+
 	post_cache_as_ram();
 }
+#endif

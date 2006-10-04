@@ -4,6 +4,8 @@
 #include <string.h>
 #include <stdint.h>
 
+#include <cpu/amd/amdk8_sysconf.h>
+
 extern  unsigned char bus_isa;
 extern  unsigned char bus_8131_0;
 extern  unsigned char bus_8131_1;
@@ -14,13 +16,9 @@ extern  unsigned apicid_8111;
 extern  unsigned apicid_8131_1;
 extern  unsigned apicid_8131_2;
 
-extern  unsigned sbdn;
-extern  unsigned hcdn[];
 extern  unsigned sbdn3;
 
 extern void get_bus_conf(void);
-
-
 
 void *smp_write_config_table(void *v)
 {
@@ -100,7 +98,7 @@ void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0xf, apicid_8111, 0xf);
 	
 //8111 LPC ????
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_0, ((sbdn+1)<<2)|0, apicid_8111, 0x13);
+        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_0, ((sysconf.sbdn+1)<<2)|0, apicid_8111, 0x13);
 
 //On Board AMD USB ???
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_1, (0<<2)|3, apicid_8111, 0x13);

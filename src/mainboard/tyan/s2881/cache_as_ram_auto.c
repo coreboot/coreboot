@@ -1,7 +1,7 @@
 #define ASSEMBLY 1
 #define __ROMCC__
 
-#define K8_4RANK_DIMM_SUPPORT 1
+#define QRANK_DIMM_SUPPORT 1
 
 #if CONFIG_LOGICAL_CPUS==1
 #define SET_NB_CFG_54 1
@@ -19,7 +19,19 @@
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
 
+#if 0
+static void post_code(uint8_t value) {
+#if 1
+        int i;
+        for(i=0;i<0x80000;i++) {
+                outb(value, 0x80);
+        }
+#endif
+}
+#endif
+
 #include <cpu/amd/model_fxx_rev.h>
+
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/amd/amd8111/amd8111_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
@@ -113,9 +125,11 @@ void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
 
         enumerate_ht_chain();
 
+        /* Setup the ck804 */
         amd8111_enable_rom();
 
         /* Is this a deliberate reset by the bios */
+//        post_code(0x22);
         if (bios_reset_detected() && last_boot_normal_x) {
                 goto normal_image;
         }
@@ -127,12 +141,14 @@ void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
                 goto fallback_image;
         }
  normal_image:
+//        post_code(0x23);
         __asm__ volatile ("jmp __normal_image"
                 : /* outputs */
                 : "a" (bist), "b" (cpu_init_detectedx) /* inputs */
                 );
 
  fallback_image:
+//        post_code(0x25);
 	;
 }
 #endif
@@ -170,6 +186,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
                 bsp_apicid = init_cpus(cpu_init_detectedx);
         }
 
+//	post_code(0x32);
 	
  	w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
         uart_init();
@@ -179,6 +196,10 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	report_bist_failure(bist);
 
         setup_s2881_resource_map();
+#if 0
+        dump_pci_device(PCI_DEV(0, 0x18, 0));
+	dump_pci_device(PCI_DEV(0, 0x19, 0));
+#endif
 
 	needs_reset = setup_coherent_ht_domain();
 
@@ -197,6 +218,12 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
        	}
 
 	enable_smbus();
+#if 0
+	dump_spd_registers(&cpu[0]);
+#endif
+#if 0
+	dump_smbus_registers();
+#endif
 
         allow_all_aps_stop(bsp_apicid);
 
@@ -207,6 +234,9 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
         memreset_setup();
         sdram_initialize(nodes, ctrl);
 
+#if 0
+	dump_pci_devices();
+#endif
 
 	post_cache_as_ram();
 }

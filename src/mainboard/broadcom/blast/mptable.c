@@ -8,9 +8,7 @@
 #include <cpu/amd/dualcore.h>
 #endif
 
-extern unsigned pci1234[];
-extern  unsigned sbdn;
-extern  unsigned hcdn[];
+#include <cpu/amd/amdk8_sysconf.h>
 
 extern  unsigned char bus_isa;
 extern  unsigned char bus_bcm5780[7];
@@ -95,7 +93,7 @@ void *smp_write_config_table(void *v)
 //IDE	
 	outb(0x02, 0xc00); outb(0x0e, 0xc01);
 
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_bcm5785_0, ((1+sbdn)<<2)|1, apicid_bcm5785[0], 0xe); // IDE
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_bcm5785_0, ((1+sysconf.sbdn)<<2)|1, apicid_bcm5785[0], 0xe); // IDE
 
 //SATA
 	outb(0x07, 0xc00); outb(0x0f, 0xc01);
@@ -104,7 +102,7 @@ void *smp_write_config_table(void *v)
 //USB
 	outb(0x01, 0xc00); outb(0x0a, 0xc01);
         for(i=0;i<3;i++) {
-                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_bcm5785_0, ((2+sbdn)<<2)|i, apicid_bcm5785[0], 0xa); //
+                smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_bcm5785_0, ((2+sysconf.sbdn)<<2)|i, apicid_bcm5785[0], 0xa); //
         }
 
 	

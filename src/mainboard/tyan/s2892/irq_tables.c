@@ -10,6 +10,8 @@
 #include <stdint.h>
 #include <arch/pirq_routing.h>
 
+#include <cpu/amd/amdk8_sysconf.h>
+
 static void write_pirq_info(struct irq_info *pirq_info, uint8_t bus, uint8_t devfn, uint8_t link0, uint16_t bitmap0, 
 		uint8_t link1, uint16_t bitmap1, uint8_t link2, uint16_t bitmap2,uint8_t link3, uint16_t bitmap3,
 		uint8_t slot, uint8_t rfu)
@@ -39,8 +41,6 @@ extern  unsigned char bus_8131_0;//7
 extern  unsigned char bus_8131_1;//8
 extern  unsigned char bus_8131_2;//9
 
-extern  unsigned sbdn;
-extern  unsigned hcdn[];
 extern  unsigned sbdn3;
 
 extern void get_bus_conf(void);
@@ -52,11 +52,13 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	struct irq_info *pirq_info;
 	unsigned slot_num;
 	uint8_t *v;
+	unsigned sbdn;
 
         uint8_t sum=0;
         int i;
 
        get_bus_conf(); // it will find out all bus num and apic that share with mptable.c and mptable.c and acpi_tables.c
+	sbdn = sysconf.sbdn;
 
         /* Align the table to be 16 byte aligned. */
         addr += 15;

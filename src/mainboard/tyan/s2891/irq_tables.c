@@ -10,6 +10,8 @@
 #include <stdint.h>
 #include <arch/pirq_routing.h>
 
+#include <cpu/amd/amdk8_sysconf.h>
+
 static void write_pirq_info(struct irq_info *pirq_info, uint8_t bus, uint8_t devfn, uint8_t link0, uint16_t bitmap0, 
 		uint8_t link1, uint16_t bitmap1, uint8_t link2, uint16_t bitmap2,uint8_t link3, uint16_t bitmap3,
 		uint8_t slot, uint8_t rfu)
@@ -40,10 +42,7 @@ extern  unsigned char bus_8131_1;//8
 extern  unsigned char bus_8131_2;//9
 extern  unsigned char bus_coproc_0;
 
-extern  unsigned sbdn;
-extern  unsigned hcdn[];
 extern  unsigned sbdn3;
-extern  unsigned pci1234[];
 extern unsigned coprocdn;
 
 extern void get_bus_conf(void);
@@ -58,8 +57,10 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 
         uint8_t sum=0;
         int i;
+	unsigned sbdn;
 
-       get_bus_conf(); // it will find out all bus num and apic that share with mptable.c and mptable.c and acpi_tables.c
+        get_bus_conf(); // it will find out all bus num and apic that share with mptable.c and mptable.c and acpi_tables.c
+	sbdn = sysconf.sbdn;
 
         /* Align the table to be 16 byte aligned. */
         addr += 15;
@@ -94,12 +95,11 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 //pcix bridge
         write_pirq_info(pirq_info, bus_8131_0, (sbdn3<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
         pirq_info++; slot_num++;
-
 //co processor
-        if(pci1234[2] & 1) {
-                write_pirq_info(pirq_info, bus_coproc_0, (coprocdn<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
-                pirq_info++; slot_num++;
-        }
+        if(sysconf.pci1234[2] & 1) {
+	        write_pirq_info(pirq_info, bus_coproc_0, (coprocdn<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
+	        pirq_info++; slot_num++;
+	}
              
 #if 0
 //smbus

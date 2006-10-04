@@ -4,6 +4,8 @@
 #include <string.h>
 #include <stdint.h>
 
+#include <cpu/amd/amdk8_sysconf.h>
+
 extern  unsigned char bus_isa;
 extern  unsigned char bus_ck804_0; //1
 extern  unsigned char bus_ck804_1; //2
@@ -18,8 +20,6 @@ extern  unsigned apicid_ck804;
 extern  unsigned apicid_8131_1;
 extern  unsigned apicid_8131_2;
 
-extern  unsigned sbdn;
-extern  unsigned hcdn[];
 extern  unsigned sbdn3;
 
 
@@ -29,6 +29,7 @@ void *smp_write_config_table(void *v)
         static const char oem[8] = "TYAN    ";
         static const char productid[12] = "S2892       ";
         struct mp_config_table *mc;
+	unsigned sbdn;
 
         unsigned char bus_num;
 	int i;
@@ -53,6 +54,7 @@ void *smp_write_config_table(void *v)
         smp_write_processors(mc);
 
 	get_bus_conf();
+	sbdn = sysconf.sbdn;
 
 /*Bus:		Bus ID	Type*/
        /* define bus and isa numbers */
@@ -74,11 +76,12 @@ void *smp_write_config_table(void *v)
 				smp_write_ioapic(mc, apicid_ck804, 0x11, res->base);
 			}
         
+	/* Initialize interrupt mapping*/
+
 			dword = 0x0000d218;
 	        	pci_write_config32(dev, 0x7c, dword);
 
 		        dword = 0x12008a00;
-
 		        pci_write_config32(dev, 0x80, dword);
 
 	        	dword = 0x0000007d;

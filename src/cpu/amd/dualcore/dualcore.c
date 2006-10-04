@@ -19,7 +19,9 @@ static inline unsigned get_core_num_in_bsp(unsigned nodeid)
 #if SET_NB_CFG_54 == 1
 static inline uint8_t set_apicid_cpuid_lo(void)
 {
+#if K8_REV_F_SUPPORT == 0
         if(is_cpu_pre_e0()) return 0; // pre_e0 can not be set
+#endif
 
         // set the NB_CFG[54]=1; why the OS will be happy with that ???
         msr_t msr;

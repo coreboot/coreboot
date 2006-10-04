@@ -138,7 +138,7 @@ default LIFT_BSP_APIC_ID=0
 default USE_DCACHE_RAM=1
 default DCACHE_RAM_BASE=0xcc000
 default DCACHE_RAM_SIZE=0x4000
-default CONFIG_USE_INIT=1
+default CONFIG_USE_INIT=0
 
 ##
 ## Build code to setup a generic IOAPIC

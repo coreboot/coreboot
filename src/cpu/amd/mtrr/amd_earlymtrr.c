@@ -15,7 +15,6 @@ static void do_amd_early_mtrr_init(const unsigned long *mtrr_msrs)
          */
         msr_t msr;
         const unsigned long *msr_addr;
-        unsigned long cr0;
 #if 0
         /* Enable the access to AMD RdDram and WrDram extension bits */
         msr = rdmsr(SYSCFG_MSR);

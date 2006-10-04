@@ -1,9 +1,25 @@
 uses CONFIG_SMP
 uses CONFIG_PRECOMPRESSED_ROM_STREAM
 uses CONFIG_USE_INIT
+uses HAVE_FAILOVER_BOOT
+uses USE_FAILOVER_IMAGE
+uses USE_FALLBACK_IMAGE
 
 init init/crt0.S.lb
-ldscript init/ldscript.lb
+
+if HAVE_FAILOVER_BOOT
+      if USE_FAILOVER_IMAGE
+              ldscript init/ldscript_failover.lb
+      else
+              ldscript init/ldscript.lb
+      end
+else
+      if USE_FALLBACK_IMAGE
+              ldscript init/ldscript_fallback.lb
+      else
+              ldscript init/ldscript.lb
+      end
+end
 
 makerule all
 	depends	"linuxbios.rom"
@@ -21,7 +37,7 @@ end
 
 makerule payload
 	depends "$(PAYLOAD)"
-	action  "cp -f $< $@"
+	action  "cp $< $@"
 end
 
 makerule payload.nrv2b
@@ -53,9 +69,19 @@ if CONFIG_PRECOMPRESSED_ROM_STREAM
 	makedefine PAYLOAD-1:=payload
 end
 
-makerule linuxbios.rom 
-	depends	"linuxbios.strip buildrom $(PAYLOAD-1)" 
-	action "./buildrom $< $@ $(PAYLOAD-1) $(ROM_IMAGE_SIZE) $(ROM_SECTION_SIZE)"
+if USE_FAILOVER_IMAGE
+	makedefine LINUXBIOS_APC:=
+	makedefine LINUXBIOS_RAM_ROM:=
+
+	makerule linuxbios.rom 
+		depends	"linuxbios.strip" 
+		action "cp $< $@"
+	end
+else
+	makerule linuxbios.rom 
+		depends	"linuxbios.strip buildrom $(PAYLOAD-1)" 
+		action "./buildrom $< $@ $(PAYLOAD-1) $(ROM_IMAGE_SIZE) $(ROM_SECTION_SIZE)"
+	end
 end
 
 makerule crt0.S
@@ -72,11 +98,11 @@ if CONFIG_USE_INIT
 	        action  "$(OBJCOPY) --rename-section .text=.init.text --rename-section .data=.init.data --rename-section .rodata=.init.rodata --rename-section .rodata.str1.1=.init.rodata.str1.1 init.pre.o init.o"
 	end
 
-	makerule linuxbios   
-		depends	"crt0.o init.o linuxbios_ram.rom ldscript.ld"
+        makerule linuxbios   
+		depends	"crt0.o $(INIT-OBJECTS) $(LINUXBIOS_APC) $(LINUXBIOS_RAM_ROM) ldscript.ld"
 		action	"$(CC) -nostdlib -nostartfiles -static -o $@ -T ldscript.ld crt0.o init.o"
 		action	"$(CROSS_COMPILE)nm -n linuxbios | sort > linuxbios.map"
-	end
+        end
 
 end
 

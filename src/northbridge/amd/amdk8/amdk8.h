@@ -2,6 +2,10 @@
 
 #define AMDK8_H
 
+#if K8_REV_F_SUPPORT == 1
+        #include "amdk8_f.h"
+
+#else
 /* Definitions of various K8 registers */
 /* Function 0 */
 #define HT_TRANSACTION_CONTROL 0x68
@@ -55,6 +59,7 @@
 #define DRAM_CSBASE	   0x40
 #define DRAM_CSMASK	   0x60
 #define DRAM_BANK_ADDR_MAP 0x80
+
 #define DRAM_TIMING_LOW	   0x88
 #define	 DTL_TCL_SHIFT	   0
 #define	 DTL_TCL_MASK	   0x7
@@ -96,6 +101,7 @@
 #define	  DTL_TWR_BASE	   2
 #define	  DTL_TWR_MIN	   2
 #define	  DTL_TWR_MAX	   3
+
 #define DRAM_TIMING_HIGH   0x8c
 #define	 DTH_TWTR_SHIFT	   0
 #define	 DTH_TWTR_MASK	   0x1
@@ -122,6 +128,7 @@
 #define	  DTH_TWCL_BASE	    1
 #define	  DTH_TWCL_MIN	    1
 #define	  DTH_TWCL_MAX	    2
+
 #define DRAM_CONFIG_LOW	   0x90
 #define	 DCL_DLL_Disable   (1<<0)
 #define	 DCL_D_DRV	   (1<<1)
@@ -140,7 +147,7 @@
 #define	 DCL_DisInRcvrs    (1<<24)
 #define	 DCL_BypMax_SHIFT  25
 #define	 DCL_En2T          (1<<28)
-#define	 DCL_UpperCSMap    (1<<29)
+
 #define DRAM_CONFIG_HIGH   0x94
 #define	 DCH_ASYNC_LAT_SHIFT  0
 #define	 DCH_ASYNC_LAT_MASK   0xf
@@ -232,3 +239,5 @@
 #define ConnectionPending (1 << 4)
 
 #endif
+
+#endif /* AMDK8_H */

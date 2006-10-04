@@ -222,6 +222,8 @@ void cpu_initialize(void)
 	 */
 	struct device *cpu;
 	struct cpu_info *info;
+	struct cpuinfo_x86 c;
+
 	info = cpu_info();
 
 	printk_notice("Initializing CPU #%d\n", info->index);
@@ -245,6 +247,11 @@ void cpu_initialize(void)
 		identify_cpu(cpu);
 		printk_debug("CPU: vendor %s device %x\n",
 			cpu_vendor_name(cpu->vendor), cpu->device);
+
+	        get_fms(&c, cpu->device);
+
+	        printk_debug("CPU: family %02x, model %02x, stepping %02x\n", c.x86, c.x86_model, c.x86_mask);
+
 			
 		/* Lookup the cpu's operations */
 		set_cpu_ops(cpu);

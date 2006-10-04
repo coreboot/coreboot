@@ -254,6 +254,7 @@ void do_vsmbios(void)
 	unsigned char *buf;
 	unsigned int size = SMM_SIZE*1024;
 	int i;
+	unsigned long ilen, olen;
 	
 	printk_err("do_vsmbios\n");
 	/* clear vsm bios data area */
@@ -273,7 +274,8 @@ void do_vsmbios(void)
 	rom = ((unsigned long) 0) - (ROM_SIZE  + 64*1024);
 
 	buf = (unsigned char *) 0x60000;
-	unrv2b((uint8_t *)rom, buf);
+	olen = unrv2b((uint8_t *)rom, buf, &ilen);
+	printk_debug("buf ilen %d olen%d\n", ilen, olen);
 	printk_debug("buf %p *buf %d buf[256k] %d\n",
 		     buf, buf[0], buf[SMM_SIZE*1024]);
 	printk_debug("buf[0x20] signature is %x:%x:%x:%x\n",

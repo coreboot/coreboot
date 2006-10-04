@@ -203,6 +203,31 @@ void acpi_create_srat(acpi_srat_t *srat)
         header->checksum        = acpi_checksum((void *)srat, header->length);
 }
 
+void acpi_create_slit(acpi_slit_t *slit)
+{
+
+        acpi_header_t *header=&(slit->header);
+        unsigned long current=(unsigned long)slit+sizeof(acpi_slit_t);
+
+        memset((void *)slit, 0, sizeof(acpi_slit_t));
+
+        /* fill out header fields */
+        memcpy(header->signature, SLIT_NAME, 4);
+        memcpy(header->oem_id, OEM_ID, 6);
+        memcpy(header->oem_table_id, SLIT_TABLE, 8);
+        memcpy(header->asl_compiler_id, ASLC, 4);
+
+        header->length = sizeof(acpi_slit_t);
+        header->revision = 1;
+
+//        current = acpi_fill_slit(current);
+
+        /* recalculate length */
+        header->length= current - (unsigned long)slit;
+
+        header->checksum        = acpi_checksum((void *)slit, header->length);
+}
+
 void acpi_create_hpet(acpi_hpet_t *hpet)
 {
 #define HPET_ADDR  0xfed00000ULL

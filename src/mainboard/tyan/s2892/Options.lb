@@ -53,7 +53,7 @@ uses CONFIG_GDB_STUB
 uses CONFIG_CHIP_NAME
 uses CONFIG_CONSOLE_VGA
 uses CONFIG_PCI_ROM_RUN
-uses K8_HW_MEM_HOLE_SIZEK
+uses HW_MEM_HOLE_SIZEK
 uses K8_HT_FREQ_1G_SUPPORT
 
 uses USE_DCACHE_RAM
@@ -63,7 +63,7 @@ uses CONFIG_USE_INIT
 
 uses HT_CHAIN_UNITID_BASE
 uses HT_CHAIN_END_UNITID_BASE
-uses K8_SB_HT_CHAIN_ON_BUS0
+uses SB_HT_CHAIN_ON_BUS0
 uses SB_HT_CHAIN_UNITID_OFFSET_ONLY
 
 ## ROM_SIZE is the size of boot ROM that this board will use.
@@ -129,7 +129,7 @@ default CONFIG_MAX_PHYSICAL_CPUS=2
 default CONFIG_LOGICAL_CPUS=1
 
 #1G memory hole
-default K8_HW_MEM_HOLE_SIZEK=0x100000
+default HW_MEM_HOLE_SIZEK=0x100000
 
 #Opteron K8 1G HT Support
 default K8_HT_FREQ_1G_SUPPORT=1
@@ -141,7 +141,7 @@ default HT_CHAIN_UNITID_BASE=0x0
 #default HT_CHAIN_END_UNITID_BASE=0x0
 
 #make the SB HT chain on bus 0, default is not (0)
-default K8_SB_HT_CHAIN_ON_BUS0=2
+default SB_HT_CHAIN_ON_BUS0=2
 
 ##only offset for SB chain?, default is yes(1)
 default SB_HT_CHAIN_UNITID_OFFSET_ONLY=0

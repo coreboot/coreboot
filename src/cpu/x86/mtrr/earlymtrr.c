@@ -47,8 +47,27 @@ static void set_var_mtrr(
 	basem.hi = 0;
 	wrmsr(MTRRphysBase_MSR(reg), basem);
 	maskm.lo = ~(size - 1) | 0x800;
-	maskm.hi = 0x0f;
+	maskm.hi = (1<<(CPU_ADDR_BITS-32))-1;
 	wrmsr(MTRRphysMask_MSR(reg), maskm);
+}
+
+static void set_var_mtrr_x(
+        unsigned reg, uint32_t base_lo, uint32_t base_hi, uint32_t size_lo, uint32_t size_hi, unsigned type)
+
+{
+        /* Bit Bit 32-35 of MTRRphysMask should be set to 1 */
+        msr_t basem, maskm;
+        basem.lo = (base_lo & 0xfffff000) | type;
+        basem.hi = base_hi & ((1<<(CPU_ADDR_BITS-32))-1);
+        wrmsr(MTRRphysBase_MSR(reg), basem);
+       	maskm.hi = (1<<(CPU_ADDR_BITS-32))-1;
+	if(size_lo) {
+	        maskm.lo = ~(size_lo - 1) | 0x800;
+	} else {
+		maskm.lo = 0x800;
+		maskm.hi &= ~(size_hi - 1);
+	}
+        wrmsr(MTRRphysMask_MSR(reg), maskm);
 }
 
 static void cache_lbmem(int type)
@@ -70,7 +89,6 @@ static void do_early_mtrr_init(const unsigned long *mtrr_msrs)
 	 */
 	msr_t msr;
 	const unsigned long *msr_addr;
-	unsigned long cr0;
 
 	/* Inialize all of the relevant msrs to 0 */
 	msr.lo = 0;

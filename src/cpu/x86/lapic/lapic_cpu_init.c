@@ -322,7 +322,7 @@ static void start_other_cpus(struct bus *cpu_bus, device_t bsp_cpu)
 
 		if (!start_cpu(cpu)) {
 			/* Record the error in cpu? */
-			printk_err("CPU  %u would not start!\n",
+			printk_err("CPU 0x%02x would not start!\n",
 				cpu->path.u.apic.apic_id);
 		}
 #if SERIAL_CPU_INIT == 1
@@ -354,7 +354,7 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 			continue;
 		}
 		if (!cpu->initialized) {
-			printk_err("CPU %u did not initialize!\n", 
+			printk_err("CPU 0x%02x did not initialize!\n", 
 				cpu->path.u.apic.apic_id);
 #warning "FIXME do I need a mainboard_cpu_fixup function?"
 		}
@@ -365,6 +365,10 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 #else /* CONFIG_SMP */
 #define initialize_other_cpus(root) do {} while(0)
 #endif /* CONFIG_SMP */
+
+#if WAIT_BEFORE_CPUS_INIT==0
+	#define cpus_ready_for_init() do {} while(0)
+#endif
 
 void initialize_cpus(struct bus *cpu_bus)
 {
@@ -394,6 +398,8 @@ void initialize_cpus(struct bus *cpu_bus)
 	copy_secondary_start_to_1m_below(); // why here? In case some day we can start core1 in amd_sibling_init
 #endif
 	
+        cpus_ready_for_init(); 
+
 #if CONFIG_SMP == 1
 	#if SERIAL_CPU_INIT == 0
 	/* start all aps at first, so we can init ECC all together */
@@ -407,7 +413,6 @@ void initialize_cpus(struct bus *cpu_bus)
 
 #if CONFIG_SMP == 1
         #if SERIAL_CPU_INIT == 1
-        /* start all aps */
         start_other_cpus(cpu_bus, info->cpu);
         #endif
 

@@ -4,74 +4,35 @@
 #include <stdint.h>
 
 
-static inline uint8_t read8(unsigned long addr)
+static inline __attribute__((always_inline)) uint8_t read8(unsigned long addr)
 {
 	return *((volatile uint8_t *)(addr));
 }
 
-static inline uint16_t read16(unsigned long addr)
+static inline __attribute__((always_inline)) uint16_t read16(unsigned long addr)
 {
 	return *((volatile uint16_t *)(addr));
 }
 
-static inline uint32_t read32(unsigned long addr)
+static inline __attribute__((always_inline)) uint32_t read32(unsigned long addr)
 {
 	return *((volatile uint32_t *)(addr));
 }
 
-static inline void write8(unsigned long addr, uint8_t value)
+static inline __attribute__((always_inline)) void write8(unsigned long addr, uint8_t value)
 {
 	*((volatile uint8_t *)(addr)) = value;
 }
 
-static inline void write16(unsigned long addr, uint16_t value)
+static inline __attribute__((always_inline)) void write16(unsigned long addr, uint16_t value)
 {
 	*((volatile uint16_t *)(addr)) = value;
 }
 
-static inline void write32(unsigned long addr, uint32_t value)
+static inline __attribute__((always_inline)) void write32(unsigned long addr, uint32_t value)
 {
 	*((volatile uint32_t *)(addr)) = value;
 }
-#if 0
-typedef __builtin_div_t div_t;
-typedef __builtin_ldiv_t ldiv_t;
-typedef __builtin_udiv_t udiv_t;
-typedef __builtin_uldiv_t uldiv_t;
-
-static inline div_t div(int numer, int denom)
-{
-	return __builtin_div(numer, denom);
-}
-
-static inline ldiv_t ldiv(long numer, long denom)
-{
-	return __builtin_ldiv(numer, denom);
-}
-
-static inline udiv_t udiv(unsigned numer, unsigned denom)
-{
-	return __builtin_udiv(numer, denom);
-}
-
-static inline uldiv_t uldiv(unsigned long numer, unsigned long denom)
-{
-	return __builtin_uldiv(numer, denom);
-}
-
-
-
-inline int log2(int value)
-{
-	/* __builtin_bsr is a exactly equivalent to the x86 machine
-	 * instruction with the exception that it returns -1  
-	 * when the value presented to it is zero.
-	 * Otherwise __builtin_bsr returns the zero based index of
-	 * the highest bit set.
-	 */
-	return __builtin_bsr(value);
-}
-#endif
 
 static inline int log2(int value)
 {
@@ -98,16 +59,16 @@ static inline int log2f(int value)
 
 }
 
-#define PCI_ADDR(BUS, DEV, FN, WHERE) ( \
-	(((BUS) & 0xFF) << 16) | \
-	(((DEV) & 0x1f) << 11) | \
-	(((FN) & 0x07) << 8) | \
-	((WHERE) & 0xFF))
+#define PCI_ADDR(SEGBUS, DEV, FN, WHERE) ( \
+        (((SEGBUS) & 0xFFF) << 20) | \
+        (((DEV) & 0x1F) << 15) | \
+        (((FN) & 0x07) << 12) | \
+        ((WHERE) & 0xFFF))
 
-#define PCI_DEV(BUS, DEV, FN) ( \
-	(((BUS) & 0xFF) << 16) | \
-	(((DEV) & 0x1f) << 11) | \
-	(((FN)  & 0x7) << 8))
+#define PCI_DEV(SEGBUS, DEV, FN) ( \
+        (((SEGBUS) & 0xFFF) << 20) | \
+        (((DEV) & 0x1F) << 15) | \
+        (((FN)  & 0x07) << 12))
 
 #define PCI_ID(VENDOR_ID, DEVICE_ID) \
 	((((DEVICE_ID) & 0xFFFF) << 16) | ((VENDOR_ID) & 0xFFFF))
@@ -117,58 +78,103 @@ static inline int log2f(int value)
 
 typedef unsigned device_t;
 
-static inline __attribute__((always_inline)) uint8_t pci_read_config8(device_t dev, unsigned where)
+static inline __attribute__((always_inline)) uint8_t pci_io_read_config8(device_t dev, unsigned where)
 {
 	unsigned addr;
-	addr = dev | where;
+	addr = (dev>>4) | where;
 	outl(0x80000000 | (addr & ~3), 0xCF8);
 	return inb(0xCFC + (addr & 3));
 }
 
-static inline __attribute__((always_inline)) uint16_t pci_read_config16(device_t dev, unsigned where)
+static inline __attribute__((always_inline)) uint8_t pci_read_config8(device_t dev, unsigned where)
+{
+	return pci_io_read_config8(dev, where);
+}
+
+static inline __attribute__((always_inline)) uint16_t pci_io_read_config16(device_t dev, unsigned where)
 {
 	unsigned addr;
-	addr = dev | where;
+        addr = (dev>>4) | where;
 	outl(0x80000000 | (addr & ~3), 0xCF8);
 	return inw(0xCFC + (addr & 2));
 }
 
-static inline __attribute__((always_inline)) uint32_t pci_read_config32(device_t dev, unsigned where)
+static inline __attribute__((always_inline)) uint16_t pci_read_config16(device_t dev, unsigned where)
+{
+        return pci_io_read_config16(dev, where);
+}
+
+
+static inline __attribute__((always_inline)) uint32_t pci_io_read_config32(device_t dev, unsigned where)
 {
 	unsigned addr;
-	addr = dev | where;
+        addr = (dev>>4) | where;
 	outl(0x80000000 | (addr & ~3), 0xCF8);
 	return inl(0xCFC);
 }
 
-static inline __attribute__((always_inline)) void pci_write_config8(device_t dev, unsigned where, uint8_t value)
+static inline __attribute__((always_inline)) uint32_t pci_read_config32(device_t dev, unsigned where)
+{
+        return pci_io_read_config32(dev, where);
+}
+
+static inline __attribute__((always_inline)) void pci_io_write_config8(device_t dev, unsigned where, uint8_t value)
 {
 	unsigned addr;
-	addr = dev | where;
+        addr = (dev>>4) | where;
 	outl(0x80000000 | (addr & ~3), 0xCF8);
 	outb(value, 0xCFC + (addr & 3));
 }
 
-static inline __attribute__((always_inline)) void pci_write_config16(device_t dev, unsigned where, uint16_t value)
+static inline __attribute__((always_inline)) void pci_write_config8(device_t dev, unsigned where, uint8_t value)
 {
-	unsigned addr;
-	addr = dev | where;
-	outl(0x80000000 | (addr & ~3), 0xCF8);
-	outw(value, 0xCFC + (addr & 2));
+        pci_io_write_config8(dev, where, value);
 }
 
-static inline __attribute__((always_inline)) void pci_write_config32(device_t dev, unsigned where, uint32_t value)
+
+static inline __attribute__((always_inline)) void pci_io_write_config16(device_t dev, unsigned where, uint16_t value)
+{
+        unsigned addr;
+        addr = (dev>>4) | where;
+        outl(0x80000000 | (addr & ~3), 0xCF8);
+        outw(value, 0xCFC + (addr & 2));
+}
+
+static inline __attribute__((always_inline)) void pci_write_config16(device_t dev, unsigned where, uint16_t value)
+{
+	pci_io_write_config16(dev, where, value);
+}
+
+
+static inline __attribute__((always_inline)) void pci_io_write_config32(device_t dev, unsigned where, uint32_t value)
 {
 	unsigned addr;
-	addr = dev | where;
+        addr = (dev>>4) | where;
 	outl(0x80000000 | (addr & ~3), 0xCF8);
 	outl(value, 0xCFC);
 }
 
+static inline __attribute__((always_inline)) void pci_write_config32(device_t dev, unsigned where, uint32_t value)
+{
+        pci_io_write_config32(dev, where, value);
+}
+
 #define PCI_DEV_INVALID (0xffffffffU)
+static device_t pci_io_locate_device(unsigned pci_id, device_t dev)
+{
+        for(; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0,0,1)) {
+                unsigned int id;
+                id = pci_io_read_config32(dev, 0);
+                if (id == pci_id) {
+                        return dev;
+                }
+        }
+        return PCI_DEV_INVALID;
+}
+
 static device_t pci_locate_device(unsigned pci_id, device_t dev)
 {
-	for(; dev <= PCI_DEV(CONFIG_MAX_PCI_BUSES, 31, 7); dev += PCI_DEV(0,0,1)) {
+	for(; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0,0,1)) {
 		unsigned int id;
 		id = pci_read_config32(dev, 0);
 		if (id == pci_id) {
@@ -180,11 +186,11 @@ static device_t pci_locate_device(unsigned pci_id, device_t dev)
 
 static device_t pci_locate_device_on_bus(unsigned pci_id, unsigned bus)
 {
-        device_t dev, last;
+	device_t dev, last;
 
         dev = PCI_DEV(bus, 0, 0);
         last = PCI_DEV(bus, 31, 7);
-
+	
         for(; dev <=last; dev += PCI_DEV(0,0,1)) {
                 unsigned int id;
                 id = pci_read_config32(dev, 0);
@@ -194,8 +200,6 @@ static device_t pci_locate_device_on_bus(unsigned pci_id, unsigned bus)
         }
         return PCI_DEV_INVALID;
 }
-
-
 
 /* Generic functions for pnp devices */
 static inline __attribute__((always_inline)) void pnp_write_config(device_t dev, uint8_t reg, uint8_t value)

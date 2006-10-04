@@ -6,7 +6,7 @@ static inline void clear_memory(void *addr, unsigned long size)
 {
         asm volatile(
                 "cld \n\t"
-                "rep stosl\n\t"
+                "rep; stosl\n\t"
                 : /* No outputs */
                 : "a" (0), "D" (addr), "c" (size>>2)
                 );

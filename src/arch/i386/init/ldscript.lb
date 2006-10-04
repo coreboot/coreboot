@@ -36,15 +36,12 @@ INPUT(linuxbios_ram.rom)
 SECTIONS
 {
 	. = _ROMBASE;
-	
+
 	.ram . : {
 		_ram = . ;
 		linuxbios_ram.rom(*)
 		_eram = . ;
 	}
-
-	_x = .;
-	. = (_x < (_ROMBASE - 0x10000 +  ROM_IMAGE_SIZE)) ? (_ROMBASE - 0x10000 +  ROM_IMAGE_SIZE) : _x;
 
 	/* This section might be better named .setup */
 	.rom . : {

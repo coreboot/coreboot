@@ -54,13 +54,13 @@ uses OBJCOPY
 uses CONFIG_CHIP_NAME
 uses CONFIG_CONSOLE_VGA
 uses CONFIG_PCI_ROM_RUN
-uses K8_HW_MEM_HOLE_SIZEK
-uses K8_HW_MEM_HOLE_SIZE_AUTO_INC
+uses HW_MEM_HOLE_SIZEK
+uses HW_MEM_HOLE_SIZE_AUTO_INC
 uses K8_HT_FREQ_1G_SUPPORT
 
 uses HT_CHAIN_UNITID_BASE
 uses HT_CHAIN_END_UNITID_BASE
-uses K8_SB_HT_CHAIN_ON_BUS0
+uses SB_HT_CHAIN_ON_BUS0
 uses SB_HT_CHAIN_UNITID_OFFSET_ONLY
 
 uses USE_DCACHE_RAM
@@ -152,14 +152,14 @@ default CONFIG_CHIP_NAME=1
 
 #memory hole size, 0 mean disable, others will enable the hole, at that case if it is small than mmio_basek, it will use mmio_basek instead. 
 #2G
-default K8_HW_MEM_HOLE_SIZEK=0x200000
+default HW_MEM_HOLE_SIZEK=0x200000
 #1G
-#default K8_HW_MEM_HOLE_SIZEK=0x100000
+#default HW_MEM_HOLE_SIZEK=0x100000
 #512M
-#default K8_HW_MEM_HOLE_SIZEK=0x80000
+#default HW_MEM_HOLE_SIZEK=0x80000
 
 #make auto increase hole size to avoid hole_startk equal to basek so as to make some kernel happy
-#default K8_HW_MEM_HOLE_SIZE_AUTO_INC=1
+#default HW_MEM_HOLE_SIZE_AUTO_INC=1
 
 #Opteron K8 1G HT Support
 default K8_HT_FREQ_1G_SUPPORT=1
@@ -175,7 +175,7 @@ default HT_CHAIN_UNITID_BASE=0x4
 default HT_CHAIN_END_UNITID_BASE=0x1
 
 #make the SB HT chain on bus 0
-default K8_SB_HT_CHAIN_ON_BUS0=1
+default SB_HT_CHAIN_ON_BUS0=1
 
 #allow capable device use that above 4G
 #default CONFIG_PCI_64BIT_PREF_MEM=1
@@ -186,7 +186,7 @@ default K8_SB_HT_CHAIN_ON_BUS0=1
 default USE_DCACHE_RAM=1
 default DCACHE_RAM_BASE=0xcc000
 default DCACHE_RAM_SIZE=0x4000
-default CONFIG_USE_INIT=1
+default CONFIG_USE_INIT=0
 
 ##
 ## Build code to setup a generic IOAPIC

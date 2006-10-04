@@ -48,14 +48,14 @@ struct bus {
 	device_t 	children;	/* devices behind this bridge */
 	unsigned	bridge_ctrl;	/* Bridge control register */
 	unsigned char	link;		/* The index of this link */
-	unsigned char	secondary; 	/* secondary bus number */
-	unsigned char	subordinate;	/* max subordinate bus number */
+	uint16_t	secondary; 	/* secondary bus number */
+	uint16_t	subordinate;	/* max subordinate bus number */
 	unsigned char   cap;		/* PCi capability offset */
 	unsigned	reset_needed : 1;
 	unsigned	disable_relaxed_ordering : 1;
 };
 
-#define MAX_RESOURCES 12
+#define MAX_RESOURCES 12 
 #define MAX_LINKS    8 
 /*
  * There is one device structure for each slot-number/function-number

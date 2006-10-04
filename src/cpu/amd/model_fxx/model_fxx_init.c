@@ -13,6 +13,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <string.h>
+#include <cpu/x86/msr.h>
 #include <cpu/x86/pae.h>
 #include <pc80/mc146818rtc.h>
 #include <cpu/x86/lapic.h>
@@ -29,6 +30,17 @@
 
 #include <cpu/amd/model_fxx_msr.h>
 
+void cpus_ready_for_init(void)
+{
+#if MEM_TRAIN_SEQ == 1
+        struct sys_info *sysinfox = (struct sys_info *)((CONFIG_LB_MEM_TOPK<<10) - DCACHE_RAM_GLOBAL_VAR_SIZE);
+        // wait for ap memory to trained
+        wait_all_core0_mem_trained(sysinfox);
+#endif
+}
+
+
+#if K8_REV_F_SUPPORT == 0
 int is_e0_later_in_bsp(int nodeid)
 {
         uint32_t val;
@@ -53,6 +65,18 @@ int is_e0_later_in_bsp(int nodeid)
 
         return e0_later;
 }
+#endif
+
+#if K8_REV_F_SUPPORT == 1
+int is_cpu_f0_in_bsp(int nodeid)
+{
+        uint32_t dword;
+        device_t dev;
+        dev = dev_find_slot(0, PCI_DEVFN(0x18+nodeid, 3));
+        dword = pci_read_config32(dev, 0xfc);
+        return (dword & 0xfff00) == 0x40f00;
+}
+#endif
 
 #define MCI_STATUS 0x401
 
@@ -265,16 +289,20 @@ static void init_ecc_memory(unsigned node_id)
 	startk = (pci_read_config32(f1_dev, 0x40 + (node_id*8)) & 0xffff0000) >> 2;
 	endk   = ((pci_read_config32(f1_dev, 0x44 + (node_id*8)) & 0xffff0000) >> 2) + 0x4000;
 
-#if K8_HW_MEM_HOLE_SIZEK != 0
+#if HW_MEM_HOLE_SIZEK != 0
+	#if K8_REV_F_SUPPORT == 0
         if (!is_cpu_pre_e0()) 
 	{
+	#endif
 
                 uint32_t val;
                 val = pci_read_config32(f1_dev, 0xf0);
                 if(val & 1) {
         	        hole_startk = ((val & (0xff<<24)) >> 10);
                 }
+	#if K8_REV_F_SUPPORT == 0
         }
+	#endif
 #endif
 	
 
@@ -294,7 +322,7 @@ static void init_ecc_memory(unsigned node_id)
 	disable_lapic();
 
 	/* Walk through 2M chunks and zero them */
-#if K8_HW_MEM_HOLE_SIZEK != 0
+#if HW_MEM_HOLE_SIZEK != 0
 	/* here hole_startk can not be equal to begink, never. Also hole_startk is in 2M boundary, 64M? */
         if ( (hole_startk != 0) && ((begink < hole_startk) && (endk>(4*1024*1024)))) {
 		        for(basek = begink; basek < hole_startk;
@@ -336,9 +364,11 @@ static void init_ecc_memory(unsigned node_id)
 	printk_debug(" done\n");
 }
 
+
 static inline void k8_errata(void)
 {
 	msr_t msr;
+#if K8_REV_F_SUPPORT == 0
 	if (is_cpu_pre_c0()) {
 		/* Erratum 63... */
 		msr = rdmsr(HWCR_MSR);
@@ -406,8 +436,11 @@ static inline void k8_errata(void)
 		msr.hi |=1;
 		wrmsr_amd(CPU_ID_HYPER_EXT_FEATURES, msr);
  	}
+#endif
 
+#if K8_REV_F_SUPPORT == 0
 	if (!is_cpu_pre_e0()) 
+#endif
 	{
 		/* Erratum 110 ... */
                 msr = rdmsr_amd(CPU_ID_EXT_FEATURES_MSR);
@@ -420,8 +453,95 @@ static inline void k8_errata(void)
 	msr.lo |= 1 << 6;
 	wrmsr(HWCR_MSR, msr);
 
+#if K8_REV_F_SUPPORT == 1
+        /* Erratum 131... */
+        msr = rdmsr(NB_CFG_MSR);
+        msr.lo |= 1 << 20;
+        wrmsr(NB_CFG_MSR, msr);
+#endif
+
 }
 
+#if K8_REV_F_SUPPORT == 1
+static void amd_set_name_string_f(device_t dev)
+{
+	unsigned socket;
+	unsigned cmpCap;
+	unsigned pwrLmt;
+	unsigned brandId;
+	unsigned brandTableIndex;
+	unsigned nN;
+	unsigned unknown = 1;
+
+	uint8_t str[48];
+	uint32_t *p;
+
+	msr_t msr;
+	unsigned i;
+	
+	brandId = cpuid_ebx(0x80000001) & 0xffff;
+
+	printk_debug("brandId=%04x\n", brandId);	
+	pwrLmt = ((brandId>>14) & 1) | ((brandId>>5) & 0x0e);
+	brandTableIndex = (brandId>>9) & 0x1f;
+	nN = (brandId & 0x3f) | ((brandId>>(15-6)) &(1<<6));
+
+	socket = (dev->device >> 4) & 0x3;
+
+	cmpCap = cpuid_ecx(0x80000008) & 0xff;
+
+
+        if((brandTableIndex == 0) && (pwrLmt == 0)) {
+        	memset(str, 0, 48);
+                sprintf(str, "AMD Engineering Sample");
+                unknown = 0;
+        } else {
+
+		memset(str, 0, 48);
+		sprintf(str, "AMD Processor model unknown");
+
+	#if CPU_SOCKET_TYPE == 0x10 
+		if(socket == 0x01) { // socket F
+			if ((cmpCap == 1) && ((brandTableIndex==0) ||(brandTableIndex ==1) ||(brandTableIndex == 4)) ) {
+				uint8_t pc[2];
+				unknown = 0;
+				switch (pwrLmt) {
+					case   2: pc[0]= 'E'; pc[1] = 'E'; break;
+					case   6: pc[0]= 'H'; pc[1] = 'E'; break;
+					case 0xa: pc[0]= ' '; pc[1] = ' '; break;
+					case 0xc: pc[0]= 'S'; pc[1] = 'E'; break;
+					default: unknown = 1;
+					
+				}
+				if(!unknown) {
+					memset(str, 0, 48);
+					sprintf(str, "Dual-Core AMD Opteron(tm) Processor %1d2%2d %c%c", brandTableIndex<<1, (nN-1)&0x3f, pc[0], pc[1]);
+				}
+			}
+		}
+	#else
+		#if CPU_SOCKET_TYPE == 0x11
+		if(socket == 0x00) { // socket AM2
+			if(cmpCap == 0) {
+				sprintf(str, "Athlon 64");	
+			} else {
+				sprintf(str, "Athlon 64 Dual Core");
+			}
+
+		}
+		#endif
+	#endif
+	}
+
+	p = str; 
+	for(i=0;i<6;i++) {
+		msr.lo = *p;  p++; msr.hi = *p; p++;
+		wrmsr(0xc0010030+i, msr);
+	}
+	
+
+}
+#endif
 
 extern void model_fxx_update_microcode(unsigned cpu_deviceid);
 int init_processor_name(void);
@@ -433,6 +553,16 @@ void model_fxx_init(device_t dev)
 	struct node_core_id id;
 #if CONFIG_LOGICAL_CPUS == 1
 	unsigned siblings;
+#endif
+
+#if K8_REV_F_SUPPORT == 1
+	struct cpuinfo_x86 c;
+	
+	get_fms(&c, dev->device);
+
+	if((c.x86_model & 0xf0) == 0x40) {
+		amd_set_name_string_f(dev);
+	} 
 #endif
 
 	/* Turn on caching if we haven't already */
@@ -504,6 +634,7 @@ static struct device_operations cpu_dev_ops = {
 	.init = model_fxx_init,
 };
 static struct cpu_device_id cpu_table[] = {
+#if K8_REV_F_SUPPORT == 0
 	{ X86_VENDOR_AMD, 0xf50 }, /* B3 */
 	{ X86_VENDOR_AMD, 0xf51 }, /* SH7-B3 */
 	{ X86_VENDOR_AMD, 0xf58 }, /* SH7-C0 */
@@ -540,6 +671,25 @@ static struct cpu_device_id cpu_table[] = {
         { X86_VENDOR_AMD, 0x20fc2 },
         { X86_VENDOR_AMD, 0x20f12 }, /* JH-E6 */
         { X86_VENDOR_AMD, 0x20f32 },
+#endif
+
+#if K8_REV_F_SUPPORT == 1
+//AMD_F0_SUPPORT
+	{ X86_VENDOR_AMD, 0x40f50 }, /* SH-F0	   Socket F (1207): Opteron */ 
+	{ X86_VENDOR_AMD, 0x40f70 },		/*        AM2: Athlon64/Athlon64 FX  */
+	{ X86_VENDOR_AMD, 0x40f40 },		/*        S1g1: Mobile Athlon64 */
+	{ X86_VENDOR_AMD, 0x40f11 }, /* JH-F1 	   Socket F (1207): Opteron Dual Core */
+	{ X86_VENDOR_AMD, 0x40f31 },		/*        AM2: Athlon64 x2/Athlon64 FX Dual Core */ 
+	{ X86_VENDOR_AMD, 0x40f01 },		/*        S1g1: Mobile Athlon64 */
+        { X86_VENDOR_AMD, 0x40f12 }, /* JH-F2      Socket F (1207): Opteron Dual Core */
+        { X86_VENDOR_AMD, 0x40f32 },            /*        AM2 : Opteron Dual Core/Athlon64 x2/ Athlon64 FX Dual Core */
+        { X86_VENDOR_AMD, 0x40fb2 }, /* BH-F2      Socket AM2:Athlon64 x2/ Mobile Athlon64 x2 */
+	{ X86_VENDOR_AMD, 0x40f82 }, 		/* 	  S1g1:Turion64 x2 */
+        { X86_VENDOR_AMD, 0x40ff2 }, /* DH-F2      Socket AM2: Athlon64 */
+        { X86_VENDOR_AMD, 0x40fc2 },            /*        S1g1:Turion64 */
+        { X86_VENDOR_AMD, 0x40f13 }, /* JH-F3      Socket F (1207): Opteron Dual Core */
+        { X86_VENDOR_AMD, 0x40f33 },            /*        AM2 : Opteron Dual Core/Athlon64 x2/ Athlon64 FX Dual Core */
+#endif
 
 	{ 0, 0 },
 };

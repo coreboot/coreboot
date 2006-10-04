@@ -149,7 +149,7 @@ void amd_setup_mtrrs(void)
 	msr.lo = state.mmio_basek << 10;
 	wrmsr(TOP_MEM, msr);
 
-	if(state.tomk>(4*1024*1024)) {
+	if(state.tomk > (4*1024*1024)) {
 		/* Setup TOP_MEM2 */
 		msr.hi = state.tomk >> 22;
 		msr.lo = state.tomk << 10;
@@ -180,7 +180,7 @@ void amd_setup_mtrrs(void)
 	/* FIXME we should probably query the cpu for this
 	 * but so far this is all any recent AMD cpu has supported.
 	 */
-	address_bits = 40;
+	address_bits = CPU_ADDR_BITS; //K8 could be 40, and GH could be 48
 
 	/* Now that I have mapped what is memory and what is not
 	 * Setup the mtrrs so we can cache the memory.

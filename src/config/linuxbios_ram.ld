@@ -109,7 +109,7 @@ SECTIONS
 	_ram_seg = _text; 
 	_eram_seg = _eheap;
 
-	_bogus = ASSERT( ((_eram_seg>>10)<CONFIG_LB_MEM_TOPK) , "please increase CONFIG_LB_MEM_TOPK");
+	_bogus = ASSERT( ( (_eram_seg>>10) < (CONFIG_LB_MEM_TOPK)) , "please increase CONFIG_LB_MEM_TOPK");
 
         _bogus = ASSERT( !((CONFIG_CONSOLE_VGA || CONFIG_PCI_ROM_RUN) && ((_ram_seg<0xa0000) && (_eram_seg>0xa0000))) , "please increase CONFIG_LB_MEM_TOPK and if still fail, try to set _RAMBASE more than 1M");
 

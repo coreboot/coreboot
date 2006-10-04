@@ -71,6 +71,48 @@ static void bcm5785_enable_wdt_port_cf9(void)
         pci_write_config8(dev, 0x40, (1<<2));
 }
 
+static unsigned get_sbdn(unsigned bus)
+{
+        device_t dev;
+
+        /* Find the device.
+         * There can only be one 8111 on a hypertransport chain/bus.
+         */
+        dev = pci_locate_device_on_bus(
+                PCI_ID(0x1166, 0x0036),
+                bus);
+
+        return (dev>>15) & 0x1f;
+
+}
+
+#define SB_VFSMAF 0
+
+static void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn)
+{
+	//ACPI Decode Enable	
+	outb(0x0e, 0xcd6);
+	outb((1<<3), 0xcd7);
+
+	// set port to 0x2060
+	outb(0x67, 0xcd6);
+	outb(0x60, 0xcd7);
+        outb(0x68, 0xcd6);
+        outb(0x20, 0xcd7);
+
+	outb(0x69, 0xcd6);
+	outb(7, 0xcd7);
+
+	outb(0x64, 0xcd6);
+	outb(9, 0xcd7);
+}
+
+static void ldtstop_sb(void)
+{
+	outb(1, 0x2060);
+}
+
+
 static void hard_reset(void)
 {
         bcm5785_enable_wdt_port_cf9();

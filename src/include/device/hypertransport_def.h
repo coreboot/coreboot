@@ -11,6 +11,11 @@
 #define HT_FREQ_1200Mhz  7
 #define HT_FREQ_1400Mhz  8
 #define HT_FREQ_1600Mhz  9
+#define HT_FREQ_1800Mhz 10 
+#define HT_FREQ_2000Mhz 11
+#define HT_FREQ_2200Mhz 12
+#define HT_FREQ_2400Mhz 13
+#define HT_FREQ_2600Mhz 14
 #define HT_FREQ_VENDOR  15  /* AMD defines this to be 100Mhz */
 
 #endif /* DEVICE_HYPERTRANSPORT_DEF_H */

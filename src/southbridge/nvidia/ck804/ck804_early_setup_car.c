@@ -3,58 +3,13 @@
  *  by yhlu@tyan.com
  * 2005.12 yhlu make it for car so it could support more ck804s
  */
-static int set_ht_link_buffer_count(uint8_t node, uint8_t linkn, uint8_t linkt, unsigned val)
-{
-        uint32_t dword, dword_old;
-        uint8_t link_type;
-        
-        /* This works on an Athlon64 because unimplemented links return 0 */
-        dword = pci_read_config32(PCI_DEV(0,0x18+node,0), 0x98 + (linkn * 0x20));
-        link_type = dword & 0xff;
-        
-        dword_old = dword = pci_read_config32(PCI_DEV(0,0x18+node,0), 0x90 + (linkn * 0x20) );
-        
-        if ( (link_type & 0x7) == linkt ) { /* Coherent Link only linkt = 3, ncoherent = 7*/
-                dword = val; 
-        }       
-        
-        if (dword != dword_old) {
-                pci_write_config32(PCI_DEV(0,0x18+node,0), 0x90 + (linkn * 0x20), dword);
-                return 1;
-        }       
-        
-        return 0;
-}
+
 static int set_ht_link_ck804(uint8_t ht_c_num)
 {
-        int reset_needed;
-        uint8_t i;
-
-        reset_needed = 0;
-
-        for (i = 0; i < ht_c_num; i++) {
-                uint32_t reg;
-                uint8_t nodeid, linkn;
-                uint8_t busn;
-                unsigned val;
-
-                reg = pci_read_config32(PCI_DEV(0,0x18,1), 0xe0 + i * 4);
-		if((reg & 3) != 3) continue; 
-
-                nodeid = ((reg & 0xf0)>>4);
-                linkn = ((reg & 0xf00)>>8); 
-                busn = (reg & 0xff0000)>>16; 
-
-                reg = pci_read_config32( PCI_DEV(busn, 1, 0), PCI_VENDOR_ID);
-                if ( (reg & 0xffff) == 0x10de ) {
-                        val = 0x01610169;
-                        reset_needed |= set_ht_link_buffer_count(nodeid, linkn, 0x07,val);
-                } 
-        }
-
-        return reset_needed;
+        unsigned vendorid = 0x10de;
+        unsigned val = 0x01610169;
+        set_ht_link_buffer_counts_chain(ht_c_num, vendorid, val);
 }
-
 
 static void setup_ss_table(unsigned index, unsigned where, unsigned control, const unsigned int *register_values, int max)
 {

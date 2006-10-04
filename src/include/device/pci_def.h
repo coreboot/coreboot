@@ -201,6 +201,7 @@
 #define PCI_HT_CAP_SLAVE_FREQ1	   0x011	/* Slave frequency to */
 #define PCI_HT_CAP_SLAVE_FREQ_CAP0 0x0e	/* Frequency capability from */
 #define PCI_HT_CAP_SLAVE_FREQ_CAP1 0x12	/* Frequency capability to */
+#define PCI_HT_CAP_SLAVE_LINK_ENUM   0x14 /* Link Enumeration Scratchpad */
 
 /* Power Management Registers */
 

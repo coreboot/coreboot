@@ -2,9 +2,9 @@
 #include <device/pci_ids.h>
 
 #define PCI_DEV(BUS, DEV, FN) ( \
-	(((BUS) & 0xFF) << 16) | \
-	(((DEV) & 0x1f) << 11) | \
-	(((FN)  & 0x7) << 8))
+	(((BUS) & 0xFFF) << 20) | \
+	(((DEV) & 0x1F) << 15) | \
+	(((FN)  & 0x7) << 12))
 
 #define PCI_ID(VENDOR_ID, DEVICE_ID) \
 	((((DEVICE_ID) & 0xFFFF) << 16) | ((VENDOR_ID) & 0xFFFF))
@@ -14,7 +14,7 @@ typedef unsigned device_t;
 static void pci_write_config8(device_t dev, unsigned where, unsigned char value)
 {
         unsigned addr;
-        addr = dev | where;
+        addr = (dev>>4) | where;
         outl(0x80000000 | (addr & ~3), 0xCF8);
         outb(value, 0xCFC + (addr & 3));
 }
@@ -22,7 +22,7 @@ static void pci_write_config8(device_t dev, unsigned where, unsigned char value)
 static void pci_write_config32(device_t dev, unsigned where, unsigned value)
 {
 	unsigned addr;
-        addr = dev | where;
+        addr = (dev>>4) | where;
         outl(0x80000000 | (addr & ~3), 0xCF8);
         outl(value, 0xCFC);
 }
@@ -30,7 +30,7 @@ static void pci_write_config32(device_t dev, unsigned where, unsigned value)
 static unsigned pci_read_config32(device_t dev, unsigned where)
 {
 	unsigned addr;
-        addr = dev | where;
+        addr = (dev>>4) | where;
         outl(0x80000000 | (addr & ~3), 0xCF8);
         return inl(0xCFC);
 }
@@ -58,8 +58,8 @@ void hard_reset(void)
 {
 	device_t dev;
 	unsigned bus;
-        unsigned node = 0;
-        unsigned link = get_sblk();
+	unsigned node = 0;
+	unsigned link = get_sblk();
 
 	/* Find the device.
 	 * There can only be one 8111 on a hypertransport chain/bus.

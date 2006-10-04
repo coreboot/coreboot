@@ -430,7 +430,7 @@ void report_resource_stored(device_t dev, struct resource *resource, const char 
 		end = resource_end(resource);
 		buf[0] = '\0';
 		if (resource->flags & IORESOURCE_PCI_BRIDGE) {
-			sprintf(buf, "bus %d ", dev->link[0].secondary);
+			sprintf(buf, "bus %02x ", dev->link[0].secondary);
 		}
 		printk_debug(
 			"%s %02x <- [0x%010Lx - 0x%010Lx] %s%s%s\n",

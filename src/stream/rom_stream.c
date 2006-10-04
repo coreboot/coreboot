@@ -54,7 +54,8 @@ unsigned long
 uncompress(uint8_t * rom_start, uint8_t *dest )
 {
 #if (CONFIG_COMPRESSED_ROM_STREAM) || (CONFIG_COMPRESSED_ROM_STREAM_NRV2B) 
-	return unrv2b(rom_start, dest);
+	unsigned long ilen; // used compressed stream length
+	return unrv2b(rom_start, dest, &ilen);
 #endif
 #if (CONFIG_COMPRESSED_ROM_STREAM_LZMA)
 	return ulzma(rom_start, dest);

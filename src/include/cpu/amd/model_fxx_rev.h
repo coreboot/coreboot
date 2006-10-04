@@ -1,5 +1,6 @@
 #include <arch/cpu.h>
 
+#if K8_REV_F_SUPPORT == 0
 static inline int is_cpu_rev_a0(void)
 {
 	return (cpuid_eax(1) & 0xfffef) == 0x0f00;
@@ -74,5 +75,46 @@ static int is_e0_later_in_bsp(int nodeid)
 int is_e0_later_in_bsp(int nodeid); //defined model_fxx_init.c
 #endif
 
+#endif
 
+#if K8_REV_F_SUPPORT == 1
+//AMD_F0_SUPPORT
+static inline int is_cpu_pre_f0(void)
+{
+        return (cpuid_eax(1) & 0xfff0f) < 0x40f00;
+}
+
+static inline int is_cpu_f0(void)
+{
+        return (cpuid_eax(1) & 0xfff00) ==  0x40f00;
+}
+
+static inline int is_cpu_pre_f2(void)
+{
+        return (cpuid_eax(1) & 0xfff0f) <  0x40f02;
+}
+
+#ifdef __ROMCC__
+//AMD_F0_SUPPORT
+static int is_cpu_f0_in_bsp(int nodeid)
+{
+	uint32_t dword;
+	device_t dev;
+	dev = PCI_DEV(0, 0x18+nodeid, 3);
+	dword = pci_read_config32(dev, 0xfc);
+        return (dword & 0xfff00) == 0x40f00;
+}
+static int is_cpu_pre_f2_in_bsp(int nodeid)
+{
+        uint32_t dword;
+	device_t dev;
+        dev = PCI_DEV(0, 0x18+nodeid, 3);
+        dword = pci_read_config32(dev, 0xfc);
+        return (dword & 0xfff0f) < 0x40f02;
+}
+#else
+int is_cpu_f0_in_bsp(int nodeid); // defined in model_fxx_init.c
+#endif
+
+#endif
 

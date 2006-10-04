@@ -28,18 +28,13 @@
 #if ENDIAN == 0 && BITSIZE == 32
 #define GETBIT(bb, src, ilen) GETBIT_LE32(bb, src, ilen)
 #endif
-
-static unsigned long unrv2b(uint8_t * src, uint8_t * dst)
+static unsigned long unrv2b(uint8_t * src, uint8_t * dst, unsigned long *ilen_p)
 {
 	unsigned long ilen = 0, olen = 0, last_m_off = 1;
 	uint32_t bb = 0;
 	unsigned bc = 0;
 	const uint8_t *m_pos;
-//	unsigned long file_len = *(unsigned long *) src;
 
-	// we only have printk_debug in copy_and_run.c if CONFIG_USE_INIT is
-	// not set, so comment it out.
-	// printk_debug("compressed file len is supposed to be %d bytes\n", file_len);
 	// skip length
 	src += 4;
 	/* FIXME: check olen with the length stored in first 4 bytes */	
@@ -81,9 +76,8 @@ static unsigned long unrv2b(uint8_t * src, uint8_t * dst)
 		} while (--m_len > 0);
 	}
 
-	// we only have printk_debug in copy_and_run.c if CONFIG_USE_INIT is
-	// not set, so comment it out.
-	//printk_debug("computed len is %d, file len is %d\n", olen, file_len);
+	*ilen_p = ilen;
+
 	return olen;
 
 }

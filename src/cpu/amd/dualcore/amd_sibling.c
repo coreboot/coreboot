@@ -11,6 +11,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/model_fxx_msr.h>
 #include <cpu/amd/model_fxx_rev.h>
+#include <cpu/amd/amdk8_sysconf.h>
 
 static int first_time = 1;
 static int disable_siblings = !CONFIG_LOGICAL_CPUS;
@@ -168,6 +169,15 @@ void amd_sibling_init(device_t cpu)
 		/* Build the cpu device path */
 		cpu_path.type = DEVICE_PATH_APIC;
 		cpu_path.u.apic.apic_id = cpu->path.u.apic.apic_id + i * (nb_cfg_54?1:8);
+                if(id.nodeid == 0) {
+                        // need some special processing, because may the bsp is not lifted, but the core1 is lifted
+			//defined in northbridge.c
+                        if(sysconf.enabled_apic_ext_id && (!sysconf.lift_bsp_apicid)) {
+                        	cpu->path.u.apic.apic_id += sysconf.apicid_offset;
+                        }
+
+                }
+
 
                 /* See if I can find the cpu */
                 new = find_dev_path(cpu->bus, &cpu_path);

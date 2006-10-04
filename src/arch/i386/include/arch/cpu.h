@@ -141,6 +141,25 @@ static inline unsigned long cpu_index(void)
 	return ci->index;
 }
 
+
+struct cpuinfo_x86 {
+        uint8_t    x86;            /* CPU family */
+        uint8_t    x86_vendor;     /* CPU vendor */
+        uint8_t    x86_model;
+        uint8_t    x86_mask;
+};
+
+static void inline get_fms(struct cpuinfo_x86 *c, uint32_t tfms)
+{
+        c->x86 = (tfms >> 8) & 0xf;
+        c->x86_model = (tfms >> 4) & 0xf;
+        c->x86_mask = tfms & 0xf;
+        if (c->x86 == 0xf)
+                c->x86 += (tfms >> 20) & 0xff;
+        if (c->x86 >= 0x6)
+                c->x86_model += ((tfms >> 16) & 0xF) << 4;
+
+}
 #endif
 
 #endif /* ARCH_CPU_H */

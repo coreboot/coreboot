@@ -4,6 +4,12 @@
 
 #define K8_SET_FIDVID_STORE_AP_APICID_AT_FIRST 1
 
+#ifndef SB_VFSMAF 
+#define	SB_VFSMAF 1
+#endif
+
+#define FX_SUPPORT 1
+
 static inline void print_debug_fv(const char *str, unsigned val)
 {
 #if K8_SET_FIDVID_DEBUG == 1
@@ -59,7 +65,7 @@ static void enable_fid_change(void)
 		dword |= (1<<14);// disable the DRAM interface at first, it will be enabled by raminit again
 		pci_write_config32(PCI_DEV(0, 0x18+i, 2), 0x94, dword);
 
-                dword = 0x23070000; //enable FID/VID change
+                dword = 0x23070700; //enable FID/VID change
 //		dword = 0x00070000; //enable FID/VID change
                 pci_write_config32(PCI_DEV(0, 0x18+i, 3), 0x80, dword);
 
@@ -122,13 +128,27 @@ static unsigned set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 	if((vid_cur==vid) && (fid_cur==fid)) return fidvid; 
 
         vid_max = (msr.hi>>(48-32)) & 0x3f;
-        fid_max = (msr.lo>>16) & 0x3f;
+        fid_max = ((msr.lo>>16) & 0x3f); //max fid
+#if FX_SUPPORT
+        if(fid_max>=((25-4)*2)) { // FX max fid is 5G
+                fid_max = ((msr.lo>>8) & 0x3f) + 5*2; // max FID is min fid + 1G
+                if(fid_max >= ((25-4)*2)) {
+                        fid_max = (10-4)*2; // hard set to 2G
+                }
+        }
+#endif
 
         //set vid to max
         msr.hi = 1;
         msr.lo = (vid_max<<8) | (fid_cur);
+#if SB_VFSMAF == 1
         msr.lo |= (1<<16); // init changes
+#endif
         wrmsr(0xc0010041, msr);
+#if SB_VFSMAF == 0
+	ldtstop_sb();
+#endif
+	
 
         for(loop=0;loop<100000;loop++){
 		msr = rdmsr(0xc0010042);
@@ -159,8 +179,13 @@ static unsigned set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 	        //set target fid
         	msr.hi = (100000/5);
 	        msr.lo = (vid_cur<<8) | fid_cur;
+#if SB_VFSMAF == 1
 	        msr.lo |= (1<<16); // init changes
+#endif
 	        wrmsr(0xc0010041, msr);
+#if SB_VFSMAF == 0
+		ldtstop_sb();
+#endif
 
 
 #if K8_SET_FIDVID_DEBUG == 1
@@ -186,8 +211,13 @@ static unsigned set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
         //set vid to final 
         msr.hi = 1;
         msr.lo = (vid<<8) | (fid_cur);
+#if SB_VFSMAF == 1
         msr.lo |= (1<<16); // init changes
+#endif
         wrmsr(0xc0010041, msr);
+#if SB_VFSMAF == 0
+	ldtstop_sb();
+#endif
 
         for(loop=0;loop<100000;loop++){
                 msr = rdmsr(0xc0010042);
@@ -215,10 +245,21 @@ static void init_fidvid_ap(unsigned bsp_apicid, unsigned apicid)
 	msr_t msr;
         uint32_t vid_cur;
         uint32_t fid_cur;
+	uint32_t fid_max;
 	int loop;
 
         msr =  rdmsr(0xc0010042);
-        send = ((msr.lo>>16) & 0x3f) << 8; //max fid
+	fid_max = ((msr.lo>>16) & 0x3f); //max fid
+#if FX_SUPPORT
+        if(fid_max>=((25-4)*2)) { // FX max fid is 5G
+                fid_max = ((msr.lo>>8) & 0x3f) + 5*2; // max FID is min fid + 1G
+                if(fid_max >= ((25-4)*2)) {
+                        fid_max = (10-4)*2; // hard set to 2G
+                }
+        }
+#endif
+	send = fid_max<<8;
+
         send |= ((msr.hi>>(48-32)) & 0x3f) << 16; //max vid
 	send |= (apicid<<24); // ap apicid
 
@@ -342,6 +383,14 @@ static void init_fidvid_bsp(unsigned bsp_apicid)
         msr_t msr;
         msr =  rdmsr(0xc0010042);
         fid_max = ((msr.lo>>16) & 0x3f); //max fid
+#if FX_SUPPORT == 1
+	if(fid_max>=((25-4)*2)) { // FX max fid is 5G
+		fid_max = ((msr.lo>>8) & 0x3f) + 5*2; // max FID is min fid + 1G	
+		if(fid_max >= ((25-4)*2)) {
+			fid_max = (10-4)*2; // hard set to 2G
+		}
+	}
+#endif
         vid_max = ((msr.hi>>(48-32)) & 0x3f); //max vid
 	fv.common_fidvid = (fid_max<<8)|(vid_max<<16);
 
@@ -365,6 +414,29 @@ static void init_fidvid_bsp(unsigned bsp_apicid)
 	for_each_ap(bsp_apicid, K8_SET_FIDVID_CORE0_ONLY, init_fidvid_bsp_stage1, &fv);
 #endif
 
+
+#if 0
+	unsigned fid, vid;
+	// Can we use max only? So we can only set fid in one around, otherwise we need to set that to max after raminit
+	// set fid vid to DQS training required
+	fid = (fv.common_fidvid >> 8)  & 0x3f;
+	vid = (fv.common_fidvid >> 16) & 0x3f;
+
+        if(fid>(10-4)*2) {
+                fid = (10-4)*2; //x10 
+        }
+
+        if(vid>=0x1f) {
+                vid+= 4; //unit is 12.5mV
+        } else {
+                vid+= 2; //unit is 25mV
+        }
+
+	fv.common_fidvid = (fid<<8) | (vid<<16);
+
+	print_debug_fv("common_fidvid=", fv.common_fidvid);
+
+#endif
 
         // set BSP fid and vid
 	print_debug_fv("bsp apicid=", bsp_apicid);

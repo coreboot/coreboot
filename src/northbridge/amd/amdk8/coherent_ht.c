@@ -1642,6 +1642,10 @@ static unsigned count_cpus(unsigned nodes)
 #endif
 		
 }
+static inline unsigned get_nodes(void)
+{
+        return ((pci_read_config32(PCI_DEV(0, 0x18, 0), 0x60)>>4) & 7) + 1;
+}
 
 static void coherent_ht_finalize(unsigned nodes)
 {

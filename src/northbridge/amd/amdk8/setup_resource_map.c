@@ -21,8 +21,8 @@ static void setup_resource_map_offset(const unsigned int *register_values, int m
                 print_debug("\r\n");
         #endif
 #endif
-                dev = (register_values[i] & ~0xff) + offset_pci_dev;
-                where = register_values[i] & 0xff;
+                dev = (register_values[i] & ~0xfff) + offset_pci_dev;
+                where = register_values[i] & 0xfff;
                 reg = pci_read_config32(dev, where);
                 reg &= register_values[i+1];
                 reg |= register_values[i+2] + offset_io_base;
@@ -58,13 +58,13 @@ static void setup_resource_map_x_offset(const unsigned int *register_values, int
 #if RES_DEBUG
 	#if CONFIG_USE_INIT
                 printk_debug("%04x: %02x %08x <- & %08x | %08x\r\n", 
-			i/4, register_values[i], 
+			i>>2, register_values[i], 
 			register_values[i+1] + ( (register_values[i]==RES_PCI_IO) ? offset_pci_dev : 0), 
 			register_values[i+2], 
 			register_values[i+3] + ( ( (register_values[i] & RES_PORT_IO_32) == RES_PORT_IO_32) ? offset_io_base : 0)
 			);
 	#else		
-                print_debug_hex16(i/4);
+                print_debug_hex16(i>>2);
                 print_debug(": ");
                 print_debug_hex8(register_values[i]);
                 print_debug(" ");
@@ -84,8 +84,8 @@ static void setup_resource_map_x_offset(const unsigned int *register_values, int
 			device_t dev;
 			unsigned where;
 			unsigned long reg;
-			dev = (register_values[i+1] & ~0xff) + offset_pci_dev;
-			where = register_values[i+1] & 0xff;
+			dev = (register_values[i+1] & ~0xfff) + offset_pci_dev;
+			where = register_values[i+1] & 0xfff;
 			reg = pci_read_config32(dev, where);
 			reg &= register_values[i+2];
 			reg |= register_values[i+3];
@@ -173,8 +173,8 @@ static void setup_resource_map_x(const unsigned int *register_values, int max)
                         device_t dev;
                         unsigned where;
                         unsigned long reg;
-                        dev = register_values[i+1] & ~0xff;
-                        where = register_values[i+1] & 0xff;
+                        dev = register_values[i+1] & ~0xfff;
+                        where = register_values[i+1] & 0xfff;
                         reg = pci_read_config32(dev, where);
                         reg &= register_values[i+2];
                         reg |= register_values[i+3];

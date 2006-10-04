@@ -18,7 +18,7 @@
 #define K8_4RANK_DIMM_SUPPORT 0
 #endif
 
-#if USE_DCACHE_RAM == 1
+#if defined (__GNUC__)
 static void hard_reset(void);
 #endif
 
@@ -44,8 +44,8 @@ static void setup_resource_map(const unsigned int *register_values, int max)
 		print_debug("\r\n");
 	#endif
 #endif
-		dev = register_values[i] & ~0xff;
-		where = register_values[i] & 0xff;
+		dev = register_values[i] & ~0xfff;
+		where = register_values[i] & 0xfff;
 		reg = pci_read_config32(dev, where);
 		reg &= register_values[i+1];
 		reg |= register_values[i+2];
@@ -555,8 +555,8 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 		print_spew("\r\n");
 	#endif
 #endif
-		dev = (register_values[i] & ~0xff) - PCI_DEV(0, 0x18, 0) + ctrl->f0;
-		where = register_values[i] & 0xff;
+		dev = (register_values[i] & ~0xfff) - PCI_DEV(0, 0x18, 0) + ctrl->f0;
+		where = register_values[i] & 0xfff;
 		reg = pci_read_config32(dev, where);
 		reg &= register_values[i+1];
 		reg |= register_values[i+2];
@@ -886,7 +886,7 @@ static void set_top_mem(unsigned tom_k, unsigned hole_startk)
 
 	/* Now set top of memory */
 	msr_t msr;
-	if(tom_k>(4*1024*1024)) {
+	if(tom_k > (4*1024*1024)) {
 		msr.lo = (tom_k & 0x003fffff) << 10;
 		msr.hi = (tom_k & 0xffc00000) >> 22;
 		wrmsr(TOP_MEM2, msr);
@@ -896,7 +896,7 @@ static void set_top_mem(unsigned tom_k, unsigned hole_startk)
 	 * so I can see my rom chip and other I/O devices.
 	 */
 	if (tom_k >= 0x003f0000) {
-#if K8_HW_MEM_HOLE_SIZEK != 0
+#if HW_MEM_HOLE_SIZEK != 0
                 if(hole_startk != 0) {
                         tom_k = hole_startk;
                 } else
@@ -2183,7 +2183,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	return;
 }
 
-#if K8_HW_MEM_HOLE_SIZEK != 0
+#if HW_MEM_HOLE_SIZEK != 0
 static uint32_t hoist_memory(int controllers, const struct mem_controller *ctrl,unsigned hole_startk, int i)
 {
         int ii;
@@ -2242,9 +2242,9 @@ static void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
         uint32_t hole_startk;
         int i;
 
-        hole_startk = 4*1024*1024 - K8_HW_MEM_HOLE_SIZEK;
+        hole_startk = 4*1024*1024 - HW_MEM_HOLE_SIZEK;
 
-#if K8_HW_MEM_HOLE_SIZE_AUTO_INC == 1 
+#if HW_MEM_HOLE_SIZE_AUTO_INC == 1 
         //We need to double check if the hole_startk is valid, if it is equal to basek, we need to decrease it some
         uint32_t basek_pri;
         for(i=0; i<controllers; i++) {
@@ -2388,7 +2388,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		print_debug(" done\r\n");
 	}
 
-#if K8_HW_MEM_HOLE_SIZEK != 0
+#if HW_MEM_HOLE_SIZEK != 0
          // init hw mem hole here
         /* DramHoleValid bit only can be set after MemClrStatus is set by Hardware */
 	if(!is_cpu_pre_e0())
@@ -2450,6 +2450,10 @@ static int mem_inited(int controllers, const struct mem_controller *ctrl)
 
 }
 #if USE_DCACHE_RAM == 1
+static void set_sysinfo_in_ram(unsigned val)
+{
+}
+
 static void fill_mem_ctrl(int controllers, struct mem_controller *ctrl_a, const uint16_t *spd_addr)
 {
         int i;

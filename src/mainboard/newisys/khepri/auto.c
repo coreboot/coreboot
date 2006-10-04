@@ -18,12 +18,10 @@
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
-#include "northbridge/amd/amdk8/incoherent_ht.c"
 #include <cpu/amd/model_fxx_rev.h>
 #include "superio/NSC/pc87360/pc87360_early_serial.c"
 #include "cpu/amd/mtrr/amd_earlymtrr.c"
 #include "cpu/x86/bist.h"
-#include "cpu/amd/dualcore/dualcore.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, PC87360_SP1)
 
@@ -80,11 +78,13 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/raminit.c"
 
 #include "northbridge/amd/amdk8/coherent_ht.c"
+#include "northbridge/amd/amdk8/incoherent_ht.c"
 
 #include "sdram/generic_sdram.c"
 
 /* newisys khepri does not want the default */
 #include "resourcemap.c"
+#include "cpu/amd/dualcore/dualcore.c"
 
 #define NODE_RAM(x)                     \
 	.node_id = 0+x,                 \

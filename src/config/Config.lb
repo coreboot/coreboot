@@ -1,6 +1,7 @@
 ## This is Architecture independant part of the makefile
 
 uses HAVE_OPTION_TABLE
+uses CONFIG_AP_CODE_IN_CAR
 
 makedefine CPP:= $(CC) -x assembler-with-cpp -DASSEMBLY -E
 makedefine LIBGCC_FILE_NAME := $(shell $(CC) -print-libgcc-file-name)
@@ -29,6 +30,12 @@ end
 makerule linuxbios.strip  
 	depends	"linuxbios" 
 	action	"$(OBJCOPY) -O binary linuxbios linuxbios.strip"
+end
+
+makerule linuxbios.a
+        depends "$(OBJECTS)"
+        action  "rm -f linuxbios.a"
+        action  "ar cr linuxbios.a $(OBJECTS)"
 end
 
 makerule linuxbios_ram.o
@@ -63,16 +70,59 @@ makerule linuxbios_ram.rom
 	action	"cp $(LINUXBIOS_RAM-1) linuxbios_ram.rom"
 end
 
-makerule linuxbios   
-	depends	"crt0.o $(INIT-OBJECTS) linuxbios_ram.rom ldscript.ld"
-	action	"$(CC) -nostdlib -nostartfiles -static -o $@ -T ldscript.ld crt0.o $(INIT-OBJECTS)"
-	action	"$(CROSS_COMPILE)nm -n linuxbios | sort > linuxbios.map"
+makedefine LINUXBIOS_APC:=
+
+if CONFIG_AP_CODE_IN_CAR
+	#for ap code in cache
+
+	makerule linuxbios_apc.a
+		depends "apc_auto.o"
+		action  "rm -f linuxbios_apc.a"
+		action  "ar cr linuxbios_apc.a apc_auto.o"
+	end
+
+	makerule linuxbios_apc.o
+		depends "linuxbios_apc.a c_start.o $(LIBGCC_FILE_NAME)"
+        action  "$(CC) -nostdlib -r -o $@ c_start.o linuxbios_apc.a $(LIBGCC_FILE_NAME)"
+	end
+
+	makerule linuxbios_apc
+		depends "linuxbios_apc.o $(TOP)/src/config/linuxbios_apc.ld ldoptions"
+		action  "$(CC) -nostdlib -nostartfiles -static -o $@ -T $(TOP)/src/config/linuxbios_apc.ld linuxbios_apc.o"
+		action  "$(CROSS_COMPILE)nm -n linuxbios_apc | sort > linuxbios_apc.map"
+	end
+
+	##
+	## By default compress the part of linuxbios that runs from cache as ram
+	##
+	makedefine LINUXBIOS_APC-$(CONFIG_COMPRESS):=linuxbios_apc.nrv2b
+	makedefine LINUXBIOS_APC-$(CONFIG_UNCOMPRESSED):=linuxbios_apc.bin
+
+	makerule linuxbios_apc.bin
+		depends "linuxbios_apc"
+		action  "$(OBJCOPY) -O binary $< $@"
+	end
+
+	makerule linuxbios_apc.nrv2b
+        depends "linuxbios_apc.bin nrv2b"
+        action  "./nrv2b e $< $@"
+	end
+
+	makerule linuxbios_apc.rom
+		depends "$(LINUXBIOS_APC-1)"
+		action  "cp $(LINUXBIOS_APC-1) linuxbios_apc.rom"
+	end
+
+	makedefine LINUXBIOS_APC:=linuxbios_apc.rom
+
 end
 
-makerule linuxbios.a   
-	depends	"$(OBJECTS)" 
-	action	"rm -f linuxbios.a"
-	action	"ar cr linuxbios.a $(OBJECTS)"
+makedefine LINUXBIOS_RAM_ROM:=linuxbios_ram.rom
+
+makerule linuxbios   
+	depends	"crt0.o $(INIT-OBJECTS) $(LINUXBIOS_APC) $(LINUXBIOS_RAM_ROM) ldscript.ld"
+	action	"$(CC) -nostdlib -nostartfiles -static -o $@ -T ldscript.ld crt0.o $(INIT-OBJECTS)"
+	action	"$(CROSS_COMPILE)nm -n linuxbios | sort > linuxbios.map"
 end
 
 #makerule crt0.S   
@@ -159,7 +209,7 @@ makerule clean
 	action	"rm -f ldscript.ld"
 	action	"rm -f a.out *.s *.l *.o *.E *.inc"
 	action	"rm -f TAGS tags romcc*"
-	action	"rm -f docipl buildrom* chips.c *chip.c linuxbios_ram* linuxbios_pay*"
+	action	"rm -f docipl buildrom* chips.c *chip.c linuxbios_apc* linuxbios_ram* linuxbios_pay*"
 	action	"rm -f build_opt_tbl* nrv2b* option_table.c crt0.S"
 end
 

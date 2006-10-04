@@ -56,14 +56,14 @@ end
 #if HAVE_ACPI_TABLES
 # 	object acpi_tables.o
 #	object fadt.o
-#	if K8_SB_HT_CHAIN_ON_BUS0
+#	if SB_HT_CHAIN_ON_BUS0
 #		object dsdt_bus0.o
 #	else
 #		object dsdt.o
 #	end
 #	object ssdt.o
 #	if ACPI_SSDTX_NUM
-#                if K8_SB_HT_CHAIN_ON_BUS0
+#                if SB_HT_CHAIN_ON_BUS0
 #                 object ssdt2_bus0.o
 #                else
 #                 object ssdt2.o
@@ -74,7 +74,7 @@ end
 if HAVE_ACPI_TABLES
         object acpi_tables.o
         object fadt.o
-        if K8_SB_HT_CHAIN_ON_BUS0
+        if SB_HT_CHAIN_ON_BUS0
                 makerule dsdt.c
                         depends "$(MAINBOARD)/dx_bus0/dsdt_lb.dsl"
                         action  "/usr/sbin/iasl -tc $(MAINBOARD)/dx_bus0/dsdt_lb.dsl"
@@ -98,7 +98,7 @@ if HAVE_ACPI_TABLES
         object ./ssdt.o
 
         if ACPI_SSDTX_NUM
-            if K8_SB_HT_CHAIN_ON_BUS0
+            if SB_HT_CHAIN_ON_BUS0
                 makerule ssdt2.c
                         depends "$(MAINBOARD)/dx/pci2.asl"
                         action  "/usr/sbin/iasl -tc $(MAINBOARD)/dx/pci2.asl"

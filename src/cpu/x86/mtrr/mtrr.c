@@ -70,6 +70,25 @@ static void set_var_mtrr(
 	msr_t base, mask;
 	unsigned address_mask_high;
 
+        if (reg >= 8)
+                return;
+
+        // it is recommended that we disable and enable cache when we
+        // do this.
+        if (sizek == 0) {
+        	disable_cache();
+	
+                msr_t zero;
+                zero.lo = zero.hi = 0;
+                /* The invalid bit is kept in the mask, so we simply clear the
+                   relevant mask register to disable a range. */
+                wrmsr (MTRRphysMask_MSR(reg), zero);
+
+        	enable_cache();
+		return;
+        }
+
+
 	address_mask_high = ((1u << (address_bits - 32u)) - 1u);
 
 	base.hi = basek >> 22;
@@ -86,25 +105,16 @@ static void set_var_mtrr(
 		mask.lo = 0;
 	}
 
-	if (reg >= 8)
-		return;
-
 	// it is recommended that we disable and enable cache when we 
 	// do this. 
 	disable_cache();
-	if (sizek == 0) {
-		msr_t zero;
-		zero.lo = zero.hi = 0;
-		/* The invalid bit is kept in the mask, so we simply clear the
-		   relevant mask register to disable a range. */
-		wrmsr (MTRRphysMask_MSR(reg), zero);
-	} else {
-		/* Bit 32-35 of MTRRphysMask should be set to 1 */
-		base.lo |= type;
-		mask.lo |= 0x800;
-		wrmsr (MTRRphysBase_MSR(reg), base);
-		wrmsr (MTRRphysMask_MSR(reg), mask);
-	}
+
+	/* Bit 32-35 of MTRRphysMask should be set to 1 */
+	base.lo |= type;
+	mask.lo |= 0x800;
+	wrmsr (MTRRphysBase_MSR(reg), base);
+	wrmsr (MTRRphysMask_MSR(reg), mask);
+
 	enable_cache();
 }
 

@@ -19,6 +19,14 @@ end
 
 if HAVE_ACPI_TABLES
 	object amdk8_acpi.o
+        makerule ssdt.c
+                depends "$(TOP)/src/northbridge/amd/amdk8/ssdt.dsl"
+                action  "/usr/sbin/iasl -tc $(TOP)/src/northbridge/amd/amdk8/ssdt.dsl"
+                action  "perl -pi -e 's/AmlCode/AmlCode_ssdt/g' ssdt.hex"
+                action  "mv ssdt.hex ssdt.c"
+        end
+        object ./ssdt.o
 end
+
 
 object get_sblk_pci1234.o

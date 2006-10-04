@@ -1,12 +1,55 @@
 //it takes the ENABLE_APIC_EXT_ID and APIC_ID_OFFSET and LIFT_BSP_APIC_ID
 #ifndef K8_SET_FIDVID
-	#define K8_SET_FIDVID 0
+	#if K8_REV_F_SUPPORT == 0
+		#define K8_SET_FIDVID 0
+	#else
+		// for rev F, need to set FID to max
+		#define K8_SET_FIDVID 1
+	#endif
+	
 #endif
 
 #ifndef K8_SET_FIDVID_CORE0_ONLY
 	/* MSR FIDVID_CTL and FIDVID_STATUS are shared by cores, so may don't need to do twice*/
        	#define K8_SET_FIDVID_CORE0_ONLY 1
 #endif
+
+static inline void print_initcpu8 (const char *strval, unsigned val)
+{
+#if CONFIG_USE_INIT
+        printk_debug("%s%02x\r\n", strval, val);
+#else
+        print_debug(strval); print_debug_hex8(val); print_debug("\r\n");
+#endif
+}
+
+static inline void print_initcpu8_nocr (const char *strval, unsigned val)
+{
+#if CONFIG_USE_INIT
+        printk_debug("%s%02x", strval, val);
+#else
+        print_debug(strval); print_debug_hex8(val);
+#endif
+}
+
+
+static inline void print_initcpu16 (const char *strval, unsigned val)
+{
+#if CONFIG_USE_INIT
+        printk_debug("%s%04x\r\n", strval, val);
+#else
+        print_debug(strval); print_debug_hex16(val); print_debug("\r\n");
+#endif
+}
+
+static inline void print_initcpu(const char *strval, unsigned val)
+{
+#if CONFIG_USE_INIT
+        printk_debug("%s%08x\r\n", strval, val);
+#else
+        print_debug(strval); print_debug_hex32(val); print_debug("\r\n");
+#endif
+}
 
 typedef void (*process_ap_t)(unsigned apicid, void *gp);
 
@@ -44,7 +87,11 @@ static void for_each_ap(unsigned bsp_apicid, unsigned core_range, process_ap_t p
                 j = ((pci_read_config32(PCI_DEV(0, 0x18+i, 3), 0xe8) >> 12) & 3);
                 if(nb_cfg_54) {
  	               if(j == 0 ){ // if it is single core, we need to increase siblings for apic calculation 
-       	               e0_later_single_core = is_e0_later_in_bsp(i);  // single core
+                       #if K8_REV_F_SUPPORT == 0
+        	               e0_later_single_core = is_e0_later_in_bsp(i);  // single core
+                       #else
+                               e0_later_single_core = is_cpu_f0_in_bsp(i);  // We can read cpuid(1) from Func3
+                       #endif
                        } 
                        if(e0_later_single_core) {
                                 j=1;
@@ -57,14 +104,17 @@ static void for_each_ap(unsigned bsp_apicid, unsigned core_range, process_ap_t p
                 if(core_range == 2) {
                         jstart = 1;
                 }
+		else {
+			jstart = 0;
+		}
 
                 if(e0_later_single_core || disable_siblings || (core_range==1)) {
                         jend = 0;
                 } else {
                         jend = siblings;
-                }
-
-
+		}	
+		
+	
                 for(j=jstart; j<=jend; j++) {
 
                         ap_apicid = i * (nb_cfg_54?(siblings+1):1) + j * (nb_cfg_54?1:8);
@@ -141,10 +191,10 @@ static void wait_cpu_state(unsigned apicid, unsigned state)
                 if((readback & 0xff) == state) break; //target cpu is in stage started
         }
 }
-
 static void wait_ap_started(unsigned ap_apicid, void *gp )
 {
         wait_cpu_state(ap_apicid, 0x33); // started
+        print_initcpu8_nocr(" ", ap_apicid);
 }
 
 static void wait_all_aps_started(unsigned bsp_apicid)
@@ -152,9 +202,11 @@ static void wait_all_aps_started(unsigned bsp_apicid)
         for_each_ap(bsp_apicid, 0 , wait_ap_started, (void *)0);
 }
 
-static void wait_all_other_cores_started(unsigned bsp_apicid)
+static void wait_all_other_cores_started(unsigned bsp_apicid) // all aps other than core0
 {
+        print_debug("started ap apicid: ");
         for_each_ap(bsp_apicid, 2 , wait_ap_started, (void *)0);
+        print_debug("\r\n");
 }
 
 static void allow_all_aps_stop(unsigned bsp_apicid)
@@ -162,8 +214,23 @@ static void allow_all_aps_stop(unsigned bsp_apicid)
         lapic_write(LAPIC_MSG_REG, (bsp_apicid<<24) | 0x44); // allow aps to stop
 }
 
+static void STOP_CAR_AND_CPU(void)
+{
+	disable_cache_as_ram(); // inline
+	stop_this_cpu(); // inline, it will stop all cores except node0/core0 the bsp ....
+}
+#if RAMINIT_SYSINFO == 1
+
+#if MEM_TRAIN_SEQ != 1
+static inline void train_ram_on_node(unsigned nodeid, unsigned coreid, struct sys_info *sysinfo, unsigned retcall) {}
+#else
+static inline void train_ram_on_node(unsigned nodeid, unsigned coreid, struct sys_info *sysinfo, unsigned retcall); 
+#endif
+
+#endif
 
 #if RAMINIT_SYSINFO == 1
+
 static unsigned init_cpus(unsigned cpu_init_detectedx ,struct sys_info *sysinfo)
 #else
 static unsigned init_cpus(unsigned cpu_init_detectedx)
@@ -251,14 +318,16 @@ static unsigned init_cpus(unsigned cpu_init_detectedx)
        		                init_fidvid_ap(bsp_apicid, apicid);
 	#endif
 
-                        // We need to stop the CACHE as RAM for this CPU, really?
-			wait_cpu_state(bsp_apicid, 0x44);
-			lapic_write(LAPIC_MSG_REG, (apicid<<24) | 0x44); // bsp can not check it before stop_this_cpu
+                       // We need to stop the CACHE as RAM for this CPU, really?
+                        wait_cpu_state(bsp_apicid, 0x44);
+                        lapic_write(LAPIC_MSG_REG, (apicid<<24) | 0x44); // bsp can not check it before stop_this_cpu
+                        set_init_ram_access();
+	#if RAMINIT_SYSINFO == 1
+			train_ram_on_node(id.nodeid, id.coreid, sysinfo, STOP_CAR_AND_CPU);
+	#endif
 
-			set_init_ram_access();
-			disable_cache_as_ram(); // inline
-                        stop_this_cpu(); // inline, it will stop all cores except node0/core0 the bsp .... 
-                }
+			STOP_CAR_AND_CPU();
+                } 
 
 		return bsp_apicid;
 }
@@ -281,9 +350,13 @@ static void wait_all_core0_started(void)
 	unsigned i;
 	unsigned nodes = get_nodes();
 
-	for(i=1;i<nodes;i++) { // skip bsp, because it is running on bsp
-		while(!is_core0_started(i)) {}
-	}
+        print_debug("core0 started: ");
+        for(i=1;i<nodes;i++) { // skip bsp, because it is running on bsp
+                while(!is_core0_started(i)) {}
+                print_initcpu8_nocr(" ", i);
+        }
+        print_debug("\r\n");
+
 }
 
 #endif

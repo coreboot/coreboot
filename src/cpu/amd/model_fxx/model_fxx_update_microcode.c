@@ -1,5 +1,5 @@
 /* Copyright 2005 AMD
- * 2005.08 yhlu add microcode support 
+ * 2005.08 yhlu add microcode support
  */
 /*============================================================================
 Copyright 2005 ADVANCED MICRO DEVICES, INC. All Rights Reserved.
@@ -52,10 +52,15 @@ $1.0$
 
 static uint8_t microcode_updates[] __attribute__ ((aligned(16))) = {
 
-#include "microcode_rev_c.h"
-#include "microcode_rev_d.h"
-#include "microcode_rev_e.h"
+#if K8_REV_F_SUPPORT == 0
+	#include "microcode_rev_c.h"
+	#include "microcode_rev_d.h"
+	#include "microcode_rev_e.h"
+#endif
 
+#if K8_REV_F_SUPPORT == 1
+//	#include "microcode_rev_f.h"
+#endif
         /*  Dummy terminator  */
         0x0, 0x0, 0x0, 0x0,
         0x0, 0x0, 0x0, 0x0,
@@ -65,6 +70,7 @@ static uint8_t microcode_updates[] __attribute__ ((aligned(16))) = {
 
 static unsigned get_equivalent_processor_rev_id(unsigned orig_id) {
 	static unsigned id_mapping_table[] = {
+	#if K8_REV_F_SUPPORT == 0
 	        0x0f48, 0x0048,
 	        0x0f58, 0x0048,
 
@@ -85,6 +91,11 @@ static unsigned get_equivalent_processor_rev_id(unsigned orig_id) {
 	        0x20f12, 0x0210,
 	        0x20f32, 0x0210,
 	        0x20fb1, 0x0210,
+	#endif
+
+	#if K8_REV_F_SUPPORT == 1
+	
+	#endif
 
 	};
 

@@ -178,17 +178,35 @@ define HAVE_FALLBACK_BOOT
 	export always
 	comment "Set if fallback booting required"
 end
+define HAVE_FAILOVER_BOOT
+	format "%d"
+	default 0
+	export always
+	comment "Set if failover booting required"
+end
 define USE_FALLBACK_IMAGE
 	format "%d"
 	default 0
 	export used
 	comment "Set to build a fallback image"
 end
+define USE_FAILOVER_IMAGE
+        format "%d"
+        default 0
+        export used
+        comment "Set to build a failover image"
+end
 define FALLBACK_SIZE
 	default 65536
 	format "0x%x"
 	export used
 	comment "Default fallback image size"
+end
+define FAILOVER_SIZE
+        default 0
+        format "0x%x"
+        export used
+        comment "Default failover image size"
 end
 define ROM_SIZE
 	default none
@@ -274,9 +292,9 @@ define USE_DCACHE_RAM
 	comment "Use data cache as temporary RAM if possible"
 end
 define DCACHE_RAM_BASE
-	default none
+	default 0xc0000
 	format "0x%x"
-	export used
+	export always
 	comment "Base address of data cache when using it for temporary RAM"
 end
 define DCACHE_RAM_SIZE
@@ -290,6 +308,21 @@ define DCACHE_RAM_GLOBAL_VAR_SIZE
 	format "0x%x"
 	export always
 	comment "Size of region that for global variable of cache as ram stage"
+end
+define CONFIG_AP_CODE_IN_CAR
+        default 0
+        export always
+        comment "will copy linuxbios_apc to AP cache ane execute in AP"
+end
+define MEM_TRAIN_SEQ
+        default 0
+        export always
+        comment "0: three for in bsp, 1: on every core0, 2: one for on bsp"
+end
+define WAIT_BEFORE_CPUS_INIT
+        default 0
+        export always
+        comment "execute cpus_ready_for_init if it is set to 1"
 end
 define XIP_ROM_BASE
 	default 0
@@ -853,7 +886,7 @@ end
 define HT_CHAIN_UNITID_BASE
 	default 1
 	export always
-	comment "first hypertransport device's unitid base. if southbridge ht chain only has one ht device, it could be 0"
+	comment "this will be first hypertransport device's unitid base, if sb ht chain only has one ht device, it could be 0"
 end
 
 define HT_CHAIN_END_UNITID_BASE
@@ -868,28 +901,65 @@ define SB_HT_CHAIN_UNITID_OFFSET_ONLY
         comment "this will decided if only offset SB hypertransport chain"
 end
 
-define K8_SB_HT_CHAIN_ON_BUS0
+define SB_HT_CHAIN_ON_BUS0
         default 0 
         export always
-        comment "this will make SB hypertransport chain sit on bus 0, if it is 2 will put other chain on 0x40, 0x80, 0xc0"
+        comment "this will make SB hypertransport chain sit on bus 0, if it is 1, will put sb ht chain on bus 0, if it is 2 will put other chain on 0x40, 0x80, 0xc0"
 end
 
-define K8_HW_MEM_HOLE_SIZEK
+define HW_MEM_HOLE_SIZEK
         default 0
         export always
         comment "Opteron E0 later memory hole size in K, 0 mean disable"
 end
 
-define K8_HW_MEM_HOLE_SIZE_AUTO_INC
+define HW_MEM_HOLE_SIZE_AUTO_INC
         default 0
         export always
         comment "Opteron E0 later memory hole size auto increase to avoid hole startk equal to basek"
 end
 
 define K8_HT_FREQ_1G_SUPPORT
-	default 0
+	default 0 
 	export always
 	comment "Optern E0 later could support 1G HT, but still depends MB design"
+end
+
+define K8_REV_F_SUPPORT
+        default 0
+        export always
+        comment "Opteron Rev F (DDR2) support"
+end
+
+define CBB
+	default 0
+	export always
+	comment "Opteron cpu bus num base"
+end
+
+define CDB
+	default 0x18
+	export always
+	comment "Opteron cpu device num base"
+end
+
+define DIMM_SUPPORT
+        default 0x0108
+	format "0x%x"
+        export always
+        comment "DIMM support: bit 0 - sdram, bit 1: ddr1, bit 2: ddr2, bit 3: ddr3, bit 4: fbdimm, bit 8: reg"
+end
+
+define CPU_SOCKET_TYPE
+	default 0x10
+	export always
+	comment "cpu socket type, 0x10 mean Socket F, 0x11 mean socket M2, 0x20, Soxket G, and 0x21 mean socket M3"
+end
+
+define CPU_ADDR_BITS
+	default 36
+	export always
+	comment "CPU hardware address lines num, for AMD K8 could be 40, and GH could be 48"
 end
 
 define CONFIG_PCI_ROM_RUN

@@ -285,11 +285,13 @@ static uint16_t read_freq_cap(device_t dev, uint8_t pos)
 	freq_cap = pci_read_config16(dev, pos);
 	freq_cap &= ~(1 << HT_FREQ_VENDOR); /* Ignore Vendor HT frequencies */
 
+#if K8_REV_F_SUPPORT == 0
 #if K8_HT_FREQ_1G_SUPPORT == 1
 	if (!is_cpu_pre_e0())
 	{
 		return freq_cap;
 	}
+#endif
 #endif
 
 	id = pci_read_config32(dev, 0);
@@ -1590,7 +1592,9 @@ static unsigned verify_dualcore(unsigned nodes)
 static void coherent_ht_finalize(unsigned nodes)
 {
 	unsigned node;
+#if K8_REV_F_SUPPORT == 0
 	int rev_a0;
+#endif
 #if CONFIG_LOGICAL_CPUS==1
 	unsigned total_cpus;
 
@@ -1609,7 +1613,11 @@ static void coherent_ht_finalize(unsigned nodes)
 	 */
 
 	print_spew("coherent_ht_finalize\r\n");
+
+#if K8_REV_F_SUPPORT == 0
 	rev_a0 = is_cpu_rev_a0();
+#endif
+
 	for (node = 0; node < nodes; node++) {
 		device_t dev;
 		uint32_t val;
@@ -1638,11 +1646,13 @@ static void coherent_ht_finalize(unsigned nodes)
 			(3 << HTTC_HI_PRI_BYP_CNT_SHIFT);
 		pci_write_config32(dev, HT_TRANSACTION_CONTROL, val);
 
+#if K8_REV_F_SUPPORT == 0
 		if (rev_a0) {
 			pci_write_config32(dev, 0x94, 0);
 			pci_write_config32(dev, 0xb4, 0);
 			pci_write_config32(dev, 0xd4, 0);
 		}
+#endif
 	}
 
 	print_spew("done\r\n");
@@ -1656,6 +1666,7 @@ static int apply_cpu_errata_fixes(unsigned nodes)
 		device_t dev;
 		uint32_t cmd;
 		dev = NODE_MC(node);
+#if K8_REV_F_SUPPORT == 0
 		if (is_cpu_pre_c0()) {
 
 			/* Errata 66
@@ -1697,6 +1708,7 @@ static int apply_cpu_errata_fixes(unsigned nodes)
 				needs_reset = 1; /* Needed? */
 			}
 		}
+#endif
 	}
 	return needs_reset;
 }
@@ -1732,6 +1744,11 @@ static int optimize_link_read_pointers(unsigned nodes)
 		}
 	}
 	return needs_reset;
+}
+
+static inline unsigned get_nodes(void)
+{
+        return ((pci_read_config32(PCI_DEV(0, 0x18, 0), 0x60)>>4) & 7) + 1;
 }
 
 static int optimize_link_coherent_ht(void)

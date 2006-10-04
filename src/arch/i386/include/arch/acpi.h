@@ -6,12 +6,9 @@
  *
  * The ACPI table structs are based on the Linux kernel sources.
  * 
- * ACPI FADT & FACS added by Nick Barker <nick.barker9@btinternet.com>
+ */
+/* ACPI FADT & FACS added by Nick Barker <nick.barker9@btinternet.com>
  * those parts (C) 2004 Nick Barker
- * 
- * ACPI SRAT support added in 2005.9 by yhlu
- * Copyright 2005 ADVANCED MICRO DEVICES, INC. All Rights Reserved.
- *
  */
 
 
@@ -32,11 +29,13 @@ typedef unsigned long long u64;
 #define HPET_NAME             "HPET"
 #define MADT_NAME             "APIC"
 #define SRAT_NAME             "SRAT"
+#define SLIT_NAME	      "SLIT"
 
 #define RSDT_TABLE            "RSDT    "
 #define HPET_TABLE            "AMD64   "
 #define MADT_TABLE            "MADT    "
 #define SRAT_TABLE	      "SRAT    "
+#define SLIT_TABLE	      "SLIT    "
 
 #define OEM_ID                "LXBIOS"
 #define ASLC                  "NONE"
@@ -49,7 +48,7 @@ typedef struct acpi_rsdp {
 	char  oem_id[6];	/* OEM ID, "LXBIOS" */
 	u8    revision;		/* 0 for APCI 1.0, 2 for ACPI 2.0 */
 	u32   rsdt_address;	/* physical address of RSDT */
-	u32   length;		/* total length of RSDP (incl. extended part) */
+	u32   length;		/* total length of RSDP (including extended part) */
 	u64   xsdt_address;	/* physical address of XSDT */
 	u8    ext_checksum;	/* chechsum of whole table */
 	u8    reserved[3];
@@ -84,15 +83,14 @@ typedef struct acpi_table_header         /* ACPI common table header */
 /* RSDT */
 typedef struct acpi_rsdt {
 	struct acpi_table_header header;
-	u32 entry[5+ACPI_SSDTX_NUM]; /* HPET, FADT, SRAT, MADT(APIC), SSDT, SSDTX */
+	u32 entry[6+ACPI_SSDTX_NUM]; /* HPET, FADT, SRAT, SLIT, MADT(APIC), SSDT, SSDTX*/
 } __attribute__ ((packed)) acpi_rsdt_t;
 
 /* XSDT */
 typedef struct acpi_xsdt {
 	struct acpi_table_header header;
-	u64 entry[5+ACPI_SSDTX_NUM];
+	u64 entry[6+ACPI_SSDTX_NUM];
 } __attribute__ ((packed)) acpi_xsdt_t;
-
 
 /* HPET TIMERS */
 typedef struct acpi_hpet {
@@ -138,6 +136,11 @@ typedef struct acpi_srat_mem {
         u32 resv2[2];
 } __attribute__ ((packed)) acpi_srat_mem_t;
 
+/* SLIT */
+typedef struct acpi_slit {
+        struct acpi_table_header header;
+	/* followed by static resource allocation 8+byte[num*num]*/
+} __attribute__ ((packed)) acpi_slit_t;
 
 
 /* MADT */

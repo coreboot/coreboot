@@ -1,7 +1,10 @@
 uses HAVE_INIT_TIMER
 uses HAVE_MOVNTI
+uses CPU_ADDR_BITS
+
 default HAVE_INIT_TIMER=1
 default HAVE_MOVNTI=1
+default CPU_ADDR_BITS=40
 dir /cpu/x86/tsc
 dir /cpu/x86/fpu
 dir /cpu/x86/mmx

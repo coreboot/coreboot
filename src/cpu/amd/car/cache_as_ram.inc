@@ -17,7 +17,7 @@
 cache_as_ram_setup:
 
 	/* hope we can skip the double set for normal part */
-#if USE_FALLBACK_IMAGE == 1
+#if ((HAVE_FAILOVER_BOOT==1) && (USE_FAILOVER_IMAGE==1)) || ((HAVE_FAILOVER_BOOT==0) && (USE_FALLBACK_IMAGE==1))
 	/* check if cpu_init_detected */
 	movl	$MTRRdefType_MSR, %ecx
 	rdmsr
@@ -56,16 +56,32 @@ clear_fixed_var_mtrr_out:
         wrmsr
 	movl	$0x269, %ecx
 	wrmsr
-#else
+#endif
 
-  #if CacheSize == 0x8000
+#if CacheSize == 0xc000
+        /* enable caching for 16K using fixed mtrr */
+        movl    $0x268, %ecx  /* fix4k_c4000*/
+        movl    $0x06060606, %edx /* WB IO type */
+        xorl    %eax, %eax
+        wrmsr
+        /* enable caching for 32K using fixed mtrr */
+        movl    $0x269, %ecx  /* fix4k_c8000*/
+        movl    $0x06060606, %eax /* WB IO type */
+        movl    %eax, %edx
+        wrmsr
+
+#endif
+
+
+#if CacheSize == 0x8000
         /* enable caching for 32K using fixed mtrr */
         movl    $0x269, %ecx  /* fix4k_c8000*/
         movl    $0x06060606, %eax /* WB IO type */
 	movl    %eax, %edx
 	wrmsr
-  #else
+#endif
 
+#if CacheSize < 0x8000
         /* enable caching for 16K/8K/4K using fixed mtrr */
         movl    $0x269, %ecx  /* fix4k_cc000*/
     #if CacheSize == 0x4000
@@ -79,8 +95,6 @@ clear_fixed_var_mtrr_out:
     #endif
 	xorl    %eax, %eax
 	wrmsr
-  #endif
-
 #endif
 
         /* enable memory access for first MBs using top_mem */
@@ -88,9 +102,10 @@ clear_fixed_var_mtrr_out:
         xorl    %edx, %edx
         movl    $(((CONFIG_LB_MEM_TOPK << 10) + TOP_MEM_MASK) & ~TOP_MEM_MASK) , %eax
         wrmsr
-#endif /*  USE_FALLBACK_IMAGE == 1*/
+#endif /*  USE_FAILOVER_IMAGE == 1*/
 
-#if USE_FALLBACK_IMAGE == 0
+
+#if ((HAVE_FAILOVER_BOOT==1) && (USE_FAILOVER_IMAGE == 0)) || ((HAVE_FAILOVER_BOOT==0) && (USE_FALLBACK_IMAGE==0))
         /* disable cache */
         movl    %cr0, %eax
         orl    $(0x1<<30),%eax
@@ -108,12 +123,12 @@ clear_fixed_var_mtrr_out:
         wrmsr
 
         movl    $0x203, %ecx
-        movl    $0x0000000f, %edx  /* AMD 40 bit */
+        movl    $((1<<(CPU_ADDR_BITS-32))-1), %edx  /* AMD 40 bit */
         movl    $(~(XIP_ROM_SIZE - 1) | 0x800), %eax
         wrmsr
 #endif /* XIP_ROM_SIZE && XIP_ROM_BASE */
 
-#if USE_FALLBACK_IMAGE == 1
+#if ((HAVE_FAILOVER_BOOT==1) && (USE_FAILOVER_IMAGE==1)) || ((HAVE_FAILOVER_BOOT==0) && (USE_FALLBACK_IMAGE==1))
         /* Set the default memory type and enable fixed and variable MTRRs */
         movl    $MTRRdefType_MSR, %ecx
         xorl    %edx, %edx
@@ -133,23 +148,25 @@ clear_fixed_var_mtrr_out:
         andl    $0x9fffffff,%eax
         movl    %eax, %cr0
 
-#if USE_FALLBACK_IMAGE == 1
+#if ((HAVE_FAILOVER_BOOT==1) && (USE_FAILOVER_IMAGE==1)) || ((HAVE_FAILOVER_BOOT==0) && (USE_FALLBACK_IMAGE==1))
 
         /* Read the range with lodsl*/
 	cld
         movl    $CacheBase, %esi
         movl    $(CacheSize>>2), %ecx
-        rep     lodsl
+        rep     
+		lodsl
         /* Clear the range */
         movl    $CacheBase, %edi
         movl    $(CacheSize>>2), %ecx
         xorl    %eax, %eax
-        rep     stosl
+        rep     
+		stosl
 
-#endif /*USE_FALLBACK_IMAGE == 1*/
+#endif /*USE_FAILOVER_IMAGE == 1*/
 
 	/* set up the stack pointer */
-	movl	$(CacheBase+CacheSize - 4 - GlobalVarSize), %eax 
+	movl	$(CacheBase+CacheSize - GlobalVarSize), %eax 
 	movl    %eax, %esp
 
 	/* Restore the BIST result */

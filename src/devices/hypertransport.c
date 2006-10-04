@@ -3,7 +3,6 @@
 
 */
 
-
 #include <bitops.h>
 #include <console/console.h>
 #include <device/device.h>
@@ -78,9 +77,11 @@ static unsigned ht_read_freq_cap(device_t dev, unsigned pos)
 	/* AMD K8 Unsupported 1Ghz? */
 	if ((dev->vendor == PCI_VENDOR_ID_AMD) && (dev->device == 0x1100)) {
 #if K8_HT_FREQ_1G_SUPPORT == 1 
+	#if K8_REV_F_SUPPORT == 0 
 		if (is_cpu_pre_e0()) { // only e0 later suupport 1GHz HT
 			freq_cap &= ~(1 << HT_FREQ_1000Mhz);
 		} 
+	#endif
 #else
 		freq_cap &= ~(1 << HT_FREQ_1000Mhz);
 #endif
@@ -450,8 +451,8 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 		}
 
 		flags &= ~0x1f; /* mask out base Unit ID */
-                       flags |= next_unitid & 0x1f;
-                       pci_write_config16(dev, pos + PCI_CAP_FLAGS, flags);
+                flags |= next_unitid & 0x1f;
+                pci_write_config16(dev, pos + PCI_CAP_FLAGS, flags);
 
 		/* Update the Unitd id in the device structure */
 		static_count = 1;
@@ -489,7 +490,6 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 			dev_path(dev),
 			dev->vendor, dev->device, 
 			(dev->enabled? "enabled": "disabled"), next_unitid);
-
 
 	} while((last_unitid != next_unitid) && (next_unitid <= (max_devfn >> 3)));
  end_of_chain:
@@ -560,9 +560,17 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
  *
  * @return The maximum bus number found, after scanning all subordinate busses
  */
+unsigned int hypertransport_scan_chain_x(struct bus *bus,
+        unsigned min_devfn, unsigned max_devfn, unsigned int max)
+{
+	unsigned ht_unitid_base[4];
+	unsigned offset_unitid = 1;
+	return hypertransport_scan_chain(bus, min_devfn, max_devfn, max, ht_unitid_base, offset_unitid);
+}
+
 unsigned int ht_scan_bridge(struct device *dev, unsigned int max)
 {
-	return do_pci_scan_bridge(dev, max, hypertransport_scan_chain);
+	return do_pci_scan_bridge(dev, max, hypertransport_scan_chain_x);
 }
 
 

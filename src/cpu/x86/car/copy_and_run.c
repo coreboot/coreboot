@@ -44,7 +44,7 @@ static void copy_and_run(unsigned cpu_reset)
 	
 //	dump_mem(src, src+0x100);
 
-	olen=unrv2b(src, dst);
+	olen = unrv2b(src, dst, &ilen);
 
 #endif
 //	dump_mem(dst, dst+0x100);

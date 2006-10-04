@@ -121,6 +121,7 @@ static void misc_control_init(struct device *dev)
 	cmd = pci_read_config32(dev, 0x44);
 	cmd |= (1<<6) | (1<<25);
 	pci_write_config32(dev, 0x44, cmd );
+#if K8_REV_F_SUPPORT == 0
 	if (is_cpu_pre_c0()) {
 
 		/* Errata 58
@@ -177,6 +178,7 @@ static void misc_control_init(struct device *dev)
 			needs_reset = 1; /* Needed? */
 		}
 	}
+#endif
 	/* Optimize the Link read pointers */
 	f0_dev = dev_find_slot(0, dev->path.u.pci.devfn - 3);
 	if (f0_dev) {

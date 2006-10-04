@@ -39,6 +39,8 @@ acknowledgement of AMD's proprietary rights in them.
 #include <string.h>
 #include <stdint.h>
 
+#include <cpu/amd/amdk8_sysconf.h>
+
 
 #if 0
 unsigned node_link_to_bus(unsigned node, unsigned link)
@@ -76,13 +78,6 @@ unsigned node_link_to_bus(unsigned node, unsigned link)
 }
 #endif
 
-
-extern unsigned pci1234[];
-extern  unsigned hcdn[];
-extern unsigned hc_possible_num;
-extern unsigned sblk;
-
-unsigned hcdn_reg[4]; // defined in northbridge.c
 
 /* why we need pci1234 array
         final result for pci1234 will be
@@ -152,6 +147,13 @@ unsigned hcdn_reg[4]; // defined in northbridge.c
 
         So Max HC_POSSIBLE_NUM is 8
 
+        1n: 3
+        2n: 2x2 - 1
+        4n: 1x4 - 2 
+        6n: 2 
+        8n: 2 
+	Total: 12 
+
         just put all the possible ht node/link to the list tp pci1234[] in  get_bus_conf.c on MB dir
 
 	Also don't forget to increase the ACPI_SSDTX_NUM etc if you have too much SSDT
@@ -169,11 +171,11 @@ void get_sblk_pci1234(void)
         /* read PCI_DEV(0,0x18,0) 0x64 bit [8:9] to find out SbLink m */
         dev = dev_find_slot(0, PCI_DEVFN(0x18,0));
         dword = pci_read_config32(dev, 0x64);
-        sblk = (dword>>8) & 0x3;
+        sysconf.sblk = (dword>>8) & 0x3;
 
         dword &=0x0300;
         dword |= 1;
-        pci1234[0] = dword;
+        sysconf.pci1234[0] = dword;
 
         /*about hardcode numbering for HT_IO support
                 set the node_id and link_id that could have ht chain in the one array,
@@ -189,35 +191,35 @@ void get_sblk_pci1234(void)
                 dwordx = pci_read_config32(dev, 0xe0+j*4);
                 dwordx &=0xffff0ff1; //keep bus num, node_id, link_num, enable bits
                 if((dwordx & 0xff1) == dword) { //SBLINK
-                        pci1234[0] = dwordx;
-			hcdn[0] = hcdn_reg[j];
+                        sysconf.pci1234[0] = dwordx;
+			sysconf.hcdn[0] = sysconf.hcdn_reg[j];
                         continue;
                 }
                 if((dwordx & 1) == 1) {
                         // We need to find out the number of HC
                         // for exact match
-                        for(i=1;i<hc_possible_num;i++) {
-                                if((dwordx & 0xff0) == (pci1234[i] & 0xff0)) {
-                                        pci1234[i] = dwordx;
-					hcdn[i] = hcdn_reg[j];
+                        for(i=1;i<sysconf.hc_possible_num;i++) {
+                                if((dwordx & 0xff0) == (sysconf.pci1234[i] & 0xff0)) {
+                                        sysconf.pci1234[i] = dwordx;
+					sysconf.hcdn[i] = sysconf.hcdn_reg[j];
                                         break;
                                 }
                         }
                         // for 0xff0 match or same node
-                        for(i=1;i<hc_possible_num;i++) {
-                                if((dwordx & 0xff0) == (dwordx & pci1234[i] & 0xff0)) {
-                                        pci1234[i] = dwordx;
-					hcdn[i] = hcdn_reg[j];
+                        for(i=1;i<sysconf.hc_possible_num;i++) {
+                                if((dwordx & 0xff0) == (dwordx & sysconf.pci1234[i] & 0xff0)) {
+                                        sysconf.pci1234[i] = dwordx;
+					sysconf.hcdn[i] = sysconf.hcdn_reg[j];
                                         break;
                                 }
                         }
                 }
         }
 
-        for(i=1;i<hc_possible_num;i++) {
-                if((pci1234[i] & 1) != 1) {
-                        pci1234[i] = 0;
-			hcdn[i] = 0x20202020;
+        for(i=1;i<sysconf.hc_possible_num;i++) {
+                if((sysconf.pci1234[i] & 1) != 1) {
+                        sysconf.pci1234[i] = 0;
+			sysconf.hcdn[i] = 0x20202020;
                 }
         }
 

@@ -11,7 +11,6 @@
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
-#include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/amd/amd8111/amd8111_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
@@ -23,7 +22,6 @@
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 #include "cpu/amd/mtrr/amd_earlymtrr.c"
 #include "cpu/x86/bist.h"
-#include "cpu/amd/dualcore/dualcore.c"
 
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
@@ -126,8 +124,10 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
+#include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "sdram/generic_sdram.c"
 #include "resourcemap.c"
+#include "cpu/amd/dualcore/dualcore.c"
 
 #define FIRST_CPU  1
 #define SECOND_CPU 1

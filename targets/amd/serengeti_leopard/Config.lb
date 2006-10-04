@@ -8,11 +8,12 @@ mainboard amd/serengeti_leopard
 # serengeti_leopard
 romimage "normal"
 #       48K for SCSI FW
-#        option ROM_SIZE = 512*1024-48*1024
+#        option ROM_SIZE = 475136
 #       48K for SCSI FW and 48K for ATI ROM
-#       option ROM_SIZE = 512*1024-48*1024-48*1024
+#       option ROM_SIZE = 425984 
 #       64K for Etherboot
-#        option ROM_SIZE = 512*1024-64*1024
+#        option ROM_SIZE = 458752 
+	option USE_FAILOVER_IMAGE=0
 	option USE_FALLBACK_IMAGE=0
 #	option ROM_IMAGE_SIZE=0x13800
 #	option ROM_IMAGE_SIZE=0x17800
@@ -38,6 +39,7 @@ romimage "normal"
 end
 
 romimage "fallback" 
+	option USE_FAILOVER_IMAGE=0
 	option USE_FALLBACK_IMAGE=1
 #	option ROM_IMAGE_SIZE=0x13800
 #	option ROM_IMAGE_SIZE=0x17800
@@ -52,8 +54,9 @@ romimage "fallback"
 #        payload ../../../payloads/tg3--filo_hda2.zelf
 #	payload ../../../payloads/tg3.zelf
 #	payload ../../../payloads/tg3_vga.zelf
+	payload ../../../../payloads/memtest
 #	payload ../../../../payloads/tg3--filo_hda2_vga.zelf
-	payload ../../../../payloads/tg3--filo_hda2_vga_5_4.zelf
+#	payload ../../../../payloads/tg3--filo_hda2_vga_5_4.zelf
 #	payload ../../../payloads/tg3_com2.zelf
 #       payload ../../../payloads/e1000--filo.zelf
 #        payload ../../../payloads/tg3--e1000--filo.zelf
@@ -62,4 +65,13 @@ romimage "fallback"
 #	payload ../../../payloads/tg3--eepro100--e1000--filo_hda2_com2.zelf
 end
 
-buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
+romimage "failover"
+	option USE_FAILOVER_IMAGE=1
+        option USE_FALLBACK_IMAGE=0
+        option ROM_IMAGE_SIZE=FAILOVER_SIZE
+        option XIP_ROM_SIZE=FAILOVER_SIZE
+        option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Failover"
+end
+
+buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback" "failover"
+#buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"

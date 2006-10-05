@@ -8,7 +8,7 @@
 #endif
 
 //use by raminit
-#define K8_4RANK_DIMM_SUPPORT 1
+#define QRANK_DIMM_SUPPORT 1
 
 //used by incoherent_ht
 //#define K8_SCAN_PCI_BUS 1

@@ -106,7 +106,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 }
 
 //#include "northbridge/amd/amdk8/setup_resource_map.c"
-#define K8_4RANK_DIMM_SUPPORT 1
+#define QRANK_DIMM_SUPPORT 1
 #include "northbridge/amd/amdk8/raminit.c"
 
 #if 0

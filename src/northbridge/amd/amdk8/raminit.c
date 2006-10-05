@@ -17,8 +17,8 @@
 # error "CONFIG_LB_MEM_TOPK must be a power of 2"
 #endif
 
-#ifndef K8_4RANK_DIMM_SUPPORT
-#define K8_4RANK_DIMM_SUPPORT 0
+#ifndef QRANK_DIMM_SUPPORT
+#define QRANK_DIMM_SUPPORT 0
 #endif
 
 #if defined (__GNUC__)
@@ -631,7 +631,7 @@ struct dimm_size {
 	unsigned long side2;
 	unsigned long rows;
 	unsigned long col;
-#if K8_4RANK_DIMM_SUPPORT == 1
+#if QRANK_DIMM_SUPPORT == 1
 	unsigned long rank;
 #endif
 };
@@ -645,7 +645,7 @@ static struct dimm_size spd_get_dimm_size(unsigned device)
 	sz.side2 = 0;
 	sz.rows = 0;
 	sz.col = 0;
-#if K8_4RANK_DIMM_SUPPORT == 1
+#if QRANK_DIMM_SUPPORT == 1
 	sz.rank = 0;
 #endif
 
@@ -689,7 +689,7 @@ static struct dimm_size spd_get_dimm_size(unsigned device)
 	if ((value != 2) && (value != 4 )) {
 		goto val_err;
 	}
-#if K8_4RANK_DIMM_SUPPORT == 1
+#if QRANK_DIMM_SUPPORT == 1
 	sz.rank = value;
 #endif
 
@@ -718,7 +718,7 @@ hw_err:
 	sz.side2 = 0;
 	sz.rows = 0;
 	sz.col = 0;
-#if K8_4RANK_DIMM_SUPPORT == 1
+#if QRANK_DIMM_SUPPORT == 1
 	sz.rank = 0;
 #endif
  out:
@@ -766,7 +766,7 @@ static void set_dimm_size(const struct mem_controller *ctrl, struct dimm_size sz
 	/* Set the appropriate DIMM base address register */
 	pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1)+0)<<2), base0);
 	pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1)+1)<<2), base1);
-#if K8_4RANK_DIMM_SUPPORT == 1
+#if QRANK_DIMM_SUPPORT == 1
 	if(sz.rank == 4) {
 		pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1)+4)<<2), base0);
 		pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1)+5)<<2), base1);
@@ -777,7 +777,7 @@ static void set_dimm_size(const struct mem_controller *ctrl, struct dimm_size sz
 	if (base0) {
 		dch = pci_read_config32(ctrl->f2, DRAM_CONFIG_HIGH);
 		dch |= DCH_MEMCLK_EN0 << index;
-#if K8_4RANK_DIMM_SUPPORT == 1
+#if QRANK_DIMM_SUPPORT == 1
 		if(sz.rank == 4) {
 			dch |= DCH_MEMCLK_EN0 << (index + 2);
 		}
@@ -800,7 +800,7 @@ static void set_dimm_map(const struct mem_controller *ctrl, struct dimm_size sz,
 
 	map = pci_read_config32(ctrl->f2, DRAM_BANK_ADDR_MAP);
 	map &= ~(0xf << (index * 4));
-#if K8_4RANK_DIMM_SUPPORT == 1
+#if QRANK_DIMM_SUPPORT == 1
         if(sz.rank == 4) {
                 map &= ~(0xf << ( (index + 2) * 4));
         }
@@ -811,7 +811,7 @@ static void set_dimm_map(const struct mem_controller *ctrl, struct dimm_size sz,
 	if (sz.side1 >= (25 +3)) {
 		if(is_cpu_pre_d0()) {
 			map |= (sz.side1 - (25 + 3)) << (index *4);
-#if K8_4RANK_DIMM_SUPPORT == 1
+#if QRANK_DIMM_SUPPORT == 1
 	                if(sz.rank == 4) {
          	              map |= (sz.side1 - (25 + 3)) << ( (index + 2) * 4);
                		}
@@ -819,7 +819,7 @@ static void set_dimm_map(const struct mem_controller *ctrl, struct dimm_size sz,
 		}
 		else {
 			map |= cs_map_aa[(sz.rows - 12) * 5 + (sz.col - 8) ] << (index*4);
-#if K8_4RANK_DIMM_SUPPORT == 1
+#if QRANK_DIMM_SUPPORT == 1
 		        if(sz.rank == 4) {
                 	       map |=  cs_map_aa[(sz.rows - 12) * 5 + (sz.col - 8) ] << ( (index + 2) * 4);
                		}
@@ -1538,7 +1538,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 	}
 #if 0
 //down speed for full load 4 rank support
-#if K8_4RANK_DIMM_SUPPORT
+#if QRANK_DIMM_SUPPORT
 	if(dimm_mask == (3|(3<<DIMM_SOCKETS)) ) {
 		int ranks = 4;
 	        for(i = 0; (i < 4) && (ctrl->channel0[i]); i++) {
@@ -1804,7 +1804,7 @@ static int update_dimm_x4(const struct mem_controller *ctrl, const struct mem_pa
 {
 	uint32_t dcl;
 	int value;
-#if K8_4RANK_DIMM_SUPPORT == 1
+#if QRANK_DIMM_SUPPORT == 1
 	int rank;
 #endif
 	int dimm;
@@ -1813,7 +1813,7 @@ static int update_dimm_x4(const struct mem_controller *ctrl, const struct mem_pa
 		return -1;
 	}
 
-#if K8_4RANK_DIMM_SUPPORT == 1
+#if QRANK_DIMM_SUPPORT == 1
 	rank = spd_read_byte(ctrl->channel0[i], 5);       /* number of physical banks */
 	if (rank < 0) {
 		return -1;	
@@ -1821,7 +1821,7 @@ static int update_dimm_x4(const struct mem_controller *ctrl, const struct mem_pa
 #endif
 
 	dimm = 1<<(DCL_x4DIMM_SHIFT+i);
-#if K8_4RANK_DIMM_SUPPORT == 1
+#if QRANK_DIMM_SUPPORT == 1
 	if(rank==4) {
 		dimm |= 1<<(DCL_x4DIMM_SHIFT+i+2);
 	}

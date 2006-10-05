@@ -99,7 +99,7 @@ if CONFIG_USE_INIT
 	end
 
         makerule linuxbios   
-		depends	"crt0.o $(INIT-OBJECTS) $(LINUXBIOS_APC) $(LINUXBIOS_RAM_ROM) ldscript.ld"
+		depends	"crt0.o init.o $(LINUXBIOS_APC) $(LINUXBIOS_RAM_ROM) ldscript.ld"
 		action	"$(CC) -nostdlib -nostartfiles -static -o $@ -T ldscript.ld crt0.o init.o"
 		action	"$(CROSS_COMPILE)nm -n linuxbios | sort > linuxbios.map"
         end

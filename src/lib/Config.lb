@@ -17,9 +17,9 @@ object version.o
 makedefine .PHONY : version.o
 
 if CONFIG_USE_INIT
-	if CONFIG_USE_PRINTK_IN_CAR
+#	if CONFIG_USE_PRINTK_IN_CAR
 	initobject uart8250.c
-	end
+#	end
 	initobject memset.o
 	initobject memcpy.o
 	initobject memcmp.o

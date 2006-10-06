@@ -1,0 +1,14 @@
+- Bugfixes:
+	* Proper handling of boot cpu information
+- Error handling / reporting
+	* Better categorization of errors into severity levels
+	* Don't stop checking for later errors because of earlier ones
+	  whenever possible
+- Generate mem reserve map
+	* linux,reserve-map property
+	* generating reserve entry for device tree itself
+	* generating reserve entries from tce, rtas etc. properties
+
+
+- Testsuite
+- Actually number releases, all that kind of jazz

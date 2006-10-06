@@ -1,0 +1,6 @@
+*.o
+*.d
+*.tab.[ch]
+lex.yy.c
+dtc
+ftdump

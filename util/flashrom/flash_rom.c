@@ -298,7 +298,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	printf("Flash part is %s\n", flash->name);
+	printf("Flash part is %s (%d KB)\n", flash->name, flash->total_size);
 
 	if (!filename && !erase_it) {
 		// FIXME: Do we really want this feature implicitly?

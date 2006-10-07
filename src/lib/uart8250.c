@@ -64,6 +64,8 @@ void uart8250_init(unsigned base_port, unsigned divisor, unsigned lcs)
 	outb(0x0, base_port + UART_IER);
 	/* enable fifo's */
 	outb(0x01, base_port + UART_FCR);
+	/* assert DTR and RTS so the other end is happy */
+	outb(0x03, base_port + UART_MCR);
 	/* Set Baud Rate Divisor to 12 ==> 115200 Baud */
 	outb(0x80 | lcs, base_port + UART_LCR);
 	outb(divisor & 0xFF,   base_port + UART_DLL);

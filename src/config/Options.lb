@@ -629,6 +629,11 @@ define CONFIG_PRECOMPRESSED_ROM_STREAM
 	export always
 	comment "boot image is already compressed" 
 end
+define CONFIG_SERIAL_STREAM
+	default 0
+	export always
+	comment "Download boot image from serial port"
+end
 define CONFIG_FS_STREAM
 	default 0
 	export always

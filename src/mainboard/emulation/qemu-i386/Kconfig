@@ -1,0 +1,20 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+mainmenu "LinuxBIOS Configuration"
+
+config BOOTFLASH
+	bool
+	default y
+	help
+	  Build the BOOTFLASH area. This includes all the reset vector, 
+	  Cache-As-Ram (CAR) code, early device setup, and the code that 
+	  parses the "file system" in the non-BOOTFLASH area. 
+
+config BIOS
+	bool
+	default y
+	help
+		Build the rest of the BIOS. This includes memory init, device init, PCI init, and so on. 

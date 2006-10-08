@@ -441,7 +441,7 @@ export LBBUILD_IMAGE ?= linuxbios.rom startup_code.rom
 ifeq ($(LBBUILD_EXTMOD),)
 core-y		+=  
 
-linuxbios-dirs	:= $(patsubst %/,%,$(filter %/, $(core-y)
+linuxbios-dirs	:= $(patsubst %/,%,$(filter %/, $(core-y)))
 
 linuxbios-alldirs	:= $(sort $(linuxbios-dirs))
 

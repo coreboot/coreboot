@@ -53,6 +53,12 @@ ifneq ($(strip $(obj-y) $(obj-m) $(obj-n) $(obj-) $(lib-target)),)
 builtin-target := $(obj)/built-in.o
 endif
 
+
+__build: $(builtin-target) $(lib-target) $(extra-y) \
+         $(subdir-ym) $(always)
+        @:
+
+
 # Linus' kernel sanity checking tool
 ifneq ($(LBBIOSBUILD_CHECKSRC),0)
   ifeq ($(LBBIOSBUILD_CHECKSRC),2)

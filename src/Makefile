@@ -396,7 +396,7 @@ endif
 # command line.
 # This allow a user to issue only 'make' to build a kernel including modules
 # Defaults vmlinux but it is usually overriden in the arch makefile
-all: vmlinux
+all: linuxbios
 
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 CFLAGS		+= -Os
@@ -544,7 +544,7 @@ endef
 
 # vmlinux image - including updated kernel symbols
 linuxbios.rom: $(linuxbios-lds) $(linuxbios-init) $(linuxbios-main) $(kallsyms.o) FORCE
-	$(call if_changed_rule,vmlinux__)
+	$(call if_changed_rule,linuxbios)
 	$(Q)rm -f .old_version
 
 # The actual objects are generated when descending, 
@@ -696,7 +696,7 @@ depend dep:
 # Directories & files removed with 'make clean'
 CLEAN_DIRS  += $(MODVERDIR)
 CLEAN_FILES +=	linuxbios.rom System.map \
-                .tmp_kallsyms* .tmp_version .tmp_vmlinux* .tmp_System.map
+                .tmp_kallsyms* .tmp_version .tmp_linuxbios* .tmp_System.map
 
 # Directories & files removed with 'make mrproper'
 MRPROPER_DIRS  += include/config

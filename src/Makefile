@@ -258,7 +258,7 @@ AFLAGS	=
 # Use LINUXBIOSINCLUDE when you must reference the include/ directory.
 # Needed to be compatible with the O= option
 LINUXBIOSINCLUDE    := -Iinclude \
-                   -I$(srctree)/include) \
+                   -I$(srctree)/include \
 		   -include include/linuxbios/autoconf.h
 
 CPPFLAGS        := $(LINUXBIOSINCLUDE)
@@ -438,7 +438,7 @@ CFLAGS += $(call cc-option,-Wno-pointer-sign,)
 export LBBUILD_IMAGE ?= linuxbios.rom startup_code.rom 
 
 
-core-y := mainboard/
+core-y := mainboard/$(MAINBOARD)/
 ifeq ($(LBBUILD_COMPRESSORS),)
 core-y		+=  compressors
 

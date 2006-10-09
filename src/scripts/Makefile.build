@@ -30,7 +30,7 @@ ifneq ($(hostprogs-y)$(hostprogs-m),)
 include scripts/Makefile.host
 endif
 
-ifneq ($(LBBIOSBUILD_SRC),)
+ifneq ($(LBBUILD_SRC),)
 # Create output directory if not already present
 _dummy := $(shell [ -d $(obj) ] || mkdir -p $(obj))
 
@@ -60,8 +60,8 @@ __build: $(builtin-target) $(lib-target) $(extra-y) \
 
 
 # Linus' kernel sanity checking tool
-ifneq ($(LBBIOSBUILD_CHECKSRC),0)
-  ifeq ($(LBBIOSBUILD_CHECKSRC),2)
+ifneq ($(LBBUILD_CHECKSRC),0)
+  ifeq ($(LBBUILD_CHECKSRC),2)
     quiet_cmd_force_checksrc = CHECK   $<
           cmd_force_checksrc = $(CHECK) $(CHECKFLAGS) $(c_flags) $< ;
   else

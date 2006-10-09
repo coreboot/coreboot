@@ -435,7 +435,7 @@ CFLAGS += $(call cc-option,-Wno-pointer-sign,)
 # set in the environment
 # Also any assignments in arch/$(ARCH)/Makefile take precedence over
 # this default value
-export LBBUILD_IMAGE ?= linuxbios.rom startup_code.rom 
+export LBBUILD_IMAGE ?= linuxbios.rom startup_code.rom
 
 
 core-y := mainboard/$(MAINBOARD)/

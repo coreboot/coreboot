@@ -506,7 +506,7 @@ quiet_cmd_sysmap = SYSMAP
 # Generate System.map and verify that the content is consistent
 # Use + in front of the vmlinux_version rule to silent warning with make -j2
 # First command is ':' to allow us to use + in front of the rule
-define rule_vmlinux__
+define rule_linuxbios__
 	:
 	$(if $(CONFIG_KALLSYMS),,+$(call cmd,vmlinux_version))
 

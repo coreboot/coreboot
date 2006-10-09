@@ -438,6 +438,7 @@ CFLAGS += $(call cc-option,-Wno-pointer-sign,)
 export LBBUILD_IMAGE ?= linuxbios.rom startup_code.rom 
 
 
+core-y := mainboard/
 ifeq ($(LBBUILD_COMPRESSORS),)
 core-y		+=  compressors
 

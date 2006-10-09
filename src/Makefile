@@ -255,13 +255,13 @@ CFLAGS	=
 AFLAGS	=
 
 
-# Use LINUXINCLUDE when you must reference the include/ directory.
+# Use LINUXBIOSINCLUDE when you must reference the include/ directory.
 # Needed to be compatible with the O= option
-LINUXINCLUDE    := -Iinclude \
+LINUXBIOSINCLUDE    := -Iinclude \
                    -I$(srctree)/include) \
 		   -include include/linuxbios/autoconf.h
 
-CPPFLAGS        := $(LINUXINCLUDE)
+CPPFLAGS        := $(LINUXBIOSINCLUDE)
 
 CFLAGS 		:= -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 	  	   -fno-strict-aliasing -fno-common
@@ -276,7 +276,7 @@ export	VERSION PATCHLEVEL SUBLEVEL LINUXBIOSRELEASE LINUXBIOSVERSION \
 	CPP AR NM STRIP OBJCOPY OBJDUMP MAKE AWK GENKSYMS PERL UTS_MACHINE \
 	HOSTCXX HOSTCXXFLAGS CHECK CHECKFLAGS
 
-export CPPFLAGS NOSTDINC_FLAGS LINUXINCLUDE OBJCOPYFLAGS LDFLAGS
+export CPPFLAGS NOSTDINC_FLAGS LINUXBIOSINCLUDE OBJCOPYFLAGS LDFLAGS
 export CFLAGS 
 export AFLAGS
 
@@ -396,7 +396,7 @@ endif
 # command line.
 # This allow a user to issue only 'make' to build a kernel including modules
 # Defaults vmlinux but it is usually overriden in the arch makefile
-all: linuxbios
+all: linuxbios.rom
 
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 CFLAGS		+= -Os
@@ -435,11 +435,11 @@ CFLAGS += $(call cc-option,-Wno-pointer-sign,)
 # set in the environment
 # Also any assignments in arch/$(ARCH)/Makefile take precedence over
 # this default value
-export LBBUILD_IMAGE ?= linuxbios.rom startup_code.rom
+export LBBUILD_IMAGE ?= linuxbios.rom startup_code.rom 
 
 
-ifeq ($(LBBUILD_EXTMOD),)
-core-y		+=  
+ifeq ($(LBBUILD_COMPRESSORS),)
+core-y		+=  compressors
 
 linuxbios-dirs	:= $(patsubst %/,%,$(filter %/, $(core-y)))
 
@@ -475,7 +475,7 @@ linuxbios-alldirs	:= $(sort $(linuxbios-dirs))
 linuxbios-init := $(head-y) $(init-y)
 linuxbios-main := $(core-y) $(libs-y) $(drivers-y) $(net-y)
 linuxbios-all  := $(linuxbios-init) $(linuxbios-main)
-linuxbios-lds  := arch/$(ARCH)/kernel/vmlinux.lds
+linuxbios-lds  := mainboard/$(MAINBOARD)/linuxbios.lds
 
 # Rule to link vmlinux - also used during CONFIG_KALLSYMS
 # May be overridden by arch/$(ARCH)/Makefile
@@ -875,14 +875,6 @@ linuxbiosversion:
 %.o: %.S prepare scripts FORCE
 	$(Q)$(MAKE) $(build)=$(build-dir) $(target-dir)$(notdir $@)
 
-# Modules
-/ %/: prepare scripts FORCE
-	$(Q)$(MAKE) LBBUILD_MODULES=$(if $(CONFIG_MODULES),1) \
-	$(build)=$(build-dir)
-%.ko: prepare scripts FORCE
-	$(Q)$(MAKE) LBBUILD_MODULES=$(if $(CONFIG_MODULES),1)   \
-	$(build)=$(build-dir) $(@:.ko=.o)
-	$(Q)$(MAKE) -rR -f $(srctree)/scripts/Makefile.modpost
 
 # FIXME Should go into a make.lib or something 
 # ===========================================================================

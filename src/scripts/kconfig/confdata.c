@@ -512,7 +512,7 @@ int conf_write(const char *name)
 	fclose(out);
 	if (out_h) {
 		fclose(out_h);
-		rename(".tmpconfig.h", "include/linux/autoconf.h");
+		rename(".tmpconfig.h", "include/linuxbios/autoconf.h");
 	}
 	if (!name || basename != conf_def_filename) {
 		if (!name)

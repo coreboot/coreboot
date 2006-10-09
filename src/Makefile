@@ -380,16 +380,16 @@ include .config
 # To avoid any implicit rule to kick in, define an empty command
 .config .kconfig.d: ;
 
-# If .config is newer than include/linux/autoconf.h, someone tinkered
+# If .config is newer than include/linuxbios/autoconf.h, someone tinkered
 # with it and forgot to run make oldconfig.
 # If kconfig.d is missing then we are probarly in a cleaned tree so
 # we execute the config step to be sure to catch updated Kconfig files
-include/linux/autoconf.h: .kconfig.d .config
+include/linuxbios/autoconf.h: .kconfig.d .config
 	$(Q)mkdir -p include/linux
 	$(Q)$(MAKE) -f $(srctree)/Makefile silentoldconfig
 else
 # Dummy target needed, because used as prerequisite
-include/linux/autoconf.h: ;
+include/linuxbios/autoconf.h: ;
 endif
 
 # The all: target is the default when no target is given on the
@@ -563,7 +563,7 @@ $(linuxbios-dirs): prepare scripts
 	$(Q)$(MAKE) $(build)=$@
 
 # Build the kernel release string
-# The LINUXBIOSRELEASE is stored in a file named .kernelrelease
+# The LINUXBIOSRELEASE is stored in a file named .linuxbiosrelease
 # to be used when executing for example make install or make modules_install
 #
 # Take the contents of any files called localversion* and the config
@@ -607,7 +607,7 @@ linuxbiosrelease = $(LINUXBIOSVERSION)$(localver-full)
 # Things we need to do before we recursively start building the kernel
 # or the modules are listed in "prepare".
 # A multi level approach is used. prepareN is processed before prepareN-1.
-# archprepare is used in arch Makefiles and when processed asm symlink,
+# archprepare is used in arch Makefiles and when processed
 # version.h and scripts_basic is processed / created.
 
 # Listed in dependency order
@@ -619,8 +619,7 @@ PHONY += prepare-all
 # prepare3 is used to check if we are building in a separate output directory,
 # and if so do:
 # 1) Check that make has not been executed in the kernel src $(srctree)
-# 2) Create the include2 directory, used for the second asm symlink
-prepare3: .kernelrelease
+prepare3: .linuxbiosrelease
 ifneq ($(LBBUILD_SRC),)
 	@echo '  Using $(srctree) as source for kernel'
 	$(Q)if [ -f $(srctree)/.config ]; then \
@@ -628,14 +627,12 @@ ifneq ($(LBBUILD_SRC),)
 		echo "  in the '$(srctree)' directory.";\
 		/bin/false; \
 	fi;
-	$(Q)if [ ! -d include2 ]; then mkdir -p include2; fi;
-	$(Q)ln -fsn $(srctree)/include/asm-$(ARCH) include2/asm
 endif
 
 # prepare2 creates a makefile if using a separate output directory
 prepare2: prepare3 outputmakefile
 
-prepare1: prepare2 include/linux/version.h include/asm \
+prepare1: prepare2 include/linuxbios/version.h\
                    include/config/MARKER
 ifneq ($(LBBUILD_MODULES),)
 	$(Q)mkdir -p $(MODVERDIR)
@@ -651,11 +648,11 @@ prepare prepare-all: prepare1
 
 export CPPFLAGS_linuxbios.lds += -P -C -U$(ARCH)
 
-# 	Split autoconf.h into include/linux/config/*
+# 	Split autoconf.h into include/linuxbios/config/*
 
-include/config/MARKER: scripts/basic/split-include include/linux/autoconf.h
-	@echo '  SPLIT   include/linux/autoconf.h -> include/config/*'
-	@scripts/basic/split-include include/linux/autoconf.h include/config
+include/config/MARKER: scripts/basic/split-include include/linuxbios/autoconf.h
+	@echo '  SPLIT   include/linuxbios/autoconf.h -> include/config/*'
+	@scripts/basic/split-include include/linuxbios/autoconf.h include/config
 	@touch $@
 
 # Generate some files
@@ -671,13 +668,13 @@ define filechk_version.h
 	  echo '"$(LINUXBIOSRELEASE)" exceeds $(uts_len) characters' >&2; \
 	  exit 1; \
 	fi; \
-	(echo \#define UTS_RELEASE \"$(LINUXBIOSRELEASE)\"; \
+	(echo \#define LINUXBIOS_RELEASE \"$(LINUXBIOSRELEASE)\"; \
 	  echo \#define LINUX_VERSION_CODE `expr $(VERSION) \\* 65536 + $(PATCHLEVEL) \\* 256 + $(SUBLEVEL)`; \
 	 echo '#define LINUXBIOS_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))'; \
 	)
 endef
 
-include/linuxbios/version.h: $(srctree)/Makefile .config .kernelrelease FORCE
+include/linuxbios/version.h: $(srctree)/Makefile .config .linuxbiosrelease FORCE
 	$(call filechk,version.h)
 
 # ---------------------------------------------------------------------------
@@ -701,9 +698,9 @@ CLEAN_FILES +=	linuxbios.rom System.map \
 
 # Directories & files removed with 'make mrproper'
 MRPROPER_DIRS  += include/config
-MRPROPER_FILES += .config .config.old include/asm .version .old_version \
-                  include/linux/autoconf.h include/linux/version.h \
-		  .kernelrelease Module.symvers tags TAGS cscope*
+MRPROPER_FILES += .config .config.old  .old_version \
+                  include/linuxbios/autoconf.h include/linuxbios/version.h \
+		  .linuxbiosrelease Module.symvers tags TAGS cscope*
 
 # clean - Delete most, but leave enough to build external modules
 #
@@ -786,7 +783,7 @@ help:
 	@echo  '  rpm		  - Build a kernel as an RPM package'
 	@echo  '  tags/TAGS	  - Generate tags file for editors'
 	@echo  '  cscope	  - Generate cscope index'
-	@echo  '  kernelrelease	  - Output the release version string'
+	@echo  '  linuxbiosrelease	  - Output the release version string'
 	@echo  '  kernelversion	  - Output the version stored in Makefile'
 	@echo  ''
 	@echo  'Static analysers'

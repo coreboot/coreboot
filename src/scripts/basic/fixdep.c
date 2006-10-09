@@ -17,15 +17,15 @@
  *
  * To use this list as-is however has the drawback that virtually
  * every file in the kernel includes <linux/config.h> which then again
- * includes <linux/autoconf.h>
+ * includes <linuxbios/autoconf.h>
  *
- * If the user re-runs make *config, linux/autoconf.h will be
+ * If the user re-runs make *config, linuxbios/autoconf.h will be
  * regenerated.  make notices that and will rebuild every file which
  * includes autoconf.h, i.e. basically all files. This is extremely
  * annoying if the user just changed CONFIG_HIS_DRIVER from n to m.
  *
  * So we play the same trick that "mkdep" played before. We replace
- * the dependency on linux/autoconf.h by a dependency on every config
+ * the dependency on linuxbios/autoconf.h by a dependency on every config
  * option which is mentioned in any of the listed prequisites.
  *
  * To be exact, split-include populates a tree in include/config/,
@@ -72,7 +72,7 @@
  *   cmd_<target> = <cmdline>
  *
  * and then basically copies the .<target>.d file to stdout, in the
- * process filtering out the dependency on linux/autoconf.h and adding
+ * process filtering out the dependency on linuxbios/autoconf.h and adding
  * dependencies on include/config/my/option.h for every
  * CONFIG_MY_OPTION encountered in any of the prequisites.
  *
@@ -97,7 +97,7 @@
  * Note 2: if somebody writes HELLO_CONFIG_BOOM in a file, it will depend onto
  * CONFIG_BOOM. This could seem a bug (not too hard to fix), but please do not
  * fix it! Some UserModeLinux files (look at arch/um/) call CONFIG_BOOM as
- * UML_CONFIG_BOOM, to avoid conflicts with /usr/include/linux/autoconf.h,
+ * UML_CONFIG_BOOM, to avoid conflicts with /usr/include/linuxbios/autoconf.h,
  * through arch/um/include/uml-config.h; this fixdep "bug" makes sure that
  * those files will have correct dependencies.
  */
@@ -320,7 +320,7 @@ void parse_dep_file(void *map, size_t len)
 			p++;
 		}
 		memcpy(s, m, p-m); s[p-m] = 0;
-		if (strrcmp(s, "include/linux/autoconf.h") &&
+		if (strrcmp(s, "include/linuxbios/autoconf.h") &&
 		    strrcmp(s, "arch/um/include/uml-config.h") &&
 		    strrcmp(s, ".ver")) {
 			printf("  %s \\\n", s);

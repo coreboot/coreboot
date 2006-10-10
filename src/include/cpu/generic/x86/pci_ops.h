@@ -14,17 +14,12 @@
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 */
-#ifndef PCI_OPS_H
-#define PCI_OPS_H
+#ifndef ARCH_I386_PCI_OPS_H
+#define ARCH_I386_PCI_OPS_H
 
-#include <stdint.h>
-#include <device/device.h>
+const struct pci_bus_operations pci_cf8_conf1;
+const struct pci_bus_operations pci_cf8_conf2;
 
-uint8_t  pci_read_config8(device_t dev, unsigned where);
-uint16_t pci_read_config16(device_t dev, unsigned where);
-uint32_t pci_read_config32(device_t dev, unsigned where);
-void pci_write_config8(device_t dev, unsigned where, uint8_t val);
-void pci_write_config16(device_t dev, unsigned where, uint16_t val);
-void pci_write_config32(device_t dev, unsigned where, uint32_t val);
+void pci_set_method(device_t dev);
 
-#endif /* PCI_OPS_H */
+#endif /* ARCH_I386_PCI_OPS_H */

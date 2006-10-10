@@ -257,8 +257,11 @@ AFLAGS	=
 
 # Use LINUXBIOSINCLUDE when you must reference the include/ directory.
 # Needed to be compatible with the O= option
+# how to set the fucking LBARCH in time? arg.
 LINUXBIOSINCLUDE    := -Iinclude \
                    -I$(srctree)/include \
+			-I$(srctree)/include/cpu/generic/$(LBARCH)/  \
+			-I$(srctree)/include/cpu/generic/x86/  \
 		   -include include/linuxbios/autoconf.h
 
 CPPFLAGS        := $(LINUXBIOSINCLUDE)
@@ -354,6 +357,7 @@ ifeq ($(config-targets),1)
 # LBBUILD_DEFCONFIG may point out an alternative default configuration
 # used for 'make defconfig'
 include $(srctree)/mainboard/$(MAINBOARD)/Makefile
+
 export LBBUILD_DEFCONFIG
 
 config %config: scripts_basic outputmakefile FORCE
@@ -421,7 +425,8 @@ endif
 include $(srctree)/mainboard/$(MAINBOARD)/Makefile
 
 # mainboard Makefile may override CC so keep this after mainboard Makefile is included
-NOSTDINC_FLAGS += -nostdinc -isystem $(shell $(CC) -print-file-name=include)
+#NOSTDINC_FLAGS += -nostdinc -isystem $(shell $(CC) -print-file-name=include)
+NOSTDINC_FLAGS += -isystem $(shell $(CC) -print-file-name=include)
 CHECKFLAGS     += $(NOSTDINC_FLAGS)
 
 # warn about C99 declaration after statement

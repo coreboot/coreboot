@@ -23,6 +23,10 @@
 
 #define SUPERIO_GPIO_IO_BASE 0x400
 
+#define SUPERIO_COM1_DEV PNP_DEV(0x2e, LPC47B397_SP1)
+
+#define SUPERIO_COM1_IO_BASE 0x3f8
+
 static void sio_setup(void)
 {
         
@@ -41,11 +45,15 @@ static void sio_setup(void)
 	pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa0, dword);
 
 #if  1
-        lpc47b397_enable_serial(SUPERIO_GPIO_DEV, SUPERIO_GPIO_IO_BASE);
+        lpc47b397_enable_serial(SUPERIO_COM1_DEV, SUPERIO_COM1_IO_BASE);
 
+#if 0
+/* what's this?
 	value =  lpc47b397_gpio_offset_in(SUPERIO_GPIO_IO_BASE, 0x77);
 	value &= 0xbf;
         lpc47b397_gpio_offset_out(SUPERIO_GPIO_IO_BASE, 0x77, value);
+*/
+#endif
 #endif
 
 }

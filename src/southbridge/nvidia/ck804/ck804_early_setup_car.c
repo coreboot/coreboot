@@ -8,7 +8,7 @@ static int set_ht_link_ck804(uint8_t ht_c_num)
 {
         unsigned vendorid = 0x10de;
         unsigned val = 0x01610169;
-        set_ht_link_buffer_counts_chain(ht_c_num, vendorid, val);
+        return set_ht_link_buffer_counts_chain(ht_c_num, vendorid, val);
 }
 
 static void setup_ss_table(unsigned index, unsigned where, unsigned control, const unsigned int *register_values, int max)

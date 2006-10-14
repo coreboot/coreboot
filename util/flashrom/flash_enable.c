@@ -381,6 +381,7 @@ static FLASH_ENABLE enables[] = {
 	{0x8086, 0x2814, "ICH8DO", enable_flash_ich_dc},
 	{0x1106, 0x8231, "VT8231", enable_flash_vt8231},
 	{0x1106, 0x3177, "VT8235", enable_flash_vt8235},
+	{0x1106, 0x3227, "VT8237", enable_flash_vt8231},
 	{0x1078, 0x0100, "CS5530", enable_flash_cs5530},
 	{0x100b, 0x0510, "SC1100", enable_flash_sc1100},
 	{0x1039, 0x0008, "SIS5595", enable_flash_sis5595},
@@ -389,7 +390,12 @@ static FLASH_ENABLE enables[] = {
         {0x10de, 0x0050, "NVIDIA CK804", enable_flash_ck804}, // LPC
         {0x10de, 0x0051, "NVIDIA CK804", enable_flash_ck804}, // Pro
         {0x10de, 0x00d3, "NVIDIA CK804", enable_flash_ck804}, // Slave, should not be here, to fix known bug for A01.
-	{0x10de, 0x0261, "NVIDIA C51",   enable_flash_ck804},
+
+        {0x10de, 0x0260, "NVidia MCP51", enable_flash_ck804},
+        {0x10de, 0x0261, "NVidia MCP51", enable_flash_ck804},
+        {0x10de, 0x0262, "NVidia MCP51", enable_flash_ck804},
+        {0x10de, 0x0263, "NVidia MCP51", enable_flash_ck804},
+
 	{0x1002, 0x4377, "ATI SB400", enable_flash_sb400}, // ATI Technologies Inc IXP SB400 PCI-ISA Bridge (rev 80)
 };
 

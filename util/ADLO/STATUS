@@ -1,0 +1,154 @@
+$Id: STATUS,v 1.1 2002/11/25 02:07:53 rminnich Exp $
+==========================================
+==========================================
+
+		STATUS
+
+==========================================
+==========================================
+
+LILO
+	fully supported
+
+ ==========================================
+
+GRUB
+	fully supported
+
+	notes
+		int15/eAX=00C0 - not supported
+		int15/Eax=5300 - not supported
+		int 13 ; fn 41 -> dev 81
+		int 13 ; fn 08 -> dev 81
+
+ ==========================================
+
+LINUX
+	fully supported
+
+	notes
+		won't reboot
+		fix fb? 
+
+ ==========================================
+
+openbsd
+	fully supported
+
+	notes
+		won't reboot
+
+ ==========================================
+Win2k	
+
+	fully supported
+
+	notes
+		network?
+		better gfx?
+
+ ==========================================
+
+freebsd
+	somewhat supported
+
+	notes
+		won't reboot
+
+		right now it hangs somewhere around fsck/net startup
+
+		probably due to bad PIRQ table, 
+		it probably switches to polled IO and is dog slow.
+
+ ==========================================
+
+Win98
+	somewhat supported
+
+	lots of ata issues, but if get past
+	ata hurdles, desktop will show up
+
+	press F8 for safe mode.
+		the desktop comes up 
+		(can see "safe mode")
+
+	int 15 D8 (?) not supporte
+	int 15 ?? not supported
+	int 15 fn 24 (set A20 gate) not suported)
+
+ ==========================================
+
+winXP
+
+	no go
+
+safe/normal boot
+
+	progress bar finishes, switches to gfx mode
+	and immediatelly STOP 7B, no sub error.
+
+more timing problems!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	more likely "unexpected previous state" problems.
+
+cold reboot, normal boot and safe mode
+	missing hal
+		\system32\hal.dll
+
+	missing system
+-------------------
+no lba - ie none
+	function 02, error 11 - drv not ready.
+
+	
+ ==========================================
+ ==========================================
+
+syslinux
+netbsd
+hurd
+dos
+other applications
+
+	not supported/tested at present time
+
+ ==========================================
+TODO:
+
+timing in ide read code (int13) [WIP]
+	grub boot
+		sometimes it work, sometimes it doesn't
+
+	openbsd boot /WinXP boot.
+		(AH=0x02) misreads sometimes.
+
+fix int15 memory functions. (E820, etc)
+	so that mem size is not hard coded.
+	(see prep "fixup" section in loader.s)
+
+fix bios to properly handle reboot
+
+setup PIRQ table for P6STMT mbo.
+	have it extract from linuxbios somehow..
+		find it in ram and copy...
+
+hack gcc to support 16 bit real mode.
+
+
+port 80 card broken? 
+
+hack dev86 to support rdmsr and wrmsr 		[done]
+
+
+ ==========================================
+problems:
+	-binary only video bios required
+	-binary only bios required
+	-warm reboot from pc bios is required	
+		chipset timings or something
+		P6STMT board only.
+
+
+	int 12 not stable, multiple reboot required
+		debug msg for slowing down required
+
+ ==========================================

@@ -1,0 +1,231 @@
+==========================================
+$Id: README,v 1.1 2002/11/25 02:07:53 rminnich Exp $
+==========================================
+
+ADLO
+
+	A project to combine LinuxBIOS and BOCHS BIOS to add support 
+	for booting legacy applications, such as Microsoft Windows.
+
+==========================================
+
+Boot Overvew:
+	
+	ADLO requires an boot loader with ELF support.
+	In our case it is either LinuxBIOS or EtherBOOT.
+
+	Sample execution paths:
+
+LinuxBIOS -> ADLO -> LILO -> LINUX
+
+LinuxBIOS -> EtherBOOT -> ADLO -> LILO -> LINUX
+
+	Then it can start any real mode application.
+	In our case it could be LILO or GRUB, but
+	choices are not limited to this.
+
+==========================================
+
+ADLO overview:
+
+	-Elf header
+	-mainteance routines
+	-bochs bios
+	-vga bios
+
+------------------------------------------
+
+Elf header
+
+	hand crafted binary. Currently there are 3 diff binaries
+	for three different sizes of payload (65kb,113kb,129kb).
+
+	they are catted at beginning of file
+
+------------------------------------------
+
+mainteance routines 
+
+	this is the loader.s file which gets compiled into loader.o binary
+
+	it is catted 2nd right after elf header and it is where
+	control is being transfered when the elf is executed.
+
+	it consist of :
+		-tuneups:
+			select device to boot
+			set memory for Int15/EAX=E820
+			enable LBA
+			copy LinuxBIOS table [TODO]
+		-shadow : 
+			enable/write/read
+		-copy:
+			bochs @ 0xF00000
+			video bios (binary only) @ 0xC00000
+		-switch
+			from Real to Protected Mode
+		-jump 
+			jmp to the bios at 0xFFFF:0x0000
+
+	we must have bios payload always at 1kb
+	offset from start of ELF payload so loader.o
+	must be always 1024 bytes.
+		
+------------------------------------------
+
+BOCHS BIOS
+
+	we have taken the boch's project and just extracted
+	its bios from it only. it took us (so far) only
+	minor modifications in order to make it work.
+
+	basically it is the following directory in the
+	bochs sources
+
+		bochs-cvs/bochs/bios
+
+	of all files there the rombios.c is the key file.
+	Most of the times our patches are against current 
+	version of the rombios.c file. We try to feed back
+	the patches to bochs maintainers so that's possible
+	to use the bochs bios as is.
+
+	the boch's related stuff are in bochs subdirectory.
+
+	building boch's bios is as simple as 
+
+		cd bochs/bochs-cvs/bochs/bios
+		make
+
+	the resulting file rombios.bin is our bios image.
+
+			-----
+	At present time, it is recommended to use 
+	dev86-0.16.3 + my patch in order to compile 
+	bochs' bios. The dev86 package can be found
+	at:
+
+	http://www.cix.co.uk/~mayday/
+
+	prepatched sources at:
+
+	http://www.missl.cs.umd.edu/~adam/dev86-0.16.3-MSR.tgz
+
+------------------------------------------
+
+Video BIOS
+
+	Video BIOS we use is binary only, so far.
+
+	At the present time we are using the original
+	Video BIOS as supplied from the system.
+
+	To get the image simply type:
+
+		make makevideobios
+
+	The right thing will happen. For refernece the
+	magic line in the Makefile is:
+
+	videobios:
+        	dd if=/proc/kcore \
+		of=./video.bios.bin \
+		bs=1 count=65536 skip=790528
+
+		---------------
+
+	We assume it is located at 0xC00000-0xE00000
+	and we use 'dd and /proc/kcore to extract it
+	(obviously it works as root only).
+
+	Obviously it needs to be done with original 
+	(as shipped by manufactuer bios) so it should 
+	be done as the first step of the ADLO setup.
+
+		---------------
+
+	The /proc/kcore is in ELF format (linux kernel 
+	2.4.x and later) so if we want to get accurate 
+	image of ram we must skip the ELF header. 
+	The magic command is :
+
+		 readelf -a /proc/kcore 
+
+Program Headers:
+  Type           Offset   VirtAddr   PhysAddr   FileSiz MemSiz 
+  NOTE           0x0007d4 0x00000000 0x00000000 0x005b0 0x00000
+  LOAD           0x001000 0xc0000000 0x00000000 0xff60000 0xff60000
+                 ^^^^^^^^
+
+	There we look for the first LOAD section, and see what
+	is its offset (for us it is 0x1000)
+
+		---------------
+
+	64KiB = 65536
+
+	0x0C 00 00 + 0x10 00 = 790528
+
+		---------------
+
+	On technical note in our case video bios
+	is just 48kb, but for paranoia sake we copy
+	64kb.
+
+==========================================
+
+Environment overview
+
+ADLO is an ELF file and thus can be loaded either directly from 1)
+LinuxBIOS, or 2) via EtherBOOT, or 3) via EtherBOOT+ AA patch for FS
+support.
+
+1)
+Both LinuxBIOS and ADLO are on the same EEPROM chip. From end-user 
+viewpoint it is probably the most similar to the bios classic.
+(computer boots up and just loads whatever is in MBR).
+
+2)
+Set it up in /tftpboot directory on dhcp/tftp server and have it served
+from there. (this is how we did the development)
+
+3)
+Use AA patch and put it as /kernel file and it will be then loaded by
+etherboot from local hard disk.
+
+
+------------------------------------------
+
+Before ADLO starts.
+
+	ADLO requires an boot loader with ELF support.
+	In our case it is:
+
+	-LinuxBIOS
+	-LinuxBIOS and EtherBOOT
+	-LinuxBIOS and EtherBOOT + AA polled I/O patch (w/ FS support).
+
+	As little as LinuxBIOS only is required to get ADLO
+	up and running.
+
+	For development purposes it is recommended full set of
+	LinuxBIOS + EtherBOOT and boot via DHCP/TFTP.
+	
+------------------------------------------
+
+After ADLO finish.
+
+	ADLO will attempt to locate the first hard disk
+	and read MBR from it and execute.
+
+	Then it can start any real mode application.
+	In our case it could be LILO or GRUB 
+	but choices are not limited to this. 
+
+	In our case it would cause LILO to load 
+	(fully usable) and from there it was able to
+	execute simple programs. so far the list
+	of the program is limited to linux which 
+	runs somewhat. More to come in future.
+
+==========================================

@@ -1,0 +1,37 @@
+Date: Sat, 23 Nov 2002 22:20:57 -0500
+From: Adam Sulmicki <adam@cfar.umd.edu>
+To: LinuxBIOS <linuxbios@clustermatic.org>
+Cc: William Arbaugh <waa@cs.umd.edu>, Adam Agnew <agnew@cs.umd.edu>
+Subject: [ANNOUNCE] LinuxBIOS boots Windows 2000, GRUB, and OpenBSD.
+
+We're happy to announce that we've been able to successfully boot  
+Windows 2000 without a legacy BIOS. We accomplished this by developing  
+software that combined elements from two very successful projects:  
+LinuxBIOS and BOCHS. The Etherboot project also helped in various ways.
+
+As a result now, we have a completely open source replacement for the  
+BIOS that can use (without modification) either LILO or GRUB as  
+bootloaders, and Linux, OpenBSD, and Windows 2000 as operating systems  
+(NOTE: We're still working on supporting FreeBSD and Windows XP. We  
+expect that improving ATA support will permit Win98 and WinXP to boot,  
+and finishing PIRQ support will permit FreeBSD to boot.) Motherboard  
+support is also limited at this time, but we hope to expand that along  
+with LinuxBIOS.
+
+More details can be found at:
+
+http://www.missl.cs.umd.edu/Projects/sebos/main.shtml
+
+and
+
+http://www.missl.cs.umd.edu/Projects/sebos/phase2.shtml
+
+Ironically, twenty years ago this month Compaq introduced their Compaq  
+portable computer with the first BIOS outside of IBM, see
+http://www.old-computers.com/museum/computer.asp?st=1&c=547 .
+
+Adam Sulmicki
+Adam Agnew
+William Arbaugh
+
+This work has been funded by a grant from DARPA under the CHATS program.

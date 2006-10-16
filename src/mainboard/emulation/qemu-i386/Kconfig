@@ -19,8 +19,9 @@ config BIOS
 	help
 		Build the rest of the BIOS. This includes memory init, device init, PCI init, and so on. 
 
-config COMPRESSORS
+config UNCOMPRESSORS
 	bool
 	default y
 	help
-		Build the various compressors found in the compressors directory
+		Build the various uncompressors found in the uncompressors directory
+

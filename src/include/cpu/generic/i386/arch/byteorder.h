@@ -19,7 +19,7 @@
 
 #define __LITTLE_ENDIAN 1234
 
-#include <swab.h>
+#include <arch/swab.h>
 
 #define cpu_to_le32(x) ((unsigned int)(x))
 #define le32_to_cpu(x) ((unsigned int)(x))

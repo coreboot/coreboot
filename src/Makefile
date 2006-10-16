@@ -257,10 +257,9 @@ AFLAGS	=
 
 # Use LINUXBIOSINCLUDE when you must reference the include/ directory.
 # Needed to be compatible with the O= option
-# how to set the fucking LBARCH in time? arg.
 LINUXBIOSINCLUDE    := -Iinclude \
                    -I$(srctree)/include \
-			-I$(srctree)/include/cpu/generic/$(LBARCH)/  \
+			-I$(srctree)/include/cpu/generic/$(ARCH)/  \
 			-I$(srctree)/include/cpu/generic/x86/  \
 		   -include include/linuxbios/autoconf.h
 

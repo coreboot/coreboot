@@ -1,0 +1,24 @@
+# Config file for the olpc btest
+
+target btest
+mainboard olpc/btest
+
+# Don't let LinuxBIOS compress the payload
+#option CONFIG_COMPRESSED_ROM_STREAM_NRV2B=0
+#option CONFIG_COMPRESSED_ROM_STREAM_LZMA=1
+#option CONFIG_PRECOMPRESSED_ROM_STREAM=0
+
+# leave 64k for vsa and 64k for EC code
+option ROM_SIZE=(1024*1024)-(64*1024)-(64*1024)
+option FALLBACK_SIZE=ROM_SIZE
+
+option DEFAULT_CONSOLE_LOGLEVEL = 11
+option MAXIMUM_CONSOLE_LOGLEVEL = 11
+romimage "fallback" 
+	option USE_FALLBACK_IMAGE=1
+	option ROM_IMAGE_SIZE=32*1024
+	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
+	payload /tmp/olpcpayload.elf
+end
+
+buildrom ./linuxbios.rom ROM_SIZE  "fallback"

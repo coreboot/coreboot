@@ -68,6 +68,33 @@ static void init_dcon(void) {
   write_bit(rev > 0 ? 1 : 0);
 }
 
+void
+init_cafe_irq(void){
+	const unsigned char slots_cafe[4] = {11, 0, 0, 0};
+
+ 
+	/* CAFE PCI slots */ 
+	pci_assign_irqs(0, 0x0C, slots_cafe); 
+
+	/* Make the pin assignments - NOTENOTENOTE:  This should be 
+	  * configurable! 
+	  */ 
+
+	/* Configure the GPIO pins to use - class 0, index 9 to configure 
+	  * AB.  Write 0xFF to disable 
+	  */ 
+	
+	vrWrite(0x9, 0XFF00); 
+	
+	/* Configure the GPIO pins to use - class 0, index A to configure 
+	  * CD.  Write 0xFF to disable 
+	  */ 
+	
+       vrWrite(0xA, 0xFFFF); 
+	 
+}
+
+
 static void init(struct device *dev) {
 /*
 	unsigned bus = 0;
@@ -94,6 +121,7 @@ static void init(struct device *dev) {
 #endif
 
 	init_dcon();
+	init_cafe_irq();
 	printk_debug("OLPC BTEST EXIT %s\n", __FUNCTION__);
 }
 

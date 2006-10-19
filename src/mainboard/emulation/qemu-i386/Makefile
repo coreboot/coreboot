@@ -4,11 +4,11 @@
 # not configurable
 LBARCH=x86
 
-obj-y     = mainboard.o irq_tables.o setup_before_car.o
-core-$(COMPRESSORS) += compressors
+obj-y     = mainboard.o setup_before_car.o
+core-$(UNCOMPRESSORS) += uncompressors
 
-mainboard.o: dtc.h
+$(obj)/mainboard.o: $(obj)/dtc.h
 
-dtc.h: dts
-	dtc -O lb dts > $@
+$(obj)/dtc.h: $(src)/dts
+	dtc -O lb $(src)/dts ($obj)/dtc.h
 

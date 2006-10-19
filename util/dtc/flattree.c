@@ -417,7 +417,7 @@ static void linuxbios_emit_data(void *e, struct property *p)
 	free(cleanname);
 
 	for(i = 0; i < d.len; i++)
-		fprintf(f, "%02x,", d.val[i]);
+		fprintf(f, "0x%02x,", d.val[i]);
 
 	fprintf(f, "};\n");
 }

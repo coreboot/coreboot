@@ -101,7 +101,7 @@ struct fixup {
 
 struct data {
 	int len;
-	char *val;
+	unsigned char *val;
 	int asize;
 	struct fixup *refs;
 };

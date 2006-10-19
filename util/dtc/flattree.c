@@ -413,7 +413,7 @@ static void linuxbios_emit_data(void *e, struct property *p)
 		return;
 
 	cleanname = clean(p->name, 1);
-	fprintf(f, "\tu8 %s = {", cleanname);
+	fprintf(f, "\t.%s = {", cleanname);
 	free(cleanname);
 
 	for(i = 0; i < d.len; i++)
@@ -539,13 +539,13 @@ static void flatten_tree_emit_structdecls(struct node *tree, struct emitter *emi
 		if (streq(prop->name, "name"))
 			seen_name_prop = 1;
 		cleanname = clean(prop->name, 0);
-		fprintf(f, "\tu32 %s;\n", cleanname);
+		fprintf(f, "\tu8 %s[%d];\n", prop->name, prop->val.len);
 		free(cleanname);
 
 	}
 #if 0
 	if ((vi->flags & FTF_NAMEPROPS) && !seen_name_prop) {
-		fprintf(f, "\tu32 %s\n", prop->name);
+		fprintf(f, "\tu8 %s[%d];\n", prop->name, prop->val.len);
 	}
 #endif
 	emit->endnode(etarget, treename);
@@ -590,7 +590,7 @@ static void flatten_tree_emit_structinits(struct node *tree, struct emitter *emi
 	}
 #if 0
 	if ((vi->flags & FTF_NAMEPROPS) && !seen_name_prop) {
-		fprintf(f, "\tu32 %s\n", prop->name);
+		fprintf(f, "\tu8 %s[%d]\n", prop->name, prop->data.len);
 	}
 #endif
 

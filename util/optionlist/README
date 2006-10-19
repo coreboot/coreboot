@@ -1,13 +1,14 @@
 I would like to contribute the following to the LinuxBIOS wiki in case
 it's useable:
 
-1. I have written a rather small python script to convert the Options.lb
-   to a XML file which is much more useable for the web in most cases.
+1. I have written a rather small Python script to convert the Options.lb
+   into an XML file which is much more useable for the web in most cases.
 
 2. I have written a XSLT to convert the XML file to (X)HTML to be able
    to present it as a table.
 
 Florob (Florian Zeitz <florian-zeitz@lycos.de>)
+
 
 ChangeLog
 ---------
@@ -20,5 +21,26 @@ ChangeLog
 * 2005-03-15 florob
   - Initial version
 
+
+License
+-------
+
+Copyright (C) 2005 Florian Zeitz <florian-zeitz@lycos.de>
+Copyright (C) 2005-2006 Stefan Reinauer <stepan@coresystems.de>
+Copyright (C) 2006 Uwe Hermann <uwe@hermann-uwe.de>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 

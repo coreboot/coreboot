@@ -419,7 +419,7 @@ static void linuxbios_emit_data(void *e, struct property *p)
 	for(i = 0; i < d.len; i++)
 		fprintf(f, "0x%02x,", d.val[i]);
 
-	fprintf(f, "};\n");
+	fprintf(f, "},\n");
 }
 
 static void linuxbios_emit_beginnode(void *e, char *label)
@@ -539,7 +539,7 @@ static void flatten_tree_emit_structdecls(struct node *tree, struct emitter *emi
 		if (streq(prop->name, "name"))
 			seen_name_prop = 1;
 		cleanname = clean(prop->name, 0);
-		fprintf(f, "\tu8 %s[%d];\n", prop->name, prop->val.len);
+		fprintf(f, "\tu8 %s[%d];\n", cleanname, prop->val.len);
 		free(cleanname);
 
 	}

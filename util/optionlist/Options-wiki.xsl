@@ -29,7 +29,7 @@ This is an automatically generated list of '''LinuxBIOS compile-time options'''.
 
 Last update: <xsl:value-of select="//creationdate"/>.
 
-{| border="1"
+{| border="0"
 |- bgcolor="#6699dd"
 ! align="left" | Option
 ! align="left" | Comment

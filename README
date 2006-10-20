@@ -1,0 +1,63 @@
+-------------------------------------------------------------------------------
+LinuxBIOS README
+-------------------------------------------------------------------------------
+
+LinuxBIOS is a Free Software project aimed at replacing the proprietary
+BIOS you can find in most of today's computers.
+
+It performs just a little bit of hardware initialization and then executes
+one of many possible payloads, e.g. a Linux kernel.
+
+
+Payloads
+--------
+
+After the basic initialization of the hardware has been performed, any
+desired "payload" can be started by LinuxBIOS. Examples include:
+
+ * A Linux kernel
+ * FILO (a simple bootloader with filesystem support)
+ * OpenBIOS (a free IEEE1275-1994 Open Firmware implementation)
+ * Etherboot (for network booting and booting from raw IDE or FILO)
+ * ADLO (for booting Windows 2000 or OpenBSD)
+ * Plan 9 (a distributed operating system)
+ * memtest86 (for testing your RAM)
+
+
+Supported Hardware
+------------------
+
+LinuxBIOS supports a wide range of chipsets, devices, and mainboards.
+
+For details please consult:
+
+ * http://www.linuxbios.org/Supported_Motherboards
+ * http://www.linuxbios.org/Supported_Chipsets_and_Devices
+
+
+Website and Mailing List
+------------------------
+
+Further details on the project, a FAQ, many HOWTOs, news, development
+guidelines and more can be found on the LinuxBIOS website:
+
+  http://www.linuxbios.org
+
+You can contact us directly on the LinuxBIOS mailing list:
+
+  http://www.linuxbios.org/Mailinglist
+
+
+Copyright and License
+---------------------
+
+The copyright on LinuxBIOS is owned by quite a large number of individual
+developers and companies. Please check the individual source files for details.
+
+LinuxBIOS is licensed under the terms of the GNU General Public License (GPL).
+Some files are licensed under the "GPL (version 2, or any later version)",
+and some files (mostly those derived from the Linux kernel) are licensed under
+the "GPL, version 2". For some parts, which were derived from other projects,
+other (GPL-compatible) licenses may apply. Please check the individual
+source files for details.
+

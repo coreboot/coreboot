@@ -58,7 +58,7 @@ default ::= 'default' ID '=' (``value'' | term)
 # as they are specified. To attach a superio to a southbridge, for
 # example, one would do this:
 # southbridge acer/5432 
-#   superio NSC/123 
+#   superio nsc/123 
 #   end 
 # end
 # the tool generates static initializers for this hierarchy.
@@ -234,7 +234,7 @@ end
 southbridge amd/amd8111
 end
 #mainboardinit arch/i386/smp/secondary.inc
-superio NSC/pc87360
+superio nsc/pc87360
 	register "com1={1} com2={0} floppy=1 lpt=1 keyboard=1"
 end
 dir /pc80

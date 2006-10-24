@@ -148,7 +148,7 @@ chip northbridge/amd/amdk8/root_complex
 						device pci 1.0 on end
 					end
 					device pci 1.0 on
-						chip superio/NSC/pc87360
+						chip superio/nsc/pc87360
 							device pnp 2e.0 off    # Floppy 
 								 io 0x60 = 0x3f0
 								irq 0x70 = 6

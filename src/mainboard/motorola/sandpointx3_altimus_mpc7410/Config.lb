@@ -14,7 +14,7 @@ chip northbridge/motorola/mpc107
 		device pci 0.0 on end
 		device pci b.0 on
 			chip southbridge/winbond/w83c553
-				chip superio/NSC/pc97307
+				chip superio/nsc/pc97307
 					device pnp 15c.0 on end # Kyeboard
 					device pnp 15c.1 on end # Mouse
 					device pnp 15c.2 on end # Real-time Clock

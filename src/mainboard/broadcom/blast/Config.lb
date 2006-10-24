@@ -217,7 +217,7 @@ chip northbridge/amd/amdk8/root_complex
 					end
                                         device pci 1.1 on end # IDE        0x0214
                                         device pci 1.2 on     # LPC        0x0234
-                                                chip superio/NSC/pc87417
+                                                chip superio/nsc/pc87417
                                                         device  pnp 2e.0 off  # Floppy
                                                                  io 0x60 = 0x3f0
                                                                 irq 0x70 = 6

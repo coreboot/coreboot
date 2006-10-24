@@ -22,7 +22,7 @@
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
 #include <cpu/amd/model_fxx_rev.h>
-#include "superio/NSC/pc87360/pc87360_early_serial.c"
+#include "superio/nsc/pc87360/pc87360_early_serial.c"
 #include "cpu/amd/mtrr/amd_earlymtrr.c"
 #include "cpu/x86/bist.h"
 

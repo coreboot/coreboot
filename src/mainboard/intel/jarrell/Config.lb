@@ -163,7 +163,7 @@ chip northbridge/intel/E7520
 				end
 			end
 			device pci 1f.0 on 
-				chip superio/NSC/pc87427
+				chip superio/nsc/pc87427
 					device pnp 2e.0 off end
 					device pnp 2e.2 on
 #						 io 0x60 = 0x2f8

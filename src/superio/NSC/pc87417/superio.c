@@ -17,7 +17,7 @@
 
 static void init(device_t dev)
 {
-	struct superio_NSC_pc87417_config *conf;
+	struct superio_nsc_pc87417_config *conf;
 	struct resource *res0, *res1;
 	/* Wishlist handle well known programming interfaces more
 	 * generically.
@@ -71,7 +71,7 @@ static void enable_dev(struct device *dev)
 		sizeof(pnp_dev_info)/sizeof(pnp_dev_info[0]), pnp_dev_info);
 }
 
-struct chip_operations superio_NSC_pc87417_ops = {
+struct chip_operations superio_nsc_pc87417_ops = {
 	CHIP_NAME("NSC pc87417")
 	.enable_dev = enable_dev,
 };

@@ -9,7 +9,7 @@
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
-#include "superio/NSC/pc87360/pc87360_early_serial.c"
+#include "superio/nsc/pc87360/pc87360_early_serial.c"
 #include "cpu/x86/bist.h"
 #include "cpu/x86/msr.h"
 #include <cpu/amd/gx2def.h>

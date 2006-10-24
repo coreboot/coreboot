@@ -47,7 +47,7 @@ static void post_code(uint8_t value) {
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
-#include "superio/NSC/pc87417/pc87417_early_serial.c"
+#include "superio/nsc/pc87417/pc87417_early_serial.c"
 
 #include "cpu/amd/mtrr/amd_earlymtrr.c"
 #include "cpu/x86/bist.h"

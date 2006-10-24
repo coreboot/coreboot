@@ -10,7 +10,7 @@
 
 static void init(device_t dev)
 {
-	struct superio_NSC_pc97307_config *conf;
+	struct superio_nsc_pc97307_config *conf;
 	struct resource *res0, *res1;
 
 	if (!dev->enabled) {
@@ -82,7 +82,7 @@ static void enable_dev(struct device *dev)
 		sizeof(pnp_dev_info)/sizeof(pnp_dev_info[0]), pnp_dev_info);
 }
 
-struct chip_operations superio_NSC_pc97307_ops = {
+struct chip_operations superio_nsc_pc97307_ops = {
 	CHIP_NAME("NSC 97307")
 	.enable_dev = enable_dev,
 };

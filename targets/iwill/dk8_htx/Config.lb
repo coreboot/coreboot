@@ -1,6 +1,6 @@
 
 target dk8_htx
-mainboard Iwill/dk8_htx
+mainboard iwill/dk8_htx
 
 # serengeti_leopard
 romimage "normal"

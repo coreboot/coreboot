@@ -130,7 +130,7 @@ mainboardinit cpu/x86/mmx/disable_mmx.inc
 dir /pc80
 config chip.h
 
-# config for Iwill/DK8S2
+# config for iwill/dk8s2
 chip northbridge/amd/amdk8/root_complex
 	device pci_domain 0 on
 		chip northbridge/amd/amdk8

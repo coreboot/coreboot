@@ -4,7 +4,7 @@
 
 target dk8s2
 
-mainboard Iwill/DK8S2
+mainboard iwill/dk8s2
 
 option HAVE_HARD_RESET=1
 

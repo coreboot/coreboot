@@ -5,7 +5,7 @@
 #include <device/pci_ops.h>
 #include "chip.h"
 
-struct chip_operations mainboard_Iwill_DK8X_ops = {
+struct chip_operations mainboard_iwill_dk8x_ops = {
 	CHIP_NAME("Iwill DK8X mainboard")
 };
 

@@ -1,4 +1,4 @@
-.TH ABUILD 1 "September 19, 2006"
+.TH ABUILD 1 "October 24, 2006"
 .SH NAME
 abuild \- build LinuxBIOS images for all available targets
 .SH SYNOPSIS
@@ -41,6 +41,11 @@ The file will be called
 .B abuild.xml
 and will be created in the current directory.
 .TP
+.B "\-T, \-\-test"
+Submit generated image(s) to the automated test system.
+The results of the tests will be made available at 
+.B http://qa.linuxbios.org/log_manual.php
+.TP
 .B "\-v, \-\-verbose"
 More verbose output.
 .TP
@@ -62,7 +67,7 @@ is covered by the GNU General Public License (GPL), version 2 or later.
 .br
 2006 coresystems GmbH
 .SH AUTHORS
-Stefan Reinauer <stepan@openbios.org>
+Stefan Reinauer <stepan@coresystems.de>
 .PP
 This manual page was written by Uwe Hermann <uwe@hermann-uwe.de>.
 It is licensed under the terms of the GNU GPL (v2 or later).

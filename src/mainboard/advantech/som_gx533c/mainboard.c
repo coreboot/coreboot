@@ -7,6 +7,6 @@
 #include "chip.h"
 
 struct chip_operations mainboard_advantech_som_gx533c_ops = {
-	CHIP_NAME("Advantech SOM GX DB533-C mainboard ")
+	CHIP_NAME("Advantech SOM GX DB533-C mainboard")
 };
 

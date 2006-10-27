@@ -7,6 +7,6 @@
 
 #if CONFIG_CHIP_NAME == 1
 struct chip_operations mainboard_tyan_s4880_ops = {
-	CHIP_NAME("Tyan s4880 mainboard")
+	CHIP_NAME("Tyan S4880 mainboard")
 };
 #endif

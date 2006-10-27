@@ -41,6 +41,6 @@ void write_protect_vgabios(void)
 }
 
 struct chip_operations mainboard_via_epia_m_ops = {
-	CHIP_NAME("VIA EPIA-M mainboard ")
+	CHIP_NAME("VIA EPIA-M mainboard")
 };
 

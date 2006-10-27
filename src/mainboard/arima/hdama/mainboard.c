@@ -11,6 +11,6 @@
 
 
 struct chip_operations mainboard_arima_hdama_ops = {
-	CHIP_NAME("Arima Hdama mainboard")
+	CHIP_NAME("Arima HDAMA mainboard")
 };
 

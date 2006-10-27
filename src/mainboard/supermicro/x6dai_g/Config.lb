@@ -132,7 +132,7 @@ mainboardinit cpu/x86/mmx/disable_mmx.inc
 dir /pc80
 config chip.h
 
-chip northbridge/intel/E7525 # mch
+chip northbridge/intel/e7525 # mch
 	device pci_domain 0 on
 		chip southbridge/intel/esb6300  # esb6300 
 			register "pirq_a_d" = "0x0b0a0a05"

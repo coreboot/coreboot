@@ -264,7 +264,7 @@ static void enable_dev(device_t dev)
 	}
 }
 
-struct chip_operations northbridge_intel_E7520_ops = {
+struct chip_operations northbridge_intel_e7520_ops = {
 	CHIP_NAME("Intel E7520 Northbridge")
 	.enable_dev = enable_dev,
 };

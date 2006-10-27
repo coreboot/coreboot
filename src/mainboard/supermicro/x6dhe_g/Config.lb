@@ -132,7 +132,7 @@ mainboardinit cpu/x86/mmx/disable_mmx.inc
 dir /pc80
 config chip.h
 
-chip northbridge/intel/E7520  # MCH
+chip northbridge/intel/e7520  # MCH
 	chip drivers/generic/debug  # DEBUGGING
 		device pnp 00.0 on end
 		device pnp 00.1 off end

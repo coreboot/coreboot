@@ -9,7 +9,7 @@
 #include "arch/i386/lib/console.c"
 #include "pc80/mc146818rtc_early.c"
 #include "cpu/x86/lapic/boot_cpu.c"
-#include "northbridge/intel/E7525/memory_initialized.c"
+#include "northbridge/intel/e7525/memory_initialized.c"
 
 static unsigned long main(unsigned long bist)
 {

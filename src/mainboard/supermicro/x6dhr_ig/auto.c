@@ -11,7 +11,7 @@
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
 #include "southbridge/intel/i82801er/i82801er_early_smbus.c"
-#include "northbridge/intel/E7520/raminit.h"
+#include "northbridge/intel/e7520/raminit.h"
 #include "superio/winbond/w83627hf/w83627hf.h"
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
@@ -20,7 +20,7 @@
 #include "reset.c"
 #include "x6dhr_fixups.c"
 #include "superio/winbond/w83627hf/w83627hf_early_init.c"
-#include "northbridge/intel/E7520/memory_initialized.c"
+#include "northbridge/intel/e7520/memory_initialized.c"
 #include "cpu/x86/bist.h"
 
 
@@ -69,7 +69,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-#include "northbridge/intel/E7520/raminit.c"
+#include "northbridge/intel/e7520/raminit.c"
 #include "sdram/generic_sdram.c"
 
 

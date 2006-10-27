@@ -7,7 +7,7 @@
 #include <arch/io.h>
 #include "chip.h"
                                                            
-typedef struct northbridge_intel_E7525_config config_t;
+typedef struct northbridge_intel_e7525_config config_t;
 
 static void pcie_init(struct device *dev)
 {

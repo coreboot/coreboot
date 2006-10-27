@@ -8,7 +8,7 @@
 #include "chip.h"
 #include <part/hard_reset.h>
                                                            
-typedef struct northbridge_intel_E7520_config config_t;
+typedef struct northbridge_intel_e7520_config config_t;
 
 static void pcie_init(struct device *dev)
 {

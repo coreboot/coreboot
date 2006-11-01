@@ -1,4 +1,6 @@
 /*
+ * This file is part of the LinuxBIOS project.
+ *
  * Copyright (C) 2006 Uwe Hermann <uwe@hermann-uwe.de>
  *
  * This program is free software; you can redistribute it and/or modify

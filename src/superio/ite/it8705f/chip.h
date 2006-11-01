@@ -23,9 +23,9 @@
 
 #include <uart8250.h>
 
-extern struct chip_operations superio_ITE_it8705f_ops;
+extern struct chip_operations superio_ite_it8705f_ops;
 
-struct superio_ITE_it8705f_config {
+struct superio_ite_it8705f_config {
 	struct uart8250 com1, com2;
 };
 

@@ -25,7 +25,7 @@
 
 static void init(device_t dev)
 {
-	struct superio_ITE_it8661f_config *conf;
+	struct superio_ite_it8661f_config *conf;
 	struct resource *res0, *res1;
 
 	if (!dev->enabled) {
@@ -72,7 +72,7 @@ static void enable_dev(struct device *dev)
 		sizeof(pnp_dev_info)/sizeof(pnp_dev_info[0]), pnp_dev_info);
 }
 
-struct chip_operations superio_ITE_it8661f_ops = {
+struct chip_operations superio_ite_it8661f_ops = {
 	CHIP_NAME("ITE it8661f")
 	.enable_dev = enable_dev,
 };

@@ -28,7 +28,7 @@ The specification looks like this:
 chip <name> [path=<path>] ["<configuration>"]
 \end{verbatim}
 The name is in the standard LinuxBIOS form of type/vendor/name, e.g. 
-"southbridge/intel/piix4e" or "superio/ITE/it8671f". The class of the 
+"southbridge/intel/piix4e" or "superio/ite/it8671f". The class of the 
 chip is derived from the first pathname component of the name, and the chip 
 configuration is derived from the following components. 
 
@@ -50,9 +50,9 @@ each individual chip and an array of pointers to these structures.
 For each chip, there are two structures. The structures contain control 
 information for the chip, and register initialization information. The 
 names of the structures are derived by ``flattening'' the chip name, 
-as in the current linuxbios. For example, superio/ITE/xyz uses 
-two structs, one called superio_ITE_xyz_control and one called
-superio_ITE_xyz_init. The control struct is initialized from the 
+as in the current linuxbios. For example, superio/ite/xyz uses 
+two structs, one called superio_ite_xyz_control and one called
+superio_ite_xyz_init. The control struct is initialized from the 
 chip name and path information, and has a pointer to the 
 config struct. The config struct is initialized from the quote string
 

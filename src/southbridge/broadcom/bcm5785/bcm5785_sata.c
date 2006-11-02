@@ -21,6 +21,8 @@ static void sata_init(struct device *dev)
         uint8_t *base;
 	uint8_t *mmio;
         struct resource *res;
+        unsigned int mmio_base;
+        volatile unsigned int *mmio_reg;
 	int i;
 
 	if(!(dev->path.u.pci.devfn & 7)) { // only set it in Func0
@@ -30,6 +32,21 @@ static void sata_init(struct device *dev)
 
 	        res = find_resource(dev, 0x24);
 	        base = res->base;
+
+                mmio_base = base;
+                mmio_base &= 0xfffffffc;
+                mmio_reg = (unsigned int *)( mmio_base + 0x10f0 );
+                * mmio_reg = 0x40000001;
+                mmio_reg = ( unsigned int *)( mmio_base + 0x8c );
+                * mmio_reg = 0x00ff2007;
+                mdelay( 10 );
+                * mmio_reg = 0x78592009;
+                mdelay( 10 );
+                * mmio_reg = 0x00082004;
+                mdelay( 10 );
+                * mmio_reg = 0x00002004;
+                mdelay( 10 );
+
 		//init PHY
 
 		printk_debug("init PHY...\n");

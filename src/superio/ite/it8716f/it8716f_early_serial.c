@@ -26,7 +26,7 @@
 #define SIO_INDEX                    SIO_BASE
 #define SIO_DATA                     SIO_BASE+1
 
-/* Global Configuration Registers. */
+/* Global configuration registers. */
 #define IT8716F_CONFIG_REG_CC        0x02 /* Configure Control (write-only). */
 #define IT8716F_CONFIG_REG_LDN       0x07 /* Logical Device Number. */
 #define IT8716F_CONFIG_REG_CONFIGSEL 0x22 /* Configuration Select. */
@@ -36,7 +36,7 @@
 #define IT8716F_CONFIGURATION_PORT   0x2e /* Write-only. */
 
 /* The content of IT8716F_CONFIG_REG_LDN (index 0x07) must be set to the
- * LDN the register belongs to, before you can access the register. */
+   LDN the register belongs to, before you can access the register. */
 static void it8716f_sio_write(uint8_t ldn, uint8_t index, uint8_t value)
 {
 	outb(IT8716F_CONFIG_REG_LDN, SIO_BASE);
@@ -45,7 +45,7 @@ static void it8716f_sio_write(uint8_t ldn, uint8_t index, uint8_t value)
 	outb(value, SIO_DATA);
 }
 
-/* Enable the peripheral devices on the IT8716F Super IO chip. */
+/* Enable the peripheral devices on the IT8716F Super I/O chip. */
 static void it8716f_enable_serial(device_t dev, unsigned iobase)
 {
 	/* (1) Enter the configuration state (MB PnP mode). */
@@ -61,8 +61,8 @@ static void it8716f_enable_serial(device_t dev, unsigned iobase)
 	/* (2) Modify the data of configuration registers. */
 
 	/* Select the chip to configure (if there's more than one).
-         * Set bit 7 to select JP3=1, clear bit 7 to select JP3=0.
-         * If this register is not written, both chips are configured. */
+           Set bit 7 to select JP3=1, clear bit 7 to select JP3=0.
+           If this register is not written, both chips are configured. */
 	/* it8716f_sio_write(0x00, IT8716F_CONFIG_REG_CONFIGSEL, 0x00); */
 
 	/* Enable all devices. */
@@ -78,12 +78,12 @@ static void it8716f_enable_serial(device_t dev, unsigned iobase)
 	it8716f_sio_write(IT8716F_IR,   0x30, 0x1); /* Consumer IR */
 
 	/* Select 24MHz/48MHz CLKIN (set/clear bit 0). TODO: Needed? */
-	/* it8716f_sio_write(0x00, IT8716F_CONFIG_REG_CLOCKSEL, 0x00); */
+	/* it8716f_sio_write(0x00, IT8716F_CONFIG_REG_CLOCKSEL, 0x01); */
 
 	/* Clear software suspend mode (clear bit 0). TODO: Needed? */
 	/* it8716f_sio_write(0x00, IT8716F_CONFIG_REG_SWSUSP, 0x00); */
 
 	/* (3) Exit the configuration state (MB PnP mode). */
-	it8716f_sio_write(0x00, IT8716F_CONFIG_REG_CC, 0x02); 
+	it8716f_sio_write(0x00, IT8716F_CONFIG_REG_CC, 0x02);
 }
 

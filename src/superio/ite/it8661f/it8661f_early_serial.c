@@ -26,7 +26,7 @@
 #define SIO_INDEX                  SIO_BASE
 #define SIO_DATA                   SIO_BASE+1
 
-/* Global Configuration Registers. */
+/* Global configuration registers. */
 #define IT8661F_CONFIG_REG_CC      0x02   /* Configure Control (write-only). */
 #define IT8661F_CONFIG_REG_LDN     0x07   /* Logical Device Number. */
 #define IT8661F_CONFIG_REG_LDE     0x23   /* PnP Logical Device Enable. */
@@ -35,7 +35,7 @@
 #define IT8661F_CONFIGURATION_PORT 0x0279 /* Write-only. */
 
 /* Special values used for entering MB PnP mode. The first four bytes of
- * each line determine the address port, the last four are data. */
+   each line determine the address port, the last four are data. */
 static const uint8_t init_values[] = {
 	0x6a, 0xb5, 0xda, 0xed, /**/ 0xf6, 0xfb, 0x7d, 0xbe,
 	0xdf, 0x6f, 0x37, 0x1b, /**/ 0x0d, 0x86, 0xc3, 0x61,
@@ -44,7 +44,7 @@ static const uint8_t init_values[] = {
 };
 
 /* The content of IT8661F_CONFIG_REG_LDN (index 0x07) must be set to the
- * LDN the register belongs to, before you can access the register. */
+   LDN the register belongs to, before you can access the register. */
 static void it8661f_sio_write(uint8_t ldn, uint8_t index, uint8_t value)
 {
 	outb(IT8661F_CONFIG_REG_LDN, SIO_BASE);
@@ -53,7 +53,7 @@ static void it8661f_sio_write(uint8_t ldn, uint8_t index, uint8_t value)
 	outb(value, SIO_DATA);
 }
 
-/* Enable the peripheral devices on the IT8661F Super IO chip. */
+/* Enable the peripheral devices on the IT8661F Super I/O chip. */
 static void it8661f_enable_serial(device_t dev, unsigned iobase)
 {
 	uint8_t i;
@@ -88,10 +88,10 @@ static void it8661f_enable_serial(device_t dev, unsigned iobase)
 	it8661f_sio_write(IT8661F_IR,   0x30, 0x1); /* IR */
 
 	/* Select 24MHz CLKIN (clear bit 1) and clear software suspend mode
-           (clear bit 0). */
+	   (clear bit 0). */
 	it8661f_sio_write(0x00, IT8661F_CONFIG_REG_SWSUSP, 0x00);
 
 	/* (3) Exit the configuration state (MB PnP mode). */
-	it8661f_sio_write(0x00, IT8661F_CONFIG_REG_CC, 0x02); 
+	it8661f_sio_write(0x00, IT8661F_CONFIG_REG_CC, 0x02);
 }
 

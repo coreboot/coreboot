@@ -19,7 +19,7 @@
  */
 
 /* Datasheet: http://www.datasheet4u.com/html/I/T/8/IT8673F_ITE.pdf.html */
-/* Status: untested on real hardware, but it compiles. */
+/* Status: Untested on real hardware, but it compiles. */
 
 #define IT8673F_FDC  0x00 /* Floppy */
 #define IT8673F_SP1  0x01 /* Com1 */

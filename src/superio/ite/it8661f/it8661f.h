@@ -19,7 +19,7 @@
  */
 
 /* Datasheet: http://www.ite.com.tw/product_info/PC/Brief-IT8661_2.asp */
-/* Status: untested on real hardware, but it compiles. */
+/* Status: Untested on real hardware, but it compiles. */
 
 /* This chip doesn't seem to have keyboard and mouse support. */
 

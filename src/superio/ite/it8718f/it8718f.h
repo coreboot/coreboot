@@ -19,7 +19,7 @@
  */
 
 /* Datasheet: http://www.ite.com.tw/product_info/PC/Brief-IT8718_2.asp */
-/* Status: untested on real hardware, but it compiles. */
+/* Status: Untested on real hardware, but it compiles. */
 
 #define IT8718F_FDC  0x00 /* Floppy */
 #define IT8718F_SP1  0x01 /* Com1 */

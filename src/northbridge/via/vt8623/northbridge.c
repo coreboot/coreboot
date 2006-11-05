@@ -364,6 +364,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations northbridge_via_vt8623_ops = {
-	CHIP_NAME("VIA vt8623 Northbridge")
+	CHIP_NAME("VIA VT8623 Northbridge")
 	.enable_dev = enable_dev,
 };

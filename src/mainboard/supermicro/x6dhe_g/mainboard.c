@@ -2,6 +2,6 @@
 #include "chip.h"
 
 struct chip_operations supermicro_x6dhe_g_ops = {
-    CHIP_NAME("Supermicro X6DHE-G mainboard")
+    CHIP_NAME("Supermicro X6DHE-G Mainboard")
 };
 

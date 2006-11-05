@@ -98,6 +98,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations northbridge_ibm_cpc925_ops = {
-	CHIP_NAME("CPC925")
+	CHIP_NAME("IBM CPC925 Northbridge")
 	.enable_dev = enable_dev,
 };

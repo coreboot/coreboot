@@ -2,5 +2,5 @@
 #include "chip.h"
 
 struct chip_operations cpu_amd_socket_AM2_ops = {
-	CHIP_NAME("socket AM2")
+	CHIP_NAME("Socket AM2 CPU")
 };

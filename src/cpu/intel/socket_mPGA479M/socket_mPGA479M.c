@@ -3,5 +3,5 @@
 
 
 struct chip_operations cpu_intel_socket_mPGA479M_ops = {
-	CHIP_NAME("socket mPGA479M")
+	CHIP_NAME("Socket mPGA479M CPU")
 };

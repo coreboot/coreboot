@@ -3,5 +3,5 @@
 
 
 struct chip_operations cpu_intel_socket_PGA370_ops = {
-	CHIP_NAME("socket PGA370")
+	CHIP_NAME("Socket PGA370 CPU")
 };

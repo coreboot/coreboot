@@ -131,6 +131,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations mainboard_olpc_btest_ops = {
-	CHIP_NAME("OLPC btest mainboard")
+	CHIP_NAME("OLPC btest Mainboard")
         .enable_dev = enable_dev,
 };

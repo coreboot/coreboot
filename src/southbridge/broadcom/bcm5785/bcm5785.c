@@ -75,6 +75,6 @@ void bcm5785_enable(device_t dev)
 }
 
 struct chip_operations southbridge_broadcom_bcm5785_ops = {
-	CHIP_NAME("Serverworks bcm5785")
+	CHIP_NAME("Serverworks BCM5785 Southbridge")
 	.enable_dev = bcm5785_enable,
 };

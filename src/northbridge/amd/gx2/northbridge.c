@@ -531,6 +531,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations northbridge_amd_gx2_ops = {
-	CHIP_NAME("AMD GX2 Northbridge")
+	CHIP_NAME("AMD GX (previously GX2) Northbridge")
 	.enable_dev = enable_dev, 
 };

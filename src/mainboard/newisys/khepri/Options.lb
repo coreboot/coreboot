@@ -110,8 +110,8 @@ default CONFIG_IOAPIC=1
 ##
 ## Clean up the motherboard id strings
 ##
-default MAINBOARD_PART_NUMBER="KHEPRI"
-default MAINBOARD_VENDOR="NEWISYS"
+default MAINBOARD_PART_NUMBER="Khepri"
+default MAINBOARD_VENDOR="Newisys"
 
 ###
 ### LinuxBIOS layout values

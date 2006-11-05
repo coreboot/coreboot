@@ -105,6 +105,6 @@ static void enable_dev(device_t dev)
 }
 
 struct chip_operations superio_winbond_w83627thf_ops = {
-	CHIP_NAME("Winbond w83627thf")
+	CHIP_NAME("Winbond W83627THF Super I/O")
 	.enable_dev = enable_dev,
 };

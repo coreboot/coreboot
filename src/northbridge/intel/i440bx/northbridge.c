@@ -181,6 +181,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations northbridge_intel_i440bx_ops = {
-	CHIP_NAME("Intel 440bx Northbridge")
+	CHIP_NAME("Intel 440BX Northbridge")
 	.enable_dev = enable_dev, 
 };

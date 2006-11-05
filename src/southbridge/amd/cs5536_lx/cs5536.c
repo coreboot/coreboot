@@ -323,7 +323,7 @@ static struct pci_driver cs5536_lx_pci_driver __pci_driver = {
 };
 
 struct chip_operations southbridge_amd_cs5536_lx_ops = {
-	CHIP_NAME("AMD cs5536 (LX)")
+	CHIP_NAME("AMD Geode CS5536 (LX) Southbridge")
 	/* This only called when this device is listed in the 
 	* static device tree.
 	*/

@@ -48,6 +48,6 @@ void i82801ca_enable(device_t dev)
 }
 
 struct chip_operations southbridge_intel_i82801ca_ops = {
-	CHIP_NAME("Intel 82801ca Southbridge")
+	CHIP_NAME("Intel 82801CA Southbridge")
 	.enable_dev = i82801ca_enable,
 };

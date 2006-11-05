@@ -53,7 +53,7 @@ option CONFIG_IOAPIC=1
 ### Clean up the motherboard id strings
 ###
 option MAINBOARD_PART_NUMBER="DK8S2"
-option MAINBOARD_VENDOR="Iwill"
+option MAINBOARD_VENDOR="IWILL"
 #
 ###
 ### Compute the location and size of where this firmware image

@@ -92,6 +92,6 @@ static void vt8235_enable(struct device *dev)
 }
 
 struct chip_operations southbridge_via_vt8235_ops = {
-	CHIP_NAME("VIA vt8235")
+	CHIP_NAME("VIA VT8235 Southbridge")
 	.enable_dev = vt8235_enable,
 };

@@ -53,7 +53,7 @@ static void pnp_exit_conf_state(device_t dev);
 
 
 struct chip_operations superio_smsc_lpc47n217_ops = {
-	CHIP_NAME("smsc lpc47n217")
+	CHIP_NAME("SMSC LPC47N217 Super I/O")
 	.enable_dev = enable_dev,
 };
 

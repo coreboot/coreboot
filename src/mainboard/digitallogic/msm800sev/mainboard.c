@@ -62,7 +62,7 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations mainboard_digitallogic_msm800sev_ops = {
-	CHIP_NAME("DIGITAL-LOGIC MSM800SEV mainboard")
+	CHIP_NAME("DIGITAL-LOGIC MSM800SEV Mainboard")
         .enable_dev = enable_dev,
 };
 

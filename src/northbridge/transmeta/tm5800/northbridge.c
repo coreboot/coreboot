@@ -150,6 +150,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations northbridge_transmeta_tm5800_control = {
-	CHIP_NAME("Transmeta tm5800 Northbridge")
+	CHIP_NAME("Transmeta TM5800 Northbridge")
 	.enable_dev = enable_dev, 
 };

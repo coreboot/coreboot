@@ -217,6 +217,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations superio_via_vt1211_ops = {
-	CHIP_NAME("VIA vt1211")
+	CHIP_NAME("VIA VT1211 Super I/O")
 	.enable_dev = enable_dev,
 };

@@ -192,6 +192,6 @@ void ck804_enable(device_t dev)
 }
 
 struct chip_operations southbridge_nvidia_ck804_ops = {
-	CHIP_NAME("Nvidia ck804")
+	CHIP_NAME("NVIDIA CK804 Southbridge")
 	.enable_dev = ck804_enable,
 };

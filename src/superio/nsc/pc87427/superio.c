@@ -72,6 +72,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations superio_nsc_pc87427_ops = {
-	CHIP_NAME("NSC 87427")
+	CHIP_NAME("NSC PC87427 Super I/O")
 	.enable_dev = enable_dev,
 };

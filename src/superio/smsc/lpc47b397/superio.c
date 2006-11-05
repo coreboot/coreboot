@@ -211,7 +211,7 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations superio_smsc_lpc47b397_ops = {
-	CHIP_NAME("smsc lpc47b397")
+	CHIP_NAME("SMSC LPC47B397 Super I/O")
 	.enable_dev = enable_dev,
 };
 

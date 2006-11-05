@@ -630,7 +630,7 @@ int elfboot(struct lb_memory *mem)
 			printk_spew("NO header at %d\n", i);
 			continue;
 		}
-		printk_debug("Found ELF candiate at offset %d\n", i);
+		printk_debug("Found ELF candidate at offset %d\n", i);
 		/* Sanity check the elf header */
 		if ((ehdr->e_type == ET_EXEC) &&
 			elf_check_arch(ehdr) &&

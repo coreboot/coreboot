@@ -77,6 +77,37 @@ static int enable_flash_sis630(struct pci_dev *dev, char *name)
 	return 0;
 }
 
+/* Datasheet: http://www.intel.com/design/intarch/datashts/290562.htm */
+static int enable_flash_piix4(struct pci_dev *dev, char *name)
+{
+	uint16_t old, new;
+	uint16_t xbcs = 0x4e; /* X-Bus Chip Select register. */
+
+	old = pci_read_word(dev, xbcs);
+
+	/* Set bit 9: 1-Meg Extended BIOS Enable (PCI master accesses to
+                      FFF00000-FFF7FFFF are forwarded to ISA).
+           Set bit 7: Extended BIOS Enable (PCI master accesses to
+                      FFF80000-FFFDFFFF are forwarded to ISA).
+           Set bit 6: Lower BIOS Enable (PCI master, or ISA master accesses to
+                      the lower 64-Kbyte BIOS block (E00000­EFFFF) at the top
+                      of 1 Mbyte, or the aliases at the top of 4 Gbyte
+                      (FFFE0000-FFFEFFF) result in the generation of BIOSCS#.
+           Set bit 2: BIOSCS# Write Protect Enable (1=enable, 0=disable). */
+	new = old | 0x2c4;
+
+	if (new == old)
+		return 0;
+
+	pci_write_word(dev, xbcs, new);
+
+	if (pci_read_word(dev, xbcs) != new) {
+		printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n", xbcs, new, name);
+		return -1;
+	}
+	return 0;
+}
+
 static int enable_flash_ich(struct pci_dev *dev, char *name, int bios_cntl)
 {
 	/* register 4e.b gets or'ed with one */
@@ -362,6 +393,7 @@ typedef struct penable {
 
 static FLASH_ENABLE enables[] = {
 	{0x1039, 0x0630, "SIS630", enable_flash_sis630},
+	{0x8086, 0x7110, "PIIX4/PIIX4E/PIIX4M", enable_flash_piix4},
 	{0x8086, 0x2410, "ICH", enable_flash_ich_4e},
 	{0x8086, 0x2420, "ICH0", enable_flash_ich_4e},
 	{0x8086, 0x2440, "ICH2", enable_flash_ich_4e},

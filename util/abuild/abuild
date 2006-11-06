@@ -163,7 +163,7 @@ EOF
 
 	sed -i.pre -e s,VENDOR,$VENDOR,g \
 		-e s,MAINBOARD,$MAINBOARD,g \
-		-e s,PAYLOAD,$PAYLOAD,g \
+		-e s,payload\ PAYLOAD,payload\ $PAYLOAD,g \
 		-e s,CROSSCC,"$CC",g \
 		-e s,CROSS_PREFIX,"$CROSS_COMPILE",g \
 		-e s,CROSS_HOSTCC,"$HOSTCC",g \

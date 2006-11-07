@@ -1,0 +1,87 @@
+LinuxBIOS Archiver: lar
+-----------------------
+
+TOC
+- Introduction
+- Usage
+- Archive format
+- TODO
+- ChangeLog
+
+Introduction
+------------
+
+This is a simple archiver, similar to cpio, ar or tar.
+
+Design goals were
+ - minimum overhead
+ - maximum fault tolerance
+ - simplicity
+
+For a usage example see example.c
+
+For questions contact Stefan Reinauer <stepan@coresystems.de>
+
+Usage
+-----
+
+Create archive archive.lar containting files file1 ... fileN
+
+  $ lar c archive.lar file1 ... fileN
+
+
+Extract files from archive.lar
+
+  $ lar x archive.lar [file1 .. fileN]
+
+List files in archive:
+
+  $ lar l archive.lar
+
+
+Archive format
+--------------
+
+The rough format is:
+
+ |--------------|
+ |  header      |
+ |--------------|
+ |  data        |
+ |--------------|
+ |  header      |
+ |--------------|
+ |  data        |
+ |--------------|
+  ...
+
+Headers have to be 16 byte aligned.
+
+ |--------------------|
+ |  magic (8byte)     |
+ |--------------------|
+ |  length (4byte)    |
+ |--------------------|
+ |  checksum (4byte)  |
+ |--------------------|
+ | offset to blob (4b)|
+ |--------------------|
+ | "path name"        | <-- null terminated, aligned to 16b
+ |--------------------|
+ | blob (aligned 16b) |
+ |--------------------|
+
+
+TODO
+----
+
+* reading flash layouts
+* This does not enforce any alignment yet
+* Alignment enforcing will be optional.
+
+
+ChangeLog
+
+2006/10/9
+ - inital version
+

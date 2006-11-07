@@ -31,6 +31,7 @@
 #ifndef PCI_H
 #define PCI_H
 
+#include <arch/types.h>
 #include <device/pci_def.h>
 #include <device/resource.h>
 #include <device/device.h>
@@ -45,12 +46,17 @@ struct pci_operations {
 
 /* Common pci bus operations */
 struct pci_bus_operations {
-	uint8_t (*read8)   (struct bus *pbus, unsigned char bus, int devfn, int where);
-	uint16_t (*read16) (struct bus *pbus, unsigned char bus, int devfn, int where);
-	uint32_t (*read32) (struct bus *pbus, unsigned char bus, int devfn, int where);
-	void (*write8)  (struct bus *pbus, unsigned char bus, int devfn, int where, uint8_t val);
-	void (*write16) (struct bus *pbus, unsigned char bus, int devfn, int where, uint16_t val);
-	void (*write32) (struct bus *pbus, unsigned char bus, int devfn, int where, uint32_t val);
+	u8 (*read8)(struct bus *pbus, unsigned char bus, int devfn, int where);
+	u16 (*read16)(struct bus *pbus, unsigned char bus, int devfn,
+	              int where);
+	u32 (*read32)(struct bus *pbus, unsigned char bus, int devfn,
+	              int where);
+	void (*write8)(struct bus *pbus, unsigned char bus, int devfn,
+	               int where, u8 val);
+	void (*write16)(struct bus *pbus, unsigned char bus, int devfn,
+	                int where, u16 val);
+	void (*write32)(struct bus *pbus, unsigned char bus, int devfn,
+	                int where, u32 val);
 };
 
 struct pci_driver {
@@ -81,9 +87,9 @@ unsigned int do_pci_scan_bridge(device_t bus, unsigned int max,
 		unsigned min_devfn, unsigned max_devfn, unsigned int max));
 unsigned int pci_scan_bridge(device_t bus, unsigned int max);
 unsigned int pci_scan_bus(struct bus *bus, unsigned min_devfn, unsigned max_devfn, unsigned int max);
-uint8_t pci_moving_config8(struct device *dev, unsigned reg);
-uint16_t pci_moving_config16(struct device *dev, unsigned reg);
-uint32_t pci_moving_config32(struct device *dev, unsigned reg);
+u8 pci_moving_config8(struct device *dev, unsigned reg);
+u16 pci_moving_config16(struct device *dev, unsigned reg);
+u32 pci_moving_config32(struct device *dev, unsigned reg);
 unsigned pci_find_next_capability(device_t dev, unsigned cap, unsigned last);
 unsigned pci_find_capability(device_t dev, unsigned cap);
 struct resource *pci_get_resource(struct device *dev, unsigned long index);

@@ -17,7 +17,7 @@
 #ifndef CONSOLE_CONSOLE_H_
 #define CONSOLE_CONSOLE_H_
 
-#include <stdint.h>
+#include <arch/types.h>
 #include <console/loglevel.h>
 
 void console_init(void);
@@ -25,7 +25,7 @@ void console_tx_byte(unsigned char byte);
 void console_tx_flush(void);
 unsigned char console_rx_byte(void);
 int console_tst_byte(void);
-void post_code(uint8_t value);
+void post_code(u8 value);
 void die(const char *msg);
 
 struct console_driver {

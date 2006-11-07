@@ -77,7 +77,12 @@ static int enable_flash_sis630(struct pci_dev *dev, char *name)
 	return 0;
 }
 
-/* Datasheet: http://www.intel.com/design/intarch/datashts/290562.htm */
+/* Datasheet:
+ *   - Name: 82371AB PCI-TO-ISA / IDE XCELERATOR (PIIX4)
+ *   - URL: http://www.intel.com/design/intarch/datashts/290562.htm
+ *   - PDF: http://www.intel.com/design/intarch/datashts/29056201.pdf
+ *   - Order Number: 290562-001
+ */
 static int enable_flash_piix4(struct pci_dev *dev, char *name)
 {
 	uint16_t old, new;
@@ -90,10 +95,11 @@ static int enable_flash_piix4(struct pci_dev *dev, char *name)
            Set bit 7: Extended BIOS Enable (PCI master accesses to
                       FFF80000-FFFDFFFF are forwarded to ISA).
            Set bit 6: Lower BIOS Enable (PCI master, or ISA master accesses to
-                      the lower 64-Kbyte BIOS block (E00000­EFFFF) at the top
+                      the lower 64-Kbyte BIOS block (E0000-EFFFF) at the top
                       of 1 Mbyte, or the aliases at the top of 4 Gbyte
-                      (FFFE0000-FFFEFFF) result in the generation of BIOSCS#.
-           Set bit 2: BIOSCS# Write Protect Enable (1=enable, 0=disable). */
+                      (FFFE0000-FFFEFFFF) result in the generation of BIOSCS#.
+           Note: Accesses to FFFF0000-FFFFFFFF are always forwarded to ISA.
+           Set bit 2: BIOSCS# Write Enable (1=enable, 0=disable). */
 	new = old | 0x2c4;
 
 	if (new == old)

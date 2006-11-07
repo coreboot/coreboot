@@ -23,6 +23,6 @@
 #include "dtc.h"
 
 struct chip_operations mainboard_emulation_qemu_i386_ops = {
-	"qemu mainboard "
+	.name = "QEMU Mainboard"
 };
 

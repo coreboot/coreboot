@@ -17,7 +17,7 @@
 #ifndef RESOURCE_H
 #define RESOURCE_H
 
-#include <arch/types.h>
+#include <stdint.h>
 
 #define IORESOURCE_BITS		0x000000ff	/* Bus-specific bits */
 
@@ -78,7 +78,7 @@
 #define IORESOURCE_MEM_EXPANSIONROM	(1<<6)
 
 
-typedef u64 resource_t;
+typedef uint64_t resource_t;
 struct resource {
 	resource_t base;	/* Base address of the resource */
 	resource_t size;	/* Size of the resource */

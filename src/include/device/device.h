@@ -17,7 +17,7 @@
 #ifndef DEVICE_H
 #define DEVICE_H
 
-#include <arch/types.h>
+#include <stdint.h>
 #include <device/resource.h>
 #include <device/path.h>
 
@@ -87,7 +87,7 @@ struct device {
 	unsigned int    on_mainboard : 1;
 	unsigned long   rom_address;
 
-	u8 command;
+	uint8_t command;
 
 	/* Base registers for this device. I/O, MEM and Expansion ROM */
 	struct resource resource[MAX_RESOURCES];

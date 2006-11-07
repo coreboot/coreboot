@@ -95,14 +95,17 @@ int write_sst_fwhub(struct flashchip *flash, uint8_t *buf)
 	    flash->page_size;
 	volatile uint8_t *bios = flash->virt_addr;
 
-	// Do we want block wide erase?
+	// FIXME: We want block wide erase instead of ironing the whole chip
 	erase_sst_fwhub(flash);
 	
-	// FIXME: This test is not sufficient!
-	if (*bios != 0xff) {
-		printf("ERASE FAILED\n");
-		return -1;
+	// dumb check if erase was successful.
+	for (i=0; i < total_size; i++) {
+		if (bios[i] != 0xff) {
+			printf("ERASE FAILED\n");
+			return -1;
+		}
 	}
+
 	printf("Programming Page: ");
 	for (i = 0; i < total_size / page_size; i++) {
 		printf("%04d at address: 0x%08x", i, i * page_size);

@@ -1,0 +1,732 @@
+#LyX 1.4.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 245
+\begin_document
+\begin_header
+\textclass latex8
+\language english
+\inputencoding default
+\fontscheme default
+\graphics default
+\paperfontsize 10
+\spacing single
+\papersize default
+\use_geometry false
+\use_amsmath 0
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 2
+\tocdepth 2
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle empty
+\tracking_changes false
+\output_changes true
+\end_header
+
+\begin_body
+
+\begin_layout Title
+LinuxBIOS boot structure
+\newline
+LA-UR-06-7928
+\end_layout
+
+\begin_layout Author
+New LinuxBIOS group
+\newline
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+thispagestyle{empty}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Abstract
+This is the new linuxbios boot architectures
+\end_layout
+
+\begin_layout Section
+Introduction
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Standard
+rae Sat Jun 20 18:39:35 1998
+\end_layout
+
+\begin_layout Standard
+Section number will appear correctly on paper.
+\end_layout
+
+\begin_layout Standard
+That is, "1." instead of just "1"
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The new LinuxBIOS boot architecture depends on CAR, with payloads appearing
+ as files in a cpio archive.
+ The device tree is defined by a device tree blob (DTB) and all the activities
+ flow from that.
+ For now, the DTC will produce a standard V2 device tree; this will, we
+ hope, be improved.
+ romcc is gone.
+ 
+\end_layout
+
+\begin_layout Standard
+Required attributes of a CPU for V3: 
+\end_layout
+
+\begin_layout Itemize
+Supports CAR
+\end_layout
+
+\begin_layout Standard
+Required platform attributes: 
+\end_layout
+
+\begin_layout Section
+Goal 
+\end_layout
+
+\begin_layout Subsection
+Design Goals 
+\end_layout
+
+\begin_layout Itemize
+remove linuxbios tree -- people found it too confusing.
+ 
+\end_layout
+
+\begin_layout Itemize
+Make the device tree format from open firmware the focus of the linuxbios
+ code
+\end_layout
+
+\begin_layout Subsection
+Features
+\end_layout
+
+\begin_layout Section
+FLASH layout
+\end_layout
+
+\begin_layout Standard
+Shown in 
+\begin_inset LatexCommand \ref{fig:FLASH-layout}
+
+\end_inset
+
+ is the layout of the whole FLASH.
+ Note that we can kill buildrom tool, since the FLASH code is now a CPIO
+ archive.
+ Note that the linker script will now be very simple.
+ The initram is roughly what is in auto.c, although the early hardware setup
+ from auto.c is now in the pre-initram, so that we have serial output and
+ other capabilities.
+ The FLASH recovery is interesting: in hopeless cases, the serial port can
+ be used to load a new flash image, and allow a successful boot from a totally
+ hosed machine.
+ VPD includes data such as the MAC address, instance of the motherboard,
+ etc.
+ The DTB can be modified by the flashrom tool, and hence a platform can
+ be customized from a binary FLASH image.
+ Each CPIO file has a checksum attached to the end, so that the system can
+ verify that the data is uncorrupted.
+ We now build at least four targets for a platform:
+\end_layout
+
+\begin_layout Itemize
+basic startup and CAR (in most cases, same for all processors of a given
+ type)
+\end_layout
+
+\begin_layout Itemize
+Pre-initram device setup (large FLASH, serial port, etc.)
+\end_layout
+
+\begin_layout Itemize
+initram
+\end_layout
+
+\begin_layout Itemize
+Traditional linuxbios ram code (LAR, etc.)
+\end_layout
+
+\begin_layout Itemize
+Load payload and start it
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{fig:FLASH-layout}
+
+\end_inset
+
+FLASH layout
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename flashlayout.eps
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Boot Process
+\end_layout
+
+\begin_layout Subsection
+Stage 0: Basic startup (ASM, PIC)
+\end_layout
+
+\begin_layout Subsection
+Stage 1: CAR (ASM, PIC)
+\end_layout
+
+\begin_layout Standard
+This is a standard cache-as-ram .s file for the architecture.
+ 
+\end_layout
+
+\begin_layout Subsection
+Stage 2: 
+\end_layout
+
+\begin_layout Enumerate
+Bzero an (e.g.) 4K block of cache (it is 4K now).
+ (ASM, PIC)
+\end_layout
+
+\begin_layout Enumerate
+Set up a stack variable so that we have stack and auto in that cache (ASM,
+ PIC)
+\end_layout
+
+\begin_layout Enumerate
+preboot hardware, as from auto.c (C)
+\end_layout
+
+\begin_layout Enumerate
+Decide whether we can proceed or must recover from serial port.
+ (C)
+\end_layout
+
+\begin_layout Enumerate
+checksum the top flash 
+\begin_inset Quotes eld
+\end_inset
+
+boot area
+\begin_inset Quotes erd
+\end_inset
+
+, if it is bad then ...
+ reover from serial port (C, PIC).
+ We can definitely reflash CPIO archive, but NOTE: reflashing the boot block
+ is tricky ...
+ (C)
+\end_layout
+
+\begin_layout Subsection
+Stage 3
+\end_layout
+
+\begin_layout Enumerate
+Examine the flash.
+ Look in DTB option node, normal property for directory named by the boot
+ type (e.g.
+ 'normal', 
+\begin_inset Quotes eld
+\end_inset
+
+fallback', etc.) (C)
+\end_layout
+
+\begin_layout Enumerate
+In that directory, need 'initram', 'payload.ext', and others.
+ make sure that in '/', ther eis a decompressor of the irght type for each
+ extension needed.
+ (C)
+\end_layout
+
+\begin_layout Subsection
+Stage 4
+\end_layout
+
+\begin_layout Enumerate
+Each file has a four-byte checksum at end.
+ Check the checksum for each one.
+ (C)
+\end_layout
+
+\begin_layout Enumerate
+If all the tests pass, run each one, in order, decompressing those which
+ need it.
+ The last one might not return.
+ If the checksum fails, If the test fails, use the backup property in the
+ option node to find a backup.
+ initram is (C, PIC) as it must execute in place.
+ The linuxbios payload will be uncompressed to RAM, and is in C, but need
+ not be PIC.
+ 
+\end_layout
+
+\begin_layout Subsection
+Stage 5
+\end_layout
+
+\begin_layout Section
+The static tree
+\end_layout
+
+\begin_layout Standard
+The static tree is generated from the DTS.
+ Shown is a sample DTS, for qemu.
+ Note that we don't fill out all properties of each node, e.g.
+ the northbridge.
+ The sum total of all properties is found in the dts for that node in the
+ source directiory, i.e.
+ src/northbridge/intel/440bx/440bx.dts (is this name ok? Or just chip.dts?)
+\end_layout
+
+\begin_layout Quote
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+Sample DTS
+\end_layout
+
+\begin_layout LyX-Code
+/{
+\end_layout
+
+\begin_layout LyX-Code
+        model = "qemu";
+\end_layout
+
+\begin_layout LyX-Code
+        #address-cells = <1>;
+\end_layout
+
+\begin_layout LyX-Code
+        #size-cells = <1>;
+\end_layout
+
+\begin_layout LyX-Code
+        compatible = "emulation-i386,qemu";
+\end_layout
+
+\begin_layout LyX-Code
+        cpus {
+\end_layout
+
+\begin_layout LyX-Code
+                #address-cells = <1>;
+\end_layout
+
+\begin_layout LyX-Code
+                #size-cells = <0>;
+\end_layout
+
+\begin_layout LyX-Code
+                emulation,qemu-i386@0{
+\end_layout
+
+\begin_layout LyX-Code
+                        name = "emulation,qemu-i386";
+\end_layout
+
+\begin_layout LyX-Code
+                        device_type = "cpu";
+\end_layout
+
+\begin_layout LyX-Code
+                        clock-frequency = <5f5e1000>;
+\end_layout
+
+\begin_layout LyX-Code
+                        timebase-frequency = <1FCA055>;
+\end_layout
+
+\begin_layout LyX-Code
+                        linux,boot-cpu;
+\end_layout
+
+\begin_layout LyX-Code
+                        reg = <0>;
+\end_layout
+
+\begin_layout LyX-Code
+                        i-cache-size = <2000>;
+\end_layout
+
+\begin_layout LyX-Code
+                        d-cache-size = <2000>;
+\end_layout
+
+\begin_layout LyX-Code
+                };
+\end_layout
+
+\begin_layout LyX-Code
+        };
+\end_layout
+
+\begin_layout LyX-Code
+        memory@0 {
+\end_layout
+
+\begin_layout LyX-Code
+                device_type = "memory";
+\end_layout
+
+\begin_layout LyX-Code
+                reg = <00000000 20000000>;
+\end_layout
+
+\begin_layout LyX-Code
+        };
+\end_layout
+
+\begin_layout LyX-Code
+        /* the I/O stuff */
+\end_layout
+
+\begin_layout LyX-Code
+        northbridge,intel,440bx{
+\end_layout
+
+\begin_layout LyX-Code
+                associated-cpu = <&/cpus/emulation,qemu-i386@0>;
+\end_layout
+
+\begin_layout LyX-Code
+                southbridge,intel,piix4{
+\end_layout
+
+\begin_layout LyX-Code
+                        superio,nsc,sucks{
+\end_layout
+
+\begin_layout LyX-Code
+                                uart@0{ 
+\end_layout
+
+\begin_layout LyX-Code
+                                        enabled=<1>;
+\end_layout
+
+\begin_layout LyX-Code
+                                };
+\end_layout
+
+\begin_layout LyX-Code
+                        };
+\end_layout
+
+\begin_layout LyX-Code
+                };
+\end_layout
+
+\begin_layout LyX-Code
+        };
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+        chosen {
+\end_layout
+
+\begin_layout LyX-Code
+               bootargs = "root=/dev/sda2";
+\end_layout
+
+\begin_layout LyX-Code
+           linux,platform = <00000600>;
+\end_layout
+
+\begin_layout LyX-Code
+           linux,stdout-path="/dev/ttyS0";
+\end_layout
+
+\begin_layout LyX-Code
+        };
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+        options {
+\end_layout
+
+\begin_layout LyX-Code
+               normal="normal";
+\end_layout
+
+\begin_layout LyX-Code
+               fallback="fallback";
+\end_layout
+
+\begin_layout LyX-Code
+   };
+\end_layout
+
+\begin_layout LyX-Code
+};
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status collapsed
+
+\begin_layout Standard
+\begin_inset LatexCommand \bibtex[latex8]{yourbibfile}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+The major change -- the death of the static tree
+\end_layout
+
+\begin_layout Standard
+We made a decision on 12/2/2006 in the conference calle, We are going to
+ try to remove the linux static.c from linuxbios, and center all our work
+ on the OFW device tree.
+ 
+\end_layout
+
+\begin_layout Standard
+Hence, we need an idea of how this works.
+ EVERY structure dereference in the linuxbios code will now be an OFW-style
+ property operation.
+ 
+\end_layout
+
+\begin_layout Standard
+To see if this is posisble, we are ging to work through the linuxbios code
+ and see how it would look.
+ 
+\end_layout
+
+\begin_layout Standard
+Here we go!
+\end_layout
+
+\begin_layout Subsection
+basic startup and CAR (in most cases, same for all processors of a given
+ type)
+\end_layout
+
+\begin_layout Standard
+No change currently.
+ 
+\end_layout
+
+\begin_layout Subsection
+Pre-initram device setup (large FLASH, serial port, etc.)
+\end_layout
+
+\begin_layout Quote
+
+\end_layout
+
+\begin_layout Subsection
+initram
+\end_layout
+
+\begin_layout Subsection
+Traditional linuxbios ram code (LAR, etc.)
+\end_layout
+
+\begin_layout Subsection
+Load payload and start it
+\end_layout
+
+\begin_layout Section
+Conclusions
+\end_layout
+
+\begin_layout Standard
+This is great stuff.
+\end_layout
+
+\begin_layout Section
+Appendix A: issues
+\end_layout
+
+\begin_layout Itemize
+One issue I thought I should mention before all the tools start >> making
+ incorrect assumptions: on most non-x86 architectures, the >> bootblock
+ is at the start of the flash, not at the end.
+ The general >> structure of the flash layout can stay the same on such
+ systems, >> just flipped upside down.
+ 
+\end_layout
+
+\begin_layout Itemize
+move over to the xorg emulator, drop the one we have now as it is not complete
+ enough.
+ 
+\end_layout
+
+\begin_layout Section
+Comments from Peter Stuge
+\end_layout
+
+\begin_layout Itemize
+* Ridiculous and error-prone to require commands in three dirs for a build.
+ (Edit targets/foo/bar/Config.lb, run ./buildtarget foo/bar in targets and
+ finally cd targets/foo/bar/baz to make.) (Deps fail on reconfig, I've gotten
+ the wrong payload a couple of times causing annoying extra reboots/hotswaps/fla
+shes.)
+\end_layout
+
+\begin_layout Itemize
+* Flash ROM size needs to affect one option, and one option only.
+ Maybe even autodetect it for those building on the target.
+ All other sizes can and MUST be derived from this value.
+ Also: What about option ROMs? Should we aim to produce a ready-to-use lb-2.0-epi
+a.rom and require a correct (how carefully do we check?) vgabios.rom in order
+ to build with VGA support - or just dump a half- finished product in the
+ user's lap and require them to finish the puzzle on their own? Licensing
+ issues? Is "cat" considered "linking"?
+\end_layout
+
+\begin_layout Itemize
+* Any redundancy in the config/build process should be removed.
+ I must not need to type the target name more than once.
+ Brings me to..
+\end_layout
+
+\begin_layout Itemize
+* Global vs.
+ local builds - pros/cons with kernel style (global) build (always produces
+ arch/x/*Image) and LBv2 style build (produces target/x/y/z/linuxbios.rom
+ for each target) Either way the config/build system must be consistently
+ either global or local.
+\end_layout
+
+\begin_layout Itemize
+* Support for target variants? Same mobo with/without certain parts populated.
+ Perhaps just sets of default options that can be pre-selected as a base
+ config and then still allow user to change whatever they want.
+ (Kconfig has just one variant per arch, right?)
+\end_layout
+
+\begin_layout Itemize
+..basically we want a system that is able to do very complex detailed configuratio
+ns but that's also able to hide all the details behind "512KiB EPIA-MII
+ 6000E without CF addon" (hypothetical example)
+\end_layout
+
+\begin_layout Itemize
+Some boards will require more from the user, but when possible a config
+ and build should be dirt simple.
+\end_layout
+
+\begin_layout Itemize
+One idea is a kind of iterative config with increasing resolution per iteration.
+ Novice users with a known-good board need only complete the first iteration:
+ flash size, board name and board variant if any.
+ Further iterations are optional and allow increasingly specific settings.
+ Think fdisk normal/expert mode.
+\end_layout
+
+\begin_layout Itemize
+* Payload.
+ I say something must be included in the LB tree or trivially added to a
+ tree by download or command.
+ FILO is candidate for inclusion.
+ What's up with FILO(EB) and FILO(LB) ? Merge them? Make EB default payload?
+ FILO? memtest86? All about making a usable product.
+ memtest86 would have to be explicitly selected in expert mode in favor
+ of the default option that would be able to load an OS.
+ Doesn't matter much if it's only Linux right now because that's the most
+ likely boot candidate for early LB adopters.
+\end_layout
+
+\begin_layout Itemize
+* Payload config.
+ Long/tedious for EB, simple default for boards with onboard LAN, what to
+ do otherwise? Tricky for FILO.
+ (e.g.
+ EPIA-MII CF boot requires IDE+!PCI, !PCI requires !USB or build fails)
+ filesystems, devices, etc.
+\end_layout
+
+\begin_layout Itemize
+* Kernel payload and payload utilities - where to get mkelfImage? I had
+ to look hard.
+ Should it be downloaded on demand? Perhaps after the user chooses her payload?
+ Think cygwin installer that downloads selected packages.
+ Maybe a bad idea.
+\end_layout
+
+\begin_layout Itemize
+* Consistent terminology - the payload seems to have many names in the decompres
+sion code.
+ ;) 
+\end_layout
+
+\end_body
+\end_document

@@ -2,11 +2,11 @@ LinuxBIOS Archiver: lar
 -----------------------
 
 Table of Contents
- - Introduction
- - Usage
- - Archive format
- - TODO
- - ChangeLog
+  - Introduction
+  - Usage
+  - Archive format
+  - TODO
+  - ChangeLog
 
 
 Introduction
@@ -91,5 +91,5 @@ ChangeLog
 ---------
 
 2006/10/9
- - Initial version
+  - Initial version
 

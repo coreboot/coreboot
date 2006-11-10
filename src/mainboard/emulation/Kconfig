@@ -1,0 +1,20 @@
+choice
+	prompt "Board model"
+	depends on EMULATION
+
+config EMULATION_QEMU_X86
+	bool "x86 QEMU"
+	help
+	  x86 QEMU bla bla bla
+
+config EMULATION_QEMU_POWERPC
+	bool "PowerPC QEMU"
+	help
+	  PowerPC QEMU bla bla bla
+
+config EMULATION_C64
+	bool "C64 emulators"
+	help
+	  bla bla bla
+
+endchoice

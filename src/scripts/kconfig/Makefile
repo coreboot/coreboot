@@ -5,23 +5,23 @@
 PHONY += oldconfig xconfig gconfig menuconfig config silentoldconfig update-po-config
 
 xconfig: $(obj)/qconf
-	$< mainboard/$(MAINBOARD)/Kconfig
+	$< Kconfig
 
 gconfig: $(obj)/gconf
-	$< mainboard/$(MAINBOARD)/Kconfig
+	$< Kconfig
 
 menuconfig: $(obj)/mconf
 	$(Q)$(MAKE) $(build)=scripts/kconfig/lxdialog
-	$< mainboard/$(MAINBOARD)/Kconfig
+	$< Kconfig
 
 config: $(obj)/conf
-	$< mainboard/$(MAINBOARD)/Kconfig
+	$< Kconfig
 
 oldconfig: $(obj)/conf
-	$< -o mainboard/$(MAINBOARD)/Kconfig
+	$< -o Kconfig
 
 silentoldconfig: $(obj)/conf
-	$< -s mainboard/$(MAINBOARD)/Kconfig
+	$< -s Kconfig
 
 update-po-config: $(obj)/kxgettext
 	xgettext --default-domain=linux \
@@ -45,27 +45,27 @@ update-po-config: $(obj)/kxgettext
 PHONY += randconfig allyesconfig allnoconfig allmodconfig defconfig
 
 randconfig: $(obj)/conf
-	$< -r mainboard/$(MAINBOARD)/Kconfig
+	$< -r Kconfig
 
 allyesconfig: $(obj)/conf
-	$< -y mainboard/$(MAINBOARD)/Kconfig
+	$< -y Kconfig
 
 allnoconfig: $(obj)/conf
-	$< -n mainboard/$(MAINBOARD)/Kconfig
+	$< -n Kconfig
 
 allmodconfig: $(obj)/conf
-	$< -m mainboard/$(MAINBOARD)/Kconfig
+	$< -m Kconfig
 
 defconfig: $(obj)/conf
 ifeq ($(KBUILD_DEFCONFIG),)
-	$< -d mainboard/$(MAINBOARD)/Kconfig
+	$< -d Kconfig
 else
 	@echo *** Default configuration is based on '$(KBUILD_DEFCONFIG)'
-	$(Q)$< -D arch/$(ARCH)/configs/$(KBUILD_DEFCONFIG) mainboard/$(MAINBOARD)/Kconfig
+	$(Q)$< -D arch/$(ARCH)/configs/$(KBUILD_DEFCONFIG) Kconfig
 endif
 
 %_defconfig: $(obj)/conf
-	$(Q)$< -D arch/$(ARCH)/configs/$@ mainboard/$(MAINBOARD)/Kconfig
+	$(Q)$< -D arch/$(ARCH)/configs/$@ Kconfig
 
 # Help text used by make help
 help:

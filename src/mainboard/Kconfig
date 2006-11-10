@@ -1,0 +1,22 @@
+choice
+	prompt "Board vendor"
+	default EMULATION
+
+config EMULATION
+	bool "Emulated systems"
+	help
+	  Select this option for various system emulators, such as QEMU.
+
+config FROOBATZ
+	bool "Froobatz Technologies"
+	help
+	  Select this option for boards manufactured by Froobatz technologies.
+
+config CRAY
+	bool "Cray"
+	help
+	  Select this option if you have too much money and time.
+
+endchoice
+
+source "mainboard/emulation/Kconfig"

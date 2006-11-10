@@ -7,14 +7,9 @@ option DEFAULT_CONSOLE_LOGLEVEL=10
 option MAXIMUM_CONSOLE_LOGLEVEL=10
 option CONFIG_COMPRESS=0
 
-option CONFIG_CONSOLE_VGA=1
+__COMPRESSION__
 
-#romimage "normal"
-#	option USE_FALLBACK_IMAGE=0
-#	option ROM_IMAGE_SIZE=0x10000
-#	option LINUXBIOS_EXTRA_VERSION=".0Normal"
-#	payload /etc/hosts
-#end
+option CONFIG_CONSOLE_VGA=1
 
 romimage "fallback" 
 	option FALLBACK_SIZE = 256 * 1024
@@ -25,7 +20,7 @@ romimage "fallback"
 	option ROM_IMAGE_SIZE=128 * 1024 # 0x10000
 #	option ROM_IMAGE_SIZE=512 * 1024 # 0x10000
 	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
-	payload /dev/null
+	payload PAYLOAD
 end
 
 buildrom ./linuxbios.rom ROM_SIZE  "fallback"

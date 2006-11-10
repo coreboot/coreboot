@@ -105,10 +105,14 @@ function create_config
 	TARGCONFIG=$LBROOT/targets/$VENDOR/$MAINBOARD/Config-abuild.lb
 
         # get a working payload for the board if we have one.
+        # the --payload option expects a directory containing 
+	# an executable shell script payload.sh
+	#   Usage: payload.sh [VENDOR] [DEVICE]
+	# the script returns an absolute path to the payload binary.
 
 	if [ -x $payloads/payload.sh ]; then
 		PAYLOAD=`$payloads/payload.sh $VENDOR $MAINBOARD`
-		printf "Using custom payload $PAYLOAD\n"
+		printf "Using payload $PAYLOAD\n"
 	fi
 	
 	mkdir -p $TARGET
@@ -131,19 +135,21 @@ option CC="CROSSCC"
 option CROSS_COMPILE="CROSS_PREFIX"
 option HOSTCC="CROSS_HOSTCC"
 
+__COMPRESSION__
+
 EOF
 		if [ "$TARCH" == i386 ] ; then
 			cat <<EOF
 romimage "normal"
 	option USE_FALLBACK_IMAGE=0
-	option ROM_IMAGE_SIZE=0x20000
+	option ROM_IMAGE_SIZE=0x16000
 	option LINUXBIOS_EXTRA_VERSION=".0-normal"
 	payload PAYLOAD
 end
 
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
-	option ROM_IMAGE_SIZE=0x20000
+	option ROM_IMAGE_SIZE=0x16000
 	option LINUXBIOS_EXTRA_VERSION=".0-fallback"
 	payload PAYLOAD
 end
@@ -161,14 +167,20 @@ EOF
 		) > $TARGET/Config-${VENDOR}_${MAINBOARD}.lb
 	fi
 
+	if [ "`which lzma`" != "" -a "$PAYLOAD" != /dev/null ]; then
+		COMPRESSION="option CONFIG_COMPRESSED_ROM_STREAM_LZMA=1"
+	else
+		COMPRESSION="# no compression"
+	fi
+
 	sed -i.pre -e s,VENDOR,$VENDOR,g \
 		-e s,MAINBOARD,$MAINBOARD,g \
 		-e s,payload\ PAYLOAD,payload\ $PAYLOAD,g \
 		-e s,CROSSCC,"$CC",g \
 		-e s,CROSS_PREFIX,"$CROSS_COMPILE",g \
 		-e s,CROSS_HOSTCC,"$HOSTCC",g \
+		-e s,__COMPRESSION__,"$COMPRESSION",g \
 		$TARGET/Config-${VENDOR}_${MAINBOARD}.lb
-		
 	printf " ok\n"
 }
 
@@ -422,8 +434,8 @@ function myhelp
 {
 	printf "Usage: $0 [-v] [-a] [-b] [-t <vendor/board>] [-p <dir>] [lbroot]\n"
 	printf "       $0 [-V|--version]\n"
-	printf "       $0 [-h|--help]\n"
-	printf
+	printf "       $0 [-h|--help]\n\n"
+
 	printf "Options:\n"
 	printf "    [-v|--verbose]		  print more messages\n"
 	printf "    [-a|--all]			  build previously succeeded ports as well\n"

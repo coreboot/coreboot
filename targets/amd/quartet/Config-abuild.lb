@@ -1,0 +1,28 @@
+# This will make a target directory of ./VENDOR_MAINBOARD
+
+target VENDOR_MAINBOARD
+mainboard VENDOR/MAINBOARD
+
+option CC="CROSSCC"
+option CROSS_COMPILE="CROSS_PREFIX"
+option HOSTCC="CROSS_HOSTCC"
+
+__COMPRESSION__
+
+option ROM_SIZE=512*1024
+
+
+romimage "normal"
+	option USE_FALLBACK_IMAGE=0
+	option ROM_IMAGE_SIZE=0x20000
+	option LINUXBIOS_EXTRA_VERSION=".0-normal"
+	payload PAYLOAD
+end
+
+romimage "fallback" 
+	option USE_FALLBACK_IMAGE=1
+	option ROM_IMAGE_SIZE=0x20000
+	option LINUXBIOS_EXTRA_VERSION=".0-fallback"
+	payload PAYLOAD
+end
+buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"

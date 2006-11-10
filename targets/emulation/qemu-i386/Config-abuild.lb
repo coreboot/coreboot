@@ -3,6 +3,8 @@
 target emulation_qemu-i386
 mainboard emulation/qemu-i386
 
+__COMPRESSION__
+
 option ROM_SIZE=256*1024
 
 option CC="gcc -m32"

@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* 
+/*
  * Datasheet:
  *   - Name: Intel 440BX AGPset: 82443BX Host Bridge/Controller
  *   - URL: http://www.intel.com/design/chipsets/datashts/290633.htm
@@ -31,7 +31,7 @@
  * The values in parenthesis are the default values as per datasheet.
  * Any addresses between 0x00 and 0xff not listed below are either
  * Reserved or Intel Reserved and should not be touched.
- */ 
+ */
 #define VID     0x00 /* Vendor Identification (0x8086). */
 #define DID     0x02 /* Device Identification (0x7190/0x7192). */
 #define PCICMD  0x04 /* PCI Command Register (0x006). */
@@ -44,7 +44,7 @@
 #define APBASE  0x10 /* Aperture Base Configuration (0x00000008). */
 #define SVID    0x2c /* Subsystem Vendor Identification (0x0000). */
 #define SID     0x2e /* Subsystem Identification (0x0000). */
-#define CAPPTR  0x34 /* Capabilities Pointer (0xa0/0x00. */
+#define CAPPTR  0x34 /* Capabilities Pointer (0xa0/0x00). */
 #define NBXCFG  0x50 /* 440BX Configuration (0x0000:00S0_0000_000S_0S00b). */
 #define DRAMC   0x57 /* DRAM Control (00S0_0000b). */
 #define DRAMT   0x58 /* DRAM Timing (0x03). */

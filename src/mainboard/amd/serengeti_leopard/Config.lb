@@ -90,7 +90,7 @@ if HAVE_ACPI_TABLES
         object fadt.o
 	makerule dsdt.c
 		depends "$(MAINBOARD)/dx/dsdt_lb.dsl"
-		action  "/usr/sbin/iasl -tc $(MAINBOARD)/dx/dsdt_lb.dsl"
+		action  "iasl -tc $(MAINBOARD)/dx/dsdt_lb.dsl"
 		action  "mv dsdt_lb.hex dsdt.c"
 	end
         object ./dsdt.o
@@ -100,7 +100,7 @@ if HAVE_ACPI_TABLES
         if ACPI_SSDTX_NUM
             makerule ssdt2.c
                         depends "$(MAINBOARD)/dx/pci2.asl"
-                        action  "/usr/sbin/iasl -tc $(MAINBOARD)/dx/pci2.asl"
+                        action  "iasl -tc $(MAINBOARD)/dx/pci2.asl"
                         action  "perl -pi -e 's/AmlCode/AmlCode_ssdt2/g' pci2.hex"
                         action  "mv pci2.hex ssdt2.c"
             end

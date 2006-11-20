@@ -1,16 +1,20 @@
-This is the universal LinuxBIOS flash utility.
+-------------------------------------------------------------------------------
+Flashrom README
+-------------------------------------------------------------------------------
 
-build requirements
+This is the universal (LinuxBIOS) flash utility.
+
+Build Requirements
 ------------------
 
 To build the flashrom utility you need to have the following packages
-installed on your linux system:
+installed on your Linux system:
 
 * pciutils
 * pciutils-devel
 
 
-usage
+Usage
 -----
 
 usage: ./flashrom [-rwvEVfh] [-c chipname] [-s exclude_start]
@@ -33,21 +37,21 @@ usage: ./flashrom [-rwvEVfh] [-c chipname] [-s exclude_start]
  is that flash info is dumped and the flash chip is set to writable.
 
 
-LinuxBIOS table and Mainboard identification
+LinuxBIOS Table and Mainboard Identification
 --------------------------------------------
 
-flashrom reads the LinuxBIOS table to determine the current mainboard.
+Flashrom reads the LinuxBIOS table to determine the current mainboard.
 (Parse DMI as well in future?) If no LinuxBIOS table could be read
-or if you want to override these values, you can to specify -m ie.:
+or if you want to override these values, you can specify -m, e.g.:
 
-     flashrom -w --mainboard ISLAND:ARUMA island_aruma.rom
+  flashrom -w --mainboard ISLAND:ARUMA island_aruma.rom
 
 
-rom layout support
+ROM Layout Support
 ------------------
 
-flashrom supports rom layouts. This allows to flash certain parts of
-the flash chip only. A rom layout file looks like follows:
+Flashrom supports ROM layouts. This allows to flash certain parts of
+the flash chip only. A ROM layout file looks like follows:
 
   00000000:00008fff gfxrom
   00009000:0003ffff normal
@@ -58,19 +62,19 @@ the flash chip only. A rom layout file looks like follows:
 
   all addresses are offsets within the file, not absolute addresses!
   
-If you only want to update the normal image in a rom you can say:
+If you only want to update the normal image in a ROM you can say:
 
      flashrom -w --layout rom.layout --image normal island_aruma.rom
      
-To update normal and fallback but leave the vga bios alone, say:
+To update normal and fallback but leave the VGA BIOS alone, say:
 
      flashrom -w -l rom.layout -i normal -i fallback island_aruma.rom
  
-Currently overlapping sections are not spported.
+Currently overlapping sections are not supported.
 
-rom layouts should replace the -s and -e option since they are more 
-flexible and they should lead to a rom update file format with the 
-rom layout and the rom image in one file (cpio, zip or something?)
+ROM layouts should replace the -s and -e option since they are more 
+flexible and they should lead to a ROM update file format with the 
+ROM layout and the ROM image in one file (cpio, zip or something?)
 
 
 DOC support

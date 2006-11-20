@@ -114,6 +114,8 @@ struct flashchip flashchips[] = {
 #endif
 	{"LHF00L04",	SHARP_ID,		SHARP_LHF00L04,		NULL, 1024, 64 * 1024,
 	 probe_lhf00l04, erase_lhf00l04,	write_lhf00l04,	NULL},
+	{"S29C51002T", 	SM_ID, 	S29C51002T,	NULL, 256, 128,
+	 probe_jedec,	erase_chip_jedec, write_49f002, NULL},
 	{NULL,}
 };
 

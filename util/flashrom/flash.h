@@ -79,6 +79,9 @@ extern struct flashchip flashchips[];
 #define MSYSTEMS_MD2800   0x30	/* hmm -- both 0x30 */
 #define MSYSTEMS_MD2802   0x30	/* hmm -- both 0x30 */
 
+#define SM_ID		  0x40  /* SyncMOS ID */
+#define S29C51002T	  0x02
+
 extern void myusec_delay(int time);
 extern void myusec_calibrate_delay();
 extern int enable_flash_write(void);

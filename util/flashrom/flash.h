@@ -29,6 +29,9 @@ extern struct flashchip flashchips[];
 #define AM_29F040B        0xA4
 #define AM_29F016D        0xAD
 
+#define ASD_ID		  0x25
+#define ASD_AE49F2008     0x52
+
 #define ATMEL_ID          0x1F	/* Winbond Manufacture ID code        */
 #define AT_29C040A        0xA4	/* Winbond w29c020c device code */
 

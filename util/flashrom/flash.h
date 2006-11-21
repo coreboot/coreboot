@@ -80,7 +80,10 @@ extern struct flashchip flashchips[];
 #define MSYSTEMS_MD2802   0x30	/* hmm -- both 0x30 */
 
 #define SM_ID		  0x40  /* SyncMOS ID */
-#define S29C51002T	  0x02
+#define S29C51001T	  0x01  /* SyncMOS S29C51001T/B */
+#define S29C51002T	  0x02  /* SyncMOS S29C51002T/B */
+#define S29C51004T	  0x03  /* SyncMOS S29C51004T/B */
+#define S29C31004T	  0x63  /* SyncMOS S29C31004T */
 
 extern void myusec_delay(int time);
 extern void myusec_calibrate_delay();

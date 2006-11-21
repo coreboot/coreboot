@@ -28,6 +28,8 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/mman.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
@@ -332,10 +334,21 @@ int main(int argc, char *argv[])
 		fclose(image);
 		printf("done\n");
 	} else {
+		struct stat image_stat;
+
 		if ((image = fopen(filename, "r")) == NULL) {
 			perror(filename);
 			exit(1);
 		}
+		if (fstat(fileno(image), &image_stat) != 0) {
+			perror(filename);
+			exit(1);
+		}
+		if(image_stat.st_size!=flash->total_size*1024) {
+			perror("Image size doesnt match");
+			exit(1);
+		}
+
 		fread(buf, sizeof(char), size, image);
 		show_id(buf, size);
 		fclose(image);

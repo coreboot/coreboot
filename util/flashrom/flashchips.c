@@ -114,13 +114,13 @@ struct flashchip flashchips[] = {
 #endif
 	{"LHF00L04",	SHARP_ID,		SHARP_LHF00L04,		NULL, 1024, 64 * 1024,
 	 probe_lhf00l04, erase_lhf00l04,	write_lhf00l04,	NULL},
-	{"S29C51001T", 	SM_ID, 	S29C51001T,	NULL, 128, 128,
+	{"S29C51001T", 	SYNCMOS_ID, 	S29C51001T,	NULL, 128, 128,
 	 probe_jedec,	erase_chip_jedec, write_49f002, NULL},
-	{"S29C51002T", 	SM_ID, 	S29C51002T,	NULL, 256, 128,
+	{"S29C51002T", 	SYNCMOS_ID, 	S29C51002T,	NULL, 256, 128,
 	 probe_jedec,	erase_chip_jedec, write_49f002, NULL},
-	{"S29C51004T", 	SM_ID, 	S29C51004T,	NULL, 512, 128,
+	{"S29C51004T", 	SYNCMOS_ID, 	S29C51004T,	NULL, 512, 128,
 	 probe_jedec,	erase_chip_jedec, write_49f002, NULL},
-	{"S29C31004T", 	SM_ID, 	S29C31004T,	NULL, 512, 128,
+	{"S29C31004T", 	SYNCMOS_ID, 	S29C31004T,	NULL, 512, 128,
 	 probe_jedec,	erase_chip_jedec, write_49f002, NULL},
 	{NULL,}
 };

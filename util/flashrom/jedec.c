@@ -3,6 +3,8 @@
  *
  *
  * Copyright 2000 Silicon Integrated System Corporation
+ * Copyright 2006 Giampiero Giancipoli <gianci@email.it>
+ * Copyright 2006 coresystems GmbH <info@coresystems.de>
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -28,6 +30,8 @@
 #include "flash.h"
 #include "jedec.h"
 #include "debug.h"
+
+#define MAX_REFLASH_TRIES 0x10
 
 int probe_jedec(struct flashchip *flash)
 {
@@ -134,34 +138,58 @@ int erase_chip_jedec(struct flashchip *flash)
 int write_page_write_jedec(volatile uint8_t *bios, uint8_t *src,
 			   volatile uint8_t *dst, int page_size)
 {
-	int i;
+	int i, tried = 0, start_index = 0, ok;
+	volatile uint8_t *d = dst;
+	uint8_t *s = src;
 
+retry:
 	/* Issue JEDEC Data Unprotect comand */
 	*(volatile uint8_t *) (bios + 0x5555) = 0xAA;
 	*(volatile uint8_t *) (bios + 0x2AAA) = 0x55;
 	*(volatile uint8_t *) (bios + 0x5555) = 0xA0;
 
 	/* transfer data from source to destination */
-	for (i = 0; i < page_size; i++) {
+	for (i = start_index; i < page_size; i++) {
 		/* If the data is 0xFF, don't program it */
-		if (*src == 0xFF)
-			continue;
-		*dst++ = *src++;
+		if (*src != 0xFF ) 
+			*dst = *src;
+		dst++;
+		src++;
 	}
 
 	toggle_ready_jedec(dst - 1);
 
-	return 0;
+	dst = d;
+	src = s;
+	ok = 1;
+	for (i = 0; i < page_size; i++) {
+		if ( *dst != *src ) 
+		{
+			ok = 0;
+			break;
+		}
+		dst++;
+		src++;
+	}
+		
+	if (!ok && tried++ < MAX_REFLASH_TRIES) {
+		start_index = i;
+ 		goto retry;
+ 	}
+	if (!ok) {
+		fprintf( stderr, " page %d failed!\n", (unsigned int)(d-bios)/page_size );
+	}
+	return (!ok);
 }
 
 int write_byte_program_jedec(volatile uint8_t *bios, uint8_t *src,
 			     volatile uint8_t *dst)
 {
-	int tried = 0;
+	int tried = 0, ok = 1;
 
 	/* If the data is 0xFF, don't program it */
 	if (*src == 0xFF) {
-		return 0;
+		return -1;
 	}
 
 retry:
@@ -174,11 +202,14 @@ retry:
 	*dst = *src;
 	toggle_ready_jedec(bios);
 
-	if (*dst != *src && tried++ < 0x10) {
+	if (*dst != *src && tried++ < MAX_REFLASH_TRIES) {
  		goto retry;
  	}
 
-	return 0;
+	if (tried >= MAX_REFLASH_TRIES)
+		ok=0;
+
+	return (!ok);
 }
 
 int write_sector_jedec(volatile uint8_t *bios, uint8_t *src,
@@ -202,10 +233,14 @@ int write_jedec(struct flashchip *flash, uint8_t *buf)
 	volatile uint8_t *bios = flash->virt_addr;
 
 	erase_chip_jedec(flash);
-	if (*bios != (uint8_t) 0xff) {
-		printf("ERASE FAILED\n");
-		return -1;
-	}
+        // dumb check if erase was successful.
+        for (i=0; i < total_size; i++) {
+                if (bios[i] != (uint8_t)0xff) {
+                        printf("ERASE FAILED\n");
+                        return -1;
+                }
+        }
+
 	printf("Programming Page: ");
 	for (i = 0; i < total_size / page_size; i++) {
 		printf("%04d at address: 0x%08x", i, i * page_size);

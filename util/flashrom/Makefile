@@ -10,7 +10,7 @@ CC      = gcc
 STRIP	= strip
 #CFLAGS  = -O2 -g -Wall -Werror
 CFLAGS  = -Os -Wall -Werror -DDISABLE_DOC # -DTS5300
-LDFLAGS = -lpci -static
+LDFLAGS = -lpci -lz -static 
 
 
 OBJS  = flash_enable.o udelay.o jedec.o sst28sf040.o am29f040b.o mx29f002.o  \

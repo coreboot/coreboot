@@ -93,8 +93,8 @@ static const uint8_t dual_channel_parameters[] = {
 	SPD_NUM_COLUMNS, 
 	SPD_NUM_ROWS, 
 	SPD_NUM_DIMM_BANKS, 
-	SPD_PRIMARY_DRAM_WIDTH, 
-	SPD_NUM_BANKS_PER_DRAM
+	SPD_PRIMARY_SDRAM_WIDTH, 
+	SPD_NUM_BANKS_PER_SDRAM
 };
 
 	/*
@@ -560,7 +560,7 @@ static struct dimm_size sdram_spd_get_width(uint16_t dimm_socket_address)
 	width.side1 = 0;
 	width.side2 = 0;
 
-	value = spd_read_byte(dimm_socket_address, SPD_PRIMARY_DRAM_WIDTH);
+	value = spd_read_byte(dimm_socket_address, SPD_PRIMARY_SDRAM_WIDTH);
 	die_on_spd_error(value);
 	
 	width.side1 = value & 0x7f;			// Mask off bank 2 flag
@@ -625,7 +625,7 @@ static struct dimm_size spd_get_dimm_size(unsigned dimm_socket_address)
 				sz.side2 += value;			// Symmetric
 		}
 
-        value = spd_read_byte(dimm_socket_address, SPD_NUM_BANKS_PER_DRAM);
+        value = spd_read_byte(dimm_socket_address, SPD_NUM_BANKS_PER_SDRAM);
         die_on_spd_error(value);
 
 		value = log2(value);
@@ -701,7 +701,7 @@ static uint8_t spd_get_supported_dimms(const struct mem_controller *ctrl)
 		if (channel0_dimm == 0)
 			continue;		// No such socket on this mainboard
 
-        if (spd_read_byte(channel0_dimm, SPD_MEMORY_TYPE) != MEMORY_TYPE_SDRAM_DDR)
+        if (spd_read_byte(channel0_dimm, SPD_MEMORY_TYPE) != SPD_MEMORY_TYPE_SDRAM_DDR)
 			continue;
 
 #ifdef VALIDATE_DIMM_COMPATIBILITY
@@ -1325,7 +1325,7 @@ static void configure_e7501_cas_latency(const struct mem_controller *ctrl, uint8
 
 		current_cas_latency >>= 1;
 		if (current_cas_latency != 0) {
-			value = spd_read_byte(dimm_socket_address, SPD_MIN_CYCLE_TIME_AT_CAS_REDUCED_05);
+			value = spd_read_byte(dimm_socket_address, SPD_SDRAM_CYCLE_TIME_2ND);
 			if(value < 0 ) goto hw_err;
 			if(value > 0x75)
 				dimm_compatible_cas_latencies &= ~current_cas_latency;
@@ -1334,7 +1334,7 @@ static void configure_e7501_cas_latency(const struct mem_controller *ctrl, uint8
 		// Can we support the next-highest CAS# latency (max - 1.0)?
 		current_cas_latency >>= 1;
 		if (current_cas_latency != 0) {
-			value = spd_read_byte(dimm_socket_address, SPD_MIN_CYCLE_TIME_AT_CAS_REDUCED_10);
+			value = spd_read_byte(dimm_socket_address, SPD_SDRAM_CYCLE_TIME_3RD);
             if(value < 0 ) goto hw_err;
             if(value > 0x75)
                 dimm_compatible_cas_latencies &= ~current_cas_latency;
@@ -1489,11 +1489,11 @@ static void configure_e7501_dram_controller_mode(const struct mem_controller *ct
 #ifdef SUSPICIOUS_LOOKING_CODE
 // SJM NOTE: This code doesn't look right. SPD values are an order of magnitude smaller
 //			 than the clock period of the memory controller. Also, no other northbridge
-//			 looks at SPD_ADDRESS_CMD_HOLD.
+//			 looks at SPD_CMD_SIGNAL_INPUT_HOLD_TIME.
 
 		// Switch to 2 clocks for address/command if required by any one of the DIMMs
 		// NOTE: At 133 MHz, 1 clock == 7.52 ns
-		value = spd_read_byte(dimm_socket_address, SPD_ADDRESS_CMD_HOLD);
+		value = spd_read_byte(dimm_socket_address, SPD_CMD_SIGNAL_INPUT_HOLD_TIME);
 		die_on_spd_error(value);
 		if(value >= 0xa0) { 		/* At 133MHz this constant should be 0x75 */
 			controller_mode &= ~(1<<16);	/* Use two clock cyles instead of one */

@@ -1,0 +1,27 @@
+# Config file for the IEI nova4899r motherboard
+# This will make a target directory of nova4899r
+
+target nova4899r
+mainboard iei/nova4899r
+
+#option ROM_SIZE=256*1024
+
+#from OLPC definitions
+option CONFIG_COMPRESSED_ROM_STREAM_NRV2B=1
+#option CONFIG_COMPRESSED_ROM_STREAM_LZMA=1
+#option CONFIG_PRECOMPRESSED_ROM_STREAM=0
+# leave 128k for vsa and 32k for VGA code
+option ROM_SIZE=(256*1024)-(128*1024)-(32*1024)
+option FALLBACK_SIZE=ROM_SIZE
+
+option DEFAULT_CONSOLE_LOGLEVEL = 8
+option MAXIMUM_CONSOLE_LOGLEVEL = 8
+romimage "fallback" 
+	option USE_FALLBACK_IMAGE=1
+	option ROM_IMAGE_SIZE=64*1024
+	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
+	payload /opt/linuxbios-SVN/filo.elf
+end
+
+buildrom ./linuxbios.rom ROM_SIZE "fallback"
+#"normal" 

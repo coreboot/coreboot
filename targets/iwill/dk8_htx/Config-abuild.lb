@@ -1,0 +1,25 @@
+# This will make a target directory of ./iwill_dk8_htx
+
+target iwill_dk8_htx
+mainboard iwill/dk8_htx
+
+option CC="gcc -m32"
+option CROSS_COMPILE=""
+option HOSTCC="gcc"
+
+option CONFIG_COMPRESSED_ROM_STREAM_LZMA=1
+
+romimage "normal"
+	option USE_FALLBACK_IMAGE=0
+	option ROM_IMAGE_SIZE=0x17000
+	option LINUXBIOS_EXTRA_VERSION=".0-normal"
+	payload /home/stepan/svn/LinuxBIOSv2/util/abuild/LinuxBIOS-payloads/payloads/default/filo-0.5.0.elf
+end
+
+romimage "fallback" 
+	option USE_FALLBACK_IMAGE=1
+	option ROM_IMAGE_SIZE=0x17000
+	option LINUXBIOS_EXTRA_VERSION=".0-fallback"
+	payload /home/stepan/svn/LinuxBIOSv2/util/abuild/LinuxBIOS-payloads/payloads/default/filo-0.5.0.elf
+end
+buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"

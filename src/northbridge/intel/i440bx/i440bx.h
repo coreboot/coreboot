@@ -79,3 +79,11 @@
 #define DRB6    0x66
 #define DRB7    0x67
 
+#define PAM0    0x59
+#define PAM1    0x5a
+#define PAM2    0x5b
+#define PAM3    0x5c
+#define PAM4    0x5d
+#define PAM5    0x5e
+#define PAM6    0x5f
+

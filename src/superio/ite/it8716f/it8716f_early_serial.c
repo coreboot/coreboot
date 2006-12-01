@@ -78,8 +78,8 @@ static void it8716f_enable_serial(device_t dev, unsigned iobase)
 	it8716f_sio_write(IT8716F_GAME, 0x30, 0x1); /* GAME port */
 	it8716f_sio_write(IT8716F_IR,   0x30, 0x1); /* Consumer IR */
 
-	/* Select 24MHz/48MHz CLKIN (set/clear bit 0). TODO: Needed? */
-	/* it8716f_sio_write(0x00, IT8716F_CONFIG_REG_CLOCKSEL, 0x01); */
+	/* Select 24MHz CLKIN (set bit 0). */
+	it8716f_sio_write(0x00, IT8716F_CONFIG_REG_CLOCKSEL, 0x01);
 
 	/* Clear software suspend mode (clear bit 0). TODO: Needed? */
 	/* it8716f_sio_write(0x00, IT8716F_CONFIG_REG_SWSUSP, 0x00); */

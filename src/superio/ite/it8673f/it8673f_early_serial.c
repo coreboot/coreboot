@@ -86,7 +86,7 @@ static void it8673f_enable_serial(device_t dev, unsigned iobase)
 	it8673f_sio_write(IT8673F_KBCK, 0x30, 0x1); /* Keyboard */
 	it8673f_sio_write(IT8673F_KBCM, 0x30, 0x1); /* Mouse */
 
-	/* Select 24MHz CLKIN (clear bit 0). TODO: is this really needed? */
+	/* Select 24MHz CLKIN (clear bit 0). */
 	it8673f_sio_write(0x00, IT8673F_CONFIG_REG_CLOCKSEL, 0x00);
 
 	/* Clear software suspend mode (clear bit 0). */

@@ -21,6 +21,7 @@
 #ifndef _SUPERIO_ITE_IT8716F
 #define _SUPERIO_ITE_IT8716F
 
+#include <device/device.h>
 #include <pc80/keyboard.h>
 #include <uart8250.h>
 

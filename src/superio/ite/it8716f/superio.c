@@ -18,6 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <device/device.h>
+#include <device/pnp.h>
 #include <uart8250.h>
 #include <pc80/keyboard.h>
 #include "chip.h"

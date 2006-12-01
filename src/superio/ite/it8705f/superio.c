@@ -20,6 +20,8 @@
 
 /* This chip doesn't seem to have keyboard and mouse support. */
 
+#include <device/device.h>
+#include <device/pnp.h>
 #include <uart8250.h>
 #include "chip.h"
 #include "it8705f.h"

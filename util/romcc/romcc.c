@@ -3,8 +3,8 @@
 #undef RELEASE_DATE
 #undef VERSION
 #define VERSION_MAJOR "0"
-#define VERSION_MINOR "68"
-#define RELEASE_DATE "15 November 2004"
+#define VERSION_MINOR "69"
+#define RELEASE_DATE "02 December 2006"
 #define VERSION VERSION_MAJOR "." VERSION_MINOR
 
 #include <stdarg.h>
@@ -4028,10 +4028,15 @@ static void raw_next_token(struct compile_state *state,
 		tok = TOK_SPACE;
 		tokp = next_char(file, tokp, 1);
 		while((c = get_char(file, tokp)) != -1) {
-			tokp = next_char(file, tokp, 1);
+			/* Advance to the next character only after we verify
+			 * the current character is not a newline.  
+			 * EOL is special to the preprocessor so we don't
+			 * want to loose any.
+			 */
 			if (c == '\n') {
 				break;
 			}
+			tokp = next_char(file, tokp, 1);
 		}
 	}
 	/* Comments */

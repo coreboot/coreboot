@@ -19,7 +19,6 @@
  */
 
 #include <arch/romcc_io.h>
-#include <device/device.h>
 #include "it8716f.h"
 
 /* The base address is 0x2e or 0x4e, depending on config bytes. */

@@ -19,7 +19,6 @@
  */
 
 #include <arch/romcc_io.h>
-#include <device/device.h>
 #include "it8673f.h"
 
 /* The base address is 0x3f0, 0x3bd, or 0x370, depending on config bytes. */

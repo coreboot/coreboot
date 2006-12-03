@@ -261,7 +261,7 @@ LINUXBIOSINCLUDE    := -Iinclude \
                    -I$(srctree)/include \
 			-I$(srctree)/include/cpu/generic/$(ARCH)/  \
 			-I$(srctree)/include/cpu/generic/x86/  \
-		   -include include/linuxbios/autoconf.h
+		   -include $(srctree)/include/linuxbios/autoconf.h
 
 CPPFLAGS        := $(LINUXBIOSINCLUDE)
 
@@ -355,7 +355,8 @@ ifeq ($(config-targets),1)
 # Read arch specific Makefile to set LBBUILD_DEFCONFIG as needed.
 # LBBUILD_DEFCONFIG may point out an alternative default configuration
 # used for 'make defconfig'
-include $(srctree)/mainboard/$(MAINBOARD)/Makefile
+# The ? makes the error go away if configuration has been done yet.
+include $(srctree)/mainboard/$(MAINBOARD)/Makefil?
 
 export LBBUILD_DEFCONFIG
 

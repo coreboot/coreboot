@@ -1,0 +1,7 @@
+#
+# source all architectures 
+#
+
+source arch/x86/Kconfig
+source arch/powerpc/Kconfig
+

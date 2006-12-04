@@ -1,0 +1,5 @@
+
+config ARCH_POWERPC
+	boolean
+	default n
+

@@ -4,6 +4,7 @@ choice
 
 config BOARD_EMULATION_QEMU_X86
 	bool "x86 QEMU"
+	select ARCH_X86
 	help
 	  x86 QEMU bla bla bla
 

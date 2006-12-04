@@ -7,6 +7,8 @@ mainmenu "LinuxBIOS Configuration"
 
 source mainboard/Kconfig
 
+source arch/Kconfig
+
 config BOOTFLASH
 	bool
 	default y

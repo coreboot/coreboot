@@ -2,7 +2,7 @@ choice
 	prompt "Board vendor"
 	default EMULATION
 
-config EMULATION
+config VENDOR_EMULATION
 	bool "Emulated systems"
 	help
 	  Select this option for various system emulators, such as QEMU.
@@ -19,4 +19,7 @@ config CRAY
 
 endchoice
 
+
 source "mainboard/emulation/Kconfig"
+
+

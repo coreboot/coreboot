@@ -356,7 +356,6 @@ ifeq ($(config-targets),1)
 # LBBUILD_DEFCONFIG may point out an alternative default configuration
 # used for 'make defconfig'
 # The ? makes the error go away if configuration has been done yet.
-include $(srctree)/mainboard/$(MAINBOARD)/Makefil?
 
 export LBBUILD_DEFCONFIG
 
@@ -389,7 +388,6 @@ include .config
 # If kconfig.d is missing then we are probarly in a cleaned tree so
 # we execute the config step to be sure to catch updated Kconfig files
 include/linuxbios/autoconf.h: .kconfig.d .config
-	$(Q)mkdir -p include/linux
 	$(Q)$(MAKE) -f $(srctree)/Makefile silentoldconfig
 else
 # Dummy target needed, because used as prerequisite
@@ -422,8 +420,6 @@ ifdef CONFIG_DEBUG_INFO
 CFLAGS		+= -g
 endif
 
-include $(srctree)/mainboard/$(MAINBOARD)/Makefile
-
 # mainboard Makefile may override CC so keep this after mainboard Makefile is included
 #NOSTDINC_FLAGS += -nostdinc -isystem $(shell $(CC) -print-file-name=include)
 NOSTDINC_FLAGS += -isystem $(shell $(CC) -print-file-name=include)
@@ -443,7 +439,7 @@ CFLAGS += $(call cc-option,-Wno-pointer-sign,)
 export LBBUILD_IMAGE ?= linuxbios.rom startup_code.rom
 
 
-core-y := mainboard/$(MAINBOARD)/
+core-y := mainboard/
 ifeq ($(LBBUILD_COMPRESSORS),)
 core-y		+=  compressors
 
@@ -481,7 +477,7 @@ linuxbios-alldirs	:= $(sort $(linuxbios-dirs))
 linuxbios-init := $(head-y) $(init-y)
 linuxbios-main := $(core-y) $(libs-y) $(drivers-y) $(net-y)
 linuxbios-all  := $(linuxbios-init) $(linuxbios-main)
-linuxbios-lds  := mainboard/$(MAINBOARD)/linuxbios.lds
+#linuxbios-lds  := mainboard/$(MAINBOARD)/linuxbios.lds
 
 # Rule to link vmlinux - also used during CONFIG_KALLSYMS
 # May be overridden by arch/$(ARCH)/Makefile

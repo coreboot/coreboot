@@ -1,8 +1,8 @@
 choice
 	prompt "Board model"
-	depends on EMULATION
+	depends on VENDOR_EMULATION
 
-config EMULATION_QEMU_X86
+config BOARD_EMULATION_QEMU_X86
 	bool "x86 QEMU"
 	help
 	  x86 QEMU bla bla bla

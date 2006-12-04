@@ -440,6 +440,7 @@ export LBBUILD_IMAGE ?= linuxbios.rom startup_code.rom
 
 
 core-y := mainboard/
+core-y += arch/
 ifeq ($(LBBUILD_COMPRESSORS),)
 core-y		+=  compressors
 

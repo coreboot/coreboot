@@ -1,11 +1,9 @@
 /*
- * superio.c: RAM-based driver for SMSC LPC47N217 Super I/O chip
+ * This file is part of the LinuxBIOS project.
  *
- * Based on LinuxBIOS code for SMSC 47B397:
- * Copyright 2000  AG Electronics Ltd.
- * Copyright 2003-2004 Linux Networx
- * Copyright 2004 Tyan 
- *
+ * Copyright (C) 2000 AG Electronics Ltd.
+ * Copyright (C) 2003-2004 Linux Networx
+ * Copyright (C) 2004 Tyan 
  * Copyright (C) 2005 Digital Design Corporation
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,8 +18,11 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
+
+/* RAM-based driver for SMSC LPC47N217 Super I/O chip. */
+/* Based on LinuxBIOS code for SMSC 47B397. */
 
 #include <arch/io.h>
 #include <device/device.h>

@@ -1,5 +1,5 @@
 /*
- * lpc47b272_early_serial.c: Pre-RAM driver for SMSC LPC47B272 Super I/O chip
+ * This file is part of the LinuxBIOS project.
  *
  * Copyright (C) 2005 Digital Design Corporation
  *
@@ -15,8 +15,10 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
+
+/* Pre-RAM driver for SMSC LPC47B272 Super I/O chip. */
 
 #include <arch/romcc_io.h>
 #include "lpc47b272.h"

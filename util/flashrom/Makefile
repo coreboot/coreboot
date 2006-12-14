@@ -8,6 +8,8 @@ PROGRAM = flashrom
 
 CC      = gcc
 STRIP	= strip
+INSTALL = /usr/bin/install
+PREFIX  = /usr/local
 #CFLAGS  = -O2 -g -Wall -Werror
 CFLAGS  = -Os -Wall -Werror -DDISABLE_DOC # -DTS5300
 LDFLAGS = -lpci -lz -static 
@@ -44,6 +46,9 @@ pciutils:
 		echo "See README for more information."; echo;		\
 		rm -f .test.c .test; exit 1)
 	@rm -f .test.c .test
+
+install: $(PROGRAM)
+	$(INSTALL) flashrom $(PREFIX)/bin
 
 .PHONY: all clean distclean dep pciutils
 

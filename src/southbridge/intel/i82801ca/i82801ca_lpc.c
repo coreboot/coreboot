@@ -121,8 +121,8 @@ void i82801ca_1f0_misc(struct device *dev)
 	// Prevent LPC disabling, enable parity errors, and SERR# (System Error)
     pci_write_config16(dev, PCI_COMMAND, 0x014f);
         
-    // Set ACPI base address to 0x1000 (I/O space)
-    pci_write_config32(dev, PMBASE, 0x00001001);
+    // Set ACPI base address to 0x1100 (I/O space)
+    pci_write_config32(dev, PMBASE, 0x00001101);
         
     // Enable ACPI I/O and power management
     pci_write_config8(dev, ACPI_CNTL, 0x10);

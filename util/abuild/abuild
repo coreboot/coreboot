@@ -168,7 +168,7 @@ EOF
 	fi
 
 	if [ "`which lzma`" != "" -a "$PAYLOAD" != /dev/null ]; then
-		COMPRESSION="option CONFIG_COMPRESSED_ROM_STREAM_LZMA=1"
+		COMPRESSION="option CONFIG_COMPRESSED_PAYLOAD_LZMA=1"
 	else
 		COMPRESSION="# no compression"
 	fi

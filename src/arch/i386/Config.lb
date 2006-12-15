@@ -1,5 +1,5 @@
 uses CONFIG_SMP
-uses CONFIG_PRECOMPRESSED_ROM_STREAM
+uses CONFIG_PRECOMPRESSED_PAYLOAD
 uses CONFIG_USE_INIT
 uses HAVE_FAILOVER_BOOT
 uses USE_FAILOVER_IMAGE
@@ -61,11 +61,11 @@ end
 makedefine PAYLOAD-1:=payload
 
 # match the case where a compression type is specified.
-makedefine PAYLOAD-$(CONFIG_COMPRESSED_ROM_STREAM_NRV2B):=payload.nrv2b
-makedefine PAYLOAD-$(CONFIG_COMPRESSED_ROM_STREAM_LZMA):=payload.lzma
+makedefine PAYLOAD-$(CONFIG_COMPRESSED_PAYLOAD_NRV2B):=payload.nrv2b
+makedefine PAYLOAD-$(CONFIG_COMPRESSED_PAYLOAD_LZMA):=payload.lzma
 
 # catch the case where there is precompression. Yes, this bites. 
-if CONFIG_PRECOMPRESSED_ROM_STREAM 
+if CONFIG_PRECOMPRESSED_PAYLOAD 
 	makedefine PAYLOAD-1:=payload
 end
 

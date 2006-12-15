@@ -4,9 +4,9 @@ target rev_a_1M
 mainboard olpc/rev_a
 
 # Don't let LinuxBIOS compress the payload
-#option CONFIG_COMPRESSED_ROM_STREAM_NRV2B=0
-#option CONFIG_COMPRESSED_ROM_STREAM_LZMA=1
-#option CONFIG_PRECOMPRESSED_ROM_STREAM=0
+#option CONFIG_COMPRESSED_PAYLOAD_NRV2B=0
+#option CONFIG_COMPRESSED_PAYLOAD_LZMA=1
+#option CONFIG_PRECOMPRESSED_PAYLOAD=0
 
 # leave 64k for vsa and 64k for EC code
 option ROM_SIZE=(1024*1024)-(64*1024)-(64*1024)

@@ -5,16 +5,16 @@
 #include <string.h>
 
 /* if they set the precompressed rom stream, they better have set a type */
-#if CONFIG_PRECOMPRESSED_ROM_STREAM && ((!CONFIG_COMPRESSED_ROM_STREAM) && (!CONFIG_COMPRESSED_ROM_STREAM_NRV2B) && (!CONFIG_COMPRESSED_ROM_STREAM_LZMA))
-#error "You set CONFIG_PRECOMPRESSED_ROM_STREAM but need to set CONFIG_COMPRESSED_ROM_STREAM (implies NRV2B, deprecated) or CONFIG_COMPRESSED_ROM_STREAM_NRV2B or CONFIG_COMPRESSED_ROM_STREAM_LZMA"
+#if CONFIG_PRECOMPRESSED_PAYLOAD && ((!CONFIG_COMPRESSED_PAYLOAD_NRV2B) && (!CONFIG_COMPRESSED_PAYLOAD_LZMA))
+#error "You set CONFIG_PRECOMPRESSED_PAYLOAD but need to set CONFIG_COMPRESSED_PAYLOAD_NRV2B or CONFIG_COMPRESSED_PAYLOAD_LZMA"
 #endif
 
-#if (CONFIG_COMPRESSED_ROM_STREAM) || (CONFIG_COMPRESSED_ROM_STREAM_NRV2B) 
+#if (CONFIG_COMPRESSED_PAYLOAD_NRV2B) 
 #define HAVE_UNCOMPRESSER 1
 #include "../lib/nrv2b.c"
 #endif
 
-#if (CONFIG_COMPRESSED_ROM_STREAM_LZMA)
+#if (CONFIG_COMPRESSED_PAYLOAD_LZMA)
 #if HAVE_UNCOMPRESSER
 #error "You're defining more than one compression type, which is not allowed (of course)"
 #endif
@@ -33,11 +33,11 @@ static int stream_max_bytes = 0x00800000;
 #if HAVE_UNCOMPRESSER
 static unsigned long uncompress(uint8_t *src, uint8_t *dest)
 {
-#if (CONFIG_COMPRESSED_ROM_STREAM) || (CONFIG_COMPRESSED_ROM_STREAM_NRV2B) 
+#if (CONFIG_COMPRESSED_PAYLOAD_NRV2B) 
 	unsigned long ilen;
 	return unrv2b(src, dest, &ilen);
 #endif
-#if (CONFIG_COMPRESSED_ROM_STREAM_LZMA)
+#if (CONFIG_COMPRESSED_PAYLOAD_LZMA)
 	return ulzma(src, dest);
 #endif
 }

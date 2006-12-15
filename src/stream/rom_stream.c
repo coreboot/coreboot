@@ -5,23 +5,23 @@
 #include <string.h>
 
 /* if they set the precompressed rom stream, they better have set a type */
-#if CONFIG_PRECOMPRESSED_ROM_STREAM && ((!CONFIG_COMPRESSED_ROM_STREAM) && (!CONFIG_COMPRESSED_ROM_STREAM_NRV2B) && (!CONFIG_COMPRESSED_ROM_STREAM_LZMA))
-#error "You set CONFIG_PRECOMPRESSED_ROM_STREAM but need to set CONFIG_COMPRESSED_ROM_STREAM (implies NRV2B, deprecated) or CONFIG_COMPRESSED_ROM_STREAM_NRV2B or CONFIG_COMPRESSED_ROM_STREAM_LZMA"
+#if CONFIG_PRECOMPRESSED_PAYLOAD && ((!CONFIG_COMPRESSED_PAYLOAD_NRV2B) && (!CONFIG_COMPRESSED_PAYLOAD_LZMA))
+#error "You set CONFIG_PRECOMPRESSED_PAYLOAD but need to set CONFIG_COMPRESSED_PAYLOAD_NRV2B or CONFIG_COMPRESSED_PAYLOAD_LZMA"
 #endif
 
 /* If they set ANY of these, then we're compressed */
-#if ((CONFIG_COMPRESSED_ROM_STREAM) || (CONFIG_COMPRESSED_ROM_STREAM_NRV2B) || (CONFIG_COMPRESSED_ROM_STREAM_LZMA))
+#if ((CONFIG_COMPRESSED_PAYLOAD_NRV2B) || (CONFIG_COMPRESSED_PAYLOAD_LZMA))
 #define UNCOMPRESSER 1
 extern unsigned char _heap, _eheap;
 #endif
 
-#if (CONFIG_COMPRESSED_ROM_STREAM) || (CONFIG_COMPRESSED_ROM_STREAM_NRV2B) 
+#if (CONFIG_COMPRESSED_PAYLOAD_NRV2B) 
 #define HAVE_UNCOMPRESSER 1
 // include generic nrv2b
 #include "../lib/nrv2b.c"
 #endif
 
-#if (CONFIG_COMPRESSED_ROM_STREAM_LZMA)
+#if (CONFIG_COMPRESSED_PAYLOAD_LZMA)
 #if HAVE_UNCOMPRESSER
 #error "You're defining more than one compression type, which is not allowed (of course)"
 #endif
@@ -53,11 +53,11 @@ static const unsigned char *rom;
 unsigned long 
 uncompress(uint8_t * rom_start, uint8_t *dest )
 {
-#if (CONFIG_COMPRESSED_ROM_STREAM) || (CONFIG_COMPRESSED_ROM_STREAM_NRV2B) 
+#if (CONFIG_COMPRESSED_PAYLOAD_NRV2B) 
 	unsigned long ilen; // used compressed stream length
 	return unrv2b(rom_start, dest, &ilen);
 #endif
-#if (CONFIG_COMPRESSED_ROM_STREAM_LZMA)
+#if (CONFIG_COMPRESSED_PAYLOAD_LZMA)
 	return ulzma(rom_start, dest);
 #endif
 }

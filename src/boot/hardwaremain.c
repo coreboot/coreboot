@@ -88,7 +88,7 @@ void hardwaremain(int boot_complete)
 	 */
 	lb_mem = write_tables();
 
-#if CONFIG_FS_STREAM == 1
+#if CONFIG_FS_PAYLOAD == 1
 	filo(lb_mem);
 #else
 	elfboot(lb_mem);

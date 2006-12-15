@@ -21,7 +21,7 @@ end
 ##
 ## Compute where this copy of linuxBIOS will start in the boot rom
 ##
-default _ROMBASE      = ( CONFIG_ROM_STREAM_START + PAYLOAD_SIZE )
+default _ROMBASE      = ( CONFIG_ROM_PAYLOAD_START + PAYLOAD_SIZE )
 
 ##
 ## Compute a range of ROM that can cached to speed up linuxBIOS,

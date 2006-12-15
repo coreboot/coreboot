@@ -30,21 +30,21 @@ extern unsigned char _heap, _eheap;
 #include "../lib/lzma.c"
 #endif
 
-#ifndef CONFIG_ROM_STREAM_START
-#define CONFIG_ROM_STREAM_START 0xffff0000UL
+#ifndef CONFIG_ROM_PAYLOAD_START
+#define CONFIG_ROM_PAYLOAD_START 0xffff0000UL
 #endif
 
 /* well, this is a mess, and it will get fixed, but not right away.
  * until we stop using 'ld' for building the rom image, that is.
- * problem is, that on the sc520, ROM_STREAM_START has to be at 0x2000000.
- * but if you set CONFIG_ROM_STREAM_START to that, then ld will try to
+ * problem is, that on the sc520, ROM_PAYLOAD_START has to be at 0x2000000.
+ * but if you set CONFIG_ROM_PAYLOAD_START to that, then ld will try to
  * build a giant image: 0x0-0x2000000, i.e. almost 4 GB.
  * so make this non-static, non-const for now.
  */
 
 /*XXXXXXXXXXXXXX */
-/*static const */unsigned char *rom_start = (unsigned char *)CONFIG_ROM_STREAM_START;
-/*static const */unsigned char *rom_end   = (unsigned char *)(CONFIG_ROM_STREAM_START + PAYLOAD_SIZE - 1);
+/*static const */unsigned char *rom_start = (unsigned char *)CONFIG_ROM_PAYLOAD_START;
+/*static const */unsigned char *rom_end   = (unsigned char *)(CONFIG_ROM_PAYLOAD_START + PAYLOAD_SIZE - 1);
 /*XXXXXXXXXXXXXX */
 
 static const unsigned char *rom;

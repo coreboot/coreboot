@@ -32,7 +32,7 @@ romimage "normal"
 
         ## Boot linux from IDE
         option CONFIG_IDE=1
-        option CONFIG_FS_STREAM=1
+        option CONFIG_FS_PAYLOAD=1
         option CONFIG_FS_EXT2=1
         option CONFIG_FS_ISO9660=1
         option CONFIG_FS_FAT=1

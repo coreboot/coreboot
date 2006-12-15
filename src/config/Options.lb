@@ -593,17 +593,17 @@ end
 # Boot options
 ###############################################
 
-define CONFIG_IDE_STREAM
+define CONFIG_IDE_PAYLOAD
 	default 0
 	export always
 	comment "Boot from IDE device"
 end
-define CONFIG_ROM_STREAM
+define CONFIG_ROM_PAYLOAD
 	default 0
 	export always
 	comment "Boot image is located in ROM" 
 end
-define CONFIG_ROM_STREAM_START
+define CONFIG_ROM_PAYLOAD_START
 	default {0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1}
 	format "0x%x"
 	export always
@@ -624,12 +624,12 @@ define CONFIG_PRECOMPRESSED_PAYLOAD
 	export always
 	comment "boot image is already compressed" 
 end
-define CONFIG_SERIAL_STREAM
+define CONFIG_SERIAL_PAYLOAD
 	default 0
 	export always
 	comment "Download boot image from serial port"
 end
-define CONFIG_FS_STREAM
+define CONFIG_FS_PAYLOAD
 	default 0
 	export always
 	comment "Boot from a filesystem"

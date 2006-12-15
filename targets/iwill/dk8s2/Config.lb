@@ -119,7 +119,7 @@ option HEAP_SIZE=0xe000
 ### Compute the start location and size size of
 ### The linuxBIOS bootloader.
 ###
-option CONFIG_ROM_STREAM     = 1
+option CONFIG_ROM_PAYLOAD     = 1
 
 #
 # 
@@ -134,8 +134,8 @@ romimage "normal"
 	option ROM_SECTION_OFFSET= 0
 
 	option PAYLOAD_SIZE            = (ROM_SECTION_SIZE - ROM_IMAGE_SIZE)
-	option CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
-	option _ROMBASE      = (CONFIG_ROM_STREAM_START + PAYLOAD_SIZE)
+	option CONFIG_ROM_PAYLOAD_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+	option _ROMBASE      = (CONFIG_ROM_PAYLOAD_START + PAYLOAD_SIZE)
 
 #	option XIP_ROM_SIZE = FALLBACK_SIZE
         option XIP_ROM_SIZE = 65536
@@ -153,8 +153,8 @@ romimage "fallback"
 	option ROM_SECTION_OFFSET= (ROM_SIZE - FALLBACK_SIZE)
 
 	option PAYLOAD_SIZE            = (ROM_SECTION_SIZE - ROM_IMAGE_SIZE)
-	option CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
-	option _ROMBASE      = (CONFIG_ROM_STREAM_START + PAYLOAD_SIZE)
+	option CONFIG_ROM_PAYLOAD_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+	option _ROMBASE      = (CONFIG_ROM_PAYLOAD_START + PAYLOAD_SIZE)
 
 #	option XIP_ROM_SIZE = FALLBACK_SIZE
 	option XIP_ROM_SIZE = 65536

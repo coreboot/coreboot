@@ -15,8 +15,8 @@ uses ROM_SECTION_SIZE
 uses ROM_IMAGE_SIZE
 uses ROM_SECTION_SIZE
 uses ROM_SECTION_OFFSET
-uses CONFIG_ROM_STREAM
-uses CONFIG_ROM_STREAM_START
+uses CONFIG_ROM_PAYLOAD
+uses CONFIG_ROM_PAYLOAD_START
 uses CONFIG_COMPRESSED_PAYLOAD_LZMA
 uses PAYLOAD_SIZE
 uses _ROMBASE
@@ -147,7 +147,7 @@ default _RAMBASE=0x00004000
 ##
 ## Load the payload from the ROM
 ##
-default CONFIG_ROM_STREAM = 1
+default CONFIG_ROM_PAYLOAD = 1
 
 ###
 ### Defaults of options that you may want to override in the target config file

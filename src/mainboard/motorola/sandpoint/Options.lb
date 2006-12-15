@@ -22,7 +22,7 @@ uses NO_POST
 uses CONFIG_CONSOLE_SERIAL8250 
 uses TTYS0_BASE 
 uses CONFIG_IDE
-uses CONFIG_FS_STREAM 
+uses CONFIG_FS_PAYLOAD 
 uses CONFIG_FS_EXT2
 uses CONFIG_FS_ISO9660
 uses CONFIG_FS_FAT
@@ -83,7 +83,7 @@ default TTYS0_BASE=0x3f8
 
 ## Load payload using filo
 default CONFIG_IDE=1
-default CONFIG_FS_STREAM=1
+default CONFIG_FS_PAYLOAD=1
 default CONFIG_FS_EXT2=1
 default CONFIG_FS_ISO9660=1
 default CONFIG_FS_FAT=1

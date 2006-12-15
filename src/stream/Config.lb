@@ -1,23 +1,23 @@
-uses CONFIG_ROM_STREAM
-uses CONFIG_IDE_STREAM
-uses CONFIG_FS_STREAM
+uses CONFIG_ROM_PAYLOAD
+uses CONFIG_IDE_PAYLOAD
+uses CONFIG_FS_PAYLOAD
 uses CONFIG_IDE
-uses CONFIG_SERIAL_STREAM
+uses CONFIG_SERIAL_PAYLOAD
 
-if CONFIG_ROM_STREAM
+if CONFIG_ROM_PAYLOAD
   object rom_stream.o
 end
 
-if CONFIG_IDE_STREAM
+if CONFIG_IDE_PAYLOAD
   default CONFIG_IDE=1
   object ide_stream.o
 end
 
-if CONFIG_FS_STREAM
+if CONFIG_FS_PAYLOAD
   object fs_stream.o
   dir fs
 end
 
-if CONFIG_SERIAL_STREAM
+if CONFIG_SERIAL_PAYLOAD
   object serial_stream.o
 end

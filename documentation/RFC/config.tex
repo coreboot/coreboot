@@ -262,7 +262,7 @@ option SMBUS_MEM_DEVICE_INC=1
 ### The linuxBIOS bootloader.
 ###
 option PAYLOAD_SIZE            = (ROM_SECTION_SIZE - ROM_IMAGE_SIZE)
-option CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+option CONFIG_ROM_PAYLOAD_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
 #
 
 \end{verbatim}

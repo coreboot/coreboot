@@ -14,13 +14,13 @@ end
 ## Compute the start location and size size of
 ## The linuxBIOS bootloader.
 ##
-default CONFIG_ROM_STREAM_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+default CONFIG_ROM_PAYLOAD_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
 default PAYLOAD_SIZE            = ( ROM_SECTION_SIZE - ROM_IMAGE_SIZE )
 
 ##
 ## Compute where this copy of linuxBIOS will start in the boot rom
 ##
-default _ROMBASE      = ( CONFIG_ROM_STREAM_START + PAYLOAD_SIZE )
+default _ROMBASE      = ( CONFIG_ROM_PAYLOAD_START + PAYLOAD_SIZE )
 
 ##
 ## Compute a range of ROM that can cached to speed up linuxBIOS,

@@ -11,7 +11,8 @@ To build the flashrom utility you need to have the following packages
 installed on your Linux system:
 
 * pciutils
-* pciutils-devel
+* pciutils-devel / pciutils-dev
+* zlib-devel / zlib1g-dev
 
 
 Usage

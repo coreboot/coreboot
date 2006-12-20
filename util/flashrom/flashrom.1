@@ -1,12 +1,14 @@
-.TH FLASHROM 1 "November 22, 2006"
+.TH FLASHROM 1 "December 20, 2006"
 .SH NAME
-flashrom \- the universal LinuxBIOS flash utility
+flashrom \- a universal flash programming utility
 .SH SYNOPSIS
 .B flashrom \fR[\fB\-rwvEVfh\fR] [\fB\-c\fR chipname] [\fB\-s\fR exclude_start] [\fB\-e\fR exclude_end]
          [\fB-m\fR vendor:part] [\fB-l\fR file.layout] [\fB-i\fR image_name] [file]
 .SH DESCRIPTION
 .B flashrom
-is the universal LinuxBIOS flash utility.
+is a universal flash programming utility for flash chips
+(e.g. in DIP or PLCC packaging). It can be used to flash BIOS images,
+for example.
 .SH OPTIONS
 If no file is specified, then all that happens
 is that flash info is dumped and the flash chip is set to writable.

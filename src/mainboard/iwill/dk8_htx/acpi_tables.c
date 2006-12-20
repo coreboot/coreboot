@@ -44,6 +44,7 @@ extern unsigned char AmlCode_ssdt[];
 extern unsigned char AmlCode_ssdt2[];
 extern unsigned char AmlCode_ssdt3[];
 extern unsigned char AmlCode_ssdt4[];
+extern unsigned char AmlCode_ssdt5[];
 #endif
 
 #define IO_APIC_ADDR	0xfec00000UL
@@ -286,7 +287,9 @@ unsigned long write_acpi_tables(unsigned long start)
                         p = AmlCode_ssdt4;
                         break;
                 default:
-                        continue;
+			//HTX no io apic
+                        p = AmlCode_ssdt5;
+			break;
                 }
                 current += ((acpi_header_t *)p)->length;
                 memcpy((void *)ssdtx, (void *)p, ((acpi_header_t *)p)->length);

@@ -1,0 +1,11 @@
+config chip.h
+driver i82801db.o
+driver i82801db_uhci.o
+driver i82801db_lpc.o
+driver i82801db_ide.o
+driver i82801db_ehci.o
+driver i82801db_smbus.o
+driver i82801db_pci.o
+driver i82801db_ac97.o
+object i82801db_watchdog.o
+object i82801db_reset.o

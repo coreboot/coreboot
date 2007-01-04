@@ -20,5 +20,4 @@
 
 config ARCH_X86
 	boolean
-	default n
 

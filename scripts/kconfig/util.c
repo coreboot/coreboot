@@ -44,7 +44,7 @@ int file_write_dep(const char *name)
 		else
 			fprintf(out, "\t%s\n", file->name);
 	}
-	fprintf(out, "\n.config include/linuxbios/autoconf.h: $(deps_config)\n\n$(deps_config):\n");
+	fprintf(out, "\n.config  $(objtree)/include/linuxbios/autoconf.h: $(deps_config)\n\n$(deps_config):\n");
 	fclose(out);
 	rename("..config.tmp", name);
 	return 0;

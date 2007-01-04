@@ -26,6 +26,7 @@ const char conf_defname[] = "arch/$ARCH/defconfig";
 
 const char *conf_confnames[] = {
 	".config",
+	conf_defname,
 	NULL,
 };
 
@@ -321,7 +322,7 @@ int conf_read(const char *name)
 				sym->flags |= e->right.sym->flags & SYMBOL_NEW;
 	}
 
-	sym_change_count = conf_warnings || conf_unsaved;
+	sym_change_count = conf_warnings && conf_unsaved;
 
 	return 0;
 }
@@ -370,7 +371,6 @@ int conf_write(const char *name)
 		out_h = fopen(".tmpconfig.h", "w");
 		if (!out_h)
 			return 1;
-		file_write_dep(NULL);
 	}
 	sym = sym_lookup("KERNELVERSION", 0);
 	sym_calc_value(sym);
@@ -509,6 +509,7 @@ int conf_write(const char *name)
 	if (out_h) {
 		fclose(out_h);
 		rename(".tmpconfig.h", "include/linuxbios/autoconf.h");
+		file_write_dep(NULL);
 	}
 	if (!name || basename != conf_def_filename) {
 		if (!name)

@@ -17,7 +17,7 @@
 #ifndef _ARCH_IO_H
 #define _ARCH_IO_H
 
-#include <stdint.h>
+#include <arch/types.h>
 
 /*
  * This file contains the definitions for the x86 IO instructions
@@ -26,43 +26,43 @@
  * versions of the single-IO instructions (inb_p/inw_p/..).
  */
 
-static inline void outb(uint8_t value, uint16_t port)
+static inline void outb(u8 value, u16 port)
 {
 	__asm__ __volatile__ ("outb %b0, %w1" : : "a" (value), "Nd" (port));
 }
 
-static inline void outw(uint16_t value, uint16_t port)
+static inline void outw(u16 value, u16 port)
 {
 	__asm__ __volatile__ ("outw %w0, %w1" : : "a" (value), "Nd" (port));
 }
 
-static inline void outl(uint32_t value, uint16_t port)
+static inline void outl(u32 value, u16 port)
 {
 	__asm__ __volatile__ ("outl %0, %w1" : : "a" (value), "Nd" (port));
 }
 
-static inline uint8_t inb(uint16_t port)
+static inline u8 inb(u16 port)
 {
-	uint8_t value;
+	u8 value;
 	__asm__ __volatile__ ("inb %w1, %b0" : "=a"(value) : "Nd" (port));
 	return value;
 }
 
-static inline uint16_t inw(uint16_t port)
+static inline u16 inw(u16 port)
 {
-	uint16_t value;
+	u16 value;
 	__asm__ __volatile__ ("inw %w1, %w0" : "=a"(value) : "Nd" (port));
 	return value;
 }
 
-static inline uint32_t inl(uint16_t port)
+static inline u32 inl(u16 port)
 {
-	uint32_t value;
+	u32 value;
 	__asm__ __volatile__ ("inl %w1, %0" : "=a"(value) : "Nd" (port));
 	return value;
 }
 
-static inline void outsb(uint16_t port, const void *addr, unsigned long count)
+static inline void outsb(u16 port, const void *addr, unsigned long count)
 {
 	__asm__ __volatile__ (
 		"cld ; rep ; outsb " 
@@ -71,7 +71,7 @@ static inline void outsb(uint16_t port, const void *addr, unsigned long count)
 		);
 }
 
-static inline void outsw(uint16_t port, const void *addr, unsigned long count)
+static inline void outsw(u16 port, const void *addr, unsigned long count)
 {
 	__asm__ __volatile__ (
 		"cld ; rep ; outsw " 
@@ -80,7 +80,7 @@ static inline void outsw(uint16_t port, const void *addr, unsigned long count)
 		);
 }
 
-static inline void outsl(uint16_t port, const void *addr, unsigned long count)
+static inline void outsl(u16 port, const void *addr, unsigned long count)
 {
 	__asm__ __volatile__ (
 		"cld ; rep ; outsl " 
@@ -90,7 +90,7 @@ static inline void outsl(uint16_t port, const void *addr, unsigned long count)
 }
 
 
-static inline void insb(uint16_t port, void *addr, unsigned long count)
+static inline void insb(u16 port, void *addr, unsigned long count)
 {
 	__asm__ __volatile__ (
 		"cld ; rep ; insb " 
@@ -99,7 +99,7 @@ static inline void insb(uint16_t port, void *addr, unsigned long count)
 		);
 }
 
-static inline void insw(uint16_t port, void *addr, unsigned long count)
+static inline void insw(u16 port, void *addr, unsigned long count)
 {
 	__asm__ __volatile__ (
 		"cld ; rep ; insw " 
@@ -108,7 +108,7 @@ static inline void insw(uint16_t port, void *addr, unsigned long count)
 		);
 }
 
-static inline void insl(uint16_t port, void *addr, unsigned long count)
+static inline void insl(u16 port, void *addr, unsigned long count)
 {
 	__asm__ __volatile__ (
 		"cld ; rep ; insl " 
@@ -117,34 +117,34 @@ static inline void insl(uint16_t port, void *addr, unsigned long count)
 		);
 }
 
-static inline void writeb(uint8_t b, volatile void *addr)
+static inline void writeb(u8 b, volatile void *addr)
 {
-	*(volatile uint8_t *) addr = b;
+	*(volatile u8 *) addr = b;
 }
 
-static inline void writew(uint16_t b, volatile void *addr)
+static inline void writew(u16 b, volatile void *addr)
 {
-	*(volatile uint16_t *) addr = b;
+	*(volatile u16 *) addr = b;
 }
 
-static inline void writel(uint32_t b, volatile void *addr)
+static inline void writel(u32 b, volatile void *addr)
 {
-	*(volatile uint32_t *) addr = b;
+	*(volatile u32 *) addr = b;
 }
 
-static inline uint8_t readb(const volatile void *addr)
+static inline u8 readb(const volatile void *addr)
 {
-	return *(volatile uint8_t *) addr;
+	return *(volatile u8 *) addr;
 }
 
-static inline uint16_t readw(const volatile void *addr)
+static inline u16 readw(const volatile void *addr)
 {
-	return *(volatile uint16_t *) addr;
+	return *(volatile u16 *) addr;
 }
 
-static inline uint32_t readl(const volatile void *addr)
+static inline u32 readl(const volatile void *addr)
 {
-	return *(volatile uint32_t *) addr;
+	return *(volatile u32 *) addr;
 }
 
 #endif

@@ -58,7 +58,8 @@
 
 #include "dialog.h"
 
-static int menu_width, item_x;
+#define ITEM_IDENT 1   /* Indent of menu entries. Fixed for all menus */
+static int menu_width;
 
 /*
  * Print menu item
@@ -69,7 +70,7 @@ static void do_print_item(WINDOW * win, const char *item, int choice,
 	int j;
 	char *menu_item = malloc(menu_width + 1);
 
-	strncpy(menu_item, item, menu_width - item_x);
+	strncpy(menu_item, item, menu_width - ITEM_IDENT);
 	menu_item[menu_width] = 0;
 	j = first_alpha(menu_item, "YyNnMmHh");
 
@@ -86,13 +87,13 @@ static void do_print_item(WINDOW * win, const char *item, int choice,
 	wclrtoeol(win);
 #endif
 	wattrset(win, selected ? item_selected_attr : item_attr);
-	mvwaddstr(win, choice, item_x, menu_item);
+	mvwaddstr(win, choice, ITEM_IDENT, menu_item);
 	if (hotkey) {
 		wattrset(win, selected ? tag_key_selected_attr : tag_key_attr);
-		mvwaddch(win, choice, item_x + j, menu_item[j]);
+		mvwaddch(win, choice, ITEM_IDENT + j, menu_item[j]);
 	}
 	if (selected) {
-		wmove(win, choice, item_x + 1);
+		wmove(win, choice, ITEM_IDENT + 1);
 	}
 	free(menu_item);
 	wrefresh(win);
@@ -226,8 +227,6 @@ int dialog_menu(const char *title, const char *prompt, int height, int width,
 	draw_box(dialog, box_y, box_x, menu_height + 2, menu_width + 2,
 		 menubox_border_attr, menubox_attr);
 
-	item_x = (menu_width - 70) / 2;
-
 	/* Set choice to default item */
 	for (i = 0; i < item_no; i++)
 		if (strcmp(current, items[i * 2]) == 0)
@@ -264,10 +263,10 @@ int dialog_menu(const char *title, const char *prompt, int height, int width,
 	wnoutrefresh(menu);
 
 	print_arrows(dialog, item_no, scroll,
-		     box_y, box_x + item_x + 1, menu_height);
+		     box_y, box_x + ITEM_IDENT + 1, menu_height);
 
 	print_buttons(dialog, height, width, 0);
-	wmove(menu, choice, item_x + 1);
+	wmove(menu, choice, ITEM_IDENT + 1);
 	wrefresh(menu);
 
 	while (key != ESC) {
@@ -350,7 +349,7 @@ int dialog_menu(const char *title, const char *prompt, int height, int width,
 			print_item(scroll + choice, choice, TRUE);
 
 			print_arrows(dialog, item_no, scroll,
-				     box_y, box_x + item_x + 1, menu_height);
+				     box_y, box_x + ITEM_IDENT + 1, menu_height);
 
 			wnoutrefresh(dialog);
 			wrefresh(menu);

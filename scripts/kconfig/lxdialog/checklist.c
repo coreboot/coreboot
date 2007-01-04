@@ -196,8 +196,8 @@ int dialog_checklist(const char *title, const char *prompt, int height,
 
 	print_buttons(dialog, height, width, 0);
 
-	wnoutrefresh(dialog);
 	wnoutrefresh(list);
+	wnoutrefresh(dialog);
 	doupdate();
 
 	while (key != ESC) {
@@ -225,11 +225,12 @@ int dialog_checklist(const char *title, const char *prompt, int height,
 					}
 					scroll--;
 					print_item(list, items[scroll * 3 + 1], status[scroll], 0, TRUE);
+					wnoutrefresh(list);
+
 					print_arrows(dialog, choice, item_no,
 						     scroll, box_y, box_x + check_x + 5, list_height);
 
-					wnoutrefresh(dialog);
-					wrefresh(list);
+					wrefresh(dialog);
 
 					continue;	/* wait for another key press */
 				} else
@@ -251,12 +252,12 @@ int dialog_checklist(const char *title, const char *prompt, int height,
 					scroll++;
 					print_item(list, items[(scroll + max_choice - 1) * 3 + 1],
 						   status[scroll + max_choice - 1], max_choice - 1, TRUE);
+					wnoutrefresh(list);
 
 					print_arrows(dialog, choice, item_no,
 						     scroll, box_y, box_x + check_x + 5, list_height);
 
-					wnoutrefresh(dialog);
-					wrefresh(list);
+					wrefresh(dialog);
 
 					continue;	/* wait for another key press */
 				} else
@@ -270,8 +271,8 @@ int dialog_checklist(const char *title, const char *prompt, int height,
 				choice = i;
 				print_item(list, items[(scroll + choice) * 3 + 1],
 					   status[scroll + choice], choice, TRUE);
-				wnoutrefresh(dialog);
-				wrefresh(list);
+				wnoutrefresh(list);
+				wrefresh(dialog);
 			}
 			continue;	/* wait for another key press */
 		}
@@ -305,8 +306,8 @@ int dialog_checklist(const char *title, const char *prompt, int height,
 						print_item(list, items[(scroll + i) * 3 + 1],
 							   status[scroll + i], i, i == choice);
 				}
-				wnoutrefresh(dialog);
-				wrefresh(list);
+				wnoutrefresh(list);
+				wrefresh(dialog);
 
 				for (i = 0; i < item_no; i++)
 					if (status[i])

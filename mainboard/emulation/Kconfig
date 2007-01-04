@@ -19,3 +19,6 @@ config EMULATION_C64
 	  bla bla bla
 
 endchoice
+
+source "mainboard/emulation/qemu-i386/Kconfig"
+

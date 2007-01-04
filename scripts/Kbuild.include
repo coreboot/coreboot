@@ -45,7 +45,7 @@ define filechk
 endef
 
 ######
-# gcc support functions
+# cc support functions to be used (only) in arch/$(ARCH)/Makefile
 # See documentation in Documentation/kbuild/makefiles.txt
 
 # as-option
@@ -87,13 +87,9 @@ cc-ifversion = $(shell if [ $(call cc-version, $(CC)) $(1) $(2) ]; then \
 # $(Q)$(MAKE) $(build)=dir
 build := -f $(if $(KBUILD_SRC),$(srctree)/)scripts/Makefile.build obj
 
-# Prefix -I with $(srctree) if it is not an absolute path
-addtree = $(if $(filter-out -I/%,$(1)),$(patsubst -I%,-I$(srctree)/%,$(1))) $(1)
-# Find all -I options and call addtree
-flags = $(foreach o,$($(1)),$(if $(filter -I%,$(o)),$(call addtree,$(o)),$(o)))
-
 # If quiet is set, only print short version of command
-cmd = @$(echo-cmd) $(cmd_$(1))
+cmd = @$(if $($(quiet)cmd_$(1)),\
+      echo '  $(call escsq,$($(quiet)cmd_$(1)))' &&) $(cmd_$(1))
 
 # Add $(obj)/ for paths that is not absolute
 objectify = $(foreach o,$(1),$(if $(filter /%,$(o)),$(o),$(obj)/$(o)))
@@ -116,33 +112,30 @@ endif
 echo-cmd = $(if $($(quiet)cmd_$(1)), \
 	echo '  $(call escsq,$($(quiet)cmd_$(1)))';)
 
-make-cmd = $(subst \#,\\\#,$(subst $$,$$$$,$(call escsq,$(cmd_$(1)))))
-
 # function to only execute the passed command if necessary
 # >'< substitution is for echo to work, >$< substitution to preserve $ when reloading .cmd file
 # note: when using inline perl scripts [perl -e '...$$t=1;...'] in $(cmd_xxx) double $$ your perl vars
-#
-if_changed = $(if $(strip $(filter-out $(PHONY),$?)          \
-		$(call arg-check, $(cmd_$(1)), $(cmd_$@)) ), \
+# 
+if_changed = $(if $(strip $? $(call arg-check, $(cmd_$(1)), $(cmd_$@)) ), \
 	@set -e; \
-	$(echo-cmd) $(cmd_$(1)); \
-	echo 'cmd_$@ := $(make-cmd)' > $(@D)/.$(@F).cmd)
+	$(echo-cmd) \
+	$(cmd_$(1)); \
+	echo 'cmd_$@ := $(subst $$,$$$$,$(call escsq,$(cmd_$(1))))' > $(@D)/.$(@F).cmd)
 
 # execute the command and also postprocess generated .d dependencies
 # file
-if_changed_dep = $(if $(strip $(filter-out $(PHONY),$?)  \
-		$(filter-out FORCE $(wildcard $^),$^)    \
-	$(call arg-check, $(cmd_$(1)), $(cmd_$@)) ),     \
+if_changed_dep = $(if $(strip $? $(filter-out FORCE $(wildcard $^),$^)\
+	$(call arg-check, $(cmd_$(1)), $(cmd_$@)) ),                  \
 	@set -e; \
-	$(echo-cmd) $(cmd_$(1)); \
-	scripts/basic/fixdep $(depfile) $@ '$(make-cmd)' > $(@D)/.$(@F).tmp; \
+	$(echo-cmd) \
+	$(cmd_$(1)); \
+	scripts/basic/fixdep $(depfile) $@ '$(subst $$,$$$$,$(call escsq,$(cmd_$(1))))' > $(@D)/.$(@F).tmp; \
 	rm -f $(depfile); \
 	mv -f $(@D)/.$(@F).tmp $(@D)/.$(@F).cmd)
 
 # Usage: $(call if_changed_rule,foo)
 # will check if $(cmd_foo) changed, or any of the prequisites changed,
 # and if so will execute $(rule_foo)
-if_changed_rule = $(if $(strip $(filter-out $(PHONY),$?)            \
-			$(call arg-check, $(cmd_$(1)), $(cmd_$@)) ),\
+if_changed_rule = $(if $(strip $? $(call arg-check, $(cmd_$(1)), $(cmd_$@)) ),\
 			@set -e; \
 			$(rule_$(1)))

@@ -2,7 +2,7 @@
 # Kernel configuration targets
 # These targets are used from top-level makefile
 
-PHONY += oldconfig xconfig gconfig menuconfig config silentoldconfig update-po-config
+.PHONY: oldconfig xconfig gconfig menuconfig config silentoldconfig update-po-config
 
 xconfig: $(obj)/qconf
 	$< Kconfig
@@ -28,10 +28,9 @@ update-po-config: $(obj)/kxgettext
           --add-comments --keyword=_ --keyword=N_ \
           --files-from=scripts/kconfig/POTFILES.in \
           --output scripts/kconfig/config.pot
-	$(Q)ln -fs Kconfig_i386 arch/um/Kconfig_arch
 	$(Q)for i in `ls arch/`; \
 	do \
-	  scripts/kconfig/kxgettext arch/$$i/Kconfig \
+	  scripts/kconfig/kxgettext Kconfig \
 	    | msguniq -o scripts/kconfig/linux_$${i}.pot; \
 	done
 	$(Q)msgcat scripts/kconfig/config.pot \
@@ -39,10 +38,9 @@ update-po-config: $(obj)/kxgettext
 	  --output scripts/kconfig/linux_raw.pot
 	$(Q)msguniq --sort-by-file scripts/kconfig/linux_raw.pot \
 	    --output scripts/kconfig/linux.pot
-	$(Q)rm -f arch/um/Kconfig_arch
 	$(Q)rm -f scripts/kconfig/linux_*.pot scripts/kconfig/config.pot
 
-PHONY += randconfig allyesconfig allnoconfig allmodconfig defconfig
+.PHONY: randconfig allyesconfig allnoconfig allmodconfig defconfig
 
 randconfig: $(obj)/conf
 	$< -r Kconfig
@@ -56,16 +54,32 @@ allnoconfig: $(obj)/conf
 allmodconfig: $(obj)/conf
 	$< -m Kconfig
 
+UNAME_RELEASE := $(shell uname -r)
+CLONECONFIG := $(firstword $(wildcard /proc/config.gz \
+				      /lib/modules/$(UNAME_RELEASE)/.config \
+				      /etc/kernel-config \
+				      /boot/config-$(UNAME_RELEASE)))
+cloneconfig: $(obj)/conf
+	$(Q)case "$(CLONECONFIG)" in				\
+	'')	echo -e "The configuration of the running"	\
+			"kernel could not be determined\n";	\
+		false ;;					\
+	*.gz)	gzip -cd $(CLONECONFIG) > .config.running ;;	\
+	*)	cat $(CLONECONFIG) > .config.running ;;		\
+	esac &&							\
+	echo -e "Cloning configuration file $(CLONECONFIG)\n"
+	$(Q)$< -D .config.running Kconfig
+
 defconfig: $(obj)/conf
 ifeq ($(KBUILD_DEFCONFIG),)
 	$< -d Kconfig
 else
 	@echo *** Default configuration is based on '$(KBUILD_DEFCONFIG)'
-	$(Q)$< -D arch/$(ARCH)/configs/$(KBUILD_DEFCONFIG) Kconfig
+	$(Q)$< -D configs/$(KBUILD_DEFCONFIG) Kconfig
 endif
 
 %_defconfig: $(obj)/conf
-	$(Q)$< -D arch/$(ARCH)/configs/$@ Kconfig
+	$(Q)$< -D configs/$@ Kconfig
 
 # Help text used by make help
 help:
@@ -78,7 +92,7 @@ help:
 	@echo  '  defconfig	  - New config with default answer to all options'
 	@echo  '  allmodconfig	  - New config selecting modules when possible'
 	@echo  '  allyesconfig	  - New config where all options are accepted with yes'
-	@echo  '  allnoconfig	  - New config where all options are answered with no'
+	@echo  '  allnoconfig	  - New minimal config'
 
 # ===========================================================================
 # Shared Makefile for the various kconfig executables:

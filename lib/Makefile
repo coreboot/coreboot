@@ -18,5 +18,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-head-y += init.o
+compressors-$(CONFIG_COMPRESSION_LZMA)	+= lzma.o
+compressors-$(CONFIG_COMPRESSION_NRV2B)	+= nrv2b.o
 

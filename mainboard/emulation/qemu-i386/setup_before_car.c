@@ -14,7 +14,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <stdint.h>
+#include <arch/types.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <arch/io.h>
@@ -33,6 +33,6 @@ void setup_before_car(void)
 {
 	outb(5, 0x80);
 	
-	uart_init();
-	console_init();
+	//uart_init();
+	//console_init();
 }

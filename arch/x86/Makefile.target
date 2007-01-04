@@ -1,0 +1,110 @@
+##
+## This file is part of the LinuxBIOS project.
+##
+## Copyright (C) 2006 coresystems GmbH
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+
+#
+# This part builds the last 16 byte containing the jmp to the code
+# and a date or stamp or pointer to a data structure that flashrom
+# might want to read
+#
+
+linuxbios.jump: FORCE
+	$(Q)echo "Building jump vector"
+	$(Q)dd if=/dev/zero of=$(objtree)/linuxbios.jump bs=16 count=1 # 0x10
+	touch $(objtree)/linuxbios.jump
+
+
+#
+# This part takes care of compression. It should build the compression modules
+# in a way that they can be put in the lar. FIXME it belongs in lib/ 
+#
+
+lzma:
+	$(Q)echo "building lzma"
+
+
+#
+# initram is always uncompressed. It belongs into the mainboard directory
+# and is build from what was auto.c in v2
+#
+	
+initram:
+	$(Q)echo "building initram"
+
+#
+# this is the rest of linuxbios (v2: linuxbios_ram.rom) 
+# Is this maybe platform independent, except for the "drivers"? 
+# Where should it be built?
+#
+# This needs to be compressed with the default compressor
+#
+
+linuxbios_ram:
+	$(Q)echo "building linuxbios_ram"
+
+#
+# The payload as we love it. Get it from somewhere.
+# Is this a place to incorporate buildrom?
+# 
+# This needs to be compressed with the default compressor
+#
+	
+payload:
+	$(Q)echo "building payload"
+
+#
+# build the lar archive
+#
+
+	
+linuxbios.lar: lzma initram linuxbios_ram payload 
+	$(Q)echo lar c $(objdir)/linuxbios.lar $^
+	$(Q)dd if=/dev/zero of=$(objtree)/linuxbios.lar bs=57088 count=1
+
+
+#
+# this is going to be the enable car code, lar parser and such:
+#
+
+	
+linuxbios.init: 
+	$(Q)echo Building init from $^
+	$(Q)dd if=/dev/zero of=$(objtree)/linuxbios.init bs=8192 count=1
+
+#
+# VPD or SIP ROM or ... how does nvidia call it? 
+# Some space to cope with dirty southbridge tricks. 
+# Do we want to put our own stuff there, too?
+#
+	
+linuxbios.vpd:
+	$(Q)printf "Building dummy VPD ..."
+	$(Q)dd if=/dev/zero of=$(objtree)/linuxbios.vpd bs=240 count=1 # 0xf0
+	$(Q)printf "ok.\n"
+
+#
+# Compose the image:
+#
+	
+linuxbios.rom: linuxbios.lar linuxbios.init linuxbios.vpd linuxbios.jump
+	$(Q)cat $(objtree)/linuxbios.lar $(objtree)/linuxbios.init \
+		$(objtree)/linuxbios.vpd $(objtree)/linuxbios.jump > \
+		$(objtree)/linuxbios.rom
+
+.PHONY: linuxbios.rom

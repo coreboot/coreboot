@@ -215,7 +215,7 @@ crt_console_tx_string:
 
 #if defined(CONSOLE_DEBUG_TX_STRING) && (ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG)
 .section ".rom.data"
-str_copying_to_ram:  .string "Copying LinuxBIOS to ram.\r\n"
+str_copying_to_ram:  .string "Copying LinuxBIOS to RAM.\r\n"
 str_pre_main:        .string "Jumping to LinuxBIOS.\r\n"
 .previous
 

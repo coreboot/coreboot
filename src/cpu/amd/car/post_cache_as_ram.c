@@ -53,7 +53,7 @@ static void post_cache_as_ram(void)
 	set_init_ram_access(); /* So we can access RAM from [1M, CONFIG_LB_MEM_TOPK) */
 
 //	dump_mem(DCACHE_RAM_BASE+DCACHE_RAM_SIZE-0x8000, DCACHE_RAM_BASE+DCACHE_RAM_SIZE-0x7c00);
-	print_debug("Copying data from cache to ram -- switching to use ram as stack... ");
+	print_debug("Copying data from cache to RAM -- switching to use RAM as stack... ");
 
 	/* from here don't store more data in CAR */
 #if 0

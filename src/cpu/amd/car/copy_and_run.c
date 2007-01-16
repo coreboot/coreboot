@@ -23,7 +23,7 @@ static void copy_and_run(void)
 	uint8_t *src, *dst; 
         unsigned long ilen, olen;
 
-	print_debug("Copying LinuxBIOS to ram.\r\n");
+	print_debug("Copying LinuxBIOS to RAM.\r\n");
 
 #if !CONFIG_COMPRESS 
 	__asm__ volatile (

@@ -391,6 +391,46 @@ static int enable_flash_sb400(struct pci_dev *dev, char *name)
 	return 0;
 }
 
+//By yhlu
+static int enable_flash_mcp55(struct pci_dev *dev, char *name)
+{
+        /* register 4e.b gets or'ed with one */
+        unsigned char old, new, byte;
+        unsigned short word;
+	
+        /* if it fails, it fails. There are so many variations of broken mobos
+         * that it is hard to argue that we should quit at this point. 
+         */
+
+        //dump_pci_device(dev); 
+
+        /* Set the 4MB enable bit bit */
+        byte = pci_read_byte(dev, 0x88);
+        byte |= 0xff; //256K
+        pci_write_byte(dev, 0x88, byte);
+        byte = pci_read_byte(dev, 0x8c);
+        byte |= 0xff; //1M
+        pci_write_byte(dev, 0x8c, byte);
+        word = pci_read_word(dev, 0x90);
+        word |= 0x7fff; //15M
+        pci_write_word(dev, 0x90, word);
+        
+        old = pci_read_byte(dev, 0x6d);
+        new = old | 0x01;
+        if (new == old)
+                return 0;
+        pci_write_byte(dev, 0x6d, new);
+
+        if (pci_read_byte(dev, 0x6d) != new) {
+                printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
+                       0x6d, new, name);
+                return -1;
+        }
+
+	return 0;
+
+}
+
 typedef struct penable {
 	unsigned short vendor, device;
 	char *name;
@@ -432,8 +472,12 @@ static FLASH_ENABLE enables[] = {
 
         {0x10de, 0x0260, "NVidia MCP51", enable_flash_ck804},
         {0x10de, 0x0261, "NVidia MCP51", enable_flash_ck804},
+	// {0x10de, 0x0261, "NVIDIA C51",   enable_flash_ck804}, // YHLU
         {0x10de, 0x0262, "NVidia MCP51", enable_flash_ck804},
         {0x10de, 0x0263, "NVidia MCP51", enable_flash_ck804},
+
+	{0x10de, 0x0364, "NVIDIA MCP55", enable_flash_mcp55}, // LPC
+	{0x10de, 0x0367, "NVIDIA MCP55", enable_flash_mcp55}, // Pro
 
 	{0x1002, 0x4377, "ATI SB400", enable_flash_sb400}, // ATI Technologies Inc IXP SB400 PCI-ISA Bridge (rev 80)
 };

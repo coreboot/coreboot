@@ -31,6 +31,7 @@
 #endif
 #include "am29f040b.h"
 #include "sst28sf040.h"
+#include "sst49lfxxxc.h"
 #include "w49f002u.h"
 #include "sst39sf020.h"
 #include "sst49lf040.h"
@@ -82,6 +83,12 @@ struct flashchip flashchips[] = {
 	 probe_sst_fwhub, erase_sst_fwhub, write_sst_fwhub, NULL},
 	{"Pm49FL002",	PMC_ID,		PMC_49FL002,	NULL, 256, 16 * 1024,
 	 probe_jedec,	erase_chip_jedec, write_49fl004,NULL},
+	{"SST49LF004C", SST_ID,	SST_49LF004C,	NULL, 512, 4 * 1024,
+	 probe_49lfxxxc, erase_49lfxxxc, write_49lfxxxc,NULL},
+	{"SST49LF008C", SST_ID,		SST_49LF008C, 	NULL, 1024, 4 * 1024 ,
+	 probe_49lfxxxc, erase_49lfxxxc, write_49lfxxxc, NULL},
+	{"SST49LF016C", SST_ID,		SST_49LF016C, 	NULL, 2048, 4 * 1024 ,
+	 probe_49lfxxxc, erase_49lfxxxc, write_49lfxxxc, NULL},
 	{"Pm49FL004",	PMC_ID,		PMC_49FL004,	NULL, 512, 64 * 1024,
 	 probe_jedec,	erase_chip_jedec, write_49fl004,NULL},
 	{"W29C011",	WINBOND_ID,	W_29C011,	NULL, 128, 128,

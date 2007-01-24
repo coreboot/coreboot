@@ -55,7 +55,7 @@ initram:
 # This needs to be compressed with the default compressor
 #
 
-linuxbios_ram: dtc.o
+linuxbios_ram: statictree.o
 	$(Q)echo "building linuxbios_ram"
 
 #
@@ -108,16 +108,18 @@ linuxbios.rom: linuxbios.lar linuxbios.init linuxbios.vpd linuxbios.jump
 		$(objtree)/linuxbios.rom
 
 # miscellaneous important targets. 
-$(obj)/mainboard.o: $(obj)/dtc.o
+$(objtree)/mainboard.o: $(objtree)/statictree.o
 
-$(obj)/dtc.o:  $(obj)/dtc.c
-$(obj)/dtc.c: $(obj)/mainboard/$(CONFIG_CONFIG_MAINBOARD_NAME)/dts $(src)/dts $(obj)/dtc
-	$(obj)/dtc -O lb $(shell ecoh $(src)/mainboard/$(CONFIG_CONFIG_MAINBOARD_NAME)/dts) >$(obj)/dtc.c
+$(objtree)/statictree.o:  $(objtree)/statictree.c
+	$(CC) -c -o $(objtree)/statictree.o  $(objtree)/statictree.c
+
+$(objtree)/statictree.c: $(shell echo $(srctree)/mainboard/$(CONFIG_MAINBOARD_NAME)/dts) $(objtree)/dtc
+	$(objtree)/dtc -O lb $(shell echo $(srctree)/mainboard/$(CONFIG_MAINBOARD_NAME)/dts) >$(objtree)/statictree.c
 
 
-$(obj)/dtc:
+$(objtree)/dtc:
 	$(MAKE) -C $(srctree)/util/dtc/
-	cp $(srctree)/util/dtc/dtc $(obj)
+	cp $(srctree)/util/dtc/dtc $(objtree)
 
 
 .PHONY: linuxbios.rom

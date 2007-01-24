@@ -472,7 +472,6 @@ static FLASH_ENABLE enables[] = {
 
         {0x10de, 0x0260, "NVidia MCP51", enable_flash_ck804},
         {0x10de, 0x0261, "NVidia MCP51", enable_flash_ck804},
-	// {0x10de, 0x0261, "NVIDIA C51",   enable_flash_ck804}, // YHLU
         {0x10de, 0x0262, "NVidia MCP51", enable_flash_ck804},
         {0x10de, 0x0263, "NVidia MCP51", enable_flash_ck804},
 

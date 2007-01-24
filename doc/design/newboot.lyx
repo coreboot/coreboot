@@ -544,8 +544,111 @@ status collapsed
 
 \end_layout
 
+\begin_layout Subsection
+How DTC will compile the DTS
+\end_layout
+
+\begin_layout Standard
+Forth has no real tpyes to speak of -- it is a very old language, and the
+ original use did ont really envision types.
+ 
+\end_layout
+
+\begin_layout Standard
+The DTS, potentially, defines several types.
+ We use the Forth naming conventions and their usage to determine what they
+ are.
+ THe set of types used if very simple, to keep from having to modify the
+ DTS specification.
+ At the same time, we want some type information so we can catch as many
+ errors as possible at compile time.
+ The types that we will generate are as follows:
+\end_layout
+
+\begin_layout Itemize
+char * -- for assignments such as x -= 
+\begin_inset Quotes eld
+\end_inset
+
+y
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+unsgiend long [], for assignments such as x = <y z>
+\end_layout
+
+\begin_layout Itemize
+unsigned long, for assignments such as #a = b
+\end_layout
+
+\begin_layout Itemize
+void *, for assignments such as a = <&b>
+\end_layout
+
+\begin_layout Standard
+Note a problem here: you can't tell the type absent an assignment.
+ Should we add type keywords? 
+\end_layout
+
+\begin_layout Standard
+Note that we are going to need an unflatten tool to generate the device
+ tree.
+ The steps are as follows: 
+\end_layout
+
+\begin_layout Itemize
+Compile time creation of the c structures
+\end_layout
+
+\begin_layout Itemize
+run-time filling in the blanks with data about real hardware
+\end_layout
+
+\begin_layout Itemize
+runtime generation of the OFW device tree
+\end_layout
+
+\begin_layout Standard
+The DTS is defined per each mainboard.
+ It uses elements which are actually define elsewhere.
+ -- for examplle, if the user references the intel 440bx northbridge, the
+ DTC must pull in northbidge/intel/440bx/dts to get the full set of definitions.
+ Call the full DTS the base DTS; call the DTS mentioned in the mainboard
+ DTS the instance DTS.
+ Each member of the DTS from the base DTS must be initialized in some manner
+ so we can infter type and default values.
+ The instance can define some,all, or none of the values.
+ The DTC will create a c file iwth structure declarations and initializaions
+ in it.
+ 
+\end_layout
+
+\begin_layout Standard
+We show how this looks in 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+How we get from the mainboard DTS to C
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
-The major change -- the death of the static tree
+The major change -- the death of the static tree (we're not doing this after
+ all)
 \end_layout
 
 \begin_layout Standard
@@ -600,6 +703,89 @@ Traditional linuxbios ram code (LAR, etc.)
 
 \begin_layout Subsection
 Load payload and start it
+\end_layout
+
+\begin_layout Section
+Makefile targets
+\end_layout
+
+\begin_layout Subsection
+lzma
+\end_layout
+
+\begin_layout Standard
+This is for creating the linuxbios.lzma file.
+ 
+\end_layout
+
+\begin_layout Subsection
+initram
+\end_layout
+
+\begin_layout Standard
+This is for creating initram.
+ The actual files used can be defined in any Makefile that is part of this
+ build.
+ Typcially, the files are defined in the northbridge Makeflie.
+ 
+\end_layout
+
+\begin_layout Subsection
+linuxbios_ram
+\end_layout
+
+\begin_layout Standard
+This is the code that runs in RAM.
+ This is almost always hardwaremain().
+ This code is almost always defined by the mainboard Makefile.
+ 
+\end_layout
+
+\begin_layout Subsection
+payload
+\end_layout
+
+\begin_layout Standard
+This is what we boot.
+ Almost always this is FILO, Etherboot, Linux kernel, Open FirmWare, and
+ so on.
+ 
+\end_layout
+
+\begin_layout Subsection
+linuxbios.lar
+\end_layout
+
+\begin_layout Standard
+This is the 
+\begin_inset Quotes eld
+\end_inset
+
+file system
+\begin_inset Quotes erd
+\end_inset
+
+ that contains the lzma, initram, linuxbios_ram, and payload targets.
+ 
+\end_layout
+
+\begin_layout Subsection
+jumpvector
+\end_layout
+
+\begin_layout Standard
+This is the jumpvector.
+ Jumpvector is entered at power on reset (POR) or hard or soft reset.
+ 
+\end_layout
+
+\begin_layout Subsection
+vpd
+\end_layout
+
+\begin_layout Standard
+This contains information that a payload can use to find out about the mainboard.
+ 
 \end_layout
 
 \begin_layout Section

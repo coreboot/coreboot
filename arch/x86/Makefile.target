@@ -55,7 +55,7 @@ initram:
 # This needs to be compressed with the default compressor
 #
 
-linuxbios_ram:
+linuxbios_ram: dtc.o
 	$(Q)echo "building linuxbios_ram"
 
 #
@@ -106,5 +106,18 @@ linuxbios.rom: linuxbios.lar linuxbios.init linuxbios.vpd linuxbios.jump
 	$(Q)cat $(objtree)/linuxbios.lar $(objtree)/linuxbios.init \
 		$(objtree)/linuxbios.vpd $(objtree)/linuxbios.jump > \
 		$(objtree)/linuxbios.rom
+
+# miscellaneous important targets. 
+$(obj)/mainboard.o: $(obj)/dtc.o
+
+$(obj)/dtc.o:  $(obj)/dtc.c
+$(obj)/dtc.c: $(obj)/mainboard/$(CONFIG_CONFIG_MAINBOARD_NAME)/dts $(src)/dts $(obj)/dtc
+	$(obj)/dtc -O lb $(shell ecoh $(src)/mainboard/$(CONFIG_CONFIG_MAINBOARD_NAME)/dts) >$(obj)/dtc.c
+
+
+$(obj)/dtc:
+	$(MAKE) -C $(srctree)/util/dtc/
+	cp $(srctree)/util/dtc/dtc $(obj)
+
 
 .PHONY: linuxbios.rom

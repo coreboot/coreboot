@@ -549,49 +549,71 @@ How DTC will compile the DTS
 \end_layout
 
 \begin_layout Standard
-Forth has no real tpyes to speak of -- it is a very old language, and the
- original use did ont really envision types.
+There are two pieces to the static tree.
+ The first is the tree itself.
+ As in V2, the user does not see the structures and types that define this
+ tree; the user does define the structure of the tree by the way they lay
+ out the config file.
+ Sibling, child, and parent references are defined by the use of reserved
+ names (sibling, child, and parent, unsurprisingly) and the use of & to
+ define what the sibling, child, and parent keywords are referring to.
  
 \end_layout
 
 \begin_layout Standard
-The DTS, potentially, defines several types.
- We use the Forth naming conventions and their usage to determine what they
- are.
- THe set of types used if very simple, to keep from having to modify the
- DTS specification.
- At the same time, we want some type information so we can catch as many
- errors as possible at compile time.
- The types that we will generate are as follows:
+The second part of the tree is the per-chip and per-device information.
+ As in V2, each device or chip can define a structure which defines per-device
+ information.
+ These structures are called config structures, and define per-instance
+ configuration of a chip.
+ A survey of all the v2 structures shows that for almost all such config
+ structures, almost all use int, unsigned long and unsigned int, char, and
+ array of char types.
+ However, for superio parts, the config structures in almost all cases contain
+ structure declarations.
+ We could in theory resolve the superio issue as follows: define the superio
+ struct as having links, much as our other structures do now:
 \end_layout
 
-\begin_layout Itemize
-char * -- for assignments such as x -= 
-\begin_inset Quotes eld
-\end_inset
-
-y
-\begin_inset Quotes erd
-\end_inset
-
-
+\begin_layout LyX-Code
+struct superio {
 \end_layout
 
-\begin_layout Itemize
-unsgiend long [], for assignments such as x = <y z>
+\begin_layout LyX-Code
+    void *links[8];
 \end_layout
 
-\begin_layout Itemize
-unsigned long, for assignments such as #a = b
-\end_layout
-
-\begin_layout Itemize
-void *, for assignments such as a = <&b>
+\begin_layout LyX-Code
+};
 \end_layout
 
 \begin_layout Standard
-Note a problem here: you can't tell the type absent an assignment.
- Should we add type keywords? 
+Then initialize them:
+\end_layout
+
+\begin_layout LyX-Code
+struct superio superio {
+\end_layout
+
+\begin_layout LyX-Code
+    .links = {&pc_keyboard, &com1, &com2, 0};
+\end_layout
+
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout Standard
+In our opinion, this is asking for trouble.
+ We currently, in the superio code, can catch stupid errors in usage that
+ would be lost were we to go to this
+\family sans
+ void * based approach.
+ In fact, we can argue that we ought to be adding stronger type checking
+ to the tree, not taking it away.
+ As of this version of the document, the handling of the superio is not
+ defined.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -644,65 +666,6 @@ How we get from the mainboard DTS to C
 \end_inset
 
 
-\end_layout
-
-\begin_layout Section
-The major change -- the death of the static tree (we're not doing this after
- all)
-\end_layout
-
-\begin_layout Standard
-We made a decision on 12/2/2006 in the conference calle, We are going to
- try to remove the linux static.c from linuxbios, and center all our work
- on the OFW device tree.
- 
-\end_layout
-
-\begin_layout Standard
-Hence, we need an idea of how this works.
- EVERY structure dereference in the linuxbios code will now be an OFW-style
- property operation.
- 
-\end_layout
-
-\begin_layout Standard
-To see if this is posisble, we are ging to work through the linuxbios code
- and see how it would look.
- 
-\end_layout
-
-\begin_layout Standard
-Here we go!
-\end_layout
-
-\begin_layout Subsection
-basic startup and CAR (in most cases, same for all processors of a given
- type)
-\end_layout
-
-\begin_layout Standard
-No change currently.
- 
-\end_layout
-
-\begin_layout Subsection
-Pre-initram device setup (large FLASH, serial port, etc.)
-\end_layout
-
-\begin_layout Quote
-
-\end_layout
-
-\begin_layout Subsection
-initram
-\end_layout
-
-\begin_layout Subsection
-Traditional linuxbios ram code (LAR, etc.)
-\end_layout
-
-\begin_layout Subsection
-Load payload and start it
 \end_layout
 
 \begin_layout Section

@@ -459,6 +459,10 @@ include .config
 # To avoid any implicit rule to kick in, define an empty command
 .config .kconfig.d: ;
 
+MAINBOARDDIR=$(shell echo $(CONFIG_MAINBOARD_NAME))
+
+include mainboard/$(MAINBOARDDIR)/Makefile.target
+
 # If .config is newer than include/linuxbios/autoconf.h, someone tinkered
 # with it and forgot to run make oldconfig.
 # If kconfig.d is missing then we are probarly in a cleaned tree so
@@ -977,7 +981,7 @@ clean: archclean $(clean-dirs)
 #
 mrproper: rm-dirs  := $(wildcard $(MRPROPER_DIRS))
 mrproper: rm-files := $(wildcard $(MRPROPER_FILES))
-mrproper-dirs      := $(addprefix _mrproper_,Documentation/DocBook scripts)
+mrproper-dirs      := $(addprefix _mrproper_,doc scripts)
 
 .PHONY: $(mrproper-dirs) mrproper archmrproper
 $(mrproper-dirs):
@@ -998,19 +1002,6 @@ distclean: mrproper
 	 	-o -name '.*.rej' -o -size 0 \
 		-o -name '*%' -o -name '.*.cmd' -o -name 'core' \) \
 		-type f -print | xargs rm -f
-
-
-# Packaging of the kernel to various formats
-# ---------------------------------------------------------------------------
-# rpm target kept for backward compatibility
-package-dir	:= $(srctree)/scripts/package
-
-.PHONY: %-pkg rpm
-
-%pkg: FORCE
-	$(Q)$(MAKE) -f $(package-dir)/Makefile $@
-rpm: FORCE
-	$(Q)$(MAKE) -f $(package-dir)/Makefile $@
 
 
 # Brief documentation of the typical targets used
@@ -1035,7 +1026,6 @@ help:
 	@echo  '  dir/            - Build all files in dir and below'
 	@echo  '  dir/file.[ois]  - Build specified target only'
 	@echo  '  dir/file.ko     - Build module including final link'
-	@echo  '  rpm		  - Build a kernel as an RPM package'
 	@echo  '  tags/TAGS	  - Generate tags file for editors'
 	@echo  '  cscope	  - Generate cscope index'
 	@echo  '  kernelrelease	  - Output the release version string'
@@ -1047,11 +1037,8 @@ help:
 	@echo  '  checkstack      - Generate a list of stack hogs'
 	@echo  '  namespacecheck  - Name space analysis on compiled kernel'
 	@echo  ''
-	@echo  'Kernel packaging:'
-	@$(MAKE) -f $(package-dir)/Makefile help
-	@echo  ''
 	@echo  'Documentation targets:'
-	@$(MAKE) -f $(srctree)/Documentation/DocBook/Makefile dochelp
+	@$(MAKE) -f $(srctree)/doc/Makefile dochelp
 	@echo  ''
 	@echo  'Architecture specific targets ($(ARCH)):'
 	@$(if $(archhelp),$(archhelp),\
@@ -1074,7 +1061,7 @@ help:
 # Documentation targets
 # ---------------------------------------------------------------------------
 %docs: scripts_basic FORCE
-	$(Q)$(MAKE) $(build)=Documentation/DocBook $@
+	$(Q)$(MAKE) $(build)=doc $@
 
 else # KBUILD_EXTMOD
 

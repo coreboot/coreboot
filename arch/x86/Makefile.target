@@ -113,9 +113,8 @@ $(objtree)/mainboard.o: $(objtree)/statictree.o
 $(objtree)/statictree.o:  $(objtree)/statictree.c
 	$(CC) $(CFLAGS) $(LINUXBIOSINCLUDE) -c -o $(objtree)/statictree.o  $(objtree)/statictree.c
 
-$(objtree)/statictree.c: $(shell echo $(srctree)/mainboard/$(CONFIG_MAINBOARD_NAME)/dts) $(objtree)/dtc
-	$(objtree)/dtc -O lb $(shell echo $(srctree)/mainboard/$(CONFIG_MAINBOARD_NAME)/dts) >$(objtree)/statictree.c
-
+$(objtree)/statictree.c: mainboard/$(MAINBOARDDIR)/dts $(objtree)/dtc
+	$(objtree)/dtc -O lb mainboard/$(MAINBOARDDIR)/dts >$(objtree)/statictree.c
 
 $(objtree)/dtc:
 	$(MAKE) -C $(srctree)/util/dtc/

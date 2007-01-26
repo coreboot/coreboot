@@ -299,7 +299,7 @@ AFLAGS_KERNEL	=
 
 # Use LINUXBIOSINCLUDE when you must reference the include/ directory.
 # Needed to be compatible with the O= option
-LINUXBIOSINCLUDE    :=  -Iinclude \
+LINUXBIOSINCLUDE    :=  -I$(srctree) -Iinclude \
 			-I$(srctree)/include \
 			-I$(srctree)/include/cpu/generic/$(ARCH)/ \
 			-include $(srctree)/include/linuxbios/autoconf.h

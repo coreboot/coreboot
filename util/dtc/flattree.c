@@ -79,6 +79,31 @@ clean(char *name, int instantiate){
 	return cleanname;
 }
 
+char *
+topath(struct property *p){
+	struct data d = p->val;
+	int i = 0;
+	char *pathname, *cp;
+
+	pathname = malloc(d.len + 1);
+
+	for(cp = pathname, i = 0; i < d.len; i++, cp++) {
+		switch(d.val[i]){
+			case '@':
+				*cp = 0;
+				break;
+			case ',':
+				*cp = '/';
+				break;
+			default: 
+				*cp = d.val[i];
+				break;
+		}
+	}
+	*cp++ = 0;
+	return pathname;
+}
+
 
 
 static void bin_emit_cell(void *e, cell_t val)
@@ -473,15 +498,62 @@ static void linuxbios_emit_property(void *e, char *label)
 static void linuxbios_emit_special(void *e, struct node *tree)
 {
 	FILE *f = e;
+	struct property *prop;
 
 	fprintf(f, "struct device dev_%s = {\n", tree->label);
-	if (tree->next_sibling) 
-		fprintf(f, "\t.sibling = dev_%s\n", tree->next_sibling->label);
-	/* now do we do next? */
-	if (tree->children)
-		fprintf(f, "\t.children = dev_%s\n", tree->children->label);
+	/* special case -- the root has a distinguished path */
+	if (! strncmp(tree->label, "root", 4)){
+		fprintf(f, "\t.path =  { .type = DEVICE_PATH_ROOT },\n");
+	}
 
-	fprintf(f, "}\n");
+	for_each_property(tree, prop) {
+		if (streq(prop->name, "pcidomain")){
+			fprintf(f, "\t.path = {.type=DEVICE_PATH_PCI_DOMAIN,.u={.pci_domain={ .domain = %s }}},\n", 
+				prop->val.val);
+		}
+		if (streq(prop->name, "pcipath")){
+			fprintf(f, "\t.path = {.type=DEVICE_PATH_PCI,.u={.pci={ .devfn = PCI_DEVFN(%s)}}},\n", 
+				prop->val.val);
+		}
+		/* to do: check the value, maybe. Kinda pointless though. */
+		if (streq(prop->name, "on_mainboard")){
+			fprintf(f, "\t.on_mainboard = 1,\n");
+		}
+		if (streq(prop->name, "enabled")){
+			fprintf(f, "\t.enabled = 1,\n");
+		}
+
+		if (streq(prop->name, "config")){
+			fprintf(f, "\t.chip_ops = &%s_ops,\n", clean(prop->val.val, 0));
+			fprintf(f, "\t.chip_info = &%s,\n", clean(tree->label, 1));
+		}
+
+	}
+	if (tree->next_sibling) 
+		fprintf(f, "\t.sibling = dev_%s;\n", tree->next_sibling->label);
+	/* now do we do next? */
+	/* this will need to do a bus for every child. And, below, we're going to need to find which bus we're on*/
+	/* for now, let's keep it to the minimum that will work, while we see if we like this. */
+	if (tree->children){
+		fprintf(f,"\t.links = 1,\n");
+		fprintf(f,"\t.link = {\n");
+		fprintf(f,"\t\t[0] = {\n");
+		fprintf(f,"\t\t\t.dev = &dev_%s,\n", tree->label);
+		fprintf(f,"\t\t\t.link = 0,\n");
+		fprintf(f,"\t\t\t.children = &dev_%s\n", tree->children->label);
+		fprintf(f,"\t\t},\n");
+		fprintf(f,"\t},\n");
+	}
+	/* fill in the 'bus I am on' entry */
+	if (tree->parent)
+		fprintf(f, "\t.bus = &dev_%s.link[0],\n", tree->parent->label);
+	else
+		fprintf(f, "\t.bus = &dev_%s.link[0],\n", tree->label);
+
+	if (tree->next)
+		fprintf(f, "\t.next = &dev_%s,\n", tree->next->label);
+
+	fprintf(f, "};\n");
 }
 
 static struct emitter linuxbios_emitter = {
@@ -509,6 +581,31 @@ static int stringtable_insert(struct data *d, char *str)
 
 	*d = data_append_data(*d, str, strlen(str)+1);
 	return i;
+}
+
+/* we're going to overload the name node for testing. This may be the wrong thing long-term */
+static void flatten_tree_emit_includes(struct node *tree, struct emitter *emit,
+			 void *etarget, struct data *strbuf,
+			 struct version_info *vi)
+{
+	char *pathname;
+	struct property *prop;
+	struct node *child;
+	FILE *f = etarget;
+
+	for_each_property(tree, prop) {
+		if (streq(prop->name, "config")) {
+			pathname = topath(prop);
+			fprintf(f, "#include <%s/config.h>\n", pathname);
+			free(pathname);
+		}
+	}
+
+	for_each_child(tree, child) {
+		flatten_tree_emit_includes(child, emit, etarget, strbuf, vi);
+	}
+
+
 }
 
 	
@@ -570,31 +667,33 @@ static void flatten_tree_emit_structinits(struct node *tree, struct emitter *emi
 	struct node *child;
 	int seen_name_prop = 0;
 	FILE *f = etarget;
-
+/*
 	treename = clean(tree->name, 0);
 	fprintf(f, "struct %s %s = {\n", treename, tree->label);
 	free(treename);
 
-
+*/
 #if 0
 	if (vi->flags & FTF_FULLPATH)
 		emit->string(etarget, tree->fullpath, 0);
 	else
 		emit->string(etarget, tree->name, 0);
 #endif
-
+/*
 	for_each_property(tree, prop) {
 		if (streq(prop->name, "name"))
 			seen_name_prop = 1;
 		emit->data(etarget, prop);
 	}
+ */
 #if 0
 	if ((vi->flags & FTF_NAMEPROPS) && !seen_name_prop) {
 		fprintf(f, "\tu8 %s[%d]\n", prop->name, prop->data.len);
 	}
 #endif
-
+/*
 	emit->endnode(etarget, tree->label);
+*/
 
 	/* now emit the device for this node, with sibling and child pointers etc. */
 	emit->special(f, tree);
@@ -978,6 +1077,9 @@ void dt_to_linuxbios(FILE *f, struct boot_info *bi, int version, int boot_cpuid_
 	int i;
 	struct data strbuf = empty_data;
 	char *symprefix = "dt";
+	extern char *code;
+	struct node *next;
+	extern struct node *first_node;
 
 	labeltree(bi->dt);
 
@@ -994,9 +1096,23 @@ void dt_to_linuxbios(FILE *f, struct boot_info *bi, int version, int boot_cpuid_
 	bi->dt->name  = bi->dt->label  = "root";
 	/* steps: emit all structs. Then emit the initializers, with the pointers to other structs etc. */
 
-	flatten_tree_emit_structdecls(bi->dt, &linuxbios_emitter, f, &strbuf, vi);
+	/* emit any includes that we need  -- TODO: ONLY ONCE PER TYPE*/
+	fprintf(f, "#include <device/device.h>\n#include <device/pci.h>\n");
+	flatten_tree_emit_includes(bi->dt, &linuxbios_emitter, f, &strbuf, vi);
+	/* forward declarations */
+	for(next = first_node; next; next = next->next)
+		fprintf(f, "struct device dev_%s;\n", next->label);
+
+	/* emit the code, if any */
+	if (code)
+		fprintf(f, "%s\n", code);
+
+
+//	flatten_tree_emit_structdecls(bi->dt, &linuxbios_emitter, f, &strbuf, vi);
 	flatten_tree_emit_structinits(bi->dt, &linuxbios_emitter, f, &strbuf, vi);
 	data_free(strbuf);
+	/* */
+
 }
 
 

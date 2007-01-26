@@ -152,6 +152,7 @@ struct node {
 
 	struct node *parent;
 	struct node *next_sibling;
+	struct node *next;
 
 	char *fullpath;
 	int basenamelen;

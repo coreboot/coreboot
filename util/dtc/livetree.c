@@ -24,6 +24,8 @@
  * Tree building functions
  */
 
+struct node *first_node = NULL;
+
 struct property *build_property(char *name, struct data val, char *label)
 {
 	struct property *new = xmalloc(sizeof(*new));
@@ -48,6 +50,8 @@ struct property *chain_property(struct property *first, struct property *list)
 
 struct node *build_node(struct property *proplist, struct node *children)
 {
+	static struct node *last_node = NULL;
+
 	struct node *new = xmalloc(sizeof(*new));
 	struct node *child;
 
@@ -59,6 +63,14 @@ struct node *build_node(struct property *proplist, struct node *children)
 	for_each_child(new, child) {
 		child->parent = new;
 	}
+
+	if (last_node) 
+		last_node->next = new;
+
+	last_node = new;
+
+	if (! first_node)
+		first_node = new;
 
 	return new;
 }
@@ -288,6 +300,7 @@ static struct {
 } prop_checker_table[] = {
 	{"name", must_be_string},
 	{"name", name_prop_check},
+/* we don't care about these things now  -- we think */
 	{"linux,phandle", must_be_one_cell},
 	{"#address-cells", must_be_one_cell},
 	{"#size-cells", must_be_one_cell},
@@ -446,12 +459,12 @@ static int check_root(struct node *root)
 	struct property *prop;
 	int ok = 1;
 
-	CHECK_HAVE_STRING(root, "model");
+//	CHECK_HAVE_STRING(root, "model");
 
-	CHECK_HAVE(root, "#address-cells");
-	CHECK_HAVE(root, "#size-cells");
+//	CHECK_HAVE(root, "#address-cells");
+//	CHECK_HAVE(root, "#size-cells");
 
-	CHECK_HAVE_WARN(root, "compatible");
+//	CHECK_HAVE_WARN(root, "compatible");
 
 	return ok;
 }
@@ -469,20 +482,20 @@ static int check_cpus(struct node *root, int outversion, int boot_cpuid_phys)
 		return 0;
 	}
 
-	CHECK_HAVE_WARN(cpus, "#address-cells");
-	CHECK_HAVE_WARN(cpus, "#size-cells");
+//	CHECK_HAVE_WARN(cpus, "#address-cells");
+//	CHECK_HAVE_WARN(cpus, "#size-cells");
 
 	for_each_child(cpus, cpu) {
 		CHECK_HAVE_STREQ(cpu, "device_type", "cpu");
-
+#ifdef NOTDEF
 		if (cpu->addr_cells != 1)
 			DO_ERR("%s has bad #address-cells value %d (should be 1)\n",
 			       cpu->fullpath, cpu->addr_cells);
 		if (cpu->size_cells != 0)
 			DO_ERR("%s has bad #size-cells value %d (should be 0)\n",
 			       cpu->fullpath, cpu->size_cells);
-
-		CHECK_HAVE_ONECELL(cpu, "reg");
+#endif
+//		CHECK_HAVE_ONECELL(cpu, "reg");
 		if (prop) {
 			cell_t unitnum;
 			char *eptr;
@@ -499,12 +512,13 @@ static int check_cpus(struct node *root, int outversion, int boot_cpuid_phys)
 
 /* 		CHECK_HAVE_ONECELL(cpu, "d-cache-line-size"); */
 /* 		CHECK_HAVE_ONECELL(cpu, "i-cache-line-size"); */
-		CHECK_HAVE_ONECELL(cpu, "d-cache-size");
-		CHECK_HAVE_ONECELL(cpu, "i-cache-size");
+//		CHECK_HAVE_ONECELL(cpu, "d-cache-size");
+//		CHECK_HAVE_ONECELL(cpu, "i-cache-size");
 
-		CHECK_HAVE_WARN_ONECELL(cpu, "clock-frequency");
-		CHECK_HAVE_WARN_ONECELL(cpu, "timebase-frequency");
+//		CHECK_HAVE_WARN_ONECELL(cpu, "clock-frequency");
+//		CHECK_HAVE_WARN_ONECELL(cpu, "timebase-frequency");
 
+#ifdef NOT
 		prop = get_property(cpu, "linux,boot-cpu");
 		if (prop) {
 			if (prop->val.len)
@@ -516,8 +530,10 @@ static int check_cpus(struct node *root, int outversion, int boot_cpuid_phys)
 			else
 				bootcpu = cpu;
 		}
+#endif
 	}
 
+#ifdef NOT
 	if (outversion < 2) {
 		if (! bootcpu)
 			WARNMSG("No cpu has \"linux,boot-cpu\" property\n");
@@ -527,6 +543,7 @@ static int check_cpus(struct node *root, int outversion, int boot_cpuid_phys)
 		if (boot_cpuid_phys == 0xfeedbeef)
 			WARNMSG("physical boot CPU not set.  Use -b option to set\n");
 	}
+#endif
 
 	return ok;	
 }
@@ -721,8 +738,8 @@ int check_device_tree(struct node *dt, int outversion, int boot_cpuid_phys)
 
 	ok = ok && check_root(dt);
 	ok = ok && check_cpus(dt, outversion, boot_cpuid_phys);
-	ok = ok && check_memory(dt);
-	ok = ok && check_chosen(dt);
+//	ok = ok && check_memory(dt);
+//	ok = ok && check_chosen(dt);
 	if (! ok)
 		return 0;
 

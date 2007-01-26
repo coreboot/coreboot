@@ -20,3 +20,10 @@
 
 #obj-y += init/
 
+define archhelp
+  echo  '* linuxbios.rom   - Compressed kernel image (arch/$(ARCH)/linuxbios.rom)'
+  echo  '  install         - Install kernel using'
+  echo  '  fdimage         - Create a bios update floppy image'
+endef
+	      
+

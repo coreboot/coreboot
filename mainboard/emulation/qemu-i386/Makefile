@@ -18,13 +18,4 @@ obj-y     = setup_before_car.o
 #	$(MAKE) -C $(srctree)/util/dtc/
 #	cp $(srctree)/util/dtc/dtc $(obj)
 
-#
-# This is duplicate in arch/x86/ where it does not belong. 
-# How can we cross reference?
-#
-linuxbios.vpd:
-	$(Q)printf "Building dummy VPD ..."
-	$(Q)dd if=/dev/zero of=$(objtree)/linuxbios.vpd bs=$(( 0xf0 )) count=1
-	$(Q)printf "ok.\n"
-
 

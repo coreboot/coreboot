@@ -46,7 +46,7 @@ extern struct boot_info *the_boot_info;
 	struct reserve_info *re;
 }
 
-%token DT_MEMRESERVE
+%token <str> DT_MEMRESERVE
 %token <addr> DT_ADDR
 %token <str> DT_PROPNAME
 %token <str> DT_NODENAME
@@ -56,9 +56,13 @@ extern struct boot_info *the_boot_info;
 %token <str> DT_UNIT
 %token <str> DT_LABEL
 %token <str> DT_REF
+%token <str> DT_CONFIG
 
 %type <data> propdata
 %type <re> memreserve
+/*
+%type <re> config
+ */
 %type <re> memreserves
 %type <data> celllist
 %type <data> bytestring
@@ -71,11 +75,14 @@ extern struct boot_info *the_boot_info;
 %type <nodelist> subnodes
 %type <str> label
 %type <str> nodename
-
+%type <data> includepath
+%type <data> structname
 %%
 
-sourcefile:	memreserves devicetree {
-			the_boot_info = build_boot_info($1, $2);
+/*sourcefile:	memreserves devicetree {*/
+sourcefile:	devicetree {
+/*			the_boot_info = build_boot_info($1, $2);*/
+			the_boot_info = build_boot_info(0, $1);
 		}
 	;
 
@@ -111,6 +118,23 @@ proplist:	propdef proplist {
 	|	/* empty */	{
 			$$ = NULL;
 		}
+	;
+
+/* I doubt we will do this 
+config:         DT_CONFIG '(' includepath ',' structname ')' ';' {
+  			$$ = setupconfig($3, $5);
+		}
+	|
+				{
+			$$ = NULL;
+		}
+	;
+ */
+
+includepath:	DT_STRING { $$ = $1; }
+	;
+
+structname: 	DT_STRING {$$ = $1; }
 	;
 
 propdef:	label DT_PROPNAME '=' propdata ';' {

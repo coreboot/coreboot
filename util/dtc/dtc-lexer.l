@@ -23,6 +23,7 @@
 %x CELLDATA
 %x BYTESTRING
 %x MEMRESERVE
+%x PASSTHROUGH
 
 PROPCHAR	[a-zA-Z0-9,._+*#?-]
 UNITCHAR	[0-9a-f,]
@@ -43,7 +44,7 @@ REFCHAR		({PROPCHAR}|{UNITCHAR}|[/@])
 #define DPRINT(fmt, ...)	do { } while (0)
 #endif
 
-
+char *code = 0;
 
 %}
 
@@ -57,6 +58,22 @@ REFCHAR		({PROPCHAR}|{UNITCHAR}|[/@])
 			yylloc.first_line = yylineno;
 			return DT_STRING;
 		}
+
+^%%\n	{
+			DPRINT("Begin passthrough\n");
+			/* let's be stupid. 1 MB is way more than enough ... */
+			code = malloc(1048576);
+			*code = 0;
+			BEGIN(PASSTHROUGH);
+		}
+
+<PASSTHROUGH>.*	{
+					DPRINT("Matchingin passthrough %s\n", yytext);
+					/* you tell me why echo does not work */
+					/*ECHO;*/
+					strcat(code, yytext);
+					strcat(code, "\n");
+				}
 
 "/memreserve/"	{
 			yylloc.first_line = yylineno;

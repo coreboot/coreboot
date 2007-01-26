@@ -93,10 +93,10 @@ linuxbios.init:
 # Do we want to put our own stuff there, too?
 #
 	
-linuxbios.vpd:
-	$(Q)printf "Building dummy VPD ..."
-	$(Q)dd if=/dev/zero of=$(objtree)/linuxbios.vpd bs=240 count=1 # 0xf0
-	$(Q)printf "ok.\n"
+#linuxbios.vpd:
+#	$(Q)printf "Building dummy VPD ..."
+#	$(Q)dd if=/dev/zero of=$(objtree)/linuxbios.vpd bs=240 count=1 # 0xf0
+#	$(Q)printf "ok.\n"
 
 #
 # Compose the image:
@@ -111,7 +111,7 @@ linuxbios.rom: linuxbios.lar linuxbios.init linuxbios.vpd linuxbios.jump
 $(objtree)/mainboard.o: $(objtree)/statictree.o
 
 $(objtree)/statictree.o:  $(objtree)/statictree.c
-	$(CC) -c -o $(objtree)/statictree.o  $(objtree)/statictree.c
+	$(CC) $(CFLAGS) $(LINUXBIOSINCLUDE) -c -o $(objtree)/statictree.o  $(objtree)/statictree.c
 
 $(objtree)/statictree.c: $(shell echo $(srctree)/mainboard/$(CONFIG_MAINBOARD_NAME)/dts) $(objtree)/dtc
 	$(objtree)/dtc -O lb $(shell echo $(srctree)/mainboard/$(CONFIG_MAINBOARD_NAME)/dts) >$(objtree)/statictree.c

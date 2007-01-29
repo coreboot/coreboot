@@ -418,7 +418,7 @@ include $(srctree)/arch/$(ARCH)/Makefile
 export KBUILD_DEFCONFIG
 
 config %config: scripts_basic outputmakefile FORCE
-	$(Q)mkdir -p include/linux
+	$(Q)mkdir -p include/linuxbios
 	$(Q)$(MAKE) $(build)=scripts/kconfig $@
 	$(Q)$(MAKE) -C $(srctree) KBUILD_SRC= .kernelrelease
 

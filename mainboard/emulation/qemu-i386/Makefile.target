@@ -1,7 +1,28 @@
+##
+## This file is part of the LinuxBIOS project.
+##
+## Copyright (C) 2006 coresystems GmbH
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+
 
 #
-# This is duplicate in arch/x86/ where it does not belong. 
-# How can we cross reference?
+# VPD or SIP ROM or ... how does nvidia call it? 
+# Some space to cope with dirty southbridge tricks. 
+# Do we want to put our own stuff there, too?
 #
 
 linuxbios.vpd:
@@ -9,4 +30,41 @@ linuxbios.vpd:
 	$(Q)dd if=/dev/zero of=$(objtree)/linuxbios.vpd bs=240 count=1
 	$(Q)printf "ok.\n"
 
+
+#
+# this is going to be the enable car code, lar parser and such:
+#
+
+INITCFLAGS=-I$(srctree)/include/cpu/generic/x86 -I$(srctree)/include -fno-builtin -Os -fPIC
+
+linuxbios.initram: 
+	$(Q)echo Building linuxbios.initram
+	#
+	# main
+	$(Q)$(CC) $(INITCFLAGS) -c $(srctree)/mainboard/$(MAINBOARDDIR)/initram.c -o initram.o
+	#
+	# console lib
+	$(Q)$(CC) $(INITCFLAGS) -c $(srctree)/arch/x86/console.c -o console.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(srctree)/arch/x86/serial.c -o serial.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(srctree)/console/vtxprintf.c -o vtxprintf.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(srctree)/lib/uart8250.c -o uart8250.o
+
+	$(Q)$(LD) -Ttext 0x00000000 -s --oformat binary initram.o console.o uart8250.o \
+		serial.o vtxprintf.o -o $(objtree)/linuxbios.initram
+
+	$(Q)chmod 644 $(objtree)/linuxbios.initram
+
+
+# miscellaneous important targets. 
+$(objtree)/mainboard.o: $(objtree)/statictree.o
+
+$(objtree)/statictree.o:  $(objtree)/statictree.c
+	$(CC) $(CFLAGS) $(LINUXBIOSINCLUDE) -c -o $(objtree)/statictree.o  $(objtree)/statictree.c
+
+$(objtree)/statictree.c: mainboard/$(MAINBOARDDIR)/dts $(objtree)/dtc
+	$(objtree)/dtc -O lb mainboard/$(MAINBOARDDIR)/dts >$(objtree)/statictree.c
+
+$(objtree)/dtc:
+	$(MAKE) -C $(srctree)/util/dtc/
+	cp $(srctree)/util/dtc/dtc $(objtree)
 

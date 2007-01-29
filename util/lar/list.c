@@ -90,7 +90,7 @@ int list_lar(int argc, char *argv[])
 
 		printf("  %s ", walk+sizeof(struct lar_header));
 
-		printf("(%d bytes @0x%lx)\n", ntohl(header->len),
+		printf("(%d bytes @0x%x)\n", ntohl(header->len),
 				(walk-inmap)+ntohl(header->offset));
 	}
 	munmap(inmap, statbuf.st_size);

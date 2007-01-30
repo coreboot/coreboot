@@ -1,4 +1,4 @@
-#LyX 1.4.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -58,7 +58,7 @@ thispagestyle{empty}
 \end_layout
 
 \begin_layout Abstract
-This is the new linuxbios boot architectures
+This is the new LinuxBIOS boot architecture.
 \end_layout
 
 \begin_layout Section
@@ -85,17 +85,17 @@ That is, "1." instead of just "1"
 
 \begin_layout Standard
 The new LinuxBIOS boot architecture depends on CAR, with payloads appearing
- as files in a cpio archive.
+ as files in a CPIO archive.
  The device tree is defined by a device tree blob (DTB) and all the activities
  flow from that.
- For now, the DTC will produce a standard V2 device tree; this will, we
- hope, be improved.
+ For now, the DTC will produce a standard LinuxBIOS v2 device tree; this
+ will, we hope, be improved.
  romcc is gone.
  
 \end_layout
 
 \begin_layout Standard
-Required attributes of a CPU for V3: 
+Required attributes of a CPU for LinuxBIOS v3: 
 \end_layout
 
 \begin_layout Itemize
@@ -115,13 +115,13 @@ Design Goals
 \end_layout
 
 \begin_layout Itemize
-remove linuxbios tree -- people found it too confusing.
+Remove LinuxBIOS tree -- people found it too confusing.
  
 \end_layout
 
 \begin_layout Itemize
-Make the device tree format from open firmware the focus of the linuxbios
- code
+Make the device tree format from open firmware the focus of the LinuxBIOS
+ code.
 \end_layout
 
 \begin_layout Subsection
@@ -139,8 +139,8 @@ Shown in
 \end_inset
 
  is the layout of the whole FLASH.
- Note that we can kill buildrom tool, since the FLASH code is now a CPIO
- archive.
+ Note that we can kill the buildrom tool, since the FLASH code is now a
+ CPIO archive.
  Note that the linker script will now be very simple.
  The initram is roughly what is in auto.c, although the early hardware setup
  from auto.c is now in the pre-initram, so that we have serial output and
@@ -158,7 +158,7 @@ Shown in
 \end_layout
 
 \begin_layout Itemize
-basic startup and CAR (in most cases, same for all processors of a given
+Basic startup and CAR (in most cases, same for all processors of a given
  type)
 \end_layout
 
@@ -171,7 +171,7 @@ initram
 \end_layout
 
 \begin_layout Itemize
-Traditional linuxbios ram code (LAR, etc.)
+Traditional LinuxBIOS RAM code (LAR, etc.)
 \end_layout
 
 \begin_layout Itemize
@@ -238,7 +238,7 @@ Set up a stack variable so that we have stack and auto in that cache (ASM,
 \end_layout
 
 \begin_layout Enumerate
-preboot hardware, as from auto.c (C)
+Preboot hardware, as from auto.c (C)
 \end_layout
 
 \begin_layout Enumerate
@@ -247,7 +247,7 @@ Decide whether we can proceed or must recover from serial port.
 \end_layout
 
 \begin_layout Enumerate
-checksum the top flash 
+Checksum the top flash 
 \begin_inset Quotes eld
 \end_inset
 
@@ -256,7 +256,7 @@ boot area
 \end_inset
 
 , if it is bad then ...
- reover from serial port (C, PIC).
+ recover from serial port (C, PIC).
  We can definitely reflash CPIO archive, but NOTE: reflashing the boot block
  is tricky ...
  (C)
@@ -279,7 +279,7 @@ fallback', etc.) (C)
 
 \begin_layout Enumerate
 In that directory, need 'initram', 'payload.ext', and others.
- make sure that in '/', ther eis a decompressor of the irght type for each
+ make sure that in '/', there is a decompressor of the right type for each
  extension needed.
  (C)
 \end_layout
@@ -289,7 +289,7 @@ Stage 4
 \end_layout
 
 \begin_layout Enumerate
-Each file has a four-byte checksum at end.
+Each file has a four-byte checksum at the end.
  Check the checksum for each one.
  (C)
 \end_layout
@@ -301,7 +301,7 @@ If all the tests pass, run each one, in order, decompressing those which
  If the checksum fails, If the test fails, use the backup property in the
  option node to find a backup.
  initram is (C, PIC) as it must execute in place.
- The linuxbios payload will be uncompressed to RAM, and is in C, but need
+ The LinuxBIOS payload will be uncompressed to RAM, and is in C, but need
  not be PIC.
  
 \end_layout
@@ -316,11 +316,11 @@ The static tree
 
 \begin_layout Standard
 The static tree is generated from the DTS.
- Shown is a sample DTS, for qemu.
+ Shown is a sample DTS, for QEMU.
  Note that we don't fill out all properties of each node, e.g.
  the northbridge.
  The sum total of all properties is found in the dts for that node in the
- source directiory, i.e.
+ source directory, i.e.
  src/northbridge/intel/440bx/440bx.dts (is this name ok? Or just chip.dts?)
 \end_layout
 
@@ -551,7 +551,7 @@ How DTC will compile the DTS
 \begin_layout Standard
 There are two pieces to the static tree.
  The first is the tree itself.
- As in V2, the user does not see the structures and types that define this
+ As in v2, the user does not see the structures and types that define this
  tree; the user does define the structure of the tree by the way they lay
  out the config file.
  Sibling, child, and parent references are defined by the use of reserved
@@ -562,7 +562,7 @@ There are two pieces to the static tree.
 
 \begin_layout Standard
 The second part of the tree is the per-chip and per-device information.
- As in V2, each device or chip can define a structure which defines per-device
+ As in v2, each device or chip can define a structure which defines per-device
  information.
  These structures are called config structures, and define per-instance
  configuration of a chip.
@@ -623,28 +623,28 @@ Note that we are going to need an unflatten tool to generate the device
 \end_layout
 
 \begin_layout Itemize
-Compile time creation of the c structures
+Compile time creation of the C structures.
 \end_layout
 
 \begin_layout Itemize
-run-time filling in the blanks with data about real hardware
+Run-time filling in the blanks with data about real hardware.
 \end_layout
 
 \begin_layout Itemize
-runtime generation of the OFW device tree
+Runtime generation of the OFW device tree.
 \end_layout
 
 \begin_layout Standard
 The DTS is defined per each mainboard.
- It uses elements which are actually define elsewhere.
- -- for examplle, if the user references the intel 440bx northbridge, the
- DTC must pull in northbidge/intel/440bx/dts to get the full set of definitions.
+ It uses elements which are actually defined elsewhere -- for example, if
+ the user references the Intel 440BX northbridge, the DTC must pull in northbidg
+e/intel/440bx/dts to get the full set of definitions.
  Call the full DTS the base DTS; call the DTS mentioned in the mainboard
  DTS the instance DTS.
  Each member of the DTS from the base DTS must be initialized in some manner
  so we can infter type and default values.
- The instance can define some,all, or none of the values.
- The DTC will create a c file iwth structure declarations and initializaions
+ The instance can define some, all, or none of the values.
+ The DTC will create a C file with structure declarations and initializations
  in it.
  
 \end_layout
@@ -689,7 +689,7 @@ initram
 This is for creating initram.
  The actual files used can be defined in any Makefile that is part of this
  build.
- Typcially, the files are defined in the northbridge Makeflie.
+ Typically, the files are defined in the northbridge Makefile.
  
 \end_layout
 

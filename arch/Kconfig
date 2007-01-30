@@ -19,7 +19,7 @@
 ##
 
 #
-# source all architectures 
+# source all architectures
 #
 
 source arch/x86/Kconfig

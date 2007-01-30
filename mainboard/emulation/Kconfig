@@ -6,17 +6,12 @@ config BOARD_EMULATION_QEMU_X86
 	bool "x86 QEMU"
 	select ARCH_X86
 	help
-	  x86 QEMU bla bla bla
+	  x86 QEMU variant.
 
 config EMULATION_QEMU_POWERPC
 	bool "PowerPC QEMU"
 	help
-	  PowerPC QEMU bla bla bla
-
-config EMULATION_C64
-	bool "C64 emulators"
-	help
-	  bla bla bla
+	  PowerPC QEMU variant.
 
 endchoice
 

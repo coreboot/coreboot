@@ -11,8 +11,8 @@ void set_boot_successful(void);
 
 void boot_successful(void);
 
-#endif /* ASSEMBLY */
+#endif				/* ASSEMBLY */
 
 #define RTC_BOOT_BYTE	48
 
-#endif /* PART_FALLBACK_BOOT_H */
+#endif				/* PART_FALLBACK_BOOT_H */

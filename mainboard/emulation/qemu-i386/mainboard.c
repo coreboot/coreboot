@@ -25,4 +25,3 @@
 struct chip_operations mainboard_emulation_qemu_i386_ops = {
 	.name = "QEMU Mainboard"
 };
-

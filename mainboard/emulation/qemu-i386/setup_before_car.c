@@ -22,17 +22,17 @@
 
 /*
  */
-void udelay(int usecs) 
+void udelay(int usecs)
 {
 	int i;
-	for(i = 0; i < usecs; i++)
-		outb(i&0xff, 0x80);
+	for (i = 0; i < usecs; i++)
+		outb(i & 0xff, 0x80);
 }
 
 void setup_before_car(void)
 {
 	outb(5, 0x80);
-	
+
 	//uart_init();
 	//console_init();
 }

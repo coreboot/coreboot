@@ -30,9 +30,7 @@ int main(void)
 {
 	printk(BIOS_INFO, "RAM init code started\n");
 
-	die ("Nothing to do.");
+	die("Nothing to do.");
 
 	return 0;
 }
-
-

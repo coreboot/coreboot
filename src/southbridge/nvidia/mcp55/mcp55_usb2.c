@@ -27,7 +27,9 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include "mcp55.h"
+#if CONFIG_USBDEBUG_DIRECT
 #include <usbdebug_direct.h>
+#endif
 
 extern struct ehci_debug_info dbg_info;
 

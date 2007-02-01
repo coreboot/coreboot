@@ -1,6 +1,5 @@
 #ifndef AMDK8_SYSCONF_H
-
-#define AMDK8_SYSINFO_H
+#define AMDK8_SYSCONF_H
 
 #define HC_POSSIBLE_NUM 8
 

@@ -2506,7 +2506,7 @@ static void set_misc_timing(const struct mem_controller *ctrl, struct mem_info *
                                 case 0x00:
                                         dwordx = 0x002b2220; //x8 double Rank
                                         break;
-                                defalut:
+                                default:
                                         dwordx = 0x002a2220; //x8 single Rank and double Rank mixed
                                 }
                         } else if((meminfo->x4_mask == 0) && (meminfo->x16_mask == 0x01) && (meminfo->single_rank_mask == 0x01)) {

@@ -116,7 +116,7 @@ byte_offset_t stream_skip(byte_offset_t count)
 {
 	byte_offset_t bytes;
 	bytes = count;
-	if ((rom + bytes) > rom_end) {
+	if ((rom + bytes - 1) > rom_end) {
 		printk_warning("%6d:%s() - overflowed source buffer\n",
 			__LINE__, __FUNCTION__);
 		bytes = 0;

@@ -80,9 +80,7 @@ static int do_smbus_recv_byte(unsigned smbus_io_base, unsigned device)
 	/* set the device I'm talking too */
 	outb(((device & 0x7f) << 1)|1 , smbus_io_base + SMBXMITADD);
 	smbus_delay();
-	/* set the command/address... */
-	outb(0, smbus_io_base + SMBHSTCMD);
-	smbus_delay();
+
 	/* byte data recv */
 	outb(0x05, smbus_io_base + SMBHSTPRTCL);
 	smbus_delay();
@@ -95,7 +93,7 @@ static int do_smbus_recv_byte(unsigned smbus_io_base, unsigned device)
 	global_status_register = inb(smbus_io_base + SMBHSTSTAT) & 0x80; /* lose check */
 
 	/* read results of transaction */
-	byte = inb(smbus_io_base + SMBHSTDAT0);
+	byte = inb(smbus_io_base + SMBHSTCMD);
 
 	if (global_status_register != 0x80) { // lose check, otherwise it should be 0
 		return -1;
@@ -109,11 +107,12 @@ static int do_smbus_send_byte(unsigned smbus_io_base, unsigned device, unsigned 
 	outb(val, smbus_io_base + SMBHSTDAT0);
 	smbus_delay();
 
-	/* set the device I'm talking too */
-	outb(((device & 0x7f) << 1) | 0, smbus_io_base + SMBXMITADD);
+	/* set the command... */
+	outb(val, smbus_io_base + SMBHSTCMD);
 	smbus_delay();
 
-	outb(0, smbus_io_base + SMBHSTCMD);
+	/* set the device I'm talking too */
+	outb(((device & 0x7f) << 1) | 0, smbus_io_base + SMBXMITADD);
 	smbus_delay();
 
 	/* set up for a byte data write */

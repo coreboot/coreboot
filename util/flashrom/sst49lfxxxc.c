@@ -28,11 +28,11 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/mman.h>
-#include <sys/io.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+
 #include "flash.h"
 #include "jedec.h"
 #include "debug.h"

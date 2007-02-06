@@ -52,8 +52,8 @@ struct flashchip *probe_flash(struct flashchip *flash)
 	volatile uint8_t *bios;
 	unsigned long size;
 
-	if ((fd_mem = open("/dev/mem", O_RDWR)) < 0) {
-		perror("Error: Can not open /dev/mem. You need to be root.");
+	if ((fd_mem = open(MEM_DEV, O_RDWR)) < 0) {
+		perror("Error: Can not access memory using " MEM_DEV ". You need to be root.");
 		exit(1);
 	}
 

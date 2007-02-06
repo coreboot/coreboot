@@ -26,7 +26,6 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/mman.h>
-#include <sys/io.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -83,7 +82,7 @@ int probe_82802ab(struct flashchip *flash)
 			    flash->fd_mem, (off_t) (0 - 0x400000 - size));
 		if (bios == MAP_FAILED) {
 			// it's this part but we can't map it ...
-			perror("Error MMAP /dev/mem");
+			perror("Error MMAP memory using " MEM_DEV );
 			exit(1);
 		}
 

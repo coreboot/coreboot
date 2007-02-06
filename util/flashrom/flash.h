@@ -1,7 +1,34 @@
+/*
+ * flash.h: flash programming utility - central include file
+ *
+ * Copyright 2000 Silicon Integrated System Corporation
+ * Copyright 2000 Ronald G. Minnich <rminnich@gmail.com>
+ * Copyright 2005 coresystems GmbH <stepan@coresystems.de>
+ * 
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ */
+
+
 #ifndef __FLASH_H__
 #define __FLASH_H__ 1
 
+#if defined(__GLIBC__)
 #include <sys/io.h>
+#endif
+
 #include <unistd.h>
 #include <stdint.h>
 
@@ -92,7 +119,18 @@ extern struct flashchip flashchips[];
 #define S29C51004T	  0x03  /* SyncMOS S29C51004T/B */
 #define S29C31004T	  0x63  /* SyncMOS S29C31004T */
 
+/* function prototypes from udelay.h */
+
 extern void myusec_delay(int time);
 extern void myusec_calibrate_delay();
 extern int enable_flash_write(void);
+
+/* physical memory mapping device */
+
+#if defined (__sun) && (defined(__i386) || defined(__amd64))
+#  define MEM_DEV "/dev/xsvc"
+#else
+#  define MEM_DEV "/dev/mem"
+#endif
+
 #endif				/* !__FLASH_H__ */

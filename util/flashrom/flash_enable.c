@@ -11,12 +11,18 @@
  *
  */
 
-#include <sys/io.h>
 #include <stdio.h>
 #include <pci/pci.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#if defined (__sun) && (defined(__i386) || defined(__amd64))
+#include <strings.h>
+#include <sys/sysi86.h>
+#include <sys/psw.h>
+#include <asm/sunddi.h>
+#endif
+#include "flash.h"
 #include "lbtable.h"
 #include "debug.h"
 
@@ -26,12 +32,6 @@ static struct pci_access *pacc;
 static int enable_flash_sis630(struct pci_dev *dev, char *name)
 {
 	char b;
-
-	/* get io privilege access PCI configuration space */
-	if (iopl(3) != 0) {
-		perror("Can not set io priviliage");
-		exit(1);
-	}
 
 	/* Enable 0xFFF8000~0xFFFF0000 decoding on SiS 540/630 */
 	outl(0x80000840, 0x0cf8);
@@ -163,12 +163,6 @@ static int enable_flash_vt8235(struct pci_dev *dev, char *name)
 	uint8_t old, new, val;
 	unsigned int base;
 	int ok;
-
-	/* get io privilege access PCI configuration space */
-	if (iopl(3) != 0) {
-		perror("Can not set io priviliage");
-		exit(1);
-	}
 
 	old = pci_read_byte(dev, 0x40);
 
@@ -347,12 +341,6 @@ static int enable_flash_sb400(struct pci_dev *dev, char *name)
 	struct pci_filter f;
 	struct pci_dev *smbusdev;
 
-	/* get io privilege access */
-	if (iopl(3) != 0) {
-		perror("Can not set io priviliage");
-		exit(1);
-	}
-
 	/* then look for the smbus device */
 	pci_filter_init((struct pci_access *) 0, &f);
 	f.vendor = 0x1002;
@@ -491,12 +479,6 @@ static int mbenable_island_aruma(void)
  *  connected to the WinBond w83627hf GPIO 24.
  */
 
-	/* get io privilege access winbond config space */
-	if (iopl(3) != 0) {
-		perror("Can not set io priviliage");
-		exit(1);
-	}
-	
 	printf("Disabling mainboard flash write protection.\n");
 
 	outb(0x87, EFIR); // sequence to unlock extended functions
@@ -552,6 +534,18 @@ int enable_flash_write()
 	struct pci_dev *dev = 0;
 	FLASH_ENABLE *enable = 0;
 
+	/* get io privilege access PCI configuration space */
+#if defined (__sun) && (defined(__i386) || defined(__amd64))
+	if (sysi86(SI86V86, V86SC_IOPL, PS_IOPL) != 0){
+#else
+	if (iopl(3) != 0) {
+#endif
+		perror("Can not set io privilege");
+		exit(1);
+	}
+
+
+	/* Initialize PCI access */
 	pacc = pci_alloc();	/* Get the pci_access structure */
 	/* Set all options you want -- here we stick with the defaults */
 	pci_init(pacc);		/* Initialize the PCI library */

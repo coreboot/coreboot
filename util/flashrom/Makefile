@@ -12,8 +12,13 @@ INSTALL = /usr/bin/install
 PREFIX  = /usr/local
 #CFLAGS  = -O2 -g -Wall -Werror
 CFLAGS  = -Os -Wall -Werror -DDISABLE_DOC # -DTS5300
+OS_ARCH	= $(shell uname)
+ifeq ($(OS_ARCH), SunOS)
+LDFLAGS = -lpci -lz
+else
 LDFLAGS = -lpci -lz -static 
-
+STRIP_ARGS = -s
+endif
 
 OBJS  = flash_enable.o udelay.o jedec.o sst28sf040.o am29f040b.o mx29f002.o  \
 	sst39sf020.o m29f400bt.o w49f002u.o 82802ab.o msys_doc.o pm49fl004.o \
@@ -24,7 +29,7 @@ all: pciutils dep $(PROGRAM)
 
 $(PROGRAM): $(OBJS)
 	$(CC) -o $(PROGRAM) $(OBJS) $(LDFLAGS)
-	$(STRIP) -s $(PROGRAM)
+	$(STRIP) $(STRIP_ARGS) $(PROGRAM)
 
 clean:
 	rm -f *.o *~

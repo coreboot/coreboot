@@ -8,7 +8,7 @@
 #include <errno.h>
 #include <sys/mman.h>
 #include "flash.h"
-#include "../../src/include/boot/linuxbios_tables.h"
+#include "linuxbios_tables.h"
 #include "debug.h"
 
 char *lb_part=NULL, *lb_vendor=NULL;

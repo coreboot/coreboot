@@ -1,4 +1,4 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -115,13 +115,8 @@ Design Goals
 \end_layout
 
 \begin_layout Itemize
-Remove LinuxBIOS tree -- people found it too confusing.
+Under construction, things have changed recently.
  
-\end_layout
-
-\begin_layout Itemize
-Make the device tree format from open firmware the focus of the LinuxBIOS
- code.
 \end_layout
 
 \begin_layout Subsection
@@ -210,31 +205,98 @@ FLASH layout
 Boot Process
 \end_layout
 
-\begin_layout Subsection
-Stage 0: Basic startup (ASM, PIC)
-\end_layout
-
-\begin_layout Subsection
-Stage 1: CAR (ASM, PIC)
+\begin_layout Standard
+The boot process consists of a number of independent, seperately compiled
+ components.
+ Unlike V2, we are not using ld scripts to glue these components together,
+ since the overall bugginess of the various tools (as and ld in particular)
+ made use of ldscripts very hard to mainbain.
+ 
 \end_layout
 
 \begin_layout Standard
-This is a standard cache-as-ram .s file for the architecture.
+By design, the seperate components can be individually replaced without
+ replacing any other component.
+ This design impliies that functions such as print are duplicated in the
+ code.
+ If this duplication causes problems we can revisit this decision.
  
 \end_layout
 
 \begin_layout Subsection
-Stage 2: 
+Stage 0: Basic startup (ASM, PIC) and CAR (ASM, PIC) in arch/{architecture}
+\end_layout
+
+\begin_layout Standard
+The Stage 0 code is a binary blob that (on x86) lives in 8192 bytes at the
+ top of memory.
+ This code comprises a jump vector to get from reset to the start of the
+ stage 0 code.
+ The stage 0 code is responsible for any steps needed to make the processor
+ behave properly, such as flushing TLBs, clearing paging bits, and so on.
+ Stage 0, on the x86, enables segments but not paging; on other platforms,
+ stage1 might also set up an initial page table.
+ Stage 0 at minimum switches to a protected mode of some sort, and on x86,
+ at minimum switches on 32-bit mode.
+ Stage 0 then sets up Cache-As-Ram (CAR) so that stage 1 can be be written
+ in C, and use functions.
+ 
+\end_layout
+
+\begin_layout Standard
+This code 
+\begin_inset Quotes eld
+\end_inset
+
+begins life
+\begin_inset Quotes erd
+\end_inset
+
+ executing in real mode, at 0xf000:fff0.
+ The code does initial setup, transitions to 32-bit mode, and then falls
+ into the CAR code.
+\end_layout
+
+\begin_layout Standard
+The files are named for the type of target.
+ The current code, named stage0_i586.S, is designed for a generic i586.
+ The file to assemble is determined from the CONFIG_STAGE0 makefile variable,
+ which is set in the mainboard Kconfig file.
+ Please note, there are NO code files included.
+ The assembly code for early startup rarely changes.
+ To give an example, much of the Stage 0 code was written in 1999/2000,
+ and has changed little since.
+ The CAR code has been unchanged since it was written two years ago.
+ 
+\end_layout
+
+\begin_layout Standard
+CAR is a standard cache-as-ram assembly source for the architecture.
+ It is actually included in the stage0_*.S file; but we maintain a distinction
+ in the stage nomenclature for now.
+ This code sets up cache-as-ram, zeros a memory area, sets up a stack, and
+ then calls Stage 1.
+ 
+\end_layout
+
+\begin_layout Subparagraph*
+Config variables:
 \end_layout
 
 \begin_layout Enumerate
-Bzero an (e.g.) 4K block of cache (it is 4K now).
- (ASM, PIC)
+CONFIG_CARTEST.
+ Test the CAR once it is enabled.
+ 
 \end_layout
 
 \begin_layout Enumerate
-Set up a stack variable so that we have stack and auto in that cache (ASM,
- PIC)
+CONFIG_ROMSIZE.
+ Size of the ROM part.
+ 
+\end_layout
+
+\begin_layout Subsection
+Stage 1: C, in arch/{architecture}
 \end_layout
 
 \begin_layout Enumerate
@@ -263,7 +325,12 @@ boot area
 \end_layout
 
 \begin_layout Subsection
-Stage 3
+Stage 2: 
+\end_layout
+
+\begin_layout Standard
+Note, currently at least part 1 of this is in the current stage 1 code ...
+ we need to figure this out.
 \end_layout
 
 \begin_layout Enumerate
@@ -285,7 +352,7 @@ In that directory, need 'initram', 'payload.ext', and others.
 \end_layout
 
 \begin_layout Subsection
-Stage 4
+Stage 3
 \end_layout
 
 \begin_layout Enumerate
@@ -307,11 +374,12 @@ If all the tests pass, run each one, in order, decompressing those which
 \end_layout
 
 \begin_layout Subsection
-Stage 5
+Stage 4
 \end_layout
 
 \begin_layout Section
-The static tree
+The static tree (This part needs to be updated, once the other stages are
+ done)
 \end_layout
 
 \begin_layout Standard
@@ -775,7 +843,8 @@ One issue I thought I should mention before all the tools start >> making
 \begin_layout Itemize
 move over to the xorg emulator, drop the one we have now as it is not complete
  enough.
- 
+ (Ron is not so sure about this, since we have done bug-fixes to the xorg
+ emulator)
 \end_layout
 
 \begin_layout Section

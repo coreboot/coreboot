@@ -41,14 +41,14 @@ dep:
 	@$(CC) -MM *.c > .dependencies
 
 pciutils:
-	@echo; echo -n "Checking for pciutils... "
+	@echo; echo -n "Checking for pciutils and zlib... "
 	@$(shell ( echo "#include <pci/pci.h>";		   \
 		   echo "struct pci_access *pacc;";	   \
 		   echo "int main(int argc, char **argv)"; \
 		   echo "{ pacc = pci_alloc(); return 0; }"; ) > .test.c )
 	@$(CC) $(CFLAGS) .test.c -o .test $(LDFLAGS) &>/dev/null &&	\
 		echo "found." || ( echo "not found."; echo;		\
-		echo "Please install pciutils and pciutils-devel.";	\
+		echo "Please install pciutils-devel and zlib-devel.";	\
 		echo "See README for more information."; echo;		\
 		rm -f .test.c .test; exit 1)
 	@rm -f .test.c .test

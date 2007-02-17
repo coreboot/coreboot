@@ -27,7 +27,7 @@
 #include "chip.h"
 
 #if CONFIG_CHIP_NAME == 1
-struct chip_operations mainboard_tyan_ms9282_ops = {
+struct chip_operations mainboard_msi_ms9282_ops = {
        CHIP_NAME("MSI ms9282 mainboard")
 };
 #endif

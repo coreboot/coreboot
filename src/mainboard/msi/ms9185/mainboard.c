@@ -28,6 +28,6 @@
 
 #if CONFIG_CHIP_NAME == 1
 struct chip_operations mainboard_msi_ms9185_ops = {
-       CHIP_NAME("MSI MS-9185 mainboard")
+       CHIP_NAME("MSI MS-9185 Mainboard")
 };
 #endif

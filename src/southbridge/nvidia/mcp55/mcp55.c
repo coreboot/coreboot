@@ -243,6 +243,6 @@ void mcp55_enable(device_t dev)
 }
 
 struct chip_operations southbridge_nvidia_mcp55_ops = {
-	CHIP_NAME("Nvidia mcp55")
+	CHIP_NAME("NVIDIA MCP55 Southbridge")
 	.enable_dev	= mcp55_enable,
 };

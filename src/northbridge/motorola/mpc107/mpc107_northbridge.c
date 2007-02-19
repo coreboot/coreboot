@@ -146,6 +146,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations northbridge_motorola_mpc107_ops = {
-	CHIP_NAME("MPC107")
+	CHIP_NAME("Motorola MPC107 Northbridge")
 	.enable_dev = enable_dev,
 };

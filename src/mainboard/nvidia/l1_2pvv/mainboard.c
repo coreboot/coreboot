@@ -28,6 +28,6 @@
 
 #if CONFIG_CHIP_NAME == 1
 struct chip_operations mainboard_nvidia_l1_2pvv_ops = {
-	CHIP_NAME("Nvidia l1_2pvv mainboard")
+	CHIP_NAME("NVIDIA l1_2pvv Mainboard")
 };
 #endif

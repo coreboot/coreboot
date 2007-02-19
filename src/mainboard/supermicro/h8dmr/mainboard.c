@@ -28,6 +28,6 @@
 
 #if CONFIG_CHIP_NAME == 1
 struct chip_operations mainboard_supermicro_h8dmr_ops = {
-	CHIP_NAME("Spermicro H8DMR mainboard")
+	CHIP_NAME("Supermicro H8DMR Mainboard")
 };
 #endif

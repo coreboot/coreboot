@@ -44,7 +44,7 @@ printk(BIOS_INFO, "start 0x%x len 0x%x\n", archive->start, archive->len);
 	for (walk = archive->start; walk < (char *)archive->start + 
 			archive->len; walk+=16) {
 printk(BIOS_INFO, "in for loop *start is %x\n", *(unsigned long *) archive->start);
-printk(BIOS_INFO, "walk is %s\n", walk);
+printk(BIOS_INFO, "walk is %s(%p)\n", walk, walk);
 		if(strcmp(walk, MAGIC)!=0)
 			continue;
 
@@ -60,8 +60,11 @@ printk(BIOS_INFO, "fullname is %s\n", fullname);
 		}
 
 		// skip file
+/*		FIXME: This is doing the wrong thing. its skipping too much.
 		walk += ( ntohl(header->offset) + ntohl(header->len)
 				+ 15 ) & 0xfffffff0;
+ */
+		walk += 16;
 	}
 printk(BIOS_INFO, "return 1! walk %p archive->start %p start _+ len %p\n", walk, archive->start, (char *)archive->start + 
                         archive->len);

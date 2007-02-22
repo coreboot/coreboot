@@ -52,9 +52,25 @@ initram:
 # This needs to be compressed with the default compressor
 #
 
-$(obj)/linuxbios.stage2: $(obj)/statictree.o
-	$(Q)echo "building linuxbios_ram"
-	touch $(obj)/linuxbios.stage2
+$(obj)/linuxbios.stage2: $(obj)/stage0.init $(obj)/statictree.o
+	$(Q)echo "Building linuxbios.stage2"
+	#
+	# main
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/stage2.c -o $(obj)/stage2.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/devices/device.c -o $(obj)/device.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/devices/device_util.c -o $(obj)/device_util.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/mem.c -o $(obj)/mem.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/malloc.c -o $(obj)/malloc.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/clog2.c -o $(obj)/clog2.o
+	$(Q)$(CC) $(INITCFLAGS) -c -I$(src) $(src)/statictree.c -o $(obj)/statictree.o
+	$(Q)$(CC) $(INITCFLAGS) -c mainboard/$(MAINBOARDDIR)/mainboard.c -o $(obj)/mainboard.o
+
+	# leave a .o with full symbols in it for debugging.
+	$(Q)cd $(obj); $(LD) -R stage0.o -Ttext 0x0  stage2.o \
+		-o $(obj)/linuxbios.stage2.o device.o device_util.o mem.o malloc.o clog2.o mainboard.o statictree.o
+	objcopy -O binary $(obj)/linuxbios.stage2.o $(obj)/linuxbios.stage2
+
+	$(Q)chmod 644 $(obj)/linuxbios.stage2
 
 #
 # The payload as we love it. Get it from somewhere.

@@ -34,7 +34,7 @@ int main(void)
 {
 	printk(BIOS_INFO, "RAM init code started\n");
 
-	die("Nothing to do.");
+	printk(BIOS_INFO, "Nothing to do.");
 
 	return 0;
 }

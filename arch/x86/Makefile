@@ -52,8 +52,9 @@ initram:
 # This needs to be compressed with the default compressor
 #
 
-linuxbios_ram: $(obj)/statictree.o
+$(obj)/linuxbios.stage2: $(obj)/statictree.o
 	$(Q)echo "building linuxbios_ram"
+	touch $(obj)/linuxbios.stage2
 
 #
 # The payload as we love it. Get it from somewhere.
@@ -70,13 +71,14 @@ payload:
 # build the lar archive
 #
 	
-$(obj)/linuxbios.lar: $(obj)/util/lar/lar lzma linuxbios.initram linuxbios_ram payload 
+$(obj)/linuxbios.lar: $(obj)/util/lar/lar lzma $(obj)/linuxbios.initram $(obj)/linuxbios.stage2 payload
 	$(Q)echo "Building LinuxBIOS archive..."
 	$(Q)rm -rf $(obj)/lar.tmp
 	$(Q)mkdir $(obj)/lar.tmp
 	$(Q)mkdir $(obj)/lar.tmp/normal
 	$(Q)cp $(obj)/linuxbios.initram $(obj)/lar.tmp/normal/initram
-	$(Q)cd $(obj)/lar.tmp && ../util/lar/lar c ../linuxbios.lar.pre normal/initram 
+	$(Q)cp $(obj)/linuxbios.stage2 $(obj)/lar.tmp/normal/stage2
+	$(Q)cd $(obj)/lar.tmp && ../util/lar/lar c ../linuxbios.lar.pre normal/initram normal/stage2
 	# TODO: dynamically pad the lar archive. bs is image size - bootblock size (8k)
 	$(Q)dd if=$(obj)/linuxbios.lar.pre of=$(obj)/linuxbios.lar bs=253952 count=1 conv=sync
 
@@ -103,10 +105,10 @@ $(obj)/stage0.init:
 	@$(CC) $(INITCFLAGS) -c $(src)/console/vtxprintf.c -o $(obj)/vtxprintf.o
 	@$(CC) $(INITCFLAGS) -c $(src)/lib/uart8250.c -o $(obj)/uart8250.o
 	# other lib parts
-	@$(CC) $(INITCFLAGS) -c $(src)/lib/memcpy.c -o $(obj)/memcpy.o
+	@$(CC) $(INITCFLAGS) -c $(src)/lib/mem.c -o $(obj)/mem.o
 
 	@cd $(obj); $(CC) -m32 -nostdlib -static -T $(src)/arch/x86/ldscript.ld cachemain.o console.o uart8250.o \
-		serial.o vtxprintf.o lar.o memcpy.o stage0_i586.o -o stage0.o
+		serial.o vtxprintf.o lar.o mem.o stage0_i586.o -o stage0.o
 	@objcopy -O binary $(obj)/stage0.o  $(obj)/stage0.init.pre
 
 	# Pad boot block to 0x2000 - 0x100 

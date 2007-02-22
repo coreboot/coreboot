@@ -30,7 +30,7 @@ void console_init(void);
 void die(const char *msg);
 int find_file(struct mem_file *archive, char *filename, struct mem_file *result);
 
-static void post_code(u8 value)
+void post_code(u8 value)
 {
 	outb(value, 0x80);
 }
@@ -90,25 +90,33 @@ void stage1_main(u32 bist)
 	// but NOT IN THE CODE.
 	
 	archive.len=LINUXBIOS_ROMSIZE_KB*1024;
-	archive.start=(void *)(0UL-archive.len);
+	archive.start=(void *)(0UL-archive.len); 
+	/* This won't work; the for loop in lib/lar.c will always 
+	 * fail as adding len to start will be 0. 
+	 * shave off 0x1000 since we know that is the boot block 
+	 */
+	archive.len-=0x1000;
+printk(BIOS_INFO, "Start search at 0x%x, size %d\n", archive.start, archive.len);
 
 	// FIXME check integrity
 
 
 	// fixme: choose an initram image (normal/fallback)
 	// find first initram
-	ret=find_file(&archive, "normal/initram", &result);
-	if(!ret) {
-		void (*initram)(void);
-		initram=(result.start);
-		printk(BIOS_INFO, "Jumping to RAM init code at 0x%08x\n",
-				result.start);
-		initram();
+	ret = run_file(&archive, "normal/initram", (void *)(512*1024)); //CONFIG_CARBASE;
 
-	}
+	if (ret)
+		die("Failed ram init code\n");
 
-	die ("FATAL: No initram module found\n");
+	printk(BIOS_INFO, "Done ram init code\n");
 
+	ret = run_file(&archive, "normal/stage2", (void *)0x1000);
+	if (ret)
+		die("Failed stage2 code\n");
+
+	printk(BIOS_INFO, "Done stage2 code\n");
+
+	die ("FATAL: This is as far as it goes\n");
 }
 
 

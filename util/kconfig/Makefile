@@ -10,9 +10,9 @@ xconfig: $(obj)/qconf
 gconfig: $(obj)/gconf
 	$< Kconfig
 
-menuconfig: $(obj)/mconf
-	$(Q)$(MAKE) $(build)=scripts/kconfig/lxdialog
-	$< Kconfig
+menuconfig: prepare $(obj)/lxdialog $(obj)/mconf
+	#$(Q)$(MAKE) $(build)=scripts/kconfig/lxdialog
+	$(obj)/mconf Kconfig
 
 config: $(obj)/conf
 	$< Kconfig
@@ -93,6 +93,32 @@ help:
 	@echo  '  allmodconfig	  - New config selecting modules when possible'
 	@echo  '  allyesconfig	  - New config where all options are accepted with yes'
 	@echo  '  allnoconfig	  - New minimal config'
+
+
+
+mconf-objects := mconf.o zconf.tab.o
+$(obj)/mconf: $(patsubst %,$(obj)/%,$(mconf-objects))
+	$(HOSTCC) -lncurses -o $@ $^
+
+$(obj)/mconf.o: $(src)/util/kconfig/mconf.c
+	$(HOSTCC) -I$(src)/util/kconfig -c -o $@ $<
+
+$(obj)/zconf.tab.o: $(obj)/zconf.tab.c $(obj)/zconf.hash.c $(obj)/lex.zconf.c
+	$(HOSTCC) -I$(src)/util/kconfig  -c -o $@ $(obj)/zconf.tab.c
+
+$(obj)/lex.zconf.c: $(src)/util/kconfig/lex.zconf.c_shipped
+	cp $< $@
+
+$(obj)/zconf.hash.c: $(src)/util/kconfig/zconf.hash.c_shipped
+	cp $< $@
+
+$(obj)/zconf.tab.c: $(src)/util/kconfig/zconf.tab.c_shipped
+	cp $< $@
+
+include $(src)/util/kconfig/lxdialog/Makefile
+
+######################
+# kbuild crap follows
 
 # ===========================================================================
 # Shared Makefile for the various kconfig executables:
@@ -226,7 +252,7 @@ $(obj)/.tmp_gtkcheck:
 	fi
 endif
 
-$(obj)/zconf.tab.o: $(obj)/lex.zconf.c $(obj)/zconf.hash.c
+#$(obj)/zconf.tab.o: $(obj)/lex.zconf.c $(obj)/zconf.hash.c
 
 $(obj)/kconfig_load.o: $(obj)/lkc_defs.h
 
@@ -249,9 +275,9 @@ $(obj)/lkc_defs.h: $(src)/lkc_proto.h
 
 ifdef LKC_GENPARSER
 
-$(obj)/zconf.tab.c: $(src)/zconf.y
-$(obj)/lex.zconf.c: $(src)/zconf.l
-$(obj)/zconf.hash.c: $(src)/zconf.gperf
+$(obj)/zconf.tab.c: $(src)/util/kconfig/zconf.y
+$(obj)/lex.zconf.c: $(src)/util/kconfig/zconf.l
+$(obj)/zconf.hash.c: $(src)/util/kconfig/zconf.gperf
 
 %.tab.c: %.y
 	bison -l -b $* -p $(notdir $*) $<

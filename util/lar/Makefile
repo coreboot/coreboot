@@ -18,21 +18,28 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
 ## 
 
-SOURCE = lar.c create.c extract.c list.c lib.c
+SOURCE := lar.c create.c extract.c list.c lib.c
 
-CC=gcc
-CFLAGS=-O2 -Wall -W
 
-lar: $(SOURCE)
-	$(CC) $(CFLAGS) -o $@ $^
-	strip -s $@
+HOSTCC=gcc
+HOSTCFLAGS=-O2 -Wall -W
+
+obj:=$(objdir)
+
+$(obj)/util/lar/lar: $(patsubst %,$(src)/util/lar/%,$(SOURCE))
+	@mkdir -p $(obj)/util/lar
+	@$(HOSTCC) $(HOSTCFLAGS) -o $@ $^
+	@echo "Built LAR."
+
+
+## --------------------------------------------------------------------
+## stuff below this line should be fixed or go away
 
 example: example.c
 	$(CC) $(CFLAGS) -o $@ $^
 
-clean:
-	rm -rf lar tree.lar tree tree2 example
-
+#clean:
+#	rm -rf lar tree.lar tree tree2 example
 
 tree:
 	@printf "creating sample tree... "

@@ -25,6 +25,8 @@
 #define LKC_DIRECT_LINK
 #include "lkc.h"
 
+static char *mconf_lxdialogpath;
+
 static char menu_backtitle[128];
 static const char mconf_readme[] = N_(
 "Overview\n"
@@ -325,7 +327,7 @@ static void cprint_init(void)
 	memset(args, 0, sizeof(args));
 	indent = 0;
 	child_count = 0;
-	cprint("./scripts/kconfig/lxdialog/lxdialog");
+	cprint("%s/lxdialog", mconf_lxdialogpath);
 	cprint("--backtitle");
 	cprint(menu_backtitle);
 }
@@ -1061,6 +1063,8 @@ int main(int ac, char **av)
 		if (!strcasecmp(mode, "single_menu"))
 			single_menu_mode = 1;
 	}
+
+	mconf_lxdialogpath = getenv("obj");
 
 	tcgetattr(1, &ios_org);
 	atexit(conf_cleanup);

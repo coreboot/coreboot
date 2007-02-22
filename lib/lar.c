@@ -31,6 +31,10 @@
 #define ntohl(x) (x)
 #endif
 
+// FIXME: this should go into a header
+int printk(int msg_level, const char *fmt, ...);
+
+
 int find_file(struct mem_file *archive, char *filename, struct mem_file *result)
 {
 	char * walk, *fullname;
@@ -83,7 +87,7 @@ int copy_file(struct mem_file *archive, char *filename, void *where)
 
 int run_file(struct mem_file *archive, char *filename, void *where)
 {
-	int (*v)();
+	int (*v)(void);
 
 	if (copy_file(archive, filename, where)){
 		printk(BIOS_INFO, "run file %s failed: ENOENT\n", filename);

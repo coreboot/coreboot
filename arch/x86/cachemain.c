@@ -23,6 +23,13 @@
 #include <lar.h>
 #include "config.h"
 
+/* these prototypes should go into headers */
+void uart_init(void);
+int printk(int msg_level, const char *fmt, ...);
+void console_init(void);
+void die(const char *msg);
+int find_file(struct mem_file *archive, char *filename, struct mem_file *result);
+
 static void post_code(u8 value)
 {
 	outb(value, 0x80);
@@ -70,7 +77,8 @@ void stage1_main(u32 bist)
 	console_init(); // print banner
 
 	if (bist!=0) {
-		die("BIST FAILED: %08x", bist);
+		printk(BIOS_INFO, "BIST FAILED: %08x", bist);
+		die("");
 	}
 
 	// enable rom

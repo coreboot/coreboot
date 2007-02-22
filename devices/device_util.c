@@ -1,4 +1,6 @@
 /*
+ * Author(s) unknown 
+ * 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation; either version 2 of the License, or
@@ -15,10 +17,11 @@
 
 */
 #include <console/console.h>
+#include <arch/io.h>
 #include <device/device.h>
-#include <device/path.h>
 #include <device/pci.h>
-#include <device/resource.h>
+#include <device/pci_ids.h>
+#include <stdlib.h>
 #include <string.h>
 
 /**
@@ -29,9 +32,9 @@
  * @return pointer to a device structure for the device on bus at path
  *         or 0/NULL if no device is found
  */
-device_t find_dev_path(struct bus *parent, struct device_path *path)
+struct device * find_dev_path(struct bus *parent, struct device_path *path)
 {
-	device_t child;
+	struct device * child;
 	for(child = parent->children; child; child = child->sibling) {
 		if (path_eq(path, &child->path)) {
 			break;
@@ -47,9 +50,9 @@ device_t find_dev_path(struct bus *parent, struct device_path *path)
  * @param path The relative path from the bus to the appropriate device
  * @return pointer to a device structure for the device on bus at path
  */
-device_t alloc_find_dev(struct bus *parent, struct device_path *path)
+struct device * alloc_find_dev(struct bus *parent, struct device_path *path)
 {
-	device_t child;
+	struct device * child;
 	child = find_dev_path(parent, path);
 	if (!child) {
 		child = alloc_dev(parent, path);
@@ -142,7 +145,7 @@ struct device *dev_find_class(unsigned int class, struct device *from)
 }
 
 
-const char *dev_path(device_t dev)
+const char *dev_path(struct device * dev)
 {
 	static char buffer[DEVICE_PATH_MAX];
 	buffer[0] = '\0';
@@ -193,7 +196,7 @@ const char *dev_path(device_t dev)
 			sprintf(buffer, "CPU_BUS: %02x", dev->path.u.cpu_bus.id);
 			break;
 		default:
-			printk_err("Unknown device path type: %d\n", dev->path.type);
+			printk(BIOS_ERR, "Unknown device path type: %d\n", dev->path.type);
 			break;
 		}
 	}
@@ -244,7 +247,7 @@ int path_eq(struct device_path *path1, struct device_path *path2)
 			equal = (path1->u.cpu_bus.id == path2->u.cpu_bus.id);
 			break;
 		default:
-			printk_err("Uknown device type: %d\n", path1->type);
+			printk(BIOS_ERR, "Uknown device type: %d\n", path1->type);
 			break;
 		}
 	}
@@ -256,7 +259,7 @@ int path_eq(struct device_path *path1, struct device_path *path2)
  * If so remove the allocation.
  * @param dev The device to find the resource on
  */
-void compact_resources(device_t dev)
+void compact_resources(struct device * dev)
 {
 	struct resource *resource;
 	int i;
@@ -264,7 +267,8 @@ void compact_resources(device_t dev)
 	for(i = 0; i < dev->resources;) {
 		resource = &dev->resource[i];
 		if (!resource->flags) {
-			memmove(resource, resource + 1, dev->resources - i);
+			/* note: memmove was used here. But this can never overlap, right? */
+			memcpy(resource, resource + 1, dev->resources - i);
 			dev->resources -= 1;
 			memset(&dev->resource[dev->resources], 0, sizeof(*resource));
 		} else {
@@ -280,7 +284,7 @@ void compact_resources(device_t dev)
  * @param index  The index of the resource on the device.
  * @return the resource if it already exists
  */
-struct resource *probe_resource(device_t dev, unsigned index)
+struct resource *probe_resource(struct device * dev, unsigned index)
 {
 	struct resource *resource;
 	int i;
@@ -302,7 +306,7 @@ struct resource *probe_resource(device_t dev, unsigned index)
  * @param dev The device to find the resource on
  * @param index  The index of the resource on the device.
  */
-struct resource *new_resource(device_t dev, unsigned index)
+struct resource *new_resource(struct device * dev, unsigned index)
 {
 	struct resource *resource;
 
@@ -338,14 +342,14 @@ struct resource *new_resource(device_t dev, unsigned index)
  * @param dev The device to find the resource on
  * @param index  The index of the resource on the device.
  */
-struct resource *find_resource(device_t dev, unsigned index)
+struct resource *find_resource(struct device * dev, unsigned index)
 {
 	struct resource *resource;
 
 	/* See if there is a resource with the appropriate index */
 	resource = probe_resource(dev, index);
 	if (!resource) {
-		printk_emerg("%s missing resource: %02x\n",
+		printk(BIOS_EMERG, "%s missing resource: %02x\n",
 			dev_path(dev), index);
 		die("");
 	}
@@ -443,7 +447,7 @@ const char *resource_type(struct resource *resource)
  * @param dev the device the stored resorce lives on
  * @param resource the resource that was just stored.
  */
-void report_resource_stored(device_t dev, struct resource *resource, const char *comment)
+void report_resource_stored(struct device * dev, struct resource *resource, const char *comment)
 {
 	if (resource->flags & IORESOURCE_STORED) {
 		unsigned char buf[10];
@@ -458,7 +462,7 @@ void report_resource_stored(device_t dev, struct resource *resource, const char 
 			sprintf(buf, "bus %02x ", dev->link[0].secondary);
 #endif
 		}
-		printk_debug(
+		printk(BIOS_DEBUG, 
 			"%s %02x <- [0x%010Lx - 0x%010Lx] %s%s%s\n",
 			dev_path(dev),
 			resource->index,
@@ -520,14 +524,14 @@ void search_global_resources(
 	}
 }
 
-void dev_set_enabled(device_t dev, int enable)
+void dev_set_enabled(struct device * dev, int enable)
 {
 	if (dev->enabled == enable) {
 		return;
 	}
 	dev->enabled = enable;
-	if (dev->ops && dev->ops->enable) {
-		dev->ops->enable(dev);
+	if (dev->ops && dev->ops->phase5) {
+		dev->ops->phase5(dev);
 	}
 	else if (dev->chip_ops && dev->chip_ops->enable_dev) {
 		dev->chip_ops->enable_dev(dev);
@@ -536,7 +540,7 @@ void dev_set_enabled(device_t dev, int enable)
 
 void disable_children(struct bus *bus)
 {
-	device_t child;
+	struct device * child;
 	for(child = bus->children; child; child = child->sibling) {
 		int link;
 		for(link = 0; link < child->links; link++) {

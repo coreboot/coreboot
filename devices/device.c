@@ -31,19 +31,19 @@
  */
 
 #include <console/console.h>
-#include <bitops.h>
+//#include <bitops.h>
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <stdlib.h>
 #include <string.h>
-#include <smp/spinlock.h>
+//#include <smp/spinlock.h>
 
 /** Linked list of ALL devices */
 struct device *all_devices = &dev_root;
-/** Pointer to the last device */
-extern struct device **last_dev_p;
+/** Pointer to the last device -- computed at run time -- no more config tool magic */
+struct device **last_dev_p;
 
 /** The upper limit of MEM resource of the devices.
  * Reserve 20M for the system */
@@ -51,6 +51,24 @@ extern struct device **last_dev_p;
 /** The lower limit of IO resource of the devices.
  * Reserve 4k for ISA/Legacy devices */
 #define DEVICE_IO_START 0x1000
+
+/**
+ * @brief Initialization tasks for the device tree code. 
+ * 
+ * At present, merely sets up last_dev_p, which used to be done by Fucking Magic (FM) in config tool
+ * @return none
+ *
+ */
+
+void
+dev_init(void)
+{
+	struct device *dev;
+
+	for(dev = all_devices; dev; dev = dev->next) {
+		last_dev_p = &dev->next;
+	}
+}
 
 /**
  * @brief Allocate a new device structure.
@@ -65,13 +83,13 @@ extern struct device **last_dev_p;
  *
  * @see device_path
  */
-static spinlock_t dev_lock = SPIN_LOCK_UNLOCKED;
-device_t alloc_dev(struct bus *parent, struct device_path *path)
+//static spinlock_t dev_lock = SPIN_LOCK_UNLOCKED;
+struct device * alloc_dev(struct bus *parent, struct device_path *path)
 {
-	device_t dev, child;
+	struct device * dev, *child;
 	int link;
 
-	spin_lock(&dev_lock);	
+//	spin_lock(&dev_lock);	
 
 	/* Find the last child of our parent */
 	for(child = parent->children; child && child->sibling; ) {
@@ -108,7 +126,7 @@ device_t alloc_dev(struct bus *parent, struct device_path *path)
 	*last_dev_p = dev;
 	last_dev_p = &dev->next;
 
-	spin_unlock(&dev_lock);
+//	spin_unlock(&dev_lock);
 	return dev;
 }
 
@@ -134,7 +152,7 @@ static void read_resources(struct bus *bus)
 {
 	struct device *curdev;
 
-	printk_spew("%s read_resources bus %d link: %d\n",
+	printk(BIOS_SPEW, "%s read_resources bus %d link: %d\n",
 		dev_path(bus->dev), bus->secondary, bus->link);
 
 	/* Walk through all of the devices and find which resources they need. */
@@ -147,12 +165,12 @@ static void read_resources(struct bus *bus)
 		if (!curdev->enabled) {
 			continue;
 		}
-		if (!curdev->ops || !curdev->ops->read_resources) {
-			printk_err("%s missing read_resources\n",
+		if (!curdev->ops || !curdev->ops->phase4_read_resources) {
+			printk(BIOS_ERR, "%s missing phase4_read_resources\n",
 				dev_path(curdev));
 			continue;
 		}
-		curdev->ops->read_resources(curdev);
+		curdev->ops->phase4_read_resources(curdev);
 		curdev->have_resources = 1;
 		/* Read in subtractive resources behind the current device */
 		links = 0;
@@ -164,7 +182,7 @@ static void read_resources(struct bus *bus)
 				continue;
 			link = IOINDEX_SUBTRACTIVE_LINK(resource->index);
 			if (link > MAX_LINKS) {
-				printk_err("%s subtractive index on link: %d\n",
+				printk(BIOS_ERR, "%s subtractive index on link: %d\n",
 					dev_path(curdev), link);
 				continue;
 			}
@@ -174,7 +192,7 @@ static void read_resources(struct bus *bus)
 			}
 		}
 	}
-	printk_spew("%s read_resources bus %d link: %d done\n",
+	printk(BIOS_SPEW, "%s read_resources bus %d link: %d done\n",
 		dev_path(bus->dev), bus->secondary, bus->link);
 }
 
@@ -274,7 +292,7 @@ void compute_allocate_resource(
 	min_align = 0;
 	base = bridge->base;
 
-	printk_spew("%s compute_allocate_%s: base: %08Lx size: %08Lx align: %d gran: %d\n", 
+	printk(BIOS_SPEW, "%s compute_allocate_%s: base: %08Lx size: %08Lx align: %d gran: %d\n", 
 		dev_path(bus->dev),
 		(bridge->flags & IORESOURCE_IO)? "io":
 		(bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",
@@ -357,7 +375,7 @@ void compute_allocate_resource(
 			resource->flags &= ~IORESOURCE_STORED;
 			base += size;
 			
-			printk_spew(
+			printk(BIOS_SPEW, 
 				"%s %02x *  [0x%08Lx - 0x%08Lx] %s\n",
 				dev_path(dev),
 				resource->index, 
@@ -375,7 +393,7 @@ void compute_allocate_resource(
 	 */
 	bridge->size = round(base, bridge->gran) - bridge->base;
 
-	printk_spew("%s compute_allocate_%s: base: %08Lx size: %08Lx align: %d gran: %d done\n", 
+	printk(BIOS_SPEW, "%s compute_allocate_%s: base: %08Lx size: %08Lx align: %d gran: %d done\n", 
 		dev_path(bus->dev),
 		(bridge->flags & IORESOURCE_IO)? "io":
 		(bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",
@@ -385,7 +403,7 @@ void compute_allocate_resource(
 }
 
 #if CONFIG_CONSOLE_VGA == 1
-device_t vga_pri = 0;
+struct device * vga_pri = 0;
 static void allocate_vga_resource(void)
 {
 #warning "FIXME modify allocate_vga_resource so it is less pci centric!"
@@ -441,7 +459,7 @@ static void allocate_vga_resource(void)
 	
 	if (vga) {
 		/* vga is first add on card or the only onboard vga */
-		printk_debug("Allocating VGA resource %s\n", dev_path(vga));
+		printk(BIOS_DEBUG, "Allocating VGA resource %s\n", dev_path(vga));
 		/* All legacy VGA cards have MEM & I/O space registers */
 		vga->command |= (PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
 		vga_pri = vga;
@@ -449,7 +467,7 @@ static void allocate_vga_resource(void)
 	}
 	/* Now walk up the bridges setting the VGA enable */
 	while(bus) {
-		printk_debug("Setting PCI_BRIDGE_CTL_VGA for bridge %s\n",
+		printk(BIOS_DEBUG, "Setting PCI_BRIDGE_CTL_VGA for bridge %s\n",
 			     dev_path(bus->dev));
 		bus->bridge_ctrl |= PCI_BRIDGE_CTL_VGA;
 		bus = (bus == bus->dev->bus)? 0 : bus->dev->bus;
@@ -472,25 +490,30 @@ static void allocate_vga_resource(void)
  *	assign_resources() -> device_operation::set_resources()
  *	device_operation::set_resources() -> assign_resources()
  */
-void assign_resources(struct bus *bus)
+void phase4_assign_resources(struct bus *bus)
 {
 	struct device *curdev;
 
-	printk_spew("%s assign_resources, bus %d link: %d\n", 
+	printk(BIOS_SPEW, "%s assign_resources, bus %d link: %d\n", 
 		dev_path(bus->dev), bus->secondary, bus->link);
 
 	for(curdev = bus->children; curdev; curdev = curdev->sibling) {
 		if (!curdev->enabled || !curdev->resources) {
 			continue;
 		}
-		if (!curdev->ops || !curdev->ops->set_resources) {
-			printk_err("%s missing set_resources\n",
+		if (!curdev->ops) {
+			printk(BIOS_ERR, "%s missing ops\n",
 				dev_path(curdev));
 			continue;
 		}
-		curdev->ops->set_resources(curdev);
+		if (!curdev->ops->phase4_set_resources) {
+			printk(BIOS_ERR, "%s ops has no missing phase4_set_resources\n",
+				dev_path(curdev));
+			continue;
+		}
+		curdev->ops->phase4_set_resources(curdev);
 	}
-	printk_spew("%s assign_resources, bus %d link: %d\n", 
+	printk(BIOS_SPEW, "%s assign_resources, bus %d link: %d\n", 
 		dev_path(bus->dev), bus->secondary, bus->link);
 }
 
@@ -500,28 +523,32 @@ void assign_resources(struct bus *bus)
  * @param dev the device whose resources are to be enabled
  *
  * Enable resources of the device by calling the device specific
- * enable_resources() method.
+ * phase5() method.
  *
  * The parent's resources should be enabled first to avoid having enabling
- * order problem. This is done by calling the parent's enable_resources()
- * method and let that method to call it's children's enable_resoruces()
- * method via the (global) enable_childrens_resources().
+ * order problem. This is done by calling the parent's phase5()
+ * method and let that method to call it's children's phase5()
+ * method via the (global) phase5_children().
  *
  * Indirect mutual recursion:
- *	enable_resources() -> device_operations::enable_resource()
- *	device_operations::enable_resource() -> enable_children_resources()
- *	enable_children_resources() -> enable_resources()
+ *	dev_phase5() -> device_operations::phase5()
+ *	device_operations::phase5() -> phase5_children()
+ *	phase5_children() -> dev_phase5()
  */
-void enable_resources(struct device *dev)
+void dev_phase5(struct device *dev)
 {
 	if (!dev->enabled) {
 		return;
 	}
-	if (!dev->ops || !dev->ops->enable_resources) {
-		printk_err("%s missing enable_resources\n", dev_path(dev));
+	if (!dev->ops) {
+		printk(BIOS_ERR, "%s missing ops\n", dev_path(dev));
 		return;
 	}
-	dev->ops->enable_resources(dev);
+	if (!dev->ops->phase5) {
+		printk(BIOS_ERR, "%s ops are missing phase5\n", dev_path(dev));
+		return;
+	}
+	dev->ops->phase5(dev);
 }
 
 /** 
@@ -545,6 +572,57 @@ int reset_bus(struct bus *bus)
 	return 0;
 }
 
+/**
+ * @brief Do very early setup for all devices in the global device list.
+ *
+ * Starting at the first device on the global device link list,
+ * walk the list and call the device's phase1() method to do very
+ * early setup. phase1 should only used for devices that CAN NOT use printk, 
+ * or that are part of making printk work. 
+ */
+void dev_phase1(void)
+{
+	struct device *dev;
+
+	post_code(0x31);
+	for(dev = all_devices; dev; dev = dev->next) {
+		if (dev->ops && dev->ops->phase1) 
+		{
+			dev->ops->phase1(dev);
+		}
+	}
+	post_code(0x3e);
+	/* printk should be working at this point ... */
+	printk(BIOS_INFO, "Phase 1: done\n");
+	post_code(0x3f);
+}
+
+/**
+ * @brief Do early setup for all devices in the global device list.
+ *
+ * Starting at the first device on the global device link list,
+ * walk the list and call the device's phase2() method to do
+ * early setup. You can use printk() in phase 2 methods. 
+ */
+void dev_phase2(void)
+{
+	struct device *dev;
+
+	post_code(0x41);
+	printk(BIOS_INFO, "Phase 2: early setup ...\n");
+	for(dev = all_devices; dev; dev = dev->next) {
+		if (dev->ops && dev->ops->phase1) 
+		{
+			printk(BIOS_DEBUG, "%s phase2\n", dev_path(dev));
+			dev->ops->phase1(dev);
+		}
+	}
+	post_code(0x4e);
+	printk(BIOS_INFO, "Phase 2: done\n");
+	post_code(0x4f);
+}
+
+
 /** 
  * @brief Scan for devices on a bus.
  *
@@ -557,26 +635,26 @@ int reset_bus(struct bus *bus)
  *
  * @return The maximum bus number found, after scanning all subordinate busses
  */
-unsigned int scan_bus(device_t bus, unsigned int max)
+unsigned int dev_phase3(struct device * bus, unsigned int max)
 {
 	unsigned int new_max;
-	int do_scan_bus;
+	int do_phase3;
 	if (	!bus ||
 		!bus->enabled ||
 		!bus->ops ||
-		!bus->ops->scan_bus)
+		!bus->ops->phase3)
 	{
 		return max;
 	}
-	do_scan_bus = 1;
-	while(do_scan_bus) {
+	do_phase3 = 1;
+	while(do_phase3) {
 		int link;
-		new_max = bus->ops->scan_bus(bus, max);
-		do_scan_bus = 0;
+		new_max = bus->ops->phase3(bus, max);
+		do_phase3 = 0;
 		for(link = 0; link < bus->links; link++) {
 			if (bus->link[link].reset_needed) {
 				if (reset_bus(&bus->link[link])) {
-					do_scan_bus = 1;
+					do_phase3 = 1;
 				} else {
 					bus->bus->reset_needed = 1;
 				}
@@ -609,21 +687,25 @@ unsigned int scan_bus(device_t bus, unsigned int max)
  * scan_bus() method also has to create the device structure and attach
  * it to the device tree. 
  */
-void dev_enumerate(void)
+void dev_root_phase3(void)
 {
 	struct device *root;
 	unsigned subordinate;
-	printk_info("Enumerating buses...\n");
+	printk(BIOS_INFO, "Phase 3: Enumerating buses...\n");
 	root = &dev_root;
 	if (root->chip_ops && root->chip_ops->enable_dev) {
 		root->chip_ops->enable_dev(root);
 	}
-	if (!root->ops || !root->ops->scan_bus) {
-		printk_err("dev_root missing scan_bus operation");
+	if (!root->ops) {
+		printk(BIOS_ERR, "dev_root missing 'ops' initialization\n");
 		return;
 	}
-	subordinate = scan_bus(root, 0);
-	printk_info("done\n");
+	if (!root->ops->phase3) {
+		printk(BIOS_ERR, "dev_root ops struct missing 'phase3' initialization in ops structure");
+		return;
+	}
+	subordinate = dev_phase3(root, 0);
+	printk(BIOS_INFO, "done\n");
 }
 
 /**
@@ -640,26 +722,30 @@ void dev_enumerate(void)
  * Since the assignment is hierarchical we set the values into the dev_root
  * struct. 
  */
-void dev_configure(void)
+void dev_phase4(void)
 {
 	struct resource *io, *mem;
 	struct device *root;
 
-	printk_info("Allocating resources...\n");
+	printk(BIOS_INFO, "Allocating resources...\n");
 
 	root = &dev_root;
-	if (!root->ops || !root->ops->read_resources) {
-		printk_err("dev_root missing read_resources\n");
+	if (!root->ops) {
+		printk(BIOS_ERR, "dev_root missing ops initialization\n");
+		return;
+	}	
+	if (!root->ops->phase4_read_resources) {
+		printk(BIOS_ERR, "dev_root ops missing read_resources\n");
 		return;
 	}
-	if (!root->ops || !root->ops->set_resources) {
-		printk_err("dev_root missing set_resources\n");
+	if (!root->ops->phase4_set_resources) {
+		printk(BIOS_ERR, "dev_root ops missing set_resources\n");
 		return;
 	}
 
-	printk_info("Reading resources...\n");
-	root->ops->read_resources(root);
-	printk_info("Done reading resources.\n");
+	printk(BIOS_INFO, "Reading resources...\n");
+	root->ops->phase4_read_resources(root);
+	printk(BIOS_INFO, "Done reading resources.\n");
 
 	/* Get the resources */
 	io  = &root->resource[0];
@@ -681,15 +767,15 @@ void dev_configure(void)
 #endif
 
 	/* Store the computed resource allocations into device registers ... */
-	printk_info("Setting resources...\n");
-	root->ops->set_resources(root);
-	printk_info("Done setting resources.\n");
+	printk(BIOS_INFO, "Setting resources...\n");
+	root->ops->phase4_set_resources(root);
+	printk(BIOS_INFO, "Done setting resources.\n");
 #if 0
 	mem->flags |= IORESOURCE_STORED;
 	report_resource_stored(root, mem, "");
 #endif
 
-	printk_info("Done allocating resources.\n");
+	printk(BIOS_INFO, "Done allocating resources.\n");
 }
 
 /**
@@ -698,14 +784,14 @@ void dev_configure(void)
  * Starting at the root, walk the tree and enable all devices/bridges by
  * calling the device's enable_resources() method.
  */
-void dev_enable(void)
+void dev_root_phase5(void)
 {
-	printk_info("Enabling resources...\n");
+	printk(BIOS_INFO, "Enabling resources...\n");
 
 	/* now enable everything. */
-	enable_resources(&dev_root);
+	dev_phase5(&dev_root);
 
-	printk_info("done.\n");
+	printk(BIOS_INFO, "done.\n");
 }
 
 /**
@@ -715,24 +801,24 @@ void dev_enable(void)
  * walk the list and call the device's init() method to do deivce
  * specific setup.
  */
-void dev_initialize(void)
+void dev_phase6(void)
 {
 	struct device *dev;
 
-	printk_info("Initializing devices...\n");
+	printk(BIOS_INFO, "Phase 6: Initializing devices...\n");
 	for(dev = all_devices; dev; dev = dev->next) {
 		if (dev->enabled && !dev->initialized && 
-			dev->ops && dev->ops->init) 
+			dev->ops && dev->ops->phase6) 
 		{
 			if (dev->path.type == DEVICE_PATH_I2C) {
- 				printk_debug("smbus: %s[%d]->",
+ 				printk(BIOS_DEBUG, "smbus: %s[%d]->",
 					dev_path(dev->bus->dev), dev->bus->link);
 			}
-			printk_debug("%s init\n", dev_path(dev));
+			printk(BIOS_DEBUG, "%s init\n", dev_path(dev));
 			dev->initialized = 1;
-			dev->ops->init(dev);
+			dev->ops->phase6(dev);
 		}
 	}
-	printk_info("Devices initialized\n");
+	printk(BIOS_INFO, "Phase 6:Devices initialized\n");
 }
 

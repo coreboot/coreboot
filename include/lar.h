@@ -36,3 +36,9 @@ struct mem_file {
 	void *start;
 	int len;
 };
+
+/* prototypes */
+int find_file(struct mem_file *archive, char *filename, struct mem_file *result);
+int copy_file(struct mem_file *archive, char *filename, void *where);
+int run_file(struct mem_file *archive, char *filename, void *where);
+

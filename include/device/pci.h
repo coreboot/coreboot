@@ -41,7 +41,7 @@
 /* Common pci operations without a standard interface */
 struct pci_operations {
 	/* set the Subsystem IDs for the PCI device */
-	void (*set_subsystem)(device_t dev, unsigned vendor, unsigned device);
+	void (*set_subsystem)(struct device * dev, unsigned vendor, unsigned device);
 };
 
 /* Common pci bus operations */
@@ -75,30 +75,30 @@ extern struct pci_driver epci_drivers[];
 extern struct device_operations default_pci_ops_dev;
 extern struct device_operations default_pci_ops_bus;
 
-void pci_dev_read_resources(device_t dev);
-void pci_bus_read_resources(device_t dev);
-void pci_dev_set_resources(device_t dev);
-void pci_dev_enable_resources(device_t dev);
-void pci_bus_enable_resources(device_t dev);
+void pci_dev_read_resources(struct device * dev);
+void pci_bus_read_resources(struct device * dev);
+void pci_dev_set_resources(struct device * dev);
+void pci_dev_enable_resources(struct device * dev);
+void pci_bus_enable_resources(struct device * dev);
 void pci_bus_reset(struct bus *bus);
-device_t pci_probe_dev(device_t dev, struct bus *bus, unsigned devfn);
-unsigned int do_pci_scan_bridge(device_t bus, unsigned int max,
+struct device * pci_probe_dev(struct device * dev, struct bus *bus, unsigned devfn);
+unsigned int do_pci_scan_bridge(struct device * bus, unsigned int max,
 	unsigned int (*do_scan_bus)(struct bus *bus, 
 		unsigned min_devfn, unsigned max_devfn, unsigned int max));
-unsigned int pci_scan_bridge(device_t bus, unsigned int max);
+unsigned int pci_scan_bridge(struct device * bus, unsigned int max);
 unsigned int pci_scan_bus(struct bus *bus, unsigned min_devfn, unsigned max_devfn, unsigned int max);
 u8 pci_moving_config8(struct device *dev, unsigned reg);
 u16 pci_moving_config16(struct device *dev, unsigned reg);
 u32 pci_moving_config32(struct device *dev, unsigned reg);
-unsigned pci_find_next_capability(device_t dev, unsigned cap, unsigned last);
-unsigned pci_find_capability(device_t dev, unsigned cap);
+unsigned pci_find_next_capability(struct device * dev, unsigned cap, unsigned last);
+unsigned pci_find_capability(struct device * dev, unsigned cap);
 struct resource *pci_get_resource(struct device *dev, unsigned long index);
-void pci_dev_set_subsystem(device_t dev, unsigned vendor, unsigned device);
+void pci_dev_set_subsystem(struct device * dev, unsigned vendor, unsigned device);
 
 #define PCI_IO_BRIDGE_ALIGN 4096
 #define PCI_MEM_BRIDGE_ALIGN (1024*1024)
 
-static inline const struct pci_operations *ops_pci(device_t dev)
+static inline const struct pci_operations *ops_pci(struct device * dev)
 {
 	const struct pci_operations *pops;
 	pops = 0;

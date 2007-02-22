@@ -20,11 +20,11 @@
 #include <arch/types.h>
 #include <device/device.h>
 
-u8 pci_read_config8(device_t dev, unsigned where);
-u16 pci_read_config16(device_t dev, unsigned where);
-u32 pci_read_config32(device_t dev, unsigned where);
-void pci_write_config8(device_t dev, unsigned where, u8 val);
-void pci_write_config16(device_t dev, unsigned where, u16 val);
-void pci_write_config32(device_t dev, unsigned where, u32 val);
+u8 pci_read_config8(struct device * dev, unsigned where);
+u16 pci_read_config16(struct device * dev, unsigned where);
+u32 pci_read_config32(struct device * dev, unsigned where);
+void pci_write_config8(struct device * dev, unsigned where, u8 val);
+void pci_write_config16(struct device * dev, unsigned where, u16 val);
+void pci_write_config32(struct device * dev, unsigned where, u32 val);
 
 #endif /* PCI_OPS_H */

@@ -23,7 +23,6 @@
 
 
 struct device;
-typedef struct device * device_t;
 struct pci_operations;
 struct pci_bus_operations;
 struct smbus_bus_operations;
@@ -36,15 +35,35 @@ struct chip_operations {
 
 struct bus;
 
+/* we are moving from the confusing naming scheme to a numbering scheme. We are hoping
+  * this makes it easier for people to know the order of operations. 
+  */
 struct device_operations {
-	void (*read_resources)(device_t dev);
-	void (*set_resources)(device_t dev);
-	void (*enable_resources)(device_t dev);
-	void (*init)(device_t dev);
-	unsigned int (*scan_bus)(device_t bus, unsigned int max);
-	void (*enable)(device_t dev);
-	void (*set_link)(device_t dev, unsigned int link);
+//	void (*enable)(struct device * dev);
+	/* for now, we leave these, since they seem generic */
+	void (*set_link)(struct device * dev, unsigned int link);
 	void (*reset_bus)(struct bus *bus);
+
+	/* phase1 is called ONLY if you CAN NEVER use printk. Only very early console needs this now */
+	void (*phase1)(struct device * dev);
+
+	/* phase 2 is for any magic you have to do before the busses are scanned */
+	void (*phase2)(struct device * dev);
+
+	/* phase 3 is for scanning the bus, if needed. */
+	unsigned int (*phase3)(struct device * bus, unsigned int max);
+
+	/* typically used by phase4 */
+	/* again, if we never use this anywhere else, we may change the names */
+	void (*phase4_read_resources)(struct device * dev);
+	void (*phase4_set_resources)(struct device * dev);
+
+	/* phase 5: enable devices */
+	void (*phase5)(struct device * dev);
+
+	/* phase 6: any post-setup device initialization that might be needed */
+	void (*phase6)();
+
 	const struct pci_operations *ops_pci;
 	const struct smbus_bus_operations *ops_smbus_bus;
 	const struct pci_bus_operations *ops_pci_bus;
@@ -52,8 +71,8 @@ struct device_operations {
 
 
 struct bus {
-	device_t 	dev;		/* This bridge device */
-	device_t 	children;	/* devices behind this bridge */
+	struct device * 	dev;		/* This bridge device */
+	struct device * 	children;	/* devices behind this bridge */
 	unsigned	bridge_ctrl;	/* Bridge control register */
 	unsigned char	link;		/* The index of this link */
 	unsigned char	secondary; 	/* secondary bus number */
@@ -73,8 +92,8 @@ struct bus {
 struct device {
 	struct bus *	bus;		/* bus this device is on, for bridge
 					 * devices, it is the up stream bus */
-	device_t	sibling;	/* next device on this bus */
-	device_t	next;		/* chain of all devices */
+	struct device *	sibling;	/* next device on this bus */
+	struct device *	next;		/* chain of all devices */
 
 	struct device_path path;
 	unsigned 	vendor;
@@ -110,7 +129,7 @@ extern struct device	*all_devices;	/* list of all devices */
 
 
 /* Generic device interface functions */
-extern device_t alloc_dev(struct bus *parent, struct device_path *path);
+extern struct device * alloc_dev(struct bus *parent, struct device_path *path);
 extern void dev_enumerate(void);
 extern void dev_configure(void);
 extern void dev_enable(void);
@@ -126,18 +145,18 @@ extern void assign_resources(struct bus *bus);
 extern void enable_resources(struct device *dev);
 extern void enumerate_static_device(void);
 extern void enumerate_static_devices(void);
-extern const char *dev_path(device_t dev);
+extern const char *dev_path(struct device * dev);
 const char *bus_path(struct bus *bus);
-extern void dev_set_enabled(device_t dev, int enable);
+extern void dev_set_enabled(struct device * dev, int enable);
 extern void disable_children(struct bus *bus);
 
 /* Helper functions */
-device_t find_dev_path(struct bus *parent, struct device_path *path);
-device_t alloc_find_dev(struct bus *parent, struct device_path *path);
-device_t dev_find_device (unsigned int vendor, unsigned int device, device_t from);
-device_t dev_find_class (unsigned int class, device_t from);
-device_t dev_find_slot (unsigned int bus, unsigned int devfn);
-device_t dev_find_slot_on_smbus (unsigned int bus, unsigned int addr);
+struct device * find_dev_path(struct bus *parent, struct device_path *path);
+struct device * alloc_find_dev(struct bus *parent, struct device_path *path);
+struct device * dev_find_device (unsigned int vendor, unsigned int device, struct device * from);
+struct device * dev_find_class (unsigned int class, struct device * from);
+struct device * dev_find_slot (unsigned int bus, unsigned int devfn);
+struct device * dev_find_slot_on_smbus (unsigned int bus, unsigned int addr);
 
 
 /* Rounding for boundaries. 
@@ -147,11 +166,12 @@ device_t dev_find_slot_on_smbus (unsigned int bus, unsigned int addr);
 #define DEVICE_MEM_ALIGN 4096
 
 struct device_operations default_dev_ops_root;
-extern void root_dev_read_resources(device_t dev);
-extern void root_dev_set_resources(device_t dev);
-extern unsigned int scan_static_bus(device_t bus, unsigned int max);
-extern void enable_childrens_resources(device_t dev);
-extern void root_dev_enable_resources(device_t dev);
-extern unsigned int root_dev_scan_bus(device_t root, unsigned int max);
-extern void root_dev_init(device_t dev);
+extern void root_dev_read_resources(struct device * dev);
+extern void root_dev_set_resources(struct device * dev);
+extern unsigned int scan_static_bus(struct device * bus, unsigned int max);
+extern void enable_childrens_resources(struct device * dev);
+extern void root_dev_enable_resources(struct device * dev);
+extern unsigned int root_dev_scan_bus(struct device * root, unsigned int max);
+extern void root_dev_init(struct device * dev);
+extern void dev_init(void);
 #endif /* DEVICE_H */

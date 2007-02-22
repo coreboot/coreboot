@@ -22,6 +22,7 @@
 #include <arch/types.h>
 #include <string.h>
 #include <lar.h>
+#include <console/loglevel.h>
 
 #ifndef CONFIG_BIG_ENDIAN
 #define ntohl(x) ( ((x&0xff)<<24) | ((x&0xff00)<<8) | \
@@ -34,19 +35,21 @@ int find_file(struct mem_file *archive, char *filename, struct mem_file *result)
 {
 	char * walk, *fullname;
 	struct lar_header * header;
-	
+	printk(BIOS_INFO, "filename is %s\n", filename);
+printk(BIOS_INFO, "start 0x%x len 0x%x\n", archive->start, archive->len);
 	for (walk = archive->start; walk < (char *)archive->start + 
 			archive->len; walk+=16) {
-
+printk(BIOS_INFO, "in for loop *start is %x\n", *(unsigned long *) archive->start);
+printk(BIOS_INFO, "walk is %s\n", walk);
 		if(strcmp(walk, MAGIC)!=0)
 			continue;
 
 		header=(struct lar_header *)walk;
 		fullname=walk+sizeof(struct lar_header);
-
+printk(BIOS_INFO, "fullname is %s\n", fullname);
 		// FIXME: check checksum
 		
-		if(strcmp(fullname, filename)!=0) {
+		if(strcmp(fullname, filename)==0) {
 			result->start=walk + ntohl(header->offset);
 			result->len=ntohl(header->len);
 			return 0;
@@ -56,8 +59,38 @@ int find_file(struct mem_file *archive, char *filename, struct mem_file *result)
 		walk += ( ntohl(header->offset) + ntohl(header->len)
 				+ 15 ) & 0xfffffff0;
 	}
-
+printk(BIOS_INFO, "return 1! walk %p archive->start %p start _+ len %p\n", walk, archive->start, (char *)archive->start + 
+                        archive->len);
 	return 1;
 }
 
+int copy_file(struct mem_file *archive, char *filename, void *where)
+{
+	int ret;
+	struct mem_file result;
 
+	ret = find_file(archive, filename, &result);
+	if (ret) {
+		printk(BIOS_INFO, "copy_file: no such name %s\n", filename);
+		return 1;
+	}
+
+	memcpy(where, result.start, result.len);
+
+	return 0;
+}
+
+
+int run_file(struct mem_file *archive, char *filename, void *where)
+{
+	int (*v)();
+
+	if (copy_file(archive, filename, where)){
+		printk(BIOS_INFO, "run file %s failed: ENOENT\n", filename);
+		return 1;
+	}
+
+	v = where;
+	return v();
+	
+}

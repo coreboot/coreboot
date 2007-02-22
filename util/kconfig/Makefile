@@ -4,24 +4,23 @@
 
 .PHONY: oldconfig xconfig gconfig menuconfig config silentoldconfig update-po-config
 
-xconfig: $(obj)/qconf
-	$< Kconfig
+xconfig: prepare $(obj)/qconf
+	$(obj)/qconf Kconfig
 
 gconfig: $(obj)/gconf
-	$< Kconfig
+	$(obj)/gconf Kconfig
 
 menuconfig: prepare $(obj)/lxdialog $(obj)/mconf
-	#$(Q)$(MAKE) $(build)=scripts/kconfig/lxdialog
 	$(obj)/mconf Kconfig
 
-config: $(obj)/conf
-	$< Kconfig
+config: prepare $(obj)/conf
+	$(obj)/conf Kconfig
 
-oldconfig: $(obj)/conf
-	$< -o Kconfig
+oldconfig: prepare $(obj)/conf
+	$(obj)/conf -o Kconfig
 
-silentoldconfig: $(obj)/conf
-	$< -s Kconfig
+silentoldconfig: prepare $(obj)/conf
+	$(obj)/conf -s Kconfig
 
 update-po-config: $(obj)/kxgettext
 	xgettext --default-domain=linux \
@@ -97,10 +96,18 @@ help:
 
 
 mconf-objects := mconf.o zconf.tab.o
+conf-objects  := conf.o zconf.tab.o
+
 $(obj)/mconf: $(patsubst %,$(obj)/%,$(mconf-objects))
 	$(HOSTCC) -lncurses -o $@ $^
 
+$(obj)/conf: $(patsubst %,$(obj)/%,$(conf-objects))
+	$(HOSTCC) -lncurses -o $@ $^
+
 $(obj)/mconf.o: $(src)/util/kconfig/mconf.c
+	$(HOSTCC) -I$(src)/util/kconfig -c -o $@ $<
+
+$(obj)/conf.o: $(src)/util/kconfig/conf.c
 	$(HOSTCC) -I$(src)/util/kconfig -c -o $@ $<
 
 $(obj)/zconf.tab.o: $(obj)/zconf.tab.c $(obj)/zconf.hash.c $(obj)/lex.zconf.c

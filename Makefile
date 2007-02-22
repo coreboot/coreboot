@@ -76,7 +76,7 @@ include util/Makefile
 include arch/$(ARCH)/Makefile
 
 MAINBOARDDIR=$(shell echo $(CONFIG_MAINBOARD_NAME))
-include mainboard/$(MAINBOARDDIR)/Makefile
+-include mainboard/$(MAINBOARDDIR)/Makefile
 
 
 prepare:

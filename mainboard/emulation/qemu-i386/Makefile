@@ -34,7 +34,7 @@ $(obj)/linuxbios.vpd:
 # this is going to be the init ram code:
 #
 
-$(obj)/linuxbios.initram: $(obj)/stage0.init
+$(obj)/linuxbios.initram: $(obj)/stage0.o
 	$(Q)echo Building linuxbios.initram
 	#
 	# main
@@ -49,7 +49,7 @@ $(obj)/linuxbios.initram: $(obj)/stage0.init
 	#cd $(obj); $(Q)$(LD) -Ttext 0x00000000 -s --oformat binary initram.o console.o uart8250.o \
 	#	serial.o vtxprintf.o -o $(obj)/linuxbios.initram
 
-	$(Q)$(LD) -R stage0.o -Ttext 0x80000  $(obj)/initram.o \
+	$(Q)$(LD) -R $(obj)/stage0.o -Ttext 0x80000  $(obj)/initram.o \
 		-o $(obj)/linuxbios.initram.o
 
 	$(Q)objcopy -O binary $(obj)/linuxbios.initram.o $(obj)/linuxbios.initram

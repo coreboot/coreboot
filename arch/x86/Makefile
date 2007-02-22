@@ -62,7 +62,7 @@ $(obj)/linuxbios.stage2: $(obj)/stage0.init $(obj)/statictree.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/mem.c -o $(obj)/mem.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/malloc.c -o $(obj)/malloc.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/clog2.c -o $(obj)/clog2.o
-	$(Q)$(CC) $(INITCFLAGS) -c -I$(src) $(src)/statictree.c -o $(obj)/statictree.o
+	$(Q)$(CC) $(INITCFLAGS) -c -I$(src) $(obj)/statictree.c -o $(obj)/statictree.o
 	$(Q)$(CC) $(INITCFLAGS) -c mainboard/$(MAINBOARDDIR)/mainboard.c -o $(obj)/mainboard.o
 
 	# leave a .o with full symbols in it for debugging.

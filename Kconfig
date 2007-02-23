@@ -11,3 +11,4 @@ source arch/Kconfig
 
 source lib/Kconfig
 
+source console/Kconfig

@@ -1,0 +1,27 @@
+#
+#
+#
+
+menu "Console"
+
+config CONSOLE_SERIAL
+	boolean "Support serial console (default)"
+	default y
+	---help---
+	  Send LinuxBIOS output to serial console 
+
+
+config CONSOLE_VGA
+	boolean "Support VGA console"
+	---help---
+	  Send LinuxBIOS output to VGA console as soon as VGA 
+	  is initialized.
+
+config CONSOLE_USB
+	boolean "Support USB2 debug console"
+	---help---
+	  Send LinuxBIOS output to USB debug console. Note: This requires
+	  a USB2 controller which supports the debug capability.
+
+endmenu
+

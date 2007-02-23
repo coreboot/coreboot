@@ -404,7 +404,7 @@ void compute_allocate_resource(
 
 }
 
-#if CONFIG_CONSOLE_VGA == 1
+#if defined(CONFIG_CONSOLE_VGA) && CONFIG_CONSOLE_VGA == 1
 struct device * vga_pri = 0;
 static void allocate_vga_resource(void)
 {
@@ -763,7 +763,7 @@ void dev_phase4(void)
 	mem->flags |= IORESOURCE_ASSIGNED;
 	mem->flags &= ~IORESOURCE_STORED;
 
-#if CONFIG_CONSOLE_VGA == 1
+#if defined(CONFIG_CONSOLE_VGA) && CONFIG_CONSOLE_VGA == 1
 	/* Allocate the VGA I/O resource.. */
 	allocate_vga_resource(); 
 #endif

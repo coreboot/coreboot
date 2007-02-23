@@ -20,10 +20,6 @@
 
 SOURCE := lar.c create.c extract.c list.c lib.c
 
-
-HOSTCC=gcc
-HOSTCFLAGS=-O2 -Wall -W
-
 $(obj)/util/lar/lar: $(patsubst %,$(src)/util/lar/%,$(SOURCE))
 	$(Q)printf "Building LAR utility..."
 	$(Q)mkdir -p $(obj)/util/lar

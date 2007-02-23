@@ -465,6 +465,7 @@ static void linuxbios_emit_endnode(void *e, char *label)
 	}
 }
 
+#ifdef LINUXBIOS_OUTPUT
 static void linuxbios_emit_struct_start(void *e, char *prefix, char *label)
 {
 	FILE *f = e;
@@ -482,7 +483,7 @@ static void linuxbios_emit_struct_end(void *e, char *prefix, char *label)
 		fprintf(f, "}; /*%s*/\n", label);
 	}
 }
-
+#endif
 
 
 static void linuxbios_emit_property(void *e, char *label)
@@ -1293,7 +1294,7 @@ static const char UNITCHAR[] = "0123456789abcdef,";
 static int check_node_name(char *name)
 {
 	char *atpos;
-	int basenamelen;
+	unsigned int basenamelen;
 
 	atpos = strrchr(name, '@');
 
@@ -1374,7 +1375,7 @@ static struct node *unflatten_tree(struct inbuf *dtbuf,
 
 struct boot_info *dt_from_blob(FILE *f)
 {
-	u32 magic, totalsize, version, size_str;
+	u32 magic, totalsize, version, size_str = 0;
 	u32 off_dt, off_str, off_mem_rsvmap;
 	int rc;
 	char *blob;

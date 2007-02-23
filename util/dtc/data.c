@@ -128,7 +128,7 @@ struct data data_copy_escape_string(char *s, int len)
 {
 	int i = 0;
 	struct data d;
-	char *q;
+	unsigned char *q;
 
 	d = data_grow_for(empty_data, strlen(s)+1);
 

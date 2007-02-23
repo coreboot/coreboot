@@ -28,9 +28,9 @@ $(obj)/lex.yy.c: $(src)/util/dtc/dtc-lexer.l
 $(obj)/dtc.o: $(src)/util/dtc/dtc.c
 	$(Q)$(HOSTCC) $(HOSTCFLAGS) -o $@ -c $< 
 $(obj)/livetree.o: $(src)/util/dtc/livetree.c
-	$(Q)$(HOSTCC) $(HOSTCFLAGS) -o $@ -c $< 
+	$(HOSTCC) $(HOSTCFLAGS) -o $@ -c $< 
 $(obj)/flattree.o: $(src)/util/dtc/flattree.c
-	$(Q)$(HOSTCC) $(HOSTCFLAGS) -o $@ -c $< 
+	$(HOSTCC) $(HOSTCFLAGS) -o $@ -c $< 
 $(obj)/data.o: $(src)/util/dtc/data.c
 	$(Q)$(HOSTCC) $(HOSTCFLAGS) -o $@ -c $< 
 $(obj)/treesource.o: $(src)/util/dtc/treesource.c

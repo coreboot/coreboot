@@ -105,12 +105,12 @@ static void usage(void)
 
 int main(int argc, char *argv[])
 {
-	struct boot_info *bi;
+	struct boot_info *bi=NULL;
 	char *inform = "dts";
 	char *outform = "dts";
 	char *outname = "-";
 	int force = 0;
-	char *arg;
+	char *arg=NULL;
 	int opt;
 	FILE *inf = NULL;
 	FILE *outf = NULL;

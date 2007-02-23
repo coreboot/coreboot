@@ -84,7 +84,7 @@ char *code = 0;
 
 <MEMRESERVE>[0-9a-fA-F]+ {
 			yylloc.first_line = yylineno;
-			if (yyleng > 2*sizeof(yylval.addr)) {
+			if ((unsigned long)yyleng > 2*sizeof(yylval.addr)) {
 				fprintf(stderr, "Address value %s too large\n",
 					yytext);
 			}
@@ -103,7 +103,7 @@ char *code = 0;
 
 <CELLDATA>[0-9a-fA-F]+	{
 			yylloc.first_line = yylineno;
-			if (yyleng > 2*sizeof(yylval.cval)) {
+			if ((unsigned long)yyleng > 2*sizeof(yylval.cval)) {
 				fprintf(stderr,
 					"Cell value %s too long\n", yytext);
 			}

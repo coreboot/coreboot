@@ -57,7 +57,7 @@ enum proptype {
 static enum proptype guess_type(struct property *prop)
 {
 	int len = prop->val.len;
-	char *p = prop->val.val;
+	unsigned char *p = prop->val.val;
 	int nnoprint = 0;
 	int i;
 
@@ -92,7 +92,7 @@ static void write_tree_source_node(FILE *f, struct node *tree, int level)
 
 	for_each_property(tree, prop) {
 		cell_t *cp;
-		char *bp;
+		unsigned char *bp;
 		void *propend;
 		enum proptype type;
 

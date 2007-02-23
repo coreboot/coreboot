@@ -1,19 +1,21 @@
 /*
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
-	
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-	
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ * This file is part of the LinuxBIOS project.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by 
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
 
-*/
 #ifndef DEVICE_H
 #define DEVICE_H
 
@@ -64,7 +66,7 @@ struct device_operations {
 	void (*phase5)(struct device * dev);
 
 	/* phase 6: any post-setup device initialization that might be needed */
-	void (*phase6)();
+	void (*phase6)(struct device * dev);
 
 	const struct pci_operations *ops_pci;
 	const struct smbus_bus_operations *ops_smbus_bus;
@@ -131,26 +133,26 @@ extern struct device	*all_devices;	/* list of all devices */
 
 
 /* Generic device interface functions */
-extern struct device * alloc_dev(struct bus *parent, struct device_path *path);
-extern void dev_enumerate(void);
-extern void dev_configure(void);
-extern void dev_enable(void);
-extern void dev_initialize(void);
-extern void dev_optimize(void);
+struct device * alloc_dev(struct bus *parent, struct device_path *path);
+void dev_enumerate(void);
+void dev_configure(void);
+void dev_enable(void);
+void dev_initialize(void);
+void dev_optimize(void);
 
 /* Generic device helper functions */
-extern int reset_bus(struct bus *bus);
-extern unsigned int scan_bus(struct device *bus, unsigned int max);
-extern void compute_allocate_resource(struct bus *bus, struct resource *bridge,
+int reset_bus(struct bus *bus);
+unsigned int scan_bus(struct device *bus, unsigned int max);
+void compute_allocate_resource(struct bus *bus, struct resource *bridge,
 	unsigned long type_mask, unsigned long type);
-extern void assign_resources(struct bus *bus);
-extern void enable_resources(struct device *dev);
-extern void enumerate_static_device(void);
-extern void enumerate_static_devices(void);
-extern const char *dev_path(struct device * dev);
+void assign_resources(struct bus *bus);
+void enable_resources(struct device *dev);
+void enumerate_static_device(void);
+void enumerate_static_devices(void);
+const char *dev_path(struct device * dev);
 const char *bus_path(struct bus *bus);
-extern void dev_set_enabled(struct device * dev, int enable);
-extern void disable_children(struct bus *bus);
+void dev_set_enabled(struct device * dev, int enable);
+void disable_children(struct bus *bus);
 
 /* Helper functions */
 struct device * find_dev_path(struct bus *parent, struct device_path *path);
@@ -167,13 +169,25 @@ struct device * dev_find_slot_on_smbus (unsigned int bus, unsigned int addr);
 #define DEVICE_IO_ALIGN 16 
 #define DEVICE_MEM_ALIGN 4096
 
-struct device_operations default_dev_ops_root;
-extern void root_dev_read_resources(struct device * dev);
-extern void root_dev_set_resources(struct device * dev);
-extern unsigned int scan_static_bus(struct device * bus, unsigned int max);
-extern void enable_childrens_resources(struct device * dev);
-extern void root_dev_enable_resources(struct device * dev);
-extern unsigned int root_dev_scan_bus(struct device * root, unsigned int max);
-extern void root_dev_init(struct device * dev);
-extern void dev_init(void);
+extern struct device_operations default_dev_ops_root;
+
+void root_dev_read_resources(struct device * dev);
+void root_dev_set_resources(struct device * dev);
+unsigned int scan_static_bus(struct device * bus, unsigned int max);
+void enable_childrens_resources(struct device * dev);
+void root_dev_enable_resources(struct device * dev);
+unsigned int root_dev_scan_bus(struct device * root, unsigned int max);
+void root_dev_init(struct device * dev);
+void dev_init(void);
+void dev_phase1(void);
+void dev_phase2(void);
+void dev_root_phase3(void);
+void dev_phase4(void);
+void dev_root_phase5(void);
+void dev_phase6(void);
+
+void phase4_assign_resources(struct bus *bus);
+unsigned int dev_phase3(struct device * bus, unsigned int max);
+void dev_phase5(struct device *dev);
+
 #endif /* DEVICE_H */

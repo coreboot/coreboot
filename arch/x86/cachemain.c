@@ -19,13 +19,13 @@
 
 #include <arch/types.h>
 #include <arch/io.h>
+#include <console/console.h>
 #include <console/loglevel.h>
 #include <lar.h>
 #include "config.h"
 
 /* these prototypes should go into headers */
 void uart_init(void);
-int printk(int msg_level, const char *fmt, ...);
 void console_init(void);
 void die(const char *msg);
 int find_file(struct mem_file *archive, char *filename, struct mem_file *result);
@@ -200,7 +200,9 @@ printk(BIOS_INFO, "Start search at 0x%x, size %d\n", archive.start, archive.len)
 #endif
         );
 
-	(void) run_file(&archive, "normal/stage2", (void *)0x1000);
+	ret = run_file(&archive, "normal/stage2", (void *)0x1000);
+	if (ret)
+		die("FATAL: Failed in stage2 code");
 
 	printk(BIOS_INFO, "Done stage2 code\n");
 

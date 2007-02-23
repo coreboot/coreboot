@@ -44,4 +44,8 @@ extern struct console_driver econsole_drivers[];
 
 extern int console_loglevel;
 
+// 
+int printk(int msg_level, const char *fmt, ...);
+
+
 #endif /* CONSOLE_CONSOLE_H_ */

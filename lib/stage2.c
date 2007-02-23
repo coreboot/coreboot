@@ -47,8 +47,9 @@ it with the version available from LANL.
 #include <arch/types.h>
 #include <string.h>
 #include <lar.h>
+#include <console/console.h>
 #include <console/loglevel.h>
-
+#include <device/device.h>
 
 /**
  * @brief Main function of the DRAM part of LinuxBIOS.
@@ -61,7 +62,7 @@ it with the version available from LANL.
  * Device Enumeration:
  *	In the dev_enumerate() phase, 
  */
-void stage2(void)
+int stage2(void)
 {
 	struct lb_memory *lb_mem;
 
@@ -102,6 +103,6 @@ void stage2(void)
 
 	elfboot(lb_mem);
 #endif
-
+	return 0;
 }
 

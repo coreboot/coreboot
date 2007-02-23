@@ -496,7 +496,7 @@ static void linuxbios_emit_property(void *e, char *label)
 	fprintf(f, "\tu32 p%d = \tOF_DT_PROP;\n", unique++);
 }
 
-static void linuxbios_emit_special(void *e, struct node *tree)
+static void linuxbios_emit_special(FILE *e, struct node *tree)
 {
 	FILE *f = e;
 	struct property *prop;
@@ -871,7 +871,7 @@ void dt_to_blob(FILE *f, struct boot_info *bi, int version,
 
 static void dump_stringtable_asm(FILE *f, struct data strbuf)
 {
-	char *p;
+	unsigned char *p;
 	int len;
 
 	p = strbuf.val;
@@ -971,7 +971,7 @@ void dt_to_asm(FILE *f, struct boot_info *bi, int version, int boot_cpuid_phys)
 
 static void dump_stringtable_C(FILE *f, struct data strbuf)
 {
-	char *p;
+	unsigned char *p;
 	int len;
 
 	p = strbuf.val;

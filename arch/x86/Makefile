@@ -127,8 +127,9 @@ $(obj)/linuxbios.stage2: $(obj)/stage0.init $(obj)/statictree.o
 
 	$(Q)# leave a .o with full symbols in it for debugging.
 	$(Q)cd $(obj); $(LD) -R $(obj)/stage0.o -Ttext 0x1000  \
-		-o $(obj)/linuxbios.stage2.o stage2.o device.o \
-		device_util.o root_device.o elfboot.o compute_ip_checksum.o mem.o malloc.o clog2.o mainboard.o \
+		--entry=stage2 -o $(obj)/linuxbios.stage2.o \
+		stage2.o device.o device_util.o root_device.o elfboot.o \
+		compute_ip_checksum.o mem.o malloc.o clog2.o mainboard.o \
 		statictree.o
 	$(Q)objcopy -O binary $(obj)/linuxbios.stage2.o $(obj)/linuxbios.stage2
 

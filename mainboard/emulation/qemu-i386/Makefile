@@ -42,7 +42,7 @@ $(obj)/linuxbios.initram: $(obj)/stage0.init $(obj)/stage0.o
 	# initram links against stage0
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/mainboard/$(MAINBOARDDIR)/initram.c -o $(obj)/initram.o
 	$(Q)$(LD) -R $(obj)/stage0.o -Ttext 0x80000  $(obj)/initram.o \
-		-o $(obj)/linuxbios.initram.o
+		--entry=main -o $(obj)/linuxbios.initram.o
 
 	$(Q)objcopy -O binary $(obj)/linuxbios.initram.o $(obj)/linuxbios.initram
 

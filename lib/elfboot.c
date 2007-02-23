@@ -47,7 +47,7 @@ setupmalloc(void *s, int size)
 
 static void *localmalloc(int nbytes)
 {
-	char *ret;
+	unsigned char *ret;
 	if (nbytes > arenasize)
 		return NULL;
 

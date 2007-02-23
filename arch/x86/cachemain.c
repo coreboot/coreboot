@@ -63,13 +63,17 @@ void stage1_main(u32 bist)
 	int ret;
 	struct mem_file archive, result;
 	int elfboot_mem(struct lb_memory *mem, void *where, int size);
+
 	/* HACK -- fake memory table for now */
-	struct lb_memory mem = {
+	static struct lb_memory mem = {
 		.tag = LB_TAG_MEMORY, 
 		.size = 1, 
-		.map  = {
-			 { .start = 0, .size = (32*1024*1024), .type = LB_MEM_RAM}
-		}
+		.map = { {
+			.start = { .lo = 0, .hi = 0 }, 
+			.size =  { .lo = (32*1024*1024), .hi = 0 }, 
+			.type = LB_MEM_RAM
+		} }
+
 	};
 
 	post_code(0x02);
@@ -228,7 +232,7 @@ printk(BIOS_INFO, "Start search at 0x%x, size %d\n", archive.start, archive.len)
 
 	ret =  elfboot_mem(&mem, result.start, result.len);
 
-	printk("elfboot_mem returns %d\n", ret);
+	printk(BIOS_INFO, "elfboot_mem returns %d\n", ret);
 
 	die ("FATAL: This is as far as it goes\n");
 }

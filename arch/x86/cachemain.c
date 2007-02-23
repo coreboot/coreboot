@@ -72,8 +72,6 @@ void stage1_main(u32 bist)
 		}
 	};
 
-        struct mem_file result;
-
 	post_code(0x02);
 
 	// before we do anything, we want to stop if we dont run 

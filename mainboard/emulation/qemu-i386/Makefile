@@ -25,30 +25,19 @@
 #
 
 $(obj)/linuxbios.vpd:
-	@printf "Building dummy VPD ..."
-	@dd if=/dev/zero of=$(obj)/linuxbios.vpd bs=256 count=1
-	@printf "ok.\n"
+	$(Q)printf "Building dummy VPD ..."
+	$(Q)dd if=/dev/zero of=$(obj)/linuxbios.vpd bs=256 count=1
+	$(Q)printf "ok.\n"
 
 
 #
 # this is going to be the init ram code:
 #
 
-$(obj)/linuxbios.initram: $(obj)/stage0.o
+$(obj)/linuxbios.initram: $(obj)/stage0.init $(obj)/stage0.o 
 	$(Q)echo Building linuxbios.initram
-	#
-	# main
+	# initram links against stage0
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/mainboard/$(MAINBOARDDIR)/initram.c -o $(obj)/initram.o
-	#
-	# console lib
-	#$(Q)$(CC) $(INITCFLAGS) -c $(src)/arch/x86/console.c -o $(obj)/console.o
-	#$(Q)$(CC) $(INITCFLAGS) -c $(src)/arch/x86/serial.c -o $(obj)/serial.o
-	#$(Q)$(CC) $(INITCFLAGS) -c $(src)/console/vtxprintf.c -o $(obj)/vtxprintf.o
-	#$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/uart8250.c -o $(obj)/uart8250.o
-
-	#cd $(obj); $(Q)$(LD) -Ttext 0x00000000 -s --oformat binary initram.o console.o uart8250.o \
-	#	serial.o vtxprintf.o -o $(obj)/linuxbios.initram
-
 	$(Q)$(LD) -R $(obj)/stage0.o -Ttext 0x80000  $(obj)/initram.o \
 		-o $(obj)/linuxbios.initram.o
 
@@ -61,10 +50,10 @@ $(obj)/linuxbios.initram: $(obj)/stage0.o
 $(obj)/mainboard.o: $(obj)/statictree.o
 
 $(obj)/statictree.o:  $(obj)/statictree.c
-	$(CC) $(CFLAGS) $(LINUXBIOSINCLUDE) -c -o $(obj)/statictree.o $(obj)/statictree.c
+	$(Q)$(CC) $(CFLAGS) $(LINUXBIOSINCLUDE) -c -o $(obj)/statictree.o $(obj)/statictree.c
 
 $(obj)/statictree.c: mainboard/$(MAINBOARDDIR)/dts $(obj)/util/dtc/dtc
-	$(obj)/util/dtc/dtc -O lb mainboard/$(MAINBOARDDIR)/dts >$(obj)/statictree.c
+	$(Q)$(obj)/util/dtc/dtc -O lb mainboard/$(MAINBOARDDIR)/dts >$(obj)/statictree.c
 
 
 

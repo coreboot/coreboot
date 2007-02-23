@@ -5,53 +5,35 @@
 .PHONY: oldconfig xconfig gconfig menuconfig config silentoldconfig update-po-config
 
 xconfig: prepare $(obj)/qconf
-	$(obj)/qconf Kconfig
+	$(Q)$(obj)/qconf Kconfig
 
 gconfig: $(obj)/gconf
-	$(obj)/gconf Kconfig
+	$(Q)$(obj)/gconf Kconfig
 
 menuconfig: prepare $(obj)/lxdialog $(obj)/mconf
-	$(obj)/mconf Kconfig
+	$(Q)$(obj)/mconf Kconfig
 
 config: prepare $(obj)/conf
-	$(obj)/conf Kconfig
+	$(Q)$(obj)/conf Kconfig
 
 oldconfig: prepare $(obj)/conf
-	$(obj)/conf -o Kconfig
+	$(Q)$(obj)/conf -o Kconfig
 
 silentoldconfig: prepare $(obj)/conf
-	$(obj)/conf -s Kconfig
-
-update-po-config: $(obj)/kxgettext
-	xgettext --default-domain=linux \
-          --add-comments --keyword=_ --keyword=N_ \
-          --files-from=scripts/kconfig/POTFILES.in \
-          --output scripts/kconfig/config.pot
-	$(Q)for i in `ls arch/`; \
-	do \
-	  scripts/kconfig/kxgettext Kconfig \
-	    | msguniq -o scripts/kconfig/linux_$${i}.pot; \
-	done
-	$(Q)msgcat scripts/kconfig/config.pot \
-	  `find scripts/kconfig/ -type f -name linux_*.pot` \
-	  --output scripts/kconfig/linux_raw.pot
-	$(Q)msguniq --sort-by-file scripts/kconfig/linux_raw.pot \
-	    --output scripts/kconfig/linux.pot
-	$(Q)rm -f scripts/kconfig/linux_*.pot scripts/kconfig/config.pot
-
+	$(Q)$(obj)/conf -s Kconfig
 .PHONY: randconfig allyesconfig allnoconfig allmodconfig defconfig
 
 randconfig: $(obj)/conf
-	$< -r Kconfig
+	$(Q)$< -r Kconfig
 
 allyesconfig: $(obj)/conf
-	$< -y Kconfig
+	$(Q)$< -y Kconfig
 
 allnoconfig: $(obj)/conf
-	$< -n Kconfig
+	$(Q)$< -n Kconfig
 
 allmodconfig: $(obj)/conf
-	$< -m Kconfig
+	$(Q)$< -m Kconfig
 
 UNAME_RELEASE := $(shell uname -r)
 CLONECONFIG := $(firstword $(wildcard /proc/config.gz \
@@ -124,8 +106,28 @@ $(obj)/zconf.tab.c: $(src)/util/kconfig/zconf.tab.c_shipped
 
 include $(src)/util/kconfig/lxdialog/Makefile
 
-######################
-# kbuild crap follows
+# #####################################################################
+
+ifdef KCONFIG_DEBUG
+
+update-po-config: $(obj)/kxgettext
+	xgettext --default-domain=linux \
+          --add-comments --keyword=_ --keyword=N_ \
+          --files-from=scripts/kconfig/POTFILES.in \
+          --output scripts/kconfig/config.pot
+	$(Q)for i in `ls arch/`; \
+	do \
+	  scripts/kconfig/kxgettext Kconfig \
+	    | msguniq -o scripts/kconfig/linux_$${i}.pot; \
+	done
+	$(Q)msgcat scripts/kconfig/config.pot \
+	  `find scripts/kconfig/ -type f -name linux_*.pot` \
+	  --output scripts/kconfig/linux_raw.pot
+	$(Q)msguniq --sort-by-file scripts/kconfig/linux_raw.pot \
+	    --output scripts/kconfig/linux.pot
+	$(Q)rm -f scripts/kconfig/linux_*.pot scripts/kconfig/config.pot
+
+
 
 # ===========================================================================
 # Shared Makefile for the various kconfig executables:
@@ -183,6 +185,10 @@ HOSTCXXFLAGS_qconf.o	= $(KC_QT_CFLAGS) -D LKC_DIRECT_LINK
 HOSTLOADLIBES_gconf	= `pkg-config --libs gtk+-2.0 gmodule-2.0 libglade-2.0`
 HOSTCFLAGS_gconf.o	= `pkg-config --cflags gtk+-2.0 gmodule-2.0 libglade-2.0` \
                           -D LKC_DIRECT_LINK
+
+endif
+
+# #####################################################################
 
 $(obj)/qconf.o: $(obj)/.tmp_qtcheck
 

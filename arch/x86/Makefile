@@ -19,7 +19,7 @@
 ##
 
 $(obj)/linuxbios.rom: $(obj)/linuxbios.lar $(obj)/stage0.init $(obj)/linuxbios.vpd
-	@cat $(obj)/linuxbios.lar \
+	$(Q)cat $(obj)/linuxbios.lar \
 	     $(obj)/linuxbios.vpd \
 	     $(obj)/stage0.init > \
 	     $(obj)/linuxbios.rom
@@ -67,7 +67,7 @@ $(obj)/linuxbios.stage2: $(obj)/stage0.init $(obj)/statictree.o
 		-o $(obj)/linuxbios.stage2.o stage2.o device.o \
 		device_util.o mem.o malloc.o clog2.o mainboard.o \
 		statictree.o
-	objcopy -O binary $(obj)/linuxbios.stage2.o $(obj)/linuxbios.stage2
+	$(Q)objcopy -O binary $(obj)/linuxbios.stage2.o $(obj)/linuxbios.stage2
 
 	$(Q)chmod 644 $(obj)/linuxbios.stage2
 
@@ -105,34 +105,34 @@ $(obj)/linuxbios.lar: $(obj)/util/lar/lar lzma $(obj)/linuxbios.initram $(obj)/l
 INITCFLAGS  := $(CFLAGS) -I$(src)/include/cpu/generic/x86 -I$(src)/include -fno-builtin 
 
 $(obj)/stage0.init: 
-	@echo Building linuxbios.init
+	$(Q)echo Building linuxbios.init
 	# Building asm stub
-	@$(CC) -E $(LINUXBIOSINCLUDE) $(src)/arch/x86/stage0_i586.S -o $(obj)/stage0_i586.s -DBOOTBLK=0x1f00 -DRESRVED=0xf0 -DDATE=\"`date +%Y/%m/%d`\"
-	@$(AS) $(obj)/stage0_i586.s -o $(obj)/stage0_i586.o
+	$(Q)$(CC) -E $(LINUXBIOSINCLUDE) $(src)/arch/x86/stage0_i586.S -o $(obj)/stage0_i586.s -DBOOTBLK=0x1f00 -DRESRVED=0xf0 -DDATE=\"`date +%Y/%m/%d`\"
+	$(Q)$(AS) $(obj)/stage0_i586.s -o $(obj)/stage0_i586.o
 	# Building cachemain
 	$(CC) $(INITCFLAGS) -c $(src)/arch/x86/cachemain.c -o $(obj)/cachemain.o
 	# 
-	@$(CC) $(INITCFLAGS) -c $(src)/lib/lar.c -o $(obj)/lar.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/lar.c -o $(obj)/lar.o
 	#
 	# console lib
-	@$(CC) $(INITCFLAGS) -c $(src)/arch/x86/console.c -o $(obj)/console.o
-	@$(CC) $(INITCFLAGS) -c $(src)/arch/x86/serial.c -o $(obj)/serial.o
-	@$(CC) $(INITCFLAGS) -c $(src)/console/vtxprintf.c -o $(obj)/vtxprintf.o
-	@$(CC) $(INITCFLAGS) -c $(src)/console/vsprintf.c -o $(obj)/vsprintf.o
-	@$(CC) $(INITCFLAGS) -c $(src)/lib/uart8250.c -o $(obj)/uart8250.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/arch/x86/console.c -o $(obj)/console.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/arch/x86/serial.c -o $(obj)/serial.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/console/vtxprintf.c -o $(obj)/vtxprintf.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/console/vsprintf.c -o $(obj)/vsprintf.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/uart8250.c -o $(obj)/uart8250.o
 	# other lib parts
-	@$(CC) $(INITCFLAGS) -c $(src)/lib/mem.c -o $(obj)/mem.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/mem.c -o $(obj)/mem.o
 
-	@cd $(obj); $(CC) -m32 -nostdlib -static -T $(src)/arch/x86/ldscript.ld cachemain.o console.o uart8250.o \
+	$(Q)cd $(obj); $(CC) -m32 -nostdlib -static -T $(src)/arch/x86/ldscript.ld cachemain.o console.o uart8250.o \
 		serial.o vtxprintf.o vsprintf.o lar.o mem.o stage0_i586.o -o stage0.o
-	@objcopy -O binary $(obj)/stage0.o  $(obj)/stage0.init.pre
+	$(Q)objcopy -O binary $(obj)/stage0.o  $(obj)/stage0.init.pre
 
 	# Pad boot block to 0x2000 - 0x100 
 	# we will probably remove this step -- not needed if we continue with ldscript.ld
-	@dd if=$(obj)/stage0.init.pre of=$(obj)/stage0.init bs=7936 conv=sync
-	@echo "Len: `wc -c < $(obj)/stage0.init.pre`"
+	$(Q)dd if=$(obj)/stage0.init.pre of=$(obj)/stage0.init bs=7936 conv=sync
+	$(Q)echo "Len: `wc -c < $(obj)/stage0.init.pre`"
 	#
-	@test `wc -c < $(obj)/stage0.init.pre` -gt 7936  && echo "Error. Bootblock got too big" || true
+	$(Q)test `wc -c < $(obj)/stage0.init.pre` -gt 7936  && echo "Error. Bootblock got too big" || true
 
 
 

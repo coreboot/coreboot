@@ -48,45 +48,50 @@ CFLAGS     := -Os -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 	      -ffreestanding -fno-builtin
 
 HOSTCC     := gcc
-HOSTCFLAGS := -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer
+HOSTCFLAGS := -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer 
 
 LINUXBIOSINCLUDE    :=  -I$(src) -Iinclude \
 			-I$(src)/include \
 			-I$(src)/include/cpu/generic/$(ARCH)/ \
 			-include $(obj)/config.h
+# make silent per default
+Q := @
 
 CPPFLAGS   := $(LINUXBIOSINCLUDE)
 
 export src obj KERNELVERSION
 
 ifeq ($(strip $(have_dotconfig)),) 
+
 all:
-	@echo "run make menuconfig first"
+	$(Q)echo "Please run make menuconfig, xconfig or config first."
+
 else
+
 include $(src)/.config
 all: prepare prepare2 $(obj)/linuxbios.rom
-	@echo "build process finished."
-endif
-
-
-include util/Makefile
-#include mainboards/Makefile
-include arch/$(ARCH)/Makefile
+	$(Q)echo "build process finished."
 
 MAINBOARDDIR=$(shell echo $(CONFIG_MAINBOARD_NAME))
--include mainboard/$(MAINBOARDDIR)/Makefile
+
+include arch/$(ARCH)/Makefile
+include mainboard/$(MAINBOARDDIR)/Makefile
+endif
+
+include util/Makefile
+
 
 
 prepare:
-	@mkdir -p $(obj)
+	$(Q)mkdir -p $(obj)
 
 prepare2:
-	@cp $(src)/.tmpconfig.h $(obj)/config.h
+	$(Q)cp $(src)/.tmpconfig.h $(obj)/config.h
 
 clean:
-	@echo "Cleaning up..."
-	rm -rf $(obj)
-
+	$(Q)echo "Cleaning up..."
+	$(Q)rm -rf $(obj)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -o $@ -c $< 
+	$(Q)echo "Compiling $<"
+	$(Q)$(CC) $(CFLAGS) -o $@ -c $< 

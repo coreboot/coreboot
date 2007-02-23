@@ -25,40 +25,43 @@ HOSTCC=gcc
 HOSTCFLAGS=-O2 -Wall -W
 
 $(obj)/util/lar/lar: $(patsubst %,$(src)/util/lar/%,$(SOURCE))
-	@mkdir -p $(obj)/util/lar
-	@$(HOSTCC) $(HOSTCFLAGS) -o $@ $^
-	@echo "Built LAR."
+	$(Q)printf "Building LAR utility..."
+	$(Q)mkdir -p $(obj)/util/lar
+	$(Q)$(HOSTCC) $(HOSTCFLAGS) -o $@ $^
+	$(Q)printf "done."
 
 
 ## --------------------------------------------------------------------
-## stuff below this line should be fixed or go away
+## stuff below this line is for debugging purposes only.
 
+ifdef DEBUG_LAR
 example: example.c
-	$(CC) $(CFLAGS) -o $@ $^
+	$(Q)$(CC) $(CFLAGS) -o $@ $^
 
-#clean:
-#	rm -rf lar tree.lar tree tree2 example
+clean:
+	$(Q)rm -rf lar tree.lar tree tree2 example
 
 tree:
-	@printf "creating sample tree... "
-	@rm -rf tree
-	@mkdir tree
-	@mkdir -p tree/compression
-	@mkdir -p tree/normal
-	@mkdir -p tree/fallback
-	@dd if=/dev/urandom of=tree/compression/lzma bs=1k count=8 &>/dev/null
-	@dd if=/dev/urandom of=tree/normal/linuxbios.elf.lzma bs=1k count=32 &>/dev/null
-	@dd if=/dev/urandom of=tree/normal/initmem bs=1k count=16 &>/dev/null
-	@dd if=/dev/urandom of=tree/fallback/linuxbios.elf.lzma bs=1k count=32 &>/dev/null
-	@dd if=/dev/urandom of=tree/fallback/initmem bs=1k count=16 &>/dev/null
-	@printf "done.\n"
+	$(Q)printf "creating sample tree... "
+	$(Q)rm -rf tree
+	$(Q)mkdir tree
+	$(Q)mkdir -p tree/compression
+	$(Q)mkdir -p tree/normal
+	$(Q)mkdir -p tree/fallback
+	$(Q)dd if=/dev/urandom of=tree/compression/lzma bs=1k count=8 &>/dev/null
+	$(Q)dd if=/dev/urandom of=tree/normal/linuxbios.elf.lzma bs=1k count=32 &>/dev/null
+	$(Q)dd if=/dev/urandom of=tree/normal/initmem bs=1k count=16 &>/dev/null
+	$(Q)dd if=/dev/urandom of=tree/fallback/linuxbios.elf.lzma bs=1k count=32 &>/dev/null
+	$(Q)dd if=/dev/urandom of=tree/fallback/initmem bs=1k count=16 &>/dev/null
+	$(Q)printf "done.\n"
 
 tree.lar: lar tree
-	cd tree; ../lar c ../tree.lar `find . -type f|cut -c3-`
+	$(Q)cd tree; ../lar c ../tree.lar `find . -type f|cut -c3-`
 
 test: lar example tree.lar
-	mkdir tree2; cd tree2; ../lar x ../tree.lar
-	@echo Comparing tree:
-	diff -urN tree tree2
-	@rm -rf tree tree2
-	./example tree.lar
+	$(Q)mkdir tree2; cd tree2; ../lar x ../tree.lar
+	$(Q)echo Comparing tree:
+	$(Q)diff -urN tree tree2
+	$(Q)rm -rf tree tree2
+	$(Q)./example tree.lar
+endif

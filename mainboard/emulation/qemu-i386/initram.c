@@ -20,11 +20,11 @@
 #include <arch/types.h>
 #include <arch/io.h>
 #include <console/loglevel.h>
+#include <console/console.h>
 
 int printk(int msg_level, const char *fmt, ...);
 void die(const char *msg);
-static void post_code(u8 value);
-
+void post_code(u8 value);
 
 int main(void)
 {
@@ -35,8 +35,4 @@ int main(void)
 	return 0;
 }
 
-static void post_code(u8 value)
-{
-	outb(value, 0x80);
-}
 

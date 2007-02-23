@@ -75,6 +75,7 @@ all: prepare prepare2 $(obj)/linuxbios.rom
 
 MAINBOARDDIR=$(shell echo $(CONFIG_MAINBOARD_NAME))
 
+include lib/Makefile
 include arch/$(ARCH)/Makefile
 include mainboard/$(MAINBOARDDIR)/Makefile
 endif

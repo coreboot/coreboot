@@ -18,68 +18,30 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
+INITCFLAGS  := $(CFLAGS) -I$(src)/include/cpu/generic/x86 -I$(src)/include \
+	       -fno-builtin 
+
 SILENT := &> /dev/null
 
-$(obj)/linuxbios.rom: $(obj)/linuxbios.lar $(obj)/stage0.init $(obj)/linuxbios.vpd
-	$(Q)cat $(obj)/linuxbios.lar \
-	     $(obj)/linuxbios.vpd \
-	     $(obj)/stage0.init > \
-	     $(obj)/linuxbios.rom
-
+# Build the final ROM image
 #
-# This part takes care of compression. It should build the compression modules
-# in a way that they can be put in the lar. FIXME it belongs in lib/ 
+# These are the main linuxbios components. Do not change the order unless you
+# know exactly what you are doing.
 #
 
-lzma:
-	$(Q)echo "Building lzma... skipped"
+LINUXBIOS_COMPONENTS := linuxbios.lar linuxbios.vpd stage0.init
+
+$(obj)/linuxbios.rom: $(patsubst %,$(obj)/%,$(LINUXBIOS_COMPONENTS))
+	$(Q)cat $^ > $@ 
 
 #
-# this is the rest of linuxbios (v2: linuxbios_ram.rom) 
-# Is this maybe platform independent, except for the "drivers"? 
-# Where should it be built?
+# LinuxBIOS v3 is completely modular and based on a very small startup
+# code (stage0) plus a LAR archive. The LAR archive may contain any number
+# of stages, payloads and option roms.
 #
-# This needs to be compressed with the default compressor
+# Build the LAR archive:
 #
 
-$(obj)/linuxbios.stage2: $(obj)/stage0.init $(obj)/statictree.o
-	$(Q)echo "Building linuxbios.stage2"
-	#
-	# main
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/stage2.c -o $(obj)/stage2.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/device/device.c -o $(obj)/device.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/device/device_util.c -o $(obj)/device_util.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/device/root_device.c -o $(obj)/root_device.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/mem.c -o $(obj)/mem.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/malloc.c -o $(obj)/malloc.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/clog2.c -o $(obj)/clog2.o
-	$(Q)$(CC) $(INITCFLAGS) -c -I$(src) $(obj)/statictree.c -o $(obj)/statictree.o
-	$(Q)$(CC) $(INITCFLAGS) -c mainboard/$(MAINBOARDDIR)/mainboard.c -o $(obj)/mainboard.o
-
-	# leave a .o with full symbols in it for debugging.
-	$(Q)cd $(obj); $(LD) -R $(obj)/stage0.o -Ttext 0x1000  \
-		-o $(obj)/linuxbios.stage2.o stage2.o device.o \
-		device_util.o root_device.o mem.o malloc.o clog2.o mainboard.o \
-		statictree.o
-	$(Q)objcopy -O binary $(obj)/linuxbios.stage2.o $(obj)/linuxbios.stage2
-
-	$(Q)chmod 644 $(obj)/linuxbios.stage2
-
-#
-# The payload as we love it. Get it from somewhere.
-# Is this a place to incorporate buildrom?
-# 
-# This needs to be compressed with the default compressor
-#
-	
-payload:
-	$(Q)echo "Building payload... skipped"
-
-
-#
-# build the lar archive
-#
-	
 $(obj)/linuxbios.lar: $(obj)/util/lar/lar lzma $(obj)/linuxbios.initram $(obj)/linuxbios.stage2 payload
 	$(Q)echo "Building LinuxBIOS archive..."
 	$(Q)rm -rf $(obj)/lar.tmp
@@ -93,41 +55,91 @@ $(obj)/linuxbios.lar: $(obj)/util/lar/lar lzma $(obj)/linuxbios.initram $(obj)/l
 		  bs=253952 count=1 conv=sync $(SILENT)
 
 
-#
-# this is going to be the enable car code, lar parser and such:
-#
 
-INITCFLAGS  := $(CFLAGS) -I$(src)/include/cpu/generic/x86 -I$(src)/include -fno-builtin 
+#
+# LinuxBIOS stage0. This is the LinuxBIOS "boot block code".
+# It enables Cache-as-RAM and parses the LAR archive for an
+# initram module and the various stages and payload files.
+#
 
 $(obj)/stage0.init: 
-	$(Q)echo Building linuxbios.init
-	# Building asm stub
+	$(Q)echo "Building stage0.init"
+	$(Q)# Building asm stub
 	$(Q)$(CC) -E $(LINUXBIOSINCLUDE) $(src)/arch/x86/stage0_i586.S -o $(obj)/stage0_i586.s -DBOOTBLK=0x1f00 -DRESRVED=0xf0 -DDATE=\"`date +%Y/%m/%d`\"
 	$(Q)$(AS) $(obj)/stage0_i586.s -o $(obj)/stage0_i586.o
-	# Building cachemain
-	$(CC) $(INITCFLAGS) -c $(src)/arch/x86/cachemain.c -o $(obj)/cachemain.o
-	# 
+	$(Q)# Building cachemain
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/arch/x86/cachemain.c -o $(obj)/cachemain.o
+
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/lar.c -o $(obj)/lar.o
-	#
-	# console lib
+	
+	$(Q)# console lib
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/arch/x86/console.c -o $(obj)/console.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/arch/x86/serial.c -o $(obj)/serial.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/console/vtxprintf.c -o $(obj)/vtxprintf.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/console/vsprintf.c -o $(obj)/vsprintf.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/uart8250.c -o $(obj)/uart8250.o
-	# other lib parts
+	$(Q)# other lib parts
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/mem.c -o $(obj)/mem.o
 
-	$(Q)cd $(obj); $(CC) -m32 -nostdlib -static -T $(src)/arch/x86/ldscript.ld cachemain.o console.o uart8250.o \
-		serial.o vtxprintf.o vsprintf.o lar.o mem.o stage0_i586.o -o stage0.o
+	$(Q)cd $(obj); $(CC) -m32 -nostdlib -static        \
+		-T $(src)/arch/x86/ldscript.ld cachemain.o \
+		console.o uart8250.o serial.o vtxprintf.o  \
+		vsprintf.o lar.o mem.o stage0_i586.o -o stage0.o
+
 	$(Q)objcopy -O binary $(obj)/stage0.o  $(obj)/stage0.init.pre
 
 	# Pad boot block to 0x2000 - 0x100 
 	# we will probably remove this step -- not needed if we continue with ldscript.ld
-	$(Q)dd if=$(obj)/stage0.init.pre of=$(obj)/stage0.init bs=7936 conv=sync
+	$(Q)dd if=$(obj)/stage0.init.pre of=$(obj)/stage0.init \
+		bs=7936 conv=sync $(SILENT)
 	$(Q)echo "Len: `wc -c < $(obj)/stage0.init.pre`"
-	#
+
 	$(Q)test `wc -c < $(obj)/stage0.init.pre` -gt 7936  && echo "Error. Bootblock got too big" || true
+
+
+
+
+
+#
+# This is the rest of linuxbios (v2: linuxbios_ram.rom) 
+# Is this maybe platform independent, except for the "drivers"? 
+# Where should it be built, maybe in device/ ?
+#
+# TODO: This should be compressed with the default compressor
+#
+
+$(obj)/linuxbios.stage2: $(obj)/stage0.init $(obj)/statictree.o
+	$(Q)echo "Building linuxbios.stage2"
+	$(Q)# main
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/stage2.c -o $(obj)/stage2.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/device/device.c -o $(obj)/device.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/device/device_util.c -o $(obj)/device_util.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/device/root_device.c -o $(obj)/root_device.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/mem.c -o $(obj)/mem.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/malloc.c -o $(obj)/malloc.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/clog2.c -o $(obj)/clog2.o
+	$(Q)$(CC) $(INITCFLAGS) -c -I$(src) $(obj)/statictree.c -o $(obj)/statictree.o
+	$(Q)$(CC) $(INITCFLAGS) -c mainboard/$(MAINBOARDDIR)/mainboard.c -o $(obj)/mainboard.o
+
+	$(Q)# leave a .o with full symbols in it for debugging.
+	$(Q)cd $(obj); $(LD) -R $(obj)/stage0.o -Ttext 0x1000  \
+		-o $(obj)/linuxbios.stage2.o stage2.o device.o \
+		device_util.o root_device.o mem.o malloc.o clog2.o mainboard.o \
+		statictree.o
+	$(Q)objcopy -O binary $(obj)/linuxbios.stage2.o $(obj)/linuxbios.stage2
+
+	$(Q)chmod 644 $(obj)/linuxbios.stage2
+
+#
+# The payload as we love it. Get it from somewhere.
+# Is this a place to incorporate buildrom?
+# 
+# TODO: This is not implemented yet.
+# TODO: This needs to be compressed with the default compressor
+#
+	
+payload:
+	$(Q)echo "Building payload... skipped"
 
 
 

@@ -18,6 +18,21 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-compressors-$(CONFIG_COMPRESSION_LZMA)	+= lzma.o
-compressors-$(CONFIG_COMPRESSION_NRV2B)	+= nrv2b.o
+COMPRESSORS := 
+ifdef $(CONFIG_COMPRESSION_LZMA)
+COMPRESSORS	+= lzma.o
+endif
+ifdef $(CONFIG_COMPRESSION_NRV2B)
+COMPRESSORS	+= nrv2b.o
+endif
+
+#
+# This part takes care of compression. It should build the compression modules
+# in a way that they can be put in the lar.  
+#
+
+lzma:
+	$(Q)echo "Building lzma... skipped"
+
+
 

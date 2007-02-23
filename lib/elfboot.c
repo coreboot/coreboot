@@ -132,12 +132,12 @@ static struct verify_callback *process_elf_notes(
 			switch(hdr->n_type) {
 			case EIN_PROGRAM_NAME:
 				if (n_desc[hdr->n_descsz -1] == 0) {
-					program = n_desc;
+					program = (char *) n_desc;
 				}
 				break;
 			case EIN_PROGRAM_VERSION:
 				if (n_desc[hdr->n_descsz -1] == 0) {
-					version = n_desc;
+					version = (char *) n_desc;
 				}
 				break;
 			case EIN_PROGRAM_CHECKSUM:

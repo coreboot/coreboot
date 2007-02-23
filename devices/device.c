@@ -697,15 +697,15 @@ void dev_root_phase3(void)
 		root->chip_ops->enable_dev(root);
 	}
 	if (!root->ops) {
-		printk(BIOS_ERR, "dev_root missing 'ops' initialization\n");
+		printk(BIOS_ERR, "dev_root_phase3 missing 'ops' initialization\nPhase 3: Failed\n");
 		return;
 	}
 	if (!root->ops->phase3) {
-		printk(BIOS_ERR, "dev_root ops struct missing 'phase3' initialization in ops structure");
+		printk(BIOS_ERR, "dev_root ops struct missing 'phase3' initialization in ops structure\nPhase 3: Failed");
 		return;
 	}
 	subordinate = dev_phase3(root, 0);
-	printk(BIOS_INFO, "done\n");
+	printk(BIOS_INFO, "Phase 3: done\n");
 }
 
 /**
@@ -727,25 +727,25 @@ void dev_phase4(void)
 	struct resource *io, *mem;
 	struct device *root;
 
-	printk(BIOS_INFO, "Allocating resources...\n");
+	printk(BIOS_INFO, "Phase 4:Allocating resources...\n");
 
 	root = &dev_root;
 	if (!root->ops) {
-		printk(BIOS_ERR, "dev_root missing ops initialization\n");
+		printk(BIOS_ERR, "Phase 4: dev_root missing ops initialization\nPhase 4: Failed\n");
 		return;
 	}	
 	if (!root->ops->phase4_read_resources) {
-		printk(BIOS_ERR, "dev_root ops missing read_resources\n");
+		printk(BIOS_ERR, "dev_root ops missing read_resources\nPhase 4: Failed\n");
 		return;
 	}
 	if (!root->ops->phase4_set_resources) {
-		printk(BIOS_ERR, "dev_root ops missing set_resources\n");
+		printk(BIOS_ERR, "dev_root ops missing set_resources\nPhase 4: Failed\n");
 		return;
 	}
 
-	printk(BIOS_INFO, "Reading resources...\n");
+	printk(BIOS_INFO, "Phase 4: Reading resources...\n");
 	root->ops->phase4_read_resources(root);
-	printk(BIOS_INFO, "Done reading resources.\n");
+	printk(BIOS_INFO, "Phase 4: Done reading resources.\n");
 
 	/* Get the resources */
 	io  = &root->resource[0];
@@ -767,15 +767,15 @@ void dev_phase4(void)
 #endif
 
 	/* Store the computed resource allocations into device registers ... */
-	printk(BIOS_INFO, "Setting resources...\n");
+	printk(BIOS_INFO, "Phase 4: Setting resources...\n");
 	root->ops->phase4_set_resources(root);
-	printk(BIOS_INFO, "Done setting resources.\n");
+	printk(BIOS_INFO, "Phase 4: Done setting resources.\n");
 #if 0
 	mem->flags |= IORESOURCE_STORED;
 	report_resource_stored(root, mem, "");
 #endif
 
-	printk(BIOS_INFO, "Done allocating resources.\n");
+	printk(BIOS_INFO, "Phase 4: Done allocating resources.\n");
 }
 
 /**
@@ -786,12 +786,12 @@ void dev_phase4(void)
  */
 void dev_root_phase5(void)
 {
-	printk(BIOS_INFO, "Enabling resources...\n");
+	printk(BIOS_INFO, "Phase 5: Enabling resources...\n");
 
 	/* now enable everything. */
 	dev_phase5(&dev_root);
 
-	printk(BIOS_INFO, "done.\n");
+	printk(BIOS_INFO, "Phase 5: done.\n");
 }
 
 /**
@@ -811,10 +811,10 @@ void dev_phase6(void)
 			dev->ops && dev->ops->phase6) 
 		{
 			if (dev->path.type == DEVICE_PATH_I2C) {
- 				printk(BIOS_DEBUG, "smbus: %s[%d]->",
+ 				printk(BIOS_DEBUG, "Phase 6: smbus: %s[%d]->",
 					dev_path(dev->bus->dev), dev->bus->link);
 			}
-			printk(BIOS_DEBUG, "%s init\n", dev_path(dev));
+			printk(BIOS_DEBUG, "Phase 6: %s init\n", dev_path(dev));
 			dev->initialized = 1;
 			dev->ops->phase6(dev);
 		}

@@ -200,9 +200,7 @@ printk(BIOS_INFO, "Start search at 0x%x, size %d\n", archive.start, archive.len)
 #endif
         );
 
-	ret = run_file(&archive, "normal/stage2", (void *)0x1000);
-	if (ret)
-		die("Failed stage2 code\n");
+	(void) run_file(&archive, "normal/stage2", (void *)0x1000);
 
 	printk(BIOS_INFO, "Done stage2 code\n");
 

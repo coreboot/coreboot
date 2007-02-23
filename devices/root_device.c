@@ -17,14 +17,14 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <part/hard_reset.h>
+//#include <part/hard_reset.h>
 
 /** 
  * Read the resources for the root device,
  * that encompass the resources for the entire system.
  * @param root Pointer to the device structure for the system root device
  */
-void root_dev_read_resources(device_t root)
+void root_dev_read_resources(struct device * root)
 {
 	struct resource *resource;
 
@@ -58,7 +58,7 @@ void root_dev_read_resources(device_t root)
  * and every device under it which are all of the devices.
  * @param root Pointer to the device structure for the system root device
  */
-void root_dev_set_resources(device_t root)
+void root_dev_set_resources(struct device * root)
 {
 	struct bus *bus;
 
@@ -67,7 +67,7 @@ void root_dev_set_resources(device_t root)
 		&root->resource[0], IORESOURCE_IO, IORESOURCE_IO);
 	compute_allocate_resource(bus, 
 		&root->resource[1], IORESOURCE_MEM, IORESOURCE_MEM);
-	assign_resources(bus);
+	phase4_assign_resources(bus);
 }
 
 /**
@@ -93,12 +93,12 @@ void root_dev_set_resources(device_t root)
  * @return Largest bus number used.
  */
 static int smbus_max = 0;
-unsigned int scan_static_bus(device_t bus, unsigned int max)
+unsigned int scan_static_bus(struct device * bus, unsigned int max)
 {
-	device_t child;
+	struct device * child;
 	unsigned link;
 
-	printk_spew("%s for %s\n", __func__, dev_path(bus));
+	printk(BIOS_SPEW, "%s for %s\n", __func__, dev_path(bus));
 
 	for(link = 0; link < bus->links; link++) {
 		/* for smbus bus enumerate */
@@ -110,28 +110,29 @@ unsigned int scan_static_bus(device_t bus, unsigned int max)
 			if (child->chip_ops && child->chip_ops->enable_dev) {
 				child->chip_ops->enable_dev(child);
 			}
-			if (child->ops && child->ops->enable) {
-				child->ops->enable(child);
+			/* sigh. Have to enable to scan ... */
+			if (child->ops && child->ops->phase5) {
+				child->ops->phase5(child);
 			}
  			if (child->path.type == DEVICE_PATH_I2C) {
- 				printk_debug("smbus: %s[%d]->",  
+ 				printk(BIOS_DEBUG, "smbus: %s[%d]->",  
 					dev_path(child->bus->dev), child->bus->link );
 			}
-			printk_debug("%s %s\n",
+			printk(BIOS_DEBUG, "%s %s\n",
 				dev_path(child),
 				child->enabled?"enabled": "disabled");
 		}
 	}
 	for(link = 0; link < bus->links; link++) {
 		for(child = bus->link[link].children; child; child = child->sibling) {
-			if (!child->ops || !child->ops->scan_bus)
+			if (!child->ops || !child->ops->phase3)
 				continue;
-			printk_spew("%s scanning...\n", dev_path(child));
-			max = scan_bus(child, max);
+			printk(BIOS_SPEW, "%s scanning...\n", dev_path(child));
+			max = dev_phase3(child, max);
 		}
 	}
 
-	printk_spew("%s for %s done\n", __func__, dev_path(bus));
+	printk(BIOS_SPEW, "%s for %s done\n", __func__, dev_path(bus));
 
 	return max;
 }
@@ -149,18 +150,18 @@ unsigned int scan_static_bus(device_t bus, unsigned int max)
  *	enable_resources() -> device_operation::enable_resources()
  *	device_operation::enable_resources() -> enable_children_resources()
  */
-void enable_childrens_resources(device_t dev)
+void enable_childrens_resources(struct device * dev)
 {
 	unsigned link;
 	for(link = 0; link < dev->links; link++) {
-		device_t child;
+		struct device * child;
 		for(child = dev->link[link].children; child; child = child->sibling) {
-			enable_resources(child);
+			dev_phase5(child);
 		}
 	}
 }
 
-void root_dev_enable_resources(device_t dev)
+void root_dev_enable_resources(struct device * dev)
 {
 	enable_childrens_resources(dev);
 }
@@ -173,19 +174,19 @@ void root_dev_enable_resources(device_t dev)
  *
  * This function is the default scan_bus() method of the root device.
  */
-unsigned int root_dev_scan_bus(device_t root, unsigned int max)
+unsigned int root_dev_scan_bus(struct device * root, unsigned int max)
 {
 	return scan_static_bus(root, max);
 }
 
-void root_dev_init(device_t root)
+void root_dev_init(struct device * root)
 {
 }
 
 void root_dev_reset(struct bus *bus)
 {
-	printk_info("Reseting board...\n");
-	hard_reset();
+	printk(BIOS_INFO, "Reseting board...   NOT! Define hard_reset please\n");
+//	hard_reset();
 }
 
 /**
@@ -196,11 +197,11 @@ void root_dev_reset(struct bus *bus)
  * of a motherboard can override this if you want non-default behavior.
  */
 struct device_operations default_dev_ops_root = {
-	.read_resources   = root_dev_read_resources,
-	.set_resources    = root_dev_set_resources,
-	.enable_resources = root_dev_enable_resources,
-	.init             = root_dev_init,
-	.scan_bus         = root_dev_scan_bus,
+	.phase4_read_resources   = root_dev_read_resources,
+	.phase4_set_resources    = root_dev_set_resources,
+	.phase5 = root_dev_enable_resources,
+	.phase6             = root_dev_init,
+	.phase3         = root_dev_scan_bus,
 	.reset_bus        = root_dev_reset,
 };
 

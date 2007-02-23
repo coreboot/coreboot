@@ -22,6 +22,11 @@
 #include <arch/types.h>
 // #include "dtc.h"
 
+static void enable_dev(struct device *dev){
+	printk(BIOS_INFO, "qemu-i386 enable_dev done\n");
+}
+
 struct chip_operations mainboard_emulation_qemu_i386_ops = {
-	.name = "QEMU Mainboard"
+	.name = "QEMU Mainboard",
+	.enable_dev = enable_dev
 };

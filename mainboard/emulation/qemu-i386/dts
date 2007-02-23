@@ -1,6 +1,7 @@
 /{
+	config="mainboard,emulation,qemu-i386";
+
 	cpus {
-		config="mainboard,emulation,qemu-i386";
 		emulation,qemu-i386@0{
 			enabled;
 			on_mainboard;
@@ -22,7 +23,7 @@
 
 %%
 
-struct mainboard_emulation_qemu_i386_config cpus = {
+struct mainboard_emulation_qemu_i386_config root = {
 		.nothing = 1,
 };
 

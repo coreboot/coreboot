@@ -37,6 +37,8 @@ struct bus;
 
 /* we are moving from the confusing naming scheme to a numbering scheme. We are hoping
   * this makes it easier for people to know the order of operations. 
+  * So far, it is not clear. We may actually want to have names like dev_phase5_enable_resources. 
+  * The numbering is nice, the naming is nice, what to do?
   */
 struct device_operations {
 //	void (*enable)(struct device * dev);

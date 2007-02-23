@@ -500,10 +500,13 @@ static void linuxbios_emit_special(void *e, struct node *tree)
 {
 	FILE *f = e;
 	struct property *prop;
+	int ops_set = 0;
+	int is_root = 0;
 
 	fprintf(f, "struct device dev_%s = {\n", tree->label);
 	/* special case -- the root has a distinguished path */
 	if (! strncmp(tree->label, "root", 4)){
+		is_root = 1;
 		fprintf(f, "\t.path =  { .type = DEVICE_PATH_ROOT },\n");
 	}
 
@@ -527,6 +530,10 @@ static void linuxbios_emit_special(void *e, struct node *tree)
 		if (streq(prop->name, "config")){
 			fprintf(f, "\t.chip_ops = &%s_ops,\n", clean(prop->val.val, 0));
 			fprintf(f, "\t.chip_info = &%s,\n", clean(tree->label, 1));
+		}
+		if (streq(prop->name, "ops")){
+			fprintf(f, "\t.ops = &%s,\n", clean(prop->val.val, 0));
+			ops_set  = 1;
 		}
 
 	}
@@ -553,6 +560,9 @@ static void linuxbios_emit_special(void *e, struct node *tree)
 
 	if (tree->next)
 		fprintf(f, "\t.next = &dev_%s,\n", tree->next->label);
+
+	if ((! ops_set) && is_root)
+		fprintf(f, "\t.ops = &default_dev_ops_root,\n");
 
 	fprintf(f, "};\n");
 }

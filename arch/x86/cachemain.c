@@ -65,6 +65,8 @@ void stage1_main(u32 bist)
 	int elfboot_mem(struct lb_memory *mem, void *where, int size);
 	/* HACK -- fake memory table for now */
 	struct lb_memory mem = {LB_TAG_MEMORY, 1, .map = { {0, 32*1024*1024, LB_MEM_RAM}}};
+        struct mem_file result;
+
 	post_code(0x02);
 
 	// before we do anything, we want to stop if we dont run 

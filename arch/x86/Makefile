@@ -54,9 +54,9 @@ $(obj)/linuxbios.stage2: $(obj)/stage0.init $(obj)/statictree.o
 	#
 	# main
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/stage2.c -o $(obj)/stage2.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/devices/device.c -o $(obj)/device.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/devices/device_util.c -o $(obj)/device_util.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/devices/root_device.c -o $(obj)/root_device.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/device/device.c -o $(obj)/device.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/device/device_util.c -o $(obj)/device_util.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/device/root_device.c -o $(obj)/root_device.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/mem.c -o $(obj)/mem.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/malloc.c -o $(obj)/malloc.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/clog2.c -o $(obj)/clog2.o

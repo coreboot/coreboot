@@ -23,9 +23,9 @@
 #include <console/console.h>
 
 #if 0
-#define MALLOCDBG(x)
+#define MALLOCDBG(x...)
 #else
-#define MALLOCDBG(x) printk x
+#define MALLOCDBG(x...) printk (BIOS_SPEW, x)
 #endif
 
 /* instead of ldscript magic, just declare an array. The array 
@@ -56,7 +56,7 @@ void *malloc(size_t size)
 {
 	void *p;
 
-	MALLOCDBG(("%s Enter, size %d, free_mem_ptr %p\n", __FUNCTION__, size, free_mem_ptr));
+	MALLOCDBG("%s Enter, size %d, free_mem_ptr %p\n", __FUNCTION__, size, free_mem_ptr);
 	if (size < 0)
 		die("Error! malloc: Size < 0");
 	if (free_mem_ptr <= 0)
@@ -70,7 +70,7 @@ void *malloc(size_t size)
 	if (free_mem_ptr >= free_mem_end_ptr)
 		die("Error! malloc: free_mem_ptr >= free_mem_end_ptr");
 
-	MALLOCDBG(("malloc 0x%08lx\n", (unsigned long)p));
+	MALLOCDBG("malloc 0x%08lx\n", (unsigned long)p);
 
 	return p;
 }

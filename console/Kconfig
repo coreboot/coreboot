@@ -10,6 +10,55 @@ config CONSOLE_SERIAL
 	---help---
 	  Send LinuxBIOS output to serial console 
 
+choice
+        prompt "Serial console COM port"
+	default CONSOLE_SERIAL_COM1
+	depends CONSOLE_SERIAL
+
+config CONSOLE_SERIAL_COM1
+        bool "COM1/ttyS0"
+	---help---
+	  Serial console on COM1.
+
+config CONSOLE_SERIAL_COM2
+        bool "COM2/ttyS1"
+	---help---
+	  Serial console on COM2.
+
+endchoice
+
+choice
+        prompt "Serial console speed"
+	default CONSOLE_SERIAL_115200
+	depends CONSOLE_SERIAL
+
+config CONSOLE_SERIAL_115200
+        bool "115200 bps"
+	---help---
+	  Set speed to 115200 bps.
+
+config CONSOLE_SERIAL_57600
+        bool "57600 bps"
+	---help---
+	  Set speed to 57600 bps.
+
+config CONSOLE_SERIAL_38400
+        bool "38400 bps"
+	---help---
+	  Set speed to 38400 bps.
+
+config CONSOLE_SERIAL_19200
+        bool "19200 bps"
+	---help---
+	  Set speed to 19200 bps.
+
+config CONSOLE_SERIAL_9600
+        bool "9600 bps"
+	---help---
+	  Set speed to 9600 bps.
+
+endchoice
+
 
 config CONSOLE_VGA
 	boolean "Support VGA console"

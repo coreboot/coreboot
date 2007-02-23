@@ -61,10 +61,17 @@ static void enable_rom(void)
 void stage1_main(u32 bist)
 {
 	int ret;
-	struct mem_file archive;
+	struct mem_file archive, result;
 	int elfboot_mem(struct lb_memory *mem, void *where, int size);
 	/* HACK -- fake memory table for now */
-	struct lb_memory mem = {LB_TAG_MEMORY, 1, .map = { {0, 32*1024*1024, LB_MEM_RAM}}};
+	struct lb_memory mem = {
+		.tag = LB_TAG_MEMORY, 
+		.size = 1, 
+		.map  = {
+			 { .start = 0, .size = (32*1024*1024), .type = LB_MEM_RAM}
+		}
+	};
+
         struct mem_file result;
 
 	post_code(0x02);

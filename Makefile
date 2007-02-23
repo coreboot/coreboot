@@ -60,6 +60,8 @@ Q := @
 
 CPPFLAGS   := $(LINUXBIOSINCLUDE)
 
+CFLAGS += $(LINUXBIOSINCLUDE)
+
 export src obj KERNELVERSION
 
 ifeq ($(strip $(have_dotconfig)),) 

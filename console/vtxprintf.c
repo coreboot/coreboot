@@ -1,3 +1,18 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
+
 /*  vtxprintf.c, from
  *    linux/lib/vsprintf.c
  *
@@ -6,46 +21,11 @@
 
 #include <stdarg.h>
 #include <string.h>
-
 #include <div64.h>
 
-/* haha, don't need ctype.c */
 #define isdigit(c)	((c) >= '0' && (c) <= '9')
 #define is_digit isdigit
 #define isxdigit(c)	(((c) >= '0' && (c) <= '9') || ((c) >= 'a' && (c) <= 'f') || ((c) >= 'A' && (c) <= 'F'))
-
-static unsigned long simple_strtoul(const char *cp,char **endp,unsigned int base)
-{
-	unsigned long result = 0,value;
-
-	if (!base) {
-		base = 10;
-		if (*cp == '0') {
-			base = 8;
-			cp++;
-			if ((*cp == 'x') && isxdigit(cp[1])) {
-				cp++;
-				base = 16;
-			}
-		}
-	}
-	while (isxdigit(*cp) && (value = isdigit(*cp) ? *cp-'0' : (islower(*cp)
-	    ? toupper(*cp) : *cp)-'A'+10) < base) {
-		result = result*base + value;
-		cp++;
-	}
-	if (endp)
-		*endp = (char *)cp;
-	return result;
-}
-
-static long simple_strtol(const char *cp,char **endp,unsigned int base)
-{
-	if(*cp=='-')
-		return -simple_strtoul(cp+1,endp,base);
-	return simple_strtoul(cp,endp,base);
-}
-
 
 static int skip_atoi(const char **s)
 {

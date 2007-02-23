@@ -5,7 +5,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include <arch/boot/boot.h>
+#include <arch/elf.h>
 
 /* Type for a 16-bit quantity.  */
 typedef uint16_t Elf32_Half;

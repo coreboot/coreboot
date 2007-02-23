@@ -352,7 +352,13 @@ In that directory, need 'initram', 'payload.ext', and others.
 \end_layout
 
 \begin_layout Subsection
-Stage 3
+Stage 3: elf boot
+\end_layout
+
+\begin_layout Quotation
+WARNING: you can not load any elf segment in the range 0 to 0x1000.
+ That is our stack.
+ 
 \end_layout
 
 \begin_layout Enumerate

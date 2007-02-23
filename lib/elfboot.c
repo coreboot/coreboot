@@ -1,22 +1,12 @@
 #include <console/console.h>
-#include <part/fallback_boot.h>
-#include <boot/elf.h>
-#include <boot/elf_boot.h>
-#include <boot/linuxbios_tables.h>
+//#include <part/fallback_boot.h>
+#include <elf.h>
+#include <elf_boot.h>
+#include <linuxbios_tables.h>
 #include <ip_checksum.h>
-#include <stream/read_bytes.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-
-/* Maximum physical address we can use for the linuxBIOS bounce buffer.
- */
-#ifndef MAX_ADDR
-#define MAX_ADDR -1UL
-#endif
-
-extern unsigned char _ram_seg;
-extern unsigned char _eram_seg;
 
 struct segment {
 	struct segment *next;
@@ -41,6 +31,39 @@ struct ip_checksum_vcb {
 	struct verify_callback data;
 	unsigned short ip_checksum;
 };
+
+/* streams are a nice way to abstract the pointer/size-based nature of the 
+  * memory away. The main good part is that we have a way to fail out if the 
+  * elfboot code is running off the end of the array for some reason. So we won't
+  * rip it out just yet. 
+  */
+unsigned char *streambase = NULL;
+int streamsize = -1;
+
+int stream_init(void){
+	return 0;
+}
+
+void stream_fini(void){
+}
+
+int stream_skip(int bytes){
+	streamsize -= bytes;
+	if (streamsize < 0)
+		return -1;
+	streambase += bytes;
+
+	return bytes;
+}
+
+int stream_read(void *dest, int bytes) {
+	if (streamsize < bytes)
+		return -1;
+
+	memcpy(dest, streambase, bytes);
+	stream_skip(bytes);
+	return bytes;
+}
 
 int verify_ip_checksum(
 	struct verify_callback *vcb, 
@@ -76,67 +99,11 @@ int verify_ip_checksum(
 		memcpy(n_desc, buff, 2);
 	}
 	if (checksum != cb->ip_checksum) {
-		printk_err("Image checksum: %04x != computed checksum: %04x\n",
+		printk(BIOS_ERR, "Image checksum: %04x != computed checksum: %04x\n",
 			cb->ip_checksum, checksum);
 	}
 	return checksum == cb->ip_checksum;
 }
-
-/* The problem:  
- * Static executables all want to share the same addresses
- * in memory because only a few addresses are reliably present on
- * a machine, and implementing general relocation is hard.
- *
- * The solution:
- * - Allocate a buffer twice the size of the linuxBIOS image.
- * - Anything that would overwrite linuxBIOS copy into the lower half of
- *   the buffer. 
- * - After loading an ELF image copy linuxBIOS to the upper half of the
- *   buffer.
- * - Then jump to the loaded image.
- * 
- * Benefits:
- * - Nearly arbitrary standalone executables can be loaded.
- * - LinuxBIOS is preserved, so it can be returned to.
- * - The implementation is still relatively simple,
- *   and much simpler then the general case implemented in kexec.
- * 
- */
-
-static unsigned long get_bounce_buffer(struct lb_memory *mem)
-{
-	unsigned long lb_size;
-	unsigned long mem_entries;
-	unsigned long buffer;
-	int i;
-	lb_size = (unsigned long)(&_eram_seg - &_ram_seg);
-	/* Double linuxBIOS size so I have somewhere to place a copy to return to */
-	lb_size = lb_size + lb_size;
-	mem_entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
-	buffer = 0;
-	for(i = 0; i < mem_entries; i++) {
-		unsigned long mstart, mend;
-		unsigned long msize;
-		unsigned long tbuffer;
-		if (mem->map[i].type != LB_MEM_RAM)
-			continue;
-		if (unpack_lb64(mem->map[i].start) > MAX_ADDR)
-			continue;
-		if (unpack_lb64(mem->map[i].size) < lb_size)
-			continue;
-		mstart = unpack_lb64(mem->map[i].start);
-		msize = MAX_ADDR - mstart +1;
-		if (msize > unpack_lb64(mem->map[i].size))
-			msize = unpack_lb64(mem->map[i].size);
-		mend = mstart + msize;
-		tbuffer = mend - lb_size;
-		if (tbuffer < buffer) 
-			continue;
-		buffer = tbuffer;
-	}
-	return buffer;
-}
-
 
 static struct verify_callback *process_elf_notes(
 	unsigned char *header, 
@@ -186,20 +153,20 @@ static struct verify_callback *process_elf_notes(
 			}
 			}
 		}
-		printk_spew("n_type: %08x n_name(%d): %-*.*s n_desc(%d): %-*.*s\n", 
+		printk(BIOS_SPEW, "n_type: %08x n_name(%d): %-*.*s n_desc(%d): %-*.*s\n", 
 			hdr->n_type,
 			hdr->n_namesz, hdr->n_namesz, hdr->n_namesz, n_name,
 			hdr->n_descsz,hdr->n_descsz, hdr->n_descsz, n_desc);
 		note = next;
 	}
 	if (program && version) {
-		printk_info("Loading %s version: %s\n",
+		printk(BIOS_INFO, "Loading %s version: %s\n",
 			program, version);
 	}
 	return cb_chain;
 }
 
-static int valid_area(struct lb_memory *mem, unsigned long buffer,
+static int valid_area(struct lb_memory *mem, 
 	unsigned long start, unsigned long len)
 {
 	/* Check through all of the memory segments and ensure
@@ -209,11 +176,6 @@ static int valid_area(struct lb_memory *mem, unsigned long buffer,
 	int i;
 	unsigned long end = start + len;
 	unsigned long mem_entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
-
-	/* See if I conflict with the bounce buffer */
-	if (end >= buffer) {
-		return 0;
-	}
 
 	/* Walk through the table of valid memory ranges and see if I
 	 * have a match.
@@ -229,16 +191,16 @@ static int valid_area(struct lb_memory *mem, unsigned long buffer,
 		}
 	}
 	if (i == mem_entries) {
-		printk_err("No matching ram area found for range:\n");
-		printk_err("  [0x%016lx, 0x%016lx)\n", start, end);
-		printk_err("Ram areas\n");
+		printk(BIOS_ERR, "No matching ram area found for range:\n");
+		printk(BIOS_ERR, "  [0x%016lx, 0x%016lx)\n", start, end);
+		printk(BIOS_ERR, "Ram areas\n");
 		for(i = 0; i < mem_entries; i++) {
 			uint64_t mstart, mend;
 			uint32_t mtype;
 			mtype = mem->map[i].type;
 			mstart = unpack_lb64(mem->map[i].start);
 			mend = mstart + unpack_lb64(mem->map[i].size);
-			printk_err("  [0x%016lx, 0x%016lx) %s\n",
+			printk(BIOS_ERR, "  [0x%016lx, 0x%016lx) %s\n",
 				(unsigned long)mstart, 
 				(unsigned long)mend, 
 				(mtype == LB_MEM_RAM)?"RAM":"Reserved");
@@ -249,118 +211,8 @@ static int valid_area(struct lb_memory *mem, unsigned long buffer,
 	return 1;
 }
 
-static void relocate_segment(unsigned long buffer, struct segment *seg)
-{
-	/* Modify all segments that want to load onto linuxBIOS
-	 * to load onto the bounce buffer instead.
-	 */
-	unsigned long lb_start = (unsigned long)&_ram_seg;
-	unsigned long lb_end = (unsigned long)&_eram_seg;
-	unsigned long start, middle, end;
-
-	printk_spew("lb: [0x%016lx, 0x%016lx)\n", 
-		lb_start, lb_end);
-
-	start = seg->s_addr;
-	middle = start + seg->s_filesz;
-	end = start + seg->s_memsz;
-	/* I don't conflict with linuxBIOS so get out of here */
-	if ((end <= lb_start) || (start >= lb_end))
-		return;
-
-	printk_spew("segment: [0x%016lx, 0x%016lx, 0x%016lx)\n", 
-		start, middle, end);
-
-	/* Slice off a piece at the beginning
-	 * that doesn't conflict with linuxBIOS.
-	 */
-	if (start < lb_start) {
-		struct segment *new;
-		unsigned long len = lb_start - start;
-		new = malloc(sizeof(*new));
-		*new = *seg;
-		new->s_memsz = len;
-		seg->s_memsz -= len;
-		seg->s_addr += len;
-		seg->s_offset += len;
-		if (seg->s_filesz > len) {
-			new->s_filesz = len;
-			seg->s_filesz -= len;
-		} else {
-			seg->s_filesz = 0;
-		}
-
-		/* Order by stream offset */
-		new->next = seg;
-		new->prev = seg->prev;
-		seg->prev->next = new;
-		seg->prev = new;
-		/* Order by original program header order */
-		new->phdr_next = seg;
-		new->phdr_prev = seg->phdr_prev;
-		seg->phdr_prev->phdr_next = new;
-		seg->phdr_prev = new;
-
-		/* compute the new value of start */
-		start = seg->s_addr;
-		
-		printk_spew("   early: [0x%016lx, 0x%016lx, 0x%016lx)\n", 
-			new->s_addr, 
-			new->s_addr + new->s_filesz,
-			new->s_addr + new->s_memsz);
-	}
-	
-	/* Slice off a piece at the end 
-	 * that doesn't conflict with linuxBIOS 
-	 */
-	if (end > lb_end) {
-		unsigned long len = lb_end - start;
-		struct segment *new;
-		new = malloc(sizeof(*new));
-		*new = *seg;
-		seg->s_memsz = len;
-		new->s_memsz -= len;
-		new->s_addr += len;
-		new->s_offset += len;
-		if (seg->s_filesz > len) {
-			seg->s_filesz = len;
-			new->s_filesz -= len;
-		} else {
-			new->s_filesz = 0;
-		}
-		/* Order by stream offset */
-		new->next = seg->next;
-		new->prev = seg;
-		seg->next->prev = new;
-		seg->next = new;
-		/* Order by original program header order */
-		new->phdr_next = seg->phdr_next;
-		new->phdr_prev = seg;
-		seg->phdr_next->phdr_prev = new;
-		seg->phdr_next = new;
-
-		/* compute the new value of end */
-		end = start + len;
-		
-		printk_spew("   late: [0x%016lx, 0x%016lx, 0x%016lx)\n", 
-			new->s_addr, 
-			new->s_addr + new->s_filesz,
-			new->s_addr + new->s_memsz);
-		
-	}
-	/* Now retarget this segment onto the bounce buffer */
-	seg->s_addr = buffer + (seg->s_addr - lb_start);
-
-	printk_spew(" bounce: [0x%016lx, 0x%016lx, 0x%016lx)\n", 
-		seg->s_addr, 
-		seg->s_addr + seg->s_filesz, 
-		seg->s_addr + seg->s_memsz);
-}
-
-
 static int build_elf_segment_list(
-	struct segment *head, 
-	unsigned long bounce_buffer, struct lb_memory *mem,
+	struct segment *head, struct lb_memory *mem,
 	Elf_phdr *phdr, int headers)
 {
 	struct segment *ptr;
@@ -372,11 +224,11 @@ static int build_elf_segment_list(
 		struct segment *new;
 		/* Ignore data that I don't need to handle */
 		if (phdr[i].p_type != PT_LOAD) {
-			printk_debug("Dropping non PT_LOAD segment\n");
+			printk(BIOS_DEBUG, "Dropping non PT_LOAD segment\n");
 			continue;
 		}
 		if (phdr[i].p_memsz == 0) {
-			printk_debug("Dropping empty segment\n");
+			printk(BIOS_DEBUG, "Dropping empty segment\n");
 			continue;
 		}
 		new = malloc(sizeof(*new));
@@ -384,13 +236,13 @@ static int build_elf_segment_list(
 		new->s_memsz = phdr[i].p_memsz;
 		new->s_offset = phdr[i].p_offset;
 		new->s_filesz = phdr[i].p_filesz;
-		printk_debug("New segment addr 0x%lx size 0x%lx offset 0x%lx filesize 0x%lx\n",
+		printk(BIOS_DEBUG, "New segment addr 0x%lx size 0x%lx offset 0x%lx filesize 0x%lx\n",
 			new->s_addr, new->s_memsz, new->s_offset, new->s_filesz);
 		/* Clean up the values */
 		if (new->s_filesz > new->s_memsz)  {
 			new->s_filesz = new->s_memsz;
 		}
-		printk_debug("(cleaned up) New segment addr 0x%lx size 0x%lx offset 0x%lx filesize 0x%lx\n",
+		printk(BIOS_DEBUG, "(cleaned up) New segment addr 0x%lx size 0x%lx offset 0x%lx filesize 0x%lx\n",
 			new->s_addr, new->s_memsz, new->s_offset, new->s_filesz);
 		for(ptr = head->next; ptr != head; ptr = ptr->next) {
 			if (new->s_offset < ptr->s_offset)
@@ -408,12 +260,8 @@ static int build_elf_segment_list(
 		head->phdr_prev = new;
 
 		/* Verify the memory addresses in the segment are valid */
-		if (!valid_area(mem, bounce_buffer, new->s_addr, new->s_memsz)) 
+		if (!valid_area(mem, new->s_addr, new->s_memsz)) 
 			goto out;
-
-		/* Modify the segment to load onto the bounce_buffer if necessary.
-		 */
-		relocate_segment(bounce_buffer, new);
 	}
 	return 1;
  out:
@@ -431,8 +279,8 @@ static int load_elf_segments(
 		unsigned long start_offset;
 		unsigned long skip_bytes, read_bytes;
 		unsigned char *dest, *middle, *end;
-		byte_offset_t result;
-		printk_debug("Loading Segment: addr: 0x%016lx memsz: 0x%016lx filesz: 0x%016lx\n",
+		unsigned long result;
+		printk(BIOS_DEBUG, "Loading Segment: addr: 0x%016lx memsz: 0x%016lx filesz: 0x%016lx\n",
 			ptr->s_addr, ptr->s_memsz, ptr->s_filesz);
 		
 		/* Compute the boundaries of the segment */
@@ -445,7 +293,7 @@ static int load_elf_segments(
 			start_offset = offset;
 		}
 		
-		printk_spew("[ 0x%016lx, %016lx, 0x%016lx) <- %016lx\n",
+		printk(BIOS_SPEW, "[ 0x%016lx, %016lx, 0x%016lx) <- %016lx\n",
 			(unsigned long)dest,
 			(unsigned long)middle,
 			(unsigned long)end,
@@ -464,7 +312,7 @@ static int load_elf_segments(
 		skip_bytes = start_offset - offset;
 		if (skip_bytes && 
 			((result = stream_skip(skip_bytes)) != skip_bytes)) {
-			printk_err("ERROR: Skip of %ld bytes skipped %ld bytes\n",
+			printk(BIOS_ERR, "ERROR: Skip of %ld bytes skipped %ld bytes\n",
 				skip_bytes, result);
 			goto out;
 		}
@@ -487,7 +335,7 @@ static int load_elf_segments(
 		read_bytes = middle - dest;
 		if (read_bytes && 
 			((result = stream_read(dest, read_bytes)) != read_bytes)) {
-			printk_err("ERROR: Read of %ld bytes read %ld bytes...\n",
+			printk(BIOS_ERR, "ERROR: Read of %ld bytes read %ld bytes...\n",
 				read_bytes, result);
 			goto out;
 		}
@@ -495,7 +343,7 @@ static int load_elf_segments(
 		
 		/* Zero the extra bytes between middle & end */
 		if (middle < end) {
-			printk_debug("Clearing Segment: addr: 0x%016lx memsz: 0x%016lx\n",
+			printk(BIOS_DEBUG, "Clearing Segment: addr: 0x%016lx memsz: 0x%016lx\n",
 				(unsigned long)middle, end - middle);
 			
 			/* Zero the extra bytes */
@@ -541,16 +389,9 @@ int elfload(struct lb_memory *mem,
 	Elf_ehdr *ehdr;
 	Elf_phdr *phdr;
 	void *entry;
+	void (*v)(void);
 	struct segment head;
 	struct verify_callback *cb_chain;
-	unsigned long bounce_buffer;
-
-	/* Find a bounce buffer so I can load to linuxBIOS's current location */
-	bounce_buffer = get_bounce_buffer(mem);
-	if (!bounce_buffer) {
-		printk_err("Could not find a bounce buffer...\n");
-		goto out;
-	}
 
 	ehdr = (Elf_ehdr *)header;
 	entry = (void *)(ehdr->e_entry);
@@ -565,32 +406,34 @@ int elfload(struct lb_memory *mem,
 	}
 
 	/* Preprocess the elf segments */
-	if (!build_elf_segment_list(&head, 
-		bounce_buffer, mem, phdr, ehdr->e_phnum))
+	if (!build_elf_segment_list(&head, mem, phdr, ehdr->e_phnum))
 		goto out;
 
 	/* Load the segments */
 	if (!load_elf_segments(&head, header, header_size))
 		goto out;
 
-	printk_spew("Loaded segments\n");
+	printk(BIOS_SPEW, "Loaded segments\n");
 	/* Verify the loaded image */
 	if (!verify_loaded_image(cb_chain, ehdr, phdr, &head)) 
 		goto out;
 
-	printk_spew("verified segments\n");
+	printk(BIOS_SPEW, "verified segments\n");
 	/* Shutdown the stream device */
 	stream_fini();
 	
-	printk_spew("closed down stream\n");
+	printk(BIOS_SPEW, "closed down stream\n");
 	/* Reset to booting from this image as late as possible */
-	boot_successful();
+	/* what the hell is boot_successful? */
+	//boot_successful();
 
-	printk_debug("Jumping to boot code at 0x%x\n", entry);
+	printk(BIOS_DEBUG, "Jumping to boot code at 0x%x\n", entry);
 	post_code(0xfe);
 
 	/* Jump to kernel */
-	jmp_to_elf_entry(entry, bounce_buffer);
+	/* just call it as a function. If it wants to return, it will. */
+	v = entry;
+	v();
 	return 1;
 
  out:
@@ -605,21 +448,20 @@ int elfboot(struct lb_memory *mem)
 	int i, result;
 
 	result = 0;
-	printk_info("\n");
-	printk_info("Welcome to %s, the open sourced starter.\n", BOOTLOADER);
-	printk_info("January 2002, Eric Biederman.\n");
-	printk_info("Version %s\n", BOOTLOADER_VERSION);
-	printk_info("\n");
+	printk(BIOS_INFO, "\n");
+	printk(BIOS_INFO, "Welcome to %s, the open sourced starter.\n", BOOTLOADER);
+	printk(BIOS_INFO, "Version %s\n", BOOTLOADER_VERSION);
+	printk(BIOS_INFO, "\n");
 	post_code(0xf8);
 
 	if (stream_init() < 0) {
-		printk_err("Could not initialize driver...\n");
+		printk(BIOS_ERR, "Could not initialize driver...\n");
 		goto out;
 	}
 
 	/* Read in the initial ELF_HEAD_SIZE bytes */
 	if (stream_read(header, ELF_HEAD_SIZE) != ELF_HEAD_SIZE) {
-		printk_err("Read failed...\n");
+		printk(BIOS_ERR, "Read failed...\n");
 		goto out;
 	}
 	/* Scan for an elf header */
@@ -627,10 +469,10 @@ int elfboot(struct lb_memory *mem)
 	for(i = 0; i < ELF_HEAD_SIZE - (sizeof(Elf_ehdr) + sizeof(Elf_phdr)); i+=16) {
 		ehdr = (Elf_ehdr *)(&header[i]);
 		if (memcmp(ehdr->e_ident, ELFMAG, 4) != 0) {
-			printk_spew("NO header at %d\n", i);
+			printk(BIOS_SPEW, "NO header at %d\n", i);
 			continue;
 		}
-		printk_debug("Found ELF candidate at offset %d\n", i);
+		printk(BIOS_DEBUG, "Found ELF candidate at offset %d\n", i);
 		/* Sanity check the elf header */
 		if ((ehdr->e_type == ET_EXEC) &&
 			elf_check_arch(ehdr) &&
@@ -646,12 +488,12 @@ int elfboot(struct lb_memory *mem)
 		}
 		ehdr = 0;
 	}
-	printk_spew("header_offset is %d\n", header_offset);
+	printk(BIOS_SPEW, "header_offset is %d\n", header_offset);
 	if (header_offset == -1) {
 		goto out;
 	}
 
-	printk_spew("Try to load at offset 0x%x\n", header_offset);
+	printk(BIOS_SPEW, "Try to load at offset 0x%x\n", header_offset);
 	result = elfload(mem, 
 		header + header_offset , ELF_HEAD_SIZE - header_offset);
  out:
@@ -659,7 +501,7 @@ int elfboot(struct lb_memory *mem)
 		/* Shutdown the stream device */
 		stream_fini();
 
-		printk_err("Cannot Load ELF Image\n");
+		printk(BIOS_ERR, "Cannot Load ELF Image\n");
 
 		post_code(0xff);
 	}

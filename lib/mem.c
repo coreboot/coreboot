@@ -21,6 +21,7 @@
  */
 
 /* this one is pretty stupid. Won't handle overlaps, it's not efficient, etc. */
+/* Please don't be silly and inline these. Inlines are not as wonderful as people think */
 void memcpy(void *dest, const void *src, int len)
 {
 	unsigned char *d = dest;
@@ -34,5 +35,23 @@ void memset(void *v, unsigned char a, int len)
 	unsigned char *cp = v;
 	while(len--)
 		*cp++ = a;
+}
+
+/* did you ever notice that the memcmp web page does not specify 
+  * a signed or unsigned compare? It matters ... oh well, we assumed unsigned
+  */
+int memcmp(const void *s1, const void *s2, size_t n)
+{
+	const unsigned char *d = s1
+	const unsigned char *s = s2;
+	while (len--){
+		if (*d < *s)
+			return -1;
+		if (*d > *s)
+			return 1;
+		d++, s++;
+	}
+	return 0;
+
 }
 

@@ -23,12 +23,8 @@
 
 int printk(int msg_level, const char *fmt, ...);
 void die(const char *msg);
+static void post_code(u8 value);
 
-
-static void post_code(u8 value)
-{
-	outb(value, 0x80);
-}
 
 int main(void)
 {
@@ -38,3 +34,9 @@ int main(void)
 
 	return 0;
 }
+
+static void post_code(u8 value)
+{
+	outb(value, 0x80);
+}
+

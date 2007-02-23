@@ -83,12 +83,12 @@ int stream_skip(int bytes){
 }
 
 int stream_read(void *dest, int bytes) {
+printk(BIOS_INFO, "read %d bytes %d left\n", bytes, streamsize);
 	if (streamsize < bytes)
 		return -1;
 
 	memcpy(dest, streambase, bytes);
-	stream_skip(bytes);
-	return bytes;
+	return stream_skip(bytes);
 }
 
 int verify_ip_checksum(
@@ -469,7 +469,7 @@ int elfload(struct lb_memory *mem,
 int elfboot(struct lb_memory *mem)
 {
 	Elf_ehdr *ehdr;
-	static unsigned char header[ELF_HEAD_SIZE];
+	unsigned char header[ELF_HEAD_SIZE];
 	int header_offset;
 	int i, result;
 	/* for stupid allocator which won't run into trouble with segments */
@@ -478,9 +478,7 @@ int elfboot(struct lb_memory *mem)
 	setupmalloc(alloc, sizeof(alloc));
 	result = 0;
 	printk(BIOS_INFO, "\n");
-	printk(BIOS_INFO, "Welcome to %s, the open sourced starter.\n", BOOTLOADER);
-	printk(BIOS_INFO, "Version %s\n", BOOTLOADER_VERSION);
-	printk(BIOS_INFO, "\n");
+	printk(BIOS_INFO, "Elfboot\n");
 	post_code(0xf8);
 
 	if (stream_init() < 0) {
@@ -490,7 +488,7 @@ int elfboot(struct lb_memory *mem)
 
 	/* Read in the initial ELF_HEAD_SIZE bytes */
 	if (stream_read(header, ELF_HEAD_SIZE) != ELF_HEAD_SIZE) {
-		printk(BIOS_ERR, "Read failed...\n");
+		printk(BIOS_ERR, "Header read failed...\n");
 		goto out;
 	}
 	/* Scan for an elf header */
@@ -542,5 +540,6 @@ int elfboot_mem(struct lb_memory *mem, void *where, int size)
 {
 	streambase = where;
 	streamsize = size;
+printk(BIOS_INFO, "base %p, size %d\n", streambase, streamsize);
 	return elfboot(mem);
 }	

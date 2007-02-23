@@ -43,8 +43,6 @@ int find_file(struct mem_file *archive, char *filename, struct mem_file *result)
 printk(BIOS_INFO, "start 0x%x len 0x%x\n", archive->start, archive->len);
 	for (walk = archive->start; walk < (char *)archive->start + 
 			archive->len; walk+=16) {
-printk(BIOS_INFO, "in for loop *start is %x\n", *(unsigned long *) archive->start);
-printk(BIOS_INFO, "walk is %s(%p)\n", walk, walk);
 		if(strcmp(walk, MAGIC)!=0)
 			continue;
 

@@ -224,7 +224,7 @@ printk(BIOS_INFO, "Start search at 0x%x, size %d\n", archive.start, archive.len)
 
 	printk(BIOS_INFO, "Done stage2 code\n");
 
-	ret = find_file(&archive, "payload", &result);
+	ret = find_file(&archive, "normal/payload", &result);
 	if (ret) {
 		printk(BIOS_INFO, "no such name %s\n", "payload");
 		die("cachemain finding payload");

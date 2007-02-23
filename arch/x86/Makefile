@@ -49,7 +49,8 @@ $(obj)/linuxbios.lar: $(obj)/util/lar/lar lzma $(obj)/linuxbios.initram $(obj)/l
 	$(Q)mkdir $(obj)/lar.tmp/normal
 	$(Q)cp $(obj)/linuxbios.initram $(obj)/lar.tmp/normal/initram
 	$(Q)cp $(obj)/linuxbios.stage2 $(obj)/lar.tmp/normal/stage2
-	$(Q)cd $(obj)/lar.tmp && ../util/lar/lar c ../linuxbios.lar.pre normal/initram normal/stage2
+	$(Q)cp $(PAYLOAD) $(obj)/lar.tmp/normal/payload
+	$(Q)cd $(obj)/lar.tmp && ../util/lar/lar c ../linuxbios.lar.pre normal/initram normal/stage2 normal/payload
 	# TODO: dynamically pad the lar archive. bs is image size - bootblock size (8k)
 	$(Q)dd if=$(obj)/linuxbios.lar.pre of=$(obj)/linuxbios.lar \
 		  bs=245760 count=1 conv=sync $(SILENT)
@@ -81,13 +82,13 @@ $(obj)/stage0.init:
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/uart8250.c -o $(obj)/uart8250.o
 	$(Q)# other lib parts
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/mem.c -o $(obj)/mem.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/elfboot.c -o $(obj)/elfboot.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/newelfboot.c -o $(obj)/newelfboot.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/compute_ip_checksum.c -o $(obj)/compute_ip_checksum.o
 
 	$(Q)cd $(obj); $(CC) -m32 -nostdlib -static        \
 		-T $(src)/arch/x86/ldscript.ld cachemain.o \
 		console.o uart8250.o serial.o archelfboot.o vtxprintf.o  \
-		vsprintf.o lar.o elfboot.o compute_ip_checksum.o mem.o stage0_i586.o -o stage0.o
+		vsprintf.o lar.o newelfboot.o compute_ip_checksum.o mem.o stage0_i586.o -o stage0.o
 
 	$(Q)objcopy -O binary $(obj)/stage0.o  $(obj)/stage0.init.pre
 
@@ -128,8 +129,8 @@ $(obj)/linuxbios.stage2: $(obj)/stage0.init $(obj)/statictree.o
 	$(Q)# leave a .o with full symbols in it for debugging.
 	$(Q)cd $(obj); $(LD) -R $(obj)/stage0.o -Ttext 0x1000  \
 		--entry=stage2 -o $(obj)/linuxbios.stage2.o \
-		stage2.o device.o device_util.o root_device.o elfboot.o \
-		compute_ip_checksum.o mem.o malloc.o clog2.o mainboard.o \
+		stage2.o device.o device_util.o root_device.o  \
+		 mem.o malloc.o clog2.o mainboard.o \
 		statictree.o
 	$(Q)objcopy -O binary $(obj)/linuxbios.stage2.o $(obj)/linuxbios.stage2
 

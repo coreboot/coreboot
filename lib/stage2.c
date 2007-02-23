@@ -57,52 +57,52 @@ it with the version available from LANL.
  * LinuxBIOS is divided into Pre-DRAM part and DRAM part. 
  * The phases before this part are phase 0 and phase 1.
  * This part contains phases x through y. 
- *
  * 
  * Device Enumeration:
  *	In the dev_enumerate() phase, 
  */
 int stage2(void)
 {
-	struct lb_memory *lb_mem;
-
 	post_code(0x20);
 	dev_init();
 
-	dev_phase1(); /* console init, also ANYTHING that has to be done before printk can be used */
-	
+	/* console init, also ANYTHING that has to be done 
+	 * before printk can be used 
+	 */
 	post_code(0x30);
+	dev_phase1(); 
+	
+//	printk_notice("LinuxBIOS-%s%s %s booting...\n", 
+//		linuxbios_version, linuxbios_extra_version, linuxbios_build);
 
-//	printk_notice("LinuxBIOS-%s%s %s booting...\n", linuxbios_version, linuxbios_extra_version, linuxbios_build);
 
+	/* here is where weird stuff like init_timer handling should be
+	 * done.  This is for ANYTHING that might have to happen before
+	 * device enumeration but that needs a printk
+	 */
 	post_code(0x40);
-
-	/* here is where weird stuff like init_timer handling should be done. This is for ANYTHING
-	  * that might have to happen before device enumeration but that needs a printk
-	  */
 	dev_phase2();
-	/* walk physical devices and add any dynamic devices to the device tree */
+
+	/* walk physical devices and add any dynamic devices to the
+	 * device tree 
+	 */
 	post_code(0x30);
 	dev_root_phase3();
-	post_code(0x40);
+
 	/* Compute and assign the bus resources. */
+	post_code(0x40);
 	dev_phase4();
-	post_code(0x50);
+
 	/* Now actually enable devices on the bus */
+	post_code(0x50);
 	dev_root_phase5(); 
-	post_code(0x60);
+
 	/*initialize devices on the bus */
+	post_code(0x60);
 	dev_phase6(); 
 	
 	post_code(0x70);
-#ifdef NOT
-	/* Now that we have collected all of our information
-	 * write our configuration tables.
-	 */
-	phase8(); /* all devices up, prepare for elfboot */
 
-	elfboot(lb_mem);
-#endif
 	return 0;
 }
 

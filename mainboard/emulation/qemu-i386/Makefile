@@ -26,12 +26,15 @@
 
 $(obj)/linuxbios.vpd:
 	$(Q)printf "Building dummy VPD ..."
-	$(Q)dd if=/dev/zero of=$(obj)/linuxbios.vpd bs=256 count=1
+	$(Q)dd if=/dev/zero of=$(obj)/linuxbios.vpd bs=256 count=1 $(SILENT)
 	$(Q)printf "ok.\n"
 
 
 #
 # this is going to be the init ram code:
+#
+# initram is always uncompressed. It belongs into the mainboard directory
+# and is build from what was auto.c in v2
 #
 
 $(obj)/linuxbios.initram: $(obj)/stage0.init $(obj)/stage0.o 

@@ -71,7 +71,7 @@ else
 
 include $(src)/.config
 all: prepare prepare2 $(obj)/linuxbios.rom
-	$(Q)echo "build process finished."
+	$(Q)echo "Build process finished."
 
 MAINBOARDDIR=$(shell echo $(CONFIG_MAINBOARD_NAME))
 

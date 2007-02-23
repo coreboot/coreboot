@@ -18,6 +18,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
+SILENT := &> /dev/null
+
 $(obj)/linuxbios.rom: $(obj)/linuxbios.lar $(obj)/stage0.init $(obj)/linuxbios.vpd
 	$(Q)cat $(obj)/linuxbios.lar \
 	     $(obj)/linuxbios.vpd \
@@ -30,16 +32,7 @@ $(obj)/linuxbios.rom: $(obj)/linuxbios.lar $(obj)/stage0.init $(obj)/linuxbios.v
 #
 
 lzma:
-	$(Q)echo "building lzma"
-
-
-#
-# initram is always uncompressed. It belongs into the mainboard directory
-# and is build from what was auto.c in v2
-#
-	
-initram:
-	$(Q)echo "building initram"
+	$(Q)echo "Building lzma... skipped"
 
 #
 # this is the rest of linuxbios (v2: linuxbios_ram.rom) 
@@ -80,7 +73,7 @@ $(obj)/linuxbios.stage2: $(obj)/stage0.init $(obj)/statictree.o
 #
 	
 payload:
-	$(Q)echo "building payload"
+	$(Q)echo "Building payload... skipped"
 
 
 #
@@ -96,7 +89,8 @@ $(obj)/linuxbios.lar: $(obj)/util/lar/lar lzma $(obj)/linuxbios.initram $(obj)/l
 	$(Q)cp $(obj)/linuxbios.stage2 $(obj)/lar.tmp/normal/stage2
 	$(Q)cd $(obj)/lar.tmp && ../util/lar/lar c ../linuxbios.lar.pre normal/initram normal/stage2
 	# TODO: dynamically pad the lar archive. bs is image size - bootblock size (8k)
-	$(Q)dd if=$(obj)/linuxbios.lar.pre of=$(obj)/linuxbios.lar bs=253952 count=1 conv=sync
+	$(Q)dd if=$(obj)/linuxbios.lar.pre of=$(obj)/linuxbios.lar \
+		  bs=253952 count=1 conv=sync $(SILENT)
 
 
 #

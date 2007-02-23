@@ -24,7 +24,7 @@ $(obj)/util/lar/lar: $(patsubst %,$(src)/util/lar/%,$(SOURCE))
 	$(Q)printf "Building LAR utility..."
 	$(Q)mkdir -p $(obj)/util/lar
 	$(Q)$(HOSTCC) $(HOSTCFLAGS) -o $@ $^
-	$(Q)printf "done."
+	$(Q)printf "done.\n"
 
 
 ## --------------------------------------------------------------------

@@ -20,7 +20,7 @@
 extern int vtxprintf(void (*)(unsigned char), const char *, va_list);
 extern void uart8250_tx_byte(unsigned, unsigned char);
 
-int console_loglevel()
+int console_loglevel(void)
 {
 	return 8;
 }

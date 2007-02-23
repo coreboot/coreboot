@@ -30,6 +30,10 @@ void console_init(void);
 void die(const char *msg);
 int find_file(struct mem_file *archive, char *filename, struct mem_file *result);
 
+// Is this value correct?
+#define DCACHE_RAM_SIZE 0x8000
+
+
 void post_code(u8 value)
 {
 	outb(value, 0x80);
@@ -56,7 +60,7 @@ static void enable_rom(void)
 void stage1_main(u32 bist)
 {
 	int ret;
-	struct mem_file archive, result;
+	struct mem_file archive;
 
 	post_code(0x02);
 

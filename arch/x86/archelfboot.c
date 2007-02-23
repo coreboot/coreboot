@@ -69,6 +69,7 @@ int elf_check_arch(Elf_ehdr *ehdr)
 
 void jmp_to_elf_entry(void *entry)
 {
+#ifdef NOTYET
 	extern unsigned char _ram_seg, _eram_seg;
 	unsigned long lb_start, lb_size;
 	unsigned long adjusted_boot_notes;
@@ -83,12 +84,11 @@ void jmp_to_elf_entry(void *entry)
 
 	adjusted_boot_notes = (unsigned long)&elf_boot_notes;
 
-	printk_spew("entry    = 0x%08lx\n", (unsigned long)entry);
-	printk_spew("lb_start = 0x%08lx\n", lb_start);
-	printk_spew("lb_size  = 0x%08lx\n", lb_size);
-	printk_spew("buffer   = 0x%08lx\n", buffer);
-	printk_spew("     elf_boot_notes = 0x%08lx\n", (unsigned long)&elf_boot_notes);
-	printk_spew("adjusted_boot_notes = 0x%08lx\n", adjusted_boot_notes);
+	printk(BIOS_SPEW, "entry    = 0x%08lx\n", (unsigned long)entry);
+	printk(BIOS_SPEW, "lb_start = 0x%08lx\n", lb_start);
+	printk(BIOS_SPEW, "lb_size  = 0x%08lx\n", lb_size);
+	printk(BIOS_SPEW, "     elf_boot_notes = 0x%08lx\n", (unsigned long)&elf_boot_notes);
+	printk(BIOS_SPEW, "adjusted_boot_notes = 0x%08lx\n", adjusted_boot_notes);
 	
 	/* Jump to kernel */
 	__asm__ __volatile__(
@@ -174,6 +174,7 @@ void jmp_to_elf_entry(void *entry)
 		"g" (lb_start), "g" (buffer), "g" (lb_size),
 		"g" (entry), "g"(adjusted_boot_notes)
 		);
+#endif
 }
 
 

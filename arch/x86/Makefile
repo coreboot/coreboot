@@ -75,16 +75,19 @@ $(obj)/stage0.init:
 	$(Q)# console lib
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/arch/x86/console.c -o $(obj)/console.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/arch/x86/serial.c -o $(obj)/serial.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/arch/x86/archelfboot.c -o $(obj)/archelfboot.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/console/vtxprintf.c -o $(obj)/vtxprintf.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/console/vsprintf.c -o $(obj)/vsprintf.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/uart8250.c -o $(obj)/uart8250.o
 	$(Q)# other lib parts
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/mem.c -o $(obj)/mem.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/elfboot.c -o $(obj)/elfboot.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/compute_ip_checksum.c -o $(obj)/compute_ip_checksum.o
 
 	$(Q)cd $(obj); $(CC) -m32 -nostdlib -static        \
 		-T $(src)/arch/x86/ldscript.ld cachemain.o \
-		console.o uart8250.o serial.o vtxprintf.o  \
-		vsprintf.o lar.o mem.o stage0_i586.o -o stage0.o
+		console.o uart8250.o serial.o archelfboot.o vtxprintf.o  \
+		vsprintf.o lar.o elfboot.o compute_ip_checksum.o mem.o stage0_i586.o -o stage0.o
 
 	$(Q)objcopy -O binary $(obj)/stage0.o  $(obj)/stage0.init.pre
 
@@ -115,8 +118,6 @@ $(obj)/linuxbios.stage2: $(obj)/stage0.init $(obj)/statictree.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/device/device.c -o $(obj)/device.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/device/device_util.c -o $(obj)/device_util.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/device/root_device.c -o $(obj)/root_device.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/elfboot.c -o $(obj)/elfboot.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/compute_ip_checksum.c -o $(obj)/compute_ip_checksum.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/mem.c -o $(obj)/mem.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/malloc.c -o $(obj)/malloc.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/clog2.c -o $(obj)/clog2.o

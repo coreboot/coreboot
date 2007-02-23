@@ -32,13 +32,39 @@ struct ip_checksum_vcb {
 	unsigned short ip_checksum;
 };
 
+/* we're trying to keep out of the way of elf segments, without requiring the
+  * bounce buffer. This may fail, but it's worth the effort. 
+  */
+static unsigned char *arena;
+int arenasize;
+
+static void
+setupmalloc(void *s, int size)
+{
+	arena = s;
+	arenasize = size;
+}
+
+static void *localmalloc(int nbytes)
+{
+	char *ret;
+	if (nbytes > arenasize)
+		return NULL;
+
+	arenasize -= nbytes;
+	ret = arena;
+	arena += nbytes;
+	return ret;
+}
+
+
 /* streams are a nice way to abstract the pointer/size-based nature of the 
   * memory away. The main good part is that we have a way to fail out if the 
   * elfboot code is running off the end of the array for some reason. So we won't
   * rip it out just yet. 
   */
-unsigned char *streambase = NULL;
-int streamsize = -1;
+static unsigned char *streambase = NULL;
+static int streamsize = -1;
 
 int stream_init(void){
 	return 0;
@@ -143,7 +169,7 @@ static struct verify_callback *process_elf_notes(
 			case EIN_PROGRAM_CHECKSUM:
 			{
 				struct ip_checksum_vcb *cb;
-				cb = malloc(sizeof(*cb));
+				cb = localmalloc(sizeof(*cb));
 				cb->ip_checksum = *((uint16_t *)n_desc);
 				cb->data.callback = verify_ip_checksum;
 				cb->data.next = cb_chain;
@@ -231,7 +257,7 @@ static int build_elf_segment_list(
 			printk(BIOS_DEBUG, "Dropping empty segment\n");
 			continue;
 		}
-		new = malloc(sizeof(*new));
+		new = localmalloc(sizeof(*new));
 		new->s_addr = phdr[i].p_paddr;
 		new->s_memsz = phdr[i].p_memsz;
 		new->s_offset = phdr[i].p_offset;
@@ -446,7 +472,10 @@ int elfboot(struct lb_memory *mem)
 	static unsigned char header[ELF_HEAD_SIZE];
 	int header_offset;
 	int i, result;
+	/* for stupid allocator which won't run into trouble with segments */
+	char alloc[256];
 
+	setupmalloc(alloc, sizeof(alloc));
 	result = 0;
 	printk(BIOS_INFO, "\n");
 	printk(BIOS_INFO, "Welcome to %s, the open sourced starter.\n", BOOTLOADER);
@@ -508,3 +537,10 @@ int elfboot(struct lb_memory *mem)
 	return 0;
 
 }
+
+int elfboot_mem(struct lb_memory *mem, void *where, int size)
+{
+	streambase = where;
+	streamsize = size;
+	return elfboot(mem);
+}	

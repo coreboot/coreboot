@@ -390,7 +390,7 @@ typedef Elf64_Phdr Elf_phdr;
 #endif
 
 extern int elf_check_arch(Elf_ehdr *ehdr);
-extern void jmp_to_elf_entry(void *entry, unsigned long buffer);
+extern void jmp_to_elf_entry(void *entry);
 struct lb_memory;
 extern int elfboot(struct lb_memory *mem);
 

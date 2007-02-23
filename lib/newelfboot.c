@@ -87,8 +87,10 @@ static int load_elf_segments(struct lb_memory *mem,Elf_phdr *phdr, int headers)
 		  * then copy out the data, which may be a subset of the total area. 
 		  * the cache, after all, is your friend.
 		  */
+		printk(BIOS_INFO, "set %p to 0 for %d bytes\n", (unsigned char *)phdr[i].p_paddr, 0, size);
 		memset((unsigned char *)phdr[i].p_paddr, 0, size);
 		/* ok, copy it out */
+		printk(BIOS_INFO, "Copy to %p from %p for %d bytes\n", (unsigned char *)phdr[i].p_paddr, &header[phdr[i].p_offset], size);
 		memcpy((unsigned char *)phdr[i].p_paddr, &header[phdr[i].p_offset], size);
 		
 	}
@@ -136,68 +138,6 @@ int elfload(struct lb_memory *mem,
 	return 0;
 }
 
-#ifdef NOT
-int elfboot(struct lb_memory *mem)
-{
-	Elf_ehdr *ehdr;
-	unsigned char header[ELF_HEAD_SIZE];
-	int header_offset;
-	int i, result;
-
-	result = 0;
-	printk(BIOS_INFO, "\n");
-	printk(BIOS_INFO, "Elfboot\n");
-	post_code(0xf8);
-
-	/* Read in the initial ELF_HEAD_SIZE bytes */
-	if (stream_read(header, ELF_HEAD_SIZE) != ELF_HEAD_SIZE) {
-		printk(BIOS_ERR, "Header read failed...\n");
-		goto out;
-	}
-	/* Scan for an elf header */
-	header_offset = -1;
-	for(i = 0; i < ELF_HEAD_SIZE - (sizeof(Elf_ehdr) + sizeof(Elf_phdr)); i+=16) {
-		ehdr = (Elf_ehdr *)(&header[i]);
-		if (memcmp(ehdr->e_ident, ELFMAG, 4) != 0) {
-			printk(BIOS_SPEW, "NO header at %d\n", i);
-			continue;
-		}
-		printk(BIOS_DEBUG, "Found ELF candidate at offset %d\n", i);
-		/* Sanity check the elf header */
-		if ((ehdr->e_type == ET_EXEC) &&
-			elf_check_arch(ehdr) &&
-			(ehdr->e_ident[EI_VERSION] == EV_CURRENT) &&
-			(ehdr->e_version == EV_CURRENT) &&
-			(ehdr->e_ehsize == sizeof(Elf_ehdr)) &&
-			(ehdr->e_phentsize = sizeof(Elf_phdr)) &&
-			(ehdr->e_phoff < (ELF_HEAD_SIZE - i)) &&
-			((ehdr->e_phoff + (ehdr->e_phentsize * ehdr->e_phnum)) <= 
-				(ELF_HEAD_SIZE - i))) {
-			header_offset = i;
-			break;
-		}
-		ehdr = 0;
-	}
-	printk(BIOS_SPEW, "header_offset is %d\n", header_offset);
-	if (header_offset == -1) {
-		goto out;
-	}
-
-	printk(BIOS_SPEW, "Try to load at offset 0x%x\n", header_offset);
-	result = elfload(mem, 
-		header + header_offset , ELF_HEAD_SIZE - header_offset);
- out:
-	if (!result) {
-		/* Shutdown the stream device */
-
-		printk(BIOS_ERR, "Cannot Load ELF Image\n");
-
-		post_code(0xff);
-	}
-	return 0;
-
-}
-#endif
 int elfboot_mem(struct lb_memory *mem, void *where, int size)
 {
 	Elf_ehdr *ehdr;
@@ -239,9 +179,8 @@ int elfboot_mem(struct lb_memory *mem, void *where, int size)
 		goto out;
 	}
 
-	printk(BIOS_SPEW, "Try to load at offset 0x%x\n", header_offset);
-	result = elfload(mem, 
-		header + header_offset , ELF_HEAD_SIZE - header_offset);
+	printk(BIOS_SPEW, "Try to load at offset 0x%x %d phdr\n", header_offset, ehdr->e_phnum);
+	result = elfload(mem, header + header_offset , ehdr->e_phnum);
  out:
 	if (!result) {
 

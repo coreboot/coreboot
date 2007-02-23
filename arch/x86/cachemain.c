@@ -64,17 +64,17 @@ void stage1_main(u32 bist)
 	struct mem_file archive, result;
 	int elfboot_mem(struct lb_memory *mem, void *where, int size);
 
-	/* HACK -- fake memory table for now */
-	static struct lb_memory mem = {
-		.tag = LB_TAG_MEMORY, 
-		.size = 1, 
-		.map = { {
-			.start = { .lo = 0, .hi = 0 }, 
-			.size =  { .lo = (32*1024*1024), .hi = 0 }, 
-			.type = LB_MEM_RAM
-		} }
+	/* we can't statically init this hack. */
+	unsigned char *faker[64];
+	struct lb_memory *mem = (struct lb_memory*) &faker;
 
-	};
+	mem->tag = LB_TAG_MEMORY;
+	mem->size = 28;
+	mem->map[0].start.lo = mem->map[0].start.hi = 0;
+	mem->map[0].size.lo = (32*1024*1024);
+	mem->map[0].size.hi = 0;
+	mem->map[0].type = LB_MEM_RAM;
+
 
 	post_code(0x02);
 
@@ -230,7 +230,7 @@ printk(BIOS_INFO, "Start search at 0x%x, size %d\n", archive.start, archive.len)
 		die("cachemain finding payload");
 	}
 
-	ret =  elfboot_mem(&mem, result.start, result.len);
+	ret =  elfboot_mem(mem, result.start, result.len);
 
 	printk(BIOS_INFO, "elfboot_mem returns %d\n", ret);
 

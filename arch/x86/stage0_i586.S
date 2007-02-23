@@ -214,8 +214,9 @@ __protected_stage0:
 #define CacheSize CONFIG_CARSIZE
 #endif
 
+/* pick a safer value for default -- i.e. not the C segment! */
 #ifndef CONFIG_CARBASE
-#define CacheBase (0xd0000 - CacheSize) 
+#define CacheBase (0x90000 - CacheSize) 
 #else
 #define CacheBase CONFIG_CARBASE
 #endif

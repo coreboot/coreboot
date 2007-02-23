@@ -28,7 +28,7 @@ ENTRY(_start)
 TARGET(binary)
 SECTIONS
 {
-	. = 0xffffe000 + 256; /* leave space for vpd */
+	. = 0xffffc000 + 256; /* leave space for vpd */
 
 	.stage0_1 . : {
 		_stage0_1 = .;

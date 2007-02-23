@@ -52,7 +52,7 @@ $(obj)/linuxbios.lar: $(obj)/util/lar/lar lzma $(obj)/linuxbios.initram $(obj)/l
 	$(Q)cd $(obj)/lar.tmp && ../util/lar/lar c ../linuxbios.lar.pre normal/initram normal/stage2
 	# TODO: dynamically pad the lar archive. bs is image size - bootblock size (8k)
 	$(Q)dd if=$(obj)/linuxbios.lar.pre of=$(obj)/linuxbios.lar \
-		  bs=253952 count=1 conv=sync $(SILENT)
+		  bs=245760 count=1 conv=sync $(SILENT)
 
 
 
@@ -91,13 +91,14 @@ $(obj)/stage0.init:
 
 	$(Q)objcopy -O binary $(obj)/stage0.o  $(obj)/stage0.init.pre
 
-	# Pad boot block to 0x2000 - 0x100 
+	# Pad boot block to 0x4000 - 0x100 
 	# we will probably remove this step -- not needed if we continue with ldscript.ld
+
 	$(Q)dd if=$(obj)/stage0.init.pre of=$(obj)/stage0.init \
-		bs=7936 conv=sync $(SILENT)
+		bs=16128 conv=sync $(SILENT)
 	$(Q)echo "Len: `wc -c < $(obj)/stage0.init.pre`"
 
-	$(Q)test `wc -c < $(obj)/stage0.init.pre` -gt 7936  && echo "Error. Bootblock got too big" || true
+	$(Q)test `wc -c < $(obj)/stage0.init.pre` -gt 16128  && echo "Error. Bootblock got too big" || true
 
 
 

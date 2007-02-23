@@ -24,8 +24,6 @@ SOURCE := lar.c create.c extract.c list.c lib.c
 HOSTCC=gcc
 HOSTCFLAGS=-O2 -Wall -W
 
-obj:=$(objdir)
-
 $(obj)/util/lar/lar: $(patsubst %,$(src)/util/lar/%,$(SOURCE))
 	@mkdir -p $(obj)/util/lar
 	@$(HOSTCC) $(HOSTCFLAGS) -o $@ $^

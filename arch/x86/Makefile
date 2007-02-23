@@ -18,9 +18,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-obj:=$(objdir)
-src:=$(srcdir)
-
 $(obj)/linuxbios.rom: $(obj)/linuxbios.lar $(obj)/stage0.init $(obj)/linuxbios.vpd
 	@cat $(obj)/linuxbios.lar \
 	     $(obj)/linuxbios.vpd \
@@ -66,8 +63,10 @@ $(obj)/linuxbios.stage2: $(obj)/stage0.init $(obj)/statictree.o
 	$(Q)$(CC) $(INITCFLAGS) -c mainboard/$(MAINBOARDDIR)/mainboard.c -o $(obj)/mainboard.o
 
 	# leave a .o with full symbols in it for debugging.
-	$(Q)cd $(obj); $(LD) -R stage0.o -Ttext 0x0  stage2.o \
-		-o $(obj)/linuxbios.stage2.o device.o device_util.o mem.o malloc.o clog2.o mainboard.o statictree.o
+	$(Q)cd $(obj); $(LD) -R $(obj)/stage0.o -Ttext 0x0  \
+		-o $(obj)/linuxbios.stage2.o stage2.o device.o \
+		device_util.o mem.o malloc.o clog2.o mainboard.o \
+		statictree.o
 	objcopy -O binary $(obj)/linuxbios.stage2.o $(obj)/linuxbios.stage2
 
 	$(Q)chmod 644 $(obj)/linuxbios.stage2
@@ -119,12 +118,13 @@ $(obj)/stage0.init:
 	@$(CC) $(INITCFLAGS) -c $(src)/arch/x86/console.c -o $(obj)/console.o
 	@$(CC) $(INITCFLAGS) -c $(src)/arch/x86/serial.c -o $(obj)/serial.o
 	@$(CC) $(INITCFLAGS) -c $(src)/console/vtxprintf.c -o $(obj)/vtxprintf.o
+	@$(CC) $(INITCFLAGS) -c $(src)/console/vsprintf.c -o $(obj)/vsprintf.o
 	@$(CC) $(INITCFLAGS) -c $(src)/lib/uart8250.c -o $(obj)/uart8250.o
 	# other lib parts
 	@$(CC) $(INITCFLAGS) -c $(src)/lib/mem.c -o $(obj)/mem.o
 
 	@cd $(obj); $(CC) -m32 -nostdlib -static -T $(src)/arch/x86/ldscript.ld cachemain.o console.o uart8250.o \
-		serial.o vtxprintf.o lar.o mem.o stage0_i586.o -o stage0.o
+		serial.o vtxprintf.o vsprintf.o lar.o mem.o stage0_i586.o -o stage0.o
 	@objcopy -O binary $(obj)/stage0.o  $(obj)/stage0.init.pre
 
 	# Pad boot block to 0x2000 - 0x100 

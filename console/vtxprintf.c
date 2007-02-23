@@ -307,23 +307,3 @@ int vtxprintf(void (*tx_byte)(unsigned char byte), const char *fmt, va_list args
 	return count;
 }
 
-/* very gross simple thing that is non-reentrant. This should not matter though. */
-static unsigned char *ssp;
-static void stxbyte(unsigned char byte)
-{
-	*ssp++ = byte;
-}
-
-int sprintf(char *str, const char *format, ...)
-{
-	va_list args;
-	int i;
-
-	ssp = (unsigned char *) str;
-	va_start(args, format);
-	i = vtxprintf(stxbyte, format, args);
-	va_end(args);
-
-	return i;
-
-}

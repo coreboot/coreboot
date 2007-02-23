@@ -34,10 +34,8 @@ KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
 
 have_dotconfig := $(wildcard .config)
  
-srcdir:=$(shell pwd)
-src:=$(srcdir)
-objdir:=$(shell pwd)/lbobj
-obj:=$(objdir)
+src:=$(shell pwd)
+obj:=$(shell pwd)/lbobj
 
 
 # Do not print "Entering directory ..."
@@ -59,7 +57,7 @@ LINUXBIOSINCLUDE    :=  -I$(src) -Iinclude \
 
 CPPFLAGS   := $(LINUXBIOSINCLUDE)
 
-export srcdir src objdir obj KERNELVERSION
+export src obj KERNELVERSION
 
 ifeq ($(strip $(have_dotconfig)),) 
 all:
@@ -80,14 +78,14 @@ MAINBOARDDIR=$(shell echo $(CONFIG_MAINBOARD_NAME))
 
 
 prepare:
-	@mkdir -p $(objdir)
+	@mkdir -p $(obj)
 
 prepare2:
 	@cp $(src)/.tmpconfig.h $(obj)/config.h
 
 clean:
 	@echo "Cleaning up..."
-	rm -rf $(objdir)
+	rm -rf $(obj)
 
 
 %.o: %.c

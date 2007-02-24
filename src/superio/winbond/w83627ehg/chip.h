@@ -19,17 +19,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef SIO_COM1
-#define SIO_COM1_BASE 0x3f8
-#endif
-#ifndef SIO_COM2
-#define SIO_COM2_BASE 0x2f8
-#endif
-
-extern struct chip_operations superio_winbond_w83627ehg_ops;
-
 #include <pc80/keyboard.h>
 #include <uart8250.h>
+
+extern struct chip_operations superio_winbond_w83627ehg_ops;
 
 struct superio_winbond_w83627ehg_config {
 	struct uart8250 com1, com2;

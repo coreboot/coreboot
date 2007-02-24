@@ -53,12 +53,17 @@ static int valid_area(struct lb_memory *mem,
 	return 1;
 }
 
-static int load_elf_segments(struct lb_memory *mem,Elf_phdr *phdr, int headers)
+static int load_elf_segments(struct lb_memory *mem,unsigned char *header, int headers)
 {
+        Elf_ehdr *ehdr;
+        Elf_phdr *phdr;
+
+        ehdr = (Elf_ehdr *)header;
+        phdr = (Elf_phdr *)(&header[ehdr->e_phoff]);
+
 	struct segment *ptr;
 	int i;
 	int size;
-	unsigned char *header = (unsigned char *) phdr;
 	for(i = 0; i < headers; i++) {
 		struct segment *new;
 		/* Ignore data that I don't need to handle */
@@ -101,21 +106,18 @@ static int load_elf_segments(struct lb_memory *mem,Elf_phdr *phdr, int headers)
 
 
 
-int elfload(struct lb_memory *mem,
-	unsigned char *header, unsigned long header_size)
+int elfload(struct lb_memory *mem, unsigned char *header, unsigned long header_size)
 {
 	Elf_ehdr *ehdr;
-	Elf_phdr *phdr;
 	void *entry;
 	void (*v)(void);
 	struct verify_callback *cb_chain;
 
 	ehdr = (Elf_ehdr *)header;
 	entry = (void *)(ehdr->e_entry);
-	phdr = (Elf_phdr *)(&header[ehdr->e_phoff]);
 
 	/* Load the segments */
-	if (!load_elf_segments(mem, phdr, header_size))
+	if (!load_elf_segments(mem, header, header_size))
 		goto out;
 
 	printk(BIOS_SPEW, "Loaded segments\n");
@@ -129,9 +131,11 @@ int elfload(struct lb_memory *mem,
 	post_code(0xfe);
 
 	/* Jump to kernel */
-	/* just call it as a function. If it wants to return, it will. */
-	v = entry;
-	v();
+	/* most of the time, jmp_to_elf_entry is just a call. But this hook gives us 
+	  * a handy way to get architecture-dependent operations done, if needed 
+	  * jmp_to_elf_entry is in arch/<architecture>/archelfboot.c
+	  */
+	jmp_to_elf_entry(entry);
 	return 1;
 
  out:
@@ -180,7 +184,7 @@ int elfboot_mem(struct lb_memory *mem, void *where, int size)
 	}
 
 	printk(BIOS_SPEW, "Try to load at offset 0x%x %d phdr\n", header_offset, ehdr->e_phnum);
-	result = elfload(mem, header + header_offset , ehdr->e_phnum);
+	result = elfload(mem, header,  ehdr->e_phnum);
  out:
 	if (!result) {
 

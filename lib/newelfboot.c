@@ -3,7 +3,7 @@
 #include <elf.h>
 #include <elf_boot.h>
 #include <linuxbios_tables.h>
-#include <ip_checksum.h>
+//#include <ip_checksum.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>

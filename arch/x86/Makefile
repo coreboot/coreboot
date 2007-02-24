@@ -83,12 +83,11 @@ $(obj)/stage0.init:
 	$(Q)# other lib parts
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/mem.c -o $(obj)/mem.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/newelfboot.c -o $(obj)/newelfboot.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/compute_ip_checksum.c -o $(obj)/compute_ip_checksum.o
 
 	$(Q)cd $(obj); $(CC) -m32 -nostdlib -static        \
 		-T $(src)/arch/x86/ldscript.ld cachemain.o \
 		console.o uart8250.o serial.o archelfboot.o vtxprintf.o  \
-		vsprintf.o lar.o newelfboot.o compute_ip_checksum.o mem.o stage0_i586.o -o stage0.o
+		vsprintf.o lar.o newelfboot.o mem.o stage0_i586.o -o stage0.o
 
 	$(Q)objcopy -O binary $(obj)/stage0.o  $(obj)/stage0.init.pre
 

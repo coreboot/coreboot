@@ -1,8 +1,10 @@
 /*
  * malloc -- simple non-freeing malloc. 
+ * there have been about a million versions of this but we need one with a known
+ * author. Almost every OS and bootloader has had this at some time or other. 
  * 
  *
- * Author unkown. I guess we need a 'tomb of the unknown coder'. 
+ * Copyright (C) 2007 Ronald G. Minnich
  *
  *
  * This program is free software; you can redistribute it and/or modify
@@ -29,46 +31,36 @@
 #endif
 
 /* instead of ldscript magic, just declare an array. The array 
- * will consume no bytes in the image. And it won't run into trouble
- * the way the V2 allocator could. 
+ * will consume no bytes in the image, and it won't run into trouble
+ * the way the V2 allocator could. We do not provide zero'd memory. 
+ * note that the execute-in-place code in top of flash is not allowed to call malloc, 
+ * since we can't link this in to it. The FLASH-based code should always be dead simple. 
+ * (in fact, it's not clear we need malloc at all any more -- we're doing our best to 
+ * remove all usage of it -- the only real users were elfboot and lzma, and we have
+ * removed its usage in elfboot, and will try to remove its usage in lzma). 
  */
 
 #define HEAPSIZE (256*1024)
 static unsigned char heap[HEAPSIZE];
-static size_t free_mem_ptr = (size_t)&heap;		/* Start of heap */
-static size_t free_mem_end_ptr = (size_t)&heap[HEAPSIZE];
-/* to keep gcc etc. happy ... */
-typedef size_t malloc_mark_t;
-
-void malloc_mark(malloc_mark_t *place)
-{
-	*place = free_mem_ptr;
-	printk(BIOS_SPEW, "malloc_mark 0x%08lx\n", (unsigned long)free_mem_ptr);
-}
-
-void malloc_release(malloc_mark_t *ptr)
-{
-	free_mem_ptr = *ptr;
-	printk(BIOS_SPEW, "malloc_release 0x%08lx\n", (unsigned long)free_mem_ptr);
-}
+static unsigned char * free_mem_ptr = heap;
+static unsigned long freebytes = HEAPSIZE;
 
 void *malloc(size_t size)
 {
 	void *p;
 
 	MALLOCDBG("%s Enter, size %d, free_mem_ptr %p\n", __FUNCTION__, size, free_mem_ptr);
-	if (size < 0)
-		die("Error! malloc: Size < 0");
-	if (free_mem_ptr <= 0)
-		die("Error! malloc: Free_mem_ptr <= 0");
 
-	free_mem_ptr = (free_mem_ptr + 3) & ~3;	/* Align */
+	if (size > freebytes){
+		printk(BIOS_ERR, "OUT OF MEMORY for alloc of %d bytes\n", size);
+		die("OUT OF MEMORY\n");
+	}
+	
+	size = (size + 3) & 3;	/* Align */
 
-	p = (void *) free_mem_ptr;
+	p = free_mem_ptr;
 	free_mem_ptr += size;
-
-	if (free_mem_ptr >= free_mem_end_ptr)
-		die("Error! malloc: free_mem_ptr >= free_mem_end_ptr");
+	freebytes -= size;
 
 	MALLOCDBG("malloc 0x%08lx\n", (unsigned long)p);
 

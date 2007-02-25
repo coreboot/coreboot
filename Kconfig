@@ -1,14 +1,12 @@
 #
 # For a description of the syntax of this configuration file,
-# see Documentation/kbuild/kconfig-language.txt.
+# see http://lxr.linux.no/source/Documentation/kbuild/kconfig-language.txt.
 #
 
 mainmenu "LinuxBIOS Configuration"
 
 source mainboard/Kconfig
-
 source arch/Kconfig
-
 source lib/Kconfig
-
 source console/Kconfig
+

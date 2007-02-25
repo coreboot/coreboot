@@ -1,10 +1,23 @@
+
+# ===========================================================================
+# Shared Makefile for the various kconfig executables:
+# conf:	  Used for defconfig, oldconfig and related targets
+# mconf:  Used for the mconfig target.
+#         Utilizes the lxdialog package
+# qconf:  Used for the xconfig target
+#         Based on QT which needs to be installed to compile it
+# gconf:  Used for the gconfig target
+#         Based on GTK which needs to be installed to compile it
+# object files used by all kconfig flavours
+
+
 # ===========================================================================
 # Kernel configuration targets
 # These targets are used from top-level makefile
 
 .PHONY: oldconfig xconfig gconfig menuconfig config silentoldconfig update-po-config
 
-xconfig: prepare $(obj)/qconf
+xconfig: $(obj)/.tmp_qtcheck $(obj)/qconf
 	$(Q)$(obj)/qconf Kconfig
 
 gconfig: $(obj)/gconf
@@ -21,6 +34,7 @@ oldconfig: prepare $(obj)/conf
 
 silentoldconfig: prepare $(obj)/conf
 	$(Q)$(obj)/conf -s Kconfig
+
 .PHONY: randconfig allyesconfig allnoconfig allmodconfig defconfig
 
 randconfig: $(obj)/conf
@@ -36,14 +50,14 @@ allmodconfig: $(obj)/conf
 	$(Q)$< -m Kconfig
 
 UNAME_RELEASE := $(shell uname -r)
-CLONECONFIG := $(firstword $(wildcard /proc/config.gz \
-				      /lib/modules/$(UNAME_RELEASE)/.config \
-				      /etc/kernel-config \
-				      /boot/config-$(UNAME_RELEASE)))
+#CLONECONFIG := $(firstword $(wildcard /proc/config.gz \
+#				      /lib/modules/$(UNAME_RELEASE)/.config \
+#				      /etc/kernel-config \
+#				      /boot/config-$(UNAME_RELEASE)))
 cloneconfig: $(obj)/conf
 	$(Q)case "$(CLONECONFIG)" in				\
 	'')	echo -e "The configuration of the running"	\
-			"kernel could not be determined\n";	\
+			"firmware could not be determined\n";	\
 		false ;;					\
 	*.gz)	gzip -cd $(CLONECONFIG) > .config.running ;;	\
 	*)	cat $(CLONECONFIG) > .config.running ;;		\
@@ -75,10 +89,10 @@ help:
 	@echo  '  allyesconfig	  - New config where all options are accepted with yes'
 	@echo  '  allnoconfig	  - New minimal config'
 
-
-
 mconf-objects := mconf.o zconf.tab.o
 conf-objects  := conf.o zconf.tab.o
+qconf-objects := qconf.o kconfig_load.o zconf.tab.o
+gconf-objects := gconf.o kconfig_load.o zconf.tab.o
 
 $(obj)/mconf: $(patsubst %,$(obj)/%,$(mconf-objects))
 	$(Q)$(HOSTCC) -lncurses -o $@ $^
@@ -86,11 +100,34 @@ $(obj)/mconf: $(patsubst %,$(obj)/%,$(mconf-objects))
 $(obj)/conf: $(patsubst %,$(obj)/%,$(conf-objects))
 	$(Q)$(HOSTCC) -lncurses -o $@ $^
 
+$(obj)/qconf: $(patsubst %,$(obj)/%,$(qconf-objects))
+	$(Q)$(HOSTCXX) $(KC_QT_LIBS) -ldl -o $@ $^
+
+$(obj)/gconf: $(patsubst %,$(obj)/%,$(gconf-objects))
+	$(Q)$(HOSTCC) `pkg-config --libs gtk+-2.0 gmodule-2.0 libglade-2.0` -o $@ $^
+
 $(obj)/mconf.o: $(src)/util/kconfig/mconf.c
 	$(Q)$(HOSTCC) -I$(src)/util/kconfig -c -o $@ $<
 
 $(obj)/conf.o: $(src)/util/kconfig/conf.c
 	$(Q)$(HOSTCC) -I$(src)/util/kconfig -c -o $@ $<
+
+$(obj)/kconfig_load.o: $(src)/util/kconfig/kconfig_load.c
+	$(Q)$(HOSTCC) -I$(obj) -I$(src)/util/kconfig -c -o $@ $<
+
+$(obj)/qconf.o: $(src)/util/kconfig/qconf.cc $(obj)/qconf.moc $(obj)/lkc_defs.h
+	$(Q)$(HOSTCXX) $(KC_QT_CFLAGS) -D LKC_DIRECT_LINK \
+		-I$(src)/util/kconfig -I$(obj) -c -o $@ $<
+
+$(obj)/gconf.o: $(obj)/lkc_defs.h
+	$(Q)$(HOSTCC) `pkg-config --cflags gtk+-2.0 gmodule-2.0 libglade-2.0` \
+		-D LKC_DIRECT_LINK -I$(obj) -I$(src)/util/kconfig -c -o $@ $<
+
+$(obj)/%.moc: $(src)/util/kconfig/%.h
+	$(Q)$(KC_QT_MOC) -i $< -o $@
+
+$(obj)/lkc_defs.h: $(src)/util/kconfig/lkc_proto.h
+	$(Q)sed < $< > $@ 's/P(\([^,]*\),.*/#define \1 (\*\1_p)/'
 
 $(obj)/zconf.tab.o: $(obj)/zconf.tab.c $(obj)/zconf.hash.c $(obj)/lex.zconf.c
 	$(Q)$(HOSTCC) -I$(src)/util/kconfig  -c -o $@ $(obj)/zconf.tab.c
@@ -108,43 +145,6 @@ include $(src)/util/kconfig/lxdialog/Makefile
 
 # #####################################################################
 
-ifdef KCONFIG_DEBUG
-
-update-po-config: $(obj)/kxgettext
-	xgettext --default-domain=linux \
-          --add-comments --keyword=_ --keyword=N_ \
-          --files-from=scripts/kconfig/POTFILES.in \
-          --output scripts/kconfig/config.pot
-	$(Q)for i in `ls arch/`; \
-	do \
-	  scripts/kconfig/kxgettext Kconfig \
-	    | msguniq -o scripts/kconfig/linux_$${i}.pot; \
-	done
-	$(Q)msgcat scripts/kconfig/config.pot \
-	  `find scripts/kconfig/ -type f -name linux_*.pot` \
-	  --output scripts/kconfig/linux_raw.pot
-	$(Q)msguniq --sort-by-file scripts/kconfig/linux_raw.pot \
-	    --output scripts/kconfig/linux.pot
-	$(Q)rm -f scripts/kconfig/linux_*.pot scripts/kconfig/config.pot
-
-
-
-# ===========================================================================
-# Shared Makefile for the various kconfig executables:
-# conf:	  Used for defconfig, oldconfig and related targets
-# mconf:  Used for the mconfig target.
-#         Utilizes the lxdialog package
-# qconf:  Used for the xconfig target
-#         Based on QT which needs to be installed to compile it
-# gconf:  Used for the gconfig target
-#         Based on GTK which needs to be installed to compile it
-# object files used by all kconfig flavours
-
-hostprogs-y	:= conf mconf qconf gconf kxgettext
-conf-objs	:= conf.o  zconf.tab.o
-mconf-objs	:= mconf.o zconf.tab.o
-kxgettext-objs	:= kxgettext.o zconf.tab.o
-
 ifeq ($(MAKECMDGOALS),xconfig)
 	qconf-target := 1
 endif
@@ -152,19 +152,7 @@ ifeq ($(MAKECMDGOALS),gconfig)
 	gconf-target := 1
 endif
 
-
-ifeq ($(qconf-target),1)
-qconf-cxxobjs	:= qconf.o
-qconf-objs	:= kconfig_load.o zconf.tab.o
-endif
-
-ifeq ($(gconf-target),1)
-gconf-objs	:= gconf.o kconfig_load.o zconf.tab.o
-endif
-
-clean-files	:= lkc_defs.h qconf.moc .tmp_qtcheck \
-		   .tmp_gtkcheck zconf.tab.c lex.zconf.c zconf.hash.c
-subdir- += lxdialog
+ifdef KCONFIG_DEBUG
 
 # Needed for systems without gettext
 KBUILD_HAVE_NLS := $(shell \
@@ -175,25 +163,14 @@ ifeq ($(KBUILD_HAVE_NLS),no)
 HOSTCFLAGS	+= -DKBUILD_NO_NLS
 endif
 
-# generated files seem to need this to find local include files
-HOSTCFLAGS_lex.zconf.o	:= -I$(src)
-HOSTCFLAGS_zconf.tab.o	:= -I$(src)
-
-HOSTLOADLIBES_qconf	= $(KC_QT_LIBS) -ldl
-HOSTCXXFLAGS_qconf.o	= $(KC_QT_CFLAGS) -D LKC_DIRECT_LINK
-
-HOSTLOADLIBES_gconf	= `pkg-config --libs gtk+-2.0 gmodule-2.0 libglade-2.0`
-HOSTCFLAGS_gconf.o	= `pkg-config --cflags gtk+-2.0 gmodule-2.0 libglade-2.0` \
-                          -D LKC_DIRECT_LINK
-
 endif
 
 # #####################################################################
 
-$(obj)/qconf.o: $(obj)/.tmp_qtcheck
 
 ifeq ($(qconf-target),1)
-$(obj)/.tmp_qtcheck: $(src)/Makefile
+$(obj)/.tmp_qtcheck: $(src)/util/kconfig/Makefile
+
 -include $(obj)/.tmp_qtcheck
 
 # QT needs some extra effort...
@@ -234,14 +211,15 @@ $(obj)/.tmp_qtcheck:
 	  echo "*"; \
 	  moc="/usr/bin/moc"; \
 	fi; \
+	mkdir -p $(obj); \
 	echo "KC_QT_CFLAGS=$$cflags" > $@; \
 	echo "KC_QT_LIBS=$$libs" >> $@; \
 	echo "KC_QT_MOC=$$moc" >> $@
 endif
 
+ifeq ($(gconf-target),1)
 $(obj)/gconf.o: $(obj)/.tmp_gtkcheck
 
-ifeq ($(gconf-target),1)
 -include $(obj)/.tmp_gtkcheck
 
 # GTK needs some extra effort, too...
@@ -264,21 +242,6 @@ $(obj)/.tmp_gtkcheck:
 		false;									\
 	fi
 endif
-
-#$(obj)/zconf.tab.o: $(obj)/lex.zconf.c $(obj)/zconf.hash.c
-
-$(obj)/kconfig_load.o: $(obj)/lkc_defs.h
-
-$(obj)/qconf.o: $(obj)/qconf.moc $(obj)/lkc_defs.h
-
-$(obj)/gconf.o: $(obj)/lkc_defs.h
-
-$(obj)/%.moc: $(src)/%.h
-	$(KC_QT_MOC) -i $< -o $@
-
-$(obj)/lkc_defs.h: $(src)/lkc_proto.h
-	sed < $< > $@ 's/P(\([^,]*\),.*/#define \1 (\*\1_p)/'
-
 
 ###
 # The following requires flex/bison/gperf

@@ -1,59 +1,55 @@
-#
-#
-#
-
 menu "Console"
 
 config CONSOLE_SERIAL
 	boolean "Support serial console (default)"
 	default y
 	---help---
-	  Send LinuxBIOS output to serial console 
+	  Send LinuxBIOS output to serial console.
 
 choice
-        prompt "Serial console COM port"
+	prompt "Serial console COM port"
 	default CONSOLE_SERIAL_COM1
 	depends CONSOLE_SERIAL
 
 config CONSOLE_SERIAL_COM1
-        bool "COM1/ttyS0"
+	bool "COM1/ttyS0"
 	---help---
 	  Serial console on COM1.
 
 config CONSOLE_SERIAL_COM2
-        bool "COM2/ttyS1"
+	bool "COM2/ttyS1"
 	---help---
 	  Serial console on COM2.
 
 endchoice
 
 choice
-        prompt "Serial console speed"
+	prompt "Serial console speed"
 	default CONSOLE_SERIAL_115200
 	depends CONSOLE_SERIAL
 
 config CONSOLE_SERIAL_115200
-        bool "115200 bps"
+	bool "115200 bps"
 	---help---
 	  Set speed to 115200 bps.
 
 config CONSOLE_SERIAL_57600
-        bool "57600 bps"
+	bool "57600 bps"
 	---help---
 	  Set speed to 57600 bps.
 
 config CONSOLE_SERIAL_38400
-        bool "38400 bps"
+	bool "38400 bps"
 	---help---
 	  Set speed to 38400 bps.
 
 config CONSOLE_SERIAL_19200
-        bool "19200 bps"
+	bool "19200 bps"
 	---help---
 	  Set speed to 19200 bps.
 
 config CONSOLE_SERIAL_9600
-        bool "9600 bps"
+	bool "9600 bps"
 	---help---
 	  Set speed to 9600 bps.
 
@@ -63,14 +59,26 @@ endchoice
 config CONSOLE_VGA
 	boolean "Support VGA console"
 	---help---
-	  Send LinuxBIOS output to VGA console as soon as VGA 
+	  Send LinuxBIOS output to VGA console as soon as VGA
 	  is initialized.
 
 config CONSOLE_USB
 	boolean "Support USB2 debug console"
 	---help---
-	  Send LinuxBIOS output to USB debug console. Note: This requires
-	  a USB2 controller which supports the debug capability.
+	  Send LinuxBIOS output to USB debug console.
+
+	  Note: This requires a USB2 controller which supports the
+	  debug capability. USB2 controllers which are known to work:
+
+	    * 10b9:5239 ALi Corporation USB 2.0 (USB PCI card)
+	    * 10de:0088 nVidia MCP2A
+	    * 10de:036d nVidia MCP55
+	    * 8086:24dd Intel ICH5
+	    * 8086:265c Intel ICH6
+	    * 8086:268c Intel 631xESB/632xESB/3100
+	    * 8086:27cc Intel ICH7
+
+	  See http://linuxbios.org/EHCI_Debug_Port for an up-to-date list.
 
 endmenu
 

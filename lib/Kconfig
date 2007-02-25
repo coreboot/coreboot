@@ -1,21 +1,17 @@
-#
-#
-#
-
 menu "Compression methods"
 
 config COMPRESSION_LZMA
 	boolean "Support LZMA compression"
 	default y
 	---help---
-	  This is the preferred compression method, as LZMA
-	  reaches very good compression rates with a small footprint.
+	  This is the preferred compression method, as LZMA reaches
+	  very good compression rates with a small memory footprint.
 
 config COMPRESSION_NRV2B
 	boolean "Support NRV2B compression"
 	---help---
 	  This compression method has a smaller memory footprint than
-	  LZMA but also significantly worse results.
+	  LZMA but also significantly worse compression results.
 
 choice
 	prompt "Default compression method"
@@ -31,10 +27,10 @@ config DEFAULT_COMPRESSION_NRV2B
 	bool "NRV2B compression"
 	depends COMPRESSION_NRV2B
 	---help---
-	  Choose this option if you have a too large flash chip.
+	  Choose this option if you have a flash chip which is large enough.
 
 config DEFAULT_COMPRESSION_NONE
-	bool "no compression"
+	bool "No compression"
 	---help---
 	  Do not compress any LinuxBIOS modules per default.
 

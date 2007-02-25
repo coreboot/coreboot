@@ -81,28 +81,28 @@ mconf-objects := mconf.o zconf.tab.o
 conf-objects  := conf.o zconf.tab.o
 
 $(obj)/mconf: $(patsubst %,$(obj)/%,$(mconf-objects))
-	$(HOSTCC) -lncurses -o $@ $^
+	$(Q)$(HOSTCC) -lncurses -o $@ $^
 
 $(obj)/conf: $(patsubst %,$(obj)/%,$(conf-objects))
-	$(HOSTCC) -lncurses -o $@ $^
+	$(Q)$(HOSTCC) -lncurses -o $@ $^
 
 $(obj)/mconf.o: $(src)/util/kconfig/mconf.c
-	$(HOSTCC) -I$(src)/util/kconfig -c -o $@ $<
+	$(Q)$(HOSTCC) -I$(src)/util/kconfig -c -o $@ $<
 
 $(obj)/conf.o: $(src)/util/kconfig/conf.c
-	$(HOSTCC) -I$(src)/util/kconfig -c -o $@ $<
+	$(Q)$(HOSTCC) -I$(src)/util/kconfig -c -o $@ $<
 
 $(obj)/zconf.tab.o: $(obj)/zconf.tab.c $(obj)/zconf.hash.c $(obj)/lex.zconf.c
-	$(HOSTCC) -I$(src)/util/kconfig  -c -o $@ $(obj)/zconf.tab.c
+	$(Q)$(HOSTCC) -I$(src)/util/kconfig  -c -o $@ $(obj)/zconf.tab.c
 
 $(obj)/lex.zconf.c: $(src)/util/kconfig/lex.zconf.c_shipped
-	cp $< $@
+	$(Q)cp $< $@
 
 $(obj)/zconf.hash.c: $(src)/util/kconfig/zconf.hash.c_shipped
-	cp $< $@
+	$(Q)cp $< $@
 
 $(obj)/zconf.tab.c: $(src)/util/kconfig/zconf.tab.c_shipped
-	cp $< $@
+	$(Q)cp $< $@
 
 include $(src)/util/kconfig/lxdialog/Makefile
 

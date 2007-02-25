@@ -24,31 +24,31 @@ lxdialog-objs := checklist.o menubox.o textbox.o yesno.o inputbox.o \
 
 
 $(obj)/lxdialog: $(obj)/dochecklxdialog $(patsubst %,$(obj)/%,$(lxdialog-objs))
-	$(HOSTCC) $(HOST_LOADLIBES) $(patsubst %,$(obj)/%,$(lxdialog-objs)) -o $@
+	$(Q)$(HOSTCC) $(HOST_LOADLIBES) $(patsubst %,$(obj)/%,$(lxdialog-objs)) -o $@
 
 $(obj)/checklist.o: $(src)/util/kconfig/lxdialog/checklist.c
-	$(HOSTCC) $(HOST_EXTRACFLAGS) $^ -c -o $@
+	$(Q)$(HOSTCC) $(HOST_EXTRACFLAGS) $^ -c -o $@
 
 $(obj)/menubox.o: $(src)/util/kconfig/lxdialog/menubox.c
-	$(HOSTCC) $(HOST_EXTRACFLAGS) $^ -c -o $@
+	$(Q)$(HOSTCC) $(HOST_EXTRACFLAGS) $^ -c -o $@
 
 $(obj)/textbox.o: $(src)/util/kconfig/lxdialog/textbox.c
-	$(HOSTCC) $(HOST_EXTRACFLAGS) $^ -c -o $@
+	$(Q)$(HOSTCC) $(HOST_EXTRACFLAGS) $^ -c -o $@
 
 $(obj)/yesno.o: $(src)/util/kconfig/lxdialog/yesno.c
-	$(HOSTCC) $(HOST_EXTRACFLAGS) $^ -c -o $@
+	$(Q)$(HOSTCC) $(HOST_EXTRACFLAGS) $^ -c -o $@
 
 $(obj)/inputbox.o: $(src)/util/kconfig/lxdialog/inputbox.c
-	$(HOSTCC) $(HOST_EXTRACFLAGS) $^ -c -o $@
+	$(Q)$(HOSTCC) $(HOST_EXTRACFLAGS) $^ -c -o $@
 
 $(obj)/util.o: $(src)/util/kconfig/lxdialog/util.c
-	$(HOSTCC) $(HOST_EXTRACFLAGS) $^ -c -o $@
+	$(Q)$(HOSTCC) $(HOST_EXTRACFLAGS) $^ -c -o $@
 
 $(obj)/lxdialog.o: $(src)/util/kconfig/lxdialog/lxdialog.c
-	$(HOSTCC) $(HOST_EXTRACFLAGS) $^ -c -o $@
+	$(Q)$(HOSTCC) $(HOST_EXTRACFLAGS) $^ -c -o $@
 
 $(obj)/msgbox.o: $(src)/util/kconfig/lxdialog/msgbox.c
-	$(HOSTCC) $(HOST_EXTRACFLAGS) $^ -c -o $@
+	$(Q)$(HOSTCC) $(HOST_EXTRACFLAGS) $^ -c -o $@
 
 
 

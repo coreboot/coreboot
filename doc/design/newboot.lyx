@@ -324,15 +324,6 @@ boot area
  (C)
 \end_layout
 
-\begin_layout Subsection
-Stage 2: 
-\end_layout
-
-\begin_layout Standard
-Note, currently at least part 1 of this is in the current stage 1 code ...
- we need to figure this out.
-\end_layout
-
 \begin_layout Enumerate
 Examine the flash.
  Look in DTB option node, normal property for directory named by the boot
@@ -349,6 +340,124 @@ In that directory, need 'initram', 'payload.ext', and others.
  make sure that in '/', there is a decompressor of the right type for each
  extension needed.
  (C)
+\end_layout
+
+\begin_layout Subsection
+Stage 2: Device tree
+\end_layout
+
+\begin_layout Standard
+Run the standard device tree code.
+ This code runs in 6 phases.
+ 
+\end_layout
+
+\begin_layout Subparagraph*
+Phase 1 
+\end_layout
+
+\begin_layout Standard
+These are any functions that are required to make printk operational.
+ No other code should be run in Phase 1.
+ 
+\end_layout
+
+\begin_layout Standard
+Post codes: 
+\end_layout
+
+\begin_layout Itemize
+Entry: 0x20
+\end_layout
+
+\begin_layout Itemize
+Exit: 0x2f
+\end_layout
+
+\begin_layout Subparagraph*
+Phase 2 
+\end_layout
+
+\begin_layout Standard
+These are functions that are required before any PCI operations of any kind
+ are run.
+ 
+\end_layout
+
+\begin_layout Subparagraph*
+Post codes: 
+\end_layout
+
+\begin_layout Itemize
+Entry: 0x30
+\end_layout
+
+\begin_layout Itemize
+Exit: 0x3f
+\end_layout
+
+\begin_layout Subparagraph*
+Phase 3 
+\end_layout
+
+\begin_layout Subparagraph*
+Post codes: 
+\end_layout
+
+\begin_layout Itemize
+Entry: 0x40
+\end_layout
+
+\begin_layout Itemize
+Exit: 0x4f
+\end_layout
+
+\begin_layout Subparagraph*
+Phase 4 
+\end_layout
+
+\begin_layout Subparagraph*
+Post codes: 
+\end_layout
+
+\begin_layout Itemize
+Entry: 0x50
+\end_layout
+
+\begin_layout Itemize
+Exit: 0x5f
+\end_layout
+
+\begin_layout Subparagraph*
+Phase 5 
+\end_layout
+
+\begin_layout Subparagraph*
+Post codes: 
+\end_layout
+
+\begin_layout Itemize
+Entry: 0x60
+\end_layout
+
+\begin_layout Itemize
+Exit: 0x6f
+\end_layout
+
+\begin_layout Subparagraph*
+Phase 6
+\end_layout
+
+\begin_layout Standard
+Post codes: 
+\end_layout
+
+\begin_layout Itemize
+Entry: 0x70
+\end_layout
+
+\begin_layout Itemize
+Exit: 0x7f
 \end_layout
 
 \begin_layout Subsection

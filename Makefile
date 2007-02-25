@@ -96,6 +96,10 @@ clean:
 	$(Q)echo "Cleaning up..."
 	$(Q)rm -rf $(obj)
 
+distclean: clean
+	$(Q)echo "Deleting config files..."
+	$(Q)rm -f .kconfig.d .config .tmpconfig.h .config.old
+
 %.o: %.c
 	$(Q)echo "Compiling $<"
 	$(Q)$(CC) $(CFLAGS) -o $@ -c $< 

@@ -1,5 +1,5 @@
 /*
- * mem -- simple routines that have no optimizations for anything
+ * This file is part of the LinuxBIOS project.
  *
  * Copright (C) 2007 Ronald G. Minnich <rminnich@gmail.com>
  *
@@ -15,8 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
- *
  */
+
+/* Simple memory routines that have no optimizations for anything. */
+
 #include <arch/types.h>
 
 /* this one is pretty stupid. Won't handle overlaps, it's not efficient, etc. */

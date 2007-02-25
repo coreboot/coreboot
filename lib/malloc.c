@@ -1,11 +1,7 @@
 /*
- * malloc -- simple non-freeing malloc. 
- * there have been about a million versions of this but we need one with a known
- * author. Almost every OS and bootloader has had this at some time or other. 
- * 
+ * This file is part of the LinuxBIOS project.
  *
- * Copyright (C) 2007 Ronald G. Minnich
- *
+ * Copyright (C) 2007 Ronald G. Minnich <rminnich@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
- *
  */
+
+/*
+ * Simple non-freeing malloc. There have been about a million versions of
+ * this but we need one with a known author. Almost every OS and bootloader
+ * has had this at some time or other. 
+ */ 
+
 #include <stdlib.h>
 #include <console/console.h>
 

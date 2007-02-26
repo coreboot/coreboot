@@ -30,10 +30,10 @@ $(obj)/linuxbios.vpd:
 	$(Q)printf "done\n"
 
 #
-# This is going to be the init RAM code:
+# This is going to be the init RAM code.
 #
-# Initram is always uncompressed. It belongs into the mainboard directory
-# and is built from what was auto.c in v2.
+# The initram file is always uncompressed. It belongs into the mainboard
+# directory and is built from what was auto.c in v2.
 #
 
 $(obj)/linuxbios.initram: $(obj)/stage0.init $(obj)/stage0.o

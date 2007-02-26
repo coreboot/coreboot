@@ -637,32 +637,34 @@ void dev_phase2(void)
  *
  * @return The maximum bus number found, after scanning all subordinate busses
  */
-unsigned int dev_phase3(struct device * bus, unsigned int max)
+unsigned int dev_phase3(struct device * busdevice, unsigned int max)
 {
 	unsigned int new_max;
 	int do_phase3;
-	if (	!bus ||
-		!bus->enabled ||
-		!bus->ops ||
-		!bus->ops->phase3)
+	post_code(0x42);
+	if (	!busdevice ||
+		!busdevice->enabled ||
+		!busdevice->ops ||
+		!busdevice->ops->phase3)
 	{
 		return max;
 	}
 	do_phase3 = 1;
 	while(do_phase3) {
 		int link;
-		new_max = bus->ops->phase3(bus, max);
+		new_max = busdevice->ops->phase3(busdevice, max);
 		do_phase3 = 0;
-		for(link = 0; link < bus->links; link++) {
-			if (bus->link[link].reset_needed) {
-				if (reset_bus(&bus->link[link])) {
+		for(link = 0; link < busdevice->links; link++) {
+			if (busdevice->link[link].reset_needed) {
+				if (reset_bus(&busdevice->link[link])) {
 					do_phase3 = 1;
 				} else {
-					bus->bus->reset_needed = 1;
+					busdevice->bus->reset_needed = 1;
 				}
 			}
 		}
 	}
+	post_code(0x4e);
 	return new_max;
 }
 
@@ -698,6 +700,7 @@ void dev_root_phase3(void)
 	if (root->chip_ops && root->chip_ops->enable_dev) {
 		root->chip_ops->enable_dev(root);
 	}
+	post_code(0x41);
 	if (!root->ops) {
 		printk(BIOS_ERR, "dev_root_phase3 missing 'ops' initialization\nPhase 3: Failed\n");
 		return;
@@ -740,6 +743,7 @@ void dev_phase4(void)
 		printk(BIOS_ERR, "dev_root ops missing read_resources\nPhase 4: Failed\n");
 		return;
 	}
+
 	if (!root->ops->phase4_set_resources) {
 		printk(BIOS_ERR, "dev_root ops missing set_resources\nPhase 4: Failed\n");
 		return;

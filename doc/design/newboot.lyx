@@ -450,16 +450,43 @@ Stage 2: Device tree
 \begin_layout Standard
 Run the standard device tree code.
  This code runs in 6 phases.
+ The device tree, as set up by dts, has two ways it can be traversed.
+ 
+\end_layout
+
+\begin_layout Standard
+The first is the hierarchy formed by busses and devices.
+ Devices have up to MAX_LINKS links, which are initialized as part of the
+ process of creating the static tree.
+ These links point to busses.
+ A bus has a child device, a device associated with it (e.g.
+ a PCI bridge device), and other attributes described elsewhere.
+ Some operations, such as enumeration, require that the tree be traversed
+ in the hierarchy represented by the bus/device relationship.
+ This traversal starts at the root device, and for each link, follows those
+ busses to the other devices.
+ 
+\end_layout
+
+\begin_layout Standard
+The second is a simple traversal, via linked list, of all the devices.
+ This faster, less complex traversal, is performed when there is no need
+ to be concerned with the bus/device relationship.
  
 \end_layout
 
 \begin_layout Subparagraph*
-Phase 1 
+Phase 1 -- making printk work
 \end_layout
 
 \begin_layout Standard
 These are any functions that are required to make printk operational.
  No other code should be run in Phase 1.
+ 
+\end_layout
+
+\begin_layout Standard
+The simple traversal (forall devices) is used for this phase.
  
 \end_layout
 
@@ -476,12 +503,18 @@ Exit: 0x2f
 \end_layout
 
 \begin_layout Subparagraph*
-Phase 2 
+Phase 2 -- preparation for bus scan
 \end_layout
 
 \begin_layout Standard
 These are functions that are required before any PCI operations of any kind
  are run.
+ These functions may call printk.
+ 
+\end_layout
+
+\begin_layout Standard
+The simple traversal (forall devices) is used for this phase.
  
 \end_layout
 
@@ -498,7 +531,301 @@ Exit: 0x3f
 \end_layout
 
 \begin_layout Subparagraph*
-Phase 3 
+Phase 3 -- bus scan
+\end_layout
+
+\begin_layout Standard
+This phase is typical of all the phases that do a hierarchical traversal.
+ It starts at the root device (i.e.
+ the mainboard), which uses the distinguished function 
+\emph on
+dev_root_phase3
+\emph default
+.
+ Some root devices have special setup requirements, and there is a way to
+ call this special setup code.
+ If the dts has specified a configuration for the root device, it is possible
+ to set up an enable_dev function.
+ In other words, for any device, it is possible to call some 'preparation'
+ code for that device.
+ We show an example of such a function below, from the qemu mainboard.
+ First, we show the dts, to show how the chip operations can be enabled.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+The dts for the emulation/qemu target
+\end_layout
+
+\begin_layout LyX-Code
+/{ config="mainboard,emulation,qemu-i386";
+\end_layout
+
+\begin_layout LyX-Code
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+cpus { ...};
+\end_layout
+
+\begin_layout LyX-Code
+%%
+\end_layout
+
+\begin_layout LyX-Code
+struct mainboard_emulation_qemu_i386_config root = { .nothing = 1, }; 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The dts has been shortened for readability.
+ Note the use of the 'config=' in the root.
+ It specifies that there is an initialized structure after the %% in the
+ dts file.
+ The structure is at the bottom.
+ The dts generates the code shown below.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+Code generated for the dts
+\end_layout
+
+\begin_layout LyX-Code
+struct mainboard_emulation_qemu_i386_config root = { .nothing = 1, };
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+struct device dev_root = {
+\end_layout
+
+\begin_layout LyX-Code
+     .path =  { .type = DEVICE_PATH_ROOT },
+\end_layout
+
+\begin_layout LyX-Code
+    .chip_ops = &mainboard_emulation_qemu_i386_ops, 
+\end_layout
+
+\begin_layout LyX-Code
+.
+\end_layout
+
+\begin_layout LyX-Code
+.
+\end_layout
+
+\begin_layout LyX-Code
+.
+\end_layout
+
+\begin_layout LyX-Code
+};
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The code after the %% is reproduced exactly.
+ The dts generates a generic device struct, and initializes the .chip_ops
+ struct member to point to the mainboard_emulation_qemu_i386_ops structure.
+ 
+\end_layout
+
+\begin_layout Standard
+When phase 3 is run, the code checks the chip_ops structure member and,
+ if it is non-zero, checks the chip_ops->enable_dev pointer and, if it is
+ non-zero, calls it.
+ 
+\end_layout
+
+\begin_layout Standard
+The mainboard code is shown below.
+ The enable_dev function will be called in phase 3, 
+\emph on
+before
+\emph default
+ any other enumeration is done for that device.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+What the mainboard file looks like with enable_dev
+\end_layout
+
+\begin_layout LyX-Code
+static void enable_dev(struct device *dev){
+\end_layout
+
+\begin_layout LyX-Code
+    printk(BIOS_INFO, "qemu-i386 enable_dev done
+\backslash
+n");
+\end_layout
+
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout LyX-Code
+struct chip_operations mainboard_emulation_qemu_i386_ops = {
+\end_layout
+
+\begin_layout LyX-Code
+   .name = "QEMU Mainboard",
+\end_layout
+
+\begin_layout LyX-Code
+      .enable_dev = enable_dev
+\end_layout
+
+\begin_layout LyX-Code
+}; 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Root_dev_phase3, which is called with the root 
+\emph on
+device
+\emph default
+, calls dev_phase3, for each device attached to the root device.
+ The devices are, in fact, bridge devices, i.e.
+ the device attached to a bus.
+ Dev_phase3, in turn, checks the bus device to see if it is a non-NULL pointer,
+ if is enabled, if it has ops and a phase 3 ops; if so, the functions calls
+ the bus device's phase 3 op to kick off scanning of busses.
+ 
+\end_layout
+
+\begin_layout Standard
+The phase 3 op is different for each type of bus.
+ For the root bus, which is statically configured, the phase 3 operation
+ walks the set of statically initialized pointers for the root device; for
+ the (e.g.) PCI device, which is much more dynamic, the code does actual probing.
+ 
+\end_layout
+
+\begin_layout Standard
+Some busses require a reset operation after scanning.
+ The dev_phase3 code will scan its subordinate busses, and then test all
+ the busses to see if a reset is needed.
+ If so, for each bus that needs a reset, a reset is performed, and 
+\emph on
+the bus scanning operation is repeated
+\emph default
+ until a reset is no longer needed.
+ 
+\end_layout
+
+\begin_layout Standard
+To sum up, the operation for phase 3, bus scanning, is as follows
+\end_layout
+
+\begin_layout Itemize
+The root device is the starting point for bus scanning
+\end_layout
+
+\begin_layout Itemize
+After some initial setup, including an optional call to the chip_ops->enable_dev
+ method for the root device, the dev_phase3 function is called with the
+ root device as the parameter.
+ 
+\end_layout
+
+\begin_layout Itemize
+The dev_phase3 function, after checking that the bus has the ability to
+ be scanned (i.e.
+ the device has an ops->phase3 pointer), scans the bus by calling the phase3
+ function for the bus.
+ 
+\end_layout
+
+\begin_layout Itemize
+If scanning results in a need for a reset, the reset(s) are performed on
+ the links that need it, and 
+\emph on
+the scan operation is repeated
+\emph default
+.
+ This cycle continues until no resets are needed.
+ 
+\end_layout
+
+\begin_layout Standard
+The per-device phase 3 operation for a bus has a mutually recursive relationship
+ with dev_phase3.
+ The per-device function is called with the pointer to the device that was
+ passed into dev_phase3.
+ The per-device phase 3 iterates over the set of child links (i.e.
+ busses) that are attached to the device and, for each link, checks the
+ chip_ops of the child link device for each link, and determines whether
+ to call the enable_dev for each child link device.
+ The one quite non-intuitive action that some of these functions take is
+ to enable the child link device, whether the child link device is enabled
+ or not in the configuration.
+ This enable is done in order to ensure that child busses are properly enumerate
+d, whether they are enabled or not.
+ 
+\end_layout
+
+\begin_layout Standard
+Once the child link devices have been properly examined and (for some busses)
+ set up for enumeration, the per-device phase 3 operation iterates over
+ the child link devices one more time and calls dev_phase 3 for each child
+ link device.
+ This final loop completes the enumeration for this level of the hierarchy.
+ 
+\end_layout
+
+\begin_layout Standard
+At the end of the per-device phase 3 operation, the structure of the physical
+ device tree has been completely determined, including both the static devices
+ and any dynamic devices, such as cards plugged into PCI slots.
+ For each level of the tree, the structure which define the devices, and
+ busses, have been filled in, and the presence or absence of devices has
+ been determined.
+ At the end of this pass, it is possible to determine what resources each
+ device will need, and to allocate those resources as needed.
+ 
 \end_layout
 
 \begin_layout Subparagraph*
@@ -506,15 +833,94 @@ Post codes:
 \end_layout
 
 \begin_layout Itemize
-Entry: 0x40
+root_dev_phase3 entry: 0x40
 \end_layout
 
 \begin_layout Itemize
-Exit: 0x4f
+After enable_dev is tested and potentially called: 0x41
+\end_layout
+
+\begin_layout Itemize
+dev_phase3 entry: 0x42
+\end_layout
+
+\begin_layout Itemize
+dev_phase3 entry: 0x4e (note: since this is a recursive function, the post
+ codes can cycle from 4e to 43 and back again)
+\end_layout
+
+\begin_layout Itemize
+root_dev_phase3 exit: 0x4f
 \end_layout
 
 \begin_layout Subparagraph*
 Phase 4 
+\end_layout
+
+\begin_layout Standard
+The point of phase 4 is to determine what resources are needed for each
+ device; to allocate those resources; and to configure the devices with
+ those resource values.
+ Resources are determined in one of two ways.
+ Some devices, if present, have static resource requirements (e.g.
+ superio parts, which have a fixed requirement for two I/O addresses).
+ Other devices have resource requirements that can be determined by reading
+ registers (such as Base Address Registers in PCI) and are hence dynamic.
+ 
+\end_layout
+
+\begin_layout Standard
+A similarl mutual recursion is employed, starting again at the root.
+ The root devices phase 4 ops are called with the root device as a parameter.
+ For each link on the device, and for each type of resource that is needed
+ to be determined, the compute_allocate_resource function is called.
+ This function takes a bus, resource, mask, and type as a parameter.
+ As busses as scanned, and resources are read, the mask is applied ot the
+ resource and compared to the type, so as to select the type of resource
+ desired.
+ 
+\end_layout
+
+\begin_layout Standard
+Once the reading of resources is done, the root device has IO resources
+ as resource 0, and mem resources as resource 1.
+ 
+\end_layout
+
+\begin_layout Standard
+After the generic resource reading has been done, there is one special case,
+ for VGA, which overrides the standard hierarchical traversal.
+ If VGA console is enabled, the bridges must be configured in such a way
+ as to pick a 
+\begin_inset Quotes eld
+\end_inset
+
+primary
+\begin_inset Quotes erd
+\end_inset
+
+ VGA device.
+ Once the resources have been enumerated, a function called allocate_vga_resourc
+e is called.
+ This function traverses the devices in non-hierarchical order, and selects
+ one of them as the VGA device for the so-called 
+\begin_inset Quotes eld
+\end_inset
+
+compatibilty chain
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Once this device is selected, the function walkss the tree from the device
+ to the root, enabling the VGA CTL bit in each bridge.
+ 
+\end_layout
+
+\begin_layout Standard
+Once this phase has been done, all the memory and IO resources have been
+ enumerated and allocated to each device, and to each bridge, in the system.
+ This phase is easily the most complex of all the phases in stage 2.
 \end_layout
 
 \begin_layout Subparagraph*

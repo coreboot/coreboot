@@ -26,6 +26,6 @@ include util/kconfig/Makefile
 
 #
 # Compressors
-include util/nrv2b/Makefile
-include util/lzma/Makefile
+#include util/nrv2b/Makefile
+#include util/lzma/Makefile
 

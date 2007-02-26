@@ -17,7 +17,11 @@ desired "payload" can be started by LinuxBIOS. Examples include:
 
  * A Linux kernel
  * FILO (a simple bootloader with filesystem support)
+ * GRUB2 (a free bootloader; support is in development)
  * OpenBIOS (a free IEEE1275-1994 Open Firmware implementation)
+ * Open Firmware (a free IEEE1275-1994 Open Firmware implementation)
+ * SmartFirmware (a free IEEE1275-1994 Open Firmware implementation)
+ * GNUFI (a free, UEFI-compatible firmware)
  * Etherboot (for network booting and booting from raw IDE or FILO)
  * ADLO (for booting Windows 2000 or OpenBSD)
  * Plan 9 (a distributed operating system)

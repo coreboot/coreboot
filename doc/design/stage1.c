@@ -1,4 +1,4 @@
-/* the standard linuxbios include file has constant definitions, types and so on */
+/* the standard LinuxBIOS include file has constant definitions, types and so on */
 #include <linuxbios.h>
 
 #if 0
@@ -16,7 +16,7 @@ northbridge/amd/amdk8/setup_resource_map.c -- map of 18.1 device for routing
 #endif
 
 /* there is a global struct used by main, that is the dtb tree */
-/* it is built when the linuxbios image is built */
+/* it is built when the LinuxBIOS image is built */
 /* it is linked in, as it is generated as a C struct */
 extern struct dtb *dtb;
 

@@ -392,7 +392,7 @@ static struct emitter C_emitter = {
 };
 
 
-/* linuxbios static.c */
+/* LinuxBIOS static.c */
 
 static void linuxbios_emit_cell(void *e, cell_t val)
 {

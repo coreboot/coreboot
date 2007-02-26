@@ -25,7 +25,7 @@ SILENT := &> /dev/null
 
 # Build the final ROM image
 #
-# These are the main linuxbios components. Do not change the order unless you
+# These are the main LinuxBIOS components. Do not change the order unless you
 # know exactly what you are doing.
 #
 
@@ -105,7 +105,7 @@ $(obj)/stage0.init:
 
 
 #
-# This is the rest of linuxbios (v2: linuxbios_ram.rom) 
+# This is the rest of LinuxBIOS (v2: linuxbios_ram.rom) 
 # Is this maybe platform independent, except for the "drivers"? 
 # Where should it be built, maybe in device/ ?
 #

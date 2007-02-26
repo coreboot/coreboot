@@ -22,7 +22,7 @@
 
 #include <stdint.h>
 
-/* The linuxbios table information is for conveying information
+/* The LinuxBIOS table information is for conveying information
  * from the firmware to the loaded OS image.  Primarily this
  * is expected to be information that cannot be discovered by
  * other means, such as quering the hardware directly.

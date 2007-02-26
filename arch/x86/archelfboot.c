@@ -73,7 +73,7 @@ int elf_check_arch(Elf_ehdr *ehdr)
   */
 void jmp_to_elf_entry(void *entry)
 {
-	int (*v)() = entry;
+	int (*v)(void) = entry;
 	v();
 }
 

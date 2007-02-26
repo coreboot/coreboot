@@ -89,11 +89,9 @@ static int load_elf_segments(struct lb_memory *mem,unsigned char *header, int he
         ehdr = (Elf_ehdr *)header;
         phdr = (Elf_phdr *)(&header[ehdr->e_phoff]);
 
-	struct segment *ptr;
 	int i;
 	int size;
 	for(i = 0; i < headers; i++) {
-		struct segment *new;
 		/* Ignore data that I don't need to handle */
 		if (phdr[i].p_type != PT_LOAD) {
 			printk(BIOS_DEBUG, "Dropping non PT_LOAD segment\n");
@@ -138,8 +136,6 @@ int elfload(struct lb_memory *mem, unsigned char *header, unsigned long header_s
 {
 	Elf_ehdr *ehdr;
 	void *entry;
-	void (*v)(void);
-	struct verify_callback *cb_chain;
 
 	ehdr = (Elf_ehdr *)header;
 	entry = (void *)(ehdr->e_entry);

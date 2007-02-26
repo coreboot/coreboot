@@ -18,14 +18,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-#
-# This stuff is always needed
-include util/lar/Makefile
-include util/dtc/Makefile
-include util/kconfig/Makefile
-
-#
-# Compressors
-include util/nrv2b/Makefile
-include util/lzma/Makefile
+$(obj)/%.o: $(src)/device/%.c
+	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
 

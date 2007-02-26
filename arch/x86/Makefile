@@ -18,6 +18,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
+ifeq ($(CONFIG_ARCH_X86),y)
+
 INITCFLAGS := $(CFLAGS) -I$(src)/include/cpu/generic/x86 -I$(src)/include \
 		-fno-builtin
 
@@ -44,16 +46,16 @@ $(obj)/linuxbios.rom: $(patsubst %,$(obj)/%,$(LINUXBIOS_COMPONENTS))
 #
 
 $(obj)/linuxbios.lar: $(obj)/util/lar/lar lzma $(obj)/linuxbios.initram $(obj)/linuxbios.stage2 payload
-	$(Q)echo "Building LinuxBIOS archive... "
+	$(Q)printf "Building LinuxBIOS archive... \n"
 	$(Q)rm -rf $(obj)/lar.tmp
 	$(Q)mkdir $(obj)/lar.tmp
 	$(Q)mkdir $(obj)/lar.tmp/normal
 	$(Q)cp $(obj)/linuxbios.initram $(obj)/lar.tmp/normal/initram
 	$(Q)cp $(obj)/linuxbios.stage2 $(obj)/lar.tmp/normal/stage2
 	$(Q)cp $(PAYLOAD) $(obj)/lar.tmp/normal/payload
-	$(Q)echo -n "  "
+	$(Q)printf "  "
 	$(Q)cd $(obj)/lar.tmp && ../util/lar/lar c ../linuxbios.lar.pre normal/initram normal/stage2 normal/payload
-	$(Q)# TODO: Dynamically pad the LAR archive. bs is image size - bootblock size (8k)
+	$(Q)# TODO: Dynamically pad the LAR archive. bs is image size - bootblock size (16k)
 	$(Q)dd if=$(obj)/linuxbios.lar.pre of=$(obj)/linuxbios.lar \
 		  bs=245760 count=1 conv=sync $(SILENT)
 
@@ -64,47 +66,36 @@ $(obj)/linuxbios.lar: $(obj)/util/lar/lar lzma $(obj)/linuxbios.initram $(obj)/l
 # initram module and the various stages and payload files.
 #
 
-$(obj)/stage0.init: 
-	$(Q)echo -n "Building stage0.init... "
-	$(Q)# Building asm stub
-	$(Q)$(CC) -E $(LINUXBIOSINCLUDE) $(src)/arch/x86/stage0_i586.S \
-		-o $(obj)/stage0_i586.s -DBOOTBLK=0x1f00 -DRESRVED=0xf0 \
-		-DDATE=\"`date +%Y/%m/%d`\"
-	$(Q)$(AS) $(obj)/stage0_i586.s -o $(obj)/stage0_i586.o
-	$(Q)# Building cachemain
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/arch/x86/cachemain.c \
-		-o $(obj)/cachemain.o
+STAGE0_CONSOLE_OBJ   = $(obj)/vtxprintf.o $(obj)/vsprintf.o
+STAGE0_LIB_OBJ       = $(obj)/uart8250.o $(obj)/mem.o $(obj)/elfboot.o \
+		       $(obj)/lar.o
+STAGE0_ARCH_X86_OBJ  = $(obj)/cachemain.o $(obj)/console.o $(obj)/serial.o \
+		       $(obj)/archelfboot.o
 
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/lar.c -o $(obj)/lar.o
-	
-	$(Q)# console lib
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/arch/x86/console.c -o $(obj)/console.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/arch/x86/serial.c -o $(obj)/serial.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/arch/x86/archelfboot.c -o $(obj)/archelfboot.o $(SILENT)
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/console/vtxprintf.c -o $(obj)/vtxprintf.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/console/vsprintf.c -o $(obj)/vsprintf.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/uart8250.c -o $(obj)/uart8250.o
-	$(Q)# other lib parts
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/mem.c -o $(obj)/mem.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/elfboot.c -o $(obj)/elfboot.o $(SILENT)
 
-	$(Q)cd $(obj); $(CC) -m32 -nostdlib -static \
-		-T $(src)/arch/x86/ldscript.ld cachemain.o \
-		console.o uart8250.o serial.o archelfboot.o vtxprintf.o \
-		vsprintf.o lar.o elfboot.o mem.o stage0_i586.o -o stage0.o
+ifeq ($(CONFIG_CAR_TYPE_I586),y)
+  STAGE0_CAR_OBJ = $(obj)/stage0_i586.o
+else
+  STAGE0_CAR_OBJ = $(obj)/stage0_i586.o
+endif
 
-	$(Q)objcopy -O binary $(obj)/stage0.o $(obj)/stage0.init.pre
+STAGE0_OBJ := $(STAGE0_CONSOLE_OBJ) $(STAGE0_LIB_OBJ) $(STAGE0_ARCH_X86_OBJ) $(STAGE0_CAR_OBJ)
 
-	$(Q)# Pad boot block to 0x4000 - 0x100.
-	$(Q)# We will probably remove this step -- not needed if we continue
-	$(Q)# with ldscript.ld.
+$(obj)/stage0.init: $(STAGE0_OBJ)
+	$(Q)printf "Building stage0.init... "
 
-	$(Q)dd if=$(obj)/stage0.init.pre of=$(obj)/stage0.init \
-		bs=16128 conv=sync $(SILENT)
-	$(Q)# echo "Len: `wc -c < $(obj)/stage0.init.pre`"
+	$(Q)# We need to be careful. If stage0.o gets bigger than 
+	$(Q)# 0x4000 - 0x100, we will end up with a 4 gig file. 
+	$(Q)# I wonder if that behavior is on purpose.
 
-	$(Q)test `wc -c < $(obj)/stage0.init.pre` -gt 16128 && echo "Error. Bootblock got too big" || true
-	$(Q)echo "done"
+	$(Q)$(CC) -nostdlib -static -T $(src)/arch/x86/ldscript.ld \
+		$(STAGE0_OBJ) -o $(obj)/stage0.o
+
+	$(Q)objcopy -O binary $(obj)/stage0.o $(obj)/stage0.init
+
+	$(Q)test `wc -c < $(obj)/stage0.init` -gt 16128 && \
+		printf "Error. Bootblock got too big.\n" || true
+	$(Q)printf "done\n"
 
 
 #
@@ -115,32 +106,24 @@ $(obj)/stage0.init:
 # TODO: This should be compressed with the default compressor.
 #
 
-$(obj)/linuxbios.stage2: $(obj)/stage0.init $(obj)/statictree.o
-	$(Q)echo -n "Building linuxbios.stage2... "
-	$(Q)# main
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/arch/x86/archtables.c -o $(obj)/archtables.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/arch/x86/linuxbios_table.c -o $(obj)/linuxbios_table.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/device/device.c -o $(obj)/device.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/device/device_util.c -o $(obj)/device_util.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/device/root_device.c -o $(obj)/root_device.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/clog2.c -o $(obj)/clog2.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/mem.c -o $(obj)/mem.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/malloc.c -o $(obj)/malloc.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/stage2.c -o $(obj)/stage2.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/tables.c -o $(obj)/tables.o
-	$(Q)$(CC) $(INITCFLAGS) -c -I$(src) $(obj)/statictree.c -o $(obj)/statictree.o
-	$(Q)$(CC) $(INITCFLAGS) -c mainboard/$(MAINBOARDDIR)/mainboard.c -o $(obj)/mainboard.o
+STAGE2_LIB_OBJ       = $(obj)/clog2.o $(obj)/mem.o $(obj)/malloc.o \
+		       $(obj)/stage2.o #$(obj)/tables.o
+STAGE2_DEVICE_OBJ    = $(obj)/device.o $(obj)/device_util.o \
+		       $(obj)/root_device.o
+STAGE2_ARCH_X86_OBJ  = $(obj)/archtables.o (obj)/linuxbios_table.o
+STAGE2_MAINBOARD_OBJ = $(obj)/mainboard.o
+STAGE2_DYNAMIC_OBJ   = $(obj)/statictree.o
 
+STAGE2_OBJ := $(STAGE2_LIB_OBJ) $(STAGE2_DEVICE_OBJ) $(STAGE2_ARCH_X86_OBJ)
+STAGE2_OBJ += $(STAGE2_MAINBOARD_OBJ) $(STAGE2_DYNAMIC_OBJ)
+
+$(obj)/linuxbios.stage2: $(obj)/stage0.init $(STAGE2_OBJ)
+	$(Q)printf "Building linuxbios.stage2... "
 	$(Q)# leave a .o with full symbols in it for debugging.
-	$(Q)cd $(obj); $(LD) -R $(obj)/stage0.o -Ttext 0x1000  \
-		--entry=stage2 -o $(obj)/linuxbios.stage2.o \
-		archtables.o linuxbios_table.o device.o device_util.o root_device.o  \
-		 clog2.o mem.o malloc.o mainboard.o stage2.o tables.o\
-		statictree.o
+	$(Q)$(LD) -R $(obj)/stage0.o -Ttext 0x1000 --entry=stage2 \
+		  -o $(obj)/linuxbios.stage2.o $(STAGE2_OBJ) 
 	$(Q)objcopy -O binary $(obj)/linuxbios.stage2.o $(obj)/linuxbios.stage2
-
-	$(Q)chmod 644 $(obj)/linuxbios.stage2
-	$(Q)echo "done"
+	$(Q)printf "done\n"
 
 #
 # The payload as we love it. Get it from somewhere.
@@ -151,5 +134,22 @@ $(obj)/linuxbios.stage2: $(obj)/stage0.init $(obj)/statictree.o
 #
 
 payload:
-	$(Q)echo "Building payload... skipped"
+	$(Q)printf "Building payload... skipped\n"
 
+
+# build rules
+#
+$(obj)/%.o: $(src)/arch/x86/%.c
+	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
+
+$(obj)/%.o: $(src)/mainboard/$(MAINBOARDDIR)/%.c
+	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
+
+# Building asm stub
+$(obj)/stage0%.o: $(src)/arch/x86/stage0%.S
+	$(Q)$(CC) -E $(LINUXBIOSINCLUDE) $< \
+		-o $(obj)/stage0_asm.s -DBOOTBLK=0x1f00 -DRESRVED=0xf0 \
+		-DDATE=\"`date +%Y/%m/%d`\"
+	$(Q)$(AS) $(obj)/stage0_asm.s -o $@
+
+endif

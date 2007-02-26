@@ -21,3 +21,6 @@
 config ARCH_X86
 	boolean
 
+config CAR_TYPE_I586
+	boolean
+

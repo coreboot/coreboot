@@ -118,21 +118,24 @@ $(obj)/stage0.init:
 $(obj)/linuxbios.stage2: $(obj)/stage0.init $(obj)/statictree.o
 	$(Q)echo -n "Building linuxbios.stage2... "
 	$(Q)# main
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/stage2.c -o $(obj)/stage2.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/arch/x86/archtables.c -o $(obj)/archtables.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/arch/x86/linuxbios_tables.c -o $(obj)/linuxbios_tables.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/device/device.c -o $(obj)/device.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/device/device_util.c -o $(obj)/device_util.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/device/root_device.c -o $(obj)/root_device.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/clog2.c -o $(obj)/clog2.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/mem.c -o $(obj)/mem.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/malloc.c -o $(obj)/malloc.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/clog2.c -o $(obj)/clog2.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/stage2.c -o $(obj)/stage2.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/tables.c -o $(obj)/tables.o
 	$(Q)$(CC) $(INITCFLAGS) -c -I$(src) $(obj)/statictree.c -o $(obj)/statictree.o
 	$(Q)$(CC) $(INITCFLAGS) -c mainboard/$(MAINBOARDDIR)/mainboard.c -o $(obj)/mainboard.o
 
 	$(Q)# leave a .o with full symbols in it for debugging.
 	$(Q)cd $(obj); $(LD) -R $(obj)/stage0.o -Ttext 0x1000  \
 		--entry=stage2 -o $(obj)/linuxbios.stage2.o \
-		stage2.o device.o device_util.o root_device.o \
-		mem.o malloc.o clog2.o mainboard.o \
+		archtables.o linuxbios_tables.o device.o device_util.o root_device.o  \
+		 clog2.o mem.o malloc.o mainboard.o stage2.o tables.o\
 		statictree.o
 	$(Q)objcopy -O binary $(obj)/linuxbios.stage2.o $(obj)/linuxbios.stage2
 

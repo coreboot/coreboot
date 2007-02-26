@@ -19,44 +19,43 @@
 ##
 
 #
-# VPD or SIP ROM or ... how does nvidia call it? 
-# Some space to cope with dirty southbridge tricks. 
+# VPD or SIP ROM or ... how does NVIDIA call it?
+# Some space to cope with dirty southbridge tricks.
 # Do we want to put our own stuff there, too?
 #
 
 $(obj)/linuxbios.vpd:
-	$(Q)printf "Building dummy VPD ..."
+	$(Q)printf "Building dummy VPD... "
 	$(Q)dd if=/dev/zero of=$(obj)/linuxbios.vpd bs=256 count=1 $(SILENT)
-	$(Q)printf "ok.\n"
-
+	$(Q)printf "done\n"
 
 #
-# this is going to be the init ram code:
+# This is going to be the init RAM code:
 #
-# initram is always uncompressed. It belongs into the mainboard directory
-# and is build from what was auto.c in v2
+# Initram is always uncompressed. It belongs into the mainboard directory
+# and is built from what was auto.c in v2.
 #
 
-$(obj)/linuxbios.initram: $(obj)/stage0.init $(obj)/stage0.o 
-	$(Q)echo Building linuxbios.initram
+$(obj)/linuxbios.initram: $(obj)/stage0.init $(obj)/stage0.o
+	$(Q)echo "Building linuxbios.initram... "
 	# initram links against stage0
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/mainboard/$(MAINBOARDDIR)/initram.c -o $(obj)/initram.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
+		-o $(obj)/initram.o
 	$(Q)$(LD) -R $(obj)/stage0.o -Ttext 0x80000  $(obj)/initram.o \
 		--entry=main -o $(obj)/linuxbios.initram.o
-
-	$(Q)objcopy -O binary $(obj)/linuxbios.initram.o $(obj)/linuxbios.initram
-
+	$(Q)objcopy -O binary $(obj)/linuxbios.initram.o \
+		$(obj)/linuxbios.initram
 	$(Q)chmod 644 $(obj)/linuxbios.initram
 
+#
+# Miscellaneous important targets.
+#
 
-# miscellaneous important targets. 
 $(obj)/mainboard.o: $(obj)/statictree.o
 
-$(obj)/statictree.o:  $(obj)/statictree.c
+$(obj)/statictree.o: $(obj)/statictree.c
 	$(Q)$(CC) $(CFLAGS) $(LINUXBIOSINCLUDE) -c -o $(obj)/statictree.o $(obj)/statictree.c
 
 $(obj)/statictree.c: mainboard/$(MAINBOARDDIR)/dts $(obj)/util/dtc/dtc
 	$(Q)$(obj)/util/dtc/dtc -O lb mainboard/$(MAINBOARDDIR)/dts >$(obj)/statictree.c
-
-
 

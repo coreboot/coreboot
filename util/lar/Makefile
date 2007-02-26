@@ -21,14 +21,14 @@
 SOURCE := lar.c create.c extract.c list.c lib.c
 
 $(obj)/util/lar/lar: $(patsubst %,$(src)/util/lar/%,$(SOURCE))
-	$(Q)printf "Building LAR utility..."
+	$(Q)printf "Building LAR utility... "
 	$(Q)mkdir -p $(obj)/util/lar
 	$(Q)$(HOSTCC) $(HOSTCFLAGS) -o $@ $^
-	$(Q)printf "done.\n"
+	$(Q)printf "done\n"
 
 
 ## --------------------------------------------------------------------
-## stuff below this line is for debugging purposes only.
+## Stuff below this line is for debugging purposes only.
 
 ifdef DEBUG_LAR
 example: example.c

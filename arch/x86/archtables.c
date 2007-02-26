@@ -22,6 +22,7 @@
 /* 2006.1 yhlu add mptable cross 0x467 processing */
 
 #include <console/console.h>
+#include <string.h>
 //#include <cpu/cpu.h>
 //#include <boot/tables.h>
 //#include <boot/linuxbios_tables.h>
@@ -31,8 +32,8 @@
 #include <tables.h>
 
 // Global Descriptor Table, defined in c_start.S
-extern uint8_t gdt;
-extern uint8_t gdt_end;
+extern u8 gdt;
+extern u8 gdt_end;
 
 /* i386 lgdt argument */
 struct gdtarg {
@@ -45,15 +46,15 @@ struct gdtarg {
 // Ported from Etherboot to LinuxBIOS 2005-08 by Steve Magnani
 void move_gdt(unsigned long newgdt)
 {
-	uint16_t num_gdt_bytes = &gdt_end - &gdt;
+	u16 num_gdt_bytes = &gdt_end - &gdt;
 	struct gdtarg gdtarg;
 
-	printk_debug("Moving GDT to %#lx...", newgdt);
+	printk(BIOS_DEBUG,"Moving GDT to %#lx...", newgdt);
 	memcpy((void*)newgdt, &gdt, num_gdt_bytes);
 	gdtarg.base = newgdt;
 	gdtarg.limit = num_gdt_bytes - 1;
 	__asm__ __volatile__ ("lgdt %0\n\t" : : "m" (gdtarg));
-	printk_debug("ok\n");
+	printk(BIOS_DEBUG,"ok\n");
 }
 
 struct lb_memory *write_tables(void)
@@ -72,23 +73,23 @@ struct lb_memory *write_tables(void)
 	post_code(0x9a);
 
 	/* This table must be betweeen 0xf0000 & 0x100000 */
-	rom_table_end = write_pirq_routing_table(rom_table_end);
-	rom_table_end = (rom_table_end + 1023) & ~1023;
+//	rom_table_end = write_pirq_routing_table(rom_table_end);
+//	rom_table_end = (rom_table_end + 1023) & ~1023;
 
 	/* Write ACPI tables */
 	/* write them in the rom area because DSDT can be large (8K on epia-m) which
 	 * pushes linuxbios table out of first 4K if set up in low table area 
          */
 
-	rom_table_end = write_acpi_tables(rom_table_end);
-	rom_table_end = (rom_table_end+1023) & ~1023;
+//	rom_table_end = write_acpi_tables(rom_table_end);
+//	rom_table_end = (rom_table_end+1023) & ~1023;
 
 	/* copy the smp block to address 0 */
 	post_code(0x96);
 
 	/* The smp table must be in 0-1K, 639K-640K, or 960K-1M */
-	new_low_table_end = write_smp_table(low_table_end);
-
+//	new_low_table_end = write_smp_table(low_table_end);
+#if 0
 #if HAVE_MP_TABLE==1
         /* Don't write anything in the traditional x86 BIOS data segment,
          * for example the linux kernel smp need to use 0x467 to pass reset vector
@@ -98,7 +99,7 @@ struct lb_memory *write_tables(void)
                 /* We can not put mptable here, we need to copy them to somewhere else*/
                 if((rom_table_end+mptable_size)<0x100000) {
                         /* We can copy mptable on rom_table, and leave low space for lbtable  */
-                        printk_debug("move mptable to 0x%0x\n", rom_table_end);
+                        printk(BIOS_DEBUG,"move mptable to 0x%0x\n", rom_table_end);
                         memcpy((unsigned char *)rom_table_end, (unsigned char *)(low_table_end+SMP_FLOATING_TABLE_LEN), mptable_size);
                         memset((unsigned char *)low_table_end, '\0', mptable_size + SMP_FLOATING_TABLE_LEN);
                         smp_write_floating_table_physaddr(low_table_end, rom_table_end);
@@ -107,7 +108,7 @@ struct lb_memory *write_tables(void)
                         rom_table_end = (rom_table_end+1023) & ~1023;
                 } else {
                         /* We can need to put mptable low and from 0x500 */
-                        printk_debug("move mptable to 0x%0x\n", 0x500);
+                        printk(BIOS_DEBUG,"move mptable to 0x%0x\n", 0x500);
                         memcpy((unsigned char *)0x500, (unsigned char *)(low_table_end+SMP_FLOATING_TABLE_LEN), mptable_size);
                         memset((unsigned char *)low_table_end, '\0', 0x500-low_table_end);
                         smp_write_floating_table_physaddr(low_table_end, 0x500);
@@ -115,6 +116,7 @@ struct lb_memory *write_tables(void)
                 }
         }
 #endif 
+#endif
 
 	/* Don't write anything in the traditional x86 BIOS data segment */
 	if (low_table_end < 0x500) {

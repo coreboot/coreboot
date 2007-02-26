@@ -22,6 +22,9 @@
 #include <arch/types.h>
 // #include "dtc.h"
 
+char *mainboard_vendor = "emulation";
+char *mainboard_part_number = "qemu-x86";
+
 static void enable_dev(struct device *dev){
 	printk(BIOS_INFO, "qemu-i386 enable_dev done\n");
 }

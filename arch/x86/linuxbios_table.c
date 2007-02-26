@@ -21,11 +21,15 @@
 
 #include <console/console.h>
 //#include <ip_checksum.h>
-#include <tables.h>
 #include <string.h>
-#include <version.h>
-#include <device/device.h>
-#include <stdlib.h>
+//#include <cpu/cpu.h>
+//#include <boot/tables.h>
+//#include <boot/linuxbios_tables.h>
+//#include <arch/pirq_routing.h>
+//#include <arch/smp/mpspec.h>
+//#include <arch/acpi.h>
+#include <tables.h>
+
 
 struct lb_header *lb_table_init(unsigned long addr)
 {
@@ -98,6 +102,7 @@ struct lb_mainboard *lb_mainboard(struct lb_header *header)
 {
 	struct lb_record *rec;
 	struct lb_mainboard *mainboard;
+	extern char *mainboard_vendor, *mainboard_part_number;
 	rec = lb_new_record(header);
 	mainboard = (struct lb_mainboard *)rec;
 	mainboard->tag = LB_TAG_MAINBOARD;
@@ -127,21 +132,25 @@ struct cmos_checksum *lb_cmos_checksum(struct lb_header *header)
 	cmos_checksum->tag = LB_TAG_OPTION_CHECKSUM;
 
 	cmos_checksum->size = (sizeof(*cmos_checksum));
-
+/*
 	cmos_checksum->range_start = LB_CKS_RANGE_START * 8;
 	cmos_checksum->range_end = ( LB_CKS_RANGE_END * 8 ) + 7;
 	cmos_checksum->location = LB_CKS_LOC * 8;
 	cmos_checksum->type = CHECKSUM_PCBIOS;
-	
+ */
+#warning "Fix up LBCKSUM in linuxbios_table.c"
 	return cmos_checksum;
 }
 
 void lb_strings(struct lb_header *header)
 {
+#warning "Fill in the strings in lb_strings -- needs Makefile changes"
 	static const struct {
-		uint32_t tag;
-		const uint8_t *string;
+		u32 tag;
+		const u8 *string;
 	} strings[] = {
+		{ LB_TAG_VERSION,        "3 -- FIXME",        },
+/*
 		{ LB_TAG_VERSION,        linuxbios_version,        },
 		{ LB_TAG_EXTRA_VERSION,  linuxbios_extra_version,  },
 		{ LB_TAG_BUILD,          linuxbios_build,          },
@@ -152,6 +161,7 @@ void lb_strings(struct lb_header *header)
 		{ LB_TAG_COMPILER,       linuxbios_compiler,       },
 		{ LB_TAG_LINKER,         linuxbios_linker,         },
 		{ LB_TAG_ASSEMBLER,      linuxbios_assembler,      },
+*/
 	};
 	unsigned int i;
 	for(i = 0; i < sizeof(strings)/sizeof(strings[0]); i++) {
@@ -167,7 +177,7 @@ void lb_strings(struct lb_header *header)
 }
 
 void lb_memory_range(struct lb_memory *mem,
-	uint32_t type, uint64_t start, uint64_t size)
+	u32 type, u64 start, u64 size)
 {
 	int entries;
 	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
@@ -181,8 +191,8 @@ static void lb_reserve_table_memory(struct lb_header *head)
 {
 	struct lb_record *last_rec;
 	struct lb_memory *mem;
-	uint64_t start;
-	uint64_t end;
+	u64 start;
+	u64 end;
 	int i, entries;
 
 	last_rec = lb_last_record(head);
@@ -195,8 +205,8 @@ static void lb_reserve_table_memory(struct lb_header *head)
 	 * setup so that is all we need to do.
 	 */
 	for(i = 0; i < entries; i++ ) {
-		uint64_t map_start = unpack_lb64(mem->map[i].start);
-		uint64_t map_end = map_start + unpack_lb64(mem->map[i].size);
+		u64 map_start = unpack_lb64(mem->map[i].start);
+		u64 map_end = map_start + unpack_lb64(mem->map[i].size);
 		/* Does this area need to be expanded? */
 		if (map_end == start) {
 			mem->map[i].size = pack_lb64(end - map_start);
@@ -221,7 +231,7 @@ unsigned long lb_table_fini(struct lb_header *head)
 	head->table_checksum = 0; //compute_ip_checksum(first_rec, head->table_bytes);
 	head->header_checksum = 0;
 	head->header_checksum = 0; //compute_ip_checksum(head, sizeof(*head));
-	printk_debug("Wrote linuxbios table at: %p - %p  checksum %lx\n",
+	printk(BIOS_DEBUG,"Wrote linuxbios table at: %p - %p  checksum %lx\n",
 		head, rec, head->table_checksum);
 	return (unsigned long)rec;
 }
@@ -234,9 +244,9 @@ static void lb_cleanup_memory_ranges(struct lb_memory *mem)
 	
 	/* Sort the lb memory ranges */
 	for(i = 0; i < entries; i++) {
-		uint64_t entry_start = unpack_lb64(mem->map[i].start);
+		u64 entry_start = unpack_lb64(mem->map[i].start);
 		for(j = i; j < entries; j++) {
-			uint64_t temp_start = unpack_lb64(mem->map[j].start);
+			u64 temp_start = unpack_lb64(mem->map[j].start);
 			if (temp_start < entry_start) {
 				struct lb_memory_range tmp;
 				tmp = mem->map[i];
@@ -248,7 +258,7 @@ static void lb_cleanup_memory_ranges(struct lb_memory *mem)
 
 	/* Merge adjacent entries */
 	for(i = 0; (i + 1) < entries; i++) {
-		uint64_t start, end, nstart, nend;
+		u64 start, end, nstart, nend;
 		if (mem->map[i].type != mem->map[i + 1].type) {
 			continue;
 		}
@@ -279,9 +289,9 @@ static void lb_cleanup_memory_ranges(struct lb_memory *mem)
 }
 
 static void lb_remove_memory_range(struct lb_memory *mem, 
-	uint64_t start, uint64_t size)
+	u64 start, u64 size)
 {
-	uint64_t end;
+	u64 end;
 	int entries;
 	int i;
 
@@ -290,8 +300,8 @@ static void lb_remove_memory_range(struct lb_memory *mem,
 
 	/* Remove a reserved area from the memory map */
 	for(i = 0; i < entries; i++) {
-		uint64_t map_start = unpack_lb64(mem->map[i].start);
-		uint64_t map_end   = map_start + unpack_lb64(mem->map[i].size);
+		u64 map_start = unpack_lb64(mem->map[i].start);
+		u64 map_end   = map_start + unpack_lb64(mem->map[i].size);
 		if ((start <= map_start) && (end >= map_end)) {
 			/* Remove the completely covered range */
 			memmove(&mem->map[i], &mem->map[i + 1], 
@@ -328,7 +338,7 @@ static void lb_remove_memory_range(struct lb_memory *mem,
 }
 
 static void lb_add_memory_range(struct lb_memory *mem,
-	uint32_t type, uint64_t start, uint64_t size)
+	u32 type, u64 start, u64 size)
 {
 	lb_remove_memory_range(mem, start, size);
 	lb_memory_range(mem, type, start, size);
@@ -384,7 +394,7 @@ unsigned long write_linuxbios_table(
 		head = lb_table_init(low_table_end);
 		low_table_end = (unsigned long)head;
 	}
-
+#if 0
 	if (HAVE_OPTION_TABLE == 1) {
 		struct lb_record *rec_dest, *rec_src;
 		/* Write the option config table... */
@@ -394,6 +404,7 @@ unsigned long write_linuxbios_table(
 		/* Create cmos checksum entry in linuxbios table */
 		lb_cmos_checksum(head);
 	}
+#endif
 	/* Record where RAM is located */
 	mem = build_lb_mem(head);
 	

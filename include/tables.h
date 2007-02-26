@@ -56,7 +56,7 @@ struct lb_memory *write_tables(void);
 
 /* Since LinuxBIOS is usually compiled 32bit, gcc will align 64bit 
  * types to 32bit boundaries. If the LinuxBIOS table is dumped on a 
- * 64bit system, a uint64_t would be aligned to 64bit boundaries, 
+ * 64bit system, a u64 would be aligned to 64bit boundaries, 
  * breaking the table format.
  *
  * lb_uint64 will keep 64bit LinuxBIOS table values aligned to 32bit
@@ -67,19 +67,19 @@ struct lb_memory *write_tables(void);
  */
 
 struct lb_uint64 {
-	uint32_t lo;
-	uint32_t hi;
+	u32 lo;
+	u32 hi;
 };
 
-static inline uint64_t unpack_lb64(struct lb_uint64 value)
+static inline u64 unpack_lb64(struct lb_uint64 value)
 {
-        uint64_t result;
+        u64 result;
         result = value.hi;
         result = (result << 32) + value.lo;
         return result;
 }
 
-static inline struct lb_uint64 pack_lb64(uint64_t value)
+static inline struct lb_uint64 pack_lb64(u64 value)
 {
         struct lb_uint64 result;
         result.lo = (value >> 0) & 0xffffffff;
@@ -91,12 +91,12 @@ static inline struct lb_uint64 pack_lb64(uint64_t value)
 
 struct lb_header
 {
-	uint8_t  signature[4]; /* LBIO */
-	uint32_t header_bytes;
-	uint32_t header_checksum;
-	uint32_t table_bytes;
-	uint32_t table_checksum;
-	uint32_t table_entries;
+	u8  signature[4]; /* LBIO */
+	u32 header_bytes;
+	u32 header_checksum;
+	u32 table_bytes;
+	u32 table_checksum;
+	u32 table_entries;
 };
 
 /* Every entry in the boot enviroment list will correspond to a boot
@@ -106,8 +106,8 @@ struct lb_header
  * forward compatibility with records not yet defined.
  */
 struct lb_record {
-	uint32_t tag;		/* tag ID */
-	uint32_t size;		/* size of record (in bytes) */
+	u32 tag;		/* tag ID */
+	u32 size;		/* size of record (in bytes) */
 };
 
 #define LB_TAG_UNUSED	0x0000
@@ -117,32 +117,32 @@ struct lb_record {
 struct lb_memory_range {
 	struct lb_uint64 start;
 	struct lb_uint64 size;
-	uint32_t type;
+	u32 type;
 #define LB_MEM_RAM       1	/* Memory anyone can use */
 #define LB_MEM_RESERVED  2	/* Don't use this memory region */
 #define LB_MEM_TABLE     16	/* Ram configuration tables are kept in */
 };
 
 struct lb_memory {
-	uint32_t tag;
-	uint32_t size;
+	u32 tag;
+	u32 size;
 	struct lb_memory_range map[0];
 };
 
 #define LB_TAG_HWRPB	0x0002
 struct lb_hwrpb {
-	uint32_t tag;
-	uint32_t size;
-	uint64_t hwrpb;
+	u32 tag;
+	u32 size;
+	u64 hwrpb;
 };
 
 #define LB_TAG_MAINBOARD	0x0003
 struct lb_mainboard {
-	uint32_t tag;
-	uint32_t size;
-	uint8_t  vendor_idx;
-	uint8_t  part_number_idx;
-	uint8_t  strings[0];
+	u32 tag;
+	u32 size;
+	u8  vendor_idx;
+	u8  part_number_idx;
+	u8  strings[0];
 };
 
 #define LB_TAG_VERSION		0x0004
@@ -156,18 +156,18 @@ struct lb_mainboard {
 #define LB_TAG_LINKER		0x000c
 #define LB_TAG_ASSEMBLER	0x000d
 struct lb_string {
-	uint32_t tag;
-	uint32_t size;
-	uint8_t  string[0];
+	u32 tag;
+	u32 size;
+	u8  string[0];
 };
 
 /* The following structures are for the cmos definitions table */
 #define LB_TAG_CMOS_OPTION_TABLE 200
 /* cmos header record */
 struct cmos_option_table {
-	uint32_t tag;               /* CMOS definitions table type */
-	uint32_t size;               /* size of the entire table */
-	uint32_t header_length;      /* length of header */
+	u32 tag;               /* CMOS definitions table type */
+	u32 size;               /* size of the entire table */
+	u32 header_length;      /* length of header */
 };
 
 /* cmos entry record
@@ -179,14 +179,14 @@ struct cmos_option_table {
 */
 #define LB_TAG_OPTION 201
 struct cmos_entries {
-	uint32_t tag;                /* entry type */
-	uint32_t size;               /* length of this record */
-	uint32_t bit;                /* starting bit from start of image */
-	uint32_t length;             /* length of field in bits */
-	uint32_t config;             /* e=enumeration, h=hex, r=reserved */
-	uint32_t config_id;          /* a number linking to an enumeration record */
+	u32 tag;                /* entry type */
+	u32 size;               /* length of this record */
+	u32 bit;                /* starting bit from start of image */
+	u32 length;             /* length of field in bits */
+	u32 config;             /* e=enumeration, h=hex, r=reserved */
+	u32 config_id;          /* a number linking to an enumeration record */
 #define CMOS_MAX_NAME_LENGTH 32
-	uint8_t name[CMOS_MAX_NAME_LENGTH]; /* name of entry in ascii, 
+	u8 name[CMOS_MAX_NAME_LENGTH]; /* name of entry in ascii, 
 					       variable length int aligned */
 };
 
@@ -197,12 +197,12 @@ struct cmos_entries {
 */
 #define LB_TAG_OPTION_ENUM 202
 struct cmos_enums {
-	uint32_t tag;		     /* enumeration type */
-	uint32_t size; 		     /* length of this record */
-	uint32_t config_id;          /* a number identifying the config id */
-	uint32_t value;              /* the value associated with the text */
+	u32 tag;		     /* enumeration type */
+	u32 size; 		     /* length of this record */
+	u32 config_id;          /* a number identifying the config id */
+	u32 value;              /* the value associated with the text */
 #define CMOS_MAX_TEXT_LENGTH 32
-	uint8_t text[CMOS_MAX_TEXT_LENGTH]; /* enum description in ascii, 
+	u8 text[CMOS_MAX_TEXT_LENGTH]; /* enum description in ascii, 
 						variable length int aligned */
 };
 
@@ -211,25 +211,25 @@ struct cmos_enums {
 */
 #define LB_TAG_OPTION_DEFAULTS 203
 struct cmos_defaults {
-	uint32_t tag;                /* default type */
-	uint32_t size;               /* length of this record */
-	uint32_t name_length;        /* length of the following name field */
-	uint8_t name[CMOS_MAX_NAME_LENGTH]; /* name identifying the default */
+	u32 tag;                /* default type */
+	u32 size;               /* length of this record */
+	u32 name_length;        /* length of the following name field */
+	u8 name[CMOS_MAX_NAME_LENGTH]; /* name identifying the default */
 #define CMOS_IMAGE_BUFFER_SIZE 128
-	uint8_t default_set[CMOS_IMAGE_BUFFER_SIZE]; /* default settings */
+	u8 default_set[CMOS_IMAGE_BUFFER_SIZE]; /* default settings */
 };
 
 #define LB_TAG_OPTION_CHECKSUM 204
 struct	cmos_checksum {
-	uint32_t tag;
-	uint32_t size;
+	u32 tag;
+	u32 size;
 	/* In practice everything is byte aligned, but things are measured
 	 * in bits to be consistent.
 	 */
-	uint32_t range_start;	/* First bit that is checksummed (byte aligned) */
-	uint32_t range_end;	/* Last bit that is checksummed (byte aligned) */
-	uint32_t location;	/* First bit of the checksum (byte aligned) */
-	uint32_t type;		/* Checksum algorithm that is used */
+	u32 range_start;	/* First bit that is checksummed (byte aligned) */
+	u32 range_end;	/* Last bit that is checksummed (byte aligned) */
+	u32 location;	/* First bit of the checksum (byte aligned) */
+	u32 type;		/* Checksum algorithm that is used */
 #define CHECKSUM_NONE	0
 #define CHECKSUM_PCBIOS	1
 };
@@ -245,7 +245,7 @@ struct lb_record *lb_next_record(struct lb_record *rec);
 struct lb_record *lb_new_record(struct lb_header *header);
 struct lb_memory *lb_memory(struct lb_header *header);
 void lb_memory_range(struct lb_memory *mem, 
-	uint32_t type, uint64_t start, uint64_t size);
+	u32 type, u64 start, u64 size);
 struct lb_mainboard *lb_mainboard(struct lb_header *header);
 unsigned long lb_table_fini(struct lb_header *header);
 

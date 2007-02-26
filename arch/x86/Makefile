@@ -119,7 +119,7 @@ $(obj)/linuxbios.stage2: $(obj)/stage0.init $(obj)/statictree.o
 	$(Q)echo -n "Building linuxbios.stage2... "
 	$(Q)# main
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/arch/x86/archtables.c -o $(obj)/archtables.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/arch/x86/linuxbios_tables.c -o $(obj)/linuxbios_tables.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/arch/x86/linuxbios_table.c -o $(obj)/linuxbios_table.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/device/device.c -o $(obj)/device.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/device/device_util.c -o $(obj)/device_util.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/device/root_device.c -o $(obj)/root_device.o
@@ -134,7 +134,7 @@ $(obj)/linuxbios.stage2: $(obj)/stage0.init $(obj)/statictree.o
 	$(Q)# leave a .o with full symbols in it for debugging.
 	$(Q)cd $(obj); $(LD) -R $(obj)/stage0.o -Ttext 0x1000  \
 		--entry=stage2 -o $(obj)/linuxbios.stage2.o \
-		archtables.o linuxbios_tables.o device.o device_util.o root_device.o  \
+		archtables.o linuxbios_table.o device.o device_util.o root_device.o  \
 		 clog2.o mem.o malloc.o mainboard.o stage2.o tables.o\
 		statictree.o
 	$(Q)objcopy -O binary $(obj)/linuxbios.stage2.o $(obj)/linuxbios.stage2

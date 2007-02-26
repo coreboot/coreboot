@@ -50,6 +50,7 @@ it with the version available from LANL.
 #include <console/console.h>
 #include <console/loglevel.h>
 #include <device/device.h>
+#include <tables.h>
 
 /**
  * @brief Main function of the DRAM part of LinuxBIOS.
@@ -102,6 +103,7 @@ int stage2(void)
 	dev_phase6(); 
 	
 	post_code(0x70);
+	write_tables();
 
 	return 0;
 }

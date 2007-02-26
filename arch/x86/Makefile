@@ -106,8 +106,8 @@ $(obj)/stage0.init: $(STAGE0_OBJ)
 # TODO: This should be compressed with the default compressor.
 #
 
-STAGE2_LIB_OBJ       = $(obj)/clog2.o $(obj)/mem.o $(obj)/malloc.o \
-		       $(obj)/stage2.o #$(obj)/tables.o
+STAGE2_LIB_OBJ       = $(obj)/stage2.o $(obj)/clog2.o $(obj)/mem.o $(obj)/malloc.o \
+		       $(obj)/tables.o
 STAGE2_DEVICE_OBJ    = $(obj)/device.o $(obj)/device_util.o \
 		       $(obj)/root_device.o
 STAGE2_ARCH_X86_OBJ  = $(obj)/archtables.o $(obj)/linuxbios_table.o

@@ -202,6 +202,107 @@ FLASH layout
 \end_layout
 
 \begin_layout Section
+LinuxBIOS device structures
+\end_layout
+
+\begin_layout Subsection
+Resources
+\end_layout
+
+\begin_layout Standard
+Resources describe memory and I/O address ranges, IRQs, and DRQs.
+ They are define in include/device/resource.h.
+ There can be variations of a resource which include things like prefetchable,
+ cacheable, and so on.
+ 
+\end_layout
+
+\begin_layout Subsection
+Path
+\end_layout
+
+\begin_layout Standard
+A path nams a way of accessing a device.
+ These are defined in include/device/path.h.
+ The path structure is in essence a case-variant type (struct which includes
+ a type and a union of all possible path types).
+ 
+\end_layout
+
+\begin_layout Section
+Bus
+\end_layout
+
+\begin_layout Standard
+Busses, defined in include/device/device.h, connect parent devices to child
+ devices.
+ Busses are attached to a device, and have child devices attached to them.
+ 
+\end_layout
+
+\begin_layout Subsection
+Devices
+\end_layout
+
+\begin_layout Standard
+Devices are defined in include/device/device.h.
+ Devices:
+\end_layout
+
+\begin_layout Itemize
+have a path
+\end_layout
+
+\begin_layout Itemize
+are attached to a bus
+\end_layout
+
+\begin_layout Itemize
+have sibling devices
+\end_layout
+
+\begin_layout Itemize
+have a vendor and device ID
+\end_layout
+
+\begin_layout Itemize
+have a class and hdr type
+\end_layout
+
+\begin_layout Itemize
+have several booleans, describing state, including enabled, initialized,
+ resources have been read, and on the mainboard
+\end_layout
+
+\begin_layout Itemize
+have a rom address, if a rom is attached to them (e.g.
+ VGA)
+\end_layout
+
+\begin_layout Itemize
+have a set of up to MAX_RESOURCES (currently 12) resources.
+ The resources are built into the structure and are not dynamically allocated.
+ Functions to manage the resources attached to a device are found in device/devi
+ce_util.c
+\end_layout
+
+\begin_layout Itemize
+have links, which are usually empty in the case of everything but a bridge
+\end_layout
+
+\begin_layout Itemize
+have a set of device operations -- these are per-device-type
+\end_layout
+
+\begin_layout Itemize
+have a set of chip operations, per chip-type
+\end_layout
+
+\begin_layout Itemize
+have a chip information structure, which is per-chip instance
+\end_layout
+
+\begin_layout Section
 Boot Process
 \end_layout
 

@@ -616,7 +616,7 @@ void dev_phase2(void)
 		if (dev->ops && dev->ops->phase1) 
 		{
 			printk(BIOS_DEBUG, "%s phase2\n", dev_path(dev));
-			dev->ops->phase1(dev);
+			dev->ops->phase2(dev);
 		}
 	}
 	post_code(0x4e);

@@ -234,6 +234,7 @@ struct	cmos_checksum {
 #define CHECKSUM_PCBIOS	1
 };
 
+struct lb_memory *arch_write_tables(void);
 unsigned long write_linuxbios_table(
 	unsigned long low_table_start, unsigned long low_table_end,
 	unsigned long rom_table_start, unsigned long rom_table_end);

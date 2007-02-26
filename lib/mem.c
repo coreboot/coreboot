@@ -31,6 +31,15 @@ void memcpy(void *dest, const void *src, int len)
 		*d++ = *s++;
 }
 
+/* seperate function in case we decide to use the built-in -- not sure yet. */
+void memmove(void *dest, const void *src, int len)
+{
+	unsigned char *d = dest;
+	const unsigned char *s = src;
+	while (len--)
+		*d++ = *s++;
+}
+
 void memset(void *v, unsigned char a, int len)
 {
 	unsigned char *cp = v;

@@ -28,6 +28,7 @@
 //#include <arch/pirq_routing.h>
 //#include <arch/smp/mpspec.h>
 //#include <arch/acpi.h>
+#include <device/device.h>
 #include <tables.h>
 
 
@@ -149,7 +150,7 @@ void lb_strings(struct lb_header *header)
 		u32 tag;
 		const u8 *string;
 	} strings[] = {
-		{ LB_TAG_VERSION,        "3 -- FIXME",        },
+		{ LB_TAG_VERSION,        (u8 *) "3 -- FIXME",        },
 /*
 		{ LB_TAG_VERSION,        linuxbios_version,        },
 		{ LB_TAG_EXTRA_VERSION,  linuxbios_extra_version,  },
@@ -168,7 +169,7 @@ void lb_strings(struct lb_header *header)
 		struct lb_string *rec;
 		size_t len;
 		rec = (struct lb_string *)lb_new_record(header);
-		len = strlen(strings[i].string);
+		len = strlen((char *)strings[i].string);
 		rec->tag = strings[i].tag;
 		rec->size = (sizeof(*rec) + len + 1 + 3) & ~3;
 		memcpy(rec->string, strings[i].string, len+1);
@@ -382,7 +383,6 @@ unsigned long write_linuxbios_table(
 	unsigned long low_table_start, unsigned long low_table_end, 
 	unsigned long rom_table_start, unsigned long rom_table_end)
 {
-	unsigned long table_size;
 	struct lb_header *head;
 	struct lb_memory *mem;
 

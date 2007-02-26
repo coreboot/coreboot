@@ -41,6 +41,7 @@ struct gdtarg {
 	unsigned int base;
 } __attribute__((packed));
 
+#if 0
 // Copy GDT to new location and reload it
 // 2003-07 by SONE Takeshi
 // Ported from Etherboot to LinuxBIOS 2005-08 by Steve Magnani
@@ -56,10 +57,15 @@ void move_gdt(unsigned long newgdt)
 	__asm__ __volatile__ ("lgdt %0\n\t" : : "m" (gdtarg));
 	printk(BIOS_DEBUG,"ok\n");
 }
-
-struct lb_memory *write_tables(void)
+#endif
+struct lb_memory *arch_write_tables(void)
 {
-	unsigned long low_table_start, low_table_end, new_low_table_end;
+#if 0
+#if HAVE_MP_TABLE==1
+	unsigned long new_low_table_end;
+#endif
+#endif
+	unsigned long low_table_start, low_table_end;
 	unsigned long rom_table_start, rom_table_end;
 
 	rom_table_start = 0xf0000;
@@ -123,10 +129,12 @@ struct lb_memory *write_tables(void)
 		low_table_end = 0x500;
 	}
 
+#warning "Move the move_gdt to somewhere else ... not table writing!"
+#if 0
 	// Relocate the GDT to reserved memory, so it won't get clobbered
 	move_gdt(low_table_end);
 	low_table_end += &gdt_end - &gdt;
-
+#endif
 	/* The linuxbios table must be in 0-4K or 960K-1M */
 	write_linuxbios_table(
 			      low_table_start, low_table_end,

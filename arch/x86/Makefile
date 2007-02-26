@@ -51,8 +51,9 @@ $(obj)/linuxbios.lar: $(obj)/util/lar/lar lzma $(obj)/linuxbios.initram $(obj)/l
 	$(Q)cp $(obj)/linuxbios.initram $(obj)/lar.tmp/normal/initram
 	$(Q)cp $(obj)/linuxbios.stage2 $(obj)/lar.tmp/normal/stage2
 	$(Q)cp $(PAYLOAD) $(obj)/lar.tmp/normal/payload
+	$(Q)echo -n "  "
 	$(Q)cd $(obj)/lar.tmp && ../util/lar/lar c ../linuxbios.lar.pre normal/initram normal/stage2 normal/payload
-	# TODO: Dynamically pad the LAR archive. bs is image size - bootblock size (8k)
+	$(Q)# TODO: Dynamically pad the LAR archive. bs is image size - bootblock size (8k)
 	$(Q)dd if=$(obj)/linuxbios.lar.pre of=$(obj)/linuxbios.lar \
 		  bs=245760 count=1 conv=sync $(SILENT)
 
@@ -64,7 +65,7 @@ $(obj)/linuxbios.lar: $(obj)/util/lar/lar lzma $(obj)/linuxbios.initram $(obj)/l
 #
 
 $(obj)/stage0.init: 
-	$(Q)echo "Building stage0.init... "
+	$(Q)echo -n "Building stage0.init... "
 	$(Q)# Building asm stub
 	$(Q)$(CC) -E $(LINUXBIOSINCLUDE) $(src)/arch/x86/stage0_i586.S \
 		-o $(obj)/stage0_i586.s -DBOOTBLK=0x1f00 -DRESRVED=0xf0 \
@@ -79,13 +80,13 @@ $(obj)/stage0.init:
 	$(Q)# console lib
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/arch/x86/console.c -o $(obj)/console.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/arch/x86/serial.c -o $(obj)/serial.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/arch/x86/archelfboot.c -o $(obj)/archelfboot.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/arch/x86/archelfboot.c -o $(obj)/archelfboot.o $(SILENT)
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/console/vtxprintf.c -o $(obj)/vtxprintf.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/console/vsprintf.c -o $(obj)/vsprintf.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/uart8250.c -o $(obj)/uart8250.o
 	$(Q)# other lib parts
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/mem.c -o $(obj)/mem.o
-	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/elfboot.c -o $(obj)/elfboot.o
+	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/elfboot.c -o $(obj)/elfboot.o $(SILENT)
 
 	$(Q)cd $(obj); $(CC) -m32 -nostdlib -static \
 		-T $(src)/arch/x86/ldscript.ld cachemain.o \
@@ -94,15 +95,16 @@ $(obj)/stage0.init:
 
 	$(Q)objcopy -O binary $(obj)/stage0.o $(obj)/stage0.init.pre
 
-	# Pad boot block to 0x4000 - 0x100.
-	# We will probably remove this step -- not needed if we continue
-	# with ldscript.ld.
+	$(Q)# Pad boot block to 0x4000 - 0x100.
+	$(Q)# We will probably remove this step -- not needed if we continue
+	$(Q)# with ldscript.ld.
 
 	$(Q)dd if=$(obj)/stage0.init.pre of=$(obj)/stage0.init \
 		bs=16128 conv=sync $(SILENT)
-	$(Q)echo "Len: `wc -c < $(obj)/stage0.init.pre`"
+	$(Q)# echo "Len: `wc -c < $(obj)/stage0.init.pre`"
 
 	$(Q)test `wc -c < $(obj)/stage0.init.pre` -gt 16128 && echo "Error. Bootblock got too big" || true
+	$(Q)echo "done"
 
 
 #
@@ -114,7 +116,7 @@ $(obj)/stage0.init:
 #
 
 $(obj)/linuxbios.stage2: $(obj)/stage0.init $(obj)/statictree.o
-	$(Q)echo "Building linuxbios.stage2... "
+	$(Q)echo -n "Building linuxbios.stage2... "
 	$(Q)# main
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/lib/stage2.c -o $(obj)/stage2.o
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/device/device.c -o $(obj)/device.o
@@ -135,6 +137,7 @@ $(obj)/linuxbios.stage2: $(obj)/stage0.init $(obj)/statictree.o
 	$(Q)objcopy -O binary $(obj)/linuxbios.stage2.o $(obj)/linuxbios.stage2
 
 	$(Q)chmod 644 $(obj)/linuxbios.stage2
+	$(Q)echo "done"
 
 #
 # The payload as we love it. Get it from somewhere.

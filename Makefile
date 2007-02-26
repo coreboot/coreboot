@@ -94,12 +94,14 @@ prepare2:
 	$(Q)cp $(src)/.tmpconfig.h $(obj)/config.h
 
 clean:
-	$(Q)echo "Cleaning up..."
+	$(Q)echo -n "Cleaning up... "
 	$(Q)rm -rf $(obj)
+	$(Q)echo "done"
 
 distclean: clean
-	$(Q)echo "Deleting config files..."
+	$(Q)echo -n "Deleting config files... "
 	$(Q)rm -f .kconfig.d .config .tmpconfig.h .config.old
+	$(Q)echo "done"
 
 %.o: %.c
 	$(Q)echo "Compiling $<"

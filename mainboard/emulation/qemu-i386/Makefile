@@ -37,8 +37,8 @@ $(obj)/linuxbios.vpd:
 #
 
 $(obj)/linuxbios.initram: $(obj)/stage0.init $(obj)/stage0.o
-	$(Q)echo "Building linuxbios.initram... "
-	# initram links against stage0
+	$(Q)echo -n "Building linuxbios.initram... "
+	$(Q)# initram links against stage0
 	$(Q)$(CC) $(INITCFLAGS) -c $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
 		-o $(obj)/initram.o
 	$(Q)$(LD) -R $(obj)/stage0.o -Ttext 0x80000  $(obj)/initram.o \
@@ -46,6 +46,7 @@ $(obj)/linuxbios.initram: $(obj)/stage0.init $(obj)/stage0.o
 	$(Q)objcopy -O binary $(obj)/linuxbios.initram.o \
 		$(obj)/linuxbios.initram
 	$(Q)chmod 644 $(obj)/linuxbios.initram
+	$(Q)echo "done"
 
 #
 # Miscellaneous important targets.
@@ -57,5 +58,5 @@ $(obj)/statictree.o: $(obj)/statictree.c
 	$(Q)$(CC) $(CFLAGS) $(LINUXBIOSINCLUDE) -c -o $(obj)/statictree.o $(obj)/statictree.c
 
 $(obj)/statictree.c: mainboard/$(MAINBOARDDIR)/dts $(obj)/util/dtc/dtc
-	$(Q)$(obj)/util/dtc/dtc -O lb mainboard/$(MAINBOARDDIR)/dts >$(obj)/statictree.c
+	$(Q)$(obj)/util/dtc/dtc -O lb mainboard/$(MAINBOARDDIR)/dts >$(obj)/statictree.c 2>/dev/null
 

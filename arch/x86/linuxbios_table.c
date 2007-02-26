@@ -2,7 +2,7 @@
  * table management code for Linux BIOS tables
  *
  *
- * Copright (C) 2002 Eric Biederman, Linux NetworX
+ * Copyright (C) 2002 Eric Biederman, Linux NetworX
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

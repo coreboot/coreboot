@@ -3,8 +3,8 @@
  * ALL structs and prototypes for tables that LinuxBIOS generates should be defined here. 
  * 
  *
- * Copright (C) 2002 Eric Biederman, Linux NetworX
- * Copright (C) 2005 Stefan Reinauer, Core Systems
+ * Copyright (C) 2002 Eric Biederman, Linux NetworX
+ * Copyright (C) 2005 coresystems GmbH <stepan@coresystems.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

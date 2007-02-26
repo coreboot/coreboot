@@ -1,7 +1,7 @@
 /*
  * lar - LinuxBIOS archiver
  *
- * Copright (C) 2006-2007 coresystems GmbH
+ * Copyright (C) 2006-2007 coresystems GmbH
  * Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify

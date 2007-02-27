@@ -25,9 +25,10 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-int mkdirp(char *dirpath)
-{
 #define MAX_PATH 1024
+
+int mkdirp(const char *dirpath)
+{
 	char *pos, *currpath, *path;
 	char cwd[MAX_PATH];
 	int ret = 0;
@@ -37,7 +38,7 @@ int mkdirp(char *dirpath)
 
 	if (!getcwd(cwd, MAX_PATH)) {
 		free(path);
-		printf("error getting cwd\n");
+		printf("Error getting cwd.\n");
 		return -1;
 	}
 
@@ -46,7 +47,7 @@ int mkdirp(char *dirpath)
 		if (pos)
 			*pos = 0;
 
-		//printf("cp=%s\n",currpath);
+		/* printf("cp=%s\n", currpath); */
 		mkdir(currpath, 0755);
 		ret = chdir(currpath);
 
@@ -59,22 +60,3 @@ int mkdirp(char *dirpath)
 
 	return ret;
 }
-
-#if 0
-int main(void)
-{
-	int ret;
-	ret = mkdirp("a/b/c/d/");
-	if (ret)
-		printf("error! mkdir\n\n");
-	else
-		printf("jippie! mkdir\n\n");
-	ret = mkdirp("a/b/c/d");
-	if (ret)
-		printf("error! mkdir\n");
-	else
-		printf("jippie! mkdir\n");
-
-	return 0;
-}
-#endif

@@ -19,7 +19,7 @@
  */
 
 #ifndef __LAR_EXTRACT_H
-#define __LAR_EXTRACT_H 1
+#define __LAR_EXTRACT_H
 
 int extract_lar(int argc, char *argv[]);
 

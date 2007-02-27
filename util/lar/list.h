@@ -19,7 +19,7 @@
  */
 
 #ifndef __LAR_LIST_H
-#define __LAR_LIST_H 1
+#define __LAR_LIST_H
 
 int list_lar(int argc, char *argv[]);
 

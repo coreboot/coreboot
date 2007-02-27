@@ -55,7 +55,7 @@ int create_lar(int argc, char *argv[])
 	printf("Opening %s\n", archivename);
 	archive = fopen(archivename, "w");
 	if (!archive) {
-		// error
+		/* Error. */
 		exit(1);
 	}
 
@@ -64,14 +64,14 @@ int create_lar(int argc, char *argv[])
 
 		ret = stat(argv[i], &statbuf);
 		if (ret) {
-			printf(" no such file %s\n", argv[i]);
+			printf("No such file %s\n", argv[i]);
 			exit(1);
 		}
 		filelen = statbuf.st_size;
 
 		tempmem = malloc(sizeof(struct lar_header) + MAX_PATHLEN + filelen + 16);
 		if (!tempmem) {
-			printf("no memory\n");
+			printf("No memory\n");
 			return (1);
 		}
 		memset(tempmem, 0, sizeof(struct lar_header) + MAX_PATHLEN + filelen + 16);
@@ -79,24 +79,24 @@ int create_lar(int argc, char *argv[])
 		header = (struct lar_header *)tempmem;
 		pathname = tempmem + sizeof(struct lar_header);
 		pathlen = sprintf(pathname, argv[i]) + 1;
-		pathlen = (pathlen + 15) & 0xfffffff0;	// align it to 16 bytes
+		pathlen = (pathlen + 15) & 0xfffffff0;	/* Align it to 16 bytes. */
 
-		/* read file into memory */
+		/* Read file into memory. */
 		filebuf = pathname + pathlen;
 		source = fopen(argv[i], "r");
 		if (!source) {
-			printf(" no such file %s\n", argv[i]);
+			printf("No such file %s\n", argv[i]);
 			exit(1);
 		}
 		fread(filebuf, statbuf.st_size, 1, source);
 		fclose(source);
 
-		/* create correct header */
+		/* Create correct header. */
 		memcpy(header, MAGIC, 8);
 		header->len = htonl(statbuf.st_size);
 		header->offset = htonl(sizeof(struct lar_header) + pathlen);
 
-		/* calculate checksum */
+		/* Calculate checksum. */
 		csum = 0;
 		for (walk = (u32 *) tempmem;
 		     walk < (u32 *) (tempmem + statbuf.st_size +
@@ -105,13 +105,12 @@ int create_lar(int argc, char *argv[])
 		}
 		header->checksum = htonl(csum);
 
-		/* write out entry to archive */
+		/* Write out entry to archive. */
 		entrylen = (filelen + pathlen + sizeof(struct lar_header) + 15) & 0xfffffff0;
 
 		fwrite(tempmem, entrylen, 1, archive);
 
 		free(tempmem);
-
 	}
 
 	fclose(archive);

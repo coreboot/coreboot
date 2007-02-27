@@ -73,7 +73,7 @@ int extract_lar(int argc, char *argv[])
 		header = (struct lar_header *)walk;
 		fullname = walk + sizeof(struct lar_header);
 
-		// FIXME: check checksum
+		/* FIXME: check checksum. */
 
 		do_extract = 1;
 		if (argc > 3) {
@@ -85,19 +85,20 @@ int extract_lar(int argc, char *argv[])
 				}
 			}
 		}
-		// dont extract this one, skip it.
+
+		/* Don't extract this one, skip it. */
 		if (!do_extract)
 			continue;
 
 		printf("  Extracting file %s\n",
 		       walk + sizeof(struct lar_header));
 
-		// Create the directory if it does not exist.
+		/* Create the directory if it does not exist. */
 		pathname = strdup(fullname);
 		pos = strrchr(pathname, '/');
 		if (pos) {
 			pos[1] = 0;
-			//printf("pathname %s\n",pathname);
+			/* printf("Pathname %s\n",pathname); */
 			mkdirp(pathname);
 		}
 		free(pathname);
@@ -107,12 +108,13 @@ int extract_lar(int argc, char *argv[])
 			printf("error creating file.\n");
 			exit(1);
 		}
-		//printf("starting offs=%d, len=%d\n", ntohl(header->offset),
-		//              ntohl(header->len));
+		/* printf("Starting offs=%d, len=%d\n", ntohl(header->offset),
+		          ntohl(header->len)); */
 		fwrite(walk + ntohl(header->offset), ntohl(header->len),
 		       1, file_to_extract);
 		fclose(file_to_extract);
 	}
+
 	munmap(inmap, statbuf.st_size);
 	close(archivefile);
 	printf("done.\n");

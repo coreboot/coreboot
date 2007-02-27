@@ -19,7 +19,7 @@
  */
 
 #ifndef __LAR_CREATE_H
-#define __LAR_CREATE_H 1
+#define __LAR_CREATE_H
 
 int create_lar(int argc, char *argv[]);
 

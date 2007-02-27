@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 	else if (strcmp(argv[1], "l") == 0)
 		list_lar(argc, argv);
 	else {
-		printf("mode must be c or x\n");
+		printf("Mode must be c, x, or l.\n");
 		exit(1);
 	}
 

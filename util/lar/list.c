@@ -81,7 +81,8 @@ int list_lar(int argc, char *argv[])
 				}
 			}
 		}
-		// dont extract this one, skip it.
+
+		/* Don't extract this one, skip it. */
 		if (!do_extract)
 			continue;
 
@@ -90,6 +91,7 @@ int list_lar(int argc, char *argv[])
 		printf("(%d bytes @0x%x)\n", ntohl(header->len),
 		       (walk - inmap) + ntohl(header->offset));
 	}
+
 	munmap(inmap, statbuf.st_size);
 	close(archivefile);
 	printf("done.\n");

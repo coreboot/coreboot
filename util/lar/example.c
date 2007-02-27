@@ -52,14 +52,15 @@ int find_file(struct mem_file *archive, char *filename, struct mem_file *result)
 		header = (struct lar_header *)walk;
 		fullname = walk + sizeof(struct lar_header);
 
-		// FIXME: check checksum
+		/* FIXME: check checksum. */
 
 		if (strcmp(fullname, filename) != 0) {
 			result->start = walk + ntohl(header->offset);
 			result->len = ntohl(header->len);
 			return 0;
 		}
-		// skip file
+
+		/* Skip file. */
 		walk += (ntohl(header->offset) + ntohl(header->len)
 			 + 15) & 0xfffffff0;
 	}
@@ -94,24 +95,26 @@ int main(int argc, char *argv[])
 
 	archive.start = mmap(NULL, statbuf.st_size, PROT_READ,
 			     MAP_SHARED, fd, 0);
-	/* OS stuff ends here */
+
+	/* OS stuff ends here. */
 	/* ------------------------------------------------- */
 
-	// find first compressor
+	/* Find the first compressor. */
 	ret = find_file(&archive, "compression/", &result);
 	if (!ret)
-		printf("file found.\n");
+		printf("File found.\n");
 	else
-		printf("file not found.\n");
+		printf("File not found.\n");
 
 	ret = find_file(&archive, "normal/initram", &result);
 	if (!ret)
-		printf("file found.\n");
+		printf("File found.\n");
 	else
-		printf("file not found.\n");
+		printf("File not found.\n");
 
 	/* ------------------------------------------------- */
-	/* OS stuff starts again here */
+	/* OS stuff starts again here. */
+
 	munmap(archive.start, archive.len);
 	close(fd);
 

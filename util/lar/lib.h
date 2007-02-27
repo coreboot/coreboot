@@ -19,8 +19,8 @@
  */
 
 #ifndef __LAR_LIB_H
-#define __LAR_LIB_H 1
+#define __LAR_LIB_H
 
-int mkdirp(char *dirpath);
+int mkdirp(const char *dirpath);
 
 #endif

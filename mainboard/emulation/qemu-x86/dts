@@ -1,12 +1,12 @@
 /{
-	config="mainboard,emulation,qemu-i386";
+	config="mainboard,emulation,qemu-x86";
 
 	cpus {
-		emulation,qemu-i386@0{
+		emulation,qemu-x86@0{
 			enabled;
 			on_mainboard;
 			device_type = "cpu";
-			name = "emulation,qemu-i386";
+			name = "emulation,qemu-x86";
 			pcidomain = "0";
 			ops="i440bxemulation,pcidomainops";
 			/* the I/O stuff */
@@ -26,7 +26,7 @@
 
 extern struct device_operations i440bxemulation_pcidomainops;
 
-struct mainboard_emulation_qemu_i386_config root = {
+struct mainboard_emulation_qemu_x86_config root = {
 		.nothing = 1,
 };
 

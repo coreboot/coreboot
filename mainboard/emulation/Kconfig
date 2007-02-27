@@ -17,5 +17,5 @@ config BOARD_EMULATION_QEMU_POWERPC
 
 endchoice
 
-source "mainboard/emulation/qemu-i386/Kconfig"
+source "mainboard/emulation/qemu-x86/Kconfig"
 

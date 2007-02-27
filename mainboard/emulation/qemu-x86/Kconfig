@@ -1,6 +1,6 @@
 config MAINBOARD_NAME
 	string
-	default emulation/qemu-i386
+	default emulation/qemu-x86
 	depends BOARD_EMULATION_QEMU_X86
 	help
 	  This is the default mainboard name.

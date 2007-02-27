@@ -54,8 +54,10 @@ _stage0:
 	movl	%eax, %cr3	/* Invalidate TLB */
 
 	/* switch to protected mode */
-	/* NOTE: WIth GNU assembler version 2.15.94.0.2.2 (i386-redhat-linux) using BFD version 2.15.94.0.2.2 20041220
-	 * this works fine without all the ld hackery and other things. So leave it as is with this comment. 
+
+	/* NOTE: With GNU assembler version 2.15.94.0.2.2 (i386-redhat-linux)
+	 * using BFD version 2.15.94.0.2.2 20041220 this works fine without all
+	 * the ld hackery and other things. So leave it as is with this comment. 
 	 */
 
 #	movw	%cs, %ax
@@ -105,13 +107,17 @@ gdt16xend:
 
 	.code32
 
-/* We have two gdts where we could have one. That is ok. 
-  * Let's not worry about this -- optimizing gdt is pointless since we're only in it for a little bit. 
-  * BTW note the trick below: the gdt points to ITSELF, and the first good descriptor is at offset 8. 
-  * so you word-align the table, and then because you chose 8, 
-  * you get a nice 64-bit aligned gdt endtry, which is 
-  * good as this is the size of the entry. Just in case you ever wonder why people do this. 
-  */
+/* We have two gdts where we could have one. That is ok.  
+ *
+ * Let's not worry about this -- optimizing gdt is pointless since we're
+ * only in it for a little bit.
+ *
+ * BTW note the trick below: The GDT points to ITSELF, and the first good
+ * descriptor is at offset 8. So you word-align the table, and then because
+ * you chose 8, you get a nice 64-bit aligned GDT entry, which is good as 
+ * this is the size of the entry. 
+ * Just in case you ever wonder why people do this. 
+ */
 	.align  4
 	.globl gdtptr
 gdt:
@@ -145,7 +151,7 @@ gdt_end:
  *      After that, we call the chipset bootstrap routine that
  *      does what is left of the chipset initialization.
  *
- *      NOTE aligned to 4 so that we are sure that the prefetch
+ *      NOTE: Aligned to 4 so that we are sure that the prefetch
  *      cache will be reloaded.
  */
 

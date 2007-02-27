@@ -36,17 +36,17 @@
 
 int main(int argc, char *argv[])
 {
-	if (argc<2) {
+	if (argc < 2) {
 		printf("Usage: lar [cxl] archive.lar <files>\n");
 		exit(0);
 	}
 
-	if (strcmp(argv[1], "x")==0)
+	if (strcmp(argv[1], "x") == 0)
 		extract_lar(argc, argv);
-	else if (strcmp(argv[1], "c")==0)
-		create_lar(argc,argv);
-	else if (strcmp(argv[1], "l")==0)
-		list_lar(argc,argv);
+	else if (strcmp(argv[1], "c") == 0)
+		create_lar(argc, argv);
+	else if (strcmp(argv[1], "l") == 0)
+		list_lar(argc, argv);
 	else {
 		printf("mode must be c or x\n");
 		exit(1);

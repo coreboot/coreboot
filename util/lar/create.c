@@ -43,49 +43,48 @@ int create_lar(int argc, char *argv[])
 	u32 *walk;
 	u32 csum;
 	int pathlen, entrylen, filelen;
-	struct lar_header  *header;
+	struct lar_header *header;
 	struct stat statbuf;
 
-	archivename=argv[2];
-	if (argc<=3) {
+	archivename = argv[2];
+	if (argc <= 3) {
 		printf("No files for archive %s\n", archivename);
 		exit(1);
 	}
 
 	printf("Opening %s\n", archivename);
-	archive=fopen(archivename, "w");
-	if(!archive) {
-	// error
+	archive = fopen(archivename, "w");
+	if (!archive) {
+		// error
 		exit(1);
 	}
 
-	for (i=3; i<argc; i++) {
+	for (i = 3; i < argc; i++) {
 		printf("  Adding %s to archive\n", argv[i]);
 
-		ret=stat(argv[i], &statbuf);
-		if(ret) {
+		ret = stat(argv[i], &statbuf);
+		if (ret) {
 			printf(" no such file %s\n", argv[i]);
 			exit(1);
 		}
-		filelen=statbuf.st_size;
+		filelen = statbuf.st_size;
 
-		tempmem=malloc(sizeof(struct lar_header)+MAX_PATHLEN+filelen+16);
-		if(!tempmem) {
-			printf ("no memory\n");
+		tempmem = malloc(sizeof(struct lar_header) + MAX_PATHLEN + filelen + 16);
+		if (!tempmem) {
+			printf("no memory\n");
 			return (1);
 		}
-		memset(tempmem, 0, sizeof(struct lar_header)+MAX_PATHLEN+filelen+16);
+		memset(tempmem, 0, sizeof(struct lar_header) + MAX_PATHLEN + filelen + 16);
 
-		header=(struct lar_header *)tempmem;
-		pathname=tempmem+sizeof(struct lar_header);
-		pathlen=sprintf(pathname, argv[i])+1;
-		pathlen = (pathlen+15)&0xfffffff0; // align it to 16 bytes
+		header = (struct lar_header *)tempmem;
+		pathname = tempmem + sizeof(struct lar_header);
+		pathlen = sprintf(pathname, argv[i]) + 1;
+		pathlen = (pathlen + 15) & 0xfffffff0;	// align it to 16 bytes
 
 		/* read file into memory */
-		filebuf=pathname+pathlen;
-		source=fopen(argv[i], "r");
-		if(!source) {
-		
+		filebuf = pathname + pathlen;
+		source = fopen(argv[i], "r");
+		if (!source) {
 			printf(" no such file %s\n", argv[i]);
 			exit(1);
 		}
@@ -94,20 +93,20 @@ int create_lar(int argc, char *argv[])
 
 		/* create correct header */
 		memcpy(header, MAGIC, 8);
-		header->len=htonl(statbuf.st_size);
-		header->offset=htonl(sizeof(struct lar_header)+pathlen);
+		header->len = htonl(statbuf.st_size);
+		header->offset = htonl(sizeof(struct lar_header) + pathlen);
 
 		/* calculate checksum */
-		csum=0;
-		for (walk=(u32 *)tempmem; 
-		  walk<(u32 *)(tempmem+ statbuf.st_size+sizeof(struct lar_header)+pathlen);
-		  walk++) {
-			csum+=ntohl(*walk);
+		csum = 0;
+		for (walk = (u32 *) tempmem;
+		     walk < (u32 *) (tempmem + statbuf.st_size +
+			      sizeof(struct lar_header) + pathlen); walk++) {
+			csum += ntohl(*walk);
 		}
-		header->checksum=htonl(csum);
+		header->checksum = htonl(csum);
 
 		/* write out entry to archive */
-		entrylen=(filelen+pathlen+sizeof(struct lar_header)+15) & 0xfffffff0;
+		entrylen = (filelen + pathlen + sizeof(struct lar_header) + 15) & 0xfffffff0;
 
 		fwrite(tempmem, entrylen, 1, archive);
 
@@ -120,5 +119,3 @@ int create_lar(int argc, char *argv[])
 
 	return 0;
 }
-
-

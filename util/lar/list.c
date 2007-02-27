@@ -35,63 +35,60 @@
 int list_lar(int argc, char *argv[])
 {
 	int archivefile;
-	char * archivename;
-	char * inmap;
-	char * walk;
+	char *archivename;
+	char *inmap;
+	char *walk;
 	char *fullname;
-	struct lar_header * header;
+	struct lar_header *header;
 	struct stat statbuf;
 	int archivelen;
 	int do_extract;
 	int i;
 
-	archivename=argv[2];
+	archivename = argv[2];
 
-	if (stat(archivename, &statbuf)!=0) {
-		printf("Error opening %s: %s\n", 
-				archivename, strerror(errno));
+	if (stat(archivename, &statbuf) != 0) {
+		printf("Error opening %s: %s\n", archivename, strerror(errno));
 		exit(1);
 	}
 	printf("Opening %s\n", archivename);
 
-	archivefile=open(archivename, O_RDONLY);
-	if (archivefile==-1) {
-		printf("Error while opening %s: %s\n", 
-				archivename, strerror(errno));
+	archivefile = open(archivename, O_RDONLY);
+	if (archivefile == -1) {
+		printf("Error while opening %s: %s\n",
+		       archivename, strerror(errno));
 		exit(1);
 	}
-	archivelen=statbuf.st_size;
+	archivelen = statbuf.st_size;
 
-		
-	inmap=mmap(NULL, statbuf.st_size, PROT_READ,
-			MAP_SHARED, archivefile, 0);
+	inmap = mmap(NULL, statbuf.st_size, PROT_READ,
+		     MAP_SHARED, archivefile, 0);
 
-	for (walk=inmap; walk<inmap+statbuf.st_size; walk+=16) {
-		if(strcmp(walk, MAGIC)!=0)
+	for (walk = inmap; walk < inmap + statbuf.st_size; walk += 16) {
+		if (strcmp(walk, MAGIC) != 0)
 			continue;
 
-		header=(struct lar_header *)walk;
-		fullname=walk+sizeof(struct lar_header);
-		
-		do_extract=1;
-		if(argc>3) {
-			do_extract=0;
-			for (i=3; i<argc; i++) {
-				if(strcmp(fullname, argv[i])==0) {
-					do_extract=1;
+		header = (struct lar_header *)walk;
+		fullname = walk + sizeof(struct lar_header);
+
+		do_extract = 1;
+		if (argc > 3) {
+			do_extract = 0;
+			for (i = 3; i < argc; i++) {
+				if (strcmp(fullname, argv[i]) == 0) {
+					do_extract = 1;
 					break;
 				}
 			}
 		}
-
 		// dont extract this one, skip it.
-		if(!do_extract) 
+		if (!do_extract)
 			continue;
 
-		printf("  %s ", walk+sizeof(struct lar_header));
+		printf("  %s ", walk + sizeof(struct lar_header));
 
 		printf("(%d bytes @0x%x)\n", ntohl(header->len),
-				(walk-inmap)+ntohl(header->offset));
+		       (walk - inmap) + ntohl(header->offset));
 	}
 	munmap(inmap, statbuf.st_size);
 	close(archivefile);
@@ -99,5 +96,3 @@ int list_lar(int argc, char *argv[])
 
 	return 0;
 }
-
-

@@ -30,27 +30,29 @@ int mkdirp(char *dirpath)
 #define MAX_PATH 1024
 	char *pos, *currpath, *path;
 	char cwd[MAX_PATH];
-	int ret=0;
+	int ret = 0;
 
 	path = strdup(dirpath);
 	currpath = path;
 
-	if(!getcwd(cwd, MAX_PATH)) {
+	if (!getcwd(cwd, MAX_PATH)) {
 		free(path);
 		printf("error getting cwd\n");
 		return -1;
 	}
 
 	do {
-		pos=index(currpath,'/');
-		if (pos)*pos=0;
+		pos = index(currpath, '/');
+		if (pos)
+			*pos = 0;
 
 		//printf("cp=%s\n",currpath);
-		mkdir(currpath,0755);
-		ret=chdir(currpath);
-		
-		if(pos) currpath=pos+1;
-	} while (pos && !ret && strlen(currpath)) ;
+		mkdir(currpath, 0755);
+		ret = chdir(currpath);
+
+		if (pos)
+			currpath = pos + 1;
+	} while (pos && !ret && strlen(currpath));
 
 	chdir(cwd);
 	free(path);
@@ -59,14 +61,19 @@ int mkdirp(char *dirpath)
 }
 
 #if 0
-int main(void) {
+int main(void)
+{
 	int ret;
-	ret=mkdirp("a/b/c/d/");
-	if (ret) printf("error! mkdir\n\n");
-	else printf("jippie! mkdir\n\n");
-	ret=mkdirp("a/b/c/d");
-	if (ret) printf("error! mkdir\n");
-	else printf("jippie! mkdir\n");
+	ret = mkdirp("a/b/c/d/");
+	if (ret)
+		printf("error! mkdir\n\n");
+	else
+		printf("jippie! mkdir\n\n");
+	ret = mkdirp("a/b/c/d");
+	if (ret)
+		printf("error! mkdir\n");
+	else
+		printf("jippie! mkdir\n");
 
 	return 0;
 }

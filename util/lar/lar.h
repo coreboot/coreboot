@@ -33,5 +33,3 @@ struct lar_header {
 	u32 checksum;
 	u32 offset;
 };
-
-

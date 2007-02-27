@@ -40,35 +40,32 @@ struct mem_file {
 
 int find_file(struct mem_file *archive, char *filename, struct mem_file *result)
 {
-	char * walk, *fullname;
-	struct lar_header * header;
-	
-	for (walk = archive->start; walk < archive->start + 
-			archive->len; walk+=16) {
+	char *walk, *fullname;
+	struct lar_header *header;
 
-		if(strcmp(walk, MAGIC)!=0)
+	for (walk = archive->start; walk < archive->start +
+	     archive->len; walk += 16) {
+
+		if (strcmp(walk, MAGIC) != 0)
 			continue;
 
-		header=(struct lar_header *)walk;
-		fullname=walk+sizeof(struct lar_header);
+		header = (struct lar_header *)walk;
+		fullname = walk + sizeof(struct lar_header);
 
 		// FIXME: check checksum
-		
-		if(strcmp(fullname, filename)!=0) {
-			result->start=walk + ntohl(header->offset);
-			result->len=ntohl(header->len);
+
+		if (strcmp(fullname, filename) != 0) {
+			result->start = walk + ntohl(header->offset);
+			result->len = ntohl(header->len);
 			return 0;
 		}
-
 		// skip file
-		walk += ( ntohl(header->offset) + ntohl(header->len)
-				+ 15 ) & 0xfffffff0;
+		walk += (ntohl(header->offset) + ntohl(header->len)
+			 + 15) & 0xfffffff0;
 	}
 
 	return 1;
 }
-
-
 
 int main(int argc, char *argv[])
 {
@@ -76,40 +73,42 @@ int main(int argc, char *argv[])
 	struct stat statbuf;
 	struct mem_file archive, result;
 
-	if (argc!=2) {
+	if (argc != 2) {
 		printf("Usage: example archive.lar\n");
 		exit(0);
 	}
 
-	if (stat(argv[1], &statbuf)!=0) {
-		printf("Error opening %s: %s\n", 
-				argv[1], strerror(errno));
+	if (stat(argv[1], &statbuf) != 0) {
+		printf("Error opening %s: %s\n", argv[1], strerror(errno));
 		exit(1);
 	}
 	printf("Opening %s\n", argv[1]);
 
-	fd=open(argv[1], O_RDONLY);
-	if (fd==-1) {
-		printf("Error while opening %s: %s\n", 
-				argv[1], strerror(errno));
+	fd = open(argv[1], O_RDONLY);
+	if (fd == -1) {
+		printf("Error while opening %s: %s\n",
+		       argv[1], strerror(errno));
 		exit(1);
 	}
-	archive.len=statbuf.st_size;
+	archive.len = statbuf.st_size;
 
-	archive.start=mmap(NULL, statbuf.st_size, PROT_READ,
-			MAP_SHARED, fd, 0);
+	archive.start = mmap(NULL, statbuf.st_size, PROT_READ,
+			     MAP_SHARED, fd, 0);
 	/* OS stuff ends here */
 	/* ------------------------------------------------- */
 
 	// find first compressor
-	ret=find_file(&archive, "compression/", &result);
-	if(!ret) printf("file found.\n");
-	else printf("file not found.\n");
+	ret = find_file(&archive, "compression/", &result);
+	if (!ret)
+		printf("file found.\n");
+	else
+		printf("file not found.\n");
 
-	ret=find_file(&archive, "normal/initram", &result);
-	if(!ret) printf("file found.\n");
-	else printf("file not found.\n");
-
+	ret = find_file(&archive, "normal/initram", &result);
+	if (!ret)
+		printf("file found.\n");
+	else
+		printf("file not found.\n");
 
 	/* ------------------------------------------------- */
 	/* OS stuff starts again here */
@@ -118,5 +117,3 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
-
-

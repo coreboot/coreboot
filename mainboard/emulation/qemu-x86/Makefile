@@ -2,6 +2,7 @@
 ## This file is part of the LinuxBIOS project.
 ##
 ## Copyright (C) 2006-2007 coresystems GmbH
+## Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -60,5 +61,4 @@ $(obj)/statictree.c: mainboard/$(MAINBOARDDIR)/dts $(obj)/util/dtc/dtc
 STAGE2_CHIPSET_OBJ = 
 # chipset
 include $(src)/northbridge/intel/i440bxemulation/Makefile
-
 

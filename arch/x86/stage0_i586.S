@@ -6,7 +6,7 @@
 ## Copyright (C) 2000,2007 Ronald G. Minnich <rminnich@gmail.com>
 ##
 ## Copyright (C) 2007 coresystems GmbH
-## Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH
+## Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH.
 ## 
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -190,7 +190,7 @@ __protected_stage0:
 ## Written by Yinghai Lu <yhlu@tyan.com> for Tyan.
 ##
 ## Copyright (C) 2007 coresystems GmbH
-## Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH
+## Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH.
 ## 
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -479,7 +479,7 @@ var_mtrr_msr:
 ## This file is part of the LinuxBIOS project.
 ## 
 ## Copyright (C) 2007 coresystems GmbH
-## Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH
+## Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH.
 ## 
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by

@@ -1,7 +1,9 @@
 /*
  * serial.c -- uart init function
  *
- * Copyright (C) 2007 coresystems GmbH <stepan@coresystems.de>
+ * Copyright (C) 2007 coresystems GmbH
+ * Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH.
+ *
  * Copyright (C) 2007 Ronald G. Minnich <rminnich@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,7 +18,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
- *
  */
 
 #include <arch/io.h>

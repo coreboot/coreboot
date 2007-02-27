@@ -18,14 +18,11 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-#
-# This stuff is always needed
-include util/lar/Makefile
-include util/dtc/Makefile
-include util/kconfig/Makefile
+$(obj)/util/nrv2b/nrv2b: nrv2bdir $(src)/util/nrv2b/nrv2b.c
+	$(Q)$(HOSTCC) $(HOSTCFLAGS) -DENCODE -DDECODE -DMAIN -DVERBOSE -DNDEBUG -DBITSIZE=32 -DENDIAN=0 -o $@ $(src)/util/nrv2b/nrv2b.c
+	$(Q)printf "done\n"
 
-#
-# Compressors
-include util/nrv2b/Makefile
-include util/lzma/Makefile
+nrv2bdir:
+	$(Q)printf "Building nrv2b compressor... "
+	$(Q)mkdir -p $(obj)/util/nrv2b/
 

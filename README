@@ -65,3 +65,5 @@ the "GPL, version 2". For some parts, which were derived from other projects,
 other (GPL-compatible) licenses may apply. Please check the individual
 source files for details.
 
+This makes the resulting LinuxBIOS images licensed under the GPL, version 2.
+

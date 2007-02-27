@@ -56,8 +56,11 @@ LINUXBIOSINCLUDE    :=  -I$(src) -Iinclude \
 			-I$(src)/include \
 			-I$(src)/include/cpu/generic/$(ARCH)/ \
 			-include $(obj)/config.h
-# make silent per default
+
+# make is silent per default. make V=1 will show all compiler calls.
+ifneq ($(V),1)
 Q := @
+endif
 
 CPPFLAGS   := $(LINUXBIOSINCLUDE)
 

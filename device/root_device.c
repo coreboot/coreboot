@@ -111,8 +111,8 @@ unsigned int scan_static_bus(struct device * busdevice, unsigned int max)
 				child->chip_ops->enable_dev(child);
 			}
 			/* sigh. Have to enable to scan ... */
-			if (child->ops && child->ops->phase5) {
-				child->ops->phase5(child);
+			if (child->ops && child->ops->phase5_enable_resources) {
+				child->ops->phase5_enable_resources(child);
 			}
  			if (child->path.type == DEVICE_PATH_I2C) {
  				printk(BIOS_DEBUG, "smbus: %s[%d]->",  
@@ -125,10 +125,10 @@ unsigned int scan_static_bus(struct device * busdevice, unsigned int max)
 	}
 	for(link = 0; link < busdevice->links; link++) {
 		for(child = busdevice->link[link].children; child; child = child->sibling) {
-			if (!child->ops || !child->ops->phase3)
+			if (!child->ops || !child->ops->phase3_scan)
 				continue;
 			printk(BIOS_SPEW, "%s scanning...\n", dev_path(child));
-			max = dev_phase3(child, max);
+			max = dev_phase3_scan(child, max);
 		}
 	}
 
@@ -199,9 +199,9 @@ void root_dev_reset(struct bus *bus)
 struct device_operations default_dev_ops_root = {
 	.phase4_read_resources   = root_dev_read_resources,
 	.phase4_set_resources    = root_dev_set_resources,
-	.phase5 = root_dev_enable_resources,
-	.phase6             = root_dev_init,
-	.phase3         = root_dev_scan_bus,
+	.phase5_enable_resources = root_dev_enable_resources,
+	.phase6_init             = root_dev_init,
+	.phase3_scan         = root_dev_scan_bus,
 	.reset_bus        = root_dev_reset,
 };
 

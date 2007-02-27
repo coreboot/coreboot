@@ -8,7 +8,7 @@
 			device_type = "cpu";
 			name = "emulation,qemu-i386";
 			pcidomain = "0";
-
+			ops="i440bxemulation,pcidomainops";
 			/* the I/O stuff */
 			northbridge,intel,440bx{
 				config="northbridge,intel,i440bxemulation";
@@ -23,6 +23,8 @@
 };
 
 %%
+
+extern struct device_operations i440bxemulation_pcidomainops;
 
 struct mainboard_emulation_qemu_i386_config root = {
 		.nothing = 1,

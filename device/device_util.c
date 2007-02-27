@@ -530,8 +530,8 @@ void dev_set_enabled(struct device * dev, int enable)
 		return;
 	}
 	dev->enabled = enable;
-	if (dev->ops && dev->ops->phase5) {
-		dev->ops->phase5(dev);
+	if (dev->ops && dev->ops->phase5_enable_resources) {
+		dev->ops->phase5_enable_resources(dev);
 	}
 	else if (dev->chip_ops && dev->chip_ops->enable_dev) {
 		dev->chip_ops->enable_dev(dev);

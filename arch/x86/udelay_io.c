@@ -1,11 +1,11 @@
 /*
  * This file is part of the LinuxBIOS project.
  *
- * Copyright (C) 2007 coresystems GmbH <stepan@coresystems.de>
+ * Copyright (C) FIXME GET HISTORY
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,16 +14,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
+#include <arch/io.h>
 
-#ifndef LIB_H
-#define LIB_H
+void udelay(int usecs)
+{
+	int i;
+	for(i = 0; i < usecs; i++)
+		outb(i&0xff, 0x80);
+}
 
-unsigned long log2(unsigned long x);
-
-void udelay(unsigned usecs);
-void mdelay(unsigned msecs);
-void delay(unsigned secs);
-
-#endif

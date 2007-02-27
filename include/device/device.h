@@ -43,7 +43,6 @@ struct bus;
   * The numbering is nice, the naming is nice, what to do?
   */
 struct device_operations {
-//	void (*enable)(struct device * dev);
 	/* for now, we leave these, since they seem generic */
 	void (*set_link)(struct device * dev, unsigned int link);
 	void (*reset_bus)(struct bus *bus);
@@ -55,18 +54,21 @@ struct device_operations {
 	void (*phase2)(struct device * dev);
 
 	/* phase 3 is for scanning the bus, if needed. */
-	unsigned int (*phase3)(struct device * bus, unsigned int max);
+	unsigned int (*phase3_scan)(struct device * bus, unsigned int max);
 
 	/* typically used by phase4 */
 	/* again, if we never use this anywhere else, we may change the names */
 	void (*phase4_read_resources)(struct device * dev);
 	void (*phase4_set_resources)(struct device * dev);
+	/* some devices need to be enabled to scan, then disabled again. */
+	/* this function enables/disables according the value of 'enabled' in the device*/
+	void (*phase4_enable_disable)(struct device * dev);
 
 	/* phase 5: enable devices */
-	void (*phase5)(struct device * dev);
+	void (*phase5_enable_resources)(struct device * dev);
 
 	/* phase 6: any post-setup device initialization that might be needed */
-	void (*phase6)(struct device * dev);
+	void (*phase6_init)(struct device * dev);
 
 	const struct pci_operations *ops_pci;
 	const struct smbus_bus_operations *ops_smbus_bus;
@@ -182,6 +184,7 @@ void dev_init(void);
 void dev_phase1(void);
 void dev_phase2(void);
 void dev_root_phase3(void);
+unsigned int dev_phase3_scan(struct device * busdevice, unsigned int max);
 void dev_phase4(void);
 void dev_root_phase5(void);
 void dev_phase6(void);

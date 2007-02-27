@@ -546,11 +546,11 @@ void dev_phase5(struct device *dev)
 		printk(BIOS_ERR, "%s missing ops\n", dev_path(dev));
 		return;
 	}
-	if (!dev->ops->phase5) {
-		printk(BIOS_ERR, "%s ops are missing phase5\n", dev_path(dev));
+	if (!dev->ops->phase5_enable_resources) {
+		printk(BIOS_ERR, "%s ops are missing phase5_enable_resources\n", dev_path(dev));
 		return;
 	}
-	dev->ops->phase5(dev);
+	dev->ops->phase5_enable_resources(dev);
 }
 
 /** 
@@ -637,7 +637,7 @@ void dev_phase2(void)
  *
  * @return The maximum bus number found, after scanning all subordinate busses
  */
-unsigned int dev_phase3(struct device * busdevice, unsigned int max)
+unsigned int dev_phase3_scan(struct device * busdevice, unsigned int max)
 {
 	unsigned int new_max;
 	int do_phase3;
@@ -645,14 +645,14 @@ unsigned int dev_phase3(struct device * busdevice, unsigned int max)
 	if (	!busdevice ||
 		!busdevice->enabled ||
 		!busdevice->ops ||
-		!busdevice->ops->phase3)
+		!busdevice->ops->phase3_scan)
 	{
 		return max;
 	}
 	do_phase3 = 1;
 	while(do_phase3) {
 		int link;
-		new_max = busdevice->ops->phase3(busdevice, max);
+		new_max = busdevice->ops->phase3_scan(busdevice, max);
 		do_phase3 = 0;
 		for(link = 0; link < busdevice->links; link++) {
 			if (busdevice->link[link].reset_needed) {
@@ -705,11 +705,11 @@ void dev_root_phase3(void)
 		printk(BIOS_ERR, "dev_root_phase3 missing 'ops' initialization\nPhase 3: Failed\n");
 		return;
 	}
-	if (!root->ops->phase3) {
+	if (!root->ops->phase3_scan) {
 		printk(BIOS_ERR, "dev_root ops struct missing 'phase3' initialization in ops structure\nPhase 3: Failed");
 		return;
 	}
-	subordinate = dev_phase3(root, 0);
+	subordinate = dev_phase3_scan(root, 0);
 	printk(BIOS_INFO, "Phase 3: done\n");
 }
 
@@ -814,7 +814,7 @@ void dev_phase6(void)
 	printk(BIOS_INFO, "Phase 6: Initializing devices...\n");
 	for(dev = all_devices; dev; dev = dev->next) {
 		if (dev->enabled && !dev->initialized && 
-			dev->ops && dev->ops->phase6) 
+			dev->ops && dev->ops->phase6_init) 
 		{
 			if (dev->path.type == DEVICE_PATH_I2C) {
  				printk(BIOS_DEBUG, "Phase 6: smbus: %s[%d]->",
@@ -822,7 +822,7 @@ void dev_phase6(void)
 			}
 			printk(BIOS_DEBUG, "Phase 6: %s init\n", dev_path(dev));
 			dev->initialized = 1;
-			dev->ops->phase6(dev);
+			dev->ops->phase6_init(dev);
 		}
 	}
 	printk(BIOS_INFO, "Phase 6:Devices initialized\n");

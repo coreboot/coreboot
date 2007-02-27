@@ -6,6 +6,7 @@ Table of Contents
   - Usage
   - Archive format
   - TODO
+  - Copyright and License
   - ChangeLog
 
 
@@ -27,11 +28,11 @@ For questions contact Stefan Reinauer <stepan@coresystems.de>.
 Usage
 -----
 
-Create archive archive.lar containing files file1 ... fileN
+Create archive archive.lar containing files file1 ... fileN:
 
   $ lar c archive.lar file1 ... fileN
 
-Extract files from archive.lar
+Extract files from archive.lar:
 
   $ lar x archive.lar [file1 ... fileN]
 
@@ -46,31 +47,31 @@ Archive format
 The rough format is:
 
  |--------------|
- |  header      |
+ | header       |
  |--------------|
- |  data        |
+ | data         |
  |--------------|
- |  header      |
+ | header       |
  |--------------|
- |  data        |
+ | data         |
  |--------------|
   ...
 
 Headers have to be 16 byte aligned.
 
- |--------------------|
- |  magic (8byte)     |
- |--------------------|
- |  length (4byte)    |
- |--------------------|
- |  checksum (4byte)  |
- |--------------------|
- | offset to blob (4b)|
- |--------------------|
- | "path name"        | <-- null terminated, aligned to 16b
- |--------------------|
- | blob (aligned 16b) |
- |--------------------|
+ |----------------------------|
+ | magic (8 bytes)            |
+ |----------------------------|
+ | length (4 bytes)           |
+ |----------------------------|
+ | checksum (4 bytes)         |
+ |----------------------------|
+ | offset to blob (4 bytes)   |
+ |----------------------------|
+ | "path name"                | <-- null terminated, aligned to 16 bytes
+ |----------------------------|
+ | blob (aligned to 16 bytes) |
+ |----------------------------|
 
 
 TODO
@@ -81,10 +82,24 @@ TODO
   - Alignment enforcing will be optional
 
 
-License
--------
+Copyright and License
+---------------------
 
-This program is licensed under the terms of the GPL, version 2.
+Copyright (C) 2006 coresystems GmbH
+Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; version 2 of the License.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
 
 
 ChangeLog

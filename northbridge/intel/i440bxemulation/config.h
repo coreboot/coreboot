@@ -18,13 +18,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
 extern struct chip_operations northbridge_intel_i440bxemulation_ops;
 
 struct northbridge_intel_i440bx_config
 {
-	/* the various emulators don't always get 440bx right. So we are going to allow
-	 * users to set the ramsize via Kconfig. 
+	/* The various emulators don't always get 440BX right. So we are
+	 * going to allow users to set the RAM size via Kconfig. 
 	 */
 	int ramsize;
 };

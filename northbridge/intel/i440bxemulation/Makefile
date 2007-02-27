@@ -24,6 +24,5 @@
 $(obj)/i440bx.o: $(src)/northbridge/intel/i440bxemulation/i440bx.c
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
 
-
 STAGE2_CHIPSET_OBJ += $(obj)/i440bx.o
 

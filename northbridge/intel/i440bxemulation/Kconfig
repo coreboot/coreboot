@@ -2,5 +2,5 @@ config NORTHBRIDGE_INTEL_I440BXEMULATION_RAMSIZE
 	int
 	default 32 # Mbytes
 	help
-	  This is the default ram size of emulation
+	  This is the default RAM size of emulation.
 

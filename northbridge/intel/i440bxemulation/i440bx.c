@@ -27,12 +27,12 @@
 #include "config.h"
 #include "i440bx.h"
 
-/* this is the starting point */
+/* This is the starting point. */
 
 static void i440bxemulation_enable_dev(struct device *dev)
 {
 	printk(BIOS_INFO, "%s: \n", __FUNCTION__);
-        /* Set the operations if it is a special bus type */
+        /* Set the operations if it is a special bus type. */
 /*
         if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
                 dev->ops = &pci_domain_ops;
@@ -46,18 +46,18 @@ struct chip_operations northbridge_intel_i440bxemulation_ops = {
 	.enable_dev = i440bxemulation_enable_dev, 
 };
 
-/* here are the ops for 440bx as a pci domain */
+/* Here are the ops for 440BX as a PCI domain. */
 
 static void pci_domain_read_resources(struct device * dev)
 {
         struct resource *resource;
 
-        /* Initialize the system wide io space constraints */
+        /* Initialize the system wide I/O space constraints. */
         resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0,0));
         resource->limit = 0xffffUL;
         resource->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 
-        /* Initialize the system wide memory resources constraints */
+        /* Initialize the system wide memory resources constraints. */
         resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1,0));
         resource->limit = 0xffffffffULL;
         resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
@@ -81,7 +81,7 @@ static void ram_resource(struct device * dev, unsigned long index,
 static void pci_domain_set_resources(struct device * dev)
 {
 	struct device * mc_dev;
-        uint32_t tolmk; /* top of low mem, Kbytes */
+        uint32_t tolmk; /* Top of low mem, Kbytes. */
 	int idx;
 	struct northbridge_intel_i440bx_config *chip_info = dev->chip_info;
         tolmk = chip_info->ramsize * 1024;
@@ -105,4 +105,4 @@ struct device_operations i440bxemulation_pcidomainops = {
         .phase5_enable_resources = enable_childrens_resources,
         .phase6_init            = 0,
         .phase3_scan        = pci_domain_scan_bus,
-};  
+};

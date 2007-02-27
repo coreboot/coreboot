@@ -569,7 +569,7 @@ void pci_dev_set_resources(struct device *dev)
 		struct bus *bus;
 		bus = &dev->link[link];
 		if (bus->children) {
-			assign_resources(bus);
+			phase4_assign_resources(bus);
 		}
 	}
 
@@ -1077,7 +1077,7 @@ unsigned int pci_scan_bus(struct bus *bus,
 	 * scan the bus behind that child.
 	 */
 	for(child = bus->children; child; child = child->sibling) {
-		max = scan_bus(child, max);
+		max = dev_phase3_scan(child, max);
 	}
 
 	/*

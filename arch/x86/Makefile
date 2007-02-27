@@ -115,7 +115,7 @@ STAGE2_MAINBOARD_OBJ = $(obj)/mainboard.o
 STAGE2_DYNAMIC_OBJ   = $(obj)/statictree.o
 
 STAGE2_OBJ := $(STAGE2_LIB_OBJ) $(STAGE2_DEVICE_OBJ) $(STAGE2_ARCH_X86_OBJ)
-STAGE2_OBJ += $(STAGE2_MAINBOARD_OBJ) $(STAGE2_DYNAMIC_OBJ)
+STAGE2_OBJ += $(STAGE2_MAINBOARD_OBJ) $(STAGE2_DYNAMIC_OBJ) $(STAGE2_CHIPSET_OBJ)
 
 $(obj)/linuxbios.stage2: $(obj)/stage0.init $(STAGE2_OBJ)
 	$(Q)printf "Building linuxbios.stage2... "

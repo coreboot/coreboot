@@ -11,6 +11,7 @@
 
 			/* the I/O stuff */
 			northbridge,intel,440bx{
+				config="northbridge,intel,i440bxemulation";
 				pcipath = "0,0";
 				southbridge,intel,piix4{
 				};
@@ -28,3 +29,6 @@ struct mainboard_emulation_qemu_i386_config root = {
 };
 
 
+struct northbridge_intel_i440bx_config northbridge_intel_440bx = {
+	.ramsize = CONFIG_NORTHBRIDGE_INTEL_I440BXEMULATION_RAMSIZE,
+};

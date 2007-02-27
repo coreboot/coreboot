@@ -5,3 +5,4 @@ config MAINBOARD_NAME
 	help
 	  This is the default mainboard name.
 
+source northbridge/intel/i440bxemulation/Kconfig

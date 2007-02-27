@@ -81,8 +81,8 @@ MAINBOARDDIR=$(shell echo $(CONFIG_MAINBOARD_NAME))
 include lib/Makefile
 include device/Makefile
 include console/Makefile
-include arch/$(ARCH)/Makefile
 include mainboard/$(MAINBOARDDIR)/Makefile
+include arch/$(ARCH)/Makefile
 endif
 
 include util/Makefile

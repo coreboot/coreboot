@@ -1,0 +1,27 @@
+-------------------------------------------------------------------------------
+HACKING
+-------------------------------------------------------------------------------
+
+Development Guidelines
+----------------------
+
+Please read http://linuxbios.org/Development_Guidelines.
+
+
+Third-party Code and License Overview
+-------------------------------------
+
+* util/dtc/*: GPLv2 or later
+  Taken from http://ozlabs.org/~dgibson/dtc/dtc.tar.gz (currently down).
+  There seems to be a git repository for dtc somewhere!?
+
+* util/kconfig/*: GPLv2
+  Taken from git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux-2.6.
+
+* util/lar/*: GPLv2
+
+* include/elf.h: LGPLv2.1 or later
+  Taken from the GNU C Library.
+  You can get the latest version of the file via CVS:
+  cvs -d:pserver:anoncvs@sources.redhat.com:/cvs/glibc co libc/elf/elf.h
+

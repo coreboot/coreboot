@@ -22,8 +22,8 @@
 #include <device/pnp_def.h>
 
 /* Primitive pnp resource manipulation */
-void    pnp_write_config(device_t dev, uint8_t reg, uint8_t value);
-uint8_t pnp_read_config(device_t dev, uint8_t reg);
+void    pnp_write_config(device_t dev, u8 reg, u8 value);
+u8 pnp_read_config(device_t dev, u8 reg);
 void    pnp_set_logical_device(device_t dev);
 void    pnp_set_enable(device_t dev, int enable);
 int     pnp_read_enable(device_t dev);

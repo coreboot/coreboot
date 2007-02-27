@@ -39,9 +39,9 @@
 #define ELF_HEAD_SIZE		(8*1024)
 #define ELF_BOOT_MAGIC		0x0E1FB007
 
-typedef uint16_t Elf_Half;
-typedef uint32_t Elf_Word;
-typedef uint64_t Elf_Xword;
+typedef u16 Elf_Half;
+typedef u32 Elf_Word;
+typedef u64 Elf_Xword;
 
 typedef struct
 {

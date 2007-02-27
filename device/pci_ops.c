@@ -1,19 +1,19 @@
 /*
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
-	
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-	
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
 
-*/
 #include <console/console.h>
 #include <arch/pciconf.h>
 #include <device/pci.h>
@@ -27,44 +27,44 @@ static struct bus *get_pbus(struct device * dev)
 		pbus = pbus->dev->bus;
 	}
 	if (!pbus || !pbus->dev || !pbus->dev->ops || !pbus->dev->ops->ops_pci_bus) {
-		printk_alert("%s Cannot find pci bus operations", dev_path(dev));
+		printk(BIOS_ALERT,"%s Cannot find pci bus operations", dev_path(dev));
 		die("");
 		for(;;);
 	}
 	return pbus;
 }
 
-uint8_t pci_read_config8(struct device * dev, unsigned where)
+u8 pci_read_config8(struct device * dev, unsigned where)
 {
 	struct bus *pbus = get_pbus(dev);
 	return ops_pci_bus(pbus)->read8(pbus, dev->bus->secondary, dev->path.u.pci.devfn, where);
 }
 
-uint16_t pci_read_config16(struct device * dev, unsigned where)
+u16 pci_read_config16(struct device * dev, unsigned where)
 {
 	struct bus *pbus = get_pbus(dev);
 	return ops_pci_bus(pbus)->read16(pbus, dev->bus->secondary, dev->path.u.pci.devfn, where);
 }
 
-uint32_t pci_read_config32(struct device * dev, unsigned where)
+u32 pci_read_config32(struct device * dev, unsigned where)
 {
 	struct bus *pbus = get_pbus(dev);
 	return ops_pci_bus(pbus)->read32(pbus, dev->bus->secondary, dev->path.u.pci.devfn, where);
 }
 
-void pci_write_config8(struct device * dev, unsigned where, uint8_t val)
+void pci_write_config8(struct device * dev, unsigned where, u8 val)
 {
 	struct bus *pbus = get_pbus(dev);
 	ops_pci_bus(pbus)->write8(pbus, dev->bus->secondary, dev->path.u.pci.devfn, where, val);
 }
 
-void pci_write_config16(struct device * dev, unsigned where, uint16_t val)
+void pci_write_config16(struct device * dev, unsigned where, u16 val)
 {
 	struct bus *pbus = get_pbus(dev);
 	ops_pci_bus(pbus)->write16(pbus, dev->bus->secondary, dev->path.u.pci.devfn, where, val);
 }
 
-void pci_write_config32(struct device * dev, unsigned where, uint32_t val)
+void pci_write_config32(struct device * dev, unsigned where, u32 val)
 {
 	struct bus *pbus = get_pbus(dev);
 	ops_pci_bus(pbus)->write32(pbus, dev->bus->secondary, dev->path.u.pci.devfn, where, val);

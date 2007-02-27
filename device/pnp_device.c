@@ -27,13 +27,13 @@
 
 /* PNP fundamental operations */
 
-void pnp_write_config(device_t dev, uint8_t reg, uint8_t value)
+void pnp_write_config(device_t dev, u8 reg, u8 value)
 {
 	outb(reg, dev->path.u.pnp.port);
 	outb(value, dev->path.u.pnp.port + 1);
 }
 
-uint8_t pnp_read_config(device_t dev, uint8_t reg)
+u8 pnp_read_config(device_t dev, u8 reg)
 {
 	outb(reg, dev->path.u.pnp.port);
 	return inb(dev->path.u.pnp.port + 1);

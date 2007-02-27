@@ -17,7 +17,7 @@
     (bb*=2,bb&0xffff ? (bb>>16)&1 : (ilen+=2,((bb=(src[ilen-2]+src[ilen-1]*256u)*2+1)>>16)&1))
 #define GETBIT_LE32(bb, src, ilen) \
     (bc > 0 ? ((bb>>--bc)&1) : (bc=31,\
-    bb=*(const uint32_t *)((src)+ilen),ilen+=4,(bb>>31)&1))
+    bb=*(const u32 *)((src)+ilen),ilen+=4,(bb>>31)&1))
 
 #if ENDIAN == 0 && BITSIZE == 8
 #define GETBIT(bb, src, ilen) GETBIT_8(bb, src, ilen)
@@ -28,12 +28,12 @@
 #if ENDIAN == 0 && BITSIZE == 32
 #define GETBIT(bb, src, ilen) GETBIT_LE32(bb, src, ilen)
 #endif
-static unsigned long unrv2b(uint8_t * src, uint8_t * dst, unsigned long *ilen_p)
+static unsigned long unrv2b(u8 * src, u8 * dst, unsigned long *ilen_p)
 {
 	unsigned long ilen = 0, olen = 0, last_m_off = 1;
-	uint32_t bb = 0;
+	u32 bb = 0;
 	unsigned bc = 0;
-	const uint8_t *m_pos;
+	const u8 *m_pos;
 
 	// skip length
 	src += 4;

@@ -115,8 +115,8 @@ struct ht_link {
 
 static int ht_setup_link(struct ht_link *prev, device_t dev, unsigned pos)
 {
-	static const uint8_t link_width_to_pow2[]= { 3, 4, 0, 5, 1, 2, 0, 0 };
-	static const uint8_t pow2_to_link_width[] = { 0x7, 4, 5, 0, 1, 3 };
+	static const u8 link_width_to_pow2[]= { 3, 4, 0, 5, 1, 2, 0, 0 };
+	static const u8 pow2_to_link_width[] = { 0x7, 4, 5, 0, 1, 3 };
 	struct ht_link cur[1];
 	unsigned present_width_cap,    upstream_width_cap;
 	unsigned present_freq_cap,     upstream_freq_cap;
@@ -322,7 +322,7 @@ static void ht_collapse_early_enumeration(struct bus *bus, unsigned offset_uniti
         /* Check if is already collapsed */
         if((!offset_unitid)|| (offset_unitid && (!((HT_CHAIN_END_UNITID_BASE == 0) && (HT_CHAIN_END_UNITID_BASE <HT_CHAIN_UNITID_BASE))))) {
                 struct device dummy;
-                uint32_t id;
+                u32 id;
                 dummy.bus              = bus;
                 dummy.path.type        = DEVICE_PATH_PCI;
                 dummy.path.u.pci.devfn = PCI_DEVFN(0, 0);
@@ -338,7 +338,7 @@ static void ht_collapse_early_enumeration(struct bus *bus, unsigned offset_uniti
 	 */
 	for(devfn = PCI_DEVFN(1, 0); devfn <= 0xff; devfn += 8) {
 		struct device dummy;
-		uint32_t id;
+		u32 id;
 		unsigned pos, flags;
 		dummy.bus              = bus;
 		dummy.path.type        = DEVICE_PATH_PCI;
@@ -379,7 +379,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 #if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
         //let't record the device of last ht device, So we can set the Unitid to HT_CHAIN_END_UNITID_BASE
         unsigned real_last_unitid; 
-        uint8_t real_last_pos;
+        u8 real_last_pos;
 	device_t real_last_dev;
 #endif
 
@@ -402,8 +402,8 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 	last_unitid = min_unitid -1;
 	next_unitid = min_unitid;
 	do {
-		uint8_t pos;
-		uint16_t flags;
+		u8 pos;
+		u16 flags;
 		unsigned count, static_count;
 		unsigned ctrl;
 
@@ -520,7 +520,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 
 #if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
         if(offset_unitid && (ht_dev_num>0)) {
-                uint16_t flags;
+                u16 flags;
                 int i;
 		device_t last_func = 0;
                 flags = pci_read_config16(real_last_dev, real_last_pos + PCI_CAP_FLAGS);

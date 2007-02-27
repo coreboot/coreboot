@@ -89,7 +89,7 @@ void cardbus_read_resources(device_t dev)
 {
 	resource_t moving_base, moving_limit, moving;
 	unsigned long type;
-	uint16_t ctl;
+	u16 ctl;
 	unsigned long index;	
 
 	/* See if needs a card control registers base address */
@@ -156,7 +156,7 @@ void cardbus_read_resources(device_t dev)
 
 void cardbus_enable_resources(device_t dev)
 {
-	uint16_t ctrl;
+	u16 ctrl;
 	ctrl = pci_read_config16(dev, PCI_CB_BRIDGE_CONTROL);
 	ctrl |= (dev->link[0].bridge_ctrl & (
 			PCI_BRIDGE_CTL_PARITY | 
@@ -185,8 +185,8 @@ unsigned int cardbus_scan_bus(struct bus *bus,
 unsigned int cardbus_scan_bridge(device_t dev, unsigned int max)
 {
 	struct bus *bus;
-	uint32_t buses;
-	uint16_t cr;
+	u32 buses;
+	u16 cr;
 
 	printk_spew("%s for %s\n", __func__, dev_path(dev));
 

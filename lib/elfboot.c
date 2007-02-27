@@ -51,8 +51,8 @@ static int valid_area(struct lb_memory *mem,
 	 * have a match.
 	 */
 	for(i = 0; i < mem_entries; i++) {
-		uint64_t mstart, mend;
-		uint32_t mtype;
+		u64 mstart, mend;
+		u32 mtype;
 		mtype = mem->map[i].type;
 		mstart = unpack_lb64(mem->map[i].start);
 		mend = mstart + unpack_lb64(mem->map[i].size);
@@ -65,8 +65,8 @@ static int valid_area(struct lb_memory *mem,
 		printk(BIOS_ERR, "  [0x%016lx, 0x%016lx)\n", start, end);
 		printk(BIOS_ERR, "Ram areas\n");
 		for(i = 0; i < mem_entries; i++) {
-			uint64_t mstart, mend;
-			uint32_t mtype;
+			u64 mstart, mend;
+			u32 mtype;
 			mtype = mem->map[i].type;
 			mstart = unpack_lb64(mem->map[i].start);
 			mend = mstart + unpack_lb64(mem->map[i].size);

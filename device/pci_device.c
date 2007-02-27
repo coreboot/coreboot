@@ -56,9 +56,9 @@
 #include <device/cardbus.h>
 #endif
 
-uint8_t pci_moving_config8(struct device *dev, unsigned reg)
+u8 pci_moving_config8(struct device *dev, unsigned reg)
 {
-	uint8_t value, ones, zeroes;
+	u8 value, ones, zeroes;
 	value = pci_read_config8(dev, reg);
 	
 	pci_write_config8(dev, reg, 0xff);
@@ -72,9 +72,9 @@ uint8_t pci_moving_config8(struct device *dev, unsigned reg)
 	return ones ^ zeroes;
 }
 
-uint16_t pci_moving_config16(struct device *dev, unsigned reg)
+u16 pci_moving_config16(struct device *dev, unsigned reg)
 {
-	uint16_t value, ones, zeroes;
+	u16 value, ones, zeroes;
 	value = pci_read_config16(dev, reg);
 	
 	pci_write_config16(dev, reg, 0xffff);
@@ -88,9 +88,9 @@ uint16_t pci_moving_config16(struct device *dev, unsigned reg)
 	return ones ^ zeroes;
 }
 
-uint32_t pci_moving_config32(struct device *dev, unsigned reg)
+u32 pci_moving_config32(struct device *dev, unsigned reg)
 {
-	uint32_t value, ones, zeroes;
+	u32 value, ones, zeroes;
 	value = pci_read_config32(dev, reg);
 	
 	pci_write_config32(dev, reg, 0xffffffff);
@@ -398,11 +398,11 @@ static void pci_bridge_read_bases(struct device *dev)
 	resource_t moving_base, moving_limit, moving;
 
 	/* See if the bridge I/O resources are implemented */
-	moving_base = ((uint32_t)pci_moving_config8(dev, PCI_IO_BASE)) << 8;
-	moving_base |= ((uint32_t)pci_moving_config16(dev, PCI_IO_BASE_UPPER16)) << 16;
+	moving_base = ((u32)pci_moving_config8(dev, PCI_IO_BASE)) << 8;
+	moving_base |= ((u32)pci_moving_config16(dev, PCI_IO_BASE_UPPER16)) << 16;
 
-	moving_limit = ((uint32_t)pci_moving_config8(dev, PCI_IO_LIMIT)) << 8;
-	moving_limit |= ((uint32_t)pci_moving_config16(dev, PCI_IO_LIMIT_UPPER16)) << 16;
+	moving_limit = ((u32)pci_moving_config8(dev, PCI_IO_LIMIT)) << 8;
+	moving_limit |= ((u32)pci_moving_config16(dev, PCI_IO_LIMIT_UPPER16)) << 16;
 
 	moving = moving_base & moving_limit;
 
@@ -428,8 +428,8 @@ static void pci_bridge_read_bases(struct device *dev)
 	
 
 	/* See if the bridge mem resources are implemented */
-	moving_base = ((uint32_t)pci_moving_config16(dev, PCI_MEMORY_BASE)) << 16;
-	moving_limit = ((uint32_t)pci_moving_config16(dev, PCI_MEMORY_LIMIT)) << 16;
+	moving_base = ((u32)pci_moving_config16(dev, PCI_MEMORY_BASE)) << 16;
+	moving_limit = ((u32)pci_moving_config16(dev, PCI_MEMORY_LIMIT)) << 16;
 
 	moving = moving_base & moving_limit;
 
@@ -559,7 +559,7 @@ void pci_dev_set_resources(struct device *dev)
 {
 	struct resource *resource, *last;
 	unsigned link;
-	uint8_t line;
+	u8 line;
 
 	last = &dev->resource[dev->resources];
 
@@ -594,7 +594,7 @@ void pci_dev_set_resources(struct device *dev)
 void pci_dev_enable_resources(struct device *dev)
 {
 	const struct pci_operations *ops;
-	uint16_t command;
+	u16 command;
 
 	/* Set the subsystem vendor and device id for mainboard devices */
 	ops = ops_pci(dev);
@@ -619,7 +619,7 @@ void pci_dev_enable_resources(struct device *dev)
 
 void pci_bus_enable_resources(struct device *dev)
 {
-	uint16_t ctrl;
+	u16 ctrl;
 	/* enable IO in command register if there is VGA card
 	 * connected with (even it does not claim IO resource) */
 	if (dev->link[0].bridge_ctrl & PCI_BRIDGE_CTL_VGA)
@@ -899,8 +899,8 @@ static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
  */
 struct device * pci_probe_dev(struct device * dev, struct bus *bus, unsigned devfn)
 {
-	uint32_t id, class;
-	uint8_t hdr_type;
+	u32 id, class;
+	u8 hdr_type;
 
 	/* Detect if a device is present */
 	if (!dev) {
@@ -1112,8 +1112,8 @@ unsigned int do_pci_scan_bridge(struct device *dev, unsigned int max,
 		unsigned min_devfn, unsigned max_devfn, unsigned int max))
 {
 	struct bus *bus;
-	uint32_t buses;
-	uint16_t cr;
+	u32 buses;
+	u16 cr;
 
 	printk(BIOS_SPEW,"%s for %s\n", __func__, dev_path(dev));
 

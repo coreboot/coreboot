@@ -23,45 +23,43 @@
 #ifndef _ELF_H
 #define	_ELF_H 1
 
+#include <arch/types.h>
 #include <stddef.h>
 #include <arch/elf.h>
-#include <stdint.h>
-
-__BEGIN_DECLS
 
 /* Standard ELF types.  */
 
 /* Type for a 16-bit quantity.  */
-typedef uint16_t Elf32_Half;
-typedef uint16_t Elf64_Half;
+typedef u16 Elf32_Half;
+typedef u16 Elf64_Half;
 
 /* Types for signed and unsigned 32-bit quantities.  */
-typedef uint32_t Elf32_Word;
-typedef	int32_t  Elf32_Sword;
-typedef uint32_t Elf64_Word;
-typedef	int32_t  Elf64_Sword;
+typedef u32 Elf32_Word;
+typedef	s32  Elf32_Sword;
+typedef u32 Elf64_Word;
+typedef	s32  Elf64_Sword;
 
 /* Types for signed and unsigned 64-bit quantities.  */
-typedef uint64_t Elf32_Xword;
-typedef	int64_t  Elf32_Sxword;
-typedef uint64_t Elf64_Xword;
-typedef	int64_t  Elf64_Sxword;
+typedef u64 Elf32_Xword;
+typedef	s64  Elf32_Sxword;
+typedef u64 Elf64_Xword;
+typedef	s64  Elf64_Sxword;
 
 /* Type of addresses.  */
-typedef uint32_t Elf32_Addr;
-typedef uint64_t Elf64_Addr;
+typedef u32 Elf32_Addr;
+typedef u64 Elf64_Addr;
 
 /* Type of file offsets.  */
-typedef uint32_t Elf32_Off;
-typedef uint64_t Elf64_Off;
+typedef u32 Elf32_Off;
+typedef u64 Elf64_Off;
 
 /* Type for section indices, which are 16-bit quantities.  */
-typedef uint16_t Elf32_Section;
-typedef uint16_t Elf64_Section;
+typedef u16 Elf32_Section;
+typedef u16 Elf64_Section;
 
 /* Type of symbol indices.  */
-typedef uint32_t Elf32_Symndx;
-typedef uint64_t Elf64_Symndx;
+typedef u32 Elf32_Symndx;
+typedef u64 Elf64_Symndx;
 
 
 /* The ELF file header.  This appears at the start of every ELF file.  */

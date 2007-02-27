@@ -1,7 +1,8 @@
 /*
  * This file is part of the LinuxBIOS project.
  *
- * Copyright (C) FIXME GET HISTORY
+ * Copyright (C) 2001 Linux Networx
+ * Written by Eric Biederman
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +19,7 @@
  */
 
 #include <lib.h>
+
 void mdelay(unsigned msecs)
 {
 	unsigned i;

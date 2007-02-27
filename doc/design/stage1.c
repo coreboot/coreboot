@@ -25,8 +25,8 @@ static void stage1_superio_setup(void)
 {
 	struct property *superio;
 	unsigned value;
-	uint32_t dword;
-	uint8_t byte;
+	u32 dword;
+	u8 byte;
 
 	superio = get_property(dtb, "ck804");
 	/* read dev  1 , function 0, of the superio, */

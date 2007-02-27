@@ -74,35 +74,35 @@ int smbus_recv_byte(device_t dev)
 {
 	return ops_smbus_bus(get_pbus_smbus(dev))->recv_byte(dev);
 }
-int smbus_send_byte(device_t dev, uint8_t byte)
+int smbus_send_byte(device_t dev, u8 byte)
 {
 	return ops_smbus_bus(get_pbus_smbus(dev))->send_byte(dev, byte);
 }
-int smbus_read_byte(device_t dev, uint8_t addr)
+int smbus_read_byte(device_t dev, u8 addr)
 {
 	return ops_smbus_bus(get_pbus_smbus(dev))->read_byte(dev, addr);
 }
-int smbus_write_byte(device_t dev, uint8_t addr, uint8_t val)
+int smbus_write_byte(device_t dev, u8 addr, u8 val)
 {
 	return ops_smbus_bus(get_pbus_smbus(dev))->write_byte(dev, addr, val);
 }
-int smbus_read_word(device_t dev, uint8_t addr)
+int smbus_read_word(device_t dev, u8 addr)
 {
 	return ops_smbus_bus(get_pbus_smbus(dev))->read_word(dev, addr);
 }
-int smbus_write_word(device_t dev, uint8_t addr, uint16_t val)
+int smbus_write_word(device_t dev, u8 addr, u16 val)
 {
 	return ops_smbus_bus(get_pbus_smbus(dev))->write_word(dev, addr, val);
 }
-int smbus_process_call(device_t dev, uint8_t cmd, uint16_t data)
+int smbus_process_call(device_t dev, u8 cmd, u16 data)
 {
 	return ops_smbus_bus(get_pbus_smbus(dev))->process_call(dev, cmd, data);
 }
-int smbus_block_read(device_t dev, uint8_t cmd, uint8_t bytes, uint8_t *buffer)
+int smbus_block_read(device_t dev, u8 cmd, u8 bytes, u8 *buffer)
 {
 	return ops_smbus_bus(get_pbus_smbus(dev))->block_read(dev, cmd, bytes, buffer);
 }
-int smbus_block_write(device_t dev, uint8_t cmd, uint8_t bytes, const uint8_t *buffer)
+int smbus_block_write(device_t dev, u8 cmd, u8 bytes, const u8 *buffer)
 {
 	return ops_smbus_bus(get_pbus_smbus(dev))->block_write(dev, cmd, bytes, buffer);
 }

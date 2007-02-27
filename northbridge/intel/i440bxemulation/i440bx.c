@@ -81,7 +81,7 @@ static void ram_resource(struct device * dev, unsigned long index,
 static void pci_domain_set_resources(struct device * dev)
 {
 	struct device * mc_dev;
-        uint32_t tolmk; /* Top of low mem, Kbytes. */
+        u32 tolmk; /* Top of low mem, Kbytes. */
 	int idx;
 	struct northbridge_intel_i440bx_config *chip_info = dev->chip_info;
         tolmk = chip_info->ramsize * 1024;

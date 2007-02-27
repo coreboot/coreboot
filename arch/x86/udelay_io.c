@@ -1,7 +1,7 @@
 /*
  * This file is part of the LinuxBIOS project.
  *
- * Copyright (C) FIXME GET HISTORY
+ * Copyright (C) 2005 coresystems GmbH <stepan@coresystems.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

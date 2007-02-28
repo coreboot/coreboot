@@ -12,16 +12,32 @@ Third-party Code and License Overview
 -------------------------------------
 
 * util/dtc/*: GPLv2 or later
-  Taken from http://ozlabs.org/~dgibson/dtc/dtc.tar.gz (currently down).
-  There seems to be a git repository for dtc somewhere!?
+  Source: git://www.jdl.com/software/dtc.git
+  Current version we use: ?
 
 * util/kconfig/*: GPLv2
-  Taken from git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux-2.6.
+  Source: git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux-2.6
+  Current version we use: ?
 
 * util/lar/*: GPLv2
+  Independant project, but written specifically for LinuxBIOS.
+
+* util/lzma/C/*: Dual-licensed, LGPL + Common Public License (CPL). There's
+  a special exception, please see util/lzma/C/7zip/Decompress/LzmaDecode.c.
+  Source: LZMA SDK, http://sourceforge.net/projects/sevenzip/
+  Current version we use: lzma442.tar.bz2
+
+* util/lzma/minilzma.cc: ?
+  Source: ?
+  Current version we use: ?
+
+* util/nrv2b/nrv2b.c: ?
+  Source: ?
+  Current version we use: ?
 
 * include/elf.h: LGPLv2.1 or later
-  Taken from the GNU C Library.
+  Source: The GNU C Library, http://www.gnu.org/software/libc/
   You can get the latest version of the file via CVS:
   cvs -d:pserver:anoncvs@sources.redhat.com:/cvs/glibc co libc/elf/elf.h
+  Current version we use: ?
 

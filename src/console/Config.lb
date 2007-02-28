@@ -1,4 +1,5 @@
 uses CONFIG_CONSOLE_SERIAL8250
+uses CONFIG_USBDEBUG_DIRECT
 uses CONFIG_CONSOLE_VGA
 uses CONFIG_CONSOLE_BTEXT
 uses CONFIG_CONSOLE_LOGBUF
@@ -8,6 +9,9 @@ uses CONFIG_USE_PRINTK_IN_CAR
 object printk.o
 if CONFIG_CONSOLE_SERIAL8250
 	driver uart8250_console.o
+end
+if CONFIG_USBDEBUG_DIRECT
+	driver usbdebug_direct_console.o
 end
 if CONFIG_CONSOLE_VGA
 	driver vga_console.o

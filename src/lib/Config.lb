@@ -1,9 +1,15 @@
 uses HAVE_FALLBACK_BOOT
 uses CONFIG_USE_INIT
 uses CONFIG_USE_PRINTK_IN_CAR
+uses CONFIG_USBDEBUG_DIRECT
 
 object clog2.o
 object uart8250.o
+
+if CONFIG_USBDEBUG_DIRECT
+	object usbdebug_direct.o
+end
+
 object memset.o
 object memcpy.o
 object memcmp.o

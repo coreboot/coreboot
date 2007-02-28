@@ -442,6 +442,11 @@ define CONFIG_CONSOLE_SERIAL8250
 	export always
 	comment "Log messages to 8250 uart based serial console"
 end
+define CONFIG_USBDEBUG_DIRECT
+	default 0
+	export always
+	comment "Log messages to ehci debug port console"
+end
 define DEFAULT_CONSOLE_LOGLEVEL
 	default 7
 	export always
@@ -997,6 +1002,12 @@ define CONFIG_PCI_64BIT_PREF_MEM
         default 0
         export always
         comment "allow PCI device get 4G above Region as pref mem"
+end
+
+define CONFIG_AGESA
+	default 0
+	export always
+	comment "use AMD AGESA to init RAM instead of native code"
 end
 
 define CONFIG_VIDEO_MB

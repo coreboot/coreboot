@@ -546,6 +546,8 @@ static void amd_set_name_string_f(device_t dev)
 extern void model_fxx_update_microcode(unsigned cpu_deviceid);
 int init_processor_name(void);
 
+static unsigned ehci_debug_addr;
+
 void model_fxx_init(device_t dev)
 {
 	unsigned long i;
@@ -565,10 +567,20 @@ void model_fxx_init(device_t dev)
 	} 
 #endif
 
+#if CONFIG_USBDEBUG_DIRECT
+	if(!ehci_debug_addr) 
+		ehci_debug_addr = get_ehci_debug();
+	set_ehci_debug(0);
+#endif
+
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
 	amd_setup_mtrrs();
 	x86_mtrr_check();
+
+#if CONFIG_USBDEBUG_DIRECT
+	set_ehci_debug(ehci_debug_addr);
+#endif
 
         /* Update the microcode */
 	model_fxx_update_microcode(dev->device);

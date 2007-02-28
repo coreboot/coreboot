@@ -132,8 +132,8 @@ int data_is_one_string(struct data d);
 
 /* DT constraints */
 
-#define MAX_PROPNAME_LEN	31
-#define MAX_NODENAME_LEN	31
+#define MAX_PROPNAME_LEN	63
+#define MAX_NODENAME_LEN	63
 
 /* Live trees */
 struct property {

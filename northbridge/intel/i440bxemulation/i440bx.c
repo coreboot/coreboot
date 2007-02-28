@@ -28,11 +28,13 @@
 #include "i440bx.h"
 
 /* This is the starting point. */
-
+struct device_operations i440bxemulation_pcidomainops;
 static void i440bxemulation_enable_dev(struct device *dev)
 {
 	printk(BIOS_INFO, "%s: \n", __FUNCTION__);
-        /* Set the operations if it is a special bus type. */
+	/* just a test here. ... we don't want to do this in real life */
+	dev->ops = &i440bxemulation_pcidomainops;
+        /* Set the operations if it is a special bus type */
 /*
         if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
                 dev->ops = &pci_domain_ops;

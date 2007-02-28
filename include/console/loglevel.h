@@ -20,11 +20,11 @@
 /* Safe for inclusion in assembly */
 
 #ifndef MAXIMUM_CONSOLE_LOGLEVEL
-#define MAXIMUM_CONSOLE_LOGLEVEL 8
+#define MAXIMUM_CONSOLE_LOGLEVEL 9
 #endif
 
 #ifndef DEFAULT_CONSOLE_LOGLEVEL
-#define DEFAULT_CONSOLE_LOGLEVEL 8 /* anything MORE serious than BIOS_SPEW */
+#define DEFAULT_CONSOLE_LOGLEVEL 9 /* anything MORE serious than BIOS_SPEW */
 #endif
 
 #ifndef ASM_CONSOLE_LOGLEVEL

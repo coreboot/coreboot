@@ -647,11 +647,16 @@ unsigned int dev_phase3_scan(struct device * busdevice, unsigned int max)
 		!busdevice->ops ||
 		!busdevice->ops->phase3_scan)
 	{
+		printk(BIOS_INFO, "%s: busdevice %p enabled %d ops %p\n" ,
+			busdevice, busdevice ? busdevice->enabled : NULL, 
+			busdevice ? busdevice->ops : NULL);
+		printk(BIOS_INFO, "%s: can not scan from here, returning %d\n", __FUNCTION__, max);
 		return max;
 	}
 	do_phase3 = 1;
 	while(do_phase3) {
 		int link;
+		printk(BIOS_INFO, "%s: scanning %s\n", __FUNCTION__, dev_path(busdevice));
 		new_max = busdevice->ops->phase3_scan(busdevice, max);
 		do_phase3 = 0;
 		for(link = 0; link < busdevice->links; link++) {
@@ -665,6 +670,7 @@ unsigned int dev_phase3_scan(struct device * busdevice, unsigned int max)
 		}
 	}
 	post_code(0x4e);
+	printk(BIOS_INFO, "%s: returning %d\n", __FUNCTION__, max);
 	return new_max;
 }
 

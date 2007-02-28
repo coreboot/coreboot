@@ -98,7 +98,7 @@ unsigned int scan_static_bus(struct device * busdevice, unsigned int max)
 	struct device * child;
 	unsigned link;
 
-	printk(BIOS_SPEW, "%s for %s\n", __func__, dev_path(busdevice));
+	printk(BIOS_INFO, "%s for %s\n", __func__, dev_path(busdevice));
 
 	for(link = 0; link < busdevice->links; link++) {
 		/* for smbus bus enumerate */
@@ -127,12 +127,12 @@ unsigned int scan_static_bus(struct device * busdevice, unsigned int max)
 		for(child = busdevice->link[link].children; child; child = child->sibling) {
 			if (!child->ops || !child->ops->phase3_scan)
 				continue;
-			printk(BIOS_SPEW, "%s scanning...\n", dev_path(child));
+			printk(BIOS_INFO, "%s scanning...\n", dev_path(child));
 			max = dev_phase3_scan(child, max);
 		}
 	}
 
-	printk(BIOS_SPEW, "%s for %s done\n", __func__, dev_path(busdevice));
+	printk(BIOS_INFO, "%s for %s done\n", __func__, dev_path(busdevice));
 
 	return max;
 }

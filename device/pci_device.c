@@ -784,6 +784,8 @@ static void set_pci_ops(struct device *dev)
 		return;
 	}
 
+#warning "need to fix this leftover PCI bogosity from V2"
+#if 0
 	/* Look through the list of setup drivers and find one for
 	 * this pci device 
 	 */
@@ -799,7 +801,7 @@ static void set_pci_ops(struct device *dev)
 			return;
 		}
 	}
-
+#endif
 	/* If I don't have a specific driver use the default operations */
 	switch(dev->hdr_type & 0x7f) {	/* header type */
 	case PCI_HEADER_TYPE_NORMAL:	/* standard header */
@@ -851,8 +853,8 @@ static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
 	dev = 0;
 	for(; *list; list = &(*list)->sibling) {
 		if ((*list)->path.type != DEVICE_PATH_PCI) {
-			printk(BIOS_ERR,"child %s not a pci device\n",
-				dev_path(*list));
+			printk(BIOS_ERR,"%s: child %s not a pci device: it's type %d\n", __FUNCTION__, 
+				dev_path(*list), (*list)->path.type);
 			continue;
 		}
 		if ((*list)->path.u.pci.devfn == devfn) {

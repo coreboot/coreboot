@@ -611,7 +611,7 @@ void dev_phase2(void)
 	struct device *dev;
 
 	post_code(0x41);
-	printk(BIOS_INFO, "Phase 2: early setup ...\n");
+	printk(BIOS_INFO, "Phase 2: Early setup...\n");
 	for(dev = all_devices; dev; dev = dev->next) {
 		printk(BIOS_SPEW, "%s: dev %s: ", __FUNCTION__, dev->dtsname);
 		if (dev->ops && dev->ops->phase1) {
@@ -622,7 +622,7 @@ void dev_phase2(void)
 		printk(BIOS_SPEW, "\n");
 	}
 	post_code(0x4e);
-	printk(BIOS_INFO, "Phase 2: done\n");
+	printk(BIOS_INFO, "Phase 2: Done.\n");
 	post_code(0x4f);
 }
 
@@ -711,15 +711,15 @@ void dev_root_phase3(void)
 	}
 	post_code(0x41);
 	if (!root->ops) {
-		printk(BIOS_ERR, "dev_root_phase3 missing 'ops' initialization\nPhase 3: Failed\n");
+		printk(BIOS_ERR, "dev_root_phase3 missing 'ops' initialization\nPhase 3: Failed.\n");
 		return;
 	}
 	if (!root->ops->phase3_scan) {
-		printk(BIOS_ERR, "dev_root ops struct missing 'phase3' initialization in ops structure\nPhase 3: Failed");
+		printk(BIOS_ERR, "dev_root ops struct missing 'phase3' initialization in ops structure\nPhase 3: Failed.");
 		return;
 	}
 	subordinate = dev_phase3_scan(root, 0);
-	printk(BIOS_INFO, "Phase 3: done\n");
+	printk(BIOS_INFO, "Phase 3: Done.\n");
 }
 
 /**
@@ -741,20 +741,20 @@ void dev_phase4(void)
 	struct resource *io, *mem;
 	struct device *root;
 
-	printk(BIOS_INFO, "Phase 4:Allocating resources...\n");
+	printk(BIOS_INFO, "Phase 4: Allocating resources...\n");
 
 	root = &dev_root;
 	if (!root->ops) {
-		printk(BIOS_ERR, "Phase 4: dev_root missing ops initialization\nPhase 4: Failed\n");
+		printk(BIOS_ERR, "Phase 4: dev_root missing ops initialization\nPhase 4: Failed.\n");
 		return;
 	}	
 	if (!root->ops->phase4_read_resources) {
-		printk(BIOS_ERR, "dev_root ops missing read_resources\nPhase 4: Failed\n");
+		printk(BIOS_ERR, "dev_root ops missing read_resources\nPhase 4: Failed.\n");
 		return;
 	}
 
 	if (!root->ops->phase4_set_resources) {
-		printk(BIOS_ERR, "dev_root ops missing set_resources\nPhase 4: Failed\n");
+		printk(BIOS_ERR, "dev_root ops missing set_resources\nPhase 4: Failed.\n");
 		return;
 	}
 
@@ -806,7 +806,7 @@ void dev_root_phase5(void)
 	/* now enable everything. */
 	dev_phase5(&dev_root);
 
-	printk(BIOS_INFO, "Phase 5: done.\n");
+	printk(BIOS_INFO, "Phase 5: Done.\n");
 }
 
 /**
@@ -829,11 +829,11 @@ void dev_phase6(void)
  				printk(BIOS_DEBUG, "Phase 6: smbus: %s[%d]->",
 					dev_path(dev->bus->dev), dev->bus->link);
 			}
-			printk(BIOS_DEBUG, "Phase 6: %s init\n", dev_path(dev));
+			printk(BIOS_DEBUG, "Phase 6: %s init.\n", dev_path(dev));
 			dev->initialized = 1;
 			dev->ops->phase6_init(dev);
 		}
 	}
-	printk(BIOS_INFO, "Phase 6:Devices initialized\n");
+	printk(BIOS_INFO, "Phase 6: Devices initialized.\n");
 }
 

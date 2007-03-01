@@ -27,7 +27,8 @@
 #include <stdarg.h>
 #include <string.h>
 
-int vtxprintf(void (*tx_byte)(unsigned char byte), const char *fmt, va_list args);
+int vtxprintf(void (*tx_byte) (unsigned char byte), const char *fmt,
+	      va_list args);
 
 /* FIXME this global makes vsprintf non-reentrant */
 
@@ -38,7 +39,7 @@ static void str_tx_byte(unsigned char byte)
 	str_buf++;
 }
 
-int vsprintf(char * buf, const char *fmt, va_list args)
+int vsprintf(char *buf, const char *fmt, va_list args)
 {
 	int i;
 	str_buf = buf;
@@ -47,13 +48,13 @@ int vsprintf(char * buf, const char *fmt, va_list args)
 	return i;
 }
 
-int sprintf(char * buf, const char *fmt, ...)
+int sprintf(char *buf, const char *fmt, ...)
 {
 	va_list args;
 	int i;
 
 	va_start(args, fmt);
-	i=vsprintf(buf,fmt,args);
+	i = vsprintf(buf, fmt, args);
 	va_end(args);
 	return i;
 }

@@ -1,7 +1,6 @@
 #ifndef CPU_X86_MTRR_H
 #define CPU_X86_MTRR_H
 
-
 /*  These are the region types  */
 #define MTRR_TYPE_UNCACHEABLE 0
 #define MTRR_TYPE_WRCOMB     1
@@ -31,15 +30,12 @@
 #define MTRRfix4K_F0000_MSR 0x26e
 #define MTRRfix4K_F8000_MSR 0x26f
 
-
 #if !defined(__ROMCC__) && !defined (ASSEMBLY)
-
 
 void x86_setup_var_mtrrs(unsigned address_bits);
 void x86_setup_mtrrs(unsigned address_bits);
 int x86_mtrr_check(void);
 
-#endif /* __ROMCC__ */
+#endif				/* __ROMCC__ */
 
-
-#endif /* CPU_X86_MTRR_H */
+#endif				/* CPU_X86_MTRR_H */

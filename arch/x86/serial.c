@@ -42,7 +42,7 @@
 #define TTYSx_BAUD 19200
 #elif defined(CONFIG_CONSOLE_SERIAL_9600)
 #define TTYSx_BAUD 9600
-#else // default
+#else				// default
 #define TTYSx_BAUD 115200
 #warning no serial speed set
 #endif
@@ -61,23 +61,21 @@
 
 #define UART_LCS	TTYSx_LCS
 
-
 void uart8250_init(unsigned base_port, unsigned divisor, unsigned lcs);
 
 void uart_init(void)
 {
-        unsigned ttysx_div;
+	unsigned ttysx_div;
 #if 0
 	unsigned ttysx_index;
-        static const unsigned char divisor[] = { 1,2,3,6,12,24,48,96 };
+	static const unsigned char divisor[] = { 1, 2, 3, 6, 12, 24, 48, 96 };
 
 	// read CMOS settings?
-        ttysx_index = read_option(CMOS_VSTART_baud_rate, CMOS_VLEN_baud_rate, 0);
-        ttysx_index &= 7;
-        ttysx_div = divisor[ttysx_index];
+	ttysx_index = read_option(CMOS_VSTART_baud_rate, CMOS_VLEN_baud_rate, 0);
+	ttysx_index &= 7;
+	ttysx_div = divisor[ttysx_index];
 #else
 	ttysx_div = TTYSx_DIV;
 #endif
 	uart8250_init(TTYSx_BASE, ttysx_div, UART_LCS);
 }
-

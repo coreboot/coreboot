@@ -25,7 +25,8 @@
 char *mainboard_vendor = "emulation";
 char *mainboard_part_number = "qemu-x86";
 
-static void enable_dev(struct device *dev){
+static void enable_dev(struct device *dev)
+{
 	printk(BIOS_INFO, "qemu-x86 enable_dev done\n");
 }
 

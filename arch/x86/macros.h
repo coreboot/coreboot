@@ -22,7 +22,6 @@
 #ifndef X86_MACROS_H
 #define X86_MACROS_H 1
 
-
 #define port80_post(value)	\
 	movb	$value, %al;	\
 	outb	%al, $0x80

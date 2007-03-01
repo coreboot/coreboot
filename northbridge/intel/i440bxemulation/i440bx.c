@@ -41,7 +41,7 @@ static void i440bxemulation_enable_dev(struct device *dev)
 		pci_set_method(dev);
         }
  */
-	printk(BIOS_INFO, "%s: DONE\n", __FUNCTION__);
+	printk(BIOS_INFO, "%s: Done.\n", __FUNCTION__);
 }
 
 struct chip_operations northbridge_intel_i440bxemulation_ops = {

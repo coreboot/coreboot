@@ -22,7 +22,7 @@ extern void uart8250_tx_byte(unsigned, unsigned char);
 
 int console_loglevel(void)
 {
-	return 8;
+	return CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 }
 
 void console_tx_byte(unsigned char byte)

@@ -202,34 +202,177 @@ FLASH layout
 \end_layout
 
 \begin_layout Section
-LinuxBIOS device structures
-\end_layout
-
-\begin_layout Subsection
-Resources
+LinuxBIOS chip/device/link/driver structures
 \end_layout
 
 \begin_layout Standard
-Resources describe memory and I/O address ranges, IRQs, and DRQs.
- They are define in include/device/resource.h.
- There can be variations of a resource which include things like prefetchable,
- cacheable, and so on.
+There are four primary objects which are used to manage the LinuxBIOS device
+ tree: chips, devices, links, and drivers.
+ Devices and links are generic structures: chips and drivers, on the other
+ hand, are specialized.
+ We describe these parts, and their relationship, below.
+ 
+\end_layout
+
+\begin_layout Standard
+These structures are linked together in the static device tree.
+ The static device tree, a set of initialized C structures, is created by
+ the device tree compiler, in the file statictree.c.
+ This tree defines the hardware that is known to exist on the mainboard.
+ At run time, the static tree is elided with dynamically determined information,
+ and can even be restructured to some extent (e.g., the static tree has a
+ device at 0:4.0; if a dynamic device is found at 0:3.0, it will be place
+ in the tree 
+\begin_inset Quotes eld
+\end_inset
+
+in front of
+\begin_inset Quotes erd
+\end_inset
+
+ the 0:4.0 device).
  
 \end_layout
 
 \begin_layout Subsection
-Path
+Chips
 \end_layout
 
 \begin_layout Standard
-A path nams a way of accessing a device.
- These are defined in include/device/path.h.
- The path structure is in essence a case-variant type (struct which includes
- a type and a union of all possible path types).
+A chip represents a physical object.
+ These physical objects are northbridges, southbridges, superios, etc.
+ Chips are not generic, unlike devices, but are rather quite specialized.
+ The code for a given chip is contained in a single directory, which is
+ not shared with any other chip.
  
 \end_layout
 
-\begin_layout Section
+\begin_layout Standard
+Chips, in some cases, have special control registers that need to be set.
+ Functions for controlling the chips and their settings are found in the
+ chip directory.
+ All the variables for controlling a chip must be defined in a single structure,
+ and that structure is defined in the file config.h in the chip directory.
+ It is one structure, instead of a set of variables, because it must be
+ instantiated and initialized by the device tree compiler (dtc), and a pointer
+ to it is held in a generic device structure.
+ 
+\end_layout
+
+\begin_layout Standard
+We show an example of a chip, below.
+ The chip is the i440bx emulation.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+The files in the i440bx directory.
+ 
+\end_layout
+
+\begin_layout LyX-Code
+[rminnich@q ~]$ ls ~/src/bios/LinuxBIOSv3/northbridge/intel/i440bxemulation/
+ 
+\end_layout
+
+\begin_layout LyX-Code
+config.h i440bx.c i440bx.h Kconfig Makefile 
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+i440bx.h contains manifest constants defining registers, bits in registers,
+ and so on.
+ 
+\end_layout
+
+\begin_layout Standard
+Config.h defines the structures and declarations that allow the static device
+ tree to compile.
+ We show it below.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+config.h for the i440bx
+\end_layout
+
+\begin_layout LyX-Code
+extern struct chip_operations northbridge_intel_i440bxemulation_ops;
+\end_layout
+
+\begin_layout LyX-Code
+struct northbridge_intel_i440bx_config
+\end_layout
+
+\begin_layout LyX-Code
+{
+\end_layout
+
+\begin_layout LyX-Code
+/* The various emulators don't always get 440BX right.
+ So we are
+\end_layout
+
+\begin_layout LyX-Code
+ * going to allow users to set the RAM size via Kconfig.
+ 
+\end_layout
+
+\begin_layout LyX-Code
+ */
+\end_layout
+
+\begin_layout LyX-Code
+ int ramsize;
+\end_layout
+
+\begin_layout LyX-Code
+}; 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The file contains an extern declaration, pointing to a set of operations
+ for the chip (needed to get statictree.c to compile); and the chip-specific
+ structure, containing the control variable ramsize.
+ 
+\end_layout
+
+\begin_layout Standard
+The Kconfig and Makefile are for the Kbuild system.
+ 
+\end_layout
+
+\begin_layout Standard
+The code is somewhat complex 
+\end_layout
+
+\begin_layout Subsection
 Bus
 \end_layout
 
@@ -300,6 +443,30 @@ have a set of chip operations, per chip-type
 
 \begin_layout Itemize
 have a chip information structure, which is per-chip instance
+\end_layout
+
+\begin_layout Subparagraph*
+Path
+\end_layout
+
+\begin_layout Standard
+A path names a way of accessing a device.
+ These are defined in include/device/path.h.
+ The path structure is in essence a case-variant type (struct which includes
+ a type and a union of all possible path types).
+ 
+\end_layout
+
+\begin_layout Subparagraph*
+Device Resources
+\end_layout
+
+\begin_layout Standard
+Resources describe memory and I/O address ranges, IRQs, and DRQs.
+ They are define in include/device/resource.h.
+ There can be variations of a resource which include things like prefetchable,
+ cacheable, and so on.
+ 
 \end_layout
 
 \begin_layout Section
@@ -568,11 +735,7 @@ The dts for the emulation/qemu target
 \end_layout
 
 \begin_layout LyX-Code
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-cpus { ...};
+ ~ ~ ~ ~cpus { ...};
 \end_layout
 
 \begin_layout LyX-Code

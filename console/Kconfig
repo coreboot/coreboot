@@ -14,12 +14,12 @@ choice
 config CONSOLE_SERIAL_COM1
 	bool "COM1/ttyS0"
 	---help---
-	  Serial console on COM1.
+	  Serial console on COM1/ttyS0.
 
 config CONSOLE_SERIAL_COM2
 	bool "COM2/ttyS1"
 	---help---
-	  Serial console on COM2.
+	  Serial console on COM2/ttyS1.
 
 endchoice
 
@@ -55,12 +55,10 @@ config CONSOLE_SERIAL_9600
 
 endchoice
 
-
 config CONSOLE_VGA
 	boolean "Support VGA console"
 	---help---
-	  Send LinuxBIOS output to VGA console as soon as VGA
-	  is initialized.
+	  Send LinuxBIOS output to VGA console as soon as VGA is initialized.
 
 config CONSOLE_USB
 	boolean "Support USB2 debug console"

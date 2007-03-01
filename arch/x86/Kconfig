@@ -23,12 +23,12 @@ config ARCH_X86
 	boolean
 	help
 	  This option is used to set the architecture of a mainboard.
-	  It is usually set in mainboard/*/Kconfig. 
+	  It is usually set in mainboard/*/Kconfig.
 
 config CAR_TYPE_I586
 	boolean
 	help
-	  This option selects the reset vector and cache as ram
+	  This option selects the reset vector and Cache-as-RAM (CAR)
 	  implementation for a mainboard. See arch/x86/Makefile for
 	  more hints on possible values.
 	  It is usually set in mainboard/*/Kconfig.

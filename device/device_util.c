@@ -196,7 +196,7 @@ const char *dev_path(struct device * dev)
 			sprintf(buffer, "CPU_BUS: %02x", dev->path.u.cpu_bus.id);
 			break;
 		default:
-			printk(BIOS_ERR, "Unknown device path type: %d\n", dev->path.type);
+			printk(BIOS_ERR, "%s: Unknown device path type: %d\n", dev->dtsname, dev->path.type);
 			break;
 		}
 	}

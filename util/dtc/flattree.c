@@ -564,6 +564,8 @@ static void linuxbios_emit_special(FILE *e, struct node *tree)
 	if ((! ops_set) && is_root)
 		fprintf(f, "\t.ops = &default_dev_ops_root,\n");
 
+	fprintf(f, "\t.dtsname = \"%s\",\n", tree->label);
+
 	fprintf(f, "};\n");
 }
 

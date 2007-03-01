@@ -98,7 +98,7 @@ unsigned int scan_static_bus(struct device * busdevice, unsigned int max)
 	struct device * child;
 	unsigned link;
 
-	printk(BIOS_INFO, "%s for %s\n", __func__, dev_path(busdevice));
+	printk(BIOS_INFO, "%s for %s(%s)\n", __func__, busdevice->dtsname, dev_path(busdevice));
 
 	for(link = 0; link < busdevice->links; link++) {
 		/* for smbus bus enumerate */
@@ -115,24 +115,23 @@ unsigned int scan_static_bus(struct device * busdevice, unsigned int max)
 				child->ops->phase5_enable_resources(child);
 			}
  			if (child->path.type == DEVICE_PATH_I2C) {
- 				printk(BIOS_DEBUG, "smbus: %s[%d]->",  
-					dev_path(child->bus->dev), child->bus->link );
+ 				printk(BIOS_DEBUG, "smbus: %s(%s)[%d]->",  
+					child->dtsname, dev_path(child->bus->dev), child->bus->link );
 			}
-			printk(BIOS_DEBUG, "%s %s\n",
-				dev_path(child),
-				child->enabled?"enabled": "disabled");
+			printk(BIOS_DEBUG, "%s(%s) %s\n",
+				child->dtsname, dev_path(child), child->enabled?"enabled": "disabled");
 		}
 	}
 	for(link = 0; link < busdevice->links; link++) {
 		for(child = busdevice->link[link].children; child; child = child->sibling) {
 			if (!child->ops || !child->ops->phase3_scan)
 				continue;
-			printk(BIOS_INFO, "%s scanning...\n", dev_path(child));
+			printk(BIOS_INFO, "%s(%s) scanning...\n", child->dtsname, dev_path(child));
 			max = dev_phase3_scan(child, max);
 		}
 	}
 
-	printk(BIOS_INFO, "%s for %s done\n", __func__, dev_path(busdevice));
+	printk(BIOS_INFO, "%s for %s(%s) done\n", __func__, busdevice->dtsname, dev_path(busdevice));
 
 	return max;
 }

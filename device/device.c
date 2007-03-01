@@ -496,27 +496,27 @@ void phase4_assign_resources(struct bus *bus)
 {
 	struct device *curdev;
 
-	printk(BIOS_SPEW, "%s assign_resources, bus %d link: %d\n", 
-		dev_path(bus->dev), bus->secondary, bus->link);
+	printk(BIOS_SPEW, "%s(%s) assign_resources, bus %d link: %d\n", 
+		bus->dev->dtsname, dev_path(bus->dev), bus->secondary, bus->link);
 
 	for(curdev = bus->children; curdev; curdev = curdev->sibling) {
 		if (!curdev->enabled || !curdev->resources) {
 			continue;
 		}
 		if (!curdev->ops) {
-			printk(BIOS_ERR, "%s missing ops\n",
-				dev_path(curdev));
+			printk(BIOS_ERR, "%s(%s) missing ops\n",
+				curdev->dtsname, dev_path(curdev));
 			continue;
 		}
 		if (!curdev->ops->phase4_set_resources) {
-			printk(BIOS_ERR, "%s ops has no missing phase4_set_resources\n",
-				dev_path(curdev));
+			printk(BIOS_ERR, "%s(%s) ops has no missing phase4_set_resources\n",
+				curdev->dtsname, dev_path(curdev));
 			continue;
 		}
 		curdev->ops->phase4_set_resources(curdev);
 	}
-	printk(BIOS_SPEW, "%s assign_resources, bus %d link: %d\n", 
-		dev_path(bus->dev), bus->secondary, bus->link);
+	printk(BIOS_SPEW, "%s(%s) assign_resources, bus %d link: %d\n", 
+		bus->dev->dtsname, dev_path(bus->dev), bus->secondary, bus->link);
 }
 
 /**
@@ -543,11 +543,11 @@ void dev_phase5(struct device *dev)
 		return;
 	}
 	if (!dev->ops) {
-		printk(BIOS_ERR, "%s missing ops\n", dev_path(dev));
+		printk(BIOS_ERR, "%s: %s(%s) missing ops\n", __FUNCTION__, dev->dtsname, dev_path(dev));
 		return;
 	}
 	if (!dev->ops->phase5_enable_resources) {
-		printk(BIOS_ERR, "%s ops are missing phase5_enable_resources\n", dev_path(dev));
+		printk(BIOS_ERR, "%s: %s(%s) ops are missing phase5_enable_resources\n", __FUNCTION__, dev->dtsname, dev_path(dev));
 		return;
 	}
 	dev->ops->phase5_enable_resources(dev);
@@ -613,11 +613,13 @@ void dev_phase2(void)
 	post_code(0x41);
 	printk(BIOS_INFO, "Phase 2: early setup ...\n");
 	for(dev = all_devices; dev; dev = dev->next) {
-		if (dev->ops && dev->ops->phase1) 
-		{
-			printk(BIOS_DEBUG, "%s phase2\n", dev_path(dev));
+		printk(BIOS_SPEW, "%s: dev %s: ", __FUNCTION__, dev->dtsname);
+		if (dev->ops && dev->ops->phase1) {
+			printk(BIOS_SPEW, "Calling phase2 ..");
 			dev->ops->phase2(dev);
+			printk(BIOS_SPEW, " DONE");
 		}
+		printk(BIOS_SPEW, "\n");
 	}
 	post_code(0x4e);
 	printk(BIOS_INFO, "Phase 2: done\n");
@@ -647,7 +649,8 @@ unsigned int dev_phase3_scan(struct device * busdevice, unsigned int max)
 		!busdevice->ops ||
 		!busdevice->ops->phase3_scan)
 	{
-		printk(BIOS_INFO, "%s: busdevice %p enabled %d ops %p\n" ,
+		printk(BIOS_INFO, "%s: %s: busdevice %p enabled %d ops %p\n" , __FUNCTION__,
+			busdevice->dtsname,
 			busdevice, busdevice ? busdevice->enabled : NULL, 
 			busdevice ? busdevice->ops : NULL);
 		printk(BIOS_INFO, "%s: can not scan from here, returning %d\n", __FUNCTION__, max);

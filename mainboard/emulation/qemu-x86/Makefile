@@ -56,7 +56,7 @@ $(obj)/statictree.o: $(obj)/statictree.c
 	$(Q)$(CC) $(CFLAGS) $(LINUXBIOSINCLUDE) -c -o $(obj)/statictree.o $(obj)/statictree.c
 
 $(obj)/statictree.c: mainboard/$(MAINBOARDDIR)/dts $(obj)/util/dtc/dtc
-	$(Q)$(obj)/util/dtc/dtc -O lb mainboard/$(MAINBOARDDIR)/dts >$(obj)/statictree.c 2>/dev/null
+	$(Q)$(obj)/util/dtc/dtc -O lb mainboard/$(MAINBOARDDIR)/dts >$(obj)/statictree.c 
 
 STAGE2_CHIPSET_OBJ = 
 # chipset

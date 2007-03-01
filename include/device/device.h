@@ -102,6 +102,7 @@ struct device {
 	struct device *	next;		/* chain of all devices */
 
 	struct device_path path;
+	char *		dtsname;	/* the name from the dts */
 	unsigned 	vendor;
 	unsigned 	device;
 	unsigned int	class;		/* 3 bytes: (base,sub,prog-if) */

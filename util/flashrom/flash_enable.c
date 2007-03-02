@@ -158,52 +158,49 @@ static int enable_flash_ich_dc(struct pci_dev *dev, char *name)
 	return enable_flash_ich(dev, name, 0xdc);
 }
 
-static int enable_flash_vt8235(struct pci_dev *dev, char *name)
-{
-	uint8_t old, new, val;
-	unsigned int base;
-	int ok;
-
-	old = pci_read_byte(dev, 0x40);
-
-	new = old | 0x10;
-
-	if (new == old)
-		return 0;
-
-	ok = pci_write_byte(dev, 0x40, new);
-	if (ok != 0) {
-		printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
-		       old, new, name);
-	}
-
-	/* enable GPIO15 which is connected to write protect. */
-	base = ((pci_read_byte(dev, 0x88) & 0x80) | pci_read_byte(dev, 0x89) << 8);
-	val = inb(base + 0x4d);
-	val |= 0x80;
-	outb(val, base + 0x4d);
-
-	if (ok != 0) {
-		return -1;
-	} else {
-		return 0;
-	}
-}
-
-static int enable_flash_vt8231(struct pci_dev *dev, char *name)
+static int enable_flash_vt823x(struct pci_dev *dev, char *name)
 {
 	uint8_t val;
+        int ret = 0;
 
+        /* ROM Write enable */
 	val = pci_read_byte(dev, 0x40);
 	val |= 0x10;
 	pci_write_byte(dev, 0x40, val);
 
 	if (pci_read_byte(dev, 0x40) != val) {
-		printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
-		       0x40, val, name);
-		return -1;
+		printf("Warning: Failed to enable ROM Write on %s\n", name);
+		ret = -1;
 	}
-	return 0;
+
+        if (dev->device_id == 0x3177) { /* VT8235 */
+                if (!iopl(3)) { /* enable full IO access */
+                        unsigned int base;
+
+                        /* GPIO12-15 -> output */
+                        val = pci_read_byte(dev, 0xE4);
+                        val |= 0x38;
+                        pci_write_byte(dev, 0xE4, val);
+
+                        /* Get Power Management IO address. */
+                        base = pci_read_word(dev, 0x88) & 0xFF80;
+
+                        /* enable GPIO15 which is connected to write protect. */
+                        val = inb(base + 0x4d);
+                        val |= 0xFF;
+                        outb(val, base + 0x4d);
+
+                        val = inb(base + 0x4E);
+                        val |= 0x0F;
+                        outb(val, base + 0x4E);
+                } else {
+                        printf("Warning; Failed to disable Write Protect"
+                               " on %s (iopl failed)\n", name);
+                        return -1;
+                }
+        }
+
+	return ret;
 }
 
 static int enable_flash_cs5530(struct pci_dev *dev, char *name)
@@ -445,9 +442,9 @@ static FLASH_ENABLE enables[] = {
 	{0x8086, 0x2810, "ICH8/ICH8R", enable_flash_ich_dc},
 	{0x8086, 0x2812, "ICH8DH", enable_flash_ich_dc},
 	{0x8086, 0x2814, "ICH8DO", enable_flash_ich_dc},
-	{0x1106, 0x8231, "VT8231", enable_flash_vt8231},
-	{0x1106, 0x3177, "VT8235", enable_flash_vt8235},
-	{0x1106, 0x3227, "VT8237", enable_flash_vt8231},
+	{0x1106, 0x8231, "VT8231", enable_flash_vt823x},
+	{0x1106, 0x3177, "VT8235", enable_flash_vt823x},
+	{0x1106, 0x3227, "VT8237", enable_flash_vt823x},
 	{0x1106, 0x0686, "VT82C686", enable_flash_amd8111},
 	{0x1078, 0x0100, "CS5530", enable_flash_cs5530},
 	{0x100b, 0x0510, "SC1100", enable_flash_sc1100},

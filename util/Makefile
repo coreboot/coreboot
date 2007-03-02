@@ -18,14 +18,12 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-#
-# This stuff is always needed
-include util/lar/Makefile
+# This stuff is always needed.
 include util/dtc/Makefile
 include util/kconfig/Makefile
+include util/lar/Makefile
 
-#
-# Compressors
-include util/nrv2b/Makefile
+# Compressors.
 include util/lzma/Makefile
+include util/nrv2b/Makefile
 

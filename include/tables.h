@@ -1,10 +1,11 @@
 /*
  * table management structs and prototypes for LinuxBIOS
  * ALL structs and prototypes for tables that LinuxBIOS generates should be defined here. 
- * 
  *
  * Copyright (C) 2002 Eric Biederman, Linux NetworX
- * Copyright (C) 2005 coresystems GmbH <stepan@coresystems.de>
+ *
+ * Copyright (C) 2005 coresystems GmbH
+ * Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +19,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
- *
  */
 
 #ifndef TABLES_H

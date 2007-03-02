@@ -1,7 +1,8 @@
 /*
  * This file is part of the LinuxBIOS project.
  *
- * Copyright (C) 2007 coresystems GmbH <stepan@coresystems.de>
+ * Copyright (C) 2007 coresystems GmbH
+ * Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as

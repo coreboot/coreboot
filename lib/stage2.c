@@ -38,11 +38,9 @@ such modified SOFTWARE should be clearly marked, so as not to confuse
 it with the version available from LANL.
  */
 
-
 /*
  * C Bootstrap code for the LinuxBIOS
  */
-
 
 #include <arch/types.h>
 #include <string.h>
@@ -71,11 +69,10 @@ int stage2(void)
 	 * before printk can be used 
 	 */
 	post_code(0x30);
-	dev_phase1(); 
-	
-//	printk_notice("LinuxBIOS-%s%s %s booting...\n", 
-//		linuxbios_version, linuxbios_extra_version, linuxbios_build);
+	dev_phase1();
 
+//      printk_notice("LinuxBIOS-%s%s %s booting...\n", 
+//              linuxbios_version, linuxbios_extra_version, linuxbios_build);
 
 	/* here is where weird stuff like init_timer handling should be
 	 * done.  This is for ANYTHING that might have to happen before
@@ -96,15 +93,14 @@ int stage2(void)
 
 	/* Now actually enable devices on the bus */
 	post_code(0x50);
-	dev_root_phase5(); 
+	dev_root_phase5();
 
 	/*initialize devices on the bus */
 	post_code(0x60);
-	dev_phase6(); 
-	
+	dev_phase6();
+
 	post_code(0x70);
 	write_tables();
 
 	return 0;
 }
-

@@ -41,7 +41,8 @@
  * @param len Number of bytes to copy.
  * @param backwards Start at the end, used by memmove() when dest > src.
  */
-static void memcpy_helper(void *dest, const void *src, int len, int backwards) {
+static void memcpy_helper(void *dest, const void *src, int len, int backwards)
+{
 	u8 *d = dest;
 	const u8 *s = src;
 	unsigned long *ld;
@@ -55,8 +56,10 @@ static void memcpy_helper(void *dest, const void *src, int len, int backwards) {
 	if (backwards) {
 		d += len;
 		s += len;
-		if (((unsigned long)d & longmask) == ((unsigned long)s & longmask)) {
-			while (((unsigned long)d & longmask || (unsigned long)s & longmask) && len) {
+		if (((unsigned long)d & longmask) ==
+		    ((unsigned long)s & longmask)) {
+			while (((unsigned long)d & longmask
+				|| (unsigned long)s & longmask) && len) {
 				*--d = *--s;
 				len--;
 			}
@@ -66,14 +69,16 @@ static void memcpy_helper(void *dest, const void *src, int len, int backwards) {
 				*--ld = *--ls;
 				len -= longlen;
 			}
-			d = (u8 *)ld;
+			d = (u8 *) ld;
 			s = (const u8 *)ls;
 		}
 		while (len--)
 			*--d = *--s;
 	} else {
-		if (((unsigned long)d & longmask) == ((unsigned long)s & longmask)) {
-			while (((unsigned long)d & longmask || (unsigned long)s & longmask) && len) {
+		if (((unsigned long)d & longmask) ==
+		    ((unsigned long)s & longmask)) {
+			while (((unsigned long)d & longmask
+				|| (unsigned long)s & longmask) && len) {
 				*d++ = *s++;
 				len--;
 			}
@@ -83,7 +88,7 @@ static void memcpy_helper(void *dest, const void *src, int len, int backwards) {
 				*ld++ = *ls++;
 				len -= longlen;
 			}
-			d = (u8 *)ld;
+			d = (u8 *) ld;
 			s = (const u8 *)ls;
 		}
 		while (len--)
@@ -108,7 +113,7 @@ void memmove(void *dest, const void *src, int len)
 void memset(void *v, unsigned char a, int len)
 {
 	unsigned char *cp = v;
-	while(len--)
+	while (len--)
 		*cp++ = a;
 }
 
@@ -119,7 +124,7 @@ int memcmp(const void *s1, const void *s2, int len)
 {
 	const unsigned char *d = (const unsigned char *)s1;
 	const unsigned char *s = (const unsigned char *)s2;
-	while (len--){
+	while (len--) {
 		if (*d < *s)
 			return -1;
 		if (*d > *s)
@@ -129,4 +134,3 @@ int memcmp(const void *s1, const void *s2, int len)
 	return 0;
 
 }
-

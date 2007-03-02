@@ -21,7 +21,7 @@
  * Simple non-freeing malloc. There have been about a million versions of
  * this but we need one with a known author. Almost every OS and bootloader
  * has had this at some time or other. 
- */ 
+ */
 
 #include <stdlib.h>
 #include <console/console.h>
@@ -44,20 +44,21 @@
 
 #define HEAPSIZE (256*1024)
 static unsigned char heap[HEAPSIZE];
-static unsigned char * free_mem_ptr = heap;
+static unsigned char *free_mem_ptr = heap;
 static unsigned long freebytes = HEAPSIZE;
 
 void *malloc(size_t size)
 {
 	void *p;
 
-	MALLOCDBG("%s Enter, size %d, free_mem_ptr %p\n", __FUNCTION__, size, free_mem_ptr);
+	MALLOCDBG("%s Enter, size %d, free_mem_ptr %p\n", __FUNCTION__, size,
+		  free_mem_ptr);
 
-	if (size > freebytes){
+	if (size > freebytes) {
 		printk(BIOS_ERR, "OUT OF MEMORY for alloc of %d bytes\n", size);
 		die("OUT OF MEMORY\n");
 	}
-	
+
 	size = (size + 3) & 3;	/* Align */
 
 	p = free_mem_ptr;

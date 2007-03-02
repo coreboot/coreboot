@@ -22,6 +22,8 @@
 #include <device/pci_ops.h>
 #include <arch/types.h>
 
+/* walk up the tree from the current dev, in an attempt to find a bus that has ops_pci_bus set */
+/* the assumption here being that if it has ops_pci_bus set, then it can do bus operations */
 static struct bus *get_pbus(struct device * dev)
 {
 	struct bus *pbus = dev->bus;
@@ -29,7 +31,7 @@ static struct bus *get_pbus(struct device * dev)
 		pbus = pbus->dev->bus;
 	}
 	if (!pbus || !pbus->dev || !pbus->dev->ops || !pbus->dev->ops->ops_pci_bus) {
-		printk(BIOS_ALERT,"%s Cannot find pci bus operations", dev_path(dev));
+		printk(BIOS_ALERT,"%s: %s(%s) Cannot find pci bus operations", __func__, dev->dtsname, dev_path(dev));
 		die("");
 		for(;;);
 	}

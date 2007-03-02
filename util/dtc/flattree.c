@@ -531,11 +531,26 @@ static void linuxbios_emit_special(FILE *e, struct node *tree)
 			fprintf(f, "\t.chip_ops = &%s_ops,\n", clean(prop->val.val, 0));
 			fprintf(f, "\t.chip_info = &%s,\n", clean(tree->label, 1));
 		}
+
 		if (streq(prop->name, "ops")){
 			fprintf(f, "\t.ops = &%s,\n", clean(prop->val.val, 0));
 			ops_set  = 1;
 		}
 
+		if (streq(prop->name, "ops_pci")){
+			fprintf(f, "\t.ops_pci = &%s,\n", clean(prop->val.val, 0));
+			ops_set  = 1;
+		}
+
+		if (streq(prop->name, "ops_pci_bus")){
+			fprintf(f, "\t.ops_pci_bus = &%s,\n", clean(prop->val.val, 0));
+			ops_set  = 1;
+		}
+
+		if (streq(prop->name, "ops_smbus_bus")){
+			fprintf(f, "\t.ops_smbus_bus = &%s,\n", clean(prop->val.val, 0));
+			ops_set  = 1;
+		}
 	}
 	if (tree->next_sibling) 
 		fprintf(f, "\t.sibling = &dev_%s,\n", tree->next_sibling->label);

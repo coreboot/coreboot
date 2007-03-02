@@ -17,11 +17,11 @@
 #ifndef ARCH_I386_PCI_OPS_H
 #define ARCH_I386_PCI_OPS_H
 
-const struct pci_bus_operations pci_cf8_conf1;
-const struct pci_bus_operations pci_cf8_conf2;
+extern struct pci_bus_operations pci_cf8_conf1;
+extern struct pci_bus_operations pci_cf8_conf2;
 
-#if MMCONF_SUPPORT==1
-const struct pci_bus_operations pci_ops_mmconf;
+#if defined(CONFIG_MMCONF_SUPPORT) &&  (CONFIG_MMCONF_SUPPORT=='y')
+extern struct pci_bus_operations pci_ops_mmconf;
 #endif
 
 void pci_set_method(struct device * dev);

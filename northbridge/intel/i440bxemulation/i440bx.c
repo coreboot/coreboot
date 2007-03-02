@@ -108,4 +108,6 @@ struct device_operations i440bxemulation_pcidomainops = {
         .phase5_enable_resources = enable_childrens_resources,
         .phase6_init            = 0,
         .phase3_scan        = pci_domain_scan_bus,
+        .ops_pci_bus      = &pci_cf8_conf1,
+
 };

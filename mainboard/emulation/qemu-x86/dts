@@ -8,6 +8,7 @@
 	northbridge,intel,i440bxemulation{
 		enabled;
 		config="northbridge,intel,i440bxemulation";
+		ops="default_pci_ops_dev";
 		pcipath = "0,0";
 /*		southbridge,intel,piix4{
 			pcipath = "0,0";

@@ -57,6 +57,9 @@ LINUXBIOSINCLUDE    :=  -I$(src) -Iinclude \
 			-I$(src)/include/cpu/generic/$(ARCH)/ \
 			-include $(obj)/config.h
 
+DOXYGEN := doxygen
+DOXYGEN_OUTPUT_DIR := doxygen
+
 # make is silent per default. make V=1 will show all compiler calls.
 ifneq ($(V),1)
 Q := @
@@ -90,7 +93,8 @@ endif
 
 include util/Makefile
 
-
+doc:
+	$(DOXYGEN) util/Doxyfile.LinuxBIOS
 
 prepare:
 	$(Q)mkdir -p $(obj)
@@ -101,6 +105,7 @@ prepare2:
 clean:
 	$(Q)echo -n "Cleaning up... "
 	$(Q)rm -rf $(obj)
+	$(Q)rm -rf $(DOXYGEN_OUTPUT_DIR)
 	$(Q)echo "done"
 
 distclean: clean
@@ -111,3 +116,6 @@ distclean: clean
 %.o: %.c
 	$(Q)echo "Compiling $<"
 	$(Q)$(CC) $(CFLAGS) -o $@ -c $< 
+
+.PHONY: doc
+

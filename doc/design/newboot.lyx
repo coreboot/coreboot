@@ -1,4 +1,4 @@
-#LyX 1.4.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -485,7 +485,7 @@ The boot process consists of a number of independent, seperately compiled
 \begin_layout Standard
 By design, the seperate components can be individually replaced without
  replacing any other component.
- This design impliies that functions such as print are duplicated in the
+ This design implies that functions such as print are duplicated in the
  code.
  If this duplication causes problems we can revisit this decision.
  
@@ -715,7 +715,7 @@ dev_root_phase3
  to set up an enable_dev function.
  In other words, for any device, it is possible to call some 'preparation'
  code for that device.
- We show an example of such a function below, from the qemu mainboard.
+ We show an example of such a function below, from the QEMU mainboard.
  First, we show the dts, to show how the chip operations can be enabled.
  
 \end_layout
@@ -1033,7 +1033,7 @@ The point of phase 4 is to determine what resources are needed for each
 \end_layout
 
 \begin_layout Standard
-A similarl mutual recursion is employed, starting again at the root.
+A similar mutual recursion is employed, starting again at the root.
  The root devices phase 4 ops are called with the root device as a parameter.
  For each link on the device, and for each type of resource that is needed
  to be determined, the compute_allocate_resource function is called.

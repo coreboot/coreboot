@@ -1,0 +1,26 @@
+-------------------------------------------------------------------------------
+LinuxBIOS POST Codes
+-------------------------------------------------------------------------------
+
+This is an (incomplete) list of POST codes emitted by LinuxBIOSv2.
+
+0x10 Entry into protected mode
+0x01 Entry into 'crt0.s' reset code jumps to here
+0x11 Start copying LinuxBIOS to RAM with decompression if compressed
+0x12 Copy/decompression finished jumping to RAM
+0x80 Entry into LinuxBIOS in RAM
+0x13 Entry into c_start
+0xfe Pre call to hardwaremain()
+0x39 Console is initialized
+0x40 Console boot message succeeded
+0x66 Devices have been enumerated
+0x88 Devices have been configured
+0x89 Devices have been enabled
+0xf8 Entry into elf boot
+0xf3 Jumping to payload
+
+Errors (used in several places):
+
+0xee Not supposed to get here
+0xff Elfload fail or die() called
+

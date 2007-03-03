@@ -53,7 +53,7 @@ $(obj)/linuxbios.lar: $(obj)/util/lar/lar lzma $(obj)/linuxbios.initram $(obj)/l
 	$(Q)mkdir $(obj)/lar.tmp/normal
 	$(Q)cp $(obj)/linuxbios.initram $(obj)/lar.tmp/normal/initram
 	$(Q)cp $(obj)/linuxbios.stage2 $(obj)/lar.tmp/normal/stage2
-	$(Q)cp $(PAYLOAD) $(obj)/lar.tmp/normal/payload
+	$(Q)cp $(CONFIG_PAYLOAD) $(obj)/lar.tmp/normal/payload
 	$(Q)printf "  "
 	$(Q)cd $(obj)/lar.tmp && ../util/lar/lar c ../linuxbios.lar.pre normal/initram normal/stage2 normal/payload
 	$(Q)# TODO: Dynamically pad the LAR archive. bs is image size - bootblock size (16k)

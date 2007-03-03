@@ -10,3 +10,13 @@ source arch/Kconfig
 source lib/Kconfig
 source console/Kconfig
 
+menu "Payload"
+
+config PAYLOAD
+	string "Payload filename"
+	default "filo.elf"
+	help
+	  The path and filename of the payload file to use.
+
+endmenu
+

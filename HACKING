@@ -22,6 +22,9 @@ Third-party Code and License Overview
 * util/lar/*: GPLv2
   Independant project, but written specifically for LinuxBIOS.
 
+* include/lar.h, util/lar/lar.h, util/lar/example.c:
+  Dual-licensed (GPLv2 + revised BSD license)
+
 * util/lzma/C/*: Dual-licensed, LGPL + Common Public License (CPL). There's
   a special exception, please see util/lzma/C/7zip/Decompress/LzmaDecode.c.
   Source: LZMA SDK, http://sourceforge.net/projects/sevenzip/

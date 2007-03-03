@@ -62,6 +62,7 @@ it with the version available from LANL.
  */
 int stage2(void)
 {
+	void show_all_devs(void);
 	post_code(0x20);
 	dev_init();
 
@@ -69,7 +70,11 @@ int stage2(void)
 	 * before printk can be used 
 	 */
 	post_code(0x30);
-	dev_phase1();
+	dev_phase1(); 
+show_all_devs();
+	
+//	printk_notice("LinuxBIOS-%s%s %s booting...\n", 
+//		linuxbios_version, linuxbios_extra_version, linuxbios_build);
 
 //      printk_notice("LinuxBIOS-%s%s %s booting...\n", 
 //              linuxbios_version, linuxbios_extra_version, linuxbios_build);
@@ -80,27 +85,33 @@ int stage2(void)
 	 */
 	post_code(0x40);
 	dev_phase2();
+show_all_devs();
 
 	/* walk physical devices and add any dynamic devices to the
 	 * device tree 
 	 */
 	post_code(0x30);
 	dev_root_phase3();
+show_all_devs();
 
 	/* Compute and assign the bus resources. */
 	post_code(0x40);
 	dev_phase4();
+show_all_devs();
 
 	/* Now actually enable devices on the bus */
 	post_code(0x50);
 	dev_root_phase5();
+show_all_devs();
 
 	/*initialize devices on the bus */
 	post_code(0x60);
-	dev_phase6();
-
+	dev_phase6(); 
+show_all_devs();
+	
 	post_code(0x70);
 	write_tables();
+show_all_devs();
 
 	return 0;
 }

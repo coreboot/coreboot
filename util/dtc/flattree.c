@@ -554,6 +554,8 @@ static void linuxbios_emit_special(FILE *e, struct node *tree)
 	}
 	if (tree->next_sibling) 
 		fprintf(f, "\t.sibling = &dev_%s,\n", tree->next_sibling->label);
+	if (tree->next) 
+		fprintf(f, "\t.next = &dev_%s,\n", tree->next->label);
 	/* now do we do next? */
 	/* this will need to do a bus for every child. And, below, we're going to need to find which bus we're on*/
 	/* for now, let's keep it to the minimum that will work, while we see if we like this. */
@@ -1098,6 +1100,17 @@ labeltree(struct node *tree)
 
 }
 
+/* the root, weirdly enough, is last on the 'next' chain. yuck. */
+void fix_next(struct node *root){
+	extern struct node *first_node;
+	struct node *next2last, *next;
+	for(next = first_node; next; next = next->next)
+		if (next->next == root)
+			next2last = next;
+	next2last->next = NULL;
+	root->next = first_node;
+	first_node = root;
+}
 
 void dt_to_linuxbios(FILE *f, struct boot_info *bi, int version, int boot_cpuid_phys)
 {
@@ -1124,6 +1137,7 @@ void dt_to_linuxbios(FILE *f, struct boot_info *bi, int version, int boot_cpuid_
 	bi->dt->name  = bi->dt->label  = "root";
 	/* steps: emit all structs. Then emit the initializers, with the pointers to other structs etc. */
 
+	fix_next(bi->dt);
 	/* emit any includes that we need  -- TODO: ONLY ONCE PER TYPE*/
 	fprintf(f, "#include <device/device.h>\n#include <device/pci.h>\n");
 	flatten_tree_emit_includes(bi->dt, &linuxbios_emitter, f, &strbuf, vi);

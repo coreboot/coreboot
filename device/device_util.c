@@ -505,12 +505,17 @@ void search_global_resources(
 	resource_search_t search, void *gp)
 {
 	struct device *curdev;
+	printk(BIOS_SPEW-2, "%s: mask %x type %x \n", __func__, type_mask, type);
 	for(curdev = all_devices; curdev; curdev = curdev->next) {
 		int i;
+		printk(BIOS_SPEW, "%s: dev %s, have_resources %d #resources %d\n", __func__, curdev->dtsname,
+				curdev->have_resources, curdev->resources);
 		/* Ignore disabled devices */
 		if (!curdev->have_resources) continue;
 		for(i = 0; i < curdev->resources; i++) {
 			struct resource *resource = &curdev->resource[i];
+			printk(BIOS_SPEW, "%s: dev %s, resource %d, flags %x\n", __func__, curdev->dtsname,
+				i, resource->flags);
 			/* If it isn't the right kind of resource ignore it */
 			if ((resource->flags & type_mask) != type) {
 				continue;

@@ -59,7 +59,7 @@ void *malloc(size_t size)
 		die("OUT OF MEMORY\n");
 	}
 
-	size = (size + 3) & 3;	/* Align */
+	size = (size + 3) & (~3);	/* Align */
 
 	p = free_mem_ptr;
 	free_mem_ptr += size;

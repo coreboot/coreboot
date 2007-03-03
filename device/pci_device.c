@@ -612,7 +612,7 @@ void pci_dev_enable_resources(struct device *dev)
 	command = pci_read_config16(dev, PCI_COMMAND);
 	command |= dev->command;
 	command |= (PCI_COMMAND_PARITY + PCI_COMMAND_SERR); /* error check */
-	printk(BIOS_DEBUG,"%s cmd <- %02x\n", dev_path(dev), command);
+	printk(BIOS_DEBUG,"%s: %s(%s) cmd <- %02x\n", __func__, dev->dtsname, dev_path(dev), command);
 	pci_write_config16(dev, PCI_COMMAND, command);
 }
 
@@ -781,6 +781,7 @@ static void set_pci_ops(struct device *dev)
 {
 	struct pci_driver *driver;
 	if (dev->ops) {
+		printk(BIOS_INFO, "%s: dev %p(%s) already has ops %p\n", __func__, dev, dev->dtsname, dev->ops);
 		return;
 	}
 
@@ -829,6 +830,7 @@ static void set_pci_ops(struct device *dev)
 				dev->class >> 8, dev->hdr_type);
 		}
 	}
+	printk(BIOS_INFO, "%s: dev %p(%s) set ops to %p\n", __func__, dev, dev->dtsname, dev->ops);
 	return;
 }
 
@@ -851,12 +853,15 @@ static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
 {
 	struct device *dev;
 	dev = 0;
+	printk(BIOS_INFO, "%s: list is %p, *list is %p\n", __func__, list, *list);
 	for(; *list; list = &(*list)->sibling) {
+		printk(BIOS_INFO, "%s: check dev %s \n", __func__, (*list)->dtsname);
 		if ((*list)->path.type != DEVICE_PATH_PCI) {
-			printk(BIOS_ERR,"%s: child %s not a pci device: it's type %d\n", __FUNCTION__, 
-				dev_path(*list), (*list)->path.type);
+			printk(BIOS_ERR,"%s: child %s(%s) not a pci device: it's type %d\n", __FUNCTION__, 
+				(*list)->dtsname, dev_path(*list), (*list)->path.type);
 			continue;
 		}
+		printk(BIOS_INFO, "%s: check dev %s it has devfn 0x%x\n", __func__, (*list)->dtsname, (*list)->path.u.pci.devfn);
 		if ((*list)->path.u.pci.devfn == devfn) {
 			/* Unlink from the list */
 			dev = *list;
@@ -1027,7 +1032,7 @@ unsigned int pci_scan_bus(struct bus *bus,
 	struct device * old_devices;
 	struct device * child;
 
-	printk(BIOS_DEBUG, "%s start\n", __func__);
+	printk(BIOS_DEBUG, "%s start bus %p, bus->dev %p\n", __func__, bus, bus->dev);
 #if PCI_BUS_SEGN_BITS
 	printk(BIOS_DEBUG,"PCI: pci_scan_bus for bus %04x:%02x\n", bus->secondary >> 8, bus->secondary & 0xff);
 #else
@@ -1035,6 +1040,7 @@ unsigned int pci_scan_bus(struct bus *bus,
 #endif
 
 	old_devices = bus->children;
+	printk(BIOS_DEBUG, "%s: old_devices %p, dev for this bus %p(%s)\n", __func__, old_devices, bus->dev, bus->dev->dtsname);
 	bus->children = 0;
 
 	post_code(0x24);
@@ -1049,12 +1055,12 @@ unsigned int pci_scan_bus(struct bus *bus,
 		/* First thing setup the device structure */
 		dev = pci_scan_get_dev(&old_devices, devfn);
 
-		printk(BIOS_SPEW-2,"PCI: pci_scan_bus pci_scan_get_dev returns dev %s\n", dev->dtsname);
+		printk(BIOS_SPEW-2,"PCI: pci_scan_bus pci_scan_get_dev returns dev %s\n", dev ? dev->dtsname :"None (no dev in tree yet)");
 		/* See if a device is present and setup the device
 		 * structure.
 		 */
 		dev = pci_probe_dev(dev, bus, devfn); 
-		printk(BIOS_SPEW-2,"PCI: pci_scan_bus pci_probe_dev returns dev %s\n", dev->dtsname);
+		printk(BIOS_SPEW-2,"PCI: pci_scan_bus pci_probe_dev returns dev %p(%s)\n", dev, dev->dtsname);
 
 		/* if this is not a multi function device, 
 		 * or the device is not present don't waste

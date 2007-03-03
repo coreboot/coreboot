@@ -5,11 +5,15 @@
 	cpus {
 		enabled;
 	};
-	northbridge,intel,i440bxemulation{
+	domain0{
 		enabled;
 		config="northbridge,intel,i440bxemulation";
 		ops="default_pci_ops_dev";
-		pcipath = "0,0";
+		pcidomain = "0";
+		device0,0{
+			enabled;
+			pcipath="0,0";
+		};
 /*		southbridge,intel,piix4{
 			pcipath = "0,0";
 			enabled;
@@ -25,6 +29,6 @@ struct mainboard_emulation_qemu_x86_config root = {
 	.nothing = 1,
 };
 
-struct northbridge_intel_i440bx_config northbridge_intel_i440bxemulation = {
+struct northbridge_intel_i440bx_config domain0 = {
 	.ramsize = CONFIG_NORTHBRIDGE_INTEL_I440BXEMULATION_RAMSIZE,
 };

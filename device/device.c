@@ -90,6 +90,8 @@ struct device * alloc_dev(struct bus *parent, struct device_path *path)
 {
 	struct device * dev, *child;
 	int link;
+	static char thissucks[64];
+	static int fuck = 0;
 
 //	spin_lock(&dev_lock);	
 
@@ -128,6 +130,21 @@ struct device * alloc_dev(struct bus *parent, struct device_path *path)
 	*last_dev_p = dev;
 	last_dev_p = &dev->next;
 
+	/* give the device a name */
+	dev -> dtsname = malloc(32);
+        if (dev->dtsname == 0) {
+                die("DEV: out of memory.\n");
+        }
+	sprintf(thissucks, "dynamic %s", dev_path(dev));
+	printk(BIOS_INFO, "thissucks is %s dev is %p dev->dtsname is %p\n", thissucks, dev, dev->dtsname);
+	sprintf(dev->dtsname, "dynamic %s", dev_path(dev));
+	printk(BIOS_INFO, "after sprintf dtsname is %s\n", dev->dtsname);
+	memcpy(dev->dtsname, thissucks, strlen(thissucks));
+	printk(BIOS_INFO, "after strcpy dtsname is %s\n", dev->dtsname);
+	/* FUCK. sprintf doesn't work. */
+	dev->dtsname[0] = '0' + fuck++;
+	dev->dtsname[1] = 0;
+
 //	spin_unlock(&dev_lock);
 	return dev;
 }
@@ -154,13 +171,15 @@ static void read_resources(struct bus *bus)
 {
 	struct device *curdev;
 
-	printk(BIOS_SPEW, "%s read_resources bus %d link: %d\n",
+	printk(BIOS_SPEW, "%s: %s(%s) read_resources bus %d link: %d\n", __func__, bus->dev->dtsname,
 		dev_path(bus->dev), bus->secondary, bus->link);
 
 	/* Walk through all of the devices and find which resources they need. */
 	for(curdev = bus->children; curdev; curdev = curdev->sibling) {
 		unsigned links;
 		int i;
+		printk(BIOS_SPEW, "%s: %s(%s) have_resources %d enabled %d\n", __func__, bus->dev->dtsname,
+			dev_path(bus->dev), curdev->have_resources, curdev->enabled);
 		if (curdev->have_resources) {
 			continue;
 		}
@@ -168,8 +187,8 @@ static void read_resources(struct bus *bus)
 			continue;
 		}
 		if (!curdev->ops || !curdev->ops->phase4_read_resources) {
-			printk(BIOS_ERR, "%s missing phase4_read_resources\n",
-				dev_path(curdev));
+			printk(BIOS_ERR, "%s: %s(%s) missing phase4_read_resources\n", __func__, 
+				curdev->dtsname, dev_path(curdev));
 			continue;
 		}
 		curdev->ops->phase4_read_resources(curdev);
@@ -194,7 +213,7 @@ static void read_resources(struct bus *bus)
 			}
 		}
 	}
-	printk(BIOS_SPEW, "%s read_resources bus %d link: %d done\n",
+	printk(BIOS_SPEW, "%s: %s(%s) read_resources bus %d link: %d done\n", __func__, bus->dev->dtsname,
 		dev_path(bus->dev), bus->secondary, bus->link);
 }
 
@@ -659,7 +678,7 @@ unsigned int dev_phase3_scan(struct device * busdevice, unsigned int max)
 	do_phase3 = 1;
 	while(do_phase3) {
 		int link;
-		printk(BIOS_INFO, "%s: scanning %s\n", __FUNCTION__, dev_path(busdevice));
+		printk(BIOS_INFO, "%s: scanning %s(%s)\n", __FUNCTION__, busdevice->dtsname, dev_path(busdevice));
 		new_max = busdevice->ops->phase3_scan(busdevice, max);
 		do_phase3 = 0;
 		for(link = 0; link < busdevice->links; link++) {
@@ -835,5 +854,17 @@ void dev_phase6(void)
 		}
 	}
 	printk(BIOS_INFO, "Phase 6: Devices initialized.\n");
+}
+
+
+void show_all_devs(void) {
+
+        struct device *dev;
+
+        printk(BIOS_INFO, "show all devs..\n");
+        for(dev = all_devices; dev; dev = dev->next) {
+		printk(BIOS_SPEW, "%s(%s): enabled %d have_resources %d initialized %d\n", 
+			dev->dtsname, dev_path(dev), dev->enabled, dev->have_resources, dev->initialized);
+        }
 }
 

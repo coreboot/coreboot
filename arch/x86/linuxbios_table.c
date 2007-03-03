@@ -181,6 +181,7 @@ void lb_memory_range(struct lb_memory *mem,
 	u32 type, u64 start, u64 size)
 {
 	int entries;
+	printk(BIOS_SPEW-2, "%s: start 0x%lx size 0x%lx\n", __func__, start, size);
 	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
 	mem->map[entries].start = pack_lb64(start);
 	mem->map[entries].size = pack_lb64(size);

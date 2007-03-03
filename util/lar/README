@@ -7,7 +7,6 @@ Table of Contents
   - Archive format
   - TODO
   - Copyright and License
-  - ChangeLog
 
 
 Introduction
@@ -101,10 +100,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
 
-
-ChangeLog
----------
-
-2006/10/9
-  - Initial version
+Note: The files lar.h and example.c are dual-licensed. You can choose between:
+ - The GNU GPL, version 2, as published by the Free Software Foundation.
+ - The revised BSD license (without advertising clause). See lar.h.
 

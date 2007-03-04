@@ -17,7 +17,7 @@ config DEFAULT_CONSOLE_LOGLEVEL
 	  #define BIOS_SPEW     8  /* way too many details             */
 
 config CONSOLE_SERIAL
-	boolean "Support serial console (default)"
+	boolean "Serial console support"
 	default y
 	---help---
 	  Send LinuxBIOS output to serial console.
@@ -47,42 +47,42 @@ choice
 config CONSOLE_SERIAL_115200
 	bool "115200 bps"
 	---help---
-	  Set speed to 115200 bps.
+	  Set serial console speed to 115200 bps.
 
 config CONSOLE_SERIAL_57600
 	bool "57600 bps"
 	---help---
-	  Set speed to 57600 bps.
+	  Set serial console speed to 57600 bps.
 
 config CONSOLE_SERIAL_38400
 	bool "38400 bps"
 	---help---
-	  Set speed to 38400 bps.
+	  Set serial console speed to 38400 bps.
 
 config CONSOLE_SERIAL_19200
 	bool "19200 bps"
 	---help---
-	  Set speed to 19200 bps.
+	  Set serial console speed to 19200 bps.
 
 config CONSOLE_SERIAL_9600
 	bool "9600 bps"
 	---help---
-	  Set speed to 9600 bps.
+	  Set serial console speed to 9600 bps.
 
 endchoice
 
 config CONSOLE_VGA
-	boolean "Support VGA console"
+	boolean "VGA console support"
 	---help---
 	  Send LinuxBIOS output to VGA console as soon as VGA is initialized.
 
 config CONSOLE_USB
-	boolean "Support USB2 debug console"
+	boolean "USB2 console support"
 	---help---
-	  Send LinuxBIOS output to USB debug console.
+	  Send LinuxBIOS output to USB2 (EHCI) console.
 
-	  Note: This requires a USB2 controller which supports the
-	  debug capability. USB2 controllers which are known to work:
+	  Note: This requires a USB2 controller which supports the EHCI
+	  Debug Port capability. Controllers which are known to work:
 
 	    * 10b9:5239 ALi Corporation USB 2.0 (USB PCI card)
 	    * 10de:0088 nVidia MCP2A

@@ -13,10 +13,10 @@ source console/Kconfig
 menu "Payload"
 
 config PAYLOAD
-	string "Payload filename"
+	string "Payload path and filename"
 	default "filo.elf"
 	help
-	  The path and filename of the payload file to use.
+	  The path and filename of the LinuxBIOS payload to use.
 
 endmenu
 

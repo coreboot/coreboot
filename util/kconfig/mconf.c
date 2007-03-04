@@ -188,7 +188,7 @@ setmod_text[] = N_(
 	"This feature depends on another which has been configured as a module.\n"
 	"As a result, this feature will be built as a module."),
 nohelp_text[] = N_(
-	"There is no help available for this firmware option.\n"),
+	"There is no help available for this option.\n"),
 load_config_text[] = N_(
 	"Enter the name of the configuration file you wish to load.  "
 	"Accept the name shown to restore the configuration you "

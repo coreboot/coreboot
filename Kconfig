@@ -5,6 +5,33 @@
 
 mainmenu "LinuxBIOS Configuration"
 
+menu "General setup"
+
+config EXPERIMENTAL
+        bool "Prompt for development and/or incomplete code/mainboards"
+        ---help---
+	  Enable this option if you want to test development features or
+	  incomplete/unsupported mainboards.
+
+	  We do not make any guarantees about anything that is marked
+	  as EXPERIMENTAL! You have been warned!
+
+config EXPERT
+        bool "Expert mode"
+        ---help---
+	  This allows you to select certain advanced configuration options.
+	  It is mainly intended for LinuxBIOS developers.
+
+	  Warning: Only enable this option if you really know what you're
+	  doing! You have been warned!
+
+config LOCALVERSION
+        string "Local version - append to LinuxBIOS release"
+        help
+	  Append an extra string to the end of the LinuxBIOS version.
+
+endmenu
+
 source mainboard/Kconfig
 source arch/Kconfig
 source lib/Kconfig

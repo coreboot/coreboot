@@ -135,8 +135,8 @@ config CONSOLE_VGA
 	  Send LinuxBIOS output to VGA console as soon as VGA is initialized.
 
 config CONSOLE_USB
-	boolean "USB2 console support"
-	depends CONSOLE
+	boolean "USB2 console support (EXPERIMENTAL)"
+	depends CONSOLE && EXPERIMENTAL
 	help
 	  Send LinuxBIOS output to USB2 (EHCI) console.
 

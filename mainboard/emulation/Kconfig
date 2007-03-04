@@ -10,7 +10,8 @@ config BOARD_EMULATION_QEMU_X86
 	  x86 QEMU variant.
 
 config BOARD_EMULATION_QEMU_POWERPC
-	bool "PowerPC QEMU"
+	bool "PowerPC QEMU (EXPERIMENTAL)"
+	depends on EXPERIMENTAL
 	select ARCH_POWERPC
 	help
 	  PowerPC QEMU variant.

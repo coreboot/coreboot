@@ -32,6 +32,11 @@ ARCH := $(shell uname -m | sed -e s/i.86/x86/ -e s/sun4u/sparc64/ \
 
 KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
 
+# TODO: Check whether this really works!
+ifdef $(CONFIG_LOCALVERSION)
+KERNELVERSION = "$(KERNELVERSION)-$(CONFIG_LOCALVERSION)"
+endif
+
 have_dotconfig := $(wildcard .config)
  
 src:=$(shell pwd)

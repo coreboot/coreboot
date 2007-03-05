@@ -28,22 +28,22 @@ ARCH=`uname -m | sed -e s/i.86/x86/ -e s/sun4u/sparc64/ \
 case  "$ARCH" in
 "x86_64")
 	echo "CC_x86 := \"gcc -m32\""
-	echo "AS_x86 := \"as --32\"" 
+	echo "AS_x86 := \"as --32\""
 	echo "LD_x86 := \"ld -b elf32-i386 -melf_i386\""
 	;;
 "x86")
 	echo "CC_x86 := \"gcc\""
-	echo "AS_x86 := \"as\"" 
+	echo "AS_x86 := \"as\""
 	echo "LD_x86 := \"ld\""
 	;;
 *)
-	# FIXME: This should be detected
+	# FIXME: This should be detected.
 	echo "CC_x86 := \"i386-linux-gcc\""
-	echo "AS_x86 := \"i386-linux-as\"" 
+	echo "AS_x86 := \"i386-linux-as\""
 	echo "LD_x86 := \"i386-linux-ld\""
 	;;
 esac
 
-# TODO: The same as above for powerpc, and other architectures
-#       as soon as they are supported by LinuxBIOSv3
+# TODO: The same as above for PowerPC, and other architectures
+#       as soon as they are supported by LinuxBIOSv3.
 

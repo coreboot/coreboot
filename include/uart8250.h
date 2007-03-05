@@ -27,7 +27,7 @@
 #endif
 
 #if ((115200%TTYSx_BAUD) != 0)
-#error Bad ttys0 baud rate
+#error Bad ttyS0 baud rate
 #endif
 
 #define TTYSx_DIV	(115200/TTYSx_BAUD)

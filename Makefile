@@ -4,6 +4,7 @@
 ## LinuxBIOS build system Lbuild
 ##
 ## Copyright (C) 2007 coresystems GmbH
+## Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -26,12 +27,12 @@ SUBLEVEL = 0
 
 have_dotconfig := $(wildcard .config)
 have_dotxcompile := $(wildcard .xcompile)
- 
+
 src:=$(shell pwd)
 obj:=$(shell pwd)/lbobj
 export src obj
 
-# Do not print "Entering directory ..."
+# Do not print "Entering directory ...".
 MAKEFLAGS += --no-print-directory
 
 CC         := gcc
@@ -56,7 +57,7 @@ endif
 KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
 export KERNELVERSION
 
-ifeq ($(strip $(have_dotconfig)),) 
+ifeq ($(strip $(have_dotconfig)),)
 
 all:
 	$(Q)echo "Please run make menuconfig, xconfig or config first."
@@ -81,8 +82,7 @@ LINUXBIOSINCLUDE    :=  -I$(src) -Iinclude \
 			-include $(obj)/config.h \
 			-include $(obj)/build.h
 
-
-ifneq ($(strip $(have_dotxcompile)),) 
+ifneq ($(strip $(have_dotxcompile)),)
 	include $(src)/.xcompile
 	CC := $(CC_$(ARCH))
 	AS := $(AS_$(ARCH))
@@ -111,7 +111,7 @@ prepare2:
 	$(Q)cp $(src)/.tmpconfig.h $(obj)/config.h
 	$(Q)echo "#define LINUXBIOS_VERSION \"$(KERNELVERSION)\"" > $(obj)/build.h
 	$(Q)echo "#define LINUXBIOS_EXTRA_VERSION \"$(LINUXBIOS_EXTRA_VERSION)\"" >> $(obj)/build.h
-	$(Q)echo "#define LINUXBIOS_BUILD   \"`date`\"" >> $(obj)/build.h
+	$(Q)echo "#define LINUXBIOS_BUILD \"`date`\"" >> $(obj)/build.h
 
 clean:
 	$(Q)echo -n "Cleaning up... "

@@ -181,7 +181,7 @@ void lb_memory_range(struct lb_memory *mem,
 	u32 type, u64 start, u64 size)
 {
 	int entries;
-	printk(BIOS_SPEW-2, "%s: start 0x%lx size 0x%lx\n", __func__, start, size);
+	printk(BIOS_SPEW-2, "%s: start 0x%lx size 0x%lx\n", __func__, (u32)start, (u32)size);
 	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
 	mem->map[entries].start = pack_lb64(start);
 	mem->map[entries].size = pack_lb64(size);
@@ -243,6 +243,9 @@ static void lb_cleanup_memory_ranges(struct lb_memory *mem)
 	int entries;
 	int i, j;
 	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
+	printk(BIOS_INFO, "%s: # entries %d\n", __func__, entries);
+	for(i = 0; i < entries; i++)
+		printk(BIOS_INFO, "  #%d: base 0x%x size 0x%x\n", i, (u32)mem->map[i].start.lo, mem->map[i].size.lo);
 	
 	/* Sort the lb memory ranges */
 	for(i = 0; i < entries; i++) {

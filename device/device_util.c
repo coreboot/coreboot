@@ -514,8 +514,8 @@ void search_global_resources(
 		if (!curdev->have_resources) continue;
 		for(i = 0; i < curdev->resources; i++) {
 			struct resource *resource = &curdev->resource[i];
-			printk(BIOS_SPEW, "%s: dev %s, resource %d, flags %x\n", __func__, curdev->dtsname,
-				i, resource->flags);
+			printk(BIOS_SPEW, "%s: dev %s, resource %d, flags %x base 0x%lx size 0x%lx\n", __func__, curdev->dtsname,
+				i, resource->flags, (u32) resource->base, (u32)resource->size);
 			/* If it isn't the right kind of resource ignore it */
 			if ((resource->flags & type_mask) != type) {
 				continue;

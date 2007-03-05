@@ -42,7 +42,7 @@ Third-party Code and License Overview
   Source: The GNU C Library, http://www.gnu.org/software/libc/
   You can get the latest version of the file via CVS:
   cvs -d:pserver:anoncvs@sources.redhat.com:/cvs/glibc co libc/elf/elf.h
-  Current version we use: ?
+  Current version we use: CVS rev. 1.156
 
 * lib/lzmadecode.[ch]: Dual-licensed, LGPL + Common Public License (CPL).
   There's a special exception, please see lib/lzmadecode.[ch].

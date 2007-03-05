@@ -1,24 +1,12 @@
 #include <arch/types.h>
 #include <arch/hlt.h>
 #include <console/loglevel.h>
-#include "config.h"
+#include <uart8250.h>
 
 // FIXME: we need this for varargs
 #include <stdarg.h>
 
-#if MAXIMUM_CONSOLE_LOGLEVEL <= BIOS_DEBUG
-#define debug(msg_level, fmt, arg...)   printk(msg_level, fmt, ##arg)
-#endif
-
-#ifndef LINUXBIOS_EXTRA_VERSION
-#define LINUXBIOS_EXTRA_VERSION ""
-#endif
-
-/* printk's without a loglevel use this.. */
-#define DEFAULT_MESSAGE_LOGLEVEL 4 /* BIOS_WARNING */
-
 extern int vtxprintf(void (*)(unsigned char), const char *, va_list);
-extern void uart8250_tx_byte(unsigned, unsigned char);
 
 int console_loglevel(void)
 {
@@ -28,8 +16,8 @@ int console_loglevel(void)
 void console_tx_byte(unsigned char byte)
 {
 	if (byte == '\n')
-		uart8250_tx_byte(TTYS0_BASE, '\r');
-	uart8250_tx_byte(TTYS0_BASE, byte);
+		uart8250_tx_byte(TTYSx_BASE, '\r');
+	uart8250_tx_byte(TTYSx_BASE, byte);
 }
 
 int printk(int msg_level, const char *fmt, ...)

@@ -14,10 +14,10 @@ DEPFILES = $(DTC_OBJS:.o=.d)
 
 $(obj)/util/dtc/dtc: $(patsubst %,$(obj)/%,$(DTC_OBJS))
 	$(Q)mkdir -p $(obj)/util/dtc/
-	$(Q)$(LINK.c) -o $@ $^
+	$(Q)$(HOSTCC) -o $@ $^
 
 ftdump:	ftdump.o
-	$(Q)$(LINK.c) -o $@ $^
+	$(Q)$(HOSTCC) -o $@ $^
 
 $(obj)/dtc-parser.tab.c $(obj)/dtc-parser.tab.h $(obj)/dtc-parser.output: $(src)/util/dtc/dtc-parser.y
 	$(Q)cd $(obj); $(BISON) -d $< &> $(obj)/dtc.bison.out
@@ -59,6 +59,6 @@ clean:
 endif
 
 %.d: %.c
-	$(CC) -MM -MG -MT "$*.o $@" $< > $@
+	$(HOSTCC) -MM -MG -MT "$*.o $@" $< > $@
 
 -include $(DEPFILES)

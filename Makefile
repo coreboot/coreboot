@@ -24,24 +24,12 @@ VERSION = 3
 PATCHLEVEL = 0
 SUBLEVEL = 0
 
-
-ARCH := $(shell uname -m | sed -e s/i.86/x86/ -e s/sun4u/sparc64/ \
-				-e s/arm.*/arm/ -e s/sa110/arm/ \
-				-e s/s390x/s390/ -e s/parisc64/parisc/ \
-				-e s/ppc.*/powerpc/ -e s/mips.*/mips/ )
-
-KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
-
-# TODO: Check whether this really works!
-ifdef $(CONFIG_LOCALVERSION)
-KERNELVERSION = "$(KERNELVERSION)-$(CONFIG_LOCALVERSION)"
-endif
-
 have_dotconfig := $(wildcard .config)
+have_dotxcompile := $(wildcard .xcompile)
  
 src:=$(shell pwd)
 obj:=$(shell pwd)/lbobj
-
+export src obj
 
 # Do not print "Entering directory ..."
 MAKEFLAGS += --no-print-directory
@@ -57,11 +45,6 @@ HOSTCXX    := g++
 HOSTCFLAGS := -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer \
 	      -Wno-unused -Wno-sign-compare -Wno-pointer-sign
 
-LINUXBIOSINCLUDE    :=  -I$(src) -Iinclude \
-			-I$(src)/include \
-			-I$(src)/include/cpu/generic/$(ARCH)/ \
-			-include $(obj)/config.h
-
 DOXYGEN := doxygen
 DOXYGEN_OUTPUT_DIR := doxygen
 
@@ -70,11 +53,8 @@ ifneq ($(V),1)
 Q := @
 endif
 
-CPPFLAGS   := $(LINUXBIOSINCLUDE)
-
-CFLAGS += $(LINUXBIOSINCLUDE)
-
-export src obj KERNELVERSION
+KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
+export KERNELVERSION
 
 ifeq ($(strip $(have_dotconfig)),) 
 
@@ -84,10 +64,33 @@ all:
 else
 
 include $(src)/.config
+
+ifneq ($(CONFIG_LOCALVERSION),)
+LINUXBIOS_EXTRA_VERSION := -$(shell echo $(CONFIG_LOCALVERSION))
+endif
+
 all: prepare prepare2 $(obj)/linuxbios.rom
 	$(Q)echo "Build process finished."
 
+ARCH:=$(shell echo $(CONFIG_ARCH))
 MAINBOARDDIR=$(shell echo $(CONFIG_MAINBOARD_NAME))
+
+LINUXBIOSINCLUDE    :=  -I$(src) -Iinclude \
+			-I$(src)/include \
+			-I$(src)/include/cpu/generic/$(ARCH)/ \
+			-include $(obj)/config.h \
+			-include $(obj)/build.h
+
+
+ifneq ($(strip $(have_dotxcompile)),) 
+	include $(src)/.xcompile
+	CC := $(CC_$(ARCH))
+	AS := $(AS_$(ARCH))
+	LD := $(LD_$(ARCH))
+endif
+
+CPPFLAGS := $(LINUXBIOSINCLUDE)
+CFLAGS += $(LINUXBIOSINCLUDE)
 
 include lib/Makefile
 include device/Makefile
@@ -106,6 +109,9 @@ prepare:
 
 prepare2:
 	$(Q)cp $(src)/.tmpconfig.h $(obj)/config.h
+	$(Q)echo "#define LINUXBIOS_VERSION \"$(KERNELVERSION)\"" > $(obj)/build.h
+	$(Q)echo "#define LINUXBIOS_EXTRA_VERSION \"$(LINUXBIOS_EXTRA_VERSION)\"" >> $(obj)/build.h
+	$(Q)echo "#define LINUXBIOS_BUILD   \"`date`\"" >> $(obj)/build.h
 
 clean:
 	$(Q)echo -n "Cleaning up... "

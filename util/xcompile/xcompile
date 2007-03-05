@@ -1,0 +1,49 @@
+#!/bin/sh
+#
+# This file is part of the LinuxBIOS project.
+#
+# Copyright (C) 2007 coresystems GmbH
+# Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+#
+
+ARCH=`uname -m | sed -e s/i.86/x86/ -e s/sun4u/sparc64/ \
+			-e s/arm.*/arm/ -e s/sa110/arm/ \
+			-e s/s390x/s390/ -e s/parisc64/parisc/ \
+			-e s/ppc.*/powerpc/ -e s/mips.*/mips/`
+
+case  "$ARCH" in
+"x86_64")
+	echo "CC_x86 := \"gcc -m32\""
+	echo "AS_x86 := \"as --32\"" 
+	echo "LD_x86 := \"ld -b elf32-i386 -melf_i386\""
+	;;
+"x86")
+	echo "CC_x86 := \"gcc\""
+	echo "AS_x86 := \"as\"" 
+	echo "LD_x86 := \"ld\""
+	;;
+*)
+	# FIXME: This should be detected
+	echo "CC_x86 := \"i386-linux-gcc\""
+	echo "AS_x86 := \"i386-linux-as\"" 
+	echo "LD_x86 := \"i386-linux-ld\""
+	;;
+esac
+
+# TODO: The same as above for powerpc, and other architectures
+#       as soon as they are supported by LinuxBIOSv3
+

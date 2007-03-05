@@ -23,13 +23,15 @@
 #include <console/loglevel.h>
 #include <lar.h>
 #include <linuxbios_tables.h>
-#include "config.h"
 
 /* these prototypes should go into headers */
 void uart_init(void);
 void console_init(void);
 void die(const char *msg);
 int find_file(struct mem_file *archive, char *filename, struct mem_file *result);
+
+// FIXME: This should go somewhere else (.config?)
+#define LINUXBIOS_ROMSIZE_KB        256
 
 // Is this value correct?
 #define DCACHE_RAM_SIZE 0x8000

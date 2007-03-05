@@ -25,6 +25,13 @@ config ARCH_X86
 	  This option is used to set the architecture of a mainboard.
 	  It is usually set in mainboard/*/Kconfig.
 
+config ARCH
+	string
+	default x86
+	depends ARCH_X86
+	help
+	  This is the arch directory name
+
 config CAR_TYPE_I586
 	boolean
 	help

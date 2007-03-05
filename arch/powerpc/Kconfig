@@ -25,3 +25,11 @@ config ARCH_POWERPC
 	  This option is used to set the architecture of a mainboard.
 	  It is usually set in mainboard/*/Kconfig.
 
+config ARCH
+	string
+	default powerpc
+	depends ARCH_POWERPC
+	help
+	  This is the arch directory name
+
+

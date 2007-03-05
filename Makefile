@@ -29,7 +29,7 @@ have_dotconfig := $(wildcard .config)
 have_dotxcompile := $(wildcard .xcompile)
 
 src:=$(shell pwd)
-obj:=$(shell pwd)/lbobj
+obj:=$(shell pwd)/build
 export src obj
 
 # Do not print "Entering directory ...".

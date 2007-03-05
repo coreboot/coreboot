@@ -102,7 +102,7 @@ endif
 include util/Makefile
 
 doc:
-	$(DOXYGEN) util/Doxyfile.LinuxBIOS
+	$(DOXYGEN) util/doxygen/Doxyfile.LinuxBIOS
 
 prepare:
 	$(Q)mkdir -p $(obj)

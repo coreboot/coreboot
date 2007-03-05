@@ -1,5 +1,5 @@
 choice
-	prompt "Board model"
+	prompt "Mainboard model"
 	depends on VENDOR_EMULATION
 
 config BOARD_EMULATION_QEMU_X86

@@ -1,4 +1,4 @@
-menu "Compression methods"
+menu "Compression"
 
 config COMPRESSION_LZMA
 	boolean "Support LZMA compression"

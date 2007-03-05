@@ -779,7 +779,9 @@ static struct device_operations *get_pci_bridge_ops(struct device * dev)
  */
 static void set_pci_ops(struct device *dev)
 {
+#if 0
 	struct pci_driver *driver;
+#endif
 	if (dev->ops) {
 		printk(BIOS_INFO, "%s: dev %p(%s) already has ops %p\n", __func__, dev, dev->dtsname, dev->ops);
 		return;

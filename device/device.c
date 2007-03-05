@@ -670,7 +670,7 @@ unsigned int dev_phase3_scan(struct device * busdevice, unsigned int max)
 	{
 		printk(BIOS_INFO, "%s: %s: busdevice %p enabled %d ops %p\n" , __FUNCTION__,
 			busdevice->dtsname,
-			busdevice, busdevice ? busdevice->enabled : NULL, 
+			busdevice, busdevice ? busdevice->enabled : 0, 
 			busdevice ? busdevice->ops : NULL);
 		printk(BIOS_INFO, "%s: can not scan from here, returning %d\n", __FUNCTION__, max);
 		return max;

@@ -1062,8 +1062,8 @@ void dt_to_C(FILE *f, struct boot_info *bi, int version, int boot_cpuid_phys)
 	 */
 	fprintf(f, "\tu64 reservemap[] = {\n");
 	for (re = bi->reservelist; re; re = re->next) {
-		fprintf(f, "\tu64\t0x%qx\n", re->re.address);
-		fprintf(f, "\tu64\t0x%qx\n", re->re.size);
+		fprintf(f, "\tu64\t0x%lx\n", re->re.address);
+		fprintf(f, "\tu64\t0x%lx\n", re->re.size);
 	}
 
 
@@ -1103,7 +1103,7 @@ labeltree(struct node *tree)
 /* the root, weirdly enough, is last on the 'next' chain. yuck. */
 void fix_next(struct node *root){
 	extern struct node *first_node;
-	struct node *next2last, *next;
+	struct node *next2last=NULL, *next;
 	for(next = first_node; next; next = next->next)
 		if (next->next == root)
 			next2last = next;

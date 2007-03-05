@@ -27,29 +27,18 @@
 #include "config.h"
 #include "i440bx.h"
 
-/* This is the starting point. */
-struct device_operations i440bxemulation_pcidomainops;
 static void i440bxemulation_enable_dev(struct device *dev)
 {
 	printk(BIOS_INFO, "%s: \n", __FUNCTION__);
-	/* just a test here. ... we don't want to do this in real life */
-	dev->ops = &i440bxemulation_pcidomainops;
-        /* Set the operations if it is a special bus type */
-/*
-        if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
-                dev->ops = &pci_domain_ops;
-		pci_set_method(dev);
-        }
- */
 	printk(BIOS_INFO, "%s: Done.\n", __FUNCTION__);
 }
 
-struct chip_operations northbridge_intel_i440bxemulation_ops = {
-	.name="Intel 440BX Northbridge Emulation",
-	.enable_dev = i440bxemulation_enable_dev, 
-};
 
 /* Here are the ops for 440BX as a PCI domain. */
+/* a PCI domain contains the I/O and memory resource address space below it. */
+/* Currently, the only functions in here are for the domain. If device functions are needed,
+  * they will come later. 
+ */
 
 static void pci_domain_read_resources(struct device * dev)
 {
@@ -103,6 +92,14 @@ static unsigned int pci_domain_scan_bus(struct device * dev, unsigned int max)
         return max;
 }
 
+/* here are the chip operations. These are for the chip-specific functions. */
+struct chip_operations northbridge_intel_i440bxemulation_ops = {
+	.name="Intel 440BX Northbridge Emulation",
+	.enable_dev = i440bxemulation_enable_dev, 
+};
+
+/* here are the operations for when the northbridge is running a pci domain. */
+/* see emulation/qemu-x86 for an example of how these are used. */
 struct device_operations i440bxemulation_pcidomainops = {
         .phase4_read_resources   = pci_domain_read_resources,
         .phase4_set_resources    = pci_domain_set_resources,

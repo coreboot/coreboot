@@ -8,7 +8,7 @@
 	domain0{
 		enabled;
 		config="northbridge,intel,i440bxemulation";
-		ops="default_pci_ops_dev";
+		ops="i440bxemulation_pcidomainops";
 		pcidomain = "0";
 		device0,0{
 			enabled;

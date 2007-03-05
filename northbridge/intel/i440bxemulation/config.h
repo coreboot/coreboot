@@ -19,6 +19,7 @@
  */
 
 extern struct chip_operations northbridge_intel_i440bxemulation_ops;
+extern struct device_operations i440bxemulation_pcidomainops;
 
 struct northbridge_intel_i440bx_config
 {

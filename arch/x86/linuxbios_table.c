@@ -19,7 +19,7 @@
  */
 
 #include <console/console.h>
-//#include <ip_checksum.h>
+#include <ip_checksum.h>
 #include <string.h>
 //#include <cpu/cpu.h>
 //#include <boot/tables.h>
@@ -229,9 +229,9 @@ unsigned long lb_table_fini(struct lb_header *head)
 	}
 	lb_reserve_table_memory(head);
 	first_rec = lb_first_record(head);
-	head->table_checksum = 0; //compute_ip_checksum(first_rec, head->table_bytes);
+	head->table_checksum = compute_ip_checksum(first_rec, head->table_bytes);
 	head->header_checksum = 0;
-	head->header_checksum = 0; //compute_ip_checksum(head, sizeof(*head));
+	head->header_checksum = compute_ip_checksum(head, sizeof(*head));
 	printk(BIOS_DEBUG,"Wrote linuxbios table at: %p - %p  checksum %lx\n",
 		head, rec, head->table_checksum);
 	return (unsigned long)rec;

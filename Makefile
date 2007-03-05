@@ -121,7 +121,7 @@ clean:
 
 distclean: clean
 	$(Q)echo -n "Deleting config files... "
-	$(Q)rm -f .kconfig.d .config .tmpconfig.h .config.old
+	$(Q)rm -f .kconfig.d .config .tmpconfig.h .config.old .xconfig
 	$(Q)echo "done"
 
 %.o: %.c

@@ -30,9 +30,6 @@ void console_init(void);
 void die(const char *msg);
 int find_file(struct mem_file *archive, char *filename, struct mem_file *result);
 
-// FIXME: This should go somewhere else (.config?)
-#define LINUXBIOS_ROMSIZE_KB 256
-
 // Is this value correct?
 #define DCACHE_RAM_SIZE 0x8000
 
@@ -109,7 +106,7 @@ void stage1_main(u32 bist)
 	// FIXME this should be defined in the VPD area
 	// but NOT IN THE CODE.
 	
-	archive.len=LINUXBIOS_ROMSIZE_KB*1024;
+	archive.len=CONFIG_LINUXBIOS_ROMSIZE_KB*1024;
 	archive.start=(void *)(0UL-archive.len); 
 	/* This won't work; the for loop in lib/lar.c will always 
 	 * fail as adding len to start will be 0. 

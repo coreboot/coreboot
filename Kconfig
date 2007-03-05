@@ -30,6 +30,47 @@ config LOCALVERSION
         help
 	  Append an extra string to the end of the LinuxBIOS version.
 
+choice
+	prompt "ROM chip size"
+	default LINUXBIOS_ROMSIZE_KB_256
+
+config LINUXBIOS_ROMSIZE_KB_128
+	bool "128 KB"
+	help
+	  Choose this option if you have a 128 KB ROM chip.
+
+config LINUXBIOS_ROMSIZE_KB_256
+	bool "256 KB"
+	help
+	  Choose this option if you have a 256 KB ROM chip.
+
+config LINUXBIOS_ROMSIZE_KB_512
+	bool "512 KB"
+	help
+	  Choose this option if you have a 512 KB ROM chip.
+
+config LINUXBIOS_ROMSIZE_KB_1024
+	bool "1024 KB (1 MB)"
+	help
+	  Choose this option if you have a 1 MB (1024 KB) ROM chip.
+
+config LINUXBIOS_ROMSIZE_KB_2048
+	bool "2048 KB (2 MB)"
+	help
+	  Choose this option if you have a 2 MB (2048 KB) ROM chip.
+
+endchoice
+
+config LINUXBIOS_ROMSIZE_KB
+	int
+	default 128 if LINUXBIOS_ROMSIZE_KB_128
+	default 256 if LINUXBIOS_ROMSIZE_KB_256
+	default 512 if LINUXBIOS_ROMSIZE_KB_512
+	default 1024 if LINUXBIOS_ROMSIZE_KB_1024
+	default 2048 if LINUXBIOS_ROMSIZE_KB_2048
+	help
+	  Map the config names to an integer.
+
 endmenu
 
 source mainboard/Kconfig

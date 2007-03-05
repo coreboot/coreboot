@@ -48,17 +48,12 @@ struct pci_operations {
 
 /* Common pci bus operations */
 struct pci_bus_operations {
-	u8 (*read8)(struct bus *pbus, unsigned char bus, int devfn, int where);
-	u16 (*read16)(struct bus *pbus, unsigned char bus, int devfn,
-	              int where);
-	u32 (*read32)(struct bus *pbus, unsigned char bus, int devfn,
-	              int where);
-	void (*write8)(struct bus *pbus, unsigned char bus, int devfn,
-	               int where, u8 val);
-	void (*write16)(struct bus *pbus, unsigned char bus, int devfn,
-	                int where, u16 val);
-	void (*write32)(struct bus *pbus, unsigned char bus, int devfn,
-	                int where, u32 val);
+	u8 (*read8)(struct bus *pbus, int bus, int devfn, int where);
+	u16 (*read16)(struct bus *pbus, int bus, int devfn, int where);
+	u32 (*read32)(struct bus *pbus, int bus, int devfn, int where);
+	void (*write8)(struct bus *pbus, int bus, int devfn, int where, u8 val);
+	void (*write16)(struct bus *pbus, int bus, int devfn, int where, u16 val);
+	void (*write32)(struct bus *pbus, int bus, int devfn, int where, u32 val);
 };
 
 struct pci_driver {

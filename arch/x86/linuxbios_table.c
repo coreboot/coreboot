@@ -1,7 +1,6 @@
 /*
  * table management code for Linux BIOS tables
  *
- *
  * Copyright (C) 2002 Eric Biederman, Linux NetworX
  *
  * This program is free software; you can redistribute it and/or modify
@@ -181,7 +180,7 @@ void lb_memory_range(struct lb_memory *mem,
 	u32 type, u64 start, u64 size)
 {
 	int entries;
-	printk(BIOS_SPEW-2, "%s: start 0x%lx size 0x%lx\n", __func__, (u32)start, (u32)size);
+	printk(BIOS_INFO, "%s: start 0x%lx size 0x%lx\n", __func__, (u32)start, (u32)size);
 	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
 	mem->map[entries].start = pack_lb64(start);
 	mem->map[entries].size = pack_lb64(size);

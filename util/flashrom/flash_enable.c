@@ -461,7 +461,12 @@ static FLASH_ENABLE enables[] = {
         {0x10de, 0x0263, "NVidia MCP51", enable_flash_ck804},
 
 	{0x10de, 0x0360, "NVIDIA MCP55", enable_flash_mcp55}, // Gigabyte m57sli-s4
+	{0x10de, 0x0361, "NVIDIA MCP55", enable_flash_mcp55}, // LPC
+	{0x10de, 0x0362, "NVIDIA MCP55", enable_flash_mcp55}, // LPC
+	{0x10de, 0x0363, "NVIDIA MCP55", enable_flash_mcp55}, // LPC
 	{0x10de, 0x0364, "NVIDIA MCP55", enable_flash_mcp55}, // LPC
+	{0x10de, 0x0365, "NVIDIA MCP55", enable_flash_mcp55}, // LPC
+	{0x10de, 0x0366, "NVIDIA MCP55", enable_flash_mcp55}, // LPC
 	{0x10de, 0x0367, "NVIDIA MCP55", enable_flash_mcp55}, // Pro
 
 	{0x1002, 0x4377, "ATI SB400", enable_flash_sb400}, // ATI Technologies Inc IXP SB400 PCI-ISA Bridge (rev 80)

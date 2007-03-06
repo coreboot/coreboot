@@ -8,8 +8,8 @@ mainmenu "LinuxBIOS Configuration"
 menu "General setup"
 
 config EXPERIMENTAL
-        bool "Prompt for development and/or incomplete code/mainboards"
-        ---help---
+	bool "Prompt for development and/or incomplete code/mainboards"
+	help
 	  Enable this option if you want to test development features or
 	  incomplete/unsupported mainboards.
 
@@ -17,8 +17,8 @@ config EXPERIMENTAL
 	  as EXPERIMENTAL! You have been warned!
 
 config EXPERT
-        bool "Expert mode"
-        ---help---
+	bool "Expert mode"
+	help
 	  This allows you to select certain advanced configuration options.
 	  It is mainly intended for LinuxBIOS developers.
 
@@ -26,8 +26,8 @@ config EXPERT
 	  doing! You have been warned!
 
 config LOCALVERSION
-        string "Local version - append to LinuxBIOS release"
-        help
+	string "Local version - append to LinuxBIOS release"
+	help
 	  Append an extra string to the end of the LinuxBIOS version.
 
 endmenu

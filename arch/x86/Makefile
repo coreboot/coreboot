@@ -38,6 +38,7 @@ LINUXBIOS_COMPONENTS := linuxbios.lar linuxbios.vpd stage0.init
 $(obj)/linuxbios.rom: $(patsubst %,$(obj)/%,$(LINUXBIOS_COMPONENTS))
 	$(Q)cat $^ > $@
 
+
 #
 # Build the LAR archive.
 #
@@ -75,9 +76,9 @@ STAGE0_ARCH_X86_OBJ  = $(obj)/cachemain.o $(obj)/console.o $(obj)/serial.o \
 
 
 ifeq ($(CONFIG_CAR_TYPE_I586),y)
-  STAGE0_CAR_OBJ = $(obj)/stage0_i586.o
+	STAGE0_CAR_OBJ = $(obj)/stage0_i586.o
 else
-  STAGE0_CAR_OBJ = $(obj)/stage0_i586.o
+	STAGE0_CAR_OBJ = $(obj)/stage0_i586.o
 endif
 
 STAGE0_OBJ := $(STAGE0_CONSOLE_OBJ) $(STAGE0_LIB_OBJ) $(STAGE0_ARCH_X86_OBJ) $(STAGE0_CAR_OBJ)
@@ -125,6 +126,7 @@ $(obj)/linuxbios.stage2: $(obj)/stage0.init $(STAGE2_OBJ)
 	$(Q)objcopy -O binary $(obj)/linuxbios.stage2.o $(obj)/linuxbios.stage2
 	$(Q)printf "done\n"
 
+
 #
 # The payload as we love it. Get it from somewhere.
 # Is this a place to incorporate buildrom?
@@ -137,15 +139,17 @@ payload:
 	$(Q)printf "Building payload... skipped\n"
 
 
-# build rules
 #
+# Build rules.
+#
+
 $(obj)/%.o: $(src)/arch/x86/%.c
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
 
 $(obj)/%.o: $(src)/mainboard/$(MAINBOARDDIR)/%.c
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
 
-# Building asm stub
+# Building asm stub.
 $(obj)/stage0%.o: $(src)/arch/x86/stage0%.S
 	$(Q)$(CC) -E $(LINUXBIOSINCLUDE) $< \
 		-o $(obj)/stage0_asm.s -DBOOTBLK=0x1f00 -DRESRVED=0xf0 \

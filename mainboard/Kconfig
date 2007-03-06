@@ -35,12 +35,12 @@ config LINUXBIOS_ROMSIZE_KB_512
 config LINUXBIOS_ROMSIZE_KB_1024
 	bool "1024 KB (1 MB)"
 	help
-	  Choose this option if you have a 1 MB (1024 KB) ROM chip.
+	  Choose this option if you have a 1024 KB (1 MB) ROM chip.
 
 config LINUXBIOS_ROMSIZE_KB_2048
 	bool "2048 KB (2 MB)"
 	help
-	  Choose this option if you have a 2 MB (2048 KB) ROM chip.
+	  Choose this option if you have a 2048 KB (2 MB) ROM chip.
 
 endchoice
 

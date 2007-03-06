@@ -28,8 +28,8 @@ SUBLEVEL = 0
 have_dotconfig := $(wildcard .config)
 have_dotxcompile := $(wildcard .xcompile)
 
-src:=$(shell pwd)
-obj:=$(shell pwd)/build
+src := $(shell pwd)
+obj := $(shell pwd)/build
 export src obj
 
 # Do not print "Entering directory ...".
@@ -97,6 +97,7 @@ include device/Makefile
 include console/Makefile
 include mainboard/$(MAINBOARDDIR)/Makefile
 include arch/$(ARCH)/Makefile
+
 endif
 
 include util/Makefile
@@ -126,7 +127,7 @@ distclean: clean
 
 %.o: %.c
 	$(Q)echo "Compiling $<"
-	$(Q)$(CC) $(CFLAGS) -o $@ -c $< 
+	$(Q)$(CC) $(CFLAGS) -o $@ -c $<
 
 .PHONY: doc
 

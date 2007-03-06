@@ -1,8 +1,7 @@
 #
-# Documentation Makefile
+# Documentation Makefile.
 #
 
-	      
 dochelp:
 	@echo  '  LinuxBIOS internal documentation in different formats:'
 	@echo  '  pdfdocs (PDF)'

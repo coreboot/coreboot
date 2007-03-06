@@ -2,9 +2,7 @@
  * elfboot -- boot elf images
  * 
  * (C)opyright 2002 Eric Biederman, Linux NetworX
- *
  * (C)opyright 2007 Ronald G. Minnich
- *
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,13 +18,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  *
  */
+
 /* This code is modified from the LinuxBIOS V2 version as follows:
  * great simplified
  * checksum removed -- lar can do that
  * can run from read-only FLASH
  * no calls to malloc
  */
-
 
 #include <console/console.h>
 #include <elf.h>

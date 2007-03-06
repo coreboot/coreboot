@@ -1062,8 +1062,8 @@ void dt_to_C(FILE *f, struct boot_info *bi, int version, int boot_cpuid_phys)
 	 */
 	fprintf(f, "\tu64 reservemap[] = {\n");
 	for (re = bi->reservelist; re; re = re->next) {
-		fprintf(f, "\tu64\t0x%lx\n", re->re.address);
-		fprintf(f, "\tu64\t0x%lx\n", re->re.size);
+		fprintf(f, "\tu64\t0x%lx\n", (long unsigned int)re->re.address);
+		fprintf(f, "\tu64\t0x%lx\n", (long unsigned int)re->re.size);
 	}
 
 

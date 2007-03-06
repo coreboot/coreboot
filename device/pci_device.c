@@ -720,7 +720,7 @@ struct device_operations default_pci_ops_bus = {
  */
 static struct device_operations *get_pci_bridge_ops(struct device * dev)
 {
-	unsigned pos;
+	// unsigned pos;
 
 #if CONFIG_PCIX_PLUGIN_SUPPORT == 1
 	pos = pci_find_capability(dev, PCI_CAP_ID_PCIX);

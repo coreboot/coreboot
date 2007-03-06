@@ -47,6 +47,8 @@ $(obj)/linuxbios.rom: $(patsubst %,$(obj)/%,$(LINUXBIOS_COMPONENTS))
 # of stages, payloads and option ROMs.
 #
 
+LAR_SIZE := $(shell expr \( $(CONFIG_LINUXBIOS_ROMSIZE_KB) - 16 \) \* 1024 )
+
 $(obj)/linuxbios.lar: $(obj)/util/lar/lar lzma $(obj)/linuxbios.initram $(obj)/linuxbios.stage2 payload
 	$(Q)printf "Building LinuxBIOS archive... \n"
 	$(Q)rm -rf $(obj)/lar.tmp
@@ -57,9 +59,9 @@ $(obj)/linuxbios.lar: $(obj)/util/lar/lar lzma $(obj)/linuxbios.initram $(obj)/l
 	$(Q)cp $(CONFIG_PAYLOAD) $(obj)/lar.tmp/normal/payload
 	$(Q)printf "  "
 	$(Q)cd $(obj)/lar.tmp && ../util/lar/lar c ../linuxbios.lar.pre normal/initram normal/stage2 normal/payload
-	$(Q)# TODO: Dynamically pad the LAR archive. bs is image size - bootblock size (16k)
+	$(Q)# Padding the LAR archive to image size - 16k (bootblock size)
 	$(Q)dd if=$(obj)/linuxbios.lar.pre of=$(obj)/linuxbios.lar \
-		  bs=245760 count=1 conv=sync $(SILENT)
+		  bs=$(LAR_SIZE) count=1 conv=sync $(SILENT)
 
 
 #

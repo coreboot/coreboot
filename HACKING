@@ -49,3 +49,7 @@ Third-party Code and License Overview
   Source: LZMA SDK, http://sourceforge.net/projects/sevenzip/
   Current version we use: LZMA SDK 4.40 (05/2006)
 
+* lib/compute_ip_checksum.c, include/ip_checksum.h: GPLv2
+  Source: kexec-tools, http://www.xmission.com/~ebiederm/files/kexec/
+  Current version we use: kexec-tools 1.101
+

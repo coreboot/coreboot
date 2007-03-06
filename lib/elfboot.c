@@ -87,6 +87,7 @@ static int load_elf_segments(struct lb_memory *mem,unsigned char *header, int he
         ehdr = (Elf_ehdr *)header;
         phdr = (Elf_phdr *)(&header[ehdr->e_phoff]);
 
+	printk(BIOS_DEBUG, "%s: header %p #headers %d\n", header, headers);
 	int i;
 	int size;
 	for(i = 0; i < headers; i++) {
@@ -116,8 +117,8 @@ static int load_elf_segments(struct lb_memory *mem,unsigned char *header, int he
 		  * then copy out the data, which may be a subset of the total area. 
 		  * the cache, after all, is your friend.
 		  */
-		printk(BIOS_INFO, "set %p to 0 for %d bytes\n", (unsigned char *)phdr[i].p_paddr, 0, size);
-		memset((unsigned char *)phdr[i].p_paddr, 0, size);
+		printk(BIOS_INFO, "set %p to 0 for %d bytes\n", (unsigned char *)phdr[i].p_paddr, phdr[i].p_memsz);
+		memset((unsigned char *)phdr[i].p_paddr, 0, phdr[i].p_memsz);
 		/* ok, copy it out */
 		printk(BIOS_INFO, "Copy to %p from %p for %d bytes\n", (unsigned char *)phdr[i].p_paddr, &header[phdr[i].p_offset], size);
 		memcpy((unsigned char *)phdr[i].p_paddr, &header[phdr[i].p_offset], size);

@@ -112,7 +112,11 @@ prepare2:
 	$(Q)cp $(src)/.tmpconfig.h $(obj)/config.h
 	$(Q)echo "#define LINUXBIOS_VERSION \"$(KERNELVERSION)\"" > $(obj)/build.h
 	$(Q)echo "#define LINUXBIOS_EXTRA_VERSION \"$(LINUXBIOS_EXTRA_VERSION)\"" >> $(obj)/build.h
-	$(Q)echo "#define LINUXBIOS_BUILD \"`date`\"" >> $(obj)/build.h
+	$(Q)echo "#define LINUXBIOS_BUILD \"`LANG= date`\"" >> $(obj)/build.h
+	$(Q)echo >> $(obj)/build.h
+	$(Q)echo "#define LINUXBIOS_COMPILER \"$(shell LANG= $(CC) --version | head -n1)\"" >> $(obj)/build.h
+	$(Q)echo "#define LINUXBIOS_ASSEMBLER \"$(shell LANG= $(AS) --version | head -n1)\"" >> $(obj)/build.h
+	$(Q)echo "#define LINUXBIOS_LINKER \"$(shell LANG= $(LD) --version | head -n1)\"" >> $(obj)/build.h
 
 clean:
 	$(Q)echo -n "Cleaning up... "

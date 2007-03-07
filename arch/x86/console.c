@@ -6,14 +6,14 @@
 // FIXME: we need this for varargs
 #include <stdarg.h>
 
-extern int vtxprintf(void (*)(unsigned char), const char *, va_list);
+extern int vtxprintf(void (*)(unsigned char, void *arg), void *arg, const char *, va_list);
 
 int console_loglevel(void)
 {
 	return CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 }
 
-void console_tx_byte(unsigned char byte)
+void console_tx_byte(unsigned char byte, void *ignored)
 {
 	if (byte == '\n')
 		uart8250_tx_byte(TTYSx_BASE, '\r');
@@ -30,7 +30,7 @@ int printk(int msg_level, const char *fmt, ...)
 	}
 
 	va_start(args, fmt);
-	i = vtxprintf(console_tx_byte, fmt, args);
+	i = vtxprintf(console_tx_byte, (void *)0, fmt, args);
 	va_end(args);
 
 	return i;

@@ -505,7 +505,7 @@ void search_global_resources(
 	resource_search_t search, void *gp)
 {
 	struct device *curdev;
-	printk(BIOS_SPEW-2, "%s: mask %x type %x \n", __func__, type_mask, type);
+	printk(BIOS_SPEW, "%s: mask %x type %x \n", __func__, type_mask, type);
 	for(curdev = all_devices; curdev; curdev = curdev->next) {
 		int i;
 		printk(BIOS_SPEW, "%s: dev %s, have_resources %d #resources %d\n", __func__, curdev->dtsname,

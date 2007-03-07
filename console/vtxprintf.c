@@ -44,7 +44,7 @@ static int skip_atoi(const char **s)
 #define SPECIAL	32		/* 0x */
 #define LARGE	64		/* use 'ABCDEF' instead of 'abcdef' */
 
-static int number(void (*tx_byte)(unsigned char byte), 
+static int number(void (*tx_byte)(unsigned char byte, void *arg), void *arg,
 	unsigned long long num, int base, int size, int precision, int type)
 {
 	char c,sign,tmp[66];
@@ -89,31 +89,31 @@ static int number(void (*tx_byte)(unsigned char byte),
 	size -= precision;
 	if (!(type&(ZEROPAD+LEFT)))
 		while(size-->0)
-			tx_byte(' '), count++;
+			tx_byte(' ', arg), count++;
 	if (sign)
-		tx_byte(sign), count++;
+		tx_byte(sign, arg), count++;
 	if (type & SPECIAL) {
 		if (base==8)
-			tx_byte('0'), count++;
+			tx_byte('0', arg), count++;
 		else if (base==16) {
-			tx_byte('0'), count++;
-			tx_byte(digits[33]), count++;
+			tx_byte('0', arg), count++;
+			tx_byte(digits[33], arg), count++;
 		}
 	}
 	if (!(type & LEFT))
 		while (size-- > 0)
-			tx_byte(c), count++;
+			tx_byte(c, arg), count++;
 	while (i < precision--)
-		tx_byte('0'), count++;
+		tx_byte('0', arg), count++;
 	while (i-- > 0)
-		tx_byte(tmp[i]), count++;
+		tx_byte(tmp[i], arg), count++;
 	while (size-- > 0)
-		tx_byte(' '), count++;
+		tx_byte(' ', arg), count++;
 	return count;
 }
 
 
-int vtxprintf(void (*tx_byte)(unsigned char byte), const char *fmt, va_list args)
+int vtxprintf(void (*tx_byte)(unsigned char byte, void *arg), void *arg, const char *fmt, va_list args)
 {
 	int len;
 	unsigned long long num;
@@ -131,7 +131,7 @@ int vtxprintf(void (*tx_byte)(unsigned char byte), const char *fmt, va_list args
 
 	for (count=0; *fmt ; ++fmt) {
 		if (*fmt != '%') {
-			tx_byte(*fmt), count++;
+			tx_byte(*fmt, arg), count++;
 			continue;
 		}
 			
@@ -194,10 +194,10 @@ int vtxprintf(void (*tx_byte)(unsigned char byte), const char *fmt, va_list args
 		case 'c':
 			if (!(flags & LEFT))
 				while (--field_width > 0)
-					tx_byte(' '), count++;
-			tx_byte((unsigned char) va_arg(args, int)), count++;
+					tx_byte(' ', arg), count++;
+			tx_byte((unsigned char) va_arg(args, int), arg), count++;
 			while (--field_width > 0)
-				tx_byte(' '), count++;
+				tx_byte(' ', arg), count++;
 			continue;
 
 		case 's':
@@ -209,11 +209,11 @@ int vtxprintf(void (*tx_byte)(unsigned char byte), const char *fmt, va_list args
 
 			if (!(flags & LEFT))
 				while (len < field_width--)
-					tx_byte(' '), count++;
+					tx_byte(' ', arg), count++;
 			for (i = 0; i < len; ++i)
-				tx_byte(*s++), count++;
+				tx_byte(*s++, arg), count++;
 			while (len < field_width--)
-				tx_byte(' '), count++;
+				tx_byte(' ', arg), count++;
 			continue;
 
 		case 'p':
@@ -221,7 +221,7 @@ int vtxprintf(void (*tx_byte)(unsigned char byte), const char *fmt, va_list args
 				field_width = 2*sizeof(void *);
 				flags |= ZEROPAD;
 			}
-			count += number(tx_byte,
+			count += number(tx_byte, arg, 
 				(unsigned long) va_arg(args, void *), 16,
 				field_width, precision, flags);
 			continue;
@@ -241,7 +241,7 @@ int vtxprintf(void (*tx_byte)(unsigned char byte), const char *fmt, va_list args
 			continue;
 
 		case '%':
-			tx_byte('%'), count++;
+			tx_byte('%', arg), count++;
 			continue;
 
 		/* integer number formats - set up the flags and "break" */
@@ -262,9 +262,9 @@ int vtxprintf(void (*tx_byte)(unsigned char byte), const char *fmt, va_list args
 			break;
 
 		default:
-			tx_byte('%'), count++;
+			tx_byte('%', arg), count++;
 			if (*fmt)
-				tx_byte(*fmt), count++;
+				tx_byte(*fmt, arg), count++;
 			else
 				--fmt;
 			continue;
@@ -282,7 +282,7 @@ int vtxprintf(void (*tx_byte)(unsigned char byte), const char *fmt, va_list args
 		} else {
 			num = va_arg(args, unsigned int);
 		}
-		count += number(tx_byte, num, base, field_width, precision, flags);
+		count += number(tx_byte, arg, num, base, field_width, precision, flags);
 	}
 	return count;
 }

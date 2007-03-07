@@ -26,35 +26,33 @@
 
 #include <stdarg.h>
 #include <string.h>
+#include <console/console.h>
 
-int vtxprintf(void (*tx_byte) (unsigned char byte), const char *fmt,
+int vtxprintf(void (*tx_byte) (unsigned char byte, void *arg), void *arg, const char *fmt,
 	      va_list args);
 
-/* FIXME this global makes vsprintf non-reentrant */
-
-static char *str_buf;
-static void str_tx_byte(unsigned char byte)
+/* the arg is the char ** for the buffer */
+static void str_tx_byte(unsigned char byte, void *arg)
 {
-	*str_buf = byte;
-	str_buf++;
-}
-
-int vsprintf(char *buf, const char *fmt, va_list args)
-{
-	int i;
-	str_buf = buf;
-	i = vtxprintf(str_tx_byte, fmt, args);
-	*str_buf = '\0';
-	return i;
+	unsigned char *cp = *(unsigned char **) arg;
+	
+	*cp = byte;
+	cp++;
+	/* paranoia, make sure it will be null terminated. The cost for this is small, 
+	 * the benefit large.
+	 */
+	*cp = 0;
+	*(unsigned char **) arg = cp;
 }
 
 int sprintf(char *buf, const char *fmt, ...)
 {
 	va_list args;
 	int i;
-
+	unsigned char *cp = (unsigned char *)buf;
+	unsigned char **cpp = &cp;
 	va_start(args, fmt);
-	i = vsprintf(buf, fmt, args);
+	i = vtxprintf(str_tx_byte, cpp, fmt, args);
 	va_end(args);
 	return i;
 }

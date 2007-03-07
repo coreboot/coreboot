@@ -90,8 +90,6 @@ struct device * alloc_dev(struct bus *parent, struct device_path *path)
 {
 	struct device * dev, *child;
 	int link;
-	static char thissucks[64];
-	static int fuck = 0;
 
 //	spin_lock(&dev_lock);	
 
@@ -135,15 +133,7 @@ struct device * alloc_dev(struct bus *parent, struct device_path *path)
         if (dev->dtsname == 0) {
                 die("DEV: out of memory.\n");
         }
-	sprintf(thissucks, "dynamic %s", dev_path(dev));
-	printk(BIOS_INFO, "thissucks is %s dev is %p dev->dtsname is %p\n", thissucks, dev, dev->dtsname);
 	sprintf(dev->dtsname, "dynamic %s", dev_path(dev));
-	printk(BIOS_INFO, "after sprintf dtsname is %s\n", dev->dtsname);
-	memcpy(dev->dtsname, thissucks, strlen(thissucks));
-	printk(BIOS_INFO, "after strcpy dtsname is %s\n", dev->dtsname);
-	/* FUCK. sprintf doesn't work. */
-	dev->dtsname[0] = '0' + fuck++;
-	dev->dtsname[1] = 0;
 
 //	spin_unlock(&dev_lock);
 	return dev;

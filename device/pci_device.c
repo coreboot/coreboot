@@ -129,7 +129,7 @@ unsigned pci_find_next_capability(struct device * dev, unsigned cap, unsigned la
 		int this_cap;
 		pos &= ~3;
 		this_cap = pci_read_config8(dev, pos + PCI_CAP_LIST_ID);
-		printk(BIOS_SPEW-2,"Capability: 0x%02x @ 0x%02x\n", cap, pos);
+		printk(BIOS_SPEW,"Capability: 0x%02x @ 0x%02x\n", cap, pos);
 		if (this_cap == 0xff) {
 			break;
 		}
@@ -797,7 +797,7 @@ static void set_pci_ops(struct device *dev)
 			(driver->device == dev->device)) 
 		{
 			dev->ops = driver->ops;
-			printk(BIOS_SPEW-2,"%s [%04x/%04x] %sops\n", 
+			printk(BIOS_SPEW,"%s [%04x/%04x] %sops\n", 
 				dev_path(dev),
 				driver->vendor, driver->device,
 				(driver->ops->phase3_scan?"bus ":""));
@@ -855,15 +855,15 @@ static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
 {
 	struct device *dev;
 	dev = 0;
-	printk(BIOS_INFO, "%s: list is %p, *list is %p\n", __func__, list, *list);
+	printk(BIOS_SPEW, "%s: list is %p, *list is %p\n", __func__, list, *list);
 	for(; *list; list = &(*list)->sibling) {
-		printk(BIOS_INFO, "%s: check dev %s \n", __func__, (*list)->dtsname);
+		printk(BIOS_SPEW, "%s: check dev %s \n", __func__, (*list)->dtsname);
 		if ((*list)->path.type != DEVICE_PATH_PCI) {
 			printk(BIOS_ERR,"%s: child %s(%s) not a pci device: it's type %d\n", __FUNCTION__, 
 				(*list)->dtsname, dev_path(*list), (*list)->path.type);
 			continue;
 		}
-		printk(BIOS_INFO, "%s: check dev %s it has devfn 0x%x\n", __func__, (*list)->dtsname, (*list)->path.u.pci.devfn);
+		printk(BIOS_SPEW, "%s: check dev %s it has devfn 0x%x\n", __func__, (*list)->dtsname, (*list)->path.u.pci.devfn);
 		if ((*list)->path.u.pci.devfn == devfn) {
 			/* Unlink from the list */
 			dev = *list;
@@ -923,7 +923,7 @@ struct device * pci_probe_dev(struct device * dev, struct bus *bus, unsigned dev
 		if (	(id == 0xffffffff) || (id == 0x00000000) ||
 			(id == 0x0000ffff) || (id == 0xffff0000))
 		{
-			printk(BIOS_SPEW-2,"PCI: devfn 0x%x, bad id 0x%x\n", devfn, id);
+			printk(BIOS_SPEW,"PCI: devfn 0x%x, bad id 0x%x\n", devfn, id);
 			return NULL;
 		}
 		dev = alloc_dev(bus, &dummy.path);
@@ -1046,23 +1046,23 @@ unsigned int pci_scan_bus(struct bus *bus,
 	bus->children = 0;
 
 	post_code(0x24);
-	printk(BIOS_SPEW-2,"PCI: scan devfn 0x%x to 0x%x\n", min_devfn, max_devfn);
+	printk(BIOS_SPEW,"PCI: scan devfn 0x%x to 0x%x\n", min_devfn, max_devfn);
 	/* probe all devices/functions on this bus with some optimization for
 	 * non-existence and single funcion devices
 	 */
 	for (devfn = min_devfn; devfn <= max_devfn; devfn++) {
 		struct device * dev;
-		printk(BIOS_SPEW-2,"PCI: devfn 0x%x\n", devfn);
+		printk(BIOS_SPEW,"PCI: devfn 0x%x\n", devfn);
 
 		/* First thing setup the device structure */
 		dev = pci_scan_get_dev(&old_devices, devfn);
 
-		printk(BIOS_SPEW-2,"PCI: pci_scan_bus pci_scan_get_dev returns dev %s\n", dev ? dev->dtsname :"None (no dev in tree yet)");
+		printk(BIOS_SPEW,"PCI: pci_scan_bus pci_scan_get_dev returns dev %s\n", dev ? dev->dtsname :"None (no dev in tree yet)");
 		/* See if a device is present and setup the device
 		 * structure.
 		 */
 		dev = pci_probe_dev(dev, bus, devfn); 
-		printk(BIOS_SPEW-2,"PCI: pci_scan_bus pci_probe_dev returns dev %p(%s)\n", dev, dev->dtsname);
+		printk(BIOS_SPEW,"PCI: pci_scan_bus pci_probe_dev returns dev %p(%s)\n", dev, dev->dtsname);
 
 		/* if this is not a multi function device, 
 		 * or the device is not present don't waste
@@ -1075,7 +1075,7 @@ unsigned int pci_scan_bus(struct bus *bus,
 			devfn += 0x07;
 		}
 	}
-	printk(BIOS_SPEW-2,"PCI: Done for loop\n");
+	printk(BIOS_SPEW,"PCI: Done for loop\n");
 	post_code(0x25);
 
 	/* Die if any leftover Static devices are are found.  
@@ -1130,7 +1130,7 @@ unsigned int do_pci_scan_bridge(struct device *dev, unsigned int max,
 	u32 buses;
 	u16 cr;
 
-	printk(BIOS_SPEW-2,"%s for %s\n", __func__, dev_path(dev));
+	printk(BIOS_SPEW,"%s for %s\n", __func__, dev_path(dev));
 
 	bus = &dev->link[0];
 	bus->dev = dev;
@@ -1179,7 +1179,7 @@ unsigned int do_pci_scan_bridge(struct device *dev, unsigned int max,
 	pci_write_config16(dev, PCI_COMMAND, cr);
 	
 	printk(BIOS_DEBUG, "%s DONE\n", __func__);
-	printk(BIOS_SPEW-2,"%s returns max %d\n", __func__, max);
+	printk(BIOS_SPEW,"%s returns max %d\n", __func__, max);
 	return max;
 }
 
@@ -1209,10 +1209,10 @@ void pci_level_irq(unsigned char intNum)
 {
 	unsigned short intBits = inb(0x4d0) | (((unsigned) inb(0x4d1)) << 8);
 
-	printk(BIOS_SPEW-2,"%s: current ints are 0x%x\n", __func__, intBits);
+	printk(BIOS_SPEW,"%s: current ints are 0x%x\n", __func__, intBits);
 	intBits |= (1 << intNum);
 
-	printk(BIOS_SPEW-2,"%s: try to set ints 0x%x\n", __func__, intBits);
+	printk(BIOS_SPEW,"%s: try to set ints 0x%x\n", __func__, intBits);
 
 	// Write new values
 	outb((unsigned char) intBits, 0x4d0);

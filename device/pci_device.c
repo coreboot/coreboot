@@ -129,7 +129,7 @@ unsigned pci_find_next_capability(struct device * dev, unsigned cap, unsigned la
 		int this_cap;
 		pos &= ~3;
 		this_cap = pci_read_config8(dev, pos + PCI_CAP_LIST_ID);
-		printk(BIOS_SPEW,"Capability: 0x%02x @ 0x%02x\n", cap, pos);
+		printk(BIOS_SPEW, "Capability: 0x%02x @ 0x%02x\n", cap, pos);
 		if (this_cap == 0xff) {
 			break;
 		}

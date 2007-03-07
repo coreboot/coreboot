@@ -184,7 +184,7 @@ void root_dev_init(struct device * root)
 
 void root_dev_reset(struct bus *bus)
 {
-	printk(BIOS_INFO, "Reseting board...   NOT! Define hard_reset please\n");
+	printk(BIOS_INFO, "Reseting board... NOT! Define hard_reset please\n");
 //	hard_reset();
 }
 

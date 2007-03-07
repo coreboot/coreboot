@@ -68,7 +68,7 @@ static void ram_resource(struct device * dev, unsigned long index,
         resource->size  = ((resource_t)sizek) << 10;
         resource->flags =  IORESOURCE_MEM | IORESOURCE_CACHEABLE | \
                 IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
-	printk(BIOS_INFO, "%s: add ram resoource %d bytes\n", __func__, resource->size);
+	printk(BIOS_INFO, "%s: add RAM ressource %d bytes\n", __func__, resource->size);
 }
 
 static void pci_domain_set_resources(struct device * dev)

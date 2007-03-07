@@ -262,7 +262,7 @@ static unsigned ht_lookup_slave_capability(struct device *dev)
 		if (pos) {
 			unsigned flags;
 			flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
-			printk_spew("flags: 0x%04x\n", flags);
+			printk_spew("Flags: 0x%04x\n", flags);
 			if ((flags >> 13) == 0) {
 				/* Entry is a Slave secondary, success... */
 				break;
@@ -551,7 +551,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 		for(left = old_devices; left; left = left->sibling) {
 			printk_debug("%s\n", dev_path(left));
 		}
-		printk_err("HT: Left over static devices.  Check your Config.lb\n");
+		printk_err("HT: Left over static devices. Check your Config.lb\n");
 		if(last_func  && !last_func->sibling) // put back the left over static device, and let pci_scan_bus disable it
 			last_func->sibling = old_devices; 
 	}

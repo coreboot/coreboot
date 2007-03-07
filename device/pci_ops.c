@@ -31,7 +31,7 @@ static struct bus *get_pbus(struct device * dev)
 		pbus = pbus->dev->bus;
 	}
 	if (!pbus || !pbus->dev || !pbus->dev->ops || !pbus->dev->ops->ops_pci_bus) {
-		printk(BIOS_ALERT,"%s: %s(%s) Cannot find pci bus operations", __func__, dev->dtsname, dev_path(dev));
+		printk(BIOS_ALERT,"%s: %s(%s) Cannot find PCI bus operations", __func__, dev->dtsname, dev_path(dev));
 		die("");
 		for(;;);
 	}

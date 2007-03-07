@@ -55,7 +55,7 @@ void move_gdt(unsigned long newgdt)
 	gdtarg.base = newgdt;
 	gdtarg.limit = num_gdt_bytes - 1;
 	__asm__ __volatile__ ("lgdt %0\n\t" : : "m" (gdtarg));
-	printk(BIOS_DEBUG,"ok\n");
+	printk(BIOS_DEBUG,"OK\n");
 }
 #endif
 struct lb_memory *arch_write_tables(void)
@@ -105,7 +105,7 @@ struct lb_memory *arch_write_tables(void)
                 /* We can not put mptable here, we need to copy them to somewhere else*/
                 if((rom_table_end+mptable_size)<0x100000) {
                         /* We can copy mptable on rom_table, and leave low space for lbtable  */
-                        printk(BIOS_DEBUG,"move mptable to 0x%0x\n", rom_table_end);
+                        printk(BIOS_DEBUG,"Move mptable to 0x%0x\n", rom_table_end);
                         memcpy((unsigned char *)rom_table_end, (unsigned char *)(low_table_end+SMP_FLOATING_TABLE_LEN), mptable_size);
                         memset((unsigned char *)low_table_end, '\0', mptable_size + SMP_FLOATING_TABLE_LEN);
                         smp_write_floating_table_physaddr(low_table_end, rom_table_end);
@@ -114,7 +114,7 @@ struct lb_memory *arch_write_tables(void)
                         rom_table_end = (rom_table_end+1023) & ~1023;
                 } else {
                         /* We can need to put mptable low and from 0x500 */
-                        printk(BIOS_DEBUG,"move mptable to 0x%0x\n", 0x500);
+                        printk(BIOS_DEBUG,"Move mptable to 0x%0x\n", 0x500);
                         memcpy((unsigned char *)0x500, (unsigned char *)(low_table_end+SMP_FLOATING_TABLE_LEN), mptable_size);
                         memset((unsigned char *)low_table_end, '\0', 0x500-low_table_end);
                         smp_write_floating_table_physaddr(low_table_end, 0x500);

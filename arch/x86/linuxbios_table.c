@@ -232,7 +232,7 @@ unsigned long lb_table_fini(struct lb_header *head)
 	head->table_checksum = compute_ip_checksum(first_rec, head->table_bytes);
 	head->header_checksum = 0;
 	head->header_checksum = compute_ip_checksum(head, sizeof(*head));
-	printk(BIOS_DEBUG,"Wrote linuxbios table at: %p - %p  checksum %lx\n",
+	printk(BIOS_DEBUG,"Wrote LinuxBIOS table at: %p - %p  checksum %lx\n",
 		head, rec, head->table_checksum);
 	return (unsigned long)rec;
 }

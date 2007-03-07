@@ -29,6 +29,8 @@ int printk(int msg_level, const char *fmt, ...)
 		return 0;
 	}
 
+	i = vtxprintf(console_tx_byte, (void *)0, "(LB) ", args);
+
 	va_start(args, fmt);
 	i = vtxprintf(console_tx_byte, (void *)0, fmt, args);
 	va_end(args);

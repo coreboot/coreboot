@@ -59,9 +59,9 @@ static int valid_area(struct lb_memory *mem,
 		}
 	}
 	if (i == mem_entries) {
-		printk(BIOS_ERR, "No matching ram area found for range:\n");
+		printk(BIOS_ERR, "No matching RAM area found for range:\n");
 		printk(BIOS_ERR, "  [0x%016lx, 0x%016lx)\n", start, end);
-		printk(BIOS_ERR, "Ram areas\n");
+		printk(BIOS_ERR, "RAM areas\n");
 		for(i = 0; i < mem_entries; i++) {
 			u64 mstart, mend;
 			u32 mtype;
@@ -117,7 +117,7 @@ static int load_elf_segments(struct lb_memory *mem,unsigned char *header, int he
 		  * then copy out the data, which may be a subset of the total area. 
 		  * the cache, after all, is your friend.
 		  */
-		printk(BIOS_INFO, "set %p to 0 for %d bytes\n", (unsigned char *)phdr[i].p_paddr, phdr[i].p_memsz);
+		printk(BIOS_INFO, "Set %p to 0 for %d bytes\n", (unsigned char *)phdr[i].p_paddr, phdr[i].p_memsz);
 		memset((unsigned char *)phdr[i].p_paddr, 0, phdr[i].p_memsz);
 		/* ok, copy it out */
 		printk(BIOS_INFO, "Copy to %p from %p for %d bytes\n", (unsigned char *)phdr[i].p_paddr, &header[phdr[i].p_offset], size);
@@ -145,7 +145,7 @@ int elfload(struct lb_memory *mem, unsigned char *header, unsigned long header_s
 
 	printk(BIOS_SPEW, "Loaded segments\n");
 	
-	printk(BIOS_SPEW, "closed down stream\n");
+	printk(BIOS_SPEW, "Closed down stream\n");
 	/* Reset to booting from this image as late as possible */
 	/* what the hell is boot_successful? */
 	//boot_successful();
@@ -182,7 +182,7 @@ int elfboot_mem(struct lb_memory *mem, void *where, int size)
 	for(i = 0; i < ELF_HEAD_SIZE - (sizeof(Elf_ehdr) + sizeof(Elf_phdr)); i+=16) {
 		ehdr = (Elf_ehdr *)(&header[i]);
 		if (memcmp(ehdr->e_ident, ELFMAG, 4) != 0) {
-			printk(BIOS_SPEW, "NO header at %d\n", i);
+			printk(BIOS_SPEW, "No header at %d\n", i);
 			continue;
 		}
 		printk(BIOS_DEBUG, "Found ELF candidate at offset %d\n", i);
@@ -211,7 +211,7 @@ int elfboot_mem(struct lb_memory *mem, void *where, int size)
  out:
 	if (!result) {
 
-		printk(BIOS_ERR, "Cannot Load ELF Image\n");
+		printk(BIOS_ERR, "Cannot load ELF image\n");
 
 		post_code(0xff);
 	}

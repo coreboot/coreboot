@@ -38,8 +38,8 @@ int find_file(struct mem_file *archive, char *filename, struct mem_file *result)
 {
 	char * walk, *fullname;
 	struct lar_header * header;
-	printk(BIOS_INFO, "filename is %s\n", filename);
-	printk(BIOS_SPEW, "start 0x%x len 0x%x\n", archive->start, archive->len);
+	printk(BIOS_INFO, "LAR: Filename is %s\n", filename);
+	printk(BIOS_SPEW, "LAR: Start 0x%x len 0x%x\n", archive->start, archive->len);
 	for (walk = archive->start; walk < (char *)archive->start + 
 			archive->len - 1; walk+=16) {
 		if(strcmp(walk, MAGIC)!=0)
@@ -47,7 +47,7 @@ int find_file(struct mem_file *archive, char *filename, struct mem_file *result)
 
 		header=(struct lar_header *)walk;
 		fullname=walk+sizeof(struct lar_header);
-printk(BIOS_INFO, "fullname is %s\n", fullname);
+printk(BIOS_INFO, "LAR: Fullname is %s\n", fullname);
 		// FIXME: check checksum
 		
 		if(strcmp(fullname, filename)==0) {
@@ -62,7 +62,7 @@ printk(BIOS_INFO, "fullname is %s\n", fullname);
  */
 		walk += 16;
 	}
-printk(BIOS_INFO, "return 1! walk %p archive->start %p start _+ len %p\n", walk, archive->start, (char *)archive->start + 
+printk(BIOS_INFO, "LAR: Return 1! walk %p archive->start %p start _+ len %p\n", walk, archive->start, (char *)archive->start + 
                         archive->len);
 	return 1;
 }
@@ -74,7 +74,7 @@ int copy_file(struct mem_file *archive, char *filename, void *where)
 
 	ret = find_file(archive, filename, &result);
 	if (ret) {
-		printk(BIOS_INFO, "copy_file: no such name %s\n", filename);
+		printk(BIOS_INFO, "LAR: copy_file: no such name %s\n", filename);
 		return 1;
 	}
 
@@ -89,7 +89,7 @@ int run_file(struct mem_file *archive, char *filename, void *where)
 	int (*v)(void);
 
 	if (copy_file(archive, filename, where)){
-		printk(BIOS_INFO, "run file %s failed: ENOENT\n", filename);
+		printk(BIOS_INFO, "LAR: Run file %s failed: ENOENT\n", filename);
 		return 1;
 	}
 

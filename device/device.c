@@ -851,7 +851,7 @@ void show_all_devs(void) {
 
         struct device *dev;
 
-        printk(BIOS_INFO, "show all devs..\n");
+        printk(BIOS_INFO, "Show all devs.\n");
         for(dev = all_devices; dev; dev = dev->next) {
 		printk(BIOS_SPEW, "%s(%s): enabled %d have_resources %d initialized %d\n", 
 			dev->dtsname, dev_path(dev), dev->enabled, dev->have_resources, dev->initialized);

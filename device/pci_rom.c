@@ -37,7 +37,7 @@ struct rom_header * pci_rom_probe(struct device *dev)
 		return NULL;
 	}
 
-	printk_debug("rom address for %s = %x\n", dev_path(dev), rom_address);
+	printk_debug("ROM address for %s = %x\n", dev_path(dev), rom_address);
 	
 	if(!dev->on_mainboard) {
 		/* enable expansion ROM address decoding */
@@ -64,7 +64,7 @@ struct rom_header * pci_rom_probe(struct device *dev)
 		return NULL;
 	}
 
-	printk_spew("PCI ROM Image,  Class Code %04x%02x, Code Type %02x\n",
+	printk_spew("PCI ROM Image, Class Code %04x%02x, Code Type %02x\n",
 		    rom_data->class_hi, rom_data->class_lo,
 		    rom_data->type);
 	if (dev->class != ((rom_data->class_hi << 8) | rom_data->class_lo)) {
@@ -109,14 +109,14 @@ struct rom_header *pci_rom_load(struct device *dev, struct rom_header *rom_heade
 	#if CONFIG_CONSOLE_VGA_MULTI == 0
 		if (dev != vga_pri) return NULL; // only one VGA supported
 	#endif
-		printk_debug("copying VGA ROM Image from 0x%x to 0x%x, 0x%x bytes\n",
+		printk_debug("Copying VGA ROM image from 0x%x to 0x%x, 0x%x bytes\n",
 			    rom_header, PCI_VGA_RAM_IMAGE_START, rom_size);
 		memcpy(PCI_VGA_RAM_IMAGE_START, rom_header, rom_size);
 		vga_inited = 1;
 		return (struct rom_header *) (PCI_VGA_RAM_IMAGE_START);
 #endif
 	} else {
-		printk_debug("copying non-VGA ROM Image from 0x%x to 0x%x, 0x%x bytes\n",
+		printk_debug("Copying non-VGA ROM image from 0x%x to 0x%x, 0x%x bytes\n",
 			    rom_header, pci_ram_image_start, rom_size);
 		memcpy(pci_ram_image_start, rom_header, rom_size);
 		pci_ram_image_start += rom_size;

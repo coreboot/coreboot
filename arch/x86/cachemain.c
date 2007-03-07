@@ -123,9 +123,9 @@ printk(BIOS_INFO, "Start search at 0x%x, size %d\n", archive.start, archive.len)
 	ret = run_file(&archive, "normal/initram", (void *)(512*1024)); //CONFIG_CARBASE;
 
 	if (ret)
-		die("Failed ram init code\n");
+		die("Failed RAM init code\n");
 
-	printk(BIOS_INFO, "Done ram init code\n");
+	printk(BIOS_INFO, "Done RAM init code\n");
 	/* this is nasty. And, it has to be done this way. Sorry! */
 	/* we have to turn off CAR, and do some other things, and it has to be done
 	 * inline -- you can't call a function
@@ -225,7 +225,7 @@ printk(BIOS_INFO, "Start search at 0x%x, size %d\n", archive.start, archive.len)
 
 	ret = find_file(&archive, "normal/payload", &result);
 	if (ret) {
-		printk(BIOS_INFO, "no such name %s\n", "payload");
+		printk(BIOS_INFO, "No such name %s\n", "payload");
 		die("cachemain finding payload");
 	}
 

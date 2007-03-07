@@ -28,9 +28,9 @@ void post_code(u8 value);
 
 int main(void)
 {
-	printk(BIOS_INFO, "RAM init code started\n");
+	printk(BIOS_INFO, "RAM init code started.\n");
 
-	printk(BIOS_INFO, "Nothing to do.");
+	printk(BIOS_INFO, "Nothing to do.\n");
 
 	return 0;
 }

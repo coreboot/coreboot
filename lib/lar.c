@@ -39,9 +39,9 @@ int find_file(struct mem_file *archive, char *filename, struct mem_file *result)
 	char * walk, *fullname;
 	struct lar_header * header;
 	printk(BIOS_INFO, "filename is %s\n", filename);
-printk(BIOS_INFO, "start 0x%x len 0x%x\n", archive->start, archive->len);
+	printk(BIOS_SPEW, "start 0x%x len 0x%x\n", archive->start, archive->len);
 	for (walk = archive->start; walk < (char *)archive->start + 
-			archive->len; walk+=16) {
+			archive->len - 1; walk+=16) {
 		if(strcmp(walk, MAGIC)!=0)
 			continue;
 
@@ -58,8 +58,7 @@ printk(BIOS_INFO, "fullname is %s\n", fullname);
 
 		// skip file
 /*		FIXME: This is doing the wrong thing. its skipping too much.
-		walk += ( ntohl(header->offset) + ntohl(header->len)
-				+ 15 ) & 0xfffffff0;
+		walk += ( ntohl(header->offset) + ntohl(header->len) + 15 ) & 0xfffffff0;
  */
 		walk += 16;
 	}

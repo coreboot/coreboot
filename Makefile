@@ -37,9 +37,8 @@ MAKEFLAGS += --no-print-directory
 
 CC         := gcc
 CFLAGS     := -Os -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
-	      -Werror-implicit-function-declaration \
-	      -fno-strict-aliasing -fno-common \
-	      -ffreestanding -fno-builtin
+	      -Werror-implicit-function-declaration -Wstrict-aliasing \
+	      -fno-common -ffreestanding -fno-builtin
 
 HOSTCC     := gcc
 HOSTCXX    := g++
@@ -66,7 +65,7 @@ else
 
 include $(src)/.config
 
-ifneq ($(CONFIG_LOCALVERSION),)
+ifneq ($(CONFIG_LOCALVERSION),"")
 LINUXBIOS_EXTRA_VERSION := -$(shell echo $(CONFIG_LOCALVERSION))
 endif
 

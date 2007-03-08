@@ -128,6 +128,14 @@ config CONSOLE_SERIAL_9600
 
 endchoice
 
+config CONSOLE_SERIAL_TAG
+	bool "Tag serial console output"
+	depends CONSOLE_SERIAL
+	default n
+	help
+	  When you enable this option, LinuxBIOS will prefix each line of 
+	  serial output with (LB).
+
 config CONSOLE_VGA
 	boolean "VGA console support"
 	depends CONSOLE

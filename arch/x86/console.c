@@ -16,8 +16,19 @@ int console_loglevel(void)
 
 void console_tx_byte(unsigned char byte, void *ignored)
 {
-	if (byte == '\n')
+	if (byte == '\n') {
 		uart8250_tx_byte(TTYSx_BASE, '\r');
+#if defined(CONFIG_CONSOLE_SERIAL_TAG) && (CONFIG_CONSOLE_SERIAL_TAG == 1)
+		uart8250_tx_byte(TTYSx_BASE, '\n');
+		uart8250_tx_byte(TTYSx_BASE, '(');
+		uart8250_tx_byte(TTYSx_BASE, 'L');
+		uart8250_tx_byte(TTYSx_BASE, 'B');
+		uart8250_tx_byte(TTYSx_BASE, ')');
+		uart8250_tx_byte(TTYSx_BASE, ' ');
+		return;
+#endif
+	}
+
 	uart8250_tx_byte(TTYSx_BASE, byte);
 }
 
@@ -30,8 +41,6 @@ int printk(int msg_level, const char *fmt, ...)
 		return 0;
 	}
 
-	i = vtxprintf(console_tx_byte, (void *)0, "(LB) ", args);
-
 	va_start(args, fmt);
 	i = vtxprintf(console_tx_byte, (void *)0, fmt, args);
 	va_end(args);
@@ -41,7 +50,6 @@ int printk(int msg_level, const char *fmt, ...)
 
 void console_init(void)
 {
-	va_list args;
 	static const char console_test[] =
 		"\n\nLinuxBIOS-"
 		LINUXBIOS_VERSION
@@ -50,10 +58,8 @@ void console_init(void)
 		LINUXBIOS_BUILD
 		" starting...\n";
 
-	/* We don't use printk() directly here in order to avoid printing
-	   the "(LB) " in the first line of LinuxBIOS output. */
-	if (BIOS_INFO < console_loglevel())
-		vtxprintf(console_tx_byte, (void *)0, console_test, args);
+	printk(BIOS_INFO, console_test);
+
 }
 
 void die(const char *str)

@@ -150,6 +150,8 @@ config CONSOLE_USB
 	    * 8086:265c Intel ICH6
 	    * 8086:268c Intel 631xESB/632xESB/3100
 	    * 8086:27cc Intel ICH7
+	    * 8086:2836 Intel ICH8
+	    * 8086:283a Intel ICH8 
 
 	  See http://linuxbios.org/EHCI_Debug_Port for an up-to-date list.
 

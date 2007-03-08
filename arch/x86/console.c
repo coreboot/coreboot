@@ -1,15 +1,16 @@
 #include <arch/types.h>
 #include <arch/hlt.h>
+#include <console/console.h>
 #include <console/loglevel.h>
 #include <uart8250.h>
 
 // FIXME: we need this for varargs
 #include <stdarg.h>
 
-extern int vtxprintf(void (*)(unsigned char, void *arg), void *arg,
-		     const char *, va_list);
+int vtxprintf(void (*)(unsigned char, void *arg), 
+		void *arg, const char *, va_list);
 
-int console_loglevel(void)
+static int console_loglevel(void)
 {
 	return CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 }

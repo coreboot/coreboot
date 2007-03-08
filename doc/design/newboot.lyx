@@ -2,7 +2,7 @@
 \lyxformat 245
 \begin_document
 \begin_header
-\textclass latex8
+\textclass article
 \language english
 \inputencoding default
 \fontscheme default
@@ -112,6 +112,21 @@ Goal
 
 \begin_layout Subsection
 Design Goals 
+\end_layout
+
+\begin_layout Itemize
+All components are seperate modules.
+\end_layout
+
+\begin_layout Itemize
+The strict seperation of normal/fallback does not exist anymore.
+ Any module can be available several times.
+\end_layout
+
+\begin_layout Itemize
+Commonly used code is shared.
+ There is _one_ implementation of printk, and one implementation for each
+ compressor.
 \end_layout
 
 \begin_layout Itemize
@@ -1613,23 +1628,22 @@ This is great stuff.
 \end_layout
 
 \begin_layout Section
-Appendix A: issues
+Appendix A: Issues
 \end_layout
 
 \begin_layout Itemize
-One issue I thought I should mention before all the tools start >> making
- incorrect assumptions: on most non-x86 architectures, the >> bootblock
- is at the start of the flash, not at the end.
- The general >> structure of the flash layout can stay the same on such
- systems, >> just flipped upside down.
+On most non-x86 architectures, the bootblock is at the start of the flash,
+ not at the end.
+ The general structure of the flash layout can stay the same on such systems,
+ just flipped upside down.
  
 \end_layout
 
 \begin_layout Itemize
-move over to the xorg emulator, drop the one we have now as it is not complete
- enough.
- (Ron is not so sure about this, since we have done bug-fixes to the xorg
- emulator)
+Move over to the Xorg version of x86emu/biosemu, drop the one we have now
+ as it is not complete enough.
+ (Ron is not so sure about this, since we have done our own bug-fixes to
+ x86emu)
 \end_layout
 
 \begin_layout Section
@@ -1637,7 +1651,7 @@ Comments from Peter Stuge
 \end_layout
 
 \begin_layout Itemize
-* Ridiculous and error-prone to require commands in three dirs for a build.
+Ridiculous and error-prone to require commands in three dirs for a build.
  (Edit targets/foo/bar/Config.lb, run ./buildtarget foo/bar in targets and
  finally cd targets/foo/bar/baz to make.) (Deps fail on reconfig, I've gotten
  the wrong payload a couple of times causing annoying extra reboots/hotswaps/fla
@@ -1645,7 +1659,7 @@ shes.)
 \end_layout
 
 \begin_layout Itemize
-* Flash ROM size needs to affect one option, and one option only.
+Flash ROM size needs to affect one option, and one option only.
  Maybe even autodetect it for those building on the target.
  All other sizes can and MUST be derived from this value.
  Also: What about option ROMs? Should we aim to produce a ready-to-use lb-2.0-epi
@@ -1656,13 +1670,13 @@ a.rom and require a correct (how carefully do we check?) vgabios.rom in order
 \end_layout
 
 \begin_layout Itemize
-* Any redundancy in the config/build process should be removed.
+Any redundancy in the config/build process should be removed.
  I must not need to type the target name more than once.
  Brings me to..
 \end_layout
 
 \begin_layout Itemize
-* Global vs.
+Global vs.
  local builds - pros/cons with kernel style (global) build (always produces
  arch/x/*Image) and LBv2 style build (produces target/x/y/z/linuxbios.rom
  for each target) Either way the config/build system must be consistently
@@ -1670,7 +1684,7 @@ a.rom and require a correct (how carefully do we check?) vgabios.rom in order
 \end_layout
 
 \begin_layout Itemize
-* Support for target variants? Same mobo with/without certain parts populated.
+Support for target variants? Same mobo with/without certain parts populated.
  Perhaps just sets of default options that can be pre-selected as a base
  config and then still allow user to change whatever they want.
  (Kconfig has just one variant per arch, right?)
@@ -1696,7 +1710,7 @@ One idea is a kind of iterative config with increasing resolution per iteration.
 \end_layout
 
 \begin_layout Itemize
-* Payload.
+Payload.
  I say something must be included in the LB tree or trivially added to a
  tree by download or command.
  FILO is candidate for inclusion.
@@ -1709,7 +1723,7 @@ One idea is a kind of iterative config with increasing resolution per iteration.
 \end_layout
 
 \begin_layout Itemize
-* Payload config.
+Payload config.
  Long/tedious for EB, simple default for boards with onboard LAN, what to
  do otherwise? Tricky for FILO.
  (e.g.
@@ -1718,16 +1732,16 @@ One idea is a kind of iterative config with increasing resolution per iteration.
 \end_layout
 
 \begin_layout Itemize
-* Kernel payload and payload utilities - where to get mkelfImage? I had
- to look hard.
+Kernel payload and payload utilities - where to get mkelfImage? I had to
+ look hard.
  Should it be downloaded on demand? Perhaps after the user chooses her payload?
  Think cygwin installer that downloads selected packages.
  Maybe a bad idea.
 \end_layout
 
 \begin_layout Itemize
-* Consistent terminology - the payload seems to have many names in the decompres
-sion code.
+Consistent terminology - the payload seems to have many names in the decompressi
+on code.
  ;) 
 \end_layout
 

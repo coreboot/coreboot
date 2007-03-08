@@ -10,12 +10,13 @@
 int vtxprintf(void (*)(unsigned char, void *arg), 
 		void *arg, const char *, va_list);
 
+
 static int console_loglevel(void)
 {
 	return CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 }
 
-void console_tx_byte(unsigned char byte, void *ignored)
+void console_tx_byte(unsigned char byte)
 {
 	if (byte == '\n') {
 		uart8250_tx_byte(TTYSx_BASE, '\r');

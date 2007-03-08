@@ -42,8 +42,6 @@ struct console_driver {
 extern struct console_driver console_drivers[];
 extern struct console_driver econsole_drivers[];
 
-extern int console_loglevel;
-
 // 
 int printk(int msg_level, const char *fmt, ...);
 

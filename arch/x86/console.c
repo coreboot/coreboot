@@ -6,7 +6,8 @@
 // FIXME: we need this for varargs
 #include <stdarg.h>
 
-extern int vtxprintf(void (*)(unsigned char, void *arg), void *arg, const char *, va_list);
+extern int vtxprintf(void (*)(unsigned char, void *arg), void *arg,
+		     const char *, va_list);
 
 int console_loglevel(void)
 {
@@ -40,7 +41,8 @@ int printk(int msg_level, const char *fmt, ...)
 
 void console_init(void)
 {
-	static const char console_test[] = 
+	va_list args;
+	static const char console_test[] =
 		"\n\nLinuxBIOS-"
 		LINUXBIOS_VERSION
 		LINUXBIOS_EXTRA_VERSION
@@ -48,13 +50,16 @@ void console_init(void)
 		LINUXBIOS_BUILD
 		" starting...\n";
 
-	printk(BIOS_INFO, console_test);
+	/* We don't use printk() directly here in order to avoid printing
+	   the "(LB) " in the first line of LinuxBIOS output. */
+	if (BIOS_INFO < console_loglevel())
+		vtxprintf(console_tx_byte, (void *)0, console_test, args);
 }
 
 void die(const char *str)
 {
-	printk(BIOS_EMERG,str);
+	printk(BIOS_EMERG, str);
 	do {
 		hlt();
-	} while(1);
+	} while (1);
 }

@@ -44,6 +44,10 @@ Third-party Code and License Overview
   cvs -d:pserver:anoncvs@sources.redhat.com:/cvs/glibc co libc/elf/elf.h
   Current version we use: CVS rev. 1.156
 
+* include/device/pci_ids.h: GPLv2
+  Source: git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux-2.6
+  Current version we use: e81e557a8f1e22fab1b1bdc649ac0d24017ddce2
+
 * lib/lzmadecode.[ch]: Dual-licensed, LGPL + Common Public License (CPL).
   There's a special exception, please see lib/lzmadecode.[ch].
   Source: LZMA SDK, http://sourceforge.net/projects/sevenzip/

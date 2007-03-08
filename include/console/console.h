@@ -21,7 +21,7 @@
 #include <console/loglevel.h>
 
 void console_init(void);
-void console_tx_byte(unsigned char byte);
+void console_tx_byte(unsigned char byte, void *arg);
 void console_tx_flush(void);
 unsigned char console_rx_byte(void);
 int console_tst_byte(void);
@@ -30,7 +30,7 @@ void die(const char *msg);
 
 struct console_driver {
 	void (*init)(void);
-	void (*tx_byte)(unsigned char byte);
+	void (*tx_byte)(unsigned char byte, void *arg);
 	void (*tx_flush)(void);
 	unsigned char (*rx_byte)(void);
 	int (*tst_byte)(void);

@@ -1,4 +1,10 @@
-/* log 2 in c, from mozilla, from jscpucfg.c */
+/*
+ * This file is part of the LinuxBIOS project.
+ *
+ * It is based on the file js/src/jscpucfg.c from Mozilla, CVS rev. 3.25.
+ * See http://lxr.mozilla.org/mozilla1.8.0/source/js/src/jscpucfg.c.
+ */
+
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
  *
  * ***** BEGIN LICENSE BLOCK *****

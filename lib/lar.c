@@ -67,7 +67,7 @@ int copy_file(struct mem_file *archive, char *filename, void *where)
 
 	ret = find_file(archive, filename, &result);
 	if (ret) {
-		printk(BIOS_INFO, "LAR: copy_file: no such name %s\n", filename);
+		printk(BIOS_INFO, "LAR: copy_file: No such file '%s'\n", filename);
 		return 1;
 	}
 

@@ -106,8 +106,8 @@ void stage1_main(u32 bist)
 	// FIXME this should be defined in the VPD area
 	// but NOT IN THE CODE.
 	
-	archive.len=CONFIG_LINUXBIOS_ROMSIZE_KB*1024;
-	archive.start=(void *)(0UL-archive.len); 
+	archive.len=(CONFIG_LINUXBIOS_ROMSIZE_KB-16)*1024;
+	archive.start=(void *)(0UL-(CONFIG_LINUXBIOS_ROMSIZE_KB*1024)); 
 
 	// FIXME check integrity
 
@@ -213,14 +213,14 @@ void stage1_main(u32 bist)
 
 	ret = run_file(&archive, "normal/stage2", (void *)0x1000);
 	if (ret)
-		die("FATAL: Failed in stage2 code");
+		die("FATAL: Failed in stage2 code.");
 
-	printk(BIOS_DEBUG, "Done stage2 code\n");
+	printk(BIOS_DEBUG, "Stage2 code done.\n");
 
 	ret = find_file(&archive, "normal/payload", &result);
 	if (ret) {
-		printk(BIOS_WARNING, "No such name %s\n", "normal/payload");
-		die("FATAL: No payload found.");
+		printk(BIOS_WARNING, "No such file '%s'.\n", "normal/payload");
+		die("FATAL: No payload found.\n");
 	}
 
 	ret =  elfboot_mem(mem, result.start, result.len);

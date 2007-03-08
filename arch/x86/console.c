@@ -20,7 +20,7 @@ void console_tx_byte(unsigned char byte)
 {
 	if (byte == '\n') {
 		uart8250_tx_byte(TTYSx_BASE, '\r');
-#if defined(CONFIG_CONSOLE_SERIAL_TAG) && (CONFIG_CONSOLE_SERIAL_TAG == 1)
+#if defined(CONFIG_CONSOLE_PREFIX) && (CONFIG_CONSOLE_PREFIX == 1)
 		uart8250_tx_byte(TTYSx_BASE, '\n');
 		uart8250_tx_byte(TTYSx_BASE, '(');
 		uart8250_tx_byte(TTYSx_BASE, 'L');

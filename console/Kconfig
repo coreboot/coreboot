@@ -128,14 +128,6 @@ config CONSOLE_SERIAL_9600
 
 endchoice
 
-config CONSOLE_SERIAL_TAG
-	bool "Tag serial console output"
-	depends CONSOLE_SERIAL
-	default n
-	help
-	  When you enable this option, LinuxBIOS will prefix each line of 
-	  serial output with (LB).
-
 config CONSOLE_VGA
 	boolean "VGA console support"
 	depends CONSOLE
@@ -160,6 +152,17 @@ config CONSOLE_USB
 	    * 8086:27cc Intel ICH7
 
 	  See http://linuxbios.org/EHCI_Debug_Port for an up-to-date list.
+
+comment "Cosmetic console options"
+	depends EXPERT && (CONSOLE_SERIAL || CONSOLE_VGA || CONSOLE_USB)
+
+config CONSOLE_PREFIX
+	bool "Prefix all console output with '(LB)'"
+	depends EXPERT && (CONSOLE_SERIAL || CONSOLE_VGA || CONSOLE_USB)
+	default n
+	help
+	  When you enable this option, LinuxBIOS will prefix each line of 
+	  console output with '(LB)'.
 
 endmenu
 

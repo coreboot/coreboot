@@ -21,6 +21,7 @@
 #include <arch/types.h>
 #include <string.h>
 #include <lar.h>
+#include <console/console.h>
 #include <console/loglevel.h>
 
 #ifndef CONFIG_BIG_ENDIAN
@@ -30,15 +31,11 @@
 #define ntohl(x) (x)
 #endif
 
-// FIXME: this should go into a header
-int printk(int msg_level, const char *fmt, ...);
-
-
 int find_file(struct mem_file *archive, char *filename, struct mem_file *result)
 {
 	char * walk, *fullname;
 	struct lar_header * header;
-	printk(BIOS_INFO, "LAR: Filename is %s\n", filename);
+	printk(BIOS_INFO, "LAR: Attempting to open '%s'.\n", filename);
 	printk(BIOS_SPEW, "LAR: Start 0x%x len 0x%x\n", archive->start, archive->len);
 	for (walk = archive->start; walk < (char *)archive->start + 
 			archive->len - 1; walk+=16) {
@@ -47,7 +44,8 @@ int find_file(struct mem_file *archive, char *filename, struct mem_file *result)
 
 		header=(struct lar_header *)walk;
 		fullname=walk+sizeof(struct lar_header);
-printk(BIOS_INFO, "LAR: Fullname is %s\n", fullname);
+
+		printk(BIOS_SPEW, "LAR: current filename is %s\n", fullname);
 		// FIXME: check checksum
 		
 		if(strcmp(fullname, filename)==0) {
@@ -57,13 +55,8 @@ printk(BIOS_INFO, "LAR: Fullname is %s\n", fullname);
 		}
 
 		// skip file
-/*		FIXME: This is doing the wrong thing. its skipping too much.
-		walk += ( ntohl(header->offset) + ntohl(header->len) + 15 ) & 0xfffffff0;
- */
-		walk += 16;
+		walk += ( ntohl(header->len) + ntohl(header->offset) -1 ) & 0xfffffff0;
 	}
-printk(BIOS_INFO, "LAR: Return 1! walk %p archive->start %p start _+ len %p\n", walk, archive->start, (char *)archive->start + 
-                        archive->len);
 	return 1;
 }
 

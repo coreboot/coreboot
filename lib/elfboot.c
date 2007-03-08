@@ -145,7 +145,6 @@ int elfload(struct lb_memory *mem, unsigned char *header, unsigned long header_s
 
 	printk(BIOS_SPEW, "Loaded segments\n");
 	
-	printk(BIOS_SPEW, "Closed down stream\n");
 	/* Reset to booting from this image as late as possible */
 	/* what the hell is boot_successful? */
 	//boot_successful();
@@ -173,8 +172,7 @@ int elfboot_mem(struct lb_memory *mem, void *where, int size)
 	int i, result;
 
 	result = 0;
-	printk(BIOS_INFO, "\n");
-	printk(BIOS_INFO, "Elfboot\n");
+	printk(BIOS_INFO, "ELF loader started.\n");
 	post_code(0xf8);
 
 	/* Scan for an elf header */

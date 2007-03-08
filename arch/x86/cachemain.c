@@ -108,12 +108,6 @@ void stage1_main(u32 bist)
 	
 	archive.len=CONFIG_LINUXBIOS_ROMSIZE_KB*1024;
 	archive.start=(void *)(0UL-archive.len); 
-	/* This won't work; the for loop in lib/lar.c will always 
-	 * fail as adding len to start will be 0. 
-	 * shave off 0x1000 since we know that is the boot block 
-	 */
-	archive.len-=0x1000;
-printk(BIOS_INFO, "Start search at 0x%x, size %d\n", archive.start, archive.len);
 
 	// FIXME check integrity
 
@@ -221,19 +215,19 @@ printk(BIOS_INFO, "Start search at 0x%x, size %d\n", archive.start, archive.len)
 	if (ret)
 		die("FATAL: Failed in stage2 code");
 
-	printk(BIOS_INFO, "Done stage2 code\n");
+	printk(BIOS_DEBUG, "Done stage2 code\n");
 
 	ret = find_file(&archive, "normal/payload", &result);
 	if (ret) {
-		printk(BIOS_INFO, "No such name %s\n", "payload");
-		die("cachemain finding payload");
+		printk(BIOS_WARNING, "No such name %s\n", "normal/payload");
+		die("FATAL: No payload found.");
 	}
 
 	ret =  elfboot_mem(mem, result.start, result.len);
 
-	printk(BIOS_INFO, "elfboot_mem returns %d\n", ret);
+	printk(BIOS_DEBUG, "elfboot_mem returns %d\n", ret);
 
-	die ("FATAL: This is as far as it goes\n");
+	die ("FATAL: Last stage returned to LinuxBIOS.\n");
 }
 
 

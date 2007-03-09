@@ -475,48 +475,47 @@ var_mtrr_msr:
 
 
 
-## 
+##
 ## This file is part of the LinuxBIOS project.
-## 
+##
 ## Copyright (C) 2007 coresystems GmbH
 ## Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH.
-## 
+##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 2 of the License, or
 ## (at your option) any later version.
-## 
+##
 ## This program is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
-## 
+##
 ## You should have received a copy of the GNU General Public License
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
-## 
+##
 
-# reset vector
+# Reset vector.
 
 # RVECTOR: size of reset vector, default is 0x10
 # RESRVED: size of vpd code, default is 0xf0
-#
 # BOOTBLK: size of bootblock code, default is 0x1f00 (8k-256b)
-#
 
 SEGMENT_SIZE = 0x10000
 RVECTOR      = 0x00010
 #.=0x1ff0
 #.=0xfffffff0
 #.=_stage0 + 0x1ff0
-# due to YET ANOTHER BUG in GNU  bintools, you  can NOT have a code16 here. 
-# I think we should leave it this way forever, as the bugs come and go -- and come again
+# Due to YET ANOTHER BUG in GNU bintools, you can NOT have a code16 here.
+# I think we should leave it this way forever, as the bugs come and
+# go -- and come again.
 #	.code16
 #	.section ".rom.text"
 .section ".reset", "ax"
 	.globl _resetjump
 _resetjump:
-	/* gnu bintools win again. this jumps to stage0 - 2. Sigh. */
+	/* GNU bintools win again. This jumps to stage0 - 2. Sigh. */
 #	jmp _stage0
 	.byte  0xe9
 	.int   _stage0 - ( . + 2 )
@@ -525,11 +524,11 @@ _resetjump:
 	 * is little endian and allows us to use supported 32bit relocations
 	 * instead of the weird 16 bit relocations that binutils does not
 	 * handle consistenly between versions because they are used so rarely.
-	 */	
+	 */
 .byte	0
 
-# date? idstring? we might want to put something else in here.
+# Date? ID string? We might want to put something else in here.
 .ascii DATE
 
-# checksum
-#.word  0
+# Checksum.
+#.word	0

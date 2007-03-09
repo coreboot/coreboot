@@ -3,8 +3,8 @@
 #
 
 dochelp:
-	@echo  '  LinuxBIOS internal documentation in different formats:'
-	@echo  '  pdfdocs (PDF)'
+	@printf  '  LinuxBIOS internal documentation in different formats:'
+	@printf  '  pdfdocs (PDF)'
 
 pdfdocs:
-	@echo  '  Not implemented yet. Please use lyx for now.'
+	@printf  '  Not implemented yet. Please use lyx for now.'

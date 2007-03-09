@@ -59,7 +59,7 @@ export KERNELVERSION
 ifeq ($(strip $(have_dotconfig)),)
 
 all:
-	$(Q)echo "Please run make menuconfig, xconfig or config first."
+	$(Q)printf "Please run make menuconfig, xconfig or config first.\n"
 
 else
 
@@ -70,7 +70,7 @@ LINUXBIOS_EXTRA_VERSION := -$(shell echo $(CONFIG_LOCALVERSION))
 endif
 
 all: prepare prepare2 $(obj)/linuxbios.rom
-	$(Q)echo "Build process finished."
+	$(Q)printf "Build process finished.\n"
 
 ARCH:=$(shell echo $(CONFIG_ARCH))
 MAINBOARDDIR=$(shell echo $(CONFIG_MAINBOARD_NAME))
@@ -109,27 +109,27 @@ prepare:
 
 prepare2:
 	$(Q)cp $(src)/.tmpconfig.h $(obj)/config.h
-	$(Q)echo "#define LINUXBIOS_VERSION \"$(KERNELVERSION)\"" > $(obj)/build.h
-	$(Q)echo "#define LINUXBIOS_EXTRA_VERSION \"$(LINUXBIOS_EXTRA_VERSION)\"" >> $(obj)/build.h
-	$(Q)echo "#define LINUXBIOS_BUILD \"`LANG= date`\"" >> $(obj)/build.h
-	$(Q)echo >> $(obj)/build.h
-	$(Q)echo "#define LINUXBIOS_COMPILER \"$(shell LANG= $(CC) --version | head -n1)\"" >> $(obj)/build.h
-	$(Q)echo "#define LINUXBIOS_ASSEMBLER \"$(shell LANG= $(AS) --version | head -n1)\"" >> $(obj)/build.h
-	$(Q)echo "#define LINUXBIOS_LINKER \"$(shell LANG= $(LD) --version | head -n1)\"" >> $(obj)/build.h
+	$(Q)printf "#define LINUXBIOS_VERSION \"$(KERNELVERSION)\"\n" > $(obj)/build.h
+	$(Q)printf "#define LINUXBIOS_EXTRA_VERSION \"$(LINUXBIOS_EXTRA_VERSION)\"\n" >> $(obj)/build.h
+	$(Q)printf "#define LINUXBIOS_BUILD \"`LANG= date`\"\n" >> $(obj)/build.h
+	$(Q)printf "\n" >> $(obj)/build.h
+	$(Q)printf "#define LINUXBIOS_COMPILER \"$(shell LANG= $(CC) --version | head -n1)\"\n" >> $(obj)/build.h
+	$(Q)printf "#define LINUXBIOS_ASSEMBLER \"$(shell LANG= $(AS) --version | head -n1)\"\n" >> $(obj)/build.h
+	$(Q)printf "#define LINUXBIOS_LINKER \"$(shell LANG= $(LD) --version | head -n1)\"\n" >> $(obj)/build.h
 
 clean:
-	$(Q)echo -n "Cleaning up... "
+	$(Q)printf "Cleaning up... "
 	$(Q)rm -rf $(obj)
 	$(Q)rm -rf $(DOXYGEN_OUTPUT_DIR)
-	$(Q)echo "done"
+	$(Q)printf "done\n"
 
 distclean: clean
-	$(Q)echo -n "Deleting config files... "
+	$(Q)printf "Deleting config files... "
 	$(Q)rm -f .kconfig.d .config .tmpconfig.h .config.old .xcompile
-	$(Q)echo "done"
+	$(Q)printf "done\n"
 
 %.o: %.c
-	$(Q)echo "Compiling $<"
+	$(Q)printf "Compiling $<\n"
 	$(Q)$(CC) $(CFLAGS) -o $@ -c $<
 
 .PHONY: doc

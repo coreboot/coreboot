@@ -33,7 +33,7 @@ endif
 #
 
 lzma:
-	$(Q)echo "Building lzma... skipped"
+	$(Q)printf "Building lzma... skipped\n"
 
 $(obj)/%.o: $(src)/lib/%.c
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@

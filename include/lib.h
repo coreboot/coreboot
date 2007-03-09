@@ -5,8 +5,8 @@
  * Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH.
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,10 +21,10 @@
 #ifndef LIB_H
 #define LIB_H
 
-unsigned long log2(unsigned long x);
+int log2(unsigned int n);
 
-void udelay(unsigned usecs);
-void mdelay(unsigned msecs);
-void delay(unsigned secs);
+void udelay(unsigned int usecs);
+void mdelay(unsigned int msecs);
+void delay(unsigned int secs);
 
 #endif

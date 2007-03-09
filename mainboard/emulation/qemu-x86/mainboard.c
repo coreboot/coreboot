@@ -16,14 +16,9 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <device/pci.h>
-#include <device/pci_ids.h>
-#include <device/pci_ops.h>
-#include <arch/types.h>
-// #include "dtc.h"
 
-char *mainboard_vendor = "emulation";
-char *mainboard_part_number = "qemu-x86";
+const char *mainboard_vendor = "emulation";
+const char *mainboard_part_number = "qemu-x86";
 
 static void enable_dev(struct device *dev)
 {

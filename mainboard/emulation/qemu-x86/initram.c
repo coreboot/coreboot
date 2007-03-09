@@ -4,8 +4,8 @@
  * Copyright (C) 2007 Stefan Reinauer <stepan@coresystems.de>
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,19 +17,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include <arch/types.h>
-#include <arch/io.h>
-#include <console/loglevel.h>
 #include <console/console.h>
-
-int printk(int msg_level, const char *fmt, ...);
-void die(const char *msg);
-void post_code(u8 value);
 
 int main(void)
 {
 	printk(BIOS_INFO, "RAM init code started.\n");
-
 	printk(BIOS_INFO, "Nothing to do.\n");
 
 	return 0;

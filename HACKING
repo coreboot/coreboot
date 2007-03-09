@@ -61,3 +61,7 @@ Third-party Code and License Overview
   Source: http://lxr.mozilla.org/mozilla1.8.0/source/js/src/jscpucfg.c
   Current version we use: CVS rev. 3.25
 
+* include/cpu/generic/x86/div64.h: GPLv2
+  Source: git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux-2.6
+  Current version we use: e2afe67453e5b1499459ee3596b1e7924a5208f5
+

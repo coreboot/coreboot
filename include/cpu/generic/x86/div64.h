@@ -1,3 +1,9 @@
+/*
+ * This file is part of the LinuxBIOS project.
+ *
+ * It was taken from the Linux kernel, include/asm-i386/div64.h.
+ */
+
 #ifndef __I386_DIV64
 #define __I386_DIV64
 
@@ -35,7 +41,7 @@
  */
 #define div_long_long_rem(a,b,c) div_ll_X_l_rem(a,b,c)
 
-extern inline long
+static inline long
 div_ll_X_l_rem(long long divs, long div, long *rem)
 {
 	long dum2;

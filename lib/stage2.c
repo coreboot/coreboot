@@ -20,11 +20,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
-/* stage2 - LinuxBIOS ram based setup */
-
-/*
- * C Bootstrap code for the LinuxBIOS
- */
+/* stage2 - LinuxBIOS RAM-based setup. */
 
 #include <arch/types.h>
 #include <string.h>
@@ -35,67 +31,69 @@
 #include <tables.h>
 
 /**
- * @brief Main function of the DRAM part of LinuxBIOS.
+ * Main function of the DRAM part of LinuxBIOS.
  *
- * LinuxBIOS is divided into Pre-DRAM part and DRAM part. 
- * The phases before this part are phase 0 and phase 1.
- * This part contains phases x through y. 
- * 
- * Device Enumeration:
- *	In the dev_enumerate() phase, 
+ * LinuxBIOS is divided into pre-DRAM part and DRAM part. The phases before
+ * this part are phase 0 and phase 1. This part contains phases x through y.
+ *
+ * Device Enumeration: in the dev_enumerate() phase.
+ *
+ * TODO: Check whether this documentation is still correct. Improve it.
  */
 int stage2(void)
 {
+	/* TODO: Add comment. */
 	void show_all_devs(void);
 	post_code(0x20);
 	dev_init();
 
-	/* console init, also ANYTHING that has to be done 
-	 * before printk can be used 
+	/* Console init, also ANYTHING that has to be done 
+	 * before printk can be used. 
 	 */
 	post_code(0x30);
-	dev_phase1(); 
-show_all_devs();
-	
-//	printk_notice("LinuxBIOS-%s%s %s booting...\n", 
-//		linuxbios_version, linuxbios_extra_version, linuxbios_build);
+	dev_phase1();
+	show_all_devs();
 
 //      printk_notice("LinuxBIOS-%s%s %s booting...\n", 
 //              linuxbios_version, linuxbios_extra_version, linuxbios_build);
 
-	/* here is where weird stuff like init_timer handling should be
-	 * done.  This is for ANYTHING that might have to happen before
-	 * device enumeration but that needs a printk
+//      printk_notice("LinuxBIOS-%s%s %s booting...\n", 
+//              linuxbios_version, linuxbios_extra_version, linuxbios_build);
+
+	/* Here is where weird stuff like init_timer handling should be
+	 * done. This is for ANYTHING that might have to happen before
+	 * device enumeration but that needs a printk.
 	 */
 	post_code(0x40);
 	dev_phase2();
-show_all_devs();
+	show_all_devs();
 
-	/* walk physical devices and add any dynamic devices to the
-	 * device tree 
+	/* Walk physical devices and add any dynamic devices to the
+	 * device tree.
 	 */
 	post_code(0x30);
 	dev_root_phase3();
-show_all_devs();
+	show_all_devs();
 
 	/* Compute and assign the bus resources. */
 	post_code(0x40);
 	dev_phase4();
-show_all_devs();
+	show_all_devs();
 
-	/* Now actually enable devices on the bus */
+	/* Now actually enable devices on the bus. */
 	post_code(0x50);
 	dev_root_phase5();
-show_all_devs();
+	show_all_devs();
 
-	/*initialize devices on the bus */
+	/* Initialize devices on the bus. */
 	post_code(0x60);
-	dev_phase6(); 
-show_all_devs();
-	
+	dev_phase6();
+	show_all_devs();
+
+	/* TODO: Add comment. */
 	post_code(0x70);
 	write_tables();
-show_all_devs();
+	show_all_devs();
 
 	return 0;
 }

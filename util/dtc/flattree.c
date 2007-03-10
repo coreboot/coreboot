@@ -528,8 +528,7 @@ static void linuxbios_emit_special(FILE *e, struct node *tree)
 		}
 
 		if (streq(prop->name, "config")){
-			fprintf(f, "\t.chip_ops = &%s_ops,\n", clean(prop->val.val, 0));
-			fprintf(f, "\t.chip_info = &%s,\n", clean(tree->label, 1));
+			fprintf(f, "\t.device_configuration = &%s,\n", clean(tree->label, 1));
 		}
 
 		if (streq(prop->name, "ops")){

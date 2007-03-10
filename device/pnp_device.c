@@ -144,7 +144,7 @@ struct device_operations pnp_ops = {
 	.enable           = pnp_enable,
 };
 
-/* PNP chip opertations */
+/* PNP chip operations */
 
 static void pnp_get_ioresource(device_t dev, unsigned index, struct io_info *info)
 {

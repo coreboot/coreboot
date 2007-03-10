@@ -58,7 +58,10 @@ $(obj)/statictree.o: $(obj)/statictree.c
 $(obj)/statictree.c: mainboard/$(MAINBOARDDIR)/dts $(obj)/util/dtc/dtc
 	$(Q)$(obj)/util/dtc/dtc -O lb mainboard/$(MAINBOARDDIR)/dts >$(obj)/statictree.c 
 
+STAGE2_MAINBOARD_OBJ = $(obj)/mainboard.o
 STAGE2_CHIPSET_OBJ = 
+
 # chipset
 include $(src)/northbridge/intel/i440bxemulation/Makefile
+include $(src)/southbridge/intel/i82371eb/Makefile
 

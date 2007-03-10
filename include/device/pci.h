@@ -71,6 +71,8 @@ extern struct pci_driver epci_drivers[];
 
 extern struct device_operations default_pci_ops_dev;
 extern struct device_operations default_pci_ops_bus;
+extern struct pci_operations pci_dev_ops_pci;
+extern struct pci_operations pci_bus_ops_pci;
 
 void pci_dev_read_resources(struct device * dev);
 void pci_bus_read_resources(struct device * dev);

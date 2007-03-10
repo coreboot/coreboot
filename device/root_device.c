@@ -107,8 +107,8 @@ unsigned int scan_static_bus(struct device * busdevice, unsigned int max)
 			busdevice->link[link].secondary = ++smbus_max;
 		}
 		for(child = busdevice->link[link].children; child; child = child->sibling) {
-			if (child->chip_ops && child->chip_ops->enable_dev) {
-				child->chip_ops->enable_dev(child);
+			if (child->ops && child->ops->phase3_enable_scan) {
+				child->ops->phase3_enable_scan(child);
 			}
 			/* sigh. Have to enable to scan ... */
 			if (child->ops && child->ops->phase5_enable_resources) {
@@ -192,8 +192,9 @@ void root_dev_reset(struct bus *bus)
  * @brief Default device operation for root device
  *
  * This is the default device operation for root devices. These operations
- * should be fully usable as is.  However the chip_operations::enable_dev()
- * of a motherboard can override this if you want non-default behavior.
+ * should be fully usable as is.  If you need something else, set up your own ops
+ * in (e.g.) the mainboard, and initialize it in the dts in the mainboard directory. 
+ *
  */
 struct device_operations default_dev_ops_root = {
 	.phase4_read_resources   = root_dev_read_resources,

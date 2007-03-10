@@ -671,7 +671,7 @@ void pci_dev_init(struct device *dev)
 }
 
 /** Default device operation for PCI devices */
-static struct pci_operations pci_dev_ops_pci = {
+struct pci_operations pci_dev_ops_pci = {
 	.set_subsystem = pci_dev_set_subsystem,
 };
 
@@ -686,7 +686,7 @@ struct device_operations default_pci_ops_dev = {
 };
 
 /** Default device operations for PCI bridges */
-static struct pci_operations pci_bus_ops_pci = {
+struct pci_operations pci_bus_ops_pci = {
 	.set_subsystem = 0,
 };
 
@@ -779,32 +779,29 @@ static struct device_operations *get_pci_bridge_ops(struct device * dev)
  */
 static void set_pci_ops(struct device *dev)
 {
-#if 0
-	struct pci_driver *driver;
-#endif
+	struct constructor *c;
+	struct device_id id = {.type = DEVICE_ID_PCI};
+
 	if (dev->ops) {
-		printk(BIOS_INFO, "%s: dev %p(%s) already has ops %p\n", __func__, dev, dev->dtsname, dev->ops);
+		printk(BIOS_SPEW, "%s: dev %p(%s) already has ops %p\n", __func__, dev, dev->dtsname, dev->ops);
 		return;
 	}
 
-#warning "need to fix this leftover PCI bogosity from V2"
-#if 0
+	/* we need to make the id in the device a device_id type ... */
+	id.u.pci.vendor = dev->vendor;
+	id.u.pci.device = dev->device;
 	/* Look through the list of setup drivers and find one for
 	 * this pci device 
 	 */
-	for(driver = &pci_drivers[0]; driver != &epci_drivers[0]; driver++) {
-		if ((driver->vendor == dev->vendor) &&
-			(driver->device == dev->device)) 
-		{
-			dev->ops = driver->ops;
-			printk(BIOS_SPEW,"%s [%04x/%04x] %sops\n", 
-				dev_path(dev),
-				driver->vendor, driver->device,
-				(driver->ops->phase3_scan?"bus ":""));
-			return;
-		}
+	c = find_constructor(&id);
+	if (c) {
+		dev->ops = c->ops;
+		printk(BIOS_SPEW,"%s id %s [%04x/%04x] %sops\n", 
+			dev_path(dev), dev_id_string(&id), dev->vendor, dev->device, 
+				(dev->ops->phase3_scan?"bus ":""));
+		return;
 	}
-#endif
+
 	/* If I don't have a specific driver use the default operations */
 	switch(dev->hdr_type & 0x7f) {	/* header type */
 	case PCI_HEADER_TYPE_NORMAL:	/* standard header */
@@ -913,6 +910,7 @@ struct device * pci_probe_dev(struct device * dev, struct bus *bus, unsigned dev
 	/* Detect if a device is present */
 	if (!dev) {
 		struct device dummy;
+		struct device_id devid;
 		dummy.bus              = bus;
 		dummy.path.type        = DEVICE_PATH_PCI;
 		dummy.path.u.pci.devfn = devfn;
@@ -926,7 +924,10 @@ struct device * pci_probe_dev(struct device * dev, struct bus *bus, unsigned dev
 			printk(BIOS_SPEW,"PCI: devfn 0x%x, bad id 0x%x\n", devfn, id);
 			return NULL;
 		}
-		dev = alloc_dev(bus, &dummy.path);
+		devid.type = DEVICE_PATH_PCI;
+		devid.u.pci.vendor = id & 0xffff;
+		devid.u.pci.device = id >> 16;
+		dev = alloc_dev(bus, &dummy.path, &devid);
 	}
 	else {
 		/* Enable/disable the device.  Once we have
@@ -942,8 +943,8 @@ struct device * pci_probe_dev(struct device * dev, struct bus *bus, unsigned dev
 		 * 
 		 */
 		/* Run the magice enable sequence for the device */
-		if (dev->chip_ops && dev->chip_ops->enable_dev) {
-			dev->chip_ops->enable_dev(dev);
+		if (dev->ops && dev->ops->phase3_enable_scan) {
+			dev->ops->phase3_enable_scan(dev);
 		}
 		/* Now read the vendor and device id */
 		id = pci_read_config32(dev, PCI_VENDOR_ID);

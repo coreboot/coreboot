@@ -73,9 +73,95 @@ dev_init(void)
 }
 
 /**
+ * @brief The default constructor, which simply allocates and sets the ops pointer
+ * 
+ * Allocte a new device structure and initalize device->ops. 
+ *
+ * @param A pointer to a struct constructor
+ *
+ * @return pointer to the newly created device structure.
+ *
+ * @see
+ */
+
+struct device *default_device_constructor(struct constructor *constructor){
+	struct device *dev;
+	dev = malloc(sizeof(*dev));
+	if (dev == 0) {
+		die("DEV: out of memory.\n");
+	}
+	memset(dev, 0, sizeof(dev));
+	dev->ops = constructor->ops;
+	return dev;
+}
+
+/**
+ * @brief Given a path, find a constructor
+ * 
+ * Given a path, locate the constructor for it from all_constructors
+ *
+ * @param path path to the device to be created.
+ *
+ * @return pointer to the constructor or 0, if none found
+ *
+ * @see device_path
+ */
+struct constructor *find_constructor(struct device_id *id){
+	extern struct constructor *all_constructors[];
+	struct constructor *c;
+	int i;
+	printk(BIOS_SPEW, "%s: find %s\n", __func__, dev_id_string(id));
+	for(i = 0; all_constructors[i]; i++) {
+		printk(BIOS_SPEW, "%s: check all_constructors[i] 0x%lx\n", __func__, all_constructors[i]);
+		for(c = all_constructors[i]; c->ops; c++) {
+			printk(BIOS_SPEW, "%s: cons 0x%lx, cons id %s\n", __func__, c, dev_id_string(&c->id));
+			if ((! c->ops) || (!c->ops->constructor)) {
+				printk(BIOS_ERR, "Constructor for %s with missing ops or ops->constructor!\n", 
+					dev_id_string(&c->id));
+				continue;
+			}
+			if (id_eq(&c->id, id)){
+				printk(BIOS_SPEW, "%s: match\n", __func__);
+				return c;
+			}
+		}
+	}
+
+	return 0;
+}
+
+/**
+ * @brief Given a path, find a constructor, and run it
+ * 
+ * Given a path, call find_constructor to find it call that 
+ * constructor via constructor->ops->constructor, with itself as a parameter; 
+ * return the result. 
+ *
+ * @param path path to the device to be created.
+ *
+ * @return pointer to the newly created device structure.
+ *
+ * @see device_path
+ */
+struct device *constructor(struct device_id *id){
+	struct constructor *c;
+	struct device *dev  = 0;
+
+	c = find_constructor(id);
+	printk(BIOS_INFO, "%s constructor is 0x%lx\n", __func__, c);
+	if (! c)
+		return 0;
+
+	dev = c->ops->constructor(c);
+	printk(BIOS_INFO, "%s returns 0x%lx\n", __func__, dev);
+	return dev;
+}
+
+
+/**
  * @brief Allocate a new device structure.
  * 
- * Allocte a new device structure and attached it to the device tree as a
+ * Allocate a new device structure and attached it to the device tree as a
  * child of the parent bus.
  *
  * @param parent parent bus the newly created device attached to.
@@ -86,7 +172,7 @@ dev_init(void)
  * @see device_path
  */
 //static spinlock_t dev_lock = SPIN_LOCK_UNLOCKED;
-struct device * alloc_dev(struct bus *parent, struct device_path *path)
+struct device * alloc_dev(struct bus *parent, struct device_path *path, struct device_id *devid)
 {
 	struct device * dev, *child;
 	int link;
@@ -98,11 +184,15 @@ struct device * alloc_dev(struct bus *parent, struct device_path *path)
 		child = child->sibling;
 	}
 
-	dev = malloc(sizeof(*dev));
-	if (dev == 0) {
-		die("DEV: out of memory.\n");
-	}
-	memset(dev, 0, sizeof(*dev));
+	dev = constructor(devid);
+	if (! dev)
+		printk(BIOS_INFO, "%s: No constructor, going with empty dev", dev_id_string(devid));
+       dev = malloc(sizeof(*dev));
+       if (dev == 0) {
+               die("DEV: alloc_dev: out of memory.\n");
+       }
+       memset(dev, 0, sizeof(*dev));
+
 	memcpy(&dev->path, path, sizeof(*path));
 
 	/* Initialize the back pointers in the link fields */
@@ -559,6 +649,7 @@ void dev_phase5(struct device *dev)
 		printk(BIOS_ERR, "%s: %s(%s) ops are missing phase5_enable_resources\n", __FUNCTION__, dev->dtsname, dev_path(dev));
 		return;
 	}
+
 	dev->ops->phase5_enable_resources(dev);
 }
 
@@ -597,13 +688,12 @@ void dev_phase1(void)
 
 	post_code(0x31);
 	for(dev = all_devices; dev; dev = dev->next) {
-		if (dev->ops && dev->ops->phase1) 
+		if (dev->ops && dev->ops->phase1_set_device_operations) 
 		{
-			dev->ops->phase1(dev);
+			dev->ops->phase1_set_device_operations(dev);
 		}
 	}
 	post_code(0x3e);
-	/* printk should be working at this point ... */
 	printk(BIOS_INFO, "Phase 1: done\n");
 	post_code(0x3f);
 }
@@ -623,18 +713,18 @@ void dev_phase2(void)
 	printk(BIOS_INFO, "Phase 2: Early setup...\n");
 	for(dev = all_devices; dev; dev = dev->next) {
 		printk(BIOS_SPEW, "%s: dev %s: ", __FUNCTION__, dev->dtsname);
-		if (dev->ops && dev->ops->phase1) {
-			printk(BIOS_SPEW, "Calling phase2 ..");
-			dev->ops->phase2(dev);
+		if (dev->ops && dev->ops->phase2_setup_scan_bus) {
+			printk(BIOS_SPEW, "Calling phase2 phase2_setup_scan_bus ..");
+			dev->ops->phase2_setup_scan_bus(dev);
 			printk(BIOS_SPEW, " DONE");
 		}
 		printk(BIOS_SPEW, "\n");
 	}
+
 	post_code(0x4e);
 	printk(BIOS_INFO, "Phase 2: Done.\n");
 	post_code(0x4f);
 }
-
 
 /** 
  * @brief Scan for devices on a bus.
@@ -665,6 +755,10 @@ unsigned int dev_phase3_scan(struct device * busdevice, unsigned int max)
 		printk(BIOS_INFO, "%s: can not scan from here, returning %d\n", __FUNCTION__, max);
 		return max;
 	}
+
+	if (busdevice->ops->phase3_enable_scan)
+		busdevice->ops->phase3_enable_scan(busdevice);
+
 	do_phase3 = 1;
 	while(do_phase3) {
 		int link;
@@ -715,8 +809,9 @@ void dev_root_phase3(void)
 	unsigned subordinate;
 	printk(BIOS_INFO, "Phase 3: Enumerating buses...\n");
 	root = &dev_root;
-	if (root->chip_ops && root->chip_ops->enable_dev) {
-		root->chip_ops->enable_dev(root);
+
+	if (root->ops && root->ops->phase3_enable_scan) {
+		root->ops->phase3_enable_scan(root);
 	}
 	post_code(0x41);
 	if (!root->ops) {

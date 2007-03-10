@@ -14,18 +14,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include <console/console.h>
-#include <device/device.h>
+const char *mainboard_vendor = "Emulation";
+const char *mainboard_part_number = "QEMU x86";
 
-const char *mainboard_vendor = "emulation";
-const char *mainboard_part_number = "qemu-x86";
-
-static void enable_dev(struct device *dev)
-{
-	printk(BIOS_INFO, "qemu-x86 enable_dev done\n");
-}
-
-struct chip_operations mainboard_emulation_qemu_x86_ops = {
-	.name = "QEMU Mainboard",
-	.enable_dev = enable_dev
-};

@@ -114,7 +114,6 @@ STAGE2_LIB_OBJ       = $(obj)/stage2.o $(obj)/clog2.o $(obj)/mem.o $(obj)/malloc
 		       $(obj)/tables.o $(obj)/delay.o $(obj)/compute_ip_checksum.o
 STAGE2_ARCH_X86_OBJ  = $(obj)/archtables.o $(obj)/linuxbios_table.o $(obj)/udelay_io.o
 STAGE2_ARCH_X86_OBJ += $(obj)/pci_ops_auto.o $(obj)/pci_ops_conf1.o $(obj)/pci_ops_conf2.o 
-STAGE2_MAINBOARD_OBJ = $(obj)/mainboard.o
 STAGE2_DYNAMIC_OBJ   = $(obj)/statictree.o
 
 STAGE2_OBJ := $(STAGE2_LIB_OBJ) $(STAGE2_DEVICE_OBJ) $(STAGE2_ARCH_X86_OBJ)

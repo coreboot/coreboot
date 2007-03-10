@@ -50,12 +50,12 @@ struct device * find_dev_path(struct bus *parent, struct device_path *path)
  * @param path The relative path from the bus to the appropriate device
  * @return pointer to a device structure for the device on bus at path
  */
-struct device * alloc_find_dev(struct bus *parent, struct device_path *path)
+struct device * alloc_find_dev(struct bus *parent, struct device_path *path, struct device_id *id)
 {
 	struct device * child;
 	child = find_dev_path(parent, path);
 	if (!child) {
-		child = alloc_dev(parent, path);
+		child = alloc_dev(parent, path, id);
 	}
 	return child;
 }
@@ -145,6 +145,7 @@ struct device *dev_find_class(unsigned int class, struct device *from)
 }
 
 
+/* WARNING: NOT SMP-safe!*/
 const char *dev_path(struct device * dev)
 {
 	static char buffer[DEVICE_PATH_MAX];
@@ -203,6 +204,54 @@ const char *dev_path(struct device * dev)
 	return buffer;
 }
 
+/* WARNING: NOT SMP-safe!*/
+const char *dev_id_string(struct device_id *id)
+{
+	static char buffer[DEVICE_ID_MAX];
+	buffer[0] = '\0';
+	if (!id) {
+		memcpy(buffer, "<null>", 7);
+	}
+	else {
+		switch(id->type) {
+		case DEVICE_ID_ROOT:
+			memcpy(buffer, "Root Device", 12);
+			break;
+		case DEVICE_ID_PCI:
+			sprintf(buffer, "PCI: %02x:%02x",id->u.pci.vendor, id->u.pci.device);
+			break;
+		case DEVICE_ID_PNP:
+			sprintf(buffer, "PNP: %04x", id->u.pnp.device);
+			break;
+		case DEVICE_ID_I2C:
+			sprintf(buffer, "I2C: %04x", id->u.i2c.id);
+			break;
+		case DEVICE_ID_APIC:
+			sprintf(buffer, "APIC: %02x:%02x",id->u.apic.vendor, id->u.apic.device);
+			break;
+		case DEVICE_ID_PCI_DOMAIN:
+			sprintf(buffer, "PCI_DOMAIN: %02x:%02x",id->u.pci_domain.vendor, id->u.pci_domain.device);
+			break;
+		case DEVICE_ID_APIC_CLUSTER:
+			sprintf(buffer, "APIC_CLUSTER: %02x:%02x",id->u.apic_cluster.vendor, id->u.apic_cluster.device);
+			break;
+		case DEVICE_ID_CPU:
+			sprintf(buffer, "CPU", id->u.cpu.cpuid[0],  id->u.cpu.cpuid[1],  id->u.cpu.cpuid[2]);
+			break;
+		case DEVICE_ID_CPU_BUS:
+			sprintf(buffer, "CPU_BUS: %02x:%02x",id->u.cpu_bus.vendor, id->u.cpu_bus.device);
+			break;
+		default:
+			printk(BIOS_ERR, "%s: Unknown device id type: %d\n", __func__, id->type);
+			memcpy(buffer, "Unknown", 8);
+			break;
+		}
+	}
+	return buffer;
+}
+
+
+
 const char *bus_path(struct bus *bus)
 {
 	static char buffer[BUS_PATH_MAX];
@@ -253,6 +302,49 @@ int path_eq(struct device_path *path1, struct device_path *path2)
 	}
 	return equal;
 }
+
+int id_eq(struct device_id *path1, struct device_id *path2)
+{
+	int equal = 0;
+	if (path1->type == path2->type) {
+		switch(path1->type) {
+		case DEVICE_ID_NONE:
+			break;
+		case DEVICE_ID_ROOT:
+			equal = 1;
+			break;
+		case DEVICE_ID_PCI:
+			equal = (path1->u.pci.vendor == path2->u.pci.vendor) &&  (path1->u.pci.device == path2->u.pci.device);
+			break;
+		case DEVICE_ID_PNP:
+			equal = (path1->u.pnp.device == path2->u.pnp.device);
+			break;
+		case DEVICE_ID_I2C:
+			equal = (path1->u.i2c.id == path2->u.i2c.id);
+			break;
+		case DEVICE_ID_APIC:
+			equal = (path1->u.apic.vendor == path2->u.apic.vendor) &&  (path1->u.apic.device == path2->u.apic.device);
+			break;
+		case DEVICE_ID_PCI_DOMAIN:
+			equal = (path1->u.pci_domain.vendor == path2->u.pci_domain.vendor) &&  (path1->u.pci_domain.device == path2->u.pci_domain.device);
+			break;
+		case DEVICE_ID_APIC_CLUSTER:
+			equal = (path1->u.apic_cluster.vendor == path2->u.apic_cluster.vendor) &&  (path1->u.apic_cluster.device == path2->u.apic_cluster.device);
+			break;
+		case DEVICE_ID_CPU:
+			equal = (path1->u.cpu.cpuid == path2->u.cpu.cpuid);
+			break;
+		case DEVICE_ID_CPU_BUS:
+			equal = (path1->u.cpu_bus.vendor == path2->u.cpu_bus.vendor) &&  (path1->u.cpu_bus.device == path2->u.cpu_bus.device);
+			break;
+		default:
+			printk(BIOS_ERR, "Uknown device type: %d\n", path1->type);
+			break;
+		}
+	}
+	return equal;
+}
+
 
 /**
  * See if we have unused but allocated resource structures.
@@ -537,9 +629,6 @@ void dev_set_enabled(struct device * dev, int enable)
 	dev->enabled = enable;
 	if (dev->ops && dev->ops->phase5_enable_resources) {
 		dev->ops->phase5_enable_resources(dev);
-	}
-	else if (dev->chip_ops && dev->chip_ops->enable_dev) {
-		dev->chip_ops->enable_dev(dev);
 	}
 }
 

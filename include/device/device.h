@@ -1,5 +1,6 @@
 /*
  * This file is part of the LinuxBIOS project.
+ * Copyright (C) 2007 Ronald G. Minnich <rminnich@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by 
@@ -23,37 +24,114 @@
 #include <device/resource.h>
 #include <device/path.h>
 
+#define DEVICE_ID_MAX 64
+enum device_id_type {
+	DEVICE_ID_NONE = 0,
+	DEVICE_ID_ROOT,
+	DEVICE_ID_PCI,
+	DEVICE_ID_PNP,
+	DEVICE_ID_I2C,
+	DEVICE_ID_APIC,
+	DEVICE_ID_PCI_DOMAIN,
+	DEVICE_ID_APIC_CLUSTER,
+	DEVICE_ID_CPU,
+	DEVICE_ID_CPU_BUS,
+};
 
 struct device;
 struct pci_operations;
 struct pci_bus_operations;
 struct smbus_bus_operations;
-
-/* Chip operations */
-struct chip_operations {
-	void (*enable_dev)(struct device *dev);
-	char *name;
-};
-
 struct bus;
 
-/* we are moving from the confusing naming scheme to a numbering scheme. We are hoping
-  * this makes it easier for people to know the order of operations. 
-  * So far, it is not clear. We may actually want to have names like dev_phase5_enable_resources. 
-  * The numbering is nice, the naming is nice, what to do?
-  */
+
+
+struct pci_domain_id
+{
+	u16 vendor, device;
+};
+
+struct pci_id
+{
+	u16 vendor, device;
+};
+
+struct pnp_id
+{
+	u32 device;
+};
+
+struct i2c_id
+{
+	u32 id;
+};
+
+struct apic_id
+{
+	u16 vendor, device;
+};
+
+struct apic_cluster_id
+{
+	u16 vendor, device;
+};
+
+struct cpu_id
+{
+	u32 cpuid[3];
+};
+
+struct cpu_bus_id
+{
+	u16 vendor, device;
+};
+
+struct device_id {
+	enum device_id_type type;
+	union {
+		struct pci_id			pci;
+		struct pnp_id			pnp;
+		struct i2c_id			i2c;
+		struct apic_id			apic;
+		struct pci_domain_id	pci_domain;
+		struct apic_cluster_id	apic_cluster;
+		struct cpu_id			cpu;
+		struct cpu_bus_id		cpu_bus;
+	} u;
+};
+
+
+struct constructor {
+	struct device_id id;
+	struct device_operations *ops;
+};
+
 struct device_operations {
 	/* for now, we leave these, since they seem generic */
 	void (*set_link)(struct device * dev, unsigned int link);
 	void (*reset_bus)(struct bus *bus);
 
-	/* phase1 is called ONLY if you CAN NEVER use printk. Only very early console needs this now */
-	void (*phase1)(struct device * dev);
+	/* a constructor. The constructor for a given device is defined in the device source file. 
+	 * When is this called? Not for the static tree. When the scan bus code finds a new device, it must
+	 * create it and insert it into the device tree. To do this, it calls a device constructor. 
+	 * The set of all device constructors is concatenated into the constructors array of structures via the usual 
+	 * gcc hack of naming a segment.  
+	 * The dev_constructor code in device.c iterates over the constructors array. 
+	 * A match consists of a path type, a vendor (which may be ignored if the constructo vendor value is 0), 
+	 * and a device id. 
+	 * When it finds a match, the dev_constructor calls the 
+	 * function constructors->constructor(constructors->constructor) and a new device is created. 
+	 */
+	struct device *(*constructor)(struct constructor *);
+
+	/* set device ops */
+	void (*phase1_set_device_operations)(struct device *dev);
 
 	/* phase 2 is for any magic you have to do before the busses are scanned */
-	void (*phase2)(struct device * dev);
+	void (*phase2_setup_scan_bus)(struct device * dev);
 
 	/* phase 3 is for scanning the bus, if needed. */
+	void (*phase3_enable_scan)(struct device *dev);
 	unsigned int (*phase3_scan)(struct device * bus, unsigned int max);
 
 	/* typically used by phase4 */
@@ -127,8 +205,7 @@ struct device {
 	unsigned int links;
 
 	struct device_operations *ops;
-	struct chip_operations *chip_ops;
-	void *chip_info;
+	void *device_configuration;
 };
 
 extern struct device	dev_root;	/* root bus */
@@ -136,7 +213,8 @@ extern struct device	*all_devices;	/* list of all devices */
 
 
 /* Generic device interface functions */
-struct device * alloc_dev(struct bus *parent, struct device_path *path);
+struct constructor *find_constructor(struct device_id *id);
+struct device * alloc_dev(struct bus *parent, struct device_path *path, struct device_id *id);
 void dev_enumerate(void);
 void dev_configure(void);
 void dev_enable(void);
@@ -153,17 +231,19 @@ void enable_resources(struct device *dev);
 void enumerate_static_device(void);
 void enumerate_static_devices(void);
 const char *dev_path(struct device * dev);
+const char *dev_id_string(struct device_id *id);
 const char *bus_path(struct bus *bus);
 void dev_set_enabled(struct device * dev, int enable);
 void disable_children(struct bus *bus);
 
 /* Helper functions */
 struct device * find_dev_path(struct bus *parent, struct device_path *path);
-struct device * alloc_find_dev(struct bus *parent, struct device_path *path);
+struct device * alloc_find_dev(struct bus *parent, struct device_path *path, struct device_id *id);
 struct device * dev_find_device (unsigned int vendor, unsigned int device, struct device * from);
 struct device * dev_find_class (unsigned int class, struct device * from);
 struct device * dev_find_slot (unsigned int bus, unsigned int devfn);
 struct device * dev_find_slot_on_smbus (unsigned int bus, unsigned int addr);
+struct device *default_device_constructor(struct constructor *constructor);
 
 
 /* Rounding for boundaries. 
@@ -174,6 +254,7 @@ struct device * dev_find_slot_on_smbus (unsigned int bus, unsigned int addr);
 
 extern struct device_operations default_dev_ops_root;
 
+extern int id_eq(struct device_id *id1, struct device_id *id2);
 void root_dev_read_resources(struct device * dev);
 void root_dev_set_resources(struct device * dev);
 unsigned int scan_static_bus(struct device * bus, unsigned int max);

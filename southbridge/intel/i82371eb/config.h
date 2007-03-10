@@ -17,43 +17,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
-/{
-	config="mainboard,emulation,qemu-x86";
-	enabled;
 
-	cpus {
-		enabled;
-	};
-	domain0{
-		enabled;
-		config="northbridge,intel,i440bxemulation";
-		ops="i440bxemulation_pcidomainops";
-		pcidomain = "0";
-		device0,0{
-			enabled;
-			pcipath="0,0";
-		};
-/*		southbridge,intel,piix4{
-			pcipath = "0,0";
-			enabled;
-		};
- */
-	};
-
+extern struct constructor i82371eb_constructors[];
+struct southbridge_intel_i82371eb_config
+{
+	int ide;
 };
 
-%%
-
-#include <southbridge/intel/i82371eb/config.h>
-
-struct mainboard_emulation_qemu_x86_config root = {
-	.nothing = 1,
-};
-
-struct northbridge_intel_i440bx_config domain0 = {
-	.ramsize = CONFIG_NORTHBRIDGE_INTEL_I440BXEMULATION_RAMSIZE,
-};
-
-struct constructor *all_constructors[] ={
-	i440bx_constructors, i82371eb_constructors, 0
-};

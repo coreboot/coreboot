@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2007 Ronald G. Minnich <rminnich@gmail.com>
  * Copyright (C) 2007 Peter Stuge <peter@stuge.se>
+ * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +19,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
-/* Memory routines with some optimizations. */
+/* Memory routines with some optimizations. Please don't be silly and inline
+ * these. Inlines are not as wonderful as people think.
+ */
 
 #include <arch/types.h>
 
@@ -96,20 +99,41 @@ static void memcpy_helper(void *dest, const void *src, int len, int backwards)
 	}
 }
 
-/* Won't handle overlaps. */
-/* Please don't be silly and inline these. Inlines are not as wonderful as people think */
+/**
+ * Copy 'len' bytes from one memory area to another.
+ *
+ * The memory areas may _not_ overlap.
+ *
+ * @param dest Pointer to the destination memory area.
+ * @param src Pointer to the source memory area.
+ * @param len Number of bytes to copy.
+ */
 void memcpy(void *dest, const void *src, int len)
 {
 	memcpy_helper(dest, src, len, 0);
 }
 
-/* Handles overlapping memory. */
-/* seperate function in case we decide to use the built-in -- not sure yet. */
+/**
+ * Copy 'len' bytes from one memory area to another.
+ *
+ * The memory areas may overlap.
+ *
+ * @param dest Pointer to the destination memory area.
+ * @param src Pointer to the source memory area.
+ * @param len Number of bytes to copy.
+ */
 void memmove(void *dest, const void *src, int len)
 {
 	memcpy_helper(dest, src, len, dest > src && dest < (src + len));
 }
 
+/**
+ * Fill a memory area with the specified byte.
+ *
+ * @param v Pointer to the beginning of the memory area.
+ * @param a The byte which is used for filling the memory area.
+ * @param len The number of bytes to write.
+ */
 void memset(void *v, unsigned char a, int len)
 {
 	unsigned char *cp = v;
@@ -117,9 +141,17 @@ void memset(void *v, unsigned char a, int len)
 		*cp++ = a;
 }
 
-/* did you ever notice that the memcmp web page does not specify 
-  * a signed or unsigned compare? It matters ... oh well, we assumed unsigned
-  */
+/**
+ * Compare the first 'len' bytes of two memory areas.
+ *
+ * We assume unsigned characters here.
+ *
+ * @param s1 Pointer to the first memory area.
+ * @param s2 Pointer to the second memory area.
+ * @param len Number of bytes to compare.
+ * @return Returns a negative number if s1 is shorter than s2. Returns zero if
+ * 	   s1 matches s2. Returns a positive number if s1 is longer than s2.
+ */
 int memcmp(const void *s1, const void *s2, int len)
 {
 	const unsigned char *d = (const unsigned char *)s1;
@@ -132,5 +164,4 @@ int memcmp(const void *s1, const void *s2, int len)
 		d++, s++;
 	}
 	return 0;
-
 }

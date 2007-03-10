@@ -64,8 +64,8 @@ void stage1_main(u32 bist)
 	int elfboot_mem(struct lb_memory *mem, void *where, int size);
 
 	/* we can't statically init this hack. */
-	unsigned char *faker[64];
-	struct lb_memory *mem = (struct lb_memory*) &faker;
+	unsigned char faker[64];
+	struct lb_memory *mem = (struct lb_memory*) faker;
 
 	mem->tag = LB_TAG_MEMORY;
 	mem->size = 28;

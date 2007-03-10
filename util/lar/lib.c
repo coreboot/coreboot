@@ -30,7 +30,7 @@
 
 #define MAX_PATH 1024
 
-static struct file * files = NULL;
+static struct file *files = NULL;
 
 int mkdirp(const char *dirpath)
 {
@@ -73,12 +73,13 @@ int mkdirp(const char *dirpath)
 
 static int handle_directory(const char *name)
 {
-	int ret=-1, n;
+	int n;
+	int ret = -1;
 	struct dirent **namelist;
 
 	n = scandir(name, &namelist, 0, alphasort);
 
-	if(n < 0) {
+	if (n < 0) {
 		fprintf(stderr, "Could not enter directory %s\n", name);
 	} else {
 		while (n--) {
@@ -87,15 +88,16 @@ static int handle_directory(const char *name)
 			fullname[0] = '\0';
 
 			if (strncmp("..", namelist[n]->d_name, 3) &&
-				strncmp(".", namelist[n]->d_name, 2)) {
+			    strncmp(".", namelist[n]->d_name, 2)) {
 
 				strncpy(fullname, name, MAX_PATH);
 
-				if(name[(strlen(name))-1] != '/') {
+				if (name[(strlen(name)) - 1] != '/') {
 					strncat(fullname, "/", MAX_PATH);
 				}
 
-				strncat(fullname, namelist[n]->d_name, MAX_PATH);
+				strncat(fullname, namelist[n]->d_name,
+					MAX_PATH);
 
 				add_files(fullname);
 			}
@@ -103,7 +105,7 @@ static int handle_directory(const char *name)
 
 		}
 		free(namelist);
-		ret=0;
+		ret = 0;
 	}
 
 	return ret;
@@ -124,7 +126,7 @@ int add_files(const char *name)
 		fprintf(stderr, "Error getting file attributes of %s\n", name);
 		return -1;
 	}
-	
+
 	if (S_ISCHR(filestat.st_mode) || S_ISBLK(filestat.st_mode)) {
 		fprintf(stderr, "Device files are not supported: %s\n", name);
 	}
@@ -140,12 +142,10 @@ int add_files(const char *name)
 	if (S_ISLNK(filestat.st_mode)) {
 		fprintf(stderr, "Symbolic links are not supported: %s\n", name);
 	}
-
 	// Is it a directory?
 	if (S_ISDIR(filestat.st_mode)) {
-		ret=handle_directory(name);
+		ret = handle_directory(name);
 	}
-
 	// Is it a regular file?
 	if (S_ISREG(filestat.st_mode)) {
 		struct file *tmpfile;
@@ -158,7 +158,7 @@ int add_files(const char *name)
 		}
 
 		tmpfile->name = strdup(name);
-		if(!tmpfile->name) {
+		if (!tmpfile->name) {
 			fprintf(stderr, "Out of memory.\n");
 			exit(1);
 		}
@@ -193,7 +193,7 @@ int add_file_or_directory(const char *name)
 	}
 
 	tmpfile->next = files;
-	files=tmpfile;
+	files = tmpfile;
 
 	return 0;
 }
@@ -205,11 +205,11 @@ struct file *get_files(void)
 
 void free_files(void)
 {
-	struct file * temp;
+	struct file *temp;
 
 	while (files) {
-		temp=files;
-		files=files->next;
+		temp = files;
+		files = files->next;
 		free(temp->name);
 		free(temp);
 	}
@@ -218,14 +218,14 @@ void free_files(void)
 #ifdef DEBUG
 int list_files(void)
 {
-	struct file * walk = files;
+	struct file *walk = files;
 
-	printf ("File list:\n");
+	printf("File list:\n");
 	while (walk) {
 		printf("- %s\n", walk->name);
-		walk=walk->next;
+		walk = walk->next;
 	}
-	printf ("-----\n");
+	printf("-----\n");
 	return 0;
 }
 #endif

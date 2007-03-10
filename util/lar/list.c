@@ -45,12 +45,12 @@ int list_lar(const char *archivename, struct file *files)
 	int i;
 
 	if (stat(archivename, &statbuf) != 0) {
-		fprintf(stderr, "Error opening %s: %s\n", 
-				archivename, strerror(errno));
+		fprintf(stderr, "Error opening %s: %s\n",
+			archivename, strerror(errno));
 		exit(1);
 	}
 
-	if(verbose())
+	if (verbose())
 		printf("Opening %s\n", archivename);
 
 	archivefile = open(archivename, O_RDONLY);
@@ -73,17 +73,16 @@ int list_lar(const char *archivename, struct file *files)
 
 		do_extract = 1;
 		if (files) {
-			struct file *fwalk=files;
+			struct file *fwalk = files;
 			do_extract = 0;
 			while (fwalk) {
 				if (strcmp(fullname, fwalk->name) == 0) {
 					do_extract = 1;
 					break;
 				}
-				fwalk=fwalk->next;
+				fwalk = fwalk->next;
 			}
 		}
-
 
 		/* Don't extract this one, skip it. */
 		if (!do_extract) {
@@ -95,14 +94,14 @@ int list_lar(const char *archivename, struct file *files)
 		printf("(%d bytes @0x%lx)\n", ntohl(header->len),
 		       (unsigned long)(walk - inmap) + ntohl(header->offset));
 
-		walk += (ntohl(header->len) + ntohl(header->offset) 
-				- 1) & 0xfffffff0;
+		walk += (ntohl(header->len) + ntohl(header->offset)
+			 - 1) & 0xfffffff0;
 	}
 
 	munmap(inmap, statbuf.st_size);
 	close(archivefile);
 
-	if(verbose())
+	if (verbose())
 		printf("done.\n");
 
 	return 0;

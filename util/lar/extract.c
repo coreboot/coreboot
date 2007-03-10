@@ -49,7 +49,7 @@ int extract_lar(const char *archivename, struct file *files)
 		exit(1);
 	}
 
-	if(verbose())
+	if (verbose())
 		printf("Opening %s\n", archivename);
 
 	archivefile = open(archivename, O_RDONLY);
@@ -76,14 +76,14 @@ int extract_lar(const char *archivename, struct file *files)
 
 		do_extract = 1;
 		if (files) {
-			struct file *fwalk=files;
+			struct file *fwalk = files;
 			do_extract = 0;
 			while (fwalk) {
 				if (strcmp(fullname, fwalk->name) == 0) {
 					do_extract = 1;
 					break;
 				}
-				fwalk=fwalk->next;
+				fwalk = fwalk->next;
 			}
 		}
 
@@ -91,7 +91,7 @@ int extract_lar(const char *archivename, struct file *files)
 		if (!do_extract)
 			continue;
 
-		if(verbose())
+		if (verbose())
 			printf("  Extracting file %s\n",
 			       walk + sizeof(struct lar_header));
 
@@ -121,14 +121,13 @@ int extract_lar(const char *archivename, struct file *files)
 		fclose(file_to_extract);
 
 		walk += (ntohl(header->offset) + ntohl(header->len)
-			 -1 ) & 0xfffffff0;
+			 - 1) & 0xfffffff0;
 	}
 
 	munmap(inmap, statbuf.st_size);
 	close(archivefile);
 
-
-	if(verbose())
+	if (verbose())
 		printf("done.\n");
 
 	return 0;

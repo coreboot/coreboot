@@ -24,7 +24,7 @@
 /* data types */
 
 struct file {
-	char * name;
+	char *name;
 	struct file *next;
 };
 
@@ -39,7 +39,6 @@ enum {
 int verbose(void);
 long get_larsize(void);
 char *get_bootblock(void);
-
 
 /* prototypes for lib.c functions */
 int mkdirp(const char *dirpath);

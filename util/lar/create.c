@@ -52,24 +52,24 @@ int create_lar(const char *archivename, struct file *files)
 		exit(1);
 	}
 
-	if(verbose())
+	if (verbose())
 		printf("Opening %s\n", archivename);
 
 	archive = fopen(archivename, "w");
 	if (!archive) {
-		fprintf(stderr, "Could not open archive %s for writing\n", 
-				archivename);
+		fprintf(stderr, "Could not open archive %s for writing\n",
+			archivename);
 		exit(1);
 	}
 
 	while (files) {
-		char *name=files->name;
+		char *name = files->name;
 
 		/* skip ./ if available */
-		if (name[0]=='.' && name[1]=='/')
+		if (name[0] == '.' && name[1] == '/')
 			name += 2;
 
-		if(verbose())
+		if (verbose())
 			printf("  Adding %s to archive\n", name);
 
 		ret = stat(name, &statbuf);
@@ -79,17 +79,19 @@ int create_lar(const char *archivename, struct file *files)
 		}
 		filelen = statbuf.st_size;
 
-		tempmem = malloc(sizeof(struct lar_header) + MAX_PATHLEN + filelen + 16);
+		tempmem = malloc(sizeof(struct lar_header) + MAX_PATHLEN
+				 + filelen + 16);
 		if (!tempmem) {
 			fprintf(stderr, "Out of memory.\n");
 			return (1);
 		}
-		memset(tempmem, 0, sizeof(struct lar_header) + MAX_PATHLEN + filelen + 16);
+		memset(tempmem, 0, sizeof(struct lar_header) + MAX_PATHLEN
+		       + filelen + 16);
 
 		header = (struct lar_header *)tempmem;
 		pathname = tempmem + sizeof(struct lar_header);
-		pathlen = snprintf(pathname, MAX_PATHLEN-1, name) + 1;
-		pathlen = (pathlen + 15) & 0xfffffff0;	/* Align it to 16 bytes. */
+		pathlen = snprintf(pathname, MAX_PATHLEN - 1, name) + 1;
+		pathlen = (pathlen + 15) & 0xfffffff0;/* Align to 16 bytes. */
 
 		/* Read file into memory. */
 		filebuf = pathname + pathlen;
@@ -110,13 +112,15 @@ int create_lar(const char *archivename, struct file *files)
 		csum = 0;
 		for (walk = (u32 *) tempmem;
 		     walk < (u32 *) (tempmem + statbuf.st_size +
-			      sizeof(struct lar_header) + pathlen); walk++) {
+				     sizeof(struct lar_header) + pathlen);
+		     walk++) {
 			csum += ntohl(*walk);
 		}
 		header->checksum = htonl(csum);
 
 		/* Write out entry to archive. */
-		entrylen = (filelen + pathlen + sizeof(struct lar_header) + 15) & 0xfffffff0;
+		entrylen = (filelen + pathlen + sizeof(struct lar_header) +
+			    15) & 0xfffffff0;
 
 		fwrite(tempmem, entrylen, 1, archive);
 
@@ -135,8 +139,9 @@ int create_lar(const char *archivename, struct file *files)
 		diff = get_larsize() - currentsize;
 
 	if (diff < 0) {
-		fprintf(stderr, "Error: LAR archive exceeded size (%ld > %ld)\n", 
-				currentsize, get_larsize());
+		fprintf(stderr,
+			"Error: LAR archive exceeded size (%ld > %ld)\n",
+			currentsize, get_larsize());
 
 		/* Open files can not be deleted. */
 		fclose(archive);
@@ -145,10 +150,10 @@ int create_lar(const char *archivename, struct file *files)
 		return -1;
 	}
 
-	if ( diff > 0 ) {
+	if (diff > 0) {
 		char *padding;
 		/* generate padding (0xff is flash friendly) */
-		padding=malloc(diff);
+		padding = malloc(diff);
 		if (!padding) {
 			fprintf(stderr, "Out of memory.\n");
 			exit(1);
@@ -160,7 +165,7 @@ int create_lar(const char *archivename, struct file *files)
 
 	fclose(archive);
 
-	if(verbose())
+	if (verbose())
 		printf("done.\n");
 
 	return 0;

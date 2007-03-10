@@ -37,8 +37,8 @@ LINUXBIOS_COMPONENTS := linuxbios.lar linuxbios.vpd stage0.init
 
 $(obj)/linuxbios.rom: $(patsubst %,$(obj)/%,$(LINUXBIOS_COMPONENTS))
 	$(Q)cat $^ > $@
-	$(Q)# qemu wants bios.bin: 
-	$(Q)# run "qemu -L build/ -nographic -hda /dev/zero"
+	$(Q)# QEMU wants bios.bin:
+	$(Q)# Run "qemu -L build/ -nographic -hda /dev/zero".
 	$(Q)cp $@ $(obj)/bios.bin
 
 #

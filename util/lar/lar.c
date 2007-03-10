@@ -38,13 +38,12 @@
 
 static int isverbose = 0;
 static long larsize = 0;
-static char * bootblock = NULL;
-
+static char *bootblock = NULL;
 
 static void usage(char *name)
 {
-	printf ("\nLAR - the LinuxBIOS Archiver " VERSION "\n" COPYRIGHT "\n\n"
-		"Usage: %s [-cxl] archive.lar [[[file1] file2] ...]\n\n", name);
+	printf("\nLAR - the LinuxBIOS Archiver " VERSION "\n" COPYRIGHT "\n\n"
+	       "Usage: %s [-cxl] archive.lar [[[file1] file2] ...]\n\n", name);
 }
 
 int verbose(void)
@@ -62,7 +61,6 @@ char *get_bootblock(void)
 	return bootblock;
 }
 
-
 int main(int argc, char *argv[])
 {
 	int opt;
@@ -70,18 +68,18 @@ int main(int argc, char *argv[])
 
 	int larmode = NONE;
 
-	char * archivename = NULL;
+	char *archivename = NULL;
 
-	static struct option long_options[]= {
-		{ "create", 0, 0, 'c' },
-		{ "extract", 0, 0, 'x' },
-		{ "list", 0, 0, 'l' },
-		{ "size", 1, 0, 's' },
-		{ "bootblock", 1, 0, 'b' },
-		{ "verbose", 0, 0, 'v' },
-		{ "version", 0, 0, 'V' },
-		{ "help", 0, 0, 'h' },
-		{ 0, 0, 0, 0 }
+	static struct option long_options[] = {
+		{"create", 0, 0, 'c'},
+		{"extract", 0, 0, 'x'},
+		{"list", 0, 0, 'l'},
+		{"size", 1, 0, 's'},
+		{"bootblock", 1, 0, 'b'},
+		{"verbose", 0, 0, 'v'},
+		{"version", 0, 0, 'V'},
+		{"help", 0, 0, 'h'},
+		{0, 0, 0, 0}
 	};
 
 	if (argc < 3) {
@@ -89,9 +87,9 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	while ((opt = getopt_long(argc, argv, "cxls:b:vVh?", 
-					long_options, &option_index)) != EOF) {
-		switch(opt) {
+	while ((opt = getopt_long(argc, argv, "cxls:b:vVh?",
+				  long_options, &option_index)) != EOF) {
+		switch (opt) {
 		case 'c':
 			larmode = CREATE;
 			break;
@@ -105,7 +103,7 @@ int main(int argc, char *argv[])
 			larsize = strtol(optarg, (char **)NULL, 10);
 			break;
 		case 'b':
-			printf("Bootblock handling not yet supported. Ignoring\n");
+			printf("Bootblock handling not yet supported. Ignoring.\n");
 			bootblock = strdup(optarg);
 			if (!bootblock) {
 				fprintf(stderr, "Out of memory.\n");
@@ -116,7 +114,7 @@ int main(int argc, char *argv[])
 			isverbose = 1;
 			break;
 		case 'V':
-			printf ("LAR - the LinuxBIOS Archiver " VERSION "\n");
+			printf("LAR - the LinuxBIOS Archiver " VERSION "\n");
 			break;
 		default:
 			usage(argv[0]);
@@ -129,14 +127,13 @@ int main(int argc, char *argv[])
 	// Right now, you'd have to write lar x -v instead of
 	// lar xv... but the author of this software was too
 	// lazy to handle all option parameter twice.
-	if (larmode == NONE) 
-	{
+	if (larmode == NONE) {
 		if (strncmp(argv[optind], "x", 2) == 0)
-			larmode=EXTRACT; 
+			larmode = EXTRACT;
 		else if (strncmp(argv[optind], "c", 2) == 0)
-			larmode=CREATE; 
+			larmode = CREATE;
 		else if (strncmp(argv[optind], "l", 2) == 0)
-			larmode=LIST; 
+			larmode = LIST;
 
 		/* If larmode changed in this if branch,
 		 * eat a parameter
@@ -145,8 +142,7 @@ int main(int argc, char *argv[])
 			optind++;
 	}
 
-	if (larmode == NONE)
-	{
+	if (larmode == NONE) {
 		usage(argv[0]);
 		printf("Error: No mode specified.\n\n");
 		exit(1);
@@ -155,11 +151,11 @@ int main(int argc, char *argv[])
 	/* size only makes sense when creating a lar */
 	if (larmode != CREATE && larsize) {
 		printf("Warning: size parameter ignored since "
-				"not creating an archive.\n");
+		       "not creating an archive.\n");
 	}
 
 	if (optind < argc) {
-		archivename=argv[optind++];
+		archivename = argv[optind++];
 	} else {
 
 		usage(argv[0]);
@@ -178,7 +174,7 @@ int main(int argc, char *argv[])
 		} else
 			add_file_or_directory(argv[optind++]);
 	}
-	
+
 	switch (larmode) {
 	case EXTRACT:
 		extract_lar(archivename, get_files());

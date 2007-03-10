@@ -89,7 +89,7 @@ int find_file(struct mem_file *archive, char *filename, struct mem_file *result)
 
 		/* Skip file. */
 		walk += (ntohl(header->len) + ntohl(header->offset) -
-			1) & 0xfffffff0;
+			 1) & 0xfffffff0;
 	}
 
 	return 1;

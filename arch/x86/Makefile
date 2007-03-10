@@ -68,11 +68,10 @@ $(obj)/linuxbios.lar: $(obj)/util/lar/lar lzma $(obj)/linuxbios.initram $(obj)/l
 # initram module and the various stages and payload files.
 #
 
-STAGE0_CONSOLE_OBJ   = $(obj)/vtxprintf.o $(obj)/vsprintf.o
+STAGE0_CONSOLE_OBJ   = $(obj)/vtxprintf.o $(obj)/vsprintf.o $(obj)/console.o
 STAGE0_LIB_OBJ       = $(obj)/uart8250.o $(obj)/mem.o $(obj)/elfboot.o \
 		       $(obj)/lar.o
-STAGE0_ARCH_X86_OBJ  = $(obj)/cachemain.o $(obj)/console.o $(obj)/serial.o \
-		       $(obj)/archelfboot.o
+STAGE0_ARCH_X86_OBJ  = $(obj)/cachemain.o $(obj)/serial.o $(obj)/archelfboot.o
 
 
 ifeq ($(CONFIG_CAR_TYPE_I586),y)

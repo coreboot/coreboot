@@ -19,9 +19,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-# I think a .c.o rule might be more confusing than just putting the rule
-# underneath the dependency graph -- but I welcome correction on this.
-
 $(obj)/i440bx.o: $(src)/northbridge/intel/i440bxemulation/i440bx.c
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
 

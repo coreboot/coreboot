@@ -1,7 +1,7 @@
 /*
  * lar - LinuxBIOS archiver
  *
- * Copyright (C) 2006 coresystems GmbH
+ * Copyright (C) 2006-2007 coresystems GmbH
  * Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -32,60 +32,70 @@
 #include "lib.h"
 #include "lar.h"
 
-int create_lar(int argc, char *argv[])
+int create_lar(const char *archivename, struct file *files)
 {
 	int i, ret;
+	int diff = 0;
 	FILE *archive, *source;
-	char *archivename;
 	char *tempmem;
 	char *filebuf;
 	char *pathname;
 	u32 *walk;
 	u32 csum;
 	int pathlen, entrylen, filelen;
+	long currentsize = 0;
 	struct lar_header *header;
 	struct stat statbuf;
 
-	archivename = argv[2];
-	if (argc <= 3) {
-		printf("No files for archive %s\n", archivename);
+	if (!files) {
+		fprintf(stderr, "No files for archive %s\n", archivename);
 		exit(1);
 	}
 
-	printf("Opening %s\n", archivename);
+	if(verbose())
+		printf("Opening %s\n", archivename);
+
 	archive = fopen(archivename, "w");
 	if (!archive) {
-		/* Error. */
+		fprintf(stderr, "Could not open archive %s for writing\n", 
+				archivename);
 		exit(1);
 	}
 
-	for (i = 3; i < argc; i++) {
-		printf("  Adding %s to archive\n", argv[i]);
+	while (files) {
+		char *name=files->name;
 
-		ret = stat(argv[i], &statbuf);
+		/* skip ./ if available */
+		if (name[0]=='.' && name[1]=='/')
+			name += 2;
+
+		if(verbose())
+			printf("  Adding %s to archive\n", name);
+
+		ret = stat(name, &statbuf);
 		if (ret) {
-			printf("No such file %s\n", argv[i]);
+			fprintf(stderr, "No such file %s\n", name);
 			exit(1);
 		}
 		filelen = statbuf.st_size;
 
 		tempmem = malloc(sizeof(struct lar_header) + MAX_PATHLEN + filelen + 16);
 		if (!tempmem) {
-			printf("No memory\n");
+			fprintf(stderr, "Out of memory.\n");
 			return (1);
 		}
 		memset(tempmem, 0, sizeof(struct lar_header) + MAX_PATHLEN + filelen + 16);
 
 		header = (struct lar_header *)tempmem;
 		pathname = tempmem + sizeof(struct lar_header);
-		pathlen = sprintf(pathname, argv[i]) + 1;
+		pathlen = snprintf(pathname, MAX_PATHLEN-1, name) + 1;
 		pathlen = (pathlen + 15) & 0xfffffff0;	/* Align it to 16 bytes. */
 
 		/* Read file into memory. */
 		filebuf = pathname + pathlen;
-		source = fopen(argv[i], "r");
+		source = fopen(name, "r");
 		if (!source) {
-			printf("No such file %s\n", argv[i]);
+			fprintf(stderr, "No such file %s\n", name);
 			exit(1);
 		}
 		fread(filebuf, statbuf.st_size, 1, source);
@@ -111,10 +121,47 @@ int create_lar(int argc, char *argv[])
 		fwrite(tempmem, entrylen, 1, archive);
 
 		free(tempmem);
+
+		/* size counter */
+		currentsize += entrylen;
+
+		files = files->next;
+	}
+
+	/* Calculate difference, if a size has been specified.
+	 * Otherwise diff stays 0 and no action is taken below.
+	 */
+	if (get_larsize())
+		diff = get_larsize() - currentsize;
+
+	if (diff < 0) {
+		fprintf(stderr, "Error: LAR archive exceeded size (%ld > %ld)\n", 
+				currentsize, get_larsize());
+
+		/* Open files can not be deleted. */
+		fclose(archive);
+		/* File is too big, delete it. */
+		unlink(archivename);
+		return -1;
+	}
+
+	if ( diff > 0 ) {
+		char *padding;
+		/* generate padding (0xff is flash friendly) */
+		padding=malloc(diff);
+		if (!padding) {
+			fprintf(stderr, "Out of memory.\n");
+			exit(1);
+		}
+		memset(padding, 0xff, diff);
+		fwrite(padding, diff, 1, archive);
+		free(padding);
 	}
 
 	fclose(archive);
-	printf("done.\n");
+
+	if(verbose())
+		printf("done.\n");
 
 	return 0;
 }

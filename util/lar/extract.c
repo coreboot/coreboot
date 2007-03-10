@@ -1,7 +1,7 @@
 /*
  * lar - LinuxBIOS archiver
  *
- * Copyright (C) 2006 coresystems GmbH
+ * Copyright (C) 2006-2007 coresystems GmbH
  * Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -32,10 +32,9 @@
 #include "lib.h"
 #include "lar.h"
 
-int extract_lar(int argc, char *argv[])
+int extract_lar(const char *archivename, struct file *files)
 {
 	int archivefile;
-	char *archivename;
 	char *inmap;
 	char *walk;
 	char *fullname, *pathname, *pos;
@@ -45,13 +44,13 @@ int extract_lar(int argc, char *argv[])
 	int do_extract;
 	int i;
 
-	archivename = argv[2];
-
 	if (stat(archivename, &statbuf) != 0) {
 		printf("Error opening %s: %s\n", archivename, strerror(errno));
 		exit(1);
 	}
-	printf("Opening %s\n", archivename);
+
+	if(verbose())
+		printf("Opening %s\n", archivename);
 
 	archivefile = open(archivename, O_RDONLY);
 	if (archivefile == -1) {
@@ -76,13 +75,15 @@ int extract_lar(int argc, char *argv[])
 		/* FIXME: check checksum. */
 
 		do_extract = 1;
-		if (argc > 3) {
+		if (files) {
+			struct file *fwalk=files;
 			do_extract = 0;
-			for (i = 3; i < argc; i++) {
-				if (strcmp(fullname, argv[i]) == 0) {
+			while (fwalk) {
+				if (strcmp(fullname, fwalk->name) == 0) {
 					do_extract = 1;
 					break;
 				}
+				fwalk=fwalk->next;
 			}
 		}
 
@@ -90,11 +91,17 @@ int extract_lar(int argc, char *argv[])
 		if (!do_extract)
 			continue;
 
-		printf("  Extracting file %s\n",
-		       walk + sizeof(struct lar_header));
+		if(verbose())
+			printf("  Extracting file %s\n",
+			       walk + sizeof(struct lar_header));
 
 		/* Create the directory if it does not exist. */
 		pathname = strdup(fullname);
+		if (!pathname) {
+			fprintf(stderr, "Out of memory.\n");
+			exit(1);
+		}
+
 		pos = strrchr(pathname, '/');
 		if (pos) {
 			pos[1] = 0;
@@ -105,19 +112,24 @@ int extract_lar(int argc, char *argv[])
 
 		file_to_extract = fopen(fullname, "w");
 		if (!file_to_extract) {
-			printf("error creating file.\n");
+			fprintf(stderr, "error creating file %s.\n", fullname);
 			exit(1);
 		}
-		/* printf("Starting offs=%d, len=%d\n", ntohl(header->offset),
-		          ntohl(header->len)); */
+
 		fwrite(walk + ntohl(header->offset), ntohl(header->len),
 		       1, file_to_extract);
 		fclose(file_to_extract);
+
+		walk += (ntohl(header->offset) + ntohl(header->len)
+			 -1 ) & 0xfffffff0;
 	}
 
 	munmap(inmap, statbuf.st_size);
 	close(archivefile);
-	printf("done.\n");
+
+
+	if(verbose())
+		printf("done.\n");
 
 	return 0;
 }

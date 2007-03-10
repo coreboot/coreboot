@@ -1,7 +1,7 @@
 /*
  * lar - LinuxBIOS archiver
  *
- * Copyright (C) 2006 coresystems GmbH
+ * Copyright (C) 2006-2007 coresystems GmbH
  * Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -32,10 +32,9 @@
 #include "lib.h"
 #include "lar.h"
 
-int list_lar(int argc, char *argv[])
+int list_lar(const char *archivename, struct file *files)
 {
 	int archivefile;
-	char *archivename;
 	char *inmap;
 	char *walk;
 	char *fullname;
@@ -45,13 +44,14 @@ int list_lar(int argc, char *argv[])
 	int do_extract;
 	int i;
 
-	archivename = argv[2];
-
 	if (stat(archivename, &statbuf) != 0) {
-		printf("Error opening %s: %s\n", archivename, strerror(errno));
+		fprintf(stderr, "Error opening %s: %s\n", 
+				archivename, strerror(errno));
 		exit(1);
 	}
-	printf("Opening %s\n", archivename);
+
+	if(verbose())
+		printf("Opening %s\n", archivename);
 
 	archivefile = open(archivename, O_RDONLY);
 	if (archivefile == -1) {
@@ -72,29 +72,38 @@ int list_lar(int argc, char *argv[])
 		fullname = walk + sizeof(struct lar_header);
 
 		do_extract = 1;
-		if (argc > 3) {
+		if (files) {
+			struct file *fwalk=files;
 			do_extract = 0;
-			for (i = 3; i < argc; i++) {
-				if (strcmp(fullname, argv[i]) == 0) {
+			while (fwalk) {
+				if (strcmp(fullname, fwalk->name) == 0) {
 					do_extract = 1;
 					break;
 				}
+				fwalk=fwalk->next;
 			}
 		}
 
+
 		/* Don't extract this one, skip it. */
-		if (!do_extract)
+		if (!do_extract) {
 			continue;
+		}
 
 		printf("  %s ", walk + sizeof(struct lar_header));
 
 		printf("(%d bytes @0x%lx)\n", ntohl(header->len),
 		       (unsigned long)(walk - inmap) + ntohl(header->offset));
+
+		walk += (ntohl(header->len) + ntohl(header->offset) 
+				- 1) & 0xfffffff0;
 	}
 
 	munmap(inmap, statbuf.st_size);
 	close(archivefile);
-	printf("done.\n");
+
+	if(verbose())
+		printf("done.\n");
 
 	return 0;
 }

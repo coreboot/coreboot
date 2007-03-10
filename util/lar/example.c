@@ -1,7 +1,7 @@
 /*
  * lar - LinuxBIOS archiver
  *
- * Copyright (C) 2006 coresystems GmbH
+ * Copyright (C) 2006-2007 coresystems GmbH
  * Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH.
  *
  * This file is dual-licensed. You can choose between:
@@ -88,8 +88,8 @@ int find_file(struct mem_file *archive, char *filename, struct mem_file *result)
 		}
 
 		/* Skip file. */
-		walk += (ntohl(header->offset) + ntohl(header->len)
-			 + 15) & 0xfffffff0;
+		walk += (ntohl(header->len) + ntohl(header->offset) -
+			1) & 0xfffffff0;
 	}
 
 	return 1;

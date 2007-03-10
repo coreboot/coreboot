@@ -37,7 +37,9 @@ LINUXBIOS_COMPONENTS := linuxbios.lar linuxbios.vpd stage0.init
 
 $(obj)/linuxbios.rom: $(patsubst %,$(obj)/%,$(LINUXBIOS_COMPONENTS))
 	$(Q)cat $^ > $@
-
+	$(Q)# qemu wants bios.bin: 
+	$(Q)# run "qemu -L build/ -nographic -hda /dev/zero"
+	$(Q)cp $@ $(obj)/bios.bin
 
 #
 # Build the LAR archive.
@@ -58,11 +60,7 @@ $(obj)/linuxbios.lar: $(obj)/util/lar/lar lzma $(obj)/linuxbios.initram $(obj)/l
 	$(Q)cp $(obj)/linuxbios.stage2 $(obj)/lar.tmp/normal/stage2
 	$(Q)cp $(CONFIG_PAYLOAD) $(obj)/lar.tmp/normal/payload
 	$(Q)printf "  "
-	$(Q)cd $(obj)/lar.tmp && ../util/lar/lar c ../linuxbios.lar.pre normal/initram normal/stage2 normal/payload
-	$(Q)# Padding the LAR archive to image size - 16k (bootblock size)
-	$(Q)dd if=$(obj)/linuxbios.lar.pre of=$(obj)/linuxbios.lar \
-		  bs=$(LAR_SIZE) count=1 conv=sync $(SILENT)
-
+	$(Q)cd $(obj)/lar.tmp && ../util/lar/lar -cv ../linuxbios.lar . -s $(LAR_SIZE)
 
 #
 # LinuxBIOS stage0. This is the LinuxBIOS "boot block code".

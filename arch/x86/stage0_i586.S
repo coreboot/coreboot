@@ -31,12 +31,8 @@
 
 #define CACHE_RAM_CODE_SEG 0x18
 #define CACHE_RAM_DATA_SEG 0x20
-#	.section ".rom.text"
-
 	.code16
-#.=0
 	.globl _stage0
-#	.section ".rom.text"
 _stage0:
 	cli
 
@@ -60,12 +56,6 @@ _stage0:
 	 * the ld hackery and other things. So leave it as is with this comment. 
 	 */
 
-#	movw	%cs, %ax
-#	shlw	$4, %ax
-#	movl	$0xffffe000, %ebx
-#	movw	$gdt16 + 0xe000, %bx
-	#subw	%ax, %bx
-	#data32	lgdt %cs:(%bx)
 	data32	lgdt %cs:gdtptr
 
 	movl	%cr0, %eax
@@ -504,9 +494,6 @@ var_mtrr_msr:
 
 SEGMENT_SIZE = 0x10000
 RVECTOR      = 0x00010
-#.=0x1ff0
-#.=0xfffffff0
-#.=_stage0 + 0x1ff0
 # Due to YET ANOTHER BUG in GNU bintools, you can NOT have a code16 here.
 # I think we should leave it this way forever, as the bugs come and
 # go -- and come again.
@@ -515,7 +502,7 @@ RVECTOR      = 0x00010
 .section ".reset", "ax"
 	.globl _resetjump
 _resetjump:
-	/* GNU bintools win again. This jumps to stage0 - 2. Sigh. */
+	/* GNU bintools bugs again. This jumps to stage0 - 2. Sigh. */
 #	jmp _stage0
 	.byte  0xe9
 	.int   _stage0 - ( . + 2 )

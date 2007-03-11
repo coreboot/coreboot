@@ -181,7 +181,7 @@ static void asm_emit_cell(void *e, cell_t val)
 static void asm_emit_string(void *e, char *str, int len)
 {
 	FILE *f = e;
-	char c;
+	char c = 0;
 
 	if (len != 0) {
 		/* XXX: ewww */
@@ -283,7 +283,7 @@ static void C_emit_cell(void *e, cell_t val)
 static void C_emit_string(void *e, char *str, int len)
 {
 	FILE *f = e;
-	char c;
+	char c = 0;
 
 	if (len != 0) {
 		/* XXX: ewww */
@@ -404,7 +404,7 @@ static void linuxbios_emit_cell(void *e, cell_t val)
 static void linuxbios_emit_string(void *e, char *str, int len)
 {
 	FILE *f = e;
-	char c;
+	char c = 0;
 
 	if (len != 0) {
 		/* XXX: ewww */

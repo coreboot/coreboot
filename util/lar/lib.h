@@ -58,4 +58,10 @@ int list_lar(const char *archivename, struct file *files);
 /* prototypes for create.c functions */
 int create_lar(const char *archivename, struct file *files);
 
+/* prototypes for bootblock.c functions */
+extern char *bootblock_code;
+extern int bootblock_len;
+
+int load_bootblock(const char *bootblock);
+int fixup_bootblock(void);
 #endif

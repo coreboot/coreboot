@@ -18,7 +18,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
 ##
 
-SOURCE := lar.c create.c extract.c list.c lib.c
+SOURCE := lar.c create.c extract.c list.c lib.c bootblock.c
 
 $(obj)/util/lar/lar: $(patsubst %,$(src)/util/lar/%,$(SOURCE))
 	$(Q)printf "Building LAR utility... "

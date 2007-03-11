@@ -27,32 +27,17 @@ INITCFLAGS := $(CFLAGS) -I$(src)/include/cpu/generic/x86 -I$(src)/include \
 SILENT := &> /dev/null
 
 #
-# Build the final ROM image.
+# Build the ROM Image / LAR archive
 #
-# These are the main LinuxBIOS components. Do not change the order unless you
-# know exactly what you are doing.
-#
-
-LINUXBIOS_COMPONENTS := linuxbios.lar linuxbios.vpd stage0.init
-
-$(obj)/linuxbios.rom: $(patsubst %,$(obj)/%,$(LINUXBIOS_COMPONENTS))
-	$(Q)cat $^ > $@
-	$(Q)# QEMU wants bios.bin:
-	$(Q)# Run "qemu -L build/ -nographic -hda /dev/zero".
-	$(Q)cp $@ $(obj)/bios.bin
-
-#
-# Build the LAR archive.
-#
-# LinuxBIOS v3 is completely modular and based on a very small startup
-# code (stage0) plus a LAR archive. The LAR archive may contain any number
-# of stages, payloads and option ROMs.
+# LinuxBIOS v3 is completely modular. One module, the bootblock (stage0), 
+# is mandatory. All modules are packed together in a LAR archive. 
+# The LAR archive may contain any number of stages, payloads and option ROMs.
 #
 
-LAR_SIZE := $(shell expr \( $(CONFIG_LINUXBIOS_ROMSIZE_KB) - 16 \) \* 1024 )
+ROM_SIZE := $(shell expr $(CONFIG_LINUXBIOS_ROMSIZE_KB) \* 1024 )
 
-$(obj)/linuxbios.lar: $(obj)/util/lar/lar lzma $(obj)/linuxbios.initram $(obj)/linuxbios.stage2 payload
-	$(Q)printf "Building LinuxBIOS archive... \n"
+$(obj)/linuxbios.rom: $(obj)/linuxbios.bootblock $(obj)/util/lar/lar lzma $(obj)/linuxbios.initram $(obj)/linuxbios.stage2 payload
+	$(Q)printf "Building LinuxBIOS image... \n"
 	$(Q)rm -rf $(obj)/lar.tmp
 	$(Q)mkdir $(obj)/lar.tmp
 	$(Q)mkdir $(obj)/lar.tmp/normal
@@ -60,7 +45,14 @@ $(obj)/linuxbios.lar: $(obj)/util/lar/lar lzma $(obj)/linuxbios.initram $(obj)/l
 	$(Q)cp $(obj)/linuxbios.stage2 $(obj)/lar.tmp/normal/stage2
 	$(Q)cp $(CONFIG_PAYLOAD) $(obj)/lar.tmp/normal/payload
 	$(Q)printf "  "
-	$(Q)cd $(obj)/lar.tmp && ../util/lar/lar -cv ../linuxbios.lar . -s $(LAR_SIZE)
+	$(Q)cd $(obj)/lar.tmp && ../util/lar/lar -cv ../linuxbios.rom . \
+		-s $(ROM_SIZE) -b $(obj)/linuxbios.bootblock
+	$(Q)# QEMU wants bios.bin:
+	$(Q)# Run "qemu -L build/ -nographic -hda /dev/zero".
+	$(Q)cp $@ $(obj)/bios.bin
+
+$(obj)/linuxbios.bootblock: $(obj)/linuxbios.vpd $(obj)/stage0.init
+	$(Q)cat $^ > $@
 
 #
 # LinuxBIOS stage0. This is the LinuxBIOS "boot block code".

@@ -51,6 +51,7 @@
 
 #define MAGIC "LARCHIVE"
 #define MAX_PATHLEN 1024
+#define BOOTBLOCK_SIZE 16384
 
 typedef uint32_t u32;
 

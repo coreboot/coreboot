@@ -28,6 +28,8 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <netinet/in.h>
+#include <libgen.h>
+
 
 #include "lib.h"
 #include "lar.h"
@@ -36,6 +38,7 @@ int create_lar(const char *archivename, struct file *files)
 {
 	int i, ret;
 	int diff = 0;
+	int bb_header_len = 0;
 	FILE *archive, *source;
 	char *tempmem;
 	char *filebuf;
@@ -133,10 +136,41 @@ int create_lar(const char *archivename, struct file *files)
 	}
 
 	/* Calculate difference, if a size has been specified.
+	 * If diff is below zero, the size has been exceeded.
+	 * If diff is above zero, it specifies the number of 
+	 * padding bytes required for the image.
 	 * Otherwise diff stays 0 and no action is taken below.
 	 */
 	if (get_larsize())
 		diff = get_larsize() - currentsize;
+
+	/* If there's a bootblock loaded, some space is required
+	 * _after_ the padding. 
+	 * Calculate this size here, but write the bootblock later.
+	 */
+
+	if (bootblock_len) {
+		printf ("Detected bootblock of %d bytes\n", bootblock_len);
+
+		bb_header_len = sizeof(struct lar_header) +
+			((strlen(basename(get_bootblock()))+15) & 0xfffffff0);
+
+		bb_header_len = (bb_header_len + 15) & 0xfffffff0;
+
+		printf ("Required bootblock header of %d bytes\n", bb_header_len);
+
+		diff -= bootblock_len;
+		diff -= bb_header_len;
+	}
+
+	/* The image became too big. Print an error message and exit,
+	 * deleting the file. So nobody used an invalid image by accident.
+	 *
+	 * Don't delete the image in "Out of memory" situations. If memory
+	 * is _that_ tight that a few bytes don't fit anymore, everything 
+	 * else will fail as well, so just print an error and exit the 
+	 * program as soon as possible.
+	 */
 
 	if (diff < 0) {
 		fprintf(stderr,
@@ -150,6 +184,8 @@ int create_lar(const char *archivename, struct file *files)
 		return -1;
 	}
 
+	/* Pad the image. */
+
 	if (diff > 0) {
 		char *padding;
 		/* generate padding (0xff is flash friendly) */
@@ -161,6 +197,36 @@ int create_lar(const char *archivename, struct file *files)
 		memset(padding, 0xff, diff);
 		fwrite(padding, diff, 1, archive);
 		free(padding);
+	}
+
+	if (bootblock_len) {
+		char *bootblock_header;
+		struct lar_header *bb;
+
+		bootblock_header = malloc(bb_header_len);
+		if(!bootblock_header) {
+			fprintf(stderr, "Out of memory.\n");
+			exit(1);
+		}
+
+		memset (bootblock_header, 0, bb_header_len);
+
+		/* construct header */
+		bb=(struct lar_header *)bootblock_header;
+		memcpy(bb->magic, MAGIC, 8);
+		bb->len = htonl(bootblock_len);
+		bb->offset = htonl(bb_header_len);
+
+		/* TODO checksum */
+
+		/* Write filename. we calculated the buffer size, 
+		 * so no overflow danger here.
+		 */
+		strcpy(bootblock_header+sizeof(struct lar_header), 
+				basename(get_bootblock()) );
+
+		fwrite(bootblock_header, bb_header_len, 1, archive);
+		fwrite(bootblock_code, bootblock_len, 1, archive);
 	}
 
 	fclose(archive);

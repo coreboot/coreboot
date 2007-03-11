@@ -33,7 +33,7 @@
 #include "lib.h"
 #include "lar.h"
 
-#define VERSION "v0.9"
+#define VERSION "v0.9.1"
 #define COPYRIGHT "Copyright (C) 2006-2007 coresystems GmbH"
 
 static int isverbose = 0;
@@ -103,7 +103,6 @@ int main(int argc, char *argv[])
 			larsize = strtol(optarg, (char **)NULL, 10);
 			break;
 		case 'b':
-			printf("Bootblock handling not yet supported. Ignoring.\n");
 			bootblock = strdup(optarg);
 			if (!bootblock) {
 				fprintf(stderr, "Out of memory.\n");
@@ -144,7 +143,7 @@ int main(int argc, char *argv[])
 
 	if (larmode == NONE) {
 		usage(argv[0]);
-		printf("Error: No mode specified.\n\n");
+		fprintf(stderr, "Error: No mode specified.\n\n");
 		exit(1);
 	}
 
@@ -154,12 +153,34 @@ int main(int argc, char *argv[])
 		       "not creating an archive.\n");
 	}
 
+	if (bootblock) {
+
+		/* adding a bootblock only makes sense when creating a lar */
+		if (larmode != CREATE) {
+			printf("Warning: bootblock parameter ignored since "
+			       "not creating an archive.\n");
+		}
+
+		/* adding a bootblock only makes sense when creating a lar */
+		if (!larsize) {
+			printf("Warning: When specifying a bootblock "
+			       "you should also set an archive size.\n");
+		}
+
+		/* load the bootblock */
+		if (larmode == CREATE) {
+			load_bootblock(bootblock);
+			fixup_bootblock();
+		}
+
+	}
+
 	if (optind < argc) {
 		archivename = argv[optind++];
 	} else {
 
 		usage(argv[0]);
-		printf("Error: No archive name.\n\n");
+		fprintf(stderr, "Error: No archive name.\n\n");
 		exit(1);
 	}
 

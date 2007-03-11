@@ -327,7 +327,7 @@ static void cprint_init(void)
 	memset(args, 0, sizeof(args));
 	indent = 0;
 	child_count = 0;
-	cprint("%s/lxdialog", mconf_lxdialogpath);
+	cprint("%s/util/kconfig/lxdialog/lxdialog", mconf_lxdialogpath);
 	cprint("--backtitle");
 	cprint(menu_backtitle);
 }

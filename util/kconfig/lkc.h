@@ -29,7 +29,7 @@ extern "C" {
 #include "lkc_proto.h"
 #undef P
 
-#define SRCTREE "srctree"
+#define SRCTREE "src"
 
 #define PACKAGE "linux"
 #define LOCALEDIR "/usr/share/locale"

@@ -17,44 +17,46 @@
 
 .PHONY: oldconfig xconfig gconfig menuconfig config silentoldconfig update-po-config
 
-xconfig: $(obj)/.tmp_qtcheck $(obj)/qconf
-	$(Q)$(obj)/qconf Kconfig
+xconfig: $(obj)/util/kconfig/.tmp_qtcheck $(obj)/util/kconfig/qconf
+	$(Q)$(obj)/util/kconfig/qconf Kconfig
 
-gconfig: $(obj)/gconf
-	$(Q)$(obj)/gconf Kconfig
+gconfig: prepare $(obj)/util/kconfig/.tmp_gtkcheck $(obj)/util/kconfig/gconf
+	$(Q)$(obj)/util/kconfig/gconf Kconfig
 
-menuconfig: prepare $(obj)/lxdialog $(obj)/mconf
-	$(Q)$(obj)/mconf Kconfig
+menuconfig: prepare $(obj)/util/kconfig/lxdialog/lxdialog $(obj)/util/kconfig/mconf
+	$(Q)$(obj)/util/kconfig/mconf Kconfig
 
-config: prepare $(obj)/conf
-	$(Q)$(obj)/conf Kconfig
+config: prepare $(obj)/util/kconfig/conf
+	$(Q)$(obj)/util/kconfig/conf Kconfig
 
-oldconfig: prepare $(obj)/conf
-	$(Q)$(obj)/conf -o Kconfig
+oldconfig: prepare $(obj)/util/kconfig/conf
+	$(Q)$(obj)/util/kconfig/conf -o Kconfig
 
-silentoldconfig: prepare $(obj)/conf
-	$(Q)$(obj)/conf -s Kconfig
+silentoldconfig: prepare $(obj)/util/kconfig/conf
+	$(Q)$(obj)/util/kconfig/conf -s Kconfig
 
 .PHONY: randconfig allyesconfig allnoconfig allmodconfig defconfig
 
-randconfig: $(obj)/conf
+randconfig: $(obj)/util/kconfig/conf
 	$(Q)$< -r Kconfig
 
-allyesconfig: $(obj)/conf
+allyesconfig: $(obj)/util/kconfig/conf
 	$(Q)$< -y Kconfig
 
-allnoconfig: $(obj)/conf
+allnoconfig: $(obj)/util/kconfig/conf
 	$(Q)$< -n Kconfig
 
-allmodconfig: $(obj)/conf
+allmodconfig: $(obj)/util/kconfig/conf
 	$(Q)$< -m Kconfig
 
 UNAME_RELEASE := $(shell uname -r)
+
 #CLONECONFIG := $(firstword $(wildcard /proc/config.gz \
 #				      /lib/modules/$(UNAME_RELEASE)/.config \
 #				      /etc/kernel-config \
 #				      /boot/config-$(UNAME_RELEASE)))
-cloneconfig: $(obj)/conf
+
+cloneconfig: $(obj)/util/kconfig/conf
 	$(Q)case "$(CLONECONFIG)" in				\
 	'')	echo -e "The configuration of the running"	\
 			"firmware could not be determined\n";	\
@@ -65,7 +67,7 @@ cloneconfig: $(obj)/conf
 	echo -e "Cloning configuration file $(CLONECONFIG)\n"
 	$(Q)$< -D .config.running Kconfig
 
-defconfig: $(obj)/conf
+defconfig: $(obj)/util/kconfig/conf
 ifeq ($(KBUILD_DEFCONFIG),)
 	$< -d Kconfig
 else
@@ -73,7 +75,7 @@ else
 	$(Q)$< -D configs/$(KBUILD_DEFCONFIG) Kconfig
 endif
 
-%_defconfig: $(obj)/conf
+%_defconfig: $(obj)/util/kconfig/conf
 	$(Q)$< -D configs/$@ Kconfig
 
 # Help text used by make help
@@ -94,51 +96,64 @@ conf-objects  := conf.o zconf.tab.o
 qconf-objects := qconf.o kconfig_load.o zconf.tab.o
 gconf-objects := gconf.o kconfig_load.o zconf.tab.o
 
-$(obj)/mconf: $(patsubst %,$(obj)/%,$(mconf-objects))
+$(obj)/util/kconfig/mconf: $(patsubst %,$(obj)/util/kconfig/%,$(mconf-objects))
 	$(Q)$(HOSTCC) -lncurses -o $@ $^
 
-$(obj)/conf: $(patsubst %,$(obj)/%,$(conf-objects))
+$(obj)/util/kconfig/conf: $(patsubst %,$(obj)/util/kconfig/%,$(conf-objects))
 	$(Q)$(HOSTCC) -lncurses -o $@ $^
 
-$(obj)/qconf: $(patsubst %,$(obj)/%,$(qconf-objects))
+$(obj)/util/kconfig/qconf: $(patsubst %,$(obj)/util/kconfig/%,$(qconf-objects))
 	$(Q)$(HOSTCXX) $(KC_QT_LIBS) -ldl -o $@ $^
 
-$(obj)/gconf: $(patsubst %,$(obj)/%,$(gconf-objects))
+$(obj)/util/kconfig/gconf: $(patsubst %,$(obj)/util/kconfig/%,$(gconf-objects))
 	$(Q)$(HOSTCC) `pkg-config --libs gtk+-2.0 gmodule-2.0 libglade-2.0` -o $@ $^
 
-$(obj)/mconf.o: $(src)/util/kconfig/mconf.c
+
+
+$(obj)/util/kconfig/mconf.o: $(src)/util/kconfig/mconf.c
+	$(Q)mkdir -p $(obj)/util/kconfig
 	$(Q)$(HOSTCC) -I$(src)/util/kconfig -c -o $@ $<
 
-$(obj)/conf.o: $(src)/util/kconfig/conf.c
+$(obj)/util/kconfig/conf.o: $(src)/util/kconfig/conf.c
+	$(Q)mkdir -p $(obj)/util/kconfig
 	$(Q)$(HOSTCC) -I$(src)/util/kconfig -c -o $@ $<
 
-$(obj)/kconfig_load.o: $(src)/util/kconfig/kconfig_load.c
-	$(Q)$(HOSTCC) -I$(obj) -I$(src)/util/kconfig -c -o $@ $<
+$(obj)/util/kconfig/kconfig_load.o: $(src)/util/kconfig/kconfig_load.c
+	$(Q)mkdir -p $(obj)/util/kconfig
+	$(Q)$(HOSTCC) -I$(obj)/util/kconfig -I$(src)/util/kconfig -c -o $@ $<
 
-$(obj)/qconf.o: $(src)/util/kconfig/qconf.cc $(obj)/qconf.moc $(obj)/lkc_defs.h
+$(obj)/util/kconfig/qconf.o: $(src)/util/kconfig/qconf.cc $(obj)/util/kconfig/qconf.moc $(obj)/util/kconfig/lkc_defs.h
+	$(Q)mkdir -p $(obj)/util/kconfig
 	$(Q)$(HOSTCXX) $(KC_QT_CFLAGS) -D LKC_DIRECT_LINK \
-		-I$(src)/util/kconfig -I$(obj) -c -o $@ $<
+		-I$(src)/util/kconfig -I$(obj)/util/kconfig -c -o $@ $<
 
-$(obj)/gconf.o: $(obj)/lkc_defs.h
+$(obj)/util/kconfig/gconf.o: $(src)/util/kconfig/gconf.c $(obj)/util/kconfig/lkc_defs.h
+	$(Q)mkdir -p $(obj)/util/kconfig
 	$(Q)$(HOSTCC) `pkg-config --cflags gtk+-2.0 gmodule-2.0 libglade-2.0` \
 		-D LKC_DIRECT_LINK -I$(obj) -I$(src)/util/kconfig -c -o $@ $<
 
-$(obj)/%.moc: $(src)/util/kconfig/%.h
+$(obj)/util/kconfig/%.moc: $(src)/util/kconfig/%.h
+	$(Q)mkdir -p $(obj)/util/kconfig
 	$(Q)$(KC_QT_MOC) -i $< -o $@
 
-$(obj)/lkc_defs.h: $(src)/util/kconfig/lkc_proto.h
+$(obj)/util/kconfig/lkc_defs.h: $(src)/util/kconfig/lkc_proto.h
+	$(Q)mkdir -p $(obj)/util/kconfig
 	$(Q)sed < $< > $@ 's/P(\([^,]*\),.*/#define \1 (\*\1_p)/'
 
-$(obj)/zconf.tab.o: $(obj)/zconf.tab.c $(obj)/zconf.hash.c $(obj)/lex.zconf.c
-	$(Q)$(HOSTCC) -I$(src)/util/kconfig  -c -o $@ $(obj)/zconf.tab.c
+$(obj)/util/kconfig/zconf.tab.o: $(obj)/util/kconfig/zconf.tab.c $(obj)/util/kconfig/zconf.hash.c $(obj)/util/kconfig/lex.zconf.c
+	$(Q)mkdir -p $(obj)/util/kconfig
+	$(Q)$(HOSTCC) -I$(src)/util/kconfig  -c -o $@ $(obj)/util/kconfig/zconf.tab.c
 
-$(obj)/lex.zconf.c: $(src)/util/kconfig/lex.zconf.c_shipped
+$(obj)/util/kconfig/lex.zconf.c: $(src)/util/kconfig/lex.zconf.c_shipped
+	$(Q)mkdir -p $(obj)/util/kconfig
 	$(Q)cp $< $@
 
-$(obj)/zconf.hash.c: $(src)/util/kconfig/zconf.hash.c_shipped
+$(obj)/util/kconfig/zconf.hash.c: $(src)/util/kconfig/zconf.hash.c_shipped
+	$(Q)mkdir -p $(obj)/util/kconfig
 	$(Q)cp $< $@
 
-$(obj)/zconf.tab.c: $(src)/util/kconfig/zconf.tab.c_shipped
+$(obj)/util/kconfig/zconf.tab.c: $(src)/util/kconfig/zconf.tab.c_shipped
+	$(Q)mkdir -p $(obj)/util/kconfig
 	$(Q)cp $< $@
 
 include $(src)/util/kconfig/lxdialog/Makefile
@@ -169,12 +184,12 @@ endif
 
 
 ifeq ($(qconf-target),1)
-$(obj)/.tmp_qtcheck: $(src)/util/kconfig/Makefile
+$(obj)/util/kconfig/.tmp_qtcheck: $(src)/util/kconfig/Makefile
 
--include $(obj)/.tmp_qtcheck
+-include $(obj)/util/kconfig/.tmp_qtcheck
 
 # QT needs some extra effort...
-$(obj)/.tmp_qtcheck:
+$(obj)/util/kconfig/.tmp_qtcheck:
 	@set -e; echo "  CHECK   qt"; dir=""; pkg=""; \
 	pkg-config --exists qt 2> /dev/null && pkg=qt; \
 	pkg-config --exists qt-mt 2> /dev/null && pkg=qt-mt; \
@@ -211,22 +226,23 @@ $(obj)/.tmp_qtcheck:
 	  echo "*"; \
 	  moc="/usr/bin/moc"; \
 	fi; \
-	mkdir -p $(obj); \
+	mkdir -p $(obj)/util/kconfig; \
 	echo "KC_QT_CFLAGS=$$cflags" > $@; \
 	echo "KC_QT_LIBS=$$libs" >> $@; \
 	echo "KC_QT_MOC=$$moc" >> $@
 endif
 
 ifeq ($(gconf-target),1)
-$(obj)/gconf.o: $(obj)/.tmp_gtkcheck
+$(obj)/util/kconfig/.tmp_gtkcheck: $(src)/util/kconfig/Makefile
 
--include $(obj)/.tmp_gtkcheck
+-include $(obj)/util/kconfig/.tmp_gtkcheck
 
 # GTK needs some extra effort, too...
-$(obj)/.tmp_gtkcheck:
+$(obj)/util/kconfig/.tmp_gtkcheck:
 	@if `pkg-config --exists gtk+-2.0 gmodule-2.0 libglade-2.0`; then		\
 		if `pkg-config --atleast-version=2.0.0 gtk+-2.0`; then			\
-			touch $@;								\
+			mkdir -p $(obj)/util/kconfig;					\
+			touch $@;							\
 		else									\
 			echo "*"; 							\
 			echo "* GTK+ is present but version >= 2.0.0 is required.";	\

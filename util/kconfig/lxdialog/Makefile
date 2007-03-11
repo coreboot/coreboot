@@ -5,7 +5,7 @@ CONFIG_SHELL:=sh
 
 check-lxdialog  := $(src)/util/kconfig/lxdialog/check-lxdialog.sh
 
-# Use reursively expanded variables so we do not call gcc unless
+# Use recursively expanded variables so we do not call gcc unless
 # we really need to do so. (Do not call gcc as part of make mrproper)
 HOST_EXTRACFLAGS = $(shell $(CONFIG_SHELL) $(check-lxdialog) -ccflags)
 HOST_LOADLIBES   = $(shell $(CONFIG_SHELL) $(check-lxdialog) -ldflags $(HOSTCC))
@@ -16,39 +16,17 @@ HOST_EXTRACFLAGS += -DLOCALE
 $(obj)/dochecklxdialog:
 	$(Q)$(CONFIG_SHELL) $(check-lxdialog) -check $(HOSTCC) $(HOST_LOADLIBES)
 
-hostprogs-y	:= lxdialog
-always		:= $(hostprogs-y) dochecklxdialog
+always		:= lxdialog dochecklxdialog
 
 lxdialog-objs := checklist.o menubox.o textbox.o yesno.o inputbox.o \
 		 util.o lxdialog.o msgbox.o
 
+$(obj)/util/kconfig/lxdialog/lxdialog: $(obj)/dochecklxdialog $(patsubst %,$(obj)/util/kconfig/lxdialog/%,$(lxdialog-objs))
+	$(Q)$(HOSTCC) $(HOST_LOADLIBES) \
+		$(patsubst %,$(obj)/util/kconfig/lxdialog/%,$(lxdialog-objs)) -o $@
 
-$(obj)/lxdialog: $(obj)/dochecklxdialog $(patsubst %,$(obj)/%,$(lxdialog-objs))
-	$(Q)$(HOSTCC) $(HOST_LOADLIBES) $(patsubst %,$(obj)/%,$(lxdialog-objs)) -o $@
-
-$(obj)/checklist.o: $(src)/util/kconfig/lxdialog/checklist.c
+$(obj)/util/kconfig/lxdialog/%.o: $(src)/util/kconfig/lxdialog/%.c
+	$(Q)mkdir -p $(obj)/util/kconfig/lxdialog/
 	$(Q)$(HOSTCC) $(HOST_EXTRACFLAGS) $^ -c -o $@
-
-$(obj)/menubox.o: $(src)/util/kconfig/lxdialog/menubox.c
-	$(Q)$(HOSTCC) $(HOST_EXTRACFLAGS) $^ -c -o $@
-
-$(obj)/textbox.o: $(src)/util/kconfig/lxdialog/textbox.c
-	$(Q)$(HOSTCC) $(HOST_EXTRACFLAGS) $^ -c -o $@
-
-$(obj)/yesno.o: $(src)/util/kconfig/lxdialog/yesno.c
-	$(Q)$(HOSTCC) $(HOST_EXTRACFLAGS) $^ -c -o $@
-
-$(obj)/inputbox.o: $(src)/util/kconfig/lxdialog/inputbox.c
-	$(Q)$(HOSTCC) $(HOST_EXTRACFLAGS) $^ -c -o $@
-
-$(obj)/util.o: $(src)/util/kconfig/lxdialog/util.c
-	$(Q)$(HOSTCC) $(HOST_EXTRACFLAGS) $^ -c -o $@
-
-$(obj)/lxdialog.o: $(src)/util/kconfig/lxdialog/lxdialog.c
-	$(Q)$(HOSTCC) $(HOST_EXTRACFLAGS) $^ -c -o $@
-
-$(obj)/msgbox.o: $(src)/util/kconfig/lxdialog/msgbox.c
-	$(Q)$(HOSTCC) $(HOST_EXTRACFLAGS) $^ -c -o $@
-
 
 

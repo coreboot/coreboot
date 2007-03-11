@@ -19,8 +19,9 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-$(obj)/%.o: $(src)/device/%.c
+$(obj)/device/%.o: $(src)/device/%.c
+	$(Q)mkdir -p $(obj)/device
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
 
-STAGE2_DEVICE_OBJ = $(obj)/device.o $(obj)/device_util.o \
-		    $(obj)/root_device.o $(obj)/pci_device.o $(obj)/pci_ops.o
+STAGE2_DEVICE_OBJ = device.o device_util.o \
+		    root_device.o pci_device.o pci_ops.o

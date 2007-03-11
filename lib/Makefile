@@ -35,6 +35,7 @@ endif
 lzma:
 	$(Q)printf "Building lzma... skipped\n"
 
-$(obj)/%.o: $(src)/lib/%.c
+$(obj)/lib/%.o: $(src)/lib/%.c
+	$(Q)mkdir -p $(obj)/lib
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
 

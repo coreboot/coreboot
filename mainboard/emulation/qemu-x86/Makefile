@@ -37,10 +37,11 @@ $(obj)/linuxbios.vpd:
 # directory and is built from what was auto.c in v2.
 #
 
-$(obj)/linuxbios.initram: $(obj)/stage0.init $(obj)/stage0.o $(obj)/initram.o
+$(obj)/linuxbios.initram: $(obj)/stage0.init $(obj)/stage0.o $(obj)/mainboard/$(MAINBOARDDIR)/initram.o
 	$(Q)printf "Building linuxbios.initram... "
 	$(Q)# initram links against stage0
-	$(Q)$(LD) -R $(obj)/stage0.o -Ttext 0x80000 $(obj)/initram.o \
+	$(Q)$(LD) -R $(obj)/stage0.o -Ttext 0x80000 \
+		$(obj)/mainboard/$(MAINBOARDDIR)/initram.o \
 		--entry=main -o $(obj)/linuxbios.initram.o
 	$(Q)objcopy -O binary $(obj)/linuxbios.initram.o \
 		$(obj)/linuxbios.initram
@@ -50,15 +51,15 @@ $(obj)/linuxbios.initram: $(obj)/stage0.init $(obj)/stage0.o $(obj)/initram.o
 # Miscellaneous important targets.
 #
 
-$(obj)/mainboard.o: $(obj)/statictree.o
+$(obj)/mainboard/$(MAINBOARDDIR)/mainboard.o: $(obj)/mainboard/$(MAINBOARDDIR)/statictree.o
 
-$(obj)/statictree.o: $(obj)/statictree.c
-	$(Q)$(CC) $(CFLAGS) $(LINUXBIOSINCLUDE) -c -o $(obj)/statictree.o $(obj)/statictree.c
+$(obj)/mainboard/$(MAINBOARDDIR)/statictree.o: $(obj)/mainboard/$(MAINBOARDDIR)/statictree.c
+	$(Q)$(CC) $(CFLAGS) $(LINUXBIOSINCLUDE) -c -o $@ $<
 
-$(obj)/statictree.c: mainboard/$(MAINBOARDDIR)/dts $(obj)/util/dtc/dtc
-	$(Q)$(obj)/util/dtc/dtc -O lb mainboard/$(MAINBOARDDIR)/dts >$(obj)/statictree.c 
+$(obj)/mainboard/$(MAINBOARDDIR)/statictree.c: $(src)/mainboard/$(MAINBOARDDIR)/dts $(obj)/util/dtc/dtc
+	$(Q)$(obj)/util/dtc/dtc -O lb mainboard/$(MAINBOARDDIR)/dts > $@
 
-STAGE2_MAINBOARD_OBJ = $(obj)/mainboard.o
+STAGE2_MAINBOARD_OBJ = mainboard.o
 STAGE2_CHIPSET_OBJ = 
 
 # chipset

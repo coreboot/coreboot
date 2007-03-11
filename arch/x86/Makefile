@@ -60,19 +60,21 @@ $(obj)/linuxbios.bootblock: $(obj)/linuxbios.vpd $(obj)/stage0.init
 # initram module and the various stages and payload files.
 #
 
-STAGE0_CONSOLE_OBJ   = $(obj)/vtxprintf.o $(obj)/vsprintf.o $(obj)/console.o
-STAGE0_LIB_OBJ       = $(obj)/uart8250.o $(obj)/mem.o $(obj)/elfboot.o \
-		       $(obj)/lar.o
-STAGE0_ARCH_X86_OBJ  = $(obj)/cachemain.o $(obj)/serial.o $(obj)/archelfboot.o
-
+STAGE0_CONSOLE_OBJ   = vtxprintf.o vsprintf.o console.o
+STAGE0_LIB_OBJ       = uart8250.o mem.o elfboot.o lar.o
+STAGE0_ARCH_X86_OBJ  = cachemain.o serial.o archelfboot.o
 
 ifeq ($(CONFIG_CAR_TYPE_I586),y)
-	STAGE0_CAR_OBJ = $(obj)/stage0_i586.o
+	STAGE0_CAR_OBJ = stage0_i586.o
 else
-	STAGE0_CAR_OBJ = $(obj)/stage0_i586.o
+	STAGE0_CAR_OBJ = stage0_i586.o
 endif
 
-STAGE0_OBJ := $(STAGE0_CONSOLE_OBJ) $(STAGE0_LIB_OBJ) $(STAGE0_ARCH_X86_OBJ) $(STAGE0_CAR_OBJ)
+
+STAGE0_OBJ := $(patsubst %,$(obj)/console/%,$(STAGE0_CONSOLE_OBJ)) \
+	      $(patsubst %,$(obj)/lib/%,$(STAGE0_LIB_OBJ)) \
+	      $(patsubst %,$(obj)/arch/x86/%,$(STAGE0_ARCH_X86_OBJ)) \
+	      $(patsubst %,$(obj)/arch/x86/%,$(STAGE0_CAR_OBJ))
 
 $(obj)/stage0.init: $(STAGE0_OBJ)
 	$(Q)printf "Building stage0.init... "
@@ -99,14 +101,20 @@ $(obj)/stage0.init: $(STAGE0_OBJ)
 # TODO: This should be compressed with the default compressor.
 #
 
-STAGE2_LIB_OBJ       = $(obj)/stage2.o $(obj)/clog2.o $(obj)/mem.o $(obj)/malloc.o \
-		       $(obj)/tables.o $(obj)/delay.o $(obj)/compute_ip_checksum.o
-STAGE2_ARCH_X86_OBJ  = $(obj)/archtables.o $(obj)/linuxbios_table.o $(obj)/udelay_io.o
-STAGE2_ARCH_X86_OBJ += $(obj)/pci_ops_auto.o $(obj)/pci_ops_conf1.o $(obj)/pci_ops_conf2.o 
-STAGE2_DYNAMIC_OBJ   = $(obj)/statictree.o
+STAGE2_LIB_OBJ       = stage2.o clog2.o mem.o malloc.o tables.o delay.o compute_ip_checksum.o
 
-STAGE2_OBJ := $(STAGE2_LIB_OBJ) $(STAGE2_DEVICE_OBJ) $(STAGE2_ARCH_X86_OBJ)
-STAGE2_OBJ += $(STAGE2_MAINBOARD_OBJ) $(STAGE2_DYNAMIC_OBJ) $(STAGE2_CHIPSET_OBJ)
+STAGE2_ARCH_X86_OBJ  = archtables.o linuxbios_table.o udelay_io.o
+STAGE2_ARCH_X86_OBJ += pci_ops_auto.o pci_ops_conf1.o pci_ops_conf2.o 
+
+STAGE2_DYNAMIC_OBJ   = statictree.o
+
+STAGE2_OBJ := $(patsubst %,$(obj)/lib/%,$(STAGE2_LIB_OBJ)) \
+	      $(patsubst %,$(obj)/arch/x86/%,$(STAGE2_ARCH_X86_OBJ)) \
+	      $(patsubst %,$(obj)/device/%,$(STAGE2_DEVICE_OBJ)) \
+	      $(patsubst %,$(obj)/mainboard/$(MAINBOARDDIR)/%,$(STAGE2_MAINBOARD_OBJ)) \
+	      $(patsubst %,$(obj)/mainboard/$(MAINBOARDDIR)/%,$(STAGE2_DYNAMIC_OBJ)) \
+
+STAGE2_OBJ += $(STAGE2_CHIPSET_OBJ)
 
 $(obj)/linuxbios.stage2: $(obj)/stage0.init $(STAGE2_OBJ)
 	$(Q)printf "Building linuxbios.stage2... "
@@ -133,17 +141,19 @@ payload:
 # Build rules.
 #
 
-$(obj)/%.o: $(src)/arch/x86/%.c
+$(obj)/arch/x86/%.o: $(src)/arch/x86/%.c
+	$(Q)mkdir -p $(obj)/arch/x86
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
 
-$(obj)/%.o: $(src)/mainboard/$(MAINBOARDDIR)/%.c
+$(obj)/mainboard/$(MAINBOARDDIR)/%.o: $(src)/mainboard/$(MAINBOARDDIR)/%.c
+	$(Q)mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
 
 # Building asm stub.
-$(obj)/stage0%.o: $(src)/arch/x86/stage0%.S
+$(obj)/arch/x86/stage0%.o: $(src)/arch/x86/stage0%.S
 	$(Q)$(CC) -E $(LINUXBIOSINCLUDE) $< \
-		-o $(obj)/stage0_asm.s -DBOOTBLK=0x1f00 -DRESRVED=0xf0 \
+		-o $(obj)/arch/x86/stage0_asm.s -DBOOTBLK=0x1f00 -DRESRVED=0xf0 \
 		-DDATE=\"`date +%Y/%m/%d`\"
-	$(Q)$(AS) $(obj)/stage0_asm.s -o $@
+	$(Q)$(AS) $(obj)/arch/x86/stage0_asm.s -o $@
 
 endif

@@ -12,36 +12,28 @@ DEPFILES = $(DTC_OBJS:.o=.d)
 
 #all: $(TARGETS)
 
-$(obj)/util/dtc/dtc: $(patsubst %,$(obj)/%,$(DTC_OBJS))
+$(obj)/util/dtc/dtc: $(patsubst %,$(obj)/util/dtc/%,$(DTC_OBJS))
 	$(Q)mkdir -p $(obj)/util/dtc/
 	$(Q)$(HOSTCC) -o $@ $^
 
 ftdump:	ftdump.o
 	$(Q)$(HOSTCC) -o $@ $^
 
-$(obj)/dtc-parser.tab.c $(obj)/dtc-parser.tab.h $(obj)/dtc-parser.output: $(src)/util/dtc/dtc-parser.y
-	$(Q)cd $(obj); $(BISON) -d $< &> $(obj)/dtc.bison.out
+$(obj)/util/dtc/dtc-parser.tab.c $(obj)/util/dtc/dtc-parser.tab.h $(obj)/util/dtc/dtc-parser.output: $(src)/util/dtc/dtc-parser.y
+	$(Q)cd $(obj)/util/dtc; $(BISON) -d $< &> $(obj)/util/dtc/dtc.bison.out
 
-$(obj)/lex.yy.c: $(src)/util/dtc/dtc-lexer.l
-	$(Q)cd $(obj); $(LEX) $<
+$(obj)/util/dtc/lex.yy.c: $(src)/util/dtc/dtc-lexer.l
+	$(Q)cd $(obj)/util/dtc; $(LEX) $<
 
-$(obj)/dtc.o: $(src)/util/dtc/dtc.c
-	$(Q)$(HOSTCC) $(HOSTCFLAGS) -o $@ -c $< 
-$(obj)/livetree.o: $(src)/util/dtc/livetree.c
-	$(Q)$(HOSTCC) $(HOSTCFLAGS) -o $@ -c $< 
-$(obj)/flattree.o: $(src)/util/dtc/flattree.c
-	$(Q)$(HOSTCC) $(HOSTCFLAGS) -o $@ -c $< 
-$(obj)/data.o: $(src)/util/dtc/data.c
-	$(Q)$(HOSTCC) $(HOSTCFLAGS) -o $@ -c $< 
-$(obj)/treesource.o: $(src)/util/dtc/treesource.c
-	$(Q)$(HOSTCC) $(HOSTCFLAGS) -o $@ -c $< 
-$(obj)/fstree.o: $(src)/util/dtc/fstree.c
-	$(Q)$(HOSTCC) $(HOSTCFLAGS) -o $@ -c $< 
-$(obj)/dtc-parser.tab.o: $(obj)/dtc-parser.tab.c
-	$(Q)$(HOSTCC) -I$(src)/util/dtc $(HOSTCFLAGS) -o $@ -c $< 
-$(obj)/lex.yy.o: $(obj)/lex.yy.c $(obj)/dtc-parser.tab.h
+$(obj)/util/dtc/%.o: $(src)/util/dtc/%.c
+	$(Q)mkdir -p $(obj)/util/dtc/
 	$(Q)$(HOSTCC) -I$(src)/util/dtc $(HOSTCFLAGS) -o $@ -c $< 
 
+$(obj)/util/dtc/dtc-parser.tab.o: $(obj)/util/dtc/dtc-parser.tab.c
+	$(Q)$(HOSTCC) -I$(src)/util/dtc $(HOSTCFLAGS) -o $@ -c $< 
+
+$(obj)/util/dtc/lex.yy.o: $(obj)/util/dtc/lex.yy.c $(obj)/util/dtc/dtc-parser.tab.h
+	$(Q)$(HOSTCC) -I$(src)/util/dtc $(HOSTCFLAGS) -o $@ -c $< 
 
 ifdef DTC_DEBUG
 

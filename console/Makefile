@@ -19,6 +19,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-$(obj)/%.o: $(src)/console/%.c
+$(obj)/console/%.o: $(src)/console/%.c
+	$(Q)mkdir -p $(obj)/console
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
 

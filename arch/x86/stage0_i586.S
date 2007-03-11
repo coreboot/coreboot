@@ -488,9 +488,11 @@ var_mtrr_msr:
 
 # Reset vector.
 
-# RVECTOR: size of reset vector, default is 0x10
-# RESRVED: size of vpd code, default is 0xf0
-# BOOTBLK: size of bootblock code, default is 0x1f00 (8k-256b)
+/*
+ RVECTOR: size of reset vector, default is 0x10
+ RESRVED: size of vpd code, default is 0xf0
+ BOOTBLK: size of bootblock code, default is 0x1f00 (8k-256b)
+*/
 
 SEGMENT_SIZE = 0x10000
 RVECTOR      = 0x00010

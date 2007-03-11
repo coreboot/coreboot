@@ -21,5 +21,6 @@
 
 $(obj)/console/%.o: $(src)/console/%.c
 	$(Q)mkdir -p $(obj)/console
+	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
 

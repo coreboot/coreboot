@@ -21,10 +21,9 @@
 SOURCE := lar.c create.c extract.c list.c lib.c bootblock.c
 
 $(obj)/util/lar/lar: $(patsubst %,$(src)/util/lar/%,$(SOURCE))
-	$(Q)printf "Building LAR utility... "
 	$(Q)mkdir -p $(obj)/util/lar
+	$(Q)printf "  HOSTCC  $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(HOSTCC) $(HOSTCFLAGS) -o $@ $^
-	$(Q)printf "done\n"
 
 
 # -----------------------------------------------------------------------------

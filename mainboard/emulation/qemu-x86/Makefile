@@ -26,9 +26,8 @@
 #
 
 $(obj)/linuxbios.vpd:
-	$(Q)printf "Building dummy VPD... "
+	$(Q)printf "  BUILD   DUMMY VPD\n"
 	$(Q)dd if=/dev/zero of=$(obj)/linuxbios.vpd bs=256 count=1 $(SILENT)
-	$(Q)printf "done\n"
 
 #
 # This is going to be the init RAM code.
@@ -38,14 +37,14 @@ $(obj)/linuxbios.vpd:
 #
 
 $(obj)/linuxbios.initram: $(obj)/stage0.init $(obj)/stage0.o $(obj)/mainboard/$(MAINBOARDDIR)/initram.o
-	$(Q)printf "Building linuxbios.initram... "
 	$(Q)# initram links against stage0
+	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(LD) -R $(obj)/stage0.o -Ttext 0x80000 \
 		$(obj)/mainboard/$(MAINBOARDDIR)/initram.o \
 		--entry=main -o $(obj)/linuxbios.initram.o
+	$(Q)printf "  OBJCOPY $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)objcopy -O binary $(obj)/linuxbios.initram.o \
 		$(obj)/linuxbios.initram
-	$(Q)printf "done\n"
 
 #
 # Miscellaneous important targets.
@@ -54,9 +53,11 @@ $(obj)/linuxbios.initram: $(obj)/stage0.init $(obj)/stage0.o $(obj)/mainboard/$(
 $(obj)/mainboard/$(MAINBOARDDIR)/mainboard.o: $(obj)/mainboard/$(MAINBOARDDIR)/statictree.o
 
 $(obj)/mainboard/$(MAINBOARDDIR)/statictree.o: $(obj)/mainboard/$(MAINBOARDDIR)/statictree.c
+	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) $(CFLAGS) $(LINUXBIOSINCLUDE) -c -o $@ $<
 
 $(obj)/mainboard/$(MAINBOARDDIR)/statictree.c: $(src)/mainboard/$(MAINBOARDDIR)/dts $(obj)/util/dtc/dtc
+	$(Q)printf "  DTC     $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(obj)/util/dtc/dtc -O lb mainboard/$(MAINBOARDDIR)/dts > $@
 
 STAGE2_MAINBOARD_OBJ = mainboard.o

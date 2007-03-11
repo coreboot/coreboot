@@ -70,7 +70,7 @@ LINUXBIOS_EXTRA_VERSION := -$(shell echo $(CONFIG_LOCALVERSION))
 endif
 
 all: prepare prepare2 $(obj)/linuxbios.rom
-	$(Q)printf "Build process finished.\n"
+	$(Q)printf "  DONE\n"
 
 ARCH:=$(shell echo $(CONFIG_ARCH))
 MAINBOARDDIR=$(shell echo $(CONFIG_MAINBOARD_NAME))
@@ -108,7 +108,9 @@ prepare:
 	$(Q)mkdir -p $(obj)
 
 prepare2:
+	$(Q)printf "  CP      $(subst $(shell pwd)/,,$(obj)/config.h)\n"
 	$(Q)cp $(src)/.tmpconfig.h $(obj)/config.h
+	$(Q)printf "  GEN     $(subst $(shell pwd)/,,$(obj)/build.h)\n"
 	$(Q)printf "#define LINUXBIOS_VERSION \"$(KERNELVERSION)\"\n" > $(obj)/build.h
 	$(Q)printf "#define LINUXBIOS_EXTRA_VERSION \"$(LINUXBIOS_EXTRA_VERSION)\"\n" >> $(obj)/build.h
 	$(Q)printf "#define LINUXBIOS_BUILD \"`LANG= date`\"\n" >> $(obj)/build.h
@@ -118,18 +120,17 @@ prepare2:
 	$(Q)printf "#define LINUXBIOS_LINKER \"$(shell LANG= $(LD) --version | head -n1)\"\n" >> $(obj)/build.h
 
 clean:
-	$(Q)printf "Cleaning up... "
+	$(Q)printf "  CLEAN   $(subst $(shell pwd)/,,$(obj))\n"
 	$(Q)rm -rf $(obj)
+	$(Q)printf "  CLEAN   $(subst $(shell pwd)/,,$(DOXYGEN_OUTPUT_DIR))\n"
 	$(Q)rm -rf $(DOXYGEN_OUTPUT_DIR)
-	$(Q)printf "done\n"
 
 distclean: clean
-	$(Q)printf "Deleting config files... "
+	$(Q)printf "  CLEAN   .kconfig.d .config .tmpconfig.h .config.old .xcompile\n"
 	$(Q)rm -f .kconfig.d .config .tmpconfig.h .config.old .xcompile
-	$(Q)printf "done\n"
 
 %.o: %.c
-	$(Q)printf "Compiling $<\n"
+	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) $(CFLAGS) -o $@ -c $<
 
 .PHONY: doc

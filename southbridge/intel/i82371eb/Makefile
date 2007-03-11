@@ -19,6 +19,7 @@
 ##
 
 $(obj)/%.o: $(src)/southbridge/intel/i82371eb/%.c
+	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
 
 STAGE2_CHIPSET_OBJ += $(obj)/i82371eb.o

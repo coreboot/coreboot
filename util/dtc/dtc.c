@@ -153,8 +153,10 @@ int main(int argc, char *argv[])
 	else
 		arg = argv[optind];
 
-	fprintf(stderr, "DTC: %s->%s  on file \"%s\"\n",
-		inform, outform, arg);
+	// fprintf(stderr, "DTC: %s->%s  on file \"%s\"\n",
+	// 	inform, outform, arg);
+	fprintf(stderr, "  DTC     %s (%s->%s)\n",
+		arg, inform, outform);
 
 	if (streq(inform, "dts")) {
 		inf = dtc_open_file(arg);

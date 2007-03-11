@@ -150,14 +150,16 @@ int create_lar(const char *archivename, struct file *files)
 	 */
 
 	if (bootblock_len) {
-		printf ("Detected bootblock of %d bytes\n", bootblock_len);
+		if (verbose())
+			printf ("Detected bootblock of %d bytes\n", bootblock_len);
 
 		bb_header_len = sizeof(struct lar_header) +
 			((strlen(basename(get_bootblock()))+15) & 0xfffffff0);
 
 		bb_header_len = (bb_header_len + 15) & 0xfffffff0;
 
-		printf ("Required bootblock header of %d bytes\n", bb_header_len);
+		if (verbose())
+			printf ("Required bootblock header of %d bytes\n", bb_header_len);
 
 		diff -= bootblock_len;
 		diff -= bb_header_len;

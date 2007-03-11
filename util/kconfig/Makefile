@@ -97,51 +97,63 @@ qconf-objects := qconf.o kconfig_load.o zconf.tab.o
 gconf-objects := gconf.o kconfig_load.o zconf.tab.o
 
 $(obj)/util/kconfig/mconf: $(patsubst %,$(obj)/util/kconfig/%,$(mconf-objects))
+	$(Q)printf "  HOSTCC  $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(HOSTCC) -lncurses -o $@ $^
 
 $(obj)/util/kconfig/conf: $(patsubst %,$(obj)/util/kconfig/%,$(conf-objects))
+	$(Q)printf "  HOSTCC  $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(HOSTCC) -lncurses -o $@ $^
 
 $(obj)/util/kconfig/qconf: $(patsubst %,$(obj)/util/kconfig/%,$(qconf-objects))
+	$(Q)printf "  HOSTCXX $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(HOSTCXX) $(KC_QT_LIBS) -ldl -o $@ $^
 
 $(obj)/util/kconfig/gconf: $(patsubst %,$(obj)/util/kconfig/%,$(gconf-objects))
+	$(Q)printf "  HOSTCC  $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(HOSTCC) `pkg-config --libs gtk+-2.0 gmodule-2.0 libglade-2.0` -o $@ $^
 
 
 
 $(obj)/util/kconfig/mconf.o: $(src)/util/kconfig/mconf.c
 	$(Q)mkdir -p $(obj)/util/kconfig
+	$(Q)printf "  HOSTCC  $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(HOSTCC) -I$(src)/util/kconfig -c -o $@ $<
 
 $(obj)/util/kconfig/conf.o: $(src)/util/kconfig/conf.c
 	$(Q)mkdir -p $(obj)/util/kconfig
+	$(Q)printf "  HOSTCC  $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(HOSTCC) -I$(src)/util/kconfig -c -o $@ $<
 
 $(obj)/util/kconfig/kconfig_load.o: $(src)/util/kconfig/kconfig_load.c
 	$(Q)mkdir -p $(obj)/util/kconfig
+	$(Q)printf "  HOSTCC  $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(HOSTCC) -I$(obj)/util/kconfig -I$(src)/util/kconfig -c -o $@ $<
 
 $(obj)/util/kconfig/qconf.o: $(src)/util/kconfig/qconf.cc $(obj)/util/kconfig/qconf.moc $(obj)/util/kconfig/lkc_defs.h
 	$(Q)mkdir -p $(obj)/util/kconfig
+	$(Q)printf "  HOSTCXX $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(HOSTCXX) $(KC_QT_CFLAGS) -D LKC_DIRECT_LINK \
 		-I$(src)/util/kconfig -I$(obj)/util/kconfig -c -o $@ $<
 
 $(obj)/util/kconfig/gconf.o: $(src)/util/kconfig/gconf.c $(obj)/util/kconfig/lkc_defs.h
 	$(Q)mkdir -p $(obj)/util/kconfig
+	$(Q)printf "  HOSTCC  $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(HOSTCC) `pkg-config --cflags gtk+-2.0 gmodule-2.0 libglade-2.0` \
 		-D LKC_DIRECT_LINK -I$(obj) -I$(src)/util/kconfig -c -o $@ $<
 
 $(obj)/util/kconfig/%.moc: $(src)/util/kconfig/%.h
 	$(Q)mkdir -p $(obj)/util/kconfig
+	$(Q)printf "  MOC     $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(KC_QT_MOC) -i $< -o $@
 
 $(obj)/util/kconfig/lkc_defs.h: $(src)/util/kconfig/lkc_proto.h
 	$(Q)mkdir -p $(obj)/util/kconfig
+	$(Q)printf "  GEN     $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)sed < $< > $@ 's/P(\([^,]*\),.*/#define \1 (\*\1_p)/'
 
 $(obj)/util/kconfig/zconf.tab.o: $(obj)/util/kconfig/zconf.tab.c $(obj)/util/kconfig/zconf.hash.c $(obj)/util/kconfig/lex.zconf.c
 	$(Q)mkdir -p $(obj)/util/kconfig
+	$(Q)printf "  HOSTCC  $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(HOSTCC) -I$(src)/util/kconfig  -c -o $@ $(obj)/util/kconfig/zconf.tab.c
 
 $(obj)/util/kconfig/lex.zconf.c: $(src)/util/kconfig/lex.zconf.c_shipped

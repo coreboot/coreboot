@@ -21,6 +21,7 @@
 
 $(obj)/device/%.o: $(src)/device/%.c
 	$(Q)mkdir -p $(obj)/device
+	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
 
 STAGE2_DEVICE_OBJ = device.o device_util.o \

@@ -14,6 +14,7 @@ DEPFILES = $(DTC_OBJS:.o=.d)
 
 $(obj)/util/dtc/dtc: $(patsubst %,$(obj)/util/dtc/%,$(DTC_OBJS))
 	$(Q)mkdir -p $(obj)/util/dtc/
+	$(Q)printf "  HOSTCC  $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(HOSTCC) -o $@ $^
 
 ftdump:	ftdump.o
@@ -27,9 +28,11 @@ $(obj)/util/dtc/lex.yy.c: $(src)/util/dtc/dtc-lexer.l
 
 $(obj)/util/dtc/%.o: $(src)/util/dtc/%.c
 	$(Q)mkdir -p $(obj)/util/dtc/
+	$(Q)printf "  HOSTCC  $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(HOSTCC) -I$(src)/util/dtc $(HOSTCFLAGS) -o $@ -c $< 
 
 $(obj)/util/dtc/dtc-parser.tab.o: $(obj)/util/dtc/dtc-parser.tab.c
+	$(Q)printf "  HOSTCC  $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(HOSTCC) -I$(src)/util/dtc $(HOSTCFLAGS) -o $@ -c $< 
 
 $(obj)/util/dtc/lex.yy.o: $(obj)/util/dtc/lex.yy.c $(obj)/util/dtc/dtc-parser.tab.h
@@ -51,6 +54,7 @@ clean:
 endif
 
 %.d: %.c
+	$(Q)printf "  HOSTCC  $(subst $(shell pwd)/,,$(@))\n"
 	$(HOSTCC) -MM -MG -MT "$*.o $@" $< > $@
 
 -include $(DEPFILES)

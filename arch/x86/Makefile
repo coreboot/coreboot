@@ -37,21 +37,22 @@ SILENT := &> /dev/null
 ROM_SIZE := $(shell expr $(CONFIG_LINUXBIOS_ROMSIZE_KB) \* 1024 )
 
 $(obj)/linuxbios.rom: $(obj)/linuxbios.bootblock $(obj)/util/lar/lar lzma $(obj)/linuxbios.initram $(obj)/linuxbios.stage2 payload
-	$(Q)printf "Building LinuxBIOS image... \n"
 	$(Q)rm -rf $(obj)/lar.tmp
 	$(Q)mkdir $(obj)/lar.tmp
 	$(Q)mkdir $(obj)/lar.tmp/normal
 	$(Q)cp $(obj)/linuxbios.initram $(obj)/lar.tmp/normal/initram
 	$(Q)cp $(obj)/linuxbios.stage2 $(obj)/lar.tmp/normal/stage2
 	$(Q)cp $(CONFIG_PAYLOAD) $(obj)/lar.tmp/normal/payload
-	$(Q)printf "  "
-	$(Q)cd $(obj)/lar.tmp && ../util/lar/lar -cv ../linuxbios.rom . \
+	$(Q)printf "  LAR     $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)cd $(obj)/lar.tmp && ../util/lar/lar -c ../linuxbios.rom . \
 		-s $(ROM_SIZE) -b $(obj)/linuxbios.bootblock
 	$(Q)# QEMU wants bios.bin:
 	$(Q)# Run "qemu -L build/ -nographic -hda /dev/zero".
+	$(Q)printf "  CP      $(subst $(shell pwd)/,,$(obj)/bios.bin)\n"
 	$(Q)cp $@ $(obj)/bios.bin
 
 $(obj)/linuxbios.bootblock: $(obj)/linuxbios.vpd $(obj)/stage0.init
+	$(Q)printf "  BUILD   $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)cat $^ > $@
 
 #
@@ -77,20 +78,20 @@ STAGE0_OBJ := $(patsubst %,$(obj)/console/%,$(STAGE0_CONSOLE_OBJ)) \
 	      $(patsubst %,$(obj)/arch/x86/%,$(STAGE0_CAR_OBJ))
 
 $(obj)/stage0.init: $(STAGE0_OBJ)
-	$(Q)printf "Building stage0.init... "
-
 	$(Q)# We need to be careful. If stage0.o gets bigger than 
 	$(Q)# 0x4000 - 0x100, we will end up with a 4 gig file. 
 	$(Q)# I wonder if that behavior is on purpose.
 
+	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) -nostdlib -static -T $(src)/arch/x86/ldscript.ld \
 		$(STAGE0_OBJ) -o $(obj)/stage0.o
 
+	$(Q)printf "  OBJCOPY $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)objcopy -O binary $(obj)/stage0.o $(obj)/stage0.init
 
+	$(Q)printf "  TEST    $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)test `wc -c < $(obj)/stage0.init` -gt 16128 && \
 		printf "Error. Bootblock got too big.\n" || true
-	$(Q)printf "done\n"
 
 
 #
@@ -117,12 +118,12 @@ STAGE2_OBJ := $(patsubst %,$(obj)/lib/%,$(STAGE2_LIB_OBJ)) \
 STAGE2_OBJ += $(STAGE2_CHIPSET_OBJ)
 
 $(obj)/linuxbios.stage2: $(obj)/stage0.init $(STAGE2_OBJ)
-	$(Q)printf "Building linuxbios.stage2... "
 	$(Q)# leave a .o with full symbols in it for debugging.
+	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(LD) -R $(obj)/stage0.o -Ttext 0x1000 --entry=stage2 \
 		  -o $(obj)/linuxbios.stage2.o $(STAGE2_OBJ) 
+	$(Q)printf "  OBJCOPY $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)objcopy -O binary $(obj)/linuxbios.stage2.o $(obj)/linuxbios.stage2
-	$(Q)printf "done\n"
 
 
 #
@@ -134,7 +135,7 @@ $(obj)/linuxbios.stage2: $(obj)/stage0.init $(STAGE2_OBJ)
 #
 
 payload:
-	$(Q)printf "Building payload... skipped\n"
+	$(Q)printf "  BUILD   PAYLOAD (skipped)\n"
 
 
 #
@@ -143,17 +144,21 @@ payload:
 
 $(obj)/arch/x86/%.o: $(src)/arch/x86/%.c
 	$(Q)mkdir -p $(obj)/arch/x86
+	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/%.o: $(src)/mainboard/$(MAINBOARDDIR)/%.c
 	$(Q)mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)
+	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
 
 # Building asm stub.
 $(obj)/arch/x86/stage0%.o: $(src)/arch/x86/stage0%.S
+	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) -E $(LINUXBIOSINCLUDE) $< \
 		-o $(obj)/arch/x86/stage0_asm.s -DBOOTBLK=0x1f00 -DRESRVED=0xf0 \
 		-DDATE=\"`date +%Y/%m/%d`\"
+	$(Q)printf "  AS      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(AS) $(obj)/arch/x86/stage0_asm.s -o $@
 
 endif

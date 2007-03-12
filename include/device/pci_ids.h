@@ -1,28 +1,11 @@
 /*
  * This file is part of the LinuxBIOS project.
  *
- * It is based on the pci_ids.h file from the Linux kernel.
+ * It is based on the include/linux/pci_ids.h file from the Linux kernel.
  *
- * Copyright (C) xxxx The Linux Kernel Developers
- * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
- */
-
-/*
  * Note: we maintain our own short list of PCI vendor IDs and device IDs
  * for LinuxBIOS, as we only need very few of the entries.
+ * The 'Device classes and subclasses' section is copied from the Linux file.
  */
 
 /*
@@ -160,5 +143,5 @@
 
 /* Vendors and devices. Sort key: vendor first, device next. */
 
-#define PCI_VENDOR_ID_AMD               0x1022
+#define PCI_VENDOR_ID_AMD		0x1022
 

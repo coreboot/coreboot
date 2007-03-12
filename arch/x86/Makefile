@@ -113,9 +113,13 @@ STAGE2_OBJ := $(patsubst %,$(obj)/lib/%,$(STAGE2_LIB_OBJ)) \
 	      $(patsubst %,$(obj)/arch/x86/%,$(STAGE2_ARCH_X86_OBJ)) \
 	      $(patsubst %,$(obj)/device/%,$(STAGE2_DEVICE_OBJ)) \
 	      $(patsubst %,$(obj)/mainboard/$(MAINBOARDDIR)/%,$(STAGE2_MAINBOARD_OBJ)) \
-	      $(patsubst %,$(obj)/mainboard/$(MAINBOARDDIR)/%,$(STAGE2_DYNAMIC_OBJ)) \
+	      $(patsubst %,$(obj)/mainboard/$(MAINBOARDDIR)/%,$(STAGE2_DYNAMIC_OBJ))
 
 STAGE2_OBJ += $(STAGE2_CHIPSET_OBJ)
+
+# x86emu wants libgcc
+LIBGCC_FILE_NAME := $(shell $(CC) -print-libgcc-file-name)
+STAGE2_OBJ += $(obj)/util/x86emu/libx86emu.a $(LIBGCC_FILE_NAME)
 
 $(obj)/linuxbios.stage2: $(obj)/stage0.init $(STAGE2_OBJ)
 	$(Q)# leave a .o with full symbols in it for debugging.

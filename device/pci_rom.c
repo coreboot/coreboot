@@ -1,24 +1,26 @@
 /*
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
-	
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-	
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ *
+ */
 
-*/
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <string.h>
 
 struct rom_header * pci_rom_probe(struct device *dev)
 {
@@ -37,7 +39,7 @@ struct rom_header * pci_rom_probe(struct device *dev)
 		return NULL;
 	}
 
-	printk_debug("ROM address for %s = %x\n", dev_path(dev), rom_address);
+	printk(BIOS_DEBUG, "ROM address for %s = %x\n", dev_path(dev), rom_address);
 	
 	if(!dev->on_mainboard) {
 		/* enable expansion ROM address decoding */
@@ -46,29 +48,29 @@ struct rom_header * pci_rom_probe(struct device *dev)
 	}
 
 	rom_header = (struct rom_header *)rom_address;
-	printk_spew("PCI Expansion ROM, signature 0x%04x, INIT size 0x%04x, data ptr 0x%04x\n",
+	printk(BIOS_SPEW, "PCI Expansion ROM, signature 0x%04x, INIT size 0x%04x, data ptr 0x%04x\n",
 		    le32_to_cpu(rom_header->signature),
 		    rom_header->size * 512, le32_to_cpu(rom_header->data));
 	if (le32_to_cpu(rom_header->signature) != PCI_ROM_HDR) {
-		printk_err("Incorrect Expansion ROM Header Signature %04x\n",
+		printk(BIOS_ERR, "Incorrect Expansion ROM Header Signature %04x\n",
 			   le32_to_cpu(rom_header->signature));
 		return NULL;
 	}
 
 	rom_data = (unsigned char *) rom_header + le32_to_cpu(rom_header->data);
-	printk_spew("PCI ROM Image, Vendor %04x, Device %04x,\n",
+	printk(BIOS_SPEW, "PCI ROM Image, Vendor %04x, Device %04x,\n",
 		    rom_data->vendor, rom_data->device);
 	if (dev->vendor != rom_data->vendor || dev->device != rom_data->device) {
-		printk_err("Device or Vendor ID mismatch Vendor %04x, Device %04x\n",
+		printk(BIOS_ERR, "Device or Vendor ID mismatch Vendor %04x, Device %04x\n",
 			   rom_data->vendor, rom_data->device);
 		return NULL;
 	}
 
-	printk_spew("PCI ROM Image, Class Code %04x%02x, Code Type %02x\n",
+	printk(BIOS_SPEW, "PCI ROM Image, Class Code %04x%02x, Code Type %02x\n",
 		    rom_data->class_hi, rom_data->class_lo,
 		    rom_data->type);
 	if (dev->class != ((rom_data->class_hi << 8) | rom_data->class_lo)) {
-		printk_debug("Class Code mismatch ROM %08x, dev %08x\n", 
+		printk(BIOS_DEBUG, "Class Code mismatch ROM %08x, dev %08x\n", 
 			    (rom_data->class_hi << 8) | rom_data->class_lo, dev->class);
 		//return NULL;
 	}
@@ -109,14 +111,14 @@ struct rom_header *pci_rom_load(struct device *dev, struct rom_header *rom_heade
 	#if CONFIG_CONSOLE_VGA_MULTI == 0
 		if (dev != vga_pri) return NULL; // only one VGA supported
 	#endif
-		printk_debug("Copying VGA ROM image from 0x%x to 0x%x, 0x%x bytes\n",
+		printk(BIOS_DEBUG, "Copying VGA ROM image from 0x%x to 0x%x, 0x%x bytes\n",
 			    rom_header, PCI_VGA_RAM_IMAGE_START, rom_size);
 		memcpy(PCI_VGA_RAM_IMAGE_START, rom_header, rom_size);
 		vga_inited = 1;
 		return (struct rom_header *) (PCI_VGA_RAM_IMAGE_START);
 #endif
 	} else {
-		printk_debug("Copying non-VGA ROM image from 0x%x to 0x%x, 0x%x bytes\n",
+		printk(BIOS_DEBUG, "Copying non-VGA ROM image from 0x%x to 0x%x, 0x%x bytes\n",
 			    rom_header, pci_ram_image_start, rom_size);
 		memcpy(pci_ram_image_start, rom_header, rom_size);
 		pci_ram_image_start += rom_size;

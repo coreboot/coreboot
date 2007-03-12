@@ -50,12 +50,6 @@ SECTIONS {
 	. = _ROMTOP;
 	.resetvector . : {
 		*(.reset)
-/*
-		. = 15 ;
-		BYTE(0x00);
- */
 	} 
 }
 
-/*
-*/

@@ -23,6 +23,9 @@ include util/dtc/Makefile
 include util/kconfig/Makefile
 include util/lar/Makefile
 
+# parts used by LinuxBIOS
+include util/x86emu/Makefile
+
 # Compressors.
 include util/lzma/Makefile
 include util/nrv2b/Makefile

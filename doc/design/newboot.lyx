@@ -1,4 +1,4 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -217,14 +217,70 @@ FLASH layout
 \end_layout
 
 \begin_layout Section
-LinuxBIOS chip/device/link/driver structures
+Introduction to the LinuxBIOS device tree
+\end_layout
+
+\begin_layout Subsection
+Purpose and function
 \end_layout
 
 \begin_layout Standard
-There are four primary objects which are used to manage the LinuxBIOS device
- tree: chips, devices, links, and drivers.
- Devices and links are generic structures: chips and drivers, on the other
- hand, are specialized.
+The LinuxBIOS device tree is probably the single most important concept
+ in LinuxBIOS, and, in V2, was the least understood part of the software.
+ The device tree provides a tremendous amount of capability to the software.
+ The initial tree, which almost always will be an incomplete representation
+ of the hardware (consider pluggable devices), is created by the configuration
+ tool -- in V3, the device tree compiler, or DTC.
+ The initial tree is statically allocated at compile time.
+ At runtime, hardware must be probed, and the tree must be filled in, extended,
+ and even restructured as the hardware discovery process occurs.
+ The tree represents devices as nodes and busses as edges (called links)
+ between the nodes.
+ Some devices can bridge a bus to another; these are intermediate nodes
+ in the tree.
+ Other devices do not bridge busses; these are leaf nodes.
+ And, of course, a bridge device might exist with nothing on the other side
+ -- this device will of course also be a leaf node.
+ 
+\end_layout
+
+\begin_layout Standard
+At build time, the programmer can specify hardware that is likely to be
+ there, although some may not be (a 2-cpu system might have only one CPU
+ installed).
+ At run time, the software must determine what hardware exists, and modify
+ the tree to accord to reality.
+ This modification can include deletion of nodes, including bridge nodes;
+ and even deletion of edges in the graph.
+ The software must also be able to add new nodes and edges, as bridges and
+ devices are found.
+ 
+\end_layout
+
+\begin_layout Standard
+Finally, once the tree is built, the device tree software must allocate
+ resources to each device.
+ Resources, in this context, are for the most part address space ranges,
+ in memory or I/O space.
+ A given device will require a certain range of addresses and, still worse,
+ might require that those addresses be fixed at a certain value (such as
+ a superio which is hardware to address 0x4e).
+ The software must allocate the resources to devices, and, for a bridge,
+ must allocate the resources to the bridge that are held by all the devices
+ on the other side of the bridge.
+ The process is more complex than might at first seem.
+ 
+\end_layout
+
+\begin_layout Subsection
+Device tree structures
+\end_layout
+
+\begin_layout Standard
+There are three primary objects which are used to manage the LinuxBIOS device
+ tree: devices, links, and drivers.
+ Devices and links are generic structures: drivers, on the other hand, are
+ specialized.
  We describe these parts, and their relationship, below.
  
 \end_layout
@@ -232,7 +288,8 @@ There are four primary objects which are used to manage the LinuxBIOS device
 \begin_layout Standard
 These structures are linked together in the static device tree.
  The static device tree, a set of initialized C structures, is created by
- the device tree compiler, in the file statictree.c.
+ the device tree compiler, in the file build/statictree.c, using as input
+ the dts file inthe mainboard directory.
  This tree defines the hardware that is known to exist on the mainboard.
  At run time, the static tree is elided with dynamically determined information,
  and can even be restructured to some extent (e.g., the static tree has a
@@ -249,34 +306,76 @@ in front of
  
 \end_layout
 
-\begin_layout Subsection
-Chips
-\end_layout
-
 \begin_layout Standard
-A chip represents a physical object.
- These physical objects are northbridges, southbridges, superios, etc.
- Chips are not generic, unlike devices, but are rather quite specialized.
- The code for a given chip is contained in a single directory, which is
- not shared with any other chip.
+Each device has a void * which can be filled in, via the dts file, with
+ non-generic, i.e., device-specific, information.
  
 \end_layout
 
 \begin_layout Standard
-Chips, in some cases, have special control registers that need to be set.
- Functions for controlling the chips and their settings are found in the
- chip directory.
- All the variables for controlling a chip must be defined in a single structure,
- and that structure is defined in the file config.h in the chip directory.
+What's the difference between generic and non-generic information? As an
+ example, the PCI configuration address or 
+\begin_inset Quotes eld
+\end_inset
+
+path
+\begin_inset Quotes erd
+\end_inset
+
+ of a device is generic; there is a path of some sort for every device in
+ a system.
+ But, not all devices have identical capabilities.
+ Some PCI devices have IDE controllers, others do not; some can drive the
+ legacy PC XBUS, others can not; and so on.
+ In LinuxBIOS V1, we attempted to create devices that were the union of
+ all possible devices, but creating such a union proved to be impossible,
+ as new devices with new capabilities came out.
+ So, in V2, we split off the device-specific information into a seperate
+ structure.
+ The generic device structure is defined in include/device/device.h; the
+ device-specific structures are defined in the source directory for a given
+ device, always in a file named config.h, e.g.
+ src/northbridge/intel/i440gx/config.h.
+\end_layout
+
+\begin_layout Standard
+For an analogous structure, see the Linux kernel Virtual File System (VFS)
+ code.
+ A VFS is a generic file system, with a generic structure, which can be
+ extended via individual file system structures.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+More on device source directories, configuration structure and config.h file
+\end_layout
+
+\begin_layout Standard
+The generic code for the device tree is contained in the device directory.
+ The code for a given device is contained in a single directory, which is
+ not shared with any other device.
+ The naming convention is <device-type>/<vendor>/<device-name>/filename.
+ The config.h file contains configuration information for a given device.
+\end_layout
+
+\begin_layout Standard
+Devices, in some cases, have special control registers that need to be set.
+ in a few cases, generic code can handle these operiations: see device/pci_devic
+e.c.
+ Device-specific functions for controlling the device and its settings are
+ found in the device-specific directory.
+ All the configuration variables for controlling a device must be defined
+ in a single structure; to reiterate,that structure is defined in the file
+ config.h.
  It is one structure, instead of a set of variables, because it must be
  instantiated and initialized by the device tree compiler (dtc), and a pointer
- to it is held in a generic device structure.
+ to it is held in the generic device structure.
  
 \end_layout
 
 \begin_layout Standard
-We show an example of a chip, below.
- The chip is the i440bx emulation.
+We show an example of a specific device, below.
+ The device is the i440bx emulation.
  
 \end_layout
 
@@ -383,10 +482,6 @@ The Kconfig and Makefile are for the Kbuild system.
  
 \end_layout
 
-\begin_layout Standard
-The code is somewhat complex 
-\end_layout
-
 \begin_layout Subsection
 Bus
 \end_layout
@@ -399,11 +494,11 @@ Busses, defined in include/device/device.h, connect parent devices to child
 \end_layout
 
 \begin_layout Subsection
-Devices
+Generic device structure and code
 \end_layout
 
 \begin_layout Standard
-Devices are defined in include/device/device.h.
+Generic devices are defined in include/device/device.h.
  Devices:
 \end_layout
 
@@ -481,6 +576,61 @@ Resources describe memory and I/O address ranges, IRQs, and DRQs.
  They are define in include/device/resource.h.
  There can be variations of a resource which include things like prefetchable,
  cacheable, and so on.
+ 
+\end_layout
+
+\begin_layout Subsection
+How are devices created? Via static and dynamic constructors
+\end_layout
+
+\begin_layout Standard
+In V2, there was no formal model for creating and/or allocating device structure
+s.
+ There was not even a formal convention or way of thinking about such operations
+; this lack of rigor, to some extent, was a result of our limited understanding
+ of how to think about the problem, which in turn was a result of the revolution
+ in design which followed on the release of the Opteron, with its multiple
+ busses per socket, integrated north bridge, ability to site a non-Opteron
+ device in an Opteron socket, on-chip HyperTransport router, and so on.
+ 
+\end_layout
+
+\begin_layout Standard
+We learned a lot with V2, and that knowledge underlies the architecture
+ of the V3 device tree.
+ We have introduced a standardized device id, and are using the notion of
+ C++ constructors to unify our thinking.
+ 
+\end_layout
+
+\begin_layout Standard
+The device id is very similar to the existing path structure.
+ It is defined in include/device/device.h, and is a standard C case-variant
+ type with a tag and a union.
+ 
+\end_layout
+
+\begin_layout Standard
+The device tree compiler is the static constructor.
+ It reads the dts file in the mainboard directory and creates the initial
+ device tree, with the devices and busses already set up.
+ 
+\end_layout
+
+\begin_layout Standard
+The dynamic constructor is part fo the device tree code.
+ There is a set of default constructors, but each device can have its own
+ private constructors if needed.
+ The constructor structure is simple: it is a standard device id, and a
+ pointer to a device_operations structure.
+ 
+\end_layout
+
+\begin_layout Standard
+The purpose of a dynamic constructor is to take a standard device path and
+ a device id, and create a device structure, with as much information filled
+ in as possible.
+ At minimum the device id, path, and device operations are filled in.
  
 \end_layout
 

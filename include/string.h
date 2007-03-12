@@ -1,9 +1,12 @@
 /*
- * Derived from the Linux kernel
+ * This file is part of the LinuxBIOS project.
+ *
+ * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,141 +15,99 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
- *
- * This file may be dual licensed with the new BSD license.
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 #ifndef STRING_H
 #define STRING_H
 
-#include <stddef.h>
 #include <stdlib.h>
 
-extern void *memcpy(void *dest, const void *src, size_t n);
-extern void *memmove(void *dest, const void *src, size_t n);
-extern void *memset(void *s, int c, size_t n);
-extern int memcmp(const void *s1, const void *s2, size_t n);
+/* Prototypes for functions from lib/mem.c. */
+extern void *memcpy(void *dest, const void *src, int len);
+extern void *memmove(void *dest, const void *src, int len);
+extern void *memset(void *v, unsigned char a, int len);
+extern int memcmp(const void *s1, const void *s2, int len);
 
+/* Prototypes for functions from console/vsprintf.c. */
 extern int sprintf(char *buf, const char *fmt, ...);
 
-// yes, linux has fancy ones. We don't care. This stuff gets used 
-// hardly at all. And the pain of including those files is just too high.
-
-//extern inline void strcpy(char *dst, char *src) {while (*src) *dst++ = *src++;}
-
-//extern inline int strlen(char *src) { int i = 0; while (*src++) i++; return i;}
-
-static inline size_t strnlen(const char *src, size_t max)
+/**
+ * Calculate the length of a fixed-size string.
+ *
+ * @param str The input string.
+ * @param maxlen Return at most maxlen characters as length of the string.
+ * @return The length of the string, not including the final NUL character.
+ * 	   The maximum length returned is maxlen.
+ */
+static inline size_t strnlen(const char *str, size_t maxlen)
 {
-	size_t i = 0;
-	while ((*src++) && (i < max)) {
-		i++;
-	}
-	return i;
-}
+	size_t len = 0;
 
-static inline size_t strlen(const char *src)
-{
-	size_t i = 0;
-	while (*src++) {
-		i++;
-	}
-	return i;
-}
-
-static inline char *strchr(const char *s, int c)
-{
-	for (; *s; s++) {
-		if (*s == c)
-			return (char *)s;
-	}
-	return 0;
-}
-
-static inline char *strdup(const char *s)
-{
-	size_t sz = strlen(s) + 1;
-	char *d = malloc(sz);
-	memcpy(d, s, sz);
-	return d;
-}
-
-static inline char *strncpy(char *to, const char *from, int count)
-{
-	register char *ret = to;
-
-	while (count > 0) {
-		count--;
-		if ((*to++ = *from++) == '\0')
-			break;
-	}
-
-	while (count > 0) {
-		count--;
-		*to++ = '\0';
-	}
-	return ret;
-}
-
-static inline int strcmp(const char *s1, const char *s2)
-{
-	int r;
-
-	while ((r = (*s1 - *s2)) == 0 && *s1) {
-		s1++;
-		s2++;
-	}
-	return r;
-}
-
-static inline int isspace(int c)
-{
-	switch (c) {
-	case ' ':
-	case '\f':
-	case '\n':
-	case '\r':
-	case '\t':
-	case '\v':
-		return 1;
-	default:
+	/* NULL and empty strings have length 0. */
+	if (!str)
 		return 0;
+
+	/* Loop until we find a NUL character, or maxlen is reached. */
+	while ((*str++ != '\0') && (len < maxlen))
+		len++;
+
+	return len;
+}
+
+/**
+ * Calculate the length of a string.
+ *
+ * @param str The input string.
+ * @return The length of the string, not including the final NUL character.
+ */
+static inline size_t strlen(const char *str)
+{
+	size_t len = 0;
+
+	/* NULL and empty strings have length 0. */
+	if (!str)
+		return 0;
+
+	/* Loop until we find a NUL character. */
+	while (*str++ != '\0')
+		len++;
+
+	return len;
+}
+
+/**
+ * Compare two strings.
+ *
+ * @param s1 The first string.
+ * @param s2 The second string.
+ * @return Returns a value less than zero, if s1 is shorter than s2. Returns
+ * 	   zero, if s1 equals s2. Returns a value greater than zero, if
+ * 	   s1 is longer than s2.
+ */
+static inline int strcmp(const unsigned char *s1, const unsigned char *s2)
+{
+	unsigned char c1, c2;
+
+	/* Set c1 == c2, so that we can enter the while loop. */
+	c1 = 0;
+	c2 = 0;
+
+	/* Compare characters until they differ, or one of the strings ends. */
+	while (c1 == c2) {
+		/* Read the next character from each string. */
+		c1 = *s1++;
+		c2 = *s2++;
+
+		/* Return something negative (if s1 is shorter than s2), or
+		   zero (if s1 equals s2). */
+		if (c1 == '\0')
+			return c1 - c2;
 	}
+
+	/* Return someting positive (if s1 is longer than s2), or zero (if s1
+	   and s2 are equal). */
+	return c1 - c2;
 }
 
-static inline int isdigit(int c)
-{
-	return (c >= '0' && c <= '9');
-}
-
-static inline int isxdigit(int c)
-{
-	return ((c >= '0' && c <= '9') ||
-		(c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'));
-}
-
-static inline int isupper(int c)
-{
-	return (c >= 'A' && c <= 'Z');
-}
-
-static inline int islower(int c)
-{
-	return (c >= 'a' && c <= 'z');
-}
-
-static inline int toupper(int c)
-{
-	if (islower(c))
-		c -= 'a' - 'A';
-	return c;
-}
-
-static inline int tolower(int c)
-{
-	if (isupper(c))
-		c -= 'A' - 'a';
-	return c;
-}
 #endif				/* STRING_H */

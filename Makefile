@@ -45,6 +45,7 @@ HOSTCXX    := g++
 HOSTCFLAGS := -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer \
 	      -Wno-unused -Wno-sign-compare -Wno-pointer-sign
 
+LYX := lyx
 DOXYGEN := doxygen
 DOXYGEN_OUTPUT_DIR := doxygen
 
@@ -102,7 +103,11 @@ endif
 include util/Makefile
 
 doc:
-	$(DOXYGEN) util/doxygen/Doxyfile.LinuxBIOS
+	$(Q)$(LYX) -e pdf doc/design/newboot.lyx
+
+doxy:
+doxygen:
+	$(Q)$(DOXYGEN) util/doxygen/Doxyfile.LinuxBIOS
 
 prepare:
 	$(Q)mkdir -p $(obj)
@@ -124,6 +129,8 @@ clean:
 	$(Q)rm -rf $(obj)
 	$(Q)printf "  CLEAN   $(subst $(shell pwd)/,,$(DOXYGEN_OUTPUT_DIR))\n"
 	$(Q)rm -rf $(DOXYGEN_OUTPUT_DIR)
+	$(Q)printf "  CLEAN   doc/design/newboot.pdf\n"
+	$(Q)rm -f doc/design/newboot.pdf
 
 distclean: clean
 	$(Q)printf "  CLEAN   .kconfig.d .config .tmpconfig.h .config.old .xcompile\n"

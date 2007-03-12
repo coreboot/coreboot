@@ -27,34 +27,36 @@
 #include "config.h"
 // #include "i82371eb.h"
 
-
 /* The plain PCI device uses the standard PCI operations. */
 
-/* Note that this structure is not necessary (yet), 
- * but is here as an example of how you can set up your own ops 
+/* Note that this structure is not necessary (yet),
+ * but is here as an example of how you can set up your own ops.
  */
 
-/* You can override or extend each of these operations as needed for the device. */
+/* You can override or extend each operation as needed for the device. */
 static struct device_operations i82371eb_pci_ops_dev = {
-	.constructor		  = default_device_constructor,
-	.phase3_scan		  = 0,
-	.phase4_read_resources	  = pci_dev_read_resources,
-	.phase4_set_resources	  = pci_dev_set_resources,
-	.phase4_enable_disable 	  = 0,
-	.phase5_enable_resources  = pci_dev_enable_resources,
-	.phase6_init		  = pci_dev_init,
-	.ops_pci		  = &pci_dev_ops_pci,
+	.constructor		 = default_device_constructor,
+	.phase3_scan		 = 0,
+	.phase4_read_resources	 = pci_dev_read_resources,
+	.phase4_set_resources	 = pci_dev_set_resources,
+	.phase4_enable_disable	 = 0,
+	.phase5_enable_resources = pci_dev_enable_resources,
+	.phase6_init		 = pci_dev_init,
+	.ops_pci		 = &pci_dev_ops_pci,
 };
 
-
 struct constructor i82371eb_constructors[] = {
-	{.id={.type=DEVICE_ID_PCI, .u={.pci={.vendor=0x8086,  .device=0x7110}}}, 
+	{.id = {.type = DEVICE_ID_PCI,
+		.u = {.pci = {.vendor = 0x8086,.device = 0x7110}}},
 		&i82371eb_pci_ops_dev},
-	{.id={.type=DEVICE_ID_PCI, .u={.pci={.vendor=0x8086,  .device=0x7111}}}, 
+	{.id = {.type = DEVICE_ID_PCI,
+		.u = {.pci = {.vendor = 0x8086,.device = 0x7111}}},
 		&i82371eb_pci_ops_dev},
-	{.id={.type=DEVICE_ID_PCI, .u={.pci={.vendor=0x8086,  .device=0x7112}}}, 
+	{.id = {.type = DEVICE_ID_PCI,
+		.u = {.pci = {.vendor = 0x8086,.device = 0x7112}}},
 		&i82371eb_pci_ops_dev},
-	{.id={.type=DEVICE_ID_PCI, .u={.pci={.vendor=0x8086,  .device=0x7113}}}, 
+	{.id = {.type = DEVICE_ID_PCI,
+		.u = {.pci = {.vendor = 0x8086,.device = 0x7113}}},
 		&i82371eb_pci_ops_dev},
 	{.ops = 0},
 };

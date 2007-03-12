@@ -19,8 +19,7 @@
  */
 
 extern struct constructor i82371eb_constructors[];
-struct southbridge_intel_i82371eb_config
-{
+
+struct southbridge_intel_i82371eb_config {
 	int ide;
 };
-

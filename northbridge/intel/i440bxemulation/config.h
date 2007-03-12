@@ -20,6 +20,7 @@
 
 extern struct device_operations i440bxemulation_pcidomainops;
 extern struct constructor i440bx_constructors[];
+
 struct northbridge_intel_i440bx_config {
 	/* The various emulators don't always get 440BX right. So we are
 	 * going to allow users to set the RAM size via Kconfig.

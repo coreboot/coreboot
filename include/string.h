@@ -87,7 +87,7 @@ static inline size_t strlen(const char *str)
  */
 static inline int strcmp(const char *s1, const char *s2)
 {
-	unsigned char c1, c2;
+	char c1, c2;
 
 	/* Set c1 == c2, so that we can enter the while loop. */
 	c1 = 0;

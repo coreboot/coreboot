@@ -85,7 +85,7 @@ static inline size_t strlen(const char *str)
  * 	   zero, if s1 equals s2. Returns a value greater than zero, if
  * 	   s1 is longer than s2.
  */
-static inline int strcmp(const unsigned char *s1, const unsigned char *s2)
+static inline int strcmp(const char *s1, const char *s2)
 {
 	unsigned char c1, c2;
 

@@ -505,6 +505,7 @@ void compute_allocate_resource(
 
 #if defined(CONFIG_CONSOLE_VGA) && CONFIG_CONSOLE_VGA == 1
 struct device * vga_pri = 0;
+int vga_inited = 0;
 static void allocate_vga_resource(void)
 {
 #warning "FIXME modify allocate_vga_resource so it is less pci centric!"

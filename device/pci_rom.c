@@ -83,11 +83,6 @@ struct rom_header * pci_rom_probe(struct device *dev)
 
 static void *pci_ram_image_start = (void *)PCI_RAM_IMAGE_START;
 
-#ifndef GO_AWAY
-int vga_inited;
-struct device *vga_pri;
-#endif
-
 #if CONFIG_CONSOLE_VGA == 1
 extern int vga_inited;		// defined in vga_console.c 
 #if CONFIG_CONSOLE_VGA_MULTI == 0

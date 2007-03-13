@@ -20,6 +20,6 @@
 ##
 
 ifdef CONFIG_NORTHBRIDGE_INTEL_I440BXEMULATION
-  include $(src)/northbridge/intel/i440bxemulation/Makefile
+	include $(src)/northbridge/intel/i440bxemulation/Makefile
 endif
 

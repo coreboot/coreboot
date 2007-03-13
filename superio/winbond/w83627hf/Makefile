@@ -19,8 +19,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-# always add to variables, as there could be more than one superio
-
+# Always add to variables, as there could be more than one Super I/O.
 STAGE2_CHIPSET_OBJ += $(obj)/superio/winbond/w83627hf/superio.o
 
 $(obj)/superio/winbond/w83627hf/%.o: $(src)/superio/winbond/w83627hf/%.c

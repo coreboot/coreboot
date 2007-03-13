@@ -36,7 +36,8 @@ source mainboard/Kconfig
 source arch/Kconfig
 source lib/Kconfig
 source console/Kconfig
-# these are used for internal purposes only
+
+# These are used for internal purposes only.
 source northbridge/Kconfig
 source southbridge/Kconfig
 source superio/Kconfig

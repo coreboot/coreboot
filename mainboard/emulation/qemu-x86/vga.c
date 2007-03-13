@@ -30,15 +30,15 @@
 static void setup_onboard(struct device *dev)
 {
 	struct pc_keyboard conf;
+
 	printk(BIOS_INFO, "Init VGA device\n");
-	dev->on_mainboard=1;
-	dev->rom_address=0xc0000;
+	dev->on_mainboard = 1;
+	dev->rom_address = 0xc0000;
 
 	// FIXME - this should be in superio some day
 	// but since qemu has no superio.
 	init_pc_keyboard(0x60, 0x64, &conf);
 }
-
 
 static struct device_operations qemuvga_pci_ops_dev = {
 	.constructor		 = default_device_constructor,
@@ -54,6 +54,6 @@ static struct device_operations qemuvga_pci_ops_dev = {
 struct constructor qemuvga_constructors[] = {
 	{.id = {.type = DEVICE_ID_PCI,
 		.u = {.pci = {.vendor = 0x1013,.device = 0x00b8}}},
-		&qemuvga_pci_ops_dev},
+	 &qemuvga_pci_ops_dev},
 	{.ops = 0},
 };

@@ -22,6 +22,6 @@
 config SUPERIO_WINBOND_W83627HF
 	boolean
 	help
-	  This option is internally used to decide which southbridge code to
-	  use. It is set in the mainboard Kconfig
+	  This option is internally used to decide which Super I/O code to
+	  use. It is set in the mainboard Kconfig file.
 

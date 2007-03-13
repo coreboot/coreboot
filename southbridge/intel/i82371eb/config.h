@@ -25,5 +25,4 @@ extern struct constructor i82371eb_constructors[];
 struct southbridge_intel_i82371eb_config {
         unsigned int ide0_enable : 1;
         unsigned int ide1_enable : 1;
-
 };

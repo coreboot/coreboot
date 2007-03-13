@@ -23,5 +23,5 @@ config SOUTHBRIDGE_INTEL_I82371EB
 	boolean
 	help
 	  This option is internally used to decide which southbridge code to
-	  use. It is set in the mainboard Kconfig
+	  use. It is set in the mainboard Kconfig file.
 

@@ -23,6 +23,5 @@ config NORTHBRIDGE_INTEL_I440BXEMULATION
 	boolean
 	help
 	  This option is internally used to decide which northbridge code to
-	  use. It is set in the mainboard Kconfig
-
+	  use. It is set in the mainboard Kconfig file.
 

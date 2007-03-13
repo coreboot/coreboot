@@ -19,11 +19,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-# one entry like the below for each supported intel southbridge
-
+# One entry like the below for each supported Intel southbridge.
 ifdef CONFIG_SOUTHBRIDGE_INTEL_I82371EB
-  include $(src)/southbridge/intel/i82371eb/Makefile
+	include $(src)/southbridge/intel/i82371eb/Makefile
 endif
-
-
 

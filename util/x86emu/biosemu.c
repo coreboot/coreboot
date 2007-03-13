@@ -1,3 +1,40 @@
+/*
+ * This software and ancillary information (herein called SOFTWARE )
+ * called LinuxBIOS          is made available under the terms described
+ * here.  The SOFTWARE has been approved for release with associated
+ * LA-CC Number 00-34   .  Unless otherwise indicated, this SOFTWARE has
+ * been authored by an employee or employees of the University of
+ * California, operator of the Los Alamos National Laboratory under
+ * Contract No. W-7405-ENG-36 with the U.S. Department of Energy.  The
+ * U.S. Government has rights to use, reproduce, and distribute this
+ * SOFTWARE.  The public may copy, distribute, prepare derivative works
+ * and publicly display this SOFTWARE without charge, provided that this
+ * Notice and any statement of authorship are reproduced on all copies.
+ * Neither the Government nor the University makes any warranty, express
+ * or implied, or assumes any liability or responsibility for the use of
+ * this SOFTWARE.  If SOFTWARE is modified to produce derivative works,
+ * such modified SOFTWARE should be clearly marked, so as not to confuse
+ * it with the version available from LANL.
+ */
+ /*
+ * This file is part of the LinuxBIOS project.
+ *
+ *  (c) Copyright 2000, Ron Minnich, Advanced Computing Lab, LANL
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by 
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
 #include <arch/io.h>
 #include <console/console.h>
 #include <device/device.h>

@@ -234,6 +234,8 @@ The LinuxBIOS device tree is probably the single most important concept
  The initial tree is statically allocated at compile time.
  At runtime, hardware must be probed, and the tree must be filled in, extended,
  and even restructured as the hardware discovery process occurs.
+ The restructuring mainly consists of adding nodes, and reordering nodes
+ in the tree to accomodate these new nodes.
  The tree represents devices as nodes and busses as edges (called links)
  between the nodes.
  Some devices can bridge a bus to another; these are intermediate nodes
@@ -245,9 +247,13 @@ The LinuxBIOS device tree is probably the single most important concept
 \end_layout
 
 \begin_layout Standard
-At build time, the programmer can specify hardware that is likely to be
- there, although some may not be (a 2-cpu system might have only one CPU
- installed).
+At build time, the programmer can specify, via a configuration file, hardware
+ that is likely to be on the mainboard, although it is not required to be
+ present (e.g.
+ a 2-cpu system might have only one CPU installed).
+ Also, hardware that can be probed, and that does not need any special configura
+tion, can be left out of the configurtation file and left to be discovered
+ dynamically, even if it is known to be on the board.
  At run time, the software must determine what hardware exists, and modify
  the tree to accord to reality.
  This modification can include deletion of nodes, including bridge nodes;
@@ -264,11 +270,31 @@ Finally, once the tree is built, the device tree software must allocate
  in memory or I/O space.
  A given device will require a certain range of addresses and, still worse,
  might require that those addresses be fixed at a certain value (such as
- a superio which is hardware to address 0x4e).
+ a superio which is hardwired to address 0x4e).
  The software must allocate the resources to devices, and, for a bridge,
  must allocate the resources to the bridge that are held by all the devices
  on the other side of the bridge.
- The process is more complex than might at first seem.
+ 
+\end_layout
+
+\begin_layout Standard
+The process of resource allocation must take into acount the fact that addresses
+ at a bridge may have special alignment requirements (e.g.
+ the 4096 byte alignment for memory address ranges); that memory addresses
+ on a device must be aligned to the size of the region (e.g.
+ a 512KiB region must be aligned to 512KiB); and other restrictions dependent
+ on the device or bridge.
+ Another issue is the use of 
+\emph on
+subtractive address ranges
+\emph default
+, which define an address range that is picked up by default if no other
+ resource claims it.
+ S
+\emph on
+ubtractive address ranges
+\emph default
+ are typically used for legacy PC address ranges.
  
 \end_layout
 
@@ -289,7 +315,7 @@ There are three primary objects which are used to manage the LinuxBIOS device
 These structures are linked together in the static device tree.
  The static device tree, a set of initialized C structures, is created by
  the device tree compiler, in the file build/statictree.c, using as input
- the dts file inthe mainboard directory.
+ the dts file in the mainboard directory.
  This tree defines the hardware that is known to exist on the mainboard.
  At run time, the static tree is elided with dynamically determined information,
  and can even be restructured to some extent (e.g., the static tree has a

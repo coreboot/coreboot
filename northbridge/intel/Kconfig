@@ -25,3 +25,5 @@ config NORTHBRIDGE_INTEL_I440BXEMULATION
 	  This option is internally used to decide which northbridge code to
 	  use. It is set in the mainboard Kconfig file.
 
+source northbridge/intel/i440bxemulation/Kconfig
+

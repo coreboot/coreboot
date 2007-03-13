@@ -73,7 +73,7 @@ static void init_hwm(unsigned long base)
 	int i;
 
 	unsigned  hwm_reg_values[] = {
-/*	      reg  mask  data */
+	    /* reg, mask, data */
               0x40, 0xff, 0x81,  /* start HWM */
               0x48, 0xaa, 0x2a,  /* set SMBus base to 0x54>>1	*/
               0x4a, 0x21, 0x21,  /* set T2 SMBus base to 0x92>>1 and T3 SMBus base to 0x94>>1 */
@@ -90,9 +90,9 @@ static void init_hwm(unsigned long base)
 	 	value = pnp_read_index(base, reg);		
 		value &= 0xff & hwm_reg_values[i+1];
 		value |= 0xff & hwm_reg_values[i+2];
-#if 0
-		printk_debug("base = 0x%04x, reg = 0x%02x, value = 0x%02x\r\n", base, reg,value);
-#endif
+
+		printk(BIOS_SPEW, "base = 0x%04x, reg = 0x%02x, value = 0x%02x\r\n", base, reg,value);
+
 		pnp_write_index(base, reg, value);
 	}
 }
@@ -104,7 +104,6 @@ static void w83627hf_init(struct device * dev)
 
 #if 1
 	printk(BIOS_ERR, "dummy init XXXX\n");
-	init_pc_keyboard(res0->base, res1->base, &conf->keyboard);
 #endif
 
 	if (!dev->enabled) {

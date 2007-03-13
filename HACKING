@@ -69,3 +69,7 @@ Third-party Code and License Overview
   Source: git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux-2.6
   Current version we use: ?
 
+* arch/x86/i8259.c: GPLv2
+  Source: Linux kernel, arch/i386/boot/setup.S
+  Current version we use: Linux 2.2.26
+

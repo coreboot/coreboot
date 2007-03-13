@@ -20,7 +20,7 @@
 
 X86EMU_OBJ  = debug.o decode.o fpu.o ops.o ops2.o prim_ops.o sys.o
 PCBIOS_OBJ  = pcibios.o
-BIOSEMU_OBJ = biosemu.o
+BIOSEMU_OBJ = biosemu.o vm86.o
 
 LIBX86EMU_OBJS = $(patsubst %,$(obj)/util/x86emu/x86emu/%,$(X86EMU_OBJ)) \
 		 $(patsubst %,$(obj)/util/x86emu/pcbios/%,$(PCBIOS_OBJ)) \

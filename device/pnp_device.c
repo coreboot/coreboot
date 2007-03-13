@@ -1,25 +1,25 @@
 /*
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
-	
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-	
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
-
-*/
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
 /* Copyright 2004 Linux Networx  */
 
+#include <arch/types.h>
 #include <console/console.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <bitops.h>
+//#include <stdint.h>
+//#include <bitops.h>
 #include <string.h>
 #include <arch/io.h>
 #include <device/device.h>
@@ -27,47 +27,47 @@
 
 /* PNP fundamental operations */
 
-void pnp_write_config(device_t dev, u8 reg, u8 value)
+void pnp_write_config(struct device * dev, u8 reg, u8 value)
 {
 	outb(reg, dev->path.u.pnp.port);
 	outb(value, dev->path.u.pnp.port + 1);
 }
 
-u8 pnp_read_config(device_t dev, u8 reg)
+u8 pnp_read_config(struct device * dev, u8 reg)
 {
 	outb(reg, dev->path.u.pnp.port);
 	return inb(dev->path.u.pnp.port + 1);
 }
 
-void pnp_set_logical_device(device_t dev)
+void pnp_set_logical_device(struct device * dev)
 {
 	pnp_write_config(dev, 0x07, dev->path.u.pnp.device);
 }
 
-void pnp_set_enable(device_t dev, int enable)
+void pnp_set_enable(struct device * dev, int enable)
 {
 	pnp_write_config(dev, 0x30, enable?0x1:0x0);
 }
 
-int pnp_read_enable(device_t dev)
+int pnp_read_enable(struct device * dev)
 {
 	return !!pnp_read_config(dev, 0x30);
 }
 
-void pnp_set_iobase(device_t dev, unsigned index, unsigned iobase)
+void pnp_set_iobase(struct device * dev, unsigned index, unsigned iobase)
 {
 	/* Index == 0x60 or 0x62 */
 	pnp_write_config(dev, index + 0, (iobase >> 8) & 0xff);
 	pnp_write_config(dev, index + 1, iobase & 0xff);
 }
 
-void pnp_set_irq(device_t dev, unsigned index, unsigned irq)
+void pnp_set_irq(struct device * dev, unsigned index, unsigned irq)
 {
 	/* Index == 0x70 or 0x72 */
 	pnp_write_config(dev, index, irq);
 }
 
-void pnp_set_drq(device_t dev, unsigned index, unsigned drq)
+void pnp_set_drq(struct device * dev, unsigned index, unsigned drq)
 {
 	/* Index == 0x74 */
 	pnp_write_config(dev, index, drq & 0xff);
@@ -75,15 +75,15 @@ void pnp_set_drq(device_t dev, unsigned index, unsigned drq)
 
 /* PNP device operations */
 
-void pnp_read_resources(device_t dev)
+void pnp_read_resources(struct device * dev)
 {
 	return;
 }
 
-static void pnp_set_resource(device_t dev, struct resource *resource)
+static void pnp_set_resource(struct device * dev, struct resource *resource)
 {
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
-		printk_err("ERROR: %s %02x %s size: 0x%010Lx not assigned\n",
+		printk(BIOS_ERR, "ERROR: %s %02x %s size: 0x%010Lx not assigned\n",
 			dev_path(dev), resource->index,
 			resource_type(resource),
 			resource->size);
@@ -101,7 +101,7 @@ static void pnp_set_resource(device_t dev, struct resource *resource)
 		pnp_set_irq(dev, resource->index, resource->base);
 	}
 	else {
-		printk_err("ERROR: %s %02x unknown resource type\n",
+		printk(BIOS_ERR, "ERROR: %s %02x unknown resource type\n",
 			dev_path(dev), resource->index);
 		return;
 	}
@@ -110,7 +110,7 @@ static void pnp_set_resource(device_t dev, struct resource *resource)
 	report_resource_stored(dev, resource, "");
 }
 
-void pnp_set_resources(device_t dev)
+void pnp_set_resources(struct device * dev)
 {
 	int i;
 
@@ -123,13 +123,13 @@ void pnp_set_resources(device_t dev)
 	}
 }
 
-void pnp_enable_resources(device_t dev)
+void pnp_enable_resources(struct device * dev)
 {
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 1);
 }
 
-void pnp_enable(device_t dev)
+void pnp_enable(struct device * dev)
 {
 	if (!dev->enabled) {
 		pnp_set_logical_device(dev);
@@ -138,15 +138,16 @@ void pnp_enable(device_t dev)
 }
 
 struct device_operations pnp_ops = {
-	.read_resources   = pnp_read_resources,
-	.set_resources    = pnp_set_resources,
-	.enable_resources = pnp_enable_resources,
-	.enable           = pnp_enable,
+	.phase4_read_resources   = pnp_read_resources,
+	.phase4_set_resources    = pnp_set_resources,
+	.phase5_enable_resources = pnp_enable_resources,
+	//.enable           = pnp_enable,
+	// FIXME
 };
 
 /* PNP chip operations */
 
-static void pnp_get_ioresource(device_t dev, unsigned index, struct io_info *info)
+static void pnp_get_ioresource(struct device * dev, unsigned index, struct io_info *info)
 {
 	struct resource *resource;
 	unsigned moving, gran, step;
@@ -185,7 +186,7 @@ static void pnp_get_ioresource(device_t dev, unsigned index, struct io_info *inf
 	resource->size  = 1 << gran;
 }
 
-static void get_resources(device_t dev, struct pnp_info *info)
+static void get_resources(struct device * dev, struct pnp_info *info)
 {
 	struct resource *resource;
 
@@ -223,11 +224,12 @@ static void get_resources(device_t dev, struct pnp_info *info)
 	}	
 } 
 
-void pnp_enable_devices(device_t base_dev, struct device_operations *ops, 
+void pnp_enable_devices(struct device * base_dev, struct device_operations *ops, 
 	unsigned functions, struct pnp_info *info)
 {
 	struct device_path path;
-	device_t dev;
+	struct device_id id = {.type = DEVICE_ID_PNP};
+	struct device * dev;
 	int i;
 
 	path.type       = DEVICE_PATH_PNP;
@@ -236,7 +238,7 @@ void pnp_enable_devices(device_t base_dev, struct device_operations *ops,
 	/* Setup the ops and resources on the newly allocated devices */
 	for(i = 0; i < functions; i++) {
 		path.u.pnp.device = info[i].function;
-		dev = alloc_find_dev(base_dev->bus, &path);
+		dev = alloc_find_dev(base_dev->bus, &path, &id);
 		
 		/* Don't initialize a device multiple times */
 		if (dev->ops) 

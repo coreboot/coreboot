@@ -22,6 +22,9 @@
 #include <device/pci_ops.h>
 #include <string.h>
 
+#define CONFIG_CONSOLE_VGA 1
+#define CONFIG_CONSOLE_VGA_MULTI 0
+
 struct rom_header * pci_rom_probe(struct device *dev)
 {
 	unsigned long rom_address;
@@ -80,10 +83,15 @@ struct rom_header * pci_rom_probe(struct device *dev)
 
 static void *pci_ram_image_start = (void *)PCI_RAM_IMAGE_START;
 
+#ifndef GO_AWAY
+int vga_inited;
+struct device *vga_pri;
+#endif
+
 #if CONFIG_CONSOLE_VGA == 1
 extern int vga_inited;		// defined in vga_console.c 
 #if CONFIG_CONSOLE_VGA_MULTI == 0
-extern device_t vga_pri;	// the primary vga device, defined in device.c
+extern struct device *vga_pri;	// the primary vga device, defined in device.c
 #endif
 #endif
 
@@ -109,11 +117,11 @@ struct rom_header *pci_rom_load(struct device *dev, struct rom_header *rom_heade
 	if (PCI_CLASS_DISPLAY_VGA == rom_data->class_hi) {
 #if CONFIG_CONSOLE_VGA == 1
 	#if CONFIG_CONSOLE_VGA_MULTI == 0
-		if (dev != vga_pri) return NULL; // only one VGA supported
+		//if (dev != vga_pri) return NULL; // only one VGA supported
 	#endif
 		printk(BIOS_DEBUG, "Copying VGA ROM image from 0x%x to 0x%x, 0x%x bytes\n",
 			    rom_header, PCI_VGA_RAM_IMAGE_START, rom_size);
-		memcpy(PCI_VGA_RAM_IMAGE_START, rom_header, rom_size);
+		memcpy((void *)PCI_VGA_RAM_IMAGE_START, rom_header, rom_size);
 		vga_inited = 1;
 		return (struct rom_header *) (PCI_VGA_RAM_IMAGE_START);
 #endif

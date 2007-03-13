@@ -60,10 +60,6 @@ $(obj)/mainboard/$(MAINBOARDDIR)/statictree.c: $(src)/mainboard/$(MAINBOARDDIR)/
 	$(Q)printf "  DTC     $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(obj)/util/dtc/dtc -O lb mainboard/$(MAINBOARDDIR)/dts > $@
 
-STAGE2_MAINBOARD_OBJ = mainboard.o
+STAGE2_MAINBOARD_OBJ = mainboard.o vga.o
 STAGE2_CHIPSET_OBJ = 
-
-# chipset
-include $(src)/northbridge/intel/i440bxemulation/Makefile
-include $(src)/southbridge/intel/i82371eb/Makefile
 

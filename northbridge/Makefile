@@ -19,12 +19,5 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-$(obj)/device/%.o: $(src)/device/%.c
-	$(Q)mkdir -p $(obj)/device
-	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
-
-STAGE2_DEVICE_OBJ = device.o device_util.o root_device.o \
-		    pci_device.o pci_ops.o pci_rom.o     \
-		    pnp_device.o
+include $(src)/northbridge/intel/Makefile
 

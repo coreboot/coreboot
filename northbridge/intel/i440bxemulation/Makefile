@@ -19,9 +19,10 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-$(obj)/i440bx.o: $(src)/northbridge/intel/i440bxemulation/i440bx.c
+STAGE2_CHIPSET_OBJ += $(obj)/northbridge/intel/i440bxemulation/i440bx.o
+
+$(obj)/northbridge/intel/i440bxemulation/%.o: $(src)/northbridge/intel/i440bxemulation/%.c
+	$(Q)mkdir -p $(obj)/northbridge/intel/i440bxemulation
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
-
-STAGE2_CHIPSET_OBJ += $(obj)/i440bx.o
 

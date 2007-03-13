@@ -70,7 +70,7 @@ u32 getIntVect(int num)
 	return MEM_RW(num << 2) + (MEM_RW((num << 2) + 2) << 4);
 }
 
-/* FixME: There is already a push_word() in the emulator */
+/* FIXME: There is already a push_word() in the emulator */
 void pushw(u16 val)
 {
 	X86_ESP -= 2;
@@ -97,8 +97,8 @@ u8 x_inb(u16 port)
 
 	val = inb(port);
 
-	//if (port != 0x40)
-	//    printk(BIOS_DEBUG,"inb(0x%04x) = 0x%02x\n", port, val);
+	if (port != 0x40)
+	    printk("inb(0x%04x) = 0x%02x\n", port, val);
 
 	return val;
 }
@@ -109,7 +109,7 @@ u16 x_inw(u16 port)
 
 	val = inw(port);
 
-	//printk(BIOS_DEBUG,"inw(0x%04x) = 0x%04x\n", port, val);
+	printk("inw(0x%04x) = 0x%04x\n", port, val);
 	return val;
 }
 
@@ -119,26 +119,26 @@ u32 x_inl(u16 port)
 
 	val = inl(port);
 
-	//printk(BIOS_DEBUG,"inl(0x%04x) = 0x%08x\n", port, val);
+	printk("inl(0x%04x) = 0x%08x\n", port, val);
 	return val;
 }
 
 void x_outb(u16 port, u8 val)
 {
-	//if (port != 0x43)
-	//	printk(BIOS_DEBUG,"outb(0x%02x, 0x%04x)\n", val, port);
+	if (port != 0x43)
+		printk("outb(0x%02x, 0x%04x)\n", val, port);
 	outb(val, port);
 }
 
 void x_outw(u16 port, u16 val)
 {
-	//printk(BIOS_DEBUG,"outw(0x%04x, 0x%04x)\n", val, port);
+	printk("outw(0x%04x, 0x%04x)\n", val, port);
 	outw(val, port);
 }
 
 void x_outl(u16 port, u32 val)
 {
-	//printk(BIOS_DEBUG,"outl(0x%08x, 0x%04x)\n", val, port);
+	printk("outl(0x%08x, 0x%04x)\n", val, port);
 	outl(val, port);
 }
 
@@ -155,7 +155,7 @@ void do_int(int num)
 {
 	int ret = 0;
 
-//	printk(BIOS_DEBUG,"int%x vector at %x\n", num, getIntVect(num));
+	printk("int%x vector at %x\n", num, getIntVect(num));
 
 	switch (num) {
 #ifndef _PC
@@ -316,6 +316,7 @@ void reset_int_vect(void)
 	MEM_WW((0x6D << 2) + 2, SYS_BIOS >> 4);
 }
 #endif
+
 void run_bios(struct device * dev, unsigned long addr)
 {
 #if 1
@@ -367,10 +368,13 @@ void run_bios(struct device * dev, unsigned long addr)
 	pushw(X86_SS);
 	pushw(X86_SP + 2);
 
-//	X86EMU_trace_on();
+#ifndef NO_TRACE
+	//X86EMU_trace_on();
+#endif
 
 	printk("entering emulator\n");
-
 	X86EMU_exec();
+	printk("exited emulator\n");
+
 #endif
 }

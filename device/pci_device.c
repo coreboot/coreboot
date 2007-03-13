@@ -659,8 +659,10 @@ void pci_dev_init(struct device *dev)
 // #warning "Need to set up CONFIG_PCI_ROM_RUN"
 #if CONFIG_PCI_ROM_RUN == 1
 	void run_bios(struct device * dev, unsigned long addr);
+	void do_vgabios(void);
 	struct rom_header *rom, *ram;
 
+	printk(BIOS_INFO, "Probing for option rom\n");
 	rom = pci_rom_probe(dev);
 	if (rom == NULL)
 		return;
@@ -668,7 +670,10 @@ void pci_dev_init(struct device *dev)
 	if (ram == NULL)
 		return;
 
-	run_bios(dev, ram);
+	//run_bios(dev, ram);
+	//void do_vgabios(void)
+	//
+	do_vgabios();
 #endif
 }
 

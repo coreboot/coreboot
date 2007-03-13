@@ -110,6 +110,9 @@ gdt16xend:
  */
 	.align  4
 	.globl gdtptr
+	.globl gdt_limit
+gdt_limit = gdt_end - gdt - 1   /* compute the table limit */
+
 gdt:
 gdtptr:
 	.word   gdt_end - gdt -1 /* compute the table limit */

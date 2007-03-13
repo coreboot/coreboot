@@ -1,7 +1,9 @@
 /*
  * This file is part of the LinuxBIOS project.
  *
- * Copyright (C) 2007 Ronald G. Minnich <rminnich@gmail.com>
+ * Copyright (C) 2004 Linux Networx
+ * Copyright (C) 2005 Bitworks
+ * Copyright (C) 2007 Ronald G. Minnich
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,5 +23,7 @@
 extern struct constructor i82371eb_constructors[];
 
 struct southbridge_intel_i82371eb_config {
-	int ide;
+        unsigned int ide0_enable : 1;
+        unsigned int ide1_enable : 1;
+
 };

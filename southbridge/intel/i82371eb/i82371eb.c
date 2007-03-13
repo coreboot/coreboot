@@ -1,7 +1,9 @@
 /*
  * This file is part of the LinuxBIOS project.
  *
- * Copyright (C) 2007 Ronald G. Minnich <rminnich@gmail.com>
+ * Copyright (C) 2004 Linux Networx
+ * Copyright (C) 2005 Bitworks
+ * Copyright (C) 2007 Ronald G. Minnich
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +30,9 @@
 // #include "i82371eb.h"
 
 /* The plain PCI device uses the standard PCI operations. */
+/* TODO: bring in the rest of the v2 code for controlling IDE enable. 
+ * This is just placeholder code for now
+ */
 
 /* Note that this structure is not necessary (yet),
  * but is here as an example of how you can set up your own ops.

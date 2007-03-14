@@ -140,7 +140,7 @@ static void real_mode_switch_call_vga(unsigned long devfn)
 
 		/* put the stack at the end of page zero. 
 		 * that way we can easily share it between real and protected, 
-		 * since the 16-bit ESP at segment 0 will work for any case. 
+		 * since the 16-bit ESP at segment 0 will work for any case. */
 		/* Setup a stack */
 		"	mov	$0x0, %ax	\n"
 		"	mov	%ax, %ss	\n"
@@ -235,7 +235,7 @@ void vga_enable_console()
 
 		/* put the stack at the end of page zero. 
 		 * that way we can easily share it between real and protected, 
-		 * since the 16-bit ESP at segment 0 will work for any case. 
+		 * since the 16-bit ESP at segment 0 will work for any case. */
 		/* Setup a stack */
 		"	mov	$0x0, %ax	\n"
 		"	mov	%ax, %ss	\n"

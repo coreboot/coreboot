@@ -64,24 +64,26 @@ static void soft_reset(void)
         pci_write_config8(PCI_DEV(0, 0x04, 0), 0x47, 1);
 }
 
+/*
+ * GPIO28 of 8111 will control H0_MEMRESET_L
+ * GPIO29 of 8111 will control H1_MEMRESET_L
+ */
 static void memreset_setup(void)
 {
-   if (is_cpu_pre_c0()) {
-        outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=0
-   }
-   else {
-        outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=1
-   }
-        outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
+	/* Ensure the CPU has controll of the memory lines */
+	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0),
+			SMBUS_IO_BASE + 0xc0 + 29);
 }
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
-   if (is_cpu_pre_c0()) {
-        udelay(800);
-        outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 17); //REVB_MEMRST_L=1
-        udelay(90);
-   }
+	if (is_cpu_pre_c0()) {
+		udelay(800);
+		/* Set memreset_high */
+		outb((0<<7)|(0<<6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), 
+				SMBUS_IO_BASE + 0xc0 + 28);
+		udelay(90);
+	}
 }
 
 static inline void activate_spd_rom(const struct mem_controller *ctrl)

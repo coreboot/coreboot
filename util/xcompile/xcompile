@@ -27,20 +27,20 @@ ARCH=`uname -m | sed -e s/i.86/x86/ -e s/sun4u/sparc64/ \
 
 case  "$ARCH" in
 "x86_64")
-	echo "CC_x86 := \"gcc -m32\""
-	echo "AS_x86 := \"as --32\""
-	echo "LD_x86 := \"ld -b elf32-i386 -melf_i386\""
+	echo "CC_x86 := gcc -m32"
+	echo "AS_x86 := as --32"
+	echo "LD_x86 := ld -b elf32-i386 -melf_i386"
 	;;
 "x86")
-	echo "CC_x86 := \"gcc\""
-	echo "AS_x86 := \"as\""
-	echo "LD_x86 := \"ld\""
+	echo "CC_x86 := gcc"
+	echo "AS_x86 := as"
+	echo "LD_x86 := ld"
 	;;
 *)
 	# FIXME: This should be detected.
-	echo "CC_x86 := \"i386-linux-gcc\""
-	echo "AS_x86 := \"i386-linux-as\""
-	echo "LD_x86 := \"i386-linux-ld\""
+	echo "CC_x86 := i386-linux-gcc"
+	echo "AS_x86 := i386-linux-as"
+	echo "LD_x86 := i386-linux-ld"
 	;;
 esac
 

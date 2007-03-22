@@ -1,0 +1,90 @@
+##
+## This file is part of the LinuxBIOS project.
+##
+## Copyright (C) 2007 coresystems GmbH
+## Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+
+menu "Devices"
+
+config PCI_OPTION_ROM_RUN
+	bool
+	help
+	  Execute PCI/AGP option roms if available. This is required to
+	  enable PCI/AGP VGA plugin cards. This option is not exposed
+	  to the user but set by the options PCI_OPTION_ROM_RUN_VM86
+	  and PCI_OPTION_ROM_RUN_X86EMU.
+
+choice
+	prompt "Execute PCI Option ROMs"
+	default PCI_OPTION_ROM_RUN_VM86
+	help
+	  Execute PCI/AGP option roms if available. You can choose to
+	  execute PCI option roms natively (32bit x86 system required), 
+	  in an emulator (x86emu), or ignore option rom execution
+
+
+config PCI_OPTION_ROM_RUN_X86EMU
+	bool "x86emu"
+	select PCI_OPTION_ROM_RUN
+	help
+	  If choose this option, the x86 instruction set emulator 
+	  x86emu is used to execute 16bit legacy bios option roms.
+	  
+	  x86emu is slow, big and safe. All 16bit x86 code is executed
+	  in an encapsulated environment where it can not break out.
+
+
+config PCI_OPTION_ROM_RUN_VM86
+	bool "vm86"
+	select PCI_OPTION_ROM_RUN
+	depends ARCH_X86
+	help
+	  If choose this option, the virtual x86 mode "vm86" is used
+	  to execute 16bit legacy bios option roms.
+
+	  vm86 is very small, fast, and probably a little less safe than 
+	  x86emu, since it runs option roms on the real hardware instead
+	  of an emulator.
+
+config PCI_OPTION_ROM_RUN_NONE
+	bool "Disabled"
+	help
+	  Do not execute PCI option roms at all.
+
+	  If you choose this option, VGA plugin cards will not be 
+	  initialized.
+
+endchoice
+
+# This should probably become a CMOS option
+config MULTIPLE_VGA_INIT
+	bool "Initialize all VGA cards"
+	depends PCI_OPTION_ROM_RUN
+	help
+	  If you enable this option, all VGA cards will be initialized
+	  If you disable this option, only the first VGA card will be
+	  initialized.
+
+config INITIALIZE_ONBOARD_VGA_FIRST
+	bool "Initialize onboard VGA first"
+	depends PCI_OPTION_ROM_RUN
+	help
+	  Initialize onboard VGA chips before any plugin VGA cards 
+	  are initialized.
+
+endmenu
+

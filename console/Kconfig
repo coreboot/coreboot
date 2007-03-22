@@ -128,12 +128,6 @@ config CONSOLE_SERIAL_9600
 
 endchoice
 
-config CONSOLE_VGA
-	boolean "VGA console support"
-	depends CONSOLE
-	help
-	  Send LinuxBIOS output to VGA console as soon as VGA is initialized.
-
 config CONSOLE_USB
 	boolean "USB2 console support (EXPERIMENTAL)"
 	depends CONSOLE && EXPERIMENTAL

@@ -503,13 +503,13 @@ void compute_allocate_resource(
 
 }
 
-#if defined(CONFIG_CONSOLE_VGA) && CONFIG_CONSOLE_VGA == 1
+#if defined(CONFIG_PCI_OPTION_ROM_RUN) && CONFIG_PCI_OPTION_ROM_RUN == 1
 struct device * vga_pri = 0;
 int vga_inited = 0;
 static void allocate_vga_resource(void)
 {
 #warning "FIXME modify allocate_vga_resource so it is less pci centric!"
-#warning "This function knows to much about PCI stuff, it should be just a ietrator/visitor."
+#warning "This function knows to much about PCI stuff, it should be just a iterator/visitor."
 
 	/* FIXME handle the VGA pallette snooping */
 	struct device *dev, *vga, *vga_onboard, *vga_first, *vga_last;
@@ -549,7 +549,8 @@ static void allocate_vga_resource(void)
                 vga = vga_first;
         }
 
-#if CONFIG_CONSOLE_VGA_ONBOARD_AT_FIRST == 1
+#if defined(CONFIG_INITIALIZE_ONBOARD_VGA_FIRST) && \
+	CONFIG_INITIALIZE_ONBOARD_VGA_FIRST == 1
         if (vga_onboard) // will use on board vga as pri
 #else
         if (!vga) // will use last add on adapter as pri
@@ -881,7 +882,7 @@ void dev_phase4(void)
 	mem->flags |= IORESOURCE_ASSIGNED;
 	mem->flags &= ~IORESOURCE_STORED;
 
-#if defined(CONFIG_CONSOLE_VGA) && CONFIG_CONSOLE_VGA == 1
+#if defined(CONFIG_PCI_OPTION_ROM_RUN) && CONFIG_PCI_OPTION_ROM_RUN == 1
 	/* Allocate the VGA I/O resource.. */
 	allocate_vga_resource(); 
 #endif

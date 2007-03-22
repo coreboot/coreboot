@@ -22,9 +22,6 @@
 #include <device/pci_ops.h>
 #include <string.h>
 
-#define CONFIG_CONSOLE_VGA 1
-#define CONFIG_CONSOLE_VGA_MULTI 0
-
 struct rom_header * pci_rom_probe(struct device *dev)
 {
 	unsigned long rom_address;
@@ -60,7 +57,9 @@ struct rom_header * pci_rom_probe(struct device *dev)
 		return NULL;
 	}
 
-	rom_data = (unsigned char *) rom_header + le32_to_cpu(rom_header->data);
+	rom_data = (struct pci_data *)((unsigned char *) rom_header +
+			le32_to_cpu(rom_header->data));
+
 	printk(BIOS_SPEW, "PCI ROM Image, Vendor %04x, Device %04x,\n",
 		    rom_data->vendor, rom_data->device);
 	if (dev->vendor != rom_data->vendor || dev->device != rom_data->device) {
@@ -83,9 +82,9 @@ struct rom_header * pci_rom_probe(struct device *dev)
 
 static void *pci_ram_image_start = (void *)PCI_RAM_IMAGE_START;
 
-#if CONFIG_CONSOLE_VGA == 1
+#if defined(CONFIG_PCI_OPTION_ROM_RUN) && CONFIG_PCI_OPTION_ROM_RUN == 1
 extern int vga_inited;		// defined in vga_console.c 
-#if CONFIG_CONSOLE_VGA_MULTI == 0
+#ifndef CONFIG_MULTIPLE_VGA_INIT
 extern struct device *vga_pri;	// the primary vga device, defined in device.c
 #endif
 #endif
@@ -100,8 +99,10 @@ struct rom_header *pci_rom_load(struct device *dev, struct rom_header *rom_heade
 	rom_address = pci_read_config32(dev, PCI_ROM_ADDRESS);
 
 	do {
-		rom_header = (unsigned char *) rom_header + image_size; // get next image
-	        rom_data = (unsigned char *) rom_header + le32_to_cpu(rom_header->data);
+		rom_header = (struct rom_header *)((unsigned char *)rom_header
+				+ image_size); // get next image
+	        rom_data = (struct pci_data *)((unsigned char *) rom_header +
+				le32_to_cpu(rom_header->data));
         	image_size = le32_to_cpu(rom_data->ilen) * 512;
 	} while ((rom_data->type!=0) && (rom_data->indicator!=0));  // make sure we got x86 version
 
@@ -110,9 +111,9 @@ struct rom_header *pci_rom_load(struct device *dev, struct rom_header *rom_heade
 	rom_size = rom_header->size * 512;
 
 	if (PCI_CLASS_DISPLAY_VGA == rom_data->class_hi) {
-#if CONFIG_CONSOLE_VGA == 1
-	#if CONFIG_CONSOLE_VGA_MULTI == 0
-		//if (dev != vga_pri) return NULL; // only one VGA supported
+#if defined(CONFIG_PCI_OPTION_ROM_RUN) && CONFIG_PCI_OPTION_ROM_RUN == 1
+	#ifndef CONFIG_MULTIPLE_VGA_INIT 
+		if (dev != vga_pri) return NULL; // only one VGA supported
 	#endif
 		printk(BIOS_DEBUG, "Copying VGA ROM image from 0x%x to 0x%x, 0x%x bytes\n",
 			    rom_header, PCI_VGA_RAM_IMAGE_START, rom_size);

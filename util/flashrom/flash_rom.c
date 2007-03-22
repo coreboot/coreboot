@@ -345,7 +345,7 @@ int main(int argc, char *argv[])
 			exit(1);
 		}
 		if(image_stat.st_size!=flash->total_size*1024) {
-			perror("Image size doesnt match");
+			fprintf(stderr, "Error: Image size doesnt match\n");
 			exit(1);
 		}
 

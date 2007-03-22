@@ -38,7 +38,8 @@ MAKEFLAGS += --no-print-directory
 CC         := gcc
 CFLAGS     := -Os -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 	      -Werror-implicit-function-declaration -Wstrict-aliasing \
-	      -fno-common -ffreestanding -fno-builtin
+	      -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer \
+	      -mpreferred-stack-boundary=2 -mregparm=3 -pipe
 
 HOSTCC     := gcc
 HOSTCXX    := g++
@@ -126,6 +127,11 @@ prepare2:
 	$(Q)printf "#define LINUXBIOS_COMPILER \"$(shell LANG= $(CC) --version | head -n1)\"\n" >> $(obj)/build.h
 	$(Q)printf "#define LINUXBIOS_ASSEMBLER \"$(shell LANG= $(AS) --version | head -n1)\"\n" >> $(obj)/build.h
 	$(Q)printf "#define LINUXBIOS_LINKER \"$(shell LANG= $(LD) --version | head -n1)\"\n" >> $(obj)/build.h
+	$(Q)printf "#define LINUXBIOS_COMPILE_TIME \"`LANG= date +%T`\"\n" >> $(obj)/build.h
+	$(Q)printf "#define LINUXBIOS_COMPILE_BY \"$(shell whoami)\"\n" >> $(obj)/build.h
+	$(Q)printf "#define LINUXBIOS_COMPILE_HOST \"$(shell hostname)\"\n" >> $(obj)/build.h
+	$(Q)printf "#define LINUXBIOS_COMPILE_DOMAIN \"$(shell dnsdomainname)\"\n" >> $(obj)/build.h
+
 
 clean:
 	$(Q)printf "  CLEAN   $(subst $(shell pwd)/,,$(obj))\n"

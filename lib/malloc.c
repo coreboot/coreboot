@@ -55,7 +55,6 @@ void *malloc(size_t size)
 		  free_mem_ptr);
 
 	if (size > freebytes) {
-		printk(BIOS_ERR, "OUT OF MEMORY for alloc of %d bytes\n", size);
 		die("OUT OF MEMORY\n");
 	}
 

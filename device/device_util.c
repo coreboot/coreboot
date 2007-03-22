@@ -297,7 +297,7 @@ int path_eq(struct device_path *path1, struct device_path *path2)
 			equal = (path1->u.cpu_bus.id == path2->u.cpu_bus.id);
 			break;
 		default:
-			printk(BIOS_ERR, "Uknown device type: %d\n", path1->type);
+			printk(BIOS_ERR, "Unknown device type: %d\n", path1->type);
 			break;
 		}
 	}
@@ -339,7 +339,7 @@ int id_eq(struct device_id *path1, struct device_id *path2)
 			equal = (path1->u.cpu_bus.vendor == path2->u.cpu_bus.vendor) &&  (path1->u.cpu_bus.device == path2->u.cpu_bus.device);
 			break;
 		default:
-			printk(BIOS_ERR, "Uknown device type: %d\n", path1->type);
+			printk(BIOS_ERR, "Unknown device type: %d\n", path1->type);
 			break;
 		}
 	}

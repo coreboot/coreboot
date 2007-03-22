@@ -144,24 +144,20 @@ struct cmos_checksum *lb_cmos_checksum(struct lb_header *header)
 
 void lb_strings(struct lb_header *header)
 {
-#warning "Fill in the strings in lb_strings -- needs Makefile changes"
 	static const struct {
 		u32 tag;
 		const u8 *string;
 	} strings[] = {
-		{ LB_TAG_VERSION,        (u8 *) "3 -- FIXME",        },
-/*
-		{ LB_TAG_VERSION,        linuxbios_version,        },
-		{ LB_TAG_EXTRA_VERSION,  linuxbios_extra_version,  },
-		{ LB_TAG_BUILD,          linuxbios_build,          },
-		{ LB_TAG_COMPILE_TIME,   linuxbios_compile_time,   },
-		{ LB_TAG_COMPILE_BY,     linuxbios_compile_by,     },
-		{ LB_TAG_COMPILE_HOST,   linuxbios_compile_host,   },
-		{ LB_TAG_COMPILE_DOMAIN, linuxbios_compile_domain, },
-		{ LB_TAG_COMPILER,       linuxbios_compiler,       },
-		{ LB_TAG_LINKER,         linuxbios_linker,         },
-		{ LB_TAG_ASSEMBLER,      linuxbios_assembler,      },
-*/
+		{ LB_TAG_VERSION,        (const u8 *)LINUXBIOS_VERSION,        },
+		{ LB_TAG_EXTRA_VERSION,  (const u8 *)LINUXBIOS_EXTRA_VERSION,  },
+		{ LB_TAG_BUILD,          (const u8 *)LINUXBIOS_BUILD,          },
+		{ LB_TAG_COMPILE_TIME,   (const u8 *)LINUXBIOS_COMPILE_TIME,   }, // duplicate?
+		{ LB_TAG_COMPILE_BY,     (const u8 *)LINUXBIOS_COMPILE_BY,     },
+		{ LB_TAG_COMPILE_HOST,   (const u8 *)LINUXBIOS_COMPILE_HOST,   },
+		{ LB_TAG_COMPILE_DOMAIN, (const u8 *)LINUXBIOS_COMPILE_DOMAIN, },
+		{ LB_TAG_COMPILER,       (const u8 *)LINUXBIOS_COMPILER,       },
+		{ LB_TAG_LINKER,         (const u8 *)LINUXBIOS_LINKER,         },
+		{ LB_TAG_ASSEMBLER,      (const u8 *)LINUXBIOS_ASSEMBLER,      },
 	};
 	unsigned int i;
 	for(i = 0; i < sizeof(strings)/sizeof(strings[0]); i++) {
@@ -244,7 +240,8 @@ static void lb_cleanup_memory_ranges(struct lb_memory *mem)
 	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
 	printk(BIOS_INFO, "%s: # entries %d\n", __func__, entries);
 	for(i = 0; i < entries; i++)
-		printk(BIOS_INFO, "  #%d: base 0x%x size 0x%x\n", i, (u32)mem->map[i].start.lo, mem->map[i].size.lo);
+		printk(BIOS_INFO, "  #%d: base 0x%x size 0x%x\n", 
+				i, (u32)mem->map[i].start.lo, mem->map[i].size.lo);
 	
 	/* Sort the lb memory ranges */
 	for(i = 0; i < entries; i++) {
@@ -375,8 +372,7 @@ static struct lb_memory *build_lb_mem(struct lb_header *head)
 	mem_ranges = mem;
 
 	/* Build the raw table of memory */
-	search_global_resources(
-		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
+	search_global_resources( IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
 		build_lb_mem_range, mem);
 	lb_cleanup_memory_ranges(mem);
 	return mem;

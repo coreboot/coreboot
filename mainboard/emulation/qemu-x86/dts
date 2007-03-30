@@ -18,20 +18,20 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 /{
-	config="mainboard,emulation,qemu-x86";
+	config = "mainboard,emulation,qemu-x86";
 	enabled;
 
 	cpus {
 		enabled;
 	};
-	domain0{
+	domain0 {
 		enabled;
-		config="northbridge,intel,i440bxemulation";
-		ops="i440bxemulation_pcidomainops";
+		config = "northbridge,intel,i440bxemulation";
+		ops = "i440bxemulation_pcidomainops";
 		pcidomain = "0";
-		device0,0{
+		device0,0 {
 			enabled;
-			pcipath="0,0";
+			pcipath = "0,0";
 		};
 /*		southbridge,intel,piix4{
 			pcipath = "0,0";
@@ -55,6 +55,6 @@ struct northbridge_intel_i440bx_config domain0 = {
 	.ramsize = CONFIG_NORTHBRIDGE_INTEL_I440BXEMULATION_RAMSIZE,
 };
 
-struct constructor *all_constructors[] ={
+struct constructor *all_constructors[] = {
 	i440bx_constructors, i82371eb_constructors, qemuvga_constructors, 0
 };

@@ -436,6 +436,7 @@ static FLASH_ENABLE enables[] = {
 	{0x8086, 0x24d0, "ICH5/ICH5R", enable_flash_ich_4e},
 	{0x8086, 0x2640, "ICH6/ICH6R", enable_flash_ich_dc},
 	{0x8086, 0x2641, "ICH6-M", enable_flash_ich_dc},
+	{0x8086, 0x27b0, "ICH7DH", enable_flash_ich_dc},
 	{0x8086, 0x27b8, "ICH7/ICH7R", enable_flash_ich_dc},
 	{0x8086, 0x27b9, "ICH7M", enable_flash_ich_dc},
 	{0x8086, 0x27bd, "ICH7MDH", enable_flash_ich_dc},

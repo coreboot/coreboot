@@ -9,14 +9,12 @@
 #include <bitops.h>
 #include "chip.h"
 #include "northbridge.h"
+#include "i440bx.h"
 
-/*
-*/
 static void northbridge_init(device_t dev) 
 {
 	printk_spew("Northbridge Init\n");
 }
-
 
 static struct device_operations northbridge_operations = {
 	.read_resources   = pci_dev_read_resources,
@@ -34,20 +32,20 @@ static struct pci_driver northbridge_driver __pci_driver = {
 };
 
 
-
 #define BRIDGE_IO_MASK (IORESOURCE_IO | IORESOURCE_MEM)
 
 static void pci_domain_read_resources(device_t dev)
 {
         struct resource *resource;
+        unsigned reg;
 
         /* Initialize the system wide io space constraints */
-        resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0,0));
+        resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
         resource->limit = 0xffffUL;
         resource->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 
         /* Initialize the system wide memory resources constraints */
-        resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1,0));
+        resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
         resource->limit = 0xffffffffULL;
         resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 }
@@ -93,36 +91,28 @@ static uint32_t find_pci_tolm(struct bus *bus)
 
 static void pci_domain_set_resources(device_t dev)
 {
-	static const uint8_t ramregs[] = {
-		0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 0x56, 0x57
-	};
 	device_t mc_dev;
         uint32_t pci_tolm;
 
         pci_tolm = find_pci_tolm(&dev->link[0]);
 	mc_dev = dev->link[0].children;
 	if (mc_dev) {
+		/* Figure out which areas are/should be occupied by RAM.
+		 * This is all computed in kilobytes and converted to/from
+		 * the memory controller right at the edges.
+		 * Having different variables in different units is
+		 * too confusing to get right.  Kilobytes are good up to
+		 * 4 Terabytes of RAM...
+		 */
+		uint16_t tolm_r;
 		unsigned long tomk, tolmk;
-		unsigned char rambits;
-		int i, idx;
+		int idx;
 
-		for(rambits = 0, i = 0; i < sizeof(ramregs)/sizeof(ramregs[0]); i++) {
-			unsigned char reg;
-			reg = pci_read_config8(mc_dev, ramregs[i]);
-			/* these are ENDING addresses, not sizes. 
-			 * if there is memory in this slot, then reg will be > rambits.
-			 * So we just take the max, that gives us total. 
-			 * We take the highest one to cover for once and future linuxbios
-			 * bugs. We warn about bugs.
-			 */
-			if (reg > rambits)
-				rambits = reg;
-			if (reg < rambits)
-				printk_err("ERROR! register 0x%x is not set!\n", 
-					ramregs[i]);
-		}
-		printk_debug("I would set ram size to 0x%x Kbytes\n", (rambits)*8*1024);
-		tomk = rambits*8*1024;
+		/* Get the value of the highest DRB. This tells the end of
+		 * the physical memory.  The units are ticks of 8MB
+		 * i.e. 1 means 8MB.
+		 */
+		tomk = ((unsigned long)pci_read_config8(mc_dev, DRB7)) << 15;
 		/* Compute the top of Low memory */
 		tolmk = pci_tolm >> 10;
 		if (tolmk >= tomk) {
@@ -130,9 +120,17 @@ static void pci_domain_set_resources(device_t dev)
 			 */
 			tolmk = tomk;
 		}
+		/* Write the ram configuration registers,
+		 * preserving the reserved bits.
+		 */
+		tolm_r = pci_read_config16(mc_dev, 0xc4);
+		tolm_r = ((tolmk >> 10) << 3) | (tolm_r & 0xf);
+		pci_write_config16(mc_dev, 0xc4, tolm_r);
+
 		/* Report the memory regions */
 		idx = 10;
-		ram_resource(dev, idx++, 0, tolmk);
+		ram_resource(dev, idx++, 0, 640);
+		ram_resource(dev, idx++, 768, tolmk - 768);
 	}
 	assign_resources(&dev->link[0]);
 }
@@ -170,6 +168,8 @@ static struct device_operations cpu_bus_ops = {
 
 static void enable_dev(struct device *dev)
 {
+        struct device_path path;
+
         /* Set the operations if it is a special bus type */
         if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
                 dev->ops = &pci_domain_ops;
@@ -182,5 +182,5 @@ static void enable_dev(struct device *dev)
 
 struct chip_operations northbridge_intel_i440bx_ops = {
 	CHIP_NAME("Intel 440BX Northbridge")
-	.enable_dev = enable_dev, 
+	.enable_dev = enable_dev,
 };

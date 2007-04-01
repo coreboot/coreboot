@@ -31,16 +31,16 @@
 
 int erase_49lf040(struct flashchip *flash)
 {
-        int i;
-        int total_size = flash->total_size * 1024;
-        int page_size = flash->page_size;
-        volatile uint8_t *bios = flash->virt_addr;
+	int i;
+	int total_size = flash->total_size * 1024;
+	int page_size = flash->page_size;
+	volatile uint8_t *bios = flash->virt_addr;
 
-        for (i = 0; i < total_size / page_size; i++) {
+	for (i = 0; i < total_size / page_size; i++) {
 		/* Chip erase only works in parallel programming mode
 		 * for the 49lf040. Use sector-erase instead */
 		erase_sector_jedec(bios, i * page_size);
-	}         
+	}
 	return 0;
 }
 
@@ -60,7 +60,7 @@ int write_49lf040(struct flashchip *flash, uint8_t *buf)
 
 		/* write to the sector */
 		printf("%04d at address: 0x%08x ", i, i * page_size);
-		
+
 		write_sector_jedec(bios, buf + i * page_size,
 				   bios + i * page_size, page_size);
 

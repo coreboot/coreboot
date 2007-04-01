@@ -21,7 +21,8 @@ extern __inline__ void toggle_ready_82802ab(volatile uint8_t *dst)
 	}
 }
 
-extern __inline__ void data_polling_82802ab(volatile uint8_t *dst, uint8_t data)
+extern __inline__ void data_polling_82802ab(volatile uint8_t *dst,
+					    uint8_t data)
 {
 	unsigned int i = 0;
 	uint8_t tmp;
@@ -38,9 +39,9 @@ extern __inline__ void data_polling_82802ab(volatile uint8_t *dst, uint8_t data)
 
 extern __inline__ void protect_82802ab(volatile uint8_t *bios)
 {
-	*(volatile uint8_t *) (bios + 0x5555) = 0xAA;
-	*(volatile uint8_t *) (bios + 0x2AAA) = 0x55;
-	*(volatile uint8_t *) (bios + 0x5555) = 0xA0;
+	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
+	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
+	*(volatile uint8_t *)(bios + 0x5555) = 0xA0;
 
 	usleep(200);
 }

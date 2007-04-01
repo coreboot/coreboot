@@ -19,12 +19,8 @@
  *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-
-
 #ifndef __MSYS_DOC_H__
 #define __MSYS_DOC_H__ 1
-
-
 
 /* idea from include/linux/mtd/doc2000.h */
 /* registers with __ should not be read/written directly */
@@ -66,8 +62,6 @@
 #define MSYSTEMS_DOC_R_CDSNIO_BASE                0x0800
 #define MSYSTEMS_DOC_W_CDSNIO_BASE                0x0800
 
-
-
 #define doc_read(base,reg) \
 	(*(volatile uint8_t *)(base + MSYSTEMS_DOC_R_##reg))
 
@@ -98,13 +92,9 @@
 #define doc_toggle(base)   /* 0, 1, 0, 1, 0, 1, ... if a doc is present */ \
 	( (doc_read(base, ECCConfiguration) & 0x04) >> 2 )
 
-
-
 extern int probe_md2802(struct flashchip *flash);
 extern int read_md2802(struct flashchip *flash, uint8_t *buf);
 extern int erase_md2802(struct flashchip *flash);
 extern int write_md2802(struct flashchip *flash, uint8_t *buf);
-
-
 
 #endif				/* !__MSYS_DOC_H__ */

@@ -34,8 +34,8 @@
 int write_49f002(struct flashchip *flash, uint8_t *buf)
 {
 	int i;
-	int total_size = flash->total_size * 1024, page_size =
-		flash->page_size;
+	int total_size = flash->total_size * 1024;
+	int page_size = flash->page_size;
 	volatile uint8_t *bios = flash->virt_addr;
 
 	erase_chip_jedec(flash);

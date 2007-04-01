@@ -32,15 +32,15 @@ extern int exclude_start_page, exclude_end_page;
 int write_49fl004(struct flashchip *flash, uint8_t *buf)
 {
 	int i;
-	int total_size = flash->total_size * 1024, page_size =
-		flash->page_size;
+	int total_size = flash->total_size * 1024;
+	int page_size = flash->page_size;
 	volatile uint8_t *bios = flash->virt_addr;
-	
+
 	printf("Programming Page: ");
 	for (i = 0; i < total_size / page_size; i++) {
-		if( (i>=exclude_start_page) && (i<exclude_end_page)) 	
+		if ((i >= exclude_start_page) && (i < exclude_end_page))
 			continue;
-		
+
 		/* erase the page before programming */
 		erase_block_jedec(bios, i * page_size);
 

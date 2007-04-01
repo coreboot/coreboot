@@ -90,15 +90,15 @@ int erase_sst_fwhub(struct flashchip *flash)
 int write_sst_fwhub(struct flashchip *flash, uint8_t *buf)
 {
 	int i;
-	int total_size = flash->total_size * 1024, page_size =
-	    flash->page_size;
+	int total_size = flash->total_size * 1024;
+	int page_size = flash->page_size;
 	volatile uint8_t *bios = flash->virt_addr;
 
 	// FIXME: We want block wide erase instead of ironing the whole chip
 	erase_sst_fwhub(flash);
-	
+
 	// dumb check if erase was successful.
-	for (i=0; i < total_size; i++) {
+	for (i = 0; i < total_size; i++) {
 		if (bios[i] != 0xff) {
 			printf("ERASE FAILED\n");
 			return -1;

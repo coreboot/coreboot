@@ -9,8 +9,7 @@ extern int write_jedec(struct flashchip *flash, uint8_t *buf);
 extern int erase_sector_jedec(volatile uint8_t *bios, unsigned int page);
 extern int erase_block_jedec(volatile uint8_t *bios, unsigned int page);
 extern int write_sector_jedec(volatile uint8_t *bios, uint8_t *src,
-			      volatile uint8_t *dst,
-			      unsigned int page_size);
+			      volatile uint8_t *dst, unsigned int page_size);
 
 extern __inline__ void toggle_ready_jedec(volatile uint8_t *dst)
 {
@@ -45,21 +44,21 @@ extern __inline__ void data_polling_jedec(volatile uint8_t *dst, uint8_t data)
 
 extern __inline__ void unprotect_jedec(volatile uint8_t *bios)
 {
-	*(volatile uint8_t *) (bios + 0x5555) = 0xAA;
-	*(volatile uint8_t *) (bios + 0x2AAA) = 0x55;
-	*(volatile uint8_t *) (bios + 0x5555) = 0x80;
-	*(volatile uint8_t *) (bios + 0x5555) = 0xAA;
-	*(volatile uint8_t *) (bios + 0x2AAA) = 0x55;
-	*(volatile uint8_t *) (bios + 0x5555) = 0x20;
+	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
+	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
+	*(volatile uint8_t *)(bios + 0x5555) = 0x80;
+	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
+	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
+	*(volatile uint8_t *)(bios + 0x5555) = 0x20;
 
 	usleep(200);
 }
 
 extern __inline__ void protect_jedec(volatile uint8_t *bios)
 {
-	*(volatile uint8_t *) (bios + 0x5555) = 0xAA;
-	*(volatile uint8_t *) (bios + 0x2AAA) = 0x55;
-	*(volatile uint8_t *) (bios + 0x5555) = 0xA0;
+	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
+	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
+	*(volatile uint8_t *)(bios + 0x5555) = 0xA0;
 
 	usleep(200);
 }

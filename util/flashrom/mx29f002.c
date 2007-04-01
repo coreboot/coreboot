@@ -40,8 +40,8 @@ int probe_29f002(struct flashchip *flash)
 	*(bios + 0x2AAA) = 0x55;
 	*(bios + 0x5555) = 0x90;
 
-	id1 = *(volatile uint8_t *) bios;
-	id2 = *(volatile uint8_t *) (bios + 0x01);
+	id1 = *(volatile uint8_t *)bios;
+	id2 = *(volatile uint8_t *)(bios + 0x01);
 
 	*bios = 0xF0;
 
@@ -101,7 +101,7 @@ int write_29f002(struct flashchip *flash, uint8_t *buf)
 	for (i = 0; i < total_size; i++) {
 		/* write to the sector */
 		if ((i & 0xfff) == 0)
-			printf("address: 0x%08lx", (unsigned long) i);
+			printf("address: 0x%08lx", (unsigned long)i);
 		*(bios + 0x5555) = 0xAA;
 		*(bios + 0x2AAA) = 0x55;
 		*(bios + 0x5555) = 0xA0;

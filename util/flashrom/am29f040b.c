@@ -54,9 +54,9 @@ static __inline__ int write_sector_29f040b(volatile uint8_t *bios,
 	int i;
 
 	for (i = 0; i < page_size; i++) {
-		if( (i & 0xfff) == 0xfff )
-			printf("0x%08lx", (unsigned long) dst - 
-					(unsigned long) bios);
+		if ((i & 0xfff) == 0xfff)
+			printf("0x%08lx", (unsigned long)dst -
+			       (unsigned long)bios);
 
 		*(bios + 0x555) = 0xAA;
 		*(bios + 0x2AA) = 0x55;
@@ -66,7 +66,7 @@ static __inline__ int write_sector_29f040b(volatile uint8_t *bios,
 		/* wait for Toggle bit ready */
 		toggle_ready_jedec(bios);
 
-		if( (i & 0xfff) == 0xfff )
+		if ((i & 0xfff) == 0xfff)
 			printf("\b\b\b\b\b\b\b\b\b\b");
 	}
 
@@ -116,8 +116,8 @@ int erase_29f040b(struct flashchip *flash)
 int write_29f040b(struct flashchip *flash, uint8_t *buf)
 {
 	int i;
-	int total_size = flash->total_size * 1024, page_size =
-	    flash->page_size;
+	int total_size = flash->total_size * 1024;
+	int page_size = flash->page_size;
 	volatile uint8_t *bios = flash->virt_addr;
 
 	printf("Programming page ");

@@ -80,12 +80,9 @@ static void it8661f_enable_serial(device_t dev, unsigned iobase)
 	   PP (3), IR (4). Bits 5-7 are reserved. */
 	it8661f_sio_write(0x00, IT8661F_CONFIG_REG_LDE, 0x1f);
 
-	/* Enable all devices. */
-	it8661f_sio_write(IT8661F_FDC,  0x30, 0x1); /* Floppy */
+	/* Enable serial port(s). */
 	it8661f_sio_write(IT8661F_SP1,  0x30, 0x1); /* Serial port 1 */
 	it8661f_sio_write(IT8661F_SP2,  0x30, 0x1); /* Serial port 2 */
-	it8661f_sio_write(IT8661F_PP,   0x30, 0x1); /* Parallel port */
-	it8661f_sio_write(IT8661F_IR,   0x30, 0x1); /* IR */
 
 	/* Select 24MHz CLKIN (clear bit 1) and clear software suspend mode
 	   (clear bit 0). */

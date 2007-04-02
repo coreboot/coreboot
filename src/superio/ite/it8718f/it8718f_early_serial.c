@@ -66,14 +66,8 @@ static void it8718f_enable_serial(device_t dev, unsigned iobase)
 	/* it8718f_sio_write(0x00, IT8718F_CONFIG_REG_CONFIGSEL, 0x00); */
 
 	/* Enable all devices. */
-	it8718f_sio_write(IT8718F_FDC,  0x30, 0x1); /* Floppy */
 	it8718f_sio_write(IT8718F_SP1,  0x30, 0x1); /* Serial port 1 */
 	it8718f_sio_write(IT8718F_SP2,  0x30, 0x1); /* Serial port 2 */
-	it8718f_sio_write(IT8718F_PP,   0x30, 0x1); /* Parallel port */
-	it8718f_sio_write(IT8718F_EC,   0x30, 0x1); /* Environment controller */
-	it8718f_sio_write(IT8718F_KBCK, 0x30, 0x1); /* Keyboard */
-	it8718f_sio_write(IT8718F_KBCM, 0x30, 0x1); /* Mouse */
-	it8718f_sio_write(IT8718F_IR,   0x30, 0x1); /* Consumer IR */
 
 	/* Select 24MHz CLKIN (set bit 0). */
 	it8718f_sio_write(0x00, IT8718F_CONFIG_REG_CLOCKSEL, 0x01);

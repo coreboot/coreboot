@@ -67,15 +67,9 @@ static void it8705f_enable_serial(device_t dev, unsigned iobase)
            If this register is not written, both chips are configured. */
 	/* it8705f_sio_write(0x00, IT8705F_CONFIG_REG_CONFIGSEL, 0x00); */
 
-	/* Enable all devices. */
-	it8705f_sio_write(IT8705F_FDC,  0x30, 0x1); /* Floppy */
+	/* Enable serial port(s). */
 	it8705f_sio_write(IT8705F_SP1,  0x30, 0x1); /* Serial port 1 */
 	it8705f_sio_write(IT8705F_SP2,  0x30, 0x1); /* Serial port 2 */
-	it8705f_sio_write(IT8705F_PP,   0x30, 0x1); /* Parallel port */
-	it8705f_sio_write(IT8705F_EC,   0x30, 0x1); /* Environment controller */
-	it8705f_sio_write(IT8705F_GAME, 0x30, 0x1); /* GAME port */
-	it8705f_sio_write(IT8705F_IR,   0x30, 0x1); /* Consumer IR */
-	it8705f_sio_write(IT8705F_MIDI, 0x30, 0x1); /* MIDI port */
 
 	/* Select 24MHz CLKIN (set bit 0). */
 	it8705f_sio_write(0x00, IT8705F_CONFIG_REG_CLOCKSEL, 0x01);

@@ -80,13 +80,9 @@ static void it8671f_enable_serial(device_t dev, unsigned iobase)
            PP (3), Reserved (4), KBCK (5), KBCM (6), Reserved (7). */
 	it8671f_sio_write(0x00, IT8671F_CONFIG_REG_LDE, 0x6f);
 
-	/* Activate all devices. */
-	it8671f_sio_write(IT8671F_FDC,  0x30, 0x01); /* Floppy */
+	/* Enable serial port(s). */
 	it8671f_sio_write(IT8671F_SP1,  0x30, 0x01); /* Serial port 1 */
 	it8671f_sio_write(IT8671F_SP2,  0x30, 0x01); /* Serial port 2 */
-	it8671f_sio_write(IT8671F_PP,   0x30, 0x01); /* Parallel port */
-	it8671f_sio_write(IT8671F_KBCK, 0x30, 0x01); /* Keyboard */
-	it8671f_sio_write(IT8671F_KBCM, 0x30, 0x01); /* Mouse */
 
 	/* Select 24MHz CLKIN (clear bit 6) and clear software suspend
 	   mode (clear bit 0). */

@@ -77,13 +77,8 @@ static void it8673f_enable_serial(device_t dev, unsigned iobase)
 	/* (2) Modify the data of configuration registers. */
 
 	/* Enable all devices. */
-	it8673f_sio_write(IT8673F_FDC,  0x30, 0x1); /* Floppy */
 	it8673f_sio_write(IT8673F_SP1,  0x30, 0x1); /* Serial port 1 */
 	it8673f_sio_write(IT8673F_SP2,  0x30, 0x1); /* Serial port 2 */
-	it8673f_sio_write(IT8673F_PP,   0x30, 0x1); /* Parallel port */
-	it8673f_sio_write(IT8673F_FAN,  0x30, 0x1); /* Fan controller */
-	it8673f_sio_write(IT8673F_KBCK, 0x30, 0x1); /* Keyboard */
-	it8673f_sio_write(IT8673F_KBCM, 0x30, 0x1); /* Mouse */
 
 	/* Select 24MHz CLKIN (clear bit 0). */
 	it8673f_sio_write(0x00, IT8673F_CONFIG_REG_CLOCKSEL, 0x00);

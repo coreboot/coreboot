@@ -3,7 +3,7 @@
  *
  * Copyright 2000 Silicon Integrated System Corporation
  * Copyright 2000 Ronald G. Minnich <rminnich@gmail.com>
- * Copyright 2005 coresystems GmbH <stepan@coresystems.de>
+ * Copyright 2005-2007 coresystems GmbH <stepan@coresystems.de>
  * 
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -128,7 +128,15 @@ extern struct flashchip flashchips[];
 
 extern void myusec_delay(int time);
 extern void myusec_calibrate_delay();
-extern int enable_flash_write(void);
+
+/* pci handling for board/chipset_enable */
+extern struct pci_access *pacc; /* For board and chipset_enable */
+extern struct pci_dev *pci_dev_find(uint16_t vendor, uint16_t device);
+extern struct pci_dev *pci_card_find(uint16_t vendor, uint16_t device,
+                                     uint16_t card_vendor, uint16_t card_device);
+
+extern int board_flash_enable(char *vendor, char *part); /* board_enable.c */
+extern int chipset_flash_enable(void); /* chipset_enable.c */
 
 /* physical memory mapping device */
 

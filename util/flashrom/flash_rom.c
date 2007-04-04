@@ -35,6 +35,15 @@
 #include <string.h>
 #include <stdlib.h>
 #include <getopt.h>
+#include <pci/pci.h>
+
+/* for iopl */
+#if defined (__sun) && (defined(__i386) || defined(__amd64))
+#include <strings.h>
+#include <sys/sysi86.h>
+#include <sys/psw.h>
+#include <asm/sunddi.h>
+#endif
 
 #include "flash.h"
 #include "lbtable.h"
@@ -42,9 +51,53 @@
 #include "debug.h"
 
 char *chip_to_probe = NULL;
-
+struct pci_access *pacc; /* For board and chipset_enable */
 int exclude_start_page, exclude_end_page;
 int force=0, verbose=0;
+
+/*
+ *
+ */
+struct pci_dev *
+pci_dev_find(uint16_t vendor, uint16_t device)
+{
+        struct pci_dev  *temp;
+        struct pci_filter  filter;
+
+        pci_filter_init(NULL, &filter);
+        filter.vendor = vendor;
+        filter.device = device;
+
+        for (temp = pacc->devices; temp; temp = temp->next)
+                if (pci_filter_match(&filter, temp))
+                        return temp;
+
+        return NULL;
+}
+
+/*
+ *
+ */
+struct pci_dev *
+pci_card_find(uint16_t vendor, uint16_t device,
+              uint16_t card_vendor, uint16_t card_device)
+{
+        struct pci_dev  *temp;
+        struct pci_filter  filter;
+
+        pci_filter_init(NULL, &filter);
+        filter.vendor = vendor;
+        filter.device = device;
+
+        for (temp = pacc->devices; temp; temp = temp->next)
+                if (pci_filter_match(&filter, temp)) {
+                        if ((card_vendor == pci_read_word(temp, 0x2C)) &&
+                            (card_device == pci_read_word(temp, 0x2E)))
+                                return temp;
+                }
+
+        return NULL;
+}
 
 struct flashchip *probe_flash(struct flashchip *flash)
 {
@@ -72,10 +125,11 @@ struct flashchip *probe_flash(struct flashchip *flash)
 			       __FUNCTION__, flash->total_size * 1024,
 			       (unsigned long) size);
 		}
+
 		bios = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
 			    fd_mem, (off_t) (0xffffffff - size + 1));
 		if (bios == MAP_FAILED) {
-			perror("Error: Can't mmap /dev/mem.");
+			perror("Error: Can't mmap " MEM_DEV ".");
 			exit(1);
 		}
 		flash->virt_addr = bios;
@@ -92,7 +146,7 @@ struct flashchip *probe_flash(struct flashchip *flash)
 		bios = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
 			    fd_mem, (off_t) (0x9400000));
 		if (bios == MAP_FAILED) {
-			perror("Error: Can't mmap /dev/mem.");
+			perror("Error: Can't mmap " MEM_DEV ".");
 			exit(1);
 		}
 		flash->virt_addr = bios;
@@ -281,6 +335,22 @@ int main(int argc, char *argv[])
 	if (optind < argc)
 		filename = argv[optind++];
 
+        /* First get full io access */
+#if defined (__sun) && (defined(__i386) || defined(__amd64))
+	if (sysi86(SI86V86, V86SC_IOPL, PS_IOPL) != 0){
+#else
+	if (iopl(3) != 0) {
+#endif
+		fprintf(stderr, "ERROR: iopl failed: \"%s\"\n", strerror(errno));
+		exit(1);
+	}
+
+        /* Initialize PCI access for flash enables */
+	pacc = pci_alloc();	/* Get the pci_access structure */
+	/* Set all options you want -- here we stick with the defaults */
+	pci_init(pacc);		/* Initialize the PCI library */
+	pci_scan_bus(pacc);	/* We want to get the list of devices */
+
 	printf("Calibrating delay loop... ");
 	myusec_calibrate_delay();
 	printf("ok\n");
@@ -293,7 +363,13 @@ int main(int argc, char *argv[])
 	/* try to enable it. Failure IS an option, since not all motherboards
 	 * really need this to be done, etc., etc.
 	 */
-	(void) enable_flash_write();
+        ret = chipset_flash_enable();
+        if (ret == -2)
+                printf("WARNING: No chipset found. Flash detection "
+                       "will most likely fail.\n");
+
+        board_flash_enable(lb_vendor, lb_part);
+
 
 	if ((flash = probe_flash(flashchips)) == NULL) {
 		printf("No EEPROM/flash device found.\n");

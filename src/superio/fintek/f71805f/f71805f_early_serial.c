@@ -18,22 +18,24 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* Pre-RAM driver for Fintek F81705F Super I/O chip. */
+/* Pre-RAM driver for the Fintek F81705F Super I/O chip. */
 
 #include <arch/romcc_io.h>
 #include "f71805f.h"
 
-static inline void pnp_enter_conf_state(device_t dev) {
-	unsigned port = dev>>8;
+static inline void pnp_enter_conf_state(device_t dev)
+{
+	unsigned int port = dev >> 8;
 	outb(0x87, port);
 }
 
-static void pnp_exit_conf_state(device_t dev) {
-	unsigned port = dev>>8;
+static void pnp_exit_conf_state(device_t dev)
+{
+	unsigned int port = dev >> 8;
 	outb(0xaa, port);
 }
 
-static void f71805f_enable_serial(device_t dev, unsigned iobase)
+static void f71805f_enable_serial(device_t dev, unsigned int iobase)
 {
 	pnp_enter_conf_state(dev);
 	pnp_set_logical_device(dev);

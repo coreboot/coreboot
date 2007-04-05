@@ -150,11 +150,11 @@ config CONSOLE_USB
 	  See http://linuxbios.org/EHCI_Debug_Port for an up-to-date list.
 
 comment "Cosmetic console options"
-	depends EXPERT && (CONSOLE_SERIAL || CONSOLE_VGA || CONSOLE_USB)
+	depends EXPERT && (CONSOLE_SERIAL || CONSOLE_USB)
 
 config CONSOLE_PREFIX
 	bool "Prefix all console output with '(LB)'"
-	depends EXPERT && (CONSOLE_SERIAL || CONSOLE_VGA || CONSOLE_USB)
+	depends EXPERT && (CONSOLE_SERIAL || CONSOLE_USB)
 	default n
 	help
 	  When you enable this option, LinuxBIOS will prefix each line of 

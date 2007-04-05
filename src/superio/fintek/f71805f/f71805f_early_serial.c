@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* Pre-RAM driver for the Fintek F81705F Super I/O chip. */
+/* Pre-RAM driver for the Fintek F71805F/FG Super I/O chip. */
 
 #include <arch/romcc_io.h>
 #include "f71805f.h"

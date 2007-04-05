@@ -20,7 +20,6 @@
 #include <arch/types.h>
 #include <arch/io.h>
 #include <console/console.h>
-#include <console/loglevel.h>
 #include <lar.h>
 #include <linuxbios_tables.h>
 

@@ -24,7 +24,7 @@
 #define UART_LCS	TTYS0_LCS
 
 
-#if CONFIG_USE_INIT == 0
+#if CONFIG_USE_PRINTK_IN_CAR == 0
 
 /* Data */
 #define UART_RBR 0x00
@@ -92,6 +92,7 @@ static void uart_init(void)
 	outb(UART_LCS, TTYS0_BASE + UART_LCR);
 }
 #else
+#include "../lib/uart8250.c"
 extern void uart8250_init(unsigned base_port, unsigned divisor, unsigned lcs);
 static void uart_init(void)
 {

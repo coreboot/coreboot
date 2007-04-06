@@ -485,6 +485,14 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	 * [31:26] Reserved
 	 */
 	PCI_ADDR(0, 0x18, 2, 0x98), 0xfc00ffff, 0x00000000,
+	/* MCA NB Status Low reg */
+	PCI_ADDR(0, 0x18, 3, 0x48), 0x00f00000, 0x00000000,
+	/* MCA NB Status high reg */
+	PCI_ADDR(0, 0x18, 3, 0x4c), 0x01801e8c, 0x00000000,
+	/* MCA NB address Low reg */
+	PCI_ADDR(0, 0x18, 3, 0x50), 0x00000007, 0x00000000,
+	/* MCA NB address high reg */
+	PCI_ADDR(0, 0x18, 3, 0x54), 0xffffff00, 0x00000000,
 	/* DRAM Scrub Control Register
 	 * F3:0x58
 	 * [ 4: 0] DRAM Scrube Rate
@@ -2333,6 +2341,16 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	/* And if necessary toggle the the reset on the dimms by hand */
 	memreset(controllers, ctrl);
+
+	/* We need to wait a mimmium of 20 MEMCLKS to enable the  InitDram */
+#if 0
+	print_debug("prepare to InitDram:");
+	for(i=0; i<100; i++) {
+		print_debug_hex32(i);
+		print_debug("\b\b\b\b\b\b\b\b");
+	}
+	print_debug("\r\n");
+#endif
 
 	for(i = 0; i < controllers; i++) {
 		uint32_t dcl, dch;

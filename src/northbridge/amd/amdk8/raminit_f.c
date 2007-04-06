@@ -79,16 +79,13 @@ static inline void print_t(const char *strval)
 	*/
 
 
-#if 1
 static void setup_resource_map(const unsigned int *register_values, int max)
 {
 	int i;
-
 	for(i = 0; i < max; i += 3) {
 		device_t dev;
 		unsigned where;
 		unsigned long reg;
-
 		dev = register_values[i] & ~0xff;
 		where = register_values[i] & 0xff;
 		reg = pci_read_config32(dev, where);
@@ -97,7 +94,6 @@ static void setup_resource_map(const unsigned int *register_values, int max)
 		pci_write_config32(dev, where, reg);
 	}
 }
-#endif
 
 static int controller_present(const struct mem_controller *ctrl)
 {
@@ -635,218 +631,13 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 			- poll the DctAccessDone untio it = 1
 		
 	*/
-#if 0
-	static const unsigned int index_register_values[] = {
-	/* Output Driver Compensation Control Register
-	 * Index: 0x00
-	 * [ 1: 0] CkeDrvStren (CKE Drive Strength)
-	 *	00 = 1.0x
-	 *	01 = 1.25x
-	 *	10 = 1.5x (Default)
-	 *	11 = 2.0x
-	 * [ 3: 2] reserved
-	 * [ 5: 4] CsOdtDrvStren (CS/ODT Drive Strength)
-         *      00 = 1.0x
-         *      01 = 1.25x
-         *      10 = 1.5x (Default)
-         *      11 = 2.0x
-         * [ 7: 6] reserved
-	 * [ 9: 8] AddrCmdDrvStren (Address/Command Drive Strength)
-         *      00 = 1.0x
-         *      01 = 1.25x
-         *      10 = 1.5x (Default)
-         *      11 = 2.0x
-         * [11:10] reserved
-	 * [13:12] ClkDrvStren (MEMCLK Drive Strength)
-         *      00 = 0.75x
-         *      01 = 1.0x Default)
-         *      10 = 1.25x 
-         *      11 = 1.5x
-         * [15:14] reserved
-         * [17:16] DataDrvStren (Data Drive Strength)
-         *      00 = 0.75x
-         *      01 = 1.0x Default)
-         *      10 = 1.25x
-         *      11 = 1.5x
-         * [19:18] reserved
-         * [21:20] DqsDrvStren (DQS Drive Strength)
-         *      00 = 0.75x
-         *      01 = 1.0x Default)
-         *      10 = 1.25x
-         *      11 = 1.5x
-         * [27:22] reserved
-         * [29:28] ProcOdt ( Processor On-die Termination)
-         *      00 = 300 ohms +/- 20%
-         *      01 = 150 ohms +/- 20%
-         *      10 = 75 ohms +/- 20%
-         *      11 = reserved
-         * [31:30] reserved
-	 */
-	0x00, 0xcfcccccc, 0x00000000, 
-	0x20, 0xcfcccccc, 0x00000000, 
-	/* Write Data Timing Low Control Register
-	 * Index 0x01
-	 * [ 5: 0] WrDatTimeByte0 (Write Data Byte 0 Timing Control)
-	 *	000000 =  no delay
-	 *	000001 = 1/96 MEMCLK delay
-	 *	000010 = 2/96 MEMCLK delay
-	 *	...
-	 *	101111 = 47/96 MEMCLK delay
-	 *	11xxxx = reserved
-	 * [ 7: 6] reserved
-         * [13: 8] WrDatTimeByte1 (Write Data Byte 1 Timing Control)
-         * [15:14] reserved
-         * [21:16] WrDatTimeByte2 (Write Data Byte 2 Timing Control)
-         * [23:22] reserved
-         * [29:24] WrDatTimeByte3 (Write Data Byte 3 Timing Control)
-         * [31:30] reserved
-	 */
-	0x01, 0xc0c0c0c0, 0x00000000,
-	0x21, 0xc0c0c0c0, 0x00000000,
-	/* Write Data Timing High Control Register
-	 * Index 0x02
-	 * [ 5: 0] WrDatTimeByte4 (Write Data Byte 4 Timing Control)
-	 * [ 7: 6] reserved
-         * [13: 8] WrDatTimeByte5 (Write Data Byte 5 Timing Control)
-         * [15:14] reserved
-         * [21:16] WrDatTimeByte6 (Write Data Byte 6 Timing Control)
-         * [23:22] reserved
-         * [29:24] WrDatTimeByte7 (Write Data Byte 7 Timing Control)
-         * [31:30] reserved
-	 */
-	0x02, 0xc0c0c0c0, 0x00000000,
-	0x22, 0xc0c0c0c0, 0x00000000,
-
-	/* Write Data ECC Timing Control Register
-	 * Index 0x03
-	 * [ 5: 0] WrChkTime (Write Data ECC Timing Control)
-	 *	000000 =  no delay
-	 *	000001 = 1/96 MEMCLK delay
-	 *	000010 = 2/96 MEMCLK delay
-	 *	...
-	 *	101111 = 47/96 MEMCLK delay
-	 *	11xxxx = reserved
-         * [31: 6] reserved
-	 */
-	0x03, 0x000000c0, 0x00000000,
-	0x23, 0x000000c0, 0x00000000,
-
-	/* Address Timing Control Register
-	 * Index 0x04
-	 * [ 4: 0] CkeFineDelay (CKE Fine Delay)
-	 *	00000 =  no delay
-	 *	00001 = 1/64 MEMCLK delay
-	 *	00010 = 2/64 MEMCLK delay
-	 *	...
-	 *	11111 = 31/64 MEMCLK delay
-	 * [ 5: 5] CkeSetup (CKE Setup Time)
-	 *	0 = 1/2 MEMCLK
-	 *	1 = 1 MEMCLK
-         * [ 7: 6] reserved
-	 * [12: 8] CsOdtFineDelay (CS/ODT Fine Delay)
-	 *	00000 =  no delay
-	 *	00001 = 1/64 MEMCLK delay
-	 *	00010 = 2/64 MEMCLK delay
-	 *	...
-	 *	11111 = 31/64 MEMCLK delay
-	 * [13:13] CsOdtSetup (CS/ODT Setup Time)
-	 *	0 = 1/2 MEMCLK
-	 *	1 = 1 MEMCLK
-         * [15:14] reserved
-	 * [20:16] AddrCmdFineDelay (Address/Command Fine Delay)
-	 *	00000 =  no delay
-	 *	00001 = 1/64 MEMCLK delay
-	 *	00010 = 2/64 MEMCLK delay
-	 *	...
-	 *	11111 = 31/64 MEMCLK delay
-	 * [21:21] AddrCmdSetup (Address/Command Setup Time)
-	 *	0 = 1/2 MEMCLK
-	 *	1 = 1 MEMCLK
-         * [31:22] reserved
-	 */
-	0x04, 0xffc0c0c0, 0x00000000,
-	0x24, 0xffc0c0c0, 0x00000000,
-
-	/* Read DQS Timing Low Control Register
-	 * Index 0x05
-	 * [ 5: 0] RdDqsTimeByte0 (Read DQS Byte 0 Timing Control)
-	 *	000000 =  no delay
-	 *	000001 = 1/96 MEMCLK delay
-	 *	000010 = 2/96 MEMCLK delay
-	 *	...
-	 *	101111 = 47/96 MEMCLK delay
-	 *	11xxxx = reserved
-	 * [ 7: 6] reserved
-         * [13: 8] RdDqsTimeByte1 (Read DQS Byte 1 Timing Control)
-         * [15:14] reserved
-         * [21:16] RdDqsTimeByte2 (Read DQS Byte 2 Timing Control)
-         * [23:22] reserved
-         * [29:24] RdDqsTimeByte3 (Read DQS Byte 3 Timing Control)
-         * [31:30] reserved
-	 */
-	0x05, 0xc0c0c0c0, 0x00000000,
-	0x25, 0xc0c0c0c0, 0x00000000,
-
-	/* Read DQS Timing High Control Register
-	 * Index 0x06
-	 * [ 5: 0] RdDqsTimeByte4 (Read DQS Byte 4 Timing Control)
-	 * [ 7: 6] reserved
-         * [13: 8] RdDqsTimeByte5 (Read DQS Byte 5 Timing Control)
-         * [15:14] reserved
-         * [21:16] RdDqsTimeByte6 (Read DQS Byte 6 Timing Control)
-         * [23:22] reserved
-         * [29:24] RdDqsTimeByte7 (Read DQS Byte 7 Timing Control)
-         * [31:30] reserved
-	 */
-	0x06, 0xc0c0c0c0, 0x00000000,
-	0x26, 0xc0c0c0c0, 0x00000000,
-
-	/* Read DQS ECC Timing Control Register
-	 * Index 0x07
-	 * [ 5: 0] RdDqsTimeCheck (Read DQS ECC Timing Control)
-	 *	000000 =  no delay
-	 *	000001 = 1/96 MEMCLK delay
-	 *	000010 = 2/96 MEMCLK delay
-	 *	...
-	 *	101111 = 47/96 MEMCLK delay
-	 *	11xxxx = reserved
-         * [31: 6] reserved
-	 */
-	0x07, 0x000000c0, 0x00000000,
-	0x27, 0x000000c0, 0x00000000,
-
-	/* DQS Receiver Enable Timing Control Register
-	 * Index 0x10, 0x13, 0x16, 0x19,
-	 * [ 7: 0] Dqs RcvEnDelay (DQS Receiver Enable Delay)
-	 *	0x00 =  0 ps
-	 *	0x01 = 50 ps
-	 *	0x02 = 100 ps
-	 *	...
-	 *	0xae = 8.7 ns
-	 *	0xaf-0xff = reserved
-         * [31: 6] reserved
-	 */
-	0x10, 0x000000ff, 0x00000000,
-	0x13, 0x000000ff, 0x00000000,
-	0x16, 0x000000ff, 0x00000000,
-	0x19, 0x000000ff, 0x00000000,
-	0x30, 0x000000ff, 0x00000000,
-	0x33, 0x000000ff, 0x00000000,
-	0x36, 0x000000ff, 0x00000000,
-	0x39, 0x000000ff, 0x00000000,
-	};
-#endif
-
 	int i;
 	int max;
 
-#if 1
         if (!controller_present(ctrl)) {
-//                print_debug("No memory controller present\r\n");
 		sysinfo->ctrl_present[ctrl->node_id] = 0;
                 return;
         }
-#endif
 	sysinfo->ctrl_present[ctrl->node_id] = 1;
 	
 	print_spew("setting up CPU");
@@ -865,20 +656,6 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 		pci_write_config32(dev, where, reg);
 	}
 
-#if 0
-	// for index regs
-	max = sizeof(index_register_values)/sizeof(index_register_values[0]);
-	for(i = 0; i < max; i += 3) {
-		unsigned long reg;
-		unsigned index;
-		index = register_values[i];
-		reg = pci_read_config32_index_wait(ctrl->f2, DRAM_CTRL_ADDI_DATA_OFFSET, index);
-		reg &= register_values[i+1];
-		reg |= register_values[i+2];
-		pci_write_config32_index_wait(ctrl->f2, DRAM_CTRL_ADDI_DATA_OFFSET, index, reg);
-	}
-#endif
-
 	print_spew("done.\r\n");
 }
 
@@ -887,6 +664,19 @@ static int is_dual_channel(const struct mem_controller *ctrl)
 	uint32_t dcl;
 	dcl = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
 	return dcl & DCL_Width128;
+}
+
+static int is_opteron(const struct mem_controller *ctrl)
+{
+	/* Test to see if I am an Opteron.  
+	 * FIXME Testing dual channel capability is correct for now
+	 * but a beter test is probably required.
+	 * m2 and s1g1 support dual channel too. but only support unbuffered dimm
+	 */
+#warning "FIXME implement a better test for opterons"
+	uint32_t nbcap;
+	nbcap = pci_read_config32(ctrl->f3, NORTHBRIDGE_CAP);
+	return !!(nbcap & NBCAP_128Bit);
 }
 
 static int is_registered(const struct mem_controller *ctrl)
@@ -1456,6 +1246,20 @@ static long spd_handle_unbuffered_dimms(const struct mem_controller *ctrl, long 
 		} 
 	}
 
+	if (is_opteron(ctrl)) {
+#if 0
+		if ( registered != (dimm_mask & ((1<<DIMM_SOCKETS)-1)) ) {
+			dimm_mask &= (registered | (registered << DIMM_SOCKETS) ); //disable unbuffed dimm
+	//		die("Mixed buffered and registered dimms not supported");
+		}
+		//By yhlu for debug M2, s1g1 can do dual channel, but it use unbuffer DIMM
+		if (!registered) {
+			die("Unbuffered Dimms not supported on Opteron");
+		}
+#endif
+	}
+
+
 	dcl = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
 	dcl &= ~DCL_UnBuffDimm;
 	meminfo->is_registered = 1;
@@ -1852,7 +1656,6 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 		if (latencies < 0) goto hw_error;
 		if (latencies == 0) {
 			continue;
-//			goto dimm_err;
 		}
 
 		/* Compute the lowest cas latency supported */
@@ -1966,23 +1769,6 @@ static int update_dimm_Trfc(const struct mem_controller *ctrl, const struct mem_
 	uint32_t dth;
 	int value;
 
-#if 0
-	int value2;
-
-	value = spd_read_byte(ctrl->channel0[i], SPD_TRFC);
-	if (value < 0) return -1;
-
-        value2 = spd_read_byte(ctrl->channel0[i], SPD_TRC -1);
-	if(value2 & 1) value += 256;
-        value <<= 2;
-        value += convert_to_1_4(value2>>1);
-
-	if (value == 0) {
-		value = param->tRFC;
-	}
-	value *= 10;
-	clocks = (value + param->divisor - 1)/param->divisor;
-#endif
 	//get the cs_size --> logic dimm size
 	value = spd_read_byte(ctrl->channel0[i], SPD_PRI_WIDTH);
         if (value < 0) {
@@ -1997,7 +1783,6 @@ static int update_dimm_Trfc(const struct mem_controller *ctrl, const struct mem_
 
 	old_clocks = ((dth >> (DTH_TRFC0_SHIFT+i*3)) & DTH_TRFC_MASK);
 	if (old_clocks >= clocks) { // some one did it?
-//		clocks = old_clocks;
 		return 1;
 	}
 	dth &= ~(DTH_TRFC_MASK << (DTH_TRFC0_SHIFT+i*3));
@@ -2072,7 +1857,6 @@ static int update_dimm_Tras(const struct mem_controller *ctrl, const struct mem_
 	dtl = pci_read_config32(ctrl->f2, DRAM_TIMING_LOW);
 	old_clocks = ((dtl >> DTL_TRAS_SHIFT) & DTL_TRAS_MASK) + DTL_TRAS_BASE;
 	if (old_clocks >= clocks) { // someone did it?
-//		clocks = old_clocks;
 		return 1;
 	}
 	dtl &= ~(DTL_TRAS_MASK << DTL_TRAS_SHIFT);
@@ -2397,6 +2181,7 @@ static void set_max_async_latency(const struct mem_controller *ctrl, const struc
 	dch = pci_read_config32(ctrl->f2, DRAM_CONFIG_HIGH);
 	dch &= ~(DCH_MaxAsyncLat_MASK << DCH_MaxAsyncLat_SHIFT);
 
+	//FIXME: We need to use Max of DqsRcvEnDelay + 6ns here: After trainning and get that from index reg 0x10, 0x13, 0x16, 0x19, 0x30, 0x33, 0x36, 0x39
 	async_lat = 6+6;
 	
 	
@@ -2684,7 +2469,6 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl, struct sy
 	long dimm_mask;
 #if 1
 	if (!sysinfo->ctrl_present[ctrl->node_id]) {
-//		print_debug("No memory controller present\r\n");
 		return;
 	}
 #endif
@@ -2852,6 +2636,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl, str
 
 #if K8_REV_F_SUPPORT_F0_F1_WORKAROUND == 1
         unsigned cpu_f0_f1[8];
+	/* FIXME: How about 32 node machine later? */
 	tsc_t tsc, tsc0[8];
 	
 	print_debug_addr("sdram_enable: tsc0[8]: ", &tsc0[0]);
@@ -2886,6 +2671,14 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl, str
 
 	/* We need to wait a mimmium of 20 MEMCLKS to enable the  InitDram */
 	memreset(controllers, ctrl);
+#if 0
+	print_debug("prepare to InitDram:");
+	for(i=0; i<10; i++) {
+		print_debug_hex32(i);
+		print_debug("\b\b\b\b\b\b\b\b");
+	}
+	print_debug("\r\n");
+#endif
 
 	for(i = 0; i < controllers; i++) {
 		uint32_t dcl, dch;
@@ -3016,10 +2809,6 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl, str
                 sysinfo->mem_trained[i] = 0x80; // mem need to be trained
         }
 
-#if 0
-        dump_pci_devices();
-        dump_pci_device_index_wait(PCI_DEV(0, 0x18, 2), 0x98);
-#endif
 
 #if MEM_TRAIN_SEQ ==  0
    #if K8_REV_F_SUPPORT_F0_F1_WORKAROUND == 1
@@ -3054,11 +2843,6 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl, str
 
 #if MEM_TRAIN_SEQ != 1
 	wait_all_core0_mem_trained(sysinfo);
-#endif
-
-#if 0
-        dump_pci_devices();
-        dump_pci_device_index_wait(PCI_DEV(0, 0x18, 2), 0x98);
 #endif
 
 }

@@ -107,15 +107,6 @@ static unsigned Get_MCTSysAddr(const struct mem_controller *ctrl,  unsigned cs_i
 
 static unsigned Get_RcvrSysAddr(const struct mem_controller * ctrl, unsigned channel, unsigned cs_idx, struct sys_info *sysinfo)
 {
-#if 0
-	//get SB_64MuxedMode
-	uint32_t dword;
-	dword = pci_read_config32(ctrl->f2, DRAM_CTRL_MISC);
-	if((dword & DCM_Mode64BitMux) == DCM_Mode64BitMux) {
-		if(channel) cs_idx += 4; // translate Receiver number to Chipsel
-	}
-#endif
-	
 	return Get_MCTSysAddr(ctrl, cs_idx, sysinfo);
 
 }
@@ -181,43 +172,6 @@ static void set_FSBASE(uint32_t addr_hi)
 
 }
 
-#if 0
-static void write_mem(uint32_t addr_hi, uint32_t addr_lo, uint32_t value) 
-{
-	if(addr_hi == 0) {
-		*((uint32_t *)addr_lo) = value;
-		return;
-	} 
-
-	set_FSBASE(addr_hi);
-
-        __asm__ volatile (
-		"movl %1, %%fs:(%0)\n\t"
-                :: "a" (addr_lo), "b" (value) 
-        );
-	
-}
-
-static uint32_t read_mem(uint32_t addr_hi, uint32_t addr_lo)
-{
-	unsigned value;
-        if(addr_hi == 0) {
-                value = *((uint32_t *)addr_lo);
-		return value; 
-        }
-
-	set_FSBASE(addr_hi);
-
-        __asm__ volatile (
-                "movl %%fs:(%1), %0\n\t"
-                :"=b"(value): "a" (addr_lo)
-        );
-	
-	return value;
-
-}
-#endif
-
 static unsigned ChipSelPresent(const struct mem_controller *ctrl, unsigned cs_idx, struct sys_info *sysinfo)
 {
         unsigned enabled;
@@ -233,6 +187,7 @@ static unsigned ChipSelPresent(const struct mem_controller *ctrl, unsigned cs_id
 
 static unsigned RcvrRankEnabled(const struct mem_controller *ctrl, int channel, int cs_idx, unsigned is_Width128, struct sys_info *sysinfo)
 {
+	/* FIXME: process 64Muxed */
         if(!is_Width128) {
         	if(channel) return 0; // no channel b
         }
@@ -701,6 +656,7 @@ static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, st
 
 				/* Program current Receiver enable delay */
 				pci_write_config32_index_wait(ctrl->f2, 0x98, index, RcvrEnDly);
+				/* FIXME: 64bit MUX */
 	
 				if(is_Width128) {
 					/* Program current Receiver enable delay chaannel b */
@@ -1164,6 +1120,7 @@ static unsigned TrainDQSPos(const struct mem_controller *ctrl, unsigned channel,
 
 	for(ChipSel = 0; ChipSel < 8; ChipSel++) { //logical register chipselects 0..7
 		print_debug_dqs("\t\t\t\tTrainDQSPos: 11 ChipSel ", ChipSel, 4); 
+		//FIXME: process 64MUXedMode
 		if(!ChipSelPresent(ctrl, ChipSel, sysinfo)) continue;
 		BanksPresent  = 1;
 
@@ -1454,6 +1411,7 @@ static unsigned TrainDQSRdWrPos(const struct mem_controller *ctrl, struct sys_in
 		}
 		channel++;
 		if(!is_Width128){
+			//FIXME: 64MuxMode??	
 			channel++; // skip channel if 64-bit mode
 		}
 	}
@@ -2030,11 +1988,15 @@ static inline void train_ram_on_node(unsigned nodeid, unsigned coreid, struct sy
 	wait_till_sysinfo_in_ram(); // use pci to get it
 
 	if(sysinfox->mem_trained[nodeid] == 0x80) {
+	#if 0
 		sysinfo->tom_k = sysinfox->tom_k;
 		sysinfo->tom2_k = sysinfox->tom2_k;
 		sysinfo->meminfo[nodeid].is_Width128 = sysinfox->meminfo[nodeid].is_Width128;
 		sysinfo->mem_trained[nodeid] = sysinfox->mem_trained[nodeid];
 		memcpy(&sysinfo->ctrl[nodeid], &sysinfox->ctrl[nodeid], sizeof(struct mem_controller));
+	#else
+		memcpy(sysinfo, sysinfox, DCACHE_RAM_GLOBAL_VAR_SIZE);
+	#endif
 		set_top_mem_ap(sysinfo->tom_k, sysinfo->tom2_k); // keep the ap's tom consistent with bsp's
 	#if CONFIG_AP_CODE_IN_CAR == 0
 		print_debug("CODE IN ROM AND RUN ON NODE:"); print_debug_hex8(nodeid); print_debug("\r\n");

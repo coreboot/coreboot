@@ -633,17 +633,39 @@ void pci_dev_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 
 void pci_dev_init(struct device *dev)
 {
-#if CONFIG_PCI_ROM_RUN == 1
+#if CONFIG_CONSOLE_VGA == 1
+	extern int vga_inited;
+#endif
+#if CONFIG_PCI_ROM_RUN == 1 || CONFIG_CONSOLE_VGA == 1
 	struct rom_header *rom, *ram;
+
+#if CONFIG_PCI_ROM_RUN != 1
+	/* We want to execute VGA option ROMs when CONFIG_CONSOLE_VGA
+	 * is set but CONFIG_PCI_ROM_RUN is not. In this case we skip
+	 * all other option ROM types.
+	 */
+	if (dev->class!=PCI_CLASS_DISPLAY_VGA) 
+		return;
+#endif
 
 	rom = pci_rom_probe(dev);
 	if (rom == NULL)
 		return;
+
 	ram = pci_rom_load(dev, rom);
 	if (ram == NULL)
 		return;
 
 	run_bios(dev, ram);
+
+#if CONFIG_CONSOLE_VGA == 1
+	/* vga_inited is a trigger of the VGA console code.
+	 *
+	 * Only set it if we enabled VGA console, and if we 
+	 * just initialized a VGA card.
+	 */
+	vga_inited|=dev->class==PCI_CLASS_DISPLAY_VGA;
+#endif
 #endif
 }
 

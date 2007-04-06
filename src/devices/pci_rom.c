@@ -62,11 +62,8 @@ struct rom_header * pci_rom_probe(struct device *dev)
 
 static void *pci_ram_image_start = (void *)PCI_RAM_IMAGE_START;
 
-#if CONFIG_CONSOLE_VGA == 1
-extern int vga_inited;		// defined in vga_console.c 
-#if CONFIG_CONSOLE_VGA_MULTI == 0
+#if CONFIG_CONSOLE_VGA == 1 && CONFIG_CONSOLE_VGA_MULTI == 0
 extern device_t vga_pri;	// the primary vga device, defined in device.c
-#endif
 #endif
 
 struct rom_header *pci_rom_load(struct device *dev, struct rom_header *rom_header)
@@ -96,7 +93,6 @@ struct rom_header *pci_rom_load(struct device *dev, struct rom_header *rom_heade
 		printk_debug("copying VGA ROM Image from 0x%x to 0x%x, 0x%x bytes\n",
 			    rom_header, PCI_VGA_RAM_IMAGE_START, rom_size);
 		memcpy(PCI_VGA_RAM_IMAGE_START, rom_header, rom_size);
-		vga_inited = 1;
 		return (struct rom_header *) (PCI_VGA_RAM_IMAGE_START);
 #endif
 	} else {

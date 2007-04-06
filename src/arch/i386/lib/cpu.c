@@ -207,7 +207,6 @@ static void set_cpu_ops(struct device *cpu)
 			}
 		}
 	}
-	die("Unknown cpu");
 	return;
  found:
 	cpu->ops = driver->ops;
@@ -223,7 +222,7 @@ void cpu_initialize(void)
 	struct device *cpu;
 	struct cpu_info *info;
 	struct cpuinfo_x86 c;
-
+	
 	info = cpu_info();
 
 	printk_notice("Initializing CPU #%d\n", info->index);
@@ -233,41 +232,37 @@ void cpu_initialize(void)
 		die("CPU: missing cpu device structure");
 	}
 
-	// Check that we haven't been passed bad information as the result of a race 
-	// (i.e. BSP timed out while waiting for us to load secondary_stack)
+	/* Find what type of cpu we are dealing with */
+	identify_cpu(cpu);
+	printk_debug("CPU: vendor %s device %x\n",
+		cpu_vendor_name(cpu->vendor), cpu->device);
 
-#if CONFIG_SMP  || CONFIG_IOPIC 
-	if (cpu->path.u.apic.apic_id != lapicid()) {
-		printk_err("CPU #%d Initialization FAILED: APIC ID mismatch (%u != %u)\n",
-				   info->index, cpu->path.u.apic.apic_id, lapicid());
-		// return without setting initialized flag
-	} else {
-#endif
-		/* Find what type of cpu we are dealing with */
-		identify_cpu(cpu);
-		printk_debug("CPU: vendor %s device %x\n",
-			cpu_vendor_name(cpu->vendor), cpu->device);
+	get_fms(&c, cpu->device);
 
-	        get_fms(&c, cpu->device);
+	printk_debug("CPU: family %02x, model %02x, stepping %02x\n", c.x86, c.x86_model, c.x86_mask);
+	
+	/* Lookup the cpu's operations */
+	set_cpu_ops(cpu);
 
-	        printk_debug("CPU: family %02x, model %02x, stepping %02x\n", c.x86, c.x86_model, c.x86_mask);
-
-			
-		/* Lookup the cpu's operations */
+	if(!cpu->ops) { 
+		/* mask out the stepping and try again */
+		cpu->device -= c.x86_mask;
 		set_cpu_ops(cpu);
-
-		/* Initialize the cpu */
-		if (cpu->ops && cpu->ops->init) {
-			cpu->enabled = 1;
-			cpu->initialized = 1;
-			cpu->ops->init(cpu);
-		}
-
-		printk_info("CPU #%d Initialized\n", info->index);
-#if CONFIG_SMP  || CONFIG_IOPIC 
-
+		cpu->device += c.x86_mask;
+		if(!cpu->ops) die("Unknown cpu");
+		printk_debug("WARNING: Using generic cpu ops\n");
 	}
-#endif
+	
+
+	/* Initialize the cpu */
+	if (cpu->ops && cpu->ops->init) {
+		cpu->enabled = 1;
+		cpu->initialized = 1;
+		cpu->ops->init(cpu);
+	}
+
+	printk_info("CPU #%d Initialized\n", info->index);
+
 	return;
 }
 

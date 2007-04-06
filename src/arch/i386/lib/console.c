@@ -9,11 +9,15 @@ static void __console_tx_byte(unsigned char byte)
 #include "console_print.c"
 
 #else  
-/* CONFIG_USE_INIT == 1 */
+/* CONFIG_USE_PRINTK_IN_CAR == 1 */
 
 #include "console_printk.c"
 
-#endif /* CONFIG_USE_INIT */
+// do_printk
+#include "../../../console/vtxprintf.c"
+#include "printk_init.c"
+
+#endif /* CONFIG_USE_PRINTK_IN_CAR */
 
 #ifndef LINUXBIOS_EXTRA_VERSION
 #define LINUXBIOS_EXTRA_VERSION ""

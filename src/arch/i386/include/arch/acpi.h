@@ -17,9 +17,6 @@
 
 #if HAVE_ACPI_TABLES==1
 
-typedef unsigned char u8;
-typedef unsigned short u16;
-typedef unsigned int u32;
 typedef unsigned long long u64;
 
 #define RSDP_SIG              "RSD PTR "  /* RSDT Pointer signature */
@@ -83,7 +80,7 @@ typedef struct acpi_table_header         /* ACPI common table header */
 /* RSDT */
 typedef struct acpi_rsdt {
 	struct acpi_table_header header;
-	u32 entry[6+ACPI_SSDTX_NUM]; /* HPET, FADT, SRAT, SLIT, MADT(APIC), SSDT, SSDTX*/
+	u32 entry[6+ACPI_SSDTX_NUM+CONFIG_MAX_CPUS]; /* HPET, FADT, SRAT, SLIT, MADT(APIC), SSDT, SSDTX, and SSDT for CPU pstate*/
 } __attribute__ ((packed)) acpi_rsdt_t;
 
 /* XSDT */

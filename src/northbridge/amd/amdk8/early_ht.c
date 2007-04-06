@@ -13,6 +13,8 @@ static void enumerate_ht_chain(void)
 	 * links needs to be programed to point at bus 0.
 	 */
 	unsigned next_unitid, last_unitid;
+	unsigned temp_unitid;
+	unsigned not_use_count;
 #if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
 	//let't record the device of last ht device, So we can set the Unitid to HT_CHAIN_END_UNITID_BASE
 	unsigned real_last_unitid;
@@ -60,14 +62,21 @@ static void enumerate_ht_chain(void)
 					unsigned ctrl, ctrl_off;
 
 					flags &= ~0x1f;
-					flags |= next_unitid & 0x1f;
 					count = (flags >> 5) & 0x1f;
+					not_use_count = 0;
+					temp_unitid = next_unitid;
 #if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
-					real_last_unitid = next_unitid;
+					if ( (count + next_unitid) >= 0x20) { 
+						temp_unitid = HT_CHAIN_END_UNITID_BASE;
+						not_use_count = 1;
+					} 
+					real_last_unitid = temp_unitid;
 					real_last_pos = pos;
-					ht_dev_num++ ;
+					ht_dev_num++;
 #endif
-					next_unitid += count;
+					flags |= temp_unitid & 0x1f;
+					if(!not_use_count) 
+						next_unitid += count;
 
 					/* Test for end of chain */
 					ctrl_off = ((flags >> 10) & 1)?
@@ -87,8 +96,9 @@ static void enumerate_ht_chain(void)
 			pos = pci_read_config8(PCI_DEV(0, 0, 0), pos + PCI_CAP_LIST_NEXT);
 		}
 	} while((last_unitid != next_unitid) && (next_unitid <= 0x1f));
+
 #if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
-	if(ht_dev_num>0) {
+	if((ht_dev_num>1) && (real_last_unitid != HT_CHAIN_END_UNITID_BASE)) {
 		uint16_t flags;
 		flags = pci_read_config16(PCI_DEV(0,real_last_unitid,0), real_last_pos + PCI_CAP_FLAGS); 
                 flags &= ~0x1f;

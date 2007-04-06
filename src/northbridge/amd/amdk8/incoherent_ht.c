@@ -162,6 +162,24 @@ static uint16_t ht_read_freq_cap(device_t dev, uint8_t pos)
 
 	return freq_cap;
 }
+static uint8_t ht_read_width_cap(device_t dev, uint8_t pos)
+{
+	uint8_t width_cap = pci_read_config8(dev, pos);
+
+	uint32_t id;
+
+	id = pci_read_config32(dev, 0);
+
+	/* netlogic micro cap doesn't support 16 bit yet */
+	if (id == (0x184e | (0x0001 << 16))) {
+		if((width_cap & 0x77) == 0x11) {
+			width_cap &= 0x88;
+		}
+	}
+	
+	return width_cap;
+	
+}
 #define LINK_OFFS(CTRL, WIDTH,FREQ,FREQ_CAP) \
       (((CTRL & 0xff) << 24) | ((WIDTH & 0xff) << 16) | ((FREQ & 0xff) << 8) | (FREQ_CAP & 0xFF))
 
@@ -223,8 +241,8 @@ static int ht_optimize_link(
 	pci_write_config8(dev2, pos2 + LINK_FREQ(offs2), freq);
 
 	/* Get the width capabilities */
-	width_cap1 = pci_read_config8(dev1, pos1 + LINK_WIDTH(offs1));
-	width_cap2 = pci_read_config8(dev2, pos2 + LINK_WIDTH(offs2));
+	width_cap1 = ht_read_width_cap(dev1, pos1 + LINK_WIDTH(offs1));
+	width_cap2 = ht_read_width_cap(dev2, pos2 + LINK_WIDTH(offs2));
 
 	/* Calculate dev1's input width */
 	ln_width1 = link_width_to_pow2[width_cap1 & 7];
@@ -402,6 +420,8 @@ static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned of
 
 	uint8_t next_unitid, last_unitid;
 	unsigned uoffs;
+	uint8_t temp_unitid;
+	unsigned not_use_count;
 
 #if RAMINIT_SYSINFO == 0
 	int reset_needed = 0;
@@ -473,24 +493,34 @@ static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned of
 
 		/* Update the Unitid of the current device */
 		flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
-		flags &= ~0x1f; /* mask out the bse Unit ID */
-		flags |= next_unitid & 0x1f;
+                /* Compute the number of unitids consumed */
+                count = (flags >> 5) & 0x1f;
+		flags &= ~0x1f; /* mask out the base Unit ID */
+
+		not_use_count = 0;
+		temp_unitid = next_unitid;
+#if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
+		if(offset_unitid) {
+			if( (next_unitid + count) >= 0x20) {
+		                temp_unitid = HT_CHAIN_END_UNITID_BASE;
+				// keep to use the old next_unitid
+				not_use_count = 1;
+			} 
+        	        real_last_pos = pos;
+			real_last_unitid = temp_unitid;
+			ht_dev_num++;
+		} 
+#endif
+
+		flags |= temp_unitid & 0x1f;
 		pci_write_config16(dev, pos + PCI_CAP_FLAGS, flags);
 
 		/* Note the change in device number */
-		dev = PCI_DEV(bus, next_unitid, 0);
+		dev = PCI_DEV(bus, temp_unitid, 0);
 
-                /* Compute the number of unitids consumed */
-                count = (flags >> 5) & 0x1f;
-#if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
-		if(offset_unitid) {
-	                real_last_unitid = next_unitid;
-        	        real_last_pos = pos;
-			ht_dev_num++;
-		}
-#endif
+		if(!not_use_count) 
+	                next_unitid += count;
 
-                next_unitid += count;
 
 		/* Find which side of the ht link we are on,
 		 * by reading which direction our last write to PCI_CAP_FLAGS
@@ -525,7 +555,7 @@ static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned of
 end_of_chain: ;
 	
 #if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
-        if(offset_unitid && (ht_dev_num>0)  ) {
+        if(offset_unitid && (ht_dev_num>1) && (real_last_unitid != HT_CHAIN_END_UNITID_BASE) ) {
                 uint16_t flags;
 		int i;
                 flags = pci_read_config16(PCI_DEV(bus,real_last_unitid,0), real_last_pos + PCI_CAP_FLAGS);
@@ -690,14 +720,7 @@ static int set_ht_link_buffer_counts_chain(uint8_t ht_c_num, unsigned vendorid, 
                 uint32_t reg;
                 uint8_t nodeid, linkn;
                 uint8_t busn;
-                unsigned devn = 1;
-
-        #if HT_CHAIN_UNITID_BASE != 1
-                #if SB_HT_CHAIN_UNITID_OFFSET_ONLY == 1
-                if(i==0) // to check if it is sb ht chain
-                #endif
-                        devn = HT_CHAIN_UNITID_BASE;
-        #endif
+                unsigned devn;
 
                 reg = pci_read_config32(PCI_DEV(0,0x18,1), 0xe0 + i * 4);
                 if((reg & 3) != 3) continue; // not enabled
@@ -706,10 +729,13 @@ static int set_ht_link_buffer_counts_chain(uint8_t ht_c_num, unsigned vendorid, 
                 linkn = ((reg & 0xf00)>>8); // link n
                 busn = (reg & 0xff0000)>>16; //busn
 
-                reg = pci_read_config32( PCI_DEV(busn, devn, 0), PCI_VENDOR_ID); //1?
-                if ( (reg & 0xffff) == vendorid ) {
-                        reset_needed |= set_ht_link_buffer_count(nodeid, linkn, 0x07,val);
-                }
+		for(devn = 0; devn < 0x20; devn++) {
+	                reg = pci_read_config32( PCI_DEV(busn, devn, 0), PCI_VENDOR_ID); //1?
+        	        if ( (reg & 0xffff) == vendorid ) {
+                	        reset_needed |= set_ht_link_buffer_count(nodeid, linkn, 0x07,val);
+				break;
+                	}
+		}
         }
 
         return reset_needed;

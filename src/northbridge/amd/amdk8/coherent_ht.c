@@ -1,10 +1,3 @@
-#if USE_DCACHE_RAM
-
-#include "coherent_ht_car.c"
-
-#else
-
-
 /* coherent hypertransport initialization for AMD64 
  * 
  * written by Stefan Reinauer <stepan@openbios.org>
@@ -74,6 +67,7 @@
 #include <device/pci_ids.h>
 #include <device/hypertransport_def.h>
 #include "arch/romcc_io.h"
+
 #include "amdk8.h"
 
 #define enable_bsp_routing()	enable_routing(0)
@@ -84,8 +78,6 @@
 
 #define DEFAULT 0x00010101	/* default row entry */
 
-typedef uint8_t u8;
-typedef uint32_t u32;
 
 #ifndef CROSS_BAR_47_56
 	#define CROSS_BAR_47_56 0
@@ -101,21 +93,25 @@ typedef uint32_t u32;
 
 #ifndef K8_HT_CHECK_PENDING_LINK
 	#if CONFIG_MAX_PHYSICAL_CPUS >= 4
-	#define K8_HT_CHECK_PENDING_LINK 1
+		#define K8_HT_CHECK_PENDING_LINK 1
 	#else
-	#define K8_HT_CHECK_PENDING_LINK 0
+		#define K8_HT_CHECK_PENDING_LINK 0
 	#endif
 #endif
 
 #ifndef CONFIG_MAX_PHYSICAL_CPUS_4_BUT_MORE_INSTALLED
-#define CONFIG_MAX_PHYSICAL_CPUS_4_BUT_MORE_INSTALLED 0
+	#define CONFIG_MAX_PHYSICAL_CPUS_4_BUT_MORE_INSTALLED 0
+#endif
+
+#ifndef ENABLE_APIC_EXT_ID
+        #define ENABLE_APIC_EXT_ID 0
 #endif
 
 
 static inline void print_linkn (const char *strval, uint8_t byteval) 
 {
 #if 1
-#if CONFIG_USE_INIT
+#if CONFIG_USE_PRINTK_IN_CAR
 	printk_debug("%s%02x\r\n", strval, byteval); 
 #else
 	print_debug(strval); print_debug_hex8(byteval); print_debug("\r\n");
@@ -162,6 +158,19 @@ static void disable_probes(void)
 
 }
 
+static void enable_apic_ext_id(u8 node) 
+{
+#if ENABLE_APIC_EXT_ID==1
+#warning "FIXME Is the right place to enable apic ext id here?"
+
+      u32 val;
+
+        val = pci_read_config32(NODE_HT(node), 0x68);
+        val |= (HTTC_APIC_EXT_SPUR | HTTC_APIC_EXT_ID | HTTC_APIC_EXT_BRD_CST);
+        pci_write_config32(NODE_HT(node), 0x68, val);
+#endif
+}
+
 static void enable_routing(u8 node)
 {
 	u32 val;
@@ -198,17 +207,6 @@ static void enable_routing(u8 node)
 
 	print_spew(" done.\r\n");
 }
-
-static void enable_apic_ext_id(u8 node)
-{
-
-	u32 val;
-
-        val = pci_read_config32(NODE_HT(node), 0x68);
-        val |= (HTTC_APIC_EXT_SPUR | HTTC_APIC_EXT_ID | HTTC_APIC_EXT_BRD_CST);
-        pci_write_config32(NODE_HT(node), 0x68, val);
-}
-
 
 static void fill_row(u8 node, u8 row, u32 value)
 {
@@ -259,23 +257,6 @@ static void rename_temp_node(u8 node)
 
 	print_spew(" done.\r\n");
 }
-#if K8_HT_CHECK_PENDING_LINK == 1
-static void wait_ht_stable(uint8_t node)
-{       
-        uint8_t linkn;
-        for(linkn = 0; linkn<3; linkn++) {
-                uint8_t regpos;
-                uint16_t i;
-                uint32_t reg;
-                regpos = 0x98 + 0x20 * linkn;
-                for(i = 0; i < 0xff; i++) { //wait to make sure it is done
-                        reg = pci_read_config32(NODE_HT(node), regpos);
-                        if ((reg & 0x10) == 0) break; // init complete
-                        udelay(10);
-                } 
-        }
-}
-#endif
 
 static int verify_connection(u8 dest)
 {
@@ -293,18 +274,23 @@ static int verify_connection(u8 dest)
 	return 1;
 }
 
-static unsigned read_freq_cap(device_t dev, unsigned pos)
+static uint16_t read_freq_cap(device_t dev, uint8_t pos)
 {
 	/* Handle bugs in valid hypertransport frequency reporting */
-	unsigned freq_cap;
+	uint16_t freq_cap;
 	uint32_t id;
 
 	freq_cap = pci_read_config16(dev, pos);
 	freq_cap &= ~(1 << HT_FREQ_VENDOR); /* Ignore Vendor HT frequencies */
 
-	if (!is_cpu_pre_e0()) {
+#if K8_HT_FREQ_1G_SUPPORT == 1
+    #if K8_REV_F_SUPPORT == 0
+	if (!is_cpu_pre_e0())
+    #endif 
+	{
 		return freq_cap;
 	}
+#endif
 
 	id = pci_read_config32(dev, 0);
 
@@ -320,8 +306,8 @@ static int optimize_connection(device_t node1, uint8_t link1, device_t node2, ui
 {
 	static const uint8_t link_width_to_pow2[]= { 3, 4, 0, 5, 1, 2, 0, 0 };
 	static const uint8_t pow2_to_link_width[] = { 0x7, 4, 5, 0, 1, 3 };
-	uint16_t freq_cap1, freq_cap2, freq_cap, freq_mask;
-	uint8_t width_cap1, width_cap2, width_cap, width, old_width, ln_width1, ln_width2;
+	uint16_t freq_cap1, freq_cap2;
+	uint8_t width_cap1, width_cap2, width, old_width, ln_width1, ln_width2;
 	uint8_t freq, old_freq;
 	int needs_reset;
 	/* Set link width and frequency */
@@ -369,6 +355,7 @@ static int optimize_connection(device_t node1, uint8_t link1, device_t node2, ui
 	
 	/* See if I am changing node1's width */
 	old_width = pci_read_config8(node1, link1 + PCI_HT_CAP_HOST_WIDTH + 1);
+	old_width &= 0x77;	
 	needs_reset |= old_width != width;
 
 	/* Set node1's widths */
@@ -379,10 +366,12 @@ static int optimize_connection(device_t node1, uint8_t link1, device_t node2, ui
 
 	/* See if I am changing node2's width */
 	old_width = pci_read_config8(node2, link2 + PCI_HT_CAP_HOST_WIDTH + 1);
+	old_width &= 0x77;
 	needs_reset |= old_width != width;
 
 	/* Set node2's widths */
 	pci_write_config8(node2, link2 + PCI_HT_CAP_HOST_WIDTH + 1, width);
+
 	return needs_reset;
 }
 
@@ -676,11 +665,6 @@ static void setup_uniprocessor(void)
 	disable_probes();
 }
 
-struct setup_smp_result {
-	int nodes;
-	int needs_reset;
-};
-
 #if CONFIG_MAX_PHYSICAL_CPUS > 2
 static int optimize_connection_group(const u8 *opt_conn, int num) {
 	int needs_reset = 0;
@@ -695,21 +679,20 @@ static int optimize_connection_group(const u8 *opt_conn, int num) {
 #endif
 
 #if CONFIG_MAX_PHYSICAL_CPUS > 1
-static struct setup_smp_result setup_smp2(void)
+static unsigned setup_smp2(void)
 {
-	struct setup_smp_result result;
+	unsigned nodes;
 	u8 byte;
 	uint32_t val;
-	result.nodes = 2;
-	result.needs_reset = 0;
+	nodes = 2;
 
 	setup_row_local(0, 0); /* it will update the broadcast RT*/
 	
 	val = get_row(0,0);
 	byte = (val>>16) & 0xfe;
 	if(byte<0x2) { /* no coherent connection so get out.*/
-		result.nodes = 1;
-		return result;
+		nodes = 1;
+		return nodes;
 	}
 
 	/* Setup and check a temporary connection to node 1 */
@@ -766,24 +749,19 @@ static struct setup_smp_result setup_smp2(void)
 	clear_temp_row(0);
 #endif
 
-	result.needs_reset |= optimize_connection(
-		NODE_HT(0), 0x80 + link_to_register(link_connection(0,1)),
-		NODE_HT(1), 0x80 + link_to_register(link_connection(1,0)) );
-
-	return result;
+	return nodes;
 }
 #endif /*CONFIG_MAX_PHYSICAL_CPUS > 1 */
 
 #if CONFIG_MAX_PHYSICAL_CPUS > 2
 
-static struct setup_smp_result setup_smp4(int needs_reset)
+static unsigned setup_smp4(void)
 {
-	struct setup_smp_result result;
+	unsigned nodes;
 	u8 byte;
 	uint32_t val;
 
-	result.nodes=4;
-	result.needs_reset = needs_reset;
+	nodes=4;
 
 	/* Setup and check temporary connection from Node 0 to Node 2 */
 	val = get_row(0,0);
@@ -791,8 +769,8 @@ static struct setup_smp_result setup_smp4(int needs_reset)
 	byte = get_linkn_last_count(byte);
 
 	if((byte>>2)==0) { /* We should have two coherent for 4p and above*/
-		result.nodes = 2;
-		return result;
+		nodes = 2;
+		return nodes;
 	}
 
 	byte &= 3; /* bit [3,2] is count-1*/
@@ -940,16 +918,7 @@ static struct setup_smp_result setup_smp4(int needs_reset)
 	clear_temp_row(1);
 #endif
 
-	/* optimize physical connections - by LYH */
-	static const u8 opt_conn4[] = {
-		0,2,
-		1,3,
-		2,3,
-	};
-
-	result.needs_reset |= optimize_connection_group(opt_conn4, sizeof(opt_conn4)/sizeof(opt_conn4[0]));
-
-	return result;
+	return nodes;
 
 }
 
@@ -957,14 +926,13 @@ static struct setup_smp_result setup_smp4(int needs_reset)
 
 #if CONFIG_MAX_PHYSICAL_CPUS > 4
 
-static struct setup_smp_result setup_smp6(int needs_reset)
+static unsigned setup_smp6(void)
 {
-	struct setup_smp_result result;
+	unsigned nodes;
 	u8 byte;
 	uint32_t val;
 
-	result.nodes=6;
-	result.needs_reset = needs_reset;
+	nodes=6;
 
 	/* Setup and check temporary connection from Node 0 to Node 4  through 2*/
         val = get_row(2,2);
@@ -972,8 +940,8 @@ static struct setup_smp_result setup_smp6(int needs_reset)
         byte = get_linkn_last_count(byte);
 
         if((byte>>2)==0) { /* We should have three coherent link on node 2 for 6p and above*/
-                result.nodes = 4;
-                return result;
+                nodes = 4;
+                return nodes;
         }
 
 	/* Setup and check temporary connection from Node 0 to Node 5  through 1, 3*/
@@ -982,8 +950,8 @@ static struct setup_smp_result setup_smp6(int needs_reset)
         byte = ((val>>16) & 0xfe) - link_connection(3,2) - link_connection(3,1);
         byte = get_linkn_last_count(byte);
         if((byte>>2)==0) { /* We should have three coherent links on node 3 for 6p and above*/
-                result.nodes = 4;
-                return result;
+                nodes = 4;
+                return nodes;
         }
 	
 	/* We found 6 nodes so far. Now setup all nodes for 6p */
@@ -1153,17 +1121,7 @@ static struct setup_smp_result setup_smp6(int needs_reset)
 	}
 #endif
 
-	/* optimize physical connections - by LYH */
-	static const uint8_t opt_conn6[] ={
-		2, 4,
-		3, 5,
-#if !CROSS_BAR_47_56
-		4, 5,
-#endif
-	}; 
-	result.needs_reset |= optimize_connection_group(opt_conn6, sizeof(opt_conn6)/sizeof(opt_conn6[0]));
-
-	return result;
+	return nodes;
 
 }
 
@@ -1171,14 +1129,13 @@ static struct setup_smp_result setup_smp6(int needs_reset)
 
 #if CONFIG_MAX_PHYSICAL_CPUS > 6
 
-static struct setup_smp_result setup_smp8(int needs_reset)
+static unsigned setup_smp8(void)
 {
-	struct setup_smp_result result;
+	unsigned nodes;
 	u8 byte;
 	uint32_t val;
 
-	result.nodes=8;
-	result.needs_reset = needs_reset;
+	nodes=8;
 
 	/* Setup and check temporary connection from Node 0 to Node 6 via 2 and 4 to 7 */
 	val = get_row(4,4);
@@ -1188,16 +1145,16 @@ static struct setup_smp_result setup_smp8(int needs_reset)
 	byte = ((val>>16) & 0xfe) - link_connection(4,5) - link_connection(4,2);
         byte = get_linkn_last_count(byte); /* Max link to 6*/
         if((byte>>2)==0) { /* We should have two or three coherent links on node 4 for 8p*/
-                result.nodes = 6;
-                return result;
+                nodes = 6;
+                return nodes;
         }
 #endif
 
 #if CROSS_BAR_47_56 
 	byte = get_linkn_last_count(byte); /* Max link to 6*/
 	if((byte>>2)<2) { /* We should have two or three coherent links on node 4 for 8p*/
-		result.nodes = 6;
-		return result;
+		nodes = 6;
+		return nodes;
 	}
 #if TRY_HIGH_FIRST == 1
 	byte = ((val>>16) & 0xfe) - link_connection(4,2);
@@ -1215,8 +1172,8 @@ static struct setup_smp_result setup_smp8(int needs_reset)
         byte = ((val>>16) & 0xfe) - link_connection(5,4) - link_connection(5,3);
         byte = get_linkn_last_count(byte);
         if((byte>>2)==0) { /* We should have three coherent links on node 5 for 6p and above*/
-                result.nodes = 6;
-                return result;
+                nodes = 6;
+                return nodes;
         }
 #endif
 
@@ -1232,6 +1189,7 @@ static struct setup_smp_result setup_smp8(int needs_reset)
 		3, 6,
 		/*3, 7,*/
 		/*4, 7,*/
+		5, 6,
 #else
 		0, 6, 2, 0,
 		/*0, 7, 2, 0,*/
@@ -1513,19 +1471,7 @@ static struct setup_smp_result setup_smp8(int needs_reset)
 /* ready to enable RT for Node 7 */
 	enable_routing(7);      /* enable routing on node 7 (temp.) */
 
-	static const uint8_t opt_conn8[] ={
-		4, 6,
-#if CROSS_BAR_47_56
-		4, 7,
-		5, 6,
-#endif
-		5, 7,
-		6, 7,
-	};
-	/* optimize physical connections - by LYH */
-	result.needs_reset |= optimize_connection_group(opt_conn8, sizeof(opt_conn8)/sizeof(opt_conn8[0]));
-
-	return result;
+	return nodes;
 }
 
 #endif /* CONFIG_MAX_PHYSICAL_CPUS > 6 */
@@ -1533,36 +1479,36 @@ static struct setup_smp_result setup_smp8(int needs_reset)
 
 #if CONFIG_MAX_PHYSICAL_CPUS > 1
 
-static struct setup_smp_result setup_smp(void)
+static unsigned setup_smp(void)
 {
-	struct setup_smp_result result;
+	unsigned nodes;
 
 	print_spew("Enabling SMP settings\r\n");
 		
-	result = setup_smp2();
+	nodes = setup_smp2();
 #if CONFIG_MAX_PHYSICAL_CPUS > 2
-	if(result.nodes == 2) 
-		result = setup_smp4(result.needs_reset);
+	if(nodes == 2) 
+		nodes = setup_smp4();
 #endif
 	
 #if CONFIG_MAX_PHYSICAL_CPUS > 4
-	if(result.nodes == 4)
-		result = setup_smp6(result.needs_reset);
+	if(nodes == 4)
+		nodes = setup_smp6();
 #endif
 
 #if CONFIG_MAX_PHYSICAL_CPUS > 6
-	if(result.nodes == 6) 
-		result = setup_smp8(result.needs_reset);
+	if(nodes == 6) 
+		nodes = setup_smp8();
 #endif
 
-#if CONFIG_USE_INIT
-	printk_debug("%02x nodes initialized.\r\n", result.nodes);
+#if CONFIG_USE_PRINTK_IN_CAR
+	printk_debug("%02x nodes initialized.\r\n", nodes);
 #else
-	print_debug_hex8(result.nodes);
+	print_debug_hex8(nodes);
 	print_debug(" nodes initialized.\r\n");
 #endif
 	
-	return result;
+	return nodes;
 }
 
 static unsigned verify_mp_capabilities(unsigned nodes)
@@ -1601,7 +1547,7 @@ static void clear_dead_routes(unsigned nodes)
 {
 	int last_row;
 	int node, row;
-#if CONFIG_MAX_PHYSICAL_CPUS > 6
+#if CONFIG_MAX_PHYSICAL_CPUS == 8
 	if(nodes==8) return;/* don't touch (7,7)*/
 #endif
 	last_row = nodes;
@@ -1625,9 +1571,9 @@ static void clear_dead_routes(unsigned nodes)
 }
 #endif /* CONFIG_MAX_PHYSICAL_CPUS > 1 */
 
-static unsigned count_cpus(unsigned nodes)
-{
 #if CONFIG_LOGICAL_CPUS==1
+static unsigned verify_dualcore(unsigned nodes)
+{
 	unsigned node, totalcpus, tmp;
 
 	totalcpus = 0;
@@ -1637,25 +1583,27 @@ static unsigned count_cpus(unsigned nodes)
 	}
 
 	return totalcpus;
-#else
-	return nodes;
-#endif
 		
 }
-static inline unsigned get_nodes(void)
-{
-        return ((pci_read_config32(PCI_DEV(0, 0x18, 0), 0x60)>>4) & 7) + 1;
-}
+#endif
 
 static void coherent_ht_finalize(unsigned nodes)
 {
-	unsigned total_cpus;
-	unsigned cpu_node_count;
 	unsigned node;
+#if K8_REV_F_SUPPORT == 0
 	int rev_a0;
-	total_cpus = count_cpus(nodes);
-	cpu_node_count = ((total_cpus -1)<<16)|((nodes - 1) << 4);
+#endif
+#if CONFIG_LOGICAL_CPUS==1
+	unsigned total_cpus;
 
+	if(read_option(CMOS_VSTART_dual_core, CMOS_VLEN_dual_core, 0) == 0) { /* dual_core */
+		total_cpus = verify_dualcore(nodes);
+	}
+	else {
+		total_cpus = nodes;
+	}
+#endif
+	
 	/* set up cpu count and node count and enable Limit
 	 * Config Space Range for all available CPUs.
 	 * Also clear non coherent hypertransport bus range
@@ -1663,7 +1611,9 @@ static void coherent_ht_finalize(unsigned nodes)
 	 */
 
 	print_spew("coherent_ht_finalize\r\n");
+#if K8_REV_F_SUPPORT == 0
 	rev_a0 = is_cpu_rev_a0();
+#endif
 	for (node = 0; node < nodes; node++) {
 		device_t dev;
 		uint32_t val;
@@ -1672,7 +1622,11 @@ static void coherent_ht_finalize(unsigned nodes)
 		/* Set the Total CPU and Node count in the system */
 		val = pci_read_config32(dev, 0x60);
 		val &= (~0x000F0070);
-		val |= cpu_node_count;
+#if CONFIG_LOGICAL_CPUS==1
+		val |= ((total_cpus-1)<<16)|((nodes-1)<<4);
+#else
+		val |= ((nodes-1)<<16)|((nodes-1)<<4);
+#endif
 		pci_write_config32(dev, 0x60, val);
 
 		/* Only respond to real cpu pci configuration cycles
@@ -1688,23 +1642,27 @@ static void coherent_ht_finalize(unsigned nodes)
 			(3 << HTTC_HI_PRI_BYP_CNT_SHIFT);
 		pci_write_config32(dev, HT_TRANSACTION_CONTROL, val);
 
+#if K8_REV_F_SUPPORT == 0
 		if (rev_a0) {
 			pci_write_config32(dev, 0x94, 0);
 			pci_write_config32(dev, 0xb4, 0);
 			pci_write_config32(dev, 0xd4, 0);
 		}
+#endif
 	}
 
 	print_spew("done\r\n");
 }
 
-static int apply_cpu_errata_fixes(unsigned nodes, int needs_reset)
+static int apply_cpu_errata_fixes(unsigned nodes)
 {
 	unsigned node;
+	int needs_reset = 0;
 	for(node = 0; node < nodes; node++) {
 		device_t dev;
 		uint32_t cmd;
 		dev = NODE_MC(node);
+#if K8_REV_F_SUPPORT == 0
 		if (is_cpu_pre_c0()) {
 
 			/* Errata 66
@@ -1746,13 +1704,15 @@ static int apply_cpu_errata_fixes(unsigned nodes, int needs_reset)
 				needs_reset = 1; /* Needed? */
 			}
 		}
+#endif
 	}
 	return needs_reset;
 }
 
-static int optimize_link_read_pointers(unsigned nodes, int needs_reset)
+static int optimize_link_read_pointers(unsigned nodes)
 {
 	unsigned node;
+	int needs_reset = 0;
 	for(node = 0; node < nodes; node++) {
 		device_t f0_dev, f3_dev;
 		uint32_t cmd_ref, cmd;
@@ -1782,58 +1742,98 @@ static int optimize_link_read_pointers(unsigned nodes, int needs_reset)
 	return needs_reset;
 }
 
-static void startup_other_cores(unsigned nodes)
+static inline unsigned get_nodes(void)
 {
-	unsigned node;
-	for(node = 0; node < nodes; node++) {
-		device_t dev;
-		unsigned siblings;
-		dev = NODE_MC(node);
-		siblings = (pci_read_config32(dev, 0xe8) >> 12) & 0x3;
-
-		if (siblings) {
-			device_t dev_f0;
-			unsigned val;
-			/* Redirect all MC4 accesses and error logging to core0 */
-			val = pci_read_config32(dev, 0x44);
-			val |= (1 << 27); //NbMcaToMstCpuEn bit
-			pci_write_config32(dev, 0x44, val);
-
-			/* Enable the second core */
-			dev_f0 = NODE_HT(node);
-			val = pci_read_config32(dev_f0, 0x68);
-			val |= ( 1 << 5);
-			pci_write_config32(dev_f0, 0x68, val);
-		}
-	}
+        return ((pci_read_config32(PCI_DEV(0, 0x18, 0), 0x60)>>4) & 7) + 1;
 }
 
-
-static int setup_coherent_ht_domain(void)
+static int optimize_link_coherent_ht(void)
 {
-	struct setup_smp_result result;
-	result.nodes = 1;
-	result.needs_reset = 0;
+        int needs_reset = 0;
 
-#if K8_HT_CHECK_PENDING_LINK == 1 
-	//needed?
-        wait_ht_stable(0);
-#endif	
+        unsigned nodes;
+
+        nodes = get_nodes();
+
+#if CONFIG_MAX_PHYSICAL_CPUS > 1
+        if(nodes>1) {
+                needs_reset |= optimize_connection(
+                        NODE_HT(0), 0x80 + link_to_register(link_connection(0,1)),
+                        NODE_HT(1), 0x80 + link_to_register(link_connection(1,0)) );
+        }
+
+#if CONFIG_MAX_PHYSICAL_CPUS > 2
+        if(nodes>2) {
+        /* optimize physical connections - by LYH */
+                static const u8 opt_conn4[] = {
+                        0,2,
+                        1,3,
+                        2,3,
+                };
+                needs_reset |= optimize_connection_group(opt_conn4, sizeof(opt_conn4)/sizeof(opt_conn4[0]));
+        }
+#endif
+
+#if CONFIG_MAX_PHYSICAL_CPUS > 4
+        if(nodes>4) {
+                static const uint8_t opt_conn6[] ={
+                        2, 4,
+                        3, 5,
+        #if !CROSS_BAR_47_56
+                        4, 5,
+        #endif
+                };
+                needs_reset |= optimize_connection_group(opt_conn6, sizeof(opt_conn6)/sizeof(opt_conn6[0]));
+        }
+#endif
+
+#if CONFIG_MAX_PHYSICAL_CPUS > 6
+        if(nodes>6) {
+               static const uint8_t opt_conn8[] ={
+                       4, 6,
+        #if CROSS_BAR_47_56
+                       4, 7,
+                       5, 6,
+        #endif
+                       5, 7,
+                       6, 7,
+               };
+                needs_reset |= optimize_connection_group(opt_conn8, sizeof(opt_conn8)/sizeof(opt_conn8[0]));
+        }
+#endif
+
+#endif
+
+        needs_reset |= apply_cpu_errata_fixes(nodes);
+        needs_reset |= optimize_link_read_pointers(nodes);
+
+        return needs_reset;
+}
+
+#if RAMINIT_SYSINFO == 1
+static void setup_coherent_ht_domain(void)
+#else
+static int setup_coherent_ht_domain(void)
+#endif
+{
+	unsigned nodes;
+	nodes = 1;
+
 	enable_bsp_routing();
 
 #if CONFIG_MAX_PHYSICAL_CPUS > 1
-	result = setup_smp();
-	result.nodes = verify_mp_capabilities(result.nodes);
-	clear_dead_routes(result.nodes);
+        nodes = setup_smp();
+        nodes = verify_mp_capabilities(nodes);
+        clear_dead_routes(nodes);
 #endif
-	if (result.nodes == 1) {
+
+	if (nodes == 1) {
 		setup_uniprocessor();
 	}
-	coherent_ht_finalize(result.nodes);
-	startup_other_cores(result.nodes);
-	result.needs_reset = apply_cpu_errata_fixes(result.nodes, result.needs_reset);
-	result.needs_reset = optimize_link_read_pointers(result.nodes, result.needs_reset);
-	return result.needs_reset;
+	coherent_ht_finalize(nodes);
+
+#if RAMINIT_SYSINFO == 0
+	return optimize_link_coherent_ht();
+#endif
 }
 
-#endif

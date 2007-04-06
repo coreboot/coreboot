@@ -62,8 +62,8 @@ $(obj)/linuxbios.bootblock: $(obj)/linuxbios.vpd $(obj)/stage0.init
 #
 
 STAGE0_CONSOLE_OBJ   = vtxprintf.o vsprintf.o console.o
-STAGE0_LIB_OBJ       = uart8250.o mem.o elfboot.o lar.o
-STAGE0_ARCH_X86_OBJ  = cachemain.o serial.o archelfboot.o
+STAGE0_LIB_OBJ       = uart8250.o mem.o elfboot.o lar.o delay.o
+STAGE0_ARCH_X86_OBJ  = cachemain.o serial.o archelfboot.o speaker.o udelay_io.o
 
 ifeq ($(CONFIG_CAR_TYPE_I586),y)
 	STAGE0_CAR_OBJ = stage0_i586.o

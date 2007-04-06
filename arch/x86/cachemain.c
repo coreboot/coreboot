@@ -22,6 +22,7 @@
 #include <console/console.h>
 #include <lar.h>
 #include <linuxbios_tables.h>
+#include <lib.h>
 
 /* these prototypes should go into headers */
 void uart_init(void);
@@ -47,7 +48,9 @@ static void stop_ap(void)
 static void enable_superio(void)
 {
 	// nothing yet
+	beep_short(); // FIXME
 	post_code(0xf1);
+	beep_long(); // FIXME
 }
 
 static void enable_rom(void)

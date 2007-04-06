@@ -30,6 +30,13 @@ config LOCALVERSION
 	help
 	  Append an extra string to the end of the LinuxBIOS version.
 
+config BEEPS
+	bool "Enable beeps upon certain LinuxBIOS events."
+	depends EXPERT
+	default n
+	help
+	  Enable this option to make LinuxBIOS beep upon certain events.
+
 endmenu
 
 source mainboard/Kconfig

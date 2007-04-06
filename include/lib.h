@@ -27,4 +27,7 @@ void udelay(unsigned int usecs);
 void mdelay(unsigned int msecs);
 void delay(unsigned int secs);
 
+void beep_short(void);
+void beep_long(void);
+
 #endif

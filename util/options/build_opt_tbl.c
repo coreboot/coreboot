@@ -462,7 +462,8 @@ int main(int argc, char **argv)
 			exit(1);
 		}
 		if ((cs->range_end/8) != LB_CKS_RANGE_END) {
-			fprintf(stderr, "Error - Range end does not match define in line\n%s\n", line);
+			fprintf(stderr, "Error - Range end (%d) does not match define (%d) in line\n%s\n", 
+					(cs->range_end/8), LB_CKS_RANGE_END, line);
 			exit(1);
 		}
 		if ((cs->location/8) != LB_CKS_LOC) {

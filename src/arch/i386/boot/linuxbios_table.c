@@ -365,7 +365,8 @@ unsigned long write_linuxbios_table(
 		low_table_end = (unsigned long)head;
 	}
 
-	if (HAVE_OPTION_TABLE == 1) {
+#if (HAVE_OPTION_TABLE == 1) 
+	{
 		struct lb_record *rec_dest, *rec_src;
 		/* Write the option config table... */
 		rec_dest = lb_new_record(head);
@@ -374,6 +375,7 @@ unsigned long write_linuxbios_table(
 		/* Create cmos checksum entry in linuxbios table */
 		lb_cmos_checksum(head);
 	}
+#endif
 	/* Record where RAM is located */
 	mem = build_lb_mem(head);
 	

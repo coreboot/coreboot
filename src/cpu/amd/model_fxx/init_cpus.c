@@ -356,7 +356,6 @@ static unsigned init_cpus(unsigned cpu_init_detectedx)
 		return bsp_apicid;
 }
 
-#if CONFIG_LOGICAL_CPUS == 1
 
 static unsigned is_core0_started(unsigned nodeid)
 {
@@ -383,4 +382,3 @@ static void wait_all_core0_started(void)
 
 }
 
-#endif

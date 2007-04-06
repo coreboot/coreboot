@@ -20,8 +20,6 @@
 #include <string.h>
 #include <cpu/x86/msr.h>
 
-typedef unsigned int u32;
-
 /* The maximum length of CPU names is 48 bytes, including the final NULL byte.
  * If you change these names your BIOS will _NOT_ pass the AMD validation and
  * your mainboard will not be posted on the AMD Recommended Motherboard Website

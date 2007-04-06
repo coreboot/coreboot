@@ -42,6 +42,7 @@ static void set_var_mtrr(
 
 {
 	/* Bit Bit 32-35 of MTRRphysMask should be set to 1 */
+	/* FIXME: It only support 4G less range */
 	msr_t basem, maskm;
 	basem.lo = base | type;
 	basem.hi = 0;

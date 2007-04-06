@@ -282,10 +282,16 @@ static void set_fixed_mtrr_resource(void *gp, struct device *dev, struct resourc
 	
 }
 
+#ifndef CONFIG_VAR_MTRR_HOLE
+#define CONFIG_VAR_MTRR_HOLE 1
+#endif
+
 struct var_mtrr_state {
 	unsigned long range_startk, range_sizek;
 	unsigned int reg;
+#if CONFIG_VAR_MTRR_HOLE
 	unsigned long hole_startk, hole_sizek;
+#endif
 	unsigned address_bits;
 };
 
@@ -308,6 +314,7 @@ void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res)
 	}
 	/* Write the range mtrrs */
 	if (state->range_sizek != 0) {
+#if CONFIG_VAR_MTRR_HOLE
 		if (state->hole_sizek == 0) {
 			/* We need to put that on to hole */
 			unsigned long endk = basek + sizek;
@@ -316,17 +323,22 @@ void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res)
 			state->range_sizek = endk - state->range_startk;
 			return;
 		}
+#endif
 		state->reg = range_to_mtrr(state->reg, state->range_startk, 
 			state->range_sizek, basek, MTRR_TYPE_WRBACK, state->address_bits);
+#if CONFIG_VAR_MTRR_HOLE
 		state->reg = range_to_mtrr(state->reg, state->hole_startk, 
 			state->hole_sizek, basek,  MTRR_TYPE_UNCACHEABLE, state->address_bits);
+#endif
 		state->range_startk = 0;
 		state->range_sizek = 0;
+#if CONFIG_VAR_MTRR_HOLE
                 state->hole_startk = 0;
                 state->hole_sizek = 0;
+#endif
 	}
 	/* Allocate an msr */  
-	printk_spew(" Allocate an msr - basek = %d, sizek = %d,\n", basek, sizek);
+	printk_spew(" Allocate an msr - basek = %08x, sizek = %08x,\n", basek, sizek);
 	state->range_startk = basek;
 	state->range_sizek  = sizek;
 }
@@ -377,8 +389,10 @@ void x86_setup_var_mtrrs(unsigned address_bits)
 	 */
 	var_state.range_startk = 0;
 	var_state.range_sizek = 0;
+#if CONFIG_VAR_MTRR_HOLE
 	var_state.hole_startk = 0;
 	var_state.hole_sizek = 0;
+#endif
 	var_state.reg = 0;
 	var_state.address_bits = address_bits;
 	search_global_resources(
@@ -388,8 +402,10 @@ void x86_setup_var_mtrrs(unsigned address_bits)
 	/* Write the last range */
 	var_state.reg = range_to_mtrr(var_state.reg, var_state.range_startk, 
 		var_state.range_sizek, 0, MTRR_TYPE_WRBACK, var_state.address_bits);
+#if CONFIG_VAR_MTRR_HOLE
 	var_state.reg = range_to_mtrr(var_state.reg, var_state.hole_startk,
 		var_state.hole_sizek,  0, MTRR_TYPE_UNCACHEABLE, var_state.address_bits);
+#endif
 	printk_debug("DONE variable MTRRs\n");
 	printk_debug("Clear out the extra MTRR's\n");
 	/* Clear out the extra MTRR's */

@@ -26,13 +26,13 @@
  * no calls to malloc
  */
 
+#include <arch/types.h>
+#include <string.h>
+
 #include <console/console.h>
+#include <linuxbios_tables.h>
 #include <elf.h>
 #include <elf_boot.h>
-#include <linuxbios_tables.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
 
 static int valid_area(struct lb_memory *mem, 
 	unsigned long start, unsigned long len)

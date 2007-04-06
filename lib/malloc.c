@@ -23,6 +23,7 @@
  * has had this at some time or other. 
  */
 
+#include <arch/types.h>
 #include <stdlib.h>
 #include <console/console.h>
 
@@ -51,11 +52,11 @@ void *malloc(size_t size)
 {
 	void *p;
 
-	MALLOCDBG("%s Enter, size %d, free_mem_ptr %p\n", __FUNCTION__, size,
-		  free_mem_ptr);
+	MALLOCDBG("%s Enter, size %d, free_mem_ptr %p\n", 
+			__FUNCTION__, size, free_mem_ptr);
 
 	if (size > freebytes) {
-		die("OUT OF MEMORY\n");
+		die("Out of memory.\n");
 	}
 
 	size = (size + 3) & (~3);	/* Align */

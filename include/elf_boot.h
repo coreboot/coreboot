@@ -20,7 +20,7 @@
 #ifndef ELF_BOOT_H 
 #define ELF_BOOT_H 
 
-#include <stdint.h>
+#include <arch/types.h>
 
 /* This defines the structure of a table of parameters useful for ELF
  * bootable images.  These parameters are all passed and generated

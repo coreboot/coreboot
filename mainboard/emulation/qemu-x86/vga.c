@@ -18,14 +18,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <arch/types.h>
 #include <console/console.h>
-#include <stdint.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <stdlib.h>
 #include <string.h>
 #include <keyboard.h>
-#include "config.h"
 
 static void setup_onboard(struct device *dev)
 {

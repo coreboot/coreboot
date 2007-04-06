@@ -1,9 +1,10 @@
 /*
  *  Erik Arjan Hendriks <hendriks@lanl.gov>
- *  (C) 2000 Scyld.
+ *  Copyright (C) 2000 Scyld.
  *  Copyright (C) 2000 Scyld Computing Corporation
  *  Copyright (C) 2001 University of California.  LA-CC Number 01-67.
- *  (C) 2005 Nick.Barker9@btinternet.com
+ *  Copyright (C) 2005 Nick.Barker9@btinternet.com
+ *  Copyright (C) 2007 coresystems GmbH
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,17 +22,19 @@
  *
  */
 
-#include <console/console.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#undef __KERNEL__
-#include <arch/io.h>
-//#include <printk.h>
+#include <console/console.h>
 #include <string.h>
-//#include "vgachip.h"
-/* Declare a temporary global descriptor table - necessary because the
-   Core part of the bios no longer sets up any 16 bit segments */
+#include <arch/io.h>
+
+
+/* Declare a temporary global descriptor table - 
+ * necessary because the core part of the bios 
+ * no longer sets up any 16 bit segments 
+ */
+
 __asm__ (
 	/* pointer to original gdt */
 	"gdtarg:			\n"
@@ -76,6 +79,7 @@ __asm__ (
 
 	"__mygdt_end:				\n"
 
+	/* FIXME: This does probably not belong here */
 	"idtarg:\n"
 	"	.word   _idt_end - _idt - 1\n"     /* limit */
 	"	.long   _idt\n"
@@ -84,10 +88,8 @@ __asm__ (
 	"	.fill   20, 8, 0\n" //       # idt is unitiailzed
 	"_idt_end:\n"
 
-);
-
-/* Declare a pointer to where our idt is going to be i.e. at mem zero */
-__asm__ ("__myidt:		\n"
+	/* Declare a pointer to where our idt is going to be i.e. at mem zero */
+	 "__myidt:		\n"
 	 /* 16-bit limit */
 	 "	.word 1023	\n"
 	 /* 24-bit base */
@@ -99,8 +101,9 @@ __asm__ ("__myidt:		\n"
 static void real_mode_switch_call_vga(unsigned long devfn)
 {
 	__asm__ __volatile__ (
-		// paranoia -- does ecx get saved? not sure. This is 
-		// the easiest safe thing to do.
+		/* paranoia -- does ecx get saved? not sure. 
+		 * This is the easiest safe thing to do.
+		 */
 		"	pushal			\n"
 		/* save the stack */
 		"	mov 	%esp, __stack	\n"
@@ -109,6 +112,7 @@ static void real_mode_switch_call_vga(unsigned long devfn)
 		"1:\n"
 		/* get devfn into %ecx */
 		"	movl    %esp, %ebp	\n"
+		// FIXME: why is this 8? 
 		"	movl    8(%ebp), %ecx	\n"
 		/* load 'our' gdt */
 		"	lgdt	%cs:__mygdtaddr	\n"
@@ -119,9 +123,11 @@ static void real_mode_switch_call_vga(unsigned long devfn)
 		"	.code16			\n"
 		/* 16 bit code from here on... */
 
-		/* Load the segment registers w/ properly configured segment
-		 * descriptors.  They will retain these configurations (limits,
-		 * writability, etc.) once protected mode is turned off. */
+		/* Load the segment registers w/ properly configured 
+		 * segment descriptors. They will retain these 
+		 * configurations (limits, writability, etc.) once 
+		 * protected mode is turned off. 
+		 */
 		"	mov	$0x30, %ax	\n"
 		"	mov	%ax, %ds       	\n"
 		"	mov	%ax, %es       	\n"
@@ -138,10 +144,10 @@ static void real_mode_switch_call_vga(unsigned long devfn)
 		"	ljmp	$0,  $__rms_real\n"
 		"__rms_real:			\n"
 
-		/* put the stack at the end of page zero. 
-		 * that way we can easily share it between real and protected, 
-		 * since the 16-bit ESP at segment 0 will work for any case. */
-		/* Setup a stack */
+		/* Setup a stack: Put the stack at the end of page zero. 
+		 * That way we can easily share it between real and
+		 * protected, since the 16-bit ESP at segment 0 will 
+		 * work for any case. */
 		"	mov	$0x0, %ax	\n"
 		"	mov	%ax, %ss	\n"
 		"	movl	$0x1000, %eax	\n"
@@ -152,7 +158,7 @@ static void real_mode_switch_call_vga(unsigned long devfn)
 		"	mov	%ax, %ds	\n"
 		"	lidt	__myidt		\n"
 
-		/* Dump zeros in the other segregs */
+		/* Dump zeros in the other segment registers */
 		"	mov	%ax, %es       	\n"
 		"	mov	%ax, %fs       	\n"
 		"	mov	%ax, %gs       	\n"
@@ -163,13 +169,16 @@ static void real_mode_switch_call_vga(unsigned long devfn)
 		/* run VGA BIOS at 0xc000:0003 */
 		"	lcall	$0xc000, $0x0003\n"
 
-		/* if we got here, just about done. 
-		 * Need to get back to protected mode */
+		/* If we got here, just about done. 
+		 * Need to get back to protected mode 
+		 */
 		"	movl	%cr0, %eax	\n"
 		"	orl	$0x0000001, %eax\n" /* PE = 1 */
 		"	movl	%eax, %cr0	\n"
 
-		/* Now that we are in protected mode jump to a 32 bit code segment. */
+		/* Now that we are in protected mode 
+		 * jump to a 32 bit code segment. 
+		 */
 		"	data32	ljmp	$0x10, $vgarestart\n"
 		"vgarestart:\n"
 		"	.code32\n"
@@ -191,12 +200,13 @@ static void real_mode_switch_call_vga(unsigned long devfn)
 		);
 }
 
-__asm__ (".text\n""real_mode_switch_end:\n");
-extern char real_mode_switch_end[];
+// FIXME: drop this
+// __asm__ (".text\n""real_mode_switch_end:\n");
+// extern char real_mode_switch_end[];
 
 /* call vga bios int 10 function 0x4f14 to enable main console 
    epia-m does not always autosence the main console so forcing it on is good !! */ 
-void vga_enable_console()
+void vga_enable_console(void)
 {
 	__asm__ __volatile__ (
 		/* paranoia -- does ecx get saved? not sure. This is 
@@ -602,7 +612,7 @@ void setup_realmode_idt(void)
 	// and get it that way. But that's really disgusting.
 	for (i = 0; i < 256; i++) {
 		idts[i].cs = 0;
-		codeptr = (char*) 4096 + i * codesize;
+		codeptr = (unsigned char *) 4096 + i * codesize;
 		idts[i].offset = (unsigned) codeptr;
 		memcpy(codeptr, &idthandle, codesize);
 		intbyte = codeptr + 3;
@@ -615,7 +625,7 @@ void setup_realmode_idt(void)
 	// int10. 
 	// calling convention here is the same as INTs, we can reuse
 	// the int entry code.
-	codeptr = (char*) 0xff065;
+	codeptr = (unsigned char *) 0xff065;
 	memcpy(codeptr, &idthandle, codesize);
 	intbyte = codeptr + 3;
 	*intbyte = 0x42; /* int42 is the relocated int10 */
@@ -654,19 +664,11 @@ pcibios(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 	unsigned long *pesp, unsigned long *pebx, unsigned long *pedx, 
 	unsigned long *pecx, unsigned long *peax, unsigned long *pflags)
 {
-	unsigned long edi = *pedi;
-	unsigned long esi = *pesi;
-	unsigned long ebp = *pebp;
-	unsigned long esp = *pesp;
-	unsigned long ebx = *pebx;
-	unsigned long edx = *pedx;
-	unsigned long ecx = *pecx;
-	unsigned long eax = *peax;
-	unsigned long flags = *pflags;
-	unsigned short func = (unsigned short) eax;
+	unsigned short func = (unsigned short) *peax;
 	int retval = 0;
 	unsigned short devid, vendorid, devfn;
-	short devindex; /* Use short to get rid of gabage in upper half of 32-bit register */
+	/* Use short to get rid of gabage in upper half of 32-bit register */
+	short devindex; 
 	unsigned char bus;
 	struct device *dev;
 	

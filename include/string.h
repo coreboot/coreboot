@@ -21,7 +21,7 @@
 #ifndef STRING_H
 #define STRING_H
 
-#include <stdlib.h>
+#include <arch/types.h>
 
 /* Prototypes for functions from lib/mem.c. */
 extern void *memcpy(void *dest, const void *src, int len);

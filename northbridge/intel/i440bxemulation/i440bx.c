@@ -16,6 +16,7 @@
  * such modified SOFTWARE should be clearly marked, so as not to confuse
  * it with the version available from LANL.
  */
+
 /* Copyright 2000, Ron Minnich, Advanced Computing Lab, LANL
  * Copyright (C) 2007 Ronald G. Minnich <rminnich@gmail.com>
  * This program is free software; you can redistribute it and/or modify
@@ -31,16 +32,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
-*/
+ */
 
+#include <arch/types.h>
 #include <console/console.h>
-#include <stdint.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <stdlib.h>
 #include <string.h>
-#include "config.h"
 #include "i440bx.h"
+#include "config.h"
 
 /* Here are the ops for 440BX as a PCI domain. */
 /* A PCI domain contains the I/O and memory resource address space below it. */
@@ -75,7 +75,7 @@ static void ram_resource(struct device *dev, unsigned long index,
 	resource->size = ((resource_t) sizek) << 10;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_CACHEABLE |
 	    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
-	printk(BIOS_INFO, "%s: add ram resoource %d bytes\n", __func__,
+	printk(BIOS_DEBUG, "%s: add ram resoource %d bytes\n", __func__,
 	       resource->size);
 }
 

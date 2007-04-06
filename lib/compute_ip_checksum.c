@@ -19,13 +19,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include <stdint.h>
+#include <arch/types.h>
 #include <ip_checksum.h>
 #include <string.h>
 
 unsigned long compute_ip_checksum(void *addr, unsigned long length)
 {
-	uint16_t *ptr;
+	u16 *ptr;
 	unsigned long sum;
 	unsigned long len;
 	unsigned long laddr;
@@ -33,7 +33,7 @@ unsigned long compute_ip_checksum(void *addr, unsigned long length)
 	laddr = (unsigned long )addr;
 	sum = 0;
 	if (laddr & 1) {
-		uint16_t buffer;
+		u16 buffer;
 		unsigned char *ptr;
 		/* copy the first byte into a 2 byte buffer.
 		 * This way automatically handles the endian question
@@ -58,7 +58,7 @@ unsigned long compute_ip_checksum(void *addr, unsigned long length)
 	}
 	addr = ptr;
 	if (length & 1) {
-		uint16_t buffer;
+		u16 buffer;
 		unsigned char *ptr;
 		/* copy the last byte into a 2 byte buffer.
 		 * This way automatically handles the endian question

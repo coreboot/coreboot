@@ -20,14 +20,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <arch/types.h>
 #include <console/console.h>
-#include <stdint.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <stdlib.h>
 #include <string.h>
 #include "config.h"
-// #include "i82371eb.h"
 
 /* The plain PCI device uses the standard PCI operations. */
 /* TODO: bring in the rest of the v2 code for controlling IDE enable. 

@@ -47,7 +47,7 @@
  * ---------------------------------------------------------------------------
  */
 
-#include <stdint.h>
+#include <arch/types.h>
 
 #define MAGIC "LARCHIVE"
 #define MAX_PATHLEN 1024

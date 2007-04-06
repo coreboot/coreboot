@@ -4,6 +4,7 @@
  *  (c) 1999--2000 Martin Mares <mj@suse.cz>
  *  (c) 2003 Eric Biederman <ebiederm@xmission.com>
  *  (c) 2003 Linux Networx
+ *  (C) 2007 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by 
@@ -32,14 +33,14 @@
  */
 
 #include <console/console.h>
-//#include <bitops.h>
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 #include <lib.h>
+#warning Do we need spinlocks in device/device.c?
 //#include <smp/spinlock.h>
 
 /** Linked list of ALL devices */
@@ -87,7 +88,11 @@ dev_init(void)
 struct device *default_device_constructor(struct constructor *constructor){
 	struct device *dev;
 	dev = malloc(sizeof(*dev));
-	if (dev == 0) {
+
+	// FIXME: This is overkill. Our malloc will never return with 
+	// a return value of NULL. So this is dead code (and thus would
+	// drop code coverage and usability in safety critical environments
+	if (dev == NULL) {
 		die("DEV: out of memory.\n");
 	}
 	memset(dev, 0, sizeof(dev));
@@ -112,11 +117,13 @@ struct constructor *find_constructor(struct device_id *id){
 	int i;
 	printk(BIOS_SPEW, "%s: find %s\n", __func__, dev_id_string(id));
 	for(i = 0; all_constructors[i]; i++) {
-		printk(BIOS_SPEW, "%s: check all_constructors[i] 0x%lx\n", __func__, all_constructors[i]);
+		printk(BIOS_SPEW, "%s: check all_constructors[i] 0x%lx\n", 
+				__func__, all_constructors[i]);
 		for(c = all_constructors[i]; c->ops; c++) {
-			printk(BIOS_SPEW, "%s: cons 0x%lx, cons id %s\n", __func__, c, dev_id_string(&c->id));
+			printk(BIOS_SPEW, "%s: cons 0x%lx, cons id %s\n",
+					__func__, c, dev_id_string(&c->id));
 			if ((! c->ops) || (!c->ops->constructor)) {
-				printk(BIOS_ERR, "Constructor for %s with missing ops or ops->constructor!\n", 
+				printk(BIOS_INFO, "Constructor for %s with missing ops or ops->constructor!\n", 
 					dev_id_string(&c->id));
 				continue;
 			}
@@ -148,12 +155,12 @@ struct device *constructor(struct device_id *id){
 	struct device *dev  = 0;
 
 	c = find_constructor(id);
-	printk(BIOS_INFO, "%s constructor is 0x%lx\n", __func__, c);
+	printk(BIOS_DEBUG, "%s constructor is 0x%lx\n", __func__, c);
 	if (! c)
 		return 0;
 
 	dev = c->ops->constructor(c);
-	printk(BIOS_INFO, "%s returns 0x%lx\n", __func__, dev);
+	printk(BIOS_DEBUG, "%s returns 0x%lx\n", __func__, dev);
 	return dev;
 }
 
@@ -180,23 +187,25 @@ struct device * alloc_dev(struct bus *parent, struct device_path *path, struct d
 //	spin_lock(&dev_lock);	
 
 	/* Find the last child of our parent */
-	for(child = parent->children; child && child->sibling; ) {
+	for (child = parent->children; child && child->sibling; ) {
 		child = child->sibling;
 	}
 
 	dev = constructor(devid);
-	if (! dev)
-		printk(BIOS_INFO, "%s: No constructor, going with empty dev", dev_id_string(devid));
-       dev = malloc(sizeof(*dev));
-       if (dev == 0) {
-               die("DEV: alloc_dev: out of memory.\n");
-       }
-       memset(dev, 0, sizeof(*dev));
+	if (!dev)
+		printk(BIOS_DEBUG, "%s: No constructor, going with empty dev", 
+				dev_id_string(devid));
+
+	dev = malloc(sizeof(*dev));
+	if (dev == NULL) {
+		die("DEV: out of memory.\n");
+	}
+	memset(dev, 0, sizeof(*dev));
 
 	memcpy(&dev->path, path, sizeof(*path));
 
 	/* Initialize the back pointers in the link fields */
-	for(link = 0; link < MAX_LINKS; link++) {
+	for (link = 0; link < MAX_LINKS; link++) {
 		dev->link[link].dev  = dev;
 		dev->link[link].link = link;
 	}
@@ -220,7 +229,7 @@ struct device * alloc_dev(struct bus *parent, struct device_path *path, struct d
 
 	/* give the device a name */
 	dev -> dtsname = malloc(32);
-        if (dev->dtsname == 0) {
+        if (dev->dtsname == NULL) {
                 die("DEV: out of memory.\n");
         }
 	sprintf(dev->dtsname, "dynamic %s", dev_path(dev));
@@ -251,8 +260,9 @@ static void read_resources(struct bus *bus)
 {
 	struct device *curdev;
 
-	printk(BIOS_SPEW, "%s: %s(%s) read_resources bus %d link: %d\n", __func__, bus->dev->dtsname,
-		dev_path(bus->dev), bus->secondary, bus->link);
+	printk(BIOS_SPEW, "%s: %s(%s) read_resources bus %d link: %d\n", 
+			__func__, bus->dev->dtsname, dev_path(bus->dev), 
+			bus->secondary, bus->link);
 
 	/* Walk through all of the devices and find which resources they need. */
 	for(curdev = bus->children; curdev; curdev = curdev->sibling) {
@@ -335,8 +345,8 @@ static void pick_largest_resource(void *gp,
 	}    
 }
 
-static struct device *largest_resource(struct bus *bus, struct resource **result_res,
-	unsigned long type_mask, unsigned long type)
+static struct device *largest_resource(struct bus *bus, struct resource 
+		**result_res, unsigned long type_mask, unsigned long type)
 {
 	struct pick_largest_state state;
 
@@ -508,10 +518,11 @@ struct device * vga_pri = 0;
 int vga_inited = 0;
 static void allocate_vga_resource(void)
 {
-#warning "FIXME modify allocate_vga_resource so it is less pci centric!"
-#warning "This function knows to much about PCI stuff, it should be just a iterator/visitor."
+#warning Modify allocate_vga_resource so it is less pci centric.
+	// FIXME: This function knows to much about PCI stuff, 
+	// it should just be an iterator/visitor.
 
-	/* FIXME handle the VGA pallette snooping */
+	/* FIXME: handle the VGA pallette snooping */
 	struct device *dev, *vga, *vga_onboard, *vga_first, *vga_last;
 	struct bus *bus;
 	bus = 0;
@@ -605,12 +616,12 @@ void phase4_assign_resources(struct bus *bus)
 			continue;
 		}
 		if (!curdev->ops) {
-			printk(BIOS_ERR, "%s(%s) missing ops\n",
+			printk(BIOS_WARNING, "%s(%s) missing ops\n",
 				curdev->dtsname, dev_path(curdev));
 			continue;
 		}
 		if (!curdev->ops->phase4_set_resources) {
-			printk(BIOS_ERR, "%s(%s) ops has no missing phase4_set_resources\n",
+			printk(BIOS_WARNING, "%s(%s) ops has no missing phase4_set_resources\n",
 				curdev->dtsname, dev_path(curdev));
 			continue;
 		}
@@ -644,11 +655,12 @@ void dev_phase5(struct device *dev)
 		return;
 	}
 	if (!dev->ops) {
-		printk(BIOS_ERR, "%s: %s(%s) missing ops\n", __FUNCTION__, dev->dtsname, dev_path(dev));
+		printk(BIOS_WARNING, "%s: %s(%s) missing ops\n", 
+				__FUNCTION__, dev->dtsname, dev_path(dev));
 		return;
 	}
 	if (!dev->ops->phase5_enable_resources) {
-		printk(BIOS_ERR, "%s: %s(%s) ops are missing phase5_enable_resources\n", __FUNCTION__, dev->dtsname, dev_path(dev));
+		printk(BIOS_WARNING, "%s: %s(%s) ops are missing phase5_enable_resources\n", __FUNCTION__, dev->dtsname, dev_path(dev));
 		return;
 	}
 
@@ -696,7 +708,7 @@ void dev_phase1(void)
 		}
 	}
 	post_code(0x3e);
-	printk(BIOS_INFO, "Phase 1: done\n");
+	printk(BIOS_DEBUG, "Phase 1: done\n");
 	post_code(0x3f);
 }
 
@@ -712,7 +724,7 @@ void dev_phase2(void)
 	struct device *dev;
 
 	post_code(0x41);
-	printk(BIOS_INFO, "Phase 2: Early setup...\n");
+	printk(BIOS_DEBUG, "Phase 2: Early setup...\n");
 	for(dev = all_devices; dev; dev = dev->next) {
 		printk(BIOS_SPEW, "%s: dev %s: ", __FUNCTION__, dev->dtsname);
 		if (dev->ops && dev->ops->phase2_setup_scan_bus) {
@@ -724,7 +736,7 @@ void dev_phase2(void)
 	}
 
 	post_code(0x4e);
-	printk(BIOS_INFO, "Phase 2: Done.\n");
+	printk(BIOS_DEBUG, "Phase 2: Done.\n");
 	post_code(0x4f);
 }
 

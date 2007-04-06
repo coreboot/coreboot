@@ -1,35 +1,36 @@
-/* This file was taken from the GNU C Library, CVS rev. 1.156, and modified
-   for use by the LinuxBIOS project. */
+/* This file was taken from the GNU C Library, CVS rev. 1.156, 
+ * and modified for use by the LinuxBIOS project. 
+ */
 
 /* This file defines standard ELF types, structures, and macros.
-   Copyright (C) 1995-2003,2004,2005,2006,2007 Free Software Foundation, Inc.
-   Copyright (C) 2001 Eric Biederman <ebiederman@lnxi.com>
-   This file is part of the GNU C Library.
-
-   The GNU C Library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Lesser General Public
-   License as published by the Free Software Foundation; either
-   version 2.1 of the License, or (at your option) any later version.
-
-   The GNU C Library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public
-   License along with the GNU C Library; if not, write to the Free
-   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-   02111-1307 USA.  */
+ * Copyright (C) 1995-2003,2004,2005,2006,2007 Free Software Foundation, Inc.
+ * Copyright (C) 2001 Eric Biederman <ebiederman@lnxi.com>
+ * This file is part of the GNU C Library.
+ *
+ * The GNU C Library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * The GNU C Library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with the GNU C Library; if not, write to the Free
+ * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+ * 02111-1307 USA.  
+ */
 
 #ifndef _ELF_H
 #define	_ELF_H 1
 
-#include <features.h>
+#include <arch/types.h>
 #include <arch/elf.h>
 
 /* Standard ELF types.  */
 
-#include <stdint.h>
 
 /* Type for a 16-bit quantity.  */
 typedef u16 Elf32_Half;
@@ -907,10 +908,10 @@ typedef struct
 
 typedef struct
 {
-  uint32_t a_type;		/* Entry type */
+  u32 a_type;		/* Entry type */
   union
     {
-      uint32_t a_val;		/* Integer value */
+      u32 a_val;		/* Integer value */
       /* We use to have pointer elements added here.  We cannot do that,
 	 though, since it does not work when using 32-bit definitions
 	 on 64-bit platforms and vice versa.  */
@@ -919,10 +920,10 @@ typedef struct
 
 typedef struct
 {
-  uint64_t a_type;		/* Entry type */
+  u64 a_type;		/* Entry type */
   union
     {
-      uint64_t a_val;		/* Integer value */
+      u64 a_val;		/* Integer value */
       /* We use to have pointer elements added here.  We cannot do that,
 	 though, since it does not work when using 32-bit definitions
 	 on 64-bit platforms and vice versa.  */

@@ -26,15 +26,16 @@
  *  Copyright 2003 -- Eric Biederman <ebiederman@lnxi.com>
  */
 
-#include <console/console.h>
-#include <stdlib.h>
-#include <stdint.h>
+#include <arch/types.h>
+#include <arch/io.h>
 #include <string.h>
+#include <lib.h>
+
+#include <console/console.h>
+
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <lib.h>
-#include <arch/io.h>
 #define CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT 0
 #define CONFIG_PCIX_PLUGIN_SUPPORT 0
 #define CONFIG_PCIEXP_PLUGIN_SUPPORT 0

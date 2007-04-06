@@ -20,7 +20,7 @@
 #ifndef LINUXBIOS_TABLES_H
 #define LINUXBIOS_TABLES_H
 
-#include <stdint.h>
+#include <arch/types.h>
 
 /* The LinuxBIOS table information is for conveying information
  * from the firmware to the loaded OS image.  Primarily this

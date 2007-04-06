@@ -364,6 +364,17 @@ unsigned long write_linuxbios_table(
 		head = lb_table_init(low_table_end);
 		low_table_end = (unsigned long)head;
 	}
+ 
+	printk_debug("Adjust low_table_end from 0x%08x to ", low_table_end);
+	low_table_end += 0xfff; // 4K aligned
+	low_table_end &= ~0xfff;
+	printk_debug("0x%08x \n", low_table_end);
+
+	/* The Linux kernel assumes this region is reserved */
+	printk_debug("Adjust rom_table_end from 0x%08x to ", rom_table_end);
+	rom_table_end += 0xffff; // 64K align
+	rom_table_end &= ~0xffff;
+	printk_debug("0x%08x \n", rom_table_end);
 
 #if (HAVE_OPTION_TABLE == 1) 
 	{

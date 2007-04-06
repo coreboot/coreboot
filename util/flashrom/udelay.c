@@ -18,7 +18,8 @@ void myusec_calibrate_delay()
 	struct timeval start, end;
 	int ok = 0;
 
-	printf_debug("Setting up microsecond timing loop\n");
+	printf("Calibrating delay loop... ");
+
 	while (!ok) {
 		gettimeofday(&start, 0);
 		myusec_delay(count);
@@ -34,5 +35,6 @@ void myusec_calibrate_delay()
 	// compute one microsecond. That will be count / time
 	micro = count / timeusec;
 
-	printf_debug("%ldM loops per second\n", (unsigned long)micro);
+	printf_debug("%ldM loops per second. ", (unsigned long)micro);
+	printf("ok\n");
 }

@@ -45,7 +45,6 @@ struct flashchip {
 	int (*write) (struct flashchip *flash, uint8_t *buf);
 	int (*read) (struct flashchip *flash, uint8_t *buf);
 
-	int fd_mem;
 	volatile uint8_t *virt_addr_2;
 };
 
@@ -126,17 +125,17 @@ extern struct flashchip flashchips[];
 
 /* function prototypes from udelay.h */
 
-extern void myusec_delay(int time);
-extern void myusec_calibrate_delay();
+void myusec_delay(int time);
+void myusec_calibrate_delay();
 
 /* pci handling for board/chipset_enable */
-extern struct pci_access *pacc; /* For board and chipset_enable */
-extern struct pci_dev *pci_dev_find(uint16_t vendor, uint16_t device);
-extern struct pci_dev *pci_card_find(uint16_t vendor, uint16_t device,
-                                     uint16_t card_vendor, uint16_t card_device);
+struct pci_access *pacc; /* For board and chipset_enable */
+struct pci_dev *pci_dev_find(uint16_t vendor, uint16_t device);
+struct pci_dev *pci_card_find(uint16_t vendor, uint16_t device, 
+		uint16_t card_vendor, uint16_t card_device);
 
-extern int board_flash_enable(char *vendor, char *part); /* board_enable.c */
-extern int chipset_flash_enable(void); /* chipset_enable.c */
+int board_flash_enable(char *vendor, char *part); /* board_enable.c */
+int chipset_flash_enable(void); /* chipset_enable.c */
 
 /* physical memory mapping device */
 
@@ -145,5 +144,7 @@ extern int chipset_flash_enable(void); /* chipset_enable.c */
 #else
 #  define MEM_DEV "/dev/mem"
 #endif
+
+extern int fd_mem;
 
 #endif				/* !__FLASH_H__ */

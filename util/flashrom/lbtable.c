@@ -158,14 +158,8 @@ int linuxbios_init(void)
 	struct lb_header *lb_table;
 	struct lb_record *rec, *last;
 	
-	int fd;
-	fd = open(MEM_DEV, O_RDONLY);
-	if (fd < 0) {
-		fprintf(stderr, "Can not access memory using " MEM_DEV "\n");
-		exit(-1);
-	}
-	low_1MB = mmap(0, 1024*1024, PROT_READ, MAP_SHARED, fd, 0x00000000);
-	if (low_1MB == ((void *) -1)) {
+	low_1MB = mmap(0, 1024*1024, PROT_READ, MAP_SHARED, fd_mem, 0x00000000);
+	if (low_1MB == MAP_FAILED) {
 		fprintf(stderr, "Can not mmap " MEM_DEV " at %08lx errno(%d):%s\n",
 			0x00000000UL, errno, strerror(errno));
 		exit(-2);

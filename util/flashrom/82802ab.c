@@ -79,7 +79,7 @@ int probe_82802ab(struct flashchip *flash)
 		size_t size = flash->total_size * 1024;
 		// we need to mmap the write-protect space. 
 		bios = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
-			    flash->fd_mem, (off_t) (0 - 0x400000 - size));
+			    fd_mem, (off_t) (0 - 0x400000 - size));
 		if (bios == MAP_FAILED) {
 			// it's this part but we can't map it ...
 			perror("Error MMAP memory using " MEM_DEV );

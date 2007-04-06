@@ -4,7 +4,7 @@
  * Copyright 2000 Silicon Integrated System Corporation
  * Copyright 2004 Tyan Corp
  *	yhlu yhlu@tyan.com add exclude start and end option
- * Copyright 2005-2006 coresystems GmbH 
+ * Copyright 2005-2007 coresystems GmbH 
  *      Stefan Reinauer <stepan@coresystems.de> added rom layout
  *      support, and checking for suitable rom image, various fixes
  *      support for flashing the Technologic Systems 5300.
@@ -55,6 +55,8 @@ struct pci_access *pacc; /* For board and chipset_enable */
 int exclude_start_page, exclude_end_page;
 int force=0, verbose=0;
 
+int fd_mem;
+
 /*
  *
  */
@@ -101,66 +103,53 @@ pci_card_find(uint16_t vendor, uint16_t device,
 
 struct flashchip *probe_flash(struct flashchip *flash)
 {
-	int fd_mem;
 	volatile uint8_t *bios;
-	unsigned long size;
-
-	if ((fd_mem = open(MEM_DEV, O_RDWR)) < 0) {
-		perror("Error: Can not access memory using " MEM_DEV ". You need to be root.");
-		exit(1);
-	}
+	unsigned long flash_baseaddr, size;
 
 	while (flash->name != NULL) {
 		if (chip_to_probe && strcmp(flash->name, chip_to_probe) != 0) {
 			flash++;
 			continue;
 		}
-		printf_debug("Trying %s, %d KB\n", flash->name, flash->total_size);
+		printf_debug("Probing for %s, %d KB\n", 
+				flash->name, flash->total_size);
+
 		size = flash->total_size * 1024;
-		/* BUG? what happens if getpagesize() > size!?
-		   -> ``Error MMAP /dev/mem: Invalid argument'' NIKI */
+
+#ifdef TS5300
+		// FIXME: Wrong place for this decision
+		flash_baseaddr = 0x9400000;
+#else
+		flash_baseaddr = (0xffffffff - size + 1);
+#endif
+
+		/* If getpagesize() > size -> 
+		 * `Error MMAP /dev/mem: Invalid argument' 
+		 * This should never happen as we don't support any flash chips
+		 * smaller than 4k or 8k yet.
+		 */
+
 		if (getpagesize() > size) {
 			size = getpagesize();
-			printf("%s: warning: size: %d -> %ld\n",
-			       __FUNCTION__, flash->total_size * 1024,
-			       (unsigned long) size);
+			printf("WARNING: size: %d -> %ld (page size)\n",
+			       flash->total_size * 1024, (unsigned long) size);
 		}
 
 		bios = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
-			    fd_mem, (off_t) (0xffffffff - size + 1));
+			    fd_mem, (off_t)flash_baseaddr );
 		if (bios == MAP_FAILED) {
 			perror("Error: Can't mmap " MEM_DEV ".");
 			exit(1);
 		}
 		flash->virt_addr = bios;
-		flash->fd_mem = fd_mem;
 
 		if (flash->probe(flash) == 1) {
 			printf("%s found at physical address: 0x%lx\n",
-			       flash->name, (0xffffffff - size + 1));
+			       flash->name, flash_baseaddr);
 			return flash;
 		}
 		munmap((void *) bios, size);
-#ifdef TS5300
-		/* TS-5300 */
-		bios = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
-			    fd_mem, (off_t) (0x9400000));
-		if (bios == MAP_FAILED) {
-			perror("Error: Can't mmap " MEM_DEV ".");
-			exit(1);
-		}
-		flash->virt_addr = bios;
-		flash->fd_mem = fd_mem;
 
-		if (flash->probe(flash) == 1) {
-			printf("TS-5300 %s found at physical address: 0x%lx\n",
-			       flash->name, 0x9400000UL);
-			return flash;
-		}
-		munmap((void *) bios, size);
-		/* TS-5300 */
-#endif
-		
 		flash++;
 	}
 	return NULL;
@@ -351,9 +340,13 @@ int main(int argc, char *argv[])
 	pci_init(pacc);		/* Initialize the PCI library */
 	pci_scan_bus(pacc);	/* We want to get the list of devices */
 
-	printf("Calibrating delay loop... ");
+	/* Open the memory device. A lot of functions need it */
+	if ((fd_mem = open(MEM_DEV, O_RDWR)) < 0) {
+		perror("Error: Can not access memory using " MEM_DEV ". You need to be root.");
+		exit(1);
+	}
+
 	myusec_calibrate_delay();
-	printf("ok\n");
 
 	/* We look at the lbtable first to see if we need a
 	 * mainboard specific flash enable sequence.

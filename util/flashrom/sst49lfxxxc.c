@@ -151,7 +151,7 @@ int probe_49lfxxxc(struct flashchip *flash)
 		return 0;
 
 	bios = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
-		    flash->fd_mem, (off_t) (0xFFFFFFFF - 0x400000 - size + 1));
+		    fd_mem, (off_t) (0xFFFFFFFF - 0x400000 - size + 1));
 	if (bios == MAP_FAILED) {
 		// it's this part but we can't map it ...
 		perror("Error MMAP /dev/mem");

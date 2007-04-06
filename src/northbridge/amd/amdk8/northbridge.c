@@ -103,12 +103,6 @@ static unsigned int amdk8_nodeid(device_t dev)
 
 static unsigned int amdk8_scan_chain(device_t dev, unsigned nodeid, unsigned link, unsigned sblink, unsigned int max, unsigned offset_unitid)
 {
-#if 0
-	printk_debug("%s amdk8_scan_chains max: %d starting...\n", 
-		dev_path(dev), max);
-#endif
-//	I want to put sb chain in bus 0 can I?
-
 	 
 		uint32_t link_type;
 		int i;
@@ -212,10 +206,6 @@ static unsigned int amdk8_scan_chain(device_t dev, unsigned nodeid, unsigned lin
 			((dev->link[link].subordinate) << 24);
 		f1_write_config32(config_reg, config_busses);
 
-#if 0
-		printk_debug("%s Hyper transport scan link: %d max: %d\n", 
-			dev_path(dev), link, max);
-#endif
 		/* Now we can scan all of the subordinate busses i.e. the
 		 * chain on the hypertranport link 
 		 */
@@ -223,11 +213,6 @@ static unsigned int amdk8_scan_chain(device_t dev, unsigned nodeid, unsigned lin
 			ht_unitid_base[i] = 0x20;
 		}
 		max = hypertransport_scan_chain(&dev->link[link], 0, 0xbf, max, ht_unitid_base, offset_unitid);
-
-#if 0
-		printk_debug("%s Hyper transport scan link: %d new max: %d\n",
-			dev_path(dev), link, max);
-#endif		
 
 		/* We know the number of busses behind this bridge.  Set the
 		 * subordinate bus number to it's real value
@@ -254,11 +239,6 @@ static unsigned int amdk8_scan_chain(device_t dev, unsigned nodeid, unsigned lin
 
 		}
 
-#if 0
-		printk_debug("%s Hypertransport scan link: %d done\n",
-			dev_path(dev), link);
-#endif
-
 	return max;
 }
 
@@ -271,11 +251,6 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
         nodeid = amdk8_nodeid(dev);
 	
 
-#if 0
-        printk_debug("%s amdk8_scan_chains max: %d starting...\n",
-                dev_path(dev), max);
-#endif
-//      I want to put sb chain in bus 0 
 
         if(nodeid==0) {
                 sblink = (pci_read_config32(dev, 0x64)>>8) & 3;
@@ -301,10 +276,6 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 
 		max = amdk8_scan_chain(dev, nodeid, link, sblink, max, offset_unitid);
         }
-#if 0
-        printk_debug("%s amdk8_scan_chains max: %d done\n",
-                dev_path(dev), max);
-#endif
         return max;
 }
 
@@ -332,12 +303,7 @@ static int reg_useable(unsigned reg,
 			result = 1;
 		}
 	}
-#if 0
-	printk_debug("reg: %02x result: %d gnodeid: %u glink: %u nodeid: %u link: %u\n",
-		reg, result, 
-		goal_nodeid, goal_link, 
-		nodeid, link);
-#endif
+
 	return result;
 }
 
@@ -1258,7 +1224,7 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 		if (dev && dev->enabled) {
 			j = pci_read_config32(dev, 0xe8);
 			j = (j >> 12) & 3; // dev is func 3
-			printk_debug("  %s siblings=%d\r\n", dev_path(dev), j);
+			printk_debug("  %s siblings=%d\n", dev_path(dev), j);
 
 			if(nb_cfg_54) {
 				// For e0 single core if nb_cfg_54 is set, apicid will be 0, 2, 4.... 

@@ -21,7 +21,7 @@
  /* rl5c476 routines and defines*/
 
 
-typedef unsigned char u8;
+#include <stdint.h>
 
 
 /* the 16 bit control structure for ricoh cardbus bridge */

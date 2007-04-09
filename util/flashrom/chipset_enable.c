@@ -410,6 +410,7 @@ static FLASH_ENABLE enables[] = {
 	{0x1106, 0x8231, "VT8231", enable_flash_vt823x},
 	{0x1106, 0x3177, "VT8235", enable_flash_vt823x},
 	{0x1106, 0x3227, "VT8237", enable_flash_vt823x},
+	{0x1106, 0x8324, "CX700" , enable_flash_vt823x},
 	{0x1106, 0x0686, "VT82C686", enable_flash_amd8111},
 	{0x1078, 0x0100, "CS5530", enable_flash_cs5530},
 	{0x100b, 0x0510, "SC1100", enable_flash_sc1100},

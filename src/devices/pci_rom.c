@@ -62,10 +62,6 @@ struct rom_header * pci_rom_probe(struct device *dev)
 
 static void *pci_ram_image_start = (void *)PCI_RAM_IMAGE_START;
 
-#if CONFIG_CONSOLE_VGA == 1 && CONFIG_CONSOLE_VGA_MULTI == 0
-extern device_t vga_pri;	// the primary vga device, defined in device.c
-#endif
-
 struct rom_header *pci_rom_load(struct device *dev, struct rom_header *rom_header)
 {
 	struct pci_data * rom_data;
@@ -86,15 +82,14 @@ struct rom_header *pci_rom_load(struct device *dev, struct rom_header *rom_heade
 	rom_size = rom_header->size * 512;
 
 	if (PCI_CLASS_DISPLAY_VGA == rom_data->class_hi) {
-#if CONFIG_CONSOLE_VGA == 1
-	#if CONFIG_CONSOLE_VGA_MULTI == 0
+#if CONFIG_CONSOLE_VGA == 1 && CONFIG_CONSOLE_VGA_MULTI == 0
+		extern device_t vga_pri;	// the primary vga device, defined in device.c
 		if (dev != vga_pri) return NULL; // only one VGA supported
-	#endif
+#endif
 		printk_debug("copying VGA ROM Image from 0x%x to 0x%x, 0x%x bytes\n",
 			    rom_header, PCI_VGA_RAM_IMAGE_START, rom_size);
 		memcpy(PCI_VGA_RAM_IMAGE_START, rom_header, rom_size);
 		return (struct rom_header *) (PCI_VGA_RAM_IMAGE_START);
-#endif
 	} else {
 		printk_debug("copying non-VGA ROM Image from 0x%x to 0x%x, 0x%x bytes\n",
 			    rom_header, pci_ram_image_start, rom_size);

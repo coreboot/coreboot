@@ -65,9 +65,16 @@ int main(int argc, char *argv[])
 	if (fstat(payloadfd, &payloadbuf) < 0)
 		fatal("stat of infile");
 	if (payloadbuf.st_size > (romsize - size)){
-		fprintf(stderr, "payload (%d) + linuxbios (%d) size larger than ROM (%d) size!\n", payloadbuf.st_size, size, romsize);
+		fprintf(stderr, "ERROR: payload (%d) + linuxbios (%d) - Size is %d bytes larger than ROM size (%d).\n", 
+				payloadbuf.st_size, size, 
+				payloadbuf.st_size+size-romsize,
+				romsize);
 		exit(1);
 	}
+
+	printf("Payload: %d LinuxBIOS: %d ROM size: %d Left space: %d\n",
+			payloadbuf.st_size, size, romsize,
+			romsize-payloadbuf.st_size-size);
 
 	cp = malloc(romsize);
 	if (!cp)

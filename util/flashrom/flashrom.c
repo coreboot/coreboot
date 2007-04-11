@@ -1,5 +1,5 @@
 /*
- * flash_rom.c: Flash programming utility
+ * flashrom.c: Flash programming utility
  *
  * Copyright 2000 Silicon Integrated System Corporation
  * Copyright 2004 Tyan Corp

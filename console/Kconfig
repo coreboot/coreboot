@@ -138,8 +138,9 @@ config CONSOLE_USB
 	  Debug Port capability. Controllers which are known to work:
 
 	    * 10b9:5239 ALi Corporation USB 2.0 (USB PCI card)
-	    * 10de:0088 nVidia MCP2A
-	    * 10de:036d nVidia MCP55
+	    * 10de:0088 NVIDIA MCP2A
+	    * 10de:005b NVIDIA CK804
+	    * 10de:036d NVIDIA MCP55
 	    * 8086:24dd Intel ICH5
 	    * 8086:265c Intel ICH6
 	    * 8086:268c Intel 631xESB/632xESB/3100

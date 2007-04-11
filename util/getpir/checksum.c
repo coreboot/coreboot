@@ -1,5 +1,4 @@
-#include <arch/pirq_routing.h>
-
+#include "pirq_routing.h"
 #include "checksum.h"
 
 int calc_checksum(struct irq_routing_table *rt)

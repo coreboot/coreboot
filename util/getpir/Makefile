@@ -1,33 +1,25 @@
-# change to the path of your linuxbios tree
-#LINUXBIOSROOT=/home/rminnich/src//freebios/
-LINUXBIOSROOT=../..
+#
+#
+#
 
-INCLUDEPATH=$(LINUXBIOSROOT)/src/arch/i386/include
-INCLUDE2=$(LINUXBIOSROOT)/src/include
-
-getpir: getpir.c checksum.o code_gen.o
-	gcc -o getpir -I$(INCLUDEPATH) -I$(INCLUDE2) getpir.c checksum.o code_gen.o
-
-code_gen.o: code_gen.c
-	gcc -c -I$(INCLUDEPATH) -I$(INCLUDE2) code_gen.c
+CC=gcc
+CFLAGS=-O2 -D_GNU_SOURCE -DGETPIR -Wall
 
 all: getpir checkpir
+	./checkpir
+
+getpir: getpir.o checksum.o code_gen.o
+	$(CC) $(CFLAGS) -o getpir $^
 
 checkpir: checkpir.c checksum.o irq_tables.o
-	gcc -o checkpir -I$(INCLUDEPATH) -I$(INCLUDE2) irq_tables.o checksum.o checkpir.c
+	$(CC) $(CFLAGS) -o checkpir $^
 
-checksum.o: checksum.c
-	gcc -c -I$(INCLUDEPATH) -I$(INCLUDE2) checksum.c 
-
-irq_tables.o: irq_tables.c  
-	gcc -c -I$(INCLUDEPATH) -I$(INCLUDE2) irq_tables.c
+irq_tables.c: getpir
+	./getpir
 
 clean:
 	rm -f getpir checkpir *.o *~
 
-cleantable:
-	rm -f irq_table.o
+distclean: clean
+	rm -f irq_tables.o irq_tables.c
 
-test:   checkpir
-	./checkpir ;\
-	exit 0;

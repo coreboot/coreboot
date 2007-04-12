@@ -96,6 +96,10 @@ uses SB_HT_CHAIN_UNITID_OFFSET_ONLY
 #bx_b005+
 uses SB_HT_CHAIN_ON_BUS0
 
+# stepan 2007-04-12
+uses CONFIG_COMPRESSED_PAYLOAD_LZMA
+uses CONFIG_COMPRESSED_PAYLOAD_NRV2B
+
 ## ROM_SIZE is the size of boot ROM that this board will use.
 #512K bytes
 default ROM_SIZE=524288

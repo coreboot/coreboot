@@ -7,7 +7,6 @@ mainboard technologic/ts5300
 option DEFAULT_CONSOLE_LOGLEVEL=3
 option MAXIMUM_CONSOLE_LOGLEVEL=3
 option CONFIG_COMPRESS=1
-option CONFIG_CONSOLE_VGA=0
 
 #romimage "normal"
 #	option USE_FALLBACK_IMAGE=0

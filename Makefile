@@ -109,7 +109,7 @@ include util/Makefile
 doc:
 	$(Q)$(LYX) -e pdf doc/design/newboot.lyx
 
-doxy:
+doxy: doxygen
 doxygen:
 	$(Q)$(DOXYGEN) util/doxygen/Doxyfile.LinuxBIOS
 

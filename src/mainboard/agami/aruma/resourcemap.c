@@ -257,6 +257,12 @@ static void setup_aruma_resource_map(void)
         PCI_ADDR(0, 0x18, 1, 0xE4), 0x0000FC88, 0x0b050213, // CPU1 LDT2
         PCI_ADDR(0, 0x18, 1, 0xE8), 0x0000FC88, 0x100c0223, // CPU2 LDT2
         PCI_ADDR(0, 0x18, 1, 0xEC), 0x0000FC88, 0x15110133, // CPU3 LTD1
+
+	/* setup power management registers */
+	PCI_ADDR(0, 0x18, 3, 0x80), 0x80808080, 0x23070000, // PM control low
+	PCI_ADDR(0, 0x18, 3, 0x84), 0x80808080, 0x00132113, // PM control high
+	PCI_ADDR(0, 0x18, 3, 0xD8), 0x8E000000, 0x20002710, // Clock PM high
+
 	};
 	int max;
 	max = sizeof(register_values)/sizeof(register_values[0]);

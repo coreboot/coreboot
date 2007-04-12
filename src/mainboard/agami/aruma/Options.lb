@@ -54,10 +54,18 @@ uses CONFIG_CONSOLE_VGA
 uses CONFIG_PCI_ROM_RUN
 uses CONFIG_CHIP_NAME
 
+uses HT_CHAIN_UNITID_BASE
+uses HT_CHAIN_END_UNITID_BASE
+uses SB_HT_CHAIN_ON_BUS0
+uses SB_HT_CHAIN_UNITID_OFFSET_ONLY
+
 uses USE_DCACHE_RAM
 uses DCACHE_RAM_BASE
 uses DCACHE_RAM_SIZE
 uses CONFIG_USE_INIT
+
+uses CONFIG_USE_PRINTK_IN_CAR
+
 
 uses SERIAL_CPU_INIT
 
@@ -133,6 +141,18 @@ default ENABLE_APIC_EXT_ID=1
 default APIC_ID_OFFSET=0x10
 default LIFT_BSP_APIC_ID=0
 
+#HT Unit ID offset
+#default HT_CHAIN_UNITID_BASE=0xa
+
+#real SB Unit ID
+#default HT_CHAIN_END_UNITID_BASE=0x6
+
+#make the SB HT chain on bus 0
+#default SB_HT_CHAIN_ON_BUS0=1
+
+#allow capable device use that above 4G
+#default CONFIG_PCI_64BIT_PREF_MEM=1
+
 ##
 ## enable CACHE_AS_RAM specifics
 ##
@@ -140,6 +160,8 @@ default USE_DCACHE_RAM=1
 default DCACHE_RAM_BASE=0xcc000
 default DCACHE_RAM_SIZE=0x4000
 default CONFIG_USE_INIT=0
+#default CONFIG_USE_INIT=1
+#default CONFIG_USE_PRINTK_IN_CAR=1
 
 ##
 ## Build code to setup a generic IOAPIC
@@ -248,6 +270,8 @@ default MAINBOARD_POWER_ON_AFTER_POWER_FAIL="MAINBOARD_POWER_ON"
 #VGA
 default CONFIG_CONSOLE_VGA=1
 default CONFIG_PCI_ROM_RUN=1
+#default CONFIG_CONSOLE_VGA=0
+#default CONFIG_PCI_ROM_RUN=0
 
 ### End Options.lb
 end

@@ -43,57 +43,62 @@ if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
 
 #needed by irq_tables and mptable and acpi_tables
-object get_bus_conf.o
+#object get_bus_conf.o
 
 if HAVE_ACPI_TABLES
- 	object acpi_tables.o
+ 	object acpi_tables_static.o
 	object fadt.o
-	
-	makerule dsdt.c
-		depends "$(MAINBOARD)/dx/dsdt_lb.dsl"
-		action  "iasl -tc $(MAINBOARD)/dx/dsdt_lb.dsl"
-		action  "mv dsdt_lb.hex dsdt.c"
-	end
-	object ./dsdt.o
 
-	makerule ssdt.c
-		depends "$(MAINBOARD)/ssdt_lb_x.dsl"
-		action  "iasl -tc $(MAINBOARD)/ssdt_lb_x.dsl"
-		action  "perl -pi -e 's/AmlCode/AmlCode_ssdt/g' ssdt_lb_x.hex"
-		action  "mv ssdt_lb_x.hex ssdt.c"
-	end
-	object ./ssdt.o
-	
-	if ACPI_SSDTX_NUM
-		makerule ssdt2.c
-			depends "$(MAINBOARD)/dx/pci2.asl"
-			action  "iasl -tc $(MAINBOARD)/dx/pci2.asl"
-			action  "perl -pi -e 's/AmlCode/AmlCode_ssdt2/g' pci2.hex"
-			action  "mv pci2.hex ssdt2.c"
-		end
-		object ./ssdt2.o
-		makerule ssdt3.c
-			depends "$(MAINBOARD)/dx/pci3.asl"
-			action  "iasl -tc $(MAINBOARD)/dx/pci3.asl"
-			action  "perl -pi -e 's/AmlCode/AmlCode_ssdt3/g' pci3.hex"
-			action  "mv pci3.hex ssdt3.c"
-		end
-		object ./ssdt3.o
-		makerule ssdt4.c
-			depends "$(MAINBOARD)/dx/pci4.asl"
-			action  "iasl -tc $(MAINBOARD)/dx/pci4.asl"
-			action  "perl -pi -e 's/AmlCode/AmlCode_ssdt4/g' pci4.hex"
-			action  "mv pci4.hex ssdt4.c"
-		end
-		object ./ssdt4.o
+	object dsdt.o
 
-	end
+#	makerule dsdt.c
+#		depends "$(MAINBOARD)/dx/dsdt_lb.dsl"
+#		action  "iasl -tc $(MAINBOARD)/dx/dsdt_lb.dsl"
+#		action  "mv dsdt_lb.hex dsdt.c"
+#	end
+#	object ./dsdt.o
+#
+#	makerule ssdt.c
+#		depends "$(MAINBOARD)/ssdt_lb_x.dsl"
+#		action  "iasl -tc $(MAINBOARD)/ssdt_lb_x.dsl"
+#		action  "perl -pi -e 's/AmlCode/AmlCode_ssdt/g' ssdt_lb_x.hex"
+#		action  "mv ssdt_lb_x.hex ssdt.c"
+#	end
+#	object ./ssdt.o
+#	
+#	if ACPI_SSDTX_NUM
+#		makerule ssdt2.c
+#			depends "$(MAINBOARD)/dx/pci2.asl"
+#			action  "iasl -tc $(MAINBOARD)/dx/pci2.asl"
+#			action  "perl -pi -e 's/AmlCode/AmlCode_ssdt2/g' pci2.hex"
+#			action  "mv pci2.hex ssdt2.c"
+#		end
+#		object ./ssdt2.o
+#		makerule ssdt3.c
+#			depends "$(MAINBOARD)/dx/pci3.asl"
+#			action  "iasl -tc $(MAINBOARD)/dx/pci3.asl"
+#			action  "perl -pi -e 's/AmlCode/AmlCode_ssdt3/g' pci3.hex"
+#			action  "mv pci3.hex ssdt3.c"
+#		end
+#		object ./ssdt3.o
+#		makerule ssdt4.c
+#			depends "$(MAINBOARD)/dx/pci4.asl"
+#			action  "iasl -tc $(MAINBOARD)/dx/pci4.asl"
+#			action  "perl -pi -e 's/AmlCode/AmlCode_ssdt4/g' pci4.hex"
+#			action  "mv pci4.hex ssdt4.c"
+#		end
+#		object ./ssdt4.o
+#
+#	end
 end
 
 
 
 #object reset.o
 
+# FIXME: This should be solved generically.
+#object vgabios.o
+#driver atiragexl.o
 
 if USE_DCACHE_RAM
 

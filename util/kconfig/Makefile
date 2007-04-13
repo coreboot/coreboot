@@ -15,6 +15,10 @@
 # Kernel configuration targets
 # These targets are used from top-level makefile
 
+CONFIG_SHELL := sh
+check-lxdialog  := $(src)/util/kconfig/lxdialog/check-lxdialog.sh
+CURSESLIBS := $(shell $(CONFIG_SHELL) $(check-lxdialog) -ldflags $(HOSTCC))
+
 .PHONY: oldconfig xconfig gconfig menuconfig config silentoldconfig update-po-config
 
 xconfig: $(obj)/util/kconfig/.tmp_qtcheck $(obj)/util/kconfig/qconf
@@ -98,11 +102,11 @@ gconf-objects := gconf.o kconfig_load.o zconf.tab.o
 
 $(obj)/util/kconfig/mconf: $(patsubst %,$(obj)/util/kconfig/%,$(mconf-objects))
 	$(Q)printf "  HOSTCC  $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(HOSTCC) -lncurses -o $@ $^
+	$(Q)$(HOSTCC) $(CURSESLIBS) -o $@ $^
 
 $(obj)/util/kconfig/conf: $(patsubst %,$(obj)/util/kconfig/%,$(conf-objects))
 	$(Q)printf "  HOSTCC  $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(HOSTCC) -lncurses -o $@ $^
+	$(Q)$(HOSTCC) $(CURSESLIBS) -o $@ $^
 
 $(obj)/util/kconfig/qconf: $(patsubst %,$(obj)/util/kconfig/%,$(qconf-objects))
 	$(Q)printf "  HOSTCXX $(subst $(shell pwd)/,,$(@))\n"

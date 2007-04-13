@@ -4,17 +4,17 @@
 # What library to link
 ldflags()
 {
-	$cc -print-file-name=libncursesw.so | grep -q /
+	$cc -print-file-name=libncursesw.so | grep / >/dev/null
 	if [ $? -eq 0 ]; then
 		echo '-lncursesw'
 		exit
 	fi
-	$cc -print-file-name=libncurses.so | grep -q /
+	$cc -print-file-name=libncurses.so | grep / >/dev/null
 	if [ $? -eq 0 ]; then
 		echo '-lncurses'
 		exit
 	fi
-	$cc -print-file-name=libcurses.so | grep -q /
+	$cc -print-file-name=libcurses.so | grep / >/dev/null
 	if [ $? -eq 0 ]; then
 		echo '-lcurses'
 		exit
@@ -60,7 +60,7 @@ usage() {
 	printf "Usage: $0 [-check compiler options|-header|-library]\n"
 }
 
-if [ $# == 0 ]; then
+if [ $# -eq 0 ]; then
 	usage
 	exit 1
 fi

@@ -627,7 +627,7 @@ int elfboot(struct lb_memory *mem)
 	for(i = 0; i < ELF_HEAD_SIZE - (sizeof(Elf_ehdr) + sizeof(Elf_phdr)); i+=16) {
 		ehdr = (Elf_ehdr *)(&header[i]);
 		if (memcmp(ehdr->e_ident, ELFMAG, 4) != 0) {
-			printk_spew("NO header at %d\n", i);
+			printk_debug("No header at %d\n", i);
 			continue;
 		}
 		printk_debug("Found ELF candidate at offset %d\n", i);
@@ -646,12 +646,12 @@ int elfboot(struct lb_memory *mem)
 		}
 		ehdr = 0;
 	}
-	printk_spew("header_offset is %d\n", header_offset);
+	printk_debug("header_offset is %d\n", header_offset);
 	if (header_offset == -1) {
 		goto out;
 	}
 
-	printk_spew("Try to load at offset 0x%x\n", header_offset);
+	printk_debug("Try to load at offset 0x%x\n", header_offset);
 	result = elfload(mem, 
 		header + header_offset , ELF_HEAD_SIZE - header_offset);
  out:
@@ -659,7 +659,7 @@ int elfboot(struct lb_memory *mem)
 		/* Shutdown the stream device */
 		stream_fini();
 
-		printk_err("Cannot Load ELF Image\n");
+		printk_err("Can not load ELF Image.\n");
 
 		post_code(0xff);
 	}

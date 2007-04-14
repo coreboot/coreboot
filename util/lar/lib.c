@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <unistd.h>
 #include <dirent.h>
 #include <sys/stat.h>
@@ -32,7 +33,7 @@
 
 static struct file *files = NULL;
 
-int mkdirp(const char *dirpath)
+int mkdirp(const char *dirpath, mode_t mode)
 {
 	char *pos, *currpath, *path;
 	char cwd[MAX_PATH];
@@ -58,7 +59,7 @@ int mkdirp(const char *dirpath)
 			*pos = 0;
 
 		/* printf("cp=%s\n", currpath); */
-		mkdir(currpath, 0755);
+		mkdir(currpath, mode);
 		ret = chdir(currpath);
 
 		if (pos)

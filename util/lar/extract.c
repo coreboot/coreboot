@@ -106,7 +106,7 @@ int extract_lar(const char *archivename, struct file *files)
 		if (pos) {
 			pos[1] = 0;
 			/* printf("Pathname %s\n",pathname); */
-			mkdirp(pathname);
+			mkdirp(pathname,0755);
 		}
 		free(pathname);
 

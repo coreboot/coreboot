@@ -41,7 +41,7 @@ long get_larsize(void);
 char *get_bootblock(void);
 
 /* prototypes for lib.c functions */
-int mkdirp(const char *dirpath);
+int mkdirp(const char *dirpath, mode_t mode);
 
 int add_files(const char *name);
 int add_file_or_directory(const char *name);

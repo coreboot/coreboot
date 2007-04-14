@@ -303,7 +303,8 @@ int main(int argc, char *argv[])
 			break;
 		case 'l':
 			tempstr=strdup(optarg);
-			read_romlayout(tempstr);
+			if (read_romlayout(tempstr))
+				exit(1);
 			break;
 		case 'i':
 			tempstr=strdup(optarg);

@@ -106,7 +106,8 @@ int read_romlayout(char *name)
 	romlayout=fopen (name, "r");
 	
 	if(!romlayout) {
-		printf("Error while opening rom layout (%s).\n", name);
+		fprintf(stderr, "ERROR: Could not open rom layout (%s).\n", 
+				name);
 		return -1;
 	}
 	

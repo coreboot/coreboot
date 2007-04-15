@@ -48,7 +48,7 @@
  *  - http://en.wikipedia.org/wiki/Pc_speaker
  *  - http://en.wikipedia.org/wiki/Intel_8253
  *
- * @param The frequency of the tone.
+ * @param freq The frequency of the tone.
  */
 void speaker_enable(u16 freq)
 {
@@ -80,8 +80,8 @@ void speaker_disable(void)
  * Wait for a short amount of time after the beep to make it distinguishable
  * from the next beep (if any).
  *
- * @param The frequency of the tone/beep.
- * @param The duration of the tone/beep in milliseconds.
+ * @param freq The frequency of the tone/beep.
+ * @param duration The duration of the tone/beep in milliseconds.
  */
 void speaker_tone(u16 freq, unsigned int duration)
 {

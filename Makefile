@@ -46,8 +46,11 @@ HOSTCXX    := g++
 HOSTCFLAGS := -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer \
 	      -Wno-unused -Wno-sign-compare -Wno-pointer-sign
 
-LYX := lyx
-DOXYGEN := doxygen
+LEX        := flex
+
+LYX        := lyx
+DOXYGEN    := doxygen
+
 DOXYGEN_OUTPUT_DIR := doxygen
 
 # make is silent per default. make V=1 will show all compiler calls.
@@ -85,10 +88,15 @@ LINUXBIOSINCLUDE    :=  -I$(src) -Iinclude \
 
 ifneq ($(strip $(have_dotxcompile)),)
 	include $(src)/.xcompile
-	CC := $(CC_$(ARCH))
-	AS := $(AS_$(ARCH))
-	LD := $(LD_$(ARCH))
+else
+	include $(shell $(src)/util/xcompile/xcompile > $(src)/.xcompile || \
+		{ echo "complete\\ toolchain" && rm -f $(src)/.xcompile && exit 1; }; echo $(src)/.xcompile)
 endif
+
+CC := $(CC_$(ARCH))
+AS := $(AS_$(ARCH))
+LD := $(LD_$(ARCH))
+OBJCOPY := $(OBJCOPY_$(ARCH))
 
 CPPFLAGS := $(LINUXBIOSINCLUDE)
 CFLAGS += $(LINUXBIOSINCLUDE)
@@ -128,9 +136,9 @@ prepare2:
 	$(Q)printf "#define LINUXBIOS_ASSEMBLER \"$(shell LANG= $(AS) --version | head -n1)\"\n" >> $(obj)/build.h
 	$(Q)printf "#define LINUXBIOS_LINKER \"$(shell LANG= $(LD) --version | head -n1)\"\n" >> $(obj)/build.h
 	$(Q)printf "#define LINUXBIOS_COMPILE_TIME \"`LANG= date +%T`\"\n" >> $(obj)/build.h
-	$(Q)printf "#define LINUXBIOS_COMPILE_BY \"$(shell whoami)\"\n" >> $(obj)/build.h
+	$(Q)printf "#define LINUXBIOS_COMPILE_BY \"$(shell PATH=$$PATH:/usr/ucb whoami)\"\n" >> $(obj)/build.h
 	$(Q)printf "#define LINUXBIOS_COMPILE_HOST \"$(shell hostname)\"\n" >> $(obj)/build.h
-	$(Q)printf "#define LINUXBIOS_COMPILE_DOMAIN \"$(shell dnsdomainname)\"\n" >> $(obj)/build.h
+	$(Q)printf "#define LINUXBIOS_COMPILE_DOMAIN \"$(shell which dnsdomainname 1>/dev/null && dnsdomainname || domainname)\"\n" >> $(obj)/build.h
 
 
 clean:

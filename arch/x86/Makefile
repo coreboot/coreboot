@@ -90,7 +90,7 @@ $(obj)/stage0.init: $(STAGE0_OBJ)
 		$(STAGE0_OBJ) -o $(obj)/stage0.o
 
 	$(Q)printf "  OBJCOPY $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)objcopy -O binary $(obj)/stage0.o $(obj)/stage0.init
+	$(Q)$(OBJCOPY) -O binary $(obj)/stage0.o $(obj)/stage0.init
 
 	$(Q)printf "  TEST    $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)test `wc -c < $(obj)/stage0.init` -gt 16128 && \
@@ -122,7 +122,9 @@ STAGE2_OBJ := $(patsubst %,$(obj)/lib/%,$(STAGE2_LIB_OBJ)) \
 STAGE2_OBJ += $(STAGE2_CHIPSET_OBJ)
 
 # x86emu wants libgcc
+ifneq ($(strip $(CC)),)
 LIBGCC_FILE_NAME := $(shell $(CC) -print-libgcc-file-name)
+endif
 STAGE2_OBJ += $(obj)/util/x86emu/libx86emu.a $(LIBGCC_FILE_NAME)
 
 $(obj)/linuxbios.stage2: $(obj)/stage0.init $(STAGE2_OBJ)
@@ -131,7 +133,7 @@ $(obj)/linuxbios.stage2: $(obj)/stage0.init $(STAGE2_OBJ)
 	$(Q)$(LD) -R $(obj)/stage0.o -Ttext 0x1000 --entry=stage2 \
 		  -o $(obj)/linuxbios.stage2.o $(STAGE2_OBJ) 
 	$(Q)printf "  OBJCOPY $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)objcopy -O binary $(obj)/linuxbios.stage2.o $(obj)/linuxbios.stage2
+	$(Q)$(OBJCOPY) -O binary $(obj)/linuxbios.stage2.o $(obj)/linuxbios.stage2
 
 
 #

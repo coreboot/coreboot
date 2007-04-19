@@ -25,22 +25,42 @@ ARCH=`uname -m | sed -e s/i.86/x86/ -e s/sun4u/sparc64/ \
 			-e s/s390x/s390/ -e s/parisc64/parisc/ \
 			-e s/ppc.*/powerpc/ -e s/mips.*/mips/`
 
+function searchgnu()
+{
+	# $1 short name
+	# result: GNU version of that tool on stdout
+	#         or no output if no GNU version was found
+	for i in "$1" "g$1" "gnu$1"; do
+	        if test -x "`which $i 2>/dev/null`"; then
+			if test `$i --version 2>/dev/null |grep -c GNU` -gt 0; then
+				echo $i
+				return
+			fi
+	        fi
+	done
+	echo "ERROR: Missing toolchain: $1" > &3
+	exit 1
+}
+
 case  "$ARCH" in
 "x86_64")
 	echo "CC_x86 := gcc -m32"
-	echo "AS_x86 := as --32"
-	echo "LD_x86 := ld -b elf32-i386 -melf_i386"
+	searchgnu as >/dev/null && echo "AS_x86 := $(searchgnu as) --32"
+	searchgnu ld >/dev/null && echo "LD_x86 := $(searchgnu ld) -b elf32-i386 -melf_i386"
+	searchgnu objcopy >/dev/null && echo "OBJCOPY_x86 := $(searchgnu objcopy)"
 	;;
 "x86")
 	echo "CC_x86 := gcc"
-	echo "AS_x86 := as"
-	echo "LD_x86 := ld"
+	searchgnu as >/dev/null && echo "AS_x86 := $(searchgnu as)"
+	searchgnu ld >/dev/null && echo "LD_x86 := $(searchgnu ld)"
+	searchgnu objcopy >/dev/null && echo "OBJCOPY_x86 := $(searchgnu objcopy)"
 	;;
 *)
 	# FIXME: This should be detected.
 	echo "CC_x86 := i386-linux-gcc"
 	echo "AS_x86 := i386-linux-as"
 	echo "LD_x86 := i386-linux-ld"
+	echo "OBJCOPY_x86 := i386-linux-objcopy"
 	;;
 esac
 

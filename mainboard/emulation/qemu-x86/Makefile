@@ -43,7 +43,7 @@ $(obj)/linuxbios.initram: $(obj)/stage0.init $(obj)/stage0.o $(obj)/mainboard/$(
 		$(obj)/mainboard/$(MAINBOARDDIR)/initram.o \
 		--entry=main -o $(obj)/linuxbios.initram.o
 	$(Q)printf "  OBJCOPY $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)objcopy -O binary $(obj)/linuxbios.initram.o \
+	$(Q)$(OBJCOPY) -O binary $(obj)/linuxbios.initram.o \
 		$(obj)/linuxbios.initram
 
 #

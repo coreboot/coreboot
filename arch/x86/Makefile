@@ -82,6 +82,9 @@ $(obj)/stage0.init: $(STAGE0_OBJ)
 	$(Q)# 0x4000 - 0x100, we will end up with a 4 gig file. 
 	$(Q)# I wonder if that behavior is on purpose.
 
+	# Note: we invoke gcc (instead of ld directly) here, as we hit
+	# strange problems in the past. It seems that only gcc knows how to
+	# properly invoke ld.
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) -nostdlib -static -T $(src)/arch/x86/ldscript.ld \
 		$(STAGE0_OBJ) -o $(obj)/stage0.o

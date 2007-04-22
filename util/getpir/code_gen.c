@@ -9,7 +9,7 @@ static char *preamble[] = {
 	" * Contains the IRQ Routing Table dumped directly from your\n",
 	" * memory, which BIOS sets up.\n",
 	" *\n",
-	" * Documentation at: http://www.microsoft.com/hwdev/busbios/PCIIRQ.HTM\n */\n\n",
+	" * Documentation at: http://www.microsoft.com/whdc/archive/pciirq.mspx\n */\n\n",
 	"#ifdef GETPIR\n",
 	"#include \"pirq_routing.h\"\n",
 	"#else\n"

@@ -1,12 +1,25 @@
 /*
+ * This file is part of the LinuxBIOS project.
+ *
+ * It was originally based on the Linux kernel (drivers/pci/pci.c).
+ *
+ * Modifications are:
+ * Copyright (C) 2003-2004 Linux Networx
+ * (Written by Eric Biederman <ebiederman@lnxi.com> for Linux Networx)
+ * Copyright (C) 2003-2006 Ronald G. Minnich <rminnich@gmail.com>
+ * Copyright (C) 2004-2005 Li-Ta Lo <ollie@lanl.gov>
+ * Copyright (C) 2005-2006 Tyan
+ * (Written by Yinghai Lu <yhlu@tyan.com> for Tyan)
+ * Copyright (C) 2005-2007 Stefan Reinauer <stepan@openbios.org>
+ */
+
+/*
  *      PCI Bus Services, see include/linux/pci.h for further explanation.
  *
  *      Copyright 1993 -- 1997 Drew Eckhardt, Frederic Potter,
  *      David Mosberger-Tang
  *
  *      Copyright 1997 -- 1999 Martin Mares <mj@atrey.karlin.mff.cuni.cz>
- *	
- *	Copyright 2003 -- Eric Biederman <ebiederman@lnxi.com>
  */
 
 #include <console/console.h>

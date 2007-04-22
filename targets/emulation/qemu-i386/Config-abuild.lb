@@ -15,7 +15,7 @@ option IRQ_SLOT_COUNT=6
 romimage "image" 
 	option ROM_IMAGE_SIZE=0x10000
 	option LINUXBIOS_EXTRA_VERSION="-OpenBIOS"
-	payload PAYLOAD
+	payload __PAYLOAD__
 end
 
 buildrom ./qemu-bios.rom ROM_SIZE "image"

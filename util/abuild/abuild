@@ -144,14 +144,14 @@ romimage "normal"
 	option USE_FALLBACK_IMAGE=0
 	option ROM_IMAGE_SIZE=0x17000
 	option LINUXBIOS_EXTRA_VERSION=".0-normal"
-	payload PAYLOAD
+	payload __PAYLOAD__
 end
 
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
 	option ROM_IMAGE_SIZE=0x17000
 	option LINUXBIOS_EXTRA_VERSION=".0-fallback"
-	payload PAYLOAD
+	payload __PAYLOAD__
 end
 buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
 EOF
@@ -159,7 +159,7 @@ EOF
 			cat <<EOF
 romimage "only"
 	option LINUXBIOS_EXTRA_VERSION=".0"
-	payload PAYLOAD
+	payload __PAYLOAD__
 end
 buildrom ./linuxbios.rom ROM_SIZE "only"
 EOF
@@ -175,7 +175,7 @@ EOF
 
 	sed -i.pre -e s,VENDOR,$VENDOR,g \
 		-e s,MAINBOARD,$MAINBOARD,g \
-		-e s,payload\ PAYLOAD,payload\ $PAYLOAD,g \
+		-e s,payload\ __PAYLOAD__,payload\ $PAYLOAD,g \
 		-e s,CROSSCC,"$CC",g \
 		-e s,CROSS_PREFIX,"$CROSS_COMPILE",g \
 		-e s,CROSS_HOSTCC,"$HOSTCC",g \

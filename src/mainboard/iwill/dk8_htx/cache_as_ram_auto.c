@@ -54,11 +54,12 @@
 
 #if CONFIG_USE_INIT == 0
 	#include "lib/memcpy.c"
- #if CONFIG_USE_PRINTK_IN_CAR == 1
-	#include "lib/uart8250.c"
-	#include "console/vtxprintf.c"
-	#include "arch/i386/lib/printk_init.c"
- #endif
+ // TODO: This doesn't compile at the moment. Fix later.
+ // #if CONFIG_USE_PRINTK_IN_CAR == 1
+ //        #include "lib/uart8250.c"
+ //        #include "console/vtxprintf.c"
+ //        #include "arch/i386/lib/printk_init.c"
+ // #endif
 #endif
 #include "northbridge/amd/amdk8/debug.c"
 #include "cpu/amd/mtrr/amd_earlymtrr.c"

@@ -78,9 +78,6 @@
 
 #define DEFAULT 0x00010101	/* default row entry */
 
-typedef uint8_t u8;
-typedef uint32_t u32;
-
 #ifndef CROSS_BAR_47_56
 	#define CROSS_BAR_47_56 0
 #endif

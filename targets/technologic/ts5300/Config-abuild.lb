@@ -15,7 +15,7 @@ romimage "fallback"
 #	option ROM_IMAGE_SIZE=32 * 1024 # 0x8000
 	option ROM_IMAGE_SIZE=128 * 1024 # 0x10000
 	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
-	payload PAYLOAD
+	payload __PAYLOAD__
 end
 
 buildrom ./linuxbios.rom ROM_SIZE  "fallback"

@@ -60,6 +60,23 @@ $(obj)/mainboard/$(MAINBOARDDIR)/statictree.c: $(src)/mainboard/$(MAINBOARDDIR)/
 	$(Q)printf "  DTC     $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(obj)/util/dtc/dtc -O lb mainboard/$(MAINBOARDDIR)/dts > $@
 
-STAGE2_MAINBOARD_OBJ = mainboard.o vga.o
+$(obj)/mainboard/$(MAINBOARDDIR)/option_table.c: $(obj)/util/options/build_opt_tbl $(src)/mainboard/$(MAINBOARDDIR)/cmos.layout
+	$(Q)printf "  OPTIONS $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)
+	$(Q)$(obj)/util/options/build_opt_tbl -b \
+		--config $(src)/mainboard/$(MAINBOARDDIR)/cmos.layout \
+		--option $(obj)/mainboard/$(MAINBOARDDIR)/option_table.c 
+
+$(obj)/option_table: $(obj)/mainboard/$(MAINBOARDDIR)/option_table.o
+	$(Q)printf "  OBJCOPY $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(OBJCOPY) -O binary $< $@ 
+
+STAGE2_MAINBOARD_OBJ = mainboard.o vga.o 
+
 STAGE2_CHIPSET_OBJ = 
+
+$(obj)/mainboard/$(MAINBOARDDIR)/%.o: $(src)/nboard/$(MAINBOARDDIR)/%.c
+	$(Q)mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)
+	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
 

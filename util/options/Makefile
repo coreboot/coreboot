@@ -18,16 +18,16 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-# This stuff is always needed.
-include util/dtc/Makefile
-include util/kconfig/Makefile
-include util/lar/Makefile
-include util/options/Makefile
+OPTIONS_OBJ := $(obj)/util/options/build_opt_tbl.o
 
-# Parts used by LinuxBIOS.
-include util/x86emu/Makefile
+$(obj)/util/options/build_opt_tbl: optionsdir $(OPTIONS_OBJ)
+	$(Q)printf "  HOSTCC  $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(HOSTCC) $(HOSTCFLAGS) -o $@ $(OPTIONS_OBJ)
 
-# Compressors.
-include util/lzma/Makefile
-include util/nrv2b/Makefile
+optionsdir:
+	$(Q)mkdir -p $(obj)/util/options/
+
+$(obj)/util/options/%.o: $(src)/util/options/%.c
+	$(Q)printf "  HOSTCC  $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(HOSTCC) $(HOSTCFLAGS) -I$(src)/util/options -o $@ -c $<
 

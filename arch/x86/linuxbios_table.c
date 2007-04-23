@@ -2,6 +2,7 @@
  * table management code for Linux BIOS tables
  *
  * Copyright (C) 2002 Eric Biederman, Linux NetworX
+ * Copyright (C) 2007 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,15 +22,13 @@
 #include <console/console.h>
 #include <ip_checksum.h>
 #include <string.h>
+#include <device/device.h>
+#include <tables.h>
+#include <mc146818rtc.h>
 //#include <cpu/cpu.h>
-//#include <boot/tables.h>
-//#include <boot/linuxbios_tables.h>
 //#include <arch/pirq_routing.h>
 //#include <arch/smp/mpspec.h>
 //#include <arch/acpi.h>
-#include <device/device.h>
-#include <tables.h>
-
 
 struct lb_header *lb_table_init(unsigned long addr)
 {
@@ -132,13 +131,13 @@ struct cmos_checksum *lb_cmos_checksum(struct lb_header *header)
 	cmos_checksum->tag = LB_TAG_OPTION_CHECKSUM;
 
 	cmos_checksum->size = (sizeof(*cmos_checksum));
-/*
+
 	cmos_checksum->range_start = LB_CKS_RANGE_START * 8;
 	cmos_checksum->range_end = ( LB_CKS_RANGE_END * 8 ) + 7;
 	cmos_checksum->location = LB_CKS_LOC * 8;
+
 	cmos_checksum->type = CHECKSUM_PCBIOS;
- */
-#warning "Fix up LBCKSUM in linuxbios_table.c"
+
 	return cmos_checksum;
 }
 
@@ -148,16 +147,16 @@ void lb_strings(struct lb_header *header)
 		u32 tag;
 		const u8 *string;
 	} strings[] = {
-		{ LB_TAG_VERSION,        (const u8 *)LINUXBIOS_VERSION,        },
-		{ LB_TAG_EXTRA_VERSION,  (const u8 *)LINUXBIOS_EXTRA_VERSION,  },
-		{ LB_TAG_BUILD,          (const u8 *)LINUXBIOS_BUILD,          },
-		{ LB_TAG_COMPILE_TIME,   (const u8 *)LINUXBIOS_COMPILE_TIME,   }, // duplicate?
-		{ LB_TAG_COMPILE_BY,     (const u8 *)LINUXBIOS_COMPILE_BY,     },
-		{ LB_TAG_COMPILE_HOST,   (const u8 *)LINUXBIOS_COMPILE_HOST,   },
-		{ LB_TAG_COMPILE_DOMAIN, (const u8 *)LINUXBIOS_COMPILE_DOMAIN, },
-		{ LB_TAG_COMPILER,       (const u8 *)LINUXBIOS_COMPILER,       },
-		{ LB_TAG_LINKER,         (const u8 *)LINUXBIOS_LINKER,         },
-		{ LB_TAG_ASSEMBLER,      (const u8 *)LINUXBIOS_ASSEMBLER,      },
+		{ LB_TAG_VERSION,        (const u8 *)LINUXBIOS_VERSION        },
+		{ LB_TAG_EXTRA_VERSION,  (const u8 *)LINUXBIOS_EXTRA_VERSION  },
+		{ LB_TAG_BUILD,          (const u8 *)LINUXBIOS_BUILD          },
+		{ LB_TAG_COMPILE_TIME,   (const u8 *)LINUXBIOS_COMPILE_TIME   }, // duplicate?
+		{ LB_TAG_COMPILE_BY,     (const u8 *)LINUXBIOS_COMPILE_BY     },
+		{ LB_TAG_COMPILE_HOST,   (const u8 *)LINUXBIOS_COMPILE_HOST   },
+		{ LB_TAG_COMPILE_DOMAIN, (const u8 *)LINUXBIOS_COMPILE_DOMAIN },
+		{ LB_TAG_COMPILER,       (const u8 *)LINUXBIOS_COMPILER       },
+		{ LB_TAG_LINKER,         (const u8 *)LINUXBIOS_LINKER         },
+		{ LB_TAG_ASSEMBLER,      (const u8 *)LINUXBIOS_ASSEMBLER      },
 	};
 	unsigned int i;
 	for(i = 0; i < sizeof(strings)/sizeof(strings[0]); i++) {
@@ -176,7 +175,10 @@ void lb_memory_range(struct lb_memory *mem,
 	u32 type, u64 start, u64 size)
 {
 	int entries;
-	printk(BIOS_INFO, "%s: start 0x%lx size 0x%lx\n", __func__, (u32)start, (u32)size);
+
+	printk(BIOS_DEBUG, "%s: start 0x%lx size 0x%lx\n", 
+			__func__, (u32)start, (u32)size);
+
 	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
 	mem->map[entries].start = pack_lb64(start);
 	mem->map[entries].size = pack_lb64(size);
@@ -238,7 +240,7 @@ static void lb_cleanup_memory_ranges(struct lb_memory *mem)
 	int entries;
 	int i, j;
 	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
-	printk(BIOS_INFO, "%s: # entries %d\n", __func__, entries);
+	printk(BIOS_DEBUG, "%s: # entries %d\n", __func__, entries);
 	for(i = 0; i < entries; i++)
 		printk(BIOS_INFO, "  #%d: base 0x%x size 0x%x\n", 
 				i, (u32)mem->map[i].start.lo, mem->map[i].size.lo);
@@ -309,7 +311,10 @@ static void lb_remove_memory_range(struct lb_memory *mem,
 				((entries - i - 1) * sizeof(mem->map[0])));
 			mem->size -= sizeof(mem->map[0]);
 			entries -= 1;
-			/* Since the index will disappear revisit what will appear here */
+
+			/* Since the index will disappear 
+			 * revisit what will appear here 
+			 */
 			i -= 1; 
 		}
 		else if ((start > map_start) && (end < map_end)) {
@@ -372,8 +377,9 @@ static struct lb_memory *build_lb_mem(struct lb_header *head)
 	mem_ranges = mem;
 
 	/* Build the raw table of memory */
-	search_global_resources( IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
-		build_lb_mem_range, mem);
+	search_global_resources( IORESOURCE_MEM | IORESOURCE_CACHEABLE, 
+		IORESOURCE_MEM | IORESOURCE_CACHEABLE, build_lb_mem_range, mem);
+
 	lb_cleanup_memory_ranges(mem);
 	return mem;
 }
@@ -384,6 +390,7 @@ unsigned long write_linuxbios_table(
 {
 	struct lb_header *head;
 	struct lb_memory *mem;
+	struct lb_record *rec_dest, *rec_src;
 
 	if(low_table_end > (0x1000 - sizeof(struct lb_header))) { /* after 4K */
 		/* We need to put lbtable on  to [0xf0000,0x100000) */
@@ -393,21 +400,22 @@ unsigned long write_linuxbios_table(
 		head = lb_table_init(low_table_end);
 		low_table_end = (unsigned long)head;
 	}
-#if 0
-	if (HAVE_OPTION_TABLE == 1) {
-		struct lb_record *rec_dest, *rec_src;
-		/* Write the option config table... */
+
+	/* Write the option config table... */
+
+	rec_src = (struct lb_record *)(void *)get_option_table();
+	if (rec_src != NULL) {
 		rec_dest = lb_new_record(head);
-		rec_src = (struct lb_record *)(void *)&option_table;
+
 		memcpy(rec_dest,  rec_src, rec_src->size);
 		/* Create cmos checksum entry in linuxbios table */
 		lb_cmos_checksum(head);
 	}
-#endif
+
 	/* Record where RAM is located */
 	mem = build_lb_mem(head);
 	
-	/* Record the mptable and the the lb_table (This will be adjusted later) */
+	/* Record the mptable and the the lb_table (will be adjusted later) */
 	lb_add_memory_range(mem, LB_MEM_TABLE, 
 		low_table_start, low_table_end - low_table_start);
 
@@ -424,6 +432,7 @@ unsigned long write_linuxbios_table(
 
 	/* Record our motheboard */
 	lb_mainboard(head);
+
 	/* Record our various random string information */
 	lb_strings(head);
 

@@ -18,9 +18,10 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-$(obj)/%.o: $(src)/southbridge/intel/i82371eb/%.c
+STAGE2_CHIPSET_OBJ += $(obj)/southbridge/intel/i82371eb/i82371eb.o
+
+$(obj)/southbridge/intel/i82371eb/%.o: $(src)/southbridge/intel/i82371eb/%.c
+	$(Q)mkdir -p $(obj)/southbridge/intel/i82371eb/
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
-
-STAGE2_CHIPSET_OBJ += $(obj)/i82371eb.o
 

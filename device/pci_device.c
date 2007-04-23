@@ -595,18 +595,20 @@ void pci_dev_enable_resources(struct device *dev)
 
 	/* Set the subsystem vendor and device id for mainboard devices */
 	ops = ops_pci(dev);
-#warning "Need to do this again: Set the subsystem vendor and device id for mainboard devices"
-/*
+
+#if defined(CONFIG_MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID) && \
+	defined(CONFIG_MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID)
 	if (dev->on_mainboard && ops && ops->set_subsystem) {
-		printk(BIOS_DEBUG,"%s subsystem <- %02x/%02x\n",
+		printk(BIOS_DEBUG,"%s: Setting subsystem VID/DID to %02x/%02x\n",
 			dev_path(dev), 
-			MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID,
-			MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID);
+			CONFIG_MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID,
+			CONFIG_MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID);
+
 		ops->set_subsystem(dev, 
-			MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID,
-			MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID);
+			CONFIG_MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID,
+			CONFIG_MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID);
 	}
- */
+#endif
 	command = pci_read_config16(dev, PCI_COMMAND);
 	command |= dev->command;
 	command |= (PCI_COMMAND_PARITY + PCI_COMMAND_SERR); /* error check */

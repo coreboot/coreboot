@@ -36,18 +36,19 @@ SILENT := &> /dev/null
 
 ROM_SIZE := $(shell expr $(CONFIG_LINUXBIOS_ROMSIZE_KB) \* 1024 )
 
-$(obj)/linuxbios.rom: $(obj)/linuxbios.bootblock $(obj)/util/lar/lar lzma $(obj)/linuxbios.initram $(obj)/linuxbios.stage2 payload
+$(obj)/linuxbios.rom: $(obj)/linuxbios.bootblock $(obj)/util/lar/lar lzma $(obj)/linuxbios.initram $(obj)/linuxbios.stage2 $(obj)/option_table payload
 	$(Q)rm -rf $(obj)/lar.tmp
 	$(Q)mkdir $(obj)/lar.tmp
 	$(Q)mkdir $(obj)/lar.tmp/normal
 	$(Q)cp $(obj)/linuxbios.initram $(obj)/lar.tmp/normal/initram
 	$(Q)cp $(obj)/linuxbios.stage2 $(obj)/lar.tmp/normal/stage2
+	$(Q)cp $(obj)/option_table $(obj)/lar.tmp/normal/option_table
 	$(Q)cp $(CONFIG_PAYLOAD) $(obj)/lar.tmp/normal/payload
 	$(Q)printf "  LAR     $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)cd $(obj)/lar.tmp && ../util/lar/lar -c ../linuxbios.rom . \
 		-s $(ROM_SIZE) -b $(obj)/linuxbios.bootblock
 	$(Q)# QEMU wants bios.bin:
-	$(Q)# Run "qemu -L build/ -nographic -hda /dev/zero".
+	$(Q)# Run "qemu -L build/ -serial stdio -hda /dev/zero".
 	$(Q)printf "  CP      $(subst $(shell pwd)/,,$(obj)/bios.bin)\n"
 	$(Q)cp $@ $(obj)/bios.bin
 
@@ -63,7 +64,7 @@ $(obj)/linuxbios.bootblock: $(obj)/linuxbios.vpd $(obj)/stage0.init
 
 STAGE0_CONSOLE_OBJ   = vtxprintf.o vsprintf.o console.o
 STAGE0_LIB_OBJ       = uart8250.o mem.o elfboot.o lar.o delay.o
-STAGE0_ARCH_X86_OBJ  = cachemain.o serial.o archelfboot.o speaker.o udelay_io.o
+STAGE0_ARCH_X86_OBJ  = cachemain.o serial.o archelfboot.o speaker.o udelay_io.o mc146818rtc.o
 
 ifeq ($(CONFIG_CAR_TYPE_I586),y)
 	STAGE0_CAR_OBJ = stage0_i586.o
@@ -121,11 +122,14 @@ STAGE2_OBJ := $(patsubst %,$(obj)/lib/%,$(STAGE2_LIB_OBJ)) \
 
 STAGE2_OBJ += $(STAGE2_CHIPSET_OBJ)
 
+ifeq ($(CONFIG_PCI_OPTION_ROM_RUN),y)
+ifeq ($(CONFIG_PCI_OPTION_ROM_RUN_X86EMU),y)
 # x86emu wants libgcc
 ifneq ($(strip $(CC)),)
 LIBGCC_FILE_NAME := $(shell $(CC) -print-libgcc-file-name)
 endif
 STAGE2_OBJ += $(obj)/util/x86emu/libx86emu.a $(LIBGCC_FILE_NAME)
+endif
 
 $(obj)/linuxbios.stage2: $(obj)/stage0.init $(STAGE2_OBJ)
 	$(Q)# leave a .o with full symbols in it for debugging.

@@ -1,11 +1,11 @@
 /*
  * table management structs and prototypes for LinuxBIOS
- * ALL structs and prototypes for tables that LinuxBIOS generates should be defined here. 
+ *
+ * ALL structs and prototypes for tables that LinuxBIOS generates should be
+ * defined here. 
  *
  * Copyright (C) 2002 Eric Biederman, Linux NetworX
- *
- * Copyright (C) 2005 coresystems GmbH
- * Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH.
+ * Copyright (C) 2005-2007 coresystems GmbH <info@coresystems.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 
 struct lb_memory *write_tables(void);
 
-/* The linuxbios table information is for conveying information
+/* The LinuxBIOS table information is for conveying information
  * from the firmware to the loaded OS image.  Primarily this
  * is expected to be information that cannot be discovered by
  * other means, such as quering the hardware directly.
@@ -255,7 +255,8 @@ unsigned long lb_table_fini(struct lb_header *header);
  */
 struct lb_memory *get_lb_mem(void);
 
-extern struct cmos_option_table option_table;
+// extern struct cmos_option_table option_table;
+struct cmos_option_table *get_option_table(void);
 
 
 #endif /* TABLES_H */

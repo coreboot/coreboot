@@ -19,16 +19,22 @@
 ##
 
 X86EMU_OBJ  = debug.o decode.o fpu.o ops.o ops2.o prim_ops.o sys.o
-PCBIOS_OBJ  = pcibios.o
-BIOSEMU_OBJ = biosemu.o vm86.o
+BIOSEMU_OBJ = biosemu.o pcbios/pcibios.o
+VM86_OBJ    = vm86.o
 
+ifeq ($(CONFIG_PCI_OPTION_ROM_RUN_X86EMU),y)
 LIBX86EMU_OBJS = $(patsubst %,$(obj)/util/x86emu/x86emu/%,$(X86EMU_OBJ)) \
-		 $(patsubst %,$(obj)/util/x86emu/pcbios/%,$(PCBIOS_OBJ)) \
 		 $(patsubst %,$(obj)/util/x86emu/%,$(BIOSEMU_OBJ))
+endif
 
-$(obj)/util/x86emu/libx86emu.a: $(LIBX86EMU_OBJS)
+ifeq ($(CONFIG_PCI_OPTION_ROM_RUN_VM86),y)
+LIBX86EMU_OBJS := $(patsubst %,$(obj)/util/x86emu/%,$(VM86_OBJ))
+endif
+
+$(obj)/util/x86emu/libx86emu.a: $(LIBX86EMU_OBJS) $(src)/.config
 	$(Q)printf "  AR      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(AR) q $@ $^
+	$(Q)rm -f $@ # otherwise we always add to the archive
+	$(Q)$(AR) qcs $@ $(LIBX86EMU_OBJS)
 
 $(obj)/util/x86emu/x86emu/%.o: $(src)/util/x86emu/x86emu/%.c
 	$(Q)mkdir -p $(obj)/util/x86emu/x86emu/
@@ -44,5 +50,4 @@ $(obj)/util/x86emu/%.o: $(src)/util/x86emu/%.c
 	$(Q)mkdir -p $(obj)/util/x86emu
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) $(INITCFLAGS) -I$(src)/util/x86emu/include -c $< -o $@
-
 

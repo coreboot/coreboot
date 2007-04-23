@@ -24,42 +24,114 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <mc146818rtc.h>
 #include <string.h>
 #include "config.h"
 
 /* The plain PCI device uses the standard PCI operations. */
-/* TODO: bring in the rest of the v2 code for controlling IDE enable. 
+
+
+
+/* TODO: bring in the rest of the v2 code for controlling IDE enable.
  * This is just placeholder code for now
  */
 
-/* Note that this structure is not necessary (yet),
- * but is here as an example of how you can set up your own ops.
- */
+
+static void i82371eb_isa_init(struct device *dev)
+{
+	rtc_init(0);
+}
+
+static void i82371eb_ide_init(struct device *dev)
+{
+	unsigned short c;
+
+	printk(BIOS_DEBUG, "Enabling IDE channel 1\n");
+	c = pci_read_config16(dev, 0x40);
+	c |= 0x8000;
+	pci_write_config16(dev, 0x40, c);
+
+	printk(BIOS_DEBUG, "Enabling IDE channel 2\n");
+	c = pci_read_config16(dev, 0x42);
+	c |= 0x8000;
+	pci_write_config16(dev, 0x42, c);
+
+	printk(BIOS_INFO, "Enabling Legacy IDE\n");
+	c = pci_read_config16(dev, 4);
+	c |= 1;
+	pci_write_config16(dev, 4, c);
+}
+
+static void i82371eb_acpi_init(struct device *dev)
+{
+	int smbus_io, pm_io;
+	printk(BIOS_DEBUG, "Enabling SMBus.\n");
+
+	smbus_io = 0xFFF0;
+
+	/* iobase addr */
+	pci_write_config32(dev, 0x90, smbus_io | 1);
+	/* smbus enable */
+	pci_write_config8(dev, 0xd2,  (0x4 << 1) | 1);
+	/* iospace enable */
+	pci_write_config16(dev, 0x4, 1);
+
+	printk(BIOS_DEBUG, "Enable Power Management Functions\n");
+	pm_io = 0xFF80;
+	/* iobase addr */
+	pci_write_config32(dev, 0x40, pm_io | 1);
+
+	/* enable pm io address */
+	pci_write_config8(dev, 0x80, 1);
+}
 
 /* You can override or extend each operation as needed for the device. */
-static struct device_operations i82371eb_pci_ops_dev = {
+static struct device_operations i82371eb_isa_ops_dev = {
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = 0,
 	.phase4_read_resources	 = pci_dev_read_resources,
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase4_enable_disable	 = 0,
 	.phase5_enable_resources = pci_dev_enable_resources,
-	.phase6_init		 = pci_dev_init,
+	.phase6_init		 = i82371eb_isa_init,
 	.ops_pci		 = &pci_dev_ops_pci,
 };
 
+static struct device_operations i82371eb_ide_ops_dev = {
+	.constructor		 = default_device_constructor,
+	.phase3_scan		 = 0,
+	.phase4_read_resources	 = pci_dev_read_resources,
+	.phase4_set_resources	 = pci_dev_set_resources,
+	.phase4_enable_disable	 = 0,
+	.phase5_enable_resources = pci_dev_enable_resources,
+	.phase6_init		 = i82371eb_ide_init,
+	.ops_pci		 = &pci_dev_ops_pci,
+};
+
+static struct device_operations i82371eb_acpi_ops_dev = {
+	.constructor		 = default_device_constructor,
+	.phase3_scan		 = 0,
+	.phase4_read_resources	 = pci_dev_read_resources,
+	.phase4_set_resources	 = pci_dev_set_resources,
+	.phase4_enable_disable	 = 0,
+	.phase5_enable_resources = pci_dev_enable_resources,
+	.phase6_init		 = i82371eb_acpi_init,
+	.ops_pci		 = &pci_dev_ops_pci,
+};
+
+/*
+ *
+ */
+
 struct constructor i82371eb_constructors[] = {
 	{.id = {.type = DEVICE_ID_PCI,
-		.u = {.pci = {.vendor = 0x8086,.device = 0x7110}}},
-		&i82371eb_pci_ops_dev},
+		.u = {.pci = {.vendor = 0x8086,.device = 0x7000}}},
+		&i82371eb_isa_ops_dev},
 	{.id = {.type = DEVICE_ID_PCI,
-		.u = {.pci = {.vendor = 0x8086,.device = 0x7111}}},
-		&i82371eb_pci_ops_dev},
-	{.id = {.type = DEVICE_ID_PCI,
-		.u = {.pci = {.vendor = 0x8086,.device = 0x7112}}},
-		&i82371eb_pci_ops_dev},
+		.u = {.pci = {.vendor = 0x8086,.device = 0x7010}}},
+		&i82371eb_ide_ops_dev},
 	{.id = {.type = DEVICE_ID_PCI,
 		.u = {.pci = {.vendor = 0x8086,.device = 0x7113}}},
-		&i82371eb_pci_ops_dev},
+		&i82371eb_acpi_ops_dev},
 	{.ops = 0},
 };

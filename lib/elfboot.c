@@ -30,7 +30,7 @@
 #include <string.h>
 
 #include <console/console.h>
-#include <linuxbios_tables.h>
+#include <tables.h>
 #include <elf.h>
 #include <elf_boot.h>
 

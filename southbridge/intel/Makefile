@@ -20,7 +20,7 @@
 ##
 
 # One entry like the below for each supported Intel southbridge.
-ifdef CONFIG_SOUTHBRIDGE_INTEL_I82371EB
+ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_I82371EB),y)
 	include $(src)/southbridge/intel/i82371eb/Makefile
 endif
 

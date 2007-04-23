@@ -84,7 +84,7 @@ int run_file(struct mem_file *archive, char *filename, void *where)
 	int (*v) (void);
 
 	if (copy_file(archive, filename, where)) {
-		printk(BIOS_INFO, "LAR: Run file %s failed: ENOENT\n",
+		printk(BIOS_INFO, "LAR: Run file %s failed: No such file.\n",
 		       filename);
 		return 1;
 	}

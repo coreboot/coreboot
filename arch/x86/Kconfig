@@ -40,3 +40,11 @@ config CAR_TYPE_I586
 	  more hints on possible values.
 	  It is usually set in mainboard/*/Kconfig.
 
+config OPTION_TABLE
+	boolean
+	help
+	  This option is used to determine whether the mainboard has
+	  a battery backed up real time clock with CMOS NVRAM.
+	  It is usually set in mainboard/*/Kconfig.
+
+

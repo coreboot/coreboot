@@ -21,8 +21,9 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <lar.h>
-#include <linuxbios_tables.h>
+#include <tables.h>
 #include <lib.h>
+#include <mc146818rtc.h>
 
 /* these prototypes should go into headers */
 void uart_init(void);
@@ -114,9 +115,14 @@ void stage1_main(u32 bist)
 	// FIXME check integrity
 
 
-	// fixme: choose an initram image (normal/fallback)
 	// find first initram
-	ret = run_file(&archive, "normal/initram", (void *)(512*1024)); //CONFIG_CARBASE;
+	if (last_boot_normal()) {
+		printk(BIOS_DEBUG, "Choosing normal boot.\n");
+		ret = run_file(&archive, "normal/initram", (void *)(512*1024)); //CONFIG_CARBASE;
+	} else {
+		printk(BIOS_DEBUG, "Choosing fallback boot.\n");
+		ret = run_file(&archive, "fallback/initram", (void *)(512*1024)); //CONFIG_CARBASE;
+	}
 
 	if (ret)
 		die("Failed RAM init code\n");

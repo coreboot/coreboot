@@ -40,6 +40,7 @@ CFLAGS     := -Os -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 	      -Werror-implicit-function-declaration -Wstrict-aliasing \
 	      -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer \
 	      -mpreferred-stack-boundary=2 -mregparm=3 -pipe
+# FIXME: Does stack boundary or regparm break the code on real hw?
 
 HOSTCC     := gcc
 HOSTCXX    := g++
@@ -124,6 +125,8 @@ doxygen:
 prepare:
 	$(Q)mkdir -p $(obj)
 
+# FIXME: If .config changed, a rebuild is required.
+
 prepare2:
 	$(Q)printf "  CP      $(subst $(shell pwd)/,,$(obj)/config.h)\n"
 	$(Q)cp $(src)/.tmpconfig.h $(obj)/config.h
@@ -157,5 +160,5 @@ distclean: clean
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) $(CFLAGS) -o $@ -c $<
 
-.PHONY: doc
+.PHONY: doc depends prepare prepare2 clean distclean
 

@@ -21,15 +21,14 @@
 
 /* 2006.1 yhlu add mptable cross 0x467 processing */
 
+#include <arch/types.h>
 #include <console/console.h>
 #include <string.h>
+#include <tables.h>
 //#include <cpu/cpu.h>
-//#include <boot/tables.h>
-//#include <boot/linuxbios_tables.h>
 //#include <arch/pirq_routing.h>
 //#include <arch/smp/mpspec.h>
 //#include <arch/acpi.h>
-#include <tables.h>
 
 // Global Descriptor Table, defined in c_start.S
 extern u8 gdt;
@@ -40,6 +39,8 @@ struct gdtarg {
 	unsigned short limit;
 	unsigned int base;
 } __attribute__((packed));
+
+#warning enable disabled code in archtables.c
 
 #if 0
 // Copy GDT to new location and reload it
@@ -129,7 +130,7 @@ struct lb_memory *arch_write_tables(void)
 		low_table_end = 0x500;
 	}
 
-#warning "Move the move_gdt to somewhere else ... not table writing!"
+#warning GDT should be placed in a reserved position from the beginning on.
 #if 0
 	// Relocate the GDT to reserved memory, so it won't get clobbered
 	move_gdt(low_table_end);

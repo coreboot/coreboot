@@ -1,10 +1,14 @@
-/* This file was taken from the GNU C Library, CVS rev. 1.156, 
- * and modified for use by the LinuxBIOS project. 
+/*
+ * This file is part of the LinuxBIOS project.
+ *
+ * It is based on elf/elf.h from the GNU C Library, CVS rev. 1.156.
+ *
+ * Modifications are:
+ * Copyright (C) 2001 Eric Biederman <ebiederman@lnxi.com>
  */
 
 /* This file defines standard ELF types, structures, and macros.
  * Copyright (C) 1995-2003,2004,2005,2006,2007 Free Software Foundation, Inc.
- * Copyright (C) 2001 Eric Biederman <ebiederman@lnxi.com>
  * This file is part of the GNU C Library.
  *
  * The GNU C Library is free software; you can redistribute it and/or

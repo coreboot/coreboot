@@ -18,17 +18,16 @@
  */
 
 #ifndef __KEYBOARD_H
-#define __KEYBOARD_H 1
+#define __KEYBOARD_H
 
+/* TODO: This structure should contain typematic settings, but LinuxBIOS
+ * does not care yet.
+ */
 struct pc_keyboard {
-	// this structure should contain typematic settings, but LinuxBIOS
-	// does not care yet.
 };
 
-/* This function is called in the SuperIO code */
-void init_pc_keyboard(unsigned int port0, unsigned int port1, struct pc_keyboard *kbd);
-
-
+/* This function is called in the Super-IO code. */
+void init_pc_keyboard(unsigned int port0, unsigned int port1,
+		      struct pc_keyboard *kbd);
 
 #endif
-

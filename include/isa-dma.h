@@ -20,8 +20,7 @@
 #ifndef __ISA_DMA_H
 #define __ISA_DMA_H
 
-/* This function is called in the southbridge code */
+/* This function is called in the southbridge code. */
 void isa_dma_init(void);
 
 #endif
-

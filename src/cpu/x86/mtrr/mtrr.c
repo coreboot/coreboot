@@ -1,5 +1,5 @@
 /*
- * intel_mtrr.c: setting MTRR to decent values for cache initialization on P6
+ * mtrr.c: setting MTRR to decent values for cache initialization on P6
  *
  * Derived from intel_set_mtrr in intel_subr.c and mtrr.c in linux kernel
  *

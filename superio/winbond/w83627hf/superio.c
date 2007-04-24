@@ -173,14 +173,7 @@ void w83627hf_pnp_enable(struct device * dev)
         }
 }
 
-static struct device_operations ops = {
-	.phase4_read_resources   = pnp_read_resources,
-	.phase4_set_resources    = w83627hf_pnp_set_resources,
-	.phase4_enable_disable   = w83627hf_pnp_enable_resources,
-	.phase5_enable_resources = w83627hf_pnp_enable,
-	.phase6_init             = w83627hf_init,
-};
-
+static struct device_operations ops;
 static struct pnp_info pnp_dev_info[] = {
         { &ops, W83627HF_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
         { &ops, W83627HF_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
@@ -196,14 +189,18 @@ static struct pnp_info pnp_dev_info[] = {
         { &ops, W83627HF_HWM,  PNP_IO0 | PNP_IRQ0, { 0xff8, 0 }, },
 };
 
-static void enable_dev(struct device *dev)
+
+static void phase2_setup_scan_bus(struct device *dev)
 {
 	pnp_enable_devices(dev, &ops,
 		sizeof(pnp_dev_info)/sizeof(pnp_dev_info[0]), pnp_dev_info);
 }
-/*
-struct chip_operations superio_winbond_w83627hf_ops = {
-	CHIP_NAME("Winbond W83627HF Super I/O")
-	.enable_dev = enable_dev,
+
+static struct device_operations ops = {
+	.phase2_setup_scan_bus = phase2_setup_scan_bus,
+	.phase4_read_resources   = pnp_read_resources,
+	.phase4_set_resources    = w83627hf_pnp_set_resources,
+	.phase4_enable_disable   = w83627hf_pnp_enable_resources,
+	.phase5_enable_resources = w83627hf_pnp_enable,
+	.phase6_init             = w83627hf_init,
 };
-*/

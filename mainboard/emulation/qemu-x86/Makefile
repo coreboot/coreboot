@@ -75,7 +75,7 @@ STAGE2_MAINBOARD_OBJ = mainboard.o vga.o
 
 STAGE2_CHIPSET_OBJ = 
 
-$(obj)/mainboard/$(MAINBOARDDIR)/%.o: $(src)/nboard/$(MAINBOARDDIR)/%.c
+$(obj)/mainboard/$(MAINBOARDDIR)/%.o: $(src)/mainboard/$(MAINBOARDDIR)/%.c
 	$(Q)mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@

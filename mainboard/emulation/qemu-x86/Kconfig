@@ -6,14 +6,14 @@ config MAINBOARD_NAME
 	  This is the default mainboard name.
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	int
+	hex
 	default 0x15ad
 	depends BOARD_EMULATION_QEMU_X86
 	help
 	  Mainboard specific PCI subsystem vendor ID.
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	int
+	hex
 	default 0x1976
 	depends BOARD_EMULATION_QEMU_X86
 	help

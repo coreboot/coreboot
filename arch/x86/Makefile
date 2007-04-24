@@ -128,6 +128,7 @@ ifeq ($(CONFIG_PCI_OPTION_ROM_RUN_X86EMU),y)
 ifneq ($(strip $(CC)),)
 LIBGCC_FILE_NAME := $(shell $(CC) -print-libgcc-file-name)
 endif
+endif
 STAGE2_OBJ += $(obj)/util/x86emu/libx86emu.a $(LIBGCC_FILE_NAME)
 endif
 

@@ -19,7 +19,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-ifdef CONFIG_NORTHBRIDGE_INTEL_I440BXEMULATION
+ifeq ($(CONFIG_NORTHBRIDGE_INTEL_I440BXEMULATION),y)
 	include $(src)/northbridge/intel/i440bxemulation/Makefile
 endif
 

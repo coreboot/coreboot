@@ -19,7 +19,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-ifdef CONFIG_SUPERIO_WINBOND_W83627HF
-  include $(src)/superio/winbond/w83627hf/Makefile
+ifeq ($(CONFIG_SUPERIO_WINBOND_W83627HF),y)
+	include $(src)/superio/winbond/w83627hf/Makefile
 endif
 

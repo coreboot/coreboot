@@ -256,7 +256,10 @@ chip northbridge/amd/amdk8/root_complex
                 	                 			io 0x60 = 0x378
                 	                			irq 0x70 = 7
 							end
-                	        			device pnp 2e.4 off #  EC
+                	        			device pnp 2e.4 on #  EC
+                	                 			io 0x60 = 0x290
+                	                 			io 0x62 = 0x230
+                	                			irq 0x70 = 9
 							end
                 	        			device pnp 2e.5 on #  Keyboard
                 	                 			io 0x60 = 0x60
@@ -268,7 +271,7 @@ chip northbridge/amd/amdk8/root_complex
 							end
                 	        			device pnp 2e.8 off #  MIDI
 								io 0x60 = 0x300
-								irq 0x70 = 9
+								irq 0x70 = 10
 							end
                 	        			device pnp 2e.9 off #  GAME
 								io 0x60 = 0x220

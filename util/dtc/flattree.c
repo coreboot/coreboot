@@ -532,22 +532,22 @@ static void linuxbios_emit_special(FILE *e, struct node *tree)
 		}
 
 		if (streq(prop->name, "ops")){
-			fprintf(f, "\t.ops = &%s,\n", clean(prop->val.val, 0));
+			fprintf(f, "\t.ops = &%s,\n", clean((char *)prop->val.val, 0));
 			ops_set  = 1;
 		}
 
 		if (streq(prop->name, "ops_pci")){
-			fprintf(f, "\t.ops_pci = &%s,\n", clean(prop->val.val, 0));
+			fprintf(f, "\t.ops_pci = &%s,\n", clean((char *)prop->val.val, 0));
 			ops_set  = 1;
 		}
 
 		if (streq(prop->name, "ops_pci_bus")){
-			fprintf(f, "\t.ops_pci_bus = &%s,\n", clean(prop->val.val, 0));
+			fprintf(f, "\t.ops_pci_bus = &%s,\n", clean((char *)prop->val.val, 0));
 			ops_set  = 1;
 		}
 
 		if (streq(prop->name, "ops_smbus_bus")){
-			fprintf(f, "\t.ops_smbus_bus = &%s,\n", clean(prop->val.val, 0));
+			fprintf(f, "\t.ops_smbus_bus = &%s,\n", clean((char *)prop->val.val, 0));
 			ops_set  = 1;
 		}
 	}
@@ -895,7 +895,7 @@ static void dump_stringtable_asm(FILE *f, struct data strbuf)
 	p = strbuf.val;
 
 	while (p < (strbuf.val + strbuf.len)) {
-		len = strlen(p);
+		len = strlen((char *)p);
 		fprintf(f, "\t.string \"%s\"\n", p);
 		p += len+1;
 	}
@@ -996,7 +996,7 @@ static void dump_stringtable_C(FILE *f, struct data strbuf)
 
 	fprintf(f, "\tchar *stringtable[] = {\n");
 	while (p < (strbuf.val + strbuf.len)) {
-		len = strlen(p);
+		len = strlen((char *)p);
 		fprintf(f, "\t\"%s\"\n", p);
 		p += len+1;
 	}

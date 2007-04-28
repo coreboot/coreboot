@@ -86,8 +86,8 @@ typedef u32 cell_t;
 #define be64_to_cpu(x)	bswap_64(x)
 #endif
 
-#define streq(a, b)	(strcmp((a), (b)) == 0)
-#define strneq(a, b, n)	(strncmp((a), (b), (n)) == 0)
+#define streq(a, b)	(strcmp((char *)(a), (char *)(b)) == 0)
+#define strneq(a, b, n)	(strncmp((char *)(a), (char *)(b), (n)) == 0)
 
 #define ALIGN(x, a)	(((x) + (a) - 1) & ~((a) - 1))
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))

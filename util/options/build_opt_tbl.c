@@ -183,7 +183,7 @@ static int is_ident_nondigit(int c)
 	return result;
 }
 
-static int is_ident(char *str)
+static int is_ident(unsigned char *str)
 {
 	int result;
 	int ch;
@@ -223,7 +223,7 @@ int main(int argc, char **argv)
 	struct cmos_entries *ce;
 	struct cmos_enums *c_enums, *c_enums_start;
 	struct cmos_checksum *cs;
-	unsigned char line[INPUT_LINE_MAX];
+	char line[INPUT_LINE_MAX];
 	unsigned char uc;
 	int entry_mode=0;
 	int enum_mode=0;
@@ -235,7 +235,7 @@ int main(int argc, char **argv)
 	int entries_length;
 	int enum_length;
 	int len;
-	unsigned char buf[16];
+	char buf[16];
 
         for(i=1;i<argc;i++) {
                 if(argv[i][0]!='-') {
@@ -347,7 +347,7 @@ int main(int argc, char **argv)
 		/* put in the record type */
 		ce->tag=LB_TAG_OPTION;
 		/* calculate and save the record length */
-		len=strlen(ce->name)+1;
+		len=strlen((char *)ce->name)+1;
 		/* make the record int aligned */
 		if(len%4)
 			len+=(4-(len%4));

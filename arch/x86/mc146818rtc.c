@@ -294,7 +294,7 @@ int get_option(void *dest, char *name)
 	if(!rtc_checksum_valid(LB_CKS_RANGE_START,
 			LB_CKS_RANGE_END,LB_CKS_LOC))
 		return(-4);
-#if USE_OPTION_TABLE == 1
+#if defined(CONFIG_OPTION_TABLE) && (CONFIG_OPTION_TABLE == 1)
 	return(0);
 #else
 	return -2;

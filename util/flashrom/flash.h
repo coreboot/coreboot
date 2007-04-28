@@ -64,6 +64,7 @@ extern struct flashchip flashchips[];
 
 #define ATMEL_ID		0x1F	/* Atmel */
 #define AT_29C040A		0xA4
+#define AT_29C020		0xDA
 
 #define MX_ID			0xC2	/* Macronix (MX) */
 #define MX_29F002		0xB0
@@ -106,8 +107,10 @@ extern struct flashchip flashchips[];
 #define W_49V002FA		0x32
 
 #define ST_ID			0x20	/* ST */
-#define ST_M29F040B		0xE2
+#define ST_M29F002B		0x34
+#define ST_M29F002T		0xB0	/* M29F002T / M29F002NT */
 #define ST_M29F400BT		0xD5
+#define ST_M29F040B		0xE2
 
 #define EMST_ID			0x8c	/* EMST / EFST */
 #define EMST_F49B002UA		0x00

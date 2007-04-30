@@ -38,7 +38,7 @@ Macros and definitions.
 #define PRINT_DEBUG_HEX32(x)	print_debug_hex32(x)
 #define DUMPNORTH()		dump_pci_device(PCI_DEV(0, 0, 0))
 #else
-#define PRINT_DEBUG_(x)
+#define PRINT_DEBUG(x)
 #define PRINT_DEBUG_HEX8(x)
 #define PRINT_DEBUG_HEX16(x)
 #define PRINT_DEBUG_HEX32(x)

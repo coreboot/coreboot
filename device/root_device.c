@@ -25,61 +25,62 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
-//#include <part/hard_reset.h>
+// #include <part/hard_reset.h>
 
 /** 
  * Read the resources for the root device,
  * that encompass the resources for the entire system.
- * @param root Pointer to the device structure for the system root device
+ *
+ * @param root Pointer to the device structure for the system root device.
  */
-void root_dev_read_resources(struct device * root)
+void root_dev_read_resources(struct device *root)
 {
 	struct resource *resource;
 
-	/* Initialize the system wide io space constraints */
+	/* Initialize the system wide I/O space constraints. */
 	resource = new_resource(root, 0);
-	resource->base  = 0x400;
-	resource->size  = 0;
+	resource->base = 0x400;
+	resource->size = 0;
 	resource->align = 0;
-	resource->gran  = 0;
+	resource->gran = 0;
 	resource->limit = 0xffffUL;
 	resource->flags = IORESOURCE_IO;
-	compute_allocate_resource(&root->link[0], resource, 
-		IORESOURCE_IO, IORESOURCE_IO);
+	compute_allocate_resource(&root->link[0], resource,
+				  IORESOURCE_IO, IORESOURCE_IO);
 
-	/* Initialize the system wide memory resources constraints */
+	/* Initialize the system wide memory resources constraints. */
 	resource = new_resource(root, 1);
-	resource->base  = 0;
-	resource->size  = 0;
+	resource->base = 0;
+	resource->size = 0;
 	resource->align = 0;
-	resource->gran  = 0;
+	resource->gran = 0;
 	resource->limit = 0xffffffffUL;
 	resource->flags = IORESOURCE_MEM;
 	compute_allocate_resource(&root->link[0], resource,
-		IORESOURCE_MEM, IORESOURCE_MEM);
+				  IORESOURCE_MEM, IORESOURCE_MEM);
 }
 
 /**
- * @brief Write the resources for every device
- *
  * Write the resources for the root device,
  * and every device under it which are all of the devices.
- * @param root Pointer to the device structure for the system root device
+ *
+ * @param root Pointer to the device structure for the system root device.
  */
-void root_dev_set_resources(struct device * root)
+void root_dev_set_resources(struct device *root)
 {
 	struct bus *bus;
 
 	bus = &root->link[0];
 	compute_allocate_resource(bus,
-		&root->resource[0], IORESOURCE_IO, IORESOURCE_IO);
-	compute_allocate_resource(bus, 
-		&root->resource[1], IORESOURCE_MEM, IORESOURCE_MEM);
+				  &root->resource[0], IORESOURCE_IO,
+				  IORESOURCE_IO);
+	compute_allocate_resource(bus, &root->resource[1], IORESOURCE_MEM,
+				  IORESOURCE_MEM);
 	phase4_assign_resources(bus);
 }
 
 /**
- * @brief Scan devices on static buses.
+ * Scan devices on static buses.
  *
  * The enumeration of certain buses is purely static. The existence of
  * devices on those buses can be completely determined at compile time
@@ -96,58 +97,65 @@ void root_dev_set_resources(struct device * root)
  * This function is the default scan_bus() method for the root device and
  * LPC bridges.
  *
- * @param bus Pointer to the device structure which the static buses are attached
- * @param max  Maximum bus number currently used before scanning.
+ * @param busdevice Pointer to the device structure which the static
+ * 		    buses are attached.
+ * @param max Maximum bus number currently used before scanning.
  * @return Largest bus number used.
  */
 static int smbus_max = 0;
-unsigned int scan_static_bus(struct device * busdevice, unsigned int max)
+unsigned int scan_static_bus(struct device *busdevice, unsigned int max)
 {
-	struct device * child;
-	unsigned link;
+	struct device *child;
+	unsigned int link;
 
-	printk(BIOS_INFO, "%s for %s(%s)\n", __func__, busdevice->dtsname, dev_path(busdevice));
+	printk(BIOS_INFO, "%s for %s(%s)\n", __func__, busdevice->dtsname,
+	       dev_path(busdevice));
 
-	for(link = 0; link < busdevice->links; link++) {
-		/* for smbus bus enumerate */
+	for (link = 0; link < busdevice->links; link++) {
+		/* For smbus bus enumerate. */
 		child = busdevice->link[link].children;
-		if(child && child->path.type == DEVICE_PATH_I2C) {
+		if (child && child->path.type == DEVICE_PATH_I2C) {
 			busdevice->link[link].secondary = ++smbus_max;
 		}
-		for(child = busdevice->link[link].children; child; child = child->sibling) {
+		for (child = busdevice->link[link].children; child;
+		     child = child->sibling) {
 			if (child->ops && child->ops->phase3_enable_scan) {
 				child->ops->phase3_enable_scan(child);
 			}
-			/* sigh. Have to enable to scan ... */
+			/* Sigh. Have to enable to scan... */
 			if (child->ops && child->ops->phase5_enable_resources) {
 				child->ops->phase5_enable_resources(child);
 			}
- 			if (child->path.type == DEVICE_PATH_I2C) {
- 				printk(BIOS_DEBUG, "smbus: %s(%s)[%d]->",  
-					child->dtsname, dev_path(child->bus->dev), child->bus->link );
+			if (child->path.type == DEVICE_PATH_I2C) {
+				printk(BIOS_DEBUG, "smbus: %s(%s)[%d]->",
+				       child->dtsname,
+				       dev_path(child->bus->dev),
+				       child->bus->link);
 			}
 			printk(BIOS_DEBUG, "%s(%s) %s\n",
-				child->dtsname, dev_path(child), child->enabled?"enabled": "disabled");
+			       child->dtsname, dev_path(child),
+			       child->enabled ? "enabled" : "disabled");
 		}
 	}
-	for(link = 0; link < busdevice->links; link++) {
-		for(child = busdevice->link[link].children; child; child = child->sibling) {
+	for (link = 0; link < busdevice->links; link++) {
+		for (child = busdevice->link[link].children; child;
+		     child = child->sibling) {
 			if (!child->ops || !child->ops->phase3_scan)
 				continue;
-			printk(BIOS_INFO, "%s(%s) scanning...\n", child->dtsname, dev_path(child));
+			printk(BIOS_INFO, "%s(%s) scanning...\n",
+			       child->dtsname, dev_path(child));
 			max = dev_phase3_scan(child, max);
 		}
 	}
 
-	printk(BIOS_INFO, "%s for %s(%s) done\n", __func__, busdevice->dtsname, dev_path(busdevice));
+	printk(BIOS_INFO, "%s for %s(%s) done\n", __func__, busdevice->dtsname,
+	       dev_path(busdevice));
 
 	return max;
 }
 
 /**
- * @brief Enable resources for children devices
- *
- * @param dev the device whos children's resources are to be enabled
+ * Enable resources for children devices.
  *
  * This function is called by the global enable_resource() indirectly via the
  * device_operation::enable_resources() method of devices.
@@ -156,65 +164,69 @@ unsigned int scan_static_bus(struct device * busdevice, unsigned int max)
  *	enable_childrens_resources() -> enable_resources()
  *	enable_resources() -> device_operation::enable_resources()
  *	device_operation::enable_resources() -> enable_children_resources()
+ *
+ * @param dev The device whose children's resources are to be enabled.
  */
-void enable_childrens_resources(struct device * dev)
+void enable_childrens_resources(struct device *dev)
 {
-	unsigned link;
-	for(link = 0; link < dev->links; link++) {
-		struct device * child;
-		for(child = dev->link[link].children; child; child = child->sibling) {
+	unsigned int link;
+	for (link = 0; link < dev->links; link++) {
+		struct device *child;
+		for (child = dev->link[link].children; child;
+		     child = child->sibling) {
 			dev_phase5(child);
 		}
 	}
 }
 
-void root_dev_enable_resources(struct device * dev)
+void root_dev_enable_resources(struct device *dev)
 {
 	enable_childrens_resources(dev);
 }
 
 /**
- * @brief Scan root bus for generic systems
- *
- * @param root The root device structure
- * @param max The current bus number scanned so far, usually 0x00
+ * Scan root bus for generic systems.
  *
  * This function is the default scan_bus() method of the root device.
+ *
+ * @param root The root device structure.
+ * @param max The current bus number scanned so far, usually 0x00.
+ * @return TODO
  */
-unsigned int root_dev_scan_bus(struct device * root, unsigned int max)
+unsigned int root_dev_scan_bus(struct device *root, unsigned int max)
 {
 	return scan_static_bus(root, max);
 }
 
-void root_dev_init(struct device * root)
+void root_dev_init(struct device *root)
 {
 }
 
 void root_dev_reset(struct bus *bus)
 {
-	printk(BIOS_INFO, "Reseting board... NOT! Define hard_reset please\n");
-//	hard_reset();
+	printk(BIOS_INFO, "Resetting board... NOT! Define hard_reset please\n");
+	// hard_reset();
 }
 
 /**
- * @brief Default device operation for root device
+ * Default device operation for root device.
  *
  * This is the default device operation for root devices. These operations
- * should be fully usable as is.  If you need something else, set up your own ops
- * in (e.g.) the mainboard, and initialize it in the dts in the mainboard directory. 
- *
+ * should be fully usable as is. If you need something else, set up your
+ * own ops in (e.g.) the mainboard, and initialize it in the dts in the
+ * mainboard directory. 
  */
 struct device_operations default_dev_ops_root = {
 	.phase4_read_resources   = root_dev_read_resources,
 	.phase4_set_resources    = root_dev_set_resources,
 	.phase5_enable_resources = root_dev_enable_resources,
 	.phase6_init             = root_dev_init,
-	.phase3_scan         = root_dev_scan_bus,
-	.reset_bus        = root_dev_reset,
+	.phase3_scan             = root_dev_scan_bus,
+	.reset_bus               = root_dev_reset,
 };
 
 /**
- * @brief The root of device tree.
+ * The root of device tree.
  *
  * This is the root of the device tree. The device tree is defined in the
  * static.c file and is generated by config tool during compile time.

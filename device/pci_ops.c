@@ -26,54 +26,65 @@
 #include <device/pci_ops.h>
 #include <arch/types.h>
 
-/* walk up the tree from the current dev, in an attempt to find a bus that has ops_pci_bus set */
-/* the assumption here being that if it has ops_pci_bus set, then it can do bus operations */
-static struct bus *get_pbus(struct device * dev)
+/**
+ * Walk up the tree from the current dev, in an attempt to find a
+ * bus that has ops_pci_bus set. The assumption here being that if it
+ * has ops_pci_bus set, then it can do bus operations.
+ */
+static struct bus *get_pbus(struct device *dev)
 {
 	struct bus *pbus = dev->bus;
-	while(pbus && pbus->dev && !ops_pci_bus(pbus)) {
+	while (pbus && pbus->dev && !ops_pci_bus(pbus)) {
 		pbus = pbus->dev->bus;
 	}
-	if (!pbus || !pbus->dev || !pbus->dev->ops || !pbus->dev->ops->ops_pci_bus) {
-		printk(BIOS_ALERT,"%s: %s(%s) Cannot find PCI bus operations", __func__, dev->dtsname, dev_path(dev));
+	if (!pbus || !pbus->dev || !pbus->dev->ops
+	    || !pbus->dev->ops->ops_pci_bus) {
+		printk(BIOS_ALERT, "%s: %s(%s) Cannot find PCI bus operations",
+		       __func__, dev->dtsname, dev_path(dev));
 		die("");
-		for(;;);
+		for (;;) ;
 	}
 	return pbus;
 }
 
-u8 pci_read_config8(struct device * dev, unsigned where)
+u8 pci_read_config8(struct device *dev, unsigned int where)
 {
 	struct bus *pbus = get_pbus(dev);
-	return ops_pci_bus(pbus)->read8(pbus, dev->bus->secondary, dev->path.u.pci.devfn, where);
+	return ops_pci_bus(pbus)->read8(pbus, dev->bus->secondary,
+					dev->path.u.pci.devfn, where);
 }
 
-u16 pci_read_config16(struct device * dev, unsigned where)
+u16 pci_read_config16(struct device *dev, unsigned int where)
 {
 	struct bus *pbus = get_pbus(dev);
-	return ops_pci_bus(pbus)->read16(pbus, dev->bus->secondary, dev->path.u.pci.devfn, where);
+	return ops_pci_bus(pbus)->read16(pbus, dev->bus->secondary,
+					 dev->path.u.pci.devfn, where);
 }
 
-u32 pci_read_config32(struct device * dev, unsigned where)
+u32 pci_read_config32(struct device *dev, unsigned int where)
 {
 	struct bus *pbus = get_pbus(dev);
-	return ops_pci_bus(pbus)->read32(pbus, dev->bus->secondary, dev->path.u.pci.devfn, where);
+	return ops_pci_bus(pbus)->read32(pbus, dev->bus->secondary,
+					 dev->path.u.pci.devfn, where);
 }
 
-void pci_write_config8(struct device * dev, unsigned where, u8 val)
+void pci_write_config8(struct device *dev, unsigned int where, u8 val)
 {
 	struct bus *pbus = get_pbus(dev);
-	ops_pci_bus(pbus)->write8(pbus, dev->bus->secondary, dev->path.u.pci.devfn, where, val);
+	ops_pci_bus(pbus)->write8(pbus, dev->bus->secondary,
+				  dev->path.u.pci.devfn, where, val);
 }
 
-void pci_write_config16(struct device * dev, unsigned where, u16 val)
+void pci_write_config16(struct device *dev, unsigned int where, u16 val)
 {
 	struct bus *pbus = get_pbus(dev);
-	ops_pci_bus(pbus)->write16(pbus, dev->bus->secondary, dev->path.u.pci.devfn, where, val);
+	ops_pci_bus(pbus)->write16(pbus, dev->bus->secondary,
+				   dev->path.u.pci.devfn, where, val);
 }
 
-void pci_write_config32(struct device * dev, unsigned where, u32 val)
+void pci_write_config32(struct device *dev, unsigned int where, u32 val)
 {
 	struct bus *pbus = get_pbus(dev);
-	ops_pci_bus(pbus)->write32(pbus, dev->bus->secondary, dev->path.u.pci.devfn, where, val);
+	ops_pci_bus(pbus)->write32(pbus, dev->bus->secondary,
+				   dev->path.u.pci.devfn, where, val);
 }

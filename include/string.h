@@ -24,10 +24,10 @@
 #include <arch/types.h>
 
 /* Prototypes for functions from lib/mem.c. */
-extern void *memcpy(void *dest, const void *src, int len);
-extern void *memmove(void *dest, const void *src, int len);
-extern void *memset(void *v, unsigned char a, int len);
-extern int memcmp(const void *s1, const void *s2, int len);
+extern void *memcpy(void *dest, const void *src, size_t len);
+extern void *memmove(void *dest, const void *src, size_t len);
+extern void *memset(void *v, unsigned char a, size_t len);
+extern int memcmp(const void *s1, const void *s2, size_t len);
 
 /* Prototypes for functions from console/vsprintf.c. */
 extern int sprintf(char *buf, const char *fmt, ...);

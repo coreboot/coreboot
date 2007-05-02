@@ -44,7 +44,8 @@
  * @param len Number of bytes to copy.
  * @param backwards Start at the end, used by memmove() when dest > src.
  */
-static void memcpy_helper(void *dest, const void *src, int len, int backwards)
+static void memcpy_helper(void *dest, const void *src, size_t len,
+			  int backwards)
 {
 	u8 *d = dest;
 	const u8 *s = src;
@@ -108,7 +109,7 @@ static void memcpy_helper(void *dest, const void *src, int len, int backwards)
  * @param src Pointer to the source memory area.
  * @param len Number of bytes to copy.
  */
-void memcpy(void *dest, const void *src, int len)
+void memcpy(void *dest, const void *src, size_t len)
 {
 	memcpy_helper(dest, src, len, 0);
 }
@@ -122,7 +123,7 @@ void memcpy(void *dest, const void *src, int len)
  * @param src Pointer to the source memory area.
  * @param len Number of bytes to copy.
  */
-void memmove(void *dest, const void *src, int len)
+void memmove(void *dest, const void *src, size_t len)
 {
 	memcpy_helper(dest, src, len, dest > src && dest < (src + len));
 }
@@ -134,7 +135,7 @@ void memmove(void *dest, const void *src, int len)
  * @param a The byte which is used for filling the memory area.
  * @param len The number of bytes to write.
  */
-void memset(void *v, unsigned char a, int len)
+void memset(void *v, unsigned char a, size_t len)
 {
 	unsigned char *cp = v;
 	while (len--)
@@ -152,7 +153,7 @@ void memset(void *v, unsigned char a, int len)
  * @return Returns a negative number if s1 is shorter than s2. Returns zero if
  * 	   s1 matches s2. Returns a positive number if s1 is longer than s2.
  */
-int memcmp(const void *s1, const void *s2, int len)
+int memcmp(const void *s1, const void *s2, size_t len)
 {
 	const unsigned char *d = (const unsigned char *)s1;
 	const unsigned char *s = (const unsigned char *)s2;

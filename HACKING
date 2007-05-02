@@ -8,6 +8,31 @@ Development Guidelines
 Please read http://linuxbios.org/Development_Guidelines.
 
 
+Doxygen-generated Code/API Documentation
+----------------------------------------
+
+The source code of LinuxBIOS is documented using Doxygen-style code comments.
+The Doxygen tool can generate HTML API documentation out of these comments.
+
+You can generate this documentation via:
+
+  make doxy
+
+The documentation will be stored in the doxygen/html directory.
+
+The generation of the documentation takes ca. 1-2 minutes, and may require
+more than 30 MB of space on the hard drive, depending on the options
+selected in the Doxygen config file, util/doxygen/Doxyfile.LinuxBIOS.
+
+Required software:
+
+  * Doxygen (tested with Doxgen 1.5.1)
+    http://www.doxygen.org/
+  
+  * dot (>= 1.8.10)
+    http://www.graphviz.org/
+
+
 Third-party Code and License Overview
 -------------------------------------
 

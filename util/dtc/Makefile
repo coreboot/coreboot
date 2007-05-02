@@ -21,6 +21,8 @@ ftdump:	ftdump.o
 	$(Q)$(HOSTCC) -o $@ $^
 
 $(obj)/util/dtc/dtc-parser.tab.c $(obj)/util/dtc/dtc-parser.tab.h $(obj)/util/dtc/dtc-parser.output: $(src)/util/dtc/dtc-parser.y
+	$(Q)mkdir -p $(obj)/util/dtc
+	$(Q)printf "  BISON   $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)cd $(obj)/util/dtc; $(BISON) -d $< &> $(obj)/util/dtc/dtc.bison.out
 
 $(obj)/util/dtc/lex.yy.c: $(src)/util/dtc/dtc-lexer.l

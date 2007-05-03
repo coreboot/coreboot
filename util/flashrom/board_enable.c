@@ -23,6 +23,56 @@
 #include "flash.h"
 #include "debug.h"
 
+static int board_iwill_dk8_htx(const char *name)
+{
+	/* Extended function index register, either 0x2e or 0x4e. */
+#define EFIR 0x2e
+	/* Extended function data register, one plus the index reg. */
+#define EFDR EFIR + 1
+	char b;
+
+	/* Disable the flash write protect (which is connected to the
+	 * Winbond W83627HF GPIOs).
+	 */
+	outb(0x87, EFIR);	/* Sequence to unlock extended functions */
+	outb(0x87, EFIR);
+
+	/* Activate logical device. */
+	outb(0x7, EFIR);
+	outb(8, EFDR);
+
+	/* Set GPIO regs. */
+	outb(0x2b, EFIR);	/* GPIO multiplexed pin reg. */
+	b = inb(EFDR) | 0xd0;
+	outb(0x2b, EFIR);
+	outb(b, EFDR);
+
+	outb(0x30, EFIR);	/* GPIO2 */
+	b = inb(EFDR) | 0x01;
+	outb(0x30, EFIR);
+	outb(b, EFDR);
+
+	outb(0xf0, EFIR);	/* IO sel */
+	b = inb(EFDR) | 0xef;
+	outb(0xf0, EFIR);
+	outb(b, EFDR);
+
+	outb(0xf1, EFIR);	/* GPIO data reg */
+	b = inb(EFDR) | 0x16;
+	outb(0xf1, EFIR);
+	outb(b, EFDR);
+
+	outb(0xf2, EFIR);	/* GPIO inversion reg */
+	b = inb(EFDR) | 0x00;
+	outb(0xf2, EFIR);
+	outb(b, EFDR);
+
+	/* Lock extended functions again. */
+	outb(0xaa, EFIR);	/* Command to exit extended functions */
+
+	return 0;
+}
+
 /*
  * Match on pci-ids, no report received, just data from the mainboard
  * specific code:
@@ -195,14 +245,16 @@ struct board_pciid_enable {
 };
 
 struct board_pciid_enable board_pciid_enables[] = {
-        { 0x1022, 0x746B, 0x1022, 0x36C0,  0x0000, 0x0000, 0x0000, 0x0000,
-		"AGAMI", "ARUMA", "Agami Aruma", board_agami_aruma },
-        { 0x1106, 0x3177, 0x1106, 0xAA01,  0x1106, 0x3123, 0x1106, 0xAA01, 
+	{ 0x1022, 0x746B, 0x1022, 0x36C0,  0x0000, 0x0000, 0x0000, 0x0000,
+		"AGAMI", "ARUMA", "agami Aruma", board_agami_aruma },
+	{ 0x1106, 0x3177, 0x1106, 0xAA01,  0x1106, 0x3123, 0x1106, 0xAA01, 
 		NULL, NULL, "VIA EPIA M/MII/...", board_via_epia_m },
-        { 0x1106, 0x3177, 0x1043, 0x80A1,  0x1106, 0x3205, 0x1043, 0x8118, 
-		NULL, NULL, "Asus A7V8-MX SE", board_asus_a7v8x_mx },
-        { 0, 0, 0, 0,  0, 0, 0, 0, NULL, NULL } /* Keep this */
+	{ 0x1106, 0x3177, 0x1043, 0x80A1,  0x1106, 0x3205, 0x1043, 0x8118, 
+		NULL, NULL, "ASUS A7V8-MX SE", board_asus_a7v8x_mx },
+	{ 0x1022, 0x7468, 0x0, 0x0,  0x0, 0x0, 0x0, 0x0,
+		"iwill", "dk8_htx", "IWILL DK8-HTX", board_iwill_dk8_htx },
 
+        { 0, 0, 0, 0,  0, 0, 0, 0, NULL, NULL } /* Keep this */
 };
 
 /*

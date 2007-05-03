@@ -47,6 +47,12 @@ or if you want to override these values, you can specify -m, e.g.:
 
   flashrom -w --mainboard ISLAND:ARUMA island_aruma.rom
 
+The following boards require the specification of the board name, if
+no LinuxBIOS table is found:
+
+* IWILL DK8-HTX: use -m iwill:dk8_htx
+* agami Aruma: use -m AGAMI:ARUMA
+
 
 ROM Layout Support
 ------------------

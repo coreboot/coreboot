@@ -357,7 +357,7 @@ static void pci_record_bridge_resource(struct device *dev, resource_t moving,
 				       unsigned int index, unsigned long mask,
 				       unsigned long type)
 {
-	/* Initiliaze the constraints on the current bus. */
+	/* Initialize the constraints on the current bus. */
 	struct resource *resource;
 	resource = 0;
 	if (moving) {
@@ -468,7 +468,7 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 		return;
 	}
 
-	/* If the resource is substractive don't worry about it. */
+	/* If the resource is subtractive don't worry about it. */
 	if (resource->flags & IORESOURCE_SUBTRACTIVE) {
 		return;
 	}
@@ -725,7 +725,7 @@ static struct device_operations *get_pci_bridge_ops(struct device *dev)
 #if CONFIG_PCIX_PLUGIN_SUPPORT == 1
 	pos = pci_find_capability(dev, PCI_CAP_ID_PCIX);
 	if (pos) {
-		printk(BIOS_DEBUG, "%s subbordinate bus PCI-X\n",
+		printk(BIOS_DEBUG, "%s subordinate bus PCI-X\n",
 		       dev_path(dev));
 		return &default_pcix_ops_bus;
 	}
@@ -741,7 +741,7 @@ static struct device_operations *get_pci_bridge_ops(struct device *dev)
 		if ((flags >> 13) == 1) {
 			/* Host or Secondary Interface. */
 			printk(BIOS_DEBUG,
-			       "%s subbordinate bus Hypertransport\n",
+			       "%s subordinate bus Hypertransport\n",
 			       dev_path(dev));
 			return &default_ht_ops_bus;
 		}
@@ -756,11 +756,11 @@ static struct device_operations *get_pci_bridge_ops(struct device *dev)
 		case PCI_EXP_TYPE_ROOT_PORT:
 		case PCI_EXP_TYPE_UPSTREAM:
 		case PCI_EXP_TYPE_DOWNSTREAM:
-			printk(BIOS_DEBUG, "%s subbordinate bus PCI Express\n",
+			printk(BIOS_DEBUG, "%s subordinate bus PCI Express\n",
 			       dev_path(dev));
 			return &default_pciexp_ops_bus;
 		case PCI_EXP_TYPE_PCI_BRIDGE:
-			printk(BIOS_DEBUG, "%s subbordinate PCI\n",
+			printk(BIOS_DEBUG, "%s subordinate PCI\n",
 			       dev_path(dev));
 			return &default_pci_ops_bus;
 		default:
@@ -902,10 +902,9 @@ static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
  *
  * Determine the existence of a given PCI device.
  *
- * @param bus pointer to the bus structure
- * @param devfn to look at
- *
- * @return The device structure for hte device (if found)
+ * @param bus Pointer to the bus structure.
+ * @param devfn A device/function number.
+ * @return The device structure for the device (if found)
  *         or the NULL if no device is found.
  */
 struct device *pci_probe_dev(struct device *dev, struct bus *bus,
@@ -922,7 +921,7 @@ struct device *pci_probe_dev(struct device *dev, struct bus *bus,
 		dummy.path.type = DEVICE_PATH_PCI;
 		dummy.path.u.pci.devfn = devfn;
 		id = pci_read_config32(&dummy, PCI_VENDOR_ID);
-		/* Have we found somthing?
+		/* Have we found something?
 		 * Some broken boards return 0 if a slot is empty.
 		 */
 		if ((id == 0xffffffff) || (id == 0x00000000) ||
@@ -1189,7 +1188,7 @@ unsigned int do_pci_scan_bridge(struct device *dev, unsigned int max,
  * This function is the default scan_bus() method for PCI bridge devices.
  *
  * @param dev Pointer to the bridge device.
- * @param max The highest bus number assgined up to now.
+ * @param max The highest bus number assigned up to now.
  * @return The maximum bus number found, after scanning all subordinate buses.
  */
 unsigned int pci_scan_bridge(struct device *dev, unsigned int max)

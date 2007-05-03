@@ -41,7 +41,7 @@ static void cardbus_record_bridge_resource(device_t dev, resource_t moving,
 					   resource_t min_size, unsigned int index,
 					   unsigned long type)
 {
-	/* Initiliaze the constraints on the current bus. */
+	/* Initialize the constraints on the current bus. */
 	struct resource *resource;
 	resource = 0;
 	if (moving) {

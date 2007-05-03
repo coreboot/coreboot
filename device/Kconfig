@@ -23,7 +23,7 @@ menu "Devices"
 config PCI_OPTION_ROM_RUN
 	bool
 	help
-	  Execute PCI/AGP option roms if available. This is required to
+	  Execute PCI/AGP option ROMs if available. This is required to
 	  enable PCI/AGP VGA plugin cards. This option is not exposed
 	  to the user but set by the options PCI_OPTION_ROM_RUN_VM86
 	  and PCI_OPTION_ROM_RUN_X86EMU.
@@ -32,17 +32,17 @@ choice
 	prompt "Execute PCI Option ROMs"
 	default PCI_OPTION_ROM_RUN_VM86
 	help
-	  Execute PCI/AGP option roms if available. You can choose to
-	  execute PCI option roms natively (32bit x86 system required), 
-	  in an emulator (x86emu), or ignore option rom execution
+	  Execute PCI/AGP option ROMs if available. You can choose to
+	  execute PCI option ROMs natively (32bit x86 system required), 
+	  in an emulator (x86emu), or ignore option ROM execution.
 
 
 config PCI_OPTION_ROM_RUN_X86EMU
 	bool "x86emu"
 	select PCI_OPTION_ROM_RUN
 	help
-	  If choose this option, the x86 instruction set emulator 
-	  x86emu is used to execute 16bit legacy bios option roms.
+	  If you choose this option, the x86 instruction set emulator 
+	  x86emu is used to execute 16bit legacy BIOS option ROMs.
 	  
 	  x86emu is slow, big and safe. All 16bit x86 code is executed
 	  in an encapsulated environment where it can not break out.
@@ -53,17 +53,17 @@ config PCI_OPTION_ROM_RUN_VM86
 	select PCI_OPTION_ROM_RUN
 	depends ARCH_X86
 	help
-	  If choose this option, the virtual x86 mode "vm86" is used
-	  to execute 16bit legacy bios option roms.
+	  If you choose this option, the virtual x86 mode "vm86" is used
+	  to execute 16bit legacy BIOS option ROMs.
 
 	  vm86 is very small, fast, and probably a little less safe than 
-	  x86emu, since it runs option roms on the real hardware instead
+	  x86emu, since it runs option ROMs on the real hardware instead
 	  of an emulator.
 
 config PCI_OPTION_ROM_RUN_NONE
 	bool "Disabled"
 	help
-	  Do not execute PCI option roms at all.
+	  Do not execute PCI option ROMs at all.
 
 	  If you choose this option, VGA plugin cards will not be 
 	  initialized.

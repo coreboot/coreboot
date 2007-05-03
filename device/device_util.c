@@ -582,7 +582,7 @@ const char *resource_type(struct resource *resource)
 /**
  * Print the resource that was just stored.
  *
- * @param dev The device the stored resorce lives on.
+ * @param dev The device the stored resource lives on.
  * @param resource The resource that was just stored.
  */
 void report_resource_stored(struct device *dev, struct resource *resource,

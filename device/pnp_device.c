@@ -158,7 +158,7 @@ static void pnp_get_ioresource(struct device *dev, unsigned int index,
 
 	resource = new_resource(dev, index);
 
-	/* Initilize the resource. */
+	/* Initialize the resource. */
 	resource->limit = 0xffff;
 	resource->flags |= IORESOURCE_IO;
 

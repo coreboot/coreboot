@@ -78,7 +78,7 @@ void dev_init(void)
 /**
  * The default constructor, which simply allocates and sets the ops pointer.
  * 
- * Allocte a new device structure and initialize device->ops. 
+ * Allocate a new device structure and initialize device->ops. 
  *
  * @param constructor A pointer to a struct constructor.
  * @return Pointer to the newly created device structure.
@@ -502,7 +502,7 @@ void compute_allocate_resource(struct bus *bus, struct resource *bridge,
 	/* A PCI bridge resource does not need to be a power of two size, but
 	 * it does have a minimum granularity. Round the size up to that
 	 * minimum granularity so we know not to place something else at an
-	 * address postitively decoded by the bridge.
+	 * address positively decoded by the bridge.
 	 */
 	bridge->size = round(base, bridge->gran) - bridge->base;
 
@@ -518,7 +518,7 @@ static void allocate_vga_resource(void)
 	// FIXME: This function knows too much about PCI stuff, 
 	// it should just be an iterator/visitor.
 
-	/* FIXME: Handle the VGA pallette snooping. */
+	/* FIXME: Handle the VGA palette snooping. */
 	struct device *dev, *vga, *vga_onboard, *vga_first, *vga_last;
 	struct bus *bus;
 	bus = 0;

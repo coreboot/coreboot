@@ -97,7 +97,7 @@ static unsigned ht_read_freq_cap(device_t dev, unsigned pos)
 	if ((dev->vendor == PCI_VENDOR_ID_AMD) && (dev->device == 0x1100)) {
 #if K8_HT_FREQ_1G_SUPPORT == 1
 #if K8_REV_F_SUPPORT == 0
-		if (is_cpu_pre_e0()) {	// Only e0 later suupport 1GHz HT.
+		if (is_cpu_pre_e0()) {	// Only e0 later support 1GHz HT.
 			freq_cap &= ~(1 << HT_FREQ_1000Mhz);
 		}
 #endif
@@ -406,7 +406,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int min_devfn,
 	int ht_dev_num = 0;
 
 #if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
-	/* Let't record the device of last HT device, so we can set the
+	/* Let's record the device of last HT device, so we can set the
 	 * unitid to HT_CHAIN_END_UNITID_BASE.
 	 */
 	unsigned int real_last_unitid;
@@ -501,7 +501,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int min_devfn,
 		flags |= next_unitid & 0x1f;
 		pci_write_config16(dev, pos + PCI_CAP_FLAGS, flags);
 
-		/* Update the Unitd id in the device structure. */
+		/* Update the unitid in the device structure. */
 		static_count = 1;
 		for (func = dev; func; func = func->sibling) {
 			func->path.u.pci.devfn += (next_unitid << 3);
@@ -530,7 +530,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int min_devfn,
 #endif
 		next_unitid += count;
 
-		/* Setup the hypetransport link. */
+		/* Setup the hypertransport link. */
 		bus->reset_needed |= ht_setup_link(&prev, dev, pos);
 
 		printk_debug("%s [%04x/%04x] %s next_unitid: %04x\n",

@@ -18,26 +18,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-target s1846
-mainboard tyan/s1846
+config chip.h
 
-option ROM_SIZE = 256 * 1024
+driver i82371eb.o
+driver i82371eb_smbus.o
 
-romimage "normal"
-	option USE_FALLBACK_IMAGE = 0
-	option ROM_IMAGE_SIZE=0x0e000
-	option LINUXBIOS_EXTRA_VERSION = ".0Normal"
-	payload /tmp/filo.elf
-	# payload /tmp/memtest
-end
-
-romimage "fallback"
-	option USE_FALLBACK_IMAGE = 1
-	option ROM_IMAGE_SIZE=0x0e000
-	option LINUXBIOS_EXTRA_VERSION = ".0Fallback"
-	payload /tmp/filo.elf
-	# payload /tmp/memtest
-end
-
-buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
-# buildrom ./linuxbios.rom ROM_SIZE "fallback"

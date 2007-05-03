@@ -39,5 +39,5 @@ static struct device_operations smbus_ops = {
 static struct pci_driver smbus_driver __pci_driver = {
 	.ops = &smbus_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = PCI_DEVICE_INTEL_440BX_SMB,
+	.device = 0x7111, // FIXME?
 };

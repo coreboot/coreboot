@@ -49,6 +49,19 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 #include "northbridge/intel/i440bx/debug.c"
 #include "sdram/generic_sdram.c"
 
+static void enable_mainboard_devices(void)
+{
+	device_t dev;
+
+	dev = pci_locate_device(PCI_ID(0x8086, 0x7110), 0);
+
+	if (dev == PCI_DEV_INVALID) {
+		die("Southbridge not found!\n");
+	} else {
+		print_debug("Southbridge found!\n");
+	}
+}
+
 static void main(unsigned long bist)
 {
 	static const struct mem_controller memctrl[] = {
@@ -75,12 +88,27 @@ static void main(unsigned long bist)
 	/* Halt if there was a built in self test failure. */
 	report_bist_failure(bist);
 
+	enable_mainboard_devices();
+
 	enable_smbus();
 
 	dump_spd_registers(&memctrl[0]);
 
 	sdram_initialize(sizeof(memctrl) / sizeof(memctrl[0]), memctrl);
 
-	/* Check 64 MB of RAM. */
-	ram_check(0x00000000, 0x04000000);
+	/* Check whether RAM is working.
+	 *
+	 * Do _not_ check the area from 640 KB - 1 MB, as that's not really
+	 * RAM, but rather reserved for various other things:
+	 *
+	 *  - 640 KB ­ 768 KB: Video Buffer Area
+	 *  - 768 KB ­ 896 KB: Expansion Area
+	 *  - 896 KB ­ 960 KB: Extended System BIOS Area
+	 *  - 960 KB ­ 1 MB:   Memory (BIOS Area) - System BIOS Area
+	 *
+	 * Trying to check these areas will fail.
+	 */
+	/* TODO: This is currently hardcoded to check 64 MB. */
+	ram_check(0x00000000, 0x0009ffff);	/* 0 - 640 KB */
+	ram_check(0x00100000, 0x007c0000);	/* 1 MB - 64 MB */
 }

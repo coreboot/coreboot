@@ -126,10 +126,37 @@ dir /pc80
 config chip.h
 
 # TODO.
-chip northbridge/intel/i440bx
-   device pci_domain 0 on 
-   end
-   chip cpu/intel/slot_2
-   end
+chip northbridge/intel/i440bx # Northbridge
+	device pci_domain 0 on 
+		device pci 0.0 on end # Host bridge
+		device pci 1.0 off end # PCI bridge  TODO: AGP bridge?
+		# device pci 7.0 on end # ISA bridge
+		chip southbridge/intel/i82371eb # Southbridge
+			device pci 7.0 on # ISA bridge ???
+				chip superio/nsc/pc87309 # Super I/O
+					device pnp 2e.0 on end # Floppy
+					device pnp 2e.1 on end # Parallel port
+					device pnp 2e.2 on end # Com2
+					device pnp 2e.3 on # Com1
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.4 on end # Power mgmt.
+					device pnp 2e.5 on end # Mouse
+					device pnp 2e.6 on # Keyboard
+						io 0x60 = 0x60
+						io 0x62 = 0x64
+						irq 0x70 = 1
+						irq 0x72 = 12 # ???
+					end
+				end
+				device pci 7.1 on end # IDE
+				device pci 7.2 on end # USB
+				device pci 7.3 on end # ACPI
+			end
+		end
+	end
+	chip cpu/intel/slot_2
+	end
 end
 

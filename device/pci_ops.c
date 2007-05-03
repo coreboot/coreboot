@@ -42,7 +42,6 @@ static struct bus *get_pbus(struct device *dev)
 		printk(BIOS_ALERT, "%s: %s(%s) Cannot find PCI bus operations",
 		       __func__, dev->dtsname, dev_path(dev));
 		die("");
-		for (;;) ;
 	}
 	return pbus;
 }

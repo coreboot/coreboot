@@ -36,7 +36,6 @@ struct bus *get_pbus_smbus(device_t dev)
 		printk_alert("%s Cannot find smbus bus operations",
 			     dev_path(dev));
 		die("");
-		for (;;) ;
 	}
 	return pbus;
 }

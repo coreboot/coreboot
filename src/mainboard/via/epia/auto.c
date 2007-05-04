@@ -66,8 +66,15 @@ static void enable_mainboard_devices(void)
 	/* we do this here as in V2, we can not yet do raw operations 
 	 * to pci!
 	 */
-        dev += 0x100; /* ICKY */
+	/* changed this to work correctly on later revisions of LB.
+	* The original dev += 0x100; stopped working. It also appears
+	* that if this is not set here, but in ide_init() only, the IDE
+	* does not work at all. I assume it needs to be set before something else,
+	* possibly before enabling the IDE peripheral, or it is a timing issue.
+	* Ben Hewson 29 Apr 2007.
+	*/
 
+	dev = pci_locate_device(PCI_ID(0x1106,0x0571), 0);
 	pci_write_config8(dev, 0x42, 0);
 }
 

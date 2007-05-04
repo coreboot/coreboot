@@ -51,7 +51,7 @@ uses MAXIMUM_CONSOLE_LOGLEVEL
 
 default CONFIG_CONSOLE_SERIAL8250=1
 ## Select the serial console baud rate
-default TTYS0_BAUD=19200
+default TTYS0_BAUD=115200
 
 # Select the serial console base port
 default TTYS0_BASE=0x3f8

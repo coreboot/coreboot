@@ -5,6 +5,11 @@
 ## 
 ## Copyright (C) 2000,2007 Ronald G. Minnich <rminnich@gmail.com>
 ##
+## Copyright (C) 2005 Eswar Nallusamy, LANL
+##
+## Copyright (C) 2005 Tyan
+## Written by Yinghai Lu <yhlu@tyan.com> for Tyan.
+##
 ## Copyright (C) 2007 coresystems GmbH
 ## Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH.
 ## 
@@ -39,7 +44,7 @@ _stage0:
 	/* save the BIST result */
 	movl	%eax, %ebp;
 
-	/* thanks to kmliu@sis.tw.com for this TBL fix */
+	/* thanks to kmliu@sis.tw.com for this TLB fix */
 	/* IMMEDIATELY invalidate the translation lookaside buffer before
 	 * executing any further code.  Even though paging is disabled we 
 	 * could still get false address translations due to the TLB if we 
@@ -174,31 +179,7 @@ __protected_stage0:
 
 .align 4
 
-## 
-## This file is part of the LinuxBIOS project.
-## 
-## Copyright (C) 2005 Eswar Nallusamy, LANL
-##
-## Copyright (C) 2005 Tyan
-## Written by Yinghai Lu <yhlu@tyan.com> for Tyan.
-##
-## Copyright (C) 2007 coresystems GmbH
-## Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH.
-## 
-## This program is free software; you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
-## (at your option) any later version.
-## 
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-## 
-## You should have received a copy of the GNU General Public License
-## along with this program; if not, write to the Free Software
-## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
-## 
+
 
 /* We will use 4Kbytes only for cache as ram. This is
  * enough to fit in our stack.
@@ -464,30 +445,6 @@ var_mtrr_msr:
         .long   0x208, 0x209, 0x20A, 0x20B
         .long   0x20C, 0x20D, 0x20E, 0x20F
         .long   0x000 /* NULL, end of table */
-
-
-
-
-##
-## This file is part of the LinuxBIOS project.
-##
-## Copyright (C) 2007 coresystems GmbH
-## Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH.
-##
-## This program is free software; you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
-## (at your option) any later version.
-##
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-##
-## You should have received a copy of the GNU General Public License
-## along with this program; if not, write to the Free Software
-## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
-##
 
 # Reset vector.
 

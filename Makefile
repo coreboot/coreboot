@@ -39,6 +39,7 @@ CC         := gcc
 CFLAGS     := -Os -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 	      -Werror-implicit-function-declaration -Wstrict-aliasing \
 	      -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer \
+	      -nostdinc -isystem `gcc -print-file-name=include` \
 	      -mpreferred-stack-boundary=2 -mregparm=3 -pipe
 # FIXME: Does stack boundary or regparm break the code on real hw?
 

@@ -144,17 +144,17 @@ chip northbridge/amd/gx2
 		# Active(Quiet) mode. Save power....
 		# SIRQ Enable = Enabled
 		# Invert mask = IRQ 12 and 1 are active high. Keyboard and Mouse IRQs. OK 
-			register "lpc_irq" = "0x00001002"
-			register "lpc_serirq_enable" = "0xEFFD0080"
- 			register "enable_gpio0_inta" = "1"
-			register "enable_ide_nand_flash" = "1"
-			register "enable_uarta" = "1"
-			register "enable_USBP4_host" = "1"
-			register "audio_irq" = "5"
-			register "usbf4_irq" = "10"
-			register "usbf5_irq" = "10"
-			register "usbf6_irq" = "0"
-			register "usbf7_irq" = "0"
+			#register "lpc_irq" = "0x00001002"
+			#register "lpc_serirq_enable" = "0xEFFD0080"
+			#register "enable_gpio0_inta" = "1"
+			#register "enable_ide_nand_flash" = "1"
+			#register "enable_uarta" = "1"
+			#register "enable_USBP4_host" = "1"
+			#register "audio_irq" = "5"
+			#register "usbf4_irq" = "10"
+			#register "usbf5_irq" = "10"
+			#register "usbf6_irq" = "0"
+			#register "usbf7_irq" = "0"
         		device pci d.0 on end	# Realtek 8139 LAN
         		device pci f.0 on end	# ISA Bridge
         		device pci f.2 on end	# IDE Controller

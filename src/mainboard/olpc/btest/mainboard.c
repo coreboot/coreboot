@@ -7,6 +7,7 @@
 #include <pc80/mc146818rtc.h>
 #include "chip.h"
 #include "../southbridge/amd/cs5536/cs5536_smbus2.h"
+#include <cpu/amd/vr.h>
 
 /* Borrowed from mc146818rtc.c */
 

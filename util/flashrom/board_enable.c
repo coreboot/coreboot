@@ -23,108 +23,87 @@
 #include "flash.h"
 #include "debug.h"
 
-static int board_iwill_dk8_htx(const char *name)
+/*
+ * Helper functions for many Winbond superIOs of the w836xx range.
+ */
+#define W836_INDEX 0x2E
+#define W836_DATA  0x2F
+
+/* Enter extended functions */
+static void
+w836xx_ext_enter(void)
 {
-	/* Extended function index register, either 0x2e or 0x4e. */
-#define EFIR 0x2e
-	/* Extended function data register, one plus the index reg. */
-#define EFDR EFIR + 1
-	char b;
+	outb(0x87, W836_INDEX);
+	outb(0x87, W836_INDEX);
+}
 
-	/* Disable the flash write protect (which is connected to the
-	 * Winbond W83627HF GPIOs).
-	 */
-	outb(0x87, EFIR);	/* Sequence to unlock extended functions */
-	outb(0x87, EFIR);
+/* Leave extended functions */
+static void
+w836xx_ext_leave(void)
+{
+	outb(0xAA, W836_INDEX);
+}
 
-	/* Activate logical device. */
-	outb(0x7, EFIR);
-	outb(8, EFDR);
+/* General functions for read/writing WB SuperIOs */
+static unsigned char
+wbsio_read(unsigned char index)
+{
+	outb(index, W836_INDEX);
+	return inb(W836_DATA);
+}
 
-	/* Set GPIO regs. */
-	outb(0x2b, EFIR);	/* GPIO multiplexed pin reg. */
-	b = inb(EFDR) | 0xd0;
-	outb(0x2b, EFIR);
-	outb(b, EFDR);
+static void
+wbsio_write(unsigned char index, unsigned char data)
+{
+	outb(index, W836_INDEX);
+	outb(data, W836_DATA);
+}
 
-	outb(0x30, EFIR);	/* GPIO2 */
-	b = inb(EFDR) | 0x01;
-	outb(0x30, EFIR);
-	outb(b, EFDR);
+static void
+wbsio_mask(unsigned char index, unsigned char data,
+	   unsigned char mask)
+{
+	unsigned char tmp;
 
-	outb(0xf0, EFIR);	/* IO sel */
-	b = inb(EFDR) | 0xef;
-	outb(0xf0, EFIR);
-	outb(b, EFDR);
-
-	outb(0xf1, EFIR);	/* GPIO data reg */
-	b = inb(EFDR) | 0x16;
-	outb(0xf1, EFIR);
-	outb(b, EFDR);
-
-	outb(0xf2, EFIR);	/* GPIO inversion reg */
-	b = inb(EFDR) | 0x00;
-	outb(0xf2, EFIR);
-	outb(b, EFDR);
-
-	/* Lock extended functions again. */
-	outb(0xaa, EFIR);	/* Command to exit extended functions */
-
-	return 0;
+	outb(index, W836_INDEX);
+	tmp = inb(W836_DATA) & ~mask;
+	outb(tmp | (data & mask), W836_DATA);
 }
 
 /*
- * Match on pci-ids, no report received, just data from the mainboard
- * specific code:
- *   main: 0x1022:0x746B, which is the SMBUS controller.
- *   card: 0x1022:0x36C0...
+ * WinBond w83627hf: raise GPIO24.
+ *
+ * Suited for:
+ *      * Agami Aruma
+ *      * IWILL DK8-HTX
  */
 
-static int board_agami_aruma(char *name)
+static int w83627hf_gpio24_raise(const char *name)
 {
-	/* Extended function index register, either 0x2e or 0x4e    */
-#define EFIR 0x2e
-	/* Extended function data register, one plus the index reg. */
-#define EFDR EFIR + 1
-	char b;
+	w836xx_ext_enter();
 
-        /*  Disable the flash write protect.  The flash write protect is
-         *  connected to the WinBond w83627hf GPIO 24.
-         */
-	outb(0x87, EFIR); /* sequence to unlock extended functions */
-	outb(0x87, EFIR);
-
-	outb(0x20, EFIR); /* SIO device ID register */
-	b = inb(EFDR);
-	printf_debug("\nW83627HF device ID = 0x%x\n",b);
-
-	if (b != 0x52) {
-		fprintf(stderr, "\nIncorrect device ID, aborting write protect disable\n");
+	/* Is this the w83627hf? */
+	if (wbsio_read(0x20) != 0x52) { /* SIO device ID register */
+		fprintf(stderr, "\nERROR: %s: W83627HF: Wrong ID: 0x%02X.\n",
+			name, wbsio_read(0x20));
+		w836xx_ext_leave();
 		return -1;
 	}
 
-	outb(0x2b, EFIR); /* GPIO multiplexed pin reg. */
-	b = inb(EFDR) | 0x10;
-	outb(0x2b, EFIR);
-	outb(b, EFDR); /* select GPIO 24 instead of WDTO */
+	/* PIN89S: WDTO/GP24 multiplex -> GPIO24 */
+	wbsio_mask(0x2B, 0x10, 0x10);
 
-	outb(0x7, EFIR); /* logical device select */
-        outb(0x8, EFDR); /* point to device 8, GPIO port 2 */
+	wbsio_write(0x07, 0x08); /* Select logical device 8: GPIO port 2 */
 
-	outb(0x30, EFIR); /* logic device activation control */
-	outb(0x1, EFDR); /* activate */
+	wbsio_mask(0x30, 0x01, 0x01); /* Activate logical device. */
 
-	outb(0xf0, EFIR); /* GPIO 20-27 I/O selection register */
-	b = inb(EFDR) & ~0x10;
-	outb(0xf0, EFIR);
-	outb(b, EFDR); /* set GPIO 24 as an output */
+	wbsio_mask(0xF0, 0x00, 0x10); /* GPIO24 -> output */
 
-	outb(0xf1, EFIR); /* GPIO 20-27 data register */
-	b = inb(EFDR) | 0x10;
-	outb(0xf1, EFIR);
-	outb(b, EFDR); /* set GPIO 24 */
+	wbsio_mask(0xF2, 0x00, 0x10); /* Clear GPIO24 inversion */
 
-	outb(0xaa, EFIR); /* command to exit extended functions */
+	wbsio_mask(0xF1, 0x10, 0x10); /* Raise GPIO24 */
+
+	w836xx_ext_leave();
 
 	return 0;
 }
@@ -135,7 +114,7 @@ static int board_agami_aruma(char *name)
  * We don't need to do this when using linuxbios, GPIO15 is never lowered there.
  */
 
-static int board_via_epia_m(char *name)
+static int board_via_epia_m(const char *name)
 {
         struct pci_dev *dev;
         unsigned int base;
@@ -164,33 +143,11 @@ static int board_via_epia_m(char *name)
 }
 
 /*
- * Winbond LPC super IO.
- *
- * Raises the ROM MEMW# line.
- */
-
-static void w83697_rom_memw_enable(void)
-{
-        uint8_t val;
-
-        outb(0x87, 0x2E); /* enable extended functions */
-        outb(0x87, 0x2E);
-
-        outb(0x24, 0x2E); /* rom bits live here */
-
-        val = inb(0x2F);
-        if (!(val & 0x02)) /* flash rom enabled? */
-                outb(val | 0x08, 0x2F); /* enable MEMW# */
-
-        outb(0xAA, 0x2E); /* disable extended functions */
-}
-
-/*
  * Suited for Asus A7V8X-MX SE and A7V400-MX.
  *
  */
 
-static int board_asus_a7v8x_mx(char *name)
+static int board_asus_a7v8x_mx(const char *name)
 {
         struct pci_dev *dev;
         uint8_t val;
@@ -206,7 +163,13 @@ static int board_asus_a7v8x_mx(char *name)
         val &= 0x7F;
         pci_write_byte(dev, 0x59, val);
 
-        w83697_rom_memw_enable();
+	/* Raise ROM MEMW# line on Winbond w83697 SuperIO */
+        w836xx_ext_enter();
+
+	if (!(wbsio_read(0x24) & 0x02)) /* flash rom enabled? */
+		wbsio_mask(0x24, 0x08, 0x08); /* enable MEMW# */
+
+	w836xx_ext_leave();
 
         return 0;
 }
@@ -241,18 +204,18 @@ struct board_pciid_enable {
         char  *lb_part;
 
         char  *name;
-        int  (*enable)(char *name);
+        int  (*enable)(const char *name);
 };
 
 struct board_pciid_enable board_pciid_enables[] = {
+	{ 0x1022, 0x7468, 0x0000, 0x0000,  0x0000, 0x0000, 0x0000, 0x0000,
+		"iwill", "dk8_htx", "IWILL DK8-HTX", w83627hf_gpio24_raise },
 	{ 0x1022, 0x746B, 0x1022, 0x36C0,  0x0000, 0x0000, 0x0000, 0x0000,
-		"AGAMI", "ARUMA", "agami Aruma", board_agami_aruma },
+		"AGAMI", "ARUMA", "agami Aruma", w83627hf_gpio24_raise },
 	{ 0x1106, 0x3177, 0x1106, 0xAA01,  0x1106, 0x3123, 0x1106, 0xAA01, 
 		NULL, NULL, "VIA EPIA M/MII/...", board_via_epia_m },
 	{ 0x1106, 0x3177, 0x1043, 0x80A1,  0x1106, 0x3205, 0x1043, 0x8118, 
 		NULL, NULL, "ASUS A7V8-MX SE", board_asus_a7v8x_mx },
-	{ 0x1022, 0x7468, 0x0, 0x0,  0x0, 0x0, 0x0, 0x0,
-		"iwill", "dk8_htx", "IWILL DK8-HTX", board_iwill_dk8_htx },
 
         { 0, 0, 0, 0,  0, 0, 0, 0, NULL, NULL } /* Keep this */
 };

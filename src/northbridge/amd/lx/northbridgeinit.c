@@ -1,3 +1,9 @@
+/*
+*
+* Copyright (C) 2007 Advanced Micro Devices
+*
+*/
+
 #include <console/console.h>
 #include <arch/io.h>
 #include <stdint.h>
@@ -13,7 +19,6 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/cache.h>
 
-/* put this here for now, we are not sure where it belongs */
 
 struct gliutable {
 	unsigned long desc_name;
@@ -36,9 +41,10 @@ struct gliutable gliu1table[] = {
 	{.desc_name=MSR_GLIU1_BASE1,.desc_type=  BM,.hi=  MSR_GL0 + 0x0,.lo=  0x0FFF80},	/*  0-7FFFF to MC*/
 	{.desc_name=MSR_GLIU1_BASE2,.desc_type=  BM,.hi=  MSR_GL0 + 0x0,.lo= (0x80 << 20) +0x0FFFE0},	/*  80000-9ffff to Mc*/
 	{.desc_name=MSR_GLIU1_SHADOW,.desc_type=  SC_SHADOW,.hi=  MSR_GL0 + 0x0,.lo=  0x03}, /*  C0000-Fffff split to MC and PCI (sub decode)*/
-	{.desc_name=MSR_GLIU1_SYSMEM,.desc_type=  R_SYSMEM,.hi=  MSR_GL0,.lo=  0x0},		/*  Cat0xc and fix dynamicly.*/
-	{.desc_name=MSR_GLIU1_SMM,.desc_type=  BM_SMM,.hi=  MSR_GL0,.lo=  0x0},			/*  Cat0xc and fix dynamicly.*/
+	{.desc_name=MSR_GLIU1_SYSMEM,.desc_type=  R_SYSMEM,.hi=	 MSR_GL0,.lo=  0x0},		/*	Catch and fix dynamicly.*/
+	{.desc_name=MSR_GLIU1_SMM,.desc_type=  BM_SMM,.hi=	MSR_GL0,.lo=  0x0},			/*	Catch and fix dynamicly.*/
 	{.desc_name=GLIU1_GLD_MSR_COH,.desc_type= OTHER,.hi= 0x0,.lo= GL1_GLIU0},
+	{.desc_name=MSR_GLIU1_FPU_TRAP,.desc_type=  SCIO,.hi=  (GL1_GLCP << 29) + 0x0,.lo=  0x033000F0},	/*  FooGlue FPU 0xF0*/
 	{.desc_name=GL_END,.desc_type= GL_END,.hi= 0x0,.lo= 0x0},
 };
 
@@ -51,53 +57,35 @@ struct msrinit {
 
 struct msrinit ClockGatingDefault [] = {
 	{GLIU0_GLD_MSR_PM,	{.hi=0x00,.lo=0x0005}},
-			/*  MC must stay off in SDR mode. It is turned on in CPUBug??? lotus #77.142*/
-	{MC_GLD_MSR_PM,		{.hi=0x00,.lo=0x0000}},
-	{GLIU1_GLD_MSR_PM,	{.hi=0x00,.lo=0x0005}},
-	{VG_GLD_MSR_PM,		{.hi=0x00,.lo=0x0000}},			/*  lotus #77.163*/
+	{MC_GLD_MSR_PM,		{.hi=0x00,.lo=0x0001}},
+	{VG_GLD_MSR_PM,		{.hi=0x00,.lo=0x0015}},
 	{GP_GLD_MSR_PM,		{.hi=0x00,.lo=0x0001}},
-	/*{DF_GLD_MSR_PM,		{.hi=0x00,.lo=0x0155}},*/ //GX3 
-	{GLCP_GLD_MSR_PM,	{.hi=0x00,.lo=0x0015}},
+	{DF_GLD_MSR_PM,		{.hi=0x00,.lo=0x0555}},
+	{GLIU1_GLD_MSR_PM,	{.hi=0x00,.lo=0x0005}},
+	{GLCP_GLD_MSR_PM,	{.hi=0x00,.lo=0x0014}},
 	{GLPCI_GLD_MSR_PM,	{.hi=0x00,.lo=0x0015}},
-	/*{FG_GLD_MSR_PM,		{.hi=0x00,.lo=0x0000}},	*/		/* Always on*/ //GX3
+	{VIP_GLD_MSR_PM,	{.hi=0x00,.lo=0x0005}},
+	{AES_GLD_MSR_PM,	{.hi=0x00,.lo=0x0015}},
+	{CPU_BC_PMODE_MSR,	{.hi=0x00,.lo=0x70303}},
 	{0xffffffff, 				{0xffffffff, 0xffffffff}},
-};
-	/*  All On*/
-struct msrinit ClockGatingAllOn[] = {
-	{GLIU0_GLD_MSR_PM,	{.hi=0x00,.lo=0x0FFFFFFFF}},
-	{MC_GLD_MSR_PM,		{.hi=0x00,.lo=0x0FFFFFFFF}},
-	{GLIU1_GLD_MSR_PM,	{.hi=0x00,.lo=0x0FFFFFFFF}},
-	{VG_GLD_MSR_PM,		{.hi=0x00, .lo=0x00}},
-	{GP_GLD_MSR_PM,		{.hi=0x00,.lo=0x000000001}},
-	/*{DF_GLD_MSR_PM,		{.hi=0x00,.lo=0x0FFFFFFFF}}, */ //GX3
-	{GLCP_GLD_MSR_PM,	{.hi=0x00,.lo=0x0FFFFFFFF}},
-	{GLPCI_GLD_MSR_PM,	{.hi=0x00,.lo=0x0FFFFFFFF}},
-	/*{FG_GLD_MSR_PM,		{.hi=0x00,.lo=0x0000}}, */ //GX3
- 	{0xffffffff, 				{0xffffffff, 0xffffffff}},
 };
 
-	/*  Performance*/
-struct msrinit ClockGatingPerformance[] = {
-	{VG_GLD_MSR_PM,		{.hi=0x00,.lo=0x0000}},		/*  lotus #77.163*/
-	{GP_GLD_MSR_PM,		{.hi=0x00,.lo=0x0001}},
-	/*{DF_GLD_MSR_PM,		{.hi=0x00,.lo=0x0155}},	*/ //GX3
-	{GLCP_GLD_MSR_PM,	{.hi=0x00,.lo=0x0015}},
-	{0xffffffff, 				{0xffffffff, 0xffffffff}},
-};
 /* */
 /*  SET GeodeLink PRIORITY*/
 /* */
 struct msrinit GeodeLinkPriorityTable [] = {
-	{CPU_GLD_MSR_CONFIG,		{.hi=0x00,.lo=0x0220}},	/*  CPU Priority.*/
-	/*{DF_GLD_MSR_MASTER_CONF,	{.hi=0x00,.lo=0x0000}},*/ 	/*  DF Priority.*/		//GX3
-	{VG_GLD_MSR_CONFIG,		{.hi=0x00,.lo=0x0720}},	/*  VG Primary and Secondary Priority.*/
-	{GP_GLD_MSR_CONFIG,		{.hi=0x00,.lo=0x0010}},	/*  Graphics Priority.*/
-	{GLPCI_GLD_MSR_CONFIG,		{.hi=0x00,.lo=0x0027}},	/*  GLPCI Priority + PID*/
-	{GLCP_GLD_MSR_CONF,		{.hi=0x00,.lo=0x0001}},	/*  GLCP Priority + PID*/
-	{VIP_GLD_MSR_CONFIG,		{.hi=0x00,.lo=0x0622}},	/*  VIP PID*/
-	{AES_GLD_MSR_CONFIG,		{.hi=0x00,.lo=0x0013}},	/*  AES PID*/
+	{CPU_GLD_MSR_CONFIG,		{.hi=0x00,.lo=0x0220}},
+	{DF_GLD_MSR_MASTER_CONF,	{.hi=0x00,.lo=0x0000}},
+	{VG_GLD_MSR_CONFIG,			{.hi=0x00,.lo=0x0720}},
+	{GP_GLD_MSR_CONFIG,			{.hi=0x00,.lo=0x0010}},
+	{GLPCI_GLD_MSR_CONFIG,		{.hi=0x00,.lo=0x0017}},
+	{GLCP_GLD_MSR_CONF,			{.hi=0x00,.lo=0x0001}},
+	{VIP_GLD_MSR_CONFIG,		{.hi=0x00,.lo=0x0622}},
+	{AES_GLD_MSR_CONFIG,		{.hi=0x00,.lo=0x0013}},
 	{0x0FFFFFFFF, 			{0x0FFFFFFFF, 0x0FFFFFFFF}},	/*  END*/
 };
+
+extern int sizeram(void);
 
 static void
 writeglmsr(struct gliutable *gl){
@@ -106,10 +94,7 @@ writeglmsr(struct gliutable *gl){
 	msr.lo = gl->lo;
 	msr.hi = gl->hi;
 	wrmsr(gl->desc_name, msr);	// MSR - see table above
-	// printk_debug("%s: write msr 0x%08x, val 0x%08x:0x%08x\n", __FUNCTION__, gl->desc_name, msr.hi, msr.lo); //GX3
-	/* they do this, so we do this */
-	msr = rdmsr(gl->desc_name);
-	// printk_debug("%s: AFTER write msr 0x%08x, val 0x%08x:0x%08x\n", __FUNCTION__, gl->desc_name, msr.hi, msr.lo); // GX3
+	printk_debug("%s: MSR 0x%08x, val 0x%08x:0x%08x\n", __FUNCTION__, gl->desc_name, msr.hi, msr.lo); // GX3
 }
 
 static void
@@ -124,14 +109,8 @@ ShadowInit(struct gliutable *gl)
 	}
 }
 
-/* NOTE: transcribed from assembly code. There is the usual redundant assembly nonsense in here. 
-  * CLEAN ME UP
-   */
-/* yes, this duplicates later code, but it seems that is how they want it done. 
-  */
 extern int sizeram(void);
-static void
-SysmemInit(struct gliutable *gl)
+static void SysmemInit(struct gliutable *gl)
 {
 	msr_t msr;
 	int sizembytes, sizebytes;
@@ -141,51 +120,51 @@ SysmemInit(struct gliutable *gl)
 	 * system. We will adjust for SMM now and Frame Buffer later.
 	 */
 	sizembytes = sizeram();
-	printk_debug("%s: enable for %dm bytes\n", __FUNCTION__, sizembytes);
+	printk_debug("%s: enable for %dMBytes\n", __FUNCTION__, sizembytes);
 	sizebytes = sizembytes << 20;
 
-	sizebytes -= ((SMM_SIZE)<<10);
+	sizebytes -= ((SMM_SIZE * 1024) + 1);
 	printk_debug("usable RAM: %d bytes\n", sizebytes);
 
+	/* 20 bit address The bottom 12 bits go into bits 20-31 in msr.lo
+	 The top 8 bits go into 0-7 of msr.hi. */
+	sizebytes--;
 	msr.hi = (gl->hi & 0xFFFFFF00) | (sizebytes >> 24);
-	/* set up sizebytes to fit into msr.lo */
-	sizebytes <<= 8; /* what? well, we want bits 23:12 in bits 31:20. */
+	sizebytes <<= 8;		/* move bits 23:12 in bits 31:20. */
 	sizebytes &= 0xfff00000;
-	sizebytes |= 0x100;
+	sizebytes |= 0x100;		/* start at 1MB */
 	msr.lo = sizebytes;
 
 	wrmsr(gl->desc_name, msr);	// MSR - see table above
-	msr = rdmsr(gl->desc_name);
-	/* printk_debug("%s: AFTER write msr 0x%08x, val 0x%08x:0x%08x\n", __FUNCTION__, 
-				gl->desc_name, msr.hi, msr.lo); */ // GX3	
+	printk_debug("%s: MSR 0x%08x, val 0x%08x:0x%08x\n", __FUNCTION__,
+				gl->desc_name, msr.hi, msr.lo);
 }
 
-static void
-SMMGL0Init(struct gliutable *gl) {
+static void SMMGL0Init(struct gliutable *gl) {
 	msr_t msr;
 	int sizebytes = sizeram()<<20;
 	long offset;
 
-	sizebytes -= ((SMM_SIZE)<<10);
+	sizebytes -= (SMM_SIZE*1024);
 
 	printk_debug("%s: %d bytes\n", __FUNCTION__, sizebytes);
 
+	/* calculate the Two's complement offset */
 	offset = sizebytes - SMM_OFFSET;
 	offset = (offset >> 12) & 0x000fffff;
-	printk_debug("%s: offset is 0x%08x\n", __FUNCTION__, offset);
+	printk_debug("%s: offset is 0x%08x\n", __FUNCTION__, SMM_OFFSET);
 
-	msr.hi = offset << 8 | MSR_MC;
+	msr.hi = offset << 8 | gl->hi;
 	msr.hi |= SMM_OFFSET>>24;
 
 	msr.lo = SMM_OFFSET << 8;
 	msr.lo |= ((~(SMM_SIZE*1024)+1)>>12)&0xfffff;
 	
 	wrmsr(gl->desc_name, msr);	// MSR - See table above
-	msr = rdmsr(gl->desc_name);
-	printk_debug("%s: AFTER write msr 0x%08x, val 0x%08x:0x%08x\n", __FUNCTION__, gl->desc_name, msr.hi, msr.lo);
+	printk_debug("%s: MSR 0x%08x, val 0x%08x:0x%08x\n", __FUNCTION__, gl->desc_name, msr.hi, msr.lo);
 }
-static void
-SMMGL1Init(struct gliutable *gl) {
+
+static void SMMGL1Init(struct gliutable *gl) {
 	msr_t msr;
 	printk_debug("%s:\n", __FUNCTION__ );
 
@@ -193,16 +172,14 @@ SMMGL1Init(struct gliutable *gl) {
 	/* I don't think this is needed */
 	msr.hi &= 0xffffff00;
 	msr.hi |= (SMM_OFFSET >> 24);
-	msr.lo = SMM_OFFSET << 8;
+	msr.lo = (SMM_OFFSET << 8) & 0xFFF00000;
 	msr.lo |= ((~(SMM_SIZE*1024)+1)>>12)&0xfffff;
 	
 	wrmsr(gl->desc_name, msr);	// MSR - See table above
-	msr = rdmsr(gl->desc_name);
-	printk_debug("%s: AFTER write msr 0x%08x, val 0x%08x:0x%08x\n", __FUNCTION__, gl->desc_name, msr.hi, msr.lo);
+	printk_debug("%s: MSR 0x%08x, val 0x%08x:0x%08x\n", __FUNCTION__, gl->desc_name, msr.hi, msr.lo);
 }
 
-static void
-GLIUInit(struct gliutable *gl){
+static void GLIUInit(struct gliutable *gl){
 
 	while (gl->desc_type != GL_END){
 		switch(gl->desc_type){
@@ -229,6 +206,7 @@ GLIUInit(struct gliutable *gl){
 	}
 
 }
+
 	/* ***************************************************************************/
 	/* **/
 	/* *	GLPCIInit*/
@@ -255,8 +233,8 @@ static void GLPCIInit(void){
 	/* */
 	/*  R0 - GLPCI settings for Conventional Memory space.*/
 	/* */
-	msr.hi =  (0x09F000 >> 12) << GLPCI_RC_UPPER_TOP_SHIFT		/*  640*/;
-	msr.lo =  0							/*  0*/;
+	msr.hi =  (0x09F000 >> 12) << GLPCI_RC_UPPER_TOP_SHIFT;		/* 640 */
+	msr.lo =  0;							/* 0*/
 	msr.lo |= GLPCI_RC_LOWER_EN_SET+ GLPCI_RC_LOWER_PF_SET + GLPCI_RC_LOWER_WC_SET;
 	msrnum = GLPCI_RC0;
 	wrmsr(msrnum, msr);
@@ -283,8 +261,7 @@ static void GLPCIInit(void){
 		/* So we need a high page aligned addresss (pah) and low page aligned address (pal)
 		 * pah is from msr.hi << 12 | msr.low >> 20. pal is msr.lo << 12
 		 */
-		printk_debug("GLPCI r1: system msr.lo 0x%08x msr.hi 0x%08x\n", msr.lo, msr.hi);
-		pah = ((msr.hi &0xff) << 12) | ((msr.lo >> 20) & 0xfff);
+		pah = ((msr.hi & 0xFF) << 12) | ((msr.lo >> 20) & 0xFFF);
 		/* we have the page address. Now make it a page-aligned address */
 		pah <<= 12;
 
@@ -292,24 +269,25 @@ static void GLPCIInit(void){
 		msr.hi =  pah;
 		msr.lo =  pal;
 		msr.lo |= GLPCI_RC_LOWER_EN_SET | GLPCI_RC_LOWER_PF_SET | GLPCI_RC_LOWER_WC_SET;
-		printk_debug("GLPCI r1: system msr.lo 0x%08x msr.hi 0x%08x\n", msr.lo, msr.hi);
+		printk_debug("GLPCI R1: system msr.lo 0x%08x msr.hi 0x%08x\n", msr.lo, msr.hi);
 		msrnum = GLPCI_RC1;
 		wrmsr(msrnum, msr);
 	}
 
 	/* */
-	/*  R2 - GLPCI settings for SMM space.*/
+	/*	R2 - GLPCI settings for SMM space */
 	/* */
 	msr.hi =  ((SMM_OFFSET+(SMM_SIZE*1024-1)) >> 12) << GLPCI_RC_UPPER_TOP_SHIFT;
 	msr.lo =  (SMM_OFFSET >> 12) << GLPCI_RC_LOWER_BASE_SHIFT;
 	msr.lo |= GLPCI_RC_LOWER_EN_SET | GLPCI_RC_LOWER_PF_SET;
+	printk_debug("GLPCI R2: system msr.lo 0x%08x msr.hi 0x%08x\n", msr.lo, msr.hi);
 	msrnum = GLPCI_RC2;
 	wrmsr(msrnum, msr);
 
 	/* this is done elsewhere already, but it does no harm to do it more than once */
 	/*  write serialize memory hole to PCI. Need to to unWS when something is shadowed regardless of cachablility.*/
-	msr.lo =  0x021212121								/*  cache disabled and write serialized*/;
-	msr.hi =  0x021212121								/*  cache disabled and write serialized*/;
+	msr.lo =  0x021212121;								/* cache disabled and write serialized */
+	msr.hi =  0x021212121;								/* cache disabled and write serialized */
 
 	msrnum = CPU_RCONF_A0_BF;
 	wrmsr(msrnum, msr);
@@ -340,17 +318,16 @@ static void GLPCIInit(void){
 	msrnum = CPU_DM_CONFIG0;
 	msr = rdmsr(msrnum);
 	msr.hi &= ~ (7 << DM_CONFIG0_UPPER_WSREQ_SHIFT);
-	msr.hi |= 2 << DM_CONFIG0_UPPER_WSREQ_SHIFT	;	/*  reduce to 1 for safe mode.*/
+	msr.hi |= 2 << DM_CONFIG0_UPPER_WSREQ_SHIFT;	/* reduce to 1 for safe mode */
 	wrmsr(msrnum, msr);
 
 	/* we are ignoring the 5530 case for now, and perhaps forever. */
 
 	/* */
-	/* 5535 NB Init*/
+	/* 553x NB Init*/
 	/* */	
 
 	/* Arbiter setup */
-
 	enable_preempt = GLPCI_ARB_LOWER_PRE0_SET | GLPCI_ARB_LOWER_PRE1_SET | GLPCI_ARB_LOWER_PRE2_SET | GLPCI_ARB_LOWER_CPRE_SET; 
 	enable_cpu_override = GLPCI_ARB_LOWER_COV_SET;
 	enable_bus_parking = GLPCI_ARB_LOWER_PARK_SET;
@@ -392,10 +369,10 @@ static void GLPCIInit(void){
 	wrmsr(msrnum, msr);
 
 
-	/*  Set GLPCI Latency Timer.*/
+	/* Set GLPCI Latency Timer */
 	msrnum = GLPCI_CTRL;
 	msr = rdmsr(msrnum);
-	msr.hi |=  0x1F << GLPCI_CTRL_UPPER_LAT_SHIFT; 	/*  Change once 1.x is gone.*/
+	msr.hi |=  0x1F << GLPCI_CTRL_UPPER_LAT_SHIFT;	/* Change once 1.x is gone */
 	wrmsr(msrnum, msr);
 
 	/*  GLPCI_SPARE*/
@@ -404,7 +381,6 @@ static void GLPCIInit(void){
 	msr.lo &=  ~ 0x7;
 	msr.lo |=  GLPCI_SPARE_LOWER_AILTO_SET | GLPCI_SPARE_LOWER_PPD_SET | GLPCI_SPARE_LOWER_PPC_SET | GLPCI_SPARE_LOWER_MPC_SET | GLPCI_SPARE_LOWER_NSE_SET | GLPCI_SPARE_LOWER_SUPO_SET;
 	wrmsr(msrnum, msr);
-
 }
 
 
@@ -420,35 +396,13 @@ static void GLPCIInit(void){
 	/* *	Modified:*/
 	/* **/
 	/* ***************************************************************************/
-static void 
-ClockGatingInit (void){
+static void ClockGatingInit (void){
 	msr_t msr;
 	struct msrinit *gating = ClockGatingDefault;
 	int i;
 
-#if 0
-	mov	cx, TOKEN_CLK_GATE
-	NOSTACK	bx, GetNVRAMValueBX
-	cmp	al, TVALUE_CG_OFF
-	je	gatingdone
-	
-	cmp	al, TVALUE_CG_DEFAULT
-	jb	allon
-	ja	performance
-	lea	si, ClockGatingDefault
-	jmp	nextdevice
-
-allon:
-	lea	si, ClockGatingAllOn
-	jmp	nextdevice
-
-performance:
-	lea	si, ClockGatingPerformance
-#endif
-
 	for(i = 0; gating->msrnum != 0xffffffff; i++) {
 		msr = rdmsr(gating->msrnum);
-		//printk_debug("%s: MSR 0x%08x is 0x%08x:0x%08x\n", __FUNCTION__, gating->msrnum, msr.hi, msr.lo); //GX3 
 		msr.hi |= gating->msr.hi;
 		msr.lo |= gating->msr.lo;
 		/* printk_debug("%s: MSR 0x%08x will be set to  0x%08x:0x%08x\n", __FUNCTION__, 
@@ -459,15 +413,13 @@ performance:
 
 }
 
-static void 
-GeodeLinkPriority(void){
+static void GeodeLinkPriority(void){
 	msr_t msr;
 	struct msrinit *prio = GeodeLinkPriorityTable;
 	int i;
 
 	for(i = 0; prio->msrnum != 0xffffffff; i++) {
 		msr = rdmsr(prio->msrnum);
-		// printk_debug("%s: MSR 0x%08x is 0x%08x:0x%08x\n", __FUNCTION__, prio->msrnum, msr.hi, msr.lo); // GX3
 		msr.hi |= prio->msr.hi;
 		msr.lo &= ~0xfff;
 		msr.lo |= prio->msr.lo;
@@ -485,9 +437,9 @@ GeodeLinkPriority(void){
  *	If the setShadow function is used then all shadow descriptors
  *	  will stay sync'ed.
  */
-static uint64_t getShadow(void)
-{
+static uint64_t getShadow(void){
 	msr_t msr;
+
 	msr = rdmsr(MSR_GLIU0_SHADOW);
 	return ( ( (uint64_t) msr.hi ) << 32 ) | msr.lo;
 }
@@ -499,8 +451,8 @@ static uint64_t getShadow(void)
  *	This is part of the PCI lockup solution
  *	Entry: EDX:EAX is the shadow settings
  */
-static void setShadowRCONF(uint32_t shadowHi, uint32_t shadowLo)
-{
+static void setShadowRCONF(uint32_t shadowHi, uint32_t shadowLo){
+
 	// ok this is whacky bit translation time.
 	int bit;
 	uint8_t shadowByte;
@@ -557,7 +509,6 @@ static void setShadowGLPCI(uint32_t shadowHi, uint32_t shadowLo)
 	msr_t msr;
 	
 // Set the Enable Register.
-
 	msr = rdmsr(GLPCI_REN);
 	msr.lo &= 0xFFFF00FF;
 	msr.lo |= ( (shadowLo & 0xFFFF0000) >> 8);
@@ -592,26 +543,13 @@ static void setShadow(uint64_t shadowSettings)
 				msr.hi &= 0xFFFF0000;		// maintain PDID in upper EDX
 				msr.hi |= ((uint32_t) (shadowSettings >> 32)) & 0x0000FFFF;
 				wrmsr(pTable->desc_name, msr);	// MSR - See the table above
-
 			}
 		}
 	}
 }
 
-/**************************************************************************
- *
- *	shadowRom
- *
- *	Set up a stack for ease of further testing
- *
- *	Entry:
- *	Exit:
- *	Destroys:
- *
- **************************************************************************/
-static void 
-shadowRom(void)
-{
+static void rom_shadow_settings(void){
+
 	uint64_t shadowSettings = getShadow();
 	shadowSettings &= (uint64_t) 0xFFFF00000000FFFFULL;	// Disable read & writes
 	shadowSettings |= (uint64_t) 0x00000000F0000000ULL;	// Enable reads for F0000-FFFFF
@@ -623,7 +561,7 @@ shadowRom(void)
 
 /***************************************************************************
  *
- * RCONFInit
+ * L1Init
  *	  Set up RCONF_DEFAULT and any other RCONF registers needed
  *
  *  DEVRC_RCONF_DEFAULT:
@@ -639,14 +577,12 @@ shadowRom(void)
 #define ROMBASE_RCONF_DEFAULT 0xFFFC0000
 #define ROMRC_RCONF_DEFAULT 0x25
 
-static void
-RCONFInit(void)
+static void enable_L1_cache(void)
 {
 	struct gliutable *gl = 0;
 	int i;
 	msr_t msr;
 	uint8_t SysMemCacheProp;
-	//uint8_t RegionProp;
 
 	/* Locate SYSMEM entry in GLIU0table */
 	for(i = 0; gliu0table[i].desc_name != GL_END; i++) {
@@ -661,10 +597,7 @@ RCONFInit(void)
 	}
 
 // sysdescfound:	
-	/* found the descriptor... get its contents */
 	msr = rdmsr(gl->desc_name);
-
-	printk_debug("SYSDESC: 0x%08X:0x%08X\n",msr.hi,msr.lo);
 
 	/* 20 bit address -  The bottom 12 bits go into bits 20-31 in eax, the 
 	 * top 8 bits go into 0-7 of edx. 
@@ -673,13 +606,11 @@ RCONFInit(void)
 	msr.lo = ((msr.lo << 12) | (msr.lo >> 20)) & 0x000FFFFF;
 	msr.lo <<= RCONF_DEFAULT_LOWER_SYSTOP_SHIFT;	// 8
 	
-	printk_debug("RCONF LO: 0x%08X\n",msr.lo);
-	
 	// Set Default SYSMEM region properties
-	msr.lo &= ~SYSMEM_RCONF_WRITETHROUGH;	// 8 (or ~8)
+	msr.lo &= ~SYSMEM_RCONF_WRITETHROUGH;	// NOT writethrough == writeback 8 (or ~8)
 
 	// Set PCI space cache properties
-	msr.hi = (DEVRC_RCONF_DEFAULT >> 4);	// only need the bottom bits and lets clean the rest of edx
+	msr.hi = (DEVRC_RCONF_DEFAULT >> 4);	// setting is split betwwen hi and lo...
 	msr.lo |= (DEVRC_RCONF_DEFAULT << 28);
 
 	// Set the ROMBASE. This is usually FFFC0000h
@@ -690,6 +621,7 @@ RCONFInit(void)
 	
 	// now program RCONF_DEFAULT
 	wrmsr(CPU_RCONF_DEFAULT, msr);
+	printk_debug("CPU_RCONF_DEFAULT (1808): 0x%08X:0x%08X\n",msr.hi,msr.lo);
 
 	// RCONF_BYPASS: Cache tablewalk properties and SMM/DMM header access properties.
 	// Set to match system memory cache properties.
@@ -699,21 +631,84 @@ RCONFInit(void)
 	msr.lo = (msr.lo & 0xFFFF0000) | (SysMemCacheProp << 8) | SysMemCacheProp;
 	wrmsr(CPU_RCONF_BYPASS, msr);
 	
-	printk_debug("CPU_RCONF_SMM (180E)  0x%08x : 0x%08x\n", msr.hi, msr.lo);
+	printk_debug("CPU_RCONF_BYPASS (180A): 0x%08x : 0x%08x\n", msr.hi, msr.lo);
 }
 
+static void enable_L2_cache(void) {
+	msr_t msr;
+
+	/* Instruction Memory Configuration register
+	 * set EBE bit, required when L2 cache is enabled
+	 */
+	msr = rdmsr(CPU_IM_CONFIG);
+	msr.lo |= 0x400;
+	wrmsr(CPU_IM_CONFIG, msr);
+
+	/* Data Memory Subsystem Configuration register
+	 * set EVCTONRPL bit, required when L2 cache is enabled in victim mode
+	 */
+	msr = rdmsr(CPU_DM_CONFIG0);
+	msr.lo |= 0x4000;
+	wrmsr(CPU_DM_CONFIG0, msr);
+
+	/* invalidate L2 cache */
+	msr.hi = 0x00;
+	msr.lo = 0x10;
+	wrmsr(CPU_BC_L2_CONF, msr);
+
+	/* Enable L2 cache */
+	msr.hi = 0x00;
+	msr.lo = 0x0f;
+	wrmsr(CPU_BC_L2_CONF, msr);
+
+	printk_debug("L2 cache enabled\n");
+}
+
+static void setup_lx_cache(void)
+{
+	msr_t msr;
+
+	enable_L1_cache();
+	enable_L2_cache();
+
+	// Make sure all INVD instructions are treated as WBINVD.  We do this
+	// because we've found some programs which require this behavior.
+	msr = rdmsr(CPU_DM_CONFIG0);
+	msr.lo |= DM_CONFIG0_LOWER_WBINVD_SET;
+	wrmsr(CPU_DM_CONFIG0, msr);
+
+	x86_enable_cache();
+	wbinvd();
+}
+
+uint32_t get_systop(void) {
+	struct gliutable *gl = 0;
+	uint32_t systop;
+	msr_t msr;
+	int i;
+
+	for(i = 0; gliu0table[i].desc_name != GL_END; i++) {
+		if (gliu0table[i].desc_type == R_SYSMEM) {
+			gl = &gliu0table[i];
+			break;
+		}
+	}
+	if (gl) {
+		msr = rdmsr(gl->desc_name);
+		systop = ((msr.hi & 0xFF) << 24) | ((msr.lo & 0xFFF00000) >> 8);
+		systop += 0x1000;		/* 4K */
+	}else{
+		systop = ((sizeram() - CONFIG_VIDEO_MB) * 1024) - SMM_SIZE - 1024;
+	}
+	return systop;
+}
 
 /****************************************************************************/
 /* *	northbridge_init_early */
 /* **/
 /* *	Core Logic initialization:  Host bridge*/
 /* **/
-/* *	Entry:*/
-/* *	Exit:*/
-/* *	Modified:*/
-/* **/
 /* ***************************************************************************/
-
 void northbridge_init_early(void)
 {
 	msr_t msr;
@@ -723,34 +718,21 @@ void northbridge_init_early(void)
 	for(i = 0; gliutables[i]; i++)
 		GLIUInit(gliutables[i]);
 
-	GeodeLinkPriority();
-	
-	shadowRom();
-	
-	// GeodeROM ensures that the BIOS waits the required 1 second before 
-	// allowing anything to access PCI
-	// PCIDelay();
-	
-	RCONFInit();
-	
-	// The cacheInit function in GeodeROM tests cache and, among other things,
-	// makes sure all INVD instructions are treated as WBINVD.  We do this
-	// because we've found some programs which require this behavior.
-	// That subset of cacheInit() is implemented here:
-	
-	/* GX3 OK */
-	msr = rdmsr(CPU_DM_CONFIG0);
-	msr.lo |= DM_CONFIG0_LOWER_WBINVD_SET;
-	wrmsr(CPU_DM_CONFIG0, msr);
-	
 	/*  Now that the descriptor to memory is set up.*/
 	/*  The memory controller needs one read to synch its lines before it can be used.*/
 	i = *(int *) 0;
 
+	GeodeLinkPriority();
+
+	setup_lx_cache();
+
+	rom_shadow_settings();
+
 	GLPCIInit();
+
 	ClockGatingInit();
-	__asm__("FINIT\n");
-	/* CPUBugsFix -- called elsewhere */
+
+	__asm__ __volatile__("FINIT\n");
 	printk_debug("Exit %s\n", __FUNCTION__);
 }
 

@@ -1,3 +1,9 @@
+/*
+*
+* Copyright (C) 2007 Advanced Micro Devices
+*
+*/
+
 #include <console/console.h>
 #include <arch/io.h>
 #include <stdint.h>
@@ -7,13 +13,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <bitops.h>
-#include "chip.h"
-#include "northbridge.h"
 #include <cpu/cpu.h>
 #include <cpu/amd/lxdef.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/amd/vr.h>
+#include "chip.h"
+#include "northbridge.h"
 
 
 /* here is programming for the various MSRs.*/
@@ -56,9 +62,11 @@
 
 extern void graphics_init(void);
 extern void cpubug(void);
+extern void chipsetinit(void);
+extern void print_conf(void);
+extern uint32_t get_systop(void);
 
 void northbridge_init_early(void);
-void chipsetinit(struct northbridge_amd_lx_config *nb);
 void setup_realmode_idt(void);
 void do_vsmbios(void);
 
@@ -97,309 +105,42 @@ struct msr_defaults {
 /* todo: add a resource record. We don't do this here because this may be called when 
   * very little of the platform is actually working.
   */
-int
-sizeram(void)
+int sizeram(void)
 {
 	msr_t msr;
 	int sizem = 0;
 	unsigned short dimm;
 
-	msr = rdmsr(0x20000018);
-	printk_debug("sizeram: %08x:%08x\n", msr.hi, msr.lo);
+	msr = rdmsr(MC_CF07_DATA);
+	printk_debug("sizeram: _MSR MC_CF07_DATA: %08x:%08x\n", msr.hi, msr.lo);
 
 	/* dimm 0 */
 	dimm = msr.hi;
-	sizem = (1 << ((dimm >> 12)-1)) * 8;
-
+	/* installed? */
+	if ((dimm & 7) != 7){
+		sizem = 4 << ((dimm >> 12) & 0x0F);
+	}
 
 	/* dimm 1*/
 	dimm = msr.hi >> 16;
 	/* installed? */
-	if ((dimm & 7) != 7)
-		sizem += (1 << ((dimm >> 12)-1)) * 8;
+	if ((dimm & 7) != 7){
+		sizem += 4 << ((dimm >> 12) & 0x0F);
+	}
 
-	printk_debug("sizeram: sizem 0x%x\n", sizem);
+	printk_debug("sizeram: sizem 0x%xMB\n", sizem);
 	return sizem;
 }
 
-/* note that dev is NOT used -- yet */
-static void irq_init_steering(struct device *dev, uint16_t irq_map) {
-	/* Set up IRQ steering */
-	uint32_t pciAddr = 0x80000000 | (CHIPSET_DEV_NUM << 11) | 0x5C;
 
-	printk_debug("%s(%08X [%08X], %04X)\n", __FUNCTION__, dev, pciAddr, irq_map);
-
-	/* The IRQ steering values (in hex) are effectively dcba, where:
-	 *    <a> represents the IRQ for INTA, 
-	 *    <b> represents the IRQ for INTB,
-	 *    <c> represents the IRQ for INTC, and
-	 *    <d> represents the IRQ for INTD.
-	 * Thus, a value of irq_map = 0xAA5B translates to:
-	 *    INTA = IRQB (IRQ 11)
-	 *    INTB = IRQ5 (IRQ 5)
-	 *    INTC = IRQA (IRQ 10)
-	 *    INTD = IRQA (IRQ 10)
-	 */
-	outl(pciAddr & ~3, 0xCF8);
-	outl(irq_map,      0xCFC);
-}
-
-
-/*
- * setup_lx_cache
- *
- * Returns the amount of memory (in KB) available to the system.  This is the 
- * total amount of memory less the amount of memory reserved for SMM use.
- *
- */ 
-static int
-setup_lx_cache(void)
-{
-	msr_t msr;
-	unsigned long long val;
-	int sizekbytes, sizereg;
-
-	sizekbytes = sizeram() * 1024;
-	printk_debug("setup_lx_cache: enable for %d KB\n", sizekbytes);
-	/* build up the rconf word. */
-	/* the SYSTOP bits 27:8 are actually the top bits from 31:12. Book fails to say that */
-	/* set romrp */
-	val = ((unsigned long long) ROM_PROPERTIES) << 56;
-	/* make rom base useful for 1M roms */
-	/* Flash base address -- sized for 1M for now*/
-	val |= ((unsigned long long) 0xfff00)<<36;
-	/* set the devrp properties */
-	val |= ((unsigned long long) DEVICE_PROPERTIES) << 28;
-	/* Take our TOM, RIGHT shift 12, since it page-aligned, then LEFT-shift 8 for reg. */
-	/* yank off memory for the SMM handler */
-	sizekbytes -= SMM_SIZE;
-	sizereg = sizekbytes;
-	sizereg >>= 2;
-	sizereg <<= 8;
-	val |= sizereg;
-	val |= RAM_PROPERTIES;
-	msr.lo = val;
-	msr.hi = (val >> 32);
-	
-	// GX3
-	//msr.hi = 0x04FFFC02;
-	//msr.lo = 0x1077BE00;
-	
-	//sizekbytes = 122616;
-
-	printk_debug("msr 0x%08X will be set to %08x:%08x\n", CPU_RCONF_DEFAULT, msr.hi, msr.lo);
-	wrmsr(CPU_RCONF_DEFAULT, msr);
-
-	enable_cache();
-	wbinvd();
-	return sizekbytes;
-}
-
-/* we have to do this here. We have not found a nicer way to do it */
-void
-setup_lx(void)
-{
-
-	unsigned long tmp, tmp2;
-	msr_t msr;
-	unsigned long size_kb, membytes;
-
-	size_kb = setup_lx_cache();
-
-#if 0	// andrei: this is done in northbridge.c SMMGL0Init and SystemInit!
-	membytes = size_kb * 1024;
-	/* NOTE! setup_lx_cache returns the SIZE OF RAM - RAMADJUST!
-	  * so it is safe to use. You should NOT at this point call 	
-	  * sizeram() directly. 
-	  */
-
-	/* we need to set 0x10000028 and 0x40000029 */
-	/*
-	 * These two descriptors cover the range from 1 MB (0x100000) to 
-	 * SYSTOP (a.k.a. TOM, or Top of Memory)
-	 */
-
-
-	/* fixme: SMM MSR 0x10000026 and 0x400000023 */
-	/* calculate the OFFSET field */
-	tmp = membytes - SMM_OFFSET;
-	tmp >>= 12;
-	tmp <<= 8;
-	tmp |= 0x20000000;
-	tmp |= (SMM_OFFSET >> 24);
-
-	/* calculate the PBASE and PMASK fields */
-	tmp2 = (SMM_OFFSET << 8) & 0xFFF00000; /* shift right 12 then left 20  == left 8 */
-	tmp2 |= (((~(SMM_SIZE * 1024) + 1) >> 12) & 0xfffff);
-	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x10000026, tmp, tmp2);
-	msr.hi = tmp;
-	msr.lo = tmp2;
-	wrmsr(0x10000026, msr);
-#endif
-}
 
 static void enable_shadow(device_t dev)
 {
 }
 
-void print_conf(void) {
-	int i;
-	unsigned long iol;
-	msr_t msr;
-	
-	int cpu_msr_defs[] =  { L2_CONFIG_MSR, CPU_IM_CONFIG, 
-							CPU_DM_CONFIG0, CPU_DM_CONFIG1, CPU_DM_PFLOCK, CPU_RCONF_DEFAULT,
-							CPU_RCONF_BYPASS, CPU_RCONF_A0_BF, CPU_RCONF_C0_DF, CPU_RCONF_E0_FF,
-							CPU_RCONF_SMM, CPU_RCONF_DMM, GLCP_DELAY_CONTROLS, GL_END
-							};
-
-	int gliu0_msr_defs[] = {MSR_GLIU0_BASE1, MSR_GLIU0_BASE2, MSR_GLIU0_BASE3, MSR_GLIU0_BASE4, MSR_GLIU0_BASE5, MSR_GLIU0_BASE6,
-							 GLIU0_P2D_BMO_0, GLIU0_P2D_BMO_1, MSR_GLIU0_SYSMEM,
-							 GLIU0_P2D_RO_0, GLIU0_P2D_RO_1, GLIU0_P2D_RO_2, MSR_GLIU0_SHADOW,
-							 GLIU0_IOD_BM_0, GLIU0_IOD_BM_1, GLIU0_IOD_BM_2,
-							 GLIU0_IOD_SC_0, GLIU0_IOD_SC_1, GLIU0_IOD_SC_2, GLIU0_IOD_SC_3, GLIU0_IOD_SC_4, GLIU0_IOD_SC_5,
-							 GLIU0_GLD_MSR_COH, GL_END
-							};
-
-	int gliu1_msr_defs[] = {MSR_GLIU1_BASE1, MSR_GLIU1_BASE2, MSR_GLIU1_BASE3, MSR_GLIU1_BASE4, MSR_GLIU1_BASE5, MSR_GLIU1_BASE6,
-							 MSR_GLIU1_BASE7, MSR_GLIU1_BASE8, MSR_GLIU1_BASE9, MSR_GLIU1_BASE10,
-							 GLIU1_P2D_R_0, GLIU1_P2D_R_1, GLIU1_P2D_R_2, GLIU1_P2D_R_3, MSR_GLIU1_SHADOW,
-							 GLIU1_IOD_BM_0, GLIU1_IOD_BM_1, GLIU1_IOD_BM_2,
-							 GLIU1_IOD_SC_0, GLIU1_IOD_SC_1, GLIU1_IOD_SC_2, GLIU1_IOD_SC_3,
-							 GLIU1_GLD_MSR_COH, GL_END
-							};
-
-	int rconf_msr[] = { CPU_RCONF0, CPU_RCONF1, CPU_RCONF2, CPU_RCONF3, CPU_RCONF4,
-						CPU_RCONF5, CPU_RCONF6, CPU_RCONF7, GL_END
-							};
-							
-	int cs5536_msr[] = { MDD_LBAR_GPIO, MDD_LBAR_FLSH0, MDD_LBAR_FLSH1, MDD_LEG_IO, MDD_PIN_OPT,
-						 MDD_IRQM_ZLOW, MDD_IRQM_ZHIGH, MDD_IRQM_PRIM, GL_END
-							};
-							
-	int pci_msr[] = { GLPCI_CTRL, GLPCI_ARB, GLPCI_REN, GLPCI_A0_BF, GLPCI_C0_DF, GLPCI_E0_FF,
-					  GLPCI_RC0, GLPCI_RC1, GLPCI_RC2, GLPCI_RC3, GLPCI_EXT_MSR, GLPCI_SPARE,
-						 GL_END
-							};
-
-	int dma_msr[] =  { MDD_DMA_MAP, MDD_DMA_SHAD1, MDD_DMA_SHAD2, MDD_DMA_SHAD3, MDD_DMA_SHAD4,
-							MDD_DMA_SHAD5, MDD_DMA_SHAD6, MDD_DMA_SHAD7, MDD_DMA_SHAD8,
-							MDD_DMA_SHAD9, GL_END
-							};
-
-
-	printk_debug("---------- CPU ------------\n");
-
-	for(i = 0; cpu_msr_defs[i] != GL_END; i++) {
-		msr = rdmsr(cpu_msr_defs[i]);
-		printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", cpu_msr_defs[i], msr.hi, msr.lo);
-	}
-
-	printk_debug("---------- GLIU 0 ------------\n");
-
-	for(i = 0; gliu0_msr_defs[i] != GL_END; i++) {
-		msr = rdmsr(gliu0_msr_defs[i]);
-		printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", gliu0_msr_defs[i], msr.hi, msr.lo);
-	}
-
-	printk_debug("---------- GLIU 1 ------------\n");
-
-	for(i = 0; gliu1_msr_defs[i] != GL_END; i++) {
-		msr = rdmsr(gliu1_msr_defs[i]);
-		printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", gliu1_msr_defs[i], msr.hi, msr.lo);
-	}
-
-	printk_debug("---------- RCONF ------------\n");
-
-	for(i = 0; rconf_msr[i] != GL_END; i++) {
-		msr = rdmsr(rconf_msr[i]);
-		printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", rconf_msr[i], msr.hi, msr.lo);
-	}
-
-	printk_debug("---------- VARIA ------------\n");
-	msr = rdmsr(0x51300010);
-	printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", 0x51300010, msr.hi, msr.lo);
-
-	msr = rdmsr(0x51400015);
-	printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", 0x51400015, msr.hi, msr.lo);
-
-	printk_debug("---------- DIVIL IRQ ------------\n");
-	msr = rdmsr(MDD_IRQM_YLOW);
-	printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", MDD_IRQM_YLOW, msr.hi, msr.lo);
-	msr = rdmsr(MDD_IRQM_YHIGH);
-	printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", MDD_IRQM_YHIGH, msr.hi, msr.lo);
-	msr = rdmsr(MDD_IRQM_ZLOW);
-	printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", MDD_IRQM_ZLOW, msr.hi, msr.lo);
-	msr = rdmsr(MDD_IRQM_ZHIGH);
-	printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", MDD_IRQM_ZHIGH, msr.hi, msr.lo);
-
-
-	printk_debug("---------- PCI ------------\n");
-
-	for(i = 0; pci_msr[i] != GL_END; i++) {
-		msr = rdmsr(pci_msr[i]);
-		printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", pci_msr[i], msr.hi, msr.lo);
-	}
-
-	printk_debug("---------- LPC/UART DMA ------------\n");
-
-	for(i = 0; dma_msr[i] != GL_END; i++) {
-		msr = rdmsr(dma_msr[i]);
-		printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", dma_msr[i], msr.hi, msr.lo);
-	}
-
-	printk_debug("---------- CS5536 ------------\n");
-
-	for(i = 0; cs5536_msr[i] != GL_END; i++) {
-		msr = rdmsr(cs5536_msr[i]);
-		printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", cs5536_msr[i], msr.hi, msr.lo);
-	}
-	
-	iol = inl(GPIOL_INPUT_ENABLE);
-	printk_debug("IOR 0x%08X is now 0x%08X\n", GPIOL_INPUT_ENABLE, iol);
-	iol = inl(GPIOL_EVENTS_ENABLE);
-	printk_debug("IOR 0x%08X is now 0x%08X\n", GPIOL_EVENTS_ENABLE, iol);
-	iol = inl(GPIOL_INPUT_INVERT_ENABLE);
-	printk_debug("IOR 0x%08X is now 0x%08X\n", GPIOL_INPUT_INVERT_ENABLE, iol);
-	iol = inl(GPIO_MAPPER_X);
-	printk_debug("IOR 0x%08X is now 0x%08X\n", GPIO_MAPPER_X, iol);
-	
-}
-
-static void enable_L2_cache(void) {
-	msr_t msr;
-
-	/* Instruction Memory Configuration register
-	 * set EBE bit, required when L2 cache is enabled
-	 */ 
-	msr = rdmsr(CPU_IM_CONFIG);
-	msr.lo |= 0x400;
-	wrmsr(CPU_IM_CONFIG, msr);
-	
-	/* Data Memory Subsystem Configuration register
-	 * set EVCTONRPL bit, required when L2 cache is enabled in victim mode
-	 */
-	msr = rdmsr(CPU_DM_CONFIG0);
-	msr.lo |= 0x4000;
-	wrmsr(CPU_DM_CONFIG0, msr);
-
-	/* invalidate L2 cache */
-	msr.hi = 0x00;
-	msr.lo = 0x10;
-	wrmsr(L2_CONFIG_MSR, msr);
-
-	/* Enable L2 cache */	
-	msr.hi = 0x00;
-	msr.lo = 0x0f;	
-	wrmsr(L2_CONFIG_MSR, msr);
-	
-	printk_debug("L2 cache enabled\n");
-}
-
 static void northbridge_init(device_t dev) 
 {
 	//msr_t msr;
-	struct northbridge_amd_lx_config *nb = (struct northbridge_amd_lx_config *)dev->chip_info;
 
 	printk_spew(">> Entering northbridge.c: %s\n", __FUNCTION__);
 	
@@ -412,8 +153,6 @@ static void northbridge_init(device_t dev)
 	//msr.hi |= 0x3;
 	//msr.lo |= 0x30000;
 	
-// not needed (also irq steering is in legacy vsm so it wouldnt work either)
-//	irq_init_steering(dev, nb->irqmap);
 
 	//printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", MSR_GLIU0_SHADOW, msr.hi, msr.lo);
 	//printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", MSR_GLIU1_SHADOW, msr.hi, msr.lo);
@@ -521,7 +260,7 @@ static void pci_domain_set_resources(device_t dev)
 		/* Report the memory regions */
 		idx = 10;
 		ram_resource(dev, idx++, 0, 640);
-		ram_resource(dev, idx++, 1024, ((sizeram() - CONFIG_VIDEO_MB) * 1024) - SMM_SIZE - 1024);
+		ram_resource(dev, idx++, 1024, (get_systop()- 0x100000)/1024 ); // Systop - 1 MB -> KB
 	}
 
 	assign_resources(&dev->link[0]);
@@ -529,25 +268,23 @@ static void pci_domain_set_resources(device_t dev)
 
 static void pci_domain_enable(device_t dev)
 {
-	struct northbridge_amd_lx_config *nb = (struct northbridge_amd_lx_config *)dev->chip_info;
 
 	printk_spew(">> Entering northbridge.c: %s\n", __FUNCTION__);
 
 	// do this here for now -- this chip really breaks our device model
-	enable_L2_cache();
 	northbridge_init_early();
 	cpubug();
-	chipsetinit(nb);
-	setup_lx();
+	chipsetinit();
+
 	setup_realmode_idt();
 
 	printk_debug("Before VSA:\n");
-	print_conf();
+	// print_conf();
 
 	do_vsmbios();	// do the magic stuff here, so prepare your tambourine ;)
 	
 	printk_debug("After VSA:\n");
-	print_conf();
+	// print_conf();
 
 	graphics_init();
 	pci_set_method(dev);

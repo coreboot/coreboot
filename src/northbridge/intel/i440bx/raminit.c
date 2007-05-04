@@ -242,7 +242,7 @@ static const long register_values[] = {
 	RPS, 0x0000, 0x0000,
 
 	/* SDRAMC - SDRAM Control Register
-	 * 0x76-0x77
+	 * 0x76 - 0x77
 	 *
 	 * [15:10] Reserved
 	 * [09:08] Idle/Pipeline DRAM Leadoff Timing (IPDLT)
@@ -519,8 +519,6 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	/* 4. Mode register set. Wait two memory cycles. */
 	PRINT_DEBUG("RAM Enable 4: Mode register set\r\n");
 	do_ram_command(ctrl, RAM_COMMAND_MRS, 0x1d0);
-	// TODO: Is 0x1d0 correct?
-	// do_ram_command(ctrl, RAM_COMMAND_MRS, 0x1d0000);
 	mdelay(10);
 	mdelay(10);
 

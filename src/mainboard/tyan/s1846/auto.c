@@ -101,10 +101,10 @@ static void main(unsigned long bist)
 	 * Do _not_ check the area from 640 KB - 1 MB, as that's not really
 	 * RAM, but rather reserved for various other things:
 	 *
-	 *  - 640 KB ­ 768 KB: Video Buffer Area
-	 *  - 768 KB ­ 896 KB: Expansion Area
-	 *  - 896 KB ­ 960 KB: Extended System BIOS Area
-	 *  - 960 KB ­ 1 MB:   Memory (BIOS Area) - System BIOS Area
+	 *  - 640 KB - 768 KB: Video Buffer Area
+	 *  - 768 KB - 896 KB: Expansion Area
+	 *  - 896 KB - 960 KB: Extended System BIOS Area
+	 *  - 960 KB - 1 MB:   Memory (BIOS Area) - System BIOS Area
 	 *
 	 * Trying to check these areas will fail.
 	 */

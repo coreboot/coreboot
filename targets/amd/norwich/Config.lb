@@ -1,0 +1,29 @@
+# Config file for the AMD Geode LX/5536 Norwich Platform
+
+target norwich
+mainboard amd/norwich
+
+#HACK to get the right tsc support
+option CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2=1
+
+# leave 36k for vsa
+option CONFIG_COMPRESSED_PAYLOAD_NRV2B=0
+option CONFIG_COMPRESSED_PAYLOAD_LZMA=0
+
+option ROM_SIZE=512*1024-36*1024
+#option ROM_SIZE=256*1024-36*1024
+option FALLBACK_SIZE=ROM_SIZE
+
+option DEFAULT_CONSOLE_LOGLEVEL = 11
+option MAXIMUM_CONSOLE_LOGLEVEL = 11
+#option DEFAULT_CONSOLE_LOGLEVEL = 4
+#option MAXIMUM_CONSOLE_LOGLEVEL = 4
+
+romimage "fallback"
+	option USE_FALLBACK_IMAGE=1
+	option ROM_IMAGE_SIZE=64*1024
+	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
+	payload ../payload.elf
+end
+
+buildrom ./norwich.rom ROM_SIZE  "fallback"

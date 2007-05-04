@@ -85,6 +85,17 @@
 #define SPD_INTEL_SPEC_FOR_FREQUENCY       126 /* Intel specification for frequency */
 #define SPD_INTEL_SPEC_100_MHZ             127 /* Intel specification details for 100MHz support */
 
+/* DRAM specifications use the following naming conventions for SPD locations */
+#define SPD_tRP                             SPD_MIN_ROW_PRECHARGE_TIME
+#define SPD_tRRD                            SPD_MIN_ROWACTIVE_TO_ROWACTIVE
+#define SPD_tRCD                            SPD_MIN_RAS_TO_CAS_DELAY
+#define SPD_tRAS                            SPD_MIN_ACTIVE_TO_PRECHARGE_DELAY
+#define SPD_BANK_DENSITY                    SPD_DENSITY_OF_EACH_ROW_ON_MODULE
+#define SPD_ADDRESS_CMD_HOLD                SPD_CMD_SIGNAL_INPUT_HOLD_TIME
+#define SPD_tRC				    41	/* SDRAM Device Minimum Active to Active/Auto Refresh Time (tRC) */
+#define SPD_tRFC			    42	/* SDRAM Device Minimum Auto Refresh to Active/Auto Refresh (tRFC) */
+
+
 /* SPD_MEMORY_TYPE values. */
 #define SPD_MEMORY_TYPE_FPM_DRAM         1
 #define SPD_MEMORY_TYPE_EDO              2

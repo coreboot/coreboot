@@ -69,6 +69,9 @@
  *  software, even if advised of the possibility of such damage.
  *
  *  $Id: vsmsetup.c,v 1.8 2006/09/08 12:47:57 andrei Exp $
+*
+* Copyright (C) 2007 Advanced Micro Devices
+*
  *--------------------------------------------------------------------*/
 
 /* Modified to be a self sufficient plug in so that it can be used 
@@ -300,13 +303,13 @@ void do_vsmbios(void)
 	printk_err("do_vsmbios\n");
 	/* clear vsm bios data area */
 	for (i = 0x400; i < 0x500; i++) {
-		*(unsigned char *) i = 0;
+		*(volatile unsigned char *) i = 0;
 	}
 
 	/* declare rom address here - keep any config data out of the way
 	 * of core LXB stuff */
 
-	/* this is the base of rom on the GX2 at present. At some point, this has to be 
+	/* this is the base of rom on the LX at present. At some point, this has to be
 	  * much better parameterized 
 	  */
 	//rom = 0xfff80000;
@@ -314,8 +317,10 @@ void do_vsmbios(void)
 	/* the VSA starts at the base of rom - 64 */
 	//rom = ((unsigned long) 0) - (ROM_SIZE  + 64*1024);
 	
-	rom = 0xfffc8000;
+	//rom = 0xfffc8000;
 
+	//VSA is cat onto the end after LB builds
+	rom = ((unsigned long) 0) - (ROM_SIZE + 36 * 1024);
 	buf = (unsigned char *) VSA2_BUFFER;
 	olen = unrv2b((uint8_t *)rom, buf, &ilen);
 	printk_debug("buf ilen %d olen%d\n", ilen, olen);

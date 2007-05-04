@@ -46,7 +46,6 @@ static void model_lx_init(device_t dev)
 	printk_debug("model_lx_init\n");
 
 	/* Turn on caching if we haven't already */
-	
 	x86_enable_cache();
 
 	/* Enable the local cpu apics */
@@ -60,7 +59,7 @@ static void model_lx_init(device_t dev)
 	outb(0x02,0x92);
 	printk_debug("A20 (0x92): %d\n",inb(0x92));
 
-	printk_debug("model_lx_init DONE\n");
+	printk_debug("CPU model_lx_init DONE\n");
 };
 
 static struct device_operations cpu_dev_ops = {

@@ -20,77 +20,219 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* ***************************************************************************/
-/* **/
-/* *	BIST */
-/* **/
-/* *	GX2 BISTs need to be run before BTB or caches are enabled.*/
-/* *	BIST result left in registers on failure to be checked with FS2.*/
-/* **/
-/* ***************************************************************************/
-static void
-BIST(void){
-	int msrnum;
+/**************************************************************************
+;*
+;*	SetDelayControl
+;*
+;*************************************************************************/
+void SetDelayControl(void){
+	unsigned int msrnum, glspeed;
+	unsigned char spdbyte0, spdbyte1;
 	msr_t msr;
 
-	/* DM*/
-	msrnum = CPU_DM_CONFIG0;
-	msr = rdmsr(msrnum);
-	msr.lo |=  DM_CONFIG0_LOWER_DCDIS_SET;
+	glspeed = GeodeLinkSpeed();
+
+	/* fix delay controls for DM and IM arrays */
+	msrnum = CPU_BC_MSS_ARRAY_CTL0;
+	msr.hi = 0;
+	msr.lo = 0x2814D352;
 	wrmsr(msrnum, msr);
 	
-	msr.lo =  0x00000003F;
-	msr.hi =  0x000000000;
-	msrnum = CPU_DM_BIST;
-	wrmsr(msrnum, msr);
-
-	outb(POST_CPU_DM_BIST_FAILURE, 0x80);				/* 0x29*/
-	msr = rdmsr(msrnum);						/* read back for pass fail*/
-	msr.lo &= 0x0F3FF0000;
-	if (msr.lo != 0xfeff0000)
-		goto BISTFail;
- 
-	msrnum = CPU_DM_CONFIG0;
-	msr = rdmsr(msrnum);
-	msr.lo &=  ~ DM_CONFIG0_LOWER_DCDIS_SET;
-	wrmsr(msrnum, msr);
-
-	/* FPU*/
-	msr.lo =  0x000000131;
+	msrnum = CPU_BC_MSS_ARRAY_CTL1;
 	msr.hi = 0;
-	msrnum = CPU_FP_UROM_BIST;
+	msr.lo = 0x1068334D;
 	wrmsr(msrnum, msr);
 
-	outb(POST_CPU_FPU_BIST_FAILURE, 0x80);				/* 0x89*/
-	inb(0x80);									/*  IO delay*/
-	msr = rdmsr(msrnum);							/* read back for pass fail*/
-	while ((msr.lo&0x884) != 0x884)
-		msr = rdmsr(msrnum);					/*  Endless loop if BIST is broken*/
-	if ((msr.lo&0x642) != 0x642)
-		goto BISTFail;
+	msrnum = CPU_BC_MSS_ARRAY_CTL2;
+	msr.hi = 0x00000106;
+	msr.lo = 0x83104104;
+	wrmsr(msrnum,msr);
+ 
+	msrnum = GLCP_FIFOCTL;
+	msr = rdmsr(msrnum);
+	msr.hi = 0x00000005;
+	wrmsr(msrnum, msr);
 
-	msr.lo = msr.hi = 0;				/*  clear FPU BIST bits*/
-	msrnum = CPU_FP_UROM_BIST;
+	/* Enable setting */
+	msrnum = CPU_BC_MSS_ARRAY_CTL_ENA;
+	msr.hi = 0;
+	msr.lo = 0x00000001;
 	wrmsr(msrnum, msr);
 
 
-	/* BTB*/
-	msr.lo =  0x000000303;
-	msr.hi =  0x000000000;
-	msrnum = CPU_PF_BTBRMA_BIST;
-	wrmsr(msrnum, msr);
+	/* Debug Delay Control Setup Check
+	Leave it alone if it has been setup. FS2 or something is here.*/
+	msrnum = GLCP_DELAY_CONTROLS;
+	msr = rdmsr(msrnum);
+	if (msr.lo & ~(0x7C0)){
+		return;
+	}
 
-	outb(POST_CPU_BTB_BIST_FAILURE	, 0x80);				/* 0x8A*/
-	msr = rdmsr(msrnum);							/* read back for pass fail*/
-	if ((msr.lo & 0x3030) != 0x3030)
-		goto BISTFail;
 
+	/*
+	; Delay Controls based on DIMM loading. UGH!
+	; # of Devices = Module Width (SPD6) / Device Width(SPD13) * Physical Banks(SPD5)
+	; Note - We only support module width of 64.
+	*/
+	spdbyte0 = spd_read_byte(DIMM0, SPD_PRIMARY_SDRAM_WIDTH);
+	if (spdbyte0 !=0xFF){
+		spdbyte0 = (unsigned char) 64/spdbyte0 * (unsigned char) (spd_read_byte(DIMM0, SPD_NUM_DIMM_BANKS));
+	}
+	else{
+		spdbyte0=0;
+	}
+
+	spdbyte1 = spd_read_byte(DIMM1, SPD_PRIMARY_SDRAM_WIDTH);
+	if (spdbyte1 !=0xFF){
+		spdbyte1 = (unsigned char) 64/spdbyte1 * (unsigned char) (spd_read_byte(DIMM1, SPD_NUM_DIMM_BANKS));
+	}
+	else{
+		spdbyte1=0;
+	}
+
+
+
+/* The current thinking. Subject to change...
+
+;								   "FUTURE ROBUSTNESS" PROPOSAL
+;								   ----------------------------
+;		DIMM	 Max MBUS					   MC 0x2000001A bits 26:24
+;DIMMs	devices	 Frequency	 MCP 0x4C00000F Setting		 vvv
+;-----	-------	 ---------	 ----------------------	 ----------
+;1		 4		 400MHz		 0x82*100FF 0x56960004		  4
+;1		 8		 400MHz		 0x82*100AA 0x56960004		  4
+;1		 16		 400MHz		 0x82*10055 0x56960004		  4
+;
+;2		 4,4	 400MHz		 0x82710000 0x56960004		  4
+;2		 8,8	 400MHz		 0xC27100A5 0x56960004		  4	*** OUT OF PUBLISHED ENVELOPE ***
+;
+;2		16,4	 >333		 0xB27100A5 0x56960004		  4	*** OUT OF PUBLISHED ENVELOPE ***
+;2		16,8	 >333		 0xB27100A5 0x56960004		  4	*** OUT OF PUBLISHED ENVELOPE ***
+;2		16,16	 >333		 0xB2710000 0x56960004		  4	*** OUT OF PUBLISHED ENVELOPE ***
+;
+;1		 4		 <=333MHz	 0x83*100FF 0x56960004		  3
+;1		 8		 <=333MHz	 0x83*100AA 0x56960004		  3
+;1		 16		 <=333MHz	 0x83*100AA 0x56960004		  3
+;
+;2		 4,4	 <=333MHz	 0x837100A5 0x56960004		  3
+;2		 8,8	 <=333MHz	 0x937100A5 0x56960004		  3
+;
+;2		16,4	 <=333MHz	 0xB37100A5 0x56960004		  3	*** OUT OF PUBLISHED ENVELOPE ***
+;2		16,8	 <=333MHz	 0xB37100A5 0x56960004		  3	*** OUT OF PUBLISHED ENVELOPE ***
+;2		16,16	 <=333MHz	 0xB37100A5 0x56960004		  3	*** OUT OF PUBLISHED ENVELOPE ***
+;=========================================================================
+;* - Bit 55 (disable SDCLK 1,3,5) should be set if there is a single DIMM in slot 0,
+;	 but it should be clear for all 2 DIMM settings and if a single DIMM is in slot 1.
+;	 Bits 54:52 should always be set to '111'.
+
+;No VTT termination
+;-------------------------------------
+;ADDR/CTL have 22 ohm series R
+;DQ/DQM/DQS have 33 ohm series R
+;
+;		DIMM	 Max MBUS
+;DIMMs	devices	 Frequency	 MCP 0x4C00000F Setting
+;-----	-------	 ---------	 ----------------------
+;1		 4		 400MHz		 0xF2F100FF 0x56960004		  4			The MC changes improve Salsa.
+;1		 8		 400MHz		 0xF2F100FF 0x56960004		  4			Delay controls no real change,
+;1		 4		 <=333MHz	 0xF2F100FF 0x56960004		  3			just fixing typo in left side.
+;1		 8		 <=333MHz	 0xF2F100FF 0x56960004		  3
+;1		 16		 <=333MHz	 0xF2F100FF 0x56960004		  3
+*/
+	msr.hi = msr.lo = 0;
+
+	if (spdbyte0 == 0 || spdbyte1 == 0){
+		/* one dimm solution */
+		if (spdbyte1 == 0){
+			msr.hi |= 0x000800000;
+		}
+		spdbyte0 += spdbyte1;
+		if (spdbyte0 > 8){
+			/* large dimm */
+			if (glspeed < 334){
+				msr.hi |= 0x0837100AA;
+				msr.lo |= 0x056960004;
+			}
+			else{
+				msr.hi |= 0x082710055;
+				msr.lo |= 0x056960004;
+			}
+		}
+		else if (spdbyte0 > 4){
+			/* medium dimm */
+			if (glspeed < 334){
+				msr.hi |= 0x0837100AA;
+				msr.lo |= 0x056960004;
+			}
+			else{
+				msr.hi |= 0x0827100AA;
+				msr.lo |= 0x056960004;
+			}
+		}
+		else{
+			/* small dimm */
+			if (glspeed < 334){
+				msr.hi |= 0x0837100FF;
+				msr.lo |= 0x056960004;
+			}
+			else{
+				msr.hi |= 0x0827100FF;
+				msr.lo |= 0x056960004;
+			}
+		}
+	}
+	else{
+		/* two dimm solution */
+		spdbyte0 += spdbyte1;
+		if (spdbyte0 > 24){
+			/* huge dimms */
+			if (glspeed < 334){
+				msr.hi |= 0x0B37100A5;
+				msr.lo |= 0x056960004;
+			}
+			else{
+				msr.hi |= 0x0B2710000;
+				msr.lo |= 0x056960004;
+			}
+		}
+		else if (spdbyte0 > 16){
+			/* large dimms */
+			if (glspeed < 334){
+				msr.hi |= 0x0B37100A5;
+				msr.lo |= 0x056960004;
+			}
+			else{
+				msr.hi |= 0x0B27100A5;
+				msr.lo |= 0x056960004;
+			}
+		}
+		else if (spdbyte0 >= 8){
+			/* medium dimms */
+			if (glspeed < 334){
+				msr.hi |= 0x0937100A5;
+				msr.lo |= 0x056960004;
+			}
+			else{
+				msr.hi |= 0x0C27100A5;
+				msr.lo |= 0x056960004;
+			}
+		}
+		else{
+			/* small dimms */
+			if (glspeed < 334){
+				msr.hi |= 0x0837100A5;
+				msr.lo |= 0x056960004;
+			}
+			else{
+				msr.hi |= 0x082710000;
+				msr.lo |= 0x056960004;
+			}
+		}
+	}
+	wrmsr(GLCP_DELAY_CONTROLS,msr);
 	return;
-
-BISTFail:
-	print_err("BIST failed!\n");
-	while(1);
 }
+
 /* ***************************************************************************/
 /* *	cpuRegInit*/
 /* ***************************************************************************/
@@ -99,173 +241,78 @@ cpuRegInit (void){
 	int msrnum;
 	msr_t msr;
 	
-	//GX3 suspend: what is desired?
-
-	/*  Enable Suspend on Halt*/
-	/*msrnum = CPU_XC_CONFIG;
+	/* Castle 2.0 BTM periodic sync period. */
+	/*	[40:37] 1 sync record per 256 bytes */
+	msrnum = CPU_PF_CONF;
 	msr = rdmsr(msrnum);
-	msr.lo |=  XC_CONFIG_SUSP_ON_HLT;
-	wrmsr(msrnum, msr);*/
-
-	/*  ENable SUSP and allow TSC to run in Suspend */
-	/*  to keep speed detection happy*/
-	/*msrnum = CPU_BC_CONF_0;
-	msr = rdmsr(msrnum);
-	msr.lo |=  TSC_SUSP_SET | SUSP_EN_SET;
-	wrmsr(msrnum, msr);*/
-
-	/*  Setup throttling to proper mode if it is ever enabled.*/
-	msrnum = 0x04C00001E;
-	msr.hi =  0x000000000;
-	msr.lo =  0x00000603C;
-	wrmsr(msrnum, msr);		// GX3 OK +/-
-
-
-/*  Only do this if we are building for 5535*/
-/* */
-/*  FooGlue Setup*/
-/* */
-#if 0
-	/*  Enable CIS mode B in FooGlue*/
-	msrnum = MSR_FG + 0x10;
-	msr = rdmsr(msrnum);
-	msr.lo &= ~3;
-	msr.lo |= 2;			/*  ModeB*/
+	msr.hi |= (0x8 << 5);
 	wrmsr(msrnum, msr);
-#endif
 
-/* */
-/*  Disable DOT PLL. Graphics init will enable it if needed.*/
-/* */
-
-// GX3: Disable DOT PLL? No. Lets tick.
-
-/*	msrnum = GLCP_DOTPLL;
-	msr = rdmsr(msrnum);
-	msr.lo |= DOTPPL_LOWER_PD_SET;
-	wrmsr(msrnum, msr); */
-
-/* */
-/*  Enable RSDC*/
-/* */
-	msrnum = 0x1301 ;
-	msr = rdmsr(msrnum);
-	msr.lo |=  0x08;
-	wrmsr(msrnum, msr);		//GX3 OK
-
-
-/* */
-/*  BIST*/
-/* */
-	/*if (getnvram( TOKEN_BIST_ENABLE) & == TVALUE_DISABLE) {*/
-	{
-//		BIST();
-	}
-
-
-/* */
-/*  Enable BTB*/
-/* */
-	/*  I hate to put this check here but it doesn't really work in cpubug.asm*/
-
-//GX3: BTB is enabled by default
-
-/*	msrnum = MSR_GLCP+0x17;
-	msr = rdmsr(msrnum);
-	if (msr.lo >= CPU_REV_2_1){
-		msrnum = CPU_PF_BTB_CONF;
-		msr = rdmsr(msrnum);
-		msr.lo |= BTB_ENABLE_SET | RETURN_STACK_ENABLE_SET;
-		wrmsr(msrnum, msr);
-	}
-
+	/*
+	; Castle performance setting.
+	; Enable Quack for fewer re-RAS on the MC
 	*/
+	msrnum = GLIU0_ARB;
+	msr = rdmsr(msrnum);
+	msr.hi &= ~ARB_UPPER_DACK_EN_SET;
+	msr.hi |= ARB_UPPER_QUACK_EN_SET;
+	wrmsr(msrnum, msr);
 
-/* */
-/*  FPU impercise exceptions bit*/
-/* */
-	/*if (getnvram( TOKEN_FPU_IE_ENABLE) != TVALUE_DISABLE) {*/
+	msrnum = GLIU1_ARB;
+	msr = rdmsr(msrnum);
+	msr.hi &= ~ARB_UPPER_DACK_EN_SET;
+	msr.hi |= ARB_UPPER_QUACK_EN_SET;
+	wrmsr(msrnum, msr);
+
+	/*	GLIU port active enable, limit south pole masters (AES and PCI) to one outstanding transaction. */
+	msrnum = GLIU1_PORT_ACTIVE;
+	msr = rdmsr(msrnum);
+	msr.lo &= ~0x880;
+	wrmsr(msrnum, msr);
+
+	/* Set the Delay Control in GLCP */
+	SetDelayControl();
+
+/*  Enable RSDC*/
+	msrnum = CPU_AC_SMM_CTL;
+	msr = rdmsr(msrnum);
+	msr.lo |= SMM_INST_EN_SET;
+		wrmsr(msrnum, msr);
 
 
-
-// GX3: FPU impercise exceptions bit - what's that?
-/*	{
+	/* FPU imprecise exceptions bit */
 		msrnum = CPU_FPU_MSR_MODE;
 		msr = rdmsr(msrnum);
 		msr.lo |= FPU_IE_SET;
 		wrmsr(msrnum, msr);
-	}
 
-	*/
 
-#if 0
-	/* */
-	/*  Cache Overides*/
-	/* */
-	/* This code disables the data cache.  Don't execute this
-	 * unless you're testing something.
-	 */ 
-	/*  Allow NVRam to override DM Setup*/
-	/*if (getnvram( TOKEN_CACHE_DM_MODE) != 1) {*/
-	{
-
-		msrnum = CPU_DM_CONFIG0;
+	/* Power Savers (Do after BIST) */
+	/* Enable Suspend on HLT & PAUSE instructions*/
+	msrnum = CPU_XC_CONFIG;
 		msr = rdmsr(msrnum);
-		msr.lo |=  DM_CONFIG0_LOWER_DCDIS_SET;
+	msr.lo |= XC_CONFIG_SUSP_ON_HLT |  XC_CONFIG_SUSP_ON_PAUSE;
 		wrmsr(msrnum, msr);
-	}
-	/* This code disables the instruction cache.  Don't execute
-	 * this unless you're testing something.
-	*/ 
-	/*  Allow NVRam to override IM Setup*/
-	/*if (getnvram( TOKEN_CACHE_IM_MODE) ==1) {*/
-	{
-		msrnum = CPU_IM_CONFIG;
+
+	/* Enable SUSP and allow TSC to run in Suspend (keep speed detection happy) */
+	msrnum = CPU_BC_CONF_0;
 		msr = rdmsr(msrnum);
-		msr.lo |=  IM_CONFIG_LOWER_ICD_SET;
+	msr.lo |= TSC_SUSP_SET | SUSP_EN_SET;
+	msr.lo &= 0x0F0FFFFFF;
+	msr.lo |= 0x002000000;	 /* PBZ213: Set PAUSEDLY = 2 */
 		wrmsr(msrnum, msr);
-	}
-#endif
-}
 
-
-
-
-/* ***************************************************************************/
-/* **/
-/* *	MTestPinCheckBX*/
-/* **/
-/* *	Set MTEST pins to expected values from OPTIONS.INC/NVRAM*/
-/* *  This version is called when there isn't a stack available*/
-/* **/
-/* ***************************************************************************/
-static void
-MTestPinCheckBX (void){
-	int msrnum;
-	msr_t msr;
-
-	/*if (getnvram( TOKEN_MTEST_ENABLE) ==TVALUE_DISABLE ) {*/
-			/* return ; */
-	/* } */
-
-	/*  Turn on MTEST*/
-	msrnum = MC_CFCLK_DBUG;
-	msr = rdmsr(msrnum);
-	msr.hi |=  CFCLK_UPPER_MTST_B2B_DIS_SET | CFCLK_UPPER_MTEST_EN_SET;
+	/* Disable the debug clock to save power.*/
+	/* NOTE: leave it enabled for fs2 debug */
+/*	msrnum = GLCP_DBGCLKCTL;
+	msr.hi = 0;
+	msr.lo = 0;
 	wrmsr(msrnum, msr);
+*/
 
-	msrnum = GLCP_SYS_RSTPLL			/*  Get SDR/DDR mode from GLCP*/;
-	msr = rdmsr(msrnum);
-	msr.lo >>=  RSTPPL_LOWER_SDRMODE_SHIFT;
-	if (msr.lo & 1) {
-		msrnum = MC_CFCLK_DBUG;			/*  Turn on SDR MTEST stuff*/
-		msr = rdmsr(msrnum);
-		msr.lo |=  CFCLK_LOWER_SDCLK_SET;
-		msr.hi |=  CFCLK_UPPER_MTST_DQS_EN_SET;
+	/* Setup throttling delays to proper mode if it is ever enabled. */
+	msrnum = GLCP_TH_OD;
+	msr.hi = 0;
+	msr.lo = 0x00000603C;
 		wrmsr(msrnum, msr);
 	}
-
-	/*  Lock the cache down here.*/
-	__asm__("wbinvd\n");
-
-}

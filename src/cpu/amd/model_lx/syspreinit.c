@@ -21,8 +21,6 @@
  */
 
 /* ***************************************************************************/
-
-/* ***************************************************************************/
 /* **/
 /* *	StartTimer1*/
 /* **/
@@ -41,6 +39,8 @@ void
 SystemPreInit(void){
 
 	/* they want a jump ... */
-	__asm__("jmp .+2\ninvd\njmp.+2\n");
+#ifndef USE_DCACHE_RAM
+	__asm__ __volatile__("jmp .+2\ninvd\njmp .+2\n");
+#endif
 	StartTimer1();
 }

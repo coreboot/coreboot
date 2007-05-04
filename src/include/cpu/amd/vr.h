@@ -1,22 +1,11 @@
-/* <LIC_AMD_STD>
- * Copyright (C) 2003-2005 Advanced Micro Devices, Inc.  All Rights Reserved.
- * </LIC_AMD_STD>  */
-//<CTL_AMD_STD>
-//$Id: //bios/main/vsa_ii/inc/vr.h#18 $
-//$Header: //bios/main/vsa_ii/inc/vr.h#18 $
-//$Date: 2005/09/29 $
-//$DateTime: 2005/09/29 11:07:14 $
-//$Change: 65425 $
-//$File: //bios/main/vsa_ii/inc/vr.h $
-//$Revision: #18 $
-//$Author: johnk $
-//</CTL_AMD_STD>
-//<DOC_AMD_STD>
-// Virtual Register USAGE:
-//
-// 	Index: 	AH = Class, AL = Parameter_ID
-// 	Data:	AX = data
-//</DOC_AMD_STD>
+/*
+*
+* Copyright (C) 2007 Advanced Micro Devices
+*
+*/
+
+#ifndef CPU_AMD_VR_H
+#define CPU_AMD_VR_H
 
 #define VRC_INDEX				0xAC1C	// Index register 
 #define VRC_DATA				0xAC1E	// Data register
@@ -484,3 +473,28 @@
     #define MAX_THERMAL         VRC_THERMAL_SMB_DATA
 
 #define MAX_VR_CLASS	  		VRC_THERMAL
+
+/*
+ * Write to a Virtual Register
+ * AX = Class/Index
+ * CX = data to write
+ */
+static inline void vrWrite(uint16_t wClassIndex, uint16_t wData)
+{
+	outl(((uint32_t) VR_UNLOCK << 16) | wClassIndex, VRC_INDEX);
+	outw(wData, VRC_DATA);
+}
+
+ /*
+ * Read from a Virtual Register
+ * AX = Class/Index
+ * Returns a 16-bit word of data
+ */
+static inline uint16_t vrRead(uint16_t wClassIndex)
+{
+	uint16_t wData;
+	outl(((uint32_t) VR_UNLOCK << 16) | wClassIndex, VRC_INDEX);
+	wData = inw(VRC_DATA);
+	return wData;
+}
+#endif

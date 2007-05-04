@@ -43,11 +43,10 @@
 #define SMBUS_TIMEOUT (100*1000*10)
 #define SMBUS_STATUS_MASK 0xfbff
 
-#define SMBUS_IO_BASE 0x6000
 
 static void smbus_delay(void)
 {
-	outb(0x80, 0x80);
+	inb(0x80);
 }
 
 static int smbus_wait(unsigned smbus_io_base) {

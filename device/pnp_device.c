@@ -22,7 +22,7 @@
  */
 
 #include <arch/types.h>
-#include <console/console.h>
+#include <console.h>
 #include <stdlib.h>
 // #include <stdint.h>
 // #include <bitops.h>

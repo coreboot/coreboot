@@ -29,7 +29,7 @@
 #include <arch/types.h>
 #include <string.h>
 
-#include <console/console.h>
+#include <console.h>
 #include <tables.h>
 #include <elf.h>
 #include <elf_boot.h>

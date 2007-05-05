@@ -28,7 +28,7 @@
  * handle resource allocation for non-pci devices.
  */
 
-#include <console/console.h>
+#include <console.h>
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>

@@ -1,5 +1,5 @@
 
-#include <console/console.h>
+#include <console.h>
 #include <device/device.h>
 #include <arch/pciconf.h>
 #include <device/pci.h>

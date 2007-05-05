@@ -22,7 +22,7 @@
 /* 2006.1 yhlu add mptable cross 0x467 processing */
 
 #include <arch/types.h>
-#include <console/console.h>
+#include <console.h>
 #include <string.h>
 #include <tables.h>
 //#include <cpu/cpu.h>

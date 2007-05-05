@@ -9,7 +9,7 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pnp.h>
-#include <console/console.h>
+#include <console.h>
 #include <string.h>
 //#include <bitops.h>
 #include <uart8250.h>

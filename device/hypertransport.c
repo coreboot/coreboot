@@ -24,7 +24,7 @@
  */
 
 #include <bitops.h>
-#include <console/console.h>
+#include <console.h>
 #include <device/device.h>
 #include <device/path.h>
 #include <device/pci.h>

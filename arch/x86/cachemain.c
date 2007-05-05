@@ -19,7 +19,7 @@
 
 #include <arch/types.h>
 #include <arch/io.h>
-#include <console/console.h>
+#include <console.h>
 #include <lar.h>
 #include <tables.h>
 #include <lib.h>

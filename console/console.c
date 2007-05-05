@@ -1,6 +1,6 @@
 #include <arch/types.h>
 #include <arch/hlt.h>
-#include <console/console.h>
+#include <console.h>
 #include <uart8250.h>
 // FIXME: we need this for varargs
 #include <stdarg.h>

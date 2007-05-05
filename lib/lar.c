@@ -21,7 +21,7 @@
 #include <arch/types.h>
 #include <string.h>
 #include <lar.h>
-#include <console/console.h>
+#include <console.h>
 
 #ifndef CONFIG_BIG_ENDIAN
 #define ntohl(x) ( ((x&0xff)<<24) | ((x&0xff00)<<8) | \

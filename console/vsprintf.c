@@ -26,7 +26,7 @@
 
 #include <stdarg.h>
 #include <string.h>
-#include <console/console.h>
+#include <console.h>
 
 int vtxprintf(void (*tx_byte) (unsigned char byte, void *arg), void *arg, const char *fmt,
 	      va_list args);

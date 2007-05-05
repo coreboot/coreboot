@@ -19,7 +19,7 @@
  *
  */
 
-#include <console/console.h>
+#include <console.h>
 #include <ip_checksum.h>
 #include <string.h>
 #include <device/device.h>

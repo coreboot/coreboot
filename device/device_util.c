@@ -22,7 +22,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include <console/console.h>
+#include <console.h>
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>

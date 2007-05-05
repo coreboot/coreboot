@@ -25,7 +25,7 @@
 #include <arch/types.h>
 #include <string.h>
 #include <lar.h>
-#include <console/console.h>
+#include <console.h>
 #include <device/device.h>
 #include <tables.h>
 

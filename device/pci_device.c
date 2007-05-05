@@ -26,7 +26,7 @@
 #include <arch/io.h>
 #include <string.h>
 #include <lib.h>
-#include <console/console.h>
+#include <console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

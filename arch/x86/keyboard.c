@@ -1,4 +1,4 @@
-#include <console/console.h>
+#include <console.h>
 #include <keyboard.h>
 #include <device/device.h>
 #include <arch/io.h>

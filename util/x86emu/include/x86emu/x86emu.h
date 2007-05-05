@@ -44,7 +44,7 @@
 
 /* FIXME: undefine printk for the moment */
 #ifdef LINUXBIOS_VERSION
-#include <console/console.h>
+#include <console.h>
 #define printk(x...) printk(BIOS_DEBUG, x)
 #else
 #define printk printf

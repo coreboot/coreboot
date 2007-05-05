@@ -21,7 +21,7 @@
 
 #include <arch/types.h>
 #include <arch/io.h>
-#include <console/console.h>
+#include <console.h>
 #include <tables.h>
 #include <mc146818rtc.h>
 #include <string.h>

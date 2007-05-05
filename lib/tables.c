@@ -19,7 +19,7 @@
  *
  */
 
-#include <console/console.h>
+#include <console.h>
 //#include <cpu.h>
 #include <tables.h>
 #include <tables.h>

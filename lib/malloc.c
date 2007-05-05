@@ -25,7 +25,7 @@
 
 #include <arch/types.h>
 #include <stdlib.h>
-#include <console/console.h>
+#include <console.h>
 
 #if 0
 #define MALLOCDBG(x...)

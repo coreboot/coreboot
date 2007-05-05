@@ -24,6 +24,7 @@
  */
 
 #include <arch/types.h>
+#include <string.h>
 
 /**
  * memcpy() and memmove() helper that uses unsigned long copying when dest and
@@ -108,10 +109,12 @@ static void memcpy_helper(void *dest, const void *src, size_t len,
  * @param dest Pointer to the destination memory area.
  * @param src Pointer to the source memory area.
  * @param len Number of bytes to copy.
+ * @return Pointer specified by parameter dest
  */
-void memcpy(void *dest, const void *src, size_t len)
+void *memcpy(void *dest, const void *src, size_t len)
 {
 	memcpy_helper(dest, src, len, 0);
+	return dest;
 }
 
 /**
@@ -122,24 +125,28 @@ void memcpy(void *dest, const void *src, size_t len)
  * @param dest Pointer to the destination memory area.
  * @param src Pointer to the source memory area.
  * @param len Number of bytes to copy.
+ * @return Pointer specified by parameter dest
  */
-void memmove(void *dest, const void *src, size_t len)
+void *memmove(void *dest, const void *src, size_t len)
 {
 	memcpy_helper(dest, src, len, dest > src && dest < (src + len));
+	return dest;
 }
 
 /**
  * Fill a memory area with the specified byte.
  *
- * @param v Pointer to the beginning of the memory area.
- * @param a The byte which is used for filling the memory area.
+ * @param s Pointer to the beginning of the memory area.
+ * @param c The byte which is used for filling the memory area.
  * @param len The number of bytes to write.
+ * @return Pointer specified by parameter s 
  */
-void memset(void *v, unsigned char a, size_t len)
+void *memset(void *s, int c, size_t len)
 {
-	unsigned char *cp = v;
+	unsigned char *cp = s;
 	while (len--)
-		*cp++ = a;
+		*cp++ = (unsigned char)c;
+	return s;
 }
 
 /**

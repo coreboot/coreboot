@@ -15,7 +15,7 @@ typedef signed int s32;
 typedef signed short s16;
 typedef signed char s8;
 
-typedef u64 size_t;
+typedef long unsigned int size_t;
 
 #define NULL ((void *)0)
 

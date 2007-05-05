@@ -245,8 +245,6 @@ struct lb_record *lb_last_record(struct lb_header *header);
 struct lb_record *lb_next_record(struct lb_record *rec);
 struct lb_record *lb_new_record(struct lb_header *header);
 struct lb_memory *lb_memory(struct lb_header *header);
-void lb_memory_range(struct lb_memory *mem, 
-	u32 type, u64 start, u64 size);
 struct lb_mainboard *lb_mainboard(struct lb_header *header);
 unsigned long lb_table_fini(struct lb_header *header);
 
@@ -255,7 +253,6 @@ unsigned long lb_table_fini(struct lb_header *header);
  */
 struct lb_memory *get_lb_mem(void);
 
-// extern struct cmos_option_table option_table;
 struct cmos_option_table *get_option_table(void);
 
 

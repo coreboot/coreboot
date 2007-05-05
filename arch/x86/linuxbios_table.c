@@ -171,7 +171,7 @@ void lb_strings(struct lb_header *header)
 
 }
 
-void lb_memory_range(struct lb_memory *mem,
+static void lb_memory_range(struct lb_memory *mem,
 	u32 type, u64 start, u64 size)
 {
 	int entries;

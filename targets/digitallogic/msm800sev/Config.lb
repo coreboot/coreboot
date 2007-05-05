@@ -7,8 +7,9 @@ option CONFIG_COMPRESSED_PAYLOAD_NRV2B=0
 
 ## ROM_SIZE is the total number of bytes allocated for LinuxBIOS use
 ## (normal AND fallback images and payloads).
-## leave 64k for vsa and 32K for video ROM
-option ROM_SIZE = 1024*1024 - 64*1024 - 32 * 1024
+## leave 36k for vsa 
+##
+option ROM_SIZE = 1024*1024 - 36 * 1024
 
 ## ROM_IMAGE_SIZE is the maximum number of bytes allowed for a LinuxBIOS image,
 ## not including any payload.

@@ -177,6 +177,7 @@ DCacheSetupGood:
 
 	/* Go do early init and memory setup */
 	call	cache_as_ram_main
+done_cache_as_ram_main:
 
 	/* If you wanted to maintain the stack in memory you would need to set the tags as dirty
 	  so the wbinvd would push out the old stack contents to memory */

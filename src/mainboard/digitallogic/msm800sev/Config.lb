@@ -44,30 +44,21 @@ arch i386 end
 
 driver mainboard.o
 
-if HAVE_PIRQ_TABLE object irq_tables.o end
-#object reset.o
-
-##
-## Romcc output
-##
-makerule ./failover.E
-	depends "$(MAINBOARD)/failover.c ./romcc" 
-	action "./romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
+if HAVE_PIRQ_TABLE
+	object irq_tables.o
 end
 
-makerule ./failover.inc
-	depends "$(MAINBOARD)/failover.c ./romcc"
-	action "./romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
+if USE_DCACHE_RAM
+	#compile cache_as_ram.c to auto.inc
+	makerule ./cache_as_ram_auto.inc
+			depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
+			action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -S -o $@"
+			action "perl -e 's/.rodata/.rom.data/g' -pi $@"
+			action "perl -e 's/.text/.section .rom.text/g' -pi $@"
+	end
 end
 
-makerule ./auto.E 
-	depends	"$(MAINBOARD)/auto.c option_table.h ./romcc" 
-	action	"./romcc -E -mcpu=p2 -O -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
-end
-makerule ./auto.inc 
-	depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
-	action	"./romcc    -mcpu=p2 -O -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
-end
+
 
 ##
 ## Build our 16 bit and 32 bit linuxBIOS entry code
@@ -104,7 +95,7 @@ ldscript /arch/i386/lib/id.lds
 ###
 if USE_FALLBACK_IMAGE
 	ldscript /arch/i386/lib/failover.lds 
-	mainboardinit ./failover.inc
+#	mainboardinit ./failover.inc
 end
 
 ###
@@ -115,7 +106,11 @@ end
 ## Setup RAM
 ##
 mainboardinit cpu/x86/fpu/enable_fpu.inc
-mainboardinit ./auto.inc
+
+if USE_DCACHE_RAM
+	mainboardinit cpu/amd/model_lx/cache_as_ram.inc
+	mainboardinit ./cache_as_ram_auto.inc
+end
 
 ##
 ## Include the secondary Configuration files 
@@ -124,57 +119,88 @@ dir /pc80
 config chip.h
 
 chip northbridge/amd/lx
-	# they keep changing this. 0:f.0 5c.w to see where it is
-	register "irqmap" = "0xbaba"
-	register "setupflash" = "0"
+  	device pci_domain 0 on 
+    		device pci 1.0 on end
+		device pci 1.1 on end
+      		chip southbridge/amd/cs5536
+			# IRQ 12 and 1 unmasked,  Keyboard and Mouse IRQs. OK
+			# SIRQ Mode = Active(Quiet) mode. Save power....
+			# Invert mask = IRQ 12 and 1 are active high. Keyboard and Mouse IRQs. OK
+			# How to get these? Boot linux and do this:
+			# rdmsr 0x51400025
+			register "lpc_serirq_enable" = "0x000010da"
+			# rdmsr 0x5140004e -- polairy is high 16 bits of low 32 bits
+			register "lpc_serirq_polarity" = "0x0000EF25"
+			# mode is high 10 bits (determined from code)
+			register "lpc_serirq_mode" = "1"
+			# Don't yet know how to find this.
+			register "enable_gpio_int_route" = "0x0D0C0700"
+			register "enable_ide_nand_flash" = "0" # 0:ide mode, 1:flash
+			register "enable_USBP4_device" = "0"	#0: host, 1:device
+			register "enable_USBP4_overcurrent" = "0" #0:off, xxxx:overcurrent setting CS5536 Data Book (pages 380-381)
+			register "com1_enable" = "0"
+			register "com1_address" = "0x3F8"
+			register "com1_irq" = "4"
+			register "com2_enable" = "0"
+			register "com2_address" = "0x2F8"
+			register "com2_irq" = "3"
+			register "unwanted_vpci[0]" = "0"	# End of list has a zero
+        			device pci f.0 on	# ISA Bridge
+				chip superio/winbond/w83627hf
+					device pnp 2e.0 off #  Floppy
+						io 0x60 = 0x3f0
+						irq 0x70 = 6
+						drq 0x74 = 2
+					end
+					device pnp 2e.1 off #  Parallel Port
+						io 0x60 = 0x378
+						irq 0x70 = 7
+					end
+					device pnp 2e.2 on #  Com1
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.3 on #  Com2
+						io 0x60 = 0x2f8
+						irq 0x70 = 3
+					end
+					device pnp 2e.5 on #  Keyboard
+						io 0x60 = 0x60
+						io 0x62 = 0x64
+						irq 0x70 = 1
+						irq 0x72 = 12
+					end
+					device pnp 2e.6 off #  CIR
+						io 0x60 = 0x100
+					end
+					device pnp 2e.7 off #  GAME_MIDI_GIPO1
+						io 0x60 = 0x220
+						io 0x62 = 0x300
+						irq 0x70 = 9
+					end						
+					device pnp 2e.8 off end #  GPIO2
+					device pnp 2e.9 off end #  GPIO3
+					device pnp 2e.a off end #  ACPI
+					device pnp 2e.b on #  HW Monitor
+						io 0x60 = 0x290
+						irq 0x70 = 5
+					end
+				end
+			end
+			device pci f.1 on end	# Flash controller
+			device pci f.2 on end	# IDE controller
+        			device pci f.3 on end 	# Audio
+        			device pci f.4 on end	# OHCI
+			device pci f.5 on end	# EHCI
+      		end
+	end
+
+	# APIC cluster is late CPU init.
 	device apic_cluster 0 on
 		chip cpu/amd/model_lx
 			device apic 0 on end
 		end
 	end
-  	device pci_domain 0 on 
-    		device pci 1.0 on end
-		device pci 1.1 on end
-      		chip southbridge/amd/cs5536_lx
-			register "isa_irq" = "0"
-			#register "flash_irq" = "14"
 
-			## IDE IRQ
-			register "enable_ide_irq" = "0"
-
-			register "audio_irq" = "5"
-			register "usb_irq" = "7"
-			
-			register "uart0_irq" = "0"
-			register "uart1_irq" = "4"
-
-			## PCI INTA ... INTD and their GPIO pins
-			##   int==0: disable 
-			register "pci_int[0]" = "0"
-			register "pci_int[1]" = "10"
-			register "pci_int[2]" = "0"
-			register "pci_int[3]" = "0"
-			register "pci_int_pin[0]" = "0"
-			register "pci_int_pin[1]" = "7"
-			register "pci_int_pin[2]" = "0"
-			register "pci_int_pin[3]" = "0"			
-
-
-			# Keyboard Emulation Logic IRQs
-			# Enable keyboard IRQ2
-			register "enable_kel_keyb_irq" = "0"
-			# Enable mouse IRQ12
-			register "enable_kel_mouse_irq" = "0"
-			# Configure KEL Emulation IRQ, 0 to disable
-			register "kel_emul_irq" = "0"
-
-        		device pci f.0 on end	# ISA Bridge
-			device pci f.1 on end	# Flash controller
-			device pci f.2 off end	# IDE controller
-        		device pci f.3 on end 	# Audio
-        		device pci f.4 on end	# OHCI
-			device pci f.5 on end	# EHCI
-      		end
-    	end
 end
 

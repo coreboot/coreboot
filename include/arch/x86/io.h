@@ -17,7 +17,7 @@
 #ifndef _ARCH_IO_H
 #define _ARCH_IO_H
 
-#include <arch/types.h>
+#include <types.h>
 
 /*
  * This file contains the definitions for the x86 IO instructions

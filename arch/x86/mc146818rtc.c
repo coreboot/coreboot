@@ -19,8 +19,8 @@
  */
 
 
-#include <arch/types.h>
-#include <arch/io.h>
+#include <types.h>
+#include <io.h>
 #include <console.h>
 #include <tables.h>
 #include <mc146818rtc.h>

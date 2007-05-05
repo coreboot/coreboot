@@ -20,7 +20,7 @@
 #ifndef DEVICE_PNP_H
 #define DEVICE_PNP_H
 
-#include <arch/types.h>
+#include <types.h>
 #include <device/device.h>
 #include <device/pnp_def.h>
 

@@ -6,7 +6,7 @@
  * This code is distributed without warranty under the GPL v2 (see COPYING) 
  */
 
-#include <arch/io.h>
+#include <io.h>
 #include <device/device.h>
 #include <device/pnp.h>
 #include <console.h>

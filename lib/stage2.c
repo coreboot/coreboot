@@ -22,7 +22,7 @@
 
 /* stage2 - LinuxBIOS RAM-based setup. */
 
-#include <arch/types.h>
+#include <types.h>
 #include <string.h>
 #include <lar.h>
 #include <console.h>

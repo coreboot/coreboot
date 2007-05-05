@@ -1,7 +1,7 @@
 #include <console.h>
 #include <keyboard.h>
 #include <device/device.h>
-#include <arch/io.h>
+#include <io.h>
 
 static int kbd_empty_input_buffer(void)
 {

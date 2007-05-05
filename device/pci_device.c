@@ -22,8 +22,8 @@
  * Copyright 1997 -- 1999 Martin Mares <mj@atrey.karlin.mff.cuni.cz>
  */
 
-#include <arch/types.h>
-#include <arch/io.h>
+#include <types.h>
+#include <io.h>
 #include <string.h>
 #include <lib.h>
 #include <console.h>

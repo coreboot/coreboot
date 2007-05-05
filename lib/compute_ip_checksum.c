@@ -19,7 +19,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include <arch/types.h>
+#include <types.h>
 #include <ip_checksum.h>
 #include <string.h>
 

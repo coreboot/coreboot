@@ -26,9 +26,8 @@
  * no calls to malloc
  */
 
-#include <arch/types.h>
+#include <types.h>
 #include <string.h>
-
 #include <console.h>
 #include <tables.h>
 #include <elf.h>

@@ -81,7 +81,7 @@ MAINBOARDDIR=$(shell echo $(CONFIG_MAINBOARD_NAME))
 
 LINUXBIOSINCLUDE    :=  -I$(src) -Iinclude \
 			-I$(src)/include \
-			-I$(src)/include/cpu/generic/$(ARCH)/ \
+			-I$(src)/include/arch/$(ARCH)/ \
 			-include $(obj)/config.h \
 			-include $(obj)/build.h
 

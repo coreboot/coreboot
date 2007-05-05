@@ -25,7 +25,7 @@
  *  - Order number: 231244-006
  */
 
-#include <arch/io.h>
+#include <io.h>
 #include <lib.h>
 
 #define I82C54_CONTROL_WORD_REGISTER	0x43	/* Write-only. */

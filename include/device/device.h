@@ -20,7 +20,7 @@
 #ifndef DEVICE_H
 #define DEVICE_H
 
-#include <arch/types.h>
+#include <types.h>
 #include <device/resource.h>
 #include <device/path.h>
 

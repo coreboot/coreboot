@@ -33,7 +33,7 @@
 #ifndef PCI_H
 #define PCI_H
 
-#include <arch/types.h>
+#include <types.h>
 #include <device/pci_def.h>
 #include <device/resource.h>
 #include <device/device.h>

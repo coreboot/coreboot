@@ -21,13 +21,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include <arch/types.h>
+#include <types.h>
 #include <console.h>
 #include <stdlib.h>
 // #include <stdint.h>
 // #include <bitops.h>
 #include <string.h>
-#include <arch/io.h>
+#include <io.h>
 #include <device/device.h>
 #include <device/pnp.h>
 

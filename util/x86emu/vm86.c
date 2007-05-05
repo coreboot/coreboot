@@ -27,7 +27,7 @@
 #include <device/pci_ops.h>
 #include <console.h>
 #include <string.h>
-#include <arch/io.h>
+#include <io.h>
 
 
 /* Declare a temporary global descriptor table - 

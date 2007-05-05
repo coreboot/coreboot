@@ -23,7 +23,7 @@
  * these. Inlines are not as wonderful as people think.
  */
 
-#include <arch/types.h>
+#include <types.h>
 #include <string.h>
 
 /**

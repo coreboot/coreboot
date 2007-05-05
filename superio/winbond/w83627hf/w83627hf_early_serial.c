@@ -1,4 +1,3 @@
-#include <arch/romcc_io.h>
 #include "w83627hf.h"
 
 static inline void pnp_enter_ext_func_mode(struct device *dev) 

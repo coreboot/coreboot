@@ -26,9 +26,9 @@
 #include <tables.h>
 #include <mc146818rtc.h>
 //#include <cpu/cpu.h>
-//#include <arch/pirq_routing.h>
-//#include <arch/smp/mpspec.h>
-//#include <arch/acpi.h>
+//#include <pirq_routing.h>
+//#include <smp/mpspec.h>
+//#include <acpi.h>
 
 struct lb_header *lb_table_init(unsigned long addr)
 {

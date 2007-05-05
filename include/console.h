@@ -17,7 +17,7 @@
 #ifndef CONSOLE_CONSOLE_H_
 #define CONSOLE_CONSOLE_H_
 
-#include <arch/types.h>
+#include <types.h>
 
 #define BIOS_EMERG      0   /* system is unusable                   */
 #define BIOS_ALERT      1   /* action must be taken immediately     */

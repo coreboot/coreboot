@@ -16,8 +16,8 @@
 
 #ifndef PCI_ROM_H
 #define PCI_ROM_H
-#include <arch/types.h>
-#include <arch/byteorder.h>
+#include <types.h>
+#include <byteorder.h>
 
 #define PCI_ROM_HDR 0xAA55
 #define PCI_DATA_HDR (u32) ( ('R' << 24) | ('I' << 16) | ('C' << 8) | 'P' )

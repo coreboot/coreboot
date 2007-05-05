@@ -1,4 +1,3 @@
-#include <arch/romcc_io.h>
 #include "w83627hf.h"
 
 static void w83627hf_disable_dev(struct device *dev)

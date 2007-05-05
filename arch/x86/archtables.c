@@ -21,14 +21,14 @@
 
 /* 2006.1 yhlu add mptable cross 0x467 processing */
 
-#include <arch/types.h>
+#include <types.h>
 #include <console.h>
 #include <string.h>
 #include <tables.h>
 //#include <cpu/cpu.h>
-//#include <arch/pirq_routing.h>
-//#include <arch/smp/mpspec.h>
-//#include <arch/acpi.h>
+//#include <pirq_routing.h>
+//#include <smp/mpspec.h>
+//#include <acpi.h>
 
 // Global Descriptor Table, defined in c_start.S
 extern u8 gdt;

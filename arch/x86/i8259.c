@@ -11,7 +11,7 @@
 ! March 1993/June 1994 (Christoph.Niemann@linux.org)
 */
 
-#include <arch/io.h>
+#include <io.h>
 
 /*
 ! well, that went ok, I hope. Now we have to reprogram the interrupts :-(

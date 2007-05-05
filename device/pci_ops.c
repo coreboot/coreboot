@@ -20,11 +20,11 @@
 
 #include <console.h>
 #include <device/device.h>
-#include <arch/pciconf.h>
+#include <pciconf.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <arch/types.h>
+#include <types.h>
 
 /**
  * Walk up the tree from the current dev, in an attempt to find a

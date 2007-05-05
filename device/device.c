@@ -29,7 +29,7 @@
  */
 
 #include <console.h>
-#include <arch/io.h>
+#include <io.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

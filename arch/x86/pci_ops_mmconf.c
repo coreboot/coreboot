@@ -1,11 +1,10 @@
-
 #include <console.h>
 #include <device/device.h>
-#include <arch/pciconf.h>
+#include <pciconf.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <arch/types.h>
+#include <types.h>
 
 
 /*
@@ -17,7 +16,7 @@
         (((DEVFN) & 0xFF) << 12) | \
         ((WHERE) & 0xFFF))
 
-#include <arch/mmio_conf.h>
+#include <mmio_conf.h>
 
 static uint8_t pci_mmconf_read_config8(struct bus *pbus, int bus, int devfn, int where)
 {

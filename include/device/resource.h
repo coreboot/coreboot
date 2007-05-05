@@ -17,7 +17,7 @@
 #ifndef RESOURCE_H
 #define RESOURCE_H
 
-#include <arch/types.h>
+#include <types.h>
 
 #define IORESOURCE_BITS		0x000000ff	/* Bus-specific bits */
 

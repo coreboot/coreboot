@@ -1,5 +1,3 @@
-
-
 #include <keyboard.h>
 #include <uart8250.h>
 

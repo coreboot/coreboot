@@ -46,7 +46,7 @@
 #include "debug.h"
 #include "prim_ops.h"
 #ifdef LINUXBIOS_VERSION
-#include "arch/io.h"
+#include "io.h"
 #else
 #include <sys/io.h>
 #endif

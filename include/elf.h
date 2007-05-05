@@ -30,8 +30,8 @@
 #ifndef _ELF_H
 #define	_ELF_H 1
 
-#include <arch/types.h>
-#include <arch/elf.h>
+#include <types.h>
+#include <archelf.h>
 
 /* Standard ELF types.  */
 

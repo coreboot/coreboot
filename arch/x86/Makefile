@@ -21,7 +21,7 @@
 
 ifeq ($(CONFIG_ARCH_X86),y)
 
-INITCFLAGS := $(CFLAGS) -I$(src)/include/cpu/generic/x86 -I$(src)/include \
+INITCFLAGS := $(CFLAGS) -I$(src)/include/arch/x86 -I$(src)/include \
 		-fno-builtin
 
 SILENT := &> /dev/null

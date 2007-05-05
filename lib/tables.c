@@ -22,7 +22,6 @@
 #include <console.h>
 //#include <cpu.h>
 #include <tables.h>
-#include <tables.h>
 
 struct lb_memory *
 write_tables(void)

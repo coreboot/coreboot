@@ -23,7 +23,7 @@
  * has had this at some time or other. 
  */
 
-#include <arch/types.h>
+#include <types.h>
 #include <stdlib.h>
 #include <console.h>
 

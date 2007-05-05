@@ -1,4 +1,4 @@
-#include <arch/io.h>
+#include <io.h>
 #include <isa-dma.h>
 
 /* DMA controller registers */

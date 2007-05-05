@@ -1,11 +1,11 @@
 #include <console.h>
 #include <device/device.h>
-#include <arch/pciconf.h>
+#include <pciconf.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <arch/types.h>
-#include <arch/io.h>
+#include <types.h>
+#include <io.h>
 
 /*
  * Before we decide to use direct hardware access mechanisms, we try to do some

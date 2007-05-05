@@ -40,7 +40,7 @@ CFLAGS     := -Os -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 	      -Werror-implicit-function-declaration -Wstrict-aliasing \
 	      -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer \
 	      -mpreferred-stack-boundary=2 -mregparm=3 -pipe
-# FIXME: Does stack boundary or regparm break the code on real hw?
+# FIXME: Does stack boundary or regparm break the code on real hardware?
 
 HOSTCC     := gcc
 HOSTCXX    := g++
@@ -48,13 +48,11 @@ HOSTCFLAGS := -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer \
 	      -Wno-unused -Wno-sign-compare 
 
 LEX        := flex
-
 LYX        := lyx
 DOXYGEN    := doxygen
-
 DOXYGEN_OUTPUT_DIR := doxygen
 
-# make is silent per default. make V=1 will show all compiler calls.
+# Make is silent per default, but 'make V=1' will show all compiler calls.
 ifneq ($(V),1)
 Q := @
 endif
@@ -102,6 +100,9 @@ OBJCOPY := $(OBJCOPY_$(ARCH))
 CPPFLAGS := $(LINUXBIOSINCLUDE)
 CFLAGS += $(LINUXBIOSINCLUDE)
 
+# Note: This _must_ come after 'CC' is set for the second time in this
+# Makefile (see above), otherwise the build would break if 'gcc' isn't
+# the compiler actually used for the build (e.g. on cross compiler setups).
 CFLAGS += -nostdinc -isystem `$(CC) -print-file-name=include`
 
 include lib/Makefile
@@ -144,7 +145,6 @@ prepare2:
 	$(Q)printf "#define LINUXBIOS_COMPILE_BY \"$(shell PATH=$$PATH:/usr/ucb whoami)\"\n" >> $(obj)/build.h
 	$(Q)printf "#define LINUXBIOS_COMPILE_HOST \"$(shell hostname)\"\n" >> $(obj)/build.h
 	$(Q)printf "#define LINUXBIOS_COMPILE_DOMAIN \"$(shell which dnsdomainname 1>/dev/null && dnsdomainname || domainname)\"\n" >> $(obj)/build.h
-
 
 clean:
 	$(Q)printf "  CLEAN   $(subst $(shell pwd)/,,$(obj))\n"

@@ -17,11 +17,11 @@
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 */
-void cardbus_read_resources(device_t dev);
+void cardbus_read_resources(struct device *dev);
 unsigned int cardbus_scan_bus(struct bus *bus, 
 	unsigned min_devfn, unsigned max_devfn, unsigned int max);
-unsigned int cardbus_scan_bridge(device_t dev, unsigned int max);
-void cardbus_enable_resources(device_t dev);
+unsigned int cardbus_scan_bridge(struct device *dev, unsigned int max);
+void cardbus_enable_resources(struct device *dev);
 
 extern struct device_operations default_cardbus_ops_bus;
 

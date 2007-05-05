@@ -24,7 +24,7 @@
 #include <device/pci_ids.h>
 #include <device/pcix.h>
 
-static void pcix_tune_dev(device_t dev)
+static void pcix_tune_dev(struct device *dev)
 {
 	unsigned int cap;
 	unsigned int status, orig_cmd, cmd;
@@ -63,7 +63,7 @@ static void pcix_tune_dev(device_t dev)
 unsigned int pcix_scan_bus(struct bus *bus, unsigned int min_devfn,
 			   unsigned int max_devfn, unsigned int max)
 {
-	device_t child;
+	struct device *child;
 	max = pci_scan_bus(bus, min_devfn, max_devfn, max);
 	for (child = bus->children; child; child = child->sibling) {
 		if ((child->path.u.pci.devfn < min_devfn) ||
@@ -114,7 +114,7 @@ const char *pcix_speed(unsigned int sstatus)
 	return result;
 }
 
-unsigned int pcix_scan_bridge(device_t dev, unsigned int max)
+unsigned int pcix_scan_bridge(struct device *dev, unsigned int max)
 {
 	unsigned int pos, status;
 

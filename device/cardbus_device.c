@@ -37,7 +37,7 @@
 #define CARDBUS_IO_SIZE		(4096)
 #define CARDBUS_MEM_SIZE	(32*1024*1024)
 
-static void cardbus_record_bridge_resource(device_t dev, resource_t moving,
+static void cardbus_record_bridge_resource(struct device *dev, resource_t moving,
 					   resource_t min_size, unsigned int index,
 					   unsigned long type)
 {
@@ -70,7 +70,8 @@ static void cardbus_record_bridge_resource(device_t dev, resource_t moving,
 	return;
 }
 
-static void cardbus_size_bridge_resource(device_t dev, unsigned int index)
+static void cardbus_size_bridge_resource(struct device *dev,
+					 unsigned int index)
 {
 	struct resource *resource;
 	resource_t min_size;
@@ -88,7 +89,7 @@ static void cardbus_size_bridge_resource(device_t dev, unsigned int index)
 	}
 }
 
-void cardbus_read_resources(device_t dev)
+void cardbus_read_resources(struct device *dev)
 {
 	resource_t moving_base, moving_limit, moving;
 	unsigned long type;
@@ -157,7 +158,7 @@ void cardbus_read_resources(device_t dev)
 	compact_resources(dev);
 }
 
-void cardbus_enable_resources(device_t dev)
+void cardbus_enable_resources(struct device *dev)
 {
 	u16 ctrl;
 	ctrl = pci_read_config16(dev, PCI_CB_BRIDGE_CONTROL);
@@ -185,7 +186,7 @@ unsigned int cardbus_scan_bus(struct bus *bus, unsigned int min_devfn,
 	return pci_scan_bus(bus, min_devfn, max_devfn, max);
 }
 
-unsigned int cardbus_scan_bridge(device_t dev, unsigned int max)
+unsigned int cardbus_scan_bridge(struct device *dev, unsigned int max)
 {
 	struct bus *bus;
 	u32 buses;

@@ -25,7 +25,7 @@
 #include <device/path.h>
 #include <device/smbus.h>
 
-struct bus *get_pbus_smbus(device_t dev)
+struct bus *get_pbus_smbus(struct device *dev)
 {
 	struct bus *pbus = dev->bus;
 	while (pbus && pbus->dev && !ops_smbus_bus(pbus)) {
@@ -46,7 +46,7 @@ struct bus *get_pbus_smbus(device_t dev)
  *   1 store get_pbus_smbus list link
  *   2 reverse the link and call set link
  */
-int smbus_set_link(device_t dev)
+int smbus_set_link(struct device *dev)
 {
 	struct bus *pbus_a[4];	// 4 level mux only. Enough?
 	struct bus *pbus = dev->bus;
@@ -71,57 +71,57 @@ int smbus_set_link(device_t dev)
 	return pbus_num;
 }
 
-int smbus_quick_read(device_t dev)
+int smbus_quick_read(struct device *dev)
 {
 	return ops_smbus_bus(get_pbus_smbus(dev))->quick_read(dev);
 }
 
-int smbus_quick_write(device_t dev)
+int smbus_quick_write(struct device *dev)
 {
 	return ops_smbus_bus(get_pbus_smbus(dev))->quick_write(dev);
 }
 
-int smbus_recv_byte(device_t dev)
+int smbus_recv_byte(struct device *dev)
 {
 	return ops_smbus_bus(get_pbus_smbus(dev))->recv_byte(dev);
 }
 
-int smbus_send_byte(device_t dev, u8 byte)
+int smbus_send_byte(struct device *dev, u8 byte)
 {
 	return ops_smbus_bus(get_pbus_smbus(dev))->send_byte(dev, byte);
 }
 
-int smbus_read_byte(device_t dev, u8 addr)
+int smbus_read_byte(struct device *dev, u8 addr)
 {
 	return ops_smbus_bus(get_pbus_smbus(dev))->read_byte(dev, addr);
 }
 
-int smbus_write_byte(device_t dev, u8 addr, u8 val)
+int smbus_write_byte(struct device *dev, u8 addr, u8 val)
 {
 	return ops_smbus_bus(get_pbus_smbus(dev))->write_byte(dev, addr, val);
 }
 
-int smbus_read_word(device_t dev, u8 addr)
+int smbus_read_word(struct device *dev, u8 addr)
 {
 	return ops_smbus_bus(get_pbus_smbus(dev))->read_word(dev, addr);
 }
 
-int smbus_write_word(device_t dev, u8 addr, u16 val)
+int smbus_write_word(struct device *dev, u8 addr, u16 val)
 {
 	return ops_smbus_bus(get_pbus_smbus(dev))->write_word(dev, addr, val);
 }
 
-int smbus_process_call(device_t dev, u8 cmd, u16 data)
+int smbus_process_call(struct device *dev, u8 cmd, u16 data)
 {
 	return ops_smbus_bus(get_pbus_smbus(dev))->process_call(dev, cmd, data);
 }
 
-int smbus_block_read(device_t dev, u8 cmd, u8 bytes, u8 *buffer)
+int smbus_block_read(struct device *dev, u8 cmd, u8 bytes, u8 *buffer)
 {
 	return ops_smbus_bus(get_pbus_smbus(dev))->block_read(dev, cmd, bytes,
 							      buffer);
 }
-int smbus_block_write(device_t dev, u8 cmd, u8 bytes, const u8 *buffer)
+int smbus_block_write(struct device *dev, u8 cmd, u8 bytes, const u8 *buffer)
 {
 	return ops_smbus_bus(get_pbus_smbus(dev))->block_write(dev, cmd, bytes,
 							       buffer);

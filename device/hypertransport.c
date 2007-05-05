@@ -39,9 +39,9 @@
 #include <cpu/amd/model_fxx_rev.h>
 #endif
 
-static device_t ht_scan_get_devs(device_t *old_devices)
+static struct device *ht_scan_get_devs(struct device **old_devices)
 {
-	device_t first, last;
+	struct device *first, *last;
 	first = *old_devices;
 	last = first;
 
@@ -54,7 +54,7 @@ static device_t ht_scan_get_devs(device_t *old_devices)
 		last = last->sibling;
 	}
 	if (first) {
-		device_t child;
+		struct device *child;
 		/* Unlink the chain from the list of old devices. */
 		*old_devices = last->sibling;
 		last->sibling = 0;
@@ -75,7 +75,7 @@ static device_t ht_scan_get_devs(device_t *old_devices)
 }
 
 #if OPT_HT_LINK == 1
-static unsigned ht_read_freq_cap(device_t dev, unsigned pos)
+static unsigned ht_read_freq_cap(struct device *dev, unsigned pos)
 {
 	/* Handle bugs in valid hypertransport frequency reporting. */
 	unsigned freq_cap;
@@ -116,7 +116,8 @@ struct ht_link {
 	unsigned char ctrl_off, config_off, freq_off, freq_cap_off;
 };
 
-static int ht_setup_link(struct ht_link *prev, device_t dev, unsigned int pos)
+static int ht_setup_link(struct ht_link *prev, struct device *dev,
+			 unsigned int pos)
 {
 	static const u8 link_width_to_pow2[] = { 3, 4, 0, 5, 1, 2, 0, 0 };
 	static const u8 pow2_to_link_width[] = { 0x7, 4, 5, 0, 1, 3 };
@@ -399,10 +400,10 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int min_devfn,
 	 * optimize link.
 	 */
 	unsigned int next_unitid, last_unitid;
-	device_t old_devices, dev, func;
+	struct device *old_devices, *dev, *func;
 	unsigned int min_unitid = (offset_unitid) ? HT_CHAIN_UNITID_BASE : 1;
 	struct ht_link prev;
-	device_t last_func = 0;
+	struct device *last_func = 0;
 	int ht_dev_num = 0;
 
 #if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
@@ -411,7 +412,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int min_devfn,
 	 */
 	unsigned int real_last_unitid;
 	u8 real_last_pos;
-	device_t real_last_dev;
+	struct device *real_last_dev;
 #endif
 
 	/* Restore the hypertransport chain to its unitialized state. */
@@ -554,7 +555,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int min_devfn,
 	if (offset_unitid && (ht_dev_num > 0)) {
 		u16 flags;
 		int i;
-		device_t last_func = 0;
+		struct device *last_func = 0;
 		flags = pci_read_config16(real_last_dev,
 			      real_last_pos + PCI_CAP_FLAGS);
 		flags &= ~0x1f;
@@ -585,7 +586,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int min_devfn,
 	 * TODO: No more Config.lb in LinuxBIOSv3.
 	 */
 	if (old_devices) {
-		device_t left;
+		struct device *left;
 		for (left = old_devices; left; left = left->sibling) {
 			printk_debug("%s\n", dev_path(left));
 		}

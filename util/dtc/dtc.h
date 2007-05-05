@@ -31,8 +31,9 @@
 #include <errno.h>
 #include <unistd.h>
 #include <netinet/in.h>
-#include <endian.h>
-#include <byteswap.h>
+
+/* also covers (part of?) linux's byteswap.h functionality */
+#include "endian.h"
 
 #include "flat_dt.h"
 

@@ -20,10 +20,10 @@ $(obj)/util/dtc/dtc: $(patsubst %,$(obj)/util/dtc/%,$(DTC_OBJS))
 ftdump:	ftdump.o
 	$(Q)$(HOSTCC) -o $@ $^
 
-$(obj)/util/dtc/dtc-parser.tab.c $(obj)/util/dtc/dtc-parser.tab.h $(obj)/util/dtc/dtc-parser.output: $(src)/util/dtc/dtc-parser.y
+$(obj)/util/dtc/dtc-parser.tab.c $(obj)/util/dtc/dtc-parser.tab.h: $(src)/util/dtc/dtc-parser.y
 	$(Q)mkdir -p $(obj)/util/dtc
 	$(Q)printf "  BISON   $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)cd $(obj)/util/dtc; $(BISON) -d $< &> $(obj)/util/dtc/dtc.bison.out
+	$(Q)cd $(obj)/util/dtc; $(BISON) -d $< 2> $(obj)/util/dtc/dtc.bison.stderr.out > $(obj)/util/dtc/dtc.bison.out
 
 $(obj)/util/dtc/lex.yy.c: $(src)/util/dtc/dtc-lexer.l
 	$(Q)cd $(obj)/util/dtc; $(LEX) $<
@@ -50,7 +50,7 @@ check: all
 clean:
 	$(Q)rm -f *~ *.o a.out core $(TARGETS)
 	$(Q)rm -f *.tab.[ch] lex.yy.c
-	$(Q)rm -f *.i *.output vgcore.*
+	$(Q)rm -f *.i *.out vgcore.*
 	$(Q)rm -f *.d
 	$(Q)cd tests && $(MAKE) clean
 endif

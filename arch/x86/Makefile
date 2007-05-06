@@ -62,8 +62,8 @@ $(obj)/linuxbios.bootblock: $(obj)/linuxbios.vpd $(obj)/stage0.init
 # initram module and the various stages and payload files.
 #
 
-STAGE0_CONSOLE_OBJ   = vtxprintf.o vsprintf.o console.o
-STAGE0_LIB_OBJ       = uart8250.o mem.o elfboot.o lar.o delay.o
+STAGE0_LIB_OBJ       = uart8250.o mem.o elfboot.o lar.o delay.o vtxprintf.o \
+		       vsprintf.o console.o
 STAGE0_ARCH_X86_OBJ  = cachemain.o serial.o archelfboot.o speaker.o udelay_io.o mc146818rtc.o
 
 ifeq ($(CONFIG_CAR_TYPE_I586),y)
@@ -73,8 +73,7 @@ else
 endif
 
 
-STAGE0_OBJ := $(patsubst %,$(obj)/console/%,$(STAGE0_CONSOLE_OBJ)) \
-	      $(patsubst %,$(obj)/lib/%,$(STAGE0_LIB_OBJ)) \
+STAGE0_OBJ := $(patsubst %,$(obj)/lib/%,$(STAGE0_LIB_OBJ)) \
 	      $(patsubst %,$(obj)/arch/x86/%,$(STAGE0_ARCH_X86_OBJ)) \
 	      $(patsubst %,$(obj)/arch/x86/%,$(STAGE0_CAR_OBJ))
 

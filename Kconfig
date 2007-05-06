@@ -42,7 +42,6 @@ endmenu
 source mainboard/Kconfig
 source arch/Kconfig
 source lib/Kconfig
-source console/Kconfig
 source device/Kconfig
 
 # These are used for internal purposes only.

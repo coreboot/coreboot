@@ -61,3 +61,168 @@ endchoice
 
 endmenu
 
+menu "Console"
+
+config CONSOLE
+	bool "Console support"
+	default y
+	help
+	  Support for various types of (debugging) consoles.
+
+choice
+	prompt "Console log level"
+	default CONSOLE_LOGLEVEL_8
+	depends CONSOLE
+
+config CONSOLE_LOGLEVEL_8
+	bool "BIOS_SPEW"
+	help
+	  Way too many details.
+
+config CONSOLE_LOGLEVEL_7
+	bool "BIOS_DEBUG"
+	help
+	  Debug-level messages.
+
+config CONSOLE_LOGLEVEL_6
+	bool "BIOS_INFO"
+	help
+	  Informational messages.
+
+config CONSOLE_LOGLEVEL_5
+	bool "BIOS_NOTICE"
+	help
+	  Normal but significant conditions.
+
+config CONSOLE_LOGLEVEL_4
+	bool "BIOS_WARNING"
+	help
+	  Warning conditions.
+
+config CONSOLE_LOGLEVEL_3
+	bool "BIOS_ERR"
+	help
+	  Error conditions.
+
+config CONSOLE_LOGLEVEL_2
+	bool "BIOS_CRIT"
+	help
+	  Critical conditions.
+
+config CONSOLE_LOGLEVEL_1
+	bool "BIOS_ALERT"
+	help
+	  Action must be taken immediately.
+
+config CONSOLE_LOGLEVEL_0
+	bool "BIOS_EMERG"
+	help
+	  System is unusable.
+
+endchoice
+
+config DEFAULT_CONSOLE_LOGLEVEL
+	int
+	default 0 if CONSOLE_LOGLEVEL_0
+	default 1 if CONSOLE_LOGLEVEL_1
+	default 2 if CONSOLE_LOGLEVEL_2
+	default 3 if CONSOLE_LOGLEVEL_3
+	default 4 if CONSOLE_LOGLEVEL_4
+	default 5 if CONSOLE_LOGLEVEL_5
+	default 6 if CONSOLE_LOGLEVEL_6
+	default 7 if CONSOLE_LOGLEVEL_7
+	default 8 if CONSOLE_LOGLEVEL_8
+	help
+	  Map the log level config names to an integer.
+
+config CONSOLE_SERIAL
+	boolean "Serial console support"
+	default y
+	depends CONSOLE
+	help
+	  Send LinuxBIOS output to serial console.
+
+choice
+	prompt "Serial console COM port"
+	default CONSOLE_SERIAL_COM1
+	depends CONSOLE_SERIAL
+
+config CONSOLE_SERIAL_COM1
+	bool "COM1/ttyS0"
+	help
+	  Serial console on COM1/ttyS0.
+
+config CONSOLE_SERIAL_COM2
+	bool "COM2/ttyS1"
+	help
+	  Serial console on COM2/ttyS1.
+
+endchoice
+
+choice
+	prompt "Serial console speed"
+	default CONSOLE_SERIAL_115200
+	depends CONSOLE_SERIAL
+
+config CONSOLE_SERIAL_115200
+	bool "115200 bps"
+	help
+	  Set serial console speed to 115200 bps.
+
+config CONSOLE_SERIAL_57600
+	bool "57600 bps"
+	help
+	  Set serial console speed to 57600 bps.
+
+config CONSOLE_SERIAL_38400
+	bool "38400 bps"
+	help
+	  Set serial console speed to 38400 bps.
+
+config CONSOLE_SERIAL_19200
+	bool "19200 bps"
+	help
+	  Set serial console speed to 19200 bps.
+
+config CONSOLE_SERIAL_9600
+	bool "9600 bps"
+	help
+	  Set serial console speed to 9600 bps.
+
+endchoice
+
+config CONSOLE_USB
+	boolean "USB2 console support (EXPERIMENTAL)"
+	depends CONSOLE && EXPERIMENTAL
+	help
+	  Send LinuxBIOS output to USB2 (EHCI) console.
+
+	  Note: This requires a USB2 controller which supports the EHCI
+	  Debug Port capability. Controllers which are known to work:
+
+	    * 10b9:5239 ALi Corporation USB 2.0 (USB PCI card)
+	    * 10de:0088 NVIDIA MCP2A
+	    * 10de:005b NVIDIA CK804
+	    * 10de:036d NVIDIA MCP55
+	    * 8086:24dd Intel ICH5
+	    * 8086:265c Intel ICH6
+	    * 8086:268c Intel 631xESB/632xESB/3100
+	    * 8086:27cc Intel ICH7
+	    * 8086:2836 Intel ICH8
+	    * 8086:283a Intel ICH8 
+
+	  See http://linuxbios.org/EHCI_Debug_Port for an up-to-date list.
+
+comment "Cosmetic console options"
+	depends EXPERT && (CONSOLE_SERIAL || CONSOLE_USB)
+
+config CONSOLE_PREFIX
+	bool "Prefix all console output with '(LB)'"
+	depends EXPERT && (CONSOLE_SERIAL || CONSOLE_USB)
+	default n
+	help
+	  When you enable this option, LinuxBIOS will prefix each line of 
+	  console output with '(LB)'.
+
+endmenu
+

@@ -23,7 +23,7 @@ ftdump:	ftdump.o
 $(obj)/util/dtc/dtc-parser.tab.c $(obj)/util/dtc/dtc-parser.tab.h: $(src)/util/dtc/dtc-parser.y
 	$(Q)mkdir -p $(obj)/util/dtc
 	$(Q)printf "  BISON   $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)cd $(obj)/util/dtc; $(BISON) -d $< 2> $(obj)/util/dtc/dtc.bison.stderr.out > $(obj)/util/dtc/dtc.bison.out
+	$(Q)cd $(obj)/util/dtc; $(BISON) -d $< > $(obj)/util/dtc/dtc.bison.out 2>&1
 
 $(obj)/util/dtc/lex.yy.c: $(src)/util/dtc/dtc-lexer.l
 	$(Q)cd $(obj)/util/dtc; $(LEX) $<

@@ -24,7 +24,7 @@ ifeq ($(CONFIG_ARCH_X86),y)
 INITCFLAGS := $(CFLAGS) -I$(src)/include/arch/x86 -I$(src)/include \
 		-fno-builtin
 
-SILENT := &> /dev/null
+SILENT := >/dev/null 2>&1
 
 #
 # Build the ROM Image / LAR archive

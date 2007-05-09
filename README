@@ -39,6 +39,38 @@ For details please consult:
  * http://www.linuxbios.org/Supported_Chipsets_and_Devices
 
 
+Building and Installing
+-----------------------
+
+Note: Currently only the x86 QEMU target is supported in LinuxBIOSv3.
+
+1) Build a payload:
+
+  For example: FILO.
+
+2) Configure LinuxBIOS:
+
+  $ make menuconfig
+
+  Select at least the desired mainboard vendor, the mainboard device,
+  the size of your ROM chip, and a payload.
+
+3) Build the LinuxBIOS ROM image:
+
+  $ make
+
+  The generated ROM image is build/linuxbios.rom.
+
+4) You can now test the LinuxBIOS image using:
+
+  $ qemu -L build -hda /dev/zero -serial stdio
+
+  If you have a full QEMU image with a Linux distribution installed,
+  you can boot that Linux kernel by using a proper FILO payload and typing:
+
+  $ qemu -L build -hda /tmp/qemu.img -serial stdio
+
+
 Website and Mailing List
 ------------------------
 

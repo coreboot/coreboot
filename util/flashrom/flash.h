@@ -132,13 +132,13 @@ void myusec_delay(int time);
 void myusec_calibrate_delay();
 
 /* pci handling for board/chipset_enable */
-struct pci_access *pacc; /* For board and chipset_enable */
+struct pci_access *pacc;	/* For board and chipset_enable */
 struct pci_dev *pci_dev_find(uint16_t vendor, uint16_t device);
-struct pci_dev *pci_card_find(uint16_t vendor, uint16_t device, 
-		uint16_t card_vendor, uint16_t card_device);
+struct pci_dev *pci_card_find(uint16_t vendor, uint16_t device,
+			      uint16_t card_vendor, uint16_t card_device);
 
-int board_flash_enable(char *vendor, char *part); /* board_enable.c */
-int chipset_flash_enable(void); /* chipset_enable.c */
+int board_flash_enable(char *vendor, char *part);	/* board_enable.c */
+int chipset_flash_enable(void);	/* chipset_enable.c */
 
 /* physical memory mapping device */
 

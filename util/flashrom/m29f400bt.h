@@ -5,10 +5,10 @@
 
 extern int probe_m29f400bt(struct flashchip *flash);
 extern int erase_m29f400bt(struct flashchip *flash);
-extern int block_erase_m29f400bt(volatile uint8_t *bios, volatile uint8_t *dst);
+extern int block_erase_m29f400bt(volatile uint8_t *bios,
+				 volatile uint8_t *dst);
 extern int write_m29f400bt(struct flashchip *flash, uint8_t *buf);
-extern int write_linuxbios_m29f400bt(struct flashchip *flash,
-				     uint8_t *buf);
+extern int write_linuxbios_m29f400bt(struct flashchip *flash, uint8_t *buf);
 
 extern __inline__ void toggle_ready_m29f400bt(volatile uint8_t *dst)
 {
@@ -44,23 +44,24 @@ extern __inline__ void data_polling_m29f400bt(volatile uint8_t *dst,
 
 extern __inline__ void protect_m29f400bt(volatile uint8_t *bios)
 {
-	*(volatile uint8_t *) (bios + 0xAAA) = 0xAA;
-	*(volatile uint8_t *) (bios + 0x555) = 0x55;
-	*(volatile uint8_t *) (bios + 0xAAA) = 0xA0;
+	*(volatile uint8_t *)(bios + 0xAAA) = 0xAA;
+	*(volatile uint8_t *)(bios + 0x555) = 0x55;
+	*(volatile uint8_t *)(bios + 0xAAA) = 0xA0;
 
 	usleep(200);
 }
 
-extern __inline__ void write_page_m29f400bt(volatile uint8_t *bios, uint8_t *src,
+extern __inline__ void write_page_m29f400bt(volatile uint8_t *bios,
+					    uint8_t *src,
 					    volatile uint8_t *dst,
 					    int page_size)
 {
 	int i;
 
 	for (i = 0; i < page_size; i++) {
-		*(volatile uint8_t *) (bios + 0xAAA) = 0xAA;
-		*(volatile uint8_t *) (bios + 0x555) = 0x55;
-		*(volatile uint8_t *) (bios + 0xAAA) = 0xA0;
+		*(volatile uint8_t *)(bios + 0xAAA) = 0xAA;
+		*(volatile uint8_t *)(bios + 0x555) = 0x55;
+		*(volatile uint8_t *)(bios + 0xAAA) = 0xA0;
 
 		/* transfer data from source to destination */
 		*dst = *src;

@@ -19,26 +19,17 @@
  *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-
-
 #include <stdio.h>
 #include <unistd.h>
 #include "flash.h"
 #include "msys_doc.h"
 #include "debug.h"
 
-
-
-
 static int doc_wait(volatile uint8_t *bios, int timeout);
 static uint8_t doc_read_chipid(volatile uint8_t *bios);
 static uint8_t doc_read_docstatus(volatile uint8_t *bios);
 static uint8_t doc_read_cdsncontrol(volatile uint8_t *bios);
 static void doc_write_cdsncontrol(volatile uint8_t *bios, uint8_t data);
-
-
-
-
 
 int probe_md2802(struct flashchip *flash)
 {
@@ -72,10 +63,8 @@ int probe_md2802(struct flashchip *flash)
 
 	printf("%s: switching off write protection ...\n", __FUNCTION__);
 	doc_write_cdsncontrol(bios, doc_read_cdsncontrol(bios) & (~0x08));
-	printf("%s: switching off write protection ... done\n",
-	       __FUNCTION__);
+	printf("%s: switching off write protection ... done\n", __FUNCTION__);
 	printf("%s:\n", __FUNCTION__);
-
 
 	chipid = doc_read_chipid(bios);
 #ifndef MSYSTEMS_DOC_NO_55AA_CHECKING
@@ -140,9 +129,8 @@ int probe_md2802(struct flashchip *flash)
 	printf("\n%s: toggle result: %d/%d\n", __FUNCTION__, toggle_a,
 	       toggle_b);
 
-	if (chipid == flash->model_id
-	    && ((toggle_a == 5 && toggle_b == 0)
-		|| (toggle_a == 0 && toggle_b == 5))
+	if (chipid == flash->model_id && ((toggle_a == 5 && toggle_b == 0)
+					  || (toggle_a == 0 && toggle_b == 5))
 #ifndef MSYSTEMS_DOC_NO_55AA_CHECKING
 	    && id_0x55 == 0x55 && id_0xAA == 0xaa
 #endif				/* !MSYSTEMS_DOC_NO_55AA_CHECKING */
@@ -153,37 +141,31 @@ int probe_md2802(struct flashchip *flash)
 	return (0);
 }				/* int probe_md2802(struct flashchip *flash) */
 
-
-
 int read_md2802(struct flashchip *flash, uint8_t *buf)
 {
 
 	return (0);
 }				/* int read_md2802(struct flashchip *flash, uint8_t *buf) */
 
-
-
 int erase_md2802(struct flashchip *flash)
 {
 	volatile uint8_t *bios = flash->virt_addr;
 
 	return (1);
-	*(volatile uint8_t *) (bios + 0x5555) = 0xAA;
-	*(volatile uint8_t *) (bios + 0x2AAA) = 0x55;
-	*(volatile uint8_t *) (bios + 0x5555) = 0x80;
+	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
+	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
+	*(volatile uint8_t *)(bios + 0x5555) = 0x80;
 
-	*(volatile uint8_t *) (bios + 0x5555) = 0xAA;
-	*(volatile uint8_t *) (bios + 0x2AAA) = 0x55;
-	*(volatile uint8_t *) (bios + 0x5555) = 0x10;
+	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
+	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
+	*(volatile uint8_t *)(bios + 0x5555) = 0x10;
 }				/* int erase_md2802(struct flashchip *flash) */
-
-
 
 int write_md2802(struct flashchip *flash, uint8_t *buf)
 {
 	int i;
-	int total_size = flash->total_size * 1024, page_size =
-	    flash->page_size;
+	int total_size = flash->total_size * 1024;
+	int page_size = flash->page_size;
 	volatile uint8_t *bios = flash->virt_addr;
 
 	return (1);
@@ -204,11 +186,6 @@ int write_md2802(struct flashchip *flash, uint8_t *buf)
 
 	return 0;
 }				/* int write_md2802(struct flashchip *flash, uint8_t *buf) */
-
-
-
-
-
 
 /*
 	wait timeout msec for doc to become ready
@@ -237,8 +214,6 @@ static int doc_wait(volatile uint8_t *bios, int timeout)
 	return (0);
 }				/* static int doc_wait(volatile uint8_t *bios, int timeout) */
 
-
-
 static uint8_t doc_read_docstatus(volatile uint8_t *bios)
 {
 	doc_read(bios, CDSNSlowIO);
@@ -247,8 +222,6 @@ static uint8_t doc_read_docstatus(volatile uint8_t *bios)
 	return (doc_read(bios, _DOCStatus));
 }				/* static uint8_t doc_read_docstatus(volatile uint8_t *bios) */
 
-
-
 static uint8_t doc_read_chipid(volatile uint8_t *bios)
 {
 	doc_read(bios, CDSNSlowIO);
@@ -256,8 +229,6 @@ static uint8_t doc_read_chipid(volatile uint8_t *bios)
 
 	return (doc_read(bios, _ChipID));
 }				/* static uint8_t doc_read_chipid(volatile uint8_t *bios) */
-
-
 
 static uint8_t doc_read_cdsncontrol(volatile uint8_t *bios)
 {
@@ -272,8 +243,6 @@ static uint8_t doc_read_cdsncontrol(volatile uint8_t *bios)
 
 	return (value);
 }				/* static uint8_t doc_read_chipid(volatile char *bios) */
-
-
 
 static void doc_write_cdsncontrol(volatile uint8_t *bios, uint8_t data)
 {

@@ -39,23 +39,23 @@ int probe_jedec(struct flashchip *flash)
 	uint8_t id1, id2;
 
 	/* Issue JEDEC Product ID Entry command */
-	*(volatile uint8_t *) (bios + 0x5555) = 0xAA;
+	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
 	myusec_delay(10);
-	*(volatile uint8_t *) (bios + 0x2AAA) = 0x55;
+	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
 	myusec_delay(10);
-	*(volatile uint8_t *) (bios + 0x5555) = 0x90;
+	*(volatile uint8_t *)(bios + 0x5555) = 0x90;
 	myusec_delay(10);
 
 	/* Read product ID */
-	id1 = *(volatile uint8_t *) bios;
-	id2 = *(volatile uint8_t *) (bios + 0x01);
+	id1 = *(volatile uint8_t *)bios;
+	id2 = *(volatile uint8_t *)(bios + 0x01);
 
 	/* Issue JEDEC Product ID Exit command */
-	*(volatile uint8_t *) (bios + 0x5555) = 0xAA;
+	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
 	myusec_delay(10);
-	*(volatile uint8_t *) (bios + 0x2AAA) = 0x55;
+	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
 	myusec_delay(10);
-	*(volatile uint8_t *) (bios + 0x5555) = 0xF0;
+	*(volatile uint8_t *)(bios + 0x5555) = 0xF0;
 	myusec_delay(10);
 
 	printf_debug("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, id1, id2);
@@ -68,18 +68,18 @@ int probe_jedec(struct flashchip *flash)
 int erase_sector_jedec(volatile uint8_t *bios, unsigned int page)
 {
 	/*  Issue the Sector Erase command   */
-	*(volatile uint8_t *) (bios + 0x5555) = 0xAA;
+	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
 	myusec_delay(10);
-	*(volatile uint8_t *) (bios + 0x2AAA) = 0x55;
+	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
 	myusec_delay(10);
-	*(volatile uint8_t *) (bios + 0x5555) = 0x80;
+	*(volatile uint8_t *)(bios + 0x5555) = 0x80;
 	myusec_delay(10);
 
-	*(volatile uint8_t *) (bios + 0x5555) = 0xAA;
+	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
 	myusec_delay(10);
-	*(volatile uint8_t *) (bios + 0x2AAA) = 0x55;
+	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
 	myusec_delay(10);
-	*(volatile uint8_t *) (bios + page)   = 0x30;
+	*(volatile uint8_t *)(bios + page) = 0x30;
 	myusec_delay(10);
 
 	/* wait for Toggle bit ready         */
@@ -91,18 +91,18 @@ int erase_sector_jedec(volatile uint8_t *bios, unsigned int page)
 int erase_block_jedec(volatile uint8_t *bios, unsigned int block)
 {
 	/*  Issue the Sector Erase command   */
-	*(volatile uint8_t *) (bios + 0x5555) = 0xAA;
+	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
 	myusec_delay(10);
-	*(volatile uint8_t *) (bios + 0x2AAA) = 0x55;
+	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
 	myusec_delay(10);
-	*(volatile uint8_t *) (bios + 0x5555) = 0x80;
+	*(volatile uint8_t *)(bios + 0x5555) = 0x80;
 	myusec_delay(10);
 
-	*(volatile uint8_t *) (bios + 0x5555) = 0xAA;
+	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
 	myusec_delay(10);
-	*(volatile uint8_t *) (bios + 0x2AAA) = 0x55;
+	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
 	myusec_delay(10);
-	*(volatile uint8_t *) (bios + block)  = 0x50;
+	*(volatile uint8_t *)(bios + block) = 0x50;
 	myusec_delay(10);
 
 	/* wait for Toggle bit ready         */
@@ -116,18 +116,18 @@ int erase_chip_jedec(struct flashchip *flash)
 	volatile uint8_t *bios = flash->virt_addr;
 
 	/*  Issue the JEDEC Chip Erase command   */
-	*(volatile uint8_t *) (bios + 0x5555) = 0xAA;
+	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
 	myusec_delay(10);
-	*(volatile uint8_t *) (bios + 0x2AAA) = 0x55;
+	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
 	myusec_delay(10);
-	*(volatile uint8_t *) (bios + 0x5555) = 0x80;
+	*(volatile uint8_t *)(bios + 0x5555) = 0x80;
 	myusec_delay(10);
 
-	*(volatile uint8_t *) (bios + 0x5555) = 0xAA;
+	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
 	myusec_delay(10);
-	*(volatile uint8_t *) (bios + 0x2AAA) = 0x55;
+	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
 	myusec_delay(10);
-	*(volatile uint8_t *) (bios + 0x5555) = 0x10;
+	*(volatile uint8_t *)(bios + 0x5555) = 0x10;
 	myusec_delay(10);
 
 	toggle_ready_jedec(bios);
@@ -144,14 +144,14 @@ int write_page_write_jedec(volatile uint8_t *bios, uint8_t *src,
 
 retry:
 	/* Issue JEDEC Data Unprotect comand */
-	*(volatile uint8_t *) (bios + 0x5555) = 0xAA;
-	*(volatile uint8_t *) (bios + 0x2AAA) = 0x55;
-	*(volatile uint8_t *) (bios + 0x5555) = 0xA0;
+	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
+	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
+	*(volatile uint8_t *)(bios + 0x5555) = 0xA0;
 
 	/* transfer data from source to destination */
 	for (i = start_index; i < page_size; i++) {
 		/* If the data is 0xFF, don't program it */
-		if (*src != 0xFF ) 
+		if (*src != 0xFF)
 			*dst = *src;
 		dst++;
 		src++;
@@ -163,21 +163,21 @@ retry:
 	src = s;
 	ok = 1;
 	for (i = 0; i < page_size; i++) {
-		if ( *dst != *src ) 
-		{
+		if (*dst != *src) {
 			ok = 0;
 			break;
 		}
 		dst++;
 		src++;
 	}
-		
+
 	if (!ok && tried++ < MAX_REFLASH_TRIES) {
 		start_index = i;
- 		goto retry;
- 	}
+		goto retry;
+	}
 	if (!ok) {
-		fprintf( stderr, " page %d failed!\n", (unsigned int)(d-bios)/page_size );
+		fprintf(stderr, " page %d failed!\n",
+			(unsigned int)(d - bios) / page_size);
 	}
 	return (!ok);
 }
@@ -194,20 +194,20 @@ int write_byte_program_jedec(volatile uint8_t *bios, uint8_t *src,
 
 retry:
 	/* Issue JEDEC Byte Program command */
-	*(volatile uint8_t *) (bios + 0x5555) = 0xAA;
-	*(volatile uint8_t *) (bios + 0x2AAA) = 0x55;
-	*(volatile uint8_t *) (bios + 0x5555) = 0xA0;
+	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
+	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
+	*(volatile uint8_t *)(bios + 0x5555) = 0xA0;
 
 	/* transfer data from source to destination */
 	*dst = *src;
 	toggle_ready_jedec(bios);
 
 	if (*dst != *src && tried++ < MAX_REFLASH_TRIES) {
- 		goto retry;
- 	}
+		goto retry;
+	}
 
 	if (tried >= MAX_REFLASH_TRIES)
-		ok=0;
+		ok = 0;
 
 	return (!ok);
 }
@@ -233,13 +233,13 @@ int write_jedec(struct flashchip *flash, uint8_t *buf)
 	volatile uint8_t *bios = flash->virt_addr;
 
 	erase_chip_jedec(flash);
-        // dumb check if erase was successful.
-        for (i=0; i < total_size; i++) {
-                if (bios[i] != (uint8_t)0xff) {
-                        printf("ERASE FAILED\n");
-                        return -1;
-                }
-        }
+	// dumb check if erase was successful.
+	for (i = 0; i < total_size; i++) {
+		if (bios[i] != (uint8_t) 0xff) {
+			printf("ERASE FAILED\n");
+			return -1;
+		}
+	}
 
 	printf("Programming Page: ");
 	for (i = 0; i < total_size / page_size; i++) {

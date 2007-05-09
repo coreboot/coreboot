@@ -50,25 +50,22 @@ struct lb_uint64 {
 
 static inline uint64_t unpack_lb64(struct lb_uint64 value)
 {
-        uint64_t result;
-        result = value.hi;
-        result = (result << 32) + value.lo;
-        return result;
+	uint64_t result;
+	result = value.hi;
+	result = (result << 32) + value.lo;
+	return result;
 }
 
 static inline struct lb_uint64 pack_lb64(uint64_t value)
 {
-        struct lb_uint64 result;
-        result.lo = (value >> 0) & 0xffffffff;
-        result.hi = (value >> 32) & 0xffffffff;
-        return result;
+	struct lb_uint64 result;
+	result.lo = (value >> 0) & 0xffffffff;
+	result.hi = (value >> 32) & 0xffffffff;
+	return result;
 }
 
-
-
-struct lb_header
-{
-	uint8_t  signature[4]; /* LBIO */
+struct lb_header {
+	uint8_t signature[4];	/* LBIO */
 	uint32_t header_bytes;
 	uint32_t header_checksum;
 	uint32_t table_bytes;
@@ -117,9 +114,9 @@ struct lb_hwrpb {
 struct lb_mainboard {
 	uint32_t tag;
 	uint32_t size;
-	uint8_t  vendor_idx;
-	uint8_t  part_number_idx;
-	uint8_t  strings[0];
+	uint8_t vendor_idx;
+	uint8_t part_number_idx;
+	uint8_t strings[0];
 };
 
 #define LB_TAG_VERSION		0x0004
@@ -135,16 +132,16 @@ struct lb_mainboard {
 struct lb_string {
 	uint32_t tag;
 	uint32_t size;
-	uint8_t  string[0];
+	uint8_t string[0];
 };
 
 /* The following structures are for the cmos definitions table */
 #define LB_TAG_CMOS_OPTION_TABLE 200
 /* cmos header record */
 struct cmos_option_table {
-	uint32_t tag;               /* CMOS definitions table type */
-	uint32_t size;               /* size of the entire table */
-	uint32_t header_length;      /* length of header */
+	uint32_t tag;		/* CMOS definitions table type */
+	uint32_t size;		/* size of the entire table */
+	uint32_t header_length;	/* length of header */
 };
 
 /* cmos entry record
@@ -156,17 +153,16 @@ struct cmos_option_table {
 */
 #define LB_TAG_OPTION 201
 struct cmos_entries {
-	uint32_t tag;                /* entry type */
-	uint32_t size;               /* length of this record */
-	uint32_t bit;                /* starting bit from start of image */
-	uint32_t length;             /* length of field in bits */
-	uint32_t config;             /* e=enumeration, h=hex, r=reserved */
-	uint32_t config_id;          /* a number linking to an enumeration record */
+	uint32_t tag;		/* entry type */
+	uint32_t size;		/* length of this record */
+	uint32_t bit;		/* starting bit from start of image */
+	uint32_t length;	/* length of field in bits */
+	uint32_t config;	/* e=enumeration, h=hex, r=reserved */
+	uint32_t config_id;	/* a number linking to an enumeration record */
 #define CMOS_MAX_NAME_LENGTH 32
-	uint8_t name[CMOS_MAX_NAME_LENGTH]; /* name of entry in ascii, 
-					       variable length int aligned */
+	uint8_t name[CMOS_MAX_NAME_LENGTH];	/* name of entry in ascii, 
+						   variable length int aligned */
 };
-
 
 /* cmos enumerations record
         This record is variable length.  The text field may be
@@ -174,13 +170,13 @@ struct cmos_entries {
 */
 #define LB_TAG_OPTION_ENUM 202
 struct cmos_enums {
-	uint32_t tag;		     /* enumeration type */
-	uint32_t size; 		     /* length of this record */
-	uint32_t config_id;          /* a number identifying the config id */
-	uint32_t value;              /* the value associated with the text */
+	uint32_t tag;		/* enumeration type */
+	uint32_t size;		/* length of this record */
+	uint32_t config_id;	/* a number identifying the config id */
+	uint32_t value;		/* the value associated with the text */
 #define CMOS_MAX_TEXT_LENGTH 32
-	uint8_t text[CMOS_MAX_TEXT_LENGTH]; /* enum description in ascii, 
-						variable length int aligned */
+	uint8_t text[CMOS_MAX_TEXT_LENGTH];	/* enum description in ascii, 
+						   variable length int aligned */
 };
 
 /* cmos defaults record
@@ -188,16 +184,16 @@ struct cmos_enums {
 */
 #define LB_TAG_OPTION_DEFAULTS 203
 struct cmos_defaults {
-	uint32_t tag;                /* default type */
-	uint32_t size;               /* length of this record */
-	uint32_t name_length;        /* length of the following name field */
-	uint8_t name[CMOS_MAX_NAME_LENGTH]; /* name identifying the default */
+	uint32_t tag;		/* default type */
+	uint32_t size;		/* length of this record */
+	uint32_t name_length;	/* length of the following name field */
+	uint8_t name[CMOS_MAX_NAME_LENGTH];	/* name identifying the default */
 #define CMOS_IMAGE_BUFFER_SIZE 128
-	uint8_t default_set[CMOS_IMAGE_BUFFER_SIZE]; /* default settings */
+	uint8_t default_set[CMOS_IMAGE_BUFFER_SIZE];	/* default settings */
 };
 
 #define LB_TAG_OPTION_CHECKSUM 204
-struct	cmos_checksum {
+struct cmos_checksum {
 	uint32_t tag;
 	uint32_t size;
 	/* In practice everything is byte aligned, but things are measured
@@ -211,6 +207,4 @@ struct	cmos_checksum {
 #define CHECKSUM_PCBIOS	1
 };
 
-
-
-#endif /* LINUXBIOS_TABLES_H */
+#endif				/* LINUXBIOS_TABLES_H */

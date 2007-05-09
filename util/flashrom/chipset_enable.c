@@ -75,20 +75,21 @@ static int enable_flash_sis630(struct pci_dev *dev, char *name)
 static int enable_flash_piix4(struct pci_dev *dev, char *name)
 {
 	uint16_t old, new;
-	uint16_t xbcs = 0x4e; /* X-Bus Chip Select register. */
+	uint16_t xbcs = 0x4e;	/* X-Bus Chip Select register. */
 
 	old = pci_read_word(dev, xbcs);
 
 	/* Set bit 9: 1-Meg Extended BIOS Enable (PCI master accesses to
-                      FFF00000-FFF7FFFF are forwarded to ISA).
-           Set bit 7: Extended BIOS Enable (PCI master accesses to
-                      FFF80000-FFFDFFFF are forwarded to ISA).
-           Set bit 6: Lower BIOS Enable (PCI master, or ISA master accesses to
-                      the lower 64-Kbyte BIOS block (E0000-EFFFF) at the top
-                      of 1 Mbyte, or the aliases at the top of 4 Gbyte
-                      (FFFE0000-FFFEFFFF) result in the generation of BIOSCS#.
-           Note: Accesses to FFFF0000-FFFFFFFF are always forwarded to ISA.
-           Set bit 2: BIOSCS# Write Enable (1=enable, 0=disable). */
+	 *            FFF00000-FFF7FFFF are forwarded to ISA).
+	 * Set bit 7: Extended BIOS Enable (PCI master accesses to
+	 *            FFF80000-FFFDFFFF are forwarded to ISA).
+	 * Set bit 6: Lower BIOS Enable (PCI master, or ISA master accesses to
+	 *            the lower 64-Kbyte BIOS block (E0000-EFFFF) at the top
+	 *            of 1 Mbyte, or the aliases at the top of 4 Gbyte
+	 *            (FFFE0000-FFFEFFFF) result in the generation of BIOSCS#.
+	 * Note: Accesses to FFFF0000-FFFFFFFF are always forwarded to ISA.
+	 * Set bit 2: BIOSCS# Write Enable (1=enable, 0=disable).
+	 */
 	new = old | 0x2c4;
 
 	if (new == old)
@@ -113,7 +114,7 @@ static int enable_flash_ich(struct pci_dev *dev, char *name, int bios_cntl)
 	 */
 
 	/* Note: the ICH0-ICH5 BIOS_CNTL register is actually 16 bit wide, but
-         * just treating it as 8 bit wide seems to work fine in practice.
+	 * just treating it as 8 bit wide seems to work fine in practice.
 	 */
 
 	/* see ie. page 375 of "Intel ICH7 External Design Specification"
@@ -130,8 +131,7 @@ static int enable_flash_ich(struct pci_dev *dev, char *name, int bios_cntl)
 	pci_write_byte(dev, bios_cntl, new);
 
 	if (pci_read_byte(dev, bios_cntl) != new) {
-		printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
-		       bios_cntl, new, name);
+		printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n", bios_cntl, new, name);
 		return -1;
 	}
 	return 0;
@@ -150,23 +150,22 @@ static int enable_flash_ich_dc(struct pci_dev *dev, char *name)
 /*
  *
  */
-static int
-enable_flash_vt823x(struct pci_dev *dev, char *name)
+static int enable_flash_vt823x(struct pci_dev *dev, char *name)
 {
 	uint8_t val;
 
-        /* ROM Write enable */
+	/* ROM Write enable */
 	val = pci_read_byte(dev, 0x40);
 	val |= 0x10;
 	pci_write_byte(dev, 0x40, val);
 
 	if (pci_read_byte(dev, 0x40) != val) {
 		printf("\nWARNING: Failed to enable ROM Write on \"%s\"\n",
-                       name);
+		       name);
 		return -1;
 	}
 
-        return 0;
+	return 0;
 }
 
 static int enable_flash_cs5530(struct pci_dev *dev, char *name)
@@ -178,8 +177,7 @@ static int enable_flash_cs5530(struct pci_dev *dev, char *name)
 	new = pci_read_byte(dev, 0x52);
 
 	if (new != 0xee) {
-		printf("tried to set register 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
-		       0x52, new, name);
+		printf("tried to set register 0x%x to 0x%x on %s failed (WARNING ONLY)\n", 0x52, new, name);
 		return -1;
 	}
 
@@ -188,7 +186,6 @@ static int enable_flash_cs5530(struct pci_dev *dev, char *name)
 
 	return 0;
 }
-
 
 static int enable_flash_sc1100(struct pci_dev *dev, char *name)
 {
@@ -199,8 +196,7 @@ static int enable_flash_sc1100(struct pci_dev *dev, char *name)
 	new = pci_read_byte(dev, 0x52);
 
 	if (new != 0xee) {
-		printf("tried to set register 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
-		       0x52, new, name);
+		printf("tried to set register 0x%x to 0x%x on %s failed (WARNING ONLY)\n", 0x52, new, name);
 		return -1;
 	}
 	return 0;
@@ -221,8 +217,7 @@ static int enable_flash_sis5595(struct pci_dev *dev, char *name)
 
 	newer = pci_read_byte(dev, 0x45);
 	if (newer != new) {
-		printf("tried to set register 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
-		       0x45, new, name);
+		printf("tried to set register 0x%x to 0x%x on %s failed (WARNING ONLY)\n", 0x45, new, name);
 		printf("Stuck at 0x%x\n", newer);
 		return -1;
 	}
@@ -233,6 +228,7 @@ static int enable_flash_amd8111(struct pci_dev *dev, char *name)
 {
 	/* register 4e.b gets or'ed with one */
 	uint8_t old, new;
+
 	/* if it fails, it fails. There are so many variations of broken mobos
 	 * that it is hard to argue that we should quit at this point.
 	 */
@@ -243,8 +239,7 @@ static int enable_flash_amd8111(struct pci_dev *dev, char *name)
 	if (new != old) {
 		pci_write_byte(dev, 0x43, new);
 		if (pci_read_byte(dev, 0x43) != new) {
-			printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
-			       0x43, new, name);
+			printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n", 0x43, new, name);
 		}
 	}
 
@@ -255,8 +250,7 @@ static int enable_flash_amd8111(struct pci_dev *dev, char *name)
 	pci_write_byte(dev, 0x40, new);
 
 	if (pci_read_byte(dev, 0x40) != new) {
-		printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
-		       0x40, new, name);
+		printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n", 0x40, new, name);
 		return -1;
 	}
 	return 0;
@@ -264,47 +258,46 @@ static int enable_flash_amd8111(struct pci_dev *dev, char *name)
 
 static int enable_flash_ck804(struct pci_dev *dev, char *name)
 {
-        /* register 4e.b gets or'ed with one */
-        uint8_t old, new;
-        /* if it fails, it fails. There are so many variations of broken mobos
-         * that it is hard to argue that we should quit at this point.
-         */
+	/* register 4e.b gets or'ed with one */
+	uint8_t old, new;
 
-        /* dump_pci_device(dev); */
+	/* if it fails, it fails. There are so many variations of broken mobos
+	 * that it is hard to argue that we should quit at this point.
+	 */
 
-        old = pci_read_byte(dev, 0x88);
-        new = old | 0xc0;
-        if (new != old) {
-                pci_write_byte(dev, 0x88, new);
-                if (pci_read_byte(dev, 0x88) != new) {
-                        printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
-                               0x88, new, name);
-                }
-        }
+	/* dump_pci_device(dev); */
 
-        old = pci_read_byte(dev, 0x6d);
-        new = old | 0x01;
-        if (new == old)
-                return 0;
-        pci_write_byte(dev, 0x6d, new);
+	old = pci_read_byte(dev, 0x88);
+	new = old | 0xc0;
+	if (new != old) {
+		pci_write_byte(dev, 0x88, new);
+		if (pci_read_byte(dev, 0x88) != new) {
+			printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n", 0x88, new, name);
+		}
+	}
 
-        if (pci_read_byte(dev, 0x6d) != new) {
-                printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
-                       0x6d, new, name);
-                return -1;
-        }
-        return 0;
+	old = pci_read_byte(dev, 0x6d);
+	new = old | 0x01;
+	if (new == old)
+		return 0;
+	pci_write_byte(dev, 0x6d, new);
+
+	if (pci_read_byte(dev, 0x6d) != new) {
+		printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n", 0x6d, new, name);
+		return -1;
+	}
+	return 0;
 }
 
 static int enable_flash_sb400(struct pci_dev *dev, char *name)
 {
-        uint8_t tmp;
+	uint8_t tmp;
 
 	struct pci_filter f;
 	struct pci_dev *smbusdev;
 
 	/* then look for the smbus device */
-	pci_filter_init((struct pci_access *) 0, &f);
+	pci_filter_init((struct pci_access *)0, &f);
 	f.vendor = 0x1002;
 	f.device = 0x4372;
 
@@ -314,26 +307,26 @@ static int enable_flash_sb400(struct pci_dev *dev, char *name)
 		}
 	}
 
-	if(!smbusdev) {
+	if (!smbusdev) {
 		fprintf(stderr, "ERROR: SMBus device not found. aborting\n");
 		exit(1);
 	}
 
 	/* enable some smbus stuff */
-	tmp=pci_read_byte(smbusdev, 0x79);
-	tmp|=0x01;
+	tmp = pci_read_byte(smbusdev, 0x79);
+	tmp |= 0x01;
 	pci_write_byte(smbusdev, 0x79, tmp);
 
 	/* change southbridge */
-	tmp=pci_read_byte(dev, 0x48);
-	tmp|=0x21;
+	tmp = pci_read_byte(dev, 0x48);
+	tmp |= 0x21;
 	pci_write_byte(dev, 0x48, tmp);
 
 	/* now become a bit silly. */
-	tmp=inb(0xc6f);
-	outb(tmp,0xeb);
+	tmp = inb(0xc6f);
 	outb(tmp, 0xeb);
-	tmp|=0x40;
+	outb(tmp, 0xeb);
+	tmp |= 0x40;
 	outb(tmp, 0xc6f);
 	outb(tmp, 0xeb);
 	outb(tmp, 0xeb);
@@ -343,38 +336,39 @@ static int enable_flash_sb400(struct pci_dev *dev, char *name)
 
 static int enable_flash_mcp55(struct pci_dev *dev, char *name)
 {
-        /* register 4e.b gets or'ed with one */
-        unsigned char old, new, byte;
-        unsigned short word;
+	/* register 4e.b gets or'ed with one */
+	unsigned char old, new, byte;
+	unsigned short word;
 
-        /* if it fails, it fails. There are so many variations of broken mobos
-         * that it is hard to argue that we should quit at this point.
-         */
+	/* if it fails, it fails. There are so many variations of broken mobos
+	 * that it is hard to argue that we should quit at this point.
+	 */
 
-        /* dump_pci_device(dev); */
+	/* dump_pci_device(dev); */
 
-        /* Set the 4MB enable bit bit */
-        byte = pci_read_byte(dev, 0x88);
-        byte |= 0xff; /* 256K */
-        pci_write_byte(dev, 0x88, byte);
-        byte = pci_read_byte(dev, 0x8c);
-        byte |= 0xff; /* 1M */
-        pci_write_byte(dev, 0x8c, byte);
-        word = pci_read_word(dev, 0x90);
-        word |= 0x7fff; /* 15M */
-        pci_write_word(dev, 0x90, word);
+	/* Set the 4MB enable bit bit */
+	byte = pci_read_byte(dev, 0x88);
+	byte |= 0xff;		/* 256K */
+	pci_write_byte(dev, 0x88, byte);
+	byte = pci_read_byte(dev, 0x8c);
+	byte |= 0xff;		/* 1M */
+	pci_write_byte(dev, 0x8c, byte);
+	word = pci_read_word(dev, 0x90);
+	word |= 0x7fff;		/* 15M */
+	pci_write_word(dev, 0x90, word);
 
-        old = pci_read_byte(dev, 0x6d);
-        new = old | 0x01;
-        if (new == old)
-                return 0;
-        pci_write_byte(dev, 0x6d, new);
+	old = pci_read_byte(dev, 0x6d);
+	new = old | 0x01;
+	if (new == old)
+		return 0;
+	pci_write_byte(dev, 0x6d, new);
 
-        if (pci_read_byte(dev, 0x6d) != new) {
-                printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
-                       0x6d, new, name);
-                return -1;
-        }
+	if (pci_read_byte(dev, 0x6d) != new) {
+		printf
+		    ("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
+		     0x6d, new, name);
+		return -1;
+	}
 
 	return 0;
 
@@ -410,61 +404,60 @@ static FLASH_ENABLE enables[] = {
 	{0x1106, 0x8231, "VT8231", enable_flash_vt823x},
 	{0x1106, 0x3177, "VT8235", enable_flash_vt823x},
 	{0x1106, 0x3227, "VT8237", enable_flash_vt823x},
-	{0x1106, 0x8324, "CX700" , enable_flash_vt823x},
+	{0x1106, 0x8324, "CX700", enable_flash_vt823x},
 	{0x1106, 0x0686, "VT82C686", enable_flash_amd8111},
 	{0x1078, 0x0100, "CS5530", enable_flash_cs5530},
 	{0x100b, 0x0510, "SC1100", enable_flash_sc1100},
 	{0x1039, 0x0008, "SIS5595", enable_flash_sis5595},
 	{0x1022, 0x7468, "AMD8111", enable_flash_amd8111},
 	/* this fallthrough looks broken. */
-        {0x10de, 0x0050, "NVIDIA CK804", enable_flash_ck804}, /* LPC */
-        {0x10de, 0x0051, "NVIDIA CK804", enable_flash_ck804}, /* Pro */
-        {0x10de, 0x00d3, "NVIDIA CK804", enable_flash_ck804}, /* Slave, should not be here, to fix known bug for A01. */
+	{0x10de, 0x0050, "NVIDIA CK804", enable_flash_ck804},	/* LPC */
+	{0x10de, 0x0051, "NVIDIA CK804", enable_flash_ck804},	/* Pro */
+	{0x10de, 0x00d3, "NVIDIA CK804", enable_flash_ck804},	/* Slave, should not be here, to fix known bug for A01. */
 
-        {0x10de, 0x0260, "NVidia MCP51", enable_flash_ck804},
-        {0x10de, 0x0261, "NVidia MCP51", enable_flash_ck804},
-        {0x10de, 0x0262, "NVidia MCP51", enable_flash_ck804},
-        {0x10de, 0x0263, "NVidia MCP51", enable_flash_ck804},
+	{0x10de, 0x0260, "NVidia MCP51", enable_flash_ck804},
+	{0x10de, 0x0261, "NVidia MCP51", enable_flash_ck804},
+	{0x10de, 0x0262, "NVidia MCP51", enable_flash_ck804},
+	{0x10de, 0x0263, "NVidia MCP51", enable_flash_ck804},
 
-	{0x10de, 0x0360, "NVIDIA MCP55", enable_flash_mcp55}, /* Gigabyte m57sli-s4 */
-	{0x10de, 0x0361, "NVIDIA MCP55", enable_flash_mcp55}, /* LPC */
-	{0x10de, 0x0362, "NVIDIA MCP55", enable_flash_mcp55}, /* LPC */
-	{0x10de, 0x0363, "NVIDIA MCP55", enable_flash_mcp55}, /* LPC */
-        {0x10de, 0x0364, "NVIDIA MCP55", enable_flash_mcp55}, /* LPC */
-	{0x10de, 0x0365, "NVIDIA MCP55", enable_flash_mcp55}, /* LPC */
-	{0x10de, 0x0366, "NVIDIA MCP55", enable_flash_mcp55}, /* LPC */
-	{0x10de, 0x0367, "NVIDIA MCP55", enable_flash_mcp55}, /* Pro */
+	{0x10de, 0x0360, "NVIDIA MCP55", enable_flash_mcp55},	/* Gigabyte m57sli-s4 */
+	{0x10de, 0x0361, "NVIDIA MCP55", enable_flash_mcp55},	/* LPC */
+	{0x10de, 0x0362, "NVIDIA MCP55", enable_flash_mcp55},	/* LPC */
+	{0x10de, 0x0363, "NVIDIA MCP55", enable_flash_mcp55},	/* LPC */
+	{0x10de, 0x0364, "NVIDIA MCP55", enable_flash_mcp55},	/* LPC */
+	{0x10de, 0x0365, "NVIDIA MCP55", enable_flash_mcp55},	/* LPC */
+	{0x10de, 0x0366, "NVIDIA MCP55", enable_flash_mcp55},	/* LPC */
+	{0x10de, 0x0367, "NVIDIA MCP55", enable_flash_mcp55},	/* Pro */
 
-	{0x1002, 0x4377, "ATI SB400", enable_flash_sb400}, /* ATI Technologies Inc IXP SB400 PCI-ISA Bridge (rev 80) */
+	{0x1002, 0x4377, "ATI SB400", enable_flash_sb400},	/* ATI Technologies Inc IXP SB400 PCI-ISA Bridge (rev 80) */
 };
 
 /*
  *
  */
-int
-chipset_flash_enable(void)
+int chipset_flash_enable(void)
 {
-        struct pci_dev *dev = 0;
-        int ret = -2; /* nothing! */
-        int i;
+	struct pci_dev *dev = 0;
+	int ret = -2;		/* nothing! */
+	int i;
 
 	/* now let's try to find the chipset we have ... */
 	for (i = 0; i < sizeof(enables) / sizeof(enables[0]); i++) {
-                dev = pci_dev_find(enables[i].vendor, enables[i].device);
-                if (dev)
-                        break;
-        }
-
-        if (dev) {
-                printf("Found chipset \"%s\": Enabling flash write... ",
-                       enables[i].name);
-
-                ret = enables[i].doit(dev, enables[i].name);
-                if (ret)
-                        printf("Failed!\n");
-                else
-                        printf("OK.\n");
+		dev = pci_dev_find(enables[i].vendor, enables[i].device);
+		if (dev)
+			break;
 	}
 
-        return ret;
+	if (dev) {
+		printf("Found chipset \"%s\": Enabling flash write... ",
+		       enables[i].name);
+
+		ret = enables[i].doit(dev, enables[i].name);
+		if (ret)
+			printf("Failed!\n");
+		else
+			printf("OK.\n");
+	}
+
+	return ret;
 }

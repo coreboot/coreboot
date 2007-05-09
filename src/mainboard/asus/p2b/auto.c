@@ -1,3 +1,23 @@
+/*
+ * This file is part of the LinuxBIOS project.
+ *
+ * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
+
 #define ASSEMBLY 1
 
 #include <stdint.h>
@@ -17,8 +37,6 @@
 
 #define SERIAL_DEV PNP_DEV(0x3f0, W83977TF_SP1)
 
-/*
- */
 void udelay(int usecs) 
 {
 	int i;
@@ -29,65 +47,23 @@ void udelay(int usecs)
 #include "debug.c"
 #include "lib/delay.c"
 
-
-static void memreset_setup(void)
-{
-}
-
-/*
-  static void memreset(int controllers, const struct mem_controller *ctrl)
-  {
-  }
-*/
-
-
-static void enable_mainboard_devices(void) 
-{
-	device_t dev;
-	/* dev 0 for southbridge */
-  
-	dev = pci_locate_device(PCI_ID(0x1106,0x8231), 0);
-  
-	if (dev == PCI_DEV_INVALID) {
-		die("Southbridge not found!!!\n");
-	}
-	pci_write_config8(dev, 0x50, 7);
-	pci_write_config8(dev, 0x51, 0xff);
-#if 0
-	// This early setup switches IDE into compatibility mode before PCI gets 
-	// // a chance to assign I/Os
-	//         movl    $CONFIG_ADDR(0, 0x89, 0x42), %eax
-	//         //      movb    $0x09, %dl
-	//                 movb    $0x00, %dl
-	//                         PCI_WRITE_CONFIG_BYTE
-	//
-#endif
-	/* we do this here as in V2, we can not yet do raw operations 
-	 * to pci!
-	 */
-        dev += 0x100; /* ICKY */
-
-	pci_write_config8(dev, 0x42, 0);
-}
-
 static void enable_shadow_ram(void) 
 {
-	device_t dev = 0; /* no need to look up 0:0.0 */
-	unsigned char shadowreg;
-	/* dev 0 for southbridge */
-	shadowreg = pci_read_config8(dev, 0x63);
+	uint8_t shadowreg;
+	/* dev 0 for northbridge */
+	shadowreg = pci_read_config8(0, 0x59);
 	/* 0xf0000-0xfffff */
 	shadowreg |= 0x30;
-	pci_write_config8(dev, 0x63, shadowreg);
+	pci_write_config8(0, 0x59, shadowreg);
 }
 
+/* TODO: fix raminit.c to use smbus_read_byte */
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
-	unsigned char c;
+	uint8_t c;
 	c = smbus_read_byte(device, address);
 	return c;
 }
-
 
 #include "northbridge/intel/i440bx/raminit.c"
 #include "northbridge/intel/i440bx/debug.c"
@@ -95,16 +71,17 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 static void main(unsigned long bist)
 {
-	static const struct mem_controller cpu[] = {
+	static const struct mem_controller memctrl[] = {
 		{
+		 .d0 = PCI_DEV(0, 0, 0),
 		 .channel0 = {
-			 (0xa << 3) | 0,
-			 (0xa << 3) | 1,
-			 (0xa << 3) | 2, (0xa << 3) | 3,
-		 	},
+			      (0xa << 3) | 0,
+			      (0xa << 3) | 1,
+			      (0xa << 3) | 2,
+			      (0xa << 3) | 3,
+			      },
 		 }
 	};
-	unsigned long x;
 	
 	if (bist == 0) {
 		early_mtrr_init();
@@ -116,39 +93,27 @@ static void main(unsigned long bist)
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-	enable_smbus();
-	dump_spd_registers(&cpu[0]);
-
-#if 0
 	enable_shadow_ram();
-	/*
-	  memreset_setup();
-	  this is way more generic than we need.
-	  sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
-	*/
-	sdram_set_registers((const struct mem_controller *) 0);
-	sdram_set_spd_registers((const struct mem_controller *) 0);
-	sdram_enable(0, (const struct mem_controller *) 0);
-#endif
-	
-	/* Check all of memory */
-#if 0
-	ram_check(0x00000000, msr.lo);
-#endif
-#if 0
-	static const struct {
-		unsigned long lo, hi;
-	} check_addrs[] = {
-		/* Check 16MB of memory @ 0*/
-		{ 0x00000000, 0x01000000 },
-#if TOTAL_CPUS > 1
-		/* Check 16MB of memory @ 2GB */
-		{ 0x80000000, 0x81000000 },
-#endif
-	};
-	int i;
-	for(i = 0; i < sizeof(check_addrs)/sizeof(check_addrs[0]); i++) {
-		ram_check(check_addrs[i].lo, check_addrs[i].hi);
-	}
-#endif
+
+	enable_smbus();
+
+	dump_spd_registers(&memctrl[0]);
+
+	sdram_initialize(sizeof(memctrl) / sizeof(memctrl[0]), memctrl);
+
+	/* Check whether RAM is working.
+	 *
+	 * Do _not_ check the area from 640 KB - 1 MB, as that's not really
+	 * RAM, but rather reserved for various other things:
+	 *
+	 *  - 640 KB - 768 KB: Video Buffer Area
+	 *  - 768 KB - 896 KB: Expansion Area
+	 *  - 896 KB - 960 KB: Extended System BIOS Area
+	 *  - 960 KB - 1 MB:   Memory (BIOS Area) - System BIOS Area
+	 *
+	 * Trying to check these areas will fail.
+	 */
+	/* TODO: This is currently hardcoded to check 64 MB. */
+	ram_check(0x00000000, 0x0009ffff);	/* 0 - 640 KB */
+	ram_check(0x00100000, 0x007c0000);	/* 1 MB - 64 MB */
 }

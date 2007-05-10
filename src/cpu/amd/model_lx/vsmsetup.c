@@ -142,7 +142,8 @@ static void real_mode_switch_call_vsm(unsigned long smm, unsigned long sysm)
 		/* save the stack */
 		"	mov 	%%esp, __stack	\n"
 		"	jmp 	1f		\n"
-		"__stack: .long 0		\n" "1:\n"
+		"__stack: .long 0		\n" 
+		"1:\n"
 		/* get devfn into %%ecx */
 		"	movl    %%esp, %%ebp	\n"
 #if 0
@@ -389,7 +390,8 @@ void callbiosint(void)
 		"callbiosint16:		\n"
 		"	push	%ds	\n"
 		"	push	%es	\n"
-		"	push	%fs	\n" "	push	%gs	\n"
+		"	push	%fs	\n"
+		"	push	%gs	\n"
 		// clean up the int #. To save space we put it in the lower
 		// byte. But the top 24 bits are junk.
 		"	andl	$0xff, %eax\n"
@@ -464,7 +466,8 @@ void callbiosint(void)
 		"	pop	%ds		\n"
 		"	popal			\n"
 		"	iret			\n"
-		"	.code32			\n");
+		"	.code32			\n"
+	);
 }
 
 enum {
@@ -510,7 +513,7 @@ int biosint(unsigned long intnumber,
 
 	// cases in a good compiler are just as good as your own tables.
 	switch (intnumber) {
-	case 0...15:
+	case 0 ... 15:
 		// These are not BIOS service, but the CPU-generated exceptions
 		printk_info("biosint: Oops, exception %u\n", intnumber);
 		if (esp < 0x1000) {

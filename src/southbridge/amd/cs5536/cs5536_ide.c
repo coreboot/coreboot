@@ -25,9 +25,9 @@
 #include "cs5536.h"
 
 #define IDE_CFG	  0x40
-  #define CHANEN  (1L <<  1)
-  #define PWB	  (1L << 14)
-  #define CABLE	  (1L << 16)
+	#define CHANEN  (1L <<  1)
+	#define PWB	(1L << 14)
+	#define CABLE	(1L << 16)
 #define IDE_DTC	  0x48
 #define IDE_CAST  0x4C
 #define IDE_ETC	  0x50
@@ -54,15 +54,15 @@ static void ide_enable(struct device *dev)
 }
 
 static struct device_operations ide_ops = {
-	.read_resources	  = pci_dev_read_resources,
-	.set_resources	  = pci_dev_set_resources,
+	.read_resources = pci_dev_read_resources,
+	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init			  = ide_init,
-	.enable			  = 0,
+	.init = ide_init,
+	.enable = 0,
 };
 
 static struct pci_driver ide_driver __pci_driver = {
-	.ops	= &ide_ops,
+	.ops = &ide_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = PCI_DEVICE_ID_AMD_CS5536_IDE,
 };

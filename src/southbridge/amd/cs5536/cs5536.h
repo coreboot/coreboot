@@ -23,21 +23,21 @@
 #define Cx5536_ID	 (	0x208F1022)
 
 /*	SouthBridge Equates */
-#define CS5536_GLINK_PORT_NUM	0x02			/* port of the SouthBridge */
-#define NB_PCI			((2	<< 29) + (4 << 26)) /* NB GLPCI is in the same location on all Geodes. */
+#define CS5536_GLINK_PORT_NUM	0x02	/* port of the SouthBridge */
+#define NB_PCI			((2	<< 29) + (4 << 26))	/* NB GLPCI is in the same location on all Geodes. */
 #define MSR_SB			((CS5536_GLINK_PORT_NUM << 23) + NB_PCI)	/* address to the SouthBridge */
-#define SB_SHIFT		20						/* 29 -> 26 -> 23 -> 20...... When making a SB address uses this shift. */
+#define SB_SHIFT		20	/* 29 -> 26 -> 23 -> 20...... When making a SB address uses this shift. */
 
-#define CS5536_DEV_NUM	0x0F		/* default PCI device number for CS5536 */
+#define CS5536_DEV_NUM	0x0F	/* default PCI device number for CS5536 */
 #define SMBUS_IO_BASE	0x6000
 #define GPIO_IO_BASE	0x6100
 #define MFGPT_IO_BASE	0x6200
 #define ACPI_IO_BASE	0x9C00
 #define PMS_IO_BASE		0x9D00
 
-#define CS5535_IDSEL	0x02000000	 // IDSEL = AD25, device #15
+#define CS5535_IDSEL	0x02000000	// IDSEL = AD25, device #15
 #define CHIPSET_DEV_NUM	15
-#define IDSEL_BASE		11			 // bit 11 = device 1
+#define IDSEL_BASE		11	// bit 11 = device 1
 
 /* Cs5536 as follows. */
 /*	SB_GLIU */
@@ -50,8 +50,8 @@
 /*	port6 - USB Controller #1 */
 /*	port7 - GLCP */
 
-#define MSR_SB_GLIU		((9 << 14) + MSR_SB)		/* 51024xxx or 510*xxxx	- fake out just like GL0 on CPU. */
-#define MSR_SB_GLPCI	(MSR_SB)			/* 5100xxxx - don't go to the GLIU */
+#define MSR_SB_GLIU		((9 << 14) + MSR_SB)	/* 51024xxx or 510*xxxx - fake out just like GL0 on CPU. */
+#define MSR_SB_GLPCI	(MSR_SB)	/* 5100xxxx - don't go to the GLIU */
 #define MSR_SB_USB2		((2 << SB_SHIFT) + MSR_SB)	/* 5120xxxx */
 #define MSR_SB_ATA		((3 << SB_SHIFT) + MSR_SB)	/* 5130xxxx */
 #define MSR_SB_MDD		((4 << SB_SHIFT) + MSR_SB)	/* 5140xxxx, a.k.a. DIVIL = Diverse Integrated Logic device */
@@ -78,13 +78,13 @@
 /* */
 #define USB2_SB_GLD_MSR_CAP			(MSR_SB_USB2 + 0x00)
 #define USB2_SB_GLD_MSR_CONF		(MSR_SB_USB2 + 0x01)
-	#define	USB2_UPPER_SSDEN_SET		(1 << 3 )				/* Bit 35 */
+#define	USB2_UPPER_SSDEN_SET		(1 << 3 )	/* Bit 35 */
 #define USB2_SB_GLD_MSR_PM			(MSR_SB_USB2 + 0x04)
 #define USB2_SB_GLD_MSR_DIAG		(MSR_SB_USB2 + 0x05)
 #define USB2_SB_GLD_MSR_OHCI_BASE	(MSR_SB_USB2 + 0x08)
 #define USB2_SB_GLD_MSR_EHCI_BASE	(MSR_SB_USB2 + 0x09)
 #define USB2_SB_GLD_MSR_DEVCTL_BASE	(MSR_SB_USB2 + 0x0A)
-#define USB2_SB_GLD_MSR_UOC_BASE	(MSR_SB_USB2 + 0x0B) /* Option controller base */
+#define USB2_SB_GLD_MSR_UOC_BASE	(MSR_SB_USB2 + 0x0B)	/* Option controller base */
 
 /* */
 /*	ATA*/
@@ -203,7 +203,6 @@
 #define MDD_RTC_MONA_IND		(MSR_SB_MDD + 0x056)
 #define MDD_RTC_CENTURY_OFFSET	(MSR_SB_MDD + 0x057)
 
-
 /* ***********************************************************/
 /*	LBUS Device Equates - */
 /* ***********************************************************/
@@ -320,7 +319,6 @@
 #define GPIOH_29_CLEAR	(1 << 29)
 #define GPIOH_30_CLEAR	(1 << 30)
 #define GPIOH_31_CLEAR	(1 << 31)
-
 
 /*	GPIO LOW Bank Bit Registers*/
 #define GPIOL_OUTPUT_VALUE			(0x00)
@@ -439,7 +437,6 @@
 #define PM_AWKD		(0x50)
 #define PM_SSC		(0x54)
 
-
 /* FLASH device macros */
 #define FLASH_TYPE_NONE	0	/* No flash device installed */
 #define FLASH_TYPE_NAND 1	/* NAND device */
@@ -467,5 +464,4 @@
 #define FLASH_IO_128B		0x0000FF80
 #define FLASH_IO_256B		0x0000FF00
 
-
-#endif /* _CS5536_H */
+#endif				/* _CS5536_H */

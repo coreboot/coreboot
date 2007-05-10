@@ -33,9 +33,11 @@ static void cs5536_setup_extmsr(void)
 	/* forward MSR access to CS5536_GLINK_PORT_NUM to CS5536_DEV_NUM */
 	msr.hi = msr.lo = 0x00000000;
 	if (CS5536_GLINK_PORT_NUM <= 4) {
-		msr.lo = CS5536_DEV_NUM << (unsigned char)((CS5536_GLINK_PORT_NUM - 1) * 8);
+		msr.lo = CS5536_DEV_NUM << 
+			(unsigned char)((CS5536_GLINK_PORT_NUM - 1) * 8);
 	} else {
-		msr.hi = CS5536_DEV_NUM << (unsigned char)((CS5536_GLINK_PORT_NUM - 5) * 8);
+		msr.hi = CS5536_DEV_NUM << 
+			(unsigned char)((CS5536_GLINK_PORT_NUM - 5) * 8);
 	}
 	wrmsr(GLPCI_ExtMSR, msr);
 }
@@ -92,13 +94,14 @@ static void cs5536_setup_iobase(void)
 
 static void cs5536_setup_power_button(void)
 {
-	/*	Power Button Setup */
+	/*      Power Button Setup */
 	outl(0x40020000, PMS_IO_BASE + 0x40);
 
 	/* setup GPIO24, it is the external signal for 5536 vsb_work_aux
-	; which controls all voltage rails except Vstandby & Vmem.
-	; We need to enable, OUT_AUX1 and OUTPUT_ENABLE in this order.
-	; If GPIO24 is not enabled then soft-off will not work. */
+	 * which controls all voltage rails except Vstandby & Vmem.
+	 * We need to enable, OUT_AUX1 and OUTPUT_ENABLE in this order.
+	 * If GPIO24 is not enabled then soft-off will not work. 
+	 */
 	outl(GPIOH_24_SET, GPIO_IO_BASE + GPIOH_OUT_AUX1_SELECT);
 	outl(GPIOH_24_SET, GPIO_IO_BASE + GPIOH_OUTPUT_ENABLE);
 
@@ -123,18 +126,19 @@ static void cs5536_setup_gpio(void)
 static void cs5536_disable_internal_uart(void)
 {
 	msr_t msr;
-	/* ; The UARTs default to enabled.
-	; Disable and reset them and configure them later. (SIO init) */
+	/* The UARTs default to enabled.
+	 * Disable and reset them and configure them later. (SIO init) 
+	 */
 	msr = rdmsr(MDD_UART1_CONF);
-	msr.lo = 1;					// reset
+	msr.lo = 1;		// reset
 	wrmsr(MDD_UART1_CONF, msr);
-	msr.lo = 0;					// disabled
+	msr.lo = 0;		// disabled
 	wrmsr(MDD_UART1_CONF, msr);
 
 	msr = rdmsr(MDD_UART2_CONF);
-	msr.lo = 1;					// reset
+	msr.lo = 1;		// reset
 	wrmsr(MDD_UART2_CONF, msr);
-	msr.lo = 0;					// disabled
+	msr.lo = 0;		// disabled
 	wrmsr(MDD_UART2_CONF, msr);
 }
 
@@ -149,7 +153,6 @@ static void cs5536_setup_cis_mode(void)
 	wrmsr(GLPCI_SB_CTRL, msr);
 }
 
-
 /* see page 412 of the cs5536 companion book */
 static void cs5536_setup_onchipuart(void)
 {
@@ -157,11 +160,11 @@ static void cs5536_setup_onchipuart(void)
 
 	/* Setup early for polling only mode.
 	 * 1. Eanble GPIO 8 to OUT_AUX1, 9 to IN_AUX1
-	 *	  GPIO LBAR + 0x04, LBAR + 0x10, LBAR + 0x20, LBAR + 34
+	 *        GPIO LBAR + 0x04, LBAR + 0x10, LBAR + 0x20, LBAR + 34
 	 * 2. Enable UART IO space in MDD
-	 *	  MSR 0x51400014 bit 18:16
+	 *        MSR 0x51400014 bit 18:16
 	 * 3. Enable UART controller
-	 *	  MSR 0x5140003A bit 0, 1
+	 *        MSR 0x5140003A bit 0, 1
 	 */
 
 	/* GPIO8 - UART1_TX */
@@ -178,10 +181,10 @@ static void cs5536_setup_onchipuart(void)
 	/* set address to 3F8 */
 	msr = rdmsr(MDD_LEG_IO);
 	msr.lo |= 0x7 << 16;
-	wrmsr(MDD_LEG_IO,msr);
+	wrmsr(MDD_LEG_IO, msr);
 
-	/*	Bit 1 = DEVEN (device enable)
-	 *	Bit 4 = EN_BANKS (allow access to the upper banks
+	/*      Bit 1 = DEVEN (device enable)
+	 *      Bit 4 = EN_BANKS (allow access to the upper banks
 	 */
 	msr.lo = (1 << 4) | (1 << 1);
 	msr.hi = 0;

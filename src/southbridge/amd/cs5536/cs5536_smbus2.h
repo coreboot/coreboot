@@ -62,13 +62,13 @@
 #define SMBUS_TIMEOUT (100*1000*10)
 #define SMBUS_STATUS_MASK 0xfbff
 
-
 static void smbus_delay(void)
 {
 	inb(0x80);
 }
 
-static int smbus_wait(unsigned smbus_io_base) {
+static int smbus_wait(unsigned smbus_io_base)
+{
 	unsigned long loops = SMBUS_TIMEOUT;
 	unsigned char val;
 
@@ -81,13 +81,14 @@ static int smbus_wait(unsigned smbus_io_base) {
 			printk_debug("SMBUS WAIT ERROR %x\n", val);
 			return SMBUS_ERROR;
 		}
-	} while(--loops);
+	} while (--loops);
 
 	outb(0, smbus_io_base + SMB_STS);
 	return loops ? 0 : SMBUS_WAIT_UNTIL_READY_TIMEOUT;
 }
 
-static int smbus_write(unsigned smbus_io_base, unsigned char byte) {
+static int smbus_write(unsigned smbus_io_base, unsigned char byte)
+{
 
 	outb(byte, smbus_io_base + SMB_SDA);
 	return smbus_wait(smbus_io_base);
@@ -122,17 +123,17 @@ static int smbus_check_stop_condition(unsigned smbus_io_base)
 		if ((val & SMB_CTRL1_STOP) == 0) {
 			break;
 		}
-	} while(--loops);
-	return loops?0:SMBUS_WAIT_UNTIL_READY_TIMEOUT;
+	} while (--loops);
+	return loops ? 0 : SMBUS_WAIT_UNTIL_READY_TIMEOUT;
 
 	/* Make sure everything is cleared and ready to go */
 
 	val = inb(smbus_io_base + SMB_CTRL1);
 	outb(val & ~(SMB_CTRL1_STASTRE | SMB_CTRL1_NMINTE),
-			smbus_io_base + SMB_CTRL1);
+	     smbus_io_base + SMB_CTRL1);
 
 	outb(SMB_STS_BER | SMB_STS_NEGACK | SMB_STS_STASTR,
-			smbus_io_base + SMB_STS);
+	     smbus_io_base + SMB_STS);
 
 	val = inb(smbus_io_base + SMB_CTRL_STS);
 	outb(val | SMB_CSTS_BB, smbus_io_base + SMB_CTRL_STS);
@@ -159,7 +160,8 @@ static int smbus_ack(unsigned smbus_io_base, int state)
 	return 0;
 }
 
-static int smbus_send_slave_address(unsigned smbus_io_base, unsigned char device)
+static int smbus_send_slave_address(unsigned smbus_io_base,
+				    unsigned char device)
 {
 	unsigned char val;
 
@@ -168,8 +170,7 @@ static int smbus_send_slave_address(unsigned smbus_io_base, unsigned char device
 
 	/* check for bus conflict and NACK */
 	val = inb(smbus_io_base + SMB_STS);
-	if (((val & SMB_STS_BER)    != 0) ||
-	    ((val & SMB_STS_NEGACK) != 0)) {
+	if (((val & SMB_STS_BER) != 0) || ((val & SMB_STS_NEGACK) != 0)) {
 		printk_debug("SEND SLAVE ERROR (%x)\n", val);
 		return SMBUS_ERROR;
 	}
@@ -178,22 +179,21 @@ static int smbus_send_slave_address(unsigned smbus_io_base, unsigned char device
 
 static int smbus_send_command(unsigned smbus_io_base, unsigned char command)
 {
-        unsigned char val;
+	unsigned char val;
 
 	/* send the command */
 	outb(command, smbus_io_base + SMB_SDA);
 
 	/* check for bus conflict and NACK */
 	val = inb(smbus_io_base + SMB_STS);
-	if (((val & SMB_STS_BER)    != 0) ||
-	    ((val & SMB_STS_NEGACK) != 0))
+	if (((val & SMB_STS_BER) != 0) || ((val & SMB_STS_NEGACK) != 0))
 		return SMBUS_ERROR;
 
 	return smbus_wait(smbus_io_base);
 }
 
 static void _doread(unsigned smbus_io_base, unsigned char device,
-		unsigned char address, unsigned char *data, int count)
+		    unsigned char address, unsigned char *data, int count)
 {
 	int ret;
 	int index = 0;
@@ -207,7 +207,7 @@ static void _doread(unsigned smbus_io_base, unsigned char device,
 	if ((ret = smbus_start_condition(smbus_io_base)))
 		goto err;
 
-	index++; /* 2 */
+	index++;		/* 2 */
 	if ((ret = smbus_send_slave_address(smbus_io_base, device)))
 		goto err;
 
@@ -226,7 +226,7 @@ static void _doread(unsigned smbus_io_base, unsigned char device,
 	if ((ret = smbus_send_slave_address(smbus_io_base, device | 0x01)))
 		goto err;
 
-	while(count) {
+	while (count) {
 		/* Set the ACK if this is the next to last byte */
 		smbus_ack(smbus_io_base, (count == 2) ? 1 : 0);
 
@@ -249,12 +249,12 @@ static void _doread(unsigned smbus_io_base, unsigned char device,
 
 	return;
 
- err:
+      err:
 	printk_debug("SMBUS READ ERROR (%d): %d\n", index, ret);
 }
 
 static unsigned char do_smbus_read_byte(unsigned smbus_io_base,
-		unsigned char device,
+					unsigned char device,
 					unsigned char address)
 {
 	unsigned char val = 0;
@@ -263,16 +263,18 @@ static unsigned char do_smbus_read_byte(unsigned smbus_io_base,
 }
 
 static unsigned short do_smbus_read_word(unsigned smbus_io_base,
-		unsigned char device, unsigned char address)
+					 unsigned char device,
+					 unsigned char address)
 {
 	unsigned short val = 0;
-	_doread(smbus_io_base, device, address, (unsigned char *) &val,
-			sizeof(val));
+	_doread(smbus_io_base, device, address, (unsigned char *)&val,
+		sizeof(val));
 	return val;
 }
 
 static int _dowrite(unsigned smbus_io_base, unsigned char device,
-		unsigned char address, unsigned char *data, int count) {
+		    unsigned char address, unsigned char *data, int count)
+{
 
 	int ret;
 
@@ -288,7 +290,7 @@ static int _dowrite(unsigned smbus_io_base, unsigned char device,
 	if ((ret = smbus_send_command(smbus_io_base, address)))
 		goto err;
 
-	while(count) {
+	while (count) {
 		if ((ret = smbus_write(smbus_io_base, *data++)))
 			goto err;
 		count--;
@@ -297,21 +299,21 @@ static int _dowrite(unsigned smbus_io_base, unsigned char device,
 	smbus_stop_condition(smbus_io_base);
 	return 0;
 
- err:
+      err:
 	printk_debug("SMBUS WRITE ERROR: %d\n", ret);
 	return -1;
 }
 
-
 static int do_smbus_write_byte(unsigned smbus_io_base, unsigned char device,
-		unsigned char address, unsigned char data)
+			       unsigned char address, unsigned char data)
 {
 	return _dowrite(smbus_io_base, device, address,
-			(unsigned char *) &data, 1);
+			(unsigned char *)&data, 1);
 }
 
-static int do_smbus_write_word(unsigned smbus_io_base, unsigned char device, unsigned char address,
-			       unsigned short data)
+static int do_smbus_write_word(unsigned smbus_io_base, unsigned char device,
+			       unsigned char address, unsigned short data)
 {
-	return _dowrite(smbus_io_base, device ,address, (unsigned char *) &data, 2);
+	return _dowrite(smbus_io_base, device, address, (unsigned char *)&data,
+			2);
 }

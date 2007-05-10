@@ -18,8 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-struct northbridge_amd_lx_config
-{
+struct northbridge_amd_lx_config {
 
 };
 

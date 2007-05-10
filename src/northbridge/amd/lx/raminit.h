@@ -27,4 +27,4 @@ struct mem_controller {
 	uint16_t channel0[DIMM_SOCKETS];
 };
 
-#endif /* RAMINIT_H */
+#endif				/* RAMINIT_H */

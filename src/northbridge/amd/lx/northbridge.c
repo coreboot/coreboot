@@ -35,12 +35,11 @@
 #include "chip.h"
 #include "northbridge.h"
 
-
 /* here is programming for the various MSRs.*/
 #define IM_QWAIT 0x100000
 
-#define DMCF_WRITE_SERIALIZE_REQUEST (2<<12) /* 2 outstanding */ /* in high */
-#define DMCF_SERIAL_LOAD_MISSES  (2) /* enabled */
+#define DMCF_WRITE_SERIALIZE_REQUEST (2<<12) /* 2 outstanding */	/* in high */
+#define DMCF_SERIAL_LOAD_MISSES  (2)	/* enabled */
 
 /* these are the 8-bit attributes for controlling RCONF registers */
 #define CACHE_DISABLE (1<<0)
@@ -87,33 +86,36 @@ void do_vsmbios(void);
 struct msr_defaults {
 	int msr_no;
 	msr_t msr;
-} msr_defaults [] = {
-	{0x1700, {.hi = 0, .lo = IM_QWAIT}},
-	{0x1800, {.hi = DMCF_WRITE_SERIALIZE_REQUEST, .lo = DMCF_SERIAL_LOAD_MISSES}},
-	/* 1808 will be done down below, so we have to do 180a->1817 (well, 1813 really) */
-	/* for 180a, for now, we assume VSM will configure it */
-	/* 180b is left at reset value,a0000-bffff is non-cacheable */
-	/* 180c, c0000-dffff is set to write serialize and non-cachable */
-	/* oops, 180c will be set by cpu bug handling in cpubug.c */
-	//{0x180c, {.hi = MSR_WS_CD_DEFAULT, .lo = MSR_WS_CD_DEFAULT}},
-	/* 180d is left at default, e0000-fffff is non-cached */
-
-	/* we will assume 180e, the ssm region configuration, is left at default or set by VSM */
-	/* we will not set 0x180f, the DMM,yet */
-	//{0x1810, {.hi=0xee7ff000, .lo=RRCF_LOW(0xee000000, WRITE_COMBINE|CACHE_DISABLE)}},
-	//{0x1811, {.hi = 0xefffb000, .lo = RRCF_LOW_CD(0xefff8000)}},
-	//{0x1812, {.hi = 0xefff7000, .lo = RRCF_LOW_CD(0xefff4000)}},
-	//{0x1813, {.hi = 0xefff3000, .lo = RRCF_LOW_CD(0xefff0000)}},
-	/* now for GLPCI routing */
-	/* GLIU0 */
-	P2D_BM(MSR_GLIU0_BASE1, 0x1, 0x0, 0x0, 0xfff80),
-	P2D_BM(MSR_GLIU0_BASE2, 0x1, 0x0, 0x80000, 0xfffe0),
-	P2D_SC(MSR_GLIU0_SHADOW, 0x1, 0x0, 0x0,  0xff03, 0xC0000),
-	/* GLIU1 */
-	P2D_BM(MSR_GLIU1_BASE1, 0x1, 0x0, 0x0, 0xfff80),
-	P2D_BM(MSR_GLIU1_BASE2, 0x1, 0x0, 0x80000, 0xfffe0),
-	P2D_SC(MSR_GLIU1_SHADOW, 0x1, 0x0, 0x0,  0xff03, 0xC0000),
-	{0}
+} msr_defaults[] = {
+	{
+		0x1700, {
+	.hi = 0,.lo = IM_QWAIT}}, {
+		0x1800, {
+	.hi = DMCF_WRITE_SERIALIZE_REQUEST,.lo =
+			    DMCF_SERIAL_LOAD_MISSES}},
+	    /* 1808 will be done down below, so we have to do 180a->1817 (well, 1813 really) */
+	    /* for 180a, for now, we assume VSM will configure it */
+	    /* 180b is left at reset value,a0000-bffff is non-cacheable */
+	    /* 180c, c0000-dffff is set to write serialize and non-cachable */
+	    /* oops, 180c will be set by cpu bug handling in cpubug.c */
+	    //{0x180c, {.hi = MSR_WS_CD_DEFAULT, .lo = MSR_WS_CD_DEFAULT}},
+	    /* 180d is left at default, e0000-fffff is non-cached */
+	    /* we will assume 180e, the ssm region configuration, is left at default or set by VSM */
+	    /* we will not set 0x180f, the DMM,yet */
+	    //{0x1810, {.hi=0xee7ff000, .lo=RRCF_LOW(0xee000000, WRITE_COMBINE|CACHE_DISABLE)}},
+	    //{0x1811, {.hi = 0xefffb000, .lo = RRCF_LOW_CD(0xefff8000)}},
+	    //{0x1812, {.hi = 0xefff7000, .lo = RRCF_LOW_CD(0xefff4000)}},
+	    //{0x1813, {.hi = 0xefff3000, .lo = RRCF_LOW_CD(0xefff0000)}},
+	    /* now for GLPCI routing */
+	    /* GLIU0 */
+	    P2D_BM(MSR_GLIU0_BASE1, 0x1, 0x0, 0x0, 0xfff80),
+	    P2D_BM(MSR_GLIU0_BASE2, 0x1, 0x0, 0x80000, 0xfffe0),
+	    P2D_SC(MSR_GLIU0_SHADOW, 0x1, 0x0, 0x0, 0xff03, 0xC0000),
+	    /* GLIU1 */
+	    P2D_BM(MSR_GLIU1_BASE1, 0x1, 0x0, 0x0, 0xfff80),
+	    P2D_BM(MSR_GLIU1_BASE2, 0x1, 0x0, 0x80000, 0xfffe0),
+	    P2D_SC(MSR_GLIU1_SHADOW, 0x1, 0x0, 0x0, 0xff03, 0xC0000), {
+	0}
 };
 
 /* todo: add a resource record. We don't do this here because this may be called when 
@@ -131,14 +133,14 @@ int sizeram(void)
 	/* dimm 0 */
 	dimm = msr.hi;
 	/* installed? */
-	if ((dimm & 7) != 7){
+	if ((dimm & 7) != 7) {
 		sizem = 4 << ((dimm >> 12) & 0x0F);
 	}
 
-	/* dimm 1*/
+	/* dimm 1 */
 	dimm = msr.hi >> 16;
 	/* installed? */
-	if ((dimm & 7) != 7){
+	if ((dimm & 7) != 7) {
 		sizem += 4 << ((dimm >> 12) & 0x0F);
 	}
 
@@ -146,27 +148,24 @@ int sizeram(void)
 	return sizem;
 }
 
-
-
 static void enable_shadow(device_t dev)
 {
 }
 
-static void northbridge_init(device_t dev) 
+static void northbridge_init(device_t dev)
 {
 	//msr_t msr;
 
 	printk_spew(">> Entering northbridge.c: %s\n", __FUNCTION__);
-	
+
 	enable_shadow(dev);
 	/*
 	 * Swiss cheese
 	 */
 	//msr = rdmsr(MSR_GLIU0_SHADOW);
-	
+
 	//msr.hi |= 0x3;
 	//msr.lo |= 0x30000;
-	
 
 	//printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", MSR_GLIU0_SHADOW, msr.hi, msr.lo);
 	//printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", MSR_GLIU1_SHADOW, msr.hi, msr.lo);
@@ -180,19 +179,20 @@ void northbridge_set_resources(struct device *dev)
 
 	last = &dev->resource[dev->resources];
 
-	for(resource = &dev->resource[0]; resource < last; resource++)
-	{
+	for (resource = &dev->resource[0]; resource < last; resource++) {
 
 		// andrei: do not change the base address, it will make the VSA virtual registers unusable
 		//pci_set_resource(dev, resource);
 		// FIXME: static allocation may conflict with dynamic mappings!
 	}
 
-	for(link = 0; link < dev->links; link++) {
+	for (link = 0; link < dev->links; link++) {
 		struct bus *bus;
 		bus = &dev->link[link];
 		if (bus->children) {
-			printk_debug("my_dev_set_resources: assign_resources %d\n", bus);
+			printk_debug
+			    ("my_dev_set_resources: assign_resources %d\n",
+			     bus);
 			assign_resources(bus);
 		}
 	}
@@ -210,18 +210,18 @@ void northbridge_set_resources(struct device *dev)
 	if (line) {
 		pci_write_config8(dev, PCI_INTERRUPT_LINE, 0);
 	}
-	
+
 	/* set the cache line size, so far 64 bytes is good for everyone */
 	pci_write_config8(dev, PCI_CACHE_LINE_SIZE, 64 >> 2);
 }
 
 static struct device_operations northbridge_operations = {
-	.read_resources   = pci_dev_read_resources,
-	.set_resources    = northbridge_set_resources,
+	.read_resources = pci_dev_read_resources,
+	.set_resources = northbridge_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = northbridge_init,
-	.enable           = 0,
-	.ops_pci          = 0,
+	.init = northbridge_init,
+	.enable = 0,
+	.ops_pci = 0,
 };
 
 static struct pci_driver northbridge_driver __pci_driver = {
@@ -230,35 +230,37 @@ static struct pci_driver northbridge_driver __pci_driver = {
 	.device = PCI_DEVICE_ID_AMD_LXBRIDGE,
 };
 
-
 static void pci_domain_read_resources(device_t dev)
 {
-        struct resource *resource;
+	struct resource *resource;
 	printk_spew(">> Entering northbridge.c: %s\n", __FUNCTION__);
 
-        /* Initialize the system wide io space constraints */
-        resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0,0));
-        resource->limit = 0xffffUL;
-        resource->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+	/* Initialize the system wide io space constraints */
+	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
+	resource->limit = 0xffffUL;
+	resource->flags =
+	    IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 
-        /* Initialize the system wide memory resources constraints */
-        resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1,0));
-        resource->limit = 0xffffffffULL;
-        resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+	/* Initialize the system wide memory resources constraints */
+	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
+	resource->limit = 0xffffffffULL;
+	resource->flags =
+	    IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 }
 
 static void ram_resource(device_t dev, unsigned long index,
-        unsigned long basek, unsigned long sizek)
+			 unsigned long basek, unsigned long sizek)
 {
-        struct resource *resource;
+	struct resource *resource;
 
-	if (!sizek) return;
-	
-        resource = new_resource(dev, index);
-        resource->base  = ((resource_t)basek) << 10;
-        resource->size  = ((resource_t)sizek) << 10;
-	resource->flags =  IORESOURCE_MEM | IORESOURCE_CACHEABLE |
-                IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
+	if (!sizek)
+		return;
+
+	resource = new_resource(dev, index);
+	resource->base = ((resource_t) basek) << 10;
+	resource->size = ((resource_t) sizek) << 10;
+	resource->flags = IORESOURCE_MEM | IORESOURCE_CACHEABLE |
+	    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 }
 
 static void pci_domain_set_resources(device_t dev)
@@ -269,12 +271,11 @@ static void pci_domain_set_resources(device_t dev)
 	printk_spew(">> Entering northbridge.c: %s\n", __FUNCTION__);
 
 	mc_dev = dev->link[0].children;
-	if (mc_dev) 
-	{
+	if (mc_dev) {
 		/* Report the memory regions */
 		idx = 10;
 		ram_resource(dev, idx++, 0, 640);
-		ram_resource(dev, idx++, 1024, (get_systop()- 0x100000)/1024 ); // Systop - 1 MB -> KB
+		ram_resource(dev, idx++, 1024, (get_systop() - 0x100000) / 1024);	// Systop - 1 MB -> KB
 	}
 
 	assign_resources(&dev->link[0]);
@@ -295,8 +296,8 @@ static void pci_domain_enable(device_t dev)
 	printk_debug("Before VSA:\n");
 	// print_conf();
 
-	do_vsmbios();	// do the magic stuff here, so prepare your tambourine ;)
-	
+	do_vsmbios();		// do the magic stuff here, so prepare your tambourine ;)
+
 	printk_debug("After VSA:\n");
 	// print_conf();
 
@@ -308,23 +309,23 @@ static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
 {
 	printk_spew(">> Entering northbridge.c: %s\n", __FUNCTION__);
 
-        max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0, 0), 0xff, max);
-        return max;
+	max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0, 0), 0xff, max);
+	return max;
 }
 
 static struct device_operations pci_domain_ops = {
-        .read_resources   = pci_domain_read_resources,
-        .set_resources    = pci_domain_set_resources,
-        .enable_resources = enable_childrens_resources,
-        .scan_bus         = pci_domain_scan_bus,
-        .enable           = pci_domain_enable,
-};  
+	.read_resources = pci_domain_read_resources,
+	.set_resources = pci_domain_set_resources,
+	.enable_resources = enable_childrens_resources,
+	.scan_bus = pci_domain_scan_bus,
+	.enable = pci_domain_enable,
+};
 
 static void cpu_bus_init(device_t dev)
 {
 	printk_spew(">> Entering northbridge.c: %s\n", __FUNCTION__);
 
-        initialize_cpus(&dev->link[0]);
+	initialize_cpus(&dev->link[0]);
 }
 
 static void cpu_bus_noop(device_t dev)
@@ -332,26 +333,26 @@ static void cpu_bus_noop(device_t dev)
 }
 
 static struct device_operations cpu_bus_ops = {
-        .read_resources   = cpu_bus_noop,
-        .set_resources    = cpu_bus_noop,
-        .enable_resources = cpu_bus_noop,
-        .init             = cpu_bus_init,
-        .scan_bus         = 0,
+	.read_resources = cpu_bus_noop,
+	.set_resources = cpu_bus_noop,
+	.enable_resources = cpu_bus_noop,
+	.init = cpu_bus_init,
+	.scan_bus = 0,
 };
 
 static void enable_dev(struct device *dev)
 {
-	printk_spew(">> Entering northbridge.c: %s with path %d\n", 
-		__FUNCTION__, dev->path.type);
+	printk_spew(">> Entering northbridge.c: %s with path %d\n",
+		    __FUNCTION__, dev->path.type);
 
-        /* Set the operations if it is a special bus type */
+	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_PCI_DOMAIN)
 		dev->ops = &pci_domain_ops;
 	else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER)
-                dev->ops = &cpu_bus_ops;
+		dev->ops = &cpu_bus_ops;
 }
 
 struct chip_operations northbridge_amd_lx_ops = {
 	CHIP_NAME("AMD LX Northbridge")
-	.enable_dev = enable_dev, 
+	    .enable_dev = enable_dev,
 };

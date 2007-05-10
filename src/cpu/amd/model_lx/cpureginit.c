@@ -101,11 +101,6 @@ void SetDelayControl(void)
 ;1		 16		 400MHz		 0x82*10055 0x56960004		  4
 ;
 ;2		 4,4	 400MHz		 0x82710000 0x56960004		  4
-;2		 8,8	 400MHz		 0xC27100A5 0x56960004		  4	*** OUT OF PUBLISHED ENVELOPE ***
-;
-;2		16,4	 >333		 0xB27100A5 0x56960004		  4	*** OUT OF PUBLISHED ENVELOPE ***
-;2		16,8	 >333		 0xB27100A5 0x56960004		  4	*** OUT OF PUBLISHED ENVELOPE ***
-;2		16,16	 >333		 0xB2710000 0x56960004		  4	*** OUT OF PUBLISHED ENVELOPE ***
 ;
 ;1		 4		 <=333MHz	 0x83*100FF 0x56960004		  3
 ;1		 8		 <=333MHz	 0x83*100AA 0x56960004		  3
@@ -114,9 +109,6 @@ void SetDelayControl(void)
 ;2		 4,4	 <=333MHz	 0x837100A5 0x56960004		  3
 ;2		 8,8	 <=333MHz	 0x937100A5 0x56960004		  3
 ;
-;2		16,4	 <=333MHz	 0xB37100A5 0x56960004		  3	*** OUT OF PUBLISHED ENVELOPE ***
-;2		16,8	 <=333MHz	 0xB37100A5 0x56960004		  3	*** OUT OF PUBLISHED ENVELOPE ***
-;2		16,16	 <=333MHz	 0xB37100A5 0x56960004		  3	*** OUT OF PUBLISHED ENVELOPE ***
 ;=========================================================================
 ;* - Bit 55 (disable SDCLK 1,3,5) should be set if there is a single DIMM in slot 0,
 ;	 but it should be clear for all 2 DIMM settings and if a single DIMM is in slot 1.
@@ -130,9 +122,9 @@ void SetDelayControl(void)
 ;		DIMM	 Max MBUS
 ;DIMMs	devices	 Frequency	 MCP 0x4C00000F Setting
 ;-----	-------	 ---------	 ----------------------
-;1		 4		 400MHz		 0xF2F100FF 0x56960004		  4			The MC changes improve Salsa.
-;1		 8		 400MHz		 0xF2F100FF 0x56960004		  4			Delay controls no real change,
-;1		 4		 <=333MHz	 0xF2F100FF 0x56960004		  3			just fixing typo in left side.
+;1		 4		 400MHz		 0xF2F100FF 0x56960004		  4			The No VTT changes improve timing.
+;1		 8		 400MHz		 0xF2F100FF 0x56960004		  4
+;1		 4		 <=333MHz	 0xF2F100FF 0x56960004		  3
 ;1		 8		 <=333MHz	 0xF2F100FF 0x56960004		  3
 ;1		 16		 <=333MHz	 0xF2F100FF 0x56960004		  3
 */
@@ -233,8 +225,8 @@ void cpuRegInit(void)
 	wrmsr(msrnum, msr);
 
 	/*
-	   ; Castle performance setting.
-	   ; Enable Quack for fewer re-RAS on the MC
+	 * LX performance setting.
+	 * Enable Quack for fewer re-RAS on the MC
 	 */
 	msrnum = GLIU0_ARB;
 	msr = rdmsr(msrnum);

@@ -476,8 +476,6 @@
 
 /*
  * Write to a Virtual Register
- * AX = Class/Index
- * CX = data to write
  */
 static inline void vrWrite(uint16_t wClassIndex, uint16_t wData)
 {
@@ -487,7 +485,6 @@ static inline void vrWrite(uint16_t wClassIndex, uint16_t wData)
 
  /*
  * Read from a Virtual Register
- * AX = Class/Index
  * Returns a 16-bit word of data
  */
 static inline uint16_t vrRead(uint16_t wClassIndex)

@@ -290,8 +290,7 @@ void do_vsmbios(void)
 	/* this is the base of rom on the LX at present. At some point, this has to be
 	 * much better parameterized
 	 */
-	/* the VSA starts at the base of rom - 64 */
-	//rom = ((unsigned long) 0) - (ROM_SIZE  + 64*1024);
+
 	//VSA is cat onto the end after LB builds
 	rom = ((unsigned long)0) - (ROM_SIZE + 36 * 1024);
 	buf = (unsigned char *)VSA2_BUFFER;

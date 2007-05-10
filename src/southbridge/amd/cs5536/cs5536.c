@@ -131,14 +131,12 @@ static void pmChipsetInit(void)
 
 	/*      PM_SED */
 	port = (PMS_IO_BASE + 0x014);
-/*	mov		eax, 0x057642	; 100ms, works*/
-	val = 0x04601;		/*  5ms */
+	val = 0x04601;		/*  5ms, # of 3.57954MHz clock edges */
 	outl(val, port);
 
 	/*      PM_SIDD */
 	port = (PMS_IO_BASE + 0x020);
-/*	mov		eax, 0x0AEC84	; 200ms, works*/
-	val = 0x08C02;		/*  10ms */
+	val = 0x08C02;		/*  10ms, # of 3.57954MHz clock edges */
 	outl(val, port);
 }
 

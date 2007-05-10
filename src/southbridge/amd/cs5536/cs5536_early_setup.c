@@ -97,10 +97,10 @@ static void cs5536_setup_power_button(void)
 	/*      Power Button Setup */
 	outl(0x40020000, PMS_IO_BASE + 0x40);
 
-	/* setup GPIO24, it is the external signal for 5536 vsb_work_aux
-	 * which controls all voltage rails except Vstandby & Vmem.
+	/* setup WORK_AUX/GPIO24, it is the external signal for 5536
+	 * vsb_work_aux controls all voltage rails except Vstandby & Vmem.
 	 * We need to enable, OUT_AUX1 and OUTPUT_ENABLE in this order.
-	 * If GPIO24 is not enabled then soft-off will not work. 
+	 * If WORK_AUX/GPIO24 is not enabled then soft-off will not work.
 	 */
 	outl(GPIOH_24_SET, GPIO_IO_BASE + GPIOH_OUT_AUX1_SELECT);
 	outl(GPIOH_24_SET, GPIO_IO_BASE + GPIOH_OUTPUT_ENABLE);
@@ -127,7 +127,7 @@ static void cs5536_disable_internal_uart(void)
 {
 	msr_t msr;
 	/* The UARTs default to enabled.
-	 * Disable and reset them and configure them later. (SIO init) 
+	 * Disable and reset them and configure them later. (SIO init)
 	 */
 	msr = rdmsr(MDD_UART1_CONF);
 	msr.lo = 1;		// reset

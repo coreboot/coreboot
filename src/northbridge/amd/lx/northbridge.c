@@ -127,6 +127,7 @@ int sizeram(void)
 	int sizem = 0;
 	unsigned short dimm;
 
+	/* Get the RAM size from the memory controller as calculated and set by auto_size_dimm() */
 	msr = rdmsr(MC_CF07_DATA);
 	printk_debug("sizeram: _MSR MC_CF07_DATA: %08x:%08x\n", msr.hi, msr.lo);
 
@@ -134,14 +135,14 @@ int sizeram(void)
 	dimm = msr.hi;
 	/* installed? */
 	if ((dimm & 7) != 7) {
-		sizem = 4 << ((dimm >> 12) & 0x0F);
+		sizem = 4 << ((dimm >> 12) & 0x0F); /* 1:8MB, 2:16MB, 3:32MB, 4:64MB, ... 7:512MB, 8:1GB */
 	}
 
 	/* dimm 1 */
 	dimm = msr.hi >> 16;
 	/* installed? */
 	if ((dimm & 7) != 7) {
-		sizem += 4 << ((dimm >> 12) & 0x0F);
+		sizem += 4 << ((dimm >> 12) & 0x0F); /* 1:8MB, 2:16MB, 3:32MB, 4:64MB, ... 7:512MB, 8:1GB */
 	}
 
 	printk_debug("sizeram: sizem 0x%xMB\n", sizem);

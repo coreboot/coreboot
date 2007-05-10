@@ -96,6 +96,7 @@ static void pci_domain_set_resources(device_t dev)
 
         pci_tolm = find_pci_tolm(&dev->link[0]);
 	mc_dev = dev->link[0].children;
+
 	if (mc_dev) {
 		/* Figure out which areas are/should be occupied by RAM.
 		 * This is all computed in kilobytes and converted to/from
@@ -114,6 +115,7 @@ static void pci_domain_set_resources(device_t dev)
 		 */
 		tomk = ((unsigned long)pci_read_config8(mc_dev, DRB7)) << 13; 
 		printk_debug("Setting RAM size to %d MB\n", tomk >> 10);
+
 		/* Compute the top of Low memory */
 		tolmk = pci_tolm >> 10;
 		if (tolmk >= tomk) {
@@ -121,17 +123,12 @@ static void pci_domain_set_resources(device_t dev)
 			 */
 			tolmk = tomk;
 		}
-		/* Write the ram configuration registers,
-		 * preserving the reserved bits.
-		 */
-		tolm_r = pci_read_config16(mc_dev, 0xc4);
-		tolm_r = ((tolmk >> 10) << 3) | (tolm_r & 0xf);
-		pci_write_config16(mc_dev, 0xc4, tolm_r);
 
 		/* Report the memory regions */
 		idx = 10;
 		ram_resource(dev, idx++, 0, 640);
-		ram_resource(dev, idx++, 768, tolmk - 768);
+		// ram_resource(dev, idx++, 768, tolmk - 768);
+		ram_resource(dev, idx++, 1024, tolmk - 1024);
 	}
 	assign_resources(&dev->link[0]);
 }

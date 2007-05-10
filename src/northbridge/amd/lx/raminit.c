@@ -45,7 +45,7 @@ static void auto_size_dimm(unsigned int dimm)
 	/* EEPROM byte usage: (5) Number of DIMM Banks */
 	spd_byte = spd_read_byte(dimm, SPD_NUM_DIMM_BANKS);
 	if ((MIN_MOD_BANKS > spd_byte) && (spd_byte > MAX_MOD_BANKS)) {
-		print_debug("Number of module banks not compatible\r\n");
+		print_debug("Number of module banks not compatible\n");
 		POST_CODE(ERROR_BANK_SET);
 		__asm__ __volatile__("hlt\n");
 	}
@@ -55,7 +55,7 @@ static void auto_size_dimm(unsigned int dimm)
 	/* EEPROM byte usage: (17) Number of Banks on SDRAM Device */
 	spd_byte = spd_read_byte(dimm, SPD_NUM_BANKS_PER_SDRAM);
 	if ((MIN_DEV_BANKS > spd_byte) && (spd_byte > MAX_DEV_BANKS)) {
-		print_debug("Number of device banks not compatible\r\n");
+		print_debug("Number of device banks not compatible\n");
 		POST_CODE(ERROR_BANK_SET);
 		__asm__ __volatile__("hlt\n");
 	}
@@ -70,7 +70,7 @@ static void auto_size_dimm(unsigned int dimm)
 	 */
 	if ((spd_read_byte(dimm, SPD_NUM_ROWS) & 0xF0)
 	    || (spd_read_byte(dimm, SPD_NUM_COLUMNS) & 0xF0)) {
-		print_debug("Assymetirc DIMM not compatible\r\n");
+		print_debug("Assymetirc DIMM not compatible\n");
 		POST_CODE(ERROR_UNSUPPORTED_DIMM);
 		__asm__ __volatile__("hlt\n");
 	}
@@ -83,7 +83,7 @@ static void auto_size_dimm(unsigned int dimm)
 	dimm_size <<= (dimm_setting >> CF07_UPPER_D0_MB_SHIFT) & 1;	/* shift to multiply by # DIMM banks */
 	dimm_size = __builtin_ctz(dimm_size);
 	if (dimm_size > 8) {	/* 8 is 1GB only support 1GB per DIMM */
-		print_debug("Only support up to 1 GB per DIMM\r\n");
+		print_debug("Only support up to 1 GB per DIMM\n");
 		POST_CODE(ERROR_DENSITY_DIMM);
 		__asm__ __volatile__("hlt\n");
 	}
@@ -114,7 +114,7 @@ static void auto_size_dimm(unsigned int dimm)
 
 	spd_byte = NumColAddr[spd_read_byte(dimm, SPD_NUM_COLUMNS) & 0xF];
 	if (spd_byte > MAX_COL_ADDR) {
-		print_debug("DIMM page size not compatible\r\n");
+		print_debug("DIMM page size not compatible\n");
 		POST_CODE(ERROR_SET_PAGE);
 		__asm__ __volatile__("hlt\n");
 	}
@@ -152,7 +152,7 @@ static void checkDDRMax(void)
 
 	/* I don't think you need this check.
 	   if (spd_byte0 < 0xA0 || spd_byte0 < 0xA0){
-	   print_debug("DIMM overclocked. Check GeodeLink Speed\r\n");
+	   print_debug("DIMM overclocked. Check GeodeLink Speed\n");
 	   POST_CODE(POST_PLL_MEM_FAIL);
 	   __asm__       __volatile__("hlt\n");
 	   } */
@@ -549,7 +549,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	}
 	spd_byte = spd_read_byte(DIMM1, SPD_MODULE_ATTRIBUTES);
 	if ((spd_byte != 0xFF) && (spd_byte & 3)) {
-		print_debug("DIMM1 NOT COMPATIBLE\r\n");
+		print_debug("DIMM1 NOT COMPATIBLE\n");
 		POST_CODE(ERROR_UNSUPPORTED_DIMM);
 		__asm__ __volatile__("hlt\n");
 	}
@@ -718,7 +718,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	msr.lo |= (209 << 8);	/* bits[15:8] = 209 */
 	wrmsr(msrnum, msr);
 
-	print_debug("DRAM controller init done.\r\n");
+	print_debug("DRAM controller init done.\n");
 	POST_CODE(POST_MEM_SETUP_GOOD);	//0x7E
 
 	/* make sure there is nothing stale in the cache */
@@ -750,6 +750,6 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		msr.lo |= 1;
 		wrmsr(msrnum, msr);
 	}
-	print_debug("RAM DLL lock\r\n");
+	print_debug("RAM DLL lock\n");
 
 }

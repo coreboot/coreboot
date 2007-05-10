@@ -38,6 +38,7 @@ uses DEFAULT_CONSOLE_LOGLEVEL
 uses MAXIMUM_CONSOLE_LOGLEVEL
 uses CONFIG_CONSOLE_SERIAL8250
 uses CONFIG_UDELAY_TSC
+uses CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
 uses CONFIG_PCI_ROM_RUN
 uses CONFIG_CONSOLE_VGA
 uses CONFIG_MAX_PCI_BUSES 
@@ -66,11 +67,12 @@ default HAVE_MP_TABLE=0
 ## Use TSC for udelay.
 ##
 default CONFIG_UDELAY_TSC=1
+default CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2=1
 
 ##
 ## Build code to reset the motherboard from linuxBIOS
 ##
-default HAVE_HARD_RESET=1
+default HAVE_HARD_RESET=0
 
 ##
 ## Build code to export a programmable irq routing table

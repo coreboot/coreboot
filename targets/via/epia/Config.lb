@@ -1,6 +1,11 @@
 # Sample config file for EPIA
 # This will make a target directory of ./epia
 
+## uncomment these three lines if you have a Nehemiah CPU to boot 1s faster
+#option CONFIG_UDELAY_IO=0
+#option CONFIG_UDELAY_TSC=1
+#option CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2=1
+
 target epia
 mainboard via/epia
 option MAXIMUM_CONSOLE_LOGLEVEL=9

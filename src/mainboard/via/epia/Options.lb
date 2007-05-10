@@ -11,6 +11,8 @@ uses USE_FALLBACK_IMAGE
 uses HAVE_FALLBACK_BOOT
 uses HAVE_HARD_RESET
 uses CONFIG_UDELAY_IO
+uses CONFIG_UDELAY_TSC
+uses CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
 uses HAVE_OPTION_TABLE
 uses USE_OPTION_TABLE
 uses CONFIG_ROM_PAYLOAD
@@ -81,12 +83,15 @@ default HAVE_MP_TABLE=0
 ##
 ## Build code to reset the motherboard from linuxBIOS
 ##
-default HAVE_HARD_RESET=1
+default HAVE_HARD_RESET=0
 
 ##
 ## use io based udelay function
+## disable IO and enable TSC on Nehemiah boards
 ##
 default CONFIG_UDELAY_IO=1
+default CONFIG_UDELAY_TSC=0
+default CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2=0
 
 ##
 ## Build code to export a programmable irq routing table

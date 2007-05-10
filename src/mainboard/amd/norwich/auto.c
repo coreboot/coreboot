@@ -42,11 +42,11 @@
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
-		return smbus_read_byte(device, address);
+	return smbus_read_byte(device, address);
 }
 
 #define ManualConf 0		/* Do automatic strapped PLL config */
-#define PLLMSRhi 0x00001490 /* manual settings for the PLL */
+#define PLLMSRhi 0x00001490	/* manual settings for the PLL */
 #define PLLMSRlo 0x02000030
 #define DIMM0 0xA0
 #define DIMM1 0xA2
@@ -60,7 +60,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 static void msr_init(void)
 {
 	/* Setup access to the MC for low memory. Note MC not setup yet. */
-	__builtin_wrmsr(CPU_RCONF_DEFAULT,	 0x10f3bf00, 0x24fffc02);
+	__builtin_wrmsr(CPU_RCONF_DEFAULT, 0x10f3bf00, 0x24fffc02);
 
 	__builtin_wrmsr(MSR_GLIU0 + 0x20, 0xfff80, 0x20000000);
 	__builtin_wrmsr(MSR_GLIU0 + 0x21, 0x80fffe0, 0x20000000);
@@ -76,8 +76,8 @@ static void mb_gpio_init(void)
 
 static void main(unsigned long bist)
 {
-	static const struct mem_controller memctrl [] = {
-		{.channel0 = {(0xa<<3)|0, (0xa<<3)|1}}
+	static const struct mem_controller memctrl[] = {
+		{.channel0 = {(0xa << 3) | 0, (0xa << 3) | 1}}
 	};
 
 	SystemPreInit();
@@ -89,8 +89,8 @@ static void main(unsigned long bist)
 	 * it is counting on some early MSR setup
 	 * for cs5536
 	 */
-	/* cs5536_disable_internal_uart	 disable them for now, set them up later...*/
-	cs5536_setup_onchipuart(); /* if debug. real setup done in chipset init via config.lb */
+	/* cs5536_disable_internal_uart  disable them for now, set them up later... */
+	cs5536_setup_onchipuart();	/* if debug. real setup done in chipset init via config.lb */
 	mb_gpio_init();
 	uart_init();
 	console_init();

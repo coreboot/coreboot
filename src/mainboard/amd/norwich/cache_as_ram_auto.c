@@ -42,11 +42,11 @@
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
-		return smbus_read_byte(device, address);
+	return smbus_read_byte(device, address);
 }
 
 #define ManualConf 0		/* Do automatic strapped PLL config */
-#define PLLMSRhi 0x00001490 /* manual settings for the PLL */
+#define PLLMSRhi 0x00001490	/* manual settings for the PLL */
 #define PLLMSRlo 0x02000030
 #define DIMM0 0xA0
 #define DIMM1 0xA2
@@ -62,11 +62,11 @@ static void msr_init(void)
 	msr_t msr;
 	/* Setup access to the cache for under 1MB. */
 	msr.hi = 0x24fffc02;
-	msr.lo =  0x1000A000; /* 0-A0000 write back */
+	msr.lo = 0x1000A000;	/* 0-A0000 write back */
 	wrmsr(CPU_RCONF_DEFAULT, msr);
 
-	msr.hi = 0x0;	/* write back */
-	msr.lo =  0x0;
+	msr.hi = 0x0;		/* write back */
+	msr.lo = 0x0;
 	wrmsr(CPU_RCONF_A0_BF, msr);
 	wrmsr(CPU_RCONF_C0_DF, msr);
 	wrmsr(CPU_RCONF_E0_FF, msr);
@@ -81,11 +81,11 @@ static void msr_init(void)
 	wrmsr(MSR_GLIU0 + 0x21, msr);
 
 	msr.hi = 0x20000000;
-	msr.lo =  0xfff80;
+	msr.lo = 0xfff80;
 	wrmsr(MSR_GLIU1 + 0x20, msr);
 
 	msr.hi = 0x20000000;
-	msr.lo =  0x80fffe0;
+	msr.lo = 0x80fffe0;
 	wrmsr(MSR_GLIU1 + 0x21, msr);
 
 }
@@ -99,8 +99,8 @@ void cache_as_ram_main(void)
 {
 	POST_CODE(0x01);
 
-	static const struct mem_controller memctrl [] = {
-		{.channel0 = {(0xa<<3)|0, (0xa<<3)|1}}
+	static const struct mem_controller memctrl[] = {
+		{.channel0 = {(0xa << 3) | 0, (0xa << 3) | 1}}
 	};
 
 	SystemPreInit();
@@ -112,8 +112,8 @@ void cache_as_ram_main(void)
 	 * it is counting on some early MSR setup
 	 * for cs5536
 	 */
-	/* cs5536_disable_internal_uart	 disable them for now, set them up later...*/
-	cs5536_setup_onchipuart(); /* if debug. real setup done in chipset init via config.lb */
+	/* cs5536_disable_internal_uart  disable them for now, set them up later... */
+	cs5536_setup_onchipuart();	/* if debug. real setup done in chipset init via config.lb */
 	mb_gpio_init();
 	uart_init();
 	console_init();
@@ -125,7 +125,7 @@ void cache_as_ram_main(void)
 	sdram_initialize(1, memctrl);
 
 	/* Check all of memory */
-	/*ram_check(0x00000000, 640*1024);*/
+	/*ram_check(0x00000000, 640*1024); */
 
 	/* Memory is setup. Return to cache_as_ram.inc and continue to boot */
 	return;

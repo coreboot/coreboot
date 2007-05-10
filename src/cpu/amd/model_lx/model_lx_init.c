@@ -33,12 +33,9 @@
 
 static void vsm_end_post_smi(void)
 {
-	__asm__ volatile (
-			  "push %ax\n"
+	__asm__ volatile ("push %ax\n"
 			  "mov $0x5000, %ax\n"
-			  ".byte 0x0f, 0x38\n"
-			  "pop %ax\n"
-			  );
+			  ".byte 0x0f, 0x38\n" "pop %ax\n");
 }
 
 static void model_lx_init(device_t dev)
@@ -55,23 +52,23 @@ static void model_lx_init(device_t dev)
 	vsm_end_post_smi();
 
 	// Set gate A20 (legacy vsm disables it in late init)
-	printk_debug("A20 (0x92): %d\n",inb(0x92));
-	outb(0x02,0x92);
-	printk_debug("A20 (0x92): %d\n",inb(0x92));
+	printk_debug("A20 (0x92): %d\n", inb(0x92));
+	outb(0x02, 0x92);
+	printk_debug("A20 (0x92): %d\n", inb(0x92));
 
 	printk_debug("CPU model_lx_init DONE\n");
 };
 
 static struct device_operations cpu_dev_ops = {
-	.init	= model_lx_init,
+	.init = model_lx_init,
 };
 
 static struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_AMD, 0x05A2 },
-	{ 0, 0 },
+	{X86_VENDOR_AMD, 0x05A2},
+	{0, 0},
 };
 
 static struct cpu_driver driver __cpu_driver = {
-	.ops	  = &cpu_dev_ops,
+	.ops = &cpu_dev_ops,
 	.id_table = cpu_table,
 };

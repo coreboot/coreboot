@@ -25,7 +25,8 @@
 ;*	SetDelayControl
 ;*
 ;*************************************************************************/
-void SetDelayControl(void){
+void SetDelayControl(void)
+{
 	unsigned int msrnum, glspeed;
 	unsigned char spdbyte0, spdbyte1;
 	msr_t msr;
@@ -37,7 +38,7 @@ void SetDelayControl(void){
 	msr.hi = 0;
 	msr.lo = 0x2814D352;
 	wrmsr(msrnum, msr);
-	
+
 	msrnum = CPU_BC_MSS_ARRAY_CTL1;
 	msr.hi = 0;
 	msr.lo = 0x1068334D;
@@ -46,8 +47,8 @@ void SetDelayControl(void){
 	msrnum = CPU_BC_MSS_ARRAY_CTL2;
 	msr.hi = 0x00000106;
 	msr.lo = 0x83104104;
-	wrmsr(msrnum,msr);
- 
+	wrmsr(msrnum, msr);
+
 	msrnum = GLCP_FIFOCTL;
 	msr = rdmsr(msrnum);
 	msr.hi = 0x00000005;
@@ -59,38 +60,34 @@ void SetDelayControl(void){
 	msr.lo = 0x00000001;
 	wrmsr(msrnum, msr);
 
-
 	/* Debug Delay Control Setup Check
-	Leave it alone if it has been setup. FS2 or something is here.*/
+	   Leave it alone if it has been setup. FS2 or something is here. */
 	msrnum = GLCP_DELAY_CONTROLS;
 	msr = rdmsr(msrnum);
-	if (msr.lo & ~(0x7C0)){
+	if (msr.lo & ~(0x7C0)) {
 		return;
 	}
 
-
 	/*
-	; Delay Controls based on DIMM loading. UGH!
-	; # of Devices = Module Width (SPD6) / Device Width(SPD13) * Physical Banks(SPD5)
-	; Note - We only support module width of 64.
-	*/
+	 * Delay Controls based on DIMM loading. UGH!
+	 * # of Devices = Module Width (SPD6) / Device Width(SPD13) * Physical Banks(SPD5)
+	 * Note - We only support module width of 64.
+	 */
 	spdbyte0 = spd_read_byte(DIMM0, SPD_PRIMARY_SDRAM_WIDTH);
-	if (spdbyte0 !=0xFF){
-		spdbyte0 = (unsigned char) 64/spdbyte0 * (unsigned char) (spd_read_byte(DIMM0, SPD_NUM_DIMM_BANKS));
-	}
-	else{
-		spdbyte0=0;
+	if (spdbyte0 != 0xFF) {
+		spdbyte0 = (unsigned char)64 / spdbyte0 *
+		    (unsigned char)(spd_read_byte(DIMM0, SPD_NUM_DIMM_BANKS));
+	} else {
+		spdbyte0 = 0;
 	}
 
 	spdbyte1 = spd_read_byte(DIMM1, SPD_PRIMARY_SDRAM_WIDTH);
-	if (spdbyte1 !=0xFF){
-		spdbyte1 = (unsigned char) 64/spdbyte1 * (unsigned char) (spd_read_byte(DIMM1, SPD_NUM_DIMM_BANKS));
+	if (spdbyte1 != 0xFF) {
+		spdbyte1 = (unsigned char)64 / spdbyte1 *
+		    (unsigned char)(spd_read_byte(DIMM1, SPD_NUM_DIMM_BANKS));
+	} else {
+		spdbyte1 = 0;
 	}
-	else{
-		spdbyte1=0;
-	}
-
-
 
 /* The current thinking. Subject to change...
 
@@ -141,117 +138,104 @@ void SetDelayControl(void){
 */
 	msr.hi = msr.lo = 0;
 
-	if (spdbyte0 == 0 || spdbyte1 == 0){
+	if (spdbyte0 == 0 || spdbyte1 == 0) {
 		/* one dimm solution */
-		if (spdbyte1 == 0){
+		if (spdbyte1 == 0) {
 			msr.hi |= 0x000800000;
 		}
 		spdbyte0 += spdbyte1;
-		if (spdbyte0 > 8){
+		if (spdbyte0 > 8) {
 			/* large dimm */
-			if (glspeed < 334){
+			if (glspeed < 334) {
 				msr.hi |= 0x0837100AA;
 				msr.lo |= 0x056960004;
-			}
-			else{
+			} else {
 				msr.hi |= 0x082710055;
 				msr.lo |= 0x056960004;
 			}
-		}
-		else if (spdbyte0 > 4){
+		} else if (spdbyte0 > 4) {
 			/* medium dimm */
-			if (glspeed < 334){
+			if (glspeed < 334) {
 				msr.hi |= 0x0837100AA;
 				msr.lo |= 0x056960004;
-			}
-			else{
+			} else {
 				msr.hi |= 0x0827100AA;
 				msr.lo |= 0x056960004;
 			}
-		}
-		else{
+		} else {
 			/* small dimm */
-			if (glspeed < 334){
+			if (glspeed < 334) {
 				msr.hi |= 0x0837100FF;
 				msr.lo |= 0x056960004;
-			}
-			else{
+			} else {
 				msr.hi |= 0x0827100FF;
 				msr.lo |= 0x056960004;
 			}
 		}
-	}
-	else{
+	} else {
 		/* two dimm solution */
 		spdbyte0 += spdbyte1;
-		if (spdbyte0 > 24){
+		if (spdbyte0 > 24) {
 			/* huge dimms */
-			if (glspeed < 334){
+			if (glspeed < 334) {
 				msr.hi |= 0x0B37100A5;
 				msr.lo |= 0x056960004;
-			}
-			else{
+			} else {
 				msr.hi |= 0x0B2710000;
 				msr.lo |= 0x056960004;
 			}
-		}
-		else if (spdbyte0 > 16){
+		} else if (spdbyte0 > 16) {
 			/* large dimms */
-			if (glspeed < 334){
+			if (glspeed < 334) {
 				msr.hi |= 0x0B37100A5;
 				msr.lo |= 0x056960004;
-			}
-			else{
+			} else {
 				msr.hi |= 0x0B27100A5;
 				msr.lo |= 0x056960004;
 			}
-		}
-		else if (spdbyte0 >= 8){
+		} else if (spdbyte0 >= 8) {
 			/* medium dimms */
-			if (glspeed < 334){
+			if (glspeed < 334) {
 				msr.hi |= 0x0937100A5;
 				msr.lo |= 0x056960004;
-			}
-			else{
+			} else {
 				msr.hi |= 0x0C27100A5;
 				msr.lo |= 0x056960004;
 			}
-		}
-		else{
+		} else {
 			/* small dimms */
-			if (glspeed < 334){
+			if (glspeed < 334) {
 				msr.hi |= 0x0837100A5;
 				msr.lo |= 0x056960004;
-			}
-			else{
+			} else {
 				msr.hi |= 0x082710000;
 				msr.lo |= 0x056960004;
 			}
 		}
 	}
-	wrmsr(GLCP_DELAY_CONTROLS,msr);
+	wrmsr(GLCP_DELAY_CONTROLS, msr);
 	return;
 }
 
 /* ***************************************************************************/
 /* *	cpuRegInit*/
 /* ***************************************************************************/
-void
-cpuRegInit (void){
+void cpuRegInit(void)
+{
 	int msrnum;
 	msr_t msr;
-	
+
 	/* Castle 2.0 BTM periodic sync period. */
-	/*	[40:37] 1 sync record per 256 bytes */
+	/*      [40:37] 1 sync record per 256 bytes */
 	msrnum = CPU_PF_CONF;
 	msr = rdmsr(msrnum);
 	msr.hi |= (0x8 << 5);
 	wrmsr(msrnum, msr);
 
 	/*
-	; Castle performance setting.
-	; Enable Quack for fewer re-RAS on the MC
-	*/
+	   ; Castle performance setting.
+	   ; Enable Quack for fewer re-RAS on the MC
+	 */
 	msrnum = GLIU0_ARB;
 	msr = rdmsr(msrnum);
 	msr.hi &= ~ARB_UPPER_DACK_EN_SET;
@@ -264,7 +248,7 @@ cpuRegInit (void){
 	msr.hi |= ARB_UPPER_QUACK_EN_SET;
 	wrmsr(msrnum, msr);
 
-	/*	GLIU port active enable, limit south pole masters (AES and PCI) to one outstanding transaction. */
+	/*      GLIU port active enable, limit south pole masters (AES and PCI) to one outstanding transaction. */
 	msrnum = GLIU1_PORT_ACTIVE;
 	msr = rdmsr(msrnum);
 	msr.lo &= ~0x880;
@@ -273,46 +257,45 @@ cpuRegInit (void){
 	/* Set the Delay Control in GLCP */
 	SetDelayControl();
 
-/*  Enable RSDC*/
+	/*  Enable RSDC */
 	msrnum = CPU_AC_SMM_CTL;
 	msr = rdmsr(msrnum);
 	msr.lo |= SMM_INST_EN_SET;
-		wrmsr(msrnum, msr);
-
+	wrmsr(msrnum, msr);
 
 	/* FPU imprecise exceptions bit */
-		msrnum = CPU_FPU_MSR_MODE;
-		msr = rdmsr(msrnum);
-		msr.lo |= FPU_IE_SET;
-		wrmsr(msrnum, msr);
-
+	msrnum = CPU_FPU_MSR_MODE;
+	msr = rdmsr(msrnum);
+	msr.lo |= FPU_IE_SET;
+	wrmsr(msrnum, msr);
 
 	/* Power Savers (Do after BIST) */
-	/* Enable Suspend on HLT & PAUSE instructions*/
+	/* Enable Suspend on HLT & PAUSE instructions */
 	msrnum = CPU_XC_CONFIG;
-		msr = rdmsr(msrnum);
-	msr.lo |= XC_CONFIG_SUSP_ON_HLT |  XC_CONFIG_SUSP_ON_PAUSE;
-		wrmsr(msrnum, msr);
+	msr = rdmsr(msrnum);
+	msr.lo |= XC_CONFIG_SUSP_ON_HLT | XC_CONFIG_SUSP_ON_PAUSE;
+	wrmsr(msrnum, msr);
 
 	/* Enable SUSP and allow TSC to run in Suspend (keep speed detection happy) */
 	msrnum = CPU_BC_CONF_0;
-		msr = rdmsr(msrnum);
+	msr = rdmsr(msrnum);
 	msr.lo |= TSC_SUSP_SET | SUSP_EN_SET;
 	msr.lo &= 0x0F0FFFFFF;
-	msr.lo |= 0x002000000;	 /* PBZ213: Set PAUSEDLY = 2 */
-		wrmsr(msrnum, msr);
+	msr.lo |= 0x002000000;	/* PBZ213: Set PAUSEDLY = 2 */
+	wrmsr(msrnum, msr);
 
-	/* Disable the debug clock to save power.*/
+	/* Disable the debug clock to save power. */
 	/* NOTE: leave it enabled for fs2 debug */
-/*	msrnum = GLCP_DBGCLKCTL;
+#if 0
+	msrnum = GLCP_DBGCLKCTL;
 	msr.hi = 0;
 	msr.lo = 0;
 	wrmsr(msrnum, msr);
-*/
+#endif
 
 	/* Setup throttling delays to proper mode if it is ever enabled. */
 	msrnum = GLCP_TH_OD;
 	msr.hi = 0;
 	msr.lo = 0x00000603C;
-		wrmsr(msrnum, msr);
-	}
+	wrmsr(msrnum, msr);
+}

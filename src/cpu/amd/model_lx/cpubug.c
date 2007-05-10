@@ -30,7 +30,6 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/lxdef.h>
 
-
 /**************************************************************************
  *
  *	pcideadlock
@@ -40,27 +39,27 @@
  *	There is also fix code in cache and PCI functions. This bug is very is pervasive.
  *
  **************************************************************************/
-static void pcideadlock(void){
+static void pcideadlock(void)
+{
 	msr_t msr;
 
 	/*
 	 * forces serialization of all load misses. Setting this bit prevents the 
 	 * DM pipe from backing up if a read request has to be held up waiting 
 	 * for PCI writes to complete.
-	*/
+	 */
 	msr = rdmsr(CPU_DM_CONFIG0);
 	msr.lo |= DM_CONFIG0_LOWER_MISSER_SET;
 	wrmsr(CPU_DM_CONFIG0, msr);
 
-	
 	/* write serialize memory hole to PCI. Need to unWS when something is 
 	 * shadowed regardless of cachablility.
 	 */
 	msr.lo = 0x021212121;
 	msr.hi = 0x021212121;
-	wrmsr( CPU_RCONF_A0_BF, msr);
-	wrmsr( CPU_RCONF_C0_DF, msr);
-	wrmsr( CPU_RCONF_E0_FF, msr);
+	wrmsr(CPU_RCONF_A0_BF, msr);
+	wrmsr(CPU_RCONF_C0_DF, msr);
+	wrmsr(CPU_RCONF_E0_FF, msr);
 }
 
 /****************************************************************************/
@@ -74,17 +73,19 @@ static void pcideadlock(void){
 /**	 to maintain coherency with and the cache is not enabled yet.*/
 /***/
 /****************************************************************************/
-static void disablememoryreadorder(void){
+static void disablememoryreadorder(void)
+{
 	msr_t msr;
 
 	msr = rdmsr(MC_CF8F_DATA);
-	msr.hi |=  CF8F_UPPER_REORDER_DIS_SET;
+	msr.hi |= CF8F_UPPER_REORDER_DIS_SET;
 	wrmsr(MC_CF8F_DATA, msr);
 }
 
 /* For cpu version C3. Should be the only released version */
-void cpubug(void) {
-			pcideadlock();
+void cpubug(void)
+{
+	pcideadlock();
 	disablememoryreadorder();
 	printk_debug("Done cpubug fixes \n");
 }

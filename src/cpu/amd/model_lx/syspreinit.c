@@ -29,14 +29,14 @@
 /* *	Destroys: Al,*/
 /* **/
 /* ***************************************************************************/
-void
-StartTimer1(void){
+void StartTimer1(void)
+{
 	outb(0x56, 0x43);
 	outb(0x12, 0x41);
 }
 
-void
-SystemPreInit(void){
+void SystemPreInit(void)
+{
 
 	/* they want a jump ... */
 #ifndef USE_DCACHE_RAM

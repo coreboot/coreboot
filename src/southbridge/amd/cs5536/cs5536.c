@@ -487,13 +487,13 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 	dev = dev_find_device(PCI_VENDOR_ID_AMD, 
 			PCI_DEVICE_ID_AMD_CS5536_UDC, 0);
 	if (dev) {
-		pci_write_config8(dev, 0x7C, 0xDEADBEEF);
+		pci_write_config32(dev, 0x7C, 0xDEADBEEF);
 	}
 
 	dev = dev_find_device(PCI_VENDOR_ID_AMD, 
 			PCI_DEVICE_ID_AMD_CS5536_OTG, 0);
 	if (dev) {
-		pci_write_config8(dev, 0x7C, 0xDEADBEEF);
+		pci_write_config32(dev, 0x7C, 0xDEADBEEF);
 	}
 }
 
@@ -512,7 +512,7 @@ void chipsetinit(void)
 	    (struct southbridge_amd_cs5536_config *)dev->chip_info;
 	struct msrinit *csi;
 
-	outb(P80_CHIPSET_INIT, 0x80);
+	post_code(P80_CHIPSET_INIT);
 
 	/* we hope NEVER to be in linuxbios when S3 resumes
 	   if (! IsS3Resume()) */

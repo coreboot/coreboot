@@ -377,18 +377,22 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		if (!size)
 			continue;
 
-		/* Calculate the value of MA mapping type register,
-		 * based on size of SDRAM chips. */
-		size = (size & 0xffff) << (3 + 3);
-		/* convert module size to be in Mbits */
-		size /= spd_num_chips(slot);
-		print_debug_hex16(size);
-		print_debug(" is the chip size\r\n");
-		if (size < 64)
-			ma = 0;
-		else if (size < 256)
-			ma = 8;
-		else
+		/* Read the row densities */
+		size = smbus_read_byte(0x50+slot, 0x1f);
+
+		/* Set the MA map type.
+		 *
+		 * 0xa should be another option, but when 
+		 * it would be used is unknown.
+		 */
+
+		if (size < 16 ) /* less than 64 MB per side */
+			ma = 0x0;
+		else if (size < 32) /* less than 128MB per side */
+			ma = 0x8;
+		else if ( size < 64) /* less than 256MB per side */
+			ma = 0xc;
+		else /* 256MB or more per side */
 			ma = 0xe;
 		print_debug_hex16(ma);
 		print_debug(" is the MA type\r\n");

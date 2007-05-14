@@ -40,7 +40,7 @@
 #include "southbridge/amd/cs5536/cs5536_early_smbus.c"
 #include "southbridge/amd/cs5536/cs5536_early_setup.c"
 
-static inline int spd_read_byte(unsigned device, unsigned address)
+static inline int spd_read_byte(unsigned int device, unsigned int address)
 {
 	return smbus_read_byte(device, address);
 }
@@ -50,6 +50,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #define PLLMSRlo 0x02000030
 #define DIMM0 0xA0
 #define DIMM1 0xA2
+
 #include "northbridge/amd/lx/raminit.h"
 #include "northbridge/amd/lx/pll_reset.c"
 #include "northbridge/amd/lx/raminit.c"
@@ -60,6 +61,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 static void msr_init(void)
 {
 	msr_t msr;
+
 	/* Setup access to the cache for under 1MB. */
 	msr.hi = 0x24fffc02;
 	msr.lo = 0x1000A000;	/* 0-A0000 write back */
@@ -87,12 +89,11 @@ static void msr_init(void)
 	msr.hi = 0x20000000;
 	msr.lo = 0x80fffe0;
 	wrmsr(MSR_GLIU1 + 0x21, msr);
-
 }
 
 static void mb_gpio_init(void)
 {
-	/* Early mainboard specific GPIO setup */
+	/* Early mainboard specific GPIO setup. */
 }
 
 void cache_as_ram_main(void)
@@ -108,9 +109,8 @@ void cache_as_ram_main(void)
 
 	cs5536_early_setup();
 
-	/* NOTE: must do this AFTER the early_setup!
-	 * it is counting on some early MSR setup
-	 * for cs5536
+	/* Note: must do this AFTER the early_setup! It is counting on some early
+	 * MSR setup for CS5536.
 	 */
 	/* cs5536_disable_internal_uart  disable them for now, set them up later... */
 	cs5536_setup_onchipuart();	/* if debug. real setup done in chipset init via config.lb */
@@ -124,9 +124,9 @@ void cache_as_ram_main(void)
 
 	sdram_initialize(1, memctrl);
 
-	/* Check all of memory */
-	/*ram_check(0x00000000, 640*1024); */
+	/* Check memory. */
+	/* ram_check(0x00000000, 640 * 1024); */
 
-	/* Memory is setup. Return to cache_as_ram.inc and continue to boot */
+	/* Memory is setup. Return to cache_as_ram.inc and continue to boot. */
 	return;
 }

@@ -14,7 +14,7 @@
 *
 * You should have received a copy of the GNU General Public License
 * along with this program; if not, write to the Free Software
-* Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA	 02110-1301 USA
+* Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 */
 
 #include <arch/pirq_routing.h>
@@ -55,7 +55,7 @@ const struct irq_routing_table intel_irq_routing_table = {
 	0x00,			/*      u8 checksum , this has to set to some value that would give 0 after the sum of all bytes for this structure (including checksum) */
 	{
 	 /* If you change the number of entries, change the IRQ_SLOT_COUNT above! */
-	 /* bus,         dev|fn,          {link, bitmap},         {link, bitmap},         {link, bitmap},         {link, bitmap},  slot, rfu */
+	 /* bus, dev|fn,           {link, bitmap},      {link, bitmap},     {link, bitmap},     {link, bitmap},     slot, rfu */
 	 {0x00, (0x01 << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {0x00, 0x00}, {0x00, 0x00}, {0x00, 0x00}}, 0x0, 0x0},	/* cpu */
 	 {0x00, (0x0F << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {L_PIRQB, M_PIRQB}, {L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}}, 0x0, 0x0},	/* chipset */
 	 {0x00, (0x0D << 3) | 0x0, {{L_PIRQB, M_PIRQB}, {L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}, {L_PIRQA, M_PIRQA}}, 0x1, 0x0},	/* slot1 */
@@ -75,7 +75,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 
 	pirtable_end = copy_pirq_routing_table(addr);
 
-	/* Set up chipset IRQ steering */
+	/* Set up chipset IRQ steering. */
 	pciAddr = 0x80000000 | (CHIPSET_DEV_NUM << 11) | 0x5C;
 	chipset_irq_map = (PIRQD << 12 | PIRQC << 8 | PIRQB << 4 | PIRQA);
 	printk_debug("%s(%08X, %04X)\n", __FUNCTION__, pciAddr,
@@ -86,20 +86,23 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	pirq_tbl = (struct irq_routing_table *)(addr);
 	num_entries = (pirq_tbl->size - 32) / 16;
 
-	/* Set PCI IRQs */
+	/* Set PCI IRQs. */
 	for (i = 0; i < num_entries; i++) {
 		printk_debug("PIR Entry %d Dev/Fn: %X Slot: %d\n", i,
 			     pirq_tbl->slots[i].devfn, pirq_tbl->slots[i].slot);
 		for (j = 0; j < 4; j++) {
 			printk_debug("INT: %c bitmap: %x ", 'A' + j,
 				     pirq_tbl->slots[i].irq[j].bitmap);
-			for (k = 0; (!((pirq_tbl->slots[i].irq[j].bitmap >> k) & 1)) && (pirq_tbl->slots[i].irq[j].bitmap != 0); k++) ;	/* finds lsb in bitmap to IRQ# */
+			for (k = 0; (!((pirq_tbl->slots[i].irq[j].bitmap >> k) & 1)) && (pirq_tbl->slots[i].irq[j].bitmap != 0); k++) ;	/* Finds lsb in bitmap to IRQ#. */
 			pirq[j] = k;
 			printk_debug("PIRQ: %d\n", k);
 		}
-		pci_assign_irqs(pirq_tbl->slots[i].bus, pirq_tbl->slots[i].devfn >> 3, pirq);	/* bus, device, slots IRQs for {A,B,C,D} */
+
+		/* Bus, device, slots IRQs for {A,B,C,D}. */
+		pci_assign_irqs(pirq_tbl->slots[i].bus,
+				pirq_tbl->slots[i].devfn >> 3, pirq);
 	}
 
-	/* put the PIR table in memory and checksum */
+	/* Put the PIR table in memory and checksum. */
 	return pirtable_end;
 }

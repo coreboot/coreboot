@@ -1,12 +1,12 @@
-# Config file for the AMD Geode LX/5536 Norwich Platform
+# Config file for the AMD Geode LX/5536 Norwich Platform.
 
 target norwich
 mainboard amd/norwich
 
-#HACK to get the right tsc support
+# HACK to get the right TSC support.
 option CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2=1
 
-# leave 36k for vsa
+# Leave 36k for VSA.
 option CONFIG_COMPRESSED_PAYLOAD_NRV2B=0
 option CONFIG_COMPRESSED_PAYLOAD_LZMA=0
 
@@ -26,4 +26,4 @@ romimage "fallback"
 	payload ../payload.elf
 end
 
-buildrom ./norwich.rom ROM_SIZE  "fallback"
+buildrom ./norwich.rom ROM_SIZE "fallback"

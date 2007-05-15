@@ -38,33 +38,17 @@
 
 static void main(unsigned long bist)
 {
+	/* Initialize the serial console. */
 	w83977tf_enable_serial(SERIAL_DEV, TTYS0_BASE);
 	uart_init();
 	console_init();
 
-	/* Halt if there was a built in self test failure */
+	/* Halt if there was a built in self test failure. */
 	report_bist_failure(bist);
-	
+
+	/* Initialize RAM. */
 	sdram_init();
-	
-	/* Check all of memory */
-#if 0
-	ram_check(0x00000000, msr.lo);
-#endif
-#if 0
-	static const struct {
-		unsigned long lo, hi;
-	} check_addrs[] = {
-		/* Check 16MB of memory @ 0*/
-		{ 0x00000000, 0x01000000 },
-#if TOTAL_CPUS > 1
-		/* Check 16MB of memory @ 2GB */
-		{ 0x80000000, 0x81000000 },
-#endif
-	};
-	int i;
-	for(i = 0; i < sizeof(check_addrs)/sizeof(check_addrs[0]); i++) {
-		ram_check(check_addrs[i].lo, check_addrs[i].hi);
-	}
-#endif
+
+	/* Check RAM. */
+	/* ram_check(0x00000000, 640 * 1024); */
 }

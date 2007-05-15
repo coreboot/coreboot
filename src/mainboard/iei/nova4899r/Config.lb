@@ -126,13 +126,13 @@ mainboardinit ./auto.inc
 #config chip.h
 
 chip northbridge/amd/gx1
-  device pci_domain 0 on 
+  device pci_domain 0 on
     device pci 0.0 on end
       chip southbridge/amd/cs5530
-	      device pci 0a.0 on  end 	# ETH0
-	      device pci 0b.0 off end 	# ETH1
-	      device pci 0c.0 on  end 	# ETH2
-	      device pci 0f.0 on  end 	# PCI slot
+        device pci 0a.0 on  end		# ETH0
+        device pci 0b.0 off end		# ETH1
+        device pci 0c.0 on  end		# ETH2
+        device pci 0f.0 on  end		# PCI slot
         device pci 12.0 on
           chip superio/winbond/w83977tf
             device pnp 2e.0 on		# FDC
@@ -157,8 +157,8 @@ chip northbridge/amd/gx1
             device pnp 2e.5 on		# Keyboard
                io 0x60 = 0x60
                io 0x62 = 0x64
-              irq 0x70 = 0x01     # int  1 for PS/2 keyboard
-              irq 0x72 = 0x0c     # int 12 for PS/2 mouse
+              irq 0x70 = 0x01		# Int  1 for PS/2 keyboard
+              irq 0x72 = 0x0c		# Int 12 for PS/2 mouse
             end
             device pnp 2e.6 on		# IR
                io 0x60 = 0x2e8
@@ -179,10 +179,10 @@ chip northbridge/amd/gx1
           end
         device pci 12.1 on  end		# SMI
         device pci 12.2 on  end		# IDE
-        device pci 12.3 on  end 	# Audio
-      	device pci 12.4 on  end	  # VGA onboard
+        device pci 12.3 on  end		# Audio
+        device pci 12.4 on  end		# VGA onboard
       end
-      device pci 13.0 on end 	# USB
+      device pci 13.0 on end		# USB
     end
   end
 

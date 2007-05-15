@@ -19,6 +19,7 @@
  */
 
 #define ASSEMBLY 1
+
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>

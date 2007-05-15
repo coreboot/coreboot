@@ -39,15 +39,19 @@
  * - the additional PCI slot must share the IRQ with the internal USB
  */
 
-#define IRQ_BITMAP_LINK0 0x0200	/* bit  9 means IRQ 9 available for this cs5530 INT input*/
-#define IRQ_BITMAP_LINK1 0x0020	/* bit  5 means IRQ 5 available for this cs5530 INT input*/
-#define IRQ_BITMAP_LINK2 0x0400	/* bit 10 means IRQ10 available for this cs5530 INT input*/
-#define IRQ_BITMAP_LINK3 0x0800	/* bit 11 means IRQ11 available for this cs5530 INT input*/
+/* Bit  9 means IRQ 9 is available for this cs5530 INT input. */
+#define IRQ_BITMAP_LINK0 0x0200
+/* Bit  5 means IRQ 5 is available for this cs5530 INT input. */
+#define IRQ_BITMAP_LINK1 0x0020
+/* Bit 10 means IRQ10 is available for this cs5530 INT input. */
+#define IRQ_BITMAP_LINK2 0x0400
+/* Bit 11 means IRQ11 is available for this cs5530 INT input. */
+#define IRQ_BITMAP_LINK3 0x0800
 
 const struct irq_routing_table intel_irq_routing_table = {
 	.signature = PIRQ_SIGNATURE,	/* u32 signature */
 	.version = PIRQ_VERSION,	/* u16 version   */
-	.size = 32+16*IRQ_SLOT_COUNT,	/* there can be total 4 devices on the bus */
+	.size = 32+16*IRQ_SLOT_COUNT,	/* There can be total 4 devices on the bus */
 	.rtr_bus = 0x00,		/* Where the interrupt router lies (bus) */
 	.rtr_devfn = (0x12<<3)|0x0,	/* Where the interrupt router lies (dev) */
 	.exclusive_irqs = 0x4C20,	/* IRQs devoted exclusively to PCI usage */
@@ -88,7 +92,7 @@ const struct irq_routing_table intel_irq_routing_table = {
  * the network device is soldered...
  *
  * Configuration is ommited on purpose in the attempt of solving the
- * issue with IRQ panics (this is device is actually eth1)
+ * issue with IRQ panics (this is device is actually eth1).
 
 		[1] = {
 			.bus = 0x00,
@@ -143,7 +147,7 @@ const struct irq_routing_table intel_irq_routing_table = {
 			.slot = 0x1,	/* soldered */
 		},
 /*
- * This is a free PCI slot
+ * This is a free PCI slot.
  */
 		[3] = {
 			.bus = 0x00,
@@ -208,4 +212,3 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 {
 	return copy_pirq_routing_table(addr);
 }
-

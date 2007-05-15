@@ -29,4 +29,3 @@
 struct chip_operations mainboard_iei_nova4899r_ops = {
 	CHIP_NAME("IEI NOVA-4899R Mainboard")
 };
-

@@ -129,72 +129,60 @@ chip northbridge/amd/gx1
   device pci_domain 0 on 
     device pci 0.0 on end
       chip southbridge/amd/cs5530
-  			register "audio_irq" = "5"
-  			register "unwanted_vpci[0]" = "0x80007E00"	# USB/UDC
-	   		register "unwanted_vpci[1]" = "0x80007F00"	# USB/OTG
-	 	    register "unwanted_vpci[2]" = "0"	# End of list has a zero
-
+	      device pci 0a.0 on  end 	# ETH0
+	      device pci 0b.0 off end 	# ETH1
+	      device pci 0c.0 on  end 	# ETH2
+	      device pci 0f.0 on  end 	# PCI slot
         device pci 12.0 on
           chip superio/winbond/w83977tf
-            device pnp 2e.0 on		# Keyboard
-               io 0x60 = 0x60
-               io 0x62 = 0x64
-              irq 0x70 = 1
+            device pnp 2e.0 on		# FDC
+              irq 0x70 = 6
             end
-            device pnp 2e.1 on		# Mouse
-              irq 0x70 = 12
-            end
-            device pnp 2e.2 on		# RTC
-               io 0x60 = 0x70
-              irq 0x70 = 8
-            end
-            device pnp 2e.3 off		# FDC
-            end
-            device pnp 2e.4 on		# Parallel Port
+            device pnp 2e.1 on		# Parallel Port
                io 0x60 = 0x378
               irq 0x70 = 7
             end
-            device pnp 2e.5 on		# COM2
-               io 0x60 = 0x2f8
-              irq 0x70 = 3
-            end
-            device pnp 2e.6 on		# COM1
+            device pnp 2e.2 on		# COM1
                io 0x60 = 0x3f8
               irq 0x70 = 4
             end
-            device pnp 2e.7 on		# GPIO
-               io 0x60 = 0xe0
+            register "com1" = "{115200}"
+            device pnp 2e.3 on		# COM2
+               io 0x60 = 0x2f8
+              irq 0x70 = 3
             end
-            device pnp 2e.8 on		# Power Management
+            register "com2" = "{115200}"
+            device pnp 2e.4 off		# Reserved
+            end
+            device pnp 2e.5 on		# Keyboard
+               io 0x60 = 0x60
+               io 0x62 = 0x64
+              irq 0x70 = 0x01     # int  1 for PS/2 keyboard
+              irq 0x72 = 0x0c     # int 12 for PS/2 mouse
+            end
+            device pnp 2e.6 on		# IR
+               io 0x60 = 0x2e8
+              irq 0x70 = 3
+            end
+            device pnp 2e.7 on		# GAME/MIDI/GPIO1
+               io 0x60 = 0x290
+            end
+            device pnp 2e.8 on		# GPIO2
+               io 0x60 = 0x110
+            end
+            device pnp 2e.9 on		# GPIO3
+               io 0x60 = 0x120
+            end
+            device pnp 2e.A on		# Power Management
                io 0x60 = 0xe800
             end
-            register "com1" = "{115200}"
-            register "com2" = "{115200}"
           end
         device pci 12.1 on  end		# SMI
         device pci 12.2 on  end		# IDE
         device pci 12.3 on  end 	# Audio
-       
+      	device pci 12.4 on  end	  # VGA onboard
       end
-
-      # VGA onboard
-      device pci 12.4 on 
-      chip drivers/pci/onboard
-          device pci 12.4 on end
-          register "rom_address" = "0xfffc0000" #256k image
-          #register "rom_address" = "0xfff80000" #512k image
-          #register "rom_address" = "0xfff00000" #1M image
-      end	# VGA 
-      end	# VGA 
-
-      device pci 0a.0 on  end 	# ETH0
-      device pci 0b.0 on  end 	# ETH1
-      device pci 0c.0 on  end 	# ETH2
-      device pci 0f.0 on  end 	# ETH3
-      
-      device pci 13.0 on  	# USB
-      end
-      
+      device pci 13.0 on end 	# USB
     end
   end
 

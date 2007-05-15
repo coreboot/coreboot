@@ -31,9 +31,7 @@ void udelay(int usecs)
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
-	unsigned char c;
-	c = smbus_read_byte(device, address);
-	return c;
+	return smbus_read_byte(device, address);
 }
 
 #include "northbridge/via/vt8601/raminit.c"

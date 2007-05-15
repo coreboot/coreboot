@@ -57,12 +57,9 @@ static void enable_shadow_ram(void)
 	pci_write_config8(0, 0x59, shadowreg);
 }
 
-/* TODO: fix raminit.c to use smbus_read_byte */
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
-	uint8_t c;
-	c = smbus_read_byte(device, address);
-	return c;
+	return smbus_read_byte(device, address);
 }
 
 #include "northbridge/intel/i440bx/raminit.c"

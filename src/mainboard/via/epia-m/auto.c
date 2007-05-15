@@ -39,9 +39,7 @@ static void memreset_setup(void)
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
-	unsigned char c;
-	c = smbus_read_byte(device, address);
-	return c;
+	return smbus_read_byte(device, address);
 }
 
 #include "northbridge/via/vt8623/raminit.c"

@@ -19,6 +19,10 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-include $(src)/northbridge/amd/Makefile
-include $(src)/northbridge/intel/Makefile
+STAGE2_CHIPSET_OBJ += $(obj)/northbridge/amd/geodelx/geodelx.o
+
+$(obj)/northbridge/amd/geodelx/%.o: $(src)/northbridge/amd/geodelx/%.c
+	$(Q)mkdir -p $(obj)/northbridge/amd/geodelx
+	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
 

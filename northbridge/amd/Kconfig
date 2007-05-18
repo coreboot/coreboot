@@ -19,6 +19,9 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-include $(src)/northbridge/amd/Makefile
-include $(src)/northbridge/intel/Makefile
+config NORTHBRIDGE_AMD_GEODELX
+	boolean
+	help
+	  This option is internally used to decide which northbridge code to
+	  use. It is set in the mainboard Kconfig file.
 

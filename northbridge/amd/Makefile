@@ -19,6 +19,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-include $(src)/northbridge/amd/Makefile
-include $(src)/northbridge/intel/Makefile
+ifeq ($(CONFIG_NORTHBRIDGE_AMD_GEODELX),y)
+	include $(src)/northbridge/amd/geodelx/Makefile
+endif
 

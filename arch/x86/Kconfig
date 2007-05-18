@@ -32,12 +32,20 @@ config ARCH
 	help
 	  This is the name of the respective subdirectory in arch/.
 
-config CAR_TYPE_I586
+config CPU_I586
 	boolean
 	help
-	  This option selects the reset vector and Cache-as-RAM (CAR)
-	  implementation for a mainboard. See arch/x86/Makefile for
-	  more hints on possible values.
+	  CPU type. At the moment this option selects the reset vector and
+	  Cache-as-RAM (CAR) implementation for a mainboard. See
+	  arch/x86/Makefile for more hints on possible values.
+	  It is usually set in mainboard/*/Kconfig.
+
+config CPU_AMD_GEODELX
+	boolean
+	help
+	  CPU type. At the moment this option selects the reset vector and
+	  Cache-as-RAM (CAR) implementation for a mainboard. See
+	  arch/x86/Makefile for more hints on possible values.
 	  It is usually set in mainboard/*/Kconfig.
 
 config OPTION_TABLE

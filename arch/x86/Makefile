@@ -66,10 +66,14 @@ STAGE0_LIB_OBJ       = uart8250.o mem.o elfboot.o lar.o delay.o vtxprintf.o \
 		       vsprintf.o console.o
 STAGE0_ARCH_X86_OBJ  = cachemain.o serial.o archelfboot.o speaker.o udelay_io.o mc146818rtc.o
 
-ifeq ($(CONFIG_CAR_TYPE_I586),y)
+ifeq ($(CONFIG_CPU_I586),y)
 	STAGE0_CAR_OBJ = stage0_i586.o
+else 
+ifeq ($(CONFIG_CPU_AMD_GEODELX),y)
+	STAGE0_CAR_OBJ = stage0_amd_geodelx.o
 else
 	STAGE0_CAR_OBJ = stage0_i586.o
+endif 
 endif
 
 

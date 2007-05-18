@@ -19,6 +19,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-source southbridge/amd/Kconfig
-source southbridge/intel/Kconfig
+# One entry like the below for each supported AMD southbridge.
+ifeq ($(CONFIG_SOUTHBRIDGE_AMD_CS5536),y)
+	include $(src)/southbridge/amd/cs5536/Makefile
+endif
 

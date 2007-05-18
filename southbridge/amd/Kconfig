@@ -19,6 +19,9 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-source southbridge/amd/Kconfig
-source southbridge/intel/Kconfig
+config SOUTHBRIDGE_AMD_CS5536
+	boolean
+	help
+	  This option is internally used to decide which southbridge code to
+	  use. It is set in the mainboard Kconfig file.
 

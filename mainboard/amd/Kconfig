@@ -3,15 +3,14 @@ choice
 	depends on VENDOR_AMD
 
 config BOARD_AMD_NORWICH
-	bool "AMD Norwich (LX Devel)"
+	bool "Norwich"
 	select ARCH_X86
 	select CPU_AMD_GEODELX
 	select OPTION_TABLE
 	select NORTHBRIDGE_AMD_GEODELX
 	select SOUTHBRIDGE_AMD_CS5536
-	#select SUPERIO_WINBOND_W83627HF
 	help
-	  AMD Norwich Development board
+	  AMD Norwich Geode LX Development board
 endchoice
 
 source "mainboard/amd/norwich/Kconfig"

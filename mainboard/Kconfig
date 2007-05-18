@@ -2,7 +2,13 @@ menu "Mainboard"
 
 choice
 	prompt "Mainboard vendor"
-	default EMULATION
+	default VENDOR_EMULATION
+
+config VENDOR_AMD
+	bool "AMD"
+	help
+	  Select this option for various systems from 
+	  Advanced Micro Devices, Inc
 
 config VENDOR_EMULATION
 	bool "Emulated systems"
@@ -12,6 +18,7 @@ config VENDOR_EMULATION
 endchoice
 
 source "mainboard/emulation/Kconfig"
+source "mainboard/amd/Kconfig"
 
 choice
 	prompt "ROM chip size"

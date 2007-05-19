@@ -121,8 +121,8 @@ static unsigned int scan_root_bus(device_t root, unsigned int max)
 	printk_debug("scan_root_bus ok\n");
 
 	/* The following is a little silly. We need a hook into the boot
-	 * process *after* the ADT7643 device has been initialized. So we
-	 * create this dummy device, and we put the ADT7643 S2881 specific
+	 * process *after* the ADT7463 device has been initialized. So we
+	 * create this dummy device, and we put the ADT7463 S2881 specific
 	 * settings in its init function, which gets called
 	 * as the last device to be initialized.
 	 */

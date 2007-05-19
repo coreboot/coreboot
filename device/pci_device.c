@@ -605,7 +605,7 @@ void pci_dev_enable_resources(struct device *dev)
 	command = pci_read_config16(dev, PCI_COMMAND);
 	command |= dev->command;
 	command |= (PCI_COMMAND_PARITY + PCI_COMMAND_SERR); // Error check.
-	printk(BIOS_DEBUG, "%s: %s(%s) cmd <- %02x\n", __func__, dev->dtsname,
+	printk(BIOS_DEBUG, "%s: %s (%s) cmd <- %02x\n", __func__, dev->dtsname,
 	       dev_path(dev), command);
 	pci_write_config16(dev, PCI_COMMAND, command);
 }
@@ -1039,7 +1039,7 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 #endif
 
 	old_devices = bus->children;
-	printk(BIOS_DEBUG, "%s: old_devices %p, dev for this bus %p(%s)\n",
+	printk(BIOS_DEBUG, "%s: old_devices %p, dev for this bus %p (%s)\n",
 	       __func__, old_devices, bus->dev, bus->dev->dtsname);
 	bus->children = 0;
 

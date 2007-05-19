@@ -32,7 +32,7 @@ static void pciexp_tune_dev(struct device *dev)
 		/* error... */
 		return;
 	}
-	printk_debug("PCIEXP: tuning %s\n", dev_path(dev));
+	printk(BIOS_DEBUG, "PCIEXP: tuning %s\n", dev_path(dev));
 #warning "IMPLEMENT PCI EXPRESS TUNING"
 }
 

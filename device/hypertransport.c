@@ -190,12 +190,11 @@ static int ht_setup_link(struct ht_link *prev, struct device *dev,
 		unsigned int new_freq;
 		pci_write_config8(cur->dev, cur->pos + cur->freq_off, freq);
 		reset_needed = 1;
-		printk_spew("HyperT FreqP old %x new %x\n", old_freq, freq);
+		printk(BIOS_SPEW, "HyperT FreqP old %x new %x\n", old_freq, freq);
 		new_freq = pci_read_config8(cur->dev, cur->pos + cur->freq_off);
 		new_freq &= 0x0f;
 		if (new_freq != freq) {
-			printk_err
-			    ("%s Hypertransport frequency would not set wanted: %x got: %x\n",
+			printk(BIOS_ERR, "%s Hypertransport frequency would not set wanted: %x got: %x\n",
 			     dev_path(dev), freq, new_freq);
 		}
 	}
@@ -205,13 +204,12 @@ static int ht_setup_link(struct ht_link *prev, struct device *dev,
 		pci_write_config8(cur->dev, cur->pos + cur->config_off + 1,
 				  present_width);
 		reset_needed = 1;
-		printk_spew("HyperT widthP old %x new %x\n", old_width,
+		printk(BIOS_SPEW, "HyperT widthP old %x new %x\n", old_width,
 			    present_width);
 		new_width =
 		    pci_read_config8(cur->dev, cur->pos + cur->config_off + 1);
 		if (new_width != present_width) {
-			printk_err
-			    ("%s Hypertransport width would not set wanted: %x got: %x\n",
+			printk(BIOS_ERR, "%s Hypertransport width would not set wanted: %x got: %x\n",
 			     dev_path(dev), present_width, new_width);
 		}
 	}
@@ -223,13 +221,12 @@ static int ht_setup_link(struct ht_link *prev, struct device *dev,
 		unsigned int new_freq;
 		pci_write_config8(prev->dev, prev->pos + prev->freq_off, freq);
 		reset_needed = 1;
-		printk_spew("HyperT freqU old %x new %x\n", old_freq, freq);
+		printk(BIOS_SPEW, "HyperT freqU old %x new %x\n", old_freq, freq);
 		new_freq =
 		    pci_read_config8(prev->dev, prev->pos + prev->freq_off);
 		new_freq &= 0x0f;
 		if (new_freq != freq) {
-			printk_err
-			    ("%s Hypertransport frequency would not set wanted: %x got: %x\n",
+			printk(BIOS_ERR, "%s Hypertransport frequency would not set wanted: %x got: %x\n",
 			     dev_path(prev->dev), freq, new_freq);
 		}
 	}
@@ -240,14 +237,13 @@ static int ht_setup_link(struct ht_link *prev, struct device *dev,
 		pci_write_config8(prev->dev, prev->pos + prev->config_off + 1,
 				  upstream_width);
 		reset_needed = 1;
-		printk_spew("HyperT widthU old %x new %x\n", old_width,
+		printk(BIOS_SPEW, "HyperT widthU old %x new %x\n", old_width,
 			    upstream_width);
 		new_width =
 		    pci_read_config8(prev->dev,
 				     prev->pos + prev->config_off + 1);
 		if (new_width != upstream_width) {
-			printk_err
-			    ("%s Hypertransport width would not set wanted: %x got: %x\n",
+			printk(BIOS_ERR, "%s Hypertransport width would not set wanted: %x got: %x\n",
 			     dev_path(prev->dev), upstream_width, new_width);
 		}
 	}
@@ -282,7 +278,7 @@ static unsigned int ht_lookup_slave_capability(struct device *dev)
 		if (pos) {
 			unsigned int flags;
 			flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
-			printk_spew("Flags: 0x%04x\n", flags);
+			printk(BIOS_SPEW, "Flags: 0x%04x\n", flags);
 			if ((flags >> 13) == 0) {
 				/* Entry is a Slave secondary, success... */
 				break;
@@ -325,8 +321,7 @@ static void ht_collapse_early_enumeration(struct bus *bus,
 			ctrl = pci_read_config16(prev.dev,
 					      prev.pos + prev.ctrl_off);
 			if (ctrl & ((1 << 4) | (1 << 8))) {
-				printk_alert
-				    ("Detected error on Hypertransport Link\n");
+				printk(BIOS_ALERT, "Detected error on Hypertransport Link\n");
 				return;
 			}
 		}
@@ -384,7 +379,7 @@ static void ht_collapse_early_enumeration(struct bus *bus,
 		flags = pci_read_config16(&dummy, pos + PCI_CAP_FLAGS);
 		flags &= ~0x1f;
 		pci_write_config16(&dummy, pos + PCI_CAP_FLAGS, flags);
-		printk_spew("Collapsing %s [%04x/%04x]\n",
+		printk(BIOS_SPEW, "Collapsing %s [%04x/%04x]\n",
 			    dev_path(&dummy), dummy.vendor, dummy.device);
 	}
 }
@@ -461,8 +456,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int min_devfn,
 				ctrl = pci_read_config16(prev.dev,
 					      prev.pos + prev.ctrl_off);
 				if (ctrl & ((1 << 4) | (1 << 8))) {
-					printk_alert
-					    ("Detected error on Hypertransport Link\n");
+					printk(BIOS_ALERT, "Detected error on Hypertransport Link\n");
 					goto end_of_chain;
 				}
 			}
@@ -480,8 +474,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int min_devfn,
 		/* Find the hypertransport link capability. */
 		pos = ht_lookup_slave_capability(dev);
 		if (pos == 0) {
-			printk_err
-			    ("%s Hypertransport link capability not found",
+			printk(BIOS_ERR, "%s Hypertransport link capability not found",
 			     dev_path(dev));
 			break;
 		}
@@ -513,7 +506,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int min_devfn,
 
 		/* Compute the number of unitids consumed. */
 		count = (flags >> 5) & 0x1f;	/* Get unit count. */
-		printk_spew("%s count: %04x static_count: %04x\n",
+		printk(BIOS_SPEW, "%s count: %04x static_count: %04x\n",
 			    dev_path(dev), count, static_count);
 		if (count < static_count) {
 			count = static_count;
@@ -534,7 +527,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int min_devfn,
 		/* Setup the hypertransport link. */
 		bus->reset_needed |= ht_setup_link(&prev, dev, pos);
 
-		printk_debug("%s [%04x/%04x] %s next_unitid: %04x\n",
+		printk(BIOS_DEBUG, "%s [%04x/%04x] %s next_unitid: %04x\n",
 			     dev_path(dev),
 			     dev->vendor, dev->device,
 			     (dev->enabled ? "enabled" : "disabled"),
@@ -545,9 +538,9 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int min_devfn,
       end_of_chain:
 #if OPT_HT_LINK == 1
 	if (bus->reset_needed) {
-		printk_info("HyperT reset needed\n");
+		printk(BIOS_INFO, "HyperT reset needed\n");
 	} else {
-		printk_debug("HyperT reset not needed\n");
+		printk(BIOS_DEBUG, "HyperT reset not needed\n");
 	}
 #endif
 
@@ -588,9 +581,9 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int min_devfn,
 	if (old_devices) {
 		struct device *left;
 		for (left = old_devices; left; left = left->sibling) {
-			printk_debug("%s\n", dev_path(left));
+			printk(BIOS_DEBUG, "%s\n", dev_path(left));
 		}
-		printk_err("HT: Left over static devices.\n");
+		printk(BIOS_ERR, "HT: Left over static devices.\n");
 		/* Put back the left over static device, and let
 		 * pci_scan_bus() disable it.
 		 */

@@ -37,7 +37,7 @@ static void pcix_tune_dev(struct device *dev)
 	if (!cap) {
 		return;
 	}
-	printk_debug("%s PCI-X tuning\n", dev_path(dev));
+	printk(BIOS_DEBUG, "%s PCI-X tuning\n", dev_path(dev));
 	status = pci_read_config32(dev, cap + PCI_X_STATUS);
 	orig_cmd = cmd = pci_read_config16(dev, cap + PCI_X_CMD);
 
@@ -129,7 +129,7 @@ unsigned int pcix_scan_bridge(struct device *dev, unsigned int max)
 	}
 
 	/* Print the PCI-X bus speed. */
-	printk_debug("PCI: %02x: %s\n", dev->link[0].secondary,
+	printk(BIOS_DEBUG, "PCI: %02x: %s\n", dev->link[0].secondary,
 		     pcix_speed(sstatus));
 
 	return max;

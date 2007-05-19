@@ -108,7 +108,7 @@ unsigned int scan_static_bus(struct device *busdevice, unsigned int max)
 	struct device *child;
 	unsigned int link;
 
-	printk(BIOS_INFO, "%s for %s(%s)\n", __func__, busdevice->dtsname,
+	printk(BIOS_INFO, "%s for %s (%s)\n", __func__, busdevice->dtsname,
 	       dev_path(busdevice));
 
 	for (link = 0; link < busdevice->links; link++) {

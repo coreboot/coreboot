@@ -172,7 +172,7 @@ void cardbus_enable_resources(struct device *dev)
 	/* Error check. */
 	ctrl |= (PCI_CB_BRIDGE_CTL_PARITY + PCI_CB_BRIDGE_CTL_SERR);
 
-	printk_debug("%s bridge ctrl <- %04x\n", dev_path(dev), ctrl);
+	printk(BIOS_DEBUG, "%s bridge ctrl <- %04x\n", dev_path(dev), ctrl);
 	pci_write_config16(dev, PCI_BRIDGE_CONTROL, ctrl);
 
 	pci_dev_enable_resources(dev);
@@ -192,7 +192,7 @@ unsigned int cardbus_scan_bridge(struct device *dev, unsigned int max)
 	u32 buses;
 	u16 cr;
 
-	printk_spew("%s for %s\n", __func__, dev_path(dev));
+	printk(BIOS_SPEW, "%s for %s\n", __func__, dev_path(dev));
 
 	bus = &dev->link[0];
 	bus->dev = dev;
@@ -238,7 +238,7 @@ unsigned int cardbus_scan_bridge(struct device *dev, unsigned int max)
 	pci_write_config32(dev, PCI_CB_PRIMARY_BUS, buses);
 	pci_write_config16(dev, PCI_COMMAND, cr);
 
-	printk_spew("%s returns max %d\n", __func__, max);
+	printk(BIOS_SPEW, "%s returns max %d\n", __func__, max);
 	return max;
 }
 

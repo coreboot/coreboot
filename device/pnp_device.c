@@ -23,9 +23,6 @@
 
 #include <types.h>
 #include <console.h>
-#include <stdlib.h>
-// #include <stdint.h>
-// #include <bitops.h>
 #include <string.h>
 #include <io.h>
 #include <device/device.h>

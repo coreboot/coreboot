@@ -43,7 +43,19 @@ int stage2(void)
 {
 	/* TODO: Add comment. */
 	void show_all_devs(void);
+
+	static const char console_test[] =
+		"\n\nLinuxBIOS-"
+		LINUXBIOS_VERSION
+		LINUXBIOS_EXTRA_VERSION
+		" "
+		LINUXBIOS_BUILD
+		" booting...\n";
+
 	post_code(0x20);
+
+	printk(BIOS_NOTICE, console_test);
+
 	dev_init();
 
 	/* Console init, also ANYTHING that has to be done 
@@ -52,12 +64,6 @@ int stage2(void)
 	post_code(0x30);
 	dev_phase1();
 	show_all_devs();
-
-//      printk_notice("LinuxBIOS-%s%s %s booting...\n", 
-//              linuxbios_version, linuxbios_extra_version, linuxbios_build);
-
-//      printk_notice("LinuxBIOS-%s%s %s booting...\n", 
-//              linuxbios_version, linuxbios_extra_version, linuxbios_build);
 
 	/* Here is where weird stuff like init_timer handling should be
 	 * done. This is for ANYTHING that might have to happen before

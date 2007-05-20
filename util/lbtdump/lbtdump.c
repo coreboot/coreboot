@@ -110,30 +110,30 @@ void pretty_print_number(FILE *stream, uint64_t value)
 {
 	if (value >      1024ULL*1024*1024*1024*1024*1024) {
 		value /= 1024ULL*1024*1024*1024*1024*1024;
-		fprintf(stream, "%ldEB", value);
+		fprintf(stream, "%lldEB", value);
 	}
 	else if (value > 1024ULL*1024*1024*1024*1024) {
 		value /= 1024ULL*1024*1024*1024*1024;
-		fprintf(stream, "%ldPB", value);
+		fprintf(stream, "%lldPB", value);
 	}
 	else if (value > 1024ULL*1024*1024*1024) {
 		value /= 1024ULL*1024*1024*1024;
-		fprintf(stream, "%ldTB", value);
+		fprintf(stream, "%lldTB", value);
 	}
 	else if (value > 1024ULL*1024*1024) {
 		value /= 1024ULL*1024*1024;
-		fprintf(stream, "%ldGB", value);
+		fprintf(stream, "%lldGB", value);
 	}
 	else if (value > 1024ULL*1024) {
 		value /= 1024ULL*1024;
-		fprintf(stream, "%ldMB", value);
+		fprintf(stream, "%lldMB", value);
 	}
 	else if (value > 1024ULL) {
 		value /= 1024ULL;
-		fprintf(stream, "%ldKB", value);
+		fprintf(stream, "%lldKB", value);
 	}
 	else {
-		fprintf(stream, "%ldB", value);
+		fprintf(stream, "%lldB", value);
 	}
 }
 
@@ -156,7 +156,7 @@ void print_memory(struct lb_record *ptr, unsigned long addr)
 		default:
 		case 2: mem_type = "reserved"; break;
 		}
-		printf("0x%08lx - 0x%08lx %s (",
+		printf("0x%08llx - 0x%08llx %s (",
 			start, end, mem_type);
 		pretty_print_number(stdout, start);
 		printf(" - ");

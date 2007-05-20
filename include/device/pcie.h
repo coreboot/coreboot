@@ -14,14 +14,14 @@
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 */
-#ifndef DEVICE_PCIEXP_H
-#define DEVICE_PCIEXP_H
+#ifndef DEVICE_PCIE_H
+#define DEVICE_PCIE_H
 /* (c) 2005 Linux Networx GPL see COPYING for details */
 
-unsigned int pciexp_scan_bus(struct bus *bus, 
+unsigned int pcie_scan_bus(struct bus *bus, 
 	unsigned min_devfn, unsigned max_devfn, unsigned int max);
-unsigned int pciexp_scan_bridge(struct device *dev, unsigned int max);
+unsigned int pcie_scan_bridge(struct device *dev, unsigned int max);
 
-extern struct device_operations default_pciexp_ops_bus;
+extern struct device_operations default_pcie_ops_bus;
 
-#endif /* DEVICE_PCIEXP_H */
+#endif /* DEVICE_PCIE_H */

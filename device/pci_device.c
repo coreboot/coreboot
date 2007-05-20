@@ -32,7 +32,7 @@
 #include <device/pci_ids.h>
 #define CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT 0
 #define CONFIG_PCIX_PLUGIN_SUPPORT 0
-#define CONFIG_PCIEXP_PLUGIN_SUPPORT 0
+#define CONFIG_PCIE_PLUGIN_SUPPORT 0
 #define CONFIG_CARDBUS_PLUGIN_SUPPORT 0
 #define CONFIG_AGP_PLUGIN_SUPPORT 0
 #if CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT == 1
@@ -41,8 +41,8 @@
 #if CONFIG_PCIX_PLUGIN_SUPPORT == 1
 #include <device/pcix.h>
 #endif
-#if CONFIG_PCIEXP_PLUGIN_SUPPORT == 1
-#include <device/pciexp.h>
+#if CONFIG_PCIE_PLUGIN_SUPPORT == 1
+#include <device/pcie.h>
 #endif
 #if CONFIG_AGP_PLUGIN_SUPPORT == 1
 #include <device/agp.h>
@@ -747,7 +747,7 @@ static struct device_operations *get_pci_bridge_ops(struct device *dev)
 		}
 	}
 #endif
-#if CONFIG_PCIEXP_PLUGIN_SUPPORT == 1
+#if CONFIG_PCIE_PLUGIN_SUPPORT == 1
 	pos = pci_find_capability(dev, PCI_CAP_ID_PCIE);
 	if (pos) {
 		unsigned int flags;
@@ -758,7 +758,7 @@ static struct device_operations *get_pci_bridge_ops(struct device *dev)
 		case PCI_EXP_TYPE_DOWNSTREAM:
 			printk(BIOS_DEBUG, "%s subordinate bus PCI Express\n",
 			       dev_path(dev));
-			return &default_pciexp_ops_bus;
+			return &default_pcie_ops_bus;
 		case PCI_EXP_TYPE_PCI_BRIDGE:
 			printk(BIOS_DEBUG, "%s subordinate PCI\n",
 			       dev_path(dev));

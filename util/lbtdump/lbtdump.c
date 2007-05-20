@@ -106,8 +106,10 @@ void nop_print(struct lb_record *rec, unsigned long addr)
 	return;
 }
 
-void pretty_print_number(FILE *stream, uint64_t value)
+void pretty_print_number(FILE *stream, uint64_t num)
 {
+	unsigned long long value = (unsigned long long) num;
+
 	if (value >      1024ULL*1024*1024*1024*1024*1024) {
 		value /= 1024ULL*1024*1024*1024*1024*1024;
 		fprintf(stream, "%lldEB", value);
@@ -157,7 +159,7 @@ void print_memory(struct lb_record *ptr, unsigned long addr)
 		case 2: mem_type = "reserved"; break;
 		}
 		printf("0x%08llx - 0x%08llx %s (",
-			start, end, mem_type);
+			(unsigned long long)start, (unsigned long long)end, mem_type);
 		pretty_print_number(stdout, start);
 		printf(" - ");
 		pretty_print_number(stdout, end);		

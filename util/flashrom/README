@@ -51,7 +51,8 @@ The following boards require the specification of the board name, if
 no LinuxBIOS table is found:
 
 * IWILL DK8-HTX: use -m iwill:dk8_htx
-* agami Aruma: use -m AGAMI:ARUMA
+* Agami Aruma: use -m AGAMI:ARUMA
+* ASUS P5A: use -m asus:p5a
 
 
 ROM Layout Support

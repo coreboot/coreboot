@@ -138,7 +138,7 @@ static int board_via_epia_m(const char *name)
 }
 
 /*
- * Suited for Asus A7V8X-MX SE and A7V400-MX.
+ * Suited for ASUS A7V8X-MX SE and A7V400-MX.
  *
  */
 
@@ -165,6 +165,83 @@ static int board_asus_a7v8x_mx(const char *name)
 		wbsio_mask(0x24, 0x08, 0x08);	/* enable MEMW# */
 
 	w836xx_ext_leave();
+
+	return 0;
+}
+
+/*
+ * Suited for ASUS P5A.
+ *
+ * This is rather nasty code, but there's no way to do this cleanly.
+ * We're basically talking to some unknown device on SMBus, my guess
+ * is that it is the Winbond W83781D that lives near the DIP BIOS.
+ */
+
+static int board_asus_p5a(const char *name)
+{
+	uint8_t tmp;
+	int i;
+
+#define ASUSP5A_LOOP 5000
+
+	outb(0x00, 0xE807);
+	outb(0xEF, 0xE803);
+
+	outb(0xFF, 0xE800);
+
+	for (i = 0; i < ASUSP5A_LOOP; i++) {
+		outb(0xE1, 0xFF);
+		if (inb(0xE800) & 0x04)
+			break;
+	}
+
+	if (i == ASUSP5A_LOOP) {
+		printf("%s: Unable to contact device.\n", name);
+		return -1;
+	}
+
+	outb(0x20, 0xE801);
+	outb(0x20, 0xE1);
+
+	outb(0xFF, 0xE802);
+
+	for (i = 0; i < ASUSP5A_LOOP; i++) {
+		tmp = inb(0xE800);
+		if (tmp & 0x70)
+			break;
+	}
+
+	if ((i == ASUSP5A_LOOP) || !(tmp & 0x10)) {
+		printf("%s: failed to read device.\n", name);
+		return -1;
+	}
+
+	tmp = inb(0xE804);
+	tmp &= ~0x02;
+
+	outb(0x00, 0xE807);
+	outb(0xEE, 0xE803);
+
+	outb(tmp, 0xE804);
+
+	outb(0xFF, 0xE800);
+	outb(0xE1, 0xFF);
+
+	outb(0x20, 0xE801);
+	outb(0x20, 0xE1);
+
+	outb(0xFF, 0xE802);
+
+	for (i = 0; i < ASUSP5A_LOOP; i++) {
+		tmp = inb(0xE800);
+		if (tmp & 0x70)
+			break;
+	}
+
+	if ((i == ASUSP5A_LOOP) || !(tmp & 0x10)) {
+		printf("%s: failed to write to device.\n", name);
+		return -1;
+	}
 
 	return 0;
 }
@@ -211,7 +288,8 @@ struct board_pciid_enable board_pciid_enables[] = {
 	 NULL, NULL, "VIA EPIA M/MII/...", board_via_epia_m},
 	{0x1106, 0x3177, 0x1043, 0x80A1, 0x1106, 0x3205, 0x1043, 0x8118,
 	 NULL, NULL, "ASUS A7V8-MX SE", board_asus_a7v8x_mx},
-
+	{0x10B9, 0x1541, 0x0000, 0x0000, 0x10B9, 0x1533, 0x0000, 0x0000,
+	 "asus", "p5a", "ASUS P5A", board_asus_p5a},
 	{0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL}	/* Keep this */
 };
 

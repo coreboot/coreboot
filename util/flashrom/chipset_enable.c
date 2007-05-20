@@ -18,6 +18,19 @@
 #include "flash.h"
 #include "debug.h"
 
+static int enable_flash_ali_m1533(struct pci_dev *dev, char *name)
+{
+	uint8_t tmp;
+
+	/* ROM Write enable, 0xFFFC0000-0xFFFDFFFF and
+	   0xFFFE0000-0xFFFFFFFF ROM select enable. */
+	tmp = pci_read_byte(dev, 0x47);
+	tmp |= 0x46;
+	pci_write_byte(dev, 0x47, tmp);
+
+	return 0;
+}
+
 static int enable_flash_sis630(struct pci_dev *dev, char *name)
 {
 	char b;
@@ -410,6 +423,7 @@ static FLASH_ENABLE enables[] = {
 	{0x100b, 0x0510, "SC1100", enable_flash_sc1100},
 	{0x1039, 0x0008, "SIS5595", enable_flash_sis5595},
 	{0x1022, 0x7468, "AMD8111", enable_flash_amd8111},
+	{0x10B9, 0x1533, "ALi M1533", enable_flash_ali_m1533},
 	/* this fallthrough looks broken. */
 	{0x10de, 0x0050, "NVIDIA CK804", enable_flash_ck804},	/* LPC */
 	{0x10de, 0x0051, "NVIDIA CK804", enable_flash_ck804},	/* Pro */

@@ -129,7 +129,7 @@ unsigned int pcix_scan_bridge(struct device *dev, unsigned int max)
 	}
 
 	/* Print the PCI-X bus speed. */
-	printk(BIOS_DEBUG, "PCI: %02x: %s\n", dev->link[0].secondary,
+	printk(BIOS_DEBUG, "PCI-X: %02x: %s\n", dev->link[0].secondary,
 		     pcix_speed(sstatus));
 
 	return max;

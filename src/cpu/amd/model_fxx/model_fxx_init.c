@@ -683,6 +683,7 @@ static struct cpu_device_id cpu_table[] = {
         { X86_VENDOR_AMD, 0x20fc2 },
         { X86_VENDOR_AMD, 0x20f12 }, /* JH-E6 */
         { X86_VENDOR_AMD, 0x20f32 },
+	{ X86_VENDOR_AMD, 0x30ff2 }, /* E4 ? */
 #endif
 
 #if K8_REV_F_SUPPORT == 1

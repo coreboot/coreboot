@@ -1,11 +1,10 @@
 /*
- * table management structs and prototypes for LinuxBIOS
+ * This file is part of the LinuxBIOS project.
  *
- * ALL structs and prototypes for tables that LinuxBIOS generates should be
- * defined here. 
- *
- * Copyright (C) 2002 Eric Biederman, Linux NetworX
- * Copyright (C) 2005-2007 coresystems GmbH <info@coresystems.de>
+ * Copyright (C) 2002 Linux Networx
+ * (Written by Eric Biederman <ebiederman@lnxi.com> for Linux Networx)
+ * Copyright (C) 2005-2007 coresystems GmbH
+ * (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +22,13 @@
 
 #ifndef TABLES_H
 #define TABLES_H
+
+/*
+ * Table management structs and prototypes for LinuxBIOS.
+ *
+ * ALL structs and prototypes for tables that LinuxBIOS generates should be
+ * defined here. 
+ */
 
 struct lb_memory *write_tables(void);
 

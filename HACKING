@@ -98,3 +98,7 @@ Third-party Code and License Overview
   Source: Linux kernel, arch/i386/boot/setup.S
   Current version we use: Linux 2.2.26
 
+* console/vsprintf.c, console/vtxprintf.c: GPLv2
+  Source: Linux kernel, lib/vsprintf.c
+  Current version we use: ?
+

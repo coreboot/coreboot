@@ -1,5 +1,6 @@
 /*
  * This file is part of the LinuxBIOS project.
+ *
  * Copyright (C) 2007 Ronald G. Minnich <rminnich@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify

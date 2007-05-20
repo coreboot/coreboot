@@ -2,7 +2,7 @@
 ## This file is part of the LinuxBIOS project.
 ##
 ## Copyright (C) 2007 coresystems GmbH
-## Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH.
+## (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -25,6 +25,5 @@ $(obj)/device/%.o: $(src)/device/%.c
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
 
 STAGE2_DEVICE_OBJ = device.o device_util.o root_device.o \
-		    pci_device.o pci_ops.o pci_rom.o     \
-		    pnp_device.o
+		    pci_device.o pci_ops.o pci_rom.o pnp_device.o
 

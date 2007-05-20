@@ -2,7 +2,7 @@
  * This file is part of the LinuxBIOS project.
  *
  * Copyright (C) 2001 Linux Networx
- * Written by Eric Biederman
+ * (Written by Eric Biederman <ebiederman@lnxi.com> for Linux Networx)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ void mdelay(unsigned int msecs)
 		udelay(1000);
 	}
 }
+
 void delay(unsigned int secs)
 {
 	unsigned int i;

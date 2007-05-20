@@ -30,12 +30,9 @@
 
 /* The plain PCI device uses the standard PCI operations. */
 
-
-
 /* TODO: bring in the rest of the v2 code for controlling IDE enable.
  * This is just placeholder code for now
  */
-
 
 static void i82371eb_isa_init(struct device *dev)
 {
@@ -118,10 +115,6 @@ static struct device_operations i82371eb_acpi_ops_dev = {
 	.phase6_init		 = i82371eb_acpi_init,
 	.ops_pci		 = &pci_dev_ops_pci,
 };
-
-/*
- *
- */
 
 struct constructor i82371eb_constructors[] = {
 	{.id = {.type = DEVICE_ID_PCI,

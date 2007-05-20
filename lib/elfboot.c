@@ -1,8 +1,9 @@
 /*
- * elfboot -- boot elf images
- * 
- * (C)opyright 2002 Eric Biederman, Linux NetworX
- * (C)opyright 2007 Ronald G. Minnich
+ * This file is part of the LinuxBIOS project.
+ *
+ * Copyright (C) 2002 Linux Networx
+ * (Written by Eric Biederman <ebiederman@lnxi.com> for Linux Networx)
+ * Copyright (C) 2007 Ronald G. Minnich <rminnich@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +17,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
- *
  */
+
+/* elfboot -- boot elf images */
 
 /* This code is modified from the LinuxBIOS V2 version as follows:
  * great simplified

@@ -1,9 +1,8 @@
 /*
- * serial.c -- uart init function
+ * This file is part of the LinuxBIOS project.
  *
  * Copyright (C) 2007 coresystems GmbH
- * Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH.
- *
+ * (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
  * Copyright (C) 2007 Ronald G. Minnich <rminnich@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -23,6 +22,9 @@
 #include <io.h>
 #include <uart8250.h>
 
+/**
+ * UART init.
+ */
 void uart_init(void)
 {
 	unsigned ttysx_div;

@@ -1,17 +1,12 @@
-## Note: this file contains _multiple_ copyright/license headers, see below.
-
 ## 
 ## This file is part of the LinuxBIOS project.
 ## 
 ## Copyright (C) 2000,2007 Ronald G. Minnich <rminnich@gmail.com>
-##
 ## Copyright (C) 2005 Eswar Nallusamy, LANL
-##
 ## Copyright (C) 2005 Tyan
-## Written by Yinghai Lu <yhlu@tyan.com> for Tyan.
-##
+## (Written by Yinghai Lu <yhlu@tyan.com> for Tyan)
 ## Copyright (C) 2007 coresystems GmbH
-## Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH.
+## (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
 ## 
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by

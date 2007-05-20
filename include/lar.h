@@ -2,7 +2,7 @@
  * This file is part of the LinuxBIOS project.
  *
  * Copyright (C) 2006 coresystems GmbH
- * Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH.
+ * (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
  *
  * This file is dual-licensed. You can choose between:
  *   - The GNU GPL, version 2, as published by the Free Software Foundation

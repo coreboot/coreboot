@@ -4,7 +4,7 @@
 ## LinuxBIOS build system Lbuild
 ##
 ## Copyright (C) 2007 coresystems GmbH
-## Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH.
+## (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by

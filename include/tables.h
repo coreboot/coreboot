@@ -261,5 +261,4 @@ struct lb_memory *get_lb_mem(void);
 
 struct cmos_option_table *get_option_table(void);
 
-
 #endif /* TABLES_H */

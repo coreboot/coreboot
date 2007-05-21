@@ -14,9 +14,11 @@
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 */
+
+/* (c) 2005 Linux Networx GPL see COPYING for details */
+
 #ifndef DEVICE_PCIE_H
 #define DEVICE_PCIE_H
-/* (c) 2005 Linux Networx GPL see COPYING for details */
 
 unsigned int pcie_scan_bus(struct bus *bus, 
 	unsigned min_devfn, unsigned max_devfn, unsigned int max);

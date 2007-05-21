@@ -8,6 +8,9 @@
  * The 'Device classes and subclasses' section is copied from the Linux file.
  */
 
+#ifndef DEVICE_PCI_IDS_H
+#define DEVICE_PCI_IDS_H
+
 /*
  *	PCI Class, Vendor and Device IDs
  *
@@ -145,3 +148,4 @@
 
 #define PCI_VENDOR_ID_AMD		0x1022
 
+#endif /* DEVICE_PCI_IDS_H */

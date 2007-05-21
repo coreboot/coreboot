@@ -20,9 +20,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef SOUTHBRIDGE_INTEL_I82371EB_CONFIG_H
+#define SOUTHBRIDGE_INTEL_I82371EB_CONFIG_H
+
 extern struct constructor i82371eb_constructors[];
 
 struct southbridge_intel_i82371eb_config {
         unsigned int ide0_enable : 1;
         unsigned int ide1_enable : 1;
 };
+
+#endif /* SOUTHBRIDGE_INTEL_I82371EB_CONFIG_H */

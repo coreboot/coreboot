@@ -30,4 +30,4 @@ void delay(unsigned int secs);
 void beep_short(void);
 void beep_long(void);
 
-#endif
+#endif /* LIB_H */

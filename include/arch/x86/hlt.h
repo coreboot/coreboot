@@ -18,12 +18,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef ARCH_HLT_H
-#define ARCH_HLT_H
+#ifndef ARCH_X86_HLT_H
+#define ARCH_X86_HLT_H
 
 static inline __attribute__((always_inline)) void hlt(void)
 {
 	asm("hlt");
 }
 
-#endif
+#endif /* ARCH_X86_HLT_H */

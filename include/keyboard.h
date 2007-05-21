@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef __KEYBOARD_H
-#define __KEYBOARD_H
+#ifndef KEYBOARD_H
+#define KEYBOARD_H
 
 /* TODO: This structure should contain typematic settings, but LinuxBIOS
  * does not care yet.
@@ -30,4 +30,4 @@ struct pc_keyboard {
 void init_pc_keyboard(unsigned int port0, unsigned int port1,
 		      struct pc_keyboard *kbd);
 
-#endif
+#endif /* KEYBOARD_H */

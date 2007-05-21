@@ -14,8 +14,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef _ARCH_IO_H
-#define _ARCH_IO_H
+#ifndef ARCH_X86_IO_H
+#define ARCH_X86_IO_H
 
 #include <types.h>
 
@@ -147,5 +147,4 @@ static inline u32 readl(const volatile void *addr)
 	return *(volatile u32 *) addr;
 }
 
-#endif
-
+#endif /* ARCH_X86_IO_H */

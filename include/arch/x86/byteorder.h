@@ -14,8 +14,9 @@
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 */
-#ifndef _BYTEORDER_H
-#define _BYTEORDER_H
+
+#ifndef ARCH_X86_BYTEORDER_H
+#define ARCH_X86_BYTEORDER_H
 
 #define __LITTLE_ENDIAN 1234
 
@@ -30,4 +31,4 @@
 #define cpu_to_be16(x) swab16((x))
 #define be16_to_cpu(x) swab16((x))
 
-#endif /* _BYTEORDER_H */
+#endif /* ARCH_X86_BYTEORDER_H */

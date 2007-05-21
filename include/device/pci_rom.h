@@ -14,8 +14,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef PCI_ROM_H
-#define PCI_ROM_H
+#ifndef DEVICE_PCI_ROM_H
+#define DEVICE_PCI_ROM_H
+
 #include <types.h>
 #include <byteorder.h>
 
@@ -54,4 +55,4 @@ extern struct rom_header *pci_rom_load(struct device *dev, struct rom_header *ro
 
 extern void pci_dev_init(struct device *dev);
 
-#endif
+#endif /* DEVICE_PCI_ROM_H */

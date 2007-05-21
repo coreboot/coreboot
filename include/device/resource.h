@@ -14,8 +14,9 @@
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 */
-#ifndef RESOURCE_H
-#define RESOURCE_H
+
+#ifndef DEVICE_RESOURCE_H
+#define DEVICE_RESOURCE_H
 
 #include <types.h>
 
@@ -117,4 +118,4 @@ extern void search_global_resources(
 #define RESOURCE_TYPE_MAX 20
 extern const char *resource_type(struct resource *resource);
 
-#endif /* RESOURCE_H */
+#endif /* DEVICE_RESOURCE_H */

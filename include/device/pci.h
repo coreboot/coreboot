@@ -20,6 +20,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef DEVICE_PCI_H
+#define DEVICE_PCI_H
+
+#include <types.h>
+#include <device/pci_def.h>
+#include <device/resource.h>
+#include <device/device.h>
+#include <device/pci_ops.h>
+#include <device/pci_rom.h>
+
 /*
  *	For more information, please consult the following manuals (look at
  *	http://www.pcisig.com/ for how to get them):
@@ -29,16 +39,6 @@
  *	PCI to PCI Bridge Specification
  *	PCI System Design Guide
  */
-
-#ifndef PCI_H
-#define PCI_H
-
-#include <types.h>
-#include <device/pci_def.h>
-#include <device/resource.h>
-#include <device/device.h>
-#include <device/pci_ops.h>
-#include <device/pci_rom.h>
 
 /* Common pci operations without a standard interface */
 struct pci_operations {
@@ -119,4 +119,4 @@ static inline const struct pci_bus_operations *ops_pci_bus(struct bus *bus)
 	return bops;
 }
 
-#endif /* PCI_H */
+#endif /* DEVICE_PCI_H */

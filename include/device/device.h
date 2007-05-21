@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef DEVICE_H
-#define DEVICE_H
+#ifndef DEVICE_DEVICE_H
+#define DEVICE_DEVICE_H
 
 #include <types.h>
 #include <device/resource.h>
@@ -276,4 +276,4 @@ void phase4_assign_resources(struct bus *bus);
 unsigned int dev_phase3(struct device * bus, unsigned int max);
 void dev_phase5(struct device *dev);
 
-#endif /* DEVICE_H */
+#endif /* DEVICE_DEVICE_H */

@@ -19,11 +19,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef X86_MACROS_H
-#define X86_MACROS_H 1
+#ifndef ARCH_X86_MACROS_H
+#define ARCH_X86_MACROS_H
 
 #define port80_post(value)	\
 	movb	$value, %al;	\
 	outb	%al, $0x80
 
-#endif
+#endif /* ARCH_X86_MACROS_H */

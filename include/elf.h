@@ -24,11 +24,11 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with the GNU C Library; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307 USA.  
+ * 02111-1307 USA.
  */
 
-#ifndef _ELF_H
-#define	_ELF_H 1
+#ifndef ELF_H
+#define ELF_H
 
 #include <types.h>
 #include <archelf.h>
@@ -2632,4 +2632,4 @@ extern int elfboot(struct lb_memory *mem);
 #define BOOTLOADER "elfboot"
 #define BOOTLOADER_VERSION "1.3"
 
-#endif	/* elf.h */
+#endif /* ELF_H */

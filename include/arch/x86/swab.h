@@ -4,8 +4,8 @@
  * It is based on include/linux/byteorder/swab.h from the Linux kernel.
  */
 
-#ifndef _SWAB_H
-#define _SWAB_H
+#ifndef ARCH_X86_SWAB_H
+#define ARCH_X86_SWAB_H
 
 /*
  * linux/byteorder/swab.h
@@ -36,4 +36,4 @@
 		(((unsigned int)(x) & (unsigned int)0x00ff0000UL) >>  8) | \
 		(((unsigned int)(x) & (unsigned int)0xff000000UL) >> 24) ))
 
-#endif /* _SWAB_H */
+#endif /* ARCH_X86_SWAB_H */

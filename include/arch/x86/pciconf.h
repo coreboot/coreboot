@@ -1,3 +1,6 @@
+#ifndef ARCH_X86_PCICONF_H
+#define ARCH_X86_PCICONF_H
+
 #ifndef PCI_CONF_REG_INDEX
 
 // These are defined in the PCI spec, and hence are theoretically
@@ -15,3 +18,5 @@
 #endif
 #define CONFIG_ADDR(bus,devfn,where) (((bus) << 16) | ((devfn) << 8) | (where))
 #endif
+
+#endif /* ARCH_X86_PCICONF_H */

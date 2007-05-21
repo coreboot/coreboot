@@ -14,8 +14,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef CONSOLE_CONSOLE_H_
-#define CONSOLE_CONSOLE_H_
+#ifndef CONSOLE_H
+#define CONSOLE_H
 
 #include <types.h>
 
@@ -54,5 +54,4 @@ extern struct console_driver econsole_drivers[];
 // 
 int printk(int msg_level, const char *fmt, ...);
 
-
-#endif /* CONSOLE_CONSOLE_H_ */
+#endif /* CONSOLE_H */

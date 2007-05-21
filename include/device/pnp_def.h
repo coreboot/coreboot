@@ -14,6 +14,7 @@
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 */
+
 #ifndef DEVICE_PNP_DEF_H
 #define DEVICE_PNP_DEF_H
 
@@ -25,6 +26,5 @@
 #define PNP_IDX_IRQ1 0x72
 #define PNP_IDX_DRQ0 0x74
 #define PNP_IDX_DRQ1 0x75
-
 
 #endif /* DEVICE_PNP_DEF_H */

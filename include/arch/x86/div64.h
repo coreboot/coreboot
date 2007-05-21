@@ -4,8 +4,8 @@
  * It was taken from the Linux kernel, include/asm-i386/div64.h.
  */
 
-#ifndef __I386_DIV64
-#define __I386_DIV64
+#ifndef ARCH_X86_DIV64_H
+#define ARCH_X86_DIV64_H
 
 /*
  * do_div() is NOT a C function. It wants to return
@@ -51,4 +51,5 @@ div_ll_X_l_rem(long long divs, long div, long *rem)
 	return dum2;
 
 }
-#endif
+
+#endif /* ARCH_X86_DIV64_H */

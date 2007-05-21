@@ -1,5 +1,5 @@
-#ifndef CPU_X86_MTRR_H
-#define CPU_X86_MTRR_H
+#ifndef ARCH_X86_MTRR_H
+#define ARCH_X86_MTRR_H
 
 /*  These are the region types  */
 #define MTRR_TYPE_UNCACHEABLE 0
@@ -38,4 +38,4 @@ int x86_mtrr_check(void);
 
 #endif
 
-#endif				/* CPU_X86_MTRR_H */
+#endif				/* ARCH_X86_MTRR_H */

@@ -117,5 +117,4 @@ void rtc_init(int invalid);
 int get_option(void *dest, char *name);
 int last_boot_normal(void);
 
-
-#endif /*  MC146818RTC_H */
+#endif /* MC146818RTC_H */

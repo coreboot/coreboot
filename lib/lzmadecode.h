@@ -19,8 +19,8 @@
   to this file, however, are subject to the LGPL or CPL terms.
 */
 
-#ifndef __LZMADECODE_H
-#define __LZMADECODE_H
+#ifndef LZMADECODE_H
+#define LZMADECODE_H
 
 typedef unsigned char Byte;
 typedef unsigned short UInt16;
@@ -64,4 +64,4 @@ int LzmaDecode(CLzmaDecoderState *vs,
     const unsigned char *inStream, SizeT inSize, SizeT *inSizeProcessed,
     unsigned char *outStream, SizeT outSize, SizeT *outSizeProcessed);
 
-#endif
+#endif /* LZMADECODE_H */

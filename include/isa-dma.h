@@ -17,10 +17,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef __ISA_DMA_H
-#define __ISA_DMA_H
+#ifndef ISA_DMA_H
+#define ISA_DMA_H
 
 /* This function is called in the southbridge code. */
 void isa_dma_init(void);
 
-#endif
+#endif /* ISA_DMA_H */

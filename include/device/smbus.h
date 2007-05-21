@@ -14,6 +14,7 @@
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 */
+
 #ifndef DEVICE_SMBUS_H
 #define DEVICE_SMBUS_H
 
@@ -60,6 +61,5 @@ int smbus_write_word(struct device *dev, u8 addr, u16 val);
 int smbus_process_call(struct device *dev, u8 cmd, u16 data);
 int smbus_block_read(struct device *dev, u8 cmd, u8 bytes, u8 *buffer);
 int smbus_block_write(struct device *dev, u8 cmd, u8 bytes, const u8 *buffer);
-
 
 #endif /* DEVICE_SMBUS_H */

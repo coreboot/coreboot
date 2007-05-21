@@ -18,6 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef NORTHBRIDGE_INTEL_I440BXEMULATION_CONFIG_H
+#define NORTHBRIDGE_INTEL_I440BXEMULATION_CONFIG_H
+
 extern struct device_operations i440bxemulation_pcidomainops;
 extern struct constructor i440bx_constructors[];
 
@@ -27,3 +30,5 @@ struct northbridge_intel_i440bx_config {
 	 */
 	int ramsize;
 };
+
+#endif /* NORTHBRIDGE_INTEL_I440BXEMULATION_CONFIG_H */

@@ -14,8 +14,9 @@
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 */
-#ifndef PCI_OPS_H
-#define PCI_OPS_H
+
+#ifndef DEVICE_PCI_OPS_H
+#define DEVICE_PCI_OPS_H
 
 #include <types.h>
 #include <device/device.h>
@@ -28,4 +29,4 @@ void pci_write_config8(struct device * dev, unsigned where, u8 val);
 void pci_write_config16(struct device * dev, unsigned where, u16 val);
 void pci_write_config32(struct device * dev, unsigned where, u32 val);
 
-#endif /* PCI_OPS_H */
+#endif /* DEVICE_PCI_OPS_H */

@@ -1,5 +1,3 @@
-#ifndef DEVICE_CARDBUS_H
-#define DEVICE_CARDBUS_H
 /* (c) 2005 Linux Networx GPL see COPYING for details */
 /*
 	This program is free software; you can redistribute it and/or modify
@@ -17,6 +15,10 @@
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 */
+
+#ifndef DEVICE_CARDBUS_H
+#define DEVICE_CARDBUS_H
+
 void cardbus_read_resources(struct device *dev);
 unsigned int cardbus_scan_bus(struct bus *bus, 
 	unsigned min_devfn, unsigned max_devfn, unsigned int max);

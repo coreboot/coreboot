@@ -14,8 +14,10 @@
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 */
+
 #ifndef DEVICE_PCIX_H
 #define DEVICE_PCIX_H
+
 /* (c) 2005 Linux Networx GPL see COPYING for details */
 
 unsigned int pcix_scan_bus(struct bus *bus, 

@@ -14,8 +14,9 @@
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 */
-#ifndef PCI_DEF_H
-#define PCI_DEF_H
+
+#ifndef DEVICE_PCI_DEF_H
+#define DEVICE_PCI_DEF_H
 
 /*
  * Under PCI, each device has 256 bytes of configuration address space,
@@ -481,4 +482,4 @@
 #define PCI_FUNC(devfn)		((devfn) & 0x07)
 #define PCI_BDF(bus,dev,func)	((bus) << 16 | (dev) << 11 | (func) << 8)
 
-#endif /* PCI_DEF_H */
+#endif /* DEVICE_PCI_DEF_H */

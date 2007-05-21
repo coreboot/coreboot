@@ -16,7 +16,6 @@
  *
  */
 
-
 #ifndef ELF_BOOT_H 
 #define ELF_BOOT_H 
 
@@ -103,6 +102,5 @@ typedef struct
 /* Start of the ramdisk in bytes */
 #define LIN_INITRD_SIZE		0x00000005
 /* Size of the ramdisk in bytes */
-
 
 #endif /* ELF_BOOT_H */

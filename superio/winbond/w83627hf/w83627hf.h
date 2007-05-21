@@ -1,3 +1,6 @@
+#ifndef SUPERIO_WINBOND_W83627HF_W83627HF_H
+#define SUPERIO_WINBOND_W83627HF_W83627HF_H
+
 #define W83627HF_FDC              0   /* Floppy */
 #define W83627HF_PP               1   /* Parallel Port */
 #define W83627HF_SP1              2   /* Com1 */
@@ -88,4 +91,4 @@
 #define W83627HF_XSCNF		0x15
 #define W83627HF_XWBCNF		0x16
 
-
+#endif /* SUPERIO_WINBOND_W83627HF_W83627HF_H */

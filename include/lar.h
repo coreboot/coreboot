@@ -47,6 +47,9 @@
  * ---------------------------------------------------------------------------
  */
 
+#ifndef LAR_H
+#define LAR_H
+
 #include <types.h>
 
 #define MAGIC "LARCHIVE"
@@ -68,3 +71,5 @@ struct mem_file {
 int find_file(struct mem_file *archive, char *filename, struct mem_file *result);
 int copy_file(struct mem_file *archive, char *filename, void *where);
 int run_file(struct mem_file *archive, char *filename, void *where);
+
+#endif /* LAR_H */

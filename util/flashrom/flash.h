@@ -99,6 +99,7 @@ extern struct flashchip flashchips[];
 #define WINBOND_ID		0xDA	/* Winbond */
 #define W_29C011		0xC1
 #define W_29C020C		0x45
+#define W_39V040FA		0x34
 #define W_39V040A		0x3D
 #define W_39V040B		0x54
 #define W_39V080A		0xD0

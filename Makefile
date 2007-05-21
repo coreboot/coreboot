@@ -161,5 +161,5 @@ distclean: clean
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) $(CFLAGS) -o $@ -c $<
 
-.PHONY: doc depends prepare prepare2 clean distclean
+.PHONY: doc doxygen depends prepare prepare2 clean distclean
 

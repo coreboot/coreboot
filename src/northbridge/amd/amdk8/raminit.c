@@ -614,10 +614,10 @@ static int is_dual_channel(const struct mem_controller *ctrl)
 static int is_opteron(const struct mem_controller *ctrl)
 {
 	/* Test to see if I am an Opteron.  
-	 * FIXME Testing dual channel capability is correct for now
-	 * but a beter test is probably required.
+	 * FIXME Socket 939 based Athlon64 have dual channel capability,
+	 * too, so we need a better test for Opterons
 	 */
-#warning "FIXME implement a better test for opterons"
+#warning "FIXME: Implement a better test for Opterons"
 	uint32_t nbcap;
 	nbcap = pci_read_config32(ctrl->f3, NORTHBRIDGE_CAP);
 	return !!(nbcap & NBCAP_128Bit);
@@ -1202,7 +1202,7 @@ static long spd_handle_unbuffered_dimms(const struct mem_controller *ctrl, long 
 		die("Mixed buffered and registered dimms not supported");
 	}
 #if 1
-	//By yhlu for debug Athlon64 939 can do dual channel, but it use unbuffer DIMM
+	// yhlu debug: Athlon64 939 can do dual channel, but it uses unbuffered DIMMs
 	if (unbuffered && is_opteron(ctrl)) {
 		die("Unbuffered Dimms not supported on Opteron");
 	}
@@ -2264,7 +2264,10 @@ static void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
         hole_startk = 4*1024*1024 - HW_MEM_HOLE_SIZEK;
 
 #if HW_MEM_HOLE_SIZE_AUTO_INC == 1 
-        //We need to double check if the hole_startk is valid, if it is equal to basek, we need to decrease it some
+	/* We need to double check if hole_startk is valid.
+	 * If it is equal to the dram base address in K (base_k), 
+	 * we need to decrease it.
+	 */
         uint32_t basek_pri;
         for(i=0; i<controllers; i++) {
                         uint32_t base;
@@ -2275,14 +2278,17 @@ static void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
                         }
                         base_k = (base & 0xffff0000) >> 2;
                         if(base_k == hole_startk) {
-                                hole_startk -= (base_k - basek_pri)>>1; // decrease mem hole startk to make sure it is on middle of privous node
-                                break; //only one hole
+				/* decrease memory hole startk to make sure it is
+				 * in the middle of the previous node 
+				 */
+                                hole_startk -= (base_k - basek_pri)>>1; 
+                                break; /* only one hole */
                         }
                         basek_pri = base_k;
         }
 
 #endif
-        //find node index that need do set hole
+        /* Find node number that needs the memory hole configured */
         for(i=0; i<controllers; i++) {
                         uint32_t base, limit;
                         unsigned base_k, limit_k;
@@ -2298,7 +2304,7 @@ static void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
                                 hoist_memory(controllers, ctrl, hole_startk, i);
                                 end_k = memory_end_k(ctrl, controllers);
                                 set_top_mem(end_k, hole_startk);
-                                break; //only one hole
+                                break; /* only one hole */
                         }
         }
 
@@ -2343,14 +2349,6 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	memreset(controllers, ctrl);
 
 	/* We need to wait a mimmium of 20 MEMCLKS to enable the  InitDram */
-#if 0
-	print_debug("prepare to InitDram:");
-	for(i=0; i<100; i++) {
-		print_debug_hex32(i);
-		print_debug("\b\b\b\b\b\b\b\b");
-	}
-	print_debug("\r\n");
-#endif
 
 	for(i = 0; i < controllers; i++) {
 		uint32_t dcl, dch;
@@ -2454,34 +2452,6 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 #endif
 }
 
-static int mem_inited(int controllers, const struct mem_controller *ctrl)
-{
-        int i;
-
-        unsigned mask = 0;
-        unsigned mask_inited = 0;
-
-        for(i = 0; i < controllers; i++) {
-                uint32_t dcl;
-                if (!controller_present(ctrl + i))
-                        continue;
-
-                mask |= (1<<i);
-                dcl = pci_read_config32(ctrl[i].f2, DRAM_CONFIG_LOW);
-
-                if (!is_cpu_pre_c0()) { // B3
-
-                        if(  (dcl & DCL_MemClrStatus)  && (dcl & DCL_DramEnable) ) {
-                                mask_inited |= (1<<i);
-                        }
-                }
-        }
-
-        if(mask == mask_inited) return 1;
-
-        return 0;
-
-}
 #if USE_DCACHE_RAM == 1
 static void set_sysinfo_in_ram(unsigned val)
 {

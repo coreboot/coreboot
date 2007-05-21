@@ -670,7 +670,7 @@ static int is_opteron(const struct mem_controller *ctrl)
 {
 	/* Test to see if I am an Opteron.  
 	 * FIXME Testing dual channel capability is correct for now
-	 * but a beter test is probably required.
+	 * but a better test is probably required.
 	 * m2 and s1g1 support dual channel too. but only support unbuffered dimm
 	 */
 #warning "FIXME implement a better test for opterons"

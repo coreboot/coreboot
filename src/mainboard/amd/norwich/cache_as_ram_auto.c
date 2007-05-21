@@ -24,7 +24,6 @@
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
-#include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
@@ -109,11 +108,14 @@ void cache_as_ram_main(void)
 
 	cs5536_early_setup();
 
-	/* Note: must do this AFTER the early_setup! It is counting on some early
-	 * MSR setup for CS5536.
+	/* Note: must do this AFTER the early_setup! It is counting on some
+	 * early MSR setup for CS5536.
 	 */
-	/* cs5536_disable_internal_uart  disable them for now, set them up later... */
-	cs5536_setup_onchipuart();	/* if debug. real setup done in chipset init via config.lb */
+	/* cs5536_disable_internal_uart: disable them for now, set them
+	 * up later...
+	 */
+	/* If debug. real setup done in chipset init via Config.lb. */
+	cs5536_setup_onchipuart();
 	mb_gpio_init();
 	uart_init();
 	console_init();

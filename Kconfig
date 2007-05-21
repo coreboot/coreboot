@@ -74,11 +74,77 @@ source superio/Kconfig
 
 menu "Payload"
 
-config PAYLOAD
-	string "Payload path and filename"
-	default "filo.elf"
+choice
+        prompt "Payload type"
+        default PAYLOAD_ELF
+
+config PAYLOAD_FILO
+	bool "FILO"
 	help
-	  The path and filename of the LinuxBIOS payload to use.
+	  TODO
+
+config PAYLOAD_ETHERBOOT
+	bool "Etherboot"
+	help
+	  TODO
+
+config PAYLOAD_MEMTEST86
+	bool "Memtest86"
+	help
+	  TODO
+
+config PAYLOAD_LINUX
+	bool "Linux kernel"
+	help
+	  TODO
+
+config PAYLOAD_ELF
+	bool "Any ELF executable"
+	help
+	  TODO
+
+config PAYLOAD_DUMMY
+	bool "Dummy payload"
+	help
+	  For testing purposes only.
+
+endchoice
+
+config PAYLOAD_FILO_DIR
+	string "FILO source code directory"
+	depends PAYLOAD_FILO
+	default "/tmp/filo-0.5"
+	help
+	  The directory where the FILO source code is located.
+
+config PAYLOAD_FILO_CONFIGFILE
+	string "Filename of the FILO 'Config' file"
+	depends PAYLOAD_FILO
+	default "Config"
+	help
+	  The filename of the FILO 'Config' file to use. This file must reside
+	  in the directory specified via PAYLOAD_FILO_DIR.
+
+config PAYLOAD_LINUX_DIR
+	string "Linux kernel source code directory"
+	depends PAYLOAD_LINUX
+	default "/usr/src/linux"
+	help
+	  The directory where the Linux kernel source code is located.
+
+config PAYLOAD_LINUX_CONFIGFILE
+	string "Path and filename of the Linux .config file to use"
+	depends PAYLOAD_LINUX
+	default ".config" # FIXME!
+	help
+	  The path and filename of the Linux .config file to use.
+
+config PAYLOAD_ELF_FILE
+	string "Path and filename of the ELF file to use as payload"
+	depends PAYLOAD_ELF
+	default "payload.elf"
+	help
+	  The path and filename of the ELF executable file to use as payload.
 
 endmenu
 

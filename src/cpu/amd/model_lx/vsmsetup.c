@@ -70,7 +70,7 @@
  *
  *  $Id: vsmsetup.c,v 1.8 2006/09/08 12:47:57 andrei Exp $
  *
- * Copyright (C) 2007 Advanced Micro Devices
+ * Copyright (C) 2007 Advanced Micro Devices, Inc.
  *
  *--------------------------------------------------------------------*/
 

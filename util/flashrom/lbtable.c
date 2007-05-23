@@ -161,9 +161,7 @@ int linuxbios_init(void)
 	low_1MB = mmap(0, 1024 * 1024, PROT_READ, MAP_SHARED, fd_mem,
 		       0x00000000);
 	if (low_1MB == MAP_FAILED) {
-		fprintf(stderr,
-			"Can not mmap " MEM_DEV " at %08lx errno(%d):%s\n",
-			0x00000000UL, errno, strerror(errno));
+		perror("Can't mmap memory using " MEM_DEV);
 		exit(-2);
 	}
 	lb_table = 0;

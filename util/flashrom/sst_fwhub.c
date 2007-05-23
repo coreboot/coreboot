@@ -56,7 +56,7 @@ int probe_sst_fwhub(struct flashchip *flash)
 		    fd_mem, (off_t) (0xFFFFFFFF - 0x400000 - size + 1));
 	if (registers == MAP_FAILED) {
 		// it's this part but we can't map it ...
-		perror("Error MMAP /dev/mem");
+		perror("Can't mmap memory using " MEM_DEV);
 		exit(1);
 	}
 

@@ -139,7 +139,7 @@ struct flashchip *probe_flash(struct flashchip *flash)
 			perror("Error: Can't mmap " MEM_DEV ".");
 			exit(1);
 		}
-		flash->virt_addr = bios;
+		flash->virtual_memory = bios;
 
 		if (flash->probe(flash) == 1) {
 			printf("%s found at physical address: 0x%lx\n",
@@ -157,7 +157,7 @@ int verify_flash(struct flashchip *flash, uint8_t *buf)
 {
 	int idx;
 	int total_size = flash->total_size * 1024;
-	volatile uint8_t *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virtual_memory;
 
 	printf("Verifying flash ");
 
@@ -388,7 +388,7 @@ int main(int argc, char *argv[])
 		}
 		printf("Reading Flash...");
 		if (flash->read == NULL)
-			memcpy(buf, (const char *)flash->virt_addr, size);
+			memcpy(buf, (const char *)flash->virtual_memory, size);
 		else
 			flash->read(flash, buf);
 
@@ -430,7 +430,7 @@ int main(int argc, char *argv[])
 	// ////////////////////////////////////////////////////////////
 	if (exclude_end_position - exclude_start_position > 0)
 		memcpy(buf + exclude_start_position,
-		       (const char *)flash->virt_addr + exclude_start_position,
+		       (const char *)flash->virtual_memory + exclude_start_position,
 		       exclude_end_position - exclude_start_position);
 
 	exclude_start_page = exclude_start_position / flash->page_size;
@@ -442,7 +442,7 @@ int main(int argc, char *argv[])
 
 	// This should be moved into each flash part's code to do it 
 	// cleanly. This does the job.
-	handle_romentries(buf, (uint8_t *) flash->virt_addr);
+	handle_romentries(buf, (uint8_t *) flash->virtual_memory);
 
 	// ////////////////////////////////////////////////////////////
 

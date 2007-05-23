@@ -75,7 +75,7 @@ static __inline__ int write_sector_29f040b(volatile uint8_t *bios,
 
 int probe_29f040b(struct flashchip *flash)
 {
-	volatile uint8_t *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virtual_memory;
 	uint8_t id1, id2;
 
 	*(bios + 0x555) = 0xAA;
@@ -98,7 +98,7 @@ int probe_29f040b(struct flashchip *flash)
 
 int erase_29f040b(struct flashchip *flash)
 {
-	volatile uint8_t *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virtual_memory;
 
 	*(bios + 0x555) = 0xAA;
 	*(bios + 0x2AA) = 0x55;
@@ -118,7 +118,7 @@ int write_29f040b(struct flashchip *flash, uint8_t *buf)
 	int i;
 	int total_size = flash->total_size * 1024;
 	int page_size = flash->page_size;
-	volatile uint8_t *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virtual_memory;
 
 	printf("Programming page ");
 	for (i = 0; i < total_size / page_size; i++) {

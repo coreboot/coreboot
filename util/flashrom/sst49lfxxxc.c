@@ -132,7 +132,9 @@ static __inline__ int write_sector_49lfxxxc(volatile uint8_t *bios,
 
 int probe_49lfxxxc(struct flashchip *flash)
 {
-	volatile uint8_t *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virtual_memory;
+	volatile uint8_t *registers;
+
 	uint8_t id1, id2;
 	size_t size = flash->total_size * 1024;
 
@@ -148,25 +150,25 @@ int probe_49lfxxxc(struct flashchip *flash)
 	if (!(id1 == flash->manufacture_id && id2 == flash->model_id))
 		return 0;
 
-	bios = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
+	registers = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
 		    fd_mem, (off_t) (0xFFFFFFFF - 0x400000 - size + 1));
-	if (bios == MAP_FAILED) {
+	if (registers == MAP_FAILED) {
 		// it's this part but we can't map it ...
 		perror("Error MMAP /dev/mem");
 		exit(1);
 	}
-	flash->virt_addr_2 = bios;
+	flash->virtual_registers = registers;
 	return 1;
 }
 
 int erase_49lfxxxc(struct flashchip *flash)
 {
-	volatile uint8_t *bios = flash->virt_addr;
-	volatile uint8_t *bios2 = flash->virt_addr_2;
+	volatile uint8_t *bios = flash->virtual_memory;
+	volatile uint8_t *registers = flash->virtual_registers;
 	int i;
 	unsigned int total_size = flash->total_size * 1024;
 
-	write_lockbits_49lfxxxc(bios2, total_size, 0);
+	write_lockbits_49lfxxxc(registers, total_size, 0);
 	for (i = 0; i < total_size; i += flash->page_size)
 		if (erase_sector_49lfxxxc(bios, i) != 0)
 			return (-1);
@@ -180,9 +182,9 @@ int write_49lfxxxc(struct flashchip *flash, uint8_t *buf)
 	int i;
 	int total_size = flash->total_size * 1024;
 	int page_size = flash->page_size;
-	volatile uint8_t *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virtual_memory;
 
-	write_lockbits_49lfxxxc(flash->virt_addr_2, total_size, 0);
+	write_lockbits_49lfxxxc(flash->virtual_registers, total_size, 0);
 	printf("Programming Page: ");
 	for (i = 0; i < total_size / page_size; i++) {
 		/* erase the page before programming */

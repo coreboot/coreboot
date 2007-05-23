@@ -35,7 +35,7 @@
 
 int probe_jedec(struct flashchip *flash)
 {
-	volatile uint8_t *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virtual_memory;
 	uint8_t id1, id2;
 
 	/* Issue JEDEC Product ID Entry command */
@@ -113,7 +113,7 @@ int erase_block_jedec(volatile uint8_t *bios, unsigned int block)
 
 int erase_chip_jedec(struct flashchip *flash)
 {
-	volatile uint8_t *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virtual_memory;
 
 	/*  Issue the JEDEC Chip Erase command   */
 	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
@@ -230,7 +230,7 @@ int write_jedec(struct flashchip *flash, uint8_t *buf)
 	int i;
 	int total_size = flash->total_size * 1024;
 	int page_size = flash->page_size;
-	volatile uint8_t *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virtual_memory;
 
 	erase_chip_jedec(flash);
 	// dumb check if erase was successful.

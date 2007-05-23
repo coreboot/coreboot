@@ -46,33 +46,33 @@ void print_sst_fwhub_status(uint8_t status)
 /* probe_jedec works fine for probing */
 int probe_sst_fwhub(struct flashchip *flash)
 {
-	volatile uint8_t *bios;
+	volatile uint8_t *registers;
 	size_t size = flash->total_size * 1024;
 
 	if (probe_jedec(flash) == 0)
 		return 0;
 
-	bios = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
+	registers = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
 		    fd_mem, (off_t) (0xFFFFFFFF - 0x400000 - size + 1));
-	if (bios == MAP_FAILED) {
+	if (registers == MAP_FAILED) {
 		// it's this part but we can't map it ...
 		perror("Error MMAP /dev/mem");
 		exit(1);
 	}
 
-	flash->virt_addr_2 = bios;
+	flash->virtual_registers = registers;
 	return 1;
 }
 
 int erase_sst_fwhub_block(struct flashchip *flash, int offset)
 {
-	volatile uint8_t *wrprotect = flash->virt_addr_2 + offset + 2;
+	volatile uint8_t *wrprotect = flash->virtual_registers + offset + 2;
 
 	// clear write protect
 	*(wrprotect) = 0;
 
-	erase_block_jedec(flash->virt_addr, offset);
-	toggle_ready_jedec(flash->virt_addr);
+	erase_block_jedec(flash->virtual_memory, offset);
+	toggle_ready_jedec(flash->virtual_memory);
 
 	return (0);
 }
@@ -92,7 +92,7 @@ int write_sst_fwhub(struct flashchip *flash, uint8_t *buf)
 	int i;
 	int total_size = flash->total_size * 1024;
 	int page_size = flash->page_size;
-	volatile uint8_t *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virtual_memory;
 
 	// FIXME: We want block wide erase instead of ironing the whole chip
 	erase_sst_fwhub(flash);

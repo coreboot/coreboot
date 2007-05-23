@@ -29,7 +29,7 @@
 
 int probe_m29f400bt(struct flashchip *flash)
 {
-	volatile uint8_t *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virtual_memory;
 	uint8_t id1, id2;
 
 	*(volatile uint8_t *)(bios + 0xAAA) = 0xAA;
@@ -57,7 +57,7 @@ int probe_m29f400bt(struct flashchip *flash)
 
 int erase_m29f400bt(struct flashchip *flash)
 {
-	volatile uint8_t *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virtual_memory;
 
 	*(volatile uint8_t *)(bios + 0xAAA) = 0xAA;
 	*(volatile uint8_t *)(bios + 0x555) = 0x55;
@@ -96,7 +96,7 @@ int write_m29f400bt(struct flashchip *flash, uint8_t *buf)
 	int i;
 	int total_size = flash->total_size * 1024;
 	int page_size = flash->page_size;
-	volatile uint8_t *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virtual_memory;
 
 	//erase_m29f400bt (flash);
 	printf("Programming Page:\n ");
@@ -148,7 +148,7 @@ int write_m29f400bt(struct flashchip *flash, uint8_t *buf)
 
 int write_linuxbios_m29f400bt(struct flashchip *flash, uint8_t *buf)
 {
-	volatile uint8_t *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virtual_memory;
 
 	printf("Programming Page:\n ");
 	/*********************************

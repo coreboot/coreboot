@@ -36,7 +36,6 @@ struct flashchip {
 	int manufacture_id;
 	int model_id;
 
-	volatile uint8_t *virt_addr;
 	int total_size;
 	int page_size;
 
@@ -45,7 +44,11 @@ struct flashchip {
 	int (*write) (struct flashchip *flash, uint8_t *buf);
 	int (*read) (struct flashchip *flash, uint8_t *buf);
 
-	volatile uint8_t *virt_addr_2;
+	/* some flash devices have an additional
+	 * register space
+	 */
+	volatile uint8_t *virtual_memory;
+	volatile uint8_t *virtual_registers;
 };
 
 extern struct flashchip flashchips[];

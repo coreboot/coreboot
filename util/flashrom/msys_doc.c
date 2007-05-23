@@ -33,7 +33,7 @@ static void doc_write_cdsncontrol(volatile uint8_t *bios, uint8_t data);
 
 int probe_md2802(struct flashchip *flash)
 {
-	volatile uint8_t *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virtual_memory;
 	uint8_t chipid;
 #ifndef MSYSTEMS_DOC_NO_55AA_CHECKING
 	uint8_t id_0x55, id_0xAA;
@@ -149,7 +149,7 @@ int read_md2802(struct flashchip *flash, uint8_t *buf)
 
 int erase_md2802(struct flashchip *flash)
 {
-	volatile uint8_t *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virtual_memory;
 
 	return (1);
 	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
@@ -166,7 +166,7 @@ int write_md2802(struct flashchip *flash, uint8_t *buf)
 	int i;
 	int total_size = flash->total_size * 1024;
 	int page_size = flash->page_size;
-	volatile uint8_t *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virtual_memory;
 
 	return (1);
 	erase_md2802(flash);

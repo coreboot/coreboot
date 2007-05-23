@@ -105,7 +105,7 @@ static __inline__ int write_sector_28sf040(volatile uint8_t *bios,
 
 int probe_28sf040(struct flashchip *flash)
 {
-	volatile uint8_t *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virtual_memory;
 	uint8_t id1, id2, tmp;
 
 	/* save the value at the beginning of the Flash */
@@ -134,7 +134,7 @@ int probe_28sf040(struct flashchip *flash)
 
 int erase_28sf040(struct flashchip *flash)
 {
-	volatile uint8_t *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virtual_memory;
 
 	unprotect_28sf040(bios);
 	*bios = CHIP_ERASE;
@@ -152,7 +152,7 @@ int write_28sf040(struct flashchip *flash, uint8_t *buf)
 	int i;
 	int total_size = flash->total_size * 1024;
 	int page_size = flash->page_size;
-	volatile uint8_t *bios = flash->virt_addr;
+	volatile uint8_t *bios = flash->virtual_memory;
 
 	unprotect_28sf040(bios);
 

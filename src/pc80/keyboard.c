@@ -43,8 +43,10 @@ static void pc_keyboard_init(struct pc_keyboard *keyboard)
 	}
 
 	/* read self-test result, 0x55 should be returned form 0x60 */
-	if ((regval = inb(0x60) != 0x55))
+	if ((regval = inb(0x60) != 0x55)) {
+		printk_err("Keyboard selftest failed\n");
 		return;
+	}
 
 	/* enable keyboard interface */
 	outb(0x60, 0x64);

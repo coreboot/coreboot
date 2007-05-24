@@ -1,5 +1,0 @@
-config chip.h
-driver cs5536.o
-driver cs5536_usb.o
-#driver cs5536_pci.o
-#driver cs5536_ide.o

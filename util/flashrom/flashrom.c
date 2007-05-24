@@ -105,7 +105,7 @@ int map_flash_registers(struct flashchip *flash)
 	size_t size = flash->total_size * 1024;
 
 	registers = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
-		    fd_mem, (off_t) (0xFFFFFFFF - 0x400000 - size + 1));
+			 fd_mem, (off_t) (0xFFFFFFFF - 0x400000 - size + 1));
 
 	if (registers == MAP_FAILED) {
 		perror("Can't mmap registers using " MEM_DEV);
@@ -448,7 +448,8 @@ int main(int argc, char *argv[])
 	// ////////////////////////////////////////////////////////////
 	if (exclude_end_position - exclude_start_position > 0)
 		memcpy(buf + exclude_start_position,
-		       (const char *)flash->virtual_memory + exclude_start_position,
+		       (const char *)flash->virtual_memory +
+		       exclude_start_position,
 		       exclude_end_position - exclude_start_position);
 
 	exclude_start_page = exclude_start_position / flash->page_size;

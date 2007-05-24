@@ -21,7 +21,7 @@
  *
  *
  * Reference:
- *	4 MEgabit (512K x 8) SuperFlash EEPROM, SST28SF040 data sheet
+ *	4 Megabit (512K x 8) SuperFlash EEPROM, SST28SF040 data sheet
  *
  */
 

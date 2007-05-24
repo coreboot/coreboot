@@ -22,10 +22,6 @@
  * Reference: http://www.intel.com/design/chipsets/datashts/290658.htm
  */
 
-#include <errno.h>
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 

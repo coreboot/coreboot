@@ -19,9 +19,9 @@
  *
  *
  * Reference:
- *      4 MEgabit (512K x 8) SuperFlash EEPROM, SST49lF040 data sheet
+ *      4 Megabit (512K x 8) SuperFlash EEPROM, SST49lF040 data sheet
  *
- * ToDo: Consilidated to standard JEDEC code.
+ * TODO: Consilidated to standard JEDEC code.
  *
  */
 #include <stdio.h>

@@ -46,21 +46,11 @@ void print_sst_fwhub_status(uint8_t status)
 /* probe_jedec works fine for probing */
 int probe_sst_fwhub(struct flashchip *flash)
 {
-	volatile uint8_t *registers;
-	size_t size = flash->total_size * 1024;
-
 	if (probe_jedec(flash) == 0)
 		return 0;
 
-	registers = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
-		    fd_mem, (off_t) (0xFFFFFFFF - 0x400000 - size + 1));
-	if (registers == MAP_FAILED) {
-		// it's this part but we can't map it ...
-		perror("Can't mmap memory using " MEM_DEV);
-		exit(1);
-	}
+	map_flash_registers(flash);
 
-	flash->virtual_registers = registers;
 	return 1;
 }
 

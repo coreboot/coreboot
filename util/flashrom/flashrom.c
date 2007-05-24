@@ -99,6 +99,23 @@ struct pci_dev *pci_card_find(uint16_t vendor, uint16_t device,
 	return NULL;
 }
 
+int map_flash_registers(struct flashchip *flash)
+{
+	volatile uint8_t *registers;
+	size_t size = flash->total_size * 1024;
+
+	registers = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
+		    fd_mem, (off_t) (0xFFFFFFFF - 0x400000 - size + 1));
+
+	if (registers == MAP_FAILED) {
+		perror("Can't mmap registers using " MEM_DEV);
+		exit(1);
+	}
+	flash->virtual_registers = registers;
+
+	return 0;
+}
+
 struct flashchip *probe_flash(struct flashchip *flash)
 {
 	volatile uint8_t *bios;

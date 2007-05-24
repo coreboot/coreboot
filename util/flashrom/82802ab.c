@@ -49,7 +49,6 @@ void print_82802ab_status(uint8_t status)
 int probe_82802ab(struct flashchip *flash)
 {
 	volatile uint8_t *bios = flash->virtual_memory;
-	volatile uint8_t *registers;
 	uint8_t id1, id2;
 
 #if 0
@@ -75,23 +74,12 @@ int probe_82802ab(struct flashchip *flash)
 
 	printf_debug("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, id1, id2);
 
-	if (id1 == flash->manufacture_id && id2 == flash->model_id) {
-		size_t size = flash->total_size * 1024;
+	if (id1 != flash->manufacture_id || id2 != flash->model_id)
+		return 0;
 
-		// we need to mmap the write-protect space. 
-		registers = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
-			    fd_mem, (off_t) (0 - 0x400000 - size));
-		if (registers == MAP_FAILED) {
-			// it's this part but we can't map it ...
-			perror("Can't mmap memory using " MEM_DEV);
-			exit(1);
-		}
+	map_flash_registers(flash);
 
-		flash->virtual_registers = registers;
-		return 1;
-	}
-
-	return 0;
+	return 1;
 }
 
 uint8_t wait_82802ab(volatile uint8_t *bios)

@@ -133,10 +133,8 @@ static __inline__ int write_sector_49lfxxxc(volatile uint8_t *bios,
 int probe_49lfxxxc(struct flashchip *flash)
 {
 	volatile uint8_t *bios = flash->virtual_memory;
-	volatile uint8_t *registers;
 
 	uint8_t id1, id2;
-	size_t size = flash->total_size * 1024;
 
 	*bios = RESET;
 
@@ -147,17 +145,12 @@ int probe_49lfxxxc(struct flashchip *flash)
 	*bios = RESET;
 
 	printf_debug("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, id1, id2);
+
 	if (!(id1 == flash->manufacture_id && id2 == flash->model_id))
 		return 0;
 
-	registers = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
-		    fd_mem, (off_t) (0xFFFFFFFF - 0x400000 - size + 1));
-	if (registers == MAP_FAILED) {
-		// it's this part but we can't map it ...
-		perror("Can't mmap memory using " MEM_DEV);
-		exit(1);
-	}
-	flash->virtual_registers = registers;
+	map_flash_registers(flash);
+
 	return 1;
 }
 

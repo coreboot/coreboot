@@ -154,4 +154,6 @@ int chipset_flash_enable(void);	/* chipset_enable.c */
 
 extern int fd_mem;
 
+int map_flash_registers(struct flashchip *flash); /* flashrom.c */
+
 #endif				/* !__FLASH_H__ */

@@ -1,0 +1,54 @@
+##
+## This file is part of the LinuxBIOS project.
+##
+## Copyright (C) 2007 Philipp Degler <pdegler@rumms.uni-mannheim.de>
+## (Thanks to LSRA University of Mannheim for their support)
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+
+target asus_a8n_e
+mainboard asus/a8n_e
+
+romimage "normal"
+	option USE_FAILOVER_IMAGE=0
+	option USE_FALLBACK_IMAGE=0
+	option ROM_IMAGE_SIZE=0x20000
+	option XIP_ROM_SIZE=0x20000
+	option LINUXBIOS_EXTRA_VERSION="_Normal"
+#	payload ../../../../../../payloads/dummy.elf
+	payload ../../../../../../payloads/filo.elf
+end
+
+romimage "fallback" 
+	option USE_FAILOVER_IMAGE=0
+	option USE_FALLBACK_IMAGE=1
+	option ROM_IMAGE_SIZE=0x20000
+	option XIP_ROM_SIZE=0x20000
+	option LINUXBIOS_EXTRA_VERSION="_Fallback"
+#	payload ../../../../../../payloads/memtest.elf
+	payload ../../../../../../payloads/filo.elf
+end
+
+romimage "failover"
+	option USE_FAILOVER_IMAGE=1
+	option USE_FALLBACK_IMAGE=0
+	option ROM_IMAGE_SIZE=FAILOVER_SIZE
+	option XIP_ROM_SIZE=FAILOVER_SIZE
+	option LINUXBIOS_EXTRA_VERSION="_Failover"
+end
+
+buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback" "failover"
+#buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"

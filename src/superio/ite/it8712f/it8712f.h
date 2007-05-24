@@ -28,6 +28,7 @@
 #define IT8712F_EC   0x04 /* Environment controller */
 #define IT8712F_KBCK 0x05 /* Keyboard */
 #define IT8712F_KBCM 0x06 /* Mouse */
+#define IT8712F_GPIO 0x07 /* GPIO */
 #define IT8712F_MIDI 0x08 /* MIDI port */
 #define IT8712F_GAME 0x09 /* GAME port */
 #define IT8712F_IR   0x0a /* Consumer IR */

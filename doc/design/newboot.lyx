@@ -1,4 +1,4 @@
-#LyX 1.4.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -1919,6 +1919,207 @@ Kernel payload and payload utilities - where to get mkelfImage? I had to
 Consistent terminology - the payload seems to have many names in the decompressi
 on code.
  ;) 
+\end_layout
+
+\begin_layout Section
+Case study: new port
+\end_layout
+
+\begin_layout Standard
+This is a case study of installing the amd norwich board into V3.
+ For each commit, I'll record what we did.
+ 
+\end_layout
+
+\begin_layout Subsection
+319
+\end_layout
+
+\begin_layout Itemize
+Index: mainboard/Kconfig -- had to modify this to include the amd directory
+\end_layout
+
+\begin_layout Itemize
+Index: mainboard/amd/Kconfig -- had to add and modify this for the norwich
+\end_layout
+
+\begin_layout Itemize
+Index: mainboard/amd/norwich/Kconfig -- created by modifying the qemu target.
+ 
+\end_layout
+
+\begin_layout Subsection
+320
+\end_layout
+
+\begin_layout Itemize
+Index: southbridge/Kconfig -- had to modify this to include the amd options
+\end_layout
+
+\begin_layout Itemize
+Index: southbridge/amd/Kconfig -- had to modify this to include the cs5536
+ options
+\end_layout
+
+\begin_layout Itemize
+Index: southbridge/amd/cs5536/Makefile -- created by modifying the Intel
+ piix4 target.
+\end_layout
+
+\begin_layout Itemize
+Index: southbridge/amd/Makefile -- had to modify this to include the amd
+ directory
+\end_layout
+
+\begin_layout Itemize
+Index: southbridge/Makefile-- had to add and modify this for the cs5536
+\end_layout
+
+\begin_layout Subsection
+321
+\end_layout
+
+\begin_layout Itemize
+Index: northbridge/Kconfig -- had to modify this to include the amd options
+\end_layout
+
+\begin_layout Itemize
+Index: northbridge/amd/Kconfig -- had to modify this to include the cs5536
+ options
+\end_layout
+
+\begin_layout Itemize
+Index: northbridge/amd/geodelx/Makefile -- created from scratch -- we're
+ getting the hang of this
+\end_layout
+
+\begin_layout Itemize
+Index: northbridge/amd/Makefile -- had to modify this to include the geodelx
+\end_layout
+
+\begin_layout Itemize
+Index: northbridge/Makefile -- had to add and modify this for adding amd
+\end_layout
+
+\begin_layout Subsection
+322
+\end_layout
+
+\begin_layout Standard
+We had some errors and made some changes for building.
+ 
+\end_layout
+
+\begin_layout Itemize
+Index: mainboard/amd/Kconfig
+\end_layout
+
+\begin_layout Itemize
+Index: mainboard/amd/norwich/Makefile 
+\end_layout
+
+\begin_layout Subsection
+R323
+\end_layout
+
+\begin_layout Standard
+The real work begins.
+ To this point it has been more directory structure and Kconfig.
+ 
+\end_layout
+
+\begin_layout Itemize
+Create the file arch/x86/amd_geode_lx.h.
+ This file contains definitions for the chip.
+ This is from V2, and had a few mods for V3 conventions.
+ Also, there were complaints about spacing etc.
+ and these got fixed.
+ 
+\end_layout
+
+\begin_layout Itemize
+Create the file arch/x86/stage0_amd_geodelx.S.
+ This contains the CAR code for the CPU.
+ We took the qemu target and pulled out the 
+\begin_inset Quotes eld
+\end_inset
+
+CAR
+\begin_inset Quotes erd
+\end_inset
+
+ part and pulled in the v2 car code for the LX.
+ The CAR part really gets sandwiched in between startup stuff at the beginning
+ of the file and the jmp vector at the end.
+ It begins at the DCacheSetup label and ends before the leave_DCacheSetup
+ label.
+ This builds.
+ 
+\end_layout
+
+\begin_layout Standard
+Next we bring in the initram.c from v2.
+ This is LinuxBIOSv2/src/mainboard/amd/norwich/cache_as_ram_auto.c.
+ It will not build in V3, as the includes are wrong.
+ We fix these and, while we are at it, change the entry point to be called
+ main().
+ This file will be a standalone file in the LinuxBIOS Archive (LAR), and
+ hence needs to have main() as the entry point.
+ 
+\end_layout
+
+\begin_layout Standard
+We pretty much get a ton of errors once include is fixed.
+ Why? Because the old code was started from romcc, and included lots of
+ .c files, since that is how romcc worked.
+ The new code is going to be linked.
+ We took all the .c includes out, so now we get this:
+\end_layout
+
+\begin_layout LyX-Code
+/home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/norwich/initram.c: In function
+ 'spd_read_byte': /home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/norwich/init
+ram.c:30: error: implicit declaration of function 'smbus_read_byte' /home/rminnic
+h/src/bios/LinuxBIOSv3/mainboard/amd/norwich/initram.c: In function 'msr_init':
+ /home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/norwich/initram.c:41:
+ error: 'msr_t' undeclared (first use in this function) /home/rminnich/src/bios/
+LinuxBIOSv3/mainboard/amd/norwich/initram.c:41: error: (Each undeclared identifie
+r is reported only once /home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/norwic
+h/initram.c:41: error: for each function it appears in.) /home/rminnich/src/bios/L
+inuxBIOSv3/mainboard/amd/norwich/initram.c:41: error: expected ';' before
+ 'msr' /home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/norwich/initram.c:43:
+ error: 'msr' undeclared (first use in this function) /home/rminnich/src/bios/Li
+nuxBIOSv3/mainboard/amd/norwich/initram.c:45: error: implicit declaration
+ of function 'wrmsr' /home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/norwich/i
+nitram.c: In function 'main': /home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/n
+orwich/initram.c:79: error: implicit declaration of function 'POST_CODE'
+ /home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/norwich/initram.c:81:
+ error: array type has incomplete element type /home/rminnich/src/bios/LinuxBIOS
+v3/mainboard/amd/norwich/initram.c:82: error: field name not in record or
+ union initializer /home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/norwich/ini
+tram.c:82: error: (near initialization for 'memctrl') /home/rminnich/src/bios/Lin
+uxBIOSv3/mainboard/amd/norwich/initram.c:85: error: implicit declaration
+ of function 'SystemPreInit' /home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/n
+orwich/initram.c:88: error: implicit declaration of function 'cs5536_early_setup'
+ /home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/norwich/initram.c:95:
+ error: implicit declaration of function 'cs5536_setup_onchipuart' /home/rminnic
+h/src/bios/LinuxBIOSv3/mainboard/amd/norwich/initram.c:97: error: implicit
+ declaration of function 'uart_init' /home/rminnich/src/bios/LinuxBIOSv3/mainboa
+rd/amd/norwich/initram.c:100: error: implicit declaration of function 'pll_reset'
+ /home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/norwich/initram.c:102:
+ error: implicit declaration of function 'cpuRegInit' /home/rminnich/src/bios/Li
+nuxBIOSv3/mainboard/amd/norwich/initram.c:104: error: implicit declaration
+ of function 'sdram_initialize' /home/rminnich/src/bios/LinuxBIOSv3/mainboard/am
+d/norwich/initram.c:110: warning: 'return' with no value, in function returning
+ non-void /home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/norwich/initram.c:81:
+ warning: unused variable 'memctrl' make: exit 2 make: *** [/home/rminnich/src/b
+ios/LinuxBIOSv3/build/mainboard/amd/norwich/initram.o] Error 1 
+\end_layout
+
+\begin_layout Standard
+Now what we have to do is start building initram in the familiar way, via
+ linking it with other .o files so it can become a true standalone program.
+ 
 \end_layout
 
 \end_body

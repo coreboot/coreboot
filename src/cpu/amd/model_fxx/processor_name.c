@@ -9,6 +9,10 @@
  *
  * (C) 2006 by coresystems GmbH <info@coresystems.de>
  *
+ * Updated by Sven Kapferer <skapfere@rumms.uni-mannheim.de> using
+ * the Revision Guide for AMD NPT Family 0Fh Processors
+ * Document ID 33610 Rev 3.00, October 2006 (Public Version)
+ *
  * This file is subject to the terms and conditions of the GNU General
  * Public License. See the file COPYING in the main directory of this
  * archive for more details.
@@ -25,6 +29,7 @@
  * your mainboard will not be posted on the AMD Recommended Motherboard Website
  */
 
+#if K8_REV_F_SUPPORT == 0
 static char *processor_names[]={
 	/* 0x00 */ "AMD Engineering Sample",
 	/* 0x01-0x03 */ NULL, NULL, NULL,
@@ -80,6 +85,7 @@ static char *processor_names[]={
 	/* 0x3A */ "Dual Core AMD Opteron(tm) Processor 8RR"
 #define MAX_CPU_NUMBER 0x3A
 };
+#endif
 
 /* wrmsr_amd() is from yhlu's changes to model_fxx_init.c */
 
@@ -92,6 +98,17 @@ static inline void wrmsr_amd(unsigned index, msr_t msr)
                 );
 }
 
+static inline unsigned int cpuid_eax(unsigned int op)
+{
+        unsigned int eax;
+
+        __asm__("cpuid"
+                : "=a" (eax)
+                : "0" (op)
+                : "ebx", "ecx", "edx");
+        return eax;
+}
+
 static inline unsigned int cpuid_ebx(unsigned int op)
 {
         unsigned int eax, ebx;
@@ -101,6 +118,17 @@ static inline unsigned int cpuid_ebx(unsigned int op)
                 : "0" (op)
                 : "ecx", "edx" );
         return ebx;
+}
+
+static inline unsigned int cpuid_ecx(unsigned int op)
+{
+        unsigned int eax, ecx;
+
+        __asm__("cpuid"
+                : "=a" (eax), "=c" (ecx)
+                : "0" (op)
+                : "ebx", "edx" );
+        return ecx;
 }
 
 static inline void strcpy(char *dst, char *src) 
@@ -123,6 +151,7 @@ int init_processor_name(void)
 	char program_string[48];
 	unsigned int *program_values = (unsigned int *)program_string;
 
+#if K8_REV_F_SUPPORT == 0
 	/* Find out which CPU brand it is */
 	EightBitBrandId = cpuid_ebx(0x00000001) & 0xff;
 	BrandId = cpuid_ebx(0x80000001) & 0xffff;
@@ -144,6 +173,103 @@ int init_processor_name(void)
 
 	if (!processor_name_string)
 		processor_name_string = "AMD Processor model unknown";
+#endif
+
+#if K8_REV_F_SUPPORT == 1
+	u32 Socket;
+	u32 CmpCap;
+	u32 PwrLmt;
+
+	BrandId = cpuid_ebx(0x80000001) & 0xffff;
+	Socket = (cpuid_eax(0x80000001) & 0x00000030) >> 4; // 00b = S1g1, 01b = F (1207), 11b = AM2
+	CmpCap = cpuid_ecx(0x80000008) & 0x03; // Number of CPU cores
+
+	PwrLmt = ((BrandId >> 14) & 0x01) | ((BrandId >> 5) & 0x0e); // BrandId[8:6,14]
+	BrandTableIndex = (BrandId >> 9) & 0x1f; // BrandId[13:9]
+	NN = ((BrandId >> 15) & 0x01) | (BrandId & 0x3f); // BrandId[15,5:0]
+
+	if (((BrandTableIndex == 0) && (PwrLmt == 0)) || (NN == 0)) {
+		processor_name_string = "AMD Engineering Sample";
+	} else {
+		/* Use all fields to identify CPU */
+		switch ((Socket << 16) | (CmpCap << 12) | (BrandTableIndex << 4)
+			| PwrLmt) {
+		/* Socket F */
+		case 0x11016:
+			processor_name_string =
+			    "Dual-Core AMD Opteron(tm) Processor 22RR HE";
+			break;
+		case 0x1101a:
+			processor_name_string =
+			    "Dual-Core AMD Opteron(tm) Processor 22RR";
+			break;
+		case 0x1101c:
+			processor_name_string =
+			    "Dual-Core AMD Opteron(tm) Processor 22RR SE";
+			break;
+		case 0x11046:
+			processor_name_string =
+			    "Dual-Core AMD Opteron(tm) Processor 82RR HE";
+			break;
+		case 0x1104a:
+			processor_name_string =
+			    "Dual-Core AMD Opteron(tm) Processor 82RR";
+			break;
+		case 0x1104c:
+			processor_name_string =
+			    "Dual-Core AMD Opteron(tm) Processor 82RR SE";
+			break;
+		/* Socket AM2 */
+		case 0x30044:
+			processor_name_string =
+			    "AMD Athlon(tm) 64 Processor TT00+";
+			break;
+		case 0x30048:
+			processor_name_string =
+			    "AMD Athlon(tm) 64 Processor TT00+";
+			break;
+		case 0x30064:
+			processor_name_string =
+			    "AMD Sempron(tm) Processor TT00+";
+			break;
+		case 0x30068:
+			processor_name_string =
+			    "AMD Sempron(tm) Processor TT00+";
+			break;
+		case 0x3101a:
+			processor_name_string =
+			    "Dual-Core AMD Opteron(tm) Processor 12RR";
+			break;
+		case 0x3101c:
+			processor_name_string =
+			    "Dual-Core AMD Opteron(tm) Processor 12RR SE";
+			break;
+		case 0x31042:
+			processor_name_string =
+			    "AMD Athlon(tm) 64 X2 Dual Core Processor TT00+";
+			break;
+		case 0x31046:
+			processor_name_string =
+			    "AMD Athlon(tm) 64 X2 Dual Core Processor TT00+";
+			break;
+		case 0x31048:
+			processor_name_string =
+			    "AMD Athlon(tm) 64 X2 Dual Core Processor TT00+";
+			break;
+		case 0x3105c:
+			processor_name_string =
+			    "AMD Athlon(tm) 64 FX-ZZ Dual Core Processor";
+			break;
+		/* Socket S1g1 */
+		case 0x0102c:
+			processor_name_string =
+			    "AMD Turion(tm) 64 X2 Mobile Technology TL-YY";
+			break;
+		default:
+			processor_name_string = "AMD Processor model unknown";
+		}
+	}
+#endif
 
 	memset(program_string, 0, 48);
 	strcpy(program_string, processor_name_string);
@@ -156,12 +282,22 @@ int init_processor_name(void)
 	for (i=0; i<47; i++) { // 48 -1 
 		if(program_string[i] == program_string[i+1]) {
 			switch (program_string[i]) {
+#if K8_REV_F_SUPPORT == 0
 			case 'X': ModelNumber = 22+ NN; break;
 			case 'Y': ModelNumber = 38 + (2*NN); break;
 			case 'Z':
 			case 'T': ModelNumber = 24 + NN; break;
 			case 'R': ModelNumber = 45 + (5*NN); break;
 			case 'V': ModelNumber =  9 + NN; break;
+#endif
+
+#if K8_REV_F_SUPPORT == 1
+			case 'R': ModelNumber = NN - 1; break;
+			case 'P': ModelNumber = 26 + NN; break;
+			case 'T': ModelNumber = 15 + (CmpCap * 10) + NN; break;
+			case 'Z': ModelNumber = 57 + NN; break;
+			case 'Y': ModelNumber = 29 + NN; break;
+#endif
 			}
 			
 			if(ModelNumber && ModelNumber < 100) {

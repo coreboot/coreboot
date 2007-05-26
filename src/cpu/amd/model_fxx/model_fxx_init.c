@@ -462,87 +462,6 @@ static inline void k8_errata(void)
 
 }
 
-#if K8_REV_F_SUPPORT == 1
-static void amd_set_name_string_f(device_t dev)
-{
-	unsigned socket;
-	unsigned cmpCap;
-	unsigned pwrLmt;
-	unsigned brandId;
-	unsigned brandTableIndex;
-	unsigned nN;
-	unsigned unknown = 1;
-
-	uint8_t str[48];
-	uint32_t *p;
-
-	msr_t msr;
-	unsigned i;
-	
-	brandId = cpuid_ebx(0x80000001) & 0xffff;
-
-	printk_debug("brandId=%04x\n", brandId);	
-	pwrLmt = ((brandId>>14) & 1) | ((brandId>>5) & 0x0e);
-	brandTableIndex = (brandId>>9) & 0x1f;
-	nN = (brandId & 0x3f) | ((brandId>>(15-6)) &(1<<6));
-
-	socket = (dev->device >> 4) & 0x3;
-
-	cmpCap = cpuid_ecx(0x80000008) & 0xff;
-
-
-        if((brandTableIndex == 0) && (pwrLmt == 0)) {
-        	memset(str, 0, 48);
-                sprintf(str, "AMD Engineering Sample");
-                unknown = 0;
-        } else {
-
-		memset(str, 0, 48);
-		sprintf(str, "AMD Processor model unknown");
-
-	#if CPU_SOCKET_TYPE == 0x10 
-		if(socket == 0x01) { // socket F
-			if ((cmpCap == 1) && ((brandTableIndex==0) ||(brandTableIndex ==1) ||(brandTableIndex == 4)) ) {
-				uint8_t pc[2];
-				unknown = 0;
-				switch (pwrLmt) {
-					case   2: pc[0]= 'E'; pc[1] = 'E'; break;
-					case   6: pc[0]= 'H'; pc[1] = 'E'; break;
-					case 0xa: pc[0]= ' '; pc[1] = ' '; break;
-					case 0xc: pc[0]= 'S'; pc[1] = 'E'; break;
-					default: unknown = 1;
-					
-				}
-				if(!unknown) {
-					memset(str, 0, 48);
-					sprintf(str, "Dual-Core AMD Opteron(tm) Processor %1d2%2d %c%c", brandTableIndex<<1, (nN-1)&0x3f, pc[0], pc[1]);
-				}
-			}
-		}
-	#else
-		#if CPU_SOCKET_TYPE == 0x11
-		if(socket == 0x00) { // socket AM2
-			if(cmpCap == 0) {
-				sprintf(str, "Athlon 64");	
-			} else {
-				sprintf(str, "Athlon 64 Dual Core");
-			}
-
-		}
-		#endif
-	#endif
-	}
-
-	p = str; 
-	for(i=0;i<6;i++) {
-		msr.lo = *p;  p++; msr.hi = *p; p++;
-		wrmsr(0xc0010030+i, msr);
-	}
-	
-
-}
-#endif
-
 extern void model_fxx_update_microcode(unsigned cpu_deviceid);
 int init_processor_name(void);
 
@@ -561,10 +480,6 @@ void model_fxx_init(device_t dev)
 	struct cpuinfo_x86 c;
 	
 	get_fms(&c, dev->device);
-
-	if((c.x86_model & 0xf0) == 0x40) {
-		amd_set_name_string_f(dev);
-	} 
 #endif
 
 #if CONFIG_USBDEBUG_DIRECT

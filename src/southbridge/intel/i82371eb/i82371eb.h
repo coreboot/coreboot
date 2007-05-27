@@ -25,6 +25,8 @@
 
 #include "chip.h"
 
+#define XBCS		0x4e	/* X-Bus Chip Select register */
+
 void i82371eb_enable(device_t dev);
 
 #endif

@@ -18,12 +18,42 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+/* Datasheet:
+ *   - Name: 82371AB PCI-TO-ISA / IDE XCELERATOR (PIIX4)
+ *   - URL: http://www.intel.com/design/intarch/datashts/290562.htm
+ *   - PDF: http://www.intel.com/design/intarch/datashts/29056201.pdf
+ *   - Order Number: 290562-001
+ */
+
+#include <console/console.h>
 #include <device/device.h>
+#include <device/pci.h>
 #include "i82371eb.h"
 
+/**
+ * Enable access to all BIOS regions. Do not enable write access to the ROM.
+ *
+ * @param dev TODO
+ */
 void i82371eb_enable(device_t dev)
 {
-	/* TODO. */
+	uint16_t reg;
+
+	/* Set bit 9: 1-Meg Extended BIOS Enable (PCI master accesses to
+	 *            FFF00000-FFF7FFFF are forwarded to ISA).
+	 * Set bit 7: Extended BIOS Enable (PCI master accesses to
+	 *            FFF80000-FFFDFFFF are forwarded to ISA).
+	 * Set bit 6: Lower BIOS Enable (PCI master, or ISA master accesses to
+	 *            the lower 64-Kbyte BIOS block (E0000-EFFFF) at the top
+	 *            of 1 Mbyte, or the aliases at the top of 4 Gbyte
+	 *            (FFFE0000-FFFEFFFF) result in the generation of BIOSCS#.
+	 * Note: Accesses to FFFF0000-FFFFFFFF are always forwarded to ISA.
+	 * Set bit 2: BIOSCS# Write Enable (1=enable, 0=disable).
+	 */
+
+	reg = pci_read_config16(dev, XBCS);
+	reg |= 0x2c0;
+	pci_write_config16(dev, XBCS, reg);
 }
 
 struct chip_operations southbridge_intel_i82371eb_ops = {

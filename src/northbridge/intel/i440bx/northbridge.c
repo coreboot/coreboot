@@ -92,44 +92,41 @@ static uint32_t find_pci_tolm(struct bus *bus)
 static void pci_domain_set_resources(device_t dev)
 {
 	device_t mc_dev;
-        uint32_t pci_tolm;
+	uint32_t pci_tolm;
 
-        pci_tolm = find_pci_tolm(&dev->link[0]);
+	pci_tolm = find_pci_tolm(&dev->link[0]);
 	mc_dev = dev->link[0].children;
 
 	if (mc_dev) {
-		/* Figure out which areas are/should be occupied by RAM.
-		 * This is all computed in kilobytes and converted to/from
-		 * the memory controller right at the edges.
-		 * Having different variables in different units is
-		 * too confusing to get right.  Kilobytes are good up to
-		 * 4 Terabytes of RAM...
-		 */
 		uint16_t tolm_r;
 		unsigned long tomk, tolmk;
 		int idx;
 
-		/* Get the value of the highest DRB. This tells the end of
-		 * the physical memory.  The units are ticks of 8MB
-		 * i.e. 1 means 8MB.
+		/* Figure out which areas are/should be occupied by RAM. The
+		 * value of the highest DRB denotes the end of the physical
+		 * memory (in units of 8MB).
 		 */
-		tomk = ((unsigned long)pci_read_config8(mc_dev, DRB7)) << 13; 
-		printk_debug("Setting RAM size to %d MB\n", tomk >> 10);
+		tomk = ((unsigned long)pci_read_config8(mc_dev, DRB7));
 
-		/* Compute the top of Low memory */
-		tolmk = pci_tolm >> 10;
+		/* Convert to KB. */
+		tomk *= (8 * 1024);
+
+		printk_debug("Setting RAM size to %d MB\n", tomk / 1024);
+
+		/* Compute the top of low memory. */
+		tolmk = pci_tolm / 1024;
+
 		if (tolmk >= tomk) {
-			/* The PCI hole does does not overlap the memory.
-			 */
+			/* The PCI hole does does not overlap the memory. */
 			tolmk = tomk;
 		}
 
-		/* Report the memory regions */
+		/* Report the memory regions. */
 		idx = 10;
 		ram_resource(dev, idx++, 0, 640);
-		// ram_resource(dev, idx++, 768, tolmk - 768);
-		ram_resource(dev, idx++, 1024, tolmk - 1024);
+		ram_resource(dev, idx++, 768, tolmk - 768);
 	}
+
 	assign_resources(&dev->link[0]);
 }
 
@@ -179,6 +176,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations northbridge_intel_i440bx_ops = {
-	CHIP_NAME("Intel 440BX Northbridge")
+	CHIP_NAME("Intel 82443BX (440BX) Northbridge")
 	.enable_dev = enable_dev,
 };

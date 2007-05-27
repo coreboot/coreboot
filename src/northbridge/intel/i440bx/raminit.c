@@ -69,7 +69,7 @@ static const uint32_t refresh_rate_map[] = {
 /* Table format: register, bitmask, value. */
 static const long register_values[] = {
 	/* NBXCFG - NBX Configuration Register
-	 * 0x50
+	 * 0x50 - 0x53
 	 *
 	 * [31:24] SDRAM Row Without ECC
 	 *         0 = ECC components are populated in this row
@@ -158,6 +158,7 @@ static const long register_values[] = {
 
 	/*
 	 * PAM[6:0] - Programmable Attribute Map Registers
+	 * 0x59 - 0x5f
 	 *
 	 * 0x59 [3:0] Reserved
 	 * 0x59 [5:4] 0xF0000 - 0xFFFFF BIOS area
@@ -181,13 +182,13 @@ static const long register_values[] = {
 	 * 11 = Read/Write (all access goes to DRAM)
 	 */
 	// TODO
-	PAM0, 0x00000000, 0x00,
-	PAM1, 0x00000000, 0x00,
-	PAM2, 0x00000000, 0x00,
-	PAM3, 0x00000000, 0x00,
-	PAM4, 0x00000000, 0x00,
-	PAM5, 0x00000000, 0x00,
-	PAM6, 0x00000000, 0x00,
+	PAM0, 0x00, 0x00,
+	PAM1, 0x00, 0x00,
+	PAM2, 0x00, 0x00,
+	PAM3, 0x00, 0x00,
+	PAM4, 0x00, 0x00,
+	PAM5, 0x00, 0x00,
+	PAM6, 0x00, 0x00,
 
 	/* DRB[0:7] - DRAM Row Boundary Registers
 	 * 0x60 - 0x67
@@ -204,7 +205,7 @@ static const long register_values[] = {
 	 * 0x66 DRB6 = Total memory in row0+1+2+3+4+5+6 (in 8 MB)
 	 * 0x67 DRB7 = Total memory in row0+1+2+3+4+5+6+7 (in 8 MB)
 	 */
-	// TODO
+	/* Set the DRBs to zero for now, this will be fixed later. */
 	DRB0, 0x00, 0x00,
 	DRB1, 0x00, 0x00,
 	DRB2, 0x00, 0x00,
@@ -424,7 +425,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 
 	max = sizeof(register_values) / sizeof(register_values[0]);
 
-	/* Set registers as specified in the register_values array. */
+	/* Set registers as specified in the register_values[] array. */
 	for (i = 0; i < max; i += 3) {
 		reg = pci_read_config32(ctrl->d0, register_values[i]);
 		reg &= register_values[i + 1];
@@ -448,7 +449,21 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 {
 	/* TODO: Don't hardcode the values here, get info via SPD. */
 
+	/* Map all legacy regions to RAM (read/write). This is required if
+	 * you want to use the RAM area from 768 KB - 1 MB. If the PAM
+	 * registers are not set here appropriately, the RAM in that region
+	 * will not be accessible, thus a RAM check of it will also fail.
+	 */
+	pci_write_config8(ctrl->d0, PAM0, 0x30);
+	pci_write_config8(ctrl->d0, PAM1, 0x33);
+	pci_write_config8(ctrl->d0, PAM2, 0x33);
+	pci_write_config8(ctrl->d0, PAM3, 0x33);
+	pci_write_config8(ctrl->d0, PAM4, 0x33);
+	pci_write_config8(ctrl->d0, PAM5, 0x33);
+	pci_write_config8(ctrl->d0, PAM6, 0x33);
+
 	/* TODO: Set DRB0-DRB7. */
+	/* Currently this is hardcoded to one 64 MB DIMM in slot 0. */
 	pci_write_config8(ctrl->d0, DRB0, 0x08);
 	pci_write_config8(ctrl->d0, DRB1, 0x08);
 	pci_write_config8(ctrl->d0, DRB2, 0x08);

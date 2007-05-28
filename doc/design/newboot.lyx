@@ -252,7 +252,7 @@ At build time, the programmer can specify, via a configuration file, hardware
  present (e.g.
  a 2-cpu system might have only one CPU installed).
  Also, hardware that can be probed, and that does not need any special configura
-tion, can be left out of the configurtation file and left to be discovered
+tion, can be left out of the configuration file and left to be discovered
  dynamically, even if it is known to be on the board.
  At run time, the software must determine what hardware exists, and modify
  the tree to accord to reality.
@@ -290,9 +290,9 @@ subtractive address ranges
 \emph default
 , which define an address range that is picked up by default if no other
  resource claims it.
- S
+
 \emph on
-ubtractive address ranges
+ Subtractive address ranges
 \emph default
  are typically used for legacy PC address ranges.
  
@@ -319,7 +319,7 @@ These structures are linked together in the static device tree.
  This tree defines the hardware that is known to exist on the mainboard.
  At run time, the static tree is elided with dynamically determined information,
  and can even be restructured to some extent (e.g., the static tree has a
- device at 0:4.0; if a dynamic device is found at 0:3.0, it will be place
+ device at 0:4.0; if a dynamic device is found at 0:3.0, it will be placed
  in the tree 
 \begin_inset Quotes eld
 \end_inset
@@ -386,12 +386,12 @@ The generic code for the device tree is contained in the device directory.
 
 \begin_layout Standard
 Devices, in some cases, have special control registers that need to be set.
- in a few cases, generic code can handle these operiations: see device/pci_devic
-e.c.
+ In a few cases, generic code can handle these operations: see device/pci_device.
+c.
  Device-specific functions for controlling the device and its settings are
  found in the device-specific directory.
  All the configuration variables for controlling a device must be defined
- in a single structure; to reiterate,that structure is defined in the file
+ in a single structure; to reiterate, that structure is defined in the file
  config.h.
  It is one structure, instead of a set of variables, because it must be
  instantiated and initialized by the device tree compiler (dtc), and a pointer
@@ -644,7 +644,7 @@ The device tree compiler is the static constructor.
 \end_layout
 
 \begin_layout Standard
-The dynamic constructor is part fo the device tree code.
+The dynamic constructor is part of the device tree code.
  There is a set of default constructors, but each device can have its own
  private constructors if needed.
  The constructor structure is simple: it is a standard device id, and a
@@ -669,7 +669,7 @@ The boot process consists of a number of independent, seperately compiled
  components.
  Unlike V2, we are not using ld scripts to glue these components together,
  since the overall bugginess of the various tools (as and ld in particular)
- made use of ldscripts very hard to mainbain.
+ made use of ldscripts very hard to maintain.
  
 \end_layout
 

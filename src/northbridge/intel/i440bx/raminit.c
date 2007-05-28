@@ -509,44 +509,41 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 {
 	int i;
 
-	/* TODO: Use a delay here? Needed? */
-	mdelay(200);
+	/* 0. Wait until power/voltages and clocks are stable (200us). */
+	udelay(200);
 
-	/* TODO: How long should the delays be? Fix later. */
-
-	/* 1. Apply NOP. */
+	/* 1. Apply NOP. Wait 200 clock cycles (200us should do). */
 	PRINT_DEBUG("RAM Enable 1: Apply NOP\r\n");
 	do_ram_command(ctrl, RAM_COMMAND_NOP, 0);
-	mdelay(10);
+	udelay(200);
 
 	/* 2. Precharge all. Wait tRP. */
 	PRINT_DEBUG("RAM Enable 2: Precharge all\r\n");
 	do_ram_command(ctrl, RAM_COMMAND_PRECHARGE, 0);
-	mdelay(10);
+	udelay(1);
 
 	/* 3. Perform 8 refresh cycles. Wait tRC each time. */
 	PRINT_DEBUG("RAM Enable 3: CBR\r\n");
 	for (i = 0; i < 8; i++) {
 		do_ram_command(ctrl, RAM_COMMAND_CBR, 0);
-		mdelay(10);
+		udelay(1);
 	}
 
 	/* 4. Mode register set. Wait two memory cycles. */
 	PRINT_DEBUG("RAM Enable 4: Mode register set\r\n");
 	do_ram_command(ctrl, RAM_COMMAND_MRS, 0x1d0);
-	mdelay(10);
-	mdelay(10);
+	udelay(2);
 
 	/* 5. Normal operation. */
 	PRINT_DEBUG("RAM Enable 5: Normal operation\r\n");
 	do_ram_command(ctrl, RAM_COMMAND_NORMAL, 0);
-	mdelay(10);
+	udelay(1);
 
 	/* 6. Finally enable refresh. */
 	PRINT_DEBUG("RAM Enable 6: Enable refresh\r\n");
 	// pci_write_config8(ctrl->d0, PMCR, 0x10);
 	spd_enable_refresh(ctrl);
-	mdelay(10);
+	udelay(1);
 
 	PRINT_DEBUG("Northbridge following SDRAM init:\r\n");
 	DUMPNORTH();

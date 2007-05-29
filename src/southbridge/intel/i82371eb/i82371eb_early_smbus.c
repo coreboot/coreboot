@@ -1,3 +1,27 @@
+/*
+ * This file is part of the LinuxBIOS project.
+ *
+ * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
+
+/* TODO: Implement smbus_write_byte(), smbus_recv_byte(), smbus_send_byte(). */
+
+#include <device/pci_ids.h>
+#include "i82371eb.h"
 #include "i82371eb_smbus.h"
 
 #define SMBUS_IO_BASE 0x0f00
@@ -5,49 +29,35 @@
 static void enable_smbus(void)
 {
 	device_t dev;
-	dev = pci_locate_device(PCI_ID(0x8086, 0x7113), 0);
+	uint8_t reg8;
+	uint16_t reg16;
+
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_INTEL,
+				PCI_DEVICE_ID_INTEL_82371AB_SMB), 0);
+
 	if (dev == PCI_DEV_INVALID) {
-		die("SMBUS controller not found\r\n");
+		die("SMBus controller not found\r\n");
 	}
-	uint8_t enable;
 	print_spew("SMBus controller enabled\r\n");
-	pci_write_config32(dev, 0x90, SMBUS_IO_BASE | 1 );
-	// Enable and set SMBBus 
-	// 0x01 Interrupt to SMI# 
-	// (0x4<<1)|1 set interrupt to IRQ9
-	pci_write_config8(dev, 0xd2, (0x4<<1)|1);
-	
-	// Enable the IO space
-	pci_write_config16(dev, 0x04, 1);
-	
-	/* clear any lingering errors, so the transaction will run */
-	outb(0x1e, SMBUS_IO_BASE + SMBHST_STATUS);
+
+	/* Set the SMBus I/O base. */
+	pci_write_config32(dev, SMBBA, SMBUS_IO_BASE | 1);
+
+	/* Enable the SMBus Controller Host Interface. */
+	reg8 = pci_read_config8(dev, SMBHSTCFG);
+	reg8 |= SMB_HST_EN;
+	pci_write_config8(dev, SMBHSTCFG, reg8);
+
+	/* Enable access to the SMBus I/O space. */
+	reg16 = pci_read_config16(dev, PCICMD);
+	reg16 |= IOSE;
+	pci_write_config16(dev, PCICMD, reg16);
+
+	/* Clear any lingering errors, so the transaction will run. */
+	outb(inb(SMBUS_IO_BASE + SMBHST_STATUS), SMBUS_IO_BASE + SMBHST_STATUS);
 }
 
-
-
-static int smbus_read_byte(unsigned device, unsigned address)
+static int smbus_read_byte(unsigned int device, unsigned int address)
 {
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }
-
-
-// The following functions are broken.  Do no use until you
-// have fixed the low level code to do the right thing.
-//
-#if 0
-static int smbus_write_byte(unsigned device, unsigned address, unsigned char val)
-{
-	return do_smbus_write_byte(SMBUS_IO_BASE, device, address, val);
-}
-
-static int smbus_recv_byte(unsigned device)
-{
-	return do_smbus_recv_byte(SMBUS_IO_BASE, device);
-}
-
-static int smbus_send_byte(unsigned device, unsigned char val)
-{
-	return do_smbus_send_byte(SMBUS_IO_BASE, device, val);
-}
-#endif

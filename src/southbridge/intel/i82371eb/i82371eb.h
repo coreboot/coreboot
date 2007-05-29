@@ -18,17 +18,28 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef I82371EB_H
-#define I82371EB_H
+#ifndef SOUTHBRIDGE_INTEL_I82371EB_H
+#define SOUTHBRIDGE_INTEL_I82371EB_H
 
 #ifndef __ROMCC__
-
 #include "chip.h"
-
-#define XBCS		0x4e	/* X-Bus Chip Select register */
-
 void i82371eb_enable(device_t dev);
-
 #endif
 
-#endif				/* I82371EB_H */
+#define PCICMD		0x04	/* PCI Command Register */
+#define XBCS		0x4e	/* X-Bus Chip Select register */
+
+/* SMBus */
+#define SMBBA		0x90	/* SMBus Base Address */
+#define SMBHSTCFG	0xd2	/* SMBus Host Configuration */
+
+/* IDE */
+#define IDETIM_PRI	0x40	/* IDE timing register, primary channel */
+#define IDETIM_SEC	0x42	/* IDE timing register, secondary channel */
+
+/* Bit definitions */
+#define	IOSE			(1 << 0)	/* I/O Space Enable */
+#define SMB_HST_EN		(1 << 0)	/* Host Interface Enable */
+#define IDE_DECODE_ENABLE	(1 << 15)	/* IDE Decode Enable */
+
+#endif				/* SOUTHBRIDGE_INTEL_I82371EB_H */

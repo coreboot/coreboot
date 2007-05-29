@@ -1,43 +1,50 @@
 /*
- * (C) 2004 Linux Networx
- * (C) 2005 Bitworks
-*/
+ * This file is part of the LinuxBIOS project.
+ *
+ * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
 
-#include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <device/pci_ops.h>
 #include <device/smbus.h>
-#include <arch/io.h>
 #include "i82371eb.h"
-
-
-static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
-{
-	pci_write_config32(dev, 0x44, 
-		((device & 0xffff) << 16) | (vendor & 0xffff));
-}
 
 static struct smbus_bus_operations lops_smbus_bus = {
 };
 
+/* There are no subsystem IDs on the Intel 82371EB. */
 static struct pci_operations lops_pci = {
-	.set_subsystem = lpci_set_subsystem,
+	// .set_subsystem = 0,
 };
+
 static struct device_operations smbus_ops = {
-	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.init             = 0,
-	.scan_bus         = scan_static_bus,
-	.enable           = i82371eb_enable,
-	.ops_pci          = &lops_pci,
-	.ops_smbus_bus    = &lops_smbus_bus,
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.init			= 0,
+	.scan_bus		= scan_static_bus,
+	// .enable		= i82371eb_enable,	// TODO: Needed?
+	.ops_pci		= &lops_pci,
+	.ops_smbus_bus		= &lops_smbus_bus,
 };
 
 static struct pci_driver smbus_driver __pci_driver = {
-	.ops = &smbus_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x7111, // FIXME?
+	.ops	= &smbus_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= PCI_DEVICE_ID_INTEL_82371AB_SMB,
 };

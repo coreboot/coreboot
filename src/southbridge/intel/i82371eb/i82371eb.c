@@ -33,23 +33,24 @@
 /**
  * Enable access to all BIOS regions. Do not enable write access to the ROM.
  *
- * @param dev TODO
+ * XBCS register bits:
+ * - Set bit 9: 1-Meg Extended BIOS Enable (PCI master accesses to
+ *              FFF00000-FFF7FFFF are forwarded to ISA).
+ * - Set bit 7: Extended BIOS Enable (PCI master accesses to
+ *              FFF80000-FFFDFFFF are forwarded to ISA).
+ * - Set bit 6: Lower BIOS Enable (PCI master, or ISA master accesses to
+ *              the lower 64-Kbyte BIOS block (E0000-EFFFF) at the top
+ *              of 1 Mbyte, or the aliases at the top of 4 Gbyte
+ *              (FFFE0000-FFFEFFFF) result in the generation of BIOSCS#.
+ * - Bit 2: BIOSCS# Write Enable (1=enable, 0=disable).
+ *
+ * Note: Accesses to FFFF0000-FFFFFFFF are always forwarded to ISA.
+ *
+ * @param dev The device to use.
  */
 void i82371eb_enable(device_t dev)
 {
 	uint16_t reg;
-
-	/* Set bit 9: 1-Meg Extended BIOS Enable (PCI master accesses to
-	 *            FFF00000-FFF7FFFF are forwarded to ISA).
-	 * Set bit 7: Extended BIOS Enable (PCI master accesses to
-	 *            FFF80000-FFFDFFFF are forwarded to ISA).
-	 * Set bit 6: Lower BIOS Enable (PCI master, or ISA master accesses to
-	 *            the lower 64-Kbyte BIOS block (E0000-EFFFF) at the top
-	 *            of 1 Mbyte, or the aliases at the top of 4 Gbyte
-	 *            (FFFE0000-FFFEFFFF) result in the generation of BIOSCS#.
-	 * Note: Accesses to FFFF0000-FFFFFFFF are always forwarded to ISA.
-	 * Set bit 2: BIOSCS# Write Enable (1=enable, 0=disable).
-	 */
 
 	reg = pci_read_config16(dev, XBCS);
 	reg |= 0x2c0;

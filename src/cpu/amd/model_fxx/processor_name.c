@@ -1,26 +1,38 @@
 /*
- * processor_name.c
+ * This file is part of the LinuxBIOS project.
  *
+ * Copyright (C) 2006 coresystems GmbH
+ * (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
+ * Copyright (C) 2007 University of Mannheim
+ * (Written by Sven Kapferer <skapfere@rumms.uni-mannheim.de> for Uni Ma.)
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
+ */
+
+/*
  * This code sets the Processor Name String for AMD64 CPUs.
  *
  * Written by Stefan Reinauer <stepan@coresystems.de> using
  * the Revision Guide for AMD Athlon™ 64 and AMD Opteron™ Processors
- * Document ID 25759 Rev 3.59, April 2006 (Public Version)
- *
- * (C) 2006 by coresystems GmbH <info@coresystems.de>
+ * Document ID 25759 Rev 3.59, April 2006 (Public Version).
  *
  * Updated by Sven Kapferer <skapfere@rumms.uni-mannheim.de> using
  * the Revision Guide for AMD NPT Family 0Fh Processors
- * Document ID 33610 Rev 3.00, October 2006 (Public Version)
- *
- * This file is subject to the terms and conditions of the GNU General
- * Public License. See the file COPYING in the main directory of this
- * archive for more details.
- *
+ * Document ID 33610 Rev 3.00, October 2006 (Public Version).
  */
 
 #include <console/console.h>
-
 #include <string.h>
 #include <cpu/x86/msr.h>
 

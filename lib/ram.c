@@ -40,12 +40,12 @@ void ram_failure(const char *why)
  * of making it an empty function.
  *
  * @param controllers How many memory controllers there are.
- * @param ctrl Pointer to the mem control structure.
- * @param sysinfo Not used on all targets. NULL if not used. This function
- * 	  does nothing with sysinfo but pass it on.
+ * @param ctrl Pointer to the mem control structure. This is a generic pointer, since the 
+ *    structure is wholly chip-dependent, and a survey of all the types makes it clear that a common 
+ *    struct is not possible. We can not use the device tree here as this code is run before the device tree
+ *    is available. 
  */
-void ram_initialize(int controllers, const struct mem_controller *ctrl,
-		    void *sysinfo)
+void ram_initialize(int controllers, void *ctrl)
 {
 	int i;
 
@@ -53,21 +53,21 @@ void ram_initialize(int controllers, const struct mem_controller *ctrl,
 	for (i = 0; i < controllers; i++) {
 		printk(BIOS_INFO,
 		       "Setting registers of RAM controller %d\n", i);
-		ram_set_registers(ctrl + i, sysinfo);
+		ram_set_registers(ctrl, i);
 	}
 
 	/* Now setup those things we can auto detect. */
 	for (i = 0; i < controllers; i++) {
 		printk(BIOS_INFO,
 		  "Setting SPD based registers of RAM controller %d\n", i);
-		ram_set_spd_registers(ctrl + i, sysinfo);
+		ram_set_spd_registers(ctrl, i);
 	}
 
 	/* Now that everything is setup enable the RAM. Some chipsets do
 	 * the work for us while on others we need to it by hand.
 	 */
 	printk(BIOS_DEBUG, "Enabling RAM\n");
-	ram_enable(controllers, ctrl, sysinfo);
+	ram_enable(controllers, ctrl);
 
 	/* RAM initialization is done. */
 	printk(BIOS_DEBUG, "RAM enabled successfully\n");

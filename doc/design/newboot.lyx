@@ -2077,6 +2077,8 @@ We pretty much get a ton of errors once include is fixed.
 \end_layout
 
 \begin_layout LyX-Code
+
+\size tiny
 /home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/norwich/initram.c: In function
  'spd_read_byte': /home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/norwich/init
 ram.c:30: error: implicit declaration of function 'smbus_read_byte' /home/rminnic
@@ -2120,6 +2122,321 @@ ios/LinuxBIOSv3/build/mainboard/amd/norwich/initram.o] Error 1
 Now what we have to do is start building initram in the familiar way, via
  linking it with other .o files so it can become a true standalone program.
  
+\end_layout
+
+\begin_layout Paragraph
+Hold on.
+ What are we doing here? 
+\end_layout
+
+\begin_layout Standard
+We need to create an initram file for the LAR.
+ This initram file is going to set up DRAM.
+ LinuxBIOS supplies a skeleton function, which we show below, and the programmer
+ needs to supply some functions for their chipsets, so that this function
+ can work.
+ 
+\end_layout
+
+\begin_layout Standard
+What code is needed? A few things.
+ The northbridge code must supply register set functions.
+ The southbridge or superio must supply smbus read functions.
+ The basic sdram setup is found in lib/ram.c, and is dead simple:
+\end_layout
+
+\begin_layout LyX-Code
+
+\size tiny
+void ram_initialize(int controllers, void *ctrl) {      
+\end_layout
+
+\begin_layout LyX-Code
+
+\size tiny
+  int i;
+\end_layout
+
+\begin_layout LyX-Code
+
+\size tiny
+       /* Set the registers we can set once to reasonable values.
+ */
+\end_layout
+
+\begin_layout LyX-Code
+
+\size tiny
+        for (i = 0; i < controllers; i++) {
+\end_layout
+
+\begin_layout LyX-Code
+
+\size tiny
+                printk(BIOS_INFO,
+\end_layout
+
+\begin_layout LyX-Code
+
+\size tiny
+                       "Setting registers of RAM controller %d
+\backslash
+n", i);
+\end_layout
+
+\begin_layout LyX-Code
+
+\size tiny
+                ram_set_registers(ctrl, i);
+\end_layout
+
+\begin_layout LyX-Code
+
+\size tiny
+        }
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+
+\size tiny
+        /* Now setup those things we can auto detect.
+ */
+\end_layout
+
+\begin_layout LyX-Code
+
+\size tiny
+        for (i = 0; i < controllers; i++) {
+\end_layout
+
+\begin_layout LyX-Code
+
+\size tiny
+                printk(BIOS_INFO,
+\end_layout
+
+\begin_layout LyX-Code
+
+\size tiny
+                  "Setting SPD based registers of RAM controller %d
+\backslash
+n", i);
+\end_layout
+
+\begin_layout LyX-Code
+
+\size tiny
+                ram_set_spd_registers(ctrl, i);
+\end_layout
+
+\begin_layout LyX-Code
+
+\size tiny
+        }
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+
+\size tiny
+        /* Now that everything is setup enable the RAM.
+ Some chipsets do
+\end_layout
+
+\begin_layout LyX-Code
+
+\size tiny
+         * the work for us while on others we need to it by hand.
+          */
+\end_layout
+
+\begin_layout LyX-Code
+
+\size tiny
+        printk(BIOS_DEBUG, "Enabling RAM
+\backslash
+n");
+\end_layout
+
+\begin_layout LyX-Code
+
+\size tiny
+        ram_enable(controllers, ctrl);
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+
+\size tiny
+        /* RAM initialization is done.
+ */
+\end_layout
+
+\begin_layout LyX-Code
+
+\size tiny
+        printk(BIOS_DEBUG, "RAM enabled successfully
+\backslash
+n");
+\end_layout
+
+\begin_layout LyX-Code
+
+\size tiny
+}
+\end_layout
+
+\begin_layout Standard
+Ram_initialize is a core function of initram.
+ When it is called, RAM is not working; after it is called, RAM is working.
+ This function in turn calls functions in the northbridge code (or, in some
+ cases, CPU code; it depends on the part).
+ The basic idea is that this code is called with a pointer to an opaque
+ type (ctlr *), and an int indicating how many controllers, dram slots,
+ or whatever 
+\begin_inset Quotes eld
+\end_inset
+
+things
+\begin_inset Quotes erd
+\end_inset
+
+ there are, where a 
+\begin_inset Quotes eld
+\end_inset
+
+thing
+\begin_inset Quotes erd
+\end_inset
+
+ is totally chipset dependent.
+ The lib/ram.c code sets hardcoded settings, then sets dynamic settings by
+ querying the SPD bus, then enables the RAM.
+ This basic cycle has been refined now for eight years and has worked well
+ on many systems.
+ 
+\end_layout
+
+\begin_layout Standard
+The northbridge code has to provide three basic functions.
+ The first function, ram_set_registers, sets up basic parameters.
+ It will be called for each of the ram 
+\begin_inset Quotes eld
+\end_inset
+
+things
+\begin_inset Quotes erd
+\end_inset
+
+, where, as described above, 
+\begin_inset Quotes eld
+\end_inset
+
+thing
+\begin_inset Quotes erd
+\end_inset
+
+ can be just about anything, depending on the chipset.
+ The function will be called with the ctlr pointer, and in index in the
+ range 0..controllers-1.
+ The second function, ram_set_spd_registers, is called to tell the northbridge
+ code that it should do spd setup for 
+\begin_inset Quotes eld
+\end_inset
+
+thing
+\begin_inset Quotes erd
+\end_inset
+
+ i.
+ Finally, the northbridge-provided enable function is called.
+ 
+\end_layout
+
+\begin_layout Standard
+Any or all of these functions may be empty.
+ In the common case, they all do something.
+ These functions, in turn, may require other functions from other chipset
+ parts.
+ The most important, and common, set of functions reads SPD values using
+ the SMBUS.
+ The mainboard must configure, as part of stage2, a file to be compiled
+ which provides these functions.
+ The simplest function is called smbus_read_byte(unsigned device, unsigned
+ address).
+ This function should do any needed initialization, to keep life simple
+ for the northbridge code, and then read from SMBUS device 'device' at address
+ 'address'.
+ Typically, the device address range is 0xa0 up to 0xa8.
+ The address depends on the DRAM technology.
+ 
+\end_layout
+
+\begin_layout Standard
+All of the LinuxBIOS code that is run after this point uses the device tree;
+ none of the initram code uses the device tree.
+ The reason is simple: the device tree lives in RAM.
+ This bootstrap code is intentionally simple and does not use the device
+ tree.
+ 
+\end_layout
+
+\begin_layout Standard
+We will start by providing SMBUS functions.
+ The SMBUS for this board is supported on the AMD CS5536 chip.
+ The file we create will be in southbridge/amd/cs5536/smbus_initram.c.
+ 
+\end_layout
+
+\begin_layout Standard
+The revision numbers skip a bit here, since others are also working on V3.
+ We start with revision 339.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+R339
+\end_layout
+
+\begin_layout Standard
+Get the old code:
+\end_layout
+
+\begin_layout LyX-Code
+cp LinuxBIOSv2/src/southbridge/amd/cs5536/cs5536_early_smbus.c southbridge/amd/cs
+5536/smbus_initram.c 
+\end_layout
+
+\begin_layout Standard
+Then we need to set up the mainboard Makefile to include this file in the
+ mainboard stage2.
+ This is pretty easy: add the .o for this file to the INITRAM_OBJ in the
+ mainboard Makefile: 
+\end_layout
+
+\begin_layout LyX-Code
+
+\size tiny
+INITRAM_OBJ=$(obj)/stage0.init $(obj)/stage0.o $(obj)/mainboard/$(MAINBOARDDIR)/in
+itram.o $(obj)/southbridge/amd/cs5536/smbus_initram.o 
+\end_layout
+
+\begin_layout Standard
+Now we get lots more errors, so off we go to fix them!
+\end_layout
+
+\begin_layout Standard
+
 \end_layout
 
 \end_body

@@ -29,12 +29,12 @@ SILENT := >/dev/null 2>&1
 #
 # Build the ROM Image / LAR archive
 #
-# LinuxBIOS v3 is completely modular. One module, the bootblock (stage0), 
-# is mandatory. All modules are packed together in a LAR archive. 
+# LinuxBIOS v3 is completely modular. One module, the bootblock (stage0),
+# is mandatory. All modules are packed together in a LAR archive.
 # The LAR archive may contain any number of stages, payloads and option ROMs.
 #
 
-ROM_SIZE := $(shell expr $(CONFIG_LINUXBIOS_ROMSIZE_KB) \* 1024 )
+ROM_SIZE := $(shell expr $(CONFIG_LINUXBIOS_ROMSIZE_KB) \* 1024)
 
 $(obj)/linuxbios.rom: $(obj)/linuxbios.bootblock $(obj)/util/lar/lar lzma $(obj)/linuxbios.initram $(obj)/linuxbios.stage2 $(obj)/option_table payload
 	$(Q)rm -rf $(obj)/lar.tmp
@@ -64,16 +64,17 @@ $(obj)/linuxbios.bootblock: $(obj)/linuxbios.vpd $(obj)/stage0.init
 
 STAGE0_LIB_OBJ       = uart8250.o mem.o elfboot.o lar.o delay.o vtxprintf.o \
 		       vsprintf.o console.o
-STAGE0_ARCH_X86_OBJ  = cachemain.o serial.o archelfboot.o speaker.o udelay_io.o mc146818rtc.o
+STAGE0_ARCH_X86_OBJ  = cachemain.o serial.o archelfboot.o speaker.o \
+		       udelay_io.o mc146818rtc.o
 
 ifeq ($(CONFIG_CPU_I586),y)
 	STAGE0_CAR_OBJ = stage0_i586.o
-else 
+else
 ifeq ($(CONFIG_CPU_AMD_GEODELX),y)
 	STAGE0_CAR_OBJ = stage0_amd_geodelx.o
 else
 	STAGE0_CAR_OBJ = stage0_i586.o
-endif 
+endif
 endif
 
 
@@ -82,13 +83,13 @@ STAGE0_OBJ := $(patsubst %,$(obj)/lib/%,$(STAGE0_LIB_OBJ)) \
 	      $(patsubst %,$(obj)/arch/x86/%,$(STAGE0_CAR_OBJ))
 
 $(obj)/stage0.init: $(STAGE0_OBJ)
-	$(Q)# We need to be careful. If stage0.o gets bigger than 
-	$(Q)# 0x4000 - 0x100, we will end up with a 4 gig file. 
+	$(Q)# We need to be careful. If stage0.o gets bigger than
+	$(Q)# 0x4000 - 0x100, we will end up with a 4 gig file.
 	$(Q)# I wonder if that behavior is on purpose.
 
 	$(Q)# Note: we invoke gcc (instead of ld directly) here, as we hit
-	$(Q)# strange problems in the past. It seems that only gcc knows how to
-	$(Q)# properly invoke ld.
+	$(Q)# strange problems in the past. It seems that only gcc knows how
+	$(Q)# to properly invoke ld.
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) -nostdlib -static -T $(src)/arch/x86/ldscript.ld \
 		$(STAGE0_OBJ) -o $(obj)/stage0.o
@@ -109,10 +110,11 @@ $(obj)/stage0.init: $(STAGE0_OBJ)
 # TODO: This should be compressed with the default compressor.
 #
 
-STAGE2_LIB_OBJ       = stage2.o clog2.o mem.o malloc.o tables.o delay.o compute_ip_checksum.o
+STAGE2_LIB_OBJ       = stage2.o clog2.o mem.o malloc.o tables.o delay.o \
+		       compute_ip_checksum.o
 
 STAGE2_ARCH_X86_OBJ  = archtables.o linuxbios_table.o udelay_io.o
-STAGE2_ARCH_X86_OBJ += pci_ops_auto.o pci_ops_conf1.o pci_ops_conf2.o 
+STAGE2_ARCH_X86_OBJ += pci_ops_auto.o pci_ops_conf1.o pci_ops_conf2.o
 STAGE2_ARCH_X86_OBJ += keyboard.o i8259.o isa-dma.o
 
 STAGE2_DYNAMIC_OBJ   = statictree.o
@@ -139,7 +141,7 @@ $(obj)/linuxbios.stage2: $(obj)/stage0.init $(STAGE2_OBJ)
 	$(Q)# leave a .o with full symbols in it for debugging.
 	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(LD) -R $(obj)/stage0.o -Ttext 0x1000 --entry=stage2 \
-		  -o $(obj)/linuxbios.stage2.o $(STAGE2_OBJ) 
+		  -o $(obj)/linuxbios.stage2.o $(STAGE2_OBJ)
 	$(Q)printf "  OBJCOPY $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(OBJCOPY) -O binary $(obj)/linuxbios.stage2.o $(obj)/linuxbios.stage2
 
@@ -174,8 +176,8 @@ $(obj)/mainboard/$(MAINBOARDDIR)/%.o: $(src)/mainboard/$(MAINBOARDDIR)/%.c
 $(obj)/arch/x86/stage0%.o: $(src)/arch/x86/stage0%.S
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) -E $(LINUXBIOSINCLUDE) $< \
-		-o $(obj)/arch/x86/stage0_asm.s -DBOOTBLK=0x1f00 -DRESRVED=0xf0 \
-		-DDATE=\"`date +%Y/%m/%d`\"
+		-o $(obj)/arch/x86/stage0_asm.s -DBOOTBLK=0x1f00 \
+		-DRESRVED=0xf0 -DDATE=\"`date +%Y/%m/%d`\"
 	$(Q)printf "  AS      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(AS) $(obj)/arch/x86/stage0_asm.s -o $@
 

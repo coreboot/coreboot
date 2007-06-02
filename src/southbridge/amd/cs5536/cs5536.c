@@ -316,9 +316,6 @@ static void uarts_init(struct southbridge_amd_cs5536_config *sb)
 
 	} else {
 		/* Reset and disable COM1 */
-		printk_err("Not disabling COM1 due to a bug ...\n");
-		/* for now, don't do this! */
-		return;
 		msr = rdmsr(MDD_UART1_CONF);
 		msr.lo = 1;	// reset
 		wrmsr(MDD_UART1_CONF, msr);
@@ -327,7 +324,7 @@ static void uarts_init(struct southbridge_amd_cs5536_config *sb)
 
 		/* Disable the IRQ */
 		msr = rdmsr(MDD_LEG_IO);
-		msr.lo |= ~(0xF << 16);
+		msr.lo &= ~(0xF << 16);
 		wrmsr(MDD_LEG_IO, msr);
 	}
 
@@ -391,7 +388,7 @@ static void uarts_init(struct southbridge_amd_cs5536_config *sb)
 
 		/* Disable the IRQ */
 		msr = rdmsr(MDD_LEG_IO);
-		msr.lo |= ~(0xF << 20);
+		msr.lo &= ~(0xF << 20);
 		wrmsr(MDD_LEG_IO, msr);
 	}
 }

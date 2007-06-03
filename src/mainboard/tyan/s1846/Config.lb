@@ -132,11 +132,11 @@ chip northbridge/intel/i440bx		# Northbridge
     chip southbridge/intel/i82371eb	# Southbridge
       device pci 7.0 on			# ISA bridge
         chip superio/nsc/pc87309	# Super I/O
-          device pnp 2e.5 on		# Keyboard + Mouse
+          device pnp 2e.5 on		# PS/2 keyboard (+ mouse?)
             io 0x60 = 0x60
             io 0x62 = 0x64
             irq 0x70 = 1
-            irq 0x72 = 12
+            # irq 0x72 = 12
           end
           device pnp 2e.b on		# Com1
             io 0x60 = 0x3f8
@@ -150,10 +150,13 @@ chip northbridge/intel/i440bx		# Northbridge
             io 0x60 = 0x378
             irq 0x70 = 7
           end
-          device pnp 2e.f on		# Floppy
+          device pnp 2e.e on		# Floppy
             io 0x60 = 0x3f0
             irq 0x70 = 6
             drq 0x74 = 2
+          end
+          device pnp 2e.f on		# PS/2 mouse
+            irq 0x70 = 12
           end
         end
       end

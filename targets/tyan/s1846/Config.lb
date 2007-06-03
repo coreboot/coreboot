@@ -22,15 +22,15 @@ target s1846
 mainboard tyan/s1846
 
 option ROM_SIZE = 256 * 1024
-# option FALLBACK_SIZE = 256 * 1024
+option FALLBACK_SIZE = ROM_SIZE
 
-romimage "normal"
-	option USE_FALLBACK_IMAGE = 0
-	option ROM_IMAGE_SIZE = 56 * 1024
-	option LINUXBIOS_EXTRA_VERSION = ".0Normal"
-	payload /tmp/filo.elf
-	# payload /tmp/memtest
-end
+# romimage "normal"
+# 	option USE_FALLBACK_IMAGE = 0
+# 	option ROM_IMAGE_SIZE = 56 * 1024
+# 	option LINUXBIOS_EXTRA_VERSION = ".0Normal"
+# 	payload /tmp/filo.elf
+# 	# payload /tmp/memtest
+# end
 
 romimage "fallback"
 	option USE_FALLBACK_IMAGE = 1
@@ -40,5 +40,5 @@ romimage "fallback"
 	# payload /tmp/memtest
 end
 
-buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
-# buildrom ./linuxbios.rom ROM_SIZE "fallback"
+# buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
+buildrom ./linuxbios.rom ROM_SIZE "fallback"

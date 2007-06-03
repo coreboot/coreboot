@@ -26,7 +26,6 @@
 void i82371eb_enable(device_t dev);
 #endif
 
-#define PCICMD		0x04	/* PCI Command Register */
 #define XBCS		0x4e	/* X-Bus Chip Select register */
 
 /* SMBus */

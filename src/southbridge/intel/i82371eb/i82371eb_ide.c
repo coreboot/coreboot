@@ -35,9 +35,7 @@
 static void ide_init(struct device *dev)
 {
 	uint16_t reg;
-	struct southbridge_intel_i82371eb_config *conf;
-
-	conf = dev->chip_info;
+	struct southbridge_intel_i82371eb_config *conf = dev->chip_info;
 
 	/* Enable/disable the primary IDE interface. */
 	reg = pci_read_config16(dev, IDETIM_PRI);
@@ -62,18 +60,13 @@ static void ide_init(struct device *dev)
 	pci_write_config16(dev, IDETIM_SEC, reg);
 }
 
-/* There are no subsystem IDs on the Intel 82371EB. */
-static struct pci_operations lops_pci = {
-	// .set_subsystem = 0,
-};
-
 static struct device_operations ide_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= ide_init,
 	.scan_bus		= 0,
-	.ops_pci		= &lops_pci,
+	.ops_pci		= 0, /* No subsystem IDs on 82371EB! */
 };
 
 static struct pci_driver ide_driver __pci_driver = {

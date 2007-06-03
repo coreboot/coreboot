@@ -49,9 +49,9 @@ static void enable_smbus(void)
 	pci_write_config8(dev, SMBHSTCFG, reg8);
 
 	/* Enable access to the SMBus I/O space. */
-	reg16 = pci_read_config16(dev, PCICMD);
+	reg16 = pci_read_config16(dev, PCI_COMMAND);
 	reg16 |= IOSE;
-	pci_write_config16(dev, PCICMD, reg16);
+	pci_write_config16(dev, PCI_COMMAND, reg16);
 
 	/* Clear any lingering errors, so the transaction will run. */
 	outb(inb(SMBUS_IO_BASE + SMBHST_STATUS), SMBUS_IO_BASE + SMBHST_STATUS);

@@ -387,6 +387,28 @@ static int enable_flash_mcp55(struct pci_dev *dev, char *name)
 
 }
 
+
+static int enable_flash_ht1000(struct pci_dev *dev, char *name)
+{
+	unsigned char byte;
+
+	/* Set the 4MB enable bit */
+	byte = pci_read_byte(dev, 0x41);
+	byte |= 0x0e;
+	pci_write_byte(dev, 0x41, byte);
+
+	byte = pci_read_byte(dev, 0x43);
+	byte |= (1<<4);
+	pci_write_byte(dev, 0x43, byte);
+
+	/* Some magic. Comment me if you can */
+	outb(0x45, 0xcd6);
+	byte = inb(0xcd7);
+	outb(reg8|0x20, 0xcd7);
+
+	return 0;
+}
+
 typedef struct penable {
 	unsigned short vendor, device;
 	char *name;
@@ -444,6 +466,8 @@ static FLASH_ENABLE enables[] = {
 	{0x10de, 0x0367, "NVIDIA MCP55", enable_flash_mcp55},	/* Pro */
 
 	{0x1002, 0x4377, "ATI SB400", enable_flash_sb400},	/* ATI Technologies Inc IXP SB400 PCI-ISA Bridge (rev 80) */
+
+	{0x1166, 0x0205, "BCM HT1000", enable_flash_ht1000},
 };
 
 /*

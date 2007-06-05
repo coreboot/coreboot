@@ -259,37 +259,37 @@ static u8 do_smbus_read_byte(u16 smbus_io_base, u8 device, u8 address)
 
 	if (smbus_check_stop_condition(smbus_io_base)) {
 		error = "smbus_check_stop_condition timed out";
-		goto err
+		goto err;
 	}
 
-	if (errno = smbus_start_condition(smbus_io_base)) {
+	if ((errno = smbus_start_condition(smbus_io_base))) {
 		error = "smbus_start_condition";
 		goto err;
 	}
 
-	if (errno = smbus_send_slave_address(smbus_io_base, device)) {
+	if ((errno = smbus_send_slave_address(smbus_io_base, device))) {
 		error = "smbus_send_slave_address";
 		goto err;
 	}
 
 	smbus_ack(smbus_io_base);
 
-	if (errno = smbus_send_command(smbus_io_base, address)) {
+	if ((errno = smbus_send_command(smbus_io_base, address))) {
 		error = "smbus_send_command";
 		goto err;
 	}
 
-	if (errno = smbus_start_condition(smbus_io_base)) {
+	if ((errno = smbus_start_condition(smbus_io_base))) {
 		error = "smbus_start_condition";
 		goto err;
 	}
 
-	if (errno = smbus_send_slave_address(smbus_io_base, device | 0x01)) {
+	if ((errno = smbus_send_slave_address(smbus_io_base, device | 0x01))) {
 		error = "smbus_send_slave_address";
 		goto err;
 	}
 
-	if (errno = smbus_stop_condition(smbus_io_base)) {
+	if ((errno = smbus_stop_condition(smbus_io_base))) {
 		error = "second smbus_stop_condition";
 		goto err;
 	}

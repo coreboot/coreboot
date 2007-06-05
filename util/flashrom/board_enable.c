@@ -250,10 +250,10 @@ static int board_ibm_x3455(const char *name)
 {
 	uint8_t byte;
 
-	/* Set GPIO lines in HT1000 southbridge */
+	/* Set GPIO lines in the Broadcom HT-1000 southbridge. */
 	outb(0x45, 0xcd6);
 	byte = inb(0xcd7);
-	outb(byte|0x20, 0xcd7);
+	outb(byte | 0x20, 0xcd7);
 
 	return 0;
 }

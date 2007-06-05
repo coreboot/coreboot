@@ -387,12 +387,11 @@ static int enable_flash_mcp55(struct pci_dev *dev, char *name)
 
 }
 
-
 static int enable_flash_ht1000(struct pci_dev *dev, char *name)
 {
-	unsigned char byte;
+	uint8_t byte;
 
-	/* Set the 4MB enable bit */
+	/* Set the 4MB enable bit. */
 	byte = pci_read_byte(dev, 0x41);
 	byte |= 0x0e;
 	pci_write_byte(dev, 0x41, byte);
@@ -462,7 +461,7 @@ static FLASH_ENABLE enables[] = {
 
 	{0x1002, 0x4377, "ATI SB400", enable_flash_sb400},	/* ATI Technologies Inc IXP SB400 PCI-ISA Bridge (rev 80) */
 
-	{0x1166, 0x0205, "BCM HT1000", enable_flash_ht1000},
+	{0x1166, 0x0205, "Broadcom HT-1000", enable_flash_ht1000},
 };
 
 /*

@@ -53,6 +53,7 @@ no LinuxBIOS table is found:
 * IWILL DK8-HTX: use -m iwill:dk8_htx
 * Agami Aruma: use -m AGAMI:ARUMA
 * ASUS P5A: use -m asus:p5a
+* IBM x3455: use -m ibm:x3455
 
 
 ROM Layout Support
@@ -153,6 +154,7 @@ AMD CS5530
 AMD Geode SC1100
 AMD AMD-8111
 ATI SB400
+Broadcom HT-1000
 Intel ICH0-ICH8 (all variations)
 Intel PIIX4/PIIX4E/PIIX4M
 NVIDIA CK804

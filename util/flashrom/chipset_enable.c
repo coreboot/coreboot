@@ -401,11 +401,6 @@ static int enable_flash_ht1000(struct pci_dev *dev, char *name)
 	byte |= (1<<4);
 	pci_write_byte(dev, 0x43, byte);
 
-	/* Some magic. Comment me if you can */
-	outb(0x45, 0xcd6);
-	byte = inb(0xcd7);
-	outb(reg8|0x20, 0xcd7);
-
 	return 0;
 }
 

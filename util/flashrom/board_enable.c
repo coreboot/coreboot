@@ -246,6 +246,18 @@ static int board_asus_p5a(const char *name)
 	return 0;
 }
 
+static int board_ibm_x3455(const char *name)
+{
+	uint8_t byte;
+
+	/* Set GPIO lines in HT1000 southbridge */
+	outb(0x45, 0xcd6);
+	byte = inb(0xcd7);
+	outb(byte|0x20, 0xcd7);
+
+	return 0;
+}
+
 /*
  * We use 2 sets of ids here, you're free to choose which is which. This
  * to provide a very high degree of certainty when matching a board on
@@ -290,6 +302,8 @@ struct board_pciid_enable board_pciid_enables[] = {
 	 NULL, NULL, "ASUS A7V8-MX SE", board_asus_a7v8x_mx},
 	{0x10B9, 0x1541, 0x0000, 0x0000, 0x10B9, 0x1533, 0x0000, 0x0000,
 	 "asus", "p5a", "ASUS P5A", board_asus_p5a},
+	{0x1166, 0x0205, 0x1014, 0x0347, 0x0000, 0x0000, 0x0000, 0x0000,
+	 "ibm", "x3455", "IBM x3455", board_ibm_x3455},
 	{0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL}	/* Keep this */
 };
 

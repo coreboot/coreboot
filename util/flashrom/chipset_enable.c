@@ -183,19 +183,30 @@ static int enable_flash_vt823x(struct pci_dev *dev, char *name)
 
 static int enable_flash_cs5530(struct pci_dev *dev, char *name)
 {
-	uint8_t new;
+	uint8_t reg8;
 
-	pci_write_byte(dev, 0x52, 0xee);
+	#define DECODE_CONTROL_REG2		0x5b	/* F0 index 0x5b */
+	#define ROM_AT_LOGIC_CONTROL_REG	0x52	/* F0 index 0x52 */
 
-	new = pci_read_byte(dev, 0x52);
+	#define LOWER_ROM_ADDRESS_RANGE		(1 << 0)
+	#define ROM_WRITE_ENABLE		(1 << 1)
+	#define UPPER_ROM_ADDRESS_RANGE		(1 << 2)
+	#define BIOS_ROM_POSITIVE_DECODE	(1 << 5)
 
-	if (new != 0xee) {
-		printf("tried to set register 0x%x to 0x%x on %s failed (WARNING ONLY)\n", 0x52, new, name);
-		return -1;
-	}
+	/* Decode 0x000E0000-0x000FFFFF (128 KB), not just 64 KB, and
+	 * decode 0xFF000000-0xFFFFFFFF (16 MB), not just 256 KB.
+	 * Make the configured ROM areas writable.
+	 */
+	reg8 = pci_read_byte(dev, ROM_AT_LOGIC_CONTROL_REG);
+	reg8 |= LOWER_ROM_ADDRESS_RANGE;
+	reg8 |= UPPER_ROM_ADDRESS_RANGE;
+	reg8 |= ROM_WRITE_ENABLE;
+	pci_write_byte(dev, ROM_AT_LOGIC_CONTROL_REG, reg8);
 
-	new = pci_read_byte(dev, 0x5b) | 0x20;
-	pci_write_byte(dev, 0x5b, new);
+	/* Set positive decode on ROM. */
+	reg8 = pci_read_byte(dev, DECODE_CONTROL_REG2);
+	reg8 |= BIOS_ROM_POSITIVE_DECODE;
+	pci_write_byte(dev, DECODE_CONTROL_REG2, reg8);
 
 	return 0;
 }
@@ -435,7 +446,7 @@ static FLASH_ENABLE enables[] = {
 	{0x1106, 0x3227, "VT8237", enable_flash_vt823x},
 	{0x1106, 0x8324, "CX700", enable_flash_vt823x},
 	{0x1106, 0x0686, "VT82C686", enable_flash_amd8111},
-	{0x1078, 0x0100, "CS5530", enable_flash_cs5530},
+	{0x1078, 0x0100, "CS5530/CS5530A", enable_flash_cs5530},
 	{0x100b, 0x0510, "SC1100", enable_flash_sc1100},
 	{0x1039, 0x0008, "SIS5595", enable_flash_sis5595},
 	{0x1022, 0x7468, "AMD8111", enable_flash_amd8111},

@@ -30,4 +30,11 @@ void delay(unsigned int secs);
 void beep_short(void);
 void beep_long(void);
 
+/* smbus functions */
+int smbus_read_byte(unsigned device, unsigned address);
+
+/* dram functions */
+void ram_failure(const char *why);
+void ram_initialize(int controllers, void *ctrl);
+
 #endif /* LIB_H */

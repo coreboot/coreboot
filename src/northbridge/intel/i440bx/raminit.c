@@ -129,7 +129,11 @@ static const long register_values[] = {
 	 * [01:00] Reserved
 	 */
 	// TODO
-	NBXCFG, 0x00000000, 0xff00a00c,
+	NBXCFG + 0, 0x00, 0x0c,
+	// NBXCFG + 1, 0x00, 0xa0,
+	NBXCFG + 1, 0x00, 0x80,
+	NBXCFG + 2, 0x00, 0x00,
+	NBXCFG + 3, 0x00, 0xff,
 
 	/* DRAMC - DRAM Control Register
 	 * 0x57
@@ -154,7 +158,7 @@ static const long register_values[] = {
 	 *       111 = Reserved
 	 */
 	/* Choose SDRAM (not registered), and disable refresh for now. */
-	DRAMC, 0x00, 0x8,
+	DRAMC, 0x00, 0x08,
 
 	/*
 	 * PAM[6:0] - Programmable Attribute Map Registers
@@ -240,7 +244,8 @@ static const long register_values[] = {
 	 *        TODO
 	 */
 	// TODO
-	RPS, 0x0000, 0x0000,
+	RPS + 0, 0x00, 0x00,
+	RPS + 1, 0x00, 0x00,
 
 	/* SDRAMC - SDRAM Control Register
 	 * 0x76 - 0x77
@@ -276,7 +281,8 @@ static const long register_values[] = {
 	 *         0 = 3 clocks of RAS# precharge
 	 *         1 = 2 clocks of RAS# precharge
 	 */
-	SDRAMC, 0x0000, 0x0000,
+	SDRAMC + 0, 0x00, 0x00,
+	SDRAMC + 0, 0x00, 0x00,
 
 	/* PGPOL - Paging Policy Register
 	 * 0x78 - 0x79
@@ -299,7 +305,8 @@ static const long register_values[] = {
 	 *         1xxx = Infinite (pages are not closed for idle condition)
 	 */
 	// TODO
-	PGPOL, 0x0000, 0xff00,
+	PGPOL + 0, 0x00, 0x00,
+	PGPOL + 1, 0x00, 0xff,
 
 	/* PMCR - Power Management Control Register
 	 * 0x7a
@@ -418,7 +425,7 @@ Public interface.
 static void sdram_set_registers(const struct mem_controller *ctrl)
 {
 	int i, max;
-	uint32_t reg;
+	uint8_t reg;
 
 	PRINT_DEBUG("Northbridge prior to SDRAM init:\r\n");
 	DUMPNORTH();
@@ -427,15 +434,15 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 
 	/* Set registers as specified in the register_values[] array. */
 	for (i = 0; i < max; i += 3) {
-		reg = pci_read_config32(ctrl->d0, register_values[i]);
+		reg = pci_read_config8(ctrl->d0, register_values[i]);
 		reg &= register_values[i + 1];
 		reg |= register_values[i + 2] & ~(register_values[i + 1]);
-		pci_write_config32(ctrl->d0, register_values[i], reg);
+		pci_write_config8(ctrl->d0, register_values[i], reg);
 
 		PRINT_DEBUG("    Set register 0x");
-		PRINT_DEBUG_HEX32(register_values[i]);
+		PRINT_DEBUG_HEX8(register_values[i]);
 		PRINT_DEBUG(" to 0x");
-		PRINT_DEBUG_HEX32(reg);
+		PRINT_DEBUG_HEX8(reg);
 		PRINT_DEBUG("\r\n");
 	}
 }
@@ -480,23 +487,26 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	pci_write_config16(ctrl->d0, RPS, 0x0001);
 
 	/* TODO: Set SDRAMC. */
-	// pci_write_config16(ctrl->d0, SDRAMC, 0x0000);
+	// pci_write_config16(ctrl->d0, SDRAMC, 0x010f); // FIXME?
+	pci_write_config16(ctrl->d0, SDRAMC, 0x0003); // FIXME?
 
 	/* TODO: Set PGPOL. */
-	pci_write_config16(ctrl->d0, PGPOL, 0x0107);
+	// pci_write_config16(ctrl->d0, PGPOL, 0x0107);
+	pci_write_config16(ctrl->d0, PGPOL, 0x0123);
 
 	/* TODO: Set NBXCFG. */
-	// pci_write_config32(ctrl->d0, NBXCFG, 0x0100220c);
+	// pci_write_config32(ctrl->d0, NBXCFG, 0x0100220c); // FIXME?
+	pci_write_config32(ctrl->d0, NBXCFG, 0xff00800c);
 
 	/* TODO: Set PMCR? */
 	// pci_write_config8(ctrl->d0, PMCR, 0x14);
-	// pci_write_config8(ctrl->d0, PMCR, 0x10);
+	pci_write_config8(ctrl->d0, PMCR, 0x10);
 
 	/* TODO? */
-	// pci_write_config8(ctrl->d0, MLT, 0x40);
-	// pci_write_config8(ctrl->d0, DRAMT, 0x03);
-	// pci_write_config8(ctrl->d0, MBSC, 0x03);
-	// pci_write_config8(ctrl->d0, SCRR, 0x38);
+	pci_write_config8(ctrl->d0, MLT, 0x40);
+	pci_write_config8(ctrl->d0, DRAMT, 0x03);
+	pci_write_config8(ctrl->d0, MBSC, 0x03);
+	pci_write_config8(ctrl->d0, SCRR, 0x38);
 }
 
 /**

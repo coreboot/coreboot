@@ -166,6 +166,7 @@ struct device *constructor(struct device_id *id)
  *
  * @param parent Parent bus the newly created device is attached to.
  * @param path Path to the device to be created.
+ * @param devid TODO
  * @return Pointer to the newly created device structure.
  * @see device_path
  */
@@ -739,7 +740,7 @@ void dev_phase2(void)
  * bridges. If the setting up and tuning of the bus causes a reset to be
  * required, reset the bus and scan it again.
  *
- * @param bus Pointer to the bus device.
+ * @param busdevice Pointer to the bus device.
  * @param max Current bus number.
  * @return The maximum bus number found, after scanning all subordinate buses.
  */

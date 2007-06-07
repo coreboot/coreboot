@@ -249,7 +249,7 @@ static u8 smbus_get_result(u16 smbus_io_base)
  *
  * @param smbus_io_base The SMBus I/O base.
  * @param device The device.
- * @param command The command.
+ * @param address The address.
  * @return The data from the SMBus packet area.
  */
 static u8 do_smbus_read_byte(u16 smbus_io_base, u8 device, u8 address)
@@ -315,7 +315,7 @@ err:
  * one thing -- calling this function to read DRAM parameters.
  *
  * @param device The device.
- * @param command The command.
+ * @param address The address.
  * @return The data from the SMBus packet area or an error of 0xff (i.e. -1).
  */
 int smbus_read_byte(u16 device, u8 address)

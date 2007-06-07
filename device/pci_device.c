@@ -150,7 +150,6 @@ unsigned int pci_find_capability(struct device *dev, unsigned int cap)
  * Given a device and register, read the size of the BAR for that register. 
  *
  * @param dev Pointer to the device structure.
- * @param resource Pointer to the resource structure.
  * @param index Address of the PCI configuration register.
  */
 struct resource *pci_get_resource(struct device *dev, unsigned long index)

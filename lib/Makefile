@@ -33,7 +33,9 @@ endif
 #
 
 lzma:
+ifeq ($(CONFIG_DEFAULT_COMPRESSION_LZMA),y)
 	$(Q)printf "  BUILD   LZMA (skipped)\n"
+endif
 
 $(obj)/lib/%.o: $(src)/lib/%.c
 	$(Q)mkdir -p $(obj)/lib

@@ -36,14 +36,25 @@ SILENT := >/dev/null 2>&1
 
 ROM_SIZE := $(shell expr $(CONFIG_LINUXBIOS_ROMSIZE_KB) \* 1024)
 
-$(obj)/linuxbios.rom: $(obj)/linuxbios.bootblock $(obj)/util/lar/lar lzma $(obj)/linuxbios.initram $(obj)/linuxbios.stage2 $(obj)/option_table payload
+$(obj)/linuxbios.rom: $(obj)/linuxbios.bootblock $(obj)/util/lar/lar lzma $(obj)/linuxbios.initram $(obj)/linuxbios.stage2 $(obj)/option_table payload_compress
 	$(Q)rm -rf $(obj)/lar.tmp
 	$(Q)mkdir $(obj)/lar.tmp
 	$(Q)mkdir $(obj)/lar.tmp/normal
 	$(Q)cp $(obj)/linuxbios.initram $(obj)/lar.tmp/normal/initram
 	$(Q)cp $(obj)/linuxbios.stage2 $(obj)/lar.tmp/normal/stage2
 	$(Q)cp $(obj)/option_table $(obj)/lar.tmp/normal/option_table
-	$(Q)cp $(CONFIG_PAYLOAD) $(obj)/lar.tmp/normal/payload
+ifeq ($(CONFIG_PAYLOAD_NONE),y)
+	$(Q)printf "  PAYLOAD none (as specified by user)\n"
+else
+	$(Q)# TODO: Print sth. other than $(CONFIG_PAYLOAD_FILE) if compressed.
+	$(Q)if [ -r $(CONFIG_PAYLOAD_FILE) ]; then \
+		printf "  PAYLOAD $(CONFIG_PAYLOAD_FILE)\n"; \
+		cp $(CONFIG_PAYLOAD_FILE) $(obj)/lar.tmp/normal/payload; \
+	else \
+		printf "Error: payload file '$(CONFIG_PAYLOAD_FILE)' not found.\n"; \
+		exit 1; \
+	fi
+endif
 	$(Q)printf "  LAR     $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)cd $(obj)/lar.tmp && ../util/lar/lar -c ../linuxbios.rom . \
 		-s $(ROM_SIZE) -b $(obj)/linuxbios.bootblock
@@ -147,15 +158,17 @@ $(obj)/linuxbios.stage2: $(obj)/stage0.init $(STAGE2_OBJ)
 
 
 #
-# The payload as we love it. Get it from somewhere.
-# Is this a place to incorporate buildrom?
-#
-# TODO: This is not implemented yet.
-# TODO: This needs to be compressed with the default compressor.
+# TODO: Compress the payload (CONFIG_PAYLOAD_FILE) with the default compressor.
 #
 
-payload:
-	$(Q)printf "  BUILD   PAYLOAD (skipped)\n"
+payload_compress:
+ifeq ($(CONFIG_PAYLOAD_NONE),y)
+else
+ifeq ($(CONFIG_DEFAULT_COMPRESSION_NONE),y)
+else
+	$(Q)printf "  ZIP     $(CONFIG_PAYLOAD_FILE) (skipped)\n"
+endif
+endif
 
 
 #

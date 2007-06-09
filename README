@@ -6,7 +6,7 @@ LinuxBIOS is a Free Software project aimed at replacing the proprietary
 BIOS you can find in most of today's computers.
 
 It performs just a little bit of hardware initialization and then executes
-one of many possible payloads, e.g. a Linux kernel.
+one of many possible payloads.
 
 
 Payloads
@@ -39,36 +39,89 @@ For details please consult:
  * http://www.linuxbios.org/Supported_Chipsets_and_Devices
 
 
-Building and Installing
+Building And Installing
 -----------------------
 
 Note: Currently only the x86 QEMU target is supported in LinuxBIOSv3.
 
 1) Build a payload:
 
-  For example: FILO.
+  THIS IS NOT IMPLEMENTED YET. PLEASE BUILD YOUR PAYLOAD MANUALLY.
+
+  $ make payload
+
+  This step is optional. The 'make payload' command will execute a
+  helper tool which allows you to easily build and configure a wide
+  variety of payloads. The result of this step is usually a file
+  called 'payload.elf' in the top-level directory.
 
 2) Configure LinuxBIOS:
 
   $ make menuconfig
 
-  Select at least the desired mainboard vendor, the mainboard device,
-  the size of your ROM chip, and a payload.
+  Select at least the desired mainboard vendor, the mainboard device, and
+  the size of your ROM chip. Per default LinuxBIOS will look for a file
+  called 'payload.elf' in the current directory and use that as the payload.
+
+  If that's not what you want, you can change the path/filename of the
+  payload to use some other payload file. Or you can choose 'No payload'
+  in the configuration menu, in which case the resulting LinuxBIOS ROM image
+  will not contain any payload. You'll have to manually add a payload
+  later using the 'lar' utility for the LinuxBIOS ROM image to be useful.
 
 3) Build the LinuxBIOS ROM image:
 
   $ make
 
-  The generated ROM image is build/linuxbios.rom.
+  The generated ROM image is the file linuxbios.rom in the build/ directory.
 
-4) You can now test the LinuxBIOS image using:
+4) Flash the LinuxBIOS ROM image on a BIOS chip:
+
+  $ flashrom -wv linuxbios.rom
+
+  NOTE: This step will OVERWRITE the current BIOS located on the ROM chip!
+  Make sure you have adequate backup facilities before performing this
+  step, otherwise you might not be able to recover in case of problems.
+  If you have any questions, please contact us on the mailing list!
+
+  The 'flashrom' tool is located in util/flashrom where you can build it
+  from source code by typing 'make'. Alternatively, your favorite Linux
+  distribution might ship a 'flashrom' package which provides the 'flashrom'
+  program in (e.g.) /usr/bin. On Debian GNU/Linux systems you can get
+  the flashrom package via 'apt-get install flashrom'.
+
+
+Testing LinuxBIOS Without Modifying Your Hardware
+-------------------------------------------------
+
+If you want to test LinuxBIOS without any risks before you really decide
+to use it on your hardware, you can use the QEMU system emulator to run
+LinuxBIOS virtually in QEMU.
+
+The required steps are:
+
+  $ make menuconfig
+
+    Select 'Emulated systems' as mainboard vendor and 'QEMU x86' as
+    mainboard model.
+
+  $ make
 
   $ qemu -L build -hda /dev/zero -serial stdio
 
-  If you have a full QEMU image with a Linux distribution installed,
-  you can boot that Linux kernel by using a proper FILO payload and typing:
+  This will run LinuxBIOS in QEMU and output all debugging messages (which
+  are usually emitted to a serial console) on stdout. It will not do
+  anything useful beyond that, as you provided no virtual harddrive to
+  QEMU (-hda /dev/zero).
+
+  If you have a full QEMU hard drive image (say /tmp/qemu.img) with a Linux
+  distribution installed, you can boot that Linux kernel by using a proper
+  FILO payload with LinuxBIOS and typing:
 
   $ qemu -L build -hda /tmp/qemu.img -serial stdio
+
+  Installing a Linux distribution in QEMU and building the FILO payload is
+  beyond the scope of this document.
 
 
 Website and Mailing List
@@ -92,10 +145,9 @@ developers and companies. Please check the individual source files for details.
 
 LinuxBIOS is licensed under the terms of the GNU General Public License (GPL).
 Some files are licensed under the "GPL (version 2, or any later version)",
-and some files (mostly those derived from the Linux kernel) are licensed under
-the "GPL, version 2". For some parts, which were derived from other projects,
-other (GPL-compatible) licenses may apply. Please check the individual
-source files for details.
+and some files are licensed under the "GPL, version 2". For some parts,
+which were derived from other Free Software projects, other (GPL-compatible)
+licenses may apply. Please check the individual source files for details.
 
 This makes the resulting LinuxBIOS images licensed under the GPL, version 2.
 

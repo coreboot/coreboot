@@ -76,71 +76,32 @@ menu "Payload"
 
 choice
         prompt "Payload type"
-        default PAYLOAD_ELF
-
-config PAYLOAD_FILO
-	bool "FILO"
-	help
-	  TODO
-
-config PAYLOAD_ETHERBOOT
-	bool "Etherboot"
-	help
-	  TODO
-
-config PAYLOAD_MEMTEST86
-	bool "Memtest86"
-	help
-	  TODO
-
-config PAYLOAD_LINUX
-	bool "Linux kernel"
-	help
-	  TODO
+        default PAYLOAD_NONE
 
 config PAYLOAD_ELF
-	bool "Any ELF executable"
+	bool "An ELF executable payload file"
 	help
-	  TODO
+	  Select this option if you have a payload image (an ELF file)
+	  which LinuxBIOS should run as soon as the basic hardware
+	  initialization is completed.
 
-config PAYLOAD_DUMMY
-	bool "Dummy payload"
+	  You will be able to specify the location and file name of the
+	  payload image later.
+
+config PAYLOAD_NONE
+	bool "No payload"
 	help
-	  For testing purposes only.
+	  Select this option if you want to create an "empty" LinuxBIOS
+	  ROM image for a certain mainboard, i.e. a LinuxBIOS ROM image
+	  which does not yet contain a payload.
+
+	  For such an image to be useful, you have to use the 'lar' tool
+	  to add a payload to the ROM image later.
 
 endchoice
 
-config PAYLOAD_FILO_DIR
-	string "FILO source code directory"
-	depends PAYLOAD_FILO
-	default "/tmp/filo-0.5"
-	help
-	  The directory where the FILO source code is located.
-
-config PAYLOAD_FILO_CONFIGFILE
-	string "Filename of the FILO 'Config' file"
-	depends PAYLOAD_FILO
-	default "Config"
-	help
-	  The filename of the FILO 'Config' file to use. This file must reside
-	  in the directory specified via PAYLOAD_FILO_DIR.
-
-config PAYLOAD_LINUX_DIR
-	string "Linux kernel source code directory"
-	depends PAYLOAD_LINUX
-	default "/usr/src/linux"
-	help
-	  The directory where the Linux kernel source code is located.
-
-config PAYLOAD_LINUX_CONFIGFILE
-	string "Path and filename of the Linux .config file to use"
-	depends PAYLOAD_LINUX
-	default ".config" # FIXME!
-	help
-	  The path and filename of the Linux .config file to use.
-
-config PAYLOAD_ELF_FILE
-	string "Path and filename of the ELF file to use as payload"
+config PAYLOAD_FILE
+	string "Payload path and filename"
 	depends PAYLOAD_ELF
 	default "payload.elf"
 	help

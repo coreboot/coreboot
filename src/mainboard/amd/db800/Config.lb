@@ -1,0 +1,189 @@
+##
+## Compute the location and size of where this firmware image
+## (linuxBIOS plus bootloader) will live in the boot rom chip.
+##
+if USE_FALLBACK_IMAGE
+	default ROM_SECTION_SIZE   = FALLBACK_SIZE
+	default ROM_SECTION_OFFSET = ( ROM_SIZE - FALLBACK_SIZE )
+else
+	default ROM_SECTION_SIZE   = ( ROM_SIZE - FALLBACK_SIZE )
+	default ROM_SECTION_OFFSET = 0
+end
+
+##
+## Compute the start location and size size of
+## The linuxBIOS bootloader.
+##
+
+default CONFIG_ROM_PAYLOAD_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+default PAYLOAD_SIZE			= ( ROM_SECTION_SIZE - ROM_IMAGE_SIZE )
+
+##
+## Compute where this copy of linuxBIOS will start in the boot rom
+##
+default _ROMBASE	  = ( CONFIG_ROM_PAYLOAD_START + PAYLOAD_SIZE )
+
+##
+## Compute a range of ROM that can cached to speed up linuxBIOS,
+## execution speed.
+##
+## XIP_ROM_SIZE must be a power of 2.
+## XIP_ROM_BASE must be a multiple of XIP_ROM_SIZE
+##
+default XIP_ROM_SIZE=65536
+default XIP_ROM_BASE = ( _ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE )
+
+
+##
+## Set all of the defaults for an x86 architecture
+##
+
+arch i386 end
+
+##
+## Build the objects we have code for in this directory.
+##
+
+driver mainboard.o
+
+if HAVE_PIRQ_TABLE
+	object irq_tables.o
+end
+
+if USE_DCACHE_RAM
+	#compile cache_as_ram.c to auto.inc
+	makerule ./cache_as_ram_auto.inc
+			depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
+			action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -S -o $@"
+			action "perl -e 's/.rodata/.rom.data/g' -pi $@"
+			action "perl -e 's/.text/.section .rom.text/g' -pi $@"
+	end
+end
+
+
+##
+## Build our 16 bit and 32 bit linuxBIOS entry code
+##
+mainboardinit cpu/x86/16bit/entry16.inc
+mainboardinit cpu/x86/32bit/entry32.inc
+ldscript /cpu/x86/16bit/entry16.lds
+ldscript /cpu/x86/32bit/entry32.lds
+
+##
+## Build our reset vector (This is where linuxBIOS is entered)
+##
+if USE_FALLBACK_IMAGE
+	mainboardinit cpu/x86/16bit/reset16.inc
+	ldscript /cpu/x86/16bit/reset16.lds
+else
+	mainboardinit cpu/x86/32bit/reset32.inc
+	ldscript /cpu/x86/32bit/reset32.lds
+end
+
+### Should this be in the northbridge code?
+#not in serengeti_cheetah mainboardinit arch/i386/lib/cpu_reset.inc
+
+##
+## Include an id string (For safe flashing)
+##
+mainboardinit arch/i386/lib/id.inc
+ldscript /arch/i386/lib/id.lds
+
+###
+### This is the early phase of linuxBIOS startup
+### Things are delicate and we test to see if we should
+### failover to another image.
+###
+if USE_FALLBACK_IMAGE
+	ldscript /arch/i386/lib/failover.lds
+#	mainboardinit ./failover.inc
+end
+
+###
+### O.k. We aren't just an intermediary anymore!
+###
+
+##
+## Setup RAM
+##
+mainboardinit cpu/x86/fpu/enable_fpu.inc
+
+if USE_DCACHE_RAM
+	mainboardinit cpu/amd/model_lx/cache_as_ram.inc
+	mainboardinit ./cache_as_ram_auto.inc
+end
+
+##
+## Include the secondary Configuration files
+##
+dir /pc80
+config chip.h
+
+chip northbridge/amd/lx
+	device pci_domain 0 on
+		device pci 1.0 on end				# Northbridge
+		device pci 1.1 on end				# Graphics
+		chip southbridge/amd/cs5536
+			# IRQ 12 and 1 unmasked,  Keyboard and Mouse IRQs. OK
+			# SIRQ Mode = Active(Quiet) mode. Save power....
+			# Invert mask = IRQ 12 and 1 are active high. Keyboard and Mouse, UARTs, etc IRQs. OK
+			register "lpc_serirq_enable" = "0x000010da"
+			register "lpc_serirq_polarity" = "0x0000EF25"
+			register "lpc_serirq_mode" = "1"
+			register "enable_gpio_int_route" = "0x0D0C0700"
+			register "enable_ide_nand_flash" = "0"	# 0:ide mode, 1:flash
+			register "enable_USBP4_device" = "1"	# 0: host, 1:device
+			register "enable_USBP4_overcurrent" = "0" #0:off, xxxx:overcurrent setting CS5536 Data Book (pages 380-381)
+			register "com1_enable" = "0"
+			register "com1_address" = "0x3F8"
+			register "com1_irq" = "4"
+			register "com2_enable" = "0"
+			register "com2_address" = "0x2F8"
+			register "com2_irq" = "3"
+			register "unwanted_vpci[0]" = "0"	# End of list has a zero
+			device pci d.0 on end			# Ethernet
+			device pci e.0 on end			# Slot1
+			device pci f.0 on			# ISA Bridge
+				chip superio/winbond/w83627hf
+					device pnp 2e.0 off	# Floppy
+						io 0x60 = 0x3f0
+						irq 0x70 = 6
+						drq 0x74 = 2
+					end
+					device pnp 2e.1 off	# Parallel port
+						io 0x60 = 0x378
+						irq 0x70 = 7
+					end
+					device pnp 2e.2 on	# Com1
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.3 off end	# Com2
+					device pnp 2e.5 on	# Keyboard
+						io 0x60 = 0x60
+						io 0x62 = 0x64
+						irq 0x70 = 1
+						irq 0x72 = 12
+					end
+					device pnp 2e.6 off end	# CIR
+					device pnp 2e.7 off end	# GAME_MIDI_GIPO1
+					device pnp 2e.8 off end	# GPIO2
+					device pnp 2e.9 off end	# GPIO3
+					device pnp 2e.a off end	# ACPI
+					device pnp 2e.b off end	# HW Monitor
+				end
+			end
+			device pci f.2 on end			# IDE Controller
+			device pci f.3 on end			# Audio
+			device pci f.4 on end			# OHCI
+			device pci f.5 on end			# EHCI
+		end
+	end
+	# APIC cluster is late CPU init.
+	device apic_cluster 0 on
+		chip cpu/amd/model_lx
+			device apic 0 on end
+		end
+	end
+end
+

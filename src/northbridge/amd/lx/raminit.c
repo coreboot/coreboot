@@ -151,7 +151,7 @@ static void checkDDRMax(void)
 	}
 
 	/* I don't think you need this check.
-	   if (spd_byte0 < 0xA0 || spd_byte0 < 0xA0){
+	   if (spd_byte0 >= 0xA0 || spd_byte1 >= 0xA0){
 	   print_debug("DIMM overclocked. Check GeodeLink Speed\n");
 	   POST_CODE(POST_PLL_MEM_FAIL);
 	   __asm__       __volatile__("hlt\n");
@@ -231,7 +231,7 @@ static void setCAS(void)
 ;*	Destroys: We really use everything !
 ;*****************************************************************************/
 	uint16_t glspeed, dimm_speed;
-	uint8_t spd_byte, casmap0, casmap1;
+	uint8_t spd_byte, casmap0, casmap1, casmap_shift;
 	msr_t msr;
 
 	glspeed = GeodeLinkSpeed();
@@ -246,25 +246,24 @@ static void setCAS(void)
 			dimm_speed = 2 * (10000 / (((spd_byte >> 4) * 10) +
 						(spd_byte & 0x0F)));
 			if (dimm_speed >= glspeed) {
+				casmap_shift = 1; /* -.5 is a shift of 1 */
 				/* IF -1 timing is supported, check -1 timing > GeodeLink */
 				spd_byte = spd_read_byte(DIMM0, SPD_SDRAM_CYCLE_TIME_3RD);
 				if (spd_byte != 0) {
 					/* Turn SPD ns time into MHZ. Check what the asm does to this math. */
 					dimm_speed = 2 * (10000 / (((spd_byte >> 4) * 10) + (spd_byte & 0x0F)));
-					if (dimm_speed <= glspeed) {
-						/* set we can use -.5 timing but not -1 */
-						spd_byte = 31 - __builtin_clz((uint32_t) casmap0);
-						/* just want bits in the lower byte since we have to cast to a 32 */
-						casmap0 &= 0xFF << (--spd_byte);
+					if (dimm_speed >= glspeed) {
+						casmap_shift = 2; /* -1 is a shift of 2 */
 					}
-				}	/*MIN_CYCLE_10 !=0 */
+				}	/* SPD_SDRAM_CYCLE_TIME_3RD (-1) !=0 */
 			} else {
-				/* Timing_05 < GLspeed, can't use -.5 or -1 timing */
-				spd_byte = 31 - __builtin_clz((uint32_t) casmap0);
-				/* just want bits in the lower byte since we have to cast to a 32 */
-				casmap0 &= 0xFF << (spd_byte);
+				casmap_shift = 0;
 			}
-		}		/*MIN_CYCLE_05 !=0 */
+		}	/* SPD_SDRAM_CYCLE_TIME_2ND (-.5) !=0 */
+		/* set the casmap based on the shift to limit possible CAS settings */
+		spd_byte = 31 - __builtin_clz((uint32_t) casmap0);
+		/* just want bits in the lower byte since we have to cast to a 32 */
+		casmap0 &= 0xFF << (spd_byte - casmap_shift);
 	} else {		/* No DIMM */
 		casmap0 = 0;
 	}
@@ -278,25 +277,25 @@ static void setCAS(void)
 			/* Turn SPD ns time into MHZ. Check what the asm does to this math. */
 			dimm_speed = 2 * (10000 / (((spd_byte >> 4) * 10) + (spd_byte & 0x0F)));
 			if (dimm_speed >= glspeed) {
+				casmap_shift = 1; /* -.5 is a shift of 1 */
 				/* IF -1 timing is supported, check -1 timing > GeodeLink */
 				spd_byte = spd_read_byte(DIMM1, SPD_SDRAM_CYCLE_TIME_3RD);
 				if (spd_byte != 0) {
 					/* Turn SPD ns time into MHZ. Check what the asm does to this math. */
 					dimm_speed = 2 * (10000 / (((spd_byte >> 4) * 10) + (spd_byte & 0x0F)));
-					if (dimm_speed <= glspeed) {
-						/* set we can use -.5 timing but not -1 */
-						spd_byte = 31 - __builtin_clz((uint32_t) casmap1);
-						/* just want bits in the lower byte since we have to cast to a 32 */
-						casmap1 &= 0xFF << (--spd_byte);
+					if (dimm_speed >= glspeed) {
+						casmap_shift = 2; /* -1 is a shift of 2 */
 					}
-				}	/*MIN_CYCLE_10 !=0 */
+					/* note that the -1 result doesn't need to change the available CAS map */
+				}	/* SPD_SDRAM_CYCLE_TIME_3RD (-1) !=0 */
 			} else {
-				/* Timing_05 < GLspeed, can't use -.5 or -1 timing */
-				spd_byte = 31 - __builtin_clz((uint32_t) casmap1);
-				/* just want bits in the lower byte since we have to cast to a 32 */
-				casmap1 &= 0xFF << (spd_byte);
+				casmap_shift = 0;
 			}
-		}		/*MIN_CYCLE_05 !=0 */
+		}	/* SPD_SDRAM_CYCLE_TIME_2ND (-.5) !=0 */
+		/* set the casmap based on the shift to limit possible CAS settings */
+		spd_byte = 31 - __builtin_clz((uint32_t) casmap1);
+		/* just want bits in the lower byte since we have to cast to a 32 */
+		casmap1 &= 0xFF << (spd_byte - casmap_shift);
 	} else {		/* No DIMM */
 		casmap1 = 0;
 	}

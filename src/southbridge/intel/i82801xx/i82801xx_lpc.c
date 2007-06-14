@@ -89,8 +89,8 @@ void i82801xx_rtc_init(struct device *dev)
         uint8_t reg8;
         uint32_t reg32;
         int rtc_failed;
-        byte = pci_read_config8(dev, GEN_PMCON_3);
-        rtc_failed = byte & RTC_BATTERY_DEAD;
+        reg8 = pci_read_config8(dev, GEN_PMCON_3);
+        rtc_failed = reg8 & RTC_BATTERY_DEAD;
         if (rtc_failed) {
                 reg8 &= ~(1 << 1); /* preserve the power fail state */
                 pci_write_config8(dev, GEN_PMCON_3, reg8);

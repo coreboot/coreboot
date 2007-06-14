@@ -19,6 +19,7 @@
  */
 
 #include <hlt.h>
+#include <console.h>
 
 /**
  * Print an error message which says why the RAM initialization failed,
@@ -32,6 +33,10 @@ void ram_failure(const char *why)
 	hlt();
 }
 
+/* Northbridge or memory controller code must define these functions */
+void ram_set_registers(void *ctrl, int i);
+int ram_set_spd_registers(void *ctrl, int i);
+void ram_enable(int controllers, void *ctrl);
 /**
  * ram_initialize() is is the main RAM init function.
  *

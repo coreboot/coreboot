@@ -1,0 +1,113 @@
+/*
+ * This file is part of the LinuxBIOS project.
+ *
+ * Copyright (C) 2005 Tyan Computer
+ * (Written by Yinghai Lu <yinghailu@gmail.com> for Tyan Computer)
+ * Copyright (C) 2005 Digital Design Corporation
+ * (Written by Steven J. Magnani <steve@digidescorp.com> for Digital Design Corp)
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
+
+#include <console/console.h>
+#include <device/device.h>
+#include <device/pci.h>
+#include <device/pci_ids.h>
+#include "i82801xx.h"
+
+static void ide_init(struct device *dev)
+{
+	/* TODO: Needs to be tested for compatibility with ICH5(R) */
+	/* Enable ide devices so the linux ide driver will work */
+	uint16_t ideTimingConfig;
+	int enable_primary = 1;
+	int enable_secondary = 1;
+
+	ideTimingConfig = pci_read_config16(dev, IDE_TIM_PRI);
+	ideTimingConfig &= ~IDE_DECODE_ENABLE;
+	if (enable_primary) {
+		/* Enable primary ide interface */
+		ideTimingConfig |= IDE_DECODE_ENABLE;
+		printk_debug("IDE0 ");
+	}
+	pci_write_config16(dev, IDE_TIM_PRI, ideTimingConfig);
+
+	ideTimingConfig = pci_read_config16(dev, IDE_TIM_SEC);
+	ideTimingConfig &= ~IDE_DECODE_ENABLE;
+	if (enable_secondary) {
+		/* Enable secondary ide interface */
+		ideTimingConfig |= IDE_DECODE_ENABLE;
+		printk_debug("IDE1 ");
+	}
+	pci_write_config16(dev, IDE_TIM_SEC, ideTimingConfig);
+}
+
+static struct device_operations ide_ops  = {
+	.read_resources   = pci_dev_read_resources,
+	.set_resources    = pci_dev_set_resources,
+	.enable_resources = pci_dev_enable_resources,
+	.init             = ide_init,
+	.scan_bus         = 0,
+	.enable           = i82801xx_enable,
+};
+
+/* i82801aa */
+static struct pci_driver i82801aa_ide __pci_driver = {
+	.ops    = &ide_ops,
+	.vendor = PCI_VENDOR_ID_INTEL,
+	.device = 0x2411,
+};
+
+/* i82801ab */
+static struct pci_driver i82801ab_ide __pci_driver = {
+	.ops    = &ide_ops,
+	.vendor = PCI_VENDOR_ID_INTEL,
+	.device = 0x2421,
+};
+
+/* i82801ba */
+static struct pci_driver i82801ba_ide __pci_driver = {
+	.ops    = &ide_ops,
+	.vendor = PCI_VENDOR_ID_INTEL,
+	.device = 0x244b,
+};
+
+/* i82801ca */
+static struct pci_driver i82801ca_ide __pci_driver = {
+	.ops    = &ide_ops,
+	.vendor = PCI_VENDOR_ID_INTEL,
+	.device = 0x248b,
+};
+
+/* i82801db */
+static struct pci_driver i82801db_ide __pci_driver = {
+	.ops    = &ide_ops,
+	.vendor = PCI_VENDOR_ID_INTEL,
+	.device = 0x24cb,
+};
+
+/* i82801dbm */
+static struct pci_driver i82801dbm_ide __pci_driver = {
+	.ops    = &ide_ops,
+	.vendor = PCI_VENDOR_ID_INTEL,
+	.device = 0x24ca,
+};
+
+/* i82801eb & i82801er */
+static struct pci_driver i82801ex_ide __pci_driver = {
+	.ops    = &ide_ops,
+	.vendor = PCI_VENDOR_ID_INTEL,
+	.device = 0x24db,
+};

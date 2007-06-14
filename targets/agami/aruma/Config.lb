@@ -12,7 +12,7 @@ option MAXIMUM_CONSOLE_LOGLEVEL=8
 romimage "normal"
         option ROM_SIZE = 512*1024-36*1024
 	option USE_FALLBACK_IMAGE=0
-	option ROM_IMAGE_SIZE=0x16000
+	option ROM_IMAGE_SIZE=0x17000
 	option XIP_ROM_SIZE=0x20000
 	option LINUXBIOS_EXTRA_VERSION=".0-normal"
 	payload ../../../../../../filo.elf
@@ -20,7 +20,7 @@ end
 
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
-	option ROM_IMAGE_SIZE=0x16000
+	option ROM_IMAGE_SIZE=0x17000
 	option XIP_ROM_SIZE=0x20000
 	option LINUXBIOS_EXTRA_VERSION=".0-fallback"
 	payload ../../../../../../filo.elf

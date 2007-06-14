@@ -21,11 +21,17 @@ unsigned long acpi_fill_madt(unsigned long current)
 	unsigned int gsi_base=0x18, ioapic_nr=2, i;
 	device_t dev=0;
  
-	/* create all subtables for 4p */
-	current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, 0, 0); //SDE BSP APIC ID=0
+	/* creare all subtables for 4p */
+#ifdef PRE_REVE
+	current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, 0, 0);
 	current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, 1, 17);
 	current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, 2, 18);
 	current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, 3, 19);
+#endif
+	current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, 0, 16);
+	current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, 1, 18);
+	current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, 2, 20);
+	current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, 3, 22);
 	
 	/* Write 8111 IOAPIC */
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, 1,

@@ -19,31 +19,24 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-#
-# VPD or SIP ROM or ... how does NVIDIA call it?
-# Some space to cope with dirty southbridge tricks.
-# Do we want to put our own stuff there, too?
-#
-
 $(obj)/linuxbios.vpd:
 	$(Q)printf "  BUILD   DUMMY VPD\n"
 	$(Q)dd if=/dev/zero of=$(obj)/linuxbios.vpd bs=256 count=1 $(SILENT)
 
-#
-# This is going to be the init RAM code.
-#
-# The initram file is always uncompressed. It belongs into the mainboard
-# directory and is built from what was auto.c in v2.
-#
-# It should probably be renamed, as it does more than initram. 
-# auto.c is a bit too meaningless though.
-#
-
-$(obj)/linuxbios.initram: $(obj)/stage0.init $(obj)/stage0.o $(obj)/mainboard/$(MAINBOARDDIR)/initram.o
+INITRAM_OBJ=$(obj)/stage0.init $(obj)/stage0.o $(obj)/mainboard/$(MAINBOARDDIR)/initram.o \
+		$(obj)/northbridge/amd/geodelx/raminit.o \
+		$(obj)/southbridge/amd/cs5536/smbus_initram.o \
+		$(obj)/southbridge/amd/cs5536/cs5536_early_setup.o\
+		$(obj)/arch/x86/geodelx.o
+$(obj)/linuxbios.initram: $(INITRAM_OBJ)
 	$(Q)# initram links against stage0
 	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(LD) -R $(obj)/stage0.o -Ttext 0x80000 \
 		$(obj)/mainboard/$(MAINBOARDDIR)/initram.o \
+		$(obj)/northbridge/amd/geodelx/raminit.o \
+		$(obj)/southbridge/amd/cs5536/smbus_initram.o \
+		$(obj)/southbridge/amd/cs5536/cs5536_early_setup.o\
+		$(obj)/arch/x86/geodelx.o\
 		--entry=main -o $(obj)/linuxbios.initram.o
 	$(Q)printf "  OBJCOPY $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(OBJCOPY) -O binary $(obj)/linuxbios.initram.o \
@@ -76,7 +69,7 @@ $(obj)/option_table: $(obj)/mainboard/$(MAINBOARDDIR)/option_table.o
 
 STAGE2_MAINBOARD_OBJ = mainboard.o vga.o 
 
-STAGE2_CHIPSET_OBJ = 
+STAGE2_CHIPSET_OBJ =  
 
 $(obj)/mainboard/$(MAINBOARDDIR)/%.o: $(src)/mainboard/$(MAINBOARDDIR)/%.c
 	$(Q)mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)

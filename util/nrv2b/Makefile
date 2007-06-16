@@ -20,9 +20,11 @@
 ##
 
 $(obj)/util/nrv2b/nrv2b: nrv2bdir $(src)/util/nrv2b/nrv2b.c
+	$(Q)printf "  HOSTCC  $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(HOSTCC) $(HOSTCFLAGS) -DENCODE -DDECODE -DMAIN -DVERBOSE -DNDEBUG -DBITSIZE=32 -DENDIAN=0 -o $@ $(src)/util/nrv2b/nrv2b.c
 
 $(obj)/util/nrv2b/nrv2b-compress.o: nrv2bdir $(src)/util/nrv2b/nrv2b.c
+	$(Q)printf "  HOSTCC  $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(HOSTCC) $(HOSTCFLAGS) -DENCODE -DVERBOSE -DCOMPACT -DNDEBUG -DBITSIZE=32 -DENDIAN=0 -c -o $@ $(src)/util/nrv2b/nrv2b.c
 
 nrv2bdir:

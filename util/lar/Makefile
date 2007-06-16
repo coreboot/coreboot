@@ -38,9 +38,9 @@ lardir:
 	$(Q)printf "  BUILD   LAR\n"
 	$(Q)mkdir -p $(obj)/util/lar
 
-$(obj)/util/lar/lar: $(CDIR) $(LAROBJ_ABS) $(COMPRESSOR)
+$(obj)/util/lar/lar: $(LARDIR) $(LAROBJ_ABS) $(COMPRESSOR)
 	$(Q)printf "  HOSTCXX $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ $(ABS_OBJ) $(COMPRESSOR)
+	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ $(LAROBJ_ABS) $(COMPRESSOR)
 
 $(obj)/util/lar/%.o: $(src)/util/lar/%.c
 	$(Q)printf "  HOSTCC  $(subst $(shell pwd)/,,$(@))\n"

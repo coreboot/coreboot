@@ -65,11 +65,13 @@ FILE  *infile, *outfile;
 #define BITSIZE 32
 #endif
 
+#ifndef COMPACT
 static __inline__ void Error(char *message)
 {
 	Fprintf((stderr, "\n%s\n", message));
 	exit(EXIT_FAILURE);
 }
+#endif
 
 /* These will be a complete waste of time on a lo-endian */
 /* system, but it only gets done once so WTF. */
@@ -1213,6 +1215,7 @@ int ucl_nrv2b_99_compress(
 }
 
 
+#ifndef COMPACT
 void Encode(void)  /* compression */
 {
 	uint8_t *in, *out;
@@ -1291,7 +1294,16 @@ void Encode(void)  /* compression */
 #endif
 	
 }
+#endif
 
+#endif
+
+#ifdef COMPACT
+void do_nrv2b_compress(char* in, unsigned long in_len, char* out, unsigned long* out_len) {
+	*out_len = in_len + (in_len/8) + 256;
+	out = malloc(*out_len);
+	ucl_nrv2b_99_compress(in, in_len, out, out_len, 0 );
+}
 #endif
 
 #ifdef DECODE

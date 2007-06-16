@@ -234,6 +234,7 @@ const std::vector<unsigned char> LZMADeCompress
     return result;
 }
 
+#ifndef COMPACT
 int main(int argc, char *argv[])
 {
 	char  *s;
@@ -277,4 +278,16 @@ int main(int argc, char *argv[])
 	fclose(outfile);
 	return EXIT_SUCCESS;
 }
+#else
+extern "C" {
+
+void do_lzma_compress(char* in, unsigned long in_len, char* out, unsigned long* out_len) {
+	std::vector<unsigned char> result;
+	result = LZMACompress(std::vector<unsigned char>(in,in+in_len));
+	*out_len = result.size();
+    	std::memcpy(out, &result[0], *out_len);
+}
+
+}
+#endif
 

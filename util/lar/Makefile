@@ -18,12 +18,25 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
 ##
 
+LZMA_OBJ := $(obj)/util/lzma/LZMAEncoder.o $(obj)/util/lzma/LZInWindow.o
+LZMA_OBJ += $(obj)/util/lzma/RangeCoderBit.o $(obj)/util/lzma/StreamUtils.o
+LZMA_OBJ += $(obj)/util/lzma/OutBuffer.o $(obj)/util/lzma/Alloc.o
+LZMA_OBJ += $(obj)/util/lzma/CRC.o
+
 SOURCE := lar.c create.c extract.c list.c lib.c bootblock.c
 
-$(obj)/util/lar/lar: $(patsubst %,$(src)/util/lar/%,$(SOURCE))
+ifeq ($(CONFIG_COMPRESSION_LZMA),y)
+COMPRESSOR := $(LZMA_OBJ) $(obj)/util/lzma/lzma-compress.o
+endif
+
+ifeq ($(CONFIG_COMPRESSION_NRV2B),y)
+COMPRESSOR += $(obj)/util/nrv2b/nrv2b-compress.o
+endif
+
+$(obj)/util/lar/lar: $(patsubst %,$(src)/util/lar/%,$(SOURCE)) $(COMPRESSOR)
 	$(Q)mkdir -p $(obj)/util/lar
-	$(Q)printf "  HOSTCC  $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(HOSTCC) $(HOSTCFLAGS) -o $@ $^
+	$(Q)printf "  HOSTCXX $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ $^
 
 
 # -----------------------------------------------------------------------------

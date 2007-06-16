@@ -32,9 +32,16 @@ endif
 # in a way that they can be put in the lar.
 #
 
+ifeq ($(CONFIG_COMPRESSION_LZMA),y)
+lzma: $(obj)/util/lzma/lzma $(obj)/util/lzma/lzma-compress.o
+else
 lzma:
-ifeq ($(CONFIG_DEFAULT_COMPRESSION_LZMA),y)
-	$(Q)printf "  BUILD   LZMA (skipped)\n"
+endif
+
+ifeq ($(CONFIG_COMPRESSION_NRV2B),y)
+nrv2b: $(obj)/util/nrv2b/nrv2b $(obj)/util/nrv2b/nrv2b-compress.o
+else
+nrv2b:
 endif
 
 $(obj)/lib/%.o: $(src)/lib/%.c

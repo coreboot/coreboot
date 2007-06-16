@@ -21,14 +21,16 @@
 LZMA_OBJ := $(obj)/util/lzma/LZMAEncoder.o $(obj)/util/lzma/LZInWindow.o
 LZMA_OBJ += $(obj)/util/lzma/RangeCoderBit.o $(obj)/util/lzma/StreamUtils.o
 LZMA_OBJ += $(obj)/util/lzma/OutBuffer.o $(obj)/util/lzma/Alloc.o
-LZMA_OBJ += $(obj)/util/lzma/CRC.o $(obj)/util/lzma/minilzma.o
+LZMA_OBJ += $(obj)/util/lzma/CRC.o
 
-$(obj)/util/lzma/lzma: lzmadir $(LZMA_OBJ)
-	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ $(LZMA_OBJ)
-	$(Q)printf "done\n"
+$(obj)/util/lzma/lzma: lzmadir $(LZMA_OBJ) $(obj)/util/lzma/minilzma.o
+	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ $(LZMA_OBJ) $(obj)/util/lzma/minilzma.o
+
+$(obj)/util/lzma/lzma-compress.o: $(src)/util/lzma/minilzma.cc
+	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ -c -DCOMPACT $<
 
 lzmadir:
-	$(Q)printf "Building LZMA compressor... "
+	$(Q)printf "  BUILD   LZMA\n"
 	$(Q)mkdir -p $(obj)/util/lzma/
 
 $(obj)/util/lzma/%.o: $(src)/util/lzma/C/7zip/Compress/LZMA/%.cpp

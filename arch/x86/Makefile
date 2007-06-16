@@ -36,7 +36,7 @@ SILENT := >/dev/null 2>&1
 
 ROM_SIZE := $(shell expr $(CONFIG_LINUXBIOS_ROMSIZE_KB) \* 1024)
 
-$(obj)/linuxbios.rom: $(obj)/linuxbios.bootblock $(obj)/util/lar/lar lzma $(obj)/linuxbios.initram $(obj)/linuxbios.stage2 $(obj)/option_table payload_compress
+$(obj)/linuxbios.rom: $(obj)/linuxbios.bootblock $(obj)/util/lar/lar lzma nrv2b $(obj)/linuxbios.initram $(obj)/linuxbios.stage2 $(obj)/option_table
 	$(Q)rm -rf $(obj)/lar.tmp
 	$(Q)mkdir $(obj)/lar.tmp
 	$(Q)mkdir $(obj)/lar.tmp/normal
@@ -155,20 +155,6 @@ $(obj)/linuxbios.stage2: $(obj)/stage0.init $(STAGE2_OBJ)
 		  -o $(obj)/linuxbios.stage2.o $(STAGE2_OBJ)
 	$(Q)printf "  OBJCOPY $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(OBJCOPY) -O binary $(obj)/linuxbios.stage2.o $(obj)/linuxbios.stage2
-
-
-#
-# TODO: Compress the payload (CONFIG_PAYLOAD_FILE) with the default compressor.
-#
-
-payload_compress:
-ifeq ($(CONFIG_PAYLOAD_NONE),y)
-else
-ifeq ($(CONFIG_DEFAULT_COMPRESSION_NONE),y)
-else
-	$(Q)printf "  ZIP     $(CONFIG_PAYLOAD_FILE) (skipped)\n"
-endif
-endif
 
 
 #

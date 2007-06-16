@@ -19,10 +19,9 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-# This stuff is always needed.
+# main utilities
 include util/dtc/Makefile
 include util/kconfig/Makefile
-include util/lar/Makefile
 include util/options/Makefile
 
 # Parts used by LinuxBIOS.
@@ -32,3 +31,5 @@ include util/x86emu/Makefile
 include util/lzma/Makefile
 include util/nrv2b/Makefile
 
+# LinuxBIOS archiver
+include util/lar/Makefile

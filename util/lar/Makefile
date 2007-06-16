@@ -18,25 +18,33 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
 ##
 
-LZMA_OBJ := $(obj)/util/lzma/LZMAEncoder.o $(obj)/util/lzma/LZInWindow.o
-LZMA_OBJ += $(obj)/util/lzma/RangeCoderBit.o $(obj)/util/lzma/StreamUtils.o
-LZMA_OBJ += $(obj)/util/lzma/OutBuffer.o $(obj)/util/lzma/Alloc.o
-LZMA_OBJ += $(obj)/util/lzma/CRC.o
+LAROBJ := lar.o create.o extract.o list.o lib.o bootblock.o
 
-SOURCE := lar.c create.c extract.c list.c lib.c bootblock.c
+LARDIR := lardir
 
 ifeq ($(CONFIG_COMPRESSION_LZMA),y)
 COMPRESSOR := $(LZMA_OBJ) $(obj)/util/lzma/lzma-compress.o
+LARDIR     += lzmadir
 endif
 
 ifeq ($(CONFIG_COMPRESSION_NRV2B),y)
 COMPRESSOR += $(obj)/util/nrv2b/nrv2b-compress.o
+LARDIR     += nrv2bdir
 endif
 
-$(obj)/util/lar/lar: $(patsubst %,$(src)/util/lar/%,$(SOURCE)) $(COMPRESSOR)
+LAROBJ_ABS := $(patsubst %,$(obj)/util/lar/%,$(LAROBJ))
+
+lardir:
+	$(Q)printf "  BUILD   LAR\n"
 	$(Q)mkdir -p $(obj)/util/lar
+
+$(obj)/util/lar/lar: $(CDIR) $(LAROBJ_ABS) $(COMPRESSOR)
 	$(Q)printf "  HOSTCXX $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ $^
+	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ $(ABS_OBJ) $(COMPRESSOR)
+
+$(obj)/util/lar/%.o: $(src)/util/lar/%.c
+	$(Q)printf "  HOSTCC  $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(HOSTCC) $(HOSTCFLAGS) -c $< -o $@
 
 
 # -----------------------------------------------------------------------------

@@ -23,7 +23,6 @@
 
 %{
 #include "dtc.h"
-
 int yylex (void);
 void yyerror (char const *);
 
@@ -56,13 +55,11 @@ extern struct boot_info *the_boot_info;
 %token <str> DT_UNIT
 %token <str> DT_LABEL
 %token <str> DT_REF
-%token <str> DT_CONFIG
+%token <str> DT_FILENAME
+%token <proplist> DT_CONFIG
 
 %type <data> propdata
 %type <re> memreserve
-/*
-%type <re> config
- */
 %type <re> memreserves
 %type <data> celllist
 %type <data> bytestring
@@ -72,6 +69,7 @@ extern struct boot_info *the_boot_info;
 %type <node> devicetree
 %type <node> nodedef
 %type <node> subnode
+%type <proplist> config
 %type <nodelist> subnodes
 %type <str> label
 %type <str> nodename
@@ -107,8 +105,8 @@ devicetree:	'/' nodedef {
 		}
 	;
 
-nodedef:	'{' proplist subnodes '}' ';' {
-			$$ = build_node($2, $3);
+nodedef:	'{' config proplist subnodes '}' ';' {
+			$$ = build_node($2, $3, $4);
 		}
 	;
 
@@ -120,21 +118,35 @@ proplist:	propdef proplist {
 		}
 	;
 
-/* I doubt we will do this 
-config:         DT_CONFIG '(' includepath ',' structname ')' ';' {
-  			$$ = setupconfig($3, $5);
+config:        DT_CONFIG '(' 
+		includepath {
+			void switchin(FILE *f);
+
+			/* switch ... */
+			char path[1024];
+			FILE *f;
+			/* TODO: keep track of which of these we have read in. If we have already done it, then 
+			  * don't do it twice. 
+			  */
+			sprintf(path, "%s/dts", $3.val);
+			f  = fopen(path, "r");
+			if (! f){
+				perror(path);
+				exit(1);
+			}
+			switchin(f);
+		}  '{' proplist '}' ';' {
+			void	switchback(void);
+			switchback();
 		}
+		')' ';' { $$ = $6}
 	|
-				{
-			$$ = NULL;
-		}
-	;
- */
-
-includepath:	DT_STRING { $$ = $1; }
 	;
 
-structname: 	DT_STRING {$$ = $1; }
+includepath:	DT_STRING  { $$ = $1; }
+	;
+
+structname: 	DT_FILENAME {$$ = $1; }
 	;
 
 propdef:	label DT_PROPNAME '=' propdata ';' {

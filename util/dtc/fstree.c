@@ -34,7 +34,7 @@ static struct node *read_fstree(char *dirname)
 	if (! d)
 		die("opendir(): %s\n", strerror(errno));
 
-	tree = build_node(NULL, NULL);
+	tree = build_node(NULL, NULL, NULL);
 
 	while ((de = readdir(d)) != NULL) {
 		char *tmpnam;

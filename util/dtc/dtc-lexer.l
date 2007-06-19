@@ -36,8 +36,6 @@ REFCHAR		({PROPCHAR}|{UNITCHAR}|[/@])
 
 #include "dtc-parser.tab.h"
 
-/*#define LEXDEBUG	1*/
-
 #ifdef LEXDEBUG
 #define DPRINT(fmt, ...)	fprintf(stderr, fmt, ##__VA_ARGS__)
 #else
@@ -46,6 +44,21 @@ REFCHAR		({PROPCHAR}|{UNITCHAR}|[/@])
 
 char *code = 0;
 
+YY_BUFFER_STATE bstack = NULL;
+
+void
+switchin(FILE *f){
+	YY_BUFFER_STATE b;
+	bstack = yy_current_buffer;
+	b = yy_create_buffer(f, 8192);
+	yy_switch_to_buffer(b);
+	
+}
+
+void
+switchback(void){
+		yy_switch_to_buffer(bstack);
+}
 %}
 
 %%
@@ -68,7 +81,7 @@ char *code = 0;
 		}
 
 <PASSTHROUGH>.*	{
-					DPRINT("Matchingin passthrough %s\n", yytext);
+					DPRINT("Matching in passthrough %s\n", yytext);
 					/* you tell me why echo does not work */
 					/*ECHO;*/
 					strcat(code, yytext);
@@ -99,6 +112,12 @@ char *code = 0;
 			DPRINT("/MEMRESERVE\n");
 			BEGIN(INITIAL);
 			return ';';
+		}
+
+"/config/"	{
+			yylloc.first_line = yylineno;
+			DPRINT("Keyword: /config/\n");
+			return DT_CONFIG;
 		}
 
 <CELLDATA>[0-9a-fA-F]+	{

@@ -48,7 +48,7 @@ struct property *chain_property(struct property *first, struct property *list)
 	return first;      
 }
 
-struct node *build_node(struct property *proplist, struct node *children)
+struct node *build_node(struct property *config, struct property *proplist, struct node *children)
 {
 	static struct node *last_node = NULL;
 
@@ -57,6 +57,7 @@ struct node *build_node(struct property *proplist, struct node *children)
 
 	memset(new, 0, sizeof(*new));
 
+	new->config = config;
 	new->proplist = proplist;
 	new->children = children;
 

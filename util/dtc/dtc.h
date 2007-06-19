@@ -150,6 +150,7 @@ struct node {
 	char *name;
 	struct property *proplist;
 	struct node *children;
+	struct property *config; 
 
 	struct node *parent;
 	struct node *next_sibling;
@@ -170,10 +171,13 @@ struct node {
 #define for_each_child(n, c)	\
 	for ((c) = (n)->children; (c); (c) = (c)->next_sibling)
 
+#define for_each_config(n, p)	\
+	for ((p) = (n)->config; (p); (p) = (p)->next)
+
 struct property *build_property(char *name, struct data val, char *label);
 struct property *chain_property(struct property *first, struct property *list);
 
-struct node *build_node(struct property *proplist, struct node *children);
+struct node *build_node(struct property *config, struct property *proplist, struct node *children);
 struct node *name_node(struct node *node, char *name, char *label);
 struct node *chain_node(struct node *first, struct node *list);
 

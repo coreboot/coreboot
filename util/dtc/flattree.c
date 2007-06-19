@@ -432,6 +432,7 @@ static void linuxbios_emit_data(void *e, struct property *p)
 	FILE *f = e;
 	int i;
 	char *cleanname;
+	int vallen = d.len > 4 ? 4 : d.len;
 
 	/* nothing to do? */
 	if (d.len == 0)
@@ -441,8 +442,10 @@ static void linuxbios_emit_data(void *e, struct property *p)
 	fprintf(f, "\t.%s = {", cleanname);
 	free(cleanname);
 
-	for(i = 0; i < d.len; i++)
-		fprintf(f, "0x%02x,", d.val[i]);
+	/* sorry, but right now, u32 is all you get */
+	fprintf(f, "0");
+	for(i = 0; i < vallen; i++)
+		fprintf(f, "|(0x%02x<<%d)", d.val[i], (3-i)*8);
 
 	fprintf(f, "},\n");
 }
@@ -649,33 +652,35 @@ static void flatten_tree_emit_structdecls(struct node *tree, struct emitter *emi
 	int seen_name_prop = 0;
 	FILE *f = etarget;
 
-	treename = clean(tree->name, 0);
-	emit->beginnode(etarget, treename);
+	if (tree->config){
+		treename = clean(tree->name, 0);
+		emit->beginnode(etarget, treename);
 
 
 #if 0
-	if (vi->flags & FTF_FULLPATH)
-		emit->string(etarget, tree->fullpath, 0);
-	else
-		emit->string(etarget, tree->name, 0);
+		if (vi->flags & FTF_FULLPATH)
+			emit->string(etarget, tree->fullpath, 0);
+		else
+			emit->string(etarget, tree->name, 0);
 #endif
 
-	for_each_property(tree, prop) {
-		char *cleanname;
-		if (streq(prop->name, "name"))
-			seen_name_prop = 1;
-		cleanname = clean(prop->name, 0);
-		fprintf(f, "\tu8 %s[%d];\n", cleanname, prop->val.len);
-		free(cleanname);
+		for_each_config(tree, prop) {
+			char *cleanname;
+			if (streq(prop->name, "name"))
+				seen_name_prop = 1;
+			cleanname = clean(prop->name, 0);
+			fprintf(f, "\tu32 %s;\n", cleanname);
+			free(cleanname);
 
-	}
+		}
 #if 0
-	if ((vi->flags & FTF_NAMEPROPS) && !seen_name_prop) {
-		fprintf(f, "\tu8 %s[%d];\n", prop->name, prop->val.len);
-	}
+		if ((vi->flags & FTF_NAMEPROPS) && !seen_name_prop) {
+			fprintf(f, "\tu8 %s[%d];\n", prop->name, prop->val.len);
+		}
 #endif
-	emit->endnode(etarget, treename);
-	free(treename);
+		emit->endnode(etarget, treename);
+		free(treename);
+	}
 
 	for_each_child(tree, child) {
 		flatten_tree_emit_structdecls(child, emit, etarget, strbuf, vi);
@@ -692,7 +697,7 @@ static void flatten_tree_emit_structinits(struct node *tree, struct emitter *emi
 {
 	char *treename;
 
-	struct property *prop;
+	struct property *configprop, *dtsprop;
 	struct node *child;
 	int seen_name_prop = 0;
 	FILE *f = etarget;
@@ -708,6 +713,52 @@ static void flatten_tree_emit_structinits(struct node *tree, struct emitter *emi
 	else
 		emit->string(etarget, tree->name, 0);
 #endif
+	/* here is the real action. What we have to do, given a -> config entry, is this:
+	  * foreach property(tree->config)
+	  * search for the property in this node's property list
+	  * if found, then emit that with its initialization
+	  * else emit the one from the config
+	  * if there is a property in the list not in the config -> error
+	  * later on, get smart, and remove properties as they are found.
+	  * for now, be stupid. 
+	  */
+
+	if (tree->config){
+		treename = clean(tree->name, 0);
+		emit->beginnode(etarget, treename);
+#if 0
+		if (vi->flags & FTF_FULLPATH)
+			emit->string(etarget, tree->fullpath, 0);
+		else
+			emit->string(etarget, tree->name, 0);
+#endif
+
+		for_each_config(tree, configprop) {
+			char *cleanname;
+			int found = 0;
+#if 0
+			cleanname = clean(configprop->name, 0);
+			fprintf(f, "\tu32 %s = \n", cleanname);
+			free(cleanname);
+#endif
+			for_each_property(tree, dtsprop) {
+				if (streq(dtsprop->name,configprop->name)){
+					emit->data(etarget, dtsprop);
+					found = 1;
+				}
+			}
+			if (! found)
+				emit->data(etarget, configprop);
+
+		}
+#if 0
+		if ((vi->flags & FTF_NAMEPROPS) && !seen_name_configprop) {
+			fprintf(f, "\tu8 %s[%d];\n", configprop->name, configprop->val.len);
+		}
+#endif
+		emit->endnode(etarget, treename);
+		free(treename);
+	}
 /*
 	for_each_property(tree, prop) {
 		if (streq(prop->name, "name"))
@@ -739,7 +790,7 @@ static void flatten_tree(struct node *tree, struct emitter *emit,
 			 void *etarget, struct data *strbuf,
 			 struct version_info *vi)
 {
-	struct property *prop;
+	struct property *prop, *config;
 	struct node *child;
 	int seen_name_prop = 0;
 
@@ -786,6 +837,26 @@ static void flatten_tree(struct node *tree, struct emitter *emit,
 	for_each_child(tree, child) {
 		flatten_tree(child, emit, etarget, strbuf, vi);
 	}
+
+	for_each_config(tree, prop) {
+		int nameoff;
+
+		if (streq(prop->name, "name"))
+			seen_name_prop = 1;
+
+		nameoff = stringtable_insert(strbuf, prop->name);
+
+		emit->property(etarget, prop->label);
+		emit->cell(etarget, prop->val.len);
+		emit->cell(etarget, nameoff);
+
+		if ((vi->flags & FTF_VARALIGN) && (prop->val.len >= 8))
+			emit->align(etarget, 8);
+
+		emit->data(etarget, prop);
+		emit->align(etarget, sizeof(cell_t));
+	}
+
 
 	emit->endnode(etarget, tree->label);
 }
@@ -1149,7 +1220,7 @@ void dt_to_linuxbios(FILE *f, struct boot_info *bi, int version, int boot_cpuid_
 		fprintf(f, "%s\n", code);
 
 
-//	flatten_tree_emit_structdecls(bi->dt, &linuxbios_emitter, f, &strbuf, vi);
+	flatten_tree_emit_structdecls(bi->dt, &linuxbios_emitter, f, &strbuf, vi);
 	flatten_tree_emit_structinits(bi->dt, &linuxbios_emitter, f, &strbuf, vi);
 	data_free(strbuf);
 	/* */
@@ -1360,7 +1431,7 @@ static struct node *unflatten_tree(struct inbuf *dtbuf,
 	struct node *node;
 	u32 val;
 
-	node = build_node(NULL, NULL);
+	node = build_node(NULL, NULL, NULL);
 
 	if (flags & FTF_FULLPATH) {
 		node->fullpath = flat_read_string(dtbuf);

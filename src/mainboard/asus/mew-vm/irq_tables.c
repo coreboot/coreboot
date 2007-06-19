@@ -38,5 +38,5 @@ that would give 0 after the sum of all bytes for this structure (including check
 
 unsigned long write_pirq_routing_table(unsigned long addr)
 {
-        return copy_pirq_routing_table(addr);
+	return copy_pirq_routing_table(addr);
 }

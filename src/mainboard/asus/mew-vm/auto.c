@@ -38,10 +38,11 @@
 
 #include "southbridge/intel/i82801xx/i82801xx_early_smbus.c"
 
+/* TODO: Not needed? */
 void udelay(int usecs) 
 {
 	int i;
-	for(i = 0; i < usecs; i++)
+	for (i = 0; i < usecs; i++)
 		outb(i&0xff, 0x80);
 }
 
@@ -57,50 +58,31 @@ static void main(unsigned long bist)
 	static const struct mem_controller memctrl[] = {
 		{
 		 .d0 = PCI_DEV(0, 0, 0),
-		 .channel0 = {
-			      (0xa << 3) | 0,
-			      (0xa << 3) | 1,
-			      },
+		 .channel0 = {0x50, 0x51},
 		 }
 	};
-	
-	if (bist == 0) {
+
+	if (bist == 0)
 		early_mtrr_init();
-	}
-	
+
 	enable_smbus();
-	
+
 	lpc47b272_enable_serial(SERIAL_DEV, TTYS0_BASE);
 	uart_init();
 	console_init();
 
-	/* Halt if there was a built in self test failure */
+	/* Halt if there was a built in self test failure. */
 	report_bist_failure(bist);
 
-	//enable_shadow_ram();
+	/* dump_spd_registers(&memctrl[0]); */
 
-	//dump_spd_registers(&memctrl[0]);
+	/* sdram_initialize() runs out of registers. */
+	/* sdram_initialize(sizeof(memctrl) / sizeof(memctrl[0]), memctrl); */
 
-	/* sdram_initialize runs out of registers */
-	//sdram_initialize(sizeof(memctrl) / sizeof(memctrl[0]), memctrl);
-	
 	sdram_set_registers(memctrl);
 	sdram_set_spd_registers(memctrl);
 	sdram_enable(0, memctrl);
 
-	/* Check whether RAM is working.
-	 *
-	 * Do _not_ check the area from 640 KB - 1 MB, as that's not really
-	 * RAM, but rather reserved for various other things:
-	 *
-	 *  - 640 KB - 768 KB: Video Buffer Area
-	 *  - 768 KB - 896 KB: Expansion Area
-	 *  - 896 KB - 960 KB: Extended System BIOS Area
-	 *  - 960 KB - 1 MB:   Memory (BIOS Area) - System BIOS Area
-	 *
-	 * Trying to check these areas will fail.
-	 */
-	/* TODO: This is currently hardcoded to check 64 MB. */
-	//ram_check(0x00000000, 0x0009ffff);	/* 0 - 640 KB */
-	//ram_check(0x00100000, 0x007c0000);	/* 1 MB - 64 MB */
+	/* Check RAM. */
+	/* ram_check(0, 640 * 1024); */
 }

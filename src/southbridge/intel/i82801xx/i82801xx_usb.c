@@ -27,104 +27,104 @@
 
 static void usb_init(struct device *dev)
 {
-/* TODO: Any init needed? Some ports have it, others don't */
+	/* TODO: Any init needed? Some ports have it, others don't. */
 }
 
-static struct device_operations usb_ops  = {
-	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.init             = usb_init,
-	.scan_bus         = 0,
-	.enable           = i82801xx_enable,
+static struct device_operations usb_ops = {
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.init			= usb_init,
+	.scan_bus		= 0,
+	.enable			= i82801xx_enable,
 };
 
-/* i82801aa */
+/* 82801AA */
 static struct pci_driver i82801aa_usb_1 __pci_driver = {
-	.ops    = &usb_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x2412,
+	.ops	= &usb_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x2412,
 };
 
-/* i82801ab */
+/* 82801AB */
 static struct pci_driver i82801ab_usb_1 __pci_driver = {
-        .ops    = &usb_ops,
-        .vendor = PCI_VENDOR_ID_INTEL,
-        .device = 0x2422,
+	.ops	= &usb_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x2422,
 };
 
-/* i82801ba */
+/* 82801BA */
 static struct pci_driver i82801ba_usb_1 __pci_driver = {
-        .ops    = &usb_ops,
-        .vendor = PCI_VENDOR_ID_INTEL,
-        .device = 0x2442,
+	.ops	= &usb_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x2442,
 };
 
 static struct pci_driver i82801ba_usb_2 __pci_driver = {
-        .ops    = &usb_ops,
-        .vendor = PCI_VENDOR_ID_INTEL,
-        .device = 0x2444,
+	.ops	= &usb_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x2444,
 };
 
-/* i82801ca */
+/* 82801CA */
 static struct pci_driver i82801ca_usb_1 __pci_driver = {
-        .ops    = &usb_ops,
-        .vendor = PCI_VENDOR_ID_INTEL,
-        .device = 0x2482,
+	.ops	= &usb_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x2482,
 };
 
 static struct pci_driver i82801ca_usb_2 __pci_driver = {
-        .ops    = &usb_ops,
-        .vendor = PCI_VENDOR_ID_INTEL,
-        .device = 0x2484,
+	.ops	= &usb_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x2484,
 };
 
 static struct pci_driver i82801ca_usb_3 __pci_driver = {
-        .ops    = &usb_ops,
-        .vendor = PCI_VENDOR_ID_INTEL,
-        .device = 0x2487,
+	.ops	= &usb_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x2487,
 };
 
-/* i82801db and i82801dbm */
+/* 82801DB and 82801DBM */
 static struct pci_driver i82801db_usb_1 __pci_driver = {
-        .ops    = &usb_ops,
-        .vendor = PCI_VENDOR_ID_INTEL,
-        .device = 0x24c2,
+	.ops	= &usb_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x24c2,
 };
 
 static struct pci_driver i82801db_usb_2 __pci_driver = {
-        .ops    = &usb_ops,
-        .vendor = PCI_VENDOR_ID_INTEL,
-        .device = 0x24c4,
+	.ops	= &usb_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x24c4,
 };
 
 static struct pci_driver i82801db_usb_3 __pci_driver = {
-        .ops    = &usb_ops,
-        .vendor = PCI_VENDOR_ID_INTEL,
-        .device = 0x24c7,
+	.ops	= &usb_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x24c7,
 };
 
-/* i82801eb and i82801er */
+/* 82801EB and 82801ER */
 static struct pci_driver i82801ex_usb_1 __pci_driver = {
-        .ops    = &usb_ops,
-        .vendor = PCI_VENDOR_ID_INTEL,
-        .device = 0x24d2,
+	.ops	= &usb_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x24d2,
 };
 
 static struct pci_driver i82801ex_usb_2 __pci_driver = {
-        .ops    = &usb_ops,
-        .vendor = PCI_VENDOR_ID_INTEL,
-        .device = 0x24d4,
+	.ops	= &usb_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x24d4,
 };
 
 static struct pci_driver i82801ex_usb_3 __pci_driver = {
-        .ops    = &usb_ops,
-        .vendor = PCI_VENDOR_ID_INTEL,
-        .device = 0x24d7,
+	.ops	= &usb_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x24d7,
 };
 
 static struct pci_driver i82801ex_usb_4 __pci_driver = {
-        .ops    = &usb_ops,
-        .vendor = PCI_VENDOR_ID_INTEL,
-        .device = 0x24de,
+	.ops	= &usb_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x24de,
 };

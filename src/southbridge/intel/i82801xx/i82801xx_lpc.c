@@ -20,8 +20,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
- 
-/* from i82801dbm, needs to be fixed to support everything the i82801er does */
+
+/* From 82801DBM, needs to be fixed to support everything the 82801ER does. */
 
 #include <console/console.h>
 #include <device/device.h>
@@ -34,17 +34,17 @@
 
 #define NMI_OFF 0
 
-void i82801xx_enable_ioapic( struct device *dev) 
+void i82801xx_enable_ioapic(struct device *dev)
 {
 	uint32_t reg32;
 	volatile uint32_t *ioapic_index = (volatile uint32_t *)0xfec00000;
 	volatile uint32_t *ioapic_data = (volatile uint32_t *)0xfec00010;
 
 	reg32 = pci_read_config32(dev, GEN_CNTL);
-	reg32 |= (3 << 7); /* Enable IOAPIC */
-	reg32 |= (1 << 13); /* Coprocessor error enable */
-	reg32 |= (1 << 1); /* Delayed transaction enable */
-	reg32 |= (1 << 2); /* DMA collection buffer enable */
+	reg32 |= (3 << 7);	/* Enable IOAPIC */
+	reg32 |= (1 << 13);	/* Coprocessor error enable */
+	reg32 |= (1 << 1);	/* Delayed transaction enable */
+	reg32 |= (1 << 2);	/* DMA collection buffer enable */
 	pci_write_config32(dev, GEN_CNTL, reg32);
 	printk_debug("IOAPIC Southbridge enabled %x\n", reg32);
 
@@ -54,7 +54,7 @@ void i82801xx_enable_ioapic( struct device *dev)
 	*ioapic_index = 0;
 	reg32 = *ioapic_data;
 	printk_debug("Southbridge APIC ID = %x\n", reg32);
-	if(reg32 != (1 << 25))
+	if (reg32 != (1 << 25))
 		die("APIC Error\n");
 
 	/* TODO: From i82801ca, needed/useful on other ICH? */
@@ -62,44 +62,48 @@ void i82801xx_enable_ioapic( struct device *dev)
 	*ioapic_data = 1;	// Use Processor System Bus to deliver interrupts
 }
 
-void i82801xx_enable_serial_irqs( struct device *dev)
+void i82801xx_enable_serial_irqs(struct device *dev)
 {
-	/* set packet length and toggle silent mode bit */
-	pci_write_config8(dev, SERIRQ_CNTL, (1 << 7)|(1 << 6)|((21 - 17) << 2)|(0 << 0));
-	pci_write_config8(dev, SERIRQ_CNTL, (1 << 7)|(0 << 6)|((21 - 17) << 2)|(0 << 0));
-	/* TODO: Explain/#define the real meaning of these magic numbers ^^^ */
+	/* Set packet length and toggle silent mode bit. */
+	pci_write_config8(dev, SERIRQ_CNTL,
+			  (1 << 7) | (1 << 6) | ((21 - 17) << 2) | (0 << 0));
+	pci_write_config8(dev, SERIRQ_CNTL,
+			  (1 << 7) | (0 << 6) | ((21 - 17) << 2) | (0 << 0));
+	/* TODO: Explain/#define the real meaning of these magic numbers. */
 }
 
-void i82801xx_lpc_route_dma( struct device *dev, uint8_t mask) 
+void i82801xx_lpc_route_dma(struct device *dev, uint8_t mask)
 {
-        uint16_t reg16;
-        int i;
-        reg16 = pci_read_config16(dev, PCI_DMA_CFG);
-        reg16 &= 0x300;
-        for(i = 0; i < 8; i++) {
-                if (i == 4)
-                        continue;
-                reg16 |= ((mask & (1 << i))? 3:1) << (i * 2);
-        }
-        pci_write_config16(dev, PCI_DMA_CFG, reg16);
+	uint16_t reg16;
+	int i;
+
+	reg16 = pci_read_config16(dev, PCI_DMA_CFG);
+	reg16 &= 0x300;
+	for (i = 0; i < 8; i++) {
+		if (i == 4)
+			continue;
+		reg16 |= ((mask & (1 << i)) ? 3 : 1) << (i * 2);
+	}
+	pci_write_config16(dev, PCI_DMA_CFG, reg16);
 }
 
+/* TODO: Needs serious cleanup/comments. */
 void i82801xx_rtc_init(struct device *dev)
-{//todo:needs serious cleanup/comments
-        uint8_t reg8;
-        uint32_t reg32;
-        int rtc_failed;
-        reg8 = pci_read_config8(dev, GEN_PMCON_3);
-        rtc_failed = reg8 & RTC_BATTERY_DEAD;
-        if (rtc_failed) {
-                reg8 &= ~(1 << 1); /* preserve the power fail state */
-                pci_write_config8(dev, GEN_PMCON_3, reg8);
-        }
-        reg32 = pci_read_config32(dev, GEN_STS);
-        rtc_failed |= reg32 & (1 << 2);
-        rtc_init(rtc_failed);
-}
+{
+	uint8_t reg8;
+	uint32_t reg32;
+	int rtc_failed;
 
+	reg8 = pci_read_config8(dev, GEN_PMCON_3);
+	rtc_failed = reg8 & RTC_BATTERY_DEAD;
+	if (rtc_failed) {
+		reg8 &= ~(1 << 1);	/* preserve the power fail state */
+		pci_write_config8(dev, GEN_PMCON_3, reg8);
+	}
+	reg32 = pci_read_config32(dev, GEN_STS);
+	rtc_failed |= reg32 & (1 << 2);
+	rtc_init(rtc_failed);
+}
 
 void i82801xx_1f0_misc(struct device *dev)
 {
@@ -114,13 +118,13 @@ void i82801xx_1f0_misc(struct device *dev)
 	pci_write_config32(dev, GPIO_BASE, GPIO_BASE_ADDR | 1);
 	/* Enable GPIO */
 	pci_write_config8(dev, GPIO_CNTL, 0x10);
-	
+
 	//get rid of?
 	/* Route PIRQA to IRQ11, PIRQB to IRQ3, PIRQC to IRQ5, PIRQD to IRQ10 */
 	pci_write_config32(dev, PIRQA_ROUT, 0x0A05030B);
 	/* Route PIRQE to IRQ7. Leave PIRQF - PIRQH unrouted */
 	pci_write_config8(dev, PIRQE_ROUT, 0x07);
-	
+
 	//move to i82801xx_init
 	/* Prevent LPC disabling, enable parity errors, and SERR# (System Error) */
 	pci_write_config16(dev, PCI_COMMAND, 0x014f);
@@ -142,20 +146,20 @@ static void enable_hpet(struct device *dev)
 	uint32_t code = (0 & 0x3);
 
 	reg32 = pci_read_config32(dev, GEN_CNTL);
-	reg32 |= (1 << 17); /* Enable HPET */
-	/*Bits [16:15]Memory Address Range
-	00 FED0_0000h - FED0_03FFh
-	01 FED0_1000h - FED0_13FFh
-	10 FED0_2000h - FED0_23FFh
-	11 FED0_3000h - FED0_33FFh*/
-
-	reg32 &= ~(3 << 15); /* Clear it */
+	reg32 |= (1 << 17);	/* Enable HPET */
+	/*
+	 * Bits [16:15]	Memory Address Range
+	 * 00		FED0_0000h - FED0_03FFh
+	 * 01		FED0_1000h - FED0_13FFh
+	 * 10		FED0_2000h - FED0_23FFh
+	 * 11		FED0_3000h - FED0_33FFh
+	 */
+	reg32 &= ~(3 << 15);	/* Clear it */
 	reg32 |= (code << 15);
-	/* reg32 is never written to anywhere?? */
+	/* reg32 is never written to anywhere? */
 	printk_debug("Enabling HPET @0x%x\n", HPET_ADDR | (code << 12));
 #endif
 }
-
 
 static void lpc_init(struct device *dev)
 {
@@ -169,14 +173,15 @@ static void lpc_init(struct device *dev)
 	i82801xx_enable_serial_irqs(dev);
 
 	/* TODO: Find out if this is being used/works */
-#ifdef SUSPICIOUS_LOOKING_CODE	
-	/* The ICH-4 datasheet does not mention this configuration register. */ 
-	/* This code may have been inherited (incorrectly) from code for 
-	the AMD 766 southbridge, which *does* support this functionality. */
+#ifdef SUSPICIOUS_LOOKING_CODE
+	/* The ICH-4 datasheet does not mention this configuration register.
+	 * This code may have been inherited (incorrectly) from code for
+	 * the AMD 766 southbridge, which *does* support this functionality.
+	 */
 
 	/* Posted memory write enable */
 	byte = pci_read_config8(dev, 0x46);
-	pci_write_config8(dev, 0x46, byte | (1<<0)); 
+	pci_write_config8(dev, 0x46, byte | (1 << 0));
 #endif
 
 	/* power after power fail */
@@ -185,23 +190,23 @@ static void lpc_init(struct device *dev)
 	 * 0 == S0 Full On
 	 * 1 == S5 Soft Off
 	 */
-        pci_write_config8(dev, GEN_PMCON_3, pwr_on?0:1);
-        printk_info("Set power %s if power fails\n", pwr_on?"on":"off");
+	pci_write_config8(dev, GEN_PMCON_3, pwr_on ? 0 : 1);
+	printk_info("Set power %s if power fails\n", pwr_on ? "on" : "off");
 
 	/* Set up NMI on errors */
 	byte = inb(0x61);
-	byte &= ~(1 << 3); /* IOCHK# NMI Enable */
-	byte &= ~(1 << 2); /* PCI SERR# Enable */
+	byte &= ~(1 << 3);	/* IOCHK# NMI Enable */
+	byte &= ~(1 << 2);	/* PCI SERR# Enable */
 	outb(byte, 0x61);
 	byte = inb(0x70);
 
 	nmi_option = NMI_OFF;
 	get_option(&nmi_option, "nmi");
-	if (nmi_option) {			
-		byte &= ~(1 << 7); /* set NMI */
+	if (nmi_option) {
+		byte &= ~(1 << 7);	/* Set NMI */
 		outb(byte, 0x70);
 	}
-	
+
 	/* Initialize the real time clock */
 	i82801xx_rtc_init(dev);
 
@@ -224,10 +229,12 @@ static void i82801xx_lpc_read_resources(device_t dev)
 
 	/* Add an extra subtractive resource for both memory and I/O */
 	res = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
-	res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+	res->flags =
+	    IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 
 	res = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
-	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+	res->flags =
+	    IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 }
 
 static void i82801xx_lpc_enable_resources(device_t dev)
@@ -236,54 +243,54 @@ static void i82801xx_lpc_enable_resources(device_t dev)
 	enable_childrens_resources(dev);
 }
 
-static struct device_operations lpc_ops  = {
-	.read_resources   = i82801xx_lpc_read_resources,
-	.set_resources    = pci_dev_set_resources,
-	.enable_resources = i82801xx_lpc_enable_resources,
-	.init             = lpc_init,
-	.scan_bus         = scan_static_bus,
-	.enable           = i82801xx_enable,
+static struct device_operations lpc_ops = {
+	.read_resources		= i82801xx_lpc_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= i82801xx_lpc_enable_resources,
+	.init			= lpc_init,
+	.scan_bus		= scan_static_bus,
+	.enable			= i82801xx_enable,
 };
 
 static struct pci_driver i82801aa_lpc __pci_driver = {
-	.ops    = &lpc_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x2410,
+	.ops	= &lpc_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x2410,
 };
 
 static struct pci_driver i82801ab_lpc __pci_driver = {
-	.ops    = &lpc_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x2420,
+	.ops	= &lpc_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x2420,
 };
 
 static struct pci_driver i82801ba_lpc __pci_driver = {
-	.ops    = &lpc_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x2440,
+	.ops	= &lpc_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x2440,
 };
 
 static struct pci_driver i82801ca_lpc __pci_driver = {
-	.ops    = &lpc_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x2480,
+	.ops	= &lpc_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x2480,
 };
 
 static struct pci_driver i82801db_lpc __pci_driver = {
-	.ops    = &lpc_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x24c0,
+	.ops	= &lpc_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x24c0,
 };
 
 static struct pci_driver i82801dbm_lpc __pci_driver = {
-	.ops    = &lpc_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x24cc,
+	.ops	= &lpc_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x24cc,
 };
 
-/* i82801eb and er */
+/* 82801EB and 82801ER */
 static struct pci_driver i82801ex_lpc __pci_driver = {
-	.ops    = &lpc_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x24d0,
+	.ops	= &lpc_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x24d0,
 };

@@ -31,24 +31,24 @@
 #include "northbridge.h"
 #include "i82810.h"
 
-static void northbridge_init(device_t dev) 
+static void northbridge_init(device_t dev)
 {
 	printk_spew("Northbridge init\n");
 }
 
 static struct device_operations northbridge_operations = {
-	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.init             = northbridge_init,
-	.enable           = 0,
-	.ops_pci          = 0,
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.init			= northbridge_init,
+	.enable			= 0,
+	.ops_pci		= 0,
 };
 
 static struct pci_driver northbridge_driver __pci_driver = {
-	.ops = &northbridge_operations,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x7120,
+	.ops	= &northbridge_operations,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x7120,
 };
 
 #define BRIDGE_IO_MASK (IORESOURCE_IO | IORESOURCE_MEM)
@@ -62,16 +62,18 @@ static void pci_domain_read_resources(device_t dev)
 	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
 	resource->base = 0x400;
 	resource->limit = 0xffffUL;
-	resource->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+	resource->flags =
+	    IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 
 	/* Initialize the system wide memory resources constraints */
 	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
 	resource->limit = 0xffffffffULL;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+	resource->flags =
+	    IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 }
 
 static void ram_resource(device_t dev, unsigned long index,
-        unsigned long basek, unsigned long sizek)
+			 unsigned long basek, unsigned long sizek)
 {
 	struct resource *resource;
 
@@ -79,10 +81,10 @@ static void ram_resource(device_t dev, unsigned long index,
 		return;
 	}
 	resource = new_resource(dev, index);
-	resource->base  = ((resource_t)basek) << 10;
-	resource->size  = ((resource_t)sizek) << 10;
-	resource->flags =  IORESOURCE_MEM | IORESOURCE_CACHEABLE | \
-		IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
+	resource->base = ((resource_t) basek) << 10;
+	resource->size = ((resource_t) sizek) << 10;
+	resource->flags = IORESOURCE_MEM | IORESOURCE_CACHEABLE |
+	    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 }
 
 static void tolm_test(void *gp, struct device *dev, struct resource *new)
@@ -101,7 +103,8 @@ static uint32_t find_pci_tolm(struct bus *bus)
 	struct resource *min;
 	uint32_t tolm;
 	min = 0;
-	search_bus_resources(bus, IORESOURCE_MEM, IORESOURCE_MEM, tolm_test, &min);
+	search_bus_resources(bus, IORESOURCE_MEM, IORESOURCE_MEM, tolm_test,
+			     &min);
 	tolm = 0xffffffffUL;
 	if (min && tolm > min->base) {
 		tolm = min->base;
@@ -143,7 +146,7 @@ static void pci_domain_set_resources(device_t dev)
 		/* Translate it to MB and add to tomk. */
 		tomk = (unsigned long)(translate_i82810_to_mb[drp_value & 0xf]);
 		/* Now do the same for DIMM 1. */
-		drp_value = drp_value >> 4; // >>= 4; //? mess with later
+		drp_value = drp_value >> 4;	// >>= 4; //? mess with later
 		tomk += (unsigned long)(translate_i82810_to_mb[drp_value]);
 
 		printk_debug("Setting RAM size to %d MB\n", tomk);
@@ -173,11 +176,11 @@ static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
 }
 
 static struct device_operations pci_domain_ops = {
-	.read_resources   = pci_domain_read_resources,
-	.set_resources    = pci_domain_set_resources,
-	.enable_resources = enable_childrens_resources,
-	.init             = 0,
-	.scan_bus         = pci_domain_scan_bus,
+	.read_resources		= pci_domain_read_resources,
+	.set_resources		= pci_domain_set_resources,
+	.enable_resources	= enable_childrens_resources,
+	.init			= 0,
+	.scan_bus		= pci_domain_scan_bus,
 };
 
 static void cpu_bus_init(device_t dev)
@@ -190,11 +193,11 @@ static void cpu_bus_noop(device_t dev)
 }
 
 static struct device_operations cpu_bus_ops = {
-	.read_resources   = cpu_bus_noop,
-	.set_resources    = cpu_bus_noop,
-	.enable_resources = cpu_bus_noop,
-	.init             = cpu_bus_init,
-	.scan_bus         = 0,
+	.read_resources		= cpu_bus_noop,
+	.set_resources		= cpu_bus_noop,
+	.enable_resources	= cpu_bus_noop,
+	.init			= cpu_bus_init,
+	.scan_bus		= 0,
 };
 
 static void enable_dev(struct device *dev)
@@ -205,8 +208,7 @@ static void enable_dev(struct device *dev)
 	if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
 		dev->ops = &pci_domain_ops;
 		pci_set_method(dev);
-	}
-	else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
+	} else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
 		dev->ops = &cpu_bus_ops;
 	}
 }

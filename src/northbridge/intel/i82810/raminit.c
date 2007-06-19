@@ -47,9 +47,9 @@ Macros and definitions.
 #endif
 
 /* DRAMT[7:5] - SDRAM Mode Select (SMS). */
-#define RAM_COMMAND_SELF_REFRESH 0x0 /* IE disable refresh */
-#define RAM_COMMAND_NORMAL	 0x1 /* Normal refresh, 15.6us/11.7us for 100/133MHz */
-#define RAM_COMMAND_NORMAL_FR	 0x2 /* Fast refresh, 7.8us/5.85us for 100/133MHz */
+#define RAM_COMMAND_SELF_REFRESH 0x0	/* IE disable refresh */
+#define RAM_COMMAND_NORMAL	 0x1	/* Normal refresh, 15.6us/11.7us for 100/133MHz */
+#define RAM_COMMAND_NORMAL_FR	 0x2	/* Fast refresh, 7.8us/5.85us for 100/133MHz */
 #define RAM_COMMAND_NOP		 0x4
 #define RAM_COMMAND_PRECHARGE	 0x5
 #define RAM_COMMAND_MRS		 0x6
@@ -86,7 +86,7 @@ static void do_ram_command(const struct mem_controller *ctrl, uint32_t command,
 	PRINT_DEBUG("    Sending RAM command 0x");
 	PRINT_DEBUG_HEX8(reg);
 	PRINT_DEBUG(" to 0x");
-	PRINT_DEBUG_HEX32(0 + addr_offset); // FIXME
+	PRINT_DEBUG_HEX32(0 + addr_offset);	// FIXME
 	PRINT_DEBUG("\r\n");
 
 	/* Read from (DIMM start address + addr_offset). */
@@ -98,7 +98,8 @@ static void do_ram_command(const struct mem_controller *ctrl, uint32_t command,
 DIMM-independant configuration functions.
 -----------------------------------------------------------------------------*/
 
-static void spd_set_dram_size(const struct mem_controller *ctrl, uint32_t row_offset)
+static void spd_set_dram_size(const struct mem_controller *ctrl,
+			      uint32_t row_offset)
 {
 	/* The variables drp and dimm_size have to be ints since all the
 	 * SMBus-related functions return ints, and its just easier this way.
@@ -106,9 +107,8 @@ static void spd_set_dram_size(const struct mem_controller *ctrl, uint32_t row_of
 	int i, drp, dimm_size;
 
 	drp = 0x00;
-	
-	for (i = 0; i < DIMM_SOCKETS; i++)
-	{
+
+	for (i = 0; i < DIMM_SOCKETS; i++) {
 		/* First check if a DIMM is actually present. */
 		if (smbus_read_byte(ctrl->channel0[i], 2) == 4) {
 			print_debug("Found DIMM in slot ");
@@ -126,37 +126,45 @@ static void spd_set_dram_size(const struct mem_controller *ctrl, uint32_t row_of
 			 * side. This will fail if the DIMM uses a
 			 * non-supported DRAM tech, and can't be used until
 			 * buffers are done dynamically.
-			 * Note: the factory BIOS just dies if it spots
-			 * this :D
+			 * Note: the factory BIOS just dies if it spots this :D
 			 */
-			if(dimm_size > 32) {
-				print_err("DIMM row sizes larger than 128MB not" 
-							"supported on i810\r\n");
-				print_err("Attempting to treat as 128MB DIMM\r\n");
+			if (dimm_size > 32) {
+				print_err("DIMM row sizes larger than 128MB not"
+					  "supported on i810\r\n");
+				print_err
+				    ("Attempting to treat as 128MB DIMM\r\n");
 				dimm_size = 32;
 			}
 
-			/* Set the row offset, in KBytes (should this be Kbits?) */
-			/* Note that this offset is the start of the next row. */
+			/* Set the row offset, in KBytes (should this be
+			 * Kbits?). Note that this offset is the start of the
+			 * next row.
+			 */
 			row_offset = (dimm_size * 4 * 1024);
 
-			/* This is the way I was doing this, it's provided mainly
-			 * as an alternative to the "new" way.
+			/* This is the way I was doing this, it's provided
+			 * mainly as an alternative to the "new" way.
 			 */
 
-			#if 0
+#if 0
 			/* 8MB */
-			if(dimm_size == 0x2) dimm_size = 0x1;
+			if (dimm_size == 0x2)
+				dimm_size = 0x1;
 			/* 16MB */
-			else if(dimm_size == 0x4) dimm_size = 0x4;
+			else if (dimm_size == 0x4)
+				dimm_size = 0x4;
 			/* 32MB */
-			else if(dimm_size == 0x8) dimm_size = 0x7;
+			else if (dimm_size == 0x8)
+				dimm_size = 0x7;
 			/* 64 MB */
-			else if(dimm_size == 0x10) dimm_size = 0xa;
+			else if (dimm_size == 0x10)
+				dimm_size = 0xa;
 			/* 128 MB */
-			else if(dimm_size == 0x20) dimm_size = 0xd;
-			else print_debug("Ram Size not supported\r\n");
-			#endif
+			else if (dimm_size == 0x20)
+				dimm_size = 0xd;
+			else
+				print_debug("Ram Size not supported\r\n");
+#endif
 
 			/* This array is provided in raminit.h, because it got
 			 * extremely messy. The above way is cleaner, but
@@ -169,8 +177,9 @@ static void spd_set_dram_size(const struct mem_controller *ctrl, uint32_t row_of
 			print_debug("\r\n");
 
 			/* If the DIMM is dual-sided, the DRP value is +2 */
-			/* TODO: Figure out asymetrical configurations */
-			if ((smbus_read_byte(ctrl->channel0[i], 127) | 0xf) == 0xff) {
+			/* TODO: Figure out asymetrical configurations. */
+			if ((smbus_read_byte(ctrl->channel0[i], 127) | 0xf) ==
+			    0xff) {
 				print_debug("DIMM is dual-sided\r\n");
 				dimm_size += 2;
 			}
@@ -179,7 +188,7 @@ static void spd_set_dram_size(const struct mem_controller *ctrl, uint32_t row_of
 			print_debug_hex8(i);
 			print_debug("\r\n");
 
-			/* If there's no DIMM in the slot, set the value to 0. */
+			/* If there's no DIMM in the slot, set value to 0. */
 			dimm_size = 0x00;
 		}
 
@@ -233,11 +242,11 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	 * 10 = Write Only
 	 * 11 = Read/Write
 
-	 * Bit	Range
-	 * 7:6	000F0000 - 000FFFFF
-	 * 5:4	000E0000 - 000EFFFF
-	 * 3:2	000D0000 - 000DFFFF
-	 * 1:0	000C0000 - 000CFFFF
+	 * Bit  Range
+	 * 7:6  000F0000 - 000FFFFF
+	 * 5:4  000E0000 - 000EFFFF
+	 * 3:2  000D0000 - 000DFFFF
+	 * 1:0  000C0000 - 000CFFFF
 	 */
 
 	/* Ideally, this should be R/W for as many ranges as possible. */
@@ -293,7 +302,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	 */
 	uint32_t row_offset;
 
-	spd_set_dram_size(ctrl, row_offset); 
+	spd_set_dram_size(ctrl, row_offset);
 
 	/* 1. Apply NOP. */
 	PRINT_DEBUG("RAM Enable 1: Apply NOP\r\n");

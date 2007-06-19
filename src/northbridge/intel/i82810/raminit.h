@@ -21,16 +21,13 @@
 #ifndef NORTHBRIDGE_INTEL_I82810_RAMINIT_H
 #define NORTHBRIDGE_INTEL_I82810_RAMINIT_H
 
-/* The i810 supports max 2 dual-sided DIMMs. */
+/* The 82810 supports max. 2 dual-sided DIMMs. */
 #define DIMM_SOCKETS	2
 
 struct mem_controller {
 	device_t d0;
 	uint16_t channel0[DIMM_SOCKETS];
 };
-
-
-#endif				/* NORTHBRIDGE_INTEL_I82810_RAMINIT_H */
 
 /* The following table has been bumped over to this header to avoid clutter in 
  * raminit.c. It's used to translate the value read from SPD Byte 31 to a value
@@ -40,7 +37,7 @@ struct mem_controller {
  * this table is necessary.
  */
 
-/* TODO: Find a better way of doing this */
+/* TODO: Find a better way of doing this. */
 
 static const uint8_t translate_spd_to_i82810[] = {
 	/* Note: 4MB sizes are not supported, so dual-sided DIMMs with a 4MB 
@@ -86,5 +83,7 @@ static const uint8_t translate_spd_to_i82810[] = {
 	0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
 	0xff, 0xff, 0xff, /* 0x31-3f	Invalid		*/
 	0x0f,	/*	0x40		256/0 or 256	*/
-	/* Anything larger is not supported by the i810 */
+	/* Anything larger is not supported by the 82810. */
 };
+
+#endif				/* NORTHBRIDGE_INTEL_I82810_RAMINIT_H */

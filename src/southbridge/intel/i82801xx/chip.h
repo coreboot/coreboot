@@ -19,21 +19,20 @@
  */
 
 #ifndef IGNORE_I82801XX_DEVICE_LIST
-#warning "The i82801xx code currently supports, on a testing/experimental basis," 
-#warning "these devices:"
-#warning "i82801aa, i82801ab, i82801ba, i82801ca, i82801db, i82801dbm, i82801eb,"
-#warning "and i82801er."
-#warning "Using this without modification on any other i82801 version will probably"
-#warning "work until ram init, but will fail after that"
+#warning "The i82801xx code currently supports, on a testing/experimental"
+#warning "basis, these devices:"
+#warning "i82801aa, i82801ab, i82801ba, i82801ca, i82801db, i82801dbm,"
+#warning "i82801eb, and i82801er."
+#warning "Using this without modification on any other i82801 version will"
+#warning "probably work until RAM init, but will fail after that."
 #endif
 
 #ifndef SOUTHBRIDGE_INTEL_I82801XX_CHIP_H
 #define SOUTHBRIDGE_INTEL_I82801XX_CHIP_H
 
-struct southbridge_intel_i82801xx_config 
-{
+struct southbridge_intel_i82801xx_config {
 };
 
 extern struct chip_operations southbridge_intel_i82801xx_ops;
 
-#endif /* SOUTHBRIDGE_INTEL_I82801XX_CHIP_H */
+#endif				/* SOUTHBRIDGE_INTEL_I82801XX_CHIP_H */

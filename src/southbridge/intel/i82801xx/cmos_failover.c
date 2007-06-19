@@ -18,11 +18,11 @@
 
 #include "i82801xx.h"
 
-static void check_cmos_failed(void) 
+static void check_cmos_failed(void)
 {
 	uint8_t byte;
 	byte = pci_read_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3);
-	if( byte & RTC_FAILED) {
+	if (byte & RTC_FAILED) {
 		//clear bit 1 and bit 2
 		byte = cmos_read(RTC_BOOT_BYTE);
 		byte &= 0x0c;

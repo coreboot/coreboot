@@ -1,6 +1,3 @@
-# Config file for asus mew-vm board
-# This will make a target directory of ./mew-vm
-
 target mew-vm
 mainboard asus/mew-vm
 

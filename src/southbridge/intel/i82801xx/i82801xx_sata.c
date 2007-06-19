@@ -26,14 +26,15 @@
 #include <device/pci_ops.h>
 #include "i82801xx.h"
 
-/* TODO: set dynamically, if the user only wants one sata channel or none at all */
-
+/* TODO: Set dynamically, if the user only wants one SATA channel or none
+ * at all.
+ */
 static void sata_init(struct device *dev)
 {
 	/* SATA configuration */
 	pci_write_config8(dev, 0x04, 0x07);
 	pci_write_config8(dev, 0x09, 0x8f);
-	
+
 	/* Set timmings */
 	pci_write_config16(dev, 0x40, 0x0a307);
 	pci_write_config16(dev, 0x42, 0x0a307);
@@ -42,41 +43,41 @@ static void sata_init(struct device *dev)
 	pci_write_config16(dev, 0x48, 0x000f);
 	pci_write_config16(dev, 0x4a, 0x1111);
 
-	/* 66 mhz */
+	/* 66 MHz */
 	pci_write_config16(dev, 0x54, 0xf00f);
 
-	/* Combine ide - sata configuration */
+	/* Combine IDE - SATA configuration */
 	pci_write_config8(dev, 0x90, 0x0);
-	
-	/* port 0 & 1 enable */
+
+	/* Port 0 & 1 enable */
 	pci_write_config8(dev, 0x92, 0x33);
-	
-	/* initialize SATA  */
+
+	/* Initialize SATA. */
 	pci_write_config16(dev, 0xa0, 0x0018);
 	pci_write_config32(dev, 0xa4, 0x00000264);
 	pci_write_config16(dev, 0xa0, 0x0040);
 	pci_write_config32(dev, 0xa4, 0x00220043);
 }
 
-static struct device_operations sata_ops  = {
-	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.init             = sata_init,
-	.scan_bus         = 0,
-	.enable           = i82801xx_enable,
+static struct device_operations sata_ops = {
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.init			= sata_init,
+	.scan_bus		= 0,
+	.enable			= i82801xx_enable,
 };
 
-/* i82801eb */
+/* 82801EB */
 static struct pci_driver i82801eb_sata_driver __pci_driver = {
-	.ops    = &sata_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x24d1,
+	.ops	= &sata_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x24d1,
 };
 
-/* i82801er */
+/* 82801ER */
 static struct pci_driver i82801er_sata_driver __pci_driver = {
-	.ops    = &sata_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x24df,
+	.ops	= &sata_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x24df,
 };

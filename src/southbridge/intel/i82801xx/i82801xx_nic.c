@@ -23,22 +23,22 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 
-static struct device_operations nic_ops  = {
-	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.init             = 0,
-	.scan_bus         = 0,
+static struct device_operations nic_ops = {
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.init			= 0,
+	.scan_bus		= 0,
 };
 
 static struct pci_driver i82801dbm_nic __pci_driver = {
-	.ops    = &nic_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x103a,
+	.ops	= &nic_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x103a,
 };
 
 static struct pci_driver i82801ex_nic __pci_driver = {
-	.ops    = &nic_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x1051,
+	.ops	= &nic_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x1051,
 };

@@ -32,63 +32,62 @@ static int smbus_read_byte(struct bus *bus, device_t dev, uint8_t address)
 
 	device = dev->path.u.i2c.device;
 	res = find_resource(bus->dev, 0x20);
-	
+
 	return do_smbus_read_byte(res->base, device, address);
 }
 
 static struct smbus_bus_operations lops_smbus_bus = {
-	.read_byte  = smbus_read_byte,
+	.read_byte	= smbus_read_byte,
 };
 
 static struct device_operations smbus_ops = {
-	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.init             = 0,
-	.scan_bus         = scan_static_bus,
-	.enable           = i82801er_enable,
-	.ops_smbus_bus    = &lops_smbus_bus,
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.init			= 0,
+	.scan_bus		= scan_static_bus,
+	.enable			= i82801er_enable,
+	.ops_smbus_bus		= &lops_smbus_bus,
 };
 
-/* i82801aa */
+/* 82801AA */
 static struct pci_driver smbus_driver __pci_driver = {
-	.ops    = &smbus_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x2413,
+	.ops	= &smbus_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x2413,
 };
 
-/* i82801ab */
+/* 82801AB */
 static struct pci_driver smbus_driver __pci_driver = {
-	.ops    = &smbus_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x2423,
+	.ops	= &smbus_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x2423,
 };
 
-/* i82801ba */
+/* 82801BA */
 static struct pci_driver smbus_driver __pci_driver = {
-	.ops    = &smbus_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x2443,
+	.ops	= &smbus_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x2443,
 };
 
-/* i82801ca */
+/* 82801CA */
 static struct pci_driver smbus_driver __pci_driver = {
-	.ops    = &smbus_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x2483,
+	.ops	= &smbus_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x2483,
 };
 
-/* i82801db and i82801dbm */
+/* 82801DB and 82801DBM */
 static struct pci_driver smbus_driver __pci_driver = {
-	.ops    = &smbus_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x24c3,
+	.ops	= &smbus_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x24c3,
 };
 
-/* i82801eb and i82801er */
+/* 82801EB and 82801ER */
 static struct pci_driver smbus_driver __pci_driver = {
-	.ops    = &smbus_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x24d3,
+	.ops	= &smbus_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x24d3,
 };
-

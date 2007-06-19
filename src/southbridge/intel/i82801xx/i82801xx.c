@@ -2,7 +2,7 @@
  * This file is part of the LinuxBIOS project.
  *
  * Copyright (C) 2005 Digital Design Corporation
- * (Written by Steven J. Magnani <steve@digidescorp.com> for Digital Design Corp)
+ * (Written by Steven J. Magnani <steve@digidescorp.com> for Digital Design)
  * Copyright (C) 2007 Corey Osgood <corey.osgood@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -30,31 +30,30 @@ void i82801xx_enable(device_t dev)
 	unsigned int index = 0;
 	uint16_t cur_disable_mask, new_disable_mask;
 
-	// All 82801 devices should be on bus 0
-	unsigned int devfn = PCI_DEVFN(0x1f, 0); // lpc
-	device_t lpc_dev = dev_find_slot(0, devfn); // 0
+	/* All 82801 devices should be on bus 0. */
+	unsigned int devfn = PCI_DEVFN(0x1f, 0);	// LPC
+	device_t lpc_dev = dev_find_slot(0, devfn);	// 0
 	if (!lpc_dev)
 		return;
 
-	/* We're going to assume, perhaps incorrectly, that if a function exists
-	it can be disabled. Workarounds for ICH variants that don't follow this 
-	should be done by checking the device ID */
-
+	/* We're going to assume, perhaps incorrectly, that if a function
+	 * exists it can be disabled. Workarounds for ICH variants that don't
+	 * follow this should be done by checking the device ID.
+	 */
 	if (PCI_SLOT(dev->path.u.pci.devfn) == 31) {
 		index = PCI_FUNC(dev->path.u.pci.devfn);
 	} else if (PCI_SLOT(dev->path.u.pci.devfn) == 29) {
 		index = 8 + PCI_FUNC(dev->path.u.pci.devfn);
 	}
-	
-	/* Function 0 is a bit of an exception */
-	if(index == 0)
-	{
+
+	/* Function 0 is a bit of an exception. */
+	if (index == 0) {
 		index = 14;
 	}
 	cur_disable_mask = pci_read_config16(lpc_dev, FUNC_DIS);
-	new_disable_mask = cur_disable_mask & ~(1 << index); // enable it
+	new_disable_mask = cur_disable_mask & ~(1 << index);	// enable it
 	if (!dev->enabled) {
-		new_disable_mask |= (1 << index);  // disable it, if desired
+		new_disable_mask |= (1 << index); // disable it, if desired
 	}
 	if (new_disable_mask != cur_disable_mask) {
 		pci_write_config16(lpc_dev, FUNC_DIS, new_disable_mask);

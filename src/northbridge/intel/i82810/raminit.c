@@ -69,7 +69,6 @@ SDRAM configuration functions.
 static void do_ram_command(const struct mem_controller *ctrl, uint32_t command,
 			   uint32_t addr_offset, uint32_t row_offset)
 {
-	int i;
 	uint8_t reg;
 
 	/* TODO: Support for multiple DIMMs. */
@@ -242,22 +241,25 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	 */
 
 	/* Ideally, this should be R/W for as many ranges as possible. */
-	pci_write_config8(ctrl->d0, PAM, 0x00);
+	pci_write_config8(ctrl->d0, PAM, 0xff);
 
+	/* Enabling the VGA Framebuffer currently screws up the rest of the boot.
+	 * Disable for now */
+	
 	/* Enable 1MB framebuffer. */
-	pci_write_config8(ctrl->d0, SMRAM, 0xC0);
+	//pci_write_config8(ctrl->d0, SMRAM, 0xC0);
 
-	val = pci_read_config16(ctrl->d0, MISSC);
+	//val = pci_read_config16(ctrl->d0, MISSC);
 	/* Preserve reserved bits. */
-	val &= 0xff06;
+	//val &= 0xff06;
 	/* Set graphics cache window to 32MB, no power throttling. */
-	val |= 0x0001;
-	pci_write_config16(ctrl->d0, MISSC, val);
+	//val |= 0x0001;
+	//pci_write_config16(ctrl->d0, MISSC, val);
 
-	val = pci_read_config8(ctrl->d0, MISSC2);
+	//val = pci_read_config8(ctrl->d0, MISSC2);
 	/* Enable graphics palettes and clock gating (not optional!) */
-	val |= 0x06;
-	pci_write_config8(ctrl->d0, MISSC2, val);
+	//val |= 0x06;
+	//pci_write_config8(ctrl->d0, MISSC2, val);
 }
 
 /**

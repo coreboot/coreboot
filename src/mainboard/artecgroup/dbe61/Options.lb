@@ -23,6 +23,7 @@ uses ROM_SECTION_OFFSET
 uses CONFIG_ROM_PAYLOAD_START
 uses CONFIG_COMPRESSED_PAYLOAD_LZMA
 uses CONFIG_COMPRESSED_PAYLOAD_NRV2B
+uses CONFIG_PRECOMPRESSED_PAYLOAD
 uses PAYLOAD_SIZE
 uses _ROMBASE
 uses _RAMBASE
@@ -44,6 +45,9 @@ uses CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
 uses CONFIG_CONSOLE_VGA
 uses CONFIG_PCI_ROM_RUN
 uses CONFIG_VIDEO_MB
+uses USE_DCACHE_RAM
+uses DCACHE_RAM_BASE
+uses DCACHE_RAM_SIZE
 
 ## ROM_SIZE is the size of boot ROM that this board will use.
 default ROM_SIZE  = 256*1024
@@ -51,8 +55,8 @@ default ROM_SIZE  = 256*1024
 ###
 ### Build options
 ###
-default CONFIG_CONSOLE_VGA=1
-default CONFIG_PCI_ROM_RUN=1
+default CONFIG_CONSOLE_VGA=0
+default CONFIG_PCI_ROM_RUN=0
 default CONFIG_VIDEO_MB=8
 
 ##
@@ -78,8 +82,8 @@ default CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2=1
 ##
 ## Build code to export a programmable irq routing table
 ##
-default HAVE_PIRQ_TABLE=0
-default IRQ_SLOT_COUNT=6
+default HAVE_PIRQ_TABLE=1
+default IRQ_SLOT_COUNT=3
 
 #object irq_tables.o
 
@@ -95,6 +99,13 @@ default HAVE_OPTION_TABLE=0
 ## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
 default ROM_IMAGE_SIZE = 65536
 default FALLBACK_SIZE = 131072
+
+##
+## enable CACHE_AS_RAM specifics
+##
+default USE_DCACHE_RAM=1
+default DCACHE_RAM_BASE=0xc8000
+default DCACHE_RAM_SIZE=0x08000
 
 ##
 ## Use a small 8K stack

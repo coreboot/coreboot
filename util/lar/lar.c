@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
 	// Right now, you'd have to write lar x -v instead of
 	// lar xv... but the author of this software was too
 	// lazy to handle all option parameter twice.
-	if (larmode == NONE) {
+	if (larmode == NONE && optind < argc) {
 		if (strncmp(argv[optind], "x", 2) == 0)
 			larmode = EXTRACT;
 		else if (strncmp(argv[optind], "c", 2) == 0)

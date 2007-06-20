@@ -25,7 +25,7 @@ ARCH=`uname -m | sed -e s/i.86/x86/ -e s/sun4u/sparc64/ \
 			-e s/s390x/s390/ -e s/parisc64/parisc/ \
 			-e s/ppc.*/powerpc/ -e s/mips.*/mips/`
 
-function searchgnu()
+searchgnu()
 {
 	# $1 short name
 	# result: GNU version of that tool on stdout

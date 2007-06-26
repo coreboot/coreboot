@@ -90,6 +90,11 @@ Third-party Code and License Overview
   Source: git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux-2.6
   Current version we use: e2afe67453e5b1499459ee3596b1e7924a5208f5
 
+* include/arch/x86/cpu.h: GPLv2
+  Source: git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux-2.6
+  Files: include/asm-i386/processor.h, arch/i386/kernel/cpu/mtrr/state.c
+  Current version we use: ?
+
 * include/arch/x86/swab.h: GPLv2
   Source: git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux-2.6
   Current version we use: ?

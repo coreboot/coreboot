@@ -28,6 +28,11 @@
     The conversion was performed 
     by Eric Biederman <ebiederman@lnxi.com>.
                                              20 August 2002
+
+    Added do_nrv2b_uncompress().
+    by Patrick Georgi <patrick@georgi-clan.de>
+						2007-06-26
+
                                                 
 **************************************************************/
 #define UCLPACK_COMPAT 0
@@ -1303,6 +1308,56 @@ void do_nrv2b_compress(char* in, unsigned long in_len, char* out, unsigned long*
 	*out_len = in_len + (in_len/8) + 256;
 	out = malloc(*out_len);
 	ucl_nrv2b_99_compress(in, in_len, out, out_len, 0 );
+}
+
+void do_nrv2b_uncompress(char* dst, char* src, unsigned long len) {
+	unsigned long ilen = 0, olen = 0, last_m_off = 1;
+	for (;;) {
+		unsigned int m_off, m_len;
+		while (GETBIT(bb, src, ilen)) {
+			FAIL(ilen >= src_len, "input overrun");
+			FAIL(olen >= dst_len, "output overrun");
+			dst[olen++] = src[ilen++];
+		}
+		m_off = 1;
+		do {
+			m_off = (m_off * 2) + GETBIT(bb, src, ilen);
+			FAIL(ilen >= src_len, "input overrun");
+			FAIL(m_off > 0xffffffU +3, "lookbehind overrun");
+		} while (!GETBIT(bb, src, ilen));
+		if (m_off == 2) {
+			m_off = last_m_off;
+		} else {
+			FAIL(ilen >= src_len, "input overrun");
+			m_off = ((m_off - 3) * 256) + src[ilen++];
+			if (m_off == 0xffffffffU)
+				break;
+			last_m_off = ++m_off;
+		}
+		m_len = GETBIT(bb, src, ilen);
+		m_len = (m_len * 2) + GETBIT(bb, src, ilen);
+		if (m_len == 0) {
+			m_len++;
+			do {
+				m_len = (m_len * 2) + GETBIT(bb, src, ilen);
+				FAIL(ilen >= src_len, "input overrun");
+				FAIL(m_len >= dst_len, "output overrun");
+			} while(!GETBIT(bb, src, ilen));
+			m_len += 2;
+		}
+		m_len += (m_off > 0xd00);
+		FAIL(olen + m_len > dst_len, "output overrun");
+		FAIL(m_off > olen, "lookbehind overrun");
+		{
+			const uint8_t *m_pos;
+			m_pos = dst + olen - m_off;
+			dst[olen++] = *m_pos++;
+			do {
+				dst[olen++] = *m_pos++;
+			} while(--m_len > 0);
+		}
+	}
+	FAIL(ilen < src_len, "input not consumed");
 }
 #endif
 

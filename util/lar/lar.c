@@ -39,6 +39,7 @@
 static int isverbose = 0;
 static long larsize = 0;
 static char *bootblock = NULL;
+enum compalgo algo = none;
 
 static void usage(char *name)
 {
@@ -72,6 +73,7 @@ int main(int argc, char *argv[])
 
 	static struct option long_options[] = {
 		{"create", 0, 0, 'c'},
+		{"compress-algo", 1, 0, 'C'},
 		{"extract", 0, 0, 'x'},
 		{"list", 0, 0, 'l'},
 		{"size", 1, 0, 's'},
@@ -87,11 +89,19 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	while ((opt = getopt_long(argc, argv, "cxls:b:vVh?",
+	while ((opt = getopt_long(argc, argv, "cC:xls:b:vVh?",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'c':
 			larmode = CREATE;
+			break;
+		case 'C':
+			if (strcmp("lzma", optarg) == 0) {
+				algo = lzma;
+			}
+			if (strcmp("nrv2b", optarg) == 0) {
+				algo = nrv2b;
+			}
 			break;
 		case 'l':
 			larmode = LIST;

@@ -58,8 +58,11 @@
 struct lar_header {
 	char magic[8];
 	u32 len;
+	u32 reallen;
 	u32 checksum;
+	u32 compchecksum;
 	u32 offset;
+	u32 compression;
 };
 
 struct mem_file {

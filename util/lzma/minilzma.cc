@@ -4,7 +4,8 @@
  * Copyright (C) 2002 Eric Biederman
  * Copyright (C) 2005 Joel Yliluoma
  * Copyright (C) 2007 coresystems GmbH
- * Adapted by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH.
+ * (Adapted by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
+ * Copyright (C) 2007 Patrick Georgi <patrick@georgi-clan.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +21,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
-
-
 
 #include "C/Common/MyInitGuid.h"
 #include "C/7zip/Compress/LZMA/LZMAEncoder.h"
@@ -281,11 +280,18 @@ int main(int argc, char *argv[])
 #else
 extern "C" {
 
-void do_lzma_compress(char* in, unsigned long in_len, char* out, unsigned long* out_len) {
+void do_lzma_compress(char *in, unsigned long in_len, char *out,
+		      unsigned long *out_len) {
 	std::vector<unsigned char> result;
-	result = LZMACompress(std::vector<unsigned char>(in,in+in_len));
+	result = LZMACompress(std::vector<unsigned char>(in, in + in_len));
 	*out_len = result.size();
-    	std::memcpy(out, &result[0], *out_len);
+	std::memcpy(out, &result[0], *out_len);
+}
+
+void do_lzma_uncompress(char *dst, char *src, unsigned long len) {
+	std::vector<unsigned char> result;
+	result = LZMADeCompress(std::vector<unsigned char>(src, src + len));
+	std::memcpy(dst, &result[0], result.size());
 }
 
 }

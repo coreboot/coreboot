@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2006-2007 coresystems GmbH
  * (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
+ * Copyright (C) 2007 Patrick Georgi <patrick@georgi-clan.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,8 +92,20 @@ int list_lar(const char *archivename, struct file *files)
 
 		printf("  %s ", walk + sizeof(struct lar_header));
 
-		printf("(%d bytes @0x%lx)\n", ntohl(header->len),
-		       (unsigned long)(walk - inmap) + ntohl(header->offset));
+		if (ntohl(header->compression) == none) {
+			printf("(%d bytes @0x%lx)\n",
+			       ntohl(header->len),
+			       (unsigned long)(walk - inmap) +
+			       ntohl(header->offset));
+		} else {
+			printf("(%d bytes, %s compressed to %d bytes "
+			       "@0x%lx)\n",
+			       ntohl(header->reallen),
+			       algo_name[ntohl(header->compression)],
+			       ntohl(header->len),
+			       (unsigned long)(walk - inmap) +
+			       ntohl(header->offset));
+		}
 
 		walk += (ntohl(header->len) + ntohl(header->offset)
 			 - 1) & 0xfffffff0;

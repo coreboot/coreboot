@@ -121,9 +121,15 @@ int add_files(const char *name)
 {
 	struct stat filestat;
 	int ret = -1;
+	const char *realname;
+
+	realname = name;
+	if (strstr(name, "nocompress:") == name) {
+		realname = name + 11;
+	}
 
 	/* printf("... add_files %s\n", name); */
-	if (stat(name, &filestat) == -1) {
+	if (stat(realname, &filestat) == -1) {
 		fprintf(stderr, "Error getting file attributes of %s\n", name);
 		return -1;
 	}
@@ -145,7 +151,7 @@ int add_files(const char *name)
 	}
 	// Is it a directory?
 	if (S_ISDIR(filestat.st_mode)) {
-		ret = handle_directory(name);
+		ret = handle_directory(realname);
 	}
 	// Is it a regular file?
 	if (S_ISREG(filestat.st_mode)) {

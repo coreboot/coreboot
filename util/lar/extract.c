@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2006-2007 coresystems GmbH
  * (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
+ * Copyright (C) 2007 Patrick Georgi <patrick@georgi-clan.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +32,16 @@
 
 #include "lib.h"
 #include "lar.h"
+
+void uncompress_impossible(char *dst, char *src, u32 len) {
+	fprintf(stderr,
+		"Cannot uncompress data (algorithm not compiled in).\n");
+	exit(1);
+}
+
+void do_no_uncompress(char *dst, char *src, u32 len) {
+	memcpy(dst, src, len);
+}
 
 int extract_lar(const char *archivename, struct file *files)
 {
@@ -116,8 +127,17 @@ int extract_lar(const char *archivename, struct file *files)
 			exit(1);
 		}
 
-		fwrite(walk + ntohl(header->offset), ntohl(header->len),
-		       1, file_to_extract);
+		if (ntohl(header->compression) == none) {
+			fwrite(walk + ntohl(header->offset),
+			       ntohl(header->len), 1, file_to_extract);
+		} else {
+			char *buf = malloc(ntohl(header->reallen));
+			uncompress_functions[ntohl(header->compression)](buf,
+				walk + ntohl(header->offset),
+				ntohl(header->len));
+			fwrite(buf, ntohl(header->reallen), 1, file_to_extract);
+			free(buf);
+		}
 		fclose(file_to_extract);
 
 		walk += (ntohl(header->offset) + ntohl(header->len)

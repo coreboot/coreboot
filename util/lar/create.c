@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2006-2007 coresystems GmbH
  * (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
+ * Copyright (C) 2007 Patrick Georgi <patrick@georgi-clan.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,9 +31,21 @@
 #include <netinet/in.h>
 #include <libgen.h>
 
-
 #include "lib.h"
 #include "lar.h"
+
+extern enum compalgo algo;
+
+void compress_impossible(char *in, u32 in_len, char *out, u32 *out_len) {
+	fprintf(stderr,
+		"The selected compression algorithm wasn't compiled in.\n");
+	exit(1);
+}
+
+void do_no_compress(char *in, u32 in_len, char *out, u32 *out_len) {
+	memcpy(out, in, in_len);
+	out_len[0] = in_len;
+}
 
 int create_lar(const char *archivename, struct file *files)
 {
@@ -41,14 +54,16 @@ int create_lar(const char *archivename, struct file *files)
 	int bb_header_len = 0;
 	FILE *archive, *source;
 	char *tempmem;
-	char *filebuf;
+	char *filebuf, *filetarget;
 	char *pathname;
 	u32 *walk;
 	u32 csum;
 	int pathlen, entrylen, filelen;
+	u32 compfilelen;
 	long currentsize = 0;
 	struct lar_header *header;
 	struct stat statbuf;
+	enum compalgo thisalgo;
 
 	if (!files) {
 		fprintf(stderr, "No files for archive %s\n", archivename);
@@ -67,6 +82,13 @@ int create_lar(const char *archivename, struct file *files)
 
 	while (files) {
 		char *name = files->name;
+
+		thisalgo = algo;
+
+		if (strstr(name, "nocompress:") == name) {
+			name += 11;
+			thisalgo = none;
+		}
 
 		/* skip ./ if available */
 		if (name[0] == '.' && name[1] == '/')
@@ -97,24 +119,35 @@ int create_lar(const char *archivename, struct file *files)
 		pathlen = (pathlen + 15) & 0xfffffff0;/* Align to 16 bytes. */
 
 		/* Read file into memory. */
-		filebuf = pathname + pathlen;
+		filebuf = malloc(filelen);
+		filetarget = pathname + pathlen;
 		source = fopen(name, "r");
 		if (!source) {
 			fprintf(stderr, "No such file %s\n", name);
 			exit(1);
 		}
-		fread(filebuf, statbuf.st_size, 1, source);
+		fread(filebuf, filelen, 1, source);
 		fclose(source);
+		compress_functions[thisalgo](filebuf, filelen, filetarget,
+					     &compfilelen);
+		if ((compfilelen >= filelen) && (thisalgo != none)) {
+			thisalgo = none;
+			compress_functions[thisalgo](filebuf, filelen,
+						     filetarget, &compfilelen);
+		}
+		free(filebuf);
 
 		/* Create correct header. */
 		memcpy(header, MAGIC, 8);
-		header->len = htonl(statbuf.st_size);
+		header->compression = htonl(thisalgo);
+		header->reallen = htonl(filelen);
+		header->len = htonl(compfilelen);
 		header->offset = htonl(sizeof(struct lar_header) + pathlen);
 
 		/* Calculate checksum. */
 		csum = 0;
 		for (walk = (u32 *) tempmem;
-		     walk < (u32 *) (tempmem + statbuf.st_size +
+		     walk < (u32 *) (tempmem + compfilelen +
 				     sizeof(struct lar_header) + pathlen);
 		     walk++) {
 			csum += ntohl(*walk);
@@ -122,7 +155,7 @@ int create_lar(const char *archivename, struct file *files)
 		header->checksum = htonl(csum);
 
 		/* Write out entry to archive. */
-		entrylen = (filelen + pathlen + sizeof(struct lar_header) +
+		entrylen = (compfilelen + pathlen + sizeof(struct lar_header) +
 			    15) & 0xfffffff0;
 
 		fwrite(tempmem, entrylen, 1, archive);
@@ -216,6 +249,7 @@ int create_lar(const char *archivename, struct file *files)
 		/* construct header */
 		bb=(struct lar_header *)bootblock_header;
 		memcpy(bb->magic, MAGIC, 8);
+		bb->reallen = htonl(bootblock_len);
 		bb->len = htonl(bootblock_len);
 		bb->offset = htonl(bb_header_len);
 

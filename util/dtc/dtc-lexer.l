@@ -45,12 +45,15 @@ REFCHAR		({PROPCHAR}|{UNITCHAR}|[/@])
 char *code = 0;
 
 YY_BUFFER_STATE bstack = NULL;
+int line;
 
 void
 switchin(FILE *f){
 	YY_BUFFER_STATE b;
 	bstack = YY_CURRENT_BUFFER;
 	b = yy_create_buffer(f, 8192);
+	line = yylineno;
+	yylineno = 1;
 	yy_switch_to_buffer(b);
 	
 }
@@ -58,6 +61,7 @@ switchin(FILE *f){
 void
 switchback(void){
 		yy_switch_to_buffer(bstack);
+		yylineno = line;
 }
 %}
 

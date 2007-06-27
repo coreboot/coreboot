@@ -201,6 +201,8 @@ int main(int argc, char *argv[])
 		dt_to_C(outf, bi, outversion, boot_cpuid_phys);
 	} else if (streq(outform, "linuxbios") || streq(outform, "lb")) {
 		dt_to_linuxbios(outf, bi, outversion, boot_cpuid_phys);
+	} else if (streq(outform, "linuxbiosinclude") || streq(outform, "lbh")) {
+		dt_to_linuxbiosh(outf, bi, outversion, boot_cpuid_phys);
 	} else if (streq(outform, "null")) {
 		/* do nothing */
 	} else {

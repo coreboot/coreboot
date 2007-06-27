@@ -138,8 +138,13 @@ config:        DT_CONFIG '('
 		}  '{' proplist '}' ';' {
 			void	switchback(void);
 			switchback();
+			
 		}
-		')' ';' { $$ = $6}
+		')' ';' { 
+				/* convention: first property is labeled with path */
+				$6->label = strdup($3.val);
+				$$ = $6
+			}
 	|
 	;
 

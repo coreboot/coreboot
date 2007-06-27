@@ -104,7 +104,19 @@ topath(struct property *p){
 	return pathname;
 }
 
-
+char *toname(char *path, char *suffix){
+	char *ret = malloc(strlen(path) + strlen(suffix) + 1), *cp, *src;
+	for(cp = ret, src = path; *src; cp++, src++){
+		if (*src == '/')
+			*cp = '_';
+		else
+			*cp = *src;
+	}
+	cp = ret;
+	if (suffix)
+		strcat(cp, suffix);
+	return cp;
+}
 
 static void bin_emit_cell(void *e, cell_t val)
 {
@@ -439,15 +451,17 @@ static void linuxbios_emit_data(void *e, struct property *p)
 		return;
 
 	cleanname = clean(p->name, 1);
-	fprintf(f, "\t.%s = {", cleanname);
+	fprintf(f, "\t.%s = ", cleanname);
 	free(cleanname);
-
+	fprintf(f, "0x%lx,\n", strtoul((char *)d.val, 0, 0));
+#if 0
 	/* sorry, but right now, u32 is all you get */
 	fprintf(f, "0");
 	for(i = 0; i < vallen; i++)
 		fprintf(f, "|(0x%02x<<%d)", d.val[i], (3-i)*8);
 
-	fprintf(f, "},\n");
+	fprintf(f, ",\n");
+#endif
 }
 
 static void linuxbios_emit_beginnode(void *e, char *label)
@@ -505,6 +519,7 @@ static void linuxbios_emit_special(FILE *e, struct node *tree)
 	struct property *prop;
 	int ops_set = 0;
 	int is_root = 0;
+	char *configname;
 
 	fprintf(f, "struct device dev_%s = {\n", tree->label);
 	/* special case -- the root has a distinguished path */
@@ -513,6 +528,10 @@ static void linuxbios_emit_special(FILE *e, struct node *tree)
 		fprintf(f, "\t.path =  { .type = DEVICE_PATH_ROOT },\n");
 	}
 
+	if (tree->config){
+		configname = clean(tree->label, 0);
+		printf("\t.device_configuration = &%s,\n", configname);
+	}
 	for_each_property(tree, prop) {
 		if (streq(prop->name, "pcidomain")){
 			fprintf(f, "\t.path = {.type=DEVICE_PATH_PCI_DOMAIN,.u={.pci_domain={ .domain = %s }}},\n", 
@@ -640,7 +659,32 @@ static void flatten_tree_emit_includes(struct node *tree, struct emitter *emit,
 
 }
 
-	
+static void flatten_tree_emit_constructors(struct node *tree, struct emitter *emit,
+			 void *etarget, struct data *strbuf,
+			 struct version_info *vi)
+{
+	struct property *prop;
+	struct node *child;
+	/* find any/all properties with the name constructor */
+	for_each_config(tree, prop) {
+		if (streq(prop->name, "constructor")){
+			printf("\t%s,\n", prop->val.val);
+		}
+	}
+
+	for_each_property(tree, prop) {
+		if (streq(prop->name, "constructor")){
+			printf("\t%s,\n", prop->val.val);
+		}
+	}
+
+	for_each_child(tree, child) {
+		flatten_tree_emit_constructors(child, emit, etarget, strbuf, vi);
+	}
+
+
+}
+
 static void flatten_tree_emit_structdecls(struct node *tree, struct emitter *emit,
 			 void *etarget, struct data *strbuf,
 			 struct version_info *vi)
@@ -653,7 +697,8 @@ static void flatten_tree_emit_structdecls(struct node *tree, struct emitter *emi
 	FILE *f = etarget;
 
 	if (tree->config){
-		treename = clean(tree->name, 0);
+//		treename = clean(tree->label, 0);
+		treename = toname(tree->config->label, "_config");
 		emit->beginnode(etarget, treename);
 
 
@@ -668,6 +713,8 @@ static void flatten_tree_emit_structdecls(struct node *tree, struct emitter *emi
 			char *cleanname;
 			if (streq(prop->name, "name"))
 				seen_name_prop = 1;
+			if (streq(prop->name, "constructor")) /* this is special */
+				continue;
 			cleanname = clean(prop->name, 0);
 			fprintf(f, "\tu32 %s;\n", cleanname);
 			free(cleanname);
@@ -679,7 +726,24 @@ static void flatten_tree_emit_structdecls(struct node *tree, struct emitter *emi
 		}
 #endif
 		emit->endnode(etarget, treename);
-		free(treename);
+	}
+
+	for_each_config(tree, prop) {
+		if (! streq(prop->name, "constructor")) /* this is special */
+			continue;
+		fprintf(f, "extern struct constructor %s[];\n", prop->val.val);
+	}
+
+	for_each_property(tree, prop) {
+		if (! streq(prop->name, "constructor")) /* this is special */
+			continue;
+		fprintf(f, "extern struct constructor %s[];\n", prop->val.val);
+	}
+
+	for_each_property(tree, prop) {
+		if (! streq(prop->name, "ops")) /* this is special */
+			continue;
+		fprintf(f, "extern struct device_operations %s;\n", prop->val.val);
 	}
 
 	for_each_child(tree, child) {
@@ -695,7 +759,7 @@ static void flatten_tree_emit_structinits(struct node *tree, struct emitter *emi
 			 void *etarget, struct data *strbuf,
 			 struct version_info *vi)
 {
-	char *treename;
+	char *treename, *treelabel, *structname;
 
 	struct property *configprop, *dtsprop;
 	struct node *child;
@@ -724,8 +788,14 @@ static void flatten_tree_emit_structinits(struct node *tree, struct emitter *emi
 	  */
 
 	if (tree->config){
-		treename = clean(tree->name, 0);
-		emit->beginnode(etarget, treename);
+		treelabel = clean(tree->label, 0);
+		structname = toname(tree->config->label, "_config");
+		/* beginnode does not work here. 
+		  * the design of this code is wrong and must be fixed. 
+		  * the operator should take the node itself, not a string. 
+		  */
+		printf("struct %s %s = {\n", structname, treelabel);
+//		emit->beginnode(etarget, treename);
 #if 0
 		if (vi->flags & FTF_FULLPATH)
 			emit->string(etarget, tree->fullpath, 0);
@@ -736,6 +806,8 @@ static void flatten_tree_emit_structinits(struct node *tree, struct emitter *emi
 		for_each_config(tree, configprop) {
 			char *cleanname;
 			int found = 0;
+			if (streq(configprop->name, "constructor")) /* this is special */
+				continue;
 #if 0
 			cleanname = clean(configprop->name, 0);
 			fprintf(f, "\tu32 %s = \n", cleanname);
@@ -756,8 +828,7 @@ static void flatten_tree_emit_structinits(struct node *tree, struct emitter *emi
 			fprintf(f, "\tu8 %s[%d];\n", configprop->name, configprop->val.len);
 		}
 #endif
-		emit->endnode(etarget, treename);
-		free(treename);
+		emit->endnode(etarget, treelabel);
 	}
 /*
 	for_each_property(tree, prop) {
@@ -784,7 +855,6 @@ static void flatten_tree_emit_structinits(struct node *tree, struct emitter *emi
 
 
 }
-
 
 static void flatten_tree(struct node *tree, struct emitter *emit,
 			 void *etarget, struct data *strbuf,
@@ -1208,9 +1278,7 @@ void dt_to_linuxbios(FILE *f, struct boot_info *bi, int version, int boot_cpuid_
 	/* steps: emit all structs. Then emit the initializers, with the pointers to other structs etc. */
 
 	fix_next(bi->dt);
-	/* emit any includes that we need  -- TODO: ONLY ONCE PER TYPE*/
-	fprintf(f, "#include <device/device.h>\n#include <device/pci.h>\n");
-	flatten_tree_emit_includes(bi->dt, &linuxbios_emitter, f, &strbuf, vi);
+	fprintf(f, "#include <statictree.h>\n");
 	/* forward declarations */
 	for(next = first_node; next; next = next->next)
 		fprintf(f, "struct device dev_%s;\n", next->label);
@@ -1218,11 +1286,46 @@ void dt_to_linuxbios(FILE *f, struct boot_info *bi, int version, int boot_cpuid_
 	/* emit the code, if any */
 	if (code)
 		fprintf(f, "%s\n", code);
+	flatten_tree_emit_structinits(bi->dt, &linuxbios_emitter, f, &strbuf, vi);
+	fprintf(f, "struct constructor *all_constructors[] = {\n");
+	flatten_tree_emit_constructors(bi->dt, &linuxbios_emitter, f, &strbuf, vi);
+	fprintf(f, "\t0\n};\n");
+	data_free(strbuf);
+	/* */
 
+}
+
+void dt_to_linuxbiosh(FILE *f, struct boot_info *bi, int version, int boot_cpuid_phys)
+{
+	struct version_info *vi = NULL;
+	int i;
+	struct data strbuf = empty_data;
+	char *symprefix = "dt";
+	extern char *code;
+	struct node *next;
+	extern struct node *first_node;
+
+	labeltree(bi->dt);
+
+	for (i = 0; i < ARRAY_SIZE(version_table); i++) {
+		if (version_table[i].version == version)
+			vi = &version_table[i];
+	}
+	if (!vi)
+		die("Unknown device tree blob version %d\n", version);
+
+	/* the root is special -- the parser gives it no name. We fix that here. 
+	  * fix in parser? 
+	  */
+	bi->dt->name  = bi->dt->label  = "root";
+	/* steps: emit all structs. Then emit the initializers, with the pointers to other structs etc. */
+
+	fix_next(bi->dt);
+	/* emit any includes that we need  -- TODO: ONLY ONCE PER TYPE*/
+	fprintf(f, "#include <device/device.h>\n#include <device/pci.h>\n");
+	flatten_tree_emit_includes(bi->dt, &linuxbios_emitter, f, &strbuf, vi);
 
 	flatten_tree_emit_structdecls(bi->dt, &linuxbios_emitter, f, &strbuf, vi);
-	flatten_tree_emit_structinits(bi->dt, &linuxbios_emitter, f, &strbuf, vi);
-	data_free(strbuf);
 	/* */
 
 }

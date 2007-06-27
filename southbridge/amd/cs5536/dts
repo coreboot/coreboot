@@ -1,28 +1,28 @@
 /*
  * This file is part of the LinuxBIOS project.
  *
- * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2007 Ronald G. Minnich <rminnich@gmail.com>
  *
- * This program is free software = "0"; you can redistribute it and/or modify
+ * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation = "0"; either version 2 of the License, or
+ * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY = "0"; without even the implied warranty of
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program = "0"; if not, write to the Free Software
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 {
 	constructor = "cs5536_constructors";
-	/* interrupt enables for LPC bus = "0"; each bit is an irq 0-15 */
+	/* interrupt enables for LPC bus; each bit is an irq 0-15 */
 	lpc_serirq_enable = "0";
-	/* LPC IRQ polarity = "0"; each bit is an irq 0-15 */
+	/* LPC IRQ polarity; each bit is an irq 0-15 */
 	lpc_serirq_polarity = "0";
 	/* 0:Continuous 1:Quiet */
 	lpc_serirq_mode = "0";

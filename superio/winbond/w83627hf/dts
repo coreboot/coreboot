@@ -1,0 +1,73 @@
+/*
+ * This file is part of the LinuxBIOS project.
+
+ * Copyright 2007 Ronald G. Minnich <rminnich@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
+ {
+	/* to override any of these, just put the over-ride in mainboard dts */
+	floppydev = "0x0";
+	floppyenable = "0";
+	floppyio = "0x3f0";
+	floppyirq = "0x60";
+	floppydrq = "0x02";
+
+	ppdev = "2";
+	ppenable = "0";
+	ppio = "0x378";
+	ppirq = "7";
+
+	com1dev = "2";
+	com1enable = "0";
+	com1io = "0x3f8";
+	com1irq = "4";
+
+	com2dev = "3";
+	com2enable = "0";
+	com2io = "0x2f8";
+	com2irq = "3";
+
+	kbdev = "5";
+	kbenable = "0";
+	kbio = "0x60";
+	kbio2 = "0x62";
+	kbirq = "1";
+	kbirq2 = "12";
+
+	cirdev = "6";
+	cirenable = "0";
+
+	gamedev = "7";
+	gameenable = "0";
+	gameio = "0x220";
+	gameio2 = "0x400";
+	gameirq = "9";
+
+	gpio2dev = "8";
+	gpio2enable = "0";
+
+	gpio3dev = "9";
+	gpio3enable = "0";
+
+	acpidev = "0xa";
+	acpienable = "0";
+
+	hwmdev = "0xb";
+	hwmenable = "0";
+	hwmio = "0x290";
+	hwmirq = "5";
+
+};

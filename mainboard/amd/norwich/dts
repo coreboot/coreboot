@@ -19,24 +19,23 @@
  */
 /{
 	enabled;
-	constructor = "qemuvga_constructors";
+
 	cpus {
 		enabled;
 	};
 	domain0 {
-		/config/("northbridge/intel/i440bxemulation");
-		ops = "i440bxemulation_pcidomainops";
 		enabled;
 		pcidomain = "0";
 		device0,0 {
 			enabled;
-			pcipath = "0,0";
-		};
-		southbridge,intel,i82371eb{
-			/config/("southbridge/intel/i82371eb");
 			pcipath = "1,0";
+		};
+		southbridge{
+			/config/("southbridge/amd/cs5536");
+			pcipath = "1,1";
 			enabled;
 		};
+
 	};
 
 };

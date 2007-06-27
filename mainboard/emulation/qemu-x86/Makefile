@@ -57,7 +57,7 @@ $(obj)/mainboard/$(MAINBOARDDIR)/statictree.o: $(obj)/mainboard/$(MAINBOARDDIR)/
 	$(Q)$(CC) $(INITCFLAGS) $(LINUXBIOSINCLUDE) -c -o $@ $<
 
 $(obj)/statictree.h: $(src)/mainboard/$(MAINBOARDDIR)/dts $(obj)/util/dtc/dtc
-	$(Q)printf "  DTC (static.h)     $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)printf "  DTC     $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(obj)/util/dtc/dtc -O lbh mainboard/$(MAINBOARDDIR)/dts > $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/statictree.c: $(src)/mainboard/$(MAINBOARDDIR)/dts $(obj)/util/dtc/dtc $(obj)/statictree.h

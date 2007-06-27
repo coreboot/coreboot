@@ -27,6 +27,7 @@ INITRAM_OBJ=$(obj)/stage0.init $(obj)/stage0.o $(obj)/mainboard/$(MAINBOARDDIR)/
 		$(obj)/northbridge/amd/geodelx/raminit.o \
 		$(obj)/southbridge/amd/cs5536/smbus_initram.o \
 		$(obj)/southbridge/amd/cs5536/cs5536_early_setup.o\
+		$(obj)/superio/winbond/w83627hf/w83627hf_early_serial.o\
 		$(obj)/device/pnp_raw.o \
 		$(obj)/arch/x86/geodelx.o
 $(obj)/linuxbios.initram: $(INITRAM_OBJ)
@@ -37,6 +38,7 @@ $(obj)/linuxbios.initram: $(INITRAM_OBJ)
 		$(obj)/northbridge/amd/geodelx/raminit.o \
 		$(obj)/southbridge/amd/cs5536/smbus_initram.o \
 		$(obj)/southbridge/amd/cs5536/cs5536_early_setup.o\
+		$(obj)/superio/winbond/w83627hf/w83627hf_early_serial.o\
 		$(obj)/device/pnp_raw.o \
 		$(obj)/arch/x86/geodelx.o\
 		--entry=main -o $(obj)/linuxbios.initram.o

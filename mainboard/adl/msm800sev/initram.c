@@ -17,19 +17,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
-
 #include <types.h>
 #include <lib.h>
 #include <console.h>
 #include <post_code.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <io.h>
+#include <device/pnp.h>
 #include <string.h>
 #include <msr.h>
 #include <io.h>
 #include <amd_geodelx.h>
 #include <southbridge/amd/cs5536/cs5536.h>
 #include <northbridge/amd/geodelx/raminit.h>
+#include <superio/winbond/w83627hf/w83627hf.h>
+#define SERIAL_DEV 0x30
 
 #define MANUALCONF 0		/* Do automatic strapped PLL config */
 #define PLLMSRHI 0x00001490	/* manual settings for the PLL */
@@ -37,30 +40,10 @@
 #define DIMM0 ((u8) 0xA0)
 #define DIMM1 ((u8) 0xA2)
 
-
-/**
-  * Place holder in case we ever need it. Since this file is a
-  * template for other motherboards, we want this here and we want the
-  * call in the right place.
-  */
-
-static void mb_gpio_init(void)
-{
-	/* Early mainboard specific GPIO setup */
-}
-
-/** 
-  * main for initram for the amd norwich.  It might seem that you
-  * could somehow do these functions in, e.g., the cpu code, but the
-  * order of operations and what those operations are is VERY strongly
-  * mainboard dependent. It's best to leave it in the mainboard code.
-  */
 int main(void)
 {
-	u8 smb_devices[] =  {
-		DIMM0, DIMM1
-	};
-
+	void done_cache_as_ram_main(void);
+	void w83627hf_enable_serial(u8 dev, u8 serial, u16 iobase);
 	post_code(POST_START_OF_MAIN);
 
 	system_preinit();
@@ -70,23 +53,24 @@ int main(void)
 
 	/* NOTE: must do this AFTER the early_setup!
 	 * it is counting on some early MSR setup
-	 * for cs5536.
+	 * for cs5536
 	 */
-	/* We do this early for debug. 
-	 * real setup should done in chipset init via config.lb 
-	 */
-	cs5536_setup_onchipuart();
-	mb_gpio_init();
+	cs5536_disable_internal_uart();
+	w83627hf_enable_serial(0x2e, 0x30, 0x3f8);
+	console_init();
 
 	pll_reset(MANUALCONF, PLLMSRHI, PLLMSRLO);
 
 	cpu_reg_init(0, DIMM0, DIMM1);
-
 	sdram_set_registers();
 	sdram_set_spd_registers(DIMM0, DIMM1);
 	sdram_enable(DIMM0, DIMM1);
-	/* Check low memory */
-	/*ram_check(0x00000000, 640*1024); */
 
-	return 0;
+	/* Check low memory */
+	//ram_check(0x00000000, 640*1024);
+
+	/* Switch from Cache as RAM to real RAM */
+	printk(BIOS_SPEW, "Before wbinvd\n");
+	__asm__("wbinvd\n");
+	printk(BIOS_SPEW, "After wbinvd\n");
 }

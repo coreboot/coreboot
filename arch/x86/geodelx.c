@@ -26,9 +26,9 @@
 #include <device/pci.h>
 #include <string.h>
 #include <msr.h>
+#include <io.h>
 #include <amd_geodelx.h>
 #include <spd.h>
-#include <io.h>
 
 /* all these functions used to be in a lot of fiddly little files.  To
   * make it easier to find functions, we are merging them here. This
@@ -574,4 +574,7 @@ void cpu_reg_init(int debug_clock_disable, u8 dimm0, u8 dimm1)
 	msr.hi = 0;
 	msr.lo = 0x00000603C;
 	wrmsr(msrnum, msr);
+	/* fix cpu bugs */
+#warning testing fixing bugs in initram
+	cpu_bug();
 }

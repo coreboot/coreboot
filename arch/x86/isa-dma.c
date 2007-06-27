@@ -1,5 +1,6 @@
+/* where is this from? */
+
 #include <io.h>
-#include <isa-dma.h>
 
 /* DMA controller registers */
 #define DMA1_CMD_REG		0x08	/* command register (w) */

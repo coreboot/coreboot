@@ -188,4 +188,11 @@ static inline void disable_cache(void)
 	wbinvd();
 }
 
+/* random other functions. These are not architecture-specific, except they really 
+  * are in many ways. Seperate the PC from the "X86" is hard. 
+  */
+void uart_init(void);
+void rtc_init(int invalid);
+void isa_dma_init(void);
+
 #endif /* ARCH_X86_CPU_H */

@@ -18,7 +18,7 @@
  */
 
 #include <types.h>
-#include <device/pnp_def.h>
+#include <device/pnp.h>
 #include <io.h>
 
 /* very low level pnp manipulation intended for stage 0 or 1 */

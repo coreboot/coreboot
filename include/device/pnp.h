@@ -22,7 +22,6 @@
 
 #include <types.h>
 #include <device/device.h>
-#include <device/pnp_def.h>
 
 /* very low level pnp manipulation intended for stage 0 or 1 */
 void rawpnp_enter_ext_func_mode(u16 dev);
@@ -73,5 +72,14 @@ struct pnp_info {
 struct resource *pnp_get_resource(struct device * dev, unsigned index);
 void pnp_enable_devices(struct device *dev, struct device_operations *ops,
 	unsigned functions, struct pnp_info *info);
+
+#define PNP_IDX_IO0  0x60
+#define PNP_IDX_IO1  0x62
+#define PNP_IDX_IO2  0x64
+#define PNP_IDX_IO3  0x66
+#define PNP_IDX_IRQ0 0x70
+#define PNP_IDX_IRQ1 0x72
+#define PNP_IDX_DRQ0 0x74
+#define PNP_IDX_DRQ1 0x75
 
 #endif /* DEVICE_PNP_H */

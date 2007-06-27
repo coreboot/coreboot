@@ -1,0 +1,5 @@
+{
+	ide0_enable = "0";
+	ide1_enable = "0";
+	constructor = "i82371eb_constructors";
+};

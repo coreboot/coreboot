@@ -147,6 +147,7 @@
 /* Vendors and devices. Sort key: vendor first, device next. */
 
 #define PCI_VENDOR_ID_AMD		0x1022
+#define PCI_DEVICE_ID_AMD_LXBRIDGE	0x2080
 #define PCI_DEVICE_ID_AMD_CS5536_ISA	0x2090
 #define PCI_DEVICE_ID_AMD_CS5536_FLASH	0x2091
 #define PCI_DEVICE_ID_AMD_CS5536_A0_IDE	0x2092

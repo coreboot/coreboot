@@ -19,7 +19,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-STAGE2_CHIPSET_OBJ += $(obj)/northbridge/amd/geodelx/geodelx.o
+STAGE2_CHIPSET_OBJ += $(obj)/northbridge/amd/geodelx/geodelx.o $(obj)/northbridge/amd/geodelx/geodelxinit.o
 
 $(obj)/northbridge/amd/geodelx/%.o: $(src)/northbridge/amd/geodelx/%.c
 	$(Q)mkdir -p $(obj)/northbridge/amd/geodelx

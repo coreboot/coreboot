@@ -44,7 +44,7 @@
 #include <device/pci.h>
 #include <string.h>
 #include "i440bx.h"
-#include "config.h"
+#include "statictree.h"
 
 /* Here are the ops for 440BX as a PCI domain. */
 /* A PCI domain contains the I/O and memory resource address space below it. */
@@ -88,10 +88,12 @@ static void pci_domain_set_resources(struct device *dev)
 	struct device *mc_dev;
 	u32 tolmk;		/* Top of low mem, Kbytes. */
 	int idx;
-	struct northbridge_intel_i440bx_config *device_configuration =
+	struct northbridge_intel_i440bxemulation_config *device_configuration =
 	    dev->device_configuration;
 	tolmk = device_configuration->ramsize * 1024;
+	printk(BIOS_DEBUG, "pci dom set re child is %p, confi %p tolmk %x\n", dev, device_configuration, tolmk);
 	mc_dev = dev->link[0].children;
+	printk(BIOS_DEBUG, "child is %p\n", mc_dev);
 	if (mc_dev) {
 		idx = 10;
 		ram_resource(dev, idx++, 0, tolmk);

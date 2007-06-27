@@ -28,6 +28,7 @@
 #include <msr.h>
 #include <spd.h>
 #include <io.h>
+#include <hlt.h>
 #include <amd_geodelx.h>
 #include <southbridge/amd/cs5536/cs5536.h>
 

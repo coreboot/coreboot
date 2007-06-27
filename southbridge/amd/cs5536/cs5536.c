@@ -254,7 +254,7 @@ static void lpc_init(struct southbridge_amd_cs5536_config *sb)
 static void uarts_init(struct southbridge_amd_cs5536_config *sb)
 {
 	msr_t msr;
-	u16 addr;
+	u16 addr = 0;
 	u32 gpio_addr;
 	struct device *dev;
 
@@ -411,9 +411,7 @@ static void uarts_init(struct southbridge_amd_cs5536_config *sb)
 	#define PADEN_SET		(1 << 7)
 
 /** 
- * Depending on settings in the config struct, enable COM1 or COM2 or both. 
- * If the enable is NOT set, the UARTS are explicitly disabled, which is required 
- * if (e.g.) there is a superio attached that does COM1 or COM2.
+ * Depending on settings in the config struct, manage USB setup.  
   * @param southbridge config structure 
   */
 static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
@@ -503,24 +501,29 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 	}
 }
 
-/* ***************************************************************************/
-/* **/
-/* *	ChipsetInit */
-/*			Called from northbridge init (Pre-VSA). */
-/* **/
-/* ***************************************************************************/
+/** 
+  * This function is in an odd place. We need to see about moving to it geodelx.c
+  * But for now, let's get things working and put a #warning in. This function 
+  * initializes a lot of nasty bits needed for phase 2. Can this function run
+  * before vsm is set up, or is it required for vsm? The order here is a little hard to 
+  * figure out. 
+  */
 void chipsetinit(void)
 {
 	struct device *dev;
 	msr_t msr;
 	u32 msrnum;
-	struct southbridge_amd_cs5536_config *sb =
-	    (struct southbridge_amd_cs5536_config *)dev->device_configuration;
+	struct southbridge_amd_cs5536_config *sb;
 	struct msrinit *csi;
 
 	post_code(P80_CHIPSET_INIT);
-
-	/* we hope NEVER to be in linuxbios when S3 resumes
+	dev = dev_find_device(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_CS5536_ISA, 0);
+	if (! dev) {
+		printk(BIOS_ERR, "%s: Could not find the south bridge!\n", __FUNCTION));
+		return;
+	}
+	sb = (struct southbridge_amd_cs5536_config *)dev->device_configuration;
+#if 0
 	   if (! IsS3Resume()) */
 	{
 		struct acpiinit *aci = acpi_init_table;
@@ -531,6 +534,7 @@ void chipsetinit(void)
 
 		pm_chipset_init();
 	}
+#endif
 
 	/* set hd IRQ */
 	outl(GPIOL_2_SET, GPIO_IO_BASE + GPIOL_INPUT_ENABLE);
@@ -596,9 +600,9 @@ static void southbridge_init(struct device *dev)
 	uarts_init(sb);
 
 	if (sb->enable_gpio_int_route) {
-		vrWrite((VRC_MISCELLANEOUS << 8) + PCI_INT_AB,
+		vr_write((VRC_MISCELLANEOUS << 8) + PCI_INT_AB,
 			(sb->enable_gpio_int_route & 0xFFFF));
-		vrWrite((VRC_MISCELLANEOUS << 8) + PCI_INT_CD,
+		vr_write((VRC_MISCELLANEOUS << 8) + PCI_INT_CD,
 			(sb->enable_gpio_int_route >> 16));
 	}
 

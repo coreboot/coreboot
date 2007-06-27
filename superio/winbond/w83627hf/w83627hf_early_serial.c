@@ -1,11 +1,7 @@
 /*
  * This file is part of the LinuxBIOS project.
- *
- * Copyright 2000  AG Electronics Ltd. 
- * Copyright 2003-2004 Linux Networx 
- * Copyright 2004 Tyan 
- * By LYH change from PC87360 
- * Copyright 2007 coresystems GmbH 
+
+ * Copyright 2007 Ronald G. Minnich <rminnich@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
+
 #include <io.h>
 #include <device/pnp.h>
 #include "w83627hf.h"

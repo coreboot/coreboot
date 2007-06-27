@@ -83,7 +83,7 @@ ifeq ($(CONFIG_CPU_I586),y)
 	STAGE0_CAR_OBJ = stage0_i586.o
 else
 ifeq ($(CONFIG_CPU_AMD_GEODELX),y)
-	STAGE0_CAR_OBJ = stage0_amd_geodelx.o
+	STAGE0_CAR_OBJ = geodelx/stage0.o
 else
 	STAGE0_CAR_OBJ = stage0_i586.o
 endif
@@ -174,6 +174,15 @@ $(obj)/mainboard/$(MAINBOARDDIR)/%.o: $(src)/mainboard/$(MAINBOARDDIR)/%.c
 
 # Building asm stub.
 $(obj)/arch/x86/stage0%.o: $(src)/arch/x86/stage0%.S
+	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(CC) -E $(LINUXBIOSINCLUDE) $< \
+		-o $(obj)/arch/x86/stage0_asm.s -DBOOTBLK=0x1f00 \
+		-DRESRVED=0xf0 -DDATE=\"`date +%Y/%m/%d`\"
+	$(Q)printf "  AS      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(AS) $(obj)/arch/x86/stage0_asm.s -o $@
+
+$(obj)/arch/x86/geodelx/stage0.o: $(src)/arch/x86/geodelx/stage0.S
+	$(Q)mkdir -p $(obj)/arch/x86/geodelx
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) -E $(LINUXBIOSINCLUDE) $< \
 		-o $(obj)/arch/x86/stage0_asm.s -DBOOTBLK=0x1f00 \

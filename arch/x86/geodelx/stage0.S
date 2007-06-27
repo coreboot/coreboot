@@ -25,7 +25,7 @@
 
 /* Init code - Switch CPU to protected mode and enable Cache-as-Ram. */
 
-#include "macros.h"
+#include "../macros.h"
 #include <amd_geodelx.h>
 
 /* This is where the DCache will be mapped and be used as stack. It would be

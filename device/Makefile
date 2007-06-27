@@ -25,5 +25,5 @@ $(obj)/device/%.o: $(src)/device/%.c
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
 
 STAGE2_DEVICE_OBJ = device.o device_util.o root_device.o \
-		    pci_device.o pci_ops.o pci_rom.o pnp_device.o
+		    pci_device.o pci_ops.o pci_rom.o pnp_device.o rawpnp.o
 

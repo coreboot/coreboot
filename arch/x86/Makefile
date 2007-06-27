@@ -22,6 +22,7 @@
 ifeq ($(CONFIG_ARCH_X86),y)
 
 INITCFLAGS := $(CFLAGS) -I$(src)/include/arch/x86 -I$(src)/include \
+		-I$(obj) \
 		-fno-builtin
 
 SILENT := >/dev/null 2>&1

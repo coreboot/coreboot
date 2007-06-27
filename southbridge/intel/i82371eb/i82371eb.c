@@ -26,7 +26,7 @@
 #include <device/pci.h>
 #include <mc146818rtc.h>
 #include <string.h>
-#include "config.h"
+#include <statictree.h>
 
 /* The plain PCI device uses the standard PCI operations. */
 

@@ -17,6 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
+
 #include <types.h>
 #include <lib.h>
 #include <console.h>
@@ -32,6 +33,7 @@
 #include <southbridge/amd/cs5536/cs5536.h>
 #include <northbridge/amd/geodelx/raminit.h>
 #include <superio/winbond/w83627hf/w83627hf.h>
+
 #define SERIAL_DEV 0x30
 
 #define MANUALCONF 0		/* Do automatic strapped PLL config */

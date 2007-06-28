@@ -43,9 +43,15 @@
   */
 #define GPIO_BASE            0x6100
 
+/* empty function to always fail smbus reads */
+int smbus_read_byte(unsigned device, unsigned address)
+{
+	return -1;
+}
+
 static void init_gpio(void)
 {
-	msr_t msr;
+	struct msr_struct msr;
 	printk(BIOS_DEBUG, "Initializing GPIO module...\n");
 
 	// initialize the GPIO LBAR
@@ -63,7 +69,7 @@ static void sdram_hardwire(void)
 	 *                      width in bits (byte 6,7)
 	 *                    = Density per side (byte 31) * number of sides (byte 5) */
 	/* 1. Initialize GLMC registers base on SPD values, do one DIMM for now */
-	msr_t msr;
+	struct msr_struct  msr;
 
 	msr.hi = 0x10075012;
 	msr.lo = 0x00000040;
@@ -101,13 +107,21 @@ static void sdram_hardwire(void)
 /* Hold Count - how long we will sit in reset */
 #define PLLMSRlo 0x00DE0000
 
+struct wmsr {
+	u32 reg;
+	struct msr_struct  msr;
+} dbe61_msr[] = {
+	{.reg = 0x10000020, {.lo = 0xfff80, .hi = 0x20000000}},
+	{.reg = 0x10000021, {.lo = 0x80fffe0, .hi = 0x20000000}},
+	{.reg = 0x40000020, {.lo = 0xfff80, .hi = 0x20000000}},
+	{.reg = 0x40000021, {.lo = 0x80fffe0, .hi = 0x20000000}},
+};
+
 static void dbe61_msr_init(void)
 {
-	__builtin_wrmsr(0x10000020, 0xfff80, 0x20000000);
-        __builtin_wrmsr(0x10000021, 0x80fffe0, 0x20000000);
-
-        __builtin_wrmsr(0x40000020, 0xfff80, 0x20000000);
-        __builtin_wrmsr(0x40000021, 0x80fffe0, 0x20000000);
+	int i;
+	for(i = 0; i < sizeof(dbe61_msr)/sizeof(dbe61_msr[0]); i++)
+		wrmsr(dbe61_msr[i].reg, dbe61_msr[i].msr);
 }
 
 int main(void)

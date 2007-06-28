@@ -23,7 +23,8 @@ $(obj)/linuxbios.vpd:
 	$(Q)printf "  BUILD   DUMMY VPD\n"
 	$(Q)dd if=/dev/zero of=$(obj)/linuxbios.vpd bs=256 count=1 $(SILENT)
 
-INITRAM_OBJ=$(obj)/stage0.init $(obj)/stage0.o $(obj)/mainboard/$(MAINBOARDDIR)/initram.o \
+INITRAM_OBJ=$(obj)/stage0.init $(obj)/stage0.o \
+		$(obj)/mainboard/$(MAINBOARDDIR)/initram.o \
 		$(obj)/northbridge/amd/geodelx/raminit.o \
 		$(obj)/southbridge/amd/cs5536/smbus_initram.o \
 		$(obj)/southbridge/amd/cs5536/cs5536_early_setup.o\
@@ -50,8 +51,6 @@ $(obj)/linuxbios.initram: $(INITRAM_OBJ)
 # Miscellaneous important targets.
 #
 
-$(obj)/mainboard/$(MAINBOARDDIR)/mainboard.o: $(obj)/mainboard/$(MAINBOARDDIR)/statictree.o
-
 $(obj)/mainboard/$(MAINBOARDDIR)/statictree.o: $(obj)/mainboard/$(MAINBOARDDIR)/statictree.c $(obj)/statictree.h
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) $(INITCFLAGS) $(LINUXBIOSINCLUDE) -c -o $@ $<
@@ -75,7 +74,7 @@ $(obj)/option_table: $(obj)/mainboard/$(MAINBOARDDIR)/option_table.o
 	$(Q)printf "  OBJCOPY $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(OBJCOPY) -O binary $< $@ 
 
-STAGE2_MAINBOARD_OBJ = mainboard.o 
+STAGE2_MAINBOARD_OBJ = 
 
 STAGE2_CHIPSET_OBJ =  		$(obj)/arch/x86/geodecpu.o
 

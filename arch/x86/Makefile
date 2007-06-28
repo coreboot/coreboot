@@ -92,7 +92,8 @@ endif
 
 STAGE0_OBJ := $(patsubst %,$(obj)/lib/%,$(STAGE0_LIB_OBJ)) \
 	      $(patsubst %,$(obj)/arch/x86/%,$(STAGE0_ARCH_X86_OBJ)) \
-	      $(patsubst %,$(obj)/arch/x86/%,$(STAGE0_CAR_OBJ))
+	      $(patsubst %,$(obj)/arch/x86/%,$(STAGE0_CAR_OBJ)) \
+		$(STAGE0_MAINBOARD_OBJ)
 
 $(obj)/stage0.init: $(STAGE0_OBJ)
 	$(Q)# We need to be careful. If stage0.o gets bigger than

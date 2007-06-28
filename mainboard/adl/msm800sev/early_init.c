@@ -31,32 +31,24 @@
 #include <io.h>
 #include <amd_geodelx.h>
 #include <southbridge/amd/cs5536/cs5536.h>
-#include <northbridge/amd/geodelx/raminit.h>
+#include <superio/winbond/w83627hf/w83627hf.h>
 
-#define MANUALCONF 0		/* Do automatic strapped PLL config */
-#define PLLMSRHI 0x00001490	/* manual settings for the PLL */
-#define PLLMSRLO 0x02000030
-#define DIMM0 ((u8) 0xA0)
-#define DIMM1 ((u8) 0xA2)
+#define SERIAL_DEV 0x30
 
-int main(void)
+int early_init(void)
 {
-	void done_cache_as_ram_main(void);
+	void w83627hf_enable_serial(u8 dev, u8 serial, u16 iobase);
 	post_code(POST_START_OF_MAIN);
-	system_preinit();
 
-	pll_reset(MANUALCONF, PLLMSRHI, PLLMSRLO);
+	geodelx_msr_init();
 
-	cpu_reg_init(0, DIMM0, DIMM1);
-	sdram_set_registers();
-	sdram_set_spd_registers(DIMM0, DIMM1);
-	sdram_enable(DIMM0, DIMM1);
+	cs5536_early_setup();
 
-	/* Check low memory */
-	//ram_check(0x00000000, 640*1024);
-
-	/* Switch from Cache as RAM to real RAM */
-	printk(BIOS_SPEW, "Before wbinvd\n");
-	__asm__("wbinvd\n");
-	printk(BIOS_SPEW, "After wbinvd\n");
+	/* NOTE: must do this AFTER the early_setup!
+	 * it is counting on some early MSR setup
+	 * for cs5536
+	 */
+	cs5536_disable_internal_uart();
+	w83627hf_enable_serial(0x2e, 0x30, 0x3f8);
+	printk(BIOS_DEBUG, "Done %s\n", __FUNCTION__);
 }

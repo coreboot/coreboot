@@ -39,45 +39,6 @@
   * and it sucks.
   */
 
-/**
-  * geodelx_msr_init Set up Geode LX registers for sane behaviour. Set
-  * all low memory (under 1MB) to write back.  Do some setup for cache
-  * as ram as well.
-  */
-void geodelx_msr_init(void)
-{
-	struct msr  msr;
-	/* Setup access to the cache for under 1MB. */
-	msr.hi = 0x24fffc02;
-	msr.lo = 0x1000A000;	/* 0-A0000 write back */
-	wrmsr(CPU_RCONF_DEFAULT, msr);
-
-	msr.hi = 0x0;		/* write back */
-	msr.lo = 0x0;
-	wrmsr(CPU_RCONF_A0_BF, msr);
-	wrmsr(CPU_RCONF_C0_DF, msr);
-	wrmsr(CPU_RCONF_E0_FF, msr);
-
-	/* Setup access to the cache for under 640K. Note MC not setup yet. */
-	msr.hi = 0x20000000;
-	msr.lo = 0xfff80;
-	wrmsr(MSR_GLIU0 + 0x20, msr);
-
-	msr.hi = 0x20000000;
-	msr.lo = 0x80fffe0;
-	wrmsr(MSR_GLIU0 + 0x21, msr);
-
-	msr.hi = 0x20000000;
-	msr.lo = 0xfff80;
-	wrmsr(MSR_GLIU1 + 0x20, msr);
-
-	msr.hi = 0x20000000;
-	msr.lo = 0x80fffe0;
-	wrmsr(MSR_GLIU1 + 0x21, msr);
-
-}
-
-
 /** 
   * start_time1 Starts Timer 1 for port 61 use. FIXME try to figure
   * out what these values mean.
@@ -96,6 +57,7 @@ void system_preinit(void)
 {
 	start_timer1();
 }
+
 
 /* cpu bug management */
 /**

@@ -27,9 +27,9 @@
 
 /* these prototypes should go into headers */
 void uart_init(void);
-void console_init(void);
 void die(const char *msg);
 int find_file(struct mem_file *archive, char *filename, struct mem_file *result);
+void early_init(void);
 
 // Is this value correct?
 #define DCACHE_RAM_SIZE 0x8000
@@ -44,14 +44,6 @@ static void stop_ap(void)
 {
 	// nothing yet
 	post_code(0xf0);
-}
-
-static void enable_superio(void)
-{
-	// nothing yet
-	beep_short(); // FIXME
-	post_code(0xf1);
-	beep_long(); // FIXME
 }
 
 static void enable_rom(void)
@@ -90,7 +82,7 @@ void stage1_main(u32 bist)
 	// We have cache as ram running and can start executing code in C.
 	//
 	
-	enable_superio();
+	early_init();
 
 	//
 	uart_init();	// initialize serial port

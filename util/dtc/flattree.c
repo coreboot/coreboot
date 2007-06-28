@@ -112,6 +112,7 @@ char *toname(char *path, char *suffix){
 		else
 			*cp = *src;
 	}
+	*cp = 0;
 	cp = ret;
 	if (suffix)
 		strcat(cp, suffix);
@@ -1254,6 +1255,7 @@ void fix_next(struct node *root){
 
 void dt_to_linuxbios(FILE *f, struct boot_info *bi, int version, int boot_cpuid_phys)
 {
+	struct property *prop;
 	struct version_info *vi = NULL;
 	int i;
 	struct data strbuf = empty_data;
@@ -1261,6 +1263,7 @@ void dt_to_linuxbios(FILE *f, struct boot_info *bi, int version, int boot_cpuid_
 	extern char *code;
 	struct node *next;
 	extern struct node *first_node;
+	int found_mainboard_vendor = 0, found_mainboard_partnumber = 0;
 
 	labeltree(bi->dt);
 
@@ -1282,6 +1285,30 @@ void dt_to_linuxbios(FILE *f, struct boot_info *bi, int version, int boot_cpuid_
 	/* forward declarations */
 	for(next = first_node; next; next = next->next)
 		fprintf(f, "struct device dev_%s;\n", next->label);
+
+	/* special for the root. Emit the names for the mainboard vendor and part # */
+	for_each_property(bi->dt, prop) {
+		if (streq(prop->name, "mainboard-vendor")){
+			found_mainboard_vendor = 1;
+			fprintf(f, "const char *mainboard_vendor = \"%s\";\n", prop->val.val);
+		}
+		if (streq(prop->name, "mainboard-part-number")){
+			found_mainboard_partnumber = 1;
+			fprintf(f, "const char *mainboard_part_number = \"%s\";\n", prop->val.val);
+		}
+	}
+
+	if (! 	found_mainboard_vendor){
+		die("There is no mainboard-vendor property in the root. Please add one."
+			"(and make sure there is a mainboard-part-number property too");
+	}
+
+	if (! 	found_mainboard_partnumber){
+		die("There is no mainboard-part-number property in the root. "
+			"Please add one."
+			"(and make sure there is a mainboard-vendor property too");
+	}
+
 
 	/* emit the code, if any */
 	if (code)
@@ -1323,6 +1350,7 @@ void dt_to_linuxbiosh(FILE *f, struct boot_info *bi, int version, int boot_cpuid
 	fix_next(bi->dt);
 	/* emit any includes that we need  -- TODO: ONLY ONCE PER TYPE*/
 	fprintf(f, "#include <device/device.h>\n#include <device/pci.h>\n");
+	fprintf(f, "extern const char *mainboard_vendor, *mainboard_part_number;\n");
 	flatten_tree_emit_includes(bi->dt, &linuxbios_emitter, f, &strbuf, vi);
 
 	flatten_tree_emit_structdecls(bi->dt, &linuxbios_emitter, f, &strbuf, vi);

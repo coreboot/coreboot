@@ -19,7 +19,8 @@
  */
 /{
 	enabled;
-
+	mainboard-vendor = "AMD";
+	mainboard-part-number = "Norwich";
 	cpus {
 		enabled;
 	};

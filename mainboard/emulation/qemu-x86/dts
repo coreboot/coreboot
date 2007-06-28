@@ -18,6 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 /{
+	mainboard-vendor = "Emulation";
+	mainboard-part-number = "QEMU x86";
 	enabled;
 	constructor = "qemuvga_constructors";
 	cpus {

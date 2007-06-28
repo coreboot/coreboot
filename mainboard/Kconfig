@@ -38,6 +38,12 @@ config VENDOR_AMD
 	  Select this option for various systems from 
 	  Advanced Micro Devices, Inc
 
+config VENDOR_ARTECGROUP
+	bool "Artec Group"
+	help
+	  Select this option for various systems from 
+	  the Artec Group
+
 config VENDOR_EMULATION
 	bool "Emulated systems"
 	help
@@ -48,6 +54,7 @@ endchoice
 source "mainboard/emulation/Kconfig"
 source "mainboard/adl/Kconfig"
 source "mainboard/amd/Kconfig"
+source "mainboard/artecgroup/Kconfig"
 
 choice
 	prompt "ROM chip size"

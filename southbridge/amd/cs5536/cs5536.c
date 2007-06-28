@@ -117,21 +117,21 @@ static void pm_chipset_init(void)
 	/*      PM_WKXD */
 	/*      Make sure bits[3:0]=0000b to clear the */
 	/*      saved Sx state */
-	port = (PMS_IO_BASE + 0x034);
+	port = (PMS_IO_BASE + PM_WKXD);
 	val = 0x0A0;		/*  5ms */
 	outl(val, port);
 
 	/*      PM_WKD */
-	port = (PMS_IO_BASE + 0x030);
+	port = (PMS_IO_BASE + PM_WKD);
 	outl(val, port);
 
 	/*      PM_SED */
-	port = (PMS_IO_BASE + 0x014);
+	port = (PMS_IO_BASE + PM_SED);
 	val = 0x04601;		/*  5ms, # of 3.57954MHz clock edges */
 	outl(val, port);
 
 	/*      PM_SIDD */
-	port = (PMS_IO_BASE + 0x020);
+	port = (PMS_IO_BASE + PM_SIDD);
 	val = 0x08C02;		/*  10ms, # of 3.57954MHz clock edges */
 	outl(val, port);
 }
@@ -519,7 +519,7 @@ void chipsetinit(void)
 	post_code(P80_CHIPSET_INIT);
 	dev = dev_find_device(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_CS5536_ISA, 0);
 	if (! dev) {
-		printk(BIOS_ERR, "%s: Could not find the south bridge!\n", __FUNCTION));
+		printk(BIOS_ERR, "%s: Could not find the south bridge!\n", __FUNCTION__);
 		return;
 	}
 	sb = (struct southbridge_amd_cs5536_config *)dev->device_configuration;
@@ -540,8 +540,10 @@ void chipsetinit(void)
 	outl(GPIOL_2_SET, GPIO_IO_BASE + GPIOL_INPUT_ENABLE);
 	outl(GPIOL_2_SET, GPIO_IO_BASE + GPIOL_IN_AUX1_SELECT);
 
-	/*      Allow IO read and writes during a ATA DMA operation. */
-	/*       This could be done in the HD rom but do it here for easier debugging. */
+	/* Allow IO read and writes during a ATA DMA operation.
+	 * This could be done in the HD rom but 
+	 * do it here for easier debugging.
+	 */
 	msrnum = ATA_SB_GLD_MSR_ERR;
 	msr = rdmsr(msrnum);
 	msr.lo &= ~0x100;

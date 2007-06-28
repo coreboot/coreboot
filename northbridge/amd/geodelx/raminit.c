@@ -47,7 +47,7 @@ static void auto_size_dimm(unsigned int dimm, u8 dimm0, u8 dimm1)
 	u32 dimm_setting;
 	u16 dimm_size;
 	u8 spd_byte;
-	msr_t msr;
+	struct msr msr;
 
 	dimm_setting = 0;
 
@@ -207,7 +207,7 @@ static void set_refresh_rate(u8 dimm0, u8 dimm1)
 {
 	u8 spd_byte0, spd_byte1;
 	u16 rate0, rate1;
-	msr_t msr;
+	struct msr msr;
 
 	spd_byte0 = smbus_read_byte(dimm0, SPD_REFRESH);
 	spd_byte0 &= 0xF;
@@ -261,7 +261,7 @@ static void set_cas(u8 dimm0, u8 dimm1)
 {
 	u16 glspeed, dimm_speed;
 	u8 spd_byte = 0xff, casmap0, casmap1;
-	msr_t msr;
+	struct msr msr;
 
 	glspeed = geode_link_speed();
 
@@ -359,7 +359,7 @@ static void set_latencies(u8 dimm0, u8 dimm1)
 {
 	u32 memspeed, dimm_setting;
 	u8 spd_byte0, spd_byte1;
-	msr_t msr;
+	struct msr msr;
 
 	memspeed = geode_link_speed() / 2;
 	dimm_setting = 0;
@@ -502,7 +502,7 @@ static void set_latencies(u8 dimm0, u8 dimm1)
 static void set_extended_mode_registers(u8 dimm0, u8 dimm1)
 {
 	u8 spd_byte0, spd_byte1;
-	msr_t msr;
+	struct msr msr;
 	spd_byte0 = smbus_read_byte(dimm0, SPD_DEVICE_ATTRIBUTES_GENERAL);
 	if (spd_byte0 == 0xFF) {
 		spd_byte0 = 0;
@@ -528,7 +528,7 @@ static void set_extended_mode_registers(u8 dimm0, u8 dimm1)
   */
 static void EnableMTest(void)
 {
-	msr_t msr;
+	struct msr msr;
 
 	msr = rdmsr(GLCP_DELAY_CONTROLS);
 	msr.hi &= ~(7 << 20);	/* clear bits 54:52 */
@@ -552,7 +552,7 @@ static void EnableMTest(void)
   */
 void sdram_set_registers(void)
 {
-	msr_t msr;
+	struct msr msr;
 	u32 msrnum;
 
 	/* Set Timing Control */
@@ -653,7 +653,7 @@ void sdram_set_spd_registers(u8 dimm0, u8 dimm1)
 void sdram_enable(u8 dimm0, u8 dimm1)
 {
 	u32 i, msrnum;
-	msr_t msr;
+	struct msr msr;
 
 	post_code(POST_MEM_ENABLE);	// post_76h
 

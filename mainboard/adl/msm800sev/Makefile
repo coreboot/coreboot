@@ -29,7 +29,7 @@ INITRAM_OBJ =   $(obj)/mainboard/$(MAINBOARDDIR)/initram.o \
 		$(obj)/southbridge/amd/cs5536/cs5536_early_setup.o\
 		$(obj)/superio/winbond/w83627hf/w83627hf_early_serial.o\
 		$(obj)/device/pnp_raw.o \
-		$(obj)/arch/x86/geodelx.o
+		$(obj)/arch/x86/geodelx/geodelx.o
 
 $(obj)/linuxbios.initram: $(obj)/stage0.init $(obj)/stage0.o $(INITRAM_OBJ) 
 	$(Q)# initram links against stage0
@@ -67,9 +67,9 @@ $(obj)/option_table: $(obj)/mainboard/$(MAINBOARDDIR)/option_table.o
 	$(Q)printf "  OBJCOPY $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(OBJCOPY) -O binary $< $@ 
 
-STAGE2_MAINBOARD_OBJ = 
+STAGE2_MAINBOARD_OBJ =
 
-STAGE2_CHIPSET_OBJ =  		$(obj)/arch/x86/geodecpu.o
+STAGE2_CHIPSET_OBJ =  		$(obj)/arch/x86/geodelx/geodelx.o $(obj)/arch/x86/geodelx/cpu.o
 
 $(obj)/mainboard/$(MAINBOARDDIR)/%.o: $(src)/mainboard/$(MAINBOARDDIR)/%.c
 	$(Q)mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)

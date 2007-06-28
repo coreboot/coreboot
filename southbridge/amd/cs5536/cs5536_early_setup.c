@@ -41,7 +41,7 @@
  */
 void cs5536_setup_extmsr(void)
 {
-	msr_t msr;
+	struct msr  msr;
 
 	/* Forward MSR access to CS5536_GLINK_PORT_NUM to CS5536_DEV_NUM. */
 	msr.hi = msr.lo = 0x00000000;
@@ -74,7 +74,7 @@ void cs5536_setup_idsel(void)
  */
 void cs5536_usb_swapsif(void)
 {
-	msr_t msr;
+	struct msr  msr;
 
 	msr = rdmsr(USB1_SB_GLD_MSR_CAP + 0x5);
 
@@ -97,7 +97,7 @@ void cs5536_usb_swapsif(void)
  */
 void cs5536_setup_iobase(void)
 {
-	msr_t msr;
+	struct msr  msr;
 
 	/* Setup LBAR for SMBus controller. */
 	msr.hi = 0x0000f001;
@@ -174,7 +174,7 @@ void cs5536_setup_smbus_gpio(void)
  */
 void cs5536_disable_internal_uart(void)
 {
-	msr_t msr;
+	struct msr  msr;
 
 	/* The UARTs default to enabled.
 	 * Disable and reset them and configure them later (SIO init).
@@ -201,7 +201,7 @@ void cs5536_disable_internal_uart(void)
  */
 void cs5536_setup_cis_mode(void)
 {
-	msr_t msr;
+	struct msr  msr;
 
 	/* Setup CPU interface serial to mode B to match CPU. */
 	msr = rdmsr(GLPCI_SB_CTRL);
@@ -217,7 +217,7 @@ void cs5536_setup_cis_mode(void)
  */
 void cs5536_setup_onchipuart(void)
 {
-	msr_t msr;
+	struct msr  msr;
 
 	/* Setup early for polling only mode.
 	 * 1. Eanble GPIO 8 to OUT_AUX1, 9 to IN_AUX1.
@@ -276,7 +276,7 @@ void cs5536_setup_onchipuart(void)
  */
 void cs5536_early_setup(void)
 {
-	msr_t msr;
+	struct msr  msr;
 
 	/* Note: you can't do prints in here in most cases, and we don't want
 	 * to hang on serial, so they are commented out.

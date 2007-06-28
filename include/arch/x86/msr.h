@@ -21,16 +21,15 @@
 #define CPU_X86_MSR_H
 
 /* standard MSR operations, everyone has written these one hundred times */
-
-typedef struct msr_struct 
+struct msr 
 {
 	unsigned lo;
 	unsigned hi;
-} msr_t;
+};
 
-static inline msr_t rdmsr(unsigned index)
+static inline struct msr  rdmsr(unsigned index)
 {
-	msr_t result;
+	struct msr  result;
 	__asm__ __volatile__ (
 		"rdmsr"
 		: "=a" (result.lo), "=d" (result.hi)
@@ -39,7 +38,7 @@ static inline msr_t rdmsr(unsigned index)
 	return result;
 }
 
-static inline void wrmsr(unsigned index, msr_t msr)
+static inline void wrmsr(unsigned index, struct msr msr)
 {
 	__asm__ __volatile__ (
 		"wrmsr"

@@ -36,7 +36,7 @@ extern void setup_i8259(void);
 
 struct msrinit {
 	u32 msrnum;
-	msr_t msr;
+	struct msr  msr;
 };
 
 /*	Master Configuration Register for Bus Masters.*/
@@ -144,7 +144,7 @@ static void pm_chipset_init(void)
   */
 static void chipset_flash_setup(void)
 {
-	msr_t msr;
+	struct msr  msr;
 	int i;
 	int numEnabled = 0;
 
@@ -207,7 +207,7 @@ static void enable_ide_nand_flash_header(void)
   */
 static void lpc_init(struct southbridge_amd_cs5536_config *sb)
 {
-	msr_t msr;
+	struct msr  msr;
 
 	if (sb->lpc_serirq_enable) {
 		msr.lo = sb->lpc_serirq_enable;
@@ -253,7 +253,7 @@ static void lpc_init(struct southbridge_amd_cs5536_config *sb)
   */
 static void uarts_init(struct southbridge_amd_cs5536_config *sb)
 {
-	msr_t msr;
+	struct msr  msr;
 	u16 addr = 0;
 	u32 gpio_addr;
 	struct device *dev;
@@ -417,7 +417,7 @@ static void uarts_init(struct southbridge_amd_cs5536_config *sb)
 static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 {
 	u32 *bar;
-	msr_t msr;
+	struct msr  msr;
 	struct device *dev;
 
 	dev = dev_find_device(PCI_VENDOR_ID_AMD, 
@@ -511,7 +511,7 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 void chipsetinit(void)
 {
 	struct device *dev;
-	msr_t msr;
+	struct msr  msr;
 	u32 msrnum;
 	struct southbridge_amd_cs5536_config *sb;
 	struct msrinit *csi;

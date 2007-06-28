@@ -69,7 +69,7 @@ $(obj)/option_table: $(obj)/mainboard/$(MAINBOARDDIR)/option_table.o
 
 STAGE2_MAINBOARD_OBJ =
 
-STAGE2_CHIPSET_OBJ =  		$(obj)/arch/x86/geodelx/geodelx.o $(obj)/arch/x86/geodelx/cpu.o
+STAGE2_CHIPSET_OBJ =  		$(obj)/arch/x86/geodelx/cpu.o
 
 $(obj)/mainboard/$(MAINBOARDDIR)/%.o: $(src)/mainboard/$(MAINBOARDDIR)/%.c
 	$(Q)mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)

@@ -1214,23 +1214,26 @@
 
 /*
  * Write to a Virtual Register
+ * @param class_index The register index
+ * @param data The data to write
  */
-static inline void vrWrite(u16 wClassIndex, u16 wData)
+static inline void vr_write(u16 class_index, u16 data)
 {
-	outl(((u32) VR_UNLOCK << 16) | wClassIndex, VRC_INDEX);
-	outw(wData, VRC_DATA);
+	outl(((u32) VR_UNLOCK << 16) | class_index, VRC_INDEX);
+	outw(data, VRC_DATA);
 }
 
  /*
- * Read from a Virtual Register
- * Returns a 16-bit word of data
- */
-static inline u16 vrRead(u16 wClassIndex)
+  * Read from a Virtual Register
+  * @param class_index The register index
+  * @return the 16-bit word of data
+  */
+static inline u16 vr_ead(u16 class_index)
 {
-	u16 wData;
-	outl(((u32) VR_UNLOCK << 16) | wClassIndex, VRC_INDEX);
-	wData = inw(VRC_DATA);
-	return wData;
+	u16 data;
+	outl(((u32) VR_UNLOCK << 16) | class_index, VRC_INDEX);
+	data = inw(VRC_DATA);
+	return data;
 }
 
 /* support functions */

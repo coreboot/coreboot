@@ -24,16 +24,18 @@
 #include <post_code.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_ids.h>
 #include <string.h>
 #include <msr.h>
 #include <io.h>
 #include <amd_geodelx.h>
-#include "geodelx.h"
 
 /* here is programming for the various MSRs.*/
 #define IM_QWAIT 0x100000
 
-#define DMCF_WRITE_SERIALIZE_REQUEST (2<<12) /* 2 outstanding */	/* set in high nibl */
+/* set in high nibl */
+#define DMCF_WRITE_SERIALIZE_REQUEST (2<<12) /* 2 outstanding */
+
 #define DMCF_SERIAL_LOAD_MISSES  (2)	/* enabled */
 
 /* these are the 8-bit attributes for controlling RCONF registers
@@ -63,7 +65,9 @@
 #define RRCF_LOW_CD(base)	RRCF_LOW(base, CACHE_DISABLE)
 
 /* build initializer for P2D MSR */
-/* this is complex enough that you are going to need to RTFM if you really want to understand it. */
+/* this is complex enough that you are going to need to RTFM if you
+ *    really want to understand it.
+ */
 #define P2D_BM(msr, pdid1, bizarro, pbase, pmask) {msr, {.hi=(pdid1<<29)|(bizarro<<28)|(pbase>>24), .lo=(pbase<<8)|pmask}}
 #define P2D_BMO(msr, pdid1, bizarro, poffset, pbase, pmask) {msr, {.hi=(pdid1<<29)|(bizarro<<28)|(poffset<<8)|(pbase>>24), .lo=(pbase<<8)|pmask}}
 #define P2D_R(msr, pdid1, bizarro, pmax, pmin) {msr, {.hi=(pdid1<<29)|(bizarro<<28)|(pmax>>12), .lo=(pmax<<20)|pmin}}
@@ -86,37 +90,38 @@ void do_vsmbios(void);
 
 struct msr_defaults {
 	int msr_no;
-	msr_t msr;
+	struct msr  msr;
 } msr_defaults[] = {
-	{
-		0x1700, {
-	.hi = 0,.lo = IM_QWAIT}}, {
-		0x1800, {
-	.hi = DMCF_WRITE_SERIALIZE_REQUEST,.lo =
-			    DMCF_SERIAL_LOAD_MISSES}},
-	    /* 1808 will be done down below, so we have to do 180a->1817 (well, 1813 really) */
-	    /* for 180a, for now, we assume VSM will configure it */
-	    /* 180b is left at reset value,a0000-bffff is non-cacheable */
-	    /* 180c, c0000-dffff is set to write serialize and non-cachable */
-	    /* oops, 180c will be set by cpu bug handling in cpubug.c */
-	    //{0x180c, {.hi = MSR_WS_CD_DEFAULT, .lo = MSR_WS_CD_DEFAULT}},
-	    /* 180d is left at default, e0000-fffff is non-cached */
-	    /* we will assume 180e, the ssm region configuration, is left at default or set by VSM */
-	    /* we will not set 0x180f, the DMM,yet */
-	    //{0x1810, {.hi=0xee7ff000, .lo=RRCF_LOW(0xee000000, WRITE_COMBINE|CACHE_DISABLE)}},
-	    //{0x1811, {.hi = 0xefffb000, .lo = RRCF_LOW_CD(0xefff8000)}},
-	    //{0x1812, {.hi = 0xefff7000, .lo = RRCF_LOW_CD(0xefff4000)}},
-	    //{0x1813, {.hi = 0xefff3000, .lo = RRCF_LOW_CD(0xefff0000)}},
-	    /* now for GLPCI routing */
-	    /* GLIU0 */
-	    P2D_BM(MSR_GLIU0_BASE1, 0x1, 0x0, 0x0, 0xfff80),
-	    P2D_BM(MSR_GLIU0_BASE2, 0x1, 0x0, 0x80000, 0xfffe0),
-	    P2D_SC(MSR_GLIU0_SHADOW, 0x1, 0x0, 0x0, 0xff03, 0xC0000),
-	    /* GLIU1 */
-	    P2D_BM(MSR_GLIU1_BASE1, 0x1, 0x0, 0x0, 0xfff80),
-	    P2D_BM(MSR_GLIU1_BASE2, 0x1, 0x0, 0x80000, 0xfffe0),
-	    P2D_SC(MSR_GLIU1_SHADOW, 0x1, 0x0, 0x0, 0xff03, 0xC0000), {
-	0}
+	{0x1700, {.hi = 0,.lo = IM_QWAIT}}, 
+	{0x1800, {.hi = DMCF_WRITE_SERIALIZE_REQUEST,
+		  .lo = DMCF_SERIAL_LOAD_MISSES}},
+	/* 1808 will be done down below, so we have to do 180a->1817
+	 * (well, 1813 really) 
+	 */
+	/* for 180a, for now, we assume VSM will configure it */
+	/* 180b is left at reset value,a0000-bffff is non-cacheable */
+	/* 180c, c0000-dffff is set to write serialize and non-cachable */
+	/* oops, 180c will be set by cpu bug handling in cpubug.c */
+	//{0x180c, {.hi = MSR_WS_CD_DEFAULT, .lo = MSR_WS_CD_DEFAULT}},
+	/* 180d is left at default, e0000-fffff is non-cached */
+	/* we will assume 180e, the ssm region configuration, is left
+	 * at default or set by VSM */
+	/* we will not set 0x180f, the DMM,yet 
+	 */
+	//{0x1810, {.hi=0xee7ff000, .lo=RRCF_LOW(0xee000000, WRITE_COMBINE|CACHE_DISABLE)}},
+	//{0x1811, {.hi = 0xefffb000, .lo = RRCF_LOW_CD(0xefff8000)}},
+	//{0x1812, {.hi = 0xefff7000, .lo = RRCF_LOW_CD(0xefff4000)}},
+	//{0x1813, {.hi = 0xefff3000, .lo = RRCF_LOW_CD(0xefff0000)}},
+	/* now for GLPCI routing */
+	/* GLIU0 */
+	P2D_BM(MSR_GLIU0_BASE1, 0x1, 0x0, 0x0, 0xfff80),
+	P2D_BM(MSR_GLIU0_BASE2, 0x1, 0x0, 0x80000, 0xfffe0),
+	P2D_SC(MSR_GLIU0_SHADOW, 0x1, 0x0, 0x0, 0xff03, 0xC0000),
+	/* GLIU1 */
+	P2D_BM(MSR_GLIU1_BASE1, 0x1, 0x0, 0x0, 0xfff80),
+	P2D_BM(MSR_GLIU1_BASE2, 0x1, 0x0, 0x80000, 0xfffe0),
+	P2D_SC(MSR_GLIU1_SHADOW, 0x1, 0x0, 0x0, 0xff03, 0xC0000), 
+	{0}
 };
 
 /** 
@@ -127,21 +132,23 @@ struct msr_defaults {
   */
 int sizeram(void)
 {
-	msr_t msr;
+	struct msr  msr;
 	int sizem = 0;
 	unsigned short dimm;
 
-	/* Get the RAM size from the memory controller as calculated and set by auto_size_dimm() */
+	/* Get the RAM size from the memory controller as calculated
+	 * and set by auto_size_dimm() 
+	 */
 	msr = rdmsr(MC_CF07_DATA);
 	printk(BIOS_DEBUG,"sizeram: _MSR MC_CF07_DATA: %08x:%08x\n", msr.hi, msr.lo);
-
+	
 	/* dimm 0 */
 	dimm = msr.hi;
 	/* installed? */
 	if ((dimm & 7) != 7) {
 		/* 1:8MB, 2:16MB, 3:32MB, 4:64MB, ... 7:512MB, 8:1GB */
 		sizem = 4 << ((dimm >> 12) & 0x0F);	}
-
+	
 	/* dimm 1 */
 	dimm = msr.hi >> 16;
 	/* installed? */
@@ -165,12 +172,11 @@ static void enable_shadow(struct device * dev)
 /**
   * init the northbridge pci device. Right now this a no op. We leave
   * it here as a hook for later use.  
-  * @param dev The nortbridge
-  * device.
-   */
+  * @param dev The nortbridge device.
+  */
 static void geodelx_northbridge_init(struct device * dev)
 {
-	//msr_t msr;
+	//struct msr  msr;
 
 	printk(BIOS_SPEW,">> Entering northbridge.c: %s\n", __FUNCTION__);
 
@@ -202,23 +208,27 @@ void geodelx_northbridge_set_resources(struct device *dev)
 
 	for (resource = &dev->resource[0]; resource < last; resource++) {
 
-		// andrei: do not change the base address, it will make the VSA virtual registers unusable
+		/* 
+		 * from AMD: do not change the base address, it will
+		 * make the VSA virtual registers unusable
+		 */
 		//pci_set_resource(dev, resource);
 		// FIXME: static allocation may conflict with dynamic mappings!
 	}
-
+	
 	for (link = 0; link < dev->links; link++) {
 		struct bus *bus;
 		bus = &dev->link[link];
 		if (bus->children) {
-			printk(BIOS_DEBUG, "my_dev_set_resources: phase4_assign_resources %d\n", bus);
+			printk(BIOS_DEBUG, 
+			       "my_dev_set_resources: phase4_assign_resources %d\n", bus);
 			phase4_assign_resources(bus);
 		}
 	}
-
+	
 	/* set a default latency timer */
 	pci_write_config8(dev, PCI_LATENCY_TIMER, 0x40);
-
+	
 	/* set a default secondary latency timer */
 	if ((dev->hdr_type & 0x7f) == PCI_HEADER_TYPE_BRIDGE) {
 		pci_write_config8(dev, PCI_SEC_LATENCY_TIMER, 0x40);
@@ -251,13 +261,13 @@ static void geodelx_pci_domain_read_resources(struct device * dev)
 	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
 	resource->limit = 0xffffUL;
 	resource->flags =
-	    IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+		IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 
 	/* Initialize the system wide memory resources constraints */
 	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
 	resource->limit = 0xffffffffULL;
 	resource->flags =
-	    IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+		IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 }
 
 /** 
@@ -280,7 +290,7 @@ static void ram_resource(struct device * dev, unsigned long index,
 	resource->base = ((resource_t) basek) << 10;
 	resource->size = ((resource_t) sizek) << 10;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_CACHEABLE |
-	    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
+		IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 }
 
 /** 
@@ -426,13 +436,13 @@ struct device_operations geodelx_pci_ops = {
 /* Domain ops and apic cluster ops and pci device ops are different */
 struct constructor geodelx_north_constructors[] = {
   {.id = {.type = DEVICE_ID_PCI_DOMAIN,
-	  .u = {.pci_domain = {.vendor = 0x8086,.device = 0x7190}}},
+	  .u = {.pci_domain = {.vendor = PCI_VENDOR_ID_AMD,.device = PCI_DEVICE_ID_AMD_LXBRIDGE}}},
    &geodelx_pcidomainops},
   {.id = {.type = DEVICE_ID_APIC_CLUSTER,
-	  .u = {.apic_cluster = {.vendor = 0x8086,.device = 0x7190}}},
+	  .u = {.apic_cluster = {.vendor = PCI_VENDOR_ID_AMD,.device = PCI_DEVICE_ID_AMD_LXBRIDGE}}},
    &geodelx_apicops},
   {.id = {.type = DEVICE_ID_PCI,
-	  .u = {.pci = {.vendor = 0x8086,.device = 0x7190}}},
+	  .u = {.pci = {.vendor = PCI_VENDOR_ID_AMD,.device = PCI_DEVICE_ID_AMD_LXBRIDGE}}},
    &geodelx_pci_ops},
   {.ops = 0},
 };

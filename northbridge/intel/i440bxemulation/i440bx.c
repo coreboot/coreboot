@@ -91,9 +91,7 @@ static void pci_domain_set_resources(struct device *dev)
 	struct northbridge_intel_i440bxemulation_config *device_configuration =
 	    dev->device_configuration;
 	tolmk = device_configuration->ramsize * 1024;
-	printk(BIOS_DEBUG, "pci dom set re child is %p, confi %p tolmk %x\n", dev, device_configuration, tolmk);
 	mc_dev = dev->link[0].children;
-	printk(BIOS_DEBUG, "child is %p\n", mc_dev);
 	if (mc_dev) {
 		idx = 10;
 		ram_resource(dev, idx++, 0, tolmk);

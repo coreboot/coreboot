@@ -46,7 +46,7 @@
   */
 void geodelx_msr_init(void)
 {
-	msr_t msr;
+	struct msr  msr;
 	/* Setup access to the cache for under 1MB. */
 	msr.hi = 0x24fffc02;
 	msr.lo = 0x1000A000;	/* 0-A0000 write back */
@@ -107,7 +107,7 @@ void system_preinit(void)
  */
 static void pci_deadlock(void)
 {
-	msr_t msr;
+	struct msr  msr;
 
 	/*
 	 * forces serialization of all load misses. Setting this bit prevents the 
@@ -137,7 +137,7 @@ static void pci_deadlock(void)
 /****************************************************************************/
 static void disable_memory_reorder(void)
 {
-	msr_t msr;
+	struct msr  msr;
 
 	msr = rdmsr(MC_CF8F_DATA);
 	msr.hi |= CF8F_UPPER_REORDER_DIS_SET;
@@ -172,7 +172,7 @@ void cpu_bug(void)
  */
 void pll_reset(int manualconf, u32 pll_hi, u32 pll_lo)
 {
-	msr_t msrGlcpSysRstpll;
+	struct msr  msrGlcpSysRstpll;
 
 	msrGlcpSysRstpll = rdmsr(GLCP_SYS_RSTPLL);
 
@@ -228,7 +228,7 @@ void pll_reset(int manualconf, u32 pll_hi, u32 pll_lo)
 u32 cpu_speed(void)
 {
 	u32 speed;
-	msr_t msr;
+	struct msr  msr;
 
 	msr = rdmsr(GLCP_SYS_RSTPLL);
 	speed = ((((msr.hi >> RSTPLL_UPPER_CPUMULT_SHIFT) & 0x1F) + 1) * 333) / 10;
@@ -246,7 +246,7 @@ u32 cpu_speed(void)
 u32 geode_link_speed(void)
 {
 	unsigned int speed;
-	msr_t msr;
+	struct msr  msr;
 
 	msr = rdmsr(GLCP_SYS_RSTPLL);
 	speed = ((((msr.hi >> RSTPLL_UPPER_GLMULT_SHIFT) & 0x1F) + 1) * 333) / 10;
@@ -264,7 +264,7 @@ u32 geode_link_speed(void)
  */
 u32 pci_speed(void)
 {
-	msr_t msr;
+	struct msr  msr;
 
 	msr = rdmsr(GLCP_SYS_RSTPLL);
 	if (msr.hi & (1 << RSTPPL_LOWER_PCISPEED_SHIFT)) {
@@ -296,7 +296,7 @@ void set_delay_control(u8 dimm0, u8 dimm1)
 	u32 msrnum, glspeed;
 	u8 spdbyte0, spdbyte1;
 	int numdimms = 0;
-	msr_t msr;
+	struct msr  msr;
 
 	glspeed = geode_link_speed();
 
@@ -500,7 +500,7 @@ void set_delay_control(u8 dimm0, u8 dimm1)
 void cpu_reg_init(int debug_clock_disable, u8 dimm0, u8 dimm1)
 {
 	int msrnum;
-	msr_t msr;
+	struct msr  msr;
 
 	/* Castle 2.0 BTM periodic sync period. */
 	/*      [40:37] 1 sync record per 256 bytes */

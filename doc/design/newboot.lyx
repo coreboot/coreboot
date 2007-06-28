@@ -2435,6 +2435,57 @@ itram.o $(obj)/southbridge/amd/cs5536/smbus_initram.o
 Now we get lots more errors, so off we go to fix them!
 \end_layout
 
+\begin_layout Paragraph
+R334
+\end_layout
+
+\begin_layout Standard
+The errors were mainly changes to printk.
+ Also, we had to copy the old cs5536.h from the V2 tree.
+ This file is only used for the southbridge part, so, following LinuxBIOS
+ include rules, cs5536.h does not go in include; rather, it goes in the 
+\family typewriter
+southbridge/amd/cs5536 
+\family default
+directory.
+ We fix the includes so that they have proper names, and add Doxygen comments,
+ which as of June 1, 2007, are required for all commits.
+ Also, all functions save smbus_read_byte are static, as only that one function
+ is needed externally; smbus_read_byte has a static, first_time, which is
+ checked and, if set, smbus_read_byte will initialize the smbus hardware
+ via smbus_enable.
+ 
+\end_layout
+
+\begin_layout Standard
+At this point, we have smbus support for the chipset, an essential first
+ step.
+ 
+\end_layout
+
+\begin_layout Paragraph*
+R345
+\end_layout
+
+\begin_layout Standard
+We bring across the cs5536_early_setup.c, and make the few changes needed
+ to get it to compile.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+Now it is time to fix the compilation errors.
+ First, we need to get the pll_reset.c function from V2.
+ This function requires few changes.
+ Mainly, they involve removing artifacts of romcc, such as a lack of include
+ directives, and use of simple print functions instead of printk.
+ 
+\end_layout
+
 \begin_layout Standard
 
 \end_layout

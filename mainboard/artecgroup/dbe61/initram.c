@@ -51,7 +51,7 @@ int smbus_read_byte(unsigned device, unsigned address)
 
 static void init_gpio(void)
 {
-	struct msr_struct msr;
+	struct msr msr;
 	printk(BIOS_DEBUG, "Initializing GPIO module...\n");
 
 	// initialize the GPIO LBAR
@@ -69,7 +69,7 @@ static void sdram_hardwire(void)
 	 *                      width in bits (byte 6,7)
 	 *                    = Density per side (byte 31) * number of sides (byte 5) */
 	/* 1. Initialize GLMC registers base on SPD values, do one DIMM for now */
-	struct msr_struct  msr;
+	struct msr  msr;
 
 	msr.hi = 0x10075012;
 	msr.lo = 0x00000040;
@@ -109,7 +109,7 @@ static void sdram_hardwire(void)
 
 struct wmsr {
 	u32 reg;
-	struct msr_struct  msr;
+	struct msr  msr;
 } dbe61_msr[] = {
 	{.reg = 0x10000020, {.lo = 0xfff80, .hi = 0x20000000}},
 	{.reg = 0x10000021, {.lo = 0x80fffe0, .hi = 0x20000000}},

@@ -169,6 +169,7 @@ struct bus {
 
 #define MAX_RESOURCES 12
 #define MAX_LINKS    8 
+#define MAX_DTSNAME_SIZE 64
 /*
  * There is one device structure for each slot-number/function-number
  * combination:
@@ -181,7 +182,7 @@ struct device {
 	struct device *	next;		/* chain of all devices */
 
 	struct device_path path;
-	char *		dtsname;	/* the name from the dts */
+	char 		dtsname[MAX_DTSNAME_SIZE];	/* the name from the dts */
 	unsigned 	vendor;
 	unsigned 	device;
 	unsigned int	class;		/* 3 bytes: (base,sub,prog-if) */

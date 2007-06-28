@@ -221,10 +221,6 @@ struct device *alloc_dev(struct bus *parent, struct device_path *path,
 	last_dev_p = &dev->next;
 
 	/* Give the device a name. */
-	dev->dtsname = malloc(32);
-	if (dev->dtsname == NULL) {
-		die("DEV: out of memory.\n");
-	}
 	sprintf(dev->dtsname, "dynamic %s", dev_path(dev));
 
 	// spin_unlock(&dev_lock);

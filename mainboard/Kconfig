@@ -29,20 +29,18 @@ choice
 config VENDOR_ADL
 	bool "Advanced Digital Logic"
 	help
-	  Select this option for various systems from 
-	  Advanced Digital Logic
+	  Select this option for various systems from Advanced Digital Logic.
 
 config VENDOR_AMD
 	bool "AMD"
 	help
 	  Select this option for various systems from 
-	  Advanced Micro Devices, Inc
+	  Advanced Micro Devices, Inc.
 
 config VENDOR_ARTECGROUP
 	bool "Artec Group"
 	help
-	  Select this option for various systems from 
-	  the Artec Group
+	  Select this option for various systems from the Artec Group.
 
 config VENDOR_EMULATION
 	bool "Emulated systems"
@@ -51,10 +49,10 @@ config VENDOR_EMULATION
 
 endchoice
 
-source "mainboard/emulation/Kconfig"
 source "mainboard/adl/Kconfig"
 source "mainboard/amd/Kconfig"
 source "mainboard/artecgroup/Kconfig"
+source "mainboard/emulation/Kconfig"
 
 choice
 	prompt "ROM chip size"

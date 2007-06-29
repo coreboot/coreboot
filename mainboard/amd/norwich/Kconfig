@@ -28,6 +28,7 @@ config MAINBOARD_NAME
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
+	# TODO: Fix PCI ID.
 	default 0x1022
 	depends BOARD_AMD_NORWICH
 	help
@@ -35,11 +36,9 @@ config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
+	# TODO: Fix PCI ID.
 	default 0x2323
 	depends BOARD_AMD_NORWICH
 	help
 	  Mainboard specific PCI subsystem device ID.
-
-
-
 

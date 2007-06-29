@@ -55,4 +55,3 @@ config OPTION_TABLE
 	  a battery backed up real time clock with CMOS NVRAM.
 	  It is usually set in mainboard/*/Kconfig.
 
-

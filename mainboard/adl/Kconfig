@@ -24,7 +24,7 @@ choice
 	depends on VENDOR_ADL
 
 config BOARD_ADL_MSM800SEV
-	bool "msm800sev"
+	bool "MSM800SEV"
 	select ARCH_X86
 	select CPU_AMD_GEODELX
 	select OPTION_TABLE
@@ -32,7 +32,8 @@ config BOARD_ADL_MSM800SEV
 	select SOUTHBRIDGE_AMD_CS5536
 	select SUPERIO_WINBOND_W83627HF
 	help
-	  ADL MSM800SEV board
+	  Advanced Digital Logic MSM800SEV mainboard.
+
 endchoice
 
 source "mainboard/adl/msm800sev/Kconfig"

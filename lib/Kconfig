@@ -3,7 +3,7 @@
 ##
 ## Copyright (C) 2007 coresystems GmbH
 ## (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
-## Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de> 
+## Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -208,7 +208,7 @@ config CONSOLE_USB
 	    * 8086:268c Intel 631xESB/632xESB/3100
 	    * 8086:27cc Intel ICH7
 	    * 8086:2836 Intel ICH8
-	    * 8086:283a Intel ICH8 
+	    * 8086:283a Intel ICH8
 
 	  See http://linuxbios.org/EHCI_Debug_Port for an up-to-date list.
 
@@ -220,7 +220,7 @@ config CONSOLE_PREFIX
 	depends EXPERT && (CONSOLE_SERIAL || CONSOLE_USB)
 	default n
 	help
-	  When you enable this option, LinuxBIOS will prefix each line of 
+	  When you enable this option, LinuxBIOS will prefix each line of
 	  console output with '(LB)'.
 
 endmenu

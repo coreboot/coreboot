@@ -31,7 +31,8 @@ config BOARD_AMD_NORWICH
 	select NORTHBRIDGE_AMD_GEODELX
 	select SOUTHBRIDGE_AMD_CS5536
 	help
-	  AMD Norwich Geode LX Development board
+	  AMD Norwich Geode LX development board.
+
 endchoice
 
 source "mainboard/amd/norwich/Kconfig"

@@ -24,14 +24,15 @@ choice
 	depends on VENDOR_ARTECGROUP
 
 config BOARD_ARTECGROUP_DBE61
-	bool "dbe61"
+	bool "DBE61"
 	select ARCH_X86
 	select CPU_AMD_GEODELX
 	select OPTION_TABLE
 	select NORTHBRIDGE_AMD_GEODELX
 	select SOUTHBRIDGE_AMD_CS5536
 	help
-	  Artec Group DBE61, also known as Linutop
+	  Artec Group DBE61, also known as ThinCan and Linutop.
+
 endchoice
 
 source "mainboard/artecgroup/dbe61/Kconfig"

@@ -33,7 +33,7 @@ choice
 	default PCI_OPTION_ROM_RUN_VM86
 	help
 	  Execute PCI/AGP option ROMs if available. You can choose to
-	  execute PCI option ROMs natively (32bit x86 system required), 
+	  execute PCI option ROMs natively (32bit x86 system required),
 	  in an emulator (x86emu), or ignore option ROM execution.
 
 
@@ -41,9 +41,9 @@ config PCI_OPTION_ROM_RUN_X86EMU
 	bool "x86emu"
 	select PCI_OPTION_ROM_RUN
 	help
-	  If you choose this option, the x86 instruction set emulator 
+	  If you choose this option, the x86 instruction set emulator
 	  x86emu is used to execute 16bit legacy BIOS option ROMs.
-	  
+	
 	  x86emu is slow, big and safe. All 16bit x86 code is executed
 	  in an encapsulated environment where it can not break out.
 
@@ -56,7 +56,7 @@ config PCI_OPTION_ROM_RUN_VM86
 	  If you choose this option, the virtual x86 mode "vm86" is used
 	  to execute 16bit legacy BIOS option ROMs.
 
-	  vm86 is very small, fast, and probably a little less safe than 
+	  vm86 is very small, fast, and probably a little less safe than
 	  x86emu, since it runs option ROMs on the real hardware instead
 	  of an emulator.
 
@@ -65,12 +65,11 @@ config PCI_OPTION_ROM_RUN_NONE
 	help
 	  Do not execute PCI option ROMs at all.
 
-	  If you choose this option, VGA plugin cards will not be 
-	  initialized.
+	  If you choose this option, VGA plugin cards will not be initialized.
 
 endchoice
 
-# This should probably become a CMOS option
+# TODO: This should probably become a CMOS option.
 config MULTIPLE_VGA_INIT
 	bool "Initialize all VGA cards"
 	depends PCI_OPTION_ROM_RUN

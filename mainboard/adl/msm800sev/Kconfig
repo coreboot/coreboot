@@ -24,22 +24,21 @@ config MAINBOARD_NAME
 	default adl/msm800sev
 	depends BOARD_ADL_MSM800SEV
 	help
-	  This is the name for the ADL MSM800SEV
+	  This is the name for the Advanced Digital Logic MSM800SEV mainboard.
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
+	# TODO: Fix the PCI ID.
 	default 0x1022
 	depends BOARD_ADL_MSM800SEV
 	help
-	  Mainboard specific PCI subsystem vendor ID -- it's wrong. 
+	  Mainboard specific PCI subsystem vendor ID.
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
+	# TODO: Fix the PCI ID.
 	default 0x2323
-	depends ADL_MSM800SEV
+	depends BOARD_ADL_MSM800SEV
 	help
-	  Mainboard specific PCI subsystem vendor ID -- it's wrong. 
-
-
-
+	  Mainboard specific PCI subsystem vendor ID.
 

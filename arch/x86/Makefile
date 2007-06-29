@@ -76,7 +76,7 @@ $(obj)/linuxbios.bootblock: $(obj)/linuxbios.vpd $(obj)/stage0.init
 
 STAGE0_LIB_OBJ       = uart8250.o mem.o elfboot.o lar.o delay.o vtxprintf.o \
 		       vsprintf.o console.o
-STAGE0_ARCH_X86_OBJ  = cachemain.o serial.o archelfboot.o speaker.o \
+STAGE0_ARCH_X86_OBJ  = stage1.o serial.o archelfboot.o speaker.o \
 		       udelay_io.o mc146818rtc.o
 
 ifeq ($(CONFIG_CPU_I586),y)

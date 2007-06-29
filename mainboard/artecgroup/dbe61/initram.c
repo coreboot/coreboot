@@ -129,15 +129,6 @@ int main(void)
 	post_code(POST_START_OF_MAIN);
 
 	system_preinit();
-	dbe61_msr_init();
-
-	cs5536_early_setup();
-
-	/* NOTE: must do this AFTER the early_setup!
-	 * it is counting on some early MSR setup
-	 * for cs5536.
-	 */
-	cs5536_setup_onchipuart();
 
 	pll_reset(MANUALCONF, PLLMSRHI, PLLMSRLO);
 

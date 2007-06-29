@@ -19,6 +19,9 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
+
+STAGE0_MAINBOARD_OBJ :=\
+		$(obj)/mainboard/$(MAINBOARDDIR)/stage1.o 
 #
 # VPD or SIP ROM or ... how does NVIDIA call it?
 # Some space to cope with dirty southbridge tricks.
@@ -35,12 +38,12 @@ $(obj)/linuxbios.vpd:
 # The initram file is always uncompressed. It belongs into the mainboard
 # directory and is built from what was auto.c in v2.
 #
+INITRAM_OBJ =   $(obj)/mainboard/$(MAINBOARDDIR)/initram.o 
 
-$(obj)/linuxbios.initram: $(obj)/stage0.init $(obj)/stage0.o $(obj)/mainboard/$(MAINBOARDDIR)/initram.o
+$(obj)/linuxbios.initram: $(obj)/stage0.init $(obj)/stage0.o $(INITRAM_OBJ) 
 	$(Q)# initram links against stage0
 	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(LD) -R $(obj)/stage0.o -Ttext 0x80000 \
-		$(obj)/mainboard/$(MAINBOARDDIR)/initram.o \
+	$(Q)$(LD) -R $(obj)/stage0.o -Ttext 0x80000 $(INITRAM_OBJ)  \
 		--entry=main -o $(obj)/linuxbios.initram.o
 	$(Q)printf "  OBJCOPY $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(OBJCOPY) -O binary $(obj)/linuxbios.initram.o \

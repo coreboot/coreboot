@@ -18,6 +18,10 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+STAGE0_MAINBOARD_OBJ :=\
+		$(obj)/southbridge/amd/cs5536/stage1.o\
+		$(obj)/arch/x86/geodelx/stage1.o \
+		$(obj)/mainboard/$(MAINBOARDDIR)/stage1.o
 
 $(obj)/linuxbios.vpd:
 	$(Q)printf "  BUILD   DUMMY VPD\n"
@@ -26,8 +30,6 @@ $(obj)/linuxbios.vpd:
 INITRAM_OBJ =   $(obj)/mainboard/$(MAINBOARDDIR)/initram.o \
 		$(obj)/northbridge/amd/geodelx/raminit.o \
 		$(obj)/southbridge/amd/cs5536/smbus_initram.o \
-		$(obj)/southbridge/amd/cs5536/cs5536_early_setup.o\
-		$(obj)/device/pnp_raw.o \
 		$(obj)/arch/x86/geodelx/geodelx.o
 
 $(obj)/linuxbios.initram: $(obj)/stage0.init $(obj)/stage0.o $(INITRAM_OBJ)

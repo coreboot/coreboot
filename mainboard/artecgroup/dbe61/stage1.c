@@ -28,53 +28,37 @@
 #include <msr.h>
 #include <io.h>
 #include <amd_geodelx.h>
+#include <southbridge/amd/cs5536/cs5536.h>
 #include <northbridge/amd/geodelx/raminit.h>
 
-#define MANUALCONF 0		/* Do automatic strapped PLL config */
-#define PLLMSRHI 0x00001490	/* manual settings for the PLL */
-#define PLLMSRLO 0x02000030
-#define DIMM0 ((u8) 0xA0)
-#define DIMM1 ((u8) 0xA2)
+struct wmsr {
+	u32 reg;
+	struct msr  msr;
+} dbe61_msr[] = {
+	{.reg = 0x10000020, {.lo = 0xfff80, .hi = 0x20000000}},
+	{.reg = 0x10000021, {.lo = 0x80fffe0, .hi = 0x20000000}},
+	{.reg = 0x40000020, {.lo = 0xfff80, .hi = 0x20000000}},
+	{.reg = 0x40000021, {.lo = 0x80fffe0, .hi = 0x20000000}},
+};
 
-
-/**
-  * Place holder in case we ever need it. Since this file is a
-  * template for other motherboards, we want this here and we want the
-  * call in the right place.
-  */
-
-static void mb_gpio_init(void)
+static void dbe61_msr_init(void)
 {
-	/* Early mainboard specific GPIO setup */
+	int i;
+	for(i = 0; i < sizeof(dbe61_msr)/sizeof(dbe61_msr[0]); i++)
+		wrmsr(dbe61_msr[i].reg, dbe61_msr[i].msr);
 }
 
-/** 
-  * main for initram for the amd norwich.  It might seem that you
-  * could somehow do these functions in, e.g., the cpu code, but the
-  * order of operations and what those operations are is VERY strongly
-  * mainboard dependent. It's best to leave it in the mainboard code.
-  */
-int main(void)
+int hardware_stage1(void)
 {
-	u8 smb_devices[] =  {
-		DIMM0, DIMM1
-	};
-
 	post_code(POST_START_OF_MAIN);
 
-	system_preinit();
+	dbe61_msr_init();
 
-	mb_gpio_init();
+	cs5536_stage1();
 
-	pll_reset(MANUALCONF, PLLMSRHI, PLLMSRLO);
-
-	cpu_reg_init(0, DIMM0, DIMM1);
-
-	sdram_set_registers();
-	sdram_set_spd_registers(DIMM0, DIMM1);
-	sdram_enable(DIMM0, DIMM1);
-	/* Check low memory */
-	/*ram_check(0x00000000, 640*1024); */
-
-	return 0;
+	/* NOTE: must do this AFTER the early_setup!
+	 * it is counting on some early MSR setup
+	 * for cs5536.
+	 */
+	cs5536_setup_onchipuart();
 }

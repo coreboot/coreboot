@@ -25,6 +25,7 @@
 #include <device/device.h>
 #include <tables.h>
 #include <mc146818rtc.h>
+#include <lib.h>
 //#include <cpu/cpu.h>
 //#include <pirq_routing.h>
 //#include <smp/mpspec.h>
@@ -159,7 +160,7 @@ void lb_strings(struct lb_header *header)
 		{ LB_TAG_ASSEMBLER,      (const u8 *)LINUXBIOS_ASSEMBLER      },
 	};
 	unsigned int i;
-	for(i = 0; i < sizeof(strings)/sizeof(strings[0]); i++) {
+	for(i = 0; i < ARRAY_SIZE(strings); i++) {
 		struct lb_string *rec;
 		size_t len;
 		rec = (struct lb_string *)lb_new_record(header);

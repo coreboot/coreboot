@@ -93,8 +93,6 @@ struct FLASH_DEVICE FlashInitTable[] = {
 	{FLASH_TYPE_NONE, 0, 0},	/* CS3, or Flash Device 3 */
 };
 
-#define FlashInitTableLen (sizeof(FlashInitTable)/sizeof(FlashInitTable[0]))
-
 u32 FlashPort[] = {
 	MDD_LBAR_FLSH0,
 	MDD_LBAR_FLSH1,
@@ -149,7 +147,7 @@ static void chipset_flash_setup(void)
 	int numEnabled = 0;
 
 	printk(BIOS_DEBUG, "chipset_flash_setup: Start\n");
-	for (i = 0; i < FlashInitTableLen; i++) {
+	for (i = 0; i < ARRAY_SIZE(FlashInitTable); i++) {
 		if (FlashInitTable[i].fType != FLASH_TYPE_NONE) {
 			printk(BIOS_DEBUG, "Enable CS%d\n", i);
 			/* we need to configure the memory/IO mask */

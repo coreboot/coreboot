@@ -21,6 +21,12 @@
 #ifndef LIB_H
 #define LIB_H
 
+/**
+ * Return the size of a given array, no matter of which data type
+ * the individual array elements are.
+ */
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
+
 int log2(unsigned int n);
 
 void udelay(unsigned int usecs);

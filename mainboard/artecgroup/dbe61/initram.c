@@ -120,7 +120,7 @@ struct wmsr {
 static void dbe61_msr_init(void)
 {
 	int i;
-	for(i = 0; i < sizeof(dbe61_msr)/sizeof(dbe61_msr[0]); i++)
+	for (i = 0; i < ARRAY_SIZE(dbe61_msr); i++)
 		wrmsr(dbe61_msr[i].reg, dbe61_msr[i].msr);
 }
 

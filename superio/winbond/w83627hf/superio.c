@@ -22,6 +22,7 @@
  */
 
 #include <io.h>
+#include <lib.h>
 #include <device/device.h>
 #include <device/pnp.h>
 #include <console.h>
@@ -99,7 +100,7 @@ static void init_hwm(unsigned long base)
                                                                             
 	};
 
-	for(i = 0; i<  sizeof(hwm_reg_values)/sizeof(hwm_reg_values[0]); i+=3 ) { 
+	for (i = 0; i < ARRAY_SIZE(hwm_reg_values); i += 3) { 
 		reg = hwm_reg_values[i];	
 	 	value = pnp_read_index(base, reg);		
 		value &= 0xff & hwm_reg_values[i+1];
@@ -207,8 +208,7 @@ static struct pnp_info pnp_dev_info[] = {
 
 static void phase2_setup_scan_bus(struct device *dev)
 {
-	pnp_enable_devices(dev, &ops,
-		sizeof(pnp_dev_info)/sizeof(pnp_dev_info[0]), pnp_dev_info);
+	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
 static struct device_operations ops = {

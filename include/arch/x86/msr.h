@@ -27,7 +27,7 @@ struct msr
 	u32 hi;
 };
 
-static inline struct msr rdmsr(unsigned index)
+static inline struct msr rdmsr(u32 index)
 {
 	struct msr  result;
 	__asm__ __volatile__ (
@@ -38,7 +38,7 @@ static inline struct msr rdmsr(unsigned index)
 	return result;
 }
 
-static inline void wrmsr(unsigned index, struct msr msr)
+static inline void wrmsr(u32 index, struct msr msr)
 {
 	__asm__ __volatile__ (
 		"wrmsr"

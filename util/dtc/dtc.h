@@ -219,6 +219,7 @@ void dt_to_asm(FILE *f, struct boot_info *bi, int version,
 	       int boot_cpuid_phys);
 void dt_to_C(FILE *f, struct boot_info *bi, int version, int boot_cpuid_phys);
 void dt_to_linuxbios(FILE *f, struct boot_info *bi, int version, int boot_cpuid_phys);
+void dt_to_linuxbiosh(FILE *f, struct boot_info *bi, int version, int boot_cpuid_phys);
 
 struct boot_info *dt_from_blob(FILE *f);
 

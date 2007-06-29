@@ -29,7 +29,7 @@
 void uart_init(void);
 void die(const char *msg);
 int find_file(struct mem_file *archive, char *filename, struct mem_file *result);
-void early_init(void);
+void hardware_stage1(void);
 
 // Is this value correct?
 #define DCACHE_RAM_SIZE 0x8000
@@ -82,7 +82,7 @@ void stage1_main(u32 bist)
 	// We have cache as ram running and can start executing code in C.
 	//
 	
-	early_init();
+	hardware_stage1();
 
 	//
 	uart_init();	// initialize serial port

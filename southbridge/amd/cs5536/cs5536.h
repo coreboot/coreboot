@@ -451,7 +451,7 @@ void cs5536_setup_smbus_gpio(void);
 void cs5536_disable_internal_uart(void);
 void cs5536_setup_cis_mode(void);
 void cs5536_setup_onchipuart(void);
-void cs5536_early_setup(void);
+void cs5536_stage1(void);
 
 
 #endif				/* SOUTHBRIDGE_AMD_CS5536_CS5536_H */

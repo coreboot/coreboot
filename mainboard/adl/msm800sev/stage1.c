@@ -35,14 +35,14 @@
 
 #define SERIAL_DEV 0x30
 
-int early_init(void)
+int hardware_stage1(void)
 {
 	void w83627hf_enable_serial(u8 dev, u8 serial, u16 iobase);
 	post_code(POST_START_OF_MAIN);
 
 	geodelx_msr_init();
 
-	cs5536_early_setup();
+	cs5536_stage1();
 
 	/* NOTE: must do this AFTER the early_setup!
 	 * it is counting on some early MSR setup

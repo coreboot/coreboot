@@ -19,11 +19,11 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-STAGE0_MAINBOARD_OBJ := $(obj)/superio/winbond/w83627hf/w83627hf_early_serial.o \
+STAGE0_MAINBOARD_OBJ := $(obj)/superio/winbond/w83627hf/stage1.o \
 		$(obj)/device/pnp_raw.o \
-		$(obj)/southbridge/amd/cs5536/cs5536_early_setup.o\
-		$(obj)/arch/x86/geodelx/early_init.o \
-		$(obj)/mainboard/$(MAINBOARDDIR)/early_init.o
+		$(obj)/southbridge/amd/cs5536/stage1.o\
+		$(obj)/arch/x86/geodelx/stage1.o \
+		$(obj)/mainboard/$(MAINBOARDDIR)/stage1.o
 
 $(obj)/linuxbios.vpd:
 	$(Q)printf "  BUILD   DUMMY VPD\n"

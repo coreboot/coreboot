@@ -274,7 +274,7 @@ void cs5536_setup_onchipuart(void)
  * See also a comment from Marc Jones:
  * http://www.linuxbios.org/pipermail/linuxbios/2007-June/021958.html
  */
-void cs5536_early_setup(void)
+void cs5536_stage1(void)
 {
 	struct msr  msr;
 

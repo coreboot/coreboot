@@ -40,7 +40,7 @@ int find_file(struct mem_file *archive, char *filename, struct mem_file *result)
 	       archive->len);
 
 	for (walk = archive->start;
-	     walk < (char *)archive->start + archive->len - 1; walk += 16) {
+	     (walk - 1) < (char *)(archive->start + archive->len - 1 ); walk += 16) {
 		if (strcmp(walk, MAGIC) != 0)
 			continue;
 

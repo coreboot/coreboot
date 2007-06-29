@@ -101,7 +101,7 @@ void stage1_main(u32 bist)
 	// FIXME this should be defined in the VPD area
 	// but NOT IN THE CODE.
 	
-	archive.len=(CONFIG_LINUXBIOS_ROMSIZE_KB-16)*1024;
+	archive.len=(CONFIG_LINUXBIOS_ROMSIZE_KB)*1024;
 	archive.start=(void *)(0UL-(CONFIG_LINUXBIOS_ROMSIZE_KB*1024)); 
 
 	// FIXME check integrity

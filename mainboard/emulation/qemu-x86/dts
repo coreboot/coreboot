@@ -19,7 +19,7 @@
  */
 /{
 	mainboard-vendor = "Emulation";
-	mainboard-part-number = "QEMU x86";
+	mainboard-name = "QEMU x86";
 	enabled;
 	constructor = "qemuvga_constructors";
 	cpus {

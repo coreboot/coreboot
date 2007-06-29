@@ -20,7 +20,7 @@
 /{
 	enabled;
 	mainboard-vendor = "AMD";
-	mainboard-part-number = "Norwich";
+	mainboard-name = "Norwich";
 	cpus {
 		enabled;
 	};

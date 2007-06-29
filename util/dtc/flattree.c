@@ -1292,7 +1292,7 @@ void dt_to_linuxbios(FILE *f, struct boot_info *bi, int version, int boot_cpuid_
 			found_mainboard_vendor = 1;
 			fprintf(f, "const char *mainboard_vendor = \"%s\";\n", prop->val.val);
 		}
-		if (streq(prop->name, "mainboard-part-number")){
+		if (streq(prop->name, "mainboard-name")){
 			found_mainboard_partnumber = 1;
 			fprintf(f, "const char *mainboard_part_number = \"%s\";\n", prop->val.val);
 		}
@@ -1300,11 +1300,11 @@ void dt_to_linuxbios(FILE *f, struct boot_info *bi, int version, int boot_cpuid_
 
 	if (! 	found_mainboard_vendor){
 		die("There is no mainboard-vendor property in the root. Please add one."
-			"(and make sure there is a mainboard-part-number property too");
+			"(and make sure there is a mainboard-name property too");
 	}
 
 	if (! 	found_mainboard_partnumber){
-		die("There is no mainboard-part-number property in the root. "
+		die("There is no mainboard-name property in the root. "
 			"Please add one."
 			"(and make sure there is a mainboard-vendor property too");
 	}

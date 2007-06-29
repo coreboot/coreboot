@@ -23,7 +23,7 @@
 /{
 
 	mainboard-vendor = "Advanced Digital Logic";
-	mainboard-part-number = "MSM800SEV";
+	mainboard-name = "MSM800SEV";
 	cpus {
 		enabled;
 	};

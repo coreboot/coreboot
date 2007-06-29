@@ -30,7 +30,7 @@
 #include <amd_geodelx.h>
 #include <southbridge/amd/cs5536/cs5536.h>
 
-int hardware_stage1(void)
+void hardware_stage1(void)
 {
 	post_code(POST_START_OF_MAIN);
 	geodelx_msr_init();

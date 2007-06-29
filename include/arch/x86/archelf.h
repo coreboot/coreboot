@@ -1,8 +1,0 @@
-#ifndef ARCH_X86_ARCHELF_H
-#define ARCH_X86_ARCHELF_H
-
-#define ELF_CLASS	ELFCLASS32
-#define ELF_DATA	ELFDATA2LSB
-#define ELF_ARCH	EM_386
-
-#endif /* ARCH_X86_ARCHELF_H */

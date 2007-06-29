@@ -112,18 +112,21 @@ struct device_operations {
 	void (*set_link)(struct device * dev, unsigned int link);
 	void (*reset_bus)(struct bus *bus);
 
-	/* a constructor. The constructor for a given device is defined in the device source file. 
-	 * When is this called? Not for the static tree. When the scan bus code finds a new device, it must
-	 * create it and insert it into the device tree. To do this, it calls a device constructor. 
-	 * The set of all device constructors is concatenated into the constructors array of structures via the usual 
-	 * gcc hack of naming a segment.  
-	 * The dev_constructor code in device.c iterates over the constructors array. 
-	 * A match consists of a path type, a vendor (which may be ignored if the constructo vendor value is 0), 
-	 * and a device id. 
-	 * When it finds a match, the dev_constructor calls the 
-	 * function constructors->constructor(constructors->constructor) and a new device is created. 
+	/* A constructor. The constructor for a given device is defined in the
+	 * device source file.  When is this called? Not for the static tree.
+	 * When the scan bus code finds a new device, it must create it and
+	 * insert it into the device tree. To initialize it, it calls a device
+	 * constructor.  The set of all device constructors is concatenated
+	 * into the constructors array of structures.
+	 *
+	 * The dev_constructor code in device.c iterates over the constructors
+	 * array.  A match consists of a path type, a vendor (which may be
+	 * ignored if the constructor vendor value is 0), and a device id.
+	 * When it finds a match, the dev_constructor calls the function
+	 * constructors->constructor(constructors->constructor) and a new
+	 * device is created. 
 	 */
-	struct device *(*constructor)(struct constructor *);
+	void (*constructor)(struct device *, struct constructor *);
 
 	/* set device ops */
 	void (*phase1_set_device_operations)(struct device *dev);
@@ -245,7 +248,7 @@ struct device * dev_find_device (unsigned int vendor, unsigned int device, struc
 struct device * dev_find_class (unsigned int class, struct device * from);
 struct device * dev_find_slot (unsigned int bus, unsigned int devfn);
 struct device * dev_find_slot_on_smbus (unsigned int bus, unsigned int addr);
-struct device *default_device_constructor(struct constructor *constructor);
+void default_device_constructor(struct device *dev, struct constructor *constructor);
 
 
 /* Rounding for boundaries. 

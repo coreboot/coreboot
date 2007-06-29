@@ -123,8 +123,7 @@ $(obj)/stage0.init: $(STAGE0_OBJ)
 # TODO: This should be compressed with the default compressor.
 #
 
-STAGE2_LIB_OBJ       = stage2.o clog2.o mem.o malloc.o tables.o delay.o \
-		       compute_ip_checksum.o
+STAGE2_LIB_OBJ       = stage2.o clog2.o mem.o tables.o delay.o compute_ip_checksum.o
 
 STAGE2_ARCH_X86_OBJ  = archtables.o linuxbios_table.o udelay_io.o
 STAGE2_ARCH_X86_OBJ += pci_ops_auto.o pci_ops_conf1.o pci_ops_conf2.o

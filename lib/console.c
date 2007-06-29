@@ -2,7 +2,6 @@
 #include <hlt.h>
 #include <console.h>
 #include <uart8250.h>
-// FIXME: we need this for varargs
 #include <stdarg.h>
 
 int vtxprintf(void (*)(unsigned char, void *arg), 

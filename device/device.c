@@ -10,8 +10,9 @@
  * Copyright (C) 2003 Ronald G. Minnich <rminnich@gmail.com>
  * Copyright (C) 2004-2005 Li-Ta Lo <ollie@lanl.gov>
  * Copyright (C) 2005-2006 Tyan
- * (Written by Yinghai Lu <yhlu@tyan.com> for Tyan)
+ * (Written by Yinghai Lu for Tyan)
  * Copyright (C) 2005-2006 Stefan Reinauer <stepan@openbios.org>
+ * Copyright (C) 2007 coresystems GmbH
  */
 
 /*
@@ -34,10 +35,8 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <string.h>
-#include <stdlib.h>
 #include <lib.h>
-#warning Do we need spinlocks in device/device.c?
-//#include <smp/spinlock.h>
+#include <spinlock.h>
 
 /** Linked list of all devices. */
 struct device *all_devices = &dev_root;
@@ -61,6 +60,34 @@ struct device **last_dev_p;
 #define DEVICE_IO_START 0x1000
 
 /**
+ * device memory. All the device tree wil live here
+ */
+
+#define MAX_DEVICES 256
+static struct device devs[MAX_DEVICES];
+
+/**
+ * The device creator.
+ * 
+ * reserves a piece of memory for a device in the tree
+ *
+ * @return Pointer to the newly created device structure.
+ */
+
+static struct device *new_device(void)
+{
+	static int devcnt=0;
+	devcnt++;
+
+	/* Should we really die here? */
+	if (devcnt>=MAX_DEVICES) {
+		die("Too many devices. Increase MAX_DEVICES\n");
+	}
+
+	return &devs[devcnt];
+}
+
+/**
  * Initialization tasks for the device tree code. 
  * 
  * At present, merely sets up last_dev_p, which used to be done by
@@ -76,27 +103,17 @@ void dev_init(void)
 }
 
 /**
- * The default constructor, which simply allocates and sets the ops pointer.
+ * The default constructor, which simply sets the ops pointer.
  * 
- * Allocate a new device structure and initialize device->ops. 
+ * Initialize device->ops of a newly allocated device structure.
  *
+ * @param dev Pointer to the newly created device structure.
  * @param constructor A pointer to a struct constructor.
- * @return Pointer to the newly created device structure.
  */
-struct device *default_device_constructor(struct constructor *constructor)
+void default_device_constructor(struct device *dev, struct constructor *constructor)
 {
-	struct device *dev;
-	dev = malloc(sizeof(*dev));
-
-	// FIXME: This is overkill. Our malloc() will never return with 
-	// a return value of NULL. So this is dead code (and thus would
-	// drop code coverage and usability in safety critical environments.
-	if (dev == NULL) {
-		die("DEV: out of memory.\n");
-	}
-	memset(dev, 0, sizeof(dev));
+	printk(BIOS_DEBUG, "default device constructor called\n");
 	dev->ops = constructor->ops;
-	return dev;
 }
 
 /**
@@ -119,9 +136,6 @@ struct constructor *find_constructor(struct device_id *id)
 			printk(BIOS_SPEW, "%s: cons 0x%lx, cons id %s\n",
 			       __func__, c, dev_id_string(&c->id));
 			if ((!c->ops) || (!c->ops->constructor)) {
-				printk(BIOS_INFO,
-				       "Constructor for %s with missing ops or ops->constructor!\n",
-				       dev_id_string(&c->id));
 				continue;
 			}
 			if (id_eq(&c->id, id)) {
@@ -131,7 +145,7 @@ struct constructor *find_constructor(struct device_id *id)
 		}
 	}
 
-	return 0;
+	return NULL;
 }
 
 /**
@@ -141,23 +155,22 @@ struct constructor *find_constructor(struct device_id *id)
  * Call that constructor via constructor->ops->constructor, with itself as
  * a parameter; return the result. 
  *
+ * @param dev  Pointer to the newly created device structure.
  * @param path Path to the device to be created.
- * @return Pointer to the newly created device structure.
  * @see device_path
  */
-struct device *constructor(struct device_id *id)
+void constructor(struct device *dev, struct device_id *id)
 {
 	struct constructor *c;
-	struct device *dev = 0;
 
 	c = find_constructor(id);
-	printk(BIOS_DEBUG, "%s constructor is 0x%lx\n", __func__, c);
-	if (!c)
-		return 0;
-
-	dev = c->ops->constructor(c);
-	printk(BIOS_DEBUG, "%s returns 0x%lx\n", __func__, dev);
-	return dev;
+	printk(BIOS_SPEW, "%s: constructor is 0x%lx\n", __func__, c);
+ 
+	if(c && c->ops && c->ops->constructor)
+		c->ops->constructor(dev, c);
+	else
+		printk(BIOS_INFO, "No constructor called for %s.\n", 
+			dev_id_string(&c->id));
 }
 
 /**
@@ -177,24 +190,18 @@ struct device *alloc_dev(struct bus *parent, struct device_path *path,
 	struct device *dev, *child;
 	int link;
 
-//      spin_lock(&dev_lock);
+	spin_lock(&dev_lock);
 
 	/* Find the last child of our parent. */
 	for (child = parent->children; child && child->sibling; /* */) {
 		child = child->sibling;
 	}
 
-	dev = constructor(devid);
-	if (!dev)
-		printk(BIOS_DEBUG, "%s: No constructor, going with empty dev",
-		       dev_id_string(devid));
+	dev = new_device();
+	if (!dev) /* Please don't do this at home */
+		goto out;
 
-	dev = malloc(sizeof(*dev));
-	if (dev == NULL) {
-		die("DEV: out of memory.\n");
-	}
 	memset(dev, 0, sizeof(*dev));
-
 	memcpy(&dev->path, path, sizeof(*path));
 
 	/* Initialize the back pointers in the link fields. */
@@ -223,7 +230,14 @@ struct device *alloc_dev(struct bus *parent, struct device_path *path,
 	/* Give the device a name. */
 	sprintf(dev->dtsname, "dynamic %s", dev_path(dev));
 
-	// spin_unlock(&dev_lock);
+	/* Run the device specific constructor as last part of the chain
+	 * so it gets the chance to overwrite the "inherited" values above
+	 */
+
+	constructor(dev, devid);
+
+out:
+	spin_unlock(&dev_lock);
 	return dev;
 }
 

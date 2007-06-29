@@ -31,7 +31,7 @@
 #define ELF_H
 
 #include <types.h>
-#include <archelf.h>
+#include <arch/elf.h>
 
 /* Standard ELF types.  */
 

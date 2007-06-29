@@ -55,3 +55,11 @@ config OPTION_TABLE
 	  a battery backed up real time clock with CMOS NVRAM.
 	  It is usually set in mainboard/*/Kconfig.
 
+config SMP
+	boolean
+	help
+	  This option is used to enable certain functions to make 
+	  LinuxBIOS work correctly on symmetric multi processor
+	  systems.
+	  It is usually set in mainboard/*/Kconfig.
+ 

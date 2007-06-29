@@ -142,7 +142,7 @@ config:        DT_CONFIG '('
 		}
 		')' ';' { 
 				/* convention: first property is labeled with path */
-				$6->label = strdup($3.val);
+				$6->label = strdup((char *)$3.val);
 				$$ = $6
 			}
 	|

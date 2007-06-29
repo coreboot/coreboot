@@ -119,12 +119,15 @@ void stage1_main(u32 bist)
 	if (ret)
 		die("Failed RAM init code\n");
 
-	printk(BIOS_INFO, "Done RAM init code\n");
-	/* this is nasty. And, it has to be done this way. Sorry! */
-	/* we have to turn off CAR, and do some other things, and it has to be done
-	 * inline -- you can't call a function
-	 */
+	printk(BIOS_DEBUG, "Done RAM init code\n");
 
+
+	/* Turn off Cache-As-Ram, and do some other things.
+	 *
+	 * This has to be done inline -- You can't call a function because the
+	 * return stack does not survive.
+ 	 */
+ 
         __asm__ volatile (
 	/* 
 	FIXME : backup stack in CACHE_AS_RAM into mmx and sse and after we get STACK up, we restore that.

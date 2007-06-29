@@ -23,11 +23,11 @@
 /* standard MSR operations, everyone has written these one hundred times */
 struct msr 
 {
-	unsigned lo;
-	unsigned hi;
+	u32 lo;
+	u32 hi;
 };
 
-static inline struct msr  rdmsr(unsigned index)
+static inline struct msr rdmsr(unsigned index)
 {
 	struct msr  result;
 	__asm__ __volatile__ (

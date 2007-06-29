@@ -1309,9 +1309,47 @@ void do_nrv2b_compress(char* in, unsigned long in_len, char* out, unsigned long*
 	out = malloc(*out_len);
 	ucl_nrv2b_99_compress(in, in_len, out, out_len, 0 );
 }
+#endif
 
+#ifdef DECODE
+
+#define GETBIT_8(bb, src, ilen) \
+    (((bb = bb & 0x7f ? bb*2 : ((unsigned)src[ilen++]*2+1)) >> 8) & 1)
+
+#define GETBIT_LE16(bb, src, ilen) \
+    (bb*=2,bb&0xffff ? (bb>>16)&1 : (ilen+=2,((bb=(src[ilen-2]+src[ilen-1]*256u)*2+1)>>16)&1))
+
+#define GETBIT_LE32(bb, src, ilen) \
+    (bc > 0 ? ((bb>>--bc)&1) : (bc=31,\
+    bb=*(const uint32_t *)((src)+ilen),ilen+=4,(bb>>31)&1))
+
+#if ENDIAN == 0 && BITSIZE == 8
+#define GETBIT(bb, src, ilen) GETBIT_8(bb, src, ilen)
+#endif
+#if ENDIAN == 0 && BITSIZE == 16
+#define GETBIT(bb, src, ilen) GETBIT_LE16(bb, src, ilen)
+#endif
+#if ENDIAN == 0 && BITSIZE == 32
+#define GETBIT(bb, src, ilen) GETBIT_LE32(bb, src, ilen)
+#endif
+
+#ifndef GETBIT
+#error "Bad Combination of ENDIAN and BITSIZE values specified"
+#endif
+
+#undef SAFE
+
+#ifdef SAFE
+#define FAIL(x,r)   if (x) { Error(r); }
+#else
+#define FAIL(x,r)
+#endif
+
+#ifdef COMPACT
 void do_nrv2b_uncompress(char* dst, char* src, unsigned long len) {
 	unsigned long ilen = 0, olen = 0, last_m_off = 1;
+	uint32_t bb = 0;
+	unsigned bc = 0;
 	for (;;) {
 		unsigned int m_off, m_len;
 		while (GETBIT(bb, src, ilen)) {
@@ -1359,42 +1397,7 @@ void do_nrv2b_uncompress(char* dst, char* src, unsigned long len) {
 	}
 	FAIL(ilen < src_len, "input not consumed");
 }
-#endif
-
-#ifdef DECODE
-
-#define GETBIT_8(bb, src, ilen) \
-    (((bb = bb & 0x7f ? bb*2 : ((unsigned)src[ilen++]*2+1)) >> 8) & 1)
-
-#define GETBIT_LE16(bb, src, ilen) \
-    (bb*=2,bb&0xffff ? (bb>>16)&1 : (ilen+=2,((bb=(src[ilen-2]+src[ilen-1]*256u)*2+1)>>16)&1))
-
-#define GETBIT_LE32(bb, src, ilen) \
-    (bc > 0 ? ((bb>>--bc)&1) : (bc=31,\
-    bb=*(const uint32_t *)((src)+ilen),ilen+=4,(bb>>31)&1))
-
-#if ENDIAN == 0 && BITSIZE == 8
-#define GETBIT(bb, src, ilen) GETBIT_8(bb, src, ilen)
-#endif
-#if ENDIAN == 0 && BITSIZE == 16
-#define GETBIT(bb, src, ilen) GETBIT_LE16(bb, src, ilen)
-#endif
-#if ENDIAN == 0 && BITSIZE == 32
-#define GETBIT(bb, src, ilen) GETBIT_LE32(bb, src, ilen)
-#endif
-
-#ifndef GETBIT
-#error "Bad Combination of ENDIAN and BITSIZE values specified"
-#endif
-
-#undef SAFE
-
-#ifdef SAFE
-#define FAIL(x,r)   if (x) { Error(r); }
 #else
-#define FAIL(x,r)
-#endif
-
 void Decode(void)  /* recover */
 {
 	uint32_t tw;
@@ -1493,6 +1496,7 @@ void Decode(void)  /* recover */
 	free(src);
 	free(dst);
 }
+#endif
 #endif
 
 #ifdef MAIN

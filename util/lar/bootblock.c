@@ -74,16 +74,16 @@ int load_bootblock(const char *bootblock)
 
 int fixup_bootblock(void)
 {
-	/* Per definition the bootblock starts with 256 empty bytes.
-	 * These are utilized to make the bootblock part of a lar file,
-	 * and store the image size.
-	 *
-	 * We will also calculate a checksum here.
-	 */
+	int i;
+	uint32_t *size_pos;
 
-	/* first try. Clear out ugly left-over from ld hack */
-	bootblock_code[bootblock_len - 13] = '\0';
-	bootblock_code[bootblock_len - 12] = '\0';
+	/* This cleans out the area after the reset vector */
+	for(i=13; i>0; i--)
+		bootblock_code[bootblock_len - i] = '\0';
+	
+	/* add lar size to image */
+	size_pos=(uint32_t *)(bootblock_code+bootblock_len-12);
+	size_pos[0] = get_larsize();
 
 	return 0;
 }

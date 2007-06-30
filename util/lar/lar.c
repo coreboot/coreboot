@@ -96,10 +96,10 @@ int main(int argc, char *argv[])
 			larmode = CREATE;
 			break;
 		case 'C':
-			if (strcmp("lzma", optarg) == 0) {
+			if (strcasecmp("lzma", optarg) == 0) {
 				algo = lzma;
 			}
-			if (strcmp("nrv2b", optarg) == 0) {
+			if (strcasecmp("nrv2b", optarg) == 0) {
 				algo = nrv2b;
 			}
 			break;

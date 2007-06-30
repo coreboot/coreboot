@@ -101,8 +101,12 @@ void stage1_main(u32 bist)
 	// FIXME this should be defined in the VPD area
 	// but NOT IN THE CODE.
 	
-	archive.len=(CONFIG_LINUXBIOS_ROMSIZE_KB)*1024;
-	archive.start=(void *)(0UL-(CONFIG_LINUXBIOS_ROMSIZE_KB*1024)); 
+	/* The len field starts behind the reset vector on x86.
+	 * The start is not correct for all platforms. sc520 will
+	 * need some hands on here. 
+	 */
+	archive.len = *(u32 *)0xfffffff4;
+	archive.start =(void *)(0UL-archive.len); 
 
 	// FIXME check integrity
 

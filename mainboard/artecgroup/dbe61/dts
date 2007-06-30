@@ -17,66 +17,65 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
-/* leave this in until we know how to do it in dts */
+
+/* Leave this in until we know how to do it in dts. */
+
 /*
-   		chip southbridge/amd/cs5536_lx
- 			register "enable_ide_nand_flash" = "0"
- 
- 			register "isa_irq" = "0"
- 			#register "flash_irq" = "14"
- 
- 			## IDE IRQ
- 			register "enable_ide_irq" = "0"
- 
- 			register "audio_irq" = "5"
- 			register "usb_irq" = "7"
- 			
- 			register "uart0_irq" = "0"
- 			register "uart1_irq" = "4"
- 
- 			## PCI INTA ... INTD and their GPIO pins
- 			##   int==0: disable 
- 			register "pci_int[0]" = "0"
- 			register "pci_int[1]" = "10"
- 			register "pci_int[2]" = "0"
- 			register "pci_int[3]" = "0"
- 			register "pci_int_pin[0]" = "0"
- 			register "pci_int_pin[1]" = "7"
- 			register "pci_int_pin[2]" = "0"
- 			register "pci_int_pin[3]" = "0"									
- 
- 
- 			# Keyboard Emulation Logic IRQs
- 			# Enable keyboard IRQ2
- 			register "enable_kel_keyb_irq" = "0"
- 			# Enable mouse IRQ12
- 			register "enable_kel_mouse_irq" = "0"
- 			# Configure KEL Emulation IRQ, 0 to disable
- 			register "kel_emul_irq" = "0"
- 
-       		device pci f.0 on end	# ISA Bridge
+		chip southbridge/amd/cs5536_lx
+			register "enable_ide_nand_flash" = "0"
+
+			register "isa_irq" = "0"
+			#register "flash_irq" = "14"
+
+			## IDE IRQ
+			register "enable_ide_irq" = "0"
+
+			register "audio_irq" = "5"
+			register "usb_irq" = "7"
+
+			register "uart0_irq" = "0"
+			register "uart1_irq" = "4"
+
+			## PCI INTA ... INTD and their GPIO pins
+			##   int==0: disable
+			register "pci_int[0]" = "0"
+			register "pci_int[1]" = "10"
+			register "pci_int[2]" = "0"
+			register "pci_int[3]" = "0"
+			register "pci_int_pin[0]" = "0"
+			register "pci_int_pin[1]" = "7"
+			register "pci_int_pin[2]" = "0"
+			register "pci_int_pin[3]" = "0"
+
+			# Keyboard Emulation Logic IRQs
+			# Enable keyboard IRQ2
+			register "enable_kel_keyb_irq" = "0"
+			# Enable mouse IRQ12
+			register "enable_kel_mouse_irq" = "0"
+			# Configure KEL Emulation IRQ, 0 to disable
+			register "kel_emul_irq" = "0"
+
+		device pci f.0 on end	# ISA Bridge
 			device pci f.1 on end	# Flash controller
- 			device pci f.2 off end	# IDE controller
-       		device pci f.3 on end 	# Audio
-        		device pci f.4 on end	# OHCI
+			device pci f.2 off end	# IDE controller
+		device pci f.3 on end	# Audio
+		device pci f.4 on end	# OHCI
 			device pci f.5 on end	# EHCI
- 			device pci f.6 off end	# UDC controller
- 			device pci f.7 off end	# OTG controller
- 		end
-# 		chip drivers/pci/rtl8139
-## 			device pci d.0 on end	# Realtek LAN
-# 			register "nic_irq" = "10"
-#        		end
-   	end
+			device pci f.6 off end	# UDC controller
+			device pci f.7 off end	# OTG controller
+		end
+#		chip drivers/pci/rtl8139
+##			device pci d.0 on end	# Realtek LAN
+#			register "nic_irq" = "10"
+#		end
+	end
 end
-
-
 */
+
 /{
 	mainboard-vendor = "Artec Group";
 	mainboard-name = "DBE61";
 	enabled;
-
 	cpus {
 		enabled;
 	};
@@ -87,12 +86,10 @@ end
 			enabled;
 			pcipath = "1,0";
 		};
-		southbridge{
+		southbridge {
 			/config/("southbridge/amd/cs5536");
 			pcipath = "1,1";
 			enabled;
 		};
-
 	};
-
 };

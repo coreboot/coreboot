@@ -17,6 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
+
 /{
 	mainboard-vendor = "Emulation";
 	mainboard-name = "QEMU x86";
@@ -34,11 +35,10 @@
 			enabled;
 			pcipath = "0,0";
 		};
-		southbridge,intel,i82371eb{
+		southbridge,intel,i82371eb {
 			/config/("southbridge/intel/i82371eb");
 			pcipath = "1,0";
 			enabled;
 		};
 	};
-
 };

@@ -17,6 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
+
 /{
 	enabled;
 	mainboard-vendor = "AMD";
@@ -31,12 +32,10 @@
 			enabled;
 			pcipath = "1,0";
 		};
-		southbridge{
+		southbridge {
 			/config/("southbridge/amd/cs5536");
 			pcipath = "1,1";
 			enabled;
 		};
-
 	};
-
 };

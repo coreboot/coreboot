@@ -74,10 +74,4 @@ static inline __attribute__((always_inline)) void spin_unlock(spinlock_t *lock)
 		:"=m" (lock->lock) : : "memory");
 }
 
-/* REP NOP (PAUSE) is a good thing to insert into busy-wait loops. */
-static inline __attribute__((always_inline)) void cpu_relax(void)
-{
-	__asm__ __volatile__("rep;nop": : :"memory");
-}
-
 #endif /* ARCH_SPINLOCK_H */

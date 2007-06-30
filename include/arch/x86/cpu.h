@@ -10,12 +10,32 @@
  * Copyright (C) 2007 AMD
  * (Written by Yinghai Lu <yinghailu@amd.com> for AMD)
  * Copyright (C) 2007 Ronald G. Minnich <rminnich@gmail.com>
+ * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
+ */
+
+/*
+ * include/asm-i386/processor.h
+ *
+ * Copyright (C) 1994 Linus Torvalds
  */
 
 #ifndef ARCH_X86_CPU_H
 #define ARCH_X86_CPU_H
 
 #include <types.h>
+#include <device/device.h>
+
+#define X86_VENDOR_INTEL	0
+#define X86_VENDOR_CYRIX	1
+#define X86_VENDOR_AMD		2
+#define X86_VENDOR_UMC		3
+#define X86_VENDOR_NEXGEN	4
+#define X86_VENDOR_CENTAUR	5
+#define X86_VENDOR_RISE		6
+#define X86_VENDOR_TRANSMETA	7
+#define X86_VENDOR_NSC		8
+#define X86_VENDOR_NUM		9
+#define X86_VENDOR_UNKNOWN	0xff
 
 /*
  * EFLAGS bits
@@ -38,135 +58,101 @@
 #define X86_EFLAGS_VIP	0x00100000 /* Virtual Interrupt Pending */
 #define X86_EFLAGS_ID	0x00200000 /* CPUID detection flag */
 
+/**
+ * A struct holding the result of the CPUID intruction.
+ */
 struct cpuid_result {
 	u32 eax;
 	u32 ebx;
 	u32 ecx;
 	u32 edx;
 };
-/*
- * Generic CPUID function
- */
-static inline struct cpuid_result cpuid(int op)
-{
-	struct cpuid_result result;
-	asm volatile(
-		"cpuid"
-		: "=a" (result.eax),
-		  "=b" (result.ebx),
-		  "=c" (result.ecx),
-		  "=d" (result.edx)
-		: "0" (op));
-	return result;
-}
-
-
-/*
- * CPUID functions returning a single datum
- */
-static inline unsigned int cpuid_eax(unsigned int op)
-{
-	unsigned int eax;
-
-	__asm__("cpuid"
-		: "=a" (eax)
-		: "0" (op)
-		: "ebx", "ecx", "edx");
-	return eax;
-}
-static inline unsigned int cpuid_ebx(unsigned int op)
-{
-	unsigned int eax, ebx;
-
-	__asm__("cpuid"
-		: "=a" (eax), "=b" (ebx)
-		: "0" (op)
-		: "ecx", "edx" );
-	return ebx;
-}
-static inline unsigned int cpuid_ecx(unsigned int op)
-{
-	unsigned int eax, ecx;
-
-	__asm__("cpuid"
-		: "=a" (eax), "=c" (ecx)
-		: "0" (op)
-		: "ebx", "edx" );
-	return ecx;
-}
-static inline unsigned int cpuid_edx(unsigned int op)
-{
-	unsigned int eax, edx;
-
-	__asm__("cpuid"
-		: "=a" (eax), "=d" (edx)
-		: "0" (op)
-		: "ebx", "ecx");
-	return edx;
-}
-
-
-
-#define X86_VENDOR_INVALID    0
-#define X86_VENDOR_INTEL      1
-#define X86_VENDOR_CYRIX      2
-#define X86_VENDOR_AMD        3
-#define X86_VENDOR_UMC        4
-#define X86_VENDOR_NEXGEN     5
-#define X86_VENDOR_CENTAUR    6
-#define X86_VENDOR_RISE       7
-#define X86_VENDOR_TRANSMETA  8
-#define X86_VENDOR_NSC        9
-#define X86_VENDOR_SIS       10 
-#define X86_VENDOR_UNKNOWN 0xff
-
-#include <device/device.h>
 
 struct cpu_info {
 	struct device cpu;
-	unsigned long index;
+	unsigned long index;	/* TODO: u32? u64? */
 };
 
 struct cpuinfo_x86 {
-        u8    x86;            /* CPU family */
-        u8    x86_vendor;     /* CPU vendor */
-        u8    x86_model;
-        u8    x86_mask;
+	u8 x86;			/* CPU family */
+	u8 x86_vendor;		/* CPU vendor */
+	u8 x86_model;
+	u8 x86_mask;
 };
-/**
-  * Get the u32 cpuinfo information into a struct cpuinfo. 
-  */
-static void inline get_fms(struct cpuinfo_x86 *c, u32  tfms)
-{
-        c->x86 = (tfms >> 8) & 0xf;
-        c->x86_model = (tfms >> 4) & 0xf;
-        c->x86_mask = tfms & 0xf;
-        if (c->x86 == 0xf)
-                c->x86 += (tfms >> 20) & 0xff;
-        if (c->x86 >= 0x6)
-                c->x86_model += ((tfms >> 16) & 0xF) << 4;
 
+/**
+ * Generic CPUID function.
+ *
+ * @param op TODO
+ * @return A 'struct cpuid_result' which contains the values for eax, ebx,
+ *         ecx, and edx as returned by the CPUID instruction.
+ */
+static inline struct cpuid_result cpuid(u32 op)
+{
+	struct cpuid_result r;
+
+	/* Clear %ecx since some CPUs (Cyrix MII) do not set or clear %ecx,
+	 * resulting in stale register contents being returned.
+	 */
+	r.eax = op;
+	r.ecx = 0;
+
+	/* ecx is often an input as well as an output. */
+	__asm__("cpuid"
+		: "=a" (r.eax),
+		  "=b" (r.ebx),
+		  "=c" (r.ecx),
+		  "=d" (r.edx)
+		: "0" (r.eax), "2" (r.ecx));
+
+	return r;
+}
+
+/*
+ * CPUID functions returning a single datum.
+ */
+static inline u32 cpuid_eax(u32 op) { return cpuid(op).eax; } 
+static inline u32 cpuid_ebx(u32 op) { return cpuid(op).ebx; }
+static inline u32 cpuid_ecx(u32 op) { return cpuid(op).ecx; }
+static inline u32 cpuid_edx(u32 op) { return cpuid(op).edx; }
+
+/**
+ * Get the u32 CPUINFO information into a struct cpuinfo_x86.
+ *
+ * @param c Pointer to a 'cpuinfo_x86' struct.
+ * @param tfms TODO
+ */
+static void inline get_fms(struct cpuinfo_x86 *c, u32 tfms)
+{
+	c->x86 = (tfms >> 8) & 0xf;
+	c->x86_model = (tfms >> 4) & 0xf;
+	c->x86_mask = tfms & 0xf;
+	if (c->x86 == 0xf)
+		c->x86 += (tfms >> 20) & 0xff;
+	if (c->x86 >= 0x6)
+		c->x86_model += ((tfms >> 16) & 0xf) << 4;
 }
 
 static inline unsigned long read_cr0(void)
 {
 	unsigned long cr0;
-	asm volatile ("movl %%cr0, %0" : "=r" (cr0));
+	asm volatile("movl %%cr0, %0" : "=r" (cr0));
 	return cr0;
 }
 
 static inline void write_cr0(unsigned long cr0)
 {
-	asm volatile ("movl %0, %%cr0" : : "r" (cr0));
+	asm volatile("movl %0, %%cr0" : : "r" (cr0));
 }
 
 static inline void invd(void)
 {
-	asm volatile("invd" ::: "memory");
+	asm volatile("invd" : : : "memory");
 }
+
 static inline void wbinvd(void)
 {
-	asm volatile ("wbinvd");
+	asm volatile("wbinvd");
 }
 
 static inline void enable_cache(void)
@@ -177,9 +163,11 @@ static inline void enable_cache(void)
 	write_cr0(cr0);
 }
 
+/**
+ * Disable and write back the cache.
+ */
 static inline void disable_cache(void)
 {
-	/* Disable and write back the cache */
 	unsigned long cr0;
 	cr0 = read_cr0();
 	cr0 |= 0x40000000;
@@ -188,9 +176,17 @@ static inline void disable_cache(void)
 	wbinvd();
 }
 
-/* random other functions. These are not architecture-specific, except they really 
-  * are in many ways. Seperate the PC from the "X86" is hard. 
-  */
+/**
+ * REP NOP (PAUSE) is a good thing to insert into busy-wait loops.
+ */
+static inline void cpu_relax(void)
+{
+	__asm__ __volatile__("rep;nop" : : : "memory");
+}
+
+/* Random other functions. These are not architecture-specific, except they
+ * really are in many ways. Seperate the PC from the "X86" is hard.
+ */
 void uart_init(void);
 void rtc_init(int invalid);
 void isa_dma_init(void);

@@ -2,11 +2,11 @@
  * This file is part of the LinuxBIOS project.
  *
  * Copyright (C) 2001 Linux Networx
+ * Copyright (C) 2007 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation; version 2 of the License.
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,12 +25,12 @@
  * Your basic SMP spinlocks, allowing only a single CPU anywhere
  */
 
-typedef struct {
+struct spinlock {
 	volatile unsigned int lock;
-} spinlock_t;
+};
 
 
-#define SPIN_LOCK_UNLOCKED (spinlock_t) { 1 }
+#define SPIN_LOCK_UNLOCKED (struct spinlock) { 1 }
 
 /*
  * Simple spin lock operations.  There are two variants, one clears IRQ's
@@ -60,18 +60,21 @@ typedef struct {
 #define spin_unlock_string \
 	"movb $1,%0"
 
-static inline __attribute__((always_inline)) void spin_lock(spinlock_t *lock)
+static inline __attribute__((always_inline)) void spin_lock(struct spinlock *lock)
 {
 	__asm__ __volatile__(
 		spin_lock_string
 		:"=m" (lock->lock) : : "memory");
 }
 
-static inline __attribute__((always_inline)) void spin_unlock(spinlock_t *lock)
+static inline __attribute__((always_inline)) void spin_unlock(struct spinlock *lock)
 {
 	__asm__ __volatile__(
 		spin_unlock_string
 		:"=m" (lock->lock) : : "memory");
 }
+
+#define spin_define(spin) static struct spinlock spin = SPIN_LOCK_UNLOCKED
+
 
 #endif /* ARCH_SPINLOCK_H */

@@ -183,7 +183,9 @@ void constructor(struct device *dev, struct device_id *id)
  * @return Pointer to the newly created device structure.
  * @see device_path
  */
-// static spinlock_t dev_lock = SPIN_LOCK_UNLOCKED;
+
+spin_define(dev_lock);
+
 struct device *alloc_dev(struct bus *parent, struct device_path *path,
 			 struct device_id *devid)
 {

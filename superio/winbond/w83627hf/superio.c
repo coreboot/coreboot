@@ -9,7 +9,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License.
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,6 +39,7 @@ static void pnp_enter_ext_func_mode(struct device * dev)
         outb(0x87, dev->path.u.pnp.port);
         outb(0x87, dev->path.u.pnp.port);
 }
+
 static void pnp_exit_ext_func_mode(struct device * dev) 
 {
         outb(0xaa, dev->path.u.pnp.port);

@@ -33,13 +33,15 @@
 #include "lib.h"
 #include "lar.h"
 
-void uncompress_impossible(char *dst, char *src, u32 len) {
+void uncompress_impossible(char *dst, char *src, u32 len)
+{
 	fprintf(stderr,
 		"Cannot uncompress data (algorithm not compiled in).\n");
 	exit(1);
 }
 
-void do_no_uncompress(char *dst, char *src, u32 len) {
+void do_no_uncompress(char *dst, char *src, u32 len)
+{
 	memcpy(dst, src, len);
 }
 
@@ -117,7 +119,7 @@ int extract_lar(const char *archivename, struct file *files)
 		if (pos) {
 			pos[1] = 0;
 			/* printf("Pathname %s\n",pathname); */
-			mkdirp(pathname,0755);
+			mkdirp(pathname, 0755);
 		}
 		free(pathname);
 
@@ -133,8 +135,7 @@ int extract_lar(const char *archivename, struct file *files)
 		} else {
 			char *buf = malloc(ntohl(header->reallen));
 			uncompress_functions[ntohl(header->compression)](buf,
-				walk + ntohl(header->offset),
-				ntohl(header->len));
+			   walk + ntohl(header->offset), ntohl(header->len));
 			fwrite(buf, ntohl(header->reallen), 1, file_to_extract);
 			free(buf);
 		}

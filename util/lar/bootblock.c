@@ -48,11 +48,11 @@ int load_bootblock(const char *bootblock)
 	 */
 	if (bootblock_len != BOOTBLOCK_SIZE) {
 		printf("Warning: %s does not seem to be a bootblock, "
-				"so ignore it\n", bootblock);
-		bootblock_code=NULL;
-		bootblock_len=0;
+		       "so ignore it\n", bootblock);
+		bootblock_code = NULL;
+		bootblock_len = 0;
 		// Is this an error condition?
-	}	
+	}
 
 	bootblock_code = malloc(bootblock_len);
 	if (!bootblock_code) {
@@ -78,13 +78,12 @@ int fixup_bootblock(void)
 	uint32_t *size_pos;
 
 	/* This cleans out the area after the reset vector */
-	for(i=13; i>0; i--)
+	for (i = 13; i > 0; i--)
 		bootblock_code[bootblock_len - i] = '\0';
-	
+
 	/* add lar size to image */
-	size_pos=(uint32_t *)(bootblock_code+bootblock_len-12);
+	size_pos = (uint32_t *) (bootblock_code + bootblock_len - 12);
 	size_pos[0] = get_larsize();
 
 	return 0;
 }
-

@@ -36,13 +36,15 @@
 
 extern enum compalgo algo;
 
-void compress_impossible(char *in, u32 in_len, char *out, u32 *out_len) {
+void compress_impossible(char *in, u32 in_len, char *out, u32 *out_len)
+{
 	fprintf(stderr,
 		"The selected compression algorithm wasn't compiled in.\n");
 	exit(1);
 }
 
-void do_no_compress(char *in, u32 in_len, char *out, u32 *out_len) {
+void do_no_compress(char *in, u32 in_len, char *out, u32 *out_len)
+{
 	memcpy(out, in, in_len);
 	out_len[0] = in_len;
 }
@@ -116,7 +118,7 @@ int create_lar(const char *archivename, struct file *files)
 		header = (struct lar_header *)tempmem;
 		pathname = tempmem + sizeof(struct lar_header);
 		pathlen = snprintf(pathname, MAX_PATHLEN - 1, name) + 1;
-		pathlen = (pathlen + 15) & 0xfffffff0;/* Align to 16 bytes. */
+		pathlen = (pathlen + 15) & 0xfffffff0;	/* Align to 16 bytes. */
 
 		/* Read file into memory. */
 		filebuf = malloc(filelen);
@@ -184,15 +186,17 @@ int create_lar(const char *archivename, struct file *files)
 
 	if (bootblock_len) {
 		if (verbose())
-			printf ("Detected bootblock of %d bytes\n", bootblock_len);
+			printf("Detected bootblock of %d bytes\n",
+			       bootblock_len);
 
 		bb_header_len = sizeof(struct lar_header) +
-			((strlen(basename(get_bootblock()))+15) & 0xfffffff0);
+		    ((strlen(basename(get_bootblock())) + 15) & 0xfffffff0);
 
 		bb_header_len = (bb_header_len + 15) & 0xfffffff0;
 
 		if (verbose())
-			printf ("Required bootblock header of %d bytes\n", bb_header_len);
+			printf("Required bootblock header of %d bytes\n",
+			       bb_header_len);
 
 		diff -= bootblock_len;
 		diff -= bb_header_len;
@@ -239,15 +243,15 @@ int create_lar(const char *archivename, struct file *files)
 		struct lar_header *bb;
 
 		bootblock_header = malloc(bb_header_len);
-		if(!bootblock_header) {
+		if (!bootblock_header) {
 			fprintf(stderr, "Out of memory.\n");
 			exit(1);
 		}
 
-		memset (bootblock_header, 0, bb_header_len);
+		memset(bootblock_header, 0, bb_header_len);
 
 		/* construct header */
-		bb=(struct lar_header *)bootblock_header;
+		bb = (struct lar_header *)bootblock_header;
 		memcpy(bb->magic, MAGIC, 8);
 		bb->reallen = htonl(bootblock_len);
 		bb->len = htonl(bootblock_len);
@@ -258,8 +262,8 @@ int create_lar(const char *archivename, struct file *files)
 		/* Write filename. we calculated the buffer size, 
 		 * so no overflow danger here.
 		 */
-		strcpy(bootblock_header+sizeof(struct lar_header), 
-				basename(get_bootblock()) );
+		strcpy(bootblock_header + sizeof(struct lar_header),
+		       basename(get_bootblock()));
 
 		fwrite(bootblock_header, bb_header_len, 1, archive);
 		fwrite(bootblock_code, bootblock_len, 1, archive);

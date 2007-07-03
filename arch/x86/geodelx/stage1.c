@@ -50,22 +50,23 @@ void geodelx_msr_init(void)
 	wrmsr(CPU_RCONF_C0_DF, msr);
 	wrmsr(CPU_RCONF_E0_FF, msr);
 
-	/* Setup access to the cache for under 640K. Note MC not setup yet. */
+	/* Setup access to the cache for under 640K. */
+	/* Note memory controler not setup yet. */
 	msr.hi = 0x20000000;
-	msr.lo = 0xfff80;
-	wrmsr(MSR_GLIU0 + 0x20, msr);
+	msr.lo = 0x000fff80;	/* 0-0x7FFFF */
+	wrmsr(MSR_GLIU0_BASE1, msr);
 
 	msr.hi = 0x20000000;
-	msr.lo = 0x80fffe0;
-	wrmsr(MSR_GLIU0 + 0x21, msr);
+	msr.lo = 0x080fffe0;	/* 0x80000-0x9FFFF */
+	wrmsr(MSR_GLIU0_BASE2, msr);
 
 	msr.hi = 0x20000000;
-	msr.lo = 0xfff80;
-	wrmsr(MSR_GLIU1 + 0x20, msr);
+	msr.lo = 0x000fff80;	/* 0-0x7FFFF */
+	wrmsr(MSR_GLIU1_BASE1, msr);
 
 	msr.hi = 0x20000000;
-	msr.lo = 0x80fffe0;
-	wrmsr(MSR_GLIU1 + 0x21, msr);
+	msr.lo = 0x080fffe0;	/* 0x80000-0x9FFFF */
+	wrmsr(MSR_GLIU0_BASE2, msr);
 
 }
 

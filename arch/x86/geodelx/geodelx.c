@@ -40,8 +40,21 @@
   */
 
 /** 
-  * start_time1 Starts Timer 1 for port 61 use. FIXME try to figure
-  * out what these values mean.
+  * Starts Timer 1 for port 61 use.
+  * 0x43 is PIT command/control.
+  * 0x41 is PIT counter 1.
+  *
+  * The command 0x56 means write counter 1 lower 8 bits in next IO,
+  * set the counter mode to square wave generator (count down to 0
+  * from programmed value twice in a row, alternating the output signal)
+  * counting in 16-bit binary mode.
+  *
+  * 0x12 is counter/timer 1 and signals the PIT to do a RAM refresh
+  * approximately every 15us.
+  *
+  * The PIT typically is generating 1.19318 MHz
+  * Timer 1 was used for RAM refresh on XT/AT and can be read on port61.
+  * Port61 is used by many timing loops for calibration.
   */
 void start_timer1(void)
 {
@@ -134,42 +147,44 @@ void cpu_bug(void)
  */
 void pll_reset(int manualconf, u32 pll_hi, u32 pll_lo)
 {
-	struct msr  msrGlcpSysRstpll;
+	struct msr  msr_glcp_sys_pll; /* GeodeLink PLL control MSR */
 
-	msrGlcpSysRstpll = rdmsr(GLCP_SYS_RSTPLL);
+	msr_glcp_sys_pll = rdmsr(GLCP_SYS_RSTPLL);
 
 	printk(BIOS_DEBUG, 
-		"_MSR GLCP_SYS_RSTPLL (%08x) value is: %08x:%08x\n", msrGlcpSysRstpll.hi, msrGlcpSysRstpll.lo);
+		"_MSR GLCP_SYS_RSTPLL (%08x) value is: %08x:%08x\n", msr_glcp_sys_pll.hi, msr_glcp_sys_pll.lo);
 	post_code(POST_PLL_INIT);
 
-	if (!(msrGlcpSysRstpll.lo & (1 << RSTPLL_LOWER_SWFLAGS_SHIFT))) {
+	if (!(msr_glcp_sys_pll.lo & (1 << RSTPLL_LOWER_SWFLAGS_SHIFT))) {
 		printk(BIOS_DEBUG,"Configuring PLL\n");
 		if (manualconf) {
 			post_code(POST_PLL_MANUAL);
 			/* CPU and GLIU mult/div (GLMC_CLK = GLIU_CLK / 2)  */
-			msrGlcpSysRstpll.hi = pll_hi;
+			msr_glcp_sys_pll.hi = pll_hi;
 
 			/* Hold Count - how long we will sit in reset */
-			msrGlcpSysRstpll.lo = pll_lo;
+			msr_glcp_sys_pll.lo = pll_lo;
 		} else {
 			/*automatic configuration (straps) */
 			post_code(POST_PLL_STRAP);
-			msrGlcpSysRstpll.lo &=
+			/* Hold 0xDE * 16 clocks during reset. */
+			/* AMD recomended value for PLL reset from silicon validation. */
+			msr_glcp_sys_pll.lo &=
 			    ~(0xFF << RSTPPL_LOWER_HOLD_COUNT_SHIFT);
-			msrGlcpSysRstpll.lo |=
+			msr_glcp_sys_pll.lo |=
 			    (0xDE << RSTPPL_LOWER_HOLD_COUNT_SHIFT);
-			msrGlcpSysRstpll.lo &=
+			msr_glcp_sys_pll.lo &=
 			    ~(RSTPPL_LOWER_COREBYPASS_SET |
 			      RSTPPL_LOWER_MBBYPASS_SET);
-			msrGlcpSysRstpll.lo |=
+			msr_glcp_sys_pll.lo |=
 			    RSTPPL_LOWER_COREPD_SET | RSTPPL_LOWER_CLPD_SET;
 		}
 		/* Use SWFLAGS to remember: "we've already been here"  */
-		msrGlcpSysRstpll.lo |= (1 << RSTPLL_LOWER_SWFLAGS_SHIFT);
+		msr_glcp_sys_pll.lo |= (1 << RSTPLL_LOWER_SWFLAGS_SHIFT);
 
 		/* "reset the chip" value */
-		msrGlcpSysRstpll.lo |= RSTPPL_LOWER_CHIP_RESET_SET;
-		wrmsr(GLCP_SYS_RSTPLL, msrGlcpSysRstpll);
+		msr_glcp_sys_pll.lo |= RSTPPL_LOWER_CHIP_RESET_SET;
+		wrmsr(GLCP_SYS_RSTPLL, msr_glcp_sys_pll);
 
 		/*      You should never get here..... The chip has reset. */
 		printk(BIOS_EMERG,"CONFIGURING PLL FAILURE -- HALT\n");
@@ -183,9 +198,8 @@ void pll_reset(int manualconf, u32 pll_hi, u32 pll_lo)
 
 
 /**
- * Return the CPU clock rate. Rates in this system are always returned
- * as multkiples of 33 Mhz.
- *
+ * Return the CPU clock rate from the PLL MSR.
+ * @return CPU speed in MHz
  */
 u32 cpu_speed(void)
 {
@@ -193,17 +207,16 @@ u32 cpu_speed(void)
 	struct msr  msr;
 
 	msr = rdmsr(GLCP_SYS_RSTPLL);
-	speed = ((((msr.hi >> RSTPLL_UPPER_CPUMULT_SHIFT) & 0x1F) + 1) * 333) / 10;
-	if ((((((msr.hi >> RSTPLL_UPPER_CPUMULT_SHIFT) & 0x1F) + 1) * 333) % 10) > 5) {
+	speed = ((((msr.hi >> RSTPLL_UPPER_CPUMULT_SHIFT) & RSTPLL_UPPER_CPUMULT_MASK) + 1) * 333) / 10;
+	if ((((((msr.hi >> RSTPLL_UPPER_CPUMULT_SHIFT) & RSTPLL_UPPER_CPUMULT_MASK) + 1) * 333) % 10) > 5) {
 		++speed;
 	}
 	return (speed);
 }
 
 /**
- * Return the Geode Link clock rate.  Rates in this system are always
- * returned as multkiples of 33 Mhz.
- *
+ * Return the GeodeLink clock rate from the PLL MSR.
+ * @return GeodeLink speed in MHz
  */
 u32 geode_link_speed(void)
 {
@@ -211,8 +224,8 @@ u32 geode_link_speed(void)
 	struct msr  msr;
 
 	msr = rdmsr(GLCP_SYS_RSTPLL);
-	speed = ((((msr.hi >> RSTPLL_UPPER_GLMULT_SHIFT) & 0x1F) + 1) * 333) / 10;
-	if ((((((msr.hi >> RSTPLL_UPPER_GLMULT_SHIFT) & 0x1F) + 1) * 333) % 10) > 5) {
+	speed = ((((msr.hi >> RSTPLL_UPPER_GLMULT_SHIFT) & RSTPLL_UPPER_GLMULT_MASK) + 1) * 333) / 10;
+	if ((((((msr.hi >> RSTPLL_UPPER_GLMULT_SHIFT) & RSTPLL_UPPER_GLMULT_MASK) + 1) * 333) % 10) > 5) {
 		++speed;
 	}
 	return (speed);
@@ -220,9 +233,8 @@ u32 geode_link_speed(void)
 
 
 /**
- * Return the PCI bus clock rate.  Rates in this system are always
- * returned as multkiples of 33 Mhz.
- *
+ * Return the PCI bus clock rate from the PLL MSR.
+ * @return PCI speed in MHz
  */
 u32 pci_speed(void)
 {
@@ -295,7 +307,7 @@ void set_delay_control(u8 dimm0, u8 dimm1)
 	  */
 	msrnum = GLCP_DELAY_CONTROLS;
 	msr = rdmsr(msrnum);
-	if (msr.lo & ~(0x7C0)) {
+	if (msr.lo & ~(DELAY_LOWER_STATUS_MASK)) {
 		return;
 	}
 

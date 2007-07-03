@@ -95,6 +95,11 @@ Third-party Code and License Overview
   Files: include/asm-i386/processor.h, arch/i386/kernel/cpu/mtrr/state.c
   Current version we use: 297d9c035edd04327fedc0d1da27c2b112b66fcc (06/2007)
 
+* include/arch/x86/arch/spinlock.h: GPLv2
+  Source: git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux-2.6
+  Files: include/asm-i386/spinlock.h, include/asm-i386/spinlock_types.h
+  Current version we use: 139ec7c416248b9ea227d21839235344edfee1e0 (12/2006)
+
 * include/arch/x86/swab.h: GPLv2
   Source: git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux-2.6
   Current version we use: ?

@@ -1,34 +1,25 @@
 /*
  * This file is part of the LinuxBIOS project.
  *
- * Copyright (C) 2001 Linux Networx
- * Copyright (C) 2007 coresystems GmbH
+ * It is based on the Linux kernel file include/asm-i386/spinlock.h.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 	
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Modifications are:
+ * Copyright (C) 2001 Linux Networx
+ * (Written by Eric Biederman <ebiederman@lnxi.com> for Linux Networx)
+ * Copyright (C) 2007 coresystems GmbH
+ * (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
  */
 
 #ifndef ARCH_SPINLOCK_H
 #define ARCH_SPINLOCK_H
 
 /*
- * Your basic SMP spinlocks, allowing only a single CPU anywhere
+ * Your basic SMP spinlocks, allowing only a single CPU anywhere.
  */
 
 struct spinlock {
 	volatile unsigned int lock;
 };
-
 
 #define SPIN_LOCK_UNLOCKED (struct spinlock) { 1 }
 
@@ -38,7 +29,7 @@ struct spinlock {
  *
  * We make no fairness assumptions. They have a cost.
  */
-#define barrier() __asm__ __volatile__("": : :"memory")
+#define barrier()		__asm__ __volatile__("": : :"memory")
 #define spin_is_locked(x)	(*(volatile char *)(&(x)->lock) <= 0)
 #define spin_unlock_wait(x)	do { barrier(); } while(spin_is_locked(x))
 
@@ -75,6 +66,5 @@ static inline __attribute__((always_inline)) void spin_unlock(struct spinlock *l
 }
 
 #define spin_define(spin) static struct spinlock spin = SPIN_LOCK_UNLOCKED
-
 
 #endif /* ARCH_SPINLOCK_H */

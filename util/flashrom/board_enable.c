@@ -138,8 +138,9 @@ static int board_via_epia_m(const char *name)
 }
 
 /*
- * Suited for ASUS A7V8X-MX SE and A7V400-MX.
- *
+ * Suited for:
+ *   ASUS A7V8X-MX SE and A7V400-MX: AMD K7 + VIA KM400A + VT8235
+ *   Tyan Tomcat K7M: AMD Geode NX + VIA KM400 + VT8237.
  */
 
 static int board_asus_a7v8x_mx(const char *name)
@@ -148,8 +149,10 @@ static int board_asus_a7v8x_mx(const char *name)
 	uint8_t val;
 
 	dev = pci_dev_find(0x1106, 0x3177);	/* VT8235 ISA bridge */
+	if (!dev)
+		dev = pci_dev_find(0x1106, 0x3227);	/* VT8237 ISA bridge */
 	if (!dev) {
-		fprintf(stderr, "\nERROR: VT8235 ISA Bridge not found.\n");
+		fprintf(stderr, "\nERROR: VT823x ISA bridge not found.\n");
 		return -1;
 	}
 
@@ -300,6 +303,8 @@ struct board_pciid_enable board_pciid_enables[] = {
 	 NULL, NULL, "VIA EPIA M/MII/...", board_via_epia_m},
 	{0x1106, 0x3177, 0x1043, 0x80A1, 0x1106, 0x3205, 0x1043, 0x8118,
 	 NULL, NULL, "ASUS A7V8-MX SE", board_asus_a7v8x_mx},
+	{0x8086, 0x1076, 0x8086, 0x1176, 0x1106, 0x3059, 0x10f1, 0x2498,
+	 NULL, NULL, "Tyan Tomcat K7M", board_asus_a7v8x_mx},
 	{0x10B9, 0x1541, 0x0000, 0x0000, 0x10B9, 0x1533, 0x0000, 0x0000,
 	 "asus", "p5a", "ASUS P5A", board_asus_p5a},
 	{0x1166, 0x0205, 0x1014, 0x0347, 0x0000, 0x0000, 0x0000, 0x0000,

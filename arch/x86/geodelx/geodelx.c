@@ -30,6 +30,7 @@
 #include <io.h>
 #include <amd_geodelx.h>
 #include <spd.h>
+#include <legacy.h>
 
 /* all these functions used to be in a lot of fiddly little files.  To
   * make it easier to find functions, we are merging them here. This
@@ -41,8 +42,6 @@
 
 /** 
   * Starts Timer 1 for port 61 use.
-  * 0x43 is PIT command/control.
-  * 0x41 is PIT counter 1.
   *
   * The command 0x56 means write counter 1 lower 8 bits in next IO,
   * set the counter mode to square wave generator (count down to 0
@@ -58,8 +57,8 @@
   */
 void start_timer1(void)
 {
-	outb(0x56, 0x43);
-	outb(0x12, 0x41);
+	outb(0x56, I82C54_CONTROL_WORD_REGISTER);
+	outb(0x12, I82C54_COUNTER1);
 }
 
 /** 

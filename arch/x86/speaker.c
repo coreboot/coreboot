@@ -27,12 +27,7 @@
 
 #include <io.h>
 #include <lib.h>
-
-#define I82C54_CONTROL_WORD_REGISTER	0x43	/* Write-only. */
-
-#define I82C54_COUNTER0			0x40
-#define I82C54_COUNTER1			0x41
-#define I82C54_COUNTER2			0x42
+#include <legacy.h>
 
 #define PC_SPEAKER_PORT			0x61
 

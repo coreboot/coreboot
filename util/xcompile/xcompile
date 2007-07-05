@@ -25,6 +25,15 @@ ARCH=`uname -m | sed -e s/i.86/x86/ -e s/sun4u/sparc64/ \
 			-e s/s390x/s390/ -e s/parisc64/parisc/ \
 			-e s/ppc.*/powerpc/ -e s/mips.*/mips/`
 
+testcc()
+{
+	TMP=".$$$$.tmp"
+	$1 $2 -S -xc /dev/null -o $TMP > /dev/null 2>&1
+	ret=$?
+	rm -rf $TMP
+	return $ret 
+}
+
 searchgnu()
 {
 	# $1 short name
@@ -45,24 +54,36 @@ searchgnu()
 case  "$ARCH" in
 "x86_64")
 	echo "CC_x86 := gcc -m32"
+	CC="gcc -m32"
+
 	searchgnu as >/dev/null && echo "AS_x86 := $(searchgnu as) --32"
 	searchgnu ld >/dev/null && echo "LD_x86 := $(searchgnu ld) -b elf32-i386 -melf_i386"
 	searchgnu objcopy >/dev/null && echo "OBJCOPY_x86 := $(searchgnu objcopy)"
 	;;
 "x86")
 	echo "CC_x86 := gcc"
+	CC="gcc"
+
 	searchgnu as >/dev/null && echo "AS_x86 := $(searchgnu as)"
 	searchgnu ld >/dev/null && echo "LD_x86 := $(searchgnu ld)"
 	searchgnu objcopy >/dev/null && echo "OBJCOPY_x86 := $(searchgnu objcopy)"
 	;;
 *)
 	# FIXME: This should be detected.
+	CC="i386-linux-gcc"
 	echo "CC_x86 := i386-linux-gcc"
 	echo "AS_x86 := i386-linux-as"
 	echo "LD_x86 := i386-linux-ld"
 	echo "OBJCOPY_x86 := i386-linux-objcopy"
 	;;
 esac
+
+# This is where we test for various flags and other things
+
+CFLAGS=""
+testcc "$CC" "-fno-stack-protector" && CFLAGS="$CFLAGS-fno-stack-protector " 
+
+echo "CFLAGS_x86 := $CFLAGS"
 
 # TODO: The same as above for PowerPC, and other architectures
 #       as soon as they are supported by LinuxBIOSv3.

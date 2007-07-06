@@ -247,6 +247,42 @@ u32 pci_speed(void)
 	}
 }
 
+
+/**
+ * Delay Control Settings Table from AMD (MCP 0x4C00000F)
+ * =========================================================================
+ */
+const struct delay_controls {
+	u8 dimms;
+	u8 devices;
+	u32 slow_hi;
+	u32 slow_low;
+	u32 fast_hi;
+	u32 fast_low;
+} delay_control_table [] = {
+	/* DIMMs Devs Slow (<=333MHz)            Fast (>334MHz) */
+	{ 1,     4,   0x0837100FF, 0x056960004,  0x0827100FF, 0x056960004 },
+	{ 1,     8,   0x0837100AA, 0x056960004,  0x0827100AA, 0x056960004 },
+	{ 1,     16,  0x0837100AA, 0x056960004,  0x082710055, 0x056960004 },
+	{ 2,     8,   0x0837100A5, 0x056960004,  0x082710000, 0x056960004 },
+	{ 2,     16,  0x0937100A5, 0x056960004,  0x0C27100A5, 0x056960004 },
+	{ 2,     20,  0x0B37100A5, 0x056960004,  0x0B27100A5, 0x056960004 },
+	{ 2,     24,  0x0B37100A5, 0x056960004,  0x0B27100A5, 0x056960004 },
+	{ 2,     32,  0x0B37100A5, 0x056960004,  0x0B2710000, 0x056960004 },
+};
+/**
+ *  - Bit 55 (disable SDCLK 1,3,5) should be set if there is a single DIMM
+ *    in slot 0, but it should be clear for all 2 DIMM settings and if a
+ *    single DIMM is in slot 1. Bits 54:52 should always be set to '111'.
+ *
+ *    Settings for single DIMM and no VTT termination (Like db800 platform)
+ *     0xF2F100FF 0x56960004
+ *     -------------------------------------
+ *    ADDR/CTL have 22 ohm series R
+ *    DQ/DQM/DQS have 33 ohm series R
+ */
+
+
 /**
  * set_delay_control. This is Black Magic DRAM timing
  * juju(http://www.thefreedictionary.com/juju) Dram delay depends on
@@ -263,12 +299,10 @@ u32 pci_speed(void)
  * @param dimm1 DIMM 1 SMBus address
  * @param sram_width Data width of the SDRAM
  */
-
 void set_delay_control(u8 dimm0, u8 dimm1)
 {
 	u32 msrnum, glspeed;
-	u8 spdbyte0, spdbyte1;
-	int numdimms = 0;
+	u8 spdbyte0, spdbyte1, dimms, i;
 	struct msr  msr;
 
 	glspeed = geode_link_speed();
@@ -315,9 +349,10 @@ void set_delay_control(u8 dimm0, u8 dimm1)
 	 * # of Devices = Module Width (SPD6) / Device Width(SPD13) * Physical Banks(SPD5)
 	 * Note - We only support module width of 64.
 	 */
+	dimms = 0;
 	spdbyte0 = smbus_read_byte(dimm0, SPD_PRIMARY_SDRAM_WIDTH);
 	if (spdbyte0 != 0xFF) {
-		numdimms++;
+		dimms++;
 		spdbyte0 = (unsigned char)64 / spdbyte0 *
 		    (unsigned char)(smbus_read_byte(dimm0, SPD_NUM_DIMM_BANKS));
 	} else {
@@ -326,134 +361,32 @@ void set_delay_control(u8 dimm0, u8 dimm1)
 
 	spdbyte1 = smbus_read_byte(dimm1, SPD_PRIMARY_SDRAM_WIDTH);
 	if (spdbyte1 != 0xFF) {
-		numdimms++;
+		dimms++;
 		spdbyte1 = (unsigned char)64 / spdbyte1 *
 		    (unsigned char)(smbus_read_byte(dimm1, SPD_NUM_DIMM_BANKS));
 	} else {
 		spdbyte1 = 0;
 	}
 
-/* The current thinking. Subject to change...
-
-;								   "FUTURE ROBUSTNESS" PROPOSAL
-;								   ----------------------------
-;		DIMM	 Max MBUS					   MC 0x2000001A bits 26:24
-;DIMMs	devices	 Frequency	 MCP 0x4C00000F Setting		 vvv
-;-----	-------	 ---------	 ----------------------	 ----------
-;1		 4		 400MHz		 0x82*100FF 0x56960004		  4
-;1		 8		 400MHz		 0x82*100AA 0x56960004		  4
-;1		 16		 400MHz		 0x82*10055 0x56960004		  4
-;
-;2		 4,4	 400MHz		 0x82710000 0x56960004		  4
-;2		 8,8	 400MHz		 0xC27100A5 0x56960004		  4	*** OUT OF PUBLISHED ENVELOPE ***
-;
-;2		16,4	 >333		 0xB27100A5 0x56960004		  4	*** OUT OF PUBLISHED ENVELOPE ***
-;2		16,8	 >333		 0xB27100A5 0x56960004		  4	*** OUT OF PUBLISHED ENVELOPE ***
-;2		16,16	 >333		 0xB2710000 0x56960004		  4	*** OUT OF PUBLISHED ENVELOPE ***
-;
-;1		 4		 <=333MHz	 0x83*100FF 0x56960004		  3
-;1		 8		 <=333MHz	 0x83*100AA 0x56960004		  3
-;1		 16		 <=333MHz	 0x83*100AA 0x56960004		  3
-;
-;2		 4,4	 <=333MHz	 0x837100A5 0x56960004		  3
-;2		 8,8	 <=333MHz	 0x937100A5 0x56960004		  3
-;
-;2		16,4	 <=333MHz	 0xB37100A5 0x56960004		  3	*** OUT OF PUBLISHED ENVELOPE ***
-;2		16,8	 <=333MHz	 0xB37100A5 0x56960004		  3	*** OUT OF PUBLISHED ENVELOPE ***
-;2		16,16	 <=333MHz	 0xB37100A5 0x56960004		  3	*** OUT OF PUBLISHED ENVELOPE ***
-;=========================================================================
-;* - Bit 55 (disable SDCLK 1,3,5) should be set if there is a single DIMM in slot 0,
-;	 but it should be clear for all 2 DIMM settings and if a single DIMM is in slot 1.
-;	 Bits 54:52 should always be set to '111'.
-
-;No VTT termination
-;-------------------------------------
-;ADDR/CTL have 22 ohm series R
-;DQ/DQM/DQS have 33 ohm series R
-;
-;		DIMM	 Max MBUS
-;DIMMs	devices	 Frequency	 MCP 0x4C00000F Setting
-;-----	-------	 ---------	 ----------------------
-;1		 4		 400MHz		 0xF2F100FF 0x56960004		  4			The MC changes improve Salsa.
-;1		 8		 400MHz		 0xF2F100FF 0x56960004		  4			Delay controls no real change,
-;1		 4		 <=333MHz	 0xF2F100FF 0x56960004		  3			just fixing typo in left side.
-;1		 8		 <=333MHz	 0xF2F100FF 0x56960004		  3
-;1		 16		 <=333MHz	 0xF2F100FF 0x56960004		  3
-*/
+	/* zero GLCP_DELAY_CONTROLS MSR */
 	msr.hi = msr.lo = 0;
 
-	if (spdbyte0 == 0 || spdbyte1 == 0) {
-		/* one dimm solution */
-		if (spdbyte1 == 0) {
-			msr.hi |= 0x000800000;
-		}
-		spdbyte0 += spdbyte1;
-		if (spdbyte0 > 8) {
-			/* large dimm */
+	/* save some power, disable clock to second DIMM if it is empty */
+	if (spdbyte1 == 0) {
+		msr.hi |= DELAY_UPPER_DISABLE_CLK135;
+	}
+
+	spdbyte0 += spdbyte1;
+
+	for (i = 0; i < ARRAY_SIZE(delay_control_table); i++) {
+		if ((dimms == delay_control_table[i].dimms) &&
+				(spdbyte0 <= delay_control_table[i].devices)) {
 			if (glspeed < 334) {
-				msr.hi |= 0x0837100AA;
-				msr.lo |= 0x056960004;
+				msr.hi |= delay_control_table[i].slow_hi;
+				msr.lo |= delay_control_table[i].slow_low;
 			} else {
-				msr.hi |= 0x082710055;
-				msr.lo |= 0x056960004;
-			}
-		} else if (spdbyte0 > 4) {
-			/* medium dimm */
-			if (glspeed < 334) {
-				msr.hi |= 0x0837100AA;
-				msr.lo |= 0x056960004;
-			} else {
-				msr.hi |= 0x0827100AA;
-				msr.lo |= 0x056960004;
-			}
-		} else {
-			/* small dimm */
-			if (glspeed < 334) {
-				msr.hi |= 0x0837100FF;
-				msr.lo |= 0x056960004;
-			} else {
-				msr.hi |= 0x0827100FF;
-				msr.lo |= 0x056960004;
-			}
-		}
-	} else {
-		/* two dimm solution */
-		spdbyte0 += spdbyte1;
-		if (spdbyte0 > 24) {
-			/* huge dimms */
-			if (glspeed < 334) {
-				msr.hi |= 0x0B37100A5;
-				msr.lo |= 0x056960004;
-			} else {
-				msr.hi |= 0x0B2710000;
-				msr.lo |= 0x056960004;
-			}
-		} else if (spdbyte0 > 16) {
-			/* large dimms */
-			if (glspeed < 334) {
-				msr.hi |= 0x0B37100A5;
-				msr.lo |= 0x056960004;
-			} else {
-				msr.hi |= 0x0B27100A5;
-				msr.lo |= 0x056960004;
-			}
-		} else if (spdbyte0 >= 8) {
-			/* medium dimms */
-			if (glspeed < 334) {
-				msr.hi |= 0x0937100A5;
-				msr.lo |= 0x056960004;
-			} else {
-				msr.hi |= 0x0C27100A5;
-				msr.lo |= 0x056960004;
-			}
-		} else {
-			/* small dimms */
-			if (glspeed < 334) {
-				msr.hi |= 0x0837100A5;
-				msr.lo |= 0x056960004;
-			} else {
-				msr.hi |= 0x082710000;
-				msr.lo |= 0x056960004;
+				msr.hi |= delay_control_table[i].fast_hi;
+				msr.lo |= delay_control_table[i].fast_low;
 			}
 		}
 	}

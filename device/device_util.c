@@ -496,7 +496,7 @@ struct resource *find_resource(struct device *dev, unsigned int index)
  * @param gran Granularity we are aligning the number to.
  * @returns The aligned value.
  */
-static resource_t align_up(resource_t val, unsigned long gran)
+resource_t align_up(resource_t val, unsigned long gran)
 {
 	resource_t mask;
 	mask = (1ULL << gran) - 1ULL;
@@ -512,7 +512,7 @@ static resource_t align_up(resource_t val, unsigned long gran)
  * @param gran Granularity we are aligning the number to.
  * @returns The aligned value.
  */
-static resource_t align_down(resource_t val, unsigned long gran)
+resource_t align_down(resource_t val, unsigned long gran)
 {
 	resource_t mask;
 	mask = (1ULL << gran) - 1ULL;

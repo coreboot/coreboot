@@ -257,6 +257,9 @@ void default_device_constructor(struct device *dev, struct constructor *construc
 #define DEVICE_IO_ALIGN 16 
 #define DEVICE_MEM_ALIGN 4096
 
+resource_t align_up(resource_t val, unsigned long gran);
+resource_t align_down(resource_t val, unsigned long gran);
+
 extern struct device_operations default_dev_ops_root;
 
 extern int id_eq(struct device_id *id1, struct device_id *id2);

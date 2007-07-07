@@ -244,22 +244,6 @@ out:
 }
 
 /**
- * Round a number up to an alignment.
- *
- * @param val The starting value.
- * @param roundup Alignment as a power of two.
- * @returns Rounded up number.
- */
-static resource_t round(resource_t val, unsigned long pow)
-{
-	resource_t mask;
-	mask = (1ULL << pow) - 1ULL;
-	val += mask;
-	val &= ~mask;
-	return val;
-}
-
-/**
  * Read the resources on all devices of a given bus.
  *
  * @param bus Bus to read the resources on.
@@ -492,9 +476,9 @@ void compute_allocate_resource(struct bus *bus, struct resource *bridge,
 				base = 0x3e0;
 			}
 		}
-		if (((round(base, align) + size) - 1) <= resource->limit) {
+		if (((align_up(base, align) + size) - 1) <= resource->limit) {
 			/* Base must be aligned to size. */
-			base = round(base, align);
+			base = align_up(base, align);
 			resource->base = base;
 			resource->flags |= IORESOURCE_ASSIGNED;
 			resource->flags &= ~IORESOURCE_STORED;
@@ -517,7 +501,7 @@ void compute_allocate_resource(struct bus *bus, struct resource *bridge,
 	 * minimum granularity so we know not to place something else at an
 	 * address positively decoded by the bridge.
 	 */
-	bridge->size = round(base, bridge->gran) - bridge->base;
+	bridge->size = align_up(base, bridge->gran) - bridge->base;
 
 	printk(BIOS_SPEW, "%s compute_allocate_%s: base: %08Lx size: %08Lx align: %d gran: %d done\n", dev_path(bus->dev), (bridge->flags & IORESOURCE_IO) ? "io" : (bridge->flags & IORESOURCE_PREFETCH) ? "prefmem" : "mem", base, bridge->size, bridge->align, bridge->gran);
 }

@@ -32,13 +32,15 @@
 #include <spd.h>
 
 /**
-  * geodelx_msr_init Set up Geode LX registers for sane behaviour. Set
-  * all low memory (under 1MB) to write back.  Do some setup for cache
-  * as ram as well.
-  */
+ * Set up Geode LX registers for sane behaviour.
+ *
+ * Set all low memory (under 1MB) to write back. Do some setup for Cache
+ * as Ram (CAR) as well.
+ */
 void geodelx_msr_init(void)
 {
-	struct msr  msr;
+	struct msr msr;
+
 	/* Setup access to the cache for under 1MB. */
 	msr.hi = 0x24fffc02;
 	msr.lo = 0x1000A000;	/* 0-A0000 write back */
@@ -51,7 +53,7 @@ void geodelx_msr_init(void)
 	wrmsr(CPU_RCONF_E0_FF, msr);
 
 	/* Setup access to the cache for under 640K. */
-	/* Note memory controler not setup yet. */
+	/* Note: Memory controller not setup yet. */
 	msr.hi = 0x20000000;
 	msr.lo = 0x000fff80;	/* 0-0x7FFFF */
 	wrmsr(MSR_GLIU0_BASE1, msr);
@@ -67,6 +69,4 @@ void geodelx_msr_init(void)
 	msr.hi = 0x20000000;
 	msr.lo = 0x080fffe0;	/* 0x80000-0x9FFFF */
 	wrmsr(MSR_GLIU0_BASE2, msr);
-
 }
-

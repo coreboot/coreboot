@@ -1,29 +1,29 @@
-##
-## This file is part of the LinuxBIOS project.
-##
-## Copyright (C) 2000,2007 Ronald G. Minnich <rminnich@gmail.com>
-## Copyright (C) 2005 Eswar Nallusamy, LANL
-## Copyright (C) 2005 Tyan
-## (Written by Yinghai Lu <yhlu@tyan.com> for Tyan)
-## Copyright (C) 2007 coresystems GmbH
-## (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
-## Copyright (C) 2007 Advanced Micro Devices, Inc.
-##
-## This program is free software; you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; version 2 of the License.
-##
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-##
-## You should have received a copy of the GNU General Public License
-## along with this program; if not, write to the Free Software
-## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
-##
+/*
+ * This file is part of the LinuxBIOS project.
+ *
+ * Copyright (C) 2000,2007 Ronald G. Minnich <rminnich@gmail.com>
+ * Copyright (C) 2005 Eswar Nallusamy, LANL
+ * Copyright (C) 2005 Tyan
+ * (Written by Yinghai Lu <yhlu@tyan.com> for Tyan)
+ * Copyright (C) 2007 coresystems GmbH
+ * (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
+ * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
 
-/* Init code - Switch CPU to protected mode and enable Cache-as-Ram. */
+/* Init code - Switch CPU to protected mode and enable Cache-as-Ram (CAR). */
 
 #include "../macros.h"
 #include <amd_geodelx.h>
@@ -31,20 +31,20 @@
 /* This is where the DCache will be mapped and be used as stack. It would be
  * cool if it was the same base as LinuxBIOS normal stack.
  */
-#define	LX_STACK_BASE		DCACHE_RAM_BASE
-#define	LX_STACK_END		LX_STACK_BASE+(DCACHE_RAM_SIZE-4)
+#define LX_STACK_BASE		DCACHE_RAM_BASE
+#define LX_STACK_END		LX_STACK_BASE + (DCACHE_RAM_SIZE - 4)
 
-#define	LX_NUM_CACHELINES	0x080	/* There are 128 lines per way. */
-#define	LX_CACHELINE_SIZE	0x020	/* There are 32 bytes per line. */
-#define	LX_CACHEWAY_SIZE	(LX_NUM_CACHELINES * LX_CACHELINE_SIZE)
-#define	CR0_CD			0x40000000 /* Bit 30 = Cache Disable */
-#define	CR0_NW			0x20000000 /* Bit 29 = Not Write Through */
+#define LX_NUM_CACHELINES	0x080	/* There are 128 lines per way. */
+#define LX_CACHELINE_SIZE	0x020	/* There are 32 bytes per line. */
+#define LX_CACHEWAY_SIZE	(LX_NUM_CACHELINES * LX_CACHELINE_SIZE)
+#define CR0_CD			0x40000000 /* Bit 30 = Cache Disable */
+#define CR0_NW			0x20000000 /* Bit 29 = Not Write Through */
 
-#define ROM_CODE_SEG 0x08
-#define ROM_DATA_SEG 0x10
+#define ROM_CODE_SEG		0x08
+#define ROM_DATA_SEG		0x10
 
-#define CACHE_RAM_CODE_SEG 0x18
-#define CACHE_RAM_DATA_SEG 0x20
+#define CACHE_RAM_CODE_SEG	0x18
+#define CACHE_RAM_DATA_SEG	0x20
 
 	.code16
 	.globl _stage0
@@ -54,21 +54,19 @@ _stage0:
 	/* Save the BIST result. */
 	movl	%eax, %ebp;
 
-	/* Thanks to kmliu@sis.com.tw for this TLB fix. */
-	/* IMMEDIATELY invalidate the translation lookaside buffer before
+	/* IMMEDIATELY invalidate the translation lookaside buffer (TLB) before
 	 * executing any further code. Even though paging is disabled we
 	 * could still get false address translations due to the TLB if we
 	 * didn't invalidate it.
 	 */
-
 	xorl	%eax, %eax
-	movl	%eax, %cr3	/* Invalidate TLB */
+	movl	%eax, %cr3	/* Invalidate TLB. */
 
 	/* Switch to protected mode. */
 
 	/* NOTE: With GNU assembler version 2.15.94.0.2.2 (i386-redhat-linux)
 	 * using BFD version 2.15.94.0.2.2 20041220 this works fine without
-	 * all the ld hackery and so on. So leave it as is with this comment. 
+	 * all the ld hackery and so on. So leave it as is with this comment.
 	 */
 
 	data32	lgdt %cs:gdtptr
@@ -84,18 +82,19 @@ _stage0:
 	// port80_post(0x23)
 
 	/* Now we are in protected mode. Jump to a 32 bit code segment. */
-	data32 ljmp    $ROM_CODE_SEG, $protected_stage0
+	data32	ljmp $ROM_CODE_SEG, $protected_stage0
+
 	/* I am leaving this weird jump in here in the event that future gas
 	 * bugs force it to be used.
 	 */
-	#.byte 0x66
+	/* .byte 0x66 */
 	.code32
-	#ljmp    $ROM_CODE_SEG, $protected_stage0
+	/* ljmp	$ROM_CODE_SEG, $protected_stage0 */
 
-	#.code16
-	.align  4
+	/* .code16 */
+	.align 4
 	.globl gdt16
-gdt16 = . - _stage0 
+gdt16 = . - _stage0
 gdt16x:
 	.word	gdt16xend - gdt16x -1	/* Compute the table limit. */
 	.long	gdt16x
@@ -118,22 +117,22 @@ gdt16xend:
 	 * Let's not worry about this -- optimizing gdt is pointless since
 	 * we're only in it for a little bit.
 	 *
-	 * BTW note the trick below: The GDT points to ITSELF, and the first
+	 * Btw. note the trick below: The GDT points to ITSELF, and the first
 	 * good descriptor is at offset 8. So you word-align the table, and
 	 * then because you chose 8, you get a nice 64-bit aligned GDT entry,
 	 * which is good as this is the size of the entry.
 	 *
-	 * Just in case you ever wonder why people do this. 
+	 * Just in case you ever wonder why people do this.
 	 */
-	.align  4
+	.align 4
 	.globl gdtptr
 	.globl gdt_limit
-gdt_limit = gdt_end - gdt - 1   /* Compute the table limit. */
+gdt_limit = gdt_end - gdt - 1		/* Compute the table limit. */
 
 gdt:
 gdtptr:
-	.word	gdt_end - gdt -1 /* Compute the table limit. */
-	.long	gdt              /* We know the offset. */
+	.word	gdt_end - gdt -1	/* Compute the table limit. */
+	.long	gdt			/* We know the offset. */
 	.word	0
 
 	/* selgdt 0x08, flat code segment */
@@ -153,21 +152,20 @@ gdtptr:
 	.byte	0x00, 0x93, 0xcf, 0x00
 gdt_end:
 
-	/*
-	 * When we come here we are in protected mode. We expand the stack
+	/* When we come here we are in protected mode. We expand the stack
 	 * and copy the data segment from ROM to the memory.
 	 *
 	 * After that, we call the chipset bootstrap routine that
 	 * does what is left of the chipset initialization.
 	 *
-	 * NOTE: Aligned to 4 so that we are sure that the prefetch
+	 * Note: Aligned to 4 so that we are sure that the prefetch
 	 * cache will be reloaded.
 	 */
 
 	.align  4
 	.globl protected_stage0
 protected_stage0:
-	// This code was used by v2. TODO
+	/* This code was used by v2. TODO. */
 	lgdt	%cs:gdtptr
 	ljmp	$ROM_CODE_SEG, $__protected_stage0
 
@@ -188,17 +186,18 @@ __protected_stage0:
 	/* Restore the BIST value to %eax. */
 	movl	%ebp, %eax
 
-.align 4
+	.align 4
 	/* Here begins CAR support. */
-	/* This particular code is straight from LinuxBIOS V2. */
+	/* This particular code is straight from LinuxBIOS v2. */
 
 	/* DCacheSetup: Setup data cache for use as RAM for a stack. */
 DCacheSetup:
-
 	invd
+
 	/* Set cache properties. */
 	movl	$CPU_RCONF_DEFAULT, %ecx
 	rdmsr
+
 	/* 1MB system memory in write back 1|00100|00. */
 	movl	$0x010010000, %eax
 	wrmsr
@@ -208,6 +207,7 @@ DCacheSetup:
 	 */
 	movl	CPU_DM_CONFIG0,%ecx
 	rdmsr
+
 	/* TODO: Make consistent with i$ init, either whole reg = 0, or just
 	 * this bit...
 	 */
@@ -258,17 +258,18 @@ DCacheSetup:
 	movl	$CPU_DC_INDEX, %ecx
 	wrmsr
 
-	/* Startaddress for tag of Way0: ebp will hold the incrementing
-	 * address. dont destroy!
+	/* Start address for tag of Way0: ebp will hold the incrementing
+	 * address. Don't destroy!
 	 */
 	movl	$LX_STACK_BASE, %ebp	/* Init to start address. */
-	/* Set valid bit and tag for this Way (B[31:12] : Cache tag value for
+
+	/* Set valid bit and tag for this Way (B[31:12]: Cache tag value for
 	 * line/way curr. selected by CPU_DC_INDEX.
 	 */
 	orl	$1, %ebp
 
 	/* Start tag Ways 0 with 128 lines with 32 bytes each: edi will hold
-	 * the line counter. dont destroy!
+	 * the line counter. Don't destroy!
 	 */
 	movl	$LX_NUM_CACHELINES, %edi
 
@@ -298,12 +299,13 @@ DCacheSetup_quadWordLoop:
 	movl	$CPU_DC_TAG, %ecx
 	wrmsr
 
-	/* Switch to next line. Lines are in Bits10:4. */
+	/* Switch to next line. Lines are in bits 10:4. */
 	/* When index is crossing 0x7F -> 0x80 writing a RSVD bit as 0x80 is
 	 * not a valid CL anymore!
 	 */
 	movl	$CPU_DC_INDEX, %ecx
 	rdmsr
+
 	/* TODO: Probably would be more elegant to calculate this from
 	 * counter var edi...
 	 */
@@ -325,7 +327,8 @@ DCacheSetup_quadWordLoop:
 	movl	$CPU_DC_INDEX, %ecx
 	rdmsr
 	addl	$0x01, %eax
-	/* Let's be sure: reset line index Bits10:4. */
+
+	/* Let's be sure: reset line index bits 10:4. */
 	andl	$0xFFFFF80F, %eax
 	wrmsr
 
@@ -371,6 +374,7 @@ DCacheSetupGood:
 	 */
 	/* Clear the cache, the following code from crt0.S.lb will setup
 	 * a new stack.
+	 * TODO: There is no crt0.S.lb (anymore?).
 	 */
 	wbinvd
 
@@ -387,6 +391,7 @@ DCacheSetupGood:
 lout:
 	/* Restore the BIST result. */
 	movl	%ebp, %eax
+
 	/* We need to set ebp? No need. */
 	movl	%esp, %ebp
 	pushl	%eax		/* BIST */
@@ -394,40 +399,43 @@ lout:
 	/* We will not go back. */
 
 fixed_mtrr_msr:
-	.long   0x250, 0x258, 0x259
-	.long   0x268, 0x269, 0x26A
-	.long   0x26B, 0x26C, 0x26D
-	.long   0x26E, 0x26F
+	.long	0x250, 0x258, 0x259
+	.long	0x268, 0x269, 0x26A
+	.long	0x26B, 0x26C, 0x26D
+	.long	0x26E, 0x26F
 var_mtrr_msr:
-	.long   0x200, 0x201, 0x202, 0x203
-	.long   0x204, 0x205, 0x206, 0x207
-	.long   0x208, 0x209, 0x20A, 0x20B
-	.long   0x20C, 0x20D, 0x20E, 0x20F
-	.long   0x000 /* NULL, end of table */
+	.long	0x200, 0x201, 0x202, 0x203
+	.long	0x204, 0x205, 0x206, 0x207
+	.long	0x208, 0x209, 0x20A, 0x20B
+	.long	0x20C, 0x20D, 0x20E, 0x20F
+	.long	0x000 /* NULL, end of table */
 
-# Reset vector.
+/* Reset vector. */
 
 /*
- * RVECTOR: size of reset vector, default is 0x10
- * RESRVED: size of vpd code, default is 0xf0
- * BOOTBLK: size of bootblock code, default is 0x1f00 (8k-256b)
+ * RVECTOR: Size of reset vector, default is 0x10.
+ * RESRVED: Size of vpd code, default is 0xf0.
+ * BOOTBLK: Size of bootblock code, default is 0x1f00 (8k-256b).
  */
 
 SEGMENT_SIZE = 0x10000
 RVECTOR      = 0x00010
 
-# Due to YET ANOTHER BUG in GNU bintools, you can NOT have a code16 here.
-# I think we should leave it this way forever, as the bugs come and
-# go -- and come again.
-#	.code16
-#	.section ".rom.text"
+/* Due to YET ANOTHER BUG in GNU bintools, you can NOT have a code16 here.
+ * I think we should leave it this way forever, as the bugs come and
+ * go -- and come again.
+ *
+ *	.code16
+ *	.section ".rom.text"
+ */
 .section ".reset", "ax"
 	.globl _resetjump
 _resetjump:
 	/* GNU bintools bugs again. This jumps to stage0 - 2. Sigh. */
-#	jmp _stage0
-	.byte  0xe9
-	.int   _stage0 - ( . + 2 )
+	/* jmp _stage0 */
+	.byte	0xe9
+	.int	_stage0 - ( . + 2 )
+
 	/* Note: The above jump is hand coded to work around bugs in binutils.
 	 * 5 bytes are used for a 3 byte instruction. This works because x86
 	 * is little endian and allows us to use supported 32 bit relocations
@@ -436,8 +444,8 @@ _resetjump:
 	 */
 .byte	0
 
-# Date? ID string? We might want to put something else in here.
+/* Date? ID string? We might want to put something else in here. */
 .ascii DATE
 
-# Checksum.
-#.word	0
+/* Checksum. */
+/* .word 0 */

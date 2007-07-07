@@ -22,7 +22,7 @@
 # Always add to variables, as there could be more than one Super I/O.
 STAGE2_CHIPSET_OBJ += $(obj)/superio/winbond/w83627hf/superio.o
 
-$(obj)/superio/winbond/w83627hf/%.o: $(src)/superio/winbond/w83627hf/%.c
+$(obj)/superio/winbond/w83627hf/%.o: $(src)/superio/winbond/w83627hf/%.c $(obj)/statictree.h
 	$(Q)mkdir -p $(obj)/superio/winbond/w83627hf/
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@

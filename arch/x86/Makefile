@@ -95,7 +95,7 @@ STAGE0_OBJ := $(patsubst %,$(obj)/lib/%,$(STAGE0_LIB_OBJ)) \
 	      $(patsubst %,$(obj)/arch/x86/%,$(STAGE0_CAR_OBJ)) \
 		$(STAGE0_MAINBOARD_OBJ)
 
-$(obj)/stage0.init: $(STAGE0_OBJ)
+$(obj)/stage0.o $(obj)/stage0.init: $(STAGE0_OBJ)
 	$(Q)# We need to be careful. If stage0.o gets bigger than
 	$(Q)# 0x4000 - 0x100, we will end up with a 4 gig file.
 	$(Q)# I wonder if that behavior is on purpose.

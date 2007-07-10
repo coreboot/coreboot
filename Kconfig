@@ -67,10 +67,26 @@ source arch/Kconfig
 source lib/Kconfig
 source device/Kconfig
 
-# These are used for internal purposes only.
-source northbridge/Kconfig
-source southbridge/Kconfig
-source superio/Kconfig
+# These are used for internal purposes only:
+
+# Northbridges:
+config NORTHBRIDGE_AMD_GEODELX
+	boolean
+config NORTHBRIDGE_INTEL_I440BXEMULATION
+	boolean
+
+# Southbridges:
+config SOUTHBRIDGE_AMD_CS5536
+	boolean
+config SOUTHBRIDGE_INTEL_I82371EB
+	boolean
+
+# Super I/Os:
+config SUPERIO_WINBOND_W83627HF
+	boolean
+
+# Source all northbridge/southbridge/superio Kconfig files:
+source northbridge/intel/i440bxemulation/Kconfig
 
 menu "Payload"
 

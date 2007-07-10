@@ -333,10 +333,10 @@ int smbus_read_byte(u16 device, u8 address)
 /**
  * Read a byte from the SPD. 
  *
- * For this chip, that is really just saying 'read a byte from smbus'.
- * So we use smbus_read_byte. Nota Bene: leave this here as a function 
+ * For this chip, that is really just saying 'read a byte from SMBus'.
+ * So we use smbus_read_byte(). Nota Bene: leave this here as a function 
  * rather than a #define in an obscure location. This function is called 
- * only a few dozen times, and it not performance critical. 
+ * only a few dozen times, and it's not performance critical. 
  *
  * @param device The device.
  * @param address The address.

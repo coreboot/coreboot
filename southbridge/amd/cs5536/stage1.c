@@ -41,11 +41,12 @@
  */
 void cs5536_setup_extmsr(void)
 {
-	struct msr  msr;
+	struct msr msr;
 
 	/* Forward MSR access to CS5536_GLINK_PORT_NUM to CS5536_DEV_NUM. */
 	msr.hi = msr.lo = 0x00000000;
 
+	/* TODO: unsigned char -> u8? */
 #if CS5536_GLINK_PORT_NUM <= 4
 	msr.lo = CS5536_DEV_NUM <<
 	    (unsigned char)((CS5536_GLINK_PORT_NUM - 1) * 8);
@@ -74,7 +75,7 @@ void cs5536_setup_idsel(void)
  */
 void cs5536_usb_swapsif(void)
 {
-	struct msr  msr;
+	struct msr msr;
 
 	msr = rdmsr(USB1_SB_GLD_MSR_CAP + 0x5);
 
@@ -97,7 +98,7 @@ void cs5536_usb_swapsif(void)
  */
 void cs5536_setup_iobase(void)
 {
-	struct msr  msr;
+	struct msr msr;
 
 	/* Setup LBAR for SMBus controller. */
 	msr.hi = 0x0000f001;
@@ -126,16 +127,17 @@ void cs5536_setup_iobase(void)
 }
 
 /**
- * Power Button Setup.
+ * Power button setup.
  *
  * Setup GPIO24, it is the external signal for CS5536 vsb_work_aux which
- * controls all voltage rails except Vstandby & Vmem. We need to enable,
+ * controls all voltage rails except Vstandby & Vmem. We need to enable
  * OUT_AUX1 and OUTPUT_ENABLE in this order.
  *
  * If GPIO24 is not enabled then soft-off will not work.
  */
 void cs5536_setup_power_button(void)
 {
+	/* TODO: Should be a #define? */
 	outl(0x40020000, PMS_IO_BASE + 0x40);
 	outl(GPIOH_24_SET, GPIO_IO_BASE + GPIOH_OUT_AUX1_SELECT);
 	outl(GPIOH_24_SET, GPIO_IO_BASE + GPIOH_OUTPUT_ENABLE);
@@ -154,16 +156,12 @@ void cs5536_setup_smbus_gpio(void)
 	/* Setup GPIO pins 14/15 for SDA/SCL. */
 	val = GPIOL_15_SET | GPIOL_14_SET;
 
-	/* Output Enable */
+	/* Output AUX1 + enable */
 	outl(val, GPIO_IO_BASE + GPIOL_OUT_AUX1_SELECT);
-
-	/* Output AUX1 */
 	outl(val, GPIO_IO_BASE + GPIOL_OUTPUT_ENABLE);
 
-	/* Input Enable */
+	/* Input AUX1 + enable */
 	outl(val, GPIO_IO_BASE + GPIOL_IN_AUX1_SELECT);
-
-	/* Input AUX1 */
 	outl(val, GPIO_IO_BASE + GPIOL_INPUT_ENABLE);
 }
 
@@ -174,21 +172,21 @@ void cs5536_setup_smbus_gpio(void)
  */
 void cs5536_disable_internal_uart(void)
 {
-	struct msr  msr;
+	struct msr msr;
 
 	/* The UARTs default to enabled.
 	 * Disable and reset them and configure them later (SIO init).
 	 */
 	msr = rdmsr(MDD_UART1_CONF);
-	msr.lo = 1;		// reset
+	msr.lo = 1;			/* Reset */
 	wrmsr(MDD_UART1_CONF, msr);
-	msr.lo = 0;		// disabled
+	msr.lo = 0;			/* Disable */
 	wrmsr(MDD_UART1_CONF, msr);
 
 	msr = rdmsr(MDD_UART2_CONF);
-	msr.lo = 1;		// reset
+	msr.lo = 1;			/* Reset */
 	wrmsr(MDD_UART2_CONF, msr);
-	msr.lo = 0;		// disabled
+	msr.lo = 0;			/* Disable */
 	wrmsr(MDD_UART2_CONF, msr);
 }
 
@@ -201,7 +199,7 @@ void cs5536_disable_internal_uart(void)
  */
 void cs5536_setup_cis_mode(void)
 {
-	struct msr  msr;
+	struct msr msr;
 
 	/* Setup CPU interface serial to mode B to match CPU. */
 	msr = rdmsr(GLPCI_SB_CTRL);
@@ -211,16 +209,16 @@ void cs5536_setup_cis_mode(void)
 }
 
 /**
- * Enable the on chip UART.
+ * Enable the on-chip UART.
  *
  * See page 412 of the AMD Geode CS5536 Companion Device data book.
  */
 void cs5536_setup_onchipuart(void)
 {
-	struct msr  msr;
+	struct msr msr;
 
 	/* Setup early for polling only mode.
-	 * 1. Eanble GPIO 8 to OUT_AUX1, 9 to IN_AUX1.
+	 * 1. Enable GPIO 8 to OUT_AUX1, 9 to IN_AUX1.
 	 *        GPIO LBAR + 0x04, LBAR + 0x10, LBAR + 0x20, LBAR + 34
 	 * 2. Enable UART I/O space in MDD.
 	 *        MSR 0x51400014 bit 18:16
@@ -258,7 +256,7 @@ void cs5536_setup_onchipuart(void)
 /**
  * Board setup.
  *
- * Known to work on the AMD Norwich and DIGITIAL-LOGIC boards.
+ * Known to work on the AMD Norwich and Advanced Digital Logic boards.
  *
  * The extmsr and cis_mode are common for sure. The RSTPLL check is mandatory.
  * IDSEL of course is required, so the chip appears in PCI config space,
@@ -276,7 +274,7 @@ void cs5536_setup_onchipuart(void)
  */
 void cs5536_stage1(void)
 {
-	struct msr  msr;
+	struct msr msr;
 
 	/* Note: you can't do prints in here in most cases, and we don't want
 	 * to hang on serial, so they are commented out.

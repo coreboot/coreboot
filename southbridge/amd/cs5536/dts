@@ -27,7 +27,7 @@
 	/* LPC IRQ polarity. Each bit is an IRQ 0-15. */
 	lpc_serirq_polarity = "0";
 
-	/* 0:Continuous 1:Quiet */
+	/* 0:continuous 1:quiet */
 	lpc_serirq_mode = "0";
 
 	/* GPIO(0-0x20) for INT D:C:B:A, 0xFF=none. See virtual PIC spec. */

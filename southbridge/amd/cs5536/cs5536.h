@@ -441,7 +441,7 @@
 #define FLASH_IO_128B			0x0000FF80
 #define FLASH_IO_256B			0x0000FF00
 
-/* function prototypes */
+/* Function prototypes */
 void cs5536_setup_extmsr(void);
 void cs5536_setup_idsel(void);
 void cs5536_usb_swapsif(void);
@@ -453,5 +453,4 @@ void cs5536_setup_cis_mode(void);
 void cs5536_setup_onchipuart(void);
 void cs5536_stage1(void);
 
-
-#endif				/* SOUTHBRIDGE_AMD_CS5536_CS5536_H */
+#endif /* SOUTHBRIDGE_AMD_CS5536_CS5536_H */

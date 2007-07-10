@@ -19,10 +19,14 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
+ifeq ($(CONFIG_SOUTHBRIDGE_AMD_CS5536),y)
+
 STAGE2_CHIPSET_OBJ += $(obj)/southbridge/amd/cs5536/cs5536.o
 
-$(obj)/southbridge/amd/cs5536/%.o: $(src)/southbridge/amd/cs5536/%.c $(obj)/statictree.h
+$(obj)/southbridge/amd/cs5536/%.o: $(src)/southbridge/amd/cs5536/%.c \
+				   $(obj)/statictree.h
 	$(Q)mkdir -p $(obj)/southbridge/amd/cs5536/
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
 
+endif

@@ -19,6 +19,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
+ifeq ($(CONFIG_NORTHBRIDGE_INTEL_I440BXEMULATION),y)
+
 STAGE2_CHIPSET_OBJ += $(obj)/northbridge/intel/i440bxemulation/i440bx.o
 
 $(obj)/northbridge/intel/i440bxemulation/%.o: $(src)/northbridge/intel/i440bxemulation/%.c $(obj)/statictree.h
@@ -26,3 +28,4 @@ $(obj)/northbridge/intel/i440bxemulation/%.o: $(src)/northbridge/intel/i440bxemu
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
 
+endif

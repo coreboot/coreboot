@@ -109,9 +109,9 @@ CFLAGS += -nostdinc -isystem `$(CC) -print-file-name=include`
 include lib/Makefile
 include device/Makefile
 include mainboard/$(MAINBOARDDIR)/Makefile
-include northbridge/Makefile
-include southbridge/Makefile
-include superio/Makefile
+include northbridge/*/*/Makefile
+include southbridge/*/*/Makefile
+include superio/*/*/Makefile
 include arch/$(ARCH)/Makefile
 
 endif

@@ -63,7 +63,7 @@ config BEEPS
 endmenu
 
 source mainboard/Kconfig
-source arch/Kconfig
+source arch/x86/Kconfig
 source lib/Kconfig
 source device/Kconfig
 

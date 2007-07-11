@@ -1,8 +1,6 @@
 /*
  * This file is part of the LinuxBIOS project.
  *
- * Copyright (C) 2006 Indrek Kruusa <indrek.kruusa@artecdesign.ee>
- * Copyright (C) 2006 Ronald G. Minnich <rminnich@gmail.com>
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -31,42 +29,33 @@
 #include <amd_geodelx.h>
 #include <spd.h>
 
+static struct msrinit {
+	u32 msrnum;
+	struct msr msr;
+} msr_table[] = {
+  /* Setup access to the cache for under 1MB. */
+  {CPU_RCONF_DEFAULT, {.hi = 0x24fffc02,.lo = 0x1000A000}}, // 0x00000-0xA0000
+  {CPU_RCONF_A0_BF,   {.hi = 0x00000000,.lo = 0x00000000}}, // 0xA0000-0xBFFFF
+  {CPU_RCONF_C0_DF,   {.hi = 0x00000000,.lo = 0x00000000}}, // 0xC0000-0xDFFFF
+  {CPU_RCONF_E0_FF,   {.hi = 0x00000000,.lo = 0x00000000}}, // 0xE0000-0xFFFFF
+
+  /* Setup access to the cache for under 640KB. */
+  {MSR_GLIU0_BASE1,   {.hi = 0x20000000,.lo = 0x000fff80}}, // 0x00000-0x7FFFF
+  {MSR_GLIU0_BASE2,   {.hi = 0x20000000,.lo = 0x080fffe0}}, // 0x80000-0x9FFFF
+  {MSR_GLIU1_BASE1,   {.hi = 0x20000000,.lo = 0x000fff80}}, // 0x00000-0x7FFFF
+  {MSR_GLIU1_BASE2,   {.hi = 0x20000000,.lo = 0x080fffe0}}, // 0x80000-0x9FFFF
+};
+
 /**
  * Set up Geode LX registers for sane behaviour.
  *
- * Set all low memory (under 1MB) to write back. Do some setup for Cache
- * as Ram (CAR) as well.
+ * Set all low memory (under 1MB) to write-back cacheable. Do some setup for
+ * Cache-as-RAM (CAR) as well. Note: The memory controller is not set up, yet.
  */
 void geodelx_msr_init(void)
 {
-	struct msr msr;
+	int i;
 
-	/* Setup access to the cache for under 1MB. */
-	msr.hi = 0x24fffc02;
-	msr.lo = 0x1000A000;	/* 0-A0000 write back */
-	wrmsr(CPU_RCONF_DEFAULT, msr);
-
-	msr.hi = 0x0;		/* write back */
-	msr.lo = 0x0;
-	wrmsr(CPU_RCONF_A0_BF, msr);
-	wrmsr(CPU_RCONF_C0_DF, msr);
-	wrmsr(CPU_RCONF_E0_FF, msr);
-
-	/* Setup access to the cache for under 640K. */
-	/* Note: Memory controller not setup yet. */
-	msr.hi = 0x20000000;
-	msr.lo = 0x000fff80;	/* 0-0x7FFFF */
-	wrmsr(MSR_GLIU0_BASE1, msr);
-
-	msr.hi = 0x20000000;
-	msr.lo = 0x080fffe0;	/* 0x80000-0x9FFFF */
-	wrmsr(MSR_GLIU0_BASE2, msr);
-
-	msr.hi = 0x20000000;
-	msr.lo = 0x000fff80;	/* 0-0x7FFFF */
-	wrmsr(MSR_GLIU1_BASE1, msr);
-
-	msr.hi = 0x20000000;
-	msr.lo = 0x080fffe0;	/* 0x80000-0x9FFFF */
-	wrmsr(MSR_GLIU0_BASE2, msr);
+	for (i = 0; i < ARRAY_SIZE(msr_table); i++)
+		wrmsr(msr_table[i].msrnum, msr_table[i].msr);
 }

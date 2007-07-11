@@ -362,6 +362,27 @@ static void set_cas(u8 dimm0, u8 dimm1)
 	wrmsr(MC_CF8F_DATA, msr);
 }
 
+static inline void helper_spd(u8 dimm0, u8 dimm1, u8 addr, u8 *spd0, u8 *spd1)
+{
+	*spd0 = smbus_read_byte(dimm0, addr);
+	if (*spd0 == 0xFF)
+		*spd0 = 0;
+	*spd1 = smbus_read_byte(dimm1, addr);
+	if (*spd1 == 0xFF)
+		*spd1 = 0;
+	if (*spd0 < *spd1)
+		*spd0 = *spd1;
+}
+
+static inline void helper_calc(u8 *spd0, u8 *spd1, u32 memspeed)
+{
+	/* (ns/(1/MHz) = (us*MHZ)/1000 = clocks/1000 = clocks) */
+	*spd1 = ((*spd0 >> 2) * memspeed) / 1000;
+	if ((((*spd0 >> 2) * memspeed) % 1000)) {
+		++(*spd1);
+	}
+}
+
 /**
  * Set latencies for DRAM.
  *
@@ -382,70 +403,27 @@ static void set_latencies(u8 dimm0, u8 dimm1)
 
 	/* MC_CF8F setup */
 	/* tRAS */
-	spd_byte0 = smbus_read_byte(dimm0, SPD_tRAS);
-	if (spd_byte0 == 0xFF)
-		spd_byte0 = 0;
-	spd_byte1 = smbus_read_byte(dimm1, SPD_tRAS);
-	if (spd_byte1 == 0xFF)
-		spd_byte1 = 0;
-	if (spd_byte0 < spd_byte1)
-		spd_byte0 = spd_byte1;
-
+	helper_spd(dimm0, dimm1, SPD_tRAS, &spd_byte0, &spd_byte1);
 	/* (ns/(1/MHz) = (us*MHZ)/1000 = clocks/1000 = clocks) */
+	/* TODO: This calculation is a bit different. On purpose or bug? */
 	spd_byte1 = (spd_byte0 * memspeed) / 1000;
 	if (((spd_byte0 * memspeed) % 1000))
 		++spd_byte1;
 	dimm_setting |= spd_byte1 << CF8F_LOWER_ACT2PRE_SHIFT;
 
 	/* tRP */
-	spd_byte0 = smbus_read_byte(dimm0, SPD_tRP);
-	if (spd_byte0 == 0xFF)
-		spd_byte0 = 0;
-	spd_byte1 = smbus_read_byte(dimm1, SPD_tRP);
-	if (spd_byte1 == 0xFF)
-		spd_byte1 = 0;
-	if (spd_byte0 < spd_byte1)
-		spd_byte0 = spd_byte1;
-
-	/* (ns/(1/MHz) = (us*MHZ)/1000 = clocks/1000 = clocks) */
-	spd_byte1 = ((spd_byte0 >> 2) * memspeed) / 1000;
-	if ((((spd_byte0 >> 2) * memspeed) % 1000)) {
-		++spd_byte1;
-	}
+	helper_spd(dimm0, dimm1, SPD_tRP, &spd_byte0, &spd_byte1);
+	helper_calc(&spd_byte0, &spd_byte1, memspeed);
 	dimm_setting |= spd_byte1 << CF8F_LOWER_PRE2ACT_SHIFT;
 
 	/* tRCD */
-	spd_byte0 = smbus_read_byte(dimm0, SPD_tRCD);
-	if (spd_byte0 == 0xFF)
-		spd_byte0 = 0;
-	spd_byte1 = smbus_read_byte(dimm1, SPD_tRCD);
-	if (spd_byte1 == 0xFF)
-		spd_byte1 = 0;
-	if (spd_byte0 < spd_byte1)
-		spd_byte0 = spd_byte1;
-
-	/* (ns/(1/MHz) = (us*MHZ)/1000 = clocks/1000 = clocks) */
-	spd_byte1 = ((spd_byte0 >> 2) * memspeed) / 1000;
-	if ((((spd_byte0 >> 2) * memspeed) % 1000)) {
-		++spd_byte1;
-	}
+	helper_spd(dimm0, dimm1, SPD_tRCD, &spd_byte0, &spd_byte1);
+	helper_calc(&spd_byte0, &spd_byte1, memspeed);
 	dimm_setting |= spd_byte1 << CF8F_LOWER_ACT2CMD_SHIFT;
 
 	/* tRRD */
-	spd_byte0 = smbus_read_byte(dimm0, SPD_tRRD);
-	if (spd_byte0 == 0xFF)
-		spd_byte0 = 0;
-	spd_byte1 = smbus_read_byte(dimm1, SPD_tRRD);
-	if (spd_byte1 == 0xFF)
-		spd_byte1 = 0;
-	if (spd_byte0 < spd_byte1)
-		spd_byte0 = spd_byte1;
-
-	/* (ns/(1/MHz) = (us*MHZ)/1000 = clocks/1000 = clocks) */
-	spd_byte1 = ((spd_byte0 >> 2) * memspeed) / 1000;
-	if ((((spd_byte0 >> 2) * memspeed) % 1000)) {
-		++spd_byte1;
-	}
+	helper_spd(dimm0, dimm1, SPD_tRRD, &spd_byte0, &spd_byte1);
+	helper_calc(&spd_byte0, &spd_byte1, memspeed);
 	dimm_setting |= spd_byte1 << CF8F_LOWER_ACT2ACT_SHIFT;
 
 	/* tRC = tRP + tRAS */
@@ -461,14 +439,7 @@ static void set_latencies(u8 dimm0, u8 dimm1)
 
 	/* MC_CF1017 setup */
 	/* tRFC */
-	spd_byte0 = smbus_read_byte(dimm0, SPD_tRFC);
-	if (spd_byte0 == 0xFF)
-		spd_byte0 = 0;
-	spd_byte1 = smbus_read_byte(dimm1, SPD_tRFC);
-	if (spd_byte1 == 0xFF)
-		spd_byte1 = 0;
-	if (spd_byte0 < spd_byte1)
-		spd_byte0 = spd_byte1;
+	helper_spd(dimm0, dimm1, SPD_tRFC, &spd_byte0, &spd_byte1);
 
 	if (spd_byte0) {
 		/* (ns/(1/MHz) = (us*MHZ)/1000 = clocks/1000 = clocks) */

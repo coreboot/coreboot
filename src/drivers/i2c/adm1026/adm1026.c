@@ -8,7 +8,7 @@
 #include <cpu/x86/msr.h>
 #include "chip.h"
 
-#define ADM1026_DEVICE 0x2c /* 0x2e or 0x2d */
+#define ADM1026_DEVICE 0x2d /* Either 0x2c or 0x2d or 0x2e */
 #define ADM1026_REG_CONFIG1 0x00
 #define CFG1_MONITOR     0x01
 #define CFG1_INT_ENABLE  0x02
@@ -20,6 +20,8 @@
 #define CFG1_RESET       0x80
 #define ADM1026_REG_CONFIG2 0x01
 #define ADM1026_REG_CONFIG3 0x07
+
+static void adm1026_enable_monitoring(device_t dev);
 
 static void adm1026_init(device_t dev)
 {

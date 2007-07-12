@@ -1,0 +1,255 @@
+.\"***************************************************************************\
+.\" lxbios.1
+.\" $Id: lxbios.1,v 1.2 2005/12/16 22:45:49 dsp_llnl Exp $
+.\"***************************************************************************
+.\"  Copyright (C) 2002, 2003 The Regents of the University of California.
+.\"  Produced at the Lawrence Livermore National Laboratory.
+.\"  Written by David S. Peterson <dsp@llnl.gov> <dave_peterson@pobox.com>.
+.\"  UCRL-CODE-2003-012
+.\"  All rights reserved.
+.\"
+.\"  This file is part of lxbios, a utility for reading/writing LinuxBIOS
+.\"  parameters and displaying information from the LinuxBIOS table.
+.\"  For details, see <http://www.llnl.gov/linux/lxbios/>.
+.\"
+.\"  Please also read the file DISCLAIMER which is included in this software
+.\"  distribution.
+.\"
+.\"  This program is free software; you can redistribute it and/or modify it
+.\"  under the terms of the GNU General Public License (as published by the
+.\"  Free Software Foundation) version 2, dated June 1991.
+.\"
+.\"  This program is distributed in the hope that it will be useful, but
+.\"  WITHOUT ANY WARRANTY; without even the IMPLIED WARRANTY OF
+.\"  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the terms and
+.\"  conditions of the GNU General Public License for more details.
+.\"
+.\"  You should have received a copy of the GNU General Public License along
+.\"  with this program; if not, write to the Free Software Foundation, Inc.,
+.\"  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
+.\"***************************************************************************/
+.TH LXBIOS 1 "December 2005" Linux
+.SH NAME
+lxbios \- read/write LinuxBIOS-related information
+.SH SYNOPSIS
+.B "lxbios [OPTS] [-n] -r NAME"
+.br
+.B "lxbios [OPTS] -e NAME"
+.br
+.B "lxbios [OPTS] -a"
+.br
+.B "lxbios [OPTS] -w NAME=VALUE"
+.br
+.B "lxbios [OPTS] -p INPUT_FILE"
+.br
+.B "lxbios [OPTS] -i"
+.br
+.B "lxbios [OPTS] -c [VALUE]"
+.br
+.B "lxbios [OPTS] -l [ARG]"
+.br
+.B "lxbios [OPTS] -d"
+.br
+.B "lxbios [OPTS] -Y"
+.br
+.B "lxbios [OPTS] -b OUTPUT_FILE"
+.br
+.B "lxbios [OPTS] -B INPUT_FILE"
+.br
+.B "lxbios [OPTS] -x"
+.br
+.B "lxbios [OPTS] -X DUMPFILE"
+.br
+.B "lxbios [OPTS] -v"
+.br
+.B "lxbios [OPTS] -h"
+.SH DESCRIPTION
+.B "lxbios"
+is a utility for reading/writing LinuxBIOS parameters and displaying
+information from the LinuxBIOS table.
+
+The LinuxBIOS table resides in low physical memory.  It is created at boot
+time by LinuxBIOS, and contains various system information such as the type
+of mainboard in use.  It specifies locations in the CMOS (nonvolatile RAM)
+where the LinuxBIOS parameters are stored.
+
+This program is intended for x86-based systems that use LinuxBIOS.  For
+information about LinuxBIOS, see
+.br
+http://www.linuxbios.org/.
+.SH PARAMETERS
+.TP
+.B "[-n] -r NAME"
+Show the value of the LinuxBIOS parameter given by
+.B "NAME."
+If
+.B "-n"
+is specified, show only the value.  Otherwise show both parameter name and
+value.
+.TP
+.B "-e NAME"
+Show all possible values for parameter given by
+.B "NAME."
+.TP
+.B "-a"
+Show the names and values for all LinuxBIOS parameters.
+.TP
+.B "-w NAME=VALUE"
+Assign
+.B "VALUE"
+to LinuxBIOS parameter given by
+.B "NAME."
+.TP
+.B "-p INPUT_FILE"
+Assign values to LinuxBIOS parameters according to the contents of
+.B "INPUT_FILE."
+The format of this file is described below.
+.TP
+.B "-i"
+This is similar to the
+.B "-p"
+option, except that the contents of the input file are taken from standard
+input.
+.TP
+.B "-c [VALUE]"
+If
+.B "VALUE"
+is present then set the CMOS checksum for the LinuxBIOS parameters to
+.B "VALUE." 
+Otherwise, show the checksum value.
+.TP
+.B "-l [ARG]"
+If
+.B "ARG"
+is present then show information from the LinuxBIOS table as specified by
+.B "ARG."
+Otherwise show all possible values for
+.B "ARG."
+.TP
+.B "-d"
+Do a low-level dump of the LinuxBIOS table.
+.TP
+.B "-Y"
+Write CMOS layout information to standard output.  If redirected to a file,
+the layout information may be used as input for the
+.B "'-y LAYOUT_FILE'"
+option (see below).
+.TP
+.B "-b OUTPUT_FILE"
+Write the contents of CMOS memory to the binary file
+.B "OUTPUT_FILE."
+The first 14 bytes of
+.B "OUTPUT_FILE"
+do not contain actual CMOS data, and are always written as zeros.  This is
+because the first 14 bytes of the CMOS area do not contain CMOS memory.  These
+bytes are involved with the functioning of the real time clock.
+.TP
+.B "-B INPUT_FILE"
+Read binary data from
+.B "INPUT_FILE"
+and write the data to CMOS memory.  The first 14 bytes of
+.B "INPUT_FILE"
+are skipped and data is written to CMOS starting at the 15th byte of the CMOS
+area.  This is because the first 14 bytes of the CMOS area do not contain CMOS
+memory.  These bytes are involved with the functioning of the real time clock.
+.TP
+.B "-x"
+Show a hex dump of all CMOS data.  The first 14 bytes of the dump do not
+contain actual CMOS data, and are always shown as zeros.  This is because the
+first 14 bytes of the CMOS area do not contain CMOS memory.  These bytes are
+involved with the functioning of the real time clock.
+.TP
+.B "-X DUMPFILE"
+Read binary data from
+.B "DUMPFILE"
+(presumably a CMOS dumpfile created using the
+.B "-b OUTPUT_FILE"
+option) and show a hex dump of the data.
+.TP
+.B "-v"
+Show version information for this program.
+.TP
+.B "-h"
+Show a help message for this program.
+.SH "OPTIONS"
+In all cases above,
+.B "[OPTS]"
+evaluates to the following:
+
+.B "    [-y LAYOUT_FILE | -t]"
+
+The
+.B "'-y LAYOUT_FILE'"
+option tells lxbios to obtain CMOS layout information from the contents of
+.B "LAYOUT_FILE."
+Likewise, the
+.B "'-t'"
+option tells lxbios to obtain CMOS layout information from the CMOS option
+table (contained within the LinuxBIOS table).  If neither option is
+specified, the CMOS option table is used by default.
+.B "LAYOUT_FILE"
+follows the format of the
+.B "cmos.layout"
+files provided by LinuxBIOS.
+
+If the LinuxBIOS installed on your system was built without specifying
+.B "HAVE_OPTION_TABLE,"
+then the LinuxBIOS table will not contain a CMOS option table.  In this case,
+the
+.B "'-y LAYOUT_FILE'"
+option must be used.
+
+These two options are silently ignored when used in combination with other
+options (such as
+.B "-h,"
+for instance) for which they are not applicable.
+.SH FILE FORMAT
+For the
+.B "-p"
+option,
+.B "INPUT_FILE"
+must consist of a sequence of lines such that each line is either a blank
+line, a comment, or an assignment.  A blank line consists only of zero or
+more whitespace characters (spaces and tabs).  A comment is constructed as
+follows:
+
+.B "    [ws]#[text]"
+
+Here,
+.B "[ws]"
+indicates optional whitespace characters and
+.B "[text]"
+indicates optional text.  Blank lines and comments are both ignored.  An
+assignment is constructed as follows:
+
+.B "    [ws]NAME[ws]=[ws]VALUE[ws]"
+
+Here,
+.B "NAME"
+is the name of a LinuxBIOS parameter and
+.B "VALUE"
+is the value that will be assigned to
+.B "NAME."
+.B "VALUE"
+is allowed to contain whitespace characters, but it must begin and end with
+nonwhitespace characters.  Note that each comment must appear on a line by
+itself.  If you attempt to add a comment to the end of an assignment, then the
+comment will be interpreted as part of
+.B "VALUE."
+It is useful to observe that the output produced by both the
+.B "-a"
+and the
+.B "'[-n] NAME'"
+options (without
+.B "-n"
+specified) adheres to this file format.
+.SH BUGS
+This program does not implement any type of synchronization to ensure that
+different processes don't stomp on each other when trying to access the
+nonvolatile RAM simultaneously.  Therefore, corruption of the BIOS parameter
+values may occur if multiple instances of this program are executed
+concurrently.
+.SH AUTHORS
+David S. Peterson <dsp@llnl.gov> <dave_peterson@pobox.com>
+.br
+Stefan Reinauer <stepan@openbios.org>

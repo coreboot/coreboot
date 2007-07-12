@@ -1,0 +1,132 @@
+Mon Jan 23 16:00:00 PST 2006  David S. Peterson (dsp@llnl.gov)
+
+	Version 2.0.1
+
+	* Postpone most sanity checking of CMOS layout information until right
+	  before a CMOS read or write operation is attempted.  This fixes a
+	  problem discovered by Stefan Reinauer in which lxbios was failing on
+	  Opteron due to the existence of a "user_data" parameter that is 256
+	  bits long.  In general, postponing the sanity checks will make
+	  lxbios more adaptable to changes in how LinuxBIOS stores CMOS
+	  parameters.
+
+	* Merge fix from Stefan Reinauer that makes hex dumps look a bit
+	  nicer.
+
+	* Merge fix from Stefan Reinauer that allows lxbios to access CMOS
+	  memory beyond the first 128 bytes.
+
+Fri Dec 16 14:30:00 PST 2005  David S. Peterson (dsp@llnl.gov)
+
+	Version 2.0.0
+
+	* Added the following options:
+
+	      -Y
+		  Write CMOS layout information to standard output.
+
+	      -b OUTPUT_FILE
+		  Write the contents of CMOS memory to a binary file.
+
+	      -B INPUT_FILE
+		  Read binary data from file and write it to CMOS memory.
+
+	      -x
+		  Show a hex dump of all CMOS data.
+
+	      -X DUMPFILE
+		  Read binary data from a CMOS dumpfile and show a hex dump of
+		  the data.
+
+	  Thanks to Stefan Reinauer for suggesting the ideas for the "-Y",
+	  "-b OUTPUT_FILE", and "-B INPUT_FILE" options.
+
+	* Added support for reading/writing CMOS parameters between 1 and 64
+	  bits in size that are not necessarily aligned on byte boundaries.
+
+	* Reworked much of the code, cleaning up some ugly parts.
+
+	* Made a number of minor improvements.
+
+Wed Nov 30 16:30:00 PST 2005  David S. Peterson (dsp@llnl.gov)
+
+	Version 1.4.0
+
+	* Merge patch from Stefan Reinauer <stepan@openbios.org> that makes
+	  lxbios recognize the LB_TAG_OPTION_CHECKSUM entry placed in the
+	  LinuxBIOS table by newer versions of LinuxBIOS.
+
+	* Tweak formatting of code to facilitate merging future patches.
+
+	* Minor code cleanup.
+
+Fri Jun 25 18:30:00 PDT 2004  David S. Peterson (dsp@llnl.gov)
+
+	Version 1.3.2.
+
+	* Changed default_is_printable_fn to avoid problems displaying hex
+	  dumps.
+
+Thu Jun 10 14:00:00 PDT 2004  David S. Peterson (dsp@llnl.gov)
+
+	Version 1.3.1.
+
+	* Minor code cleanup.
+
+Fri Mar  7 18:00:00 PST 2003  David S. Peterson (dsp@llnl.gov)
+
+	Version 1.3.0.
+
+	* Added -y option that tells lxbios to get CMOS layout information
+	  from a file instead of from the CMOS option table.
+
+	* Modified command syntax so that -r flag is required for reading a
+	  single CMOS parameter.
+
+	* Fixed bug where CMOS checksum was being displayed with bytes
+	  reversed.
+
+Thu Dec  5 14:30:00 PST 2002  David S. Peterson (dsp@llnl.gov)
+
+	Version 1.2.3.
+
+	* Fixed bug where checksum was not being updated after changing CMOS
+	  parameter values.
+
+	* Added code to verify checksum when reading CMOS parameters.
+
+	* Modified program so that check_sum parameter is treated differently
+	  from other CMOS parameters.  Now, -c option must be used to
+	  read/write check_sum parameter.
+
+Thu Nov 14 15:15:00 PST 2002  David S. Peterson (dsp@llnl.gov)
+
+	Version 1.2.2.
+
+	* Shortened output of usage message.
+
+Mon Nov 11 18:00:00 PST 2002  David S. Peterson (dsp@llnl.gov)
+
+	Version 1.2.1.
+
+	* Fixed typo in man page.
+
+Mon Nov 11 10:00:00 PST 2002  David S. Peterson (dsp@llnl.gov)
+
+	Version 1.2.0.
+
+	* Added hex dump stuff.
+
+Fri Nov  8 17:00:00 PST 2002  David S. Peterson (dsp@llnl.gov)
+
+	Version 1.1.0.
+
+	* Added -l option for displaying entries from LinuxBIOS table.
+
+	* Added -d option for low-level dump of LinuxBIOS table.
+
+	* Improved code that searches for LinuxBIOS table.
+
+Wed Nov  6 09:30:00 PST 2002  David S. Peterson (dsp@llnl.gov)
+
+	Version 1.0.0.

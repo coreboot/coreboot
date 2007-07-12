@@ -19,15 +19,11 @@
  */
 
 #include <types.h>
-#include <lib.h>
 #include <console.h>
-#include <post_code.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <string.h>
 #include <msr.h>
-#include <io.h>
 #include <amd_geodelx.h>
 
 /* Here is programming for the various MSRs. */

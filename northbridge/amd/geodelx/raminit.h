@@ -18,6 +18,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef NORTHBRIDGE_AMD_GEODELX_RAMINIT_H
+#define NORTHBRIDGE_AMD_GEODELX_RAMINIT_H
+
+#include <types.h>
+
 void sdram_set_registers(void);
 void sdram_set_spd_registers(u8 dimm0, u8 dimm1);
 void sdram_enable(u8 dimm0, u8 dimm1);
+
+#endif /* NORTHBRIDGE_AMD_GEODELX_RAMINIT_H */

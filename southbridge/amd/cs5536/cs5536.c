@@ -21,13 +21,10 @@
 #include <lib.h>
 #include <console.h>
 #include <post_code.h>
-#include <device/device.h>
 #include <device/pci.h>
-#include <string.h>
 #include <msr.h>
-#include <io.h>
 #include <amd_geodelx.h>
-#include <cpu.h>
+#include <cpu.h>		// TODO: Move rtc_init() etc. to legacy.h
 #include <device/pci_ids.h>
 #include <statictree.h>
 #include "cs5536.h"

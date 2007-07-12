@@ -17,8 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include <console.h>
-#include <io.h>
+#include <types.h>
 #include <msr.h>
 #include <amd_geodelx.h>
 #include "cs5536.h"

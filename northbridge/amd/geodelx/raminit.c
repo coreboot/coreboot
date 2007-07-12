@@ -22,9 +22,6 @@
 #include <lib.h>
 #include <console.h>
 #include <post_code.h>
-#include <device/device.h>
-#include <device/pci.h>
-#include <string.h>
 #include <msr.h>
 #include <spd.h>
 #include <io.h>

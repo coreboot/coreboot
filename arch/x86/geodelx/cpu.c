@@ -29,7 +29,6 @@
  */
 
 #include <console.h>
-#include <string.h>
 #include <device/device.h>
 #include <lib.h>
 #include <io.h>
@@ -103,5 +102,6 @@ struct constructor geodelx_constructors[] = {
 		/* TODO: This is incorrect, these are _not_ PCI IDs! */
 		.u = {.pci = {.vendor = X86_VENDOR_AMD,.device = 0x05A2}}},
 	 .ops = &geodelx_cpuops},
+
 	{.ops = 0},
 };

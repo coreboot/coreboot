@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <types.h>
 #include <console.h>
 #include <io.h>
 #include "cs5536.h"

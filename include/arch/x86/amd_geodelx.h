@@ -25,6 +25,11 @@
 #ifndef CPU_AMD_LXDEF_H
 #define CPU_AMD_LXDEF_H
 
+#ifndef __ASSEMBLER__
+#include <types.h>
+#include <io.h>
+#endif
+
 #define CPU_ID_1_X				0x00000560	/* Stepping ID 1.x CPUbug fix to change it to 5A0 */
 #define CPU_ID_2_0				0x000005A1
 #define CPU_ID_3_0				0x000005A2

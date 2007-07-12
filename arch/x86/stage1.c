@@ -52,7 +52,11 @@ static void enable_rom(void)
 	post_code(0xf2);
 }
 
-void stage1_main(u32 bist)
+/*
+ * This function is called from assembler code whith its argument on the
+ * stack. Force the compiler to generate always correct code for this case.
+ */
+void __attribute__((stdcall)) stage1_main(u32 bist)
 {
 	int ret;
 	struct mem_file archive, result;

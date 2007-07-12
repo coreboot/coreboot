@@ -257,6 +257,10 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	memreset_setup();
 	sdram_initialize(nodes, ctrl);
 
+	/* Reset SMBus switches to access the ADM1026 */
+        smbus_send_byte(SMBUS_SWITCH1, 0x0);
+        smbus_send_byte(SMBUS_SWITCH2, 0x0);
+
 	post_cache_as_ram();
 
 }

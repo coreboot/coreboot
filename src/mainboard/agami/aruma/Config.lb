@@ -241,9 +241,7 @@ end
 
 dir /pc80
 
-if CONFIG_CHIP_NAME
-	config chip.h
-end
+config chip.h
 
 # config for agami/aruma
 chip northbridge/amd/amdk8/root_complex
@@ -323,42 +321,52 @@ chip northbridge/amd/amdk8/root_complex
 				device pci 1.1 on end
 				device pci 1.2 on end
 				device pci 1.3 on 
-					chip drivers/generic/generic
-						#phillips pca9545 smbus mux
-						device i2c 70 on 
-							# analog_devices adm1026	
-							chip drivers/generic/generic
-								device i2c 2c on end
+                                        chip drivers/i2c/i2cmux2 # pca9545 smbus mux
+                                                device i2c 71 on     #pca9545 channel0
+                                                        chip drivers/i2c/adm1026
+                                                                device i2c 2d on end
+                                                        end
+                                                end
+						device i2c 71 on     #pca9545 channel1
+                                                        chip drivers/generic/generic # fan board / pstray behind another mux
+                                                                device i2c 2d on end
+                                                        end
+                                                end
+                                        end
+                                        chip drivers/i2c/i2cmux2 # pca9543 smbus mux
+                                                device i2c 73 on     #pca9543 channel0
+							chip drivers/generic/generic #dimm 0-0-0
+								device i2c 50 on end
 							end
+							chip drivers/generic/generic #dimm 0-0-1
+								device i2c 51 on end
+							end 
+							chip drivers/generic/generic #dimm 0-1-0
+								device i2c 52 on end
+							end 
+							chip drivers/generic/generic #dimm 0-1-1
+								device i2c 53 on end
+							end 
 						end
-						device i2c 70 on end
-						device i2c 70 on end
-						device i2c 70 on end
+
+                                                device i2c 73 on     #pca9543 channel1
+							chip drivers/generic/generic #dimm 1-0-0
+								device i2c 50 on end 
+							end
+							chip drivers/generic/generic #dimm 1-0-1
+								device i2c 51 on end
+							end 
+							chip drivers/generic/generic #dimm 1-1-0
+								device i2c 52 on end
+							end 
+							chip drivers/generic/generic #dimm 1-1-1
+								device i2c 53 on end
+							end 
+						end
+					end # chip end
+					chip drivers/generic/generic # ICS950405AF
+						device i2c 69 on end
 					end
-#					chip drivers/generic/generic #dimm 0-0-0
-#						device i2c 50 on end
-#					end
-#					chip drivers/generic/generic #dimm 0-0-1
-#						device i2c 51 on end
-#					end 
-#					chip drivers/generic/generic #dimm 0-1-0
-#						device i2c 52 on end
-#					end 
-#					chip drivers/generic/generic #dimm 0-1-1
-#						device i2c 53 on end
-#					end 
-#					chip drivers/generic/generic #dimm 1-0-0
-#						device i2c 54 on end 
-#					end
-#					chip drivers/generic/generic #dimm 1-0-1
-#						device i2c 55 on end
-#					end 
-#					chip drivers/generic/generic #dimm 1-1-0
-#						device i2c 56 on end
-#					end 
-#					chip drivers/generic/generic #dimm 1-1-1
-#						device i2c 57 on end
-#					end 
 				end
 				device pci 1.5 off end
 				device pci 1.6 on end

@@ -93,6 +93,14 @@ default ROM_SIZE=524288
 # 256k
 default FALLBACK_SIZE=0x40000
 
+
+##
+## Set this.
+##
+
+default CONFIG_CHIP_NAME=1
+
+
 ##
 ## Build code for the fallback boot
 ##

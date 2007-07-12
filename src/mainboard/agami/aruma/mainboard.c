@@ -97,7 +97,7 @@ static unsigned int scan_root_bus(device_t root, unsigned int max)
 }
 #endif
 
-#if 0
+#if 1
 static void handle_smbus_error(int value, const char *msg)
 {
 	if (value >= 0) {
@@ -118,7 +118,7 @@ static void handle_smbus_error(int value, const char *msg)
 	}
 }
 
-#define ADM1026_DEVICE 0x2c /* 0x2e or 0x2d */
+#define ADM1026_DEVICE 0x2d /* 0x2e or 0x2c */
 #define ADM1026_REG_CONFIG1 0x00
 #define CFG1_MONITOR     0x01
 #define CFG1_INT_ENABLE  0x02
@@ -235,7 +235,7 @@ static void verify_cpu_voltages(device_t dev)
 		cpu_volts, delta);
 }
 
-#define SMBUS_MUX 0x70
+#define SMBUS_MUX 0x71
 
 static void do_verify_cpu_voltages(void)
 {
@@ -250,7 +250,7 @@ static void do_verify_cpu_voltages(void)
 	if (!smbus_dev) {
 		die("SMBUS controller not found\n");
 	}
-	
+
 	/* Find the smbus mux */
 	mux_path.type         = DEVICE_PATH_I2C;
 	mux_path.u.i2c.device = SMBUS_MUX;
@@ -309,31 +309,22 @@ static void mainboard_init(device_t dev)
 {
 	root_dev_init(dev);
 
-	do_verify_cpu_voltages();
+	printk_info("Initializing mainboard components... ");
+	// do_verify_cpu_voltages();
+	printk_info("ok\n");
 
 	printk_info("Initializing mainboard specific functions... ");
 	fixup_aruma();
 	printk_info("ok\n");
 }
 
-static struct device_operations mainboard_operations = {
-	.read_resources   = root_dev_read_resources,
-	.set_resources    = root_dev_set_resources,
-	.enable_resources = root_dev_enable_resources,
-	.init             = mainboard_init,
-#if !DEBUG
-	.scan_bus         = root_dev_scan_bus,
-#else
-	.scan_bus         = scan_root_bus,
-#endif
-	.enable           = 0,
-};
-
 static void enable_dev(struct device *dev)
 {
-	dev->ops = &mainboard_operations;
+	dev->ops->init = mainboard_init;
 }
+
 struct chip_operations mainboard_agami_aruma_ops = {
+	CHIP_NAME("AGAMI Aruma Mainboard")
 	.enable_dev = enable_dev, 
 };
 

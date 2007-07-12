@@ -181,7 +181,19 @@ static inline void disable_cache(void)
  */
 static inline void cpu_relax(void)
 {
-	__asm__ __volatile__("rep;nop" : : : "memory");
+	__asm__ __volatile__("rep; nop" : : : "memory");
+}
+
+/**
+ * Shut down the CPU.
+ *
+ * This function is '__attribute__((always_inline))' because it might be
+ * called before RAM is set up, thus pushing stuff on stack (for a function
+ * call) will not work.
+ */
+static inline __attribute__((always_inline)) void hlt(void)
+{
+	__asm__ __volatile__("hlt" : : : "memory");
 }
 
 /* Random other functions. These are not architecture-specific, except they

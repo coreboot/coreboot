@@ -1,5 +1,5 @@
 #include <types.h>
-#include <hlt.h>
+#include <cpu.h>
 #include <console.h>
 #include <uart8250.h>
 #include <stdarg.h>
@@ -57,13 +57,11 @@ void console_init(void)
 		" starting...\n";
 
 	printk(BIOS_INFO, console_test);
-
 }
 
 void die(const char *str)
 {
 	printk(BIOS_EMERG, str);
-	do {
+	while (1)
 		hlt();
-	} while (1);
 }

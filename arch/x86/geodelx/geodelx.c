@@ -25,7 +25,7 @@
 #include <console.h>
 #include <msr.h>
 #include <io.h>
-#include <hlt.h>
+#include <cpu.h>
 #include <amd_geodelx.h>
 #include <spd.h>
 #include <legacy.h>

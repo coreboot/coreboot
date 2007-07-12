@@ -118,7 +118,7 @@ static void handle_smbus_error(int value, const char *msg)
 	}
 }
 
-#define ADM1026_DEVICE 0x2d /* 0x2e or 0x2c */
+#define ADM1026_DEVICE 0x2d /* Either 0x2c, 0x2d or 0x2e. */
 #define ADM1026_REG_CONFIG1 0x00
 #define CFG1_MONITOR     0x01
 #define CFG1_INT_ENABLE  0x02

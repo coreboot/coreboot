@@ -240,6 +240,10 @@ void pnp_enable_devices(device_t base_dev, struct device_operations *ops,
 	
 	/* Setup the ops and resources on the newly allocated devices */
 	for(i = 0; i < functions; i++) {
+		/* Skip logical devices this Super I/O doesn't have. */
+		if (info[i].function == -1)
+			continue;
+
 		path.u.pnp.device = info[i].function;
 		dev = alloc_find_dev(base_dev->bus, &path);
 		

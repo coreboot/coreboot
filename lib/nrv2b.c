@@ -1,3 +1,4 @@
+#include <types.h>
 // This GETBIT is supposed to work on little endian 
 // 32bit systems. The algorithm will definitely need
 // some fixing on other systems, but it might not be
@@ -28,7 +29,8 @@
 #if ENDIAN == 0 && BITSIZE == 32
 #define GETBIT(bb, src, ilen) GETBIT_LE32(bb, src, ilen)
 #endif
-static unsigned long unrv2b(u8 * src, u8 * dst, unsigned long *ilen_p)
+
+unsigned long unrv2b(u8 *src, u8 *dst, unsigned long *ilen_p)
 {
 	unsigned long ilen = 0, olen = 0, last_m_off = 1;
 	u32 bb = 0;

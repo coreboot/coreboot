@@ -25,6 +25,8 @@
 #include <lib.h>
 #include <mc146818rtc.h>
 
+#define UNCOMPRESS_AREA 0x60000
+
 /* these prototypes should go into headers */
 void uart_init(void);
 void die(const char *msg);
@@ -230,13 +232,18 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 
 	ret = find_file(&archive, "normal/payload", &result);
 	if (ret) {
-		printk(BIOS_WARNING, "No such file '%s'.\n", "normal/payload");
+		printk(BIOS_ERR, "No such file '%s'.\n", "normal/payload");
 		die("FATAL: No payload found.\n");
 	}
+	ret = copy_file(&archive, "normal/payload", (void *)UNCOMPRESS_AREA);
+	if (ret) {
+		printk(BIOS_ERR, "'%s' found, but could not load it.\n", "normal/payload");
+		die("FATAL: No usable payload found.\n");
+	}
 
-	ret =  elfboot_mem(mem, result.start, result.len);
+	ret =  elfboot_mem(mem, (void *)UNCOMPRESS_AREA, result.reallen);
 
-	printk(BIOS_DEBUG, "elfboot_mem returns %d\n", ret);
+	printk(BIOS_ERR, "elfboot_mem returns %d\n", ret);
 
 	die ("FATAL: Last stage returned to LinuxBIOS.\n");
 }

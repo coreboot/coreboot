@@ -53,6 +53,8 @@ int find_file(struct mem_file *archive, char *filename, struct mem_file *result)
 		if (strcmp(fullname, filename) == 0) {
 			result->start = walk + ntohl(header->offset);
 			result->len = ntohl(header->len);
+			result->reallen = ntohl(header->reallen);
+			result->compression = ntohl(header->compression);
 			return 0;
 		}
 		// skip file
@@ -74,9 +76,31 @@ int copy_file(struct mem_file *archive, char *filename, void *where)
 		return 1;
 	}
 
-	memcpy(where, result.start, result.len);
-
-	return 0;
+	printk(BIOS_SPEW, "LAR: Compression algorithm #%i used\n", result.compression);
+	/* no compression */
+	if (result.compression == 0) {
+		memcpy(where, result.start, result.len);
+		return 0;
+	}
+#ifdef CONFIG_COMPRESSION_LZMA
+	/* lzma */
+	unsigned long ulzma(unsigned char * src, unsigned char * dst);
+	if (result.compression == 1) {
+		ulzma(result.start, where);
+		return 0;
+	}
+#endif
+#ifdef CONFIG_COMPRESSION_NRV2B
+	/* nrv2b */
+	unsigned long unrv2b(u8 * src, u8 * dst, unsigned long *ilen_p);
+	if (result.compression == 2) {
+		int tmp;
+		unrv2b(result.start, where, &tmp);
+		return 0;
+	}
+#endif
+	printk(BIOS_INFO, "LAR: Compression algorithm #%i not supported!\n", result.compression);
+	return 1;
 }
 
 int run_file(struct mem_file *archive, char *filename, void *where)

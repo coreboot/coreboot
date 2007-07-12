@@ -37,6 +37,27 @@ SILENT := >/dev/null 2>&1
 
 ROM_SIZE := $(shell expr $(CONFIG_LINUXBIOS_ROMSIZE_KB) \* 1024)
 
+LARFILES := nocompress:normal/initram normal/stage2 nocompress:normal/option_table
+ifneq ($(CONFIG_PAYLOAD_NONE),y)
+LARFILES += normal/payload
+endif
+
+DECOMPRESSORS :=
+ifeq ($(CONFIG_COMPRESSION_LZMA),y)
+DECOMPRESSORS += lzma.o
+endif
+ifeq ($(CONFIG_COMPRESSION_NRV2B),y)
+DECOMPRESSORS += nrv2b.o
+endif
+
+COMPRESSFLAG :=
+ifeq ($(CONFIG_DEFAULT_COMPRESSION_LZMA),y)
+COMPRESSFLAG := -C lzma
+endif
+ifeq ($(CONFIG_DEFAULT_COMPRESSION_NRV2B),y)
+COMPRESSFLAG := -C nrv2b
+endif
+
 $(obj)/linuxbios.rom: $(obj)/linuxbios.bootblock $(obj)/util/lar/lar lzma nrv2b $(obj)/linuxbios.initram $(obj)/linuxbios.stage2 $(obj)/option_table
 	$(Q)rm -rf $(obj)/lar.tmp
 	$(Q)mkdir $(obj)/lar.tmp
@@ -57,7 +78,9 @@ else
 	fi
 endif
 	$(Q)printf "  LAR     $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)cd $(obj)/lar.tmp && ../util/lar/lar -c ../linuxbios.rom . \
+	$(Q)cd $(obj)/lar.tmp && ../util/lar/lar $(COMPRESSFLAG) -c \
+		../linuxbios.rom \
+		$(LARFILES) \
 		-s $(ROM_SIZE) -b $(obj)/linuxbios.bootblock
 	$(Q)# QEMU wants bios.bin:
 	$(Q)# Run "qemu -L build/ -serial stdio -hda /dev/zero".
@@ -75,7 +98,7 @@ $(obj)/linuxbios.bootblock: $(obj)/linuxbios.vpd $(obj)/stage0.init
 #
 
 STAGE0_LIB_OBJ       = uart8250.o mem.o elfboot.o lar.o delay.o vtxprintf.o \
-		       vsprintf.o console.o
+		       vsprintf.o console.o $(DECOMPRESSORS)
 STAGE0_ARCH_X86_OBJ  = stage1.o serial.o archelfboot.o speaker.o \
 		       udelay_io.o mc146818rtc.o
 

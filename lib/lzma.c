@@ -7,9 +7,11 @@ Released under the GNU GPL
 */
 
 #include "lzmadecode.c"
+#include "string.h"
+#include "console.h"
 
 
-static unsigned long ulzma(unsigned char * src, unsigned char * dst)
+unsigned long ulzma(u8 *src, u8 *dst)
 {
 	unsigned char properties[LZMA_PROPERTIES_SIZE];
 	UInt32 outSize;

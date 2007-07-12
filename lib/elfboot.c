@@ -185,6 +185,8 @@ int elfboot_mem(struct lb_memory *mem, void *where, int size)
 			continue;
 		}
 		printk(BIOS_DEBUG, "Found ELF candidate at offset %d\n", i);
+			header_offset = i;
+			break;
 		/* Sanity check the elf header */
 		if ((ehdr->e_type == ET_EXEC) &&
 			elf_check_arch(ehdr) &&

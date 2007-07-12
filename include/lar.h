@@ -68,6 +68,8 @@ struct lar_header {
 struct mem_file {
 	void *start;
 	int len;
+	u32 reallen;
+	u32 compression;
 };
 
 /* Prototypes. */

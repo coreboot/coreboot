@@ -23,6 +23,7 @@
 #include <console.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_ids.h>
 #include <string.h>
 #include <keyboard.h>
 
@@ -40,19 +41,21 @@ static void setup_onboard(struct device *dev)
 }
 
 static struct device_operations qemuvga_pci_ops_dev = {
-	.constructor		 = default_device_constructor,
-	.phase3_scan		 = 0,
-	.phase4_read_resources	 = pci_dev_read_resources,
-	.phase4_set_resources	 = pci_dev_set_resources,
-	.phase4_enable_disable	 = setup_onboard,
-	.phase5_enable_resources = pci_dev_enable_resources,
-	.phase6_init		 = pci_dev_init,
-	.ops_pci		 = &pci_dev_ops_pci,
+	.constructor			= default_device_constructor,
+	.phase3_scan			= 0,
+	.phase4_read_resources		= pci_dev_read_resources,
+	.phase4_set_resources		= pci_dev_set_resources,
+	.phase4_enable_disable		= setup_onboard,
+	.phase5_enable_resources	= pci_dev_enable_resources,
+	.phase6_init			= pci_dev_init,
+	.ops_pci			= &pci_dev_ops_pci,
 };
 
 struct constructor qemuvga_constructors[] = {
 	{.id = {.type = DEVICE_ID_PCI,
-		.u = {.pci = {.vendor = 0x1013,.device = 0x00b8}}},
+		.u = {.pci = {.vendor = PCI_VENDOR_ID_CIRRUS,
+			      .device = PCI_DEVICE_ID_CIRRUS_5446}}},
 	 &qemuvga_pci_ops_dev},
+
 	{.ops = 0},
 };

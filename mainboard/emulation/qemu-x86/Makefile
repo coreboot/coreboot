@@ -19,11 +19,10 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
+STAGE0_MAINBOARD_OBJ := $(obj)/mainboard/$(MAINBOARDDIR)/stage1.o
 
-STAGE0_MAINBOARD_OBJ :=\
-		$(obj)/mainboard/$(MAINBOARDDIR)/stage1.o 
 #
-# VPD or SIP ROM or ... how does NVIDIA call it?
+# VPD or SIP ROM or... how does NVIDIA call it?
 # Some space to cope with dirty southbridge tricks.
 # Do we want to put our own stuff there, too?
 #
@@ -38,12 +37,13 @@ $(obj)/linuxbios.vpd:
 # The initram file is always uncompressed. It belongs into the mainboard
 # directory and is built from what was auto.c in v2.
 #
-INITRAM_OBJ =   $(obj)/mainboard/$(MAINBOARDDIR)/initram.o 
 
-$(obj)/linuxbios.initram: $(obj)/stage0.init $(obj)/stage0.o $(INITRAM_OBJ) 
+INITRAM_OBJ = $(obj)/mainboard/$(MAINBOARDDIR)/initram.o
+
+$(obj)/linuxbios.initram: $(obj)/stage0.init $(obj)/stage0.o $(INITRAM_OBJ)
 	$(Q)# initram links against stage0
 	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(LD) -R $(obj)/stage0.o -Ttext 0x80000 $(INITRAM_OBJ)  \
+	$(Q)$(LD) -R $(obj)/stage0.o -Ttext 0x80000 $(INITRAM_OBJ) \
 		--entry=main -o $(obj)/linuxbios.initram.o
 	$(Q)printf "  OBJCOPY $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(OBJCOPY) -O binary $(obj)/linuxbios.initram.o \
@@ -70,15 +70,15 @@ $(obj)/mainboard/$(MAINBOARDDIR)/option_table.c: $(obj)/util/options/build_opt_t
 	$(Q)mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)
 	$(Q)$(obj)/util/options/build_opt_tbl -b \
 		--config $(src)/mainboard/$(MAINBOARDDIR)/cmos.layout \
-		--option $(obj)/mainboard/$(MAINBOARDDIR)/option_table.c 
+		--option $(obj)/mainboard/$(MAINBOARDDIR)/option_table.c
 
 $(obj)/option_table: $(obj)/mainboard/$(MAINBOARDDIR)/option_table.o
 	$(Q)printf "  OBJCOPY $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(OBJCOPY) -O binary $< $@ 
+	$(Q)$(OBJCOPY) -O binary $< $@
 
-STAGE2_MAINBOARD_OBJ = vga.o 
+STAGE2_MAINBOARD_OBJ = vga.o
 
-STAGE2_CHIPSET_OBJ = 
+STAGE2_CHIPSET_OBJ =
 
 $(obj)/mainboard/$(MAINBOARDDIR)/%.o: $(src)/mainboard/$(MAINBOARDDIR)/%.c
 	$(Q)mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)

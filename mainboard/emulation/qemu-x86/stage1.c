@@ -17,9 +17,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* no printk allowed until hardware is ready; hardware is ready */
 /** 
- * start up hardware needed for stage1
+ * Start up hardware needed for stage1.
+ *
+ * No printk() allowed until hardware is ready; hardware is ready.
+ * TODO: Fix above comment? It's unclear.
  */
 void hardware_stage1(void)
 {

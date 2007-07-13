@@ -24,6 +24,7 @@
 #include <strings.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <errno.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -33,42 +34,82 @@
 
 static struct file *files = NULL;
 
-int mkdirp(const char *dirpath, mode_t mode)
+/**
+ * Create a new directory including any missing parent directories.
+ *
+ * NOTE: This function does not do complete path resolution as described in
+ * Linux path_resolution(2) and hence will fail for complex paths:
+ *
+ * e.g.: mkdirp_below("subdir", "subdir/../subdir/x", 0777);
+ *
+ * This call should create subdir/x, but since subdir/.. is outside subdir,
+ * the function returns an error.
+ *
+ * @param parent Return an error if a new directory would be created outside
+ * this directory. Pass "/" to allow new directories to be created anywhere.
+ * @param dirpath The new directory that should be created, the path can be
+ * either absolute or relative to the current working directory. (It is not
+ * relative to parent.)
+ * @param mode Permissions to use for newly created directories.
+ */
+int mkdirp_below(const char *parent, const char *dirpath, mode_t mode)
 {
-	char *pos, *currpath, *path;
-	char cwd[MAX_PATH];
-	int ret = 0;
+	int ret = -1;
+	size_t dirsep, parlen, sublen;
+	char c, *r, *path = NULL, *subdir, rpar[PATH_MAX], rsub[PATH_MAX];
+
+	if (!dirpath) {
+		fprintf(stderr, "mkdirp_below: No new directory specified\n");
+		goto done;
+	}
 
 	path = strdup(dirpath);
 	if (!path) {
-		fprintf(stderr, "Out of memory.\n");
-		exit(1);
+		perror("Duplicate new directory failed:");
+		goto done;
 	}
 
-	currpath = path;
+	if (NULL == realpath(parent, rpar)) {
+		fprintf(stderr, "realpath(%s) failed: %s\n", parent,
+			strerror(errno));
+		goto done;
+	}
+	parlen = strlen(rpar);
 
-	if (!getcwd(cwd, MAX_PATH)) {
+	for (subdir = path, dirsep = 0; subdir[dirsep]; subdir += dirsep) {
+		dirsep = strcspn(subdir, "/\\");
+		if (!dirsep) {
+			subdir++;
+			continue;
+		}
+
+		c = subdir[dirsep];
+		subdir[dirsep] = 0;
+		r = realpath(path, rsub);
+		sublen = strlen(rsub);
+		if (NULL == r) {
+			if(ENOENT != errno) {
+				fprintf(stderr, "realpath(%s) failed: %s\n",
+					path, strerror(errno));
+				goto done;
+			}
+		} else if (sublen < parlen || strncmp(rpar, rsub, parlen)) {
+			fprintf(stderr, "Abort: %s is outside %s\n", dirpath,
+				parent);
+			goto done;
+		}
+		if(-1 == mkdir(path, mode) && EEXIST != errno) {
+			fprintf(stderr, "mkdir(%s): %s\n", path,
+				strerror(errno));
+			goto done;
+		}
+		subdir[dirsep] = c;
+	}
+	ret = 0;
+
+done:
+	if (path)
 		free(path);
-		fprintf(stderr, "Error getting cwd.\n");
-		return -1;
-	}
-
-	do {
-		pos = index(currpath, '/');
-		if (pos)
-			*pos = 0;
-
-		/* printf("cp=%s\n", currpath); */
-		mkdir(currpath, mode);
-		ret = chdir(currpath);
-
-		if (pos)
-			currpath = pos + 1;
-	} while (pos && !ret && strlen(currpath));
-
-	chdir(cwd);
-	free(path);
-
 	return ret;
 }
 

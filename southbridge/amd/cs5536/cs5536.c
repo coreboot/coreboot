@@ -47,7 +47,6 @@ struct msrinit SB_MASTER_CONF_TABLE[] = {
 
 /* CS5536 clock gating */
 struct msrinit CS5536_CLOCK_GATING_TABLE[] = {
-	/* MSR                Setting */
 	{GLIU_SB_GLD_MSR_PM,  {.hi = 0,.lo = 0x000000004}},
 	{GLPCI_SB_GLD_MSR_PM, {.hi = 0,.lo = 0x000000005}},
 	{GLCP_SB_GLD_MSR_PM,  {.hi = 0,.lo = 0x000000004}},

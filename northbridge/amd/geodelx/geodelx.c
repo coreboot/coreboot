@@ -161,7 +161,7 @@ int sizeram(void)
 {
 	struct msr msr;
 	int sizem = 0;
-	unsigned short dimm;
+	u32 dimm;
 
 	/* Get the RAM size from the memory controller as calculated
 	 * and set by auto_size_dimm().
@@ -221,8 +221,10 @@ static void geodelx_northbridge_init(struct device *dev)
 	msr.hi |= 0x3;
 	msr.lo |= 0x30000;
 
-	printk(BIOS_DEBUG,"MSR 0x%08X is now 0x%08X:0x%08X\n", MSR_GLIU0_SHADOW, msr.hi, msr.lo);
-	printk(BIOS_DEBUG,"MSR 0x%08X is now 0x%08X:0x%08X\n", MSR_GLIU1_SHADOW, msr.hi, msr.lo);
+	printk(BIOS_DEBUG,"MSR 0x%08X is now 0x%08X:0x%08X\n",
+	       MSR_GLIU0_SHADOW, msr.hi, msr.lo);
+	printk(BIOS_DEBUG,"MSR 0x%08X is now 0x%08X:0x%08X\n",
+	       MSR_GLIU1_SHADOW, msr.hi, msr.lo);
 #endif
 }
 
@@ -380,12 +382,12 @@ static void geodelx_pci_domain_phase2(struct device *dev)
 
 	setup_realmode_idt();
 
-	printk(BIOS_DEBUG, "Before VSA:\n");
+	printk(BIOS_SPEW, "Before VSA:\n");
 	/* print_conf(); */
 #warning Not doing vsm bios -- linux will fail.
 	/* Do the magic stuff here, so prepare your tambourine ;) */
 	/* do_vsmbios(); */
-	printk(BIOS_DEBUG, "After VSA:\n");
+	printk(BIOS_SPEW, "After VSA:\n");
 	/* print_conf(); */
 
 #warning graphics_init is disabled.
@@ -399,6 +401,7 @@ static void geodelx_pci_domain_phase2(struct device *dev)
  *
  * @param dev The PCI domain device.
  * @param max Maximum number of devices to scan.
+ * @return TODO
  */
 static unsigned int geodelx_pci_domain_scan_bus(struct device *dev,
 						unsigned int max)
@@ -432,7 +435,7 @@ static void cpu_bus_noop(struct device *dev)
  */
 
 /** Operations for when the northbridge is running a PCI domain. */
-struct device_operations geodelx_pcidomainops = {
+struct device_operations geodelx_pcidomain_ops = {
 	.constructor			= default_device_constructor,
 	.phase2_setup_scan_bus		= geodelx_pci_domain_phase2,
 	.phase3_scan			= geodelx_pci_domain_scan_bus,
@@ -444,7 +447,7 @@ struct device_operations geodelx_pcidomainops = {
 };
 
 /** Operations for when the northbridge is running an APIC cluster. */
-struct device_operations geodelx_apicops = {
+struct device_operations geodelx_apic_ops = {
 	.constructor			= default_device_constructor,
 	.phase3_scan			= 0,
 	.phase4_read_resources		= cpu_bus_noop,
@@ -474,13 +477,13 @@ struct constructor geodelx_north_constructors[] = {
 	{.id = {.type = DEVICE_ID_PCI_DOMAIN,
 		.u = {.pci_domain = {.vendor = PCI_VENDOR_ID_AMD,
 				     .device = PCI_DEVICE_ID_AMD_LXBRIDGE}}},
-	 .ops = &geodelx_pcidomainops},
+	 .ops = &geodelx_pcidomain_ops},
 
 	/* Northbridge running an APIC cluster. */
 	{.id = {.type = DEVICE_ID_APIC_CLUSTER,
 		.u = {.apic_cluster = {.vendor = PCI_VENDOR_ID_AMD,
 				       .device = PCI_DEVICE_ID_AMD_LXBRIDGE}}},
-	 .ops = &geodelx_apicops},
+	 .ops = &geodelx_apic_ops},
 
 	/* Northbridge running a PCI device. */
 	{.id = {.type = DEVICE_ID_PCI,

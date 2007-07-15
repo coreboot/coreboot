@@ -198,7 +198,6 @@ void pll_reset(int manualconf, u32 pll_hi, u32 pll_lo)
 	}
 
 	printk(BIOS_DEBUG, "Done pll_reset\n");
-	return;
 }
 
 /**
@@ -397,7 +396,6 @@ void set_delay_control(u8 dimm0, u8 dimm1)
 		}
 	}
 	wrmsr(GLCP_DELAY_CONTROLS, msr);
-	return;
 }
 
 /**

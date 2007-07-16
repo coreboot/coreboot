@@ -90,7 +90,7 @@ typedef u32 cell_t;
 #define streq(a, b)	(strcmp((char *)(a), (char *)(b)) == 0)
 #define strneq(a, b, n)	(strncmp((char *)(a), (char *)(b), (n)) == 0)
 
-#define ALIGN(x, a)	(((x) + (a) - 1) & ~((a) - 1))
+#define DALIGN(x, a)	(((x) + (a) - 1) & ~((a) - 1))
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
 /* Data blobs */

@@ -25,6 +25,8 @@ ARCH=`uname -m | sed -e s/i.86/x86/ -e s/sun4u/sparc64/ \
 			-e s/s390x/s390/ -e s/parisc64/parisc/ \
 			-e s/ppc.*/powerpc/ -e s/mips.*/mips/`
 
+OS=`uname -s`
+
 testcc()
 {
 	TMP=".$$$$.tmp"
@@ -56,22 +58,40 @@ case  "$ARCH" in
 	echo "CC_x86 := gcc -m32"
 	CC="gcc -m32"
 
+	searchgnu ar >/dev/null && echo "AR_x86 := $(searchgnu ar)"
 	searchgnu as >/dev/null && echo "AS_x86 := $(searchgnu as) --32"
 	searchgnu ld >/dev/null && echo "LD_x86 := $(searchgnu ld) -b elf32-i386 -melf_i386"
 	searchgnu objcopy >/dev/null && echo "OBJCOPY_x86 := $(searchgnu objcopy)"
 	;;
 "x86")
-	echo "CC_x86 := gcc"
-	CC="gcc"
+	if [ "$OS" != "Darwin" ]; then
+		echo "CC_x86 := gcc"
+		CC="gcc"
 
-	searchgnu as >/dev/null && echo "AS_x86 := $(searchgnu as)"
-	searchgnu ld >/dev/null && echo "LD_x86 := $(searchgnu ld)"
-	searchgnu objcopy >/dev/null && echo "OBJCOPY_x86 := $(searchgnu objcopy)"
+		searchgnu ar >/dev/null && echo "AR_x86 := $(searchgnu ar)"
+		searchgnu as >/dev/null && echo "AS_x86 := $(searchgnu as)"
+		searchgnu ld >/dev/null && echo "LD_x86 := $(searchgnu ld)"
+		searchgnu objcopy >/dev/null && echo "OBJCOPY_x86 := $(searchgnu objcopy)"
+	else
+		CC=`find /opt/local/bin/ -name "i386-elf-gcc-*"`
+		if [ "$CC" == "" ]; then
+			echo "ERROR: Please install i386-elf-gcc from MacPorts" >&2
+			exit 1
+		fi
+		echo "CC_x86 := $CC"
+		echo "AR_x86 := i386-elf-ar"
+		echo "AS_x86 := i386-elf-as"
+		echo "LD_x86 := i386-elf-ld"
+		echo "OBJCOPY_x86 := i386-elf-objcopy"
+		echo "INTLCFLAGS  := -I/opt/local/include"
+		echo "INTLLIBS    := -L/opt/local/lib -lintl"
+	fi
 	;;
 *)
 	# FIXME: This should be detected.
 	CC="i386-linux-gcc"
 	echo "CC_x86 := i386-linux-gcc"
+	echo "AR_x86 := i386-linux-ar"
 	echo "AS_x86 := i386-linux-as"
 	echo "LD_x86 := i386-linux-ld"
 	echo "OBJCOPY_x86 := i386-linux-objcopy"

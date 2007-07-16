@@ -32,6 +32,18 @@ Required software:
   * dot (>= 1.8.10)
     http://www.graphviz.org/
 
+Building on Mac OS X
+-------------------
+
+You have to install MacPorts (tried with 1.4).
+
+Then you go
+
+ $ sudo port install gettext
+ $ sudo port install bison
+ $ sudo port install i386-elf-binutils 
+ $ sudo port install i386-elf-gcc
+ $ rehash
 
 Third-party Code and License Overview
 -------------------------------------

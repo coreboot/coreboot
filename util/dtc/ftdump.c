@@ -25,8 +25,8 @@
 #define be64_to_cpu(x)	bswap_64(x)
 #endif
 
-#define ALIGN(x, a)	(((x) + ((a) - 1)) & ~((a) - 1))
-#define PALIGN(p, a)	((void *)(ALIGN((unsigned long)(p), (a))))
+#define DALIGN(x, a)	(((x) + ((a) - 1)) & ~((a) - 1))
+#define PALIGN(p, a)	((void *)(DALIGN((unsigned long)(p), (a))))
 #define GET_CELL(p)	(p += 4, *((uint32_t *)(p-4)))
 
 static int is_printable_string(const void *data, int len)

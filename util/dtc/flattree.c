@@ -960,7 +960,7 @@ static void make_bph(struct boot_param_header *bph,
 	bph->last_comp_version = cpu_to_be32(vi->last_comp_version);
 
 	/* Reserve map should be doubleword aligned */
-	reserve_off = ALIGN(vi->hdr_size, 8);
+	reserve_off = DALIGN(vi->hdr_size, 8);
 
 	bph->off_mem_rsvmap = cpu_to_be32(reserve_off);
 	bph->off_dt_struct = cpu_to_be32(reserve_off + reservesize);
@@ -1395,7 +1395,7 @@ static void flat_realign(struct inbuf *inb, int align)
 {
 	int off = inb->ptr - inb->base;
 
-	inb->ptr = inb->base + ALIGN(off, align);
+	inb->ptr = inb->base + DALIGN(off, align);
 	if (inb->ptr > inb->limit)
 		die("Premature end of data parsing flat device tree\n");
 }

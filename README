@@ -39,6 +39,21 @@ For details please consult:
  * http://www.linuxbios.org/Supported_Chipsets_and_Devices
 
 
+Build Requirements
+------------------
+
+ * gcc / g++
+ * make
+ * bison
+ * flex
+ * libncurses5-dev
+
+Optional (for generating/viewing documentation):
+
+ * lyx
+ * doxygen
+
+
 Building And Installing
 -----------------------
 

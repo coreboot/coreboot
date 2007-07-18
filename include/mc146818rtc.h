@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 200X FIXME
  * Copyright (C) 2007 coresystems GmbH
+ * Copyright (C) 2007 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -111,10 +112,14 @@
 #define LB_CKS_LOC		126
 #endif
 
-#define RTC_BOOT_BYTE   48
+#define RTC_BOOT_BYTE		48
+#define RTC_BOOT_COUNT_SHIFT	4
+#define RTC_LAST_BOOT_FLAG_SET	(1<<1)
+#define RTC_NORMAL_BOOT_FLAG_SET (1<<0)
 
 void rtc_init(int invalid);
 int get_option(void *dest, char *name);
 int last_boot_normal(void);
+int do_normal_boot(void);
 
 #endif /* MC146818RTC_H */

@@ -76,5 +76,6 @@ struct mem_file {
 int find_file(struct mem_file *archive, char *filename, struct mem_file *result);
 int copy_file(struct mem_file *archive, char *filename, void *where);
 int run_file(struct mem_file *archive, char *filename, void *where);
+int execute_in_place(struct mem_file *archive, char *filename);
 
 #endif /* LAR_H */

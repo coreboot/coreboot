@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2006-2007 coresystems GmbH
  * (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
+ * Copyright (C) 2007 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,16 +104,41 @@ int copy_file(struct mem_file *archive, char *filename, void *where)
 	return 1;
 }
 
+
+/**
+ * Find the file in the LAR header, copy it to the desired location,
+ * and execute it. A location of 0xFFFFFFFF means execute in place (XIP).
+ */
 int run_file(struct mem_file *archive, char *filename, void *where)
 {
 	int (*v) (void);
+	struct mem_file result;
 
-	if (copy_file(archive, filename, where)) {
-		printk(BIOS_INFO, "LAR: Run file %s failed: No such file.\n",
-		       filename);
-		return 1;
+	if ((u32) where != 0xFFFFFFFF) {
+		if (copy_file(archive, filename, where)) {
+			printk(BIOS_INFO,
+			      "LAR: Run file %s failed: No such file.\n",
+			       filename);
+			return 1;
+		}
+	} else { /* XIP */
+		if (find_file(archive, filename, &result)) {
+			printk(BIOS_INFO,
+			       "LAR: Run file %s failed: No such file.\n",
+			       filename);
+			return 1;
+		}
+		where = result.start;
 	}
 
 	v = where;
 	return v();
+}
+
+/**
+ * Call run_file() to execute in place.
+ */
+int execute_in_place(struct mem_file *archive, char *filename)
+{
+	return run_file(archive, filename, (void *) 0xFFFFFFFF);
 }

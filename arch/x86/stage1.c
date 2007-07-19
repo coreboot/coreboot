@@ -2,6 +2,7 @@
  * This file is part of the LinuxBIOS project.
  *
  * Copyright (C) 2007 Stefan Reinauer <stepan@coresystems.de>
+ * Copyright (C) 2007 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -32,10 +33,7 @@ void uart_init(void);
 void die(const char *msg);
 int find_file(struct mem_file *archive, char *filename, struct mem_file *result);
 void hardware_stage1(void);
-
-// Is this value correct?
-#define DCACHE_RAM_SIZE 0x8000
-
+void disable_car(void);
 
 void post_code(u8 value)
 {
@@ -78,7 +76,7 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 
 	post_code(0x02);
 
-	// before we do anything, we want to stop if we dont run 
+	// before we do anything, we want to stop if we dont run
 	// on the bootstrap processor.
 	if (bist==0) {
 		// stop secondaries
@@ -87,7 +85,7 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 
 	// We have cache as ram running and can start executing code in C.
 	//
-	
+
 	hardware_stage1();
 
 	//
@@ -101,29 +99,37 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 
 	// enable rom
 	enable_rom();
-	
+
 	// location and size of image.
-	
+
 	// FIXME this should be defined in the VPD area
 	// but NOT IN THE CODE.
-	
+
 	/* The len field starts behind the reset vector on x86.
 	 * The start is not correct for all platforms. sc520 will
-	 * need some hands on here. 
+	 * need some hands on here.
 	 */
 	archive.len = *(u32 *)0xfffffff4;
-	archive.start =(void *)(0UL-archive.len); 
+	archive.start =(void *)(0UL-archive.len);
 
 	// FIXME check integrity
 
 
 	// find first initram
-	if (last_boot_normal()) {
+	if (check_normal_boot_flag()) {
 		printk(BIOS_DEBUG, "Choosing normal boot.\n");
-		ret = run_file(&archive, "normal/initram", (void *)(512*1024)); //CONFIG_CARBASE;
+		ret = execute_in_place(&archive, "normal/initram");
 	} else {
 		printk(BIOS_DEBUG, "Choosing fallback boot.\n");
-		ret = run_file(&archive, "fallback/initram", (void *)(512*1024)); //CONFIG_CARBASE;
+		ret = execute_in_place(&archive, "fallback/initram");
+		/* Try a normal boot if fallback doesn't exists in the lar.
+		 * TODO: There are other ways to do this.
+		 * It could be ifdef or the boot flag could be forced.
+		 */
+		if (ret) {
+			printk(BIOS_DEBUG, "Fallback failed. Try normal boot\n");
+			ret = execute_in_place(&archive, "normal/initram");
+		}
 	}
 
 	if (ret)
@@ -132,97 +138,8 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 	printk(BIOS_DEBUG, "Done RAM init code\n");
 
 
-	/* Turn off Cache-As-Ram, and do some other things.
-	 *
-	 * This has to be done inline -- You can't call a function because the
-	 * return stack does not survive.
- 	 */
- 
-        __asm__ volatile (
-	/* 
-	FIXME : backup stack in CACHE_AS_RAM into mmx and sse and after we get STACK up, we restore that.
-		It is only needed if we want to go back
-	*/
-	
-        /* We don't need cache as ram for now on */
-        /* disable cache */
-        "movl    %cr0, %eax\n\t"
-        "orl    $(0x1<<30),%eax\n\t"
-        "movl    %eax, %cr0\n\t"
-
-        /* clear sth */
-        "movl    $0x269, %ecx\n\t"  /* fix4k_c8000*/
-        "xorl    %edx, %edx\n\t"
-        "xorl    %eax, %eax\n\t"
-	"wrmsr\n\t"
-#if DCACHE_RAM_SIZE > 0x8000
-	"movl    $0x268, %ecx\n\t"  /* fix4k_c0000*/
-        "wrmsr\n\t"
-#endif
-
-        /* Set the default memory type and disable fixed and enable variable MTRRs */
-        "movl    $0x2ff, %ecx\n\t"
-//        "movl    $MTRRdefType_MSR, %ecx\n\t"
-        "xorl    %edx, %edx\n\t"
-        /* Enable Variable and Disable Fixed MTRRs */
-        "movl    $0x00000800, %eax\n\t"
-        "wrmsr\n\t"
-
-#if defined(CLEAR_FIRST_1M_RAM)
-        /* enable caching for first 1M using variable mtrr */
-        "movl    $0x200, %ecx\n\t"
-        "xorl    %edx, %edx\n\t"
-        "movl     $(0 | 1), %eax\n\t"
-//	"movl     $(0 | MTRR_TYPE_WRCOMB), %eax\n\t"
-        "wrmsr\n\t"
-
-        "movl    $0x201, %ecx\n\t"
-        "movl    $0x0000000f, %edx\n\t" /* AMD 40 bit 0xff*/
-        "movl    $((~(( 0 + 0x100000) - 1)) | 0x800), %eax\n\t"
-        "wrmsr\n\t"
-#endif
-
-        /* enable cache */
-        "movl    %cr0, %eax\n\t"
-        "andl    $0x9fffffff,%eax\n\t"
-        "movl    %eax, %cr0\n\t"
-#if defined(CLEAR_FIRST_1M_RAM)
-        /* clear the first 1M */
-        "movl    $0x0, %edi\n\t"
-        "cld\n\t"
-        "movl    $(0x100000>>2), %ecx\n\t"
-        "xorl    %eax, %eax\n\t"
-        "rep     stosl\n\t"
-
-        /* disable cache */
-        "movl    %cr0, %eax\n\t"
-        "orl    $(0x1<<30),%eax\n\t"
-        "movl    %eax, %cr0\n\t"
-
-        /* enable caching for first 1M using variable mtrr */
-        "movl    $0x200, %ecx\n\t"
-        "xorl    %edx, %edx\n\t"
-        "movl     $(0 | 6), %eax\n\t"
-//	"movl     $(0 | MTRR_TYPE_WRBACK), %eax\n\t"
-        "wrmsr\n\t"
-
-        "movl    $0x201, %ecx\n\t"
-        "movl    $0x0000000f, %edx\n\t" /* AMD 40 bit 0xff*/
-        "movl    $((~(( 0 + 0x100000) - 1)) | 0x800), %eax\n\t"
-        "wrmsr\n\t"
-
-        /* enable cache */
-        "movl    %cr0, %eax\n\t"
-        "andl    $0x9fffffff,%eax\n\t"
-        "movl    %eax, %cr0\n\t"
-	"invd\n\t"
-
-	/* 
-	FIXME: I hope we don't need to change esp and ebp value here, so we can restore value from mmx sse back
-		But the problem is the range is some io related, So don't go back
-	*/
-#endif
-        );
+	/* Turn off Cache-As-Ram */
+	disable_car();
 
 	ret = run_file(&archive, "normal/stage2", (void *)0x1000);
 	if (ret)

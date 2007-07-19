@@ -280,7 +280,7 @@ int last_boot_normal(void)
   * Check CMOS for normal or fallback boot mode.
   * Use lxbios to set normal mode once the system is operational.
   */
-int do_normal_boot(void)
+int check_normal_boot_flag(void)
 {
 	u8 byte;
 
@@ -321,7 +321,7 @@ int do_normal_boot(void)
 	/* Save the boot byte */
 	CMOS_WRITE(byte, RTC_BOOT_BYTE);
 
-	return (byte & RTC_LAST_BOOT_FLAG_SET);
+	return (byte & RTC_NORMAL_BOOT_FLAG_SET);
 }
 
 

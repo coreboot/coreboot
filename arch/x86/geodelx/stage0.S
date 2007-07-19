@@ -205,7 +205,7 @@ DCacheSetup:
 	/* In LX DCDIS is set after POR which disables the cache..., clear
 	 * this bit.
 	 */
-	movl	CPU_DM_CONFIG0,%ecx
+	movl	$CPU_DM_CONFIG0,%ecx
 	rdmsr
 
 	/* TODO: Make consistent with i$ init, either whole reg = 0, or just
@@ -368,16 +368,6 @@ DCacheSetupBad:
 	jmp DCacheSetupBad
 
 DCacheSetupGood:
-	/* If you wanted to maintain the stack in memory you would need to
-	 * set the tags as dirty so the wbinvd would push out the old stack
-	 * contents to memory.
-	 */
-	/* Clear the cache, the following code from crt0.S.lb will setup
-	 * a new stack.
-	 * TODO: There is no crt0.S.lb (anymore?).
-	 */
-	wbinvd
-
 	/* At this point, CAR should be working. */
 	movl	$(LX_STACK_END), %eax
 	movl	%eax, %esp
@@ -395,20 +385,8 @@ lout:
 	/* We need to set ebp? No need. */
 	movl	%esp, %ebp
 	pushl	%eax		/* BIST */
-	call	stage1_main
+	jmp	stage1_main
 	/* We will not go back. */
-
-fixed_mtrr_msr:
-	.long	0x250, 0x258, 0x259
-	.long	0x268, 0x269, 0x26A
-	.long	0x26B, 0x26C, 0x26D
-	.long	0x26E, 0x26F
-var_mtrr_msr:
-	.long	0x200, 0x201, 0x202, 0x203
-	.long	0x204, 0x205, 0x206, 0x207
-	.long	0x208, 0x209, 0x20A, 0x20B
-	.long	0x20C, 0x20D, 0x20E, 0x20F
-	.long	0x000 /* NULL, end of table */
 
 /* Reset vector. */
 

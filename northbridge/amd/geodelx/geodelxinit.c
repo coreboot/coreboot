@@ -31,7 +31,7 @@ struct gliutable {
 	unsigned long hi, lo;
 };
 
-struct gliutable gliu0table[] = {
+static struct gliutable gliu0table[] = {
 	/* 0-7FFFF to MC */
 	{.desc_name = MSR_GLIU0_BASE1,.desc_type = BM,.hi = MSR_MC + 0x0,
 	 .lo = 0x0FFF80},
@@ -54,7 +54,7 @@ struct gliutable gliu0table[] = {
 	{.desc_name = GL_END,.desc_type = GL_END,.hi = 0x0,.lo = 0x0},
 };
 
-struct gliutable gliu1table[] = {
+static struct gliutable gliu1table[] = {
 	/* 0-7FFFF to MC */
 	{.desc_name = MSR_GLIU1_BASE1,.desc_type = BM,.hi = MSR_GL0 + 0x0,
 	 .lo = 0x0FFF80},
@@ -78,14 +78,14 @@ struct gliutable gliu1table[] = {
 	{.desc_name = GL_END,.desc_type = GL_END,.hi = 0x0,.lo = 0x0},
 };
 
-struct gliutable *gliutables[] = { gliu0table, gliu1table, 0 };
+static struct gliutable *gliutables[] = { gliu0table, gliu1table, 0 };
 
 struct msrinit {
 	unsigned long msrnum;
 	struct msr msr;
 };
 
-struct msrinit clock_gating_default[] = {
+static struct msrinit clock_gating_default[] = {
 	{GLIU0_GLD_MSR_PM,	{.hi = 0x00,.lo = 0x0005}},
 	{MC_GLD_MSR_PM,		{.hi = 0x00,.lo = 0x0001}},
 	{VG_GLD_MSR_PM,		{.hi = 0x00,.lo = 0x0015}},
@@ -101,7 +101,7 @@ struct msrinit clock_gating_default[] = {
 };
 
 /** GeodeLink priority table. */
-struct msrinit geode_link_priority_table[] = {
+static struct msrinit geode_link_priority_table[] = {
 	{CPU_GLD_MSR_CONFIG,		{.hi = 0x00,.lo = 0x0220}},
 	{DF_GLD_MSR_MASTER_CONF,	{.hi = 0x00,.lo = 0x0000}},
 	{VG_GLD_MSR_CONFIG,		{.hi = 0x00,.lo = 0x0720}},

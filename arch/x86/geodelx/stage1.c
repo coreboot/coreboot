@@ -23,7 +23,7 @@
 #include <msr.h>
 #include <amd_geodelx.h>
 
-static struct msrinit {
+static const struct msrinit {
 	u32 msrnum;
 	struct msr msr;
 } msr_table[] = {

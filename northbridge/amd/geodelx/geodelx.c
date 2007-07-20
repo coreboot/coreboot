@@ -26,6 +26,12 @@
 #include <msr.h>
 #include <amd_geodelx.h>
 
+/* Function prototypes */
+extern void chipsetinit(void);
+extern u32 get_systop(void);
+extern void northbridge_init_early(void);
+extern void setup_realmode_idt(void);
+
 /* Here is programming for the various MSRs. */
 #define IM_QWAIT 0x100000
 
@@ -93,19 +99,9 @@
 
 #define BRIDGE_IO_MASK (IORESOURCE_IO | IORESOURCE_MEM)
 
-/* TODO: Should be in some header file? */
-extern void graphics_init(void);
-extern void cpu_bug(void);
-extern void chipsetinit(void);
-extern void print_conf(void);
-extern u32 get_systop(void);
-
-void northbridge_init_early(void);
-void setup_realmode_idt(void);
-void do_vsmbios(void);
-
-struct msr_defaults {
-	int msr_no;
+/* TODO: Not used!? */
+static const struct msr_defaults {
+	u32 msr_no;
 	struct msr msr;
 } msr_defaults[] = {
 	{ 0x1700, {.hi = 0,.lo = IM_QWAIT}},
@@ -221,10 +217,11 @@ static void geodelx_northbridge_init(struct device *dev)
 	msr.hi |= 0x3;
 	msr.lo |= 0x30000;
 
-	printk(BIOS_DEBUG,"MSR 0x%08X is now 0x%08X:0x%08X\n",
+	printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n",
 	       MSR_GLIU0_SHADOW, msr.hi, msr.lo);
-	printk(BIOS_DEBUG,"MSR 0x%08X is now 0x%08X:0x%08X\n",
+	printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n",
 	       MSR_GLIU1_SHADOW, msr.hi, msr.lo);
+	/* TODO: Is the respective wrmsr() missing? */
 #endif
 }
 
@@ -234,7 +231,7 @@ static void geodelx_northbridge_init(struct device *dev)
  *
  * @param dev The nortbridge device.
  */
-void geodelx_northbridge_set_resources(struct device *dev)
+static void geodelx_northbridge_set_resources(struct device *dev)
 {
 	struct resource *resource, *last;
 	unsigned int link;
@@ -376,8 +373,6 @@ static void geodelx_pci_domain_phase2(struct device *dev)
 	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __FUNCTION__);
 
 	northbridge_init_early();
-#warning cpu bug has been moved to initram stage
-	/* cpu_bug(); */
 	chipsetinit();
 
 	setup_realmode_idt();
@@ -435,7 +430,7 @@ static void cpu_bus_noop(struct device *dev)
  */
 
 /** Operations for when the northbridge is running a PCI domain. */
-struct device_operations geodelx_pcidomain_ops = {
+static struct device_operations geodelx_pcidomain_ops = {
 	.constructor			= default_device_constructor,
 	.phase2_setup_scan_bus		= geodelx_pci_domain_phase2,
 	.phase3_scan			= geodelx_pci_domain_scan_bus,
@@ -447,7 +442,7 @@ struct device_operations geodelx_pcidomain_ops = {
 };
 
 /** Operations for when the northbridge is running an APIC cluster. */
-struct device_operations geodelx_apic_ops = {
+static struct device_operations geodelx_apic_ops = {
 	.constructor			= default_device_constructor,
 	.phase3_scan			= 0,
 	.phase4_read_resources		= cpu_bus_noop,
@@ -458,7 +453,7 @@ struct device_operations geodelx_apic_ops = {
 };
 
 /** Operations for when the northbridge is running a PCI device. */
-struct device_operations geodelx_pci_ops = {
+static struct device_operations geodelx_pci_ops = {
 	.constructor			= default_device_constructor,
 	.phase3_scan			= geodelx_pci_domain_scan_bus,
 	.phase4_read_resources		= geodelx_pci_domain_read_resources,

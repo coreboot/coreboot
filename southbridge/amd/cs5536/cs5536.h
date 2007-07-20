@@ -442,14 +442,7 @@
 #define FLASH_IO_256B			0x0000FF00
 
 /* Function prototypes */
-void cs5536_setup_extmsr(void);
-void cs5536_setup_idsel(void);
-void cs5536_usb_swapsif(void);
-void cs5536_setup_iobase(void);
-void cs5536_setup_power_button(void);
-void cs5536_setup_smbus_gpio(void);
 void cs5536_disable_internal_uart(void);
-void cs5536_setup_cis_mode(void);
 void cs5536_setup_onchipuart(void);
 void cs5536_stage1(void);
 

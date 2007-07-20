@@ -83,7 +83,7 @@ static void lx_init(struct device *dev)
  * in multiple CPU files and use the device ID, at scan time, to pick which
  * one is used. There is a lot of flexibility here!
  */
-struct device_operations geodelx_cpuops = {
+static struct device_operations geodelx_cpuops = {
 	.constructor	= default_device_constructor,
 	.phase3_scan	= NULL,
 	.phase6_init	= lx_init,

@@ -38,7 +38,7 @@
  * The routing is controlled by an MSR. This appears to be the same on
  * all boards.
  */
-void cs5536_setup_extmsr(void)
+static void cs5536_setup_extmsr(void)
 {
 	struct msr msr;
 
@@ -61,7 +61,7 @@ void cs5536_setup_extmsr(void)
  * Setup PCI IDSEL for CS5536. There is a Magic Register that must be
  * written so that the chip appears at the expected place in the PCI tree.
  */
-void cs5536_setup_idsel(void)
+static void cs5536_setup_idsel(void)
 {
 	/* Write IDSEL to the write once register at address 0x0000. */
 	outl(0x1 << (CS5536_DEV_NUM + 10), 0);
@@ -72,7 +72,7 @@ void cs5536_setup_idsel(void)
  * These are not the bits you're looking for. You can go about your business.
  * Move along, move along.
  */
-void cs5536_usb_swapsif(void)
+static void cs5536_usb_swapsif(void)
 {
 	struct msr msr;
 
@@ -95,7 +95,7 @@ void cs5536_usb_swapsif(void)
  * the resources are there as needed. The values are hardcoded because,
  * this early in the process, fancy allocation can do more harm than good.
  */
-void cs5536_setup_iobase(void)
+static void cs5536_setup_iobase(void)
 {
 	struct msr msr;
 
@@ -134,7 +134,7 @@ void cs5536_setup_iobase(void)
  *
  * If GPIO24 is not enabled then soft-off will not work.
  */
-void cs5536_setup_power_button(void)
+static void cs5536_setup_power_button(void)
 {
 	/* TODO: Should be a #define? */
 	outl(0x40020000, PMS_IO_BASE + 0x40);
@@ -148,7 +148,7 @@ void cs5536_setup_power_button(void)
  * An unknown question at this point is how general this is to all mainboards.
  * At the same time, many boards seem to follow this particular reference spec.
  */
-void cs5536_setup_smbus_gpio(void)
+static void cs5536_setup_smbus_gpio(void)
 {
 	u32 val;
 
@@ -196,7 +196,7 @@ void cs5536_disable_internal_uart(void)
  * the southbridge and the CPU chips. At the same time, they always seem
  * to use mode B.
  */
-void cs5536_setup_cis_mode(void)
+static void cs5536_setup_cis_mode(void)
 {
 	struct msr msr;
 

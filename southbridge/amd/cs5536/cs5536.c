@@ -24,12 +24,10 @@
 #include <device/pci.h>
 #include <msr.h>
 #include <amd_geodelx.h>
-#include <cpu.h>		// TODO: Move rtc_init() etc. to legacy.h
+#include <legacy.h>
 #include <device/pci_ids.h>
 #include <statictree.h>
 #include "cs5536.h"
-
-extern void setup_i8259(void);
 
 struct msrinit {
 	u32 msrnum;
@@ -37,7 +35,7 @@ struct msrinit {
 };
 
 /* Master configuration register for bus masters */
-struct msrinit SB_MASTER_CONF_TABLE[] = {
+static struct msrinit SB_MASTER_CONF_TABLE[] = {
 	{USB2_SB_GLD_MSR_CONF, {.hi = 0,.lo = 0x00008f000}},
 	{ATA_SB_GLD_MSR_CONF,  {.hi = 0,.lo = 0x00048f000}},
 	{AC97_SB_GLD_MSR_CONF, {.hi = 0,.lo = 0x00008f000}},
@@ -46,33 +44,33 @@ struct msrinit SB_MASTER_CONF_TABLE[] = {
 };
 
 /* CS5536 clock gating */
-struct msrinit CS5536_CLOCK_GATING_TABLE[] = {
+static struct msrinit CS5536_CLOCK_GATING_TABLE[] = {
 	{GLIU_SB_GLD_MSR_PM,  {.hi = 0,.lo = 0x000000004}},
 	{GLPCI_SB_GLD_MSR_PM, {.hi = 0,.lo = 0x000000005}},
 	{GLCP_SB_GLD_MSR_PM,  {.hi = 0,.lo = 0x000000004}},
-	{MDD_SB_GLD_MSR_PM,   {.hi = 0,.lo = 0x050554111}},	/*  SMBus clock gating errata (PBZ 2226 & SiBZ 3977) */
+	{MDD_SB_GLD_MSR_PM,   {.hi = 0,.lo = 0x050554111}},	/* SMBus clock gating errata (PBZ 2226 & SiBZ 3977) */
 	{ATA_SB_GLD_MSR_PM,   {.hi = 0,.lo = 0x000000005}},
 	{AC97_SB_GLD_MSR_PM,  {.hi = 0,.lo = 0x000000005}},
 	{0, {0, 0}}
 };
 
-struct acpiinit {
+struct acpi_init {
 	u16 ioreg;
 	u32 regdata;
 };
 
-struct acpiinit acpi_init_table[] = {
-	{ACPI_IO_BASE + 0x00, 0x01000000},
-	{ACPI_IO_BASE + 0x08, 0x00000000},
-	{ACPI_IO_BASE + 0x0C, 0x00000000},
-	{ACPI_IO_BASE + 0x1C, 0x00000000},
-	{ACPI_IO_BASE + 0x18, 0xFFFFFFFF},
-	{ACPI_IO_BASE + 0x00, 0x0000FFFF},
-	{PMS_IO_BASE + PM_SCLK, 0x000000E00},
-	{PMS_IO_BASE + PM_SED,  0x000004601},
-	{PMS_IO_BASE + PM_SIDD, 0x000008C02},
-	{PMS_IO_BASE + PM_WKD,  0x0000000A0},
-	{PMS_IO_BASE + PM_WKXD, 0x0000000A0},
+static const struct acpi_init acpi_init_table[] = {
+	{ACPI_IO_BASE + 0x00,   0x01000000},
+	{ACPI_IO_BASE + 0x08,   0x00000000},
+	{ACPI_IO_BASE + 0x0C,   0x00000000},
+	{ACPI_IO_BASE + 0x1C,   0x00000000},
+	{ACPI_IO_BASE + 0x18,   0xFFFFFFFF},
+	{ACPI_IO_BASE + 0x00,   0x0000FFFF},
+	{PMS_IO_BASE + PM_SCLK, 0x00000E00},
+	{PMS_IO_BASE + PM_SED,  0x00004601},
+	{PMS_IO_BASE + PM_SIDD, 0x00008C02},
+	{PMS_IO_BASE + PM_WKD,  0x000000A0},
+	{PMS_IO_BASE + PM_WKXD, 0x000000A0},
 	{0, 0}
 };
 
@@ -82,14 +80,14 @@ struct FLASH_DEVICE {
 	unsigned long fMask;		/* Flash size/mask */
 };
 
-struct FLASH_DEVICE FlashInitTable[] = {
+static const struct FLASH_DEVICE FlashInitTable[] = {
 	{FLASH_TYPE_NAND, FLASH_IF_MEM, FLASH_MEM_4K},	/* CS0, or Flash Device 0 */
 	{FLASH_TYPE_NONE, 0, 0},	/* CS1, or Flash Device 1 */
 	{FLASH_TYPE_NONE, 0, 0},	/* CS2, or Flash Device 2 */
 	{FLASH_TYPE_NONE, 0, 0},	/* CS3, or Flash Device 3 */
 };
 
-u32 FlashPort[] = {
+static const u32 FlashPort[] = {
 	MDD_LBAR_FLSH0,
 	MDD_LBAR_FLSH1,
 	MDD_LBAR_FLSH2,
@@ -521,7 +519,7 @@ void chipsetinit(void)
 #if 0
 	if (!IsS3Resume())
 	{
-		struct acpiinit *aci = acpi_init_table;
+		struct acpi_init *aci = acpi_init_table;
 		for (; aci->ioreg; aci++) {
 			outl(aci->regdata, aci->ioreg);
 			inl(aci->ioreg);

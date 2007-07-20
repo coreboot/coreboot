@@ -32,3 +32,8 @@
 #define I82C54_COUNTER0			0x40
 #define I82C54_COUNTER1			0x41
 #define I82C54_COUNTER2			0x42
+
+void setup_i8259(void);
+void uart_init(void);
+void rtc_init(int invalid);
+void isa_dma_init(void);

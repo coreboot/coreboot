@@ -196,7 +196,7 @@ static void check_ddr_max(u8 dimm0, u8 dimm1)
 	}
 }
 
-const u16 REFRESH_RATE[] = { 15, 3, 7, 31, 62, 125 };	/* ns */
+static const u16 REFRESH_RATE[] = { 15, 3, 7, 31, 62, 125 };	/* ns */
 
 /**
  * Compute a refresh rate.
@@ -238,7 +238,7 @@ static void set_refresh_rate(u8 dimm0, u8 dimm1)
 }
 
 /* 1(1.5), 1.5, 2, 2.5, 3, 3.5, 4, 0 */
-const u8 CASDDR[] = { 5, 5, 2, 6, 3, 7, 4, 0 };
+static const u8 CASDDR[] = { 5, 5, 2, 6, 3, 7, 4, 0 };
 
 /**
  * Compute the CAS rate.

@@ -55,7 +55,7 @@
  * Timer 1 was used for RAM refresh on XT/AT and can be read on port 61.
  * Port 61 is used by many timing loops for calibration.
  */
-void start_timer1(void)
+static void start_timer1(void)
 {
 	outb(0x56, I82C54_CONTROL_WORD_REGISTER);
 	outb(0x12, I82C54_COUNTER1);
@@ -122,7 +122,7 @@ static void disable_memory_reorder(void)
  *
  * For CPU version C3. Should be the only released version.
  */
-void cpu_bug(void)
+static void cpu_bug(void)
 {
 	pci_deadlock();
 	disable_memory_reorder();
@@ -258,7 +258,7 @@ u32 pci_speed(void)
 /**
  * Delay Control Settings table from AMD (MCP 0x4C00000F).
  */
-const struct delay_controls {
+static const struct delay_controls {
 	u8 dimms;
 	u8 devices;
 	u32 slow_hi;
@@ -306,7 +306,7 @@ const struct delay_controls {
  * @param dimm0 The SMBus address of DIMM 0 (mainboard dependent).
  * @param dimm1 The SMBus address of DIMM 1 (mainboard dependent).
  */
-void set_delay_control(u8 dimm0, u8 dimm1)
+static void set_delay_control(u8 dimm0, u8 dimm1)
 {
 	u32 msrnum, glspeed;
 	u8 spdbyte0, spdbyte1, dimms, i;

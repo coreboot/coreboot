@@ -146,7 +146,7 @@ prepare2:
 	$(Q)printf "#define LINUXBIOS_COMPILE_TIME \"`LANG= date +%T`\"\n" >> $(obj)/build.h
 	$(Q)printf "#define LINUXBIOS_COMPILE_BY \"$(shell PATH=$$PATH:/usr/ucb whoami)\"\n" >> $(obj)/build.h
 	$(Q)printf "#define LINUXBIOS_COMPILE_HOST \"$(shell hostname)\"\n" >> $(obj)/build.h
-	$(Q)printf "#define LINUXBIOS_COMPILE_DOMAIN \"$(shell test `uname -s` == "Linux" && dnsdomainname || domainname)\"\n" >> $(obj)/build.h
+	$(Q)printf "#define LINUXBIOS_COMPILE_DOMAIN \"$(shell test `uname -s` = "Linux" && dnsdomainname || domainname)\"\n" >> $(obj)/build.h
 
 clean:
 	$(Q)printf "  CLEAN   $(subst $(shell pwd)/,,$(obj))\n"

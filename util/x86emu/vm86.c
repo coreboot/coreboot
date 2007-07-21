@@ -310,8 +310,8 @@ void vga_enable_console(void)
 void do_vgabios(void)
 {
 	struct device *dev;
-	unsigned long busdevfn;
-	unsigned int rom = 0;
+	unsigned int busdevfn;
+	unsigned long rom = 0;
 	unsigned char *buf;
 	unsigned int size = 64*1024;
 	int i;
@@ -334,7 +334,7 @@ void do_vgabios(void)
 #warning fix rom address
 	rom = 0xc0000;
 	pci_write_config32(dev, PCI_ROM_ADDRESS, rom|1);
-	printk(BIOS_DEBUG, "rom base, size: %x\n", rom);
+	printk(BIOS_DEBUG, "rom base, size: %p\n", (void *)rom);
 
 	buf = (unsigned char *) rom;
 	if ((buf[0] == 0x55) && (buf[1] == 0xaa)) {

@@ -46,6 +46,7 @@ struct console_driver {
 };
 
 // 
-int printk(int msg_level, const char *fmt, ...);
+int printk(int msg_level, const char *fmt, ...) 
+	__attribute__((format (printf, 2, 3)));
 
 #endif /* CONSOLE_H */

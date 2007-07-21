@@ -211,6 +211,8 @@ int vtxprintf(void (*tx_byte)(unsigned char byte, void *arg), void *arg, const c
 				field_width = 2*sizeof(void *);
 				flags |= ZEROPAD;
 			}
+			tx_byte('0', arg), count++;
+			tx_byte('x', arg), count++;
 			count += number(tx_byte, arg, 
 				(unsigned long) va_arg(args, void *), 16,
 				field_width, precision, flags);

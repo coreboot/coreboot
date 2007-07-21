@@ -37,7 +37,7 @@ int find_file(struct mem_file *archive, char *filename, struct mem_file *result)
 	struct lar_header *header;
 
 	printk(BIOS_INFO, "LAR: Attempting to open '%s'.\n", filename);
-	printk(BIOS_SPEW, "LAR: Start 0x%x len 0x%x\n", archive->start,
+	printk(BIOS_SPEW, "LAR: Start %p len 0x%x\n", archive->start,
 	       archive->len);
 
 	for (walk = archive->start;

@@ -45,7 +45,7 @@ nrv2b:
 endif
 
 $(obj)/lib/%.o: $(src)/lib/%.c
-	$(Q)mkdir -p $(obj)/lib
+	$(Q)mkdir -p $(dir $@)
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
 

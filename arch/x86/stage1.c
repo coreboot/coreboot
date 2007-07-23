@@ -25,6 +25,7 @@
 #include <tables.h>
 #include <lib.h>
 #include <mc146818rtc.h>
+#include <post_code.h>
 
 #define UNCOMPRESS_AREA 0x60000
 
@@ -34,11 +35,6 @@ void die(const char *msg);
 int find_file(struct mem_file *archive, char *filename, struct mem_file *result);
 void hardware_stage1(void);
 void disable_car(void);
-
-void post_code(u8 value)
-{
-	outb(value, 0x80);
-}
 
 static void stop_ap(void)
 {

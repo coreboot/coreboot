@@ -26,7 +26,6 @@ PATCHLEVEL = 0
 SUBLEVEL = 0
 
 have_dotconfig := $(wildcard .config)
-have_dotxcompile := $(wildcard .xcompile)
 
 src := $(shell pwd)
 obj := $(shell pwd)/build
@@ -60,6 +59,9 @@ endif
 KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
 export KERNELVERSION
 
+include $(shell $(src)/util/xcompile/xcompile > $(src)/.xcompile || \
+	{ echo "complete\\ toolchain" && rm -f $(src)/.xcompile && exit 1; }; echo $(src)/.xcompile)
+
 ifeq ($(strip $(have_dotconfig)),)
 
 all:
@@ -85,16 +87,10 @@ LINUXBIOSINCLUDE    :=  -I$(src) -Iinclude \
 			-include $(obj)/config.h \
 			-include $(obj)/build.h
 
-ifneq ($(strip $(have_dotxcompile)),)
-	include $(src)/.xcompile
-else
-	include $(shell $(src)/util/xcompile/xcompile > $(src)/.xcompile || \
-		{ echo "complete\\ toolchain" && rm -f $(src)/.xcompile && exit 1; }; echo $(src)/.xcompile)
-endif
-
 CC := $(CC_$(ARCH))
 AS := $(AS_$(ARCH))
 LD := $(LD_$(ARCH))
+NM := $(NM_$(ARCH))
 OBJCOPY := $(OBJCOPY_$(ARCH))
 AR := $(AR_$(ARCH))
 
@@ -111,6 +107,7 @@ CFLAGS += -nostdinc -isystem `$(CC) -print-file-name=include`
 include lib/Makefile
 include device/Makefile
 include mainboard/$(MAINBOARDDIR)/Makefile
+include Rules.make
 include northbridge/*/*/Makefile
 include southbridge/*/*/Makefile
 include superio/*/*/Makefile

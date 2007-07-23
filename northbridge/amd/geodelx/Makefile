@@ -24,10 +24,4 @@ ifeq ($(CONFIG_NORTHBRIDGE_AMD_GEODELX),y)
 STAGE2_CHIPSET_OBJ += $(obj)/northbridge/amd/geodelx/geodelx.o \
 		      $(obj)/northbridge/amd/geodelx/geodelxinit.o
 
-$(obj)/northbridge/amd/geodelx/%.o: $(src)/northbridge/amd/geodelx/%.c \
-				    $(obj)/statictree.h
-	$(Q)mkdir -p $(obj)/northbridge/amd/geodelx
-	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
-
 endif

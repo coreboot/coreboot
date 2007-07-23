@@ -22,8 +22,7 @@
 ifeq ($(CONFIG_ARCH_X86),y)
 
 INITCFLAGS := $(CFLAGS) -I$(src)/include/arch/x86 -I$(src)/include \
-		-I$(obj) \
-		-fno-builtin
+		-I$(obj) -fno-builtin
 
 SILENT := >/dev/null 2>&1
 
@@ -58,7 +57,7 @@ ifeq ($(CONFIG_DEFAULT_COMPRESSION_NRV2B),y)
 COMPRESSFLAG := -C nrv2b
 endif
 
-$(obj)/linuxbios.rom: $(obj)/linuxbios.bootblock $(obj)/util/lar/lar lzma nrv2b $(obj)/linuxbios.initram $(obj)/linuxbios.stage2 $(obj)/option_table
+$(obj)/linuxbios.rom $(obj)/linuxbios.map: $(obj)/linuxbios.bootblock $(obj)/util/lar/lar lzma nrv2b $(obj)/linuxbios.initram $(obj)/linuxbios.stage2 $(obj)/option_table
 	$(Q)rm -rf $(obj)/lar.tmp
 	$(Q)mkdir $(obj)/lar.tmp
 	$(Q)mkdir $(obj)/lar.tmp/normal
@@ -86,6 +85,15 @@ endif
 	$(Q)# Run "qemu -L build/ -serial stdio -hda /dev/zero".
 	$(Q)printf "  CP      $(subst $(shell pwd)/,,$(obj)/bios.bin)\n"
 	$(Q)cp $@ $(obj)/bios.bin
+	$(Q)echo "LinuxBIOS ROM Image:" > $(obj)/linuxbios.map
+	$(Q)$(obj)/util/lar/lar -l $(obj)/linuxbios.rom >> $(obj)/linuxbios.map
+	$(Q)(echo; echo "Stage 0/1 Map:") >> $(obj)/linuxbios.map
+	$(Q)cat $(obj)/stage0.init.map >> $(obj)/linuxbios.map
+	$(Q)(echo; echo "Stage Initram Map:") >> $(obj)/linuxbios.map
+	$(Q)cat $(obj)/linuxbios.initram.map >> $(obj)/linuxbios.map
+	$(Q)(echo; echo "Stage 2 Map:") >> $(obj)/linuxbios.map
+	$(Q)cat $(obj)/linuxbios.stage2.map >> $(obj)/linuxbios.map
+
 
 $(obj)/linuxbios.bootblock: $(obj)/linuxbios.vpd $(obj)/stage0.init
 	$(Q)printf "  BUILD   $(subst $(shell pwd)/,,$(@))\n"
@@ -100,13 +108,14 @@ $(obj)/linuxbios.bootblock: $(obj)/linuxbios.vpd $(obj)/stage0.init
 STAGE0_LIB_OBJ       = uart8250.o mem.o elfboot.o lar.o delay.o vtxprintf.o \
 		       vsprintf.o console.o $(DECOMPRESSORS)
 STAGE0_ARCH_X86_OBJ  = stage1.o serial.o archelfboot.o speaker.o \
-		       udelay_io.o mc146818rtc.o
+		       udelay_io.o mc146818rtc.o post_code.o
 
 ifeq ($(CONFIG_CPU_I586),y)
 	STAGE0_CAR_OBJ = stage0_i586.o
 else
 ifeq ($(CONFIG_CPU_AMD_GEODELX),y)
 	STAGE0_CAR_OBJ = geodelx/stage0.o
+	STAGE0_ARCH_X86_OBJ += geodelx/stage1.o
 else
 	STAGE0_CAR_OBJ = stage0_i586.o
 endif
@@ -116,7 +125,7 @@ endif
 STAGE0_OBJ := $(patsubst %,$(obj)/lib/%,$(STAGE0_LIB_OBJ)) \
 	      $(patsubst %,$(obj)/arch/x86/%,$(STAGE0_ARCH_X86_OBJ)) \
 	      $(patsubst %,$(obj)/arch/x86/%,$(STAGE0_CAR_OBJ)) \
-		$(STAGE0_MAINBOARD_OBJ)
+	      $(STAGE0_MAINBOARD_OBJ) $(STAGE0_CHIPSET_OBJ)
 
 $(obj)/stage0.o $(obj)/stage0.init: $(STAGE0_OBJ)
 	$(Q)# We need to be careful. If stage0.o gets bigger than
@@ -136,6 +145,9 @@ $(obj)/stage0.o $(obj)/stage0.init: $(STAGE0_OBJ)
 	$(Q)printf "  TEST    $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)test `wc -c < $(obj)/stage0.init` -gt 16128 && \
 		printf "Error. Bootblock got too big.\n" || true
+	$(Q)printf "  NM      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(NM) $(obj)/stage0.o | sort -u > $(obj)/stage0.init.map
+
 
 
 #
@@ -172,29 +184,24 @@ endif
 STAGE2_OBJ += $(obj)/util/x86emu/libx86emu.a $(LIBGCC_FILE_NAME)
 endif
 
-$(obj)/linuxbios.stage2: $(obj)/stage0.init $(STAGE2_OBJ)
+$(obj)/linuxbios.stage2 $(obj)/linuxbios.stage2.map: $(obj)/stage0.init $(STAGE2_OBJ)
 	$(Q)# leave a .o with full symbols in it for debugging.
 	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(LD) -R $(obj)/stage0.o -Ttext 0x1000 --entry=stage2 \
 		  -o $(obj)/linuxbios.stage2.o $(STAGE2_OBJ)
 	$(Q)printf "  OBJCOPY $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(OBJCOPY) -O binary $(obj)/linuxbios.stage2.o $(obj)/linuxbios.stage2
-
+	$(Q)$(NM) $(obj)/linuxbios.stage2.o | sort -u > $(obj)/linuxbios.stage2.map
 
 #
 # Build rules.
 #
 
 $(obj)/arch/x86/%.o: $(src)/arch/x86/%.c
-	$(Q)mkdir -p $(obj)/arch/x86
+	$(Q)mkdir -p $(dir $@)
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
-
-$(obj)/mainboard/$(MAINBOARDDIR)/%.o: $(src)/mainboard/$(MAINBOARDDIR)/%.c
-	$(Q)mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)
-	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
-
+	
 # Building asm stub.
 $(obj)/arch/x86/stage0%.o: $(src)/arch/x86/stage0%.S
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
@@ -205,7 +212,7 @@ $(obj)/arch/x86/stage0%.o: $(src)/arch/x86/stage0%.S
 	$(Q)$(AS) $(obj)/arch/x86/stage0_asm.s -o $@
 
 $(obj)/arch/x86/geodelx/stage0.o: $(src)/arch/x86/geodelx/stage0.S
-	$(Q)mkdir -p $(obj)/arch/x86/geodelx
+	$(Q)mkdir -p $(dir $@)
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) -E $(LINUXBIOSINCLUDE) $< \
 		-o $(obj)/arch/x86/stage0_asm.s -DBOOTBLK=0x1f00 \

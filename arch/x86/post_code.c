@@ -1,12 +1,11 @@
 /*
  * This file is part of the LinuxBIOS project.
  *
- * Copyright (C) 2007 Ronald G. Minnich <rminnich@gmail.com>
+ * Copyright (C) 2007 Stefan Reinauer <stepan@coresystems.de>
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,7 +17,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-void post_code(u8 value);
+#include <types.h>
+#include <io.h>
 
-#define POST_START_OF_MAIN                              0x01
+void post_code(u8 value)
+{
+	outb(value, 0x80);
+}
+
 

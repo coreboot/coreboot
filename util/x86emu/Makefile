@@ -36,18 +36,12 @@ $(obj)/util/x86emu/libx86emu.a: $(LIBX86EMU_OBJS) $(src)/.config
 	$(Q)rm -f $@ # otherwise we always add to the archive
 	$(Q)$(AR) qcs $@ $(LIBX86EMU_OBJS)
 
-$(obj)/util/x86emu/x86emu/%.o: $(src)/util/x86emu/x86emu/%.c
-	$(Q)mkdir -p $(obj)/util/x86emu/x86emu/
-	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(CC) $(INITCFLAGS) -I$(src)/util/x86emu/include -c $< -o $@
-
-$(obj)/util/x86emu/pcbios/%.o: $(src)/util/x86emu/pcbios/%.c
-	$(Q)mkdir -p $(obj)/util/x86emu/pcbios
-	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(CC) $(INITCFLAGS) -I$(src)/util/x86emu/include -c $< -o $@
+#
+# This rule is also valid for all subdirectories
+#
 
 $(obj)/util/x86emu/%.o: $(src)/util/x86emu/%.c
-	$(Q)mkdir -p $(obj)/util/x86emu
+	$(Q)mkdir -p $(dir $@)
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) $(INITCFLAGS) -I$(src)/util/x86emu/include -c $< -o $@
 

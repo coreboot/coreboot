@@ -23,9 +23,4 @@ ifeq ($(CONFIG_NORTHBRIDGE_INTEL_I440BXEMULATION),y)
 
 STAGE2_CHIPSET_OBJ += $(obj)/northbridge/intel/i440bxemulation/i440bx.o
 
-$(obj)/northbridge/intel/i440bxemulation/%.o: $(src)/northbridge/intel/i440bxemulation/%.c $(obj)/statictree.h
-	$(Q)mkdir -p $(obj)/northbridge/intel/i440bxemulation
-	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
-
 endif

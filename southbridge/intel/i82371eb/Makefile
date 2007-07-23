@@ -22,10 +22,4 @@ ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_I82371EB),y)
 
 STAGE2_CHIPSET_OBJ += $(obj)/southbridge/intel/i82371eb/i82371eb.o
 
-$(obj)/southbridge/intel/i82371eb/%.o: $(src)/southbridge/intel/i82371eb/%.c \
-				       $(obj)/statictree.h
-	$(Q)mkdir -p $(obj)/southbridge/intel/i82371eb/
-	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
-
 endif

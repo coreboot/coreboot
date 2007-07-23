@@ -61,6 +61,7 @@ case  "$ARCH" in
 	searchgnu ar >/dev/null && echo "AR_x86 := $(searchgnu ar)"
 	searchgnu as >/dev/null && echo "AS_x86 := $(searchgnu as) --32"
 	searchgnu ld >/dev/null && echo "LD_x86 := $(searchgnu ld) -b elf32-i386 -melf_i386"
+	searchgnu nm >/dev/null && echo "NM_x86 := $(searchgnu nm)"
 	searchgnu objcopy >/dev/null && echo "OBJCOPY_x86 := $(searchgnu objcopy)"
 	;;
 "x86")
@@ -71,6 +72,7 @@ case  "$ARCH" in
 		searchgnu ar >/dev/null && echo "AR_x86 := $(searchgnu ar)"
 		searchgnu as >/dev/null && echo "AS_x86 := $(searchgnu as)"
 		searchgnu ld >/dev/null && echo "LD_x86 := $(searchgnu ld)"
+		searchgnu nm >/dev/null && echo "NM_x86 := $(searchgnu nm)"
 		searchgnu objcopy >/dev/null && echo "OBJCOPY_x86 := $(searchgnu objcopy)"
 	else
 		CC=`find /opt/local/bin/ -name "i386-elf-gcc-*"`
@@ -82,6 +84,7 @@ case  "$ARCH" in
 		echo "AR_x86 := i386-elf-ar"
 		echo "AS_x86 := i386-elf-as"
 		echo "LD_x86 := i386-elf-ld"
+		echo "NM_x86 := i386-elf-nm"
 		echo "OBJCOPY_x86 := i386-elf-objcopy"
 		echo "INTLCFLAGS  := -I/opt/local/include"
 		echo "INTLLIBS    := -L/opt/local/lib -lintl"
@@ -94,6 +97,7 @@ case  "$ARCH" in
 	echo "AR_x86 := i386-linux-ar"
 	echo "AS_x86 := i386-linux-as"
 	echo "LD_x86 := i386-linux-ld"
+	echo "NM_x86 := i386-linux-nm"
 	echo "OBJCOPY_x86 := i386-linux-objcopy"
 	;;
 esac

@@ -20,7 +20,7 @@
 ##
 
 $(obj)/device/%.o: $(src)/device/%.c
-	$(Q)mkdir -p $(obj)/device
+	$(Q)mkdir -p $(dir $@)
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
 

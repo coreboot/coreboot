@@ -29,13 +29,8 @@
 #include <statictree.h>
 #include "cs5536.h"
 
-struct msrinit {
-	u32 msrnum;
-	struct msr msr;
-};
-
 /* Master configuration register for bus masters */
-static struct msrinit SB_MASTER_CONF_TABLE[] = {
+static const struct msrinit SB_MASTER_CONF_TABLE[] = {
 	{USB2_SB_GLD_MSR_CONF, {.hi = 0,.lo = 0x00008f000}},
 	{ATA_SB_GLD_MSR_CONF,  {.hi = 0,.lo = 0x00048f000}},
 	{AC97_SB_GLD_MSR_CONF, {.hi = 0,.lo = 0x00008f000}},
@@ -44,7 +39,7 @@ static struct msrinit SB_MASTER_CONF_TABLE[] = {
 };
 
 /* CS5536 clock gating */
-static struct msrinit CS5536_CLOCK_GATING_TABLE[] = {
+static const struct msrinit CS5536_CLOCK_GATING_TABLE[] = {
 	{GLIU_SB_GLD_MSR_PM,  {.hi = 0,.lo = 0x000000004}},
 	{GLPCI_SB_GLD_MSR_PM, {.hi = 0,.lo = 0x000000005}},
 	{GLCP_SB_GLD_MSR_PM,  {.hi = 0,.lo = 0x000000004}},
@@ -99,32 +94,18 @@ static const u32 FlashPort[] = {
  */
 static void pm_chipset_init(void)
 {
-	u32 val = 0;
-	u16 port;
+	outl(0x0E00, PMS_IO_BASE + 0x010);	/* 1ms */
 
-	port = (PMS_IO_BASE + 0x010);
-	val = 0x0E00;		/*  1ms */
-	outl(val, port);
-
-	/* PM_WKXD */
 	/* Make sure bits[3:0]=0000b to clear the saved Sx state. */
-	port = (PMS_IO_BASE + PM_WKXD);
-	val = 0x0A0;		/*  5ms */
-	outl(val, port);
+	outl(0x00A0, PMS_IO_BASE + PM_WKXD);	/* 5ms */
 
-	/* PM_WKD */
-	port = (PMS_IO_BASE + PM_WKD);
-	outl(val, port);
+	outl(0x00A0, PMS_IO_BASE + PM_WKD);
 
-	/* PM_SED */
-	port = (PMS_IO_BASE + PM_SED);
-	val = 0x04601;		/*  5ms, # of 3.57954MHz clock edges */
-	outl(val, port);
+	/* 5ms, # of 3.57954MHz clock edges */
+	outl(0x4601, PMS_IO_BASE + PM_SED);
 
-	/* PM_SIDD */
-	port = (PMS_IO_BASE + PM_SIDD);
-	val = 0x08C02;		/*  10ms, # of 3.57954MHz clock edges */
-	outl(val, port);
+	/* 10ms, # of 3.57954MHz clock edges */
+	outl(0x8C02, PMS_IO_BASE + PM_SIDD);
 }
 
 /**
@@ -136,7 +117,6 @@ static void chipset_flash_setup(void)
 {
 	int i;
 	struct msr msr;
-	int numEnabled = 0;
 
 	printk(BIOS_DEBUG, "chipset_flash_setup: Start\n");
 	for (i = 0; i < ARRAY_SIZE(FlashInitTable); i++) {
@@ -164,9 +144,6 @@ static void chipset_flash_setup(void)
 			printk(BIOS_DEBUG, "MSR(0x%08X, %08X_%08X)\n",
 			       MDD_NORF_CNTRL, msr.hi, msr.lo);
 			wrmsr(MDD_NORF_CNTRL, msr);
-
-			/* Update the number enabled. */
-			numEnabled++;
 		}
 	}
 	printk(BIOS_DEBUG, "chipset_flash_setup: Finish\n");
@@ -253,6 +230,7 @@ static void uarts_init(struct southbridge_amd_cs5536_config *sb)
 
 	dev = dev_find_device(PCI_VENDOR_ID_AMD,
 			      PCI_DEVICE_ID_AMD_CS5536_ISA, 0);
+
 	gpio_addr = pci_read_config32(dev, PCI_BASE_ADDRESS_1);
 	gpio_addr &= ~1;	/* Clear I/O bit */
 	printk(BIOS_DEBUG, "GPIO_ADDR: %08X\n", gpio_addr);
@@ -440,16 +418,14 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 		*(bar + UOCMUX) &= PUEN_SET;
 
 		/* Host or Device? */
-		if (sb->enable_USBP4_device) {
+		if (sb->enable_USBP4_device)
 			*(bar + UOCMUX) |= PMUX_DEVICE;
-		} else {
+		else
 			*(bar + UOCMUX) |= PMUX_HOST;
-		}
 
 		/* Overcurrent configuration */
-		if (sb->enable_USBP4_overcurrent) {
+		if (sb->enable_USBP4_overcurrent)
 			*(bar + UOCCAP) |= sb->enable_USBP4_overcurrent;
-		}
 	}
 
 	/* PBz#6466: If the UOC(OTG) device, port 4, is configured as a
@@ -478,15 +454,13 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 	/* Disable virtual PCI UDC and OTG headers. */
 	dev = dev_find_device(PCI_VENDOR_ID_AMD,
 			      PCI_DEVICE_ID_AMD_CS5536_UDC, 0);
-	if (dev) {
+	if (dev)
 		pci_write_config32(dev, 0x7C, 0xDEADBEEF);
-	}
 
 	dev = dev_find_device(PCI_VENDOR_ID_AMD,
 			      PCI_DEVICE_ID_AMD_CS5536_OTG, 0);
-	if (dev) {
+	if (dev)
 		pci_write_config32(dev, 0x7C, 0xDEADBEEF);
-	}
 }
 
 /** 
@@ -502,9 +476,8 @@ void chipsetinit(void)
 {
 	struct device *dev;
 	struct msr msr;
-	u32 msrnum;
 	struct southbridge_amd_cs5536_config *sb;
-	struct msrinit *csi;
+	const struct msrinit *csi;
 
 	post_code(P80_CHIPSET_INIT);
 	dev = dev_find_device(PCI_VENDOR_ID_AMD,
@@ -520,7 +493,7 @@ void chipsetinit(void)
 	if (!IsS3Resume())
 	{
 		struct acpi_init *aci = acpi_init_table;
-		for (; aci->ioreg; aci++) {
+		for (/* Nothing */; aci->ioreg; aci++) {
 			outl(aci->regdata, aci->ioreg);
 			inl(aci->ioreg);
 		}
@@ -535,22 +508,20 @@ void chipsetinit(void)
 	/* Allow I/O reads and writes during a ATA DMA operation. This could
 	 * be done in the HD ROM but do it here for easier debugging.
 	 */
-	msrnum = ATA_SB_GLD_MSR_ERR;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(ATA_SB_GLD_MSR_ERR);
 	msr.lo &= ~0x100;
-	wrmsr(msrnum, msr);
+	wrmsr(ATA_SB_GLD_MSR_ERR, msr);
 
 	/* Enable post primary IDE. */
-	msrnum = GLPCI_SB_CTRL;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(GLPCI_SB_CTRL);
 	msr.lo |= GLPCI_CRTL_PPIDE_SET;
-	wrmsr(msrnum, msr);
+	wrmsr(GLPCI_SB_CTRL, msr);
 
 	csi = SB_MASTER_CONF_TABLE;
 	for (/* Nothing */; csi->msrnum; csi++) {
 		msr.lo = csi->msr.lo;
 		msr.hi = csi->msr.hi;
-		wrmsr(csi->msrnum, msr);	/* MSR - see table above */
+		wrmsr(csi->msrnum, msr);
 	}
 
 	/* Flash BAR size setup. */
@@ -566,7 +537,7 @@ void chipsetinit(void)
 		for (/* Nothing */; csi->msrnum; csi++) {
 			msr.lo = csi->msr.lo;
 			msr.hi = csi->msr.hi;
-			wrmsr(csi->msrnum, msr); /* MSR - see table above */
+			wrmsr(csi->msrnum, msr);
 		}
 	}
 }
@@ -601,9 +572,8 @@ static void southbridge_init(struct device *dev)
 
 	printk(BIOS_ERR, "cs5536: %s: enable_ide_nand_flash is %d\n",
 	       __FUNCTION__, sb->enable_ide_nand_flash);
-	if (sb->enable_ide_nand_flash == 1) {
+	if (sb->enable_ide_nand_flash == 1)
 		enable_ide_nand_flash_header();
-	}
 
 	enable_USB_port4(sb);
 
@@ -633,8 +603,7 @@ static void southbridge_enable(struct device *dev)
  */
 static void cs5536_pci_dev_enable_resources(struct device *dev)
 {
-	/* TODO: Shouldn't this be BIOS_SPEW? */
-	printk(BIOS_ERR, "cs5536: %s()\n", __FUNCTION__);
+	printk(BIOS_SPEW, "cs5536: %s()\n", __FUNCTION__);
 	pci_dev_enable_resources(dev);
 	enable_childrens_resources(dev);
 }

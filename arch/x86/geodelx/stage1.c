@@ -23,10 +23,7 @@
 #include <msr.h>
 #include <amd_geodelx.h>
 
-static const struct msrinit {
-	u32 msrnum;
-	struct msr msr;
-} msr_table[] = {
+static const struct msrinit msr_table[] = {
   /* Setup access to cache under 1MB. */
   {CPU_RCONF_DEFAULT, {.hi = 0x24fffc02,.lo = 0x1000A000}}, // 0x00000-0xA0000
   {CPU_RCONF_A0_BF,   {.hi = 0x00000000,.lo = 0x00000000}}, // 0xA0000-0xBFFFF
@@ -43,17 +40,18 @@ static const struct msrinit {
 };
 
 /**
-  * Set up Geode LX registers for sane behaviour.
-  */
+ * Set up Geode LX registers for sane behaviour.
+ */
 void geodelx_msr_init(void)
 {
 }
 
 /**
-  * Disable Cache As RAM(CAR) after memory is setup.
-  *  Geode can write back the cache contents to RAM and continue on.
-  *  Assumes that anything in the cache was under 1MB.
-  */
+ * Disable Cache As RAM (CAR) after memory is setup.
+ *
+ * Geode can write back the cache contents to RAM and continue on.
+ * Assumes that anything in the cache was under 1MB.
+ */
 void disable_car(void)
 {
 	int i;

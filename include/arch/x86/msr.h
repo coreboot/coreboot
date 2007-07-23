@@ -21,10 +21,14 @@
 #define CPU_X86_MSR_H
 
 /* standard MSR operations, everyone has written these one hundred times */
-struct msr 
-{
+struct msr {
 	u32 lo;
 	u32 hi;
+};
+
+struct msrinit {
+        u32 msrnum;
+        struct msr msr;
 };
 
 static inline struct msr rdmsr(u32 index)

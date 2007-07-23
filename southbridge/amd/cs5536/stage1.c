@@ -19,6 +19,7 @@
 
 #include <types.h>
 #include <msr.h>
+#include <lib.h>
 #include <amd_geodelx.h>
 #include "cs5536.h"
 
@@ -43,7 +44,7 @@ static void cs5536_setup_extmsr(void)
 	struct msr msr;
 
 	/* Forward MSR access to CS5536_GLINK_PORT_NUM to CS5536_DEV_NUM. */
-	msr.hi = msr.lo = 0x00000000;
+	msr.hi = msr.lo = 0;
 
 	/* TODO: unsigned char -> u8? */
 #if CS5536_GLINK_PORT_NUM <= 4
@@ -88,6 +89,14 @@ static void cs5536_usb_swapsif(void)
 	}
 }
 
+static const struct msrinit msr_table[] = {
+	{MDD_LBAR_SMB,   {.hi = 0x0000f001, .lo = SMBUS_IO_BASE}},
+	{MDD_LBAR_GPIO,  {.hi = 0x0000f001, .lo = GPIO_IO_BASE}},
+	{MDD_LBAR_MFGPT, {.hi = 0x0000f001, .lo = MFGPT_IO_BASE}},
+	{MDD_LBAR_ACPI,  {.hi = 0x0000f001, .lo = ACPI_IO_BASE}},
+	{MDD_LBAR_PMS,   {.hi = 0x0000f001, .lo = PMS_IO_BASE}},
+};
+
 /**
  * Set up I/O bases for SMBus, GPIO, MFGPT, ACPI, and PM.
  *
@@ -97,32 +106,10 @@ static void cs5536_usb_swapsif(void)
  */
 static void cs5536_setup_iobase(void)
 {
-	struct msr msr;
+	int i;
 
-	/* Setup LBAR for SMBus controller. */
-	msr.hi = 0x0000f001;
-	msr.lo = SMBUS_IO_BASE;
-	wrmsr(MDD_LBAR_SMB, msr);
-
-	/* Setup LBAR for GPIO. */
-	msr.hi = 0x0000f001;
-	msr.lo = GPIO_IO_BASE;
-	wrmsr(MDD_LBAR_GPIO, msr);
-
-	/* Setup LBAR for MFGPT. */
-	msr.hi = 0x0000f001;
-	msr.lo = MFGPT_IO_BASE;
-	wrmsr(MDD_LBAR_MFGPT, msr);
-
-	/* Setup LBAR for ACPI. */
-	msr.hi = 0x0000f001;
-	msr.lo = ACPI_IO_BASE;
-	wrmsr(MDD_LBAR_ACPI, msr);
-
-	/* Setup LBAR for PM support. */
-	msr.hi = 0x0000f001;
-	msr.lo = PMS_IO_BASE;
-	wrmsr(MDD_LBAR_PMS, msr);
+	for (i = 0; i < ARRAY_SIZE(msr_table); i++)
+		wrmsr(msr_table[i].msrnum, msr_table[i].msr);
 }
 
 /**

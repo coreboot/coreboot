@@ -100,10 +100,7 @@ extern void setup_realmode_idt(void);
 #define BRIDGE_IO_MASK (IORESOURCE_IO | IORESOURCE_MEM)
 
 /* TODO: Not used!? */
-static const struct msr_defaults {
-	u32 msr_no;
-	struct msr msr;
-} msr_defaults[] = {
+static const struct msrinit msr_defaults[] = {
 	{ 0x1700, {.hi = 0,.lo = IM_QWAIT}},
 	{ 0x1800, {.hi = DMCF_WRITE_SERIALIZE_REQUEST,
 		   .lo = DMCF_SERIAL_LOAD_MISSES}},
@@ -235,6 +232,7 @@ static void geodelx_northbridge_set_resources(struct device *dev)
 {
 	struct resource *resource, *last;
 	unsigned int link;
+	struct bus *bus;
 	u8 line;
 
 	last = &dev->resource[dev->resources];
@@ -248,7 +246,6 @@ static void geodelx_northbridge_set_resources(struct device *dev)
 	}
 
 	for (link = 0; link < dev->links; link++) {
-		struct bus *bus;
 		bus = &dev->link[link];
 		if (bus->children) {
 			printk(BIOS_DEBUG,
@@ -402,9 +399,7 @@ static unsigned int geodelx_pci_domain_scan_bus(struct device *dev,
 						unsigned int max)
 {
 	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __FUNCTION__);
-
-	max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0, 0), 0xff, max);
-	return max;
+	return pci_scan_bus(&dev->link[0], PCI_DEVFN(0, 0), 0xff, max);
 }
 
 /**

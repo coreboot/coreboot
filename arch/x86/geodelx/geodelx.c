@@ -255,6 +255,12 @@ u32 pci_speed(void)
 		return 33;
 }
 
+static const struct msrinit msr_table[] = {
+	{CPU_BC_MSS_ARRAY_CTL0, {.hi = 0x00000000, .lo = 0x2814D352}},
+	{CPU_BC_MSS_ARRAY_CTL1, {.hi = 0x00000000, .lo = 0x1068334D}},
+	{CPU_BC_MSS_ARRAY_CTL2, {.hi = 0x00000106, .lo = 0x83104104}},
+};
+
 /**
  * Delay Control Settings table from AMD (MCP 0x4C00000F).
  */
@@ -308,44 +314,29 @@ static const struct delay_controls {
  */
 static void set_delay_control(u8 dimm0, u8 dimm1)
 {
-	u32 msrnum, glspeed;
+	u32 glspeed;
 	u8 spdbyte0, spdbyte1, dimms, i;
 	struct msr msr;
 
 	glspeed = geode_link_speed();
 
 	/* Fix delay controls for DM and IM arrays. */
-	msrnum = CPU_BC_MSS_ARRAY_CTL0;
-	msr.hi = 0;
-	msr.lo = 0x2814D352;
-	wrmsr(msrnum, msr);
+	for (i = 0; i < ARRAY_SIZE(msr_table); i++)
+		wrmsr(msr_table[i].msrnum, msr_table[i].msr);
 
-	msrnum = CPU_BC_MSS_ARRAY_CTL1;
-	msr.hi = 0;
-	msr.lo = 0x1068334D;
-	wrmsr(msrnum, msr);
-
-	msrnum = CPU_BC_MSS_ARRAY_CTL2;
-	msr.hi = 0x00000106;
-	msr.lo = 0x83104104;
-	wrmsr(msrnum, msr);
-
-	msrnum = GLCP_FIFOCTL;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(GLCP_FIFOCTL);
 	msr.hi = 0x00000005;
-	wrmsr(msrnum, msr);
+	wrmsr(GLCP_FIFOCTL, msr);
 
 	/* Enable setting. */
-	msrnum = CPU_BC_MSS_ARRAY_CTL_ENA;
 	msr.hi = 0;
 	msr.lo = 0x00000001;
-	wrmsr(msrnum, msr);
+	wrmsr(CPU_BC_MSS_ARRAY_CTL_ENA, msr);
 
 	/* Debug Delay Control setup check.
 	 * Leave it alone if it has been setup. FS2 or something is here.
 	 */
-	msrnum = GLCP_DELAY_CONTROLS;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(GLCP_DELAY_CONTROLS);
 	if (msr.lo & ~(DELAY_LOWER_STATUS_MASK))
 		return;
 
@@ -409,85 +400,74 @@ static void set_delay_control(u8 dimm0, u8 dimm1)
  */
 void cpu_reg_init(int debug_clock_disable, u8 dimm0, u8 dimm1)
 {
-	int msrnum;
 	struct msr msr;
 
 	/* Castle 2.0 BTM periodic sync period. */
 	/* [40:37] 1 sync record per 256 bytes. */
-	msrnum = CPU_PF_CONF;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(CPU_PF_CONF);
 	msr.hi |= (0x8 << 5);
-	wrmsr(msrnum, msr);
+	wrmsr(CPU_PF_CONF, msr);
 
 	/* Castle performance setting.
 	 * Enable Quack for fewer re-RAS on the MC.
 	 */
-	msrnum = GLIU0_ARB;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(GLIU0_ARB);
 	msr.hi &= ~ARB_UPPER_DACK_EN_SET;
 	msr.hi |= ARB_UPPER_QUACK_EN_SET;
-	wrmsr(msrnum, msr);
+	wrmsr(GLIU0_ARB, msr);
 
-	msrnum = GLIU1_ARB;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(GLIU1_ARB);
 	msr.hi &= ~ARB_UPPER_DACK_EN_SET;
 	msr.hi |= ARB_UPPER_QUACK_EN_SET;
-	wrmsr(msrnum, msr);
+	wrmsr(GLIU1_ARB, msr);
 
 	/* GLIU port active enable, limit south pole masters (AES and PCI) to
 	 * one outstanding transaction.
 	 */
-	msrnum = GLIU1_PORT_ACTIVE;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(GLIU1_PORT_ACTIVE);
 	msr.lo &= ~0x880;
-	wrmsr(msrnum, msr);
+	wrmsr(GLIU1_PORT_ACTIVE, msr);
 
 	/* Set the Delay Control in GLCP. */
 	set_delay_control(dimm0, dimm1);
 
 	/* Enable RSDC. */
-	msrnum = CPU_AC_SMM_CTL;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(CPU_AC_SMM_CTL);
 	msr.lo |= SMM_INST_EN_SET;
-	wrmsr(msrnum, msr);
+	wrmsr(CPU_AC_SMM_CTL, msr);
 
 	/* FPU imprecise exceptions bit. */
-	msrnum = CPU_FPU_MSR_MODE;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(CPU_FPU_MSR_MODE);
 	msr.lo |= FPU_IE_SET;
-	wrmsr(msrnum, msr);
+	wrmsr(CPU_FPU_MSR_MODE, msr);
 
 	/* Power savers (do after BIST). */
 	/* Enable Suspend on HLT & PAUSE instructions. */
-	msrnum = CPU_XC_CONFIG;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(CPU_XC_CONFIG);
 	msr.lo |= XC_CONFIG_SUSP_ON_HLT | XC_CONFIG_SUSP_ON_PAUSE;
-	wrmsr(msrnum, msr);
+	wrmsr(CPU_XC_CONFIG, msr);
 
 	/* Enable SUSP and allow TSC to run in Suspend (keep speed
 	 * detection happy).
 	 */
-	msrnum = CPU_BC_CONF_0;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(CPU_BC_CONF_0);
 	msr.lo |= TSC_SUSP_SET | SUSP_EN_SET;
 	msr.lo &= 0x0F0FFFFFF;
 	msr.lo |= 0x002000000;	/* PBZ213: Set PAUSEDLY = 2. */
-	wrmsr(msrnum, msr);
+	wrmsr(CPU_BC_CONF_0, msr);
 
 	/* Disable the debug clock to save power. */
 	/* Note: Leave it enabled for FS2 debug. */
 	if (debug_clock_disable && 0) {
-		msrnum = GLCP_DBGCLKCTL;
 		msr.hi = 0;
 		msr.lo = 0;
-		wrmsr(msrnum, msr);
+		wrmsr(GLCP_DBGCLKCTL, msr);
 	}
 
 	/* Setup throttling delays to proper mode if it is ever enabled. */
-	msrnum = GLCP_TH_OD;
 	msr.hi = 0;
 	msr.lo = 0x00000603C;
-	wrmsr(msrnum, msr);
+	wrmsr(GLCP_TH_OD, msr);
 
 	/* Fix CPU bugs. */
 #warning testing fixing bugs in initram

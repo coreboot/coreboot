@@ -80,14 +80,17 @@ static void auto_size_dimm(unsigned int dimm, u8 dimm0, u8 dimm1)
 
 	/* Size = Module Density * Module Banks */
 	dimm_size = smbus_read_byte(dimm, SPD_BANK_DENSITY);
+
 	/* Align so 1 GB (bit 0) is bit 8. This is a little weird to get gcc
 	 * to not optimize this out.
 	 */
 	dimm_size |= (dimm_size << 8);
+
 	/* And off 2 GB DIMM size: not supported and the 1 GB size we just
 	 * moved up to bit 8 as well as all the extra on top.
 	 */
 	dimm_size &= 0x01FC;
+
 	/* Module Density * Module Banks */
 	/* Shift to multiply by the number of DIMM banks. */
 	dimm_size <<= (dimm_setting >> CF07_UPPER_D0_MB_SHIFT) & 1;
@@ -130,11 +133,11 @@ static void auto_size_dimm(unsigned int dimm, u8 dimm0, u8 dimm1)
 		post_code(ERROR_SET_PAGE);
 		hlt();
 	}
+
 	spd_byte -= 7;
 	/* If the value is above 6 it means >12 address lines... */
-	if (spd_byte > 5) {
+	if (spd_byte > 5)
 		spd_byte = 7;	/* ...which means >32k so set to disabled. */
-	}
 	/* 0 = 1k, 1 = 2k, 2 = 4k, etc. */
 	dimm_setting |= spd_byte << CF07_UPPER_D0_PSZ_SHIFT;
 
@@ -181,9 +184,8 @@ static void check_ddr_max(u8 dimm0, u8 dimm1)
 #endif
 
 	/* Use the slowest DIMM. */
-	if (spd_byte0 < spd_byte1) {
+	if (spd_byte0 < spd_byte1)
 		spd_byte0 = spd_byte1;
-	}
 
 	/* Turn SPD ns time into MHz. Check what the asm does to this math. */
 	speed = 2 * ((10000 / (((spd_byte0 >> 4) * 10) + (spd_byte0 & 0x0F))));
@@ -214,22 +216,19 @@ static void set_refresh_rate(u8 dimm0, u8 dimm1)
 
 	spd_byte0 = smbus_read_byte(dimm0, SPD_REFRESH);
 	spd_byte0 &= 0xF;
-	if (spd_byte0 > 5) {
+	if (spd_byte0 > 5)
 		spd_byte0 = 5;
-	}
 	rate0 = REFRESH_RATE[spd_byte0];
 
 	spd_byte1 = smbus_read_byte(dimm1, SPD_REFRESH);
 	spd_byte1 &= 0xF;
-	if (spd_byte1 > 5) {
+	if (spd_byte1 > 5)
 		spd_byte1 = 5;
-	}
 	rate1 = REFRESH_RATE[spd_byte1];
 
 	/* Use the faster rate (lowest number). */
-	if (rate0 > rate1) {
+	if (rate0 > rate1)
 		rate0 = rate1;
-	}
 
 	msr = rdmsr(MC_CF07_DATA);
 	msr.lo |= ((rate0 * (geode_link_speed() / 2)) / 16)
@@ -488,14 +487,10 @@ static void set_extended_mode_registers(u8 dimm0, u8 dimm1)
 	spd_byte1 &= spd_byte0;
 
 	msr = rdmsr(MC_CF07_DATA);
-	if (spd_byte1 & 1) {
-		/* Drive Strength Control */
-		msr.lo |= CF07_LOWER_EMR_DRV_SET;
-	}
-	if (spd_byte1 & 2) {
-		/* FET Control */
-		msr.lo |= CF07_LOWER_EMR_QFC_SET;
-	}
+	if (spd_byte1 & 1)
+		msr.lo |= CF07_LOWER_EMR_DRV_SET; /* Drive Strength Control */
+	if (spd_byte1 & 2)
+		msr.lo |= CF07_LOWER_EMR_QFC_SET; /* FET Control */
 	wrmsr(MC_CF07_DATA, msr);
 }
 
@@ -508,15 +503,13 @@ static void EnableMTest(void)
 
 	msr = rdmsr(GLCP_DELAY_CONTROLS);
 	msr.hi &= ~(7 << 20);	/* Clear bits 54:52. */
-	if (geode_link_speed() < 200) {
+	if (geode_link_speed() < 200)
 		msr.hi |= 2 << 20;
-	}
 	wrmsr(GLCP_DELAY_CONTROLS, msr);
 
 	msr = rdmsr(MC_CFCLK_DBUG);
-	msr.hi |=
-	    CFCLK_UPPER_MTST_B2B_DIS_SET | CFCLK_UPPER_MTEST_EN_SET |
-	    CFCLK_UPPER_MTST_RBEX_EN_SET;
+	msr.hi |= CFCLK_UPPER_MTST_B2B_DIS_SET | CFCLK_UPPER_MTEST_EN_SET |
+		  CFCLK_UPPER_MTST_RBEX_EN_SET;
 	msr.lo |= CFCLK_LOWER_TRISTATE_DIS_SET;
 	wrmsr(MC_CFCLK_DBUG, msr);
 
@@ -530,32 +523,27 @@ static void EnableMTest(void)
 void sdram_set_registers(void)
 {
 	struct msr msr;
-	u32 msrnum;
 
 	/* Set Timing Control */
-	msrnum = MC_CF1017_DATA;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(MC_CF1017_DATA);
 	msr.lo &= ~(7 << CF1017_LOWER_RD_TMG_CTL_SHIFT);
-	if (geode_link_speed() < 334) {
+	if (geode_link_speed() < 334)
 		msr.lo |= (3 << CF1017_LOWER_RD_TMG_CTL_SHIFT);
-	} else {
+	else
 		msr.lo |= (4 << CF1017_LOWER_RD_TMG_CTL_SHIFT);
-	}
-	wrmsr(msrnum, msr);
+	wrmsr(MC_CF1017_DATA, msr);
 
 	/* Set Refresh Staggering */
-	msrnum = MC_CF07_DATA;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(MC_CF07_DATA);
 	msr.lo &= ~0xF0;
 	msr.lo |= 0x40;		/* Set refresh to 4 SDRAM clocks. */
-	wrmsr(msrnum, msr);
+	wrmsr(MC_CF07_DATA, msr);
 
 	/* Memory Interleave: Set HOI here otherwise default is LOI. */
 #if 0
-	msrnum = MC_CF8F_DATA;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(MC_CF8F_DATA);
 	msr.hi |= CF8F_UPPER_HOI_LOI_SET;
-	wrmsr(msrnum, msr);
+	wrmsr(MC_CF8F_DATA, msr);
 #endif
 }
 
@@ -636,7 +624,7 @@ void sdram_set_spd_registers(u8 dimm0, u8 dimm1)
  */
 void sdram_enable(u8 dimm0, u8 dimm1)
 {
-	u32 i, msrnum;
+	u32 i;
 	struct msr msr;
 
 	post_code(POST_MEM_ENABLE);
@@ -658,38 +646,33 @@ void sdram_enable(u8 dimm0, u8 dimm1)
 	}
 
 	/* Set CKEs. */
-	msrnum = MC_CFCLK_DBUG;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(MC_CFCLK_DBUG);
 	msr.lo &= ~(CFCLK_LOWER_MASK_CKE_SET0 | CFCLK_LOWER_MASK_CKE_SET1);
-	wrmsr(msrnum, msr);
+	wrmsr(MC_CFCLK_DBUG, msr);
 
 	/* Force Precharge All on next command, EMRS. */
-	msrnum = MC_CFCLK_DBUG;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(MC_CFCLK_DBUG);
 	msr.lo |= CFCLK_LOWER_FORCE_PRE_SET;
-	wrmsr(msrnum, msr);
+	wrmsr(MC_CFCLK_DBUG, msr);
 
 	/* EMRS to enable DLL (pre-setup done in setExtendedModeRegisters). */
-	msrnum = MC_CF07_DATA;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(MC_CF07_DATA);
 	msr.lo |= CF07_LOWER_PROG_DRAM_SET | CF07_LOWER_LOAD_MODE_DDR_SET;
-	wrmsr(msrnum, msr);
+	wrmsr(MC_CF07_DATA, msr);
 	msr.lo &= ~(CF07_LOWER_PROG_DRAM_SET | CF07_LOWER_LOAD_MODE_DDR_SET);
-	wrmsr(msrnum, msr);
+	wrmsr(MC_CF07_DATA, msr);
 
 	/* Clear Force Precharge All. */
-	msrnum = MC_CFCLK_DBUG;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(MC_CFCLK_DBUG);
 	msr.lo &= ~CFCLK_LOWER_FORCE_PRE_SET;
-	wrmsr(msrnum, msr);
+	wrmsr(MC_CFCLK_DBUG, msr);
 
 	/* MRS Reset DLL - set. */
-	msrnum = MC_CF07_DATA;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(MC_CF07_DATA);
 	msr.lo |= CF07_LOWER_PROG_DRAM_SET | CF07_LOWER_LOAD_MODE_DLL_RESET;
-	wrmsr(msrnum, msr);
+	wrmsr(MC_CF07_DATA, msr);
 	msr.lo &= ~(CF07_LOWER_PROG_DRAM_SET | CF07_LOWER_LOAD_MODE_DLL_RESET);
-	wrmsr(msrnum, msr);
+	wrmsr(MC_CF07_DATA, msr);
 
 	/* 2us delay (200 clocks @ 200Mhz). We probably really don't need
 	 * this but... better safe.
@@ -701,59 +684,52 @@ void sdram_enable(u8 dimm0, u8 dimm1)
 	while (!(~inb(0x61)));
 
 	/* Force Precharge All on the next command, auto-refresh. */
-	msrnum = MC_CFCLK_DBUG;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(MC_CFCLK_DBUG);
 	msr.lo |= CFCLK_LOWER_FORCE_PRE_SET;
-	wrmsr(msrnum, msr);
+	wrmsr(MC_CFCLK_DBUG, msr);
 
 	/* Manually AUTO refresh #1. If auto refresh was not enabled above we
 	 * would need to do 8 refreshes to prime the pump before these 2.
 	 */
-	msrnum = MC_CF07_DATA;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(MC_CF07_DATA);
 	msr.lo |= CF07_LOWER_REF_TEST_SET;
-	wrmsr(msrnum, msr);
+	wrmsr(MC_CF07_DATA, msr);
 	msr.lo &= ~CF07_LOWER_REF_TEST_SET;
-	wrmsr(msrnum, msr);
+	wrmsr(MC_CF07_DATA, msr);
 
 	/* Clear Force Precharge All. */
-	msrnum = MC_CFCLK_DBUG;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(MC_CFCLK_DBUG);
 	msr.lo &= ~CFCLK_LOWER_FORCE_PRE_SET;
-	wrmsr(msrnum, msr);
+	wrmsr(MC_CFCLK_DBUG, msr);
 
 	/* Manually AUTO refresh.
 	 * The MC should insert the right delay between the refreshes.
 	 */
-	msrnum = MC_CF07_DATA;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(MC_CF07_DATA);
 	msr.lo |= CF07_LOWER_REF_TEST_SET;
-	wrmsr(msrnum, msr);
+	wrmsr(MC_CF07_DATA, msr);
 	msr.lo &= ~CF07_LOWER_REF_TEST_SET;
-	wrmsr(msrnum, msr);
+	wrmsr(MC_CF07_DATA, msr);
 
 	/* MRS Reset DLL - clear. */
-	msrnum = MC_CF07_DATA;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(MC_CF07_DATA);
 	msr.lo |= CF07_LOWER_PROG_DRAM_SET;
-	wrmsr(msrnum, msr);
+	wrmsr(MC_CF07_DATA, msr);
 	msr.lo &= ~CF07_LOWER_PROG_DRAM_SET;
-	wrmsr(msrnum, msr);
+	wrmsr(MC_CF07_DATA, msr);
 
 	/* Allow MC to tristate during idle cycles with MTEST OFF. */
-	msrnum = MC_CFCLK_DBUG;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(MC_CFCLK_DBUG);
 	msr.lo &= ~CFCLK_LOWER_TRISTATE_DIS_SET;
-	wrmsr(msrnum, msr);
+	wrmsr(MC_CFCLK_DBUG, msr);
 
 	/* Disable SDCLK DIMM 1 slot if no DIMM installed (to save power). */
 	msr = rdmsr(MC_CF07_DATA);
 	if ((msr.hi & (7 << CF07_UPPER_D1_PSZ_SHIFT)) ==
 	    (7 << CF07_UPPER_D1_PSZ_SHIFT)) {
-		msrnum = GLCP_DELAY_CONTROLS;
-		msr = rdmsr(msrnum);
+		msr = rdmsr(GLCP_DELAY_CONTROLS);
 		msr.hi |= (1 << 23);	/* SDCLK bit for 2.0 */
-		wrmsr(msrnum, msr);
+		wrmsr(GLCP_DELAY_CONTROLS, msr);
 	}
 
 	/* Set PMode0 Sensitivity Counter. */
@@ -762,10 +738,9 @@ void sdram_enable(u8 dimm0, u8 dimm1)
 	wrmsr(MC_CF_PMCTR, msr);
 
 	/* Set PMode1 Up delay enable. */
-	msrnum = MC_CF1017_DATA;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(MC_CF1017_DATA);
 	msr.lo |= (209 << 8);	/* bits[15:8] = 209 */
-	wrmsr(msrnum, msr);
+	wrmsr(MC_CF1017_DATA, msr);
 
 	printk(BIOS_DEBUG, "DRAM controller init done.\n");
 	post_code(POST_MEM_SETUP_GOOD);
@@ -786,8 +761,7 @@ void sdram_enable(u8 dimm0, u8 dimm1)
 	 * Check for failed DLL settings now that we have done a
 	 * memory write.
 	 */
-	msrnum = GLCP_DELAY_CONTROLS;
-	msr = rdmsr(msrnum);
+	msr = rdmsr(GLCP_DELAY_CONTROLS);
 	if ((msr.lo & 0x7FF) == 0x104) {
 		/* If you had it you would need to clear out the fail boot
 		 * count flag (depending on where it counts from etc).
@@ -799,10 +773,9 @@ void sdram_enable(u8 dimm0, u8 dimm1)
 		 */
 
 		/* Reset the system. */
-		msrnum = MDD_SOFT_RESET;
-		msr = rdmsr(msrnum);
+		msr = rdmsr(MDD_SOFT_RESET);
 		msr.lo |= 1;
-		wrmsr(msrnum, msr);
+		wrmsr(MDD_SOFT_RESET, msr);
 	}
 
 	printk(BIOS_DEBUG, "RAM DLL lock\n");

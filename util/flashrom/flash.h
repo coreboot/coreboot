@@ -111,11 +111,19 @@ extern struct flashchip flashchips[];
 #define W_49V002FA		0x32
 
 #define ST_ID			0x20	/* ST */
+#define ST_M50FLW040A		0x08
+#define ST_M50FLW040B		0x28
+#define ST_M50FLW080A		0x80
+#define ST_M50FLW080B		0x81
 #define ST_M50FW040		0x2C
+#define ST_M50FW080		0x2D
+#define ST_M50FW016		0x2E
+#define ST_M50LPW116		0x30
 #define ST_M29F002B		0x34
 #define ST_M29F002T		0xB0	/* M29F002T / M29F002NT */
 #define ST_M29F400BT		0xD5
 #define ST_M29F040B		0xE2
+#define ST_M29W010B		0x23
 #define ST_M29W040B		0xE3
 
 #define EMST_ID			0x8c	/* EMST / EFST */

@@ -261,6 +261,25 @@ static int board_ibm_x3455(const char *name)
 	return 0;
 }
 
+/**
+ * Suited for EPoX EP-BX3, and maybe some other Intel 440BX based boards.
+ */
+static int board_epox_ep_bx3(const char *name)
+{
+	uint8_t tmp;
+
+	/* Raise GPIO22. */
+	tmp = inb(0x4036);
+	outb(tmp, 0xEB);
+
+	tmp |= 0x40;
+
+	outb(tmp, 0x4036);
+	outb(tmp, 0xEB);
+
+	return 0;
+}
+
 /*
  * We use 2 sets of ids here, you're free to choose which is which. This
  * to provide a very high degree of certainty when matching a board on
@@ -309,6 +328,8 @@ struct board_pciid_enable board_pciid_enables[] = {
 	 "asus", "p5a", "ASUS P5A", board_asus_p5a},
 	{0x1166, 0x0205, 0x1014, 0x0347, 0x0000, 0x0000, 0x0000, 0x0000,
 	 "ibm", "x3455", "IBM x3455", board_ibm_x3455},
+	{0x8086, 0x7110, 0x0000, 0x0000, 0x8086, 0x7190, 0x0000, 0x0000,
+	 "epox", "ep-bx3", "EPoX EP-BX3", board_epox_ep_bx3},
 	{0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL}	/* Keep this */
 };
 

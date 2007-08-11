@@ -54,6 +54,7 @@ no LinuxBIOS table is found:
 * Agami Aruma: use -m AGAMI:ARUMA
 * ASUS P5A: use -m asus:p5a
 * IBM x3455: use -m ibm:x3455
+* EPoX EP-BX3: use -m epox:ep-bx3
 
 
 ROM Layout Support

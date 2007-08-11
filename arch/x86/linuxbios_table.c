@@ -177,8 +177,8 @@ static void lb_memory_range(struct lb_memory *mem,
 {
 	int entries;
 
-	printk(BIOS_DEBUG, "%s: start 0x%lx size 0x%lx\n", 
-			__func__, (u32)start, (u32)size);
+	printk(BIOS_DEBUG, "%s: start 0x%Lx size 0x%Lx\n", 
+			__func__, start, size);
 
 	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
 	mem->map[entries].start = pack_lb64(start);
@@ -231,7 +231,7 @@ unsigned long lb_table_fini(struct lb_header *head)
 	head->table_checksum = compute_ip_checksum(first_rec, head->table_bytes);
 	head->header_checksum = 0;
 	head->header_checksum = compute_ip_checksum(head, sizeof(*head));
-	printk(BIOS_DEBUG,"Wrote LinuxBIOS table at: %p - %p  checksum %lx\n",
+	printk(BIOS_DEBUG,"Wrote LinuxBIOS table at: %p - %p  checksum %x\n",
 		head, rec, head->table_checksum);
 	return (unsigned long)rec;
 }
@@ -243,8 +243,8 @@ static void lb_cleanup_memory_ranges(struct lb_memory *mem)
 	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
 	printk(BIOS_DEBUG, "%s: # entries %d\n", __func__, entries);
 	for(i = 0; i < entries; i++)
-		printk(BIOS_INFO, "  #%d: base 0x%x size 0x%x\n", 
-				i, (u32)mem->map[i].start.lo, mem->map[i].size.lo);
+		printk(BIOS_INFO, "  #%d: base 0x%08x size 0x%x\n", 
+				i, mem->map[i].start.lo, mem->map[i].size.lo);
 	
 	/* Sort the lb memory ranges */
 	for(i = 0; i < entries; i++) {

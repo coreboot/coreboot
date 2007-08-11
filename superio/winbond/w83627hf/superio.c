@@ -45,13 +45,13 @@ static void pnp_exit_ext_func_mode(struct device * dev)
         outb(0xaa, dev->path.u.pnp.port);
 }
 
-static void pnp_write_index(unsigned long port_base, u8 reg, u8 value)
+static void pnp_write_index(u16 port_base, u8 reg, u8 value)
 {
         outb(reg, port_base);
         outb(value, port_base + 1);
 }
 
-static u8 pnp_read_index(unsigned long port_base, u8 reg)
+static u8 pnp_read_index(u16 port_base, u8 reg)
 {
         outb(reg, port_base);
         return inb(port_base + 1);
@@ -83,7 +83,7 @@ static void init_acpi(struct device * dev)
         pnp_exit_ext_func_mode(dev);  
 }
 
-static void init_hwm(unsigned long base)
+static void init_hwm(u16 base)
 {
 	u8  reg, value;
 	int i;

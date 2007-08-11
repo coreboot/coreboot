@@ -36,14 +36,14 @@
 #include <elf_boot.h>
 
 static int valid_area(struct lb_memory *mem, 
-	unsigned long start, unsigned long len)
+	u64 start, u64 len)
 {
 	/* Check through all of the memory segments and ensure
 	 * the segment that was passed in is completely contained
 	 * in RAM.
 	 */
 	int i;
-	unsigned long end = start + len;
+	u64 end = start + len;
 	unsigned long mem_entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
 
 	/* Walk through the table of valid memory ranges and see if I
@@ -61,7 +61,7 @@ static int valid_area(struct lb_memory *mem,
 	}
 	if (i == mem_entries) {
 		printk(BIOS_ERR, "No matching RAM area found for range:\n");
-		printk(BIOS_ERR, "  [0x%016lx, 0x%016lx)\n", start, end);
+		printk(BIOS_ERR, "  [0x%016Lx, 0x%016Lx)\n", start, end);
 		printk(BIOS_ERR, "RAM areas\n");
 		for(i = 0; i < mem_entries; i++) {
 			u64 mstart, mend;
@@ -69,10 +69,8 @@ static int valid_area(struct lb_memory *mem,
 			mtype = mem->map[i].type;
 			mstart = unpack_lb64(mem->map[i].start);
 			mend = mstart + unpack_lb64(mem->map[i].size);
-			printk(BIOS_ERR, "  [0x%016lx, 0x%016lx) %s\n",
-				(unsigned long)mstart, 
-				(unsigned long)mend, 
-				(mtype == LB_MEM_RAM)?"RAM":"Reserved");
+			printk(BIOS_ERR, "  [0x%016Lx, 0x%016Lx) %s\n",
+				mstart, mend, (mtype == LB_MEM_RAM)?"RAM":"Reserved");
 			
 		}
 		return 0;
@@ -101,14 +99,14 @@ static int load_elf_segments(struct lb_memory *mem,unsigned char *header, int he
 			printk(BIOS_DEBUG, "Dropping empty segment\n");
 			continue;
 		}
-		printk(BIOS_DEBUG, "New segment addr 0x%lx size 0x%lx offset 0x%lx filesize 0x%lx\n",
+		printk(BIOS_DEBUG, "New segment addr 0x%x size 0x%x offset 0x%x filesize 0x%x\n",
 			phdr[i].p_paddr, phdr[i].p_memsz, phdr[i].p_offset, phdr[i].p_filesz);
 		/* Clean up the values */
 		size = phdr[i].p_filesz;
 		if (phdr[i].p_filesz > phdr[i].p_memsz)  {
 			size = phdr[i].p_memsz;
 		}
-		printk(BIOS_DEBUG, "(cleaned up) New segment addr 0x%lx size 0x%lx offset 0x%lx\n",
+		printk(BIOS_DEBUG, "(cleaned up) New segment addr 0x%x size 0x%x offset 0x%x\n",
 			phdr[i].p_paddr, size, phdr[i].p_offset);
 
 		/* Verify the memory addresses in the segment are valid */
@@ -150,7 +148,7 @@ int elfload(struct lb_memory *mem, unsigned char *header, unsigned long header_s
 	/* what the hell is boot_successful? */
 	//boot_successful();
 
-	printk(BIOS_DEBUG, "Jumping to boot code at 0x%x\n", entry);
+	printk(BIOS_DEBUG, "Jumping to boot code at %p\n", entry);
 	post_code(0xfe);
 
 	/* Jump to kernel */

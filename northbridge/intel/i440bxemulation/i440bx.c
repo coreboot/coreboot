@@ -79,7 +79,7 @@ static void ram_resource(struct device *dev, unsigned long index,
 	resource->size = ((resource_t) sizek) << 10;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_CACHEABLE |
 	    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
-	printk(BIOS_DEBUG, "%s: add ram resoource %d bytes\n", __func__,
+	printk(BIOS_DEBUG, "%s: add ram resoource %Ld bytes\n", __func__,
 	       resource->size);
 }
 

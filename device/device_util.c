@@ -602,7 +602,7 @@ void report_resource_stored(struct device *dev, struct resource *resource,
 #endif
 		}
 		printk(BIOS_DEBUG,
-		       "%s %02x <- [0x%010Lx - 0x%010Lx] %s%s%s\n",
+		       "%s %02lx <- [0x%010Lx - 0x%010Lx] %s%s%s\n",
 		       dev_path(dev),
 		       resource->index,
 		       base, end, buf, resource_type(resource), comment);
@@ -643,7 +643,7 @@ void search_global_resources(unsigned long type_mask, unsigned long type,
 			     resource_search_t search, void *gp)
 {
 	struct device *curdev;
-	printk(BIOS_SPEW, "%s: mask %x type %x \n", __func__, type_mask, type);
+	printk(BIOS_SPEW, "%s: mask %lx type %lx \n", __func__, type_mask, type);
 	for (curdev = all_devices; curdev; curdev = curdev->next) {
 		int i;
 		printk(BIOS_SPEW,
@@ -656,9 +656,9 @@ void search_global_resources(unsigned long type_mask, unsigned long type,
 		for (i = 0; i < curdev->resources; i++) {
 			struct resource *resource = &curdev->resource[i];
 			printk(BIOS_SPEW,
-			       "%s: dev %s, resource %d, flags %x base 0x%lx size 0x%lx\n",
+			       "%s: dev %s, resource %d, flags %lx base 0x%Lx size 0x%Lx\n",
 			       __func__, curdev->dtsname, i, resource->flags,
-			       (u32) resource->base, (u32) resource->size);
+			       resource->base, resource->size);
 			/* If it isn't the right kind of resource ignore it. */
 			if ((resource->flags & type_mask) != type) {
 				continue;

@@ -47,7 +47,7 @@ struct rom_header *pci_rom_probe(struct device *dev)
 		return NULL;
 	}
 
-	printk(BIOS_DEBUG, "ROM address for %s = %x\n", dev_path(dev),
+	printk(BIOS_DEBUG, "ROM address for %s = %lx\n", dev_path(dev),
 	       rom_address);
 
 	if (!dev->on_mainboard) {
@@ -131,7 +131,7 @@ struct rom_header *pci_rom_load(struct device *dev,
 			return NULL;	// Only one VGA supported.
 #endif
 		printk(BIOS_DEBUG,
-		       "Copying VGA ROM image from 0x%x to 0x%x, 0x%x bytes\n",
+		       "Copying VGA ROM image from %p to 0x%x, 0x%x bytes\n",
 		       rom_header, PCI_VGA_RAM_IMAGE_START, rom_size);
 		memcpy((void *)PCI_VGA_RAM_IMAGE_START, rom_header, rom_size);
 		vga_inited = 1;
@@ -139,7 +139,7 @@ struct rom_header *pci_rom_load(struct device *dev,
 #endif
 	} else {
 		printk(BIOS_DEBUG,
-		       "Copying non-VGA ROM image from 0x%x to 0x%x, 0x%x bytes\n",
+		       "Copying non-VGA ROM image from %p to %p, 0x%x bytes\n",
 		       rom_header, pci_ram_image_start, rom_size);
 		memcpy(pci_ram_image_start, rom_header, rom_size);
 		pci_ram_image_start += rom_size;

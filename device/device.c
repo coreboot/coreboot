@@ -130,10 +130,10 @@ struct constructor *find_constructor(struct device_id *id)
 	int i;
 	printk(BIOS_SPEW, "%s: find %s\n", __func__, dev_id_string(id));
 	for (i = 0; all_constructors[i]; i++) {
-		printk(BIOS_SPEW, "%s: check all_constructors[i] 0x%lx\n",
+		printk(BIOS_SPEW, "%s: check all_constructors[i] %p\n",
 		       __func__, all_constructors[i]);
 		for (c = all_constructors[i]; c->ops; c++) {
-			printk(BIOS_SPEW, "%s: cons 0x%lx, cons id %s\n",
+			printk(BIOS_SPEW, "%s: cons %p, cons id %s\n",
 			       __func__, c, dev_id_string(&c->id));
 			if ((!c->ops) || (!c->ops->constructor)) {
 				continue;
@@ -164,7 +164,7 @@ void constructor(struct device *dev, struct device_id *id)
 	struct constructor *c;
 
 	c = find_constructor(id);
-	printk(BIOS_SPEW, "%s: constructor is 0x%lx\n", __func__, c);
+	printk(BIOS_SPEW, "%s: constructor is %p\n", __func__, c);
  
 	if(c && c->ops && c->ops->constructor)
 		c->ops->constructor(dev, c);
@@ -485,7 +485,7 @@ void compute_allocate_resource(struct bus *bus, struct resource *bridge,
 			base += size;
 
 			printk(BIOS_SPEW,
-			       "%s %02x *  [0x%08Lx - 0x%08Lx] %s\n",
+			       "%s %02lx *  [0x%08Lx - 0x%08Lx] %s\n",
 			       dev_path(dev),
 			       resource->index,
 			       resource->base,

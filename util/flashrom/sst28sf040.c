@@ -106,10 +106,7 @@ static __inline__ int write_sector_28sf040(volatile uint8_t *bios,
 int probe_28sf040(struct flashchip *flash)
 {
 	volatile uint8_t *bios = flash->virtual_memory;
-	uint8_t id1, id2, tmp;
-
-	/* save the value at the beginning of the Flash */
-	tmp = *bios;
+	uint8_t id1, id2;
 
 	*bios = RESET;
 	myusec_delay(10);
@@ -127,8 +124,6 @@ int probe_28sf040(struct flashchip *flash)
 	if (id1 == flash->manufacture_id && id2 == flash->model_id)
 		return 1;
 
-	/* if there is no SST28SF040, restore the original value */
-	*bios = tmp;
 	return 0;
 }
 

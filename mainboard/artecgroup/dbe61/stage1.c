@@ -48,7 +48,7 @@ static void dbe61_msr_init(void)
 		wrmsr(dbe61_msr[i].reg, dbe61_msr[i].msr);
 }
 
-int hardware_stage1(void)
+void hardware_stage1(void)
 {
 	post_code(POST_START_OF_MAIN);
 

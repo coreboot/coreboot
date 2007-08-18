@@ -59,4 +59,6 @@ int main(void)
 	printk(BIOS_SPEW, "Before wbinvd\n");
 	__asm__("wbinvd\n");
 	printk(BIOS_SPEW, "After wbinvd\n");
+
+	return 0;
 }

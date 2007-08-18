@@ -35,7 +35,7 @@
 
 #define SERIAL_DEV 0x30
 
-int hardware_stage1(void)
+void hardware_stage1(void)
 {
 	void w83627hf_enable_serial(u8 dev, u8 serial, u16 iobase);
 	post_code(POST_START_OF_MAIN);

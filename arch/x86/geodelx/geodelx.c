@@ -152,9 +152,8 @@ void pll_reset(int manualconf, u32 pll_hi, u32 pll_lo)
 
 	msr_glcp_sys_pll = rdmsr(GLCP_SYS_RSTPLL);
 
-	printk(BIOS_DEBUG,
-	       "_MSR GLCP_SYS_RSTPLL (%08x) value is: %08x:%08x\n",
-	       msr_glcp_sys_pll.hi, msr_glcp_sys_pll.lo);
+	printk(BIOS_DEBUG, "_MSR GLCP_SYS_RSTPLL (%08x) value is: %08x:%08x\n",
+	       GLCP_SYS_RSTPLL, msr_glcp_sys_pll.hi, msr_glcp_sys_pll.lo);
 	post_code(POST_PLL_INIT);
 
 	if (!(msr_glcp_sys_pll.lo & (1 << RSTPLL_LOWER_SWFLAGS_SHIFT))) {

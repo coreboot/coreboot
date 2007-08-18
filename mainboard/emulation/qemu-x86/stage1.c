@@ -18,11 +18,13 @@
  */
 
 /* no printk allowed until hardware is ready; hardware is ready */
+
 /** 
  * start up hardware needed for stage1
  */
 void hardware_stage1(void)
 {
+	/* Nothing to do for Qemu */
 }
 void disable_car(void)
 {

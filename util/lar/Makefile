@@ -1,7 +1,7 @@
 ##
 ## lar - LinuxBIOS archiver
 ##
-## Copyright (C) 2006 coresystems GmbH
+## Copyright (C) 2006-2007 coresystems GmbH
 ## (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
 ##
 ## This program is free software; you can redistribute it and/or modify
@@ -22,15 +22,11 @@ LAROBJ := lar.o create.o extract.o list.o lib.o bootblock.o
 
 LARDIR := lardir
 
-ifeq ($(CONFIG_COMPRESSION_LZMA),y)
 COMPRESSOR := $(LZMA_OBJ) $(obj)/util/lzma/lzma-compress.o
 LARDIR     += lzmadir
-endif
 
-ifeq ($(CONFIG_COMPRESSION_NRV2B),y)
 COMPRESSOR += $(obj)/util/nrv2b/nrv2b-compress.o
 LARDIR     += nrv2bdir
-endif
 
 LAROBJ_ABS := $(patsubst %,$(obj)/util/lar/%,$(LAROBJ))
 

@@ -78,29 +78,13 @@ typedef void (*uncompress_func) (char *, char *, u32);
 
 void compress_impossible(char *in, u32 in_len, char *out, u32 *out_len);
 void do_no_compress(char *in, u32 in_len, char *out, u32 *out_len);
-#ifdef CONFIG_COMPRESSION_LZMA
 void do_lzma_compress(char *in, u32 in_len, char *out, u32 *out_len);
-#else
-#define do_lzma_compress compress_impossible
-#endif
-#ifdef CONFIG_COMPRESSION_NRV2B
 void do_nrv2b_compress(char *in, u32 in_len, char *out, u32 *out_len);
-#else
-#define do_nrv2b_compress compress_impossible
-#endif
 
 void uncompress_impossible(char *, char *, u32);
 void do_no_uncompress(char *, char *, u32);
-#ifdef CONFIG_COMPRESSION_LZMA
 void do_lzma_uncompress(char *, char *, u32);
-#else
-#define do_lzma_uncompress uncompress_impossible
-#endif
-#ifdef CONFIG_COMPRESSION_NRV2B
 void do_nrv2b_uncompress(char *, char *, u32);
-#else
-#define do_nrv2b_uncompress uncompress_impossible
-#endif
 
 static compress_func compress_functions[] = {
 	do_no_compress,

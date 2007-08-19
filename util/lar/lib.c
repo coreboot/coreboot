@@ -210,16 +210,29 @@ int add_files(const char *name)
 {
 	struct stat filestat;
 	int ret = -1;
-	const char *realname;
+	char *realname;
+	char *c;
 
-	realname = name;
 	if (strstr(name, "nocompress:") == name) {
-		realname = name + 11;
+		name += 11;
 	}
+
+	realname = strdup(name);
+
+	if (realname == NULL) {
+	  fprintf(stderr, "Out of memory.\n");
+	  exit(1);
+	}
+
+	c = strchr(realname, ':');
+
+	if (c != NULL)
+	  *c = '\0';
 
 	/* printf("... add_files %s\n", name); */
 	if (stat(realname, &filestat) == -1) {
 		fprintf(stderr, "Error getting file attributes of %s\n", name);
+		free(realname);
 		return -1;
 	}
 
@@ -264,6 +277,7 @@ int add_files(const char *name)
 		ret = 0;
 	}
 
+	free(realname);
 	return ret;
 }
 

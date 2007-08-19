@@ -62,6 +62,64 @@ char *get_bootblock(void)
 	return bootblock;
 }
 
+int create_lar(const char *archivename, struct file *files)
+{
+	struct lar *lar = lar_new_archive(archivename, larsize);
+
+	if (lar == NULL) {
+		fprintf(stderr, "Unable to create %s as a LAR archive.\n",
+			archivename);
+		exit(1);
+	}
+
+	for( ; files; files = files->next) {
+		if (lar_add_file(lar, files->name)) {
+			fprintf(stderr, "Error adding %s to the LAR.\n", files->name);
+			lar_close_archive(lar);
+			exit(1);
+		}
+	}
+
+	if (lar_add_bootblock(lar, bootblock)) {
+		fprintf(stderr, "Error adding the bootblock to the LAR.\n");
+		lar_close_archive(lar);
+		exit(1);
+	}
+
+	lar_close_archive(lar);
+	return 0;
+}
+
+int list_lar(const char *archivename, struct file *files)
+{
+	struct lar *lar = lar_open_archive(archivename);
+
+	if (lar == NULL) {
+		fprintf(stderr, "Unable to open LAR archive %s\n", archivename);
+		exit(1);
+	}
+
+	lar_list_files(lar, files);
+	lar_close_archive(lar);
+	return 0;
+}
+
+int extract_lar(const char *archivename, struct file *files)
+{
+	int ret;
+
+	struct lar *lar = lar_open_archive(archivename);
+
+	if (lar == NULL) {
+		fprintf(stderr, "Unable to open LAR archive %s\n", archivename);
+		exit(1);
+	}
+
+	ret = lar_extract_files(lar, files);
+	lar_close_archive(lar);
+	return ret;
+}
+
 int main(int argc, char *argv[])
 {
 	int opt;
@@ -173,16 +231,9 @@ int main(int argc, char *argv[])
 
 		/* adding a bootblock only makes sense when creating a lar */
 		if (!larsize) {
-			printf("Warning: When specifying a bootblock "
-			       "you should also set an archive size.\n");
+			printf("When creating a LAR archive, you must specify an archive size.\n");
+			exit(1);
 		}
-
-		/* load the bootblock */
-		if (larmode == CREATE) {
-			load_bootblock(bootblock);
-			fixup_bootblock();
-		}
-
 	}
 
 	if (optind < argc) {

@@ -54,7 +54,11 @@
 #define MAX_PATHLEN 1024
 #define BOOTBLOCK_SIZE 16384
 
+#define BOOTBLOCK_NAME "bootblock"
+#define BOOTBLOCK_NAME_LEN 16
+
 typedef uint32_t u32;
+typedef uint8_t  u8;
 
 struct lar_header {
 	char magic[8];
@@ -69,6 +73,16 @@ struct lar_header {
 	 * 2 = nrv2b
 	 */
 	u32 compression;
+};
+
+/**\struct
+ * A structure containing information about a currently open and mapped
+ * LAR archive
+ */
+struct lar {
+	int fd;   /**< The file descriptor of the open archive */
+	u8 *map;  /**< A pointer to the mmap()ed file */
+	u32 size; /**< Size of the mmaped file */
 };
 
 enum compalgo { none = 0, lzma = 1, nrv2b = 2 };

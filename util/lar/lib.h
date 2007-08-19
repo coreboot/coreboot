@@ -49,6 +49,16 @@ int add_file_or_directory(const char *name);
 struct file *get_files(void);
 void free_files(void);
 
+/* Prototypes for the LAR I/O functions */
+struct lar * lar_new_archive(const char *archive, unsigned int size);
+struct lar * lar_open_archive(const char *archive);
+void lar_close_archive(struct lar *lar);
+
+void lar_list_files(struct lar *lar, struct file *files);
+int lar_add_file(struct lar *lar, const char *name);
+int lar_add_bootblock(struct lar *lar, const char *bootblock);
+int lar_extract_files(struct lar *lar, struct file *files);
+
 /* prototypes for extract.c functions */
 int extract_lar(const char *archivename, struct file *files);
 

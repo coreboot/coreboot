@@ -29,11 +29,52 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include "lar.h"
 #include "lib.h"
 
 #define MAX_PATH 1024
 
 static struct file *files = NULL;
+
+/**
+ * The default "compress impossible" hook to call when no other compression
+ * is used
+ */
+void compress_impossible(char *in, u32 in_len, char *out, u32 *out_len)
+{
+	fprintf(stderr,
+		"The selected compression algorithm wasn't compiled in.\n");
+	exit(1);
+}
+
+/**
+ * The default "compress" hook to call when no other compression is used
+ */
+void do_no_compress(char *in, u32 in_len, char *out, u32 *out_len)
+{
+	memcpy(out, in, in_len);
+	out_len[0] = in_len;
+}
+
+/**
+ * The default "uncompress" hook to call when no other compression is used
+ */
+
+void do_no_uncompress(char *dst, char *src, u32 len)
+{
+	memcpy(dst, src, len);
+}
+
+/**
+ * The default "uncompress" hook to call when no other compression is used
+ */
+void uncompress_impossible(char *dst, char *src, u32 len)
+{
+	fprintf(stderr,
+		"Cannot uncompress data (algorithm not compiled in).\n");
+	exit(1);
+}
+
 
 /**
  * Create a new directory including any missing parent directories.
@@ -112,6 +153,12 @@ done:
 	if (path)
 		free(path);
 	return ret;
+}
+
+
+int mkdirp(const char *dirpath, mode_t mode)
+{
+	return mkdirp_below(".", dirpath, mode);
 }
 
 static int handle_directory(const char *name)

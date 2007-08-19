@@ -47,6 +47,8 @@ $(obj)/util/lar/%.o: $(src)/util/lar/%.c
 	$(Q)$(HOSTCC) $(HOSTCFLAGS) -c $< -o $@
 
 
+lar: $(obj)/util/lar/lar
+
 # -----------------------------------------------------------------------------
 # Stuff below this line is for debugging purposes only.
 

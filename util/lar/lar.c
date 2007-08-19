@@ -44,7 +44,33 @@ enum compalgo algo = none;
 static void usage(char *name)
 {
 	printf("\nLAR - the LinuxBIOS Archiver " VERSION "\n" COPYRIGHT "\n\n"
-	       "Usage: %s [-cxl] archive.lar [[[file1] file2] ...]\n\n", name);
+	       "Usage: %s [-cxal] archive.lar [[[file1] file2] ...]\n\n", name);
+	printf("Examples:\n");
+	printf("  lar -c -s 32768 -b bootblock myrom.lar foo nocompress:bar\n");
+	printf("  lar -a myrom.lar foo blob:baz\n");
+	printf("  lar -l myrom.lar\n\n");
+
+	printf("File names:\n");
+	printf("   Names specified in the create or add modes are formatted as\n");
+	printf("   follows:  [flags]:[filename]:[pathname].\n");
+	printf("     * Flags are modifiers for the file.  Valid flags:\n");
+	printf("       nocompress\tDon't compress the file in the LAR\n");
+	printf("     * Filename is the name of the file on disk.  If no pathname\n");
+	printf("     is specified, then the filename will also be the path name\n");
+	printf("     used in the LAR.\n");
+	printf("     * Pathname is the name to use in the LAR header.\n\n");
+
+	printf("Create options:\n");
+	printf("  -s [size]\tSpecify the size of the archive (in bytes)\n");
+	printf("  -b [bootblock]\tSpecify the bootblock blob\n");
+	printf("  -C [lzma|nrv2b]\tSpecify the compression method to use\n\n");
+
+	printf("General options\n");
+	printf("  -v\tEnable verbose mode\n");
+	printf("  -V\tShow the version\n");
+	printf("  -h\tShow this help\n");
+	printf("\n");
+
 }
 
 int verbose(void)
@@ -84,6 +110,27 @@ int create_lar(const char *archivename, struct file *files)
 		fprintf(stderr, "Error adding the bootblock to the LAR.\n");
 		lar_close_archive(lar);
 		exit(1);
+	}
+
+	lar_close_archive(lar);
+	return 0;
+}
+
+int add_lar(const char *archivename, struct file *files)
+{
+	struct lar *lar = lar_open_archive(archivename);
+
+	if (lar == NULL) {
+		fprintf(stderr, "Unable to open LAR archive %s\n", archivename);
+		exit(1);
+	}
+
+	for( ; files; files = files->next) {
+		if (lar_add_file(lar, files->name)) {
+			fprintf(stderr, "Error adding %s to the LAR.\n", files->name);
+			lar_close_archive(lar);
+			exit(1);
+		}
 	}
 
 	lar_close_archive(lar);
@@ -130,6 +177,7 @@ int main(int argc, char *argv[])
 	char *archivename = NULL;
 
 	static struct option long_options[] = {
+		{"add", 0, 0, 'a'},
 		{"create", 0, 0, 'c'},
 		{"compress-algo", 1, 0, 'C'},
 		{"extract", 0, 0, 'x'},
@@ -147,9 +195,12 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	while ((opt = getopt_long(argc, argv, "cC:xls:b:vVh?",
+	while ((opt = getopt_long(argc, argv, "acC:xls:b:vVh?",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
+		case 'a':
+			larmode  = ADD;
+			break;
 		case 'c':
 			larmode = CREATE;
 			break;
@@ -258,6 +309,9 @@ int main(int argc, char *argv[])
 	}
 
 	switch (larmode) {
+	case ADD:
+		add_lar(archivename, get_files());
+		break;
 	case EXTRACT:
 		extract_lar(archivename, get_files());
 		break;

@@ -30,6 +30,7 @@ struct file {
 
 enum {
 	NONE,
+	ADD,
 	CREATE,
 	LIST,
 	EXTRACT

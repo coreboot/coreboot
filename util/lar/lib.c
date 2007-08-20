@@ -208,20 +208,16 @@ int add_files(const char *name)
 	char *c;
 
 	if (strstr(name, "nocompress:") == name) {
-		name += 11;
+		free(realname);
+		realname = strdup(name + 11);
+	} else {
+		realname = strdup(name);
 	}
-
-	realname = strdup(name);
 
 	if (realname == NULL) {
 	  fprintf(stderr, "Out of memory.\n");
 	  exit(1);
 	}
-
-	c = strchr(realname, ':');
-
-	if (c != NULL)
-	  *c = '\0';
 
 	/* printf("... add_files %s\n", name); */
 	if (stat(realname, &filestat) == -1) {

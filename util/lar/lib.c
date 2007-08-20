@@ -208,7 +208,6 @@ int add_files(const char *name)
 	char *c;
 
 	if (strstr(name, "nocompress:") == name) {
-		free(realname);
 		realname = strdup(name + 11);
 	} else {
 		realname = strdup(name);

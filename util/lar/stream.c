@@ -445,7 +445,7 @@ static int _write_file(char *filename, u8 *buffer, u32 len)
 		return -1;
 	}
 
-	mkdirp((const char *) dirname(path), 0755);
+	mkdirp_below(".", (const char *) dirname(path), 0755);
 	free(path);
 
 	fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);

@@ -155,12 +155,6 @@ done:
 	return ret;
 }
 
-
-int mkdirp(const char *dirpath, mode_t mode)
-{
-	return mkdirp_below(".", dirpath, mode);
-}
-
 static int handle_directory(const char *name)
 {
 	int n;

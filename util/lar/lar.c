@@ -46,7 +46,7 @@ static void usage(char *name)
 	printf("\nLAR - the LinuxBIOS Archiver " VERSION "\n" COPYRIGHT "\n\n"
 	       "Usage: %s [-cxal] archive.lar [[[file1] file2] ...]\n\n", name);
 	printf("Examples:\n");
-	printf("  lar -c -s 32768 -b bootblock myrom.lar foo nocompress:bar\n");
+	printf("  lar -c -s 32k -b bootblock myrom.lar foo nocompress:bar\n");
 	printf("  lar -a myrom.lar foo blob:baz\n");
 	printf("  lar -l myrom.lar\n\n");
 
@@ -61,7 +61,9 @@ static void usage(char *name)
 	printf("     * Pathname is the name to use in the LAR header.\n\n");
 
 	printf("Create options:\n");
-	printf("  -s [size]\tSpecify the size of the archive (in bytes)\n");
+	printf("  -s [size]     \tSpecify the size of the archive.\n");
+	printf("                \tUse a 'k' suffix to multiply the size by 1024 or\n");
+	printf("                \ta 'm' suffix to multiple the size by 1024*1024.\n");
 	printf("  -b [bootblock]\tSpecify the bootblock blob\n");
 	printf("  -C [lzma|nrv2b]\tSpecify the compression method to use\n\n");
 
@@ -71,6 +73,29 @@ static void usage(char *name)
 	printf("  -h\tShow this help\n");
 	printf("\n");
 
+}
+
+/* Add a human touch to the LAR size by allowing suffixes:
+ *  XX[KkMm] where k = XX * 1024 and m or M = xx * 1024 * 1024
+ */
+
+static void parse_larsize(char *str)
+{
+	char *p = NULL;
+	unsigned int size = strtoul(str, &p, 0);
+
+	if (p != NULL) {
+		if (*p == 'k' || *p == 'K')
+			size *= 1024;
+		else if (*p == 'm' || *p == 'M')
+			size *= (1024 * 1024);
+		else if (*p) {
+			fprintf(stderr, "Unknown LAR size suffix '%c'\n", *p);
+			exit(1);
+		}
+	}
+
+	larsize = size;
 }
 
 int verbose(void)
@@ -219,7 +244,7 @@ int main(int argc, char *argv[])
 			larmode = EXTRACT;
 			break;
 		case 's':
-			larsize = strtol(optarg, (char **)NULL, 10);
+			parse_larsize(optarg);
 			break;
 		case 'b':
 			bootblock = strdup(optarg);

@@ -77,6 +77,7 @@ else
 	fi
 endif
 	$(Q)printf "  LAR     $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)rm -f $(obj)/linuxbios.rom
 	$(Q)cd $(obj)/lar.tmp && ../util/lar/lar $(COMPRESSFLAG) -c \
 		../linuxbios.rom \
 		$(LARFILES) \

@@ -24,6 +24,7 @@
  * TODO: Consilidated to standard JEDEC code.
  *
  */
+
 #include <stdio.h>
 #include "flash.h"
 
@@ -39,6 +40,7 @@ int erase_49lf040(struct flashchip *flash)
 		 * for the 49lf040. Use sector-erase instead */
 		erase_sector_jedec(bios, i * page_size);
 	}
+
 	return 0;
 }
 
@@ -67,5 +69,5 @@ int write_49lf040(struct flashchip *flash, uint8_t *buf)
 	}
 	printf("\n");
 
-	return (0);
+	return 0;
 }

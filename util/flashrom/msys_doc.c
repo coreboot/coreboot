@@ -134,23 +134,23 @@ int probe_md2802(struct flashchip *flash)
 	    && id_0x55 == 0x55 && id_0xAA == 0xaa
 #endif				/* !MSYSTEMS_DOC_NO_55AA_CHECKING */
 	    ) {
-		return (1);
+		return 1;
 	}
 
-	return (0);
-}				/* int probe_md2802(struct flashchip *flash) */
+	return 0;
+}
 
 int read_md2802(struct flashchip *flash, uint8_t *buf)
 {
-
-	return (0);
-}				/* int read_md2802(struct flashchip *flash, uint8_t *buf) */
+	return 0;
+}
 
 int erase_md2802(struct flashchip *flash)
 {
 	volatile uint8_t *bios = flash->virtual_memory;
 
-	return (1);
+	return 1;
+
 	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
 	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
 	*(volatile uint8_t *)(bios + 0x5555) = 0x80;
@@ -158,7 +158,7 @@ int erase_md2802(struct flashchip *flash)
 	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
 	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
 	*(volatile uint8_t *)(bios + 0x5555) = 0x10;
-}				/* int erase_md2802(struct flashchip *flash) */
+}
 
 int write_md2802(struct flashchip *flash, uint8_t *buf)
 {
@@ -192,6 +192,7 @@ int write_md2802(struct flashchip *flash, uint8_t *buf)
 		0: ready
 		-1: timeout expired
 */
+
 static int doc_wait(volatile uint8_t *bios, int timeout)
 {
 	int i = 20;
@@ -210,8 +211,8 @@ static int doc_wait(volatile uint8_t *bios, int timeout)
 		return (-1);
 	}
 
-	return (0);
-}				/* static int doc_wait(volatile uint8_t *bios, int timeout) */
+	return 0;
+}
 
 static uint8_t doc_read_docstatus(volatile uint8_t *bios)
 {
@@ -219,7 +220,7 @@ static uint8_t doc_read_docstatus(volatile uint8_t *bios)
 	doc_read_2nop(bios);
 
 	return (doc_read(bios, _DOCStatus));
-}				/* static uint8_t doc_read_docstatus(volatile uint8_t *bios) */
+}
 
 static uint8_t doc_read_chipid(volatile uint8_t *bios)
 {
@@ -227,7 +228,7 @@ static uint8_t doc_read_chipid(volatile uint8_t *bios)
 	doc_read_2nop(bios);
 
 	return (doc_read(bios, _ChipID));
-}				/* static uint8_t doc_read_chipid(volatile uint8_t *bios) */
+}
 
 static uint8_t doc_read_cdsncontrol(volatile uint8_t *bios)
 {
@@ -240,11 +241,11 @@ static uint8_t doc_read_cdsncontrol(volatile uint8_t *bios)
 	value = doc_read(bios, _CDSNControl);
 	doc_read_2nop(bios);
 
-	return (value);
-}				/* static uint8_t doc_read_chipid(volatile char *bios) */
+	return value;
+}
 
 static void doc_write_cdsncontrol(volatile uint8_t *bios, uint8_t data)
 {
 	doc_write(data, bios, _CDSNControl);
 	doc_read_4nop(bios);
-}				/* static void doc_write_chipid(volatile char *bios, uint8_t data) */
+}

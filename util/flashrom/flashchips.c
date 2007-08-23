@@ -150,5 +150,3 @@ struct flashchip flashchips[] = {
 	 probe_jedec,	erase_chip_jedec, write_49f002},
 	{NULL,}
 };
-
-

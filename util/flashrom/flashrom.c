@@ -49,12 +49,8 @@ char *chip_to_probe = NULL;
 struct pci_access *pacc;	/* For board and chipset_enable */
 int exclude_start_page, exclude_end_page;
 int force = 0, verbose = 0;
-
 int fd_mem;
 
-/*
- *
- */
 struct pci_dev *pci_dev_find(uint16_t vendor, uint16_t device)
 {
 	struct pci_dev *temp;
@@ -71,9 +67,6 @@ struct pci_dev *pci_dev_find(uint16_t vendor, uint16_t device)
 	return NULL;
 }
 
-/*
- *
- */
 struct pci_dev *pci_card_find(uint16_t vendor, uint16_t device,
 			      uint16_t card_vendor, uint16_t card_device)
 {
@@ -163,6 +156,7 @@ struct flashchip *probe_flash(struct flashchip *flash)
 
 		flash++;
 	}
+
 	return NULL;
 }
 
@@ -196,6 +190,7 @@ int verify_flash(struct flashchip *flash, uint8_t *buf)
 		printf("\b\b\b\b\b\b\b\b\b\b ");
 
 	printf("- VERIFIED         \n");
+
 	return 0;
 }
 

@@ -100,7 +100,7 @@ int erase_m29f400bt(struct flashchip *flash)
 	myusec_delay(10);
 	toggle_ready_jedec(bios);
 
-	return (0);
+	return 0;
 }
 
 int block_erase_m29f400bt(volatile uint8_t *bios, volatile uint8_t *dst)
@@ -118,7 +118,7 @@ int block_erase_m29f400bt(volatile uint8_t *bios, volatile uint8_t *dst)
 	myusec_delay(10);
 	toggle_ready_jedec(bios);
 
-	return (0);
+	return 0;
 }
 
 int write_m29f400bt(struct flashchip *flash, uint8_t *buf)
@@ -173,7 +173,7 @@ int write_m29f400bt(struct flashchip *flash, uint8_t *buf)
 	printf("\n");
 	//protect_m29f400bt (bios);
 
-	return (0);
+	return 0;
 }
 
 int write_linuxbios_m29f400bt(struct flashchip *flash, uint8_t *buf)
@@ -215,5 +215,5 @@ int write_linuxbios_m29f400bt(struct flashchip *flash, uint8_t *buf)
 	printf("\n");
 	//protect_m29f400bt (bios);
 
-	return (0);
+	return 0;
 }

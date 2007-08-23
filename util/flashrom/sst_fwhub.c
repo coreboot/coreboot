@@ -56,7 +56,7 @@ int erase_sst_fwhub_block(struct flashchip *flash, int offset)
 	erase_block_jedec(flash->virtual_memory, offset);
 	toggle_ready_jedec(flash->virtual_memory);
 
-	return (0);
+	return 0;
 }
 
 int erase_sst_fwhub(struct flashchip *flash)
@@ -66,7 +66,8 @@ int erase_sst_fwhub(struct flashchip *flash)
 
 	for (i = 0; i < total_size; i += flash->page_size)
 		erase_sst_fwhub_block(flash, i);
-	return (0);
+
+	return 0;
 }
 
 int write_sst_fwhub(struct flashchip *flash, uint8_t *buf)
@@ -95,5 +96,6 @@ int write_sst_fwhub(struct flashchip *flash, uint8_t *buf)
 		printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 	}
 	printf("\n");
-	return (0);
+
+	return 0;
 }

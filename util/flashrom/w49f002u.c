@@ -49,5 +49,5 @@ int write_49f002(struct flashchip *flash, uint8_t *buf)
 	}
 	printf("\n");
 
-	return (0);
+	return 0;
 }

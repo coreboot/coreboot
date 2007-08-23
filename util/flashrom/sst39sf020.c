@@ -42,7 +42,7 @@ static __inline__ int erase_sector_39sf020(volatile uint8_t *bios,
 	/* wait for Toggle bit ready         */
 	toggle_ready_jedec(bios);
 
-	return (0);
+	return 0;
 }
 
 int write_39sf020(struct flashchip *flash, uint8_t *buf)
@@ -65,5 +65,5 @@ int write_39sf020(struct flashchip *flash, uint8_t *buf)
 	}
 	printf("\n");
 
-	return (0);
+	return 0;
 }

@@ -71,7 +71,7 @@ static __inline__ int write_lockbits_49lfxxxc(volatile uint8_t *bios, int size,
 	//printf("lockbits at address=0x%08lx is 0x%01x\n", (unsigned long)0xFFc00000 - size + address + 2, *(bios + address + 2) );
 	*(bios + address + 2) = bits;
 
-	return (0);
+	return 0;
 }
 
 static __inline__ int erase_sector_49lfxxxc(volatile uint8_t *bios,
@@ -91,7 +91,7 @@ static __inline__ int erase_sector_49lfxxxc(volatile uint8_t *bios,
 		}
 	} while (!(status & STATUS_WSMS));
 
-	return (0);
+	return 0;
 }
 
 static __inline__ int write_sector_49lfxxxc(volatile uint8_t *bios,
@@ -124,7 +124,7 @@ static __inline__ int write_sector_49lfxxxc(volatile uint8_t *bios,
 		} while (!(status & STATUS_WSMS));
 	}
 
-	return (0);
+	return 0;
 }
 
 int probe_49lfxxxc(struct flashchip *flash)
@@ -164,7 +164,8 @@ int erase_49lfxxxc(struct flashchip *flash)
 			return (-1);
 
 	*bios = RESET;
-	return (0);
+
+	return 0;
 }
 
 int write_49lfxxxc(struct flashchip *flash, uint8_t *buf)
@@ -189,5 +190,6 @@ int write_49lfxxxc(struct flashchip *flash, uint8_t *buf)
 	printf("\n");
 
 	*bios = RESET;
-	return (0);
+
+	return 0;
 }

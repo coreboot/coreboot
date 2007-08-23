@@ -51,5 +51,5 @@ int write_49fl004(struct flashchip *flash, uint8_t *buf)
 	}
 	printf("\n");
 
-	return (0);
+	return 0;
 }

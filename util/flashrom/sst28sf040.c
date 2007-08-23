@@ -73,7 +73,7 @@ static __inline__ int erase_sector_28sf040(volatile uint8_t *bios,
 	/* wait for Toggle bit ready         */
 	toggle_ready_jedec(bios);
 
-	return (0);
+	return 0;
 }
 
 static __inline__ int write_sector_28sf040(volatile uint8_t *bios,
@@ -98,7 +98,7 @@ static __inline__ int write_sector_28sf040(volatile uint8_t *bios,
 		toggle_ready_jedec(bios);
 	}
 
-	return (0);
+	return 0;
 }
 
 int probe_28sf040(struct flashchip *flash)
@@ -137,7 +137,7 @@ int erase_28sf040(struct flashchip *flash)
 	myusec_delay(10);
 	toggle_ready_jedec(bios);
 
-	return (0);
+	return 0;
 }
 
 int write_28sf040(struct flashchip *flash, uint8_t *buf)
@@ -164,5 +164,5 @@ int write_28sf040(struct flashchip *flash, uint8_t *buf)
 
 	protect_28sf040(bios);
 
-	return (0);
+	return 0;
 }

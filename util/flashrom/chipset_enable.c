@@ -112,6 +112,7 @@ static int enable_flash_piix4(struct pci_dev *dev, char *name)
 		printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n", xbcs, new, name);
 		return -1;
 	}
+
 	return 0;
 }
 
@@ -145,6 +146,7 @@ static int enable_flash_ich(struct pci_dev *dev, char *name, int bios_cntl)
 		printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n", bios_cntl, new, name);
 		return -1;
 	}
+
 	return 0;
 }
 
@@ -158,14 +160,11 @@ static int enable_flash_ich_dc(struct pci_dev *dev, char *name)
 	return enable_flash_ich(dev, name, 0xdc);
 }
 
-/*
- *
- */
 static int enable_flash_vt823x(struct pci_dev *dev, char *name)
 {
 	uint8_t val;
 
-	/* ROM Write enable */
+	/* ROM write enable */
 	val = pci_read_byte(dev, 0x40);
 	val |= 0x10;
 	pci_write_byte(dev, 0x40, val);
@@ -221,6 +220,7 @@ static int enable_flash_sc1100(struct pci_dev *dev, char *name)
 		printf("tried to set register 0x%x to 0x%x on %s failed (WARNING ONLY)\n", 0x52, new, name);
 		return -1;
 	}
+
 	return 0;
 }
 
@@ -243,6 +243,7 @@ static int enable_flash_sis5595(struct pci_dev *dev, char *name)
 		printf("Stuck at 0x%x\n", newer);
 		return -1;
 	}
+
 	return 0;
 }
 
@@ -275,6 +276,7 @@ static int enable_flash_amd8111(struct pci_dev *dev, char *name)
 		printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n", 0x40, new, name);
 		return -1;
 	}
+
 	return 0;
 }
 
@@ -308,6 +310,7 @@ static int enable_flash_ck804(struct pci_dev *dev, char *name)
 		printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n", 0x6d, new, name);
 		return -1;
 	}
+
 	return 0;
 }
 
@@ -393,7 +396,6 @@ static int enable_flash_mcp55(struct pci_dev *dev, char *name)
 	}
 
 	return 0;
-
 }
 
 static int enable_flash_ht1000(struct pci_dev *dev, char *name)
@@ -406,7 +408,7 @@ static int enable_flash_ht1000(struct pci_dev *dev, char *name)
 	pci_write_byte(dev, 0x41, byte);
 
 	byte = pci_read_byte(dev, 0x43);
-	byte |= (1<<4);
+	byte |= (1 << 4);
 	pci_write_byte(dev, 0x43, byte);
 
 	return 0;
@@ -473,9 +475,6 @@ static FLASH_ENABLE enables[] = {
 	{0x1166, 0x0205, "Broadcom HT-1000", enable_flash_ht1000},
 };
 
-/*
- *
- */
 int chipset_flash_enable(void)
 {
 	struct pci_dev *dev = 0;

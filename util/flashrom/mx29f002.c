@@ -79,7 +79,7 @@ int erase_29f002(struct flashchip *flash)
 	*(bios + 0x3bfff) = 0x30;
 #endif
 
-	return (0);
+	return 0;
 }
 
 int write_29f002(struct flashchip *flash, uint8_t *buf)
@@ -113,5 +113,5 @@ int write_29f002(struct flashchip *flash, uint8_t *buf)
 #endif
 	printf("\n");
 
-	return (0);
+	return 0;
 }

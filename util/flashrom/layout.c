@@ -134,6 +134,7 @@ int read_romlayout(char *name)
 	}
 
 	fclose(romlayout);
+
 	return 0;
 }
 
@@ -155,6 +156,7 @@ int find_romentry(char *name)
 	}
 	printf("not found.\n");
 	// Not found. Error.
+
 	return -1;
 }
 

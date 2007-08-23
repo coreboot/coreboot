@@ -135,7 +135,7 @@ int erase_sector_jedec(volatile uint8_t *bios, unsigned int page)
 	/* wait for Toggle bit ready         */
 	toggle_ready_jedec(bios);
 
-	return (0);
+	return 0;
 }
 
 int erase_block_jedec(volatile uint8_t *bios, unsigned int block)
@@ -158,7 +158,7 @@ int erase_block_jedec(volatile uint8_t *bios, unsigned int block)
 	/* wait for Toggle bit ready         */
 	toggle_ready_jedec(bios);
 
-	return (0);
+	return 0;
 }
 
 int erase_chip_jedec(struct flashchip *flash)
@@ -182,7 +182,7 @@ int erase_chip_jedec(struct flashchip *flash)
 
 	toggle_ready_jedec(bios);
 
-	return (0);
+	return 0;
 }
 
 int write_page_write_jedec(volatile uint8_t *bios, uint8_t *src,
@@ -229,7 +229,7 @@ retry:
 		fprintf(stderr, " page %d failed!\n",
 			(unsigned int)(d - bios) / page_size);
 	}
-	return (!ok);
+	return !ok;
 }
 
 int write_byte_program_jedec(volatile uint8_t *bios, uint8_t *src,
@@ -259,7 +259,7 @@ retry:
 	if (tried >= MAX_REFLASH_TRIES)
 		ok = 0;
 
-	return (!ok);
+	return !ok;
 }
 
 int write_sector_jedec(volatile uint8_t *bios, uint8_t *src,
@@ -272,7 +272,7 @@ int write_sector_jedec(volatile uint8_t *bios, uint8_t *src,
 		dst++, src++;
 	}
 
-	return (0);
+	return 0;
 }
 
 int write_jedec(struct flashchip *flash, uint8_t *buf)
@@ -301,5 +301,5 @@ int write_jedec(struct flashchip *flash, uint8_t *buf)
 	printf("\n");
 	protect_jedec(bios);
 
-	return (0);
+	return 0;
 }

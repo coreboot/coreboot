@@ -77,7 +77,6 @@ int probe_lhf00l04(struct flashchip *flash)
 
 uint8_t wait_lhf00l04(volatile uint8_t *bios)
 {
-
 	uint8_t status;
 	uint8_t id1, id2;
 
@@ -100,9 +99,10 @@ uint8_t wait_lhf00l04(volatile uint8_t *bios)
 	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
 	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
 	*(volatile uint8_t *)(bios + 0x5555) = 0xF0;
-	return status;
 
+	return status;
 }
+
 int erase_lhf00l04_block(struct flashchip *flash, int offset)
 {
 	volatile uint8_t *bios = flash->virtual_memory + offset;
@@ -128,8 +128,10 @@ int erase_lhf00l04_block(struct flashchip *flash, int offset)
 	status = wait_lhf00l04(flash->virtual_memory);
 	print_lhf00l04_status(status);
 	printf("DONE BLOCK 0x%x\n", offset);
-	return (0);
+
+	return 0;
 }
+
 int erase_lhf00l04(struct flashchip *flash)
 {
 	int i;
@@ -140,7 +142,8 @@ int erase_lhf00l04(struct flashchip *flash)
 	for (i = 0; i < total_size; i += flash->page_size)
 		erase_lhf00l04_block(flash, i);
 	printf("DONE ERASE\n");
-	return (0);
+
+	return 0;
 }
 
 void write_page_lhf00l04(volatile uint8_t *bios, uint8_t *src,
@@ -154,7 +157,6 @@ void write_page_lhf00l04(volatile uint8_t *bios, uint8_t *src,
 		*dst++ = *src++;
 		wait_lhf00l04(bios);
 	}
-
 }
 
 int write_lhf00l04(struct flashchip *flash, uint8_t *buf)
@@ -178,5 +180,6 @@ int write_lhf00l04(struct flashchip *flash, uint8_t *buf)
 	}
 	printf("\n");
 	protect_jedec(bios);
-	return (0);
+
+	return 0;
 }

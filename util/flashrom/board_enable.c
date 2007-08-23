@@ -22,7 +22,7 @@
 #include "flash.h"
 
 /*
- * Helper functions for many Winbond superIOs of the w836xx range.
+ * Helper functions for many Winbond Super I/Os of the W836xx range.
  */
 #define W836_INDEX 0x2E
 #define W836_DATA  0x2F
@@ -40,7 +40,7 @@ static void w836xx_ext_leave(void)
 	outb(0xAA, W836_INDEX);
 }
 
-/* General functions for read/writing WB SuperIOs */
+/* General functions for reading/writing Winbond Super I/Os. */
 static unsigned char wbsio_read(unsigned char index)
 {
 	outb(index, W836_INDEX);
@@ -53,8 +53,8 @@ static void wbsio_write(unsigned char index, unsigned char data)
 	outb(data, W836_DATA);
 }
 
-static void
-wbsio_mask(unsigned char index, unsigned char data, unsigned char mask)
+static void wbsio_mask(unsigned char index, unsigned char data,
+		       unsigned char mask)
 {
 	unsigned char tmp;
 
@@ -63,14 +63,13 @@ wbsio_mask(unsigned char index, unsigned char data, unsigned char mask)
 	outb(tmp | (data & mask), W836_DATA);
 }
 
-/*
- * WinBond w83627hf: raise GPIO24.
+/**
+ * Winbond W83627HF: Raise GPIO24.
  *
  * Suited for:
- *      * Agami Aruma
- *      * IWILL DK8-HTX
+ *  - Agami Aruma
+ *  - IWILL DK8-HTX
  */
-
 static int w83627hf_gpio24_raise(const char *name)
 {
 	w836xx_ext_enter();
@@ -101,12 +100,11 @@ static int w83627hf_gpio24_raise(const char *name)
 	return 0;
 }
 
-/*
+/**
  * Suited for VIAs EPIA M and MII, and maybe other CLE266 based EPIAs.
  *
- * We don't need to do this when using linuxbios, GPIO15 is never lowered there.
+ * We don't need to do this when using LinuxBIOS, GPIO15 is never lowered there.
  */
-
 static int board_via_epia_m(const char *name)
 {
 	struct pci_dev *dev;
@@ -135,12 +133,11 @@ static int board_via_epia_m(const char *name)
 	return 0;
 }
 
-/*
+/**
  * Suited for:
- *   ASUS A7V8X-MX SE and A7V400-MX: AMD K7 + VIA KM400A + VT8235
- *   Tyan Tomcat K7M: AMD Geode NX + VIA KM400 + VT8237.
+ *   - ASUS A7V8X-MX SE and A7V400-MX: AMD K7 + VIA KM400A + VT8235
+ *   - Tyan Tomcat K7M: AMD Geode NX + VIA KM400 + VT8237.
  */
-
 static int board_asus_a7v8x_mx(const char *name)
 {
 	struct pci_dev *dev;
@@ -170,14 +167,13 @@ static int board_asus_a7v8x_mx(const char *name)
 	return 0;
 }
 
-/*
+/**
  * Suited for ASUS P5A.
  *
  * This is rather nasty code, but there's no way to do this cleanly.
  * We're basically talking to some unknown device on SMBus, my guess
  * is that it is the Winbond W83781D that lives near the DIP BIOS.
  */
-
 static int board_asus_p5a(const char *name)
 {
 	uint8_t tmp;
@@ -278,16 +274,14 @@ static int board_epox_ep_bx3(const char *name)
 	return 0;
 }
 
-/*
- * We use 2 sets of ids here, you're free to choose which is which. This
- * to provide a very high degree of certainty when matching a board on
- * the basis of Subsystem/card ids. As not every vendor handles
- * subsystem/card ids in a sane manner.
+/**
+ * We use 2 sets of IDs here, you're free to choose which is which. This
+ * is to provide a very high degree of certainty when matching a board on
+ * the basis of subsystem/card IDs. As not every vendor handles
+ * subsystem/card IDs in a sane manner.
  *
- * Keep the second set nulled if it should be ignored.
- *
+ * Keep the second set NULLed if it should be ignored.
  */
-
 struct board_pciid_enable {
 	/* Any device, but make it sensible, like the isa bridge. */
 	uint16_t first_vendor;
@@ -331,10 +325,9 @@ struct board_pciid_enable board_pciid_enables[] = {
 	{0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL}	/* Keep this */
 };
 
-/*
- * Match boards on linuxbios table gathered vendor and part name.
- * Require main pci-ids to match too as extra safety.
- *
+/**
+ * Match boards on LinuxBIOS table gathered vendor and part name.
+ * Require main PCI IDs to match too as extra safety.
  */
 static struct board_pciid_enable *board_match_linuxbios_name(char *vendor,
 							     char *part)
@@ -359,9 +352,9 @@ static struct board_pciid_enable *board_match_linuxbios_name(char *vendor,
 	return NULL;
 }
 
-/*
- * Match boards on pci ids and subsystem ids.
- * Second set of ids can be main only or missing completely.
+/**
+ * Match boards on PCI IDs and subsystem IDs.
+ * Second set of IDs can be main only or missing completely.
  */
 static struct board_pciid_enable *board_match_pci_card_ids(void)
 {
@@ -396,9 +389,6 @@ static struct board_pciid_enable *board_match_pci_card_ids(void)
 	return NULL;
 }
 
-/*
- *
- */
 int board_flash_enable(char *vendor, char *part)
 {
 	struct board_pciid_enable *board = NULL;

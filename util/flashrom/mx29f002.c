@@ -27,9 +27,6 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "flash.h"
-#include "jedec.h"
-#include "mx29f002.h"
-#include "debug.h"
 
 int probe_29f002(struct flashchip *flash)
 {

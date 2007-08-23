@@ -22,22 +22,9 @@
  */
 
 #include "flash.h"
-#include "jedec.h"
-#include "m29f400bt.h"
-#include "82802ab.h"
 #ifndef DISABLE_DOC
 #include "msys_doc.h"
 #endif
-#include "am29f040b.h"
-#include "sst28sf040.h"
-#include "sst49lfxxxc.h"
-#include "w49f002u.h"
-#include "sst39sf020.h"
-#include "sst49lf040.h"
-#include "pm49fl004.h"
-#include "mx29f002.h"
-#include "sharplhf00l04.h"
-#include "sst_fwhub.h"
 
 struct flashchip flashchips[] = {
 	{"Am29F040B",	AMD_ID, 	AM_29F040B,	512, 64 * 1024,

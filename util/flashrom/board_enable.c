@@ -19,9 +19,7 @@
 #include <pci/pci.h>
 #include <stdint.h>
 #include <string.h>
-
 #include "flash.h"
-#include "debug.h"
 
 /*
  * Helper functions for many Winbond superIOs of the w836xx range.

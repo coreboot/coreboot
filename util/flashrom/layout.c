@@ -2,9 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
-#include "layout.h"
-#include "lbtable.h"
-#include "debug.h"
+#include "flash.h"
 
 char *mainboard_vendor = NULL;
 char *mainboard_part = NULL;

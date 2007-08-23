@@ -14,9 +14,7 @@
 #include <stdio.h>
 #include <pci/pci.h>
 #include <stdlib.h>
-
 #include "flash.h"
-#include "debug.h"
 
 static int enable_flash_ali_m1533(struct pci_dev *dev, char *name)
 {

@@ -27,9 +27,9 @@
 #if defined(__GLIBC__)
 #include <sys/io.h>
 #endif
-
 #include <unistd.h>
 #include <stdint.h>
+#include <stdio.h>
 
 struct flashchip {
 	char *name;
@@ -164,6 +164,103 @@ int chipset_flash_enable(void);	/* chipset_enable.c */
 
 extern int fd_mem;
 
-int map_flash_registers(struct flashchip *flash); /* flashrom.c */
+/* debug.c */
+extern int verbose;
+#define printf_debug(x...) { if (verbose) printf(x); }
+
+/* flashrom.c */
+int map_flash_registers(struct flashchip *flash);
+
+/* layout.c */
+int show_id(uint8_t *bios, int size);
+int read_romlayout(char *name);
+int find_romentry(char *name);
+int handle_romentries(uint8_t *buffer, uint8_t *content);
+
+/* lbtable.c */
+int linuxbios_init(void);
+extern char *lb_part, *lb_vendor;
+
+/* 82802ab.c */
+extern int probe_82802ab(struct flashchip *flash);
+extern int erase_82802ab(struct flashchip *flash);
+extern int write_82802ab(struct flashchip *flash, uint8_t *buf);
+
+/* am29f040b.c */
+extern int probe_29f040b(struct flashchip *flash);
+extern int erase_29f040b(struct flashchip *flash);
+extern int write_29f040b(struct flashchip *flash, uint8_t *buf);
+
+/* jedec.c */
+extern void toggle_ready_jedec(volatile uint8_t *dst);
+extern void data_polling_jedec(volatile uint8_t *dst, uint8_t data);
+extern void unprotect_jedec(volatile uint8_t *bios);
+extern void protect_jedec(volatile uint8_t *bios);
+int write_byte_program_jedec(volatile uint8_t *bios, uint8_t *src,
+			     volatile uint8_t *dst);
+extern int probe_jedec(struct flashchip *flash);
+extern int erase_chip_jedec(struct flashchip *flash);
+extern int write_jedec(struct flashchip *flash, uint8_t *buf);
+extern int erase_sector_jedec(volatile uint8_t *bios, unsigned int page);
+extern int erase_block_jedec(volatile uint8_t *bios, unsigned int page);
+extern int write_sector_jedec(volatile uint8_t *bios, uint8_t *src,
+			      volatile uint8_t *dst, unsigned int page_size);
+
+/* m29f400bt.c */
+extern int probe_m29f400bt(struct flashchip *flash);
+extern int erase_m29f400bt(struct flashchip *flash);
+extern int block_erase_m29f400bt(volatile uint8_t *bios,
+				 volatile uint8_t *dst);
+extern int write_m29f400bt(struct flashchip *flash, uint8_t *buf);
+extern int write_linuxbios_m29f400bt(struct flashchip *flash, uint8_t *buf);
+extern void toggle_ready_m29f400bt(volatile uint8_t *dst);
+extern void data_polling_m29f400bt(volatile uint8_t *dst, uint8_t data);
+extern void protect_m29f400bt(volatile uint8_t *bios);
+extern void write_page_m29f400bt(volatile uint8_t *bios, uint8_t *src,
+				 volatile uint8_t *dst, int page_size);
+
+/* mx29f002.c */
+extern int probe_29f002(struct flashchip *flash);
+extern int erase_29f002(struct flashchip *flash);
+extern int write_29f002(struct flashchip *flash, uint8_t *buf);
+
+/* pm49fl004.c */
+extern int probe_49fl004(struct flashchip *flash);
+extern int erase_49fl004(struct flashchip *flash);
+extern int write_49fl004(struct flashchip *flash, uint8_t *buf);
+
+/* sharplhf00l04.c */
+extern int probe_lhf00l04(struct flashchip *flash);
+extern int erase_lhf00l04(struct flashchip *flash);
+extern int write_lhf00l04(struct flashchip *flash, uint8_t *buf);
+extern void toggle_ready_lhf00l04(volatile uint8_t *dst);
+extern void data_polling_lhf00l04(volatile uint8_t *dst, uint8_t data);
+extern void protect_lhf00l04(volatile uint8_t *bios);
+
+/* sst28sf040.c */
+extern int probe_28sf040(struct flashchip *flash);
+extern int erase_28sf040(struct flashchip *flash);
+extern int write_28sf040(struct flashchip *flash, uint8_t *buf);
+
+/* sst39sf020.c */
+extern int probe_39sf020(struct flashchip *flash);
+extern int write_39sf020(struct flashchip *flash, uint8_t *buf);
+
+/* sst49lf040.c */
+extern int erase_49lf040(struct flashchip *flash);
+extern int write_49lf040(struct flashchip *flash, uint8_t *buf);
+
+/* sst49lfxxxc.c */
+extern int probe_49lfxxxc(struct flashchip *flash);
+extern int erase_49lfxxxc(struct flashchip *flash);
+extern int write_49lfxxxc(struct flashchip *flash, uint8_t *buf);
+
+/* sst_fwhub.c */
+extern int probe_sst_fwhub(struct flashchip *flash);
+extern int erase_sst_fwhub(struct flashchip *flash);
+extern int write_sst_fwhub(struct flashchip *flash, uint8_t *buf);
+
+/* w49f002u.c */
+extern int write_49f002(struct flashchip *flash, uint8_t *buf);
 
 #endif				/* !__FLASH_H__ */

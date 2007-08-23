@@ -36,7 +36,6 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include <pci/pci.h>
-
 /* for iopl */
 #if defined (__sun) && (defined(__i386) || defined(__amd64))
 #include <strings.h>
@@ -44,11 +43,7 @@
 #include <sys/psw.h>
 #include <asm/sunddi.h>
 #endif
-
 #include "flash.h"
-#include "lbtable.h"
-#include "layout.h"
-#include "debug.h"
 
 char *chip_to_probe = NULL;
 struct pci_access *pacc;	/* For board and chipset_enable */

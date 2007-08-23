@@ -24,10 +24,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
 #include "flash.h"
-#include "sharplhf00l04.h"
-#include "debug.h"
 
 void toggle_ready_lhf00l04(volatile uint8_t *dst)
 {

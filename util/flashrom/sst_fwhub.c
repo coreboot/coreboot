@@ -21,10 +21,7 @@
  */
 
 #include <stdio.h>
-
 #include "flash.h"
-#include "jedec.h"
-#include "sst_fwhub.h"
 
 // I need that Berkeley bit-map printer
 void print_sst_fwhub_status(uint8_t status)

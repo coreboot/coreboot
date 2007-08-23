@@ -24,8 +24,6 @@
 
 #include <stdio.h>
 #include "flash.h"
-#include "jedec.h"
-#include "pm49fl004.h"
 
 extern int exclude_start_page, exclude_end_page;
 

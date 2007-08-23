@@ -24,8 +24,6 @@
  */
 
 #include "flash.h"
-#include "m29f400bt.h"
-#include "debug.h"
 
 void toggle_ready_m29f400bt(volatile uint8_t *dst)
 {

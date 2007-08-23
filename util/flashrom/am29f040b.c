@@ -25,8 +25,6 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "flash.h"
-#include "jedec.h"
-#include "debug.h"
 
 static __inline__ int erase_sector_29f040b(volatile uint8_t *bios,
 					   unsigned long address)

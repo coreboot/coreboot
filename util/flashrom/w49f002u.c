@@ -28,8 +28,6 @@
 
 #include <stdio.h>
 #include "flash.h"
-#include "jedec.h"
-#include "w49f002u.h"
 
 int write_49f002(struct flashchip *flash, uint8_t *buf)
 {

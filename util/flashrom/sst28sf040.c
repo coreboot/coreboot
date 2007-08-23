@@ -28,8 +28,6 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "flash.h"
-#include "jedec.h"
-#include "debug.h"
 
 #define AUTO_PG_ERASE1		0x20
 #define AUTO_PG_ERASE2		0xD0

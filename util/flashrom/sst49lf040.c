@@ -26,8 +26,6 @@
  */
 #include <stdio.h>
 #include "flash.h"
-#include "jedec.h"
-#include "sst49lf040.h"
 
 int erase_49lf040(struct flashchip *flash)
 {

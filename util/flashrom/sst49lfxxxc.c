@@ -32,10 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-
 #include "flash.h"
-#include "jedec.h"
-#include "debug.h"
 
 #define SECTOR_ERASE		0x30
 #define BLOCK_ERASE		0x20

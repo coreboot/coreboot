@@ -28,8 +28,6 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "flash.h"
-#include "jedec.h"
-#include "debug.h"
 
 #define MAX_REFLASH_TRIES 0x10
 

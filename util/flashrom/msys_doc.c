@@ -23,7 +23,6 @@
 #include <unistd.h>
 #include "flash.h"
 #include "msys_doc.h"
-#include "debug.h"
 
 static int doc_wait(volatile uint8_t *bios, int timeout);
 static uint8_t doc_read_chipid(volatile uint8_t *bios);

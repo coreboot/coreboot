@@ -25,10 +25,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
-
 #include "flash.h"
-#include "82802ab.h"
-#include "debug.h"
 
 void toggle_ready_82802ab(volatile uint8_t *dst)
 {

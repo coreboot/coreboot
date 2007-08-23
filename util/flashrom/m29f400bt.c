@@ -25,37 +25,6 @@
 
 #include "flash.h"
 
-void toggle_ready_m29f400bt(volatile uint8_t *dst)
-{
-	unsigned int i = 0;
-	uint8_t tmp1, tmp2;
-
-	tmp1 = *dst & 0x40;
-
-	while (i++ < 0xFFFFFF) {
-		tmp2 = *dst & 0x40;
-		if (tmp1 == tmp2) {
-			break;
-		}
-		tmp1 = tmp2;
-	}
-}
-
-void data_polling_m29f400bt(volatile uint8_t *dst, uint8_t data)
-{
-	unsigned int i = 0;
-	uint8_t tmp;
-
-	data &= 0x80;
-
-	while (i++ < 0xFFFFFF) {
-		tmp = *dst & 0x80;
-		if (tmp == data) {
-			break;
-		}
-	}
-}
-
 void protect_m29f400bt(volatile uint8_t *bios)
 {
 	*(volatile uint8_t *)(bios + 0xAAA) = 0xAA;
@@ -79,7 +48,7 @@ void write_page_m29f400bt(volatile uint8_t *bios, uint8_t *src,
 		*dst = *src;
 		//*(volatile char *) (bios) = 0xF0;
 		//usleep(5);
-		toggle_ready_m29f400bt(dst);
+		toggle_ready_jedec(dst);
 		printf
 		    ("Value in the flash at address %p = %#x, want %#x\n",
 		     (uint8_t *) (dst - bios), *dst, *src);
@@ -129,7 +98,7 @@ int erase_m29f400bt(struct flashchip *flash)
 	*(volatile uint8_t *)(bios + 0xAAA) = 0x10;
 
 	myusec_delay(10);
-	toggle_ready_m29f400bt(bios);
+	toggle_ready_jedec(bios);
 
 	return (0);
 }
@@ -147,7 +116,7 @@ int block_erase_m29f400bt(volatile uint8_t *bios, volatile uint8_t *dst)
 	*dst = 0x30;
 
 	myusec_delay(10);
-	toggle_ready_m29f400bt(bios);
+	toggle_ready_jedec(bios);
 
 	return (0);
 }

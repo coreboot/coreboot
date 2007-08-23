@@ -33,6 +33,58 @@
 
 #define MAX_REFLASH_TRIES 0x10
 
+void toggle_ready_jedec(volatile uint8_t *dst)
+{
+	unsigned int i = 0;
+	uint8_t tmp1, tmp2;
+
+	tmp1 = *dst & 0x40;
+
+	while (i++ < 0xFFFFFFF) {
+		tmp2 = *dst & 0x40;
+		if (tmp1 == tmp2) {
+			break;
+		}
+		tmp1 = tmp2;
+	}
+}
+
+void data_polling_jedec(volatile uint8_t *dst, uint8_t data)
+{
+	unsigned int i = 0;
+	uint8_t tmp;
+
+	data &= 0x80;
+
+	while (i++ < 0xFFFFFFF) {
+		tmp = *dst & 0x80;
+		if (tmp == data) {
+			break;
+		}
+	}
+}
+
+void unprotect_jedec(volatile uint8_t *bios)
+{
+	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
+	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
+	*(volatile uint8_t *)(bios + 0x5555) = 0x80;
+	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
+	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
+	*(volatile uint8_t *)(bios + 0x5555) = 0x20;
+
+	usleep(200);
+}
+
+void protect_jedec(volatile uint8_t *bios)
+{
+	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
+	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
+	*(volatile uint8_t *)(bios + 0x5555) = 0xA0;
+
+	usleep(200);
+}
+
 int probe_jedec(struct flashchip *flash)
 {
 	volatile uint8_t *bios = flash->virtual_memory;

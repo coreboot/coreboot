@@ -402,7 +402,11 @@ void compute_allocate_resource(struct bus *bus, struct resource *bridge,
 	min_align = 0;
 	base = bridge->base;
 
-	printk(BIOS_SPEW, "%s compute_allocate_%s: base: %08Lx size: %08Lx align: %d gran: %d\n", dev_path(bus->dev), (bridge->flags & IORESOURCE_IO) ? "io" : (bridge->flags & IORESOURCE_PREFETCH) ? "prefmem" : "mem", base, bridge->size, bridge->align, bridge->gran);
+	printk(BIOS_SPEW,
+	       "%s compute_allocate_%s: base: %08llx size: %08llx align: %d gran: %d\n",
+	       dev_path(bus->dev),
+	       (bridge->flags & IORESOURCE_IO) ? "io" : (bridge->flags & IORESOURCE_PREFETCH) ? "prefmem" : "mem",
+	       base, bridge->size, bridge->align, bridge->gran);
 
 	/* We want different minimum alignments for different kinds of
 	 * resources. These minimums are not device type specific but
@@ -485,7 +489,7 @@ void compute_allocate_resource(struct bus *bus, struct resource *bridge,
 			base += size;
 
 			printk(BIOS_SPEW,
-			       "%s %02lx *  [0x%08Lx - 0x%08Lx] %s\n",
+			       "%s %02lx *  [0x%08llx - 0x%08llx] %s\n",
 			       dev_path(dev),
 			       resource->index,
 			       resource->base,
@@ -503,7 +507,11 @@ void compute_allocate_resource(struct bus *bus, struct resource *bridge,
 	 */
 	bridge->size = align_up(base, bridge->gran) - bridge->base;
 
-	printk(BIOS_SPEW, "%s compute_allocate_%s: base: %08Lx size: %08Lx align: %d gran: %d done\n", dev_path(bus->dev), (bridge->flags & IORESOURCE_IO) ? "io" : (bridge->flags & IORESOURCE_PREFETCH) ? "prefmem" : "mem", base, bridge->size, bridge->align, bridge->gran);
+	printk(BIOS_SPEW,
+	       "%s compute_allocate_%s: base: %08llx size: %08llx align: %d gran: %d done\n",
+	       dev_path(bus->dev),
+	       (bridge->flags & IORESOURCE_IO) ? "io" : (bridge->flags & IORESOURCE_PREFETCH) ? "prefmem" : "mem",
+	       base, bridge->size, bridge->align, bridge->gran);
 }
 
 #if defined(CONFIG_PCI_OPTION_ROM_RUN) && CONFIG_PCI_OPTION_ROM_RUN == 1

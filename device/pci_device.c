@@ -252,10 +252,10 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 		printk(BIOS_DEBUG, "%s %02x ->",
 		       dev_path(dev), resource->index);
 		printk(BIOS_DEBUG,
-		       " value: 0x%08Lx zeroes: 0x%08Lx ones: 0x%08Lx attr: %08lx\n",
+		       " value: 0x%08llx zeroes: 0x%08llx ones: 0x%08llx attr: %08lx\n",
 		       value, zeroes, ones, attr);
 		printk(BIOS_DEBUG,
-		       "%s %02x -> size: 0x%08Lx max: 0x%08Lx %s\n ",
+		       "%s %02x -> size: 0x%08llx max: 0x%08llx %s\n ",
 		       dev_path(dev), resource->index, resource->size,
 		       resource->limit, resource_type(resource));
 	}
@@ -456,7 +456,7 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 	/* Make certain the resource has actually been set. */
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
 		printk(BIOS_ERR,
-		       "ERROR: %s %02lx %s size: 0x%010Lx not assigned\n",
+		       "ERROR: %s %02lx %s size: 0x%010llx not assigned\n",
 		       dev_path(dev), resource->index, resource_type(resource),
 		       resource->size);
 		return;
@@ -863,7 +863,7 @@ static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
 			       (*list)->path.type);
 			continue;
 		}
-		printk(BIOS_SPEW, "%s: check dev %s it has devfn 0x%x\n",
+		printk(BIOS_SPEW, "%s: check dev %s it has devfn 0x%02x\n",
 		       __func__, (*list)->dtsname, (*list)->path.u.pci.devfn);
 		if ((*list)->path.u.pci.devfn == devfn) {
 			/* Unlink from the list. */

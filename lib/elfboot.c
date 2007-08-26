@@ -61,7 +61,7 @@ static int valid_area(struct lb_memory *mem,
 	}
 	if (i == mem_entries) {
 		printk(BIOS_ERR, "No matching RAM area found for range:\n");
-		printk(BIOS_ERR, "  [0x%016Lx, 0x%016Lx)\n", start, end);
+		printk(BIOS_ERR, "  [0x%016llx, 0x%016llx)\n", start, end);
 		printk(BIOS_ERR, "RAM areas\n");
 		for(i = 0; i < mem_entries; i++) {
 			u64 mstart, mend;
@@ -69,7 +69,7 @@ static int valid_area(struct lb_memory *mem,
 			mtype = mem->map[i].type;
 			mstart = unpack_lb64(mem->map[i].start);
 			mend = mstart + unpack_lb64(mem->map[i].size);
-			printk(BIOS_ERR, "  [0x%016Lx, 0x%016Lx) %s\n",
+			printk(BIOS_ERR, "  [0x%016llx, 0x%016llx) %s\n",
 				mstart, mend, (mtype == LB_MEM_RAM)?"RAM":"Reserved");
 			
 		}

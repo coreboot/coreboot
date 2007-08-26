@@ -229,7 +229,7 @@ const char *dev_id_string(struct device_id *id)
 			memcpy(buffer, "Root Device", 12);
 			break;
 		case DEVICE_ID_PCI:
-			sprintf(buffer, "PCI: %02x:%02x", id->u.pci.vendor,
+			sprintf(buffer, "PCI: %04x:%04x", id->u.pci.vendor,
 				id->u.pci.device);
 			break;
 		case DEVICE_ID_PNP:
@@ -243,7 +243,7 @@ const char *dev_id_string(struct device_id *id)
 				id->u.apic.device);
 			break;
 		case DEVICE_ID_PCI_DOMAIN:
-			sprintf(buffer, "PCI_DOMAIN: %02x:%02x",
+			sprintf(buffer, "PCI_DOMAIN: %04x:%04x",
 				id->u.pci_domain.vendor,
 				id->u.pci_domain.device);
 			break;
@@ -602,7 +602,7 @@ void report_resource_stored(struct device *dev, struct resource *resource,
 #endif
 		}
 		printk(BIOS_DEBUG,
-		       "%s %02lx <- [0x%010Lx - 0x%010Lx] %s%s%s\n",
+		       "%s %02lx <- [0x%010llx - 0x%010llx] %s%s%s\n",
 		       dev_path(dev),
 		       resource->index,
 		       base, end, buf, resource_type(resource), comment);
@@ -656,7 +656,7 @@ void search_global_resources(unsigned long type_mask, unsigned long type,
 		for (i = 0; i < curdev->resources; i++) {
 			struct resource *resource = &curdev->resource[i];
 			printk(BIOS_SPEW,
-			       "%s: dev %s, resource %d, flags %lx base 0x%Lx size 0x%Lx\n",
+			       "%s: dev %s, resource %d, flags %lx base 0x%llx size 0x%llx\n",
 			       __func__, curdev->dtsname, i, resource->flags,
 			       resource->base, resource->size);
 			/* If it isn't the right kind of resource ignore it. */

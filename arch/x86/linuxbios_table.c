@@ -177,7 +177,7 @@ static void lb_memory_range(struct lb_memory *mem,
 {
 	int entries;
 
-	printk(BIOS_DEBUG, "%s: start 0x%Lx size 0x%Lx\n", 
+	printk(BIOS_DEBUG, "%s: start 0x%llx size 0x%llx\n", 
 			__func__, start, size);
 
 	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);

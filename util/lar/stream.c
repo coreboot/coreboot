@@ -666,7 +666,7 @@ int lar_add_file(struct lar *lar, const char *name)
 
 	csum = 0;
 	for (walk = (u32 *) (lar->map + offset);
-	     walk < (u32 *) (temp + complen + hlen);
+	     walk < (u32 *) (lar->map + complen + hlen);
 	     walk++) {
 		csum += ntohl(*walk);
 	}

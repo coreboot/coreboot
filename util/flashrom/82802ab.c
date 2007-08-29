@@ -1,26 +1,29 @@
 /*
- * 82802ab.c: driver for programming JEDEC standard flash parts
- *
+ * This file is part of the flashrom project.
  *
  * Copyright 2000 Silicon Integrated System Corporation
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *
- * Reference: http://www.intel.com/design/chipsets/datashts/290658.htm
- *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
+
+/*
+ * Datasheet:
+ *  - Name: Intel 82802AB/82802AC Firmware Hub (FWH)
+ *  - URL: http://www.intel.com/design/chipsets/datashts/290658.htm
+ *  - PDF: http://download.intel.com/design/chipsets/datashts/29065804.pdf
+ *  - Order number: 290658-004
  */
 
 #include <stdio.h>

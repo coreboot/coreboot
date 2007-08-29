@@ -60,6 +60,7 @@
 typedef uint32_t u32;
 typedef uint8_t  u8;
 
+/* NOTE -- This and the linuxbios lar.h are NOT IN SYNC. Be careful. */
 struct lar_header {
 	char magic[8];
 	u32 len;
@@ -73,6 +74,8 @@ struct lar_header {
 	 * 2 = nrv2b
 	 */
 	u32 compression;
+	u32 entry;		/* we might need to make this u64 */
+	u32 loadaddress; /* ditto */
 };
 
 /**\struct

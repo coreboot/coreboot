@@ -17,7 +17,6 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
 ##
-
 LAROBJ := lar.o stream.o lib.o
 
 LARDIR := lardir
@@ -29,7 +28,6 @@ COMPRESSOR += $(obj)/util/nrv2b/nrv2b-compress.o
 LARDIR     += nrv2bdir
 
 LAROBJ_ABS := $(patsubst %,$(obj)/util/lar/%,$(LAROBJ))
-
 lardir:
 	$(Q)printf "  BUILD   LAR\n"
 	$(Q)mkdir -p $(obj)/util/lar

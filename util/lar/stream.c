@@ -32,9 +32,10 @@
 #include <sys/mman.h>
 #include <netinet/in.h>
 #include <libgen.h>
+#include <elf.h>
 
-#include "lib.h"
 #include "lar.h"
+#include "lib.h"
 
 /**
  * \def err(fmt,args...)
@@ -43,6 +44,124 @@
 #define err(fmt,args...) fprintf(stderr, fmt, ##args)
 
 extern enum compalgo algo;
+
+/* ELF processing */
+/**
+ * Given a ptr to data, determine if the data is an ELF image. 
+ * @param filebuf pointer to the data
+ * @return 1 if ELF, 0 if not
+ */
+int iself(char *filebuf)
+{
+	Elf32_Ehdr *ehdr;
+	/* validate elf header */
+	ehdr = (Elf32_Ehdr *)filebuf;
+	if (memcmp(ehdr->e_ident, ELFMAG, 4))
+		return 0;
+	return 1;
+}
+
+/**
+ * Output all the ELF segments for a given file
+ * @param lar The LAR Archoe
+ * @param name The LAR name
+ * @param filebuf The ELF file
+ * @param filelen Size of the ELF file
+ * @param algo The recommend compression algorithm
+ * Return 0 on success, -1 on failure
+ */
+int output_elf_segments(struct lar *lar, char *name, char *filebuf,
+			int filelen, enum compalgo algo)
+{
+	int ret;
+        Elf32_Phdr *phdr;
+	Elf32_Ehdr *ehdr;
+	u32 entry;
+	int i;
+	int size;
+	unsigned char *header;
+	char ename[64];
+	int headers;
+	char *temp;
+	enum compalgo thisalgo;
+	u32 complen;
+
+	/* Allocate a temporary buffer to compress into - this is unavoidable,
+	   because we need to make sure that the compressed data will fit in
+	   the LAR, and we won't know the size of the compressed data until
+	   we actually compress it */
+
+	temp = calloc(filelen, 1);
+
+	if (temp == NULL) {
+		err("Out of memory.\n");
+		return -1;
+	}
+
+	/* validate elf header */
+	ehdr = (Elf32_Ehdr *)filebuf;
+	headers = ehdr->e_phnum;
+	header  = (unsigned char *)ehdr;
+	if (verbose())
+		fprintf(stderr, "Type %d machine %d version %d entry %p phoff %d shoff %d flags %#x hsize %d phentsize %d phnum %d s_hentsize %d s_shnum %d \n", 
+		ehdr->e_type,
+		ehdr->e_machine,
+		ehdr->e_version,
+		(void *)ehdr->e_entry,
+		ehdr->e_phoff,
+		ehdr->e_shoff,
+		ehdr->e_flags,
+		ehdr->e_ehsize,
+		ehdr->e_phentsize,
+		ehdr->e_phnum,
+		ehdr->e_shentsize,
+		ehdr->e_shnum);
+        phdr = (Elf32_Phdr *)&(header[ehdr->e_phoff]);
+
+	if (verbose())
+		fprintf(stderr, "%s: header %p #headers %d\n", __FUNCTION__, ehdr, headers);
+	entry = ehdr->e_entry;
+	for(i = 0; i < headers; i++) {
+		/* Ignore data that I don't need to handle */
+		if (phdr[i].p_type != PT_LOAD) {
+			if (verbose())
+				fprintf(stderr, "Dropping non PT_LOAD segment\n");
+			continue;
+		}
+		if (phdr[i].p_memsz == 0) {
+			if (verbose())
+				fprintf(stderr, "Dropping empty segment\n");
+			continue;
+		}
+		thisalgo = algo;
+		if (verbose())
+			fprintf(stderr,  "New segment addr 0x%ulx size 0x%ulx offset 0x%ulx filesize 0x%ulx\n",
+			(u32)phdr[i].p_paddr, (u32)phdr[i].p_memsz, 
+			(u32)phdr[i].p_offset, (u32)phdr[i].p_filesz);
+		/* Clean up the values */
+		size = phdr[i].p_filesz;
+		if (phdr[i].p_filesz > phdr[i].p_memsz)  {
+			size = phdr[i].p_memsz;
+		}
+		if (verbose()) {
+			fprintf(stderr, "(cleaned up) New segment addr %p size 0x%#x offset 0x%x\n",
+				(void *)phdr[i].p_paddr, size, phdr[i].p_offset);
+			fprintf(stderr, "Copy to %p from %p for %d bytes\n", 
+				(unsigned char *)phdr[i].p_paddr, 
+				&header[phdr[i].p_offset], size);
+			fprintf(stderr, "entry %ux loadaddr %ux\n", 
+				entry,  phdr[i].p_paddr);
+		}
+			/* ok, copy it out */
+		sprintf(ename, "%s/segment%d", name, i);
+		complen = lar_compress(&header[phdr[i].p_offset], size, temp, &thisalgo);
+		ret = lar_add_entry(lar, ename, temp, complen, size, 
+				    phdr[i].p_paddr, entry, thisalgo);
+	}
+	return 0;
+out:
+	return -1;
+}
 
 /**
  * Given a size, return the offset of the bootblock (including the
@@ -259,7 +378,7 @@ struct lar * lar_new_archive(const char *archive, u32 size)
 	}
 
 	return lar;
- err:
+err:
 	lar_close_archive(lar);
 
 	/* Don't leave a halfbaked LAR laying around */
@@ -315,7 +434,7 @@ struct lar * lar_open_archive(const char *archive)
 
 	return lar;
 
- err:
+err:
 	lar_close_archive(lar);
 	return NULL;
 }
@@ -535,102 +654,132 @@ int lar_extract_files(struct lar *lar, struct file *files)
 }
 
 /**
- * Add a new file to the LAR archive
- * @param lar The LAR archive to write into
- * @param name The name of the file to add
- * @return  0 on success, or -1 on failure
+ * Given a pathname in the form [option;]path, determine the file name,
+ * LAR path name, and compression algorithm. 
+ * @param name name in the [option:][./]path form
+ * @param pfilename reference pointer to file name -- this is modified
+ * @param ppathname reference pointer to LAR path name -- this is modified
+ * @param thisalgo pointer to algorithm, which can be modified by path name
+ * @return 0 success, or -1 on failure (i.e. a bad name)
  */
-int lar_add_file(struct lar *lar, const char *name)
+int lar_process_name(char *name, char **pfilename, char **ppathname, 
+		     enum compalgo *thisalgo)
 {
-	char *filename, *ptr, *temp;
-	char *pathname;
-
-	enum compalgo thisalgo;
-	struct lar_header *header;
-	u32 offset;
-	int ret, fd, hlen;
-	u32 complen;
-	int pathlen;
-	struct stat s;
-	u32 *walk,  csum;
-
-	/* Find the beginning of the available space in the LAR */
-	offset = lar_empty_offset(lar);
-
-	thisalgo = algo;
-
-	filename = (char *) name;
+	char *filename = name, *pathname = name;
 
 	if (!strncmp(name, "nocompress:",11)) {
 		filename += 11;
-		thisalgo = none;
+		*thisalgo = none;
 	}
 
+	/* this is dangerous */
 	if (filename[0] == '.' && filename[1] == '/')
 		filename += 2;
 
 	pathname = strchr(filename, ':');
 
 	if (pathname != NULL) {
-	  *pathname = '\0';
-	  pathname++;
+		*pathname = '\0';
+		pathname++;
 
-	  if (!strlen(pathname)) {
-	    err("Invalid pathname specified.\n");
-	    return -1;
-	  }
+		if (!strlen(pathname)) {
+			err("Invalid pathname specified.\n");
+			return -1;
+		}
 	}
 	else
 		pathname = filename;
+	*pfilename = filename;
+	*ppathname = pathname;
+	return 0;
+}
+
+
+/**
+ * Given a pathname, open and mmap the file. 
+ * @param filename
+ * @param size pointer to returned size
+ * @return ptr to mmap'ed area on success, or MAP_FAILED on failure
+ */
+char *mapfile(char *filename, u32 *size)
+{
+	int fd;
+	struct stat s;
+	char *ptr;
 
 	/* Open the file */
 	fd = open(filename, O_RDONLY);
 
 	if (fd == -1) {
 		err("Unable to open %s\n", filename);
-		return -1;
+		return MAP_FAILED;
 	}
 
 	if (fstat(fd, &s)) {
 		err("Unable to stat the file %s\n", filename);
 		close(fd);
-		return -1;
-	}
-
-	/* Allocate a temporary buffer to compress into - this is unavoidable,
-	   because we need to make sure that the compressed data will fit in
-	   the LAR, and we won't know the size of the compressed data until
-	   we actually compress it */
-
-	temp = calloc(s.st_size, 1);
-
-	if (temp == NULL) {
-		err("Out of memory.\n");
-		return -1;
+		return MAP_FAILED;
 	}
 
 	ptr = mmap(0, s.st_size, PROT_READ, MAP_SHARED, fd, 0);
+	close(fd);
 
 	if (ptr == MAP_FAILED) {
 		err("Unable to map %s\n", filename);
-		close(fd);
-		free(temp);
-		return -1;
+		return MAP_FAILED;
 	}
+	*size = s.st_size;
+	return ptr;
+}
 
+/**
+ * Compress an area according to an algorithm. If the area grows, 
+ * use no compression. 
+ * @param ptr data to be compressed
+ * @param size size of the data 
+ * @param temp destination of compressed data
+ * @param thisalgo pointer to algorithm -- this can be modified
+ * @return  size of compressed data
+ */
+u32 lar_compress(char *ptr, ssize_t size, char *temp, enum compalgo *thisalgo)
+{
+	u32 complen;
+	compress_functions[*thisalgo](ptr, size, temp, &complen);
 
-	/* Do the compression step */
-	compress_functions[thisalgo](ptr, s.st_size, temp, &complen);
-
-	if (complen >= s.st_size && (thisalgo != none)) {
-		thisalgo = none;
-		compress_functions[thisalgo](ptr, s.st_size, temp, &complen);
+	if (complen >= size && (*thisalgo != none)) {
+		*thisalgo = none;
+		compress_functions[*thisalgo](ptr, size, temp, &complen);
 	}
+	return complen;
+}
 
-	munmap(ptr, s.st_size);
-	close(fd);
+/**
+ * Add a new entry to the LAR archive
+ * @param lar The LAR archive to write into
+ * @param pathname The name of the segment
+ * @param data The data for the segment
+ * @param complen The compressed length of the segment
+ * @param reallen The real (uncompressed) length of the segment
+ * @param loadaddress The load address of the segment
+ * @param entry The entry point of the segment
+ * @param thisalgo The compression algorithm
+ * @return  0 on success, or -1 on failure
+ */
+int lar_add_entry(struct lar *lar, char *pathname, void *data, 
+		  u32 complen, u32 reallen, u32 loadaddress, u32 entry, 
+		  enum compalgo thisalgo)
+{
+	struct lar_header *header;
+	int ret, hlen;
+	int pathlen;
+	u32 *walk,  csum;
+	u32 offset;
 
-	pathlen = strlen(pathname) + 1 > MAX_PATHLEN ? MAX_PATHLEN : strlen(pathname) + 1;
+	/* Find the beginning of the available space in the LAR */
+	offset = lar_empty_offset(lar);
+
+	pathlen = strlen(pathname) + 1 > MAX_PATHLEN ? 
+		MAX_PATHLEN : strlen(pathname) + 1;
 
 	/* Figure out how big our header will be */
 	hlen = sizeof(struct lar_header) + pathlen;
@@ -638,7 +787,6 @@ int lar_add_file(struct lar *lar, const char *name)
 
 	if (offset + hlen + complen >= get_bootblock_offset(lar->size)) {
 		err("Not enough room in the LAR to add the file.\n");
-		free(temp);
 		return -1;
 	}
 
@@ -651,16 +799,17 @@ int lar_add_file(struct lar *lar, const char *name)
 
 	memcpy(header, MAGIC, 8);
 	header->compression = htonl(thisalgo);
-	header->reallen = htonl(s.st_size);
+	header->reallen = htonl(reallen);
 	header->len = htonl(complen);
 	header->offset = htonl(hlen);
-
+	header->loadaddress = htonl(loadaddress);
+	header->entry = htonl(entry);
 	/* Copy the path name */
 	strncpy((char *) (lar->map + offset + sizeof(struct lar_header)),
 		pathname, pathlen - 1);
 
 	/* Copy in the data */
-	memcpy(lar->map + (offset + hlen), temp, complen);
+	memcpy(lar->map + (offset + hlen), data, complen);
 
 	/* Figure out the checksum */
 
@@ -671,7 +820,58 @@ int lar_add_file(struct lar *lar, const char *name)
 		csum += ntohl(*walk);
 	}
 	header->checksum = htonl(csum);
+	return 0;
+}
+
+/**
+ * Add a new file to the LAR archive
+ * @param lar The LAR archive to write into
+ * @param name The name of the file to add
+ * @return  0 on success, or -1 on failure
+ */
+int lar_add_file(struct lar *lar, char *name)
+{
+	char *filename, *ptr, *temp;
+	char *pathname;
+
+	enum compalgo thisalgo;
+	struct lar_header *header;
+	int ret, hlen;
+	u32 complen;
+	int pathlen;
+	u32 size;
+
+	thisalgo = algo;
+	lar_process_name(name, &filename, &pathname, &thisalgo);
+
+	ptr = mapfile(filename, &size);
+
+	if (elfparse() && iself(ptr)) {
+		output_elf_segments(lar, pathname, ptr, size, thisalgo);
+		return 0;
+	}
+
+	/* This is legacy stuff. */
+
+	/* Allocate a temporary buffer to compress into - this is unavoidable,
+	   because we need to make sure that the compressed data will fit in
+	   the LAR, and we won't know the size of the compressed data until
+	   we actually compress it */
+
+	temp = calloc(size, 1);
+
+	if (temp == NULL) {
+		err("Out of memory.\n");
+		munmap(ptr, size);
+		return -1;
+	}
+
+	complen = lar_compress(ptr, size, temp, &thisalgo);
+
+	munmap(ptr, size);
+
+	ret = lar_add_entry(lar, pathname, temp, complen, size, 0, 0, thisalgo);
 
 	free(temp);
-	return 0;
+	return ret;
 }

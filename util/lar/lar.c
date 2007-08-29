@@ -30,13 +30,14 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
-#include "lib.h"
 #include "lar.h"
+#include "lib.h"
 
 #define VERSION "v0.9.1"
 #define COPYRIGHT "Copyright (C) 2006-2007 coresystems GmbH"
 
 static int isverbose = 0;
+static int iselfparse = 0;
 static long larsize = 0;
 static char *bootblock = NULL;
 enum compalgo algo = none;
@@ -44,7 +45,7 @@ enum compalgo algo = none;
 static void usage(char *name)
 {
 	printf("\nLAR - the LinuxBIOS Archiver " VERSION "\n" COPYRIGHT "\n\n"
-	       "Usage: %s [-cxal] archive.lar [[[file1] file2] ...]\n\n", name);
+	       "Usage: %s [-ecxal] archive.lar [[[file1] file2] ...]\n\n", name);
 	printf("Examples:\n");
 	printf("  lar -c -s 32k -b bootblock myrom.lar foo nocompress:bar\n");
 	printf("  lar -a myrom.lar foo blob:baz\n");
@@ -66,13 +67,18 @@ static void usage(char *name)
 	printf("                \ta 'm' suffix to multiple the size by 1024*1024.\n");
 	printf("  -b [bootblock]\tSpecify the bootblock blob\n");
 	printf("  -C [lzma|nrv2b]\tSpecify the compression method to use\n\n");
+	printf("  -e pre-parse the payload ELF into LAR segments. Recommended\n\n");
 
 	printf("General options\n");
 	printf("  -v\tEnable verbose mode\n");
 	printf("  -V\tShow the version\n");
 	printf("  -h\tShow this help\n");
 	printf("\n");
+}
 
+int elfparse(void)
+{
+	return iselfparse;
 }
 
 /* Add a human touch to the LAR size by allowing suffixes:
@@ -209,6 +215,7 @@ int main(int argc, char *argv[])
 		{"list", 0, 0, 'l'},
 		{"size", 1, 0, 's'},
 		{"bootblock", 1, 0, 'b'},
+		{"elfparse", 1, 0, 'e'},
 		{"verbose", 0, 0, 'v'},
 		{"version", 0, 0, 'V'},
 		{"help", 0, 0, 'h'},
@@ -220,7 +227,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	while ((opt = getopt_long(argc, argv, "acC:xls:b:vVh?",
+	while ((opt = getopt_long(argc, argv, "acC:xels:b:vVh?",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'a':
@@ -239,6 +246,9 @@ int main(int argc, char *argv[])
 			break;
 		case 'l':
 			larmode = LIST;
+			break;
+		case 'e':
+			iselfparse = 1;
 			break;
 		case 'x':
 			larmode = EXTRACT;

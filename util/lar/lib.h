@@ -38,6 +38,7 @@ enum {
 
 /* prototypes for lar.c functions */
 int verbose(void);
+int elfparse(void);
 long get_larsize(void);
 char *get_bootblock(void);
 
@@ -50,13 +51,24 @@ int add_file_or_directory(const char *name);
 struct file *get_files(void);
 void free_files(void);
 
+/* Prototypes for ELF functions */
+int iself(char *filebuf);
+
+/* Prototypes for in-memory LAR operations */
+int lar_process_name(char *name, char **pfilename, char **ppathname, 
+		enum compalgo *thisalgo);
+u32 lar_compress(char *ptr, ssize_t size, char *temp, enum compalgo *thisalgo);
+int lar_add_entry(struct lar *lar, char *pathname, void *data, 
+	u32 complen, u32 reallen, u32 loadaddress, u32 entry, 
+	enum compalgo thisalgo);
 /* Prototypes for the LAR I/O functions */
+char *mapfile(char *filename, u32 *size);
 struct lar * lar_new_archive(const char *archive, unsigned int size);
 struct lar * lar_open_archive(const char *archive);
 void lar_close_archive(struct lar *lar);
 
 void lar_list_files(struct lar *lar, struct file *files);
-int lar_add_file(struct lar *lar, const char *name);
+int lar_add_file(struct lar *lar, char *name);
 int lar_add_bootblock(struct lar *lar, const char *bootblock);
 int lar_extract_files(struct lar *lar, struct file *files);
 

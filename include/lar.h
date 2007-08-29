@@ -52,9 +52,10 @@
 
 #include <types.h>
 
+/* see note in lib/lar.c as to why this is ARCHIVE and not LARCHIVE */
 #define MAGIC "LARCHIVE"
 #define MAX_PATHLEN 1024
-
+/* NOTE -- This and the user-mode lar.h are NOT IN SYNC. Be careful. */
 struct lar_header {
 	char magic[8];
 	u32 len;
@@ -62,7 +63,14 @@ struct lar_header {
 	u32 checksum;
 	u32 compchecksum;
 	u32 offset;
+	/* Compression:
+	 * 0 = no compression
+	 * 1 = lzma
+	 * 2 = nrv2b
+	 */
 	u32 compression;
+	u32 entry;		/* we might need to make this u64 */
+	u32 loadaddress; /* ditto */
 };
 
 struct mem_file {
@@ -70,6 +78,8 @@ struct mem_file {
 	int len;
 	u32 reallen;
 	u32 compression;
+	void *entry;
+	void *loadaddress;
 };
 
 /* Prototypes. */
@@ -77,5 +87,6 @@ int find_file(struct mem_file *archive, char *filename, struct mem_file *result)
 int copy_file(struct mem_file *archive, char *filename, void *where);
 int run_file(struct mem_file *archive, char *filename, void *where);
 int execute_in_place(struct mem_file *archive, char *filename);
-
+int run_address(void *f);
+void *load_file(struct mem_file *archive, char *filename);
 #endif /* LAR_H */

@@ -22,7 +22,7 @@
 ifeq ($(CONFIG_ARCH_X86),y)
 
 INITCFLAGS := $(CFLAGS) -I$(src)/include/arch/x86 -I$(src)/include \
-		-I$(obj) -fno-builtin
+		-I$(obj) -fno-builtin  
 
 SILENT := >/dev/null 2>&1
 
@@ -78,7 +78,7 @@ else
 endif
 	$(Q)printf "  LAR     $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)rm -f $(obj)/linuxbios.rom
-	$(Q)cd $(obj)/lar.tmp && ../util/lar/lar $(COMPRESSFLAG) -c \
+	$(Q)cd $(obj)/lar.tmp && ../util/lar/lar $(PARSEELF) $(COMPRESSFLAG) -c \
 		../linuxbios.rom \
 		$(LARFILES) \
 		-s $(ROM_SIZE) -b $(obj)/linuxbios.bootblock
@@ -122,6 +122,11 @@ else
 endif
 endif
 
+ifeq ($(CONFIG_NOELF), y)
+	PARSEELF = -e
+else
+	PARSEELF = 
+endif
 
 STAGE0_OBJ := $(patsubst %,$(obj)/lib/%,$(STAGE0_LIB_OBJ)) \
 	      $(patsubst %,$(obj)/arch/x86/%,$(STAGE0_ARCH_X86_OBJ)) \

@@ -22,12 +22,16 @@
 #include <io.h>
 #include <console.h>
 #include <lar.h>
+#include <string.h>
 #include <tables.h>
 #include <lib.h>
 #include <mc146818rtc.h>
 #include <post_code.h>
 
-#define UNCOMPRESS_AREA 0x60000
+/* ah, well, what a mess! This is a hard code. FIX ME but how? 
+ * By getting rid of ELF ...
+ */
+#define UNCOMPRESS_AREA (0x400000)
 
 /* these prototypes should go into headers */
 void uart_init(void);
@@ -48,6 +52,24 @@ static void enable_rom(void)
 	post_code(0xf2);
 }
 
+
+/* until we get rid of elf */
+int legacy(struct mem_file *archive, char *name, void *where, struct lb_memory *mem)
+{
+	int ret;
+	struct mem_file result;
+	int elfboot_mem(struct lb_memory *mem, void *where, int size);
+	ret = copy_file(archive, name, where);
+	if (ret) {
+		printk(BIOS_ERR, "'%s' found, but could not load it.\n", name);
+	}
+
+	ret =  elfboot_mem(mem, where, result.reallen);
+
+	printk(BIOS_ERR, "elfboot_mem returns %d\n", ret);
+	return -1;
+}
+
 /*
  * This function is called from assembler code whith its argument on the
  * stack. Force the compiler to generate always correct code for this case.
@@ -57,6 +79,8 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 	int ret;
 	struct mem_file archive, result;
 	int elfboot_mem(struct lb_memory *mem, void *where, int size);
+	void *entry;
+	int i;
 
 	/* we can't statically init this hack. */
 	unsigned char faker[64];
@@ -144,19 +168,31 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 	printk(BIOS_DEBUG, "Stage2 code done.\n");
 
 	ret = find_file(&archive, "normal/payload", &result);
-	if (ret) {
-		printk(BIOS_ERR, "No such file '%s'.\n", "normal/payload");
-		die("FATAL: No payload found.\n");
-	}
-	ret = copy_file(&archive, "normal/payload", (void *)UNCOMPRESS_AREA);
-	if (ret) {
-		printk(BIOS_ERR, "'%s' found, but could not load it.\n", "normal/payload");
-		die("FATAL: No usable payload found.\n");
-	}
+	if (! ret)
+		legacy(&archive, "normal/payload", (void *)UNCOMPRESS_AREA, mem);
 
-	ret =  elfboot_mem(mem, (void *)UNCOMPRESS_AREA, result.reallen);
 
-	printk(BIOS_ERR, "elfboot_mem returns %d\n", ret);
+	/* new style lar boot. Install all the files in memory. 
+	  * By convention we take the entry point from the first 
+	  * one. Look for a cmdline as well. 
+	  */
+	for(i = 0, entry = (void *)0; ;i++) {
+		char filename[64];
+		void *newentry;
+		sprintf(filename, "normal/payload/segment%d", i);
+		archive.len = *(u32 *)0xfffffff4;
+		archive.start =(void *)(0UL-archive.len);
+		newentry = load_file(&archive, filename);
+		printk("newentry is %p\n", newentry);
+		if (newentry == (void *)-1)
+			break;
+		if (! entry)
+			entry = newentry;
+	}
+	printk(BIOS_SPEW, "all loaded, entry %p\n", entry);
+	run_address(entry);
+
+	die("FATAL: No usable payload found.\n");
 
 	die ("FATAL: Last stage returned to LinuxBIOS.\n");
 }

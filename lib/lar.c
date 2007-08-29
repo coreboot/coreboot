@@ -31,6 +31,13 @@
 #define ntohl(x) (x)
 #endif
 
+int run_address(void *f)
+{
+	int (*v) (void);
+	v = f;
+	return v();
+}
+
 int find_file(struct mem_file *archive, char *filename, struct mem_file *result)
 {
 	char *walk, *fullname;
@@ -40,31 +47,108 @@ int find_file(struct mem_file *archive, char *filename, struct mem_file *result)
 	printk(BIOS_SPEW, "LAR: Start %p len 0x%x\n", archive->start,
 	       archive->len);
 
+	if (archive->len < sizeof(struct lar_header))
+		printk(BIOS_ERR, "Error: truncated archive (%d bytes); minimum possible size is %d bytes\n", 
+			archive->len, sizeof(struct lar_header));
+
+	/* Getting this for loop right is harder than it looks. All quantities are 
+	  * unsigned. The LAR stretches from (e.g.) 0xfff0000 for 0x100000 
+	  * bytes, i.e. to address ZERO. 
+	  * As a result, 'walk', can wrap to zero and keep going (this has been 
+	  * seen in practice). Recall that these are unsigned; walk can 
+	  * wrap to zero; so, question, when is walk less than any of these:
+	  * archive->start
+	  * Answer: once walk wraps to zero, it is < archive->start
+	  * archive->start + archive->len
+	  * archive->start + archive->len  - 1
+	  * Answer: In the case that archive->start + archive->len == 0, ALWAYS!
+	  * A lot of expressions have been tried and all have been wrong. 
+	  * So what would work? Simple:
+	  * test for walk < archive->start + archive->len - 1 to cover the case
+	  *	that the archive does NOT occupy ALL of the top of memory and 
+	  *	wrap to zero; 
+	  * and test for walk >= archive->start, 
+	  * to cover the case that you wrapped to zero. 
+	  * Unsigned pointer arithmetic that wraps to zero can be messy.
+	  */
 	for (walk = archive->start;
-	     (walk - 1) < (char *)(archive->start + archive->len - 1 ); walk += 16) {
+	     (walk < (char *)(archive->start + archive->len - sizeof(struct lar_header))) && 
+			(walk >= (char *)archive->start); walk += 16) {
 		if (strcmp(walk, MAGIC) != 0)
 			continue;
 
 		header = (struct lar_header *)walk;
 		fullname = walk + sizeof(struct lar_header);
 
-		printk(BIOS_SPEW, "LAR: current filename is %s\n", fullname);
+		printk(BIOS_SPEW, "LAR: search for %s\n", fullname);
 		// FIXME: check checksum
 
 		if (strcmp(fullname, filename) == 0) {
+			printk(BIOS_SPEW, "LAR: CHECK %s @ %p\n", fullname, header);
 			result->start = walk + ntohl(header->offset);
 			result->len = ntohl(header->len);
 			result->reallen = ntohl(header->reallen);
 			result->compression = ntohl(header->compression);
+			result->entry = (void *)ntohl(header->entry);
+			result->loadaddress = (void *)ntohl(header->loadaddress);
+			printk(BIOS_SPEW, 
+			"start %p len %d reallen %d compression %x entry %p loadaddress %p\n", 
+				result->start, result->len, result->reallen, 
+				result->compression, result->entry, result->loadaddress);
 			return 0;
 		}
 		// skip file
 		walk += (ntohl(header->len) + ntohl(header->offset) -
 			1) & 0xfffffff0;
 	}
+	printk(BIOS_SPEW, "NO FILE FOUND\n");
 	return 1;
 }
 
+
+void *load_file(struct mem_file *archive, char *filename)
+{
+	int ret;
+	struct mem_file result;
+	void *where;
+	void *entry;
+
+	ret = find_file(archive, filename, &result);
+	if (ret) {
+		printk(BIOS_INFO, "LAR: load_file: No such file '%s'\n",
+		       filename);
+		return (void *)-1;
+	}
+	entry = result.entry;
+	where = result.loadaddress;
+	printk(BIOS_SPEW, "LAR: Compression algorithm #%i used\n", result.compression);
+	/* no compression */
+	if (result.compression == 0) {
+		memcpy(where, result.start, result.len);
+		return entry;
+	}
+#ifdef CONFIG_COMPRESSION_LZMA
+	/* lzma */
+	unsigned long ulzma(unsigned char *src, unsigned char *dst);
+	if (result.compression == 1) {
+		ulzma(result.start, where);
+		return entry;
+	}
+#endif
+#ifdef CONFIG_COMPRESSION_NRV2B
+	/* nrv2b */
+	unsigned long unrv2b(u8 *src, u8 *dst, unsigned long *ilen_p);
+	if (result.compression == 2) {
+		int tmp;
+		unrv2b(result.start, where, &tmp);
+		return entry;
+	}
+#endif
+	printk(BIOS_INFO, "LAR: Compression algorithm #%i not supported!\n", result.compression);
+	return (void *)-1;
+}
+
+/* FIXME -- most of copy_file should be replaced by load_file */
 int copy_file(struct mem_file *archive, char *filename, void *where)
 {
 	int ret;
@@ -85,7 +169,7 @@ int copy_file(struct mem_file *archive, char *filename, void *where)
 	}
 #ifdef CONFIG_COMPRESSION_LZMA
 	/* lzma */
-	unsigned long ulzma(unsigned char * src, unsigned char * dst);
+	unsigned long ulzma(unsigned char *src, unsigned char *dst);
 	if (result.compression == 1) {
 		ulzma(result.start, where);
 		return 0;
@@ -93,7 +177,7 @@ int copy_file(struct mem_file *archive, char *filename, void *where)
 #endif
 #ifdef CONFIG_COMPRESSION_NRV2B
 	/* nrv2b */
-	unsigned long unrv2b(u8 * src, u8 * dst, unsigned long *ilen_p);
+	unsigned long unrv2b(u8 *src, u8 *dst, unsigned long *ilen_p);
 	if (result.compression == 2) {
 		int tmp;
 		unrv2b(result.start, where, &tmp);
@@ -113,6 +197,7 @@ int run_file(struct mem_file *archive, char *filename, void *where)
 {
 	int (*v) (void);
 	struct mem_file result;
+	int ret;
 
 	if ((u32) where != 0xFFFFFFFF) {
 		if (copy_file(archive, filename, where)) {
@@ -130,9 +215,11 @@ int run_file(struct mem_file *archive, char *filename, void *where)
 		}
 		where = result.start;
 	}
-
+	printk(BIOS_SPEW, "where is %p\n", where);
 	v = where;
-	return v();
+	ret =  v();
+	printk(BIOS_SPEW, "run_file returns with %d\n", ret);
+	return ret;
 }
 
 /**

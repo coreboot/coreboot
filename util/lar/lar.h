@@ -57,6 +57,7 @@
 #define BOOTBLOCK_NAME "bootblock"
 #define BOOTBLOCK_NAME_LEN 16
 
+typedef uint64_t u64;
 typedef uint32_t u32;
 typedef uint8_t  u8;
 
@@ -74,8 +75,8 @@ struct lar_header {
 	 * 2 = nrv2b
 	 */
 	u32 compression;
-	u32 entry;		/* we might need to make this u64 */
-	u32 loadaddress; /* ditto */
+	u64 entry;
+	u64 loadaddress;
 };
 
 /**\struct

@@ -69,8 +69,8 @@ struct lar_header {
 	 * 2 = nrv2b
 	 */
 	u32 compression;
-	u32 entry;		/* we might need to make this u64 */
-	u32 loadaddress; /* ditto */
+	u64 entry;
+	u64 loadaddress;
 };
 
 struct mem_file {
@@ -83,10 +83,10 @@ struct mem_file {
 };
 
 /* Prototypes. */
-int find_file(struct mem_file *archive, char *filename, struct mem_file *result);
-int copy_file(struct mem_file *archive, char *filename, void *where);
-int run_file(struct mem_file *archive, char *filename, void *where);
-int execute_in_place(struct mem_file *archive, char *filename);
+int find_file(struct mem_file *archive, const char *filename, struct mem_file *result);
+int copy_file(struct mem_file *archive, const char *filename, void *where);
+int run_file(struct mem_file *archive, const char *filename, void *where);
+int execute_in_place(struct mem_file *archive, const char *filename);
 int run_address(void *f);
-void *load_file(struct mem_file *archive, char *filename);
+void *load_file(struct mem_file *archive, const char *filename);
 #endif /* LAR_H */

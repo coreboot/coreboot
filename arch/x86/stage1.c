@@ -36,7 +36,6 @@
 /* these prototypes should go into headers */
 void uart_init(void);
 void die(const char *msg);
-int find_file(struct mem_file *archive, char *filename, struct mem_file *result);
 void hardware_stage1(void);
 void disable_car(void);
 

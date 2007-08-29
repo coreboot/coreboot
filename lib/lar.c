@@ -31,6 +31,13 @@
 #define ntohl(x) (x)
 #endif
 
+/**
+ * run_address is passed the address of a function taking no parameters and
+ * jumps to it, returning the result. 
+ * @param v the address to call as a function. 
+ * returns value returned by the function. 
+ */
+
 int run_address(void *f)
 {
 	int (*v) (void);
@@ -38,7 +45,18 @@ int run_address(void *f)
 	return v();
 }
 
-int find_file(struct mem_file *archive, char *filename, struct mem_file *result)
+/**
+ * Given a file name in the LAR , search for it, and fill out a return struct with the 
+ * result. 
+ * @param archive A descriptor for current archive. This is actually a mem_file type, 
+ *    which is a machine-dependent representation of hte actual archive. In particular, 
+ *    things like u32 are void * in the mem_file struct. 
+ * @param filename filename to find
+ * @param result pointer to mem_file struct which is filled in if the file is found
+ * returns 0 on success, -1 otherwise
+ */
+
+int find_file(struct mem_file *archive, const char *filename, struct mem_file *result)
 {
 	char *walk, *fullname;
 	struct lar_header *header;
@@ -105,8 +123,15 @@ int find_file(struct mem_file *archive, char *filename, struct mem_file *result)
 	return 1;
 }
 
+/**
+ * Given a file name in the LAR , search for it, and load it into memory, using 
+ * the loadaddress pointer in the mem_file struct. 
+ * @param archive A descriptor for current archive.
+ * @param filename filename to find
+ * returns 0 on success, -1 otherwise
+ */
 
-void *load_file(struct mem_file *archive, char *filename)
+void *load_file(struct mem_file *archive, const char *filename)
 {
 	int ret;
 	struct mem_file result;
@@ -149,7 +174,15 @@ void *load_file(struct mem_file *archive, char *filename)
 }
 
 /* FIXME -- most of copy_file should be replaced by load_file */
-int copy_file(struct mem_file *archive, char *filename, void *where)
+/**
+ * Given a file name in the LAR , search for it, and load it into memory, 
+ * using the passed-in pointer as the address
+ * @param archive A descriptor for current archive.
+ * @param filename filename to find
+ * @param where pointer to where to load the data
+ * returns 0 on success, -1 otherwise
+ */
+int copy_file(struct mem_file *archive, const char *filename, void *where)
 {
 	int ret;
 	struct mem_file result;
@@ -190,10 +223,15 @@ int copy_file(struct mem_file *archive, char *filename, void *where)
 
 
 /**
- * Find the file in the LAR header, copy it to the desired location,
- * and execute it. A location of 0xFFFFFFFF means execute in place (XIP).
+ * Given a file name in the LAR , search for it, and load it into memory, 
+ * using the passed-in pointer as the address; jump to the file. 
+ * If the passed-in pointer is (void *)-1, then execute the file in place. 
+ * @param archive A descriptor for current archive.
+ * @param filename filename to find
+ * @param where pointer to where to load the data
+ * returns 0 on success, -1 otherwise
  */
-int run_file(struct mem_file *archive, char *filename, void *where)
+int run_file(struct mem_file *archive, const char *filename, void *where)
 {
 	int (*v) (void);
 	struct mem_file result;
@@ -217,15 +255,18 @@ int run_file(struct mem_file *archive, char *filename, void *where)
 	}
 	printk(BIOS_SPEW, "where is %p\n", where);
 	v = where;
-	ret =  v();
+	ret = v();
 	printk(BIOS_SPEW, "run_file returns with %d\n", ret);
 	return ret;
 }
 
 /**
- * Call run_file() to execute in place.
+ * Given a file name in the LAR , search for it, and execute it in place. 
+ * @param archive A descriptor for current archive.
+ * @param filename filename to find
+ * returns 0 on success, -1 otherwise
  */
-int execute_in_place(struct mem_file *archive, char *filename)
+int execute_in_place(struct mem_file *archive, const char *filename)
 {
 	return run_file(archive, filename, (void *) 0xFFFFFFFF);
 }

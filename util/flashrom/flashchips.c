@@ -82,6 +82,8 @@ struct flashchip flashchips[] = {
 	 probe_jedec,	erase_chip_jedec, write_49fl004},
 	{"W29C011",	WINBOND_ID,	W_29C011,	128, 128,
 	 probe_jedec,	erase_chip_jedec, write_jedec},
+	{"W29C040P",	WINBOND_ID,	W_29C040P,	512, 256,
+	 probe_jedec,	erase_chip_jedec, write_jedec},
 	{"W29C020C", 	WINBOND_ID, 	W_29C020C,	256, 128,
 	 probe_jedec, 	erase_chip_jedec, write_jedec},
 	{"W49F002U", 	WINBOND_ID, 	W_49F002U,	256, 128,

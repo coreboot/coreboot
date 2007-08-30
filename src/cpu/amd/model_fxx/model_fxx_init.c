@@ -620,6 +620,7 @@ static struct cpu_device_id cpu_table[] = {
         { X86_VENDOR_AMD, 0x40f33 },            /*        AM2 : Opteron Dual Core/Athlon64 x2/ Athlon64 FX Dual Core */
         { X86_VENDOR_AMD, 0xc0f13 },            /*        AM2 : Athlon64 FX*/
         { X86_VENDOR_AMD, 0x50ff3 }, /* DH-F3      Socket AM2: Athlon64 */
+        { X86_VENDOR_AMD, 0x60fb1 }, /*       Socket AM2: Athlon64 x2 5000+*/
 #endif
 
 	{ 0, 0 },

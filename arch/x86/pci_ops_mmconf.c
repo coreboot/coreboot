@@ -18,32 +18,32 @@
 
 #include <mmio_conf.h>
 
-static uint8_t pci_mmconf_read_config8(struct bus *pbus, int bus, int devfn, int where)
+static u8 pci_mmconf_read_config8(struct bus *pbus, int bus, int devfn, int where)
 {
 		return (read8x(PCI_MMIO_ADDR(bus, devfn, where)));
 }
 
-static uint16_t pci_mmconf_read_config16(struct bus *pbus, int bus, int devfn, int where)
+static u16 pci_mmconf_read_config16(struct bus *pbus, int bus, int devfn, int where)
 {
                 return (read16x(PCI_MMIO_ADDR(bus, devfn, where)));
 }
 
-static uint32_t pci_mmconf_read_config32(struct bus *pbus, int bus, int devfn, int where)
+static u32 pci_mmconf_read_config32(struct bus *pbus, int bus, int devfn, int where)
 {
                 return (read32x(PCI_MMIO_ADDR(bus, devfn, where)));
 }
 
-static void  pci_mmconf_write_config8(struct bus *pbus, int bus, int devfn, int where, uint8_t value)
+static void  pci_mmconf_write_config8(struct bus *pbus, int bus, int devfn, int where, u8 value)
 {
                 write8x(PCI_MMIO_ADDR(bus, devfn, where), value);
 }
 
-static void pci_mmconf_write_config16(struct bus *pbus, int bus, int devfn, int where, uint16_t value)
+static void pci_mmconf_write_config16(struct bus *pbus, int bus, int devfn, int where, u16 value)
 {
                 write8x(PCI_MMIO_ADDR(bus, devfn, where), value);
 }
 
-static void pci_mmconf_write_config32(struct bus *pbus, int bus, int devfn, int where, uint32_t value)
+static void pci_mmconf_write_config32(struct bus *pbus, int bus, int devfn, int where, u32 value)
 {
                 write8x(PCI_MMIO_ADDR(bus, devfn, where), value);
 }

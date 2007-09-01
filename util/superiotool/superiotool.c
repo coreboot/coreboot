@@ -330,27 +330,18 @@ void dump_ite(unsigned short port, unsigned short id)
 {
 	int i, j, k;
 	signed short *idx;
-	printf ("ITE ");
 
-	/* ID Mapping Table
-	   unknown -> IT8711 (no datasheet)
-	   unknown -> IT8722 (no datasheet)
-	   0x8702 -> IT8702
-	   0x8705 -> IT8700 or IT8705
-	   0x8708 -> IT8708
-	   0x8710 -> IT8710
-	   0x8712 -> IT8712
-	   0x8716 -> IT8716
-	   0x8718 -> IT8718
-	   0x8726 -> IT8726 (datasheet wrongly says 0x8716)
-	 */
+	printf("ITE ");
+
+	/* TODO: Get datasheets for IT8711 and IT8712. */
 	switch (id) {
 	case 0x8702:
-	case 0x8705:
+	case 0x8705: /* IT8700F or IT8705F */
 	case 0x8708:
 	case 0x8710:
 	case 0x8712:
 	case 0x8716:
+	/* Note: IT8726F has ID 0x8726 (datasheet wrongly says 0x8716). */
 	case 0x8718:
 		for (i = 0;; i++) {
 			if (ite_reg_table[i].superio_id == EOT)
@@ -405,17 +396,18 @@ void dump_ite(unsigned short port, unsigned short id)
 void probe_idregs_simple(unsigned short port)
 {
 	unsigned char id;
+
 	outb(0x20, port);
 	if (inb(port) != 0x20) {
 		if (inb(port) == 0xff)
-			printf("No SuperI/O chip found at 0x%04x\n", port);
+			printf("No Super I/O chip found at 0x%04x\n", port);
 		else
-			printf("probing 0x%04x, failed (0x%02x), data returns 0x%02x\n", port, inb(port), inb(port + 1));
+			printf("Probing 0x%04x, failed (0x%02x), data returns 0x%02x\n", port, inb(port), inb(port + 1));
 		return;
 	}
 	id = inb(port + 1);
 
-	printf("SuperI/O found at 0x%02x: id = 0x%02x\n", port, id);
+	printf("Super I/O found at 0x%02x: id = 0x%02x\n", port, id);
 	if (id == 0xff)
 		return;
 
@@ -429,7 +421,7 @@ void probe_idregs_simple(unsigned short port)
 		dump_ns8374(port);
 		break;
 	default:
-		printf("no dump for 0x%02x\n", id);
+		printf("No dump for 0x%02x\n", id);
 		break;
 	}
 }
@@ -447,9 +439,9 @@ void probe_idregs_fintek(unsigned short port)
 	outb(0x20, port);
 	if (inb(port) != 0x20) {
 		if (inb(port) == 0xff)
-			printf("No SuperIO chip found at 0x%04x\n", port);
+			printf("No Super I/O chip found at 0x%04x\n", port);
 		else
-			printf("probing 0x%04x, failed (0x%02x), data returns 0x%02x\n", port, inb(port), inb(port + 1));
+			printf("Probing 0x%04x, failed (0x%02x), data returns 0x%02x\n", port, inb(port), inb(port + 1));
 		return;
 	}
 	did = inb(port + 1);
@@ -516,9 +508,9 @@ void probe_idregs_ite(unsigned short port)
 	id = regval(port, 0x20);
 	if (id != 0x87) {
 		if (inb(port) == 0xff)
-			printf("No Super-I/O chip found at 0x%04x\n", port);
+			printf("No Super I/O chip found at 0x%04x\n", port);
 		else
-			printf("probing 0x%04x, failed (0x%02x), data returns 0x%02x\n", port, inb(port), inb(port + 1));
+			printf("Probing 0x%04x, failed (0x%02x), data returns 0x%02x\n", port, inb(port), inb(port + 1));
 		return;
 	}
 
@@ -530,18 +522,6 @@ void probe_idregs_ite(unsigned short port)
 	/* Read chip version, only bits 3..0 for all IT87xx. */
 	chipver = regval(port, 0x22) & 0x0f;
 
-	/* ID Mapping Table
-	 * unknown -> IT8711 (no datasheet)
-	 * unknown -> IT8722 (no datasheet)
-	 * 0x8702 -> IT8702
-	 * 0x8705 -> IT8700 or IT8705
-	 * 0x8708 -> IT8708
-	 * 0x8710 -> IT8710
-	 * 0x8712 -> IT8712
-	 * 0x8716 -> IT8716
-	 * 0x8718 -> IT8718
-	 * 0x8726 -> IT8726 (datasheet wrongly says 0x8716)
-	 */
 	printf("Super I/O found at 0x%02x: id=0x%04x, chipver=0x%01x\n",
 	       port, id, chipver);
 
@@ -556,7 +536,7 @@ void probe_idregs_ite(unsigned short port)
 		dump_ite(port, id);
 		break;
 	default:
-		printf("No dump for id 0x%04x\n", id);
+		printf("No dump for ID 0x%04x\n", id);
 		break;
 	}
 	regwrite(port, 0x02, 0x02);	/* Exit MB PnP mode. */

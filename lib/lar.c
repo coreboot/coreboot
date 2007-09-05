@@ -233,7 +233,6 @@ int copy_file(struct mem_file *archive, const char *filename, void *where)
  */
 int run_file(struct mem_file *archive, const char *filename, void *where)
 {
-	int (*v) (void);
 	struct mem_file result;
 	int ret;
 
@@ -261,8 +260,7 @@ int run_file(struct mem_file *archive, const char *filename, void *where)
 		where = result.start;
 	}
 	printk(BIOS_SPEW, "where is %p\n", where);
-	v = where;
-	ret = v();
+	ret = run_address(where);
 	printk(BIOS_SPEW, "run_file returns with %d\n", ret);
 	return ret;
 }

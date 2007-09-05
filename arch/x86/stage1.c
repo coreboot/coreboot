@@ -182,7 +182,7 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 		archive.len = *(u32 *)0xfffffff4;
 		archive.start =(void *)(0UL-archive.len);
 		newentry = load_file(&archive, filename);
-		printk("newentry is %p\n", newentry);
+		printk(BIOS_SPEW, "newentry is %p\n", newentry);
 		if (newentry == (void *)-1)
 			break;
 		if (! entry)

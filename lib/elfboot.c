@@ -103,11 +103,11 @@ static int load_elf_segments(struct lb_memory *mem,unsigned char *header, int he
 			phdr[i].p_paddr, phdr[i].p_memsz, phdr[i].p_offset, phdr[i].p_filesz);
 		/* Clean up the values */
 		size = phdr[i].p_filesz;
-		if (phdr[i].p_filesz > phdr[i].p_memsz)  {
+		if (size > phdr[i].p_memsz)  {
 			size = phdr[i].p_memsz;
+			printk(BIOS_DEBUG, "(cleaned up) New segment addr 0x%x size 0x%x offset 0x%x\n",
+			    phdr[i].p_paddr, size, phdr[i].p_offset);
 		}
-		printk(BIOS_DEBUG, "(cleaned up) New segment addr 0x%x size 0x%x offset 0x%x\n",
-			phdr[i].p_paddr, size, phdr[i].p_offset);
 
 		/* Verify the memory addresses in the segment are valid */
 		if (!valid_area(mem, phdr[i].p_paddr, size)) 

@@ -649,9 +649,9 @@ void pci_dev_set_subsystem(struct device *dev, unsigned int vendor,
 
 void pci_dev_init(struct device *dev)
 {
+	printk(BIOS_SPEW, "PCI: pci_dev_init\n");
 #if defined(CONFIG_PCI_OPTION_ROM_RUN) && CONFIG_PCI_OPTION_ROM_RUN == 1
 	void run_bios(struct device *dev, unsigned long addr);
-	void do_vgabios(void);
 	struct rom_header *rom, *ram;
 
 	printk(BIOS_INFO, "Probing for option ROM\n");
@@ -661,14 +661,7 @@ void pci_dev_init(struct device *dev)
 	ram = pci_rom_load(dev, rom);
 	if (ram == NULL)
 		return;
-#if defined(CONFIG_PCI_OPTION_ROM_RUN_X86EMU) && \
-	CONFIG_PCI_OPTION_ROM_RUN_X86EMU == 1
 	run_bios(dev, ram);
-#endif
-#if defined(CONFIG_PCI_OPTION_ROM_RUN_VM86) && \
-	CONFIG_PCI_OPTION_ROM_RUN_VM86 == 1
-	do_vgabios();
-#endif
 #endif
 }
 

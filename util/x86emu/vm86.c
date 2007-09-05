@@ -307,13 +307,8 @@ void vga_enable_console(void)
 		);
 }
 
-void do_vgabios(void)
+void run_bios(struct device *dev, unsigned long addr)
 {
-	struct device *dev;
-	unsigned int busdevfn;
-	unsigned long rom = 0;
-	unsigned char *buf;
-	unsigned int size = 64*1024;
 	int i;
 	
 	/* clear vga bios data area */
@@ -321,41 +316,7 @@ void do_vgabios(void)
 		*(unsigned char *) i = 0;
 	}
 
-	dev = dev_find_class(PCI_CLASS_DISPLAY_VGA<<8 , 0);
-
-	if (!dev) {
-		printk(BIOS_DEBUG, "NO VGA FOUND\n");
-		return;
-	}
-	printk(BIOS_DEBUG,"found VGA: vid=%x, did=%x\n", dev->vendor, dev->device);
-
-	/* declare rom address here - keep any config data out of the way
-	 * of core LXB stuff */
-#warning fix rom address
-	rom = 0xc0000;
-	pci_write_config32(dev, PCI_ROM_ADDRESS, rom|1);
-	printk(BIOS_DEBUG, "rom base, size: %p\n", (void *)rom);
-
-	buf = (unsigned char *) rom;
-	if ((buf[0] == 0x55) && (buf[1] == 0xaa)) {
-		memcpy((void *) 0xc0000, buf, size);
-
-#warning Implement write_protect_vgabios()
-		//write_protect_vgabios();  // in northbridge
-
-	  	// check signature again
-		buf = (unsigned char *) 0xc0000;
-		if (buf[0]==0x55 && buf[1]==0xAA) {
-			busdevfn = (dev->bus->secondary << 8) | dev->path.u.pci.devfn;
-			printk(BIOS_DEBUG, "bus/devfn = %#x\n", busdevfn);
-
-		    	real_mode_switch_call_vga(busdevfn);
-		} else
-			printk(BIOS_DEBUG, "Failed to copy VGA BIOS to 0xc0000\n");
-	} else 
-		printk(BIOS_DEBUG, "BAD SIGNATURE 0x%x 0x%x\n", buf[0], buf[1]);
-
-	pci_write_config32(dev, PCI_ROM_ADDRESS, 0);
+	real_mode_switch_call_vga((dev->bus->secondary << 8) | dev->path.u.pci.devfn);
 }
 
 

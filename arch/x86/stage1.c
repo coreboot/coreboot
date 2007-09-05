@@ -189,7 +189,8 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 			entry = newentry;
 	}
 	printk(BIOS_SPEW, "all loaded, entry %p\n", entry);
-	run_address(entry);
+	if (entry)
+		run_address(entry);
 
 	die("FATAL: No usable payload found.\n");
 

@@ -79,7 +79,7 @@ int output_elf_segments(struct lar *lar, char *name, char *filebuf,
 	u32 entry;
 	int i;
 	int size;
-	unsigned char *header;
+	char *header;
 	char ename[64];
 	int headers;
 	char *temp;
@@ -101,7 +101,7 @@ int output_elf_segments(struct lar *lar, char *name, char *filebuf,
 	/* validate elf header */
 	ehdr = (Elf32_Ehdr *)filebuf;
 	headers = ehdr->e_phnum;
-	header  = (unsigned char *)ehdr;
+	header  = (char *)ehdr;
 	if (verbose())
 		fprintf(stderr, "Type %d machine %d version %d entry %p phoff %d shoff %d flags %#x hsize %d phentsize %d phnum %d s_hentsize %d s_shnum %d \n", 
 		ehdr->e_type,

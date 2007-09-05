@@ -107,8 +107,8 @@ int find_file(struct mem_file *archive, const char *filename, struct mem_file *r
 			result->len = ntohl(header->len);
 			result->reallen = ntohl(header->reallen);
 			result->compression = ntohl(header->compression);
-			result->entry = (void *)ntohl(header->entry);
-			result->loadaddress = (void *)ntohl(header->loadaddress);
+			result->entry = (void *)ntohl((u32)header->entry);
+			result->loadaddress = (void *)ntohl((u32)header->loadaddress);
 			printk(BIOS_SPEW, 
 			"start %p len %d reallen %d compression %x entry %p loadaddress %p\n", 
 				result->start, result->len, result->reallen, 

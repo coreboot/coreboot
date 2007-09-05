@@ -56,14 +56,13 @@ static void enable_rom(void)
 int legacy(struct mem_file *archive, char *name, void *where, struct lb_memory *mem)
 {
 	int ret;
-	struct mem_file result;
 	int elfboot_mem(struct lb_memory *mem, void *where, int size);
 	ret = copy_file(archive, name, where);
 	if (ret) {
 		printk(BIOS_ERR, "'%s' found, but could not load it.\n", name);
 	}
 
-	ret =  elfboot_mem(mem, where, result.reallen);
+	ret =  elfboot_mem(mem, where, archive->reallen);
 
 	printk(BIOS_ERR, "elfboot_mem returns %d\n", ret);
 	return -1;

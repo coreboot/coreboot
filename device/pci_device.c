@@ -661,7 +661,7 @@ void pci_dev_init(struct device *dev)
 	ram = pci_rom_load(dev, rom);
 	if (ram == NULL)
 		return;
-	run_bios(dev, ram);
+	run_bios(dev, (unsigned long)ram);
 #endif
 }
 

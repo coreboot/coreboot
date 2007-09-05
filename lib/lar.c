@@ -251,6 +251,13 @@ int run_file(struct mem_file *archive, const char *filename, void *where)
 			       filename);
 			return 1;
 		}
+		if (result.compression != 0) {
+			printk(BIOS_INFO,
+			       "LAR: Run file %s failed: Compressed file"
+			       " not supported for in-place execution\n",
+			       filename);
+			return 1;
+		}
 		where = result.start;
 	}
 	printk(BIOS_SPEW, "where is %p\n", where);

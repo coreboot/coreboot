@@ -112,16 +112,13 @@ static int load_elf_segments(struct lb_memory *mem,unsigned char *header, int he
 		/* Verify the memory addresses in the segment are valid */
 		if (!valid_area(mem, phdr[i].p_paddr, size)) 
 			goto out;
-		/* let's just be stupid about this. Bzero the whole area we are copying to, 
-		  * then copy out the data, which may be a subset of the total area. 
-		  * the cache, after all, is your friend.
-		  */
-		printk(BIOS_INFO, "Set %p to 0 for %d bytes\n", (unsigned char *)phdr[i].p_paddr, phdr[i].p_memsz);
-		memset((unsigned char *)phdr[i].p_paddr, 0, phdr[i].p_memsz);
 		/* ok, copy it out */
 		printk(BIOS_INFO, "Copy to %p from %p for %d bytes\n", (unsigned char *)phdr[i].p_paddr, &header[phdr[i].p_offset], size);
 		memcpy((unsigned char *)phdr[i].p_paddr, &header[phdr[i].p_offset], size);
-		
+		if (size < phdr[i].p_memsz) {
+		        printk(BIOS_INFO, "Set %p to 0 for %d bytes\n", (unsigned char *)phdr[i].p_paddr, phdr[i].p_memsz-size);
+		        memset((unsigned char *)phdr[i].p_paddr+size, 0, phdr[i].p_memsz-size);
+		}
 	}
 	return 1;
  out:

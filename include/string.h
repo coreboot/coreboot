@@ -110,4 +110,24 @@ static inline int strcmp(const char *s1, const char *s2)
 	return c1 - c2;
 }
 
+/**
+ * Compare two strings with fixed length.
+ *
+ * @param s1 The first string.
+ * @param s2 The second string.
+ * @param maxlen Return at most maxlen characters as length of the string.
+ * @return A non-zero value if s1 and s2 differ, or zero if s1 equals s2.
+ */
+static inline int strncmp(const char *s1, const char *s2, int maxlen)
+{
+	int i;
+
+	for (i = 0; i < maxlen; i++) {
+		if (s1[i] != s2[i])
+			return s1[i] - s2[i];
+	}
+
+	return 0;
+}
+
 #endif				/* STRING_H */

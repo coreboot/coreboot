@@ -1,0 +1,26 @@
+target alix1c
+mainboard pcengines/alix1c
+
+option CONFIG_COMPRESSED_PAYLOAD_NRV2B=0
+
+## ROM_SIZE is the total number of bytes allocated for LinuxBIOS use
+## (normal AND fallback images and payloads).
+## leave 36k for vsa 
+##
+option ROM_SIZE = 512*1024 - 36 * 1024
+
+## ROM_IMAGE_SIZE is the maximum number of bytes allowed for a LinuxBIOS image,
+## not including any payload.
+option ROM_IMAGE_SIZE=64*1024
+
+option FALLBACK_SIZE = ROM_SIZE
+
+option DEFAULT_CONSOLE_LOGLEVEL = 11
+option MAXIMUM_CONSOLE_LOGLEVEL = 11
+romimage "fallback" 
+	option USE_FALLBACK_IMAGE=1
+	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
+	payload /tmp/filo.elf
+end
+
+buildrom ./linuxbios.rom ROM_SIZE  "fallback"

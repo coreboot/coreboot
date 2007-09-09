@@ -91,9 +91,9 @@
 #define doc_toggle(base)   /* 0, 1, 0, 1, 0, 1, ... if a doc is present */ \
 	( (doc_read(base, ECCConfiguration) & 0x04) >> 2 )
 
-extern int probe_md2802(struct flashchip *flash);
-extern int read_md2802(struct flashchip *flash, uint8_t *buf);
-extern int erase_md2802(struct flashchip *flash);
-extern int write_md2802(struct flashchip *flash, uint8_t *buf);
+int probe_md2802(struct flashchip *flash);
+int read_md2802(struct flashchip *flash, uint8_t *buf);
+int erase_md2802(struct flashchip *flash);
+int write_md2802(struct flashchip *flash, uint8_t *buf);
 
 #endif				/* !__MSYS_DOC_H__ */

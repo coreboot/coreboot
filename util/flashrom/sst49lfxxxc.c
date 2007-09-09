@@ -1,8 +1,8 @@
 /*
  * This file is part of the flashrom project.
  *
- * Copyright 2000 Silicon Integrated System Corporation
- * Copyright 2005-2007 coresystems GmbH
+ * Copyright (C) 2000 Silicon Integrated System Corporation
+ * Copyright (C) 2005-2007 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

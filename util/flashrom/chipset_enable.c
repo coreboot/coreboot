@@ -46,13 +46,11 @@ static int enable_flash_sis630(struct pci_dev *dev, char *name)
 	char b;
 
 	/* Enable 0xFFF8000~0xFFFF0000 decoding on SiS 540/630 */
-	outl(0x80000840, 0x0cf8);
-	b = inb(0x0cfc) | 0x0b;
-	outb(b, 0xcfc);
+	b = pci_read_byte(dev, 0x40);
+	pci_write_byte(dev, 0x40, b | 0xb);
 	/* Flash write enable on SiS 540/630 */
-	outl(0x80000845, 0x0cf8);
-	b = inb(0x0cfd) | 0x40;
-	outb(b, 0xcfd);
+	b = pci_read_byte(dev, 0x45);
+	pci_write_byte(dev, 0x45, b | 0x40);
 
 	/* The same thing on SiS 950 SuperIO side */
 	outb(0x87, 0x2e);

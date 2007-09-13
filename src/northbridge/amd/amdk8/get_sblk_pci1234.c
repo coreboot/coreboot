@@ -29,9 +29,11 @@ restrictions as set forth in FAR 52.227-14 and DFAR 252.227-7013, et seq., or
 its successor. Use of the Materials by the Government constitutes
 acknowledgement of AMD's proprietary rights in them.
 ============================================================================*/
-// 2005.9 serengeti support
-// by yhlu
-//  2005.9 yhlu modify that to more dynamic for AMD Opteron Based MB
+/* Copyright 2007 coresystems GmbH */
+
+// 2005.9 yhlu    serengeti support
+// 2005.9 yhlu    modify that to more dynamic for AMD Opteron Based MB
+// 2007.9 stepan  improve code documentation
 
 #include <console/console.h>
 #include <device/pci.h>
@@ -79,88 +81,121 @@ unsigned node_link_to_bus(unsigned node, unsigned link)
 #endif
 
 
-/* why we need pci1234 array
-        final result for pci1234 will be
-                pci1234[0] will record sblink and bus range
-                pci1234[i] will record ht chain i.
-        it will keep the sequence when some ht io card is not installed.
+/**
+ * Why we need the pci1234[] array
+ *
+ * It will keep the sequence of HT devices in the HT link registers even when a
+ * given HT I/O card is not installed.
+ *
+ * The final result for pci1234[] will be
+ *
+ *     pci1234[0] will record the south bridge link and bus range
+ *     pci1234[i] will record HT chain i.
+ *
+ * For example, on the Tyan S2885 linxbios_ram will put the AMD8151 chain (HT
+ * link 0) into the register 0xE0, and the AMD8131/8111 HT chain into the
+ * register 0xE4.
+ *
+ * So we need to make sure that the south bridge link will always be on
+ * pci1234[0].
+ *
+ * Imagine a scenario with multiple HT I/O cards, where you don't install HT I/O 1, 
+ * but you only install HT I/O 2 and HT I/O 3. The HT I/Os  will end up in registers 
+ * 0xE4 and 0xE8.
+ *
+ * But we want to leave pci1234[1] to HT I/O 1 (even though it is disabled),
+ * and let HT I/O 2 and HT I/O 3 still use pci1234[2] and pci1234[3].
+ *
+ * So we keep the sequence. You need to preset the pci1234[1], pci1234[2],
+ * pci1234[3] for this purpose.
+ *
+ * For this example you need to set
+ *
+ *     unsigned pci1234[] = {
+ *             0x0000ff0,
+ *             0x0000f10, // HT IO 1 card always on node 1
+ *             0x0000f20, // HT IO 2 card always on node 2
+ *             0x0000f30  // HT IO 3 card always on node 3
+ *     };
+ *
+ * For 2P + htio(n1) + htio(n0_1) + htio(n1_1), 2P + htio(n1) + 2P + htio(n2) + htio(n3):
+ * You need an array pci1234[6]:
+ *
+ *     unsigned pci1234[] = {
+ *             0x0000ff0,
+ *             0x0000010, // HT IO 1 card always on node 1
+ *             0x0000f00, // HT IO 2 card always on node 0
+ *             0x0000110, // HT IO 3 card always on node 1
+ *             0x0000f20, // HT IO 4 card always on node 2
+ *             0x0000f30  // HT IO 5 card always on node 3
+ *     };
+ *
+ *
+ * For 4p+htio(n1)+htio(n2)+htio(n3),4p+htio(n1)+4p+htio(n6)+htio(n7):  
+ * You need an array pci1234[6]:
+ *
+ *     unsigned pci1234[] = {
+ *             0x0000ff0,
+ *             0x0000f10, // HT IO 1 card always on node 1
+ *             0x0000f20, // HT IO 2 card always on node 2
+ *             0x0000f30, // HT IO 3 card always on node 3
+ *             0x0000f60, // HT IO 4 card always on node 6
+ *             0x0000f70  // HT IO 5 card always on node 7
+ *     };
+ * 
+ * 
+ * For 2p + htio(n1) + htio(n0_1) + htio(n1_1), 2P + htio(n1) + 2P + 
+ * htio(n2) + htio(n3), 2P + htio(n1) + 4P + htio(n4) + htio(n5), 
+ * you need an array pci1234[8]:
+ *
+ *     unsigned pci1234[] = {
+ *             0x0000ff0,
+ *             0x0000010, // HT IO 1 card always on node 1
+ *             0x0000f00, // HT IO 2 card always on node 0
+ *             0x0000110, // HT IO 3 card always on node 1
+ *             0x0000f20, // HT IO 4 card always on node 2
+ *             0x0000f30  // HT IO 5 card always on node 3
+ *             0x0000f40, // HT IO 6 card always on node 4
+ *             0x0000f50  // HT IO 7 card always on node 5
+ *     };
+ * 
+ * 
+ * For 4P + htio(n1) + htio(n2) + htio(n3), 4p + htio(n1) + 2p + htio(n4) +
+ * htio(n5), 4p + htio(n1) + 4p + htio(n6) + htio(n7), 
+ * you need an array pci1234[8]:
+ *
+ *     unsigned pci1234[] = {
+ *             0x0000ff0,
+ *             0x0000f10, // HT IO 1 card always on node 1
+ *             0x0000f20, // HT IO 2 card always on node 2
+ *             0x0000f30, // HT IO 3 card always on node 3
+ *             0x0000f40, // HT IO 4 card always on node 4
+ *             0x0000f50  // HT IO 5 card always on node 5
+ *             0x0000f60, // HT IO 6 card always on node 6
+ *             0x0000f70  // HT IO 7 card always on node 7
+ *     };
+ * 
+ * 
+ * So the maximum posible value of HC_POSSIBLE_NUM is 8. (FIXME Why?)
+ * 
+ *     1n:       3
+ *     2n: 2x2 - 1
+ *     4n: 1x4 - 2 
+ *     6n:       2 
+ *     8n:       2 
+ *  Total:      12 
+ * 
+ * Just put all the possible HT Node/link to the list tp pci1234[] in 
+ * src/mainboard/<vendor>/<mainboard>get_bus_conf.c
+ * 
+ * Also don't forget to increase the ACPI_SSDTX_NUM etc (FIXME what else) if
+ * you have too many SSDTs
+ * 
+ * What about co-processor in socket 1 on a 2 way system? Or socket 2 and
+ * socket 3 on a 4 way system? Treat that as an HC, too!
+ * 
+ */
 
-        for Tyan S2885 the linxbios_ram will put 8151 chain (link 0) to 0xE0 reg, and 8131/8111 on 0xe4 reg, So we need to make sure the sb link
-                will always on pci1234[0]
-        for multi ht-io cards, if you don't install htio1, and only installed htio2, htio3, the htio will be on 0xe4, and 0xe8.
-                but we want to leave pci1234[1] to htio1 (even it is disabled) , and let htio2 and htio3 still use pci1234[2] and pci1234[3]
-        So we keep the sequence. ---- you need to preset the pci1234[1], pci1234[2], pci1234[3] for this purpose
-                                        for example you need set
-                        unsigned pci1234[] = {
-                                0x0000ff0,
-                                0x0000f10, // HT IO 1 card always on node 1
-                                0x0000f20, // HT IO 2 card always on node 2
-                                0x0000f30  // HT IO 3 card always on node 3
-                        };
-
-        for 2p+htio(n1)+htio(n0_1)+htio(n1_1),2p+htio(n1)+2p+htio(n2)+htio(n3) :  need pci1234[6]
-                        unsigned pci1234[] = {
-                                0x0000ff0,
-                                0x0000010, // HT IO 1 card always on node 1
-                                0x0000f00, // HT IO 2 card always on node 0
-                                0x0000110, // HT IO 3 card always on node 1
-                                0x0000f20, // HT IO 4 card always on node 2
-                                0x0000f30  // HT IO 5 card always on node 3
-                        };
-
-        for 4p+htio(n1)+htio(n2)+htio(n3),4p+htio(n1)+4p+htio(n6)+htio(n7) :  need pci1234[6]
-                        unsigned pci1234[] = {
-                                0x0000ff0,
-                                0x0000f10, // HT IO 1 card always on node 1
-                                0x0000f20, // HT IO 2 card always on node 2
-                                0x0000f30, // HT IO 3 card always on node 3
-                                0x0000f60, // HT IO 4 card always on node 6
-                                0x0000f70  // HT IO 5 card always on node 7
-                        };
-
-
-        for 2p+htio(n1)+htio(n0_1)+htio(n1_1), 2p+htio(n1)+2p+htio(n2)+htio(n3), 2p+htio(n1)+4p+htio(n4)+htio(n5), need pci1234[8]
-                        unsigned pci1234[] = {
-                                0x0000ff0,
-                                0x0000010, // HT IO 1 card always on node 1
-                                0x0000f00, // HT IO 2 card always on node 0
-                                0x0000110, // HT IO 3 card always on node 1
-                                0x0000f20, // HT IO 4 card always on node 2
-                                0x0000f30  // HT IO 5 card always on node 3
-                                0x0000f40, // HT IO 6 card always on node 4
-                                0x0000f50  // HT IO 7 card always on node 5
-                        };
-
-
-        for 4p+htio(n1)+htio(n2)+htio(n3), 4p+htio(n1)+2p+htio(n4)+htio(n5), 4p+htio(n1)+4p+htio(n6)+htio(n7), need pci1234[8]
-                        unsigned pci1234[] = {
-                                0x0000ff0,
-                                0x0000f10, // HT IO 1 card always on node 1
-                                0x0000f20, // HT IO 2 card always on node 2
-                                0x0000f30, // HT IO 3 card always on node 3
-                                0x0000f40, // HT IO 4 card always on node 4
-                                0x0000f50  // HT IO 5 card always on node 5
-                                0x0000f60, // HT IO 6 card always on node 6
-                                0x0000f70  // HT IO 7 card always on node 7
-                        };
-
-
-        So Max HC_POSSIBLE_NUM is 8
-
-        1n: 3
-        2n: 2x2 - 1
-        4n: 1x4 - 2 
-        6n: 2 
-        8n: 2 
-	Total: 12 
-
-        just put all the possible ht node/link to the list tp pci1234[] in  get_bus_conf.c on MB dir
-
-	Also don't forget to increase the ACPI_SSDTX_NUM etc if you have too much SSDT
-
-	How about co-processor on socket 1 on 2 way system. or socket 2, and socket3 on 4 way system....? treat that as one hc too!
-
-*/
 void get_sblk_pci1234(void)
 {
 
@@ -178,27 +213,37 @@ void get_sblk_pci1234(void)
         sysconf.pci1234[0] = dword;
 	sysconf.hcid[0] = 0;
 
-        /*about hardcode numbering for HT_IO support
-                set the node_id and link_id that could have ht chain in the one array,
-                then check if is enabled.... then update final value 
-        */
-        //here we need to set hcdn
-        //1. hypertransport.c need to record hcdn_reg together with 0xe0, 0xe4, 0xe8, 0xec when are set
-        //2. so at the same time we need update hsdn with hcdn_reg here
+        /* About hardcoded numbering for HT_IO support
+	 *
+	 * Set the node_id and link_id that could have a HT chain in the one
+	 * array, (FIXME: which one?) then check if is enabled. Then update
+	 * final value 
+         */
+
+        /* Here we need to set hcdn
+	 *
+	 * 1. hypertransport.c needs to record hcdn_reg together with 0xe0,
+	 *    0xe4, 0xe8, 0xec when are set (FIXME: when WHAT is set?)
+	 *
+	 * 2. So at the same time we need update hcdn with hcdn_reg here. FIXME: Why?
+	 */
 
         dev = dev_find_slot(0, PCI_DEVFN(0x18, 1));
+
         for(j=0;j<4;j++) {
                 uint32_t dwordx;
-                dwordx = pci_read_config32(dev, 0xe0+j*4);
-                dwordx &=0xffff0ff1; //keep bus num, node_id, link_num, enable bits
-                if((dwordx & 0xff1) == dword) { //SBLINK
+                dwordx = pci_read_config32(dev, 0xe0 + j*4);
+                dwordx &=0xffff0ff1; /* keep bus num, node_id, link_num, enable bits */
+                if((dwordx & 0xff1) == dword) { /* SBLINK */
                         sysconf.pci1234[0] = dwordx;
 			sysconf.hcdn[0] = sysconf.hcdn_reg[j];
                         continue;
                 }
+
                 if((dwordx & 1) == 1) {
-                        // We need to find out the number of HC
-                        // for exact match
+                        /* We need to find out the number of HC
+                         * for exact match
+			 */
                         for(i=1;i<sysconf.hc_possible_num;i++) {
                                 if((dwordx & 0xff0) == (sysconf.pci1234[i] & 0xff0)) {
                                         sysconf.pci1234[i] = dwordx;
@@ -206,7 +251,8 @@ void get_sblk_pci1234(void)
                                         break;
                                 }
                         }
-                        // for 0xff0 match or same node
+
+                        /* For 0xff0 match or same node */
                         for(i=1;i<sysconf.hc_possible_num;i++) {
                                 if((dwordx & 0xff0) == (dwordx & sysconf.pci1234[i] & 0xff0)) {
                                         sysconf.pci1234[i] = dwordx;

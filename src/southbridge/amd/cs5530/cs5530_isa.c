@@ -19,60 +19,42 @@
  */
 
 #include <console/console.h>
+#include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include "cs5530.h"
 
-/**
- * Initialize the IDE controller.
- *
- * Depending on the configuration variables 'ide0_enable' and 'ide1_enable'
- * enable or disable the primary and secondary IDE interface, respectively.
- *
- * @param dev The device to use.
- */
-static void ide_init(struct device *dev)
+static void isa_init(struct device *dev)
 {
 	uint8_t reg8;
-	struct southbridge_amd_cs5530_config *conf = dev->chip_info;
 
+	// TODO: Test if needed, otherwise drop.
+
+	/* Set positive decode on ROM. */
 	reg8 = pci_read_config8(dev, DECODE_CONTROL_REG2);
-
-	/* Enable/disable the primary IDE interface. */
-	if (conf->ide0_enable) {
-		reg8 |= PRIMARY_IDE_ENABLE;
-	} else {
-		reg8 &= ~(PRIMARY_IDE_ENABLE);
-	}
-
-	/* Enable/disable the secondary IDE interface. */
-	if (conf->ide1_enable) {
-		reg8 |= SECONDARY_IDE_ENABLE;
-	} else {
-		reg8 &= ~(SECONDARY_IDE_ENABLE);
-	}
-
+	reg8 |= BIOS_ROM_POSITIVE_DECODE;
 	pci_write_config8(dev, DECODE_CONTROL_REG2, reg8);
-
-	printk_info("%s IDE interface %s\n", "Primary",
-		    conf->ide0_enable ? "enabled" : "disabled");
-	printk_info("%s IDE interface %s\n", "Secondary",
-		    conf->ide1_enable ? "enabled" : "disabled");
 }
 
-static struct device_operations ide_ops = {
+static void cs5530_pci_dev_enable_resources(device_t dev)
+{
+	// TODO: Needed?
+	pci_dev_enable_resources(dev);
+	enable_childrens_resources(dev);
+}
+
+static struct device_operations isa_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
-	.enable_resources	= pci_dev_enable_resources,
-	.init			= ide_init,
+	.enable_resources	= cs5530_pci_dev_enable_resources,
+	.init			= isa_init,
 	.enable			= 0,
 	.scan_bus		= scan_static_bus,
-	.ops_pci		= 0,
 };
 
-static struct pci_driver ide_driver __pci_driver = {
-	.ops	= &ide_ops,
-	.vendor = PCI_VENDOR_ID_CYRIX,
-	.device = PCI_DEVICE_ID_CYRIX_5530_IDE,
+static struct pci_driver isa_driver __pci_driver = {
+	.ops	= &isa_ops,
+	.vendor	= PCI_VENDOR_ID_CYRIX,
+	.device	= PCI_DEVICE_ID_CYRIX_5530_LEGACY,
 };

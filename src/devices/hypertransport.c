@@ -383,14 +383,14 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 	struct ht_link prev;
 	device_t last_func = 0;
 	int ht_dev_num = 0;
-	unsigned temp_unitid;
-	unsigned not_use_count;
+	unsigned max_unitid;
 
-#if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
+#if HT_CHAIN_END_UNITID_BASE != 0x20
         //let't record the device of last ht device, So we can set the Unitid to HT_CHAIN_END_UNITID_BASE
         unsigned real_last_unitid; 
         uint8_t real_last_pos;
 	device_t real_last_dev;
+	unsigned end_used = 0;
 #endif
 
 	/* Restore the hypertransport chain to it's unitialized state */
@@ -410,7 +410,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 	
 	/* If present assign unitid to a hypertransport chain */
 	last_unitid = min_unitid -1;
-	next_unitid = min_unitid;
+	max_unitid = next_unitid = min_unitid;
 	do {
 		uint8_t pos;
 		uint16_t flags;
@@ -478,26 +478,27 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 		flags &= ~0x1f; /* mask out base Unit ID */
 
 		count = (flags >> 5) & 0x1f; /* get unit count */
-		not_use_count = 0;
-		temp_unitid = next_unitid;
-#if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
+#if HT_CHAIN_END_UNITID_BASE != 0x20
 		if(offset_unitid) {
-			if((next_unitid+count)>=0x20) {
-		                temp_unitid = HT_CHAIN_END_UNITID_BASE;
-				//still use the old next_unitid
-				not_use_count = 1;
+			if(next_unitid > (max_devfn>>3)) { // max_devfn will be (0x17<<3)|7 or (0x1f<<3)|7
+				if(!end_used) {
+			                next_unitid = HT_CHAIN_END_UNITID_BASE;
+					end_used = 1;
+				} else {
+					goto out;
+				}
 			}
 
 		} 
 #endif
 
-                flags |= temp_unitid & 0x1f;
+                flags |= next_unitid & 0x1f;
                 pci_write_config16(dev, pos + PCI_CAP_FLAGS, flags);
 
 		/* Update the Unitd id in the device structure */
 		static_count = 1;
 		for(func = dev; func; func = func->sibling) {
-			func->path.u.pci.devfn += (temp_unitid << 3);
+			func->path.u.pci.devfn += (next_unitid << 3);
 			static_count = (func->path.u.pci.devfn >> 3) 
 				- (dev->path.u.pci.devfn >> 3) + 1;
 			last_func = func;
@@ -508,20 +509,22 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 		if (count < static_count) {
 			count = static_count;
 		}
-		if(!not_use_count) 
-			next_unitid +=  count;
 
 		/* Update the Unitid of the next device */
-		ht_unitid_base[ht_dev_num] = temp_unitid;
+		ht_unitid_base[ht_dev_num] = next_unitid;
 		ht_dev_num++;
 
-#if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
-		if(offset_unitid) {
+#if HT_CHAIN_END_UNITID_BASE != 0x20
+		if (offset_unitid) {
         	        real_last_pos = pos;
-			real_last_unitid = temp_unitid;
+			real_last_unitid = next_unitid;
 			real_last_dev = dev;
 		}
 #endif
+		next_unitid +=  count;
+		if (next_unitid > max_unitid) {
+			max_unitid = next_unitid;
+		}
 
 		/* Setup the hypetransport link */
 		bus->reset_needed |= ht_setup_link(&prev, dev, pos);
@@ -531,7 +534,8 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 			dev->vendor, dev->device, 
 			(dev->enabled? "enabled": "disabled"), next_unitid);
 
-	} while((last_unitid != next_unitid) && (next_unitid <= 0x1f /*(max_devfn >> 3)*/ ));
+	} while (last_unitid != next_unitid);
+ out:
  end_of_chain:
 #if OPT_HT_LINK == 1
 	if(bus->reset_needed) {
@@ -542,8 +546,8 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 	}
 #endif
 
-#if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
-        if(offset_unitid && (ht_dev_num>1) && (real_last_unitid != HT_CHAIN_END_UNITID_BASE) ) {
+#if HT_CHAIN_END_UNITID_BASE != 0x20
+        if(offset_unitid && (ht_dev_num>1) && (real_last_unitid != HT_CHAIN_END_UNITID_BASE)  && !end_used) {
                 uint16_t flags;
                 int i;
 		device_t last_func = 0;
@@ -559,15 +563,18 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 
 		ht_unitid_base[ht_dev_num-1] = HT_CHAIN_END_UNITID_BASE; // update last one
 		
-                next_unitid = real_last_unitid;
+		printk_debug(" unitid: %04x --> %04x\n",
+				real_last_unitid, HT_CHAIN_END_UNITID_BASE);
+
         }
 #endif
+	next_unitid = max_unitid;
 
-	if (next_unitid > 0x1f) {
-		next_unitid = 0x1f;
+	if (next_unitid > 0x20) {
+		next_unitid = 0x20;
 	}
-	if( (bus->secondary == 0) && (next_unitid > 0x17)) { 
-		next_unitid = 0x17; /* avoid K8 on bus 0 */
+	if( (bus->secondary == 0) && (next_unitid > 0x18)) { 
+		next_unitid = 0x18; /* avoid K8 on bus 0 */
 	}
 
 	/* Die if any leftover Static devices are are found.  

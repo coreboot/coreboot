@@ -111,6 +111,7 @@ static unsigned int amdk8_scan_chain(device_t dev, unsigned nodeid, unsigned lin
 		unsigned ht_unitid_base[4]; // here assume only 4 HT device on chain
                 unsigned max_bus;
                 unsigned min_bus;
+		unsigned max_devfn;
 
 		dev->link[link].cap = 0x80 + (link *0x20);
 		do {
@@ -212,7 +213,13 @@ static unsigned int amdk8_scan_chain(device_t dev, unsigned nodeid, unsigned lin
 		for(i=0;i<4;i++) {
 			ht_unitid_base[i] = 0x20;
 		}
-		max = hypertransport_scan_chain(&dev->link[link], 0, 0xbf, max, ht_unitid_base, offset_unitid);
+
+		if (min_bus == 0) 
+			max_devfn = (0x17<<3) | 7;
+		else
+			max_devfn = (0x1f<<3) | 7;
+
+		max = hypertransport_scan_chain(&dev->link[link], 0, max_devfn, max, ht_unitid_base, offset_unitid);
 
 		/* We know the number of busses behind this bridge.  Set the
 		 * subordinate bus number to it's real value
@@ -250,12 +257,10 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 	unsigned offset_unitid = 0;
         nodeid = amdk8_nodeid(dev);
 	
-
-
         if(nodeid==0) {
                 sblink = (pci_read_config32(dev, 0x64)>>8) & 3;
 #if SB_HT_CHAIN_ON_BUS0 > 0
-	#if HT_CHAIN_UNITID_BASE != 1
+	#if ((HT_CHAIN_UNITID_BASE != 1) || (HT_CHAIN_END_UNITID_BASE != 0x20))
                 offset_unitid = 1;
         #endif
 		max = amdk8_scan_chain(dev, nodeid, sblink, sblink, max, offset_unitid ); // do sb ht chain at first, in case s2885 put sb chain (8131/8111) on link2, but put 8151 on link0
@@ -267,7 +272,7 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 		if( (nodeid == 0) && (sblink == link) ) continue; //already done
 #endif
 		offset_unitid = 0;
-	        #if HT_CHAIN_UNITID_BASE != 1
+		#if ((HT_CHAIN_UNITID_BASE != 1) || (HT_CHAIN_END_UNITID_BASE != 0x20))
 	                #if SB_HT_CHAIN_UNITID_OFFSET_ONLY == 1
 			if((nodeid == 0) && (sblink == link))
 			#endif
@@ -276,6 +281,7 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 
 		max = amdk8_scan_chain(dev, nodeid, link, sblink, max, offset_unitid);
         }
+
         return max;
 }
 

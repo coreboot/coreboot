@@ -314,12 +314,6 @@ static int scan_pci_bus( unsigned bus)
 
 	new_bus = bus;
 
-#if 0
-#if CONFIG_USE_PRINTK_IN_CAR
-	printk_debug("bus_num=%02x\r\n", bus);
-#endif
-#endif
-
 	for (devfn = 0; devfn <= 0xff; devfn++) { 
 	        uint8_t hdr_type;
 	        uint16_t class;
@@ -330,14 +324,6 @@ static int scan_pci_bus( unsigned bus)
                 hdr_type = pci_read_config8(dev, PCI_HEADER_TYPE);
                 class = pci_read_config16(dev, PCI_CLASS_DEVICE);
 
-#if 0
-#if CONFIG_USE_PRINTK_IN_CAR
-		if(hdr_type !=0xff ) {
-			printk_debug("dev=%02x fn=%02x hdr_type=%02x class=%04x\r\n", 
-				(devfn>>3)& 0x1f, (devfn & 0x7), hdr_type, class);
-		}
-#endif
-#endif
 		switch(hdr_type & 0x7f) {  /* header type */
 		        case PCI_HEADER_TYPE_BRIDGE:
 		                if (class  != PCI_CLASS_BRIDGE_PCI) goto bad;
@@ -420,18 +406,17 @@ static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned of
 
 	uint8_t next_unitid, last_unitid;
 	unsigned uoffs;
-	uint8_t temp_unitid;
-	unsigned not_use_count;
 
 #if RAMINIT_SYSINFO == 0
 	int reset_needed = 0;
 #endif
 
-#if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
+#if HT_CHAIN_END_UNITID_BASE != 0x20
         //let't record the device of last ht device, So we can set the Unitid to HT_CHAIN_END_UNITID_BASE
         unsigned real_last_unitid;
         uint8_t real_last_pos;
 	int ht_dev_num = 0;
+	uint8_t end_used = 0;
 #endif
 
 	uoffs = PCI_HT_HOST_OFFS;
@@ -491,36 +476,36 @@ static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned of
 			break;
 		}
 
-		/* Update the Unitid of the current device */
-		flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
-                /* Compute the number of unitids consumed */
-                count = (flags >> 5) & 0x1f;
-		flags &= ~0x1f; /* mask out the base Unit ID */
 
-		not_use_count = 0;
-		temp_unitid = next_unitid;
-#if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
+#if HT_CHAIN_END_UNITID_BASE != 0x20
 		if(offset_unitid) {
-			if( (next_unitid + count) >= 0x20) {
-		                temp_unitid = HT_CHAIN_END_UNITID_BASE;
-				// keep to use the old next_unitid
-				not_use_count = 1;
+			if(next_unitid>= (bus ? 0x20:0x18) ) {
+				if(!end_used) {
+			                next_unitid = HT_CHAIN_END_UNITID_BASE;
+					end_used = 1;
+				} else {
+					goto out;
+				}
+				
 			} 
         	        real_last_pos = pos;
-			real_last_unitid = temp_unitid;
+			real_last_unitid = next_unitid;
 			ht_dev_num++;
 		} 
 #endif
-
-		flags |= temp_unitid & 0x1f;
+		/* Update the Unitid of the current device */
+		flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
+		flags &= ~0x1f; /* mask out the base Unit ID */
+		flags |= next_unitid & 0x1f;
 		pci_write_config16(dev, pos + PCI_CAP_FLAGS, flags);
 
+                /* Compute the number of unitids consumed */
+                count = (flags >> 5) & 0x1f;
+
 		/* Note the change in device number */
-		dev = PCI_DEV(bus, temp_unitid, 0);
+		dev = PCI_DEV(bus, next_unitid, 0);
 
-		if(!not_use_count) 
-	                next_unitid += count;
-
+                next_unitid += count;
 
 		/* Find which side of the ht link we are on,
 		 * by reading which direction our last write to PCI_CAP_FLAGS
@@ -550,12 +535,13 @@ static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned of
 		upos = pos;
 		uoffs = ( offs != PCI_HT_SLAVE0_OFFS ) ? PCI_HT_SLAVE0_OFFS : PCI_HT_SLAVE1_OFFS;
 
-	} while((last_unitid != next_unitid) && (next_unitid <= 0x1f));
+	} while (last_unitid != next_unitid );
 
+out:
 end_of_chain: ;
 	
-#if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
-        if(offset_unitid && (ht_dev_num>1) && (real_last_unitid != HT_CHAIN_END_UNITID_BASE) ) {
+#if HT_CHAIN_END_UNITID_BASE != 0x20
+        if(offset_unitid && (ht_dev_num>1) && (real_last_unitid != HT_CHAIN_END_UNITID_BASE) && !end_used ) {
                 uint16_t flags;
 		int i;
                 flags = pci_read_config16(PCI_DEV(bus,real_last_unitid,0), real_last_pos + PCI_CAP_FLAGS);
@@ -594,7 +580,7 @@ static int ht_setup_chain(device_t udev, unsigned upos)
 #endif
 {
 	unsigned offset_unitid = 0;
-#if HT_CHAIN_UNITID_BASE != 1
+#if ((HT_CHAIN_UNITID_BASE != 1) || (HT_CHAIN_END_UNITID_BASE != 0x20))
         offset_unitid = 1;
 #endif
 
@@ -607,7 +593,7 @@ static int ht_setup_chain(device_t udev, unsigned upos)
         /* Make certain the HT bus is not enumerated */
         ht_collapse_previous_enumeration(0, 0);
 
-#if HT_CHAIN_UNITID_BASE != 1
+#if ((HT_CHAIN_UNITID_BASE != 1) || (HT_CHAIN_END_UNITID_BASE != 0x20))
         offset_unitid = 1;
 #endif
 
@@ -655,7 +641,7 @@ static int optimize_link_read_pointers_chain(uint8_t ht_c_num)
 		uint8_t val;
 		unsigned devn = 1;
 
-        #if HT_CHAIN_UNITID_BASE != 1
+	#if ((HT_CHAIN_UNITID_BASE != 1) || (HT_CHAIN_END_UNITID_BASE != 0x20))
                 #if SB_HT_CHAIN_UNITID_OFFSET_ONLY == 1
                 if(i==0) // to check if it is sb ht chain
                 #endif
@@ -788,7 +774,7 @@ static int ht_setup_chains(uint8_t ht_c_num)
 		pci_write_config32( PCI_DEV(0, devpos,0), regpos , dword);
 	
 
-        #if HT_CHAIN_UNITID_BASE != 1
+	#if ((HT_CHAIN_UNITID_BASE != 1) || (HT_CHAIN_END_UNITID_BASE != 0x20))
                 #if SB_HT_CHAIN_UNITID_OFFSET_ONLY == 1
                 if(i==0) // to check if it is sb ht chain
                 #endif

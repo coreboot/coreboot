@@ -21,25 +21,7 @@
 
 #include "superiotool.h"
 
-#define EOT		-1		/* End Of Table */
-#define NOLDN		-2		/* NO LDN needed */
-#define NANA		-3		/* Not Available */
-#define MAXNAMELEN	20		/* Maximum Name Length */
-#define MAXLDN		0xa		/* Biggest LDN */
-#define LDNSIZE		(MAXLDN + 3)	/* Biggest LDN + 0 + NOLDN + EOT */
-#define MAXNUMIDX	70		/* Maximum number of indexes */
-#define IDXSIZE 	(MAXNUMIDX + 1)
-
-const static struct ite_registers {
-	/* Yes, superio_id should be unsigned, but EOT has to be negative. */
-	signed short superio_id;
-	const char name[MAXNAMELEN];
-	struct ite_ldnidx {
-		signed short ldn;
-		signed short idx[IDXSIZE];
-		signed short def[IDXSIZE];
-	} ldn[LDNSIZE];
-} ite_reg_table[] = {
+const static struct superio_registers ite_reg_table[] = {
 	{0x8702, "IT8702", {
 		{EOT}}},
 	{0x8705, "IT8705 or IT8700", {

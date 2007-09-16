@@ -1,6 +1,7 @@
 /*
  * This file is part of the LinuxBIOS project.
  *
+ * Copyright (C) 2007 Carl-Daniel Hailfinger
  * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -25,6 +26,27 @@
 #include <stdlib.h>
 #include <sys/io.h>
 
+#define EOT		-1		/* End Of Table */
+#define NOLDN		-2		/* NO LDN needed */
+#define NANA		-3		/* Not Available */
+#define MAXNAMELEN	20		/* Maximum Name Length */
+#define MAXLDN		0xa		/* Biggest LDN */
+#define LDNSIZE		(MAXLDN + 3)	/* Biggest LDN + 0 + NOLDN + EOT */
+#define MAXNUMIDX	70		/* Maximum number of indexes */
+#define IDXSIZE 	(MAXNUMIDX + 1)
+
+struct superio_registers {
+	/* Yes, superio_id should be unsigned, but EOT has to be negative. */
+	signed short superio_id;
+	const char name[MAXNAMELEN];
+	struct ite_ldnidx {
+		signed short ldn;
+		signed short idx[IDXSIZE];
+		signed short def[IDXSIZE];
+	} ldn[LDNSIZE];
+};
+
+/* superiotool.c */
 unsigned char regval(unsigned short port, unsigned char reg);
 void regwrite(unsigned short port, unsigned char reg, unsigned char val);
 void probe_superio(unsigned short port);

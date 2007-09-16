@@ -28,16 +28,18 @@ PREFIX  = /usr/local
 CFLAGS = -O2 -Wall -Werror -Wstrict-prototypes -Wundef -Wstrict-aliasing \
          -Werror-implicit-function-declaration
 
+OBJS = fintek.o ite.o nsc.o superiotool.o
+
 all: $(PROGRAM)
 
-$(PROGRAM): $(PROGRAM).c
-	$(CC) $(CFLAGS) -o $@ $< 
+$(PROGRAM): $(OBJS)
+	$(CC) $(CFLAGS) -o $(PROGRAM) $(OBJS)
 
 install: $(PROGRAM)
 	$(INSTALL) $(PROGRAM) $(PREFIX)/bin
 
 clean:
-	rm -f $(PROGRAM)
+	rm -f $(PROGRAM) *.o
 
 .PHONY: all install clean
 

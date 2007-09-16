@@ -1,7 +1,6 @@
 /*
  * This file is part of the LinuxBIOS project.
  *
- * Copyright (C) 2006 Ronald Minnich <rminnich@gmail.com>
  * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,36 +18,27 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include "superiotool.h"
+#ifndef SUPERIOTOOL_H
+#define SUPERIOTOOL_H
 
-unsigned char regval(unsigned short port, unsigned char reg)
-{
-	outb(reg, port);
-	return inb(port + 1);
-}
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/io.h>
 
-void regwrite(unsigned short port, unsigned char reg, unsigned char val)
-{
-	outb(reg, port);
-	outb(val, port + 1);
-}
+unsigned char regval(unsigned short port, unsigned char reg);
+void regwrite(unsigned short port, unsigned char reg, unsigned char val);
+void probe_superio(unsigned short port);
 
-void probe_superio(unsigned short port)
-{
-	probe_idregs_simple(port);
-	probe_idregs_fintek(port);
-	probe_idregs_ite(port);
-}
+/* fintek.c */
+void dump_fintek(unsigned short port, unsigned int did);
+void probe_idregs_fintek(unsigned short port);
 
-int main(int argc, char *argv[])
-{
-	if (iopl(3) < 0) {
-		perror("iopl");
-		exit(1);
-	}
+/* ite.c */
+void dump_ite(unsigned short port, unsigned short id);
+void probe_idregs_ite(unsigned short port);
 
-	probe_superio(0x2e);	/* Try 0x2e. */
-	probe_superio(0x4e);	/* Try 0x4e. */
+/* nsc.c */
+void dump_ns8374(unsigned short port);
+void probe_idregs_simple(unsigned short port);
 
-	return 0;
-}
+#endif

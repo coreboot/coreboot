@@ -79,6 +79,7 @@ int output_elf_segments(struct lar *lar, char *name, char *filebuf,
 	u32 entry;
 	int i;
 	int size;
+	int segment = 0;
 	char *header;
 	char ename[64];
 	int headers;
@@ -153,7 +154,7 @@ int output_elf_segments(struct lar *lar, char *name, char *filebuf,
 				entry,  phdr[i].p_paddr);
 		}
 			/* ok, copy it out */
-		sprintf(ename, "%s/segment%d", name, i);
+		sprintf(ename, "%s/segment%d", name, segment++);
 		complen = lar_compress(&header[phdr[i].p_offset], size, temp, &thisalgo);
 		ret = lar_add_entry(lar, ename, temp, complen, size, 
 				    phdr[i].p_paddr, entry, thisalgo);

@@ -123,6 +123,35 @@ int find_file(struct mem_file *archive, const char *filename, struct mem_file *r
 	return 1;
 }
 
+static int process_file(struct mem_file *archive, void *where)
+{
+	printk(BIOS_SPEW, "LAR: Compression algorithm #%i used\n", archive->compression);
+	/* no compression */
+	if (archive->compression == 0) {
+		memcpy(where, archive->start, archive->len);
+		return 0;
+	}
+#ifdef CONFIG_COMPRESSION_LZMA
+	/* lzma */
+	unsigned long ulzma(unsigned char *src, unsigned char *dst);
+	if (archive->compression == 1) {
+		ulzma(archive->start, where);
+		return 0;
+	}
+#endif
+#ifdef CONFIG_COMPRESSION_NRV2B
+	/* nrv2b */
+	unsigned long unrv2b(u8 *src, u8 *dst, unsigned long *ilen_p);
+	if (archive->compression == 2) {
+		unsigned long tmp;
+		unrv2b(archive->start, where, &tmp);
+		return 0;
+	}
+#endif
+	printk(BIOS_INFO, "LAR: Compression algorithm #%i not supported!\n", archive->compression);
+	return -1;
+}
+
 /**
  * Given a file name in the LAR , search for it, and load it into memory, using 
  * the loadaddress pointer in the mem_file struct. 
@@ -146,34 +175,13 @@ void *load_file(struct mem_file *archive, const char *filename)
 	}
 	entry = result.entry;
 	where = result.loadaddress;
-	printk(BIOS_SPEW, "LAR: Compression algorithm #%i used\n", result.compression);
-	/* no compression */
-	if (result.compression == 0) {
-		memcpy(where, result.start, result.len);
-		return entry;
-	}
-#ifdef CONFIG_COMPRESSION_LZMA
-	/* lzma */
-	unsigned long ulzma(unsigned char *src, unsigned char *dst);
-	if (result.compression == 1) {
-		ulzma(result.start, where);
-		return entry;
-	}
-#endif
-#ifdef CONFIG_COMPRESSION_NRV2B
-	/* nrv2b */
-	unsigned long unrv2b(u8 *src, u8 *dst, unsigned long *ilen_p);
-	if (result.compression == 2) {
-		int tmp;
-		unrv2b(result.start, where, &tmp);
-		return entry;
-	}
-#endif
-	printk(BIOS_INFO, "LAR: Compression algorithm #%i not supported!\n", result.compression);
+	
+	if (process_file(&result, where) == 0)
+	    return entry;
+
 	return (void *)-1;
 }
 
-/* FIXME -- most of copy_file should be replaced by load_file */
 /**
  * Given a file name in the LAR , search for it, and load it into memory, 
  * using the passed-in pointer as the address
@@ -194,31 +202,7 @@ int copy_file(struct mem_file *archive, const char *filename, void *where)
 		return 1;
 	}
 
-	printk(BIOS_SPEW, "LAR: Compression algorithm #%i used\n", result.compression);
-	/* no compression */
-	if (result.compression == 0) {
-		memcpy(where, result.start, result.len);
-		return 0;
-	}
-#ifdef CONFIG_COMPRESSION_LZMA
-	/* lzma */
-	unsigned long ulzma(unsigned char *src, unsigned char *dst);
-	if (result.compression == 1) {
-		ulzma(result.start, where);
-		return 0;
-	}
-#endif
-#ifdef CONFIG_COMPRESSION_NRV2B
-	/* nrv2b */
-	unsigned long unrv2b(u8 *src, u8 *dst, unsigned long *ilen_p);
-	if (result.compression == 2) {
-		int tmp;
-		unrv2b(result.start, where, &tmp);
-		return 0;
-	}
-#endif
-	printk(BIOS_INFO, "LAR: Compression algorithm #%i not supported!\n", result.compression);
-	return 1;
+	return process_file(&result, where);
 }
 
 

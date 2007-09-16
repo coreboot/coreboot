@@ -21,7 +21,7 @@
 
 #include "superiotool.h"
 
-const static struct superio_registers ite_reg_table[] = {
+const static struct superio_registers reg_table[] = {
 	{0x8702, "IT8702", {
 		{EOT}}},
 	{0x8705, "IT8705 or IT8700", {
@@ -189,10 +189,7 @@ const static struct superio_registers ite_reg_table[] = {
 
 void dump_ite(unsigned short port, unsigned short id)
 {
-	int i, j, k;
-	signed short *idx;
-
-	printf("ITE ");
+	int i;
 
 	/* TODO: Get datasheets for IT8711 and IT8712. */
 	switch (id) {
@@ -204,47 +201,7 @@ void dump_ite(unsigned short port, unsigned short id)
 	case 0x8716:
 	/* Note: IT8726F has ID 0x8726 (datasheet wrongly says 0x8716). */
 	case 0x8718:
-		for (i = 0;; i++) {
-			if (ite_reg_table[i].superio_id == EOT)
-				break;
-			if ((unsigned short)ite_reg_table[i].superio_id != id)
-				continue;
-			printf("%s\n", ite_reg_table[i].name);
-			for (j = 0;; j++) {
-				if (ite_reg_table[i].ldn[j].ldn == EOT)
-					break;
-				if (ite_reg_table[i].ldn[j].ldn != NOLDN) {
-					printf("Switching to LDN 0x%01x\n",
-					       ite_reg_table[i].ldn[j].ldn);
-					regwrite(port, 0x07,
-						 ite_reg_table[i].ldn[j].ldn);
-				}
-				idx = ite_reg_table[i].ldn[j].idx;
-				printf("idx ");
-				for (k = 0;; k++) {
-					if (idx[k] == EOT)
-						break;
-					printf("%02x ", idx[k]);
-				}
-				printf("\nval ");
-				for (k = 0;; k++) {
-					if (idx[k] == EOT)
-						break;
-					printf("%02x ", regval(port, idx[k]));
-				}
-				printf("\ndef ");
-				idx = ite_reg_table[i].ldn[j].def;
-				for (k = 0;; k++) {
-					if (idx[k] == EOT)
-						break;
-					if (idx[k] == NANA)
-						printf("NA ");
-					else
-						printf("%02x ", idx[k]);
-				}
-				printf("\n");
-			}
-		}
+		dump_superio("ITE", reg_table, port, id);
 		break;
 	default:
 		printf("Unknown ITE chip, id=%04x\n", id);

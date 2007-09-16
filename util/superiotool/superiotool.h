@@ -49,6 +49,8 @@ struct superio_registers {
 /* superiotool.c */
 unsigned char regval(unsigned short port, unsigned char reg);
 void regwrite(unsigned short port, unsigned char reg, unsigned char val);
+void dump_superio(const char *name, const struct superio_registers reg_table[],
+                  unsigned short port, unsigned short id);
 void probe_superio(unsigned short port);
 
 /* fintek.c */

@@ -83,21 +83,16 @@ void dump_superio(const char *name, const struct superio_registers reg_table[],
 			for (k = 0;; k++) {
 				if (idx[k] == EOT)
 					break;
-				if (idx[k] == NANA)
+				else if (idx[k] == NANA)
 					printf("NA ");
+				else if (idx[k] == RSVD)
+					printf("RR ");
 				else
 					printf("%02x ", idx[k]);
 			}
 			printf("\n");
 		}
 	}
-}
-
-void probe_superio(unsigned short port)
-{
-	probe_idregs_simple(port);
-	probe_idregs_fintek(port);
-	probe_idregs_ite(port);
 }
 
 int main(int argc, char *argv[])
@@ -107,8 +102,17 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	probe_superio(0x2e);	/* Try 0x2e. */
-	probe_superio(0x4e);	/* Try 0x4e. */
+	probe_idregs_simple(0x2e);
+	probe_idregs_simple(0x4e);
+
+	probe_idregs_fintek(0x2e);
+	probe_idregs_fintek(0x4e);
+
+	probe_idregs_ite(0x2e);
+	probe_idregs_ite(0x4e);
+
+	probe_idregs_smsc(0x3f0);
+	probe_idregs_smsc(0x370);
 
 	return 0;
 }

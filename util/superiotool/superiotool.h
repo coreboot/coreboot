@@ -24,11 +24,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <sys/io.h>
 
 #define EOT		-1		/* End Of Table */
 #define NOLDN		-2		/* NO LDN needed */
 #define NANA		-3		/* Not Available */
+#define RSVD		-4		/* Reserved */
 #define MAXNAMELEN	20		/* Maximum Name Length */
 #define MAXLDN		0xa		/* Biggest LDN */
 #define LDNSIZE		(MAXLDN + 3)	/* Biggest LDN + 0 + NOLDN + EOT */
@@ -39,7 +41,7 @@ struct superio_registers {
 	/* Yes, superio_id should be unsigned, but EOT has to be negative. */
 	signed short superio_id;
 	const char name[MAXNAMELEN];
-	struct ite_ldnidx {
+	struct {
 		signed short ldn;
 		signed short idx[IDXSIZE];
 		signed short def[IDXSIZE];
@@ -64,5 +66,9 @@ void probe_idregs_ite(unsigned short port);
 /* nsc.c */
 void dump_ns8374(unsigned short port);
 void probe_idregs_simple(unsigned short port);
+
+/* smsc.c */
+void dump_smsc(uint32_t port, uint32_t id);
+void probe_idregs_smsc(uint32_t port);
 
 #endif

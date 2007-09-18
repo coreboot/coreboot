@@ -1,0 +1,61 @@
+-------------------------------------------------------------------------------
+Superiotool README
+-------------------------------------------------------------------------------
+
+Superiotool is a user-space utility which can
+
+ - detect which Super I/O chip is soldered onto your mainboard,
+
+ - at which configuration port it's located (usually 0x2e or 0x4e), and
+
+ - dump all register contents of the Super I/O chip, together with the
+   default values as per datasheet (to make comparing the values easy).
+
+It is mainly used for LinuxBIOS development purposes (see linuxbios.org
+for details on LinuxBIOS), but it may also be useful for other things.
+
+
+Installation
+------------
+
+ $ svn co svn://linuxbios.org/repos/trunk/util/superiotool
+
+ $ make
+
+ $ sudo make install
+
+
+Usage
+-----
+
+ $ superiotool
+
+Currently the tool will automatically try to detect which Super I/O you
+have, and also dump the register contents.
+
+
+Supported Super I/O Chips
+-------------------------
+
+Please see http://linuxbios.org/Superiotool#Supported_devices.
+
+
+Website and Mailing List
+------------------------
+
+The main website is http://linuxbios.org/Superiotool.
+
+For additional information, patches, and discussions, please join the
+LinuxBIOS mailing list at http://linuxbios.org/Mailinglist, where most
+superiotool developers are subscribed.
+
+
+Copyright and License
+---------------------
+
+Superiotool is copyrighted by a number of individual developers. Please
+refer to the respective source code files for details.
+
+It is licensed under the terms of the GNU General Public License (GPL),
+either version 2 of the License, or (at your option) any later version.
+

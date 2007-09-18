@@ -32,7 +32,7 @@ OBJS = superiotool.o fintek.o ite.o nsc.o smsc.o
 
 all: $(PROGRAM)
 
-$(PROGRAM): $(OBJS)
+$(PROGRAM): $(OBJS) superiotool.h
 	$(CC) $(CFLAGS) -o $(PROGRAM) $(OBJS)
 
 install: $(PROGRAM)

@@ -97,22 +97,18 @@ void dump_superio(const char *name, const struct superio_registers reg_table[],
 
 int main(int argc, char *argv[])
 {
+	int i, j;
+
 	if (iopl(3) < 0) {
 		perror("iopl");
 		exit(1);
 	}
 
-	probe_idregs_simple(0x2e);
-	probe_idregs_simple(0x4e);
-
-	probe_idregs_fintek(0x2e);
-	probe_idregs_fintek(0x4e);
-
-	probe_idregs_ite(0x2e);
-	probe_idregs_ite(0x4e);
-
-	probe_idregs_smsc(0x3f0);
-	probe_idregs_smsc(0x370);
+	for (i = 0; i < ARRAY_SIZE(superio_ports_table); i++) {
+		for (j = 0; superio_ports_table[i].ports[j] != EOT; j++)
+			superio_ports_table[i].probe_idregs(
+				superio_ports_table[i].ports[j]);
+	}
 
 	return 0;
 }

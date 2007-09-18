@@ -53,7 +53,7 @@ void dump_smsc(uint32_t port, uint32_t id)
 	}
 }
 
-void probe_idregs_smsc(uint32_t port)
+void probe_idregs_smsc(unsigned short port)
 {
 	uint16_t id, rev;
 

@@ -28,7 +28,7 @@ PREFIX  = /usr/local
 CFLAGS = -O2 -Wall -Werror -Wstrict-prototypes -Wundef -Wstrict-aliasing \
          -Werror-implicit-function-declaration -ansi
 
-OBJS = superiotool.o fintek.o ite.o nsc.o smsc.o
+OBJS = superiotool.o fintek.o ite.o nsc.o smsc.o winbond.o
 
 all: $(PROGRAM)
 

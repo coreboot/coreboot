@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 #include <getopt.h>
 #include <sys/io.h>
 
@@ -36,6 +37,7 @@
 #define NOLDN		-2		/* NO LDN needed */
 #define NANA		-3		/* Not Available */
 #define RSVD		-4		/* Reserved */
+#define MISC		-5		/* Needs special comment in output */
 #define MAXNAMELEN	20		/* Maximum Name Length */
 #define MAXLDN		0xa		/* Biggest LDN */
 #define LDNSIZE		(MAXLDN + 3)	/* Biggest LDN + 0 + NOLDN + EOT */
@@ -59,6 +61,7 @@ struct superio_registers {
 /* superiotool.c */
 uint8_t regval(uint16_t port, uint8_t reg);
 void regwrite(uint16_t port, uint8_t reg, uint8_t val);
+int superio_unknown(const struct superio_registers reg_table[], uint16_t id);
 const char *get_superio_name(const struct superio_registers reg_table[],
 			     uint16_t id);
 void dump_superio(const char *name, const struct superio_registers reg_table[],
@@ -80,6 +83,9 @@ void probe_idregs_simple(uint16_t port);
 /* smsc.c */
 void probe_idregs_smsc(uint16_t port);
 
+/* winbond.c */
+void probe_idregs_winbond(uint16_t port);
+
 /** Table of which config ports to probe on each Super I/O. */
 const static struct {
 	void (*probe_idregs) (uint16_t port);
@@ -89,6 +95,7 @@ const static struct {
 	{probe_idregs_fintek,	{0x2e,	0x4e,	EOT}},
 	{probe_idregs_ite,	{0x2e,	0x4e,	EOT}},
 	{probe_idregs_smsc,	{0x3f0,	0x370,	EOT}},
+	{probe_idregs_winbond,	{0x2e,	0x4e,	EOT}},
 };
 
 #endif

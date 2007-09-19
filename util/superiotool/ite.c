@@ -259,8 +259,7 @@ void probe_idregs_ite(uint16_t port)
 	printf("Super I/O found at 0x%02x: id=0x%04x, chipver=0x%01x\n",
 	       port, id, chipver);
 
-	if (dump)
-		dump_ite(port, id);
+	dump_ite(port, id);
 
 	exit_conf_mode_ite(port);
 }

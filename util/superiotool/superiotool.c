@@ -37,6 +37,11 @@ void regwrite(uint16_t port, uint8_t reg, uint8_t val)
 	outb(val, port + 1);
 }
 
+int superio_unknown(const struct superio_registers reg_table[], uint16_t id)
+{
+	return !strncmp(get_superio_name(reg_table, id), "<unknown>", 9);
+}
+
 const char *get_superio_name(const struct superio_registers reg_table[],
 			     uint16_t id)
 {
@@ -60,6 +65,9 @@ void dump_superio(const char *vendor, const struct superio_registers reg_table[]
 {
 	int i, j, k, nodump;
 	int *idx;
+
+	if (!dump)
+		return;
 
 	for (i = 0; /* Nothing */; i++) {
 		if (reg_table[i].superio_id == EOT)
@@ -107,6 +115,8 @@ void dump_superio(const char *vendor, const struct superio_registers reg_table[]
 					printf("NA ");
 				else if (idx[k] == RSVD)
 					printf("RR ");
+				else if (idx[k] == MISC)	/* TODO */
+					printf("MM ");
 				else
 					printf("%02x ", idx[k]);
 			}
@@ -166,6 +176,7 @@ int main(int argc, char *argv[])
 
 	if (iopl(3) < 0) {
 		perror("iopl");
+		printf("Superiotool must be run as root.\n");
 		exit(1);
 	}
 

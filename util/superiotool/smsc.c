@@ -52,25 +52,22 @@ static void exit_conf_mode_smsc(uint16_t port)
 
 void probe_idregs_smsc(uint16_t port)
 {
-	uint16_t id, rev;
+	uint8_t id, rev;
 
 	enter_conf_mode_smsc(port);
 
-	/* Read device ID. */
 	id = regval(port, DEVICE_ID_REG);
-	if (id != 0x28) {	/* TODO: Support for other SMSC chips. */
+	rev = regval(port, DEVICE_REV_REG);
+
+	if (superio_unknown(reg_table, id)) {
 		no_superio_found(port);
 		return;
 	}
 
-	/* Read chip revision. */
-	rev = regval(port, DEVICE_REV_REG);
-
-	printf("Found SMSC %s Super I/O (id=0x%02x, rev=0x%02x) at port=0x%04x\n",
+	printf("Found SMSC %s (id=0x%02x, rev=0x%02x) at port=0x%x\n",
 	       get_superio_name(reg_table, id), id, rev, port);
 
-	if (dump)
-		dump_superio("SMSC", reg_table, port, id);
+	dump_superio("SMSC", reg_table, port, id);
 
 	exit_conf_mode_smsc(port);
 }

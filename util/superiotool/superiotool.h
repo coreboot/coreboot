@@ -25,7 +25,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <getopt.h>
 #include <sys/io.h>
+
+#define SUPERIOTOOL_VERSION "0.1"
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
@@ -40,6 +43,9 @@
 #define IDXSIZE 	(MAXNUMIDX + 1)
 #define MAXNUMPORTS	(2 + 1)		/* Maximum number of Super I/O ports */
 
+/* Command line parameters. */
+extern int dump, verbose;
+
 struct superio_registers {
 	int32_t superio_id; /* Signed, as we need EOT. */
 	const char name[MAXNAMELEN];
@@ -53,19 +59,17 @@ struct superio_registers {
 /* superiotool.c */
 uint8_t regval(uint16_t port, uint8_t reg);
 void regwrite(uint16_t port, uint8_t reg, uint8_t val);
+const char *get_superio_name(const struct superio_registers reg_table[],
+			     uint16_t id);
 void dump_superio(const char *name, const struct superio_registers reg_table[],
 		  uint16_t port, uint16_t id);
-void probe_superio(uint16_t port);
+void no_superio_found(uint16_t port);
 
 /* fintek.c */
-void enter_conf_mode_fintek(uint16_t port);
-void exit_conf_mode_fintek(uint16_t port);
 void dump_fintek(uint16_t port, uint16_t did);
 void probe_idregs_fintek(uint16_t port);
 
 /* ite.c */
-void enter_conf_mode_ite(uint16_t port);
-void exit_conf_mode_ite(uint16_t port);
 void dump_ite(uint16_t port, uint16_t id);
 void probe_idregs_ite(uint16_t port);
 
@@ -74,9 +78,6 @@ void dump_ns8374(uint16_t port);
 void probe_idregs_simple(uint16_t port);
 
 /* smsc.c */
-void enter_conf_mode_smsc(uint16_t port);
-void exit_conf_mode_smsc(uint16_t port);
-void dump_smsc(uint16_t port, uint16_t id);
 void probe_idregs_smsc(uint16_t port);
 
 /** Table of which config ports to probe on each Super I/O. */

@@ -62,10 +62,7 @@ void probe_idregs_simple(uint16_t port)
 
 	outb(0x20, port);
 	if (inb(port) != 0x20) {
-		if (inb(port) == 0xff)
-			printf("No Super I/O chip found at 0x%04x\n", port);
-		else
-			printf("Probing 0x%04x, failed (0x%02x), data returns 0x%02x\n", port, inb(port), inb(port + 1));
+		no_superio_found(port);
 		return;
 	}
 	id = inb(port + 1);

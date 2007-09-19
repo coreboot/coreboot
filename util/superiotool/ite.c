@@ -211,7 +211,7 @@ void dump_ite(uint16_t port, uint16_t id)
 	}
 }
 
-void enter_conf_mode_ite(uint16_t port)
+static void enter_conf_mode_ite(uint16_t port)
 {
 	/* Enable configuration sequence (ITE uses this for newer IT87[012]x)
 	 * IT871[01] uses 0x87, 0x87 -> fintek detection should handle it
@@ -230,7 +230,7 @@ void enter_conf_mode_ite(uint16_t port)
 		outb(0xAA, port);
 }
 
-void exit_conf_mode_ite(uint16_t port)
+static void exit_conf_mode_ite(uint16_t port)
 {
 	regwrite(port, 0x02, 0x02);
 }
@@ -244,10 +244,7 @@ void probe_idregs_ite(uint16_t port)
 	/* Read Chip ID Byte 1. */
 	id = regval(port, 0x20);
 	if (id != 0x87) {
-		if (inb(port) == 0xff)
-			printf("No Super I/O chip found at 0x%04x\n", port);
-		else
-			printf("Probing 0x%04x, failed (0x%02x), data returns 0x%02x\n", port, inb(port), inb(port + 1));
+		no_superio_found(port);
 		return;
 	}
 
@@ -262,7 +259,8 @@ void probe_idregs_ite(uint16_t port)
 	printf("Super I/O found at 0x%02x: id=0x%04x, chipver=0x%01x\n",
 	       port, id, chipver);
 
-	dump_ite(port, id);
+	if (dump)
+		dump_ite(port, id);
 
 	exit_conf_mode_ite(port);
 }

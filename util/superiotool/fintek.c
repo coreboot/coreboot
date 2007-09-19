@@ -89,7 +89,7 @@ void dump_fintek(uint16_t port, uint16_t did)
 	       regval(port, 0xf6), regval(port, 0xf7), regval(port, 0xf8));
 }
 
-void enter_conf_mode_fintek(uint16_t port)
+static void enter_conf_mode_fintek(uint16_t port)
 {
 	/* Enable configuration sequence (Fintek uses this for example)
 	 * Older ITE chips have the same enable sequence.
@@ -98,7 +98,7 @@ void enter_conf_mode_fintek(uint16_t port)
 	outb(0x87, port);
 }
 
-void exit_conf_mode_fintek(uint16_t port)
+static void exit_conf_mode_fintek(uint16_t port)
 {
 	/* Exit MB PnP mode (for Fintek, doesn't hurt ITE). */
 	outb(0xaa, port);
@@ -112,10 +112,7 @@ void probe_idregs_fintek(uint16_t port)
 
 	outb(0x20, port);
 	if (inb(port) != 0x20) {
-		if (inb(port) == 0xff)
-			printf("No Super I/O chip found at 0x%04x\n", port);
-		else
-			printf("Probing 0x%04x, failed (0x%02x), data returns 0x%02x\n", port, inb(port), inb(port + 1));
+		no_superio_found(port);
 		return;
 	}
 	did = inb(port + 1);

@@ -40,27 +40,14 @@ const static struct superio_registers reg_table[] = {
 	{EOT}
 };
 
-void enter_conf_mode_smsc(uint16_t port)
+static void enter_conf_mode_smsc(uint16_t port)
 {
 	outb(0x55, port);
 }
 
-void exit_conf_mode_smsc(uint16_t port)
+static void exit_conf_mode_smsc(uint16_t port)
 {
 	outb(0xaa, port);
-}
-
-/* Note: The actual SMSC ID is 16 bits, but we must pass 32 bits here. */
-void dump_smsc(uint16_t port, uint16_t id)
-{
-	switch (id) {
-	case 0x28:
-		dump_superio("SMSC", reg_table, port, id);
-		break;
-	default:
-		printf("Unknown SMSC chip, id=0x%02x\n", id);
-		break;
-	}
 }
 
 void probe_idregs_smsc(uint16_t port)
@@ -72,20 +59,18 @@ void probe_idregs_smsc(uint16_t port)
 	/* Read device ID. */
 	id = regval(port, DEVICE_ID_REG);
 	if (id != 0x28) {	/* TODO: Support for other SMSC chips. */
-		if (inb(port) != 0xff)
-			printf("No Super I/O chip found at 0x%04x\n", port);
-		else
-			printf("Probing 0x%04x, failed (0x%02x), data returns 0x%02x\n", port, inb(port), inb(port + 1));
+		no_superio_found(port);
 		return;
 	}
 
 	/* Read chip revision. */
 	rev = regval(port, DEVICE_REV_REG);
 
-	printf("Super I/O found at 0x%04x: id=0x%02x, rev=0x%02x\n",
-	       port, id, rev);
+	printf("Found SMSC %s Super I/O (id=0x%02x, rev=0x%02x) at port=0x%04x\n",
+	       get_superio_name(reg_table, id), id, rev, port);
 
-	dump_smsc(port, id );
+	if (dump)
+		dump_superio("SMSC", reg_table, port, id);
 
 	exit_conf_mode_smsc(port);
 }

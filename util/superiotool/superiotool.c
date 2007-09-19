@@ -22,6 +22,9 @@
 
 #include "superiotool.h"
 
+/* Command line options. */
+int dump = 0, verbose = 0;
+
 uint8_t regval(uint16_t port, uint8_t reg)
 {
 	outb(reg, port);
@@ -32,6 +35,24 @@ void regwrite(uint16_t port, uint8_t reg, uint8_t val)
 {
 	outb(reg, port);
 	outb(val, port + 1);
+}
+
+const char *get_superio_name(const struct superio_registers reg_table[],
+			     uint16_t id)
+{
+	int i;
+
+	for (i = 0; /* Nothing */; i++) {
+		if (reg_table[i].superio_id == EOT)
+			break;
+
+		if ((uint16_t)reg_table[i].superio_id != id)
+			continue;
+
+		return reg_table[i].name;
+	}
+
+	return "<unknown>";
 }
 
 void dump_superio(const char *vendor, const struct superio_registers reg_table[],
@@ -53,7 +74,6 @@ void dump_superio(const char *vendor, const struct superio_registers reg_table[]
 			if (reg_table[i].ldn[j].ldn == EOT)
 				break;
 
-			printf("%s %s\n", vendor, reg_table[i].name);
 			nodump = 0;
 
 			if (reg_table[i].ldn[j].ldn != NOLDN) {
@@ -98,9 +118,51 @@ void dump_superio(const char *vendor, const struct superio_registers reg_table[]
 	}
 }
 
+void no_superio_found(uint16_t port) {
+	if (!verbose)
+		return;
+
+	if (inb(port) == 0xff)
+		printf("No Super I/O chip found at 0x%04x\n", port);
+	else
+		printf("Probing 0x%04x, failed (0x%02x), data returns 0x%02x\n", port, inb(port), inb(port + 1));
+}
+
 int main(int argc, char *argv[])
 {
-	int i, j;
+	int i, j, opt, option_index;
+
+	const static struct option long_options[] = {
+		{"dump",	no_argument, NULL, 'd'},
+		{"verbose",	no_argument, NULL, 'V'},
+		{"version",	no_argument, NULL, 'v'},
+		{"help",	no_argument, NULL, 'h'},
+		{0, 0, 0, 0}
+	};
+
+	while ((opt = getopt_long(argc, argv, "dVvh",
+				  long_options, &option_index)) != EOF) {
+		switch (opt) {
+		case 'd':
+			dump = 1;
+			break;
+		case 'V':
+			verbose = 1;
+			break;
+		case 'v':
+			printf("superiotool %s\n", SUPERIOTOOL_VERSION);
+			exit(0);
+			break;
+		case 'h':
+			printf("Usage: superiotool [-d] [-V] [-v] [-h]\n");
+			exit(0);
+			break;
+		default:
+			/* Unknown option. */
+			exit(1);
+			break;
+		}
+	}
 
 	if (iopl(3) < 0) {
 		perror("iopl");

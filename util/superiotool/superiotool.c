@@ -34,13 +34,11 @@ void regwrite(uint16_t port, uint8_t reg, uint8_t val)
 	outb(val, port + 1);
 }
 
-void dump_superio(const char *name, const struct superio_registers reg_table[],
+void dump_superio(const char *vendor, const struct superio_registers reg_table[],
 		  uint16_t port, uint16_t id)
 {
-	int i, j, k;
+	int i, j, k, nodump;
 	int *idx;
-
-	printf("%s ", name);
 
 	for (i = 0; /* Nothing */; i++) {
 		if (reg_table[i].superio_id == EOT)
@@ -49,11 +47,14 @@ void dump_superio(const char *name, const struct superio_registers reg_table[],
 		if ((uint16_t)reg_table[i].superio_id != id)
 			continue;
 
-		printf("%s\n", reg_table[i].name);
+		nodump = 1;
 
 		for (j = 0; /* Nothing */; j++) {
 			if (reg_table[i].ldn[j].ldn == EOT)
 				break;
+
+			printf("%s %s\n", vendor, reg_table[i].name);
+			nodump = 0;
 
 			if (reg_table[i].ldn[j].ldn != NOLDN) {
 				printf("Switching to LDN 0x%02x\n",
@@ -91,6 +92,9 @@ void dump_superio(const char *name, const struct superio_registers reg_table[],
 			}
 			printf("\n");
 		}
+
+		if (nodump)
+			printf("No dump for %s %s\n", vendor, reg_table[i].name);
 	}
 }
 

@@ -54,14 +54,18 @@ struct superio_registers {
 uint8_t regval(uint16_t port, uint8_t reg);
 void regwrite(uint16_t port, uint8_t reg, uint8_t val);
 void dump_superio(const char *name, const struct superio_registers reg_table[],
-                  uint16_t port, uint16_t id);
+		  uint16_t port, uint16_t id);
 void probe_superio(uint16_t port);
 
 /* fintek.c */
+void enter_conf_mode_fintek(uint16_t port);
+void exit_conf_mode_fintek(uint16_t port);
 void dump_fintek(uint16_t port, uint16_t did);
 void probe_idregs_fintek(uint16_t port);
 
 /* ite.c */
+void enter_conf_mode_ite(uint16_t port);
+void exit_conf_mode_ite(uint16_t port);
 void dump_ite(uint16_t port, uint16_t id);
 void probe_idregs_ite(uint16_t port);
 
@@ -70,6 +74,8 @@ void dump_ns8374(uint16_t port);
 void probe_idregs_simple(uint16_t port);
 
 /* smsc.c */
+void enter_conf_mode_smsc(uint16_t port);
+void exit_conf_mode_smsc(uint16_t port);
 void dump_smsc(uint16_t port, uint16_t id);
 void probe_idregs_smsc(uint16_t port);
 

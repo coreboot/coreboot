@@ -40,6 +40,16 @@ const static struct superio_registers reg_table[] = {
 	{EOT}
 };
 
+void enter_conf_mode_smsc(uint16_t port)
+{
+	outb(0x55, port);
+}
+
+void exit_conf_mode_smsc(uint16_t port)
+{
+	outb(0xaa, port);
+}
+
 /* Note: The actual SMSC ID is 16 bits, but we must pass 32 bits here. */
 void dump_smsc(uint16_t port, uint16_t id)
 {
@@ -57,7 +67,7 @@ void probe_idregs_smsc(uint16_t port)
 {
 	uint16_t id, rev;
 
-	outb(0x55, port);		/* Enter configuration mode. */
+	enter_conf_mode_smsc(port);
 
 	/* Read device ID. */
 	id = regval(port, DEVICE_ID_REG);
@@ -75,15 +85,8 @@ void probe_idregs_smsc(uint16_t port)
 	printf("Super I/O found at 0x%04x: id=0x%02x, rev=0x%02x\n",
 	       port, id, rev);
 
-	switch (id) {
-	case 0x28:
-		dump_smsc(port, id);
-		break;
-	default:
-		printf("No dump for ID 0x%04x\n", id);
-		break;
-	}
+	dump_smsc(port, id );
 
-	outb(0xaa, port);		/* Exit configuration mode. */
+	exit_conf_mode_smsc(port);
 }
 

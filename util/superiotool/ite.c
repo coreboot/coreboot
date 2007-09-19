@@ -211,10 +211,8 @@ void dump_ite(uint16_t port, uint16_t id)
 	}
 }
 
-void probe_idregs_ite(uint16_t port)
+void enter_conf_mode_ite(uint16_t port)
 {
-	uint16_t id, chipver;
-
 	/* Enable configuration sequence (ITE uses this for newer IT87[012]x)
 	 * IT871[01] uses 0x87, 0x87 -> fintek detection should handle it
 	 * IT8708 uses 0x87, 0x87 -> fintek detection should handle it
@@ -230,6 +228,18 @@ void probe_idregs_ite(uint16_t port)
 		outb(0x55, port);
 	else
 		outb(0xAA, port);
+}
+
+void exit_conf_mode_ite(uint16_t port)
+{
+	regwrite(port, 0x02, 0x02);
+}
+
+void probe_idregs_ite(uint16_t port)
+{
+	uint16_t id, chipver;
+
+	enter_conf_mode_ite(port);
 
 	/* Read Chip ID Byte 1. */
 	id = regval(port, 0x20);
@@ -252,20 +262,8 @@ void probe_idregs_ite(uint16_t port)
 	printf("Super I/O found at 0x%02x: id=0x%04x, chipver=0x%01x\n",
 	       port, id, chipver);
 
-	switch (id) {
-	case 0x8702:
-	case 0x8705:
-	case 0x8708:
-	case 0x8712:
-	case 0x8716:
-	case 0x8718:
-	case 0x8726:
-		dump_ite(port, id);
-		break;
-	default:
-		printf("No dump for ID 0x%04x\n", id);
-		break;
-	}
-	regwrite(port, 0x02, 0x02);	/* Exit MB PnP mode. */
+	dump_ite(port, id);
+
+	exit_conf_mode_ite(port);
 }
 

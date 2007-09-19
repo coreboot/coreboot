@@ -89,15 +89,26 @@ void dump_fintek(uint16_t port, uint16_t did)
 	       regval(port, 0xf6), regval(port, 0xf7), regval(port, 0xf8));
 }
 
-void probe_idregs_fintek(uint16_t port)
+void enter_conf_mode_fintek(uint16_t port)
 {
-	uint16_t vid, did, success = 0;
-
 	/* Enable configuration sequence (Fintek uses this for example)
 	 * Older ITE chips have the same enable sequence.
 	 */
 	outb(0x87, port);
 	outb(0x87, port);
+}
+
+void exit_conf_mode_fintek(uint16_t port)
+{
+	/* Exit MB PnP mode (for Fintek, doesn't hurt ITE). */
+	outb(0xaa, port);
+}
+
+void probe_idregs_fintek(uint16_t port)
+{
+	uint16_t vid, did, success = 0;
+
+	enter_conf_mode_fintek(port);
 
 	outb(0x20, port);
 	if (inb(port) != 0x20) {
@@ -143,7 +154,6 @@ void probe_idregs_fintek(uint16_t port)
 	if (!success)
 		printf("No dump for vid 0x%04x, did 0x%04x\n", vid, did);
 
-	/* Exit MB PnP mode (for Fintek, doesn't hurt ITE). */
-	outb(0xaa, port);
+	exit_conf_mode_fintek(port);
 }
 

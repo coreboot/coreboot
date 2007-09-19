@@ -31,6 +31,14 @@
 
 #define SUPERIOTOOL_VERSION "0.1"
 
+#define USAGE "Usage: superiotool [-d] [-V] [-v] [-h]\n\n\
+  -d | --dump      Dump Super I/O registers\n\
+  -V | --verbose   Verbose mode\n\
+  -v | --version   Show the superiotool version\n\
+  -h | --help      Show a short help text\n\n\
+Per default (no options) superiotool will just probe for a Super I/O\n\
+and print its vendor, name, ID, version, and config port.\n"
+
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
 #define EOT		-1		/* End Of Table */

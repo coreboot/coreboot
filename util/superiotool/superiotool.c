@@ -164,7 +164,7 @@ int main(int argc, char *argv[])
 			exit(0);
 			break;
 		case 'h':
-			printf("Usage: superiotool [-d] [-V] [-v] [-h]\n");
+			printf(USAGE);
 			exit(0);
 			break;
 		default:

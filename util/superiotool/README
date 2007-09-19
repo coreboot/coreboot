@@ -28,10 +28,25 @@ Installation
 Usage
 -----
 
- $ superiotool
+  $ superiotool [-d] [-V] [-v] [-h]
 
-Currently the tool will automatically try to detect which Super I/O you
-have, and also dump the register contents.
+  -d | --dump      Dump Super I/O registers
+  -V | --verbose   Verbose mode
+  -v | --version   Show the superiotool version
+  -h | --help      Show a short help text
+
+Per default (no options) superiotool will just probe for a Super I/O
+and print its vendor, name, ID, version, and config port.
+
+Typical usage of superiotool:
+
+ - Probe/detect the Super I/O in your mainboard:
+
+   $ superiotool
+
+ - Detailed register dump of the Super I/O (if detected):
+
+   $ superiotool -d
 
 
 Supported Super I/O Chips

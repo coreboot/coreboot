@@ -314,8 +314,8 @@ chip northbridge/amd/amdk8/root_complex
 					#	chip drivers/ati/ragexl
                                                 chip drivers/pci/onboard
                                                         device pci 7.0 on end
-                                                        register "rom_address" = "0xfff80000" #for 512K
-					#		register "rom_address" = "0xfff00000" #for 1M
+                                                        #register "rom_address" = "0xfff80000" #for 512K
+                                                        register "rom_address" = "0xfff00000" #for 1M
                                                 end
 					end
                 			device pci a.0 off end # NIC

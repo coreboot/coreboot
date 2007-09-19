@@ -20,7 +20,7 @@
 
 #include "superiotool.h"
 
-void dump_fintek(unsigned short port, unsigned int did)
+void dump_fintek(uint16_t port, uint16_t did)
 {
 	switch (did) {
 	case 0x0604:
@@ -89,9 +89,9 @@ void dump_fintek(unsigned short port, unsigned int did)
 	       regval(port, 0xf6), regval(port, 0xf7), regval(port, 0xf8));
 }
 
-void probe_idregs_fintek(unsigned short port)
+void probe_idregs_fintek(uint16_t port)
 {
-	unsigned int vid, did, success = 0;
+	uint16_t vid, did, success = 0;
 
 	/* Enable configuration sequence (Fintek uses this for example)
 	 * Older ITE chips have the same enable sequence.

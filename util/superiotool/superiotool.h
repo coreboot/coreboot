@@ -41,43 +41,42 @@
 #define MAXNUMPORTS	(2 + 1)		/* Maximum number of Super I/O ports */
 
 struct superio_registers {
-	/* Yes, superio_id should be unsigned, but EOT has to be negative. */
-	signed short superio_id;
+	int32_t superio_id; /* Signed, as we need EOT. */
 	const char name[MAXNAMELEN];
 	struct {
-		signed short ldn;
-		signed short idx[IDXSIZE];
-		signed short def[IDXSIZE];
+		int ldn;
+		int idx[IDXSIZE];
+		int def[IDXSIZE];
 	} ldn[LDNSIZE];
 };
 
 /* superiotool.c */
-unsigned char regval(unsigned short port, unsigned char reg);
-void regwrite(unsigned short port, unsigned char reg, unsigned char val);
+uint8_t regval(uint16_t port, uint8_t reg);
+void regwrite(uint16_t port, uint8_t reg, uint8_t val);
 void dump_superio(const char *name, const struct superio_registers reg_table[],
-                  unsigned short port, unsigned short id);
-void probe_superio(unsigned short port);
+                  uint16_t port, uint16_t id);
+void probe_superio(uint16_t port);
 
 /* fintek.c */
-void dump_fintek(unsigned short port, unsigned int did);
-void probe_idregs_fintek(unsigned short port);
+void dump_fintek(uint16_t port, uint16_t did);
+void probe_idregs_fintek(uint16_t port);
 
 /* ite.c */
-void dump_ite(unsigned short port, unsigned short id);
-void probe_idregs_ite(unsigned short port);
+void dump_ite(uint16_t port, uint16_t id);
+void probe_idregs_ite(uint16_t port);
 
 /* nsc.c */
-void dump_ns8374(unsigned short port);
-void probe_idregs_simple(unsigned short port);
+void dump_ns8374(uint16_t port);
+void probe_idregs_simple(uint16_t port);
 
 /* smsc.c */
-void dump_smsc(uint32_t port, uint32_t id);
-void probe_idregs_smsc(unsigned short port);
+void dump_smsc(uint16_t port, uint16_t id);
+void probe_idregs_smsc(uint16_t port);
 
 /** Table of which config ports to probe on each Super I/O. */
 const static struct {
-	void (*probe_idregs) (unsigned short port);
-	signed short ports[MAXNUMPORTS]; /* Signed, as we need EOT. */
+	void (*probe_idregs) (uint16_t port);
+	int ports[MAXNUMPORTS]; /* Signed, as we need EOT. */
 } superio_ports_table[] = {
 	{probe_idregs_simple,	{0x2e,	0x4e,	EOT}},
 	{probe_idregs_fintek,	{0x2e,	0x4e,	EOT}},

@@ -24,9 +24,9 @@ CC      = gcc
 INSTALL = /usr/bin/install
 PREFIX  = /usr/local
 
-# TODO: -ansi, -pedantic
+# TODO: -pedantic
 CFLAGS = -O2 -Wall -Werror -Wstrict-prototypes -Wundef -Wstrict-aliasing \
-         -Werror-implicit-function-declaration
+         -Werror-implicit-function-declaration -ansi
 
 OBJS = superiotool.o fintek.o ite.o nsc.o smsc.o
 

@@ -41,7 +41,7 @@ const static struct superio_registers reg_table[] = {
 };
 
 /* Note: The actual SMSC ID is 16 bits, but we must pass 32 bits here. */
-void dump_smsc(uint32_t port, uint32_t id)
+void dump_smsc(uint16_t port, uint16_t id)
 {
 	switch (id) {
 	case 0x28:
@@ -53,7 +53,7 @@ void dump_smsc(uint32_t port, uint32_t id)
 	}
 }
 
-void probe_idregs_smsc(unsigned short port)
+void probe_idregs_smsc(uint16_t port)
 {
 	uint16_t id, rev;
 

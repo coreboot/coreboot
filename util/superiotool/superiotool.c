@@ -22,23 +22,23 @@
 
 #include "superiotool.h"
 
-unsigned char regval(unsigned short port, unsigned char reg)
+uint8_t regval(uint16_t port, uint8_t reg)
 {
 	outb(reg, port);
 	return inb(port + 1);
 }
 
-void regwrite(unsigned short port, unsigned char reg, unsigned char val)
+void regwrite(uint16_t port, uint8_t reg, uint8_t val)
 {
 	outb(reg, port);
 	outb(val, port + 1);
 }
 
 void dump_superio(const char *name, const struct superio_registers reg_table[],
-		  unsigned short port, unsigned short id)
+		  uint16_t port, uint16_t id)
 {
 	int i, j, k;
-	signed short *idx;
+	int *idx;
 
 	printf("%s ", name);
 
@@ -46,33 +46,32 @@ void dump_superio(const char *name, const struct superio_registers reg_table[],
 		if (reg_table[i].superio_id == EOT)
 			break;
 
-		if ((unsigned short)reg_table[i].superio_id != id)
+		if ((uint16_t)reg_table[i].superio_id != id)
 			continue;
 
 		printf("%s\n", reg_table[i].name);
 
-		for (j = 0;; j++) {
+		for (j = 0; /* Nothing */; j++) {
 			if (reg_table[i].ldn[j].ldn == EOT)
 				break;
 
 			if (reg_table[i].ldn[j].ldn != NOLDN) {
-				printf("Switching to LDN 0x%01x\n",
+				printf("Switching to LDN 0x%02x\n",
 				       reg_table[i].ldn[j].ldn);
-				regwrite(port, 0x07,
-					 reg_table[i].ldn[j].ldn);
+				regwrite(port, 0x07, reg_table[i].ldn[j].ldn);
 			}
 
 			idx = reg_table[i].ldn[j].idx;
 
 			printf("idx ");
-			for (k = 0;; k++) {
+			for (k = 0; /* Nothing */; k++) {
 				if (idx[k] == EOT)
 					break;
 				printf("%02x ", idx[k]);
 			}
 
 			printf("\nval ");
-			for (k = 0;; k++) {
+			for (k = 0; /* Nothing */; k++) {
 				if (idx[k] == EOT)
 					break;
 				printf("%02x ", regval(port, idx[k]));
@@ -80,7 +79,7 @@ void dump_superio(const char *name, const struct superio_registers reg_table[],
 
 			printf("\ndef ");
 			idx = reg_table[i].ldn[j].def;
-			for (k = 0;; k++) {
+			for (k = 0; /* Nothing */; k++) {
 				if (idx[k] == EOT)
 					break;
 				else if (idx[k] == NANA)

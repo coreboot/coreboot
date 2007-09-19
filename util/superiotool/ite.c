@@ -187,7 +187,7 @@ const static struct superio_registers reg_table[] = {
 	{EOT}
 };
 
-void dump_ite(unsigned short port, unsigned short id)
+void dump_ite(uint16_t port, uint16_t id)
 {
 	int i;
 
@@ -211,9 +211,9 @@ void dump_ite(unsigned short port, unsigned short id)
 	}
 }
 
-void probe_idregs_ite(unsigned short port)
+void probe_idregs_ite(uint16_t port)
 {
-	unsigned int id, chipver;
+	uint16_t id, chipver;
 
 	/* Enable configuration sequence (ITE uses this for newer IT87[012]x)
 	 * IT871[01] uses 0x87, 0x87 -> fintek detection should handle it

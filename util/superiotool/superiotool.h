@@ -61,6 +61,7 @@ struct superio_registers {
 	const char name[MAXNAMELEN];
 	struct {
 		int ldn;
+		const char *name;
 		int idx[IDXSIZE];
 		int def[IDXSIZE];
 	} ldn[LDNSIZE];

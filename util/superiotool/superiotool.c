@@ -60,11 +60,58 @@ const char *get_superio_name(const struct superio_registers reg_table[],
 	return "<unknown>";
 }
 
-void dump_superio(const char *vendor, const struct superio_registers reg_table[],
+static void dump_regs(const struct superio_registers reg_table[],
+		      int i, int j, uint16_t port)
+{
+	int k, *idx;
+
+	if (reg_table[i].ldn[j].ldn != NOLDN) {
+		printf("LDN 0x%02x ", reg_table[i].ldn[j].ldn);
+		if (reg_table[i].ldn[j].name != NULL)
+			printf("(%s)", reg_table[i].ldn[j].name);
+		regwrite(port, 0x07, reg_table[i].ldn[j].ldn);
+	} else {
+		printf("Register dump:");
+	}
+
+	idx = reg_table[i].ldn[j].idx;
+
+	printf("\nidx ");
+	for (k = 0; /* Nothing */; k++) {
+		if (idx[k] == EOT)
+			break;
+		printf("%02x ", idx[k]);
+	}
+
+	printf("\nval ");
+	for (k = 0; /* Nothing */; k++) {
+		if (idx[k] == EOT)
+			break;
+		printf("%02x ", regval(port, idx[k]));
+	}
+
+	printf("\ndef ");
+	idx = reg_table[i].ldn[j].def;
+	for (k = 0; /* Nothing */; k++) {
+		if (idx[k] == EOT)
+			break;
+		else if (idx[k] == NANA)
+			printf("NA ");
+		else if (idx[k] == RSVD)
+			printf("RR ");
+		else if (idx[k] == MISC)	/* TODO */
+			printf("MM ");
+		else
+			printf("%02x ", idx[k]);
+	}
+	printf("\n");
+}
+
+void dump_superio(const char *vendor,
+		  const struct superio_registers reg_table[],
 		  uint16_t port, uint16_t id)
 {
-	int i, j, k, nodump;
-	int *idx;
+	int i, j, no_dump_available = 1;
 
 	if (!dump)
 		return;
@@ -76,66 +123,28 @@ void dump_superio(const char *vendor, const struct superio_registers reg_table[]
 		if ((uint16_t)reg_table[i].superio_id != id)
 			continue;
 
-		nodump = 1;
-
 		for (j = 0; /* Nothing */; j++) {
 			if (reg_table[i].ldn[j].ldn == EOT)
 				break;
-
-			nodump = 0;
-
-			if (reg_table[i].ldn[j].ldn != NOLDN) {
-				printf("Switching to LDN 0x%02x\n",
-				       reg_table[i].ldn[j].ldn);
-				regwrite(port, 0x07, reg_table[i].ldn[j].ldn);
-			}
-
-			idx = reg_table[i].ldn[j].idx;
-
-			printf("idx ");
-			for (k = 0; /* Nothing */; k++) {
-				if (idx[k] == EOT)
-					break;
-				printf("%02x ", idx[k]);
-			}
-
-			printf("\nval ");
-			for (k = 0; /* Nothing */; k++) {
-				if (idx[k] == EOT)
-					break;
-				printf("%02x ", regval(port, idx[k]));
-			}
-
-			printf("\ndef ");
-			idx = reg_table[i].ldn[j].def;
-			for (k = 0; /* Nothing */; k++) {
-				if (idx[k] == EOT)
-					break;
-				else if (idx[k] == NANA)
-					printf("NA ");
-				else if (idx[k] == RSVD)
-					printf("RR ");
-				else if (idx[k] == MISC)	/* TODO */
-					printf("MM ");
-				else
-					printf("%02x ", idx[k]);
-			}
-			printf("\n");
+			no_dump_available = 0;
+			dump_regs(reg_table, i, j, port);
 		}
 
-		if (nodump)
-			printf("No dump for %s %s\n", vendor, reg_table[i].name);
+		if (no_dump_available)
+			printf("No dump available for this Super I/O\n");
 	}
 }
 
-void no_superio_found(uint16_t port) {
+void no_superio_found(uint16_t port)
+{
 	if (!verbose)
 		return;
 
 	if (inb(port) == 0xff)
 		printf("No Super I/O chip found at 0x%04x\n", port);
 	else
-		printf("Probing 0x%04x, failed (0x%02x), data returns 0x%02x\n", port, inb(port), inb(port + 1));
+		printf("Probing 0x%04x, failed (0x%02x), data returns 0x%02x\n",
+		       port, inb(port), inb(port + 1));
 }
 
 int main(int argc, char *argv[])

@@ -70,6 +70,8 @@ struct superio_registers {
 /* superiotool.c */
 uint8_t regval(uint16_t port, uint8_t reg);
 void regwrite(uint16_t port, uint8_t reg, uint8_t val);
+void enter_conf_mode_winbond_fintek_ite_8787(uint16_t port);
+void exit_conf_mode_winbond_fintek_ite_8787(uint16_t port);
 int superio_unknown(const struct superio_registers reg_table[], uint16_t id);
 const char *get_superio_name(const struct superio_registers reg_table[],
 			     uint16_t id);

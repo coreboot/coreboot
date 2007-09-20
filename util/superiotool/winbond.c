@@ -126,23 +126,12 @@ const static struct superio_registers reg_table[] = {
 	{EOT}
 };
 
-static void enter_conf_mode_winbond(uint16_t port)
-{
-	outb(0x87, port);
-	outb(0x87, port);
-}
-
-static void exit_conf_mode_winbond(uint16_t port)
-{
-	outb(0xaa, port);
-}
-
 void probe_idregs_winbond(uint16_t port)
 {
 	uint16_t id;
 	uint8_t devid, rev;
 
-	enter_conf_mode_winbond(port);
+	enter_conf_mode_winbond_fintek_ite_8787(port);
 
 	devid = regval(port, DEVICE_ID_REG);
 	rev = regval(port, DEVICE_REV_REG);
@@ -152,7 +141,7 @@ void probe_idregs_winbond(uint16_t port)
 
 	if (superio_unknown(reg_table, id)) {
 		no_superio_found(port);
-		exit_conf_mode_winbond(port);
+		exit_conf_mode_winbond_fintek_ite_8787(port);
 		return;
 	}
 
@@ -162,6 +151,6 @@ void probe_idregs_winbond(uint16_t port)
 	/* TODO: Special notes in dump output for the MISC entries. */
 	dump_superio("Winbond", reg_table, port, id);
 
-	exit_conf_mode_winbond(port);
+	exit_conf_mode_winbond_fintek_ite_8787(port);
 }
 

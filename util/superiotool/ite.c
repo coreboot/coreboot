@@ -226,11 +226,9 @@ static void exit_conf_mode_ite(uint16_t port)
 	regwrite(port, 0x02, 0x02);
 }
 
-void probe_idregs_ite(uint16_t port)
+static void probe_idregs_ite_helper(uint16_t port)
 {
 	uint16_t id, chipver;
-
-	enter_conf_mode_ite(port);
 
 	id = regval(port, CHIP_ID_BYTE1_REG) << 8;
 	id |= regval(port, CHIP_ID_BYTE2_REG);
@@ -246,7 +244,16 @@ void probe_idregs_ite(uint16_t port)
 	       get_superio_name(reg_table, id), id, chipver, port);
 
 	dump_superio("ITE", reg_table, port, id);
+}
 
+void probe_idregs_ite(uint16_t port)
+{
+	enter_conf_mode_ite(port);
+	probe_idregs_ite_helper(port);
 	exit_conf_mode_ite(port);
+
+	enter_conf_mode_winbond_fintek_ite_8787(port);
+	probe_idregs_ite_helper(port);
+	exit_conf_mode_winbond_fintek_ite_8787(port);
 }
 

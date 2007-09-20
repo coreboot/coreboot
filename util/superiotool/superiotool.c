@@ -37,6 +37,18 @@ void regwrite(uint16_t port, uint8_t reg, uint8_t val)
 	outb(val, port + 1);
 }
 
+void enter_conf_mode_winbond_fintek_ite_8787(uint16_t port)
+{
+	outb(0x87, port);
+	outb(0x87, port);
+}
+
+void exit_conf_mode_winbond_fintek_ite_8787(uint16_t port)
+{
+	outb(0xaa, port);		/* Fintek, Winbond */
+	regwrite(port, 0x02, 0x02);	/* ITE */
+}
+
 int superio_unknown(const struct superio_registers reg_table[], uint16_t id)
 {
 	return !strncmp(get_superio_name(reg_table, id), "<unknown>", 9);

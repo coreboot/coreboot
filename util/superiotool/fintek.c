@@ -102,68 +102,32 @@ void dump_fintek(uint16_t port, uint16_t did)
 	       regval(port, 0xf6), regval(port, 0xf7), regval(port, 0xf8));
 }
 
-static void enter_conf_mode_fintek(uint16_t port)
-{
-	/* Enable configuration sequence (Fintek uses this for example)
-	 * Older ITE chips have the same enable sequence.
-	 */
-	outb(0x87, port);
-	outb(0x87, port);
-}
-
-static void exit_conf_mode_fintek(uint16_t port)
-{
-	/* Exit MB PnP mode (for Fintek, doesn't hurt ITE). */
-	outb(0xaa, port);
-}
-
 void probe_idregs_fintek(uint16_t port)
 {
-	uint16_t vid, did, did_ite, success = 0;
+	uint16_t vid, did;
 
-	enter_conf_mode_fintek(port);
+	enter_conf_mode_winbond_fintek_ite_8787(port);
 
 	did = regval(port, DEVICE_ID_BYTE1_REG);
 	did |= (regval(port, DEVICE_ID_BYTE2_REG) << 8);
-	did_ite = ((did & 0xff) << 8) | ((did & 0xff00) >> 8);
 
 	vid = regval(port, VENDOR_ID_BYTE1_REG);
 	vid |= (regval(port, VENDOR_ID_BYTE2_REG) << 8);
 
-	/* FIXME */
-	if (vid != 0x3419 && did_ite != 0x8708 && did_ite != 0x8710) {
+	if (vid != 0x3419) {
 		no_superio_found(port);
-		exit_conf_mode_fintek(port);
-		return;
-	}
-
-	if (did_ite == 0x8708 || did_ite == 0x8701) {
-		printf("Found ITE IT%04xF (id=0x%04x, rev=0x%01x) at port=0x%x\n", did_ite, did_ite, 0, port); /* FIXME */
-		dump_ite(port, did_ite);
-		regwrite(port, 0x02, 0x02); /* FIXME */
-		return;
-	}
-		
-	if (vid == 0xff || vid == 0xffff) {
-		exit_conf_mode_fintek(port);
+		exit_conf_mode_winbond_fintek_ite_8787(port);
 		return;
 	}
 
         printf("Found Fintek %s (vid=0x%04x, id=0x%04x) at port=0x%x\n",
        	       get_superio_name(reg_table, did), vid, did, port);
 
-	switch (vid) {
-	case 0x3419:
-		success = 1;
-		dump_fintek(port, did);
-		break;
-	default:
-		break;
-	}
+	dump_superio("Fintek", reg_table, port, did);
 
-	if (!success)
-		printf("No dump for vid 0x%04x, did 0x%04x\n", vid, did);
+	/* TODO: Revive this as --dump-human-readable output. */
+	/* dump_fintek(port, did); */
 
-	exit_conf_mode_fintek(port);
+	exit_conf_mode_winbond_fintek_ite_8787(port);
 }
 

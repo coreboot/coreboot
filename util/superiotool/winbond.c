@@ -150,6 +150,7 @@ void probe_idregs_winbond(uint16_t port)
 
 	/* TODO: Special notes in dump output for the MISC entries. */
 	dump_superio("Winbond", reg_table, port, id);
+	dump_superio_readable(port); /* TODO */
 
 	exit_conf_mode_winbond_fintek_ite_8787(port);
 }

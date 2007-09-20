@@ -69,6 +69,7 @@ void probe_idregs_smsc(uint16_t port)
 	       get_superio_name(reg_table, id), id, rev, port);
 
 	dump_superio("SMSC", reg_table, port, id);
+	dump_superio_readable(port); /* TODO */
 
 	exit_conf_mode_smsc(port);
 }

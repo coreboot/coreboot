@@ -31,11 +31,12 @@
 
 #define SUPERIOTOOL_VERSION "0.1"
 
-#define USAGE "Usage: superiotool [-d] [-V] [-v] [-h]\n\n\
-  -d | --dump      Dump Super I/O registers\n\
-  -V | --verbose   Verbose mode\n\
-  -v | --version   Show the superiotool version\n\
-  -h | --help      Show a short help text\n\n\
+#define USAGE "Usage: superiotool [-d] [-D] [-V] [-v] [-h]\n\n\
+  -d | --dump            Dump Super I/O registers\n\
+  -D | --dump-readable   Dump Super I/O registers in human-readable format\n\
+  -V | --verbose         Verbose mode\n\
+  -v | --version         Show the superiotool version\n\
+  -h | --help            Show a short help text\n\n\
 Per default (no options) superiotool will just probe for a Super I/O\n\
 and print its vendor, name, ID, version, and config port.\n"
 
@@ -54,14 +55,14 @@ and print its vendor, name, ID, version, and config port.\n"
 #define MAXNUMPORTS	(2 + 1)		/* Maximum number of Super I/O ports */
 
 /* Command line parameters. */
-extern int dump, verbose;
+extern int dump, dump_readable, verbose;
 
 struct superio_registers {
-	int32_t superio_id; /* Signed, as we need EOT. */
-	const char name[MAXNAMELEN];
+	int32_t superio_id;		/* Signed, as we need EOT. */
+	const char name[MAXNAMELEN];	/* Super I/O name */
 	struct {
 		int ldn;
-		const char *name;
+		const char *name;	/* LDN name */
 		int idx[IDXSIZE];
 		int def[IDXSIZE];
 	} ldn[LDNSIZE];
@@ -77,18 +78,16 @@ const char *get_superio_name(const struct superio_registers reg_table[],
 			     uint16_t id);
 void dump_superio(const char *name, const struct superio_registers reg_table[],
 		  uint16_t port, uint16_t id);
+void dump_superio_readable(uint16_t port);
 void no_superio_found(uint16_t port);
 
 /* fintek.c */
-void dump_fintek(uint16_t port, uint16_t did);
 void probe_idregs_fintek(uint16_t port);
 
 /* ite.c */
-void dump_ite(uint16_t port, uint16_t id);
 void probe_idregs_ite(uint16_t port);
 
 /* nsc.c */
-void dump_ns8374(uint16_t port);
 void probe_idregs_simple(uint16_t port);
 
 /* smsc.c */

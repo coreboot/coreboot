@@ -23,7 +23,7 @@
 #include "superiotool.h"
 
 /* Command line options. */
-int dump = 0, verbose = 0;
+int dump = 0, dump_readable = 0, verbose = 0;
 
 uint8_t regval(uint16_t port, uint8_t reg)
 {
@@ -147,6 +147,13 @@ void dump_superio(const char *vendor,
 	}
 }
 
+void dump_superio_readable(uint16_t port)
+{
+	/* TODO */
+	if (dump_readable)
+		printf("No human-readable dump available for this Super I/O\n");
+}
+
 void no_superio_found(uint16_t port)
 {
 	if (!verbose)
@@ -164,18 +171,22 @@ int main(int argc, char *argv[])
 	int i, j, opt, option_index;
 
 	const static struct option long_options[] = {
-		{"dump",	no_argument, NULL, 'd'},
-		{"verbose",	no_argument, NULL, 'V'},
-		{"version",	no_argument, NULL, 'v'},
-		{"help",	no_argument, NULL, 'h'},
+		{"dump",		no_argument, NULL, 'd'},
+		{"dump-readable",	no_argument, NULL, 'D'},
+		{"verbose",		no_argument, NULL, 'V'},
+		{"version",		no_argument, NULL, 'v'},
+		{"help",		no_argument, NULL, 'h'},
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "dVvh",
+	while ((opt = getopt_long(argc, argv, "dDVvh",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'd':
 			dump = 1;
+			break;
+		case 'D':
+			dump_readable = 1;
 			break;
 		case 'V':
 			verbose = 1;

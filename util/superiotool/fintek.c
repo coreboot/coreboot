@@ -33,8 +33,11 @@ const static struct superio_registers reg_table[] = {
 	{EOT}
 };
 
-void dump_fintek(uint16_t port, uint16_t did)
+static void dump_readable_fintek(uint16_t port, uint16_t did)
 {
+	if (!dump_readable)
+		return;
+
 	switch (did) {
 	case 0x0604:
 		printf("Fintek F71805\n");
@@ -124,9 +127,7 @@ void probe_idregs_fintek(uint16_t port)
        	       get_superio_name(reg_table, did), vid, did, port);
 
 	dump_superio("Fintek", reg_table, port, did);
-
-	/* TODO: Revive this as --dump-human-readable output. */
-	/* dump_fintek(port, did); */
+	dump_readable_fintek(port, did);
 
 	exit_conf_mode_winbond_fintek_ite_8787(port);
 }

@@ -194,12 +194,6 @@ const static struct superio_registers reg_table[] = {
 	{EOT}
 };
 
-/* TODO: Drop this function later. */
-void dump_ite(uint16_t port, uint16_t id)
-{
-	dump_superio("ITE", reg_table, port, id);
-}
-
 /**
  * Enable configuration sequence (ITE uses this for newer IT87[012]xF).
  *
@@ -244,6 +238,7 @@ static void probe_idregs_ite_helper(uint16_t port)
 	       get_superio_name(reg_table, id), id, chipver, port);
 
 	dump_superio("ITE", reg_table, port, id);
+	dump_superio_readable(port); /* TODO */
 }
 
 void probe_idregs_ite(uint16_t port)

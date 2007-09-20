@@ -25,8 +25,11 @@ static const char *familyid[] = {
 	[0xf1] = "PC8374 (Winbond/NatSemi)"
 };
 
-void dump_ns8374(uint16_t port)
+static void dump_readable_ns8374(uint16_t port)
 {
+	if (!dump_readable)
+		return;
+
 	printf("Enables: 21=%02x, 22=%02x, 23=%02x, 24=%02x, 26=%02x\n",
 	       regval(port, 0x21), regval(port, 0x22), regval(port, 0x23),
 	       regval(port, 0x24), regval(port, 0x26));
@@ -79,7 +82,7 @@ void probe_idregs_simple(uint16_t port)
 
 	switch (id) {
 	case 0xf1:
-		dump_ns8374(port);
+		dump_readable_ns8374(port);
 		break;
 	default:
 		printf("No dump for 0x%02x\n", id);

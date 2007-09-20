@@ -61,6 +61,7 @@ void probe_idregs_smsc(uint16_t port)
 
 	if (superio_unknown(reg_table, id)) {
 		no_superio_found(port);
+		exit_conf_mode_smsc(port);
 		return;
 	}
 

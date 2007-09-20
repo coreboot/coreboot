@@ -20,6 +20,19 @@
 
 #include "superiotool.h"
 
+#define DEVICE_ID_BYTE1_REG	0x20
+#define DEVICE_ID_BYTE2_REG	0x21
+#define VENDOR_ID_BYTE1_REG	0x23
+#define VENDOR_ID_BYTE2_REG	0x24
+
+const static struct superio_registers reg_table[] = {
+	{0x0604, "F71805", {
+		{EOT}}},
+	{0x4103, "F71872", {
+		{EOT}}},
+	{EOT}
+};
+
 void dump_fintek(uint16_t port, uint16_t did)
 {
 	switch (did) {
@@ -106,38 +119,38 @@ static void exit_conf_mode_fintek(uint16_t port)
 
 void probe_idregs_fintek(uint16_t port)
 {
-	uint16_t vid, did, success = 0;
+	uint16_t vid, did, did_ite, success = 0;
 
 	enter_conf_mode_fintek(port);
 
-	outb(0x20, port);
-	if (inb(port) != 0x20) {
+	did = regval(port, DEVICE_ID_BYTE1_REG);
+	did |= (regval(port, DEVICE_ID_BYTE2_REG) << 8);
+	did_ite = ((did & 0xff) << 8) | ((did & 0xff00) >> 8);
+
+	vid = regval(port, VENDOR_ID_BYTE1_REG);
+	vid |= (regval(port, VENDOR_ID_BYTE2_REG) << 8);
+
+	/* FIXME */
+	if (vid != 0x3419 && did_ite != 0x8708 && did_ite != 0x8710) {
 		no_superio_found(port);
+		exit_conf_mode_fintek(port);
 		return;
 	}
-	did = inb(port + 1);
-	did |= (regval(port, 0x21) << 8);
 
-	vid = regval(port, 0x23);
-	vid |= (regval(port, 0x24) << 8);
-
-	printf("Super I/O found at 0x%02x: vid=0x%04x/did=0x%04x\n",
-	       port, vid, did);
-
-	if (vid == 0xff || vid == 0xffff)
+	if (did_ite == 0x8708 || did_ite == 0x8701) {
+		printf("Found ITE IT%04xF (id=0x%04x, rev=0x%01x) at port=0x%x\n", did_ite, did_ite, 0, port); /* FIXME */
+		dump_ite(port, did_ite);
+		regwrite(port, 0x02, 0x02); /* FIXME */
 		return;
-
-	/* printf("%s\n", familyid[id]); */
-	switch (did) {
-	case 0x0887:		/* Pseudoreversed for ITE8708 */
-	case 0x1087:		/* Pseudoreversed for ITE8710 */
-		success = 1;
-		dump_ite(port, ((did & 0xff) << 8) | ((did & 0xff00) >> 8));
-		regwrite(port, 0x02, 0x02);	/* Exit MB PnP mode. */
-		break;
-	default:
-		break;
 	}
+		
+	if (vid == 0xff || vid == 0xffff) {
+		exit_conf_mode_fintek(port);
+		return;
+	}
+
+        printf("Found Fintek %s (vid=0x%04x, id=0x%04x) at port=0x%x\n",
+       	       get_superio_name(reg_table, did), vid, did, port);
 
 	switch (vid) {
 	case 0x3419:

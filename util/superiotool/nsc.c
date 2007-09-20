@@ -63,6 +63,7 @@ void probe_idregs_simple(uint16_t port)
 	outb(0x20, port);
 	if (inb(port) != 0x20) {
 		no_superio_found(port);
+		/* TODO: Exit config mode? */
 		return;
 	}
 	id = inb(port + 1);

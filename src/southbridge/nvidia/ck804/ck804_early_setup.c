@@ -298,7 +298,7 @@ static void ck804_early_setup(void)
                 RES_PORT_IO_8, CK804B_SYSCTRL_IO_BASE + 0xc0+19, ~(0xff), ((0<<4)|(1<<2)|(0<<0)),  
                 RES_PORT_IO_8, CK804B_SYSCTRL_IO_BASE + 0xc0+ 3, ~(0xff), ((0<<4)|(1<<2)|(0<<0)),  
                 RES_PORT_IO_8, CK804B_SYSCTRL_IO_BASE + 0xc0+ 3, ~(0xff), ((0<<4)|(1<<2)|(1<<0)),  
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE+1 , 0, 0xe4), ~(1<<23), (1<<23);
+		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE+1 , 0, 0xe4), ~(1<<23), (1<<23),
 	#endif
 #endif  
 

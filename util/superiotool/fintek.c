@@ -25,6 +25,8 @@
 #define VENDOR_ID_BYTE1_REG	0x23
 #define VENDOR_ID_BYTE2_REG	0x24
 
+#define FINTEK_VENDOR_ID	0x3419
+
 const static struct superio_registers reg_table[] = {
 	{0x0604, "F71805", {
 		{EOT}}},
@@ -38,17 +40,7 @@ static void dump_readable_fintek(uint16_t port, uint16_t did)
 	if (!dump_readable)
 		return;
 
-	switch (did) {
-	case 0x0604:
-		printf("Fintek F71805\n");
-		break;
-	case 0x4103:
-		printf("Fintek F71872\n");
-		break;
-	default:
-		printf("Unknown Fintek Super I/O: did=0x%04x\n", did);
-		return;
-	}
+	printf("Human-readable register dump:\n");
 
 	printf("Flash write is %s.\n",
 	       regval(port, 0x28) & 0x80 ? "enabled" : "disabled");
@@ -117,7 +109,7 @@ void probe_idregs_fintek(uint16_t port)
 	vid = regval(port, VENDOR_ID_BYTE1_REG);
 	vid |= (regval(port, VENDOR_ID_BYTE2_REG) << 8);
 
-	if (vid != 0x3419) {
+	if (vid != FINTEK_VENDOR_ID || superio_unknown(reg_table, did)) {
 		no_superio_found(port);
 		exit_conf_mode_winbond_fintek_ite_8787(port);
 		return;

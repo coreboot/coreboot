@@ -123,6 +123,8 @@ const static struct superio_registers reg_table[] = {
 			{0x30,0x60,0x61,0x70,0xf0,0xf1,EOT},
 			{0x00,0x00,0x00,0x00,0xc1,0x00,EOT}},
 		{EOT}}},
+	{0x52, "W83627HF", {
+		{EOT}}},
 	{EOT}
 };
 
@@ -136,8 +138,11 @@ void probe_idregs_winbond(uint16_t port)
 	devid = regval(port, DEVICE_ID_REG);
 	rev = regval(port, DEVICE_REV_REG);
 
-	/* Bits 3..0 of 'rev' form the IC version, we don't match that. */
-	id = (devid << 4) | ((rev & 0xf0) >> 4);
+	if (devid != 0x52)
+		/* Bits 3..0 of 'rev' == IC version, we don't match that. */
+		id = (devid << 4) | ((rev & 0xf0) >> 4);
+	else
+		id = devid;
 
 	if (superio_unknown(reg_table, id)) {
 		no_superio_found(port);

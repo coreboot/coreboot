@@ -239,10 +239,7 @@ const static struct superio_registers reg_table[] = {
 };
 
 /**
- * Enable configuration sequence (ITE uses this for newer IT87[012]xF).
- *
- * IT871[01]F uses 0x87, 0x87 -> Fintek detection should handle it
- * IT8708F uses 0x87, 0x87 -> Fintek detection should handle it
+ * IT871[01]F and IT8708F use 0x87, 0x87
  * IT8761F uses 0x87, 0x61, 0x55, 0x55/0xaa
  * IT86xxF series uses different ports
  * IT8661F uses 0x86, 0x61, 0x55/0xaa, 0x55/0xaa and 32 more writes

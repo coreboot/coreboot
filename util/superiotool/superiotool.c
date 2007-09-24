@@ -75,7 +75,8 @@ const char *get_superio_name(const struct superio_registers reg_table[],
 static void dump_regs(const struct superio_registers reg_table[],
 		      int i, int j, uint16_t port)
 {
-	int k, *idx;
+	int k;
+	const int *idx;
 
 	if (reg_table[i].ldn[j].ldn != NOLDN) {
 		printf("LDN 0x%02x ", reg_table[i].ldn[j].ldn);

@@ -271,6 +271,8 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn, unsigned *devn
 	RES_PCI_IO, PCI_ADDR(0, 6, 0, 0xC0), 0x00000000, 0xCB8410DE,
 	RES_PCI_IO, PCI_ADDR(0, 6, 0, 0xC4), 0xFFFFFFF8, 0x00000007,
 
+	RES_PCI_IO, PCI_ADDR(0, 1, 0, 0x78), 0xC0FFFFFF, 0x19000000,
+
 #if MCP55_USE_AZA == 1
 	RES_PCI_IO, PCI_ADDR(0, 6, 1, 0x40), 0x00000000, 0xCB8410DE,
 
@@ -293,8 +295,6 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn, unsigned *devn
     static const unsigned int ctrl_conf_master_only[] = {
 
 	RES_PORT_IO_32, ACPICTRL_IO_BASE + 0x80, 0xEFFFFFF, 0x01000000,
-
-	RES_PCI_IO, PCI_ADDR(0, 1, 0, 0x78), 0xC0FFFFFF, 0x19000000,
 
 	//Master MCP55 ????YHLU
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 0, ~(3<<2), (0<<2),

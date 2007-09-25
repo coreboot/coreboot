@@ -167,6 +167,14 @@ struct lb_string {
 	u8  string[0];
 };
 
+#define LB_TAG_DEVTREE_PTR	0x000e
+
+struct lb_devtree {
+	u32 tag;
+	u32 size;
+	u32 dev_root_ptr; /* Pointer to the root device */
+};
+
 /* The following structures are for the cmos definitions table */
 #define LB_TAG_CMOS_OPTION_TABLE 200
 /* cmos header record */

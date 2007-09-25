@@ -385,6 +385,25 @@ static struct lb_memory *build_lb_mem(struct lb_header *head)
 	return mem;
 }
 
+/**
+ * Add pointer to device tree to LinuxBIOS table.
+ *
+ * @param head Pointer to lbtable header.
+ * @return TODO
+ */
+struct lb_devtree *lb_devtree(struct lb_header *head)
+{
+	struct lb_devtree *lbdev = NULL;
+	struct device *dev = NULL;
+
+	lbdev = (struct lb_devtree *)lb_new_record(head);
+	lbdev->tag = LB_TAG_DEVTREE_PTR;
+	lbdev->size = sizeof(*lbdev);
+	lbdev->dev_root_ptr = &dev_root;
+
+	return lbdev;
+}
+
 unsigned long write_linuxbios_table( 
 	unsigned long low_table_start, unsigned long low_table_end, 
 	unsigned long rom_table_start, unsigned long rom_table_end)
@@ -431,11 +450,14 @@ unsigned long write_linuxbios_table(
 	 * size of the linuxbios table.
 	 */
 
-	/* Record our motheboard */
+	/* Record our motherboard */
 	lb_mainboard(head);
 
 	/* Record our various random string information */
 	lb_strings(head);
+
+	/* Record a pointer to the LinuxBIOS device tree */
+	lb_devtree(head);
 
 	/* Remember where my valid memory ranges are */
 	return lb_table_fini(head);

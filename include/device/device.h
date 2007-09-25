@@ -188,6 +188,16 @@ struct device {
 	char 		dtsname[MAX_DTSNAME_SIZE];	/* the name from the dts */
 	unsigned 	vendor;
 	unsigned 	device;
+	u16 status;
+	u8 revision;
+	u8 cache_line;
+	u8 irq_line;
+	u8 irq_pin;
+	u8 min_gnt;
+	u8 max_lat;
+	u16 subsystem_vendor;
+	u16 subsystem_device;
+
 	unsigned int	class;		/* 3 bytes: (base,sub,prog-if) */
 	unsigned int	hdr_type;	/* PCI header type */
 	unsigned int    enabled : 1;	/* set if we should enable the device */

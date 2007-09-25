@@ -964,6 +964,15 @@ struct device *pci_probe_dev(struct device *dev, struct bus *bus,
 	/* Read the rest of the PCI configuration information. */
 	hdr_type = pci_read_config8(dev, PCI_HEADER_TYPE);
 	class = pci_read_config32(dev, PCI_CLASS_REVISION);
+	dev->status = pci_read_config16(dev, PCI_STATUS);
+	dev->revision = pci_read_config8(dev, PCI_REVISION_ID);
+	dev->cache_line = pci_read_config8(dev, PCI_CACHE_LINE_SIZE);
+	dev->irq_line = pci_read_config8(dev, PCI_INTERRUPT_LINE);
+	dev->irq_pin = pci_read_config8(dev, PCI_INTERRUPT_PIN);
+	dev->min_gnt = pci_read_config8(dev, PCI_MIN_GNT);
+	dev->max_lat = pci_read_config8(dev, PCI_MAX_LAT);
+	dev->subsystem_vendor = pci_read_config16(dev, PCI_SUBSYSTEM_VENDOR_ID);
+	dev->subsystem_device = pci_read_config16(dev, PCI_SUBSYSTEM_ID);
 
 	/* Store the interesting information in the device structure. */
 	dev->vendor = id & 0xffff;

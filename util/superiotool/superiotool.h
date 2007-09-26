@@ -47,12 +47,12 @@ and print its vendor, name, ID, version, and config port.\n"
 #define NANA		-3		/* Not Available */
 #define RSVD		-4		/* Reserved */
 #define MISC		-5		/* Needs special comment in output */
-#define MAXNAMELEN	20		/* Maximum Name Length */
+#define MAXNAMELEN	30		/* Maximum Name Length */
 #define MAXLDN		0xa		/* Biggest LDN */
 #define LDNSIZE		(MAXLDN + 3)	/* Biggest LDN + 0 + NOLDN + EOT */
 #define MAXNUMIDX	70		/* Maximum number of indexes */
 #define IDXSIZE 	(MAXNUMIDX + 1)
-#define MAXNUMPORTS	(4 + 1)		/* Maximum number of Super I/O ports */
+#define MAXNUMPORTS	(5 + 1)		/* Maximum number of Super I/O ports */
 
 /* Command line parameters. */
 extern int dump, dump_readable, verbose;
@@ -96,7 +96,7 @@ void probe_idregs_smsc(uint16_t port);
 /* winbond.c */
 void probe_idregs_winbond(uint16_t port);
 
-/** Table of which config ports to probe on each Super I/O. */
+/** Table of which config ports to probe for each Super I/O family. */
 const static struct {
 	void (*probe_idregs) (uint16_t port);
 	int ports[MAXNUMPORTS]; /* Signed, as we need EOT. */
@@ -105,7 +105,7 @@ const static struct {
 	{probe_idregs_fintek,	{0x2e, 0x4e, EOT}},
 	{probe_idregs_ite,	{0x2e, 0x4e, EOT}},
 	{probe_idregs_smsc,	{0x2e, 0x4e, 0x3f0, 0x370, EOT}},
-	{probe_idregs_winbond,	{0x2e, 0x4e, EOT}},
+	{probe_idregs_winbond,	{0x2e, 0x4e, 0x3f0, 0x370, 0x250, EOT}},
 };
 
 #endif

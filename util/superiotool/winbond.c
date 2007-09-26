@@ -20,16 +20,29 @@
 
 #include "superiotool.h"
 
-#define DEVICE_ID_REG	0x20
-#define DEVICE_REV_REG	0x21
+#define DEVICE_ID_REG_OLD	0x09
+
+#define DEVICE_ID_REG		0x20
+#define DEVICE_REV_REG		0x21
 
 /**
  * The ID entries must be in 0xYYZ format, where YY is the device ID,
  * and Z is bits 7..4 of the device revision register. We do not match
- * bits 3..0 of the device revision here.
+ * bits 3..0 of the device revision here (at least for newer Super I/Os).
+ *
+ * But some of the older versions use both bytes (0x20 and 0x21), where
+ * register 0x21 holds the ID and the full 8 bits of 0x21 hold the revision.
+ *
+ * Some other Super I/Os only use bits 3..0 of 0x09 as ID.
  */
 const static struct superio_registers reg_table[] = {
-	{0x601, "W83697HF/F", {
+	{0x527, "W83977CTF", {
+		{EOT}}},
+	{0x52f, "W83977EF/EG", {
+		{EOT}}},
+	{0x595, "W83627SF", {
+		{EOT}}},
+	{0x601, "W83697HF/F/HG", { /* No G version? */
 		{NOLDN, NULL,
 			{0x07,0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x28,0x29,
 			 0x2a,EOT},
@@ -74,6 +87,14 @@ const static struct superio_registers reg_table[] = {
 		{0xb, "Hardware monitor",
 			{0x30,0x60,0x61,0x70,EOT},
 			{0x00,0x00,0x00,0x00,EOT}},
+		{EOT}}},
+	{0x610, "W83L517D/D-F", {
+		{EOT}}},
+	{0x681, "W83697UF/UG", {
+		{EOT}}},
+	{0x708, "W83637HF", {
+		{EOT}}},
+	{0x828, "W83627THF/THG", { /* We assume rev is bits 3..0 of 0x21. */
 		{EOT}}},
 	{0x886, "W83627EHF/EF/EHG/EG", {
 		{NOLDN, NULL,
@@ -123,26 +144,59 @@ const static struct superio_registers reg_table[] = {
 			{0x30,0x60,0x61,0x70,0xf0,0xf1,EOT},
 			{0x00,0x00,0x00,0x00,0xc1,0x00,EOT}},
 		{EOT}}},
-	{0x52, "W83627HF", {
+	{0xa23, "W83627UHG", {
+		{EOT}}},
+	{0x9771, "W83977F-A/G-A/AF-A/AG-A", {
+		{EOT}}},
+	{0x9773, "W83977TF", {
+		{EOT}}},
+	{0x9774, "W83977ATF", {
+		{EOT}}},
+	{0x52, "W83627HF/F/HG/G", {
+		{EOT}}},
+	{0xa, "W83877F", {
+		{EOT}}},
+	{0xc, "W83877TF", {
+		{EOT}}},
+	{0xd, "W83877ATF", {
 		{EOT}}},
 	{EOT}
 };
 
-void probe_idregs_winbond(uint16_t port)
+static void enter_conf_mode_winbond_88(uint16_t port)
+{
+	outb(0x88, port);
+}
+
+static void enter_conf_mode_winbond_89(uint16_t port)
+{
+	outb(0x89, port);
+}
+
+static void enter_conf_mode_winbond_86(uint16_t port)
+{
+	outb(0x86, port);
+	outb(0x86, port);
+}
+
+void probe_idregs_winbond_helper(uint16_t port)
 {
 	uint16_t id;
-	uint8_t devid, rev;
-
-	enter_conf_mode_winbond_fintek_ite_8787(port);
+	uint8_t devid, rev, olddevid;
 
 	devid = regval(port, DEVICE_ID_REG);
 	rev = regval(port, DEVICE_REV_REG);
+	olddevid = regval(port, DEVICE_ID_REG_OLD);
 
-	if (devid != 0x52)
-		/* Bits 3..0 of 'rev' == IC version, we don't match that. */
-		id = (devid << 4) | ((rev & 0xf0) >> 4);
+	if (devid == 0x52)
+		id = devid;				 /* ID only */
+	else if ((devid == 0x97) && ((rev & 0xf0) == 7))
+		id = (devid << 8) | rev;		 /* ID and rev */
 	else
-		id = devid;
+		id = (devid << 4) | ((rev & 0xf0) >> 4); /* ID and rev[3..0] */
+
+	if (olddevid == 0x0a || olddevid == 0x0c || olddevid == 0x0d)
+		id = olddevid & 0x0f;			 /* ID[3..0] */
 
 	if (superio_unknown(reg_table, id)) {
 		no_superio_found(port);
@@ -150,13 +204,36 @@ void probe_idregs_winbond(uint16_t port)
 		return;
 	}
 
-	printf("Found Winbond %s (id=0x%02x, rev=0x%02x) at 0x%x\n",
-	       get_superio_name(reg_table, id), devid, rev, port);
+	if (olddevid == 0x0a || olddevid == 0x0c || olddevid == 0x0d)
+		printf("Found Winbond %s (id=0x%02x) at 0x%x\n",
+		       get_superio_name(reg_table, id), olddevid, port);
+	else
+		printf("Found Winbond %s (id=0x%02x, rev=0x%02x) at 0x%x\n",
+		       get_superio_name(reg_table, id), devid, rev, port);
 
 	/* TODO: Special notes in dump output for the MISC entries. */
 	dump_superio("Winbond", reg_table, port, id);
 	dump_superio_readable(port); /* TODO */
+}
 
+void probe_idregs_winbond(uint16_t port)
+{
+	/* TODO: Not all init sequences are valid for all ports. */
+
+	enter_conf_mode_winbond_fintek_ite_8787(port);
+	probe_idregs_winbond_helper(port);
+	exit_conf_mode_winbond_fintek_ite_8787(port);
+
+	enter_conf_mode_winbond_88(port);
+	probe_idregs_winbond_helper(port);
+	exit_conf_mode_winbond_fintek_ite_8787(port);
+
+	enter_conf_mode_winbond_89(port);
+	probe_idregs_winbond_helper(port);
+	exit_conf_mode_winbond_fintek_ite_8787(port);
+
+	enter_conf_mode_winbond_86(port);
+	probe_idregs_winbond_helper(port);
 	exit_conf_mode_winbond_fintek_ite_8787(port);
 }
 

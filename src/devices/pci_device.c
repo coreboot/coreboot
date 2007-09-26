@@ -603,7 +603,6 @@ void pci_dev_enable_resources(struct device *dev)
 	}
 	command = pci_read_config16(dev, PCI_COMMAND);
 	command |= dev->command;
-	command |= (PCI_COMMAND_PARITY + PCI_COMMAND_SERR); /* error check */
 	printk_debug("%s cmd <- %02x\n", dev_path(dev), command);
 	pci_write_config16(dev, PCI_COMMAND, command);
 }

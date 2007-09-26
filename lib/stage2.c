@@ -31,8 +31,9 @@
 /**
  * Main function of the DRAM part of LinuxBIOS.
  *
- * LinuxBIOS is divided into pre-DRAM part and DRAM part. The phases before
- * this part are phase 0 and phase 1. This part contains phases x through y.
+ * LinuxBIOS is divided into pre-DRAM part and DRAM part. The stages before
+ * this part are stage 0 and stage 1. This part contains stage 2, which
+ * consists of phases 1 through 6.
  *
  * Device Enumeration: in the dev_enumerate() phase.
  *
@@ -53,6 +54,7 @@ int stage2(void)
 
 	post_code(0x20);
 
+	/* TODO: Explain why we use printk here although it is impossible */
 	printk(BIOS_NOTICE, console_test);
 
 	dev_init();

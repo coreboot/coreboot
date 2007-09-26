@@ -260,8 +260,10 @@ static void read_resources(struct bus *bus)
 	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
 		unsigned int links;
 		int i;
-		printk(BIOS_SPEW, "%s: %s(%s) have_resources %d enabled %d\n",
+		printk(BIOS_SPEW,
+		       "%s: %s(%s) dtsname %s have_resources %d enabled %d\n",
 		       __func__, bus->dev->dtsname, dev_path(bus->dev),
+		       curdev->dtsname,
 		       curdev->have_resources, curdev->enabled);
 		if (curdev->have_resources) {
 			continue;

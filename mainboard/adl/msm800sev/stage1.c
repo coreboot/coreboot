@@ -33,7 +33,8 @@
 #include <southbridge/amd/cs5536/cs5536.h>
 #include <superio/winbond/w83627hf/w83627hf.h>
 
-#define SERIAL_DEV 0x30
+#define SERIAL_DEV W83627HF_SP1
+#define SERIAL_IOBASE 0x3f8
 
 void hardware_stage1(void)
 {
@@ -49,6 +50,6 @@ void hardware_stage1(void)
 	 * for cs5536
 	 */
 	cs5536_disable_internal_uart();
-	w83627hf_enable_serial(0x2e, 0x30, 0x3f8);
+	w83627hf_enable_serial(0x2e, SERIAL_DEV, SERIAL_IOBASE);
 	printk(BIOS_DEBUG, "Done %s\n", __FUNCTION__);
 }

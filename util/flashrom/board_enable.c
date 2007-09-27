@@ -4,6 +4,7 @@
  * Copyright (C) 2005-2007 coresystems GmbH <stepan@coresystems.de>
  * Copyright (C) 2006 Uwe Hermann <uwe@hermann-uwe.de>
  * Copyright (C) 2007 Luc Verhaegen <libv@skynet.be>
+ * Copyright (C) 2007 Carl-Daniel Hailfinger
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +29,104 @@
 #include <stdint.h>
 #include <string.h>
 #include "flash.h"
+
+/* Generic Super I/O helper functions */
+uint8_t regval(uint16_t port, uint8_t reg)
+{
+	outb(reg, port);
+	return inb(port + 1);
+}
+
+void regwrite(uint16_t port, uint8_t reg, uint8_t val)
+{
+	outb(reg, port);
+	outb(val, port + 1);
+}
+
+/* Helper functions for most recent ITE IT87xx Super I/O chips */
+#define CHIP_ID_BYTE1_REG	0x20
+#define CHIP_ID_BYTE2_REG	0x21
+static void enter_conf_mode_ite(uint16_t port)
+{
+	outb(0x87, port);
+	outb(0x01, port);
+	outb(0x55, port);
+	if (port == 0x2e)
+		outb(0x55, port);
+	else
+		outb(0xaa, port);
+}
+
+static void exit_conf_mode_ite(uint16_t port)
+{
+	regwrite(port, 0x02, 0x02);
+}
+
+static uint16_t find_ite_serial_flash_port(uint16_t port)
+{
+	uint8_t tmp = 0;
+	uint16_t id, flashport = 0;
+
+	enter_conf_mode_ite(port);
+
+	id = regval(port, CHIP_ID_BYTE1_REG) << 8;
+	id |= regval(port, CHIP_ID_BYTE2_REG);
+
+	/* TODO: Handle more IT87xx if they support flash translation */
+	if (id == 0x8716) {
+		/* NOLDN, reg 0x24, mask out lowest bit (suspend) */
+		tmp = regval(port, 0x24) & 0xFE;
+		printf("Serial flash segment 0x%08x-0x%08x %sabled\n",
+			0xFFFE0000, 0xFFFFFFFF, (tmp & 1 << 1) ? "en" : "dis");
+		printf("Serial flash segment 0x%08x-0x%08x %sabled\n",
+			0x000E0000, 0x000FFFFF, (tmp & 1 << 1) ? "en" : "dis");
+		printf("Serial flash segment 0x%08x-0x%08x %sabled\n",
+			0xFFEE0000, 0xFFEFFFFF, (tmp & 1 << 2) ? "en" : "dis");
+		printf("Serial flash segment 0x%08x-0x%08x %sabled\n",
+			0xFFF80000, 0xFFFEFFFF, (tmp & 1 << 3) ? "en" : "dis");
+		printf("LPC write to serial flash %sabled\n",
+			(tmp & 1 << 4) ? "en" : "dis");
+		printf("serial flash pin %i\n",	(tmp & 1 << 5) ? 87 : 29);
+		/* LDN 0x7, reg 0x64/0x65 */
+		regwrite(port, 0x07, 0x7);
+		flashport = regval(port, 0x64) << 8;
+		flashport |= regval(port, 0x65);
+	}
+	exit_conf_mode_ite(port);
+	return flashport;
+}
+
+static void it8716_serial_rdid(uint16_t port)
+{
+	uint8_t busy, data0, data1, data2;
+	do {
+		busy = inb(port) & 0x80;
+	} while (busy);
+	/* RDID */
+	outb(0x9f, port + 1);
+	/* Start IO, 33MHz, 3 input bytes, 0 output bytes*/
+	outb((0x5<<4)|(0x3<<2)|(0x0), port);
+	do {
+		busy = inb(port) & 0x80;
+	} while (busy);
+	data0 = inb(port + 5);
+	data1 = inb(port + 6);
+	data2 = inb(port + 7);
+	printf("RDID returned %02x %02x %02x\n", data0, data1, data2);
+	return;
+}
+
+static int it87xx_probe_serial_flash(const char *name)
+{
+	uint16_t flashport;
+	flashport = find_ite_serial_flash_port(0x2e);
+	if (flashport)
+		it8716_serial_rdid(flashport);
+	flashport = find_ite_serial_flash_port(0x4e);
+	if (flashport)
+		it8716_serial_rdid(flashport);
+	return 0;
+}
 
 /*
  * Helper functions for many Winbond Super I/Os of the W836xx range.
@@ -314,6 +413,8 @@ struct board_pciid_enable {
 };
 
 struct board_pciid_enable board_pciid_enables[] = {
+	{0x10de, 0x0360, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+	 "gigabyte", "m57sli", "GIGABYTE GA-M57SLI", it87xx_probe_serial_flash},
 	{0x1022, 0x7468, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
 	 "iwill", "dk8_htx", "IWILL DK8-HTX", w83627hf_gpio24_raise},
 	{0x1022, 0x746B, 0x1022, 0x36C0, 0x0000, 0x0000, 0x0000, 0x0000,

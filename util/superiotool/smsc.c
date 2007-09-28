@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the superiotool project.
  *
  * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
  *
@@ -140,7 +140,7 @@ static void probe_idregs_smsc_helper(uint16_t port, uint8_t idreg,
 	rev = regval(port, revreg);
 
 	if (superio_unknown(reg_table, id)) {
-		no_superio_found(port);
+		no_superio_found("SMSC", "", port);
 		exit_conf_mode_smsc(port);
 		return;
 	}

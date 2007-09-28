@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the superiotool project.
  *
  * Copyright (C) 2006 Ronald Minnich <rminnich@gmail.com>
  *
@@ -65,7 +65,7 @@ void probe_idregs_simple(uint16_t port)
 
 	outb(0x20, port);
 	if (inb(port) != 0x20) {
-		no_superio_found(port);
+		no_superio_found("NSC", "", port);
 		/* TODO: Exit config mode? */
 		return;
 	}

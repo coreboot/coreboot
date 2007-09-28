@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the superiotool project.
  *
  * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
  *
@@ -79,7 +79,7 @@ void probe_idregs_ali(uint16_t port)
 	rev = regval(port, DEVICE_REV_REG);
 
 	if (superio_unknown(reg_table, id)) {
-		no_superio_found(port);
+		no_superio_found("ALi", "", port);
 		exit_conf_mode_ali(port);
 		return;
 	}

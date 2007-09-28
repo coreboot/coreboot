@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the superiotool project.
  *
  * Copyright (C) 2007 Carl-Daniel Hailfinger
  * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
@@ -29,7 +29,7 @@
 #include <getopt.h>
 #include <sys/io.h>
 
-#define SUPERIOTOOL_VERSION "0.1"
+#define SUPERIOTOOL_VERSION "r$Rev$"
 
 #define USAGE "Usage: superiotool [-d] [-D] [-V] [-v] [-h]\n\n\
   -d | --dump            Dump Super I/O registers\n\
@@ -38,7 +38,7 @@
   -v | --version         Show the superiotool version\n\
   -h | --help            Show a short help text\n\n\
 Per default (no options) superiotool will just probe for a Super I/O\n\
-and print its vendor, name, ID, version, and config port.\n"
+and print its vendor, name, ID, revision, and config port.\n"
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
@@ -79,7 +79,7 @@ const char *get_superio_name(const struct superio_registers reg_table[],
 void dump_superio(const char *name, const struct superio_registers reg_table[],
 		  uint16_t port, uint16_t id);
 void dump_superio_readable(uint16_t port);
-void no_superio_found(uint16_t port);
+void no_superio_found(const char *vendor, const char *info, uint16_t port);
 
 /* ali.c */
 void probe_idregs_ali(uint16_t port);

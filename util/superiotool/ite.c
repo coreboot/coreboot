@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the superiotool project.
  *
  * Copyright (C) 2007 Carl-Daniel Hailfinger
  * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
@@ -261,7 +261,7 @@ static void exit_conf_mode_ite(uint16_t port)
 	regwrite(port, 0x02, 0x02);
 }
 
-static void probe_idregs_ite_helper(uint16_t port)
+static void probe_idregs_ite_helper(const char *init, uint16_t port)
 {
 	uint16_t id, chipver;
 
@@ -270,7 +270,7 @@ static void probe_idregs_ite_helper(uint16_t port)
 	chipver = regval(port, CHIP_VERSION_REG) & 0x0f; /* Only bits 3..0 */
 
 	if (superio_unknown(reg_table, id)) {
-		no_superio_found(port);
+		no_superio_found("ITE", init, port);
 		exit_conf_mode_ite(port);
 		return;
 	}
@@ -285,11 +285,11 @@ static void probe_idregs_ite_helper(uint16_t port)
 void probe_idregs_ite(uint16_t port)
 {
 	enter_conf_mode_ite(port);
-	probe_idregs_ite_helper(port);
+	probe_idregs_ite_helper("(init=0x87,0x01,0x55,0x55/0xaa) ", port);
 	exit_conf_mode_ite(port);
 
 	enter_conf_mode_winbond_fintek_ite_8787(port);
-	probe_idregs_ite_helper(port);
+	probe_idregs_ite_helper("(init=0x87,0x87) ", port);
 	exit_conf_mode_winbond_fintek_ite_8787(port);
 }
 

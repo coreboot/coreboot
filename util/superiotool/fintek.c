@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the superiotool project.
  *
  * Copyright (C) 2006 coresystems GmbH <info@coresystems.de>
  * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
@@ -145,7 +145,7 @@ void probe_idregs_fintek(uint16_t port)
 	vid |= (regval(port, VENDOR_ID_BYTE2_REG) << 8);
 
 	if (vid != FINTEK_VENDOR_ID || superio_unknown(reg_table, did)) {
-		no_superio_found(port);
+		no_superio_found("Fintek", "", port);
 		exit_conf_mode_winbond_fintek_ite_8787(port);
 		return;
 	}

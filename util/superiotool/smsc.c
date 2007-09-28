@@ -129,22 +129,15 @@ static void exit_conf_mode_smsc(uint16_t port)
 	outb(0xaa, port);
 }
 
-void probe_idregs_smsc(uint16_t port)
+static void probe_idregs_smsc_helper(uint16_t port, uint8_t idreg,
+				     uint8_t revreg)
 {
 	uint8_t id, rev;
 
 	enter_conf_mode_smsc(port);
 
-	/* Check for older SMSC Super I/Os. */
-	id = regval(port, DEVICE_ID_REG_OLD);
-	rev = regval(port, DEVICE_REV_REG_OLD);
-
-	if (superio_unknown(reg_table, id))
-		no_superio_found(port);
-
-	/* Check for newer SMSC Super I/Os. */
-	id = regval(port, DEVICE_ID_REG);
-	rev = regval(port, DEVICE_REV_REG);
+	id = regval(port, idreg);
+	rev = regval(port, revreg);
 
 	if (superio_unknown(reg_table, id)) {
 		no_superio_found(port);
@@ -160,5 +153,11 @@ void probe_idregs_smsc(uint16_t port)
 	dump_superio_readable(port); /* TODO */
 
 	exit_conf_mode_smsc(port);
+}
+
+void probe_idregs_smsc(uint16_t port)
+{
+	probe_idregs_smsc_helper(port, DEVICE_ID_REG, DEVICE_REV_REG);
+	probe_idregs_smsc_helper(port, DEVICE_ID_REG_OLD, DEVICE_REV_REG_OLD);
 }
 

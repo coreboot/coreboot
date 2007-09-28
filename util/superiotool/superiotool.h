@@ -81,6 +81,9 @@ void dump_superio(const char *name, const struct superio_registers reg_table[],
 void dump_superio_readable(uint16_t port);
 void no_superio_found(uint16_t port);
 
+/* ali.c */
+void probe_idregs_ali(uint16_t port);
+
 /* fintek.c */
 void probe_idregs_fintek(uint16_t port);
 
@@ -101,6 +104,7 @@ const static struct {
 	void (*probe_idregs) (uint16_t port);
 	int ports[MAXNUMPORTS]; /* Signed, as we need EOT. */
 } superio_ports_table[] = {
+	{probe_idregs_ali,	{0x3f0, 0x370, EOT}},
 	{probe_idregs_simple,	{0x2e, 0x4e, EOT}},
 	{probe_idregs_fintek,	{0x2e, 0x4e, EOT}},
 	{probe_idregs_ite,	{0x2e, 0x4e, EOT}},

@@ -29,7 +29,7 @@
 #include <getopt.h>
 #include <sys/io.h>
 
-#define SUPERIOTOOL_VERSION "r$Rev$"
+#define SUPERIOTOOL_VERSION "$Rev$"
 
 #define USAGE "Usage: superiotool [-d] [-D] [-V] [-v] [-h]\n\n\
   -d | --dump            Dump Super I/O registers\n\

@@ -37,7 +37,7 @@ Usage
  -h | --help            Show a short help text
 
 Per default (no options) superiotool will just probe for a Super I/O
-and print its vendor, name, ID, version, and config port.
+and print its vendor, name, ID, revision, and config port.
 
 Typical usage of superiotool:
 

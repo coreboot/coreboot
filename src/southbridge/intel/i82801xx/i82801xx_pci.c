@@ -34,13 +34,6 @@ static void pci_init(struct device *dev)
 	reg16 |= 0xf900;	/* Clear possible errors */
 	pci_write_config16(dev, 0x06, reg16);
 
-	/* i82801er has this commented out, wonder why? */
-	/* System error enable */
-	reg32 = pci_read_config32(dev, 0x04);
-	reg32 |= (1 << 8);	/* SERR# Enable */
-	reg32 |= (1 << 6);	/* Parity Error Response */
-	pci_write_config32(dev, 0x04, reg32);
-
 	reg16 = pci_read_config16(dev, 0x1e);
 	reg16 |= 0xf800;	/* Clear possible errors */
 	pci_write_config16(dev, 0x1e, reg16);

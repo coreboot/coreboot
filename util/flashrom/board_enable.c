@@ -30,6 +30,15 @@
 #include <string.h>
 #include "flash.h"
 
+#define ITE_SUPERIO_PORT1	0x2e
+#define ITE_SUPERIO_PORT2	0x4e
+
+#define JEDEC_RDID	{0x9f}
+#define JEDEC_RDID_OUTSIZE	0x01
+#define JEDEC_RDID_INSIZE	0x03
+
+static uint16_t it8716f_flashport = 0;
+
 /* Generic Super I/O helper functions */
 uint8_t regval(uint16_t port, uint8_t reg)
 {
@@ -51,7 +60,7 @@ static void enter_conf_mode_ite(uint16_t port)
 	outb(0x87, port);
 	outb(0x01, port);
 	outb(0x55, port);
-	if (port == 0x2e)
+	if (port == ITE_SUPERIO_PORT1)
 		outb(0x55, port);
 	else
 		outb(0xaa, port);
@@ -96,35 +105,97 @@ static uint16_t find_ite_serial_flash_port(uint16_t port)
 	return flashport;
 }
 
-static void it8716_serial_rdid(uint16_t port)
+/* The IT8716F only supports commands with length 1,2,4,5 bytes including
+   command byte and can not read more than 3 bytes from the device.
+   This function expects writearr[0] to be the first byte sent to the device,
+   whereas the IT8716F splits commands internally into address and non-address
+   commands with the address in inverse wire order. That's why the register
+   ordering in case 4 and 5 may seem strange. */
+static int it8716f_spi_command(uint16_t port, unsigned char writecnt, unsigned char readcnt, const unsigned char *writearr, unsigned char *readarr)
 {
-	uint8_t busy, data0, data1, data2;
+	uint8_t busy, writeenc;
 	do {
 		busy = inb(port) & 0x80;
 	} while (busy);
-	/* RDID */
-	outb(0x9f, port + 1);
-	/* Start IO, 33MHz, 3 input bytes, 0 output bytes*/
-	outb((0x5<<4)|(0x3<<2)|(0x0), port);
+	if (readcnt > 3) {
+		printf("%s called with unsupported readcnt %i\n",
+			__FUNCTION__, readcnt);
+		return 1;
+	}
+	switch (writecnt) {
+	case 1:
+		outb(writearr[0], port + 1);
+		writeenc = 0x0;
+		break;
+	case 2:
+		outb(writearr[0], port + 1);
+		outb(writearr[1], port + 7);
+		writeenc = 0x1;
+		break;
+	case 4:
+		outb(writearr[0], port + 1);
+		outb(writearr[1], port + 4);
+		outb(writearr[2], port + 3);
+		outb(writearr[3], port + 2);
+		writeenc = 0x2;
+		break;
+	case 5:
+		outb(writearr[0], port + 1);
+		outb(writearr[1], port + 4);
+		outb(writearr[2], port + 3);
+		outb(writearr[3], port + 2);
+		outb(writearr[4], port + 7);
+		writeenc = 0x3;
+		break;
+	default:
+		printf("%s called with unsupported writecnt %i\n",
+			__FUNCTION__, writecnt);
+		return 1;
+	}
+	/* Start IO, 33MHz, readcnt input bytes, writecnt output bytes. Note:
+	   We can't use writecnt directly, but have to use a strange encoding */
+	outb((0x5 << 4) | ((readcnt & 0x3) << 2) | (writeenc), port);
 	do {
 		busy = inb(port) & 0x80;
 	} while (busy);
-	data0 = inb(port + 5);
-	data1 = inb(port + 6);
-	data2 = inb(port + 7);
-	printf("RDID returned %02x %02x %02x\n", data0, data1, data2);
-	return;
+	readarr[0] = inb(port + 5);
+	readarr[1] = inb(port + 6);
+	readarr[2] = inb(port + 7);
+	return 0;
+}
+
+static int it8716f_serial_rdid(uint16_t port, unsigned char *readarr)
+{
+	const unsigned char cmd[] = JEDEC_RDID;
+
+	if (it8716f_spi_command(port, JEDEC_RDID_OUTSIZE, JEDEC_RDID_INSIZE, cmd, readarr))
+		return 1;
+	printf("RDID returned %02x %02x %02x\n", readarr[0], readarr[1], readarr[2]);
+	return 0;
 }
 
 static int it87xx_probe_serial_flash(const char *name)
 {
-	uint16_t flashport;
-	flashport = find_ite_serial_flash_port(0x2e);
-	if (flashport)
-		it8716_serial_rdid(flashport);
-	flashport = find_ite_serial_flash_port(0x4e);
-	if (flashport)
-		it8716_serial_rdid(flashport);
+	it8716f_flashport = find_ite_serial_flash_port(ITE_SUPERIO_PORT1);
+	if (!it8716f_flashport)
+		it8716f_flashport = find_ite_serial_flash_port(ITE_SUPERIO_PORT2);
+	return (!it8716f_flashport);
+}
+
+int probe_spi(struct flashchip *flash)
+{
+	unsigned char readarr[3];
+	uint8_t manuf_id;
+	uint16_t model_id;
+	if (it8716f_flashport) {
+		it8716f_serial_rdid(it8716f_flashport, readarr);
+		manuf_id = readarr[0];
+		model_id = (readarr[1] << 8) | readarr[2];
+		printf_debug("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, manuf_id, model_id);
+		if (manuf_id == flash->manufacture_id && model_id == flash->model_id)
+			return 1;
+	}
+
 	return 0;
 }
 

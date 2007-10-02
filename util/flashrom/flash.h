@@ -55,6 +55,8 @@ extern struct flashchip flashchips[];
 /* Please keep this list sorted alphabetically by manufacturer. The first
  * entry of each section should be the manufacturer ID, followed by the
  * list of devices from that manufacturer (sorted by device IDs).
+ * All LPC/FWH parts (parallel flash) have 8-bit device IDs.
+ * All SPI parts have 16-bit device IDs.
  */
 
 #define AMD_ID			0x01	/* AMD */
@@ -68,8 +70,31 @@ extern struct flashchip flashchips[];
 #define AT_29C040A		0xA4
 #define AT_29C020		0xDA
 
+#define EON_ID			0x1C
+/* EN25 chips are SPI, first byte of device id is memory type,
+   second byte of device id is log(bitsize)-9 */
+#define EN_25B05		0x2010	/* 2^19 kbit or 2^16 kByte */
+#define EN_25B10		0x2011
+#define EN_25B20		0x2012
+#define EN_25B40		0x2013
+#define EN_25B80		0x2014
+#define EN_25B16		0x2015
+#define EN_25B32		0x2016
+
 #define MX_ID			0xC2	/* Macronix (MX) */
 #define MX_29F002		0xB0
+/* MX25L chips are SPI, first byte of device id is memory type,
+   second byte of device id is log(bitsize)-9 */
+#define MX_25L512		0x2010	/* 2^19 kbit or 2^16 kByte */
+#define MX_25L1005		0x2011
+#define MX_25L2005		0x2012
+#define MX_25L4005		0x2013	/* MX25L4005{,A} */
+#define MX_25L8005		0x2014
+#define MX_25L1605		0x2015	/* MX25L1605{,A,D} */
+#define MX_25L3205		0x2016	/* MX25L3205{,A} */
+#define MX_25L6405		0x2017	/* MX25L3205{,D} */
+#define MX_25L1635D		0x2415
+#define MX_25L3235D		0x2416
 
 #define SHARP_ID		0xB0	/* Sharp */
 #define SHARP_LHF00L04		0xCF
@@ -181,6 +206,8 @@ int handle_romentries(uint8_t *buffer, uint8_t *content);
 /* lbtable.c */
 int linuxbios_init(void);
 extern char *lb_part, *lb_vendor;
+
+int probe_spi(struct flashchip *flash);
 
 /* 82802ab.c */
 int probe_82802ab(struct flashchip *flash);

@@ -169,10 +169,19 @@ void no_superio_found(const char *vendor, const char *info, uint16_t port)
 		       port, inb(port), inb(port + 1));
 }
 
+static void print_version(void)
+{
+	char tmp[80];
+
+	strncpy((char *)&tmp,
+		(const char *)&SUPERIOTOOL_VERSION[6],
+		strlen(SUPERIOTOOL_VERSION) - 8);
+	printf("superiotool r%s\n", (char *)&tmp);
+}
+
 int main(int argc, char *argv[])
 {
 	int i, j, opt, option_index;
-	char tmp[80];
 
 	const static struct option long_options[] = {
 		{"dump",		no_argument, NULL, 'd'},
@@ -193,13 +202,12 @@ int main(int argc, char *argv[])
 			dump_readable = 1;
 			break;
 		case 'V':
+			/* Print version in --verbose mode. */
+			print_version();
 			verbose = 1;
 			break;
 		case 'v':
-			strncpy((char *)&tmp,
-				(const char *)&SUPERIOTOOL_VERSION[6],
-				strlen(SUPERIOTOOL_VERSION) - 8);
-			printf("superiotool r%s\n", (char *)&tmp);
+			print_version();
 			exit(0);
 			break;
 		case 'h':

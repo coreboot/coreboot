@@ -58,6 +58,11 @@ const static struct superio_registers reg_table[] = {
 		{EOT}}},
 	{0x62, "LPC47S45x", {
 		{EOT}}},
+	{0x6e, "LPC47B387", {
+		/* Found in the HP Compaq Business Desktop d530 Series */
+		/* http://thread.gmane.org/gmane.linux.bios/26648 */
+		/* We cannot find a public datasheet for this Super I/O. */
+		{EOT}}},
 	{0x6f, "LPC47B397", {
 		{EOT}}},
 	{0x77, "A8000", {	/* ASUS A8000, a rebranded DME1737(?) */

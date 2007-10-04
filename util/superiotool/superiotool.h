@@ -40,6 +40,8 @@
 Per default (no options) superiotool will just probe for a Super I/O\n\
 and print its vendor, name, ID, revision, and config port.\n"
 
+#define NOTFOUND "  Failed. Returned data: "
+
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
 #define EOT		-1		/* End Of Table */
@@ -79,7 +81,7 @@ const char *get_superio_name(const struct superio_registers reg_table[],
 void dump_superio(const char *name, const struct superio_registers reg_table[],
 		  uint16_t port, uint16_t id);
 void dump_superio_readable(uint16_t port);
-void no_superio_found(const char *vendor, const char *info, uint16_t port);
+void probing_for(const char *vendor, const char *info, uint16_t port);
 
 /* ali.c */
 void probe_idregs_ali(uint16_t port);
@@ -91,7 +93,7 @@ void probe_idregs_fintek(uint16_t port);
 void probe_idregs_ite(uint16_t port);
 
 /* nsc.c */
-void probe_idregs_simple(uint16_t port);
+void probe_idregs_nsc(uint16_t port);
 
 /* smsc.c */
 void probe_idregs_smsc(uint16_t port);
@@ -105,7 +107,7 @@ const static struct {
 	int ports[MAXNUMPORTS]; /* Signed, as we need EOT. */
 } superio_ports_table[] = {
 	{probe_idregs_ali,	{0x3f0, 0x370, EOT}},
-	{probe_idregs_simple,	{0x2e, 0x4e, EOT}},
+	{probe_idregs_nsc,	{0x2e, 0x4e, EOT}},
 	{probe_idregs_fintek,	{0x2e, 0x4e, EOT}},
 	{probe_idregs_ite,	{0x2e, 0x4e, EOT}},
 	{probe_idregs_smsc,	{0x2e, 0x4e, 0x3f0, 0x370, EOT}},

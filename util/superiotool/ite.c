@@ -23,6 +23,7 @@
 
 #define CHIP_ID_BYTE1_REG	0x20
 #define CHIP_ID_BYTE2_REG	0x21
+
 #define CHIP_VERSION_REG	0x22
 
 /* Note: IT8726F has ID 0x8726 (datasheet wrongly says 0x8716). */
@@ -265,17 +266,20 @@ static void probe_idregs_ite_helper(const char *init, uint16_t port)
 {
 	uint16_t id, chipver;
 
+	probing_for("ITE", init, port);
+
 	id = regval(port, CHIP_ID_BYTE1_REG) << 8;
 	id |= regval(port, CHIP_ID_BYTE2_REG);
 	chipver = regval(port, CHIP_VERSION_REG) & 0x0f; /* Only bits 3..0 */
 
 	if (superio_unknown(reg_table, id)) {
-		no_superio_found("ITE", init, port);
+		if (verbose)
+			printf(NOTFOUND "id=0x%04x, rev=0x%01x\n", id, chipver);
 		exit_conf_mode_ite(port);
 		return;
 	}
 
-	printf("Found ITE %s (id=0x%04x, rev=0x%01x) at port=0x%x\n",
+	printf("Found ITE %s (id=0x%04x, rev=0x%01x) at 0x%x\n",
 	       get_superio_name(reg_table, id), id, chipver, port);
 
 	dump_superio("ITE", reg_table, port, id);

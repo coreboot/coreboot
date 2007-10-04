@@ -72,6 +72,8 @@ void probe_idregs_ali(uint16_t port)
 	uint16_t id;
 	uint8_t rev;
 
+	probing_for("ALi", "", port);
+
 	enter_conf_mode_ali(port);
 
 	id = regval(port, DEVICE_ID_BYTE1_REG) << 8;
@@ -79,7 +81,8 @@ void probe_idregs_ali(uint16_t port)
 	rev = regval(port, DEVICE_REV_REG);
 
 	if (superio_unknown(reg_table, id)) {
-		no_superio_found("ALi", "", port);
+		if (verbose)
+			printf(NOTFOUND "id=0x%04x, rev=0x%02x\n", id, rev);
 		exit_conf_mode_ali(port);
 		return;
 	}

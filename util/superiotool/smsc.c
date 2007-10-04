@@ -133,6 +133,10 @@ static void probe_idregs_smsc_helper(uint16_t port, uint8_t idreg,
 				     uint8_t revreg)
 {
 	uint8_t id, rev;
+	const char *info = (idreg == 0x20) ? "(idregs=0x20/0x21) "
+					   : "(idregs=0x0d/0x0e) ";
+
+	probing_for("SMSC", info, port);
 
 	enter_conf_mode_smsc(port);
 
@@ -140,12 +144,13 @@ static void probe_idregs_smsc_helper(uint16_t port, uint8_t idreg,
 	rev = regval(port, revreg);
 
 	if (superio_unknown(reg_table, id)) {
-		no_superio_found("SMSC", "", port);
+		if (verbose)
+			printf(NOTFOUND "id=0x%02x, rev=0x%02x\n", id, rev);
 		exit_conf_mode_smsc(port);
 		return;
 	}
 
-	printf("Found %s %s (id=0x%02x, rev=0x%02x) at port=0x%x\n",
+	printf("Found %s %s (id=0x%02x, rev=0x%02x) at 0x%x\n",
 	       (id == 0x77 ? "ASUS" : "SMSC"), get_superio_name(reg_table, id),
 	       id, rev, port);
 

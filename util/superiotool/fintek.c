@@ -136,6 +136,8 @@ void probe_idregs_fintek(uint16_t port)
 {
 	uint16_t vid, did;
 
+	probing_for("Fintek", "", port);
+
 	enter_conf_mode_winbond_fintek_ite_8787(port);
 
 	did = regval(port, DEVICE_ID_BYTE1_REG);
@@ -145,12 +147,13 @@ void probe_idregs_fintek(uint16_t port)
 	vid |= (regval(port, VENDOR_ID_BYTE2_REG) << 8);
 
 	if (vid != FINTEK_VENDOR_ID || superio_unknown(reg_table, did)) {
-		no_superio_found("Fintek", "", port);
+		if (verbose)
+			printf(NOTFOUND "vid=0x%04x, id=0x%04x\n", vid, did);
 		exit_conf_mode_winbond_fintek_ite_8787(port);
 		return;
 	}
 
-	printf("Found Fintek %s (vid=0x%04x, id=0x%04x) at port=0x%x\n",
+	printf("Found Fintek %s (vid=0x%04x, id=0x%04x) at 0x%x\n",
 	       get_superio_name(reg_table, did), vid, did, port);
 
 	dump_superio("Fintek", reg_table, port, did);

@@ -155,18 +155,14 @@ void dump_superio_readable(uint16_t port)
 		printf("No human-readable dump available for this Super I/O\n");
 }
 
-void no_superio_found(const char *vendor, const char *info, uint16_t port)
+void probing_for(const char *vendor, const char *info, uint16_t port)
 {
 	if (!verbose)
 		return;
 
-	if (inb(port) == 0xff)
-		/* Yes, there's no space between '%s' and 'at'! */
-		printf("Probing for %s Super I/O %sat 0x%x... failed\n",
-		       vendor, info, port);
-	else
-		printf("Probing 0x%x, failed (0x%02x), data returns 0x%02x\n",
-		       port, inb(port), inb(port + 1));
+	/* Yes, there's no space between '%s' and 'at'! */
+	printf("Probing for %s Super I/O %sat 0x%x...\n",
+	       vendor, info, port);
 }
 
 static void print_version(void)

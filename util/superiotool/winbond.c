@@ -184,9 +184,11 @@ void probe_idregs_winbond_helper(const char *init, uint16_t port)
 	uint16_t id;
 	uint8_t devid, rev, olddevid;
 
+	probing_for("Winbond", init, port);
+
 	devid = regval(port, DEVICE_ID_REG);
 	rev = regval(port, DEVICE_REV_REG);
-	olddevid = regval(port, DEVICE_ID_REG_OLD);
+	olddevid = regval(port, DEVICE_ID_REG_OLD) & 0x0f;
 
 	if (devid == 0x52)
 		id = devid;				 /* ID only */
@@ -199,7 +201,9 @@ void probe_idregs_winbond_helper(const char *init, uint16_t port)
 		id = olddevid & 0x0f;			 /* ID[3..0] */
 
 	if (superio_unknown(reg_table, id)) {
-		no_superio_found("Winbond", init, port);
+		if (verbose)
+			printf(NOTFOUND "id/oldid=0x%02x/0x%02x, rev=0x%02x\n",
+			       devid, olddevid, rev);
 		exit_conf_mode_winbond_fintek_ite_8787(port);
 		return;
 	}

@@ -122,7 +122,7 @@ else
 endif
 endif
 
-ifeq ($(CONFIG_NOELF), y)
+ifeq ($(CONFIG_PAYLOAD_PREPARSE_ELF), y)
 	PARSEELF = -e
 else
 	PARSEELF = 

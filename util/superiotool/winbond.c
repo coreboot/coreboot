@@ -36,11 +36,12 @@
  * Some other Super I/Os only use bits 3..0 of 0x09 as ID.
  */
 const static struct superio_registers reg_table[] = {
-	{0x527, "W83977CTF", {
+	/* ID and rev[3..0] */
+	{0x527, "W83977CTF", {	/* TODO: Not yet in sensors-detect */
 		{EOT}}},
-	{0x52f, "W83977EF/EG", {
+	{0x52f, "W83977EF/EG", {/* TODO: Not yet in sensors-detect */
 		{EOT}}},
-	{0x595, "W83627SF", {
+	{0x595, "W83627SF", {	/* TODO: Not yet in sensors-detect */
 		{EOT}}},
 	{0x601, "W83697HF/F/HG", { /* No G version? */
 		{NOLDN, NULL,
@@ -90,13 +91,19 @@ const static struct superio_registers reg_table[] = {
 		{EOT}}},
 	{0x610, "W83L517D/D-F", {
 		{EOT}}},
-	{0x681, "W83697UF/UG", {
+	{0x681, "W83697SF/UF/UG", {
 		{EOT}}},
-	{0x708, "W83637HF", {
+	{0x708, "W83637HF/HG", {
 		{EOT}}},
 	{0x828, "W83627THF/THG", { /* We assume rev is bits 3..0 of 0x21. */
 		{EOT}}},
-	{0x886, "W83627EHF/EF/EHG/EG", {
+#if 0
+	{0x85x, "W83687THF", {	/* TODO: sensors-detect: 0x85 */
+		{EOT}}},
+#endif
+	{0xa02, "W83627DHG", {
+		{EOT}}},
+	{0x886, "W83627EHF/EF/EHG/EG", { /* sensors-detect: 0x8853 possible */
 		{NOLDN, NULL,
 			{0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27,0x28,
 			 0x29,0x2a,0x2b,0x2c,0x2d,0x2e,0x2f,EOT},
@@ -144,16 +151,22 @@ const static struct superio_registers reg_table[] = {
 			{0x30,0x60,0x61,0x70,0xf0,0xf1,EOT},
 			{0x00,0x00,0x00,0x00,0xc1,0x00,EOT}},
 		{EOT}}},
-	{0xa23, "W83627UHG", {
+	{0xa23, "W83627UHG", {/* TODO: Not yet in sensors-detect */
 		{EOT}}},
+
+	/* ID and rev */
 	{0x9771, "W83977F-A/G-A/AF-A/AG-A", {
 		{EOT}}},
 	{0x9773, "W83977TF", {
 		{EOT}}},
 	{0x9774, "W83977ATF", {
 		{EOT}}},
+
+	/* ID only */
 	{0x52, "W83627HF/F/HG/G", {
 		{EOT}}},
+
+	/* ID[3..0] */
 	{0xa, "W83877F", {
 		{EOT}}},
 	{0xc, "W83877TF", {

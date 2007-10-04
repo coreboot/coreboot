@@ -195,8 +195,7 @@ void usage(const char *name)
 	printf("       [-e exclude_end] [-m vendor:part] [-l file.layout] [-i imagename] [file]\n");
 	printf
 	    ("   -r | --read:                    read flash and save into file\n"
-	     "   -w | --write:                   write file into flash (default when\n"
-	     "                                   file is specified)\n"
+	     "   -w | --write:                   write file into flash\n"
 	     "   -v | --verify:                  verify flash against file\n"
 	     "   -E | --erase:                   erase flash device\n"
 	     "   -V | --verbose:                 more verbose output\n"
@@ -366,15 +365,22 @@ int main(int argc, char *argv[])
 
 	if ((flash = probe_flash(flashchips)) == NULL) {
 		printf("No EEPROM/flash device found.\n");
+		// FIXME: flash writes stay enabled!
 		exit(1);
 	}
 
 	printf("Flash part is %s (%d KB)\n", flash->name, flash->total_size);
 
+	if (!(read_it | write_it | verify_it | erase_it)) {
+		printf("No operations were specified.\n");
+		// FIXME: flash writes stay enabled!
+		exit(1);
+	}
+
 	if (!filename && !erase_it) {
-		// FIXME: Do we really want this feature implicitly?
-		printf("OK, only ENABLING flash write, but NOT FLASHING.\n");
-		return 0;
+		printf("Error: No filename specified.\n");
+		// FIXME: flash writes stay enabled!
+		exit(1);
 	}
 
 	size = flash->total_size * 1024;

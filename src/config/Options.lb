@@ -1016,7 +1016,23 @@ define CONFIG_VIDEO_MB
         comment "Integrated graphics with UMA has dynamic setup"
 end
 
+define CONFIG_GX1_VIDEO
+	default 0
+	export used
+	comment "Build in GX1's graphic support"
+end
 
+define CONFIG_GX1_VIDEOMODE
+	default none
+	export used
+	comment "Define video mode after reset"
+# could be
+# 0 for 640x480
+# 1 for 800x600
+# 2 for 1024x768
+# 3 for 1280x960
+# 4 for 1280x1024
+end
 
 ###############################################
 # Board specific options

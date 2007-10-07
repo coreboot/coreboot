@@ -2,7 +2,7 @@
  * This file is part of the LinuxBIOS project.
  *
  * Copyright (C) 2005 Tyan
- * Written by Yinghai Lu <yhlu@tyan.com> for Tyan.
+ * (Written by Yinghai Lu <yhlu@tyan.com> for Tyan)
  * Copyright (C) 2007 Ward Vandewege <ward@gnu.org>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,9 +21,9 @@
  */
 
 #include <device/device.h>
-#include "chip.h"
 #include <console/console.h>
 #include <device/smbus.h>
+#include "chip.h"
 
 /**
  * Do some S2881-specific HWM initialization for the ADT7463 chip.
@@ -31,28 +31,24 @@
  * See Analog Devices ADT7463 datasheet, Rev C (2004):
  * http://www.analog.com/en/prod/0,,766_825_ADT7463,00.html
  */
-static void dummy_init(device_t dev)
+static void adt7463_init(device_t dev)
 {
-	device_t smbus_dev;
-	device_t adt7463;
+	device_t smbus_dev, adt7463;
 	struct device_path path;
-
 	int result;
 
 	/* Find the SMBus controller (AMD-8111). */
 	smbus_dev = dev_find_device(0x1022, 0x746b, 0);
-	if (!smbus_dev) {
+	if (!smbus_dev)
 		die("SMBus controller not found\n");
-	}
 	printk_debug("SMBus controller found\n");
 
 	/* Find the ADT7463 device. */
 	path.type = DEVICE_PATH_I2C;
 	path.u.i2c.device = 0x2d;
 	adt7463 = find_dev_path(smbus_dev->link, &path);
-	if (!adt7463) {
+	if (!adt7463)
 		die("ADT7463 not found\n");
-	}
 	printk_debug("ADT7463 found\n");
 
 	/* Set all fans to 'Fastest Speed Calculated by All 3 Temperature
@@ -62,9 +58,10 @@ static void dummy_init(device_t dev)
 	result = smbus_write_byte(adt7463, 0x5d, 0xc2);
 	result = smbus_write_byte(adt7463, 0x5e, 0xc2);
 
-	/* Make sure that our fans never stop when temp. falls below Tmin, 
-	   but rather keep going at minimum duty cycle (applies to automatic 
-	   fan control mode only). */
+	/* Make sure that our fans never stop when temp. falls below Tmin,
+	 * but rather keep going at minimum duty cycle (applies to automatic 
+	 * fan control mode only).
+	 */
 	result = smbus_write_byte(adt7463, 0x62, 0xc0);
 
 	/* Set minimum PWM duty cycle to 25%, rather than the default 50%. */
@@ -73,16 +70,18 @@ static void dummy_init(device_t dev)
 	result = smbus_write_byte(adt7463, 0x66, 0x40);
 
 	/* Set Tmin to 55C, rather than the default 90C. Above this temperature
-	   the fans will start blowing harder as temperature increases
-	   (automatic mode only). */
+	 * the fans will start blowing harder as temperature increases
+	 * (automatic mode only).
+	 */
 	result = smbus_write_byte(adt7463, 0x67, 0x37);
 	result = smbus_write_byte(adt7463, 0x68, 0x37);
 	result = smbus_write_byte(adt7463, 0x69, 0x37);
 
 	/* Set THERM limit to 70C, rather than the default 100C.
-	   The fans will kick in at 100% if the sensors reach this temperature,
-	   (only in automatic mode, but supposedly even when hardware is
-	   locked up). This is a failsafe measure. */
+	 * The fans will kick in at 100% if the sensors reach this temperature,
+	 * (only in automatic mode, but supposedly even when hardware is
+	 * locked up). This is a failsafe measure.
+	 */
 	result = smbus_write_byte(adt7463, 0x6a, 0x46);
 	result = smbus_write_byte(adt7463, 0x6b, 0x46);
 	result = smbus_write_byte(adt7463, 0x6c, 0x46);
@@ -96,7 +95,7 @@ static void dummy_init(device_t dev)
 	/* Set TACH measurements to normal (1/second). */
 	result = smbus_write_byte(adt7463, 0x78, 0xf0);
 
-	printk_debug("ADT7463 properly initialized");
+	printk_debug("ADT7463 properly initialized\n");
 }
 
 static void dummy_noop(device_t dummy)
@@ -107,7 +106,7 @@ static struct device_operations dummy_operations = {
 	.read_resources		= dummy_noop,
 	.set_resources		= dummy_noop,
 	.enable_resources	= dummy_noop,
-	.init			= dummy_init,
+	.init			= adt7463_init,
 };
 
 static unsigned int scan_root_bus(device_t root, unsigned int max)

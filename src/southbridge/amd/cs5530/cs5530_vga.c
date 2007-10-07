@@ -13,11 +13,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
+ */
+
+/**
+ * @brief Activate the VGA feature in a Geode GX1 based system with one
+ * of five possible VESA modes: VGA, SVGA, XGA, 4:3 SXGA and 5:4 SXGA.
+ * Also it is prepared to display a splash screen.
  *
- * Purpose:
- * Activate the VGA feature in a Geode GX1 based system with one of five
- * possible VESA modes: VGA, SVGA, XGA, 4:3 SXGA and 5:4 SXGA. Also it is
- * prepared to display a splash screen.
+ * In a Geode GX1 environment the companion CS5530 is the VGA
+ * interface only. It contains a PLL for pixel clock generation,
+ * DACs to generate the analogue RGB signals, drivers for HSYNC
+ * and VSYNC and drivers for a digital flatpanel.
+ * The graphic feature itself (framebuffer, acceleration unit)
+ * is not part of this device. It is part of the CPU device.
+ * But both depend on each other, we cannot divide them into
+ * different drivers. So this driver is not only a CS5530 driver,
+ * it is also a Geode GX1 chipset graphic driver.
  */
 #include <arch/io.h>
 #include <device/device.h>
@@ -52,13 +63,13 @@
 #define DC_TIMING_CFG		0x8308
 #define DC_OUTPUT_CFG		0x830C
 
-/*
+/**
  * what colour depth should be used as default (in bpp)
  * Note: Currently no other value than 16 is supported
  */
 #define COLOUR_DEPTH 16
 
-/*
+/**
  * Support for a few basic video modes
  * Note: all modes only for CRT. The flatpanel feature is
  * not supported here (due to the lack of hardware to test)
@@ -67,33 +78,34 @@ struct video_mode {
 	int pixel_clock;		/*<< pixel clock in Hz */
 	unsigned long pll_value;	/*<< pll register value for this clock */
 
-	int visible_pixel;
-	int hsync_start;
-	int hsync_end;
-	int line_length;
+	int visible_pixel;		/*<< visible pixels in one line */
+	int hsync_start;		/*<< start of hsync behind visible pixels */
+	int hsync_end;			/*<< end of hsync behind its start */
+	int line_length;		/*<< whole line length */
 
-	int visible_lines;
-	int vsync_start;
-	int vsync_end;
-	int picture_length;
+	int visible_lines;		/*<< visible lines on screen */
+	int vsync_start;		/*<< vsync start behind last visible line */
+	int vsync_end;			/*<< end of vsync behind its start */
+	int picture_length;		/*<< whole screen length */
 
 	int sync_pol;		/*<< 0: low, 1: high, bit 0 hsync, bit 1 vsync */
 };
 
 /*
- * values for .sync_pol
+ * values for .sync_pol in struct video_mode
  */
 #define HSYNC_HIGH_POL 0
 #define HSYNC_LOW_POL 1
 #define VSYNC_HIGH_POL 0
 #define VSYNC_LOW_POL 2
 
-/* ModeLine "640x480" 31.5 640 664 704 832 480 489 491 520 -hsync -vsync */
+/**
+ * 640x480 @ 72Hz hsync: 37.9kHz
+ * VESA standard mode for classic 4:3 monitors
+ * Copied from X11:
+ * ModeLine "640x480" 31.5 640 664 704 832 480 489 491 520 -hsync -vsync
+ */
 static const struct video_mode mode_640x480 = {
-	/*
-	 * 640x480 @ 72Hz hsync: 37.9kHz
-	 * VESA standard mode for classic 4:3 monitors
-	 */
 	.pixel_clock = 31500000,
 	.pll_value = 0x33915801,
 
@@ -107,15 +119,16 @@ static const struct video_mode mode_640x480 = {
 	.vsync_end = 491,
 	.picture_length = 520, /* 13.89ms */
 
-	.sync_pol = HSYNC_LOW_POL | VSYNC_LOW_POL
+	.sync_pol = HSYNC_LOW_POL | VSYNC_LOW_POL,
 };
 
-/* ModeLine "800x600" 50.0 800 856 976 1040 600 637 643 666 +hsync +vsync */
+/**
+ * 800x600 @ 72Hz hsync: 48.1kHz
+ * VESA standard mode for classic 4:3 monitors
+ * Copied from X11:
+ * ModeLine "800x600" 50.0 800 856 976 1040 600 637 643 666 +hsync +vsync
+ */
 static const struct video_mode mode_800x600 = {
-	/*
-	 * 800x600 @ 72Hz hsync: 48.1kHz
-	 * VESA standard mode for classic 4:3 monitors
-	 */
 	.pixel_clock = 50000000,
 	.pll_value = 0x23088801,
 
@@ -129,15 +142,16 @@ static const struct video_mode mode_800x600 = {
 	.vsync_end = 643,
 	.picture_length = 666, /* 13.89ms */
 
-	.sync_pol = HSYNC_HIGH_POL | VSYNC_HIGH_POL
+	.sync_pol = HSYNC_HIGH_POL | VSYNC_HIGH_POL,
 };
 
-/* ModeLine "1024x768" 75.0 1024 1048 1184 1328 768 771 777 806 -hsync -vsync */
+/**
+ * 1024x768 @ 70Hz (VESA) hsync: 56.5kHz
+ * Standard mode for classic 4:3 monitors
+ * Copied from X11:
+ * ModeLine "1024x768" 75.0 1024 1048 1184 1328 768 771 777 806 -hsync -vsync
+ */
 static const struct video_mode mode_1024x768 = {
-	/*
-	 * 1024x768 @ 70Hz (VESA) hsync: 56.5kHz
-	 * Standard mode for classic 4:3 monitors
-	 */
 	.pixel_clock = 75000000,
 	.pll_value = 0x37E22801,
 
@@ -151,15 +165,16 @@ static const struct video_mode mode_1024x768 = {
 	.vsync_end = 777,
 	.picture_length = 806,	/* 14.3us */
 
-	.sync_pol = HSYNC_LOW_POL | VSYNC_LOW_POL
+	.sync_pol = HSYNC_LOW_POL | VSYNC_LOW_POL,
 };
 
-/* ModeLine "1280x960" 108.0 1280 1376 1488 1800 960 961 964 1000 +hsync +vsync */
+/**
+ * 1280x960 @ 60Hz (VESA) hsync: 60.0kHz
+ * Mode for classic 4:3 monitors
+ * Copied from X11:
+ * ModeLine "1280x960" 108.0 1280 1376 1488 1800 960 961 964 1000 +hsync +vsync
+ */
 static const struct video_mode mode_1280x960 = {
-	/*
-	 * 1280x960 @ 60Hz (VESA) hsync: 60.0kHz
-	 * Mode for classic 4:3 monitors
-	 */
 	.pixel_clock = 108000000,
 	.pll_value = 0x2710C805,
 
@@ -173,15 +188,16 @@ static const struct video_mode mode_1280x960 = {
 	.vsync_end = 964,
 	.picture_length = 1000,	/* 16.67ms */
 
-	.sync_pol = HSYNC_HIGH_POL | VSYNC_HIGH_POL
+	.sync_pol = HSYNC_HIGH_POL | VSYNC_HIGH_POL,
 };
 
-/* ModeLine "1280x1024" 108.0 1280 1328 1440 1688 1024 1025 1028 1066 +hsync +vsync */
+/**
+ * 1280x1024 @ 60Hz (VESA) hsync: 64.0kHz
+ * Mode for modern 5:4 flat screens
+ * Copied from X11:
+ * ModeLine "1280x1024" 108.0 1280 1328 1440 1688 1024 1025 1028 1066 +hsync +vsync
+ */
 static const struct video_mode mode_1280x1024 = {
-	/*
-	 * 1280x1024 @ 60Hz (VESA) hsync: 64.0kHz
-	 * Mode for modern 5:4 flat screens
-	 */
 	.pixel_clock = 108000000,
 	.pll_value = 0x2710C805,
 
@@ -195,11 +211,11 @@ static const struct video_mode mode_1280x1024 = {
 	.vsync_end = 1028,
 	.picture_length = 1066,
 
-	.sync_pol = HSYNC_HIGH_POL | VSYNC_HIGH_POL
+	.sync_pol = HSYNC_HIGH_POL | VSYNC_HIGH_POL,
 };
 
-/*
- * a few supported common modes
+/**
+ * List of supported common modes
  */
 static const struct video_mode *modes[] = {
 	&mode_640x480,	/* CONFIG_GX1_VIDEOMODE = 0 */
@@ -214,12 +230,14 @@ static const struct video_mode *modes[] = {
 # error Requested video mode is unknown!
 #endif
 
-/*
+/**
  * Setup the pixel PLL in the companion chip
- * base: register's base address
- * pll_val: pll register value to be set
+ * @param[in] base register's base address
+ * @param[in] pll_val pll register value to be set
+ *
+ * The PLL to program here is located in the CS5530
  */
-static void cs5530_set_clock_frequency(void *io_base,unsigned long pll_val)
+static void cs5530_set_clock_frequency(void *io_base, unsigned long pll_val)
 {
 	unsigned long reg;
 
@@ -247,17 +265,26 @@ static void cs5530_set_clock_frequency(void *io_base,unsigned long pll_val)
 	writel(reg, io_base+CS5530_DOT_CLK_CONFIG);
 }
 
-/*
+/**
  * Setup memory layout
- * gx_base: GX register area
- * mode: Data about the video mode to setup
+ * @param[in] gx_base GX register area
+ * @param[in] mode Data about the video mode to setup
  *
- * This routine assumes unlocked DC registers. Using compressed buffer
- * is not supported! (makes more sense later, but not while booting)
+ * Memory layout must be setup in Geode GX1's chipset.
+ * Note: This routine assumes unlocked DC registers.
+ * Note: Using compressed buffer is not supported yet!
+ * (makes more sense later, but not while booting)
+ *
+ * At this point a check is missed if the requested video
+ * mode is possible with the provided video memory.
+ * Check if symbol CONFIG_VIDEO_MB is at least:
+ * - 1 (=1MiB) for VGA and SVGA
+ * - 2 (=2MiB) for XGA
+ * - 4 (=4MiB) for SXGA
  */
-static void dc_setup_layout(void *gx_base,const struct video_mode *mode)
+static void dc_setup_layout(void *gx_base, const struct video_mode *mode)
 {
-	unsigned long base = 0x00000000;
+	u32 base = 0x00000000;
 
 	writel(base, gx_base + DC_FB_ST_OFFSET);
 
@@ -270,12 +297,13 @@ static void dc_setup_layout(void *gx_base,const struct video_mode *mode)
 	writel(((COLOUR_DEPTH>>3) * mode->visible_pixel) >> 3, gx_base + DC_BUF_SIZE);
 }
 
-/*
+/**
  * Setup the HSYNC/VSYNC, active video timing
- * gx_base: GX register area
- * mode: Data about the video mode to setup
+ * @param[in] gx_base GX register area
+ * @param[in] mode Data about the video mode to setup
  *
- * This routine assumes unlocked DC registers
+ * Sync signal generation is done in Geode GX1's chipset.
+ * Note: This routine assumes unlocked DC registers
  *
  * |<------------------------- htotal ----------------------------->|
  * |<------------ hactive -------------->|                          |
@@ -295,10 +323,10 @@ static void dc_setup_layout(void *gx_base,const struct video_mode *mode)
  * |#####################################___________________________| line data
  * |______________________________________________---------_________| YSYNC
  */
-static void dc_setup_timing(void *gx_base,const struct video_mode *mode)
+static void dc_setup_timing(void *gx_base, const struct video_mode *mode)
 {
-	unsigned long hactive, hblankstart, hsyncstart, hsyncend, hblankend, htotal;
-	unsigned long vactive, vblankstart, vsyncstart, vsyncend, vblankend, vtotal;
+	u32 hactive, hblankstart, hsyncstart, hsyncend, hblankend, htotal;
+	u32 vactive, vblankstart, vsyncstart, vsyncend, vblankend, vtotal;
 
 	hactive = mode->visible_pixel & 0x7FF;
 	hblankstart = hactive;
@@ -331,10 +359,13 @@ static void dc_setup_timing(void *gx_base,const struct video_mode *mode)
 	writel((vsyncstart - 2) | ((vsyncend - 2) << 16), gx_base + DC_FP_V_TIMING);
 }
 
-/*
+/**
  * Setup required internals to bring the mode up and running
- * gx_base: GX register area
- * mode: Data about the video mode to setup
+ * @param[in] gx_base GX register area
+ * @param[in] mode Data about the video mode to setup
+ *
+ * Must be setup in Geode GX1's chipset.
+ * Note: This routine assumes unlocked DC registers.
  */
 static void cs5530_activate_mode(void *gx_base, const struct video_mode *mode)
 {
@@ -348,20 +379,23 @@ static void cs5530_activate_mode(void *gx_base, const struct video_mode *mode)
 	writel(0x00003004, gx_base + DC_OUTPUT_CFG);
 }
 
-/*
+/**
  * Activate the current mode to be "visible" outside
- * gx_base: GX register area
- * mode: Data about the video mode to setup
+ * @param[in] gx_base GX register area
+ * @param[in] mode Data about the video mode to setup
+ *
+ * As we now activate the interface this must be done
+ * in the CS5530
  */
 static void cs5530_activate_video(void *io_base, const struct video_mode *mode)
 {
 	u32 val;
 
-	val = mode->sync_pol;
-	val <<= 8;
-
+	val = (u32)mode->sync_pol << 8;
 	writel(val | 0x0020002F, io_base + CS5530_DISPLAY_CONFIG);
 }
+
+#if CONFIG_SPLASH_GRAPHIC == 1
 
 /*
  * This bitmap file must provide:
@@ -382,7 +416,7 @@ static void cs5530_activate_video(void *io_base, const struct video_mode *mode)
  *
  * This routine assumes we are using a 16 bit colour depth!
  */
-static void show_boot_splash_16(u32 swidth,u32 sheight,u32 pitch,void *base)
+static void show_boot_splash_16(u32 swidth, u32 sheight, u32 pitch,void *base)
 {
 	int word_count,i;
 	unsigned short *adr;
@@ -391,51 +425,52 @@ static void show_boot_splash_16(u32 swidth,u32 sheight,u32 pitch,void *base)
 	 * fill the screen with the colour of the
 	 * left top pixel in the graphic
 	 */
-	word_count = pitch*sheight;
-	printk_debug("Clear Screen at %p, %d words\n",base,word_count);
-	adr = (unsigned short *) base;
-	for (i=0; i < word_count; i++, adr++)
+	word_count = pitch * sheight;
+	adr = (unsigned short*)base;
+	for (i = 0; i < word_count; i++, adr++)
 		*adr = colour_map[bitmap[0]];
-	printk_debug("Ready\n");
 
 	/*
 	 * paint the splash
 	 */
-	xstart=swidth-width;
-	ystart=sheight-height;
-	printk_debug("Start at %u,%u\n",xstart,ystart);
-	for (y=0;y<height;y++) {
-		adr=(unsigned short*)(base + pitch*(y+ystart)+2*xstart);
-		for (x=0;x<width;x++) {
-			*adr=(unsigned short)colour_map[(int)bitmap[x+y*width]];
+	xstart = swidth-width;
+	ystart = sheight-height;
+	for (y = 0; y < height; y++) {
+		adr=(unsigned short*)(base + pitch*(y+ystart) + 2 * xstart);
+		for (x = 0; x < width; x++) {
+			*adr=(unsigned short)colour_map[(int)bitmap[x + y * width]];
 			adr++;
 		}
 	}
 }
+#else
+# define show_boot_splash_16(w, x, y , z)
+#endif
 
-/*
- * management part
+/**
+ * LinuxBIOS management part
+ * @param[in] dev Info about the PCI device to initialise
  */
 static void cs5530_vga_init(device_t dev)
 {
 	const struct video_mode *mode;
 	void *io_base, *gx_base;
 
-	io_base = (void*)pci_read_config32(dev,0x10);
+	io_base = (void*)pci_read_config32(dev, 0x10);
 	gx_base = (void*)GX_BASE;
 	mode = modes[CONFIG_GX1_VIDEOMODE];
 
 	printk_debug("Setting up video mode %dx%d with %d Hz clock\n",
 		mode->visible_pixel, mode->visible_lines, mode->pixel_clock);
 
-	cs5530_set_clock_frequency(io_base,mode->pll_value);
+	cs5530_set_clock_frequency(io_base, mode->pll_value);
 
 	writel(DC_UNLOCK_MAGIC, gx_base + DC_UNLOCK);
 
 	show_boot_splash_16(mode->visible_pixel, mode->visible_lines,
-		mode->visible_pixel*(COLOUR_DEPTH>>3),(void*)(GX_BASE+0x800000));
+		mode->visible_pixel * (COLOUR_DEPTH>>3), (void*)(GX_BASE + 0x800000));
 
-	cs5530_activate_mode(gx_base,mode);
+	cs5530_activate_mode(gx_base, mode);
 
 	cs5530_activate_video(io_base, mode);
 	writel(0x00000000, gx_base + DC_UNLOCK);
@@ -446,13 +481,13 @@ static struct device_operations vga_ops = {
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = cs5530_vga_init,
-	.enable           = NULL /* not required */
+	.enable           = NULL, /* not required */
 };
 
 static struct pci_driver vga_pci_driver __pci_driver = {
 	.ops 	= &vga_ops,
 	.vendor = PCI_VENDOR_ID_CYRIX,
-	.device = PCI_DEVICE_ID_CYRIX_5530_VIDEO
+	.device = PCI_DEVICE_ID_CYRIX_5530_VIDEO,
 };
 
 #endif /* #if CONFIG_GX1_VIDEO == 1 */

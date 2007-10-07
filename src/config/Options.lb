@@ -1016,6 +1016,12 @@ define CONFIG_VIDEO_MB
         comment "Integrated graphics with UMA has dynamic setup"
 end
 
+define CONFIG_SPLASH_GRAPHIC
+	default 0
+	export used
+	comment "Paint a splash screen"
+end
+
 define CONFIG_GX1_VIDEO
 	default 0
 	export used

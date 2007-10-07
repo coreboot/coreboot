@@ -59,6 +59,8 @@ and print its vendor, name, ID, revision, and config port.\n"
 /* Command line parameters. */
 extern int dump, dump_readable, verbose;
 
+extern int chip_found;
+
 struct superio_registers {
 	int32_t superio_id;		/* Signed, as we need EOT. */
 	const char name[MAXNAMELEN];	/* Super I/O name */

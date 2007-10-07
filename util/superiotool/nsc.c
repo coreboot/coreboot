@@ -98,6 +98,7 @@ void probe_idregs_nsc(uint16_t port)
 
 	printf("Found NSC %s (sid=0x%02x, srid=0x%02x) at 0x%x\n",
 	       get_superio_name(reg_table, id), id, rev, port);
+	chip_found = 1;
 
 	dump_superio("NSC", reg_table, port, id);
 	if (id == 0xf1)

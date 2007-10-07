@@ -155,6 +155,7 @@ void probe_idregs_fintek(uint16_t port)
 
 	printf("Found Fintek %s (vid=0x%04x, id=0x%04x) at 0x%x\n",
 	       get_superio_name(reg_table, did), vid, did, port);
+	chip_found = 1;
 
 	dump_superio("Fintek", reg_table, port, did);
 	dump_readable_fintek(port, did);

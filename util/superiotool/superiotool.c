@@ -25,6 +25,9 @@
 /* Command line options. */
 int dump = 0, dump_readable = 0, verbose = 0;
 
+/* Global flag which indicates whether a chip was detected at all. */
+int chip_found = 0;
+
 uint8_t regval(uint16_t port, uint8_t reg)
 {
 	outb(reg, port);
@@ -228,6 +231,9 @@ int main(int argc, char *argv[])
 			superio_ports_table[i].probe_idregs(
 				superio_ports_table[i].ports[j]);
 	}
+
+	if (!chip_found)
+		printf("No Super I/O found\n");
 
 	return 0;
 }

@@ -89,6 +89,7 @@ void probe_idregs_ali(uint16_t port)
 
 	printf("Found ALi %s (id=0x%04x, rev=0x%02x) at 0x%x\n",
 	       get_superio_name(reg_table, id), id, rev, port);
+	chip_found = 1;
 
 	dump_superio("ALi", reg_table, port, id);
 	dump_superio_readable(port); /* TODO */

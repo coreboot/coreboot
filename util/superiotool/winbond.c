@@ -313,6 +313,7 @@ void probe_idregs_winbond_helper(const char *init, uint16_t port)
 	else
 		printf("Found Winbond %s (id=0x%02x, rev=0x%02x) at 0x%x\n",
 		       get_superio_name(reg_table, id), devid, rev, port);
+	chip_found = 1;
 
 	/* TODO: Special notes in dump output for the MISC entries. */
 	dump_superio("Winbond", reg_table, port, id);

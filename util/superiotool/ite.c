@@ -361,6 +361,7 @@ static void probe_idregs_ite_helper(const char *init, uint16_t port)
 
 	printf("Found ITE %s (id=0x%04x, rev=0x%01x) at 0x%x\n",
 	       get_superio_name(reg_table, id), id, chipver, port);
+	chip_found = 1;
 
 	dump_superio("ITE", reg_table, port, id);
 	dump_superio_readable(port); /* TODO */

@@ -37,6 +37,8 @@ $(PROGRAM): $(OBJS) superiotool.h
 
 install: $(PROGRAM)
 	$(INSTALL) $(PROGRAM) $(PREFIX)/bin
+	mkdir -p $(PREFIX)/share/man/man8
+	$(INSTALL) $(PROGRAM).8 $(PREFIX)/share/man/man8
 
 clean:
 	rm -f $(PROGRAM) *.o

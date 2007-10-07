@@ -125,8 +125,6 @@ static uint32_t find_pci_tolm(struct bus *bus)
 	return tolm;
 }
 
-#define FRAMEBUFFERK 4096
-
 static void pci_domain_set_resources(device_t dev)
 {
 	device_t mc_dev;
@@ -153,7 +151,7 @@ static void pci_domain_set_resources(device_t dev)
 		tomk = ramreg << 10;
 
 		/* Sort out the framebuffer size */
-		tomk -= FRAMEBUFFERK;
+		tomk -= CONFIG_VIDEO_MB * 1024;
 		*bcdramtop = ((tomk << 10) - 1);
 		*mcgbaseadd = (tomk >> 9);
 

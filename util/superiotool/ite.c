@@ -26,7 +26,6 @@
 
 #define CHIP_VERSION_REG	0x22
 
-/* Note: IT8726F has ID 0x8726 (datasheet wrongly says 0x8716). */
 const static struct superio_registers reg_table[] = {
 	{0x8661, "IT8661F", {
 		/* TODO: Needs different init sequence. */
@@ -64,7 +63,7 @@ const static struct superio_registers reg_table[] = {
 		{EOT}}},
 	{0x8702, "IT8702F", {
 		{EOT}}},
-	{0x8705, "IT8705F/AF or IT8700F", {
+	{0x8705, "IT8705F/AF / IT8700F", {
 		{NOLDN, NULL,
 			{0x07,0x20,0x21,0x22,0x23,0x24,EOT},
 			{NANA,0x87,0x05,0x00,0x00,NANA,EOT}},
@@ -111,6 +110,9 @@ const static struct superio_registers reg_table[] = {
 		{0x8, "MIDI port",
 			{0x30,0x60,0x61,0x70,0xf0,EOT},
 			{0x00,0x03,0x00,0x0a,0x00,EOT}},
+		{EOT}}},
+	{0x8706, "IT8706R", {	/* TODO: Not yet in sensors-detect */
+		/* This is a "Special General Purpose I/O chip". */
 		{EOT}}},
 	{0x8708, "IT8708F", {
 		{NOLDN, NULL,
@@ -167,7 +169,7 @@ const static struct superio_registers reg_table[] = {
 			{0x30,0x60,0x61,0x70,0xf0,EOT},
 			{0x00,0x03,0x00,0x0a,0x00,EOT}},
 		{EOT}}},
-	{0x8710, "IT8710F", {
+	{0x8710, "IT8710F", {	/* TODO: Not yet in sensors-detect */
 		{EOT}}},
 	{0x8712, "IT8712F", {
 		{NOLDN, NULL,
@@ -315,6 +317,9 @@ const static struct superio_registers reg_table[] = {
 		{0xa, "Consumer IR",
 			{0x30,0x60,0x61,0x70,0xf0,EOT},
 			{0x00,0x03,0x10,0x0b,0x00,EOT}},
+		{EOT}}},
+	{0x8726, "IT8726F", {
+		/* Datasheet wrongly says that the ID is 0x8716. */
 		{EOT}}},
 	{EOT}
 };

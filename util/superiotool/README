@@ -59,6 +59,11 @@ Supported Super I/O Chips
 
 Please see http://linuxbios.org/Superiotool#Supported_devices.
 
+There's also a collection of sample register dumps from various Super I/O
+chips on that page. Please send further register dumps (either from a
+proprietary BIOS and/or from LinuxBIOS) to the LinuxBIOS mailing list
+(http://linuxbios.org/Mailinglist).
+
 
 Website and Mailing List
 ------------------------
@@ -78,4 +83,17 @@ refer to the respective source code files for details.
 
 It is licensed under the terms of the GNU General Public License (GPL),
 either version 2 of the License, or (at your option) any later version.
+
+
+Contributors
+------------
+
+Carl-Daniel Hailfinger <c-d.hailfinger.devel.2006@gmx.net>
+David Hendricks <david.hendricks@gmail.com>
+Rasmus Wiman <rasmus@wiman.org>
+Robinson P. Tryon <bishop.robinson@gmail.com>
+Ronald Minnich <rminnich@gmail.com>
+Stefan Reinauer <stepan@coresystems.de>
+Uwe Hermann <uwe@hermann-uwe.de>
+Ward Vandewege <ward@gnu.org>
 

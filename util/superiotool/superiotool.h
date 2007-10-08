@@ -54,7 +54,7 @@ and print its vendor, name, ID, revision, and config port.\n"
 #define LDNSIZE		(MAXLDN + 3)	/* Biggest LDN + 0 + NOLDN + EOT */
 #define MAXNUMIDX	70		/* Maximum number of indexes */
 #define IDXSIZE 	(MAXNUMIDX + 1)
-#define MAXNUMPORTS	(5 + 1)		/* Maximum number of Super I/O ports */
+#define MAXNUMPORTS	(6 + 1)		/* Maximum number of Super I/O ports */
 
 /* Command line parameters. */
 extern int dump, dump_readable, verbose;
@@ -109,10 +109,10 @@ const static struct {
 	int ports[MAXNUMPORTS]; /* Signed, as we need EOT. */
 } superio_ports_table[] = {
 	{probe_idregs_ali,	{0x3f0, 0x370, EOT}},
-	{probe_idregs_nsc,	{0x2e, 0x4e, EOT}},
 	{probe_idregs_fintek,	{0x2e, 0x4e, EOT}},
 	{probe_idregs_ite,	{0x2e, 0x4e, EOT}},
-	{probe_idregs_smsc,	{0x2e, 0x4e, 0x3f0, 0x370, EOT}},
+	{probe_idregs_nsc,	{0x2e, 0x4e, EOT}},
+	{probe_idregs_smsc,	{0x2e, 0x4e, 0x162e, 0x164e, 0x3f0, 0x370, EOT}},
 	{probe_idregs_winbond,	{0x2e, 0x4e, 0x3f0, 0x370, 0x250, EOT}},
 };
 

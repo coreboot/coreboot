@@ -32,7 +32,7 @@ const static struct superio_registers reg_table[] = {
 		{EOT}}},
 	{0x14, "LPC47M172", {
 		{EOT}}},
-	{0x40, "FDC37C672/FDC37C67x", {	/* Chiprev: 0x01 */
+	{0x40, "FDC37C67x", {	/* E.g. FDC37C672. Chiprev: 0x01 */
 		{EOT}}},
 	{0x42, "FDC37B80x/FDC37M707", {
 		{EOT}}},
@@ -154,6 +154,14 @@ const static struct superio_registers reg_table[] = {
 	{0x51, "LPC47B27x", {
 		{EOT}}},
 	{0x52, "LPC47B37x", {
+		{EOT}}},
+	{0x54, "LPC47U33x", {
+		{EOT}}},
+	{0x56, "LPC47B34x", {
+		{EOT}}},
+	{0x57, "LPC47S42x", {
+		{EOT}}},
+	{0x59, "LPC47M10x/112/13x", {
 		{NOLDN, NULL,
 			{0x03,0x07,0x20,0x21,0x22,0x23,0x24,0x26,0x27,0x28,
 			 0x2a,0x2b,0x2c,0x2d,0x2e,0x2f,EOT},
@@ -187,14 +195,6 @@ const static struct superio_registers reg_table[] = {
 		{0xb, "MPU-401",
 			{0x30,0x60,0x61,0x70,EOT},
 			{0x00,0x03,0x30,0x05,EOT}},
-		{EOT}}},
-	{0x54, "LPC47U33x", {
-		{EOT}}},
-	{0x56, "LPC47B34x", {
-		{EOT}}},
-	{0x57, "LPC47S42x", {
-		{EOT}}},
-	{0x59, "LPC47M10x/112/13x", {
 		{EOT}}},
 	{0x5d, "LPC47B357", {	/* From sensors-detect (no datasheet) */
 		{EOT}}},

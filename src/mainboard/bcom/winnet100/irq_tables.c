@@ -40,6 +40,11 @@
 
 #include <arch/pirq_routing.h>
 
+#define INT_A 0x01
+#define INT_B 0x02
+#define INT_C 0x03
+#define INT_D 0x04
+
 /*
  * The USB controller should be connected to IRQ11,
  * the network controller should be connected to IRQ15.
@@ -49,7 +54,7 @@
 #define IRQ_BITMAP_LINK2 0x8000
 #define IRQ_BITMAP_LINK3 0x0200
 
-/** Reserved interrupt channels for PCI. */
+/** Reserved interrupt channels for exclusive PCI usage. */
 #define IRQ_DEVOTED_TO_PCI (IRQ_BITMAP_LINK0 | IRQ_BITMAP_LINK2)
 
 /**
@@ -57,16 +62,16 @@
  * Documentation at: http://www.microsoft.com/whdc/archive/pciirq.mspx
  */
 const struct irq_routing_table intel_irq_routing_table = {
-	.signature = PIRQ_SIGNATURE,	/* u32 signature */
-	.version = PIRQ_VERSION,	/* u16 version */
-	.size = 32+16*IRQ_SLOT_COUNT,	/* There can be total IRQ_SLOT_COUNT devices on the bus */
-	.rtr_bus = 0x00,		/* Where the interrupt router lies (bus) */
-	.rtr_devfn = (0x12<<3)|0x0,	/* Where the interrupt router lies (dev) */
-	.exclusive_irqs = IRQ_DEVOTED_TO_PCI,	/* IRQs devoted exclusively to PCI usage */
+	.signature = PIRQ_SIGNATURE,	/* PIRQ signature */
+	.version = PIRQ_VERSION,	/* PIRQ version */
+	.size = 32 +16 * IRQ_SLOT_COUNT,/* Max. IRQ_SLOT_COUNT devices */
+	.rtr_bus = 0x00,		/* Interrupt router bus */
+	.rtr_devfn = (0x12 << 3) | 0x0,	/* Interrupt router device */
+	.exclusive_irqs = IRQ_DEVOTED_TO_PCI,	/* IRQs devoted to PCI */
 	.rtr_vendor = 0x1078,		/* Vendor */
 	.rtr_device = 0x0100,		/* Device */
 	.miniport_data = 0,		/* Crap (miniport) */
-	.checksum = 0xBF+16,
+	.checksum = 0xbf + 16,		/* Checksum */
 	.slots = {
 		/*
 		 * Definition for "slot#1". There is no real slot,
@@ -76,22 +81,11 @@ const struct irq_routing_table intel_irq_routing_table = {
 			.bus = 0x00,
 			.devfn = (0x13 << 3) | 0x0,
 			.irq = {
-				[0] = {
-					.link = 0x01,	/* INT A */
-					.bitmap = IRQ_BITMAP_LINK0,
-				},
-				[1] = {
-					.link = 0x02,	/* INT B */
-					.bitmap = IRQ_BITMAP_LINK1,
-				},
-				[2] = {
-					.link = 0x03,	/* INT C */
-					.bitmap = IRQ_BITMAP_LINK2,
-				},
-				[3] = {
-					.link = 0x04,	/* INT D */
-					.bitmap = IRQ_BITMAP_LINK3,
-				}
+				/*      Link   Bitmap */
+				[0] = { INT_A, IRQ_BITMAP_LINK0 },
+				[1] = { INT_B, IRQ_BITMAP_LINK1 },
+				[2] = { INT_C, IRQ_BITMAP_LINK2 },
+				[3] = { INT_D, IRQ_BITMAP_LINK3 },
 			},
 			.slot = 0x0,
 		},
@@ -104,22 +98,11 @@ const struct irq_routing_table intel_irq_routing_table = {
 			.bus = 0x00,
 			.devfn = (0x0f << 3) | 0x0,
 			.irq = {
-				[0] = {
-					.link = 0x03,
-					.bitmap = IRQ_BITMAP_LINK2,
-				},
-				[1] = {
-					.link = 0x04,
-					.bitmap = IRQ_BITMAP_LINK3,
-				},
-				[2] = {
-					.link = 0x01,
-					.bitmap = IRQ_BITMAP_LINK0,
-				},
-				[3] = {
-					.link = 0x02,
-					.bitmap = IRQ_BITMAP_LINK1,
-				}
+				/*      Link   Bitmap */
+				[0] = { INT_C, IRQ_BITMAP_LINK2 },
+				[1] = { INT_D, IRQ_BITMAP_LINK3 },
+				[2] = { INT_A, IRQ_BITMAP_LINK0 },
+				[3] = { INT_B, IRQ_BITMAP_LINK1 },
 			},
 			.slot = 0x0,
 		}

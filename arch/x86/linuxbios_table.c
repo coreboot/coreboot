@@ -394,13 +394,14 @@ static struct lb_memory *build_lb_mem(struct lb_header *head)
 struct lb_devtree *lb_devtree(struct lb_header *head)
 {
 	struct lb_devtree *lbdev = NULL;
-	struct device *dev = NULL;
 
 	lbdev = (struct lb_devtree *)lb_new_record(head);
 	lbdev->tag = LB_TAG_DEVTREE_PTR;
 	lbdev->size = sizeof(*lbdev);
-	lbdev->dev_root_ptr = &dev_root;
+	lbdev->dev_root_ptr = (u32)&dev_root; // XXX ouch.
 
+	// FIXME we should either copy the device tree completely
+	// or at least mark it reserved. 
 	return lbdev;
 }
 

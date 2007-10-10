@@ -35,17 +35,14 @@ uses HAVE_MP_TABLE
 uses CROSS_COMPILE
 uses CC
 uses HOSTCC
-
 uses OBJCOPY
-
 uses CONFIG_CONSOLE_SERIAL8250
 uses DEFAULT_CONSOLE_LOGLEVEL
 uses MAXIMUM_CONSOLE_LOGLEVEL
-
 uses TTYS0_BAUD
 uses TTYS0_BASE
 uses TTYS0_LCS
-
+uses CONFIG_VIDEO_MB
 
 ## ROM_SIZE is the size of boot ROM that this board will use.
 default ROM_SIZE  = 256*1024
@@ -142,6 +139,8 @@ default TTYS0_LCS=0x3
 default CROSS_COMPILE=""
 default CC="$(CROSS_COMPILE)gcc -m32"
 default HOSTCC="gcc"
+
+default CONFIG_VIDEO_MB = 4
 
 end
 

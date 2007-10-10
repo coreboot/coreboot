@@ -40,21 +40,21 @@ int show_id(uint8_t *bios, int size)
 	}
 
 	if ((*walk) == 0 || ((*walk) & 0x3ff) != 0) {
-		printf("Flash image seems to be a legacy BIOS - disabling checks\n");
+		printf("Flash image seems to be a legacy BIOS. Disabling checks.\n");
 		mainboard_vendor = def_name;
 		mainboard_part = def_name;
 		return 0;
 	}
 
 	printf_debug("LinuxBIOS last image size "
-		     "(not ROM size) is %d bytes\n", *walk);
+		     "(not rom size) is %d bytes.\n", *walk);
 
 	walk--;
 	mainboard_part = strdup((const char *)(bios + size - *walk));
 	walk--;
 	mainboard_vendor = strdup((const char *)(bios + size - *walk));
-	printf_debug("Manufacturer: %s\n", mainboard_vendor);
-	printf_debug("Mainboard ID: %s\n", mainboard_part);
+	printf_debug("MANUFACTURER: %s\n", mainboard_vendor);
+	printf_debug("MAINBOARD ID: %s\n", mainboard_part);
 
 	/*
 	 * If lb_vendor is not set, the linuxbios table was
@@ -74,18 +74,18 @@ int show_id(uint8_t *bios, int size)
 	if (!strcasecmp(mainboard_vendor, lb_vendor) &&
 	    !strcasecmp(mainboard_part, lb_part)) {
 		printf_debug("This firmware image matches "
-			     "this motherboard\n");
+			     "this motherboard.\n");
 	} else {
 		if (force) {
 			printf("WARNING: This firmware image does not "
-			       "seem to fit to this machine - forcing it\n");
+			       "seem to fit to this machine - forcing it.\n");
 		} else {
 			printf("ERROR: Your firmware image (%s:%s) does not "
 			       "appear to\n       be correct for the detected "
 			       "mainboard (%s:%s)\n\nOverride with --force if you "
 			       "are absolutely sure that you\nare using a correct "
 			       "image for this mainboard or override\nthe detected "
-			       "values with --mainboard <vendor>:<mainboard>\n\n",
+			       "values with --mainboard <vendor>:<mainboard>.\n\n",
 			       mainboard_vendor, mainboard_part, lb_vendor,
 			       lb_part);
 			exit(1);
@@ -104,7 +104,7 @@ int read_romlayout(char *name)
 	romlayout = fopen(name, "r");
 
 	if (!romlayout) {
-		fprintf(stderr, "ERROR: Could not open ROM layout (%s)\n",
+		fprintf(stderr, "ERROR: Could not open rom layout (%s).\n",
 			name);
 		return -1;
 	}
@@ -150,11 +150,11 @@ int find_romentry(char *name)
 	for (i = 0; i < romimages; i++) {
 		if (!strcmp(rom_entries[i].name, name)) {
 			rom_entries[i].included = 1;
-			printf("found\n");
+			printf("found.\n");
 			return i;
 		}
 	}
-	printf("not found\n");
+	printf("not found.\n");
 	// Not found. Error.
 
 	return -1;

@@ -56,5 +56,5 @@ void myusec_calibrate_delay()
 	micro = count / timeusec;
 
 	printf_debug("%ldM loops per second. ", (unsigned long)micro);
-	printf("OK\n");
+	printf("ok\n");
 }

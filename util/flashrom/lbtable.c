@@ -42,8 +42,7 @@ static unsigned long compute_checksum(void *addr, unsigned long length)
 		uint8_t byte[2];
 		uint16_t word;
 	} value;
-	unsigned long sum;
-	unsigned long i;
+	unsigned long sum, i;
 
 	/* In the most straight forward way possible,
 	 * compute an ip style checksum.
@@ -53,15 +52,13 @@ static unsigned long compute_checksum(void *addr, unsigned long length)
 	for (i = 0; i < length; i++) {
 		unsigned long value;
 		value = ptr[i];
-		if (i & 1) {
+		if (i & 1)
 			value <<= 8;
-		}
 		/* Add the new value */
 		sum += value;
 		/* Wrap around the carry */
-		if (sum > 0xFFFF) {
+		if (sum > 0xFFFF)
 			sum = (sum + (sum >> 16)) & 0xFFFF;
-		}
 	}
 	value.byte[0] = sum & 0xff;
 	value.byte[1] = (sum >> 8) & 0xff;
@@ -110,17 +107,17 @@ static struct lb_header *find_lb_table(void *base, unsigned long start,
 			continue;
 		}
 		if (count_lb_records(head) != head->table_entries) {
-			fprintf(stderr, "bad record count: %d\n",
+			fprintf(stderr, "Bad record count: %d\n",
 				head->table_entries);
 			continue;
 		}
 		if (compute_checksum((uint8_t *) head, sizeof(*head)) != 0) {
-			fprintf(stderr, "bad header checksum\n");
+			fprintf(stderr, "Bad header checksum\n");
 			continue;
 		}
 		if (compute_checksum(recs, head->table_bytes)
 		    != head->table_checksum) {
-			fprintf(stderr, "bad table checksum: %04x\n",
+			fprintf(stderr, "Bad table checksum: %04x\n",
 				head->table_checksum);
 			continue;
 		}
@@ -140,7 +137,7 @@ static void find_mainboard(struct lb_record *ptr, unsigned long addr)
 
 	rec = (struct lb_mainboard *)ptr;
 	max_size = rec->size - sizeof(*rec);
-	printf("vendor id: %.*s part id: %.*s\n",
+	printf("Vendor ID: %.*s, part ID: %.*s\n",
 	       max_size - rec->vendor_idx,
 	       rec->strings + rec->vendor_idx,
 	       max_size - rec->part_number_idx,
@@ -151,7 +148,7 @@ static void find_mainboard(struct lb_record *ptr, unsigned long addr)
 		 rec->strings + rec->part_number_idx);
 
 	if (lb_part) {
-		printf("overwritten by command line, vendor id: %s part id: %s\n", lb_vendor, lb_part);
+		printf("Overwritten by command line, vendor ID: %s, part ID: %s\n", lb_vendor, lb_part);
 	} else {
 		lb_part = strdup(part);
 		lb_vendor = strdup(vendor);
@@ -201,7 +198,7 @@ int linuxbios_init(void)
 	if (lb_table) {
 		unsigned long addr;
 		addr = ((char *)lb_table) - ((char *)low_1MB);
-		printf_debug("lb_table found at address %p\n", lb_table);
+		printf_debug("LinuxBIOS table found at address %p\n", lb_table);
 		rec = (struct lb_record *)(((char *)lb_table) + lb_table->header_bytes);
 		last = (struct lb_record *)(((char *)rec) + lb_table->table_bytes);
 		printf_debug("LinuxBIOS header(%d) checksum: %04x table(%d) checksum: %04x entries: %d\n",
@@ -210,7 +207,7 @@ int linuxbios_init(void)
 		     lb_table->table_entries);
 		search_lb_records(rec, last, addr + lb_table->header_bytes);
 	} else {
-		printf("No LinuxBIOS table found.\n");
+		printf("No LinuxBIOS table found\n");
 		return -1;
 	}
 

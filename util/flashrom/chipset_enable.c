@@ -506,7 +506,7 @@ int chipset_flash_enable(void)
 		if (ret)
 			printf("Failed!\n");
 		else
-			printf("OK.\n");
+			printf("OK\n");
 	}
 
 	return ret;

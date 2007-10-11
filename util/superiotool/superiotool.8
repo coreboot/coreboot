@@ -1,4 +1,4 @@
-.TH SUPERIOTOOL 8 "October 7, 2007"
+.TH SUPERIOTOOL 8 "October 11, 2007"
 .SH NAME
 superiotool \- Super I/O detection tool
 .SH SYNOPSIS
@@ -16,6 +16,10 @@ is a GPL'd user-space utility which can
 .PP
 It is mainly used for LinuxBIOS development purposes (see linuxbios.org
 for details on LinuxBIOS), but it may also be useful for other things.
+.PP
+The list of supported Super I/O chips is available at:
+.br
+.B http://linuxbios.org/Superiotool#Supported_devices
 .SH OPTIONS
 If no command line option is specified,
 .B superiotool
@@ -29,7 +33,44 @@ Dump Super I/O registers (if the Super I/O chip is detected and
 .B superiotool
 supports the
 .B "\-\-dump"
-option for this chip).
+option for this chip). The output will look something like this:
+.sp
+.B "$ ./superiotool -d"
+.br
+Found SMSC FDC37N769 (id=0x28, rev=0x01) at 0x3f0
+.br
+Register dump:
+.br
+idx 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 10 11...
+.br
+val 20 90 80 f4 00 00 ff 00 00 00 40 00 0e 28 01 00 00 00...
+.br
+def 28 9c 88 70 00 00 ff 00 00 00 00 00 02 28 NA 00 00 80...
+.sp
+The
+.B idx
+fields contain the register numbers/indexes of the Super I/O, the
+.B val
+fields contain the contents of the respective register as read from the
+Super I/O, and the
+.B def
+fields contain the default values for the respective register, as specified
+in the datasheet.
+.sp
+The numbers in the output are all in hex format, and some special values
+may also occur:
+.BR NA " stands for"
+.I "not available"
+(i.e., the datasheet doesn't specify a default value for the respective
+register),
+.BR RR " means"
+.I reserved
+(the datasheet explicitly marks this register as reserved), and
+.BR MM " means"
+.IR misc ,
+which can mean several things. It's recommended to consult the datasheet for
+detailed information about the
+.BR MM " fields."
 .TP
 .B "\-D, \-\-dump-readable"
 Dump Super I/O registers in human-readable format (if the Super I/O chip
@@ -38,10 +79,19 @@ is detected and
 supports the
 .B "\-\-dump-readable"
 option for this chip).
+.sp
+The output format of this option is different for every Super I/O, and only
+very few Super I/Os currently support this option.
 .TP
 .B "\-V, \-\-verbose"
 Enable verbose mode. This option can be used together with the
-.BR "\-d" " or " "\-D" " option".
+.BR "\-d" " or " "\-D" " option (or both)."
+.sp
+The verbose output will not only list for which type of Super I/O the tool
+is scanning, but also at which configuration port it's probing, and which
+Super I/O initialization sequence is used. If no Super I/O was detected
+in a probing run, the returned output will be shown, as it may be useful
+for figuring out which (currently unrecognized) Super I/O chip this may be.
 .TP
 .B "\-v, \-\-version"
 Show version information and exit.
@@ -51,8 +101,11 @@ Show a help text and exit.
 .SH BUGS
 Please report any bugs at http://tracker.linuxbios.org/trac/LinuxBIOS/
 or on the LinuxBIOS mailing list (http://linuxbios.org/Mailinglist).
+.SH AUTHORS
+Please see the individual source code files and/or the README file.
 .SH LICENCE
 .B superiotool
-is covered by the GNU General Public License (GPL), version 2 or later.
+is covered by the GNU General Public License (GPL), either version 2 of
+the License, or (at your option) any later version.
 .SH SEE ALSO
 .BR sensors-detect (8)

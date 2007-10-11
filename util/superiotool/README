@@ -20,6 +20,8 @@ Installation
 
  $ svn co svn://linuxbios.org/repos/trunk/util/superiotool
 
+ $ cd superiotool
+
  $ make
 
  $ sudo make install

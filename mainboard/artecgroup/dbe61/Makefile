@@ -30,14 +30,21 @@ $(obj)/linuxbios.vpd:
 INITRAM_OBJ =   $(obj)/mainboard/$(MAINBOARDDIR)/initram.o \
 		$(obj)/arch/x86/geodelx/geodelx.o
 
-# These are possibly not permanent
-INITRAM_OBJ += $(obj)/lib/console.o $(obj)/lib/vtxprintf.o $(obj)/lib/uart8250.o $(obj)/arch/x86/post_code.o
+# Next Quest: Make a single rule out of those:
+$(obj)/mainboard/$(MAINBOARDDIR)/initram.o: $(src)/mainboard/$(MAINBOARDDIR)/initram.c
+	$(Q)$(CC) $(INITCFLAGS) -D_SHARED -fPIE -c $< -o $@
+$(obj)/northbridge/amd/geodelx/raminit.o: $(src)/northbridge/amd/geodelx/raminit.c
+	$(Q)$(CC) $(INITCFLAGS) -D_SHARED -fPIE -c $< -o $@
+$(obj)/southbridge/amd/cs5536/smbus_initram.o: $(src)/southbridge/amd/cs5536/smbus_initram.c
+	$(Q)$(CC) $(INITCFLAGS) -D_SHARED -fPIE -c $< -o $@
+$(obj)/arch/x86/geodelx/geodelx.o: $(src)/arch/x86/geodelx/geodelx.c
+	$(Q)$(CC) $(INITCFLAGS) -D_SHARED -fPIE -c $< -o $@
 
-$(obj)/linuxbios.initram: $(obj)/stage0.init $(obj)/stage0.o $(INITRAM_OBJ)
+$(obj)/linuxbios.initram $(obj)/linuxbios.initram.map: $(obj)/stage0.init $(obj)/stage0-prefixed.o $(INITRAM_OBJ)
 	$(Q)# initram links against stage0
 	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(LD) -Ttext 0x80000 $(INITRAM_OBJ) \
-		--entry=main -o $(obj)/linuxbios.initram.o
+	$(Q)$(LD) --entry main -N -R $(obj)/stage0-prefixed.o \
+		$(INITRAM_OBJ) -o $(obj)/linuxbios.initram.o
 	$(Q)printf "  OBJCOPY $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(OBJCOPY) -O binary $(obj)/linuxbios.initram.o \
 		$(obj)/linuxbios.initram

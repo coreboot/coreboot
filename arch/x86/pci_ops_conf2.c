@@ -12,8 +12,8 @@
  */
 
 #define IOADDR(devfn, where)	((0xC000 | ((devfn & 0x78) << 5)) + where)
-#define FUNC(devfn)		(((devfn & 7) << 1) | 0xf0)
-#define SET(bus,devfn)		outb(FUNC(devfn), 0xCF8); outb(bus, 0xCFA);
+#define DEVFUNC(devfn)		(((devfn & 7) << 1) | 0xf0)
+#define SET(bus,devfn)		outb(DEVFUNC(devfn), 0xCF8); outb(bus, 0xCFA);
 
 static u8 pci_conf2_read_config8(struct bus *pbus, int bus, int devfn, int where)
 {
@@ -65,7 +65,7 @@ static void pci_conf2_write_config32(struct bus *pbus, int bus, int devfn, int w
 
 #undef SET
 #undef IOADDR
-#undef FUNC
+#undef DEVFUNC
 
 struct pci_bus_operations pci_cf8_conf2 =
 {

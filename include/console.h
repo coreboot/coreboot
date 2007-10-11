@@ -18,6 +18,7 @@
 #define CONSOLE_H
 
 #include <types.h>
+#include <shared.h> /* We share symbols from stage 0 */
 
 #define BIOS_EMERG      0   /* system is unusable                   */
 #define BIOS_ALERT      1   /* action must be taken immediately     */
@@ -45,8 +46,7 @@ struct console_driver {
 	int (*tst_byte)(void);
 };
 
-// 
-int printk(int msg_level, const char *fmt, ...) 
-	__attribute__((format (printf, 2, 3)));
+SHARED_WITH_ATTRIBUTES(printk, int, __attribute__((format (printf, 2, 3))),
+					int msg_level, const char *fmt, ...);
 
 #endif /* CONSOLE_H */

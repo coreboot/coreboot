@@ -18,7 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-void post_code(u8 value);
+#include <shared.h>
+
+SHARED(post_code, void, u8 value);
 
 #define POST_START_OF_MAIN                              0x01
 

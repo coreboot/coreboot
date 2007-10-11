@@ -148,6 +148,11 @@ $(obj)/stage0.o $(obj)/stage0.init: $(STAGE0_OBJ)
 	$(Q)printf "  OBJCOPY $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(OBJCOPY) -O binary $(obj)/stage0.o $(obj)/stage0.init
 
+	$(Q)# Do another OBJCOPY to get a copy with renamed symbols 
+	$(Q)# for XIP code.
+	$(Q)printf "  OBJCOPY $(subst $(shell pwd)/,,$(@)) (prefixing stage0)\n"
+	$(Q)$(OBJCOPY) --prefix-symbols=stage0_ $(obj)/stage0.o $(obj)/stage0-prefixed.o
+
 	$(Q)printf "  TEST    $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)test `wc -c < $(obj)/stage0.init` -gt 16128 && \
 		printf "Error. Bootblock got too big.\n" || true

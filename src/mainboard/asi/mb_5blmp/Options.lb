@@ -156,7 +156,7 @@ default MAXIMUM_CONSOLE_LOGLEVEL=9
 # VGA Console
 # default CONFIG_CONSOLE_VGA=1
 # default CONFIG_PCI_ROM_RUN=1
-default CONFIG_VIDEO_MB = 4
+default CONFIG_VIDEO_MB = 0
 
 end
 

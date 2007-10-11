@@ -140,7 +140,7 @@ default CROSS_COMPILE=""
 default CC="$(CROSS_COMPILE)gcc -m32"
 default HOSTCC="gcc"
 
-default CONFIG_VIDEO_MB = 4
+default CONFIG_VIDEO_MB = 0
 
 end
 

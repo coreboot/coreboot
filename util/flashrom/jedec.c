@@ -281,7 +281,7 @@ int write_jedec(struct flashchip *flash, uint8_t *buf)
 	// dumb check if erase was successful.
 	for (i = 0; i < total_size; i++) {
 		if (bios[i] != (uint8_t) 0xff) {
-			printf("ERASE FAILED\n");
+			printf("ERASE FAILED @%d, val %02x\n", i, bios[i]);
 			return -1;
 		}
 	}

@@ -153,7 +153,8 @@ static int it8716f_spi_command(uint16_t port, unsigned char writecnt, unsigned c
 		return 1;
 	}
 	/* Start IO, 33MHz, readcnt input bytes, writecnt output bytes. Note:
-	   We can't use writecnt directly, but have to use a strange encoding */
+	 * We can't use writecnt directly, but have to use a strange encoding 
+	 */ 
 	outb((0x5 << 4) | ((readcnt & 0x3) << 2) | (writeenc), port);
 	do {
 		busy = inb(port) & 0x80;
@@ -202,43 +203,39 @@ int probe_spi(struct flashchip *flash)
 /*
  * Helper functions for many Winbond Super I/Os of the W836xx range.
  */
-#define W836_INDEX 0x2E
-#define W836_DATA  0x2F
-
 /* Enter extended functions */
-static void w836xx_ext_enter(void)
+static void w836xx_ext_enter(uint16_t port)
 {
-	outb(0x87, W836_INDEX);
-	outb(0x87, W836_INDEX);
+	outb(0x87, port);
+	outb(0x87, port);
 }
 
 /* Leave extended functions */
-static void w836xx_ext_leave(void)
+static void w836xx_ext_leave(uint16_t port)
 {
-	outb(0xAA, W836_INDEX);
+	outb(0xAA, port);
 }
 
 /* General functions for reading/writing Winbond Super I/Os. */
-static unsigned char wbsio_read(unsigned char index)
+static unsigned char wbsio_read(uint16_t index, uint8_t reg)
 {
-	outb(index, W836_INDEX);
-	return inb(W836_DATA);
+	outb(reg, index);
+	return inb(index+1);
 }
 
-static void wbsio_write(unsigned char index, unsigned char data)
+static void wbsio_write(uint16_t index, uint8_t reg, uint8_t data)
 {
-	outb(index, W836_INDEX);
-	outb(data, W836_DATA);
+	outb(reg, index);
+	outb(data, index+1);
 }
 
-static void wbsio_mask(unsigned char index, unsigned char data,
-		       unsigned char mask)
+static void wbsio_mask(uint16_t index, uint8_t reg, uint8_t data, uint8_t mask)
 {
-	unsigned char tmp;
+	uint8_t tmp;
 
-	outb(index, W836_INDEX);
-	tmp = inb(W836_DATA) & ~mask;
-	outb(tmp | (data & mask), W836_DATA);
+	outb(reg, index);
+	tmp = inb(index+1) & ~mask;
+	outb(tmp | (data & mask), index+1);
 }
 
 /**
@@ -248,36 +245,79 @@ static void wbsio_mask(unsigned char index, unsigned char data,
  *  - Agami Aruma
  *  - IWILL DK8-HTX
  */
-static int w83627hf_gpio24_raise(const char *name)
+static int w83627hf_gpio24_raise(uint16_t index, const char *name)
 {
-	w836xx_ext_enter();
+	w836xx_ext_enter(index);
 
 	/* Is this the w83627hf? */
-	if (wbsio_read(0x20) != 0x52) {	/* SIO device ID register */
+	if (wbsio_read(index, 0x20) != 0x52) {	/* Super I/O device ID register */
 		fprintf(stderr, "\nERROR: %s: W83627HF: Wrong ID: 0x%02X.\n",
-			name, wbsio_read(0x20));
-		w836xx_ext_leave();
+			name, wbsio_read(index, 0x20));
+		w836xx_ext_leave(index);
 		return -1;
 	}
 
 	/* PIN89S: WDTO/GP24 multiplex -> GPIO24 */
-	wbsio_mask(0x2B, 0x10, 0x10);
+	wbsio_mask(index, 0x2B, 0x10, 0x10);
 
-	wbsio_write(0x07, 0x08);	/* Select logical device 8: GPIO port 2 */
+	wbsio_write(index, 0x07, 0x08);	/* Select logical device 8: GPIO port 2 */
 
-	wbsio_mask(0x30, 0x01, 0x01);	/* Activate logical device. */
+	wbsio_mask(index, 0x30, 0x01, 0x01);	/* Activate logical device. */
 
-	wbsio_mask(0xF0, 0x00, 0x10);	/* GPIO24 -> output */
+	wbsio_mask(index, 0xF0, 0x00, 0x10);	/* GPIO24 -> output */
 
-	wbsio_mask(0xF2, 0x00, 0x10);	/* Clear GPIO24 inversion */
+	wbsio_mask(index, 0xF2, 0x00, 0x10);	/* Clear GPIO24 inversion */
 
-	wbsio_mask(0xF1, 0x10, 0x10);	/* Raise GPIO24 */
+	wbsio_mask(index, 0xF1, 0x10, 0x10);	/* Raise GPIO24 */
 
-	w836xx_ext_leave();
+	w836xx_ext_leave(index);
 
 	return 0;
 }
 
+static int w83627hf_gpio24_raise_2e(const char *name)
+{
+	return w83627hf_gpio24_raise(0x2d, name);
+}
+
+/**
+ * Winbond W83627THF: GPIO 4, bit 4
+ *
+ * Suited for:
+ *  - MSI K8N-NEO3
+ */
+static int w83627thf_gpio4_4_raise(uint16_t index, const char *name)
+{
+	w836xx_ext_enter(index);
+	/* Is this the w83627thf? */
+	if (wbsio_read(index, 0x20) != 0x82) {	/* Super I/O device ID register */
+		fprintf(stderr, "\nERROR: %s: W83627THF: Wrong ID: 0x%02X.\n",
+			name, wbsio_read(index, 0x20));
+		w836xx_ext_leave(index);
+		return -1;
+	}
+
+	/* PINxxxxS: GPIO4/bit 4 multiplex -> GPIOXXX */
+
+	wbsio_write(index, 0x07, 0x09);	/* Select logical device 9: GPIO port 4 */
+
+	wbsio_mask(index, 0x30, 0x02, 0x02);	/* Activate logical device. */
+
+	wbsio_mask(index, 0xF4, 0x00, 0x10);	/* GPIO4 bit 4 -> output */
+
+	wbsio_mask(index, 0xF6, 0x00, 0x10);	/* Clear GPIO4 bit 4 inversion */
+
+	wbsio_mask(index, 0xF5, 0x10, 0x10);	/* Raise GPIO4 bit 4 */
+
+	w836xx_ext_leave(index);
+
+	return 0;
+}
+
+static int w83627thf_gpio4_4_raise_4e(const char *name)
+{
+	return w83627thf_gpio4_4_raise(0x4E, name);
+}
 /**
  * Suited for VIAs EPIA M and MII, and maybe other CLE266 based EPIAs.
  *
@@ -335,12 +375,12 @@ static int board_asus_a7v8x_mx(const char *name)
 	pci_write_byte(dev, 0x59, val);
 
 	/* Raise ROM MEMW# line on Winbond w83697 SuperIO */
-	w836xx_ext_enter();
+	w836xx_ext_enter(0x2E);
 
-	if (!(wbsio_read(0x24) & 0x02))	/* flash rom enabled? */
-		wbsio_mask(0x24, 0x08, 0x08);	/* enable MEMW# */
+	if (!(wbsio_read(0x2E, 0x24) & 0x02))	/* flash rom enabled? */
+		wbsio_mask(0x2E, 0x24, 0x08, 0x08);	/* enable MEMW# */
 
-	w836xx_ext_leave();
+	w836xx_ext_leave(0x2E);
 
 	return 0;
 }
@@ -487,9 +527,11 @@ struct board_pciid_enable board_pciid_enables[] = {
 	{0x10de, 0x0360, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
 	 "gigabyte", "m57sli", "GIGABYTE GA-M57SLI", it87xx_probe_serial_flash},
 	{0x1022, 0x7468, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
-	 "iwill", "dk8_htx", "IWILL DK8-HTX", w83627hf_gpio24_raise},
+	 "iwill", "dk8_htx", "IWILL DK8-HTX", w83627hf_gpio24_raise_2e},
+	{0x10de, 0x005e, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+	 "msi", "k8n-neo3", "MSI K8N Neo3", w83627thf_gpio4_4_raise_4e},
 	{0x1022, 0x746B, 0x1022, 0x36C0, 0x0000, 0x0000, 0x0000, 0x0000,
-	 "AGAMI", "ARUMA", "agami Aruma", w83627hf_gpio24_raise},
+	 "AGAMI", "ARUMA", "agami Aruma", w83627hf_gpio24_raise_2e},
 	{0x1106, 0x3177, 0x1106, 0xAA01, 0x1106, 0x3123, 0x1106, 0xAA01,
 	 NULL, NULL, "VIA EPIA M/MII/...", board_via_epia_m},
 	{0x1106, 0x3177, 0x1043, 0x80A1, 0x1106, 0x3205, 0x1043, 0x8118,
@@ -509,8 +551,8 @@ struct board_pciid_enable board_pciid_enables[] = {
  * Match boards on LinuxBIOS table gathered vendor and part name.
  * Require main PCI IDs to match too as extra safety.
  */
-static struct board_pciid_enable *board_match_linuxbios_name(char *vendor,
-							     char *part)
+static struct board_pciid_enable *board_match_linuxbios_name(char *vendor, 
+								char *part)
 {
 	struct board_pciid_enable *board = board_pciid_enables;
 
@@ -525,10 +567,11 @@ static struct board_pciid_enable *board_match_linuxbios_name(char *vendor,
 			continue;
 
 		if (board->second_vendor &&
-		    !pci_dev_find(board->second_vendor, board->second_device))
+			!pci_dev_find(board->second_vendor, board->second_device))
 			continue;
 		return board;
 	}
+	printf("NOT FOUND %s:%s\n", vendor, part);
 	return NULL;
 }
 
@@ -545,20 +588,20 @@ static struct board_pciid_enable *board_match_pci_card_ids(void)
 			continue;
 
 		if (!pci_card_find(board->first_vendor, board->first_device,
-				   board->first_card_vendor,
-				   board->first_card_device))
+					board->first_card_vendor,
+					board->first_card_device))
 			continue;
 
 		if (board->second_vendor) {
 			if (board->second_card_vendor) {
 				if (!pci_card_find(board->second_vendor,
-						   board->second_device,
-						   board->second_card_vendor,
-						   board->second_card_device))
+						board->second_device,
+						board->second_card_vendor,
+						board->second_card_device))
 					continue;
 			} else {
 				if (!pci_dev_find(board->second_vendor,
-						  board->second_device))
+							board->second_device))
 					continue;
 			}
 		}
@@ -582,7 +625,7 @@ int board_flash_enable(char *vendor, char *part)
 
 	if (board) {
 		printf("Found board \"%s\": Enabling flash write... ",
-		       board->name);
+			board->name);
 
 		ret = board->enable(board->name);
 		if (ret)

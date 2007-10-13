@@ -24,13 +24,20 @@ CC      = gcc
 INSTALL = /usr/bin/install
 PREFIX  = /usr/local
 
+# Set the superiotool version string from the highest revision number
+# of the checked out superiotool files.
+SVNDEF := -D'SUPERIOTOOL_VERSION="$(shell svnversion -cn . \
+          | sed -e "s/.*://" -e "s/\([0-9]*\).*/\1/")"'
+
 # TODO: -pedantic
 CFLAGS = -O2 -Wall -Werror -Wstrict-prototypes -Wundef -Wstrict-aliasing \
-         -Werror-implicit-function-declaration -ansi
+         -Werror-implicit-function-declaration -ansi $(SVNDEF)
 
 OBJS = superiotool.o ali.o fintek.o ite.o nsc.o smsc.o winbond.o
 
 all: $(PROGRAM)
+
+superiotool.o: *.c superiotool.h
 
 $(PROGRAM): $(OBJS) superiotool.h
 	$(CC) $(CFLAGS) -o $(PROGRAM) $(OBJS)

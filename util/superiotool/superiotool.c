@@ -170,12 +170,7 @@ void probing_for(const char *vendor, const char *info, uint16_t port)
 
 static void print_version(void)
 {
-	char tmp[80];
-
-	strncpy((char *)&tmp,
-		(const char *)&SUPERIOTOOL_VERSION[6],
-		strlen(SUPERIOTOOL_VERSION) - 8);
-	printf("superiotool r%s\n", (char *)&tmp);
+	printf("superiotool r%s\n", SUPERIOTOOL_VERSION);
 }
 
 int main(int argc, char *argv[])

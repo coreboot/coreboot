@@ -562,7 +562,7 @@ static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 	base  |= (resource->base >> 8) & 0xffffff00;
 	base  |= 3;
 	limit &= 0x00000048;
-	limit |= ((resource->base + resource->size) >> 8) & 0xffffff00;
+	limit |= (resource_end(resource) >> 8) & 0xffffff00;
 	limit |= (resource->index & 3) << 4;
 	limit |= (nodeid & 7);
 	f1_write_config32(reg + 0x4, limit);

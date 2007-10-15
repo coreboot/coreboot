@@ -53,6 +53,7 @@ static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x06A0 },
 	{ X86_VENDOR_INTEL, 0x06A1 },
 	{ X86_VENDOR_INTEL, 0x06A4 },
+	{ X86_VENDOR_INTEL, 0x06B4 }, /* Mobile Celeron FCBGA */
 	{ 0, 0 },
 };
 

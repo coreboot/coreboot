@@ -207,7 +207,9 @@ int handle_romentries(uint8_t *buffer, uint8_t *content);
 int linuxbios_init(void);
 extern char *lb_part, *lb_vendor;
 
+/* spi.c */
 int probe_spi(struct flashchip *flash);
+int it87xx_probe_serial_flash(const char *name);
 
 /* 82802ab.c */
 int probe_82802ab(struct flashchip *flash);

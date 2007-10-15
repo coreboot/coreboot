@@ -291,7 +291,7 @@ void probe_idregs_winbond_helper(const char *init, uint16_t port)
 
 	if (devid == 0x52)
 		id = devid;				 /* ID only */
-	else if ((devid == 0x97) && ((rev & 0xf0) == 7))
+	else if ((devid == 0x97) && ((rev & 0xf0) == 0x70))
 		id = (devid << 8) | rev;		 /* ID and rev */
 	else
 		id = (devid << 4) | ((rev & 0xf0) >> 4); /* ID and rev[3..0] */

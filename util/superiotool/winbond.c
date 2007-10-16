@@ -199,6 +199,12 @@ const static struct superio_registers reg_table[] = {
 	/* ID and rev */
 	{0x9771, "W83977F-A/G-A/AF-A/AG-A", {
 		{EOT}}},
+	{0x9777, "W83977AF", {
+		/* W83977AF as found on the Advantech PCM-5820. We weren't able
+		 * to find a datasheet (so far) which lists the 0x77 revision,
+		 * but the hardware is there in the wild, so detect it...
+		 */
+		{EOT}}},
 	{0x9773, "W83977TF", {
 		{NOLDN, NULL,
 			{0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x28,0x2a,0x2b,

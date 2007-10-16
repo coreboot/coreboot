@@ -49,7 +49,7 @@ int run_address(void *f)
  * Given a file name in the LAR , search for it, and fill out a return struct with the 
  * result. 
  * @param archive A descriptor for current archive. This is actually a mem_file type, 
- *    which is a machine-dependent representation of hte actual archive. In particular, 
+ *    which is a machine-dependent representation of the actual archive. In particular, 
  *    things like u32 are void * in the mem_file struct. 
  * @param filename filename to find
  * @param result pointer to mem_file struct which is filled in if the file is found
@@ -65,30 +65,43 @@ int find_file(struct mem_file *archive, const char *filename, struct mem_file *r
 	printk(BIOS_SPEW, "LAR: Start %p len 0x%x\n", archive->start,
 	       archive->len);
 
-	if (archive->len < sizeof(struct lar_header))
-		printk(BIOS_ERR, "Error: truncated archive (%d bytes); minimum possible size is %d bytes\n", 
-			archive->len, sizeof(struct lar_header));
+	/* Why check for sizeof(struct lar_header) + 1? The code below expects
+	 * a filename to follow directly after the LAR header and will
+	 * dereference the address directly after the header. However, if
+	 * archive->len == sizeof(struct lar_header), printing the filename
+	 * will dereference memory outside the archive. Without looking at the
+	 * filename, the only thing we can check is that there is at least room
+	 * for an empty filename (only the terminating \0).
+	 */
+	if (archive->len < sizeof(struct lar_header) + 1)
+		printk(BIOS_ERR, "Error: truncated archive (%d bytes); minimum"
+			" possible size is %d bytes\n",
+			archive->len, sizeof(struct lar_header) + 1);
 
-	/* Getting this for loop right is harder than it looks. All quantities are 
-	  * unsigned. The LAR stretches from (e.g.) 0xfff0000 for 0x100000 
-	  * bytes, i.e. to address ZERO. 
-	  * As a result, 'walk', can wrap to zero and keep going (this has been 
-	  * seen in practice). Recall that these are unsigned; walk can 
-	  * wrap to zero; so, question, when is walk less than any of these:
-	  * archive->start
-	  * Answer: once walk wraps to zero, it is < archive->start
-	  * archive->start + archive->len
-	  * archive->start + archive->len  - 1
-	  * Answer: In the case that archive->start + archive->len == 0, ALWAYS!
-	  * A lot of expressions have been tried and all have been wrong. 
-	  * So what would work? Simple:
-	  * test for walk < archive->start + archive->len - 1 to cover the case
-	  *	that the archive does NOT occupy ALL of the top of memory and 
-	  *	wrap to zero; 
-	  * and test for walk >= archive->start, 
-	  * to cover the case that you wrapped to zero. 
-	  * Unsigned pointer arithmetic that wraps to zero can be messy.
-	  */
+	/* Getting this for loop right is harder than it looks. All quantities
+	 * are unsigned. The LAR stretches from (e.g.) 0xfff0000 for 0x100000
+	 * bytes, i.e. to address ZERO.
+	 * As a result, 'walk', can wrap to zero and keep going (this has been
+	 * seen in practice). Recall that these are unsigned; walk can
+	 * wrap to zero; so, question, when is walk less than any of these:
+	 * archive->start
+	 * Answer: once walk wraps to zero, it is < archive->start
+	 * archive->start + archive->len
+	 * archive->start + archive->len  - 1
+	 * Answer: In the case that archive->start + archive->len == 0, ALWAYS!
+	 * A lot of expressions have been tried and all have been wrong.
+	 * So what would work? Simple:
+	 * test for walk < archive->start + archive->len - sizeof(lar_header)
+	 *	to cover the case that the archive does NOT occupy ALL of the
+	 *	top of memory and wrap to zero; RESIST the temptation to change
+	 *	that comparison to <= because if a header did terminate the
+	 *	archive, the filename (stored directly after the header) would
+	 *	be outside the archive and you'd get a nice NULL pointer for
+	 *	the filename
+	 * and test for walk >= archive->start,
+	 *	to cover the case that you wrapped to zero.
+	 * Unsigned pointer arithmetic that wraps to zero can be messy.
+	 */
 	for (walk = archive->start;
 	     (walk < (char *)(archive->start + archive->len - sizeof(struct lar_header))) && 
 			(walk >= (char *)archive->start); walk += 16) {
@@ -98,7 +111,7 @@ int find_file(struct mem_file *archive, const char *filename, struct mem_file *r
 		header = (struct lar_header *)walk;
 		fullname = walk + sizeof(struct lar_header);
 
-		printk(BIOS_SPEW, "LAR: search for %s\n", fullname);
+		printk(BIOS_SPEW, "LAR: seen member %s\n", fullname);
 		// FIXME: check checksum
 
 		if (strcmp(fullname, filename) == 0) {
@@ -115,11 +128,20 @@ int find_file(struct mem_file *archive, const char *filename, struct mem_file *r
 				result->compression, result->entry, result->loadaddress);
 			return 0;
 		}
-		// skip file
-		walk += (ntohl(header->len) + ntohl(header->offset) -
-			1) & 0xfffffff0;
+		/* skip file:
+		 * The next iteration of the for loop will add 16 to walk, so
+		 * we now add offset (from header start to data start) and len
+		 * (member length), subtract 1 (to get the address of the last
+		 * byte of the member) and round this down to the next 16 byte
+		 * boundary.
+		 * In the case of consecutive archive members with header-
+		 * before-member structure, the next iteration of the loop will
+		 * start exactly at the beginning of the next header.
+		 */
+		walk += (ntohl(header->offset) + ntohl(header->len) - 1)
+			 & 0xfffffff0;
 	}
-	printk(BIOS_SPEW, "NO FILE FOUND\n");
+	printk(BIOS_SPEW, "LAR: NO FILE FOUND!\n");
 	return 1;
 }
 
@@ -157,7 +179,7 @@ static int process_file(struct mem_file *archive, void *where)
  * the loadaddress pointer in the mem_file struct. 
  * @param archive A descriptor for current archive.
  * @param filename filename to find
- * returns 0 on success, -1 otherwise
+ * returns entry on success, (void*)-1 otherwise
  */
 
 void *load_file(struct mem_file *archive, const char *filename)

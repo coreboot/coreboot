@@ -69,7 +69,7 @@ int legacy(struct mem_file *archive, char *name, void *where, struct lb_memory *
 }
 
 /*
- * This function is called from assembler code whith its argument on the
+ * This function is called from assembler code with its argument on the
  * stack. Force the compiler to generate always correct code for this case.
  */
 void __attribute__((stdcall)) stage1_main(u32 bist)
@@ -140,7 +140,7 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 	} else {
 		printk(BIOS_DEBUG, "Choosing fallback boot.\n");
 		ret = execute_in_place(&archive, "fallback/initram");
-		/* Try a normal boot if fallback doesn't exists in the lar.
+		/* Try a normal boot if fallback doesn't exist in the lar.
 		 * TODO: There are other ways to do this.
 		 * It could be ifdef or the boot flag could be forced.
 		 */

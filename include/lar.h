@@ -52,10 +52,9 @@
 
 #include <types.h>
 
-/* see note in lib/lar.c as to why this is ARCHIVE and not LARCHIVE */
 #define MAGIC "LARCHIVE"
 #define MAX_PATHLEN 1024
-/* NOTE -- This and the user-mode lar.h are NOT IN SYNC. Be careful. */
+/* NOTE -- This and the user-mode lar.h may NOT be in sync. Be careful. */
 struct lar_header {
 	char magic[8];
 	u32 len;

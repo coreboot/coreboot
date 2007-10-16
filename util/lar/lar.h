@@ -61,13 +61,15 @@ typedef uint64_t u64;
 typedef uint32_t u32;
 typedef uint8_t  u8;
 
-/* NOTE -- This and the linuxbios lar.h are NOT IN SYNC. Be careful. */
+/* NOTE -- This and the user-mode lar.h may NOT be in sync. Be careful. */
 struct lar_header {
 	char magic[8];
 	u32 len;
 	u32 reallen;
 	u32 checksum;
 	u32 compchecksum;
+	/* Filenames are limited to 2^31-1-sizeof(lar_header)-1 bytes.
+	 * "Nobody will ever need more than 640k" */
 	u32 offset;
 	/* Compression:
 	 * 0 = no compression

@@ -92,8 +92,6 @@ const static struct superio_registers reg_table[] = {
 		{EOT}}},
 	{0x610, "W83L517D/D-F", {
 		{EOT}}},
-	{0x681, "W83697SF/UF/UG", {
-		{EOT}}},
 	{0x708, "W83637HF/HG", {
 		{EOT}}},
 	{0x828, "W83627THF/THG", { /* We assume rev is bits 3..0 of 0x21. */
@@ -295,6 +293,8 @@ const static struct superio_registers reg_table[] = {
 			{0x30,0x60,0x61,0x70,0xf0,EOT},
 			{0x00,0x00,0x00,0x00,0x00,EOT}},
 		{EOT}}},
+	{0x68, "W83697SF/UF/UG", {	/* TODO: Add comment. */
+		{EOT}}},
 
 	/* ID[3..0] */
 	{0xa, "W83877F", {
@@ -333,7 +333,7 @@ void probe_idregs_winbond_helper(const char *init, uint16_t port)
 	rev = regval(port, DEVICE_REV_REG);
 	olddevid = regval(port, DEVICE_ID_REG_OLD) & 0x0f;
 
-	if (devid == 0x52)
+	if (devid == 0x52 || devid == 0x68)
 		id = devid;				 /* ID only */
 	else if ((devid == 0x97) && ((rev & 0xf0) == 0x70))
 		id = (devid << 8) | rev;		 /* ID and rev */

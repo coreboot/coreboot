@@ -601,11 +601,11 @@ void report_resource_stored(struct device *dev, struct resource *resource,
 			sprintf(buf, "bus %02x ", dev->link[0].secondary);
 #endif
 		}
-		printk(BIOS_DEBUG,
-		       "%s %02lx <- [0x%010llx - 0x%010llx] %s%s%s\n",
-		       dev_path(dev),
-		       resource->index,
-		       base, end, buf, resource_type(resource), comment);
+		printk(BIOS_DEBUG, "%s %02lx <- [0x%010llx - 0x%010llx] "
+			"size 0x%08Lx gran 0x%02x %s%s%s\n",
+			dev_path(dev), resource->index, base, end,
+			resource->size, resource->gran, buf,
+			resource_type(resource), comment);
 	}
 }
 

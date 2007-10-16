@@ -55,7 +55,8 @@ no LinuxBIOS table is found:
 * ASUS P5A: use -m asus:p5a
 * IBM x3455: use -m ibm:x3455
 * EPoX EP-BX3: use -m epox:ep-bx3
-
+* GIGABYTE GA-M57SLI v2.0: use -m gigabyte:m57sli
+* GIGABYTE GA-M61P-S3: use -m gigabyte:m61ps3
 
 ROM Layout Support
 ------------------

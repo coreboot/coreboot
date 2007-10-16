@@ -355,7 +355,7 @@ struct board_pciid_enable {
 
 struct board_pciid_enable board_pciid_enables[] = {
 	{0x10de, 0x0360, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
-	 "gigabyte", "m57sli", "GIGABYTE GA-M57SLI", it87xx_probe_serial_flash},
+	 "gigabyte", "m57sli", "GIGABYTE GA-M57SLI", it87xx_probe_spi_flash},
 	{0x1022, 0x7468, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
 	 "iwill", "dk8_htx", "IWILL DK8-HTX", w83627hf_gpio24_raise_2e},
 	{0x10de, 0x005e, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,

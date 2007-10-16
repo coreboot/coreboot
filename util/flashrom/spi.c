@@ -68,7 +68,7 @@ static void exit_conf_mode_ite(uint16_t port)
 	regwrite(port, 0x02, 0x02);
 }
 
-static uint16_t find_ite_serial_flash_port(uint16_t port)
+static uint16_t find_ite_spi_flash_port(uint16_t port)
 {
 	uint8_t tmp = 0;
 	uint16_t id, flashport = 0;
@@ -100,6 +100,14 @@ static uint16_t find_ite_serial_flash_port(uint16_t port)
 	}
 	exit_conf_mode_ite(port);
 	return flashport;
+}
+
+int it87xx_probe_spi_flash(const char *name)
+{
+	it8716f_flashport = find_ite_spi_flash_port(ITE_SUPERIO_PORT1);
+	if (!it8716f_flashport)
+		it8716f_flashport = find_ite_spi_flash_port(ITE_SUPERIO_PORT2);
+	return (!it8716f_flashport);
 }
 
 /* The IT8716F only supports commands with length 1,2,4,5 bytes including
@@ -162,22 +170,22 @@ static int it8716f_spi_command(uint16_t port, unsigned char writecnt, unsigned c
 	return 0;
 }
 
-static int it8716f_serial_rdid(uint16_t port, unsigned char *readarr)
+static int generic_spi_command(unsigned char writecnt, unsigned char readcnt, const unsigned char *writearr, unsigned char *readarr)
+{
+	if (it8716f_flashport)
+		return it8716f_spi_command(it8716f_flashport, writecnt, readcnt, writearr, readarr);
+	printf("%s called, but no SPI chipset detected\n", __FUNCTION__);
+	return 1;
+}
+
+static int generic_spi_rdid(unsigned char *readarr)
 {
 	const unsigned char cmd[] = JEDEC_RDID;
 
-	if (it8716f_spi_command(port, JEDEC_RDID_OUTSIZE, JEDEC_RDID_INSIZE, cmd, readarr))
+	if (generic_spi_command(JEDEC_RDID_OUTSIZE, JEDEC_RDID_INSIZE, cmd, readarr))
 		return 1;
 	printf("RDID returned %02x %02x %02x\n", readarr[0], readarr[1], readarr[2]);
 	return 0;
-}
-
-int it87xx_probe_serial_flash(const char *name)
-{
-	it8716f_flashport = find_ite_serial_flash_port(ITE_SUPERIO_PORT1);
-	if (!it8716f_flashport)
-		it8716f_flashport = find_ite_serial_flash_port(ITE_SUPERIO_PORT2);
-	return (!it8716f_flashport);
 }
 
 int probe_spi(struct flashchip *flash)
@@ -185,8 +193,7 @@ int probe_spi(struct flashchip *flash)
 	unsigned char readarr[3];
 	uint8_t manuf_id;
 	uint16_t model_id;
-	if (it8716f_flashport) {
-		it8716f_serial_rdid(it8716f_flashport, readarr);
+	if (!generic_spi_rdid(readarr)) {
 		manuf_id = readarr[0];
 		model_id = (readarr[1] << 8) | readarr[2];
 		printf_debug("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, manuf_id, model_id);

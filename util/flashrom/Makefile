@@ -55,7 +55,9 @@ pciutils:
 	@rm -f .test.c .test
 
 install: $(PROGRAM)
-	$(INSTALL) flashrom $(PREFIX)/bin
+	$(INSTALL) flashrom $(PREFIX)/sbin
+	mkdir -p $(PREFIX)/share/man/man8
+	$(INSTALL) $(PROGRAM).8 $(PREFIX)/share/man/man8
 
 .PHONY: all clean distclean dep pciutils
 

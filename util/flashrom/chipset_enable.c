@@ -381,7 +381,7 @@ static int enable_flash_mcp55(struct pci_dev *dev, char *name)
 
 	/* dump_pci_device(dev); */
 
-	/* Set the 4MB enable bit bit */
+	/* Set the 0-16 MB enable bits */
 	byte = pci_read_byte(dev, 0x88);
 	byte |= 0xff;		/* 256K */
 	pci_write_byte(dev, 0x88, byte);
@@ -389,7 +389,7 @@ static int enable_flash_mcp55(struct pci_dev *dev, char *name)
 	byte |= 0xff;		/* 1M */
 	pci_write_byte(dev, 0x8c, byte);
 	word = pci_read_word(dev, 0x90);
-	word |= 0x7fff;		/* 15M */
+	word |= 0x7fff;		/* 16M */
 	pci_write_word(dev, 0x90, word);
 
 	old = pci_read_byte(dev, 0x6d);

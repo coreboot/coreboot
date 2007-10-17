@@ -369,7 +369,6 @@ static void probe_idregs_ite_helper(const char *init, uint16_t port)
 	chip_found = 1;
 
 	dump_superio("ITE", reg_table, port, id);
-	dump_superio_readable(port); /* TODO */
 }
 
 void probe_idregs_ite(uint16_t port)

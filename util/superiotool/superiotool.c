@@ -23,7 +23,7 @@
 #include "superiotool.h"
 
 /* Command line options. */
-int dump = 0, dump_readable = 0, verbose = 0;
+int dump = 0, verbose = 0;
 
 /* Global flag which indicates whether a chip was detected at all. */
 int chip_found = 0;
@@ -151,13 +151,6 @@ void dump_superio(const char *vendor,
 	}
 }
 
-void dump_superio_readable(uint16_t port)
-{
-	/* TODO */
-	if (dump_readable)
-		printf("No human-readable dump available for this Super I/O\n");
-}
-
 void probing_for(const char *vendor, const char *info, uint16_t port)
 {
 	if (!verbose)
@@ -179,21 +172,17 @@ int main(int argc, char *argv[])
 
 	const static struct option long_options[] = {
 		{"dump",		no_argument, NULL, 'd'},
-		{"dump-readable",	no_argument, NULL, 'D'},
 		{"verbose",		no_argument, NULL, 'V'},
 		{"version",		no_argument, NULL, 'v'},
 		{"help",		no_argument, NULL, 'h'},
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "dDVvh",
+	while ((opt = getopt_long(argc, argv, "dVvh",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'd':
 			dump = 1;
-			break;
-		case 'D':
-			dump_readable = 1;
 			break;
 		case 'V':
 			verbose = 1;

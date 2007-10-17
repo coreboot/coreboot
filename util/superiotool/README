@@ -33,7 +33,6 @@ Usage
  $ superiotool [-d] [-D] [-V] [-v] [-h]
 
  -d | --dump            Dump Super I/O registers
- -D | --dump-readable   Dump Super I/O registers in human-readable format
  -V | --verbose         Verbose mode
  -v | --version         Show the superiotool version
  -h | --help            Show a short help text
@@ -50,10 +49,6 @@ Typical usage of superiotool:
  - Register dump as table of hex-values of the Super I/O (if detected):
 
    $ superiotool -d
-
- - Detailed register dump in human-readable format:
-
-   $ superiotool -D
 
 
 Supported Super I/O Chips

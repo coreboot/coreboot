@@ -2,7 +2,7 @@
 .SH NAME
 superiotool \- Super I/O detection tool
 .SH SYNOPSIS
-.B superiotool \fR[\fB\-dDVvh\fR] 
+.B superiotool \fR[\fB\-dVvh\fR] 
 .SH DESCRIPTION
 .B superiotool
 is a GPL'd user-space utility which can
@@ -71,17 +71,6 @@ register),
 which can mean several things. It's recommended to consult the datasheet for
 detailed information about the
 .BR MM " fields."
-.TP
-.B "\-D, \-\-dump-readable"
-Dump Super I/O registers in human-readable format (if the Super I/O chip
-is detected and
-.B superiotool
-supports the
-.B "\-\-dump-readable"
-option for this chip).
-.sp
-The output format of this option is different for every Super I/O, and only
-very few Super I/Os currently support this option.
 .TP
 .B "\-V, \-\-verbose"
 Enable verbose mode. This option can be used together with the

@@ -70,68 +70,6 @@ const static struct superio_registers reg_table[] = {
 	{EOT}
 };
 
-static void dump_readable_fintek(uint16_t port, uint16_t did)
-{
-	if (!dump_readable)
-		return;
-
-	printf("Human-readable register dump:\n");
-
-	printf("Flash write is %s.\n",
-	       regval(port, 0x28) & 0x80 ? "enabled" : "disabled");
-	printf("Flash control is 0x%04x.\n", regval(port, 0x28));
-	printf("27=%02x\n", regval(port, 0x27));
-	printf("29=%02x\n", regval(port, 0x29));
-	printf("2a=%02x\n", regval(port, 0x2a));
-	printf("2b=%02x\n", regval(port, 0x2b));
-
-	/* Select UART 1. */
-	regwrite(port, 0x07, 0x01);
-	printf("UART1 is %s\n",
-	       regval(port, 0x30) & 1 ? "enabled" : "disabled");
-	printf("UART1 base=%02x%02x, irq=%02x, mode=%s\n", regval(port, 0x60),
-	       regval(port, 0x61), regval(port, 0x70) & 0x0f,
-	       regval(port, 0xf0) & 0x10 ? "RS485" : "RS232");
-
-	/* Select UART 2. */
-	regwrite(port, 0x07, 0x02);
-	printf("UART2 is %s\n",
-	       regval(port, 0x30) & 1 ? "enabled" : "disabled");
-	printf("UART2 base=%02x%02x, irq=%02x, mode=%s\n", regval(port, 0x60),
-	       regval(port, 0x61), regval(port, 0x70) & 0x0f,
-	       regval(port, 0xf0) & 0x10 ? "RS485" : "RS232");
-
-	/* Select parallel port. */
-	regwrite(port, 0x07, 0x03);
-	printf("PARPORT is %s\n",
-	       regval(port, 0x30) & 1 ? "enabled" : "disabled");
-	printf("PARPORT base=%02x%02x, irq=%02x\n", regval(port, 0x60),
-	       regval(port, 0x61), regval(port, 0x70) & 0x0f);
-
-	/* Select HW monitor. */
-	regwrite(port, 0x07, 0x04);
-	printf("HW monitor is %s\n",
-	       regval(port, 0x30) & 1 ? "enabled" : "disabled");
-	printf("HW monitor base=%02x%02x, irq=%02x\n", regval(port, 0x60),
-	       regval(port, 0x61), regval(port, 0x70) & 0x0f);
-
-	/* Select GPIO. */
-	regwrite(port, 0x07, 0x05);
-	printf("GPIO is %s\n", regval(port, 0x30) & 1 ? "enabled" : "disabled");
-	printf
-	    ("GPIO 70=%02x, e0=%02x, e1=%02x, e2=%02x, e3=%02x, e4=%02x, e5=%02x\n",
-	     regval(port, 0x70), regval(port, 0xe0), regval(port, 0xe1),
-	     regval(port, 0xe2), regval(port, 0xe3), regval(port, 0xe4),
-	     regval(port, 0xe5));
-	printf
-	    ("GPIO e6=%02x, e7=%02x, e8=%02x, e9=%02x, f0=%02x, f1=%02x, f3=%02x, f4=%02x\n",
-	     regval(port, 0xe6), regval(port, 0xe7), regval(port, 0xe8),
-	     regval(port, 0xe9), regval(port, 0xf0), regval(port, 0xf1),
-	     regval(port, 0xf3), regval(port, 0xf4));
-	printf("GPIO f5=%02x, f6=%02x, f7=%02x, f8=%02x\n", regval(port, 0xf5),
-	       regval(port, 0xf6), regval(port, 0xf7), regval(port, 0xf8));
-}
-
 void probe_idregs_fintek(uint16_t port)
 {
 	uint16_t vid, did;
@@ -158,7 +96,6 @@ void probe_idregs_fintek(uint16_t port)
 	chip_found = 1;
 
 	dump_superio("Fintek", reg_table, port, did);
-	dump_readable_fintek(port, did);
 
 	exit_conf_mode_winbond_fintek_ite_8787(port);
 }

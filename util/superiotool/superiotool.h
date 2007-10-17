@@ -29,9 +29,8 @@
 #include <getopt.h>
 #include <sys/io.h>
 
-#define USAGE "Usage: superiotool [-d] [-D] [-V] [-v] [-h]\n\n\
+#define USAGE "Usage: superiotool [-d] [-V] [-v] [-h]\n\n\
   -d | --dump            Dump Super I/O registers\n\
-  -D | --dump-readable   Dump Super I/O registers in human-readable format\n\
   -V | --verbose         Verbose mode\n\
   -v | --version         Show the superiotool version\n\
   -h | --help            Show a short help text\n\n\
@@ -55,7 +54,7 @@ and print its vendor, name, ID, revision, and config port.\n"
 #define MAXNUMPORTS	(6 + 1)		/* Maximum number of Super I/O ports */
 
 /* Command line parameters. */
-extern int dump, dump_readable, verbose;
+extern int dump, verbose;
 
 extern int chip_found;
 
@@ -80,7 +79,6 @@ const char *get_superio_name(const struct superio_registers reg_table[],
 			     uint16_t id);
 void dump_superio(const char *name, const struct superio_registers reg_table[],
 		  uint16_t port, uint16_t id);
-void dump_superio_readable(uint16_t port);
 void probing_for(const char *vendor, const char *info, uint16_t port);
 
 /* ali.c */

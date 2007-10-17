@@ -27,6 +27,7 @@ static void pc_keyboard_init(struct pc_keyboard *keyboard)
 {
 	unsigned char regval;
 
+	printk_debug("Keyboard init...\n");
 	/* send cmd = 0xAA, self test 8042 */
 	outb(0xaa, 0x64);
 

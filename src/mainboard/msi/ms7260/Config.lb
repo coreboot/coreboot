@@ -182,30 +182,45 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
           device pci 0.0 on end			# HT
           device pci 1.0 on			# LPC
             chip superio/winbond/w83627ehg	# Super I/O
-              device pnp 4e.5 on		# Com1
-                io 0x60 = 0x3f8
-                irq 0x70 = 4
-              end
-              device pnp 4e.6 off		# Com2 / IrDA
-                io 0x60 = 0x2f8
-                irq 0x70 = 3
-              end
-              device pnp 4e.7 on		# Floppy
+              device pnp 4e.0 on		# Floppy
                 io 0x60 = 0x3f0
                 irq 0x70 = 6
                 drq 0x74 = 2
               end
-              device pnp 4e.8 on		# Parallel port
+              device pnp 4e.1 on		# Parallel port
                 io 0x60 = 0x378
                 irq 0x70 = 7
               end
-              device pnp 4e.b on		# PS/2 keyboard
+              device pnp 4e.2 on		# Com1
+                io 0x60 = 0x3f8
+                irq 0x70 = 4
+              end
+              device pnp 4e.3 on		# Com2 / IrDA
+                io 0x60 = 0x2f8
+                irq 0x70 = 3
+              end
+              device pnp 4e.5 on		# PS/2 keyboard
                 io 0x60 = 0x60
                 io 0x62 = 0x64
-                irq 0x70 = 1
+                irq 0x70 = 1			# PS/2 keyboard IRQ
+                irq 0x72 = 12			# PS/2 mouse IRQ
               end
-              device pnp 4e.c on		# PS/2 mouse
-                irq 0x70 = 12
+              device pnp 4e.6 off		# Serial flash interface
+                # io 0x62 = 0x100
+              end
+              device pnp 4e.7 off		# GPIO1/6, game port, MIDI port
+                # io 0x60 = 0x220		# Datasheet: 0x201
+                # io 0x62 = 0x300		# Datasheet: 0x330
+                # irq 0x70 = 9
+              end
+              device pnp 4e.8 off		# WDTO#, PLED
+              end
+              device pnp 4e.9 off		# GPIO2/3/4/5, SUSLED
+              end
+              device pnp 4e.a off		# ACPI
+              end
+              device pnp 4e.b on		# HWM (for lm-sensors)
+                io 0x60 = 0xa10
               end
             end
           end

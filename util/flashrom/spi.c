@@ -123,7 +123,7 @@ static int it8716f_spi_command(uint16_t port, unsigned char writecnt, unsigned c
 		busy = inb(port) & 0x80;
 	} while (busy);
 	if (readcnt > 3) {
-		printf("%s called with unsupported readcnt %i\n",
+		printf("%s called with unsupported readcnt %i.\n",
 			__FUNCTION__, readcnt);
 		return 1;
 	}
@@ -153,7 +153,7 @@ static int it8716f_spi_command(uint16_t port, unsigned char writecnt, unsigned c
 		writeenc = 0x3;
 		break;
 	default:
-		printf("%s called with unsupported writecnt %i\n",
+		printf("%s called with unsupported writecnt %i.\n",
 			__FUNCTION__, writecnt);
 		return 1;
 	}
@@ -184,7 +184,7 @@ static int generic_spi_rdid(unsigned char *readarr)
 
 	if (generic_spi_command(JEDEC_RDID_OUTSIZE, JEDEC_RDID_INSIZE, cmd, readarr))
 		return 1;
-	printf("RDID returned %02x %02x %02x\n", readarr[0], readarr[1], readarr[2]);
+	printf("RDID returned %02x %02x %02x.\n", readarr[0], readarr[1], readarr[2]);
 	return 0;
 }
 

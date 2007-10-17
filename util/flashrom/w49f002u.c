@@ -30,7 +30,7 @@ int write_49f002(struct flashchip *flash, uint8_t *buf)
 
 	erase_chip_jedec(flash);
 
-	printf("Programming Page: ");
+	printf("Programming page: ");
 	for (i = 0; i < total_size / page_size; i++) {
 		/* write to the sector */
 		printf("%04d at address: 0x%08x ", i, i * page_size);

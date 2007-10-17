@@ -124,7 +124,7 @@ int write_m29f400bt(struct flashchip *flash, uint8_t *buf)
 	volatile uint8_t *bios = flash->virtual_memory;
 
 	//erase_m29f400bt (flash);
-	printf("Programming Page:\n ");
+	printf("Programming page:\n ");
 	/*********************************
 	*Pages for M29F400BT:
 	* 16	0x7c000		0x7ffff		TOP
@@ -175,7 +175,7 @@ int write_linuxbios_m29f400bt(struct flashchip *flash, uint8_t *buf)
 {
 	volatile uint8_t *bios = flash->virtual_memory;
 
-	printf("Programming Page:\n ");
+	printf("Programming page:\n ");
 	/*********************************
 	*Pages for M29F400BT:
 	* 16	0x7c000		0x7ffff		TOP

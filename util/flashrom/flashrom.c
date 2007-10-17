@@ -143,7 +143,7 @@ struct flashchip *probe_flash(struct flashchip *flash)
 		flash->virtual_memory = bios;
 
 		if (flash->probe(flash) == 1) {
-			printf("%s found at physical address: 0x%lx\n",
+			printf("%s found at physical address 0x%lx.\n",
 			       flash->name, flash_baseaddr);
 			return flash;
 		}
@@ -161,7 +161,7 @@ int verify_flash(struct flashchip *flash, uint8_t *buf)
 	int total_size = flash->total_size * 1024;
 	volatile uint8_t *bios = flash->virtual_memory;
 
-	printf("Verifying flash ");
+	printf("Verifying flash... ");
 
 	if (verbose)
 		printf("address: 0x00000000\b\b\b\b\b\b\b\b\b\b");
@@ -174,7 +174,7 @@ int verify_flash(struct flashchip *flash, uint8_t *buf)
 			if (verbose) {
 				printf("0x%08x ", idx);
 			}
-			printf("- FAILED\n");
+			printf("FAILED!\n");
 			return 1;
 		}
 
@@ -184,7 +184,7 @@ int verify_flash(struct flashchip *flash, uint8_t *buf)
 	if (verbose)
 		printf("\b\b\b\b\b\b\b\b\b\b ");
 
-	printf("- VERIFIED         \n");
+	printf("VERIFIED.          \n");
 
 	return 0;
 }
@@ -369,7 +369,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	printf("Flash part is %s (%d KB)\n", flash->name, flash->total_size);
+	printf("Flash part is %s (%d KB).\n", flash->name, flash->total_size);
 
 	if (!(read_it | write_it | verify_it | erase_it)) {
 		printf("No operations were specified.\n");

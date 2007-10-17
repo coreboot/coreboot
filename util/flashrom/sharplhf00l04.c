@@ -164,10 +164,10 @@ int write_lhf00l04(struct flashchip *flash, uint8_t *buf)
 
 	erase_lhf00l04(flash);
 	if (*bios != 0xff) {
-		printf("ERASE FAILED\n");
+		printf("ERASE FAILED!\n");
 		return -1;
 	}
-	printf("Programming Page: ");
+	printf("Programming page: ");
 	for (i = 0; i < total_size / page_size; i++) {
 		printf("%04d at address: 0x%08x", i, i * page_size);
 		write_page_lhf00l04(bios, buf + i * page_size,

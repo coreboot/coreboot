@@ -83,12 +83,12 @@ int write_sst_fwhub(struct flashchip *flash, uint8_t *buf)
 	// dumb check if erase was successful.
 	for (i = 0; i < total_size; i++) {
 		if (bios[i] != 0xff) {
-			printf("ERASE FAILED\n");
+			printf("ERASE FAILED!\n");
 			return -1;
 		}
 	}
 
-	printf("Programming Page: ");
+	printf("Programming page: ");
 	for (i = 0; i < total_size / page_size; i++) {
 		printf("%04d at address: 0x%08x", i, i * page_size);
 		write_sector_jedec(bios, buf + i * page_size,

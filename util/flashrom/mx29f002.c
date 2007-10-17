@@ -88,7 +88,7 @@ int write_29f002(struct flashchip *flash, uint8_t *buf)
 	erase_29f002(flash);
 	//*bios = 0xF0;
 #if 1
-	printf("Programming Page: ");
+	printf("Programming page: ");
 	for (i = 0; i < total_size; i++) {
 		/* write to the sector */
 		if ((i & 0xfff) == 0)

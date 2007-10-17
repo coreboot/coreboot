@@ -105,26 +105,26 @@ static struct lb_header *find_lb_table(void *base, unsigned long start,
 		printf_debug("Found canidate at: %08lx-%08lx\n",
 			     addr, addr + head->table_bytes);
 		if (head->header_bytes != sizeof(*head)) {
-			fprintf(stderr, "Header bytes of %d are incorrect\n",
+			fprintf(stderr, "Header bytes of %d are incorrect.\n",
 				head->header_bytes);
 			continue;
 		}
 		if (count_lb_records(head) != head->table_entries) {
-			fprintf(stderr, "bad record count: %d\n",
+			fprintf(stderr, "Bad record count: %d.\n",
 				head->table_entries);
 			continue;
 		}
 		if (compute_checksum((uint8_t *) head, sizeof(*head)) != 0) {
-			fprintf(stderr, "bad header checksum\n");
+			fprintf(stderr, "Bad header checksum.\n");
 			continue;
 		}
 		if (compute_checksum(recs, head->table_bytes)
 		    != head->table_checksum) {
-			fprintf(stderr, "bad table checksum: %04x\n",
+			fprintf(stderr, "Bad table checksum: %04x.\n",
 				head->table_checksum);
 			continue;
 		}
-		fprintf(stdout, "Found LinuxBIOS table at: %08lx\n", addr);
+		fprintf(stdout, "Found LinuxBIOS table at 0x%08lx.\n", addr);
 		return head;
 
 	};
@@ -140,7 +140,7 @@ static void find_mainboard(struct lb_record *ptr, unsigned long addr)
 
 	rec = (struct lb_mainboard *)ptr;
 	max_size = rec->size - sizeof(*rec);
-	printf("vendor id: %.*s part id: %.*s\n",
+	printf("Vendor ID: %.*s, part ID: %.*s\n",
 	       max_size - rec->vendor_idx,
 	       rec->strings + rec->vendor_idx,
 	       max_size - rec->part_number_idx,
@@ -151,7 +151,7 @@ static void find_mainboard(struct lb_record *ptr, unsigned long addr)
 		 rec->strings + rec->part_number_idx);
 
 	if (lb_part) {
-		printf("overwritten by command line, vendor id: %s part id: %s\n", lb_vendor, lb_part);
+		printf("Overwritten by command line, vendor ID: %s, part ID: %s.\n", lb_vendor, lb_part);
 	} else {
 		lb_part = strdup(part);
 		lb_vendor = strdup(vendor);
@@ -201,7 +201,7 @@ int linuxbios_init(void)
 	if (lb_table) {
 		unsigned long addr;
 		addr = ((char *)lb_table) - ((char *)low_1MB);
-		printf_debug("lb_table found at address %p\n", lb_table);
+		printf_debug("LinuxBIOS table found at %p.\n", lb_table);
 		rec = (struct lb_record *)(((char *)lb_table) + lb_table->header_bytes);
 		last = (struct lb_record *)(((char *)rec) + lb_table->table_bytes);
 		printf_debug("LinuxBIOS header(%d) checksum: %04x table(%d) checksum: %04x entries: %d\n",

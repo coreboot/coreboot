@@ -169,10 +169,10 @@ int write_md2802(struct flashchip *flash, uint8_t *buf)
 	return (1);
 	erase_md2802(flash);
 	if (*bios != (uint8_t) 0xff) {
-		printf("ERASE FAILED\n");
+		printf("ERASE FAILED!\n");
 		return -1;
 	}
-	printf("Programming Page: ");
+	printf("Programming page: ");
 	for (i = 0; i < total_size / page_size; i++) {
 		printf("%04d at address: 0x%08x", i, i * page_size);
 		//write_page_md2802(bios, buf + i * page_size, bios + i * page_size, page_size);

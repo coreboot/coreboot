@@ -161,7 +161,7 @@ static int board_via_epia_m(const char *name)
 
 	dev = pci_dev_find(0x1106, 0x3177);	/* VT8235 ISA bridge */
 	if (!dev) {
-		fprintf(stderr, "\nERROR: VT8235 ISA Bridge not found.\n");
+		fprintf(stderr, "\nERROR: VT8235 ISA bridge not found.\n");
 		return -1;
 	}
 
@@ -355,9 +355,9 @@ struct board_pciid_enable {
 
 struct board_pciid_enable board_pciid_enables[] = {
 	{0x10de, 0x0360, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
-	 "gigabyte", "m57sli", "GIGABYTE GA-M57SLI", it87xx_probe_spi_flash},
+	 "gigabyte", "m57sli", "GIGABYTE GA-M57SLI-S4", it87xx_probe_spi_flash},
 	{0x10de, 0x03e0, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
-	 "gigabyte", "m61ps3", "GIGABYTE GA-M61P-S3", it87xx_probe_spi_flash},
+	 "gigabyte", "m61p", "GIGABYTE GA-M61P-S3", it87xx_probe_spi_flash},
 	{0x1022, 0x7468, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
 	 "iwill", "dk8_htx", "IWILL DK8-HTX", w83627hf_gpio24_raise_2e},
 	{0x10de, 0x005e, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
@@ -456,12 +456,12 @@ int board_flash_enable(char *vendor, char *part)
 		board = board_match_pci_card_ids();
 
 	if (board) {
-		printf("Found board \"%s\": Enabling flash write... ",
+		printf("Found board \"%s\": enabling flash write... ",
 			board->name);
 
 		ret = board->enable(board->name);
 		if (ret)
-			printf("Failed!\n");
+			printf("FAILED!\n");
 		else
 			printf("OK.\n");
 	}

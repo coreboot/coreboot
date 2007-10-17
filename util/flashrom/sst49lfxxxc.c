@@ -170,7 +170,7 @@ int write_49lfxxxc(struct flashchip *flash, uint8_t *buf)
 	volatile uint8_t *bios = flash->virtual_memory;
 
 	write_lockbits_49lfxxxc(flash->virtual_registers, total_size, 0);
-	printf("Programming Page: ");
+	printf("Programming page: ");
 	for (i = 0; i < total_size / page_size; i++) {
 		/* erase the page before programming */
 		erase_sector_49lfxxxc(bios, i * page_size);

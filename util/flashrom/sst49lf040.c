@@ -44,7 +44,7 @@ int write_49lf040(struct flashchip *flash, uint8_t *buf)
 	int page_size = flash->page_size;
 	volatile uint8_t *bios = flash->virtual_memory;
 
-	printf("Programming Page: ");
+	printf("Programming page: ");
 	for (i = 0; i < total_size / page_size; i++) {
 		/* erase the page before programming
 		 * Chip erase only works in parallel programming mode

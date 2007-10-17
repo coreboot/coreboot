@@ -47,14 +47,14 @@ int show_id(uint8_t *bios, int size)
 	}
 
 	printf_debug("LinuxBIOS last image size "
-		     "(not rom size) is %d bytes.\n", *walk);
+		     "(not ROM size) is %d bytes.\n", *walk);
 
 	walk--;
 	mainboard_part = strdup((const char *)(bios + size - *walk));
 	walk--;
 	mainboard_vendor = strdup((const char *)(bios + size - *walk));
-	printf_debug("MANUFACTURER: %s\n", mainboard_vendor);
-	printf_debug("MAINBOARD ID: %s\n", mainboard_part);
+	printf_debug("Manufacturer: %s\n", mainboard_vendor);
+	printf_debug("Mainboard ID: %s\n", mainboard_part);
 
 	/*
 	 * If lb_vendor is not set, the linuxbios table was
@@ -63,7 +63,7 @@ int show_id(uint8_t *bios, int size)
 
 	if (!lb_vendor || !lb_part) {
 		printf("Note: If the following flash access fails, "
-		       "you might need to specify -m <vendor>:<mainboard>\n");
+		       "you might need to specify -m <vendor>:<mainboard>.\n");
 		return 0;
 	}
 
@@ -104,7 +104,7 @@ int read_romlayout(char *name)
 	romlayout = fopen(name, "r");
 
 	if (!romlayout) {
-		fprintf(stderr, "ERROR: Could not open rom layout (%s).\n",
+		fprintf(stderr, "ERROR: Could not open ROM layout (%s).\n",
 			name);
 		return -1;
 	}
@@ -154,8 +154,7 @@ int find_romentry(char *name)
 			return i;
 		}
 	}
-	printf("not found.\n");
-	// Not found. Error.
+	printf("not found.\n"); // Not found. Error.
 
 	return -1;
 }

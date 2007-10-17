@@ -143,7 +143,7 @@ int write_28sf040(struct flashchip *flash, uint8_t *buf)
 
 	unprotect_28sf040(bios);
 
-	printf("Programming Page: ");
+	printf("Programming page: ");
 	for (i = 0; i < total_size / page_size; i++) {
 		/* erase the page before programming */
 		erase_sector_28sf040(bios, i * page_size);

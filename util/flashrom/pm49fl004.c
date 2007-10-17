@@ -30,7 +30,7 @@ int write_49fl004(struct flashchip *flash, uint8_t *buf)
 	int page_size = flash->page_size;
 	volatile uint8_t *bios = flash->virtual_memory;
 
-	printf("Programming Page: ");
+	printf("Programming page: ");
 	for (i = 0; i < total_size / page_size; i++) {
 		if ((i >= exclude_start_page) && (i < exclude_end_page))
 			continue;

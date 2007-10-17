@@ -499,12 +499,12 @@ int chipset_flash_enable(void)
 	}
 
 	if (dev) {
-		printf("Found chipset \"%s\": Enabling flash write... ",
+		printf("Found chipset \"%s\", enabling flash write... ",
 		       enables[i].name);
 
 		ret = enables[i].doit(dev, enables[i].name);
 		if (ret)
-			printf("Failed!\n");
+			printf("FAILED!\n");
 		else
 			printf("OK.\n");
 	}

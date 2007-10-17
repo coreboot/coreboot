@@ -196,8 +196,6 @@ int main(int argc, char *argv[])
 			dump_readable = 1;
 			break;
 		case 'V':
-			/* Print version in --verbose mode. */
-			print_version();
 			verbose = 1;
 			break;
 		case 'v':
@@ -220,6 +218,8 @@ int main(int argc, char *argv[])
 		printf("Superiotool must be run as root.\n");
 		exit(1);
 	}
+
+	print_version();
 
 	for (i = 0; i < ARRAY_SIZE(superio_ports_table); i++) {
 		for (j = 0; superio_ports_table[i].ports[j] != EOT; j++)

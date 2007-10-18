@@ -270,17 +270,9 @@ int generic_spi_chip_erase(struct flashchip *flash)
 	generic_spi_write_enable();
 	/* Send CE (Chip Erase) */
 	generic_spi_command(1, 0, cmd, NULL);
-	/* The chip needs some time for erasing, the MX25L4005A has a maximum
-	 * time of 7.5 seconds.
-	 * FIXME: Check the status register instead
-	 * Do we have to check the status register before calling
-	 * write_disable()? The data sheet suggests we don't have to call
-	 * write_disable() at all because WEL is reset automatically.
+	/* Wait until the Write-In-Progress bit is cleared */
 	while (generic_spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
 		sleep(1);
-	 */
-	generic_spi_write_disable();
-	sleep(8);
 	return 0;
 }
 
@@ -294,17 +286,9 @@ void it8716f_spi_page_program(int block, uint8_t *buf, uint8_t *bios) {
 		bios[256 * block + i] = buf[256 * block + i];
 	}
 	outb(0, it8716f_flashport);
-	/* The chip needs some time for page program, the MX25L4005A has a
-	 * maximum time of 5 ms.
-	 * FIXME: Check the status register instead.
-	 * Do we have to check the status register before calling
-	 * write_disable()? The data sheet suggests we don't have to call
-	 * write_disable() at all because WEL is reset automatically.
+	/* Wait until the Write-In-Progress bit is cleared */
 	while (generic_spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
 		usleep(1000);
-	 */
-	generic_spi_write_disable();
-	usleep(5000);
 }
 
 void generic_spi_page_program(int block, uint8_t *buf, uint8_t *bios)

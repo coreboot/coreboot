@@ -1,4 +1,4 @@
-.TH FLASHROM 8 "December 20, 2006"
+.TH FLASHROM 8 "October 18, 2007"
 .SH NAME
 flashrom \- a universal flash programming utility
 .SH SYNOPSIS
@@ -6,24 +6,23 @@ flashrom \- a universal flash programming utility
          [\fB-m\fR vendor:part] [\fB-l\fR file.layout] [\fB-i\fR image_name] [file]
 .SH DESCRIPTION
 .B flashrom
-is a universal flash programming utility for flash chips
-(e.g. in DIP or PLCC packaging). It can be used to flash BIOS images,
-for example.
+is a universal flash programming utility for DIP, PLCC, or SPI flash ROM
+chips. It can be used to flash BIOS/LinuxBIOS/firmware images, for example.
 .SH OPTIONS
 If no file is specified, then all that happens
 is that flash info is dumped and the flash chip is set to writable.
 .TP
 .B "\-r, \-\-read"
-Read flash and save contents into file.
+Read flash ROM contents an save them into the given file.
 .TP
 .B "\-w, \-\-write"
 Write file into flash (default when file is specified).
 .TP
 .B "\-v, \-\-verify"
-Verify flash against file.
+Verify the flash ROM contents against the given file.
 .TP
 .B "\-E, \-\-erase"
-Erase flash device.
+Erase the flash device.
 .TP
 .B "\-V, \-\-verbose"
 More verbose output.
@@ -38,16 +37,25 @@ Exclude start position. (obsolete)
 Exclude end postion. (obsolete)
 .TP
 .B "\-m, \-\-mainboard" <vendor:part>
-Override mainboard settings.
+Override mainboard settings. This option is needed for some mainboards,
+see the
+.B flashrom
+README for a list.
 .TP
 .B "\-f, \-\-force"
-Force write without checking image.
+Force write without checking whether the ROM image file is really meant
+to be used on this board.
+.sp
+Note: This check only works while LinuxBIOS is running, and only for those
+boards where the LinuxBIOS code supports it.
 .TP
 .B "\-l, \-\-layout" <layout.file>
 Read ROM layout from file.
 .TP
 .B "\-i, \-\-image" <name>
-Only flash image name from flash layout.
+Only flash image
+.B <name>
+from flash layout.
 .TP
 .B "\-h, \-\-help"
 Show a help text and exit.
@@ -55,13 +63,12 @@ Show a help text and exit.
 .\".B "\-\-version"
 .\"Show version information and exit.
 .SH BUGS
-Please report any bugs at http://tracker.linuxbios.org/trac/LinuxBIOS/.
+Please report any bugs at http://tracker.linuxbios.org/trac/LinuxBIOS/,
+or on the LinuxBIOS mailing list (http://linuxbios.org/Mailinglist).
 .SH LICENCE
 .B flashrom
 is covered by the GNU General Public License (GPL), version 2 or later.
-.SH SEE ALSO
-.BR romcc (1),
-.BR abuild (1).
+.\" .SH SEE ALSO
 .SH COPYRIGHT
 2000 Silicon Integrated System Corporation
 .br

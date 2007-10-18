@@ -18,8 +18,8 @@ installed on your Linux system:
 Usage
 -----
 
-usage: ./flashrom [-rwvEVfh] [-c chipname] [-s exclude_start]
-       [-e exclude_end] [-m vendor:part] [-l file.layout] [-i imagename] [file]
+ $ flashrom [-rwvEVfh] [-c chipname] [-s exclude_start] [-e exclude_end]
+            [-m vendor:part] [-l file.layout] [-i imagename] [file]
    -r | --read:                    read flash and save into file
    -w | --write:                   write file into flash (default when
                                    file is specified)
@@ -41,11 +41,11 @@ usage: ./flashrom [-rwvEVfh] [-c chipname] [-s exclude_start]
 LinuxBIOS Table and Mainboard Identification
 --------------------------------------------
 
-Flashrom reads the LinuxBIOS table to determine the current mainboard.
-(Parse DMI as well in future?) If no LinuxBIOS table could be read
+Flashrom reads the LinuxBIOS table to determine the current mainboard
+(parse DMI as well in future?). If no LinuxBIOS table could be read
 or if you want to override these values, you can specify -m, e.g.:
 
-  flashrom -w --mainboard ISLAND:ARUMA island_aruma.rom
+  flashrom -w --mainboard AGAMI:ARUMA agami_aruma.rom
 
 The following boards require the specification of the board name, if
 no LinuxBIOS table is found:
@@ -55,8 +55,10 @@ no LinuxBIOS table is found:
 * ASUS P5A: use -m asus:p5a
 * IBM x3455: use -m ibm:x3455
 * EPoX EP-BX3: use -m epox:ep-bx3
-* GIGABYTE GA-M57SLI v2.0: use -m gigabyte:m57sli
-* GIGABYTE GA-M61P-S3: use -m gigabyte:m61ps3
+* GIGABYTE GA-M57SLI-S4 v2.0: use -m gigabyte:m57sli
+* GIGABYTE GA-M61P-S3: use -m gigabyte:m61p
+* MSI K8N Neo3: use -m msi:k8n-neo3
+
 
 ROM Layout Support
 ------------------
@@ -71,27 +73,27 @@ the flash chip only. A ROM layout file looks like follows:
   i.e.:
   startaddr:endaddr name
 
-  all addresses are offsets within the file, not absolute addresses!
+  All addresses are offsets within the file, not absolute addresses!
   
 If you only want to update the normal image in a ROM you can say:
 
-     flashrom -w --layout rom.layout --image normal island_aruma.rom
+  flashrom -w --layout rom.layout --image normal agami_aruma.rom
      
 To update normal and fallback but leave the VGA BIOS alone, say:
 
-     flashrom -w -l rom.layout -i normal -i fallback island_aruma.rom
+  flashrom -w -l rom.layout -i normal -i fallback agami_aruma.rom
  
 Currently overlapping sections are not supported.
 
 ROM layouts should replace the -s and -e option since they are more 
 flexible and they should lead to a ROM update file format with the 
-ROM layout and the ROM image in one file (cpio, zip or something?)
+ROM layout and the ROM image in one file (cpio, zip or something?).
 
 
-DOC support
------------
+Disk on Chip support
+--------------------
 
-DISK on Chip support is currently disabled since it is considered unstable. 
+Disk on Chip support is currently disabled since it is considered unstable. 
 Change CFLAGS in the Makefile to enable it: Remove -DDISABLE_DOC from CFLAGS.
 
 

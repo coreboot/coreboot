@@ -30,11 +30,39 @@
 #define ITE_SUPERIO_PORT1	0x2e
 #define ITE_SUPERIO_PORT2	0x4e
 
+/* Read Electronic ID */
 #define JEDEC_RDID	{0x9f}
 #define JEDEC_RDID_OUTSIZE	0x01
 #define JEDEC_RDID_INSIZE	0x03
 
-static uint16_t it8716f_flashport = 0;
+/* Write Enable */
+#define JEDEC_WREN	{0x06}
+#define JEDEC_WREN_OUTSIZE	0x01
+#define JEDEC_WREN_INSIZE	0x00
+
+/* Write Disable */
+#define JEDEC_WRDI	{0x04}
+#define JEDEC_WRDI_OUTSIZE	0x01
+#define JEDEC_WRDI_INSIZE	0x00
+
+/* Both Chip Erase commands below should work */
+/* Chip Erase 0x60 */
+#define JEDEC_CE_1	{0x60};
+#define JEDEC_CE_1_OUTSIZE	0x01
+#define JEDEC_CE_1_INSIZE	0x00
+
+/* Chip Erase 0xc7 */
+#define JEDEC_CE_2	{0xc7};
+#define JEDEC_CE_2_OUTSIZE	0x01
+#define JEDEC_CE_2_INSIZE	0x00
+
+/* Read Status Register */
+#define JEDEC_RDSR	{0x05};
+#define JEDEC_RDSR_OUTSIZE	0x01
+#define JEDEC_RDSR_INSIZE	0x01
+#define JEDEC_RDSR_BIT_WIP	(0x01 << 0)
+
+uint16_t it8716f_flashport = 0;
 
 /* Generic Super I/O helper functions */
 uint8_t regval(uint16_t port, uint8_t reg)
@@ -119,6 +147,8 @@ int it87xx_probe_spi_flash(const char *name)
 static int it8716f_spi_command(uint16_t port, unsigned char writecnt, unsigned char readcnt, const unsigned char *writearr, unsigned char *readarr)
 {
 	uint8_t busy, writeenc;
+	int i;
+
 	do {
 		busy = inb(port) & 0x80;
 	} while (busy);
@@ -164,13 +194,15 @@ static int it8716f_spi_command(uint16_t port, unsigned char writecnt, unsigned c
 	do {
 		busy = inb(port) & 0x80;
 	} while (busy);
-	readarr[0] = inb(port + 5);
-	readarr[1] = inb(port + 6);
-	readarr[2] = inb(port + 7);
+
+	for (i = 0; i < readcnt; i++) {
+		readarr[i] = inb(port + 5 + i);
+	}
+
 	return 0;
 }
 
-static int generic_spi_command(unsigned char writecnt, unsigned char readcnt, const unsigned char *writearr, unsigned char *readarr)
+int generic_spi_command(unsigned char writecnt, unsigned char readcnt, const unsigned char *writearr, unsigned char *readarr)
 {
 	if (it8716f_flashport)
 		return it8716f_spi_command(it8716f_flashport, writecnt, readcnt, writearr, readarr);
@@ -188,6 +220,23 @@ static int generic_spi_rdid(unsigned char *readarr)
 	return 0;
 }
 
+void generic_spi_write_enable()
+{
+	const unsigned char cmd[] = JEDEC_WREN;
+
+	/* Send WREN (Write Enable) */
+	generic_spi_command(JEDEC_WREN_OUTSIZE, JEDEC_WREN_INSIZE, cmd, NULL);
+
+}
+
+void generic_spi_write_disable()
+{
+	const unsigned char cmd[] = JEDEC_WRDI;
+
+	/* Send WRDI (Write Disable) */
+	generic_spi_command(JEDEC_WRDI_OUTSIZE, JEDEC_WRDI_INSIZE, cmd, NULL);
+}
+
 int probe_spi(struct flashchip *flash)
 {
 	unsigned char readarr[3];
@@ -201,6 +250,75 @@ int probe_spi(struct flashchip *flash)
 			return 1;
 	}
 
+	return 0;
+}
+
+uint8_t generic_spi_read_status_register()
+{
+	const unsigned char cmd[] = JEDEC_RDSR;
+	unsigned char readarr[1];
+
+	/* Read Status Register */
+	generic_spi_command(JEDEC_RDSR_OUTSIZE, JEDEC_RDSR_INSIZE, cmd, readarr);
+	return readarr[0];
+}
+
+int generic_spi_chip_erase(struct flashchip *flash)
+{
+	const unsigned char cmd[] = JEDEC_CE_2;
+
+	generic_spi_write_enable();
+	/* Send CE (Chip Erase) */
+	generic_spi_command(1, 0, cmd, NULL);
+	/* The chip needs some time for erasing, the MX25L4005A has a maximum
+	 * time of 7.5 seconds.
+	 * FIXME: Check the status register instead
+	 * Do we have to check the status register before calling
+	 * write_disable()? The data sheet suggests we don't have to call
+	 * write_disable() at all because WEL is reset automatically.
+	while (generic_spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
+		sleep(1);
+	 */
+	generic_spi_write_disable();
+	sleep(8);
+	return 0;
+}
+
+void it8716f_spi_page_program(int block, uint8_t *buf, uint8_t *bios) {
+	int i;
+
+	generic_spi_write_enable();
+	outb(0x06 , it8716f_flashport + 1);
+	outb((3 << 4), it8716f_flashport);
+	for (i = 0; i < 256; i++) {
+		bios[256 * block + i] = buf[256 * block + i];
+	}
+	outb(0, it8716f_flashport);
+	/* The chip needs some time for page program, the MX25L4005A has a
+	 * maximum time of 5 ms.
+	 * FIXME: Check the status register instead.
+	 * Do we have to check the status register before calling
+	 * write_disable()? The data sheet suggests we don't have to call
+	 * write_disable() at all because WEL is reset automatically.
+	while (generic_spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
+		usleep(1000);
+	 */
+	generic_spi_write_disable();
+	usleep(5000);
+}
+
+void generic_spi_page_program(int block, uint8_t *buf, uint8_t *bios)
+{
+	if (it8716f_flashport)
+		it8716f_spi_page_program(block, buf, bios);
+}
+
+int generic_spi_chip_write(struct flashchip *flash, uint8_t *buf) {
+	int total_size = 1024 * flash->total_size;
+	int i;
+	for (i = 0; i < total_size / 256; i++) {
+		generic_spi_page_program(i, buf, (uint8_t *)flash->virtual_memory);
+	}
 	return 0;
 }
 

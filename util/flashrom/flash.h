@@ -210,6 +210,11 @@ extern char *lb_part, *lb_vendor;
 /* spi.c */
 int probe_spi(struct flashchip *flash);
 int it87xx_probe_spi_flash(const char *name);
+int generic_spi_command(unsigned char writecnt, unsigned char readcnt, const unsigned char *writearr, unsigned char *readarr);
+void generic_spi_write_enable();
+void generic_spi_write_disable();
+int generic_spi_chip_erase(struct flashchip *flash);
+int generic_spi_chip_write(struct flashchip *flash, uint8_t *buf);
 
 /* 82802ab.c */
 int probe_82802ab(struct flashchip *flash);

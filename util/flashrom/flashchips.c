@@ -39,7 +39,7 @@ struct flashchip flashchips[] = {
 	{"Mx29f002",	MX_ID,		MX_29F002,	256, 64 * 1024,
 	 probe_29f002,	erase_29f002, 	write_29f002},
 	{"MX25L4005",	MX_ID,		MX_25L4005,	512, 4 * 1024,
-	 probe_spi,	NULL,		NULL},
+	 probe_spi,	generic_spi_chip_erase,	generic_spi_chip_write},
 	{"SST29EE020A", SST_ID,		SST_29EE020A,	256, 128,
 	 probe_jedec,	erase_chip_jedec, write_jedec},
 	{"SST28SF040A", SST_ID,		SST_28SF040,	512, 256,

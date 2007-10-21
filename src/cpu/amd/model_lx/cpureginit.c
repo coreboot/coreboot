@@ -290,4 +290,5 @@ void cpuRegInit(void)
 	msr.hi = 0;
 	msr.lo = 0x00000603C;
 	wrmsr(msrnum, msr);
+	print_debug("Done cpuRegInit\r\n");
 }

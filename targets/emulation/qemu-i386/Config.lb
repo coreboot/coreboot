@@ -12,8 +12,8 @@ option IRQ_SLOT_COUNT=6
 
 romimage "image" 
 	option ROM_IMAGE_SIZE=0x10000
-	option LINUXBIOS_EXTRA_VERSION="-OpenBIOS"
-	payload /home/stepan/openbios.elf
+	option LINUXBIOS_EXTRA_VERSION="-GRUB2"
+	payload /home/stepan/core.img
 end
 
 buildrom ./qemu-bios.rom ROM_SIZE "image"

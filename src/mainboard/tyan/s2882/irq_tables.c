@@ -245,7 +245,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
         write_pirq_info(pirq_info, bus_8111_1,(4<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0x5, 0);
 	pirq_info++; slot_num++;
 
-        printk_debug("setting Onboard SI Serail ATA\n");
+        printk_debug("setting Onboard SI Serial ATA\n");
         static const unsigned char slotIrqs_8111_1_5[4] = { 10, 0, 0, 0 };
         pci_assign_irqs(bus_8111_1, 5, slotIrqs_8111_1_5);
         write_pirq_info(pirq_info, bus_8111_1,(5<<3)|0, 0x4, 0xdef8, 0, 0, 0, 0, 0, 0, 0, 0);

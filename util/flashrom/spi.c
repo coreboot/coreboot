@@ -45,16 +45,30 @@
 #define JEDEC_WRDI_OUTSIZE	0x01
 #define JEDEC_WRDI_INSIZE	0x00
 
-/* Both Chip Erase commands below should work */
-/* Chip Erase 0x60 */
+/* Chip Erase 0x60 is supported by Macronix/SST chips. */
 #define JEDEC_CE_1	{0x60};
 #define JEDEC_CE_1_OUTSIZE	0x01
 #define JEDEC_CE_1_INSIZE	0x00
 
-/* Chip Erase 0xc7 */
+/* Chip Erase 0xc7 is supported by EON/Macronix chips. */
 #define JEDEC_CE_2	{0xc7};
 #define JEDEC_CE_2_OUTSIZE	0x01
 #define JEDEC_CE_2_INSIZE	0x00
+
+/* Block Erase 0x52 is supported by SST chips. */
+#define JEDEC_BE_1	{0x52};
+#define JEDEC_BE_1_OUTSIZE	0x04
+#define JEDEC_BE_1_INSIZE	0x00
+
+/* Block Erase 0xd8 is supported by EON/Macronix chips. */
+#define JEDEC_BE_2	{0xd8};
+#define JEDEC_BE_2_OUTSIZE	0x04
+#define JEDEC_BE_2_INSIZE	0x00
+
+/* Sector Erase 0x20 is supported by Macronix/SST chips. */
+#define JEDEC_SE	{0x20};
+#define JEDEC_SE_OUTSIZE	0x04
+#define JEDEC_SE_INSIZE	0x00
 
 /* Read Status Register */
 #define JEDEC_RDSR	{0x05};
@@ -144,7 +158,7 @@ int it87xx_probe_spi_flash(const char *name)
    whereas the IT8716F splits commands internally into address and non-address
    commands with the address in inverse wire order. That's why the register
    ordering in case 4 and 5 may seem strange. */
-static int it8716f_spi_command(uint16_t port, unsigned char writecnt, unsigned char readcnt, const unsigned char *writearr, unsigned char *readarr)
+static int it8716f_spi_command(uint16_t port, unsigned int writecnt, unsigned int readcnt, const unsigned char *writearr, unsigned char *readarr)
 {
 	uint8_t busy, writeenc;
 	int i;
@@ -188,7 +202,7 @@ static int it8716f_spi_command(uint16_t port, unsigned char writecnt, unsigned c
 		return 1;
 	}
 	/* Start IO, 33MHz, readcnt input bytes, writecnt output bytes. Note:
-	 * We can't use writecnt directly, but have to use a strange encoding 
+	 * We can't use writecnt directly, but have to use a strange encoding.
 	 */ 
 	outb((0x5 << 4) | ((readcnt & 0x3) << 2) | (writeenc), port);
 	do {
@@ -202,7 +216,7 @@ static int it8716f_spi_command(uint16_t port, unsigned char writecnt, unsigned c
 	return 0;
 }
 
-int generic_spi_command(unsigned char writecnt, unsigned char readcnt, const unsigned char *writearr, unsigned char *readarr)
+int generic_spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned char *writearr, unsigned char *readarr)
 {
 	if (it8716f_flashport)
 		return it8716f_spi_command(it8716f_flashport, writecnt, readcnt, writearr, readarr);
@@ -269,13 +283,58 @@ int generic_spi_chip_erase(struct flashchip *flash)
 
 	generic_spi_write_enable();
 	/* Send CE (Chip Erase) */
-	generic_spi_command(1, 0, cmd, NULL);
-	/* Wait until the Write-In-Progress bit is cleared */
+	generic_spi_command(JEDEC_CE_2_OUTSIZE, JEDEC_CE_2_INSIZE, cmd, NULL);
+	/* Wait until the Write-In-Progress bit is cleared.
+	 * This usually takes 1-85 s, so wait in 1 s steps.
+	 */
 	while (generic_spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
 		sleep(1);
 	return 0;
 }
 
+/* Block size is usually
+ * 64k for Macronix
+ * 32k for SST
+ * 4-32k non-uniform for EON
+ */
+int generic_spi_block_erase(const struct flashchip *flash, unsigned long addr)
+{
+	unsigned char cmd[JEDEC_BE_2_OUTSIZE] = JEDEC_BE_2;
+
+	cmd[1] = (addr & 0x00ff0000) >> 16;
+	cmd[2] = (addr & 0x0000ff00) >> 8;
+	cmd[3] = (addr & 0x000000ff);
+	generic_spi_write_enable();
+	/* Send BE (Block Erase) */
+	generic_spi_command(JEDEC_BE_2_OUTSIZE, JEDEC_BE_2_INSIZE, cmd, NULL);
+	/* Wait until the Write-In-Progress bit is cleared.
+	 * This usually takes 100-4000 ms, so wait in 100 ms steps.
+	 */
+	while (generic_spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
+		usleep(100 * 1000);
+	return 0;
+}
+
+/* Sector size is usually 4k, though Macronix eliteflash has 64k */
+int generic_spi_sector_erase(const struct flashchip *flash, unsigned long addr)
+{
+	unsigned char cmd[JEDEC_SE_OUTSIZE] = JEDEC_SE;
+	cmd[1] = (addr & 0x00ff0000) >> 16;
+	cmd[2] = (addr & 0x0000ff00) >> 8;
+	cmd[3] = (addr & 0x000000ff);
+
+	generic_spi_write_enable();
+	/* Send SE (Sector Erase) */
+	generic_spi_command(JEDEC_SE_OUTSIZE, JEDEC_SE_INSIZE, cmd, NULL);
+	/* Wait until the Write-In-Progress bit is cleared.
+	 * This usually takes 15-800 ms, so wait in 10 ms steps.
+	 */
+	while (generic_spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
+		usleep(10 * 1000);
+	return 0;
+}
+
+/* Page size is usually 256 bytes */
 void it8716f_spi_page_program(int block, uint8_t *buf, uint8_t *bios) {
 	int i;
 
@@ -286,7 +345,9 @@ void it8716f_spi_page_program(int block, uint8_t *buf, uint8_t *bios) {
 		bios[256 * block + i] = buf[256 * block + i];
 	}
 	outb(0, it8716f_flashport);
-	/* Wait until the Write-In-Progress bit is cleared */
+	/* Wait until the Write-In-Progress bit is cleared.
+	 * This usually takes 1-10 ms, so wait in 1 ms steps.
+	 */
 	while (generic_spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
 		usleep(1000);
 }

@@ -72,7 +72,7 @@ extern struct flashchip flashchips[];
 
 #define EON_ID			0x1C
 /* EN25 chips are SPI, first byte of device id is memory type,
-   second byte of device id is log(bitsize)-9 */
+ * second byte of device id is log(bitsize)-9. */
 #define EN_25B05		0x2010	/* 2^19 kbit or 2^16 kByte */
 #define EN_25B10		0x2011
 #define EN_25B20		0x2012
@@ -82,9 +82,8 @@ extern struct flashchip flashchips[];
 #define EN_25B32		0x2016
 
 #define MX_ID			0xC2	/* Macronix (MX) */
-#define MX_29F002		0xB0
-/* MX25L chips are SPI, first byte of device id is memory type,
-   second byte of device id is log(bitsize)-9 */
+/* MX25 chips are SPI, first byte of device id is memory type,
+ * second byte of device id is log(bitsize)-9. */
 #define MX_25L512		0x2010	/* 2^19 kbit or 2^16 kByte */
 #define MX_25L1005		0x2011
 #define MX_25L2005		0x2012
@@ -95,11 +94,22 @@ extern struct flashchip flashchips[];
 #define MX_25L6405		0x2017	/* MX25L3205{,D} */
 #define MX_25L1635D		0x2415
 #define MX_25L3235D		0x2416
+#define MX_29F002		0xB0
 
 #define SHARP_ID		0xB0	/* Sharp */
 #define SHARP_LHF00L04		0xCF
 
 #define SST_ID			0xBF	/* SST */
+/* SST25 chips are SPI, first byte of device id is memory type, second
+ * byte of device id is related to log(bitsize) at least for some chips. */
+#define SST_25WF512		0x2501
+#define SST_25WF010		0x2502
+#define SST_25WF020		0x2503
+#define SST_25WF040		0x2504
+#define SST_25VF016B		0x2541
+#define SST_25VF032B		0x254A
+#define SST_25VF040B		0x258D
+#define SST_25VF080B		0x258E
 #define SST_29EE020A		0x10
 #define SST_28SF040		0x04
 #define SST_39SF010		0xB5
@@ -210,7 +220,7 @@ extern char *lb_part, *lb_vendor;
 /* spi.c */
 int probe_spi(struct flashchip *flash);
 int it87xx_probe_spi_flash(const char *name);
-int generic_spi_command(unsigned char writecnt, unsigned char readcnt, const unsigned char *writearr, unsigned char *readarr);
+int generic_spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned char *writearr, unsigned char *readarr);
 void generic_spi_write_enable();
 void generic_spi_write_disable();
 int generic_spi_chip_erase(struct flashchip *flash);

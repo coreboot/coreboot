@@ -94,7 +94,6 @@ static void ram_verify(unsigned long start, unsigned long stop)
 
 void ram_check(unsigned long start, unsigned long stop)
 {
-	int result;
 	/*
 	 * This is much more of a "Is my DRAM properly configured?"
 	 * test than a "Is my DRAM faulty?" test.  Not all bits

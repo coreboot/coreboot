@@ -454,7 +454,7 @@ const char *resource_type(struct resource *resource)
 void report_resource_stored(device_t dev, struct resource *resource, const char *comment)
 {
 	if (resource->flags & IORESOURCE_STORED) {
-		unsigned char buf[10];
+		char buf[10];
 		unsigned long long base, end;
 		base = resource->base;
 		end = resource_end(resource);

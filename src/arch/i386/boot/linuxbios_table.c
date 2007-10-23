@@ -120,7 +120,7 @@ void lb_strings(struct lb_header *header)
 {
 	static const struct {
 		uint32_t tag;
-		const uint8_t *string;
+		const char *string;
 	} strings[] = {
 		{ LB_TAG_VERSION,        linuxbios_version,        },
 		{ LB_TAG_EXTRA_VERSION,  linuxbios_extra_version,  },

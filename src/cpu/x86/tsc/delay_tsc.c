@@ -102,8 +102,7 @@ bad_ctc:
 static unsigned long long calibrate_tsc(void)
 {
 	unsigned long long start, end, delta;
-	unsigned long allones = (unsigned long) -1, result;
-	unsigned long count;
+	unsigned long result, count;
 	
 	start = rdtscll();
 	// no udivdi3, dammit.

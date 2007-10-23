@@ -144,7 +144,7 @@ static struct verify_callback *process_elf_notes(
 {
 	struct verify_callback *cb_chain;
 	unsigned char *note, *end;
-	char *program, *version;
+	unsigned char *program, *version;
 
 	cb_chain = 0;
 	note = header + offset;

@@ -37,6 +37,9 @@
 #include <part/hard_reset.h>
 #include <part/fallback_boot.h>
 
+/* The hypertransport link is already optimized in pre-ram code
+ * so don't do it again
+ */
 #define OPT_HT_LINK 0
         
 #if OPT_HT_LINK == 1
@@ -123,15 +126,17 @@ struct ht_link {
 
 static int ht_setup_link(struct ht_link *prev, device_t dev, unsigned pos)
 {
+#if OPT_HT_LINK == 1
 	static const uint8_t link_width_to_pow2[]= { 3, 4, 0, 5, 1, 2, 0, 0 };
 	static const uint8_t pow2_to_link_width[] = { 0x7, 4, 5, 0, 1, 3 };
-	struct ht_link cur[1];
 	unsigned present_width_cap,    upstream_width_cap;
 	unsigned present_freq_cap,     upstream_freq_cap;
 	unsigned ln_present_width_in,  ln_upstream_width_in; 
 	unsigned ln_present_width_out, ln_upstream_width_out;
 	unsigned freq, old_freq;
 	unsigned present_width, upstream_width, old_width;
+#endif
+	struct ht_link cur[1];
 	int reset_needed;
 	int linkb_to_host;
 
@@ -485,7 +490,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 			                next_unitid = HT_CHAIN_END_UNITID_BASE;
 					end_used = 1;
 				} else {
-					goto out;
+					goto end_of_chain;
 				}
 			}
 
@@ -535,7 +540,6 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 			(dev->enabled? "enabled": "disabled"), next_unitid);
 
 	} while (last_unitid != next_unitid);
- out:
  end_of_chain:
 #if OPT_HT_LINK == 1
 	if(bus->reset_needed) {

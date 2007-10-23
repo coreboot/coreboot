@@ -8,6 +8,7 @@
 #include <arch/pirq_routing.h>
 #include <arch/smp/mpspec.h>
 #include <arch/acpi.h>
+#include <string.h>
 #include "linuxbios_table.h"
 
 // Global Descriptor Table, defined in c_start.S

@@ -349,7 +349,6 @@ void x86_setup_fixed_mtrrs(void)
          * mtrrs.  If this doesn't work out we can get smart again 
          * and clear out the mtrrs.
          */
-        struct var_mtrr_state var_state;
 
         printk_debug("\n");
         /* Initialized the fixed_mtrrs to uncached */

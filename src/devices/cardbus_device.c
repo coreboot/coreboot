@@ -93,7 +93,6 @@ void cardbus_read_resources(device_t dev)
 	resource_t moving_base, moving_limit, moving;
 	unsigned long type;
 	uint16_t ctl;
-	unsigned long index;	
 
 	/* See if needs a card control registers base address */
 

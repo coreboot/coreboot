@@ -3,8 +3,8 @@
 #undef RELEASE_DATE
 #undef VERSION
 #define VERSION_MAJOR "0"
-#define VERSION_MINOR "69"
-#define RELEASE_DATE "02 December 2006"
+#define VERSION_MINOR "70"
+#define RELEASE_DATE "23 October 2007"
 #define VERSION VERSION_MAJOR "." VERSION_MINOR
 
 #include <stdarg.h>
@@ -24,6 +24,14 @@
 
 #define MAX_CWD_SIZE 4096
 #define MAX_ALLOCATION_PASSES 100
+
+/* NOTE: Before you even start thinking to touch anything 
+ * in this code, set DEBUG_ROMCC_WARNINGS to 1 to get an
+ * insight on the original author's thoughts. We introduced 
+ * this switch as romcc was about the only thing producing
+ * massive warnings in our code..
+ */
+#define DEBUG_ROMCC_WARNINGS 0
 
 #define DEBUG_CONSISTENCY 1
 #define DEBUG_SDP_BLOCKS 0
@@ -46,9 +54,11 @@
 
 #define DEBUG_EXPLICIT_CLOSURES 0
 
+#if DEBUG_ROMCC_WARNINGS
 #warning "FIXME give clear error messages about unused variables"
 #warning "FIXME properly handle multi dimensional arrays"
 #warning "FIXME handle multiple register sizes"
+#endif
 
 /*  Control flow graph of a loop without goto.
  * 
@@ -259,7 +269,9 @@ static char *slurp_file(const char *dirname, const char *filename, off_t *r_size
 }
 
 /* Types on the destination platform */
+#if DEBUG_ROMCC_WARNINGS
 #warning "FIXME this assumes 32bit x86 is the destination"
+#endif
 typedef int8_t   schar_t;
 typedef uint8_t  uchar_t;
 typedef int8_t   char_t;
@@ -800,7 +812,9 @@ static const struct op_info table_ops[] = {
 [OP_ADDRCONST  ] = OP( 0,  0, 1, 0, PURE | DEF, "addrconst"),
 [OP_UNKNOWNVAL ] = OP( 0,  0, 0, 0, PURE | DEF, "unknown"),
 
+#if DEBUG_ROMCC_WARNINGS
 #warning "FIXME is it correct for OP_WRITE to be a def?  I currently use it as one..."
+#endif
 [OP_WRITE      ] = OP( 0,  1, 1, 0, PURE | DEF | BLOCK, "write"),
 [OP_READ       ] = OP( 0,  1, 0, 0, PURE | DEF | BLOCK, "read"),
 [OP_COPY       ] = OP( 0,  1, 0, 0, PURE | DEF | BLOCK, "copy"),
@@ -1847,6 +1861,7 @@ static void valid_ins(struct compile_state *state, struct triple *ptr)
 	valid_op(state, ptr->op);
 }
 
+#if DEBUG_ROMCC_WARNING
 static void valid_param_count(struct compile_state *state, struct triple *ins)
 {
 	int lhs, rhs, misc, targ;
@@ -1869,6 +1884,7 @@ static void valid_param_count(struct compile_state *state, struct triple *ins)
 		internal_error(state, ins, "Bad targ count");
 	}
 }
+#endif
 
 static struct type void_type;
 static struct type unknown_type;
@@ -2643,13 +2659,15 @@ static int triple_is_ret(struct compile_state *state, struct triple *ins)
 	/* Is this triple a return instruction? */
 	return triple_is_branch_type(state, ins, RETBRANCH);
 }
-
+ 
+#if DEBUG_ROMCC_WARNING
 static int triple_is_simple_ubranch(struct compile_state *state, struct triple *ins)
 {
 	/* Is this triple an unconditional branch and not a call or a
 	 * return? */
 	return triple_is_branch_type(state, ins, UBRANCH);
 }
+#endif
 
 static int triple_is_end(struct compile_state *state, struct triple *ins)
 {
@@ -2925,7 +2943,10 @@ static int find_rhs_use(struct compile_state *state,
 	struct triple **param;
 	int size, i;
 	verify_use(state, user, used);
+
+#if DEBUG_ROMCC_WARNINGS
 #warning "AUDIT ME ->rhs"
+#endif
 	size = user->rhs;
 	param = &RHS(user, 0);
 	for(i = 0; i < size; i++) {
@@ -4317,7 +4338,7 @@ static void check_tok(struct compile_state *state, struct token *tk, int tok)
 
 struct macro_arg_value {
 	struct hash_entry *ident;
-	unsigned char *value;
+	char *value;
 	size_t len;
 };
 static struct macro_arg_value *read_macro_args(
@@ -4378,7 +4399,7 @@ static struct macro_arg_value *read_macro_args(
 		len = char_strlen(file, start, file->pos);
 		argv[i].value = xrealloc(
 			argv[i].value, argv[i].len + len, "macro args");
-		char_strcpy(argv[i].value + argv[i].len, file, start, file->pos);
+		char_strcpy((char *)argv[i].value + argv[i].len, file, start, file->pos);
 		argv[i].len += len;
 	}
 	if (i != macro->argc -1) {
@@ -4459,7 +4480,7 @@ static void macro_expand_args(struct compile_state *state,
 		fmacro.prev        = 0;
 		fmacro.basename    = argv[i].ident->name;
 		fmacro.dirname     = "";
-		fmacro.buf         = argv[i].value;
+		fmacro.buf         = (char *)argv[i].value;
 		fmacro.size        = argv[i].len;
 		fmacro.pos         = fmacro.buf;
 		fmacro.line        = 1;
@@ -5625,7 +5646,7 @@ static struct type *invalid_type(struct compile_state *state, struct type *type)
 static inline ulong_t mask_uint(ulong_t x)
 {
 	if (SIZEOF_INT < SIZEOF_LONG) {
-		ulong_t mask = (((ulong_t)1) << ((ulong_t)(SIZEOF_INT))) -1;
+		ulong_t mask = (1ULL << ((ulong_t)(SIZEOF_INT))) -1;
 		x &= mask;
 	}
 	return x;
@@ -5636,7 +5657,9 @@ static inline ulong_t mask_uint(ulong_t x)
 static struct type void_type    = { .type  = TYPE_VOID };
 static struct type char_type    = { .type  = TYPE_CHAR };
 static struct type uchar_type   = { .type  = TYPE_UCHAR };
+#if DEBUG_ROMCC_WARNING
 static struct type short_type   = { .type  = TYPE_SHORT };
+#endif
 static struct type ushort_type  = { .type  = TYPE_USHORT };
 static struct type int_type     = { .type  = TYPE_INT };
 static struct type uint_type    = { .type  = TYPE_UINT };
@@ -5649,11 +5672,13 @@ static struct type void_ptr_type  = {
 	.left = &void_type,
 };
 
+#if DEBUG_ROMCC_WARNING
 static struct type void_func_type = { 
 	.type  = TYPE_FUNCTION,
 	.left  = &void_type,
 	.right = &void_type,
 };
+#endif
 
 static size_t bits_to_bytes(size_t size)
 {
@@ -7394,7 +7419,9 @@ static struct triple *read_expr(struct compile_state *state, struct triple *def)
 	if  (!def) {
 		return 0;
 	}
+#if DEBUG_ROMCC_WARNINGS
 #warning "CHECK_ME is this the only place I need to do lvalue conversions?"
+#endif
 	/* Transform lvalues into something we can read */
 	def = lvalue_conversion(state, def);
 	if (!is_lvalue(state, def)) {
@@ -7735,7 +7762,9 @@ static struct triple *mkcond_expr(
 
 static int expr_depth(struct compile_state *state, struct triple *ins)
 {
+#if DEBUG_ROMCC_WARNINGS
 #warning "FIXME move optimal ordering of subexpressions into the optimizer"
+#endif
 	int count;
 	count = 0;
 	if (!ins || (ins->id & TRIPLE_FLAG_FLATTENED)) {
@@ -8349,6 +8378,7 @@ static int is_one(struct triple *ins)
 	return is_simple_const(ins) && (ins->u.cval == 1);
 }
 
+#if DEBUG_ROMCC_WARNING
 static long_t bit_count(ulong_t value)
 {
 	int count;
@@ -8365,6 +8395,8 @@ static long_t bit_count(ulong_t value)
 	return count;
 	
 }
+#endif
+
 static long_t bsr(ulong_t value)
 {
 	int i;
@@ -8582,6 +8614,7 @@ static void unuse_lhs(struct compile_state *state, struct triple *ins)
 	}
 }
 
+#if DEBUG_ROMCC_WARNING
 static void unuse_misc(struct compile_state *state, struct triple *ins)
 {
 	struct triple **expr;
@@ -8612,6 +8645,7 @@ static void check_lhs(struct compile_state *state, struct triple *ins)
 	}
 	
 }
+#endif
 
 static void check_misc(struct compile_state *state, struct triple *ins)
 {
@@ -8649,6 +8683,7 @@ static void wipe_ins(struct compile_state *state, struct triple *ins)
 	ins->targ = 0;
 }
 
+#if DEBUG_ROMCC_WARNING
 static void wipe_branch(struct compile_state *state, struct triple *ins)
 {
 	/* Becareful which instructions you replace the wiped
@@ -8664,6 +8699,7 @@ static void wipe_branch(struct compile_state *state, struct triple *ins)
 	ins->misc = 0;
 	ins->targ = 0;
 }
+#endif
 
 static void mkcopy(struct compile_state *state, 
 	struct triple *ins, struct triple *rhs)
@@ -10636,7 +10672,9 @@ static struct type *declarator(
 	struct hash_entry **ident, int need_ident);
 static void decl(struct compile_state *state, struct triple *first);
 static struct type *specifier_qualifier_list(struct compile_state *state);
+#if DEBUG_ROMCC_WARNING
 static int isdecl_specifier(int tok);
+#endif
 static struct type *decl_specifiers(struct compile_state *state);
 static int istype(int tok);
 static struct triple *expr(struct compile_state *state);
@@ -10702,7 +10740,7 @@ static struct triple *character_constant(struct compile_state *state)
 	int c;
 	int str_len;
 	tk = eat(state, TOK_LIT_CHAR);
-	str = tk->val.str + 1;
+	str = (signed char *)tk->val.str + 1;
 	str_len = tk->str_len - 2;
 	if (str_len <= 0) {
 		error(state, 0, "empty character constant");
@@ -10731,7 +10769,7 @@ static struct triple *string_constant(struct compile_state *state)
 	/* The while loop handles string concatenation */
 	do {
 		tk = eat(state, TOK_LIT_STRING);
-		str = tk->val.str + 1;
+		str = (signed char *)tk->val.str + 1;
 		str_len = tk->str_len - 2;
 		if (str_len < 0) {
 			error(state, 0, "negative string constant length");
@@ -11174,7 +11212,9 @@ static struct triple *shift_expr(struct compile_state *state)
 
 static struct triple *relational_expr(struct compile_state *state)
 {
+#if DEBUG_ROMCC_WARNINGS
 #warning "Extend relational exprs to work on more than arithmetic types"
+#endif
 	struct triple *def;
 	int done;
 	def = shift_expr(state);
@@ -11217,7 +11257,9 @@ static struct triple *relational_expr(struct compile_state *state)
 
 static struct triple *equality_expr(struct compile_state *state)
 {
+#if DEBUG_ROMCC_WARNINGS
 #warning "Extend equality exprs to work on more than arithmetic types"
+#endif
 	struct triple *def;
 	int done;
 	def = relational_expr(state);
@@ -11778,7 +11820,9 @@ static void return_statement(struct compile_state *state, struct triple *first)
 	int last;
 	eat(state, TOK_RETURN);
 
+#if DEBUG_ROMCC_WARNINGS
 #warning "FIXME implement a more general excess branch elimination"
+#endif
 	val = 0;
 	/* If we have a return value do some more work */
 	if (peek(state) != TOK_SEMI) {
@@ -12953,6 +12997,7 @@ static struct type *specifier_qualifier_list(struct compile_state *state)
 	return type;
 }
 
+#if DEBUG_ROMCC_WARNING
 static int isdecl_specifier(int tok)
 {
 	switch(tok) {
@@ -12990,6 +13035,7 @@ static int isdecl_specifier(int tok)
 		return 0;
 	}
 }
+#endif
 
 static struct type *decl_specifiers(struct compile_state *state)
 {
@@ -13072,7 +13118,9 @@ static struct triple *initializer(
 	struct compile_state *state, struct type *type)
 {
 	struct triple *result;
+#if DEBUG_ROMCC_WARNINGS
 #warning "FIXME more consistent initializer handling (where should eval_const_expr go?"
+#endif
 	if (peek(state) != TOK_LBRACE) {
 		result = assignment_expr(state);
 		if (((type->type & TYPE_MASK) == TYPE_ARRAY) &&
@@ -13520,8 +13568,10 @@ static struct reg_block *compute_variable_lifetimes(
 	struct compile_state *state, struct basic_blocks *bb);
 static void free_variable_lifetimes(struct compile_state *state, 
 	struct basic_blocks *bb, struct reg_block *blocks);
+#if DEBUG_EXPLICIT_CLOSURES
 static void print_live_variables(struct compile_state *state, 
 	struct basic_blocks *bb, struct reg_block *rb, FILE *fp);
+#endif
 
 
 static struct triple *call(struct compile_state *state,
@@ -17312,19 +17362,24 @@ static int in_triple(struct reg_block *rb, struct triple *in)
 {
 	return do_triple_set(&rb->in, in, 0);
 }
+
+#if DEBUG_ROMCC_WARNING
 static void unin_triple(struct reg_block *rb, struct triple *unin)
 {
 	do_triple_unset(&rb->in, unin);
 }
+#endif
 
 static int out_triple(struct reg_block *rb, struct triple *out)
 {
 	return do_triple_set(&rb->out, out, 0);
 }
+#if DEBUG_ROMCC_WARNING
 static void unout_triple(struct reg_block *rb, struct triple *unout)
 {
 	do_triple_unset(&rb->out, unout);
 }
+#endif
 
 static int initialize_regblock(struct reg_block *blocks,
 	struct block *block, int vertex)
@@ -17490,7 +17545,9 @@ static int use_in(struct compile_state *state, struct reg_block *rb)
 	/* Find the variables we use but don't define and add
 	 * it to the current blocks input set.
 	 */
+#if DEBUG_ROMCC_WARNINGS
 #warning "FIXME is this O(N^2) algorithm bad?"
+#endif
 	struct block *block;
 	struct triple *ptr;
 	int done;
@@ -17661,6 +17718,7 @@ struct print_live_variable_info {
 	struct reg_block *rb;
 	FILE *fp;
 };
+#if DEBUG_EXPLICIT_CLOSURES
 static void print_live_variables_block(
 	struct compile_state *state, struct block *block, void *arg)
 
@@ -17742,7 +17800,7 @@ static void print_live_variables(struct compile_state *state,
 	walk_blocks(state, bb, print_live_variables_block, &info);
 
 }
-
+#endif
 
 static int count_triples(struct compile_state *state)
 {
@@ -17913,7 +17971,10 @@ static void eliminate_inefectual_code(struct compile_state *state)
 			struct triple *last;
 			last = user->member->last;
 			while((last->op == OP_NOOP) && (last != user->member->first)) {
-				internal_warning(state, last, "awakening noop?");
+#if DEBUG_ROMCC_WARNINGS
+#warning "Should we bring the awakening noops back?"
+#endif
+				// internal_warning(state, last, "awakening noop?");
 				last = last->prev;
 			}
 			awaken(state, dtriple, &last, &work_list_tail);
@@ -18536,6 +18597,7 @@ static void transfer_live_edges(struct reg_state *rstate,
  *
  */
 
+#if DEBUG_ROMCC_WARNING
 static void different_colored(
 	struct compile_state *state, struct reg_state *rstate, 
 	struct triple *parent, struct triple *ins)
@@ -18555,7 +18617,7 @@ static void different_colored(
 		}
 	}
 }
-
+#endif
 
 static struct live_range *coalesce_ranges(
 	struct compile_state *state, struct reg_state *rstate,
@@ -18643,7 +18705,9 @@ static struct live_range *coalesce_ranges(
 #endif
 	
 	/* Append lr2 onto lr1 */
+#if DEBUG_ROMCC_WARNINGS
 #warning "FIXME should this be a merge instead of a splice?"
+#endif
 	/* This FIXME item applies to the correctness of live_range_end 
 	 * and to the necessity of making multiple passes of coalesce_live_ranges.
 	 * A failure to find some coalesce opportunities in coaleace_live_ranges
@@ -18880,6 +18944,7 @@ static void graph_ins(
 	return;
 }
 
+#if DEBUG_CONSISTENCY > 1
 static struct live_range *get_verify_live_range(
 	struct compile_state *state, struct reg_state *rstate, struct triple *ins)
 {
@@ -18958,7 +19023,7 @@ static void verify_graph_ins(
 	}
 	return;
 }
-
+#endif
 
 static void print_interference_ins(
 	struct compile_state *state, 
@@ -19195,7 +19260,9 @@ static void replace_block_use(struct compile_state *state,
 	struct reg_block *blocks, struct triple *orig, struct triple *new)
 {
 	int i;
+#if DEBUG_ROMCC_WARNINGS
 #warning "WISHLIST visit just those blocks that need it *"
+#endif
 	for(i = 1; i <= state->bb.last_vertex; i++) {
 		struct reg_block *rb;
 		rb = &blocks[i];
@@ -19248,7 +19315,9 @@ static struct triple *resolve_tangle(
 	struct triple_set *set, *next;
 	struct triple *copy;
 
+#if DEBUG_ROMCC_WARNINGS
 #warning "WISHLIST recalculate all affected instructions colors"
+#endif
 	info = find_lhs_color(state, tangle, 0);
 	for(set = tangle->use; set; set = next) {
 		struct triple *user;
@@ -19387,7 +19456,9 @@ struct triple *find_constrained_def(
 		 * Then a triple is not constrained.
 		 * FIXME handle this case!
 		 */
+#if DEBUG_ROMCC_WARNINGS
 #warning "FIXME ignore cases that cannot be fixed (a definition followed by a use)"
+#endif
 		
 
 		/* Of the constrained live ranges deal with the
@@ -19423,7 +19494,9 @@ static int split_constrained_ranges(
 	for(edge = range->edges; edge; edge = edge->next) {
 		constrained = find_constrained_def(state, edge->node, constrained);
 	}
+#if DEBUG_ROMCC_WARNINGS
 #warning "FIXME should I call find_constrained_def here only if no previous constrained def was found?"
+#endif
 	if (!constrained) {
 		constrained = find_constrained_def(state, range, constrained);
 	}
@@ -19467,7 +19540,9 @@ static int split_ranges(
 	 * it would be useful to have.
 	 *
 	 */
+#if DEBUG_ROMCC_WARNINGS
 #warning "WISHLIST implement live range splitting..."
+#endif
 	
 	if (!split && (state->compiler->debug & DEBUG_RANGE_CONFLICTS2)) {
 		FILE *fp = state->errout;
@@ -20632,7 +20707,9 @@ static int compute_lnode_val(struct compile_state *state, struct scc_state *scc,
 		scratch->next = lnode->def->next;
 	}
 	/* Recompute the value */
+#if DEBUG_ROMCC_WARNINGS
 #warning "FIXME see if simplify does anything bad"
+#endif
 	/* So far it looks like only the strength reduction
 	 * optimization are things I need to worry about.
 	 */
@@ -20696,7 +20773,9 @@ static int compute_lnode_val(struct compile_state *state, struct scc_state *scc,
 		((	!triple_is_def(state, lnode->def)  &&
 			!triple_is_cbranch(state, lnode->def)) ||
 			(lnode->def->op == OP_PIECE))) {
+#if DEBUG_ROMCC_WARNINGS
 #warning "FIXME constant propogate through expressions with multiple left hand sides"
+#endif
 		if (changed) {
 			internal_warning(state, lnode->def, "non def changes value?");
 		}
@@ -21524,8 +21603,10 @@ static void optimize(struct compile_state *state)
 	/* Propogate constants throughout the code */
 	scc_transform(state);
 	verify_consistency(state);
+#if DEBUG_ROMCC_WARNINGS
 #warning "WISHLIST implement single use constants (least possible register pressure)"
 #warning "WISHLIST implement induction variable elimination"
+#endif
 	/* Select architecture instructions and an initial partial
 	 * coloring based on architecture constraints.
 	 */
@@ -21710,7 +21791,11 @@ static void print_op_asm(struct compile_state *state,
 #define REG_XMM7   44
 #define REGC_XMM_FIRST REG_XMM0
 #define REGC_XMM_LAST  REG_XMM7
+
+#if DEBUG_ROMCC_WARNINGS
 #warning "WISHLIST figure out how to use pinsrw and pextrw to better use extended regs"
+#endif
+
 #define LAST_REG   REG_XMM7
 
 #define REGC_GPR32_8_FIRST REG_EAX
@@ -22288,7 +22373,10 @@ static int arch_select_free_register(
 
 static unsigned arch_type_to_regcm(struct compile_state *state, struct type *type) 
 {
+
+#if DEBUG_ROMCC_WARNINGS
 #warning "FIXME force types smaller (if legal) before I get here"
+#endif
 	unsigned mask;
 	mask = 0;
 	switch(type->type & TYPE_MASK) {
@@ -24463,7 +24551,9 @@ static void print_op_branch(struct compile_state *state,
 			(RHS(branch, 0)->op != OP_TEST)) {
 			internal_error(state, branch, "bad branch test");
 		}
+#if DEBUG_ROMCC_WARNINGS
 #warning "FIXME I have observed instructions between the test and branch instructions"
+#endif
 		ptr = RHS(branch, 0);
 		for(ptr = RHS(branch, 0)->next; ptr != branch; ptr = ptr->next) {
 			if (ptr->op != OP_COPY) {

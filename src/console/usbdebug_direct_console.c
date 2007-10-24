@@ -49,7 +49,7 @@ static int dbgp_tst_byte(void)
 	return dbg_info.ehci_debug;
 }
 
-static struct console_driver usbdebug_direct_console __console = {
+static const struct console_driver usbdebug_direct_console __console = {
 	.init    = dbgp_init,
 	.tx_byte = dbgp_tx_byte,
 	.rx_byte = dbgp_rx_byte,

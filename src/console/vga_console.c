@@ -106,7 +106,7 @@ static void vga_tx_byte(unsigned char byte)
 	write_crtc((vga_col + (vga_line *COLS)) & 0x0ff, CRTC_CURSOR_LO);
 }
 
-static struct console_driver vga_console __console ={
+static const struct console_driver vga_console __console ={
 	.init    = 0,
 	.tx_byte = vga_tx_byte,
 	.rx_byte = 0,

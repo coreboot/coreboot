@@ -13,7 +13,7 @@ static void logbuf_tx_byte(unsigned char byte)
 	logbuf_offset = (logbuf_offset +1) % LOGBUF_SIZE;
 }
 
-static struct console_driver __console = {
+static const struct console_driver __console = {
 	.init    = 0,
 	.tx_byte = logbuf_tx_byte,
 	.rx_byte = 0,

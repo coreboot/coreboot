@@ -445,7 +445,7 @@ void btext_tx_byte(unsigned char data)
         btext_drawchar(data);
 }
 
-static struct console_driver btext_console __console = {
+static const struct console_driver btext_console __console = {
         .init    = btext_init,
         .tx_byte = btext_tx_byte,
         .rx_byte = 0,

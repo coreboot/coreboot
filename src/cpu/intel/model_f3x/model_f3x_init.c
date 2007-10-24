@@ -52,7 +52,7 @@ static struct cpu_device_id cpu_table[] = {
 	{ 0, 0 },
 };
 
-static struct cpu_driver model_f3x __cpu_driver = {
+static const struct cpu_driver model_f3x __cpu_driver = {
 	.ops      = &cpu_dev_ops,
 	.id_table = cpu_table,
 };

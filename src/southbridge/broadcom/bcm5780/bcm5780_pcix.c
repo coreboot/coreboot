@@ -29,7 +29,7 @@ static struct device_operations ht_ops  = {
 
 };
 
-static struct pci_driver ht_driver __pci_driver = {
+static const struct pci_driver ht_driver __pci_driver = {
 	.ops    = &ht_ops,
 	.vendor = PCI_VENDOR_ID_SERVERWORKS,
 	.device = PCI_DEVICE_ID_SERVERWORKS_BCM5780_PXB,

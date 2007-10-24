@@ -259,7 +259,7 @@ static struct device_operations aza_audio_ops  = {
 	.ops_pci	= &lops_pci,
 };
 
-static struct pci_driver azaaudio_driver __pci_driver = {
+static const struct pci_driver azaaudio_driver __pci_driver = {
 	.ops	= &aza_audio_ops,
 	.vendor	= PCI_VENDOR_ID_NVIDIA,
 	.device	= PCI_DEVICE_ID_NVIDIA_MCP55_AZA,

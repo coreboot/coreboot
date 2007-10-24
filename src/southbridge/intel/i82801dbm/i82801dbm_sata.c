@@ -67,7 +67,7 @@ static struct device_operations sata_ops  = {
 	.enable           = i82801dbm_enable,
 };
 
-static struct pci_driver stat_driver __pci_driver = {
+static const struct pci_driver stat_driver __pci_driver = {
 	.ops    = &sata_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_82801ER_1F2_R,

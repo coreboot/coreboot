@@ -35,78 +35,78 @@ static struct device_operations ac97_ops = {
 };
 
 /* 82801AA */
-static struct pci_driver i82801aa_ac97_audio __pci_driver = {
+static const struct pci_driver i82801aa_ac97_audio __pci_driver = {
 	.ops	= &ac97_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2415,
 };
 
-static struct pci_driver i82801aa_ac97_modem __pci_driver = {
+static const struct pci_driver i82801aa_ac97_modem __pci_driver = {
 	.ops	= &ac97_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2416,
 };
 
 /* 82801AB */
-static struct pci_driver i82801ab_ac97_audio __pci_driver = {
+static const struct pci_driver i82801ab_ac97_audio __pci_driver = {
 	.ops	= &ac97_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2425,
 };
 
-static struct pci_driver i82801ab_ac97_modem __pci_driver = {
+static const struct pci_driver i82801ab_ac97_modem __pci_driver = {
 	.ops	= &ac97_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2426,
 };
 
 /* 82801BA */
-static struct pci_driver i82801ba_ac97_audio __pci_driver = {
+static const struct pci_driver i82801ba_ac97_audio __pci_driver = {
 	.ops	= &ac97_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2445,
 };
 
-static struct pci_driver i82801ba_ac97_modem __pci_driver = {
+static const struct pci_driver i82801ba_ac97_modem __pci_driver = {
 	.ops	= &ac97_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2446,
 };
 
 /* 82801CA */
-static struct pci_driver i82801ca_ac97_audio __pci_driver = {
+static const struct pci_driver i82801ca_ac97_audio __pci_driver = {
 	.ops	= &ac97_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2485,
 };
 
-static struct pci_driver i82801ca_ac97_modem __pci_driver = {
+static const struct pci_driver i82801ca_ac97_modem __pci_driver = {
 	.ops	= &ac97_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2486,
 };
 
 /* 82801DB & 82801DBM */
-static struct pci_driver i82801db_ac97_audio __pci_driver = {
+static const struct pci_driver i82801db_ac97_audio __pci_driver = {
 	.ops	= &ac97_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x24c5,
 };
 
-static struct pci_driver i82801db_ac97_modem __pci_driver = {
+static const struct pci_driver i82801db_ac97_modem __pci_driver = {
 	.ops	= &ac97_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x24c6,
 };
 
 /* 82801EB & 82801ER */
-static struct pci_driver i82801ex_ac97_audio __pci_driver = {
+static const struct pci_driver i82801ex_ac97_audio __pci_driver = {
 	.ops	= &ac97_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x24d5,
 };
 
-static struct pci_driver i82801ex_ac97_modem __pci_driver = {
+static const struct pci_driver i82801ex_ac97_modem __pci_driver = {
 	.ops	= &ac97_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x24d6,

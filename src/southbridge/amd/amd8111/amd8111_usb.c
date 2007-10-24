@@ -30,7 +30,7 @@ static struct device_operations usb_ops = {
 	.ops_pci          = &lops_pci,
 };
 
-static struct pci_driver usb_driver __pci_driver = {
+static const struct pci_driver usb_driver __pci_driver = {
 	.ops    = &usb_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = PCI_DEVICE_ID_AMD_8111_USB,

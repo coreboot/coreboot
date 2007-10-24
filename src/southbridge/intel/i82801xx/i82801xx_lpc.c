@@ -252,44 +252,44 @@ static struct device_operations lpc_ops = {
 	.enable			= i82801xx_enable,
 };
 
-static struct pci_driver i82801aa_lpc __pci_driver = {
+static const struct pci_driver i82801aa_lpc __pci_driver = {
 	.ops	= &lpc_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2410,
 };
 
-static struct pci_driver i82801ab_lpc __pci_driver = {
+static const struct pci_driver i82801ab_lpc __pci_driver = {
 	.ops	= &lpc_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2420,
 };
 
-static struct pci_driver i82801ba_lpc __pci_driver = {
+static const struct pci_driver i82801ba_lpc __pci_driver = {
 	.ops	= &lpc_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2440,
 };
 
-static struct pci_driver i82801ca_lpc __pci_driver = {
+static const struct pci_driver i82801ca_lpc __pci_driver = {
 	.ops	= &lpc_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2480,
 };
 
-static struct pci_driver i82801db_lpc __pci_driver = {
+static const struct pci_driver i82801db_lpc __pci_driver = {
 	.ops	= &lpc_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x24c0,
 };
 
-static struct pci_driver i82801dbm_lpc __pci_driver = {
+static const struct pci_driver i82801dbm_lpc __pci_driver = {
 	.ops	= &lpc_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x24cc,
 };
 
 /* 82801EB and 82801ER */
-static struct pci_driver i82801ex_lpc __pci_driver = {
+static const struct pci_driver i82801ex_lpc __pci_driver = {
 	.ops	= &lpc_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x24d0,

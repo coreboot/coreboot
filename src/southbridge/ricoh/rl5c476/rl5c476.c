@@ -197,7 +197,7 @@ static struct device_operations ricoh_rl5c476_ops = {
 	.scan_bus         = cardbus_scan_bridge,
 };
 
-static struct pci_driver ricoh_rl5c476_driver __pci_driver = {
+static const struct pci_driver ricoh_rl5c476_driver __pci_driver = {
 	.ops    = &ricoh_rl5c476_ops,
 	.vendor = PCI_VENDOR_ID_RICOH,
 	.device = PCI_DEVICE_ID_RICOH_RL5C476,

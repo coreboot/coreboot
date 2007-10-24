@@ -1499,7 +1499,7 @@ static struct device_operations ati_ragexl_graph_ops  = {
         .scan_bus         = 0,
 };
 
-static struct pci_driver ati_ragexl_graph_driver __pci_driver = {
+static const struct pci_driver ati_ragexl_graph_driver __pci_driver = {
         .ops    = &ati_ragexl_graph_ops,
         .vendor = PCI_VENDOR_ID_ATI,
         .device = PCI_DEVICE_ID_ATI_215XL,

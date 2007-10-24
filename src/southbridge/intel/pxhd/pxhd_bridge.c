@@ -147,13 +147,13 @@ static struct device_operations pcix_ops  = {
 	.ops_pci          = 0,
 };
 
-static struct pci_driver pcix_driver __pci_driver = {
+static const struct pci_driver pcix_driver __pci_driver = {
         .ops    = &pcix_ops,
         .vendor = PCI_VENDOR_ID_INTEL,
         .device = 0x0329,
 };
 
-static struct pci_driver pcix_driver2 __pci_driver = {
+static const struct pci_driver pcix_driver2 __pci_driver = {
         .ops    = &pcix_ops,
         .vendor = PCI_VENDOR_ID_INTEL,
         .device = 0x032a,
@@ -238,14 +238,14 @@ static struct device_operations ioapic_ops = {
 	.ops_pci          = &intel_ops_pci,
 };
 
-static struct pci_driver ioapic_driver __pci_driver = {
+static const struct pci_driver ioapic_driver __pci_driver = {
 	.ops    = &ioapic_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = 0x0326,
 	
 };
 
-static struct pci_driver ioapic2_driver __pci_driver = {
+static const struct pci_driver ioapic2_driver __pci_driver = {
 	.ops    = &ioapic_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = 0x0327,

@@ -37,12 +37,12 @@ static struct device_operations nic_ops  = {
 	.scan_bus         = 0,
 	.ops_pci          = &lops_pci,
 };
-static struct pci_driver nic_driver __pci_driver = {
+static const struct pci_driver nic_driver __pci_driver = {
 	.ops    = &nic_ops,
 	.vendor = PCI_VENDOR_ID_BROADCOM,
 	.device = PCI_DEVICE_ID_BROADCOM_BCM5780_NIC,
 };
-static struct pci_driver nic1_driver __pci_driver = {
+static const struct pci_driver nic1_driver __pci_driver = {
         .ops    = &nic_ops,
         .vendor = PCI_VENDOR_ID_BROADCOM,
         .device = PCI_DEVICE_ID_BROADCOM_BCM5780_NIC1,

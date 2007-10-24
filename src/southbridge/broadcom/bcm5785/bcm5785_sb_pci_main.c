@@ -145,7 +145,7 @@ static struct device_operations sb_ops = {
         .ops_pci          = &lops_pci,
         .ops_smbus_bus    = &lops_smbus_bus,
 };
-static struct pci_driver sb_driver __pci_driver = {
+static const struct pci_driver sb_driver __pci_driver = {
         .ops    = &sb_ops,
         .vendor = PCI_VENDOR_ID_SERVERWORKS,
         .device = PCI_DEVICE_ID_SERVERWORKS_BCM5785_SB_PCI_MAIN,

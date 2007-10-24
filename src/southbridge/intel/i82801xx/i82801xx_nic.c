@@ -31,13 +31,13 @@ static struct device_operations nic_ops = {
 	.scan_bus		= 0,
 };
 
-static struct pci_driver i82801dbm_nic __pci_driver = {
+static const struct pci_driver i82801dbm_nic __pci_driver = {
 	.ops	= &nic_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x103a,
 };
 
-static struct pci_driver i82801ex_nic __pci_driver = {
+static const struct pci_driver i82801ex_nic __pci_driver = {
 	.ops	= &nic_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x1051,

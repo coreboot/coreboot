@@ -80,7 +80,7 @@ static struct device_operations pcix_ops  = {
 	.enable           = amd8131_enable,
 };
 
-static struct pci_driver pcix_driver __pci_driver = {
+static const struct pci_driver pcix_driver __pci_driver = {
         .ops    = &pcix_ops,
         .vendor = PCI_VENDOR_ID_AMD,
         .device = 0x7450,
@@ -108,7 +108,7 @@ static struct device_operations ioapic_ops = {
 	.enable   = ioapic_enable,
 };
 
-static struct pci_driver ioapic_driver __pci_driver = {
+static const struct pci_driver ioapic_driver __pci_driver = {
 	.ops    = &ioapic_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = 0x7451,

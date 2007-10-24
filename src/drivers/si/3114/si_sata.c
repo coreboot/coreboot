@@ -59,7 +59,7 @@ static struct device_operations si_sata_ops  = {
 	.scan_bus         = 0,
 };
 
-static struct pci_driver si_sata_driver __pci_driver = {
+static const struct pci_driver si_sata_driver __pci_driver = {
         .ops    = &si_sata_ops,
         .vendor = 0x1095,
         .device = 0x3114,

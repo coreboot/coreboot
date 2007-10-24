@@ -121,12 +121,12 @@ static struct device_operations nic_ops  = {
 //	.enable           = ck804_enable,
 	.ops_pci          = &lops_pci,
 };
-static struct pci_driver nic_driver __pci_driver = {
+static const struct pci_driver nic_driver __pci_driver = {
 	.ops    = &nic_ops,
 	.vendor = PCI_VENDOR_ID_NVIDIA,
 	.device = PCI_DEVICE_ID_NVIDIA_CK804_NIC,
 };
-static struct pci_driver nic_bridge_driver __pci_driver = {
+static const struct pci_driver nic_bridge_driver __pci_driver = {
         .ops    = &nic_ops,
         .vendor = PCI_VENDOR_ID_NVIDIA,
         .device = PCI_DEVICE_ID_NVIDIA_CK804_NIC_BRIDGE,

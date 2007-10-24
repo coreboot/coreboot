@@ -23,7 +23,7 @@ static struct device_operations ide_ops = {
 	.enable           = ide_enable,
 };
 
-static struct pci_driver ide_driver __pci_driver = {
+static const struct pci_driver ide_driver __pci_driver = {
 	.ops 	= &ide_ops,
 	.vendor = PCI_VENDOR_ID_NS,
 	.device = PCI_DEVICE_ID_NS_CS5535_IDE,

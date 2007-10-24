@@ -18,7 +18,7 @@ static struct device_operations ac97audio_ops  = {
 	.scan_bus         = 0,
 };
 
-static struct pci_driver ac97audio_driver __pci_driver = {
+static const struct pci_driver ac97audio_driver __pci_driver = {
 	.ops    = &ac97audio_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_82801CA_AC97_AUDIO,
@@ -34,7 +34,7 @@ static struct device_operations ac97modem_ops  = {
 	.scan_bus         = 0,
 };
 
-static struct pci_driver ac97modem_driver __pci_driver = {
+static const struct pci_driver ac97modem_driver __pci_driver = {
 	.ops    = &ac97modem_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_82801CA_AC97_MODEM,

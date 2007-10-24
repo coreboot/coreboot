@@ -94,7 +94,7 @@ static struct device_operations smbus_ops = {
         .ops_pci          = &lops_pci,
         .ops_smbus_bus    = &lops_smbus_bus,
 };
-static struct pci_driver smbus_driver __pci_driver = {
+static const struct pci_driver smbus_driver __pci_driver = {
         .ops    = &smbus_ops,
         .vendor = PCI_VENDOR_ID_NVIDIA,
         .device = PCI_DEVICE_ID_NVIDIA_CK804_SM,

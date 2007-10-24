@@ -14,7 +14,7 @@ static struct device_operations nic_ops  = {
 	.scan_bus         = 0,
 };
 
-static struct pci_driver nic_driver __pci_driver = {
+static const struct pci_driver nic_driver __pci_driver = {
 	.ops    = &nic_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_82801CA_LAN,

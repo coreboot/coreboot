@@ -484,7 +484,7 @@ static struct device_operations vga_ops = {
 	.enable           = NULL, /* not required */
 };
 
-static struct pci_driver vga_pci_driver __pci_driver = {
+static const struct pci_driver vga_pci_driver __pci_driver = {
 	.ops 	= &vga_ops,
 	.vendor = PCI_VENDOR_ID_CYRIX,
 	.device = PCI_DEVICE_ID_CYRIX_5530_VIDEO,

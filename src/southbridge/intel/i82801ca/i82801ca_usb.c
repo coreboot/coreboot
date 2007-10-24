@@ -31,17 +31,17 @@ static struct device_operations usb_ops  = {
 	.enable           = i82801ca_enable,
 };
 
-static struct pci_driver usb_driver_1 __pci_driver = {
+static const struct pci_driver usb_driver_1 __pci_driver = {
 	.ops    = &usb_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_82801CA_USB,
 };
-static struct pci_driver usb_driver_2 __pci_driver = {
+static const struct pci_driver usb_driver_2 __pci_driver = {
         .ops    = &usb_ops,
         .vendor = PCI_VENDOR_ID_INTEL,
         .device = PCI_DEVICE_ID_INTEL_82801CA_USB2,
 };
-static struct pci_driver usb_driver_3 __pci_driver = {
+static const struct pci_driver usb_driver_3 __pci_driver = {
         .ops    = &usb_ops,
         .vendor = PCI_VENDOR_ID_INTEL,
         .device = PCI_DEVICE_ID_INTEL_82801CA_USB3,

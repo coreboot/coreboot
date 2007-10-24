@@ -85,7 +85,7 @@ static struct device_operations southbridge_ops = {
 	.scan_bus         = scan_static_bus,
 };
 
-static struct pci_driver cs5535_pci_driver __pci_driver = {
+static const struct pci_driver cs5535_pci_driver __pci_driver = {
 	.ops 	= &southbridge_ops,
 	.vendor = PCI_VENDOR_ID_NS,
 	.device = PCI_DEVICE_ID_NS_CS5535

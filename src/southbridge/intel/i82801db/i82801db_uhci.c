@@ -54,19 +54,19 @@ static struct device_operations uhci_ops  = {
 	.ops_pci          = &lops_pci,
 };
 
-static struct pci_driver uhci_driver __pci_driver = {
+static const struct pci_driver uhci_driver __pci_driver = {
 	.ops    = &uhci_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_82801DB_USB0,
 };
 
-static struct pci_driver usb2_driver __pci_driver = {
+static const struct pci_driver usb2_driver __pci_driver = {
 	.ops    = &uhci_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_82801DB_USB1,
 };
 
-static struct pci_driver usb3_driver __pci_driver = {
+static const struct pci_driver usb3_driver __pci_driver = {
 	.ops    = &uhci_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_82801DB_USB2,

@@ -213,7 +213,7 @@ static struct device_operations acpi_ops  = {
 	.ops_smbus_bus    = &lops_smbus_bus,
 };
 
-static struct pci_driver acpi_driver __pci_driver = {
+static const struct pci_driver acpi_driver __pci_driver = {
 	.ops    = &acpi_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = PCI_DEVICE_ID_AMD_8111_ACPI,

@@ -32,7 +32,7 @@ static struct device_operations pcix_ops  = {
 	.reset_bus        = pci_bus_reset,
 };
 
-static struct pci_driver pcix_driver __pci_driver = {
+static const struct pci_driver pcix_driver __pci_driver = {
         .ops    = &pcix_ops,
         .vendor = PCI_VENDOR_ID_INTEL,
         .device = PCI_DEVICE_ID_INTEL_82870_1F0,

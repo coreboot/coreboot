@@ -83,7 +83,7 @@ static struct device_operations usb2_ops  = {
 	.ops_pci	= &lops_pci,
 };
 
-static struct pci_driver usb2_driver __pci_driver = {
+static const struct pci_driver usb2_driver __pci_driver = {
 	.ops	= &usb2_ops,
 	.vendor	= PCI_VENDOR_ID_NVIDIA,
 	.device	= PCI_DEVICE_ID_NVIDIA_MCP55_USB2,

@@ -81,7 +81,7 @@ static struct device_operations qemu_graph_ops  = {
         .scan_bus         = 0,
 };
 
-static struct pci_driver qemu_graph_driver __pci_driver = {
+static const struct pci_driver qemu_graph_driver __pci_driver = {
         .ops    = &qemu_graph_ops,
         .vendor = 0x1234,
         .device = 0x1111,

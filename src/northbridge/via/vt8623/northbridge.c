@@ -81,7 +81,7 @@ static struct device_operations northbridge_operations = {
 	.init             = northbridge_init
 };
 
-static struct pci_driver northbridge_driver __pci_driver = {
+static const struct pci_driver northbridge_driver __pci_driver = {
 	.ops = &northbridge_operations,
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = PCI_DEVICE_ID_VIA_8623,
@@ -109,7 +109,7 @@ static struct device_operations agp_operations = {
 	.ops_pci          = 0,
 };
 
-static struct pci_driver agp_driver __pci_driver = {
+static const struct pci_driver agp_driver __pci_driver = {
 	.ops = &agp_operations,
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = PCI_DEVICE_ID_VIA_8633_1,
@@ -200,7 +200,7 @@ static struct device_operations vga_operations = {
 	.ops_pci          = 0,
 };
 
-static struct pci_driver vga_driver __pci_driver = {
+static const struct pci_driver vga_driver __pci_driver = {
 	.ops = &vga_operations,
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = 0x3122,

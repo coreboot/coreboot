@@ -348,39 +348,39 @@ static struct device_operations lpc_ops  = {
 //	.enable		= mcp55_enable,
 	.ops_pci	= &lops_pci,
 };
-static struct pci_driver lpc_driver __pci_driver = {
+static const struct pci_driver lpc_driver __pci_driver = {
 	.ops	= &lpc_ops,
 	.vendor	= PCI_VENDOR_ID_NVIDIA,
 	.device	= PCI_DEVICE_ID_NVIDIA_MCP55_LPC,
 };
 
-static struct pci_driver lpc_driver_pro __pci_driver = {
+static const struct pci_driver lpc_driver_pro __pci_driver = {
 	.ops	= &lpc_ops,
 	.vendor	= PCI_VENDOR_ID_NVIDIA,
 	.device	= PCI_DEVICE_ID_NVIDIA_MCP55_PRO,
 };
 
-static struct pci_driver lpc_driver_lpc2 __pci_driver = {
+static const struct pci_driver lpc_driver_lpc2 __pci_driver = {
 	.ops	= &lpc_ops,
 	.vendor	= PCI_VENDOR_ID_NVIDIA,
 	.device	= PCI_DEVICE_ID_NVIDIA_MCP55_LPC_2,
 };
-static struct pci_driver lpc_driver_lpc3 __pci_driver = {
+static const struct pci_driver lpc_driver_lpc3 __pci_driver = {
 	.ops	= &lpc_ops,
 	.vendor	= PCI_VENDOR_ID_NVIDIA,
 	.device	= PCI_DEVICE_ID_NVIDIA_MCP55_LPC_3,
 };
-static struct pci_driver lpc_driver_lpc4 __pci_driver = {
+static const struct pci_driver lpc_driver_lpc4 __pci_driver = {
 	.ops	= &lpc_ops,
 	.vendor	= PCI_VENDOR_ID_NVIDIA,
 	.device	= PCI_DEVICE_ID_NVIDIA_MCP55_LPC_4,
 };
-static struct pci_driver lpc_driver_lpc5 __pci_driver = {
+static const struct pci_driver lpc_driver_lpc5 __pci_driver = {
 	.ops	= &lpc_ops,
 	.vendor	= PCI_VENDOR_ID_NVIDIA,
 	.device	= PCI_DEVICE_ID_NVIDIA_MCP55_LPC_5,
 };
-static struct pci_driver lpc_driver_lpc6 __pci_driver = {
+static const struct pci_driver lpc_driver_lpc6 __pci_driver = {
 	.ops	= &lpc_ops,
 	.vendor	= PCI_VENDOR_ID_NVIDIA,
 	.device	= PCI_DEVICE_ID_NVIDIA_MCP55_LPC_6,
@@ -395,7 +395,7 @@ static struct device_operations lpc_slave_ops  = {
 	.ops_pci	= &lops_pci,
 };
 
-static struct pci_driver lpc_driver_slave __pci_driver = {
+static const struct pci_driver lpc_driver_slave __pci_driver = {
 	.ops	= &lpc_slave_ops,
 	.vendor	= PCI_VENDOR_ID_NVIDIA,
 	.device	= PCI_DEVICE_ID_NVIDIA_MCP55_SLAVE,

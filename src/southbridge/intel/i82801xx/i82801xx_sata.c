@@ -69,14 +69,14 @@ static struct device_operations sata_ops = {
 };
 
 /* 82801EB */
-static struct pci_driver i82801eb_sata_driver __pci_driver = {
+static const struct pci_driver i82801eb_sata_driver __pci_driver = {
 	.ops	= &sata_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x24d1,
 };
 
 /* 82801ER */
-static struct pci_driver i82801er_sata_driver __pci_driver = {
+static const struct pci_driver i82801er_sata_driver __pci_driver = {
 	.ops	= &sata_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x24df,

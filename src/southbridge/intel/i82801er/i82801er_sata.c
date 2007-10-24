@@ -49,13 +49,13 @@ static struct device_operations sata_ops  = {
 	.ops_pci          = 0,
 };
 
-static struct pci_driver sata_driver __pci_driver = {
+static const struct pci_driver sata_driver __pci_driver = {
 	.ops    = &sata_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_82801ER_1F2_R,
 };
 
-static struct pci_driver sata_driver_nr __pci_driver = {
+static const struct pci_driver sata_driver_nr __pci_driver = {
 	.ops    = &sata_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_82801ER_1F2,

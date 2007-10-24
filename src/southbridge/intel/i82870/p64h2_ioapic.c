@@ -90,7 +90,7 @@ static struct device_operations ioapic_ops = {
         .enable   = p64h2_ioapic_enable,
 };
 
-static struct pci_driver ioapic_driver __pci_driver = {
+static const struct pci_driver ioapic_driver __pci_driver = {
         .ops    = &ioapic_ops,
         .vendor = PCI_VENDOR_ID_INTEL,
         .device = PCI_DEVICE_ID_INTEL_82870_1E0,

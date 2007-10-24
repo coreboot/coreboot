@@ -43,12 +43,12 @@ static struct device_operations ac97_ops  = {
 	.ops_pci          = &lops_pci,
 };
 
-static struct pci_driver ac97_audio_driver __pci_driver = {
+static const struct pci_driver ac97_audio_driver __pci_driver = {
 	.ops    = &ac97_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_82801DB_AC97_AUDIO,
 };
-static struct pci_driver ac97_modem_driver __pci_driver = {
+static const struct pci_driver ac97_modem_driver __pci_driver = {
 	.ops    = &ac97_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_82801DB_AC97_MODEM,

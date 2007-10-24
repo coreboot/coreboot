@@ -51,42 +51,42 @@ static struct device_operations smbus_ops = {
 };
 
 /* 82801AA */
-static struct pci_driver smbus_driver __pci_driver = {
+static const struct pci_driver smbus_driver __pci_driver = {
 	.ops	= &smbus_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2413,
 };
 
 /* 82801AB */
-static struct pci_driver smbus_driver __pci_driver = {
+static const struct pci_driver smbus_driver __pci_driver = {
 	.ops	= &smbus_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2423,
 };
 
 /* 82801BA */
-static struct pci_driver smbus_driver __pci_driver = {
+static const struct pci_driver smbus_driver __pci_driver = {
 	.ops	= &smbus_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2443,
 };
 
 /* 82801CA */
-static struct pci_driver smbus_driver __pci_driver = {
+static const struct pci_driver smbus_driver __pci_driver = {
 	.ops	= &smbus_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2483,
 };
 
 /* 82801DB and 82801DBM */
-static struct pci_driver smbus_driver __pci_driver = {
+static const struct pci_driver smbus_driver __pci_driver = {
 	.ops	= &smbus_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x24c3,
 };
 
 /* 82801EB and 82801ER */
-static struct pci_driver smbus_driver __pci_driver = {
+static const struct pci_driver smbus_driver __pci_driver = {
 	.ops	= &smbus_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x24d3,

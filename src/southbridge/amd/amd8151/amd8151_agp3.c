@@ -29,7 +29,7 @@ static struct device_operations agp3bridge_ops  = {
 	.scan_bus	  = pci_scan_bridge,
 };
 
-static struct pci_driver agp3bridge_driver __pci_driver = {
+static const struct pci_driver agp3bridge_driver __pci_driver = {
 	.ops    = &agp3bridge_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = 0x7455, // AGP Bridge
@@ -68,7 +68,7 @@ static struct device_operations agp3dev_ops = {
 	.ops_pci  = &pci_ops_pci_dev,
 };
 
-static struct pci_driver agp3dev_driver __pci_driver = {
+static const struct pci_driver agp3dev_driver __pci_driver = {
 	.ops    = &agp3dev_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = 0x7454, //AGP Device	

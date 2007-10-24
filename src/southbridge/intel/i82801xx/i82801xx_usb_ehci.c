@@ -71,14 +71,14 @@ static struct device_operations usb_ehci_ops = {
 };
 
 /* 82801DB and 82801DBM */
-static struct pci_driver i82801db_usb_ehci __pci_driver = {
+static const struct pci_driver i82801db_usb_ehci __pci_driver = {
 	.ops	= &usb_ehci_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x24cd,
 };
 
 /* 82801EB and 82801ER */
-static struct pci_driver i82801ex_usb_ehci __pci_driver = {
+static const struct pci_driver i82801ex_usb_ehci __pci_driver = {
 	.ops	= &usb_ehci_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x24dd,

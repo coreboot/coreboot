@@ -53,7 +53,7 @@ static struct device_operations isa_ops = {
 	.scan_bus		= scan_static_bus,
 };
 
-static struct pci_driver isa_driver __pci_driver = {
+static const struct pci_driver isa_driver __pci_driver = {
 	.ops	= &isa_ops,
 	.vendor	= PCI_VENDOR_ID_CYRIX,
 	.device	= PCI_DEVICE_ID_CYRIX_5530_LEGACY,

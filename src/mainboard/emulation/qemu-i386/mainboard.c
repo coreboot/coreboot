@@ -27,7 +27,7 @@ static struct device_operations vga_operations = {
 	.ops_pci          = 0,
 };
 
-static struct pci_driver vga_driver __pci_driver = {
+static const struct pci_driver vga_driver __pci_driver = {
 	.ops = &vga_operations,
 	.vendor = 0x1013,
 	.device = 0x00b8,

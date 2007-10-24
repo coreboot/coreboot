@@ -72,7 +72,7 @@ static struct device_operations cpu_operations = {
 	.ops_pci          = 0,
 };
 
-static struct pci_driver cpu_driver __pci_driver = {
+static const struct pci_driver cpu_driver __pci_driver = {
 	.ops = &cpu_operations,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = 0x3000

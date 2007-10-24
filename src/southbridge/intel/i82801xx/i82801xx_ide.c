@@ -64,49 +64,49 @@ static struct device_operations ide_ops = {
 };
 
 /* 82801AA */
-static struct pci_driver i82801aa_ide __pci_driver = {
+static const struct pci_driver i82801aa_ide __pci_driver = {
 	.ops	= &ide_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2411,
 };
 
 /* 82801AB */
-static struct pci_driver i82801ab_ide __pci_driver = {
+static const struct pci_driver i82801ab_ide __pci_driver = {
 	.ops	= &ide_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2421,
 };
 
 /* 82801BA */
-static struct pci_driver i82801ba_ide __pci_driver = {
+static const struct pci_driver i82801ba_ide __pci_driver = {
 	.ops	= &ide_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x244b,
 };
 
 /* 82801CA */
-static struct pci_driver i82801ca_ide __pci_driver = {
+static const struct pci_driver i82801ca_ide __pci_driver = {
 	.ops	= &ide_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x248b,
 };
 
 /* 82801DB */
-static struct pci_driver i82801db_ide __pci_driver = {
+static const struct pci_driver i82801db_ide __pci_driver = {
 	.ops	= &ide_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x24cb,
 };
 
 /* 82801DBM */
-static struct pci_driver i82801dbm_ide __pci_driver = {
+static const struct pci_driver i82801dbm_ide __pci_driver = {
 	.ops	= &ide_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x24ca,
 };
 
 /* 82801EB & 82801ER */
-static struct pci_driver i82801ex_ide __pci_driver = {
+static const struct pci_driver i82801ex_ide __pci_driver = {
 	.ops	= &ide_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x24db,

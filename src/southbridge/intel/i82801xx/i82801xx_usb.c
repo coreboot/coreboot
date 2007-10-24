@@ -40,90 +40,90 @@ static struct device_operations usb_ops = {
 };
 
 /* 82801AA */
-static struct pci_driver i82801aa_usb_1 __pci_driver = {
+static const struct pci_driver i82801aa_usb_1 __pci_driver = {
 	.ops	= &usb_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2412,
 };
 
 /* 82801AB */
-static struct pci_driver i82801ab_usb_1 __pci_driver = {
+static const struct pci_driver i82801ab_usb_1 __pci_driver = {
 	.ops	= &usb_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2422,
 };
 
 /* 82801BA */
-static struct pci_driver i82801ba_usb_1 __pci_driver = {
+static const struct pci_driver i82801ba_usb_1 __pci_driver = {
 	.ops	= &usb_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2442,
 };
 
-static struct pci_driver i82801ba_usb_2 __pci_driver = {
+static const struct pci_driver i82801ba_usb_2 __pci_driver = {
 	.ops	= &usb_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2444,
 };
 
 /* 82801CA */
-static struct pci_driver i82801ca_usb_1 __pci_driver = {
+static const struct pci_driver i82801ca_usb_1 __pci_driver = {
 	.ops	= &usb_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2482,
 };
 
-static struct pci_driver i82801ca_usb_2 __pci_driver = {
+static const struct pci_driver i82801ca_usb_2 __pci_driver = {
 	.ops	= &usb_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2484,
 };
 
-static struct pci_driver i82801ca_usb_3 __pci_driver = {
+static const struct pci_driver i82801ca_usb_3 __pci_driver = {
 	.ops	= &usb_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x2487,
 };
 
 /* 82801DB and 82801DBM */
-static struct pci_driver i82801db_usb_1 __pci_driver = {
+static const struct pci_driver i82801db_usb_1 __pci_driver = {
 	.ops	= &usb_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x24c2,
 };
 
-static struct pci_driver i82801db_usb_2 __pci_driver = {
+static const struct pci_driver i82801db_usb_2 __pci_driver = {
 	.ops	= &usb_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x24c4,
 };
 
-static struct pci_driver i82801db_usb_3 __pci_driver = {
+static const struct pci_driver i82801db_usb_3 __pci_driver = {
 	.ops	= &usb_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x24c7,
 };
 
 /* 82801EB and 82801ER */
-static struct pci_driver i82801ex_usb_1 __pci_driver = {
+static const struct pci_driver i82801ex_usb_1 __pci_driver = {
 	.ops	= &usb_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x24d2,
 };
 
-static struct pci_driver i82801ex_usb_2 __pci_driver = {
+static const struct pci_driver i82801ex_usb_2 __pci_driver = {
 	.ops	= &usb_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x24d4,
 };
 
-static struct pci_driver i82801ex_usb_3 __pci_driver = {
+static const struct pci_driver i82801ex_usb_3 __pci_driver = {
 	.ops	= &usb_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x24d7,
 };
 
-static struct pci_driver i82801ex_usb_4 __pci_driver = {
+static const struct pci_driver i82801ex_usb_4 __pci_driver = {
 	.ops	= &usb_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x24de,

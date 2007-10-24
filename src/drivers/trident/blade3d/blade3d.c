@@ -1020,7 +1020,7 @@ static struct device_operations trident_blade3d_ops  = {
 	.scan_bus         = 0,
 };
 
-static struct pci_driver trident_blade3d_driver __pci_driver = {
+static const struct pci_driver trident_blade3d_driver __pci_driver = {
         .ops    = &trident_blade3d_ops,
         .vendor = 0x1023,
         .device = 0x9880,

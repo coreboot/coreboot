@@ -13,6 +13,11 @@
 #define is_digit isdigit
 #define isxdigit(c)	(((c) >= '0' && (c) <= '9') || ((c) >= 'a' && (c) <= 'f') || ((c) >= 'A' && (c) <= 'F'))
 
+#if 0
+/* We are using number() instead. So this code is obsoleted and should
+ * probably go away.
+ */
+
 static unsigned long simple_strtoul(const char *cp,char **endp,unsigned int base)
 {
 	unsigned long result = 0,value;
@@ -44,7 +49,7 @@ static long simple_strtol(const char *cp,char **endp,unsigned int base)
 		return -simple_strtoul(cp+1,endp,base);
 	return simple_strtoul(cp,endp,base);
 }
-
+#endif
 
 static int skip_atoi(const char **s)
 {

@@ -26,7 +26,6 @@
 
 static void pci_init(struct device *dev)
 {
-	uint32_t reg32;
 	uint16_t reg16;
 
 	/* Clear system errors */

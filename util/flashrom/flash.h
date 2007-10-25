@@ -63,6 +63,7 @@ extern struct flashchip flashchips[];
 
 #define AMD_ID			0x01	/* AMD */
 #define AM_29F040B		0xA4
+#define AM_29LV040B		0x4F
 #define AM_29F016D		0xAD
 
 #define AMIC_ID			0x37	/* AMIC */

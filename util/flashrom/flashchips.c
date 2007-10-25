@@ -28,6 +28,8 @@
 struct flashchip flashchips[] = {
 	{"Am29F040B",	AMD_ID, 	AM_29F040B,	512, 64 * 1024,
 	 probe_29f040b, erase_29f040b,	write_29f040b},
+	{"Am29LV040B",	AMD_ID, 	AM_29LV040B,	512, 64 * 1024,
+	 probe_29f040b, erase_29f040b,	write_29f040b},
 	{"Am29F016D",	AMD_ID, 	AM_29F016D,	2048, 64 * 1024,
 	 probe_29f040b, erase_29f040b,	write_29f040b},
 	{"AE49F2008",	ASD_ID,	        ASD_AE49F2008,	256, 128,

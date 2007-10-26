@@ -20,6 +20,7 @@
 #define ASSEMBLY 1
 
 #include <stdint.h>
+#include <spd.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
@@ -37,13 +38,70 @@
 #define POST_CODE(x) outb(x, 0x80)
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
-#include "southbridge/amd/cs5536/cs5536_early_smbus.c"
+/* The alix1c has no SMBUS; the setup is hard-wired.  */
+void cs5536_enable_smbus(void)
+{
+}
+
 #include "southbridge/amd/cs5536/cs5536_early_setup.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 
-static inline int spd_read_byte(unsigned device, unsigned address)
+/* the part is a hynix hy5du121622ctp-d43
+ * HY 5D U 12 16 2 2 C <blank> T <blank> P D43
+ * Hynix
+ * DDR SDRAM (5D)
+ * VDD 2.5 VDDQ 2.5 (U)
+ * 512M 8K REFRESH (12)
+ * x16 (16)
+ * 4banks (2)
+ * SSTL_2 (2)
+ * 4th GEN die (C)
+ * Normal Power Consumption (<blank> )
+ * TSOP (T)
+ * Single Die (<blank>)
+ * Lead Free (P)
+ * DDR400 3-3-3 (D43)
+ */
+/* spd array */
+static u8 spdbytes[] = {
+	[SPD_ACCEPTABLE_CAS_LATENCIES] = 0x10,
+	[SPD_BANK_DENSITY] = 0x40,
+	[SPD_DEVICE_ATTRIBUTES_GENERAL] = 0xff,
+	[SPD_MEMORY_TYPE] = 7,
+	[SPD_MIN_CYCLE_TIME_AT_CAS_MAX] = 10, /* This is a guess for tRAC value */
+	[SPD_MODULE_ATTRIBUTES] = 0xff, /* fix me later when we figure out */
+	[SPD_NUM_BANKS_PER_SDRAM] = 4,
+	[SPD_PRIMARY_SDRAM_WIDTH] = 8,
+	/* alix1c is 1 bank. */
+	[SPD_NUM_DIMM_BANKS] = 1,
+	[SPD_NUM_COLUMNS] = 0xa,
+	[SPD_NUM_ROWS] = 3,
+	[SPD_REFRESH] = 0x3a,
+	[SPD_SDRAM_CYCLE_TIME_2ND] = 60,
+	[SPD_SDRAM_CYCLE_TIME_3RD] = 75,
+	[SPD_tRAS] = 40,
+	[SPD_tRCD] = 15,
+	[SPD_tRFC] = 70,
+	[SPD_tRP] = 15,
+	[SPD_tRRD] = 10,
+};
+
+static u8 spd_read_byte(unsigned device, unsigned address)
 {
-		return smbus_read_byte(device, address);
+	print_debug("spd_read_byte dev ");
+	print_debug_hex8(device);
+
+	if (device != (0x50<<1)){
+		print_debug(" returns 0xff\n");
+		return 0xff;
+	}
+
+	print_debug(" addr ");
+	print_debug_hex8(address);
+	print_debug(" returns ");
+	print_debug_hex8(spdbytes[address]);
+	print_debug("\r\n");
+	return spdbytes[address];
 }
 
 #define ManualConf 0		/* Do automatic strapped PLL config */
@@ -83,12 +141,11 @@ static void mb_gpio_init(void)
 
 void cache_as_ram_main(void)
 {
+	static const struct mem_controller memctrl[] = {
+		{.channel0 = {0x50}},
+	};
 	extern void RestartCAR();
 	POST_CODE(0x01);
-
-	static const struct mem_controller memctrl [] = {
-		{.channel0 = {(0xa<<3)|0, (0xa<<3)|1}}
-	};
 
 	SystemPreInit();
 	msr_init();
@@ -114,24 +171,34 @@ void cache_as_ram_main(void)
 	/* Check memory */
 	ram_check(0x00000000, 640 * 1024);
 
-	/* Switch from Cache as RAM to real RAM */
-	/* There are two ways we could think about this.
-	 1. If we are using the auto.inc ROMCC way, the stack is going to be re-setup in the code following this code.
-		Just wbinvd the stack to clear the cache tags. We don't care where the stack used to be.
-	 2. This file is built as a normal .c -> .o and linked in etc. The stack might be used to return etc.
-		That means we care about what is in the stack. If we are smart we set the CAR stack to the same location
-		as the rest of LinuxBIOS. If that is the case we can just do a wbinvd. The stack will be written into real
-		RAM that is now setup and we continue like nothing happened. If the stack is located somewhere other than
-		where LB would like it, you need to write some code to do a copy from cache to RAM
-
-	 We use method 1 on Norwich and on this board too. 
-	*/
+	/* Switch from Cache as RAM to real RAM 
+	 * There are two ways we could think about this.  
+	 *
+	 * 1. If we are using the auto.inc ROMCC way, the stack is
+	 * going to be re-setup in the code following this code.  Just
+	 * wbinvd the stack to clear the cache tags.  We don't care
+	 * where the stack used to be.
+	 * 
+	 * 2. This file is built as a normal .c -> .o and linked in
+	 * etc.  The stack might be used to return etc.  That means we
+	 * care about what is in the stack.  If we are smart we set
+	 * the CAR stack to the same location as the rest of
+	 * LinuxBIOS. If that is the case we can just do a wbinvd.
+	 * The stack will be written into real RAM that is now setup
+	 * and we continue like nothing happened.  If the stack is
+	 * located somewhere other than where LB would like it, you
+	 * need to write some code to do a copy from cache to RAM
+	 *
+	 * We use method 1 on Norwich and on this board too. 
+	 */
 	POST_CODE(0x02);
 	print_err("POST 02\n");
 	__asm__("wbinvd\n");
 	print_err("Past wbinvd\n");
-	/* we are finding the return does not work on this board. Explicitly call the label that is 
-	 * after the call to us. This is gross, but sometimes at this level it is the only way out
+	/* we are finding the return does not work on this
+	 * board. Explicitly call the label that is after the call to
+	 * us. This is gross, but sometimes at this level it is the
+	 * only way out
 	 */
 	done_cache_as_ram_main();
 }

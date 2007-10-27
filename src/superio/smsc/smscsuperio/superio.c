@@ -40,6 +40,7 @@
 #include <console/console.h>
 #include <uart8250.h>
 #include <pc80/keyboard.h>
+#include <stdlib.h>
 #include "chip.h"
 
 /* The following Super I/O chips are currently supported by this driver: */
@@ -65,9 +66,6 @@
 static int first_time = 1;
 static uint8_t superio_id = 0;
 static uint8_t superio_rev = 0;
-
-/* TODO: Move somewhere else, but where? */
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
 /**
  * A list of all possible logical devices which may be supported by at least

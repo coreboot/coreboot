@@ -3,6 +3,8 @@
 
 #include <stddef.h>
 
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
+
 extern void *malloc(size_t size);
 void free(void *ptr);
 

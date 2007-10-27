@@ -1,8 +1,3 @@
-#define VID     0X00
-#define DID     0X02
-#define PCICMD  0X04
-#define PCISTS  0X06
-#define RID	0X08
 #define IURBASE	0X14
 #define MCHCFG0	0X50
 #define MCHSCRB	0X52

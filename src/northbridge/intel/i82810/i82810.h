@@ -34,19 +34,6 @@
  * should not be touched.
  */
 
-#define VID	0x00		/* Vendor Identification */
-#define DID	0x02		/* Device Identification */
-#define PCICMD	0x04		/* PCI Command Register */
-#define PCISTS	0x06		/* PCI Status Register */
-#define RID	0x08		/* Revision Identification */
-#define SUBC	0x0a		/* Sub-Class Code */
-#define BCC	0x0b		/* Base Class Code */
-#define MLT	0x0d		/* Master Latency Timer */
-#define HDR	0x0e		/* Header Type */
-#define SVID	0x2c		/* Subsystem Vendor Identification */
-#define SID	0x2e		/* Subsystem Identification */
-#define CAPPTR	0x34		/* Capabilities Pointer */
-
 /* TODO: Descriptions. */
 #define GMCHCFG	0x50
 #define PAM	0x51

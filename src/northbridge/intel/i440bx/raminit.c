@@ -503,7 +503,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	pci_write_config8(ctrl->d0, PMCR, 0x10);
 
 	/* TODO? */
-	pci_write_config8(ctrl->d0, MLT, 0x40);
+	pci_write_config8(ctrl->d0, PCI_LATENCY_TIMER, 0x40);
 	pci_write_config8(ctrl->d0, DRAMT, 0x03);
 	pci_write_config8(ctrl->d0, MBSC, 0x03);
 	pci_write_config8(ctrl->d0, SCRR, 0x38);

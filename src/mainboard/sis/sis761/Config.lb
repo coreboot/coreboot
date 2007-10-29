@@ -1,0 +1,341 @@
+##
+## This file is part of the LinuxBIOS project.
+##
+## Copyright (C) 2007 AMD
+## Written by Yinghai Lu <yinghailu@amd.com> for AMD.
+## Copyright (C) 2007 Silicon Integrated Systems Corp. (SiS)
+## Written by Morgan Tsai <my_tsai@sis.com> for SiS.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+
+##
+## Compute the location and size of where this firmware image
+## (linuxBIOS plus bootloader) will live in the boot rom chip.
+##
+if USE_FAILOVER_IMAGE
+	default ROM_SECTION_SIZE   = FAILOVER_SIZE
+	default ROM_SECTION_OFFSET = ( ROM_SIZE - FAILOVER_SIZE )
+else
+    if USE_FALLBACK_IMAGE
+	default ROM_SECTION_SIZE   = FALLBACK_SIZE
+	default ROM_SECTION_OFFSET = ( ROM_SIZE - FALLBACK_SIZE - FAILOVER_SIZE )
+    else
+	default ROM_SECTION_SIZE   = ( ROM_SIZE - FALLBACK_SIZE - FAILOVER_SIZE )
+	default ROM_SECTION_OFFSET = 0
+    end
+end
+
+##
+## Compute the start location and size size of
+## The linuxBIOS bootloader.
+##
+default PAYLOAD_SIZE            = ( ROM_SECTION_SIZE - ROM_IMAGE_SIZE )
+default CONFIG_ROM_PAYLOAD_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+
+##
+## Compute where this copy of linuxBIOS will start in the boot rom
+##
+default _ROMBASE      = ( CONFIG_ROM_PAYLOAD_START + PAYLOAD_SIZE )
+
+##
+## Compute a range of ROM that can cached to speed up linuxBIOS,
+## execution speed.
+##
+## XIP_ROM_SIZE must be a power of 2.
+## XIP_ROM_BASE must be a multiple of XIP_ROM_SIZE
+##
+default XIP_ROM_SIZE=65536
+
+if USE_FAILOVER_IMAGE
+	default XIP_ROM_BASE = ( _ROMBASE - XIP_ROM_SIZE + ROM_IMAGE_SIZE)
+else
+    if USE_FALLBACK_IMAGE
+	default XIP_ROM_BASE = ( _ROMBASE - XIP_ROM_SIZE + ROM_IMAGE_SIZE + FAILOVER_SIZE)
+    else
+	default XIP_ROM_BASE = ( _ROMBASE - XIP_ROM_SIZE + ROM_IMAGE_SIZE)
+    end
+end
+
+arch i386 end
+
+##
+## Build the objects we have code for in this directory.
+##
+
+driver mainboard.o
+#needed by irq_tables and mptable and acpi_tables
+object get_bus_conf.o
+
+if HAVE_MP_TABLE object mptable.o end
+if HAVE_PIRQ_TABLE object irq_tables.o end
+#object reset.o
+if USE_DCACHE_RAM
+
+	if CONFIG_USE_INIT
+		makerule ./cache_as_ram_auto.o
+		        depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
+        		action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -o $@"
+		end
+	else
+		makerule ./cache_as_ram_auto.inc
+        		depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
+		        action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -S -o $@"
+		        action "perl -e 's/.rodata/.rom.data/g' -pi $@"
+        		action "perl -e 's/.text/.section .rom.text/g' -pi $@"
+		end
+	end
+
+end
+
+if USE_FAILOVER_IMAGE
+else
+    if CONFIG_AP_CODE_IN_CAR
+        makerule ./apc_auto.o
+                depends "$(MAINBOARD)/apc_auto.c option_table.h"
+                action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/apc_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -o $@"
+        end
+        ldscript /arch/i386/init/ldscript_apc.lb
+    end
+end
+
+
+##
+## Build our 16 bit and 32 bit linuxBIOS entry code
+##
+if HAVE_FAILOVER_BOOT
+    if USE_FAILOVER_IMAGE
+	mainboardinit cpu/x86/16bit/entry16.inc
+	ldscript /cpu/x86/16bit/entry16.lds
+    end
+else
+    if USE_FALLBACK_IMAGE
+	mainboardinit cpu/x86/16bit/entry16.inc
+	ldscript /cpu/x86/16bit/entry16.lds
+    end
+end
+
+mainboardinit cpu/x86/32bit/entry32.inc
+
+if USE_DCACHE_RAM
+        if CONFIG_USE_INIT
+                ldscript /cpu/x86/32bit/entry32.lds
+        end
+
+        if CONFIG_USE_INIT
+                ldscript /cpu/amd/car/cache_as_ram.lds
+        end
+end
+
+
+##
+## Build our reset vector (This is where linuxBIOS is entered)
+##
+if HAVE_FAILOVER_BOOT
+    if USE_FAILOVER_IMAGE
+	mainboardinit cpu/x86/16bit/reset16.inc
+	ldscript /cpu/x86/16bit/reset16.lds
+    else
+	mainboardinit cpu/x86/32bit/reset32.inc
+	ldscript /cpu/x86/32bit/reset32.lds
+    end
+else
+    if USE_FALLBACK_IMAGE
+	mainboardinit cpu/x86/16bit/reset16.inc
+	ldscript /cpu/x86/16bit/reset16.lds
+    else
+	mainboardinit cpu/x86/32bit/reset32.inc
+	ldscript /cpu/x86/32bit/reset32.lds
+    end
+end
+
+##
+## Include an id string (For safe flashing)
+##
+mainboardinit southbridge/sis/sis966/id.inc
+ldscript /southbridge/sis/sis966/id.lds
+
+##
+## ROMSTRAP table for MCP55
+##
+if HAVE_FAILOVER_BOOT
+    if USE_FAILOVER_IMAGE
+	mainboardinit southbridge/sis/sis966/romstrap.inc
+	ldscript /southbridge/sis/sis966/romstrap.lds
+    end
+else
+    if USE_FALLBACK_IMAGE
+	mainboardinit southbridge/sis/sis966/romstrap.inc
+	ldscript /southbridge/sis/sis966/romstrap.lds
+    end
+end
+
+if USE_DCACHE_RAM
+	##
+	## Setup Cache-As-Ram
+	##
+	mainboardinit cpu/amd/car/cache_as_ram.inc
+end
+
+###
+### This is the early phase of linuxBIOS startup
+### Things are delicate and we test to see if we should
+### failover to another image.
+###
+if HAVE_FAILOVER_BOOT
+    if USE_FAILOVER_IMAGE
+	if USE_DCACHE_RAM
+		ldscript /arch/i386/lib/failover_failover.lds
+	end
+    end
+else
+    if USE_FALLBACK_IMAGE
+	if USE_DCACHE_RAM
+		ldscript /arch/i386/lib/failover.lds
+	end
+    end
+end
+
+##
+## Setup RAM
+##
+if USE_DCACHE_RAM
+
+	if CONFIG_USE_INIT
+		initobject cache_as_ram_auto.o
+	else
+		mainboardinit ./cache_as_ram_auto.inc
+	end
+end
+
+##
+## Include the secondary Configuration files
+##
+if CONFIG_CHIP_NAME
+	config chip.h
+end
+
+chip northbridge/amd/amdk8/root_complex
+        device apic_cluster 0 on
+                chip cpu/amd/socket_AM2
+                        device apic 0 on end
+                end
+        end
+	device pci_domain 0 on
+		chip northbridge/amd/amdk8 #mc0
+			device pci 18.0 on
+				#  devices on link 0, link 0 == LDT 0
+			        chip southbridge/sis/sis966
+					device pci 0.0 on end   # Northbridge
+					#################################################
+					device pci 1.0 on 			# AGP bridge
+					  chip drivers/pci/onboard	# Integrated VGA
+						device pci 0.0 on end
+						register "rom_address" = "0xfff80000"
+					  end
+					end
+					#################################################
+					## device pci 1.0 on end   # PCIE
+                			device pci 2.0 on # LPC
+						chip superio/ite/it8716f
+							device pnp 2e.0 off #  Floppy
+                	                 			io 0x60 = 0x3f0
+                	                			irq 0x70 = 6
+                	                			drq 0x74 = 2
+							end
+                	        			device pnp 2e.1 on #  Com1
+                	                 			io 0x60 = 0x3f8
+                	                			irq 0x70 = 4
+							end
+                	        			device pnp 2e.2 off #  Com2
+                	                 			io 0x60 = 0x2f8
+                	                			irq 0x70 = 3
+							end
+                	        			device pnp 2e.3 off #  Parallel Port
+                	                 			io 0x60 = 0x378
+                	                			irq 0x70 = 7
+							end
+                	        			device pnp 2e.4 on #  EC
+                	                 			io 0x60 = 0x290
+                	                 			io 0x62 = 0x230
+                	                			irq 0x70 = 9
+							end
+                	        			device pnp 2e.5 off #  Keyboard
+                	                 			io 0x60 = 0x60
+                	                 			io 0x62 = 0x64
+                	                			irq 0x70 = 1
+							end
+                	        			device pnp 2e.6 off #  Mouse
+                	                			irq 0x70 = 12
+							end
+                	        			device pnp 2e.8 off #  MIDI
+								io 0x60 = 0x300
+								irq 0x70 = 10
+							end
+                	        			device pnp 2e.9 off #  GAME
+								io 0x60 = 0x220
+							end
+                	        			device pnp 2e.a off end #  CIR
+						end
+					end
+
+ 					device pci 2.5 on end # IDE (SiS5513)
+ 					device pci 2.6 off end # Modem (SiS7013)
+ 					device pci 2.7 off end # Audio (SiS7012)
+                			device pci 3.0 on end # USB (SiS7001,USB1.1)
+	                		device pci 3.1 on end # USB (SiS7001,USB1.1)
+	                		device pci 3.3 on end # USB (SiS7002,USB2.0)
+	                		device pci 4.0 on end # NIC (SiS191)
+                			device pci 5.0 on end # SATA (SiS1183)
+                			device pci 6.0 off end # SB PCIE1 (SiS000A)
+                			device pci 7.0 off end # SB PCIE2 (SiS000A)
+        	       			device pci 9.0 off end # PCI E 6
+        	       			device pci a.0 off end # PCI E 5
+        	       			device pci b.0 off end # PCI E 4
+                			device pci c.0 off end # PCI E 3
+                			device pci d.0 off end # PCI E 2
+                			device pci e.0 off end # PCI E 1
+        	       			device pci f.0 on end # Hda
+
+	                                register "ide0_enable" = "1"
+	                                register "ide1_enable" = "1"
+                	                register "sata0_enable" = "1"
+                        	        register "sata1_enable" = "1"
+				   	#register "mac_eeprom_smbus" = "3" # 1: smbus under 2e.8, 2: SM0 3: SM1
+				   	#register "mac_eeprom_addr" = "0x51"
+				end
+			end #  device pci 18.0
+			device pci 18.0 on end # Link 1
+			device pci 18.0 on end
+			device pci 18.1 on end
+			device pci 18.2 on end
+			device pci 18.3 on end
+		end # mc0
+
+	end # PCI domain
+
+#       chip drivers/generic/debug
+#               device pnp 0.0 off end # chip name
+#                device pnp 0.1 on end # pci_regs_all
+#                device pnp 0.2 on end # mem
+#                device pnp 0.3 off end # cpuid
+#                device pnp 0.4 on end # smbus_regs_all
+#                device pnp 0.5 off end # dual core msr
+#                device pnp 0.6 off end # cache size
+#               device pnp 0.7 off end # tsc
+#                device pnp 0.8 off  end # io
+#                device pnp 0.9 off end # io
+#       end
+end #root_complex

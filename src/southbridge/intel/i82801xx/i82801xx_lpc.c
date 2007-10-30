@@ -32,13 +32,52 @@
 #include <arch/io.h>
 #include "i82801xx.h"
 
+#define PMBASE_ADDR	0x00000400 /* ACPI Base Address Register */
+#define GPIO_BASE_ADDR	0x00000500 /* GPIO Base Address Register */
+
 #define NMI_OFF 0
 
-void i82801xx_enable_ioapic(struct device *dev)
+/* PIRQ[n]_ROUT[3:0] - PIRQ Routing Control
+ * 0x00 - 0000 = Reserved
+ * 0x01 - 0001 = Reserved
+ * 0x02 - 0010 = Reserved
+ * 0x03 - 0011 = IRQ3
+ * 0x04 - 0100 = IRQ4
+ * 0x05 - 0101 = IRQ5
+ * 0x06 - 0110 = IRQ6
+ * 0x07 - 0111 = IRQ7
+ * 0x08 - 1000 = Reserved
+ * 0x09 - 1001 = IRQ9
+ * 0x0A - 1010 = IRQ10
+ * 0x0B - 1011 = IRQ11
+ * 0x0C - 1100 = IRQ12
+ * 0x0D - 1101 = Reserved
+ * 0x0E - 1110 = IRQ14
+ * 0x0F - 1111 = IRQ15
+ * PIRQ[n]_ROUT[7] - PIRQ Routing Control
+ * 0x80 - The PIRQ is not routed.
+ */
+
+#define PIRQA 0x03
+#define PIRQB 0x05
+#define PIRQC 0x06
+#define PIRQD 0x07
+#define PIRQE 0x09
+#define PIRQF 0x0A
+#define PIRQG 0x0B
+#define PIRQH 0x0C
+
+void i82801xx_enable_apic(struct device *dev)
 {
 	uint32_t reg32;
 	volatile uint32_t *ioapic_index = (volatile uint32_t *)0xfec00000;
 	volatile uint32_t *ioapic_data = (volatile uint32_t *)0xfec00010;
+
+	/* Set ACPI base address (I/O space). */
+	pci_write_config32(dev, PMBASE, (PMBASE_ADDR | 1));
+
+	/* Enable ACPI I/O and power management. */
+	pci_write_config8(dev, ACPI_CNTL, 0x10);
 
 	reg32 = pci_read_config32(dev, GEN_CNTL);
 	reg32 |= (3 << 7);	/* Enable IOAPIC */
@@ -58,8 +97,8 @@ void i82801xx_enable_ioapic(struct device *dev)
 		die("APIC Error\n");
 
 	/* TODO: From i82801ca, needed/useful on other ICH? */
-	*ioapic_index = 3;	// Select Boot Configuration register
-	*ioapic_data = 1;	// Use Processor System Bus to deliver interrupts
+	*ioapic_index = 3; /* Select Boot Configuration register. */
+	*ioapic_data = 1; /* Use Processor System Bus to deliver interrupts. */
 }
 
 void i82801xx_enable_serial_irqs(struct device *dev)
@@ -70,6 +109,87 @@ void i82801xx_enable_serial_irqs(struct device *dev)
 	pci_write_config8(dev, SERIRQ_CNTL,
 			  (1 << 7) | (0 << 6) | ((21 - 17) << 2) | (0 << 0));
 	/* TODO: Explain/#define the real meaning of these magic numbers. */
+}
+
+static void i82801xx_pirq_init(device_t dev, uint16_t ich_model)
+{
+	/* Route PIRQA - PIRQD. */
+	pci_write_config8(dev, PIRQA_ROUT, PIRQA);
+	pci_write_config8(dev, PIRQB_ROUT, PIRQB);
+	pci_write_config8(dev, PIRQC_ROUT, PIRQC);
+	pci_write_config8(dev, PIRQD_ROUT, PIRQD);
+
+	/* Route PIRQE - PIRQH (for ICH2-ICH9). */
+	if (ich_model >= 0x2440) {
+		pci_write_config8(dev, PIRQE_ROUT, PIRQE);
+		pci_write_config8(dev, PIRQF_ROUT, PIRQF);
+		pci_write_config8(dev, PIRQG_ROUT, PIRQG);
+		pci_write_config8(dev, PIRQH_ROUT, PIRQH);
+	}
+}
+
+static void i82801xx_power_options(device_t dev)
+{
+	uint8_t byte;
+	int pwr_on = -1;
+	int nmi_option;
+
+	/* power after power fail */
+	/* FIXME this doesn't work! */
+	/* Which state do we want to goto after g3 (power restored)?
+	 * 0 == S0 Full On
+	 * 1 == S5 Soft Off
+	 */
+	pci_write_config8(dev, GEN_PMCON_3, pwr_on ? 0 : 1);
+	printk_info("Set power %s if power fails\n", pwr_on ? "on" : "off");
+
+	/* Set up NMI on errors. */
+	byte = inb(0x61);
+	byte &= ~(1 << 3);	/* IOCHK# NMI Enable */
+	byte &= ~(1 << 2);	/* PCI SERR# Enable */
+	outb(byte, 0x61);
+	byte = inb(0x70);
+
+	nmi_option = NMI_OFF;
+	get_option(&nmi_option, "nmi");
+	if (nmi_option) {
+		byte &= ~(1 << 7);	/* Set NMI. */
+		outb(byte, 0x70);
+	}
+}
+
+static void gpio_init(device_t dev, uint16_t ich_model)
+{
+	/* Set the value for GPIO base address register and enable GPIO.
+	 * Note: ICH-ICH5 registers differ from ICH6-ICH9.
+	 */
+	if (ich_model <= 0x24D0) {
+		pci_write_config32(dev, GPIO_BASE_ICH0_5, (GPIO_BASE_ADDR | 1));
+		pci_write_config8(dev, GPIO_CNTL_ICH0_5, 0x10);
+	} else if (ich_model >= 0x2640) {
+		pci_write_config32(dev, GPIO_BASE_ICH6_9, (GPIO_BASE_ADDR | 1));
+		pci_write_config8(dev, GPIO_CNTL_ICH6_9, 0x10);
+	}
+}
+
+void i82801xx_rtc_init(struct device *dev)
+{
+	uint8_t reg8;
+	uint32_t reg32;
+	int rtc_failed;
+
+	reg8 = pci_read_config8(dev, GEN_PMCON_3);
+	rtc_failed = reg8 & RTC_BATTERY_DEAD;
+	if (rtc_failed) {
+		reg8 &= ~(1 << 1);	/* Preserve the power fail state. */
+		pci_write_config8(dev, GEN_PMCON_3, reg8);
+	}
+	reg32 = pci_read_config32(dev, GEN_STS);
+	rtc_failed |= reg32 & (1 << 2);
+	rtc_init(rtc_failed);
+
+	/* Enable access to the upper 128 byte bank of CMOS RAM. */
+	pci_write_config8(dev, RTC_CONF, 0x04);
 }
 
 void i82801xx_lpc_route_dma(struct device *dev, uint8_t mask)
@@ -87,56 +207,21 @@ void i82801xx_lpc_route_dma(struct device *dev, uint8_t mask)
 	pci_write_config16(dev, PCI_DMA_CFG, reg16);
 }
 
-/* TODO: Needs serious cleanup/comments. */
-void i82801xx_rtc_init(struct device *dev)
+static void i82801xx_lpc_decode_en(device_t dev, uint16_t ich_model)
 {
-	uint8_t reg8;
-	uint32_t reg32;
-	int rtc_failed;
-
-	reg8 = pci_read_config8(dev, GEN_PMCON_3);
-	rtc_failed = reg8 & RTC_BATTERY_DEAD;
-	if (rtc_failed) {
-		reg8 &= ~(1 << 1);	/* preserve the power fail state */
-		pci_write_config8(dev, GEN_PMCON_3, reg8);
+	/* Decode 0x3F8-0x3FF (COM1) for COMA port, 0x2F8-0x2FF (COM2) for COMB.
+	 * LPT decode defaults to 0x378-0x37F and 0x778-0x77F.
+	 * Floppy decode defaults to 0x3F0-0x3F5, 0x3F7.
+	 * We also need to set the value for LPC I/F Enables Register.
+	 * Note: ICH-ICH5 registers differ from ICH6-ICH9.
+	 */
+	if (ich_model <= 0x24D0) {
+		pci_write_config8(dev, COM_DEC, 0x10);
+		pci_write_config16(dev, LPC_EN_ICH0_5, 0x300F);
+	} else if (ich_model >= 0x2640) {
+		pci_write_config8(dev, LPC_IO_DEC, 0x10);
+		pci_write_config16(dev, LPC_EN_ICH6_9, 0x300F);
 	}
-	reg32 = pci_read_config32(dev, GEN_STS);
-	rtc_failed |= reg32 & (1 << 2);
-	rtc_init(rtc_failed);
-}
-
-void i82801xx_1f0_misc(struct device *dev)
-{
-	/* TODO: break this down into smaller functions */
-
-	//move to acpi_enable or something
-	/* Set ACPI base address to 0x1100 (I/O space) */
-	pci_write_config32(dev, PMBASE, PM_BASE_ADDR | 1);
-	/* Enable ACPI I/O and power management */
-	pci_write_config8(dev, ACPI_CNTL, 0x10);
-	/* Set GPIO base address to 0x1180 (I/O space) */
-	pci_write_config32(dev, GPIO_BASE, GPIO_BASE_ADDR | 1);
-	/* Enable GPIO */
-	pci_write_config8(dev, GPIO_CNTL, 0x10);
-
-	//get rid of?
-	/* Route PIRQA to IRQ11, PIRQB to IRQ3, PIRQC to IRQ5, PIRQD to IRQ10 */
-	pci_write_config32(dev, PIRQA_ROUT, 0x0A05030B);
-	/* Route PIRQE to IRQ7. Leave PIRQF - PIRQH unrouted */
-	pci_write_config8(dev, PIRQE_ROUT, 0x07);
-
-	//move to i82801xx_init
-	/* Prevent LPC disabling, enable parity errors, and SERR# (System Error) */
-	pci_write_config16(dev, PCI_COMMAND, 0x014f);
-	/* Enable access to the upper 128 byte bank of CMOS RAM */
-	pci_write_config8(dev, RTC_CONF, 0x04);
-	/* Decode 0x3F8-0x3FF (COM1) for COMA port, 0x2F8-0x2FF (COM2) for COMB */
-	pci_write_config8(dev, COM_DEC, 0x10);
-	/* LPT decode defaults to 0x378-0x37F and 0x778-0x77F
-	 * Floppy decode defaults to 0x3F0-0x3F5, 0x3F7 */
-	/* Enable: COMA, COMB, LPT, Floppy
-	 * Disable: Microcontroller, Sound, Gameport */
-	pci_write_config16(dev, LPC_EN, 0x000F);
 }
 
 static void enable_hpet(struct device *dev)
@@ -146,7 +231,7 @@ static void enable_hpet(struct device *dev)
 	uint32_t code = (0 & 0x3);
 
 	reg32 = pci_read_config32(dev, GEN_CNTL);
-	reg32 |= (1 << 17);	/* Enable HPET */
+	reg32 |= (1 << 17);	/* Enable HPET. */
 	/*
 	 * Bits [16:15]	Memory Address Range
 	 * 00		FED0_0000h - FED0_03FFh
@@ -156,67 +241,45 @@ static void enable_hpet(struct device *dev)
 	 */
 	reg32 &= ~(3 << 15);	/* Clear it */
 	reg32 |= (code << 15);
-	/* reg32 is never written to anywhere? */
+	/* TODO: reg32 is never written to anywhere? */
 	printk_debug("Enabling HPET @0x%x\n", HPET_ADDR | (code << 12));
 #endif
 }
 
 static void lpc_init(struct device *dev)
 {
-	uint8_t byte;
-	int pwr_on = -1;
-	int nmi_option;
+	uint16_t ich_model = pci_read_config16(dev, PCI_DEVICE_ID);
 
-	/* IO APIC initialization */
-	i82801xx_enable_ioapic(dev);
+	/* Set the value for PCI command register. */
+	pci_write_config16(dev, PCI_COMMAND, 0x000f);
+
+	/* IO APIC initialization. */
+	i82801xx_enable_apic(dev);
 
 	i82801xx_enable_serial_irqs(dev);
 
-	/* TODO: Find out if this is being used/works */
-#ifdef SUSPICIOUS_LOOKING_CODE
-	/* The ICH-4 datasheet does not mention this configuration register.
-	 * This code may have been inherited (incorrectly) from code for
-	 * the AMD 766 southbridge, which *does* support this functionality.
-	 */
+	/* Setup the PIRQ. */
+	i82801xx_pirq_init(dev, ich_model);
 
-	/* Posted memory write enable */
-	byte = pci_read_config8(dev, 0x46);
-	pci_write_config8(dev, 0x46, byte | (1 << 0));
-#endif
+	/* Setup power options. */
+	i82801xx_power_options(dev);
 
-	/* power after power fail */
-	/* FIXME this doesn't work! */
-	/* Which state do we want to goto after g3 (power restored)?
-	 * 0 == S0 Full On
-	 * 1 == S5 Soft Off
-	 */
-	pci_write_config8(dev, GEN_PMCON_3, pwr_on ? 0 : 1);
-	printk_info("Set power %s if power fails\n", pwr_on ? "on" : "off");
+	/* Set the state of the GPIO lines. */
+	gpio_init(dev, ich_model);
 
-	/* Set up NMI on errors */
-	byte = inb(0x61);
-	byte &= ~(1 << 3);	/* IOCHK# NMI Enable */
-	byte &= ~(1 << 2);	/* PCI SERR# Enable */
-	outb(byte, 0x61);
-	byte = inb(0x70);
-
-	nmi_option = NMI_OFF;
-	get_option(&nmi_option, "nmi");
-	if (nmi_option) {
-		byte &= ~(1 << 7);	/* Set NMI */
-		outb(byte, 0x70);
-	}
-
-	/* Initialize the real time clock */
+	/* Initialize the real time clock. */
 	i82801xx_rtc_init(dev);
 
+	/* Route DMA. */
 	i82801xx_lpc_route_dma(dev, 0xff);
 
-	/* Initialize isa dma */
+	/* Initialize ISA DMA. */
 	isa_dma_init();
 
-	i82801xx_1f0_misc(dev);
-	/* Initialize the High Precision Event Timers, if present */
+	/* Setup decode ports and LPC I/F enables. */
+	i82801xx_lpc_decode_en(dev, ich_model);
+
+	/* Initialize the High Precision Event Timers, if present. */
 	enable_hpet(dev);
 }
 
@@ -224,10 +287,10 @@ static void i82801xx_lpc_read_resources(device_t dev)
 {
 	struct resource *res;
 
-	/* Get the normal pci resources of this device */
+	/* Get the normal PCI resources of this device. */
 	pci_dev_read_resources(dev);
 
-	/* Add an extra subtractive resource for both memory and I/O */
+	/* Add an extra subtractive resource for both memory and I/O. */
 	res = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
 	res->flags =
 	    IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;

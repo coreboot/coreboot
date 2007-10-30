@@ -33,21 +33,30 @@ extern void i82801xx_enable(device_t dev);
 #define RTC_CONF		0xd8
 #define GEN_PMCON_3		0xa4
 
-#define PCICMD			0x04
 #define PMBASE			0x40
-#define PM_BASE_ADDR		0x1100
 #define ACPI_CNTL		0x44
 #define BIOS_CNTL		0x4E
-#define GPIO_BASE		0x58
-#define GPIO_BASE_ADDR		0x1180
-#define GPIO_CNTL		0x5C
+#define GPIO_BASE_ICH0_5	0x58 /* LPC GPIO Base Addr. Reg. (ICH0-ICH5) */
+#define GPIO_BASE_ICH6_9	0x48 /* LPC GPIO Base Address Register (ICH6-ICH9) */
+#define GPIO_CNTL_ICH0_5	0x5C /* LPC GPIO Control Register (ICH0-ICH5) */
+#define GPIO_CNTL_ICH6_9	0x4C /* LPC GPIO Control Register (ICH6-ICH9) */
+
 #define PIRQA_ROUT		0x60
+#define PIRQB_ROUT		0x61
+#define PIRQC_ROUT		0x62
+#define PIRQD_ROUT		0x63
 #define PIRQE_ROUT		0x68
-#define COM_DEC			0xE0
-#define LPC_EN			0xE6
+#define PIRQF_ROUT		0x69
+#define PIRQG_ROUT		0x6A
+#define PIRQH_ROUT		0x6B
+
 #define FUNC_DIS		0xF2
 
-#define CMD			0x04
+#define COM_DEC			0xE0 /* LPC I/F Communication Port Decode Ranges (ICH0-ICH5) */
+#define LPC_IO_DEC		0x80 /* IO Decode Ranges Register (ICH6-ICH9) */
+#define LPC_EN_ICH0_5		0xE6 /* LPC IF Enables Register (ICH0-ICH5) */
+#define LPC_EN_ICH6_9		0x82 /* LPC IF Enables Register (ICH6-ICH9) */
+
 #define SBUS_NUM		0x19
 #define SUB_BUS_NUM		0x1A
 #define SMLT			0x1B

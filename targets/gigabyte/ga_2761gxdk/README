@@ -1,0 +1,3 @@
+## How to append VGA bios?
+
+cat 6330VGA.rom ga_2761gxdk/linuxbios.rom > ga_2761gxdk.bin

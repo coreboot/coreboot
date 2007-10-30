@@ -21,9 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-extern struct chip_operations mainboard_sis_sis761_ops;
+extern struct chip_operations mainboard_gigabyte_ga_2761gxdk_ops;
 
-struct mainboard_sis_sis761_config {
-//	int fixup_scsi;
-//	int fixup_vga;
+struct mainboard_gigabyte_ga_2761gxdk_config {
 };

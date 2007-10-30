@@ -29,7 +29,7 @@
 #include "chip.h"
 
 #if CONFIG_CHIP_NAME == 1
-struct chip_operations mainboard_sis_sis761_ops = {
-	CHIP_NAME("SiS SiS761GX/SiS966 Mainboard")
+struct chip_operations mainboard_gigabyte_ga_2761gxdk_ops = {
+	CHIP_NAME("GIGABYTE GA-2761GXDK Mainboard")
 };
 #endif

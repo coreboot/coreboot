@@ -1,3 +1,0 @@
-## How to append VGA bios?
-
-cat 6330VGA.rom churchill/linuxbios.rom > churchill.bin

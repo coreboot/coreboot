@@ -25,7 +25,8 @@ else
 	default ROM_SECTION_SIZE = (ROM_SIZE - FALLBACK_SIZE)
 	default ROM_SECTION_OFFSET = 0
 end
-default CONFIG_ROM_PAYLOAD_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+default CONFIG_ROM_PAYLOAD_START = (0xffffffff - ROM_SIZE
+				    + ROM_SECTION_OFFSET + 1)
 default PAYLOAD_SIZE = (ROM_SECTION_SIZE - ROM_IMAGE_SIZE)
 default _ROMBASE = (CONFIG_ROM_PAYLOAD_START + PAYLOAD_SIZE)
 default XIP_ROM_SIZE = 64 * 1024
@@ -80,11 +81,16 @@ dir /pc80
 config chip.h
 
 chip northbridge/intel/i440bx		# Northbridge
+  device apic_cluster 0 on		# APIC cluster
+    chip cpu/intel/slot_2		# CPU (FIXME: It's slot 1, actually)
+      device apic 0 on end		# APIC
+    end
+  end
   device pci_domain 0 on		# PCI domain
     device pci 0.0 on end		# Host bridge
-    device pci 1.0 on end		# AGP bridge
+    device pci 1.0 on end		# PCI/AGP bridge
     chip southbridge/intel/i82371eb	# Southbridge
-      device pci 4.0 on			# ISA
+      device pci 4.0 on			# ISA bridge
         chip superio/winbond/w83977tf	# Super I/O
           device pnp 3f0.0 on		# Floppy
             io 0x60 = 0x3f0
@@ -99,11 +105,11 @@ chip northbridge/intel/i440bx		# Northbridge
             io 0x60 = 0x3f8
             irq 0x70 = 4
           end
-          device pnp 3f0.3 on		# COM2
+          device pnp 3f0.3 on		# COM2 / IR
             io 0x60 = 0x2f8
             irq 0x70 = 3
           end
-          device pnp 3f0.5 on		# PS/2 keyboard
+          device pnp 3f0.5 on		# PS/2 keyboard / mouse
             io 0x60 = 0x60
             io 0x62 = 0x64
             irq 0x70 = 1		# PS/2 keyboard interrupt
@@ -125,7 +131,5 @@ chip northbridge/intel/i440bx		# Northbridge
       register "ide0_enable" = "1"
       register "ide1_enable" = "1"
     end
-  end
-  chip cpu/intel/socket_PGA370
   end
 end

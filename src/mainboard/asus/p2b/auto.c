@@ -30,13 +30,13 @@
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
 #include "southbridge/intel/i82371eb/i82371eb_early_smbus.c"
-#include "superio/winbond/w83977tf/w83977tf_early_serial.c"
 #include "northbridge/intel/i440bx/raminit.h"
-#include "mainboard/bitworks/ims/debug.c"		/* FIXME */
+#include "mainboard/asus/mew-vm/debug.c"	/* FIXME */
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
+#include "superio/winbond/w83977tf/w83977tf_early_serial.c"
 
 #define SERIAL_DEV PNP_DEV(0x3f0, W83977TF_SP1)
 
@@ -64,10 +64,9 @@ static void main(unsigned long bist)
 	w83977tf_enable_serial(SERIAL_DEV, TTYS0_BASE);
 	uart_init();
 	console_init();
-
 	report_bist_failure(bist);
 	enable_smbus();
-	dump_spd_registers(&memctrl[0]);
+	/* dump_spd_registers(&memctrl[0]); */
 	sdram_initialize(sizeof(memctrl) / sizeof(memctrl[0]), memctrl);
-	ram_check(0, 640 * 1024);
+	/* ram_check(0, 640 * 1024); */
 }

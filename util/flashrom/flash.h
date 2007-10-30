@@ -92,6 +92,7 @@ extern struct flashchip flashchips[];
 #define EN_25B32		0x2016
 
 #define FUJITSU_ID		0x04	/* Fujitsu */
+#define MBM29F400TC		0x23
 
 #define HYUNDAI_ID		0xAD	/* Hyundai */
 

@@ -38,6 +38,8 @@ struct flashchip flashchips[] = {
 	 probe_jedec,	erase_chip_jedec, write_jedec},
 	{"At29C020",	ATMEL_ID,	AT_29C020,	256, 256,
 	 probe_jedec,	erase_chip_jedec, write_jedec},
+	{"MBM29F400TC",	FUJITSU_ID,	MBM29F400TC,	512, 64 * 1024,
+	 probe_m29f400bt, erase_m29f400bt, write_linuxbios_m29f400bt},
 	{"MX29F002",	MX_ID,		MX_29F002,	256, 64 * 1024,
 	 probe_29f002,	erase_29f002, 	write_29f002},
 	{"MX25L4005",	MX_ID,		MX_25L4005,	512, 4 * 1024,

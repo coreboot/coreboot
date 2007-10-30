@@ -433,6 +433,7 @@ typedef struct penable {
 static FLASH_ENABLE enables[] = {
 	{0x1039, 0x0630, "SIS630", enable_flash_sis630},
 	{0x8086, 0x7110, "PIIX4/PIIX4E/PIIX4M", enable_flash_piix4},
+	{0x8086, 0x7198, "Intel 440MX", enable_flash_piix4},
 	{0x8086, 0x2410, "ICH", enable_flash_ich_4e},
 	{0x8086, 0x2420, "ICH0", enable_flash_ich_4e},
 	{0x8086, 0x2440, "ICH2", enable_flash_ich_4e},

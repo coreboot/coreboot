@@ -84,6 +84,8 @@ config SOUTHBRIDGE_INTEL_I82371EB
 # Super I/Os:
 config SUPERIO_WINBOND_W83627HF
 	boolean
+config SUPERIO_FINTEK_F71805F
+	boolean
 
 # Source all northbridge/southbridge/superio Kconfig files:
 source northbridge/intel/i440bxemulation/Kconfig

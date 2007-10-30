@@ -288,13 +288,13 @@ static struct device_operations sata_ops = {
 	.ops_pci	= &lops_pci,
 };
 
-static struct pci_driver sata0_driver __pci_driver = {
+static const struct pci_driver sata0_driver __pci_driver = {
 	.ops	= &sata_ops,
 	.vendor	= PCI_VENDOR_ID_SIS,
 	.device	= PCI_DEVICE_ID_SIS_SIS966_SATA0,
 };
 
-static struct pci_driver sata1_driver __pci_driver = {
+static const struct pci_driver sata1_driver __pci_driver = {
 	.ops	= &sata_ops,
 	.vendor	= PCI_VENDOR_ID_SIS,
 	.device	= PCI_DEVICE_ID_SIS_SIS966_SATA1,

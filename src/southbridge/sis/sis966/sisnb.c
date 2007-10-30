@@ -185,7 +185,7 @@ static struct device_operations sisnb_ops  = {
 	.ops_pci          = 0,
 };
 
-static struct pci_driver sisnb_driver __pci_driver = {
+static const struct pci_driver sisnb_driver __pci_driver = {
 	.ops    = &sisnb_ops,
 	.vendor = PCI_VENDOR_ID_SIS,
 	.device = PCI_DEVICE_ID_SIS_SIS761,

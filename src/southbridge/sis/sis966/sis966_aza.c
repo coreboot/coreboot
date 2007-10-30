@@ -31,8 +31,7 @@
 #include <arch/io.h>
 #include "sis966.h"
 
-uint8_t	SiS_SiS7502_init[6][3]={
-
+uint8_t	SiS_SiS7502_init[7][3]={
 {0x04, 0xFF, 0x07},					 
 {0x2C, 0xFF, 0x39},					 
 {0x2D, 0xFF, 0x10},					 
@@ -493,7 +492,7 @@ static struct device_operations aza_audio_ops  = {
 	.ops_pci	= &lops_pci,
 };
 
-static struct pci_driver azaaudio_driver __pci_driver = {
+static const struct pci_driver azaaudio_driver __pci_driver = {
 	.ops	= &aza_audio_ops,
 	.vendor	= PCI_VENDOR_ID_SIS,
 	.device	= PCI_DEVICE_ID_SIS_SIS966_AZA,

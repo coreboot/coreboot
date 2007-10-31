@@ -23,13 +23,13 @@
 #include <types.h>
 #include <device/device.h>
 
-/* very low level pnp manipulation intended for stage 0 or 1 */
-void rawpnp_enter_ext_func_mode(u16 dev);
-void rawpnp_exit_ext_func_mode(u16 dev);
-void rawpnp_write_config(u16 dev, u8 reg, u8 value);
-void rawpnp_set_logical_device(u16 dev, u8 which);
-void rawpnp_set_enable(u16 dev, int enable);
-void rawpnp_set_iobase(u16 dev, u8 index, u16 iobase);
+/* Very low-level PNP functions, mostly intended for stage 0 or 1 */
+void rawpnp_enter_ext_func_mode(u16 port);
+void rawpnp_exit_ext_func_mode(u16 port);
+void rawpnp_write_config(u16 port, u8 reg, u8 value);
+void rawpnp_set_logical_device(u16 port, u8 ldn);
+void rawpnp_set_enable(u16 port, int enable);
+void rawpnp_set_iobase(u16 port, u8 index, u16 iobase);
 
 /* Primitive pnp resource manipulation */
 void    pnp_write_config(struct device * dev, u8 reg, u8 value);

@@ -24,78 +24,92 @@
 #include <device/pnp.h>
 #include <io.h>
 
-/* very low level pnp manipulation intended for stage 0 or 1 */
+/* Very low-level PNP functions, mostly intended for stage 0 or 1 */
+
 /**
-  * rawpnp_enter_ext_funct -- Enter the PNP extended functions,
-  * i.e. configuration mode 
-  * @param dev The device IO port.
-  */
-void  rawpnp_enter_ext_func_mode(u16 dev) 
+ * Enter the PNP extended function mode (a.k.a. "MB PnP" or "config" mode).
+ *
+ * @param port The device I/O port.
+ */
+void rawpnp_enter_ext_func_mode(u16 port)
 {
-        outb(0x87, dev);
-        outb(0x87, dev);
+	outb(0x87, port);
+	outb(0x87, port);
 }
 
 /**
-  * Exit the PNP extended functions, i.e. configuration mode
-  * @param dev The device IO port. 
-  */
-void  rawpnp_exit_ext_func_mode(u16 dev) 
+ * Exit the PNP extended function mode (a.k.a. "MB PnP" or "config" mode).
+ *
+ * @param dev The device IO port.
+ */
+void rawpnp_exit_ext_func_mode(u16 port)
 {
-        outb(0xaa, dev);
+	outb(0xaa, port);
 }
 
 /**
-  * Write a pnp configuration register. This is done by writing
-  * the register number to the port, and the value to the 
-  * port+1
-  * @param dev The device IO port. 
-  * @param reg  The register number 
-  * @param value The new value. 
-  */
-void  rawpnp_write_config(u16 dev, u8 reg, u8 value)
+ * Write an 8 bit value into a PNP configuration register.
+ *
+ * This is done by writing the register number to the port, and the value
+ * into port + 1. This code assumes that the data port is always the
+ * config-port plus 1, but luckily this is true for pretty much all devices.
+ *
+ * @param port The device I/O port.
+ * @param reg The register number.
+ * @param value The value to write into the specified register.
+ */
+void rawpnp_write_config(u16 port, u8 reg, u8 value)
 {
-        outb(reg, dev);
-        outb(value,dev + 1);
+	outb(reg, port);
+	outb(value, port + 1);
 }
 
 /**
-  * Select a logical device. PNP has up to 16 logical devices. 
-  * They are selected by writing the device # to register 7.
-  * @param dev The device IO port. 
-  * @param which Which device
-  */
-void rawpnp_set_logical_device(u16 dev, u8 which)
+ * Select a logical device.
+ *
+ * PNP has up to 16 logical devices. They are selected by writing the
+ * logical device number (LDN) to register 0x07.
+ *
+ * @param dev The device I/O port.
+ * @param ldn The logical device (number) which should be selected.
+ */
+void rawpnp_set_logical_device(u16 port, u8 ldn)
 {
-	rawpnp_write_config(dev, 0x07, which);
+	rawpnp_write_config(port, 0x07, ldn);
 }
 
 /**
-  * Set the enable for the device. The enable is at register 30. 
-  * Setting the low bit enables the device. 
-  * Code must have selected the proper device using 
-  * rawpnp_set_logical_device. If enable is non-zero, device
-  * is enabled. If enable is zero, device is disabled. 
-  * @param dev The device IO port. 
-  * @param enable non-zero enables the device
-  */
-void rawpnp_set_enable(u16 dev, int enable)
+ * Set the enable for the logical device.
+ *
+ * The enable is at register 0x30. Setting bit zero enables the device.
+ * Code must have selected the proper logical device number (LDN) using
+ * rawpnp_set_logical_device() beforehand. If enable is non-zero, the device
+ * is enabled. If enable is zero, the device is disabled.
+ *
+ * @param port The device I/O port.
+ * @param enable Non-zero enables the device, zero disables it.
+ */
+void rawpnp_set_enable(u16 port, int enable)
 {
-	rawpnp_write_config(dev, 0x30, enable ? 0x1 : 0x0);
+	rawpnp_write_config(port, 0x30, enable ? 0x1 : 0x0);
 }
 
 /**
-  * Set the iobase for the device. The iobase is at registers 'index'
-  * and 'index + 1', since these are 8 bit registers and iobase is 16 bits. 
-  * Code must have selected the proper device using 
-  * rawpnp_set_logical_device.
-  * @param dev The device IO port. 
-  * @param iobase The 16 bit iobase
-  */
-void rawpnp_set_iobase(u16 dev, u8 index, u16 iobase)
+ * Set the I/O base for the device.
+ *
+ * The I/O base is at registers 'index' and 'index + 1', since these are
+ * 8 bit registers and the I/O base is 16 bits. Typical values for 'index'
+ * are 0x60 or 0x62.
+ *
+ * Code must have selected the proper logical device (LDN) using
+ * rawpnp_set_logical_device() beforehand.
+ *
+ * @param port The device I/O port.
+ * @param index The index port.
+ * @param iobase The 16 bit I/O base.
+ */
+void rawpnp_set_iobase(u16 port, u8 index, u16 iobase)
 {
-        /* Index == 0x60 or 0x62 */
-	rawpnp_write_config(dev, index + 0, (iobase >> 8) & 0xff);
-	rawpnp_write_config(dev, index + 1, iobase & 0xff);
+	rawpnp_write_config(port, index + 0, (iobase >> 8) & 0xff); /* MSB */
+	rawpnp_write_config(port, index + 1, iobase & 0xff);	    /* LSB */
 }
-

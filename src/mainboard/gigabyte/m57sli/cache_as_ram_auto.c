@@ -134,10 +134,10 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #define MCP55_PCI_E_X_0 0
 
 #define MCP55_MB_SETUP \
-        RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+37, 0x00, 0x44,/* GPIO38 PCI_REQ3 */ \
-        RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+38, 0x00, 0x44,/* GPIO39 PCI_GNT3 */ \
-        RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+39, 0x00, 0x44,/* GPIO40 PCI_GNT2 */ \
-        RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+40, 0x00, 0x44,/* GPIO41 PCI_REQ2 */ \
+        RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+37, 0x00, 0x68,/* GPIO38 PCI_REQ3 */ \
+        RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+38, 0x00, 0x68,/* GPIO39 PCI_GNT3 */ \
+        RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+39, 0x00, 0x68,/* GPIO40 PCI_GNT2 */ \
+        RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+40, 0x00, 0x68,/* GPIO41 PCI_REQ2 */ \
         RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+59, 0x00, 0x60,/* GPIP60 FANCTL0 */ \
         RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+60, 0x00, 0x60,/* GPIO61 FANCTL1 */
 

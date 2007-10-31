@@ -99,7 +99,7 @@ static unsigned set_fidvid_without_init(unsigned fidvid)
 static unsigned set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 {
 	//for (cur, new) there is one <1600MHz x8 to find out next_fid 
-	const static uint8_t next_fid_a[] = {
+	static const uint8_t next_fid_a[] = {
 	/* x4  x5  x6  x7  x8  x9 x10 x11 x12 x13 x14 x15 */ // 0:x4, 2:x5....BASE=4, MIN=4, MAX=25, INC=2 result = (xX-BASE)*INC
 /* x4 */    0,  9,  9,  8,  9,  9,  9,  9,  9,  9,  9,  9,
 /* x5 */    9,  0, 11, 11,  9,  9, 10, 11, 11, 11, 11, 11, 

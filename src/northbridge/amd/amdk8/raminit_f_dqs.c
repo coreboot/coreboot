@@ -396,7 +396,7 @@ static void ResetDCTWrPtr(const struct mem_controller *ctrl)
 static uint16_t get_exact_T1000(unsigned i)
 {
         //			           200   266,   333,  400
-	const static uint16_t T1000_a[]= { 5000, 3759, 3003, 2500 };
+	static const uint16_t T1000_a[]= { 5000, 3759, 3003, 2500 };
 
         static const uint16_t TT_a[] = {
                  /*200   266   333   400 */
@@ -459,19 +459,19 @@ static void InitDQSPos4RcvrEn(const struct mem_controller *ctrl)
 static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, struct sys_info *sysinfo)
 {
 
-	const static uint32_t TestPattern0[] = {
+	static const uint32_t TestPattern0[] = {
 			0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa,
 			0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa,
 			0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa,
 			0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa,
 		};
-        const static uint32_t TestPattern1[] = {
+        static const uint32_t TestPattern1[] = {
                         0x55555555, 0x55555555, 0x55555555, 0x55555555,
 			0x55555555, 0x55555555, 0x55555555, 0x55555555,
 			0x55555555, 0x55555555, 0x55555555, 0x55555555,
 			0x55555555, 0x55555555, 0x55555555, 0x55555555,
 		};
-	const static uint32_t TestPattern2[] = { 
+	static const uint32_t TestPattern2[] = { 
 			0x12345678, 0x87654321, 0x23456789, 0x98765432,
 			0x59385824, 0x30496724, 0x24490795, 0x99938733,
                         0x40385642, 0x38465245, 0x29432163, 0x05067894,
@@ -1229,7 +1229,7 @@ static unsigned TrainWriteDQS(const struct mem_controller *ctrl, unsigned channe
 
 static unsigned TrainDQSRdWrPos(const struct mem_controller *ctrl, struct sys_info *sysinfo)
 {
-        const static uint32_t TestPatternJD1a[] = {
+        static const uint32_t TestPatternJD1a[] = {
 					0x00000000,0x00000000,0xFFFFFFFF,0xFFFFFFFF, // QW0-1, ALL-EVEN
                                         0x00000000,0x00000000,0x00000000,0x00000000, // QW2-3, ALL-EVEN
                                         0x00000000,0x00000000,0xFFFFFFFF,0xFFFFFFFF, // QW4-5, ALL-EVEN
@@ -1267,7 +1267,7 @@ static unsigned TrainDQSRdWrPos(const struct mem_controller *ctrl, struct sys_in
                                         0x80808080,0x80808080,0x7F7F7F7F,0x7F7F7F7F, // QW4-5, DQ7-ODD
                                         0x80808080,0x80808080,0x80808080,0x80808080  // QW6-7, DQ7-ODD
                 };
-        const static uint32_t TestPatternJD1b[] = {
+        static const uint32_t TestPatternJD1b[] = {
 					0x00000000,0x00000000,0x00000000,0x00000000, // QW0,CHA-B, ALL-EVEN
                                         0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF, // QW1,CHA-B, ALL-EVEN
                                         0x00000000,0x00000000,0x00000000,0x00000000, // QW2,CHA-B, ALL-EVEN

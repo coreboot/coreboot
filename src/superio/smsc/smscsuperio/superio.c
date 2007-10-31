@@ -110,7 +110,7 @@ enum {
  * Note: Do _not_ list chips with different name but same device ID twice!
  *       The result would be that the init code would be executed twice!
  */
-const static struct logical_devices {
+static const struct logical_devices {
 	uint8_t superio_id;
 	int devs[MAX_LOGICAL_DEVICES];
 } logical_device_table[] = {

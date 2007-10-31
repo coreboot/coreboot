@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
 {
 	int i, j, opt, option_index;
 
-	const static struct option long_options[] = {
+	static const struct option long_options[] = {
 		{"dump",		no_argument, NULL, 'd'},
 		{"verbose",		no_argument, NULL, 'V'},
 		{"version",		no_argument, NULL, 'v'},

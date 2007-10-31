@@ -36,7 +36,7 @@
  *
  * Some other Super I/Os only use bits 3..0 of 0x09 as ID.
  */
-const static struct superio_registers reg_table[] = {
+static const struct superio_registers reg_table[] = {
 	/* ID and rev[3..0] */
 	{0x527, "W83977CTF", {	/* TODO: Not yet in sensors-detect */
 		{EOT}}},

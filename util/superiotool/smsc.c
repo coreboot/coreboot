@@ -26,7 +26,7 @@
 #define DEVICE_ID_REG   	0x20
 #define DEVICE_REV_REG  	0x21
 
-const static struct superio_registers reg_table[] = {
+static const struct superio_registers reg_table[] = {
 	/* The following Super I/Os use the 0x20/0x21 ID registers. */
 	{0x0e, "LPC47N252", {	/* From sensors-detect */
 		{EOT}}},

@@ -26,7 +26,7 @@
 
 #define CHIP_VERSION_REG	0x22
 
-const static struct superio_registers reg_table[] = {
+static const struct superio_registers reg_table[] = {
 	{0x8661, "IT8661F", {
 		/* TODO: Needs different init sequence. */
 		{NOLDN, NULL,

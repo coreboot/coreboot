@@ -29,7 +29,7 @@
 
 #define FINTEK_VENDOR_ID	0x3419
 
-const static struct superio_registers reg_table[] = {
+static const struct superio_registers reg_table[] = {
 	{0x0106, "F71862FG", {
 		{EOT}}},
 	{0x4103, "F71872F/FG / F71806F/FG", {	/* Same ID? Datasheet typo? */

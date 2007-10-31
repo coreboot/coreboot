@@ -100,7 +100,7 @@ void probe_idregs_smsc(uint16_t port);
 void probe_idregs_winbond(uint16_t port);
 
 /** Table of which config ports to probe for each Super I/O family. */
-const static struct {
+static const struct {
 	void (*probe_idregs) (uint16_t port);
 	int ports[MAXNUMPORTS]; /* Signed, as we need EOT. */
 } superio_ports_table[] = {

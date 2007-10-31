@@ -25,7 +25,7 @@
 
 #define DEVICE_REV_REG		0x1f
 
-const static struct superio_registers reg_table[] = {
+static const struct superio_registers reg_table[] = {
 	/* TODO: M5113 doesn't seem to have ID registers? */
 	{0x5315, "M1535/M1535D/M1535+/M1535D+", {
 		{NOLDN, NULL,

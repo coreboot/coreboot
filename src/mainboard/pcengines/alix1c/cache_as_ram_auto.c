@@ -86,7 +86,7 @@ static u8 spdbytes[] = {
 	[SPD_tRRD] = 10,
 };
 
-static u8 spd_read_byte(unsigned device, unsigned address)
+static u8 spd_read_byte(u8 device, u8 address)
 {
 	print_debug("spd_read_byte dev ");
 	print_debug_hex8(device);

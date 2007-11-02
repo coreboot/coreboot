@@ -32,7 +32,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <arch/pirq_routing.h>
-
+#include <device/pci_ids.h>
 #include <cpu/amd/amdk8_sysconf.h>
 
 static void write_pirq_info(struct irq_info *pirq_info, uint8_t bus, uint8_t devfn, uint8_t link0, uint16_t bitmap0,
@@ -75,7 +75,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
         addr &= ~15;
 
         /* This table must be betweeen 0xf0000 & 0x100000 */
-        printk_info("Writing IRQ routing tables to 0x%x...", addr);
+        printk_info("Writing IRQ routing tables to 0x%x...\n", addr);
 
 	pirq = (void *)(addr);
 	v = (uint8_t *)(addr);
@@ -88,8 +88,8 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 
 	pirq->exclusive_irqs = 0;
 
-	pirq->rtr_vendor = 0x10de;
-	pirq->rtr_device = 0x0370;
+	pirq->rtr_vendor = PCI_VENDOR_ID_SIS;
+	pirq->rtr_device = PCI_DEVICE_ID_SIS_SIS966_PCI;
 
 	pirq->miniport_data = 0;
 
@@ -124,11 +124,17 @@ unsigned long write_pirq_routing_table(unsigned long addr)
                 }
 
                 printk_debug("Setting Onboard SiS Southbridge\n");
-//                dev = dev_find_slot(0, PCI_DEVFN(2,5));   // 5513 (IDE)
-//                pci_write_config8(dev, 0x3C, 0x0A);
-                dev = dev_find_slot(0, PCI_DEVFN(3,0));   // USB 1.1 -1
+
+                /*
+                 * Non-layout for GA-2761GX
+                 *
+                dev = dev_find_slot(0, PCI_DEVFN(2,5));   // 5513 (IDE)
+                pci_write_config8(dev, 0x3C, 0x0A);
+                */
+
+                dev = dev_find_slot(0, PCI_DEVFN(3,0));   // USB 1.1
                 pci_write_config8(dev, 0x3C, 0x0B);
-                dev = dev_find_slot(0, PCI_DEVFN(3,1));   // USB 1.1 -2
+                dev = dev_find_slot(0, PCI_DEVFN(3,1));   // USB 1.1
                 pci_write_config8(dev, 0x3C, 0x05);
                 dev = dev_find_slot(0, PCI_DEVFN(3,3));   // USB 2.0
                 pci_write_config8(dev, 0x3C, 0x0A);
@@ -136,12 +142,17 @@ unsigned long write_pirq_routing_table(unsigned long addr)
                 pci_write_config8(dev, 0x3C, 0x05);
                 dev = dev_find_slot(0, PCI_DEVFN(5,0));    // 1183 (SATA)
                 pci_write_config8(dev, 0x3C, 0x0B);
-//                dev = dev_find_slot(0, PCI_DEVFN(6,0));   // PCI-E
-//                pci_write_config8(dev, 0x3C, 0x0A);
-//                dev = dev_find_slot(0, PCI_DEVFN(7,0));   // PCI-E
-//                pci_write_config8(dev, 0x3C, 0x0A);
+
+                /*
+                 * Non-layout for GA-2761GX
+                 *
+                dev = dev_find_slot(0, PCI_DEVFN(6,0));   // PCI-E
+                pci_write_config8(dev, 0x3C, 0x0A);
+                dev = dev_find_slot(0, PCI_DEVFN(7,0));   // PCI-E
+                pci_write_config8(dev, 0x3C, 0x0A);
                 dev = dev_find_slot(0, PCI_DEVFN(15,0));  // Azalia
                 pci_write_config8(dev, 0x3C, 0x05);
+                */
         }
 
 //pci bridge

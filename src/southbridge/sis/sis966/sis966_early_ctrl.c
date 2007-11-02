@@ -51,10 +51,10 @@ static void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn)
 static void soft_reset(void)
 {
 	set_bios_reset();
-#if 1
+
 	/* link reset */
 	outb(0x02, 0x0cf9);
 	outb(0x06, 0x0cf9);
-#endif
+
 }
 

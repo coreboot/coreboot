@@ -46,7 +46,7 @@
 #endif
 
 #define DBGP_DEFAULT 7
- 
+
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
@@ -95,7 +95,7 @@
 
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 
-#define SERIAL_DEV PNP_DEV(0x2e, IT8716F_SP1) 
+#define SERIAL_DEV PNP_DEV(0x2e, IT8716F_SP1)
 
 #include "southbridge/sis/sis966/sis966_early_ctrl.c"
 
@@ -126,7 +126,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "sdram/generic_sdram.c"
 
-#include "resourcemap.c" 
+#include "resourcemap.c"
 
 #include "cpu/amd/dualcore/dualcore.c"
 
@@ -171,13 +171,13 @@ static void sio_setup(void)
         uint8_t byte;
 
         byte = pci_read_config8(PCI_DEV(0, SIS966_DEVN_BASE+1 , 0), 0x7b);
-        byte |= 0x20; 
+        byte |= 0x20;
         pci_write_config8(PCI_DEV(0, SIS966_DEVN_BASE+1 , 0), 0x7b, byte);
-        
+
         dword = pci_read_config32(PCI_DEV(0, SIS966_DEVN_BASE+1 , 0), 0xa0);
         dword |= (1<<0);
         pci_write_config32(PCI_DEV(0, SIS966_DEVN_BASE+1 , 0), 0xa0, dword);
-        
+
         dword = pci_read_config32(PCI_DEV(0, SIS966_DEVN_BASE+1 , 0), 0xa4);
         dword |= (1<<16);
         pci_write_config32(PCI_DEV(0, SIS966_DEVN_BASE+1 , 0), 0xa4, dword);
@@ -237,15 +237,15 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-#if HAVE_FAILOVER_BOOT==1 
+#if HAVE_FAILOVER_BOOT==1
     #if USE_FAILOVER_IMAGE==1
-	failover_process(bist, cpu_init_detectedx);	
+	failover_process(bist, cpu_init_detectedx);
     #else
 	real_main(bist, cpu_init_detectedx);
     #endif
 #else
     #if USE_FALLBACK_IMAGE == 1
-	failover_process(bist, cpu_init_detectedx);	
+	failover_process(bist, cpu_init_detectedx);
     #endif
 	real_main(bist, cpu_init_detectedx);
 #endif
@@ -281,7 +281,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
         setup_mb_resource_map();
 
         uart_init();
-	
+
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
@@ -340,7 +340,6 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
         needs_reset |= optimize_link_coherent_ht();
         needs_reset |= optimize_link_incoherent_ht(sysinfo);
-        needs_reset |= sis966_early_setup_x();
 
         // fidvid change will issue one LDTSTOP and the HT change will be effective too
         if (needs_reset) {
@@ -353,8 +352,8 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 
         sis_init_stage1();
-        enable_smbus(); 
-       
+        enable_smbus();
+
         memreset_setup();
 
         //do we need apci timer, tsc...., only debug need it for better output

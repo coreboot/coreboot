@@ -36,11 +36,9 @@
 
 extern struct ehci_debug_info dbg_info;
 
-// From Y.S.
-// PCI R43h-R40h=00000020h
-// PCI R4Bh-R48h=00078010h
-uint8_t	SiS_SiS7002_init[19][3]={
+uint8_t	SiS_SiS7002_init[22][3]={
 {0x04, 0x00, 0x06},
+{0x0D, 0x00, 0x00},
 
 {0x2C, 0xFF, 0x39},
 {0x2D, 0xFF, 0x10},
@@ -52,12 +50,15 @@ uint8_t	SiS_SiS7002_init[19][3]={
 {0x76, 0x00, 0x00},
 {0x77, 0x00, 0x00},
 
+{0x7A, 0x00, 0x00},
+{0x7B, 0x00, 0x00},
+
 {0x40, 0x00, 0x20},
 {0x41, 0x00, 0x00},
 {0x42, 0x00, 0x00},
 {0x43, 0x00, 0x08},
 
-{0x44, 0x00, 0x64},
+{0x44, 0x00, 0x04},
 
 {0x48, 0x00, 0x10},
 {0x49, 0x00, 0x80},
@@ -67,56 +68,58 @@ uint8_t	SiS_SiS7002_init[19][3]={
 {0x00, 0x00, 0x00}					//End of table
 };
 
-
-
 static void usb2_init(struct device *dev)
 {
-       uint8_t *base;
-	struct resource *res;
-	uint32_t temp32;
+        uint8_t *base;
+        struct resource *res;
+        uint32_t temp32;
 
+        print_debug("USB 2.0 INIT:---------->\n");
 
 //-------------- enable USB2.0 (SiS7002) -------------------------
 {
         uint8_t  temp8;
         int i=0;
 
-        printk_debug("USB2.0_Init\n");
-
-	while(SiS_SiS7002_init[i][0] != 0)
-	{				temp8 = pci_read_config8(dev, SiS_SiS7002_init[i][0]);
-					temp8 &= SiS_SiS7002_init[i][1];
-					temp8 |= SiS_SiS7002_init[i][2];
-					pci_write_config8(dev, SiS_SiS7002_init[i][0], temp8);
-					i++;
-	};
+        while(SiS_SiS7002_init[i][0] != 0)
+        {
+                temp8 = pci_read_config8(dev, SiS_SiS7002_init[i][0]);
+                temp8 &= SiS_SiS7002_init[i][1];
+                temp8 |= SiS_SiS7002_init[i][2];
+                pci_write_config8(dev, SiS_SiS7002_init[i][0], temp8);
+                i++;
+        };
 }
 
-       res = find_resource(dev, 0x10);
-	if(!res)
-		return;
+        res = find_resource(dev, 0x10);
+        if(!res)
+                return;
 
-	base =(uint8_t *) res->base;
-	printk_debug("base = %08x\n", base);
-       writel(0x2,base+0x20);
+        base =(uint8_t *) res->base;
+        printk_debug("base = %08x\n", base);
+        writel(0x2,base+0x20);
 //-----------------------------------------------------------
 
-#if 0
+#if DEBUG_USB2
 {
-    int i;
-    printk_debug("\nUSB 2.0 PCI config");
-    for(i=0;i<0xFF;i+=4)
-    {
-        if((i%16)==0)
-        {
-            print_debug("\r\n");print_debug_hex8(i);print_debug(": ");}
-            print_debug_hex32(pci_read_config32(dev,i));
-            print_debug("  ");
+        int i;
+
+        print_debug("****** USB 2.0 PCI config ******");
+        print_debug("\n    03020100  07060504  0B0A0908  0F0E0D0C");
+
+        for(i=0;i<0xff;i+=4){
+                if((i%16)==0){
+                        print_debug("\r\n");
+                        print_debug_hex8(i);
+                        print_debug(": ");
+                }
+                print_debug_hex32(pci_read_config32(dev,i));
+                print_debug("  ");
         }
         print_debug("\r\n");
-    }
+}
 #endif
-
+        print_debug("USB 2.0 INIT:<----------\n");
 }
 
 static void usb2_set_resources(struct device *dev)
@@ -164,5 +167,5 @@ static struct device_operations usb2_ops  = {
 static const struct pci_driver usb2_driver __pci_driver = {
 	.ops	= &usb2_ops,
 	.vendor	= PCI_VENDOR_ID_SIS,
-	.device	= PCI_DEVICE_ID_SIS_SIS966_EHCI,
+	.device	= PCI_DEVICE_ID_SIS_SIS966_USB2,
 };

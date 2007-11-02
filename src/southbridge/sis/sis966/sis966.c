@@ -49,7 +49,7 @@ if ((lpc_dev->vendor != PCI_VENDOR_ID_SIS) || (
 		) ) {
 			uint32_t id;
 			id = pci_read_config32(lpc_dev, PCI_VENDOR_ID);
-			if ( (id < (PCI_VENDOR_ID_SIS | (PCI_DEVICE_ID_SIS_SIS966_LPC << 16))) 	
+			if ( (id < (PCI_VENDOR_ID_SIS | (PCI_DEVICE_ID_SIS_SIS966_LPC << 16)))
 				) {
 				lpc_dev = 0;
 			}
@@ -62,18 +62,17 @@ void sis966_enable(device_t dev)
 {
 	device_t lpc_dev = 0;
 	device_t sm_dev = 0;
-	unsigned index = 0;
-	unsigned index2 = 0;
+	uint16_t index = 0;
+	uint16_t index2 = 0;
 	uint32_t reg_old, reg;
 	uint8_t byte;
-	unsigned deviceid;
-	unsigned vendorid;
+	uint16_t deviceid;
+	uint16_t vendorid;
+	uint16_t devfn;
 
 	struct southbridge_sis_sis966_config *conf;
 	conf = dev->chip_info;
 	int i;
-
-	unsigned devfn;
 
 	if(dev->device==0x0000) {
 		vendorid = pci_read_config32(dev, PCI_VENDOR_ID);
@@ -88,25 +87,16 @@ void sis966_enable(device_t dev)
 	switch(deviceid) {
 		case PCI_DEVICE_ID_SIS_SIS966_HT:
 			return;
-
-		case PCI_DEVICE_ID_SIS_SIS966_SM2://?
-			index = 16;
 			break;
 		case PCI_DEVICE_ID_SIS_SIS966_USB:
 			devfn -= (1<<3);
 			index = 8;
 			break;
-		case PCI_DEVICE_ID_SIS_SIS966_EHCI:
+		case PCI_DEVICE_ID_SIS_SIS966_USB2:
 			devfn -= (1<<3);
 			index = 20;
 			break;
-/*		case PCI_DEVICE_ID_SIS_SIS966_USB3:
-			devfn -= (1<<3);
-			index = 20;
-			break;
-*/
-		case PCI_DEVICE_ID_SIS_SIS966_NIC1: //two
-		case PCI_DEVICE_ID_SIS_SIS966_NIC_BRIDGE://two
+		case PCI_DEVICE_ID_SIS_SIS966_NIC1:
 			devfn -= (7<<3);
 			index = 10;
 			for(i=0;i<2;i++) {
@@ -125,8 +115,7 @@ void sis966_enable(device_t dev)
 			devfn -= (3<<3);
 			index = 14;
 			break;
-		case PCI_DEVICE_ID_SIS_SIS966_SATA0: //three
-		case PCI_DEVICE_ID_SIS_SIS966_SATA1: //three
+		case PCI_DEVICE_ID_SIS_SIS966_SATA0:
 			devfn -= (4<<3);
 			index = 22;
 			i = (dev->path.u.pci.devfn) & 7;
@@ -138,11 +127,7 @@ void sis966_enable(device_t dev)
 			devfn -= (5<<3);
 			index = 15;
 			break;
-//		case PCI_DEVICE_ID_SIS_SIS966_PCIE_A:
-//			devfn -= (0x9<<3);  // to LPC
-//			index2 = 9;
-//			break;
-		case PCI_DEVICE_ID_SIS_SIS966_PCIE_B_C: //two
+		case PCI_DEVICE_ID_SIS_SIS966_PCIE_B_C:
 			devfn -= (0xa<<3);  // to LPC
 			index2 = 8;
 			for(i=0;i<2;i++) {
@@ -216,17 +201,8 @@ void sis966_enable(device_t dev)
 		if(!sm_dev) return;
 
 		final_reg = pci_read_config32(sm_dev, 0xe8);
-		final_reg &= ~((1<<16)|(1<<8)|(1<<20)|(1<<14)|(1<<22)|(1<<18)|(1<<17)|(1<<15)|(1<<11)|(1<<10)|(1<<9));
+		final_reg &= ~0x0057cf00;
 		pci_write_config32(sm_dev, 0xe8, final_reg); //enable all at first
-#if 0
-		reg_old = reg = pci_read_config32(sm_dev, 0xe4);
-//		reg |= (1<<0);
-		reg &= ~(0x3f<<4);
-		if (reg != reg_old) {
-			printk_debug("sis966.c pcie enabled\n");
-			pci_write_config32(sm_dev, 0xe4, reg);
-		}
-#endif
 	}
 
 	if (!dev->enabled) {

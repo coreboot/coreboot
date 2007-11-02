@@ -33,7 +33,7 @@ extern unsigned char bus_sis966[8]; //1
 
 extern unsigned apicid_sis966;
 
-extern unsigned bus_type[256]; 
+extern unsigned bus_type[256];
 
 void *smp_write_config_table(void *v)
 {
@@ -80,7 +80,7 @@ void *smp_write_config_table(void *v)
                 device_t dev;
 		struct resource *res;
 		uint32_t dword;
- 
+
                 dev = dev_find_slot(bus_sis966[0], PCI_DEVFN(sbdn+ 0x1,0));
                 if (dev) {
 			res = find_resource(dev, PCI_BASE_ADDRESS_1);
@@ -99,7 +99,7 @@ void *smp_write_config_table(void *v)
 
                 }
 	}
-  
+
 /*I/O Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#
 */	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, apicid_sis966, 0x0);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x1, apicid_sis966, 0x1);
@@ -135,7 +135,7 @@ void *smp_write_config_table(void *v)
         	}
 	}
 
-	for(j=0; j<2; j++) 
+	for(j=0; j<2; j++)
 	        for(i=0;i<4;i++) {
         	        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sis966[1], ((0x06+j)<<2)|i, apicid_sis966, 0x10 + (2+i+j)%4);
 	        }

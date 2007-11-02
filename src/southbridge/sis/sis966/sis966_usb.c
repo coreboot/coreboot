@@ -30,36 +30,37 @@
 #include <device/pci_ops.h>
 #include "sis966.h"
 
-// From Y.S.
-// PCI R47h-R44h=0001AD54h
-// PCI R4Bh-R48h=00000271h
-uint8_t	SiS_SiS7001_init[15][3]={
-{0x04, 0xFF, 0x07},
+uint8_t	SiS_SiS7001_init[16][3]={
+{0x04, 0x00, 0x07},
+{0x0C, 0x00, 0x08},
+{0x0D, 0x00, 0x20},
+
 {0x2C, 0xFF, 0x39},
 {0x2D, 0xFF, 0x10},
 {0x2E, 0xFF, 0x01},
 {0x2F, 0xFF, 0x70},
+
 {0x44, 0x00, 0x54},
 {0x45, 0x00, 0xAD},
 {0x46, 0x00, 0x01},
 {0x47, 0x00, 0x00},
-{0x48, 0x00, 0x71},
+
+{0x48, 0x00, 0x73},
 {0x49, 0x00, 0x02},
 {0x4A, 0x00, 0x00},
 {0x4B, 0x00, 0x00},
-{0x04, 0x00, 0x07},
+
 {0x00, 0x00, 0x00}					//End of table
 };
 
 static void usb_init(struct device *dev)
 {
+        print_debug("USB 1.1 INIT:---------->\n");
 
 //-------------- enable USB1.1 (SiS7001) -------------------------
 {
         uint8_t  temp8;
         int i=0;
-
-        printk_debug("USB1.1_Init\n");
 
 	 while(SiS_SiS7001_init[i][0] != 0)
 	 {				temp8 = pci_read_config8(dev, SiS_SiS7001_init[i][0]);
@@ -71,23 +72,28 @@ static void usb_init(struct device *dev)
 }
 //-----------------------------------------------------------
 
-#if 0
+#if DEBUG_USB
 {
-    int i;
-    printk_debug("\nUSB 1.1 PCI config");
-    for(i=0;i<0xFF;i+=4)
-    {    
-        if((i%16)==0)
-        {
-            print_debug("\r\n");print_debug_hex8(i);print_debug(": ");}
-            print_debug_hex32(pci_read_config32(dev,i));
-            print_debug("  ");
+        int i;
+
+        print_debug("****** USB 1.1 PCI config ******");
+        print_debug("\n    03020100  07060504  0B0A0908  0F0E0D0C");
+
+        for(i=0;i<0xff;i+=4){
+                if((i%16)==0){
+                        print_debug("\r\n");
+                        print_debug_hex8(i);
+                        print_debug(": ");
+                }
+                print_debug_hex32(pci_read_config32(dev,i));
+                print_debug("  ");
         }
         print_debug("\r\n");
-    }
-#endif
-
 }
+#endif
+        print_debug("USB 1.1 INIT:<----------\n");
+}
+
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
 	pci_write_config32(dev, 0x40,

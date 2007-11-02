@@ -570,14 +570,14 @@ static const uint8_t	SiS_SiS1183_init[44][3]={
                             => Others:  Reserved
 */
 void Init_Share_Memory(uint8_t ShareSize)
-{  
+{
     device_t dev;
- 
+
     dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761), 0);
     pci_write_config8(dev, 0x4C, (pci_read_config8(dev, 0x4C) & 0x1F) | (ShareSize << 5));
 }
- 
-/* In:     => Aperture size 
+
+/* In:     => Aperture size
                => 00h :   32MBytes
                => 01h :   64MBytes
                => 02h :  128MBytes
@@ -587,77 +587,24 @@ void Init_Share_Memory(uint8_t ShareSize)
 */
 void Init_Aper_Size(uint8_t AperSize)
 {
- device_t dev;
- uint16_t SiSAperSizeTable[]={0x0F38, 0x0F30, 0x0F20, 0x0F00, 0x0E00};
- 
- dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_AMD, 0x1103), 0);
- pci_write_config8(dev, 0x90, AperSize << 1);
+        device_t dev;
+        uint16_t SiSAperSizeTable[]={0x0F38, 0x0F30, 0x0F20, 0x0F00, 0x0E00};
 
-//pci_write_config32(dev, 0x94, 0x78);
-//pci_write_config32(dev, 0x98, 0x0);
- 
-#if 0
-{
-int i;
-print_debug("Function3 Config in sis_init_stage2\n");
-for(i=0;i<0xFF;i+=4)
-{   if((i%16)==0)
-    {print_debug("\r\n");print_debug_hex8(i);print_debug("  ");}
-    print_debug_hex32(pci_read_config32(dev,i));
-    print_debug("  ");    
+        dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_AMD, 0x1103), 0);
+        pci_write_config8(dev, 0x90, AperSize << 1);
+
+        dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761), 0);
+        pci_write_config16(dev, 0xB4, SiSAperSizeTable[AperSize]);
 }
-print_debug("\n");  
-}
-#endif 
-
-dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761), 0);
-pci_write_config16(dev, 0xB4, SiSAperSizeTable[AperSize]);
-
-#if 0
-{
-int i;
-dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_AMD, 0x1101), 0);
-print_debug("Function1 Config in sis_init_stage2\n");
-for(i=0;i<0xFF;i+=4)
-{    if((i%16)==0)
-    {print_debug("\r\n");print_debug_hex8(i);print_debug("  ");}
-    print_debug_hex32(pci_read_config32(dev,i));
-    print_debug("  ");    
-}
-print_debug("\n");  
-}
-
- #endif 
-
- 
-}
-
- 
-
-
 
 void sis_init_stage1(void)
 {
-  device_t dev;
-	uint8_t temp8;
-  int	i;
-	uint8_t	GUI_En;   
+        device_t dev;
+        uint8_t temp8;
+        int	i;
+        uint8_t	GUI_En;
 
-#if 0
-{
-int i;
-print_debug("Northbridge PCI Config in sis_init_stage1.0\n");
-for(i=0;i<0xFF;i+=4)
-{    if((i%16)==0)
-    {print_debug("\r\n");print_debug_hex8(i);print_debug("  ");}
-    print_debug_hex32(pci_read_config32(dev,i));
-    print_debug("  ");    
-}
-print_debug("\n");  
-}
-#endif 	
-
-// SiS_Chipset_Initialization	
+// SiS_Chipset_Initialization
 // ========================== NB =============================
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761), 0);
 	i=0;
@@ -669,23 +616,6 @@ print_debug("\n");
 					i++;
 	};
 
-
-#if 0
-{
-int i;
-print_debug("Northbridge PCI Config in sis_init_stage1.1\n");
-for(i=0;i<0xFF;i+=4)
-{    if((i%16)==0)
-    {print_debug("\r\n");print_debug_hex8(i);print_debug("  ");}
-    print_debug_hex32(pci_read_config32(dev,i));
-    print_debug("  ");    
-}
-print_debug("\n");  
-}
-#endif 
-
-
-	
 // ========================== LPC =============================
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS966_LPC), 0);
 	i=0;
@@ -723,16 +653,16 @@ print_debug("\n");
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761), 0);		//Restore Internal GUI enable bit
 	temp8 = pci_read_config8(dev, 0x4C);
 	pci_write_config8(dev, 0x4C, temp8 | GUI_En);
-	
-     return;				
+
+     return;
 }
 
 
 
 void sis_init_stage2(void)
 {
-  	device_t dev;	
-  	msr_t	msr; 
+  	device_t dev;
+  	msr_t	msr;
 	int	i;
 	uint32_t j;
 	uint8_t temp8;
@@ -740,89 +670,56 @@ void sis_init_stage2(void)
 
 
 // ========================== NB_AGP =============================
- dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761), 0);   //Enable Internal GUI enable bit
- pci_write_config8(dev, 0x4C, pci_read_config8(dev, 0x4C) | 0x10);
- 
- dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, 0x0002), 0);
- i=0;
- while(SiS_NBAGP_init[i][0] != 0)
- {    temp8 = pci_read_config8(dev, SiS_NBAGP_init[i][0]);
-     temp8 &= SiS_NBAGP_init[i][1];
-     temp8 |= SiS_NBAGP_init[i][2];
-     pci_write_config8(dev, SiS_NBAGP_init[i][0], temp8);
-     i++;
- };
+        dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761), 0);   //Enable Internal GUI enable bit
+        pci_write_config8(dev, 0x4C, pci_read_config8(dev, 0x4C) | 0x10);
 
-/*       In => Share Memory size 
-                            => 00h :    0MBytes
-                            => 02h :   32MBytes
-                            => 03h :   64MBytes
-                            => 04h :  128MBytes
-                            => Others:  Reserved
-*/
-/* In:     => Aperture size 
-               => 00h :   32MBytes
-               => 01h :   64MBytes
-               => 02h :  128MBytes
-               => 03h :  256MBytes
-               => 04h :  512MBytes
-               => Others:  Reserved
-*/
- 
-  Init_Share_Memory(0x02);  //0x02 : 32M  0x03 : 64M
-  Init_Aper_Size(0x01);   // 0x1
+        dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_AGP), 0);
+        i=0;
 
-#if 0
-{
-int i;
-print_debug("AGP PCI Config in sis_init_stage2\n");
-for(i=0;i<0xFF;i+=4)
-{    if((i%16)==0)
-    {print_debug("\r\n");print_debug_hex8(i);print_debug("  ");}
-    print_debug_hex32(pci_read_config32(dev,i));
-    print_debug("  ");    
-}
-print_debug("\n");  
-}
-#endif 
+        while(SiS_NBAGP_init[i][0] != 0)
+        {
+                temp8 = pci_read_config8(dev, SiS_NBAGP_init[i][0]);
+                temp8 &= SiS_NBAGP_init[i][1];
+                temp8 |= SiS_NBAGP_init[i][2];
+                pci_write_config8(dev, SiS_NBAGP_init[i][0], temp8);
+                i++;
+        };
 
+/**
+  *   Share Memory size
+  *             => 00h :    0MBytes
+  *             => 02h :   32MBytes
+  *             => 03h :   64MBytes
+  *             => 04h :  128MBytes
+  *             => Others:  Reserved
+  *
+  *   Aperture size
+  *             => 00h :   32MBytes
+  *             => 01h :   64MBytes
+  *             => 02h :  128MBytes
+  *             => 03h :  256MBytes
+  *             => 04h :  512MBytes
+  *             => Others:  Reserved
+  */
+
+        Init_Share_Memory(0x02);  //0x02 : 32M
+        Init_Aper_Size(0x01);   //0x1 : 64M
 
 // ========================== NB =============================
 
-	printk_debug("Init NorthBridge sis761 -------->\n");
-	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761), 0);
-	msr = rdmsr(0xC001001A);
-	printk_debug("Memory Top Bound %lx\n",msr.lo );
-// 	pci_write_config16(dev, 0x8E, msr.lo >> 16);				// Topbound
-//    pci_write_config16(dev, 0x8E, (msr.lo >> 16) - ((pci_read_config8(dev, 0x4C) & 0xE0) >> 5));
- 
-    temp16=(pci_read_config8(dev, 0x4C) & 0xE0) >> 5;
-    //printk_debug("0x4c = %x\n",temp16);
-    temp16=0x0001<<(temp16-1);
-    temp16<<=8;
-   
-    printk_debug("Integrated VGA Shared memory size=%dM bytes\n", temp16 >> 4);
-    pci_write_config16(dev, 0x8E, (msr.lo >> 16) -temp16*1);
-  // pci_write_config16(dev, 0x8E, (msr.lo >> 16) -temp16);
-    pci_write_config8(dev, 0x7F, 0x08);									// ACPI Base
-    outb(inb(0x856) | 0x40, 0x856);										// Auto-Reset Function
+        printk_debug("Init NorthBridge sis761 -------->\n");
+        dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761), 0);
+        msr = rdmsr(0xC001001A);
+	 printk_debug("Memory Top Bound %lx\n",msr.lo );
 
-#if 0
-{
-int i;
-print_debug("Northbridge PCI Config in sis_init_stage2\n");
-for(i=0;i<0xFF;i+=4)
-{    if((i%16)==0)
-    {print_debug("\r\n");print_debug_hex8(i);print_debug("  ");}
-    print_debug_hex32(pci_read_config32(dev,i));
-    print_debug("  ");    
-}
-print_debug("\n");  
-}
-#endif 
+        temp16=(pci_read_config8(dev, 0x4C) & 0xE0) >> 5;
+        temp16=0x0001<<(temp16-1);
+        temp16<<=8;
 
-
-
+        printk_debug("Integrated VGA Shared memory size=%dM bytes\n", temp16 >> 4);
+        pci_write_config16(dev, 0x8E, (msr.lo >> 16) -temp16*1);
+        pci_write_config8(dev, 0x7F, 0x08);									// ACPI Base
+        outb(inb(0x856) | 0x40, 0x856);										// Auto-Reset Function
 
 // ========================== ACPI =============================
 	i=0;
@@ -839,37 +736,20 @@ print_debug("\n");
        printk_debug("Init Misc -------->\n");
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS966_ISA), 0);
 	// PCI Device Enable
-	pci_write_config8(dev, 0x7C, 0x03);  // bit0=0 : enable audio controller(), bit1=1 : disable modem 
+	pci_write_config8(dev, 0x7C, 0x03);  // bit0=0 : enable audio controller(), bit1=1 : disable modem
 	pci_write_config8(dev, 0x76, pci_read_config8(dev, 0x76)|0x30);  // SM bus enable, PCIEXP Controller 1 and 2 disable
-	pci_write_config8(dev, 0x7E, 0x00);  // azalia controller enable 
+	pci_write_config8(dev, 0x7E, 0x00);  // azalia controller enable
 
 	temp8=inb(0x878)|0x4;   //bit2=1 enable Azalia  =0 enable AC97
 	outb(temp8, 0x878);  // ACPI select AC97 or HDA controller
 	printk_debug("Audio select %x\n",inb(0x878));
-	
-	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, 0x1183), 0);	
-	if(!dev){			
+
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS966_SATA0), 0);
+	if(!dev){
 		print_debug("SiS 1183 does not exist !!");
 	}
 	// SATA Set Mode
 	pci_write_config8(dev, 0x90, (pci_read_config8(dev, 0x90)&0x3F) | 0x40);
-	
-
-//-------------- enable IDE (SiS1183) -------------------------
-/*
-{    
-       uint8_t  temp8;
-       int i=0;
-	while(SiS_SiS1183_init[i][0] != 0)
-	{				temp8 = pci_read_config8(dev, SiS_SiS1183_init[i][0]);
-					temp8 &= SiS_SiS1183_init[i][1];
-					temp8 |= SiS_SiS1183_init[i][2];				
-					pci_write_config8(dev, SiS_SiS1183_init[i][0], temp8);
-					i++;
-	};
-}
-
-*/
 
 }
 
@@ -880,16 +760,16 @@ static void enable_smbus(void)
 	device_t dev;
 	uint8_t temp8;
 	printk_debug("enable_smbus -------->\n");
-	
+
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS966_LPC), 0);
 
 	/* set smbus iobase && enable ACPI Space*/
-	pci_write_config16(dev, 0x74, 0x0800);			// Set ACPI Base
+	pci_write_config16(dev, 0x74, 0x0800);				// Set ACPI Base
 	temp8=pci_read_config8(dev, 0x40);					// Enable ACPI Space
 	pci_write_config8(dev, 0x40, temp8 | 0x80);
 	temp8=pci_read_config8(dev, 0x76);					// Enable SMBUS
 	pci_write_config8(dev, 0x76, temp8 | 0x03);
-	
+
 	printk_debug("enable_smbus <--------\n");
 }
 

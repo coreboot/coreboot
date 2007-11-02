@@ -151,81 +151,33 @@ static void lpc_slave_init(device_t dev)
 	lpc_common_init(dev);
 }
 
-#if 0
-static void enable_hpet(struct device *dev)
-{
-	unsigned long hpet_address;
-
-	pci_write_config32(dev,0x44, 0xfed00001);
-	hpet_address=pci_read_config32(dev,0x44)& 0xfffffffe;
-	printk_debug("enabling HPET @0x%x\n", hpet_address);
-}
-#endif
 
 static void lpc_usb_legacy_init(device_t dev)
 {
     uint16_t acpi_base;
 
     acpi_base = (pci_read_config8(dev,0x75) << 8);
-    //printk_debug("ACPI Base Addr=0x%4.4x\n",acpi_base);
-
-    //printk_debug("acpi_base + 0xbb=%.2x\n", inb(acpi_base + 0xbb));
-    //printk_debug("acpi_base + 0xba=%.2x\n", inb(acpi_base + 0xba));
 
     outb(inb(acpi_base + 0xbb) |0x80, acpi_base + 0xbb);
     outb(inb(acpi_base + 0xba) |0x80, acpi_base + 0xba);
-
-    //printk_debug("acpi_base + 0xbb=%.2x\n", inb(acpi_base + 0xbb));
-    //printk_debug("acpi_base + 0xba=%.2x\n", inb(acpi_base + 0xba));
-
-    return;
 }
 
 static void lpc_init(device_t dev)
 {
-	uint8_t byte;
-	uint8_t byte_old;
-	int on;
-	int nmi_option;
+	 uint8_t byte;
+	 uint8_t byte_old;
+	 int on;
+	 int nmi_option;
 
-        printk_debug("lpc_init -------->\n");
+        printk_debug("LPC_INIT -------->\n");
         init_pc_keyboard(0x60, 0x64, 0);
 
-#if 0
-            {
-            int i;
-            printk_debug("LPC PCI config \n");
-            for(i=0;i<0xFF;i+=4)
-            {
-              if((i%16)==0)
-              {
-                print_debug("\r\n");
-                print_debug_hex8(i);
-                print_debug("  ");}
-                print_debug_hex32(pci_read_config32(dev,i));
-                print_debug("  ");    
-              }
-              print_debug("\r\n");
-            }
-#endif
-            printk_debug("lpc_init <--------\n");
-            lpc_usb_legacy_init(dev);
-            return;
-	
-       printk_debug("lpc_init\r\n");
-	lpc_common_init(dev);
-       printk_debug("lpc_init2\r\n");
+        lpc_usb_legacy_init(dev);
+	 lpc_common_init(dev);
 
-
-#if 0
-	/* posted memory write enable */
-	byte = pci_read_config8(dev, 0x46);
-	pci_write_config8(dev, 0x46, byte | (1<<0));
-
-#endif
 	/* power after power fail */
 
-#if 1
+
 	on = MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 	get_option(&on, "power_on_after_fail");
 	byte = pci_read_config8(dev, PREVIOUS_POWER_STATE);
@@ -235,7 +187,7 @@ static void lpc_init(device_t dev)
 	}
 	pci_write_config8(dev, PREVIOUS_POWER_STATE, byte);
 	printk_info("set power %s after power fail\n", on?"on":"off");
-#endif
+
 	/* Throttle the CPU speed down for testing */
 	on = SLOW_CPU_OFF;
 	get_option(&on, "slow_cpu");
@@ -249,44 +201,34 @@ static void lpc_init(device_t dev)
 		printk_debug("Throttling CPU %2d.%1.1d percent.\n",
 				(on*12)+(on>>1),(on&1)*5);
 	}
- 
-#if 0
-// default is enabled
-	/* Enable Port 92 fast reset */
-	byte = pci_read_config8(dev, 0xe8);
-	byte |= ~(1 << 3);
-	pci_write_config8(dev, 0xe8, byte);
-#endif
 
-	/* Enable Error reporting */
-	/* Set up sync flood detected */
-	byte = pci_read_config8(dev, 0x47);
-	byte |= (1 << 1);
-	pci_write_config8(dev, 0x47, byte);
+        /* Enable Error reporting */
+        /* Set up sync flood detected */
+        byte = pci_read_config8(dev, 0x47);
+        byte |= (1 << 1);
+        pci_write_config8(dev, 0x47, byte);
 
-	/* Set up NMI on errors */
-	byte = inb(0x70); // RTC70
-	byte_old = byte;
-	nmi_option = NMI_OFF;
-	get_option(&nmi_option, "nmi");
-	if (nmi_option) {
-		byte &= ~(1 << 7); /* set NMI */
-	} else {
-		byte |= ( 1 << 7); // Can not mask NMI from PCI-E and NMI_NOW
-	}
-	if( byte != byte_old) {
-		outb(0x70, byte);
-	}
+        /* Set up NMI on errors */
+        byte = inb(0x70); // RTC70
+        byte_old = byte;
+        nmi_option = NMI_OFF;
+        get_option(&nmi_option, "nmi");
+        if (nmi_option) {
+                byte &= ~(1 << 7); /* set NMI */
+        } else {
+                byte |= ( 1 << 7); // Can not mask NMI from PCI-E and NMI_NOW
+        }
+        if( byte != byte_old) {
+                outb(0x70, byte);
+        }
 
-	/* Initialize the real time clock */
-	rtc_init(0);
+        /* Initialize the real time clock */
+        rtc_init(0);
 
-	/* Initialize isa dma */
-	isa_dma_init();
+        /* Initialize isa dma */
+        isa_dma_init();
 
-	/* Initialize the High Precision Event Timers */
-//	enable_hpet(dev);
-
+        printk_debug("LPC_INIT <--------\n");
 }
 
 static void sis966_lpc_read_resources(device_t dev)
@@ -403,38 +345,6 @@ static const struct pci_driver lpc_driver __pci_driver = {
 	.device	= PCI_DEVICE_ID_SIS_SIS966_LPC,
 };
 
-static const struct pci_driver lpc_driver_pro __pci_driver = {
-	.ops	= &lpc_ops,
-	.vendor	= PCI_VENDOR_ID_SIS,
-	.device	= PCI_DEVICE_ID_SIS_SIS966_PRO,
-};
-
-static const struct pci_driver lpc_driver_lpc2 __pci_driver = {
-	.ops	= &lpc_ops,
-	.vendor	= PCI_VENDOR_ID_SIS,
-	.device	= PCI_DEVICE_ID_SIS_SIS966_LPC_2,
-};
-static const struct pci_driver lpc_driver_lpc3 __pci_driver = {
-	.ops	= &lpc_ops,
-	.vendor	= PCI_VENDOR_ID_SIS,
-	.device	= PCI_DEVICE_ID_SIS_SIS966_LPC_3,
-};
-static const struct pci_driver lpc_driver_lpc4 __pci_driver = {
-	.ops	= &lpc_ops,
-	.vendor	= PCI_VENDOR_ID_SIS,
-	.device	= PCI_DEVICE_ID_SIS_SIS966_LPC_4,
-};
-static const struct pci_driver lpc_driver_lpc5 __pci_driver = {
-	.ops	= &lpc_ops,
-	.vendor	= PCI_VENDOR_ID_SIS,
-	.device	= PCI_DEVICE_ID_SIS_SIS966_LPC_5,
-};
-static const struct pci_driver lpc_driver_lpc6 __pci_driver = {
-	.ops	= &lpc_ops,
-	.vendor	= PCI_VENDOR_ID_SIS,
-	.device	= PCI_DEVICE_ID_SIS_SIS966_LPC_6,
-};
-
 static struct device_operations lpc_slave_ops  = {
 	.read_resources	= sis966_lpc_read_resources,
 	.set_resources	= pci_dev_set_resources,
@@ -442,10 +352,4 @@ static struct device_operations lpc_slave_ops  = {
 	.init		= lpc_slave_init,
 //	.enable		= sis966_enable,
 	.ops_pci	= &lops_pci,
-};
-
-static const struct pci_driver lpc_driver_slave __pci_driver = {
-	.ops	= &lpc_slave_ops,
-	.vendor	= PCI_VENDOR_ID_SIS,
-	.device	= PCI_DEVICE_ID_SIS_SIS966_SLAVE,
 };

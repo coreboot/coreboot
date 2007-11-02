@@ -1,8 +1,6 @@
 /*
  * This file is part of the LinuxBIOS project.
  *
- * Copyright (C) 2007 AMD
- * Written by Yinghai Lu <yinghai.lu@amd.com> for AMD.
  * Copyright (C) 2007 Silicon Integrated Systems Corp. (SiS)
  * Written by Morgan Tsai <my_tsai@sis.com> for SiS.
  *
@@ -23,6 +21,13 @@
 
 #ifndef SIS966_H
 #define SIS966_H
+
+#define DEBUG_AZA 0
+#define DEBUG_NIC 0
+#define DEBUG_IDE 0
+#define DEBUG_SATA 0
+#define DEBUG_USB 0
+#define DEBUG_USB2 0
 
 #include "chip.h"
 

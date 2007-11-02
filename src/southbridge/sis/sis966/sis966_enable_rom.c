@@ -32,7 +32,7 @@
 static void sis966_enable_rom(void)
 {
 	device_t addr;
- 
+
 	/* Enable 4MB rom access at 0xFFC00000 - 0xFFFFFFFF */
 	addr = pci_locate_device(PCI_ID(0x1039, 0x0966), 0);
 

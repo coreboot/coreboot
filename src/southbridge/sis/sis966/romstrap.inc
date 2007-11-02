@@ -43,28 +43,16 @@ linkedlist:
 	.long 0xFFFFFFFF			// 28h
 	.long 0xFFFFFFFF			// 2Ch
 
-// MAC address -------------------------------- 0x7FFC0h	
 	.long 0x56341200			// 30h, MAC address low 4 byte ---> keep it in 0xffffffc0
 	.long 0x00009078			// 34h, MAC address high 4 byte
 
 	.long 0x002309CE			// 38h, UUID low 4 byte
 	.long 0x00E08100			// 3Ch, UUID high 4 byte
 
-
-// Firmware Trap --------------------------------  0x7FFD0h	
-/* 
-//Firmware trap for SiS761+966         
-        .long 0x00402000
-        .long 0x6043A800  
-        .long 0x00180000
-        .long 0x1421C402 	
-*/        
- 
-//Firmware trap for SiS756+966              ---> keep it in 0xffffffd0
-        .long 0x00402000
-        .long 0xE043A800  
-        .long 0x00180000
-        .long 0x1421C402 
+	.long 0x00402000			//Firmware trap for SiS761+966
+	.long 0xE043A800
+	.long 0x00180000
+	.long 0x1421C402
 
 rspointers:
 	.long rstables				// It will be 0xffffffe0

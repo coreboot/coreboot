@@ -32,10 +32,10 @@
 #include "sis966.h"
 
 uint8_t	SiS_SiS7502_init[7][3]={
-{0x04, 0xFF, 0x07},					 
-{0x2C, 0xFF, 0x39},					 
-{0x2D, 0xFF, 0x10},					 
-{0x2E, 0xFF, 0x91},					 
+{0x04, 0xFF, 0x07},
+{0x2C, 0xFF, 0x39},
+{0x2D, 0xFF, 0x10},
+{0x2E, 0xFF, 0x91},
 {0x2F, 0xFF, 0x01},
 {0x04, 0xFF, 0x06},
 {0x00, 0x00, 0x00}					//End of table
@@ -61,7 +61,7 @@ static int set_bits(uint8_t *port, uint32_t mask, uint32_t val)
 
 	if(!count) return -1;
 
-	udelay(540);
+	udelay(500);
 	return 0;
 
 }
@@ -71,30 +71,29 @@ static int set_bits(uint8_t *port, uint32_t mask, uint32_t val)
 
 
      uint32_t dword;
-	 
+
      dword = readl(base + 0x68);
      dword=dword|(unsigned long)0x0002;
      writel(dword,base + 0x68);
-     do {	  	
-	 	dword = readl(base + 0x68);	   
+     do {
+	 	dword = readl(base + 0x68);
      }  while ((dword & 1)!=0);
      writel(verb, base + 0x60);
-     udelay(500);	 
-     dword = readl(base + 0x68);	  
-     dword =(dword |0x1);   
+     udelay(500);
+     dword = readl(base + 0x68);
+     dword =(dword |0x1);
      writel(dword, base + 0x68);
      do {
-	 	udelay(120);
+	 	udelay(100);
 		dword = readl(base + 0x68);
      } while ((dword & 3) != 2);
 
      dword = readl(base + 0x64);
      return dword;
-		
+
 }
 
 
-#if 1
 static int codec_detect(uint8_t *base)
 {
 	uint32_t dword;
@@ -102,97 +101,31 @@ static int codec_detect(uint8_t *base)
 
 	/* 1 */ // controller reset
 	printk_debug("controller reset\n");
-      
+
 	set_bits(base + 0x08, 1, 1);
-      
+
       do{
-	  	dword = readl(base + 0x08)&0x1;	
+	  	dword = readl(base + 0x08)&0x1;
 		if(idx++>1000) { printk_debug("controller reset fail !!! \n"); break;}
 	   } while (dword !=1);
-       
+
        dword=send_verb(base,0x000F0000); // get codec VendorId and DeviceId
-       
+
        if(dword==0) {
 	   	printk_debug("No codec!\n");
 		return 0;
        }
 
 	 printk_debug("Codec ID = %lx\n", dword);
-	  
-#if 0
-	/* 2 */
-	dword = readl(base + 0x0e);
-	dword |= 7;
-	writel(dword, base + 0x0e);
 
-	/* 3 */
-	set_bits(base + 0x08, 1, 0);
-
-	/* 4 */
-	set_bits(base + 0x08, 1, 1);
-		
-	/* 5 */
-	dword = readl(base + 0xe);
-	dword &= 7;
-       
-	/* 6 */
-	if(!dword) {
-		set_bits(base + 0x08, 1, 0);
-		printk_debug("No codec!\n");
-		return 0;
-	}
-#endif 
        dword=0x1;
 	return dword;
 
 }
 
-#else
 
-static int codec_detect(uint8_t *base)
-{
-	uint32_t dword;
-
-	/* 1 */
-	set_bits(base + 0x08, 1, 1);
-
-	/* 2 */
-	dword = readl(base + 0x0e);
-	dword |= 7;
-	writel(dword, base + 0x0e);
-
-	/* 3 */
-	set_bits(base + 0x08, 1, 0);
-
-	/* 4 */
-	set_bits(base + 0x08, 1, 1);
-
-	/* 5 */
-	dword = readl(base + 0xe);
-	dword &= 7;
-
-	/* 6 */
-	if(!dword) {
-		set_bits(base + 0x08, 1, 0);
-		printk_debug("No codec!\n");
-		return 0;
-	}
-	return dword;
-
-}
-
-#endif
-
-#if 1
-
-// For SiS demo board PinConfig
 static uint32_t verb_data[] = {
-#if 0
- 00172083h,
- 00172108h,
- 001722ECh,
- 00172310h,
-#endif
+
 //14
 	0x01471c10,
 	0x01471d40,
@@ -255,79 +188,6 @@ static uint32_t verb_data[] = {
 	0x01f71f01,
 };
 
-#else
-// orginal codec pin configuration setting
-
-static uint32_t verb_data[] = {
-#if 0
-	0x00172001,
-	0x001721e6,
-	0x00172200,
-	0x00172300,
-#endif
-
-	0x01471c10,
-	0x01471d44,
-	0x01471e01,
-	0x01471f01,
-//1
-	0x01571c12,
-	0x01571d14,
-	0x01571e01,
-	0x01571f01,
-//2
-	0x01671c11,
-	0x01671d60,
-	0x01671e01,
-	0x01671f01,
-//3
-	0x01771c14,
-	0x01771d20,
-	0x01771e01,
-	0x01771f01,
-//4
-	0x01871c30,
-	0x01871d9c,
-	0x01871ea1,
-	0x01871f01,
-//5
-	0x01971c40,
-	0x01971d9c,
-	0x01971ea1,
-	0x01971f02,
-//6
-	0x01a71c31,
-	0x01a71d34,
-	0x01a71e81,
-	0x01a71f01,
-//7
-	0x01b71c1f,
-	0x01b71d44,
-	0x01b71e21,
-	0x01b71f02,
-//8
-	0x01c71cf0,
-	0x01c71d11,
-	0x01c71e11,
-	0x01c71f41,
-//9
-	0x01d71c3e,
-	0x01d71d01,
-	0x01d71e83,
-	0x01d71f99,
-//10
-	0x01e71c20,
-	0x01e71d41,
-	0x01e71e45,
-	0x01e71f01,
-//11
-	0x01f71c50,
-	0x01f71d91,
-	0x01f71ec5,
-	0x01f71f01,
-};
-
-#endif 
 static unsigned find_verb(uint32_t viddid, uint32_t **verb)
 {
         if((viddid == 0x10ec0883) || (viddid == 0x10ec0882) || (viddid == 0x10ec0880)) return 0;
@@ -370,17 +230,6 @@ static void codec_init(uint8_t *base, int addr)
 	/* 3 */
 	for(i=0; i<verb_size; i++) {
 		send_verb(base,verb[i]);
-#if 0
-		do {
-			dword = readl(base + 0x68);
-		} while (dword & 1);
-
-		writel(verb[i], base + 0x60);
-
-		do {
-			dword = readl(base + 0x68);
-		} while ((dword & 3) != 2);
-#endif 
 	}
 	printk_debug("verb loaded!\n");
 }
@@ -398,45 +247,50 @@ static void codecs_init(uint8_t *base, uint32_t codec_mask)
 
 static void aza_init(struct device *dev)
 {
-	uint8_t *base;
-	struct resource *res;
-	uint32_t codec_mask;
+        uint8_t *base;
+        struct resource *res;
+        uint32_t codec_mask;
 
+        print_debug("AZALIA_INIT:---------->\n");
 
 //-------------- enable AZA (SiS7502) -------------------------
 {
-       uint8_t  temp8;
-       int i=0;
-	while(SiS_SiS7502_init[i][0] != 0)
-	{				temp8 = pci_read_config8(dev, SiS_SiS7502_init[i][0]);
-					temp8 &= SiS_SiS7502_init[i][1];
-					temp8 |= SiS_SiS7502_init[i][2];									
-					pci_write_config8(dev, SiS_SiS7502_init[i][0], temp8);
-					i++;
-	};
+        uint8_t  temp8;
+        int i=0;
+        while(SiS_SiS7502_init[i][0] != 0)
+        {
+                temp8 = pci_read_config8(dev, SiS_SiS7502_init[i][0]);
+                temp8 &= SiS_SiS7502_init[i][1];
+                temp8 |= SiS_SiS7502_init[i][2];
+                pci_write_config8(dev, SiS_SiS7502_init[i][0], temp8);
+                i++;
+        };
 }
 //-----------------------------------------------------------
 
 
-// put audio to D0 state
-pci_write_config8(dev, 0x54,0x00);
+        // put audio to D0 state
+        pci_write_config8(dev, 0x54,0x00);
 
-#if 0
+#if DEBUG_AZA
 {
-    int i;
-    printk_debug("Azalia PCI config \n");
-    for(i=0;i<0xFF;i+=4)
-    {
-        if((i%16)==0)
-        {
-            print_debug("\r\n");print_debug_hex8(i);print_debug("  ");
+        int i;
+
+        print_debug("****** Azalia PCI config ******");
+        print_debug("\n    03020100  07060504  0B0A0908  0F0E0D0C");
+
+        for(i=0;i<0xff;i+=4){
+                if((i%16)==0){
+                        print_debug("\r\n");
+                        print_debug_hex8(i);
+                        print_debug(": ");
+                }
+                print_debug_hex32(pci_read_config32(dev,i));
+                print_debug("  ");
         }
-        print_debug_hex32(pci_read_config32(dev,i));
-        print_debug("  ");    
-    }
-    print_debug("\r\n");
+        print_debug("\r\n");
 }
-#endif 
+#endif
 
 	res = find_resource(dev, 0x10);
 	if(!res)
@@ -452,24 +306,7 @@ pci_write_config8(dev, 0x54,0x00);
 		codecs_init(base, codec_mask);
 	}
 
-#if 0
-{
-    int i;
-    printk_debug("Azalia PCI config \n");
-    for(i=0;i<0xFF;i+=4)
-    {
-        if((i%16)==0)
-        {
-            print_debug("\r\n");print_debug_hex8(i);print_debug("  ");
-        }
-        outl(0x80000800+i,0xcf8);     
-        print_debug_hex32(inl(0xcfc));
-        print_debug("  ");    
-    }
-    print_debug("\r\n");
-}
-#endif 
-
+        print_debug("AZALIA_INIT:<----------\n");
 }
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)

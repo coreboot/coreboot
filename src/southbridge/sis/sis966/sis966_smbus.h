@@ -158,14 +158,14 @@ for(i=0;i<0x1000;i++)
 	}
 };
 
-	global_status_register = inb(smbus_io_base + 0x00); 
+	global_status_register = inb(smbus_io_base + 0x00);
 	byte = inb(smbus_io_base + 0x08);
 
 	if (global_status_register != 0x08) { // lose check, otherwise it should be 0
 		print_debug("Fail");print_debug("\r\t");
 			return -1;
 	}
-		print_debug("Success");print_debug("\r\t");	
+		print_debug("Success");print_debug("\r\t");
 	return byte;
 }
 

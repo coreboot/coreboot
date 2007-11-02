@@ -239,15 +239,12 @@ chip northbridge/amd/amdk8/root_complex
 				#  devices on link 0, link 0 == LDT 0
 			        chip southbridge/sis/sis966
 					device pci 0.0 on end   # Northbridge
-					#################################################
-					device pci 1.0 on 			# AGP bridge
+					device pci 1.0 on		# AGP bridge
 					  chip drivers/pci/onboard	# Integrated VGA
 						device pci 0.0 on end
 						register "rom_address" = "0xfff80000"
 					  end
 					end
-					#################################################
-					## device pci 1.0 on end   # PCIE
                 			device pci 2.0 on # LPC
 						chip superio/ite/it8716f
 							device pnp 2e.0 off #  Floppy
@@ -272,12 +269,12 @@ chip northbridge/amd/amdk8/root_complex
                 	                 			io 0x62 = 0x230
                 	                			irq 0x70 = 9
 							end
-                	        			device pnp 2e.5 off #  Keyboard
+                	        			device pnp 2e.5 on #  Keyboard
                 	                 			io 0x60 = 0x60
                 	                 			io 0x62 = 0x64
                 	                			irq 0x70 = 1
 							end
-                	        			device pnp 2e.6 off #  Mouse
+                	        			device pnp 2e.6 on #  Mouse
                 	                			irq 0x70 = 12
 							end
                 	        			device pnp 2e.8 off #  MIDI
@@ -291,30 +288,27 @@ chip northbridge/amd/amdk8/root_complex
 						end
 					end
 
- 					device pci 2.5 on end # IDE (SiS5513)
- 					device pci 2.6 off end # Modem (SiS7013)
- 					device pci 2.7 off end # Audio (SiS7012)
-                			device pci 3.0 on end # USB (SiS7001,USB1.1)
-	                		device pci 3.1 on end # USB (SiS7001,USB1.1)
-	                		device pci 3.3 on end # USB (SiS7002,USB2.0)
-	                		device pci 4.0 on end # NIC (SiS191)
-                			device pci 5.0 on end # SATA (SiS1183)
-                			device pci 6.0 off end # SB PCIE1 (SiS000A)
-                			device pci 7.0 off end # SB PCIE2 (SiS000A)
-        	       			device pci 9.0 off end # PCI E 6
-        	       			device pci a.0 off end # PCI E 5
-        	       			device pci b.0 off end # PCI E 4
-                			device pci c.0 off end # PCI E 3
-                			device pci d.0 off end # PCI E 2
-                			device pci e.0 off end # PCI E 1
-        	       			device pci f.0 on end # Hda
+                                        device pci 2.5 off end # IDE (SiS5513)
+                                        device pci 2.6 off end # Modem (SiS7013)
+                                        device pci 2.7 off end # Audio (SiS7012)
+                                        device pci 3.0 on end # USB (SiS7001,USB1.1)
+                                        device pci 3.1 on end # USB (SiS7001,USB1.1)
+                                        device pci 3.3 on end # USB (SiS7002,USB2.0)
+                                        device pci 4.0 on end # NIC (SiS191)
+                                        device pci 5.0 on end # SATA (SiS1183,IDE Mode)
+                                        device pci 6.0 off end # PCI-E (SiS000A)
+                                        device pci 7.0 off end # PCI-E (SiS000A)
+                                        device pci a.0 off end
+                                        device pci b.0 off end
+                                        device pci c.0 off end
+                                        device pci d.0 off end
+                                        device pci e.0 off end
+                                        device pci f.0 off end # HD Audio (SiS7502)
 
-	                                register "ide0_enable" = "1"
-	                                register "ide1_enable" = "1"
-                	                register "sata0_enable" = "1"
-                        	        register "sata1_enable" = "1"
-				   	#register "mac_eeprom_smbus" = "3" # 1: smbus under 2e.8, 2: SM0 3: SM1
-				   	#register "mac_eeprom_addr" = "0x51"
+                                        register "ide0_enable" = "1"
+                                        register "ide1_enable" = "1"
+                                        register "sata0_enable" = "1"
+                                        register "sata1_enable" = "1"
 				end
 			end #  device pci 18.0
 			device pci 18.0 on end # Link 1
@@ -328,14 +322,14 @@ chip northbridge/amd/amdk8/root_complex
 
 #       chip drivers/generic/debug
 #               device pnp 0.0 off end # chip name
-#                device pnp 0.1 on end # pci_regs_all
-#                device pnp 0.2 on end # mem
-#                device pnp 0.3 off end # cpuid
-#                device pnp 0.4 on end # smbus_regs_all
-#                device pnp 0.5 off end # dual core msr
-#                device pnp 0.6 off end # cache size
+#               device pnp 0.1 on end # pci_regs_all
+#               device pnp 0.2 on end # mem
+#               device pnp 0.3 off end # cpuid
+#               device pnp 0.4 on end # smbus_regs_all
+#               device pnp 0.5 off end # dual core msr
+#               device pnp 0.6 off end # cache size
 #               device pnp 0.7 off end # tsc
-#                device pnp 0.8 off  end # io
-#                device pnp 0.9 off end # io
+#               device pnp 0.8 off  end # io
+#               device pnp 0.9 off end # io
 #       end
 end #root_complex

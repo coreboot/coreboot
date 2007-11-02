@@ -3,6 +3,8 @@
 ##
 ## Copyright (C) 2007 AMD
 ## Written by Yinghai Lu <yinghailu@gmail.com> for AMD.
+## Copyright (C) 2007 Silicon Integrated Systems Corp. (SiS)
+## Written by Morgan Tsai <my_tsai@sis.com> for SiS.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -23,38 +25,22 @@ target ga_2761gxdk
 mainboard gigabyte/ga_2761gxdk
 
 romimage "normal"
-#       48K for VGA BIOS
-         option ROM_SIZE = 475136
-#       48K for SCSI FW and 48K for ATI ROM
-#        option ROM_SIZE = 425984 
-#       64K for Etherboot
-#        option ROM_SIZE = 458752 
-#       44k for atixx.rom
-#        option ROM_SIZE = 479232
-#       32k for vbios
-#        option ROM_SIZE = 491520
+#       32K for VGA BIOS
+        option ROM_SIZE = (512*1024 - 32*1024)
 
         option USE_FAILOVER_IMAGE=0
-#	option ROM_IMAGE_SIZE=0x13800
-#	option ROM_IMAGE_SIZE=0x18800
-#	option ROM_IMAGE_SIZE=0x19800
-	option ROM_IMAGE_SIZE=0x20000
-#	option ROM_IMAGE_SIZE=0x15800
-	option XIP_ROM_SIZE=0x40000
-	option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
+        option ROM_IMAGE_SIZE=0x20000
+        option XIP_ROM_SIZE=0x40000
+        option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
         payload ../../../../payloads/filo_uda1.elf
 end
 
-romimage "fallback" 
+romimage "fallback"
         option USE_FAILOVER_IMAGE=0
-	option USE_FALLBACK_IMAGE=1
-#	option ROM_IMAGE_SIZE=0x13800
-#	option ROM_IMAGE_SIZE=0x18800
-#       option ROM_IMAGE_SIZE=0x19800
-	option ROM_IMAGE_SIZE=0x20000
-#	option ROM_IMAGE_SIZE=0x15800
-	option XIP_ROM_SIZE=0x40000
-	option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Fallback"
+        option USE_FALLBACK_IMAGE=1
+        option ROM_IMAGE_SIZE=0x20000
+        option XIP_ROM_SIZE=0x40000
+        option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Fallback"
         payload ../../../../payloads/filo_uda1.elf
 end
 
@@ -66,5 +52,5 @@ romimage "failover"
         option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Failover"
 end
 
-# buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
-buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback" "failover"
+#       buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
+        buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback" "failover"

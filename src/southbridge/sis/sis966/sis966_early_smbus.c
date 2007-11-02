@@ -23,7 +23,7 @@
 
 #define SMBUS0_IO_BASE	0x8D0
 
-uint8_t	SiS_LPC_init[33][3]={
+static const uint8_t SiS_LPC_init[33][3]={
 {0x04, 0xF8, 0x07},					//Reg 0x04
 {0x45, 0x00, 0x00},					//Reg 0x45			//Enable Rom Flash
 {0x46, 0x00, 0x3D},					//Reg 0x46
@@ -59,7 +59,7 @@ uint8_t	SiS_LPC_init[33][3]={
 {0xDF, 0x00, 0xAA},					//Reg 0xDF
 {0x00, 0x00, 0x00}					//End of table
 };
-uint8_t	SiS_NBPCIE_init[43][3]={
+static const uint8_t	SiS_NBPCIE_init[43][3]={
 {0x3D, 0x00, 0x00},					//Reg 0x3D
 {0x1C, 0xFE, 0x01},					//Reg 0x1C
 {0x1D, 0xFE, 0x01},					//Reg 0x1D
@@ -105,7 +105,7 @@ uint8_t	SiS_NBPCIE_init[43][3]={
 {0x4F, 0x00, 0x00},					//Reg 0x4F
 {0x00, 0x00, 0x00}					//End of table
 };
-uint8_t	SiS_ACPI_init[10][3]={
+static const uint8_t	SiS_ACPI_init[10][3]={
 {0x1B, 0xBF, 0x40},					//Reg 0x1B
 {0x84, 0x00, 0x0E},					//Reg 0x84
 {0x85, 0x00, 0x29},					//Reg 0x85
@@ -117,7 +117,7 @@ uint8_t	SiS_ACPI_init[10][3]={
 {0x6F, 0xFF, 0x14},					//Reg 0x6F
 {0x00, 0x00, 0x00}					//End of table
 };
-uint8_t	SiS_SBPCIE_init[13][3]={
+static const uint8_t	SiS_SBPCIE_init[13][3]={
 {0x48, 0x00 ,0x07},					//Reg 0x48
 {0x49, 0x00 ,0x06},					//Reg 0x49
 {0x4A, 0x00 ,0x0C},					//Reg 0x4A
@@ -135,7 +135,7 @@ uint8_t	SiS_SBPCIE_init[13][3]={
 
 
 #if 1
-uint8_t	SiS_NB_init[56][3]={
+static const uint8_t	SiS_NB_init[56][3]={
 {0x04, 0x00 ,0x07},					//Reg 0x04
 {0x05, 0x00 ,0x00},					//Reg 0x05 // alex
 {0x0D, 0x00 ,0x20},					//Reg 0x0D
@@ -201,7 +201,7 @@ uint8_t	SiS_NB_init[56][3]={
 };
 
 #else
-uint8_t	SiS_NB_init[61][3]={
+static const uint8_t	SiS_NB_init[61][3]={
 {0x04, 0x00 ,0x07},					//Reg 0x04
 {0x05, 0x00 ,0x00},					//Reg 0x05 // alex
 {0x0D, 0x00 ,0x20},					//Reg 0x0D
@@ -270,7 +270,7 @@ uint8_t	SiS_NB_init[61][3]={
 
 #endif
 #if 1
-uint8_t SiS_NBAGP_init[34][3]={
+static const uint8_t SiS_NBAGP_init[34][3]={
 {0xCF, 0xDF, 0x00},      //HT issue
 {0x06, 0xDF, 0x20},
 {0x1E, 0xDF, 0x20},
@@ -314,7 +314,7 @@ uint8_t SiS_NBAGP_init[34][3]={
 #else
 
 //uint8_t SiS_NBAGP_init[53][3]={
-uint8_t SiS_NBAGP_init[40][3]={
+static const uint8_t SiS_NBAGP_init[40][3]={
 {0x04, 0x00 ,0x07},					//Reg 0x04
 {0x05, 0x00 ,0x01},					//Reg 0x05 // alex
 
@@ -381,7 +381,7 @@ uint8_t SiS_NBAGP_init[40][3]={
 
 #endif
 
-uint8_t	SiS_ACPI_2_init[56][3]={
+static const uint8_t	SiS_ACPI_2_init[56][3]={
 {0x00, 0x00, 0xFF},					//Reg 0x00
 {0x01, 0x00, 0xFF},					//Reg 0x01
 {0x02, 0x00, 0x00},					//Reg 0x02
@@ -441,7 +441,7 @@ uint8_t	SiS_ACPI_2_init[56][3]={
 };
 
 #if 0
-uint8_t	SiS_SiS1183_init[60][3]={
+static const uint8_t	SiS_SiS1183_init[60][3]={
 {0x04, 0x00, 0x05},					 
 {0x09, 0x00, 0x05},					 
 {0x2C, 0x00, 0x39},					 
@@ -511,7 +511,7 @@ uint8_t	SiS_SiS1183_init[60][3]={
 
 #else
 
-uint8_t	SiS_SiS1183_init[44][3]={
+static const uint8_t	SiS_SiS1183_init[44][3]={
 {0x04, 0x00, 0x05},					 
 {0x09, 0x00, 0x05},					 
 {0x2C, 0x00, 0x39},					 

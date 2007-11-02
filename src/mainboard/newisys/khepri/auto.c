@@ -19,11 +19,11 @@
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
 #include <cpu/amd/model_fxx_rev.h>
-#include "superio/nsc/pc87360/pc87360_early_serial.c"
+#include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 #include "cpu/amd/mtrr/amd_earlymtrr.c"
 #include "cpu/x86/bist.h"
 
-#define SERIAL_DEV PNP_DEV(0x2e, PC87360_SP1)
+#define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
 static void hard_reset(void)
 {
@@ -115,7 +115,7 @@ static void main(unsigned long bist)
 	    	k8_init_and_stop_secondaries();
 	}
 	/* Setup the console */
-	pc87360_enable_serial(SERIAL_DEV, TTYS0_BASE);
+        w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
 	uart_init();
 	console_init();
 

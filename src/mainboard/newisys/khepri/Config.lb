@@ -47,8 +47,27 @@ if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
 #object reset.o
 
-dir /drivers/trident/blade3d
+if USE_DCACHE_RAM
 
+if CONFIG_USE_INIT
+
+makerule ./auto.o
+        depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
+        action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -o auto.o" 
+end
+
+else    
+                
+makerule ./auto.inc
+        depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
+        action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -S -o $@"         
+        action "perl -e 's/.rodata/.rom.data/g' -pi $@"
+        action "perl -e 's/.text/.section .rom.text/g' -pi $@"
+end
+
+end
+else
+ 
 ##
 ## Romcc output
 ##
@@ -71,13 +90,27 @@ makerule ./auto.inc
 	action	"./romcc    -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
 end
 
+end
+
 ##
 ## Build our 16 bit and 32 bit linuxBIOS entry code
 ##
-mainboardinit cpu/x86/16bit/entry16.inc
+if USE_FALLBACK_IMAGE
+        mainboardinit cpu/x86/16bit/entry16.inc
+        ldscript /cpu/x86/16bit/entry16.lds
+end
+
 mainboardinit cpu/x86/32bit/entry32.inc
-ldscript /cpu/x86/16bit/entry16.lds
-ldscript /cpu/x86/32bit/entry32.lds
+
+if USE_DCACHE_RAM
+        if CONFIG_USE_INIT
+                ldscript /cpu/x86/32bit/entry32.lds
+        end
+
+        if CONFIG_USE_INIT
+                ldscript      /cpu/amd/car/cache_as_ram.lds
+        end
+end
 
 ##
 ## Build our reset vector (This is where linuxBIOS is entered)
@@ -91,13 +124,22 @@ else
 end
 
 ### Should this be in the northbridge code?
+if USE_DCACHE_RAM
+else
 mainboardinit arch/i386/lib/cpu_reset.inc
-
+end
 ##
 ## Include an id string (For safe flashing)
 ##
 mainboardinit arch/i386/lib/id.inc
 ldscript /arch/i386/lib/id.lds
+
+if USE_DCACHE_RAM
+##
+## Setup Cache-As-Ram
+##
+mainboardinit cpu/amd/car/cache_as_ram.inc
+end
 
 ###
 ### This is the early phase of linuxBIOS startup 
@@ -105,8 +147,12 @@ ldscript /arch/i386/lib/id.lds
 ### failover to another image.
 ###
 if USE_FALLBACK_IMAGE
-	ldscript /arch/i386/lib/failover.lds 
+if USE_DCACHE_RAM
+	ldscript /arch/i386/lib/failover.lds
+else
+	ldscript /arch/i386/lib/failover.lds
 	mainboardinit ./failover.inc
+end
 end
 
 ###
@@ -116,6 +162,20 @@ end
 ##
 ## Setup RAM
 ##
+if USE_DCACHE_RAM
+
+if CONFIG_USE_INIT
+initobject auto.o
+else
+mainboardinit ./auto.inc
+end
+
+else
+
+##
+## Setup RAM
+##
+
 mainboardinit cpu/x86/fpu/enable_fpu.inc
 mainboardinit cpu/x86/mmx/enable_mmx.inc
 mainboardinit cpu/x86/sse/enable_sse.inc
@@ -123,13 +183,22 @@ mainboardinit ./auto.inc
 mainboardinit cpu/x86/sse/disable_sse.inc
 mainboardinit cpu/x86/mmx/disable_mmx.inc
 
-##
-## Include the secondary Configuration files 
-##
-dir /pc80
+end
+
 config chip.h
 
+# FIXME: ROM for onboard VGA
+
 chip northbridge/amd/amdk8/root_complex
+	device apic_cluster 0 on
+		chip cpu/amd/socket_940
+			device apic 0 on end
+		end
+		chip cpu/amd/socket_940
+			device apic 1 on end
+		end
+	end
+
 	device pci_domain 0 on
 		chip northbridge/amd/amdk8
 			device pci 18.0 on end # LDT 0 
@@ -148,36 +217,45 @@ chip northbridge/amd/amdk8/root_complex
 						device pci 1.0 on end
 					end
 					device pci 1.0 on
-						chip superio/nsc/pc87360
-							device pnp 2e.0 off    # Floppy 
-								 io 0x60 = 0x3f0
-								irq 0x70 = 6
-								drq 0x74 = 2
+						chip superio/winbond/w83627hf
+							device pnp 2e.0 on #  Floppy
+                	                 			io 0x60 = 0x3f0
+                	                			irq 0x70 = 6
+                	                			drq 0x74 = 2
 							end
-							device pnp 2e.1 off     # Parallel Port
-								 io 0x60 = 0x378
-								irq 0x70 = 7
+                	        			device pnp 2e.1 off #  Parallel Port
+                	                 			io 0x60 = 0x378
+                	                			irq 0x70 = 7
 							end
-							device pnp 2e.2 off     # Com 2
-								 io 0x60 = 0x2f8
-								irq 0x70 = 3
+                	        			device pnp 2e.2 on #  Com1
+                	                 			io 0x60 = 0x3f8
+                	                			irq 0x70 = 4
 							end
-							device pnp 2e.3 on      # Com 1
-								 io 0x60 = 0x3f8
-								irq 0x70 = 4
+                	        			device pnp 2e.3 on #  Com2
+                	                 			io 0x60 = 0x2f8
+                	                			irq 0x70 = 3
 							end
-							device pnp 2e.4 off end # SWC
-							device pnp 2e.5 off end # Mouse
-							device pnp 2e.6 on      # Keyboard
-								 io 0x60 = 0x60
-								 io 0x62 = 0x64
-								irq 0x70 = 1
+                	        			device pnp 2e.5 on #  Keyboard
+                	                 			io 0x60 = 0x60
+                	                 			io 0x62 = 0x64
+                	                			irq 0x70 = 1
+								irq 0x72 = 12
 							end
-							device pnp 2e.7 off end # GPIO
-							device pnp 2e.8 off end # ACB
-							device pnp 2e.9 off end # FSCM
-							device pnp 2e.a off end # WDT  
-			
+                	        			device pnp 2e.6 off #  CIR
+								io 0x60 = 0x100
+							end
+                	        			device pnp 2e.7 off #  GAME_MIDI_GIPO1
+								io 0x60 = 0x220
+								io 0x62 = 0x300
+								irq 0x70 = 9
+							end						
+                	        			device pnp 2e.8 off end #  GPIO2
+                	        			device pnp 2e.9 off end #  GPIO3
+                	        			device pnp 2e.a off end #  ACPI
+                	        			device pnp 2e.b on #  HW Monitor
+ 					 			io 0x60 = 0x290
+								irq 0x70 = 5
+                					end
 						end
 					end
 					device pci 1.1 on end
@@ -201,13 +279,5 @@ chip northbridge/amd/amdk8/root_complex
 			device pci 19.3 on end
 		end
 	end 
-	device apic_cluster 0 on
-		chip cpu/amd/socket_940
-			device apic 0 on end
-		end
-		chip cpu/amd/socket_940
-			device apic 1 on end
-		end
-	end
 end
 

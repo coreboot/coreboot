@@ -44,7 +44,9 @@ uses CROSS_COMPILE
 uses CC
 uses HOSTCC
 uses OBJCOPY
-
+uses USE_DCACHE_RAM
+uses DCACHE_RAM_BASE
+uses DCACHE_RAM_SIZE
 uses CONFIG_USE_INIT
 
 
@@ -109,6 +111,14 @@ default CONFIG_MAX_PHYSICAL_CPUS=1
 ##
 default CONFIG_IOAPIC=1
 
+##
+## enable CACHE_AS_RAM specifics
+##
+default USE_DCACHE_RAM=1
+default DCACHE_RAM_BASE=0xcf000
+default DCACHE_RAM_SIZE=0x1000
+default CONFIG_USE_INIT=0
+ 
 ##
 ## Clean up the motherboard id strings
 ##

@@ -1,0 +1,29 @@
+# abuild config file for JUKI-511P 
+
+target iei_juki-511p
+mainboard iei/juki-511p
+
+__COMPRESSION__
+
+option ROM_SIZE=256*1024
+###
+### Compute the location and size of where this firmware image
+### (linuxBIOS plus bootloader) will live in the boot rom chip.
+###
+option FALLBACK_SIZE=128*1024
+
+romimage "normal"
+	option USE_FALLBACK_IMAGE=0
+	option ROM_IMAGE_SIZE=64*1024
+	option LINUXBIOS_EXTRA_VERSION=".0-Normal"
+	payload __PAYLOAD__
+end
+
+romimage "fallback" 
+	option USE_FALLBACK_IMAGE=1
+	option ROM_IMAGE_SIZE=64*1024
+	option LINUXBIOS_EXTRA_VERSION=".0-Fallback"
+	payload __PAYLOAD__
+end
+
+buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"

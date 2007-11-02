@@ -1177,6 +1177,7 @@ static long spd_handle_unbuffered_dimms(const struct mem_controller *ctrl, long 
 	int i;
 	int registered;
 	int unbuffered;
+	int has_dualch = is_opteron(ctrl);
 	uint32_t dcl;
 	unbuffered = 0;
 	registered = 0;
@@ -1201,17 +1202,22 @@ static long spd_handle_unbuffered_dimms(const struct mem_controller *ctrl, long 
 	if (unbuffered && registered) {
 		die("Mixed buffered and registered dimms not supported");
 	}
-#if 1
-	// yhlu debug: Athlon64 939 can do dual channel, but it uses unbuffered DIMMs
-	if (unbuffered && is_opteron(ctrl)) {
-		die("Unbuffered Dimms not supported on Opteron");
-	}
-#endif
 
 	dcl = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
 	dcl &= ~DCL_UnBufDimm;
 	if (unbuffered) {
-		dcl |= DCL_UnBufDimm;
+		if ((has_dualch) && (!is_cpu_pre_d0())) {
+			dcl |= DCL_UnBufDimm; /* set DCL_DualDIMMen too? */
+			
+			/* set DCL_En2T if you have non-equal DDR mem types! */
+			
+			if ((cpuid_eax(1) & 0x30) == 0x30) {
+				/* CS[7:4] is copy of CS[3:0], should be set for 939 socket */
+				dcl |= DCL_UpperCSMap;
+			}
+		} else {
+			dcl |= DCL_UnBufDimm;
+		}
 	}
 	pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW, dcl);
 #if 0
@@ -1333,6 +1339,9 @@ struct mem_param {
 	uint32_t dch_memclk;
 	uint16_t dch_tref4k, dch_tref8k;
 	uint8_t	 dtl_twr;
+	uint8_t	 dtl_twtr;
+	uint8_t  dtl_trwt[3][3]; /* first index is CAS_LAT 2/2.5/3 and 128/registered64/64 */
+ 	uint8_t	 rdpreamble[4]; /* 0 is for registered, 1 for 1-2 DIMMS, 2 and 3 for 3 or 4 unreg dimm slots */
 	char name[9];
 };
 
@@ -1349,6 +1358,9 @@ static const struct mem_param *get_mem_param(unsigned min_cycle_time)
 			.dch_tref4k = DTH_TREF_100MHZ_4K,
 			.dch_tref8k = DTH_TREF_100MHZ_8K,
 			.dtl_twr    = 2,
+			.dtl_twtr   = 1,
+			.dtl_trwt   = { { 2, 2, 3 }, { 3, 3, 4 }, { 3, 3, 4 }},
+			.rdpreamble = { ((9 << 1) + 0), ((9 << 1) + 0), ((9 << 1) + 0), ((9 << 1) + 0) }
 		},
 		{
 			.name	    = "133Mhz\r\n",
@@ -1360,6 +1372,9 @@ static const struct mem_param *get_mem_param(unsigned min_cycle_time)
 			.dch_tref4k = DTH_TREF_133MHZ_4K,
 			.dch_tref8k = DTH_TREF_133MHZ_8K,
 			.dtl_twr    = 2,
+			.dtl_twtr   = 1,
+			.dtl_trwt   = { { 2, 2, 3 }, { 3, 3, 4 }, { 3, 3, 4 }},
+			.rdpreamble = { ((8 << 1) + 0), ((7 << 1) + 0), ((7 << 1) + 1), ((7 << 1) + 0) }
 		},
 		{
 			.name	    = "166Mhz\r\n",
@@ -1371,6 +1386,9 @@ static const struct mem_param *get_mem_param(unsigned min_cycle_time)
 			.dch_tref4k = DTH_TREF_166MHZ_4K,
 			.dch_tref8k = DTH_TREF_166MHZ_8K,
 			.dtl_twr    = 3,
+			.dtl_twtr   = 1,
+			.dtl_trwt   = { { 3, 2, 3 }, { 3, 3, 4 }, { 4, 3, 4 }},
+			.rdpreamble = { ((7 << 1) + 1), ((6 << 1) + 0), ((6 << 1) + 1), ((6 << 1) + 0) }
 		},
 		{
 			.name	    = "200Mhz\r\n",
@@ -1382,6 +1400,9 @@ static const struct mem_param *get_mem_param(unsigned min_cycle_time)
 			.dch_tref4k = DTH_TREF_200MHZ_4K,
 			.dch_tref8k = DTH_TREF_200MHZ_8K,
 			.dtl_twr    = 3,
+			.dtl_twtr   = 2,
+			.dtl_trwt   = { { 0, 2, 3 }, { 3, 3, 4 }, { 3, 3, 4 }},
+			.rdpreamble = { ((7 << 1) + 0), ((5 << 1) + 0), ((5 << 1) + 1), ((5 << 1) + 1) }
 		},
 		{
 			.cycle_time = 0x00,
@@ -1423,8 +1444,8 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 		[NBCAP_MEMCLK_100MHZ] = 0xa0, /* 10ns */
 	};
 
-
 	value = pci_read_config32(ctrl->f3, NORTHBRIDGE_CAP);
+
 	min_cycle_time = min_cycle_times[(value >> NBCAP_MEMCLK_SHIFT) & NBCAP_MEMCLK_MASK];
 	bios_cycle_time = min_cycle_times[
 		read_option(CMOS_VSTART_max_mem_clock, CMOS_VLEN_max_mem_clock, 0)];
@@ -1877,75 +1898,47 @@ static int count_dimms(const struct mem_controller *ctrl)
 static void set_Twtr(const struct mem_controller *ctrl, const struct mem_param *param)
 {
 	uint32_t dth;
-	unsigned clocks;
-	clocks = 1; /* AMD says hard code this */
+
 	dth = pci_read_config32(ctrl->f2, DRAM_TIMING_HIGH);
 	dth &= ~(DTH_TWTR_MASK << DTH_TWTR_SHIFT);
-	dth |= ((clocks - DTH_TWTR_BASE) << DTH_TWTR_SHIFT);
+	dth |= ((param->dtl_twtr - DTH_TWTR_BASE) << DTH_TWTR_SHIFT);
 	pci_write_config32(ctrl->f2, DRAM_TIMING_HIGH, dth);
 }
 
 static void set_Trwt(const struct mem_controller *ctrl, const struct mem_param *param)
 {
 	uint32_t dth, dtl;
-	unsigned divisor;
 	unsigned latency;
 	unsigned clocks;
+	int lat, mtype;
 
 	clocks = 0;
 	dtl = pci_read_config32(ctrl->f2, DRAM_TIMING_LOW);
 	latency = (dtl >> DTL_TCL_SHIFT) & DTL_TCL_MASK;
-	divisor = param->divisor;
 
 	if (is_opteron(ctrl)) {
-		if (latency == DTL_CL_2) {
-			if (divisor == ((6 << 0) + 0)) {
-				/* 166Mhz */
-				clocks = 3;
-			}
-			else if (divisor > ((6 << 0)+0)) {
-				/* 100Mhz && 133Mhz */
-				clocks = 2;
-			}
-		}
-		else if (latency == DTL_CL_2_5) {
-			clocks = 3;
-		}
-		else if (latency == DTL_CL_3) {
-			if (divisor == ((6 << 0)+0)) {
-				/* 166Mhz */
-				clocks = 4;
-			}
-			else if (divisor > ((6 << 0)+0)) {
-				/* 100Mhz && 133Mhz */
-				clocks = 3;
-			}
-		}
+		mtype = 0; /* dual channel */
+	} else if (is_registered(ctrl)) {
+		mtype = 1; /* registered 64bit interface */
+	} else {
+		mtype = 2; /* unbuffered 64bit interface */
 	}
-	else /* Athlon64 */ {
-		if (is_registered(ctrl)) {
-			if (latency == DTL_CL_2) {
-				clocks = 2;
-			}
-			else if (latency == DTL_CL_2_5) {
-				clocks = 3;
-			}
-			else if (latency == DTL_CL_3) {
-				clocks = 3;
-			}
-		}
-		else /* Unbuffered */{
-			if (latency == DTL_CL_2) {
-				clocks = 3;
-			}
-			else if (latency == DTL_CL_2_5) {
-				clocks = 4;
-			}
-			else if (latency == DTL_CL_3) {
-				clocks = 4;
-			}
-		}
+
+	switch (latency) {
+		case DTL_CL_2:
+			lat = 0;
+			break;
+		case DTL_CL_2_5:
+			lat = 1;
+			break;
+		case DTL_CL_3:
+			lat = 2;
+			break;
+		default:
+			die("Unknown LAT for Trwt");
 	}
+
+	clocks = param->dtl_trwt[lat][mtype];
 	if ((clocks < DTH_TRWT_MIN) || (clocks > DTH_TRWT_MAX)) {
 		die("Unknown Trwt\r\n");
 	}
@@ -1977,83 +1970,38 @@ static void set_Twcl(const struct mem_controller *ctrl, const struct mem_param *
 static void set_read_preamble(const struct mem_controller *ctrl, const struct mem_param *param)
 {
 	uint32_t dch;
-	unsigned divisor;
 	unsigned rdpreamble;
-	divisor = param->divisor;
+	int slots, i;
+
+	slots = 0;
+
+	for(i = 0; i < 4; i++) {
+		if (ctrl->channel0[i]) {
+			slots += 1;
+		}
+	}
+
+	/* map to index to param.rdpreamble array */
+	if (is_registered(ctrl)) {
+		i = 0;
+	} else if (slots < 3) {
+		i = 1;
+	} else if (slots == 3) {
+		i = 2;
+	} else if (slots == 4) {
+		i = 3;
+	} else {
+		die("Unknown rdpreamble for this nr of slots");
+	}
+
 	dch = pci_read_config32(ctrl->f2, DRAM_CONFIG_HIGH);
 	dch &= ~(DCH_RDPREAMBLE_MASK << DCH_RDPREAMBLE_SHIFT);
-	rdpreamble = 0;
-	if (is_registered(ctrl)) {
-		if (divisor == ((10 << 1)+0)) {
-			/* 100Mhz, 9ns */
-			rdpreamble = ((9 << 1)+ 0);
-		}
-		else if (divisor == ((7 << 1)+1)) {
-			/* 133Mhz, 8ns */
-			rdpreamble = ((8 << 1)+0);
-		}
-		else if (divisor == ((6 << 1)+0)) {
-			/* 166Mhz, 7.5ns */
-			rdpreamble = ((7 << 1)+1);
-		}
-		else if (divisor == ((5 << 1)+0)) {
-			/* 200Mhz,  7ns */
-			rdpreamble = ((7 << 1)+0);
-		}
-	}
-	else {
-		int slots;
-		int i;
-		slots = 0;
-		for(i = 0; i < 4; i++) {
-			if (ctrl->channel0[i]) {
-				slots += 1;
-			}
-		}
-		if (divisor == ((10 << 1)+0)) {
-			/* 100Mhz */
-			if (slots <= 2) {
-				/* 9ns */
-				rdpreamble = ((9 << 1)+0);
-			} else {
-				/* 14ns */
-				rdpreamble = ((14 << 1)+0);
-			}
-		}
-		else if (divisor == ((7 << 1)+1)) {
-			/* 133Mhz */
-			if (slots <= 2) {
-				/* 7ns */
-				rdpreamble = ((7 << 1)+0);
-			} else {
-				/* 11 ns */
-				rdpreamble = ((11 << 1)+0);
-			}
-		}
-		else if (divisor == ((6 << 1)+0)) {
-			/* 166Mhz */
-			if (slots <= 2) {
-				/* 6ns */
-				rdpreamble = ((7 << 1)+0);
-			} else {
-				/* 9ns */
-				rdpreamble = ((9 << 1)+0);
-			}
-		}
-		else if (divisor == ((5 << 1)+0)) {
-			/* 200Mhz */
-			if (slots <= 2) {
-				/* 5ns */
-				rdpreamble = ((5 << 1)+0);
-			} else {
-				/* 7ns */
-				rdpreamble = ((7 << 1)+0);
-			}
-		}
-	}
+	rdpreamble = param->rdpreamble[i];
+
 	if ((rdpreamble < DCH_RDPREAMBLE_MIN) || (rdpreamble > DCH_RDPREAMBLE_MAX)) {
 		die("Unknown rdpreamble");
 	}
+
 	dch |= (rdpreamble - DCH_RDPREAMBLE_BASE) << DCH_RDPREAMBLE_SHIFT;
 	pci_write_config32(ctrl->f2, DRAM_CONFIG_HIGH, dch);
 }

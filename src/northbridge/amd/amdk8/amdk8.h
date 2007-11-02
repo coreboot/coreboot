@@ -134,7 +134,9 @@
 #define	 DCL_D_DRV	   (1<<1)
 #define	 DCL_QFC_EN	   (1<<2)
 #define	 DCL_DisDqsHys	   (1<<3)
+#define	 DCL_Burst2Opt     (1<<5)
 #define	 DCL_DramInit	   (1<<8)
+#define	 DCL_DualDIMMen    (1<<9)
 #define	 DCL_DramEnable	   (1<<10)
 #define	 DCL_MemClrStatus  (1<<11)
 #define	 DCL_ESR	   (1<<12)
@@ -147,7 +149,8 @@
 #define	 DCL_DisInRcvrs    (1<<24)
 #define	 DCL_BypMax_SHIFT  25
 #define	 DCL_En2T          (1<<28)
-
+#define	 DCL_UpperCSMap    (1<<29)
+	
 #define DRAM_CONFIG_HIGH   0x94
 #define	 DCH_ASYNC_LAT_SHIFT  0
 #define	 DCH_ASYNC_LAT_MASK   0xf

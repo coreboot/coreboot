@@ -69,49 +69,6 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
 	}
 }
 
-static unsigned int generate_row(uint8_t node, uint8_t row, uint8_t maxnodes)
-{
-	/* Routing Table Node i 
-	 *
-	 * F0: 0x40, 0x44, 0x48, 0x4c, 0x50, 0x54, 0x58, 0x5c 
-	 *  i:	  0,	1,    2,    3,	  4,	5,    6,    7
-	 *
-	 * [ 0: 3] Request Route
-	 *     [0] Route to this node
-	 *     [1] Route to Link 0
-	 *     [2] Route to Link 1
-	 *     [3] Route to Link 2
-	 * [11: 8] Response Route
-	 *     [0] Route to this node
-	 *     [1] Route to Link 0
-	 *     [2] Route to Link 1
-	 *     [3] Route to Link 2
-	 * [19:16] Broadcast route
-	 *     [0] Route to this node
-	 *     [1] Route to Link 0
-	 *     [2] Route to Link 1
-	 *     [3] Route to Link 2
-	 */
-
-	uint32_t ret=0x00010101; /* default row entry */
-
-	static const unsigned int rows_2p[2][2] = {
-		{ 0x00050101, 0x00010404 },
-		{ 0x00010404, 0x00050101 }
-	};
-
-	if(maxnodes>2) {
-		print_debug("this mainboard is only designed for 2 cpus\r\n");
-		maxnodes=2;
-	}
-
-	if (!(node>=maxnodes || row>=maxnodes)) {
-		ret=rows_2p[node][row];
-	}
-
-	return ret;
-}
-
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
 	/* nothing to do */

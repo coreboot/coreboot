@@ -47,6 +47,26 @@ if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
 #object reset.o
 
+if USE_DCACHE_RAM
+
+if CONFIG_USE_INIT
+
+makerule ./auto.o
+        depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
+        action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -o auto.o" 
+end
+
+else    
+                
+makerule ./auto.inc
+        depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
+        action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -S -o $@"         
+        action "perl -e 's/.rodata/.rom.data/g' -pi $@"
+        action "perl -e 's/.text/.section .rom.text/g' -pi $@"
+end
+
+end
+else
 ##
 ## Romcc output
 ##
@@ -69,13 +89,27 @@ makerule ./auto.inc
 	action	"./romcc    -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
 end
 
+end
+
 ##
 ## Build our 16 bit and 32 bit linuxBIOS entry code
 ##
-mainboardinit cpu/x86/16bit/entry16.inc
+if USE_FALLBACK_IMAGE
+        mainboardinit cpu/x86/16bit/entry16.inc
+        ldscript /cpu/x86/16bit/entry16.lds
+end
+
 mainboardinit cpu/x86/32bit/entry32.inc
-ldscript /cpu/x86/16bit/entry16.lds
-ldscript /cpu/x86/32bit/entry32.lds
+
+if USE_DCACHE_RAM
+        if CONFIG_USE_INIT
+                ldscript /cpu/x86/32bit/entry32.lds
+        end
+
+        if CONFIG_USE_INIT
+                ldscript      /cpu/amd/car/cache_as_ram.lds
+        end
+end
 
 ##
 ## Build our reset vector (This is where linuxBIOS is entered)
@@ -88,8 +122,11 @@ else
 	ldscript /cpu/x86/32bit/reset32.lds 
 end
 
+if USE_DCACHE_RAM
+else
 ### Should this be in the northbridge code?
 mainboardinit arch/i386/lib/cpu_reset.inc
+end
 
 ##
 ## Include an id string (For safe flashing)
@@ -97,19 +134,43 @@ mainboardinit arch/i386/lib/cpu_reset.inc
 mainboardinit arch/i386/lib/id.inc
 ldscript /arch/i386/lib/id.lds
 
+if USE_DCACHE_RAM
+##
+## Setup Cache-As-Ram
+##
+mainboardinit cpu/amd/car/cache_as_ram.inc
+end
+
 ###
 ### This is the early phase of linuxBIOS startup 
 ### Things are delicate and we test to see if we should
 ### failover to another image.
 ###
 if USE_FALLBACK_IMAGE
-	ldscript /arch/i386/lib/failover.lds 
-	mainboardinit ./failover.inc
+if USE_DCACHE_RAM
+       ldscript /arch/i386/lib/failover.lds
+else
+       ldscript /arch/i386/lib/failover.lds
+        mainboardinit ./failover.inc
+end
 end
 
 ###
 ### O.k. We aren't just an intermediary anymore!
 ###
+
+##
+## Setup RAM
+##
+if USE_DCACHE_RAM
+
+if CONFIG_USE_INIT
+initobject auto.o
+else
+mainboardinit ./auto.inc
+end
+
+else
 
 ##
 ## Setup RAM
@@ -120,11 +181,11 @@ mainboardinit cpu/x86/sse/enable_sse.inc
 mainboardinit ./auto.inc
 mainboardinit cpu/x86/sse/disable_sse.inc
 mainboardinit cpu/x86/mmx/disable_mmx.inc
+end
 
 ##
 ## Include the secondary Configuration files 
 ##
-dir /pc80
 config chip.h
 
 chip northbridge/amd/amdk8/root_complex

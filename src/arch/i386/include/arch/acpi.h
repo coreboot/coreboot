@@ -26,11 +26,13 @@ typedef unsigned long long u64;
 #define RSDT_NAME             "RSDT"
 #define HPET_NAME             "HPET"
 #define MADT_NAME             "APIC"
+#define MCFG_NAME             "MCFG"
 #define SRAT_NAME             "SRAT"
 #define SLIT_NAME	      "SLIT"
 
 #define RSDT_TABLE            "RSDT    "
 #define HPET_TABLE            "AMD64   "
+#define MCFG_TABLE            "MCFG    "
 #define MADT_TABLE            "MADT    "
 #define SRAT_TABLE	      "SRAT    "
 #define SLIT_TABLE	      "SLIT    "
@@ -81,7 +83,7 @@ typedef struct acpi_table_header         /* ACPI common table header */
 /* RSDT */
 typedef struct acpi_rsdt {
 	struct acpi_table_header header;
-	u32 entry[6+ACPI_SSDTX_NUM+CONFIG_MAX_CPUS]; /* HPET, FADT, SRAT, SLIT, MADT(APIC), SSDT, SSDTX, and SSDT for CPU pstate*/
+	u32 entry[7+ACPI_SSDTX_NUM+CONFIG_MAX_CPUS]; /* MCONFIG, HPET, FADT, SRAT, SLIT, MADT(APIC), SSDT, SSDTX, and SSDT for CPU pstate*/
 } __attribute__ ((packed)) acpi_rsdt_t;
 
 /* XSDT */
@@ -99,6 +101,22 @@ typedef struct acpi_hpet {
 	u16 min_tick;
 	u8 attributes;
 } __attribute__ ((packed)) acpi_hpet_t;
+
+/* MCFG taken from include/linux/acpi.h */
+typedef struct acpi_mcfg {
+	struct acpi_table_header header;
+	u8 reserved[8];
+} __attribute__ ((packed)) acpi_mcfg_t;
+
+typedef struct acpi_mcfg_mmconfig {
+	u32 base_address;
+	u32 base_reserved;
+	u16 pci_segment_group_number;
+	u8 start_bus_number;
+	u8 end_bus_number;
+	u8 reserved[4];
+} __attribute__ ((packed)) acpi_mcfg_mmconfig_t;
+
 
 /* SRAT */
 typedef struct acpi_srat {
@@ -273,6 +291,7 @@ typedef struct acpi_facs {
 /* These are implemented by the target port */
 unsigned long write_acpi_tables(unsigned long addr);
 unsigned long acpi_fill_madt(unsigned long current);
+unsigned long acpi_fill_mcfg(unsigned long current);
 unsigned long acpi_fill_srat(unsigned long current); 
 void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt);
 
@@ -294,10 +313,13 @@ unsigned long acpi_create_madt_lapic_nmis(unsigned long current, u16 flags, u8 l
 
 int acpi_create_srat_lapic(acpi_srat_lapic_t *lapic, u8 node, u8 apic);
 int acpi_create_srat_mem(acpi_srat_mem_t *mem, u8 node, u32 basek,u32 sizek, u32 flags);
+int acpi_create_mcfg_mmconfig(acpi_mcfg_mmconfig_t *mmconfig, u32 base, u16 seg_nr, u8 start, u8 end);
 unsigned long acpi_create_srat_lapics(unsigned long current);
 void acpi_create_srat(acpi_srat_t *srat);
 
 void acpi_create_hpet(acpi_hpet_t *hpet);
+
+void acpi_create_mcfg(acpi_mcfg_t *mcfg);
 
 void acpi_create_facs(acpi_facs_t *facs);
 

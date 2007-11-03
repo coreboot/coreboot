@@ -65,6 +65,15 @@ void acpi_add_table(acpi_rsdt_t *rsdt, void *table)
 	printk_warning("ACPI: could not add ACPI table to RSDT. failed.\n");
 }
 
+int acpi_create_mcfg_mmconfig(acpi_mcfg_mmconfig_t *mmconfig, u32 base, u16 seg_nr, u8 start, u8 end) {
+	mmconfig->base_address = base;
+	mmconfig->base_reserved = 0;
+	mmconfig->pci_segment_group_number = seg_nr;
+	mmconfig->start_bus_number = start;
+	mmconfig->end_bus_number = end;
+	return (sizeof(acpi_mcfg_mmconfig_t));
+}
+
 
 int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic)
 {
@@ -144,6 +153,31 @@ void acpi_create_madt(acpi_madt_t *madt)
 	header->length= current - (unsigned long)madt;
 	
 	header->checksum	= acpi_checksum((void *)madt, header->length);
+}
+
+void acpi_create_mcfg(acpi_mcfg_t *mcfg)
+{
+
+	acpi_header_t *header=&(mcfg->header);
+	unsigned long current=(unsigned long)mcfg+sizeof(acpi_mcfg_t);
+	
+	memset((void *)mcfg, 0, sizeof(acpi_mcfg_t));
+	
+	/* fill out header fields */
+	memcpy(header->signature, MCFG_NAME, 4);
+	memcpy(header->oem_id, OEM_ID, 6);
+	memcpy(header->oem_table_id, MCFG_TABLE, 8);
+	memcpy(header->asl_compiler_id, ASLC, 4);
+	
+	header->length = sizeof(acpi_mcfg_t);
+	header->revision = 1;
+
+	current = acpi_fill_mcfg(current);
+	
+	/* recalculate length */
+	header->length= current - (unsigned long)mcfg;
+	
+	header->checksum	= acpi_checksum((void *)mcfg, header->length);
 }
 
 int acpi_create_srat_lapic(acpi_srat_lapic_t *lapic, u8 node, u8 apic)

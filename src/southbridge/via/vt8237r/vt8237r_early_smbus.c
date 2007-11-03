@@ -20,41 +20,21 @@
  */
 
 #include <device/pci_ids.h>
+#include <spd.h>
 #include "vt8237r.h"
 
-#define VT8237R_POWER_WELL		0x94
-#define VT8237R_SMBUS_IO_BASE_REG	0xd0
-#define VT8237R_SMBUS_HOST_CONF		0xd2
-
-#define SMBHSTSTAT	(VT8237R_SMBUS_IO_BASE + 0x0)
-#define SMBSLVSTAT	(VT8237R_SMBUS_IO_BASE + 0x1)
-#define SMBHSTCTL	(VT8237R_SMBUS_IO_BASE + 0x2)
-#define SMBHSTCMD	(VT8237R_SMBUS_IO_BASE + 0x3)
-#define SMBXMITADD	(VT8237R_SMBUS_IO_BASE + 0x4)
-#define SMBHSTDAT0	(VT8237R_SMBUS_IO_BASE + 0x5)
-
-#define HOST_RESET 		0xff
-/* 1 in the 0 bit of SMBHSTADD states to READ. */
-#define READ_CMD		0x01
-#define SMBUS_TIMEOUT		(100 * 1000 * 10)
-#define I2C_TRANS_CMD		0x40
-#define CLOCK_SLAVE_ADDRESS	0x69
-
-#if DEBUG_SMBUS == 1
-#define PRINT_DEBUG(x)		print_debug(x)
-#define PRINT_DEBUG_HEX16(x)	print_debug_hex16(x)
-#else
-#define PRINT_DEBUG(x)
-#define PRINT_DEBUG_HEX16(x)
-#endif
-
-#define SMBUS_DELAY() inb(0x80)
-
+/**
+ * Print an error, should it occur. If no error, just exit.
+ *
+ * @param host_status The data returned on the host status register after a
+ * transaction is processed.
+ * @param loops The number of times a transaction was attempted.
+ */
 static void smbus_print_error(u8 host_status, int loops)
 {
 	/* Check if there actually was an error. */
-	if (host_status == 0x00 || host_status == 0x40 ||
-	    host_status == 0x42)
+	if ((host_status == 0x00 || host_status == 0x40 ||
+	    host_status == 0x42) && (loops < SMBUS_TIMEOUT))
 		return;
 
 	if (loops >= SMBUS_TIMEOUT)
@@ -66,11 +46,14 @@ static void smbus_print_error(u8 host_status, int loops)
 	if (host_status & (1 << 2))
 		print_err("Device error\r\n");
 	if (host_status & (1 << 1))
-		print_err("Interrupt/SMI# was Successful Completion\r\n");
+		print_debug("Interrupt/SMI# Completed Successfully\r\n");
 	if (host_status & (1 << 0))
 		print_err("Host busy\r\n");
 }
 
+/**
+ * Wait for the smbus to become ready to process the next transaction
+ */
 static void smbus_wait_until_ready(void)
 {
 	int loops;
@@ -79,11 +62,14 @@ static void smbus_wait_until_ready(void)
 
 	loops = 0;
 	/* Yes, this is a mess, but it's the easiest way to do it. */
-	while ((inb(SMBHSTSTAT) & 1) == 1 && loops <= SMBUS_TIMEOUT)
+	while ((inb(SMBHSTSTAT) & 1) == 1 && loops < SMBUS_TIMEOUT)
 		++loops;
 	smbus_print_error(inb(SMBHSTSTAT), loops);
 }
 
+/**
+ * Reset and take ownership of the smbus
+ */
 static void smbus_reset(void)
 {
 	outb(HOST_RESET, SMBHSTSTAT);
@@ -95,9 +81,15 @@ static void smbus_reset(void)
 	PRINT_DEBUG("\r\n");
 }
 
-u8 smbus_read_byte(u32 dimm, u32 offset)
+/**
+ * Read a byte from the smbus
+ *
+ * @param dimm The address location of the dimm on the smbus
+ * @param offset The offset the data is located at
+ */
+u8 smbus_read_byte(u8 dimm, u8 offset)
 {
-	u32 val;
+	u8 val;
 
 	PRINT_DEBUG("DIMM ");
 	PRINT_DEBUG_HEX16(dimm);
@@ -131,10 +123,12 @@ u8 smbus_read_byte(u32 dimm, u32 offset)
 	/* Probably don't have to do this, but it can't hurt. */
 	smbus_reset();
 
-	/* Can I just "return inb(SMBHSTDAT0)"? */
 	return val;
 }
 
+/**
+ * Enable the smbus on vt8237r-based systems
+ */
 void enable_smbus(void)
 {
 	device_t dev;
@@ -165,4 +159,46 @@ void enable_smbus(void)
 
 	/* Reset the internal pointer. */
 	inb(SMBHSTCTL);
+}
+
+/**
+ * A fixup for some systems that need time for the smbus to "warm up". This is 
+ * needed on some vt823x based systems, where the smbus spurts out bad data for 
+ * a short time after power on. This has been seen on the Via Epia-series and 
+ * Jetway J7F2-series. It reads the ID byte from SMBus, looking for 
+ * known-good data from a slot/address. Exits on either good data or a timeout.
+ *
+ * This should probably go into some global file, but one would need to be 
+ * created just for it. If some other chip needs/wants it, we can worry about it
+ * then.
+ *
+ * @param ctrl The memory controller and smbus addresses
+ */
+void smbus_fixup(const struct mem_controller *ctrl)
+{
+	int i, ram_slots, current_slot = 0;
+	u8 result = 0;
+
+	ram_slots = ARRAY_SIZE(ctrl->channel0);
+	if (!ram_slots) {
+		print_err("smbus_fixup thinks there are no ram slots!\r\n");
+		return;
+	}
+	
+	PRINT_DEBUG("Waiting for smbus to warm up");
+		
+	/* Bad SPD data should be either 0 or 0xff, but YMMV. So we look for the
+	 * ID bytes of SDRAM, DDR, DDR2, and DDR3 (and anything in between).
+	 * vt8237r has only been seen on DDR and DDR2 based systems, so far */
+	for(i = 0; (i < SMBUS_TIMEOUT && ((result < SPD_MEMORY_TYPE_SDRAM) || 
+			(result > SPD_MEMORY_TYPE_SDRAM_DDR3))); i++)
+	{
+		if (current_slot > ram_slots) current_slot = 0;
+		result = smbus_read_byte(ctrl->channel0[current_slot], 
+							SPD_MEMORY_TYPE);
+		current_slot++;
+		PRINT_DEBUG(".");
+	}
+	if (i >= SMBUS_TIMEOUT)	print_err("SMBus timed out while warming up\r\n");
+	else PRINT_DEBUG("Done\r\n");	
 }

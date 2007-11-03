@@ -105,6 +105,7 @@
 #define SPD_MEMORY_TYPE_SGRAM_DDR        6
 #define SPD_MEMORY_TYPE_SDRAM_DDR        7
 #define SPD_MEMORY_TYPE_SDRAM_DDR2       8
+#define SPD_MEMORY_TYPE_SDRAM_DDR3       0xb
 
 /* SPD_MODULE_VOLTAGE values. */
 #define SPD_VOLTAGE_TTL                  0 /* 5.0 Volt/TTL */

@@ -27,14 +27,6 @@
 #include "vt8237r.h"
 #include "chip.h"
 
-#define IDE_CS		0x40
-#define IDE_CONF_I	0x41
-#define IDE_CONF_II	0x42
-#define IDE_CONF_FIFO	0x43
-#define IDE_MISC_I	0x44
-#define IDE_MISC_II	0x45
-#define IDE_UDMA	0x50
-
 /**
  * No native mode. Interrupts from unconnected HDDs might occur if
  * IRQ14/15 is used for PCI. Therefore no native mode support.

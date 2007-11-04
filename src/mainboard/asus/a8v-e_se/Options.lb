@@ -95,6 +95,9 @@ uses SB_HT_CHAIN_UNITID_OFFSET_ONLY
 #bx_b005+
 uses SB_HT_CHAIN_ON_BUS0
 
+uses CONFIG_COMPRESSED_PAYLOAD_NRV2B
+uses CONFIG_COMPRESSED_PAYLOAD_LZMA
+
 ## ROM_SIZE is the size of boot ROM that this board will use.
 #512K bytes
 default ROM_SIZE=512 * 1024

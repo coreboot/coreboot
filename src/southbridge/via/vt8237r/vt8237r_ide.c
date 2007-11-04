@@ -34,7 +34,7 @@
 static void ide_init(struct device *dev)
 {
 	struct southbridge_via_vt8237r_config *sb =
-	(struct southbridge_via_vt8237r_config *) dev->chip_info;
+	    (struct southbridge_via_vt8237r_config *)dev->chip_info;
 
 	u8 enables;
 	u32 cablesel;
@@ -52,7 +52,7 @@ static void ide_init(struct device *dev)
 	/* Enable only compatibility mode. */
 	enables = pci_read_config8(dev, IDE_CONF_II);
 	enables &= ~0xc0;
-	pci_write_config8(dev,IDE_CONF_II, enables);
+	pci_write_config8(dev, IDE_CONF_II, enables);
 	enables = pci_read_config8(dev, IDE_CONF_II);
 	printk_debug("Enables in reg 0x42 read back as 0x%x\n", enables);
 
@@ -84,7 +84,7 @@ static void ide_init(struct device *dev)
 
 	/* Cable guy... */
 	cablesel = pci_read_config32(dev, IDE_UDMA);
-	cablesel &= ~((1 << 28) | (1 << 20) | (1 <<12) | (1 << 4));
+	cablesel &= ~((1 << 28) | (1 << 20) | (1 << 12) | (1 << 4));
 	cablesel |= (sb->ide0_80pin_cable << 28) |
 		    (sb->ide0_80pin_cable << 20) |
 		    (sb->ide1_80pin_cable << 12) |
@@ -92,17 +92,17 @@ static void ide_init(struct device *dev)
 	pci_write_config32(dev, IDE_UDMA, cablesel);
 }
 
-static struct device_operations ide_ops = {
-	.read_resources = pci_dev_read_resources,
-	.set_resources = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.init = ide_init,
-	.enable = 0,
-	.ops_pci = 0,
+static const struct device_operations ide_ops = {
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.init			= ide_init,
+	.enable			= 0,
+	.ops_pci		= 0,
 };
 
-static struct pci_driver northbridge_driver __pci_driver = {
-	.ops = &ide_ops,
-	.vendor = PCI_VENDOR_ID_VIA,
-	.device = PCI_DEVICE_ID_VIA_82C586_1,
+static const struct pci_driver northbridge_driver __pci_driver = {
+	.ops	= &ide_ops,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_82C586_1,
 };

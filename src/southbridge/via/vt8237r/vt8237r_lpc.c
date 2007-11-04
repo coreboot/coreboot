@@ -90,7 +90,7 @@ static void setup_ioapic(u32 ioapic_base)
 
 	/* All delivered to CPU0. */
 	ioapic_table[0].value_high = (lapicid()) << (56 - 32);
-	l = (unsigned long *) ioapic_base;
+	l = (unsigned long *)ioapic_base;
 
 	/* Set APIC to FSB message bus. */
 	l[0] = 0x3;
@@ -335,16 +335,16 @@ static void southbridge_init(struct device *dev)
 	init_keyboard(dev);
 }
 
-static struct device_operations vt8237r_lpc_ops = {
-	.read_resources = vt8237r_read_resources,
-	.set_resources = pci_dev_set_resources,
-	.enable_resources = vt8237r_enable_resources,
-	.init = &southbridge_init,
-	.scan_bus = scan_static_bus,
+static const struct device_operations vt8237r_lpc_ops = {
+	.read_resources		= vt8237r_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= vt8237r_enable_resources,
+	.init			= &southbridge_init,
+	.scan_bus		= scan_static_bus,
 };
 
-static struct pci_driver lpc_driver __pci_driver = {
-	.ops = &vt8237r_lpc_ops,
-	.vendor = PCI_VENDOR_ID_VIA,
-	.device = PCI_DEVICE_ID_VIA_VT8237R_LPC,
+static const struct pci_driver lpc_driver __pci_driver = {
+	.ops	= &vt8237r_lpc_ops,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_VT8237R_LPC,
 };

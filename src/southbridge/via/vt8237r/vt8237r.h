@@ -20,43 +20,43 @@
 #ifndef SOUTHBRIDGE_VIA_VT8237R_VT8237R_H
 #define SOUTHBRIDGE_VIA_VT8237R_VT8237R_H
 
-/* Static resources for the VT8237R southbridge. */
+/* Static resources for the VT8237R southbridge */
 
-#define VT8237R_APIC_ID		0x2
-#define VT8237R_ACPI_IO_BASE	0x500
-#define VT8237R_SMBUS_IO_BASE	0x400
+#define VT8237R_APIC_ID			0x2
+#define VT8237R_ACPI_IO_BASE		0x500
+#define VT8237R_SMBUS_IO_BASE		0x400
 /* 0x0 disabled, 0x2 reserved, 0xf = IRQ15 */
-#define VT8237R_ACPI_IRQ	0x9
-#define VT8237R_HPET_ADDR	0xfed00000ULL
-#define VT8237R_APIC_BASE	0xfec00000ULL
+#define VT8237R_ACPI_IRQ		0x9
+#define VT8237R_HPET_ADDR		0xfed00000ULL
+#define VT8237R_APIC_BASE		0xfec00000ULL
 
-/* IDE specific defines */
-#define IDE_CS		0x40
-#define IDE_CONF_I	0x41
-#define IDE_CONF_II	0x42
-#define IDE_CONF_FIFO	0x43
-#define IDE_MISC_I	0x44
-#define IDE_MISC_II	0x45
-#define IDE_UDMA	0x50
+/* IDE */
+#define IDE_CS				0x40
+#define IDE_CONF_I			0x41
+#define IDE_CONF_II			0x42
+#define IDE_CONF_FIFO			0x43
+#define IDE_MISC_I			0x44
+#define IDE_MISC_II			0x45
+#define IDE_UDMA			0x50
 
-/* SMBus specific */
+/* SMBus */
 #define VT8237R_POWER_WELL		0x94
 #define VT8237R_SMBUS_IO_BASE_REG	0xd0
 #define VT8237R_SMBUS_HOST_CONF		0xd2
 
-#define SMBHSTSTAT	(VT8237R_SMBUS_IO_BASE + 0x0)
-#define SMBSLVSTAT	(VT8237R_SMBUS_IO_BASE + 0x1)
-#define SMBHSTCTL	(VT8237R_SMBUS_IO_BASE + 0x2)
-#define SMBHSTCMD	(VT8237R_SMBUS_IO_BASE + 0x3)
-#define SMBXMITADD	(VT8237R_SMBUS_IO_BASE + 0x4)
-#define SMBHSTDAT0	(VT8237R_SMBUS_IO_BASE + 0x5)
+#define SMBHSTSTAT			(VT8237R_SMBUS_IO_BASE + 0x0)
+#define SMBSLVSTAT			(VT8237R_SMBUS_IO_BASE + 0x1)
+#define SMBHSTCTL			(VT8237R_SMBUS_IO_BASE + 0x2)
+#define SMBHSTCMD			(VT8237R_SMBUS_IO_BASE + 0x3)
+#define SMBXMITADD			(VT8237R_SMBUS_IO_BASE + 0x4)
+#define SMBHSTDAT0			(VT8237R_SMBUS_IO_BASE + 0x5)
 
-#define HOST_RESET 		0xff
+#define HOST_RESET 			0xff
 /* 1 in the 0 bit of SMBHSTADD states to READ. */
-#define READ_CMD		0x01
-#define SMBUS_TIMEOUT		(100 * 1000 * 10)
-#define I2C_TRANS_CMD		0x40
-#define CLOCK_SLAVE_ADDRESS	0x69
+#define READ_CMD			0x01
+#define SMBUS_TIMEOUT			(100 * 1000 * 10)
+#define I2C_TRANS_CMD			0x40
+#define CLOCK_SLAVE_ADDRESS		0x69
 
 #if DEBUG_SMBUS == 1
 #define PRINT_DEBUG(x)		print_debug(x)

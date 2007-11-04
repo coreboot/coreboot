@@ -42,17 +42,17 @@ static void sata_init(struct device *dev)
 	pci_write_config8(dev, SATA_MISC_CTRL, reg);
 }
 
-static struct device_operations sata_ops = {
-	.read_resources = pci_dev_read_resources,
-	.set_resources = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.init = sata_init,
-	.enable = 0,
-	.ops_pci = 0,
+static const struct device_operations sata_ops = {
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.init			= sata_init,
+	.enable			= 0,
+	.ops_pci		= 0,
 };
 
-static struct pci_driver northbridge_driver __pci_driver = {
-	.ops = &sata_ops,
-	.vendor = PCI_VENDOR_ID_VIA,
-	.device = PCI_DEVICE_ID_VIA_VT6420_SATA,
+static const struct pci_driver northbridge_driver __pci_driver = {
+	.ops	= &sata_ops,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_VT6420_SATA,
 };

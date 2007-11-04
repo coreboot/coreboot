@@ -65,8 +65,7 @@ void dump_south(device_t dev)
 	for (i = 0; i < 256; i += 16) {
 		printk_debug("%02x: ", i);
 		for (j = 0; j < 16; j++) {
-			printk_debug("%02x ",
-				     pci_read_config8(dev, i + j));
+			printk_debug("%02x ", pci_read_config8(dev, i + j));
 		}
 		printk_debug("\n");
 	}
@@ -75,7 +74,7 @@ void dump_south(device_t dev)
 static void vt8237r_enable(struct device *dev)
 {
 	struct southbridge_via_vt8237r_config *sb =
-	(struct southbridge_via_vt8237r_config *) dev->chip_info;
+	    (struct southbridge_via_vt8237r_config *)dev->chip_info;
 
 	pci_write_config8(dev, 0x50, sb->fn_ctrl_lo);
 	pci_write_config8(dev, 0x51, sb->fn_ctrl_hi);

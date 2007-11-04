@@ -52,6 +52,7 @@ struct southbridge_via_vt8237r_config {
 
 	int ide0_enable:1;
 	int ide1_enable:1;
+
 	/* 1 = 80-pin cable */
 	int ide0_80pin_cable:1;
 	int ide1_80pin_cable:1;

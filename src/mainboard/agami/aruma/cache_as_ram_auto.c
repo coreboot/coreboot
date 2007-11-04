@@ -1,4 +1,5 @@
 #define ASSEMBLY 1
+#define ASM_CONSOLE_LOGLEVEL 3
 #define __ROMCC__
 
 #define RAMINIT_SYSINFO 0

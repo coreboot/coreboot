@@ -14,10 +14,16 @@
 #include "bus.h"
 #include "ioapic.h"
 
+unsigned long acpi_fill_mcfg(unsigned long current)
+{
+	/* Just a dummy */
+	return current;
+}
+
 unsigned long acpi_fill_srat(unsigned long current)
 {
 	// Not implemented
-	return 0;
+	return current;
 }
 
 unsigned long acpi_fill_madt(unsigned long current)

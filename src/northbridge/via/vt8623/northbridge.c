@@ -20,6 +20,7 @@
  * slower than normal, ethernet drops packets).
  * Apparently these registers govern some sort of bus master behavior.
  */
+#if 0
 static void dump_dev(device_t dev)
 {
 	int i,j;
@@ -32,6 +33,8 @@ static void dump_dev(device_t dev)
 		printk_debug("\n");
 	}
 }
+#endif
+
 static void northbridge_init(device_t dev) 
 {
 	device_t fb_dev;

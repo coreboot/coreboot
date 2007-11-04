@@ -65,6 +65,11 @@ extern unsigned sbdn;
 extern unsigned hcdn[];
 extern unsigned sbdnx[7];	// for all 8131
 
+unsigned long acpi_fill_mcfg(unsigned long current)
+{
+	/* Just a dummy */
+	return current;
+}
 
 unsigned long acpi_fill_madt(unsigned long current)
 {

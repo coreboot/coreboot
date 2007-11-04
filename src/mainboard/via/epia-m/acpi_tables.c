@@ -13,14 +13,23 @@
 
 extern unsigned char AmlCode[];
 
+unsigned long acpi_fill_mcfg(unsigned long current)
+{
+	/* Nothing to do */
+	return current;
+}
+
+
 unsigned long acpi_fill_madt(unsigned long current)
 {
 	/* Nothing to do */
+	return current;
 }
 
 unsigned long acpi_fill_srat(unsigned long current)
 {
 	/* No NUMA, no SRAT */
+	return current;
 }
 
 unsigned long write_acpi_tables(unsigned long start)

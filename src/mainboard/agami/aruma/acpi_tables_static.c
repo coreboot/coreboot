@@ -14,6 +14,13 @@
 
 extern unsigned char AmlCode[];
 
+unsigned long acpi_fill_mcfg(unsigned long current)
+{
+	/* Just a dummy */
+	return current;
+}
+
+
 #define IO_APIC_ADDR	0xfec00000UL
 
 unsigned long acpi_fill_madt(unsigned long current)

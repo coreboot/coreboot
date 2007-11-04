@@ -26,7 +26,7 @@ void full_reset(void)
 {
 	device_t dev;
 	/* Enable power on after power fail... */
-	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82801ER_ISA), 0);
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82801ER_LPC), 0);
 	if (dev != PCI_DEV_INVALID) {
 		unsigned byte;
 		byte = pci_read_config8(dev, 0xa4);

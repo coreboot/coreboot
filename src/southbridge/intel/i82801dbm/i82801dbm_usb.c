@@ -35,21 +35,15 @@ static struct device_operations usb_ops  = {
 static const struct pci_driver usb_driver_1 __pci_driver = {
 	.ops    = &usb_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = PCI_DEVICE_ID_INTEL_82801ER_1D0,
+	.device = PCI_DEVICE_ID_INTEL_82801DBM_USB1,
 };
 static const struct pci_driver usb_driver_2 __pci_driver = {
         .ops    = &usb_ops,
         .vendor = PCI_VENDOR_ID_INTEL,
-        .device = PCI_DEVICE_ID_INTEL_82801ER_1D1,
+	.device = PCI_DEVICE_ID_INTEL_82801DBM_USB2,
 };
 static const struct pci_driver usb_driver_3 __pci_driver = {
         .ops    = &usb_ops,
         .vendor = PCI_VENDOR_ID_INTEL,
-        .device = PCI_DEVICE_ID_INTEL_82801ER_1D2,
+	.device = PCI_DEVICE_ID_INTEL_82801DBM_USB3,
 };
-static const struct pci_driver usb_driver_4 __pci_driver = {
-        .ops    = &usb_ops,
-        .vendor = PCI_VENDOR_ID_INTEL,
-        .device = PCI_DEVICE_ID_INTEL_82801ER_1D3,
-};
-

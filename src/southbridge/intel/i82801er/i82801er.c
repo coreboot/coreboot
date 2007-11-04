@@ -22,11 +22,11 @@ void i82801er_enable(device_t dev)
 		return;
 	}
 	if ((lpc_dev->vendor != PCI_VENDOR_ID_INTEL) ||
-		(lpc_dev->device != PCI_DEVICE_ID_INTEL_82801ER_ISA)) {
+		(lpc_dev->device != PCI_DEVICE_ID_INTEL_82801ER_LPC)) {
 		uint32_t id;
 		id = pci_read_config32(lpc_dev, PCI_VENDOR_ID);
 		if (id != (PCI_VENDOR_ID_INTEL | 
-				(PCI_DEVICE_ID_INTEL_82801ER_ISA << 16))) {
+				(PCI_DEVICE_ID_INTEL_82801ER_LPC << 16))) {
 			return;
 		}
 	}

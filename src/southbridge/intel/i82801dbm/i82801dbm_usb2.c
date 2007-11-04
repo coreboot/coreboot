@@ -36,5 +36,5 @@ static struct device_operations usb2_ops  = {
 static const struct pci_driver usb2_driver __pci_driver = {
 	.ops    = &usb2_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = PCI_DEVICE_ID_INTEL_82801ER_1D7,
+	.device = PCI_DEVICE_ID_INTEL_82801DBM_EHCI,
 };

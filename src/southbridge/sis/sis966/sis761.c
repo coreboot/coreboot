@@ -77,8 +77,6 @@ static inline msr_t rdmsr(unsigned index)
 
 static void sis761_read_resources(device_t dev)
 {
-	struct resource *resource;
-	unsigned char iommu;
 	/* Read the generic PCI resources */
 	printk_debug("sis761_read_resources\n");
 	pci_dev_read_resources(dev);
@@ -91,56 +89,13 @@ static void sis761_read_resources(device_t dev)
 
 	return;
 
-	iommu = 1;
-	get_option(&iommu, "iommu");
-
-	if (iommu) {
-		/* Add a Gart apeture resource */
-		resource = new_resource(dev, 0x94);
-		resource->size = iommu?AGP_APERTURE_SIZE:1;
-		resource->align = log2(resource->size);
-		resource->gran  = log2(resource->size);
-		resource->limit = 0xffffffff; /* 4G */
-		resource->flags = IORESOURCE_MEM;
-	}
 }
 
 static void set_agp_aperture(device_t dev)
 {
-	struct resource *resource;
 
 	return;
 
-	resource = probe_resource(dev, 0x94);
-	if (resource) {
-		device_t pdev;
-		uint32_t gart_base, gart_acr;
-
-		/* Remember this resource has been stored */
-		resource->flags |= IORESOURCE_STORED;
-
-		/* Find the size of the GART aperture */
-		gart_acr = (0<<6)|(0<<5)|(0<<4)|((resource->gran - 25) << 1)|(0<<0);
-
-		/* Get the base address */
-		gart_base = ((resource->base) >> 25) & 0x00007fff;
-
-		/* Update the other northbriges */
-		pdev = 0;
-		while((pdev = dev_find_device(PCI_VENDOR_ID_AMD, 0x1103, pdev))) {
-			/* Store the GART size but don't enable it */
-			pci_write_config32(pdev, 0x90, gart_acr);
-
-			/* Store the GART base address */
-			pci_write_config32(pdev, 0x94, gart_base);
-
-			/* Don't set the GART Table base address */
-			pci_write_config32(pdev, 0x98, 0);
-
-			/* Report the resource has been stored... */
-			report_resource_stored(pdev, resource, " <gart>");
-		}
-	}
 }
 
 static void sis761_set_resources(device_t dev)
@@ -156,9 +111,7 @@ static void sis761_set_resources(device_t dev)
 
 static void sis761_init(struct device *dev)
 {
-	uint32_t cmd, cmd_ref;
 	int needs_reset;
-	struct device *f0_dev, *f2_dev;
 	msr_t	msr;
 
 

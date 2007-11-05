@@ -23,14 +23,12 @@ static unsigned get_sbdn(unsigned bus)
 {
 	device_t dev;
 
-	/* Find the device.
-	 */
+	/* Find the device. */
 	dev = pci_locate_device_on_bus(
-		PCI_ID(PCI_VENDOR_ID_NVIDIA, PCI_DEVICE_ID_SIS_SIS966_HT),
+		PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS966_HT),
 		bus);
 
 	return (dev>>15) & 0x1f;
-
 }
 
 static void hard_reset(void)
@@ -41,6 +39,7 @@ static void hard_reset(void)
 	outb(0x0a, 0x0cf9);
 	outb(0x0e, 0x0cf9);
 }
+
 static void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn)
 {
 /* default value for sis966 is good */

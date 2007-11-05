@@ -29,6 +29,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <arch/io.h>
+#include <delay.h>
 #include "sis966.h"
 
 uint8_t	SiS_SiS7502_init[7][3]={
@@ -236,13 +237,8 @@ static void codec_init(uint8_t *base, int addr)
 
 static void codecs_init(uint8_t *base, uint32_t codec_mask)
 {
-	int i;
 	codec_init(base, 0);
 	return;
-	for(i=2; i>=0; i--) {
-		if( codec_mask & (1<<i) )
-			codec_init(base, i);
-	}
 }
 
 static void aza_init(struct device *dev)

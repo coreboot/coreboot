@@ -93,9 +93,7 @@ static void readApcMacAddr(void)
 
 static void set_apc(struct device *dev)
 {
-    uint32_t tmp;
     uint16_t addr;
-    uint32_t idx;
     uint16_t i;
     uint8_t   bTmp;
 
@@ -139,7 +137,7 @@ static void set_apc(struct device *dev)
 #define LoopNum 200
 static  unsigned long ReadEEprom( struct device *dev,  uint32_t base,  uint32_t Reg)
 {
-    uint16_t 	data;
+    uint32_t 	data;
     uint32_t 	i;
     uint32_t 	ulValue;
 
@@ -165,7 +163,7 @@ static  unsigned long ReadEEprom( struct device *dev,  uint32_t base,  uint32_t 
     if(i==LoopNum)   data=0x10000;
     else{
     	ulValue=readl(base+0x3c);
-    	data = (uint16_t)((ulValue & 0xffff0000) >> 16);
+    	data = ((ulValue & 0xffff0000) >> 16);
     }
 
     return data;
@@ -174,11 +172,9 @@ static  unsigned long ReadEEprom( struct device *dev,  uint32_t base,  uint32_t 
 static int phy_read(uint32_t  base, unsigned phy_addr, unsigned phy_reg)
 {
     uint32_t   ulValue;
-    unsigned  loop = 0x100;
     uint32_t   Read_Cmd;
     uint16_t   usData;
 
-    uint16_t   tmp;
 
 
 	   Read_Cmd = ((phy_reg << 11) |
@@ -188,16 +184,13 @@ static int phy_read(uint32_t  base, unsigned phy_addr, unsigned phy_reg)
 
            // SmiMgtInterface Reg is the SMI management interface register(offset 44h) of MAC
           writel( Read_Cmd,base+0x44);
-          //outl( Read_Cmd,tmp+0x44);
 
            // Polling SMI_REQ bit to be deasserted indicated read command completed
            do
            {
 	       // Wait 20 usec before checking status
-    	       //StallAndWait(20);
 		   mdelay(20);
     	       ulValue = readl(base+0x44);
-    	       //ulValue = inl(tmp+0x44);
            } while((ulValue & SMI_REQUEST) != 0);
             //printk_debug("base %x cmd %lx ret val %lx\n", tmp,Read_Cmd,ulValue);
            usData=(ulValue>>16);
@@ -213,7 +206,6 @@ static int phy_read(uint32_t  base, unsigned phy_addr, unsigned phy_reg)
 static int phy_detect(uint32_t base,uint16_t *PhyAddr) //BOOL PHY_Detect()
 {
     int	              bFoundPhy = FALSE;
-    uint32_t		Read_Cmd;
     uint16_t		usData;
     int		       PhyAddress = 0;
 
@@ -246,16 +238,10 @@ static int phy_detect(uint32_t base,uint16_t *PhyAddr) //BOOL PHY_Detect()
 
 static void nic_init(struct device *dev)
 {
-        uint32_t dword, old;
-        uint32_t mac_h, mac_l;
-        int eeprom_valid = 0;
         int val;
         uint16_t  PhyAddr;
-        struct southbridge_sis_sis966_config *conf;
-        static uint32_t nic_index = 0;
         uint32_t base;
         struct resource *res;
-        uint32_t reg;
 
 
         print_debug("NIC_INIT:---------->\n");
@@ -353,67 +339,6 @@ static void nic_init(struct device *dev)
 print_debug("NIC_INIT:<----------\n");
 return;
 
-#define RegStationMgtInf	0x44
-#define PHY_RGMII	0x10000000
-
-	writel(PHY_RGMII, base + RegStationMgtInf);
-	conf = dev->chip_info;
-
-	if(conf->mac_eeprom_smbus != 0) {
-//	read MAC address from EEPROM at first
-
-		struct device *dev_eeprom;
-		dev_eeprom = dev_find_slot_on_smbus(conf->mac_eeprom_smbus, conf->mac_eeprom_addr);
-
-		if(dev_eeprom) {
-		//	if that is valid we will use that
-			unsigned char dat[6];
-			int status;
-			int i;
-			for(i=0;i<6;i++) {
-				status = smbus_read_byte(dev_eeprom, i);
-				if(status < 0) break;
-				dat[i] = status & 0xff;
-			}
-			if(status >= 0) {
-				mac_l = 0;
-				for(i=3;i>=0;i--) {
-					mac_l <<= 8;
-					mac_l += dat[i];
-				}
-				if(mac_l != 0xffffffff) {
-					mac_l += nic_index;
-					mac_h = 0;
-					for(i=5;i>=4;i--) {
-						mac_h <<= 8;
-						mac_h += dat[i];
-					}
-					eeprom_valid = 1;
-				}
-			}
-		}
-	}
-
-// if that is invalid we will read that from romstrap
-	if(!eeprom_valid) {
-		unsigned long mac_pos;
-		mac_pos = 0xffffffd0; // refer to romstrap.inc and romstrap.lds
-		mac_l = readl(mac_pos) + nic_index; // overflow?
-		mac_h = readl(mac_pos + 4);
-
-	}
-
-// set that into NIC MMIO
-#define NvRegMacAddrA	0xA8
-#define NvRegMacAddrB	0xAC
-	writel(mac_l, base + NvRegMacAddrA);
-	writel(mac_h, base + NvRegMacAddrB);
-
-	nic_index++;
-
-#if CONFIG_PCI_ROM_RUN == 1
-	pci_dev_init(dev);// it will init option rom
-#endif
 
 }
 
@@ -436,6 +361,7 @@ static struct device_operations nic_ops  = {
 //	.enable		= sis966_enable,
 	.ops_pci	= &lops_pci,
 };
+
 static const struct pci_driver nic_driver __pci_driver = {
 	.ops	= &nic_ops,
 	.vendor	= PCI_VENDOR_ID_SIS,

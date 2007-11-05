@@ -72,7 +72,6 @@ static void usb2_init(struct device *dev)
 {
         uint8_t *base;
         struct resource *res;
-        uint32_t temp32;
 
         print_debug("USB 2.0 INIT:---------->\n");
 

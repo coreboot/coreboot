@@ -23,7 +23,7 @@
 
 #define SMBUS0_IO_BASE	0x8D0
 
-static const uint8_t SiS_LPC_init[33][3]={
+static const uint8_t SiS_LPC_init[34][3]={
 {0x04, 0xF8, 0x07},					//Reg 0x04
 {0x45, 0x00, 0x00},					//Reg 0x45			//Enable Rom Flash
 {0x46, 0x00, 0x3D},					//Reg 0x46
@@ -444,7 +444,6 @@ void sis_init_stage2(void)
   	device_t dev;
   	msr_t	msr;
 	int	i;
-	uint32_t j;
 	uint8_t temp8;
 	uint16_t temp16;
 

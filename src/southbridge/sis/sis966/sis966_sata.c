@@ -111,13 +111,9 @@ uint8_t	SiS_SiS1183_init[68][3]={
 
 static void sata_init(struct device *dev)
 {
-	uint32_t dword;
 	struct southbridge_sis_sis966_config *conf;
 
 
-struct resource *res;
-uint16_t base;
-uint8_t temp8;
 
 	conf = dev->chip_info;
         print_debug("SATA_INIT:---------->\n");

@@ -129,13 +129,13 @@ void *smp_write_config_table(void *v)
 	for(j=7; j>=2; j--) {
 		if(!bus_mcp55[j]) continue;
 	        for(i=0;i<4;i++) {
-        	        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_mcp55[j], (0x00<<2)|i, apicid_mcp55, 0x10 + (2+j+i+4-sbdn%4)%4);
+        	        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_mcp55[j], (0x00<<2)|i, apicid_mcp55, 0x10 + (1+j+i)%4);
         	}
 	}
 
 	for(j=0; j<2; j++) 
 	        for(i=0;i<4;i++) {
-        	        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_mcp55[1], ((0x06+j)<<2)|i, apicid_mcp55, 0x10 + (2+i+j)%4);
+        	        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_mcp55[1], ((0x07+j)<<2)|i, apicid_mcp55, 0x10 + (3+i+j)%4);
 	        }
 
 /*Local Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#*/

@@ -22,11 +22,11 @@ void esb6300_enable(device_t dev)
 		return;
 	}
 	if ((lpc_dev->vendor != PCI_VENDOR_ID_INTEL) ||
-		(lpc_dev->device != PCI_DEVICE_ID_INTEL_6300ESB_ISA)) {
+		(lpc_dev->device != PCI_DEVICE_ID_INTEL_6300ESB_LPC)) {
 		uint32_t id;
 		id = pci_read_config32(lpc_dev, PCI_VENDOR_ID);
 		if (id != (PCI_VENDOR_ID_INTEL | 
-				(PCI_DEVICE_ID_INTEL_6300ESB_ISA << 16))) {
+				(PCI_DEVICE_ID_INTEL_6300ESB_LPC << 16))) {
 			return;
 		}
 	}

@@ -46,6 +46,6 @@ static struct device_operations pci_ops  = {
 static const struct pci_driver pci_driver __pci_driver = {
 	.ops    = &pci_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = PCI_DEVICE_ID_INTEL_6300ESB_BRIDGE1C,
+	.device = PCI_DEVICE_ID_INTEL_6300ESB_PCI_X,
 };
 

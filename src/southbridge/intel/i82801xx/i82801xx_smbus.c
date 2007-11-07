@@ -18,16 +18,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+/* TODO: Check datasheets if this will work for all ICH* southbridges. */
+
+#include <stdint.h>
 #include <smbus.h>
 #include <pci.h>
 #include <arch/io.h>
-#include "i82801_model_specific.h"
 #include "i82801xx.h"
 #include "i82801_smbus.h"
 
-static int smbus_read_byte(struct bus *bus, device_t dev, uint8_t address)
+static int smbus_read_byte(struct bus *bus, device_t dev, u8 address)
 {
-	unsigned device;
+	unsigned device;	/* TODO: u16? */
 	struct resource *res;
 
 	device = dev->path.u.i2c.device;
@@ -36,11 +38,11 @@ static int smbus_read_byte(struct bus *bus, device_t dev, uint8_t address)
 	return do_smbus_read_byte(res->base, device, address);
 }
 
-static struct smbus_bus_operations lops_smbus_bus = {
+static const struct smbus_bus_operations lops_smbus_bus = {
 	.read_byte	= smbus_read_byte,
 };
 
-static struct device_operations smbus_ops = {
+static const struct device_operations smbus_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
@@ -50,44 +52,79 @@ static struct device_operations smbus_ops = {
 	.ops_smbus_bus		= &lops_smbus_bus,
 };
 
-/* 82801AA */
-static const struct pci_driver smbus_driver __pci_driver = {
+/* 82801AA (ICH) */
+static const struct pci_driver i82801aa_smb __pci_driver = {
 	.ops	= &smbus_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x2413,
+	.device	= PCI_DEVICE_ID_INTEL_82801AA_SMB,
 };
 
-/* 82801AB */
-static const struct pci_driver smbus_driver __pci_driver = {
+/* 82801AB (ICH0) */
+static const struct pci_driver i82801ab_smb __pci_driver = {
 	.ops	= &smbus_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x2423,
+	.device	= PCI_DEVICE_ID_INTEL_82801AB_SMB,
 };
 
-/* 82801BA */
-static const struct pci_driver smbus_driver __pci_driver = {
+/* 82801BA/BAM (ICH2/ICH2-M) */
+static const struct pci_driver i82801ba_smb __pci_driver = {
 	.ops	= &smbus_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x2443,
+	.device	= PCI_DEVICE_ID_INTEL_82801BA_SMB,
 };
 
-/* 82801CA */
-static const struct pci_driver smbus_driver __pci_driver = {
+/* 82801CA/CAM (ICH3-S/ICH3-M) */
+static const struct pci_driver i82801ca_smb __pci_driver = {
 	.ops	= &smbus_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x2483,
+	.device	= PCI_DEVICE_ID_INTEL_82801CA_SMB,
 };
 
-/* 82801DB and 82801DBM */
-static const struct pci_driver smbus_driver __pci_driver = {
+/* 82801DB/DBL/DBM (ICH4/ICH4-L/ICH4-M) */
+static const struct pci_driver i82801db_smb __pci_driver = {
 	.ops	= &smbus_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x24c3,
+	.device	= PCI_DEVICE_ID_INTEL_82801DB_SMB,
 };
 
-/* 82801EB and 82801ER */
-static const struct pci_driver smbus_driver __pci_driver = {
+/* 82801EB/ER (ICH5/ICH5R) */
+static const struct pci_driver i82801eb_smb __pci_driver = {
 	.ops	= &smbus_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x24d3,
+	.device	= PCI_DEVICE_ID_INTEL_82801EB_SMB,
+};
+
+/* 82801FB/FR/FW/FRW/FBM (ICH6/ICH6R/ICH6W/ICH6RW/ICH6-M) */
+static const struct pci_driver i82801fb_smb __pci_driver = {
+	.ops	= &smbus_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= PCI_DEVICE_ID_INTEL_82801FB_SMB,
+};
+
+/* 82801GB/GR/GDH/GBM/GHM/GU (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH/ICH7-U) */
+static const struct pci_driver i82801gb_smb __pci_driver = {
+	.ops	= &smbus_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= PCI_DEVICE_ID_INTEL_82801GB_SMB,
+};
+
+/* 82801HB/HR/HDH/HDO/HBM/HEM (ICH8/ICH8R/ICH8DH/ICH8DO/ICH8M/ICH8M-E) */
+static const struct pci_driver i82801hb_smb __pci_driver = {
+	.ops	= &smbus_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= PCI_DEVICE_ID_INTEL_82801HB_LAN,
+};
+
+/* 82801IB/IR/IH/IO (ICH9/ICH9R/ICH9DH/ICH9DO) */
+static const struct pci_driver i82801ib_smb __pci_driver = {
+	.ops	= &smbus_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= PCI_DEVICE_ID_INTEL_82801IB_SMB,
+};
+
+/* 82801E (C-ICH) */
+static const struct pci_driver i82801e_smb __pci_driver = {
+	.ops	= &smbus_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= PCI_DEVICE_ID_INTEL_82801E_SMB,
 };

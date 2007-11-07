@@ -23,7 +23,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <device/pci_ops.h>
 #include "i82801xx.h"
 
 /* TODO: Set dynamically, if the user only wants one SATA channel or none

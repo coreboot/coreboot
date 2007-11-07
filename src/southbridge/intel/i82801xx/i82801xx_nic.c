@@ -18,12 +18,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+/* This code should work for all ICH* southbridges with a NIC. */
+
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 
-static struct device_operations nic_ops = {
+static const struct device_operations nic_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
@@ -31,14 +33,68 @@ static struct device_operations nic_ops = {
 	.scan_bus		= 0,
 };
 
-static const struct pci_driver i82801dbm_nic __pci_driver = {
+/* Note: There's no NIC on 82801AA/AB (ICH/ICH0). */
+
+/* 82801BA/BAM/CA/CAM (ICH2/ICH2-M/ICH3-S/ICH3-M) */
+static const struct pci_driver i82801ba_nic __pci_driver = {
 	.ops	= &nic_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x103a,
+	.device	= PCI_DEVICE_ID_INTEL_82801BA_LAN,
 };
 
-static const struct pci_driver i82801ex_nic __pci_driver = {
+/* 82801DB/DBL/DBM (ICH4/ICH4-L/ICH4-M) */
+static const struct pci_driver i82801db_nic __pci_driver = {
 	.ops	= &nic_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1051,
+	.device	= PCI_DEVICE_ID_INTEL_82801DB_LAN,
 };
+
+/* 82801EB/ER (ICH5/ICH5R) */
+static const struct pci_driver i82801eb_nic __pci_driver = {
+	.ops	= &nic_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= PCI_DEVICE_ID_INTEL_82801EB_LAN,
+};
+
+/* 82801FB/FR/FW/FRW/FBM (ICH6/ICH6R/ICH6W/ICH6RW/ICH6-M) */
+static const struct pci_driver i82801fb_nic __pci_driver = {
+	.ops	= &nic_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= PCI_DEVICE_ID_INTEL_82801FB_LAN,
+};
+
+/* 82801GB/GR/GDH/GBM/GHM (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH) */
+/* Note: 82801GU (ICH7-U) doesn't have a NIC. */
+static const struct pci_driver i82801gb_nic __pci_driver = {
+	.ops	= &nic_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= PCI_DEVICE_ID_INTEL_82801GB_LAN,
+};
+
+/* 82801HB/HR/HDH/HDO/HBM/HEM (ICH8/ICH8R/ICH8DH/ICH8DO/ICH8M/ICH8M-E) */
+static const struct pci_driver i82801hb_nic __pci_driver = {
+	.ops	= &nic_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= PCI_DEVICE_ID_INTEL_82801HB_LAN,
+};
+
+/* 82801IB/IR/IH/IO (ICH9/ICH9R/ICH9DH/ICH9DO) */
+static const struct pci_driver i82801ib_nic __pci_driver = {
+	.ops	= &nic_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= PCI_DEVICE_ID_INTEL_82801IB_LAN,
+};
+
+/* 82801E (C-ICH) */
+static const struct pci_driver i82801e_nic1 __pci_driver = {
+	.ops	= &nic_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= PCI_DEVICE_ID_INTEL_82801E_LAN1,
+};
+
+static const struct pci_driver i82801e_nic2 __pci_driver = {
+	.ops	= &nic_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= PCI_DEVICE_ID_INTEL_82801E_LAN2,
+};
+

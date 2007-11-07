@@ -23,7 +23,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <device/pci_ops.h>
 #include "i82801xx.h"
 
 static void usb_ehci_init(struct device *dev)

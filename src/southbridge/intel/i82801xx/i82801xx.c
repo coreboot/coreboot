@@ -30,7 +30,7 @@ void i82801xx_enable(device_t dev)
 	unsigned int index = 0;
 	uint16_t cur_disable_mask, new_disable_mask;
 
-	/* All 82801 devices should be on bus 0. */
+	/* All 82801xx devices should be on bus 0. */
 	unsigned int devfn = PCI_DEVFN(0x1f, 0);	// LPC
 	device_t lpc_dev = dev_find_slot(0, devfn);	// 0
 	if (!lpc_dev)
@@ -50,10 +50,11 @@ void i82801xx_enable(device_t dev)
 	if (index == 0) {
 		index = 14;
 	}
+
 	cur_disable_mask = pci_read_config16(lpc_dev, FUNC_DIS);
-	new_disable_mask = cur_disable_mask & ~(1 << index);	// enable it
+	new_disable_mask = cur_disable_mask & ~(1 << index); /* Enable it. */
 	if (!dev->enabled) {
-		new_disable_mask |= (1 << index); // disable it, if desired
+		new_disable_mask |= (1 << index); /* Disable it, if desired. */
 	}
 	if (new_disable_mask != cur_disable_mask) {
 		pci_write_config16(lpc_dev, FUNC_DIS, new_disable_mask);
@@ -61,6 +62,6 @@ void i82801xx_enable(device_t dev)
 }
 
 struct chip_operations southbridge_intel_i82801xx_ops = {
-	CHIP_NAME("Intel i82801 Series Southbridge")
+	CHIP_NAME("Intel 82801 Series Southbridge")
 	.enable_dev = i82801xx_enable,
 };

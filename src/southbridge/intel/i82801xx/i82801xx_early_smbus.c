@@ -29,7 +29,7 @@ static void enable_smbus(void)
 	device_t dev;
 	uint16_t device_id;
 
-	/* Set the SMBus device staticly. */
+	/* Set the SMBus device statically. */
 	dev = PCI_DEV(0x0, 0x1f, 0x3);
 
 	/* Check to make sure we've got the right device. */

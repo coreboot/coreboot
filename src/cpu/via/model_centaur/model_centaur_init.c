@@ -48,6 +48,16 @@ static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_CENTAUR, 0x0698 },		// VIA C3 Nehemiah
 	{ X86_VENDOR_CENTAUR, 0x0699 },		// VIA C3 Nehemiah
 	{ X86_VENDOR_CENTAUR, 0x069A },		// VIA C3 Nehemiah
+	/* Some of these may not actually exist */
+	{ X86_VENDOR_CENTAUR, 0x06A0 },		// VIA C7 Esther
+	{ X86_VENDOR_CENTAUR, 0x06A8 },		// VIA C7 Esther
+	{ X86_VENDOR_CENTAUR, 0x06A9 },		// VIA C7 Esther
+	{ X86_VENDOR_CENTAUR, 0x06AA },		// VIA C7 Esther
+	{ X86_VENDOR_CENTAUR, 0x06AB },		// VIA C7 Esther
+	{ X86_VENDOR_CENTAUR, 0x06AC },		// VIA C7 Esther
+	{ X86_VENDOR_CENTAUR, 0x06AD },		// VIA C7 Esther
+	{ X86_VENDOR_CENTAUR, 0x06AE },		// VIA C7 Esther
+	{ X86_VENDOR_CENTAUR, 0x06AF },		// VIA C7 Esther
 	{ 0, 0 },
 };
 

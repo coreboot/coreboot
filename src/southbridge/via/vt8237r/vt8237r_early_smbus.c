@@ -21,6 +21,7 @@
 
 #include <device/pci_ids.h>
 #include <spd.h>
+#include <stdlib.h>
 #include "vt8237r.h"
 
 /**

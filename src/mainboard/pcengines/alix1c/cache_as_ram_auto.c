@@ -169,7 +169,8 @@ void cache_as_ram_main(void)
 	sdram_initialize(1, memctrl);
 
 	/* Check memory */
-	ram_check(0x00000000, 640 * 1024);
+	/* enable this only if you are having questions */
+	/* ram_check(0x00000000, 640 * 1024);*/
 
 	/* Switch from Cache as RAM to real RAM 
 	 * There are two ways we could think about this.  

@@ -29,9 +29,9 @@ static const unsigned char NumColAddr[] = {
 
 void banner(char *s)
 {
-	print_emerg("===========================");
-	print_emerg(s);
-	print_emerg("======================================\r\n");
+	print_debug("===========================");
+	print_debug(s);
+	print_debug("======================================\r\n");
 }
 void hcf(void)
 {

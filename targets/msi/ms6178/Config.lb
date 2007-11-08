@@ -24,6 +24,17 @@ mainboard msi/ms6178
 option ROM_SIZE = 512 * 1024
 # option ROM_SIZE = (512 * 1024) - (32 * 1024)
 
+option MAINBOARD_VENDOR = "MSI"
+option MAINBOARD_PART_NUMBER = "MS-6178"
+
+option IRQ_SLOT_COUNT = 4
+
+option DEFAULT_CONSOLE_LOGLEVEL = 9
+option MAXIMUM_CONSOLE_LOGLEVEL = 9
+
+option CONFIG_CONSOLE_VGA = 1
+option CONFIG_PCI_ROM_RUN = 1
+
 romimage "normal"
 	option USE_FALLBACK_IMAGE = 0
 	option LINUXBIOS_EXTRA_VERSION = ".0Normal"

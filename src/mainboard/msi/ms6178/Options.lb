@@ -67,15 +67,17 @@ default ROM_SIZE = 512 * 1024
 default HAVE_FALLBACK_BOOT = 1
 default HAVE_MP_TABLE = 0
 default HAVE_HARD_RESET = 0
-default HAVE_PIRQ_TABLE = 0	# FIXME
-default IRQ_SLOT_COUNT = 4	# FIXME
+default HAVE_PIRQ_TABLE = 1
+default IRQ_SLOT_COUNT = 0		# Override this in targets/*/Config.lb.
+default MAINBOARD_VENDOR = "N/A"	# Override this in targets/*/Config.lb.
+default MAINBOARD_PART_NUMBER = "N/A"	# Override this in targets/*/Config.lb.
+default ROM_IMAGE_SIZE = 64 * 1024
+default FALLBACK_SIZE = 128 * 1024
+default STACK_SIZE = 8 * 1024
+default HEAP_SIZE = 16 * 1024
 default HAVE_OPTION_TABLE = 0
 #default USE_OPTION_TABLE = !USE_FALLBACK_IMAGE
 default USE_OPTION_TABLE = 0
-default ROM_IMAGE_SIZE = 64 * 1024
-default FALLBACK_SIZE = 128 * 1024
-default STACK_SIZE = 0x2000
-default HEAP_SIZE = 0x4000
 default _RAMBASE = 0x00004000
 default CONFIG_ROM_PAYLOAD = 1
 default CROSS_COMPILE = ""
@@ -84,7 +86,7 @@ default HOSTCC = "gcc"
 default CONFIG_CONSOLE_SERIAL8250 = 1
 default TTYS0_BAUD = 115200
 default TTYS0_BASE = 0x3f8
-default TTYS0_LCS = 0x3
+default TTYS0_LCS = 0x3			# 8n1
 default DEFAULT_CONSOLE_LOGLEVEL = 9
 default MAXIMUM_CONSOLE_LOGLEVEL = 9
 default CONFIG_UDELAY_TSC = 1
@@ -93,4 +95,3 @@ default CONFIG_CONSOLE_VGA = 1
 default CONFIG_PCI_ROM_RUN = 1
 
 end
-

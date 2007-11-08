@@ -21,5 +21,4 @@
 extern struct chip_operations mainboard_msi_ms6178_ops;
 
 struct mainboard_msi_ms6178_config {
-	int nothing;
 };

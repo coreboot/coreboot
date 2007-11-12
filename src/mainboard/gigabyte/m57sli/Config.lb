@@ -282,17 +282,17 @@ chip northbridge/amd/amdk8/root_complex
 								# pin 13 is GP35
 								irq 0x27 = 0x20 
 								# pin 70 is not GP46
-								#0x28 = 0x0
+								#irq 0x28 = 0x0
 				# pin 6,3,128,127,126 is GP63,64,65,66,67
 								irq 0x29 = 0x81
 				# Enable FAN_CTL/FAN_TAC set to 5 (pin 21,23), enable FAN_CTL/FAN_TAC set to 4 (pin 20,22), pin 48 is PCIRST5#, pin91 is PCIRSTIN#, VIN7 is internal voltage divider for VCCH5V, pin 95 is ATXPG, VIN3 is internal voltage divider for VCC5V
-								#0x2c = 0x1f
+								#irq 0x2c = 0x1f
 				# Simple I/O base
 								io 0x62 = 0x800
 				# Serial Flash I/O (SPI only)
                 	                			#io 0x64 = 0x820 
 				# watch dog force timeout (parallel flash only)
-								#0x71 = 0x1
+								#irq 0x71 = 0x1
 								# No WDT interrupt
 								irq 0x72 = 0x0 
 					# GPIO pin set 1 disable internal pullup
@@ -300,23 +300,23 @@ chip northbridge/amd/amdk8/root_complex
 					# GPIO pin set 5 enable internal pullup
 								irq 0xbc = 0x01
 					# SIO pin set 1 alternate function
-								#0xc0 = 0x0
+								#irq 0xc0 = 0x0
 					# SIO pin set 2 mixed function
 								irq 0xc1 = 0x43
 					# SIO pin set 3 mixed function
 								irq 0xc2 = 0x20
 					# SIO pin set 4 alternate function
-								#0xc3 = 0x0
+								#irq 0xc3 = 0x0
 					# SIO pin set 1 input mode
-								#0xc8 = 0x0
+								#irq 0xc8 = 0x0
 					# SIO pin set 2 mixed input/output mode
 								irq 0xc9 = 0x0
 					# SIO pin set 4 input mode
-								#0xcb = 0x0
+								#irq 0xcb = 0x0
 					# Generate SMI# on EC IRQ
-								#0xf0 = 0x10
+								#irq 0xf0 = 0x10
 					# SMI# level trigger
-								#0xf1 = 0x40
+								#irq 0xf1 = 0x40
 					# HWMON alert beep pin location
 								irq 0xf6 = 0x28
 							end

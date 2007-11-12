@@ -28,6 +28,7 @@
 #define IT8716F_EC   0x04 /* Environment controller */
 #define IT8716F_KBCK 0x05 /* Keyboard */
 #define IT8716F_KBCM 0x06 /* Mouse */
+#define IT8716F_GPIO 0x07 /* GPIO */
 #define IT8716F_MIDI 0x08 /* MIDI port */
 #define IT8716F_GAME 0x09 /* GAME port */
 #define IT8716F_IR   0x0a /* Consumer IR */

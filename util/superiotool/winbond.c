@@ -414,7 +414,6 @@ void probe_idregs_winbond_helper(const char *init, uint16_t port)
 		if (verbose)
 			printf(NOTFOUND "id/oldid=0x%02x/0x%02x, rev=0x%02x\n",
 			       devid, olddevid, rev);
-		exit_conf_mode_winbond_fintek_ite_8787(port);
 		return;
 	}
 
@@ -450,4 +449,3 @@ void probe_idregs_winbond(uint16_t port)
 	probe_idregs_winbond_helper("(init=0x87,0x87) ", port);
 	exit_conf_mode_winbond_fintek_ite_8787(port);
 }
-

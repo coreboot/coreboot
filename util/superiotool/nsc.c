@@ -170,4 +170,3 @@ void probe_idregs_nsc(uint16_t port)
 
 	dump_superio("NSC", reg_table, port, id);
 }
-

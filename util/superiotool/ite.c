@@ -360,7 +360,6 @@ static void probe_idregs_ite_helper(const char *init, uint16_t port)
 	if (superio_unknown(reg_table, id)) {
 		if (verbose)
 			printf(NOTFOUND "id=0x%04x, rev=0x%01x\n", id, chipver);
-		exit_conf_mode_ite(port);
 		return;
 	}
 
@@ -381,4 +380,3 @@ void probe_idregs_ite(uint16_t port)
 	probe_idregs_ite_helper("(init=0x87,0x87) ", port);
 	exit_conf_mode_winbond_fintek_ite_8787(port);
 }
-

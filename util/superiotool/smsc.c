@@ -390,4 +390,3 @@ void probe_idregs_smsc(uint16_t port)
 	probe_idregs_smsc_helper(port, DEVICE_ID_REG, DEVICE_REV_REG);
 	probe_idregs_smsc_helper(port, DEVICE_ID_REG_OLD, DEVICE_REV_REG_OLD);
 }
-

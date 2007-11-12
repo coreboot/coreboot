@@ -95,4 +95,3 @@ void probe_idregs_ali(uint16_t port)
 
 	exit_conf_mode_ali(port);
 }
-

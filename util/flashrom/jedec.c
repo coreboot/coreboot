@@ -89,7 +89,11 @@ int probe_jedec(struct flashchip *flash)
 	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
 	myusec_delay(10);
 	*(volatile uint8_t *)(bios + 0x5555) = 0x90;
-	myusec_delay(10);
+	/* Older chips may need up to 100 us to respond. The ATMEL 29C020
+	 * needs 10 ms according to the data sheet, but it has been tested
+	 * to work reliably with 20 us. Allow a factor of 2 safety margin.
+	 */
+	myusec_delay(40);
 
 	/* Read product ID */
 	id1 = *(volatile uint8_t *)bios;
@@ -101,7 +105,7 @@ int probe_jedec(struct flashchip *flash)
 	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
 	myusec_delay(10);
 	*(volatile uint8_t *)(bios + 0x5555) = 0xF0;
-	myusec_delay(10);
+	myusec_delay(40);
 
 	printf_debug("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, id1, id2);
 	if (id1 == flash->manufacture_id && id2 == flash->model_id)

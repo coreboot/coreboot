@@ -1,0 +1,103 @@
+##
+## This file is part of the LinuxBIOS project.
+##
+## Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+
+uses HAVE_MP_TABLE
+uses HAVE_PIRQ_TABLE
+uses USE_FALLBACK_IMAGE
+uses HAVE_FALLBACK_BOOT
+uses HAVE_HARD_RESET
+uses HAVE_OPTION_TABLE
+uses USE_OPTION_TABLE
+uses CONFIG_ROM_PAYLOAD
+uses IRQ_SLOT_COUNT
+uses MAINBOARD
+uses MAINBOARD_VENDOR
+uses MAINBOARD_PART_NUMBER
+uses LINUXBIOS_EXTRA_VERSION
+uses ARCH
+uses FALLBACK_SIZE
+uses STACK_SIZE
+uses HEAP_SIZE
+uses ROM_SIZE
+uses ROM_SECTION_SIZE
+uses ROM_IMAGE_SIZE
+uses ROM_SECTION_SIZE
+uses ROM_SECTION_OFFSET
+uses CONFIG_ROM_PAYLOAD_START
+uses PAYLOAD_SIZE
+uses _ROMBASE
+uses _RAMBASE
+uses XIP_ROM_SIZE
+uses XIP_ROM_BASE
+uses CROSS_COMPILE
+uses CC
+uses HOSTCC
+uses OBJCOPY
+uses DEFAULT_CONSOLE_LOGLEVEL
+uses MAXIMUM_CONSOLE_LOGLEVEL
+uses CONFIG_CONSOLE_SERIAL8250
+uses TTYS0_BAUD
+uses TTYS0_BASE
+uses TTYS0_LCS
+uses CONFIG_COMPRESSED_PAYLOAD_LZMA
+uses CONFIG_UDELAY_TSC
+uses CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
+uses CONFIG_VIDEO_MB
+uses CONFIG_SPLASH_GRAPHIC
+uses CONFIG_GX1_VIDEO
+uses CONFIG_GX1_VIDEOMODE
+
+## Enable VGA with a splash screen (only 640x480 to run on most monitors).
+## We want to support up to 1024x768@16 so we need 2MiB video memory.
+## Note: Higher resolutions might need faster SDRAM speed.
+default CONFIG_GX1_VIDEO = 1
+default CONFIG_GX1_VIDEOMODE = 0
+default CONFIG_SPLASH_GRAPHIC = 1
+default CONFIG_VIDEO_MB = 2
+
+default ROM_SIZE = 256 * 1024
+default HAVE_PIRQ_TABLE = 1
+default IRQ_SLOT_COUNT = 0		# Override this in targets/*/Config.lb.
+default HAVE_FALLBACK_BOOT = 1
+default HAVE_MP_TABLE = 0
+default HAVE_HARD_RESET = 0
+default CONFIG_UDELAY_TSC = 1
+default CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2 = 1
+default HAVE_OPTION_TABLE = 0
+default MAINBOARD_VENDOR = "N/A"	# Override this in targets/*/Config.lb.
+default MAINBOARD_PART_NUMBER = "N/A"	# Override this in targets/*/Config.lb.
+default ROM_IMAGE_SIZE = 64 * 1024
+default FALLBACK_SIZE = 128 * 1024
+default STACK_SIZE = 8 * 1024
+default HEAP_SIZE = 16 * 1024
+default USE_OPTION_TABLE = 0
+default _RAMBASE = 0x00004000
+default CONFIG_ROM_PAYLOAD = 1
+default CROSS_COMPILE = ""
+default CC = "$(CROSS_COMPILE)gcc "
+default HOSTCC = "gcc"
+default CONFIG_CONSOLE_SERIAL8250 = 1
+default TTYS0_BAUD = 115200
+default TTYS0_BASE = 0x3f8
+default TTYS0_LCS = 0x3		# 8n1
+default DEFAULT_CONSOLE_LOGLEVEL = 9
+default MAXIMUM_CONSOLE_LOGLEVEL = 9
+
+end

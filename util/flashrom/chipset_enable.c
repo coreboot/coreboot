@@ -23,9 +23,15 @@
  * Contains the chipset specific flash enables.
  */
 
+#define _LARGEFILE64_SOURCE
+
 #include <stdio.h>
 #include <pci/pci.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include "flash.h"
 
 static int enable_flash_ali_m1533(struct pci_dev *dev, char *name)
@@ -215,6 +221,54 @@ static int enable_flash_cs5530(struct pci_dev *dev, char *name)
 	reg8 |= BIOS_ROM_POSITIVE_DECODE;
 	pci_write_byte(dev, DECODE_CONTROL_REG2, reg8);
 
+	return 0;
+}
+
+static int enable_flash_cs5536(struct pci_dev *dev, char *name)
+{
+	int fd_msr;
+	unsigned char buf[8];
+	unsigned int addr = 0x1808;
+
+	/* Geode systems write protect the BIOS via RCONFs (cache
+	 * settings similar to MTRRs). To unlock, change MSR 0x1808
+	 * top byte to 0x22. Reading and writing to msr, however
+	 * requires instrucitons rdmsr/wrmsr, which are ring0 privileged
+	 * instructions so only the kernel can do the read/write.  This
+	 * function, therefore, requires that the msr kernel module be
+	 * loaded to access these instructions from user space using
+	 * device /dev/cpu/0/msr.  This hard-coded driver location
+	 * could have potential problems on SMP machines since it
+	 * assumes cpu0, but it is safe on the geode which is not SMP.
+	 *
+	 * This is probably not portable beyond linux.
+	 */
+
+	fd_msr = open("/dev/cpu/0/msr", O_RDONLY);
+	if (!fd_msr) {
+		perror("open msr");
+		return -1;
+	}
+	lseek64(fd_msr, (off64_t) addr, SEEK_SET);
+	read(fd_msr, buf, 8);
+	close(fd_msr);
+	if (buf[7] != 0x22) {
+		printf("Enabling Geode MSR to write to flash.\n");
+		buf[7] = 0x22;
+		fd_msr = open("/dev/cpu/0/msr", O_WRONLY);
+		if (!fd_msr) {
+			perror("open msr");
+			return -1;
+		}
+		lseek64(fd_msr, (off64_t) addr, SEEK_SET);
+		if (write(fd_msr, buf, 8) < 0) {
+			perror("msr write");
+			printf
+			    ("Cannot write to MSR.  Make sure msr kernel is loaded: 'modprobe msr'\n");
+			return -1;
+		}
+		close(fd_msr);
+	}
 	return 0;
 }
 
@@ -460,6 +514,7 @@ static FLASH_ENABLE enables[] = {
 	{0x1078, 0x0100, "CS5530/CS5530A", enable_flash_cs5530},
 	{0x100b, 0x0510, "SC1100", enable_flash_sc1100},
 	{0x1039, 0x0008, "SIS5595", enable_flash_sis5595},
+	{0x1022, 0x2080, "AMD GEODE CS5536", enable_flash_cs5536},
 	{0x1022, 0x7468, "AMD8111", enable_flash_amd8111},
 	{0x10B9, 0x1533, "ALi M1533", enable_flash_ali_m1533},
 	/* this fallthrough looks broken. */

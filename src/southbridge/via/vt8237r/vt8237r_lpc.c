@@ -222,6 +222,13 @@ void setup_pm(device_t dev)
 
 	/* SCI is generated for RTC/pwrBtn/slpBtn. */
 	outw(0x001, VT8237R_ACPI_IO_BASE + 0x04);
+
+	/* FIXME: Intel needs more bit set for C2/C3. */
+
+	/* Allow SLP# signal to assert LDTSTOP_L.
+	 * Will work for C3 and for FID/VID change.
+	 */
+	outb(0x1, VT8237R_ACPI_IO_BASE + 0x11);
 }
 
 static void vt8237r_init(struct device *dev)

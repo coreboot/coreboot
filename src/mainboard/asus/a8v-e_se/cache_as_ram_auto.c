@@ -309,6 +309,10 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #endif
 	init_timer();
 	ht_setup_chains_x(sysinfo);	// it will init sblnk and sbbusn, nodes, sbdn
+
+	enable_fid_change();
+	init_fidvid_bsp(bsp_apicid);
+
 	needs_reset = optimize_link_coherent_ht();
 	needs_reset |= optimize_link_incoherent_ht(sysinfo);
 

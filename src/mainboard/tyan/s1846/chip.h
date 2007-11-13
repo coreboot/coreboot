@@ -19,6 +19,4 @@
  */
 
 extern struct chip_operations mainboard_tyan_s1846_ops;
-
-struct mainboard_tyan_s1846_config {
-};
+struct mainboard_tyan_s1846_config {};

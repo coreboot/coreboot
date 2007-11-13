@@ -22,23 +22,30 @@ target s1846
 mainboard tyan/s1846
 
 option ROM_SIZE = 256 * 1024
-option FALLBACK_SIZE = ROM_SIZE
 
-# romimage "normal"
-# 	option USE_FALLBACK_IMAGE = 0
-# 	option ROM_IMAGE_SIZE = 56 * 1024
-# 	option LINUXBIOS_EXTRA_VERSION = ".0Normal"
-# 	payload /tmp/filo.elf
-# 	# payload /tmp/memtest
-# end
+option MAINBOARD_VENDOR = "Tyan"
+option MAINBOARD_PART_NUMBER = "S1846"
+
+# TODO: Add/fix PIRQ table.
+option HAVE_PIRQ_TABLE = 0
+option IRQ_SLOT_COUNT = 0	# FIXME
+
+option DEFAULT_CONSOLE_LOGLEVEL = 9
+option MAXIMUM_CONSOLE_LOGLEVEL = 9
+
+option CONFIG_CONSOLE_VGA = 1
+option CONFIG_PCI_ROM_RUN = 1
+
+romimage "normal"
+	option USE_FALLBACK_IMAGE = 0
+	option LINUXBIOS_EXTRA_VERSION = ".0Normal"
+	payload /tmp/filo.elf
+end
 
 romimage "fallback"
 	option USE_FALLBACK_IMAGE = 1
-	option ROM_IMAGE_SIZE = 56 * 1024
 	option LINUXBIOS_EXTRA_VERSION = ".0Fallback"
 	payload /tmp/filo.elf
-	# payload /tmp/memtest
 end
 
-# buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
-buildrom ./linuxbios.rom ROM_SIZE "fallback"
+buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"

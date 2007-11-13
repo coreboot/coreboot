@@ -31,12 +31,12 @@
 #include "ram/ramtest.c"
 #include "southbridge/intel/i82371eb/i82371eb_early_smbus.c"
 #include "northbridge/intel/i440bx/raminit.h"
-#include "mainboard/bitworks/ims/debug.c"	// FIXME
+#include "mainboard/asus/mew-vm/debug.c"	/* FIXME */
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
-#include "superio/nsc/pc87309/pc87309_early_serial.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
+#include "superio/nsc/pc87309/pc87309_early_serial.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, PC87309_SP1)
 
@@ -49,64 +49,24 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 #include "northbridge/intel/i440bx/debug.c"
 #include "sdram/generic_sdram.c"
 
-static void enable_mainboard_devices(void)
-{
-	device_t dev = pci_locate_device(PCI_ID(0x8086, 0x7110), 0);
-
-	if (dev == PCI_DEV_INVALID) {
-		die("Southbridge not found!\n");
-	} else {
-		print_debug("Southbridge found!\n");
-	}
-}
-
 static void main(unsigned long bist)
 {
 	static const struct mem_controller memctrl[] = {
 		{
 			.d0 = PCI_DEV(0, 0, 0),
 			.channel0 = {0x50, 0x51, 0x52, 0x53},
-		 },
+		}
 	};
 
-	/* Skip this if there was a built in self test failure. */
-	if (bist == 0) {
+	if (bist == 0)
 		early_mtrr_init();
-	}
 
 	pc87309_enable_serial(SERIAL_DEV, TTYS0_BASE);
 	uart_init();
 	console_init();
-
-	/* Halt if there was a built in self test failure. */
 	report_bist_failure(bist);
-
-	enable_mainboard_devices();
-
 	enable_smbus();
-
-	dump_spd_registers(&memctrl[0]);
-
+	/* dump_spd_registers(&memctrl[0]); */
 	sdram_initialize(sizeof(memctrl) / sizeof(memctrl[0]), memctrl);
-
-	/* Check whether RAM is working.
-	 *
-	 * Do _not_ check the area from 640 KB - 768 KB, as that's not really
-	 * RAM, but rather reserved for the 'Video Buffer Area'.
-	 *
-	 * Other stuff in the range from 640 KB - 1 MB:
-	 *
-	 *  - 640 KB - 768 KB: Video Buffer Area
-	 *  - 768 KB - 896 KB: Expansion Area
-	 *  - 896 KB - 960 KB: Extended System BIOS Area
-	 *  - 960 KB - 1 MB:   Memory (BIOS Area) - System BIOS Area
-	 *
-	 * Trying to check these areas will usually fail, too. However, you
-	 * probably can set the PAM registers of the northbridge to map
-	 * those areas to RAM (read/write). In that case you can use the
-	 * range from 768 KB - 1 MB as normal RAM, and thus check it here.
-	 */
-	ram_check(0x00000000, 0x0009ffff);	/* 0 - 640 KB */
-	ram_check(0x000c0000, 0x00100000);	/* 768 KB - 1 MB */
-	// ram_check(0x00100000, 0x007c0000);   /* 1 MB - 64 MB */
+	/* ram_check(0, 640 * 1024); */
 }

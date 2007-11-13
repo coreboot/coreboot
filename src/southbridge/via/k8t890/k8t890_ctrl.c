@@ -23,6 +23,56 @@
 #include <device/pci_ids.h>
 #include <console/console.h>
 
+/**
+ * Setup the V-Link for VT8237R, 8X mode.
+ *
+ * For K8T890CF VIA recommends what is in VIA column, AW is award 8X:
+ *
+ *						 REG   DEF   AW  VIA-8X VIA-4X
+ *						 -----------------------------
+ * NB V-Link Manual Driving Control strobe	 0xb5  0x46  0x46  0x88  0x88
+ * NB V-Link Manual Driving Control - Data	 0xb6  0x46  0x46  0x88  0x88
+ * NB V-Link Receiving Strobe Delay		 0xb7  0x02  0x02  0x61  0x01
+ * NB V-Link Compensation Control bit4,0 (b5,b6) 0xb4  0x10  0x10  0x11  0x11
+ * SB V-Link Strobe Drive Control 		 0xb9  0x00  0xa5  0x98  0x98
+ * SB V-Link Data drive Control????		 0xba  0x00  0xbb  0x77  0x77
+ * SB V-Link Receive Strobe Delay????		 0xbb  0x04  0x11  0x11  0x11
+ * SB V-Link Compensation Control bit0 (use b9)	 0xb8  0x00  0x01  0x01  0x01
+ * V-Link CKG Control				 0xb0  0x05  0x05  0x06  0x03
+ * V-Link CKG Control				 0xb1  0x05  0x05  0x01  0x03
+ */
+static void ctrl_init(struct device *dev)
+{
+	u8 reg;
+	device_t devsb = dev_find_device(PCI_VENDOR_ID_VIA,
+					 PCI_DEVICE_ID_VIA_VT8237R_LPC, 0);
+
+	if (!devsb)
+		return;
+
+	pci_write_config8(dev, 0xb5, 0x88);
+	pci_write_config8(dev, 0xb6, 0x88);
+	pci_write_config8(dev, 0xb7, 0x61);
+
+	reg = pci_read_config8(dev, 0xb4);
+	reg |= 0x11;
+	pci_write_config8(dev, 0xb4, reg);
+
+	pci_write_config8(dev, 0xb9, 0x98);
+	pci_write_config8(dev, 0xba, 0x77);
+	pci_write_config8(dev, 0xbb, 0x11);
+
+	reg = pci_read_config8(dev, 0xb8);
+	reg |= 0x1;
+	pci_write_config8(dev, 0xb8, reg);
+
+	pci_write_config8(dev, 0xb0, 0x06);
+	pci_write_config8(dev, 0xb1, 0x01);
+
+	/* Program V-link 8X 16bit full duplex, parity enabled. */
+	pci_write_config8(dev, 0x48, 0xa3);
+}
+
 static void ctrl_enable(struct device *dev)
 {
 	u8 regm, regm2, regm3;
@@ -36,11 +86,6 @@ static void ctrl_enable(struct device *dev)
 	/* PCI CFG Address bits[27:24] are used as extended register address
 	   bit[11:8] */
 	pci_write_config8(dev, 0x47, 0x30);
-
-	/* FIXME: Program V-link 8X 16bit full duplex, this needs to be fixed
-	   for other than VT8237R SB */
-	pci_write_config8(dev, 0x48, 0x23);
-
 	/* Magic init. This is not well documented :/ */
 	pci_write_config8(dev, 0x70, 0xc2);
 
@@ -92,6 +137,7 @@ static struct device_operations ctrl_ops = {
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.enable = ctrl_enable,
+	.init = ctrl_init,
 	.ops_pci = 0,
 };
 

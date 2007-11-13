@@ -82,9 +82,9 @@ static void dump_regs(const struct superio_registers reg_table[],
 	const int *idx;
 
 	if (reg_table[i].ldn[j].ldn != NOLDN) {
-		printf("LDN 0x%02x ", reg_table[i].ldn[j].ldn);
+		printf("LDN 0x%02x", reg_table[i].ldn[j].ldn);
 		if (reg_table[i].ldn[j].name != NULL)
-			printf("(%s)", reg_table[i].ldn[j].name);
+			printf(" (%s)", reg_table[i].ldn[j].name);
 		regwrite(port, 0x07, reg_table[i].ldn[j].ldn);
 	} else {
 		printf("Register dump:");
@@ -92,33 +92,33 @@ static void dump_regs(const struct superio_registers reg_table[],
 
 	idx = reg_table[i].ldn[j].idx;
 
-	printf("\nidx ");
-	for (k = 0; /* Nothing */; k++) {
-		if (idx[k] == EOT)
-			break;
-		printf("%02x ", idx[k]);
+	printf("\nidx");
+	for (k = 0; idx[k] != EOT; k++) {
+		if (k && !(k % 8))
+			putchar(' ');
+		printf(" %02x", idx[k]);
 	}
 
-	printf("\nval ");
-	for (k = 0; /* Nothing */; k++) {
-		if (idx[k] == EOT)
-			break;
-		printf("%02x ", regval(port, idx[k]));
+	printf("\nval");
+	for (k = 0; idx[k] != EOT; k++) {
+		if (k && !(k % 8))
+			putchar(' ');
+		printf(" %02x", regval(port, idx[k]));
 	}
 
-	printf("\ndef ");
+	printf("\ndef");
 	idx = reg_table[i].ldn[j].def;
-	for (k = 0; /* Nothing */; k++) {
-		if (idx[k] == EOT)
-			break;
-		else if (idx[k] == NANA)
-			printf("NA ");
+	for (k = 0; idx[k] != EOT; k++) {
+		if (k && !(k % 8))
+			putchar(' ');
+		if (idx[k] == NANA)
+			printf(" NA");
 		else if (idx[k] == RSVD)
-			printf("RR ");
+			printf(" RR");
 		else if (idx[k] == MISC)	/* TODO */
-			printf("MM ");
+			printf(" MM");
 		else
-			printf("%02x ", idx[k]);
+			printf(" %02x", idx[k]);
 	}
 	printf("\n");
 }

@@ -21,14 +21,13 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <device/pci_ops.h>
 #include <arch/io.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/lxdef.h>
 #include "../../../southbridge/amd/cs5536/cs5536.h"
 #include "chip.h"
 
-/* Print the platform configuration */
+/* Print the platform configuration. */
 void print_conf(void) {
 #if DEFAULT_CONSOLE_LOGLEVEL >= BIOS_ERR
 	int i;
@@ -156,8 +155,8 @@ void print_conf(void) {
 
 static void init(struct device *dev)
 {
-	printk_debug("ALIX1C ENTER %s\n", __FUNCTION__);
-	printk_debug("ALIX1C EXIT %s\n", __FUNCTION__);
+	printk_debug("ALIX1.C ENTER %s\n", __FUNCTION__);
+	printk_debug("ALIX1.C EXIT %s\n", __FUNCTION__);
 }
 
 static void enable_dev(struct device *dev)

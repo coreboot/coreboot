@@ -104,7 +104,6 @@ default CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2=1
 ##
 default HAVE_PIRQ_TABLE=1
 default IRQ_SLOT_COUNT=5
-#object irq_tables.o
 
 ##
 ## Build code to export a CMOS option table

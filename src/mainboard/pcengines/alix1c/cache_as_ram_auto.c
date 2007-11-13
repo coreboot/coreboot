@@ -38,7 +38,7 @@
 #define POST_CODE(x) outb(x, 0x80)
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
-/* The alix1c has no SMBUS; the setup is hard-wired.  */
+/* The ALIX1.C has no SMBus; the setup is hard-wired. */
 void cs5536_enable_smbus(void)
 {
 }
@@ -46,7 +46,8 @@ void cs5536_enable_smbus(void)
 #include "southbridge/amd/cs5536/cs5536_early_setup.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 
-/* the part is a hynix hy5du121622ctp-d43
+/* The part is a Hynix hy5du121622ctp-d43.
+ *
  * HY 5D U 12 16 2 2 C <blank> T <blank> P D43
  * Hynix
  * DDR SDRAM (5D)
@@ -62,18 +63,17 @@ void cs5536_enable_smbus(void)
  * Lead Free (P)
  * DDR400 3-3-3 (D43)
  */
-/* spd array */
-static u8 spdbytes[] = {
+/* SPD array */
+static const u8 spdbytes[] = {
 	[SPD_ACCEPTABLE_CAS_LATENCIES] = 0x10,
 	[SPD_BANK_DENSITY] = 0x40,
 	[SPD_DEVICE_ATTRIBUTES_GENERAL] = 0xff,
 	[SPD_MEMORY_TYPE] = 7,
-	[SPD_MIN_CYCLE_TIME_AT_CAS_MAX] = 10, /* This is a guess for tRAC value */
-	[SPD_MODULE_ATTRIBUTES] = 0xff, /* fix me later when we figure out */
+	[SPD_MIN_CYCLE_TIME_AT_CAS_MAX] = 10, /* A guess for the tRAC value */
+	[SPD_MODULE_ATTRIBUTES] = 0xff, /* FIXME later when we figure out. */
 	[SPD_NUM_BANKS_PER_SDRAM] = 4,
 	[SPD_PRIMARY_SDRAM_WIDTH] = 8,
-	/* alix1c is 1 bank. */
-	[SPD_NUM_DIMM_BANKS] = 1,
+	[SPD_NUM_DIMM_BANKS] = 1, /* ALIX1.C is 1 bank. */
 	[SPD_NUM_COLUMNS] = 0xa,
 	[SPD_NUM_ROWS] = 3,
 	[SPD_REFRESH] = 0x3a,
@@ -91,7 +91,7 @@ static u8 spd_read_byte(u8 device, u8 address)
 	print_debug("spd_read_byte dev ");
 	print_debug_hex8(device);
 
-	if (device != (0x50<<1)){
+	if (device != (0x50 << 1)) {
 		print_debug(" returns 0xff\n");
 		return 0xff;
 	}
@@ -101,14 +101,17 @@ static u8 spd_read_byte(u8 device, u8 address)
 	print_debug(" returns ");
 	print_debug_hex8(spdbytes[address]);
 	print_debug("\r\n");
+
 	return spdbytes[address];
 }
 
-#define ManualConf 0		/* Do automatic strapped PLL config */
-#define PLLMSRhi 0x00001490 /* manual settings for the PLL */
-#define PLLMSRlo 0x02000030
-#define DIMM0 0xA0
-#define DIMM1 0xA2
+#define ManualConf	0		/* Do automatic strapped PLL config */
+#define PLLMSRhi	0x00001490	/* Manual settings for the PLL */
+#define PLLMSRlo	0x02000030
+
+#define DIMM0		0xa0
+#define DIMM1		0xa2
+
 #include "northbridge/amd/lx/raminit.h"
 #include "northbridge/amd/lx/pll_reset.c"
 #include "northbridge/amd/lx/raminit.c"
@@ -119,9 +122,10 @@ static u8 spd_read_byte(u8 device, u8 address)
 static void msr_init(void)
 {
 	msr_t msr;
+
 	/* Setup access to the MC for under 1MB. Note MC not setup yet. */
 	msr.hi = 0x24fffc02;
-	msr.lo =  0x10010000;
+	msr.lo = 0x10010000;
 	wrmsr(CPU_RCONF_DEFAULT, msr);
 
 	msr.hi = 0x20000000;
@@ -129,14 +133,13 @@ static void msr_init(void)
 	wrmsr(MSR_GLIU0 + 0x20, msr);
 
 	msr.hi = 0x20000000;
-	msr.lo =  0xfff00;
+	msr.lo = 0xfff00;
 	wrmsr(MSR_GLIU1 + 0x20, msr);
-
 }
 
+/** Early mainboard specific GPIO setup. */
 static void mb_gpio_init(void)
 {
-	/* Early mainboard specific GPIO setup */
 }
 
 void cache_as_ram_main(void)
@@ -144,7 +147,9 @@ void cache_as_ram_main(void)
 	static const struct mem_controller memctrl[] = {
 		{.channel0 = {0x50}},
 	};
+
 	extern void RestartCAR();
+
 	POST_CODE(0x01);
 
 	SystemPreInit();
@@ -152,9 +157,8 @@ void cache_as_ram_main(void)
 
 	cs5536_early_setup();
 
-	/* NOTE: must do this AFTER the early_setup!
-	 * it is counting on some early MSR setup
-	 * for cs5536
+	/* NOTE: Must do this AFTER cs5536_early_setup()!
+	 * It is counting on some early MSR setup for the CS5536.
 	 */
 	cs5536_disable_internal_uart();
 	w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
@@ -169,17 +173,18 @@ void cache_as_ram_main(void)
 	sdram_initialize(1, memctrl);
 
 	/* Check memory */
-	/* enable this only if you are having questions */
-	/* ram_check(0x00000000, 640 * 1024);*/
+	/* Enable this only if you are having questions. */
+	/* ram_check(0, 640 * 1024); */
 
-	/* Switch from Cache as RAM to real RAM 
-	 * There are two ways we could think about this.  
+	/* Switch from Cache as RAM to real RAM.
+	 *
+	 * There are two ways we could think about this.
 	 *
 	 * 1. If we are using the auto.inc ROMCC way, the stack is
 	 * going to be re-setup in the code following this code.  Just
 	 * wbinvd the stack to clear the cache tags.  We don't care
 	 * where the stack used to be.
-	 * 
+	 *
 	 * 2. This file is built as a normal .c -> .o and linked in
 	 * etc.  The stack might be used to return etc.  That means we
 	 * care about what is in the stack.  If we are smart we set
@@ -190,16 +195,16 @@ void cache_as_ram_main(void)
 	 * located somewhere other than where LB would like it, you
 	 * need to write some code to do a copy from cache to RAM
 	 *
-	 * We use method 1 on Norwich and on this board too. 
+	 * We use method 1 on Norwich and on this board too.
 	 */
 	POST_CODE(0x02);
 	print_err("POST 02\n");
 	__asm__("wbinvd\n");
 	print_err("Past wbinvd\n");
-	/* we are finding the return does not work on this
-	 * board. Explicitly call the label that is after the call to
-	 * us. This is gross, but sometimes at this level it is the
-	 * only way out
+
+	/* We are finding the return does not work on this board. Explicitly
+	 * call the label that is after the call to us. This is gross, but
+	 * sometimes at this level it is the only way out.
 	 */
 	done_cache_as_ram_main();
 }

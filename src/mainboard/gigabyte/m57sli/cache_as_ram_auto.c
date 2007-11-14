@@ -273,8 +273,8 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
         }
 
 	pnp_enter_ext_func_mode(SERIAL_DEV);
-	/* The following line will set CLKIN to 24 MHz */
-	pnp_write_config(SERIAL_DEV, IT8716F_CONFIG_REG_CLOCKSEL, 1);
+	/* The following line will set CLKIN to 24 MHz, external */
+	pnp_write_config(SERIAL_DEV, IT8716F_CONFIG_REG_CLOCKSEL, 0x11);
 	tmp = pnp_read_config(SERIAL_DEV, IT8716F_CONFIG_REG_SWSUSP);
 	/* Is serial flash enabled? Then enable writing to serial flash. */
 	if (tmp & 0x0e) {

@@ -61,26 +61,6 @@ static struct device_operations pcie_ops  = {
 static const struct pci_driver pciebc_driver __pci_driver = {
 	.ops	= &pcie_ops,
 	.vendor	= PCI_VENDOR_ID_SIS,
-	.device	= PCI_DEVICE_ID_SIS_SIS966_PCIE_B_C,
-};
-static const struct pci_driver pciee_driver __pci_driver = {
-	.ops	= &pcie_ops,
-	.vendor	= PCI_VENDOR_ID_SIS,
-	.device	= PCI_DEVICE_ID_SIS_SIS966_PCIE_E,
-};
-static const struct pci_driver pciea_driver __pci_driver = {
-	.ops	= &pcie_ops,
-	.vendor	= PCI_VENDOR_ID_SIS,
-	.device	= PCI_DEVICE_ID_SIS_SIS966_PCIE_A,
-};
-static const struct pci_driver pcief_driver __pci_driver = {
-	.ops	= &pcie_ops,
-	.vendor	= PCI_VENDOR_ID_SIS,
-	.device	= PCI_DEVICE_ID_SIS_SIS966_PCIE_F,
-};
-static const struct pci_driver pcied_driver __pci_driver = {
-	.ops	= &pcie_ops,
-	.vendor	= PCI_VENDOR_ID_SIS,
-	.device	= PCI_DEVICE_ID_SIS_SIS966_PCIE_D,
+	.device	= PCI_DEVICE_ID_SIS_SIS966_PCIE,
 };
 

@@ -73,36 +73,26 @@ static inline msr_t rdmsr(unsigned index)
 	return result;
 }
 
-
-
 static void sis761_read_resources(device_t dev)
 {
 	/* Read the generic PCI resources */
-	printk_debug("sis761_read_resources\n");
+	printk_debug("sis761_read_resources ------->\n");
 	pci_dev_read_resources(dev);
 
 	/* If we are not the first processor don't allocate the gart apeture */
 	if (dev->path.u.pci.devfn != PCI_DEVFN(0x0, 0)) {
+		printk_debug("sis761_not_the_first_processor !!!\n");
 		return;
 	}
 
-
-	return;
-
-}
-
-static void set_agp_aperture(device_t dev)
-{
-
+	printk_debug("sis761_read_resources <-------\n");
 	return;
 
 }
 
 static void sis761_set_resources(device_t dev)
 {
-        printk_debug("sis761_set_resources ------->\n");
-	/* Set the gart apeture */
-//	set_agp_aperture(dev);
+	printk_debug("sis761_set_resources ------->\n");
 
 	/* Set the generic PCI resources */
 	pci_dev_set_resources(dev);
@@ -124,7 +114,6 @@ static void sis761_init(struct device *dev)
 	outb(inb(0x856) | 0x40, 0x856);	 // Auto-Reset Function
 
 	printk_debug("sis761_init: <----------\n");
-	printk_debug("done.\n");
 }
 
 

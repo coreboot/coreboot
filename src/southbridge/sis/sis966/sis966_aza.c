@@ -328,6 +328,6 @@ static struct device_operations aza_audio_ops  = {
 static const struct pci_driver azaaudio_driver __pci_driver = {
 	.ops	= &aza_audio_ops,
 	.vendor	= PCI_VENDOR_ID_SIS,
-	.device	= PCI_DEVICE_ID_SIS_SIS966_AZA,
+	.device	= PCI_DEVICE_ID_SIS_SIS966_HD_AUDIO,
 };
 

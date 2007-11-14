@@ -25,7 +25,7 @@ static unsigned get_sbdn(unsigned bus)
 
 	/* Find the device. */
 	dev = pci_locate_device_on_bus(
-		PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS966_HT),
+		PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761),
 		bus);
 
 	return (dev>>15) & 0x1f;

@@ -85,9 +85,6 @@ void sis966_enable(device_t dev)
 
 	devfn = (dev->path.u.pci.devfn) & ~7;
 	switch(deviceid) {
-		case PCI_DEVICE_ID_SIS_SIS966_HT:
-			return;
-			break;
 		case PCI_DEVICE_ID_SIS_SIS966_USB:
 			devfn -= (1<<3);
 			index = 8;
@@ -96,7 +93,7 @@ void sis966_enable(device_t dev)
 			devfn -= (1<<3);
 			index = 20;
 			break;
-		case PCI_DEVICE_ID_SIS_SIS966_NIC1:
+		case PCI_DEVICE_ID_SIS_SIS966_NIC:
 			devfn -= (7<<3);
 			index = 10;
 			for(i=0;i<2;i++) {
@@ -107,7 +104,7 @@ void sis966_enable(device_t dev)
 				break;
 			}
 			break;
-		case PCI_DEVICE_ID_SIS_SIS966_AZA:
+		case PCI_DEVICE_ID_SIS_SIS966_HD_AUDIO:
 			devfn -= (5<<3);
 			index = 11;
 			break;
@@ -115,7 +112,7 @@ void sis966_enable(device_t dev)
 			devfn -= (3<<3);
 			index = 14;
 			break;
-		case PCI_DEVICE_ID_SIS_SIS966_SATA0:
+		case PCI_DEVICE_ID_SIS_SIS966_SATA:
 			devfn -= (4<<3);
 			index = 22;
 			i = (dev->path.u.pci.devfn) & 7;
@@ -123,32 +120,9 @@ void sis966_enable(device_t dev)
 				index -= (i+3);
 			}
 			break;
-		case PCI_DEVICE_ID_SIS_SIS966_PCI:
-			devfn -= (5<<3);
-			index = 15;
-			break;
-		case PCI_DEVICE_ID_SIS_SIS966_PCIE_B_C:
-			devfn -= (0xa<<3);  // to LPC
-			index2 = 8;
-			for(i=0;i<2;i++) {
-				lpc_dev = find_lpc_dev(dev, devfn - (i<<3));
-				if(!lpc_dev) continue;
-				index2 -= i;
-				devfn -= (i<<3);
-				break;
-			}
-			break;
-		case PCI_DEVICE_ID_SIS_SIS966_PCIE_D:
-			devfn -= (0xc<<3);  // to LPC
-			index2 = 6;
-			break;
-		case PCI_DEVICE_ID_SIS_SIS966_PCIE_E:
-			devfn -= (0xd<<3);  // to LPC
-			index2 = 5;
-			break;
-		case PCI_DEVICE_ID_SIS_SIS966_PCIE_F:
-			devfn -= (0xe<<3);  // to LPC
-			index2 = 4;
+		case PCI_DEVICE_ID_SIS_SIS966_PCIE:
+			devfn -= (0x9<<3);  // to LPC
+			index2 = 9;
 			break;
 		default:
 			index = 0;
@@ -191,7 +165,6 @@ void sis966_enable(device_t dev)
 		byte = pci_read_config8(lpc_dev, 0xdd);
 		byte |= ((1<<0)|(1<<3)); // expose the BAR and enable write
 		pci_write_config8(dev, 0xdd, byte);
-
 		return;
 
 	}
@@ -219,8 +192,6 @@ void sis966_enable(device_t dev)
 		}
 
 	}
-
-
 }
 
 struct chip_operations southbridge_sis_sis966_ops = {

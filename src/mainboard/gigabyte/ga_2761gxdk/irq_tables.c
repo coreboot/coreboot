@@ -89,7 +89,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	pirq->exclusive_irqs = 0;
 
 	pirq->rtr_vendor = PCI_VENDOR_ID_SIS;
-	pirq->rtr_device = PCI_DEVICE_ID_SIS_SIS966_PCI;
+	pirq->rtr_device = PCI_DEVICE_ID_SIS_SIS966_LPC;
 
 	pirq->miniport_data = 0;
 
@@ -102,6 +102,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
                 device_t dev;
                 dev = dev_find_slot(0, PCI_DEVFN(2,0));
                 if (dev) {
+
                         /* initialize PCI interupts - these assignments depend
                         on the PCB routing of PINTA-D
 
@@ -140,16 +141,16 @@ unsigned long write_pirq_routing_table(unsigned long addr)
                 pci_write_config8(dev, 0x3C, 0x0A);
                 dev = dev_find_slot(0, PCI_DEVFN(4,0));   // 191 (LAN)
                 pci_write_config8(dev, 0x3C, 0x05);
-                dev = dev_find_slot(0, PCI_DEVFN(5,0));    // 1183 (SATA)
+                dev = dev_find_slot(0, PCI_DEVFN(5,0));   // 1183 (SATA)
                 pci_write_config8(dev, 0x3C, 0x0B);
-
-                /*
-                 * Non-layout for GA-2761GX
-                 *
                 dev = dev_find_slot(0, PCI_DEVFN(6,0));   // PCI-E
                 pci_write_config8(dev, 0x3C, 0x0A);
                 dev = dev_find_slot(0, PCI_DEVFN(7,0));   // PCI-E
                 pci_write_config8(dev, 0x3C, 0x0A);
+
+                /*
+                 * Non-layout for GA-2761GX
+                 *
                 dev = dev_find_slot(0, PCI_DEVFN(15,0));  // Azalia
                 pci_write_config8(dev, 0x3C, 0x05);
                 */

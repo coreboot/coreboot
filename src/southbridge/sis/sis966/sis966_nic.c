@@ -365,5 +365,5 @@ static struct device_operations nic_ops  = {
 static const struct pci_driver nic_driver __pci_driver = {
 	.ops	= &nic_ops,
 	.vendor	= PCI_VENDOR_ID_SIS,
-	.device	= PCI_DEVICE_ID_SIS_SIS966_NIC1,
+	.device	= PCI_DEVICE_ID_SIS_SIS966_NIC,
 };

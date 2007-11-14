@@ -59,6 +59,7 @@ static const uint8_t SiS_LPC_init[34][3]={
 {0xDF, 0x00, 0xAA},					//Reg 0xDF
 {0x00, 0x00, 0x00}					//End of table
 };
+
 static const uint8_t	SiS_NBPCIE_init[43][3]={
 {0x3D, 0x00, 0x00},					//Reg 0x3D
 {0x1C, 0xFE, 0x01},					//Reg 0x1C
@@ -80,7 +81,6 @@ static const uint8_t	SiS_NBPCIE_init[43][3]={
 {0x5E, 0x00, 0x10},					//Reg 0x5E
 {0x34, 0x00, 0xD0},					//Reg 0x34
 {0xD0, 0x00, 0x01},					//Reg 0xD0
-
 {0x4F, 0x00, 0x80},					//Reg 0x4F
 {0xA1, 0x00, 0xF4},					//Reg 0xA1
 {0xA2, 0x7F, 0x00},					//Reg 0xA2
@@ -105,6 +105,7 @@ static const uint8_t	SiS_NBPCIE_init[43][3]={
 {0x4F, 0x00, 0x00},					//Reg 0x4F
 {0x00, 0x00, 0x00}					//End of table
 };
+
 static const uint8_t	SiS_ACPI_init[10][3]={
 {0x1B, 0xBF, 0x40},					//Reg 0x1B
 {0x84, 0x00, 0x0E},					//Reg 0x84
@@ -117,6 +118,7 @@ static const uint8_t	SiS_ACPI_init[10][3]={
 {0x6F, 0xFF, 0x14},					//Reg 0x6F
 {0x00, 0x00, 0x00}					//End of table
 };
+
 static const uint8_t	SiS_SBPCIE_init[13][3]={
 {0x48, 0x00 ,0x07},					//Reg 0x48
 {0x49, 0x00 ,0x06},					//Reg 0x49
@@ -132,8 +134,6 @@ static const uint8_t	SiS_SBPCIE_init[13][3]={
 {0x5B, 0x00 ,0x40},					//Reg 0x5B
 {0x00, 0x00, 0x00}					//End of table
 };
-
-
 
 static const uint8_t	SiS_NB_init[56][3]={
 {0x04, 0x00 ,0x07},					//Reg 0x04
@@ -191,10 +191,8 @@ static const uint8_t	SiS_NB_init[56][3]={
 {0x97, 0x00 ,0x00},					//Reg 0x97
 {0x98, 0x00 ,0x00},					//Reg 0x98
 {0x99, 0x00 ,0x00},					//Reg 0x99
-
 {0x00, 0x00, 0x00}					//End of table
 };
-
 
 static const uint8_t SiS_NBAGP_init[34][3]={
 {0xCF, 0xDF, 0x00},      //HT issue
@@ -230,8 +228,6 @@ static const uint8_t SiS_NBAGP_init[34][3]={
 {0xBF, 0xF9, 0x06},
 {0xBA, 0x00, 0x61},
 {0xBD, 0x7F, 0x80},
-
-
 {0x00, 0x00, 0x00}     //End of table
 };
 
@@ -302,7 +298,7 @@ static const uint8_t	SiS_SiS1183_init[44][3]={
 {0x2E, 0x00, 0x83},
 {0x2F, 0x00, 0x11},
 {0x90, 0x00, 0x40},
-{0x91, 0x00, 0x00},	// set mode
+{0x91, 0x00, 0x00},         // set mode
 {0x50, 0x00, 0xA2},
 {0x52, 0x00, 0xA2},
 {0x55, 0x00, 0x96},
@@ -317,7 +313,7 @@ static const uint8_t	SiS_SiS1183_init[44][3]={
 {0x85, 0x00, 0xB3},
 {0x86, 0x00, 0x72},
 {0x87, 0x00, 0x40},
-{0x88, 0x00, 0xDE},      // after set mode
+{0x88, 0x00, 0xDE},         // after set mode
 {0x89, 0x00, 0xB3},
 {0x8A, 0x00, 0x72},
 {0x8B, 0x00, 0x40},
@@ -340,7 +336,6 @@ static const uint8_t	SiS_SiS1183_init[44][3]={
 {0xA3, 0x00, 0x15},
 {0x00, 0x00, 0x00}					//End of table
 };
-
 
 /*       In => Share Memory size
                             => 00h :    0MBytes
@@ -421,7 +416,7 @@ void sis_init_stage1(void)
 	GUI_En = temp8 & 0x10;
 	pci_write_config8(dev, 0x4C, temp8 & (!0x10));
 
-	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, 0x0004), 0);
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761_PCIE), 0);
 	i=0;
 	while(SiS_NBPCIE_init[i][0] != 0)
 	{				temp8 = pci_read_config8(dev, SiS_NBPCIE_init[i][0]);
@@ -513,7 +508,7 @@ void sis_init_stage2(void)
 
 // ========================== Misc =============================
        printk_debug("Init Misc -------->\n");
-	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS966_ISA), 0);
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS966_LPC), 0);
 	// PCI Device Enable
 	pci_write_config8(dev, 0x7C, 0x03);  // bit0=0 : enable audio controller(), bit1=1 : disable modem
 	pci_write_config8(dev, 0x76, pci_read_config8(dev, 0x76)|0x30);  // SM bus enable, PCIEXP Controller 1 and 2 disable
@@ -523,7 +518,7 @@ void sis_init_stage2(void)
 	outb(temp8, 0x878);  // ACPI select AC97 or HDA controller
 	printk_debug("Audio select %x\n",inb(0x878));
 
-	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS966_SATA0), 0);
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS966_SATA), 0);
 	if(!dev){
 		print_debug("SiS 1183 does not exist !!");
 	}

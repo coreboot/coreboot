@@ -295,9 +295,9 @@ chip northbridge/amd/amdk8/root_complex
                                         device pci 3.1 on end # USB (SiS7001,USB1.1)
                                         device pci 3.3 on end # USB (SiS7002,USB2.0)
                                         device pci 4.0 on end # NIC (SiS191)
-                                        device pci 5.0 on end # SATA (SiS1183,IDE Mode)
-                                        device pci 6.0 off end # PCI-E (SiS000A)
-                                        device pci 7.0 off end # PCI-E (SiS000A)
+                                        device pci 5.0 on end # SATA (SiS1183,Native Mode)
+                                        device pci 6.0 on end # PCI-e x1
+                                        device pci 7.0 on end # PCI-e x1
                                         device pci a.0 off end
                                         device pci b.0 off end
                                         device pci c.0 off end
@@ -323,13 +323,13 @@ chip northbridge/amd/amdk8/root_complex
 #       chip drivers/generic/debug
 #               device pnp 0.0 off end # chip name
 #               device pnp 0.1 on end # pci_regs_all
-#               device pnp 0.2 on end # mem
+#               device pnp 0.2 off end # mem
 #               device pnp 0.3 off end # cpuid
-#               device pnp 0.4 on end # smbus_regs_all
+#               device pnp 0.4 off end # smbus_regs_all
 #               device pnp 0.5 off end # dual core msr
 #               device pnp 0.6 off end # cache size
 #               device pnp 0.7 off end # tsc
-#               device pnp 0.8 off  end # io
+#               device pnp 0.8 off end # io
 #               device pnp 0.9 off end # io
 #       end
 end #root_complex

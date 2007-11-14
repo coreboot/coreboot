@@ -93,6 +93,7 @@
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, IT8716F_SP1)
+#define GPIO_DEV PNP_DEV(0x2e, IT8716F_GPIO)
 
 #include "southbridge/nvidia/mcp55/mcp55_early_ctrl.c"
 
@@ -265,13 +266,27 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
         int needs_reset = 0;
         unsigned bsp_apicid = 0;
+	uint8_t tmp = 0;
 
         if (bist == 0) {
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
         }
 
 	pnp_enter_ext_func_mode(SERIAL_DEV);
-        pnp_write_config(SERIAL_DEV, 0x23, 1);
+	/* The following line will set CLKIN to 24 MHz */
+	pnp_write_config(SERIAL_DEV, IT8716F_CONFIG_REG_CLOCKSEL, 1);
+	tmp = pnp_read_config(SERIAL_DEV, IT8716F_CONFIG_REG_SWSUSP);
+	/* Is serial flash enabled? Then enable writing to serial flash. */
+	if (tmp & 0x0e) {
+		pnp_write_config(SERIAL_DEV, IT8716F_CONFIG_REG_SWSUSP, tmp | 0x10);
+		pnp_set_logical_device(GPIO_DEV);
+		/* Set Serial Flash interface to 0x0820 */
+		pnp_write_config(GPIO_DEV, 0x64, 0x08);
+		pnp_write_config(GPIO_DEV, 0x65, 0x20);
+		/* We can get away with not resetting the logical device because
+		 * it8716f_enable_dev(SERIAL_DEV, TTYS0_BASE) will do that.
+		 */
+	}
  	it8716f_enable_dev(SERIAL_DEV, TTYS0_BASE);
 	pnp_exit_ext_func_mode(SERIAL_DEV);
 

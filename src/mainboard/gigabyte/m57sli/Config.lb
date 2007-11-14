@@ -310,7 +310,7 @@ chip northbridge/amd/amdk8/root_complex
 					# SIO pin set 1 input mode
 								#irq 0xc8 = 0x0
 					# SIO pin set 2 mixed input/output mode
-								irq 0xc9 = 0x0
+								irq 0xc9 = 0x40
 					# SIO pin set 4 input mode
 								#irq 0xcb = 0x0
 					# Generate SMI# on EC IRQ

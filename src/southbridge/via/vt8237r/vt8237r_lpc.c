@@ -23,7 +23,6 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ops.h>
 #include <device/pci_ids.h>
 #include <pc80/mc146818rtc.h>
 #include <cpu/x86/lapic.h>
@@ -48,7 +47,7 @@
 
 extern void dump_south(device_t dev);
 
-struct ioapicreg {
+static struct ioapicreg {
 	u32 reg;
 	u32 value_low;
 	u32 value_high;
@@ -146,7 +145,7 @@ static void pci_routing_fixup(struct device *dev)
  * Set up the power management capabilities directly into ACPI mode.
  * This avoids having to handle any System Management Interrupts (SMIs).
  */
-void setup_pm(device_t dev)
+static void setup_pm(device_t dev)
 {
 	/* Debounce LID and PWRBTN# Inputs for 16ms. */
 	pci_write_config8(dev, 0x80, 0x20);
@@ -299,7 +298,7 @@ static void vt8237r_init(struct device *dev)
 	rtc_init(0);
 }
 
-void vt8237r_read_resources(device_t dev)
+static void vt8237r_read_resources(device_t dev)
 {
 	struct resource *res;
 
@@ -320,7 +319,7 @@ void vt8237r_read_resources(device_t dev)
  * than standard PC I/O addresses), however it does control the ISA bus
  * and so we need to manually call enable childrens resources on that bus.
  */
-void vt8237r_enable_resources(device_t dev)
+static void vt8237r_enable_resources(device_t dev)
 {
 	pci_dev_enable_resources(dev);
 	enable_childrens_resources(dev);

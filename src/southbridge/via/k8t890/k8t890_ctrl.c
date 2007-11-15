@@ -41,12 +41,17 @@
  * V-Link CKG Control				 0xb0  0x05  0x05  0x06  0x03
  * V-Link CKG Control				 0xb1  0x05  0x05  0x01  0x03
  */
-static void ctrl_init(struct device *dev)
+static void ctrl_init_vt8237r(struct device *dev)
 {
 	u8 reg;
+
+	/*
+	 * This init code is valid only for the VT8237R! For different
+	 * sounthbridges (e.g. VT8237A, VT8237S, VT8237 (without plus R)
+	 * and VT8251) a different init code is required.
+	 */
 	device_t devsb = dev_find_device(PCI_VENDOR_ID_VIA,
 					 PCI_DEVICE_ID_VIA_VT8237R_LPC, 0);
-
 	if (!devsb)
 		return;
 
@@ -132,17 +137,17 @@ static void ctrl_enable(struct device *dev)
 	pci_write_config8(dev, 0x63, regm3 | (regm & 0x3F));
 }
 
-static struct device_operations ctrl_ops = {
-	.read_resources = pci_dev_read_resources,
-	.set_resources = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.enable = ctrl_enable,
-	.init = ctrl_init,
-	.ops_pci = 0,
+static const struct device_operations ctrl_ops = {
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.enable			= ctrl_enable,
+	.init			= ctrl_init_vt8237r,
+	.ops_pci		= 0,
 };
 
 static const struct pci_driver northbridge_driver __pci_driver = {
-	.ops = &ctrl_ops,
-	.vendor = PCI_VENDOR_ID_VIA,
-	.device = PCI_DEVICE_ID_VIA_K8T890CE_7,
+	.ops	= &ctrl_ops,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8T890CE_7,
 };

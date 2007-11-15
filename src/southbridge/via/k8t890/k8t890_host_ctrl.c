@@ -78,16 +78,16 @@ static void host_ctrl_enable(struct device *dev)
 	dump_south(dev);
 }
 
-static struct device_operations host_ctrl_ops = {
-	.read_resources = pci_dev_read_resources,
-	.set_resources = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.enable = host_ctrl_enable,
-	.ops_pci = 0,
+static const struct device_operations host_ctrl_ops = {
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.enable			= host_ctrl_enable,
+	.ops_pci		= 0,
 };
 
 static const struct pci_driver northbridge_driver __pci_driver = {
-	.ops = &host_ctrl_ops,
-	.vendor = PCI_VENDOR_ID_VIA,
-	.device = PCI_DEVICE_ID_VIA_K8T890CE_2,
+	.ops	= &host_ctrl_ops,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8T890CE_2,
 };

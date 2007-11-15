@@ -33,15 +33,15 @@ static void error_enable(struct device *dev)
 }
 
 static const struct device_operations error_ops = {
-	.read_resources = pci_dev_read_resources,
-	.set_resources = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.enable = error_enable,
-	.ops_pci = 0,
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.enable			= error_enable,
+	.ops_pci		= 0,
 };
 
 static const struct pci_driver northbridge_driver __pci_driver = {
-	.ops = &error_ops,
-	.vendor = PCI_VENDOR_ID_VIA,
-	.device = PCI_DEVICE_ID_VIA_K8T890CE_1,
+	.ops	= &error_ops,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8T890CE_1,
 };

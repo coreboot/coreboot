@@ -19,13 +19,11 @@
 
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ops.h>
 #include <device/pci_ids.h>
 #include <console/console.h>
-
 #include "k8t890.h"
 
-void mmconfig_set_resources(device_t dev)
+static void mmconfig_set_resources(device_t dev)
 {
 	struct resource *resource;
 	u8 reg;
@@ -106,16 +104,16 @@ static void traf_ctrl_enable(struct device *dev)
 	apic[4] = (data & 0xF0FFFF) | (K8T890_APIC_ID << 24);
 }
 
-static struct device_operations traf_ctrl_ops = {
-	.read_resources = apic_mmconfig_read_resources,
-	.set_resources = mmconfig_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.enable = traf_ctrl_enable,
-	.ops_pci = 0,
+static const struct device_operations traf_ctrl_ops = {
+	.read_resources		= apic_mmconfig_read_resources,
+	.set_resources		= mmconfig_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.enable			= traf_ctrl_enable,
+	.ops_pci		= 0,
 };
 
 static const struct pci_driver northbridge_driver __pci_driver = {
-	.ops = &traf_ctrl_ops,
-	.vendor = PCI_VENDOR_ID_VIA,
-	.device = PCI_DEVICE_ID_VIA_K8T890CE_5,
+	.ops	= &traf_ctrl_ops,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8T890CE_5,
 };

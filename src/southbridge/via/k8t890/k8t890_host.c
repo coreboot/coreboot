@@ -30,16 +30,16 @@ static void host_enable(struct device *dev)
 	pci_write_config8(dev, K8T890_MULTIPLE_FN_EN, 0x01);
 }
 
-static struct device_operations host_ops = {
-	.read_resources = pci_dev_read_resources,
-	.set_resources = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.enable = host_enable,
-	.ops_pci = 0,
+static const struct device_operations host_ops = {
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.enable			= host_enable,
+	.ops_pci		= 0,
 };
 
 static const struct pci_driver northbridge_driver __pci_driver = {
-	.ops = &host_ops,
-	.vendor = PCI_VENDOR_ID_VIA,
-	.device = PCI_DEVICE_ID_VIA_K8T890CE_0,
+	.ops	= &host_ops,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8T890CE_0,
 };

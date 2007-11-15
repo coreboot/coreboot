@@ -21,10 +21,9 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pciexp.h>
-#include <device/pci_ops.h>
 #include <device/pci_ids.h>
 
-void peg_init(struct device *dev)
+static void peg_init(struct device *dev)
 {
 	u8 reg;
 
@@ -78,7 +77,7 @@ void peg_init(struct device *dev)
 	dump_south(dev);
 }
 
-void pcie_init(struct device *dev)
+static void pcie_init(struct device *dev)
 {
 	u8 reg;
 
@@ -113,52 +112,52 @@ void pcie_init(struct device *dev)
 	dump_south(dev);
 }
 
-static struct device_operations peg_ops = {
-	.read_resources = pci_bus_read_resources,
-	.set_resources = pci_dev_set_resources,
-	.enable_resources = pci_bus_enable_resources,
-	.enable = peg_init,
-	.scan_bus = pciexp_scan_bridge,
-	.reset_bus = pci_bus_reset,
-	.ops_pci = 0,
+static const struct device_operations peg_ops = {
+	.read_resources		= pci_bus_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_bus_enable_resources,
+	.enable			= peg_init,
+	.scan_bus		= pciexp_scan_bridge,
+	.reset_bus		= pci_bus_reset,
+	.ops_pci		= 0,
 };
 
-static struct device_operations pcie_ops = {
-	.read_resources = pci_bus_read_resources,
-	.set_resources = pci_dev_set_resources,
-	.enable_resources = pci_bus_enable_resources,
-	.enable = pcie_init,
-	.scan_bus = pciexp_scan_bridge,
-	.reset_bus = pci_bus_reset,
-	.ops_pci = 0,
+static const struct device_operations pcie_ops = {
+	.read_resources		= pci_bus_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_bus_enable_resources,
+	.enable			= pcie_init,
+	.scan_bus		= pciexp_scan_bridge,
+	.reset_bus		= pci_bus_reset,
+	.ops_pci		= 0,
 };
 
 static const struct pci_driver northbridge_driver __pci_driver = {
-	.ops = &peg_ops,
-	.vendor = PCI_VENDOR_ID_VIA,
-	.device = PCI_DEVICE_ID_VIA_K8T890CE_PEG,
+	.ops	= &peg_ops,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8T890CE_PEG,
 };
 
 static const struct pci_driver pcie_drvd3f0 __pci_driver = {
-	.ops = &pcie_ops,
-	.vendor = PCI_VENDOR_ID_VIA,
-	.device = PCI_DEVICE_ID_VIA_K8T890CE_PEX0,
+	.ops	= &pcie_ops,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8T890CE_PEX0,
 };
 
 static const struct pci_driver pcie_drvd3f1 __pci_driver = {
-	.ops = &pcie_ops,
-	.vendor = PCI_VENDOR_ID_VIA,
-	.device = PCI_DEVICE_ID_VIA_K8T890CE_PEX1,
+	.ops	= &pcie_ops,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8T890CE_PEX1,
 };
 
 static const struct pci_driver pcie_drvd3f2 __pci_driver = {
-	.ops = &pcie_ops,
-	.vendor = PCI_VENDOR_ID_VIA,
-	.device = PCI_DEVICE_ID_VIA_K8T890CE_PEX2,
+	.ops	= &pcie_ops,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8T890CE_PEX2,
 };
 
 static const struct pci_driver pcie_drvd3f3 __pci_driver = {
-	.ops = &pcie_ops,
-	.vendor = PCI_VENDOR_ID_VIA,
-	.device = PCI_DEVICE_ID_VIA_K8T890CE_PEX3,
+	.ops	= &pcie_ops,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8T890CE_PEX3,
 };

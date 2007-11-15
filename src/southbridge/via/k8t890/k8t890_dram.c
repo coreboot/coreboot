@@ -19,7 +19,6 @@
 
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ops.h>
 #include <device/pci_ids.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>
@@ -63,16 +62,16 @@ static void dram_enable(struct device *dev)
 	pci_write_config16(dev, 0x88, (msr.lo >> 24) | reg);
 }
 
-static struct device_operations dram_ops = {
-	.read_resources = pci_dev_read_resources,
-	.set_resources = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.enable = dram_enable,
-	.ops_pci = 0,
+static const struct device_operations dram_ops = {
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.enable			= dram_enable,
+	.ops_pci		= 0,
 };
 
 static const struct pci_driver northbridge_driver __pci_driver = {
-	.ops = &dram_ops,
-	.vendor = PCI_VENDOR_ID_VIA,
-	.device = PCI_DEVICE_ID_VIA_K8T890CE_3,
+	.ops	= &dram_ops,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8T890CE_3,
 };

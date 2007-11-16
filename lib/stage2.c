@@ -37,7 +37,8 @@
  *
  * Device Enumeration: in the dev_enumerate() phase.
  *
- * TODO: Check whether this documentation is still correct. Improve it.
+ * TODO:
+ * - Check whether this documentation is still correct. Improve it.
  */
 int stage2(void)
 {
@@ -54,7 +55,13 @@ int stage2(void)
 
 	post_code(0x20);
 
-	/* TODO: Explain why we use printk here although it is impossible */
+	/* TODO: Explain why we use printk here although it is claimed to be
+	 * impossible according to the documentation. The "has to be done
+	 * before printk can be used" comment below seems to suggest the same.
+	 * However, we already enable serial in arch/x86/stage1.c:stage1_main()
+	 * when we call hardware_stage1(); uart_init(); console_init(); 
+	 * Why test the console again if it already is tested in stage 1?
+	 */
 	printk(BIOS_NOTICE, console_test);
 
 	dev_init();

@@ -102,13 +102,16 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 	}
 
 	// We have cache as ram running and can start executing code in C.
-	//
 
 	hardware_stage1();
 
 	//
 	uart_init();	// initialize serial port
-	console_init(); // print banner
+
+	/* Exactly from now on we can use printk to the serial port.
+	 * Celebrate this by printing a LB banner.
+	 */
+	console_init();
 
 	if (bist!=0) {
 		printk(BIOS_INFO, "BIST FAILED: %08x", bist);

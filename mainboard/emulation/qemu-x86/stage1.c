@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* no printk allowed until hardware is ready; hardware is ready */
+/* printk will not yet output anything */
 
 /** 
  * start up hardware needed for stage1

@@ -85,7 +85,7 @@ That is, "1." instead of just "1"
 
 \begin_layout Standard
 The new LinuxBIOS boot architecture depends on CAR, with payloads appearing
- as files in a CPIO archive.
+ as files in a LAR archive.
  The device tree is defined by a device tree blob (DTB) and all the activities
  flow from that.
  For now, the DTC will produce a standard LinuxBIOS v2 device tree; this
@@ -150,7 +150,7 @@ Shown in
 
  is the layout of the whole FLASH.
  Note that we can kill the buildrom tool, since the FLASH code is now a
- CPIO archive.
+ LAR archive.
  Note that the linker script will now be very simple.
  The initram is roughly what is in auto.c, although the early hardware setup
  from auto.c is now in the pre-initram, so that we have serial output and
@@ -162,7 +162,7 @@ Shown in
  etc.
  The DTB can be modified by the flashrom tool, and hence a platform can
  be customized from a binary FLASH image.
- Each CPIO file has a checksum attached to the end, so that the system can
+ Each LAR file has a checksum attached to the end, so that the system can
  verify that the data is uncorrupted.
  We now build at least four targets for a platform:
 \end_layout
@@ -290,9 +290,9 @@ subtractive address ranges
 \emph default
 , which define an address range that is picked up by default if no other
  resource claims it.
-
+ 
 \emph on
- Subtractive address ranges
+Subtractive address ranges
 \emph default
  are typically used for legacy PC address ranges.
  
@@ -734,7 +734,7 @@ CAR is a standard cache-as-ram assembly source for the architecture.
  It is actually included in the stage0_*.S file; but we maintain a distinction
  in the stage nomenclature for now.
  This code sets up cache-as-ram, zeros a memory area, sets up a stack, and
- then calls Stage 1.
+ then calls stage 1.
  
 \end_layout
 
@@ -758,13 +758,53 @@ CONFIG_ROMSIZE.
 Stage 1: C, in arch/{architecture}
 \end_layout
 
+\begin_layout Standard
+Initial entry point for stage 1 is arch/{architecture}/stage1.c:stage1_main().
+\end_layout
+
+\begin_layout Standard
+printk() may be used from anywhere in C code, but it will output characters
+ only after the welcome banner has been printed.
+\end_layout
+
 \begin_layout Enumerate
-Preboot hardware, as from auto.c (C)
+POST(0x02).
+ (C)
+\end_layout
+
+\begin_layout Enumerate
+Stop secondary processors.
+ (C)
+\end_layout
+
+\begin_layout Enumerate
+Preboot hardware, as from auto.c (C).
+ hardware_stage1()
+\end_layout
+
+\begin_layout Enumerate
+Initialize serial port.
+ (C)
+\end_layout
+
+\begin_layout Enumerate
+Initialize USB debug port.
+ (C)
+\end_layout
+
+\begin_layout Enumerate
+Print welcome banner to celebrate working printk() output.
+ (C)
+\end_layout
+
+\begin_layout Enumerate
+Enable ROM.
+ (C)
 \end_layout
 
 \begin_layout Enumerate
 Decide whether we can proceed or must recover from serial port.
- (C)
+ Criteria? (C)
 \end_layout
 
 \begin_layout Enumerate
@@ -778,7 +818,7 @@ boot area
 
 , if it is bad then ...
  recover from serial port (C, PIC).
- We can definitely reflash CPIO archive, but NOTE: reflashing the boot block
+ We can definitely reflash LAR archive, but NOTE: reflashing the boot block
  is tricky ...
  (C)
 \end_layout
@@ -791,13 +831,36 @@ Examine the flash.
 \begin_inset Quotes eld
 \end_inset
 
-fallback', etc.) (C)
+fallback', etc.).
+ (C)
 \end_layout
 
 \begin_layout Enumerate
-In that directory, need 'initram', 'payload.ext', and others.
- make sure that in '/', there is a decompressor of the right type for each
- extension needed.
+In that directory, execute 'initram'.
+ If that fails, execute 'initram' in any other directory.
+ If that fails as well, recover from serial port.
+ (C, PIC)
+\end_layout
+
+\begin_layout Enumerate
+Make sure that in '/', there is a decompressor for each compression type
+ used.
+ (C)
+\end_layout
+
+\begin_layout Enumerate
+In the directory named by the boot type, execute 'stage2'.
+ (C)
+\end_layout
+
+\begin_layout Enumerate
+In that directory, look for a file 'payload', and load all of 'payload/segment%d
+'.
+ (C)
+\end_layout
+
+\begin_layout Enumerate
+Jump to the entry point of 'payload/segment0'.
  (C)
 \end_layout
 
@@ -834,13 +897,11 @@ The second is a simple traversal, via linked list, of all the devices.
 \end_layout
 
 \begin_layout Subparagraph*
-Phase 1 -- making printk work
+Phase 1 -- very early setup
 \end_layout
 
 \begin_layout Standard
-These are any functions that are required to make printk operational.
- No other code should be run in Phase 1.
- 
+This phase existed to make printk work and has been obsoleted.
 \end_layout
 
 \begin_layout Standard
@@ -867,8 +928,6 @@ Phase 2 -- preparation for bus scan
 \begin_layout Standard
 These are functions that are required before any PCI operations of any kind
  are run.
- These functions may call printk.
- 
 \end_layout
 
 \begin_layout Standard
@@ -1650,9 +1709,9 @@ struct superio superio {
 \begin_layout Standard
 In our opinion, this is asking for trouble.
  We currently, in the superio code, can catch stupid errors in usage that
- would be lost were we to go to this
+ would be lost were we to go to this 
 \family sans
- void * based approach.
+void * based approach.
  In fact, we can argue that we ought to be adding stronger type checking
  to the tree, not taking it away.
  As of this version of the document, the handling of the superio is not
@@ -2445,9 +2504,9 @@ The errors were mainly changes to printk.
  This file is only used for the southbridge part, so, following LinuxBIOS
  include rules, cs5536.h does not go in include; rather, it goes in the 
 \family typewriter
-southbridge/amd/cs5536 
+southbridge/amd/cs5536
 \family default
-directory.
+ directory.
  We fix the includes so that they have proper names, and add Doxygen comments,
  which as of June 1, 2007, are required for all commits.
  Also, all functions save smbus_read_byte are static, as only that one function
@@ -2471,10 +2530,6 @@ R345
 We bring across the cs5536_early_setup.c, and make the few changes needed
  to get it to compile.
  
-\end_layout
-
-\begin_layout Standard
-
 \end_layout
 
 \begin_layout Standard

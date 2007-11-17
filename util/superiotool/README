@@ -30,9 +30,9 @@ Installation
 Usage
 -----
 
- $ superiotool [-d] [-D] [-V] [-v] [-h]
+ $ superiotool [-d] [-V] [-v] [-h]
 
- -d | --dump            Dump Super I/O registers
+ -d | --dump            Dump Super I/O register contents
  -V | --verbose         Verbose mode
  -v | --version         Show the superiotool version
  -h | --help            Show a short help text

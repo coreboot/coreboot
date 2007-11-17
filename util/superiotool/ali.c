@@ -53,6 +53,8 @@ static const struct superio_registers reg_table[] = {
 			{0x30,0xf0,0xf1,0xf2,0xf3,0xf4,0xf5,EOT},
 			{0x00,0x35,0x14,0x11,0x71,RSVD,0x05,EOT}},
 		{EOT}}},
+	{0x2351, "M512x", {
+		{EOT}}},
 	{EOT}
 };
 
@@ -78,6 +80,8 @@ void probe_idregs_ali(uint16_t port)
 
 	id = regval(port, DEVICE_ID_BYTE1_REG) << 8;
 	id |= regval(port, DEVICE_ID_BYTE2_REG);
+
+	/* TODO: Not documented/available on M512x (?) */
 	rev = regval(port, DEVICE_REV_REG);
 
 	if (superio_unknown(reg_table, id)) {

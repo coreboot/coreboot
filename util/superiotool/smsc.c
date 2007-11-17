@@ -28,9 +28,18 @@
 
 static const struct superio_registers reg_table[] = {
 	/* The following Super I/Os use the 0x20/0x21 ID registers. */
+	{0x03, "FDC37C93xFR", {
+		/* FIXME: There's another 0x03 but found on port 0x0d/0x0e! */
+		{EOT}}},
+	{0x0a, "FDC37N971", {
+		{EOT}}},
+	{0x0b, "FDC37N972", {
+		{EOT}}},
 	{0x0e, "LPC47N252", {	/* From sensors-detect */
 		{EOT}}},
 	{0x14, "LPC47M172", {
+		{EOT}}},
+	{0x30, "FDC37C93xAPM", {
 		{EOT}}},
 	{0x40, "FDC37C67x", {	/* E.g. FDC37C672. Chiprev: 0x01 */
 		{EOT}}},
@@ -78,6 +87,8 @@ static const struct superio_registers reg_table[] = {
 		{0xa, "ACPI",
 			{0x30,0x60,0x61,0x70,0xf0,EOT},
 			{0x00,0x00,0x00,NANA,NANA,EOT}},
+		{EOT}}},
+	{0x43, "FDC37B77x", {
 		{EOT}}},
 	{0x44, "FDC37B78x", {
 		{NOLDN, NULL,
@@ -337,9 +348,13 @@ static const struct superio_registers reg_table[] = {
 	{0x03, "FDC37C669", {
 		/* Init: 0x55, 0x55. Exit: 0xaa. Ports: 0x3f0/0x370. */
 		/* Chiprev: 0x02. */
+		/* FIXME: There's another 0x03 but found on port 0x20/0x21! */
 		{EOT}}},
 	{0x04, "FDC37C669FR", {	/* TODO: Not yet in sensors-detect. */
 		/* Init: 0x55, 0x55. Exit: 0xaa. Ports: 0x3f0/0x370. */
+		{EOT}}},
+	{0x13, "LPC47N237", {
+		/* Init: 0x55. Exit: 0xaa. Ports: 0x2e/0x4e. */
 		{EOT}}},
 	{0x28, "FDC37N769", {
 		/* Init: 0x55. Exit: 0xaa. Ports: 0x3f0/0x370. */
@@ -354,6 +369,9 @@ static const struct superio_registers reg_table[] = {
 			 NANA,NANA,NANA,0x03,RSVD,RSVD,RSVD,RSVD,RSVD,RSVD,
 			 0x80,0x00,0x3c,RSVD,RSVD,0x00,0x00,0x00,0x00,0x00,
 			 0x00,0x00,RSVD,0x00,0x00,0x03,0x00,0x00,EOT}},
+		{EOT}}},
+	{0x29, "FDC37N3869/FDC37N869", {
+		/* Init: 0x55. Exit: 0xaa. Ports: 0x3f0/0x370. */
 		{EOT}}},
 	{0x5a, "LPC47N227", {
 		/* Init: 0x55. Exit: 0xaa. Ports: 0x2e/0x4e. */

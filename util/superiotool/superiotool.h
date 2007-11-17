@@ -30,7 +30,7 @@
 #include <sys/io.h>
 
 #define USAGE "Usage: superiotool [-d] [-V] [-v] [-h]\n\n\
-  -d | --dump            Dump Super I/O registers\n\
+  -d | --dump            Dump Super I/O register contents\n\
   -V | --verbose         Verbose mode\n\
   -v | --version         Show the superiotool version\n\
   -h | --help            Show a short help text\n\n\

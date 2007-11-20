@@ -18,9 +18,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef POST_CODE_H
+#define POST_CODE_H
+
 #include <shared.h>
 
 SHARED(post_code, void, u8 value);
 
 #define POST_START_OF_MAIN                              0x01
 
+#endif /* POST_CODE_H */

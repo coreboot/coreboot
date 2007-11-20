@@ -21,7 +21,6 @@
 #include <types.h>
 #include <lib.h>
 #include <console.h>
-#include <post_code.h>
 #include <msr.h>
 #include <spd.h>
 #include <io.h>

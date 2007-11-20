@@ -20,7 +20,6 @@
 #include <types.h>
 #include <lib.h>
 #include <console.h>
-#include <post_code.h>
 #include <device/pci.h>
 #include <msr.h>
 #include <amd_geodelx.h>

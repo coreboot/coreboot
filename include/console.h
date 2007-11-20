@@ -19,6 +19,7 @@
 
 #include <types.h>
 #include <shared.h> /* We share symbols from stage 0 */
+#include <post_code.h>
 
 #define BIOS_EMERG      0   /* system is unusable                   */
 #define BIOS_ALERT      1   /* action must be taken immediately     */
@@ -35,7 +36,6 @@ void console_tx_byte(unsigned char byte, void *arg);
 void console_tx_flush(void);
 unsigned char console_rx_byte(void);
 int console_tst_byte(void);
-void post_code(u8 value);
 void die(const char *msg);
 
 struct console_driver {

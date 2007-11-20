@@ -26,7 +26,6 @@
 #include <tables.h>
 #include <lib.h>
 #include <mc146818rtc.h>
-#include <post_code.h>
 
 /* ah, well, what a mess! This is a hard code. FIX ME but how? 
  * By getting rid of ELF ...

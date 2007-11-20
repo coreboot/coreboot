@@ -20,7 +20,6 @@
 
 #include <types.h>
 #include <console.h>
-#include <post_code.h>
 #include <msr.h>
 #include <cpu.h>
 #include <amd_geodelx.h>

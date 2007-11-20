@@ -34,6 +34,7 @@
  * LinuxBIOS is divided into pre-DRAM part and DRAM part. The stages before
  * this part are stage 0 and stage 1. This part contains stage 2, which
  * consists of phases 1 through 6.
+ * printk has been set up in stage 1 and is working.
  *
  * Device Enumeration: in the dev_enumerate() phase.
  *
@@ -45,29 +46,11 @@ int stage2(void)
 	/* TODO: Add comment. */
 	void show_all_devs(void);
 
-	static const char console_test[] =
-		"\n\nLinuxBIOS-"
-		LINUXBIOS_VERSION
-		LINUXBIOS_EXTRA_VERSION
-		" "
-		LINUXBIOS_BUILD
-		" booting...\n";
-
 	post_code(0x20);
-
-	/* TODO: Explain why we use printk here although it is claimed to be
-	 * impossible according to the documentation. The "has to be done
-	 * before printk can be used" comment below seems to suggest the same.
-	 * However, we already enable serial in arch/x86/stage1.c:stage1_main()
-	 * when we call hardware_stage1(); uart_init(); console_init(); 
-	 * Why test the console again if it already is tested in stage 1?
-	 */
-	printk(BIOS_NOTICE, console_test);
-
 	dev_init();
 
-	/* Console init, also ANYTHING that has to be done 
-	 * before printk can be used. 
+	/* Phase 1 was console init and making printk work. Both functions are
+	 * now performed by stage 1 code. Phase 1 is now without purpose.
 	 */
 	post_code(0x30);
 	dev_phase1();

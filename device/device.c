@@ -692,14 +692,14 @@ int reset_bus(struct bus *bus)
  *
  * Starting at the first device on the global device link list,
  * walk the list and call the device's phase1() method to do very
- * early setup. phase1 should only be used for devices that CAN NOT use
- * printk(), or that are part of making printk() work. 
+ * early setup.
  */
 void dev_phase1(void)
 {
 	struct device *dev;
 
 	post_code(0x31);
+	printk(BIOS_DEBUG, "Phase 1: Very early setup...\n");
 	for (dev = all_devices; dev; dev = dev->next) {
 		if (dev->ops && dev->ops->phase1_set_device_operations) {
 			dev->ops->phase1_set_device_operations(dev);
@@ -715,7 +715,7 @@ void dev_phase1(void)
  *
  * Starting at the first device on the global device link list,
  * walk the list and call the device's phase2() method to do
- * early setup. You can use printk() in phase 2 methods. 
+ * early setup. 
  */
 void dev_phase2(void)
 {
@@ -729,7 +729,7 @@ void dev_phase2(void)
 			printk(BIOS_SPEW,
 			       "Calling phase2 phase2_setup_scan_bus...");
 			dev->ops->phase2_setup_scan_bus(dev);
-			printk(BIOS_SPEW, " DONE");
+			printk(BIOS_SPEW, " done");
 		}
 		printk(BIOS_SPEW, "\n");
 	}

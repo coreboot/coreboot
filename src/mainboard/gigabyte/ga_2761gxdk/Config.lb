@@ -269,12 +269,12 @@ chip northbridge/amd/amdk8/root_complex
                 	                 			io 0x62 = 0x230
                 	                			irq 0x70 = 9
 							end
-                	        			device pnp 2e.5 on #  Keyboard
+							device pnp 2e.5 off #  Keyboard
                 	                 			io 0x60 = 0x60
                 	                 			io 0x62 = 0x64
                 	                			irq 0x70 = 1
 							end
-                	        			device pnp 2e.6 on #  Mouse
+							device pnp 2e.6 off #  Mouse
                 	                			irq 0x70 = 12
 							end
                 	        			device pnp 2e.8 off #  MIDI

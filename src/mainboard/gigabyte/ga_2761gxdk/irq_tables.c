@@ -75,7 +75,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
         addr &= ~15;
 
         /* This table must be betweeen 0xf0000 & 0x100000 */
-        printk_info("Writing IRQ routing tables to 0x%x...\n", addr);
+	printk_info("Writing IRQ routing tables to 0x%x...", addr);
 
 	pirq = (void *)(addr);
 	v = (uint8_t *)(addr);
@@ -83,8 +83,8 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	pirq->signature = PIRQ_SIGNATURE;
 	pirq->version  = PIRQ_VERSION;
 
-	pirq->rtr_bus = bus_sis966[0];
-	pirq->rtr_devfn = ((sbdn+6)<<3)|0;
+	pirq->rtr_bus = 0;
+	pirq->rtr_devfn = PCI_DEVFN(2, 0);
 
 	pirq->exclusive_irqs = 0;
 
@@ -98,80 +98,72 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	pirq_info = (void *) ( &pirq->checksum + 1);
 	slot_num = 0;
 
+	write_pirq_info(pirq_info, 0, PCI_DEVFN(2, 0), 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
+	pirq_info++; slot_num++;
+
+	pirq->size = 32 + 16 * slot_num;
+
+	for (i = 0; i < pirq->size; i++)
+		sum += v[i];
+
+	sum = pirq->checksum - sum;
+
+	if (sum != pirq->checksum) {
+		pirq->checksum = sum;
+	}
+
+	printk_info("done.\n");
+
         {
                 device_t dev;
                 dev = dev_find_slot(0, PCI_DEVFN(2,0));
-                if (dev) {
-
+		if (dev) {
                         /* initialize PCI interupts - these assignments depend
                         on the PCB routing of PINTA-D
 
                         PINTA = IRQ10
                         PINTB = IRQ11
-                        PINTC = IRQ5
-                        PINTD = IRQ5
+			PINTC = NA
+			PINTD = IRQ10
                         PINTE = IRQ11
                         PINTF = IRQ5
-                        PINTG = IRQ10
-                        PINTH = IRQ5
+			PINTG = NA
+			PINTH = IRQ7
 
                         */
                 int	i;
                 uint8_t	reg[8]={0x41,0x42,0x43,0x44,0x60,0x61,0x62,0x63};
-                uint8_t	irq[8]={0x0A,0X0B,0X05,0X05,0X0B,0X05,0X0A,0X0A};
+		uint8_t irq[8]={0x0A,0X0B,0X0,0X0a,0X0B,0X05,0X0,0X07};
 
                 for(i=0;i<8;i++)
                     pci_write_config8(dev, reg[i], irq[i]);
-                }
+		} // endif
 
                 printk_debug("Setting Onboard SiS Southbridge\n");
 
-                /*
-                 * Non-layout for GA-2761GX
-                 *
                 dev = dev_find_slot(0, PCI_DEVFN(2,5));   // 5513 (IDE)
                 pci_write_config8(dev, 0x3C, 0x0A);
-                */
-
                 dev = dev_find_slot(0, PCI_DEVFN(3,0));   // USB 1.1
                 pci_write_config8(dev, 0x3C, 0x0B);
                 dev = dev_find_slot(0, PCI_DEVFN(3,1));   // USB 1.1
                 pci_write_config8(dev, 0x3C, 0x05);
                 dev = dev_find_slot(0, PCI_DEVFN(3,3));   // USB 2.0
-                pci_write_config8(dev, 0x3C, 0x0A);
+		pci_write_config8(dev, 0x3C, 0x07);
                 dev = dev_find_slot(0, PCI_DEVFN(4,0));   // 191 (LAN)
-                pci_write_config8(dev, 0x3C, 0x05);
+		pci_write_config8(dev, 0x3C, 0x0A);
                 dev = dev_find_slot(0, PCI_DEVFN(5,0));   // 1183 (SATA)
                 pci_write_config8(dev, 0x3C, 0x0B);
                 dev = dev_find_slot(0, PCI_DEVFN(6,0));   // PCI-E
                 pci_write_config8(dev, 0x3C, 0x0A);
                 dev = dev_find_slot(0, PCI_DEVFN(7,0));   // PCI-E
                 pci_write_config8(dev, 0x3C, 0x0A);
-
-                /*
-                 * Non-layout for GA-2761GX
-                 *
                 dev = dev_find_slot(0, PCI_DEVFN(15,0));  // Azalia
                 pci_write_config8(dev, 0x3C, 0x05);
-                */
         }
 
-//pci bridge
-	write_pirq_info(pirq_info, bus_sis966[0], ((sbdn+6)<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
-	pirq_info++; slot_num++;
-
-	pirq->size = 32 + 16 * slot_num;
-
-        for (i = 0; i < pirq->size; i++)
-                sum += v[i];
-
-	sum = pirq->checksum - sum;
-
-        if (sum != pirq->checksum) {
-                pirq->checksum = sum;
-        }
-
-	printk_info("done.\n");
+	printk_debug("pirq routing table, size=%d\n", pirq->size);
+	for (i = 0; i < pirq->size; i+=4)
+		printk_debug("%.2x%.2x%.2x%.2x\n", v[i+3],v[i+2],v[i+1],v[i]);
 
 	return	(unsigned long) pirq_info;
 

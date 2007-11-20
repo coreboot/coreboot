@@ -151,7 +151,7 @@ static const uint8_t	SiS_NB_init[56][3]={
 {0x45, 0x00 ,0xFF},					//Reg 0x45
 {0x46, 0x00 ,0x90},					//Reg 0x46
 {0x47, 0x00 ,0xA0},					//Reg 0x47
-//{0x4C, 0xFF ,0x09},					//Reg 0x4C //  SiS307 enable
+//{0x4C, 0xFF ,0x09},					//Reg 0x4C // SiS307 enable
 {0x4E, 0x00 ,0x00},					//Reg 0x4E
 {0x4F, 0x00 ,0x02},					//Reg 0x4F
 {0x5B, 0x00 ,0x44},					//Reg 0x5B
@@ -195,7 +195,7 @@ static const uint8_t	SiS_NB_init[56][3]={
 };
 
 static const uint8_t SiS_NBAGP_init[34][3]={
-{0xCF, 0xDF, 0x00},      //HT issue
+{0xCF, 0xDF, 0x00},	//HT issue
 {0x06, 0xDF, 0x20},
 {0x1E, 0xDF, 0x20},
 {0x50, 0x00, 0x02},
@@ -228,7 +228,7 @@ static const uint8_t SiS_NBAGP_init[34][3]={
 {0xBF, 0xF9, 0x06},
 {0xBA, 0x00, 0x61},
 {0xBD, 0x7F, 0x80},
-{0x00, 0x00, 0x00}     //End of table
+{0x00, 0x00, 0x00}	//End of table
 };
 
 static const uint8_t	SiS_ACPI_2_init[56][3]={
@@ -298,7 +298,7 @@ static const uint8_t	SiS_SiS1183_init[44][3]={
 {0x2E, 0x00, 0x83},
 {0x2F, 0x00, 0x11},
 {0x90, 0x00, 0x40},
-{0x91, 0x00, 0x00},         // set mode
+{0x91, 0x00, 0x00},	// set mode
 {0x50, 0x00, 0xA2},
 {0x52, 0x00, 0xA2},
 {0x55, 0x00, 0x96},
@@ -313,7 +313,7 @@ static const uint8_t	SiS_SiS1183_init[44][3]={
 {0x85, 0x00, 0xB3},
 {0x86, 0x00, 0x72},
 {0x87, 0x00, 0x40},
-{0x88, 0x00, 0xDE},         // after set mode
+{0x88, 0x00, 0xDE},	// after set mode
 {0x89, 0x00, 0xB3},
 {0x8A, 0x00, 0x72},
 {0x8B, 0x00, 0x40},
@@ -334,7 +334,7 @@ static const uint8_t	SiS_SiS1183_init[44][3]={
 {0xA1, 0x00, 0x15},
 {0xA2, 0x00, 0x15},
 {0xA3, 0x00, 0x15},
-{0x00, 0x00, 0x00}					//End of table
+{0x00, 0x00, 0x00}	//End of table
 };
 
 /*       In => Share Memory size
@@ -411,7 +411,7 @@ void sis_init_stage1(void)
 					i++;
 	};
 // ========================== NBPCIE =============================
-	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761), 0);	  //Disable Internal GUI enable bit
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761), 0);	//Disable Internal GUI enable bit
 	temp8 = pci_read_config8(dev, 0x4C);
 	GUI_En = temp8 & 0x10;
 	pci_write_config8(dev, 0x4C, temp8 & (!0x10));
@@ -425,19 +425,19 @@ void sis_init_stage1(void)
 					pci_write_config8(dev, SiS_NBPCIE_init[i][0], temp8);
 					i++;
 	};
-	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761), 0);		//Restore Internal GUI enable bit
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761), 0);	//Restore Internal GUI enable bit
 	temp8 = pci_read_config8(dev, 0x4C);
 	pci_write_config8(dev, 0x4C, temp8 | GUI_En);
 
-     return;
+	return;
 }
 
 
 
 void sis_init_stage2(void)
 {
-  	device_t dev;
-  	msr_t	msr;
+	device_t dev;
+	msr_t	msr;
 	int	i;
 	uint8_t temp8;
 	uint16_t temp16;
@@ -509,19 +509,36 @@ void sis_init_stage2(void)
 // ========================== Misc =============================
        printk_debug("Init Misc -------->\n");
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS966_LPC), 0);
-	// PCI Device Enable
-	pci_write_config8(dev, 0x7C, 0x03);  // bit0=0 : enable audio controller(), bit1=1 : disable modem
-	pci_write_config8(dev, 0x76, pci_read_config8(dev, 0x76)|0x30);  // SM bus enable, PCIEXP Controller 1 and 2 disable
-	pci_write_config8(dev, 0x7E, 0x00);  // azalia controller enable
 
+	/* R77h Internal PCI Device Enable 1 (Power On Value = 0h)
+	 * bit5 : USB Emulation (1=enable)
+	 * bit3 : Internal Keyboard Controller Port Access Control enable (1=enable)
+	 * bit2 : Reserved
+	 * bit1 : Mask USB A20M# Event (1:K8, 0:P4/K7)
+	 */
+	pci_write_config8(dev, 0x77, 0x2E);
+
+	/* R7Ch Internal PCI Device Enable 2  (Power On Value = 0h)
+	 * bit4 : SATA Controller Enable (0=enable)
+	 * bit3 : IDE Controller Enable (0=enable)
+	 * bit2 : MAC Controller Enable (0=enable)
+	 * bit1 : MODEM Controller Enable (1=disable)
+	 * bit0 : AC97 Controller Enable (1=disable)
+	 */
+	pci_write_config8(dev, 0x7C, 0x03);
+
+	/* R7Eh Enable Azalia (Power On Value = 08h)
+	 * bit3 : Azalia Controller Enable (0=enable)
+	 */
+	pci_write_config8(dev, 0x7E, 0x00);  // azalia controller enable
 	temp8=inb(0x878)|0x4;   //bit2=1 enable Azalia  =0 enable AC97
 	outb(temp8, 0x878);  // ACPI select AC97 or HDA controller
 	printk_debug("Audio select %x\n",inb(0x878));
 
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS966_SATA), 0);
-	if(!dev){
+
+	if (!dev)
 		print_debug("SiS 1183 does not exist !!");
-	}
 	// SATA Set Mode
 	pci_write_config8(dev, 0x90, (pci_read_config8(dev, 0x90)&0x3F) | 0x40);
 

@@ -28,7 +28,7 @@
  *  - http://en.wikipedia.org/wiki/Intel_8253
  */
 
-#define I82C54_CONTROL_WORD_REGISTER	0x43	/* Write-only. */
+#define I82C54_CONTROL_WORD_REGISTER	0x43	/* Write-only! */
 #define I82C54_COUNTER0			0x40
 #define I82C54_COUNTER1			0x41
 #define I82C54_COUNTER2			0x42

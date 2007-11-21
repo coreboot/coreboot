@@ -20,9 +20,16 @@
 #include <types.h>
 #include <io.h>
 
+/**
+ * Output a POST code (Power-on-self-test code) on port 0x80.
+ *
+ * We're hardcoding 0x80 as port where we output the POST code, as pretty
+ * much all of today's computers use that one. However, in the past (pre-486
+ * era or so) other ports were sometimes used, too.
+ *
+ * @param value The 8 bit value to output as POST code.
+ */
 void post_code(u8 value)
 {
 	outb(value, 0x80);
 }
-
-

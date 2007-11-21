@@ -30,10 +30,13 @@ INITRAM_OBJ =   $(obj)/mainboard/$(MAINBOARDDIR)/initram.o \
 $(obj)/mainboard/$(MAINBOARDDIR)/initram.o: $(src)/mainboard/$(MAINBOARDDIR)/initram.c
 	$(Q)$(CC) $(INITCFLAGS) -D_SHARED -fPIE -c $< -o $@
 $(obj)/northbridge/amd/geodelx/raminit.o: $(src)/northbridge/amd/geodelx/raminit.c
+	$(Q)mkdir -p $(dir $@)
 	$(Q)$(CC) $(INITCFLAGS) -D_SHARED -fPIE -c $< -o $@
 $(obj)/southbridge/amd/cs5536/smbus_initram.o: $(src)/southbridge/amd/cs5536/smbus_initram.c
+	$(Q)mkdir -p $(dir $@)
 	$(Q)$(CC) $(INITCFLAGS) -D_SHARED -fPIE -c $< -o $@
 $(obj)/arch/x86/geodelx/geodelx.o: $(src)/arch/x86/geodelx/geodelx.c
+	$(Q)mkdir -p $(dir $@)
 	$(Q)$(CC) $(INITCFLAGS) -D_SHARED -fPIE -c $< -o $@
 
 STAGE2_MAINBOARD_OBJ = 

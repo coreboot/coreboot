@@ -43,7 +43,7 @@ $(obj)/linuxbios.vpd:
 INITRAM_OBJ = $(obj)/mainboard/$(MAINBOARDDIR)/initram.o
 
 $(obj)/mainboard/$(MAINBOARDDIR)/initram.o: $(src)/mainboard/$(MAINBOARDDIR)/initram.c
-	$(Q)$(CC) $(INITCFLAGS) -D_SHARED -fPIE -c $< -o $@
+	$(Q)$(CC) $(INITCFLAGS) -D_SHARED -D_MAINOBJECT -fPIE -c $< -o $@
 
 $(obj)/linuxbios.initram $(obj)/linuxbios.initram.map: $(obj)/stage0.init $(obj)/stage0-prefixed.o $(INITRAM_OBJ)
 	$(Q)# initram links against stage0

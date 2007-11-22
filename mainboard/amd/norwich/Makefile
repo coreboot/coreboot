@@ -28,7 +28,7 @@ INITRAM_OBJ =   $(obj)/mainboard/$(MAINBOARDDIR)/initram.o \
 
 # Next Quest: Make a single rule out of those:
 $(obj)/mainboard/$(MAINBOARDDIR)/initram.o: $(src)/mainboard/$(MAINBOARDDIR)/initram.c
-	$(Q)$(CC) $(INITCFLAGS) -D_SHARED -fPIE -c $< -o $@
+	$(Q)$(CC) $(INITCFLAGS) -D_SHARED -D_MAINOBJECT -fPIE -c $< -o $@
 $(obj)/northbridge/amd/geodelx/raminit.o: $(src)/northbridge/amd/geodelx/raminit.c
 	$(Q)mkdir -p $(dir $@)
 	$(Q)$(CC) $(INITCFLAGS) -D_SHARED -fPIE -c $< -o $@

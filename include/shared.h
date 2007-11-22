@@ -29,8 +29,23 @@
  */
 #define FUNC(func, ret, attr, args...)   \
 	ret stage0_##func(args) attr
+
+/*
+ * The introduction of the _SHARED macros had one flaw: If multiple files
+ * had _SHARED defined during compilation, each of them would contain an
+ * assignment of stage0_printk to *printk. During linking, this caused
+ * errors as multiple definitions of printk existed.
+ * Make sure _SHARED alone gives you only the printk prototype, and iff
+ * _MAINOBJECT is defined as well, include the assignment.
+ */
+#ifdef _MAINOBJECT
 #define EXTERN(func, ret, attr, args...) \
 	ret (*func)(args) attr= stage0_##func
+#else
+#define EXTERN(func, ret, attr, args...) \
+	ret *func(args) attr
+#endif
+
 #else
 #define FUNC(func, ret, attr, args...)   \
 	ret func(args) attr

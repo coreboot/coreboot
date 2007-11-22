@@ -78,3 +78,13 @@ $(obj)/southbridge/%.o: $(src)/southbridge/%.c $(obj)/statictree.h
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
 
+#
+# RAM initialization code can not be linked at a specific address,
+# hence it has to be executed in place position independently.
+#
+
+$(obj)/%_xip.o: $(src)/%.c
+	$(Q)mkdir -p $(dir $@)
+	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@)) (XIP)\n"
+	$(Q)$(CC) $(INITCFLAGS) -D_SHARED -fPIE -c $< -o $@
+

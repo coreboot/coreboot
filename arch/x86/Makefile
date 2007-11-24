@@ -107,7 +107,7 @@ $(obj)/linuxbios.bootblock: $(obj)/linuxbios.vpd $(obj)/stage0.init
 #
 
 STAGE0_LIB_OBJ       = uart8250.o mem.o elfboot.o lar.o delay.o vtxprintf.o \
-		       vsprintf.o console.o $(DECOMPRESSORS)
+		       vsprintf.o console.o string.o $(DECOMPRESSORS)
 STAGE0_ARCH_X86_OBJ  = stage1.o serial.o archelfboot.o speaker.o \
 		       udelay_io.o mc146818rtc.o post_code.o
 
@@ -169,7 +169,8 @@ $(obj)/stage0.o $(obj)/stage0.init: $(STAGE0_OBJ)
 # TODO: This should be compressed with the default compressor.
 #
 
-STAGE2_LIB_OBJ       = stage2.o clog2.o mem.o tables.o delay.o compute_ip_checksum.o
+STAGE2_LIB_OBJ       = stage2.o clog2.o mem.o tables.o delay.o \
+		       compute_ip_checksum.o string.o
 
 STAGE2_ARCH_X86_OBJ  = archtables.o linuxbios_table.o udelay_io.o
 STAGE2_ARCH_X86_OBJ += pci_ops_auto.o pci_ops_conf1.o pci_ops_conf2.o

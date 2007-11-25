@@ -69,7 +69,7 @@ if HAVE_ACPI_TABLES
         object fadt.o
 	makerule dsdt.c
 		depends "$(MAINBOARD)/dsdt.asl"
-		action  "iasl -tc $(MAINBOARD)/dsdt.asl"
+		action  "iasl -p $(PWD)/dsdt -tc $(MAINBOARD)/dsdt.asl"
 		action  "mv dsdt.hex dsdt.c"
 	end
         object ./dsdt.o

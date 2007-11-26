@@ -30,7 +30,7 @@
 #include <southbridge/amd/cs5536/cs5536.h>
 #include <northbridge/amd/geodelx/raminit.h>
 
-struct wmsr {
+static const struct wmsr {
 	u32 reg;
 	struct msr  msr;
 } dbe61_msr[] = {

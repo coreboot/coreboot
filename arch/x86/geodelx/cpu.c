@@ -83,7 +83,7 @@ static void lx_init(struct device *dev)
  * in multiple CPU files and use the device ID, at scan time, to pick which
  * one is used. There is a lot of flexibility here!
  */
-static struct device_operations geodelx_cpuops = {
+static const struct device_operations geodelx_cpuops = {
 	.constructor	= default_device_constructor,
 	.phase3_scan	= NULL,
 	.phase6_init	= lx_init,
@@ -97,7 +97,7 @@ static struct device_operations geodelx_cpuops = {
  * depending on date manufactured they can be all over the place (the Geode
  * alone has had 3 vendors!) so we will have to be careful.
  */
-struct constructor geodelx_constructors[] = {
+const struct constructor geodelx_constructors[] = {
 	{.id = {.type = DEVICE_ID_PCI,
 		/* TODO: This is incorrect, these are _not_ PCI IDs! */
 		.u = {.pci = {.vendor = X86_VENDOR_AMD,.device = 0x05A2}}},

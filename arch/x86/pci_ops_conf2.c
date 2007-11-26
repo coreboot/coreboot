@@ -67,8 +67,7 @@ static void pci_conf2_write_config32(struct bus *pbus, int bus, int devfn, int w
 #undef IOADDR
 #undef DEVFUNC
 
-struct pci_bus_operations pci_cf8_conf2 =
-{
+const struct pci_bus_operations pci_cf8_conf2 = {
 	.read8  = pci_conf2_read_config8,
 	.read16 = pci_conf2_read_config16,
 	.read32 = pci_conf2_read_config32,

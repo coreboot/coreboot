@@ -107,7 +107,7 @@ static void sdram_hardwire(void)
 /* Hold Count - how long we will sit in reset */
 #define PLLMSRlo 0x00DE0000
 
-struct wmsr {
+static const struct wmsr {
 	u32 reg;
 	struct msr  msr;
 } dbe61_msr[] = {

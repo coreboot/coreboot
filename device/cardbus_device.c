@@ -242,7 +242,7 @@ unsigned int cardbus_scan_bridge(struct device *dev, unsigned int max)
 	return max;
 }
 
-struct device_operations default_cardbus_ops_bus = {
+const struct device_operations default_cardbus_ops_bus = {
 	.read_resources   = cardbus_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = cardbus_enable_resources,

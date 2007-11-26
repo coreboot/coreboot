@@ -58,8 +58,7 @@ static void pci_conf1_write_config32(struct bus *pbus, int bus, int devfn, int w
 
 #undef CONFIG_CMD
 
-struct pci_bus_operations pci_cf8_conf1 =
-{
+const struct pci_bus_operations pci_cf8_conf1 = {
 	.read8  = pci_conf1_read_config8,
 	.read16 = pci_conf1_read_config16,
 	.read32 = pci_conf1_read_config32,

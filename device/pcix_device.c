@@ -136,11 +136,11 @@ unsigned int pcix_scan_bridge(struct device *dev, unsigned int max)
 }
 
 /** Default device operations for PCI-X bridges. */
-static struct pci_operations pcix_bus_ops_pci = {
+static const struct pci_operations pcix_bus_ops_pci = {
 	.set_subsystem = 0,
 };
 
-struct device_operations default_pcix_ops_bus = {
+const struct device_operations default_pcix_ops_bus = {
 	.read_resources   = pci_bus_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_bus_enable_resources,

@@ -40,7 +40,7 @@ static void setup_onboard(struct device *dev)
 	init_pc_keyboard(0x60, 0x64, &conf);
 }
 
-static struct device_operations qemuvga_pci_ops_dev = {
+static const struct device_operations qemuvga_pci_ops_dev = {
 	.constructor			= default_device_constructor,
 	.phase3_scan			= 0,
 	.phase4_read_resources		= pci_dev_read_resources,
@@ -51,7 +51,7 @@ static struct device_operations qemuvga_pci_ops_dev = {
 	.ops_pci			= &pci_dev_ops_pci,
 };
 
-struct constructor qemuvga_constructors[] = {
+const struct constructor qemuvga_constructors[] = {
 	{.id = {.type = DEVICE_ID_PCI,
 		.u = {.pci = {.vendor = PCI_VENDOR_ID_CIRRUS,
 			      .device = PCI_DEVICE_ID_CIRRUS_5446}}},

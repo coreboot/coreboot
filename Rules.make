@@ -80,7 +80,7 @@ $(obj)/southbridge/%.o: $(src)/southbridge/%.c $(obj)/statictree.h
 
 #
 # RAM initialization code can not be linked at a specific address,
-# hence it has to be executed in place position independently.
+# hence it has to be executed in place (XIP) position independently.
 #
 
 $(obj)/%_xip.o: $(src)/%.c

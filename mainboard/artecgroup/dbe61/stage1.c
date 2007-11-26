@@ -34,9 +34,9 @@ static const struct wmsr {
 	u32 reg;
 	struct msr  msr;
 } dbe61_msr[] = {
-	{.reg = 0x10000020, {.lo = 0xfff80, .hi = 0x20000000}},
+	{.reg = 0x10000020, {.lo = 0x00fff80, .hi = 0x20000000}},
 	{.reg = 0x10000021, {.lo = 0x80fffe0, .hi = 0x20000000}},
-	{.reg = 0x40000020, {.lo = 0xfff80, .hi = 0x20000000}},
+	{.reg = 0x40000020, {.lo = 0x00fff80, .hi = 0x20000000}},
 	{.reg = 0x40000021, {.lo = 0x80fffe0, .hi = 0x20000000}},
 };
 
@@ -55,9 +55,9 @@ void hardware_stage1(void)
 
 	cs5536_stage1();
 
-	/* NOTE: must do this AFTER the early_setup!
-	 * it is counting on some early MSR setup
-	 * for cs5536.
+	/*
+	 * NOTE: Must do this AFTER the early_setup! It is counting on some
+	 * early MSR setup for the CS5536.
 	 */
 	cs5536_setup_onchipuart();
 }

@@ -19,6 +19,7 @@
  */
 
 #define _MAINOBJECT
+
 #include <types.h>
 #include <lib.h>
 #include <console.h>
@@ -33,9 +34,11 @@
 #include <southbridge/amd/cs5536/cs5536.h>
 #include <northbridge/amd/geodelx/raminit.h>
 
-#define MANUALCONF 0		/* Do automatic strapped PLL config */
-#define PLLMSRHI 0x00001490	/* manual settings for the PLL */
+#define MANUALCONF 0		/* Do automatic strapped PLL config. */
+
+#define PLLMSRHI 0x00001490	/* Manual settings for the PLL */
 #define PLLMSRLO 0x02000030
+
 #define DIMM0 ((u8) 0xA0)
 #define DIMM1 ((u8) 0xA2)
 
@@ -52,10 +55,10 @@ int main(void)
 	sdram_set_spd_registers(DIMM0, DIMM1);
 	sdram_enable(DIMM0, DIMM1);
 
-	/* Check low memory */
-	//ram_check(0x00000000, 640*1024);
+	/* Check low memory. */
+	/* ram_check(0, 640 * 1024); */
 
-	/* Switch from Cache as RAM to real RAM */
+	/* Switch from Cache as RAM to real RAM. */
 	printk(BIOS_SPEW, "Before wbinvd\n");
 	__asm__("wbinvd\n");
 	printk(BIOS_SPEW, "After wbinvd\n");

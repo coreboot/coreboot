@@ -19,6 +19,7 @@
  */
 
 #define _MAINOBJECT
+
 #include <types.h>
 #include <lib.h>
 #include <console.h>
@@ -31,19 +32,19 @@
 #include <southbridge/amd/cs5536/cs5536.h>
 #include <northbridge/amd/geodelx/raminit.h>
 
-#define MANUALCONF 0		/* Do automatic strapped PLL config */
-#define PLLMSRHI 0x00001490	/* manual settings for the PLL */
+#define MANUALCONF 0		/* Do automatic strapped PLL config. */
+
+#define PLLMSRHI 0x00001490	/* Manual settings for the PLL */
 #define PLLMSRLO 0x02000030
+
 #define DIVIL_LBAR_GPIO		0x5140000c
+
 #define DIMM0 ((u8) 0xA0)
 #define DIMM1 ((u8) 0xA2)
 
-/* this is an incredibly mainboard-specific number that has no appropriate place
-  * outside this file. 
-  */
-#define GPIO_BASE            0x6100
+#define GPIO_BASE		0x6100 /* Mainboard-specific */
 
-/* empty function to always fail smbus reads */
+/** Empty function to always fail SMBus reads. */
 int smbus_read_byte(unsigned device, unsigned address)
 {
 	return -1;
@@ -52,14 +53,17 @@ int smbus_read_byte(unsigned device, unsigned address)
 static void init_gpio(void)
 {
 	struct msr msr;
+
 	printk(BIOS_DEBUG, "Initializing GPIO module...\n");
 
-	// initialize the GPIO LBAR
+	/* Initialize the GPIO LBAR. */
 	msr.lo = GPIO_BASE;
 	msr.hi = 0x0000f001;
 	wrmsr(DIVIL_LBAR_GPIO, msr);
 	msr = rdmsr(DIVIL_LBAR_GPIO);
-	printk(BIOS_DEBUG, "DIVIL_LBAR_GPIO set to 0x%08x 0x%08x\n", msr.hi, msr.lo);
+
+	printk(BIOS_DEBUG, "DIVIL_LBAR_GPIO set to 0x%08x 0x%08x\n",
+	       msr.hi, msr.lo);
 }
 
 static void sdram_hardwire(void)
@@ -67,16 +71,17 @@ static void sdram_hardwire(void)
 	/* Total size of DIMM = 2^row address (byte 3) * 2^col address (byte 4) *
 	 *                      component Banks (byte 17) * module banks, side (byte 5) *
 	 *                      width in bits (byte 6,7)
-	 *                    = Density per side (byte 31) * number of sides (byte 5) */
-	/* 1. Initialize GLMC registers base on SPD values, do one DIMM for now */
-	struct msr  msr;
+	 *                    = Density per side (byte 31) * number of sides (byte 5)
+	 */
+
+	/* Initialize GLMC registers based on SPD values, do one DIMM for now. */
+	struct msr msr;
 
 	msr.hi = 0x10075012;
 	msr.lo = 0x00000040;
-	
-	wrmsr(MC_CF07_DATA, msr);		//GX3
+	wrmsr(MC_CF07_DATA, msr);	/* GX3 */
 
-	/* timing and mode ... */
+	/* Timing and mode... */
 
 	//msr = rdmsr(0x20000019);
 	
@@ -109,11 +114,11 @@ static void sdram_hardwire(void)
 
 static const struct wmsr {
 	u32 reg;
-	struct msr  msr;
+	struct msr msr;
 } dbe61_msr[] = {
-	{.reg = 0x10000020, {.lo = 0xfff80, .hi = 0x20000000}},
+	{.reg = 0x10000020, {.lo = 0x00fff80, .hi = 0x20000000}},
 	{.reg = 0x10000021, {.lo = 0x80fffe0, .hi = 0x20000000}},
-	{.reg = 0x40000020, {.lo = 0xfff80, .hi = 0x20000000}},
+	{.reg = 0x40000020, {.lo = 0x00fff80, .hi = 0x20000000}},
 	{.reg = 0x40000021, {.lo = 0x80fffe0, .hi = 0x20000000}},
 };
 
@@ -129,14 +134,15 @@ int main(void)
 	post_code(POST_START_OF_MAIN);
 
 	system_preinit();
-
 	pll_reset(MANUALCONF, PLLMSRHI, PLLMSRLO);
-
 	cpu_reg_init(0, DIMM0, DIMM1);
 
 	sdram_hardwire();
+
 	/* Check low memory */
-	/*ram_check(0x00000000, 640*1024); */
+	/* ram_check(0, 640 * 1024); */
+
 	init_gpio();
+
 	return 0;
 }

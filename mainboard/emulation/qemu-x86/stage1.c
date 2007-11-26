@@ -17,15 +17,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* printk will not yet output anything */
+/* printk() will not yet output anything. */
 
 /** 
- * start up hardware needed for stage1
+ * Start up hardware needed for stage1.
  */
 void hardware_stage1(void)
 {
-	/* Nothing to do for Qemu */
+	/* Nothing to do for QEMU. */
 }
+
 void disable_car(void)
 {
 }

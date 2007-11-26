@@ -32,16 +32,17 @@
 void hardware_stage1(void)
 {
 	post_code(POST_START_OF_MAIN);
+
 	geodelx_msr_init();
 
 	cs5536_stage1();
 
-	/* NOTE: must do this AFTER the early_setup!
-	 * it is counting on some early MSR setup
-	 * for cs5536.
-	 */
-	/* We do this early for debug. 
-	 * real setup should done in chipset init via config.lb 
+	/*
+	 * NOTE: Must do this AFTER the early_setup! It is counting on some
+	 * early MSR setup for the CS5536. We do this early for debug. 
+	 * Real setup should be done in chipset init via Config.lb.
+	 *
+	 * TODO: Drop Config.lb reference, update comment.
 	 */
 	cs5536_setup_onchipuart();
 }

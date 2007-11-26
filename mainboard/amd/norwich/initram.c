@@ -31,51 +31,46 @@
 #include <amd_geodelx.h>
 #include <northbridge/amd/geodelx/raminit.h>
 
-#define MANUALCONF 0		/* Do automatic strapped PLL config */
-#define PLLMSRHI 0x00001490	/* manual settings for the PLL */
+#define MANUALCONF 0		/* Do automatic strapped PLL config. */
+
+#define PLLMSRHI 0x00001490	/* Manual settings for the PLL */
 #define PLLMSRLO 0x02000030
+
 #define DIMM0 ((u8) 0xA0)
 #define DIMM1 ((u8) 0xA2)
 
-
 /**
-  * Place holder in case we ever need it. Since this file is a
-  * template for other motherboards, we want this here and we want the
-  * call in the right place.
-  */
-
+ * Placeholder in case we ever need it. Since this file is a template for
+ * other boards, we want this here and we want the call in the right place.
+ */
 static void mb_gpio_init(void)
 {
 	/* Early mainboard specific GPIO setup */
 }
 
-/** 
-  * main for initram for the amd norwich.  It might seem that you
-  * could somehow do these functions in, e.g., the cpu code, but the
-  * order of operations and what those operations are is VERY strongly
-  * mainboard dependent. It's best to leave it in the mainboard code.
-  */
+/**
+ * Main for initram for the AMD Norwich. It might seem that you could somehow
+ * do these functions in, e.g., the CPU code, but the order of operations and
+ * what those operations are is VERY strongly mainboard dependent. It's best to
+ * leave it in the mainboard code.
+ */
 int main(void)
 {
-	u8 smb_devices[] =  {
-		DIMM0, DIMM1
-	};
+	u8 smb_devices[] = { DIMM0, DIMM1 };
 
 	post_code(POST_START_OF_MAIN);
 
 	system_preinit();
-
 	mb_gpio_init();
-
 	pll_reset(MANUALCONF, PLLMSRHI, PLLMSRLO);
-
 	cpu_reg_init(0, DIMM0, DIMM1);
 
 	sdram_set_registers();
 	sdram_set_spd_registers(DIMM0, DIMM1);
 	sdram_enable(DIMM0, DIMM1);
-	/* Check low memory */
-	/*ram_check(0x00000000, 640*1024); */
+
+	/* Check low memory. */
+	/* ram_check(0, 640 * 1024); */
 
 	return 0;
 }

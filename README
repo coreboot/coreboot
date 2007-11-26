@@ -102,7 +102,7 @@ Note: Currently only the x86 QEMU target is supported in LinuxBIOSv3.
   The 'flashrom' tool is located in util/flashrom where you can build it
   from source code by typing 'make'. Alternatively, your favorite Linux
   distribution might ship a 'flashrom' package which provides the 'flashrom'
-  program in (e.g.) /usr/bin. On Debian GNU/Linux systems you can get
+  program in (e.g.) /usr/sbin. On Debian GNU/Linux systems you can get
   the flashrom package via 'apt-get install flashrom'.
 
 

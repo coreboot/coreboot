@@ -32,10 +32,10 @@
 #include <southbridge/amd/cs5536/cs5536.h>
 #include <superio/winbond/w83627hf/w83627hf.h>
 
-#define SERIAL_DEV W83627HF_SP1
-#define SERIAL_IOBASE 0x3f8
+#define SERIAL_DEV	W83627HF_SP1
+#define SERIAL_IOBASE	0x3f8
 
-/* printk will not yet output anything */
+/* printk() will not yet output anything. */
 
 void hardware_stage1(void)
 {
@@ -46,9 +46,9 @@ void hardware_stage1(void)
 
 	cs5536_stage1();
 
-	/* NOTE: must do this AFTER the early_setup!
-	 * it is counting on some early MSR setup
-	 * for cs5536
+	/*
+	 * NOTE: Must do this AFTER the early_setup! It is counting on some
+	 * early MSR setup for the CS5536.
 	 */
 	cs5536_disable_internal_uart();
 	w83627hf_enable_serial(0x2e, SERIAL_DEV, SERIAL_IOBASE);

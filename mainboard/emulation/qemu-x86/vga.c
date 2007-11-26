@@ -32,11 +32,14 @@ static void setup_onboard(struct device *dev)
 	struct pc_keyboard conf;
 
 	printk(BIOS_INFO, "Init VGA device\n");
+
 	dev->on_mainboard = 1;
 	dev->rom_address = 0xc0000;
 
-	// FIXME - this should be in superio some day
-	// but since qemu has no superio.
+	/*
+	 * FIXME: This should be in the Super I/O code some day,
+	 * but since QEMU has no Super I/O...
+	 */
 	init_pc_keyboard(0x60, 0x64, &conf);
 }
 

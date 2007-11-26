@@ -18,6 +18,7 @@
  */
 
 #define _MAINOBJECT
+
 #include <console.h>
 
 int main(void)

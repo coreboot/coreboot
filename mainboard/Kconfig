@@ -47,12 +47,18 @@ config VENDOR_EMULATION
 	help
 	  Select this option for various system emulators, such as QEMU.
 
+config VENDOR_PCENGINES
+	bool "PC Engines"
+	help
+	  Select this option for PC Engines systems.
+
 endchoice
 
 source "mainboard/adl/Kconfig"
 source "mainboard/amd/Kconfig"
 source "mainboard/artecgroup/Kconfig"
 source "mainboard/emulation/Kconfig"
+source "mainboard/pcengines/Kconfig"
 
 choice
 	prompt "ROM chip size"

@@ -161,7 +161,12 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 	/* Turn off Cache-As-Ram */
 	disable_car();
 
-	ret = run_file(&archive, "normal/stage2", (void *)0x1000);
+	entry = load_file(&archive, "normal/stage2.o/segment0");
+	if (entry == (void *)-1)
+		die("FATAL: Failed loading stage2 segment0.");
+	if (load_file(&archive, "normal/stage2.o/segment1") == (void *)-1)
+		die("FATAL: Failed loading stage2 segment1.");
+	ret = run_address(entry);
 	if (ret)
 		die("FATAL: Failed in stage2 code.");
 

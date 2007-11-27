@@ -36,7 +36,7 @@ SILENT := >/dev/null 2>&1
 
 ROM_SIZE := $(shell expr $(CONFIG_LINUXBIOS_ROMSIZE_KB) \* 1024)
 
-LARFILES := nocompress:normal/initram.o normal/stage2 nocompress:normal/option_table
+LARFILES := nocompress:normal/initram.o normal/stage2.o nocompress:normal/option_table
 ifneq ($(CONFIG_PAYLOAD_NONE),y)
 LARFILES += normal/payload
 endif
@@ -57,12 +57,12 @@ ifeq ($(CONFIG_DEFAULT_COMPRESSION_NRV2B),y)
 COMPRESSFLAG := -C nrv2b
 endif
 
-$(obj)/linuxbios.rom $(obj)/linuxbios.map: $(obj)/linuxbios.bootblock $(obj)/util/lar/lar lzma nrv2b $(obj)/linuxbios.initram.o $(obj)/linuxbios.stage2 $(obj)/option_table
+$(obj)/linuxbios.rom $(obj)/linuxbios.map: $(obj)/linuxbios.bootblock $(obj)/util/lar/lar lzma nrv2b $(obj)/linuxbios.initram.o $(obj)/linuxbios.stage2.o $(obj)/option_table
 	$(Q)rm -rf $(obj)/lar.tmp
 	$(Q)mkdir $(obj)/lar.tmp
 	$(Q)mkdir $(obj)/lar.tmp/normal
 	$(Q)cp $(obj)/linuxbios.initram.o $(obj)/lar.tmp/normal/initram.o
-	$(Q)cp $(obj)/linuxbios.stage2 $(obj)/lar.tmp/normal/stage2
+	$(Q)cp $(obj)/linuxbios.stage2.o $(obj)/lar.tmp/normal/stage2.o
 	$(Q)cp $(obj)/option_table $(obj)/lar.tmp/normal/option_table
 ifeq ($(CONFIG_PAYLOAD_NONE),y)
 	$(Q)printf "  PAYLOAD none (as specified by user)\n"
@@ -198,13 +198,11 @@ endif
 STAGE2_OBJ += $(obj)/util/x86emu/libx86emu.a $(LIBGCC_FILE_NAME)
 endif
 
-$(obj)/linuxbios.stage2 $(obj)/linuxbios.stage2.map: $(obj)/stage0.init $(STAGE2_OBJ)
+$(obj)/linuxbios.stage2.o $(obj)/linuxbios.stage2.map: $(obj)/stage0.init $(STAGE2_OBJ)
 	$(Q)# leave a .o with full symbols in it for debugging.
 	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(LD) -R $(obj)/stage0.o -Ttext 0x1000 --entry=stage2 \
 		  -o $(obj)/linuxbios.stage2.o $(STAGE2_OBJ)
-	$(Q)printf "  OBJCOPY $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(OBJCOPY) -O binary $(obj)/linuxbios.stage2.o $(obj)/linuxbios.stage2
 	$(Q)$(NM) $(obj)/linuxbios.stage2.o | sort -u > $(obj)/linuxbios.stage2.map
 
 #

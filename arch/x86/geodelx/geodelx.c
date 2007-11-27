@@ -150,6 +150,7 @@ void pll_reset(int manualconf, u32 pll_hi, u32 pll_lo)
 {
 	struct msr msr_glcp_sys_pll;	/* GeodeLink PLL control MSR */
 
+	printk(BIOS_DEBUG, "pll_reset: read msr %#x\n", GLCP_SYS_RSTPLL);
 	msr_glcp_sys_pll = rdmsr(GLCP_SYS_RSTPLL);
 
 	printk(BIOS_DEBUG, "_MSR GLCP_SYS_RSTPLL (%08x) value is: %08x:%08x\n",
@@ -346,20 +347,20 @@ static void set_delay_control(u8 dimm0, u8 dimm1)
 	 * Note: We only support a module width of 64.
 	 */
 	dimms = 0;
-	spdbyte0 = smbus_read_byte(dimm0, SPD_PRIMARY_SDRAM_WIDTH);
+	spdbyte0 = spd_read_byte(dimm0, SPD_PRIMARY_SDRAM_WIDTH);
 	if (spdbyte0 != 0xFF) {
 		dimms++;
 		spdbyte0 = (u8)64 / spdbyte0 *
-			   (u8)(smbus_read_byte(dimm0, SPD_NUM_DIMM_BANKS));
+			   (u8)(spd_read_byte(dimm0, SPD_NUM_DIMM_BANKS));
 	} else {
 		spdbyte0 = 0;
 	}
 
-	spdbyte1 = smbus_read_byte(dimm1, SPD_PRIMARY_SDRAM_WIDTH);
+	spdbyte1 = spd_read_byte(dimm1, SPD_PRIMARY_SDRAM_WIDTH);
 	if (spdbyte1 != 0xFF) {
 		dimms++;
 		spdbyte1 = (u8)64 / spdbyte1 *
-			   (u8)(smbus_read_byte(dimm1, SPD_NUM_DIMM_BANKS));
+			   (u8)(spd_read_byte(dimm1, SPD_NUM_DIMM_BANKS));
 	} else {
 		spdbyte1 = 0;
 	}

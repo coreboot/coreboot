@@ -517,19 +517,22 @@ void lar_list_files(struct lar *lar, struct file *files)
 			printf("  %s ", filename);
 
 			if (ntohl(header->compression) == none) {
-				printf("(%d bytes @0x%lx)\n",
+				printf("(%d bytes @0x%lx);",
 				       ntohl(header->len),
 				       (unsigned long)(ptr - lar->map) +
 				       ntohl(header->offset));
 			} else {
 				printf("(%d bytes, %s compressed to %d bytes "
-				       "@0x%lx)\n",
+				       "@0x%lx);",
 				       ntohl(header->reallen),
 				       algo_name[ntohl(header->compression)],
 				       ntohl(header->len),
 				       (unsigned long)(ptr - lar->map) +
 				       ntohl(header->offset));
 			}
+			printf("loadaddress 0x%#x entry 0x%#x\n", 
+					ntohl(header->loadaddress), 
+					ntohl(header->entry));
 		}
 
 		ptr += get_next_offset(header);

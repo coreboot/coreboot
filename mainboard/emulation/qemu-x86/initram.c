@@ -21,10 +21,24 @@
 
 #include <console.h>
 
+/* printktest1() is here to increase the likelihood of main() not ending up at
+ * the beginning of the file, so we can check whether the entry point at main()
+ * was honored.
+ */
+int printktest1(void)
+{
+	printk(BIOS_INFO, "printktest1: If the immediately preceding line does"
+		" not say \"Nothing to do.\", then execution did not start at"
+		" main()\n");
+
+	return 0;
+}
+
 int main(void)
 {
 	printk(BIOS_INFO, "RAM init code started.\n");
 	printk(BIOS_INFO, "Nothing to do.\n");
+	printktest1();
 
 	return 0;
 }

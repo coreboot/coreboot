@@ -36,7 +36,7 @@ SILENT := >/dev/null 2>&1
 
 ROM_SIZE := $(shell expr $(CONFIG_LINUXBIOS_ROMSIZE_KB) \* 1024)
 
-LARFILES := nocompress:normal/initram normal/stage2 nocompress:normal/option_table
+LARFILES := nocompress:normal/initram.o normal/stage2 nocompress:normal/option_table
 ifneq ($(CONFIG_PAYLOAD_NONE),y)
 LARFILES += normal/payload
 endif
@@ -57,11 +57,11 @@ ifeq ($(CONFIG_DEFAULT_COMPRESSION_NRV2B),y)
 COMPRESSFLAG := -C nrv2b
 endif
 
-$(obj)/linuxbios.rom $(obj)/linuxbios.map: $(obj)/linuxbios.bootblock $(obj)/util/lar/lar lzma nrv2b $(obj)/linuxbios.initram $(obj)/linuxbios.stage2 $(obj)/option_table
+$(obj)/linuxbios.rom $(obj)/linuxbios.map: $(obj)/linuxbios.bootblock $(obj)/util/lar/lar lzma nrv2b $(obj)/linuxbios.initram.o $(obj)/linuxbios.stage2 $(obj)/option_table
 	$(Q)rm -rf $(obj)/lar.tmp
 	$(Q)mkdir $(obj)/lar.tmp
 	$(Q)mkdir $(obj)/lar.tmp/normal
-	$(Q)cp $(obj)/linuxbios.initram $(obj)/lar.tmp/normal/initram
+	$(Q)cp $(obj)/linuxbios.initram.o $(obj)/lar.tmp/normal/initram.o
 	$(Q)cp $(obj)/linuxbios.stage2 $(obj)/lar.tmp/normal/stage2
 	$(Q)cp $(obj)/option_table $(obj)/lar.tmp/normal/option_table
 ifeq ($(CONFIG_PAYLOAD_NONE),y)
@@ -122,10 +122,12 @@ else
 endif
 endif
 
+
+# We now parse initram as ELF, so we need PARSEELF enabled unconditionally.
 ifeq ($(CONFIG_PAYLOAD_PREPARSE_ELF), y)
 	PARSEELF = -e
 else
-	PARSEELF = 
+	PARSEELF = -e
 endif
 
 STAGE0_OBJ := $(patsubst %,$(obj)/lib/%,$(STAGE0_LIB_OBJ)) \

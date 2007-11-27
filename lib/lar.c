@@ -263,9 +263,9 @@ int run_file(struct mem_file *archive, const char *filename, void *where)
 			       filename);
 			return 1;
 		}
-		where = result.start;
+		where = result.start + (u32)result.entry;
 	}
-	printk(BIOS_SPEW, "where is %p\n", where);
+	printk(BIOS_SPEW, "Entry point is %p\n", where);
 	ret = run_address(where);
 	printk(BIOS_SPEW, "run_file returns with %d\n", ret);
 	return ret;

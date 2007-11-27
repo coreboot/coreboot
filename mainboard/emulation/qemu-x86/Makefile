@@ -42,14 +42,11 @@ $(obj)/linuxbios.vpd:
 
 INITRAM_OBJ = $(obj)/mainboard/$(MAINBOARDDIR)/initram.o
 
-$(obj)/linuxbios.initram $(obj)/linuxbios.initram.map: $(obj)/stage0.init $(obj)/stage0-prefixed.o $(patsubst %.o,%_xip.o,$(INITRAM_OBJ))
+$(obj)/linuxbios.initram.o $(obj)/linuxbios.initram.map: $(obj)/stage0.init $(obj)/stage0-prefixed.o $(patsubst %.o,%_xip.o,$(INITRAM_OBJ))
 	$(Q)# initram links against stage0
 	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(LD) --entry main -N -R $(obj)/stage0-prefixed.o \
+	$(Q)$(LD) -Ttext 0 --entry main -N -R $(obj)/stage0-prefixed.o \
 		$(patsubst %.o,%_xip.o,$(INITRAM_OBJ)) -o $(obj)/linuxbios.initram.o
-	$(Q)printf "  OBJCOPY $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(OBJCOPY) -O binary $(obj)/linuxbios.initram.o \
-		$(obj)/linuxbios.initram
 	$(Q)printf "  NM      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(NM) $(obj)/linuxbios.initram.o | sort -u > $(obj)/linuxbios.initram.map
 

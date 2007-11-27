@@ -33,6 +33,39 @@ static const u8 num_col_addr[] = {
 	0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
 };
 
+u8 spd_read_byte(u16 device, u8 address);
+
+/**
+ * Print a nice banner so we know what step we died on. 
+ *
+ * @param s String to put in the middle of the banner
+ */
+
+void banner(char *s)
+{
+	printk(BIOS_DEBUG, "===========================");
+	printk(BIOS_DEBUG, s);
+	printk(BIOS_DEBUG, "======================================\n");
+}
+
+/**
+ * Halt and Catch Fire. Print an error, then loop, sending NULLs on serial port, 
+ * to ensure the message is visible. 
+ *
+ */
+
+void hcf(void)
+{
+	printk(BIOS_EMERG, "DIE\r\n");
+	/* this guarantees we flush the UART fifos (if any) and also 
+	 * ensures that things, in general, keep going so no debug output 
+	 * is lost
+	 */
+	while (1)
+		printk(BIOS_EMERG, "\r");
+}
+
+
 /**
  * Auto-detect, using SPD, the DIMM size. It's the usual magic, with
  * all the usual failure points that can happen.
@@ -50,11 +83,15 @@ static void auto_size_dimm(unsigned int dimm, u8 dimm0, u8 dimm1)
 
 	dimm_setting = 0;
 
+	banner("Check present");
 	/* Check that we have a DIMM. */
-	if (smbus_read_byte(dimm, SPD_MEMORY_TYPE) == 0xFF)
+	if (spd_read_byte(dimm, SPD_MEMORY_TYPE) == 0xFF)
 		return;
 
-	spd_byte = smbus_read_byte(dimm, SPD_NUM_DIMM_BANKS);
+	/* Field: Module Banks per DIMM */
+	/* EEPROM byte usage: (5) Number of DIMM Banks */
+	banner("MODBANKS");
+	spd_byte = spd_read_byte(dimm, SPD_NUM_DIMM_BANKS);
 	if ((MIN_MOD_BANKS > spd_byte) && (spd_byte > MAX_MOD_BANKS)) {
 		printk(BIOS_EMERG, "Number of module banks not compatible\n");
 		post_code(ERROR_BANK_SET);
@@ -62,7 +99,10 @@ static void auto_size_dimm(unsigned int dimm, u8 dimm0, u8 dimm1)
 	}
 	dimm_setting |= (spd_byte >> 1) << CF07_UPPER_D0_MB_SHIFT;
 
-	spd_byte = smbus_read_byte(dimm, SPD_NUM_BANKS_PER_SDRAM);
+	/* Field: Banks per SDRAM device */
+	/* EEPROM byte usage: (17) Number of Banks on SDRAM Device */
+	banner("FIELDBANKS");
+	spd_byte = spd_read_byte(dimm, SPD_NUM_BANKS_PER_SDRAM);
 	if ((MIN_DEV_BANKS > spd_byte) && (spd_byte > MAX_DEV_BANKS)) {
 		printk(BIOS_EMERG, "Number of device banks not compatible\n");
 		post_code(ERROR_BANK_SET);
@@ -70,15 +110,25 @@ static void auto_size_dimm(unsigned int dimm, u8 dimm0, u8 dimm1)
 	}
 	dimm_setting |= (spd_byte >> 2) << CF07_UPPER_D0_CB_SHIFT;
 
-	if ((smbus_read_byte(dimm, SPD_NUM_ROWS) & 0xF0)
-	    || (smbus_read_byte(dimm, SPD_NUM_COLUMNS) & 0xF0)) {
+	/*; Field: DIMM size
+	 *; EEPROM byte usage: (3)  Number of Row Addresses
+	 *;                                       (4)  Number of Column Addresses
+	 *;                                       (5)  Number of DIMM Banks
+	 *;                                       (31) Module Bank Density
+	 *; Size = Module Density * Module Banks
+	 */
+	banner("SPDNUMROWS");
+
+	if ((spd_read_byte(dimm, SPD_NUM_ROWS) & 0xF0)
+	    || (spd_read_byte(dimm, SPD_NUM_COLUMNS) & 0xF0)) {
 		printk(BIOS_EMERG, "Asymmetric DIMM not compatible\n");
 		post_code(ERROR_UNSUPPORTED_DIMM);
 		hlt();
 	}
 
 	/* Size = Module Density * Module Banks */
-	dimm_size = smbus_read_byte(dimm, SPD_BANK_DENSITY);
+	banner("SPDBANKDENSITY");
+	dimm_size = spd_read_byte(dimm, SPD_BANK_DENSITY);
 
 	/* Align so 1 GB (bit 0) is bit 8. This is a little weird to get gcc
 	 * to not optimize this out.
@@ -93,7 +143,9 @@ static void auto_size_dimm(unsigned int dimm, u8 dimm0, u8 dimm1)
 	/* Module Density * Module Banks */
 	/* Shift to multiply by the number of DIMM banks. */
 	dimm_size <<= (dimm_setting >> CF07_UPPER_D0_MB_SHIFT) & 1;
+	banner("BEFORT CTZ");
 	dimm_size = __builtin_ctz(dimm_size);
+	banner("TEST DIMM SIZE>8");
 	if (dimm_size > 8) {	/* 8 is 1 GB only support 1 GB per DIMM */
 		printk(BIOS_EMERG, "Only support up to 1 GB per DIMM\n");
 		post_code(ERROR_DENSITY_DIMM);
@@ -125,8 +177,9 @@ static void auto_size_dimm(unsigned int dimm, u8 dimm0, u8 dimm1)
 	 * example, #col_addr_bits = 7 (06h), it adds 3 to get 10, then does
 	 * 2^10=1K. Get it?
 	 */
-
-	spd_byte = num_col_addr[smbus_read_byte(dimm, SPD_NUM_COLUMNS) & 0xF];
+	banner("PAGESIZE");
+	spd_byte = num_col_addr[spd_read_byte(dimm, SPD_NUM_COLUMNS) & 0xF];
+	banner("MAXCOLADDR");
 	if (spd_byte > MAX_COL_ADDR) {
 		printk(BIOS_EMERG, "DIMM page size not compatible\n");
 		post_code(ERROR_SET_PAGE);
@@ -140,7 +193,9 @@ static void auto_size_dimm(unsigned int dimm, u8 dimm0, u8 dimm1)
 	/* 0 = 1k, 1 = 2k, 2 = 4k, etc. */
 	dimm_setting |= spd_byte << CF07_UPPER_D0_PSZ_SHIFT;
 
+	banner("RDMSR CF07");
 	msr = rdmsr(MC_CF07_DATA);
+	banner("WRMSR CF07");
 	if (dimm == dimm0) {
 		msr.hi &= 0xFFFF0000;
 		msr.hi |= dimm_setting;
@@ -148,6 +203,7 @@ static void auto_size_dimm(unsigned int dimm, u8 dimm0, u8 dimm1)
 		msr.hi &= 0x0000FFFF;
 		msr.hi |= dimm_setting << 16;
 	}
+	banner("ALL DONE");
 	wrmsr(MC_CF07_DATA, msr);
 }
 
@@ -166,10 +222,10 @@ static void check_ddr_max(u8 dimm0, u8 dimm1)
 	u16 speed;
 
 	/* PC133 identifier */
-	spd_byte0 = smbus_read_byte(dimm0, SPD_MIN_CYCLE_TIME_AT_CAS_MAX);
+	spd_byte0 = spd_read_byte(dimm0, SPD_MIN_CYCLE_TIME_AT_CAS_MAX);
 	if (spd_byte0 == 0xFF)
 		spd_byte0 = 0;
-	spd_byte1 = smbus_read_byte(dimm1, SPD_MIN_CYCLE_TIME_AT_CAS_MAX);
+	spd_byte1 = spd_read_byte(dimm1, SPD_MIN_CYCLE_TIME_AT_CAS_MAX);
 	if (spd_byte1 == 0xFF)
 		spd_byte1 = 0;
 
@@ -213,13 +269,13 @@ static void set_refresh_rate(u8 dimm0, u8 dimm1)
 	u16 rate0, rate1;
 	struct msr msr;
 
-	spd_byte0 = smbus_read_byte(dimm0, SPD_REFRESH);
+	spd_byte0 = spd_read_byte(dimm0, SPD_REFRESH);
 	spd_byte0 &= 0xF;
 	if (spd_byte0 > 5)
 		spd_byte0 = 5;
 	rate0 = REFRESH_RATE[spd_byte0];
 
-	spd_byte1 = smbus_read_byte(dimm1, SPD_REFRESH);
+	spd_byte1 = spd_read_byte(dimm1, SPD_REFRESH);
 	spd_byte1 &= 0xF;
 	if (spd_byte1 > 5)
 		spd_byte1 = 5;
@@ -268,11 +324,11 @@ static void set_cas(u8 dimm0, u8 dimm1)
 	glspeed = geode_link_speed();
 
 	/* DIMM 0 */
-	casmap0 = smbus_read_byte(dimm0, SPD_ACCEPTABLE_CAS_LATENCIES);
+	casmap0 = spd_read_byte(dimm0, SPD_ACCEPTABLE_CAS_LATENCIES);
 	if (casmap0 != 0xFF) {
 		/* If -.5 timing is supported, check -.5 timing > GeodeLink. */
 		/* EEPROM byte usage: (23) SDRAM Minimum Clock Cycle Time @ CLX -.5 */
-		spd_byte = smbus_read_byte(dimm0, SPD_SDRAM_CYCLE_TIME_2ND);
+		spd_byte = spd_read_byte(dimm0, SPD_SDRAM_CYCLE_TIME_2ND);
 		if (spd_byte != 0) {
 			/* Turn SPD ns time into MHz. Check what the asm does
 			 * to this math.
@@ -282,7 +338,7 @@ static void set_cas(u8 dimm0, u8 dimm1)
 			if (dimm_speed >= glspeed) {
 				/* If -1 timing is supported, check -1 timing > GeodeLink. */
 				/* EEPROM byte usage: (25) SDRAM Minimum Clock Cycle Time @ CLX -1 */
-				spd_byte = smbus_read_byte(dimm0, SPD_SDRAM_CYCLE_TIME_3RD);
+				spd_byte = spd_read_byte(dimm0, SPD_SDRAM_CYCLE_TIME_3RD);
 				if (spd_byte != 0) {
 					/* Turn SPD ns time into MHz. Check what the asm does to this math. */
 					dimm_speed = 2 * (10000 / (((spd_byte >> 4) * 10) + (spd_byte & 0x0F)));
@@ -305,18 +361,18 @@ static void set_cas(u8 dimm0, u8 dimm1)
 	}
 
 	/* DIMM 1 */
-	casmap1 = smbus_read_byte(dimm1, SPD_ACCEPTABLE_CAS_LATENCIES);
+	casmap1 = spd_read_byte(dimm1, SPD_ACCEPTABLE_CAS_LATENCIES);
 	if (casmap1 != 0xFF) {
 		/* If -.5 timing is supported, check -.5 timing > GeodeLink. */
 		/* EEPROM byte usage: (23) SDRAM Minimum Clock Cycle Time @ CLX -.5 */
-		spd_byte = smbus_read_byte(dimm1, SPD_SDRAM_CYCLE_TIME_2ND);
+		spd_byte = spd_read_byte(dimm1, SPD_SDRAM_CYCLE_TIME_2ND);
 		if (spd_byte != 0) {
 			/* Turn SPD ns time into MHz. Check what the asm does to this math. */
 			dimm_speed = 2 * (10000 / (((spd_byte >> 4) * 10) + (spd_byte & 0x0F)));
 			if (dimm_speed >= glspeed) {
 				/* If -1 timing is supported, check -1 timing > GeodeLink. */
 				/* EEPROM byte usage: (25) SDRAM Minimum Clock Cycle Time @ CLX -1 */
-				spd_byte = smbus_read_byte(dimm1, SPD_SDRAM_CYCLE_TIME_3RD);
+				spd_byte = spd_read_byte(dimm1, SPD_SDRAM_CYCLE_TIME_3RD);
 				if (spd_byte != 0) {
 					/* Turn SPD ns time into MHz. Check what the asm does to this math. */
 					dimm_speed = 2 * (10000 / (((spd_byte >> 4) * 10) + (spd_byte & 0x0F)));
@@ -359,10 +415,10 @@ static void set_cas(u8 dimm0, u8 dimm1)
 
 static inline void helper_spd(u8 dimm0, u8 dimm1, u8 addr, u8 *spd0, u8 *spd1)
 {
-	*spd0 = smbus_read_byte(dimm0, addr);
+	*spd0 = spd_read_byte(dimm0, addr);
 	if (*spd0 == 0xFF)
 		*spd0 = 0;
-	*spd1 = smbus_read_byte(dimm1, addr);
+	*spd1 = spd_read_byte(dimm1, addr);
 	if (*spd1 == 0xFF)
 		*spd1 = 0;
 	if (*spd0 < *spd1)
@@ -477,10 +533,10 @@ static void set_extended_mode_registers(u8 dimm0, u8 dimm1)
 	u8 spd_byte0, spd_byte1;
 	struct msr msr;
 
-	spd_byte0 = smbus_read_byte(dimm0, SPD_DEVICE_ATTRIBUTES_GENERAL);
+	spd_byte0 = spd_read_byte(dimm0, SPD_DEVICE_ATTRIBUTES_GENERAL);
 	if (spd_byte0 == 0xFF)
 		spd_byte0 = 0;
-	spd_byte1 = smbus_read_byte(dimm1, SPD_DEVICE_ATTRIBUTES_GENERAL);
+	spd_byte1 = spd_read_byte(dimm1, SPD_DEVICE_ATTRIBUTES_GENERAL);
 	if (spd_byte1 == 0xFF)
 		spd_byte1 = 0;
 	spd_byte1 &= spd_byte0;
@@ -558,7 +614,7 @@ void sdram_set_spd_registers(u8 dimm0, u8 dimm1)
 
 	post_code(POST_MEM_SETUP);
 
-	spd_byte = smbus_read_byte(dimm0, SPD_MODULE_ATTRIBUTES);
+	spd_byte = spd_read_byte(dimm0, SPD_MODULE_ATTRIBUTES);
 
 	/* Check DIMM is not Registered and not Buffered DIMMs. */
 	if ((spd_byte != 0xFF) && (spd_byte & 3)) {
@@ -566,7 +622,7 @@ void sdram_set_spd_registers(u8 dimm0, u8 dimm1)
 		post_code(ERROR_UNSUPPORTED_DIMM);
 		hlt();
 	}
-	spd_byte = smbus_read_byte(dimm1, SPD_MODULE_ATTRIBUTES);
+	spd_byte = spd_read_byte(dimm1, SPD_MODULE_ATTRIBUTES);
 	if ((spd_byte != 0xFF) && (spd_byte & 3)) {
 		printk(BIOS_EMERG, "DIMM 1 NOT COMPATIBLE!\n");
 		post_code(ERROR_UNSUPPORTED_DIMM);

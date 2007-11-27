@@ -21,9 +21,8 @@
 
 STAGE0_MAINBOARD_OBJ := $(obj)/mainboard/$(MAINBOARDDIR)/stage1.o
 
-INITRAM_OBJ =	$(obj)/mainboard/$(MAINBOARDDIR)/initram.o \
+INITRAM_OBJ =   $(obj)/mainboard/$(MAINBOARDDIR)/initram.o \
 		$(obj)/northbridge/amd/geodelx/raminit.o \
-		$(obj)/southbridge/amd/cs5536/smbus_initram.o \
 		$(obj)/arch/x86/geodelx/geodelx.o
 
 STAGE2_MAINBOARD_OBJ = 

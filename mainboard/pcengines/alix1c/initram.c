@@ -30,47 +30,117 @@
 #include <io.h>
 #include <amd_geodelx.h>
 #include <northbridge/amd/geodelx/raminit.h>
+#include <spd.h>
 
-#define MANUALCONF 0		/* Do automatic strapped PLL config. */
-
-#define PLLMSRHI 0x00001490	/* Manual settings for the PLL */
+#define MANUALCONF 0		/* Do automatic strapped PLL config */
+#define PLLMSRHI 0x00001490	/* manual settings for the PLL */
 #define PLLMSRLO 0x02000030
-
 #define DIMM0 ((u8) 0xA0)
 #define DIMM1 ((u8) 0xA2)
 
-/**
- * Placeholder in case we ever need it. Since this file is a template for
- * other boards, we want this here and we want the call in the right place.
+/* The part is a Hynix hy5du121622ctp-d43.
+ *
+ * HY 5D U 12 16 2 2 C <blank> T <blank> P D43
+ * Hynix
+ * DDR SDRAM (5D)
+ * VDD 2.5 VDDQ 2.5 (U)
+ * 512M 8K REFRESH (12)
+ * x16 (16)
+ * 4banks (2)
+ * SSTL_2 (2)
+ * 4th GEN die (C)
+ * Normal Power Consumption (<blank> )
+ * TSOP (T)
+ * Single Die (<blank>)
+ * Lead Free (P)
+ * DDR400 3-3-3 (D43)
  */
+/* SPD array */
+static const u8 spdbytes[] = {
+	[SPD_ACCEPTABLE_CAS_LATENCIES] = 0x10,
+	[SPD_BANK_DENSITY] = 0x40,
+	[SPD_DEVICE_ATTRIBUTES_GENERAL] = 0xff,
+	[SPD_MEMORY_TYPE] = 7,
+	[SPD_MIN_CYCLE_TIME_AT_CAS_MAX] = 10, /* A guess for the tRAC value */
+	[SPD_MODULE_ATTRIBUTES] = 0xff, /* FIXME later when we figure out. */
+	[SPD_NUM_BANKS_PER_SDRAM] = 4,
+	[SPD_PRIMARY_SDRAM_WIDTH] = 8,
+	[SPD_NUM_DIMM_BANKS] = 1, /* ALIX1.C is 1 bank. */
+	[SPD_NUM_COLUMNS] = 0xa,
+	[SPD_NUM_ROWS] = 3,
+	[SPD_REFRESH] = 0x3a,
+	[SPD_SDRAM_CYCLE_TIME_2ND] = 60,
+	[SPD_SDRAM_CYCLE_TIME_3RD] = 75,
+	[SPD_tRAS] = 40,
+	[SPD_tRCD] = 15,
+	[SPD_tRFC] = 70,
+	[SPD_tRP] = 15,
+	[SPD_tRRD] = 10,
+};
+
+u8 spd_read_byte(u16 device, u8 address)
+{
+	printk(BIOS_DEBUG, "spd_read_byte dev %04x\n", device);
+
+	if (device != (0x50 << 1)) {
+		printk(BIOS_DEBUG, " returns 0xff\n");
+		return 0xff;
+	}
+
+	printk(BIOS_DEBUG, " addr %02x returns %02x\n", address, spdbytes[address]);
+
+	return spdbytes[address];
+}
+
+/**
+  * Place holder in case we ever need it. Since this file is a
+  * template for other motherboards, we want this here and we want the
+  * call in the right place.
+  */
+
 static void mb_gpio_init(void)
 {
 	/* Early mainboard specific GPIO setup */
 }
 
-/**
- * Main for initram for the PC Engines ALIX1.C. It might seem that you could
- * somehow do these functions in, e.g., the CPU code, but the order of
- * operations and what those operations are is VERY strongly mainboard
- * dependent. It's best to leave it in the mainboard code.
- */
+/** 
+  * main for initram for the PC Engines Alix 1C.  It might seem that you
+  * could somehow do these functions in, e.g., the cpu code, but the
+  * order of operations and what those operations are is VERY strongly
+  * mainboard dependent. It's best to leave it in the mainboard code.
+  */
 int main(void)
 {
-	u8 smb_devices[] = { DIMM0, DIMM1 };
-
+	u8 smb_devices[] =  {
+		DIMM0, DIMM1
+	};
+	printk(BIOS_DEBUG, "Hi there from stage1\n");
 	post_code(POST_START_OF_MAIN);
 
 	system_preinit();
+	printk(BIOS_DEBUG, "done preinit\n");
+
 	mb_gpio_init();
+	printk(BIOS_DEBUG, "done gpio init\n");
+
 	pll_reset(MANUALCONF, PLLMSRHI, PLLMSRLO);
+	printk(BIOS_DEBUG, "done pll reset\n");
+
 	cpu_reg_init(0, DIMM0, DIMM1);
+	printk(BIOS_DEBUG, "done cpu reg init\n");
 
 	sdram_set_registers();
+	printk(BIOS_DEBUG, "done sdram set registers\n");
+
 	sdram_set_spd_registers(DIMM0, DIMM1);
+	printk(BIOS_DEBUG, "done sdram set spd registers\n");
+
 	sdram_enable(DIMM0, DIMM1);
+	printk(BIOS_DEBUG, "done sdram enable\n");
 
-	/* Check memory. */
-	/* ram_check(0, 640 * 1024); */
+	/* Check low memory */
+	/*ram_check(0x00000000, 640*1024); */
 
+	printk(BIOS_DEBUG, "stage1 returns\n");
 	return 0;
 }

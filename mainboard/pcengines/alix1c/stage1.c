@@ -28,20 +28,24 @@
 #include <io.h>
 #include <amd_geodelx.h>
 #include <southbridge/amd/cs5536/cs5536.h>
+#include <superio/winbond/w83627hf/w83627hf.h>
+
+#define SERIAL_DEV W83627HF_SP1
+#define SERIAL_IOBASE 0x3f8
 
 void hardware_stage1(void)
 {
+	void w83627hf_enable_serial(u8 dev, u8 serial, u16 iobase);
 	post_code(POST_START_OF_MAIN);
-
 	geodelx_msr_init();
 
 	cs5536_stage1();
 
-	/* NOTE: Must do this AFTER the early_setup! It is counting on some
-	 * early MSR setup for the CS5536. We do this early for debug.
-	 * Real setup should be done in chipset init via Config.lb.
-	 *
-	 * TODO: Drop Config.lb reference, update comment.
+	/* NOTE: must do this AFTER the early_setup!
+	 * it is counting on some early MSR setup
+	 * for cs5536.
 	 */
-	cs5536_setup_onchipuart();
+	cs5536_disable_internal_uart();
+	w83627hf_enable_serial(0x2e, SERIAL_DEV, SERIAL_IOBASE);
+
 }

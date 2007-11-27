@@ -232,4 +232,12 @@ $(obj)/arch/x86/geodelx/stage0.o: $(src)/arch/x86/geodelx/stage0.S
 	$(Q)printf "  AS      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(AS) $(obj)/arch/x86/stage0_asm.s -o $@
 
+$(obj)/linuxbios.initram.o $(obj)/linuxbios.initram.map: $(obj)/stage0.init $(obj)/stage0-prefixed.o $(patsubst %.o,%_xip.o,$(INITRAM_OBJ))
+	$(Q)# initram links against stage0
+	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(LD) -Ttext 0 --entry main -N -R $(obj)/stage0-prefixed.o \
+		$(patsubst %.o,%_xip.o,$(INITRAM_OBJ)) -o $(obj)/linuxbios.initram.o
+	$(Q)printf "  NM      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(NM) $(obj)/linuxbios.initram.o | sort -u > $(obj)/linuxbios.initram.map
+
 endif

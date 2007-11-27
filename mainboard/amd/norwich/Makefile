@@ -32,11 +32,3 @@ $(obj)/linuxbios.vpd:
 	$(Q)printf "  BUILD   DUMMY VPD\n"
 	$(Q)dd if=/dev/zero of=$(obj)/linuxbios.vpd bs=256 count=1 $(SILENT)
 
-$(obj)/linuxbios.initram.o $(obj)/linuxbios.initram.map: $(obj)/stage0.init $(obj)/stage0-prefixed.o $(patsubst %.o,%_xip.o,$(INITRAM_OBJ))
-	$(Q)# initram links against stage0
-	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(LD) -Ttext 0 --entry main -N -R $(obj)/stage0-prefixed.o \
-		$(patsubst %.o,%_xip.o,$(INITRAM_OBJ)) -o $(obj)/linuxbios.initram.o
-	$(Q)printf "  NM      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(NM) $(obj)/linuxbios.initram.o | sort -u > $(obj)/linuxbios.initram.map
-

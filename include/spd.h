@@ -139,5 +139,8 @@
 #define MODULE_BUFFERED                  1
 #define MODULE_REGISTERED                2
 
+/* prototypes for dealing with spd */
+u8 spd_read_byte(u16 device, u8 address);
+
 #endif /* _SPD_H_ */
 

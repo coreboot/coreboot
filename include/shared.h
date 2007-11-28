@@ -43,7 +43,7 @@
 	ret (*func)(args) attr= stage0_##func
 #else
 #define EXTERN(func, ret, attr, args...) \
-	ret *func(args) attr
+	extern ret (*func)(args) attr
 #endif
 
 #else

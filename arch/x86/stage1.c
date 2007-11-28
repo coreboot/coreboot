@@ -77,7 +77,6 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 	struct mem_file archive, result;
 	int elfboot_mem(struct lb_memory *mem, void *where, int size);
 	void *entry;
-	int i;
 
 	/* we can't statically init this hack. */
 	unsigned char faker[64];
@@ -161,11 +160,9 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 	/* Turn off Cache-As-Ram */
 	disable_car();
 
-	entry = load_file(&archive, "normal/stage2.o/segment0");
+	entry = load_file_segments(&archive, "normal/stage2.o");
 	if (entry == (void *)-1)
-		die("FATAL: Failed loading stage2 segment0.");
-	if (load_file(&archive, "normal/stage2.o/segment1") == (void *)-1)
-		die("FATAL: Failed loading stage2 segment1.");
+		die("FATAL: Failed loading stage2.");
 	ret = run_address(entry);
 	if (ret)
 		die("FATAL: Failed in stage2 code.");
@@ -176,26 +173,8 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 	if (! ret)
 		legacy(&archive, "normal/payload", (void *)UNCOMPRESS_AREA, mem);
 
-
-	/* new style lar boot. Install all the files in memory. 
-	  * By convention we take the entry point from the first 
-	  * one. Look for a cmdline as well. 
-	  */
-	for(i = 0, entry = (void *)0; ;i++) {
-		char filename[64];
-		void *newentry;
-		sprintf(filename, "normal/payload/segment%d", i);
-		archive.len = *(u32 *)0xfffffff4;
-		archive.start =(void *)(0UL-archive.len);
-		newentry = load_file(&archive, filename);
-		printk(BIOS_SPEW, "newentry is %p\n", newentry);
-		if (newentry == (void *)-1)
-			break;
-		if (! entry)
-			entry = newentry;
-	}
-	printk(BIOS_SPEW, "all loaded, entry %p\n", entry);
-	if (entry)
+	entry = load_file_segments(&archive, "normal/payload");
+	if (entry != (void*)-1)
 		run_address(entry);
 
 	die("FATAL: No usable payload found.\n");

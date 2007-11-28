@@ -56,7 +56,7 @@ int run_address(void *f)
  * returns 0 on success, -1 otherwise
  */
 
-int find_file(struct mem_file *archive, const char *filename, struct mem_file *result)
+int find_file(const struct mem_file *archive, const char *filename, struct mem_file *result)
 {
 	char *walk, *fullname;
 	struct lar_header *header;
@@ -145,7 +145,7 @@ int find_file(struct mem_file *archive, const char *filename, struct mem_file *r
 	return 1;
 }
 
-static int process_file(struct mem_file *archive, void *where)
+static int process_file(const struct mem_file *archive, void *where)
 {
 	printk(BIOS_SPEW, "LAR: Compression algorithm #%i used\n", archive->compression);
 	/* no compression */
@@ -175,6 +175,37 @@ static int process_file(struct mem_file *archive, void *where)
 }
 
 /**
+ * Given a file name, search the LAR for all segments of it, and load them
+ * into memory, using the loadaddress pointer in the mem_file struct. 
+ * @param archive A descriptor for current archive.
+ * @param filename filename to find
+ * returns entry on success, (void*)-1 otherwise
+ * FIXME: Look for a cmdline as well. 
+ */
+void *load_file_segments(const struct mem_file *archive, const char *filename)
+{
+	void *entry = NULL;
+	void *newentry;
+	int i;
+	char tmpname[64];
+
+	for(i = 0, entry = (void *)0; ;i++) {
+		sprintf(tmpname, "%s/segment%d", filename, i);
+		newentry = load_file(archive, tmpname);
+		if (newentry == (void *)-1)
+			break;
+		if (!entry)
+			entry = newentry;
+	}
+	if (!entry) {
+		printk(BIOS_INFO, "LAR: load_file_segments: Failed for %s\n", filename);
+		return (void *)-1;
+	}
+	printk(BIOS_SPEW, "LAR: load_file_segments: All loaded, entry %p\n", entry);
+	return entry;
+}
+
+/**
  * Given a file name in the LAR , search for it, and load it into memory, using 
  * the loadaddress pointer in the mem_file struct. 
  * @param archive A descriptor for current archive.
@@ -182,7 +213,7 @@ static int process_file(struct mem_file *archive, void *where)
  * returns entry on success, (void*)-1 otherwise
  */
 
-void *load_file(struct mem_file *archive, const char *filename)
+void *load_file(const struct mem_file *archive, const char *filename)
 {
 	int ret;
 	struct mem_file result;
@@ -212,7 +243,7 @@ void *load_file(struct mem_file *archive, const char *filename)
  * @param where pointer to where to load the data
  * returns 0 on success, -1 otherwise
  */
-int copy_file(struct mem_file *archive, const char *filename, void *where)
+int copy_file(const struct mem_file *archive, const char *filename, void *where)
 {
 	int ret;
 	struct mem_file result;
@@ -229,55 +260,30 @@ int copy_file(struct mem_file *archive, const char *filename, void *where)
 
 
 /**
- * Given a file name in the LAR , search for it, and load it into memory, 
- * using the passed-in pointer as the address; jump to the file. 
- * If the passed-in pointer is (void *)-1, then execute the file in place. 
- * @param archive A descriptor for current archive.
- * @param filename filename to find
- * @param where pointer to where to load the data
- * returns 0 on success, -1 otherwise
- */
-int run_file(struct mem_file *archive, const char *filename, void *where)
-{
-	struct mem_file result;
-	int ret;
-
-	if ((u32) where != 0xFFFFFFFF) {
-		if (copy_file(archive, filename, where)) {
-			printk(BIOS_INFO,
-			      "LAR: Run file %s failed: No such file.\n",
-			       filename);
-			return 1;
-		}
-	} else { /* XIP */
-		if (find_file(archive, filename, &result)) {
-			printk(BIOS_INFO,
-			       "LAR: Run file %s failed: No such file.\n",
-			       filename);
-			return 1;
-		}
-		if (result.compression != 0) {
-			printk(BIOS_INFO,
-			       "LAR: Run file %s failed: Compressed file"
-			       " not supported for in-place execution\n",
-			       filename);
-			return 1;
-		}
-		where = result.start + (u32)result.entry;
-	}
-	printk(BIOS_SPEW, "Entry point is %p\n", where);
-	ret = run_address(where);
-	printk(BIOS_SPEW, "run_file returns with %d\n", ret);
-	return ret;
-}
-
-/**
  * Given a file name in the LAR , search for it, and execute it in place. 
  * @param archive A descriptor for current archive.
  * @param filename filename to find
  * returns 0 on success, -1 otherwise
  */
-int execute_in_place(struct mem_file *archive, const char *filename)
+int execute_in_place(const struct mem_file *archive, const char *filename)
 {
-	return run_file(archive, filename, (void *) 0xFFFFFFFF);
+	struct mem_file result;
+	int ret;
+	void *where;
+
+	if (find_file(archive, filename, &result)) {
+		printk(BIOS_INFO, "LAR: Run file %s failed: No such file.\n",
+		       filename);
+		return 1;
+	}
+	if (result.compression != 0) {
+		printk(BIOS_INFO, "LAR: Run file %s failed: Compressed file"
+			" not supported for in-place execution\n", filename);
+		return 1;
+	}
+	where = result.start + (u32)result.entry;
+	printk(BIOS_SPEW, "Entry point is %p\n", where);
+	ret = run_address(where);
+	printk(BIOS_SPEW, "run_file returns with %d\n", ret);
+	return ret;
 }

@@ -82,10 +82,11 @@ struct mem_file {
 };
 
 /* Prototypes. */
-int find_file(struct mem_file *archive, const char *filename, struct mem_file *result);
-int copy_file(struct mem_file *archive, const char *filename, void *where);
-int run_file(struct mem_file *archive, const char *filename, void *where);
-int execute_in_place(struct mem_file *archive, const char *filename);
+int find_file(const struct mem_file *archive, const char *filename, struct mem_file *result);
+int copy_file(const struct mem_file *archive, const char *filename, void *where);
+int run_file(const struct mem_file *archive, const char *filename, void *where);
+int execute_in_place(const struct mem_file *archive, const char *filename);
 int run_address(void *f);
-void *load_file(struct mem_file *archive, const char *filename);
+void *load_file(const struct mem_file *archive, const char *filename);
+void *load_file_segments(const struct mem_file *archive, const char *filename);
 #endif /* LAR_H */

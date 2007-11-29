@@ -331,7 +331,12 @@ chip northbridge/amd/amdk8/root_complex
 								io 0x62 = 0x300
 								irq 0x70 = 9
 							end						
-                	        			device pnp 2e.8 off end #  GPIO2
+							device pnp 2e.8 on #  GPIO2
+								io 0x07 = 0x08ff
+								io 0x30 = 0x01ff
+								io 0x2b = 0xd0ff
+								io 0xf0 = 0xef16
+							end
                 	        			device pnp 2e.9 off end #  GPIO3
                 	        			device pnp 2e.a off end #  ACPI
                 	        			device pnp 2e.b on #  HW Monitor

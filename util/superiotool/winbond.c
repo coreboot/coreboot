@@ -2,7 +2,6 @@
  * This file is part of the superiotool project.
  *
  * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
- * Copyright (C) 2007 Rasmus Wiman <rasmus@wiman.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -389,7 +388,7 @@ static void enter_conf_mode_winbond_86(uint16_t port)
 	outb(0x86, port);
 }
 
-void probe_idregs_winbond_helper(const char *init, uint16_t port)
+static void probe_idregs_winbond_helper(const char *init, uint16_t port)
 {
 	uint16_t id;
 	uint8_t devid, rev, olddevid;
@@ -425,14 +424,11 @@ void probe_idregs_winbond_helper(const char *init, uint16_t port)
 		       get_superio_name(reg_table, id), devid, rev, port);
 	chip_found = 1;
 
-	/* TODO: Special notes in dump output for the MISC entries. */
 	dump_superio("Winbond", reg_table, port, id);
 }
 
 void probe_idregs_winbond(uint16_t port)
 {
-	/* TODO: Not all init sequences are valid for all ports. */
-
 	enter_conf_mode_winbond_88(port);
 	probe_idregs_winbond_helper("(init=0x88) ", port);
 	exit_conf_mode_winbond_fintek_ite_8787(port);

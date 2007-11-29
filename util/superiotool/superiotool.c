@@ -115,7 +115,7 @@ static void dump_regs(const struct superio_registers reg_table[],
 			printf(" NA");
 		else if (idx[k] == RSVD)
 			printf(" RR");
-		else if (idx[k] == MISC)	/* TODO */
+		else if (idx[k] == MISC)
 			printf(" MM");
 		else
 			printf(" %02x", idx[k]);

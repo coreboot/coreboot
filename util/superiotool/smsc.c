@@ -326,7 +326,7 @@ static const struct superio_registers reg_table[] = {
 		{EOT}}},
 	{0x6e, "LPC47B387", {	/* TODO: Not yet in sensors-detect */
 		/* Found in the HP Compaq Business Desktop d530 Series */
-		/* http://thread.gmane.org/gmane.linux.bios/26648 */
+		/* http://article.gmane.org/gmane.linux.bios/27192 */
 		/* We cannot find a public datasheet for this Super I/O. */
 		{EOT}}},
 	{0x6f, "LPC47B397", {

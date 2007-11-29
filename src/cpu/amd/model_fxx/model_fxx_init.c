@@ -562,42 +562,44 @@ static struct device_operations cpu_dev_ops = {
 };
 static struct cpu_device_id cpu_table[] = {
 #if K8_REV_F_SUPPORT == 0
-	{ X86_VENDOR_AMD, 0xf50 }, /* B3 */
-	{ X86_VENDOR_AMD, 0xf51 }, /* SH7-B3 */
-	{ X86_VENDOR_AMD, 0xf58 }, /* SH7-C0 */
-	{ X86_VENDOR_AMD, 0xf48 },
+	{ X86_VENDOR_AMD, 0xf40 }, /* SH-B0 (socket 754) */
+	{ X86_VENDOR_AMD, 0xf50 }, /* SH-B0 (socket 940) */
+	{ X86_VENDOR_AMD, 0xf51 }, /* SH-B3 (socket 940) */
+	{ X86_VENDOR_AMD, 0xf58 }, /* SH-C0 (socket 940) */
+	{ X86_VENDOR_AMD, 0xf48 }, /* SH-C0 (socket 754) */
+	{ X86_VENDOR_AMD, 0xf5a }, /* SH-CG (socket 940) */
+	{ X86_VENDOR_AMD, 0xf4a }, /* SH-CG (socket 754) */
+	{ X86_VENDOR_AMD, 0xf7a }, /* SH-CG (socket 939) */
+	{ X86_VENDOR_AMD, 0xfc0 }, /* DH-CG (socket 754) */
+	{ X86_VENDOR_AMD, 0xfe0 }, /* DH-CG (socket 754) */
+	{ X86_VENDOR_AMD, 0xff0 }, /* DH-CG (socket 939) */
+	{ X86_VENDOR_AMD, 0xf82 }, /* CH-CG (socket 754) */
+	{ X86_VENDOR_AMD, 0xfb2 }, /* CH-CG (socket 939) */
 
-	{ X86_VENDOR_AMD, 0xf5A }, /* SH7-CG */
-	{ X86_VENDOR_AMD, 0xf4A },
-	{ X86_VENDOR_AMD, 0xf7A },
-	{ X86_VENDOR_AMD, 0xfc0 }, /* DH7-CG */
-	{ X86_VENDOR_AMD, 0xfe0 },
-	{ X86_VENDOR_AMD, 0xff0 },
-	{ X86_VENDOR_AMD, 0xf82 }, /* CH7-CG */
-	{ X86_VENDOR_AMD, 0xfb2 },
 //AMD_D0_SUPPORT
-	{ X86_VENDOR_AMD, 0x10f50 }, /* SH7-D0 */
-	{ X86_VENDOR_AMD, 0x10f40 },
-	{ X86_VENDOR_AMD, 0x10f70 },
-        { X86_VENDOR_AMD, 0x10fc0 }, /* DH7-D0 */
-        { X86_VENDOR_AMD, 0x10ff0 },
-        { X86_VENDOR_AMD, 0x10f80 }, /* CH7-D0 */
-        { X86_VENDOR_AMD, 0x10fb0 },
+	{ X86_VENDOR_AMD, 0x10f50 }, /* SH-D0 (socket 940) */
+	{ X86_VENDOR_AMD, 0x10f40 }, /* SH-D0 (socket 754) */
+	{ X86_VENDOR_AMD, 0x10f70 }, /* SH-D0 (socket 939) */
+        { X86_VENDOR_AMD, 0x10fc0 }, /* DH-D0 (socket 754) */
+        { X86_VENDOR_AMD, 0x10ff0 }, /* DH-D0 (socket 939) */
+        { X86_VENDOR_AMD, 0x10f80 }, /* CH-D0 (socket 754) */
+        { X86_VENDOR_AMD, 0x10fb0 }, /* CH-D0 (socket 939) */
+
 //AMD_E0_SUPPORT
-        { X86_VENDOR_AMD, 0x20f50 }, /* SH8-E0*/
+        { X86_VENDOR_AMD, 0x20f50 }, /* SH-E0 */
         { X86_VENDOR_AMD, 0x20f40 },
         { X86_VENDOR_AMD, 0x20f70 },
-        { X86_VENDOR_AMD, 0x20fc0 }, /* DH8-E0 */ /* DH-E3 */
-        { X86_VENDOR_AMD, 0x20ff0 },
-        { X86_VENDOR_AMD, 0x20f10 }, /* JH8-E1 */
-        { X86_VENDOR_AMD, 0x20f30 },
-        { X86_VENDOR_AMD, 0x20f51 }, /* SH-E4 */
-        { X86_VENDOR_AMD, 0x20f71 },
-        { X86_VENDOR_AMD, 0x20f42 }, /* SH-E5 */
-        { X86_VENDOR_AMD, 0x20ff2 }, /* DH-E6 */
-        { X86_VENDOR_AMD, 0x20fc2 },
-        { X86_VENDOR_AMD, 0x20f12 }, /* JH-E6 */
-        { X86_VENDOR_AMD, 0x20f32 },
+        { X86_VENDOR_AMD, 0x20fc0 }, /* DH-E3 (socket 754) */
+        { X86_VENDOR_AMD, 0x20ff0 }, /* DH-E3 (socket 939) */
+        { X86_VENDOR_AMD, 0x20f10 }, /* JH-E1 (socket 940) */
+        { X86_VENDOR_AMD, 0x20f51 }, /* SH-E4 (socket 940) */
+        { X86_VENDOR_AMD, 0x20f71 }, /* SH-E4 (socket 939) */
+        { X86_VENDOR_AMD, 0x20fb1 }, /* BH-E4 (socket 939) */
+        { X86_VENDOR_AMD, 0x20f42 }, /* SH-E5 (socket 754) */
+        { X86_VENDOR_AMD, 0x20ff2 }, /* DH-E6 (socket 939) */
+        { X86_VENDOR_AMD, 0x20fc2 }, /* DH-E6 (socket 754) */
+        { X86_VENDOR_AMD, 0x20f12 }, /* JH-E6 (socket 940) */
+        { X86_VENDOR_AMD, 0x20f32 }, /* JH-E6 (socket 939) */
 	{ X86_VENDOR_AMD, 0x30ff2 }, /* E4 ? */
 #endif
 

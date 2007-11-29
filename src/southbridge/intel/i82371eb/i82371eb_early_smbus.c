@@ -33,7 +33,7 @@ static void enable_smbus(void)
 	uint16_t reg16;
 
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_INTEL,
-				PCI_DEVICE_ID_INTEL_82371AB_SMB), 0);
+				PCI_DEVICE_ID_INTEL_82371AB_SMB_ACPI), 0);
 
 	if (dev == PCI_DEV_INVALID) {
 		die("SMBus controller not found\r\n");

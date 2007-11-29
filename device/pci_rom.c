@@ -33,6 +33,8 @@ struct rom_header *pci_rom_probe(struct device *dev)
 	unsigned long rom_address;
 	struct rom_header *rom_header;
 	struct pci_data *rom_data;
+	unsigned int i;
+	unsigned char sum = 0, *rom_bytes;
 
 	if (dev->on_mainboard) {
 		/* In case some device PCI_ROM_ADDRESS can not be set
@@ -67,6 +69,14 @@ struct rom_header *pci_rom_probe(struct device *dev)
 		       le32_to_cpu(rom_header->signature));
 		return NULL;
 	}
+	
+	/* checksum */
+	rom_bytes = (unsigned char *)rom_address;
+	for (i = 0; i < rom_header->size * 512; i++)
+	    sum += *(rom_bytes + i);
+
+	if (sum != 0)
+		printk(BIOS_ALERT, "Incorrent Expansion ROM checksum (%02x != 0)\n", sum);
 
 	rom_data = (struct pci_data *)((unsigned char *)rom_header +
 				       le32_to_cpu(rom_header->data));

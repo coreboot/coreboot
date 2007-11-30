@@ -18,46 +18,47 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* Datasheet:
+/* Note: This code supports the 82371FB/SB/MX/AB/EB/MB and 82437MX. */
+
+/* Datasheets:
+ *   - Name: 82371FB (PIIX) AND 82371SB (PIIX3) PCI ISA IDE XCELERATOR
+ *   - URL: http://www.intel.com/design/intarch/datashts/290550.htm
+ *   - PDF: http://download.intel.com/design/intarch/datashts/29055002.pdf
+ *   - Date: April 1997
+ *   - Order Number: 290550-002
+ *
+ *   - Name: 82371FB (PIIX) and 82371SB (PIIX3) PCI ISA IDE Xcelerator
+ *           Specification Update
+ *   - URL: http://www.intel.com/design/chipsets/specupdt/297658.htm
+ *   - PDF: http://download.intel.com/design/chipsets/specupdt/29765801.pdf
+ *   - Date: March 1998
+ *   - Order Number: 297658-004
+ *
  *   - Name: 82371AB PCI-TO-ISA / IDE XCELERATOR (PIIX4)
+ *           (applies to 82371AB/EB/MB, a.k.a. PIIX4/PIIX4E/PIIX4M)
  *   - URL: http://www.intel.com/design/intarch/datashts/290562.htm
  *   - PDF: http://www.intel.com/design/intarch/datashts/29056201.pdf
+ *   - Date: April 1997
  *   - Order Number: 290562-001
+ *
+ *   - Name: 82371AB/EB/MB (PIIX4/PIIX4E/PIIX4M) Specification Update
+ *   - URL: http://www.intel.com/design/chipsets/specupdt/297738.htm
+ *   - PDF: http://www.intel.com/design/chipsets/specupdt/29773817.pdf
+ *   - Date: January 2002
+ *   - Order Number: 297738-017
  */
 
-#include <console/console.h>
+/* TODO: List the other datasheets. */
+
 #include <device/device.h>
-#include <device/pci.h>
 #include "i82371eb.h"
 
-/**
- * Enable access to all BIOS regions. Do not enable write access to the ROM.
- *
- * XBCS register bits:
- * - Set bit 9: 1-Meg Extended BIOS Enable (PCI master accesses to
- *              FFF00000-FFF7FFFF are forwarded to ISA).
- * - Set bit 7: Extended BIOS Enable (PCI master accesses to
- *              FFF80000-FFFDFFFF are forwarded to ISA).
- * - Set bit 6: Lower BIOS Enable (PCI master, or ISA master accesses to
- *              the lower 64-Kbyte BIOS block (E0000-EFFFF) at the top
- *              of 1 Mbyte, or the aliases at the top of 4 Gbyte
- *              (FFFE0000-FFFEFFFF) result in the generation of BIOSCS#.
- * - Bit 2: BIOSCS# Write Enable (1=enable, 0=disable).
- *
- * Note: Accesses to FFFF0000-FFFFFFFF are always forwarded to ISA.
- *
- * @param dev The device to use.
- */
-void i82371eb_enable(device_t dev)
+void i82371eb_enable(struct device *dev)
 {
-	uint16_t reg;
-
-	reg = pci_read_config16(dev, XBCS);
-	reg |= 0x2c0;
-	pci_write_config16(dev, XBCS, reg);
+	/* TODO: Nothing to do? */
 }
 
-struct chip_operations southbridge_intel_i82371eb_ops = {
-	CHIP_NAME("Intel 82371EB Southbridge")
+const struct chip_operations southbridge_intel_i82371eb_ops = {
+	CHIP_NAME("Intel 82371FB/SB/MX/AB/EB/MB Southbridge")
 	.enable_dev = i82371eb_enable,
 };

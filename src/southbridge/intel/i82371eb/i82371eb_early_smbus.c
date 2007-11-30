@@ -20,6 +20,7 @@
 
 /* TODO: Implement smbus_write_byte(), smbus_recv_byte(), smbus_send_byte(). */
 
+#include <stdint.h>
 #include <device/pci_ids.h>
 #include "i82371eb.h"
 #include "i82371eb_smbus.h"
@@ -29,35 +30,36 @@
 static void enable_smbus(void)
 {
 	device_t dev;
-	uint8_t reg8;
-	uint16_t reg16;
+	u8 reg8;
+	u16 reg16;
 
+	/* Check for SMBus device PCI ID on the 82371AB/EB/MB. */
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_INTEL,
 				PCI_DEVICE_ID_INTEL_82371AB_SMB_ACPI), 0);
 
-	if (dev == PCI_DEV_INVALID) {
+	if (dev == PCI_DEV_INVALID)
 		die("SMBus controller not found\r\n");
-	}
+
 	print_spew("SMBus controller enabled\r\n");
 
 	/* Set the SMBus I/O base. */
 	pci_write_config32(dev, SMBBA, SMBUS_IO_BASE | 1);
 
-	/* Enable the SMBus Controller Host Interface. */
+	/* Enable the SMBus controller host interface. */
 	reg8 = pci_read_config8(dev, SMBHSTCFG);
 	reg8 |= SMB_HST_EN;
 	pci_write_config8(dev, SMBHSTCFG, reg8);
 
 	/* Enable access to the SMBus I/O space. */
 	reg16 = pci_read_config16(dev, PCI_COMMAND);
-	reg16 |= IOSE;
+	reg16 |= PCI_COMMAND_IO;
 	pci_write_config16(dev, PCI_COMMAND, reg16);
 
 	/* Clear any lingering errors, so the transaction will run. */
 	outb(inb(SMBUS_IO_BASE + SMBHST_STATUS), SMBUS_IO_BASE + SMBHST_STATUS);
 }
 
-static int smbus_read_byte(unsigned int device, unsigned int address)
+static int smbus_read_byte(u8 device, u8 address)
 {
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }

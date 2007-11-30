@@ -19,8 +19,9 @@
 ##
 
 config chip.h
-
 driver i82371eb.o
-driver i82371eb_smbus.o
+driver i82371eb_isa.o
 driver i82371eb_ide.o
-
+driver i82371eb_usb.o
+driver i82371eb_smbus.o
+driver i82371eb_reset.o

@@ -19,32 +19,54 @@
  */
 
 #include <stdint.h>
+#include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <device/smbus.h>
+#include <pc80/isa-dma.h>
+#include <pc80/mc146818rtc.h>
 #include "i82371eb.h"
 
-/* TODO: Needed later? */
-static const struct smbus_bus_operations lops_smbus_bus = {
-};
+static void isa_init(struct device *dev)
+{
+	u16 reg16;
+	u32 reg32;
 
-static const struct device_operations smbus_ops = {
+	/* Initialize the real time clock (RTC). */
+	rtc_init(0);
+
+	/* Enable access to all BIOS regions. */
+	reg16 = pci_read_config16(dev, XBCS);
+	reg16 |= LOWER_BIOS_ENABLE;
+	reg16 |= EXT_BIOS_ENABLE;
+	reg16 |= EXT_BIOS_ENABLE_1MB;
+	reg16 &= ~(WRITE_PROTECT_ENABLE);	/* Disable ROM write access. */
+	pci_write_config16(dev, XBCS, reg16);
+
+	/*
+	 * The PIIX4 can support the full ISA bus, or the Extended I/O (EIO)
+	 * bus, which is a subset of ISA. We select the full ISA bus here.
+	 */
+	reg32 = pci_read_config32(dev, GENCFG);
+	reg32 |= ISA;	/* Select ISA, not EIO. */
+	pci_write_config16(dev, GENCFG, reg32);
+
+	/* Initialize ISA DMA. */
+	isa_dma_init();
+}
+
+static const struct device_operations isa_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
-	.init			= 0,
-	.scan_bus		= scan_static_bus,
+	.init			= isa_init,
+	.scan_bus		= scan_static_bus,	/* TODO: Needed? */
 	.enable			= 0,
 	.ops_pci		= 0, /* No subsystem IDs on 82371EB! */
-	.ops_smbus_bus		= &lops_smbus_bus,
 };
 
-/* Note: There's no SMBus on 82371FB/SB/MX and 82437MX. */
-
-/* Intel 82371AB/EB/MB */
-static const struct pci_driver smbus_driver __pci_driver = {
-	.ops	= &smbus_ops,
+static const struct pci_driver isa_driver __pci_driver = {
+	.ops	= &isa_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82371AB_SMB_ACPI,
+	.device	= PCI_DEVICE_ID_INTEL_82371AB_ISA,
 };

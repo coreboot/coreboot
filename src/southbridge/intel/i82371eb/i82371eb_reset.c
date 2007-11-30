@@ -18,22 +18,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef SOUTHBRIDGE_INTEL_I82371EB_CHIP_H
-#define SOUTHBRIDGE_INTEL_I82371EB_CHIP_H
+#include <arch/io.h>
+#include "i82371eb.h"
 
-#include <device/device.h>
-
-extern const struct chip_operations southbridge_intel_i82371eb_ops;
-
-struct southbridge_intel_i82371eb_config {
-	int ide0_enable:1;
-	int ide0_drive0_udma33_enable:1;
-	int ide0_drive1_udma33_enable:1;
-	int ide1_enable:1;
-	int ide1_drive0_udma33_enable:1;
-	int ide1_drive1_udma33_enable:1;
-	int ide_legacy_enable:1;
-	int usb_enable:1;
-};
-
-#endif /* SOUTHBRIDGE_INTEL_I82371EB_CHIP_H */
+/**
+ * Initiate a hard reset.
+ */
+void i82371eb_hard_reset(void)
+{
+	outb(SRST | RCPU, RC);
+}

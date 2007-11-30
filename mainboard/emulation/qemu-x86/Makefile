@@ -21,6 +21,15 @@
 
 STAGE0_MAINBOARD_OBJ := $(obj)/mainboard/$(MAINBOARDDIR)/stage1.o
 
+#
+# This is going to be the init RAM code.
+#
+# The initram file is always uncompressed. It belongs into the mainboard
+# directory and is built from what was auto.c in v2.
+#
+
+INITRAM_OBJ = $(obj)/mainboard/$(MAINBOARDDIR)/initram.o
+
 STAGE2_MAINBOARD_OBJ = vga.o
 
 #
@@ -32,13 +41,4 @@ STAGE2_MAINBOARD_OBJ = vga.o
 $(obj)/linuxbios.vpd:
 	$(Q)printf "  BUILD   DUMMY VPD\n"
 	$(Q)dd if=/dev/zero of=$(obj)/linuxbios.vpd bs=256 count=1 $(SILENT)
-
-#
-# This is going to be the init RAM code.
-#
-# The initram file is always uncompressed. It belongs into the mainboard
-# directory and is built from what was auto.c in v2.
-#
-
-INITRAM_OBJ = $(obj)/mainboard/$(MAINBOARDDIR)/initram.o
 

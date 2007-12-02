@@ -323,6 +323,32 @@ static int board_epox_ep_bx3(const char *name)
 }
 
 /**
+ * Suited for Acorp 6A815EPD
+ */
+static int board_acorp_6a815epd(const char *name)
+{
+	struct pci_dev *dev;
+	uint16_t port;
+	uint8_t val;
+
+	dev = pci_dev_find(0x8086, 0x2440);     /* Intel ICH2 LPC */
+	if (!dev) {
+		fprintf(stderr, "\nERROR: ICH2 LPC bridge not found.\n");
+		return -1;
+	}
+
+	/* Use GPIOBASE register to find where the GPIO is mapped. */
+	port = (pci_read_word(dev, 0x58) & 0xFF80) + 0xE;
+
+	val = inb(port);
+	val |= 0x80; /* Top Block Lock -- pin 8 of PLCC32 */
+	val |= 0x40; /* Lower Blocks Lock -- pin 7 of PLCC32 */
+	outb(val, port);
+
+	return 0;
+}
+
+/**
  * We use 2 sets of IDs here, you're free to choose which is which. This
  * is to provide a very high degree of certainty when matching a board on
  * the basis of subsystem/card IDs. As not every vendor handles
@@ -376,6 +402,8 @@ struct board_pciid_enable board_pciid_enables[] = {
 	 "ibm", "x3455", "IBM x3455", board_ibm_x3455},
 	{0x8086, 0x7110, 0x0000, 0x0000, 0x8086, 0x7190, 0x0000, 0x0000,
 	 "epox", "ep-bx3", "EPoX EP-BX3", board_epox_ep_bx3},
+	{0x8086, 0x1130, 0x0000, 0x0000, 0x105a, 0x0d30, 0x105a, 0x4d33,
+	 "acorp", "6a815epd", "Acorp 6A815EPD", board_acorp_6a815epd},
 	{0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL}	/* Keep this */
 };
 

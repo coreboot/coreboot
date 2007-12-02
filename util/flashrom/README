@@ -58,6 +58,7 @@ no LinuxBIOS table is found:
 * GIGABYTE GA-M57SLI-S4 v2.0: use -m gigabyte:m57sli
 * GIGABYTE GA-M61P-S3: use -m gigabyte:m61p
 * MSI K8N Neo3: use -m msi:k8n-neo3
+* Acorp 6A815EPD: use -m acorp:6a815epd
 
 
 ROM Layout Support

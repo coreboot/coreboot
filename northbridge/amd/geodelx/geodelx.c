@@ -25,6 +25,7 @@
 #include <device/pci_ids.h>
 #include <msr.h>
 #include <amd_geodelx.h>
+#include <northbridgelib.h>
 
 /* Function prototypes */
 extern void chipsetinit(void);
@@ -270,58 +271,6 @@ static void geodelx_northbridge_set_resources(struct device *dev)
 }
 
 /**
- * Set resources for the PCI domain.
- *
- * Just set up basic global ranges for I/O and memory. Allocation of
- * sub-resources draws on these top-level resources in the usual
- * hierarchical manner.
- *
- * @param dev The nortbridge device.
- */
-static void geodelx_pci_domain_read_resources(struct device *dev)
-{
-	struct resource *resource;
-
-	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __FUNCTION__);
-
-	/* Initialize the system wide I/O space constraints. */
-	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
-	resource->limit = 0xffffUL;
-	resource->flags =
-	    IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-
-	/* Initialize the system wide memory resources constraints. */
-	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
-	resource->limit = 0xffffffffULL;
-	resource->flags =
-	    IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-}
-
-/**
- * Create a RAM resource, by taking the passed-in size and creating
- * a resource record.
- *
- * @param dev The device.
- * @param index A resource index.
- * @param basek Base memory address in KB.
- * @param sizek Size of memory in KB.
- */
-static void ram_resource(struct device *dev, unsigned long index,
-			 unsigned long basek, unsigned long sizek)
-{
-	struct resource *resource;
-
-	if (!sizek)
-		return;
-
-	resource = new_resource(dev, index);
-	resource->base = ((resource_t) basek) << 10;
-	resource->size = ((resource_t) sizek) << 10;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_CACHEABLE |
-	    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
-}
-
-/**
  * Set resources in the PCI domain.
  *
  * Also, as a side effect, create a RAM resource in the child which,
@@ -386,21 +335,6 @@ static void geodelx_pci_domain_phase2(struct device *dev)
 }
 
 /**
- * Support for scan bus from the "tippy top" -- i.e. the PCI domain,
- * not the 0:0.0 device.
- *
- * @param dev The PCI domain device.
- * @param max Maximum number of devices to scan.
- * @return TODO
- */
-static unsigned int geodelx_pci_domain_scan_bus(struct device *dev,
-						unsigned int max)
-{
-	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __FUNCTION__);
-	return pci_scan_bus(&dev->link[0], PCI_DEVFN(0, 0), 0xff, max);
-}
-
-/**
  * Support for APIC cluster init.
  *
  * TODO: Should we do this in phase 2? It is now done in phase 6.
@@ -426,8 +360,8 @@ static void cpu_bus_noop(struct device *dev)
 static struct device_operations geodelx_pcidomain_ops = {
 	.constructor			= default_device_constructor,
 	.phase2_setup_scan_bus		= geodelx_pci_domain_phase2,
-	.phase3_scan			= geodelx_pci_domain_scan_bus,
-	.phase4_read_resources		= geodelx_pci_domain_read_resources,
+	.phase3_scan			= pci_domain_scan_bus,
+	.phase4_read_resources		= pci_domain_read_resources,
 	.phase4_set_resources		= geodelx_pci_domain_set_resources,
 	.phase5_enable_resources	= enable_childrens_resources,
 	.phase6_init			= 0,
@@ -448,8 +382,8 @@ static struct device_operations geodelx_apic_ops = {
 /** Operations for when the northbridge is running a PCI device. */
 static struct device_operations geodelx_pci_ops = {
 	.constructor			= default_device_constructor,
-	.phase3_scan			= geodelx_pci_domain_scan_bus,
-	.phase4_read_resources		= geodelx_pci_domain_read_resources,
+	.phase3_scan			= pci_domain_scan_bus,
+	.phase4_read_resources		= pci_domain_read_resources,
 	.phase4_set_resources		= geodelx_northbridge_set_resources,
 	.phase5_enable_resources	= enable_childrens_resources,
 	.phase6_init			= geodelx_northbridge_init,

@@ -43,45 +43,11 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <string.h>
+#include <northbridgelib.h>
 #include "i440bx.h"
 #include "statictree.h"
 
 /* Here are the ops for 440BX as a PCI domain. */
-/* A PCI domain contains the I/O and memory resource address space below it. */
-
-static void pci_domain_read_resources(struct device *dev)
-{
-	struct resource *resource;
-
-	/* Initialize the system wide I/O space constraints. */
-	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
-	resource->limit = 0xffffUL;
-	resource->flags =
-	    IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-
-	/* Initialize the system wide memory resources constraints. */
-	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
-	resource->limit = 0xffffffffULL;
-	resource->flags =
-	    IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-}
-
-static void ram_resource(struct device *dev, unsigned long index,
-			 unsigned long basek, unsigned long sizek)
-{
-	struct resource *resource;
-
-	if (!sizek) {
-		return;
-	}
-	resource = new_resource(dev, index);
-	resource->base = ((resource_t) basek) << 10;
-	resource->size = ((resource_t) sizek) << 10;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_CACHEABLE |
-	    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
-	printk(BIOS_DEBUG, "%s: add ram resource %lld bytes\n", __func__,
-	       resource->size);
-}
 
 static void pci_domain_set_resources(struct device *dev)
 {
@@ -97,13 +63,6 @@ static void pci_domain_set_resources(struct device *dev)
 		ram_resource(dev, idx++, 0, tolmk);
 	}
 	phase4_assign_resources(&dev->link[0]);
-}
-
-static unsigned int pci_domain_scan_bus(struct device *dev, unsigned int max)
-{
-	/* There is only one link on this device, and it is always link 0. */
-	max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0, 0), 0xff, max);
-	return max;
 }
 
 /* Here are the operations for when the northbridge is running a PCI domain. */

@@ -43,7 +43,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <string.h>
-#include <northbridgelib.h>
 #include "i440bx.h"
 #include "statictree.h"
 

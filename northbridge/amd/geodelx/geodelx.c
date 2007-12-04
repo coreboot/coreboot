@@ -25,7 +25,6 @@
 #include <device/pci_ids.h>
 #include <msr.h>
 #include <amd_geodelx.h>
-#include <northbridgelib.h>
 
 /* Function prototypes */
 extern void chipsetinit(void);

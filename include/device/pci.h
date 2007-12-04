@@ -94,6 +94,12 @@ unsigned pci_find_capability(struct device * dev, unsigned cap);
 struct resource *pci_get_resource(struct device *dev, unsigned long index);
 void pci_dev_set_subsystem(struct device * dev, unsigned vendor, unsigned device);
 
+void pci_domain_read_resources(struct device *dev);
+void ram_resource(struct device *dev, unsigned long index,
+                  unsigned long basek, unsigned long sizek);
+unsigned int pci_domain_scan_bus(struct device *dev, unsigned int max);
+
+
 #define PCI_IO_BRIDGE_ALIGN 4096
 #define PCI_MEM_BRIDGE_ALIGN (1024*1024)
 

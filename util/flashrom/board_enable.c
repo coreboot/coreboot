@@ -50,13 +50,13 @@ static void w836xx_ext_leave(uint16_t port)
 static unsigned char wbsio_read(uint16_t index, uint8_t reg)
 {
 	outb(reg, index);
-	return inb(index+1);
+	return inb(index + 1);
 }
 
 static void wbsio_write(uint16_t index, uint8_t reg, uint8_t data)
 {
 	outb(reg, index);
-	outb(data, index+1);
+	outb(data, index + 1);
 }
 
 static void wbsio_mask(uint16_t index, uint8_t reg, uint8_t data, uint8_t mask)
@@ -64,8 +64,8 @@ static void wbsio_mask(uint16_t index, uint8_t reg, uint8_t data, uint8_t mask)
 	uint8_t tmp;
 
 	outb(reg, index);
-	tmp = inb(index+1) & ~mask;
-	outb(tmp | (data & mask), index+1);
+	tmp = inb(index + 1) & ~mask;
+	outb(tmp | (data & mask), index + 1);
 }
 
 /**
@@ -79,8 +79,8 @@ static int w83627hf_gpio24_raise(uint16_t index, const char *name)
 {
 	w836xx_ext_enter(index);
 
-	/* Is this the w83627hf? */
-	if (wbsio_read(index, 0x20) != 0x52) {	/* Super I/O device ID register */
+	/* Is this the W83627HF? */
+	if (wbsio_read(index, 0x20) != 0x52) {	/* Super I/O device ID reg. */
 		fprintf(stderr, "\nERROR: %s: W83627HF: Wrong ID: 0x%02X.\n",
 			name, wbsio_read(index, 0x20));
 		w836xx_ext_leave(index);
@@ -90,14 +90,12 @@ static int w83627hf_gpio24_raise(uint16_t index, const char *name)
 	/* PIN89S: WDTO/GP24 multiplex -> GPIO24 */
 	wbsio_mask(index, 0x2B, 0x10, 0x10);
 
-	wbsio_write(index, 0x07, 0x08);	/* Select logical device 8: GPIO port 2 */
+	/* Select logical device 8: GPIO port 2 */
+	wbsio_write(index, 0x07, 0x08);
 
 	wbsio_mask(index, 0x30, 0x01, 0x01);	/* Activate logical device. */
-
 	wbsio_mask(index, 0xF0, 0x00, 0x10);	/* GPIO24 -> output */
-
 	wbsio_mask(index, 0xF2, 0x00, 0x10);	/* Clear GPIO24 inversion */
-
 	wbsio_mask(index, 0xF1, 0x10, 0x10);	/* Raise GPIO24 */
 
 	w836xx_ext_leave(index);
@@ -107,6 +105,7 @@ static int w83627hf_gpio24_raise(uint16_t index, const char *name)
 
 static int w83627hf_gpio24_raise_2e(const char *name)
 {
+	/* TODO: Typo? Shouldn't this be 0x2e? */
 	return w83627hf_gpio24_raise(0x2d, name);
 }
 
@@ -119,8 +118,9 @@ static int w83627hf_gpio24_raise_2e(const char *name)
 static int w83627thf_gpio4_4_raise(uint16_t index, const char *name)
 {
 	w836xx_ext_enter(index);
-	/* Is this the w83627thf? */
-	if (wbsio_read(index, 0x20) != 0x82) {	/* Super I/O device ID register */
+
+	/* Is this the W83627THF? */
+	if (wbsio_read(index, 0x20) != 0x82) {	/* Super I/O device ID reg. */
 		fprintf(stderr, "\nERROR: %s: W83627THF: Wrong ID: 0x%02X.\n",
 			name, wbsio_read(index, 0x20));
 		w836xx_ext_leave(index);
@@ -129,15 +129,11 @@ static int w83627thf_gpio4_4_raise(uint16_t index, const char *name)
 
 	/* PINxxxxS: GPIO4/bit 4 multiplex -> GPIOXXX */
 
-	wbsio_write(index, 0x07, 0x09);	/* Select logical device 9: GPIO port 4 */
-
-	wbsio_mask(index, 0x30, 0x02, 0x02);	/* Activate logical device. */
-
-	wbsio_mask(index, 0xF4, 0x00, 0x10);	/* GPIO4 bit 4 -> output */
-
-	wbsio_mask(index, 0xF6, 0x00, 0x10);	/* Clear GPIO4 bit 4 inversion */
-
-	wbsio_mask(index, 0xF5, 0x10, 0x10);	/* Raise GPIO4 bit 4 */
+	wbsio_write(index, 0x07, 0x09);      /* Select LDN 9: GPIO port 4 */
+	wbsio_mask(index, 0x30, 0x02, 0x02); /* Activate logical device. */
+	wbsio_mask(index, 0xF4, 0x00, 0x10); /* GPIO4 bit 4 -> output */
+	wbsio_mask(index, 0xF6, 0x00, 0x10); /* Clear GPIO4 bit 4 inversion */
+	wbsio_mask(index, 0xF5, 0x10, 0x10); /* Raise GPIO4 bit 4 */
 
 	w836xx_ext_leave(index);
 
@@ -146,8 +142,9 @@ static int w83627thf_gpio4_4_raise(uint16_t index, const char *name)
 
 static int w83627thf_gpio4_4_raise_4e(const char *name)
 {
-	return w83627thf_gpio4_4_raise(0x4E, name);
+	return w83627thf_gpio4_4_raise(0x4e, name);
 }
+
 /**
  * Suited for VIAs EPIA M and MII, and maybe other CLE266 based EPIAs.
  *
@@ -156,7 +153,7 @@ static int w83627thf_gpio4_4_raise_4e(const char *name)
 static int board_via_epia_m(const char *name)
 {
 	struct pci_dev *dev;
-	unsigned int base;
+	uint16_t base;
 	uint8_t val;
 
 	dev = pci_dev_find(0x1106, 0x3177);	/* VT8235 ISA bridge */
@@ -173,7 +170,7 @@ static int board_via_epia_m(const char *name)
 	/* Get Power Management IO address. */
 	base = pci_read_word(dev, 0x88) & 0xFF80;
 
-	/* enable GPIO15 which is connected to write protect. */
+	/* Enable GPIO15 which is connected to write protect. */
 	val = inb(base + 0x4D);
 	val |= 0x80;
 	outb(val, base + 0x4D);
@@ -199,16 +196,16 @@ static int board_asus_a7v8x_mx(const char *name)
 		return -1;
 	}
 
-	/* This bit is marked reserved actually */
+	/* This bit is marked reserved actually. */
 	val = pci_read_byte(dev, 0x59);
 	val &= 0x7F;
 	pci_write_byte(dev, 0x59, val);
 
-	/* Raise ROM MEMW# line on Winbond w83697 SuperIO */
+	/* Raise ROM MEMW# line on Winbond W83697 Super I/O. */
 	w836xx_ext_enter(0x2E);
 
-	if (!(wbsio_read(0x2E, 0x24) & 0x02))	/* flash rom enabled? */
-		wbsio_mask(0x2E, 0x24, 0x08, 0x08);	/* enable MEMW# */
+	if (!(wbsio_read(0x2E, 0x24) & 0x02))	/* Flash ROM enabled? */
+		wbsio_mask(0x2E, 0x24, 0x08, 0x08);	/* Enable MEMW#. */
 
 	w836xx_ext_leave(0x2E);
 
@@ -323,7 +320,7 @@ static int board_epox_ep_bx3(const char *name)
 }
 
 /**
- * Suited for Acorp 6A815EPD
+ * Suited for Acorp 6A815EPD.
  */
 static int board_acorp_6a815epd(const char *name)
 {
@@ -338,7 +335,7 @@ static int board_acorp_6a815epd(const char *name)
 	}
 
 	/* Use GPIOBASE register to find where the GPIO is mapped. */
-	port = (pci_read_word(dev, 0x58) & 0xFF80) + 0xE;
+	port = (pci_read_word(dev, 0x58) & 0xFFC0) + 0xE;
 
 	val = inb(port);
 	val |= 0x80; /* Top Block Lock -- pin 8 of PLCC32 */
@@ -357,25 +354,25 @@ static int board_acorp_6a815epd(const char *name)
  * Keep the second set NULLed if it should be ignored.
  */
 struct board_pciid_enable {
-	/* Any device, but make it sensible, like the isa bridge. */
+	/* Any device, but make it sensible, like the ISA bridge. */
 	uint16_t first_vendor;
 	uint16_t first_device;
 	uint16_t first_card_vendor;
 	uint16_t first_card_device;
 
 	/* Any device, but make it sensible, like 
-	 * the host bridge. May be NULL
+	 * the host bridge. May be NULL.
 	 */
 	uint16_t second_vendor;
 	uint16_t second_device;
 	uint16_t second_card_vendor;
 	uint16_t second_card_device;
 
-	/* From linuxbios table */
-	char *lb_vendor;
-	char *lb_part;
+	/* The vendor / part name from the LinuxBIOS table. */
+	const char *lb_vendor;
+	const char *lb_part;
 
-	char *name;
+	const char *name;
 	int (*enable) (const char *name);
 };
 
@@ -411,8 +408,7 @@ struct board_pciid_enable board_pciid_enables[] = {
  * Match boards on LinuxBIOS table gathered vendor and part name.
  * Require main PCI IDs to match too as extra safety.
  */
-static struct board_pciid_enable *board_match_linuxbios_name(char *vendor, 
-								char *part)
+static struct board_pciid_enable *board_match_linuxbios_name(const char *vendor, const char *part)
 {
 	struct board_pciid_enable *board = board_pciid_enables;
 
@@ -431,7 +427,9 @@ static struct board_pciid_enable *board_match_linuxbios_name(char *vendor,
 			continue;
 		return board;
 	}
+
 	printf("NOT FOUND %s:%s\n", vendor, part);
+
 	return NULL;
 }
 
@@ -472,7 +470,7 @@ static struct board_pciid_enable *board_match_pci_card_ids(void)
 	return NULL;
 }
 
-int board_flash_enable(char *vendor, char *part)
+int board_flash_enable(const char *vendor, const char *part)
 {
 	struct board_pciid_enable *board = NULL;
 	int ret = 0;

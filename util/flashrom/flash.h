@@ -31,7 +31,7 @@
 #include <stdio.h>
 
 struct flashchip {
-	char *name;
+	const char *name;
 	int manufacture_id;
 	int model_id;
 
@@ -43,18 +43,18 @@ struct flashchip {
 	int (*write) (struct flashchip *flash, uint8_t *buf);
 	int (*read) (struct flashchip *flash, uint8_t *buf);
 
-	/* some flash devices have an additional
-	 * register space
-	 */
+	/* Some flash devices have an additional register space. */
 	volatile uint8_t *virtual_memory;
 	volatile uint8_t *virtual_registers;
 };
 
 extern struct flashchip flashchips[];
 
-/* Please keep this list sorted alphabetically by manufacturer. The first
+/*
+ * Please keep this list sorted alphabetically by manufacturer. The first
  * entry of each section should be the manufacturer ID, followed by the
  * list of devices from that manufacturer (sorted by device IDs).
+ *
  * All LPC/FWH parts (parallel flash) have 8-bit device IDs.
  * All SPI parts have 16-bit device IDs.
  */
@@ -80,9 +80,11 @@ extern struct flashchip flashchips[];
 #define EMST_ID			0x8C	/* EMST / EFST */
 #define EMST_F49B002UA		0x00
 
+/*
+ * EN25 chips are SPI, first byte of device ID is memory type,
+ * second byte of device ID is log(bitsize)-9.
+ */
 #define EON_ID			0x1C	/* EON */
-/* EN25 chips are SPI, first byte of device id is memory type,
- * second byte of device id is log(bitsize)-9. */
 #define EN_25B05		0x2010	/* 2^19 kbit or 2^16 kByte */
 #define EN_25B10		0x2011
 #define EN_25B20		0x2012
@@ -103,13 +105,15 @@ extern struct flashchip flashchips[];
 #define ISSI_ID			0xD5	/* ISSI */
 
 #define MSYSTEMS_ID		0x156F	/* M-Systems */
-#define MSYSTEMS_MD2200		0xDB	/* ? */
+#define MSYSTEMS_MD2200		0xDB
 #define MSYSTEMS_MD2800		0x30	/* hmm -- both 0x30 */
 #define MSYSTEMS_MD2802		0x30	/* hmm -- both 0x30 */
 
+/*
+ * MX25 chips are SPI, first byte of device ID is memory type,
+ * second byte of device ID is log(bitsize)-9.
+ */
 #define MX_ID			0xC2	/* Macronix (MX) */
-/* MX25 chips are SPI, first byte of device id is memory type,
- * second byte of device id is log(bitsize)-9. */
 #define MX_25L512		0x2010	/* 2^19 kbit or 2^16 kByte */
 #define MX_25L1005		0x2011
 #define MX_25L2005		0x2012
@@ -129,9 +133,11 @@ extern struct flashchip flashchips[];
 #define SHARP_ID		0xB0	/* Sharp */
 #define SHARP_LHF00L04		0xCF
 
+/*
+ * SST25 chips are SPI, first byte of device ID is memory type, second
+ * byte of device ID is related to log(bitsize) at least for some chips.
+ */
 #define SST_ID			0xBF	/* SST */
-/* SST25 chips are SPI, first byte of device id is memory type, second
- * byte of device id is related to log(bitsize) at least for some chips. */
 #define SST_25WF512		0x2501
 #define SST_25WF010		0x2502
 #define SST_25WF020		0x2503
@@ -196,22 +202,23 @@ extern struct flashchip flashchips[];
 #define W_49V002A		0xB0
 #define W_49V002FA		0x32
 
-/* function prototypes from udelay.h */
-
+/* udelay.c */
 void myusec_delay(int time);
 void myusec_calibrate_delay();
 
-/* pci handling for board/chipset_enable */
-struct pci_access *pacc;	/* For board and chipset_enable */
+/* PCI handling for board/chipset_enable */
+struct pci_access *pacc;
 struct pci_dev *pci_dev_find(uint16_t vendor, uint16_t device);
 struct pci_dev *pci_card_find(uint16_t vendor, uint16_t device,
 			      uint16_t card_vendor, uint16_t card_device);
 
-int board_flash_enable(char *vendor, char *part);	/* board_enable.c */
-int chipset_flash_enable(void);	/* chipset_enable.c */
+/* board_enable.c */
+int board_flash_enable(const char *vendor, const char *part);
 
-/* physical memory mapping device */
+/* chipset_enable.c */
+int chipset_flash_enable(void);
 
+/* Physical memory mapping device */
 #if defined (__sun) && (defined(__i386) || defined(__amd64))
 #  define MEM_DEV "/dev/xsvc"
 #else

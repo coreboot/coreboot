@@ -141,7 +141,7 @@ int find_file(const struct mem_file *archive, const char *filename, struct mem_f
 		walk += (ntohl(header->offset) + ntohl(header->len) - 1)
 			 & 0xfffffff0;
 	}
-	printk(BIOS_SPEW, "LAR: NO FILE FOUND!\n");
+	printk(BIOS_SPEW, "LAR: File not found!\n");
 	return 1;
 }
 

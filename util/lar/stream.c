@@ -63,7 +63,7 @@ int iself(char *filebuf)
 
 /**
  * Output all the ELF segments for a given file
- * @param lar The LAR Archoe
+ * @param lar The LAR archive
  * @param name The LAR name
  * @param filebuf The ELF file
  * @param filelen Size of the ELF file
@@ -88,9 +88,13 @@ int output_elf_segments(struct lar *lar, char *name, char *filebuf,
 	u32 complen;
 
 	/* Allocate a temporary buffer to compress into - this is unavoidable,
-	   because we need to make sure that the compressed data will fit in
-	   the LAR, and we won't know the size of the compressed data until
-	   we actually compress it */
+	 * because we need to make sure that the compressed data will fit in
+	 * the LAR, and we won't know the size of the compressed data until
+	 * we actually compress it.
+	 * FIXME: In case the compressed file is bigger than the original,
+	 * we corrupt memory. Compute maximum size increase and allocate that
+	 * on top of the file length.
+	 */
 
 	temp = calloc(filelen, 1);
 

@@ -36,7 +36,7 @@ SILENT := >/dev/null 2>&1
 
 ROM_SIZE := $(shell expr $(CONFIG_LINUXBIOS_ROMSIZE_KB) \* 1024)
 
-LARFILES := nocompress:normal/initram.o normal/stage2.o nocompress:normal/option_table
+LARFILES := nocompress:normal/initram normal/stage2.o nocompress:normal/option_table
 ifneq ($(CONFIG_PAYLOAD_NONE),y)
 LARFILES += normal/payload
 endif
@@ -57,11 +57,11 @@ ifeq ($(CONFIG_DEFAULT_COMPRESSION_NRV2B),y)
 COMPRESSFLAG := -C nrv2b
 endif
 
-$(obj)/linuxbios.rom $(obj)/linuxbios.map: $(obj)/linuxbios.bootblock $(obj)/util/lar/lar lzma nrv2b $(obj)/linuxbios.initram.o $(obj)/linuxbios.stage2.o $(obj)/option_table
+$(obj)/linuxbios.rom $(obj)/linuxbios.map: $(obj)/linuxbios.bootblock $(obj)/util/lar/lar lzma nrv2b $(obj)/linuxbios.initram $(obj)/linuxbios.stage2.o $(obj)/option_table
 	$(Q)rm -rf $(obj)/lar.tmp
 	$(Q)mkdir $(obj)/lar.tmp
 	$(Q)mkdir $(obj)/lar.tmp/normal
-	$(Q)cp $(obj)/linuxbios.initram.o $(obj)/lar.tmp/normal/initram.o
+	$(Q)cp $(obj)/linuxbios.initram $(obj)/lar.tmp/normal/initram
 	$(Q)cp $(obj)/linuxbios.stage2.o $(obj)/lar.tmp/normal/stage2.o
 	$(Q)cp $(obj)/option_table $(obj)/lar.tmp/normal/option_table
 ifeq ($(CONFIG_PAYLOAD_NONE),y)
@@ -232,12 +232,14 @@ $(obj)/arch/x86/geodelx/stage0.o: $(src)/arch/x86/geodelx/stage0.S
 	$(Q)printf "  AS      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(AS) $(obj)/arch/x86/stage0_asm.s -o $@
 
-$(obj)/linuxbios.initram.o $(obj)/linuxbios.initram.map: $(obj)/stage0.init $(obj)/stage0-prefixed.o $(patsubst %.o,%_xip.o,$(INITRAM_OBJ))
+$(obj)/linuxbios.initram $(obj)/linuxbios.initram.map: $(obj)/stage0.init $(obj)/stage0-prefixed.o $(INITRAM_OBJ)
+	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@)) (XIP)\n"
+	$(Q)$(CC) $(INITCFLAGS) -D_SHARED -fPIE -c -combine $(INITRAM_OBJ) -o $(obj)/linuxbios.initram_partiallylinked.o
 	$(Q)# initram links against stage0
 	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(LD) -Ttext 0 --entry main -N -R $(obj)/stage0-prefixed.o \
-		$(patsubst %.o,%_xip.o,$(INITRAM_OBJ)) -o $(obj)/linuxbios.initram.o
+		$(obj)/linuxbios.initram_partiallylinked.o -o $(obj)/linuxbios.initram
 	$(Q)printf "  NM      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(NM) $(obj)/linuxbios.initram.o | sort -u > $(obj)/linuxbios.initram.map
+	$(Q)$(NM) $(obj)/linuxbios.initram | sort -u > $(obj)/linuxbios.initram.map
 
 endif

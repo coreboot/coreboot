@@ -137,17 +137,17 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 	// find first initram
 	if (check_normal_boot_flag()) {
 		printk(BIOS_DEBUG, "Choosing normal boot.\n");
-		ret = execute_in_place(&archive, "normal/initram.o/segment0");
+		ret = execute_in_place(&archive, "normal/initram/segment0");
 	} else {
 		printk(BIOS_DEBUG, "Choosing fallback boot.\n");
-		ret = execute_in_place(&archive, "fallback/initram.o/segment0");
+		ret = execute_in_place(&archive, "fallback/initram/segment0");
 		/* Try a normal boot if fallback doesn't exist in the lar.
 		 * TODO: There are other ways to do this.
 		 * It could be ifdef or the boot flag could be forced.
 		 */
 		if (ret) {
 			printk(BIOS_DEBUG, "Fallback failed. Try normal boot\n");
-			ret = execute_in_place(&archive, "normal/initram.o/segment0");
+			ret = execute_in_place(&archive, "normal/initram/segment0");
 		}
 	}
 

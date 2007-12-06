@@ -198,11 +198,16 @@ endif
 STAGE2_OBJ += $(obj)/util/x86emu/libx86emu.a $(LIBGCC_FILE_NAME)
 endif
 
-$(obj)/linuxbios.stage2 $(obj)/linuxbios.stage2.map: $(obj)/stage0.init $(STAGE2_OBJ)
+# To reduce code duplication, always make sure STAGE2_OBJ does not contain
+# any object from STAGE0_OBJ.
+
+STAGE2_OBJ_NEEDED = $(filter-out $(STAGE0_OBJ), $(STAGE2_OBJ))
+
+$(obj)/linuxbios.stage2 $(obj)/linuxbios.stage2.map: $(obj)/stage0.init $(STAGE2_OBJ_NEEDED)
 	$(Q)# leave a .o with full symbols in it for debugging.
 	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(LD) -R $(obj)/stage0.o -Ttext 0x1000 --entry=stage2 \
-		  -o $(obj)/linuxbios.stage2 $(STAGE2_OBJ)
+		  -o $(obj)/linuxbios.stage2 $(STAGE2_OBJ_NEEDED)
 	$(Q)$(NM) $(obj)/linuxbios.stage2 | sort -u > $(obj)/linuxbios.stage2.map
 
 #

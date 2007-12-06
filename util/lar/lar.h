@@ -61,7 +61,7 @@ typedef uint64_t u64;
 typedef uint32_t u32;
 typedef uint8_t  u8;
 
-/* NOTE -- This and the user-mode lar.h may NOT be in sync. Be careful. */
+/* NOTE -- This and the linuxbios lar.h may NOT be in sync. Be careful. */
 struct lar_header {
 	char magic[8];
 	u32 len;

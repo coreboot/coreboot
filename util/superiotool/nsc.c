@@ -25,9 +25,9 @@
 #define CHIP_REV_REG	0x27	/* Super I/O revision ID (SRID) */
 
 static const struct superio_registers reg_table[] = {
-	{0xd0, "PC87371", {	/* From sensors-detect */
+	{0xd0, "PC87317", {
 		{EOT}}},
-	{0xdf, "PC97371", {	/* From sensors-detect */
+	{0xdf, "PC97317", {
 		{EOT}}},
 	{0xe1, "PC87360", {
 		{NOLDN, NULL,

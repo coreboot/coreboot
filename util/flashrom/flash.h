@@ -74,6 +74,8 @@ extern struct flashchip flashchips[];
 #define ATMEL_ID		0x1F	/* Atmel */
 #define AT_29C040A		0xA4
 #define AT_29C020		0xDA
+#define AT_49F002N		0x07	/* for AT49F002(N)  */
+#define AT_49F002NT		0x08	/* for AT49F002(N)T */
 
 #define CATALYST_ID		0x31	/* Catalyst */
 

@@ -93,7 +93,7 @@ u8 spd_read_byte(u16 device, u8 address)
 }
 
 /**
-  * Place holder in case we ever need it. Since this file is a
+  * Placeholder in case we ever need it. Since this file is a
   * template for other motherboards, we want this here and we want the
   * call in the right place.
   */

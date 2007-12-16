@@ -167,7 +167,12 @@ extern struct flashchip flashchips[];
 #define SST_49LF016C		0x5C
 #define SST_49LF160C		0x4C
 
+/*
+ * ST25P chips are SPI, first byte of device ID is memory type, second
+ * byte of device ID is related to log(bitsize) at least for some chips.
+ */
 #define ST_ID			0x20	/* ST */
+#define ST_M25P80		0x2014
 #define ST_M50FLW040A		0x08
 #define ST_M50FLW040B		0x28
 #define ST_M50FLW080A		0x80

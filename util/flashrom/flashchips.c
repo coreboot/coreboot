@@ -140,6 +140,8 @@ struct flashchip flashchips[] = {
 	 probe_jedec,	erase_chip_jedec,	write_jedec},
 	{"M29F040B",	ST_ID, 		ST_M29F040B,	512, 64 * 1024,
 	 probe_29f040b, erase_29f040b,	write_29f040b},
+	{"M25P80",	ST_ID,		ST_M25P80,	1024, 64 * 1024,
+	 probe_spi,	generic_spi_chip_erase,	generic_spi_chip_write},
 	{"82802ab",	137,		173,		512, 64 * 1024,
 	 probe_82802ab, erase_82802ab,	write_82802ab},
 	{"82802ac",	137,		172,		1024, 64 * 1024,

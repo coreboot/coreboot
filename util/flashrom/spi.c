@@ -280,7 +280,11 @@ uint8_t generic_spi_read_status_register()
 int generic_spi_chip_erase(struct flashchip *flash)
 {
 	const unsigned char cmd[] = JEDEC_CE_2;
+	uint8_t statusreg;
 
+	statusreg = generic_spi_read_status_register();
+	printf("chip status register before erase is %02x\n", statusreg);
+	
 	generic_spi_write_enable();
 	/* Send CE (Chip Erase) */
 	generic_spi_command(JEDEC_CE_2_OUTSIZE, JEDEC_CE_2_INSIZE, cmd, NULL);

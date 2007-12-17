@@ -46,24 +46,24 @@
 #define JEDEC_WRDI_INSIZE	0x00
 
 /* Chip Erase 0x60 is supported by Macronix/SST chips. */
-#define JEDEC_CE_1	{0x60};
-#define JEDEC_CE_1_OUTSIZE	0x01
-#define JEDEC_CE_1_INSIZE	0x00
+#define JEDEC_CE_60	{0x60};
+#define JEDEC_CE_60_OUTSIZE	0x01
+#define JEDEC_CE_60_INSIZE	0x00
 
-/* Chip Erase 0xc7 is supported by EON/Macronix chips. */
-#define JEDEC_CE_2	{0xc7};
-#define JEDEC_CE_2_OUTSIZE	0x01
-#define JEDEC_CE_2_INSIZE	0x00
+/* Chip Erase 0xc7 is supported by ST/EON/Macronix chips. */
+#define JEDEC_CE_C7	{0xc7};
+#define JEDEC_CE_C7_OUTSIZE	0x01
+#define JEDEC_CE_C7_INSIZE	0x00
 
 /* Block Erase 0x52 is supported by SST chips. */
-#define JEDEC_BE_1	{0x52};
-#define JEDEC_BE_1_OUTSIZE	0x04
-#define JEDEC_BE_1_INSIZE	0x00
+#define JEDEC_BE_52	{0x52};
+#define JEDEC_BE_52_OUTSIZE	0x04
+#define JEDEC_BE_52_INSIZE	0x00
 
 /* Block Erase 0xd8 is supported by EON/Macronix chips. */
-#define JEDEC_BE_2	{0xd8};
-#define JEDEC_BE_2_OUTSIZE	0x04
-#define JEDEC_BE_2_INSIZE	0x00
+#define JEDEC_BE_D8	{0xd8};
+#define JEDEC_BE_D8_OUTSIZE	0x04
+#define JEDEC_BE_D8_INSIZE	0x00
 
 /* Sector Erase 0x20 is supported by Macronix/SST chips. */
 #define JEDEC_SE	{0x20};
@@ -277,9 +277,9 @@ uint8_t generic_spi_read_status_register()
 	return readarr[0];
 }
 
-int generic_spi_chip_erase(struct flashchip *flash)
+int generic_spi_chip_erase_c7(struct flashchip *flash)
 {
-	const unsigned char cmd[] = JEDEC_CE_2;
+	const unsigned char cmd[] = JEDEC_CE_C7;
 	uint8_t statusreg;
 
 	statusreg = generic_spi_read_status_register();
@@ -287,7 +287,7 @@ int generic_spi_chip_erase(struct flashchip *flash)
 	
 	generic_spi_write_enable();
 	/* Send CE (Chip Erase) */
-	generic_spi_command(JEDEC_CE_2_OUTSIZE, JEDEC_CE_2_INSIZE, cmd, NULL);
+	generic_spi_command(JEDEC_CE_C7_OUTSIZE, JEDEC_CE_C7_INSIZE, cmd, NULL);
 	/* Wait until the Write-In-Progress bit is cleared.
 	 * This usually takes 1-85 s, so wait in 1 s steps.
 	 */
@@ -301,16 +301,16 @@ int generic_spi_chip_erase(struct flashchip *flash)
  * 32k for SST
  * 4-32k non-uniform for EON
  */
-int generic_spi_block_erase(const struct flashchip *flash, unsigned long addr)
+int generic_spi_block_erase_d8(const struct flashchip *flash, unsigned long addr)
 {
-	unsigned char cmd[JEDEC_BE_2_OUTSIZE] = JEDEC_BE_2;
+	unsigned char cmd[JEDEC_BE_D8_OUTSIZE] = JEDEC_BE_D8;
 
 	cmd[1] = (addr & 0x00ff0000) >> 16;
 	cmd[2] = (addr & 0x0000ff00) >> 8;
 	cmd[3] = (addr & 0x000000ff);
 	generic_spi_write_enable();
 	/* Send BE (Block Erase) */
-	generic_spi_command(JEDEC_BE_2_OUTSIZE, JEDEC_BE_2_INSIZE, cmd, NULL);
+	generic_spi_command(JEDEC_BE_D8_OUTSIZE, JEDEC_BE_D8_INSIZE, cmd, NULL);
 	/* Wait until the Write-In-Progress bit is cleared.
 	 * This usually takes 100-4000 ms, so wait in 100 ms steps.
 	 */

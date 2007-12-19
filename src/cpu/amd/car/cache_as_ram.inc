@@ -23,15 +23,22 @@
 /* leave some space for global variable to pass to RAM stage */
 #define GlobalVarSize DCACHE_RAM_GLOBAL_VAR_SIZE
 
+#if CAR_FAM10 == 1
+#define CacheSizeAPStack 0x400 /* 1K */
+#endif
+
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
 
 	/* Save the BIST result */
 	movl	%eax, %ebp
 
-	/* for normal part %ebx already contain cpu_init_detected from fallback call */
+	/*for normal part %ebx already contain cpu_init_detected from fallback call */
 
 cache_as_ram_setup:
+
+	movb	$0xA0, %al
+	outb	%al, $0x80
 
 	/* hope we can skip the double set for normal part */
 #if ((HAVE_FAILOVER_BOOT == 1) && (USE_FAILOVER_IMAGE == 1)) || ((HAVE_FAILOVER_BOOT == 0) && (USE_FALLBACK_IMAGE == 1))
@@ -41,6 +48,53 @@ cache_as_ram_setup:
 	rdmsr
 	andl	$(1 << 11), %eax
 	movl	%eax, %ebx	/* We store the status */
+
+#if CAR_FAM10 == 1
+	/* for GH, CAR need to set DRAM Base/Limit Registers to direct that to node0 */
+
+	/* Only BSP needed, for other nodes set during HT/memory init. */
+	/* So we need to check if it is BSP */
+	movl	$0x1b, %ecx
+	rdmsr
+	bt	$8, %eax /*BSC */
+	jnc	CAR_FAM10_out
+
+	/* Enable RT tables on BSP */
+	movl	$0x8000c06c, %eax
+	movw	$0xcf8, %dx
+	outl	%eax, %dx
+	addw	$4, %dx
+	inl	%dx, %eax
+	btr	$0, %eax
+	outl	%eax, %dx
+
+	/* Setup temporary DRAM map: [0,16M) bit 0-23 */
+	movl	$0x8000c144, %eax
+	movw	$0xcf8, %dx
+	outl	%eax, %dx
+	addw	$4, %dx
+	movl	$0, %eax
+	outl	%eax, %dx
+
+	movl	$0x8000c140, %eax
+	movw	$0xcf8, %dx
+	outl	%eax, %dx
+	addw	$4, %dx
+	movl	$3, %eax
+	outl	%eax, %dx
+
+CAR_FAM10_out:
+
+#endif
+
+#if CAR_FAM10 == 1
+	/* Errata 193: Disable clean copybacks to L3 cache to allow cached ROM.
+	   Re-enable it in after RAM is initialized and before CAR is disabled */
+	movl	$0xc001102a, %ecx
+	rdmsr
+	bts	$15, %eax
+	wrmsr
+#endif
 
 	/* Set MtrrFixDramModEn for clear fixed mtrr */
 enable_fixed_mtrr_dram_modify:
@@ -68,9 +122,14 @@ clear_fixed_var_mtrr_out:
 
 #if CacheSize == 0x10000
 	/* enable caching for 64K using fixed mtrr */
-	movl	$0x268, %ecx		/* fix4k_c0000 */
-	movl	$0x06060606, %eax	/* WB IO type */
-	movl	%eax, %edx
+	movl	$0x268, %ecx  /* fix4k_c0000*/
+ #if CAR_FAM10 == 1
+	movl	$0x1e1e1e1e, %edx /* WB MEM type */
+ #else
+	movl	$0x06060606, %edx /* WB IO type */
+ #endif
+
+	movl	%edx, %eax
 	wrmsr
 	movl	$0x269, %ecx
 	wrmsr
@@ -78,38 +137,62 @@ clear_fixed_var_mtrr_out:
 
 #if CacheSize == 0xc000
 	/* enable caching for 16K using fixed mtrr */
-	movl	$0x268, %ecx		/* fix4k_c4000 */
-	movl	$0x06060606, %edx	/* WB IO type */
+	movl	$0x268, %ecx  /* fix4k_c4000*/
+ #if CAR_FAM10 == 1
+	movl	$0x1e1e1e1e, %edx /* WB MEM type */
+ #else
+	movl	$0x06060606, %edx /* WB IO type */
+ #endif
 	xorl	%eax, %eax
 	wrmsr
 	/* enable caching for 32K using fixed mtrr */
-	movl	$0x269, %ecx		/* fix4k_c8000 */
-	movl	$0x06060606, %eax	/* WB IO type */
-	movl	%eax, %edx
+	movl	$0x269, %ecx  /* fix4k_c8000*/
+ #if CAR_FAM10 == 1
+	movl	$0x1e1e1e1e, %edx /* WB MEM type */
+ #else
+	movl	$0x06060606, %edx /* WB IO type */
+ #endif
+	movl	%edx, %eax
 	wrmsr
 #endif
 
 
 #if CacheSize == 0x8000
 	/* enable caching for 32K using fixed mtrr */
-	movl	$0x269, %ecx		/* fix4k_c8000 */
-	movl	$0x06060606, %eax	/* WB IO type */
-	movl	%eax, %edx
+	movl	$0x269, %ecx  /* fix4k_c8000*/
+ #if CAR_FAM10 == 1
+	movl	$0x1e1e1e1e, %edx /* WB MEM type */
+ #else
+	movl	$0x06060606, %edx /* WB IO type */
+ #endif
+	movl	%edx, %eax
 	wrmsr
 #endif
 
 #if CacheSize < 0x8000
 	/* enable caching for 16K/8K/4K using fixed mtrr */
 	movl	$0x269, %ecx  /* fix4k_cc000*/
-#if CacheSize == 0x4000
+ #if CacheSize == 0x4000
+  #if CAR_FAM10 == 1
+	movl	$0x1e1e1e1e, %edx /* WB MEM type */
+  #else
 	movl	$0x06060606, %edx /* WB IO type */
-#endif
-#if CacheSize == 0x2000
+  #endif
+ #endif
+ #if CacheSize == 0x2000
+  #if CAR_FAM10 == 1
+	movl	$0x1e1e0000, %edx /* WB MEM type */
+  #else
 	movl	$0x06060000, %edx /* WB IO type */
-#endif
-#if CacheSize == 0x1000
+  #endif
+ #endif
+ #if CacheSize == 0x1000
+  #if CAR_FAM10 == 1
+	movl	$0x1e000000, %edx /* WB MEM type */
+  #else
 	movl	$0x06000000, %edx /* WB IO type */
-#endif
+  #endif
+ #endif
 	xorl	%eax, %eax
 	wrmsr
 #endif
@@ -160,13 +243,27 @@ clear_fixed_var_mtrr_out:
 	wrmsr
 #endif
 
+	movb	$0xA1, %al
+	outb	%al, $0x80
+
 	/* enable cache */
 	movl	%cr0, %eax
 	andl	$0x9fffffff, %eax
 	movl	%eax, %cr0
 
-#if ((HAVE_FAILOVER_BOOT == 1) && (USE_FAILOVER_IMAGE == 1)) || ((HAVE_FAILOVER_BOOT == 0) && (USE_FALLBACK_IMAGE == 1))
 
+#if CAR_FAM10 == 1
+	/* So we need to check if it is BSP */
+	movl	$0x1b, %ecx
+	rdmsr
+	bt	$8, %eax /*BSC */
+	jnc	CAR_FAM10_ap
+#endif
+
+	movb	$0xA2, %al
+	outb	%al, $0x80
+
+#if ((HAVE_FAILOVER_BOOT == 1) && (USE_FAILOVER_IMAGE == 1)) || ((HAVE_FAILOVER_BOOT == 0) && (USE_FALLBACK_IMAGE == 1))
 		/* Read the range with lodsl*/
 	cld
 	movl	$CacheBase, %esi
@@ -184,6 +281,60 @@ clear_fixed_var_mtrr_out:
 	movl	$(CacheBase + CacheSize - GlobalVarSize), %eax
 	movl	%eax, %esp
 
+	movb	$0xA3, %al
+	outb	%al, $0x80
+
+#if CAR_FAM10 == 1
+
+	jmp	CAR_FAM10_ap_out
+CAR_FAM10_ap:
+	/* need to set stack pointer for AP */
+	/* it will be from CacheBase + (CacheSize - GlobalVarSize)/2 - (NodeID<<CoreIDbits + CoreID) * CacheSizeAPStack*/
+	/* So need to get the NodeID and CoreID at first */
+	/* If NB_CFG bit 54 is set just use initial apicid, otherwise need to reverse it */
+
+	/* store our init detected */
+	movl	%ebx, %esi
+
+	/* get the coreid bits at first */
+	movl	$0x80000008, %eax
+	cpuid
+	shrl	$12, %ecx
+	andl	$0x0f, %ecx
+	movl	%ecx, %edi
+
+	/* get the initial apic id */
+	movl	$1, %eax
+	cpuid
+	shrl	$24, %ebx
+
+	/* get the nb cfg bit 54 */
+	movl	$0xc001001f, %ecx /* NB_CFG_MSR */
+	rdmsr
+	movl	%edi, %ecx	/* CoreID bits */
+	bt	$(54-32), %edx
+	jc	roll_cfg
+	rolb	%cl, %bl
+roll_cfg:
+
+	/* calculate stack pointer */
+	movl	$CacheSizeAPStack, %eax
+	mull	%ebx
+	movl	$(CacheBase + (CacheSize - GlobalVarSize)/2), %esp
+	subl	%eax, %esp
+
+	/* retrive init detected */
+	movl	%esi, %ebx
+
+	movb	$0xA4, %al
+	outb	%al, $0x80
+
+CAR_FAM10_ap_out:
+#endif
+
+	movb	$0xA5, %al
+	outb	%al, $0x80
+
 	/* Restore the BIST result */
 	movl	%ebp, %eax
 
@@ -193,6 +344,9 @@ clear_fixed_var_mtrr_out:
 	pushl	%eax  /* bist */
 	call	cache_as_ram_main
 	/* We will not go back */
+
+	movb	$0xAF, %al		/* Should never see this postcode */
+	outb	%al, $0x80
 
 fixed_mtrr_msr:
 	.long	0x250, 0x258, 0x259

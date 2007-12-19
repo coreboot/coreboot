@@ -1,0 +1,382 @@
+/*
+ * This file is part of the LinuxBIOS project.
+ *
+ * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
+
+#include <console/console.h>
+#include <string.h>
+#include <arch/acpi.h>
+#include <device/pci.h>
+#include <cpu/x86/msr.h>
+#include <cpu/amd/mtrr.h>
+#include <cpu/amd/amdfam10_sysconf.h>
+#include "amdfam10.h"
+
+//it seems some functions can be moved arch/i386/boot/acpi.c
+
+unsigned long acpi_create_madt_lapics(unsigned long current)
+{
+	device_t cpu;
+	int cpu_index = 0;
+
+	for(cpu = all_devices; cpu; cpu = cpu->next) {
+		if ((cpu->path.type != DEVICE_PATH_APIC) ||
+		   (cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER)) {
+			continue;
+		}
+		if (!cpu->enabled) {
+			continue;
+		}
+		current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, cpu_index, cpu->path.u.apic.apic_id);
+		cpu_index++;
+	}
+	return current;
+}
+
+unsigned long acpi_create_madt_lapic_nmis(unsigned long current, u16 flags, u8 lint)
+{
+	device_t cpu;
+	int cpu_index = 0;
+
+	for(cpu = all_devices; cpu; cpu = cpu->next) {
+		if ((cpu->path.type != DEVICE_PATH_APIC) ||
+		   (cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER)) {
+			continue;
+		}
+		if (!cpu->enabled) {
+			continue;
+		}
+		current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)current, cpu_index, flags, lint);
+		cpu_index++;
+	}
+	return current;
+}
+
+
+unsigned long acpi_create_srat_lapics(unsigned long current)
+{
+	device_t cpu;
+	int cpu_index = 0;
+
+	for(cpu = all_devices; cpu; cpu = cpu->next) {
+		if ((cpu->path.type != DEVICE_PATH_APIC) ||
+		   (cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER)) {
+			continue;
+		}
+		if (!cpu->enabled) {
+			continue;
+		}
+		printk_debug("SRAT: lapic cpu_index=%02x, node_id=%02x, apic_id=%02x\n", cpu_index, cpu->path.u.apic.node_id, cpu->path.u.apic.apic_id);
+		current += acpi_create_srat_lapic((acpi_srat_lapic_t *)current, cpu->path.u.apic.node_id, cpu->path.u.apic.apic_id);
+		cpu_index++;
+	}
+	return current;
+}
+
+static unsigned long resk(uint64_t value)
+{
+	unsigned long resultk;
+	if (value < (1ULL << 42)) {
+		resultk = value >> 10;
+	} else {
+		resultk = 0xffffffff;
+	}
+	return resultk;
+}
+
+
+struct acpi_srat_mem_state {
+	unsigned long current;
+};
+
+void set_srat_mem(void *gp, struct device *dev, struct resource *res)
+{
+	struct acpi_srat_mem_state *state = gp;
+	unsigned long basek, sizek;
+	basek = resk(res->base);
+	sizek = resk(res->size);
+
+	printk_debug("set_srat_mem: dev %s, res->index=%04x startk=%08x, sizek=%08x\n",
+			dev_path(dev), res->index, basek, sizek);
+	/*
+	 0-640K must be on node 0
+	 next range is from 1M---
+	 So will cut off before 1M in the mem range
+	*/
+	if((basek+sizek)<1024) return;
+
+	if(basek<1024) {
+		sizek -= 1024 - basek;
+		basek = 1024;
+	}
+
+	// need to figure out NV
+	state->current += acpi_create_srat_mem((acpi_srat_mem_t *)state->current, (res->index & 0xf), basek, sizek, 1);
+}
+
+
+unsigned long acpi_fill_srat(unsigned long current)
+{
+	struct acpi_srat_mem_state srat_mem_state;
+
+	/* create all subtables for processors */
+	current = acpi_create_srat_lapics(current);
+
+	/* create all subteble for memory range */
+
+	/* 0-640K must be on node 0 */
+	current += acpi_create_srat_mem((acpi_srat_mem_t *)current, 0, 0, 640, 1);//enable
+
+	srat_mem_state.current = current;
+	search_global_resources(
+		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
+		set_srat_mem, &srat_mem_state);
+
+	current = srat_mem_state.current;
+	return current;
+}
+
+unsigned long acpi_fill_slit(unsigned long current)
+{
+	/* need to find out the node num at first */
+	/* fill the first 8 byte with that num */
+	/* fill the next num*num byte with distance, local is 10, 1 hop mean 20, and 2 hop with 30.... */
+
+	struct sys_info *sysinfox = (struct sys_info *)((CONFIG_LB_MEM_TOPK<<10) - DCACHE_RAM_GLOBAL_VAR_SIZE);
+	u8 *ln = sysinfox->ln;
+
+
+	u8 *p = (u8 *)current;
+	int nodes = sysconf.nodes;
+	int i,j;
+	u32 hops;
+
+	memset(p, 0, 8+nodes*nodes);
+	*p = (u8) nodes;
+	p += 8;
+
+	for(i=0;i<nodes;i++) {
+		for(j=0;j<nodes; j++) {
+			if(i==j) {
+				p[i*nodes+j] = 10;
+			} else {
+				hops = (((ln[i*NODE_NUMS+j]>>4) & 0x7)+1);
+				p[i*nodes+j] = hops * 2 + 10;
+			}
+		}
+	}
+
+	current += 8+nodes*nodes;
+	return current;
+}
+
+
+// moved from mb acpi_tables.c
+static void intx_to_stream(u32 val, u32 len, u8 *dest)
+{
+	int i;
+	for(i=0;i<len;i++) {
+		*(dest+i) = (val >> (8*i)) & 0xff;
+	}
+}
+
+
+static void int_to_stream(u32 val, u8 *dest)
+{
+	return intx_to_stream(val, 4, dest);
+}
+
+
+// used by acpi_tables.h
+void update_ssdt(void *ssdt)
+{
+	u8 *BUSN;
+	u8 *MMIO;
+	u8 *PCIO;
+	u8 *SBLK;
+	u8 *TOM1;
+	u8 *SBDN;
+	u8 *HCLK;
+	u8 *HCDN;
+	u8 *CBST;
+	u8 *CBBX;
+	u8 *CBS2;
+	u8 *CBB2;
+
+
+	int i;
+	u32 dword;
+	msr_t msr;
+
+	// the offset could be different if have different HC_NUMS, and HC_POSSIBLE_NUM and ssdt.asl
+	BUSN = ssdt+0x3b; //+5 will be next BUSN
+	MMIO = ssdt+0xe4; //+5 will be next MMIO
+	PCIO = ssdt+0x36d; //+5 will be next PCIO
+	SBLK = ssdt+0x4b2; // one byte
+	TOM1 = ssdt+0x4b9; //
+	SBDN = ssdt+0x4c3;//
+	HCLK = ssdt+0x4d1; //+5 will be next HCLK
+	HCDN = ssdt+0x57a; //+5 will be next HCDN
+	CBBX = ssdt+0x61f; //
+	CBST = ssdt+0x626;
+	CBB2 = ssdt+0x62d; //
+	CBS2 = ssdt+0x634;
+
+	for(i=0;i<HC_NUMS;i++) {
+		dword = sysconf.ht_c_conf_bus[i];
+		int_to_stream(dword, BUSN+i*5);
+	}
+
+	for(i=0;i<(HC_NUMS*2);i++) { // FIXME: change to more chain
+		dword = sysconf.conf_mmio_addrx[i]; //base
+		int_to_stream(dword, MMIO+(i*2)*5);
+		dword = sysconf.conf_mmio_addr[i]; //mask
+		int_to_stream(dword, MMIO+(i*2+1)*5);
+	}
+	for(i=0;i<HC_NUMS;i++) { // FIXME: change to more chain
+		dword = sysconf.conf_io_addrx[i];
+		int_to_stream(dword, PCIO+(i*2)*5);
+		dword = sysconf.conf_io_addr[i];
+		int_to_stream(dword, PCIO+(i*2+1)*5);
+	}
+
+	*SBLK = (u8)(sysconf.sblk);
+
+	msr = rdmsr(TOP_MEM);
+	int_to_stream(msr.lo, TOM1);
+
+	int_to_stream(sysconf.sbdn, SBDN);
+
+	for(i=0;i<sysconf.hc_possible_num;i++) {
+		int_to_stream(sysconf.pci1234[i], HCLK + i*5);
+		int_to_stream(sysconf.hcdn[i],	   HCDN + i*5);
+	}
+	for(i=sysconf.hc_possible_num; i<HC_POSSIBLE_NUM; i++) { // in case we set array size to other than 8
+		int_to_stream(0x00000000, HCLK + i*5);
+		int_to_stream(0x20202020, HCDN + i*5);
+	}
+
+	*CBBX = (u8)(CBB);
+
+	if(CBB == 0xff) {
+		*CBST = (u8) (0x0f);
+	} else {
+		if((sysconf.pci1234[0] >> 12) & 0xff) { //sb chain on  other than bus 0
+			*CBST = (u8) (0x0f);
+		}
+		else {
+			*CBST = (u8) (0x00);
+		}
+	}
+
+	if((CBB == 0xff) && (sysconf.nodes>32)) {
+		 *CBS2 = 0x0f;
+		 *CBB2 = (u8)(CBB-1);
+	} else {
+		*CBS2 = 0x00;
+		*CBB2 = 0x00;
+	}
+
+}
+
+
+void update_sspr(void *sspr, u32 nodeid, u32 cpuindex)
+{
+	u8 *CPU;
+	u8 *CPUIN;
+	u8 *COREFREQ;
+	u8 *POWER;
+	u8 *TRANSITION_LAT;
+	u8 *BUSMASTER_LAT;
+	u8 *CONTROL;
+	u8 *STATUS;
+	unsigned offset = 0x94 - 0x7f;
+	int i;
+
+	CPU = sspr + 0x38;
+	CPUIN = sspr + 0x3a;
+
+	COREFREQ = sspr + 0x7f; //2 byte
+	POWER = sspr + 0x82; //3 bytes
+	TRANSITION_LAT = sspr + 0x87; //two bytes
+	BUSMASTER_LAT = sspr + 0x8a; //two bytes
+	CONTROL = sspr + 0x8d;
+	STATUS = sspr + 0x8f;
+
+	sprintf(CPU, "%02x", (u8)cpuindex);
+	*CPUIN = (u8) cpuindex;
+
+	for(i=0;i<sysconf.p_state_num;i++) {
+		struct p_state_t *p_state = &sysconf.p_state[nodeid * 5 + i];
+		intx_to_stream(COREFREQ + i*offset, 2, p_state->corefreq);
+		intx_to_stream(POWER + i*offset, 3, p_state->power);
+		intx_to_stream(TRANSITION_LAT + i*offset, 2, p_state->transition_lat);
+		intx_to_stream(BUSMASTER_LAT + i*offset, 2, p_state->busmaster_lat);
+		*((u8 *)(CONTROL + i*offset)) =(u8) p_state->control;
+		*((u8 *)(STATUS + i*offset)) =(u8) p_state->status;
+	}
+}
+
+extern unsigned char AmlCode_sspr5[];
+extern unsigned char AmlCode_sspr4[];
+extern unsigned char AmlCode_sspr3[];
+extern unsigned char AmlCode_sspr2[];
+extern unsigned char AmlCode_sspr1[];
+
+/* fixme: find one good way for different p_state_num */
+unsigned long acpi_add_ssdt_pstates(acpi_rsdt_t *rsdt, unsigned long current)
+{
+	device_t cpu;
+	int cpu_index = 0;
+
+	acpi_header_t *ssdt;
+
+	if(!sysconf.p_state_num) return current;
+
+	u8 *AmlCode_sspr;
+	switch(sysconf.p_state_num) {
+		case 1: AmlCode_sspr = AmlCode_sspr1; break;
+		case 2: AmlCode_sspr = AmlCode_sspr2; break;
+		case 3: AmlCode_sspr = AmlCode_sspr3; break;
+		case 4: AmlCode_sspr = AmlCode_sspr4; break;
+		default: AmlCode_sspr = AmlCode_sspr5; break;
+	}
+
+	for(cpu = all_devices; cpu; cpu = cpu->next) {
+		if ((cpu->path.type != DEVICE_PATH_APIC) ||
+		   (cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER)) {
+			continue;
+		}
+		if (!cpu->enabled) {
+			 continue;
+		}
+		printk_debug("ACPI: pstate cpu_index=%02x, node_id=%02x, core_id=%02x\n", cpu_index, cpu->path.u.apic.node_id, cpu->path.u.apic.core_id);
+
+		current	  = ( current + 0x0f) & -0x10;
+		ssdt = (acpi_header_t *)current;
+		current += ((acpi_header_t *)AmlCode_sspr)->length;
+		memcpy((void *)ssdt, (void *)AmlCode_sspr, ((acpi_header_t *)AmlCode_sspr)->length);
+		update_sspr((void*)ssdt,cpu->path.u.apic.node_id, cpu_index);
+		/* recalculate checksum */
+		ssdt->checksum = 0;
+		ssdt->checksum = acpi_checksum((unsigned char *)ssdt,ssdt->length);
+		acpi_add_table(rsdt,ssdt);
+
+		cpu_index++;
+	}
+	return current;
+}

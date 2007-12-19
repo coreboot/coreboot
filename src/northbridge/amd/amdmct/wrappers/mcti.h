@@ -1,0 +1,59 @@
+/*
+ * This file is part of the LinuxBIOS project.
+ *
+ * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
+
+
+#define SERVER		0
+#define DESKTOP	1
+//#define MOBILE	2
+#define REV_F		0
+#define REV_DR		1
+#define REV_FDR	2
+
+
+/*----------------------------------------------------------------------------
+COMMENT OUT ALL BUT 1
+----------------------------------------------------------------------------*/
+//#define    BUILD_VERSION   REV_F	  /*BIOS supports rev F only*/
+//#define    BUILD_VERSION   REV_DR	  /*BIOS supports rev 10 only*/
+//#define    BUILD_VERSION   REV_FDR	  /*BIOS supports both rev F and 10*/
+
+/*----------------------------------------------------------------------------
+COMMENT OUT ALL BUT 1
+----------------------------------------------------------------------------*/
+#ifndef SYSTEM_TYPE
+#define    SYSTEM_TYPE	    SERVER
+//#define    SYSTEM_TYPE     DESKTOP
+//#define    SYSTEM_TYPE     MOBILE
+#endif
+
+/*----------------------------------------------------------------------------
+COMMENT OUT ALL BUT 1
+----------------------------------------------------------------------------*/
+#define UMA_SUPPORT	0	/*Not supported */
+//#define UMA_SUPPORT	1	/*Supported */
+
+/*----------------------------------------------------------------------------
+UPDATE AS NEEDED
+----------------------------------------------------------------------------*/
+#define MAX_NODES_SUPPORTED		8
+#define MAX_DIMMS_SUPPORTED		8
+#define MAX_CS_SUPPORTED		8
+#define MCT_TRNG_KEEPOUT_START		0x00000C00
+#define MCT_TRNG_KEEPOUT_END		0x00000CFF
+

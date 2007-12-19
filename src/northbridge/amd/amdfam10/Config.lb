@@ -1,0 +1,79 @@
+#
+# This file is part of the LinuxBIOS project.
+#
+# Copyright (C) 2007 Advanced Micro Devices, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+#
+
+uses CONFIG_CHIP_NAME
+uses AGP_APERTURE_SIZE
+uses HAVE_ACPI_TABLES
+
+default AGP_APERTURE_SIZE=0x4000000
+
+if CONFIG_CHIP_NAME
+	config chip.h
+end
+
+object northbridge.o
+driver misc_control.o
+
+if HAVE_ACPI_TABLES
+	object amdfam10_acpi.o
+	makerule ssdt.c
+		depends "$(TOP)/src/northbridge/amd/amdfam10/ssdt.dsl"
+		action	 "iasl -tc $(TOP)/src/northbridge/amd/amdfam10/ssdt.dsl"
+		action	 "perl -pi -e 's/AmlCode/AmlCode_ssdt/g' ssdt.hex"
+		action	 "mv ssdt.hex ssdt.c"
+	end
+	object ./ssdt.o
+	makerule sspr1.c
+		depends "$(TOP)/src/northbridge/amd/amdfam10/sspr1.dsl"
+		action	 "iasl -tc $(TOP)/src/northbridge/amd/amdfam10/sspr1.dsl"
+		action	 "perl -pi -e 's/AmlCode/AmlCode_sspr1/g' sspr1.hex"
+		action	 "mv sspr1.hex sspr1.c"
+	end
+	object ./sspr1.o
+	makerule sspr2.c
+		depends "$(TOP)/src/northbridge/amd/amdfam10/sspr2.dsl"
+		action	 "iasl -tc $(TOP)/src/northbridge/amd/amdfam10/sspr2.dsl"
+		action	 "perl -pi -e 's/AmlCode/AmlCode_sspr2/g' sspr2.hex"
+		action	 "mv sspr2.hex sspr2.c"
+	end
+	object ./sspr2.o
+	makerule sspr3.c
+		depends "$(TOP)/src/northbridge/amd/amdfam10/sspr3.dsl"
+		action	 "iasl -tc $(TOP)/src/northbridge/amd/amdfam10/sspr3.dsl"
+		action	 "perl -pi -e 's/AmlCode/AmlCode_sspr3/g' sspr3.hex"
+		action	 "mv sspr3.hex sspr3.c"
+	end
+	object ./sspr3.o
+	makerule sspr4.c
+		depends "$(TOP)/src/northbridge/amd/amdfam10/sspr4.dsl"
+		action	 "iasl -tc $(TOP)/src/northbridge/amd/amdfam10/sspr4.dsl"
+		action	 "perl -pi -e 's/AmlCode/AmlCode_sspr4/g' sspr4.hex"
+		action	 "mv sspr4.hex sspr4.c"
+	end
+	object ./sspr4.o
+	makerule sspr5.c
+		depends "$(TOP)/src/northbridge/amd/amdfam10/sspr5.dsl"
+		action	 "iasl -tc $(TOP)/src/northbridge/amd/amdfam10/sspr5.dsl"
+		action	 "perl -pi -e 's/AmlCode/AmlCode_sspr5/g' sspr5.hex"
+		action	 "mv sspr5.hex sspr5.c"
+	end
+	object ./sspr5.o
+end
+
+object get_pci1234.o

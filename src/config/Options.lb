@@ -291,6 +291,11 @@ define USE_DCACHE_RAM
 	export always
 	comment "Use data cache as temporary RAM if possible"
 end
+define CAR_FAM10
+	default 0
+	export always
+	comment "AMD family 10 CAR requires additional setup"
+end
 define DCACHE_RAM_BASE
 	default 0xc0000
 	format "0x%x"
@@ -937,6 +942,12 @@ define MMCONF_SUPPORT
 	comment "enable mmconfig for pci conf"
 end
 
+define MMCONF_SUPPORT_DEFAULT
+	default 0
+	export always
+	comment "enable mmconfig for pci conf"
+end
+
 define HW_MEM_HOLE_SIZEK
         default 0
         export always
@@ -947,6 +958,12 @@ define HW_MEM_HOLE_SIZE_AUTO_INC
         default 0
         export always
         comment "Opteron E0 later memory hole size auto increase to avoid hole startk equal to basek"
+end
+
+define CONFIG_VAR_MTRR_HOLE
+	default 1
+	export always
+	comment "using hole in MTRR instead of increasing method"
 end
 
 define K8_HT_FREQ_1G_SUPPORT
@@ -973,6 +990,24 @@ define CDB
 	comment "Opteron cpu device num base"
 end
 
+define HT3_SUPPORT
+	default 0
+	export always
+	comment "Hypertransport 3 support, include ac HT and unganged sublink feature"
+end
+
+define EXT_RT_TBL_SUPPORT
+	default 0
+	export always
+	comment "support AMD family 10 extended routing table via F0x158, normally is enabled when node nums is greater than 8"
+end
+
+define EXT_CONF_SUPPORT
+	default 0
+	export always
+	comment "support AMD family 10 extended config space for ram, bus, io, mmio via F1x110, normally is enabled when HT3 is enabled and non ht chain nums is greater than 4"
+end
+
 define DIMM_SUPPORT
         default 0x0108
 	format "0x%x"
@@ -989,7 +1024,7 @@ end
 define CPU_ADDR_BITS
 	default 36
 	export always
-	comment "CPU hardware address lines num, for AMD K8 could be 40, and GH could be 48"
+	comment "CPU hardware address lines num, for AMD K8 could be 40, and AMD family 10 could be 48"
 end
 
 define CONFIG_PCI_ROM_RUN
@@ -1004,10 +1039,10 @@ define CONFIG_PCI_64BIT_PREF_MEM
         comment "allow PCI device get 4G above Region as pref mem"
 end
 
-define CONFIG_AGESA
+define CONFIG_AMDMCT
 	default 0
 	export always
-	comment "use AMD AGESA to init RAM instead of native code"
+	comment "use AMD MCT to init RAM instead of native code"
 end
 
 define CONFIG_VIDEO_MB

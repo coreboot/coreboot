@@ -14,25 +14,33 @@ static unsigned get_sbdn(unsigned bus)
 
 }
 
+static void enable_cf9_x(unsigned sbbusn, unsigned sbdn)
+{
+	device_t dev;
+	uint8_t byte;
+
+	dev = PCI_DEV(sbbusn, sbdn+1, 3); //ACPI
+	/* enable cf9 */
+	byte = pci_read_config8(dev, 0x41);
+	byte |= (1<<6) | (1<<5);
+	pci_write_config8(dev, 0x41, byte);
+}
+
+static void enable_cf9(void)
+{
+	unsigned sblk = get_sblk();
+	unsigned sbbusn = get_sbbusn(sblk);
+	unsigned sbdn = get_sbdn(sbbusn);
+
+	enable_cf9_x(sbbusn, sbdn);
+}
+
 static void hard_reset(void)
 {
-        device_t dev;
-        unsigned bus;
-
-        /* Find the device.
-         * There can only be one 8111 on a hypertransport chain/bus.
-         */
-        bus = get_sbbusn(get_sblk());
-        dev = pci_locate_device_on_bus(
-                PCI_ID(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_8111_ACPI),
-                bus);
-
         set_bios_reset();
-
-        /* enable cf9 */
-        pci_write_config8(dev, 0x41, 0xf1);
         /* reset */
-        outb(0x0e, 0x0cf9);
+        enable_cf9();
+        outb(0x0e, 0x0cf9); // make sure cf9 is enabled
 }
 
 static void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn)

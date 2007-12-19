@@ -54,22 +54,7 @@ static inline __attribute__((always_inline)) unsigned long lapicid(void)
 static inline __attribute__((always_inline)) void stop_this_cpu(void)
 {
 
-	unsigned apicid;
-	apicid = lapicid();
-
-	/* Send an APIC INIT to myself */
-	lapic_write(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(apicid));
-	lapic_write(LAPIC_ICR, LAPIC_INT_LEVELTRIG | LAPIC_INT_ASSERT | LAPIC_DM_INIT);
-	/* Wait for the ipi send to finish */
-	lapic_wait_icr_idle();
-
-	/* Deassert the APIC INIT */
-	lapic_write(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(apicid));
-	lapic_write(LAPIC_ICR,  LAPIC_INT_LEVELTRIG | LAPIC_DM_INIT);
-	/* Wait for the ipi send to finish */
-	lapic_wait_icr_idle();
-
-	/* If I haven't halted spin forever */
+	/* Called by an AP when it is ready to halt and wait for a new task */
 	for(;;) {
 		hlt();
 	}

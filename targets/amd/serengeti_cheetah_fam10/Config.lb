@@ -29,6 +29,9 @@ mainboard amd/serengeti_cheetah_fam10
 # At a maximum only compile in this level of debugging
 	option  MAXIMUM_CONSOLE_LOGLEVEL=11
 
+# 512KB ROM
+option ROM_SIZE=512*1024
+
 # Cheetah Family 10
 #romimage "normal"
 #	1MB ROM

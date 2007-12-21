@@ -28,8 +28,7 @@ romimage "normal"
 	option ROM_IMAGE_SIZE=0x20000
 	option XIP_ROM_SIZE=0x20000
 	option LINUXBIOS_EXTRA_VERSION="_Normal"
-#	payload ../../../../../../payloads/dummy.elf
-	payload ../../../../../../payloads/filo.elf
+	payload /tmp/filo.elf
 end
 
 romimage "fallback" 
@@ -38,8 +37,7 @@ romimage "fallback"
 	option ROM_IMAGE_SIZE=0x20000
 	option XIP_ROM_SIZE=0x20000
 	option LINUXBIOS_EXTRA_VERSION="_Fallback"
-#	payload ../../../../../../payloads/memtest.elf
-	payload ../../../../../../payloads/filo.elf
+	payload /tmp/filo.elf
 end
 
 romimage "failover"

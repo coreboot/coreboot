@@ -78,6 +78,8 @@
 
 uint16_t it8716f_flashport = 0;
 
+void generic_spi_prettyprint_status_register(struct flashchip *flash);
+
 /* Generic Super I/O helper functions */
 uint8_t regval(uint16_t port, uint8_t reg)
 {
@@ -220,7 +222,7 @@ int generic_spi_command(unsigned int writecnt, unsigned int readcnt, const unsig
 {
 	if (it8716f_flashport)
 		return it8716f_spi_command(it8716f_flashport, writecnt, readcnt, writearr, readarr);
-	printf("%s called, but no SPI chipset detected\n", __FUNCTION__);
+	printf_debug("%s called, but no SPI chipset detected\n", __FUNCTION__);
 	return 1;
 }
 
@@ -230,7 +232,7 @@ static int generic_spi_rdid(unsigned char *readarr)
 
 	if (generic_spi_command(JEDEC_RDID_OUTSIZE, JEDEC_RDID_INSIZE, cmd, readarr))
 		return 1;
-	printf("RDID returned %02x %02x %02x.\n", readarr[0], readarr[1], readarr[2]);
+	printf_debug("RDID returned %02x %02x %02x.\n", readarr[0], readarr[1], readarr[2]);
 	return 0;
 }
 
@@ -260,8 +262,14 @@ int probe_spi(struct flashchip *flash)
 		manuf_id = readarr[0];
 		model_id = (readarr[1] << 8) | readarr[2];
 		printf_debug("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, manuf_id, model_id);
-		if (manuf_id == flash->manufacture_id && model_id == flash->model_id)
+		if (manuf_id == flash->manufacture_id && model_id == flash->model_id) {
+			/* Print the status register before erase to tell the
+			 * user about possible write protection.
+			 */
+			generic_spi_prettyprint_status_register(flash);
+
 			return 1;
+		}
 	}
 
 	return 0;
@@ -277,13 +285,48 @@ uint8_t generic_spi_read_status_register()
 	return readarr[0];
 }
 
+/* Prettyprint the status register. Works for
+ * ST M25P series
+ * MX MX25L series
+ */
+void generic_spi_prettyprint_status_register_st_m25p(uint8_t status)
+{
+	printf_debug("Chip status register: Status Register Write Disable "
+		"(SRWD) is %sset\n", (status & (1 << 7)) ? "" : "not ");
+	printf_debug("Chip status register: Bit 6 is "
+		"%sset\n", (status & (1 << 6)) ? "" : "not ");
+	printf_debug("Chip status register: Bit 5 is "
+		"%sset\n", (status & (1 << 5)) ? "" : "not ");
+	printf_debug("Chip status register: Block Protect 2 (BP2) is "
+		"%sset\n", (status & (1 << 4)) ? "" : "not ");
+	printf_debug("Chip status register: Block Protect 1 (BP1) is "
+		"%sset\n", (status & (1 << 3)) ? "" : "not ");
+	printf_debug("Chip status register: Block Protect 0 (BP0) is "
+		"%sset\n", (status & (1 << 2)) ? "" : "not ");
+	printf_debug("Chip status register: Write Enable Latch (WEL) is "
+		"%sset\n", (status & (1 << 1)) ? "" : "not ");
+	printf_debug("Chip status register: Write In Progress (WIP) is "
+		"%sset\n", (status & (1 << 0)) ? "" : "not ");
+}
+
+void generic_spi_prettyprint_status_register(struct flashchip *flash)
+{
+	uint8_t status;
+
+	status = generic_spi_read_status_register();
+	printf_debug("Chip status register is %02x\n", status);
+	switch (flash->manufacture_id) {
+	case ST_ID:
+	case MX_ID:
+		if ((flash->model_id & 0xff00) == 0x2000)
+			generic_spi_prettyprint_status_register_st_m25p(status);
+		break;
+	}
+}
+	
 int generic_spi_chip_erase_c7(struct flashchip *flash)
 {
 	const unsigned char cmd[] = JEDEC_CE_C7;
-	uint8_t statusreg;
-
-	statusreg = generic_spi_read_status_register();
-	printf("chip status register before erase is %02x\n", statusreg);
 	
 	generic_spi_write_enable();
 	/* Send CE (Chip Erase) */

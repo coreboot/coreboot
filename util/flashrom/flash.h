@@ -32,8 +32,12 @@
 
 struct flashchip {
 	const char *name;
-	int manufacture_id;
-	int model_id;
+	/* With 32bit manufacture_id and model_id we can cover IDs up to
+	 * (including) the 4th bank of JEDEC JEP106W Standard Manufacturer's
+	 * Identification code.
+	 */
+	uint32_t manufacture_id;
+	uint32_t model_id;
 
 	int total_size;
 	int page_size;
@@ -85,8 +89,14 @@ extern struct flashchip flashchips[];
 /*
  * EN25 chips are SPI, first byte of device ID is memory type,
  * second byte of device ID is log(bitsize)-9.
+ * Vendor and device ID of EN29 series are both prefixed with 0x7F, which
+ * is the continuation code for IDs in bank 2.
+ * Vendor ID of EN25 series is NOT prefixed with 0x7F, this results in
+ * a collision with Mitsubishi. Mitsubishi once manufactured flash chips.
+ * Let's hope they are not manufacturing SPI flash chips as well.
  */
-#define EON_ID			0x1C	/* EON Silicon Devices */
+#define EON_ID			0x7F1C	/* EON Silicon Devices */
+#define EON_ID_NOPREFIX		0x1C	/* EON, missing 0x7F prefix */
 #define EN_25B05		0x2010	/* 2^19 kbit or 2^16 kByte */
 #define EN_25B10		0x2011
 #define EN_25B20		0x2012
@@ -94,6 +104,13 @@ extern struct flashchip flashchips[];
 #define EN_25B80		0x2014
 #define EN_25B16		0x2015
 #define EN_25B32		0x2016
+#define EN_29F512		0x7F21
+#define EN_29F010		0x7F20
+#define EN_29F040A		0x7F04
+#define EN_29LV010		0x7F6E
+#define EN_29LV040A		0x7F4F	/* EN_29LV040(A) */
+#define EN_29F002AT		0x7F92
+#define EN_29F002AB		0x7F97
 
 #define FUJITSU_ID		0x04	/* Fujitsu */
 /* MBM29F400TC_STRANGE has a value not mentioned in the data sheet and we

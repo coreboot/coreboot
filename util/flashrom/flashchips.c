@@ -42,6 +42,9 @@ struct flashchip flashchips[] = {
 	 probe_jedec,	erase_chip_jedec, write_jedec},
 	{"At49F002(N)T",ATMEL_ID,	AT_49F002NT,	256, 256,
 	 probe_jedec,	erase_chip_jedec, write_jedec},
+	/* The EN29F002AT can do byte program at arbitrary boundaries. */
+	{"EN29F002AT",	EON_ID,		EN_29F002AT,	256, 256,
+	 probe_jedec,	erase_chip_jedec, write_jedec},
 	{"MBM29F400TC",	FUJITSU_ID,	MBM29F400TC_STRANGE,	512, 64 * 1024,
 	 probe_m29f400bt, erase_m29f400bt, write_linuxbios_m29f400bt},
 	{"MX29F002",	MX_ID,		MX_29F002,	256, 64 * 1024,

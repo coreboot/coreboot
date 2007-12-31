@@ -4,6 +4,7 @@
  * Copyright (C) 2000 Silicon Integrated System Corporation
  * Copyright (C) 2006 Giampiero Giancipoli <gianci@email.it>
  * Copyright (C) 2006 coresystems GmbH <info@coresystems.de>
+ * Copyright (C) 2007 Carl-Daniel Hailfinger
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,6 +83,7 @@ int probe_jedec(struct flashchip *flash)
 {
 	volatile uint8_t *bios = flash->virtual_memory;
 	uint8_t id1, id2;
+	uint32_t largeid1, largeid2;
 
 	/* Issue JEDEC Product ID Entry command */
 	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
@@ -98,6 +100,20 @@ int probe_jedec(struct flashchip *flash)
 	/* Read product ID */
 	id1 = *(volatile uint8_t *)bios;
 	id2 = *(volatile uint8_t *)(bios + 0x01);
+	largeid1 = id1;
+	largeid2 = id2;
+
+	/* Check if it is a continuation ID, this should be a while loop. */
+	if (id1 == 0x7F) {
+		largeid1 <<= 8;
+		id1 = *(volatile uint8_t *)(bios + 0x100);
+		largeid1 |= id1;
+	}
+	if (id2 == 0x7F) {
+		largeid2 <<= 8;
+		id2 = *(volatile uint8_t *)(bios + 0x101);
+		largeid2 |= id2;
+	}
 
 	/* Issue JEDEC Product ID Exit command */
 	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
@@ -107,8 +123,8 @@ int probe_jedec(struct flashchip *flash)
 	*(volatile uint8_t *)(bios + 0x5555) = 0xF0;
 	myusec_delay(40);
 
-	printf_debug("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, id1, id2);
-	if (id1 == flash->manufacture_id && id2 == flash->model_id)
+	printf_debug("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, largeid1, largeid2);
+	if (largeid1 == flash->manufacture_id && largeid2 == flash->model_id)
 		return 1;
 
 	return 0;

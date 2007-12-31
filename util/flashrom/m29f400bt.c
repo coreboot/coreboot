@@ -64,6 +64,9 @@ int probe_m29f400bt(struct flashchip *flash)
 	myusec_delay(10);
 
 	id1 = *(volatile uint8_t *)bios;
+	/* The data sheet says id2 is at (bios + 0x01) and id2 listed in
+	 * flash.h does not match. It should be possible to use JEDEC probe.
+	 */
 	id2 = *(volatile uint8_t *)(bios + 0x02);
 
 	*(volatile uint8_t *)(bios + 0xAAA) = 0xAA;

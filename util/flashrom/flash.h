@@ -59,16 +59,16 @@ extern struct flashchip flashchips[];
  * All SPI parts have 16-bit device IDs.
  */
 
-#define ALLIANCE_ID		0x52	/* Alliance */
+#define ALLIANCE_ID		0x52	/* Alliance Semiconductor */
 
 #define AMD_ID			0x01	/* AMD */
 #define AM_29F040B		0xA4
 #define AM_29LV040B		0x4F
 #define AM_29F016D		0xAD
 
-#define AMIC_ID			0x37	/* AMIC */
+#define AMIC_ID			0x7F37	/* AMIC */
 
-#define ASD_ID			0x25	/* ASD */
+#define ASD_ID			0x25	/* ASD, not listed in JEP106W */
 #define ASD_AE49F2008		0x52
 
 #define ATMEL_ID		0x1F	/* Atmel */
@@ -79,14 +79,14 @@ extern struct flashchip flashchips[];
 
 #define CATALYST_ID		0x31	/* Catalyst */
 
-#define EMST_ID			0x8C	/* EMST / EFST */
+#define EMST_ID			0x8C	/* EMST / EFST Elite Flash Storage*/
 #define EMST_F49B002UA		0x00
 
 /*
  * EN25 chips are SPI, first byte of device ID is memory type,
  * second byte of device ID is log(bitsize)-9.
  */
-#define EON_ID			0x1C	/* EON */
+#define EON_ID			0x1C	/* EON Silicon Devices */
 #define EN_25B05		0x2010	/* 2^19 kbit or 2^16 kByte */
 #define EN_25B10		0x2011
 #define EN_25B20		0x2012
@@ -96,17 +96,24 @@ extern struct flashchip flashchips[];
 #define EN_25B32		0x2016
 
 #define FUJITSU_ID		0x04	/* Fujitsu */
-#define MBM29F400TC		0x23
+/* MBM29F400TC_STRANGE has a value not mentioned in the data sheet and we
+ * try to read it from a location not mentioned in the data sheet.
+ */
+#define MBM29F400TC_STRANGE	0x23
+#define MBM29F400BC		0x7B
+#define MBM29F400TC		0x77
 
 #define HYUNDAI_ID		0xAD	/* Hyundai */
 
-#define IMT_ID			0x7F	/* IMT */
+#define IMT_ID			0x7F1F	/* Integrated Memory Technologies */
+#define IM_29F004B		0xAE
+#define IM_29F004T		0xAF
 
 #define INTEL_ID		0x89	/* Intel */
 
-#define ISSI_ID			0xD5	/* ISSI */
+#define ISSI_ID			0xD5	/* ISSI Integrated Silicon Solutions */
 
-#define MSYSTEMS_ID		0x156F	/* M-Systems */
+#define MSYSTEMS_ID		0x156F	/* M-Systems, not listed in JEP106W */
 #define MSYSTEMS_MD2200		0xDB
 #define MSYSTEMS_MD2800		0x30	/* hmm -- both 0x30 */
 #define MSYSTEMS_MD2802		0x30	/* hmm -- both 0x30 */
@@ -128,6 +135,9 @@ extern struct flashchip flashchips[];
 #define MX_25L3235D		0x2416
 #define MX_29F002		0xB0
 
+/* Programmable Micro Corp is listed in JEP106W in bank 2, so it should have
+ * a 0x7F continuation code prefix.
+ */
 #define PMC_ID			0x9D	/* PMC */
 #define PMC_49FL002		0x6D
 #define PMC_49FL004		0x6E
@@ -171,7 +181,7 @@ extern struct flashchip flashchips[];
  * ST25P chips are SPI, first byte of device ID is memory type, second
  * byte of device ID is related to log(bitsize) at least for some chips.
  */
-#define ST_ID			0x20	/* ST */
+#define ST_ID			0x20	/* ST / SGS/Thomson */
 #define ST_M25P05A		0x2010
 #define ST_M25P10A		0x2011
 #define ST_M25P20		0x2012

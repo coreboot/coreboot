@@ -109,8 +109,8 @@ extern struct flashchip flashchips[];
 #define EN_29F040A		0x7F04
 #define EN_29LV010		0x7F6E
 #define EN_29LV040A		0x7F4F	/* EN_29LV040(A) */
-#define EN_29F002AT		0x7F92
-#define EN_29F002AB		0x7F97
+#define EN_29F002T		0x7F92
+#define EN_29F002B		0x7F97
 
 #define FUJITSU_ID		0x04	/* Fujitsu */
 /* MBM29F400TC_STRANGE has a value not mentioned in the data sheet and we

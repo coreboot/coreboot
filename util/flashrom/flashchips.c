@@ -185,5 +185,13 @@ struct flashchip flashchips[] = {
 	 probe_jedec,	erase_chip_jedec, write_49f002},
 	{"S29C31004T", 	SYNCMOS_ID, 	S29C31004T,	512, 128,
 	 probe_jedec,	erase_chip_jedec, write_49f002},
+	{"EON unknown SPI chip", EON_ID_NOPREFIX, GENERIC_DEVICE_ID,	0, 0,
+	 probe_spi,	NULL,	NULL},
+	{"MX unknown SPI chip",	MX_ID,	GENERIC_DEVICE_ID,	0, 0,
+	 probe_spi,	NULL,	NULL},
+	{"SST unknown SPI chip",	SST_ID,	GENERIC_DEVICE_ID,	0, 0,
+	 probe_spi,	NULL,	NULL},
+	{"ST unknown SPI chip",	ST_ID,	GENERIC_DEVICE_ID,	0, 0,
+	 probe_spi,	NULL,	NULL},
 	{NULL,}
 };

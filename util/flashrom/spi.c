@@ -262,14 +262,19 @@ int probe_spi(struct flashchip *flash)
 		manuf_id = readarr[0];
 		model_id = (readarr[1] << 8) | readarr[2];
 		printf_debug("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, manuf_id, model_id);
-		if (manuf_id == flash->manufacture_id && model_id == flash->model_id) {
-			/* Print the status register before erase to tell the
+		if (manuf_id == flash->manufacture_id &&
+		    model_id == flash->model_id) {
+			/* Print the status register to tell the
 			 * user about possible write protection.
 			 */
 			generic_spi_prettyprint_status_register(flash);
 
 			return 1;
 		}
+		/* Test if this is a pure vendor match. */
+		if (manuf_id == flash->manufacture_id &&
+		    GENERIC_DEVICE_ID == flash->model_id)
+			return 1;
 	}
 
 	return 0;

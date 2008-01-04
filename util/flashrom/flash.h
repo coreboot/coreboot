@@ -59,9 +59,12 @@ extern struct flashchip flashchips[];
  * entry of each section should be the manufacturer ID, followed by the
  * list of devices from that manufacturer (sorted by device IDs).
  *
- * All LPC/FWH parts (parallel flash) have 8-bit device IDs.
+ * All LPC/FWH parts (parallel flash) have 8-bit device IDs if there is no
+ * continuation code.
  * All SPI parts have 16-bit device IDs.
  */
+
+#define GENERIC_DEVICE_ID	0xffff	/* Only match the vendor ID */
 
 #define ALLIANCE_ID		0x52	/* Alliance Semiconductor */
 

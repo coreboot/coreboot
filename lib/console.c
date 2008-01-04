@@ -46,6 +46,29 @@ int printk(int msg_level, const char *fmt, ...)
 	return i;
 }
 
+/**
+ * Print a nice banner so we know what step we died on. 
+ *
+ * @param level The printk level (e.g. BIOS_EMERG)
+ * @param s String to put in the middle of the banner
+ */
+
+void banner(int level, const char *s)
+{
+	int i;
+	/* 10 = signs and a space. */
+	printk(level, "========== ");
+	for(i = 11; *s; i++, s++)
+		printk(level, "%c", *s);
+	/* trailing space */
+	printk(level, " ");
+	i++;
+	/* fill it up to 80 columns */
+	for(;  i < 80; i++)
+		printk(level, "=");
+	printk(level, "\n");
+}
+
 void console_init(void)
 {
 	static const char console_test[] =

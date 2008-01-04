@@ -36,19 +36,6 @@ static const u8 num_col_addr[] = {
 u8 spd_read_byte(u16 device, u8 address);
 
 /**
- * Print a nice banner so we know what step we died on. 
- *
- * @param s String to put in the middle of the banner
- */
-
-void banner(char *s)
-{
-	printk(BIOS_DEBUG, "===========================");
-	printk(BIOS_DEBUG, s);
-	printk(BIOS_DEBUG, "======================================\n");
-}
-
-/**
  * Halt and Catch Fire. Print an error, then loop, sending NULLs on serial port, 
  * to ensure the message is visible. 
  *
@@ -83,14 +70,14 @@ static void auto_size_dimm(unsigned int dimm, u8 dimm0, u8 dimm1)
 
 	dimm_setting = 0;
 
-	banner("Check present");
+	banner(BIOS_DEBUG, "Check present");
 	/* Check that we have a DIMM. */
 	if (spd_read_byte(dimm, SPD_MEMORY_TYPE) == 0xFF)
 		return;
 
 	/* Field: Module Banks per DIMM */
 	/* EEPROM byte usage: (5) Number of DIMM Banks */
-	banner("MODBANKS");
+	banner(BIOS_DEBUG, "MODBANKS");
 	spd_byte = spd_read_byte(dimm, SPD_NUM_DIMM_BANKS);
 	if ((MIN_MOD_BANKS > spd_byte) && (spd_byte > MAX_MOD_BANKS)) {
 		printk(BIOS_EMERG, "Number of module banks not compatible\n");
@@ -101,7 +88,7 @@ static void auto_size_dimm(unsigned int dimm, u8 dimm0, u8 dimm1)
 
 	/* Field: Banks per SDRAM device */
 	/* EEPROM byte usage: (17) Number of Banks on SDRAM Device */
-	banner("FIELDBANKS");
+	banner(BIOS_DEBUG, "FIELDBANKS");
 	spd_byte = spd_read_byte(dimm, SPD_NUM_BANKS_PER_SDRAM);
 	if ((MIN_DEV_BANKS > spd_byte) && (spd_byte > MAX_DEV_BANKS)) {
 		printk(BIOS_EMERG, "Number of device banks not compatible\n");
@@ -117,7 +104,7 @@ static void auto_size_dimm(unsigned int dimm, u8 dimm0, u8 dimm1)
 	 *;                                       (31) Module Bank Density
 	 *; Size = Module Density * Module Banks
 	 */
-	banner("SPDNUMROWS");
+	banner(BIOS_DEBUG, "SPDNUMROWS");
 
 	if ((spd_read_byte(dimm, SPD_NUM_ROWS) & 0xF0)
 	    || (spd_read_byte(dimm, SPD_NUM_COLUMNS) & 0xF0)) {
@@ -127,7 +114,7 @@ static void auto_size_dimm(unsigned int dimm, u8 dimm0, u8 dimm1)
 	}
 
 	/* Size = Module Density * Module Banks */
-	banner("SPDBANKDENSITY");
+	banner(BIOS_DEBUG, "SPDBANKDENSITY");
 	dimm_size = spd_read_byte(dimm, SPD_BANK_DENSITY);
 
 	/* Align so 1 GB (bit 0) is bit 8. This is a little weird to get gcc
@@ -143,9 +130,9 @@ static void auto_size_dimm(unsigned int dimm, u8 dimm0, u8 dimm1)
 	/* Module Density * Module Banks */
 	/* Shift to multiply by the number of DIMM banks. */
 	dimm_size <<= (dimm_setting >> CF07_UPPER_D0_MB_SHIFT) & 1;
-	banner("BEFORT CTZ");
+	banner(BIOS_DEBUG, "BEFORT CTZ");
 	dimm_size = __builtin_ctz(dimm_size);
-	banner("TEST DIMM SIZE>8");
+	banner(BIOS_DEBUG, "TEST DIMM SIZE>8");
 	if (dimm_size > 8) {	/* 8 is 1 GB only support 1 GB per DIMM */
 		printk(BIOS_EMERG, "Only support up to 1 GB per DIMM\n");
 		post_code(ERROR_DENSITY_DIMM);
@@ -177,9 +164,9 @@ static void auto_size_dimm(unsigned int dimm, u8 dimm0, u8 dimm1)
 	 * example, #col_addr_bits = 7 (06h), it adds 3 to get 10, then does
 	 * 2^10=1K. Get it?
 	 */
-	banner("PAGESIZE");
+	banner(BIOS_DEBUG, "PAGESIZE");
 	spd_byte = num_col_addr[spd_read_byte(dimm, SPD_NUM_COLUMNS) & 0xF];
-	banner("MAXCOLADDR");
+	banner(BIOS_DEBUG, "MAXCOLADDR");
 	if (spd_byte > MAX_COL_ADDR) {
 		printk(BIOS_EMERG, "DIMM page size not compatible\n");
 		post_code(ERROR_SET_PAGE);
@@ -193,9 +180,9 @@ static void auto_size_dimm(unsigned int dimm, u8 dimm0, u8 dimm1)
 	/* 0 = 1k, 1 = 2k, 2 = 4k, etc. */
 	dimm_setting |= spd_byte << CF07_UPPER_D0_PSZ_SHIFT;
 
-	banner("RDMSR CF07");
+	banner(BIOS_DEBUG, "RDMSR CF07");
 	msr = rdmsr(MC_CF07_DATA);
-	banner("WRMSR CF07");
+	banner(BIOS_DEBUG, "WRMSR CF07");
 	if (dimm == dimm0) {
 		msr.hi &= 0xFFFF0000;
 		msr.hi |= dimm_setting;
@@ -203,7 +190,7 @@ static void auto_size_dimm(unsigned int dimm, u8 dimm0, u8 dimm1)
 		msr.hi &= 0x0000FFFF;
 		msr.hi |= dimm_setting << 16;
 	}
-	banner("ALL DONE");
+	banner(BIOS_DEBUG, "ALL DONE");
 	wrmsr(MC_CF07_DATA, msr);
 }
 

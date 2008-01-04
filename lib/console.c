@@ -82,9 +82,31 @@ void console_init(void)
 	printk(BIOS_INFO, console_test);
 }
 
+/**
+ *  Halt and loop due to a fatal error. 
+ *  There have been several iterations of this function. 
+ *  The first simply did a hlt(). Doing a hlt() can make jtag debugging
+ *  very difficult as one can not break into a hlt instruction on some CPUs. 
+ *  Second was to do a console_tx_byte of a NULL character. 
+ *  A number of concerns were raised about doing this idea. 
+ *  Third idea was to do an inb from port 0x80, the POST port. That design 
+ *  makes us very CPU-specific. 
+ *  The fourth idea was just POSTING the same
+ *  code over and over. That would erase the most recent POST code, 
+ *  hindering diagnosis. 
+ *
+ *  For now, for lack of a good alternative, 
+ *  we will continue to call console_tx_byte. We call with a NULL since
+ *  it will clear any FIFOs in the path and won't clutter up the output,
+ *  since NULL doesn't print a visible character on most terminal 
+ *  emulators. 
+ *
+ *  @param str A string to print for the error
+ *
+ */
 void die(const char *str)
 {
 	printk(BIOS_EMERG, str);
 	while (1)
-		hlt();
+		console_tx_byte(0, (void *)0);
 }

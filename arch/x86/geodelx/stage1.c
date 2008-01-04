@@ -22,6 +22,7 @@
 #include <lib.h>
 #include <msr.h>
 #include <amd_geodelx.h>
+#include <console.h>
 
 static const struct msrinit msr_table[] = {
   /* Setup access to cache under 1MB. */
@@ -59,5 +60,12 @@ void disable_car(void)
 	for (i = 0; i < ARRAY_SIZE(msr_table); i++)
 		wrmsr(msr_table[i].msrnum, msr_table[i].msr);
 
-	__asm__("wbinvd\n");
+	/* OK, here is the theory: we should be able to copy 
+	 * the data back over itself, and the wbinvd should then 
+	 * flush to memory. Let's see. 
+	 */
+	__asm__ __volatile__("cld; rep movsl" ::"D" (DCACHE_RAM_BASE), "S" (DCACHE_RAM_BASE), "c" (DCACHE_RAM_SIZE/4): "memory");
+	__asm__ __volatile__ ("wbinvd\n");
+	banner(BIOS_DEBUG, "Disable_car: done wbinvd");
+	banner(BIOS_DEBUG, "disable_car: done");
 }

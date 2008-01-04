@@ -567,6 +567,23 @@
 /* ------------------------  */
 #define DCACHE_RAM_SIZE 0x08000
 #define DCACHE_RAM_BASE 0xc8000
+/* This is where the DCache will be mapped and be used as stack. It would be
+ * cool if it was the same base as LinuxBIOS normal stack.
+ */
+#define LX_STACK_BASE		DCACHE_RAM_BASE
+#define LX_STACK_END		LX_STACK_BASE + (DCACHE_RAM_SIZE - 4)
+
+#define LX_NUM_CACHELINES	0x080	/* There are 128 lines per way. */
+#define LX_CACHELINE_SIZE	0x020	/* There are 32 bytes per line. */
+#define LX_CACHEWAY_SIZE	(LX_NUM_CACHELINES * LX_CACHELINE_SIZE)
+#define CR0_CD			0x40000000 /* Bit 30 = Cache Disable */
+#define CR0_NW			0x20000000 /* Bit 29 = Not Write Through */
+
+#define ROM_CODE_SEG		0x08
+#define ROM_DATA_SEG		0x10
+
+#define CACHE_RAM_CODE_SEG	0x18
+#define CACHE_RAM_DATA_SEG	0x20
 
 /* POST CODES */
 /* standard AMD post definitions -- might as well use them. */

@@ -176,8 +176,8 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 	entry = load_file_segments(&archive, "normal/payload");
 	if (entry != (void*)-1)
 		run_address(entry);
-
-	die("FATAL: No usable payload found.\n");
+	else
+		die("FATAL: No usable payload found.\n");
 
 	die ("FATAL: Last stage returned to LinuxBIOS.\n");
 }

@@ -572,11 +572,6 @@
  */
 #define LX_STACK_BASE		DCACHE_RAM_BASE
 #define LX_STACK_END		LX_STACK_BASE + (DCACHE_RAM_SIZE - 4)
-/* This is where the DCache will be mapped and be used as stack. It would be
- * cool if it was the same base as LinuxBIOS normal stack.
- */
-#define LX_STACK_BASE		DCACHE_RAM_BASE
-#define LX_STACK_END		LX_STACK_BASE + (DCACHE_RAM_SIZE - 4)
 
 #define LX_NUM_CACHELINES	0x080	/* There are 128 lines per way. */
 #define LX_CACHELINE_SIZE	0x020	/* There are 32 bytes per line. */

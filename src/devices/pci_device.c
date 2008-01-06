@@ -643,16 +643,14 @@ void pci_dev_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 
+/** default handler: only runs the relevant pci bios. */
 void pci_dev_init(struct device *dev)
 {
-#if CONFIG_CONSOLE_VGA == 1
-	extern int vga_inited;
-#endif
-#if CONFIG_PCI_ROM_RUN == 1 || CONFIG_CONSOLE_VGA == 1
+#if CONFIG_PCI_ROM_RUN == 1 || CONFIG_VGA_ROM_RUN == 1
 	struct rom_header *rom, *ram;
 
 #if CONFIG_PCI_ROM_RUN != 1
-	/* We want to execute VGA option ROMs when CONFIG_CONSOLE_VGA
+	/* We want to execute VGA option ROMs when CONFIG_VGA_ROM_RUN
 	 * is set but CONFIG_PCI_ROM_RUN is not. In this case we skip
 	 * all other option ROM types.
 	 */
@@ -671,14 +669,13 @@ void pci_dev_init(struct device *dev)
 	run_bios(dev, ram);
 
 #if CONFIG_CONSOLE_VGA == 1
-	/* vga_inited is a trigger of the VGA console code.
-	 *
-	 * Only set it if we enabled VGA console, and if we 
-	 * just initialized a VGA card.
-	 */
-	vga_inited|=dev->class==PCI_CLASS_DISPLAY_VGA;
-#endif
-#endif
+	/* vga_inited is a trigger of the VGA console code. */
+	if (dev->class == PCI_CLASS_DISPLAY_VGA) {
+	    extern int vga_inited;
+	    vga_inited = 1;
+	}
+#endif /* CONFIG_CONSOLE_VGA */
+#endif /* CONFIG_PCI_ROM_RUN || CONFIG_VGA_ROM_RUN */
 }
 
 /** Default device operation for PCI devices */

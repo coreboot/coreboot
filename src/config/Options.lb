@@ -415,7 +415,7 @@ end
 define CONFIG_CONSOLE_VGA
 	default 0
 	export always
-	comment "Log messages to VGA"
+	comment "Log messages to any VGA-compatible device (may require *_ROM_RUN to bring up)"
 end
 define CONFIG_CONSOLE_VGA_MULTI
         default 0
@@ -1027,10 +1027,16 @@ define CPU_ADDR_BITS
 	comment "CPU hardware address lines num, for AMD K8 could be 40, and AMD family 10 could be 48"
 end
 
+define CONFIG_VGA_ROM_RUN
+	default 0
+	export always
+	comment "Init x86 ROMs on VGA-class PCI devices"
+end
+
 define CONFIG_PCI_ROM_RUN
 	default 0
 	export always
-	comment "Init PCI device option rom"
+	comment "Init x86 ROMs on all PCI devices"
 end
 
 define CONFIG_PCI_64BIT_PREF_MEM
